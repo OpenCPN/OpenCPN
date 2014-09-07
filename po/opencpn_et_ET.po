@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 3.3.1328\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-29 21:40-0400\n"
+"POT-Creation-Date: 2014-09-07 17:41-0400\n"
 "PO-Revision-Date: 2014-04-10 19:04+0200\n"
 "Last-Translator: Highlander <highlander.et@gmail.com>\n"
 "Language-Team:  <open_en_et@googlegroups.com>\n"
@@ -1775,6 +1775,10 @@ msgstr ""
 msgid "Heading"
 msgstr "Suund"
 #
+#, fuzzy
+msgid "Heading Predictor Length (NMi)"
+msgstr "COG eeldatav asukoht (min)"
+#
 msgid "Help"
 msgstr "Abi"
 #
@@ -1915,6 +1919,9 @@ msgid "Isolated Danger"
 msgstr "Eraldiasuv oht"
 #
 msgid "Israel"
+msgstr ""
+#
+msgid "It seems you have no tide/current harmonic data installed."
 msgstr ""
 #
 msgid "Italy"
@@ -3382,6 +3389,9 @@ msgstr ""
 msgid "Texture Compression Caching"
 msgstr ""
 #
+msgid "Texture Compression with Caching"
+msgstr ""
+#
 msgid "Texture Memory Size (MB)"
 msgstr ""
 #
@@ -3776,8 +3786,9 @@ msgstr "Teepunkti omadused"
 msgid "Waypoint Properties, Layer: "
 msgstr "Kiht Teepunkti omadused:"
 #
-msgid "Waypoint(s) Uploaded successfully."
-msgstr "Teepunkt(id) on edukalt üleslaetud."
+#, fuzzy
+msgid "Waypoint(s) Transmitted."
+msgstr "Teepunkti nimi"
 #
 msgid "Waypoints"
 msgstr "Teepunktid"
@@ -3957,5 +3968,10 @@ msgstr "wxFB veebileht"
 #
 #
 #
+#
 #~ msgid "Output"
 #~ msgstr "Väljund"
+#
+#
+#~ msgid "Waypoint(s) Uploaded successfully."
+#~ msgstr "Teepunkt(id) on edukalt üleslaetud."
