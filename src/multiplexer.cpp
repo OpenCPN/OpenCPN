@@ -570,6 +570,12 @@ ret_point:
             unsigned int max_length = 76;
             unsigned int max_wp = 2;                     // seems to be required for garmin...
             
+            //  Furuno GPS can only accept 5 (five) waypoint linkage sentences....
+            //  So, we need to compact a few more points into each link sentence.
+            if(g_GPS_Ident == _T("FurunoGP3X")){
+                max_wp = 6;
+            }
+                
             oNMEA0183.Rte.Empty();
             oNMEA0183.Rte.TypeOfRoute = CompleteRoute;
 
