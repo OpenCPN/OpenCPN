@@ -342,8 +342,8 @@ void *OCP_DataStreamInput_Thread::Entry()
     bool nl_found = false;
 
     if( (m_io_select == DS_TYPE_INPUT_OUTPUT) || (m_io_select == DS_TYPE_OUTPUT) ) {
-        loop_timeout = 2;
-        max_timeout = 5000;
+        loop_timeout = 20;
+        max_timeout = 500;
     }
 
     COMMTIMEOUTS timeouts;
@@ -351,8 +351,8 @@ void *OCP_DataStreamInput_Thread::Entry()
     timeouts.ReadIntervalTimeout = MAXDWORD;
     timeouts.ReadTotalTimeoutMultiplier = MAXDWORD;
     timeouts.ReadTotalTimeoutConstant = loop_timeout;
-    timeouts.WriteTotalTimeoutMultiplier = MAXDWORD;
-    timeouts.WriteTotalTimeoutConstant = MAXDWORD;
+    timeouts.WriteTotalTimeoutMultiplier = 0;//MAXDWORD;
+    timeouts.WriteTotalTimeoutConstant = 0; //MAXDWORD;
 
     if (!SetCommTimeouts((HANDLE)m_gps_fd, &timeouts)) // Error setting time-outs.
         goto thread_exit;
@@ -399,8 +399,8 @@ void *OCP_DataStreamInput_Thread::Entry()
                 timeouts.ReadIntervalTimeout = MAXDWORD;
                 timeouts.ReadTotalTimeoutMultiplier = MAXDWORD;
                 timeouts.ReadTotalTimeoutConstant = loop_timeout;
-                timeouts.WriteTotalTimeoutMultiplier = MAXDWORD;
-                timeouts.WriteTotalTimeoutConstant = MAXDWORD;
+                timeouts.WriteTotalTimeoutMultiplier = 0;//MAXDWORD;
+                timeouts.WriteTotalTimeoutConstant = 0;//MAXDWORD;
 
                 if (!SetCommTimeouts((HANDLE)m_gps_fd, &timeouts)) // Error setting time-outs.
                     goto thread_exit;
@@ -442,9 +442,11 @@ void *OCP_DataStreamInput_Thread::Entry()
                         m_pout_mutex->Unlock();
                         WriteComPortPhysical(m_gps_fd, msg);
                         
-                        if( wxMUTEX_NO_ERROR == m_pout_mutex->TryLock() )
-                            b_qdata = (m_takIndex != (-1) || m_putIndex != (-1));
-                        else
+                        //      Lets allow only one output sentence per loop.
+                        //      Seems to make some USB-serial adapters happier
+//                        if( wxMUTEX_NO_ERROR == m_pout_mutex->TryLock() )
+//                            b_qdata = (m_takIndex != (-1) || m_putIndex != (-1));
+//                        else
                             b_qdata = false;
                     }
                     else {                                  // some index error
