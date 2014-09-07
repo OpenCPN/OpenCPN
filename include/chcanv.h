@@ -158,6 +158,7 @@ public:
       //    Methods
       void OnKeyDown(wxKeyEvent &event);
       void OnKeyUp(wxKeyEvent &event);
+      void OnKeyChar(wxKeyEvent &event);
       void OnPaint(wxPaintEvent& event);
       void PaintCleanup();
       void Scroll(int dx, int dy);

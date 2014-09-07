@@ -978,6 +978,7 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
     EVT_TIMER ( ROPOPUP_TIMER, ChartCanvas::OnRolloverPopupTimerEvent )
     EVT_KEY_DOWN(ChartCanvas::OnKeyDown )
     EVT_KEY_UP(ChartCanvas::OnKeyUp )
+    EVT_CHAR(ChartCanvas::OnKeyChar)
     EVT_MOUSE_CAPTURE_LOST(ChartCanvas::LostMouseCapture )
 
     EVT_MENU ( ID_DEF_MENU_MAX_DETAIL,         ChartCanvas::PopupMenuHandler )
@@ -1862,6 +1863,44 @@ void ChartCanvas::SetVP(ViewPort &vp)
     VPoint = vp;
 }
 
+void ChartCanvas::OnKeyChar( wxKeyEvent &event )
+{
+    int key_char = event.GetKeyCode();
+    
+    //      Handle both QWERTY and AZERTY keyboard separately for a few control codes
+    if( !g_b_assume_azerty ) {
+        switch( key_char ) {
+            case ']':
+                RotateCanvas( 1 );
+                break;
+                
+            case '[':
+                RotateCanvas( -1 );
+                break;
+                
+            case '\\':
+                DoRotateCanvas(0);
+                break;
+        }
+    }
+#if 0    
+    else {
+        switch( key_char ) {
+            case 43:
+                ZoomCanvas( 2.0 );
+                break;
+            
+            case 54:                     // '-'  alpha/num pad
+            case 56:                     // '_'  alpha/num pad
+                ZoomCanvas( 0.5 );
+                break;
+        }
+    }
+#endif    
+}    
+
+
+
 void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 {
     m_modkeys = event.GetModifiers();
@@ -2027,15 +2066,15 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
                 break;
 
             case ']':
-                RotateCanvas( 1 );
+//                RotateCanvas( 1 );
                 break;
                 
             case '[':
-                RotateCanvas( -1 );
+//                RotateCanvas( -1 );
                 break;
                 
             case '\\':
-                DoRotateCanvas(0);
+//                DoRotateCanvas(0);
                 break;
             }
         } else {
@@ -2269,7 +2308,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             break;
 
         default:
-            return;
+            break;
 
         }           // switch
     }
