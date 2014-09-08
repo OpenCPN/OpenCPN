@@ -33,6 +33,12 @@ SET(PACKAGE_NAME grib_pi)
 SET(PLUGIN_SOURCE_DIR .)
 MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME} ***")
 
+# change the package name to include the wx configuration
+if(DEFINED _wx_selected_config)
+string(REGEX REPLACE "-.*$" "" WX_SHORT_CONFIG ${_wx_selected_config})
+string(REGEX REPLACE "_pi$" "_${WX_SHORT_CONFIG}_pi" PACKAGE_NAME ${PACKAGE_NAME})
+endif()
+
 #SET(CMAKE_BUILD_TYPE Debug)
 #SET(CMAKE_VERBOSE_MAKEFILE ON)
 

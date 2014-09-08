@@ -119,6 +119,10 @@ void StatWin::OnPaint( wxPaintEvent& event )
 
     dc.SetBackground( m_backBrush );
     dc.Clear();
+
+#ifdef __WXQT__ // temporary workaround
+    pPiano->Refresh();
+#endif
 }
 
 void StatWin::OnSize( wxSizeEvent& event )

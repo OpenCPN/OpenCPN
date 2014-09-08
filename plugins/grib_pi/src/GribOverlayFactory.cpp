@@ -102,7 +102,6 @@ static wxString TToString( const wxDateTime date_time, const int time_zone )
 
 #ifdef ocpnUSE_GL
 static GLuint texture_format = 0;
-#endif
 
 static GLboolean QueryExtension( const char *extName )
 {
@@ -142,6 +141,7 @@ static GLboolean QueryExtension( const char *extName )
 #define systemGetProcAddress(ADDR) dlsym( RTLD_DEFAULT, ADDR)
 #else
 #define systemGetProcAddress(ADDR) glXGetProcAddress((const GLubyte*)ADDR)
+#endif
 #endif
 
 //----------------------------------------------------------------------------------------------------------
@@ -1153,6 +1153,7 @@ void GRIBOverlayFactory::DrawMessageWindow( wxString msg, int x, int y , wxFont 
         dc.DrawLabel( msg, wxRect( label_offset, yp, wdraw, h ),
                       wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL);
     } else {
+#ifdef ocpnUSE_GL
         m_TexFontMessage.Build(*mfont);
         int w, h;
         m_TexFontMessage.GetTextExtent( msg, &w, &h);
@@ -1175,6 +1176,7 @@ void GRIBOverlayFactory::DrawMessageWindow( wxString msg, int x, int y , wxFont 
         glEnable(GL_TEXTURE_2D);
         m_TexFontMessage.RenderString( msg, 0, yp);
         glDisable(GL_TEXTURE_2D);
+#endif
     }
 }
 

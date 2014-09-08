@@ -252,7 +252,7 @@ public:
     void OnChooseFont( wxCommandEvent& event );
     void OnCPAWarnClick( wxCommandEvent& event );
     
-#ifdef __WXGTK__
+#if defined(__WXGTK__) || defined(__WXQT__)
     void OnChooseFontColor( wxCommandEvent& event );
 #endif
     void OnOpenGLOptions( wxCommandEvent& event );

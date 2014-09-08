@@ -635,13 +635,9 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
         wxString name = fn.GetName();
         prob_pi_name = name;
         
-#ifdef __WXGTK__
+#ifndef __MSVC__
         prob_pi_name = name.Mid(3);     // lop off "lib"
-#endif        
-#ifdef __WXOSX__
-        prob_pi_name = name.Mid(3);     // lop off "lib"
-#endif        
-        
+#endif
         int len = sizeof(PluginBlacklist) / sizeof(BlackListedPlugin);
         for (int i = 0; i < len; i++) {
             wxString candidate = PluginBlacklist[i].name.Lower();

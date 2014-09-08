@@ -689,7 +689,7 @@ DEFINE_EVENT_TYPE(EVT_THREADMSG)
 //    PNG Icon resources
 //------------------------------------------------------------------------------
 
-#ifdef __WXGTK__
+#if defined(__WXGTK__) || defined(__WXQT__)
 #include "bitmaps/opencpn.xpm"
 #endif
 
@@ -1160,7 +1160,7 @@ bool MyApp::OnInit()
     //TODO  Why is the following preferred?  Will not compile with gcc...
 //    wxStandardPaths& std_path = wxApp::GetTraits()->GetStandardPaths();
     
-#ifdef __WXGTK__
+#ifdef __unix__
     std_path.SetInstallPrefix(wxString(PREFIX, wxConvUTF8));
 #endif
     
@@ -1264,7 +1264,14 @@ bool MyApp::OnInit()
 
     wxString wxver(wxVERSION_STRING);
     wxver.Prepend( _T("wxWidgets version: ") );
-    wxLogMessage( wxver );
+
+    wxPlatformInfo platforminfo = wxPlatformInfo::Get();
+
+    wxString platform = platforminfo.GetOperatingSystemIdName() + _T(" ") +
+                        platforminfo.GetArchName()+ _T(" ") +
+                        platforminfo.GetPortIdName();
+
+    wxLogMessage( wxver + _T(" ") + platform );
 
     wxLogMessage( _T("MemoryStatus:  mem_total: %d mb,  mem_initial: %d mb"), g_mem_total / 1024,
             g_mem_initial / 1024 );
@@ -1417,12 +1424,6 @@ bool MyApp::OnInit()
         exit( EXIT_FAILURE );
     }
 
-#ifdef __WXGTK__    
-//    if( !CheckSerialAccess() ){
-//    }
-        
-#endif    
-    
     //      Init the WayPoint Manager (Must be after UI Style init).
     pWayPointMan = new WayPointman();
     pWayPointMan->ProcessIcons( g_StyleManager->GetCurrentStyle() );
@@ -1557,10 +1558,7 @@ bool MyApp::OnInit()
     
 #else
     g_bdisable_opengl = true;;
-#endif
-
-
-    
+#endif    
     
  #ifdef USE_S57
 
@@ -1987,6 +1985,21 @@ bool MyApp::OnInit()
 
     //  Yield to pick up the OnSize() calls that result from Maximize()
     Yield();
+#if 0
+    wxMessageBox(wxString::Format
+                 (
+                    "Welcome to %s!\n"
+                    "\n"
+                    "This is the minimal wxWidgets sample\n"
+                    "running under %s.",
+                    wxVERSION_STRING,
+                    wxGetOsDescription()
+                     ),
+                 "About wxWidgets minimal sample",
+                 wxOK | wxICON_INFORMATION,
+                 NULL);
+    exit(0);
+#endif
     
     wxString perspective;
     pConfig->SetPath( _T ( "/AUI" ) );
@@ -2554,7 +2567,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
         ConnectionParams *cp = g_pConnectionParams->Item(i);
         if( cp->bEnabled ) {
             
-#ifdef __WXGTK__
+#ifdef __unix__
             if( cp->GetDSPort().Contains(_T("Serial"))) {
                 if( ! g_bserial_access_checked ){
                     if( !CheckSerialAccess() ){
@@ -2602,7 +2615,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     SetIcon( wxICON(0) );           // this grabs the first icon in the integrated MSW resource file
 #endif
 
-#ifdef __WXGTK__
+#if defined(__WXGTK__) || defined(__WXQT__)
     wxIcon app_icon(opencpn);          // This comes from opencpn.xpm inclusion above
     SetIcon(app_icon);
 #endif
@@ -3495,6 +3508,10 @@ void MyFrame::ODoSetSize( void )
               templateFont->GetFaceName() );
 
         m_pStatusBar->SetFont( *pstat_font );
+
+#ifdef __WXQT__
+        m_pStatusBar->SetMinHeight( pstat_font->GetPointSize() + 10 );
+#endif
     }
 
     int cccw = x;
@@ -4406,7 +4423,7 @@ int MyFrame::DoOptionsDialog()
         if( b_sub ) g_FloatingToolbarDialog->Submerge();
     }
 
-#ifdef __WXOSX__
+#if defined(__WXOSX__) || defined(__WXQT__)
     if(stats) stats->Hide();
 #endif
 
@@ -4478,7 +4495,7 @@ int MyFrame::DoOptionsDialog()
             g_FloatingToolbarDialog->Submerge();
     }
 
-#ifdef __WXMAC__
+#if defined(__WXOSX__) || defined(__WXQT__)
     if(stats)
         stats->Show();
 #endif
@@ -5463,7 +5480,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
     }
 
     if( cc1 ) {
-#ifndef __WXGTK__
+#if !defined(__WXGTK__) && !defined(__WXQT__)
         double cursor_lat, cursor_lon;
         cc1->GetCursorLatLon( &cursor_lat, &cursor_lon );
         cc1->SetCursorStatus(cursor_lat, cursor_lon);
@@ -8208,7 +8225,7 @@ void MyPrintout::DrawPageOne( wxDC *dc )
  *     Very system specific, unavoidably.
  */
 
-#ifdef __WXGTK__
+#ifdef __UNIX__
 extern "C" int wait(int *);                     // POSIX wait() for process
 
 #include <termios.h>
@@ -8245,7 +8262,7 @@ int paternAdd (const char* patern) {
 }
 
 
-#ifdef __WXGTK__
+#ifdef __UNIX__
 // This filter verify is device is withing searched patern and verify it is openable
 // -----------------------------------------------------------------------------------
 int paternFilter (const struct dirent * dir) {
@@ -8304,7 +8321,7 @@ wxArrayString *EnumerateSerialPorts( void )
 {
     wxArrayString *preturn = new wxArrayString;
 
-#ifdef __WXGTK__
+#ifdef __UNIX__
 
     //Initialize the pattern table
     if( devPatern[0] == NULL ) {
@@ -8519,7 +8536,7 @@ wxArrayString *EnumerateSerialPorts( void )
         _exit(0);// If exec fails then exit forked process.
     }
 
-#endif      // __WXGTK__
+#endif      // __UNIX__
 #ifdef __WXOSX__
 #include "macutils.h"
     char* paPortNames[MAX_SERIAL_PORTS];
@@ -8719,7 +8736,7 @@ wxArrayString *EnumerateSerialPorts( void )
 bool CheckSerialAccess( void )
 {
     bool bret = true;
-#ifdef __WXGTK__
+#ifdef __UNIX__
  
 #if 0    
     termios ttyset_old;
