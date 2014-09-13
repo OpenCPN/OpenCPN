@@ -763,10 +763,9 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
         wxRect rpoly( poly_x_min, poly_y_min, poly_x_max - poly_x_min , poly_y_max - poly_y_min);
         wxRect rRegion = Region.GetBox();
         if(rpoly.Contains(rRegion)){
-        //  subject poygon must be large enough to fully encompass the target Region,
-        //  so the intersection is simply the Region
-            if( NULL == ppoints ) delete[] pp;
-            return Region;
+        //  subject poygon may be large enough to fully encompass the target Region,
+        //  but it might not, especially for irregular or concave charts.
+        //  So we cannot shortcut here
         }
         else{
         //  Subject polygon is entirely outside of target Region
