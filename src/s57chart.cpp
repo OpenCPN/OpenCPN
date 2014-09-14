@@ -7707,6 +7707,9 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
                         if(!bviz)
                             newsector = false;
                     
+                        if((sector.sector2 == 360) && ( sector.sector1 == 0))  //FS#1437
+                            newsector = false;
+                        
                         if( newsector ) {
                             sectorlegs.push_back( sector );
                             newSectorsNeedDrawing = true;
