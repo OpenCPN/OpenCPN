@@ -681,7 +681,9 @@ ChartBase *Quilt::GetChartAtPix( wxPoint p )
     while( cnode ) {
         QuiltPatch *pqp = cnode->GetData();
         if( !pqp->b_overlay && (pqp->ActiveRegion.Contains( p ) == wxInRegion) )
+            if( ChartData->IsChartInCache( pqp->dbIndex ) ){
                 pret = ChartData->OpenChartFromDB( pqp->dbIndex, FULL_INIT );
+            }
         cnode = cnode->GetNext();
     }
 
