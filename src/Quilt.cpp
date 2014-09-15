@@ -884,8 +884,21 @@ int Quilt::AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family,  ChartTypeEnum t
         }
     }
 
-    // Search for the largest scale chart whose scale limits contain the requested scale.
+    //  If zooming in, it may happen that the selected zoom scale does not fit into the allowable range
+    //  of any chart in the quilt.  This would lead to an empty quilt, and the backing chart display.
+    //  This often happens when the available charts differ widely in scale.  Common, except for NOAA.
+    //  Avoid this case:  by default, on zoom in, keep the current reference chart.
+    //  Choose a larger scale chart when/if possible.
+    //  This will lead to slight overzoom in some cases, but better than the backing chart.
+    
+    
+    //  In zoom out mode, we find largest scale chart whose allowable zoom range fits.
+    //  We will jump to the backing chart when the smallest scale chart in the quilt no longer fits.
     int new_ref_dbIndex = -1;
+    if(b_zin)
+        int new_ref_dbIndex = m_refchart_dbIndex; 
+    
+    // Search for the largest scale chart whose scale limits contain the requested scale.
     for(size_t i=0 ; i < index_array.GetCount() ; i++){
         int a = min_scale.Item(i);
         int b = max_scale.Item(i);
