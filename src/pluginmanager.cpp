@@ -4149,6 +4149,9 @@ int PI_PLIBRenderAreaToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp, wxRe
         if(!pObj->geoPtMulti){          // do this only once
             PolyTessGeo *tess = (PolyTessGeo *)pObj->pPolyTessGeo;
         
+            if(!tess)
+                return 1;                       // bail on empty data
+                
             PolyTriGroup *ptg = new PolyTriGroup;
             ptg->tri_prim_head = tess->Get_PolyTriGroup_head()->tri_prim_head; //tph;
             ptg->bsingle_alloc = false;
@@ -4186,6 +4189,9 @@ int PI_PLIBRenderAreaToGL( const wxGLContext &glcc, PI_S57Obj *pObj, PlugIn_View
        if(!pObj->geoPtMulti ){                          // only do this once
             PolyTessGeo *tess = (PolyTessGeo *)pObj->pPolyTessGeo;
         
+            if(!tess)
+                return 1;                       // bail on empty data
+                
             PolyTriGroup *ptg = new PolyTriGroup;       // this will leak a little, but is POD
             ptg->tri_prim_head = tess->Get_PolyTriGroup_head()->tri_prim_head; 
             ptg->bsingle_alloc = false;
