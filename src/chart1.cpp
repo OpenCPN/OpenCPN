@@ -3854,6 +3854,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             } else {
                 TrackOff( true );
                 g_bTrackCarryOver = false;
+                cc1->Refresh(true);
             }
             break;
         }
