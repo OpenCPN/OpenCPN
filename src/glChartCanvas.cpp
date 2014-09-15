@@ -935,6 +935,13 @@ void glChartCanvas::SetupOpenGL()
     if( !s_glBindBuffer || !s_glBufferData || !s_glGenBuffers || !s_glDeleteBuffers )
         g_b_EnableVBO = false;
 
+#ifdef __WXMSW__
+    if( GetRendererString().Find( _T("Intel") ) != wxNOT_FOUND ) {
+        wxLogMessage( _T("OpenGL-> Detected Windows Intel renderer, disabling Vertexbuffer Objects") );
+        g_b_EnableVBO = false;
+    }
+#endif
+
     if(g_b_EnableVBO)
         wxLogMessage( _T("OpenGL-> Using Vertexbuffer Objects") );
     else
