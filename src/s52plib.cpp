@@ -2970,8 +2970,15 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
             //  Here we decide to draw or not based on the highest priority seen for this segment
             //  That is, if this segment is going to be drawn at a higher priority later, then "continue", and don't draw it here.
-                if( pedge->max_priority != priority_current ) continue;
-
+            
+            // This logic is not perfectly right for one case:
+            // If the segment has only two end connected nodes, and no intermediate edge,
+            // then we have no good way to evaluate the priority.
+            // This is due to the fact that priority is only precalculated for edge segments, not connector nodes.
+            // Only thing to do is take the conservative approach and draw the segment, in this case.
+                if( pedge->nCount ){
+                    if( pedge->max_priority != priority_current ) continue;
+                }
                 nls = pedge->nCount;
 
                 ppt = pedge->pPoints;
