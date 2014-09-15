@@ -2431,7 +2431,6 @@ int MyApp::OnExit()
 #endif
 
     delete g_pPlatform;
-    delete g_pauimgr;
 
     delete plocale_def_lang;
     
@@ -3393,7 +3392,9 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     cc1->Destroy();
     cc1 = NULL;
 
-
+    g_pauimgr->UnInit();
+    delete g_pauimgr;
+    g_pauimgr = NULL;
     //    Unload the PlugIns
     //      Note that we are waiting until after the canvas is destroyed,
     //      since some PlugIns may have created children of canvas.
@@ -3416,9 +3417,6 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     pthumbwin = NULL;
 
     g_FloatingToolbarDialog = NULL;
-
-    g_pauimgr->UnInit();
-
 
     this->Destroy();
 
