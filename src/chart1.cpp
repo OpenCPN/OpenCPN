@@ -5340,22 +5340,21 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
     }
 
     //    Build and send a Position Fix event to PlugIns
-    if( g_pi_manager ) {
-            GenericPosDatEx GPSData;
-            GPSData.kLat = gLat;
-            GPSData.kLon = gLon;
-            GPSData.kCog = gCog;
-            GPSData.kSog = gSog;
-            GPSData.kVar = gVar;
-            GPSData.kHdm = gHdm;
-            GPSData.kHdt = gHdt;
-            GPSData.nSats = g_SatsInView;
+    if( g_pi_manager )
+    {
+        GenericPosDatEx GPSData;
+        GPSData.kLat = gLat;
+        GPSData.kLon = gLon;
+        GPSData.kCog = gCog;
+        GPSData.kSog = gSog;
+        GPSData.kVar = gVar;
+        GPSData.kHdm = gHdm;
+        GPSData.kHdt = gHdt;
+        GPSData.nSats = g_SatsInView;
 
-            GPSData.FixTime = m_fixtime;
+        GPSData.FixTime = m_fixtime;
 
-            if(g_pi_manager)
-                g_pi_manager->SendPositionFixToAllPlugIns( &GPSData );
-
+        g_pi_manager->SendPositionFixToAllPlugIns( &GPSData );
     }
 
     //   Check for anchorwatch alarms                                 // pjotrc 2010.02.15
