@@ -855,8 +855,8 @@ void glChartCanvas::SetupOpenGL()
     //  Set the minimum line width
     GLint parms[2];
     glGetIntegerv( GL_SMOOTH_LINE_WIDTH_RANGE, &parms[0] );
-    g_GLMinSymbolLineWidth = parms[0];
-    g_GLMinCartographicLineWidth = parms[0];
+    g_GLMinSymbolLineWidth = wxMax(parms[0], 1);
+    g_GLMinCartographicLineWidth = wxMax(parms[0], 1);
     
     //    Some GL renderers do a poor job of Anti-aliasing very narrow line widths.
     //    This is most evident on rendered symbols which have horizontal or vertical line segments
@@ -866,7 +866,7 @@ void glChartCanvas::SetupOpenGL()
         GLfloat parf;
         glGetFloatv(  GL_SMOOTH_LINE_WIDTH_GRANULARITY, &parf );
         
-        g_GLMinSymbolLineWidth = (float)parms[0] + parf;
+        g_GLMinSymbolLineWidth = wxMax(((float)parms[0] + parf), 1);
     }
     
     s_b_useScissorTest = true;
@@ -965,6 +965,20 @@ void glChartCanvas::SetupOpenGL()
     BuildFBO();
 #if 1   /* this test sometimes fails when the fbo still works */
         //  But we need to be ultra-conservative here, so run all the tests we can think of
+    
+    
+    //  But we cannot even run this test on some platforms
+    //  So we simply have to declare FBO unavailable
+#ifdef __WXMSW__
+    if( GetRendererString().Upper().Find( _T("INTEL") ) != wxNOT_FOUND ) {
+        if(GetRendererString().Upper().Find( _T("MOBILE") ) != wxNOT_FOUND ){
+            wxLogMessage( _T("OpenGL-> Detected Windows Intel Mobile renderer, disabling Frame Buffer Objects") );
+            m_b_DisableFBO = true;
+            BuildFBO();
+        }
+    }
+#endif
+    
     if( m_b_BuiltFBO ) {
         // Check framebuffer completeness at the end of initialization.
         ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, m_fb0 );
