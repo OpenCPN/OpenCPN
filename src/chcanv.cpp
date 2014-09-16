@@ -3282,6 +3282,15 @@ void ChartCanvas::SetQuiltRefChart( int dbIndex )
     m_pQuilt->Invalidate();
 }
 
+double ChartCanvas::GetBestStartScale(int dbi_hint, const ViewPort &vp)
+{
+    if(m_pQuilt)
+        return m_pQuilt->GetBestStartScale(dbi_hint, vp);
+    else
+        return vp.view_scale_ppm;
+}
+
+
 //      Verify and adjust the current reference chart,
 //      so that it will not lead to excessive overzoom or underzoom onscreen
 int ChartCanvas::AdjustQuiltRefChart( void )

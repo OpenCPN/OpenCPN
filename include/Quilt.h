@@ -119,6 +119,7 @@ public:
     int GetnCharts() {
         return m_PatchList.GetCount();
     }
+    double GetBestStartScale(int dbi_ref_hint, const ViewPort &vp_in);
     
 
     void ComputeRenderRegion( ViewPort &vp, OCPNRegion &chart_region );

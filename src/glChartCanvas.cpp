@@ -2376,8 +2376,8 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &Region, b
         
         //  Check the first, smallest scale chart
         if(chart) {
-            if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) )
-            chart = NULL;
+//            if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) )
+//            chart = NULL;
         }
             
         while( chart ) {
@@ -2387,10 +2387,10 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &Region, b
             //  and that the quilt zoom methods choose a reasonable reference chart.
             if(chart->GetChartFamily() != CHART_FAMILY_RASTER)
             {
-                if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) ) {
-                    chart = cc1->m_pQuilt->GetNextChart();
-                    continue;
-                }
+//                if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) ) {
+//                    chart = cc1->m_pQuilt->GetNextChart();
+//                    continue;
+//                }
             }
 
             QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();

@@ -3642,7 +3642,14 @@ void MyFrame::SetGroupIndex( int index )
     cc1->UpdateCanvasOnGroupChange();
 
     int dbi_hint = cc1->FindClosestCanvasChartdbIndex( current_chart_native_scale );
-
+    
+    double best_scale = cc1->GetBestStartScale(dbi_hint, vp);
+    
+    cc1->SetVPScale( best_scale );
+    
+    if(cc1->GetQuiltMode())
+        dbi_hint = cc1->GetQuiltReferenceChartIndex();
+    
     //    Refresh the canvas, selecting the "best" chart,
     //    applying the prior ViewPort exactly
     ChartsRefresh( dbi_hint, vp, true );
@@ -5911,7 +5918,37 @@ void MyFrame::HandlePianoClick( int selected_index, int selected_dbIndex )
         if( cc1->IsChartQuiltableRef( selected_dbIndex ) ){
             if( ChartData ) ChartData->PurgeCache();
             
-            SelectQuiltRefdbChart( selected_dbIndex );
+            
+            //  This odd logic is designed to cover the case of Inland ENCs, which often
+            //  are of large scale, with no other smaller scale charts to make a nice quilt.
+            bool auto_rescale = true;
+            if(ChartData){
+                if( CHART_TYPE_S57 == ChartData->GetDBChartType( selected_dbIndex ) ){
+                    if( 1 == pCurrentStack->nEntry)
+                        auto_rescale = false;
+                }
+            }
+            
+            if(auto_rescale){
+                SelectQuiltRefdbChart( selected_dbIndex, true );  // autoscale
+            }
+            else {
+                SelectQuiltRefdbChart( selected_dbIndex, false );  // no autoscale
+                
+            
+            //  Adjust scale so that the selected chart is underzoomed/overzoomed by a controlled amount
+                ChartBase *pc = ChartData->OpenChartFromDB( selected_dbIndex, FULL_INIT );
+                if( pc ) {
+                    double proposed_scale_onscreen = cc1->GetCanvasScaleFactor() / cc1->GetVPScale();
+                    proposed_scale_onscreen = wxMin(proposed_scale_onscreen,
+                                                20 * pc->GetNormalScaleMax(cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth()));
+                    proposed_scale_onscreen = wxMax(proposed_scale_onscreen,
+                                                pc->GetNormalScaleMin(cc1->GetCanvasScaleFactor(), g_b_overzoom_x));
+                
+                    cc1->SetVPScale( cc1->GetCanvasScaleFactor() / proposed_scale_onscreen );
+                }
+            }
+                    
         }
         else {
             ToggleQuiltMode();

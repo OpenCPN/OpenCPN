@@ -201,7 +201,8 @@ public:
       bool IsQuiltDelta(void);
       void SetQuiltChartHiLiteIndex(int dbIndex);
       int GetQuiltReferenceChartIndex(void);
-
+      double GetBestStartScale(int dbi_hint, const ViewPort &vp);
+      
       int GetNextContextMenuId();
 
       bool StartTimedMovement( bool stoptimer=true );
