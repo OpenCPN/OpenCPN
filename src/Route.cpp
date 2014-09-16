@@ -31,6 +31,7 @@
 #include "navutil.h"
 #include "multiplexer.h"
 #include "Select.h"
+#include "georef.h"
 
 extern WayPointman *pWayPointMan;
 extern bool g_bIsNewLayer;
@@ -509,6 +510,7 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
 
     glBegin(GL_LINE_STRIP);
     float lastlon = 0;
+    float lastlat = 0;
     unsigned short int FromSegNo = 1;
     for(wxRoutePointListNode *node = pRoutePointList->GetFirst();
         node; node = node->GetNext()) {
@@ -521,7 +523,6 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
             dir = -1;
         else if(prp->m_lon < -150 && lastlon > 150)
             dir = 1;
-        lastlon=prp->m_lon;
         
         wxPoint r;
         if (FromSegNo != ToSegNo)
@@ -530,14 +531,18 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
             FromSegNo = ToSegNo;
             glBegin(GL_LINE_STRIP);
         }
-        if(dir) {
-            cc1->GetCanvasPointPix( prp->m_lat, dir*180, &r);
+        if(dir)
+        {
+            double crosslat = lat_gc_crosses_meridian(lastlat, lastlon, prp->m_lat, prp->m_lon, 180.0);
+            cc1->GetCanvasPointPix( crosslat, dir*180, &r);
             glVertex2i(r.x, r.y);
             glEnd();
             glBegin(GL_LINE_STRIP);
-            cc1->GetCanvasPointPix( prp->m_lat, -dir*180, &r);
+            cc1->GetCanvasPointPix( crosslat, -dir*180, &r);
             glVertex2i(r.x, r.y);
         }
+        lastlat=prp->m_lat;
+        lastlon=prp->m_lon;
         
         cc1->GetCanvasPointPix( prp->m_lat, prp->m_lon, &r);
         glVertex2i(r.x, r.y);

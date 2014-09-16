@@ -2694,3 +2694,20 @@ double lm_enorm( int n, double *x )
     return x3max*sqrt(s3);
 }
 
+
+double lat_gc_crosses_meridian( double lat1, double lon1, double lat2, double lon2, double lon )
+{
+    /*    
+    Calculates a latitude at which a GC route between two points crosses a given meridian
+    */
+
+    double dlon = lon * DEGREE;
+    double dlat1 = lat1 * DEGREE;
+    double dlat2 = lat2 * DEGREE;
+    double dlon1 = lon1 * DEGREE;
+    double dlon2 = lon2 * DEGREE;
+    
+    return RADIAN * atan((sin(dlat1) * cos(dlat2) * sin(dlon-dlon2)
+              - sin(dlat2) * cos(dlat1) * sin(dlon-dlon1)) / (cos(dlat1) * cos(dlat2) * sin(dlon1-dlon2)));
+}
+

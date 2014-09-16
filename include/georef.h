@@ -132,12 +132,14 @@ extern "C" void DistanceBearingMercator(double lat0, double lon0, double lat1, d
 
 extern "C" int Georef_Calculate_Coefficients(struct GeoRef *cp, int nlin_lon);
 extern "C" int Georef_Calculate_Coefficients_Proj(struct GeoRef *cp);
+extern "C" double lat_gc_crosses_meridian( double lat1, double lon1, double lat2, double lon2, double lon );
 
 #else
 void toDMS(double a, char *bufp, int bufplen);
 void toDMM(double a, char *bufp, int bufplen);
 int GetDatumIndex(const char *str);
 void MolodenskyTransform (double lat, double lon, double *to_lat, double *to_lon, int from_datum_index, int to_datum_index);
+double lat_gc_crosses_meridian( double lat1, double lon1, double lat2, double lon2, double lon );
 
 #endif
 
