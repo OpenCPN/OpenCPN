@@ -720,13 +720,13 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP )
             cohen_sutherland_line_clip_i( &x0, &y0, &x1, &y1, 0, sx, 0, sy ) != Visible ) {
             prp->Draw( dc, &rpt );
 
-            pointlist.push_back(rpt);
             if( ToSegNo != FromSegNo ) {
                 if(pointlist.size()) {
                     pointlists.push_back(pointlist);
                     pointlist.clear();
                 }
             }
+            pointlist.push_back(rpt);
         }
 
         node = node->GetNext();

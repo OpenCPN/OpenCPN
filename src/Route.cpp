@@ -509,9 +509,11 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
 
     glBegin(GL_LINE_STRIP);
     float lastlon = 0;
+    unsigned short int FromSegNo = 1;
     for(wxRoutePointListNode *node = pRoutePointList->GetFirst();
         node; node = node->GetNext()) {
         RoutePoint *prp = node->GetData();
+        unsigned short int ToSegNo = prp->m_GPXTrkSegNo;
         
         /* crosses IDL? if so break up into two segments */
         int dir = 0;
@@ -522,6 +524,12 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
         lastlon=prp->m_lon;
         
         wxPoint r;
+        if (FromSegNo != ToSegNo)
+        {
+            glEnd();
+            FromSegNo = ToSegNo;
+            glBegin(GL_LINE_STRIP);
+        }
         if(dir) {
             cc1->GetCanvasPointPix( prp->m_lat, dir*180, &r);
             glVertex2i(r.x, r.y);
