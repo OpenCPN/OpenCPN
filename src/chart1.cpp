@@ -232,6 +232,9 @@ extern wxString           str_version_major;
 extern wxString           str_version_minor;
 extern wxString           str_version_patch;
 
+extern CompressionWorkerPool   *g_CompressorPool;
+bool                      g_bcompression_wait;
+
 wxString                  g_uploadConnection;
 
 int                       user_user_id;
@@ -3241,6 +3244,14 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     pConfig->Write( _T ( "AUIPerspective" ), g_pauimgr->SavePerspective() );
 
     g_bquiting = true;
+    
+    if(g_bopengl && g_CompressorPool){
+        g_CompressorPool->PurgeJobList();
+        
+        if(g_CompressorPool->GetRunningJobCount())
+            g_bcompression_wait = true;
+    }
+                
     if( cc1 ) {
         cc1->SetCursor( wxCURSOR_WAIT );
 
@@ -3249,6 +3260,28 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         wxYield();
     }
 
+    
+    #define THREAD_WAIT_SECONDS  5
+    //  Try to wait a bit to see if all compression threads exit nicely
+    if(g_bopengl && g_CompressorPool){
+        wxDateTime now = wxDateTime::Now();
+        time_t stall = now.GetTicks();
+        time_t start = stall;
+        time_t end = stall + THREAD_WAIT_SECONDS;
+        
+        while(stall < end ){
+            wxDateTime later = wxDateTime::Now();
+            stall = later.GetTicks();
+            
+            wxYield();
+            wxSleep(1);
+            if(!g_CompressorPool->GetRunningJobCount())
+                break;
+        }
+        
+        int yyp = 5;    
+    }
+    
     //   Save the saved Screen Brightness
     RestoreScreenBrightness();
 
@@ -3379,8 +3412,13 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 
     //      Delete all open charts in the cache
     cc1->EnablePaint(false);
-    if( ChartData ) ChartData->PurgeCache();
+    if( ChartData )
+        ChartData->PurgeCache();
 
+        
+            
+            
+     
     SetStatusBar( NULL );
     stats = NULL;
 

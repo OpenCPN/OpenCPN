@@ -117,7 +117,7 @@ extern WayPointman      *pWayPointMan;
 extern RouteList        *pRouteList;
 extern bool             b_inCompressAllCharts;
 extern bool             g_bexpert;
-
+extern bool             g_bcompression_wait;
 
 float            g_GLMinSymbolLineWidth;
 float            g_GLMinCartographicLineWidth;
@@ -1971,6 +1971,44 @@ void glChartCanvas::DrawQuiting()
     glDisable( GL_POLYGON_STIPPLE );
 }
 
+void glChartCanvas::DrawCloseMessage(wxString msg)
+{
+    if(1){
+        
+        wxFont *pfont = wxTheFontList->FindOrCreateFont(12, wxFONTFAMILY_DEFAULT,
+                                                        wxFONTSTYLE_NORMAL,
+                                                        wxFONTWEIGHT_NORMAL);
+        
+        TexFont texfont;
+        
+        texfont.Build(*pfont);
+        int w, h;
+        texfont.GetTextExtent( msg, &w, &h);
+        h += 2;
+        int yp = cc1->GetVP().pix_height/2;
+        int xp = (cc1->GetVP().pix_width - w)/2;
+        
+        glColor3ub( 243, 229, 47 );
+        
+        glBegin(GL_QUADS);
+        glVertex2i(xp, yp);
+        glVertex2i(xp+w, yp);
+        glVertex2i(xp+w, yp+h);
+        glVertex2i(xp, yp+h);
+        glEnd();
+        
+        glEnable(GL_BLEND);
+        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+        
+        glColor3ub( 0, 0, 0 );
+        glEnable(GL_TEXTURE_2D);
+        texfont.RenderString( msg, xp, yp);
+        glDisable(GL_TEXTURE_2D);
+        
+    }
+}
+
+
 void glChartCanvas::GrowData( int size )
 {
     /* grow the temporary ram buffer used to load charts into textures */
@@ -3078,8 +3116,11 @@ void glChartCanvas::Render()
 #endif
 
     //quiting?
-    if( g_bquiting ) DrawQuiting();
-
+    if( g_bquiting )
+        DrawQuiting();
+    if( g_bcompression_wait)
+        DrawCloseMessage( _("Waiting for raster chart compression thread exit."));
+    
     SwapBuffers();
 
     if(b_timeGL){
