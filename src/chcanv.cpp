@@ -730,6 +730,23 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
             b_intersect = true;
             break;
         }
+        
+        // Check segment, last point back to first point
+        if(!b_intersect){
+            int x0 = pp[nPoints-1].x;  int y0 = pp[nPoints-1].y; int x1 = pp[0].x; int y1 = pp[0].y;
+            if( ((x0 < rect.x) && (x1 < rect.x)) ||
+                ((x0 > rect.x+rect.width) && (x1 > rect.x+rect.width)) ){
+            }
+            else{
+                if( ((y0 < rect.y) && (y1 < rect.y)) ||
+                    ((y0 > rect.y+rect.height) && (y1 > rect.y+rect.height)) ){
+                }
+                else{
+                    b_intersect = true;
+                }
+            }
+        }
+                
         screen_region_it1.NextRect();
     }
 
