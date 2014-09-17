@@ -3425,7 +3425,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
     VPoint.clat = lat;
     VPoint.clon = lon;
     VPoint.view_scale_ppm = scale_ppm;
-    VPoint.rotation = rotation;
+    SetVPRotation( rotation );
 
     if( ( VPoint.pix_width <= 0 ) || ( VPoint.pix_height <= 0 ) )    // Canvas parameters not yet set
         return false;
@@ -8860,9 +8860,9 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
         ocpnDC bgdc( temp_dc );
         double r =         VPoint.rotation;
-        VPoint.rotation = 0;
+        SetVPRotation( 0.0 );
         pWorldBackgroundChart->RenderViewOnDC( bgdc, VPoint );
-        VPoint.rotation = r;
+        SetVPRotation( r );
     }
 
     wxMemoryDC *pChartDC = &temp_dc;
