@@ -1549,10 +1549,10 @@ ChartBaseBSB::~ChartBaseBSB()
 
 double ChartBaseBSB::GetNormalScaleMin(double canvas_scale_factor, bool b_allow_overzoom)
 {
-      if(b_allow_overzoom)
+//      if(b_allow_overzoom)
             return (canvas_scale_factor / m_ppm_avg) / 32;         // allow wide range overzoom overscale
-      else
-            return (canvas_scale_factor / m_ppm_avg) / 2;         // don't suggest too much overscale
+//      else
+//            return (canvas_scale_factor / m_ppm_avg) / 2;         // don't suggest too much overscale
 
 }
 

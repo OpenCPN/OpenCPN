@@ -1280,10 +1280,10 @@ void s57chart::ClearRenderedTextCache()
 
 double s57chart::GetNormalScaleMin( double canvas_scale_factor, bool b_allow_overzoom )
 {
-    if( b_allow_overzoom )
+//    if( b_allow_overzoom )
         return m_Chart_Scale * 0.125;
-    else
-        return m_Chart_Scale * 0.25;
+//    else
+//        return m_Chart_Scale * 0.25;
 }
 double s57chart::GetNormalScaleMax( double canvas_scale_factor, int canvas_width )
 {

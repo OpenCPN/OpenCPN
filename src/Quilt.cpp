@@ -831,11 +831,11 @@ int Quilt::GetNomScaleMin(int scale, ChartTypeEnum type, ChartFamilyEnum family)
 {
     switch(family){
         case CHART_FAMILY_RASTER:{
-            return scale * 2;
+            return scale * 3;
         }
         
         case CHART_FAMILY_VECTOR:{
-            return scale * 3;
+            return scale * 4;
         }
         
         default:{
@@ -871,9 +871,10 @@ int Quilt::AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family,  ChartTypeEnum t
                     
                 int nmax_scale = GetNomScaleMax(nscale, type, family);
             
-                //  For the largest scale chart, allow a bit more zoom in range
+                //  For the largest scale chart, allow essentially infinite overzoom.
+                //  The range will be clipped later
                 if(0 == i_first)
-                    nmax_scale /= 4;
+                    nmax_scale = 1; 
                 max_scale.Add(nmax_scale);
 
                 int nmin_scale = GetNomScaleMin(nscale, type, family);
@@ -899,22 +900,25 @@ int Quilt::AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family,  ChartTypeEnum t
         }
     }
         
-        
-        
-    //  If zooming in, it may happen that the selected zoom scale does not fit into the allowable range
-    //  of any chart in the quilt.  This would lead to an empty quilt, and the backing chart display.
-    //  This often happens when the available charts differ widely in scale.  Common, except for NOAA.
-    //  Avoid this case:  by default, on zoom in, keep the current reference chart.
-    //  Choose a larger scale chart when/if possible.
-    //  This will lead to slight overzoom in some cases, but better than the backing chart.
+
+    // Traverse the list, making sure that the allowable scale ranges overlap so as to make no "holes"
+    // in the coverage.
+    // We do this by extending upward the range of larger scale charts, so that they overlap
+    // the next smaller scale chart.  Makes a nicer image...
+    if(index_array.GetCount() > 1){
+        for(size_t i=0 ; i < index_array.GetCount()-1 ; i++){
+            int a = min_scale.Item(i);
+            int b = max_scale.Item(i);
+
+            int c = min_scale.Item(i + 1);
+            int d = max_scale.Item(i + 1);
+
+            min_scale.Item(i) = wxMax(min_scale.Item(i), max_scale.Item(i+1) + 1);
+        }
+    }
     
-    
-    //  In zoom out mode, we find largest scale chart whose allowable zoom range fits.
-    //  We will jump to the backing chart when the smallest scale chart in the quilt no longer fits.
+        
     int new_ref_dbIndex = -1;
-    if(b_zin)
-        new_ref_dbIndex = m_refchart_dbIndex; 
-    
     
     // Search for the largest scale chart whose scale limits contain the requested scale.
     for(size_t i=0 ; i < index_array.GetCount() ; i++){
