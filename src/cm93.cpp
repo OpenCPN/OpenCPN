@@ -5280,7 +5280,8 @@ OCPNRegion cm93compchart::GetValidScreenCanvasRegion ( const ViewPort& VPoint, c
 
                   OCPNRegion rgn_covr = vp_positive.GetVPRegionIntersect ( ScreenRegion, pmcd->m_nvertices, ( float * ) pmcd->pvertices, chart_native_scale, DrawBuf );
 
-                  ret_region.Union( rgn_covr );
+                  if(rgn_covr.IsOk())           // not empty
+                    ret_region.Union( rgn_covr );
 
             }
 
