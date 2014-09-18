@@ -909,13 +909,7 @@ int Quilt::AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family,  ChartTypeEnum t
     // the next smaller scale chart.  Makes a nicer image...
     if(index_array.GetCount() > 1){
         for(size_t i=0 ; i < index_array.GetCount()-1 ; i++){
-            int a = min_scale.Item(i);
-            int b = max_scale.Item(i);
-
-            int c = min_scale.Item(i + 1);
-            int d = max_scale.Item(i + 1);
-
-            min_scale.Item(i) = wxMax(min_scale.Item(i), max_scale.Item(i+1) + 1);
+              min_scale.Item(i) = wxMax(min_scale.Item(i), max_scale.Item(i+1) + 1);
         }
     }
     
@@ -927,7 +921,7 @@ int Quilt::AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family,  ChartTypeEnum t
         int a = min_scale.Item(i);
         int b = max_scale.Item(i);
 
-        if( ( proposed_scale_onscreen < min_scale.Item(i)) &&
+        if( ( proposed_scale_onscreen < min_scale.Item(i) * 1.05) &&   // 5 percent leeway to allow for roundoff errors
             (proposed_scale_onscreen > max_scale.Item(i)) ) {
             new_ref_dbIndex = index_array.Item(i);
             break;

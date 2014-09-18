@@ -6080,10 +6080,10 @@ double MyFrame::GetBestVPScale( ChartBase *pchart )
             proposed_scale_onscreen = cc1->GetCanvasScaleFactor() / new_scale_ppm;
         }
 
-        proposed_scale_onscreen =
-                wxMin(proposed_scale_onscreen, pchart->GetNormalScaleMax(cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth()));
-        proposed_scale_onscreen =
-                wxMax(proposed_scale_onscreen, pchart->GetNormalScaleMin(cc1->GetCanvasScaleFactor(), g_b_overzoom_x));
+//        proposed_scale_onscreen =
+ //               wxMin(proposed_scale_onscreen, pchart->GetNormalScaleMax(cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth()));
+//        proposed_scale_onscreen =
+//                wxMax(proposed_scale_onscreen, pchart->GetNormalScaleMin(cc1->GetCanvasScaleFactor(), g_b_overzoom_x));
 
         return cc1->GetCanvasScaleFactor() / proposed_scale_onscreen;
     } else
