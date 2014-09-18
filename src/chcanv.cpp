@@ -216,7 +216,6 @@ extern bool             g_bUseGreenShip;
 
 extern ChartCanvas      *cc1;
 
-extern bool             g_bshow_overzoom_emboss;
 extern int              g_OwnShipIconType;
 extern double           g_n_ownship_length_meters;
 extern double           g_n_ownship_beam_meters;
@@ -9348,8 +9347,6 @@ void ChartCanvas::DrawEmboss( ocpnDC &dc, emboss_data *pemboss)
 
 emboss_data *ChartCanvas::EmbossOverzoomIndicator( ocpnDC &dc )
 {
-    if( !g_bshow_overzoom_emboss ) return NULL;
-
     if( GetQuiltMode() ) {
         double chart_native_ppm;
         chart_native_ppm = m_canvas_scale_factor / m_pQuilt->GetRefNativeScale();

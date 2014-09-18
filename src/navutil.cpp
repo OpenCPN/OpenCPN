@@ -231,7 +231,6 @@ extern int              g_cm93detail_dialog_x, g_cm93detail_dialog_y;
 extern bool             g_bUseGreenShip;
 
 extern bool             g_b_overzoom_x;                      // Allow high overzoom
-extern bool             g_bshow_overzoom_emboss;
 extern int              g_nautosave_interval_seconds;
 extern int              g_OwnShipIconType;
 extern double           g_n_ownship_length_meters;
@@ -1164,7 +1163,6 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "UseGreenShipIcon" ), &g_bUseGreenShip, 0 );
 //    Read( _T ( "AllowExtremeOverzoom" ), &g_b_overzoom_x, 1 );
     g_b_overzoom_x = true;
-    Read( _T ( "ShowOverzoomEmbossWarning" ), &g_bshow_overzoom_emboss, 1 );
     Read( _T ( "AutosaveIntervalSeconds" ), &g_nautosave_interval_seconds, 300 );
 
     Read( _T ( "GPSIdent" ), &g_GPS_Ident, wxT("Generic") );

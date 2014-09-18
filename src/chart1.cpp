@@ -552,7 +552,6 @@ wxString                  g_AW1GUID;
 wxString                  g_AW2GUID;
 
 bool                      g_b_overzoom_x; // Allow high overzoom
-bool                      g_bshow_overzoom_emboss;
 
 int                       g_OwnShipIconType;
 double                    g_n_ownship_length_meters;
