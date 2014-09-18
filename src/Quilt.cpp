@@ -121,30 +121,31 @@ OCPNRegion &QuiltCandidate::GetCandidateVPRegion( ViewPort &vp )
     }
     
     //  Remove the NoCovr regions
-    int nNoCovrPlyEntries = cte.GetnNoCovrPlyEntries();
-    if( nNoCovrPlyEntries ) {
-        for( int ip = 0; ip < nNoCovrPlyEntries; ip++ ) {
-            float *pfp = cte.GetpNoCovrPlyTableEntry( ip );
-            int nNoCovrPly = cte.GetNoCovrCntTableEntry( ip );
-            
-            OCPNRegion t_region = vp.GetVPRegionIntersect( screen_region, nNoCovrPly, pfp,
-                                                           cte.GetScale() );
-            
-            //  We do a test removal of the NoCovr region.
-            //  If the result iz empty, it must be that the NoCovr region is
-            //  the full extent M_COVR(CATCOV=2) feature found in NOAA ENCs.
-            //  We ignore it.
-            
-            if(!t_region.IsEmpty()) {
-                OCPNRegion test_region = candidate_region;
-                test_region.Subtract( t_region );
+    if( candidate_region.IsOk() ){              // don't bother if the region is already empty
+        int nNoCovrPlyEntries = cte.GetnNoCovrPlyEntries();
+        if( nNoCovrPlyEntries ) {
+            for( int ip = 0; ip < nNoCovrPlyEntries; ip++ ) {
+                float *pfp = cte.GetpNoCovrPlyTableEntry( ip );
+                int nNoCovrPly = cte.GetNoCovrCntTableEntry( ip );
                 
-                if( !test_region.IsEmpty())
-                    candidate_region = test_region;
+                OCPNRegion t_region = vp.GetVPRegionIntersect( screen_region, nNoCovrPly, pfp,
+                                                            cte.GetScale() );
+                
+                //  We do a test removal of the NoCovr region.
+                //  If the result iz empty, it must be that the NoCovr region is
+                //  the full extent M_COVR(CATCOV=2) feature found in NOAA ENCs.
+                //  We ignore it.
+                
+                if(!t_region.IsEmpty()) {
+                    OCPNRegion test_region = candidate_region;
+                    test_region.Subtract( t_region );
+                    
+                    if( !test_region.IsEmpty())
+                        candidate_region = test_region;
+                }
             }
         }
     }
-    
     
     //    Another superbad hack....
     //    Super small scale raster charts like bluemarble.kap usually cross the prime meridian
@@ -155,9 +156,10 @@ OCPNRegion &QuiltCandidate::GetCandidateVPRegion( ViewPort &vp )
     
     //    Clip the region to the current viewport
         candidate_region.Intersect( vp.rv_rect );
-        
-        if( !candidate_region.IsOk() ) 
-            candidate_region = OCPNRegion( 0, 0, 100, 100 );
+
+        //      It is OK to return an empty region....
+//        if( !candidate_region.IsOk() ) 
+//            candidate_region = OCPNRegion( 0, 0, 100, 100 );
         
         return candidate_region;
 }
