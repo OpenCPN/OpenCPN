@@ -1078,6 +1078,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_bDrawingRoute = false;
     m_bRouteEditing = false;
     m_bMarkEditing = false;
+    m_bIsInRadius = false;
+    
     m_bFollow = false;
     m_bTCupdate = false;
     m_bAppendingRoute = false;          // was true in MSW, why??
@@ -5388,10 +5390,28 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
     }
 
     if( event.Dragging() ) {
+        
+       //in touch screen mode ensure the finger/cursor is on the selected point's radius to allow dragging
+        if( g_btouch ) {
+            if( m_pRoutePointEditTarget && !m_bIsInRadius ) {
+                SelectItem *pFind = NULL;
+                SelectableItemList SelList = pSelect->FindSelectionList( m_cursor_lat, m_cursor_lon,
+                                                                                         +                                 SELTYPE_ROUTEPOINT );
+                wxSelectableItemListNode *node = SelList.GetFirst();
+                while( node ) {
+                    pFind = node->GetData();
+                    RoutePoint *frp = (RoutePoint *) pFind->m_pData1;
+                    if( m_pRoutePointEditTarget == frp ) m_bIsInRadius = true;
+                    node = node->GetNext();
+                }
+            }
+        }
+
+                    
         if( m_bRouteEditing && m_pRoutePointEditTarget ) {
 
-            bool DraggingAllowed = true;
-
+            bool DraggingAllowed = g_btouch ? m_bIsInRadius : true;
+            
             if( NULL == pMarkPropDialog ) {
                 if( g_bWayPointPreventDragging ) DraggingAllowed = false;
             } else if( !pMarkPropDialog->IsShown() && g_bWayPointPreventDragging ) DraggingAllowed =
@@ -5473,7 +5493,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
         else if( m_bMarkEditing && m_pRoutePointEditTarget ) {
 
-            bool DraggingAllowed = true;
+            bool DraggingAllowed = g_btouch ? m_bIsInRadius : true;
 
             if( NULL == pMarkPropDialog ) {
                 if( g_bWayPointPreventDragging ) DraggingAllowed = false;
@@ -5562,6 +5582,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
         if(g_btouch) {
             m_bChartDragging = false;
+            m_bIsInRadius = false;
             
             if( parent_frame->nRoute_State )                  // creating route?
             {
