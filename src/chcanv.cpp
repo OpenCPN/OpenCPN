@@ -3128,12 +3128,13 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
 
                 max_allowed_scale = GetCanvasScaleFactor() / m_absolute_min_scale_ppm;
 
-                if( ChartData->GetDBBoundingBox( current_index, &chart_box ) &&
-                    !viewbox.IntersectOut( chart_box ) )
-                    //  Clamp the minimum scale zoom-out to the value specified by the chart
-                    max_allowed_scale = wxMin(max_allowed_scale, 4.0 *
-                                              pc->GetNormalScaleMax( GetCanvasScaleFactor(),
-                                                                     GetCanvasWidth() ) );
+                //  We can allow essentially unbounded zoomout in single chart mode
+//                if( ChartData->GetDBBoundingBox( current_index, &chart_box ) &&
+//                    !viewbox.IntersectOut( chart_box ) )
+//                    //  Clamp the minimum scale zoom-out to the value specified by the chart
+//                    max_allowed_scale = wxMin(max_allowed_scale, 4.0 *
+//                                              pc->GetNormalScaleMax( GetCanvasScaleFactor(),
+//                                                                     GetCanvasWidth() ) );
                 if(proposed_scale_onscreen > max_allowed_scale) {
                     m_zoom_factor = 1; /* stop zooming */
                     proposed_scale_onscreen = max_allowed_scale;
@@ -9355,7 +9356,7 @@ emboss_data *ChartCanvas::EmbossOverzoomIndicator( ocpnDC &dc )
 
         double zoom_factor = GetVP().view_scale_ppm / chart_native_ppm;
 
-        if( zoom_factor <= 4.0 ) return NULL;
+        if( zoom_factor <= 3.9 ) return NULL;
     } else {
         double chart_native_ppm;
         if( Current_Ch ) chart_native_ppm = m_canvas_scale_factor / Current_Ch->GetNativeScale();
@@ -9364,7 +9365,7 @@ emboss_data *ChartCanvas::EmbossOverzoomIndicator( ocpnDC &dc )
 
         double zoom_factor = GetVP().view_scale_ppm / chart_native_ppm;
         if( Current_Ch ) {
-            if( zoom_factor <= 4.0 ) return NULL;
+            if( zoom_factor <= 3.9 ) return NULL;
         }
     }
 
