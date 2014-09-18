@@ -1161,7 +1161,6 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "DebugGPSD" ), &g_bDebugGPSD, 0 );
 
     Read( _T ( "UseGreenShipIcon" ), &g_bUseGreenShip, 0 );
-//    Read( _T ( "AllowExtremeOverzoom" ), &g_b_overzoom_x, 1 );
     g_b_overzoom_x = true;
     Read( _T ( "AutosaveIntervalSeconds" ), &g_nautosave_interval_seconds, 300 );
 
@@ -2404,7 +2403,6 @@ void MyConfig::UpdateSettings()
     Write( _T ( "CM93DetailZoomPosX" ), g_cm93detail_dialog_x );
     Write( _T ( "CM93DetailZoomPosY" ), g_cm93detail_dialog_y );
     Write( _T ( "ShowCM93DetailSlider" ), g_bShowCM93DetailSlider );
-    Write( _T ( "AllowExtremeOverzoom" ), g_b_overzoom_x );
 
     Write( _T ( "SkewToNorthUp" ), g_bskew_comp );
     Write( _T ( "OpenGL" ), g_bopengl );
