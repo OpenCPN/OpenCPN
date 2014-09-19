@@ -5967,17 +5967,19 @@ void MyFrame::HandlePianoClick( int selected_index, int selected_dbIndex )
             if( ChartData ) ChartData->PurgeCache();
             
             
-            //  This odd logic is designed to cover the case of Inland ENCs, which often
-            //  are of large scale, with no other smaller scale charts to make a nice quilt.
-            bool auto_rescale = true;
+            //  If the chart is a vector chart, and of very large scale,
+            //  then we had better set the new scale directly to avoid excessive underzoom
+            //  on, eg, Inland ENCs
+            bool set_scale = false;
             if(ChartData){
                 if( CHART_TYPE_S57 == ChartData->GetDBChartType( selected_dbIndex ) ){
-                    if( 1 == pCurrentStack->nEntry)
-                        auto_rescale = false;
+                    if( ChartData->GetDBChartScale(selected_dbIndex) < 5000){
+                        set_scale = true;
+                    }
                 }
             }
             
-            if(auto_rescale){
+            if(!set_scale){
                 SelectQuiltRefdbChart( selected_dbIndex, true );  // autoscale
             }
             else {
@@ -5988,10 +5990,18 @@ void MyFrame::HandlePianoClick( int selected_index, int selected_dbIndex )
                 ChartBase *pc = ChartData->OpenChartFromDB( selected_dbIndex, FULL_INIT );
                 if( pc ) {
                     double proposed_scale_onscreen = cc1->GetCanvasScaleFactor() / cc1->GetVPScale();
-                    proposed_scale_onscreen = wxMin(proposed_scale_onscreen,
-                                                20 * pc->GetNormalScaleMax(cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth()));
-                    proposed_scale_onscreen = wxMax(proposed_scale_onscreen,
+                    
+                    if(g_bPreserveScaleOnX){
+                        proposed_scale_onscreen = wxMin(proposed_scale_onscreen,
+                                                100 * pc->GetNormalScaleMax(cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth()));
+                    }
+                    else{
+                        proposed_scale_onscreen = wxMin(proposed_scale_onscreen,
+                                                        20 * pc->GetNormalScaleMax(cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth()));
+                        
+                        proposed_scale_onscreen = wxMax(proposed_scale_onscreen,
                                                 pc->GetNormalScaleMin(cc1->GetCanvasScaleFactor(), g_b_overzoom_x));
+                    }
                 
                     cc1->SetVPScale( cc1->GetCanvasScaleFactor() / proposed_scale_onscreen );
                 }

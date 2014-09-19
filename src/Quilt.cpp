@@ -896,7 +896,7 @@ int Quilt::AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family,  ChartTypeEnum t
             int test_db_index = index_array.Item( i-1 );
             if( type == ChartData->GetDBChartType( test_db_index ) ){
                 int smallest_min_scale = min_scale.Item(i-1);
-                min_scale.Item(i-1) = wxMax(smallest_min_scale, 200000);
+                min_scale.Item(i-1) = smallest_min_scale * 80; //wxMax(smallest_min_scale, 200000);
                 break;
             }
         }
