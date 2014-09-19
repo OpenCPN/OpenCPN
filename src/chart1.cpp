@@ -2476,6 +2476,8 @@ void MyApp::TrackOff( void )
 //------------------------------------------------------------------------------
 // MyFrame
 //------------------------------------------------------------------------------
+wxMenuBar *osx_menuBar;
+
 //      Frame implementation
 BEGIN_EVENT_TABLE(MyFrame, wxFrame) EVT_CLOSE(MyFrame::OnCloseWindow)
 EVT_MENU(wxID_EXIT, MyFrame::OnExit)
@@ -2499,6 +2501,16 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
         wxFrame( frame, -1, title, pos, size, style ) //wxSIMPLE_BORDER | wxCLIP_CHILDREN | wxRESIZE_BORDER)
 //wxCAPTION | wxSYSTEM_MENU | wxRESIZE_BORDER
 {
+
+    // wxWidgets 3.0.X seems to require that the main app wxFrame have some menubar in order to
+    // popuplate the Mac default menu items, like "Hide", "Quit". etc.
+    // Its OK if this menubar is devoid of OCPN specific items, however.
+    // Just needs to be there, empty or not...
+#ifdef __WXOSX__
+    osx_menuBar = new wxMenuBar();
+    SetMenuBar(osx_menuBar);
+#endif    
+    
     m_ulLastNEMATicktime = 0;
     m_pStatusBar = NULL;
 
