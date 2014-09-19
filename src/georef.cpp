@@ -2711,3 +2711,44 @@ double lat_gc_crosses_meridian( double lat1, double lon1, double lat2, double lo
               - sin(dlat2) * cos(dlat1) * sin(dlon-dlon1)) / (cos(dlat1) * cos(dlat2) * sin(dlon1-dlon2)));
 }
 
+double lat_rl_crosses_meridian( double lat1, double lon1, double lat2, double lon2, double lon )
+{
+    /*
+    Calculates a latitude at which a loxodromic route between two points crosses a given meridian
+    */
+    
+    double brg;
+    
+    DistanceBearingMercator( lat2, lon2, lat1, lon1, &brg, NULL );
+
+    double x1, y1, x;
+    toSM( lat1, lon1, 0., lon, &x1, &y1 );
+    toSM( lat1, lon, 0., lon, &x, &y1 );
+    
+    double dir = 1.0;
+    if ( brg >= 270.0 )
+    {
+        brg -= 270.0;
+    }
+    else if ( brg >= 180. )
+    {
+        brg = 270.0 - brg;
+        dir = -1.0;
+    }
+    else if ( brg >= 90. )
+    {
+        brg -= 90.0;
+        dir = -1.0;
+    }
+    else
+    {
+        brg = 90.0 - brg;
+    }
+
+    double ydelta = fabs( x1 ) * tan( brg * DEGREE );
+    
+    double crosslat, crosslon;
+    fromSM(x, y1 + dir * ydelta, 0., lon, &crosslat, &crosslon);
+
+    return crosslat;
+}

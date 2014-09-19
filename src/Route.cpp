@@ -533,7 +533,7 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
         }
         if(dir)
         {
-            double crosslat = lat_gc_crosses_meridian(lastlat, lastlon, prp->m_lat, prp->m_lon, 180.0);
+            double crosslat = lat_rl_crosses_meridian(lastlat, lastlon, prp->m_lat, prp->m_lon, 180.0);
             cc1->GetCanvasPointPix( crosslat, dir*180, &r);
             glVertex2i(r.x, r.y);
             glEnd();
