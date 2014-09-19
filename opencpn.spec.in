@@ -119,12 +119,6 @@ desktop-file-install \
 %dir %{_datadir}/%{name}/sounds
 %{_datadir}/%{name}/sounds/1bells.wav
 %{_datadir}/%{name}/sounds/2bells.wav
-%{_datadir}/%{name}/sounds/3bells.wav
-%{_datadir}/%{name}/sounds/4bells.wav
-%{_datadir}/%{name}/sounds/5bells.wav
-%{_datadir}/%{name}/sounds/6bells.wav
-%{_datadir}/%{name}/sounds/7bells.wav
-%{_datadir}/%{name}/sounds/8bells.wav
 %doc %{_datadir}/%{name}/sounds/README.bells
 %doc %{_datadir}/%{name}/doc
 %dir %{_datadir}/doc/%{name}
