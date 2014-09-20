@@ -102,7 +102,7 @@ desktop-file-install \
 %{_datadir}/%{name}/s57data/s57expectedinput.csv
 %{_datadir}/%{name}/s57data/s57objectclasses.csv
 %{_datadir}/%{name}/s57data/rastersymbols-dusk.png
-%if %{_include_gshhs_crude} == "ON"
+%if %{_include_gshhs_min} == "ON"
   %dir %{_datadir}/%{name}/gshhs
   %{_datadir}/%{name}/gshhs/poly-c-1.dat
 %endif
