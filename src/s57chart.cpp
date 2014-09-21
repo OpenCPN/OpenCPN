@@ -4275,7 +4275,7 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
     Title.append( SENCfile.GetFullPath() );
 
     cc1->StopMovement();
-    s_ProgDialog = new wxProgressDialog( Title, Message, m_nGeoRecords, NULL,
+    s_ProgDialog = new wxProgressDialog( Title, Message, m_nGeoRecords, GetOCPNCanvasWindow(),
                                          wxPD_AUTO_HIDE | wxPD_SMOOTH | wxSTAY_ON_TOP | wxPD_APP_MODAL);
 
     //      Analyze Updates
