@@ -1961,7 +1961,7 @@ void options::CreateControls()
     // I would prefer to change this so the plugins are only loaded if and when
     // they select the plugin page
     if(!g_bLoadedDisabledPlugins) {
-        g_pi_manager->LoadAllPlugIns( g_Plugin_Dir, false );
+//        g_pi_manager->LoadAllPlugIns( g_Plugin_Dir, false );
         g_bLoadedDisabledPlugins = true;
     }
 

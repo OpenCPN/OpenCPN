@@ -42,7 +42,7 @@ ENDIF (COMMAND cmake_policy)
 
 PROJECT(OpenCPN)
 
-#SET(CMAKE_VERBOSE_MAKEFILE ON)
+SET(CMAKE_VERBOSE_MAKEFILE ON)
 
 IF(APPLE)
   SET(PACKAGE_NAME OpenCPN)
@@ -300,12 +300,12 @@ IF(DEFINED _wx_selected_config)
       ADD_DEFINITIONS(-DocpnHAS_GTK)
       INCLUDE_DIRECTORIES(${GTK2_INCLUDE_DIRS})
       SET(EXTRA_LIBS ${EXTRA_LIBS} ${GTK2_LIBRARIES})
-      
+
       # Add a definition to satisfy some linux system builds, avoiding Apple builds
       IF (NOT WIN32 AND NOT APPLE)
         ADD_DEFINITIONS("`pkg-config --cflags --libs gtk+-2.0`")
       ENDIF (NOT WIN32 AND NOT APPLE)
-      
+
     ELSE(GTK2_FOUND)
       MESSAGE (STATUS "GTK2 Not found...")
     ENDIF (GTK2_FOUND)
