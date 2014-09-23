@@ -64,10 +64,43 @@ GRIB_OVERLAP Intersect( PlugIn_ViewPort *vp, double lat_min, double lat_max, dou
 // Is the given point in the vp ??
 bool PointInLLBox( PlugIn_ViewPort *vp, double x, double y )
 {
+    double Marge = 0.;
+    double m_minx = vp->lon_min;
+    double m_maxx = vp->lon_max;
+    double m_miny = vp->lat_min;
+    double m_maxy = vp->lat_max;
 
-    if( x >= ( vp->lon_min ) && x <= ( vp->lon_max ) && y >= ( vp->lat_min )
-            && y <= ( vp->lat_max ) ) return TRUE;
-    return FALSE;
+    //    Box is centered in East lon, crossing IDL
+    if(m_maxx > 180.)
+    {
+        if( x < m_maxx - 360.)
+            x +=  360.;
+
+        if (  x >= (m_minx - Marge) && x <= (m_maxx + Marge) &&
+            y >= (m_miny - Marge) && y <= (m_maxy + Marge) )
+            return TRUE;
+        return FALSE;
+    }
+
+    //    Box is centered in Wlon, crossing IDL
+    else if(m_minx < -180.)
+    {
+        if(x > m_minx + 360.)
+            x -= 360.;
+
+        if (  x >= (m_minx - Marge) && x <= (m_maxx + Marge) &&
+            y >= (m_miny - Marge) && y <= (m_maxy + Marge) )
+            return TRUE;
+        return FALSE;
+    }
+
+    else
+    {
+        if (  x >= (m_minx - Marge) && x <= (m_maxx + Marge) &&
+            y >= (m_miny - Marge) && y <= (m_maxy + Marge) )
+            return TRUE;
+        return FALSE;
+    }
 }
 
 #if 0
@@ -725,7 +758,7 @@ void GRIBOverlayFactory::RenderGribBarbedArrows( int settings, GribRecord **pGR,
                 if( hypot( p.x - oldpy.x, p.y - oldpy.y ) >= space ) {
                     oldpy = p;
 
-                    if( PointInLLBox( vp, lon, lat ) || PointInLLBox( vp, lon - 360., lat ) ) {
+                    if( PointInLLBox( vp, lon, lat ) ) {
                         double vx =  pGRX->getValue( i, j );
                         double vy =  pGRY->getValue( i, j );
 
