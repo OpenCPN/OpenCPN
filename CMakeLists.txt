@@ -165,6 +165,13 @@ ENDIF(BUNDLE_TCDATA MATCHES "ON")
 
 SET(wxWidgets_USE_LIBS base core net xml html adv aui)
 
+MESSAGE (STATUS "Selected Configuration: ${_wx_selected_config}")
+
+IF((_wx_selected_config MATCHES "qt-armv7"))
+SET(CMAKE_BUILD_TYPE Debug)
+ENDIF()
+
+IF(NOT (_wx_selected_config MATCHES "qt-armv7"))
 FIND_PACKAGE(OpenGL)
 IF(OPENGL_GLU_FOUND)
 
@@ -180,6 +187,7 @@ IF(OPENGL_GLU_FOUND)
 ELSE(OPENGL_GLU_FOUND)
     MESSAGE (STATUS "OpenGL not found..." )
 ENDIF(OPENGL_GLU_FOUND)
+ENDIF()
 
 # Search for opengles, short of running a program to test the speed
 # of acceleration, I simply use gles on arm systems
@@ -204,10 +212,12 @@ SET( wxWidgets_USE_UNICODE ON)
 SET( wxWidgets_USE_UNIVERSAL OFF)
 SET( wxWidgets_USE_STATIC OFF)
 
+IF(NOT (_wx_selected_config MATCHES "qt-armv7"))
 FIND_PACKAGE(wxWidgets REQUIRED)
 INCLUDE(${wxWidgets_USE_FILE})
-    MESSAGE (STATUS "Found wxWidgets..." )
-    MESSAGE (STATUS "${wxWidgets_LIBRARIES}")
+MESSAGE (STATUS "Found wxWidgets..." )
+MESSAGE (STATUS "${wxWidgets_LIBRARIES}")
+ENDIF()
 
 MESSAGE (STATUS "")
 MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME}  ***")
@@ -314,6 +324,24 @@ IF(DEFINED _wx_selected_config)
   IF(_wx_selected_config MATCHES "qt")
     SET(CMAKE_EXE_LINKER_FLAGS "-fPIE")
   ENDIF()
+
+  IF(_wx_selected_config MATCHES "qt-armv7")
+    ADD_DEFINITIONS(-D__WXQT__)
+    SET(CMAKE_CXX_FLAGS "-pthread -fPIC")
+
+    INCLUDE_DIRECTORIES("/home/dsr/Projects/wxqt/wxtrunk/wxWidgets/bldqt5droid/lib/wx/include/arm-linux-androideabi-qt-unicode-static-3.1")
+    INCLUDE_DIRECTORIES("/home/dsr/Projects/wxqt/wxtrunk/wxWidgets/include")
+    INCLUDE_DIRECTORIES("/home/dsr/Qt/5.2.1/gcc/include/QtCore")
+    INCLUDE_DIRECTORIES("/home/dsr/Qt/5.2.1/gcc/include")
+    INCLUDE_DIRECTORIES("/home/dsr/Qt/5.2.1/gcc/include/QtWidgets")
+    INCLUDE_DIRECTORIES("/home/dsr/Qt/5.2.1/gcc/include/QtGui")
+    INCLUDE_DIRECTORIES("/home/dsr/Qt/5.2.1/gcc/include/QtOpenGL")
+    INCLUDE_DIRECTORIES("/home/dsr/Qt/5.2.1/gcc/include/QtTest")
+    ADD_DEFINITIONS(-DQT_WIDGETS_LIB)
+
+    SET(USE_S57 OFF)
+  ENDIF()
+
 ENDIF()
 
 IF(UNIX)
@@ -1113,6 +1141,9 @@ IF(UNIX AND NOT APPLE)
 ADD_EXECUTABLE(${PACKAGE_NAME} ${HDRS} ${SRCS})
 ENDIF(UNIX AND NOT APPLE)
 
+IF(CMAKE_CROSSCOMPILING)
+ADD_EXECUTABLE(${PACKAGE_NAME} ${HDRS} ${SRCS})
+ENDIF()
 
 
 
@@ -1338,7 +1369,9 @@ ENDIF(WIN32 AND NOT UNIX)
 MESSAGE (STATUS "")
 
 IF(NOT SKIP_PLUGINS)
+IF(NOT (_wx_selected_config MATCHES "qt-armv7"))
  add_subdirectory (plugins)
+ENDIF()
 ENDIF(NOT SKIP_PLUGINS)
 
 # build a CPack driven installer package
