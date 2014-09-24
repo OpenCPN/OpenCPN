@@ -177,7 +177,7 @@ public:
       void DestroyWaypoint(RoutePoint *pRp, bool b_update_changeset = true);
       void ClearRoutePointFonts(void);
       void ProcessIcons( ocpnStyle::Style* style );
-
+      
       bool DoesIconExist(const wxString & icon_key) const;
       wxBitmap *GetIconBitmap(int index);
       wxString *GetIconDescription(int index);
@@ -191,6 +191,7 @@ public:
 
       void ProcessIcon(wxBitmap pimage, const wxString & key, const wxString & description);
 private:
+      void ProcessUserIcons( ocpnStyle::Style* style );
       RoutePointList    *m_pWayPointList;
       wxBitmap *CreateDimBitmap(wxBitmap *pBitmap, double factor);
 
