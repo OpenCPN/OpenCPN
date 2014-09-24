@@ -8225,7 +8225,7 @@ void MyPrintout::DrawPageOne( wxDC *dc )
  *     Very system specific, unavoidably.
  */
 
-#ifdef __UNIX__
+#ifdef __WXGTK__
 extern "C" int wait(int *);                     // POSIX wait() for process
 
 #include <termios.h>
@@ -8262,7 +8262,7 @@ int paternAdd (const char* patern) {
 }
 
 
-#ifdef __UNIX__
+#ifdef __WXGTK__
 // This filter verify is device is withing searched patern and verify it is openable
 // -----------------------------------------------------------------------------------
 int paternFilter (const struct dirent * dir) {

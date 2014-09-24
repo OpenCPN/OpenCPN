@@ -41,7 +41,10 @@
 #include "datastream.h"             // for GenericPosDat
 #include "OCPN_Sound.h"
 #include "s52s57.h"
+
+#ifdef USE_S57
 #include "s57chart.h"               // for Object list
+#endif
 
 //For widgets...
 #include "wx/hyperlink.h"
