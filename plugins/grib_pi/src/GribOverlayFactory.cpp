@@ -916,7 +916,7 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
                 if( hypot( p.x - oldpy.x, p.y - oldpy.y ) >= space ) {
                     oldpy = p;
 
-                    if( PointInLLBox( vp, lon, lat ) || PointInLLBox( vp, lon - 360., lat ) ) {
+                    if( PointInLLBox( vp, lon, lat ) ) {
                         if(polar) {
                             double dir = pGRY->getValue( i, j );
                             double sh = pGRX->getValue( i, j );
@@ -1101,7 +1101,7 @@ void GRIBOverlayFactory::RenderGribNumbers( int settings, GribRecord **pGR, Plug
                 if( hypot( p.x - oldpy.x, p.y - oldpy.y ) >= space ) {
                     oldpy = p;
 
-                    if( PointInLLBox( vp, lon, lat ) || PointInLLBox( vp, lon - 360., lat ) ) {
+                    if( PointInLLBox( vp, lon, lat ) ) {
                         double mag = pGRA->getValue( i, j );
 
                         if( mag != GRIB_NOTDEF ) {
