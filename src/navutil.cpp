@@ -1287,7 +1287,7 @@ int MyConfig::LoadMyConfig( int iteration )
 
     Read( _T ( "OwnshipCOGPredictorMinutes" ), &g_ownship_predictor_minutes, 5 );
     Read( _T ( "OwnshipCOGPredictorWidth" ), &g_cog_predictor_width, 3 );
-    Read( _T ( "OwnshipHDTPredictorMinutes" ), &g_ownship_HDTpredictor_miles, 1 );
+    Read( _T ( "OwnshipHDTPredictorMiles" ), &g_ownship_HDTpredictor_miles, 1 );
     
     Read( _T ( "OwnShipIconType" ), &g_OwnShipIconType, 0 );
     Read( _T ( "OwnShipLength" ), &g_n_ownship_length_meters, 0 );
