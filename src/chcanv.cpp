@@ -9524,9 +9524,9 @@ void ChartCanvas::SetOverzoomFont()
     dc.SetFont( font );
     dc.GetTextExtent( OVERZOOM_TEXT, &w, &h );
 
-    while(w > 500 || h > 100)
+    while( font.GetPointSize() > 10 && (w > 500 || h > 100) )
     {
-        font.SetPointSize(font.GetPointSize() - 1);
+        font.SetPointSize( font.GetPointSize() - 1 );
         dc.SetFont( font );
         dc.GetTextExtent( OVERZOOM_TEXT, &w, &h );
     }
