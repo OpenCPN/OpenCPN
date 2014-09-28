@@ -424,8 +424,8 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
     
     //  Hiliting first
     //  Being special case to draw something for a 1 point route....
+    ocpnDC dc;
     if(m_hiliteWidth){
-        ocpnDC dc;
         wxColour y = GetGlobalColor( _T ( "YELO1" ) );
         wxColour hilt( y.Red(), y.Green(), y.Blue(), 128 );
         wxPen HiPen( hilt, m_hiliteWidth, wxSOLID );
@@ -506,8 +506,14 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
         }
     }
     
+    int style = wxSOLID;
+    if( m_style != STYLE_UNDEFINED ) style = m_style;
+    dc.SetPen( *wxThePenList->FindOrCreatePen( col, width, style ) );
+    
     glColor3ub(col.Red(), col.Green(), col.Blue());
     glLineWidth( wxMax( g_GLMinSymbolLineWidth, width ) );
+    
+    dc.SetGLStipple();
 
     glBegin(GL_LINE_STRIP);
     float lastlon = 0;
@@ -549,7 +555,8 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
         glVertex2i(r.x, r.y);
     }
     glEnd();
-
+    glDisable (GL_LINE_STIPPLE);
+    
     /* direction arrows.. could probably be further optimized for opengl */
     if( !m_bIsTrack ) {
         wxRoutePointListNode *node = pRoutePointList->GetFirst();
