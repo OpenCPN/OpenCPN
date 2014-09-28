@@ -42,7 +42,8 @@ extern int g_track_line_width;
 extern Select *pSelect;
 extern MyConfig *pConfig;
 extern Multiplexer *g_pMUX;
-extern double           g_n_arrival_circle_radius;
+extern double g_n_arrival_circle_radius;
+extern float g_GLMinSymbolLineWidth;
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST ( RouteList );
@@ -504,9 +505,9 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
             }
         }
     }
-        
+    
     glColor3ub(col.Red(), col.Green(), col.Blue());
-    glLineWidth(width);
+    glLineWidth( wxMax( g_GLMinSymbolLineWidth, width ) );
 
     glBegin(GL_LINE_STRIP);
     float lastlon = 0;
