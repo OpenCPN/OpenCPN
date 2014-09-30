@@ -26,6 +26,10 @@
 
 #include "ConnectionParams.h"
 
+#if !wxUSE_XLOCALE
+#define wxAtoi(arg) atoi(arg)
+#endif
+
 ConnectionParams::ConnectionParams(const wxString &configStr )
 {
     Deserialize( configStr );

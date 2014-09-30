@@ -183,7 +183,10 @@ extern bool             g_bConfirmObjectDelete;
 extern wxString         g_GPS_Ident;
 extern bool             g_bGarminHostUpload;
 
+#if wxUSE_XLOCALE
 extern wxLocale         *plocale_def_lang;
+#endif
+
 extern OCPN_Sound        g_anchorwatch_sound;
 extern bool             g_bMagneticAPB;
 
@@ -3064,6 +3067,7 @@ void options::OnApplyClick( wxCommandEvent& event )
 #endif
 
 //    User Interface Panel
+#if wxUSE_XLOCALE
     if( m_bVisitLang ) {
         wxString new_canon = _T("en_US");
         wxString lang_sel = m_itemLangListBox->GetStringSelection();
@@ -3081,8 +3085,9 @@ void options::OnApplyClick( wxCommandEvent& event )
         wxString locale_old = g_locale;
         g_locale = new_canon;
 
-        if( g_locale != locale_old ) m_returnChanges |= LOCALE_CHANGED;
-
+        if( g_locale != locale_old )
+            m_returnChanges |= LOCALE_CHANGED;
+        
         wxString oldStyle = g_StyleManager->GetCurrentStyle()->name;
         g_StyleManager->SetStyleNextInvocation( m_itemStyleListBox->GetStringSelection() );
         if( g_StyleManager->GetStyleNextInvocation() != oldStyle ) {
@@ -3091,12 +3096,14 @@ void options::OnApplyClick( wxCommandEvent& event )
         wxSizeEvent nullEvent;
         gFrame->OnSize( nullEvent );
     }
-
+#endif
+    
     //      PlugIn Manager Panel
 
     //      Pick up any changes to selections
     bool bnew_settings = g_pi_manager->UpdatePlugIns();
-    if( bnew_settings ) m_returnChanges |= TOOLBAR_CHANGED;
+    if( bnew_settings )
+        m_returnChanges |= TOOLBAR_CHANGED;
 
     //      And keep config in sync
     g_pi_manager->UpdateConfig();
@@ -3338,6 +3345,7 @@ void options::OnPageChange( wxListbookEvent& event )
     }
 
     else if( m_pageUI == i ) {                       // 5 is the index of "User Interface" page
+#if wxUSE_XLOCALE
         if( !m_bVisitLang ) {
             ::wxBeginBusyCursor();
 
@@ -3439,6 +3447,7 @@ void options::OnPageChange( wxListbookEvent& event )
 
             ::wxEndBusyCursor();
         }
+#endif
     }
 
     else if( m_pagePlugins == i ) {                    // 7 is the index of "Plugins" page
@@ -3526,7 +3535,8 @@ wxString GetOCPNKnownLanguage( wxString lang_canonical, wxString *lang_dir )
 {
     wxString return_string;
     wxString dir_suffix;
-
+    
+#if wxUSE_XLOCALE
     if( lang_canonical == _T("en_US") ) {
         dir_suffix = _T("en");
         return_string = wxString( "English (U.S.)", wxConvUTF8 );
@@ -3599,8 +3609,11 @@ wxString GetOCPNKnownLanguage( wxString lang_canonical, wxString *lang_dir )
         return_string = info->Description;
     }
 
-    if( NULL != lang_dir ) *lang_dir = dir_suffix;
-
+    if( NULL != lang_dir )
+        *lang_dir = dir_suffix;
+#else
+    return_string = wxString( "English (U.S.)", wxConvUTF8 );
+#endif    
     return return_string;
 
 }

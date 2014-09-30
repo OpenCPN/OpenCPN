@@ -865,7 +865,7 @@ void GshhsReader::LoadQuality( int newQuality ) // 5 levels: 0=low ... 4=full
         }
     }
 #endif
-    wxLogMessage( _T("Loading World Chart Q=%d in %ld ms."), quality, perftimer.Time());
+//    wxLogMessage( _T("Loading World Chart Q=%d in %ld ms."), quality, perftimer.Time());
 
 }
 

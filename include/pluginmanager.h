@@ -276,9 +276,11 @@ public:
       
       wxArrayString GetPlugInChartClassNameArray(void);
 
+#ifdef USE_S57      
       ListOfPI_S57Obj *GetPlugInObjRuleListAtLatLon( ChartPlugInWrapper *target, float zlat, float zlon,
                                                        float SelectRadius, const ViewPort& vp );
       wxString CreateObjDescriptions( ChartPlugInWrapper *target, ListOfPI_S57Obj *rule_list );
+#endif
       
       wxString GetLastError();
       MyFrame *GetParentFrame(){ return pParent; }

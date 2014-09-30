@@ -31,10 +31,12 @@
 #endif
 
 //! standard header
+#ifndef __WXQT__
 #if defined(__linux__)
 #include <execinfo.h>    // Needed for backtrace
 #include <cxxabi.h>      // Needed for __cxa_demangle
 #include <unistd.h>
+#endif
 #endif
 
 // wxWidgets headers
@@ -76,6 +78,7 @@ wxCrashPrint::wxCrashPrint (int flags, const wxString &fname) {
 // general functions
 
 void wxCrashPrint::Report () {
+#ifndef __WXQT__    
     wxString appname = wxTheApp->GetAppName();
 
     // get the backtrace with symbols
@@ -136,5 +139,5 @@ void wxCrashPrint::Report () {
             wxPrintf (_T("%s\n"), lines[i].c_str());
         }
     }
-
+#endif
 }

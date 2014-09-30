@@ -58,9 +58,11 @@ extern int          g_memCacheLimit;
 extern bool         g_bopengl;
 extern ChartCanvas  *cc1;
 extern int          g_GroupIndex;
-extern s52plib      *ps52plib;
 extern ChartDB      *ChartData;
 
+#ifdef USE_S57
+extern s52plib      *ps52plib;
+#endif
 
 bool G_FloatPtInPolygon(MyFlPoint *rgpts, int wnumpts, float x, float y) ;
 bool GetMemoryStatus(int *mem_total, int *mem_used);
@@ -269,10 +271,11 @@ void ChartDB::PurgeCache()
                 CacheEntry *pce = (CacheEntry *)(pChartCache->Item(i));
                 ChartBase *Ch = (ChartBase *)pce->pChart;
 
+#ifdef ocpnUSE_GL
                 //    The glCanvas may be cacheing some information for this chart
                 if(g_bopengl && cc1)
                     cc1->PurgeGLCanvasChartCache(Ch, true);
-
+#endif
                 delete Ch;
                 
                 delete pce;
@@ -334,11 +337,11 @@ void ChartDB::PurgeCacheUnusedCharts( double factor)
                             if(pthumbwin->pThumbChart == Ch)
                                 pthumbwin->pThumbChart = NULL;
                         }
-                    
+#ifdef ocpnUSE_GL
                                 //    The glCanvas may be cacheing some information (i.e. texture tiles) for this chart
                         if(g_bopengl && cc1)
                               cc1->PurgeGLCanvasChartCache(Ch);
-
+#endif
                                 //    And delete the chart
                         delete Ch;
 
@@ -1071,11 +1074,12 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                                     pthumbwin->pThumbChart = NULL;
                             }
                             
-                            
+#ifdef ocpnUSE_GL
                             //    The glCanvas may be cacheing some information for this chart
                             if(g_bopengl && cc1)
                                 cc1->PurgeGLCanvasChartCache(pDeleteCandidate);
-                            
+#endif
+                                
                             //    Delete the chart
                             delete pDeleteCandidate;
                                 
@@ -1115,11 +1119,12 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                                         pthumbwin->pThumbChart = NULL;
                                 }
                                 
-                                
+#ifdef ocpnUSE_GL
                                 //    The glCanvas may be cacheing some information for this chart
                                 if(g_bopengl && cc1)
                                     cc1->PurgeGLCanvasChartCache(pDeleteCandidate);
-                                
+#endif
+                                    
                                 //    Delete the chart
                                     delete pDeleteCandidate;
                                     
@@ -1255,10 +1260,14 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
             if(Ch)
             {
                   InitReturn ir;
+                  bool b_init = Ch->GetChartFamily() != CHART_FAMILY_VECTOR;
 
+#ifdef USE_S57                  
                   //    Vector charts need a PLIB for useful display....
-                  if((Ch->GetChartFamily() != CHART_FAMILY_VECTOR) ||
-                      ((Ch->GetChartFamily() == CHART_FAMILY_VECTOR) && ps52plib) )
+                  b_init = b_init ||  ((Ch->GetChartFamily() == CHART_FAMILY_VECTOR) && ps52plib);
+#endif                  
+                  
+                  if(b_init)
                   {
                         wxString msg(_T("Initializing Chart "));
                         msg.Append(ChartFullPath);
@@ -1365,10 +1374,12 @@ bool ChartDB::DeleteCacheChart(ChartBase *pDeleteCandidate)
                               pthumbwin->pThumbChart = NULL;
                   }
 
+#ifdef ocpnUSE_GL
                   //    The glCanvas may be cacheing some information for this chart
                   if(g_bopengl && cc1)
                       cc1->PurgeGLCanvasChartCache(pDeleteCandidate);
-                  
+#endif
+                      
                   //    Delete the chart
                   delete pDeleteCandidate;
 
@@ -1609,6 +1620,7 @@ wxXmlDocument ChartDB::GetXMLDescription(int dbIndex, bool b_getGeom)
                   node->AddChild ( tnode );
             }
 
+#ifdef USE_S57
             s57chart *pcs57 = dynamic_cast<s57chart*>(pc);
             if(pcs57)
             {
@@ -1633,6 +1645,7 @@ wxXmlDocument ChartDB::GetXMLDescription(int dbIndex, bool b_getGeom)
                   node->AddChild ( tnode );
 
             }
+#endif            
       }
 
 

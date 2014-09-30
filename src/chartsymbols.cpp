@@ -259,7 +259,7 @@ void ChartSymbols::ProcessLookups( TiXmlElement* lookupNodes )
 
 void ChartSymbols::BuildLookup( Lookup &lookup )
 {
-
+#ifdef USE_S57
     LUPrec *LUP = (LUPrec*) calloc( 1, sizeof(LUPrec) );
     plib->pAlloc->Add( LUP );
 
@@ -297,6 +297,7 @@ void ChartSymbols::BuildLookup( Lookup &lookup )
     }
 
     pLUPARRAYtyped->Add( LUP );
+#endif    
 }
 
 void ChartSymbols::ProcessVectorTag( TiXmlElement* vectorNode, SymbolSizeInfo_t &vectorSize )
@@ -515,6 +516,7 @@ void ChartSymbols::ProcessPatterns( TiXmlElement* patternNodes )
 
 void ChartSymbols::BuildPattern( OCPNPattern &pattern )
 {
+#ifdef USE_S57    
     Rule *pattmp = NULL;
 
     Rule *patt = (Rule*) calloc( 1, sizeof(Rule) );
@@ -572,6 +574,7 @@ void ChartSymbols::BuildPattern( OCPNPattern &pattern )
             // the node itself is destroyed as part of pAlloc
         }
     }
+#endif    
 }
 
 void ChartSymbols::ProcessSymbols( TiXmlElement* symbolNodes )

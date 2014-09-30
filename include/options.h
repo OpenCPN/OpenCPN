@@ -639,6 +639,7 @@ private:
     ChartGroupArray *m_pGroupArray;
 };
 
+#if wxUSE_XLOCALE 
 static int lang_list[] = {
             wxLANGUAGE_DEFAULT,
             wxLANGUAGE_ABKHAZIAN,
@@ -870,7 +871,8 @@ static int lang_list[] = {
             wxLANGUAGE_ZHUANG,
             wxLANGUAGE_ZULU
             };
-
+#endif
+            
 ///////////////////////////////////////////////////////////////////////////////
 /// Class SentenceListDlg
 ///////////////////////////////////////////////////////////////////////////////
