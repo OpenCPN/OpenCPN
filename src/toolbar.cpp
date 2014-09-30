@@ -382,7 +382,17 @@ void ocpnFloatingToolbarDialog::RePosition()
         m_position.y = wxMax(0, m_position.y);
 
         wxPoint screen_pos = m_pparent->ClientToScreen( m_position );
+//        screen_pos.y = 300;
+        wxString msg;
+        msg.Printf(_T("Toolbar Reposition: %d %d"), screen_pos.x, screen_pos.y);
+        wxLogMessage(msg);
+        
         Move( screen_pos );
+        
+#ifdef __WXQT__
+        Raise();
+#endif    
+        
     }
 }
 
@@ -402,6 +412,10 @@ void ocpnFloatingToolbarDialog::Surface()
     RePosition();
     Show();
     if( m_ptoolbar ) m_ptoolbar->EnableTooltips();
+    
+#ifdef __WXQT__
+    Raise();
+#endif    
 }
 
 void ocpnFloatingToolbarDialog::HideTooltip()
@@ -851,10 +865,7 @@ void ToolTipWin::SetBitmap()
     mdc.SetTextBackground( m_back_color );
 
     mdc.DrawText( m_string, 4, 2 );
-//    mdc.SelectObject( wxNullBitmap );
     
-    int parent_width;
-    cdc.GetSize( &parent_width, NULL );
     SetSize( m_position.x, m_position.y, m_size.x, m_size.y );
 
 }

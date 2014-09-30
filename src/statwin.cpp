@@ -68,13 +68,15 @@ StatWin::StatWin( wxWindow *win )
     wstyle |= wxSTAY_ON_TOP;
 #endif
 
-    wxDialog::Create( win, wxID_ANY, _T(""), wxPoint( 20, 20 ), wxSize( 5, 5 ), wstyle );
+//    wstyle = wxCAPTION | wxMINIMIZE_BOX | wxMAXIMIZE_BOX | wxRESIZE_BORDER;
+    
+    wxDialog::Create( win, wxID_ANY, _T(""), wxPoint( 0, 0 ), wxSize( 200, 20 ), wstyle );
 
     m_backBrush = wxBrush( GetGlobalColor( _T("UIBDR") ), wxSOLID );
 
     SetBackgroundColour( GetGlobalColor( _T("UIBDR") ) );
 
-    SetBackgroundStyle( wxBG_STYLE_CUSTOM ); // on WXMSW, this prevents flashing on color scheme change
+//    SetBackgroundStyle( wxBG_STYLE_CUSTOM ); // on WXMSW, this prevents flashing on color scheme change
 
     m_rows = 1;
 
@@ -95,10 +97,14 @@ void StatWin::RePosition()
     wxSize cs = GetParent()->GetClientSize();
     wxPoint position;
     position.x = 0;
-    position.y = cs.y - GetSize().y;
+    position.y = cs.y;// - GetSize().y;
 
     wxPoint screen_pos = GetParent()->ClientToScreen( position );
+    wxString msg;
+    msg.Printf(_T("Stat RePosition: %d %d"), screen_pos.x, screen_pos.y);
+    wxLogMessage(msg);
     Move( screen_pos );
+    Raise();
 }
 
 void StatWin::ReSize()
@@ -107,6 +113,9 @@ void StatWin::ReSize()
     wxSize new_size;
     new_size.x = cs.x;
     new_size.y = 22 * GetRows();
+    wxString msg;
+    msg.Printf(_T("Stat ReSize: %d %d"), new_size.x, new_size.y);
+    wxLogMessage(msg);
     SetSize(new_size);
 }
 

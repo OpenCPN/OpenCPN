@@ -47,10 +47,9 @@ WX_DEFINE_ARRAY_INT(int, ArrayOfInts);
 //    Global Static error reporting function
 extern "C" void MyCPLErrorHandler( CPLErr eErrClass, int nError,
                              const char * pszErrorMsg );
+#endif
 
 wxFont *GetOCPNScaledFont( wxString item, int default_size );
-
-#endif
 
 wxArrayString *EnumerateSerialPorts(void);
 wxColour GetGlobalColor(wxString colorName);
@@ -330,7 +329,7 @@ class MyFrame: public wxFrame
 
     //      PlugIn support
     int GetNextToolbarToolId(){return m_next_available_plugin_tool_id;}
-    void RequestNewToolbarArgEvent( wxCommandEvent & event ){ return RequestNewToolbar(); }
+    void RequestNewToolbarArgEvent( wxCommandEvent & WXUNUSED(event) ){ return RequestNewToolbar(); }
     void RequestNewToolbar();
 
     void ActivateMOB(void);
@@ -418,7 +417,7 @@ class MyFrame: public wxFrame
 class MyPrintout: public wxPrintout
 {
  public:
-  MyPrintout(const wxChar *title = _T("My printout")):wxPrintout(title){}
+  MyPrintout(const wxString &title = wxT("My printout")):wxPrintout(title){}
   virtual
   bool OnPrintPage(int page);
   virtual
