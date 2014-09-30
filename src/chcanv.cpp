@@ -34,6 +34,7 @@
 #include <wx/listbook.h>
 #include <wx/clipbrd.h>
 #include <wx/aui/aui.h>
+#include <wx/progdlg.h>
 
 #include "dychart.h"
 
@@ -2109,6 +2110,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
                     }
                 }
 
+#ifdef USE_S57                
                 if( cm93IsAvailable ) {
                     if( !pCM93DetailSlider ) {
                         pCM93DetailSlider = new CM93DSlide( this, -1, 0,
@@ -2118,6 +2120,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
                     }
                     pCM93DetailSlider->Show( !pCM93DetailSlider->IsShown() );
                 }
+#endif                
                 break;
             }
 
@@ -6918,6 +6921,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 
 void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
 {
+#ifdef USE_S57    
     ChartPlugInWrapper *target_plugin_chart = NULL;
     s57chart *Chs57 = NULL;
 
@@ -7095,6 +7099,7 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
 
         SetCursor( wxCURSOR_ARROW );
     }
+#endif    
 }
 
 void ChartCanvas::RemovePointFromRoute( RoutePoint* point, Route* route ) {
@@ -9488,7 +9493,7 @@ void ChartCanvas::CreateOZEmbossMapData( ColorScheme cs )
 }
 
 emboss_data *ChartCanvas::CreateEmbossMapData( wxFont &font, int width, int height,
-        const wxChar *str, ColorScheme cs )
+        const wxString &str, ColorScheme cs )
 {
     int *pmap;
 
@@ -9509,8 +9514,8 @@ emboss_data *ChartCanvas::CreateEmbossMapData( wxFont &font, int width, int heig
     temp_dc.SetFont( font );
 
     int str_w, str_h;
-    temp_dc.GetTextExtent( wxString( str, wxConvUTF8 ), &str_w, &str_h );
-    temp_dc.DrawText( wxString( str, wxConvUTF8 ), width - str_w - 10, 10 );
+    temp_dc.GetTextExtent( str, &str_w, &str_h );
+    temp_dc.DrawText( str, width - str_w - 10, 10 );
 
     //  Deselect the bitmap
     temp_dc.SelectObject( wxNullBitmap );
