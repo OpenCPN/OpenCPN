@@ -51,6 +51,32 @@ ELSE(APPLE)
 ENDIF(APPLE)
 
 
+IF(DEFINED _wx_selected_config)
+MESSAGE (STATUS "Selected Configuration: ${_wx_selected_config}")
+
+IF(_wx_selected_config MATCHES "qt-armv7")
+MESSAGE (STATUS "Building for wxQt-Android")
+SET(QT_ANDROID "ON")
+SET(QT_LINUX "OFF")
+SET(QT "ON")
+ENDIF(_wx_selected_config MATCHES "qt-armv7")
+
+IF(_wx_selected_config MATCHES "qt-linux")
+MESSAGE (STATUS "Building for wxQt-linux")
+SET(QT_ANDROID "OFF")
+SET(QT_LINUX "ON")
+SET(QT "ON")
+ENDIF(_wx_selected_config MATCHES "qt-linux")
+
+ENDIF(DEFINED _wx_selected_config)
+
+IF(UNIX)
+  if(NOT QT)
+   MESSAGE (STATUS "Building for wxGTK2")
+   SET(GTK2 "ON")
+  ENDIF(NOT QT) 
+ENDIF(UNIX)
+
 INCLUDE( ${CMAKE_SOURCE_DIR}/VERSION.cmake )
 SET(PACKAGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
 
@@ -165,13 +191,11 @@ ENDIF(BUNDLE_TCDATA MATCHES "ON")
 
 SET(wxWidgets_USE_LIBS base core net xml html adv aui)
 
-MESSAGE (STATUS "Selected Configuration: ${_wx_selected_config}")
-
 IF((_wx_selected_config MATCHES "qt-armv7"))
 SET(CMAKE_BUILD_TYPE Debug)
 ENDIF()
 
-IF(NOT (_wx_selected_config MATCHES "qt-armv7"))
+IF(NOT QT_ANDROID)
 FIND_PACKAGE(OpenGL)
 IF(OPENGL_GLU_FOUND)
 
@@ -189,7 +213,7 @@ ELSE(OPENGL_GLU_FOUND)
 ENDIF(OPENGL_GLU_FOUND)
 ENDIF()
 
-# Search for opengles, short of running a program to test the speed
+# Search for opengles, short of run_wx_selected_configning a program to test the speed
 # of acceleration, I simply use gles on arm systems
 IF (ARCH MATCHES "arm*")
 find_path(OPENGLESv2_INCLUDE_DIR GLES2/gl2.h )
@@ -212,7 +236,7 @@ SET( wxWidgets_USE_UNICODE ON)
 SET( wxWidgets_USE_UNIVERSAL OFF)
 SET( wxWidgets_USE_STATIC OFF)
 
-IF(NOT (_wx_selected_config MATCHES "qt-armv7"))
+IF(NOT QT_ANDROID)
 FIND_PACKAGE(wxWidgets REQUIRED)
 INCLUDE(${wxWidgets_USE_FILE})
 MESSAGE (STATUS "Found wxWidgets..." )
@@ -301,8 +325,7 @@ SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/")
 
 IF (NOT WIN32 AND NOT APPLE)
 
-IF(DEFINED _wx_selected_config)
-  IF(_wx_selected_config MATCHES "gtk2")
+  IF(GTK2)
     FIND_PACKAGE(GTK2 2.6)
     IF (GTK2_FOUND)
       MESSAGE (STATUS "Found GTK2")
@@ -319,30 +342,60 @@ IF(DEFINED _wx_selected_config)
     ELSE(GTK2_FOUND)
       MESSAGE (STATUS "GTK2 Not found...")
     ENDIF (GTK2_FOUND)
-  ENDIF()
+  ENDIF(GTK2)
 
-  IF(_wx_selected_config MATCHES "qt")
+#IF(DEFINED _wx_selected_config)
+#  IF(_wx_selected_config MATCHES "gtk2")
+#    FIND_PACKAGE(GTK2 2.6)
+#    IF (GTK2_FOUND)
+#      MESSAGE (STATUS "Found GTK2")
+#      ADD_DEFINITIONS(-DocpnUSE_GTK_OPTIMIZE)
+#      ADD_DEFINITIONS(-DocpnHAS_GTK)
+#      INCLUDE_DIRECTORIES(${GTK2_INCLUDE_DIRS})
+#      SET(EXTRA_LIBS ${EXTRA_LIBS} ${GTK2_LIBRARIES})
+
+      # Add a definition to satisfy some linux system builds, avoiding Apple builds
+#      IF (NOT WIN32 AND NOT APPLE)
+#        ADD_DEFINITIONS("`pkg-config --cflags --libs gtk+-2.0`")
+#      ENDIF (NOT WIN32 AND NOT APPLE)
+
+#    ELSE(GTK2_FOUND)
+#      MESSAGE (STATUS "GTK2 Not found...")
+#    ENDIF (GTK2_FOUND)
+#  ENDIF()
+
+  IF(QT_LINUX)
+    ADD_DEFINITIONS(-D__WXQT__)
     SET(CMAKE_EXE_LINKER_FLAGS "-fPIE")
   ENDIF()
 
-  IF(_wx_selected_config MATCHES "qt-armv7")
+  IF(QT_ANDROID)
     ADD_DEFINITIONS(-D__WXQT__)
+    ADD_DEFINITIONS(-DOCPN_USE_WRAPPER)
+    ADD_DEFINITIONS(-D__OCPN__ANDROID__)
+    
     SET(CMAKE_CXX_FLAGS "-pthread -fPIC")
 
+    SET(${wxWidgets_INCLUDE_DIRS} "-3.1")
     INCLUDE_DIRECTORIES("/home/dsr/Projects/wxqt/wxtrunk/wxWidgets/bldqt5droid/lib/wx/include/arm-linux-androideabi-qt-unicode-static-3.1")
     INCLUDE_DIRECTORIES("/home/dsr/Projects/wxqt/wxtrunk/wxWidgets/include")
-    INCLUDE_DIRECTORIES("/home/dsr/Qt/5.2.1/gcc/include/QtCore")
-    INCLUDE_DIRECTORIES("/home/dsr/Qt/5.2.1/gcc/include")
-    INCLUDE_DIRECTORIES("/home/dsr/Qt/5.2.1/gcc/include/QtWidgets")
-    INCLUDE_DIRECTORIES("/home/dsr/Qt/5.2.1/gcc/include/QtGui")
-    INCLUDE_DIRECTORIES("/home/dsr/Qt/5.2.1/gcc/include/QtOpenGL")
-    INCLUDE_DIRECTORIES("/home/dsr/Qt/5.2.1/gcc/include/QtTest")
+    INCLUDE_DIRECTORIES("/home/dsr/Qt/5.2.1/android_armv7/include/QtCore")
+    INCLUDE_DIRECTORIES("/home/dsr/Qt/5.2.1/android_armv7/include")
+    INCLUDE_DIRECTORIES("/home/dsr/Qt/5.2.1/android_armv7/include/QtWidgets")
+    INCLUDE_DIRECTORIES("/home/dsr/Qt/5.2.1/android_armv7/include/QtGui")
+    INCLUDE_DIRECTORIES("/home/dsr/Qt/5.2.1/android_armv7/include/QtOpenGL")
+    INCLUDE_DIRECTORIES("/home/dsr/Qt/5.2.1/android_armv7/include/QtTest")
     ADD_DEFINITIONS(-DQT_WIDGETS_LIB)
+    
+    SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -L/home/dsr/Projects/wxqt/wxtrunk/wxWidgets/bldqt5droid/lib")
+    SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -L/home/dsr/Qt/5.2.1/android_armv7/lib")
+    SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lz")
+ #   SET(CMAKE_EXE_LINKER_FLAGS "-lSM  -lm")
 
     SET(USE_S57 OFF)
   ENDIF()
 
-ENDIF()
+#ENDIF()
 
 IF(UNIX)
 INCLUDE("FindPortaudio.cmake")
@@ -468,8 +521,6 @@ SET(HDRS
 		include/S57QueryDialog.h
 		include/S57ObjectDesc.h
 		include/S57Light.h
-		include/s57RegistrarMgr.h
-		include/S57ClassRegistrar.h
 		include/MarkIcon.h
 		include/SendToGpsDlg.h
 		include/TCWin.h
@@ -554,7 +605,6 @@ SET(SRCS
 		src/ocpCursor.cpp
 		src/TCWin.cpp
 		src/S57QueryDialog.cpp
-		src/s57RegistrarMgr.cpp
 		src/GoToPositionDialog.cpp
 		src/CM93DSlide.cpp
 		src/RolloverWin.cpp
@@ -638,8 +688,8 @@ ENDIF(NOT WIN32 AND NOT APPLE)
 STRING(REGEX MATCHALL "-2.9|-3." wx_Version_2.9+ "${wxWidgets_INCLUDE_DIRS}")
 IF(wx_Version_2.9+)
 ELSE(wx_Version_2.9+)
-  SET(HDRS ${HDRS} include/scrollingdialog.h )
-  SET(SRCS ${SRCS} src/scrollingdialog.cpp)
+#  SET(HDRS ${HDRS} include/scrollingdialog.h )
+#  SET(SRCS ${SRCS} src/scrollingdialog.cpp)
 ENDIF(wx_Version_2.9+)
 
 SET( PACKAGE_HEADERS "" )
@@ -695,6 +745,9 @@ IF (USE_S57)
 		src/mygeom.cpp
 		include/cm93.h
 		src/tri.c
+                include/s57RegistrarMgr.h
+                include/S57ClassRegistrar.h
+                src/s57RegistrarMgr.cpp
 		src/myiso8211/ddffielddefn.cpp
 		src/myiso8211/ddfmodule.cpp
 		src/myiso8211/ddfrecord.cpp
@@ -1142,7 +1195,7 @@ ADD_EXECUTABLE(${PACKAGE_NAME} ${HDRS} ${SRCS})
 ENDIF(UNIX AND NOT APPLE)
 
 IF(CMAKE_CROSSCOMPILING)
-ADD_EXECUTABLE(${PACKAGE_NAME} ${HDRS} ${SRCS})
+ADD_LIBRARY(${PACKAGE_NAME} ${HDRS} ${SRCS})
 ENDIF()
 
 
@@ -1189,9 +1242,34 @@ IF(GTK2_FOUND)
   TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} gobject-2.0 )
 ENDIF(GTK2_FOUND)
 
-IF(_wx_selected_config MATCHES "qt")
+IF(QT_LINUX)
   TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} Qt5Widgets Qt5OpenGL Qt5Gui Qt5Test Qt5Core )
+ENDIF(QT_LINUX)
+
+IF(QT_ANDROID)
+  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} Qt5Widgets Qt5OpenGL Qt5Gui Qt5Test Qt5Core )
+  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "/home/dsr/Projects/wxqt/wxtrunk/wxWidgets/bldqt5droid/lib/libwx_qtu_qa-3.1-arm-linux-androideabi.a" )
+  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "/home/dsr/Projects/wxqt/wxtrunk/wxWidgets/bldqt5droid/lib/libwx_qtu_html-3.1-arm-linux-androideabi.a" )
+  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "/home/dsr/Projects/wxqt/wxtrunk/wxWidgets/bldqt5droid/lib/libwx_qtu_adv-3.1-arm-linux-androideabi.a" )
+  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "/home/dsr/Projects/wxqt/wxtrunk/wxWidgets/bldqt5droid/lib/libwx_qtu_core-3.1-arm-linux-androideabi.a" )
+  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "/home/dsr/Projects/wxqt/wxtrunk/wxWidgets/bldqt5droid/lib/libwx_baseu_xml-3.1-arm-linux-androideabi.a" )
+  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "/home/dsr/Projects/wxqt/wxtrunk/wxWidgets/bldqt5droid/lib/libwx_qtu_aui-3.1-arm-linux-androideabi.a" )
+  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "/home/dsr/Projects/wxqt/wxtrunk/wxWidgets/bldqt5droid/lib/libwx_baseu-3.1-arm-linux-androideabi.a" )
+  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "/home/dsr/Projects/wxqt/wxtrunk/wxWidgets/bldqt5droid/lib/libwxregexu-3.1-arm-linux-androideabi.a" )
+  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "/home/dsr/Projects/wxqt/wxtrunk/wxWidgets/bldqt5droid/lib/libwxjpeg-3.1-arm-linux-androideabi.a" )
+  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "/home/dsr/Projects/wxqt/wxtrunk/wxWidgets/bldqt5droid/lib/libwxpng-3.1-arm-linux-androideabi.a" )
+  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "/home/dsr/Projects/wxqt/wxtrunk/wxWidgets/bldqt5droid/lib/libwxexpat-3.1-arm-linux-androideabi.a" )
+  
 ENDIF()
+
+
+#-L/home/dsr/Projects/wxqt/wxtrunk/wxWidgets/bldqt5droid/lib
+#-pthread
+
+#-L/home/dsr/Qt/5.2.1/gcc/lib
+#- -lSM -lz -lm
+
+
 
 IF(NOT APPLE)
 
@@ -1369,7 +1447,7 @@ ENDIF(WIN32 AND NOT UNIX)
 MESSAGE (STATUS "")
 
 IF(NOT SKIP_PLUGINS)
-IF(NOT (_wx_selected_config MATCHES "qt-armv7"))
+IF(NOT QT_ANDROID)
  add_subdirectory (plugins)
 ENDIF()
 ENDIF(NOT SKIP_PLUGINS)
