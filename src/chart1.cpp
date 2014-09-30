@@ -5452,14 +5452,15 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 //  Send current nav status data to log file on every half hour   // pjotrc 2010.02.09
 
     wxDateTime lognow = wxDateTime::Now();   // pjotrc 2010.02.09
-    int hour = lognow.GetHour();
+    int hourLOC = lognow.GetHour();
+    int minuteLOC = lognow.GetMinute();
     lognow.MakeGMT();
-    int minute = lognow.GetMinute();
+    int minuteUTC = lognow.GetMinute();
     int second = lognow.GetSecond();
 
     wxTimeSpan logspan = lognow.Subtract( g_loglast_time );
-    if( ( logspan.IsLongerThan( wxTimeSpan( 0, 30, 0, 0 ) ) ) || ( minute == 0 )
-            || ( minute == 30 ) ) {
+    if( ( logspan.IsLongerThan( wxTimeSpan( 0, 30, 0, 0 ) ) ) || ( minuteUTC == 0 )
+            || ( minuteUTC == 30 ) ) {
         if( logspan.IsLongerThan( wxTimeSpan( 0, 1, 0, 0 ) ) ) {
             wxString day = lognow.FormatISODate();
             wxString utc = lognow.FormatISOTime();
@@ -5494,14 +5495,14 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
             wxLogMessage( navmsg );
             g_loglast_time = lognow;
 
-            if( hour == 0 && minute == 0 && g_bTrackDaily )
+            if( hourLOC == 0 && minuteLOC == 0 && g_bTrackDaily )
                 TrackMidnightRestart();
 
-            int bells = ( hour % 4 ) * 2;     // 2 bells each hour
-            if( minute != 0 ) bells++;       // + 1 bell on 30 minutes
+            int bells = ( hourLOC % 4 ) * 2;     // 2 bells each hour
+            if( minuteLOC != 0 ) bells++;       // + 1 bell on 30 minutes
             if( !bells ) bells = 8;     // 0 is 8 bells
 
-            if( g_bPlayShipsBells && ( ( minute == 0 ) || ( minute == 30 ) ) ) {
+            if( g_bPlayShipsBells && ( ( minuteLOC == 0 ) || ( minuteLOC == 30 ) ) ) {
                 m_BellsToPlay = bells;
                 BellsTimer.Start(0, wxTIMER_ONE_SHOT);
             }
