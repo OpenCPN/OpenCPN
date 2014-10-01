@@ -426,6 +426,10 @@ wxString trimAISField( char *data )
     wxString field = wxString::From8BitData( data );
     while( field.Right( 1 ) == '@' || field.Right( 1 ) == ' ' )
         field.RemoveLast();
+    
+    //  And remove any leading spaces to properly sort and display
+    field.Trim(false);
+    
     return field;
 }
 
