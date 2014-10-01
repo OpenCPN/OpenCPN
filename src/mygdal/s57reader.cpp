@@ -816,6 +816,15 @@ void S57Reader::ApplyObjectClassAttributes( DDFRecord * poRecord,
             continue;
         }
 
+        // Handle deleted attributes
+        // If the first char of the attribute is 0x7f, then unset this field.
+        // Any later requests for the attribute value will retrun an empty string.
+        if(pszValue[0] == 0x7f)
+        {
+            poFeature->UnsetField( iField );
+            continue;
+        }
+        
         poFldDefn = poFeature->GetDefnRef()->GetFieldDefn( iField );
         if( poFldDefn->GetType() == OFTInteger
             || poFldDefn->GetType() == OFTReal )
