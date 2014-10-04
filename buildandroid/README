@@ -94,6 +94,7 @@
         $make
 
     G.  Build a needed support library
+        (Note:  This step has already been done, and the library .so is included in the github repo as a blob.)
 
         We need our fixed assets in the APK....
 
