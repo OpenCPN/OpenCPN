@@ -74,7 +74,7 @@ IF(UNIX)
   if(NOT QT)
    MESSAGE (STATUS "Building for wxGTK2")
    SET(GTK2 "ON")
-  ENDIF(NOT QT) 
+  ENDIF(NOT QT)
 ENDIF(UNIX)
 
 INCLUDE( ${CMAKE_SOURCE_DIR}/VERSION.cmake )
@@ -373,24 +373,20 @@ IF (NOT WIN32 AND NOT APPLE)
     ADD_DEFINITIONS(-D__WXQT__)
     ADD_DEFINITIONS(-DOCPN_USE_WRAPPER)
     ADD_DEFINITIONS(-D__OCPN__ANDROID__)
-    
+
     SET(CMAKE_CXX_FLAGS "-pthread -fPIC")
 
-    SET(${wxWidgets_INCLUDE_DIRS} "-3.1")
-    INCLUDE_DIRECTORIES("/home/dsr/Projects/wxqt/wxtrunk/wxWidgets/bldqt5droid/lib/wx/include/arm-linux-androideabi-qt-unicode-static-3.1")
-    INCLUDE_DIRECTORIES("/home/dsr/Projects/wxqt/wxtrunk/wxWidgets/include")
-    INCLUDE_DIRECTORIES("/home/dsr/Qt/5.2.1/android_armv7/include/QtCore")
-    INCLUDE_DIRECTORIES("/home/dsr/Qt/5.2.1/android_armv7/include")
-    INCLUDE_DIRECTORIES("/home/dsr/Qt/5.2.1/android_armv7/include/QtWidgets")
-    INCLUDE_DIRECTORIES("/home/dsr/Qt/5.2.1/android_armv7/include/QtGui")
-    INCLUDE_DIRECTORIES("/home/dsr/Qt/5.2.1/android_armv7/include/QtOpenGL")
-    INCLUDE_DIRECTORIES("/home/dsr/Qt/5.2.1/android_armv7/include/QtTest")
+    INCLUDE_DIRECTORIES("${wxQt_Base}/include")
+    INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include/QtCore")
+    INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include")
+    INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include/QtWidgets")
+    INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include/QtGui")
+    INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include/QtOpenGL")
+    INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include/QtTest")
+
+    INCLUDE_DIRECTORIES( "${wxQt_Base}/build_wxQt_armv7/lib/wx/include/arm-linux-androideabi-qt-unicode-static-3.1")
+
     ADD_DEFINITIONS(-DQT_WIDGETS_LIB)
-    
-    SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -L/home/dsr/Projects/wxqt/wxtrunk/wxWidgets/bldqt5droid/lib")
-    SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -L/home/dsr/Qt/5.2.1/android_armv7/lib")
-    SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lz")
- #   SET(CMAKE_EXE_LINKER_FLAGS "-lSM  -lm")
 
     SET(USE_S57 OFF)
   ENDIF()
@@ -1259,7 +1255,7 @@ IF(QT_ANDROID)
   TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "/home/dsr/Projects/wxqt/wxtrunk/wxWidgets/bldqt5droid/lib/libwxjpeg-3.1-arm-linux-androideabi.a" )
   TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "/home/dsr/Projects/wxqt/wxtrunk/wxWidgets/bldqt5droid/lib/libwxpng-3.1-arm-linux-androideabi.a" )
   TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "/home/dsr/Projects/wxqt/wxtrunk/wxWidgets/bldqt5droid/lib/libwxexpat-3.1-arm-linux-androideabi.a" )
-  
+
 ENDIF()
 
 
