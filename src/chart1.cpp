@@ -781,14 +781,12 @@ int CALLBACK CrashCallback(CR_CRASH_CALLBACK_INFO* pInfo)
 
 #endif
 
-#ifndef OCPN_USE_WRAPPER
 // `Main program' equivalent, creating windows and returning main app frame
 //------------------------------------------------------------------------------
 // MyApp
 //------------------------------------------------------------------------------
 
 IMPLEMENT_APP( MyApp )
-#endif
 
 BEGIN_EVENT_TABLE(MyApp, wxApp) EVT_ACTIVATE_APP(MyApp::OnActivateApp)
 END_EVENT_TABLE()
@@ -1072,7 +1070,7 @@ bool MyApp::OnInit()
 #ifndef __OCPN__ANDROID__
     setlocale( LC_NUMERIC, "C" );
 #endif    
-
+    
 //      CALLGRIND_STOP_INSTRUMENTATION
 
     
@@ -1815,12 +1813,9 @@ bool MyApp::OnInit()
         }
 #endif
 
-#if __OCPN__ANDROID__
-        g_bresponsive = true;
-#endif
-
     }
     pConfig->UpdateSettings();
+    pConfig->LoadMyConfig( 1 );
     
 
     //  Check the global Tide/Current data source array
