@@ -183,4 +183,5 @@ src/AIS_Target_Data.cpp
 src/AISTargetQueryDialog.cpp
 src/RolloverWin.cpp
 src/RoutePoint.cpp
-
+src/TCWin.cpp
+include/TCWin.h
