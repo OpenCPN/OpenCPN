@@ -83,6 +83,7 @@ const BlackListedPlugin PluginBlacklist[] = {
     { _T("aisradar_pi"), 0, 95, true, true },
     { _T("radar_pi"), 0, 95, true, true },             // GCC alias for aisradar_pi
     { _T("watchdog_pi"), 1, 00, true, true },
+    { _T("squiddio_pi"), 0, 2, true, true },
 #ifdef __WXOSX__
     { _T("s63_pi"), 0, 6, true, true },
 #endif    
