@@ -447,30 +447,34 @@ bool Routeman::UpdateProgress()
 
         bool bDidArrival = false;
 
-        if( CurrentRangeToActiveNormalCrossing <= pActiveRoute->GetRouteArrivalRadius() ) {
-            m_bArrival = true;
-            UpdateAutopilot();
+        // Special signal:  if ArrivalRadius < 0, NEVER arrive...
+        //  Used for MOB auto-created routes.
+        if( pActiveRoute->GetRouteArrivalRadius() > 0){
+            if( CurrentRangeToActiveNormalCrossing <= pActiveRoute->GetRouteArrivalRadius() ) {
+                m_bArrival = true;
+                UpdateAutopilot();
 
-            bDidArrival = true;
-            DoAdvance();
+                bDidArrival = true;
+                DoAdvance();
 
-        }
-        else {
-        //      Test to see if we are moving away from the arrival point, and
-        //      have been mving away for 2 seconds.  
-        //      If so, we should declare "Arrival"
-            if( (CurrentRangeToActiveNormalCrossing - m_arrival_min) >  pActiveRoute->GetRouteArrivalRadius() ){
-                if(++m_arrival_test > 2) {
-                    m_bArrival = true;
-                    UpdateAutopilot();
-                    
-                    bDidArrival = true;
-                    DoAdvance();
-                }
             }
-            else
-                m_arrival_test = 0;
-                
+            else {
+            //      Test to see if we are moving away from the arrival point, and
+            //      have been mving away for 2 seconds.  
+            //      If so, we should declare "Arrival"
+                if( (CurrentRangeToActiveNormalCrossing - m_arrival_min) >  pActiveRoute->GetRouteArrivalRadius() ){
+                    if(++m_arrival_test > 2) {
+                        m_bArrival = true;
+                        UpdateAutopilot();
+                        
+                        bDidArrival = true;
+                        DoAdvance();
+                    }
+                }
+                else
+                    m_arrival_test = 0;
+                    
+            }
         }
         
         if( !bDidArrival )                                        
@@ -1630,10 +1634,11 @@ void WayPointman::DestroyWaypoint( RoutePoint *pRp, bool b_update_changeset )
             for( unsigned int ir = 0; ir < proute_array->GetCount(); ir++ ) {
                 Route *pr = (Route *) proute_array->Item( ir );
                 if( pr->GetnPoints() < 2 ) {
+                    bool prev_bskip = pConfig->m_bSkipChangeSetUpdate;
                     pConfig->m_bSkipChangeSetUpdate = true;
                     pConfig->DeleteConfigRoute( pr );
                     g_pRouteMan->DeleteRoute( pr );
-                    pConfig->m_bSkipChangeSetUpdate = false;
+                    pConfig->m_bSkipChangeSetUpdate = prev_bskip;
                 }
             }
 

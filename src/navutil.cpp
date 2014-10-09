@@ -71,6 +71,7 @@
 #include "Layer.h"
 #include "NavObjectCollection.h"
 #include "NMEALogWindow.h"
+#include "AIS_Decoder.h"
 
 #ifdef USE_S57
 #include "s52plib.h"
@@ -330,6 +331,7 @@ extern bool             bGPSValid;              // for track recording
 extern bool             g_bexpert;
 
 extern int              g_SENC_LOD_pixels;
+extern ArrayOfMMSIProperties   g_MMSI_Props_Array;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
@@ -2007,6 +2009,28 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "TrackLineWidth" ), &g_track_line_width, 2 );
     Read( _T ( "CurrentArrowScale" ), &g_current_arrow_scale, 100 );
     Read( _T ( "DefaultWPIcon" ), &g_default_wp_icon, _T("triangle") );
+    
+    if(0 == iteration){
+        SetPath( _T ( "/MMSIProperties" ) );
+        int iPMax = GetNumberOfEntries();
+        if( iPMax ) {
+            g_MMSI_Props_Array.Empty();
+            wxString str, val;
+            long dummy;
+            int iDir = 0;
+            bool bCont = pConfig->GetFirstEntry( str, dummy );
+            while( bCont ) {
+                pConfig->Read( str, &val );              // Get an entry
+                
+                MMSIProperties *pProps = new MMSIProperties( val );
+                g_MMSI_Props_Array.Add(pProps);
+                
+                bCont = pConfig->GetNextEntry( str, dummy );
+                
+            }
+        }
+    }
+                
 
     return ( 0 );
 }
@@ -2712,6 +2736,15 @@ void MyConfig::UpdateSettings()
     Write( _T ( "CurrentArrowScale" ), g_current_arrow_scale );
     Write( _T ( "DefaultWPIcon" ), g_default_wp_icon );
 
+    DeleteGroup(_T ( "/MMSIProperties" ));
+    SetPath( _T ( "/MMSIProperties" ) );
+    for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
+        wxString p;
+        p.Printf(_T("Props%d"), i);
+        Write( p, g_MMSI_Props_Array.Item(i)->Serialize() );
+    }
+        
+    
     Flush();
 }
 
