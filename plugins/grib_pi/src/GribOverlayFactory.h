@@ -5,7 +5,7 @@
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2014 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -59,6 +59,25 @@ public:
     double m_dwidth, m_dheight;
 };
 
+#include <list>
+struct Particle {
+    int m_Duration;
+    std::list<wxPoint2DDouble> m_History;
+};
+
+struct ParticleMap {
+public:
+    ParticleMap(double scale, int settings)
+    : m_Scale(scale), m_Setting(settings) {}
+
+    std::list<Particle> m_Particles;
+
+    // particles are rebuilt whenever any of these fields change
+    double m_Scale;
+    time_t m_Reference_Time;
+    int m_Setting;
+};
+
 //----------------------------------------------------------------------------------------------------------
 //    Grib Overlay Factory Specification
 //----------------------------------------------------------------------------------------------------------
@@ -67,7 +86,7 @@ class GRIBUIDialog;
 class GribRecord;
 class GribTimelineRecordSet;
 
-class GRIBOverlayFactory {
+class GRIBOverlayFactory : public wxEvtHandler {
 public:
     GRIBOverlayFactory( GRIBUIDialog &dlg );
     ~GRIBOverlayFactory();
@@ -109,6 +128,8 @@ private:
     void RenderGribDirectionArrows( int config, GribRecord **pGR, PlugIn_ViewPort *vp );
     void RenderGribOverlayMap( int config, GribRecord **pGR, PlugIn_ViewPort *vp);
     void RenderGribNumbers( int config, GribRecord **pGR, PlugIn_ViewPort *vp );
+    void RenderGribParticles( int settings, GribRecord **pGR, PlugIn_ViewPort *vp );
+    void OnParticleTimer( wxTimerEvent & event );
 
     wxString GetRefString( GribRecord *rec, int map );
     void DrawMessageWindow( wxString msg, int x, int y , wxFont *mfont);
@@ -163,4 +184,8 @@ private:
 
     GRIBUIDialog &m_dlg;
     GribOverlaySettings &m_Settings;
+
+    ParticleMap *m_ParticleMap;
+    wxTimer m_tParticleTimer;
+    bool m_bUpdateParticles;
 };

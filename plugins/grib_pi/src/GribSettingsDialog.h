@@ -5,7 +5,7 @@
  * Author:   Sean D'Epagnier
  *
  ***************************************************************************
- *   Copyright (C) 2013 by Sean D'Epagnier                                 *
+ *   Copyright (C) 2014 by Sean D'Epagnier                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -85,6 +85,8 @@ struct GribOverlaySettings
         int m_iOverlayMapColors;
         bool m_bNumbers;
         int m_iNumbersSpacing;
+        bool m_bParticles;
+        double m_dParticleDensity;
 
     } Settings[SETTINGS_COUNT];
 };

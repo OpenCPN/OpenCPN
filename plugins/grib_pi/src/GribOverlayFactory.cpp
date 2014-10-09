@@ -5,7 +5,7 @@
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2014 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -191,11 +191,18 @@ GRIBOverlayFactory::GRIBOverlayFactory( GRIBUIDialog &dlg )
 
     for(int i=0; i<GribOverlaySettings::SETTINGS_COUNT; i++)
         m_pOverlay[i] = NULL;
+
+    m_ParticleMap = NULL;
+    m_tParticleTimer.Connect(wxEVT_TIMER, wxTimerEventHandler( GRIBOverlayFactory::OnParticleTimer ), NULL, this);
+    m_bUpdateParticles = false;
 }
 
 GRIBOverlayFactory::~GRIBOverlayFactory()
 {
     ClearCachedData();
+
+    delete m_ParticleMap;
+    m_ParticleMap = NULL;
 }
 
 void GRIBOverlayFactory::Reset()
@@ -304,7 +311,8 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
                         RenderGribBarbedArrows( i, pGR, vp );
                         RenderGribIsobar( i, pGR, pIA, vp );
                         RenderGribNumbers( i, pGR, vp );
-                    }else {
+                        RenderGribParticles( i, pGR, vp );
+                    } else {
                         if(m_Settings.Settings[i].m_iBarbedVisibility) RenderGribBarbedArrows( i, pGR, vp );
                     }
                 }
@@ -338,6 +346,7 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
             RenderGribIsobar( i, pGR, pIA, vp );
             RenderGribDirectionArrows( i, pGR, vp );
             RenderGribNumbers( i, pGR, vp );
+            RenderGribParticles( i, pGR, vp );
         }
     }
     if( m_Altitude ) {
@@ -1162,6 +1171,129 @@ void GRIBOverlayFactory::RenderGribNumbers( int settings, GribRecord **pGR, Plug
     }
 
     delete pGRM;
+}
+
+void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
+                                              PlugIn_ViewPort *vp )
+{
+    if(!m_Settings.Settings[settings].m_bParticles)
+        return;
+
+    //   need two records or a polar record to draw arrows
+    GribRecord *pGRX, *pGRY;
+    int idx, idy;
+    bool polar;
+    SettingsIdToGribId(settings, idx, idy, polar);
+    if(idx < 0 || idy < 0)
+        return;
+
+    pGRX = pGR[idx];
+    pGRY = pGR[idy];
+
+    if(!pGRX || !pGRY)
+        return;
+
+    if(m_ParticleMap &&
+       (
+//           m_ParticleMap->m_Scale != vp->view_scale_ppm ||
+        m_ParticleMap->m_Setting != settings)) {
+        delete m_ParticleMap;
+        m_ParticleMap = NULL;
+    }
+
+    if(!m_ParticleMap)
+        m_ParticleMap = new ParticleMap(vp->view_scale_ppm, settings);
+
+    // update particle map
+    std::list<Particle> &particles = m_ParticleMap->m_Particles;
+
+    std::list<Particle>::iterator it = particles.begin();
+    const int max_duration = 200;
+    const int history_size = 18;
+    while(it != particles.end() && m_bUpdateParticles) {
+        // don't allow particle to live more too long
+        if(it->m_Duration > max_duration) {
+            it = particles.erase(it);
+            continue;
+        }
+        it->m_Duration++;
+
+        // maximum history size
+        if(it->m_History.size() > history_size)
+            it->m_History.pop_back();
+
+        wxPoint2DDouble p = it->m_History.front();
+        double vkn, ang;
+        if(GribRecord::getInterpolatedValues(vkn, ang, pGRX, pGRY, p.m_x, p.m_y) &&
+           vkn > 0 && vkn < 100 &&
+           it->m_Duration < max_duration - history_size) {
+            vkn = 2*sqrt(vkn);
+
+            PositionBearingDistanceMercator_Plugin(p.m_y, p.m_x, ang+180, vkn,
+                                                   &p.m_y, &p.m_x);
+        }
+
+        it->m_History.push_front(p);
+
+        it++;
+    }
+    m_bUpdateParticles = false;
+
+    // add new particles as needed
+    while((int)particles.size() < m_Settings.Settings[settings].m_dParticleDensity * pGRX->getNi() * pGRX->getNj()) {
+        wxPoint2DDouble p;
+        p.m_x = (double)rand() / RAND_MAX * (pGRX->getLonMax() - pGRX->getLonMin()) + pGRX->getLonMin();
+        p.m_y = (double)rand() / RAND_MAX * (pGRX->getLatMax() - pGRX->getLatMin()) + pGRX->getLatMin();
+
+        Particle np;
+        np.m_Duration = rand()%max_duration;
+        np.m_History.push_back(p);
+        particles.push_back(np);
+    }
+
+    glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_ENABLE_BIT |
+                 GL_POLYGON_BIT | GL_HINT_BIT ); //Save state
+    
+    //      Enable anti-aliased lines, at best quality
+    glEnable( GL_LINE_SMOOTH );
+    glEnable( GL_BLEND );
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
+    glLineWidth( 1.5 );
+
+    // draw particles
+    for(std::list<Particle>::iterator it = particles.begin();
+        it != particles.end(); it++) {
+
+        wxColour c(128, 100, 200);
+        int alpha = 240;
+
+        glBegin( GL_LINE_STRIP );
+
+        for(std::list<wxPoint2DDouble>::iterator pit = it->m_History.begin();
+            pit != it->m_History.end(); pit++) {
+
+            wxPoint p;
+            GetCanvasPixLL( vp, &p, pit->m_y, pit->m_x);
+
+            glColor4ub( c.Red(), c.Green(), c.Blue(), alpha);
+            glVertex2d( p.x, p.y );
+
+            alpha -= 10;
+        }
+
+        glEnd();
+    }
+
+    glPopAttrib();
+
+    m_tParticleTimer.Start(50, true);
+}
+
+void GRIBOverlayFactory::OnParticleTimer( wxTimerEvent & event )
+{
+    m_bUpdateParticles = true;
+    RequestRefresh(GetOCPNCanvasWindow());
 }
 
 void GRIBOverlayFactory::DrawMessageWindow( wxString msg, int x, int y , wxFont *mfont)
