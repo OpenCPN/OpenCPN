@@ -259,6 +259,541 @@ int wxCALLBACK SortConnectionOnPriority(long item1, long item2, long list)
 #endif
 }
 
+    
+
+
+
+
+
+extern ArrayOfMMSIProperties   g_MMSI_Props_Array;
+
+
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class MMSIEditDialog
+///////////////////////////////////////////////////////////////////////////////
+
+IMPLEMENT_DYNAMIC_CLASS( MMSIEditDialog, wxDialog )
+
+BEGIN_EVENT_TABLE( MMSIEditDialog, wxDialog )
+EVT_BUTTON( ID_MMSIEDIT_CANCEL, MMSIEditDialog::OnMMSIEditCancelClick )
+EVT_BUTTON( ID_MMSIEDIT_OK, MMSIEditDialog::OnMMSIEditOKClick )
+END_EVENT_TABLE()
+ 
+ MMSIEditDialog::MMSIEditDialog()
+ {
+ }
+ 
+ MMSIEditDialog::MMSIEditDialog( MMSIProperties *props, wxWindow* parent, wxWindowID id, const wxString& caption,
+                                         const wxPoint& pos, const wxSize& size, long style )
+ {
+     m_props = props;
+     
+     long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;
+     wxDialog::Create( parent, id, caption, pos, size, wstyle );
+     
+     CreateControls();
+     GetSizer()->SetSizeHints( this );
+     Centre();
+     
+ }
+ 
+ MMSIEditDialog::~MMSIEditDialog()
+ {
+     delete m_MMSICtl;
+ }
+ 
+ 
+ bool MMSIEditDialog::Create( MMSIProperties *props, wxWindow* parent, wxWindowID id, const wxString& caption,
+                                  const wxPoint& pos, const wxSize& size, long style )
+{
+    m_props = props;
+    
+    SetExtraStyle( GetExtraStyle() | wxWS_EX_BLOCK_EVENTS );
+    wxDialog::Create( parent, id, caption, pos, size, style );
+     
+     CreateControls();
+     GetSizer()->SetSizeHints( this );
+     Centre();
+     
+     return TRUE;
+}
+ 
+void MMSIEditDialog::CreateControls()
+{
+     MMSIEditDialog* itemDialog1 = this;
+     
+     wxBoxSizer* itemBoxSizer2 = new wxBoxSizer( wxVERTICAL );
+     itemDialog1->SetSizer( itemBoxSizer2 );
+     
+     wxStaticBox* itemStaticBoxSizer4Static = new wxStaticBox( itemDialog1, wxID_ANY,
+                                                               _("MMSI Extended Properties") );
+     
+     wxStaticBoxSizer* itemStaticBoxSizer4 = new wxStaticBoxSizer( itemStaticBoxSizer4Static,
+                                                                   wxVERTICAL );
+     itemBoxSizer2->Add( itemStaticBoxSizer4, 0, wxEXPAND | wxALL, 5 );
+     
+     wxStaticText* itemStaticText5 = new wxStaticText( itemDialog1, wxID_STATIC, _("MMSI") );
+     itemStaticBoxSizer4->Add( itemStaticText5, 0,
+                               wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, 5 );
+     
+     m_MMSICtl = new wxTextCtrl( itemDialog1, ID_MMSI_CTL, _T(""), wxDefaultPosition, wxSize( 180, -1 ), 0 );
+     itemStaticBoxSizer4->Add( m_MMSICtl, 0,
+                               wxALIGN_LEFT | wxLEFT | wxRIGHT | wxBOTTOM | wxEXPAND, 5 );
+     
+     
+     wxStaticBoxSizer *sbSizerPropsTrack = new wxStaticBoxSizer( new wxStaticBox( itemDialog1, wxID_ANY, _("Tracking") ), wxVERTICAL );
+     
+     wxBoxSizer* bSizer15;
+     bSizer15 = new wxBoxSizer( wxHORIZONTAL );
+     
+     m_rbTypeTrackDefault = new wxRadioButton( itemDialog1, wxID_ANY, _("Default tracking"), wxDefaultPosition, wxDefaultSize, 0 );
+     m_rbTypeTrackDefault->SetValue( true );
+     bSizer15->Add( m_rbTypeTrackDefault, 0, wxALL, 5 );
+
+     m_rbTypeTrackAlways = new wxRadioButton( itemDialog1, wxID_ANY, _("Always track"), wxDefaultPosition, wxDefaultSize, 0 );
+     bSizer15->Add( m_rbTypeTrackAlways, 0, wxALL, 5 );
+     
+     m_rbTypeTrackNever = new wxRadioButton( itemDialog1, wxID_ANY, _("Never track"), wxDefaultPosition, wxDefaultSize, 0 );
+     bSizer15->Add( m_rbTypeTrackNever, 0, wxALL, 5 );
+     
+     
+     sbSizerPropsTrack->Add( bSizer15, 0, wxEXPAND, 0 );
+     itemStaticBoxSizer4->Add(sbSizerPropsTrack, 0, wxEXPAND, 0);
+     
+
+     m_IgnoreButton = new wxCheckBox( itemDialog1, wxID_ANY, _("Ignore this MMSI") );
+     itemStaticBoxSizer4->Add( m_IgnoreButton, 0, wxEXPAND, 5 );
+     
+     m_MOBButton = new wxCheckBox( itemDialog1, wxID_ANY, _("Handle this MMSI as PLB/MOB") );
+     itemStaticBoxSizer4->Add( m_MOBButton, 0, wxEXPAND, 5 );
+     
+     m_VDMButton = new wxCheckBox( itemDialog1, wxID_ANY, _("Convert AIVDM to AIVDO for this MMSI") );
+     itemStaticBoxSizer4->Add( m_VDMButton, 0, wxEXPAND, 5 );
+     
+     
+     wxBoxSizer* itemBoxSizer16 = new wxBoxSizer( wxHORIZONTAL );
+     itemBoxSizer2->Add( itemBoxSizer16, 0, wxALIGN_RIGHT | wxALL, 5 );
+     
+     m_CancelButton = new wxButton( itemDialog1, ID_MMSIEDIT_CANCEL, _("Cancel"), wxDefaultPosition,
+     wxDefaultSize, 0 );
+     itemBoxSizer16->Add( m_CancelButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
+     
+     m_OKButton = new wxButton( itemDialog1, ID_MMSIEDIT_OK, _("OK"), wxDefaultPosition,
+     wxDefaultSize, 0 );
+     itemBoxSizer16->Add( m_OKButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
+     m_OKButton->SetDefault();
+
+     //  Set initial values...
+     wxString sMMSI;
+     if(m_props->MMSI > 0)
+        sMMSI.Printf(_T("%d"), m_props->MMSI);
+     else
+         sMMSI = _T("");
+     m_MMSICtl->AppendText(sMMSI);
+
+     switch(m_props->TrackType){
+         case TRACKTYPE_DEFAULT:
+             break;
+         case TRACKTYPE_ALWAYS:
+             m_rbTypeTrackAlways->SetValue(true);
+             break;
+         case TRACKTYPE_NEVER:
+             m_rbTypeTrackNever->SetValue(true);
+             break;
+         default:
+             break;
+     }
+             
+     m_IgnoreButton->SetValue(m_props->m_bignore);
+     m_MOBButton->SetValue(m_props->m_bMOB);
+     m_VDMButton->SetValue(m_props->m_bVDM);
+     
+     
+     SetColorScheme( (ColorScheme) 0 );
+ }
+ 
+ void MMSIEditDialog::SetColorScheme( ColorScheme cs )
+ {
+     DimeControl( this );
+ }
+ 
+ 
+ void MMSIEditDialog::OnMMSIEditCancelClick( wxCommandEvent& event )
+ {
+     EndModal(wxID_CANCEL);
+ }
+ 
+ void MMSIEditDialog::OnMMSIEditOKClick( wxCommandEvent& event )
+ {
+
+     // Update the MMSIProperties by the passed pointer
+     if(m_props){
+         long nmmsi;
+         m_MMSICtl->GetValue().ToLong(&nmmsi);
+         m_props->MMSI = nmmsi;
+         
+         if( m_rbTypeTrackDefault->GetValue() )
+             m_props->TrackType = TRACKTYPE_DEFAULT;
+         else if ( m_rbTypeTrackAlways->GetValue() )
+             m_props->TrackType = TRACKTYPE_ALWAYS;
+         else 
+             m_props->TrackType = TRACKTYPE_NEVER;
+        
+         
+         m_props->m_bignore = m_IgnoreButton->GetValue();
+         m_props->m_bMOB = m_MOBButton->GetValue();
+         m_props->m_bVDM = m_VDMButton->GetValue();
+     }
+     
+     EndModal(wxID_OK);
+ }
+ 
+ 
+ void MMSIEditDialog::OnCtlUpdated( wxCommandEvent& event )
+ {
+ }
+ 
+
+
+
+
+ ///////////////////////////////////////////////////////////////////////////////
+ /// Class MMSIListCtrl
+ ///////////////////////////////////////////////////////////////////////////////
+ 
+
+BEGIN_EVENT_TABLE( MMSIListCtrl, wxListCtrl )
+ EVT_LIST_ITEM_SELECTED( ID_MMSI_PROPS_LIST, MMSIListCtrl::OnListItemClick )
+ EVT_LIST_ITEM_ACTIVATED( ID_MMSI_PROPS_LIST, MMSIListCtrl::OnListItemActivated )
+ EVT_LIST_ITEM_RIGHT_CLICK( ID_MMSI_PROPS_LIST, MMSIListCtrl::OnListItemRightClick )
+ EVT_MENU ( ID_DEF_MENU_MMSI_EDIT,             MMSIListCtrl::PopupMenuHandler )
+ EVT_MENU ( ID_DEF_MENU_MMSI_DELETE,           MMSIListCtrl::PopupMenuHandler )
+ 
+END_EVENT_TABLE()
+
+
+MMSIListCtrl::MMSIListCtrl( wxWindow* parent, wxWindowID id, const wxPoint& pos,
+        const wxSize& size, long style ) :
+        wxListCtrl( parent, id, pos, size, style )
+{
+    m_parent = parent;
+}
+
+MMSIListCtrl::~MMSIListCtrl()
+{
+}
+
+wxString MMSIListCtrl::OnGetItemText( long item, long column ) const
+{
+    wxString ret = _T("");
+    
+    MMSIProperties *props = g_MMSI_Props_Array.Item( item );
+    
+    if(props){
+        switch( column ){
+            case mlMMSI:
+                if(props->MMSI > 0)
+                    ret.Printf(_T("%d"), props->MMSI );
+                
+                break;
+                
+            case mlTrackMode:
+                if(TRACKTYPE_DEFAULT == props->TrackType)
+                    ret = _("Default");
+                else if(TRACKTYPE_ALWAYS == props->TrackType)
+                    ret = _("Always");
+                else if(TRACKTYPE_NEVER == props->TrackType)
+                    ret = _("Never");
+                else
+                    ret = _T("???");
+                break;
+                
+            case mlIgnore:
+                if( props->m_bignore)
+                    ret = _T("X");
+                break;
+                
+            case mlMOB:
+                if( props->m_bMOB)
+                    ret = _T("X");
+                break;
+                
+            case mlVDM:
+                if( props->m_bVDM)
+                    ret = _T("X");
+                break;
+                
+            default:
+                ret = _T("??");
+                break;
+        }
+    }
+            
+
+    return ret;
+}
+
+void MMSIListCtrl::OnListItemClick( wxListEvent &event)
+{
+}
+
+void MMSIListCtrl::OnListItemActivated( wxListEvent &event)
+{
+    MMSIProperties *props = g_MMSI_Props_Array.Item( event.GetIndex() );
+    MMSIProperties *props_new = new MMSIProperties( *props);
+    
+    MMSIEditDialog *pd = new MMSIEditDialog( props_new, m_parent, -1, _T("Edit MMSI Properties"),
+                                             wxDefaultPosition, wxSize(200,200) );
+    
+    if ( pd->ShowModal() == wxID_OK ){
+        g_MMSI_Props_Array.RemoveAt( event.GetIndex() );
+        g_MMSI_Props_Array.Insert(props_new, event.GetIndex());
+    }
+    
+    pd->Destroy();    
+}
+
+void MMSIListCtrl::OnListItemRightClick( wxListEvent &event)
+{
+    m_context_item = event.GetIndex();
+    
+    wxMenu* menu = new wxMenu( _("MMSI Properties") );
+
+    wxMenuItem *item_edit = new wxMenuItem(menu, ID_DEF_MENU_MMSI_EDIT, _T("Edit..."));
+#ifdef __WXMSW__
+    wxFont *qFont = GetOCPNScaledFont(_("Menu"), 10);
+    item->SetFont(*qFont);
+#endif
+    menu->Append(item_edit);
+    
+    wxMenuItem *item_delete = new wxMenuItem(menu, ID_DEF_MENU_MMSI_DELETE, _T("Delete"));
+#ifdef __WXMSW__
+    wxFont *qFont = GetOCPNScaledFont(_("Menu"), 10);
+    item->SetFont(*qFont);
+#endif
+    menu->Append(item_delete);
+    
+    wxPoint p = ScreenToClient(wxGetMousePosition());
+    PopupMenu( menu, p.x, p.y );
+    
+    SetItemCount( g_MMSI_Props_Array.GetCount() );
+    Refresh(true);
+    
+}
+
+
+void MMSIListCtrl::PopupMenuHandler( wxCommandEvent& event )
+{
+    MMSIProperties *props = g_MMSI_Props_Array.Item( m_context_item );
+    MMSIProperties *props_new = new MMSIProperties( *props);
+    
+    MMSIEditDialog *pd;
+    
+   switch( event.GetId() ) {
+       case ID_DEF_MENU_MMSI_EDIT:
+           if(props){
+            pd = new MMSIEditDialog( props_new, m_parent, -1, _T("Edit MMSI Properties"), wxDefaultPosition, wxSize(200,200) );
+           
+            if ( pd->ShowModal() == wxID_OK ){
+                g_MMSI_Props_Array.RemoveAt( m_context_item );
+                g_MMSI_Props_Array.Insert(props_new, m_context_item);
+            }
+            
+            pd->Destroy();    
+           }
+           break;
+           
+       case ID_DEF_MENU_MMSI_DELETE:
+           if(props){
+               g_MMSI_Props_Array.RemoveAt( m_context_item );
+           }
+           break;
+   }
+   
+}
+            
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class MMSI_Props_Panel
+///////////////////////////////////////////////////////////////////////////////
+
+
+MMSI_Props_Panel::MMSI_Props_Panel( wxWindow *parent ):
+        wxPanel( parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE )
+{
+    m_pparent = parent;
+    
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"), 10);
+    SetFont( *qFont );
+
+    wxBoxSizer* topSizer = new wxBoxSizer( wxVERTICAL );
+    SetSizer( topSizer );
+
+    wxString MMSI_props_column_spec = _T("120;120;100;100;100;100;100");
+    //  Parse the global column width string as read from config file
+    wxStringTokenizer tkz( MMSI_props_column_spec, _T(";") );
+    wxString s_width = tkz.GetNextToken();
+    int width;
+    long lwidth;
+    
+    m_pListCtrlMMSI = new MMSIListCtrl( this, ID_MMSI_PROPS_LIST, wxDefaultPosition,  wxSize(-1, 400),
+            wxLC_REPORT | wxLC_SINGLE_SEL | wxLC_HRULES | wxLC_VRULES | wxBORDER_SUNKEN  | wxLC_VIRTUAL );
+    wxImageList *imglist = new wxImageList( 16, 16, true, 2 );
+
+    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+    imglist->Add( style->GetIcon( _T("sort_asc") ) );
+    imglist->Add( style->GetIcon( _T("sort_desc") ) );
+
+ //   m_pListCtrlMMSI->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
+
+    int dx = GetCharWidth();
+    
+    
+    width = dx * 12;
+    if( s_width.ToLong( &lwidth ) ) {
+        width = wxMax(dx * 2, lwidth);
+        width = wxMin(width, dx * 30);
+    }
+    m_pListCtrlMMSI->InsertColumn( tlMMSI, _("MMSI"), wxLIST_FORMAT_LEFT, width );
+    s_width = tkz.GetNextToken();
+
+    width = dx * 12;
+    if( s_width.ToLong( &lwidth ) ) {
+        width = wxMax(dx * 2, lwidth);
+        width = wxMin(width, dx * 30);
+    }
+    m_pListCtrlMMSI->InsertColumn( tlCLASS, _("Track Mode"), wxLIST_FORMAT_CENTER, width );
+    s_width = tkz.GetNextToken();
+
+    width = dx * 8;
+    if( s_width.ToLong( &lwidth ) ) {
+        width = wxMax(dx * 2, lwidth);
+        width = wxMin(width, dx * 30);
+    }
+    m_pListCtrlMMSI->InsertColumn( tlTYPE, _("Ignore"), wxLIST_FORMAT_CENTER, width );
+    s_width = tkz.GetNextToken();
+
+    width = dx * 8;
+    if( s_width.ToLong( &lwidth ) ) {
+        width = wxMax(dx * 2, lwidth);
+        width = wxMin(width, dx * 30);
+    }
+    m_pListCtrlMMSI->InsertColumn( tlTYPE, _("MOB"), wxLIST_FORMAT_CENTER, width );
+    s_width = tkz.GetNextToken();
+    
+    width = dx * 8;
+    if( s_width.ToLong( &lwidth ) ) {
+        width = wxMax(dx * 2, lwidth);
+        width = wxMin(width, dx * 30);
+    }
+    m_pListCtrlMMSI->InsertColumn( tlTYPE, _("VDM->VDO"), wxLIST_FORMAT_CENTER, width );
+    s_width = tkz.GetNextToken();
+    
+
+    topSizer->Add( m_pListCtrlMMSI, 1, wxEXPAND | wxALL, 0 );
+
+    m_pButtonNew = new wxButton( this, wxID_ANY, _("New..."), wxDefaultPosition, wxSize( 200, -1));
+    m_pButtonNew->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
+                           wxCommandEventHandler( MMSI_Props_Panel::OnNewButton ), NULL, this );
+    topSizer->Add( m_pButtonNew, 0, wxALIGN_RIGHT | wxALL, 0 );
+    
+    
+    topSizer->Layout();
+
+    //    This is silly, but seems to be required for __WXMSW__ build
+    //    If not done, the SECOND invocation of the panel fails to expand the list to the full wxSizer size....
+    SetSize( GetSize().x, GetSize().y - 1 );
+
+    SetColorScheme( (ColorScheme) 0 );
+}
+
+MMSI_Props_Panel::~MMSI_Props_Panel()
+{
+}
+
+void MMSI_Props_Panel::OnNewButton( wxCommandEvent &event )
+{
+    MMSIProperties *props = new MMSIProperties(-1);
+    
+    MMSIEditDialog *pd = new MMSIEditDialog( props, m_parent, -1, _T("Add MMSI Properties"), wxDefaultPosition, wxSize(200,200) );
+    
+    if ( pd->ShowModal() == wxID_OK )
+        g_MMSI_Props_Array.Add( props );
+   
+    pd->Destroy();    
+    
+    UpdateMMSIList();
+}
+
+
+void MMSI_Props_Panel::UpdateMMSIList( void )
+{
+    int sb_position = m_pListCtrlMMSI->GetScrollPos( wxVERTICAL );
+        
+        //    Capture the MMSI of the curently selected list item
+        long selItemID = -1;
+        selItemID = m_pListCtrlMMSI->GetNextItem( selItemID, wxLIST_NEXT_ALL,
+                                                        wxLIST_STATE_SELECTED );
+        
+        int selMMSI = -1;
+        if( selItemID != -1 )
+            selMMSI = g_MMSI_Props_Array.Item( selItemID )->MMSI;
+ 
+        
+        m_pListCtrlMMSI->SetItemCount( g_MMSI_Props_Array.GetCount() );
+        
+                
+        //    Restore selected item
+        long item_sel = 0;
+        if( ( selItemID != -1 ) && ( selMMSI != -1 ) ) {
+            for( unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++ ) {
+                if( g_MMSI_Props_Array.Item( i )->MMSI == selMMSI ) {
+                    item_sel = i;
+                    break;
+                    }
+                }
+            }
+                
+        m_pListCtrlMMSI->SetItemState( item_sel,
+                    wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED,
+                    wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED );
+
+                
+#ifdef __WXMSW__
+        m_pListCtrlMMSI->Refresh( false );
+#endif
+}
+        
+void MMSI_Props_Panel::SetColorScheme( ColorScheme cs )
+{
+    DimeControl( this );
+}
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1515,6 +2050,27 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
     
 }
 
+void options::CreatePanel_MMSI( size_t parent, int border_size, int group_item_spacing, wxSize small_button_size )
+{
+    wxScrolledWindow *panelMMSI = AddPage( parent, _("MMSI Properties") );
+
+    wxBoxSizer* MMSISizer = new wxBoxSizer( wxVERTICAL );
+    panelMMSI->SetSizer( MMSISizer );
+
+    // MMSI list control (panel)
+    wxStaticBox* itemStaticBoxMMSI = new wxStaticBox( panelMMSI, wxID_ANY, _("MMSI Properties") );
+    wxStaticBoxSizer* itemStaticBoxSizerMMSI = new wxStaticBoxSizer( itemStaticBoxMMSI, wxVERTICAL );
+    MMSISizer->Add( itemStaticBoxSizerMMSI, 0, wxALL | wxEXPAND, border_size );
+
+    MMSI_Props_Panel *pPropsPanel = new MMSI_Props_Panel( panelMMSI );
+    
+    pPropsPanel->UpdateMMSIList( );
+    
+    itemStaticBoxSizerMMSI->Add( pPropsPanel, 0, wxALL | wxEXPAND, border_size );
+    
+    panelMMSI->Layout();
+}
+
 void options::CreatePanel_AIS( size_t parent, int border_size, int group_item_spacing, wxSize small_button_size )
 {
     wxScrolledWindow *panelAIS = AddPage( parent, _("AIS Targets") );
@@ -1942,7 +2498,8 @@ void options::CreateControls()
     m_pageShips = CreatePanel( _("Ships") );
     CreatePanel_Ownship( m_pageShips, border_size, group_item_spacing, small_button_size );
     CreatePanel_AIS( m_pageShips, border_size, group_item_spacing, small_button_size );
-
+    CreatePanel_MMSI( m_pageShips, border_size, group_item_spacing, small_button_size );
+    
     m_pageUI = CreatePanel( _("User Interface") );
     CreatePanel_UI( m_pageUI, border_size, group_item_spacing, small_button_size );
 

@@ -117,6 +117,7 @@ enum {
     ID_PANEL3,
     ID_PANELADVANCED,
     ID_PANELAIS,
+    ID_PANELMMSI,
     ID_PANELFONT,
     ID_PANELPIM,
     ID_PRESERVECHECKBOX,
@@ -528,6 +529,8 @@ public:
     wxArrayString           *m_pSerialArray;
 
 private:
+    void CreatePanel_MMSI( size_t parent, int border_size, int group_item_spacing,
+            wxSize small_button_size );
     void CreatePanel_AIS( size_t parent, int border_size, int group_item_spacing,
             wxSize small_button_size );
     void CreatePanel_Ownship( size_t parent, int border_size, int group_item_spacing,
@@ -943,6 +946,132 @@ public:
 
     OpenGLOptionsDlg( wxWindow* parent );
 };
+
+
+#define ID_MMSI_PROPS_LIST 10073
+
+enum {
+    mlMMSI = 0,
+    mlTrackMode,
+    mlIgnore,
+    mlMOB,
+    mlVDM
+};// MMSIListCtrl Columns;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class MMSIListCtrl
+///////////////////////////////////////////////////////////////////////////////
+
+class MMSI_Props_Panel;
+
+class MMSIListCtrl: public wxListCtrl
+{
+public:
+    MMSIListCtrl( wxWindow* parent, wxWindowID id, const wxPoint& pos,
+                  const wxSize& size, long style );
+    ~MMSIListCtrl();
+    
+    wxString OnGetItemText( long item, long column ) const;
+    //    int OnGetItemColumnImage( long item, long column ) const;
+    
+    void OnListItemClick( wxListEvent &event);
+    void OnListItemActivated( wxListEvent &event);
+    void OnListItemRightClick( wxListEvent &event);
+    void PopupMenuHandler( wxCommandEvent& event );
+    
+    wxWindow *m_parent;
+    int         m_context_item;
+    
+    DECLARE_EVENT_TABLE()
+    
+};
+
+
+
+
+#define ID_MMSIEDIT_OK          8191
+#define ID_MMSIEDIT_CANCEL      8192
+#define ID_MMSI_CTL             8193
+
+#define ID_DEF_MENU_MMSI_EDIT   8194
+#define ID_DEF_MENU_MMSI_DELETE 8195
+
+class MMSIProperties;
+///////////////////////////////////////////////////////////////////////////////
+/// Class MMSIEditDialog
+///////////////////////////////////////////////////////////////////////////////
+
+class MMSIEditDialog: public wxDialog
+{
+    DECLARE_DYNAMIC_CLASS( MMSIEditDialog )
+    DECLARE_EVENT_TABLE()
+    
+public:
+    MMSIEditDialog( );
+    MMSIEditDialog( MMSIProperties *props, wxWindow* parent, wxWindowID id = -1,
+                    const wxString& caption = _T(""),
+                    const wxPoint& pos = wxDefaultPosition,
+                    const wxSize& size = wxDefaultSize,
+                    long style = 0 );
+    
+    ~MMSIEditDialog();
+    
+    bool Create( MMSIProperties *props, wxWindow* parent, wxWindowID id = -1,
+                 const wxString& caption = _T(""),
+                 const wxPoint& pos = wxDefaultPosition,
+                 const wxSize& size = wxDefaultSize, long style = 0 );
+    
+    void SetColorScheme(ColorScheme cs);
+    
+    void CreateControls();
+    
+    void OnMMSIEditCancelClick( wxCommandEvent& event );
+    void OnMMSIEditOKClick( wxCommandEvent& event );
+    void OnCtlUpdated( wxCommandEvent& event );
+    
+    MMSIProperties      *m_props;
+    
+    wxTextCtrl          *m_MMSICtl;
+    wxRadioButton       *m_rbTypeTrackDefault;
+    wxRadioButton       *m_rbTypeTrackAlways;
+    wxRadioButton       *m_rbTypeTrackNever;
+    
+    wxCheckBox            *m_IgnoreButton;
+    wxCheckBox            *m_MOBButton;
+    wxCheckBox            *m_VDMButton;
+    
+    wxButton*     m_CancelButton;
+    wxButton*     m_OKButton;
+    
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class MMSI_Props_Panel
+///////////////////////////////////////////////////////////////////////////////
+
+class MMSI_Props_Panel: public wxPanel
+{
+    
+public:
+    MMSI_Props_Panel( wxWindow *parent );
+    ~MMSI_Props_Panel( );
+    
+//    void OnClose(wxCloseEvent &event);
+    void OnNewButton( wxCommandEvent &event );
+    
+    void SetColorScheme( ColorScheme cs );
+    void UpdateMMSIList( void );
+    
+    MMSIListCtrl      *m_pListCtrlMMSI;
+    wxButton          *m_pButtonNew;
+    
+private:
+    
+    wxWindow          *m_pparent;
+    
+};
+
 
 #endif
     // _OPTIONS_H_

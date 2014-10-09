@@ -104,6 +104,7 @@
 #include "cutil.h"
 #include "routemanagerdialog.h"
 #include "pluginmanager.h"
+#include "AIS_Target_Data.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -8159,6 +8160,141 @@ void MyFrame::LoadHarmonics()
             ptcmgr->LoadDataSources(TideCurrentDataSet);
     }
 }
+
+Route *pAISMOBRoute;
+
+void MyFrame::ActivateAISMOBRoute( AIS_Target_Data *ptarget )
+{
+    if(!ptarget)
+        return;
+    
+    //    The MOB point
+    wxDateTime mob_time = wxDateTime::Now();
+    wxString mob_label( _( "AIS MAN OVERBOARD" ) );
+    mob_label += _T(" at ");
+    mob_label += mob_time.FormatTime();
+    
+    RoutePoint *pWP_MOB = new RoutePoint( ptarget->Lat, ptarget->Lon, _T ( "mob" ), mob_label, GPX_EMPTY_STRING );
+    pWP_MOB->m_bKeepXRoute = true;
+    pWP_MOB->m_bIsolatedMark = true;
+    pSelect->AddSelectableRoutePoint( ptarget->Lat, ptarget->Lon, pWP_MOB );
+    pConfig->AddNewWayPoint( pWP_MOB, -1 );       // use auto next num
+    
+    
+    if( bGPSValid && !wxIsNaN(gCog) && !wxIsNaN(gSog) ) {
+        RoutePoint *pWP_src = new RoutePoint( gLat, gLon, g_default_wp_icon,
+                                              wxString( _( "Ownship" ) ), GPX_EMPTY_STRING );
+        pSelect->AddSelectableRoutePoint( gLat, gLon, pWP_src );
+        
+        pAISMOBRoute = new Route();
+        pRouteList->Append( pAISMOBRoute );
+        
+        pAISMOBRoute->AddPoint( pWP_src );
+        pAISMOBRoute->AddPoint( pWP_MOB );
+        
+        pSelect->AddSelectableRouteSegment(ptarget->Lat, ptarget->Lon, gLat, gLon, pWP_src, pWP_MOB, pAISMOBRoute );
+        
+        pAISMOBRoute->m_RouteNameString = _("Temporary AISMOB Route");
+        pAISMOBRoute->m_RouteStartString = _("Present Ownship");
+        pAISMOBRoute->m_RouteEndString = mob_label;
+        
+        pAISMOBRoute->m_bDeleteOnArrival = false;
+        
+        pAISMOBRoute->SetRouteArrivalRadius( -1.0 );                    // never arrives
+        
+        pAISMOBRoute->RebuildGUIDList();         // ensure the GUID list is intact and good
+        
+        if( g_pRouteMan->GetpActiveRoute() )
+            g_pRouteMan->DeactivateRoute();
+        //       g_pRouteMan->ActivateRoute( pAISMOBRoute, pWP_MOB );
+        
+        wxJSONValue v;
+        v[_T("GUID")] = pAISMOBRoute->m_GUID;
+        wxString msg_id( _T("OCPN_MAN_OVERBOARD") );
+        g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
+    }
+    
+    if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
+        pRouteManagerDialog->UpdateRouteListCtrl();
+        pRouteManagerDialog->UpdateWptListCtrl();
+    }
+    
+    cc1->Refresh( false );
+    
+    wxString mob_message( _( "AIS MAN OVERBOARD" ) );
+    mob_message += _T(" Time: ");
+    mob_message += mob_time.Format();
+    mob_message += _T("  Ownship Position: ");
+    mob_message += toSDMM( 1, gLat );
+    mob_message += _T("   ");
+    mob_message += toSDMM( 2, gLon );
+    mob_message += _T("  MOB Position: ");
+    mob_message += toSDMM( 1, ptarget->Lat );
+    mob_message += _T("   ");
+    mob_message += toSDMM( 2, ptarget->Lon );
+    wxLogMessage( mob_message );
+    
+}
+
+void MyFrame::UpdateAISMOBRoute( AIS_Target_Data *ptarget )
+{
+    if(pAISMOBRoute && ptarget){
+        
+        //   Update Current Ownship point
+        RoutePoint *OwnPoint = pAISMOBRoute->GetPoint( 1 );
+        OwnPoint->m_lat = gLat;
+        OwnPoint->m_lon = gLon;
+        
+        pSelect->DeleteSelectableRoutePoint( OwnPoint );
+        pSelect->AddSelectableRoutePoint( gLat, gLon, OwnPoint );
+        
+        //   Update Current MOB point
+        RoutePoint *MOB_Point = pAISMOBRoute->GetPoint( 2 );
+        MOB_Point->m_lat = ptarget->Lat;
+        MOB_Point->m_lon = ptarget->Lon;
+        
+        pSelect->DeleteSelectableRoutePoint( MOB_Point );
+        pSelect->AddSelectableRoutePoint( ptarget->Lat, ptarget->Lon, MOB_Point );
+        
+        pSelect->UpdateSelectableRouteSegments( OwnPoint );
+        pSelect->UpdateSelectableRouteSegments( MOB_Point );
+        
+    }
+
+    cc1->Refresh( false );
+ 
+    wxDateTime mob_time = wxDateTime::Now();
+    
+    wxString mob_message( _( "AIS MAN OVERBOARD UPDATE" ) );
+    mob_message += _T(" Time: ");
+    mob_message += mob_time.Format();
+    mob_message += _T("  Ownship Position: ");
+    mob_message += toSDMM( 1, gLat );
+    mob_message += _T("   ");
+    mob_message += toSDMM( 2, gLon );
+    mob_message += _T("  MOB Position: ");
+    mob_message += toSDMM( 1, ptarget->Lat );
+    mob_message += _T("   ");
+    mob_message += toSDMM( 2, ptarget->Lon );
+    
+    wxLogMessage( mob_message );
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //----------------------------------------------------------------------------------------------------------
 //      Application-wide CPL Error handler

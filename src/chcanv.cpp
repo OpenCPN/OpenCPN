@@ -7855,12 +7855,23 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
     }
 
     case ID_RT_MENU_ACTIVATE: {
-        if( g_pRouteMan->GetpActiveRoute() ) g_pRouteMan->DeactivateRoute();
+        if( g_pRouteMan->GetpActiveRoute() )
+            g_pRouteMan->DeactivateRoute();
 
-        RoutePoint *best_point = g_pRouteMan->FindBestActivatePoint( m_pSelectedRoute, gLat,
+        //  If this is an auto-created MOB route, always select the second point (the MOB)
+        // as the destination.
+        RoutePoint *best_point;
+        if(m_pSelectedRoute){
+            if(wxNOT_FOUND == m_pSelectedRoute->m_RouteNameString.Find(_T("MOB")) ){
+                best_point = g_pRouteMan->FindBestActivatePoint( m_pSelectedRoute, gLat,
                                  gLon, gCog, gSog );
-
-        g_pRouteMan->ActivateRoute( m_pSelectedRoute, best_point );
+            }
+            else
+                best_point = m_pSelectedRoute->GetPoint( 2 );
+        
+            g_pRouteMan->ActivateRoute( m_pSelectedRoute, best_point );
+        }
+            
         m_pSelectedRoute->m_bRtIsSelected = false;
 
         break;
