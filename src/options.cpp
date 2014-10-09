@@ -564,18 +564,16 @@ void MMSIListCtrl::OnListItemRightClick( wxListEvent &event)
     wxMenu* menu = new wxMenu( _("MMSI Properties") );
 
     wxMenuItem *item_edit = new wxMenuItem(menu, ID_DEF_MENU_MMSI_EDIT, _T("Edit..."));
-#ifdef __WXMSW__
-    wxFont *qFont = GetOCPNScaledFont(_("Menu"), 10);
-    item->SetFont(*qFont);
-#endif
     menu->Append(item_edit);
     
     wxMenuItem *item_delete = new wxMenuItem(menu, ID_DEF_MENU_MMSI_DELETE, _T("Delete"));
+    menu->Append(item_delete);
+
 #ifdef __WXMSW__
     wxFont *qFont = GetOCPNScaledFont(_("Menu"), 10);
-    item->SetFont(*qFont);
+    item_edit->SetFont(*qFont);
+    item_delete->SetFont(*qFont);
 #endif
-    menu->Append(item_delete);
     
     wxPoint p = ScreenToClient(wxGetMousePosition());
     PopupMenu( menu, p.x, p.y );
