@@ -334,25 +334,36 @@ void *OCP_DataStreamInput_Thread::Entry()
 
     hSerialComm = (HANDLE)m_gps_fd;
 
-
-    //  If port supports output, set a short timeout so that output polling mechanism works
-    int max_timeout = 5;
-    int loop_timeout = 2000;
     int n_reopen_wait = 2000;
     bool nl_found = false;
+    bool b_burst_read = false;
+    
+    int max_timeout = 5;
+    int loop_timeout = 2000;
+    int dcb_read_toc = 2000;
+    int dcb_read_tom = MAXDWORD;
 
+    bool b_sleep = false;
+    
+    //  If port supports output, arrange for no read timeouts so that output polling mechanism works
+    //  In other words, the ReadFile() call returns immediately, with or without data.
     if( (m_io_select == DS_TYPE_INPUT_OUTPUT) || (m_io_select == DS_TYPE_OUTPUT) ) {
-        loop_timeout = 20;
-        max_timeout = 500;
+        loop_timeout = 2;
+        max_timeout = 5000;
+        dcb_read_toc = 0;
+        dcb_read_tom = 0;
+        
+        b_sleep = true;         // we will need a slepp between reads
     }
 
     COMMTIMEOUTS timeouts;
 
     timeouts.ReadIntervalTimeout = MAXDWORD;
-    timeouts.ReadTotalTimeoutMultiplier = MAXDWORD;
-    timeouts.ReadTotalTimeoutConstant = loop_timeout;
-    timeouts.WriteTotalTimeoutMultiplier = 0;//MAXDWORD;
-    timeouts.WriteTotalTimeoutConstant = 0; //MAXDWORD;
+    timeouts.ReadTotalTimeoutMultiplier = dcb_read_tom;//MAXDWORD;
+    timeouts.ReadTotalTimeoutConstant = dcb_read_toc;//loop_timeout;
+    
+    timeouts.WriteTotalTimeoutMultiplier = 0;
+    timeouts.WriteTotalTimeoutConstant = 1000; 
 
     if (!SetCommTimeouts((HANDLE)m_gps_fd, &timeouts)) // Error setting time-outs.
         goto thread_exit;
@@ -397,10 +408,10 @@ void *OCP_DataStreamInput_Thread::Entry()
 
                 COMMTIMEOUTS timeouts;
                 timeouts.ReadIntervalTimeout = MAXDWORD;
-                timeouts.ReadTotalTimeoutMultiplier = MAXDWORD;
-                timeouts.ReadTotalTimeoutConstant = loop_timeout;
-                timeouts.WriteTotalTimeoutMultiplier = 0;//MAXDWORD;
-                timeouts.WriteTotalTimeoutConstant = 0;//MAXDWORD;
+                timeouts.ReadTotalTimeoutMultiplier = dcb_read_tom;
+                timeouts.ReadTotalTimeoutConstant = dcb_read_toc;
+                timeouts.WriteTotalTimeoutMultiplier = 0;
+                timeouts.WriteTotalTimeoutConstant = 1000;
 
                 if (!SetCommTimeouts((HANDLE)m_gps_fd, &timeouts)) // Error setting time-outs.
                     goto thread_exit;
@@ -413,7 +424,6 @@ void *OCP_DataStreamInput_Thread::Entry()
         }
 
         bool b_inner = true;
-        bool b_sleep = false;
         dwRead = 0;
         n_timeout = 0;
         wxDateTime now = wxDateTime::Now();
@@ -423,7 +433,7 @@ void *OCP_DataStreamInput_Thread::Entry()
             if( m_pout_mutex && (wxMUTEX_NO_ERROR == m_pout_mutex->TryLock()) ){
                 bool b_qdata = (m_takIndex != (-1) || m_putIndex != (-1));
                 
-                while(b_qdata){
+                if(b_qdata){
                     if(m_takIndex < OUT_QUEUE_LENGTH) {
                         
                         //  Take a copy of message
@@ -438,41 +448,61 @@ void *OCP_DataStreamInput_Thread::Entry()
                         else
                             m_takIndex++;
                         
-                        
-                        m_pout_mutex->Unlock();
-                        WriteComPortPhysical(m_gps_fd, msg);
-                        
-                        //      Lets allow only one output sentence per loop.
-                        //      Seems to make some USB-serial adapters happier
-//                        if( wxMUTEX_NO_ERROR == m_pout_mutex->TryLock() )
-//                            b_qdata = (m_takIndex != (-1) || m_putIndex != (-1));
-//                        else
-                            b_qdata = false;
+                        m_pout_mutex->Unlock();         // done with shared data
+
+                        if(WriteComPortPhysical(m_gps_fd, msg)){
+                            n_timeout = 0;    //  We have transmitted, so this port is by definition alive
+                            b_burst_read = true;
+                        }
+                        else
+                            n_timeout = 10000;          // Force a read timeout
                     }
                     else {                                  // some index error
-                    m_takIndex = (-1);
-                    m_putIndex = (-1);
-                    b_qdata = false;
+                        m_takIndex = (-1);
+                        m_putIndex = (-1);
+                        m_pout_mutex->Unlock();
                     }
-                    
-                    
-                } //while b_qdata
-                m_pout_mutex->Unlock();
+                } //if b_qdata
+                else{
+                    m_pout_mutex->Unlock();         // done with shared data
+                }
             }           // Mutex lock
             
 
             if( b_sleep )                       // we need a sleep if the serial port does not honor commtimeouts
-                wxSleep(1);
+                wxThread::Sleep(1);             // or this is an I/O port
             if(ReadFile((HANDLE)m_gps_fd, &chRead, 1, &dwOneRead, NULL))
             {
                 if(1 == dwOneRead) {
-                    b_sleep = false;
                     szBuf[ic] = chRead;
                     dwRead++;
-                    if(++ic > READ_BUF_SIZE - 1)
+                    if( (++ic > READ_BUF_SIZE - 1) || (chRead == 0x0a) )
                         goto HandleASuccessfulRead;
-                    if(chRead == 0x0a)
-                        goto HandleASuccessfulRead;
+                    
+                    //  burst read after writing to clear queue
+                    while(b_burst_read){
+                        if(ReadFile((HANDLE)m_gps_fd, &chRead, 1, &dwOneRead, NULL)){
+                            if(1 == dwOneRead) {
+                                szBuf[ic] = chRead;
+                                dwRead++;
+                                if( (++ic > READ_BUF_SIZE - 1) || (chRead == 0x0a) ){
+                                    goto HandleASuccessfulRead;
+                                }
+                            }
+                            else {
+                                b_burst_read = false;
+                            }
+                        }
+                        else{
+                            b_burst_read = false;
+                            b_inner = false;
+                            CloseComPortPhysical(m_gps_fd);
+                            m_gps_fd = 0;
+                            dwRead = 0;
+                            nl_found = false;
+                            n_reopen_wait = 2000;
+                        }
+                    }
                 }
                 else {                          // timed out
                     n_timeout++;;
@@ -485,13 +515,14 @@ void *OCP_DataStreamInput_Thread::Entry()
                         //  1.  Read-only port
                         //      COMMTIMEOUT(loop_timeout) is 2 seconds, max_timeout=5
                         //   2.  Read/Write port
-                        //      COMMTIMEOUT(loop_timeout) is 2 msec, max_timeout=5000
+                        //      COMMTIMEOUTs not active
                         
                         //  Some virtual port emulators (XPort, especially) do not honor COMMTIMEOUTS
                         //  So, we must check the real time (in seconds) of the inactivity time.
                         //  If it is much shorter than 10 secs, assume that COMMTIMEOUTS are not working
                         //  In this case, abort the port reset, reset the counters,
-                        //  and signal a need for a Sleep() between read commands to avoid CPU saturation.
+                        //  Follow this logic as well for I/O ports.
+                        //  If necessary, signal a need for a Sleep() between read commands to avoid CPU saturation.
                         
                         bool b_need_reset = true;
                         
@@ -512,8 +543,21 @@ void *OCP_DataStreamInput_Thread::Entry()
                             n_reopen_wait = 2000;
                         }
                     }
-                    else if((TestDestroy()) || (m_launcher->m_Thread_run_flag == 0)) {
-                        goto thread_exit;                               // smooth exit
+                    
+                    // Allow exit smoothly when there is no activity
+                    //  If b_sleep is true, it means we are polling on ReadFile(),
+                    //  So don't check exit condition on every loop.  Too slow...
+                    else if(b_sleep){
+                        if((n_timeout % 10) == 0){
+                            if( (TestDestroy()) || (m_launcher->m_Thread_run_flag == 0)) {
+                                goto thread_exit;                               // smooth exit
+                            }
+                        }
+                    }
+                    else{
+                        if( (TestDestroy()) || (m_launcher->m_Thread_run_flag == 0)) {
+                            goto thread_exit;                               // smooth exit
+                        }
                     }
                 }
             }
@@ -528,7 +572,6 @@ void *OCP_DataStreamInput_Thread::Entry()
         }
 
 HandleASuccessfulRead:
-
         if(dwRead > 0)
         {
               if((g_total_NMEAerror_messages < g_nNMEADebug) && (g_nNMEADebug > 1000))
