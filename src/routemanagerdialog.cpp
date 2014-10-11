@@ -1649,11 +1649,15 @@ void RouteManagerDialog::OnTrkToggleVisibility( wxMouseEvent &event )
     //    Clicking Visibility column?
     if( clicked_index > -1 && event.GetX() < m_pTrkListCtrl->GetColumnWidth( colTRKVISIBLE ) ) {
         // Process the clicked item
-        Route *route = pRouteList->Item( m_pTrkListCtrl->GetItemData( clicked_index ) )->GetData();
-        route->SetVisible( !route->IsVisible() );
-        m_pTrkListCtrl->SetItemImage( clicked_index, route->IsVisible() ? 0 : 1 );
-
-//            pConfig->UpdateRoute(route);
+        wxRouteListNode *node = pRouteList->Item( m_pTrkListCtrl->GetItemData( clicked_index ) );
+        if(node){
+            Route *route = node->GetData();
+            if(route){
+                route->SetVisible( !route->IsVisible() );
+                m_pTrkListCtrl->SetItemImage( clicked_index, route->IsVisible() ? 0 : 1 );
+            }
+        }
+        
         cc1->Refresh();
     }
 

@@ -3620,11 +3620,14 @@ void options::OnApplyClick( wxCommandEvent& event )
 
         int nLang = sizeof( lang_list ) / sizeof(int);
         for( int it = 0; it < nLang; it++ ) {
-            wxString lang_canonical = wxLocale::GetLanguageInfo( lang_list[it] )->CanonicalName;
-            wxString test_string = GetOCPNKnownLanguage( lang_canonical, NULL );
-            if( lang_sel == test_string ) {
-                new_canon = lang_canonical;
-                break;
+            const wxLanguageInfo * pli = wxLocale::GetLanguageInfo( lang_list[it] );
+            if(pli){
+                wxString lang_canonical = pli->CanonicalName;
+                wxString test_string = GetOCPNKnownLanguage( lang_canonical, NULL );
+                if( lang_sel == test_string ) {
+                    new_canon = lang_canonical;
+                    break;
+                }
             }
         }
 
