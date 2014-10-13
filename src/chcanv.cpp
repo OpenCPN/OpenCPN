@@ -5178,17 +5178,6 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
 //          Mouse Clicks
 
-    if(event.LeftIsDown()){
-        if( g_btouch ){
-            if(( m_bMeasure_Active && m_nMeasureState ) || ( parent_frame->nRoute_State )){
-                if( CheckEdgePan( x, y, true, 5, 10 ) ) {
-                    m_bedge_pan = true;
-                    return;
-                }
-            }
-        }
-    }
-    
     
     if( event.LeftDown() ) {
         //  This really should not be needed, but....
@@ -5385,9 +5374,9 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
            if(( m_bMeasure_Active && m_nMeasureState ) || ( parent_frame->nRoute_State )){
 
                // if near screen edge, pan with injection
-                if( CheckEdgePan( x, y, true, 5, 10 ) ) {
-                    return;
-                }
+//                if( CheckEdgePan( x, y, true, 5, 10 ) ) {
+//                    return;
+//                }
                 
            }
         }
@@ -5576,6 +5565,15 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
                 last_drag.x = mx;
                 last_drag.y = my;
+                
+                if( g_btouch ) {
+                   if(( m_bMeasure_Active && m_nMeasureState ) || ( parent_frame->nRoute_State )){
+                   //deactivate next LeftUp to ovoid creating an unexpected point
+                         m_DoubleClickTimer->Start();
+                         singleClickEventIsValid = false;
+                    }
+                }
+                        
             }
         }
     }
@@ -5618,10 +5616,6 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                     r_rband.y = y;
                 }
 
-                // if near screen edge, pan but do not add a point
-                if( CheckEdgePan( x, y, true, 5, 10 ) ) {
-                    return;
-                }
                     
                 //    Check to see if there is a nearby point which may be reused
                 RoutePoint *pMousePoint = NULL;
@@ -5762,10 +5756,6 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                     r_rband.y = y;
                 }
 
-                // if near screen edge, pan but do not add a point
-                if( CheckEdgePan( x, y, true, 5, 10 ) ) {
-                    return;
-                }
                 
                 RoutePoint *pMousePoint = new RoutePoint( m_cursor_lat, m_cursor_lon,
                                                         wxString( _T ( "circle" ) ), wxEmptyString, GPX_EMPTY_STRING );
