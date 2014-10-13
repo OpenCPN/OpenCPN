@@ -1364,6 +1364,10 @@ void PlugInManager::SetToolbarToolViz(int item, bool viz)
             if(pttc->id == item)
             {
                 pttc->b_viz = viz;
+                
+                //      Apply the change      
+                pParent->RequestNewToolbar();
+                
                 break;
             }
         }
