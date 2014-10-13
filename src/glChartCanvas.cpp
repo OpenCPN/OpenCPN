@@ -1048,6 +1048,13 @@ void glChartCanvas::SetupOpenGL()
 
 void glChartCanvas::SetupCompression()
 {
+#ifdef __WXMSW__    
+    if(!::IsProcessorFeaturePresent( PF_XMMI64_INSTRUCTIONS_AVAILABLE )){
+        wxLogMessage( _("OpenGL-> SSE2 Instruction set not available") );
+        goto no_compression;
+    }
+#endif
+
     int dim = g_GLOptions.m_iTextureDimension;
     g_uncompressed_tile_size = dim*dim*3;
     if(g_GLOptions.m_bTextureCompression) {
@@ -1108,7 +1115,7 @@ void glChartCanvas::SetupCompression()
                                         g_uncompressed_tile_size / g_tile_size));
     } else
     if(!g_GLOptions.m_bTextureCompression) {
-    no_compression:
+no_compression:
         g_GLOptions.m_bTextureCompression = false;
         
         g_tile_size = g_uncompressed_tile_size;
