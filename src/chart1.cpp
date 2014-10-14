@@ -3418,6 +3418,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 
     if(g_FloatingToolbarDialog)
         g_FloatingToolbarDialog->Destroy();
+    g_FloatingToolbarDialog = NULL;
 
     if( g_pAISTargetList ) {
         g_pAISTargetList->Disconnect_decoder();
