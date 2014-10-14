@@ -355,10 +355,13 @@ RouteProp::RouteProp( wxWindow* parent, wxWindowID id, const wxString& caption, 
     wstyle |= wxSTAY_ON_TOP;
 #endif
 
-    wxFont *qFont = GetOCPNScaledFont(_("Dialog"), 10);
-    SetFont( *qFont );
+    SetExtraStyle( GetExtraStyle() | wxWS_EX_BLOCK_EVENTS );
+    wxDialog::Create( parent, id, caption, pos, size, style );
 
-    Create( parent, id, caption, pos, size, wstyle );
+    wxFont *qFont = GetOCPNScaledFont(_T("Dialog"), 10);
+    SetFont( *qFont );
+        
+    CreateControls();
 
     //  Make an estimate of the dialog size, without scrollbars showing
     wxSize esize;
@@ -604,21 +607,6 @@ RouteProp::~RouteProp()
     delete pRoutePrintSelection;
 }
 
-/*!
- * RouteProp creator
- */
-
-bool RouteProp::Create( wxWindow* parent, wxWindowID id, const wxString& caption,
-        const wxPoint& pos, const wxSize& size, long style )
-{
-
-    SetExtraStyle( GetExtraStyle() | wxWS_EX_BLOCK_EVENTS );
-    wxDialog::Create( parent, id, caption, pos, size, style );
-
-    CreateControls();
-
-    return TRUE;
-}
 
 /*!
  * Control creation for RouteProp
@@ -1835,11 +1823,11 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     wstyle |= wxSTAY_ON_TOP;
 #endif
 
-    wxFont *qFont = GetOCPNScaledFont(_("Dialog"), 10);
-    SetFont( *qFont );
-
     Create( parent, id, title, pos, size, wstyle );
 
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"), 10);
+    SetFont( *qFont );
+    
 
     wxBoxSizer* bSizer1;
     bSizer1 = new wxBoxSizer( wxVERTICAL );

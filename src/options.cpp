@@ -839,11 +839,11 @@ options::options( MyFrame* parent, wxWindowID id, const wxString& caption, const
     long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;
     SetExtraStyle( wxWS_EX_BLOCK_EVENTS );
 
+    wxDialog::Create( parent, id, caption, pos, size, wstyle );
+
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"), 10);
     SetFont( *qFont );
     
-    wxDialog::Create( parent, id, caption, pos, size, wstyle );
-
     CreateControls();
     Fit();
     Center();

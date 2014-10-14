@@ -140,13 +140,6 @@ public:
         long style = SYMBOL_ROUTEPROP_STYLE );
     ~RouteProp( );
 
-    /// Creation
-    bool Create( wxWindow* parent, wxWindowID id = SYMBOL_ROUTEPROP_IDNAME,
-                 const wxString& caption = SYMBOL_ROUTEPROP_TITLE,
-                 const wxPoint& pos = SYMBOL_ROUTEPROP_POSITION,
-                 const wxSize& size = SYMBOL_ROUTEPROP_SIZE,
-                 long style = SYMBOL_ROUTEPROP_STYLE );
-
     void CreateControls();
 
     void SetColorScheme(ColorScheme cs);
