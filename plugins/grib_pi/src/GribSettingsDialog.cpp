@@ -523,12 +523,12 @@ void GribSettingsDialog::ShowFittingSettings( int settings )
         m_cbIsoBars->SetLabel(_("Display Isobars"));
         ShowSettings( NUMBERS );
         break;
-    case GribOverlaySettings::WAVE:
     case GribOverlaySettings::CURRENT:
+        ShowSettings( PARTICLES ); // should we allow particles for waves?
+    case GribOverlaySettings::WAVE:
         ShowSettings( D_ARROWS );
         ShowSettings( OVERLAY );
         ShowSettings( NUMBERS );
-        ShowSettings( PARTICLES );
         break;
     case GribOverlaySettings::PRECIPITATION:
     case GribOverlaySettings::CLOUD:
@@ -588,8 +588,11 @@ void GribSettingsDialog::ShowSettings( int params, bool show)
         m_cbNumbers->Show(show);
         m_ctNumbers->Show(show);
         m_sNumbersSpacing->Show(show);
+        break;
     case PARTICLES:
         m_cbParticles->Show(show);
+        m_ctParticles->Show(show);
+        m_sParticleDensity->Show(show);
         break;
     }
 }

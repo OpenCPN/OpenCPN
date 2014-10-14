@@ -155,7 +155,7 @@ class GribSettingsDialogBase : public wxDialog
 		wxStaticText* m_ctNumbers;
 		wxSpinCtrl* m_sNumbersSpacing;
 		wxCheckBox* m_cbParticles;
-		wxStaticText* m_staticText34;
+		wxStaticText* m_ctParticles;
 		wxSlider* m_sParticleDensity;
 		wxStaticText* m_staticText24;
 		wxSlider* m_sTransparency;

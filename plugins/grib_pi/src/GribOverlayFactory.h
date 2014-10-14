@@ -59,23 +59,31 @@ public:
     double m_dwidth, m_dheight;
 };
 
+#define MAX_PARTICLE_HISTORY 64
 #include <list>
 struct Particle {
     int m_Duration;
-    std::list<wxPoint2DDouble> m_History;
+
+    // history is a ringbuffer.. because so many particles are
+    // used, it is a slight optimization over std::list
+    int m_HistoryPos, m_HistorySize;
+    struct {
+        wxPoint2DDouble m_Pos;
+        wxUint8 m_Color[3];
+    } m_History[MAX_PARTICLE_HISTORY];
 };
 
 struct ParticleMap {
 public:
-    ParticleMap(double scale, int settings)
-    : m_Scale(scale), m_Setting(settings) {}
+    ParticleMap(int settings)
+    : m_Setting(settings) {}
 
     std::list<Particle> m_Particles;
 
     // particles are rebuilt whenever any of these fields change
-    double m_Scale;
     time_t m_Reference_Time;
     int m_Setting;
+    int history_size;
 };
 
 //----------------------------------------------------------------------------------------------------------

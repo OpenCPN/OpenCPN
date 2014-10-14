@@ -514,9 +514,9 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	m_cbParticles = new wxCheckBox( this, wxID_ANY, _("Particle Map"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer15->Add( m_cbParticles, 0, wxALL, 5 );
 	
-	m_staticText34 = new wxStaticText( this, wxID_ANY, _("Density"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText34->Wrap( -1 );
-	fgSizer15->Add( m_staticText34, 0, wxALL, 5 );
+	m_ctParticles = new wxStaticText( this, wxID_ANY, _("Density"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_ctParticles->Wrap( -1 );
+	fgSizer15->Add( m_ctParticles, 0, wxALL, 5 );
 	
 	m_sParticleDensity = new wxSlider( this, wxID_ANY, 5, 1, 10, wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL );
 	fgSizer15->Add( m_sParticleDensity, 0, wxALL|wxEXPAND, 5 );
