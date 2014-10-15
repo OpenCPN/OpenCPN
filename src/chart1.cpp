@@ -233,7 +233,10 @@ extern wxString           str_version_major;
 extern wxString           str_version_minor;
 extern wxString           str_version_patch;
 
+#ifdef ocpnUSE_GL
 extern CompressionWorkerPool   *g_CompressorPool;
+#endif
+
 bool                      g_bcompression_wait;
 
 wxString                  g_uploadConnection;
@@ -3261,14 +3264,16 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     pConfig->Write( _T ( "AUIPerspective" ), g_pauimgr->SavePerspective() );
 
     g_bquiting = true;
-    
+
+#ifdef ocpnUSE_GL    
     if(g_bopengl && g_CompressorPool){
         g_CompressorPool->PurgeJobList();
         
         if(g_CompressorPool->GetRunningJobCount())
             g_bcompression_wait = true;
     }
-                
+#endif
+
     if( cc1 ) {
         cc1->SetCursor( wxCURSOR_WAIT );
 
@@ -3279,6 +3284,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 
     
     #define THREAD_WAIT_SECONDS  5
+#ifdef ocpnUSE_GL
     //  Try to wait a bit to see if all compression threads exit nicely
     if(g_bopengl && g_CompressorPool){
         wxDateTime now = wxDateTime::Now();
@@ -3298,6 +3304,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         
         int yyp = 5;    
     }
+#endif
     
     //   Save the saved Screen Brightness
     RestoreScreenBrightness();
