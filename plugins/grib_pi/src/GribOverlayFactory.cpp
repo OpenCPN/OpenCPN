@@ -750,6 +750,7 @@ void GRIBOverlayFactory::RenderGribBarbedArrows( int settings, GribRecord **pGR,
     GetGlobalColor( _T ( "YELO2" ), &colour );
     for( int i = 0; i < imax; i++ ) {
         double lonl = pGRX->getX( i );
+
         /* at midpoint of grib so as to avoid problems in projection on
            gribs that go all the way to the north or south pole */
         double latl = pGRX->getY( pGRX->getNj()/2 );
@@ -766,6 +767,9 @@ void GRIBOverlayFactory::RenderGribBarbedArrows( int settings, GribRecord **pGR,
 
                 if( hypot( p.x - oldpy.x, p.y - oldpy.y ) >= space ) {
                     oldpy = p;
+
+                    if(lon > 180)
+                        lon -= 360;
 
                     if( PointInLLBox( vp, lon, lat ) ) {
                         double vx =  pGRX->getValue( i, j );
@@ -1110,6 +1114,9 @@ void GRIBOverlayFactory::RenderGribNumbers( int settings, GribRecord **pGR, Plug
                 if( hypot( p.x - oldpy.x, p.y - oldpy.y ) >= space ) {
                     oldpy = p;
 
+                    if(lon > 180)
+                        lon -= 360;
+
                     if( PointInLLBox( vp, lon, lat ) ) {
                         double mag = pGRA->getValue( i, j );
 
@@ -1353,12 +1360,10 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
 
         int i = it->m_HistoryPos;
 
-        bool first;
+        bool first = true;
         wxPoint l;
 
-        if( m_pdc )
-            first = true;
-        else
+        if( !m_pdc )
             glBegin( GL_LINE_STRIP );
 
         do {
@@ -1369,18 +1374,26 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
                 GetCanvasPixLL( vp, &p, dp.m_y, dp.m_x);
 
                 wxUint8 (&c)[3] = it->m_History[i].m_Color;
+                bool wrap = first ? false : abs(l.x - p.x) > vp->pix_width;
 
                 if( m_pdc ) {
-                    if(!first) {
+                    if(!first && !wrap) {
                         m_pdc->SetPen(wxPen( wxColour(c[0], c[1], c[2] + 240-alpha/2), 2 ));
                         m_pdc->DrawLine( p.x, p.y, l.x, l.y );
-                    } else
-                        first = false;
-                    l = p;
+                    }
+
                 } else {
+                    if(wrap) {
+                        glEnd();
+                        glBegin( GL_LINE_STRIP );
+                    }
+
                     glColor4ub( c[0], c[1], c[2] + 240-alpha/2, alpha);
                     glVertex2d( p.x, p.y );
                 }
+
+                l = p;
+                first = false;
             } else
                 runs = 1;
 
