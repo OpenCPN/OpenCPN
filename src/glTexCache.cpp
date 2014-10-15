@@ -786,7 +786,7 @@ void CompressionWorkerPool::PurgeJobList( wxString chart_path )
         }
             
         if(bthread_debug)
-            printf("Pool:  Purge, todo count: %lu\n", todo_list.GetCount());
+            printf("Pool:  Purge, todo count: %lu\n", (long unsigned)todo_list.GetCount());
     }
     else {
         todo_list.Clear();
