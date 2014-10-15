@@ -333,7 +333,7 @@ inline bool   GribRecord::hasValue(int i, int j) const
         return false;
     }
     if (!hasBMS) {
-        return true;
+        return getValue(i, j) != GRIB_NOTDEF;
     }
     int bit;
     if (isAdjacentI) {
