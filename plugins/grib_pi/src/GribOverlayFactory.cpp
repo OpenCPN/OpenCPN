@@ -741,6 +741,7 @@ void GRIBOverlayFactory::RenderGribBarbedArrows( int settings, GribRecord **pGR,
     GetGlobalColor( _T ( "YELO2" ), &colour );
     for( int i = 0; i < imax; i++ ) {
         double lonl = pGRX->getX( i );
+
         /* at midpoint of grib so as to avoid problems in projection on
            gribs that go all the way to the north or south pole */
         double latl = pGRX->getY( pGRX->getNj()/2 );
@@ -757,6 +758,9 @@ void GRIBOverlayFactory::RenderGribBarbedArrows( int settings, GribRecord **pGR,
 
                 if( hypot( p.x - oldpy.x, p.y - oldpy.y ) >= space ) {
                     oldpy = p;
+
+                    if(lon > 180)
+                        lon -= 360;
 
                     if( PointInLLBox( vp, lon, lat ) ) {
                         double vx =  pGRX->getValue( i, j );
@@ -1100,6 +1104,9 @@ void GRIBOverlayFactory::RenderGribNumbers( int settings, GribRecord **pGR, Plug
 
                 if( hypot( p.x - oldpy.x, p.y - oldpy.y ) >= space ) {
                     oldpy = p;
+
+                    if(lon > 180)
+                        lon -= 360;
 
                     if( PointInLLBox( vp, lon, lat ) ) {
                         double mag = pGRA->getValue( i, j );
