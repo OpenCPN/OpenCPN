@@ -211,8 +211,6 @@ bool wxMapiSession::Logon(const wxString& sProfileName, const wxString& sPasswor
         bSuccess = TRUE;
     }
 
-    if(bSuccess) 
-    
     return bSuccess;
 }
 
