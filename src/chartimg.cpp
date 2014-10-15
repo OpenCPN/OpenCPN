@@ -4537,6 +4537,8 @@ bool ChartBaseBSB::AnalyzeSkew(void)
         }
         
     }
+    else                        // For all other projections, assume that skew specified in header is correct
+        apparent_skew = m_Chart_Skew;
     
     if(fabs( apparent_skew - m_Chart_Skew ) > 2) {           // measured skew is more than 2 degrees 
            m_Chart_Skew = apparent_skew;                         // different from stated skew
