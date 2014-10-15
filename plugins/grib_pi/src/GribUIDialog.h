@@ -89,6 +89,7 @@ public:
 
     wxDateTime TimelineTime();
     GribTimelineRecordSet* GetTimeLineRecordSet(wxDateTime time);
+    void StopPlayBack();
     void TimelineChanged();
     void CreateActiveFileFromName( wxString filename );
     void PopulateComboDataList();
@@ -119,9 +120,9 @@ private:
 
     void OnZoomToCenterClick( wxCommandEvent& event );
     void OnPrev( wxCommandEvent& event );
-    void OnRecordForecast( wxCommandEvent& event ) { m_InterpolateMode = false; m_pNowMode = false; TimelineChanged(); }
+    void OnRecordForecast( wxCommandEvent& event ) { StopPlayBack(); m_InterpolateMode = false; m_pNowMode = false; TimelineChanged(); }
     void OnNext( wxCommandEvent& event );
-    void OnNow( wxCommandEvent& event ) { ComputeBestForecastForNow(); }
+    void OnNow( wxCommandEvent& event ) { StopPlayBack(); ComputeBestForecastForNow(); }
     void OnOpenFile( wxCommandEvent& event );
     void OnRequest(  wxCommandEvent& event );
 
@@ -151,7 +152,6 @@ private:
 
     wxString         m_file_name;   /* selected file */
     wxString         m_grib_dir;
-    wxBitmap         *m_bPlay;
 };
 
 //----------------------------------------------------------------------------------------------------------
