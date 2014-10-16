@@ -1114,7 +1114,7 @@ wxString AIS_Target_Data::GetCountryCode( bool b_CntryLongStr )  //false = Short
     case 616: return b_CntryLongStr ? _("Comoros") : _T("KM") ;
     case 617: return b_CntryLongStr ? _("Cape Verde") : _T("CV") ;
     case 618: return b_CntryLongStr ? _("Crozet Archipelago") : _T("TF") ;
-    case 619: return b_CntryLongStr ? _("Côte d'Ivoire") : _T("CI") ;
+    case 619: return b_CntryLongStr ? _("Ivory Coast") : _T("CI") ;
     case 620: return b_CntryLongStr ? _("Comoros (Union of the)") : _T("KM") ;
     case 621: return b_CntryLongStr ? _("Djibouti") : _T("DJ") ;
     case 622: return b_CntryLongStr ? _("Egypt") : _T("EG") ;
