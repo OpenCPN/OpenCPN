@@ -4713,7 +4713,7 @@ void ChartCanvas::ShowChartInfoWindow( int x, int y, int dbIndex )
             m_pCIWin->Hide();
         }
 
-        if( !m_pCIWin->IsShown() ) {
+        if( !m_pCIWin->IsShown() || (m_pCIWin->dbIndex != dbIndex) ) {
             wxString s;
             ChartBase *pc = NULL;
 
@@ -4734,6 +4734,7 @@ void ChartCanvas::ShowChartInfoWindow( int x, int y, int dbIndex )
             stats->GetSize( &statsW, &statsH );
             p.y = m_canvas_height - statsH - 4 - m_pCIWin->GetWinSize().y;
 
+            m_pCIWin->dbIndex = dbIndex;
             m_pCIWin->SetPosition( p );
             m_pCIWin->SetBitmap();
             m_pCIWin->Refresh();

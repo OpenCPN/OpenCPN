@@ -42,6 +42,7 @@ ChInfoWin::ChInfoWin( wxWindow *parent ) :
     m_pInfoTextCtl = new wxStaticText( this, -1, _T ( "" ), wxDefaultPosition, wxDefaultSize,
                                        ststyle );
 
+    dbIndex = -1;
     Hide();
 }
 
