@@ -1310,13 +1310,10 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
             p.m_y = (double)rand() / RAND_MAX * (pGRX->getLatMax() - pGRX->getLatMin()) + pGRX->getLatMin();
 
             if(GribRecord::getInterpolatedValues(vkn, ang, pGRX, pGRY, p.m_x, p.m_y) &&
-               vkn > 0 && vkn < 100) {
+               vkn > 0 && vkn < 100)
                 vkn = m_Settings.CalibrateValue(settings, vkn);
-            }
-
-            /* try again */
-            if(isnan(vkn))
-                continue;
+            else
+                continue; // try again
 
             /* try hard to find a random position where current is faster than 1 knot */
             if(settings != GribOverlaySettings::CURRENT || vkn > 1 - (double)i/20)
