@@ -5873,63 +5873,6 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 if( b_start_rollover )
                     m_RolloverPopupTimer.Start( m_rollover_popup_timer_msec, wxTIMER_ONE_SHOT );
                 
-                
-                SelectItem *pFindCurrent = NULL;
-                SelectItem *pFindTide = NULL;
-                    
-                if( m_bShowCurrent )
-                        pFindCurrent = pSelectTC->FindSelection( m_cursor_lat, m_cursor_lon, SELTYPE_CURRENTPOINT );
-                    
-                if( m_bShowTide )                                // look for tide stations
-                        pFindTide = pSelectTC->FindSelection( m_cursor_lat, m_cursor_lon, SELTYPE_TIDEPOINT );
-                    
-                if( pFindCurrent ) {
-                        // There may be multiple current entries at the same point.
-                        // For example, there often is a current substation (with directions specified)
-                        // co-located with its master.  We want to select the substation, so that
-                        // the direction will be properly indicated on the graphic.
-                        // So, we search the select list looking for IDX_type == 'c' (i.e substation)
-                        IDX_entry *pIDX_best_candidate;
-                        
-                        SelectItem *pFind = NULL;
-                        SelectableItemList SelList = pSelectTC->FindSelectionList( m_cursor_lat,
-                                                                                   m_cursor_lon, SELTYPE_CURRENTPOINT );
-                        
-                        //      Default is first entry
-                        wxSelectableItemListNode *node = SelList.GetFirst();
-                        pFind = node->GetData();
-                        pIDX_best_candidate = (IDX_entry *) ( pFind->m_pData1 );
-                        
-                        if( SelList.GetCount() > 1 ) {
-                            node = node->GetNext();
-                            while( node ) {
-                                pFind = node->GetData();
-                                IDX_entry *pIDX_candidate = (IDX_entry *) ( pFind->m_pData1 );
-                                if( pIDX_candidate->IDX_type == 'c' ) {
-                                    pIDX_best_candidate = pIDX_candidate;
-                                    break;
-                                }
-                                
-                                node = node->GetNext();
-                            }       // while (node)
-                        } else {
-                            wxSelectableItemListNode *node = SelList.GetFirst();
-                            pFind = node->GetData();
-                            pIDX_best_candidate = (IDX_entry *) ( pFind->m_pData1 );
-                        }
-                        
-                        m_pIDXCandidate = pIDX_best_candidate;
-                        
-                        DrawTCWindow( x, y, (void *) pIDX_best_candidate );
-                        Refresh( false );
-                }
-                    
-                else if( pFindTide ) {
-                        m_pIDXCandidate = (IDX_entry *) pFindTide->m_pData1;
-                        
-                        DrawTCWindow( x, y, (void *) pFindTide->m_pData1 );
-                        Refresh( false );
-                }
 
         if( m_bRouteEditing/* && !b_startedit_route*/) {            // End of RoutePoint drag
             if( m_pRoutePointEditTarget ) {
