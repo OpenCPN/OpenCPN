@@ -206,6 +206,9 @@ class GribRecord
         inline bool   isYInMap(double y) const;
         // Is there a value at a particular grid point ?
         inline bool   hasValue(int i, int j) const;
+        // Is there a value that is not GRIB_NOTDEF ?
+        inline bool   isDefined(int i, int j) const
+        { return hasValue(i, j) && getValue(i, j) != GRIB_NOTDEF; }
 
         // Reference date Date (file creation date)
         time_t getRecordRefDate () const         { return refDate; }
@@ -333,7 +336,7 @@ inline bool   GribRecord::hasValue(int i, int j) const
         return false;
     }
     if (!hasBMS) {
-        return getValue(i, j) != GRIB_NOTDEF;
+        return true;
     }
     int bit;
     if (isAdjacentI) {
