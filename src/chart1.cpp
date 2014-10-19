@@ -103,6 +103,7 @@
 #include "cutil.h"
 #include "routemanagerdialog.h"
 #include "pluginmanager.h"
+#include "AIS_Target_Data.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -230,6 +231,12 @@ wxString                  g_InvisibleLayers;
 extern wxString           str_version_major;
 extern wxString           str_version_minor;
 extern wxString           str_version_patch;
+
+#ifdef ocpnUSE_GL
+extern CompressionWorkerPool   *g_CompressorPool;
+#endif
+
+bool                      g_bcompression_wait;
 
 wxString                  g_uploadConnection;
 
@@ -548,7 +555,6 @@ wxString                  g_AW1GUID;
 wxString                  g_AW2GUID;
 
 bool                      g_b_overzoom_x; // Allow high overzoom
-bool                      g_bshow_overzoom_emboss;
 
 int                       g_OwnShipIconType;
 double                    g_n_ownship_length_meters;
@@ -2475,7 +2481,6 @@ int MyApp::OnExit()
 #endif
 
     delete g_pPlatform;
-    delete g_pauimgr;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
     delete plocale_def_lang;
@@ -2522,6 +2527,8 @@ void MyApp::TrackOff( void )
 //------------------------------------------------------------------------------
 // MyFrame
 //------------------------------------------------------------------------------
+wxMenuBar *osx_menuBar;
+
 //      Frame implementation
 BEGIN_EVENT_TABLE(MyFrame, wxFrame) EVT_CLOSE(MyFrame::OnCloseWindow)
 EVT_MENU(wxID_EXIT, MyFrame::OnExit)
@@ -2545,6 +2552,16 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
         wxFrame( frame, -1, title, pos, size, style ) //wxSIMPLE_BORDER | wxCLIP_CHILDREN | wxRESIZE_BORDER)
 //wxCAPTION | wxSYSTEM_MENU | wxRESIZE_BORDER
 {
+
+    // wxWidgets 3.0.X seems to require that the main app wxFrame have some menubar in order to
+    // popuplate the Mac default menu items, like "Hide", "Quit". etc.
+    // Its OK if this menubar is devoid of OCPN specific items, however.
+    // Just needs to be there, empty or not...
+#ifdef __WXOSX__
+    osx_menuBar = new wxMenuBar();
+    SetMenuBar(osx_menuBar);
+#endif    
+    
     m_ulLastNEMATicktime = 0;
     m_pStatusBar = NULL;
 
@@ -3121,6 +3138,11 @@ bool MyFrame::AddDefaultPositionPlugInTools( ocpnToolBarSimple *tb )
 
     for( unsigned int i = 0; i < tool_array.GetCount(); i++ ) {
         PlugInToolbarToolContainer *pttc = tool_array.Item( i );
+        
+        //      Tool is currently tagged as invisible
+        if( !pttc->b_viz )
+            continue;
+        
         if( pttc->position == -1 )                  // PlugIn has requested default positioning
                 {
             wxBitmap *ptool_bmp;
@@ -3293,7 +3315,16 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     pConfig->Write( _T ( "AUIPerspective" ), g_pauimgr->SavePerspective() );
 
     g_bquiting = true;
-    
+
+#ifdef ocpnUSE_GL    
+    if(g_bopengl && g_CompressorPool){
+        g_CompressorPool->PurgeJobList();
+        
+        if(g_CompressorPool->GetRunningJobCount())
+            g_bcompression_wait = true;
+    }
+#endif
+
 #ifndef __OCPN__ANDROID__    
     if( cc1 ) {
         cc1->SetCursor( wxCURSOR_WAIT );
@@ -3304,6 +3335,30 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     }
 #endif
 
+    
+    #define THREAD_WAIT_SECONDS  5
+#ifdef ocpnUSE_GL
+    //  Try to wait a bit to see if all compression threads exit nicely
+    if(g_bopengl && g_CompressorPool){
+        wxDateTime now = wxDateTime::Now();
+        time_t stall = now.GetTicks();
+        time_t start = stall;
+        time_t end = stall + THREAD_WAIT_SECONDS;
+        
+        while(stall < end ){
+            wxDateTime later = wxDateTime::Now();
+            stall = later.GetTicks();
+            
+            wxYield();
+            wxSleep(1);
+            if(!g_CompressorPool->GetRunningJobCount())
+                break;
+        }
+        
+        int yyp = 5;    
+    }
+#endif
+    
     //   Save the saved Screen Brightness
     RestoreScreenBrightness();
 
@@ -3422,6 +3477,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 
     if(g_FloatingToolbarDialog)
         g_FloatingToolbarDialog->Destroy();
+    g_FloatingToolbarDialog = NULL;
 
     if( g_pAISTargetList ) {
         g_pAISTargetList->Disconnect_decoder();
@@ -3433,9 +3489,11 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 
     //      Delete all open charts in the cache
     cc1->EnablePaint(false);
-    if( ChartData ) ChartData->PurgeCache();
+    if( ChartData )
+        ChartData->PurgeCache();
 
 //    SetStatusBar( NULL );
+
     stats = NULL;
 
     if( pRouteManagerDialog ) {
@@ -3446,7 +3504,9 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     cc1->Destroy();
     cc1 = NULL;
 
-
+    g_pauimgr->UnInit();
+    delete g_pauimgr;
+    g_pauimgr = NULL;
     //    Unload the PlugIns
     //      Note that we are waiting until after the canvas is destroyed,
     //      since some PlugIns may have created children of canvas.
@@ -3470,10 +3530,6 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 
     g_FloatingToolbarDialog = NULL;
 
-    g_pauimgr->UnInit();
-
-    wxLogMessage( _T("opencpn::MyFrame exiting cleanly.") );
-    
     this->Destroy();
     
 #ifdef __OCPN__ANDROID__
@@ -3706,7 +3762,14 @@ void MyFrame::SetGroupIndex( int index )
     cc1->UpdateCanvasOnGroupChange();
 
     int dbi_hint = cc1->FindClosestCanvasChartdbIndex( current_chart_native_scale );
-
+    
+    double best_scale = cc1->GetBestStartScale(dbi_hint, vp);
+    
+    cc1->SetVPScale( best_scale );
+    
+    if(cc1->GetQuiltMode())
+        dbi_hint = cc1->GetQuiltReferenceChartIndex();
+    
     //    Refresh the canvas, selecting the "best" chart,
     //    applying the prior ViewPort exactly
     ChartsRefresh( dbi_hint, vp, true );
@@ -3919,6 +3982,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             } else {
                 TrackOff( true );
                 g_bTrackCarryOver = false;
+                cc1->Refresh(true);
             }
             break;
         }
@@ -5397,22 +5461,21 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
     }
 
     //    Build and send a Position Fix event to PlugIns
-    if( g_pi_manager ) {
-            GenericPosDatEx GPSData;
-            GPSData.kLat = gLat;
-            GPSData.kLon = gLon;
-            GPSData.kCog = gCog;
-            GPSData.kSog = gSog;
-            GPSData.kVar = gVar;
-            GPSData.kHdm = gHdm;
-            GPSData.kHdt = gHdt;
-            GPSData.nSats = g_SatsInView;
+    if( g_pi_manager )
+    {
+        GenericPosDatEx GPSData;
+        GPSData.kLat = gLat;
+        GPSData.kLon = gLon;
+        GPSData.kCog = gCog;
+        GPSData.kSog = gSog;
+        GPSData.kVar = gVar;
+        GPSData.kHdm = gHdm;
+        GPSData.kHdt = gHdt;
+        GPSData.nSats = g_SatsInView;
 
-            GPSData.FixTime = m_fixtime;
+        GPSData.FixTime = m_fixtime;
 
-            if(g_pi_manager)
-                g_pi_manager->SendPositionFixToAllPlugIns( &GPSData );
-
+        g_pi_manager->SendPositionFixToAllPlugIns( &GPSData );
     }
 
     //   Check for anchorwatch alarms                                 // pjotrc 2010.02.15
@@ -5461,14 +5524,15 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 //  Send current nav status data to log file on every half hour   // pjotrc 2010.02.09
 
     wxDateTime lognow = wxDateTime::Now();   // pjotrc 2010.02.09
-    int hour = lognow.GetHour();
+    int hourLOC = lognow.GetHour();
+    int minuteLOC = lognow.GetMinute();
     lognow.MakeGMT();
-    int minute = lognow.GetMinute();
+    int minuteUTC = lognow.GetMinute();
     int second = lognow.GetSecond();
 
     wxTimeSpan logspan = lognow.Subtract( g_loglast_time );
-    if( ( logspan.IsLongerThan( wxTimeSpan( 0, 30, 0, 0 ) ) ) || ( minute == 0 )
-            || ( minute == 30 ) ) {
+    if( ( logspan.IsLongerThan( wxTimeSpan( 0, 30, 0, 0 ) ) ) || ( minuteUTC == 0 )
+            || ( minuteUTC == 30 ) ) {
         if( logspan.IsLongerThan( wxTimeSpan( 0, 1, 0, 0 ) ) ) {
             wxString day = lognow.FormatISODate();
             wxString utc = lognow.FormatISOTime();
@@ -5503,14 +5567,14 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
             wxLogMessage( navmsg );
             g_loglast_time = lognow;
 
-            if( hour == 0 && minute == 0 && g_bTrackDaily )
+            if( hourLOC == 0 && minuteLOC == 0 && g_bTrackDaily )
                 TrackMidnightRestart();
 
-            int bells = ( hour % 4 ) * 2;     // 2 bells each hour
-            if( minute != 0 ) bells++;       // + 1 bell on 30 minutes
+            int bells = ( hourLOC % 4 ) * 2;     // 2 bells each hour
+            if( minuteLOC != 0 ) bells++;       // + 1 bell on 30 minutes
             if( !bells ) bells = 8;     // 0 is 8 bells
 
-            if( g_bPlayShipsBells && ( ( minute == 0 ) || ( minute == 30 ) ) ) {
+            if( g_bPlayShipsBells && ( ( minuteLOC == 0 ) || ( minuteLOC == 30 ) ) ) {
                 m_BellsToPlay = bells;
                 BellsTimer.Start(0, wxTIMER_ONE_SHOT);
             }
@@ -5982,7 +6046,47 @@ void MyFrame::HandlePianoClick( int selected_index, int selected_dbIndex )
         if( cc1->IsChartQuiltableRef( selected_dbIndex ) ){
             if( ChartData ) ChartData->PurgeCache();
             
-            SelectQuiltRefdbChart( selected_dbIndex );
+            
+            //  If the chart is a vector chart, and of very large scale,
+            //  then we had better set the new scale directly to avoid excessive underzoom
+            //  on, eg, Inland ENCs
+            bool set_scale = false;
+            if(ChartData){
+                if( CHART_TYPE_S57 == ChartData->GetDBChartType( selected_dbIndex ) ){
+                    if( ChartData->GetDBChartScale(selected_dbIndex) < 5000){
+                        set_scale = true;
+                    }
+                }
+            }
+            
+            if(!set_scale){
+                SelectQuiltRefdbChart( selected_dbIndex, true );  // autoscale
+            }
+            else {
+                SelectQuiltRefdbChart( selected_dbIndex, false );  // no autoscale
+                
+            
+            //  Adjust scale so that the selected chart is underzoomed/overzoomed by a controlled amount
+                ChartBase *pc = ChartData->OpenChartFromDB( selected_dbIndex, FULL_INIT );
+                if( pc ) {
+                    double proposed_scale_onscreen = cc1->GetCanvasScaleFactor() / cc1->GetVPScale();
+                    
+                    if(g_bPreserveScaleOnX){
+                        proposed_scale_onscreen = wxMin(proposed_scale_onscreen,
+                                                100 * pc->GetNormalScaleMax(cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth()));
+                    }
+                    else{
+                        proposed_scale_onscreen = wxMin(proposed_scale_onscreen,
+                                                        20 * pc->GetNormalScaleMax(cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth()));
+                        
+                        proposed_scale_onscreen = wxMax(proposed_scale_onscreen,
+                                                pc->GetNormalScaleMin(cc1->GetCanvasScaleFactor(), g_b_overzoom_x));
+                    }
+                
+                    cc1->SetVPScale( cc1->GetCanvasScaleFactor() / proposed_scale_onscreen );
+                }
+            }
+                    
         }
         else {
             ToggleQuiltMode();
@@ -6077,10 +6181,10 @@ double MyFrame::GetBestVPScale( ChartBase *pchart )
             proposed_scale_onscreen = cc1->GetCanvasScaleFactor() / new_scale_ppm;
         }
 
-        proposed_scale_onscreen =
-                wxMin(proposed_scale_onscreen, pchart->GetNormalScaleMax(cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth()));
-        proposed_scale_onscreen =
-                wxMax(proposed_scale_onscreen, pchart->GetNormalScaleMin(cc1->GetCanvasScaleFactor(), g_b_overzoom_x));
+//        proposed_scale_onscreen =
+ //               wxMin(proposed_scale_onscreen, pchart->GetNormalScaleMax(cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth()));
+//        proposed_scale_onscreen =
+//                wxMax(proposed_scale_onscreen, pchart->GetNormalScaleMin(cc1->GetCanvasScaleFactor(), g_b_overzoom_x));
 
         return cc1->GetCanvasScaleFactor() / proposed_scale_onscreen;
     } else
@@ -8134,6 +8238,141 @@ void MyFrame::LoadHarmonics()
             ptcmgr->LoadDataSources(TideCurrentDataSet);
     }
 }
+
+Route *pAISMOBRoute;
+
+void MyFrame::ActivateAISMOBRoute( AIS_Target_Data *ptarget )
+{
+    if(!ptarget)
+        return;
+    
+    //    The MOB point
+    wxDateTime mob_time = wxDateTime::Now();
+    wxString mob_label( _( "AIS MAN OVERBOARD" ) );
+    mob_label += _T(" at ");
+    mob_label += mob_time.FormatTime();
+    
+    RoutePoint *pWP_MOB = new RoutePoint( ptarget->Lat, ptarget->Lon, _T ( "mob" ), mob_label, GPX_EMPTY_STRING );
+    pWP_MOB->m_bKeepXRoute = true;
+    pWP_MOB->m_bIsolatedMark = true;
+    pSelect->AddSelectableRoutePoint( ptarget->Lat, ptarget->Lon, pWP_MOB );
+    pConfig->AddNewWayPoint( pWP_MOB, -1 );       // use auto next num
+    
+    
+    if( bGPSValid && !wxIsNaN(gCog) && !wxIsNaN(gSog) ) {
+        RoutePoint *pWP_src = new RoutePoint( gLat, gLon, g_default_wp_icon,
+                                              wxString( _( "Ownship" ) ), GPX_EMPTY_STRING );
+        pSelect->AddSelectableRoutePoint( gLat, gLon, pWP_src );
+        
+        pAISMOBRoute = new Route();
+        pRouteList->Append( pAISMOBRoute );
+        
+        pAISMOBRoute->AddPoint( pWP_src );
+        pAISMOBRoute->AddPoint( pWP_MOB );
+        
+        pSelect->AddSelectableRouteSegment(ptarget->Lat, ptarget->Lon, gLat, gLon, pWP_src, pWP_MOB, pAISMOBRoute );
+        
+        pAISMOBRoute->m_RouteNameString = _("Temporary AISMOB Route");
+        pAISMOBRoute->m_RouteStartString = _("Present Ownship");
+        pAISMOBRoute->m_RouteEndString = mob_label;
+        
+        pAISMOBRoute->m_bDeleteOnArrival = false;
+        
+        pAISMOBRoute->SetRouteArrivalRadius( -1.0 );                    // never arrives
+        
+        pAISMOBRoute->RebuildGUIDList();         // ensure the GUID list is intact and good
+        
+        if( g_pRouteMan->GetpActiveRoute() )
+            g_pRouteMan->DeactivateRoute();
+        //       g_pRouteMan->ActivateRoute( pAISMOBRoute, pWP_MOB );
+        
+        wxJSONValue v;
+        v[_T("GUID")] = pAISMOBRoute->m_GUID;
+        wxString msg_id( _T("OCPN_MAN_OVERBOARD") );
+        g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
+    }
+    
+    if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
+        pRouteManagerDialog->UpdateRouteListCtrl();
+        pRouteManagerDialog->UpdateWptListCtrl();
+    }
+    
+    cc1->Refresh( false );
+    
+    wxString mob_message( _( "AIS MAN OVERBOARD" ) );
+    mob_message += _T(" Time: ");
+    mob_message += mob_time.Format();
+    mob_message += _T("  Ownship Position: ");
+    mob_message += toSDMM( 1, gLat );
+    mob_message += _T("   ");
+    mob_message += toSDMM( 2, gLon );
+    mob_message += _T("  MOB Position: ");
+    mob_message += toSDMM( 1, ptarget->Lat );
+    mob_message += _T("   ");
+    mob_message += toSDMM( 2, ptarget->Lon );
+    wxLogMessage( mob_message );
+    
+}
+
+void MyFrame::UpdateAISMOBRoute( AIS_Target_Data *ptarget )
+{
+    if(pAISMOBRoute && ptarget){
+        
+        //   Update Current Ownship point
+        RoutePoint *OwnPoint = pAISMOBRoute->GetPoint( 1 );
+        OwnPoint->m_lat = gLat;
+        OwnPoint->m_lon = gLon;
+        
+        pSelect->DeleteSelectableRoutePoint( OwnPoint );
+        pSelect->AddSelectableRoutePoint( gLat, gLon, OwnPoint );
+        
+        //   Update Current MOB point
+        RoutePoint *MOB_Point = pAISMOBRoute->GetPoint( 2 );
+        MOB_Point->m_lat = ptarget->Lat;
+        MOB_Point->m_lon = ptarget->Lon;
+        
+        pSelect->DeleteSelectableRoutePoint( MOB_Point );
+        pSelect->AddSelectableRoutePoint( ptarget->Lat, ptarget->Lon, MOB_Point );
+        
+        pSelect->UpdateSelectableRouteSegments( OwnPoint );
+        pSelect->UpdateSelectableRouteSegments( MOB_Point );
+        
+    }
+
+    cc1->Refresh( false );
+ 
+    wxDateTime mob_time = wxDateTime::Now();
+    
+    wxString mob_message( _( "AIS MAN OVERBOARD UPDATE" ) );
+    mob_message += _T(" Time: ");
+    mob_message += mob_time.Format();
+    mob_message += _T("  Ownship Position: ");
+    mob_message += toSDMM( 1, gLat );
+    mob_message += _T("   ");
+    mob_message += toSDMM( 2, gLon );
+    mob_message += _T("  MOB Position: ");
+    mob_message += toSDMM( 1, ptarget->Lat );
+    mob_message += _T("   ");
+    mob_message += toSDMM( 2, ptarget->Lon );
+    
+    wxLogMessage( mob_message );
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //----------------------------------------------------------------------------------------------------------
 //      Application-wide CPL Error handler

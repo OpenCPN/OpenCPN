@@ -77,6 +77,8 @@ extern double gHdm;
 extern double gVar;
 extern bool g_bAIS_CPA_Alert;
 extern bool g_bAIS_CPA_Alert_Audio;
+extern ArrayOfMMSIProperties   g_MMSI_Props_Array;
+extern Route    *pAISMOBRoute;
 
 BEGIN_EVENT_TABLE(AIS_Decoder, wxEvtHandler)
     EVT_TIMER(TIMER_AIS1, AIS_Decoder::OnTimerAIS)
@@ -744,6 +746,17 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
             if( !mmsi ) mmsi = strbit.GetInt( 9, 30 );
             long mmsi_long = mmsi;
 
+            // Check to see if this MMSI has been configured to be ignored completely...
+            for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
+                MMSIProperties *props =  g_MMSI_Props_Array.Item(i);
+                if((mmsi == props->MMSI)){
+                    if(props->m_bignore)
+                        return AIS_NoError;
+                    else
+                        break;
+                }
+            }
+            
              //  Search the current AISTargetList for an MMSI match
             AIS_Target_Hash::iterator it = AISTargetList->find( mmsi );
             if( it == AISTargetList->end() )                  // not found
@@ -859,8 +872,10 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                 pTargetData->b_lost = false;
 
                 bdecode_result = true;
-            } else
+            } else{
+                // The normal Plain-Old AIS target code path....
                 bdecode_result = Parse_VDXBitstring( &strbit, pTargetData );       // Parse the new data
+            }
 
                 //     Update the most recent report period
             if( pTargetData )    
@@ -878,9 +893,20 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
 
             m_pLatestTargetData = pTargetData;
 
-            if( str.Mid( 3, 3 ).IsSameAs( _T("VDO") ) ) pTargetData->b_OwnShip = true;
+            if( str.Mid( 3, 3 ).IsSameAs( _T("VDO") ) )
+                pTargetData->b_OwnShip = true;
 
-    //        if( ( bdecode_result ) && ( pTargetData->b_nameValid ) && ( pStaleTarget ) ) if( !bhad_name ) n_newname++;
+            // Check to see if this MMSI wants VDM translated to VDO...
+            for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
+                MMSIProperties *props =  g_MMSI_Props_Array.Item(i);
+                if((mmsi == props->MMSI)){
+                    if(props->m_bVDM)
+                        pTargetData->b_OwnShip = true;
+                    else
+                        break;
+                }
+            }
+                
 
             //  If the message was decoded correctly
             //  Update the AIS Target information
@@ -2065,8 +2091,10 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
 
     //    Scan all targets, looking for SART, DSC Distress, and CPA incursions
     //    In the case of multiple targets of the same type, select the shortest range or shortest TCPA
+    AIS_Target_Data *palert_target = NULL;
     
     if( NULL == g_pais_alert_dialog_active ) {
+        pAISMOBRoute = NULL;                // Reset the AISMOB auto route.
         double tcpa_min = 1e6;             // really long
         double sart_range = 1e6;
         double dsc_range = 1e6;
@@ -2112,7 +2140,7 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
         //    Which of multiple targets?
         //    Give priority to SART targets, then DSC Distress, then CPA incursion
         
-        AIS_Target_Data *palert_target = palert_target_cpa;
+        palert_target = palert_target_cpa;
 
         if( palert_target_sart )
             palert_target = palert_target_sart;
@@ -2164,8 +2192,7 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
     //    The AIS Alert dialog is already shown.  If the  dialog MMSI number is still alerted, update the dialog
     //    otherwise, destroy the dialog
     else {
-        AIS_Target_Data *palert_target = Get_Target_Data_From_MMSI(
-                g_pais_alert_dialog_active->Get_Dialog_MMSI() );
+        palert_target = Get_Target_Data_From_MMSI( g_pais_alert_dialog_active->Get_Dialog_MMSI() );
 
         if( palert_target ) {
             if( ( ( AIS_ALERT_SET == palert_target->n_alert_state )
@@ -2177,7 +2204,8 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
                 m_bAIS_Audio_Alert_On = false;
             }
 
-            if( true == palert_target->b_suppress_audio ) m_bAIS_Audio_Alert_On = false;
+            if( true == palert_target->b_suppress_audio )
+                m_bAIS_Audio_Alert_On = false;
             else
                 m_bAIS_Audio_Alert_On = true;
         } else {                                               // this should not happen, however...
@@ -2211,6 +2239,20 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
     } else
         m_AIS_Audio_Alert_Timer.Stop();
 
+    //  If a SART Alert is active, check to see if the MMSI has special properties set 
+    //  indicating that this Alert is a MOB for THIS ship.
+    if(palert_target && (palert_target->Class == AIS_SART) ){
+        for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
+            if(palert_target->MMSI == g_MMSI_Props_Array.Item(i)->MMSI){
+                if(pAISMOBRoute)
+                    gFrame->UpdateAISMOBRoute(palert_target);
+                else
+                    gFrame->ActivateAISMOBRoute(palert_target);
+                break;
+            }
+        }
+    }
+    
     TimerAIS.Start( TIMER_AIS_MSEC, wxTIMER_CONTINUOUS );
 }
 
@@ -2220,5 +2262,102 @@ AIS_Target_Data *AIS_Decoder::Get_Target_Data_From_MMSI( int mmsi )
     return NULL;
     else
         return ( *AISTargetList )[mmsi];          // find current entry
+}
+
+
+
+#include <wx/arrimpl.cpp>
+
+WX_DEFINE_OBJARRAY(ArrayOfMMSIProperties);
+
+ArrayOfMMSIProperties   g_MMSI_Props_Array;
+
+
+//      MMSIProperties Implementation
+
+MMSIProperties::MMSIProperties( wxString &spec )
+{
+    Init();
+    wxStringTokenizer tkz( spec, _T(";") );
+    wxString s;
+    
+    s = tkz.GetNextToken();
+    long mmsil;
+    s.ToLong(&mmsil);
+    MMSI = (int)mmsil;
+    
+    s = tkz.GetNextToken();
+    if(s.Len()){
+        if(s.Upper() == _T("ALWAYS"))
+            TrackType = TRACKTYPE_ALWAYS;
+        else if(s.Upper() == _T("NEVER"))
+            TrackType = TRACKTYPE_NEVER;
+    }
+    
+    s = tkz.GetNextToken();
+    if(s.Len()){
+        if(s.Upper() == _T("IGNORE"))
+            m_bignore = true;
+    }
+    
+    s = tkz.GetNextToken();
+    if(s.Len()){
+        if(s.Upper() == _T("MOB"))
+            m_bMOB = true;
+    }
+    
+    s = tkz.GetNextToken();
+    if(s.Len()){
+        if(s.Upper() == _T("VDM"))
+            m_bVDM = true;
+    }
+    
+}
+
+MMSIProperties::~MMSIProperties()
+{
+}
+
+void MMSIProperties::Init(void )
+{
+    MMSI = -1;
+    TrackType = TRACKTYPE_DEFAULT;
+    m_bignore = false;
+    m_bMOB = false;
+    m_bVDM = false;
+    
+}
+
+wxString MMSIProperties::Serialize( void )
+{
+    wxString sMMSI;
+    wxString s;
+    
+    sMMSI.Printf(_T("%d"), MMSI);
+    sMMSI << _T(";");
+    
+    if(TrackType){
+        if(TRACKTYPE_ALWAYS == TrackType)
+            sMMSI << _T("always");
+        else if(TRACKTYPE_NEVER == TrackType)
+            sMMSI << _T("never");
+    }
+    sMMSI << _T(";");
+    
+    if(m_bignore){
+        sMMSI << _T("ignore");
+    }
+    sMMSI << _T(";");
+    
+    if(m_bMOB){
+        sMMSI << _T("MOB");
+    }
+    sMMSI << _T(";");
+    
+    if(m_bVDM){
+        sMMSI << _T("VDM");
+    }
+    
+    return sMMSI;
 }
 

@@ -73,7 +73,7 @@ S57Reader::S57Reader( const char * pszFilename )
     bAttrWarningIssued = FALSE;
     
     Nall = 0;
-
+    Aall = 0;
 }
 
 /************************************************************************/
@@ -392,6 +392,7 @@ int S57Reader::Ingest(CallBackFunction pcallback)
             CPLFree( pszDSNM );
             pszDSNM = CPLStrdup(poRecord->GetStringSubfield( "DSID", 0, "DSNM", 0 ));
             Nall = poRecord->GetIntSubfield( "DSSI", 0, "NALL", 0 );
+            Aall = poRecord->GetIntSubfield( "DSSI", 0, "AALL", 0 );
         }
 
         else
@@ -768,6 +769,8 @@ void S57Reader::ApplyObjectClassAttributes( DDFRecord * poRecord,
     if( poATTF == NULL )
         return;
 
+    DDFFieldDefn *poDefn = poATTF->GetFieldDefn();
+    
     nAttrCount = poATTF->GetRepeatCount();
     for( iAttr = 0; iAttr < nAttrCount; iAttr++ )
     {
@@ -813,6 +816,15 @@ void S57Reader::ApplyObjectClassAttributes( DDFRecord * poRecord,
             continue;
         }
 
+        // Handle deleted attributes
+        // If the first char of the attribute is 0x7f, then unset this field.
+        // Any later requests for the attribute value will retrun an empty string.
+        if(pszValue[0] == 0x7f)
+        {
+            poFeature->UnsetField( iField );
+            continue;
+        }
+        
         poFldDefn = poFeature->GetDefnRef()->GetFieldDefn( iField );
         if( poFldDefn->GetType() == OFTInteger
             || poFldDefn->GetType() == OFTReal )

@@ -27,6 +27,7 @@
 
 #include <wx/glcanvas.h>
 #include <wx/file.h>
+#include <stdint.h>
 
 #include "ocpn_types.h"
 #include "glTextureDescriptor.h"
@@ -137,6 +138,59 @@ private:
     glTextureDescriptor  **m_td_array;
     
     DECLARE_EVENT_TABLE()
+    
+};
+
+const wxEventType wxEVT_OCPN_COMPRESSIONTHREAD = wxNewEventType();
+
+class JobTicket;
+
+WX_DECLARE_LIST(JobTicket, JobList);
+
+class OCPN_CompressionThreadEvent: public wxEvent
+{
+public:
+    OCPN_CompressionThreadEvent( wxEventType commandType = wxEVT_NULL, int id = 0 );
+    ~OCPN_CompressionThreadEvent( );
+    
+    // accessors
+    void SetTicket( JobTicket *ticket ){m_ticket = ticket;}
+    JobTicket *GetTicket(void){ return m_ticket; }
+    
+    // required for sending with wxPostEvent()
+    wxEvent *Clone() const;
+    
+private:
+    JobTicket  * m_ticket;
+};
+
+//      CompressionWorkerPool Definition
+class CompressionWorkerPool : public wxEvtHandler
+{
+public:
+    CompressionWorkerPool();
+    ~CompressionWorkerPool();
+    
+    bool ScheduleJob( glTexFactory *client, const wxRect &rect, int level_min,
+                      bool b_throttle_thread, bool b_immediate, bool b_postZip);
+    void OnEvtThread( OCPN_CompressionThreadEvent & event );
+    int GetRunningJobCount(){ return m_njobs_running; }
+    void PurgeJobList( wxString chart_path = wxEmptyString );
+    
+    unsigned int m_raster_format;
+    JobList             running_list;
+    
+private:
+    
+    bool DoJob( JobTicket *pticket );
+    bool DoThreadJob(JobTicket* pticket);
+    bool StartTopJob();
+    
+    JobList             todo_list;
+    int                 m_njobs_running;
+    int                 m_max_jobs;
+    
+    
     
 };
 

@@ -118,7 +118,6 @@ JobTicket::JobTicket()
 }
 
 
-WX_DECLARE_LIST(JobTicket, JobList);
 
 /* generate mipmap in software */
 void HalfScaleChartBits( int width, int height, unsigned char *source, unsigned char *target )
@@ -367,24 +366,6 @@ bool DoCompress(JobTicket *pticket, glTextureDescriptor *ptd, int level)
 
 
 
-const wxEventType wxEVT_OCPN_COMPRESSIONTHREAD = wxNewEventType();
-
-class OCPN_CompressionThreadEvent: public wxEvent
-{
-public:
-    OCPN_CompressionThreadEvent( wxEventType commandType = wxEVT_NULL, int id = 0 );
-    ~OCPN_CompressionThreadEvent( );
-    
-    // accessors
-    void SetTicket( JobTicket *ticket ){m_ticket = ticket;}
-    JobTicket *GetTicket(void){ return m_ticket; }
-    
-    // required for sending with wxPostEvent()
-    wxEvent *Clone() const;
-    
-private:
-    JobTicket  * m_ticket;
-};
 
 OCPN_CompressionThreadEvent::OCPN_CompressionThreadEvent(wxEventType commandType, int id)
 :wxEvent(id, commandType)
@@ -587,36 +568,6 @@ WX_DEFINE_LIST(JobList);
 
 
 
-//      CompressionWorkerPool Definition
-class CompressionWorkerPool : public wxEvtHandler
-{
-public:
-    CompressionWorkerPool();
-    ~CompressionWorkerPool();
-    
-    bool ScheduleJob( glTexFactory *client, const wxRect &rect, int level_min,
-                      bool b_throttle_thread, bool b_immediate, bool b_postZip);
-    void OnEvtThread( OCPN_CompressionThreadEvent & event );
-    int GetRunningJobCount(){ return m_njobs_running; }
-    void PurgeJobList( wxString &chart_path );
-    
-    
-    unsigned int m_raster_format;
-    JobList             running_list;
-    
-private:
-    
-    bool DoJob( JobTicket *pticket );
-    bool DoThreadJob(JobTicket* pticket);
-    bool StartTopJob();
-    
-    JobList             todo_list;
-    int                 m_njobs_running;
-    int                 m_max_jobs;
-    
-    
-    
-};
 
 //      CompressionWorkerPool Implementation
 CompressionWorkerPool::CompressionWorkerPool()
@@ -625,7 +576,7 @@ CompressionWorkerPool::CompressionWorkerPool()
     int nCPU =  wxMax(1, wxThread::GetCPUCount());
     m_max_jobs =  nCPU;
 
-    bthread_debug = false;
+    bthread_debug = false;;
 
     if(bthread_debug)
         printf(" nCPU: %d    m_max_jobs :%d\n", nCPU, m_max_jobs);
@@ -639,7 +590,6 @@ CompressionWorkerPool::CompressionWorkerPool()
 CompressionWorkerPool::~CompressionWorkerPool()
 {
 }
-
 
 void CompressionWorkerPool::OnEvtThread( OCPN_CompressionThreadEvent & event )
 {
@@ -816,30 +766,31 @@ bool CompressionWorkerPool::DoJob(JobTicket* pticket)
     return ret;
 }
 
-void CompressionWorkerPool::PurgeJobList( wxString &chart_path )
+
+void CompressionWorkerPool::PurgeJobList( wxString chart_path )
 {
-#if 1    
+    if(chart_path.Len()){    
         //  Remove all pending jobs relating to the passed chart path
-    wxJobListNode *tnode = todo_list.GetFirst();
-    while(tnode){
-        JobTicket *ticket = tnode->GetData();
-        if(ticket->m_ChartPath.IsSameAs(chart_path)){
-            if(bthread_debug)
-                printf("Pool:  Purge pending job for purged chart\n");
-            todo_list.DeleteNode(tnode);
-            tnode = todo_list.GetFirst();  // restart the list
+        wxJobListNode *tnode = todo_list.GetFirst();
+        while(tnode){
+            JobTicket *ticket = tnode->GetData();
+            if(ticket->m_ChartPath.IsSameAs(chart_path)){
+                if(bthread_debug)
+                    printf("Pool:  Purge pending job for purged chart\n");
+                todo_list.DeleteNode(tnode);
+                tnode = todo_list.GetFirst();  // restart the list
+            }
+            else{
+                tnode = tnode->GetNext();
+            }
         }
-        else{
-            tnode = tnode->GetNext();
-        }
-    }
-        
+            
         if(bthread_debug)
-            printf("Pool:  Purge, todo count: %lu\n", todo_list.GetCount());
-#else    
-    todo_list.Clear();
-#endif
-        
+            printf("Pool:  Purge, todo count: %lu\n", (long unsigned)todo_list.GetCount());
+    }
+    else {
+        todo_list.Clear();
+    }        
 
     //  Mark all running tasks for "abort"
     wxJobListNode *node = running_list.GetFirst();
@@ -851,7 +802,6 @@ void CompressionWorkerPool::PurgeJobList( wxString &chart_path )
     }
     
 }
-
 
 
 

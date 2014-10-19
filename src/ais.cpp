@@ -115,6 +115,7 @@ extern bool             g_bAIS_ACK_Timeout;
 extern double           g_AckTimeout_Mins;
 
 extern bool             bGPSValid;
+extern ArrayOfMMSIProperties   g_MMSI_Props_Array;
 
 extern PlugInManager    *g_pi_manager;
 extern ocpnStyle::StyleManager* g_StyleManager;
@@ -426,6 +427,10 @@ wxString trimAISField( char *data )
     wxString field = wxString::From8BitData( data );
     while( field.Right( 1 ) == '@' || field.Right( 1 ) == ' ' )
         field.RemoveLast();
+    
+    //  And remove any leading spaces to properly sort and display
+    field.Trim(false);
+    
     return field;
 }
 
@@ -1204,7 +1209,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                     arrow[1] = wxPoint(  0, 27 );
                     arrow[2] = wxPoint(  4, 20 );
                     transrot_pts(3, arrow, sin_theta, cos_theta, TargetPoint);
-                    dc.StrokePolygon( 3, arrow, TargetPoint.x, TargetPoint.y );
+                    dc.StrokePolygon( 3, arrow );
 
                     arrow[0] = wxPoint( -4, 27 );
                     arrow[1] = wxPoint(  0, 34 );
@@ -1264,7 +1269,26 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         }
 
         //  Draw tracks if enabled
-        if( 1/*g_bAISShowTracks*/ && td->b_show_track ) {
+        //  Check the Special MMSI Properties array
+        bool b_noshow = false;
+        bool b_forceshow = false;
+        for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
+            if(td->MMSI == g_MMSI_Props_Array.Item(i)->MMSI ){
+                MMSIProperties *props = g_MMSI_Props_Array.Item(i);
+                if( TRACKTYPE_NEVER == props->TrackType){
+                    b_noshow = true;
+                    break;
+                }
+                else if( TRACKTYPE_ALWAYS == props->TrackType){
+                    b_forceshow = true;
+                    break;
+                }
+                else
+                    break;
+            }
+        }
+            
+        if( (!b_noshow && td->b_show_track) || b_forceshow ) {
             wxPoint TrackPointA;
             wxPoint TrackPointB;
 

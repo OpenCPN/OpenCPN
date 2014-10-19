@@ -217,7 +217,6 @@ extern bool             g_bUseGreenShip;
 
 extern ChartCanvas      *cc1;
 
-extern bool             g_bshow_overzoom_emboss;
 extern int              g_OwnShipIconType;
 extern double           g_n_ownship_length_meters;
 extern double           g_n_ownship_beam_meters;
@@ -731,6 +730,23 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
             b_intersect = true;
             break;
         }
+        
+        // Check segment, last point back to first point
+        if(!b_intersect){
+            int x0 = pp[nPoints-1].x;  int y0 = pp[nPoints-1].y; int x1 = pp[0].x; int y1 = pp[0].y;
+            if( ((x0 < rect.x) && (x1 < rect.x)) ||
+                ((x0 > rect.x+rect.width) && (x1 > rect.x+rect.width)) ){
+            }
+            else{
+                if( ((y0 < rect.y) && (y1 < rect.y)) ||
+                    ((y0 > rect.y+rect.height) && (y1 > rect.y+rect.height)) ){
+                }
+                else{
+                    b_intersect = true;
+                }
+            }
+        }
+                
         screen_region_it1.NextRect();
     }
 
@@ -764,10 +780,9 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
         wxRect rpoly( poly_x_min, poly_y_min, poly_x_max - poly_x_min , poly_y_max - poly_y_min);
         wxRect rRegion = Region.GetBox();
         if(rpoly.Contains(rRegion)){
-        //  subject poygon must be large enough to fully encompass the target Region,
-        //  so the intersection is simply the Region
-            if( NULL == ppoints ) delete[] pp;
-            return Region;
+        //  subject poygon may be large enough to fully encompass the target Region,
+        //  but it might not, especially for irregular or concave charts.
+        //  So we cannot shortcut here
         }
         else{
         //  Subject polygon is entirely outside of target Region
@@ -1064,6 +1079,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_bDrawingRoute = false;
     m_bRouteEditing = false;
     m_bMarkEditing = false;
+    m_bIsInRadius = false;
+    
     m_bFollow = false;
     m_bTCupdate = false;
     m_bAppendingRoute = false;          // was true in MSW, why??
@@ -1338,6 +1355,9 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 
     m_canvas_width = 1000;
 
+    m_overzoomTextWidth = 0;
+    m_overzoomTextHeight = 0;
+
 //    Create the default world chart
     pWorldBackgroundChart = new GSHHSChart;
 
@@ -1349,6 +1369,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     CreateDepthUnitEmbossMaps( GLOBAL_COLOR_SCHEME_DAY );
 
     m_pEM_OverZoom = NULL;
+    SetOverzoomFont();
     CreateOZEmbossMapData( GLOBAL_COLOR_SCHEME_DAY );
 
 //    Build icons for tide/current points
@@ -3114,12 +3135,13 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
 
                 max_allowed_scale = GetCanvasScaleFactor() / m_absolute_min_scale_ppm;
 
-                if( ChartData->GetDBBoundingBox( current_index, &chart_box ) &&
-                    !viewbox.IntersectOut( chart_box ) )
-                    //  Clamp the minimum scale zoom-out to the value specified by the chart
-                    max_allowed_scale = wxMin(max_allowed_scale, 4.0 *
-                                              pc->GetNormalScaleMax( GetCanvasScaleFactor(),
-                                                                     GetCanvasWidth() ) );
+                //  We can allow essentially unbounded zoomout in single chart mode
+//                if( ChartData->GetDBBoundingBox( current_index, &chart_box ) &&
+//                    !viewbox.IntersectOut( chart_box ) )
+//                    //  Clamp the minimum scale zoom-out to the value specified by the chart
+//                    max_allowed_scale = wxMin(max_allowed_scale, 4.0 *
+//                                              pc->GetNormalScaleMax( GetCanvasScaleFactor(),
+//                                                                     GetCanvasWidth() ) );
                 if(proposed_scale_onscreen > max_allowed_scale) {
                     m_zoom_factor = 1; /* stop zooming */
                     proposed_scale_onscreen = max_allowed_scale;
@@ -3285,6 +3307,15 @@ void ChartCanvas::SetQuiltRefChart( int dbIndex )
     m_pQuilt->Invalidate();
 }
 
+double ChartCanvas::GetBestStartScale(int dbi_hint, const ViewPort &vp)
+{
+    if(m_pQuilt)
+        return m_pQuilt->GetBestStartScale(dbi_hint, vp);
+    else
+        return vp.view_scale_ppm;
+}
+
+
 //      Verify and adjust the current reference chart,
 //      so that it will not lead to excessive overzoom or underzoom onscreen
 int ChartCanvas::AdjustQuiltRefChart( void )
@@ -3402,7 +3433,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
     VPoint.clat = lat;
     VPoint.clon = lon;
     VPoint.view_scale_ppm = scale_ppm;
-    VPoint.rotation = rotation;
+    SetVPRotation( rotation );
 
     if( ( VPoint.pix_width <= 0 ) || ( VPoint.pix_height <= 0 ) )    // Canvas parameters not yet set
         return false;
@@ -4684,7 +4715,7 @@ void ChartCanvas::ShowChartInfoWindow( int x, int y, int dbIndex )
             m_pCIWin->Hide();
         }
 
-        if( !m_pCIWin->IsShown() ) {
+        if( !m_pCIWin->IsShown() || (m_pCIWin->dbIndex != dbIndex) ) {
             wxString s;
             ChartBase *pc = NULL;
 
@@ -4705,6 +4736,7 @@ void ChartCanvas::ShowChartInfoWindow( int x, int y, int dbIndex )
             stats->GetSize( &statsW, &statsH );
             p.y = m_canvas_height - statsH - 4 - m_pCIWin->GetWinSize().y;
 
+            m_pCIWin->dbIndex = dbIndex;
             m_pCIWin->SetPosition( p );
             m_pCIWin->SetBitmap();
             m_pCIWin->Refresh();
@@ -5153,17 +5185,6 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
 //          Mouse Clicks
 
-    if(event.LeftIsDown()){
-        if( g_btouch ){
-            if(( m_bMeasure_Active && m_nMeasureState ) || ( parent_frame->nRoute_State )){
-                if( CheckEdgePan( x, y, true, 5, 10 ) ) {
-                    m_bedge_pan = true;
-                    return;
-                }
-            }
-        }
-    }
-    
     
     if( event.LeftDown() ) {
         //  This really should not be needed, but....
@@ -5360,19 +5381,37 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
            if(( m_bMeasure_Active && m_nMeasureState ) || ( parent_frame->nRoute_State )){
 
                // if near screen edge, pan with injection
-                if( CheckEdgePan( x, y, true, 5, 10 ) ) {
-                    return;
-                }
+//                if( CheckEdgePan( x, y, true, 5, 10 ) ) {
+//                    return;
+//                }
                 
            }
         }
     }
 
     if( event.Dragging() ) {
+        
+       //in touch screen mode ensure the finger/cursor is on the selected point's radius to allow dragging
+        if( g_btouch ) {
+            if( m_pRoutePointEditTarget && !m_bIsInRadius ) {
+                SelectItem *pFind = NULL;
+                SelectableItemList SelList = pSelect->FindSelectionList( m_cursor_lat, m_cursor_lon,
+                                                                                         +                                 SELTYPE_ROUTEPOINT );
+                wxSelectableItemListNode *node = SelList.GetFirst();
+                while( node ) {
+                    pFind = node->GetData();
+                    RoutePoint *frp = (RoutePoint *) pFind->m_pData1;
+                    if( m_pRoutePointEditTarget == frp ) m_bIsInRadius = true;
+                    node = node->GetNext();
+                }
+            }
+        }
+
+                    
         if( m_bRouteEditing && m_pRoutePointEditTarget ) {
 
-            bool DraggingAllowed = true;
-
+            bool DraggingAllowed = g_btouch ? m_bIsInRadius : true;
+            
             if( NULL == pMarkPropDialog ) {
                 if( g_bWayPointPreventDragging ) DraggingAllowed = false;
             } else if( !pMarkPropDialog->IsShown() && g_bWayPointPreventDragging ) DraggingAllowed =
@@ -5454,7 +5493,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
         else if( m_bMarkEditing && m_pRoutePointEditTarget ) {
 
-            bool DraggingAllowed = true;
+            bool DraggingAllowed = g_btouch ? m_bIsInRadius : true;
 
             if( NULL == pMarkPropDialog ) {
                 if( g_bWayPointPreventDragging ) DraggingAllowed = false;
@@ -5533,6 +5572,15 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
                 last_drag.x = mx;
                 last_drag.y = my;
+                
+                if( g_btouch ) {
+                   if(( m_bMeasure_Active && m_nMeasureState ) || ( parent_frame->nRoute_State )){
+                   //deactivate next LeftUp to ovoid creating an unexpected point
+                         m_DoubleClickTimer->Start();
+                         singleClickEventIsValid = false;
+                    }
+                }
+                        
             }
         }
     }
@@ -5543,6 +5591,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
         if(g_btouch) {
             m_bChartDragging = false;
+            m_bIsInRadius = false;
             
             if( parent_frame->nRoute_State )                  // creating route?
             {
@@ -5574,10 +5623,6 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                     r_rband.y = y;
                 }
 
-                // if near screen edge, pan but do not add a point
-                if( CheckEdgePan( x, y, true, 5, 10 ) ) {
-                    return;
-                }
                     
                 //    Check to see if there is a nearby point which may be reused
                 RoutePoint *pMousePoint = NULL;
@@ -5718,10 +5763,6 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                     r_rband.y = y;
                 }
 
-                // if near screen edge, pan but do not add a point
-                if( CheckEdgePan( x, y, true, 5, 10 ) ) {
-                    return;
-                }
                 
                 RoutePoint *pMousePoint = new RoutePoint( m_cursor_lat, m_cursor_lon,
                                                         wxString( _T ( "circle" ) ), wxEmptyString, GPX_EMPTY_STRING );
@@ -7818,12 +7859,23 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
     }
 
     case ID_RT_MENU_ACTIVATE: {
-        if( g_pRouteMan->GetpActiveRoute() ) g_pRouteMan->DeactivateRoute();
+        if( g_pRouteMan->GetpActiveRoute() )
+            g_pRouteMan->DeactivateRoute();
 
-        RoutePoint *best_point = g_pRouteMan->FindBestActivatePoint( m_pSelectedRoute, gLat,
+        //  If this is an auto-created MOB route, always select the second point (the MOB)
+        // as the destination.
+        RoutePoint *best_point;
+        if(m_pSelectedRoute){
+            if(wxNOT_FOUND == m_pSelectedRoute->m_RouteNameString.Find(_T("MOB")) ){
+                best_point = g_pRouteMan->FindBestActivatePoint( m_pSelectedRoute, gLat,
                                  gLon, gCog, gSog );
-
-        g_pRouteMan->ActivateRoute( m_pSelectedRoute, best_point );
+            }
+            else
+                best_point = m_pSelectedRoute->GetPoint( 2 );
+        
+            g_pRouteMan->ActivateRoute( m_pSelectedRoute, best_point );
+        }
+            
         m_pSelectedRoute->m_bRtIsSelected = false;
 
         break;
@@ -8847,9 +8899,9 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
         ocpnDC bgdc( temp_dc );
         double r =         VPoint.rotation;
-        VPoint.rotation = 0;
+        SetVPRotation( 0.0 );
         pWorldBackgroundChart->RenderViewOnDC( bgdc, VPoint );
-        VPoint.rotation = r;
+        SetVPRotation( r );
     }
 
     wxMemoryDC *pChartDC = &temp_dc;
@@ -9334,15 +9386,13 @@ void ChartCanvas::DrawEmboss( ocpnDC &dc, emboss_data *pemboss)
 
 emboss_data *ChartCanvas::EmbossOverzoomIndicator( ocpnDC &dc )
 {
-    if( !g_bshow_overzoom_emboss ) return NULL;
-
     if( GetQuiltMode() ) {
         double chart_native_ppm;
         chart_native_ppm = m_canvas_scale_factor / m_pQuilt->GetRefNativeScale();
 
         double zoom_factor = GetVP().view_scale_ppm / chart_native_ppm;
 
-        if( zoom_factor <= 4.0 ) return NULL;
+        if( zoom_factor <= 3.9 ) return NULL;
     } else {
         double chart_native_ppm;
         if( Current_Ch ) chart_native_ppm = m_canvas_scale_factor / Current_Ch->GetNativeScale();
@@ -9351,7 +9401,7 @@ emboss_data *ChartCanvas::EmbossOverzoomIndicator( ocpnDC &dc )
 
         double zoom_factor = GetVP().view_scale_ppm / chart_native_ppm;
         if( Current_Ch ) {
-            if( zoom_factor <= 4.0 ) return NULL;
+            if( zoom_factor <= 3.9 ) return NULL;
         }
     }
 
@@ -9471,10 +9521,10 @@ void ChartCanvas::CreateDepthUnitEmbossMaps( ColorScheme cs )
     m_pEM_Fathoms = CreateEmbossMapData( font, emboss_width, emboss_height, _("Fathoms"), cs );
 }
 
-void ChartCanvas::CreateOZEmbossMapData( ColorScheme cs )
-{
-    delete m_pEM_OverZoom;
+#define OVERZOOM_TEXT _("OverZoom")
 
+void ChartCanvas::SetOverzoomFont()
+{
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
     int w, h;
 
@@ -9486,10 +9536,25 @@ void ChartCanvas::CreateOZEmbossMapData( ColorScheme cs )
 
     wxClientDC dc( this );
     dc.SetFont( font );
-    dc.GetTextExtent( _("OverZoom"), &w, &h );
+    dc.GetTextExtent( OVERZOOM_TEXT, &w, &h );
 
-    if((w > 0) && (w < 500) && (h > 0) && (h < 100))
-        m_pEM_OverZoom = CreateEmbossMapData( font, w + 10, h + 10, _("OverZoom"), cs );
+    while( font.GetPointSize() > 10 && (w > 500 || h > 100) )
+    {
+        font.SetPointSize( font.GetPointSize() - 1 );
+        dc.SetFont( font );
+        dc.GetTextExtent( OVERZOOM_TEXT, &w, &h );
+    }
+    m_overzoomFont = font;
+    m_overzoomTextWidth = w;
+    m_overzoomTextHeight = h;
+}
+
+void ChartCanvas::CreateOZEmbossMapData( ColorScheme cs )
+{
+    delete m_pEM_OverZoom;
+
+    if( m_overzoomTextWidth > 0 && m_overzoomTextHeight > 0 )
+        m_pEM_OverZoom = CreateEmbossMapData( m_overzoomFont, m_overzoomTextWidth + 10, m_overzoomTextHeight + 10, OVERZOOM_TEXT, cs );
 }
 
 emboss_data *ChartCanvas::CreateEmbossMapData( wxFont &font, int width, int height,

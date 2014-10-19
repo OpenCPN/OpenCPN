@@ -31,6 +31,7 @@
 #include "navutil.h"
 #include "multiplexer.h"
 #include "Select.h"
+#include "georef.h"
 
 extern WayPointman *pWayPointMan;
 extern bool g_bIsNewLayer;
@@ -41,7 +42,8 @@ extern int g_track_line_width;
 extern Select *pSelect;
 extern MyConfig *pConfig;
 extern Multiplexer *g_pMUX;
-extern double           g_n_arrival_circle_radius;
+extern double g_n_arrival_circle_radius;
+extern float g_GLMinSymbolLineWidth;
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST ( RouteList );
@@ -422,8 +424,8 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
     
     //  Hiliting first
     //  Being special case to draw something for a 1 point route....
+    ocpnDC dc;
     if(m_hiliteWidth){
-        ocpnDC dc;
         wxColour y = GetGlobalColor( _T ( "YELO1" ) );
         wxColour hilt( y.Red(), y.Green(), y.Blue(), 128 );
         wxPen HiPen( hilt, m_hiliteWidth, wxSOLID );
@@ -503,15 +505,24 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
             }
         }
     }
-        
+    
+    int style = wxSOLID;
+    if( m_style != STYLE_UNDEFINED ) style = m_style;
+    dc.SetPen( *wxThePenList->FindOrCreatePen( col, width, style ) );
+    
     glColor3ub(col.Red(), col.Green(), col.Blue());
-    glLineWidth(width);
+    glLineWidth( wxMax( g_GLMinSymbolLineWidth, width ) );
+    
+    dc.SetGLStipple();
 
     glBegin(GL_LINE_STRIP);
     float lastlon = 0;
+    float lastlat = 0;
+    unsigned short int FromSegNo = 1;
     for(wxRoutePointListNode *node = pRoutePointList->GetFirst();
         node; node = node->GetNext()) {
         RoutePoint *prp = node->GetData();
+        unsigned short int ToSegNo = prp->m_GPXTrkSegNo;
         
         /* crosses IDL? if so break up into two segments */
         int dir = 0;
@@ -519,23 +530,33 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
             dir = -1;
         else if(prp->m_lon < -150 && lastlon > 150)
             dir = 1;
-        lastlon=prp->m_lon;
         
         wxPoint r;
-        if(dir) {
-            cc1->GetCanvasPointPix( prp->m_lat, dir*180, &r);
+        if (FromSegNo != ToSegNo)
+        {
+            glEnd();
+            FromSegNo = ToSegNo;
+            glBegin(GL_LINE_STRIP);
+        }
+        if(dir)
+        {
+            double crosslat = lat_rl_crosses_meridian(lastlat, lastlon, prp->m_lat, prp->m_lon, 180.0);
+            cc1->GetCanvasPointPix( crosslat, dir*180, &r);
             glVertex2i(r.x, r.y);
             glEnd();
             glBegin(GL_LINE_STRIP);
-            cc1->GetCanvasPointPix( prp->m_lat, -dir*180, &r);
+            cc1->GetCanvasPointPix( crosslat, -dir*180, &r);
             glVertex2i(r.x, r.y);
         }
+        lastlat=prp->m_lat;
+        lastlon=prp->m_lon;
         
         cc1->GetCanvasPointPix( prp->m_lat, prp->m_lon, &r);
         glVertex2i(r.x, r.y);
     }
     glEnd();
-
+    glDisable (GL_LINE_STIPPLE);
+    
     /* direction arrows.. could probably be further optimized for opengl */
     if( !m_bIsTrack ) {
         wxRoutePointListNode *node = pRoutePointList->GetFirst();

@@ -1280,10 +1280,10 @@ void s57chart::ClearRenderedTextCache()
 
 double s57chart::GetNormalScaleMin( double canvas_scale_factor, bool b_allow_overzoom )
 {
-    if( b_allow_overzoom )
+//    if( b_allow_overzoom )
         return m_Chart_Scale * 0.125;
-    else
-        return m_Chart_Scale * 0.25;
+//    else
+//        return m_Chart_Scale * 0.25;
 }
 double s57chart::GetNormalScaleMax( double canvas_scale_factor, int canvas_width )
 {
@@ -4275,7 +4275,7 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
     Title.append( SENCfile.GetFullPath() );
 
     cc1->StopMovement();
-    s_ProgDialog = new wxProgressDialog( Title, Message, m_nGeoRecords, NULL,
+    s_ProgDialog = new wxProgressDialog( Title, Message, m_nGeoRecords, GetOCPNCanvasWindow(),
                                          wxPD_AUTO_HIDE | wxPD_SMOOTH | wxSTAY_ON_TOP | wxPD_APP_MODAL);
 
     //      Analyze Updates
@@ -5255,7 +5255,7 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
                     wxString AttrStringPrefix = wxString( line, wxConvUTF8 );
                     
                     wxString wxAttrValue;
-                    
+
                     if( (0 == strncmp("NOBJNM",pAttrName, 6) ) ||
                         (0 == strncmp("NINFOM",pAttrName, 6) ) ||
                         (0 == strncmp("NTXTDS",pAttrName, 6) ) )
@@ -5276,25 +5276,20 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
                     if( wxAttrValue.IsEmpty()) {
         // Attempt different conversions to accomodate different language encodings in
         // the original ENC files.
+        
+        //  For attribute fields other that "National" Objects, (handled above)  See FS#1464
+        //  the text must be encoded in simple ASCII, or in lex level 1 (i.e. iso8859-1)
 
                         wxAttrValue = wxString( pAttrVal, wxConvUTF8 );
 
                         if( 0 ==wxAttrValue.Length() ) {
-                            if( poReader->GetNall() == 2) {     // ENC is using UCS-2 / UTF-16 encoding
-                                wxMBConvUTF16 conv;
-                                wxString att_conv(pAttrVal, conv);
-                                att_conv.RemoveLast();          // Remove the \037 that terminates UTF-16 strings in S57
-                                wxAttrValue = att_conv;
-                            }
-                            else if( poReader->GetNall() == 1) {     // ENC is using Lex level 1 (ISO 8859_1) encoding
-                                wxCSConv conv(_T("iso8859-1") );
-                                wxString att_conv(pAttrVal, conv);
-                                wxAttrValue = att_conv;
-                            }
+                            wxCSConv conv(_T("iso8859-1") );
+                            wxString att_conv(pAttrVal, conv);
+                            wxAttrValue = att_conv;
+                        }
                             
-                            if( 0 ==wxAttrValue.Length() ) {
-                                wxLogError( _T("Warning: CreateSENCRecord(): Failed to convert string value to wxString.") );
-                            }
+                        if( 0 ==wxAttrValue.Length() ) {
+                            wxLogError( _T("Warning: CreateSENCRecord(): Failed to convert string value to wxString.") );
                         }
                     }
                 
@@ -7707,6 +7702,9 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
                         if(!bviz)
                             newsector = false;
                     
+                        if((sector.sector2 == 360) && ( sector.sector1 == 0))  //FS#1437
+                            newsector = false;
+                        
                         if( newsector ) {
                             sectorlegs.push_back( sector );
                             newSectorsNeedDrawing = true;

@@ -4,3 +4,6 @@ index.sh
 include/version.h
 build
 cscope.out
+*~
+*.kdev*
+*.patch

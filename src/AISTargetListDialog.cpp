@@ -870,7 +870,7 @@ void AISTargetListDialog::UpdateAISTargetList( void )
         wxListItem item;
 
         int index = 0;
-        if( g_bAisTargetList_autosort || g_bsort_once )
+//        if( g_bAisTargetList_autosort || g_bsort_once )
             m_pMMSI_array->Clear();
 
         for( it = ( *current_targets ).begin(); it != ( *current_targets ).end(); ++it, ++index ) {
@@ -885,6 +885,7 @@ void AISTargetListDialog::UpdateAISTargetList( void )
                     b_add = true;
                 
                 if(b_add){
+/*                    
                     if( !g_bAisTargetList_autosort && !g_bsort_once ){
                         bool b_found = false;
                         for(unsigned int j=0 ; j < m_pMMSI_array->GetCount() ; j++){
@@ -897,6 +898,7 @@ void AISTargetListDialog::UpdateAISTargetList( void )
                             m_pMMSI_array->Add( pAISTarget->MMSI );
                     }
                     else
+*/                        
                         m_pMMSI_array->Add( pAISTarget->MMSI );
                 }
             }

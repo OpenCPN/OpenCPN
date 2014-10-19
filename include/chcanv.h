@@ -201,7 +201,8 @@ public:
       bool IsQuiltDelta(void);
       void SetQuiltChartHiLiteIndex(int dbIndex);
       int GetQuiltReferenceChartIndex(void);
-
+      double GetBestStartScale(int dbi_hint, const ViewPort &vp);
+      
       int GetNextContextMenuId();
 
       bool StartTimedMovement( bool stoptimer=true );
@@ -343,6 +344,8 @@ private:
       bool        m_bDrawingRoute;
       bool        m_bRouteEditing;
       bool        m_bMarkEditing;
+      bool        m_bIsInRadius;
+      
       RoutePoint  *m_pRoutePointEditTarget;
       RoutePoint  *m_lastRoutePointEditTarget;
       SelectItem  *m_pFoundPoint;
@@ -386,6 +389,9 @@ private:
       wxMouseEvent singleClickEvent;
 
       std::vector<s57Sector_t> extendedSectorLegs;
+      wxFont m_overzoomFont;
+      int m_overzoomTextWidth;
+      int m_overzoomTextHeight;
 
       //    Methods
       void OnActivate(wxActivateEvent& event);
@@ -435,6 +441,7 @@ private:
 
       void CreateOZEmbossMapData(ColorScheme cs);
       emboss_data *EmbossOverzoomIndicator ( ocpnDC &dc);
+      void SetOverzoomFont();
 
 //      void CreateCM93OffsetEmbossMapData(ColorScheme cs);
 //      void EmbossCM93Offset ( wxMemoryDC *pdc);
