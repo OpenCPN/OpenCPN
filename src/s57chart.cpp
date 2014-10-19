@@ -5258,6 +5258,7 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
 
                     if( (0 == strncmp("NOBJNM",pAttrName, 6) ) ||
                         (0 == strncmp("NINFOM",pAttrName, 6) ) ||
+                        (0 == strncmp("NPLDST",pAttrName, 6) ) ||
                         (0 == strncmp("NTXTDS",pAttrName, 6) ) )
                     {
                         if( poReader->GetNall() == 2) {     // ENC is using UCS-2 / UTF-16 encoding
