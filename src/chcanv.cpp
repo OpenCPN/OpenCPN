@@ -6600,19 +6600,40 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     SetMenuItemFont(subItemChart);
     
     if( g_pGroupArray->GetCount() ) {
-        wxMenuItem* subItem0 = subMenuChart->AppendRadioItem( ID_DEF_MENU_GROUPBASE, _("All Active Charts") );
+
+#ifdef __WXMSW__
+          const wxString l[] = { _T(" "), wxString::Format( _T("\u2022") ) };
+          wxMenuItem* subItem1 = subMenuChart->AppendRadioItem( wxID_CANCEL , _T("temporary") );
+          SetMenuItemFont(subItem1);
+#endif
+          wxMenuItem* subItem0 = subMenuChart->AppendRadioItem( ID_DEF_MENU_GROUPBASE ,
+#ifdef __WXMSW__
+                  ( g_GroupIndex == 0 ? l[1] : l[0] ) +
+#endif
+                  _("All Active Charts") );
+
+
+
         SetMenuItemFont(subItem0);
-        
+
         for( unsigned int i = 0; i < g_pGroupArray->GetCount(); i++ ) {
-            subMenuChart->AppendRadioItem( ID_DEF_MENU_GROUPBASE + i + 1,
-                                         g_pGroupArray->Item( i )->m_group_name );
+            subItem0 = subMenuChart->AppendRadioItem( ID_DEF_MENU_GROUPBASE + i + 1,
+#ifdef __WXMSW__
+                     ( i == g_GroupIndex - 1 ? l[1] : l[0] ) +
+#endif
+                     g_pGroupArray->Item( i )->m_group_name );
+            SetMenuItemFont(subItem0);
             Connect( ID_DEF_MENU_GROUPBASE + i + 1, wxEVT_COMMAND_MENU_SELECTED,
                      (wxObjectEventFunction) (wxEventFunction) &ChartCanvas::PopupMenuHandler );
         }
-
+        
+#ifdef __WXMSW__
+    subMenuChart->Remove( wxID_CANCEL );
+#endif
         subMenuChart->Check( ID_DEF_MENU_GROUPBASE + g_GroupIndex, true );
     }
-
+    
+        
     //  Add PlugIn Context Menu items
     ArrayOfPlugInMenuItems item_array = g_pi_manager->GetPluginContextMenuItemArray();
 
