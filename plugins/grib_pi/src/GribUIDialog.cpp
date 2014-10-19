@@ -152,9 +152,8 @@ GribTimelineRecordSet::~GribTimelineRecordSet()
 
 void GRIBUIDialog::OpenFile(bool newestFile)
 {
-    m_bpPlay->SetBitmap(*m_bPlay);
+    m_bpPlay->SetBitmap(wxBitmap( play ));
     m_bpPlay->SetToolTip(_("Play"));
-    m_tPlayStop.Stop();
     m_cRecordForecast->Clear();
     m_cbAltitude->Clear();
     pPlugIn->GetGRIBOverlayFactory()->SetAltitude( 0 );
@@ -336,8 +335,7 @@ GRIBUIDialog::GRIBUIDialog(wxWindow *parent, grib_pi *ppi)
     m_bpNext->SetBitmap(wxBitmap( next ));
     m_bpNow->SetBitmap(wxBitmap( now ));
     m_bpZoomToCenter->SetBitmap(wxBitmap( zoomto ));
-    m_bPlay = new wxBitmap( play );
-    m_bpPlay->SetBitmap(*m_bPlay );
+    m_bpPlay->SetBitmap(wxBitmap( play ));
     m_bpOpenFile->SetBitmap(wxBitmap( openfile ));
     m_bpSettings->SetBitmap(wxBitmap( setting ));
     m_bpRequest->SetBitmap(wxBitmap( request ));
@@ -847,6 +845,8 @@ void GRIBUIDialog::OnSize( wxSizeEvent& event )
 
 void GRIBUIDialog::OnRequest(  wxCommandEvent& event )
 {
+    if( m_tPlayStop.IsRunning() ) return;                            // do nothing when play back is running !
+
     if(pReq_Dialog){                                                 //there is one instance of the dialog
         if(pReq_Dialog->IsShown()) return;                           //already visible
     }
@@ -864,6 +864,8 @@ void GRIBUIDialog::OnRequest(  wxCommandEvent& event )
 
 void GRIBUIDialog::OnSettings( wxCommandEvent& event )
 {
+    if( m_tPlayStop.IsRunning() ) return;      // do nothing when play back is running !
+
     GribOverlaySettings initSettings = m_OverlaySettings;
     GribSettingsDialog *dialog = new GribSettingsDialog( *this, m_OverlaySettings,  m_lastdatatype, m_FileIntervalIndex);
     if(dialog->ShowModal() == wxID_OK)
@@ -880,33 +882,31 @@ void GRIBUIDialog::OnSettings( wxCommandEvent& event )
 
 void GRIBUIDialog::OnPlayStop( wxCommandEvent& event )
 {
-    if( m_bPlay->IsSameAs( m_bpPlay->GetBitmapLabel()) ) {
+    if( m_tPlayStop.IsRunning() ) {
+        StopPlayBack();
+    } else {
         m_bpPlay->SetBitmap(wxBitmap( stop ));
         m_bpPlay->SetToolTip( _("Stop") );
         m_tPlayStop.Start( 1000/m_OverlaySettings.m_UpdatesPerSecond, wxTIMER_CONTINUOUS );
-    } else
-        m_bpPlay->SetBitmap(*m_bPlay );
+    }
 
     m_InterpolateMode = m_OverlaySettings.m_bInterpolate;
 }
 
 void GRIBUIDialog::OnPlayStopTimer( wxTimerEvent & event )
 {
-    if( m_bPlay->IsSameAs( m_bpPlay->GetBitmapLabel()) ) {
-        m_bpPlay->SetToolTip( _("Play") );
-        m_tPlayStop.Stop();
-        return;
-    }
     if(m_sTimeline->GetValue() >= m_sTimeline->GetMax()) {
         if(m_OverlaySettings.m_bLoopMode) {
             if(m_OverlaySettings.m_LoopStartPoint) {
                 ComputeBestForecastForNow();
-                if(m_sTimeline->GetValue() >= m_sTimeline->GetMax()) m_bpPlay->SetBitmap(*m_bPlay );;        //will stop playback
+                if(m_sTimeline->GetValue() >= m_sTimeline->GetMax()) StopPlayBack();        //will stop playback
                 return;
             } else
                 m_sTimeline->SetValue(0);
-        } else
-            m_bpPlay->SetBitmap(*m_bPlay );                                             //will stop playback
+        } else {
+            StopPlayBack();                                           //will stop playback
+            return;
+        }
     } else {
         int value = m_pNowMode ? m_OverlaySettings.m_bInterpolate ?
             GetNearestValue(GetNow(), 1) : GetNearestIndex(GetNow(), 2) : m_sTimeline->GetValue();
@@ -916,6 +916,15 @@ void GRIBUIDialog::OnPlayStopTimer( wxTimerEvent & event )
     m_pNowMode = false;
     if(!m_InterpolateMode) m_cRecordForecast->SetSelection( m_sTimeline->GetValue() );
     TimelineChanged();
+}
+
+void GRIBUIDialog::StopPlayBack()
+{
+    if( m_tPlayStop.IsRunning() ) {
+        m_tPlayStop.Stop();
+        m_bpPlay->SetBitmap(wxBitmap( play ));
+        m_bpPlay->SetToolTip( _("Play") );
+    }
 }
 
 void GRIBUIDialog::TimelineChanged()
@@ -1061,6 +1070,7 @@ GribTimelineRecordSet* GRIBUIDialog::GetTimeLineRecordSet(wxDateTime time)
 
 void GRIBUIDialog::OnTimeline( wxScrollEvent& event )
 {
+    StopPlayBack();
     m_InterpolateMode = m_OverlaySettings.m_bInterpolate;
     if(!m_InterpolateMode) m_cRecordForecast->SetSelection(m_sTimeline->GetValue());
     m_pNowMode = false;
@@ -1109,6 +1119,8 @@ void GRIBUIDialog::OnCBAny( wxCommandEvent& event )
 
 void GRIBUIDialog::OnOpenFile( wxCommandEvent& event )
 {
+    if( m_tPlayStop.IsRunning() ) return;      // do nothing when play back is running !
+
     if( !wxDir::Exists( m_grib_dir ) ) {
         wxStandardPathsBase& path = wxStandardPaths::Get();
         m_grib_dir = path.GetDocumentsDir();
@@ -1205,6 +1217,8 @@ void GRIBUIDialog::OnZoomToCenterClick( wxCommandEvent& event )
 
 void GRIBUIDialog::OnPrev( wxCommandEvent& event )
 {
+    if( m_tPlayStop.IsRunning() ) return;      // do nothing when play back is running !
+
     int selection;
     if(m_pNowMode)
         selection = GetNearestIndex(GetNow(), 1);
@@ -1224,6 +1238,8 @@ void GRIBUIDialog::OnPrev( wxCommandEvent& event )
 
 void GRIBUIDialog::OnNext( wxCommandEvent& event )
 {
+    if( m_tPlayStop.IsRunning() ) return;      // do nothing when play back is running !
+
     int selection;
     if(m_pNowMode)
         selection = GetNearestIndex(GetNow(), 2);
