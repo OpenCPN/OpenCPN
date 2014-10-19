@@ -27,11 +27,6 @@
 
 #include <wx/string.h>
 
-//  This icorrects an error in wxQT build rules, and might be able to go away later...
-#ifdef __WXQT__
-#include <qfont.h>
-#endif
-
 #include <wx/font.h>
 #include <wx/colour.h>
 #include <wx/list.h>
