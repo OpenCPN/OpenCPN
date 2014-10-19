@@ -86,7 +86,9 @@
 
         $cd {OCPN_root}/build_Qt521_armv7
 
-        $cmake -D_wx_selected_config=qt-armv7 -DCMAKE_SYSTEM_NAME=Generic -DCMAKE_C_COMPILER=/home/dsr/Projects/android-ndk/ndk-toolchain/bin/arm-linux-androideabi-gcc -DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets -DQt_Base=/home/dsr/Qt ..
+        $export PATH=/home/dsr/Projects/wxqt/wxWidgets/build_wxQt_armv7:$PATH
+
+        $cmake -DQt_Base=/home/dsr/Qt ..
 
 
         ___Build OCPN
@@ -146,6 +148,7 @@
 
         $export ANDROID_NDK_ROOT=/home/dsr/Projects/android-ndk/android-ndk-r10
         $export ANDROID_SDK_ROOT=/home/dsr/Projects/android-ndk/android-sdk-linux
+        $export PATH=/home/dsr/Projects/wxqt/wxWidgets/build_wxQt_armv7:$PATH
 
         $/home/dsr/Qt/5.2.1/android_armv7/bin/qmake -makefile ../buildandroid/opencpn.pro -o Makefile.android -r -spec android-g++ CONFIG+=debug
 
