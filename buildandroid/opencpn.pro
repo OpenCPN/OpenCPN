@@ -11,17 +11,20 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = opencpn
 TEMPLATE = app
 
-INCLUDEPATH += /home/dsr/Projects/wxqt/wxWidgets/include/
 INCLUDEPATH += $$PWD/../include/
 INCLUDEPATH += $$PWD/../src/nmea0183/
 
-INCLUDEPATH += /home/dsr/Projects/wxqt/wxWidgets/build_wxQt_armv7/lib/wx/include/arm-linux-androideabi-qt-unicode-static-3.1
+#wxQt_Base=/home/sean/build/wxWidgets/build-android/lib
+wxQt_Base=$$system(which wx-config)
+wxQt_Base=$$replace(wxQt_Base, "wx-config", "lib")
+message("Using wxWidgets lib directory: " $$wxQt_Base)
+
+INCLUDEPATH += $${wxQt_Base}/wx/include/arm-linux-androideabi-qt-unicode-static-3.1
 
 LIBS += ./libopencpn.a
 LIBS += ./libNMEA0183.a
 LIBS += ./libGARMINHOST.a
 
-wxQt_Base=/home/dsr/Projects/wxqt/wxWidgets/build_wxQt_armv7/lib
 LIBS += $${wxQt_Base}/libwx_qtu_html-3.1-arm-linux-androideabi.a
 LIBS += $${wxQt_Base}/libwx_baseu_xml-3.1-arm-linux-androideabi.a
 LIBS += $${wxQt_Base}/libwx_qtu_adv-3.1-arm-linux-androideabi.a
