@@ -639,7 +639,7 @@ private:
     ChartGroupArray *m_pGroupArray;
 };
 
-#if wxUSE_XLOCALE 
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
 static int lang_list[] = {
             wxLANGUAGE_DEFAULT,
             wxLANGUAGE_ABKHAZIAN,

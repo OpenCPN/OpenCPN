@@ -567,7 +567,7 @@ about                     *g_pAboutDlg;
 
 wxPlatformInfo            *g_pPlatform;
 
-#if wxUSE_XLOCALE
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
 wxLocale                  *plocale_def_lang;
 #endif
 
@@ -1260,7 +1260,7 @@ bool MyApp::OnInit()
 //        wxLog::AddTraceMask("timer");               // verbose message traces to log output
 
 #ifndef __WXMSW__
-    logger->SetTimestamp(("%H:%M:%S %Z"));
+    logger->SetTimestamp(_T("%H:%M:%S %Z"));
 #endif
 
 //      Send init message
@@ -1482,7 +1482,7 @@ bool MyApp::OnInit()
 
 //        wxLog::SetVerbose(true);            // log all messages for debugging
 
-#if wxUSE_XLOCALE    
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
     if( lang_list[0] ) {
     };                 // silly way to avoid compiler warnings
 
@@ -2477,7 +2477,7 @@ int MyApp::OnExit()
     delete g_pPlatform;
     delete g_pauimgr;
 
-#if wxUSE_XLOCALE    
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
     delete plocale_def_lang;
 #endif
     

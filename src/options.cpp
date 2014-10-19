@@ -183,7 +183,7 @@ extern bool             g_bConfirmObjectDelete;
 extern wxString         g_GPS_Ident;
 extern bool             g_bGarminHostUpload;
 
-#if wxUSE_XLOCALE
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
 extern wxLocale         *plocale_def_lang;
 #endif
 
@@ -3067,7 +3067,7 @@ void options::OnApplyClick( wxCommandEvent& event )
 #endif
 
 //    User Interface Panel
-#if wxUSE_XLOCALE
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
     if( m_bVisitLang ) {
         wxString new_canon = _T("en_US");
         wxString lang_sel = m_itemLangListBox->GetStringSelection();
@@ -3345,7 +3345,7 @@ void options::OnPageChange( wxListbookEvent& event )
     }
 
     else if( m_pageUI == i ) {                       // 5 is the index of "User Interface" page
-#if wxUSE_XLOCALE
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
         if( !m_bVisitLang ) {
             ::wxBeginBusyCursor();
 
@@ -3536,7 +3536,7 @@ wxString GetOCPNKnownLanguage( wxString lang_canonical, wxString *lang_dir )
     wxString return_string;
     wxString dir_suffix;
     
-#if wxUSE_XLOCALE
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
     if( lang_canonical == _T("en_US") ) {
         dir_suffix = _T("en");
         return_string = wxString( "English (U.S.)", wxConvUTF8 );

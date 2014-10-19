@@ -71,7 +71,7 @@ extern wxString        g_PrivateDataDir;
 extern AIS_Decoder     *g_pAIS;
 extern wxAuiManager    *g_pauimgr;
 
-#if wxUSE_XLOCALE
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
 extern wxLocale        *plocale_def_lang;
 #endif
 
@@ -1771,7 +1771,7 @@ wxAuiManager *GetFrameAuiManager(void)
 
 bool AddLocaleCatalog( wxString catalog )
 {
-#if wxUSE_XLOCALE    
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
     if(plocale_def_lang)
         return plocale_def_lang->AddCatalog( catalog );
     else
