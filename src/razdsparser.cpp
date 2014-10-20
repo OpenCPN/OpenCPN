@@ -155,7 +155,7 @@ int RazdsParser::ParseCOLS( FILE *fp )
 int RazdsParser::ParseLUPT( FILE *fp )
 {
     int ret;
-
+#ifdef USE_S57
     bool inserted = FALSE;
 
     LUPrec *LUP = (LUPrec*) calloc( 1, sizeof(LUPrec) );
@@ -238,7 +238,7 @@ int RazdsParser::ParseLUPT( FILE *fp )
         ret = ReadS52Line( pBuf, NEWLN, 0, fp );
 
     } while( inserted == FALSE );
-
+#endif
     return 1;
 }
 
@@ -304,7 +304,8 @@ int RazdsParser::ParseLNST( FILE *fp )
 
 int RazdsParser::ParsePATT( FILE *fp )
 {
-    int ret;
+    int ret = 0;
+#ifdef USE_S57    
 
     int bitmap_width;
     char pbm_line[200]; // max bitmap width...
@@ -380,13 +381,14 @@ int RazdsParser::ParsePATT( FILE *fp )
 
     } while( inserted == FALSE );
 
+#endif    
     return ret;
 }
 
 int RazdsParser::ParseSYMB( FILE *fp, RuleHash *pHash )
 {
-    int ret;
-
+    int ret = 0;
+#ifdef USE_S57
     int bitmap_width;
     char pbm_line[200]; // max bitmap width...
     bool inserted = FALSE;
@@ -457,7 +459,7 @@ int RazdsParser::ParseSYMB( FILE *fp, RuleHash *pHash )
         ChopS52Line( pBuf, '\0' );
 
     } while( inserted == FALSE );
-
+#endif
     return ret;
 }
 

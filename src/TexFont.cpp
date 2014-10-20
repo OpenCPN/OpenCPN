@@ -109,6 +109,8 @@ void TexFont::Build( wxFont &font, bool blur )
         col++;
     }
 
+    dc.SelectObject(wxNullBitmap);
+
     wxImage image = tbmp.ConvertToImage();
 
     GLuint format, internalformat;

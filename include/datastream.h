@@ -202,7 +202,6 @@ private:
     void Init(void);
     void Open(void);
 
-    void OnSocketEvent(wxSocketEvent& event);
     void OnTimerSocket(wxTimerEvent& event);
     void OnSocketReadWatchdogTimer(wxTimerEvent& event);
     
@@ -221,6 +220,8 @@ private:
     bool                m_bsec_thread_active;
     int                 m_last_error;
 
+#if wxUSE_SOCKETS    
+    void OnSocketEvent(wxSocketEvent& event);
     wxIPV4address       m_addr;
     wxSocketBase        *m_sock;
     wxSocketBase        *m_tsock;
@@ -235,7 +236,9 @@ private:
 
     wxSocketServer      *m_socket_server;                       //  The listening server
     wxSocketBase        *m_socket_server_active;                //  The active connection
-    
+
+#endif
+
     std::string         m_sock_buffer;
     wxString            m_net_addr;
     wxString            m_net_port;

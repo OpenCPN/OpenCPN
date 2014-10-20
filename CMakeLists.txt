@@ -42,14 +42,13 @@ ENDIF (COMMAND cmake_policy)
 
 PROJECT(OpenCPN)
 
-#SET(CMAKE_VERBOSE_MAKEFILE ON)
+SET(CMAKE_VERBOSE_MAKEFILE ON)
 
 IF(APPLE)
   SET(PACKAGE_NAME OpenCPN)
 ELSE(APPLE)
   SET(PACKAGE_NAME opencpn)
 ENDIF(APPLE)
-
 
 INCLUDE( ${CMAKE_SOURCE_DIR}/VERSION.cmake )
 SET(PACKAGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
@@ -242,7 +241,13 @@ ELSE(BUNDLE_TCDATA MATCHES "ON")
   ENDIF(UNIX AND NOT APPLE)
 ENDIF(BUNDLE_TCDATA MATCHES "ON")
 
+IF((_wx_selected_config MATCHES "qt-armv7"))
+SET(CMAKE_BUILD_TYPE Debug)
+
+SET(wxWidgets_USE_LIBS base core     xml html adv aui)
+ELSE()
 SET(wxWidgets_USE_LIBS base core net xml html adv aui)
+ENDIF()
 
 FIND_PACKAGE(OpenGL)
 IF(OPENGL_GLU_FOUND)
@@ -260,7 +265,7 @@ ELSE(OPENGL_GLU_FOUND)
     MESSAGE (STATUS "OpenGL not found..." )
 ENDIF(OPENGL_GLU_FOUND)
 
-# Search for opengles, short of running a program to test the speed
+# Search for opengles, short of run_wx_selected_configning a program to test the speed
 # of acceleration, I simply use gles on arm systems
 IF (ARCH MATCHES "arm*")
 find_path(OPENGLESv2_INCLUDE_DIR GLES2/gl2.h )
@@ -285,8 +290,40 @@ SET( wxWidgets_USE_STATIC OFF)
 
 FIND_PACKAGE(wxWidgets REQUIRED)
 INCLUDE(${wxWidgets_USE_FILE})
-    MESSAGE (STATUS "Found wxWidgets..." )
-    MESSAGE (STATUS "${wxWidgets_LIBRARIES}")
+MESSAGE (STATUS "Found wxWidgets..." )
+MESSAGE (STATUS "${wxWidgets_LIBRARIES}")
+
+
+IF(DEFINED _wx_selected_config)
+
+MESSAGE (STATUS "selected config ${_wx_selected_config}")
+
+IF(_wx_selected_config MATCHES "androideabi-qt")
+  MESSAGE (STATUS "Building for wxQt-Android")
+  SET(QT_ANDROID "ON")
+  SET(QT_LINUX "OFF")
+  SET(QT "ON")
+ELSE(_wx_selected_config MATCHES "androideabi-qt")
+  IF(_wx_selected_config MATCHES "qt")
+    MESSAGE (STATUS "Building for wxQt-linux")
+    SET(QT_ANDROID "OFF")
+    SET(QT_LINUX "ON")
+    SET(QT "ON")
+  ENDIF(_wx_selected_config MATCHES "qt")
+ENDIF(_wx_selected_config MATCHES "androideabi-qt")
+
+ENDIF(DEFINED _wx_selected_config)
+
+IF(UNIX)
+  if(NOT QT)
+   MESSAGE (STATUS "Building for wxGTK2")
+   SET(GTK2 "ON")
+  ENDIF(NOT QT)
+ENDIF(UNIX)
+
+IF((_wx_selected_config MATCHES "qt-armv7"))
+SET(CMAKE_BUILD_TYPE Debug)
+ENDIF()
 
 MESSAGE (STATUS "")
 MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME}  ***")
@@ -370,8 +407,28 @@ SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/")
 
 IF (NOT WIN32 AND NOT APPLE)
 
-FIND_PACKAGE(GTK2 2.6)
-IF (GTK2_FOUND)
+  IF(GTK2)
+    FIND_PACKAGE(GTK2 2.6)
+    IF (GTK2_FOUND)
+      MESSAGE (STATUS "Found GTK2")
+      ADD_DEFINITIONS(-DocpnUSE_GTK_OPTIMIZE)
+      ADD_DEFINITIONS(-DocpnHAS_GTK)
+      INCLUDE_DIRECTORIES(${GTK2_INCLUDE_DIRS})
+      SET(EXTRA_LIBS ${EXTRA_LIBS} ${GTK2_LIBRARIES})
+
+      # Add a definition to satisfy some linux system builds, avoiding Apple builds
+      IF (NOT WIN32 AND NOT APPLE)
+        ADD_DEFINITIONS("`pkg-config --cflags --libs gtk+-2.0`")
+      ENDIF (NOT WIN32 AND NOT APPLE)
+
+    ELSE(GTK2_FOUND)
+      MESSAGE (STATUS "GTK2 Not found...")
+    ENDIF (GTK2_FOUND)
+  ENDIF(GTK2)
+
+IF(GTK2)
+  FIND_PACKAGE(GTK2 2.6)
+  IF (GTK2_FOUND)
     MESSAGE (STATUS "Found GTK2")
     ADD_DEFINITIONS(-DocpnUSE_GTK_OPTIMIZE)
     ADD_DEFINITIONS(-DocpnHAS_GTK)
@@ -380,12 +437,39 @@ IF (GTK2_FOUND)
 
     # Add a definition to satisfy some linux system builds, avoiding Apple builds
     IF (NOT WIN32 AND NOT APPLE)
-       ADD_DEFINITIONS("`pkg-config --cflags --libs gtk+-2.0`")
+      ADD_DEFINITIONS("`pkg-config --cflags --libs gtk+-2.0`")
     ENDIF (NOT WIN32 AND NOT APPLE)
-
-ELSE(GTK2_FOUND)
+    
+  ELSE(GTK2_FOUND)
     MESSAGE (STATUS "GTK2 Not found...")
-ENDIF (GTK2_FOUND)
+  ENDIF (GTK2_FOUND)
+ENDIF()
+
+IF(QT_LINUX)
+  ADD_DEFINITIONS(-D__WXQT__)
+  SET(CMAKE_EXE_LINKER_FLAGS "-fPIE")
+ENDIF()
+
+IF(QT_ANDROID)
+  ADD_DEFINITIONS(-D__WXQT__)
+  ADD_DEFINITIONS(-DOCPN_USE_WRAPPER)
+  ADD_DEFINITIONS(-D__OCPN__ANDROID__)
+  
+  SET(CMAKE_CXX_FLAGS "-pthread -fPIC")
+
+  # TODO: use wxwidgets qt detection
+  INCLUDE_DIRECTORIES("${wxQt_Base}/include")
+  INCLUDE_DIRECTORIES("${Qt_Base}/5.3/android_armv7/include/QtCore")
+  INCLUDE_DIRECTORIES("${Qt_Base}/5.3/android_armv7/include")
+  INCLUDE_DIRECTORIES("${Qt_Base}/5.3/android_armv7/include/QtWidgets")
+  INCLUDE_DIRECTORIES("${Qt_Base}/5.3/android_armv7/include/QtGui")
+  INCLUDE_DIRECTORIES("${Qt_Base}/5.3/android_armv7/include/QtOpenGL")
+  INCLUDE_DIRECTORIES("${Qt_Base}/5.3/android_armv7/include/QtTest")
+  
+  ADD_DEFINITIONS(-DQT_WIDGETS_LIB)
+
+  SET(USE_S57 OFF)
+ENDIF()
 
 IF(UNIX)
 INCLUDE("FindPortaudio.cmake")
@@ -408,11 +492,13 @@ ENDIF (NOT WIN32 AND NOT APPLE)
 FIND_PACKAGE(Gettext REQUIRED)
 
 IF(UNIX)
+  IF(NOT QT_ANDROID) # this should be detected by the grib plugin
     FIND_PACKAGE(BZip2 REQUIRED)
     INCLUDE_DIRECTORIES(${BZIP2_INCLUDE_DIR})
     FIND_PACKAGE(ZLIB REQUIRED)
     INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
-    FIND_PACKAGE(TinyXML)
+  ENDIF()
+  FIND_PACKAGE(TinyXML)
 ENDIF(UNIX)
 
 # For convenience we define the sources as a variable. You can add
@@ -511,8 +597,6 @@ SET(HDRS
 		include/S57QueryDialog.h
 		include/S57ObjectDesc.h
 		include/S57Light.h
-		include/s57RegistrarMgr.h
-		include/S57ClassRegistrar.h
 		include/MarkIcon.h
 		include/SendToGpsDlg.h
 		include/TCWin.h
@@ -597,7 +681,6 @@ SET(SRCS
 		src/ocpCursor.cpp
 		src/TCWin.cpp
 		src/S57QueryDialog.cpp
-		src/s57RegistrarMgr.cpp
 		src/GoToPositionDialog.cpp
 		src/CM93DSlide.cpp
 		src/RolloverWin.cpp
@@ -681,8 +764,8 @@ ENDIF(NOT WIN32 AND NOT APPLE)
 STRING(REGEX MATCHALL "-2.9|-3." wx_Version_2.9+ "${wxWidgets_INCLUDE_DIRS}")
 IF(wx_Version_2.9+)
 ELSE(wx_Version_2.9+)
-  SET(HDRS ${HDRS} include/scrollingdialog.h )
-  SET(SRCS ${SRCS} src/scrollingdialog.cpp)
+#  SET(HDRS ${HDRS} include/scrollingdialog.h )
+#  SET(SRCS ${SRCS} src/scrollingdialog.cpp)
 ENDIF(wx_Version_2.9+)
 
 SET( PACKAGE_HEADERS "" )
@@ -738,6 +821,9 @@ IF (USE_S57)
 		src/mygeom.cpp
 		include/cm93.h
 		src/tri.c
+                include/s57RegistrarMgr.h
+                include/S57ClassRegistrar.h
+                src/s57RegistrarMgr.cpp
 		src/myiso8211/ddffielddefn.cpp
 		src/myiso8211/ddfmodule.cpp
 		src/myiso8211/ddfrecord.cpp
@@ -1184,6 +1270,9 @@ IF(UNIX AND NOT APPLE)
 ADD_EXECUTABLE(${PACKAGE_NAME} ${HDRS} ${SRCS})
 ENDIF(UNIX AND NOT APPLE)
 
+IF(QT_ANDROID)
+ADD_LIBRARY(${PACKAGE_NAME} ${HDRS} ${SRCS})
+ENDIF()
 
 
 
@@ -1226,8 +1315,25 @@ TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} dl )
 ENDIF(UNIX)
 
 IF(GTK2_FOUND)
-TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} gobject-2.0 )
+  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} gobject-2.0 )
 ENDIF(GTK2_FOUND)
+
+IF(QT_LINUX)
+  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} Qt5Widgets Qt5OpenGL Qt5Gui Qt5Test Qt5Core )
+ENDIF(QT_LINUX)
+
+IF(QT_ANDROID)
+  FIND_LIBRARY(QT_LIBRARY Qt5Widgets ${Qt_Base}/5.3/android_armv7/lib)
+  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${QT_LIBRARY} Qt5OpenGL Qt5Gui Qt5Widgets Qt5Test Qt5Core)
+ENDIF()
+
+
+#-L/home/dsr/Projects/wxqt/wxtrunk/wxWidgets/bldqt5droid/lib
+#-pthread
+
+#-L/home/dsr/Qt/5.2.1/gcc/lib
+#- -lSM -lz -lm
+
 
 
 IF(NOT APPLE)
@@ -1236,9 +1342,9 @@ IF(WIN32)
 INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME DESTINATION ".")
 ENDIF(WIN32)
 
-IF(UNIX AND NOT APPLE)
+IF(UNIX AND NOT APPLE AND NOT QT_ANDROID)
 INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME DESTINATION ${PREFIX_BIN} PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-ENDIF(UNIX AND NOT APPLE)
+ENDIF(UNIX AND NOT APPLE AND NOT QT_ANDROID)
 
 
 IF(WIN32)
@@ -1406,7 +1512,9 @@ ENDIF(WIN32 AND NOT UNIX)
 MESSAGE (STATUS "")
 
 IF(NOT SKIP_PLUGINS)
+IF(NOT QT_ANDROID)
  add_subdirectory (plugins)
+ENDIF()
 ENDIF(NOT SKIP_PLUGINS)
 
 # build a CPack driven installer package

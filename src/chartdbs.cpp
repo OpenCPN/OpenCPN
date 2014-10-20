@@ -37,7 +37,11 @@
 #include "chartdbs.h"
 #include "chartbase.h"
 #include "pluginmanager.h"
+
+#ifdef USE_S57
 #include "mygeom.h"                     // For DouglasPeucker();
+#endif
+
 #ifndef UINT32
 #define UINT32 unsigned int
 #endif
@@ -198,6 +202,7 @@ ChartTableEntry::ChartTableEntry(ChartBase &theChart)
     if (theChart.GetCOVREntries() == 1) {
           nPlyEntries = theChart.GetCOVRTablePoints(0);
           
+#ifdef USE_S57          
           if(nPlyEntries > 5 && (LOD_meters > .01)){
               wxArrayInt index_keep;
               
@@ -242,7 +247,9 @@ ChartTableEntry::ChartTableEntry(ChartBase &theChart)
               nPlyEntries = index_keep.GetCount();
               free( DPbuffer );
           }
-          else {
+          else
+#endif              
+          {
             float *pf = (float *)malloc(2 * nPlyEntries * sizeof(float));
             pPlyTable = pf;
             float *pfe = pf;
@@ -288,7 +295,8 @@ ChartTableEntry::ChartTableEntry(ChartBase &theChart)
 
           for (int j = 0 ; j < nAuxPlyEntries; j++) {
               int nPE = theChart.GetCOVRTablePoints(j);
-              
+
+#ifdef USE_S57              
               if(nPE > 5 && (LOD_meters > .01)){
                   wxArrayInt index_keep;
                   
@@ -333,7 +341,9 @@ ChartTableEntry::ChartTableEntry(ChartBase &theChart)
                   pip[j] = index_keep.GetCount();
                   free( DPbuffer );
               }
-              else {
+              else
+#endif                  
+              {
                 float *pf_entry = (float *)malloc(theChart.GetCOVRTablePoints(j) * 2 * sizeof(float));
                 memcpy(pf_entry, theChart.GetCOVRTableHead(j), theChart.GetCOVRTablePoints(j) * 2 * sizeof(float));
                 pft0[j] = pf_entry;

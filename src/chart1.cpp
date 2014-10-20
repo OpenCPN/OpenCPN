@@ -32,7 +32,6 @@
 //#include "c:\\Program Files\\visual leak detector\\include\\vld.h"
 #endif
 
-
 // Include CrashRpt Header
 #ifdef OCPN_USE_CRASHRPT
 #include "CrashRpt.h"
@@ -573,7 +572,11 @@ bool                      g_bPreserveScaleOnX;
 about                     *g_pAboutDlg;
 
 wxPlatformInfo            *g_pPlatform;
+
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
 wxLocale                  *plocale_def_lang;
+#endif
+
 wxString                  g_locale;
 bool                      g_b_assume_azerty;
 
@@ -695,7 +698,7 @@ DEFINE_EVENT_TYPE(EVT_THREADMSG)
 //    PNG Icon resources
 //------------------------------------------------------------------------------
 
-#ifdef __WXGTK__
+#if defined(__WXGTK__) || defined(__WXQT__)
 #include "bitmaps/opencpn.xpm"
 #endif
 
@@ -784,18 +787,20 @@ int CALLBACK CrashCallback(CR_CRASH_CALLBACK_INFO* pInfo)
 
 #endif
 
-
 // `Main program' equivalent, creating windows and returning main app frame
 //------------------------------------------------------------------------------
 // MyApp
 //------------------------------------------------------------------------------
 
 IMPLEMENT_APP( MyApp )
+
 BEGIN_EVENT_TABLE(MyApp, wxApp) EVT_ACTIVATE_APP(MyApp::OnActivateApp)
 END_EVENT_TABLE()
 
+
 #include "wx/dynlib.h"
 
+#if wxUSE_CMDLINE_PARSER
 void MyApp::OnInitCmdLine( wxCmdLineParser& parser )
 {
     //    Add some OpenCPN specific command line options
@@ -816,6 +821,7 @@ bool MyApp::OnCmdLineParsed( wxCmdLineParser& parser )
     
     return true;
 }
+#endif
 
 void MyApp::OnActivateApp( wxActivateEvent& event )
 {
@@ -932,7 +938,6 @@ bool MyApp::OnInit()
 {
     if( !wxApp::OnInit() ) return false;
 
-    
     //  On Windows
     //  We allow only one instance unless the portable option is used
 #ifdef __WXMSW__
@@ -1068,10 +1073,10 @@ bool MyApp::OnInit()
 
 //Fulup: force floating point to use dot as separation.
 // This needs to be set early to catch numerics in config file.
-//#ifdef __POSIX__
+#ifndef __OCPN__ANDROID__
     setlocale( LC_NUMERIC, "C" );
-//#endif
-
+#endif    
+    
 //      CALLGRIND_STOP_INSTRUMENTATION
 
     
@@ -1166,7 +1171,7 @@ bool MyApp::OnInit()
     //TODO  Why is the following preferred?  Will not compile with gcc...
 //    wxStandardPaths& std_path = wxApp::GetTraits()->GetStandardPaths();
     
-#ifdef __WXGTK__
+#ifdef __unix__
     std_path.SetInstallPrefix(wxString(PREFIX, wxConvUTF8));
 #endif
     
@@ -1204,20 +1209,32 @@ bool MyApp::OnInit()
                                   // which makes it accessible to Applications/Utilities/Console....
 #endif
 
+#ifdef __OCPN__ANDROID__
+    pHome_Locn->Clear();
+    pHome_Locn->Append(_T("/data/data/org.opencpn.opencpn/files/"));
+//    pHome_Locn->Append(_T("/sdcard/"));
+    glog_file = *pHome_Locn;
+#endif    
+    
     // create the opencpn "home" directory if we need to
     wxFileName wxHomeFiledir( *pHome_Locn );
-    if( true != wxHomeFiledir.DirExists( wxHomeFiledir.GetPath() ) ) if( !wxHomeFiledir.Mkdir(
-            wxHomeFiledir.GetPath() ) ) {
-        wxASSERT_MSG(false,_T("Cannot create opencpn home directory"));
-        return false;
+    if( true != wxHomeFiledir.DirExists( wxHomeFiledir.GetPath() ) ){
+ //       wxASSERT_MSG(false,_T("opencpn home directory does not exist.. " + *pHome_Locn ));
+        
+        if( !wxHomeFiledir.Mkdir( wxHomeFiledir.GetPath() ) ) {
+//            wxASSERT_MSG(false,_T("Cannot create opencpn home directory.. " + *pHome_Locn ));
+//            return false;
+        }
     }
+         
 
     // create the opencpn "log" directory if we need to
     wxFileName wxLogFiledir( glog_file );
     if( true != wxLogFiledir.DirExists( wxLogFiledir.GetPath() ) ) {
+//        wxASSERT_MSG(false,_T("opencpn log directory does not exist.. " + glog_file ));
         if( !wxLogFiledir.Mkdir( wxLogFiledir.GetPath() ) ) {
-            wxASSERT_MSG(false,_T("Cannot create opencpn log directory"));
-            return false;
+//            wxASSERT_MSG(false,_T("Cannot create opencpn log directory.. " + glog_file ));
+//            return false;
         }
     }
     glog_file.Append( _T("opencpn.log") );
@@ -1270,7 +1287,14 @@ bool MyApp::OnInit()
 
     wxString wxver(wxVERSION_STRING);
     wxver.Prepend( _T("wxWidgets version: ") );
-    wxLogMessage( wxver );
+
+    wxPlatformInfo platforminfo = wxPlatformInfo::Get();
+
+    wxString platform = platforminfo.GetOperatingSystemIdName() + _T(" ") +
+                        platforminfo.GetArchName()+ _T(" ") +
+                        platforminfo.GetPortIdName();
+
+    wxLogMessage( wxver + _T(" ") + platform );
 
     wxLogMessage( _T("MemoryStatus:  mem_total: %d mb,  mem_initial: %d mb"), g_mem_total / 1024,
             g_mem_initial / 1024 );
@@ -1290,9 +1314,15 @@ bool MyApp::OnInit()
      */
     g_SData_Locn = std_path.GetDataDir();
     appendOSDirSlash( &g_SData_Locn );
+    
+#ifdef __OCPN__ANDROID__
+    g_SData_Locn = _T("/data/data/org.opencpn.opencpn/cache/");
+#endif
+    
+    if( g_bportable )
+        g_SData_Locn = *pHome_Locn;
 
-    if( g_bportable ) g_SData_Locn = *pHome_Locn;
-
+    
     imsg = _T("SData_Locn is ");
     imsg += g_SData_Locn;
     wxLogMessage( imsg );
@@ -1307,13 +1337,19 @@ bool MyApp::OnInit()
 #ifdef __WXMSW__
     g_PrivateDataDir = *pHome_Locn;                     // should be {Documents and Settings}\......
 #elif defined __WXOSX__
-            g_PrivateDataDir = std_path.GetUserConfigDir();     // should be ~/Library/Preferences
+    g_PrivateDataDir = std_path.GetUserConfigDir();     // should be ~/Library/Preferences
 #else
-            g_PrivateDataDir = std_path.GetUserDataDir();       // should be ~/.opencpn
+    g_PrivateDataDir = std_path.GetUserDataDir();       // should be ~/.opencpn
 #endif
 
-    if( g_bportable ) g_PrivateDataDir = *pHome_Locn;
+    if( g_bportable )
+        g_PrivateDataDir = *pHome_Locn;
 
+    imsg = _T("PrivateDataDir is ");
+    imsg += g_PrivateDataDir;
+    wxLogMessage( imsg );
+    
+    
     //  Get the PlugIns directory location
     g_Plugin_Dir = std_path.GetPluginsDir();   // linux:   {prefix}/lib/opencpn
                                                // Mac:     appname.app/Contents/PlugIns
@@ -1403,9 +1439,9 @@ bool MyApp::OnInit()
             //    Flag to preset some options for initial config file creation
             b_novicemode = true;
 
-            if( true != config_test_file_name.DirExists( config_test_file_name.GetPath() ) ) if( !config_test_file_name.Mkdir(
-                    config_test_file_name.GetPath() ) ) wxLogMessage(
-                    _T("Cannot create config file directory for ") + gConfig_File );
+            if( true != config_test_file_name.DirExists( config_test_file_name.GetPath() ) )
+                if( !config_test_file_name.Mkdir( config_test_file_name.GetPath() ) )
+                    wxLogMessage(_T("Cannot create config file directory for ") + gConfig_File );
         }
     }
 
@@ -1423,12 +1459,6 @@ bool MyApp::OnInit()
         exit( EXIT_FAILURE );
     }
 
-#ifdef __WXGTK__    
-//    if( !CheckSerialAccess() ){
-//    }
-        
-#endif    
-    
     //      Init the WayPoint Manager (Must be after UI Style init).
     pWayPointMan = new WayPointman();
     pWayPointMan->ProcessIcons( g_StyleManager->GetCurrentStyle() );
@@ -1458,6 +1488,7 @@ bool MyApp::OnInit()
 
 //        wxLog::SetVerbose(true);            // log all messages for debugging
 
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
     if( lang_list[0] ) {
     };                 // silly way to avoid compiler warnings
 
@@ -1532,6 +1563,10 @@ bool MyApp::OnInit()
     if( loc_lang_canonical == _T("fr_FR") ) g_b_assume_azerty = true;
     if( def_lang_canonical == _T("fr_FR") ) g_b_assume_azerty = true;
 
+#else
+    wxLogMessage( _T("wxLocale support not available") );
+#endif
+    
 //  Send the Welcome/warning message if it has never been sent before,
 //  or if the version string has changed at all
 //  We defer until here to allow for localization of the message
@@ -1563,10 +1598,7 @@ bool MyApp::OnInit()
     
 #else
     g_bdisable_opengl = true;;
-#endif
-
-
-    
+#endif    
     
  #ifdef USE_S57
 
@@ -1788,6 +1820,9 @@ bool MyApp::OnInit()
 #endif
 
     }
+    pConfig->UpdateSettings();
+    pConfig->LoadMyConfig( 1 );
+    
 
     //  Check the global Tide/Current data source array
     //  If empty, preset one default (US) Ascii data source
@@ -1853,7 +1888,7 @@ bool MyApp::OnInit()
     if( ( g_nframewin_x > 100 ) && ( g_nframewin_y > 100 ) && ( g_nframewin_x <= cw )
             && ( g_nframewin_y <= ch ) ) new_frame_size.Set( g_nframewin_x, g_nframewin_y );
     else
-        new_frame_size.Set( cw * 7 / 10, ch * 7 / 10 );
+        new_frame_size.Set( cw * 9 / 10, ch * 9 / 10 );
 
     //  Try to detect any change in physical screen configuration
     //  This can happen when drivers are changed, for instance....
@@ -1861,17 +1896,18 @@ bool MyApp::OnInit()
     //  If detected, force a nominal window size and position....
     if( ( g_lastClientRectx != cx ) || ( g_lastClientRecty != cy ) || ( g_lastClientRectw != cw )
             || ( g_lastClientRecth != ch ) ) {
-        new_frame_size.Set( cw * 7 / 10, ch * 7 / 10 );
+        new_frame_size.Set( cw * 9 / 10, ch * 9 / 10 );
         g_bframemax = false;
     }
 
+    
     g_lastClientRectx = cx;
     g_lastClientRecty = cy;
     g_lastClientRectw = cw;
     g_lastClientRecth = ch;
 
     //  Validate config file position
-    wxPoint position( 0, 0 );
+    wxPoint position( 20, 50 );
     wxSize dsize = wxGetDisplaySize();
 
 #ifdef __WXMAC__
@@ -1962,8 +1998,10 @@ bool MyApp::OnInit()
 
 //      Load and initialize any PlugIns
     g_pi_manager = new PlugInManager( gFrame );
+#ifndef __WXQT__    
     g_pi_manager->LoadAllPlugIns( g_Plugin_Dir, true );
-
+#endif
+    
 // Show the frame
 
     gFrame->ClearBackground();
@@ -1978,7 +2016,8 @@ bool MyApp::OnInit()
         
     stats = new StatWin( cc1 );
     stats->SetColorScheme( global_color_scheme );
-
+    stats->Show();
+    
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 
     if( cc1->GetQuiltMode() ) {
@@ -2113,7 +2152,7 @@ bool MyApp::OnInit()
 
             OCPNMessageBox(gFrame, msg1, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK );
 
-            gFrame->DoOptionsDialog();
+///            gFrame->DoOptionsDialog();
 
             b_SetInitialPoint = true;
 
@@ -2300,6 +2339,10 @@ extern ocpnGLOptions g_GLOptions;
     gFrame->Refresh( false );
     gFrame->Raise();
 
+#ifdef __WXQT__
+    g_FloatingToolbarDialog->Raise();
+#endif    
+    
     cc1->Enable();
     cc1->SetFocus();
 
@@ -2330,6 +2373,7 @@ extern ocpnGLOptions g_GLOptions;
 
 int MyApp::OnExit()
 {
+    wxLogMessage( _T("opencpn::MyApp starting exit.") );
     //  Send current nav status data to log file   // pjotrc 2010.02.09
 
     wxDateTime lognow = wxDateTime::Now();
@@ -2370,7 +2414,6 @@ int MyApp::OnExit()
 
     if( ptcmgr ) delete ptcmgr;
 
-    wxLogMessage( _T("opencpn::MyApp exiting cleanly...\n") );
     delete pConfig;
     delete pSelect;
     delete pSelectTC;
@@ -2383,6 +2426,7 @@ int MyApp::OnExit()
     delete g_pGroupArray;
     delete pDummyChart;
 
+    wxLogMessage( _T("opencpn::MyApp exiting cleanly...\n") );
     if( logger ) {
         wxLog::SetActiveTarget( Oldlogger );
         delete logger;
@@ -2438,7 +2482,9 @@ int MyApp::OnExit()
 
     delete g_pPlatform;
 
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
     delete plocale_def_lang;
+#endif
     
     FontMgr::Shutdown();
 
@@ -2453,6 +2499,7 @@ int MyApp::OnExit()
 #endif
 #endif
 
+    
     return TRUE;
 }
 
@@ -2571,7 +2618,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
         ConnectionParams *cp = g_pConnectionParams->Item(i);
         if( cp->bEnabled ) {
             
-#ifdef __WXGTK__
+#ifdef __unix__
             if( cp->GetDSPort().Contains(_T("Serial"))) {
                 if( ! g_bserial_access_checked ){
                     if( !CheckSerialAccess() ){
@@ -2619,7 +2666,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     SetIcon( wxICON(0) );           // this grabs the first icon in the integrated MSW resource file
 #endif
 
-#ifdef __WXGTK__
+#if defined(__WXGTK__) || defined(__WXQT__)
     wxIcon app_icon(opencpn);          // This comes from opencpn.xpm inclusion above
     SetIcon(app_icon);
 #endif
@@ -2757,7 +2804,9 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
         }
     }
 
+#ifdef USE_S57    
     if( ps52plib ) ps52plib->SetPLIBColorScheme( SchemeName );
+#endif
     
     //    Set up a pointer to the proper hash table
     pcurrent_user_color_hash = (wxColorHashMap *) UserColourHashTableArray->Item(
@@ -3244,6 +3293,8 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     if( b_inCompressAllCharts ) {
         return;
     }
+
+    wxLogMessage( _T("opencpn::MyFrame starting exit.") );
     
     b_inCloseWindow = true;
 
@@ -3274,6 +3325,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     }
 #endif
 
+#ifndef __OCPN__ANDROID__    
     if( cc1 ) {
         cc1->SetCursor( wxCURSOR_WAIT );
 
@@ -3281,6 +3333,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         cc1->Update();
         wxYield();
     }
+#endif
 
     
     #define THREAD_WAIT_SECONDS  5
@@ -3314,7 +3367,6 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         g_pi_manager->DeactivateAllPlugIns();
     }
 
-    wxLogMessage( _T("opencpn::MyFrame exiting cleanly.") );
 
     quitflag++;
 
@@ -3440,11 +3492,8 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     if( ChartData )
         ChartData->PurgeCache();
 
-        
-            
-            
-     
-    SetStatusBar( NULL );
+//    SetStatusBar( NULL );
+
     stats = NULL;
 
     if( pRouteManagerDialog ) {
@@ -3482,7 +3531,11 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     g_FloatingToolbarDialog = NULL;
 
     this->Destroy();
-
+    
+#ifdef __OCPN__ANDROID__
+    wxTheApp->OnExit();
+#endif
+    
 }
 
 void MyFrame::OnMove( wxMoveEvent& event )
@@ -3556,6 +3609,10 @@ void MyFrame::ODoSetSize( void )
               templateFont->GetFaceName() );
 
         m_pStatusBar->SetFont( *pstat_font );
+
+#ifdef __WXQT__
+        m_pStatusBar->SetMinHeight( pstat_font->GetPointSize() + 10 );
+#endif
     }
 
     int cccw = x;
@@ -3885,7 +3942,8 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         }
 
         case ID_PRINT: {
-            DoPrint();
+            Close();
+//            DoPrint();
             break;
         }
 
@@ -4475,7 +4533,7 @@ int MyFrame::DoOptionsDialog()
         if( b_sub ) g_FloatingToolbarDialog->Submerge();
     }
 
-#ifdef __WXOSX__
+#if defined(__WXOSX__) || defined(__WXQT__)
     if(stats) stats->Hide();
 #endif
 
@@ -4547,7 +4605,7 @@ int MyFrame::DoOptionsDialog()
             g_FloatingToolbarDialog->Submerge();
     }
 
-#ifdef __WXMAC__
+#if defined(__WXOSX__) || defined(__WXQT__)
     if(stats)
         stats->Show();
 #endif
@@ -5532,7 +5590,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
     }
 
     if( cc1 ) {
-#ifndef __WXGTK__
+#if !defined(__WXGTK__) && !defined(__WXQT__)
         double cursor_lat, cursor_lon;
         cc1->GetCursorLatLon( &cursor_lat, &cursor_lon );
         cc1->SetCursorStatus(cursor_lat, cursor_lon);
@@ -5663,6 +5721,13 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
             m_bdefer_resize = false;
         }
     }
+    
+#ifdef __OCPN__ANDROID__
+    if(g_FloatingToolbarDialog)
+        g_FloatingToolbarDialog->Raise();
+    if(stats)
+        stats->Raise();
+#endif    
 }
 
 double MyFrame::GetTrueOrMag(double a)
@@ -7126,7 +7191,7 @@ void MyFrame::DoPrint( void )
 
     wxPrinter printer( &printDialogData );
 
-    MyPrintout printout( _("Chart Print") );
+    MyPrintout printout( wxT("Chart Print") );
     if( !printer.Print( this, &printout, true ) ) {
         if( wxPrinter::GetLastError() == wxPRINTER_ERROR ) OCPNMessageBox(NULL,
                 _("There was a problem printing.\nPerhaps your current printer is not set correctly?"),
@@ -8452,7 +8517,7 @@ void MyPrintout::DrawPageOne( wxDC *dc )
  *     Very system specific, unavoidably.
  */
 
-#ifdef __WXGTK__
+#if defined(__UNIX__) && !defined(__ANDROID__)
 extern "C" int wait(int *);                     // POSIX wait() for process
 
 #include <termios.h>
@@ -8489,7 +8554,7 @@ int paternAdd (const char* patern) {
 }
 
 
-#ifdef __WXGTK__
+#if defined(__UNIX__) && !defined(__ANDROID__)
 // This filter verify is device is withing searched patern and verify it is openable
 // -----------------------------------------------------------------------------------
 int paternFilter (const struct dirent * dir) {
@@ -8548,7 +8613,7 @@ wxArrayString *EnumerateSerialPorts( void )
 {
     wxArrayString *preturn = new wxArrayString;
 
-#ifdef __WXGTK__
+#if defined(__UNIX__) && !defined(__ANDROID__)
 
     //Initialize the pattern table
     if( devPatern[0] == NULL ) {
@@ -8763,7 +8828,7 @@ wxArrayString *EnumerateSerialPorts( void )
         _exit(0);// If exec fails then exit forked process.
     }
 
-#endif      // __WXGTK__
+#endif      // __UNIX__
 #ifdef __WXOSX__
 #include "macutils.h"
     char* paPortNames[MAX_SERIAL_PORTS];
@@ -8963,7 +9028,8 @@ wxArrayString *EnumerateSerialPorts( void )
 bool CheckSerialAccess( void )
 {
     bool bret = true;
-#ifdef __WXGTK__
+#ifdef __UNIX__
+#ifndef __ANDROID__    
  
 #if 0    
     termios ttyset_old;
@@ -9079,6 +9145,7 @@ You may do so by executing the following command from the linux command line:\n\
     
     
 
+#endif
 #endif
     
     return bret;

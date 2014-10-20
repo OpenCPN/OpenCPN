@@ -1,0 +1,172 @@
+
+    A.  Get Android SDK:
+        https://developer.android.com/sdk/index.html#downloads
+        Unpack and install somewhere, say ~/Projects/android-ndk/android-sdk-linux
+
+        Need to execute tools/android to actually download and set up platforms, etc.
+        $~/Projects/android-ndk/android-sdk-linux/tools/android
+
+        We need platform tools and libraries for Android 4.4.2, API level 19
+
+    B.  Get Android NDK
+        https://developer.android.com/tools/sdk/ndk/index.html
+        We need Android NDK R10
+
+        Extract somewhere, say ~/Projects/android-ndk
+
+        __Extract and Build the required cross-compiler toolchain:
+        $~/Projects/android-ndk/android-ndk-r10/build/tools/make-standalone-toolchain.sh --toolchain=arm-linux-androideabi-4.8 --platform=android-19 --install-dir={tools.path.of.your.choice}
+
+    C.  Get Qt 5.2.1
+        https://qt-project.org/wiki/Install_Qt_5_on_Ubuntu
+        In the following, assume that Qt is installed in ~/
+
+    D:  Get wxWidgets trunk:
+
+        $cd ~/Projects
+        $mkdir wxqt
+        $cd wxqt
+        $git clone https://github.com/wxWidgets/wxWidgets.git
+
+    E.  Build wxQt
+        ___Make a build directory
+        $cd ~/Projects/wxqt/wxWidgets
+        $mkdir build_wxQt_armv7
+        $cd build_wxQt_armv7
+
+        ___Tell wxWidgets configure process where to find Qt libraries/includes
+        $export PKG_CONFIG_PATH=~/Qt/5.2.1/android_armv7/lib/pkgconfig
+
+        ___Set a few environment variables.
+        $export CPPFLAGS=-D__ANDROID__                  (this is for some special stuff in wxWidgets)
+
+        $export PATH={tools.path.of.your.choice}/bin:$PATH
+        e.g.
+        $export PATH=/home/dsr/Projects/android-ndk/ndk-toolchain/bin:$PATH
+
+        $export CC=arm-linux-androideabi-gcc
+        $export CXX=arm-linux-androideabi-g++
+
+        ___Configure wxWidgets for Qt
+
+        $../configure --with-qt --build=x86_64-unknown-linux-gnu --host=arm-linux-androideabi --disable-compat28 --disable-shared --disable-arttango --enable-image --disable-dragimage --disable-sockets --with-libtiff=no --without-opengl --disable-baseevtloop --disable-xrc --disable-cmdline --disable-miniframe --disable-mdi --enable-debug --disable-stc --disable-ribbon --disable-propgrid --disable-timepick --disable-datepick --disable-xlocale --disable-intl
+
+        ___Build wxWidgets for Qt
+        $make
+
+        NOTES ON WXWIDGETS CONFIGURATION:
+
+        I. wxWidgets trunk needs a few patches..
+
+            1.  Android implementation of mbstowcs/wcstombs is broken.
+            So, we need to actually partially revert a commit made to wxWidgets 3.x, and reintroduce private
+            versions of mbstowcs/wcstombs for wxQt-Android.
+            2.  One method in qt/window.cpp need correction for potential NULL pointer de-reference.
+
+            These patches/commits may be found in https://github.com/bdbcat/wxWidgets.
+
+
+            These patches should be submitted as pull requests to wxWidgets trunk.
+
+        II.
+            1. wxQt build configuration must specify "--disable-xlocale --disable-intl".
+            This is caused by the faulty
+            Android implementation of the system library function setlocale().  Instead of returning a pointer to
+            the current locale string, it always returns NULL.  This breaks the ctor of CNumericLocaleSetter() in src/common/xlocale.cpp.  i.e.  wxStrdupA(setlocale(LC_NUMERIC, NULL)) faults.
+            This needs to be fixed in wxWidgets, really.  But we can work around with the limited configuration specified.
+
+            2. wxQt build configuration must specify "--disable-timepick --disable-datepick". The file "src/generic/timectrlg.cpp" does not honor "--disable-xlocale" directive, so fails to compile.
+
+
+    F.  Build OCPN
+
+        ___Checkout the OpenCPN "wxqt" branch from github opencpn site.
+
+        ___Configure OCPN build, substituting the appropriate Android NDK toolchain directory, the Qt base directory, and the as-built wxQt libraries.
+
+        $cd {OCPN_root}/build_Qt521_armv7
+
+        $export PATH=/home/dsr/Projects/wxqt/wxWidgets/build_wxQt_armv7:$PATH
+
+        $cmake -DQt_Base=/home/dsr/Qt ..
+
+
+        ___Build OCPN
+
+        $make
+
+    G.  Build a needed support library
+        (Note:  This step has already been done, and the library .so is included in the github repo as a blob.)
+
+        We need our fixed assets in the APK....
+
+        Add the asset file definitions to the opencpn.pro like this:
+
+        deployment.files += /home/dsr/Projects/opencpn_sf/opencpn/data/s57data/chartsymbols.xml
+        .
+        .
+        deployment.path = /assets
+        INSTALLS += deployment
+
+
+        We will use a library called assetbridge to make them easily accessible from the C++ application.
+
+        Get assetbridge.        https://bitbucket.org/smh377/assetbridge
+
+
+        copy the three assetbridge source files:
+            /home/dsr/Projects/opencpn_sf/opencpn/build_Qt521_armv7/assetbridge/jni/assetbridge/Android.mk
+            /home/dsr/Projects/opencpn_sf/opencpn/build_Qt521_armv7/assetbridge/jni/assetbridge/assetbridge.c
+            /home/dsr/Projects/opencpn_sf/opencpn/build_Qt521_armv7/assetbridge/jni/assetbridge/assetbridge.h
+
+        to home/dsr/Projects/opencpn_sf/opencpn/build_Qt521_armv7/assetbridge/jni
+
+        Build the library like this:
+
+        cd home/dsr/Projects/opencpn_sf/opencpn/build_Qt521_armv7/assetbridge
+        $export PATH=/home/dsr/Projects/android-ndk/ndk-toolchain/bin:$PATH
+        $export CC=arm-linux-androideabi-gcc
+        $export CXX=arm-linux-androideabi-g++
+
+        $export NDK_PROJECT_PATH=/home/dsr/Projects/opencpn_sf/opencpn/build_Qt521_armv7/assetbridge
+
+        Build the library
+        $/home/dsr/Projects/android-ndk/android-ndk-r10/ndk-build
+
+        add the resulting library: /home/dsr/Projects/opencpn_sf/opencpn/build_Qt521_armv7/assetbridge/libs/armeabi/libassetbridge.so
+        to opencpn.pro like this:
+
+        ANDROID_EXTRA_LIBS = /home/dsr/Projects/opencpn_sf/opencpn/build_Qt521_armv7/assetbridge/libs/armeabi/libassetbridge.so
+
+
+        Now, the resulting asset files will be found by the C++ application at the location:
+        /data/data/org.opencpn.opencpn/cache/
+
+
+
+    H.  Build APK
+
+        $export ANDROID_NDK_ROOT=/home/dsr/Projects/android-ndk/android-ndk-r10
+        $export ANDROID_SDK_ROOT=/home/dsr/Projects/android-ndk/android-sdk-linux
+        $export PATH=/home/dsr/Projects/wxqt/wxWidgets/build_wxQt_armv7:$PATH
+
+        $/home/dsr/Qt/5.2.1/android_armv7/bin/qmake -makefile ../buildandroid/opencpn.pro -o Makefile.android -r -spec android-g++ CONFIG+=debug
+
+        $make -f Makefile.android
+
+        $make -f Makefile.android install INSTALL_ROOT=./android_build
+
+        $/home/dsr/Qt/5.2.1/android_armv7/bin/androiddeployqt --input ./android-libopencpn.so-deployment-settings.json  --output ./android_build --android-platform android-19 --deployment bundled
+
+        This leaves the APK in ./android_build/bin/QtApp-debug.apk
+
+    I.  Install to device
+
+        __ Uninstall old version
+        $/home/dsr/Projects/android-ndk/android-sdk-linux/platform-tools/adb  uninstall org.opencpn.opencpn
+
+
+        __Install new version
+        $/home/dsr/Projects/android-ndk/android-sdk-linux/platform-tools/adb install -r ./android_build/bin/QtApp-debug.apk
+
+

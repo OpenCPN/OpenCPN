@@ -42,7 +42,7 @@
 #if wxCHECK_VERSION(2,9,4) /* does this work in 2.8 too.. do we need a test? */
 #include <wx/renderer.h>
 #endif
-#ifdef __WXGTK__
+#if defined(__WXGTK__) || defined(__WXQT__)
 #include <wx/colordlg.h>
 #endif
 
@@ -183,7 +183,10 @@ extern bool             g_bConfirmObjectDelete;
 extern wxString         g_GPS_Ident;
 extern bool             g_bGarminHostUpload;
 
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
 extern wxLocale         *plocale_def_lang;
+#endif
+
 extern OCPN_Sound        g_anchorwatch_sound;
 extern bool             g_bMagneticAPB;
 
@@ -336,9 +339,13 @@ void MMSIEditDialog::CreateControls()
                                                                    wxVERTICAL );
      itemBoxSizer2->Add( itemStaticBoxSizer4, 0, wxEXPAND | wxALL, 5 );
      
+    int flags = wxLEFT | wxRIGHT | wxTOP;
+#if !wxCHECK_VERSION(3,0,0)
+    flags |= wxADJUST_MINSIZE;
+#endif
      wxStaticText* itemStaticText5 = new wxStaticText( itemDialog1, wxID_STATIC, _("MMSI") );
      itemStaticBoxSizer4->Add( itemStaticText5, 0,
-                               wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, 5 );
+                               wxALIGN_LEFT | flags, 5 );
      
      m_MMSICtl = new wxTextCtrl( itemDialog1, ID_MMSI_CTL, _T(""), wxDefaultPosition, wxSize( 180, -1 ), 0 );
      itemStaticBoxSizer4->Add( m_MMSICtl, 0,
@@ -808,7 +815,7 @@ BEGIN_EVENT_TABLE( options, wxDialog )
     EVT_BUTTON( ID_BUTTONFONTCHOOSE, options::OnChooseFont )
     EVT_CLOSE( options::OnClose)
     
-#ifdef __WXGTK__
+#if defined(__WXGTK__) || defined(__WXQT__)
     EVT_BUTTON( ID_BUTTONFONTCOLOR, options::OnChooseFontColor )
 #endif
     EVT_BUTTON( ID_OPENGLOPTIONS, options::OnOpenGLOptions )
@@ -1746,9 +1753,12 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
     wxStaticBoxSizer* depthsSizer = new wxStaticBoxSizer( depthBox, wxVERTICAL );
     vectorPanel->Add( depthsSizer, 0, wxALL | wxEXPAND, border_size );
 
+    int flags = wxLEFT | wxRIGHT | wxTOP;
+#if !wxCHECK_VERSION(3,0,0)
+    flags |= wxADJUST_MINSIZE;
+#endif
     wxStaticText* itemStaticText4 = new wxStaticText( ps57Ctl, wxID_STATIC, _("Shallow Depth") );
-    depthsSizer->Add( itemStaticText4, 0,
-            wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, group_item_spacing );
+    depthsSizer->Add( itemStaticText4, 0, flags, group_item_spacing );
 
     m_ShallowCtl = new wxTextCtrl( ps57Ctl, ID_TEXTCTRL, _T(""), wxDefaultPosition,
             wxSize( 120, -1 ), 0 );
@@ -1756,8 +1766,7 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
             group_item_spacing );
 
     wxStaticText* itemStaticText5 = new wxStaticText( ps57Ctl, wxID_STATIC, _("Safety Depth") );
-    depthsSizer->Add( itemStaticText5, 0,
-            wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, group_item_spacing );
+    depthsSizer->Add( itemStaticText5, 0, flags, group_item_spacing );
 
     m_SafetyCtl = new wxTextCtrl( ps57Ctl, ID_TEXTCTRL, _T(""), wxDefaultPosition,
             wxSize( 120, -1 ), 0 );
@@ -1765,8 +1774,7 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
             group_item_spacing );
 
     wxStaticText* itemStaticText6 = new wxStaticText( ps57Ctl, wxID_STATIC, _("Deep Depth") );
-    depthsSizer->Add( itemStaticText6, 0,
-            wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, group_item_spacing );
+    depthsSizer->Add( itemStaticText6, 0, flags, group_item_spacing );
 
     m_DeepCtl = new wxTextCtrl( ps57Ctl, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize( 120, -1 ),
             0 );
@@ -1956,10 +1964,13 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
     pCOGUPFilterGrid->AddGrowableCol( 1 );
     itemStaticBoxSizerCDO->Add( pCOGUPFilterGrid, 0, wxALL | wxEXPAND, group_item_spacing );
 
+    int flags = 0;
+#if !wxCHECK_VERSION(3,0,0)
+    flags |= wxADJUST_MINSIZE;
+#endif
     wxStaticText* itemStaticTextCOGUPFilterSecs = new wxStaticText( pDisplayPanel, wxID_STATIC,
             _("Course-Up Mode Display Update Period (sec)") );
-    pCOGUPFilterGrid->Add( itemStaticTextCOGUPFilterSecs, 0, wxADJUST_MINSIZE,
-                           group_item_spacing );
+    pCOGUPFilterGrid->Add( itemStaticTextCOGUPFilterSecs, 0, flags, group_item_spacing );
 
     pCOGUPUpdateSecs = new wxTextCtrl( pDisplayPanel, ID_TEXTCTRL, _T(""), wxDefaultPosition,
             wxDefaultSize );
@@ -2039,7 +2050,7 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
     
     wxStaticText* itemStaticTextUserVar = new wxStaticText( pDisplayPanel, wxID_STATIC,
                                                                     _("Assumed Magnetic Variation, deg.") );
-    pUserVarGrid->Add( itemStaticTextUserVar, 0, wxADJUST_MINSIZE,
+    pUserVarGrid->Add( itemStaticTextUserVar, 0, flags,
                        group_item_spacing );
     
     pMagVar = new wxTextCtrl( pDisplayPanel, ID_TEXTCTRL, _T(""), wxDefaultPosition,
@@ -2294,7 +2305,7 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
     wxButton* itemFontChooseButton = new wxButton( itemPanelFont, ID_BUTTONFONTCHOOSE,
             _("Choose Font..."), wxDefaultPosition, wxDefaultSize, 0 );
     itemFontStaticBoxSizer->Add( itemFontChooseButton, 0, wxALL, border_size );
-#ifdef __WXGTK__
+#if defined(__WXGTK__) || defined(__WXQT__)
     wxButton* itemFontColorButton = new wxButton( itemPanelFont, ID_BUTTONFONTCOLOR,
             _("Choose Font Color..."), wxDefaultPosition, wxDefaultSize, 0 );
     itemFontStaticBoxSizer->Add( itemFontColorButton, 0, wxALL, border_size );
@@ -2340,10 +2351,13 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
     pFormatGrid->AddGrowableCol( 1 );
     miscOptions->Add( pFormatGrid, 0, wxALL | wxEXPAND, border_size );
 
+    int flags = 0;
+#if !wxCHECK_VERSION(3,0,0)
+    flags |= wxADJUST_MINSIZE;
+#endif
     wxStaticText* itemStaticTextSDMMFormat = new wxStaticText( itemPanelFont, wxID_STATIC,
             _("Show Lat/Long as") );
-    pFormatGrid->Add( itemStaticTextSDMMFormat, 0,
-            wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, border_size );
+    pFormatGrid->Add( itemStaticTextSDMMFormat, 0, flags, border_size );
 
     wxString pSDMMFormats[] = { _("Degrees, Decimal Minutes"), _("Decimal Degrees"),
             _("Degrees, Minutes, Seconds") };
@@ -2354,8 +2368,7 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
 
     wxStaticText* itemStaticTextDistanceFormat = new wxStaticText( itemPanelFont, wxID_STATIC,
             _("Show distance as") );
-    pFormatGrid->Add( itemStaticTextDistanceFormat, 0,
-            wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, border_size );
+    pFormatGrid->Add( itemStaticTextDistanceFormat, 0, flags, border_size );
 
     wxString pDistanceFormats[] = { _("Nautical miles"), _("Statute miles"),
             _("Kilometers"), _("Meters") };
@@ -2366,8 +2379,7 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
 
     wxStaticText* itemStaticTextSpeedFormat = new wxStaticText( itemPanelFont, wxID_STATIC,
             _("Show speed as") );
-    pFormatGrid->Add( itemStaticTextSpeedFormat, 0,
-            wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, border_size );
+    pFormatGrid->Add( itemStaticTextSpeedFormat, 0, flags, border_size );
 
     wxString pSpeedFormats[] = { _("Knots"), _("Mph"),
             _("km/h"), _("m/s") };
@@ -2511,7 +2523,7 @@ void options::CreateControls()
     // I would prefer to change this so the plugins are only loaded if and when
     // they select the plugin page
     if(!g_bLoadedDisabledPlugins) {
-        g_pi_manager->LoadAllPlugIns( g_Plugin_Dir, false );
+//        g_pi_manager->LoadAllPlugIns( g_Plugin_Dir, false );
         g_bLoadedDisabledPlugins = true;
     }
 
@@ -3614,6 +3626,7 @@ void options::OnApplyClick( wxCommandEvent& event )
 #endif
 
 //    User Interface Panel
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
     if( m_bVisitLang ) {
         wxString new_canon = _T("en_US");
         wxString lang_sel = m_itemLangListBox->GetStringSelection();
@@ -3634,8 +3647,9 @@ void options::OnApplyClick( wxCommandEvent& event )
         wxString locale_old = g_locale;
         g_locale = new_canon;
 
-        if( g_locale != locale_old ) m_returnChanges |= LOCALE_CHANGED;
-
+        if( g_locale != locale_old )
+            m_returnChanges |= LOCALE_CHANGED;
+        
         wxString oldStyle = g_StyleManager->GetCurrentStyle()->name;
         g_StyleManager->SetStyleNextInvocation( m_itemStyleListBox->GetStringSelection() );
         if( g_StyleManager->GetStyleNextInvocation() != oldStyle ) {
@@ -3644,12 +3658,14 @@ void options::OnApplyClick( wxCommandEvent& event )
         wxSizeEvent nullEvent;
         gFrame->OnSize( nullEvent );
     }
-
+#endif
+    
     //      PlugIn Manager Panel
 
     //      Pick up any changes to selections
     bool bnew_settings = g_pi_manager->UpdatePlugIns();
-    if( bnew_settings ) m_returnChanges |= TOOLBAR_CHANGED;
+    if( bnew_settings )
+        m_returnChanges |= TOOLBAR_CHANGED;
 
     //      And keep config in sync
     g_pi_manager->UpdateConfig();
@@ -3820,7 +3836,7 @@ void options::OnChooseFont( wxCommandEvent& event )
     event.Skip();
 }
 
-#ifdef __WXGTK__
+#if defined(__WXGTK__) || defined(__WXQT__)
 void options::OnChooseFontColor( wxCommandEvent& event )
 {
     wxString sel_text_element = m_itemFontElementListBox->GetStringSelection();
@@ -3891,6 +3907,7 @@ void options::OnPageChange( wxListbookEvent& event )
     }
 
     else if( m_pageUI == i ) {                       // 5 is the index of "User Interface" page
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
         if( !m_bVisitLang ) {
             ::wxBeginBusyCursor();
 
@@ -3992,6 +4009,7 @@ void options::OnPageChange( wxListbookEvent& event )
 
             ::wxEndBusyCursor();
         }
+#endif
     }
 
     else if( m_pagePlugins == i ) {                    // 7 is the index of "Plugins" page
@@ -4079,7 +4097,8 @@ wxString GetOCPNKnownLanguage( wxString lang_canonical, wxString *lang_dir )
 {
     wxString return_string;
     wxString dir_suffix;
-
+    
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
     if( lang_canonical == _T("en_US") ) {
         dir_suffix = _T("en");
         return_string = wxString( "English (U.S.)", wxConvUTF8 );
@@ -4152,8 +4171,11 @@ wxString GetOCPNKnownLanguage( wxString lang_canonical, wxString *lang_dir )
         return_string = info->Description;
     }
 
-    if( NULL != lang_dir ) *lang_dir = dir_suffix;
-
+    if( NULL != lang_dir )
+        *lang_dir = dir_suffix;
+#else
+    return_string = wxString( "English (U.S.)", wxConvUTF8 );
+#endif    
     return return_string;
 
 }
@@ -4653,7 +4675,7 @@ void options::OnConnValChange( wxCommandEvent& event )
 
 void options::OnTypeSerialSelected( wxCommandEvent& event )
 {
-#ifdef __WXGTK__
+#ifdef __UNIX__
     if( ! g_bserial_access_checked ){
         if( !CheckSerialAccess() ){
         }
@@ -4925,7 +4947,7 @@ void options::SetDefaultConnectionParams()
     m_choicePriority->Select(m_choicePriority->FindString(_T("1")));
 
     bool bserial = true;
-#ifdef __WXGTK__
+#ifdef __UNIX__
     if(!g_bserial_access_checked)
         bserial = false;
 #endif
@@ -5436,12 +5458,18 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent )
         m_cbTextureCompression->Disable();
     }
         
+
+    int flags = 0;
+#if !wxCHECK_VERSION(3,0,0)
+    flags |= wxADJUST_MINSIZE;
+#endif
+
  
     if(g_bexpert){
         wxStaticText* stTextureMemorySize =
             new wxStaticText( this, wxID_STATIC, _("Texture Memory Size (MB)") );
         m_bSizer1->Add( stTextureMemorySize, 0,
-                wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, 5 );
+                wxLEFT | wxRIGHT | wxTOP | flags, 5 );
 
         m_sTextureMemorySize = new wxSpinCtrl( this );
         m_sTextureMemorySize->SetRange(1, 16384 );

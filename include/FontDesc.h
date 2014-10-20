@@ -26,6 +26,7 @@
 #define __FONTDESC_H__
 
 #include <wx/string.h>
+
 #include <wx/font.h>
 #include <wx/colour.h>
 #include <wx/list.h>

@@ -56,7 +56,10 @@
 #include "ocpn_pixel.h"
 #include "s52utils.h"
 #include "gshhs.h"
+
+#ifdef USE_S57
 #include "mygeom.h"
+#endif
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -67,7 +70,11 @@ extern wxString        g_SData_Locn;
 extern wxString        g_PrivateDataDir;
 extern AIS_Decoder     *g_pAIS;
 extern wxAuiManager    *g_pauimgr;
+
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
 extern wxLocale        *plocale_def_lang;
+#endif
+
 extern ChartDB         *ChartData;
 extern MyFrame         *gFrame;
 extern ocpnStyle::StyleManager* g_StyleManager;
@@ -80,7 +87,6 @@ extern Select          *pSelect;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern RouteList       *pRouteList;
 extern PlugInManager   *g_pi_manager;
-extern s52plib         *ps52plib;
 extern wxString        *pChartListFileName;
 extern wxString         gExe_path;
 extern wxString         g_Plugin_Dir;
@@ -90,6 +96,10 @@ extern ColorScheme      global_color_scheme;
 extern ChartCanvas     *cc1;
 
 unsigned int      gs_plib_flags;
+
+#ifdef USE_S57
+extern s52plib         *ps52plib;
+#endif
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(Plugin_WaypointList);
@@ -635,13 +645,9 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
         wxString name = fn.GetName();
         prob_pi_name = name;
         
-#ifdef __WXGTK__
+#ifndef __MSVC__
         prob_pi_name = name.Mid(3);     // lop off "lib"
-#endif        
-#ifdef __WXOSX__
-        prob_pi_name = name.Mid(3);     // lop off "lib"
-#endif        
-        
+#endif
         int len = sizeof(PluginBlacklist) / sizeof(BlackListedPlugin);
         for (int i = 0; i < len; i++) {
             wxString candidate = PluginBlacklist[i].name.Lower();
@@ -1769,9 +1775,11 @@ wxAuiManager *GetFrameAuiManager(void)
 
 bool AddLocaleCatalog( wxString catalog )
 {
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
     if(plocale_def_lang)
         return plocale_def_lang->AddCatalog( catalog );
     else
+#endif        
         return false;
 }
 
@@ -3627,6 +3635,7 @@ wxString GetPlugInPath(opencpn_plugin *pplugin)
 
 //      API 1.11 Access to Vector PlugIn charts
 
+#ifdef USE_S57
 ListOfPI_S57Obj *PlugInManager::GetPlugInObjRuleListAtLatLon( ChartPlugInWrapper *target, float zlat, float zlon,
                                                  float SelectRadius, const ViewPort& vp )
 {
@@ -3657,7 +3666,7 @@ wxString PlugInManager::CreateObjDescriptions( ChartPlugInWrapper *target, ListO
     
     return ret_str;
 }
-
+#endif
 
 
 //      API 1.11 Access to S52 PLIB
@@ -3668,30 +3677,37 @@ wxString PI_GetPLIBColorScheme()
 
 int PI_GetPLIBDepthUnitInt()
 {
+#ifdef USE_S57    
     if(ps52plib)
         return ps52plib->m_nDepthUnitDisplay;
     else
+#endif        
         return 0; 
 }
 
 int PI_GetPLIBSymbolStyle()
 {
+#ifdef USE_S57    
     if(ps52plib)
         return ps52plib->m_nSymbolStyle;
     else
+#endif        
         return 0;  
 }
 
 int PI_GetPLIBBoundaryStyle()
 {
+#ifdef USE_S57    
     if(ps52plib)
         return ps52plib->m_nBoundaryStyle;
-    else        
+    else
+#endif        
         return 0;
 }
 
 bool PI_PLIBObjectRenderCheck( PI_S57Obj *pObj, PlugIn_ViewPort *vp )
 { 
+#ifdef USE_S57    
     if(ps52plib) {
         //  Create and populate a compatible s57 Object
         S57Obj cobj;
@@ -3713,15 +3729,18 @@ bool PI_PLIBObjectRenderCheck( PI_S57Obj *pObj, PlugIn_ViewPort *vp )
         return ps52plib->ObjectRenderCheck( &rzRules, &cvp );
     }
     else
+#endif        
         return false;
     
 }
 
 int PI_GetPLIBStateHash()
 {
+#ifdef USE_S57    
     if(ps52plib)
         return ps52plib->GetStateHash();
     else
+#endif        
         return 0;
 }
 
@@ -3829,6 +3848,7 @@ void CreateCompatibleS57Object( PI_S57Obj *pObj, S57Obj *cobj, chart_context *pc
 
 bool PI_PLIBSetContext( PI_S57Obj *pObj )
 {
+#ifdef USE_S57    
     S52PLIB_Context *ctx;
     if( !pObj->S52_Context ){
         ctx = new S52PLIB_Context;
@@ -3892,7 +3912,7 @@ bool PI_PLIBSetContext( PI_S57Obj *pObj )
     ps52plib->_LUP2rules( lup, &cobj );
     
     ctx->MPSRulesList = NULL;
-    
+#endif    
     return true;
 }
     
@@ -3986,12 +4006,17 @@ PI_DisCat PI_GetObjectDisplayCategory( PI_S57Obj *pObj )
 }
 double PI_GetPLIBMarinerSafetyContour()
 {
+#ifdef USE_S57    
     return S52_getMarinerParam(S52_MAR_SAFETY_CONTOUR);
+#else
+    return 0.;
+#endif    
 }
 
 
 void PI_PLIBSetLineFeaturePriority( PI_S57Obj *pObj, int prio )
 {
+#ifdef USE_S57    
     //  Create and populate a compatible s57 Object
     S57Obj cobj;
     chart_context ctx;
@@ -4012,11 +4037,12 @@ void PI_PLIBSetLineFeaturePriority( PI_S57Obj *pObj, int prio )
 
     //  Update the PLIB context after the render operation
     UpdatePIObjectPlibContext( pObj, &cobj, &rzRules );
-
+#endif
 }
 
 void PI_PLIBPrepareForNewRender( void )
 {
+#ifdef USE_S57    
     if(ps52plib){
         ps52plib->PrepareForRender();
         ps52plib->ClearTextList();
@@ -4026,6 +4052,7 @@ void PI_PLIBPrepareForNewRender( void )
         else
             ps52plib->EnableGLLS(false);   // Older cannot
     }
+#endif    
 }
 
 void PI_PLIBSetRenderCaps( unsigned int flags )
@@ -4035,7 +4062,7 @@ void PI_PLIBSetRenderCaps( unsigned int flags )
 
 void PI_PLIBFreeContext( void *pContext )
 {
-
+#ifdef USE_S57
     S52PLIB_Context *pctx = (S52PLIB_Context *)pContext;
     
     if( pctx->ChildRazRules ){
@@ -4069,10 +4096,12 @@ void PI_PLIBFreeContext( void *pContext )
     delete pctx->FText;
     
     delete pctx;
+#endif    
 }
 
 int PI_PLIBRenderObjectToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp )
 {
+#ifdef USE_S57    
     //  Create and populate a compatible s57 Object
     S57Obj cobj;
     chart_context ctx;
@@ -4100,12 +4129,13 @@ int PI_PLIBRenderObjectToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp )
     
     //  Update the PLIB context after the render operation
     UpdatePIObjectPlibContext( pObj, &cobj, &rzRules );
-
+#endif
     return 1;
 }
 
 int PI_PLIBRenderAreaToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp, wxRect rect, unsigned char *pixbuf )
 {
+#ifdef USE_S57    
     //  Create a compatible render canvas
     render_canvas_parms pb_spec;
     
@@ -4173,12 +4203,13 @@ int PI_PLIBRenderAreaToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp, wxRe
 
     //  Update the PLIB context after the render operation
     UpdatePIObjectPlibContext( pObj, &cobj, &rzRules );
-    
+#endif    
     return 1;
 }
 
 int PI_PLIBRenderAreaToGL( const wxGLContext &glcc, PI_S57Obj *pObj, PlugIn_ViewPort *vp, wxRect &render_rect )
 {
+#ifdef USE_S57    
 #ifdef ocpnUSE_GL
     //  Create and populate a compatible s57 Object
     S57Obj cobj;
@@ -4240,6 +4271,7 @@ int PI_PLIBRenderAreaToGL( const wxGLContext &glcc, PI_S57Obj *pObj, PlugIn_View
     UpdatePIObjectPlibContext( pObj, &cobj, &rzRules );
     
 #endif    
+#endif    
     return 1;
     
 }
@@ -4247,6 +4279,7 @@ int PI_PLIBRenderAreaToGL( const wxGLContext &glcc, PI_S57Obj *pObj, PlugIn_View
 int PI_PLIBRenderObjectToGL( const wxGLContext &glcc, PI_S57Obj *pObj,
                                       PlugIn_ViewPort *vp, wxRect &render_rect )
 {
+#ifdef _USE_S57    
     //  Create and populate a compatible s57 Object
     S57Obj cobj;
     chart_context ctx;
@@ -4274,7 +4307,7 @@ int PI_PLIBRenderObjectToGL( const wxGLContext &glcc, PI_S57Obj *pObj,
     
     //  Update the PLIB context after the render operation
     UpdatePIObjectPlibContext( pObj, &cobj, &rzRules );
-    
+#endif    
     return 1;
     
 }

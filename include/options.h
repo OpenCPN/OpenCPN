@@ -253,7 +253,7 @@ public:
     void OnChooseFont( wxCommandEvent& event );
     void OnCPAWarnClick( wxCommandEvent& event );
     
-#ifdef __WXGTK__
+#if defined(__WXGTK__) || defined(__WXQT__)
     void OnChooseFontColor( wxCommandEvent& event );
 #endif
     void OnOpenGLOptions( wxCommandEvent& event );
@@ -642,6 +642,7 @@ private:
     ChartGroupArray *m_pGroupArray;
 };
 
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
 static int lang_list[] = {
             wxLANGUAGE_DEFAULT,
             wxLANGUAGE_ABKHAZIAN,
@@ -873,7 +874,8 @@ static int lang_list[] = {
             wxLANGUAGE_ZHUANG,
             wxLANGUAGE_ZULU
             };
-
+#endif
+            
 ///////////////////////////////////////////////////////////////////////////////
 /// Class SentenceListDlg
 ///////////////////////////////////////////////////////////////////////////////
