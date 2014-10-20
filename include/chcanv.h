@@ -415,17 +415,16 @@ private:
       void DrawAnchorWatchPoints( ocpnDC& dc );
       double GetAnchorWatchRadiusPixels(RoutePoint *pAnchorWatchPoint);
 
-      void DrawAllTidesInBBox(ocpnDC& dc, LLBBox& BBox, bool bRebuildSelList, bool bforce_redraw_tides,
-                        bool bdraw_mono = false);
-      void DrawAllCurrentsInBBox(ocpnDC& dc, LLBBox& BBox,
-                           bool bRebuildSelList, bool bforce_redraw_currents, bool bdraw_mono = false);
+      void DrawAllTidesInBBox(ocpnDC& dc, LLBBox& BBox);
+      void DrawAllCurrentsInBBox(ocpnDC& dc, LLBBox& BBox);
       void DrawTCWindow(int x, int y, void *pIDX);
+      void RebuildTideSelectList( LLBBox& BBox );
+      void RebuildCurrentSelectList( LLBBox& BBox );
+      
 
       void RenderAllChartOutlines(ocpnDC &dc, ViewPort& vp);
       void RenderChartOutline(ocpnDC &dc, int dbIndex, ViewPort& vp);
       void RenderRouteLegs ( ocpnDC &dc );
-
-      wxBitmap *DrawTCCBitmap( wxDC *pbackground_dc, bool bAddNewSelpoints = true);
 
       void AlertDraw(ocpnDC& dc);                // pjotrc 2010.02.22
 
