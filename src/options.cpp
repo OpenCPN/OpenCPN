@@ -339,9 +339,13 @@ void MMSIEditDialog::CreateControls()
                                                                    wxVERTICAL );
      itemBoxSizer2->Add( itemStaticBoxSizer4, 0, wxEXPAND | wxALL, 5 );
      
+    int flags = wxLEFT | wxRIGHT | wxTOP;
+#if !wxCHECK_VERSION(3,0,0)
+    flags |= wxADJUST_MINSIZE;
+#endif
      wxStaticText* itemStaticText5 = new wxStaticText( itemDialog1, wxID_STATIC, _("MMSI") );
      itemStaticBoxSizer4->Add( itemStaticText5, 0,
-                               wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, 5 );
+                               wxALIGN_LEFT | flags, 5 );
      
      m_MMSICtl = new wxTextCtrl( itemDialog1, ID_MMSI_CTL, _T(""), wxDefaultPosition, wxSize( 180, -1 ), 0 );
      itemStaticBoxSizer4->Add( m_MMSICtl, 0,
