@@ -95,9 +95,13 @@ StatWin::~StatWin()
 void StatWin::RePosition()
 {
     wxSize cs = GetParent()->GetClientSize();
+    wxFrame *frame = dynamic_cast<wxFrame*>(GetParent());
     wxPoint position;
     position.x = 0;
-    position.y = cs.y;// - GetSize().y;
+    position.y = cs.y;
+#ifndef __OCPN__ANDROID__ // why no calculation for android? is there a bug in wxWidgets?
+    position.y -= GetSize().y;
+#endif
 
     wxPoint screen_pos = GetParent()->ClientToScreen( position );
     wxString msg;
