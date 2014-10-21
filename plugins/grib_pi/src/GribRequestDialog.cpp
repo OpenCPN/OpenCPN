@@ -108,9 +108,8 @@ void GribRequestSetting::InitRequestConfig()
 
 #ifdef __WXMSW__                                 //show / hide sender elemants as necessary
     m_pSenderSizer->ShowItems(false);
-    m_MailImage->SetMinSize(wxSize(-1, -1));
 #else
-    if(m_SendMethod == 0 )                              
+    if(m_SendMethod == 0 )
         m_pSenderSizer->ShowItems(false);
     else
         m_pSenderSizer->ShowItems(true);                //possibility to use "sendmail" method with Linux
@@ -126,8 +125,20 @@ void GribRequestSetting::InitRequestConfig()
 
     m_AllowSend = true;
     m_MailImage->SetValue( WriteMail() );
+
+    SetMailImageSize();
 }
 
+void GribRequestSetting::SetMailImageSize()
+{
+#ifndef __WXMSW__                   //default resizing do not work properly on no Windows plateforms
+    int h;
+    GetTextExtent( _T("abc"), NULL, &h, 0, 0, OCPNGetFont(_("Dialog"), 10) );
+    m_MailImage->SetMinSize( wxSize( -1, (h * m_MailImage->GetNumberOfLines()) + 5 ) );
+#endif
+    this->Fit();
+    this->Refresh();
+}
 void GribRequestSetting::SetVpSize(PlugIn_ViewPort *vp)
 {
     double lonmax=vp->lon_max;
@@ -242,8 +253,7 @@ void GribRequestSetting::OnTopChange(wxCommandEvent &event)
 
     if(m_AllowSend) m_MailImage->SetValue( WriteMail() );
 
-    this->Fit();
-    this->Refresh();
+    SetMailImageSize();
 }
 
 void GribRequestSetting::OnMovingClick( wxCommandEvent& event )
@@ -265,8 +275,7 @@ void GribRequestSetting::OnAnyChange(wxCommandEvent &event)
 
     if(m_AllowSend) m_MailImage->SetValue( WriteMail() );
 
-    this->Fit();
-    this->Refresh();
+    SetMailImageSize();
 }
 
 void GribRequestSetting::OnTimeRangeChange(wxCommandEvent &event)
@@ -286,8 +295,7 @@ void GribRequestSetting::OnTimeRangeChange(wxCommandEvent &event)
 
     if(m_AllowSend) m_MailImage->SetValue( WriteMail() );
 
-    this->Fit();
-    this->Refresh();
+    SetMailImageSize();
 }
 
 void GribRequestSetting::OnSaveMail( wxCommandEvent& event )
@@ -465,7 +473,7 @@ wxString GribRequestSetting::WriteMail()
 bool GribRequestSetting::EstimateFileSize()
 {
     //define size limits for zyGrib
-    int limit = IsZYGRIB ? 4 : 0;                                            //new limit  4 mb 
+    int limit = IsZYGRIB ? 2 : 0;                                            //new limit  2 mb
 
     //too small zone ? ( mini 2 * resolutions )
     double reso,time,inter;
@@ -566,6 +574,7 @@ void GribRequestSetting::OnSendMaiL( wxCommandEvent& event  )
         m_AllowSend = true;
 
         m_MailImage->SetValue( WriteMail() );
+        SetMailImageSize();
 
         return;
     }
@@ -585,8 +594,7 @@ void GribRequestSetting::OnSendMaiL( wxCommandEvent& event  )
         m_rButtonCancel->Hide();
         m_rButtonApply->Hide();
         m_rButtonYes->SetLabel(_("Continue..."));
-        this->Fit();
-        this->Refresh();
+        SetMailImageSize();
         return;
     }
 
@@ -617,6 +625,5 @@ void GribRequestSetting::OnSendMaiL( wxCommandEvent& event  )
         m_rButtonYes->Hide();
     }
     m_rButtonYes->SetLabel(_("Continue..."));
-    this->Fit();
-    this->Refresh();
+    SetMailImageSize();
 }

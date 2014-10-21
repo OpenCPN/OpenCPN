@@ -115,7 +115,8 @@ private:
     void OnPlayStopTimer( wxTimerEvent & event);
     void OnCursorTrackTimer( wxTimerEvent & event);
 
-    void AddTrackingControl( wxControl *ctrl1,  wxControl *ctrl2,  wxControl *ctrl3, bool show, bool altitude = false );
+    void AddTrackingControl( wxControl *ctrl1,  wxControl *ctrl2,  wxControl *ctrl3, bool show,
+            int wictrl2, int wictrl3 = 0, bool altitude = false );
     void UpdateTrackingControls( void );
 
     void OnZoomToCenterClick( wxCommandEvent& event );
@@ -137,6 +138,9 @@ private:
     int GetNearestValue(wxDateTime time, int model);
     bool GetGribZoneLimits(GribTimelineRecordSet *timelineSet, double *latmin, double *latmax, double *lonmin, double *lonmax);
     wxDateTime GetNow();
+    void RestaureSelectionString();
+    void SaveSelectionString()  { m_SelectionIsSaved = true; m_Selection_index = m_cRecordForecast->GetSelection();
+            m_Selection_label = m_cRecordForecast->GetString( m_Selection_index); }
 
     //    Data
     wxWindow *pParent;
@@ -150,6 +154,9 @@ private:
     bool m_InterpolateMode;
     bool m_pNowMode;
 
+    bool             m_SelectionIsSaved;
+    int              m_Selection_index;
+    wxString         m_Selection_label;
     wxString         m_file_name;   /* selected file */
     wxString         m_grib_dir;
 };

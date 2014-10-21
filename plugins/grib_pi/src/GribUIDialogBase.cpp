@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version Sep 30 2014)
+// C++ code generated with wxFormBuilder (version Jun  6 2014)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO "NOT" EDIT THIS FILE!
@@ -30,8 +30,10 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	
 	fgSizer51->Add( m_bpPrev, 0, wxALL, 1 );
 	
-	m_cRecordForecast = new wxComboBox( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 ); 
-	fgSizer51->Add( m_cRecordForecast, 0, wxEXPAND|wxALL, 1 );
+	wxArrayString m_cRecordForecastChoices;
+	m_cRecordForecast = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cRecordForecastChoices, 0 );
+	m_cRecordForecast->SetSelection( 0 );
+	fgSizer51->Add( m_cRecordForecast, 0, wxALL|wxEXPAND, 5 );
 	
 	m_bpNext = new wxBitmapButton( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_bpNext->SetToolTip( _("Next") );
@@ -86,7 +88,7 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	m_fcAltitude->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 	
 	wxArrayString m_cbAltitudeChoices;
-	m_cbAltitude = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxSize( 60,-1 ), m_cbAltitudeChoices, 0 );
+	m_cbAltitude = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxSize( -1,-1 ), m_cbAltitudeChoices, 0 );
 	m_cbAltitude->SetSelection( 0 );
 	m_cbAltitude->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), 70, 90, 90, false, wxEmptyString ) );
 	
@@ -280,7 +282,7 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	this->Connect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( GRIBUIDialogBase::OnClose ) );
 	this->Connect( wxEVT_SIZE, wxSizeEventHandler( GRIBUIDialogBase::OnSize ) );
 	m_bpPrev->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnPrev ), NULL, this );
-	m_cRecordForecast->Connect( wxEVT_COMMAND_COMBOBOX_SELECTED, wxCommandEventHandler( GRIBUIDialogBase::OnRecordForecast ), NULL, this );
+	m_cRecordForecast->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GRIBUIDialogBase::OnRecordForecast ), NULL, this );
 	m_bpNext->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnNext ), NULL, this );
 	m_bpNow->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnNow ), NULL, this );
 	m_bpZoomToCenter->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnZoomToCenterClick ), NULL, this );
@@ -316,7 +318,7 @@ GRIBUIDialogBase::~GRIBUIDialogBase()
 	this->Disconnect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( GRIBUIDialogBase::OnClose ) );
 	this->Disconnect( wxEVT_SIZE, wxSizeEventHandler( GRIBUIDialogBase::OnSize ) );
 	m_bpPrev->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnPrev ), NULL, this );
-	m_cRecordForecast->Disconnect( wxEVT_COMMAND_COMBOBOX_SELECTED, wxCommandEventHandler( GRIBUIDialogBase::OnRecordForecast ), NULL, this );
+	m_cRecordForecast->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GRIBUIDialogBase::OnRecordForecast ), NULL, this );
 	m_bpNext->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnNext ), NULL, this );
 	m_bpNow->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnNow ), NULL, this );
 	m_bpZoomToCenter->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnZoomToCenterClick ), NULL, this );
@@ -385,8 +387,8 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	m_staticText4->Wrap( -1 );
 	fgSizer13->Add( m_staticText4, 0, wxALL|wxEXPAND, 5 );
 	
-	m_sUpdatesPerSecond = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 60, 4 );
-	fgSizer13->Add( m_sUpdatesPerSecond, 0, wxALL|wxEXPAND, 5 );
+	m_sUpdatesPerSecond = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 90,-1 ), wxSP_ARROW_KEYS, 1, 60, 4 );
+	fgSizer13->Add( m_sUpdatesPerSecond, 0, wxALL, 5 );
 	
 	m_cInterpolate = new wxCheckBox( this, wxID_ANY, _("Interpolate between gribs"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer13->Add( m_cInterpolate, 0, wxALL, 5 );
@@ -457,8 +459,8 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	m_tIsoBarSpacing->Wrap( -1 );
 	m_fIsoBarSpacing->Add( m_tIsoBarSpacing, 0, wxBOTTOM|wxEXPAND|wxRIGHT, 5 );
 	
-	m_sIsoBarSpacing = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 70,-1 ), wxSP_ARROW_KEYS, 1, 1000, 1 );
-	m_fIsoBarSpacing->Add( m_sIsoBarSpacing, 0, wxALL|wxEXPAND, 5 );
+	m_sIsoBarSpacing = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 90,-1 ), wxSP_ARROW_KEYS, 1, 1000, 1 );
+	m_fIsoBarSpacing->Add( m_sIsoBarSpacing, 0, wxALL, 5 );
 	
 	
 	fgSizer15->Add( m_fIsoBarSpacing, 1, wxALL|wxEXPAND, 5 );
@@ -508,8 +510,8 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	m_ctNumbers->Wrap( -1 );
 	fgSizer15->Add( m_ctNumbers, 0, wxALL|wxEXPAND, 5 );
 	
-	m_sNumbersSpacing = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( -1,-1 ), wxSP_ARROW_KEYS, 30, 100, 50 );
-	fgSizer15->Add( m_sNumbersSpacing, 0, wxALL|wxEXPAND, 5 );
+	m_sNumbersSpacing = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 90,-1 ), wxSP_ARROW_KEYS, 30, 100, 50 );
+	fgSizer15->Add( m_sNumbersSpacing, 0, wxALL, 5 );
 	
 	m_cbParticles = new wxCheckBox( this, wxID_ANY, _("Particle Map"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer15->Add( m_cbParticles, 0, wxALL, 5 );
@@ -973,8 +975,6 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	fgSizer11->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 	
 	m_MailImage = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY );
-	m_MailImage->SetMinSize( wxSize( -1,80 ) );
-	
 	fgSizer11->Add( m_MailImage, 0, wxALL|wxEXPAND, 5 );
 	
 	

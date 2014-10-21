@@ -69,6 +69,7 @@ private:
       void OnTimeRangeChange( wxCommandEvent& event );
       void OnSendMaiL( wxCommandEvent& event );
       void OnSaveMail( wxCommandEvent& event );
+      void SetMailImageSize();
 
       bool IsZYGRIB;
       bool IsGFS;
