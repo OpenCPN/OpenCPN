@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version Sep 30 2014)
+// C++ code generated with wxFormBuilder (version Jun  6 2014)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO "NOT" EDIT THIS FILE!
@@ -21,10 +21,9 @@
 #include <wx/settings.h>
 #include <wx/string.h>
 #include <wx/button.h>
-#include <wx/combobox.h>
+#include <wx/choice.h>
 #include <wx/slider.h>
 #include <wx/sizer.h>
-#include <wx/choice.h>
 #include <wx/checkbox.h>
 #include <wx/textctrl.h>
 #include <wx/statbox.h>
@@ -59,7 +58,7 @@ class GRIBUIDialogBase : public wxDialog
 	protected:
 		wxFlexGridSizer* m_fgTrackingDisplay;
 		wxBitmapButton* m_bpPrev;
-		wxComboBox* m_cRecordForecast;
+		wxChoice* m_cRecordForecast;
 		wxBitmapButton* m_bpNext;
 		wxBitmapButton* m_bpNow;
 		wxBitmapButton* m_bpZoomToCenter;

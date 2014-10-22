@@ -92,6 +92,7 @@ public:
       void SetGribDialogSizeX(int x){ m_grib_dialog_sx = x;}
       void SetGribDialogSizeY(int x){ m_grib_dialog_sy = x;}
       void SetColorScheme(PI_ColorScheme cs);
+      void SetDialogFont( wxWindow *window, wxFont *font = OCPNGetFont(_("Dialog"), 10) );
 
       void OnGribDialogClose();
 

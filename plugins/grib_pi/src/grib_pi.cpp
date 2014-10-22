@@ -343,6 +343,10 @@ void grib_pi::OnToolbarToolCallback(int id)
 
       //    Toggle dialog?
       if(m_bShowGrib) {
+          if( m_pGribDialog->GetFont() != *OCPNGetFont(_("Dialog"), 10) ) {
+              m_pGribDialog->PopulateTrackingControls();
+              SetDialogFont( m_pGribDialog );
+          }
           m_pGribDialog->Show();
           if( m_pGribDialog->m_bGRIBActiveFile ) {
               if( m_pGribDialog->m_bGRIBActiveFile->IsOK() ) {
@@ -418,6 +422,20 @@ void grib_pi::OnContextMenuItemCallback(int id)
 {
     if(!m_pGribDialog->m_bGRIBActiveFile) return;
     m_pGribDialog->ContextMenuItemCallback(id);
+}
+
+void grib_pi::SetDialogFont( wxWindow *dialog, wxFont *font)
+{
+    dialog->SetFont( *font );
+    wxWindowList list = dialog->GetChildren();
+    wxWindowListNode *node = list.GetFirst();
+    for( size_t i = 0; i < list.GetCount(); i++ ) {
+        wxWindow *win = node->GetData();
+        win->SetFont( *font );
+        node = node->GetNext();
+    }
+    dialog->Fit();
+    dialog->Refresh();
 }
 
 void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body)
@@ -560,6 +578,6 @@ void GribPreferencesDialog::OnStartOptionChange( wxCommandEvent& event )
     if(m_rbStartOptions->GetSelection() == 2) {
         wxMessageDialog mes(this, _("You have chosen to authorize interpolation.\nDon't forget that data displayed at current time will not be real but interpolated!"),
                 _("Warning!"), wxOK);
-            mes.ShowModal();
-        }
+        mes.ShowModal();
+    }
 }

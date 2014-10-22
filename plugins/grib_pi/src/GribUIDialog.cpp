@@ -164,6 +164,7 @@ void GRIBUIDialog::OpenFile(bool newestFile)
     m_TimeLineHours = 0;
     m_InterpolateMode = false;
     m_pNowMode = false;
+    m_SelectionIsSaved = false;
 
     //get more recent file in default directory if necessary
     wxFileName f( m_file_name );
@@ -439,7 +440,8 @@ void GRIBUIDialog::SetViewPort( PlugIn_ViewPort *vp )
         if(pReq_Dialog->IsShown()) pReq_Dialog->OnVpChange(vp);
 }
 
-void GRIBUIDialog::AddTrackingControl( wxControl *ctrl1,  wxControl *ctrl2,  wxControl *ctrl3, bool show, bool altitude )
+void GRIBUIDialog::AddTrackingControl( wxControl *ctrl1,  wxControl *ctrl2,  wxControl *ctrl3, bool show,
+        int wctrl2, int wctrl3, bool altitude )
 {
     if(show) {
         if( altitude ){
@@ -453,12 +455,14 @@ void GRIBUIDialog::AddTrackingControl( wxControl *ctrl1,  wxControl *ctrl2,  wxC
         }
         if(ctrl2) {
             m_fgTrackingControls->Add(ctrl2, 0, wxALL, 1);
+            ctrl2->SetMinSize(wxSize(wctrl2, -1));
             ctrl2->Show();
         } else
               m_fgTrackingControls->Add(0, 0, 1, wxEXPAND, 1); /* spacer */
 
         if(ctrl3) {
             m_fgTrackingControls->Add(ctrl3, 0, wxALL, 1);
+            ctrl3->SetMinSize(wxSize(wctrl3, -1));
             ctrl3->Show();
         } else
             m_fgTrackingControls->Add(0, 0, 1, wxEXPAND, 1); /* spacer */
@@ -504,42 +508,53 @@ void GRIBUIDialog::PopulateTrackingControls( bool Populate_Altitude )
         m_cbAltitude->SetSelection( selection );
     }
 
+    //Get text controls sizing data
+    wxFont *font = OCPNGetFont(_("Dialog"), 10);
+    int wn, ws, wd, wl;
+    GetTextExtent( _T("abcdefghih"), &wn, NULL, 0, 0, font); // normal width text control size
+    GetTextExtent( _T("abcdef"), &ws, NULL, 0, 0, font); // short width text control size for direction only
+    GetTextExtent( _T("abcdefghijklmopq"), &wd, NULL, 0, 0, font); // long width text control size for double unit wind display
+    GetTextExtent( _T("abcdefghijklm"), &wl, NULL, 0, 0, font); // long width text control size for double unit wave display
+    //
+
     AddTrackingControl(m_cbWind, m_tcWindSpeed, m_tcWindDirection,
         m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX) != wxNOT_FOUND
-        && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VY) != wxNOT_FOUND, m_cbAltitude->GetCount() > 1 );
+        && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VY) != wxNOT_FOUND,
+        m_OverlaySettings.Settings[GribOverlaySettings::WIND].m_Units == GribOverlaySettings::BFS ? wn, 0 : wd, ws,
+        m_cbAltitude->GetCount() > 1 );
     AddTrackingControl(m_cbWindGust, m_tcWindGust, 0, m_pTimelineSet
-        && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_GUST) != wxNOT_FOUND);
+        && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_GUST) != wxNOT_FOUND, wn);
     AddTrackingControl(m_cbPressure, m_tcPressure, 0, m_pTimelineSet
-        && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_PRESSURE) != wxNOT_FOUND);
+        && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_PRESSURE) != wxNOT_FOUND, wn);
 
     /* tracking for wave is funky */
     if(m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_HTSIGW) != wxNOT_FOUND) {
         if(m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WVDIR) != wxNOT_FOUND)
-            AddTrackingControl(m_cbWave, m_tcWaveHeight, m_tcWaveDirection, true);
+            AddTrackingControl(m_cbWave, m_tcWaveHeight, m_tcWaveDirection, true, wl, ws);
         else {
-            AddTrackingControl(m_cbWave, m_tcWaveHeight, 0, true);
+            AddTrackingControl(m_cbWave, m_tcWaveHeight, 0, true, wn);
             m_tcWaveDirection->Hide();
         }
     } else
         if(m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WVDIR) != wxNOT_FOUND) {
-            AddTrackingControl(m_cbWave, 0, m_tcWaveDirection, true);
+            AddTrackingControl(m_cbWave, 0, m_tcWaveDirection, true, 0, ws);
             m_tcWaveHeight->Hide();
         } else
-            AddTrackingControl(m_cbWave, m_tcWaveHeight, m_tcWaveDirection, false);
+            AddTrackingControl(m_cbWave, m_tcWaveHeight, m_tcWaveDirection, false, 0);
 
     AddTrackingControl(m_cbCurrent, m_tcCurrentVelocity, m_tcCurrentDirection,
         m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEACURRENT_VX) != wxNOT_FOUND
-        && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEACURRENT_VY) != wxNOT_FOUND);
+        && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEACURRENT_VY) != wxNOT_FOUND, wn, ws);
     AddTrackingControl(m_cbPrecipitation, m_tcPrecipitation, 0,
-        m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_PRECIP_TOT) != wxNOT_FOUND);
+        m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_PRECIP_TOT) != wxNOT_FOUND, wn);
     AddTrackingControl(m_cbCloud, m_tcCloud, 0,
-        m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_CLOUD_TOT) != wxNOT_FOUND);
+        m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_CLOUD_TOT) != wxNOT_FOUND, wn);
     AddTrackingControl(m_cbAirTemperature, m_tcAirTemperature, 0,
-        m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_AIR_TEMP) != wxNOT_FOUND);
+        m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_AIR_TEMP) != wxNOT_FOUND, wn);
     AddTrackingControl(m_cbSeaTemperature, m_tcSeaTemperature, 0,
-        m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEA_TEMP) != wxNOT_FOUND);
+        m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEA_TEMP) != wxNOT_FOUND, wn);
     AddTrackingControl(m_cbCAPE, m_tcCAPE, 0,
-        m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_CAPE) != wxNOT_FOUND);
+        m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_CAPE) != wxNOT_FOUND, wn);
     //
     //init and show extra parameters for altitude tracking if necessary
     if( pPlugIn->GetGRIBOverlayFactory()->m_Altitude ) {
@@ -550,8 +565,11 @@ void GRIBUIDialog::PopulateTrackingControls( bool Populate_Altitude )
             || (m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_GEOP_HGT
                 + pPlugIn->GetGRIBOverlayFactory()->m_Altitude) != wxNOT_FOUND) ) {
                     m_fgTrackingDisplay->Show(2, true);
+                    m_tcAltitude->SetMinSize( wxSize( wn, -1 ));
                     m_tcAltitude->SetValue( _("N/A") );
+                    m_tcTemp->SetMinSize( wxSize( wn, -1 ));
                     m_tcTemp->SetValue( _("N/A") );
+                    m_tcRelHumid->SetMinSize( wxSize( wn, -1 ));
                     m_tcRelHumid->SetValue( _("N/A") );
         }
 
@@ -560,17 +578,6 @@ void GRIBUIDialog::PopulateTrackingControls( bool Populate_Altitude )
             .Append( _T(" ") ).Append( m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::PRESSURE) ) );
     } else
         m_fgTrackingDisplay->Show(2,false);
-    //
-    //Resize speed ctrl for single or double unit display
-    if(m_OverlaySettings.Settings[GribOverlaySettings::WIND].m_Units == GribOverlaySettings::BFS)
-        m_tcWindSpeed->SetMinSize(wxSize(70, -1));
-    else
-        m_tcWindSpeed->SetMinSize(wxSize(110, -1) );
-    //Resize wave height ctrl for single or double display
-    if(m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WVPER) == wxNOT_FOUND)
-        m_tcWaveHeight->SetMinSize(wxSize(70, -1));
-    else
-        m_tcWaveHeight->SetMinSize(wxSize(90, -1) );
 
     //add tooltips
     wxString t; double lev;
@@ -854,12 +861,10 @@ void GRIBUIDialog::OnRequest(  wxCommandEvent& event )
     delete pReq_Dialog;                                              //delete to be re-created
 
     pReq_Dialog = new GribRequestSetting( this );
-
     pReq_Dialog->SetVpSize(m_vp);
     pReq_Dialog->InitRequestConfig();
+    pPlugIn->SetDialogFont( pReq_Dialog );
     pReq_Dialog->Show();
-    pReq_Dialog->Fit();
-    pReq_Dialog->Refresh();
 }
 
 void GRIBUIDialog::OnSettings( wxCommandEvent& event )
@@ -868,6 +873,7 @@ void GRIBUIDialog::OnSettings( wxCommandEvent& event )
 
     GribOverlaySettings initSettings = m_OverlaySettings;
     GribSettingsDialog *dialog = new GribSettingsDialog( *this, m_OverlaySettings,  m_lastdatatype, m_FileIntervalIndex);
+    pPlugIn->SetDialogFont( dialog );
     if(dialog->ShowModal() == wxID_OK)
     {
         dialog->WriteSettings();
@@ -899,6 +905,7 @@ void GRIBUIDialog::OnPlayStopTimer( wxTimerEvent & event )
         if(m_OverlaySettings.m_bLoopMode) {
             if(m_OverlaySettings.m_LoopStartPoint) {
                 ComputeBestForecastForNow();
+                m_InterpolateMode = m_OverlaySettings.m_bInterpolate;
                 if(m_sTimeline->GetValue() >= m_sTimeline->GetMax()) StopPlayBack();        //will stop playback
                 return;
             } else
@@ -934,6 +941,8 @@ void GRIBUIDialog::TimelineChanged()
         return;
     }
 
+     RestaureSelectionString();                      //eventually restaure the previousely saved time label
+
     wxDateTime time = TimelineTime();
     SetGribTimelineRecordSet(GetTimeLineRecordSet(time));
 
@@ -947,13 +956,27 @@ void GRIBUIDialog::TimelineChanged()
                 wxTimeSpan(t - MinTime()).GetMinutes() / m_OverlaySettings.GetMinFromIndex(m_OverlaySettings.m_SlicesPerUpdate)
                 : m_cRecordForecast->GetCurrentSelection()
             );
-    } else
-        m_cRecordForecast->SetValue( TToString( time, pPlugIn->GetTimeZone() ) );
+    } else {
+        m_cRecordForecast->SetSelection(GetNearestIndex(time, 2));
+        SaveSelectionString();                                                                     //memorize index and label
+        m_cRecordForecast->SetString( m_Selection_index, TToString(time, pPlugIn->GetTimeZone()) );//replace it by the interpolated time label
+        m_cRecordForecast->SetStringSelection( TToString(time, pPlugIn->GetTimeZone()) );          //ensure it's visible in the box
+    }
 
     UpdateTrackingControls();
-    
+
     pPlugIn->SendTimelineMessage(time);
     RequestRefresh( pParent );
+}
+
+void GRIBUIDialog::RestaureSelectionString()
+{
+    if( !m_SelectionIsSaved ) return;
+
+    int sel = m_cRecordForecast->GetSelection();
+    m_cRecordForecast->SetString( m_Selection_index, m_Selection_label );
+    m_cRecordForecast->SetSelection( sel );
+    m_SelectionIsSaved = false;
 }
 
 int GRIBUIDialog::GetNearestIndex(wxDateTime time, int model)
@@ -1121,6 +1144,8 @@ void GRIBUIDialog::OnOpenFile( wxCommandEvent& event )
 {
     if( m_tPlayStop.IsRunning() ) return;      // do nothing when play back is running !
 
+
+
     if( !wxDir::Exists( m_grib_dir ) ) {
         wxStandardPathsBase& path = wxStandardPaths::Get();
         m_grib_dir = path.GetDocumentsDir();
@@ -1219,6 +1244,8 @@ void GRIBUIDialog::OnPrev( wxCommandEvent& event )
 {
     if( m_tPlayStop.IsRunning() ) return;      // do nothing when play back is running !
 
+    RestaureSelectionString();
+
     int selection;
     if(m_pNowMode)
         selection = GetNearestIndex(GetNow(), 1);
@@ -1239,6 +1266,8 @@ void GRIBUIDialog::OnPrev( wxCommandEvent& event )
 void GRIBUIDialog::OnNext( wxCommandEvent& event )
 {
     if( m_tPlayStop.IsRunning() ) return;      // do nothing when play back is running !
+
+    RestaureSelectionString();
 
     int selection;
     if(m_pNowMode)
@@ -1285,7 +1314,12 @@ void GRIBUIDialog::ComputeBestForecastForNow()
     m_InterpolateMode = true;
     m_pNowMode = true;
     SetGribTimelineRecordSet(GetTimeLineRecordSet(now));             //take current time & interpolate forecast
-    m_cRecordForecast->SetValue( TToString( now, pPlugIn->GetTimeZone() ) );
+
+    RestaureSelectionString();                                       //eventually restaure the previousely saved wxChoice date time label
+    m_cRecordForecast->SetSelection(GetNearestIndex(now, 2));
+    SaveSelectionString();                                           //memorize the new selected wxChoice date time label
+    m_cRecordForecast->SetString( m_Selection_index, TToString(now, pPlugIn->GetTimeZone()) );        //write the now date time label in the right place in wxChoice
+    m_cRecordForecast->SetStringSelection( TToString(now, pPlugIn->GetTimeZone()) );                  //put it in the box
 
     UpdateTrackingControls();
 
