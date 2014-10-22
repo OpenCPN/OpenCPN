@@ -1265,6 +1265,10 @@ void glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     if( glChartCanvas::s_b_UploadFullCompressedMipmaps && g_GLOptions.m_bTextureCompression )
         base_level = 0;
 
+    //  And finally, it seems that Mac OSX OpenGL drivers require mipmaps starting at zero always
+#ifdef __WXOSX__
+     base_level = 0;
+#endif     
         
     //  Now is a good time to update the cache, syncronously
     if(g_GLOptions.m_bTextureCompression && g_GLOptions.m_bTextureCompressionCaching) {
