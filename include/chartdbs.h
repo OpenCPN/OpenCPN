@@ -223,6 +223,7 @@ struct ChartTableEntry
     const ArrayOfInts &GetGroupArray(void) const { return m_GroupArray; }
     void ClearGroupArray(void) { m_GroupArray.Clear(); }
     void AddIntToGroupArray( int val ) { m_GroupArray.Add( val ); }
+    void SetAvailable(bool avail ){ m_bavail = avail;}
     
   private:
     int         EntryOffset;
@@ -252,6 +253,7 @@ struct ChartTableEntry
     wxString    *m_pfilename;             // a helper member, not on disk
     wxString    *m_psFullPath;
     wxBoundingBox m_bbox;
+    bool        m_bavail;
 };
 
 enum
@@ -329,6 +331,7 @@ public:
     int FinddbIndex(wxString PathToFind);
     wxString GetDBChartFileName(int dbIndex);
     void ApplyGroupArray(ChartGroupArray *pGroupArray);
+    bool IsChartAvailable( int dbIndex );
     ChartTable    active_chartTable;
     
 protected:

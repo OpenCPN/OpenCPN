@@ -1307,6 +1307,11 @@ void glChartCanvas::DrawAllRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region 
 
 void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
 {
+    if( ChartData->GetDBChartType( dbIndex ) == CHART_TYPE_PLUGIN ){
+        if( !ChartData->IsChartAvailable( dbIndex ) )
+            return;
+    }
+        
     /* quick bounds check */
     wxBoundingBox box, vpbox = vp.GetBBox();
     ChartData->GetDBBoundingBox( dbIndex, &box );

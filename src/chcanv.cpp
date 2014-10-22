@@ -8235,6 +8235,11 @@ void ChartCanvas::RenderChartOutline( ocpnDC &dc, int dbIndex, ViewPort& vp )
     }
 #endif
 
+    if( ChartData->GetDBChartType( dbIndex ) == CHART_TYPE_PLUGIN ){
+        if( !ChartData->IsChartAvailable( dbIndex ) )
+            return;
+    }
+
     float plylat, plylon;
     float plylat1, plylon1;
 

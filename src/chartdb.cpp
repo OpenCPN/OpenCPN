@@ -463,35 +463,45 @@ int ChartDB::BuildChartStack(ChartStack * cstk, float lat, float lon)
             else
                   b_group_add = true;
 
+            bool b_pos_add = false;
             if(b_group_add)
             {
                   if(CheckPositionWithinChart(db_index, lat, lon)  &&  (j < MAXSTACK) )
-                  {
-                        j++;
-                        cstk->nEntry = j;
-                        cstk->SetDBIndex(j-1, db_index);
-                  }
+                      b_pos_add = true;
 
                   //    Check the special case where chart spans the international dateline
                   else if( (cte.GetLonMax() > 180.) && (cte.GetLonMin() < 180.) )
                   {
                         if(CheckPositionWithinChart(db_index, lat, lon + 360.)  &&  (j < MAXSTACK) )
-                        {
-                              j++;
-                              cstk->nEntry = j;
-                              cstk->SetDBIndex(j-1, db_index);
-                        }
+                            b_pos_add = true;
                   }
                   //    Western hemisphere, some type of charts
                   else if( (cte.GetLonMax() > 180.) && (cte.GetLonMin() > 180.) )       
                   {
                       if(CheckPositionWithinChart(db_index, lat, lon + 360.)  &&  (j < MAXSTACK) )
-                      {
-                          j++;
-                          cstk->nEntry = j;
-                          cstk->SetDBIndex(j-1, db_index);
-                      }
+                          b_pos_add = true;
                   }
+                  
+                  
+            }
+            
+            bool b_available = true;
+            //  Verify PlugIn charts are actually available
+            if(b_group_add && b_pos_add && (cte.GetChartType() == CHART_TYPE_PLUGIN)){
+                
+                ChartTableEntry *pcte = (ChartTableEntry*)&cte;
+                if( !IsChartAvailable(db_index) ){
+                    pcte->SetAvailable(false);
+                    b_available = false;
+                }
+                else
+                    pcte->SetAvailable(true);
+            }
+            
+            if(b_group_add && b_pos_add && b_available){                // add it
+                j++;
+                cstk->nEntry = j;
+                cstk->SetDBIndex(j-1, db_index);
             }
       }
 

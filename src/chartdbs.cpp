@@ -1024,6 +1024,7 @@ bool ChartDatabase::Read(const wxString &filePath)
 
     entry.Clear();
     bValid = true;
+    entry.SetAvailable(true);
     
     m_nentries = active_chartTable.GetCount();
     return true;
@@ -2545,6 +2546,43 @@ int  ChartDatabase::GetnAuxPlyEntries(int dbIndex)
       }
       else
             return 0;
+}
+
+bool  ChartDatabase::IsChartAvailable(int dbIndex)
+{
+    if((bValid) && (dbIndex >= 0) && (dbIndex < (int)active_chartTable.size()))
+    {
+        ChartTableEntry *pentry = GetpChartTableEntry(dbIndex);
+        
+        //      If not PLugIn chart, assume always available
+        if(pentry->GetChartType() != CHART_TYPE_PLUGIN)
+            return true;
+        
+        wxString *path = pentry->GetpsFullPath();
+        wxFileName fn(*path);
+        wxString ext = fn.GetExt();
+        ext.Prepend(_T("*."));
+        wxString ext_upper = ext.MakeUpper();
+        wxString ext_lower = ext.MakeLower();
+        
+        //    Search the array of chart class descriptors to find a match
+        //    between the search mask and the the chart file extension
+        
+        for(unsigned int i=0 ; i < m_ChartClassDescriptorArray.GetCount() ; i++)
+        {
+            if(m_ChartClassDescriptorArray.Item(i).m_descriptor_type == PLUGIN_DESCRIPTOR)
+            {
+                if(m_ChartClassDescriptorArray.Item(i).m_search_mask == ext_upper) {
+                    return true;
+                }
+                if(m_ChartClassDescriptorArray.Item(i).m_search_mask == ext_lower) {
+                    return true;
+                }
+            }
+        }
+    }
+        
+    return false;
 }
 
 void ChartDatabase::ApplyGroupArray(ChartGroupArray *pGroupArray)
