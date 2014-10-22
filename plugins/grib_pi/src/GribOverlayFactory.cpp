@@ -1186,6 +1186,8 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
     if(!m_Settings.Settings[settings].m_bParticles)
         return;
 
+    m_tParticleTimer.Stop();
+    
     //   need two records or a polar record to draw arrows
     GribRecord *pGRX, *pGRY;
     int idx, idy;
@@ -1420,8 +1422,9 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
 
     int time = sw.Time();
 
-    // run at 20fps but with at least some sleep
-    m_tParticleTimer.Start(wxMax(50 - time, 10), true);
+    //  Try to run at 20 fps,
+    //  But also arrange not to consume more than 50% CPU(core) duty cycle
+    m_tParticleTimer.Start(wxMax(50 - time, time), true);
 
 #if 0
     static int total_time;
