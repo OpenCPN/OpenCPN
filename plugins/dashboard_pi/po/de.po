@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-09-07 17:44-0400\n"
-"PO-Revision-Date: 2014-09-07 19:25-0400\n"
+"PO-Revision-Date: 2014-10-12 19:21-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -25,7 +25,7 @@ msgstr "Position"
 
 #: src/dashboard_pi.cpp:98
 msgid "SOG"
-msgstr "SOG"
+msgstr ""
 
 #: src/dashboard_pi.cpp:100
 msgid "Speedometer"
@@ -33,7 +33,7 @@ msgstr "Log"
 
 #: src/dashboard_pi.cpp:102
 msgid "COG"
-msgstr "COG"
+msgstr ""
 
 #: src/dashboard_pi.cpp:104
 msgid "GPS Compass"
@@ -45,7 +45,7 @@ msgstr "Wahrer Kompaß"
 
 #: src/dashboard_pi.cpp:108
 msgid "STW"
-msgstr "STW"
+msgstr ""
 
 #: src/dashboard_pi.cpp:110
 msgid "True HDG"
@@ -105,7 +105,7 @@ msgstr "wahre Windricht. & -Geschw."
 
 #: src/dashboard_pi.cpp:145 src/dashboard_pi.cpp:147
 msgid "VMG"
-msgstr "VMG"
+msgstr ""
 
 #: src/dashboard_pi.cpp:149 src/dashboard_pi.cpp:151
 msgid "Rudder Angle"
@@ -117,11 +117,11 @@ msgstr "GPS Sat. Anzahl"
 
 #: src/dashboard_pi.cpp:155
 msgid "GPS Status"
-msgstr "GPS Status"
+msgstr ""
 
 #: src/dashboard_pi.cpp:157
 msgid "Cursor"
-msgstr "Cursor"
+msgstr ""
 
 #: src/dashboard_pi.cpp:159
 msgid "Clock"
@@ -145,11 +145,11 @@ msgstr "Barometerhistorie"
 
 #: src/dashboard_pi.cpp:169
 msgid "Trip Log"
-msgstr "Trip Log"
+msgstr ""
 
 #: src/dashboard_pi.cpp:171
 msgid "Sum Log"
-msgstr "Sum Log"
+msgstr ""
 
 #: src/dashboard_pi.cpp:173
 msgid "From Ownship"
@@ -159,7 +159,7 @@ msgstr "von eigener Position"
 #: src/dashboard_pi.cpp:1302 src/dashboard_pi.cpp:1460
 #: src/dashboard_pi.cpp:1499 src/dashboard_pi.cpp:1763
 msgid "Dashboard"
-msgstr "Dashboard"
+msgstr ""
 
 #: src/dashboard_pi.cpp:457
 msgid "Dashboard PlugIn for OpenCPN"
@@ -232,7 +232,7 @@ msgstr "Daten:"
 
 #: src/dashboard_pi.cpp:1602
 msgid "Label:"
-msgstr "Label:"
+msgstr ""
 
 #: src/dashboard_pi.cpp:1608
 msgid "Small:"

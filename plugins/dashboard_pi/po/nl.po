@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-09-07 17:44-0400\n"
-"PO-Revision-Date: 2014-09-07 19:24-0400\n"
+"PO-Revision-Date: 2014-09-28 21:18-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Dutch\n"
 "Language: nl_NL\n"
@@ -105,7 +105,7 @@ msgstr "Ware wind"
 
 #: src/dashboard_pi.cpp:145 src/dashboard_pi.cpp:147
 msgid "VMG"
-msgstr "Behouden vaart"
+msgstr "Grondvaart"
 
 #: src/dashboard_pi.cpp:149 src/dashboard_pi.cpp:151
 msgid "Rudder Angle"

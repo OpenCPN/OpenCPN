@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-09-07 17:43-0400\n"
-"PO-Revision-Date: 2014-09-07 19:24-0400\n"
+"PO-Revision-Date: 2014-10-18 20:34-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -43,7 +43,7 @@ msgstr "N/A"
 
 #: src/GribUIDialog.cpp:587
 msgid "Wind Speed at"
-msgstr "Vitesse du vent à "
+msgstr "Vitesse du vent à"
 
 #: src/GribUIDialog.cpp:588
 msgid "Wind Direction at"

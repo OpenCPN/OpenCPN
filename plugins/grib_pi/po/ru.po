@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-09-07 17:43-0400\n"
-"PO-Revision-Date: 2014-09-07 19:25-0400\n"
+"PO-Revision-Date: 2014-09-26 13:20-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
@@ -59,7 +59,7 @@ msgstr "Температура воздуха в "
 
 #: src/GribUIDialog.cpp:594
 msgid "Surface level"
-msgstr "Surface level"
+msgstr ""
 
 #: src/GribUIDialog.cpp:594
 msgid "Sea Surface Temperature"
@@ -68,7 +68,7 @@ msgstr "Температура воды"
 #: src/GribUIDialog.cpp:604
 #, c-format
 msgid "Select Geopotential Height (in %s) or Standard Altitude."
-msgstr "Select Geopotential Height (in %s) or Standard Altitude."
+msgstr ""
 
 #: src/GribUIDialog.cpp:885
 msgid "Stop"
@@ -204,7 +204,7 @@ msgstr "Энергия конвекции"
 
 #: src/GribSettingsDialog.cpp:49
 msgid "Altitude(Geopotential)"
-msgstr "Altitude(Geopotential)"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:49
 msgid "Relative Humidity"
@@ -581,7 +581,7 @@ msgstr "Температура воды (0 м)"
 
 #: src/GribUIDialogBase.cpp:923
 msgid "Geopotential Height"
-msgstr "Geopotential Height"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:933
 msgid "850 hPA"
@@ -649,11 +649,11 @@ msgstr "Построение карты изобар"
 
 #: src/GribOverlayFactory.cpp:975
 msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
-msgstr "Overlays not supported by this graphics hardware (Disable OpenGL)"
+msgstr ""
 
 #: src/GribOverlayFactory.cpp:985
 msgid "Overlays too wide and can't be displayed:"
-msgstr "Overlays too wide and can't be displayed:"
+msgstr ""
 
 #: src/GribOverlayFactory.cpp:994
 msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
@@ -681,7 +681,7 @@ msgstr "Таблица погоды"
 
 #: src/grib_pi.cpp:287
 msgid "Menu"
-msgstr "Menu"
+msgstr ""
 
 #: src/grib_pi.cpp:560
 msgid "You have chosen to authorize interpolation.\nDon't forget that data displayed at current time will not be real but interpolated!"

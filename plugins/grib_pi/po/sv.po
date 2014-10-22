@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-09-07 17:43-0400\n"
-"PO-Revision-Date: 2014-09-07 19:25-0400\n"
+"PO-Revision-Date: 2014-10-15 13:35-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Swedish\n"
 "Language: sv_SE\n"
@@ -649,7 +649,7 @@ msgstr "Skapar isobar-karta"
 
 #: src/GribOverlayFactory.cpp:975
 msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
-msgstr "Overlays not supported by this graphics hardware (Disable OpenGL)"
+msgstr "Överlagring stöds av grafikhårdvaran (inaktivera OpenGL)"
 
 #: src/GribOverlayFactory.cpp:985
 msgid "Overlays too wide and can't be displayed:"
@@ -681,7 +681,7 @@ msgstr "Vädertabell"
 
 #: src/grib_pi.cpp:287
 msgid "Menu"
-msgstr "Menu"
+msgstr "Meny"
 
 #: src/grib_pi.cpp:560
 msgid "You have chosen to authorize interpolation.\nDon't forget that data displayed at current time will not be real but interpolated!"

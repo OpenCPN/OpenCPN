@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-09-07 17:43-0400\n"
-"PO-Revision-Date: 2014-09-07 19:24-0400\n"
+"PO-Revision-Date: 2014-10-06 16:54-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Czech\n"
 "Language: cs_CZ\n"
@@ -269,15 +269,15 @@ msgstr "Otevřít soubor"
 
 #: src/GribUIDialogBase.cpp:65
 msgid "Settings"
-msgstr "Settings"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:70
 msgid "Request"
-msgstr "Request"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:78
 msgid "GRIB Data at Cursor"
-msgstr "GRIB Data at Cursor"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:111
 msgid "Significant Wave Height"
@@ -289,11 +289,11 @@ msgstr "Směr větru"
 
 #: src/GribUIDialogBase.cpp:124
 msgid "Surface Current Speed"
-msgstr "Surface Current Speed"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:129
 msgid "Surface Current Direction"
-msgstr "Surface Current Direction"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:146
 msgid "Mean Sea Level Pressure (MSLP)"
@@ -301,11 +301,11 @@ msgstr "Tlak, mBar"
 
 #: src/GribUIDialogBase.cpp:157
 msgid "Cumulative Rainfall per Hour"
-msgstr "Cumulative Rainfall per Hour"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:175 src/GribUIDialogBase.cpp:496
 msgid "Air Temp"
-msgstr "Air Temp"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:184 src/GribUIDialogBase.cpp:496
 msgid "Sea Temp"
@@ -313,15 +313,15 @@ msgstr "Povrchová teplota moře, C"
 
 #: src/GribUIDialogBase.cpp:197
 msgid "Convective Available Potential Energy"
-msgstr "Convective Available Potential Energy"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:218
 msgid "Grib Data at"
-msgstr "Grib Data at"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:235
 msgid "Altitude"
-msgstr "Altitude"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:245
 msgid "Temperature"
@@ -329,99 +329,99 @@ msgstr "Povrchová teplota moře, C"
 
 #: src/GribUIDialogBase.cpp:255
 msgid "Rel. Humid."
-msgstr "Rel. Humid."
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:358
 msgid "playback"
-msgstr "playback"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:365
 msgid "Loop Mode"
-msgstr "Loop Mode"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:368
 msgid "Loop Start"
-msgstr "Loop Start"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:372
 msgid "Top of Grib File"
-msgstr "Top of Grib File"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:372
 msgid "Current time forecast"
-msgstr "Current time forecast"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:382
 msgid "Updates per Second"
-msgstr "Updates per Second"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:389
 msgid "Interpolate between gribs"
-msgstr "Interpolate between gribs"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:392
 msgid "Time Interval"
-msgstr "Time Interval"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:408
 msgid "Data"
-msgstr "Data"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:421
 msgid "Units"
-msgstr "Units"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:434
 msgid "Barbed Arrows"
-msgstr "Barbed Arrows"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:437
 msgid "Default Colour"
-msgstr "Default Colour"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:437
 msgid "Controled Colours"
-msgstr "Controled Colours"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:443 src/GribUIDialogBase.cpp:468
 msgid "Always visible"
-msgstr "Always visible"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:446
 msgid "IsoBars"
-msgstr "IsoBars"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:454
 msgid "Spacing"
-msgstr "Spacing"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:474
 msgid "Direction Arrows"
-msgstr "Direction Arrows"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:477
 msgid "Single Arrow"
-msgstr "Single Arrow"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:477
 msgid "Double Arrow"
-msgstr "Double Arrow"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:477
 msgid "Proportional Arrow"
-msgstr "Proportional Arrow"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:483
 msgid "Default Size"
-msgstr "Default Size"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:483
 msgid "Small Size"
-msgstr "Small Size"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:489
 msgid "OverlayMap"
-msgstr "OverlayMap"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:492
 msgid "Colors"
@@ -429,23 +429,23 @@ msgstr "&Zavřít"
 
 #: src/GribUIDialogBase.cpp:496
 msgid "Generic"
-msgstr "Generic"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:502
 msgid "Numbers"
-msgstr "Numbers"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:505
 msgid "Minimum Spacing"
-msgstr "Minimum Spacing"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:519
 msgid "Display"
-msgstr "Display"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:526
 msgid "Overlay Transparency"
-msgstr "Overlay Transparency"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:604
 msgid "Use High Definition Graphics"
@@ -453,47 +453,47 @@ msgstr "Použít grafiku ve velkém rozlišení"
 
 #: src/GribUIDialogBase.cpp:607
 msgid "Use Gradual Colors"
-msgstr "Use Gradual Colors"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:610
 msgid "Copy First Cumulative Missing Record"
-msgstr "Copy First Cumulative Missing Record"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:613
 msgid "Copy Missing Wave Records"
-msgstr "Copy Missing Wave Records"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:616
 msgid "Load the More Recent File in Directory"
-msgstr "Load the More Recent File in Directory"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:616
 msgid "Load the Last Opened File"
-msgstr "Load the Last Opened File"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:618
 msgid "Load File Options"
-msgstr "Load File Options"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:622
 msgid "Start at the first forecast in GRIB file"
-msgstr "Start at the first forecast in GRIB file"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:622
 msgid "Start at the nearest forecast to current time"
-msgstr "Start at the nearest forecast to current time"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:622
 msgid "Authorize Interpolation to start at current time"
-msgstr "Authorize Interpolation to start at current time"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:624
 msgid "Start Options"
-msgstr "Start Options"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:628
 msgid "Local Time"
-msgstr "Local Time"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:628
 msgid "UTC"
@@ -649,7 +649,7 @@ msgstr "Vytváří se mapa izobar"
 
 #: src/GribOverlayFactory.cpp:975
 msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
-msgstr "Overlays not supported by this graphics hardware (Disable OpenGL)"
+msgstr ""
 
 #: src/GribOverlayFactory.cpp:985
 msgid "Overlays too wide and can't be displayed:"
@@ -681,7 +681,7 @@ msgstr "Tabulka počasí"
 
 #: src/grib_pi.cpp:287
 msgid "Menu"
-msgstr "Menu"
+msgstr ""
 
 #: src/grib_pi.cpp:560
 msgid "You have chosen to authorize interpolation.\nDon't forget that data displayed at current time will not be real but interpolated!"
@@ -729,33 +729,33 @@ msgstr "Požaduješ předpověď na víc než 8 dní.\nData vlnění nejsou pro 
 
 #: src/GribRequestDialog.cpp:547 src/GribRequestDialog.cpp:550
 msgid "MB"
-msgstr "MB"
+msgstr ""
 
 #: src/GribRequestDialog.cpp:550
 msgid "Max"
-msgstr "Max"
+msgstr ""
 
 #: src/GribRequestDialog.cpp:573
 msgid "Before sending an email to Zygrib you have to enter your Login and Code.\nPlease visit www.zygrib.org/ and follow instructions..."
-msgstr "Before sending an email to Zygrib you have to enter your Login and Code.\nPlease visit www.zygrib.org/ and follow instructions..."
+msgstr ""
 
 #: src/GribRequestDialog.cpp:574
 msgid "The file size limit is overcome!\nYou can zoom in and/or change parameters..."
-msgstr "The file size limit is overcome!\nYou can zoom in and/or change parameters..."
+msgstr ""
 
 #: src/GribRequestDialog.cpp:587 src/GribRequestDialog.cpp:619
 msgid "Continue..."
-msgstr "Continue..."
+msgstr ""
 
 #: src/GribRequestDialog.cpp:604 src/GribRequestDialog.cpp:608
 msgid "Your request is ready. An email is prepared in your email environment. \nYou have just to verify and send it...\nSave or Cancel to finish...or Continue..."
-msgstr "Your request is ready. An email is prepared in your email environment. \nYou have just to verify and send it...\nSave or Cancel to finish...or Continue..."
+msgstr ""
 
 #: src/GribRequestDialog.cpp:611
 msgid "Your request was sent \n(if your system has an MTA configured and is able to send email).\nSave or Cancel to finish...or Continue..."
-msgstr "Your request was sent \n(if your system has an MTA configured and is able to send email).\nSave or Cancel to finish...or Continue..."
+msgstr ""
 
 #: src/GribRequestDialog.cpp:616
 msgid "Request can't be sent. Please verify your email systeme parameters.\nYou should also have a look at your log file.\nSave or Cancel to finish..."
-msgstr "Request can't be sent. Please verify your email systeme parameters.\nYou should also have a look at your log file.\nSave or Cancel to finish..."
+msgstr ""
 
