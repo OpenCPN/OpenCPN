@@ -6116,8 +6116,15 @@ double MyFrame::GetBestVPScale( ChartBase *pchart )
             proposed_scale_onscreen = cc1->GetCanvasScaleFactor() / new_scale_ppm;
         }
 
-//        proposed_scale_onscreen =
- //               wxMin(proposed_scale_onscreen, pchart->GetNormalScaleMax(cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth()));
+        // Do not allow excessive underzoom, even if the g_bPreserveScaleOnX flag is set.
+        // Otherwise, we get severe performance problems on all platforms
+        
+        double max_underzoom_multiplier = 2.0;
+        
+        proposed_scale_onscreen =
+               wxMin(proposed_scale_onscreen,
+                     pchart->GetNormalScaleMax(cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth()) *
+                     max_underzoom_multiplier);
 //        proposed_scale_onscreen =
 //                wxMax(proposed_scale_onscreen, pchart->GetNormalScaleMin(cc1->GetCanvasScaleFactor(), g_b_overzoom_x));
 
