@@ -925,6 +925,7 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, cons
                 case 109:
                 case 110:
                 case 111:
+                case 112:
                 {
                     opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                     if(ppi)
