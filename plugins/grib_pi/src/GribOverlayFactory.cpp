@@ -1423,8 +1423,8 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
     int time = sw.Time();
 
     //  Try to run at 20 fps,
-    //  But also arrange not to consume more than 50% CPU(core) duty cycle
-    m_tParticleTimer.Start(wxMax(50 - time, time), true);
+    //  But also arrange not to consume more than 33% CPU(core) duty cycle
+    m_tParticleTimer.Start(wxMax(50 - time, 2 * time), true);
 
 #if 0
     static int total_time;
