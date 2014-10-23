@@ -2512,6 +2512,13 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     // Just needs to be there, empty or not...
 #ifdef __WXOSX__
     osx_menuBar = new wxMenuBar();
+
+    wxMenu* help_menu = new wxMenu();
+    help_menu->Append(wxID_ABOUT, _("About OpenCPN"));
+    help_menu->Append(wxID_HELP, _("Help"));
+    help_menu->Append(wxID_PREFERENCES, _("Preferences	Ctrl-,"));
+    osx_menuBar->Append(help_menu, _("Help"));
+
     SetMenuBar(osx_menuBar);
 #endif    
     
@@ -3809,6 +3816,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             break;
         }
 
+        case wxID_PREFERENCES:
         case ID_SETTINGS: {
 
             bool bnewtoolbar = !( DoOptionsDialog() == 0 );
@@ -3875,6 +3883,8 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         }
 
+        case wxID_ABOUT:
+        case wxID_HELP:
         case ID_HELP: {
             if( !g_pAboutDlg ) g_pAboutDlg = new about( this, &g_SData_Locn );
 
