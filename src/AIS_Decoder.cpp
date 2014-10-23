@@ -749,7 +749,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
             // Check to see if this MMSI has been configured to be ignored completely...
             for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
                 MMSIProperties *props =  g_MMSI_Props_Array.Item(i);
-                if((mmsi == props->MMSI)){
+                if(mmsi == props->MMSI){
                     if(props->m_bignore)
                         return AIS_NoError;
                     else
@@ -899,7 +899,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
             // Check to see if this MMSI wants VDM translated to VDO...
             for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
                 MMSIProperties *props =  g_MMSI_Props_Array.Item(i);
-                if((mmsi == props->MMSI)){
+                if(mmsi == props->MMSI){
                     if(props->m_bVDM)
                         pTargetData->b_OwnShip = true;
                     else
