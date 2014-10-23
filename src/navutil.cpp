@@ -1913,6 +1913,7 @@ int MyConfig::LoadMyConfig( int iteration )
 
 //      next thing to do is read tracks, etc from the NavObject XML file,
     if( 0 == iteration ) {
+        wxLogMessage( _T("Loading navobjects from navobj.xml") );
         CreateRotatingNavObjBackup();
 
         if( NULL == m_pNavObjectInputSet )
@@ -1922,7 +1923,7 @@ int MyConfig::LoadMyConfig( int iteration )
             if( m_pNavObjectInputSet->load_file( m_sNavObjSetFile.fn_str() ) )
                 m_pNavObjectInputSet->LoadAllGPXObjects();
         }
-
+        wxLogMessage( _T("Done loading navobjects") );
         delete m_pNavObjectInputSet;
 
 
