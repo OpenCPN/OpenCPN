@@ -117,7 +117,7 @@ extern WayPointman      *pWayPointMan;
 extern RouteList        *pRouteList;
 extern bool             b_inCompressAllCharts;
 extern bool             g_bexpert;
-
+extern bool             g_bcompression_wait;
 
 float            g_GLMinSymbolLineWidth;
 float            g_GLMinCartographicLineWidth;
@@ -863,8 +863,8 @@ void glChartCanvas::SetupOpenGL()
     //  Set the minimum line width
     GLint parms[2];
     glGetIntegerv( GL_SMOOTH_LINE_WIDTH_RANGE, &parms[0] );
-    g_GLMinSymbolLineWidth = parms[0];
-    g_GLMinCartographicLineWidth = parms[0];
+    g_GLMinSymbolLineWidth = wxMax(parms[0], 1);
+    g_GLMinCartographicLineWidth = wxMax(parms[0], 1);
     
     //    Some GL renderers do a poor job of Anti-aliasing very narrow line widths.
     //    This is most evident on rendered symbols which have horizontal or vertical line segments
@@ -874,7 +874,7 @@ void glChartCanvas::SetupOpenGL()
         GLfloat parf;
         glGetFloatv(  GL_SMOOTH_LINE_WIDTH_GRANULARITY, &parf );
         
-        g_GLMinSymbolLineWidth = (float)parms[0] + parf;
+        g_GLMinSymbolLineWidth = wxMax(((float)parms[0] + parf), 1);
     }
     
     s_b_useScissorTest = true;
@@ -943,6 +943,13 @@ void glChartCanvas::SetupOpenGL()
     if( !s_glBindBuffer || !s_glBufferData || !s_glGenBuffers || !s_glDeleteBuffers )
         g_b_EnableVBO = false;
 
+#ifdef __WXMSW__
+    if( GetRendererString().Find( _T("Intel") ) != wxNOT_FOUND ) {
+        wxLogMessage( _T("OpenGL-> Detected Windows Intel renderer, disabling Vertexbuffer Objects") );
+        g_b_EnableVBO = false;
+    }
+#endif
+
     if(g_b_EnableVBO)
         wxLogMessage( _T("OpenGL-> Using Vertexbuffer Objects") );
     else
@@ -966,6 +973,20 @@ void glChartCanvas::SetupOpenGL()
     BuildFBO();
 #if 1   /* this test sometimes fails when the fbo still works */
         //  But we need to be ultra-conservative here, so run all the tests we can think of
+    
+    
+    //  But we cannot even run this test on some platforms
+    //  So we simply have to declare FBO unavailable
+#ifdef __WXMSW__
+    if( GetRendererString().Upper().Find( _T("INTEL") ) != wxNOT_FOUND ) {
+        if(GetRendererString().Upper().Find( _T("MOBILE") ) != wxNOT_FOUND ){
+            wxLogMessage( _T("OpenGL-> Detected Windows Intel Mobile renderer, disabling Frame Buffer Objects") );
+            m_b_DisableFBO = true;
+            BuildFBO();
+        }
+    }
+#endif
+    
     if( m_b_BuiltFBO ) {
         // Check framebuffer completeness at the end of initialization.
         ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, m_fb0 );
@@ -1035,6 +1056,13 @@ void glChartCanvas::SetupOpenGL()
 
 void glChartCanvas::SetupCompression()
 {
+#ifdef __WXMSW__    
+    if(!::IsProcessorFeaturePresent( PF_XMMI64_INSTRUCTIONS_AVAILABLE )){
+        wxLogMessage( _("OpenGL-> SSE2 Instruction set not available") );
+        goto no_compression;
+    }
+#endif
+
     int dim = g_GLOptions.m_iTextureDimension;
     g_uncompressed_tile_size = dim*dim*3;
     if(g_GLOptions.m_bTextureCompression) {
@@ -1095,7 +1123,7 @@ void glChartCanvas::SetupCompression()
                                         g_uncompressed_tile_size / g_tile_size));
     } else
     if(!g_GLOptions.m_bTextureCompression) {
-    no_compression:
+no_compression:
         g_GLOptions.m_bTextureCompression = false;
         
         g_tile_size = g_uncompressed_tile_size;
@@ -1958,6 +1986,44 @@ void glChartCanvas::DrawQuiting()
     glDisable( GL_POLYGON_STIPPLE );
 }
 
+void glChartCanvas::DrawCloseMessage(wxString msg)
+{
+    if(1){
+        
+        wxFont *pfont = wxTheFontList->FindOrCreateFont(12, wxFONTFAMILY_DEFAULT,
+                                                        wxFONTSTYLE_NORMAL,
+                                                        wxFONTWEIGHT_NORMAL);
+        
+        TexFont texfont;
+        
+        texfont.Build(*pfont);
+        int w, h;
+        texfont.GetTextExtent( msg, &w, &h);
+        h += 2;
+        int yp = cc1->GetVP().pix_height/2;
+        int xp = (cc1->GetVP().pix_width - w)/2;
+        
+        glColor3ub( 243, 229, 47 );
+        
+        glBegin(GL_QUADS);
+        glVertex2i(xp, yp);
+        glVertex2i(xp+w, yp);
+        glVertex2i(xp+w, yp+h);
+        glVertex2i(xp, yp+h);
+        glEnd();
+        
+        glEnable(GL_BLEND);
+        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+        
+        glColor3ub( 0, 0, 0 );
+        glEnable(GL_TEXTURE_2D);
+        texfont.RenderString( msg, xp, yp);
+        glDisable(GL_TEXTURE_2D);
+        
+    }
+}
+
+
 void glChartCanvas::GrowData( int size )
 {
     /* grow the temporary ram buffer used to load charts into textures */
@@ -2377,8 +2443,8 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &Region, b
         
         //  Check the first, smallest scale chart
         if(chart) {
-            if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) )
-            chart = NULL;
+//            if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) )
+//            chart = NULL;
         }
             
         while( chart ) {
@@ -2388,10 +2454,10 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &Region, b
             //  and that the quilt zoom methods choose a reasonable reference chart.
             if(chart->GetChartFamily() != CHART_FAMILY_RASTER)
             {
-                if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) ) {
-                    chart = cc1->m_pQuilt->GetNextChart();
-                    continue;
-                }
+//                if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) ) {
+//                    chart = cc1->m_pQuilt->GetNextChart();
+//                    continue;
+//                }
             }
 
             QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();
@@ -2568,6 +2634,12 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
     if( !backgroundRegion.IsEmpty() )
         RenderWorldChart(dc, backgroundRegion);
 
+    if( cc1->m_bShowTide )
+        cc1->RebuildTideSelectList( VPoint.GetBBox() ); 
+        
+    if( cc1->m_bShowCurrent )
+        cc1->RebuildCurrentSelectList( VPoint.GetBBox() ); 
+
     /* render in each rectangle, the grounded overlay objects */
     for(OCPNRegionIterator upd( region ); upd.HaveRects(); upd.NextRect()) {
         wxRect rect = upd.GetRect();
@@ -2672,10 +2744,10 @@ void glChartCanvas::DrawGroundedOverlayObjectsRect(ocpnDC &dc, wxRect &rect)
     DrawAllRoutesAndWaypoints( temp_vp, region );
 
     if( cc1->m_bShowTide )
-        cc1->DrawAllTidesInBBox( dc, temp_vp.GetBBox(), true, true );
+        cc1->DrawAllTidesInBBox( dc, temp_vp.GetBBox() );
     
     if( cc1->m_bShowCurrent )
-        cc1->DrawAllCurrentsInBBox( dc, temp_vp.GetBBox(), true, true );
+        cc1->DrawAllCurrentsInBBox( dc, temp_vp.GetBBox() );
 
     DisableClipRegion();
 }
@@ -3065,8 +3137,11 @@ void glChartCanvas::Render()
 #endif
 
     //quiting?
-    if( g_bquiting ) DrawQuiting();
-
+    if( g_bquiting )
+        DrawQuiting();
+    if( g_bcompression_wait)
+        DrawCloseMessage( _("Waiting for raster chart compression thread exit."));
+    
     SwapBuffers();
 
     if(b_timeGL){

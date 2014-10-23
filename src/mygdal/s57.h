@@ -205,6 +205,7 @@ class S57Reader
     int                 bAttrWarningIssued;
     
     int                 Nall;
+    int                 Aall;
     
 
   public:
@@ -243,7 +244,8 @@ class S57Reader
     OGRErr              GetExtent( OGREnvelope *psExtent, int bForce );
     
     int                 GetNall(){ return Nall; }
-
+    int                 GetAall(){ return Aall; }
+    
  };
 
 /************************************************************************/

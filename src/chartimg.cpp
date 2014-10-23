@@ -1549,10 +1549,10 @@ ChartBaseBSB::~ChartBaseBSB()
 
 double ChartBaseBSB::GetNormalScaleMin(double canvas_scale_factor, bool b_allow_overzoom)
 {
-      if(b_allow_overzoom)
+//      if(b_allow_overzoom)
             return (canvas_scale_factor / m_ppm_avg) / 32;         // allow wide range overzoom overscale
-      else
-            return (canvas_scale_factor / m_ppm_avg) / 2;         // don't suggest too much overscale
+//      else
+//            return (canvas_scale_factor / m_ppm_avg) / 2;         // don't suggest too much overscale
 
 }
 
@@ -4537,6 +4537,8 @@ bool ChartBaseBSB::AnalyzeSkew(void)
         }
         
     }
+    else                        // For all other projections, assume that skew specified in header is correct
+        apparent_skew = m_Chart_Skew;
     
     if(fabs( apparent_skew - m_Chart_Skew ) > 2) {           // measured skew is more than 2 degrees 
            m_Chart_Skew = apparent_skew;                         // different from stated skew

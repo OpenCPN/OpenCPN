@@ -217,7 +217,6 @@ extern bool             g_bUseGreenShip;
 
 extern ChartCanvas      *cc1;
 
-extern bool             g_bshow_overzoom_emboss;
 extern int              g_OwnShipIconType;
 extern double           g_n_ownship_length_meters;
 extern double           g_n_ownship_beam_meters;
@@ -731,6 +730,23 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
             b_intersect = true;
             break;
         }
+        
+        // Check segment, last point back to first point
+        if(!b_intersect){
+            int x0 = pp[nPoints-1].x;  int y0 = pp[nPoints-1].y; int x1 = pp[0].x; int y1 = pp[0].y;
+            if( ((x0 < rect.x) && (x1 < rect.x)) ||
+                ((x0 > rect.x+rect.width) && (x1 > rect.x+rect.width)) ){
+            }
+            else{
+                if( ((y0 < rect.y) && (y1 < rect.y)) ||
+                    ((y0 > rect.y+rect.height) && (y1 > rect.y+rect.height)) ){
+                }
+                else{
+                    b_intersect = true;
+                }
+            }
+        }
+                
         screen_region_it1.NextRect();
     }
 
@@ -764,10 +780,9 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
         wxRect rpoly( poly_x_min, poly_y_min, poly_x_max - poly_x_min , poly_y_max - poly_y_min);
         wxRect rRegion = Region.GetBox();
         if(rpoly.Contains(rRegion)){
-        //  subject poygon must be large enough to fully encompass the target Region,
-        //  so the intersection is simply the Region
-            if( NULL == ppoints ) delete[] pp;
-            return Region;
+        //  subject poygon may be large enough to fully encompass the target Region,
+        //  but it might not, especially for irregular or concave charts.
+        //  So we cannot shortcut here
         }
         else{
         //  Subject polygon is entirely outside of target Region
@@ -1064,6 +1079,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_bDrawingRoute = false;
     m_bRouteEditing = false;
     m_bMarkEditing = false;
+    m_bIsInRadius = false;
+    
     m_bFollow = false;
     m_bTCupdate = false;
     m_bAppendingRoute = false;          // was true in MSW, why??
@@ -1151,7 +1168,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 
-#if !defined(__WXMSW__)
+#if !defined(__WXMSW__) && !defined(__WXQT__)
 
     wxImage ICursorLeft = style->GetIcon( _T("left") ).ConvertToImage();
     wxImage ICursorRight = style->GetIcon( _T("right") ).ConvertToImage();
@@ -1274,7 +1291,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
         pCursorCross = new wxCursor( ICursorCross );
     } else
         pCursorCross = new wxCursor( wxCURSOR_ARROW );
-#endif      // MSW, X11
+#endif      // MSW, QT
     pCursorArrow = new wxCursor( wxCURSOR_ARROW );
 
     SetCursor( *pCursorArrow );
@@ -1338,6 +1355,9 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 
     m_canvas_width = 1000;
 
+    m_overzoomTextWidth = 0;
+    m_overzoomTextHeight = 0;
+
 //    Create the default world chart
     pWorldBackgroundChart = new GSHHSChart;
 
@@ -1349,6 +1369,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     CreateDepthUnitEmbossMaps( GLOBAL_COLOR_SCHEME_DAY );
 
     m_pEM_OverZoom = NULL;
+    SetOverzoomFont();
     CreateOZEmbossMapData( GLOBAL_COLOR_SCHEME_DAY );
 
 //    Build icons for tide/current points
@@ -3114,12 +3135,13 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
 
                 max_allowed_scale = GetCanvasScaleFactor() / m_absolute_min_scale_ppm;
 
-                if( ChartData->GetDBBoundingBox( current_index, &chart_box ) &&
-                    !viewbox.IntersectOut( chart_box ) )
-                    //  Clamp the minimum scale zoom-out to the value specified by the chart
-                    max_allowed_scale = wxMin(max_allowed_scale, 4.0 *
-                                              pc->GetNormalScaleMax( GetCanvasScaleFactor(),
-                                                                     GetCanvasWidth() ) );
+                //  We can allow essentially unbounded zoomout in single chart mode
+//                if( ChartData->GetDBBoundingBox( current_index, &chart_box ) &&
+//                    !viewbox.IntersectOut( chart_box ) )
+//                    //  Clamp the minimum scale zoom-out to the value specified by the chart
+//                    max_allowed_scale = wxMin(max_allowed_scale, 4.0 *
+//                                              pc->GetNormalScaleMax( GetCanvasScaleFactor(),
+//                                                                     GetCanvasWidth() ) );
                 if(proposed_scale_onscreen > max_allowed_scale) {
                     m_zoom_factor = 1; /* stop zooming */
                     proposed_scale_onscreen = max_allowed_scale;
@@ -3285,6 +3307,15 @@ void ChartCanvas::SetQuiltRefChart( int dbIndex )
     m_pQuilt->Invalidate();
 }
 
+double ChartCanvas::GetBestStartScale(int dbi_hint, const ViewPort &vp)
+{
+    if(m_pQuilt)
+        return m_pQuilt->GetBestStartScale(dbi_hint, vp);
+    else
+        return vp.view_scale_ppm;
+}
+
+
 //      Verify and adjust the current reference chart,
 //      so that it will not lead to excessive overzoom or underzoom onscreen
 int ChartCanvas::AdjustQuiltRefChart( void )
@@ -3402,7 +3433,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
     VPoint.clat = lat;
     VPoint.clon = lon;
     VPoint.view_scale_ppm = scale_ppm;
-    VPoint.rotation = rotation;
+    SetVPRotation( rotation );
 
     if( ( VPoint.pix_width <= 0 ) || ( VPoint.pix_height <= 0 ) )    // Canvas parameters not yet set
         return false;
@@ -4684,7 +4715,7 @@ void ChartCanvas::ShowChartInfoWindow( int x, int y, int dbIndex )
             m_pCIWin->Hide();
         }
 
-        if( !m_pCIWin->IsShown() ) {
+        if( !m_pCIWin->IsShown() || (m_pCIWin->dbIndex != dbIndex) ) {
             wxString s;
             ChartBase *pc = NULL;
 
@@ -4705,6 +4736,7 @@ void ChartCanvas::ShowChartInfoWindow( int x, int y, int dbIndex )
             stats->GetSize( &statsW, &statsH );
             p.y = m_canvas_height - statsH - 4 - m_pCIWin->GetWinSize().y;
 
+            m_pCIWin->dbIndex = dbIndex;
             m_pCIWin->SetPosition( p );
             m_pCIWin->SetBitmap();
             m_pCIWin->Refresh();
@@ -5153,17 +5185,6 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
 //          Mouse Clicks
 
-    if(event.LeftIsDown()){
-        if( g_btouch ){
-            if(( m_bMeasure_Active && m_nMeasureState ) || ( parent_frame->nRoute_State )){
-                if( CheckEdgePan( x, y, true, 5, 10 ) ) {
-                    m_bedge_pan = true;
-                    return;
-                }
-            }
-        }
-    }
-    
     
     if( event.LeftDown() ) {
         //  This really should not be needed, but....
@@ -5360,19 +5381,37 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
            if(( m_bMeasure_Active && m_nMeasureState ) || ( parent_frame->nRoute_State )){
 
                // if near screen edge, pan with injection
-                if( CheckEdgePan( x, y, true, 5, 10 ) ) {
-                    return;
-                }
+//                if( CheckEdgePan( x, y, true, 5, 10 ) ) {
+//                    return;
+//                }
                 
            }
         }
     }
 
     if( event.Dragging() ) {
+        
+       //in touch screen mode ensure the finger/cursor is on the selected point's radius to allow dragging
+        if( g_btouch ) {
+            if( m_pRoutePointEditTarget && !m_bIsInRadius ) {
+                SelectItem *pFind = NULL;
+                SelectableItemList SelList = pSelect->FindSelectionList( m_cursor_lat, m_cursor_lon,
+                                                                                         +                                 SELTYPE_ROUTEPOINT );
+                wxSelectableItemListNode *node = SelList.GetFirst();
+                while( node ) {
+                    pFind = node->GetData();
+                    RoutePoint *frp = (RoutePoint *) pFind->m_pData1;
+                    if( m_pRoutePointEditTarget == frp ) m_bIsInRadius = true;
+                    node = node->GetNext();
+                }
+            }
+        }
+
+                    
         if( m_bRouteEditing && m_pRoutePointEditTarget ) {
 
-            bool DraggingAllowed = true;
-
+            bool DraggingAllowed = g_btouch ? m_bIsInRadius : true;
+            
             if( NULL == pMarkPropDialog ) {
                 if( g_bWayPointPreventDragging ) DraggingAllowed = false;
             } else if( !pMarkPropDialog->IsShown() && g_bWayPointPreventDragging ) DraggingAllowed =
@@ -5454,7 +5493,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
         else if( m_bMarkEditing && m_pRoutePointEditTarget ) {
 
-            bool DraggingAllowed = true;
+            bool DraggingAllowed = g_btouch ? m_bIsInRadius : true;
 
             if( NULL == pMarkPropDialog ) {
                 if( g_bWayPointPreventDragging ) DraggingAllowed = false;
@@ -5533,6 +5572,15 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
                 last_drag.x = mx;
                 last_drag.y = my;
+                
+                if( g_btouch ) {
+                   if(( m_bMeasure_Active && m_nMeasureState ) || ( parent_frame->nRoute_State )){
+                   //deactivate next LeftUp to ovoid creating an unexpected point
+                         m_DoubleClickTimer->Start();
+                         singleClickEventIsValid = false;
+                    }
+                }
+                        
             }
         }
     }
@@ -5543,6 +5591,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
         if(g_btouch) {
             m_bChartDragging = false;
+            m_bIsInRadius = false;
             
             if( parent_frame->nRoute_State )                  // creating route?
             {
@@ -5574,10 +5623,6 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                     r_rband.y = y;
                 }
 
-                // if near screen edge, pan but do not add a point
-                if( CheckEdgePan( x, y, true, 5, 10 ) ) {
-                    return;
-                }
                     
                 //    Check to see if there is a nearby point which may be reused
                 RoutePoint *pMousePoint = NULL;
@@ -5718,10 +5763,6 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                     r_rband.y = y;
                 }
 
-                // if near screen edge, pan but do not add a point
-                if( CheckEdgePan( x, y, true, 5, 10 ) ) {
-                    return;
-                }
                 
                 RoutePoint *pMousePoint = new RoutePoint( m_cursor_lat, m_cursor_lon,
                                                         wxString( _T ( "circle" ) ), wxEmptyString, GPX_EMPTY_STRING );
@@ -5838,63 +5879,6 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 if( b_start_rollover )
                     m_RolloverPopupTimer.Start( m_rollover_popup_timer_msec, wxTIMER_ONE_SHOT );
                 
-                
-                SelectItem *pFindCurrent = NULL;
-                SelectItem *pFindTide = NULL;
-                    
-                if( m_bShowCurrent )
-                        pFindCurrent = pSelectTC->FindSelection( m_cursor_lat, m_cursor_lon, SELTYPE_CURRENTPOINT );
-                    
-                if( m_bShowTide )                                // look for tide stations
-                        pFindTide = pSelectTC->FindSelection( m_cursor_lat, m_cursor_lon, SELTYPE_TIDEPOINT );
-                    
-                if( pFindCurrent ) {
-                        // There may be multiple current entries at the same point.
-                        // For example, there often is a current substation (with directions specified)
-                        // co-located with its master.  We want to select the substation, so that
-                        // the direction will be properly indicated on the graphic.
-                        // So, we search the select list looking for IDX_type == 'c' (i.e substation)
-                        IDX_entry *pIDX_best_candidate;
-                        
-                        SelectItem *pFind = NULL;
-                        SelectableItemList SelList = pSelectTC->FindSelectionList( m_cursor_lat,
-                                                                                   m_cursor_lon, SELTYPE_CURRENTPOINT );
-                        
-                        //      Default is first entry
-                        wxSelectableItemListNode *node = SelList.GetFirst();
-                        pFind = node->GetData();
-                        pIDX_best_candidate = (IDX_entry *) ( pFind->m_pData1 );
-                        
-                        if( SelList.GetCount() > 1 ) {
-                            node = node->GetNext();
-                            while( node ) {
-                                pFind = node->GetData();
-                                IDX_entry *pIDX_candidate = (IDX_entry *) ( pFind->m_pData1 );
-                                if( pIDX_candidate->IDX_type == 'c' ) {
-                                    pIDX_best_candidate = pIDX_candidate;
-                                    break;
-                                }
-                                
-                                node = node->GetNext();
-                            }       // while (node)
-                        } else {
-                            wxSelectableItemListNode *node = SelList.GetFirst();
-                            pFind = node->GetData();
-                            pIDX_best_candidate = (IDX_entry *) ( pFind->m_pData1 );
-                        }
-                        
-                        m_pIDXCandidate = pIDX_best_candidate;
-                        
-                        DrawTCWindow( x, y, (void *) pIDX_best_candidate );
-                        Refresh( false );
-                }
-                    
-                else if( pFindTide ) {
-                        m_pIDXCandidate = (IDX_entry *) pFindTide->m_pData1;
-                        
-                        DrawTCWindow( x, y, (void *) pFindTide->m_pData1 );
-                        Refresh( false );
-                }
 
         if( m_bRouteEditing/* && !b_startedit_route*/) {            // End of RoutePoint drag
             if( m_pRoutePointEditTarget ) {
@@ -6622,19 +6606,40 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     SetMenuItemFont(subItemChart);
     
     if( g_pGroupArray->GetCount() ) {
-        wxMenuItem* subItem0 = subMenuChart->AppendRadioItem( ID_DEF_MENU_GROUPBASE, _("All Active Charts") );
+
+#ifdef __WXMSW__
+          const wxString l[] = { _T(" "), wxString::Format( _T("\u2022") ) };
+          wxMenuItem* subItem1 = subMenuChart->AppendRadioItem( wxID_CANCEL , _T("temporary") );
+          SetMenuItemFont(subItem1);
+#endif
+          wxMenuItem* subItem0 = subMenuChart->AppendRadioItem( ID_DEF_MENU_GROUPBASE ,
+#ifdef __WXMSW__
+                  ( g_GroupIndex == 0 ? l[1] : l[0] ) +
+#endif
+                  _("All Active Charts") );
+
+
+
         SetMenuItemFont(subItem0);
-        
+
         for( unsigned int i = 0; i < g_pGroupArray->GetCount(); i++ ) {
-            subMenuChart->AppendRadioItem( ID_DEF_MENU_GROUPBASE + i + 1,
-                                         g_pGroupArray->Item( i )->m_group_name );
+            subItem0 = subMenuChart->AppendRadioItem( ID_DEF_MENU_GROUPBASE + i + 1,
+#ifdef __WXMSW__
+                     ( i == g_GroupIndex - 1 ? l[1] : l[0] ) +
+#endif
+                     g_pGroupArray->Item( i )->m_group_name );
+            SetMenuItemFont(subItem0);
             Connect( ID_DEF_MENU_GROUPBASE + i + 1, wxEVT_COMMAND_MENU_SELECTED,
                      (wxObjectEventFunction) (wxEventFunction) &ChartCanvas::PopupMenuHandler );
         }
-
+        
+#ifdef __WXMSW__
+    subMenuChart->Remove( wxID_CANCEL );
+#endif
         subMenuChart->Check( ID_DEF_MENU_GROUPBASE + g_GroupIndex, true );
     }
-
+    
+        
     //  Add PlugIn Context Menu items
     ArrayOfPlugInMenuItems item_array = g_pi_manager->GetPluginContextMenuItemArray();
 
@@ -7818,12 +7823,23 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
     }
 
     case ID_RT_MENU_ACTIVATE: {
-        if( g_pRouteMan->GetpActiveRoute() ) g_pRouteMan->DeactivateRoute();
+        if( g_pRouteMan->GetpActiveRoute() )
+            g_pRouteMan->DeactivateRoute();
 
-        RoutePoint *best_point = g_pRouteMan->FindBestActivatePoint( m_pSelectedRoute, gLat,
+        //  If this is an auto-created MOB route, always select the second point (the MOB)
+        // as the destination.
+        RoutePoint *best_point;
+        if(m_pSelectedRoute){
+            if(wxNOT_FOUND == m_pSelectedRoute->m_RouteNameString.Find(_T("MOB")) ){
+                best_point = g_pRouteMan->FindBestActivatePoint( m_pSelectedRoute, gLat,
                                  gLon, gCog, gSog );
-
-        g_pRouteMan->ActivateRoute( m_pSelectedRoute, best_point );
+            }
+            else
+                best_point = m_pSelectedRoute->GetPoint( 2 );
+        
+            g_pRouteMan->ActivateRoute( m_pSelectedRoute, best_point );
+        }
+            
         m_pSelectedRoute->m_bRtIsSelected = false;
 
         break;
@@ -8847,9 +8863,9 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
         ocpnDC bgdc( temp_dc );
         double r =         VPoint.rotation;
-        VPoint.rotation = 0;
+        SetVPRotation( 0.0 );
         pWorldBackgroundChart->RenderViewOnDC( bgdc, VPoint );
-        VPoint.rotation = r;
+        SetVPRotation( r );
     }
 
     wxMemoryDC *pChartDC = &temp_dc;
@@ -8954,45 +8970,16 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
     ocpnDC scratch_dc( mscratch_dc );
     DrawOverlayObjects( scratch_dc, ru );
 
-    if( m_bShowTide ) DrawAllTidesInBBox( scratch_dc, GetVP().GetBBox(), true, true );
-
-    if( m_bShowCurrent ) DrawAllCurrentsInBBox( scratch_dc, GetVP().GetBBox(), true, true );
-
-#if 0
-//  Using yet another bitmap and DC, draw semi-static overlay objects if necessary
-
-    /*    Why go to all this trouble?
-     Answer:  Calculating and rendering tides and currents is expensive,
-     and the data only change every 15 minutes or so.  So, keep a "mask blit-able"
-     copy in persistent storage, and use as necessary.
-     */
-    if ( m_bShowTide || m_bShowCurrent )         // Showing T/C?
-    {
-        if ( 1/*b_newview*/|| m_bTCupdate )         // need to update the overlay
-        {
-            delete pss_overlay_bmp;
-            pss_overlay_bmp = DrawTCCBitmap(&mscratch_dc);
-        }
-
-        //    blit the semi-static overlay onto the scratch DC if it is needed
-        if ( NULL != pss_overlay_bmp )
-        {
-            wxMemoryDC ssdc_r;
-            ssdc_r.SelectObject ( *pss_overlay_bmp );
-
-            OCPNRegionIterator upd_final ( rgn_blit );
-            while ( upd_final )
-            {
-                wxRect rect = upd_final.GetRect();
-                mscratch_dc.Blit ( rect.x, rect.y, rect.width, rect.height,
-                                   &ssdc_r, rect.x, rect.y, wxCOPY, true );      // Blit with mask
-                upd_final ++;
-            }
-
-            ssdc_r.SelectObject ( wxNullBitmap );
-        }
+    if( m_bShowTide ){
+        RebuildTideSelectList( GetVP().GetBBox() );
+        DrawAllTidesInBBox( scratch_dc, GetVP().GetBBox() );
     }
-#endif
+
+    if( m_bShowCurrent ){
+        RebuildCurrentSelectList( GetVP().GetBBox() );
+        DrawAllCurrentsInBBox( scratch_dc, GetVP().GetBBox() );
+    }
+
 
     //quiting?
     if( g_bquiting ) {
@@ -9334,15 +9321,13 @@ void ChartCanvas::DrawEmboss( ocpnDC &dc, emboss_data *pemboss)
 
 emboss_data *ChartCanvas::EmbossOverzoomIndicator( ocpnDC &dc )
 {
-    if( !g_bshow_overzoom_emboss ) return NULL;
-
     if( GetQuiltMode() ) {
         double chart_native_ppm;
         chart_native_ppm = m_canvas_scale_factor / m_pQuilt->GetRefNativeScale();
 
         double zoom_factor = GetVP().view_scale_ppm / chart_native_ppm;
 
-        if( zoom_factor <= 4.0 ) return NULL;
+        if( zoom_factor <= 3.9 ) return NULL;
     } else {
         double chart_native_ppm;
         if( Current_Ch ) chart_native_ppm = m_canvas_scale_factor / Current_Ch->GetNativeScale();
@@ -9351,7 +9336,7 @@ emboss_data *ChartCanvas::EmbossOverzoomIndicator( ocpnDC &dc )
 
         double zoom_factor = GetVP().view_scale_ppm / chart_native_ppm;
         if( Current_Ch ) {
-            if( zoom_factor <= 4.0 ) return NULL;
+            if( zoom_factor <= 3.9 ) return NULL;
         }
     }
 
@@ -9471,10 +9456,10 @@ void ChartCanvas::CreateDepthUnitEmbossMaps( ColorScheme cs )
     m_pEM_Fathoms = CreateEmbossMapData( font, emboss_width, emboss_height, _("Fathoms"), cs );
 }
 
-void ChartCanvas::CreateOZEmbossMapData( ColorScheme cs )
-{
-    delete m_pEM_OverZoom;
+#define OVERZOOM_TEXT _("OverZoom")
 
+void ChartCanvas::SetOverzoomFont()
+{
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
     int w, h;
 
@@ -9486,10 +9471,25 @@ void ChartCanvas::CreateOZEmbossMapData( ColorScheme cs )
 
     wxClientDC dc( this );
     dc.SetFont( font );
-    dc.GetTextExtent( _("OverZoom"), &w, &h );
+    dc.GetTextExtent( OVERZOOM_TEXT, &w, &h );
 
-    if((w > 0) && (w < 500) && (h > 0) && (h < 100))
-        m_pEM_OverZoom = CreateEmbossMapData( font, w + 10, h + 10, _("OverZoom"), cs );
+    while( font.GetPointSize() > 10 && (w > 500 || h > 100) )
+    {
+        font.SetPointSize( font.GetPointSize() - 1 );
+        dc.SetFont( font );
+        dc.GetTextExtent( OVERZOOM_TEXT, &w, &h );
+    }
+    m_overzoomFont = font;
+    m_overzoomTextWidth = w;
+    m_overzoomTextHeight = h;
+}
+
+void ChartCanvas::CreateOZEmbossMapData( ColorScheme cs )
+{
+    delete m_pEM_OverZoom;
+
+    if( m_overzoomTextWidth > 0 && m_overzoomTextHeight > 0 )
+        m_pEM_OverZoom = CreateEmbossMapData( m_overzoomFont, m_overzoomTextWidth + 10, m_overzoomTextHeight + 10, OVERZOOM_TEXT, cs );
 }
 
 emboss_data *ChartCanvas::CreateEmbossMapData( wxFont &font, int width, int height,
@@ -9562,89 +9562,6 @@ emboss_data *ChartCanvas::CreateEmbossMapData( wxFont &font, int width, int heig
     return pret;
 }
 
-//----------------------------------------------------------------------------
-//  Get a wxBitmap with wxMask associated containing the semi-static overlays
-//----------------------------------------------------------------------------
-
-wxBitmap *ChartCanvas::DrawTCCBitmap( wxDC *pbackground_dc, bool bAddNewSelpoints )
-{
-    wxBitmap *p_bmp = new wxBitmap( GetVP().pix_width, GetVP().pix_height, -1 );
-
-    //      Here is the new drawing DC
-    wxMemoryDC ssdc;
-    ssdc.SelectObject( *p_bmp );
-    ssdc.SetBackground( *wxWHITE_BRUSH );
-
-    //  if a background dc is provided, use it as wallpaper
-    if( pbackground_dc ) ssdc.Blit( 0, 0, GetVP().pix_width, GetVP().pix_height, pbackground_dc, 0,
-                                        0 );
-    else
-        ssdc.Clear();
-
-    //      Believe it or not, it is faster to REDRAW the overlay objects
-    //      onto a mono bitmap, and then convert it into a mask bitmap
-    //      than it is to create a mask from a colour bmp.
-    //      Look at the wx code.  It goes through wxImage conversion, etc...
-    //      So, create a mono DC, drawing white-on-black
-    wxMemoryDC ssdc_mask;
-    wxBitmap mask_bmp( GetVP().pix_width, GetVP().pix_height, 1 );
-    ssdc_mask.SelectObject( mask_bmp );
-
-    //      On X11, the drawing is Black on White, and the mask bitmap is inverted before
-    //      making into a mask.
-    //      On MSW and GTK, the drawing is White on Black, and no inversion is required
-    //      Todo....  Some wxWidgets problem with this....
-#ifndef __WXX11__
-    ssdc_mask.SetBackground( *wxBLACK_BRUSH );
-#endif
-
-    ssdc_mask.Clear();
-
-//    Maybe draw the Tide Points
-    ocpnDC ossdc( ssdc ), ossdc_mask( ssdc_mask );
-
-    if( m_bShowTide ) {
-        // Rebuild Selpoints list on new map
-        DrawAllTidesInBBox( ossdc, GetVP().GetBBox(), bAddNewSelpoints || !bShowingTide, true );
-        DrawAllTidesInBBox( ossdc_mask, GetVP().GetBBox(), false, true, true );    // onto the mask
-        bShowingTide = true;
-    } else
-        bShowingTide = false;
-
-//    Maybe draw the current arrows
-    if( m_bShowCurrent ) {
-        // Rebuild Selpoints list on new map
-        // and force redraw
-        DrawAllCurrentsInBBox( ossdc, GetVP().GetBBox(), bAddNewSelpoints || !bShowingCurrent,
-                               true );
-        DrawAllCurrentsInBBox( ossdc_mask, GetVP().GetBBox(), false, true, true );  // onto the mask
-        bShowingCurrent = true;
-    } else
-        bShowingCurrent = false;
-
-    ssdc.SelectObject( wxNullBitmap );
-
-#ifdef __WXX11__
-    //      Invert the mono bmp, to make a useable mask bmp
-    wxMemoryDC ssdc_mask_invert;
-    wxBitmap mask_bmp_invert ( GetVP().pix_width, GetVP().pix_height, 1 );
-    ssdc_mask_invert.SelectObject ( mask_bmp_invert );
-    ssdc_mask_invert.Blit ( 0, 0, GetVP().pix_width, GetVP().pix_height,
-                            &ssdc_mask, 0, 0, wxSRC_INVERT );
-
-    ssdc_mask_invert.SelectObject ( wxNullBitmap );
-    pss_overlay_mask = new wxMask ( mask_bmp_invert );
-    ssdc_mask.SelectObject ( wxNullBitmap );
-#else
-    ssdc_mask.SelectObject( wxNullBitmap );
-    pss_overlay_mask = new wxMask( mask_bmp );
-#endif
-
-    //      Create and associate the mask
-    p_bmp->SetMask( pss_overlay_mask );
-
-    return p_bmp;
-}
 
 extern bool g_bTrackActive;
 
@@ -9864,9 +9781,29 @@ double ChartCanvas::GetAnchorWatchRadiusPixels( RoutePoint *pAnchorWatchPoint )
 //------------------------------------------------------------------------------------------
 //    Tides Support
 //------------------------------------------------------------------------------------------
+void ChartCanvas::RebuildTideSelectList( LLBBox& BBox )
+{
+    pSelectTC->DeleteAllSelectableTypePoints( SELTYPE_TIDEPOINT );
+    
+    for( int i = 1; i < ptcmgr->Get_max_IDX() + 1; i++ ) {
+        const IDX_entry *pIDX = ptcmgr->GetIDX_entry( i );
+        double lon = pIDX->IDX_lon;
+        double lat = pIDX->IDX_lat;
+        
+        char type = pIDX->IDX_type;             // Entry "TCtcIUu" identifier
+        if( ( type == 't' ) || ( type == 'T' ) ) {
+            
+            if( BBox.PointInBox( lon, lat, 0 ) ) {
+                
+                //    Manage the point selection list
+                pSelectTC->AddSelectablePoint( lat, lon, pIDX, SELTYPE_TIDEPOINT );
+            }
+        }
+    }
+}
 
-void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox, bool bRebuildSelList,
-                                      bool bforce_redraw_tides, bool bdraw_mono_for_mask )
+
+void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
 {
     wxPen *pblack_pen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFD" ) ), 1,
                         wxSOLID );
@@ -9887,26 +9824,8 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox, bool bRebuildSel
     wxFont *plabelFont = wxTheFontList->FindOrCreateFont( font_size, dFont->GetFamily(),
                          dFont->GetStyle(), dFont->GetWeight() );
 
-    if( bdraw_mono_for_mask ) {
-#ifdef __WXX11__
-        const wxPen *pmono_pen = wxBLACK_PEN;
-        const wxBrush *pmono_brush = wxBLACK_BRUSH;
-#else
-        const wxPen *pmono_pen = wxWHITE_PEN;
-        const wxBrush *pmono_brush = wxWHITE_BRUSH;
-#endif
-
-        pblack_pen = (wxPen *) pmono_pen;
-        pgreen_brush = (wxBrush *) pmono_brush;
-        brc_1 = (wxBrush *) pmono_brush;
-        brc_2 = (wxBrush *) pmono_brush;
-
-    }
-
     dc.SetPen( *pblack_pen );
     dc.SetBrush( *pgreen_brush );
-
-    if( bRebuildSelList ) pSelectTC->DeleteAllSelectableTypePoints( SELTYPE_TIDEPOINT );
 
     wxBitmap bm;
     switch( m_cs ) {
@@ -9930,7 +9849,6 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox, bool bRebuildSel
     wxDateTime this_now = wxDateTime::Now();
     time_t t_this_now = this_now.GetTicks();
 
-//      if(1/*BBox.GetValid()*/)
     {
 
         double lon_last = 0.;
@@ -9960,19 +9878,11 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox, bool bRebuildSel
 //try to eliminate double entry , but the only good way is to clean the file!
                 if( b_inbox && ( lat != lat_last ) && ( lon != lon_last ) ) {
 
-//    Manage the point selection list
-                    if( bRebuildSelList ) pSelectTC->AddSelectablePoint( lat, lon, pIDX,
-                                SELTYPE_TIDEPOINT );
-
                     wxPoint r;
                     GetCanvasPointPix( lat, nlon, &r );
 //draw standard icons
                     if( GetVP().chart_scale > 500000 ) {
-
-                        if( bdraw_mono_for_mask ) dc.DrawRectangle( r.x - bmw / 2, r.y - bmh / 2,
-                                    bmw, bmh );
-                        else
-                            dc.DrawBitmap( bm, r.x - bmw / 2, r.y - bmh / 2, true );
+                        dc.DrawBitmap( bm, r.x - bmw / 2, r.y - bmh / 2, true );
                     }
 //draw "extended" icons
                     else {
@@ -9982,12 +9892,8 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox, bool bRebuildSel
                         dc.GetTextExtent( _T("99.9ft "), &wx, &hx );
                         int w = r.x - 6;
                         int h = r.y - 22;
-//draw mask
-                        if( bdraw_mono_for_mask ) dc.DrawRectangle( r.x - ( wx / 2 ), h, wx,
-                                    hx + 45 );
-                        //process tides
-                        else {
-                            if( bforce_redraw_tides ) {
+                        {
+                            {
                                 float val, nowlev;
                                 float ltleve = 0.;
                                 float htleve = 0.;
@@ -10112,8 +10018,40 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox, bool bRebuildSel
 //    Currents Support
 //------------------------------------------------------------------------------------------
 
-void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox, bool bRebuildSelList,
-        bool bforce_redraw_currents, bool bdraw_mono_for_mask )
+void ChartCanvas::RebuildCurrentSelectList( LLBBox& BBox )
+{
+    pSelectTC->DeleteAllSelectableTypePoints( SELTYPE_CURRENTPOINT );
+    
+    double lon_last = 0.;
+    double lat_last = 0.;
+    for( int i = 1; i < ptcmgr->Get_max_IDX() + 1; i++ ) {
+        const IDX_entry *pIDX = ptcmgr->GetIDX_entry( i );
+        double lon = pIDX->IDX_lon;
+        double lat = pIDX->IDX_lat;
+        
+        char type = pIDX->IDX_type;             // Entry "TCtcIUu" identifier
+        if( ( ( type == 'c' ) || ( type == 'C' ) ) && ( 1/*pIDX->IDX_Useable*/) ) {
+            
+            //  TODO This is a ---HACK---
+            //  try to avoid double current arrows.  Select the first in the list only
+            //  Proper fix is to correct the TCDATA index file for depth indication
+            bool b_dup = false;
+            if( ( type == 'c' ) && ( lat == lat_last ) && ( lon == lon_last ) )
+                b_dup = true;
+               
+            if( !b_dup && ( BBox.PointInBox( lon, lat, 0 ) ) ) {
+                   
+                   //    Manage the point selection list
+                   pSelectTC->AddSelectablePoint( lat, lon, pIDX, SELTYPE_CURRENTPOINT );
+            }
+        }
+        lon_last = lon;
+        lat_last = lat;
+    }
+}
+                   
+
+void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
 {
     float tcvalue, dir;
     bool bnew_val;
@@ -10141,28 +10079,10 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox, bool bRebuild
     if( !g_bskew_comp )
         skew_angle += GetVPSkew();
 
-    if( bdraw_mono_for_mask ) {
-#ifdef __WXX11__
-        const wxPen *pmono_pen = wxBLACK_PEN;
-        const wxBrush *pmono_brush = wxBLACK_BRUSH;
-#else
-        const wxPen *pmono_pen = wxWHITE_PEN;
-        const wxBrush *pmono_brush = wxWHITE_BRUSH;
-#endif
-
-        pblack_pen = (wxPen *) pmono_pen;
-        porange_pen = (wxPen *) pmono_pen;
-        porange_brush = (wxBrush *) pmono_brush;
-        pgray_brush = (wxBrush *) pmono_brush;
-    }
-
     pTCFont = FontMgr::Get().GetFont( _("CurrentValue"), 12 );
     
     int now = time( NULL );
 
-    if( bRebuildSelList ) pSelectTC->DeleteAllSelectableTypePoints( SELTYPE_CURRENTPOINT );
-
-//     if(1/*BBox.GetValid()*/)
     {
 
         for( int i = 1; i < ptcmgr->Get_max_IDX() + 1; i++ ) {
@@ -10180,10 +10100,6 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox, bool bRebuild
                 if( ( type == 'c' ) && ( lat == lat_last ) && ( lon == lon_last ) ) b_dup = true;
 
                 if( !b_dup && ( BBox.PointInBox( lon, lat, 0 ) ) ) {
-
-//    Manage the point selection list
-                    if( bRebuildSelList ) pSelectTC->AddSelectablePoint( lat, lon, pIDX,
-                                SELTYPE_CURRENTPOINT );
 
                     wxPoint r;
                     GetCanvasPointPix( lat, lon, &r );
@@ -10210,8 +10126,9 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox, bool bRebuild
                             dc.DrawCircle( r.x, r.y, 2 );
                         }
 
-                        else if( ( type == 'c' ) && ( GetVP().chart_scale < 1000000 ) ) {
-                            if( bnew_val || bforce_redraw_currents ) {
+                        else if( ( type == 'c' ) && ( GetVP().chart_scale < 1000000 ) )
+                        {
+                            {
 
 //    Get the display pixel location of the current station
                                 int pixxc, pixyc;
@@ -10220,8 +10137,6 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox, bool bRebuild
                                 pixxc = cpoint.x;
                                 pixyc = cpoint.y;
 
-//    Draw arrow using preset parameters, see mm_per_knot variable
-//                                                            double scale = fabs ( tcvalue ) * current_draw_scaler;
 //    Adjust drawing size using logarithmic scale
                                 double a1 = fabs( tcvalue ) * 10.;
                                 a1 = wxMax(1.0, a1);      // Current values less than 0.1 knot

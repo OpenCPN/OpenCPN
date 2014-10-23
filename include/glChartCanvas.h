@@ -36,8 +36,9 @@
 #endif
 
 
+#include "glTexCache.h"
 
-class glTexFactory;
+//class glTexFactory;
 //      This is a hashmap with Chart full path as key, and glTexFactory as value
 WX_DECLARE_STRING_HASH_MAP( glTexFactory*, ChartPathHashTexfactType );
 
@@ -129,7 +130,8 @@ protected:
     void DrawGroundedOverlayObjectsRect(ocpnDC &dc, wxRect &rect);
 
     void DrawQuiting();
-
+    void DrawCloseMessage(wxString msg);
+    
     wxGLContext       *m_pcontext;
 
     int max_texture_dimension;

@@ -5143,12 +5143,8 @@ int cm93compchart::GetNativeScale()
 
 double cm93compchart::GetNormalScaleMin ( double canvas_scale_factor, bool b_allow_overzoom )
 {
-      //Adjust overzoom factor based on  b_allow_overzoom option setting
       double oz_factor;
-      if ( b_allow_overzoom )
-            oz_factor = 40.;
-      else
-            oz_factor = 4.;
+      oz_factor = 40.;
 
       if ( m_pcm93chart_current )
       {
@@ -5284,7 +5280,8 @@ OCPNRegion cm93compchart::GetValidScreenCanvasRegion ( const ViewPort& VPoint, c
 
                   OCPNRegion rgn_covr = vp_positive.GetVPRegionIntersect ( ScreenRegion, pmcd->m_nvertices, ( float * ) pmcd->pvertices, chart_native_scale, DrawBuf );
 
-                  ret_region.Union( rgn_covr );
+                  if(rgn_covr.IsOk())           // not empty
+                    ret_region.Union( rgn_covr );
 
             }
 

@@ -394,6 +394,18 @@ int DDFFieldDefn::Initialize( DDFModule * poModuleIn,
         _data_type_code = dtc_char_string;
     }
 
+    // Pick up the "truncated escape sequence",
+    // and decode lexical level
+    char seq[4];
+    strncpy(seq, (char *)&pachFieldArea[6], 3);
+    if(seq[0] == ' ')
+        _lex_level = 0;
+    else if(seq[0] == '-')
+        _lex_level = 1;
+    else 
+        _lex_level = 2;
+    
+    
 /* -------------------------------------------------------------------- */
 /*      Capture the field name, description (sub field names), and      */
 /*      format statements.                                              */
@@ -431,6 +443,8 @@ int DDFFieldDefn::Initialize( DDFModule * poModuleIn,
             return FALSE;
     }
 
+//    Dump(stdout);
+    
     return TRUE;
 }
 
@@ -521,6 +535,8 @@ void DDFFieldDefn::Dump( FILE * fp )
 
     fprintf( fp, "      _data_type_code = %s\n", pszValue );
 
+    fprintf( fp, "      _lex_level = %d\n", _lex_level );
+    
     for( int i = 0; i < nSubfieldCount; i++ )
         papoSubfields[i]->Dump( fp );
 }

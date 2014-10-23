@@ -201,7 +201,8 @@ public:
       bool IsQuiltDelta(void);
       void SetQuiltChartHiLiteIndex(int dbIndex);
       int GetQuiltReferenceChartIndex(void);
-
+      double GetBestStartScale(int dbi_hint, const ViewPort &vp);
+      
       int GetNextContextMenuId();
 
       bool StartTimedMovement( bool stoptimer=true );
@@ -343,6 +344,8 @@ private:
       bool        m_bDrawingRoute;
       bool        m_bRouteEditing;
       bool        m_bMarkEditing;
+      bool        m_bIsInRadius;
+      
       RoutePoint  *m_pRoutePointEditTarget;
       RoutePoint  *m_lastRoutePointEditTarget;
       SelectItem  *m_pFoundPoint;
@@ -386,6 +389,9 @@ private:
       wxMouseEvent singleClickEvent;
 
       std::vector<s57Sector_t> extendedSectorLegs;
+      wxFont m_overzoomFont;
+      int m_overzoomTextWidth;
+      int m_overzoomTextHeight;
 
       //    Methods
       void OnActivate(wxActivateEvent& event);
@@ -409,17 +415,16 @@ private:
       void DrawAnchorWatchPoints( ocpnDC& dc );
       double GetAnchorWatchRadiusPixels(RoutePoint *pAnchorWatchPoint);
 
-      void DrawAllTidesInBBox(ocpnDC& dc, LLBBox& BBox, bool bRebuildSelList, bool bforce_redraw_tides,
-                        bool bdraw_mono = false);
-      void DrawAllCurrentsInBBox(ocpnDC& dc, LLBBox& BBox,
-                           bool bRebuildSelList, bool bforce_redraw_currents, bool bdraw_mono = false);
+      void DrawAllTidesInBBox(ocpnDC& dc, LLBBox& BBox);
+      void DrawAllCurrentsInBBox(ocpnDC& dc, LLBBox& BBox);
       void DrawTCWindow(int x, int y, void *pIDX);
+      void RebuildTideSelectList( LLBBox& BBox );
+      void RebuildCurrentSelectList( LLBBox& BBox );
+      
 
       void RenderAllChartOutlines(ocpnDC &dc, ViewPort& vp);
       void RenderChartOutline(ocpnDC &dc, int dbIndex, ViewPort& vp);
       void RenderRouteLegs ( ocpnDC &dc );
-
-      wxBitmap *DrawTCCBitmap( wxDC *pbackground_dc, bool bAddNewSelpoints = true);
 
       void AlertDraw(ocpnDC& dc);                // pjotrc 2010.02.22
 
@@ -435,6 +440,7 @@ private:
 
       void CreateOZEmbossMapData(ColorScheme cs);
       emboss_data *EmbossOverzoomIndicator ( ocpnDC &dc);
+      void SetOverzoomFont();
 
 //      void CreateCM93OffsetEmbossMapData(ColorScheme cs);
 //      void EmbossCM93Offset ( wxMemoryDC *pdc);

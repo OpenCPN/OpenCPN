@@ -5,7 +5,7 @@
  * Author:   Sean D'Epagnier
  *
  ***************************************************************************
- *   Copyright (C) 2013 by Sean D'Epagnier                                 *
+ *   Copyright (C) 2014 by Sean D'Epagnier                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -58,7 +58,7 @@ static const wxString altitude_from_index[3][5] = {
     {_T("Std"), _T("25.2"), _T("20.7"), _T("14.8"), _T("8.9")}
     };
 
-enum SettingsDisplay {B_ARROWS, ISO_LINE, ISO_LINE_VISI, ISO_LINE_SHORT, D_ARROWS, OVERLAY, NUMBERS};
+enum SettingsDisplay {B_ARROWS, ISO_LINE, ISO_LINE_VISI, ISO_LINE_SHORT, D_ARROWS, OVERLAY, NUMBERS, PARTICLES};
 
 wxString GribOverlaySettings::GetAltitudeFromIndex( int index, int unit )
 {
@@ -120,6 +120,9 @@ void GribOverlaySettings::Read()
 
         pConf->Read ( Name + _T ( "Numbers" ), &Settings[i].m_bNumbers, false);
         pConf->Read ( Name + _T ( "NumbersSpacing" ), &Settings[i].m_iNumbersSpacing, 50);
+
+        pConf->Read ( Name + _T ( "Particles" ), &Settings[i].m_bParticles, false);
+        pConf->Read ( Name + _T ( "ParticleDensity" ), &Settings[i].m_dParticleDensity, 1.0);
     }
 }
 
@@ -148,6 +151,7 @@ void GribOverlaySettings::Write()
             SaveSettingGroups(pConf, i, ISO_LINE_SHORT);
             SaveSettingGroups(pConf, i, OVERLAY);
             SaveSettingGroups(pConf, i, NUMBERS);
+            SaveSettingGroups(pConf, i, PARTICLES);
         }
         else if(i == WIND_GUST || i == AIR_TEMPERATURE || i == SEA_TEMPERATURE || i == CAPE) {
             SaveSettingGroups(pConf, i, ISO_LINE_SHORT);
@@ -163,6 +167,7 @@ void GribOverlaySettings::Write()
             SaveSettingGroups(pConf, i, D_ARROWS);
             SaveSettingGroups(pConf, i, OVERLAY);
             SaveSettingGroups(pConf, i, NUMBERS);
+            SaveSettingGroups(pConf, i, PARTICLES);
         }
         else if( i == PRECIPITATION || i == CLOUD) {
             SaveSettingGroups(pConf, i, OVERLAY);
@@ -201,6 +206,10 @@ void GribOverlaySettings::SaveSettingGroups(wxFileConfig *pConf, int settings, i
     case NUMBERS:
         pConf->Write ( Name + _T ( "Numbers" ), Settings[settings].m_bNumbers);
         pConf->Write ( Name + _T ( "NumbersSpacing" ), Settings[settings].m_iNumbersSpacing);
+        break;
+    case PARTICLES:
+        pConf->Write ( Name + _T ( "Particles" ), Settings[settings].m_bParticles);
+        pConf->Write ( Name + _T ( "ParticleDensity" ), Settings[settings].m_dParticleDensity);
         break;
     }
 }
@@ -449,7 +458,8 @@ void GribSettingsDialog::SetDataTypeSettings(int settings)
     odc.m_iOverlayMapColors = m_cOverlayColors->GetSelection();
     odc.m_bNumbers = m_cbNumbers->GetValue();
     odc.m_iNumbersSpacing = m_sNumbersSpacing->GetValue();
-
+    odc.m_bParticles = m_cbParticles->GetValue();
+    odc.m_dParticleDensity = 2.0*exp(m_sParticleDensity->GetValue() / 2.0 - 3);
 }
 
 void GribSettingsDialog::ReadDataTypeSettings(int settings)
@@ -470,6 +480,8 @@ void GribSettingsDialog::ReadDataTypeSettings(int settings)
     m_cOverlayColors->SetSelection(odc.m_iOverlayMapColors);
     m_cbNumbers->SetValue(odc.m_bNumbers);
     m_sNumbersSpacing->SetValue(odc.m_iNumbersSpacing);
+    m_cbParticles->SetValue(odc.m_bParticles);
+    m_sParticleDensity->SetValue(2.0*(log(odc.m_dParticleDensity/2.0) + 3));
 
     ShowFittingSettings(settings);
 }
@@ -485,50 +497,53 @@ void GribSettingsDialog::ShowFittingSettings( int settings )
     ShowSettings( D_ARROWS, false  );
     ShowSettings( OVERLAY, false  );
     ShowSettings( NUMBERS, false );
+    ShowSettings( PARTICLES, false );
     this->Fit();
     //Show only fitting parameters
     switch(settings){
-    case 0:
+    case GribOverlaySettings::WIND:
         ShowSettings( ISO_LINE_SHORT );
         ShowSettings( ISO_LINE );
         m_cbIsoBars->SetLabel(_("Display Isotachs"));
         ShowSettings( B_ARROWS );
         ShowSettings( OVERLAY );
         ShowSettings( NUMBERS );
+        ShowSettings( PARTICLES );
         break;
-    case 1:
+    case GribOverlaySettings::WIND_GUST:
         ShowSettings( ISO_LINE_SHORT );
         ShowSettings( ISO_LINE );
         m_cbIsoBars->SetLabel(_("Display Isotachs"));
         ShowSettings( OVERLAY );
         ShowSettings( NUMBERS );
         break;
-    case 2:
+    case GribOverlaySettings::PRESSURE:
         ShowSettings( ISO_LINE_VISI );
         ShowSettings( ISO_LINE );
         m_cbIsoBars->SetLabel(_("Display Isobars"));
         ShowSettings( NUMBERS );
         break;
-    case 3:
-    case 4:
+    case GribOverlaySettings::CURRENT:
+        ShowSettings( PARTICLES ); // should we allow particles for waves?
+    case GribOverlaySettings::WAVE:
         ShowSettings( D_ARROWS );
         ShowSettings( OVERLAY );
         ShowSettings( NUMBERS );
         break;
-    case 5:
-    case 6:
+    case GribOverlaySettings::PRECIPITATION:
+    case GribOverlaySettings::CLOUD:
         ShowSettings( OVERLAY );
         ShowSettings( NUMBERS );
         break;
-    case 7:
-    case 8:
+    case GribOverlaySettings::AIR_TEMPERATURE:
+    case GribOverlaySettings::SEA_TEMPERATURE:
         ShowSettings( ISO_LINE_SHORT );
         ShowSettings( ISO_LINE );
         m_cbIsoBars->SetLabel(_("Display Isotherms"));
         ShowSettings( OVERLAY );
         ShowSettings( NUMBERS );
         break;
-    case 9:
+    case GribOverlaySettings::CAPE:
         ShowSettings( ISO_LINE_SHORT );
         ShowSettings( ISO_LINE );
         m_cbIsoBars->SetLabel(_("Display Iso CAPE"));
@@ -573,6 +588,12 @@ void GribSettingsDialog::ShowSettings( int params, bool show)
         m_cbNumbers->Show(show);
         m_ctNumbers->Show(show);
         m_sNumbersSpacing->Show(show);
+        break;
+    case PARTICLES:
+        m_cbParticles->Show(show);
+        m_ctParticles->Show(show);
+        m_sParticleDensity->Show(show);
+        break;
     }
 }
 

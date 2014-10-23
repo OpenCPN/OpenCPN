@@ -71,7 +71,7 @@ extern wxString        g_PrivateDataDir;
 extern AIS_Decoder     *g_pAIS;
 extern wxAuiManager    *g_pauimgr;
 
-#if wxUSE_XLOCALE
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
 extern wxLocale        *plocale_def_lang;
 #endif
 
@@ -1370,6 +1370,10 @@ void PlugInManager::SetToolbarToolViz(int item, bool viz)
             if(pttc->id == item)
             {
                 pttc->b_viz = viz;
+                
+                //      Apply the change      
+                pParent->RequestNewToolbar();
+                
                 break;
             }
         }
@@ -1771,7 +1775,7 @@ wxAuiManager *GetFrameAuiManager(void)
 
 bool AddLocaleCatalog( wxString catalog )
 {
-#if wxUSE_XLOCALE    
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
     if(plocale_def_lang)
         return plocale_def_lang->AddCatalog( catalog );
     else
@@ -4179,6 +4183,9 @@ int PI_PLIBRenderAreaToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp, wxRe
         if(!pObj->geoPtMulti){          // do this only once
             PolyTessGeo *tess = (PolyTessGeo *)pObj->pPolyTessGeo;
         
+            if(!tess)
+                return 1;                       // bail on empty data
+                
             PolyTriGroup *ptg = new PolyTriGroup;
             ptg->tri_prim_head = tess->Get_PolyTriGroup_head()->tri_prim_head; //tph;
             ptg->bsingle_alloc = false;
@@ -4217,6 +4224,9 @@ int PI_PLIBRenderAreaToGL( const wxGLContext &glcc, PI_S57Obj *pObj, PlugIn_View
        if(!pObj->geoPtMulti ){                          // only do this once
             PolyTessGeo *tess = (PolyTessGeo *)pObj->pPolyTessGeo;
         
+            if(!tess)
+                return 1;                       // bail on empty data
+                
             PolyTriGroup *ptg = new PolyTriGroup;       // this will leak a little, but is POD
             ptg->tri_prim_head = tess->Get_PolyTriGroup_head()->tri_prim_head; 
             ptg->bsingle_alloc = false;

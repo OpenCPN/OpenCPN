@@ -108,7 +108,8 @@ void LATITUDE::Write( SENTENCE& sentence )
             neg = 1;
             }
     d = (int) Latitude;
-    m = (int) ((Latitude - (double) d) * 60000.0);
+    double m0 = (Latitude - (double) d) * 60000.0;
+    m = (int)wxRound(m0);
 
     if (neg)
             d = -d;

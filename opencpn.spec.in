@@ -102,29 +102,43 @@ desktop-file-install \
 %{_datadir}/%{name}/s57data/s57expectedinput.csv
 %{_datadir}/%{name}/s57data/s57objectclasses.csv
 %{_datadir}/%{name}/s57data/rastersymbols-dusk.png
-%dir %{_datadir}/%{name}/gshhs
-%{_datadir}/%{name}/gshhs/wdb_borders_l.b
-%{_datadir}/%{name}/gshhs/wdb_borders_c.b
-%{_datadir}/%{name}/gshhs/wdb_rivers_i.b
-%{_datadir}/%{name}/gshhs/poly-c-1.dat
-%{_datadir}/%{name}/gshhs/wdb_rivers_l.b
-%{_datadir}/%{name}/gshhs/poly-i-1.dat
-%{_datadir}/%{name}/gshhs/wdb_rivers_c.b
-%{_datadir}/%{name}/gshhs/wdb_borders_i.b
-%{_datadir}/%{name}/gshhs/poly-l-1.dat
-%dir %{_datadir}/%{name}/tcdata
-%{_datadir}/%{name}/tcdata/HARMONIC
-%{_datadir}/%{name}/tcdata/HARMONIC.IDX
-%doc %{_datadir}/%{name}/tcdata/README.harmonics
+%if %{_include_gshhs_min} == "ON"
+  %dir %{_datadir}/%{name}/gshhs
+  %{_datadir}/%{name}/gshhs/poly-c-1.dat
+%endif
+%if %{_include_gshhs_crude} == "ON"
+  %{_datadir}/%{name}/gshhs/wdb_borders_c.b
+  %{_datadir}/%{name}/gshhs/wdb_rivers_c.b
+%endif
+%if %{_include_gshhs_low} == "ON"
+  %{_datadir}/%{name}/gshhs/wdb_borders_l.b
+  %{_datadir}/%{name}/gshhs/wdb_rivers_l.b
+  %{_datadir}/%{name}/gshhs/poly-l-1.dat
+%endif
+%if %{_include_gshhs_intermediate} == "ON"
+  %{_datadir}/%{name}/gshhs/wdb_borders_i.b
+  %{_datadir}/%{name}/gshhs/wdb_rivers_i.b
+  %{_datadir}/%{name}/gshhs/poly-i-1.dat
+%endif
+%if %{_include_gshhs_high} == "ON"
+  %{_datadir}/%{name}/gshhs/wdb_borders_h.b
+  %{_datadir}/%{name}/gshhs/wdb_rivers_h.b
+  %{_datadir}/%{name}/gshhs/poly-h-1.dat
+%endif
+%if %{_include_gshhs_full} == "ON"
+  %{_datadir}/%{name}/gshhs/wdb_borders_f.b
+  %{_datadir}/%{name}/gshhs/wdb_rivers_f.b
+  %{_datadir}/%{name}/gshhs/poly-f-1.dat
+%endif
+%if %{_include_tcdata} == "ON"
+  %dir %{_datadir}/%{name}/tcdata
+  %{_datadir}/%{name}/tcdata/HARMONIC
+  %{_datadir}/%{name}/tcdata/HARMONIC.IDX
+  %doc %{_datadir}/%{name}/tcdata/README.harmonics
+%endif
 %dir %{_datadir}/%{name}/sounds
 %{_datadir}/%{name}/sounds/1bells.wav
 %{_datadir}/%{name}/sounds/2bells.wav
-%{_datadir}/%{name}/sounds/3bells.wav
-%{_datadir}/%{name}/sounds/4bells.wav
-%{_datadir}/%{name}/sounds/5bells.wav
-%{_datadir}/%{name}/sounds/6bells.wav
-%{_datadir}/%{name}/sounds/7bells.wav
-%{_datadir}/%{name}/sounds/8bells.wav
 %doc %{_datadir}/%{name}/sounds/README.bells
 %doc %{_datadir}/%{name}/doc
 %dir %{_datadir}/doc/%{name}

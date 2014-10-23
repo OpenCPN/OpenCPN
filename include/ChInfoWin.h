@@ -54,7 +54,7 @@ public:
     void OnEraseBackground( wxEraseEvent& event );
 
     wxStaticText *m_pInfoTextCtl;
-    
+    int dbIndex;
 private:
 
     wxString m_string;

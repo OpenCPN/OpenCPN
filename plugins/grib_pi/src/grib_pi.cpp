@@ -351,6 +351,7 @@ void grib_pi::OnToolbarToolCallback(int id)
               }
           }
       } else {
+          m_pGribDialog->StopPlayBack();
           SetCanvasContextMenuItemViz( m_MenuItem, false);
           m_pGribDialog->Hide();
           if(m_pGribDialog->pReq_Dialog) m_pGribDialog->pReq_Dialog->Hide();
@@ -359,11 +360,11 @@ void grib_pi::OnToolbarToolCallback(int id)
       // Toggle is handled by the toolbar but we must keep plugin manager b_toggle updated
       // to actual status to ensure correct status upon toolbar rebuild
       SetToolbarItemState( m_leftclick_tool_id, m_bShowGrib );
-/*
+
       wxPoint p = m_pGribDialog->GetPosition();
       m_pGribDialog->Move(0,0);        // workaround for gtk autocentre dialog behavior
       m_pGribDialog->Move(p);
-*/
+
       RequestRefresh(m_parent_window); // refresh mainn window
 }
 

@@ -425,7 +425,7 @@ void about::OnPageChange( wxNotebookEvent& event )
     int i = event.GetSelection();
 
     if( 3 == i ) {                       // 3 is the index of "Help" page
-#if wxUSE_XLOCALE
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
         wxString def_lang_canonical = wxLocale::GetLanguageInfo( wxLANGUAGE_DEFAULT )->CanonicalName;
 #else
         wxString def_lang_canonical =_T("us_US");

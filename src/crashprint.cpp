@@ -31,12 +31,10 @@
 #endif
 
 //! standard header
-#ifndef __WXQT__
-#if defined(__linux__)
+#if defined(__linux__) && !defined(__ANDROID__)
 #include <execinfo.h>    // Needed for backtrace
 #include <cxxabi.h>      // Needed for __cxa_demangle
 #include <unistd.h>
-#endif
 #endif
 
 // wxWidgets headers

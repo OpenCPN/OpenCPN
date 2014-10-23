@@ -71,6 +71,7 @@
 #include "Layer.h"
 #include "NavObjectCollection.h"
 #include "NMEALogWindow.h"
+#include "AIS_Decoder.h"
 
 #ifdef USE_S57
 #include "s52plib.h"
@@ -231,7 +232,6 @@ extern int              g_cm93detail_dialog_x, g_cm93detail_dialog_y;
 extern bool             g_bUseGreenShip;
 
 extern bool             g_b_overzoom_x;                      // Allow high overzoom
-extern bool             g_bshow_overzoom_emboss;
 extern int              g_nautosave_interval_seconds;
 extern int              g_OwnShipIconType;
 extern double           g_n_ownship_length_meters;
@@ -331,6 +331,7 @@ extern bool             bGPSValid;              // for track recording
 extern bool             g_bexpert;
 
 extern int              g_SENC_LOD_pixels;
+extern ArrayOfMMSIProperties   g_MMSI_Props_Array;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
@@ -720,13 +721,13 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP )
             cohen_sutherland_line_clip_i( &x0, &y0, &x1, &y1, 0, sx, 0, sy ) != Visible ) {
             prp->Draw( dc, &rpt );
 
-            pointlist.push_back(rpt);
             if( ToSegNo != FromSegNo ) {
                 if(pointlist.size()) {
                     pointlists.push_back(pointlist);
                     pointlist.clear();
                 }
             }
+            pointlist.push_back(rpt);
         }
 
         node = node->GetNext();
@@ -1162,9 +1163,7 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "DebugGPSD" ), &g_bDebugGPSD, 0 );
 
     Read( _T ( "UseGreenShipIcon" ), &g_bUseGreenShip, 0 );
-//    Read( _T ( "AllowExtremeOverzoom" ), &g_b_overzoom_x, 1 );
     g_b_overzoom_x = true;
-    Read( _T ( "ShowOverzoomEmbossWarning" ), &g_bshow_overzoom_emboss, 1 );
     Read( _T ( "AutosaveIntervalSeconds" ), &g_nautosave_interval_seconds, 300 );
 
     Read( _T ( "GPSIdent" ), &g_GPS_Ident, wxT("Generic") );
@@ -1290,7 +1289,7 @@ int MyConfig::LoadMyConfig( int iteration )
 
     Read( _T ( "OwnshipCOGPredictorMinutes" ), &g_ownship_predictor_minutes, 5 );
     Read( _T ( "OwnshipCOGPredictorWidth" ), &g_cog_predictor_width, 3 );
-    Read( _T ( "OwnshipHDTPredictorMinutes" ), &g_ownship_HDTpredictor_miles, 1 );
+    Read( _T ( "OwnshipHDTPredictorMiles" ), &g_ownship_HDTpredictor_miles, 1 );
     
     Read( _T ( "OwnShipIconType" ), &g_OwnShipIconType, 0 );
     Read( _T ( "OwnShipLength" ), &g_n_ownship_length_meters, 0 );
@@ -2014,6 +2013,28 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "TrackLineWidth" ), &g_track_line_width, 2 );
     Read( _T ( "CurrentArrowScale" ), &g_current_arrow_scale, 100 );
     Read( _T ( "DefaultWPIcon" ), &g_default_wp_icon, _T("triangle") );
+    
+    if(0 == iteration){
+        SetPath( _T ( "/MMSIProperties" ) );
+        int iPMax = GetNumberOfEntries();
+        if( iPMax ) {
+            g_MMSI_Props_Array.Empty();
+            wxString str, val;
+            long dummy;
+            int iDir = 0;
+            bool bCont = pConfig->GetFirstEntry( str, dummy );
+            while( bCont ) {
+                pConfig->Read( str, &val );              // Get an entry
+                
+                MMSIProperties *pProps = new MMSIProperties( val );
+                g_MMSI_Props_Array.Add(pProps);
+                
+                bCont = pConfig->GetNextEntry( str, dummy );
+                
+            }
+        }
+    }
+                
 
     return ( 0 );
 }
@@ -2410,7 +2431,6 @@ void MyConfig::UpdateSettings()
     Write( _T ( "CM93DetailZoomPosX" ), g_cm93detail_dialog_x );
     Write( _T ( "CM93DetailZoomPosY" ), g_cm93detail_dialog_y );
     Write( _T ( "ShowCM93DetailSlider" ), g_bShowCM93DetailSlider );
-    Write( _T ( "AllowExtremeOverzoom" ), g_b_overzoom_x );
 
     Write( _T ( "SkewToNorthUp" ), g_bskew_comp );
     Write( _T ( "OpenGL" ), g_bopengl );
@@ -2537,7 +2557,7 @@ void MyConfig::UpdateSettings()
             Write( _T ( "VPLatLon" ), st1 );
             st1.Printf( _T ( "%g" ), vp.view_scale_ppm );
             Write( _T ( "VPScale" ), st1 );
-            st1.Printf( _T ( "%g" ), vp.rotation * 180 / PI );
+            st1.Printf( _T ( "%i" ), ((int)(vp.rotation * 180 / PI)) % 360 );
             Write( _T ( "VPRotation" ), st1 );
         }
     }
@@ -2724,6 +2744,15 @@ void MyConfig::UpdateSettings()
     Write( _T ( "CurrentArrowScale" ), g_current_arrow_scale );
     Write( _T ( "DefaultWPIcon" ), g_default_wp_icon );
 
+    DeleteGroup(_T ( "/MMSIProperties" ));
+    SetPath( _T ( "/MMSIProperties" ) );
+    for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
+        wxString p;
+        p.Printf(_T("Props%d"), i);
+        Write( p, g_MMSI_Props_Array.Item(i)->Serialize() );
+    }
+        
+    
     Flush();
 }
 
@@ -2748,7 +2777,7 @@ void MyConfig::UpdateNavObj( void )
 
 bool MyConfig::ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxString suggestedName )
 {
-    wxFileDialog saveDialog( parent, _( "Export GPX file" ), m_gpx_path, suggestedName,
+    wxFileDialog saveDialog( NULL, _( "Export GPX file" ), m_gpx_path, suggestedName,
             wxT ( "GPX files (*.gpx)|*.gpx" ), wxFD_SAVE );
 
 #ifdef __WXOSX__
@@ -2788,7 +2817,7 @@ bool MyConfig::ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxSt
 
 bool MyConfig::ExportGPXWaypoints( wxWindow* parent, RoutePointList *pRoutePoints, const wxString suggestedName )
 {
-    wxFileDialog saveDialog( parent, _( "Export GPX file" ), m_gpx_path, suggestedName,
+    wxFileDialog saveDialog( NULL, _( "Export GPX file" ), m_gpx_path, suggestedName,
             wxT ( "GPX files (*.gpx)|*.gpx" ), wxFD_SAVE );
 
     int response = saveDialog.ShowModal();
@@ -2818,7 +2847,7 @@ bool MyConfig::ExportGPXWaypoints( wxWindow* parent, RoutePointList *pRoutePoint
 
 void MyConfig::ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
 {
-    wxFileDialog saveDialog( parent, _( "Export GPX file" ), m_gpx_path, wxT ( "" ),
+    wxFileDialog saveDialog( NULL, _( "Export GPX file" ), m_gpx_path, wxT ( "" ),
             wxT ( "GPX files (*.gpx)|*.gpx" ), wxFD_SAVE );
 
     int response = saveDialog.ShowModal();
@@ -2918,7 +2947,7 @@ void MyConfig::UI_ImportGPX( wxWindow* parent, bool islayer, wxString dirpath, b
     Layer *l = NULL;
 
     if( !islayer || dirpath.IsSameAs( _T("") ) ) {
-        wxFileDialog openDialog( parent, _( "Import GPX file" ), m_gpx_path, wxT ( "" ),
+        wxFileDialog openDialog( NULL, _( "Import GPX file" ), m_gpx_path, wxT ( "" ),
                 wxT ( "GPX files (*.gpx)|*.gpx|All files (*.*)|*.*" ),
                 wxFD_OPEN | wxFD_MULTIPLE );
         openDialog.Centre();

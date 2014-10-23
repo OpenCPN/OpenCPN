@@ -50,6 +50,7 @@
 #include "wx/string.h"
 #include "wx/list.h"
 #include "wx/arrstr.h"
+#include <wx/math.h>
 
 /*
 ** Turn off the warning about precompiled headers, it is rather annoying

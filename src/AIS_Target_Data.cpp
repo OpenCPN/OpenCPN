@@ -887,7 +887,7 @@ wxString AIS_Target_Data::GetCountryCode( bool b_CntryLongStr )  //false = Short
   int mmsi_start = MMSI / 1000000;
   if (mmsi_start == 111) mmsi_start = (MMSI - 111000000)/1000 ; //SAR Aircraft start with 111 and has a MID.
 
-#if wxUSE_XLOCALE
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
   switch(mmsi_start) {
     case 201: return b_CntryLongStr ? _("Albania") : _T("AL") ;
     case 202: return b_CntryLongStr ? _("Andorra") : _T("AD") ;
@@ -1115,7 +1115,7 @@ wxString AIS_Target_Data::GetCountryCode( bool b_CntryLongStr )  //false = Short
     case 616: return b_CntryLongStr ? _("Comoros") : _T("KM") ;
     case 617: return b_CntryLongStr ? _("Cape Verde") : _T("CV") ;
     case 618: return b_CntryLongStr ? _("Crozet Archipelago") : _T("TF") ;
-    case 619: return b_CntryLongStr ? _("Côte d'Ivoire") : _T("CI") ;
+    case 619: return b_CntryLongStr ? _("Ivory Coast") : _T("CI") ;
     case 620: return b_CntryLongStr ? _("Comoros (Union of the)") : _T("KM") ;
     case 621: return b_CntryLongStr ? _("Djibouti") : _T("DJ") ;
     case 622: return b_CntryLongStr ? _("Egypt") : _T("EG") ;
