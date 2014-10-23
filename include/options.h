@@ -272,7 +272,8 @@ public:
     void OnRemoveTideDataLocation( wxCommandEvent &event );
     void OnCharHook( wxKeyEvent& event );
     void OnChartsPageChange( wxListbookEvent& event );
-
+    void OnChartDirListSelect( wxCommandEvent& event );
+    
     void UpdateWorkArrayFromTextCtl();
 
 // Should we show tooltips?
@@ -437,6 +438,7 @@ public:
     wxCheckBox                *pUpdateCheckBox;
     wxCheckBox                *pScanCheckBox;
     int                       k_charts;
+    wxButton                  *m_removeBtn;
 
 //    For "AIS" Page
     wxCheckBox                *m_pCheck_CPA_Max;
