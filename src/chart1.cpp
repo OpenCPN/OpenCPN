@@ -2513,6 +2513,16 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
 #ifdef __WXOSX__
     osx_menuBar = new wxMenuBar();
 
+    wxMenu* view_menu = new wxMenu();
+    view_menu->Append(ID_ZOOMIN, _("Zoom In"));
+    view_menu->Append(ID_ZOOMOUT, _("Zoom Out"));
+    view_menu->AppendSeparator();
+    view_menu->Append(ID_STKDN, _("Larger Scale Chart"));
+    view_menu->Append(ID_STKUP, _("Smaller Scale Chart"));
+    view_menu->AppendSeparator();
+    view_menu->Append(ID_COLSCHEME, _("Change Color Scheme"));
+    osx_menuBar->Append(view_menu, _("View"));
+
     wxMenu* help_menu = new wxMenu();
     help_menu->Append(wxID_ABOUT, _("About OpenCPN"));
     help_menu->Append(wxID_HELP, _("Help"));
