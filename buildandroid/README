@@ -170,3 +170,9 @@
         $/home/dsr/Projects/android-ndk/android-sdk-linux/platform-tools/adb install -r ./android_build/bin/QtApp-debug.apk
 
 
+
+    Addendum:
+    23 October, 2014.
+
+    1.  We can relax the wxWidgets config string to:
+    ../configure --with-qt --build=x86_64-unknown-linux-gnu --host=arm-linux-androideabi --enable-compat28 --disable-shared --disable-arttango --enable-image --disable-dragimage --disable-sockets --with-libtiff=no --without-opengl --disable-baseevtloop --disable-xrc --disable-cmdline --disable-miniframe --disable-mdi --enable-debug --disable-stc --disable-ribbon --disable-propgrid
