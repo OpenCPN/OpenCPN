@@ -331,7 +331,19 @@ GRIBUIDialog::GRIBUIDialog(wxWindow *parent, grib_pi *ppi)
         pConf->SetPath ( _T ( "/Directories" ) );
         pConf->Read ( _T ( "GRIBDirectory" ), &m_grib_dir, spath.GetDocumentsDir()  );
     }
+    //set checkboxes ID to have a formal link to data type
+    m_cbWind->SetId( GribOverlaySettings::WIND );
+    m_cbWindGust->SetId( GribOverlaySettings::WIND_GUST );
+    m_cbPressure->SetId( GribOverlaySettings::PRESSURE );
+    m_cbCurrent->SetId( GribOverlaySettings::CURRENT );
+    m_cbWave->SetId( GribOverlaySettings::WAVE );
+    m_cbPrecipitation->SetId( GribOverlaySettings::PRECIPITATION );
+    m_cbCloud->SetId( GribOverlaySettings::CLOUD );
+    m_cbAirTemperature->SetId( GribOverlaySettings::AIR_TEMPERATURE );
+    m_cbSeaTemperature->SetId( GribOverlaySettings::SEA_TEMPERATURE );
+    m_cbCAPE->SetId( GribOverlaySettings::CAPE );
 
+    //set buttons bitmap
     m_bpPrev->SetBitmap(wxBitmap( prev ));
     m_bpNext->SetBitmap(wxBitmap( next ));
     m_bpNow->SetBitmap(wxBitmap( now ));
@@ -1125,17 +1137,32 @@ void GRIBUIDialog::OnAltitudeChange( wxCommandEvent& event )
 
 void GRIBUIDialog::OnCBAny( wxCommandEvent& event )
 {
-    //Ovoid to have more than one overlay at a time
-    if(m_cbWind->IsShown() && event.GetId() != m_cbWind->GetId()) m_cbWind->SetValue(false);
-    if(m_cbPressure->IsShown() && event.GetId() != m_cbPressure->GetId()) m_cbPressure->SetValue(false);
-    if(m_cbWindGust->IsShown() && event.GetId() != m_cbWindGust->GetId()) m_cbWindGust->SetValue(false);
-    if(m_cbWave->IsShown() && event.GetId() != m_cbWave->GetId()) m_cbWave->SetValue(false);
-    if(m_cbPrecipitation->IsShown() && event.GetId() != m_cbPrecipitation->GetId()) m_cbPrecipitation->SetValue(false);
-    if(m_cbCloud->IsShown() && event.GetId() != m_cbCloud->GetId()) m_cbCloud->SetValue(false);
-    if(m_cbAirTemperature->IsShown() && event.GetId() != m_cbAirTemperature->GetId()) m_cbAirTemperature->SetValue(false);
-    if(m_cbSeaTemperature->IsShown() && event.GetId() != m_cbSeaTemperature->GetId()) m_cbSeaTemperature->SetValue(false);
-    if(m_cbCAPE->IsShown() && event.GetId() != m_cbCAPE->GetId()) m_cbCAPE->SetValue(false);
-    if(m_cbCurrent->IsShown() && event.GetId() != m_cbCurrent->GetId()) m_cbCurrent->SetValue(false);
+    //allow multi selection if there is no display type superposition
+    int event_id = event.GetId(), win_id;
+    wxWindowList list = this->GetChildren();
+    wxWindowListNode *node = list.GetFirst();
+    for( size_t i = 0; i < list.GetCount(); i++ ) {
+        wxWindow *win = node->GetData();
+        if( win->IsKindOf(CLASSINFO(wxCheckBox)) && ((wxCheckBox*) win )->IsChecked() ) {
+            win_id = win->GetId();
+            if( event_id != win_id ) {
+                if( (m_OverlaySettings.Settings[event_id].m_bBarbedArrows &&
+                        m_OverlaySettings.Settings[win_id].m_bBarbedArrows)
+                        || (m_OverlaySettings.Settings[event_id].m_bDirectionArrows &&
+                        m_OverlaySettings.Settings[win_id].m_bDirectionArrows)
+                        || (m_OverlaySettings.Settings[event_id].m_bIsoBars &&
+                        m_OverlaySettings.Settings[win_id].m_bIsoBars)
+                        || (m_OverlaySettings.Settings[event_id].m_bNumbers &&
+                        m_OverlaySettings.Settings[win_id].m_bNumbers)
+                        || (m_OverlaySettings.Settings[event_id].m_bOverlayMap &&
+                        m_OverlaySettings.Settings[win_id].m_bOverlayMap)
+                        || (m_OverlaySettings.Settings[event_id].m_bParticles &&
+                        m_OverlaySettings.Settings[win_id].m_bParticles) )
+                    ((wxCheckBox*) win )->SetValue(false);
+            }
+        }
+        node = node->GetNext();
+    }
 
     SetFactoryOptions();                     // Reload the visibility options
 }
