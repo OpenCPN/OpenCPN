@@ -48,7 +48,8 @@ public:
 
       void AddPoint(RoutePoint *pNewPoint,
                     bool b_rename_in_sequence = true,
-                    bool b_deferBoxCalc = false);
+                    bool b_deferBoxCalc = false,
+                    bool b_isLoading = false);
 
       void AddTentativePoint(const wxString& GUID);
       RoutePoint *GetPoint(int nPoint);
