@@ -253,7 +253,7 @@ Track *GPXLoadTrack1( pugi::xml_node &trk_node, bool b_fullviz,
                     if( tpChildName == _T("trkpt") ) {
                         pWp = ::GPXLoadWaypoint1(tpchild, _T("empty"), _T("noGUID"), false, b_layer, b_layerviz, layer_id);
                         pWp->m_bIsolatedMark = false;
-                        pTentTrack->AddPoint( pWp, false, true );          // defer BBox calculation
+                        pTentTrack->AddPoint( pWp, false, true, true );          // defer BBox calculation
                         pWp->m_bIsInRoute = false;                      // Hack
                         pWp->m_bIsInTrack = true;
                         pWp->m_GPXTrkSegNo = GPXSeg;
@@ -406,7 +406,7 @@ Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
                     RoutePoint *erp = ::WaypointExists( pWp->m_GUID );
                     if( erp != NULL )
                         pWp = erp;
-                    pTentRoute->AddPoint( pWp, false, true );          // defer BBox calculation
+                    pTentRoute->AddPoint( pWp, false, true, true );          // defer BBox calculation
                     pWp->m_bIsInRoute = true;                      // Hack
                     pWp->m_bIsInTrack = false;
                     if( erp == NULL )
