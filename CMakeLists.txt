@@ -241,59 +241,6 @@ ELSE(BUNDLE_TCDATA MATCHES "ON")
   ENDIF(UNIX AND NOT APPLE)
 ENDIF(BUNDLE_TCDATA MATCHES "ON")
 
-IF((_wx_selected_config MATCHES "qt-armv7"))
-SET(CMAKE_BUILD_TYPE Debug)
-
-SET(wxWidgets_USE_LIBS base core     xml html adv aui)
-ELSE()
-SET(wxWidgets_USE_LIBS base core net xml html adv aui)
-ENDIF()
-
-FIND_PACKAGE(OpenGL)
-IF(OPENGL_GLU_FOUND)
-
-    SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
-    INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR})
-
-    MESSAGE (STATUS "Found OpenGL..." )
-    MESSAGE (STATUS "    Lib: " ${OPENGL_LIBRARIES})
-    MESSAGE (STATUS "    Include: " ${OPENGL_INCLUDE_DIR})
-    ADD_DEFINITIONS(-DocpnUSE_GL)
-    ADD_DEFINITIONS(-DUSE_GLU_TESS)
-
-ELSE(OPENGL_GLU_FOUND)
-    MESSAGE (STATUS "OpenGL not found..." )
-ENDIF(OPENGL_GLU_FOUND)
-
-# Search for opengles, short of run_wx_selected_configning a program to test the speed
-# of acceleration, I simply use gles on arm systems
-IF (ARCH MATCHES "arm*")
-find_path(OPENGLESv2_INCLUDE_DIR GLES2/gl2.h )
-IF (OPENGLESv2_INCLUDE_DIR)
-  MESSAGE (STATUS "Found OpenGLESv2")
-  ADD_DEFINITIONS(-DocpnUSE_GLES)
-ELSE()
-find_path(OPENGLESv1_INCLUDE_DIR GLES/gl.h )
-IF (OPENGLESv1_INCLUDE_DIR)
-  MESSAGE (STATUS "Found OpenGLESv1")
-  ADD_DEFINITIONS(-DocpnUSE_GLES)
-ENDIF()
-ENDIF()
-ENDIF()
-
-# Find wxWidgets here, and the setting get inherited by all plugins.
-# These options can be used to set the linux widgets build type
-SET( wxWidgets_USE_DEBUG OFF)
-SET( wxWidgets_USE_UNICODE ON)
-SET( wxWidgets_USE_UNIVERSAL OFF)
-SET( wxWidgets_USE_STATIC OFF)
-
-FIND_PACKAGE(wxWidgets REQUIRED)
-INCLUDE(${wxWidgets_USE_FILE})
-MESSAGE (STATUS "Found wxWidgets..." )
-MESSAGE (STATUS "${wxWidgets_LIBRARIES}")
-
-
 IF(DEFINED _wx_selected_config)
 
 MESSAGE (STATUS "selected config ${_wx_selected_config}")
@@ -324,6 +271,62 @@ ENDIF(UNIX)
 IF((_wx_selected_config MATCHES "qt-armv7"))
 SET(CMAKE_BUILD_TYPE Debug)
 ENDIF()
+
+IF((_wx_selected_config MATCHES "qt-armv7"))
+SET(CMAKE_BUILD_TYPE Debug)
+
+SET(wxWidgets_USE_LIBS base core     xml html adv aui)
+ELSE()
+SET(wxWidgets_USE_LIBS base core net xml html adv aui)
+ENDIF()
+
+IF(NOT QT_ANDROID)
+    FIND_PACKAGE(OpenGL)
+    IF(OPENGL_GLU_FOUND)
+
+        SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
+        INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR})
+
+        MESSAGE (STATUS "Found OpenGL..." )
+        MESSAGE (STATUS "    Lib: " ${OPENGL_LIBRARIES})
+        MESSAGE (STATUS "    Include: " ${OPENGL_INCLUDE_DIR})
+        ADD_DEFINITIONS(-DocpnUSE_GL)
+        ADD_DEFINITIONS(-DUSE_GLU_TESS)
+
+    ELSE(OPENGL_GLU_FOUND)
+        MESSAGE (STATUS "OpenGL not found..." )
+    ENDIF(OPENGL_GLU_FOUND)
+
+    # Search for opengles, short of run_wx_selected_configning a program to test the speed
+    # of acceleration, I simply use gles on arm systems
+    IF (ARCH MATCHES "arm*")
+    find_path(OPENGLESv2_INCLUDE_DIR GLES2/gl2.h )
+    IF (OPENGLESv2_INCLUDE_DIR)
+    MESSAGE (STATUS "Found OpenGLESv2")
+    ADD_DEFINITIONS(-DocpnUSE_GLES)
+    ELSE()
+    find_path(OPENGLESv1_INCLUDE_DIR GLES/gl.h )
+    IF (OPENGLESv1_INCLUDE_DIR)
+    MESSAGE (STATUS "Found OpenGLESv1")
+    ADD_DEFINITIONS(-DocpnUSE_GLES)
+    ENDIF()
+    ENDIF()
+    ENDIF()
+
+    # Find wxWidgets here, and the setting get inherited by all plugins.
+    # These options can be used to set the linux widgets build type
+    SET( wxWidgets_USE_DEBUG OFF)
+    SET( wxWidgets_USE_UNICODE ON)
+    SET( wxWidgets_USE_UNIVERSAL OFF)
+    SET( wxWidgets_USE_STATIC OFF)
+
+    FIND_PACKAGE(wxWidgets REQUIRED)
+    INCLUDE(${wxWidgets_USE_FILE})
+    MESSAGE (STATUS "Found wxWidgets..." )
+    MESSAGE (STATUS "${wxWidgets_LIBRARIES}")
+    MESSAGE (STATUS "${wxWidgets_USE_FILE}")
+ENDIF(NOT QT_ANDROID)
+
 
 MESSAGE (STATUS "")
 MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME}  ***")
@@ -457,8 +460,6 @@ IF(QT_ANDROID)
   
   SET(CMAKE_CXX_FLAGS "-pthread -fPIC")
 
-  # TODO: use wxwidgets qt detection
-  INCLUDE_DIRECTORIES("${wxQt_Base}/include")
   INCLUDE_DIRECTORIES("${Qt_Base}/5.3/android_armv7/include/QtCore")
   INCLUDE_DIRECTORIES("${Qt_Base}/5.3/android_armv7/include")
   INCLUDE_DIRECTORIES("${Qt_Base}/5.3/android_armv7/include/QtWidgets")
@@ -467,6 +468,9 @@ IF(QT_ANDROID)
   INCLUDE_DIRECTORIES("${Qt_Base}/5.3/android_armv7/include/QtTest")
   
   ADD_DEFINITIONS(-DQT_WIDGETS_LIB)
+
+  INCLUDE_DIRECTORIES("${wxQt_Base}/include")
+  INCLUDE_DIRECTORIES( "${wxQt_Base}/${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-static-3.1")
 
   SET(USE_S57 OFF)
 ENDIF()
@@ -1322,10 +1326,10 @@ IF(QT_LINUX)
   TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} Qt5Widgets Qt5OpenGL Qt5Gui Qt5Test Qt5Core )
 ENDIF(QT_LINUX)
 
-IF(QT_ANDROID)
-  FIND_LIBRARY(QT_LIBRARY Qt5Widgets ${Qt_Base}/5.3/android_armv7/lib)
-  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${QT_LIBRARY} Qt5OpenGL Qt5Gui Qt5Widgets Qt5Test Qt5Core)
-ENDIF()
+#IF(QT_ANDROID)
+#  FIND_LIBRARY(QT_LIBRARY Qt5Widgets ${Qt_Base}/5.3/android_armv7/lib)
+#  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${QT_LIBRARY} Qt5OpenGL Qt5Gui Qt5Widgets Qt5Test Qt5Core)
+#ENDIF()
 
 
 #-L/home/dsr/Projects/wxqt/wxtrunk/wxWidgets/bldqt5droid/lib
