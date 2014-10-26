@@ -1185,8 +1185,6 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
 {
     if(!m_Settings.Settings[settings].m_bParticles)
         return;
-
-    m_tParticleTimer.Stop();
     
     //   need two records or a polar record to draw arrows
     GribRecord *pGRX, *pGRY;
@@ -1201,6 +1199,8 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
 
     if(!pGRX || !pGRY)
         return;
+
+    m_tParticleTimer.Stop();
 
     wxStopWatch sw;
     sw.Start();
