@@ -442,7 +442,7 @@ IF(GTK2)
     IF (NOT WIN32 AND NOT APPLE)
       ADD_DEFINITIONS("`pkg-config --cflags --libs gtk+-2.0`")
     ENDIF (NOT WIN32 AND NOT APPLE)
-    
+
   ELSE(GTK2_FOUND)
     MESSAGE (STATUS "GTK2 Not found...")
   ENDIF (GTK2_FOUND)
@@ -457,7 +457,7 @@ IF(QT_ANDROID)
   ADD_DEFINITIONS(-D__WXQT__)
   ADD_DEFINITIONS(-DOCPN_USE_WRAPPER)
   ADD_DEFINITIONS(-D__OCPN__ANDROID__)
-  
+
   SET(CMAKE_CXX_FLAGS "-pthread -fPIC")
 
   INCLUDE_DIRECTORIES("${Qt_Base}/5.3/android_armv7/include/QtCore")
@@ -466,7 +466,7 @@ IF(QT_ANDROID)
   INCLUDE_DIRECTORIES("${Qt_Base}/5.3/android_armv7/include/QtGui")
   INCLUDE_DIRECTORIES("${Qt_Base}/5.3/android_armv7/include/QtOpenGL")
   INCLUDE_DIRECTORIES("${Qt_Base}/5.3/android_armv7/include/QtTest")
-  
+
   ADD_DEFINITIONS(-DQT_WIDGETS_LIB)
 
   INCLUDE_DIRECTORIES("${wxQt_Base}/include")
@@ -656,8 +656,6 @@ SET(HDRS
 		include/wx/json_defs.h
 		include/wx/jsonwriter.h
 		include/wx/jsonreader.h
-		include/chartsymbols.h
-		include/razdsparser.h
 		include/styles.h
 		include/toolbar.h
 		include/compasswin.h
@@ -742,8 +740,6 @@ SET(SRCS
 		src/wxJSON/jsonwriter.cpp
 		src/wxJSON/jsonreader.cpp
 		src/wxJSON/jsonval.cpp
-		src/chartsymbols.cpp
-		src/razdsparser.cpp
 		src/styles.cpp
 		src/toolbar.cpp
 		src/compasswin.cpp
@@ -960,6 +956,18 @@ IF (USE_GARMINHOST)
 ELSE (USE_GARMINHOST)
 	message (STATUS "Garmin Host Mode support: disabled")
 ENDIF (USE_GARMINHOST)
+
+#Chart Symbols library
+SET(SRC_SYMBOLS
+    src/chartsymbols.cpp
+    include/chartsymbols.h
+    src/razdsparser.cpp
+    include/razdsparser.h
+    )
+
+ADD_LIBRARY(SYMBOLS ${SRC_SYMBOLS})
+SET(EXTRA_LIBS ${EXTRA_LIBS} SYMBOLS)
+
 
 # Compile texcompression support library
 IF (OPENGL_GLU_FOUND)
