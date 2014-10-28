@@ -21,18 +21,18 @@
         https://qt-project.org/wiki/Install_Qt_5_on_Ubuntu
         In the following, assume that Qt is installed in ~/
 
-    D:  Get wxWidgets trunk:
+    D:  Get wxWidgets trunk known to work:
 
         $cd ~/Projects
         $mkdir wxqt
         $cd wxqt
-        $git clone https://github.com/wxWidgets/wxWidgets.git
+        $git clone https://github.com/bdbcat/wxWidgets.git
 
     E.  Build wxQt
         ___Make a build directory
         $cd ~/Projects/wxqt/wxWidgets
-        $mkdir build_wxQt_armv7
-        $cd build_wxQt_armv7
+        $mkdir build_android
+        $cd build_android
 
         ___Tell wxWidgets configure process where to find Qt libraries/includes
         $export PKG_CONFIG_PATH=~/Qt/5.2.1/android_armv7/lib/pkgconfig
@@ -49,7 +49,8 @@
 
         ___Configure wxWidgets for Qt
 
-        $../configure --with-qt --build=x86_64-unknown-linux-gnu --host=arm-linux-androideabi --disable-compat28 --disable-shared --disable-arttango --enable-image --disable-dragimage --disable-sockets --with-libtiff=no --without-opengl --disable-baseevtloop --disable-xrc --disable-cmdline --disable-miniframe --disable-mdi --enable-debug --disable-stc --disable-ribbon --disable-propgrid --disable-timepick --disable-datepick --disable-xlocale --disable-intl
+        $../configure --with-qt --build=x86_64-unknown-linux-gnu --host=arm-linux-androideabi --enable-compat28 --disable-shared --disable-arttango --enable-image --disable-dragimage --disable-sockets --with-libtiff=no --without-opengl --disable-baseevtloop --disable-xrc --disable-cmdline --disable-miniframe --disable-mdi --enable-debug --disable-stc --disable-ribbon --disable-propgrid --disable-timepick --disable-datepick --disable-xlocale --disable-intl
+
 
         ___Build wxWidgets for Qt
         $make
@@ -62,11 +63,14 @@
             So, we need to actually partially revert a commit made to wxWidgets 3.x, and reintroduce private
             versions of mbstowcs/wcstombs for wxQt-Android.
             2.  One method in qt/window.cpp need correction for potential NULL pointer de-reference.
+            3.  In src/qt/dcscreen.cpp, the include file <QtWidgets> tries to include <GLES/gl2.h>
+                This file is not present in the Qt/5.2.1/android_armv7 tree.  We disable the dcscreen code.
+
 
             These patches/commits may be found in https://github.com/bdbcat/wxWidgets.
 
 
-            These patches should be submitted as pull requests to wxWidgets trunk.
+            These patches should be refined and submitted as pull requests to wxWidgets trunk.
 
         II.
             1. wxQt build configuration must specify "--disable-xlocale --disable-intl".
@@ -82,18 +86,46 @@
 
         ___Checkout the OpenCPN "wxqt" branch from github opencpn site.
 
-        ___Configure OCPN build, substituting the appropriate Android NDK toolchain directory, the Qt base directory, and the as-built wxQt libraries.
+        1.  The object of the OCPN build is to create a set of static linkable libraries,
+        instead of a full OCPN application.  We will later built a "wrapper" program
+        which provide a main() entry point, and calls the opencpn initialization method.
 
-        $cd {OCPN_root}/build_Qt521_armv7
+        2.  This is a cross compiling project, so this means several things:
+        a)  We cannot use the normal method to find wxWidgets for the OCPN build.
+        This is not so troublesome, since we need at this point only the include files specific
+        to the Qt_Android wxWidgets build.  We will need the wxWidgets libraries in a later step.
+        b)  We must of course use the arm cross compilers and tools to build OCPN.
 
-        $export PATH=/home/dsr/Projects/wxqt/wxWidgets/build_wxQt_armv7:$PATH
 
-        $cmake -DQt_Base=/home/dsr/Qt ..
+        3. We can accomplish all of the above by using a hand-crafted include file in the opencpn cmake
+        command invocation.
+
+        First, edit the file {opencpn_root}/buildandroid/build_android.cmake.
+
+        Adjust the paths to the following:
+        a)  The androideabi toolchain location for the gcc and g++ compilers.
+        b)  (wxQt_Base).....The wxWidgets root directory
+        c)  (wxQt_Build)....The relative location of the specific wxWidgets build for Qt_Android
+        d)  (Qt_Base).......The Qt installation base location
 
 
-        ___Build OCPN
+
+        4. Configure OpenCPN build
+        $cd {opencpn_root}
+        $mkdir build_android
+        $cd build_android
+
+        $cmake -D_wx_selected_config=androideabi-qt -DCMAKE_TOOLCHAIN_FILE=../buildandroid/build_android.cmake ..
+
+
+        5. Build OCPN
 
         $make
+
+        The result of this build is a set of statically linkable libraries containing the opencpn native
+        classes, without wxWidgets linked.
+
+
 
     G.  Build a needed support library
         (Note:  This step has already been done, and the library .so is included in the github repo as a blob.)
@@ -146,19 +178,60 @@
 
     H.  Build APK
 
+        Building the APK will use the Qt toolchain to simplify the process.
+        The overall process goes like this:
+        a)  Use qmake to build a makefile (called makefile.android)
+            This makefile will combine the OCPN static libraries, the wxQT libraries,
+            and the Qt libraries into a single dynamic (libopencpn.so) library.
+            Also included is a "wrapper" object which effectively provides the
+            entire application with a main() entry point, and calls the opencpn OnInit() method.
+            qmake uses a project file called opencpn.pro for its instructions.
+            We will need to edit that file in order to set some paths and parameters.
+
+        b)  Run makefile.android
+
+        c)  Use the qt tool "androiddeployqt" to constuct an actual .APK file from the
+            libopencpn.so library, and other configuration and bundled library files as needed.
+
+
+        In detail:
+        d)  Edit the file {opencpn_base}/buildandroid/opencpn.pro
+
+        Set the 4 (four) path strings to your wxQt and OpenCPN build locations.
+
+        wxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
+        wxQt_Build=build_test26
+
+        OCPN_Base=/home/dsr/Projects/opencpn_sf/opencpn
+        #OCPN_Build=build_android
+        OCPN_Build=build_test
+
+        e)  Switch to build directory, and set tool paths
+        $cd {opencpn_base}/build_android
+
+
         $export ANDROID_NDK_ROOT=/home/dsr/Projects/android-ndk/android-ndk-r10
         $export ANDROID_SDK_ROOT=/home/dsr/Projects/android-ndk/android-sdk-linux
-        $export PATH=/home/dsr/Projects/wxqt/wxWidgets/build_wxQt_armv7:$PATH
+        $export PATH=/home/dsr/Projects/android-ndk/ndk-toolchain/bin:$PATH
+
+        f)  Run qmake
 
         $/home/dsr/Qt/5.2.1/android_armv7/bin/qmake -makefile ../buildandroid/opencpn.pro -o Makefile.android -r -spec android-g++ CONFIG+=debug
 
+        This will result in the creating of makefile.android, and android-libopencpn.so-deployment-settings.json
+
+        g)  Build and install the opencpn (libopencpn.so) library from makefile.android
+
         $make -f Makefile.android
+        This results in making the file libopencpn.so, which will be about 93 MBytes in size.
 
-        $make -f Makefile.android install INSTALL_ROOT=./android_build
+        $make -f Makefile.android install INSTALL_ROOT=./apk_build
 
-        $/home/dsr/Qt/5.2.1/android_armv7/bin/androiddeployqt --input ./android-libopencpn.so-deployment-settings.json  --output ./android_build --android-platform android-19 --deployment bundled
+        h)  Build the .APK
 
-        This leaves the APK in ./android_build/bin/QtApp-debug.apk
+        $/home/dsr/Qt/5.2.1/android_armv7/bin/androiddeployqt --input ./android-libopencpn.so-deployment-settings.json  --output ./apk_build --android-platform android-19 --deployment bundled
+
+        This leaves the APK in ./apk_build/bin/QtApp-debug.apk  It is about 12 MBytes.
 
     I.  Install to device
 
@@ -167,12 +240,21 @@
 
 
         __Install new version
-        $/home/dsr/Projects/android-ndk/android-sdk-linux/platform-tools/adb install -r ./android_build/bin/QtApp-debug.apk
+        $/home/dsr/Projects/android-ndk/android-sdk-linux/platform-tools/adb install -r ./apk_build/bin/QtApp-debug.apk
 
+        __Access the log, etc...
+        $/home/dsr/Projects/android-ndk/android-sdk-linux/platform-tools/adb shell
+
+        log is at  /data/data/org.opencpn.opencpn/files/opencpn.logic
 
 
     Addendum:
-    23 October, 2014.
+    27 October, 2014.
 
     1.  We can relax the wxWidgets config string to:
     ../configure --with-qt --build=x86_64-unknown-linux-gnu --host=arm-linux-androideabi --enable-compat28 --disable-shared --disable-arttango --enable-image --disable-dragimage --disable-sockets --with-libtiff=no --without-opengl --disable-baseevtloop --disable-xrc --disable-cmdline --disable-miniframe --disable-mdi --enable-debug --disable-stc --disable-ribbon --disable-propgrid
+
+
+
+
+
