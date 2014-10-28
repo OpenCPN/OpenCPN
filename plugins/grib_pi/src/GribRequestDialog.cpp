@@ -47,8 +47,6 @@ wxString toMailFormat ( int NEflag, int a )                 //convert position t
 //----------------------------------------------------------------------------------------------------------
 void GribRequestSetting::InitRequestConfig()
 {
-    DimeWindow( this );                             //aplly global colours scheme
-
     wxFileConfig *pConf = GetOCPNConfigObject();
 
     if(pConf) {
@@ -122,6 +120,8 @@ void GribRequestSetting::InitRequestConfig()
 
     m_pWind->Enable( false );                                               //always selected if available
     m_pPress->Enable( false );
+
+    DimeWindow( this );                                                     //aplly global colours scheme
 
     m_AllowSend = true;
     m_MailImage->SetValue( WriteMail() );
