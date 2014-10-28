@@ -1210,12 +1210,12 @@ bool MyApp::OnInit()
                                   // which makes it accessible to Applications/Utilities/Console....
 #endif
 
-#ifdef __OCPN__ANDROID__
-    pHome_Locn->Clear();
-    pHome_Locn->Append(_T("/data/data/org.opencpn.opencpn/files/"));
+//#ifdef __OCPN__ANDROID__
+//    pHome_Locn->Clear();
+//    pHome_Locn->Append(_T("/data/data/org.opencpn.opencpn/files/"));
 //    pHome_Locn->Append(_T("/sdcard/"));
-    glog_file = *pHome_Locn;
-#endif
+//    glog_file = *pHome_Locn;
+//#endif
 
     // create the opencpn "home" directory if we need to
     wxFileName wxHomeFiledir( *pHome_Locn );
@@ -1317,7 +1317,10 @@ bool MyApp::OnInit()
     appendOSDirSlash( &g_SData_Locn );
 
 #ifdef __OCPN__ANDROID__
-    g_SData_Locn = _T("/data/data/org.opencpn.opencpn/cache/");
+    wxFileName fdir = wxFileName::DirName(*pHome_Locn);
+    fdir.RemoveLastDir();
+    g_SData_Locn = fdir.GetPath();
+    g_SData_Locn += _T("/cache/");
 #endif
 
     if( g_bportable )
