@@ -211,7 +211,7 @@
                         </object>
                         <object class="sizeritem" expanded="0">
                             <property name="border">5</property>
-                            <property name="flag">wxALL</property>
+                            <property name="flag">wxALL|wxEXPAND</property>
                             <property name="proportion">0</property>
                             <object class="wxChoice" expanded="0">
                                 <property name="BottomDockable">1</property>
@@ -6927,7 +6927,7 @@
                                         <property name="gripper">0</property>
                                         <property name="hidden">0</property>
                                         <property name="id">wxID_ANY</property>
-                                        <property name="label">Overlay Transparency</property>
+                                        <property name="label">Overlay Transparency (%)</property>
                                         <property name="max_size"></property>
                                         <property name="maximize_button">0</property>
                                         <property name="maximum_size"></property>
@@ -7010,11 +7010,11 @@
                                         <property name="gripper">0</property>
                                         <property name="hidden">0</property>
                                         <property name="id">wxID_ANY</property>
-                                        <property name="maxValue">255</property>
+                                        <property name="maxValue">100</property>
                                         <property name="max_size"></property>
                                         <property name="maximize_button">0</property>
                                         <property name="maximum_size"></property>
-                                        <property name="minValue">70</property>
+                                        <property name="minValue">0</property>
                                         <property name="min_size"></property>
                                         <property name="minimize_button">0</property>
                                         <property name="minimum_size"></property>
@@ -7029,7 +7029,7 @@
                                         <property name="resize">Resizable</property>
                                         <property name="show">1</property>
                                         <property name="size">200,-1</property>
-                                        <property name="style">wxSL_HORIZONTAL</property>
+                                        <property name="style">wxSL_BOTTOM|wxSL_HORIZONTAL|wxSL_LABELS</property>
                                         <property name="subclass"></property>
                                         <property name="toolbar_pane">0</property>
                                         <property name="tooltip"></property>

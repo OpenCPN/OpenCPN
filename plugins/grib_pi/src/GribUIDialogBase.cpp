@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version Jun  6 2014)
+// C++ code generated with wxFormBuilder (version Jun  5 2014)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO "NOT" EDIT THIS FILE!
@@ -537,11 +537,11 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	fgSizer34->SetFlexibleDirection( wxBOTH );
 	fgSizer34->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 	
-	m_staticText24 = new wxStaticText( this, wxID_ANY, _("Overlay Transparency"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText24 = new wxStaticText( this, wxID_ANY, _("Overlay Transparency (%)"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText24->Wrap( -1 );
 	fgSizer34->Add( m_staticText24, 0, wxALL, 5 );
 	
-	m_sTransparency = new wxSlider( this, wxID_ANY, 50, 70, 255, wxDefaultPosition, wxSize( 200,-1 ), wxSL_HORIZONTAL );
+	m_sTransparency = new wxSlider( this, wxID_ANY, 50, 0, 100, wxDefaultPosition, wxSize( 200,-1 ), wxSL_BOTTOM|wxSL_HORIZONTAL|wxSL_LABELS );
 	fgSizer34->Add( m_sTransparency, 0, wxALL|wxEXPAND, 5 );
 	
 	
