@@ -585,7 +585,7 @@ void GRIBUIDialog::PopulateTrackingControls( bool Populate_Altitude )
                     m_tcRelHumid->SetValue( _("N/A") );
         }
 
-        m_stAltitudeText->SetLabel((m_OverlaySettings.GetAltitudeFromIndex(
+        m_stAltitudeText->SetLabel( wxString(_("Data at")).Append(_T(" ")).Append(m_OverlaySettings.GetAltitudeFromIndex(
             pPlugIn->GetGRIBOverlayFactory()->m_Altitude, m_OverlaySettings.Settings[GribOverlaySettings::PRESSURE].m_Units))
             .Append( _T(" ") ).Append( m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::PRESSURE) ) );
     } else

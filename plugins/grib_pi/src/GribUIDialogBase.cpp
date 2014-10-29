@@ -218,14 +218,9 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	fgSizer31->SetFlexibleDirection( wxBOTH );
 	fgSizer31->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 	
-	wxStaticText* m_staticText38;
-	m_staticText38 = new wxStaticText( this, wxID_ANY, _("Grib Data at"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText38->Wrap( -1 );
-	fgSizer31->Add( m_staticText38, 0, wxLEFT|wxRIGHT, 5 );
-	
 	m_stAltitudeText = new wxStaticText( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( -1,-1 ), 0 );
 	m_stAltitudeText->Wrap( -1 );
-	fgSizer31->Add( m_stAltitudeText, 0, wxLEFT|wxRIGHT, 5 );
+	fgSizer31->Add( m_stAltitudeText, 0, wxEXPAND|wxLEFT|wxRIGHT, 5 );
 	
 	
 	fgSizer30->Add( fgSizer31, 1, wxEXPAND, 5 );
