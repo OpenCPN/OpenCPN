@@ -47,8 +47,6 @@ wxString toMailFormat ( int NEflag, int a )                 //convert position t
 //----------------------------------------------------------------------------------------------------------
 void GribRequestSetting::InitRequestConfig()
 {
-    DimeWindow( this );                             //aplly global colours scheme
-
     wxFileConfig *pConf = GetOCPNConfigObject();
 
     if(pConf) {
@@ -122,6 +120,8 @@ void GribRequestSetting::InitRequestConfig()
 
     m_pWind->Enable( false );                                               //always selected if available
     m_pPress->Enable( false );
+
+    DimeWindow( this );                                                     //aplly global colours scheme
 
     m_AllowSend = true;
     m_MailImage->SetValue( WriteMail() );
@@ -215,8 +215,8 @@ void GribRequestSetting::ApplyRequestConfig( unsigned rs, unsigned it, unsigned 
     m_pAirTemp->Enable( IsGFS );
     m_pSeaTemp->SetValue( (m_RequestConfigBase.GetChar(12) == 'X' && (!IsZYGRIB && IsGFS)) || IsRTOFS );
     m_pSeaTemp->Enable( !IsZYGRIB && IsGFS );
-    m_pWindGust->SetValue( m_RequestConfigBase.GetChar(14) == 'X' && IsZYGRIB);
-    m_pWindGust->Enable( IsZYGRIB );
+    m_pWindGust->SetValue( m_RequestConfigBase.GetChar(14) == 'X' && IsGFS);
+    m_pWindGust->Enable( IsGFS );
     m_pCAPE->SetValue( m_RequestConfigBase.GetChar(15) == 'X' && IsGFS );
     m_pCAPE->Enable( IsGFS );
 
@@ -323,7 +323,9 @@ void GribRequestSetting::OnSaveMail( wxCommandEvent& event )
     m_RequestConfigBase.SetChar( 7, 'X' );                                              //pressure must be always selected as a default
 
     if(m_pModel->GetCurrentSelection() != COAMPS) {
-        m_pWaves->IsChecked() ? m_RequestConfigBase.SetChar( 8, 'X' )                               //waves                       
+        m_pWindGust->IsChecked() ? m_RequestConfigBase.SetChar( 14, 'X' )                           //Gust
+            : m_RequestConfigBase.SetChar( 14, '.' );
+        m_pWaves->IsChecked() ? m_RequestConfigBase.SetChar( 8, 'X' )                               //waves
             : m_RequestConfigBase.SetChar( 8, '.' );
         m_pRainfall->IsChecked() ? m_RequestConfigBase.SetChar( 9, 'X' )                            //rainfall
             : m_RequestConfigBase.SetChar( 9, '.' );
@@ -339,9 +341,6 @@ void GribRequestSetting::OnSaveMail( wxCommandEvent& event )
     if(m_pModel->GetCurrentSelection() != ZYGRIB && m_pModel->GetCurrentSelection() != COAMPS)      //current
         m_pCurrent->IsChecked() ? m_RequestConfigBase.SetChar( 13, 'X' )
             : m_RequestConfigBase.SetChar( 13, '.' );
-    if(m_pMailTo->GetCurrentSelection() == ZYGRIB)                                                  //wind gust
-        m_pWindGust->IsChecked() ? m_RequestConfigBase.SetChar( 14, 'X' )
-            : m_RequestConfigBase.SetChar( 14, '.' );
 
     if( IsGFS ) {
         m_pAltitudeData->IsChecked() ?  m_RequestConfigBase.SetChar( 17, 'X' )                      //altitude data
@@ -381,7 +380,7 @@ wxString GribRequestSetting::WriteMail()
     //some useful strings
     const wxString s[] = { _T(","), _T(" ") };        //separators
     const wxString p[][11] = {{ _T("APCP"), _T("TCDC"), _T("AIRTMP"), _T("HTSGW,WVPER,WVDIR"),      //parameters Saildocs
-        _T("SEATMP"), wxEmptyString, _T("CAPE"), wxEmptyString, wxEmptyString, _T("WIND500,HGT500"), wxEmptyString}, 
+        _T("SEATMP"), _T("GUST"), _T("CAPE"), wxEmptyString, wxEmptyString, _T("WIND500,HGT500"), wxEmptyString},
         {_T("PRECIP"), _T("CLOUD"), _T("TEMP"), _T("WVSIG WVWIND"), wxEmptyString, _T("GUST"),      //parameters zigrib
             _T("CAPE"), _T("A850"), _T("A700"), _T("A500"), _T("A300")} };
 
@@ -454,7 +453,6 @@ wxString GribRequestSetting::WriteMail()
             if( m_p300hpa->IsChecked() )
                 r_parameters.Append( s[m_pMailTo->GetCurrentSelection()] + p[m_pMailTo->GetCurrentSelection()][10] );
         }
-
         break;
     case COAMPS:                                                                           //COAMPS
         r_parameters = wxT("WIND,PRMSL");                                 //the default parameters for this model
@@ -465,6 +463,18 @@ wxString GribRequestSetting::WriteMail()
     }
     if( !IsZYGRIB && m_cMovingGribEnabled->IsChecked())            //moving grib
         r_parameters.Append(wxString::Format(_T("|%d,%d"),m_sMovingSpeed->GetValue(),m_sMovingCourse->GetValue()));
+
+    // line lenth limitation
+    int j = 0;
+    char c =  m_pMailTo->GetCurrentSelection() == SAILDOCS ? ',' : ' ';
+    for( size_t i = 0; i < r_parameters.Len(); i++ ) {
+        if(r_parameters.GetChar( i ) == '|' ) j--;                        //do not split Saildocs "moving" values
+        if(r_parameters.GetChar( i ) == c ) j++;
+        if( j > 6 ) {                                                       //no more than 6 parameters on the same line
+            r_parameters.insert( i + 1 , m_pMailTo->GetCurrentSelection() == SAILDOCS ? _T("=\n") : _T("\n"));
+            break;
+        }
+    }
 
     if( !EstimateFileSize() ) m_MailError_Nb += 2;
     return wxString( r_topmess + r_parameters );

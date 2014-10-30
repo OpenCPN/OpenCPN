@@ -400,7 +400,7 @@ GribSettingsDialog::GribSettingsDialog(GRIBUIDialog &parent, GribOverlaySettings
     m_cLoopStartPoint->SetSelection(m_Settings.m_LoopStartPoint);
     m_sSlicesPerUpdate->SetSelection(m_Settings.m_SlicesPerUpdate);
     m_sUpdatesPerSecond->SetValue(m_Settings.m_UpdatesPerSecond);
-    m_sTransparency->SetValue(m_Settings.m_iOverlayTransparency);
+    m_sTransparency->SetValue(100. - ((float) m_Settings.m_iOverlayTransparency * 100. / 254.));
     if(!m_cInterpolate->IsChecked() ) {              //hide no suiting parameters
         m_tSlicesPerUpdate->Hide();
         m_sSlicesPerUpdate->Hide();
@@ -617,7 +617,7 @@ void GribSettingsDialog::OnDataTypeChoice( wxCommandEvent& event )
 void GribSettingsDialog::OnTransparencyChange( wxScrollEvent& event  )
 {
     m_extSettings = m_Settings;
-    m_Settings.m_iOverlayTransparency = m_sTransparency->GetValue();
+    m_Settings.m_iOverlayTransparency = 254. - ( (long) m_sTransparency->GetValue() * 254. / 100. );
     m_parent.SetFactoryOptions();
 }
 
