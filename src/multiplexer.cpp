@@ -35,6 +35,10 @@ extern PlugInManager    *g_pi_manager;
 extern wxString         g_GPS_Ident;
 extern bool             g_bGarminHostUpload;
 extern bool             g_bWplIsAprsPosition;
+extern wxArrayOfConnPrm  *g_pConnectionParams;
+extern bool             g_bserial_access_checked;
+
+extern "C" bool CheckSerialAccess( void );
 
 Multiplexer::Multiplexer()
 {
@@ -95,6 +99,47 @@ void Multiplexer::StopAndRemoveStream( DataStream *stream )
     }
 }
 
+void Multiplexer::StartAllStreams( void )
+{
+    for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+    {
+        ConnectionParams *cp = g_pConnectionParams->Item(i);
+        if( cp->bEnabled ) {
+            
+#ifdef __WXGTK__
+            if( cp->GetDSPort().Contains(_T("Serial"))) {
+                if( ! g_bserial_access_checked ){
+                    if( !CheckSerialAccess() ){
+                    }
+                    g_bserial_access_checked = true;
+                }
+            }
+#endif    
+            
+            dsPortType port_type = cp->IOSelect;
+            DataStream *dstr = new DataStream( this,
+                                               cp->GetDSPort(),
+                                               wxString::Format(wxT("%i"),cp->Baudrate),
+                                               port_type,
+                                               cp->Priority,
+                                               cp->Garmin
+                                               );
+                                               dstr->SetInputFilter(cp->InputSentenceList);
+                                               dstr->SetInputFilterType(cp->InputSentenceListType);
+                                               dstr->SetOutputFilter(cp->OutputSentenceList);
+                                               dstr->SetOutputFilterType(cp->OutputSentenceListType);
+                                               dstr->SetChecksumCheck(cp->ChecksumCheck);
+                                               
+            cp->b_IsSetup = true;
+                                               
+            AddStream(dstr);
+        }
+    }
+    
+}
+
+    
+    
 void Multiplexer::LogOutputMessageColor(const wxString &msg, const wxString & stream_name, const wxString & color)
 {
     if (NMEALogWindow::Get().Active()) {

@@ -206,7 +206,6 @@ private:
     void OnTimerSocket(wxTimerEvent& event);
     void OnSocketReadWatchdogTimer(wxTimerEvent& event);
     
-    wxMutex             m_output_mutex;
     bool                m_bok;
     wxEvtHandler        *m_consumer;
     wxString            m_portstring;

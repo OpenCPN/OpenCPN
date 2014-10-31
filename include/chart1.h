@@ -30,6 +30,7 @@
 #include "wx/datetime.h"
 #include <wx/cmdline.h>
 #include <wx/snglinst.h>
+#include <wx/power.h>
 
 #ifdef __WXMSW__
 #include "wx/msw/private.h"
@@ -229,7 +230,13 @@ class MyFrame: public wxFrame
     void OnEvtPlugInMessage( OCPN_MsgEvent & event );
     void OnMemFootTimer(wxTimerEvent& event);
     void OnBellsTimer(wxTimerEvent& event);
-
+#ifdef wxHAS_POWER_EVENTS
+    void OnSuspending(wxPowerEvent &event);
+    void OnSuspended(wxPowerEvent &event);
+    void OnSuspendCancel(wxPowerEvent &event);
+    void OnResume(wxPowerEvent &event);
+#endif // wxHAS_POWER_EVENTS
+    
     void UpdateAllFonts(void);
     void PositionConsole(void);
     void OnToolLeftClick(wxCommandEvent& event);
