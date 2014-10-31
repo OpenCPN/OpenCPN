@@ -1810,13 +1810,6 @@ bool MyApp::OnInit()
             TideCurrentDataSet.RemoveAt(0);
             TideCurrentDataSet.Insert( default_tcdata, 0 );
         }
-        else {
-            wxString first_path(ft.GetPath());
-            if(fdefault.GetPath() != first_path){
-                TideCurrentDataSet.RemoveAt(0);
-                TideCurrentDataSet.Insert( default_tcdata, 0 );
-            }
-        }
     }
 
 
