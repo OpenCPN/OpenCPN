@@ -4673,6 +4673,10 @@ bool MyFrame::CheckGroup( int igroup )
     if( igroup == 0 ) return true;              // "all charts" is always OK
 
     ChartGroup *pGroup = g_pGroupArray->Item( igroup - 1 );
+    
+    if( !pGroup->m_element_array.GetCount() )   //  truly empty group is OK
+        return true;
+    
     bool b_chart_in_group = false;
 
     for( unsigned int j = 0; j < pGroup->m_element_array.GetCount(); j++ ) {
