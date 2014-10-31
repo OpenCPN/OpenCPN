@@ -559,7 +559,10 @@ void MMSIListCtrl::OnListItemActivated( wxListEvent &event)
 
 void MMSIListCtrl::OnListItemRightClick( wxListEvent &event)
 {
-    m_context_item = event.GetIndex();
+    m_context_item = GetNextItem( -1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
+    
+    if(-1 == m_context_item)
+        return;
     
     wxMenu* menu = new wxMenu( _("MMSI Properties") );
 
