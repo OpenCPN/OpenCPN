@@ -576,7 +576,7 @@ CompressionWorkerPool::CompressionWorkerPool()
     int nCPU =  wxMax(1, wxThread::GetCPUCount());
     m_max_jobs =  nCPU;
 
-    bthread_debug = false;;
+    bthread_debug = true;;
 
     if(bthread_debug)
         printf(" nCPU: %d    m_max_jobs :%d\n", nCPU, m_max_jobs);

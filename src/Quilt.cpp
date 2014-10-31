@@ -833,7 +833,7 @@ int Quilt::GetNomScaleMin(int scale, ChartTypeEnum type, ChartFamilyEnum family)
 {
     switch(family){
         case CHART_FAMILY_RASTER:{
-            return scale * 3;
+            return scale * 1.5;
         }
         
         case CHART_FAMILY_VECTOR:{

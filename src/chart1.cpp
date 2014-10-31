@@ -1242,7 +1242,7 @@ bool MyApp::OnInit()
 #ifdef __WXMSW__
 
 //  Un-comment the following to establish a separate console window as a target for printf() in Windows
-//     RedirectIOToConsole();
+     RedirectIOToConsole();
 
 #endif
 
