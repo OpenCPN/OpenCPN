@@ -40,6 +40,8 @@ extern MyFrame *gFrame;
 #ifdef __WXMSW__
 extern int g_total_NMEAerror_messages;
 extern int g_nNMEADebug;
+
+#include <queue>
 #endif
 
 typedef enum DS_ENUM_BUFFER_STATE
@@ -49,11 +51,16 @@ typedef enum DS_ENUM_BUFFER_STATE
 }_DS_ENUM_BUFFER_STATE;
 
 
+/**
+ * This thread manages reading the data stream from the declared serial port.
+ *
+ * This thread manages reading the NMEA data stream from the declared source.
+ */
+
 OCP_DataStreamInput_Thread::OCP_DataStreamInput_Thread(DataStream *Launcher,
                                                        wxEvtHandler *MessageTarget,
                                                        const wxString& PortName,
                                                        const wxString& strBaudRate,
-                                                       wxMutex *pout_mutex,
                                                        dsPortType io_select
                                                       )
 {
@@ -64,7 +71,6 @@ OCP_DataStreamInput_Thread::OCP_DataStreamInput_Thread(DataStream *Launcher,
     m_PortName = PortName;
     m_FullPortName = _T("Serial:") + PortName;
 
-    m_pout_mutex = pout_mutex;
     m_io_select = io_select;
 
     rx_buffer = new char[DS_RX_BUFFER_SIZE + 1];
@@ -78,14 +84,8 @@ OCP_DataStreamInput_Thread::OCP_DataStreamInput_Thread(DataStream *Launcher,
     if(strBaudRate.ToLong(&lbaud))
         m_baud = (int)lbaud;
 
-    // Allocate the static output queue
-    for(int i=0 ; i  < OUT_QUEUE_LENGTH ; i++){
-        m_poutQueue[i] = (char *)malloc(MAX_OUT_QUEUE_MESSAGE_LENGTH);
-    }
-    m_takIndex = -1;
-    m_putIndex = -1;
-
     Create();
+    
 }
 
 OCP_DataStreamInput_Thread::~OCP_DataStreamInput_Thread(void)
@@ -247,46 +247,31 @@ void *OCP_DataStreamInput_Thread::Entry()
 
         //      Check for any pending output message
 
-        if( m_pout_mutex && (wxMUTEX_NO_ERROR == m_pout_mutex->TryLock()) ){
-            bool b_qdata = (m_takIndex != (-1) || m_putIndex != (-1));
+        m_outCritical.Enter();
+        {
+            bool b_qdata = !out_que.empty();
             
             while(b_qdata){
-                if(m_takIndex < OUT_QUEUE_LENGTH) {
                     
                     //  Take a copy of message
+                    char *qmsg = out_que.front();
                     char msg[MAX_OUT_QUEUE_MESSAGE_LENGTH];
-                    strncpy( msg, m_poutQueue[m_takIndex], MAX_OUT_QUEUE_MESSAGE_LENGTH-1 );
-                    
-                    //  Update and release the taker index
-                    if(m_takIndex==m_putIndex)
-                        m_takIndex=m_putIndex=(-1);
-                    else if(m_takIndex == (OUT_QUEUE_LENGTH-1) )
-                        m_takIndex=0;
-                    else
-                        m_takIndex++;
-                    
-                    
-                    m_pout_mutex->Unlock();
+                    strncpy( msg, qmsg, MAX_OUT_QUEUE_MESSAGE_LENGTH-1 );
+                    out_que.pop();
+                    free(qmsg);
+
+                    m_outCritical.Leave();
                     WriteComPortPhysical(m_gps_fd, msg);
+                    m_outCritical.Enter();
                     
-                    if( wxMUTEX_NO_ERROR == m_pout_mutex->TryLock() )
-                        b_qdata = (m_takIndex != (-1) || m_putIndex != (-1));
-                    else
-                        b_qdata = false;
-                }
-                else {                                  // some index error
-                    m_takIndex = (-1);
-                    m_putIndex = (-1);
-                    b_qdata = false;
-                }
+                    b_qdata = !out_que.empty();
                 
                 
             } //while b_qdata
-            m_pout_mutex->Unlock();
         }
+        m_outCritical.Leave();
         
- bail_output:
-    bool bail = true;
+        
     }                          // the big while...
 
 //          Close the port cleanly
@@ -304,11 +289,15 @@ thread_exit:
 
 
 #ifdef __WXMSW__
+#define SERIAL_OVERLAPPED
 
 //    Entry Point
 void *OCP_DataStreamInput_Thread::Entry()
 {
     wxString msg;
+    OVERLAPPED osReader = {0};
+    OVERLAPPED osWriter = {0};
+    
     m_launcher->SetSecThreadActive();               // I am alive
     
     wxSleep(1);         //  allow Bluetooth SPP connections to re-cycle after the parent's test for existence.
@@ -322,63 +311,63 @@ void *OCP_DataStreamInput_Thread::Entry()
        //    Request the com port from the comm manager
     if ((m_gps_fd = OpenComPortPhysical(m_PortName, m_baud)) < 0)
     {
-        wxString msg(_T("NMEA input device open failed: "));
+        wxString msg(_T("NMEA input device initial open failed: "));
         msg.Append(m_PortName);
         wxString msg_error;
         msg_error.Printf(_T("...GetLastError():  %d"), GetLastError());
         msg.Append(msg_error);
 
         ThreadMessage(msg);
-        goto thread_exit;
+        m_gps_fd = NULL;
+//        goto thread_exit;
     }
 
     hSerialComm = (HANDLE)m_gps_fd;
 
     int n_reopen_wait = 2000;
-    bool nl_found = false;
-    bool b_burst_read = false;
     
-    int max_timeout = 5;
-    int loop_timeout = 2000;
-    int dcb_read_toc = 2000;
-    int dcb_read_tom = MAXDWORD;
-
-    bool b_sleep = false;
-    
-    //  If port supports output, arrange for no read timeouts so that output polling mechanism works
-    //  In other words, the ReadFile() call returns immediately, with or without data.
-    if( (m_io_select == DS_TYPE_INPUT_OUTPUT) || (m_io_select == DS_TYPE_OUTPUT) ) {
-        loop_timeout = 2;
-        max_timeout = 5000;
-        dcb_read_toc = 0;
-        dcb_read_tom = 0;
-        
-        b_sleep = true;         // we will need a slepp between reads
-    }
-
     COMMTIMEOUTS timeouts;
 
-    timeouts.ReadIntervalTimeout = MAXDWORD;
-    timeouts.ReadTotalTimeoutMultiplier = dcb_read_tom;//MAXDWORD;
-    timeouts.ReadTotalTimeoutConstant = dcb_read_toc;//loop_timeout;
-    
+    //  Short read timeout for faster response
+    timeouts.ReadIntervalTimeout = 1;
+    timeouts.ReadTotalTimeoutMultiplier = 0;
+    timeouts.ReadTotalTimeoutConstant = 0;
     timeouts.WriteTotalTimeoutMultiplier = 0;
-    timeouts.WriteTotalTimeoutConstant = 1000; 
+    timeouts.WriteTotalTimeoutConstant = 500; 
+    
+    
+    if(m_gps_fd){
+        if (!SetCommTimeouts(hSerialComm, &timeouts)){ // Error setting time-outs.
+            CloseComPortPhysical(m_gps_fd);
+            m_gps_fd = NULL;
+        }            
+    }
 
-    if (!SetCommTimeouts((HANDLE)m_gps_fd, &timeouts)) // Error setting time-outs.
-        goto thread_exit;
-
+      // Create the reader overlapped event.
+    osReader.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+    // Create the writer overlapped event.
+    osWriter.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+    
+      
     not_done = true;
 
 #define READ_BUF_SIZE 200
     char szBuf[READ_BUF_SIZE];
-
+    
+#define READ_TIMEOUT      50      // milliseconds
+    
     DWORD dwRead;
-    DWORD dwOneRead;
-    char  chRead;
-    int ic;
-    int n_timeout;
+    DWORD dwWritten;
+    DWORD dwRes;
+    DWORD dwToWrite;
 
+    int n_timeout = 0;
+    int max_timeout = 100;
+    
+    bool fWaitingOnRead = false;
+    bool fWaitingOnWrite = false;
+    
+    
 //    The main loop
 
     while(not_done)
@@ -392,9 +381,18 @@ void *OCP_DataStreamInput_Thread::Entry()
             if((TestDestroy()) || (m_launcher->m_Thread_run_flag == 0))
                 goto thread_exit;                               // smooth exit
 
-            if(n_reopen_wait)
-            {
-                wxThread::Sleep(n_reopen_wait);                        // stall for a bit
+            if(n_reopen_wait){
+                int nrwd10 = wxMax(1, n_reopen_wait /10);
+
+                while(n_reopen_wait > 0){
+                    wxThread::Sleep(nrwd10);                        // stall for a bit
+                    
+                    if((TestDestroy()) || (m_launcher->m_Thread_run_flag == 0))
+                        goto thread_exit;                               // smooth exit
+                    
+                    n_reopen_wait -= nrwd10;
+                }
+                        
                 n_reopen_wait = 0;
             }
 
@@ -403,266 +401,201 @@ void *OCP_DataStreamInput_Thread::Entry()
             {
                 hSerialComm = (HANDLE)m_gps_fd;
 
-                if(!SetCommMask((HANDLE)m_gps_fd, EV_RXCHAR)) // Setting Event Type
-                    goto thread_exit;
-
-                COMMTIMEOUTS timeouts;
-                timeouts.ReadIntervalTimeout = MAXDWORD;
-                timeouts.ReadTotalTimeoutMultiplier = dcb_read_tom;
-                timeouts.ReadTotalTimeoutConstant = dcb_read_toc;
-                timeouts.WriteTotalTimeoutMultiplier = 0;
-                timeouts.WriteTotalTimeoutConstant = 1000;
-
-                if (!SetCommTimeouts((HANDLE)m_gps_fd, &timeouts)) // Error setting time-outs.
-                    goto thread_exit;
+                wxThread::Sleep(100);                        // stall for a bit
+                
+                if (!SetCommTimeouts(hSerialComm, &timeouts)){ // Error setting time-outs.
+                      int errt = GetLastError();                // so just retry
+                      CloseComPortPhysical(m_gps_fd);
+                      m_gps_fd = NULL;
+                      
+                }
+                
+                fWaitingOnWrite = FALSE;
+                fWaitingOnRead = FALSE;
+                n_timeout = 0;
+                
             }
             else
             {
                 m_gps_fd = 0;
-                wxThread::Sleep(2000);                        // stall for a bit
+                
+                int nwait = 2000;
+                while(nwait > 0){
+                    wxThread::Sleep(200);                        // stall for a bit
+                    
+                    if((TestDestroy()) || (m_launcher->m_Thread_run_flag == 0))
+                        goto thread_exit;                               // smooth exit
+                        
+                    nwait -= 200;
+                }
             }
         }
 
-        bool b_inner = true;
-        dwRead = 0;
-        n_timeout = 0;
-        wxDateTime now = wxDateTime::Now();
-        int t = now.GetTicks();                 // set a separate timer not controlled by serial port
-        ic=0;
-        while( b_inner ) {
-            if( m_pout_mutex && (wxMUTEX_NO_ERROR == m_pout_mutex->TryLock()) ){
-                bool b_qdata = (m_takIndex != (-1) || m_putIndex != (-1));
-                
-                if(b_qdata){
-                    if(m_takIndex < OUT_QUEUE_LENGTH) {
+        if( (m_io_select == DS_TYPE_INPUT_OUTPUT) || (m_io_select == DS_TYPE_OUTPUT) ) {
+                m_outCritical.Enter();
+                bool b_qdata = !out_que.empty();
+                    
+                bool b_break = false;
+                while(!b_break && b_qdata){
+                    char msg[MAX_OUT_QUEUE_MESSAGE_LENGTH];
+                    
+//                    printf("wl %d\n", out_que.size());
+                    {
+                        
+                        if(fWaitingOnWrite){
+//                            printf("wow\n");
+                            dwRes = WaitForSingleObject(osWriter.hEvent, INFINITE);
+                            
+                            switch(dwRes)
+                            {
+                                case WAIT_OBJECT_0:
+                                    if (!GetOverlappedResult(hSerialComm, &osWriter, &dwWritten, FALSE)) {
+                                        if (GetLastError() == ERROR_OPERATION_ABORTED){
+                                            //    UpdateStatus("Write aborted\r\n");
+                                        }
+                                        else{
+                                            b_break = true;
+                                        }
+                                    }
+                                    
+                                    if (dwWritten != dwToWrite) {
+                                        //ErrorReporter("Error writing data to port (overlapped)");
+                                    }
+                                    else {
+                                        // Delayed write completed
+                                        fWaitingOnWrite = false;
+//                                        printf("-wow\n");
+                                    }
+                                    break;
+                                    
+                                //                
+                                // wait timed out
+                                //
+                                case WAIT_TIMEOUT:
+                                    break;
+                                    
+                                case WAIT_FAILED:
+                                default:
+                                    break;
+                            }
+                            
+                        }
+                        if(!fWaitingOnWrite){          // not waiting on Write, OK to issue another
                         
                         //  Take a copy of message
-                        char msg[MAX_OUT_QUEUE_MESSAGE_LENGTH];
-                        strncpy( msg, m_poutQueue[m_takIndex], MAX_OUT_QUEUE_MESSAGE_LENGTH-1 );
-                        
-                        //  Update and release the taker index
-                        if(m_takIndex==m_putIndex)
-                            m_takIndex=m_putIndex=(-1);
-                        else if(m_takIndex == (OUT_QUEUE_LENGTH-1) )
-                            m_takIndex=0;
-                        else
-                            m_takIndex++;
-                        
-                        m_pout_mutex->Unlock();         // done with shared data
-
-                        if(WriteComPortPhysical(m_gps_fd, msg)){
-                            n_timeout = 0;    //  We have transmitted, so this port is by definition alive
-                            b_burst_read = true;
-                        }
-                        else
-                            n_timeout = 10000;          // Force a read timeout
-                    }
-                    else {                                  // some index error
-                        m_takIndex = (-1);
-                        m_putIndex = (-1);
-                        m_pout_mutex->Unlock();
-                    }
-                } //if b_qdata
-                else{
-                    m_pout_mutex->Unlock();         // done with shared data
-                }
-            }           // Mutex lock
-            
-
-            if( b_sleep )                       // we need a sleep if the serial port does not honor commtimeouts
-                wxThread::Sleep(1);             // or this is an I/O port
-            if(ReadFile((HANDLE)m_gps_fd, &chRead, 1, &dwOneRead, NULL))
-            {
-                if(1 == dwOneRead) {
-                    szBuf[ic] = chRead;
-                    dwRead++;
-                    if( (++ic > READ_BUF_SIZE - 1) || (chRead == 0x0a) )
-                        goto HandleASuccessfulRead;
-                    
-                    //  burst read after writing to clear queue
-                    while(b_burst_read){
-                        if(ReadFile((HANDLE)m_gps_fd, &chRead, 1, &dwOneRead, NULL)){
-                            if(1 == dwOneRead) {
-                                szBuf[ic] = chRead;
-                                dwRead++;
-                                if( (++ic > READ_BUF_SIZE - 1) || (chRead == 0x0a) ){
-                                    goto HandleASuccessfulRead;
+                            char *qmsg = out_que.front();
+                            strncpy( msg, qmsg, MAX_OUT_QUEUE_MESSAGE_LENGTH-1 );
+                            out_que.pop();
+                            free(qmsg);
+ 
+                            dwToWrite = strlen(msg);
+                            //
+                            // issue write
+                            //
+                            n_timeout = 0;
+                            
+//                            printf("w\n");
+                            if (!WriteFile(hSerialComm, msg, dwToWrite, &dwWritten, &osWriter)) {
+                                if (GetLastError() == ERROR_IO_PENDING) { 
+                                //
+                                // write is delayed
+                                //
+                                    fWaitingOnWrite = true;
+//                                    printf("+wow\n");
+                                }
+                                else{
+                                    b_break = true;
                                 }
                             }
                             else {
-                                b_burst_read = false;
+                            //
+                            // writefile returned immediately
+                            //
                             }
-                        }
-                        else{
-                            b_burst_read = false;
-                            b_inner = false;
-                            CloseComPortPhysical(m_gps_fd);
-                            m_gps_fd = 0;
-                            dwRead = 0;
-                            nl_found = false;
-                            n_reopen_wait = 2000;
-                        }
-                    }
-                }
-                else {                          // timed out
-                    n_timeout++;;
-                    if( n_timeout > max_timeout ) {
-                        
-                        //  If nothing has been input from the port for a long time (10 sec), it may be broken.
-                        //  So we probably want to reset the port.
-                        
-                        //  There are 2 cases to consider on timing
-                        //  1.  Read-only port
-                        //      COMMTIMEOUT(loop_timeout) is 2 seconds, max_timeout=5
-                        //   2.  Read/Write port
-                        //      COMMTIMEOUTs not active
-                        
-                        //  Some virtual port emulators (XPort, especially) do not honor COMMTIMEOUTS
-                        //  So, we must check the real time (in seconds) of the inactivity time.
-                        //  If it is much shorter than 10 secs, assume that COMMTIMEOUTS are not working
-                        //  In this case, abort the port reset, reset the counters,
-                        //  Follow this logic as well for I/O ports.
-                        //  If necessary, signal a need for a Sleep() between read commands to avoid CPU saturation.
-                        
-                        bool b_need_reset = true;
-                        
-                        wxDateTime then = wxDateTime::Now();
-                        int dt = then.GetTicks() - t;
-                        if( (dt) <  ((max_timeout * loop_timeout)/1000)/2 ) {
-                            b_need_reset = false;
-                            n_timeout = 0;
-                            b_sleep = true;
-                        }
-                        
-                        if( b_need_reset ) {
-                            b_inner = false;
-                            CloseComPortPhysical(m_gps_fd);
-                            m_gps_fd = 0;
-                            dwRead = 0;
-                            nl_found = false;
-                            n_reopen_wait = 2000;
+
+                            b_qdata = !out_que.empty();
+                            
                         }
                     }
                     
-                    // Allow exit smoothly when there is no activity
-                    //  If b_sleep is true, it means we are polling on ReadFile(),
-                    //  So don't check exit condition on every loop.  Too slow...
-                    else if(b_sleep){
-                        if((n_timeout % 10) == 0){
-                            if( (TestDestroy()) || (m_launcher->m_Thread_run_flag == 0)) {
-                                goto thread_exit;                               // smooth exit
-                            }
-                        }
-                    }
-                    else{
-                        if( (TestDestroy()) || (m_launcher->m_Thread_run_flag == 0)) {
-                            goto thread_exit;                               // smooth exit
-                        }
-                    }
-                }
-            }
-            else {                     //      ReadFile Erorr
-                b_inner = false;
-                CloseComPortPhysical(m_gps_fd);
-                m_gps_fd = 0;
-                dwRead = 0;
-                nl_found = false;
-                n_reopen_wait = 2000;
-            }
+                } //while b_qdata
+                
+
+            
+                m_outCritical.Leave();
         }
-
-HandleASuccessfulRead:
-        if(dwRead > 0)
-        {
-              if((g_total_NMEAerror_messages < g_nNMEADebug) && (g_nNMEADebug > 1000))
-              {
-                    g_total_NMEAerror_messages++;
-                    wxString msg;
-                    msg.Printf(_T("NMEA activity...%d bytes"), dwRead);
-                    ThreadMessage(msg);
-              }
-
-              int nchar = dwRead;
-              char *pb = szBuf;
-
-              while(nchar)
-              {
-                    if(0x0a == *pb)
-                          nl_found = true;
-
-                    *put_ptr++ = *pb++;
-                    if((put_ptr - rx_buffer) > DS_RX_BUFFER_SIZE)
-                          put_ptr = rx_buffer;
-
-                    nchar--;
-              }
-              if((g_total_NMEAerror_messages < g_nNMEADebug) && (g_nNMEADebug > 1000))
-              {
-                    g_total_NMEAerror_messages++;
-                    wxString msg1 = _T("Buffer is: ");
-                    int nc = dwRead;
-                    char *pb = szBuf;
-                    while(nc)
-                    {
-                          msg1.Append(*pb++);
-                          nc--;
-                    }
-                    ThreadMessage(msg1);
-              }
-        }
-
-//    Found a NL char, thus end of message?
-        if(nl_found)
-        {
-            char *tptr;
-            char *ptmpbuf;
-
-            bool partial = false;
-            while (!partial)
-            {
-
-            //    Copy the message into a temp buffer
-
-                tptr = tak_ptr;
-                ptmpbuf = temp_buf;
-
-                while((*tptr != 0x0a) && (tptr != put_ptr))
-                {
-                    *ptmpbuf++ = *tptr++;
-
-                    if((tptr - rx_buffer) > RX_BUFFER_SIZE)
-                        tptr = rx_buffer;
-//                    wxASSERT_MSG((ptmpbuf - temp_buf) < DS_RX_BUFFER_SIZE, "temp_buf overrun");
-                }
-
-                if((*tptr == 0x0a) && (tptr != put_ptr))    // well formed sentence
-                {
-                    *ptmpbuf++ = *tptr++;
-                    if((tptr - rx_buffer) > DS_RX_BUFFER_SIZE)
-                        tptr = rx_buffer;
-//                    wxASSERT_MSG((ptmpbuf - temp_buf) < DS_RX_BUFFER_SIZE, "temp_buf overrun");
-
-                    *ptmpbuf = 0;
-
-                    tak_ptr = tptr;
-
-                    // parse and send the message
-//                    wxString str_temp_buf(temp_buf, wxConvUTF8);
-                    if(temp_buf[0] == '\r')
-                        Parse_And_Send_Posn(&temp_buf[1]);
-                    else
-                        Parse_And_Send_Posn(temp_buf);
+        
+        
+        //
+        // if no read is outstanding, then issue another one
+        //
+//        printf("r\n");
+        if (!fWaitingOnRead) {
+            if (!ReadFile(hSerialComm, szBuf, READ_BUF_SIZE, &dwRead, &osReader)) {
+                if (GetLastError() != ERROR_IO_PENDING) {  // read not delayed?
+                        CloseComPortPhysical(m_gps_fd);
+                        m_gps_fd = NULL;
+                        fWaitingOnRead = FALSE;
+                        n_reopen_wait = 2000;
                 }
                 else
-                {
-                    partial = true;
-                }
-            }                 // while !partial
-
-        }        // nl found
+                    fWaitingOnRead = TRUE;
+            }
+            else {    // read completed immediately
+                n_timeout = 0;
+                
+                if (dwRead)
+                    HandleASuccessfulRead(szBuf, dwRead);
+            }
+        }
+        
+        //
+        // wait for pending operations to complete
+        //
+        if ( fWaitingOnRead ) {
+            dwRes = WaitForSingleObject(osReader.hEvent, READ_TIMEOUT);
+            
+            switch(dwRes)
+            {
+                //
+                // read completed
+                //
+                case WAIT_OBJECT_0:
+                    if (!GetOverlappedResult(hSerialComm, &osReader, &dwRead, FALSE)) {
+                        int err = GetLastError();
+                        if (GetLastError() == ERROR_OPERATION_ABORTED){
+                        }
+                        else{
+                                //      Some other error
+                            n_reopen_wait = 2000;
+                            CloseComPortPhysical(m_gps_fd);
+                            m_gps_fd = 0;
+                        }
+                    }
+                    else {      // read completed successfully
+                        if (dwRead)
+                            HandleASuccessfulRead(szBuf, dwRead);
+                    }
+                    
+                    fWaitingOnRead = FALSE;
+                    n_timeout = 0;
+                    
+                    break;
+                    
+                case WAIT_TIMEOUT:
+                    n_timeout++;
+                        
+                    break;                       
+                    
+                default:                // error of some kind with handles
+                    fWaitingOnRead = FALSE;
+                    break;
+            }
+        }
         
         if(m_launcher->m_Thread_run_flag <= 0)
             not_done = false;
+        
     }           // the big while...
 
 
@@ -678,6 +611,101 @@ thread_exit:
     return 0;
 
 }
+
+void OCP_DataStreamInput_Thread::HandleASuccessfulRead( char *szBuf, int nread )
+{
+    if(nread > 0)
+    {
+        if((g_total_NMEAerror_messages < g_nNMEADebug) && (g_nNMEADebug > 1000))
+        {
+            g_total_NMEAerror_messages++;
+            wxString msg;
+            msg.Printf(_T("NMEA activity...%d bytes"), nread);
+            ThreadMessage(msg);
+        }
+        
+        int nchar = nread;
+        char *pb = szBuf;
+        
+        while(nchar)
+        {
+            if(0x0a == *pb)
+                m_nl_found = true;
+            
+            *put_ptr++ = *pb++;
+            if((put_ptr - rx_buffer) > DS_RX_BUFFER_SIZE)
+                put_ptr = rx_buffer;
+            
+            nchar--;
+        }
+        if((g_total_NMEAerror_messages < g_nNMEADebug) && (g_nNMEADebug > 1000))
+        {
+            g_total_NMEAerror_messages++;
+            wxString msg1 = _T("Buffer is: ");
+            int nc = nread;
+            char *pb = szBuf;
+            while(nc)
+            {
+                msg1.Append(*pb++);
+                nc--;
+            }
+            ThreadMessage(msg1);
+        }
+    }
+
+    //    Found a NL char, thus end of message?
+    if(m_nl_found)
+    {
+        char *tptr;
+        char *ptmpbuf;
+        
+        bool partial = false;
+        while (!partial)
+        {
+            
+            //    Copy the message into a temp buffer
+            
+            tptr = tak_ptr;
+            ptmpbuf = temp_buf;
+            
+            while((*tptr != 0x0a) && (tptr != put_ptr))
+            {
+                *ptmpbuf++ = *tptr++;
+                
+                if((tptr - rx_buffer) > RX_BUFFER_SIZE)
+                    tptr = rx_buffer;
+                //                    wxASSERT_MSG((ptmpbuf - temp_buf) < DS_RX_BUFFER_SIZE, "temp_buf overrun");
+            }
+            
+            if((*tptr == 0x0a) && (tptr != put_ptr))    // well formed sentence
+                    {
+                        *ptmpbuf++ = *tptr++;
+                        if((tptr - rx_buffer) > DS_RX_BUFFER_SIZE)
+                            tptr = rx_buffer;
+                        //                    wxASSERT_MSG((ptmpbuf - temp_buf) < DS_RX_BUFFER_SIZE, "temp_buf overrun");
+                            
+                            *ptmpbuf = 0;
+                            
+                            tak_ptr = tptr;
+                            
+                            // parse and send the message
+                            //                    wxString str_temp_buf(temp_buf, wxConvUTF8);
+                            if(temp_buf[0] == '\r')
+                                Parse_And_Send_Posn(&temp_buf[1]);
+                            else
+                                Parse_And_Send_Posn(temp_buf);
+                    }
+                    else
+                    {
+                        partial = true;
+                    }
+        }                 // while !partial
+        
+    }        // nl found
+}
+
+
+
 
 #endif            // __WXMSW__
 
@@ -705,10 +733,24 @@ void OCP_DataStreamInput_Thread::ThreadMessage(const wxString &msg)
         gFrame->GetEventHandler()->AddPendingEvent(event);
 }
 
-bool OCP_DataStreamInput_Thread::SetOutMsg(const wxString & msg)
+bool OCP_DataStreamInput_Thread::SetOutMsg(const wxString &msg)
 {
     //  Assume that the caller already owns the mutex
-
+    wxCriticalSectionLocker locker( m_outCritical );
+    
+    if(out_que.size() < OUT_QUEUE_LENGTH){
+        wxCharBuffer buf = msg.ToUTF8();
+        if(buf.data()){
+            char *qmsg = (char *)malloc(strlen(buf.data()) +1);
+            strcpy(qmsg, buf.data());
+            out_que.push(qmsg);
+            return true;
+        }
+    }
+    
+    return false;
+    
+#if 0
     if((m_takIndex==0 && m_putIndex==OUT_QUEUE_LENGTH-1) || (m_takIndex==(m_putIndex+1)))
     {
         return false;
@@ -735,6 +777,7 @@ bool OCP_DataStreamInput_Thread::SetOutMsg(const wxString & msg)
 
         return true;
     }
+#endif    
 }
 
 
@@ -895,8 +938,12 @@ int OCP_DataStreamInput_Thread::OpenComPortPhysical(const wxString &com_name, in
     wxString xcom_name = com_name;
     xcom_name.Prepend(_T("\\\\.\\"));                  // Required for access to Serial Ports greater than COM9
 
+#ifdef SERIAL_OVERLAPPED
+    DWORD open_flags = FILE_FLAG_OVERLAPPED;
+#else
     DWORD open_flags = 0;
-
+#endif
+    
     HANDLE hSerialComm = CreateFile(xcom_name.fn_str(),      // Port Name
                              GENERIC_READ | GENERIC_WRITE,     // Desired Access
                              0,                               // Shared Mode

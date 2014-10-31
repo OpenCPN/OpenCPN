@@ -49,6 +49,8 @@ class Multiplexer : public wxEvtHandler
         void AddStream(DataStream *stream);
         void StopAllStreams();
         void ClearStreams();
+        void StartAllStreams();
+        
         DataStream *FindStream(const wxString & port);
         void StopAndRemoveStream( DataStream *stream );
         void SaveStreamProperties( DataStream *stream );

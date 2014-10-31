@@ -2477,6 +2477,8 @@ void MyApp::TrackOff( void )
  return -1;
  }
  */
+#include <wx/power.h>
+
 //------------------------------------------------------------------------------
 // MyFrame
 //------------------------------------------------------------------------------
@@ -2497,6 +2499,12 @@ EVT_ACTIVATE(MyFrame::OnActivate)
 EVT_MAXIMIZE(MyFrame::OnMaximize)
 EVT_COMMAND(wxID_ANY, wxEVT_COMMAND_TOOL_RCLICKED, MyFrame::RequestNewToolbarArgEvent)
 EVT_ERASE_BACKGROUND(MyFrame::OnEraseBackground)
+#ifdef wxHAS_POWER_EVENTS
+EVT_POWER_SUSPENDING(MyFrame::OnSuspending)
+EVT_POWER_SUSPENDED(MyFrame::OnSuspended)
+EVT_POWER_SUSPEND_CANCEL(MyFrame::OnSuspendCancel)
+EVT_POWER_RESUME(MyFrame::OnResume)
+#endif // wxHAS_POWER_EVENTS
 END_EVENT_TABLE()
 
 // My frame constructor
@@ -2613,6 +2621,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
 
     Connect( EVT_THREADMSG, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtTHREADMSG );
 
+    
     //        Establish the system icons for the frame.
 
 #ifdef __WXMSW__
@@ -8295,6 +8304,55 @@ void MyFrame::UpdateAISMOBRoute( AIS_Target_Data *ptarget )
 }
 
 
+
+#ifdef wxHAS_POWER_EVENTS
+void MyFrame::OnSuspending(wxPowerEvent& event)
+{
+ //   wxDateTime now = wxDateTime::Now();
+ //   printf("OnSuspending...%d\n", now.GetTicks());
+    
+    wxLogMessage(_T("System suspend starting..."));
+    if ( wxMessageBox(_T("Veto suspend?"), _T("Please answer"),
+        wxYES_NO, this) == wxYES )
+    {
+        event.Veto();
+        wxLogMessage(_T("Vetoed suspend."));
+    }
+}
+
+void MyFrame::OnSuspended(wxPowerEvent& WXUNUSED(event))
+{
+//    wxDateTime now = wxDateTime::Now();
+//    printf("OnSuspended...%d\n", now.GetTicks());
+    wxLogMessage(_T("System is going to suspend."));
+}
+
+void MyFrame::OnSuspendCancel(wxPowerEvent& WXUNUSED(event))
+{
+//    wxDateTime now = wxDateTime::Now();
+//    printf("OnSuspendCancel...%d\n", now.GetTicks());
+    wxLogMessage(_T("System suspend was cancelled."));
+}
+
+int g_last_resume_ticks;
+void MyFrame::OnResume(wxPowerEvent& WXUNUSED(event))
+{
+    wxDateTime now = wxDateTime::Now();
+//    printf("OnResume...%d\n", now.GetTicks());
+    wxLogMessage(_T("System resumed from suspend."));
+    
+    if((now.GetTicks() - g_last_resume_ticks) > 5){
+        wxLogMessage(_T("Restarting streams."));
+ //       printf("   Restarting streams\n");
+        g_last_resume_ticks = now.GetTicks();
+        if(g_pMUX){
+            g_pMUX->ClearStreams();
+        
+            g_pMUX->StartAllStreams();
+        }
+    }
+}
+#endif // wxHAS_POWER_EVENTS
 
 
 

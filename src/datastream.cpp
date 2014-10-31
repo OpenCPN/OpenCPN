@@ -146,8 +146,10 @@ void DataStream::Open(void)
             wxString comx;
             comx =  m_portstring.AfterFirst(':');      // strip "Serial:"
 
- #ifdef __WXMSW__
             comx = comx.BeforeFirst(' ');               // strip off any description provided by Windows
+            
+#if 0
+ #ifdef __WXMSW__
             wxString scomx = comx;
             scomx.Prepend(_T("\\\\.\\"));                  // Required for access to Serial Ports greater than COM9
 
@@ -168,11 +170,13 @@ void DataStream::Open(void)
             else
                 CloseHandle(hSerialComm);
 #endif
+#endif
+
     //    Kick off the DataSource RX thread
             m_pSecondary_Thread = new OCP_DataStreamInput_Thread(this,
                                                                  m_consumer,
                                                                  comx, m_BaudRate,
-                                                                 &m_output_mutex, m_io_select);
+                                                                 m_io_select);
             m_Thread_run_flag = 1;
             m_pSecondary_Thread->Run();
 
@@ -677,27 +681,18 @@ bool DataStream::SendSentence( const wxString &sentence )
                 {
                     int retry = 10;
                     while( retry ) {
-                        if(m_output_mutex.TryLock() == wxMUTEX_NO_ERROR) {
-                            if( m_pSecondary_Thread->SetOutMsg( payload )){
-                                m_output_mutex.Unlock();
-                                return true;
-                            }
-                            else {
-                                m_output_mutex.Unlock();        // output buffer is full
-                                return false;                   // no sense retrying
-                            }
-                        }
-                        else {          // could not get mutex, stall a bit
+                        if( m_pSecondary_Thread->SetOutMsg( payload ))
+                            return true;
+                        else
                             retry--;
-                            wxMilliSleep(1);
-                        }
                     }
-                    return false;   // could not get mutex after 10 msec....
+                    return false;   // could not send after several tries....
                 }
                 else
                     return false;
             }
             break;
+            
         case NETWORK:
             if(m_txenter)
                 return false;                 // do not allow recursion, could happen with non-blocking sockets
