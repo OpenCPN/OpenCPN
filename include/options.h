@@ -319,7 +319,7 @@ public:
     wxTextCtrl              *pMagVar;
     wxCheckBox              *pMobile;
     wxCheckBox              *pResponsive;
-    
+    wxSlider                *m_pSlider_Zoom;    
     int                      k_tides;
 
     

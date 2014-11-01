@@ -654,6 +654,7 @@ bool             g_bresponsive;
 
 bool             b_inCompressAllCharts;
 bool             g_bexpert;
+int              g_chart_zoom_modifier;
 
 #ifdef LINUX_CRASHRPT
 wxCrashPrint g_crashprint;

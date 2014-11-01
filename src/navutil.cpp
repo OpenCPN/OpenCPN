@@ -333,6 +333,8 @@ extern bool             g_bexpert;
 extern int              g_SENC_LOD_pixels;
 extern ArrayOfMMSIProperties   g_MMSI_Props_Array;
 
+extern int              g_chart_zoom_modifier;
+
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
 #endif
@@ -1247,7 +1249,10 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "MobileTouch" ), &g_btouch, 0 );
     Read( _T ( "ResponsiveGraphics" ), &g_bresponsive, 0 );
     
-
+    Read( _T ( "ZoomDetailFactor" ), &g_chart_zoom_modifier, 0 );
+    g_chart_zoom_modifier = wxMin(g_chart_zoom_modifier,5);
+    g_chart_zoom_modifier = wxMax(g_chart_zoom_modifier,-5);
+    
 #ifdef USE_S57
     Read( _T ( "CM93DetailFactor" ), &g_cm93_zoom_factor, 0 );
     g_cm93_zoom_factor = wxMin(g_cm93_zoom_factor,CM93_ZOOM_FACTOR_MAX_RANGE);
@@ -2432,6 +2437,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "SkewToNorthUp" ), g_bskew_comp );
     Write( _T ( "OpenGL" ), g_bopengl );
 
+    Write( _T ( "ZoomDetailFactor" ), g_chart_zoom_modifier );
+    
 #ifdef ocpnUSE_GL
     /* opengl options */
     Write( _T ( "UseAcceleratedPanning" ), g_GLOptions.m_bUseAcceleratedPanning );

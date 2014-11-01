@@ -87,7 +87,7 @@ extern bool             g_bopengl;
 extern bool             g_bsmoothpanzoom;
 extern bool             g_bShowMag;
 extern double           g_UserVar;
-
+extern int              g_chart_zoom_modifier;
 
 extern wxString         *pInit_Chart_Dir;
 extern wxArrayOfConnPrm *g_pConnectionParams;
@@ -2397,6 +2397,15 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
                                                _("Confirm deletion of tracks and routes") );
     pConfirmObjectDeletion->SetValue( FALSE );
     miscOptions->Add( pConfirmObjectDeletion, 0, wxALL, border_size );
+    
+    wxStaticBox *zoomDetailBox = new wxStaticBox( itemPanelFont, wxID_ANY, _("Chart Zoom Detail Level") );
+    wxStaticBoxSizer* zoomDetailBoxSizer = new wxStaticBoxSizer( zoomDetailBox, wxVERTICAL );
+    m_pSlider_Zoom = new wxSlider( itemPanelFont, ID_CM93ZOOM, 0, -5,
+                                        5, wxDefaultPosition, wxSize( 200, 50),
+                                        wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS );
+    zoomDetailBoxSizer->Add( m_pSlider_Zoom, 0, wxALL | wxEXPAND, border_size );
+    m_itemBoxSizerFontPanel->Add( zoomDetailBoxSizer, 1, wxALL, border_size );
+    
 }
 
 void options::CreateControls()
@@ -2757,6 +2766,8 @@ void options::SetInitialSettings()
     m_pCheck_Rollover_COG->SetValue( g_bAISRolloverShowCOG );
     m_pCheck_Rollover_CPA->SetValue( g_bAISRolloverShowCPA );
 
+    m_pSlider_Zoom->SetValue( g_chart_zoom_modifier );
+    
 #ifdef USE_S57
     m_pSlider_CM93_Zoom->SetValue( g_cm93_zoom_factor );
 
@@ -3544,6 +3555,8 @@ void options::OnApplyClick( wxCommandEvent& event )
     else
         g_GPS_Ident = _T("Generic");
 
+    g_chart_zoom_modifier = m_pSlider_Zoom->GetValue();
+    
 #ifdef USE_S57
     //    Handle Vector Charts Tab
 

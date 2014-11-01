@@ -42,6 +42,7 @@ extern ChartStack *pCurrentStack;
 extern ChartCanvas *cc1;
 extern int g_GroupIndex;
 extern ColorScheme global_color_scheme;
+extern int g_chart_zoom_modifier;
 
 //      We define and use this one Macro in this module
 //      Reason:  some compilers refuse to inline "GetChartTableEntry()"
@@ -831,17 +832,21 @@ int Quilt::GetNomScaleMax(int scale, ChartTypeEnum type, ChartFamilyEnum family)
 
 int Quilt::GetNomScaleMin(int scale, ChartTypeEnum type, ChartFamilyEnum family)
 {
+    double mod = ((double)g_chart_zoom_modifier + 5.)/5.;  // 0->2
+    mod = wxMax(mod, .2);
+    mod = wxMin(mod, 1.5);
+    
     switch(family){
         case CHART_FAMILY_RASTER:{
-            return scale * 3;
+            return scale * 3 * mod;
         }
         
         case CHART_FAMILY_VECTOR:{
-            return scale * 4;
+            return scale * 4 * mod;
         }
         
         default:{
-            return scale * 2;
+            return scale * 2 * mod;
         }
     }
 }
