@@ -1185,7 +1185,7 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
 {
     if(!m_Settings.Settings[settings].m_bParticles)
         return;
-    
+
     //   need two records or a polar record to draw arrows
     GribRecord *pGRX, *pGRY;
     int idx, idy;
@@ -1248,18 +1248,18 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
                 it = particles.erase(it);
                 continue;
             }
-            
+
             it->m_Duration++;
-            
+
             wxPoint2DDouble &pp = it->m_History[it->m_HistoryPos].m_Pos;
-            
+
             // maximum history size
             if(++it->m_HistorySize > history_size)
                 it->m_HistorySize = history_size;
-            
+
             if(++it->m_HistoryPos >= history_size)
                 it->m_HistoryPos = 0;
-            
+
             wxPoint2DDouble &p = it->m_History[it->m_HistoryPos].m_Pos;
             double vkn=0, ang;
             if(it->m_Duration < max_duration - history_size &&
@@ -1277,17 +1277,17 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
                                                        &p.m_y, &p.m_x);
 
                 wxColor c = GetGraphicColor(settings, vkn);
-            
+
                 it->m_History[it->m_HistoryPos].m_Color[0] = c.Red();
                 it->m_History[it->m_HistoryPos].m_Color[1] = c.Green();
                 it->m_History[it->m_HistoryPos].m_Color[2] = c.Blue();
             } else
                 p.m_x = -10000;
-            
+
             it++;
         }
     }
-    
+
     m_bUpdateParticles = false;
 
     int total_particles = m_Settings.Settings[settings].m_dParticleDensity * pGRX->getNi() * pGRX->getNj();
@@ -1342,13 +1342,13 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
     if( !m_pdc ) {
         glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_ENABLE_BIT |
                      GL_POLYGON_BIT | GL_HINT_BIT ); //Save state
-    
+
         //      Enable anti-aliased lines, at best quality
         glEnable( GL_LINE_SMOOTH );
         glEnable( GL_BLEND );
         glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
         glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
-        glLineWidth( 2.3 );
+        glLineWidth( 2.3f );
     }
 
     // draw particles
