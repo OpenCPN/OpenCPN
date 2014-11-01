@@ -601,8 +601,12 @@ GenericFunction ocpnGetProcAddress(const char *addr, const char *extension)
     return (GenericFunction)systemGetProcAddress(addrbuf);
 }
 
+bool  b_glEntryPointsSet;
+
 static void GetglEntryPoints( void )
 {
+    b_glEntryPointsSet = true;
+    
     // the following are all part of framebuffer object,
     // according to opengl spec, we cannot mix EXT and ARB extensions
     // (I don't know that it could ever happen, but if it did, bad things would happen)
