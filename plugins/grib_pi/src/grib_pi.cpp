@@ -209,6 +209,7 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
     GribPreferencesDialog *Pref = new GribPreferencesDialog(parent);
 
     DimeWindow( Pref );                                     //aplly global colours scheme
+    SetDialogFont( Pref );                                  //Apply global font
 
     Pref->m_cbUseHiDef->SetValue(m_bGRIBUseHiDef);
     Pref->m_cbUseGradualColors->SetValue(m_bGRIBUseGradualColors);
