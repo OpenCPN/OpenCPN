@@ -4447,8 +4447,19 @@ void MyFrame::JumpToPosition( double lat, double lon, double scale )
     vLat = lat;
     vLon = lon;
     cc1->m_bFollow = false;
-    DoChartUpdate();
 
+    //  is the current chart available at the target location?
+    int currently_selected_index = pCurrentStack->GetCurrentEntrydbIndex();
+    
+    //  If not, then select the smallest scale chart at the target location (may be empty)
+    ChartData->BuildChartStack( pCurrentStack, lat, lon );
+    if(!pCurrentStack->DoesStackContaindbIndex(currently_selected_index)){
+        pCurrentStack->CurrentStackEntry = pCurrentStack->nEntry - 1;
+        int selected_index = pCurrentStack->GetCurrentEntrydbIndex();
+        if( cc1->GetQuiltMode() )
+            cc1->SetQuiltRefChart( selected_index );
+    }
+    
     if( !cc1->GetQuiltMode() ) {
         cc1->SetViewPoint( lat, lon, scale, Current_Ch->GetChartSkew() * PI / 180., cc1->GetVPRotation() );
     } else {
