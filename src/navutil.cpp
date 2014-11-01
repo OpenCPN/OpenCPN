@@ -1467,7 +1467,7 @@ int MyConfig::LoadMyConfig( int iteration )
         ps52plib->SetExtendLightSectors( !( read_int == 0 ) );
 
         Read( _T ( "nDisplayCategory" ), &read_int, (enum _DisCat) STANDARD );
-        ps52plib->m_nDisplayCategory = (enum _DisCat) read_int;
+        ps52plib->SetDisplayCategory((enum _DisCat) read_int );
 
         Read( _T ( "nSymbolStyle" ), &read_int, (enum _LUPname) PAPER_CHART );
         ps52plib->m_nSymbolStyle = (LUPname) read_int;
@@ -2642,7 +2642,7 @@ void MyConfig::UpdateSettings()
     if( ps52plib ) {
         Write( _T ( "bShowS57Text" ), ps52plib->GetShowS57Text() );
         Write( _T ( "bShowS57ImportantTextOnly" ), ps52plib->GetShowS57ImportantTextOnly() );
-        Write( _T ( "nDisplayCategory" ), (long) ps52plib->m_nDisplayCategory );
+        Write( _T ( "nDisplayCategory" ), (long) ps52plib->GetDisplayCategory() );
         Write( _T ( "nSymbolStyle" ), (int) ps52plib->m_nSymbolStyle );
         Write( _T ( "nBoundaryStyle" ), (int) ps52plib->m_nBoundaryStyle );
 

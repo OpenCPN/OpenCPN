@@ -58,6 +58,14 @@ class PixelCache;
 class RenderFromHPGL;
 class TexFont;
 
+class noshow_element
+{
+public:
+    char obj[7];
+};
+
+WX_DECLARE_OBJARRAY(noshow_element, ArrayOfNoshow);
+
 //-----------------------------------------------------------------------------
 //      LUP Array container, and friends
 //-----------------------------------------------------------------------------
@@ -155,6 +163,9 @@ public:
     void SetShowLdisText( bool f ) { m_bShowLdisText = f; }
     void SetExtendLightSectors( bool f ) { m_bExtendLightSectors = f; }
 
+    void SetDisplayCategory( enum _DisCat cat );
+    DisCat GetDisplayCategory(){ return m_nDisplayCategory; }
+    
     wxArrayOfLUPrec* SelectLUPARRAY( LUPname TNAM );
     LUPArrayContainer *SelectLUPArrayContainer( LUPname TNAM );
         
@@ -171,9 +182,13 @@ public:
 //#endif
 
     bool EnableGLLS(bool benable);
+
+    bool IsObjNoshow( const char *objcl);
+    void AddObjNoshow( const char *objcl);
+    void RemoveObjNoshow( const char *objcl);
+    void ClearNoshow(void);
     
     //Todo accessors
-    DisCat m_nDisplayCategory;
     LUPname m_nSymbolStyle;
     LUPname m_nBoundaryStyle;
     bool m_bOK;
@@ -334,7 +349,8 @@ private:
     TexFont *m_txf;
     
     bool m_benableGLLS;
-    
+    DisCat m_nDisplayCategory;
+    ArrayOfNoshow m_noshow_array;
 };
 
 

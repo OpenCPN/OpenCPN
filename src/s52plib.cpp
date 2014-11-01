@@ -83,6 +83,11 @@ static TexFont s_txf;
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST( TextObjList );
 
+
+//    Implement all arrays
+#include <wx/arrimpl.cpp>
+WX_DEFINE_OBJARRAY(ArrayOfNoshow);
+
 //-----------------------------------------------------------------------------
 //      Comparison Function for LUPArray sorting
 //      Note Global Scope
@@ -4275,6 +4280,9 @@ int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
     if( !ObjectRenderCheckPos( rzRules, vp ) )
         return 0;
 
+    if( IsObjNoshow( rzRules->LUP->OBCL) )
+        return 0;
+        
     if( !ObjectRenderCheckCat( rzRules, vp ) ) {
 
         //  If this object cannot be moved to a higher category by CS procedures,
@@ -6986,7 +6994,9 @@ bool s52plib::ObjectRenderCheckCat( ObjRazRules *rzRules, ViewPort *vp )
                 }
 
 //  Soundings override
-    if( !strncmp( rzRules->LUP->OBCL, "SOUNDG", 6 ) ) b_catfilter = m_bShowSoundg;
+    if( !strncmp( rzRules->LUP->OBCL, "SOUNDG", 6 ) )
+        b_catfilter = m_bShowSoundg;
+    
 
     bool b_visible = false;
     if( b_catfilter ) {
@@ -7017,6 +7027,51 @@ bool s52plib::ObjectRenderCheckCat( ObjRazRules *rzRules, ViewPort *vp )
 
     return b_visible;
 }
+
+void s52plib::SetDisplayCategory(enum _DisCat cat)
+{
+    enum _DisCat old = m_nDisplayCategory;
+    m_nDisplayCategory = cat;
+    
+    if(old != cat){
+        ClearNoshow();
+    }
+}
+
+
+bool s52plib::IsObjNoshow( const char *objcl )
+{
+    for(unsigned int i=0 ; i < m_noshow_array.GetCount() ; i++){
+        if(!strncmp(m_noshow_array[i].obj, objcl, 6) )
+            return true;
+    }
+    return false;
+}
+
+void s52plib::AddObjNoshow( const char *objcl )
+{
+    if( !IsObjNoshow( objcl ) ){
+        noshow_element element;
+        strncpy(element.obj, objcl, 6);
+        m_noshow_array.Add( element );
+    }
+}
+
+void s52plib::RemoveObjNoshow( const char *objcl )
+{
+    for(unsigned int i=0 ; i < m_noshow_array.GetCount() ; i++){
+        if(!strncmp(m_noshow_array[i].obj, objcl, 6) ){
+            m_noshow_array.RemoveAt(i);
+            return;
+        }
+    }
+}
+
+void s52plib::ClearNoshow(void)
+{
+    m_noshow_array.Clear();
+}
+
 
 //    Do all those things necessary to prepare for a new rendering
 void s52plib::PrepareForRender()

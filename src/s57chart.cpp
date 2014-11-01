@@ -3260,8 +3260,8 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
     ps52plib->m_bShowSoundg = false;
 
 //      Use display category MARINERS_STANDARD to force use of OBJLArray
-    DisCat dsave = ps52plib->m_nDisplayCategory;
-    ps52plib->m_nDisplayCategory = MARINERS_STANDARD;
+    DisCat dsave = ps52plib->GetDisplayCategory();
+    ps52plib->SetDisplayCategory( MARINERS_STANDARD );
 
 #ifdef ocpnUSE_DIBSECTION
     ocpnMemDC memdc, dc_org;
@@ -3285,7 +3285,7 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
         pOLE->nViz = *psvr++;
     }
 
-    ps52plib->m_nDisplayCategory = dsave;
+    ps52plib->SetDisplayCategory(dsave);
     ps52plib->m_bShowSoundg = bsavem_bShowSoundgp;
 
 //      Reset the color scheme

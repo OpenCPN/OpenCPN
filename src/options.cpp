@@ -2799,7 +2799,7 @@ void options::SetInitialSettings()
         }
 
         int nset = 2;                             // default OTHER
-        switch( ps52plib->m_nDisplayCategory ){
+        switch( ps52plib->GetDisplayCategory() ){
             case ( DISPLAYBASE ):
                 nset = 0;
                 break;
@@ -2819,9 +2819,9 @@ void options::SetInitialSettings()
 
         pDispCat->SetSelection( nset );
 
-        ps57CtlListBox->Enable( MARINERS_STANDARD == ps52plib->m_nDisplayCategory );
-        itemButtonClearList->Enable( MARINERS_STANDARD == ps52plib->m_nDisplayCategory );
-        itemButtonSelectList->Enable( MARINERS_STANDARD == ps52plib->m_nDisplayCategory );
+        ps57CtlListBox->Enable( MARINERS_STANDARD == ps52plib->GetDisplayCategory() );
+        itemButtonClearList->Enable( MARINERS_STANDARD == ps52plib->GetDisplayCategory() );
+        itemButtonSelectList->Enable( MARINERS_STANDARD == ps52plib->GetDisplayCategory() );
 
         //  Other Display Filters
         pCheck_SOUNDG->SetValue( ps52plib->m_bShowSoundg );
@@ -3602,7 +3602,7 @@ void options::OnApplyClick( wxCommandEvent& event )
                 nset = MARINERS_STANDARD;
                 break;
         }
-        ps52plib->m_nDisplayCategory = nset;
+        ps52plib-> SetDisplayCategory( nset );
 
         ps52plib->m_bShowSoundg = pCheck_SOUNDG->GetValue();
         ps52plib->m_bShowMeta = pCheck_META->GetValue();

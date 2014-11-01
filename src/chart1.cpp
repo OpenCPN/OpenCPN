@@ -1771,7 +1771,7 @@ bool MyApp::OnInit()
 #ifdef USE_S57
         if( ps52plib && ps52plib->m_bOK ) {
             ps52plib->m_bShowSoundg = true;
-            ps52plib->m_nDisplayCategory = (enum _DisCat) STANDARD;
+            ps52plib->SetDisplayCategory((enum _DisCat) STANDARD );
             ps52plib->m_nSymbolStyle = (LUPname) PAPER_CHART;
             ps52plib->m_nBoundaryStyle = (LUPname) PLAIN_BOUNDARIES;
             ps52plib->m_bUseSCAMIN = true;
@@ -4223,6 +4223,16 @@ bool MyFrame::ToggleLights( bool doToggle, bool temporary )
             }
         }
     }
+    
+    if( doToggle ){
+        if( !ps52plib->IsObjNoshow("LIGHTS") )
+            ps52plib->AddObjNoshow("LIGHTS");
+        else
+            ps52plib->RemoveObjNoshow("LIGHTS");
+    }
+        
+            
+    
 #endif
     return oldstate;
 }
@@ -4285,6 +4295,20 @@ void MyFrame::ToggleAnchor( void )
             }
             if( cnt == num ) break;
         }
+        
+        if( !ps52plib->IsObjNoshow("SBDARE") ){
+            ps52plib->AddObjNoshow("SBDARE");
+            for( unsigned int c = 0; c < num; c++ ) {
+                ps52plib->AddObjNoshow(categories[c]);
+            }
+        }
+        else{
+            ps52plib->RemoveObjNoshow("SBDARE");
+            for( unsigned int c = 0; c < num; c++ ) {
+                ps52plib->RemoveObjNoshow(categories[c]);
+            }
+        }
+        
         ps52plib->GenerateStateHash();
         cc1->ReloadVP();
     }
