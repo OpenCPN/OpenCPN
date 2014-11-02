@@ -84,7 +84,7 @@ public:
     
     void ContextMenuItemCallback(int id);
     void SetCursorLatLon( double lat, double lon );
-    void SetFactoryOptions( bool set_val = false );
+    void SetFactoryOptions();
     void PopulateTrackingControls( bool Populate_Altitude = true );
 
     wxDateTime TimelineTime();
@@ -96,6 +96,7 @@ public:
     void ComputeBestForecastForNow();
     void SetViewPort( PlugIn_ViewPort *vp );
     void SetDataBackGroundColor();
+    void SetTimeLineMax( bool SetValue );
 
     GribOverlaySettings m_OverlaySettings;
 
