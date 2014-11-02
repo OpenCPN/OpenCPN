@@ -2514,6 +2514,23 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     // Just needs to be there, empty or not...
 #ifdef __WXOSX__
     osx_menuBar = new wxMenuBar();
+
+    wxMenu* view_menu = new wxMenu();
+    view_menu->Append(ID_ZOOMIN, _("Zoom In"));
+    view_menu->Append(ID_ZOOMOUT, _("Zoom Out"));
+    view_menu->AppendSeparator();
+    view_menu->Append(ID_STKDN, _("Larger Scale Chart"));
+    view_menu->Append(ID_STKUP, _("Smaller Scale Chart"));
+    view_menu->AppendSeparator();
+    view_menu->Append(ID_COLSCHEME, _("Change Color Scheme"));
+    osx_menuBar->Append(view_menu, _("View"));
+
+    wxMenu* help_menu = new wxMenu();
+    help_menu->Append(wxID_ABOUT, _("About OpenCPN"));
+    help_menu->Append(wxID_HELP, _("Help"));
+    help_menu->Append(wxID_PREFERENCES, _("Preferences	Ctrl-,"));
+    osx_menuBar->Append(help_menu, _("Help"));
+
     SetMenuBar(osx_menuBar);
 #endif    
     
@@ -3812,6 +3829,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             break;
         }
 
+        case wxID_PREFERENCES:
         case ID_SETTINGS: {
 
             bool bnewtoolbar = !( DoOptionsDialog() == 0 );
@@ -3878,6 +3896,8 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         }
 
+        case wxID_ABOUT:
+        case wxID_HELP:
         case ID_HELP: {
             if( !g_pAboutDlg ) g_pAboutDlg = new about( this, &g_SData_Locn );
 
