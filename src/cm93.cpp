@@ -69,6 +69,7 @@ extern s52plib          *ps52plib;
 extern MyConfig         *pConfig;
 extern bool             g_bDebugCM93;
 extern int              g_cm93_zoom_factor;
+extern int              g_cm93_overzoom_factor;
 extern CM93DSlide       *pCM93DetailSlider;
 extern int              g_cm93detail_dialog_x, g_cm93detail_dialog_y;
 extern bool             g_bShowCM93DetailSlider;
@@ -4801,6 +4802,7 @@ void cm93compchart::Activate ( void )
             pCM93DetailSlider->Disable();
             pCM93DetailSlider->Show();
             pCM93DetailSlider->Enable();
+
       }
 }
 
@@ -5147,8 +5149,9 @@ int cm93compchart::GetNativeScale()
 
 double cm93compchart::GetNormalScaleMin ( double canvas_scale_factor, bool b_allow_overzoom )
 {
+      // Change overzoom allowed based on slider in settings
       double oz_factor;
-      oz_factor = 40.;
+      oz_factor = 40. * double (g_cm93_overzoom_factor + 1);
 
       if ( m_pcm93chart_current )
       {
