@@ -261,43 +261,43 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
                 if( m_gpsconsumer )
                     m_gpsconsumer->AddPendingEvent(event);
             }
-        }
 
-            //Send to the Debug Window, if open
-        LogInputMessage( message, port, !bpass );
+            //Send to plugins
+            if ( g_pi_manager )
+                g_pi_manager->SendNMEASentenceToAllPlugIns( message );
 
-        //Send to plugins
-        if ( g_pi_manager )
-            g_pi_manager->SendNMEASentenceToAllPlugIns( message );
+           //Send to all the other outputs
+            for (size_t i = 0; i < m_pdatastreams->Count(); i++)
+            {
+                DataStream* s = m_pdatastreams->Item(i);
+                if ( s->IsOk() ) {
+                    if((s->GetConnectionType() == SERIAL)  || (s->GetPort() != port)) {
+                        if ( s->GetIoSelect() == DS_TYPE_INPUT_OUTPUT || s->GetIoSelect() == DS_TYPE_OUTPUT ) {
+                            bool bout_filter = true;
 
-       //Send to all the other outputs
-        for (size_t i = 0; i < m_pdatastreams->Count(); i++)
-        {
-            DataStream* s = m_pdatastreams->Item(i);
-            if ( s->IsOk() ) {
-                if((s->GetConnectionType() == SERIAL)  || (s->GetPort() != port)) {
-                    if ( s->GetIoSelect() == DS_TYPE_INPUT_OUTPUT || s->GetIoSelect() == DS_TYPE_OUTPUT ) {
-                        bool bout_filter = true;
+                            bool bxmit_ok = true;
+                            if(s->SentencePassesFilter( message, FILTER_OUTPUT ) ) {
+                                bxmit_ok = s->SendSentence(message);
+                                bout_filter = false;
+                            }
 
-                        bool bxmit_ok = true;
-                        if(s->SentencePassesFilter( message, FILTER_OUTPUT ) ) {
-                            bxmit_ok = s->SendSentence(message);
-                            bout_filter = false;
-                        }
-
-                        //Send to the Debug Window, if open
-                        if( !bout_filter ) {
-                            if( bxmit_ok )
-                                LogOutputMessageColor( message, s->GetPort(), _T("<BLUE>") );
+                            //Send to the Debug Window, if open
+                            if( !bout_filter ) {
+                                if( bxmit_ok )
+                                    LogOutputMessageColor( message, s->GetPort(), _T("<BLUE>") );
+                                else
+                                    LogOutputMessageColor( message, s->GetPort(), _T("<RED>") );
+                            }
                             else
-                                LogOutputMessageColor( message, s->GetPort(), _T("<RED>") );
+                                LogOutputMessageColor( message, s->GetPort(), _T("<AMBER>") );
                         }
-                        else
-                            LogOutputMessageColor( message, s->GetPort(), _T("<AMBER>") );
                     }
                 }
             }
         }
+
+            //Send to the Debug Window, if open
+        LogInputMessage( message, port, !bpass );
     }
 }
 
