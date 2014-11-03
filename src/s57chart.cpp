@@ -6099,6 +6099,8 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
                 //  Line geometry is carried in SM or CM93 coordinates, so...
                 //  make the hit test using SM coordinates, converting from object points to SM using per-object conversion factors.
 
+                float sel_rad_meters = select_radius * 1852 * 60;       // approximately
+                
                 double easting, northing;
                 toSM( lat, lon, ref_lat, ref_lon, &easting, &northing );
 
@@ -6119,10 +6121,10 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
                     double east = ( ppt->x * xr ) + xo;
 
                     //    A slightly less coarse segment bounding box check
-                    if( northing >= ( fmin(north, north0) - select_radius ) ) if( northing
-                            <= ( fmax(north, north0) + select_radius ) ) if( easting
-                            >= ( fmin(east, east0) - select_radius ) ) if( easting
-                            <= ( fmax(east, east0) + select_radius ) ) {
+                    if( northing >= ( fmin(north, north0) - sel_rad_meters ) ) if( northing
+                        <= ( fmax(north, north0) + sel_rad_meters ) ) if( easting
+                        >= ( fmin(east, east0) - sel_rad_meters ) ) if( easting
+                        <= ( fmax(east, east0) + sel_rad_meters ) ) {
                         //                                                    index = ip;
                         return true;
                     }
