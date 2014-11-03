@@ -3247,6 +3247,9 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     if( b_inCompressAllCharts ) {
         return;
     }
+
+    if( bDBUpdateInProgress )
+        return;
     
     b_inCloseWindow = true;
 
