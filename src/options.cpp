@@ -368,7 +368,7 @@ void MMSIEditDialog::CreateControls()
      m_IgnoreButton = new wxCheckBox( itemDialog1, wxID_ANY, _("Ignore this MMSI") );
      itemStaticBoxSizer4->Add( m_IgnoreButton, 0, wxEXPAND, 5 );
      
-     m_MOBButton = new wxCheckBox( itemDialog1, wxID_ANY, _("Handle this MMSI as SART/PLB MOB.") );
+     m_MOBButton = new wxCheckBox( itemDialog1, wxID_ANY, _("Handle this MMSI as SART/PLB(AIS) MOB.") );
      itemStaticBoxSizer4->Add( m_MOBButton, 0, wxEXPAND, 5 );
      
      m_VDMButton = new wxCheckBox( itemDialog1, wxID_ANY, _("Convert AIVDM to AIVDO for this MMSI") );
