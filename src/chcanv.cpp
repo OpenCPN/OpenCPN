@@ -1866,12 +1866,45 @@ bool ChartCanvas::IsChartLargeEnoughToRender( ChartBase* chart, ViewPort& vp )
     return ( chartMaxScale*g_ChartNotRenderScaleFactor > vp.chart_scale );
 }
 
+void ChartCanvas::StartMeasureRoute()
+{
+    if( !parent_frame->nRoute_State ) {  // no measure tool if currently creating route
+        if( m_bMeasure_Active ) {
+            g_pRouteMan->DeleteRoute( m_pMeasureRoute );
+            m_pMeasureRoute = NULL;
+        }
+        
+        m_bMeasure_Active = true;
+        m_nMeasureState = 1;
+        SetCursor( *pCursorPencil );
+        Refresh();
+    }
+}
+
 void ChartCanvas::CancelMeasureRoute()
 {
     m_bMeasure_Active = false;
     m_nMeasureState = 0;
     g_pRouteMan->DeleteRoute( m_pMeasureRoute );
     m_pMeasureRoute = NULL;
+}
+
+void ChartCanvas::DropMarker( bool atOwnShip )
+{
+    double lat, lon;
+    lat = atOwnShip ? gLat : m_cursor_lat;
+    lon = atOwnShip ? gLon : m_cursor_lon;
+    
+    RoutePoint *pWP = new RoutePoint( lat, lon, g_default_wp_icon, wxEmptyString, GPX_EMPTY_STRING );
+    pWP->m_bIsolatedMark = true;                      // This is an isolated mark
+    pSelect->AddSelectableRoutePoint( lat, lon, pWP );
+    pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
+    
+    if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
+    undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
+    undo->AfterUndoableAction( NULL );
+    InvalidateGL();
+    Refresh( false );
 }
 
 ViewPort &ChartCanvas::GetVP()
@@ -1981,18 +2014,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         break;
     }
     case WXK_F4:
-        if( !parent_frame->nRoute_State )   // no measure tool if currently creating route
-        {
-            if( m_bMeasure_Active ) {
-                g_pRouteMan->DeleteRoute( m_pMeasureRoute );
-                m_pMeasureRoute = NULL;
-            }
-
-            m_bMeasure_Active = true;
-            m_nMeasureState = 1;
-            SetCursor( *pCursorPencil );
-            Refresh();
-        }
+        StartMeasureRoute();
         break;
 
     case WXK_F5:
@@ -2184,20 +2206,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 
         case 13:             // Ctrl M // Drop Marker at cursor
         {
-            double lat, lon;
-            lat = m_cursor_lat;
-            lon = m_cursor_lon;
-            RoutePoint *pWP = new RoutePoint( lat, lon, g_default_wp_icon, wxEmptyString,
-                                              GPX_EMPTY_STRING );
-            pWP->m_bIsolatedMark = true;                      // This is an isolated mark
-            pSelect->AddSelectableRoutePoint( lat, lon, pWP );
-            pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
-
-            if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
-            undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
-            undo->AfterUndoableAction( NULL );
-            InvalidateGL();
-            Refresh( false );
+            DropMarker(false);
             break;
         }
 
@@ -2216,17 +2225,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 
         case 15:             // Ctrl O - Drop Marker at boat's position
         {
-            RoutePoint *pWP = new RoutePoint( gLat, gLon, g_default_wp_icon, wxEmptyString,
-                                              GPX_EMPTY_STRING );
-            pWP->m_bIsolatedMark = true;                      // This is an isolated mark
-            pSelect->AddSelectableRoutePoint( gLat, gLon, pWP );
-            pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
-
-            if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
-            undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
-            undo->AfterUndoableAction( NULL );
-            InvalidateGL();
-            Refresh( false );
+            DropMarker(true);
             break;
         }
 

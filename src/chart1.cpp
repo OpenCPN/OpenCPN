@@ -3848,6 +3848,19 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             
             break;
         }
+        case ID_MEASURE: {
+            cc1->StartMeasureRoute();
+            break;
+        }
+        
+        case ID_MARK_BOAT: {
+            cc1->DropMarker(true);
+            break;
+        }
+        case ID_MARK_CURSOR: {
+            cc1->DropMarker(false);
+            break;
+        }
 
         case ID_FOLLOW: {
             TogglebFollow();
