@@ -523,12 +523,13 @@ class CM93OffsetDialog: public wxDialog
       DECLARE_EVENT_TABLE()
 
       public:
-            CM93OffsetDialog( wxWindow *parent, cm93compchart *pchart );
+            CM93OffsetDialog( wxWindow *parent );
             ~CM93OffsetDialog( );
 
             void OnClose(wxCloseEvent& event);
             void OnOK(wxCommandEvent& event);
 
+            void SetCM93Chart( cm93compchart *pchart );
             void SetColorScheme( );
             void UpdateMCOVRList( const ViewPort &vpt );     // Rebuild MCOVR list
 

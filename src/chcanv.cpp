@@ -7689,18 +7689,24 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
 
 #ifdef USE_S57
     case ID_DEF_MENU_CM93OFFSET_DIALOG:
+    {
         if( NULL == g_pCM93OffsetDialog ) {
-            if( !VPoint.b_quilt && Current_Ch
-                    && ( Current_Ch->GetChartType() == CHART_TYPE_CM93COMP ) ) {
-                cm93compchart *pch = (cm93compchart *) Current_Ch;
-                g_pCM93OffsetDialog = new CM93OffsetDialog( parent_frame, pch );
-            }
+            g_pCM93OffsetDialog = new CM93OffsetDialog( parent_frame );
         }
-        g_pCM93OffsetDialog->Show();
-        g_pCM93OffsetDialog->UpdateMCOVRList( GetVP() );
+        
+        cm93compchart *pch = NULL;
+        if( !VPoint.b_quilt && Current_Ch  && ( Current_Ch->GetChartType() == CHART_TYPE_CM93COMP ) ) {
+                pch = (cm93compchart *) Current_Ch;
+        }
+        
+        if( g_pCM93OffsetDialog ){
+            g_pCM93OffsetDialog->SetCM93Chart( pch );
+            g_pCM93OffsetDialog->Show();
+            g_pCM93OffsetDialog->UpdateMCOVRList( GetVP() );
+        }
 
         break;
-
+    }
     case ID_DEF_MENU_QUERY: {
         ShowObjectQueryWindow( popx, popy, zlat, zlon );
         break;

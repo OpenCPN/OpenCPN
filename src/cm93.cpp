@@ -4687,6 +4687,10 @@ cm93compchart::cm93compchart()
 
 cm93compchart::~cm93compchart()
 {
+    if( m_pOffsetDialog ){
+        m_pOffsetDialog->Hide();
+    }
+       
       for ( int i = 0 ; i < 8 ; i++ )
             delete m_pcm93chart_array[i];
 
@@ -6662,14 +6666,10 @@ BEGIN_EVENT_TABLE ( CM93OffsetDialog, wxDialog )
 END_EVENT_TABLE()
 
 
-CM93OffsetDialog::CM93OffsetDialog ( wxWindow *parent, cm93compchart *pchart )
+CM93OffsetDialog::CM93OffsetDialog ( wxWindow *parent )
 {
       m_pparent = parent;
-      m_pcompchart = pchart;
-
-      if ( m_pcompchart )
-            m_pcompchart->SetOffsetDialog ( this );
-
+      m_pcompchart = NULL;
 
       m_xoff = 0;
       m_yoff = 0;
@@ -6783,6 +6783,12 @@ void CM93OffsetDialog::OnOK ( wxCommandEvent& event )
       Close();
 }
 
+void CM93OffsetDialog::SetCM93Chart( cm93compchart *pchart )
+{ 
+    m_pcompchart = pchart;
+    if ( m_pcompchart )
+        m_pcompchart->SetOffsetDialog ( this );
+}
 
 void CM93OffsetDialog::OnOffSetSet ( wxCommandEvent& event )
 {
@@ -6823,6 +6829,8 @@ void CM93OffsetDialog::SetColorScheme()
 
 void CM93OffsetDialog::OnCellSelected ( wxListEvent &event )
 {
+    if ( m_pcompchart ){
+        
       m_selected_list_index = event.GetIndex();
 
       M_COVR_Desc *mcd =  m_pcovr_array.Item ( event.GetIndex() );
@@ -6852,7 +6860,7 @@ void CM93OffsetDialog::OnCellSelected ( wxListEvent &event )
 
       if ( m_pparent )
             m_pparent->Refresh ( true );
-
+    }
 }
 
 
