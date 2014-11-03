@@ -8496,6 +8496,19 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
     if( (parent_frame->nRoute_State >= 2) ||
         (m_pMeasureRoute && m_bMeasure_Active && ( m_nMeasureState >= 2 )) ) {
 
+        Route* route = 0;
+        int state;
+        if( m_pMeasureRoute ) {
+            route = m_pMeasureRoute;
+            state = m_nMeasureState;
+        } else {
+            route = m_pMouseRoute;
+            state = parent_frame->nRoute_State;
+        }
+        
+        if(!route)
+            return;
+    
         double rhumbBearing, rhumbDist, gcBearing, gcBearing2, gcDist;
         DistanceBearingMercator( m_cursor_lat, m_cursor_lon, m_prev_rlat, m_prev_rlon, &rhumbBearing, &rhumbDist );
         Geodesic::GreatCircleDistBear( m_prev_rlon, m_prev_rlat, m_cursor_lon, m_cursor_lat, &gcDist, &gcBearing, &gcBearing2);
@@ -8504,16 +8517,7 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
         if( ( m_prev_rlat == m_cursor_lat ) && ( m_prev_rlon == m_cursor_lon ) ) rhumbBearing = 90.;
 
         wxPoint destPoint, lastPoint;
-        Route* route;
-        int state;
 
-        if( m_pMeasureRoute ) {
-            route = m_pMeasureRoute;
-            state = m_nMeasureState;
-        } else {
-            route = m_pMouseRoute;
-            state = parent_frame->nRoute_State;
-        }
 
         double brg = rhumbBearing;
         double dist = rhumbDist;
