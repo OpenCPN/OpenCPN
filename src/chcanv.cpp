@@ -7831,9 +7831,9 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
                 best_point = m_pSelectedRoute->GetPoint( 2 );
         
             g_pRouteMan->ActivateRoute( m_pSelectedRoute, best_point );
+            m_pSelectedRoute->m_bRtIsSelected = false;
         }
             
-        m_pSelectedRoute->m_bRtIsSelected = false;
 
         break;
     }

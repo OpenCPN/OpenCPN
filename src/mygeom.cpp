@@ -419,7 +419,7 @@ PolyTessGeo::PolyTessGeo(unsigned char *polybuf, int nrecl, int index, int senc_
     int nvert;
     int nvert_max = 0;
     bool not_finished = true;
-    int total_byte_size = 0;
+    int total_byte_size = 2 * sizeof(float);
     while(not_finished)
     {
         if((m_buf_ptr - m_buf_head) != m_nrecl)
@@ -927,7 +927,7 @@ int PolyTessGeo::PolyTessGeoTri(OGRPolygon *poly, bool bSENC_SM, double ref_lat,
     //  to reduce SENC size and enable efficient access later
     
     //  First calculate the total byte size
-    int total_byte_size = 0;
+    int total_byte_size = 2 * sizeof(float);
     TriPrim *p_tp = m_ppg_head->tri_prim_head;
     while( p_tp ) {
         total_byte_size += p_tp->nVert * 2 * sizeof(float);
@@ -2009,7 +2009,7 @@ int PolyTessGeo::PolyTessGeoGL(OGRPolygon *poly, bool bSENC_SM, double ref_lat, 
     //  to reduce SENC size and enable efficient access later
     
     //  First calculate the total byte size
-    int total_byte_size = 0;
+    int total_byte_size = 2 * sizeof(float);
     TriPrim *p_tp = m_ppg_head->tri_prim_head;
     while( p_tp ) {
         total_byte_size += p_tp->nVert * 2 * sizeof(float);
@@ -2426,7 +2426,7 @@ int PolyTessGeo::BuildTessGL(void)
       //  to reduce SENC size and enable efficient access later
       
       //  First calculate the total byte size
-      int total_byte_size = 0;
+      int total_byte_size = 2 * sizeof(float);
       TriPrim *p_tp = m_ppg_head->tri_prim_head;
       while( p_tp ) {
           total_byte_size += p_tp->nVert * 2 * sizeof(float);
