@@ -4994,8 +4994,9 @@ void MyFrame::SetupQuiltMode( void )
 
         Current_Ch = NULL;                  // Bye....
         
+        SetChartThumbnail( -1 );            //Turn off thumbnails for sure
+
         //  Re-qualify the quilt reference chart selection
-//        cc1->ReloadVP();
         cc1->AdjustQuiltRefChart(  );
         
     } else                                                  // going to SC Mode
@@ -6056,7 +6057,6 @@ void MyFrame::HandlePianoClick( int selected_index, int selected_dbIndex )
                     cc1->SetVPScale( cc1->GetCanvasScaleFactor() / proposed_scale_onscreen );
                 }
             }
-                    
         }
         else {
             ToggleQuiltMode();
