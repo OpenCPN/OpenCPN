@@ -929,6 +929,9 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
                 if( hypot( p.x - oldpy.x, p.y - oldpy.y ) >= space ) {
                     oldpy = p;
 
+                    if(lon > 180)
+                        lon -= 360;
+
                     if( PointInLLBox( vp, lon, lat ) ) {
                         if(polar) {
                             double dir = pGRY->getValue( i, j );

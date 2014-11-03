@@ -624,8 +624,7 @@ void GribSettingsDialog::OnTransparencyChange( wxScrollEvent& event  )
 void GribSettingsDialog::OnApply( wxCommandEvent& event )
 {
     WriteSettings();
-    m_parent.SetFactoryOptions(true);
-    m_parent.TimelineChanged();
+    m_parent.SetFactoryOptions();
     m_parent.PopulateTrackingControls();
 }
 
