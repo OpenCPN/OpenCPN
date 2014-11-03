@@ -93,10 +93,22 @@ enum
       ID_STKUP,
       ID_STKDN,
       ID_ROUTE,
+      ID_MEASURE,
+      ID_MARK_BOAT,
+      ID_MARK_CURSOR,
       ID_FOLLOW,
+      ID_NORTHUP,
+	  ID_COGUP,
       ID_SETTINGS,
       ID_AIS,           // pjotrc 2010.02.09
-      ID_TEXT,
+      ID_ENC_TEXT,
+      ID_ENC_LIGHTS,
+      ID_ENC_SOUNDINGS,
+      ID_ENC_ANCHOR,
+      ID_OUTLINES,
+      ID_QUILTING,
+      ID_CHARTBAR,
+      ID_FULLSCREEN,
       ID_CURRENT,
       ID_TIDE,
       ID_HELP,
@@ -109,7 +121,6 @@ enum
       ID_TBSTATBOX,
       ID_MOB,
       ID_PLUGIN_BASE
-
 };
 
 
