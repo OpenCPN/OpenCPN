@@ -4011,13 +4011,17 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         }
 
         case wxID_ABOUT:
-        case wxID_HELP:
         case ID_HELP: {
             if( !g_pAboutDlg ) g_pAboutDlg = new about( this, &g_SData_Locn );
 
             g_pAboutDlg->Update();
             g_pAboutDlg->Show();
 
+            break;
+        }
+        
+        case wxID_HELP: {
+            LaunchLocalHelp();
             break;
         }
 
@@ -4847,6 +4851,27 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
     
     return 0;
 }
+
+void MyFrame::LaunchLocalHelp( void ) {
+    wxString def_lang_canonical = wxLocale::GetLanguageInfo( wxLANGUAGE_DEFAULT )->CanonicalName;
+    
+    wxString help_locn = g_SData_Locn + _T("doc/help_");
+    
+    wxString help_try = help_locn + def_lang_canonical + _T(".html");
+    
+    if( ! ::wxFileExists( help_try ) ) {
+        help_try = help_locn + _T("en_US") + _T(".html");
+        
+        if( ! ::wxFileExists( help_try ) ) {
+            help_try = help_locn + _T("web") + _T(".html");
+        }
+        
+        if( ! ::wxFileExists( help_try ) ) return;
+    }
+    
+    wxLaunchDefaultBrowser(wxString( _T("file:///") ) + help_try );
+}
+
 
 wxString MyFrame::GetGroupName( int igroup )
 {
