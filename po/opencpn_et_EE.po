@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-29 21:40-0400\n"
-"PO-Revision-Date: 2014-08-24 04:41-0400\n"
+"POT-Creation-Date: 2014-11-02 18:40-0600\n"
+"PO-Revision-Date: 2014-11-02 19:42-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Estonian\n"
 "Language: et_EE\n"
@@ -14,29 +14,29 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: crowdin.com\n"
 
-#: include/routeprop.h:64 src/chcanv.cpp:4824 src/chcanv.cpp:7810
+#: include/routeprop.h:64 src/chcanv.cpp:5011 src/chcanv.cpp:8023
 #: src/routemanagerdialog.cpp:1100
 msgid "Route Properties"
 msgstr "Teekonna omadused"
 
-#: include/routeprop.h:99 include/routeprop.h:323 src/chcanv.cpp:6958
-#: src/routemanagerdialog.cpp:2061
+#: include/routeprop.h:99 include/routeprop.h:316 src/chcanv.cpp:7160
+#: src/routemanagerdialog.cpp:2065
 msgid "Waypoint Properties"
 msgstr "Teepunkti omadused"
 
-#: include/routeprop.h:347
+#: include/routeprop.h:340
 msgid "Waypoint Information"
 msgstr "Teepunkti info"
 
-#: include/options.h:56 src/chart1.cpp:2888 src/chart1.cpp:4355
+#: include/options.h:56 src/chart1.cpp:2920 src/chart1.cpp:4483
 msgid "Options"
 msgstr "Valikud"
 
-#: include/options.h:912
+#: include/options.h:918
 msgid "Sentence Filter"
 msgstr "Teate filter"
 
-#: include/about.h:39 src/chart1.cpp:2948
+#: include/about.h:39 src/chart1.cpp:2983
 msgid "About OpenCPN"
 msgstr "OpenCPN teave"
 
@@ -48,360 +48,386 @@ msgstr "Lingi omadused"
 msgid "Center View"
 msgstr "Vaade keskele"
 
-#: src/chartdbs.cpp:982
+#: src/chartdbs.cpp:1123
 msgid " ChartFile:  "
 msgstr "Kaardifail: "
 
-#: src/chartdbs.cpp:1019
+#: src/chartdbs.cpp:1160
 msgid " Name:  "
 msgstr "Nimi:"
 
-#: src/chartdbs.cpp:1047 src/chartdbs.cpp:1049
+#: src/chartdbs.cpp:1188 src/chartdbs.cpp:1190
 #, c-format
 msgid " Scale:  1:%d"
 msgstr "Mõõtkava: 1:%d"
 
-#: src/chartdbs.cpp:1059
+#: src/chartdbs.cpp:1200
 msgid " ID:  "
 msgstr "ID: "
 
-#: src/chartdbs.cpp:1070
+#: src/chartdbs.cpp:1211
 msgid " Depth Units:  "
 msgstr "Sügavusühikud: "
 
-#: src/chartdbs.cpp:1081
+#: src/chartdbs.cpp:1222
 msgid " Soundings:  "
 msgstr "  sügavused: "
 
-#: src/chartdbs.cpp:1092
+#: src/chartdbs.cpp:1233
 msgid " Datum:  "
 msgstr "Koordinaatsüsteem: "
 
-#: src/chartdbs.cpp:1100
+#: src/chartdbs.cpp:1241
 msgid " Projection:  "
 msgstr "  projektsioon: "
 
-#: src/chartdbs.cpp:1102 src/ais.cpp:182 src/AIS_Target_Data.cpp:359
+#: src/chartdbs.cpp:1243 src/ais.cpp:183 src/AIS_Target_Data.cpp:359
 #: src/AIS_Target_Data.cpp:637 src/AIS_Target_Data.cpp:697
 #: src/AIS_Target_Data.cpp:868
 msgid "Unknown"
 msgstr "tundmatu"
 
-#: src/chartdbs.cpp:1104
+#: src/chartdbs.cpp:1245
 msgid "Mercator"
 msgstr "Merkaator"
 
-#: src/chartdbs.cpp:1106
+#: src/chartdbs.cpp:1247
 msgid "Transverse Mercator"
 msgstr "Mercatori põik-"
 
-#: src/chartdbs.cpp:1108
+#: src/chartdbs.cpp:1249
 msgid "Polyconic"
 msgstr "polükooniline"
 
-#: src/chartdbs.cpp:1117
+#: src/chartdbs.cpp:1258
 msgid " Source Edition:  "
 msgstr "Väljaanne: "
 
-#: src/chartdbs.cpp:1128
+#: src/chartdbs.cpp:1269
 msgid " Updated:  "
 msgstr "  uuendatud: "
 
-#: src/chartdbs.cpp:1346
+#: src/chartdbs.cpp:1489
 msgid "OpenCPN Chart Scan...."
 msgstr "OpenCPN kaardi otsing...."
 
-#: src/chartdbs.cpp:1390
+#: src/chartdbs.cpp:1533
 msgid "OpenCPN Directory Scan...."
 msgstr "OpenCPN asukoha otsing...."
 
-#: src/chartdbs.cpp:1724
+#: src/chartdbs.cpp:1867
 msgid "OpenCPN Chart Add...."
 msgstr "OpenCPN lisa kaart...."
 
-#: src/chart1.cpp:747
+#: src/chart1.cpp:755
 msgid "\nOpenCPN is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied\nwarranty of MERCHANTABILITY or FITNESS FOR A\nPARTICULAR PURPOSE.\nSee the GNU General Public License for more details.\n\nOpenCPN must only be used in conjunction with approved\npaper charts and traditional methods of navigation.\n\nDO NOT rely upon OpenCPN for safety of life or property.\n\nPlease click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"
-msgstr "\nOpenCPN jagatakse lootuses, et see on sulle kasulik,\nkuid ilma MINGI GARANTIITA; isegi mitte kaudse\nTURUSTAMISE või KONKREETSELE OTSTARBELE\nSOBIVUSE garantiita.\nVaata GNU General Public License täpsustamiseks.\n\nOpenCPN-i peab kasutama ainult koos heakskiidetud\npaberkaartidega ja navigatsiooni traditsiooniliste meetoditega .\n\nÄRA TOETU OpenCPN-ile elu või omandi ohutuse tagamiseks.\n\nPalun vajuta \"OK\" kui oled nõus, \"Katkestal\" väljumiseks.\n"
+msgstr "\nOpenCPN jagatakse lootuses, et see võib kasulik olla,\nkuid ilma MINGI GARANTIITA; isegi mitte kaudse\nTURUSTAMISE või KONKREETSELE OTSTARBELE\nSOBIVUSE garantiita.\nVaata GNU General Public License täpsustamiseks.\n\nOpenCPN-i peab kasutama ainult koos heakskiidetud\npaberkaartidega ja navigatsiooni traditsiooniliste meetoditega .\n\nÄRA TOETU OpenCPN-ile elu või omandi ohutuse tagamiseks.\n\nPalun vajuta \"OK\" kui oled nõus, \"Katkesta\" väljumiseks.\n"
 
-#: src/chart1.cpp:761
+#: src/chart1.cpp:769
 msgid "Welcome to OpenCPN"
 msgstr "Tere tulemast!"
 
-#: src/chart1.cpp:1225
+#: src/chart1.cpp:1233
 msgid "Old log will be moved to opencpn.log.log"
 msgstr "Vana logi viiakse opencpn.log.log"
 
-#: src/chart1.cpp:1409 src/chart1.cpp:1413
+#: src/chart1.cpp:1417 src/chart1.cpp:1421
 msgid "Failed to initialize the user interface. "
 msgstr "Kasutajaliidest ei õnnestunud käivtada."
 
-#: src/chart1.cpp:1410
+#: src/chart1.cpp:1418
 msgid "OpenCPN cannot start. "
 msgstr "OpenCPN ei suuda käivituda."
 
-#: src/chart1.cpp:1411
+#: src/chart1.cpp:1419
 msgid "The necessary configuration files were not found. "
 msgstr "Ei suudetud leida vajalikke konfiguratsioonifaile."
 
-#: src/chart1.cpp:1412
+#: src/chart1.cpp:1420
 msgid "See the log file at "
 msgstr "Vaata logifaili"
 
-#: src/chart1.cpp:1412
+#: src/chart1.cpp:1420
 msgid " for details."
 msgstr " täpsustamiseks."
 
-#: src/chart1.cpp:1481
+#: src/chart1.cpp:1489
 msgid "Retrieving initial language selection from Windows Registry"
 msgstr "Otsin algse keelevaliku Windows-i registrist välja"
 
-#: src/chart1.cpp:1540 src/chart1.cpp:2104 src/chart1.cpp:4502
-#: src/chart1.cpp:8777 src/chart1.cpp:8808 src/pluginmanager.cpp:575
-#: src/pluginmanager.cpp:629 src/RoutePoint.cpp:627
+#: src/chart1.cpp:1548 src/chart1.cpp:2108 src/chart1.cpp:4630
+#: src/chart1.cpp:9137 src/chart1.cpp:9168 src/pluginmanager.cpp:608
+#: src/pluginmanager.cpp:662 src/RoutePoint.cpp:627
 msgid "OpenCPN Info"
 msgstr "OpenCPN info"
 
-#: src/chart1.cpp:1897
+#: src/chart1.cpp:1901
 msgid " -- [Portable(-p) executing from "
 msgstr " -- [Käivitan kaasaskantavat(-p) asukohas "
 
-#: src/chart1.cpp:2028
+#: src/chart1.cpp:2032
 msgid "Retrieving initial Chart Directory set from Windows Registry"
 msgstr "Otsin algse kaartide konplekti asukoha Windows-i registrist välja"
 
-#: src/chart1.cpp:2079
+#: src/chart1.cpp:2083
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr "Taastan kaartide andmebaasi konfiguratsioonifaili kirjetest..."
 
-#: src/chart1.cpp:2082
+#: src/chart1.cpp:2086
 msgid "Elapsed time : "
 msgstr "Möödunud aeg:"
 
-#: src/chart1.cpp:2083
+#: src/chart1.cpp:2087
 msgid "Estimated time : "
 msgstr "Eeldatav aeg:"
 
-#: src/chart1.cpp:2084
+#: src/chart1.cpp:2088
 msgid "Remaining time : "
 msgstr "Järelejäänud aeg: "
 
-#: src/chart1.cpp:2085 src/chart1.cpp:4748
+#: src/chart1.cpp:2089 src/chart1.cpp:4881 src/chart1.cpp:4883
 msgid "OpenCPN Chart Update"
 msgstr "OpenCPN kaardi uuendamine"
 
-#: src/chart1.cpp:2102
+#: src/chart1.cpp:2106
 msgid "No Charts Installed.\nPlease select chart folders in Options > Charts."
 msgstr "Kaarte pole paigaldatud.\nPalun vali kaartide kaustad Valikud > Kaardid."
 
-#: src/chart1.cpp:2764 src/chcanv.cpp:10136
+#: src/chart1.cpp:2796 src/chcanv.cpp:10257
 msgid "AIS Target Query"
 msgstr "AIS märgi päring"
 
-#: src/chart1.cpp:2843
+#: src/chart1.cpp:2875
 msgid "Zoom In"
 msgstr "Suurenda"
 
-#: src/chart1.cpp:2849
+#: src/chart1.cpp:2881
 msgid "Zoom Out"
 msgstr "Vähenda"
 
-#: src/chart1.cpp:2858
+#: src/chart1.cpp:2890
 msgid "Shift to Larger Scale Chart"
 msgstr "Mine suurema mõõtkavaga kaardile"
 
-#: src/chart1.cpp:2866
+#: src/chart1.cpp:2898
 msgid "Shift to Smaller Scale Chart"
 msgstr "Mine väiksema mõõtkavaga kaardile"
 
-#: src/chart1.cpp:2874
+#: src/chart1.cpp:2906
 msgid "Create Route"
 msgstr "Loo teekond"
 
-#: src/chart1.cpp:2881
+#: src/chart1.cpp:2913
 msgid "Auto Follow"
 msgstr "Automaatne järgimine"
 
-#: src/chart1.cpp:2894
+#: src/chart1.cpp:2926
 msgid "Show ENC Text"
 msgstr "Näita ENC teksti"
 
-#: src/chart1.cpp:2902 src/chart1.cpp:2984 src/chart1.cpp:3705
+#: src/chart1.cpp:2934 src/chart1.cpp:3019 src/chart1.cpp:3793
 msgid "Hide AIS Targets"
 msgstr "Peida AIS märgid"
 
-#: src/chart1.cpp:2909
+#: src/chart1.cpp:2941
 msgid "Show Currents"
 msgstr "Näita hoovusi"
 
-#: src/chart1.cpp:2915
+#: src/chart1.cpp:2947
 msgid "Show Tides"
 msgstr "Näita loodeid"
 
-#: src/chart1.cpp:2921
+#: src/chart1.cpp:2953
 msgid "Print Chart"
 msgstr "Prindi kaart"
 
-#: src/chart1.cpp:2927 src/routemanagerdialog.cpp:423
+#: src/chart1.cpp:2959 src/routemanagerdialog.cpp:423
 msgid "Route Manager"
 msgstr "Teekondade haldur"
 
-#: src/chart1.cpp:2934
+#: src/chart1.cpp:2966
 msgid "Toggle Tracking"
 msgstr "Lülita järgimist sisse-välja"
 
-#: src/chart1.cpp:2941
+#: src/chart1.cpp:2973
 msgid "Change Color Scheme"
 msgstr "Vaheta värviskeemi"
 
-#: src/chart1.cpp:2957
+#: src/chart1.cpp:2992
 msgid "Drop MOB Marker"
 msgstr "Pane MOB tähis"
 
-#: src/chart1.cpp:2957
+#: src/chart1.cpp:2992
 msgid " (Ctrl-Space)"
 msgstr "(Ctrl-Space)"
 
-#: src/chart1.cpp:2988 src/chart1.cpp:3707
+#: src/chart1.cpp:3023 src/chart1.cpp:3795
 msgid "Show AIS Targets"
 msgstr "Näita AIS märke"
 
-#: src/chart1.cpp:3299
+#: src/chart1.cpp:3374
 msgid "Anchorage created "
 msgstr "Ankrukoht loodud"
 
-#: src/chart1.cpp:3470
+#: src/chart1.cpp:3551
 msgid "StatusBar"
 msgstr "Olekuriba"
 
-#: src/chart1.cpp:3637
+#: src/chart1.cpp:3725
 msgid "Group \""
 msgstr "Grupp \""
 
-#: src/chart1.cpp:3639
+#: src/chart1.cpp:3727
 msgid "\" is empty, switching to \"All Active Charts\" group."
 msgstr "\" on tühi, lülitun \"All Active Charts\" grupile ümber."
 
-#: src/chart1.cpp:3641
+#: src/chart1.cpp:3729
 msgid "OpenCPN Group Notice"
 msgstr "OpenCPN grupi märkus"
 
-#: src/chart1.cpp:3776
+#: src/chart1.cpp:3864
 msgid "Chart1::Event...TCMgr Not Available"
 msgstr "Chart1::Event...TCMgr pole saadaval"
 
-#: src/chart1.cpp:3898 src/chart1.cpp:3953
+#: src/chart1.cpp:3991 src/chart1.cpp:4046
 msgid "MAN OVERBOARD"
 msgstr "MEES ÜLE PARDA"
 
-#: src/chart1.cpp:3915
+#: src/chart1.cpp:4008
 msgid "1.0 NM along COG"
 msgstr "1.0 miil piki COG"
 
-#: src/chart1.cpp:3926
+#: src/chart1.cpp:4019
 msgid "Temporary MOB Route"
 msgstr "Ajutine MOB teekond"
 
-#: src/chart1.cpp:3927
+#: src/chart1.cpp:4020
 msgid "Assumed 1 Mile Point"
 msgstr "1 miili oletatav punkt"
 
-#: src/chart1.cpp:3993 src/chart1.cpp:7086 src/chart1.cpp:7219
+#: src/chart1.cpp:4086 src/chart1.cpp:7262 src/chart1.cpp:7395
 #: src/routemanagerdialog.cpp:1587
 msgid "(Unnamed Track)"
 msgstr "(nimetu jälg)"
 
-#: src/chart1.cpp:4501
+#: src/chart1.cpp:4629
 msgid "Please restart OpenCPN to activate language or style changes."
 msgstr "Palun taaskäivita OpenCPN keele- või stiilimuutuste aktiveerimiseks."
 
-#: src/chart1.cpp:6742
+#: src/chart1.cpp:6918
 msgid "Show This Chart"
 msgstr "Näita seda kaarti"
 
-#: src/chart1.cpp:6747 src/chcanv.cpp:6408
+#: src/chart1.cpp:6923 src/chcanv.cpp:6589
 msgid "Hide This Chart"
 msgstr "Peida see kaart"
 
-#: src/chart1.cpp:6995
+#: src/chart1.cpp:7171
 msgid "Chart Print"
 msgstr "Kaardi printimine"
 
-#: src/chart1.cpp:6998 src/routeprintout.cpp:469
+#: src/chart1.cpp:7174 src/routeprintout.cpp:469
 msgid "There was a problem printing.\nPerhaps your current printer is not set correctly?"
 msgstr "Oli probleem printimisega.\nVõib-olla pole printer korralikult seadistatud?"
 
-#: src/chart1.cpp:7149 src/chart1.cpp:7222 src/routemanagerdialog.cpp:888
+#: src/chart1.cpp:7325 src/chart1.cpp:7398 src/routemanagerdialog.cpp:888
 msgid "(Unnamed Route)"
 msgstr "(nimetu teekond)"
 
-#: src/chart1.cpp:7781
+#: src/chart1.cpp:7957
 msgid " Ship "
 msgstr "Laev"
 
-#: src/chart1.cpp:8772
+#: src/chart1.cpp:8228 src/chart1.cpp:8279
+msgid "AIS MAN OVERBOARD"
+msgstr "AIS Mees üle parda"
+
+#: src/chart1.cpp:8241
+msgid "Ownship"
+msgstr "Oma laev"
+
+#: src/chart1.cpp:8252
+msgid "Temporary AISMOB Route"
+msgstr "Ajutine AISMOB teekond"
+
+#: src/chart1.cpp:8253
+msgid "Present Ownship"
+msgstr "Praegune oma laeva koht"
+
+#: src/chart1.cpp:8323
+msgid "AIS MAN OVERBOARD UPDATE"
+msgstr "AIS Mees üle parda uuendus"
+
+#: src/chart1.cpp:9132
 msgid "OpenCPN requires access to serial ports to use serial NMEA data.\n"
 msgstr "OpenCPN vajab ligipääsi jadaportidele NMEA-jadaandmete kasutamiseks.\n"
 
-#: src/chart1.cpp:8774
+#: src/chart1.cpp:9134
 msgid "No Serial Ports can be found on this system.\nYou must install a serial port (modprobe correct kernel module) or plug in a usb serial device.\n"
 msgstr "Selles süsteemis ei ole jadaporte tuvastatud.\nTe peate paigaldama jadapordi (modproovi tegelik kerneli moodul) või ühenda usb-jadaseade.\n"
 
-#: src/chart1.cpp:8796
+#: src/chart1.cpp:9156
 msgid "You do currently not have permission to access the serial ports on this system.\n\nIt is suggested that you exit OpenCPN now,\nand add yourself to the correct group to enable serial port access.\n\nYou may do so by executing the following command from the linux command line:\n\n                sudo usermod -a -G "
 msgstr "Teil puudub praegu luba selles süsteemis jadaportidele ligipääsu saamiseks.\n\nSoovitame Teil väljuda nüüd OpenCPN'st.\nja lisada ennast õigesse gruppi jadaportidele ligipääsu võimaldamiseks,\n\nTe võite seda teha käivitades järgneva käsu Linuxi käsureal:\n\n                sudo usermod -a -G "
 
-#: src/chart1.cpp:9226 src/routeprop.cpp:358 src/routeprop.cpp:1838
-#: src/routemanagerdialog.cpp:426 src/options.cpp:307 src/TrackPropDlg.cpp:85
-#: src/LinkPropDlg.cpp:32 src/AISTargetListDialog.cpp:297
+#: src/chart1.cpp:9586 src/routeprop.cpp:1828 src/routemanagerdialog.cpp:426
+#: src/options.cpp:634 src/options.cpp:847 src/options.cpp:5421
+#: src/TrackPropDlg.cpp:85 src/LinkPropDlg.cpp:38
+#: src/AISTargetListDialog.cpp:297 src/TCWin.cpp:61
 msgid "Dialog"
 msgstr "Dialoog"
 
-#: src/s52plib.cpp:1711 src/s52plib.cpp:1766 src/s52plib.cpp:1904
+#: src/s52plib.cpp:1712 src/s52plib.cpp:1767 src/s52plib.cpp:1905
 msgid "ChartTexts"
 msgstr "Tekst kaardil"
 
-#: src/cm93.cpp:6640
+#: src/tcmgr.cpp:760
+msgid "It seems you have no tide/current harmonic data installed."
+msgstr "Tundub, et loodete/hoovuste harmoonilised andmed ei ole paigaldatud."
+
+#: src/cm93.cpp:6680
 msgid "OpenCPN CM93 Cell Offset Adjustments"
 msgstr "OpenCPN CM93 elemendi nihke täpsustused"
 
-#: src/cm93.cpp:6657
+#: src/cm93.cpp:6697
 msgid "Cell"
 msgstr "Element"
 
-#: src/cm93.cpp:6660
+#: src/cm93.cpp:6700
 msgid "M_COVR ID"
 msgstr "M_COVR ID"
 
-#: src/cm93.cpp:6663
+#: src/cm93.cpp:6703
 msgid "Cell Scale"
 msgstr "Elemendi mõõtkava"
 
-#: src/cm93.cpp:6666
+#: src/cm93.cpp:6706
 msgid "wgsox"
 msgstr "wgsox"
 
-#: src/cm93.cpp:6669
+#: src/cm93.cpp:6709
 msgid "wgsoy"
 msgstr "wgsoy"
 
-#: src/cm93.cpp:6672
+#: src/cm93.cpp:6712
 msgid "User X Offset"
 msgstr "Kasutaja X-nihe"
 
-#: src/cm93.cpp:6675
+#: src/cm93.cpp:6715
 msgid "User Y Offset"
 msgstr "Kasutaja Y-nihe"
 
-#: src/cm93.cpp:6683
+#: src/cm93.cpp:6723
 msgid "User X Offset (Metres)"
 msgstr "Kasutaja X-nihe meetrites"
 
-#: src/cm93.cpp:6690
+#: src/cm93.cpp:6730
 msgid "User Y Offset (Metres)"
 msgstr "Kasutaja Y-nihe meetrites"
 
-#: src/cm93.cpp:6697 src/routeprop.cpp:820 src/routeprintout.cpp:406
-#: src/GoToPositionDialog.cpp:149
+#: src/cm93.cpp:6737 src/routeprop.cpp:808 src/options.cpp:385
+#: src/routeprintout.cpp:406 src/GoToPositionDialog.cpp:149 src/TCWin.cpp:140
+#: src/TCWin.cpp:145
 msgid "OK"
 msgstr "OK"
 
@@ -409,56 +435,56 @@ msgstr "OK"
 msgid "No Chart Available"
 msgstr "Kaarte pole saadaval"
 
-#: src/chartimg.cpp:705 src/chartimg.cpp:1332
+#: src/chartimg.cpp:707 src/chartimg.cpp:1336
 msgid "   Chart File contains less than 3 PLY points: "
 msgstr "   Kaardifail sisaldab vähem kui 3 kalibreerimispunkti: "
 
-#: src/chartimg.cpp:819
+#: src/chartimg.cpp:823
 #, c-format
 msgid "   Could not read first %d bytes of header for chart file: "
 msgstr "   Ei suutnud lugeda kaardifaili päise esimesi %d baite: "
 
-#: src/chartimg.cpp:842
+#: src/chartimg.cpp:846
 msgid "   Chart file has no BSB header, cannot Init."
 msgstr "   Kaardifailil pole BSB-päist, ei suuda käivitada."
 
-#: src/chartimg.cpp:1390
+#: src/chartimg.cpp:1394
 msgid "   Chart File RLL data corrupt on chart "
 msgstr "   Kaardifaili RLL-andmed on kaardil rikutud "
 
-#: src/chartimg.cpp:1743 src/chartimg.cpp:1754
+#: src/chartimg.cpp:1748 src/chartimg.cpp:1758 src/chartimg.cpp:1777
 msgid "   Chart File corrupt in PostInit() on chart "
 msgstr "   Kaardifail on PostInit() kohas kaardil rikutud "
 
-#: src/chartimg.cpp:1812
+#: src/chartimg.cpp:1817
 msgid "   Line Index corrupt, recreating Index for chart "
 msgstr "   Liinide indeks on rikutud, taastan indeksi kaardi jaoks "
 
-#: src/chartimg.cpp:1817
+#: src/chartimg.cpp:1822
 msgid "   Error creating Line Index for chart "
 msgstr "   Viga liinide indeksi loomisel kaardi jaoks"
 
-#: src/chartimg.cpp:4882
+#: src/chartimg.cpp:4904
 msgid "---<<< Warning:  Chart georef accuracy may be poor. >>>---"
 msgstr "---<<< Hoiatus: kaardi georeferensi täpsus võib olla madal. >>>---"
 
-#: src/chartimg.cpp:4977
+#: src/chartimg.cpp:4999
 msgid "   VP Final Check: Georeference Chart_Error_Factor on chart "
 msgstr "   VP lõplik kontroll: georeferensi Chart_Error_Factor viga kaardil "
 
-#: src/chartimg.cpp:4985 src/chartimg.cpp:5053
+#: src/chartimg.cpp:5007 src/chartimg.cpp:5075
 msgid "---<<< Warning:  Chart georef accuracy is poor. >>>---"
 msgstr "---<<< Hoiatus: kaardi georeferensi täpsus on madal. >>>---"
 
-#: src/chartimg.cpp:4992
+#: src/chartimg.cpp:5014
 msgid "   Trying again with internally calculated georef solution "
 msgstr "   Proovin seespidiselt arvutatud georeferenss-lahendusega uuesti "
 
-#: src/chartimg.cpp:5045
+#: src/chartimg.cpp:5067
 msgid "   VP Final Check with internal georef: Georeference Chart_Error_Factor on chart "
 msgstr "   VP lõplik kontroll seespidise georeferensiga: georeferensi Chart_Error_Factor viga kaardil "
 
-#: src/chartimg.cpp:5057
+#: src/chartimg.cpp:5079
 msgid "   Result: OK, Internal georef solution used."
 msgstr "   Tulemus: OK, kasutatakse seespidist georeferenss-lahendust."
 
@@ -478,7 +504,7 @@ msgstr "Konsooli legend"
 msgid "Console Value"
 msgstr "Konsooli väärtus"
 
-#: src/concanv.cpp:190 src/chcanv.cpp:6231
+#: src/concanv.cpp:190 src/chcanv.cpp:6412
 msgid "Route"
 msgstr "Teekond"
 
@@ -502,549 +528,549 @@ msgstr "XTE R"
 msgid "ETA          "
 msgstr "ETA          "
 
-#: src/chcanv.cpp:1975 src/options.cpp:1242
+#: src/chcanv.cpp:2139 src/options.cpp:1790
 msgid "CM93 Detail Level"
 msgstr "CM93 detailide tase"
 
-#: src/chcanv.cpp:2611 src/chcanv.cpp:8353
+#: src/chcanv.cpp:2775 src/chcanv.cpp:8571
 msgid "Route: "
 msgstr "Teekond:"
 
-#: src/chcanv.cpp:2613 src/chcanv.cpp:8355
+#: src/chcanv.cpp:2777 src/chcanv.cpp:8573
 msgid "Layer Route: "
 msgstr "Kiht Teekond:"
 
-#: src/chcanv.cpp:2615
+#: src/chcanv.cpp:2779
 msgid "(unnamed)"
 msgstr "(nimetu)"
 
-#: src/chcanv.cpp:2619
+#: src/chcanv.cpp:2783
 msgid "Total Length: "
 msgstr "Kogupikkus: "
 
-#: src/chcanv.cpp:2620
+#: src/chcanv.cpp:2784
 msgid "Leg: from "
 msgstr "Lõik:alates "
 
-#: src/chcanv.cpp:2621
+#: src/chcanv.cpp:2785
 msgid " to "
 msgstr " kuni "
 
-#: src/chcanv.cpp:3472
+#: src/chcanv.cpp:3651
 #, c-format
 msgid "Scale %4.0f (%1.1fx)"
 msgstr "Mõõtkava %4.0f (%1.1fx)-st"
 
-#: src/chcanv.cpp:3475
+#: src/chcanv.cpp:3654
 #, c-format
 msgid "Scale %4.0f (%1.2fx)"
 msgstr "Mõõtkava %4.0f (%1.2fx)-st"
 
-#: src/chcanv.cpp:3478
+#: src/chcanv.cpp:3657
 #, c-format
 msgid "Scale %4.0f"
 msgstr "Mõõtkava %4.0f"
 
-#: src/chcanv.cpp:5038 src/chcanv.cpp:5404
+#: src/chcanv.cpp:5226 src/chcanv.cpp:5635
 msgid "Use nearby waypoint?"
 msgstr "Kasutada lähimat teepunkti?"
 
-#: src/chcanv.cpp:5039 src/chcanv.cpp:5088 src/chcanv.cpp:5405
-#: src/chcanv.cpp:5454
+#: src/chcanv.cpp:5227 src/chcanv.cpp:5277 src/chcanv.cpp:5636
+#: src/chcanv.cpp:5685
 msgid "OpenCPN Route Create"
 msgstr "Loo OpenCPN teekond"
 
-#: src/chcanv.cpp:5083 src/chcanv.cpp:5449
+#: src/chcanv.cpp:5272 src/chcanv.cpp:5680
 msgid "For this leg the Great Circle route is "
 msgstr "Selle lõigu jaoks on suure ringi tee"
 
-#: src/chcanv.cpp:5084 src/chcanv.cpp:5450
+#: src/chcanv.cpp:5273 src/chcanv.cpp:5681
 msgid " shorter than rhumbline.\n\n"
 msgstr " lühem kui rumbijoon.\n\n"
 
-#: src/chcanv.cpp:5085 src/chcanv.cpp:5451
+#: src/chcanv.cpp:5274 src/chcanv.cpp:5682
 msgid "Would you like include the Great Circle routing points for this leg?"
 msgstr "Kas sooviksite lisada selle lõigu jaoks suure ringi teekonna punktid?"
 
-#: src/chcanv.cpp:6213 src/chcanv.cpp:6222
+#: src/chcanv.cpp:6394 src/chcanv.cpp:6403 src/options.cpp:576
 msgid "Menu"
 msgstr "Menüü"
 
-#: src/chcanv.cpp:6230
+#: src/chcanv.cpp:6411
 msgid "Waypoint"
 msgstr "Teepunkt"
 
-#: src/chcanv.cpp:6232
+#: src/chcanv.cpp:6413
 msgid "Track"
 msgstr "Jälg"
 
-#: src/chcanv.cpp:6233
+#: src/chcanv.cpp:6414
 msgid "AIS"
 msgstr "AIS"
 
-#: src/chcanv.cpp:6258 src/chcanv.cpp:6260
+#: src/chcanv.cpp:6439 src/chcanv.cpp:6441
 msgid "End Route"
 msgstr "Teekonna lõpp"
 
-#: src/chcanv.cpp:6267 src/chcanv.cpp:6269
+#: src/chcanv.cpp:6448 src/chcanv.cpp:6450
 msgid "Measure Off"
 msgstr "Mõõtmine välja"
 
-#: src/chcanv.cpp:6272
+#: src/chcanv.cpp:6453
 msgid "Measure"
 msgstr "Mõõtmine"
 
-#: src/chcanv.cpp:6278
+#: src/chcanv.cpp:6459
 msgid "Undo"
 msgstr "Võta tagasi"
 
-#: src/chcanv.cpp:6284
+#: src/chcanv.cpp:6465
 msgid "Redo"
 msgstr "Korda"
 
-#: src/chcanv.cpp:6338
+#: src/chcanv.cpp:6519
 msgid "Max Detail Here"
 msgstr "Maksimaalne detailsus siia"
 
-#: src/chcanv.cpp:6339 src/chcanv.cpp:6353
+#: src/chcanv.cpp:6520 src/chcanv.cpp:6534
 msgid "Scale In"
 msgstr "Suurenda"
 
-#: src/chcanv.cpp:6340 src/chcanv.cpp:6354
+#: src/chcanv.cpp:6521 src/chcanv.cpp:6535
 msgid "Scale Out"
 msgstr "Vähenda"
 
-#: src/chcanv.cpp:6344 src/chcanv.cpp:6350
+#: src/chcanv.cpp:6525 src/chcanv.cpp:6531
 msgid "Object Query..."
 msgstr "Objekti päring..."
 
-#: src/chcanv.cpp:6359
+#: src/chcanv.cpp:6540
 msgid "Drop Mark"
 msgstr "Pane märk"
 
-#: src/chcanv.cpp:6361
+#: src/chcanv.cpp:6542
 msgid "Move Boat Here"
 msgstr "Pane laev siia"
 
-#: src/chcanv.cpp:6364
+#: src/chcanv.cpp:6545
 msgid "Navigate To Here"
 msgstr "Navigeeri siia"
 
-#: src/chcanv.cpp:6366
+#: src/chcanv.cpp:6547
 msgid "Center View..."
 msgstr "Keskenda vaade..."
 
-#: src/chcanv.cpp:6368
+#: src/chcanv.cpp:6549
 msgid "Course Up Mode"
 msgstr "kurss-üleval tööreþiim"
 
-#: src/chcanv.cpp:6371
+#: src/chcanv.cpp:6552
 msgid "Chart Up Mode"
 msgstr "Kaart-üleval tööreþiim"
 
-#: src/chcanv.cpp:6373
+#: src/chcanv.cpp:6554
 msgid "North Up Mode"
 msgstr "N-üleval tööreþiim"
 
-#: src/chcanv.cpp:6381
+#: src/chcanv.cpp:6562
 msgid "Paste Waypoint"
 msgstr "Kleebi teepunkt"
 
-#: src/chcanv.cpp:6385 src/chcanv.cpp:6393
+#: src/chcanv.cpp:6566 src/chcanv.cpp:6574
 msgid "Paste Route"
 msgstr "Kleebi teekond"
 
-#: src/chcanv.cpp:6389 src/chcanv.cpp:6394
+#: src/chcanv.cpp:6570 src/chcanv.cpp:6575
 msgid "Paste Track"
 msgstr "kleebi jälg"
 
-#: src/chcanv.cpp:6402
+#: src/chcanv.cpp:6583
 msgid "CM93 Offset Dialog..."
 msgstr "CM93 nihke dialoog..."
 
-#: src/chcanv.cpp:6418 src/options.cpp:1297 src/options.cpp:1345
-#: src/options.cpp:3625
+#: src/chcanv.cpp:6599 src/options.cpp:1845 src/options.cpp:1893
+#: src/options.cpp:4251
 msgid "Chart Groups"
 msgstr "Kaartide grupid"
 
-#: src/chcanv.cpp:6422
+#: src/chcanv.cpp:6613
 msgid "All Active Charts"
 msgstr "Kõik aktiivsed kaardid"
 
-#: src/chcanv.cpp:6461
+#: src/chcanv.cpp:6663
 msgid "AIS Target List..."
 msgstr "AIS märkide nimekiri..."
 
-#: src/chcanv.cpp:6464
+#: src/chcanv.cpp:6666
 msgid "Target Query..."
 msgstr "Märkide päring..."
 
-#: src/chcanv.cpp:6468
+#: src/chcanv.cpp:6670
 msgid "Hide Target CPA"
 msgstr "Peida märgi CPA"
 
-#: src/chcanv.cpp:6470
+#: src/chcanv.cpp:6672
 msgid "Show Target CPA"
 msgstr "Näita märgi CPA"
 
-#: src/chcanv.cpp:6472
+#: src/chcanv.cpp:6674
 msgid "Target List..."
 msgstr "Märkide nimekiri"
 
-#: src/chcanv.cpp:6475
+#: src/chcanv.cpp:6677
 msgid "Hide Target Track"
 msgstr "Peida märgi jälg"
 
-#: src/chcanv.cpp:6477
+#: src/chcanv.cpp:6679
 msgid "Show Target Track"
 msgstr "Näita märgi jälge"
 
-#: src/chcanv.cpp:6490
+#: src/chcanv.cpp:6692
 msgid "Layer Route"
 msgstr "Kihi teekond"
 
-#: src/chcanv.cpp:6491 src/chcanv.cpp:6506 src/chcanv.cpp:6553
-#: src/chcanv.cpp:6556 src/chcanv.cpp:6573 src/chcanv.cpp:6579
-#: src/chcanv.cpp:6629 src/chcanv.cpp:6632
+#: src/chcanv.cpp:6693 src/chcanv.cpp:6708 src/chcanv.cpp:6755
+#: src/chcanv.cpp:6758 src/chcanv.cpp:6775 src/chcanv.cpp:6781
+#: src/chcanv.cpp:6831 src/chcanv.cpp:6834
 msgid "Properties..."
 msgstr "Omadused..."
 
-#: src/chcanv.cpp:6496 src/chcanv.cpp:6511 src/chcanv.cpp:6589
+#: src/chcanv.cpp:6698 src/chcanv.cpp:6713 src/chcanv.cpp:6791
 msgid "Activate Next Waypoint"
 msgstr "Käivita järgmine teepunkt"
 
-#: src/chcanv.cpp:6498 src/chcanv.cpp:6513 src/routemanagerdialog.cpp:943
+#: src/chcanv.cpp:6700 src/chcanv.cpp:6715 src/routemanagerdialog.cpp:943
 msgid "Deactivate"
 msgstr "Peata"
 
-#: src/chcanv.cpp:6501 src/chcanv.cpp:6516 src/chcanv.cpp:6576
-#: src/chcanv.cpp:6582 src/routemanagerdialog.cpp:937
+#: src/chcanv.cpp:6703 src/chcanv.cpp:6718 src/chcanv.cpp:6778
+#: src/chcanv.cpp:6784 src/routemanagerdialog.cpp:937
 msgid "Activate"
 msgstr "Käivita"
 
-#: src/chcanv.cpp:6519
+#: src/chcanv.cpp:6721
 msgid "Insert Waypoint"
 msgstr "Sisesta teepunkt"
 
-#: src/chcanv.cpp:6520 src/undo.cpp:91
+#: src/chcanv.cpp:6722 src/undo.cpp:91
 msgid "Append Waypoint"
 msgstr "Lisa teepunkt"
 
-#: src/chcanv.cpp:6521
+#: src/chcanv.cpp:6723
 msgid "Copy as KML..."
 msgstr "Kopeeri KML-na"
 
-#: src/chcanv.cpp:6522 src/chcanv.cpp:6558
+#: src/chcanv.cpp:6724 src/chcanv.cpp:6760
 msgid "Delete..."
 msgstr "Kustuta..."
 
-#: src/chcanv.cpp:6523
+#: src/chcanv.cpp:6725
 msgid "Reverse..."
 msgstr "Pööra ümber..."
 
-#: src/chcanv.cpp:6526 src/chcanv.cpp:6602 src/chcanv.cpp:6644
+#: src/chcanv.cpp:6728 src/chcanv.cpp:6804 src/chcanv.cpp:6846
 msgid "Send to GPS"
 msgstr "Saada GPS-i"
 
-#: src/chcanv.cpp:6535 src/chcanv.cpp:6611
+#: src/chcanv.cpp:6737 src/chcanv.cpp:6813
 msgid "Send to new GPS"
 msgstr "Saada uude GPS-i"
 
-#: src/chcanv.cpp:6552
+#: src/chcanv.cpp:6754
 msgid "Layer Track"
 msgstr "Kiht Jälg"
 
-#: src/chcanv.cpp:6557
+#: src/chcanv.cpp:6759
 msgid "Copy As KML"
 msgstr "Kopeeri KML-na"
 
-#: src/chcanv.cpp:6572
+#: src/chcanv.cpp:6774
 msgid "Layer Routepoint"
 msgstr "Kiht Teekonnapunkt"
 
-#: src/chcanv.cpp:6593
+#: src/chcanv.cpp:6795
 msgid "Remove from Route"
 msgstr "Kõrvalda teekonnast"
 
-#: src/chcanv.cpp:6595 src/chcanv.cpp:6637
+#: src/chcanv.cpp:6797 src/chcanv.cpp:6839
 msgid "Copy as KML"
 msgstr "Kopeeri KML-na"
 
-#: src/chcanv.cpp:6598 src/chcanv.cpp:6640 src/routeprop.cpp:1985
-#: src/options.cpp:4567 src/TrackPropDlg.cpp:291
+#: src/chcanv.cpp:6800 src/chcanv.cpp:6842 src/routeprop.cpp:1973
+#: src/options.cpp:5193 src/TrackPropDlg.cpp:291
 msgid "Delete"
 msgstr "Kustuta"
 
-#: src/chcanv.cpp:6628
+#: src/chcanv.cpp:6830
 msgid "Layer Waypoint"
 msgstr "Kiht Teepunkt"
 
-#: src/chcanv.cpp:6635
+#: src/chcanv.cpp:6837
 msgid "Navigate To This"
 msgstr "Navigeeri selle juurde"
 
-#: src/chcanv.cpp:6654
+#: src/chcanv.cpp:6856
 msgid "Clear Anchor Watch"
 msgstr "Lõpeta ankruvaht"
 
-#: src/chcanv.cpp:6664
+#: src/chcanv.cpp:6866
 msgid "Set Anchor Watch"
 msgstr "Alusta ankruvahti"
 
-#: src/chcanv.cpp:6680
+#: src/chcanv.cpp:6882
 msgid "Show Tide Information"
 msgstr "Näita loodete infot"
 
-#: src/chcanv.cpp:6686
+#: src/chcanv.cpp:6888
 msgid "Show Current Information"
 msgstr "Näita hoovuse infot"
 
-#: src/chcanv.cpp:6807 src/chcanv.cpp:6819
+#: src/chcanv.cpp:7009 src/chcanv.cpp:7021
 msgid "ObjectQuery"
 msgstr "Objektipäring"
 
-#: src/chcanv.cpp:6813
+#: src/chcanv.cpp:7015
 msgid "Object Query"
 msgstr "Objekti päring"
 
-#: src/chcanv.cpp:6954 src/routemanagerdialog.cpp:2057
+#: src/chcanv.cpp:7156 src/routemanagerdialog.cpp:2061
 msgid "Waypoint Properties, Layer: "
 msgstr "Kiht Teepunkti omadused:"
 
-#: src/chcanv.cpp:7043
+#: src/chcanv.cpp:7245
 msgid "There is an existing waypoint at the same location as the one you are pasting. Would you like to merge the pasted data with it?\n\n"
 msgstr "Seal on samas kohas olemas teepunkt, kuhu soovite seda kleepida. Kas soovite kleebitavad andmed temaga mestida?\n\n"
 
-#: src/chcanv.cpp:7044
+#: src/chcanv.cpp:7246
 msgid "Answering 'No' will create a new waypoint at the same location."
 msgstr "Vastates 'Ei' luuakse uus teepunkt samas kohas."
 
-#: src/chcanv.cpp:7045
+#: src/chcanv.cpp:7247
 msgid "Merge waypoint?"
 msgstr "Mestida teepunkt?"
 
-#: src/chcanv.cpp:7104
+#: src/chcanv.cpp:7306
 msgid "There are existing waypoints at the same location as some of the ones you are pasting. Would you like to just merge the pasted data into them?\n\n"
 msgstr "Seal on samas kohas, kuhu soovite mõned kleepida, olemas teepunktid,. Kas soovite kleebitavad andmed nendega mestida?\n\n"
 
-#: src/chcanv.cpp:7105
+#: src/chcanv.cpp:7307
 msgid "Answering 'No' will create all new waypoints for this route."
 msgstr "Vastates 'Ei' luuakse täiesti uued teepunktid selle teekonna jaoks."
 
-#: src/chcanv.cpp:7106
+#: src/chcanv.cpp:7308
 msgid "Merge waypoints?"
 msgstr "Mestida teepunktid?"
 
-#: src/chcanv.cpp:7305
+#: src/chcanv.cpp:7507
 msgid "Temporary GOTO Route"
 msgstr "Ajutine GOTO teekond"
 
-#: src/chcanv.cpp:7306 src/chcanv.cpp:7358 src/routemanagerdialog.cpp:2181
+#: src/chcanv.cpp:7508 src/chcanv.cpp:7560 src/routemanagerdialog.cpp:2185
 msgid "Here"
 msgstr "Siin"
 
-#: src/chcanv.cpp:7308
+#: src/chcanv.cpp:7510
 msgid "There"
 msgstr "Seal"
 
-#: src/chcanv.cpp:7354 src/routemanagerdialog.cpp:1865
-#: src/routemanagerdialog.cpp:2177
+#: src/chcanv.cpp:7556 src/routemanagerdialog.cpp:1869
+#: src/routemanagerdialog.cpp:2181
 msgid "(Unnamed Waypoint)"
 msgstr "(nimetu teepunkt)"
 
-#: src/chcanv.cpp:7355 src/routemanagerdialog.cpp:2178
+#: src/chcanv.cpp:7557 src/routemanagerdialog.cpp:2182
 msgid "Go to "
 msgstr "Mine"
 
-#: src/chcanv.cpp:7556 src/routemanagerdialog.cpp:1152
+#: src/chcanv.cpp:7758 src/routemanagerdialog.cpp:1152
 msgid "Rename Waypoints?"
 msgstr "Nimetada teepunkt ümber?"
 
-#: src/chcanv.cpp:7576
+#: src/chcanv.cpp:7778
 msgid "Are you sure you want to delete this route?"
 msgstr "Kas olete kindel, et soovite selle teekonna kustutada?"
 
-#: src/chcanv.cpp:7577
+#: src/chcanv.cpp:7779
 msgid "OpenCPN Route Delete"
 msgstr "OpenCPN teekonna kustutamine"
 
-#: src/chcanv.cpp:7700 src/chcanv.cpp:7711 src/chcanv.cpp:7724
-#: src/chcanv.cpp:7736 src/routemanagerdialog.cpp:1344
-#: src/routemanagerdialog.cpp:2232
+#: src/chcanv.cpp:7913 src/chcanv.cpp:7924 src/chcanv.cpp:7937
+#: src/chcanv.cpp:7949 src/routemanagerdialog.cpp:1344
+#: src/routemanagerdialog.cpp:2236
 msgid "Send To GPS..."
 msgstr "Saada GPS-i"
 
-#: src/chcanv.cpp:7822
+#: src/chcanv.cpp:8035
 msgid "Are you sure you want to delete this track?"
 msgstr "Kas olete kindel, et soovite seda jälge kustutada?"
 
-#: src/chcanv.cpp:7823 src/routeman.cpp:870
+#: src/chcanv.cpp:8036 src/routeman.cpp:874
 msgid "OpenCPN Track Delete"
 msgstr "OpenCPN jälje kustutamine"
 
-#: src/chcanv.cpp:8247 src/chcanv.cpp:8330 src/RolloverWin.cpp:106
+#: src/chcanv.cpp:8465 src/chcanv.cpp:8548 src/RolloverWin.cpp:106
 #: src/RolloverWin.cpp:156
 msgid "RouteLegInfoRollover"
 msgstr "Lõigu lühi-info üleliikudes"
 
-#: src/chcanv.cpp:9257 src/options.cpp:1235
+#: src/chcanv.cpp:9447 src/options.cpp:1783
 msgid "Feet"
 msgstr "jalad"
 
-#: src/chcanv.cpp:9258 src/options.cpp:1235 src/options.cpp:1799
+#: src/chcanv.cpp:9448 src/options.cpp:1783 src/options.cpp:2368
 msgid "Meters"
 msgstr "meetrid"
 
-#: src/chcanv.cpp:9259 src/options.cpp:1235
+#: src/chcanv.cpp:9449 src/options.cpp:1783
 msgid "Fathoms"
 msgstr "süllad"
 
-#: src/chcanv.cpp:9277 src/chcanv.cpp:9279
+#: src/chcanv.cpp:9452
 msgid "OverZoom"
 msgstr "Liigsuum"
 
-#: src/chcanv.cpp:9671 src/chcanv.cpp:9672
+#: src/chcanv.cpp:9814 src/chcanv.cpp:9815
 msgid "ExtendedTideIcon"
 msgstr "Üksikasjalik loodete ikoon"
 
-#: src/chcanv.cpp:9946
+#: src/chcanv.cpp:10075
 msgid "CurrentValue"
 msgstr "Tegelik väärtus"
 
-#: src/chcanv.cpp:10335
+#: src/chcanv.cpp:10456
 msgid "   External application \"xcalib\" not found. Screen brightness not changed."
 msgstr "  Ei leitud välist programmi \"xcalib\". Ekraani heledust ei muudetud."
 
-#: src/navutil.cpp:2715 src/navutil.cpp:2755 src/navutil.cpp:2785
-#: src/navutil.cpp:2810
+#: src/navutil.cpp:2780 src/navutil.cpp:2820 src/navutil.cpp:2850
+#: src/navutil.cpp:2875
 msgid "Export GPX file"
 msgstr "Ekspordi GPX-fail"
 
-#: src/navutil.cpp:2738 src/navutil.cpp:2768 src/navutil.cpp:2798
+#: src/navutil.cpp:2803 src/navutil.cpp:2833 src/navutil.cpp:2863
 msgid "Overwrite existing file?"
 msgstr "Ks olemasolev fail üle kirjutada?"
 
-#: src/navutil.cpp:2885
+#: src/navutil.cpp:2950
 msgid "Import GPX file"
 msgstr "Impordi GPX-faili"
 
-#: src/navutil.cpp:3420
+#: src/navutil.cpp:3485
 msgid "&Font family:"
 msgstr "&Kirjamärgi grupp:"
 
-#: src/navutil.cpp:3426 src/navutil.cpp:3428
+#: src/navutil.cpp:3491 src/navutil.cpp:3493
 msgid "The font family."
 msgstr "Kirjamärgi grupp."
 
-#: src/navutil.cpp:3433
+#: src/navutil.cpp:3498
 msgid "&Style:"
 msgstr "&Stiil"
 
-#: src/navutil.cpp:3437 src/navutil.cpp:3439
+#: src/navutil.cpp:3502 src/navutil.cpp:3504
 msgid "The font style."
 msgstr "Kirjamärgi stiil."
 
-#: src/navutil.cpp:3444
+#: src/navutil.cpp:3509
 msgid "&Weight:"
 msgstr "&Paksus"
 
-#: src/navutil.cpp:3448 src/navutil.cpp:3450
+#: src/navutil.cpp:3513 src/navutil.cpp:3515
 msgid "The font weight."
 msgstr "Kirjamärgi paksus."
 
-#: src/navutil.cpp:3457
+#: src/navutil.cpp:3522
 msgid "C&olour:"
 msgstr "&Värv:"
 
-#: src/navutil.cpp:3467 src/navutil.cpp:3469
+#: src/navutil.cpp:3532 src/navutil.cpp:3534
 msgid "The font colour."
 msgstr "Kirjamärgi värv."
 
-#: src/navutil.cpp:3475
+#: src/navutil.cpp:3540
 msgid "&Point size:"
 msgstr "&Punkti suurus:"
 
-#: src/navutil.cpp:3480 src/navutil.cpp:3482
+#: src/navutil.cpp:3545 src/navutil.cpp:3547
 msgid "The font point size."
 msgstr "Kirjamärgi punkti suurus."
 
-#: src/navutil.cpp:3489
+#: src/navutil.cpp:3554
 msgid "&Underline"
 msgstr "&Allajoonitud"
 
-#: src/navutil.cpp:3492 src/navutil.cpp:3494
+#: src/navutil.cpp:3557 src/navutil.cpp:3559
 msgid "Whether the font is underlined."
 msgstr "Kas kirjamärk on allajoonitud."
 
-#: src/navutil.cpp:3501
+#: src/navutil.cpp:3566
 msgid "Preview:"
 msgstr "Eelvaade:"
 
-#: src/navutil.cpp:3506 src/navutil.cpp:3508
+#: src/navutil.cpp:3571 src/navutil.cpp:3573
 msgid "Shows the font preview."
 msgstr "Näitab kirjamärgi eelvaadet."
 
-#: src/navutil.cpp:3515 src/options.cpp:1915
+#: src/navutil.cpp:3580 src/options.cpp:2493
 msgid "&Cancel"
 msgstr "&Tühista"
 
-#: src/navutil.cpp:3517
+#: src/navutil.cpp:3582
 msgid "Click to cancel the font selection."
 msgstr "Vajuta kirjamärgi valiku tühistamiseks."
 
-#: src/navutil.cpp:3520
+#: src/navutil.cpp:3585
 msgid "&OK"
 msgstr "&OK"
 
-#: src/navutil.cpp:3522 src/navutil.cpp:3524
+#: src/navutil.cpp:3587 src/navutil.cpp:3589
 msgid "Click to confirm the font selection."
 msgstr "Vajuta kirjamärgi valiku kinnitamiseks."
 
-#: src/navutil.cpp:4038
+#: src/navutil.cpp:4103
 msgid "NMi"
 msgstr "Mm"
 
-#: src/navutil.cpp:4041
+#: src/navutil.cpp:4106
 msgid "mi"
 msgstr "miili"
 
-#: src/navutil.cpp:4044
+#: src/navutil.cpp:4109
 msgid "km"
 msgstr "km"
 
-#: src/navutil.cpp:4047
+#: src/navutil.cpp:4112
 msgid "m"
 msgstr "m"
 
-#: src/navutil.cpp:4050
+#: src/navutil.cpp:4115
 msgid "ft"
 msgstr "jalga"
 
-#: src/navutil.cpp:4053
+#: src/navutil.cpp:4118
 msgid "fa"
 msgstr "sülda"
 
-#: src/navutil.cpp:4056 src/AIS_Target_Data.cpp:756
+#: src/navutil.cpp:4121 src/AIS_Target_Data.cpp:756
 msgid "in"
 msgstr "tolli"
 
-#: src/navutil.cpp:4059
+#: src/navutil.cpp:4124
 msgid "cm"
 msgstr "cm"
 
-#: src/navutil.cpp:4127
+#: src/navutil.cpp:4192
 msgid "kts"
 msgstr "sõlme"
 
-#: src/navutil.cpp:4130
+#: src/navutil.cpp:4195
 msgid "mph"
 msgstr "mp/h"
 
-#: src/navutil.cpp:4133 src/options.cpp:1811
+#: src/navutil.cpp:4198 src/options.cpp:2380
 msgid "km/h"
 msgstr "km/h"
 
-#: src/navutil.cpp:4136 src/options.cpp:1811
+#: src/navutil.cpp:4201 src/options.cpp:2380
 msgid "m/s"
 msgstr "m/s"
 
@@ -1072,427 +1098,427 @@ msgstr "Hämarik"
 msgid "Nighttime"
 msgstr "Öö-aeg"
 
-#: src/routeprop.cpp:379
+#: src/routeprop.cpp:382
 msgid "&Waypoint Properties..."
 msgstr "&Teepunkti omadused..."
 
-#: src/routeprop.cpp:382
+#: src/routeprop.cpp:385
 msgid "&Remove Selected"
 msgstr "&Kõrvalda valitud"
 
-#: src/routeprop.cpp:387 src/TrackPropDlg.cpp:787
+#: src/routeprop.cpp:390 src/TrackPropDlg.cpp:792
 msgid "&Copy all as text"
 msgstr "K&opeeri kõik tekstina"
 
-#: src/routeprop.cpp:402 src/routeprop.cpp:407 src/TrackPropDlg.cpp:702
+#: src/routeprop.cpp:405 src/routeprop.cpp:410 src/TrackPropDlg.cpp:709
 msgid "_A"
 msgstr "_A"
 
-#: src/routeprop.cpp:403 src/routeprop.cpp:408 src/TrackPropDlg.cpp:703
+#: src/routeprop.cpp:406 src/routeprop.cpp:411 src/TrackPropDlg.cpp:710
 msgid "_B"
 msgstr "_B"
 
-#: src/routeprop.cpp:470 src/TrackPropDlg.cpp:678
+#: src/routeprop.cpp:473 src/TrackPropDlg.cpp:685
 msgid "_plus"
 msgstr "_pluss"
 
-#: src/routeprop.cpp:486 src/routeprop.cpp:648 src/routeprop.cpp:1886
+#: src/routeprop.cpp:489 src/routeprop.cpp:636 src/routeprop.cpp:1874
 #: src/routeprintout.cpp:103 src/routeprintout.cpp:361 src/TrackPropDlg.cpp:114
-#: src/TrackPropDlg.cpp:737 src/AISTargetListDialog.cpp:356
+#: src/TrackPropDlg.cpp:742 src/AISTargetListDialog.cpp:356
 msgid "Name"
 msgstr "Nimi"
 
-#: src/routeprop.cpp:487 src/routeprop.cpp:661 src/TrackPropDlg.cpp:738
+#: src/routeprop.cpp:490 src/routeprop.cpp:649 src/TrackPropDlg.cpp:743
 msgid "Depart From"
 msgstr "Alates"
 
-#: src/routeprop.cpp:488 src/routeprop.cpp:666 src/TrackPropDlg.cpp:739
+#: src/routeprop.cpp:491 src/routeprop.cpp:654 src/TrackPropDlg.cpp:744
 #: src/AIS_Target_Data.cpp:497
 msgid "Destination"
 msgstr "Sihtpunkt"
 
-#: src/routeprop.cpp:489 src/routeprop.cpp:685 src/TrackPropDlg.cpp:740
+#: src/routeprop.cpp:492 src/routeprop.cpp:673 src/TrackPropDlg.cpp:745
 msgid "Total Distance"
 msgstr "Kogu vahemaa"
 
-#: src/routeprop.cpp:490
+#: src/routeprop.cpp:493
 msgid "Speed (Kts)"
 msgstr "Kiirus (sõlme)"
 
-#: src/routeprop.cpp:491 src/routeprop.cpp:702 src/TrackPropDlg.cpp:742
+#: src/routeprop.cpp:494 src/routeprop.cpp:690 src/TrackPropDlg.cpp:747
 msgid "Departure Time (m/d/y h:m)"
 msgstr "Lahkumise aeg\n(mm/dd/yyyy hh:mm)"
 
-#: src/routeprop.cpp:492 src/routeprop.cpp:696 src/TrackPropDlg.cpp:743
+#: src/routeprop.cpp:495 src/routeprop.cpp:684 src/TrackPropDlg.cpp:748
 msgid "Time Enroute"
 msgstr "Aeg teel"
 
-#: src/routeprop.cpp:643 src/routeprop.cpp:1863 src/options.cpp:605
+#: src/routeprop.cpp:631 src/routeprop.cpp:1851 src/options.cpp:1143
 msgid "Properties"
 msgstr "Omadused"
 
-#: src/routeprop.cpp:690
+#: src/routeprop.cpp:678
 msgid "Plan Speed"
 msgstr "Kavandatud kiirus"
 
-#: src/routeprop.cpp:728 src/routeprop.cpp:737 src/TrackPropDlg.cpp:230
+#: src/routeprop.cpp:716 src/routeprop.cpp:725 src/TrackPropDlg.cpp:230
 msgid "UTC"
 msgstr "UTC"
 
-#: src/routeprop.cpp:728 src/routeprop.cpp:740 src/TrackPropDlg.cpp:233
+#: src/routeprop.cpp:716 src/routeprop.cpp:728 src/TrackPropDlg.cpp:233
 msgid "Local @ PC"
 msgstr "kohalik @ PC"
 
-#: src/routeprop.cpp:728 src/routeprop.cpp:743
+#: src/routeprop.cpp:716 src/routeprop.cpp:731
 msgid "LMT @ Location"
 msgstr "LMT @ kohapeal"
 
-#: src/routeprop.cpp:732
+#: src/routeprop.cpp:720
 msgid "Times shown as"
 msgstr "Ajad näidatud kui"
 
-#: src/routeprop.cpp:746
+#: src/routeprop.cpp:734
 msgid "Color:"
 msgstr "Värv:"
 
-#: src/routeprop.cpp:751 src/TrackPropDlg.cpp:154
+#: src/routeprop.cpp:739 src/TrackPropDlg.cpp:154
 msgid "Default color"
 msgstr "vaikimisi värv"
 
-#: src/routeprop.cpp:751 src/TrackPropDlg.cpp:154
+#: src/routeprop.cpp:739 src/TrackPropDlg.cpp:154
 msgid "Black"
 msgstr "must"
 
-#: src/routeprop.cpp:751 src/TrackPropDlg.cpp:154
+#: src/routeprop.cpp:739 src/TrackPropDlg.cpp:154
 msgid "Dark Red"
 msgstr "tumepunane"
 
-#: src/routeprop.cpp:751 src/TrackPropDlg.cpp:154
+#: src/routeprop.cpp:739 src/TrackPropDlg.cpp:154
 msgid "Dark Green"
 msgstr "tumeroheline"
 
-#: src/routeprop.cpp:752 src/TrackPropDlg.cpp:155
+#: src/routeprop.cpp:740 src/TrackPropDlg.cpp:155
 msgid "Dark Yellow"
 msgstr "tumekollane"
 
-#: src/routeprop.cpp:752 src/TrackPropDlg.cpp:155
+#: src/routeprop.cpp:740 src/TrackPropDlg.cpp:155
 msgid "Dark Blue"
 msgstr "tumesinine"
 
-#: src/routeprop.cpp:752 src/TrackPropDlg.cpp:155
+#: src/routeprop.cpp:740 src/TrackPropDlg.cpp:155
 msgid "Dark Magenta"
 msgstr "tumepurpurviolett"
 
-#: src/routeprop.cpp:752 src/TrackPropDlg.cpp:155
+#: src/routeprop.cpp:740 src/TrackPropDlg.cpp:155
 msgid "Dark Cyan"
 msgstr "tume-erksinine"
 
-#: src/routeprop.cpp:753 src/TrackPropDlg.cpp:156
+#: src/routeprop.cpp:741 src/TrackPropDlg.cpp:156
 msgid "Light Gray"
 msgstr "helehall"
 
-#: src/routeprop.cpp:753 src/TrackPropDlg.cpp:156
+#: src/routeprop.cpp:741 src/TrackPropDlg.cpp:156
 msgid "Dark Gray"
 msgstr "tumehall"
 
-#: src/routeprop.cpp:753 src/TrackPropDlg.cpp:156
+#: src/routeprop.cpp:741 src/TrackPropDlg.cpp:156
 msgid "Red"
 msgstr "punane"
 
-#: src/routeprop.cpp:753 src/TrackPropDlg.cpp:156
+#: src/routeprop.cpp:741 src/TrackPropDlg.cpp:156
 msgid "Green"
 msgstr "roheline"
 
-#: src/routeprop.cpp:753 src/TrackPropDlg.cpp:156
+#: src/routeprop.cpp:741 src/TrackPropDlg.cpp:156
 msgid "Yellow"
 msgstr "kollane"
 
-#: src/routeprop.cpp:753 src/TrackPropDlg.cpp:156
+#: src/routeprop.cpp:741 src/TrackPropDlg.cpp:156
 msgid "Blue"
 msgstr "sinine"
 
-#: src/routeprop.cpp:754 src/TrackPropDlg.cpp:157
+#: src/routeprop.cpp:742 src/TrackPropDlg.cpp:157
 msgid "Magenta"
 msgstr "purpurviolett"
 
-#: src/routeprop.cpp:754 src/TrackPropDlg.cpp:157
+#: src/routeprop.cpp:742 src/TrackPropDlg.cpp:157
 msgid "Cyan"
 msgstr "erksinine"
 
-#: src/routeprop.cpp:754 src/TrackPropDlg.cpp:157
+#: src/routeprop.cpp:742 src/TrackPropDlg.cpp:157
 msgid "White"
 msgstr "valge"
 
-#: src/routeprop.cpp:761
+#: src/routeprop.cpp:749
 msgid "Style:"
 msgstr "Stiil:"
 
-#: src/routeprop.cpp:766 src/routeprop.cpp:779 src/options.cpp:959
-#: src/TrackPropDlg.cpp:167 src/TrackPropDlg.cpp:177
+#: src/routeprop.cpp:754 src/routeprop.cpp:767 src/options.cpp:506
+#: src/options.cpp:1503 src/TrackPropDlg.cpp:167 src/TrackPropDlg.cpp:177
 msgid "Default"
 msgstr "vaikimisi"
 
-#: src/routeprop.cpp:766 src/TrackPropDlg.cpp:167
+#: src/routeprop.cpp:754 src/TrackPropDlg.cpp:167
 msgid "Solid"
 msgstr "jäme"
 
-#: src/routeprop.cpp:766 src/TrackPropDlg.cpp:167
+#: src/routeprop.cpp:754 src/TrackPropDlg.cpp:167
 msgid "Dot"
 msgstr "punktiirjoon"
 
-#: src/routeprop.cpp:766 src/TrackPropDlg.cpp:167
+#: src/routeprop.cpp:754 src/TrackPropDlg.cpp:167
 msgid "Long dash"
 msgstr "pikk joon"
 
-#: src/routeprop.cpp:767 src/TrackPropDlg.cpp:167
+#: src/routeprop.cpp:755 src/TrackPropDlg.cpp:167
 msgid "Short dash"
 msgstr "lühike joon"
 
-#: src/routeprop.cpp:767 src/TrackPropDlg.cpp:167
+#: src/routeprop.cpp:755 src/TrackPropDlg.cpp:167
 msgid "Dot dash"
 msgstr "punkt-kriips-joon"
 
-#: src/routeprop.cpp:774
+#: src/routeprop.cpp:762
 msgid "Width:"
 msgstr "Laius: "
 
-#: src/routeprop.cpp:779 src/TrackPropDlg.cpp:177
+#: src/routeprop.cpp:767 src/TrackPropDlg.cpp:177
 msgid "1 pixel"
 msgstr "1 piksel"
 
-#: src/routeprop.cpp:779 src/TrackPropDlg.cpp:177
+#: src/routeprop.cpp:767 src/TrackPropDlg.cpp:177
 msgid "2 pixels"
 msgstr "2 pikslit"
 
-#: src/routeprop.cpp:779 src/TrackPropDlg.cpp:177
+#: src/routeprop.cpp:767 src/TrackPropDlg.cpp:177
 msgid "3 pixels"
 msgstr "3 pikslit"
 
-#: src/routeprop.cpp:780 src/TrackPropDlg.cpp:178
+#: src/routeprop.cpp:768 src/TrackPropDlg.cpp:178
 msgid "4 pixels"
 msgstr "4 pikslit"
 
-#: src/routeprop.cpp:780 src/TrackPropDlg.cpp:178
+#: src/routeprop.cpp:768 src/TrackPropDlg.cpp:178
 msgid "5 pixels"
 msgstr "5 pikslit"
 
-#: src/routeprop.cpp:780 src/TrackPropDlg.cpp:178
+#: src/routeprop.cpp:768 src/TrackPropDlg.cpp:178
 msgid "6 pixels"
 msgstr "6 pikslit"
 
-#: src/routeprop.cpp:780 src/TrackPropDlg.cpp:178
+#: src/routeprop.cpp:768 src/TrackPropDlg.cpp:178
 msgid "7 pixels"
 msgstr "7 pikslit"
 
-#: src/routeprop.cpp:780 src/TrackPropDlg.cpp:178
+#: src/routeprop.cpp:768 src/TrackPropDlg.cpp:178
 msgid "8 pixels"
 msgstr "8 pikslit"
 
-#: src/routeprop.cpp:781 src/TrackPropDlg.cpp:179
+#: src/routeprop.cpp:769 src/TrackPropDlg.cpp:179
 msgid "9 pixels"
 msgstr "9 pikslit"
 
-#: src/routeprop.cpp:781 src/TrackPropDlg.cpp:179
+#: src/routeprop.cpp:769 src/TrackPropDlg.cpp:179
 msgid "10 pixels"
 msgstr "10 pikslit"
 
-#: src/routeprop.cpp:791 src/routemanagerdialog.cpp:620
+#: src/routeprop.cpp:779 src/routemanagerdialog.cpp:620
 msgid "Waypoints"
 msgstr "Teepunktid"
 
-#: src/routeprop.cpp:798
+#: src/routeprop.cpp:786
 msgid "Print Route"
 msgstr "Prindi teekond"
 
-#: src/routeprop.cpp:803 src/routeprop.cpp:1063
+#: src/routeprop.cpp:791 src/routeprop.cpp:1051
 msgid "Extend Route"
 msgstr "Pikenda teekonda"
 
-#: src/routeprop.cpp:808 src/routeprop.cpp:1064
+#: src/routeprop.cpp:796 src/routeprop.cpp:1052
 msgid "Split Route"
 msgstr "Poolita teekond"
 
-#: src/routeprop.cpp:816 src/routeprintout.cpp:402
+#: src/routeprop.cpp:804 src/options.cpp:381 src/routeprintout.cpp:402
 #: src/GoToPositionDialog.cpp:145
 msgid "Cancel"
 msgstr "Tühista"
 
-#: src/routeprop.cpp:838 src/TrackPropDlg.cpp:247
+#: src/routeprop.cpp:826 src/TrackPropDlg.cpp:247
 msgid "Leg"
 msgstr "Lõik"
 
-#: src/routeprop.cpp:839
+#: src/routeprop.cpp:827
 msgid "To Waypoint"
 msgstr "Teepunkti"
 
-#: src/routeprop.cpp:840 src/routeprintout.cpp:112 src/routeprintout.cpp:383
+#: src/routeprop.cpp:828 src/routeprintout.cpp:112 src/routeprintout.cpp:383
 #: src/TrackPropDlg.cpp:248
 msgid "Distance"
 msgstr "Vahemaa"
 
-#: src/routeprop.cpp:843
+#: src/routeprop.cpp:831
 msgid "Bearing (M)"
 msgstr "Peiling (M)"
 
-#: src/routeprop.cpp:845 src/TrackPropDlg.cpp:249 src/AIS_Target_Data.cpp:604
+#: src/routeprop.cpp:833 src/TrackPropDlg.cpp:249 src/AIS_Target_Data.cpp:604
 msgid "Bearing"
 msgstr "Suund"
 
-#: src/routeprop.cpp:847 src/routeprop.cpp:1925 src/TrackPropDlg.cpp:250
+#: src/routeprop.cpp:835 src/routeprop.cpp:1913 src/TrackPropDlg.cpp:250
 #: src/GoToPositionDialog.cpp:122
 msgid "Latitude"
 msgstr "laius"
 
-#: src/routeprop.cpp:848 src/routeprop.cpp:1934 src/TrackPropDlg.cpp:251
+#: src/routeprop.cpp:836 src/routeprop.cpp:1922 src/TrackPropDlg.cpp:251
 #: src/GoToPositionDialog.cpp:132
 msgid "Longitude"
 msgstr "pikkus"
 
-#: src/routeprop.cpp:849
+#: src/routeprop.cpp:837
 msgid "ETE/ETD"
 msgstr "ETE/ETD"
 
-#: src/routeprop.cpp:850 src/TrackPropDlg.cpp:253 src/TrackPropDlg.cpp:741
+#: src/routeprop.cpp:838 src/TrackPropDlg.cpp:253 src/TrackPropDlg.cpp:746
 #: src/AIS_Target_Data.cpp:586
 msgid "Speed"
 msgstr "Kiirus"
 
-#: src/routeprop.cpp:851 src/routeprop.cpp:1215
+#: src/routeprop.cpp:839 src/routeprop.cpp:1203
 msgid "Next tide event"
 msgstr "Järgmised looded"
 
-#: src/routeprop.cpp:852 src/routeprop.cpp:1945 src/routeprop.cpp:2038
+#: src/routeprop.cpp:840 src/routeprop.cpp:1933 src/routeprop.cpp:2026
 #: src/routeprintout.cpp:115 src/routeprintout.cpp:390 src/TrackPropDlg.cpp:267
 msgid "Description"
 msgstr "Kirjeldus"
 
-#: src/routeprop.cpp:854
+#: src/routeprop.cpp:842
 msgid "Course (M)"
 msgstr "Kurss (M)"
 
-#: src/routeprop.cpp:856 src/routeprintout.cpp:109 src/routeprintout.cpp:376
+#: src/routeprop.cpp:844 src/routeprintout.cpp:109 src/routeprintout.cpp:376
 #: src/AIS_Target_Data.cpp:587
 msgid "Course"
 msgstr "Kurss"
 
-#: src/routeprop.cpp:945
+#: src/routeprop.cpp:933
 msgid "Are you sure you want to remove this waypoint?"
 msgstr "Olete kindel, et soovite selle teepunkti kõrvaldada?"
 
-#: src/routeprop.cpp:946
+#: src/routeprop.cpp:934
 msgid "OpenCPN Remove Waypoint"
 msgstr "OpenCPN teepunkti kõrvaldamine"
 
-#: src/routeprop.cpp:1055 src/TrackPropDlg.cpp:200
+#: src/routeprop.cpp:1043 src/TrackPropDlg.cpp:200
 msgid "Avg. speed"
 msgstr "Kesk. kiirus"
 
-#: src/routeprop.cpp:1057
+#: src/routeprop.cpp:1045
 msgid "Extend Track"
 msgstr "Pikenda jälg"
 
-#: src/routeprop.cpp:1058
+#: src/routeprop.cpp:1046
 msgid "Split Track"
 msgstr "Poolita jälg"
 
-#: src/routeprop.cpp:1061
+#: src/routeprop.cpp:1049
 msgid "Plan speed"
 msgstr "Kavandatav kiirus"
 
-#: src/routeprop.cpp:1197 src/routeprop.cpp:1297
+#: src/routeprop.cpp:1185 src/routeprop.cpp:1285
 msgid " %D Days  %H Hours  %M Minutes"
 msgstr " %D päeva  %H tundi  %M minutit"
 
-#: src/routeprop.cpp:1199 src/routeprop.cpp:1299
+#: src/routeprop.cpp:1187 src/routeprop.cpp:1287
 msgid " %H Hours  %M Minutes"
 msgstr " %H tundi  %M minutit"
 
-#: src/routeprop.cpp:1230
+#: src/routeprop.cpp:1218
 msgid "ETA"
 msgstr "ETA"
 
-#: src/routeprop.cpp:1232
+#: src/routeprop.cpp:1220
 msgid "ETE"
 msgstr "ETE"
 
-#: src/routeprop.cpp:1434
+#: src/routeprop.cpp:1422
 msgid "Start"
 msgstr "Käivita"
 
-#: src/routeprop.cpp:1855 src/TrackPropDlg.cpp:103
+#: src/routeprop.cpp:1843 src/TrackPropDlg.cpp:103
 msgid "Basic"
 msgstr "Elementaarne"
 
-#: src/routeprop.cpp:1876
+#: src/routeprop.cpp:1864
 msgid "This waypoint is part of a layer and can't be edited"
 msgstr "See teepunkt on osa kihist ning seda ei saa redigeerida"
 
-#: src/routeprop.cpp:1905
+#: src/routeprop.cpp:1893
 msgid "Show name"
 msgstr "Näita nime"
 
-#: src/routeprop.cpp:1909 src/routemanagerdialog.cpp:636
+#: src/routeprop.cpp:1897 src/routemanagerdialog.cpp:636
 msgid "Icon"
 msgstr "Ikoon"
 
-#: src/routeprop.cpp:1914
+#: src/routeprop.cpp:1902
 msgid "Combo!"
 msgstr "Mõlemad!"
 
-#: src/routeprop.cpp:1959 src/options.cpp:755 src/options.cpp:782
+#: src/routeprop.cpp:1947 src/options.cpp:1293 src/options.cpp:1320
 msgid "..."
 msgstr "..."
 
-#: src/routeprop.cpp:1972 src/TrackPropDlg.cpp:274
+#: src/routeprop.cpp:1960 src/TrackPropDlg.cpp:274
 msgid "Links"
 msgstr "Lingid"
 
-#: src/routeprop.cpp:1979 src/TrackPropDlg.cpp:280
+#: src/routeprop.cpp:1967 src/TrackPropDlg.cpp:280
 msgid "wxFB Website"
 msgstr "wxFB veebileht"
 
-#: src/routeprop.cpp:1990 src/routeprop.cpp:2014 src/TrackPropDlg.cpp:283
+#: src/routeprop.cpp:1978 src/routeprop.cpp:2002 src/TrackPropDlg.cpp:283
 #: src/TrackPropDlg.cpp:310
 msgid "Edit"
 msgstr "Muuda"
 
-#: src/routeprop.cpp:1995 src/TrackPropDlg.cpp:287
+#: src/routeprop.cpp:1983 src/TrackPropDlg.cpp:287
 msgid "Add new"
 msgstr "Lisa uus"
 
-#: src/routeprop.cpp:2010 src/options.cpp:1335 src/options.cpp:4564
+#: src/routeprop.cpp:1998 src/options.cpp:1883 src/options.cpp:5190
 #: src/TrackPropDlg.cpp:307
 msgid "Add"
 msgstr "Lisa"
 
-#: src/routeprop.cpp:2019 src/routeprop.cpp:2466 src/TrackPropDlg.cpp:313
-#: src/TrackPropDlg.cpp:976
+#: src/routeprop.cpp:2007 src/routeprop.cpp:2482 src/TrackPropDlg.cpp:313
+#: src/TrackPropDlg.cpp:981
 msgid "Links are opened in the default browser."
 msgstr "Lingid on avatud vaikimisi brauseris."
 
-#: src/routeprop.cpp:2044 src/routemanagerdialog.cpp:750
-#: src/routemanagerdialog.cpp:2305 src/routemanagerdialog.cpp:2317
+#: src/routeprop.cpp:2032 src/routemanagerdialog.cpp:750
+#: src/routemanagerdialog.cpp:2309 src/routemanagerdialog.cpp:2321
 #: src/TrackPropDlg.cpp:147
 msgid "Show on chart"
 msgstr "Näita kaardil"
 
-#: src/routeprop.cpp:2051
+#: src/routeprop.cpp:2039
 msgid "GUID"
 msgstr "GUID"
 
-#: src/routeprop.cpp:2062
+#: src/routeprop.cpp:2050
 msgid "GPX"
 msgstr "GPX"
 
-#: src/routeprop.cpp:2076
+#: src/routeprop.cpp:2064
 msgid "Extended"
 msgstr "Laiendatud"
 
-#: src/routeprop.cpp:2464 src/TrackPropDlg.cpp:974
+#: src/routeprop.cpp:2480 src/TrackPropDlg.cpp:979
 msgid "Links are opened for editing."
 msgstr "Lingid on avatud muutmiseks."
 
-#: src/routemanagerdialog.cpp:455 src/options.cpp:1041
+#: src/routemanagerdialog.cpp:455 src/options.cpp:1585
 msgid "Routes"
 msgstr "Teekonnad"
 
@@ -1542,7 +1568,7 @@ msgstr "&Saada GPS-i"
 msgid "&Delete All"
 msgstr "Kustut&a kõik"
 
-#: src/routemanagerdialog.cpp:555 src/options.cpp:1019
+#: src/routemanagerdialog.cpp:555 src/options.cpp:1563
 msgid "Tracks"
 msgstr "Jäljed"
 
@@ -1610,13 +1636,13 @@ msgstr "Osa N°"
 msgid "Temporary layer"
 msgstr "Ajutine kiht"
 
-#: src/routemanagerdialog.cpp:755 src/routemanagerdialog.cpp:2310
-#: src/routemanagerdialog.cpp:2318
+#: src/routemanagerdialog.cpp:755 src/routemanagerdialog.cpp:2314
+#: src/routemanagerdialog.cpp:2322
 msgid "Show WPT names"
 msgstr "Näita WPT nimesid"
 
-#: src/routemanagerdialog.cpp:760 src/routemanagerdialog.cpp:2315
-#: src/routemanagerdialog.cpp:2319
+#: src/routemanagerdialog.cpp:760 src/routemanagerdialog.cpp:2319
+#: src/routemanagerdialog.cpp:2323
 msgid "List contents"
 msgstr "Loenda sisu"
 
@@ -1624,16 +1650,16 @@ msgstr "Loenda sisu"
 msgid " - "
 msgstr " - "
 
-#: src/routemanagerdialog.cpp:1006 src/routemanagerdialog.cpp:1698
-#: src/routemanagerdialog.cpp:2089
+#: src/routemanagerdialog.cpp:1006 src/routemanagerdialog.cpp:1702
+#: src/routemanagerdialog.cpp:2093
 msgid "Are you sure you want to delete the selected object(s)"
 msgstr "Kas kindlalt soovite valitud objekt(id) kustutada?"
 
 #: src/routemanagerdialog.cpp:1006 src/routemanagerdialog.cpp:1055
-#: src/routemanagerdialog.cpp:1698 src/routemanagerdialog.cpp:1805
-#: src/routemanagerdialog.cpp:2089 src/routemanagerdialog.cpp:2122
-#: src/routemanagerdialog.cpp:2254 src/routemanagerdialog.cpp:2388
-#: src/toolbar.cpp:676 src/toolbar.cpp:1955
+#: src/routemanagerdialog.cpp:1702 src/routemanagerdialog.cpp:1809
+#: src/routemanagerdialog.cpp:2093 src/routemanagerdialog.cpp:2126
+#: src/routemanagerdialog.cpp:2258 src/routemanagerdialog.cpp:2392
+#: src/toolbar.cpp:689 src/toolbar.cpp:2006
 msgid "OpenCPN Alert"
 msgstr "OpenCPN hoiatus"
 
@@ -1674,7 +1700,7 @@ msgstr "Vähenda andmete täpsust"
 msgid "The amount of data used by the track\n was reduced by %d%%."
 msgstr "Teekonna poolt kasutatud andmete\nkogus on vähendatud %d%%."
 
-#: src/routemanagerdialog.cpp:1432 src/options.cpp:2647
+#: src/routemanagerdialog.cpp:1432 src/options.cpp:3267
 msgid "OpenCPN info"
 msgstr "OpenPCN teave"
 
@@ -1682,1896 +1708,1977 @@ msgstr "OpenPCN teave"
 msgid "The currently running Track was not merged.\nYou can merge it later when it is completed."
 msgstr "Praegu jooksvat jälge ei mestitud.\nVõite mestida teda hiljem kui ta on lõpetanud."
 
-#: src/routemanagerdialog.cpp:1770
+#: src/routemanagerdialog.cpp:1774
 msgid "OpenCPN Converting Track to Route...."
 msgstr "OpenCPN muudab jälje teekonnaks..."
 
-#: src/routemanagerdialog.cpp:1771
+#: src/routemanagerdialog.cpp:1775
 msgid "Processing Waypoints..."
 msgstr "Töötlemas teepunkte..."
 
-#: src/routemanagerdialog.cpp:1781
+#: src/routemanagerdialog.cpp:1785
 msgid "Done."
 msgstr "Tehtud."
 
-#: src/routemanagerdialog.cpp:1804
+#: src/routemanagerdialog.cpp:1808
 msgid "Are you sure you want to delete <ALL> tracks?"
 msgstr "Kas olete kindel, et soovite kustutada <KÕIK> jäljed?"
 
-#: src/routemanagerdialog.cpp:2122
+#: src/routemanagerdialog.cpp:2126
 msgid "The waypoint you want to delete is used in a route, do you really want to delete it?"
 msgstr "Teepunkt, mida soovite kustutada, on teekonnas kasutusel, kas tõesti soovite teda kustutada?"
 
-#: src/routemanagerdialog.cpp:2244
+#: src/routemanagerdialog.cpp:2248
 msgid "Are you sure you want to delete <ALL> waypoints?"
 msgstr "Kas olete kindel, et soovite kustutada <KÕIK> teepunktid?"
 
-#: src/routemanagerdialog.cpp:2250
+#: src/routemanagerdialog.cpp:2254
 msgid "There are some waypoints used in routes or anchor alarms.\n Do you want to delete them as well?\n This will change the routes and disable the anchor alarms.\n Answering No keeps the waypoints used in routes or alarms."
 msgstr "Mõned teepunktid on kasutusel teekondades või ankru häiretes.\nKas soovite ka nemad kustutada?\nSee muudab teekonnad ja blokeerib ankruhäired.\nVastates Ei hoiatakse teekondade ja häirete punktid alles."
 
-#: src/routemanagerdialog.cpp:2303
+#: src/routemanagerdialog.cpp:2307
 msgid "Hide from chart"
 msgstr "Peida kaardilt"
 
-#: src/routemanagerdialog.cpp:2308
+#: src/routemanagerdialog.cpp:2312
 msgid "Hide WPT names"
 msgstr "Peida WPT nimed"
 
-#: src/routemanagerdialog.cpp:2313
+#: src/routemanagerdialog.cpp:2317
 msgid "Unlist contents"
 msgstr "Tühjenda nimekiri"
 
-#: src/routemanagerdialog.cpp:2387
+#: src/routemanagerdialog.cpp:2391
 msgid "Are you sure you want to delete this layer and <ALL> of its contents?"
 msgstr "Kas olete kindel, et soovite kustutada <ALL> teekonnad?"
 
-#: src/routemanagerdialog.cpp:2661
+#: src/routemanagerdialog.cpp:2665
 msgid "(Unnamed Layer)"
 msgstr "(nimetu kiht)"
 
-#: src/ais.cpp:133
+#: src/ais.cpp:134
 msgid "Underway"
 msgstr "Teel"
 
-#: src/ais.cpp:134
+#: src/ais.cpp:135
 msgid "At Anchor"
 msgstr "Ankrul"
 
-#: src/ais.cpp:135
+#: src/ais.cpp:136
 msgid "Not Under Command"
 msgstr "Juhitavuse kaotanud"
 
-#: src/ais.cpp:136
+#: src/ais.cpp:137
 msgid "Restricted Manoeuvrability"
 msgstr "Piiratud manööverdusvõime"
 
-#: src/ais.cpp:137
+#: src/ais.cpp:138
 msgid "Constrained by draught"
 msgstr "Süviselt piiratud laev"
 
-#: src/ais.cpp:138
+#: src/ais.cpp:139
 msgid "Moored"
 msgstr "Sildunud"
 
-#: src/ais.cpp:139
+#: src/ais.cpp:140
 msgid "Aground"
 msgstr "Madalal"
 
-#: src/ais.cpp:140
+#: src/ais.cpp:141
 msgid "Engaged in Fishing"
 msgstr "Kalastamas"
 
-#: src/ais.cpp:141
+#: src/ais.cpp:142
 msgid "Under way sailing"
 msgstr "Teel purjede all"
 
-#: src/ais.cpp:142 src/ais.cpp:171
+#: src/ais.cpp:143 src/ais.cpp:172
 msgid "High Speed Craft"
 msgstr "Kiirlaev"
 
-#: src/ais.cpp:143
+#: src/ais.cpp:144
 msgid "Wing In Ground Effect"
 msgstr "Lendlaev"
 
-#: src/ais.cpp:144
+#: src/ais.cpp:145
 msgid "Reserved 11"
 msgstr "reserveeritud 11"
 
-#: src/ais.cpp:145
+#: src/ais.cpp:146
 msgid "Reserved 12"
 msgstr "reserveeritud 12"
 
-#: src/ais.cpp:146
+#: src/ais.cpp:147
 msgid "Reserved 13"
 msgstr "reserveeritud 13"
 
-#: src/ais.cpp:147
+#: src/ais.cpp:148
 msgid "Reserved 14"
 msgstr "reserveeritud 14"
 
-#: src/ais.cpp:148 src/AIS_Target_Data.cpp:373
+#: src/ais.cpp:149 src/AIS_Target_Data.cpp:373
 msgid "Undefined"
 msgstr "Määratlemata"
 
-#: src/ais.cpp:149
+#: src/ais.cpp:150
 msgid "Virtual"
 msgstr "Virtuaalne"
 
-#: src/ais.cpp:150
+#: src/ais.cpp:151
 msgid "Virtual (On Position)"
 msgstr "Virtuaalne (asukohal)"
 
-#: src/ais.cpp:151
+#: src/ais.cpp:152
 msgid "Virtual (Off Position)"
 msgstr "Virtuaalne (asukohalt väljas)"
 
-#: src/ais.cpp:152
+#: src/ais.cpp:153
 msgid "Real"
 msgstr "Tegelik"
 
-#: src/ais.cpp:153
+#: src/ais.cpp:154
 msgid "Real (On Position)"
 msgstr "Päris (asukohal)"
 
-#: src/ais.cpp:154
+#: src/ais.cpp:155
 msgid "Real(Off Position)"
 msgstr "Päris (asukohalt väljas)"
 
-#: src/ais.cpp:163
+#: src/ais.cpp:164
 msgid "Vessel Fishing"
 msgstr "Kalastav laev"
 
-#: src/ais.cpp:164
+#: src/ais.cpp:165
 msgid "Vessel Towing"
 msgstr "Pukseeriv laev"
 
-#: src/ais.cpp:165
+#: src/ais.cpp:166
 msgid "Vessel Towing, Long"
 msgstr "Pukseeriv laev, pikk koosseis"
 
-#: src/ais.cpp:166
+#: src/ais.cpp:167
 msgid "Vessel Dredging"
 msgstr "Süvendav laev"
 
-#: src/ais.cpp:167
+#: src/ais.cpp:168
 msgid "Vessel Diving"
 msgstr "Sukeldumine laevalt"
 
-#: src/ais.cpp:168
+#: src/ais.cpp:169
 msgid "Military Vessel"
 msgstr "Sõjalaev"
 
-#: src/ais.cpp:169
+#: src/ais.cpp:170
 msgid "Sailing Vessel"
 msgstr "Purjelaev"
 
-#: src/ais.cpp:170
+#: src/ais.cpp:171
 msgid "Pleasure craft"
 msgstr "Väikelaev"
 
-#: src/ais.cpp:172
+#: src/ais.cpp:173
 msgid "Pilot Vessel"
 msgstr "Lootsilaev"
 
-#: src/ais.cpp:173
+#: src/ais.cpp:174
 msgid "Search and Rescue Vessel"
 msgstr "Päästelaev"
 
-#: src/ais.cpp:174 src/ais.cpp:239
+#: src/ais.cpp:175 src/ais.cpp:240
 msgid "Tug"
 msgstr "Puksiir"
 
-#: src/ais.cpp:175
+#: src/ais.cpp:176
 msgid "Port Tender"
 msgstr "Sadamapuksiir"
 
-#: src/ais.cpp:176
+#: src/ais.cpp:177
 msgid "Pollution Control Vessel"
 msgstr "Reostustõrjelaev"
 
-#: src/ais.cpp:177
+#: src/ais.cpp:178
 msgid "Law Enforcement Vessel"
 msgstr "Korrakaitse laev"
 
-#: src/ais.cpp:178
+#: src/ais.cpp:179
 msgid "Medical Transport"
 msgstr "Meditsiiniline transportlaev"
 
-#: src/ais.cpp:179
+#: src/ais.cpp:180
 msgid "Passenger Ship"
 msgstr "Reisilaev"
 
-#: src/ais.cpp:180
+#: src/ais.cpp:181
 msgid "Cargo Ship"
 msgstr "Kaubalaev"
 
-#: src/ais.cpp:181
+#: src/ais.cpp:182
 msgid "Tanker"
 msgstr "Tanker"
 
-#: src/ais.cpp:183
+#: src/ais.cpp:184
 msgid "Unspecified"
 msgstr "Määratlemata"
 
-#: src/ais.cpp:184
+#: src/ais.cpp:185
 msgid "Reference Point"
 msgstr "Lähtepunkt"
 
-#: src/ais.cpp:185 src/ais.cpp:251
+#: src/ais.cpp:186 src/ais.cpp:252
 msgid "RACON"
 msgstr "Radarimajakas"
 
-#: src/ais.cpp:186
+#: src/ais.cpp:187
 msgid "Fixed Structure"
 msgstr "Kohtkindel ehitis"
 
-#: src/ais.cpp:187
+#: src/ais.cpp:188
 msgid "Spare"
 msgstr "Tagavara"
 
-#: src/ais.cpp:188
+#: src/ais.cpp:189
 msgid "Light"
 msgstr "Tuli"
 
-#: src/ais.cpp:189
+#: src/ais.cpp:190
 msgid "Light w/Sectors"
 msgstr "Sektoritega tuli"
 
-#: src/ais.cpp:190
+#: src/ais.cpp:191
 msgid "Leading Light Front"
 msgstr "Alumine sihituli"
 
-#: src/ais.cpp:191
+#: src/ais.cpp:192
 msgid "Leading Light Rear"
 msgstr "Ülemine sihituli"
 
-#: src/ais.cpp:192
+#: src/ais.cpp:193
 msgid "Cardinal N Beacon"
 msgstr "Kardinaalne N paak/torn"
 
-#: src/ais.cpp:193
+#: src/ais.cpp:194
 msgid "Cardinal E Beacon"
 msgstr "Kardinaalne E paak/torn"
 
-#: src/ais.cpp:194
+#: src/ais.cpp:195
 msgid "Cardinal S Beacon"
 msgstr "Kardinaalne S paak/torn"
 
-#: src/ais.cpp:195
+#: src/ais.cpp:196
 msgid "Cardinal W Beacon"
 msgstr "Kardinaalne W paak/torn"
 
-#: src/ais.cpp:196
+#: src/ais.cpp:197
 msgid "Beacon, Port Hand"
 msgstr "Vasaku külje paak/torn"
 
-#: src/ais.cpp:197
+#: src/ais.cpp:198
 msgid "Beacon, Starboard Hand"
 msgstr "Parema külje paak/torn"
 
-#: src/ais.cpp:198
+#: src/ais.cpp:199
 msgid "Beacon, Preferred Channel Port Hand"
 msgstr "Vasaku külje eelistatud kanali paak/torn"
 
-#: src/ais.cpp:199
+#: src/ais.cpp:200
 msgid "Beacon, Preferred Channel Starboard Hand"
 msgstr "Parema külje eelistatud kanali paak/torn"
 
-#: src/ais.cpp:200
+#: src/ais.cpp:201
 msgid "Beacon, Isolated Danger"
 msgstr "Eraldiohu märk"
 
-#: src/ais.cpp:201
+#: src/ais.cpp:202
 msgid "Beacon, Safe Water"
 msgstr "Farvaatri märk"
 
-#: src/ais.cpp:202
+#: src/ais.cpp:203
 msgid "Beacon, Special Mark"
 msgstr "Eriotstarbe märk"
 
-#: src/ais.cpp:203
+#: src/ais.cpp:204
 msgid "Cardinal Mark N"
 msgstr "Kardinaalne N-märk"
 
-#: src/ais.cpp:204
+#: src/ais.cpp:205
 msgid "Cardinal Mark E"
 msgstr "Kardinaalne E-märk"
 
-#: src/ais.cpp:205
+#: src/ais.cpp:206
 msgid "Cardinal Mark S"
 msgstr "Kardinaalne S-märk"
 
-#: src/ais.cpp:206
+#: src/ais.cpp:207
 msgid "Cardinal Mark W"
 msgstr "Kardinaalne W-märk"
 
-#: src/ais.cpp:207
+#: src/ais.cpp:208
 msgid "Port Hand Mark"
 msgstr "vasaku külje märk"
 
-#: src/ais.cpp:208
+#: src/ais.cpp:209
 msgid "Starboard Hand Mark"
 msgstr "Parema külje märk"
 
-#: src/ais.cpp:209
+#: src/ais.cpp:210
 msgid "Preferred Channel Port Hand"
 msgstr "Vasaka külje eelistatud kanal"
 
-#: src/ais.cpp:210
+#: src/ais.cpp:211
 msgid "Preferred Channel Starboard Hand"
 msgstr "Parema külje eelistatud kanal"
 
-#: src/ais.cpp:211
+#: src/ais.cpp:212
 msgid "Isolated Danger"
 msgstr "Eraldiasuv oht"
 
-#: src/ais.cpp:212 src/ais.cpp:267 src/ais.cpp:278
+#: src/ais.cpp:213 src/ais.cpp:268 src/ais.cpp:279
 msgid "Safe Water"
 msgstr "Farvaater"
 
-#: src/ais.cpp:213
+#: src/ais.cpp:214
 msgid "Special Mark"
 msgstr "Eriotstarbeline märk"
 
-#: src/ais.cpp:214
+#: src/ais.cpp:215
 msgid "Light Vessel/Rig"
 msgstr "Tulelaev/-seade"
 
-#: src/ais.cpp:215
+#: src/ais.cpp:216
 msgid "GpsGate Buddy"
 msgstr "GPSGate sõber"
 
-#: src/ais.cpp:216
+#: src/ais.cpp:217
 msgid "Position Report"
 msgstr "Asukoha ettekanne"
 
-#: src/ais.cpp:217 src/ais.cpp:283
+#: src/ais.cpp:218 src/ais.cpp:284
 msgid "Distress"
 msgstr "Häda"
 
-#: src/ais.cpp:218
+#: src/ais.cpp:219
 msgid "ARPA radar target"
 msgstr "ARPA märk"
 
-#: src/ais.cpp:219 src/AIS_Target_Data.cpp:865
+#: src/ais.cpp:220 src/AIS_Target_Data.cpp:865
 msgid "APRS Position Report"
 msgstr "ARPS asukoha ettekanne"
 
-#: src/ais.cpp:228
+#: src/ais.cpp:229
 msgid "F/V"
 msgstr "K/l"
 
-#: src/ais.cpp:229
+#: src/ais.cpp:230
 msgid "Tow"
 msgstr "Pukseerimine"
 
-#: src/ais.cpp:230
+#: src/ais.cpp:231
 msgid "Long Tow"
 msgstr "Pikk pukseerimine"
 
-#: src/ais.cpp:231
+#: src/ais.cpp:232
 msgid "Dredge"
 msgstr "Süvendaja"
 
-#: src/ais.cpp:232
+#: src/ais.cpp:233
 msgid "D/V"
 msgstr "Süv/l"
 
-#: src/ais.cpp:233
+#: src/ais.cpp:234
 msgid "Mil/V"
 msgstr "S/l"
 
-#: src/ais.cpp:234
+#: src/ais.cpp:235
 msgid "S/V"
 msgstr "Pu/l"
 
-#: src/ais.cpp:235
+#: src/ais.cpp:236
 msgid "Yat"
 msgstr "Jaht"
 
-#: src/ais.cpp:236
+#: src/ais.cpp:237
 msgid "HSC"
 msgstr "Kiire"
 
-#: src/ais.cpp:237
+#: src/ais.cpp:238
 msgid "P/V"
 msgstr "Lo/l"
 
-#: src/ais.cpp:238
+#: src/ais.cpp:239
 msgid "SAR/V"
 msgstr "SAR/l"
 
-#: src/ais.cpp:240
+#: src/ais.cpp:241
 msgid "Tender"
 msgstr "Pukser"
 
-#: src/ais.cpp:241
+#: src/ais.cpp:242
 msgid "PC/V"
 msgstr "ReoTõr/l"
 
-#: src/ais.cpp:242
+#: src/ais.cpp:243
 msgid "LE/V"
 msgstr "KoKa/l"
 
-#: src/ais.cpp:243
+#: src/ais.cpp:244
 msgid "Med/V"
 msgstr "Med/l"
 
-#: src/ais.cpp:244
+#: src/ais.cpp:245
 msgid "Pass/V"
 msgstr "R/l"
 
-#: src/ais.cpp:245
+#: src/ais.cpp:246
 msgid "M/V"
 msgstr "M/l"
 
-#: src/ais.cpp:246
+#: src/ais.cpp:247
 msgid "M/T"
 msgstr "M/t"
 
-#: src/ais.cpp:247 src/ais.cpp:253
+#: src/ais.cpp:248 src/ais.cpp:254
 msgid "?"
 msgstr "?"
 
-#: src/ais.cpp:249 src/AIS_Target_Data.cpp:850
+#: src/ais.cpp:250 src/AIS_Target_Data.cpp:850
 msgid "AtoN"
 msgstr "AtoN"
 
-#: src/ais.cpp:250
+#: src/ais.cpp:251
 msgid "Ref. Pt"
 msgstr "Läht/p"
 
-#: src/ais.cpp:252
+#: src/ais.cpp:253
 msgid "Fix.Struct."
 msgstr "Fix.ehit"
 
-#: src/ais.cpp:254
+#: src/ais.cpp:255
 msgid "Lt"
 msgstr "Tuli"
 
-#: src/ais.cpp:255
+#: src/ais.cpp:256
 msgid "Lt sect."
 msgstr "Tule sekt."
 
-#: src/ais.cpp:256
+#: src/ais.cpp:257
 msgid "Ldg Lt Front"
 msgstr "Alum. sihim."
 
-#: src/ais.cpp:257
+#: src/ais.cpp:258
 msgid "Ldg Lt Rear"
 msgstr "Ülem. sihim."
 
-#: src/ais.cpp:258 src/ais.cpp:269
+#: src/ais.cpp:259 src/ais.cpp:270
 msgid "Card. N"
 msgstr "Kard. N"
 
-#: src/ais.cpp:259 src/ais.cpp:270
+#: src/ais.cpp:260 src/ais.cpp:271
 msgid "Card. E"
 msgstr "Kard. E"
 
-#: src/ais.cpp:260 src/ais.cpp:271
+#: src/ais.cpp:261 src/ais.cpp:272
 msgid "Card. S"
 msgstr "Kard. S"
 
-#: src/ais.cpp:261 src/ais.cpp:272
+#: src/ais.cpp:262 src/ais.cpp:273
 msgid "Card. W"
 msgstr "Kard. W"
 
-#: src/ais.cpp:262
+#: src/ais.cpp:263
 msgid "Port"
 msgstr "v/p"
 
-#: src/ais.cpp:263
+#: src/ais.cpp:264
 msgid "Stbd"
 msgstr "p/p"
 
-#: src/ais.cpp:264 src/ais.cpp:265 src/ais.cpp:275 src/ais.cpp:276
+#: src/ais.cpp:265 src/ais.cpp:266 src/ais.cpp:276 src/ais.cpp:277
 msgid "Pref. Chnl"
 msgstr "Eel.kanal"
 
-#: src/ais.cpp:266 src/ais.cpp:277
+#: src/ais.cpp:267 src/ais.cpp:278
 msgid "Isol. Dngr"
 msgstr "Era.oht"
 
-#: src/ais.cpp:268 src/ais.cpp:279
+#: src/ais.cpp:269 src/ais.cpp:280
 msgid "Special"
 msgstr "Eri"
 
-#: src/ais.cpp:273
+#: src/ais.cpp:274
 msgid "Port Hand"
 msgstr "vasak külg"
 
-#: src/ais.cpp:274
+#: src/ais.cpp:275
 msgid "Stbd Hand"
 msgstr "parem külg"
 
-#: src/ais.cpp:280
+#: src/ais.cpp:281
 msgid "LtV/Rig"
 msgstr "Tl/-s"
 
-#: src/ais.cpp:281 src/AIS_Target_Data.cpp:854
+#: src/ais.cpp:282 src/AIS_Target_Data.cpp:854
 msgid "Buddy"
 msgstr "Sõber"
 
-#: src/ais.cpp:282 src/AIS_Target_Data.cpp:857 src/AIS_Target_Data.cpp:859
+#: src/ais.cpp:283 src/AIS_Target_Data.cpp:857 src/AIS_Target_Data.cpp:859
 msgid "DSC"
 msgstr "DSC"
 
-#: src/ais.cpp:284 src/AIS_Target_Data.cpp:863
+#: src/ais.cpp:285 src/AIS_Target_Data.cpp:863
 msgid "ARPA"
 msgstr "ARPA"
 
-#: src/ais.cpp:285 src/AIS_Target_Data.cpp:865
+#: src/ais.cpp:286 src/AIS_Target_Data.cpp:865
 msgid "APRS"
 msgstr "ARPS"
 
-#: src/ais.cpp:292
+#: src/ais.cpp:293
 msgid "Caution Area: Marine mammals habitat (implies whales NOT observed)"
 msgstr "Ettevaatusala: mereimetajate elukoht (ei eelda vaalade olemasolu)"
 
-#: src/ais.cpp:293
+#: src/ais.cpp:294
 msgid "Caution Area: Marine mammals in area - reduce speed"
 msgstr "Ettevaatusala: mereimetajad alas - vähenda kiirust"
 
-#: src/ais.cpp:294
+#: src/ais.cpp:295
 msgid "Caution Area: Marine mammals in area - stay clear"
 msgstr "Ettevaatusala: mereimetajad alas - hoia eemale"
 
-#: src/ais.cpp:295
+#: src/ais.cpp:296
 msgid "Caution Area: Marine mammals in area - report sightings"
 msgstr "Ettevaatusala: mereimetajad alas - teata märkamistest"
 
-#: src/ais.cpp:296
+#: src/ais.cpp:297
 msgid "Caution Area: Protected habitat - reduce speed"
 msgstr "Ettevaatusala: kaitstud elukoht - vähenda kiirust"
 
-#: src/ais.cpp:297
+#: src/ais.cpp:298
 msgid "Caution Area: Protected habitat - stay clear"
 msgstr "Ettevaatusala: kaitstud elukoht - hoia eemale"
 
-#: src/ais.cpp:298
+#: src/ais.cpp:299
 msgid "Caution Area: Protected habitat - no fishing or anchoring"
 msgstr "Ettevaatusala: kaitstud elukoht - kalapüük ja ankurdamine keelatud"
 
-#: src/ais.cpp:299
+#: src/ais.cpp:300
 msgid "Caution Area: Derelicts (drifting objects)"
 msgstr "Ettevaatusala: mahajäetud triivivad objektid"
 
-#: src/ais.cpp:300
+#: src/ais.cpp:301
 msgid "Caution Area: Traffic congestion"
 msgstr "Ettevaatusala: liiklustakistus"
 
-#: src/ais.cpp:301
+#: src/ais.cpp:302
 msgid "Caution Area: Marine event"
 msgstr "Ettevaatusala: meresündmus"
 
-#: src/ais.cpp:302
+#: src/ais.cpp:303
 msgid "Caution Area: Divers down"
 msgstr "Ettevaatusala: sukeldujad vees"
 
-#: src/ais.cpp:303
+#: src/ais.cpp:304
 msgid "Caution Area: Swim area"
 msgstr "Ettevaatusala: ujumisala"
 
-#: src/ais.cpp:304
+#: src/ais.cpp:305
 msgid "Caution Area: Dredge operations"
 msgstr "Ettevaatusala: süvendustööd"
 
-#: src/ais.cpp:305
+#: src/ais.cpp:306
 msgid "Caution Area: Survey operations"
 msgstr "Ettevaatusala: mõõdistustööd"
 
-#: src/ais.cpp:306
+#: src/ais.cpp:307
 msgid "Caution Area: Underwater operation"
 msgstr "Ettevaatusala: veealused tööd"
 
-#: src/ais.cpp:307
+#: src/ais.cpp:308
 msgid "Caution Area: Seaplane operations"
 msgstr "Ettevaatusala: vesilennukite kasutamine"
 
-#: src/ais.cpp:308
+#: src/ais.cpp:309
 msgid "Caution Area: Fishery - nets in water"
 msgstr "Ettevaatusala: kalandus - võrgud vees"
 
-#: src/ais.cpp:309
+#: src/ais.cpp:310
 msgid "Caution Area: Cluster of fishing vessels"
 msgstr "Ettevaatusala: kalalaevade kogum"
 
-#: src/ais.cpp:310
+#: src/ais.cpp:311
 msgid "Caution Area: Fairway closed"
 msgstr "Ettevaatusala: farvaater suletud"
 
-#: src/ais.cpp:311
+#: src/ais.cpp:312
 msgid "Caution Area: Harbour closed"
 msgstr "Ettevaatusala: sadam suletud"
 
-#: src/ais.cpp:312
+#: src/ais.cpp:313
 msgid "Caution Area: Risk (define in Associated text field)"
 msgstr "Ettevaatusala: risk (määratle seotud tekstiväljas)"
 
-#: src/ais.cpp:313
+#: src/ais.cpp:314
 msgid "Caution Area: Underwater vehicle operation"
 msgstr "Ettevaatusala: veealuse seadme kasutamine"
 
-#: src/ais.cpp:314 src/ais.cpp:323 src/ais.cpp:331 src/ais.cpp:338
-#: src/ais.cpp:339 src/ais.cpp:340 src/ais.cpp:341 src/ais.cpp:342
-#: src/ais.cpp:343 src/ais.cpp:344 src/ais.cpp:345 src/ais.cpp:346
-#: src/ais.cpp:347 src/ais.cpp:351 src/ais.cpp:352 src/ais.cpp:353
-#: src/ais.cpp:354 src/ais.cpp:355 src/ais.cpp:369 src/ais.cpp:370
-#: src/ais.cpp:371 src/ais.cpp:378 src/ais.cpp:379 src/ais.cpp:401
-#: src/ais.cpp:402 src/ais.cpp:403 src/ais.cpp:405 src/ais.cpp:407
-#: src/ais.cpp:408 src/ais.cpp:409 src/ais.cpp:410 src/ais.cpp:411
-#: src/ais.cpp:415 src/ais.cpp:416
+#: src/ais.cpp:315 src/ais.cpp:324 src/ais.cpp:332 src/ais.cpp:339
+#: src/ais.cpp:340 src/ais.cpp:341 src/ais.cpp:342 src/ais.cpp:343
+#: src/ais.cpp:344 src/ais.cpp:345 src/ais.cpp:346 src/ais.cpp:347
+#: src/ais.cpp:348 src/ais.cpp:352 src/ais.cpp:353 src/ais.cpp:354
+#: src/ais.cpp:355 src/ais.cpp:356 src/ais.cpp:370 src/ais.cpp:371
+#: src/ais.cpp:372 src/ais.cpp:379 src/ais.cpp:380 src/ais.cpp:402
+#: src/ais.cpp:403 src/ais.cpp:404 src/ais.cpp:406 src/ais.cpp:408
+#: src/ais.cpp:409 src/ais.cpp:410 src/ais.cpp:411 src/ais.cpp:412
+#: src/ais.cpp:416 src/ais.cpp:417
 msgid "(reserved for future use)"
 msgstr "(reserveeritud tulevikuks)"
 
-#: src/ais.cpp:315
+#: src/ais.cpp:316
 msgid "Environmental Caution Area: Storm front (line squall)"
 msgstr "Keskkonna ettevaatusala: tormi serv (pagi tee)"
 
-#: src/ais.cpp:316
+#: src/ais.cpp:317
 msgid "Environmental Caution Area: Hazardous sea ice"
 msgstr "Keskkonna ettevaatusala: ohtlik merejää"
 
-#: src/ais.cpp:317
+#: src/ais.cpp:318
 msgid "Environmental Caution Area: Storm warning (storm cell or line of storms)"
 msgstr "Keskkonna ettevaatusala: tormihoiatus (tormi süda või tormide rivi)"
 
-#: src/ais.cpp:318
+#: src/ais.cpp:319
 msgid "Environmental Caution Area: High wind"
 msgstr "Keskkonna ettevaatusala: tugev tuul"
 
-#: src/ais.cpp:319
+#: src/ais.cpp:320
 msgid "Environmental Caution Area: High waves"
 msgstr "Keskkonna ettevaatusala: kõrged lained"
 
-#: src/ais.cpp:320
+#: src/ais.cpp:321
 msgid "Environmental Caution Area: Restricted visibility (fog, rain, etc.)"
 msgstr "Keskkonna ettevaatusala: piiratud nähtavus (udu, vihm jne)"
 
-#: src/ais.cpp:321
+#: src/ais.cpp:322
 msgid "Environmental Caution Area: Strong currents"
 msgstr "Keskkonna ettevaatusala: tugevad hoovused"
 
-#: src/ais.cpp:322
+#: src/ais.cpp:323
 msgid "Environmental Caution Area: Heavy icing"
 msgstr "Keskkonna ettevaatusala: kiire jäätumine"
 
-#: src/ais.cpp:324
+#: src/ais.cpp:325
 msgid "Restricted Area: Fishing prohibited"
 msgstr "Piiranguala: kalastamine keelatud"
 
-#: src/ais.cpp:325
+#: src/ais.cpp:326
 msgid "Restricted Area: No anchoring."
 msgstr "Piiranguala: ankurdamine keelatud"
 
-#: src/ais.cpp:326
+#: src/ais.cpp:327
 msgid "Restricted Area: Entry approval required prior to transit"
 msgstr "Piiranguala: sisenemisluba nõutud enne läbisõitu"
 
-#: src/ais.cpp:327
+#: src/ais.cpp:328
 msgid "Restricted Area: Entry prohibited"
 msgstr "Piiranguala: sisenemine keelatud"
 
-#: src/ais.cpp:328
+#: src/ais.cpp:329
 msgid "Restricted Area: Active military OPAREA"
 msgstr "Piiranguala: aktiivne sõjaoperatsioonide ala"
 
-#: src/ais.cpp:329
+#: src/ais.cpp:330
 msgid "Restricted Area: Firing - danger area."
 msgstr "Piiranguala: tulistamine - ohtlik ala"
 
-#: src/ais.cpp:330
+#: src/ais.cpp:331
 msgid "Restricted Area: Drifting Mines"
 msgstr "Piiranguala: triivivad miinid"
 
-#: src/ais.cpp:332
+#: src/ais.cpp:333
 msgid "Anchorage Area: Anchorage open"
 msgstr "Ankruala: ankurdamine avatud"
 
-#: src/ais.cpp:333
+#: src/ais.cpp:334
 msgid "Anchorage Area: Anchorage closed"
 msgstr "Ankruala: ankurdamine suletud"
 
-#: src/ais.cpp:334
+#: src/ais.cpp:335
 msgid "Anchorage Area: Anchoring prohibited"
 msgstr "Ankruala: ankurdamine keelatud"
 
-#: src/ais.cpp:335
+#: src/ais.cpp:336
 msgid "Anchorage Area: Deep draft anchorage"
 msgstr "Ankruala: ankurdamine suure süvisega"
 
-#: src/ais.cpp:336
+#: src/ais.cpp:337
 msgid "Anchorage Area: Shallow draft anchorage"
 msgstr "Ankruala: ankurdamine väikese süvisega"
 
-#: src/ais.cpp:337
+#: src/ais.cpp:338
 msgid "Anchorage Area: Vessel transfer operations"
 msgstr "Ankruala: laevalt-laevale tööd"
 
-#: src/ais.cpp:348
+#: src/ais.cpp:349
 msgid "Security Alert - Level 1"
 msgstr "Turvalisuse hoiatus - 1. tase"
 
-#: src/ais.cpp:349
+#: src/ais.cpp:350
 msgid "Security Alert - Level 2"
 msgstr "Turvalisuse hoiatus - 2. tase"
 
-#: src/ais.cpp:350
+#: src/ais.cpp:351
 msgid "Security Alert - Level 3"
 msgstr "Turvalisuse hoiatus - 3. tase"
 
-#: src/ais.cpp:356
+#: src/ais.cpp:357
 msgid "Distress Area: Vessel disabled and adrift"
 msgstr "Häire ala: juhtimisvõimetu laev triivis"
 
-#: src/ais.cpp:357
+#: src/ais.cpp:358
 msgid "Distress Area: Vessel sinking"
 msgstr "Häire ala: uppuv laev"
 
-#: src/ais.cpp:358
+#: src/ais.cpp:359
 msgid "Distress Area: Vessel abandoning ship"
 msgstr "Häire ala: mahajäetav laev"
 
-#: src/ais.cpp:359
+#: src/ais.cpp:360
 msgid "Distress Area: Vessel requests medical assistance"
 msgstr "Häire ala: Laev palub meditsiinilist abi"
 
-#: src/ais.cpp:360
+#: src/ais.cpp:361
 msgid "Distress Area: Vessel flooding"
 msgstr "Häire ala: laev võtab vett sisse"
 
-#: src/ais.cpp:361
+#: src/ais.cpp:362
 msgid "Distress Area: Vessel fire/explosion"
 msgstr "Häire ala: tulekahju/plahvatus laeval"
 
-#: src/ais.cpp:362
+#: src/ais.cpp:363
 msgid "Distress Area: Vessel grounding"
 msgstr "Häie ala: laev madalal"
 
-#: src/ais.cpp:363
+#: src/ais.cpp:364
 msgid "Distress Area: Vessel collision"
 msgstr "Häire ala: laeva kokkupõrge"
 
-#: src/ais.cpp:364
+#: src/ais.cpp:365
 msgid "Distress Area: Vessel listing/capsizing"
 msgstr "Häire ala: laev kreenis/kaadumas"
 
-#: src/ais.cpp:365
+#: src/ais.cpp:366
 msgid "Distress Area: Vessel under assault"
 msgstr "Häire ala: laeva rünnatakse"
 
-#: src/ais.cpp:366
+#: src/ais.cpp:367
 msgid "Distress Area: Person overboard"
 msgstr "Häire ala: inimene üle parda"
 
-#: src/ais.cpp:367
+#: src/ais.cpp:368
 msgid "Distress Area: SAR area"
 msgstr "Häire ala: SAR ala"
 
-#: src/ais.cpp:368
+#: src/ais.cpp:369
 msgid "Distress Area: Pollution response area"
 msgstr "Häire ala: reostustõrje ala"
 
-#: src/ais.cpp:372
+#: src/ais.cpp:373
 msgid "Instruction: Contact VTS at this point/juncture"
 msgstr "Juhis: võtke siin puntis/piiril ühendust VTS-ga "
 
-#: src/ais.cpp:373
+#: src/ais.cpp:374
 msgid "Instruction: Contact Port Administration at this point/juncture"
 msgstr "Juhis: Võtke siin punktis/piiril ühendust sadama administratsiooniga"
 
-#: src/ais.cpp:374
+#: src/ais.cpp:375
 msgid "Instruction: Do not proceed beyond this point/juncture"
 msgstr "Juhis: ärge ületage seda punkti/piiri"
 
-#: src/ais.cpp:375
+#: src/ais.cpp:376
 msgid "Instruction: Await instructions prior to proceeding beyond this point/juncture"
 msgstr "Juhis: oodake juhiseid enne kui jätkate sellest punktist/piirist kaugemale edasi"
 
-#: src/ais.cpp:376
+#: src/ais.cpp:377
 msgid "Proceed to this location - await instructions"
 msgstr "Liikuge sinna asukohta - oodake juhiseid"
 
-#: src/ais.cpp:377
+#: src/ais.cpp:378
 msgid "Clearance granted - proceed to berth"
 msgstr "Luba antud - minge kai äärde"
 
-#: src/ais.cpp:380
+#: src/ais.cpp:381
 msgid "Information: Pilot boarding position"
 msgstr "Info: lootsi pealevõtu koht"
 
-#: src/ais.cpp:381
+#: src/ais.cpp:382
 msgid "Information: Icebreaker waiting area"
 msgstr "Info: jäämurdja ootamise ala"
 
-#: src/ais.cpp:382
+#: src/ais.cpp:383
 msgid "Information: Places of refuge"
 msgstr "Info: varjupaigad"
 
-#: src/ais.cpp:383
+#: src/ais.cpp:384
 msgid "Information: Position of icebreakers"
 msgstr "Info: jäämurdjate asukohad"
 
-#: src/ais.cpp:384
+#: src/ais.cpp:385
 msgid "Information: Location of response units"
 msgstr "Info: eriüksuste asukoht"
 
-#: src/ais.cpp:385
+#: src/ais.cpp:386
 msgid "VTS active target"
 msgstr "VTS-i aktiivne märk"
 
-#: src/ais.cpp:386
+#: src/ais.cpp:387
 msgid "Rogue or suspicious vessel"
 msgstr "Suli või kahtlane laev"
 
-#: src/ais.cpp:387
+#: src/ais.cpp:388
 msgid "Vessel requesting non-distress assistance"
 msgstr "Merehädas mitteolev laev vajab abi"
 
-#: src/ais.cpp:388
+#: src/ais.cpp:389
 msgid "Chart Feature: Sunken vessel"
 msgstr "Kaardi objekt: uppunud laev"
 
-#: src/ais.cpp:389
+#: src/ais.cpp:390
 msgid "Chart Feature: Submerged object"
 msgstr "Kaardi objekt: sukeldunud objekt"
 
-#: src/ais.cpp:390
+#: src/ais.cpp:391
 msgid "Chart Feature: Semi-submerged object"
 msgstr "Kaardi objekt: osaliselt sukeldunud objekt"
 
-#: src/ais.cpp:391
+#: src/ais.cpp:392
 msgid "Chart Feature: Shoal area"
 msgstr "Kaardi objekt: madal ala"
 
-#: src/ais.cpp:392
+#: src/ais.cpp:393
 msgid "Chart Feature: Shoal area due north"
 msgstr "Kaardi objekt: madal ala otse N-s"
 
-#: src/ais.cpp:393
+#: src/ais.cpp:394
 msgid "Chart Feature: Shoal area due east"
 msgstr "Kaardi objekt: madal ala otse E-s"
 
-#: src/ais.cpp:394
+#: src/ais.cpp:395
 msgid "Chart Feature: Shoal area due south"
 msgstr "Kaardi objekt: madal ala otse S-s"
 
-#: src/ais.cpp:395
+#: src/ais.cpp:396
 msgid "Chart Feature: Shoal area due west"
 msgstr "Kaardi objekt: madal ala otse W-s"
 
-#: src/ais.cpp:396
+#: src/ais.cpp:397
 msgid "Chart Feature: Channel obstruction"
 msgstr "Kaardi objekt: kanali takistus"
 
-#: src/ais.cpp:397
+#: src/ais.cpp:398
 msgid "Chart Feature: Reduced vertical clearance"
 msgstr "Kaardi objekt: vähendatud vertikaalne liikumisruum"
 
-#: src/ais.cpp:398
+#: src/ais.cpp:399
 msgid "Chart Feature: Bridge closed"
 msgstr "Kanali objekt: sild suletud"
 
-#: src/ais.cpp:399
+#: src/ais.cpp:400
 msgid "Chart Feature: Bridge partially open"
 msgstr "Kaardi objekt: sild osaliselt avatud"
 
-#: src/ais.cpp:400
+#: src/ais.cpp:401
 msgid "Chart Feature: Bridge fully open"
 msgstr "Kaardi objekt: sild täiesti avatud"
 
-#: src/ais.cpp:404
+#: src/ais.cpp:405
 msgid "Report from ship: Icing info"
 msgstr "Ettekanne laevalt: jäätumise info"
 
-#: src/ais.cpp:406
+#: src/ais.cpp:407
 msgid "Report from ship: Miscellaneous information - define in Associated text field"
 msgstr "Ettekanne laevalt: mitmesugune info - määratlege seotud tekstiväljas"
 
-#: src/ais.cpp:412
+#: src/ais.cpp:413
 msgid "Route: Recommended route"
 msgstr "Teekond: soovitatav teekond"
 
-#: src/ais.cpp:413
+#: src/ais.cpp:414
 msgid "Route: Alternative route"
 msgstr "Teekond: alternatiivne teekond"
 
-#: src/ais.cpp:414
+#: src/ais.cpp:415
 msgid "Route: Recommended route through ice"
 msgstr "Teekond: soovitatav teekond läbi jää"
 
-#: src/ais.cpp:417
+#: src/ais.cpp:418
 msgid "Other - Define in associated text field"
 msgstr "Muu - määratlege seotud tekstiväljas"
 
-#: src/ais.cpp:418
+#: src/ais.cpp:419
 msgid "Cancellation - cancel area as identified by Message Linkage ID"
 msgstr "Tühistamine - tühistada ala, määratletud teatega seotud ID"
 
-#: src/ais.cpp:419
+#: src/ais.cpp:420
 msgid "Undefined (default)"
 msgstr "Määratlemata (vaikimisi)"
 
-#: src/ais.cpp:1250 src/ais.cpp:1251
+#: src/ais.cpp:1256 src/ais.cpp:1257
 msgid "AIS Target Name"
 msgstr "AIS-märgi nimi"
 
-#: src/options.cpp:519
+#: src/options.cpp:333
+msgid "MMSI Extended Properties"
+msgstr "MMSI laiendatud omadused"
+
+#: src/options.cpp:339 src/options.cpp:665 src/AISTargetListDialog.cpp:372
+#: src/AIS_Target_Data.cpp:315 src/AIS_Target_Data.cpp:324
+msgid "MMSI"
+msgstr "MMSI"
+
+#: src/options.cpp:348
+msgid "Tracking"
+msgstr "Jälgimine"
+
+#: src/options.cpp:353
+msgid "Default tracking"
+msgstr "Vaikimisi jälgimine"
+
+#: src/options.cpp:357
+msgid "Always track"
+msgstr "Jälgi alati"
+
+#: src/options.cpp:360
+msgid "Never track"
+msgstr "Mitte kunagi jälgida"
+
+#: src/options.cpp:368
+msgid "Ignore this MMSI"
+msgstr "Eira seda MMSI"
+
+#: src/options.cpp:371
+msgid "Handle this MMSI as SART/PLB MOB."
+msgstr ""
+
+#: src/options.cpp:374
+msgid "Convert AIVDM to AIVDO for this MMSI"
+msgstr "Teisenda selle MMSI AIVDM AIVDO'ks"
+
+#: src/options.cpp:508
+msgid "Always"
+msgstr "Alati"
+
+#: src/options.cpp:510
+msgid "Never"
+msgstr "Mitte kunagi"
+
+#: src/options.cpp:567 src/options.cpp:2060 src/options.cpp:2066
+msgid "MMSI Properties"
+msgstr "MMSI omadused"
+
+#: src/options.cpp:673
+msgid "Track Mode"
+msgstr "Jälgimise viis"
+
+#: src/options.cpp:681
+msgid "Ignore"
+msgstr "Eira"
+
+#: src/options.cpp:689
+msgid "MOB"
+msgstr "MOB"
+
+#: src/options.cpp:697
+msgid "VDM->VDO"
+msgstr "VDM-> VDO"
+
+#: src/options.cpp:703
+msgid "New..."
+msgstr "Uus..."
+
+#: src/options.cpp:1057
 msgid "NMEA"
 msgstr "NMEA"
 
-#: src/options.cpp:529
+#: src/options.cpp:1067
 msgid "General"
 msgstr "Üldine"
 
-#: src/options.cpp:540
+#: src/options.cpp:1078
 msgid "Filter NMEA Course and Speed data"
 msgstr "filtreeri NMEA kursi ja kiiruse andmed"
 
-#: src/options.cpp:543
+#: src/options.cpp:1081
 msgid "Filter period (sec)"
 msgstr "Filtri periood (s)"
 
-#: src/options.cpp:558
+#: src/options.cpp:1096
 msgid "Show NMEA Debug Window"
 msgstr "näita NMEA silumise akent"
 
-#: src/options.cpp:561
+#: src/options.cpp:1099
 msgid "Format uploads for Furuno GP3X"
 msgstr "vormista üleslaadimine Furuno GP3X jaoks"
 
-#: src/options.cpp:565
+#: src/options.cpp:1103
 msgid "Use Garmin GRMN (Host) mode for uploads"
 msgstr "kasuta Garmini GRMN (host) moodust üleslaadimiseks"
 
-#: src/options.cpp:569
+#: src/options.cpp:1107
 msgid "Use magnetic bearings in output sentence ECAPB"
 msgstr "kasuta magnetpeilingut väljuvas ECAPB-teates"
 
-#: src/options.cpp:579
+#: src/options.cpp:1117
 msgid "Data Connections"
 msgstr "Andmeühendused"
 
-#: src/options.cpp:591
+#: src/options.cpp:1129
 msgid "Add Connection"
 msgstr "Lisa ühendus"
 
-#: src/options.cpp:594
+#: src/options.cpp:1132
 msgid "Remove Connection"
 msgstr "Kõrvalda ühendus"
 
-#: src/options.cpp:610
+#: src/options.cpp:1148
 msgid "Serial"
 msgstr "jada"
 
-#: src/options.cpp:614
+#: src/options.cpp:1152
 msgid "Network"
 msgstr "võrk"
 
-#: src/options.cpp:622 src/options.cpp:687
+#: src/options.cpp:1160 src/options.cpp:1225
 msgid "Protocol"
 msgstr "protokoll"
 
-#: src/options.cpp:629
+#: src/options.cpp:1167
 msgid "TCP"
 msgstr "TCP"
 
-#: src/options.cpp:634
+#: src/options.cpp:1172
 msgid "UDP"
 msgstr "UDP"
 
-#: src/options.cpp:639
+#: src/options.cpp:1177
 msgid "GPSD"
 msgstr "GPSD"
 
-#: src/options.cpp:646
+#: src/options.cpp:1184
 msgid "Address"
 msgstr "aadress"
 
-#: src/options.cpp:653 src/options.cpp:670 src/options.cpp:843
+#: src/options.cpp:1191 src/options.cpp:1208 src/options.cpp:1381
 msgid "DataPort"
 msgstr "andmepoord"
 
-#: src/options.cpp:677
+#: src/options.cpp:1215
 msgid "Baudrate"
 msgstr "Boodi"
 
-#: src/options.cpp:681
+#: src/options.cpp:1219
 msgid "150"
 msgstr "150"
 
-#: src/options.cpp:681
+#: src/options.cpp:1219
 msgid "300"
 msgstr "300"
 
-#: src/options.cpp:681
+#: src/options.cpp:1219
 msgid "600"
 msgstr "600"
 
-#: src/options.cpp:681
+#: src/options.cpp:1219
 msgid "1200"
 msgstr "1200"
 
-#: src/options.cpp:681
+#: src/options.cpp:1219
 msgid "2400"
 msgstr "2400"
 
-#: src/options.cpp:681
+#: src/options.cpp:1219
 msgid "4800"
 msgstr "4800"
 
-#: src/options.cpp:681
+#: src/options.cpp:1219
 msgid "9600"
 msgstr "9600"
 
-#: src/options.cpp:681
+#: src/options.cpp:1219
 msgid "19200"
 msgstr "19200"
 
-#: src/options.cpp:681
+#: src/options.cpp:1219
 msgid "38400"
 msgstr "38400"
 
-#: src/options.cpp:681
+#: src/options.cpp:1219
 msgid "57600"
 msgstr "57600"
 
-#: src/options.cpp:681
+#: src/options.cpp:1219
 msgid "115200"
 msgstr "115200"
 
-#: src/options.cpp:681
+#: src/options.cpp:1219
 msgid "230400"
 msgstr "230400"
 
-#: src/options.cpp:681
+#: src/options.cpp:1219
 msgid "460800"
 msgstr "460800"
 
-#: src/options.cpp:681
+#: src/options.cpp:1219
 msgid "921600"
 msgstr "921600"
 
-#: src/options.cpp:691
+#: src/options.cpp:1229
 msgid "NMEA 0183"
 msgstr "NMEA 0183"
 
-#: src/options.cpp:691
+#: src/options.cpp:1229
 msgid "NMEA 2000"
 msgstr "NMEA 2000"
 
-#: src/options.cpp:691
+#: src/options.cpp:1229
 msgid "Seatalk"
 msgstr "Seatalk"
 
-#: src/options.cpp:699 src/options.cpp:848
+#: src/options.cpp:1237 src/options.cpp:1386
 msgid "Priority"
 msgstr "Eesõigus"
 
-#: src/options.cpp:703
+#: src/options.cpp:1241
 msgid "0"
 msgstr "0"
 
-#: src/options.cpp:703
+#: src/options.cpp:1241
 msgid "1"
 msgstr "1"
 
-#: src/options.cpp:703
+#: src/options.cpp:1241
 msgid "2"
 msgstr "2"
 
-#: src/options.cpp:703
+#: src/options.cpp:1241
 msgid "3"
 msgstr "3"
 
-#: src/options.cpp:703
+#: src/options.cpp:1241
 msgid "4"
 msgstr "4"
 
-#: src/options.cpp:703
+#: src/options.cpp:1241
 msgid "5"
 msgstr "5"
 
-#: src/options.cpp:703
+#: src/options.cpp:1241
 msgid "6"
 msgstr "6"
 
-#: src/options.cpp:703
+#: src/options.cpp:1241
 msgid "7"
 msgstr "7"
 
-#: src/options.cpp:703
+#: src/options.cpp:1241
 msgid "8"
 msgstr "8"
 
-#: src/options.cpp:703
+#: src/options.cpp:1241
 msgid "9"
 msgstr "9"
 
-#: src/options.cpp:717
+#: src/options.cpp:1255
 msgid "Control checksum"
 msgstr "vaata kontrollsumma üle"
 
-#: src/options.cpp:719
+#: src/options.cpp:1257
 msgid "If checked, only the sentences with a valid checksum are passed through"
 msgstr "Kui valitud, ainult kehtiva kontrollsummaga teated saavad läbi"
 
-#: src/options.cpp:722
+#: src/options.cpp:1260
 msgid "Use Garmin (GRMN) mode for input"
 msgstr "kasuta Garmini (GRMN) moodust sisendiks"
 
-#: src/options.cpp:726
+#: src/options.cpp:1264
 msgid "Receive Input on this Port"
 msgstr "Vüta vastu selles pordis"
 
-#: src/options.cpp:729
+#: src/options.cpp:1267
 msgid "Output on this port ( as Autopilot or NMEA Repeater)"
 msgstr "väljasta selles pordis (nagu autoroolile või NMEA-kordajale)"
 
-#: src/options.cpp:735
+#: src/options.cpp:1273
 msgid "Input filtering"
 msgstr "Sisendi filtreerimine"
 
-#: src/options.cpp:740
+#: src/options.cpp:1278
 msgid "Accept only sentences"
 msgstr "vastu võtta ainult teated"
 
-#: src/options.cpp:743
+#: src/options.cpp:1281
 msgid "Ignore sentences"
 msgstr "eira teateid"
 
-#: src/options.cpp:762
+#: src/options.cpp:1300
 msgid "Output filtering"
 msgstr "Väljundi filtreerimine"
 
-#: src/options.cpp:767
+#: src/options.cpp:1305
 msgid "Transmit sentences"
 msgstr "saada teated"
 
-#: src/options.cpp:770
+#: src/options.cpp:1308
 msgid "Drop sentences"
 msgstr "hülga teated"
 
-#: src/options.cpp:833 src/pluginmanager.cpp:2941 src/pluginmanager.cpp:2951
+#: src/options.cpp:1371 src/pluginmanager.cpp:3035 src/pluginmanager.cpp:3045
 msgid "Enable"
 msgstr "Võimalda"
 
-#: src/options.cpp:838 src/AISTargetListDialog.cpp:388
+#: src/options.cpp:1376 src/AISTargetListDialog.cpp:388
 msgid "Type"
 msgstr "Tüüp"
 
-#: src/options.cpp:853
+#: src/options.cpp:1391
 msgid "Parameters"
 msgstr "Muutujad"
 
-#: src/options.cpp:858
+#: src/options.cpp:1396
 msgid "Connection"
 msgstr "Ühendus"
 
-#: src/options.cpp:863
+#: src/options.cpp:1401
 msgid "Filters"
 msgstr "Filtrid"
 
-#: src/options.cpp:936
+#: src/options.cpp:1474
 msgid "Own Ship"
 msgstr "Oma laev"
 
-#: src/options.cpp:942
+#: src/options.cpp:1480
 msgid "Display Options"
 msgstr "Kuvamise valikud"
 
-#: src/options.cpp:950
+#: src/options.cpp:1488
 msgid "COG Predictor Length (min)"
 msgstr "COG eeldatav asukoht (min)"
 
-#: src/options.cpp:956
+#: src/options.cpp:1494
+msgid "Heading Predictor Length (NMi)"
+msgstr "Kursivektori pikkus (NM)"
+
+#: src/options.cpp:1500
 msgid "Ship Icon Type"
 msgstr "laeva ikooni tüüp"
 
-#: src/options.cpp:959
+#: src/options.cpp:1503
 msgid "Real Scale Bitmap"
 msgstr "raster tegelikus mõõtkavas"
 
-#: src/options.cpp:959
+#: src/options.cpp:1503
 msgid "Real Scale Vector"
 msgstr "vektor tegelikus mõõtkavas"
 
-#: src/options.cpp:968
+#: src/options.cpp:1512
 msgid "Length Over All (m)"
 msgstr "Üldpikkus (LOA) (m)"
 
-#: src/options.cpp:972
+#: src/options.cpp:1516
 msgid "Width Over All (m)"
 msgstr "Suurim laius (m)"
 
-#: src/options.cpp:976
+#: src/options.cpp:1520
 msgid "GPS Offset from Bow (m)"
 msgstr "GPS-i nihe vöörist (m)"
 
-#: src/options.cpp:980
+#: src/options.cpp:1524
 msgid "GPS Offset from Midship (m)"
 msgstr "GPS-i nihe laeva miidlis (m)"
 
-#: src/options.cpp:984
+#: src/options.cpp:1528
 msgid "Minimum Screen Size (mm)"
 msgstr "Vähim suurus ekraanil (mm)"
 
-#: src/options.cpp:994
+#: src/options.cpp:1538
 msgid "Show radar rings"
 msgstr "näita radariringe"
 
-#: src/options.cpp:997
+#: src/options.cpp:1541
 msgid "None"
 msgstr "mitte ühtegi"
 
-#: src/options.cpp:1005
+#: src/options.cpp:1549
 msgid "Distance Between Rings"
 msgstr "Vahemaa ringide vahel"
 
-#: src/options.cpp:1011
+#: src/options.cpp:1555
 msgid "Distance Unit"
 msgstr "Vahemaa ühik"
 
-#: src/options.cpp:1014
+#: src/options.cpp:1558
 msgid "Nautical Miles"
 msgstr "meremiilid"
 
-#: src/options.cpp:1014 src/options.cpp:1799
+#: src/options.cpp:1558 src/options.cpp:2368
 msgid "Kilometers"
 msgstr "kilomeetrid"
 
-#: src/options.cpp:1023
+#: src/options.cpp:1567
 msgid "Automatic Daily Tracks"
 msgstr "automaatsed päevajäljed"
 
-#: src/options.cpp:1026
+#: src/options.cpp:1570
 msgid "Highlight Tracks"
 msgstr "erista jäljed"
 
-#: src/options.cpp:1033
+#: src/options.cpp:1577
 msgid "Tracking Precision"
 msgstr "järgimise täpsus"
 
-#: src/options.cpp:1036
+#: src/options.cpp:1580
 msgid "Low"
 msgstr "madal"
 
-#: src/options.cpp:1036
+#: src/options.cpp:1580
 msgid "Medium"
 msgstr "keskmine"
 
-#: src/options.cpp:1036
+#: src/options.cpp:1580
 msgid "High"
 msgstr "Kõrge"
 
-#: src/options.cpp:1049
+#: src/options.cpp:1593
 msgid "Waypoint Arrival Circle Radius (NMi)"
 msgstr "teepunkti saabumisringi raadius (miili)"
 
-#: src/options.cpp:1061
+#: src/options.cpp:1605
 msgid "Loaded Charts"
 msgstr "Laetud kaardid"
 
-#: src/options.cpp:1066
+#: src/options.cpp:1610
 msgid "Directories"
 msgstr "Asukohad"
 
-#: src/options.cpp:1090
+#: src/options.cpp:1636
 msgid "Add Directory..."
 msgstr "Lisa asukoht..."
 
-#: src/options.cpp:1093 src/options.cpp:1278
+#: src/options.cpp:1639 src/options.cpp:1826
 msgid "Remove Selected"
 msgstr "Kõrvalda valitud"
 
-#: src/options.cpp:1097
+#: src/options.cpp:1645
 msgid "Update Control"
 msgstr "Uuenduste kontroll"
 
-#: src/options.cpp:1103
+#: src/options.cpp:1651
 msgid "Scan Charts and Update Database"
 msgstr "otsi kaarte ja uuenda andmebaas"
 
-#: src/options.cpp:1107
+#: src/options.cpp:1655
 msgid "Force Full Database Rebuild"
 msgstr "sunduslik kogu andmebaasi taasloomine"
 
-#: src/options.cpp:1116
+#: src/options.cpp:1664
 msgid "Vector Charts"
 msgstr "Vektorkaardid"
 
-#: src/options.cpp:1124
+#: src/options.cpp:1672
 msgid "Mariner's Standard"
 msgstr "Laevniku valik"
 
-#: src/options.cpp:1135 src/options.cpp:4556
+#: src/options.cpp:1683 src/options.cpp:5182
 msgid "Select All"
 msgstr "Vali kõik"
 
-#: src/options.cpp:1137 src/options.cpp:4559
+#: src/options.cpp:1685 src/options.cpp:5185
 msgid "Clear All"
 msgstr "Puhasta kõik"
 
-#: src/options.cpp:1144 src/AIS_Target_Data.cpp:852
+#: src/options.cpp:1692 src/AIS_Target_Data.cpp:852
 msgid "Base"
 msgstr "baas"
 
-#: src/options.cpp:1144
+#: src/options.cpp:1692
 msgid "Standard"
 msgstr "standartne"
 
-#: src/options.cpp:1144
+#: src/options.cpp:1692
 msgid "All"
 msgstr "kõik"
 
-#: src/options.cpp:1144
+#: src/options.cpp:1692
 msgid "Mariners Standard"
 msgstr "laevniku valik"
 
-#: src/options.cpp:1145
+#: src/options.cpp:1693
 msgid "Display Category"
 msgstr "Kuva kategooria"
 
-#: src/options.cpp:1149
+#: src/options.cpp:1697
 msgid "Depth Soundings"
 msgstr "Sügavuse mõõdistused"
 
-#: src/options.cpp:1153
+#: src/options.cpp:1701
 msgid "Chart Information Objects"
 msgstr "Kaardi-info objektid"
 
-#: src/options.cpp:1158
+#: src/options.cpp:1706
 msgid "Important Text Only"
 msgstr "Ainult oluline tekst"
 
-#: src/options.cpp:1162
+#: src/options.cpp:1710
 msgid "Reduced Detail at Small Scale"
 msgstr "Vähendatud detailid väiksel mõõtkaval"
 
-#: src/options.cpp:1166
+#: src/options.cpp:1714
 msgid "Buoy/Light Labels"
 msgstr "Poi/tule silt"
 
-#: src/options.cpp:1170
+#: src/options.cpp:1718
 msgid "Light Descriptions"
 msgstr "Tule kirjeldus"
 
-#: src/options.cpp:1174
+#: src/options.cpp:1722
 msgid "Extended Light Sectors"
 msgstr "Pikendatud tulesektorid"
 
-#: src/options.cpp:1178
+#: src/options.cpp:1726
 msgid "De-Cluttered Text"
 msgstr "Virvarrita tekst"
 
-#: src/options.cpp:1182
+#: src/options.cpp:1730
 msgid "National text on chart"
 msgstr "Rahvuslik tekst kaardil"
 
-#: src/options.cpp:1189
+#: src/options.cpp:1737
 msgid "Paper Chart"
 msgstr "paberkaart"
 
-#: src/options.cpp:1189
+#: src/options.cpp:1737
 msgid "Simplified"
 msgstr "lihtsustatud"
 
-#: src/options.cpp:1190
+#: src/options.cpp:1738
 msgid "Points"
 msgstr "Punktid"
 
-#: src/options.cpp:1194
+#: src/options.cpp:1742
 msgid "Plain"
 msgstr "lihtne"
 
-#: src/options.cpp:1194
+#: src/options.cpp:1742
 msgid "Symbolized"
 msgstr "lisatud sümbolid"
 
-#: src/options.cpp:1195
+#: src/options.cpp:1743
 msgid "Boundaries"
 msgstr "Piirid"
 
-#: src/options.cpp:1199
+#: src/options.cpp:1747
 msgid "2 Color"
 msgstr "2 värvi"
 
-#: src/options.cpp:1199
+#: src/options.cpp:1747
 msgid "4 Color"
 msgstr "4 värvi"
 
-#: src/options.cpp:1200
+#: src/options.cpp:1748
 msgid "Colors"
 msgstr "Värvid"
 
-#: src/options.cpp:1204
+#: src/options.cpp:1752
 msgid "Depth Settings(m)"
 msgstr "Sügavuse seaded (m)"
 
-#: src/options.cpp:1208
+#: src/options.cpp:1756
 msgid "Shallow Depth"
 msgstr "madal vesi"
 
-#: src/options.cpp:1217
+#: src/options.cpp:1765
 msgid "Safety Depth"
 msgstr "ohutu sügavus"
 
-#: src/options.cpp:1226
+#: src/options.cpp:1774
 msgid "Deep Depth"
 msgstr "suur sügavus"
 
-#: src/options.cpp:1237
+#: src/options.cpp:1785
 msgid "Chart Depth Units"
 msgstr "Kaardi sügavusühikud"
 
-#: src/options.cpp:1257
+#: src/options.cpp:1805
 msgid "Tides && Currents"
 msgstr "Looded && hoovused"
 
-#: src/options.cpp:1262
+#: src/options.cpp:1810
 msgid "Active Datasets"
 msgstr "Aktiivne andmestik"
 
-#: src/options.cpp:1277
+#: src/options.cpp:1825
 msgid "Add Dataset..."
 msgstr "Lisa andmestik..."
 
-#: src/options.cpp:1323
+#: src/options.cpp:1871
 msgid "All Available Charts"
 msgstr "Kõik saadaval kaardid"
 
-#: src/options.cpp:1337
+#: src/options.cpp:1885
 msgid "Remove Chart"
 msgstr "Eemalda kaart"
 
-#: src/options.cpp:1358
+#: src/options.cpp:1906
 msgid "All Charts"
 msgstr "Kõik kaardid"
 
-#: src/options.cpp:1374
+#: src/options.cpp:1922
 msgid "New Group..."
 msgstr "Uus grupp..."
 
-#: src/options.cpp:1375
+#: src/options.cpp:1923
 msgid "Delete Group"
 msgstr "Kustuta grupp"
 
-#: src/options.cpp:1397 src/options.cpp:1574 src/options.cpp:1921
+#: src/options.cpp:1945 src/options.cpp:2143 src/options.cpp:2499
 msgid "Display"
 msgstr "Kuvamine"
 
-#: src/options.cpp:1404
+#: src/options.cpp:1952
 msgid "Chart Display Options"
 msgstr "Kaardi kuvamise valikud"
 
-#: src/options.cpp:1410
+#: src/options.cpp:1958
 msgid "Course UP Mode"
 msgstr "kurss-üleval moodus"
 
-#: src/options.cpp:1419
+#: src/options.cpp:1967
 msgid "Course-Up Mode Display Update Period (sec)"
 msgstr "kurss-üleval mooduse kuvamise uuendamise periood (sek)"
 
-#: src/options.cpp:1428
+#: src/options.cpp:1976
 msgid "Look Ahead Mode"
 msgstr "ette-vaate moodus"
 
-#: src/options.cpp:1432
+#: src/options.cpp:1980
 msgid "Show Grid"
 msgstr "näita kaardivõrku"
 
-#: src/options.cpp:1436
+#: src/options.cpp:1984
 msgid "Show Depth Units"
 msgstr "näita sügavusühikuid"
 
-#: src/options.cpp:1443
+#: src/options.cpp:1991
 msgid "Use Accelerated Graphics (OpenGL)"
 msgstr "kasuta graafikakiirendit (OpenGL)"
 
-#: src/options.cpp:1447
+#: src/options.cpp:1995
 msgid "Options ..."
 msgstr "Valikud ..."
 
-#: src/options.cpp:1453
+#: src/options.cpp:2001
 msgid "Smooth Panning / Zooming"
 msgstr "sujuv panoraamimine / suumimine"
 
-#: src/options.cpp:1457
+#: src/options.cpp:2005
 msgid "Zoom to Cursor"
 msgstr "suumi hiire juurde"
 
-#: src/options.cpp:1462
+#: src/options.cpp:2010
 msgid "Preserve Scale when Switching Charts"
 msgstr "säilita kaarte vahetades mõõtkava"
 
-#: src/options.cpp:1466
+#: src/options.cpp:2014
 msgid "Enable Chart Quilting"
 msgstr "luba kaartide kihistamine"
 
-#: src/options.cpp:1471
+#: src/options.cpp:2019
 msgid "Disable Full Screen Quilting"
 msgstr "blokeeri täisekraan-kihistamine"
 
-#: src/options.cpp:1475
+#: src/options.cpp:2023
 msgid "Show Chart Outlines"
 msgstr "näita kaardi kontuure"
 
-#: src/options.cpp:1480
+#: src/options.cpp:2028
 msgid "Show Skewed Raster Charts as North-Up"
 msgstr "näita viltuseid rasterkaarte kui N-üleval"
 
-#: src/options.cpp:1484
+#: src/options.cpp:2032
 msgid "Enable Touchscreen/Tablet interface"
 msgstr "võimalda puutepaneeli/tableti kasutajaliides"
 
-#: src/options.cpp:1487
+#: src/options.cpp:2035
 msgid "Enable Responsive graphics interface"
 msgstr "võimalda reageeriv graafiline liides"
 
-#: src/options.cpp:1491
+#: src/options.cpp:2039
 msgid "Show Magnetic bearings and headings"
 msgstr "Näita magnetsuundi ja -kursse"
 
-#: src/options.cpp:1500
+#: src/options.cpp:2048
 msgid "Assumed Magnetic Variation, deg."
 msgstr "oletatav magnetvariatsioon, °"
 
-#: src/options.cpp:1512
+#: src/options.cpp:2081
 msgid "AIS Targets"
 msgstr "AIS märgid"
 
-#: src/options.cpp:1518
+#: src/options.cpp:2087
 msgid "CPA Calculation"
 msgstr "CPA arvutamine"
 
-#: src/options.cpp:1527
+#: src/options.cpp:2096
 msgid "No CPA Calculation if target range is greater than (NMi)"
 msgstr "CPA ei arvutata kui märk on kaugemal kui (miili)"
 
-#: src/options.cpp:1533
+#: src/options.cpp:2102
 msgid "Warn if CPA less than (NMi)"
 msgstr "hoiata kui CPA on vähem kui (miili)"
 
-#: src/options.cpp:1545
+#: src/options.cpp:2114
 msgid "...and TCPA is less than (min)"
 msgstr "...ja TCPA on vähem kui (min)"
 
-#: src/options.cpp:1552
+#: src/options.cpp:2121
 msgid "Lost Targets"
 msgstr "Kaotatud märgid"
 
-#: src/options.cpp:1560
+#: src/options.cpp:2129
 msgid "Mark targets as lost after (min)"
 msgstr "märgista märk kaotatuks peale (min)"
 
-#: src/options.cpp:1567
+#: src/options.cpp:2136
 msgid "Remove lost targets after (min)"
 msgstr "kõrvalda kaotatud märgid peale (min)"
 
-#: src/options.cpp:1582
+#: src/options.cpp:2151
 msgid "Show target COG predictor arrow, length (min)"
 msgstr "näita märgi COG eeldatavat asukohta, (min) kaugusel"
 
-#: src/options.cpp:1588
+#: src/options.cpp:2157
 msgid "Show target tracks, length (min)"
 msgstr "näita märgi jälge, pikkus (minutit)"
 
-#: src/options.cpp:1594
+#: src/options.cpp:2163
 msgid "Hide anchored/moored targets, speed max (kn)"
 msgstr "peida ankurdatud/sildunud märgid, suurim kiirus kuni (sõlme)"
 
-#: src/options.cpp:1601
+#: src/options.cpp:2170
 msgid "Show area notices (from AIS binary messages)"
 msgstr "näita ala teateid (AIS binaarteadetest)"
 
-#: src/options.cpp:1607
+#: src/options.cpp:2176
 msgid "Show AIS targets real size"
 msgstr "näita AIS märgi tegelikku suurust"
 
-#: src/options.cpp:1613
+#: src/options.cpp:2182
 msgid "Show names with AIS targets at scale greater than 1:"
 msgstr "näita nimesid koos AIS-märkidega suuremal mõõtkaval kui 1:"
 
-#: src/options.cpp:1619
+#: src/options.cpp:2188
 msgid "Treat WPL sentences as APRS position reports"
 msgstr "käsitle WPL-teateid kui ARPS asukoha ettekandeid"
 
-#: src/options.cpp:1629
+#: src/options.cpp:2198
 msgid "Rollover"
 msgstr "Liigu üle"
 
-#: src/options.cpp:1633
+#: src/options.cpp:2202
 msgid "\"Ship Name\" MMSI (Call Sign)"
 msgstr "\"Laev nimi\" MMSI (kutsung)"
 
-#: src/options.cpp:1636
+#: src/options.cpp:2205
 msgid "[Class] Type (Status)"
 msgstr "[Klass] tüüp (olek)"
 
-#: src/options.cpp:1639
+#: src/options.cpp:2208
 msgid "SOG COG"
 msgstr "SOG COG"
 
-#: src/options.cpp:1642
+#: src/options.cpp:2211
 msgid "CPA TCPA"
 msgstr "CPA TCPA"
 
-#: src/options.cpp:1646
+#: src/options.cpp:2215
 msgid "CPA/TCPA Alerts"
 msgstr "CPA/TCPA häired"
 
-#: src/options.cpp:1655
+#: src/options.cpp:2224
 msgid "Show CPA/TCPA Alert Dialog"
 msgstr "näita CPA/TCPA häire dialoogi"
 
-#: src/options.cpp:1659
+#: src/options.cpp:2228
 msgid "Select Alert Sound"
 msgstr "Vali häire heli"
 
-#: src/options.cpp:1663
+#: src/options.cpp:2232
 msgid "Play Sound on CPA/TCPA Alerts and DSC/SART emergencies."
 msgstr "mängi heli CPA/TCPA häiretega ja DSC/SART hädaolukordades."
 
-#: src/options.cpp:1667
+#: src/options.cpp:2236
 msgid "Test Alert Sound"
 msgstr "Testi häire heli"
 
-#: src/options.cpp:1671
+#: src/options.cpp:2240
 msgid "Supress Alerts for anchored/moored targets"
 msgstr "vaigista ankurdatud/sildunud märkide häired"
 
-#: src/options.cpp:1678
+#: src/options.cpp:2247
 msgid "Enable Target Alert Acknowledge timeout (min)"
 msgstr "luba märgi häirele vastamise hilinemine (min)"
 
-#: src/options.cpp:1691
+#: src/options.cpp:2260
 msgid "General Options"
 msgstr "Üldised valikud"
 
-#: src/options.cpp:1701
+#: src/options.cpp:2270
 msgid "Language"
 msgstr "Keel"
 
-#: src/options.cpp:1712
+#: src/options.cpp:2281
 msgid "Fonts"
 msgstr "Kirjamärgid"
 
-#: src/options.cpp:1733
+#: src/options.cpp:2302
 msgid "Choose Font..."
 msgstr "Vali täht..."
 
-#: src/options.cpp:1737
+#: src/options.cpp:2306
 msgid "Choose Font Color..."
 msgstr "Vali tähe värv..."
 
-#: src/options.cpp:1741
+#: src/options.cpp:2310
 msgid "Toolbar and Window Style"
 msgstr "Tööriistariba ja akna stiil"
 
-#: src/options.cpp:1756
+#: src/options.cpp:2325
 msgid "Miscellaneous Options"
 msgstr "Erinevad valikud"
 
-#: src/options.cpp:1760
+#: src/options.cpp:2329
 msgid "Show Status Bar"
 msgstr "näita olekuriba"
 
-#: src/options.cpp:1764
+#: src/options.cpp:2333
 msgid "Show Compass/GPS Status Window"
 msgstr "näita kompassi/GPS olukorra akent"
 
-#: src/options.cpp:1769
+#: src/options.cpp:2338
 msgid "Show Toolbar in Fullscreen Mode"
 msgstr "näita tööriistariba täisekraani-reþiimis"
 
-#: src/options.cpp:1773
+#: src/options.cpp:2342
 msgid "Enable Transparent Toolbar"
 msgstr "luba läbipaistev tööriistariba"
 
-#: src/options.cpp:1782
+#: src/options.cpp:2351
 msgid "Show Lat/Long as"
 msgstr "näita laiust/pikkust kui"
 
-#: src/options.cpp:1786
+#: src/options.cpp:2355
 msgid "Degrees, Decimal Minutes"
 msgstr "kraadid, minutite kümnendikud"
 
-#: src/options.cpp:1786
+#: src/options.cpp:2355
 msgid "Decimal Degrees"
 msgstr "Kraadi kümnendikud"
 
-#: src/options.cpp:1787
+#: src/options.cpp:2356
 msgid "Degrees, Minutes, Seconds"
 msgstr "kraadid, minutid, sekundid"
 
-#: src/options.cpp:1794
+#: src/options.cpp:2363
 msgid "Show distance as"
 msgstr "näita vahemaad kui"
 
-#: src/options.cpp:1798
+#: src/options.cpp:2367
 msgid "Nautical miles"
 msgstr "meremiil"
 
-#: src/options.cpp:1798
+#: src/options.cpp:2367
 msgid "Statute miles"
 msgstr "maamiil"
 
-#: src/options.cpp:1806
+#: src/options.cpp:2375
 msgid "Show speed as"
 msgstr "näita kiirust kui"
 
-#: src/options.cpp:1810
+#: src/options.cpp:2379
 msgid "Knots"
 msgstr "sõlmed"
 
-#: src/options.cpp:1810
+#: src/options.cpp:2379
 msgid "Mph"
 msgstr "mp/h"
 
-#: src/options.cpp:1818
+#: src/options.cpp:2387
 msgid "Play Ships Bells"
 msgstr "helista laevakella"
 
-#: src/options.cpp:1822
+#: src/options.cpp:2391
 msgid "Lock Waypoints (Unless waypoint property dialog visible)"
 msgstr "lukusta teepunktid (kui teepunkti omaduste dialoog pole just nähtav)"
 
-#: src/options.cpp:1828
+#: src/options.cpp:2397
 msgid "Confirm deletion of tracks and routes"
 msgstr "kinnita teekondade ja -punktide kustutamine"
 
-#: src/options.cpp:1911
+#: src/options.cpp:2401
+msgid "Chart Zoom Detail Level"
+msgstr ""
+
+#: src/options.cpp:2489
 msgid "Ok"
 msgstr "OK"
 
-#: src/options.cpp:1918
+#: src/options.cpp:2496
 msgid "Apply"
 msgstr "Rakenda"
 
-#: src/options.cpp:1924
+#: src/options.cpp:2502
 msgid "Connections"
 msgstr "Ühendused"
 
-#: src/options.cpp:1927
+#: src/options.cpp:2505
 msgid "Charts"
 msgstr "Kaardid"
 
-#: src/options.cpp:1934
+#: src/options.cpp:2512
 msgid "Ships"
 msgstr "Laevad"
 
-#: src/options.cpp:1938
+#: src/options.cpp:2517
 msgid "User Interface"
 msgstr "Kasutajaliides"
 
-#: src/options.cpp:1941 src/options.cpp:1942
+#: src/options.cpp:2520 src/options.cpp:2521
 msgid "Plugins"
 msgstr "Pluginad"
 
-#: src/options.cpp:2438
+#: src/options.cpp:3058
 msgid "Add a directory containing chart files"
 msgstr "Lisa kaarte sisaldav asukoht"
 
-#: src/options.cpp:2533
+#: src/options.cpp:3153
 msgid "Data connection must be input, output or both"
 msgstr "Andmete ühendus peab olema sisend, väljund või mõlemad"
 
-#: src/options.cpp:2533 src/options.cpp:2539 src/options.cpp:2547
-#: src/options.cpp:2554
+#: src/options.cpp:3153 src/options.cpp:3159 src/options.cpp:3167
+#: src/options.cpp:3174
 msgid "Error!"
 msgstr "Viga!"
 
-#: src/options.cpp:2539
+#: src/options.cpp:3159
 msgid "You must select or enter the port..."
 msgstr "Peate valima või sisenema porti..."
 
-#: src/options.cpp:2547
+#: src/options.cpp:3167
 msgid "You must enter a port..."
 msgstr "Peate sisestama pordi..."
 
-#: src/options.cpp:2554
+#: src/options.cpp:3174
 msgid "You must enter the address..."
 msgstr "Te peate sisestama aadressi..."
 
-#: src/options.cpp:2636
+#: src/options.cpp:3256
 msgid "\n - your ship's length must be > 0"
 msgstr "\n - te laeva pikkus peab olema > 0"
 
-#: src/options.cpp:2638
+#: src/options.cpp:3258
 msgid "\n - your ship's beam must be > 0"
 msgstr "\n - te laeva laius peab olema > 0"
 
-#: src/options.cpp:2640
+#: src/options.cpp:3260
 msgid "\n - your GPS offset from midship must be within your ship's beam"
 msgstr "\n - teie GPS-i nihe keskosast peab olema te laeva laiuse piires"
 
-#: src/options.cpp:2642
+#: src/options.cpp:3262
 msgid "\n - your GPS offset from bow must be within your ship's length"
 msgstr "\n - teie GPS-i nihe vöörist peab olema te laeva pikkuse piires"
 
-#: src/options.cpp:2644
+#: src/options.cpp:3264
 msgid "\n - your minimum ship icon size must be between 1 and 100 mm"
 msgstr "\n - teie laeva vähim ikooni suurus peab olema 1 and 100 mm vahel"
 
-#: src/options.cpp:2646
+#: src/options.cpp:3266
 msgid "The settings for own ship real size are not correct:"
 msgstr "Oma laeva tegeliku suuruse seaded ei ole õiged:"
 
-#: src/options.cpp:3446
+#: src/options.cpp:4072
 msgid "Select Sound File"
 msgstr "Vali helifail"
 
-#: src/options.cpp:3447
+#: src/options.cpp:4073
 msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
 msgstr "WAV-failid (*.wav)|*.wav|Kõik failid (*.*)|*.*"
 
-#: src/options.cpp:3851
+#: src/options.cpp:4477
 msgid "Enter Group Name"
 msgstr "Sisesta grupi nimi"
 
-#: src/options.cpp:3852
+#: src/options.cpp:4478
 msgid "New Chart Group"
 msgstr "Uus kaardigrupp"
 
-#: src/options.cpp:4009
+#: src/options.cpp:4635
 msgid "Select Tide/Current Data"
 msgstr "Vali loodete/hoovuse andmed"
 
-#: src/options.cpp:4704
+#: src/options.cpp:5330
 msgid "Enter the NMEA sentence (2, 3 or 5 characters)"
 msgstr "Sisesta NMEA teade (2, 3 või 5 tähemärki)"
 
-#: src/options.cpp:4704
+#: src/options.cpp:5330
 msgid "Enter the NMEA sentence"
 msgstr "Sisesta NMEA teade"
 
-#: src/options.cpp:4713
+#: src/options.cpp:5339
 msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.) It can also have a two letter prefix identifying the source, or TALKER, of the message (The whole sentences then looks like GPGGA or AITXT). You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.). The filter accepts just these three formats."
 msgstr "NMEA teade on harilikult 3 tähemärki pikk (nagu RMC, GGA jne). Sellel võib samuti olla 2-täheline eesliide allika ehk TALKER teate määratlemiseks. (Kogu teade näeb siis välja nagu GPGGA või AITXT). Võite välja filtreerida kindla TALKER-eesliitega (nagu GP, AI jne) teated. Filter tunnustab ainult neid kolme formaati."
 
-#: src/options.cpp:4713
+#: src/options.cpp:5339
 msgid "Wrong length of the NMEA filter value"
 msgstr "NMEA filtri väärtuse vale pikkus"
 
-#: src/options.cpp:4764
+#: src/options.cpp:5390
 msgid "Accept Sentences"
 msgstr "Võta vastu teated"
 
-#: src/options.cpp:4766
+#: src/options.cpp:5392
 msgid "Ignore Sentences"
 msgstr "Eira teated"
 
-#: src/options.cpp:4770
+#: src/options.cpp:5396
 msgid "Transmit Sentences"
 msgstr "Saada teated"
 
-#: src/options.cpp:4772
+#: src/options.cpp:5398
 msgid "Drop Sentences"
 msgstr "Jäta kõrvale teated"
 
-#: src/options.cpp:4792
+#: src/options.cpp:5429
 msgid "Use Accelerated Panning"
 msgstr "Kasuta kiirendatud panoraamimist"
 
-#: src/options.cpp:4804
+#: src/options.cpp:5443
 msgid "Texture Compression"
 msgstr "Tekstuuri tihendamine"
 
-#: src/options.cpp:4808
+#: src/options.cpp:5447
 msgid "Texture Compression Caching"
 msgstr "Tekstuuri tihendamise vahemällu viimine"
 
-#: src/options.cpp:4822
+#: src/options.cpp:5460
+msgid "Texture Compression with Caching"
+msgstr "Tekstuuri pakkimine vahemällu"
+
+#: src/options.cpp:5484
 msgid "Texture Memory Size (MB)"
 msgstr "Tekstuuri mälu maht (MB)"
 
-#: src/options.cpp:4831
+#: src/options.cpp:5495
 msgid "Rebuild Texture Cache"
 msgstr "Loo uuesti tekstuuride vahemälu"
 
-#: src/options.cpp:4834
+#: src/options.cpp:5501
 msgid "Clear Texture Cache"
 msgstr "Tühjenda tekstuuri vahemälu"
 
@@ -3607,90 +3714,90 @@ msgstr "Abi"
 msgid "Close"
 msgstr "Sulge"
 
-#: src/s57chart.cpp:3718
+#: src/s57chart.cpp:4274
 msgid "OpenCPN S57 SENC File Create..."
 msgstr "OpenCPN S57 SENC faili loomine..."
 
-#: src/s57chart.cpp:6434
+#: src/s57chart.cpp:7074
 msgid "<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>"
 msgstr "<font size=-2>(Sektori nurgad on tõelised peilingud mere poolt vaadates)</font><br>"
 
-#: src/routeman.cpp:978
+#: src/routeman.cpp:982
 msgid "Waypoints can be renamed to reflect the new order, the names will be '001', '002' etc.\n\nDo you want to rename the waypoints?"
 msgstr "Teepunkte saab ümber nimetada uue järjekorra kasjatamiseks, nimed oleksid '001', 002' jne.\n\nKas soovite teepunktid ümber nimetadaa?"
 
-#: src/pluginmanager.cpp:275
+#: src/pluginmanager.cpp:278
 msgid "    Incompatible PlugIn detected:"
 msgstr "    Avastatud mitteühilduv plugin:"
 
-#: src/pluginmanager.cpp:562
+#: src/pluginmanager.cpp:595
 #, c-format
 msgid "PlugIn %s (%s), version %i.%i was detected.\n This version is known to be unstable and will not be loaded.\n Please update this PlugIn at the opencpn.org website."
 msgstr "Plugin %s (%s), versioon %i.%i on avastatud.\n Teadaolevalt on see versioon ebastabiilne ja teda ei käivitata.\n Palun uuendage see plugin opencpn.org veebilehelt."
 
-#: src/pluginmanager.cpp:563 src/pluginmanager.cpp:569
+#: src/pluginmanager.cpp:596 src/pluginmanager.cpp:602
 msgid "Blacklisted plugin detected..."
 msgstr "On avastatud keelatud plugin..."
 
-#: src/pluginmanager.cpp:568
+#: src/pluginmanager.cpp:601
 #, c-format
 msgid "PlugIn %s (%s), version %i.%i was detected.\n This version is known to be unstable.\n Please update this PlugIn at the opencpn.org website."
 msgstr "Plugin %s (%s), versioon %i.%i on avastatud.\n Teadaolevalt on see versioon ebastabiilne.\n Palun uuendage see plugin opencpn.org veebilehelt."
 
-#: src/pluginmanager.cpp:616
+#: src/pluginmanager.cpp:649
 msgid "Incompatible PlugIn detected:\n"
 msgstr "Avastatud mitteühilduv plugin:\n"
 
-#: src/pluginmanager.cpp:618
+#: src/pluginmanager.cpp:651
 msgid "\n\n"
 msgstr "\n\n"
 
-#: src/pluginmanager.cpp:621
+#: src/pluginmanager.cpp:654
 #, c-format
 msgid "PlugIn [ %s ] version %i.%i"
 msgstr "Plugina [ %s ] versioon %i.%i"
 
-#: src/pluginmanager.cpp:626
+#: src/pluginmanager.cpp:659
 msgid ", and all previous versions,"
 msgstr ", ja kõik eelmised versioonid,"
 
-#: src/pluginmanager.cpp:627
+#: src/pluginmanager.cpp:660
 msgid " is incompatible with this version of OpenCPN."
 msgstr "on ühildamatu selle OpenCPN versiooniga."
 
-#: src/pluginmanager.cpp:2871
+#: src/pluginmanager.cpp:2965
 msgid "Preferences"
 msgstr "Eelistused"
 
-#: src/pluginmanager.cpp:2949
+#: src/pluginmanager.cpp:3043
 msgid "Disable"
 msgstr "Keela"
 
-#: src/toolbar.cpp:675
+#: src/toolbar.cpp:688
 msgid "You can't hide the last tool from the toolbar\nas this would make it inaccessible."
 msgstr "Te ei saa peita viimast vahendit tööriistaribal,\nsest see muudaks ta kättesaamatuks."
 
-#: src/toolbar.cpp:788 src/toolbar.cpp:797
+#: src/toolbar.cpp:809 src/toolbar.cpp:820
 msgid "ToolTips"
 msgstr "Nõuanded"
 
-#: src/toolbar.cpp:1905
+#: src/toolbar.cpp:1956
 msgid "Visible buttons"
 msgstr "Nähtavad nupud"
 
-#: src/toolbar.cpp:1962
+#: src/toolbar.cpp:2013
 msgid "No, I don't want to hide it."
 msgstr "Ei, ma ei soovi teda peita."
 
-#: src/toolbar.cpp:1965
+#: src/toolbar.cpp:2016
 msgid "No, and permanently remove the option to hide it."
 msgstr "Ei ning jäädavalt kõrvalda tema peitmise valikuvõimalus."
 
-#: src/toolbar.cpp:1968
+#: src/toolbar.cpp:2019
 msgid "Yes, hide it."
 msgstr "Jah, peida ta."
 
-#: src/toolbar.cpp:1974
+#: src/toolbar.cpp:2025
 msgid "The Man Over Board button could be an important safety feature.\nAre you sure you want to hide it?"
 msgstr "Mees üle parda nupp võiks olla oluline ohutusfuntsioon.\nKas olete kindel, et soovite seda peita?"
 
@@ -3839,56 +3946,56 @@ msgstr "Teekonnale"
 msgid "Export"
 msgstr "Ekspordi"
 
-#: src/TrackPropDlg.cpp:570
+#: src/TrackPropDlg.cpp:577
 msgid "%D Days, %H:%M"
 msgstr "%D päeva, %H:%M"
 
-#: src/TrackPropDlg.cpp:573
+#: src/TrackPropDlg.cpp:580
 msgid "%H:%M"
 msgstr "%H:%M"
 
-#: src/TrackPropDlg.cpp:617
+#: src/TrackPropDlg.cpp:624
 #, c-format
 msgid "Track Properties, Layer: %d"
 msgstr "Jälje omadused, kiht: %d"
 
-#: src/TrackPropDlg.cpp:630
+#: src/TrackPropDlg.cpp:637
 msgid "Track Properties"
 msgstr "Jalje omadused"
 
-#: src/TrackPropDlg.cpp:845
+#: src/TrackPropDlg.cpp:850
 msgid "track"
 msgstr "jälg"
 
-#: src/TrackPropDlg.cpp:1279
+#: src/TrackPropDlg.cpp:1284
 msgid "--"
 msgstr "--"
 
-#: src/LinkPropDlg.cpp:41
+#: src/LinkPropDlg.cpp:47
 msgid "Link"
 msgstr "Link"
 
-#: src/LinkPropDlg.cpp:44
+#: src/LinkPropDlg.cpp:50
 msgid "Link description"
 msgstr "Lingi kirjeldus"
 
-#: src/LinkPropDlg.cpp:53
+#: src/LinkPropDlg.cpp:59
 msgid "URL"
 msgstr "URL"
 
-#: src/LinkPropDlg.cpp:62
+#: src/LinkPropDlg.cpp:68
 msgid "Local file..."
 msgstr "Kohalik fail..."
 
-#: src/LinkPropDlg.cpp:113
+#: src/LinkPropDlg.cpp:119
 msgid "Choose a file"
 msgstr "Vali fail"
 
-#: src/LinkPropDlg.cpp:124
+#: src/LinkPropDlg.cpp:130
 msgid "Link not complete, can't be saved."
 msgstr "Link pole lõpetatud, pole võimalik säilitada."
 
-#: src/LinkPropDlg.cpp:124
+#: src/LinkPropDlg.cpp:130
 msgid "Problem discovered"
 msgstr "Avastatud probleem"
 
@@ -3913,11 +4020,6 @@ msgstr "Jälg"
 #: src/AISTargetListDialog.cpp:364
 msgid "Call"
 msgstr "Väljakutse"
-
-#: src/AISTargetListDialog.cpp:372 src/AIS_Target_Data.cpp:315
-#: src/AIS_Target_Data.cpp:324
-msgid "MMSI"
-msgstr "MMSI"
 
 #: src/AISTargetListDialog.cpp:380 src/AIS_Target_Data.cpp:316
 #: src/AIS_Target_Data.cpp:325
@@ -4815,7 +4917,7 @@ msgid "Crozet Archipelago"
 msgstr "Crozet arhipelaag"
 
 #: src/AIS_Target_Data.cpp:1117
-msgid "CÃ´te d'Ivoire"
+msgid "Ivory Coast"
 msgstr "Elevandiluurannik"
 
 #: src/AIS_Target_Data.cpp:1118
@@ -5028,7 +5130,7 @@ msgstr "Falklandi saared"
 
 #: src/AIS_Target_Data.cpp:1172
 msgid "Guiana"
-msgstr "Guyana"
+msgstr "Guajaana"
 
 #: src/AIS_Target_Data.cpp:1173
 msgid "Guyana"
@@ -5072,8 +5174,8 @@ msgid "Marks"
 msgstr "Märgid"
 
 #: src/RoutePoint.cpp:619
-msgid "Waypoint(s) Uploaded successfully."
-msgstr "Teepunkt(id) on edukalt üleslaetud."
+msgid "Waypoint(s) Transmitted."
+msgstr "Edastatud teepunkt(id)."
 
 #: src/RoutePoint.cpp:622
 msgid "Error on Waypoint Upload.  Garmin GPS not connected"
@@ -5082,4 +5184,44 @@ msgstr "Viga teepunktide üleslaadimisel. Garmini GPS pole ühendatud"
 #: src/RoutePoint.cpp:624
 msgid "Error on Waypoint Upload.  Please check logfiles..."
 msgstr "Viga teepunktide üleslaadimisel. Vaadake logifaili..."
+
+#: src/TCWin.cpp:72
+msgid "Tide"
+msgstr "Loode"
+
+#: src/TCWin.cpp:77
+msgid "Current"
+msgstr "Hoovus"
+
+#: src/TCWin.cpp:148
+msgid "Prev"
+msgstr "Eelmine"
+
+#: src/TCWin.cpp:158
+msgid "Next"
+msgstr "Järgmine"
+
+#: src/TCWin.cpp:233
+msgid "Reference Station :"
+msgstr "Vaatlusjaam:"
+
+#: src/TCWin.cpp:249
+msgid "Data Source :"
+msgstr "Andmeallikas:"
+
+#: src/TCWin.cpp:446
+msgid "HW"
+msgstr "Kõrgvesi"
+
+#: src/TCWin.cpp:446
+msgid "LW"
+msgstr "Madalvesi"
+
+#: src/TCWin.cpp:624
+msgid "Today"
+msgstr "Täna"
+
+#: src/TCWin.cpp:625 src/TCWin.cpp:630
+msgid "Tomorrow"
+msgstr "Homme"
 

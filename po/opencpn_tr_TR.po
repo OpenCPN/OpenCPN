@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-10-22 15:10-0500\n"
-"PO-Revision-Date: 2014-10-22 16:15-0400\n"
+"POT-Creation-Date: 2014-11-02 18:40-0600\n"
+"PO-Revision-Date: 2014-11-02 19:43-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Turkish\n"
 "Language: tr_TR\n"
@@ -28,15 +28,15 @@ msgstr "Seyirnoktası Özellikleri"
 msgid "Waypoint Information"
 msgstr "Seyirnoktası Bilgisi "
 
-#: include/options.h:56 src/chart1.cpp:2917 src/chart1.cpp:4445
+#: include/options.h:56 src/chart1.cpp:2920 src/chart1.cpp:4483
 msgid "Options"
 msgstr "Seçenekler"
 
-#: include/options.h:916
+#: include/options.h:918
 msgid "Sentence Filter"
 msgstr "Cümle Filtresi"
 
-#: include/about.h:39 src/chart1.cpp:2980
+#: include/about.h:39 src/chart1.cpp:2983
 msgid "About OpenCPN"
 msgstr "OpenCPN Kılavuzu"
 
@@ -48,336 +48,336 @@ msgstr "Bağlantı Özellikleri"
 msgid "Center View"
 msgstr "Merkez Görünüm"
 
-#: src/chartdbs.cpp:1122
+#: src/chartdbs.cpp:1123
 msgid " ChartFile:  "
 msgstr "HaritaDosyası: "
 
-#: src/chartdbs.cpp:1159
+#: src/chartdbs.cpp:1160
 msgid " Name:  "
 msgstr "Ad : "
 
-#: src/chartdbs.cpp:1187 src/chartdbs.cpp:1189
+#: src/chartdbs.cpp:1188 src/chartdbs.cpp:1190
 #, c-format
 msgid " Scale:  1:%d"
 msgstr " Ölçek: 1:%d"
 
-#: src/chartdbs.cpp:1199
+#: src/chartdbs.cpp:1200
 msgid " ID:  "
 msgstr " ID: "
 
-#: src/chartdbs.cpp:1210
+#: src/chartdbs.cpp:1211
 msgid " Depth Units:  "
 msgstr " Derinlik Birimleri : "
 
-#: src/chartdbs.cpp:1221
+#: src/chartdbs.cpp:1222
 msgid " Soundings:  "
 msgstr " Derinlik Ölçüleri  : "
 
-#: src/chartdbs.cpp:1232
+#: src/chartdbs.cpp:1233
 msgid " Datum:  "
 msgstr " Datum:  "
 
-#: src/chartdbs.cpp:1240
+#: src/chartdbs.cpp:1241
 msgid " Projection:  "
 msgstr " Projeksiyon : "
 
-#: src/chartdbs.cpp:1242 src/ais.cpp:183 src/AIS_Target_Data.cpp:359
+#: src/chartdbs.cpp:1243 src/ais.cpp:183 src/AIS_Target_Data.cpp:359
 #: src/AIS_Target_Data.cpp:637 src/AIS_Target_Data.cpp:697
 #: src/AIS_Target_Data.cpp:868
 msgid "Unknown"
 msgstr "Bilinmiyor"
 
-#: src/chartdbs.cpp:1244
+#: src/chartdbs.cpp:1245
 msgid "Mercator"
 msgstr "Mercator"
 
-#: src/chartdbs.cpp:1246
+#: src/chartdbs.cpp:1247
 msgid "Transverse Mercator"
 msgstr "Enine Mercator"
 
-#: src/chartdbs.cpp:1248
+#: src/chartdbs.cpp:1249
 msgid "Polyconic"
 msgstr "Polyconic"
 
-#: src/chartdbs.cpp:1257
+#: src/chartdbs.cpp:1258
 msgid " Source Edition:  "
 msgstr "Kaynak Baskı: "
 
-#: src/chartdbs.cpp:1268
+#: src/chartdbs.cpp:1269
 msgid " Updated:  "
 msgstr " Güncellendi: "
 
-#: src/chartdbs.cpp:1488
+#: src/chartdbs.cpp:1489
 msgid "OpenCPN Chart Scan...."
 msgstr "OpenCPN Harita Arıyor..."
 
-#: src/chartdbs.cpp:1532
+#: src/chartdbs.cpp:1533
 msgid "OpenCPN Directory Scan...."
 msgstr "OpenCPN Klasör Aranıyor..."
 
-#: src/chartdbs.cpp:1866
+#: src/chartdbs.cpp:1867
 msgid "OpenCPN Chart Add...."
 msgstr "OpenCPN Harita Ekliyor..."
 
-#: src/chart1.cpp:754
+#: src/chart1.cpp:755
 msgid "\nOpenCPN is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied\nwarranty of MERCHANTABILITY or FITNESS FOR A\nPARTICULAR PURPOSE.\nSee the GNU General Public License for more details.\n\nOpenCPN must only be used in conjunction with approved\npaper charts and traditional methods of navigation.\n\nDO NOT rely upon OpenCPN for safety of life or property.\n\nPlease click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"
 msgstr "\n OpenCPN  HİÇBİR GARANTİ VERMEKSİZİN; hatta \n TİCARİLEŞTİRİLEBİLİRLİĞİNİN ya da BELİRLİ BİR AMAÇ \n İÇİN SAĞLAM olduğunun güvencesini vermeksizin\n sadece kullananlara yararlı olacağı düşünülerek dağıtılmaktadır.\n Ayrıntılar için \"GNU General Public License\"a bakınız.\n\nOpenCPN sadece denenmiş ve onaylanmış kağıt haritalarla\nve geleneksel seyir yöntemleriyle birlikte kullanılmalıdır.\nCan ve mal güvenliğiniz için OpenCPN'ye GÜVENMEYİNİZ\n\nKabul ediyorsanız, lütfen  \"Tamam\" tuşuna basarak devam ediniz;\netmiyorsanız,  \"İptal\" tuşuna basarak kurulumdan çıkınız.\n"
 
-#: src/chart1.cpp:768
+#: src/chart1.cpp:769
 msgid "Welcome to OpenCPN"
 msgstr "OpenCPN'e Hoşgeldiniz"
 
-#: src/chart1.cpp:1232
+#: src/chart1.cpp:1233
 msgid "Old log will be moved to opencpn.log.log"
 msgstr "Eski kütük opencpn.log.log dosyasına aktarılacak"
 
-#: src/chart1.cpp:1416 src/chart1.cpp:1420
+#: src/chart1.cpp:1417 src/chart1.cpp:1421
 msgid "Failed to initialize the user interface. "
 msgstr "Kullanıcı seçenekleri başlatılamadı."
 
-#: src/chart1.cpp:1417
+#: src/chart1.cpp:1418
 msgid "OpenCPN cannot start. "
 msgstr "OpenCPN başlatılamıyor"
 
-#: src/chart1.cpp:1418
+#: src/chart1.cpp:1419
 msgid "The necessary configuration files were not found. "
 msgstr "Gerekli ayar dosyaları bulunamadı. "
 
-#: src/chart1.cpp:1419
+#: src/chart1.cpp:1420
 msgid "See the log file at "
 msgstr "Kütük dosyasına bakınız "
 
-#: src/chart1.cpp:1419
+#: src/chart1.cpp:1420
 msgid " for details."
 msgstr " ayrıntılar için."
 
-#: src/chart1.cpp:1488
+#: src/chart1.cpp:1489
 msgid "Retrieving initial language selection from Windows Registry"
 msgstr "Başlangıçta seçilen dil, Windows kaydından alınıyor."
 
-#: src/chart1.cpp:1547 src/chart1.cpp:2114 src/chart1.cpp:4592
-#: src/chart1.cpp:9053 src/chart1.cpp:9084 src/pluginmanager.cpp:608
+#: src/chart1.cpp:1548 src/chart1.cpp:2108 src/chart1.cpp:4630
+#: src/chart1.cpp:9137 src/chart1.cpp:9168 src/pluginmanager.cpp:608
 #: src/pluginmanager.cpp:662 src/RoutePoint.cpp:627
 msgid "OpenCPN Info"
 msgstr "OpenCPN Hakkında"
 
-#: src/chart1.cpp:1907
+#: src/chart1.cpp:1901
 msgid " -- [Portable(-p) executing from "
 msgstr " -- [Portable(-p) Uygulanıyor"
 
-#: src/chart1.cpp:2038
+#: src/chart1.cpp:2032
 msgid "Retrieving initial Chart Directory set from Windows Registry"
 msgstr "Başlangıçtaki Harita Klasörü, Windows Kaydından alınıyor."
 
-#: src/chart1.cpp:2089
+#: src/chart1.cpp:2083
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr "Yapılandırma dosya girişlerinden, yeniden harita veritabanı oluşturuluyor..."
 
-#: src/chart1.cpp:2092
+#: src/chart1.cpp:2086
 msgid "Elapsed time : "
 msgstr "Geçen süre:"
 
-#: src/chart1.cpp:2093
+#: src/chart1.cpp:2087
 msgid "Estimated time : "
 msgstr "Tahmini süre: "
 
-#: src/chart1.cpp:2094
+#: src/chart1.cpp:2088
 msgid "Remaining time : "
 msgstr "Kalan Süre : "
 
-#: src/chart1.cpp:2095 src/chart1.cpp:4839
+#: src/chart1.cpp:2089 src/chart1.cpp:4881 src/chart1.cpp:4883
 msgid "OpenCPN Chart Update"
 msgstr "OpenCPN Harita Güncelliyor"
 
-#: src/chart1.cpp:2112
+#: src/chart1.cpp:2106
 msgid "No Charts Installed.\nPlease select chart folders in Options > Charts."
 msgstr "Harita Yüklenmedi \n Lütfen harita klasörlerini seçiniz (Seçenekler -> Haritalar)."
 
-#: src/chart1.cpp:2793 src/chcanv.cpp:10252
+#: src/chart1.cpp:2796 src/chcanv.cpp:10257
 msgid "AIS Target Query"
 msgstr "AIS Hedef Sorgusu"
 
-#: src/chart1.cpp:2872
+#: src/chart1.cpp:2875
 msgid "Zoom In"
 msgstr "Yakınlaştır"
 
-#: src/chart1.cpp:2878
+#: src/chart1.cpp:2881
 msgid "Zoom Out"
 msgstr "Uzaklaştır"
 
-#: src/chart1.cpp:2887
+#: src/chart1.cpp:2890
 msgid "Shift to Larger Scale Chart"
 msgstr "Büyük Ölçekli Haritaya Geç."
 
-#: src/chart1.cpp:2895
+#: src/chart1.cpp:2898
 msgid "Shift to Smaller Scale Chart"
 msgstr "Küçük Ölçekli Haritaya Geç"
 
-#: src/chart1.cpp:2903
+#: src/chart1.cpp:2906
 msgid "Create Route"
 msgstr "Rota Oluştur"
 
-#: src/chart1.cpp:2910
+#: src/chart1.cpp:2913
 msgid "Auto Follow"
 msgstr "Otomatik İzle"
 
-#: src/chart1.cpp:2923
+#: src/chart1.cpp:2926
 msgid "Show ENC Text"
 msgstr "Harita Metinlerini Göster"
 
-#: src/chart1.cpp:2931 src/chart1.cpp:3016 src/chart1.cpp:3790
+#: src/chart1.cpp:2934 src/chart1.cpp:3019 src/chart1.cpp:3793
 msgid "Hide AIS Targets"
 msgstr "AIS Hedeflerini Gizle"
 
-#: src/chart1.cpp:2938
+#: src/chart1.cpp:2941
 msgid "Show Currents"
 msgstr "Akıntıları Göster"
 
-#: src/chart1.cpp:2944
+#: src/chart1.cpp:2947
 msgid "Show Tides"
 msgstr "Gelgitleri Göster"
 
-#: src/chart1.cpp:2950
+#: src/chart1.cpp:2953
 msgid "Print Chart"
 msgstr "Haritayı Bas"
 
-#: src/chart1.cpp:2956 src/routemanagerdialog.cpp:423
+#: src/chart1.cpp:2959 src/routemanagerdialog.cpp:423
 msgid "Route Manager"
 msgstr "Rota Yöneticisi"
 
-#: src/chart1.cpp:2963
+#: src/chart1.cpp:2966
 msgid "Toggle Tracking"
 msgstr "Seyirizi Ayarı"
 
-#: src/chart1.cpp:2970
+#: src/chart1.cpp:2973
 msgid "Change Color Scheme"
 msgstr "Renk Tonunu Değiştir"
 
-#: src/chart1.cpp:2989
+#: src/chart1.cpp:2992
 msgid "Drop MOB Marker"
 msgstr "DAD (Denize Adam Düştü) işareti bırak"
 
-#: src/chart1.cpp:2989
+#: src/chart1.cpp:2992
 msgid " (Ctrl-Space)"
 msgstr " (Ctrl-Boşluk)"
 
-#: src/chart1.cpp:3020 src/chart1.cpp:3792
+#: src/chart1.cpp:3023 src/chart1.cpp:3795
 msgid "Show AIS Targets"
 msgstr "AIS Hedeflerini Göster"
 
-#: src/chart1.cpp:3371
+#: src/chart1.cpp:3374
 msgid "Anchorage created "
 msgstr "Demiryeri oluşturuldu."
 
-#: src/chart1.cpp:3548
+#: src/chart1.cpp:3551
 msgid "StatusBar"
 msgstr "Durum Çubuğu"
 
-#: src/chart1.cpp:3722
+#: src/chart1.cpp:3725
 msgid "Group \""
 msgstr "Grup \""
 
-#: src/chart1.cpp:3724
+#: src/chart1.cpp:3727
 msgid "\" is empty, switching to \"All Active Charts\" group."
 msgstr "\" boş, geçiş yapılıyor\"Kullanımdaki Tüm Haritalar\"grup."
 
-#: src/chart1.cpp:3726
+#: src/chart1.cpp:3729
 msgid "OpenCPN Group Notice"
 msgstr "OpenCPN Grubunun dikkatine"
 
-#: src/chart1.cpp:3861
+#: src/chart1.cpp:3864
 msgid "Chart1::Event...TCMgr Not Available"
 msgstr "Harita1::Olay...TCMgr'ye ulaşılmıyor."
 
-#: src/chart1.cpp:3988 src/chart1.cpp:4043
+#: src/chart1.cpp:3991 src/chart1.cpp:4046
 msgid "MAN OVERBOARD"
 msgstr "DENİZE ADAM DÜŞTÜ"
 
-#: src/chart1.cpp:4005
+#: src/chart1.cpp:4008
 msgid "1.0 NM along COG"
 msgstr "COG boyunca 1.0 NM"
 
-#: src/chart1.cpp:4016
+#: src/chart1.cpp:4019
 msgid "Temporary MOB Route"
 msgstr "Geçici Denize Adam Düştü (DAD) Rotası"
 
-#: src/chart1.cpp:4017
+#: src/chart1.cpp:4020
 msgid "Assumed 1 Mile Point"
 msgstr "Varsayılan 1 mil noktası"
 
-#: src/chart1.cpp:4083 src/chart1.cpp:7227 src/chart1.cpp:7360
+#: src/chart1.cpp:4086 src/chart1.cpp:7262 src/chart1.cpp:7395
 #: src/routemanagerdialog.cpp:1587
 msgid "(Unnamed Track)"
 msgstr "(Adsız Seyirizi)"
 
-#: src/chart1.cpp:4591
+#: src/chart1.cpp:4629
 msgid "Please restart OpenCPN to activate language or style changes."
 msgstr "Seçilen dili ya da yazı türü değişikliğini etkinleştirmek için OpenCPN'i yeniden başlatın."
 
-#: src/chart1.cpp:6883
+#: src/chart1.cpp:6918
 msgid "Show This Chart"
 msgstr "Bu Haritayı Göster"
 
-#: src/chart1.cpp:6888 src/chcanv.cpp:6589
+#: src/chart1.cpp:6923 src/chcanv.cpp:6589
 msgid "Hide This Chart"
 msgstr "Bu Haritayı Gizle"
 
-#: src/chart1.cpp:7136
+#: src/chart1.cpp:7171
 msgid "Chart Print"
 msgstr "Haritayı Yazdır"
 
-#: src/chart1.cpp:7139 src/routeprintout.cpp:469
+#: src/chart1.cpp:7174 src/routeprintout.cpp:469
 msgid "There was a problem printing.\nPerhaps your current printer is not set correctly?"
 msgstr "Yazdırırken bir sorun oluştu.\n Kullanılan yazıcı doğru yapılandırılmamış olabilir mi?"
 
-#: src/chart1.cpp:7290 src/chart1.cpp:7363 src/routemanagerdialog.cpp:888
+#: src/chart1.cpp:7325 src/chart1.cpp:7398 src/routemanagerdialog.cpp:888
 msgid "(Unnamed Route)"
 msgstr "(Adsız Rota)"
 
-#: src/chart1.cpp:7922
+#: src/chart1.cpp:7957
 msgid " Ship "
 msgstr "Tekne"
 
-#: src/chart1.cpp:8193 src/chart1.cpp:8244
+#: src/chart1.cpp:8228 src/chart1.cpp:8279
 msgid "AIS MAN OVERBOARD"
 msgstr ""
 
-#: src/chart1.cpp:8206
+#: src/chart1.cpp:8241
 msgid "Ownship"
 msgstr ""
 
-#: src/chart1.cpp:8217
+#: src/chart1.cpp:8252
 msgid "Temporary AISMOB Route"
 msgstr ""
 
-#: src/chart1.cpp:8218
+#: src/chart1.cpp:8253
 msgid "Present Ownship"
 msgstr ""
 
-#: src/chart1.cpp:8288
+#: src/chart1.cpp:8323
 msgid "AIS MAN OVERBOARD UPDATE"
 msgstr ""
 
-#: src/chart1.cpp:9048
+#: src/chart1.cpp:9132
 msgid "OpenCPN requires access to serial ports to use serial NMEA data.\n"
 msgstr "OpenCPN NMEA verisi kullanmak için seri bağlantı noktalarına erişimi gerektirir. \n"
 
-#: src/chart1.cpp:9050
+#: src/chart1.cpp:9134
 msgid "No Serial Ports can be found on this system.\nYou must install a serial port (modprobe correct kernel module) or plug in a usb serial device.\n"
 msgstr "Sistemde seri bağlantı noktası yok.\nSeri bağlantı noktası (modprobe correct kernel module) yüklemeniz veya bir usb seri aygıt takmanız gerekiyor\n"
 
-#: src/chart1.cpp:9072
+#: src/chart1.cpp:9156
 msgid "You do currently not have permission to access the serial ports on this system.\n\nIt is suggested that you exit OpenCPN now,\nand add yourself to the correct group to enable serial port access.\n\nYou may do so by executing the following command from the linux command line:\n\n                sudo usermod -a -G "
 msgstr "Şu sırada seri bağlantı noktalarına erişim izniniz yok. \n\nIt OpenCPN'den çıkmanızı öneriyor. \n ve ardından kendinizi seri bağlantı noktasına erişebilecekler listesine ekleyin\n\n Bunu yapmak için linux komut satırına aşağıdaki komutu ekleyin.\n\n sudo usermod -a -G "
 
-#: src/chart1.cpp:9502 src/routeprop.cpp:1828 src/routemanagerdialog.cpp:426
-#: src/options.cpp:631 src/options.cpp:844 src/options.cpp:5387
+#: src/chart1.cpp:9586 src/routeprop.cpp:1828 src/routemanagerdialog.cpp:426
+#: src/options.cpp:634 src/options.cpp:847 src/options.cpp:5421
 #: src/TrackPropDlg.cpp:85 src/LinkPropDlg.cpp:38
 #: src/AISTargetListDialog.cpp:297 src/TCWin.cpp:61
 msgid "Dialog"
 msgstr "İletişim"
 
-#: src/s52plib.cpp:1707 src/s52plib.cpp:1762 src/s52plib.cpp:1900
+#: src/s52plib.cpp:1712 src/s52plib.cpp:1767 src/s52plib.cpp:1905
 msgid "ChartTexts"
 msgstr "Harita Metinleri"
 
@@ -528,15 +528,15 @@ msgstr "Sapma     Sağ"
 msgid "ETA          "
 msgstr "ETA, Hesaplanan Varış Zamanı                                          "
 
-#: src/chcanv.cpp:2139 src/options.cpp:1783
+#: src/chcanv.cpp:2139 src/options.cpp:1790
 msgid "CM93 Detail Level"
 msgstr "  CM93 Harita Ayrıntı Ayarı"
 
-#: src/chcanv.cpp:2775 src/chcanv.cpp:8566
+#: src/chcanv.cpp:2775 src/chcanv.cpp:8571
 msgid "Route: "
 msgstr "Rota:"
 
-#: src/chcanv.cpp:2777 src/chcanv.cpp:8568
+#: src/chcanv.cpp:2777 src/chcanv.cpp:8573
 msgid "Layer Route: "
 msgstr "Etiket Rotası"
 
@@ -592,7 +592,7 @@ msgstr "Rhumbline'dan daha kısa.\n\n"
 msgid "Would you like include the Great Circle routing points for this leg?"
 msgstr "Bu ayağa Büyük Daire Seyri rotası eklemek ister misiniz?"
 
-#: src/chcanv.cpp:6394 src/chcanv.cpp:6403 src/options.cpp:573
+#: src/chcanv.cpp:6394 src/chcanv.cpp:6403 src/options.cpp:576
 msgid "Menu"
 msgstr ""
 
@@ -688,8 +688,8 @@ msgstr "Seyirizini Yapıştır"
 msgid "CM93 Offset Dialog..."
 msgstr "CM93 Ayarı"
 
-#: src/chcanv.cpp:6599 src/options.cpp:1838 src/options.cpp:1886
-#: src/options.cpp:4217
+#: src/chcanv.cpp:6599 src/options.cpp:1845 src/options.cpp:1893
+#: src/options.cpp:4251
 msgid "Chart Groups"
 msgstr "Harita Grupları"
 
@@ -797,7 +797,7 @@ msgid "Copy as KML"
 msgstr "KML Olarak Kopyala"
 
 #: src/chcanv.cpp:6800 src/chcanv.cpp:6842 src/routeprop.cpp:1973
-#: src/options.cpp:5159 src/TrackPropDlg.cpp:291
+#: src/options.cpp:5193 src/TrackPropDlg.cpp:291
 msgid "Delete"
 msgstr "Sil"
 
@@ -908,169 +908,169 @@ msgstr "Bu seyirizini silmek istediğinizden emin misiniz?"
 msgid "OpenCPN Track Delete"
 msgstr "OpenCPN Seyirizini Sil"
 
-#: src/chcanv.cpp:8460 src/chcanv.cpp:8543 src/RolloverWin.cpp:106
+#: src/chcanv.cpp:8465 src/chcanv.cpp:8548 src/RolloverWin.cpp:106
 #: src/RolloverWin.cpp:156
 msgid "RouteLegInfoRollover"
 msgstr "Rota Bacağı Bilgisi"
 
-#: src/chcanv.cpp:9442 src/options.cpp:1776
+#: src/chcanv.cpp:9447 src/options.cpp:1783
 msgid "Feet"
 msgstr "Ayak"
 
-#: src/chcanv.cpp:9443 src/options.cpp:1776 src/options.cpp:2361
+#: src/chcanv.cpp:9448 src/options.cpp:1783 src/options.cpp:2368
 msgid "Meters"
 msgstr "Metre"
 
-#: src/chcanv.cpp:9444 src/options.cpp:1776
+#: src/chcanv.cpp:9449 src/options.cpp:1783
 msgid "Fathoms"
 msgstr "Kulaç"
 
-#: src/chcanv.cpp:9447
+#: src/chcanv.cpp:9452
 msgid "OverZoom"
 msgstr "Aşırı Yaklaştırma."
 
-#: src/chcanv.cpp:9809 src/chcanv.cpp:9810
+#: src/chcanv.cpp:9814 src/chcanv.cpp:9815
 msgid "ExtendedTideIcon"
 msgstr "Uzantılı Gelgit Simgesi"
 
-#: src/chcanv.cpp:10070
+#: src/chcanv.cpp:10075
 msgid "CurrentValue"
 msgstr "Akıntı"
 
-#: src/chcanv.cpp:10451
+#: src/chcanv.cpp:10456
 msgid "   External application \"xcalib\" not found. Screen brightness not changed."
 msgstr "  Dış uygulama \"x ölçümü\" bulunamadı. Ekran parlaklığı değiştirilmedi."
 
-#: src/navutil.cpp:2772 src/navutil.cpp:2812 src/navutil.cpp:2842
-#: src/navutil.cpp:2867
+#: src/navutil.cpp:2780 src/navutil.cpp:2820 src/navutil.cpp:2850
+#: src/navutil.cpp:2875
 msgid "Export GPX file"
 msgstr "Kaydet (.gpx)"
 
-#: src/navutil.cpp:2795 src/navutil.cpp:2825 src/navutil.cpp:2855
+#: src/navutil.cpp:2803 src/navutil.cpp:2833 src/navutil.cpp:2863
 msgid "Overwrite existing file?"
 msgstr "Varolan dosyanın üstüne yazmak ister misiniz ?"
 
-#: src/navutil.cpp:2942
+#: src/navutil.cpp:2950
 msgid "Import GPX file"
 msgstr "Dosya Aç  (.gpx)"
 
-#: src/navutil.cpp:3477
+#: src/navutil.cpp:3485
 msgid "&Font family:"
 msgstr "&Yazı türü:"
 
-#: src/navutil.cpp:3483 src/navutil.cpp:3485
+#: src/navutil.cpp:3491 src/navutil.cpp:3493
 msgid "The font family."
 msgstr "Yazı türü"
 
-#: src/navutil.cpp:3490
+#: src/navutil.cpp:3498
 msgid "&Style:"
 msgstr "&Tür:"
 
-#: src/navutil.cpp:3494 src/navutil.cpp:3496
+#: src/navutil.cpp:3502 src/navutil.cpp:3504
 msgid "The font style."
 msgstr "Yazı tipi"
 
-#: src/navutil.cpp:3501
+#: src/navutil.cpp:3509
 msgid "&Weight:"
 msgstr "&Ağırlık:"
 
-#: src/navutil.cpp:3505 src/navutil.cpp:3507
+#: src/navutil.cpp:3513 src/navutil.cpp:3515
 msgid "The font weight."
 msgstr "Yazı kalınlığı"
 
-#: src/navutil.cpp:3514
+#: src/navutil.cpp:3522
 msgid "C&olour:"
 msgstr "&Renk:"
 
-#: src/navutil.cpp:3524 src/navutil.cpp:3526
+#: src/navutil.cpp:3532 src/navutil.cpp:3534
 msgid "The font colour."
 msgstr "Yazı rengi"
 
-#: src/navutil.cpp:3532
+#: src/navutil.cpp:3540
 msgid "&Point size:"
 msgstr "&Nokta büyüklüğü:"
 
-#: src/navutil.cpp:3537 src/navutil.cpp:3539
+#: src/navutil.cpp:3545 src/navutil.cpp:3547
 msgid "The font point size."
 msgstr "Yazı nokta büyüklüğü"
 
-#: src/navutil.cpp:3546
+#: src/navutil.cpp:3554
 msgid "&Underline"
 msgstr "&Altınıçiz"
 
-#: src/navutil.cpp:3549 src/navutil.cpp:3551
+#: src/navutil.cpp:3557 src/navutil.cpp:3559
 msgid "Whether the font is underlined."
 msgstr "Yazı altının çizlii olup olmadığı"
 
-#: src/navutil.cpp:3558
+#: src/navutil.cpp:3566
 msgid "Preview:"
 msgstr "Önizleme :"
 
-#: src/navutil.cpp:3563 src/navutil.cpp:3565
+#: src/navutil.cpp:3571 src/navutil.cpp:3573
 msgid "Shows the font preview."
 msgstr "Harf önizlenmeyi gösterir"
 
-#: src/navutil.cpp:3572 src/options.cpp:2477
+#: src/navutil.cpp:3580 src/options.cpp:2493
 msgid "&Cancel"
 msgstr "&İptal"
 
-#: src/navutil.cpp:3574
+#: src/navutil.cpp:3582
 msgid "Click to cancel the font selection."
 msgstr "Yazı türü seçimini iptal etmek için tıklayın."
 
-#: src/navutil.cpp:3577
+#: src/navutil.cpp:3585
 msgid "&OK"
 msgstr "&Tamam"
 
-#: src/navutil.cpp:3579 src/navutil.cpp:3581
+#: src/navutil.cpp:3587 src/navutil.cpp:3589
 msgid "Click to confirm the font selection."
 msgstr "Yazı türü seçimini onaylamak için tıklayın."
 
-#: src/navutil.cpp:4095
+#: src/navutil.cpp:4103
 msgid "NMi"
 msgstr "NMI"
 
-#: src/navutil.cpp:4098
+#: src/navutil.cpp:4106
 msgid "mi"
 msgstr "Dak. "
 
-#: src/navutil.cpp:4101
+#: src/navutil.cpp:4109
 msgid "km"
 msgstr "km"
 
-#: src/navutil.cpp:4104
+#: src/navutil.cpp:4112
 msgid "m"
 msgstr "m"
 
-#: src/navutil.cpp:4107
+#: src/navutil.cpp:4115
 msgid "ft"
 msgstr "Sol"
 
-#: src/navutil.cpp:4110
+#: src/navutil.cpp:4118
 msgid "fa"
 msgstr "fa"
 
-#: src/navutil.cpp:4113 src/AIS_Target_Data.cpp:756
+#: src/navutil.cpp:4121 src/AIS_Target_Data.cpp:756
 msgid "in"
 msgstr "Bağlantı"
 
-#: src/navutil.cpp:4116
+#: src/navutil.cpp:4124
 msgid "cm"
 msgstr "m"
 
-#: src/navutil.cpp:4184
+#: src/navutil.cpp:4192
 msgid "kts"
 msgstr "Knot"
 
-#: src/navutil.cpp:4187
+#: src/navutil.cpp:4195
 msgid "mph"
 msgstr "mil/saat"
 
-#: src/navutil.cpp:4190 src/options.cpp:2373
+#: src/navutil.cpp:4198 src/options.cpp:2380
 msgid "km/h"
 msgstr "km/saat"
 
-#: src/navutil.cpp:4193 src/options.cpp:2373
+#: src/navutil.cpp:4201 src/options.cpp:2380
 msgid "m/s"
 msgstr "m/saniye"
 
@@ -1153,7 +1153,7 @@ msgstr "Kalkış (Ay/Gün/Yıl Saat:Dakika)"
 msgid "Time Enroute"
 msgstr "Yoldaki Süre"
 
-#: src/routeprop.cpp:631 src/routeprop.cpp:1851 src/options.cpp:1140
+#: src/routeprop.cpp:631 src/routeprop.cpp:1851 src/options.cpp:1143
 msgid "Properties"
 msgstr "Özellikler"
 
@@ -1254,7 +1254,7 @@ msgid "Style:"
 msgstr "Türü:"
 
 #: src/routeprop.cpp:754 src/routeprop.cpp:767 src/options.cpp:506
-#: src/options.cpp:1500 src/TrackPropDlg.cpp:167 src/TrackPropDlg.cpp:177
+#: src/options.cpp:1503 src/TrackPropDlg.cpp:167 src/TrackPropDlg.cpp:177
 msgid "Default"
 msgstr "Varsayılan"
 
@@ -1465,7 +1465,7 @@ msgstr "Simge"
 msgid "Combo!"
 msgstr "Açılır menü!"
 
-#: src/routeprop.cpp:1947 src/options.cpp:1290 src/options.cpp:1317
+#: src/routeprop.cpp:1947 src/options.cpp:1293 src/options.cpp:1320
 msgid "..."
 msgstr "..."
 
@@ -1486,7 +1486,7 @@ msgstr "Değiştir"
 msgid "Add new"
 msgstr "Yenisini ekle"
 
-#: src/routeprop.cpp:1998 src/options.cpp:1876 src/options.cpp:5156
+#: src/routeprop.cpp:1998 src/options.cpp:1883 src/options.cpp:5190
 #: src/TrackPropDlg.cpp:307
 msgid "Add"
 msgstr "Ekle"
@@ -1518,7 +1518,7 @@ msgstr "Uzantılı"
 msgid "Links are opened for editing."
 msgstr "Bağlantılar düzeltme için açılır."
 
-#: src/routemanagerdialog.cpp:455 src/options.cpp:1582
+#: src/routemanagerdialog.cpp:455 src/options.cpp:1585
 msgid "Routes"
 msgstr "Rotalar"
 
@@ -1568,7 +1568,7 @@ msgstr "&GPS'e Gönder"
 msgid "&Delete All"
 msgstr "&Tümünü Sil"
 
-#: src/routemanagerdialog.cpp:555 src/options.cpp:1560
+#: src/routemanagerdialog.cpp:555 src/options.cpp:1563
 msgid "Tracks"
 msgstr "Seyirizleri"
 
@@ -1700,7 +1700,7 @@ msgstr "Veri Kesinliğini Azalt"
 msgid "The amount of data used by the track\n was reduced by %d%%."
 msgstr "İzsürümün kullandığı veri miktarı\n%d%% değeriyle düzeltildi. "
 
-#: src/routemanagerdialog.cpp:1432 src/options.cpp:3235
+#: src/routemanagerdialog.cpp:1432 src/options.cpp:3267
 msgid "OpenCPN info"
 msgstr "OpenCPN Hakkında "
 
@@ -2628,7 +2628,7 @@ msgstr "AIS Hedef Adı"
 msgid "MMSI Extended Properties"
 msgstr ""
 
-#: src/options.cpp:339 src/options.cpp:662 src/AISTargetListDialog.cpp:372
+#: src/options.cpp:339 src/options.cpp:665 src/AISTargetListDialog.cpp:372
 #: src/AIS_Target_Data.cpp:315 src/AIS_Target_Data.cpp:324
 msgid "MMSI"
 msgstr "MMSI"
@@ -2654,7 +2654,7 @@ msgid "Ignore this MMSI"
 msgstr ""
 
 #: src/options.cpp:371
-msgid "Handle this MMSI as PLB/MOB"
+msgid "Handle this MMSI as SART/PLB MOB."
 msgstr ""
 
 #: src/options.cpp:374
@@ -2669,1012 +2669,1016 @@ msgstr ""
 msgid "Never"
 msgstr ""
 
-#: src/options.cpp:564 src/options.cpp:2053 src/options.cpp:2059
+#: src/options.cpp:567 src/options.cpp:2060 src/options.cpp:2066
 msgid "MMSI Properties"
 msgstr ""
 
-#: src/options.cpp:670
+#: src/options.cpp:673
 msgid "Track Mode"
 msgstr ""
 
-#: src/options.cpp:678
+#: src/options.cpp:681
 msgid "Ignore"
 msgstr ""
 
-#: src/options.cpp:686
+#: src/options.cpp:689
 msgid "MOB"
 msgstr ""
 
-#: src/options.cpp:694
+#: src/options.cpp:697
 msgid "VDM->VDO"
 msgstr ""
 
-#: src/options.cpp:700
+#: src/options.cpp:703
 msgid "New..."
 msgstr ""
 
-#: src/options.cpp:1054
+#: src/options.cpp:1057
 msgid "NMEA"
 msgstr "NMEA"
 
-#: src/options.cpp:1064
+#: src/options.cpp:1067
 msgid "General"
 msgstr "Genel"
 
-#: src/options.cpp:1075
+#: src/options.cpp:1078
 msgid "Filter NMEA Course and Speed data"
 msgstr "NMEA Yön ve Hız Verisini Süz."
 
-#: src/options.cpp:1078
+#: src/options.cpp:1081
 msgid "Filter period (sec)"
 msgstr "Süzme Sıklığı (dakika ) "
 
-#: src/options.cpp:1093
+#: src/options.cpp:1096
 msgid "Show NMEA Debug Window"
 msgstr "NMEA Veri Akış Penceresini Göster"
 
-#: src/options.cpp:1096
+#: src/options.cpp:1099
 msgid "Format uploads for Furuno GP3X"
 msgstr "Furuno GP3X'e Göre Formatla"
 
-#: src/options.cpp:1100
+#: src/options.cpp:1103
 msgid "Use Garmin GRMN (Host) mode for uploads"
 msgstr "Yüklerken Garmin GRMN (Servis sağlayıcı) Durumunu Kullan"
 
-#: src/options.cpp:1104
+#: src/options.cpp:1107
 msgid "Use magnetic bearings in output sentence ECAPB"
 msgstr "ECAP Cümlelerini Manyetik Kerteriz Olarak Kullan"
 
-#: src/options.cpp:1114
+#: src/options.cpp:1117
 msgid "Data Connections"
 msgstr "Veri Bağlanıları"
 
-#: src/options.cpp:1126
+#: src/options.cpp:1129
 msgid "Add Connection"
 msgstr "Bağlantı Ekle"
 
-#: src/options.cpp:1129
+#: src/options.cpp:1132
 msgid "Remove Connection"
 msgstr "Bağlantıyı Kaldır"
 
-#: src/options.cpp:1145
+#: src/options.cpp:1148
 msgid "Serial"
 msgstr "Seri"
 
-#: src/options.cpp:1149
+#: src/options.cpp:1152
 msgid "Network"
 msgstr "Ağ"
 
-#: src/options.cpp:1157 src/options.cpp:1222
+#: src/options.cpp:1160 src/options.cpp:1225
 msgid "Protocol"
 msgstr "Protokol"
 
-#: src/options.cpp:1164
+#: src/options.cpp:1167
 msgid "TCP"
 msgstr "TCP"
 
-#: src/options.cpp:1169
+#: src/options.cpp:1172
 msgid "UDP"
 msgstr "UDP"
 
-#: src/options.cpp:1174
+#: src/options.cpp:1177
 msgid "GPSD"
 msgstr "GÜGD"
 
-#: src/options.cpp:1181
+#: src/options.cpp:1184
 msgid "Address"
 msgstr "Adres"
 
-#: src/options.cpp:1188 src/options.cpp:1205 src/options.cpp:1378
+#: src/options.cpp:1191 src/options.cpp:1208 src/options.cpp:1381
 msgid "DataPort"
 msgstr "Bağlantı Noktası"
 
-#: src/options.cpp:1212
+#: src/options.cpp:1215
 msgid "Baudrate"
 msgstr "Verihızı"
 
-#: src/options.cpp:1216
+#: src/options.cpp:1219
 msgid "150"
 msgstr "150"
 
-#: src/options.cpp:1216
+#: src/options.cpp:1219
 msgid "300"
 msgstr "300"
 
-#: src/options.cpp:1216
+#: src/options.cpp:1219
 msgid "600"
 msgstr "600"
 
-#: src/options.cpp:1216
+#: src/options.cpp:1219
 msgid "1200"
 msgstr "1200"
 
-#: src/options.cpp:1216
+#: src/options.cpp:1219
 msgid "2400"
 msgstr "2400"
 
-#: src/options.cpp:1216
+#: src/options.cpp:1219
 msgid "4800"
 msgstr "4800"
 
-#: src/options.cpp:1216
+#: src/options.cpp:1219
 msgid "9600"
 msgstr "9600"
 
-#: src/options.cpp:1216
+#: src/options.cpp:1219
 msgid "19200"
 msgstr "19200"
 
-#: src/options.cpp:1216
+#: src/options.cpp:1219
 msgid "38400"
 msgstr "38400"
 
-#: src/options.cpp:1216
+#: src/options.cpp:1219
 msgid "57600"
 msgstr "57600"
 
-#: src/options.cpp:1216
+#: src/options.cpp:1219
 msgid "115200"
 msgstr "115200"
 
-#: src/options.cpp:1216
+#: src/options.cpp:1219
 msgid "230400"
 msgstr "230400"
 
-#: src/options.cpp:1216
+#: src/options.cpp:1219
 msgid "460800"
 msgstr "460800"
 
-#: src/options.cpp:1216
+#: src/options.cpp:1219
 msgid "921600"
 msgstr "921600"
 
-#: src/options.cpp:1226
+#: src/options.cpp:1229
 msgid "NMEA 0183"
 msgstr "NMEA 0183"
 
-#: src/options.cpp:1226
+#: src/options.cpp:1229
 msgid "NMEA 2000"
 msgstr "NMEA 2000"
 
-#: src/options.cpp:1226
+#: src/options.cpp:1229
 msgid "Seatalk"
 msgstr "Gemici Dili"
 
-#: src/options.cpp:1234 src/options.cpp:1383
+#: src/options.cpp:1237 src/options.cpp:1386
 msgid "Priority"
 msgstr "Öncelik"
 
-#: src/options.cpp:1238
+#: src/options.cpp:1241
 msgid "0"
 msgstr "0"
 
-#: src/options.cpp:1238
+#: src/options.cpp:1241
 msgid "1"
 msgstr "1"
 
-#: src/options.cpp:1238
+#: src/options.cpp:1241
 msgid "2"
 msgstr "2"
 
-#: src/options.cpp:1238
+#: src/options.cpp:1241
 msgid "3"
 msgstr "3"
 
-#: src/options.cpp:1238
+#: src/options.cpp:1241
 msgid "4"
 msgstr "4"
 
-#: src/options.cpp:1238
+#: src/options.cpp:1241
 msgid "5"
 msgstr "5"
 
-#: src/options.cpp:1238
+#: src/options.cpp:1241
 msgid "6"
 msgstr "6"
 
-#: src/options.cpp:1238
+#: src/options.cpp:1241
 msgid "7"
 msgstr "7"
 
-#: src/options.cpp:1238
+#: src/options.cpp:1241
 msgid "8"
 msgstr "8"
 
-#: src/options.cpp:1238
+#: src/options.cpp:1241
 msgid "9"
 msgstr "9"
 
-#: src/options.cpp:1252
+#: src/options.cpp:1255
 msgid "Control checksum"
 msgstr "Toplu denetim "
 
-#: src/options.cpp:1254
+#: src/options.cpp:1257
 msgid "If checked, only the sentences with a valid checksum are passed through"
 msgstr "Eğer işaretlenmişse, sadece işaret toplamı cümleler geçecektir."
 
-#: src/options.cpp:1257
+#: src/options.cpp:1260
 msgid "Use Garmin (GRMN) mode for input"
 msgstr "Girişte Garmin (GRMN) Durumunu Kullan."
 
-#: src/options.cpp:1261
+#: src/options.cpp:1264
 msgid "Receive Input on this Port"
 msgstr "Bu bağlantı noktasına girdi alın"
 
-#: src/options.cpp:1264
+#: src/options.cpp:1267
 msgid "Output on this port ( as Autopilot or NMEA Repeater)"
 msgstr "Bu bağlantı noktası çıkışı (Otopilot ya da NMEA cihazı)"
 
-#: src/options.cpp:1270
+#: src/options.cpp:1273
 msgid "Input filtering"
 msgstr "Giriş Filtresi"
 
-#: src/options.cpp:1275
+#: src/options.cpp:1278
 msgid "Accept only sentences"
 msgstr "Sadece Cümleleri Kabulet."
 
-#: src/options.cpp:1278
+#: src/options.cpp:1281
 msgid "Ignore sentences"
 msgstr "Cümleleri Dikkate Alma"
 
-#: src/options.cpp:1297
+#: src/options.cpp:1300
 msgid "Output filtering"
 msgstr "Çıkış Filtresi"
 
-#: src/options.cpp:1302
+#: src/options.cpp:1305
 msgid "Transmit sentences"
 msgstr "İleti Cümleleri"
 
-#: src/options.cpp:1305
+#: src/options.cpp:1308
 msgid "Drop sentences"
 msgstr "Cümleleri dikkate alma"
 
-#: src/options.cpp:1368 src/pluginmanager.cpp:3035 src/pluginmanager.cpp:3045
+#: src/options.cpp:1371 src/pluginmanager.cpp:3035 src/pluginmanager.cpp:3045
 msgid "Enable"
 msgstr "Etkinleştir"
 
-#: src/options.cpp:1373 src/AISTargetListDialog.cpp:388
+#: src/options.cpp:1376 src/AISTargetListDialog.cpp:388
 msgid "Type"
 msgstr "Tür"
 
-#: src/options.cpp:1388
+#: src/options.cpp:1391
 msgid "Parameters"
 msgstr "Değişkenler"
 
-#: src/options.cpp:1393
+#: src/options.cpp:1396
 msgid "Connection"
 msgstr "Bağlantılar"
 
-#: src/options.cpp:1398
+#: src/options.cpp:1401
 msgid "Filters"
 msgstr "Filtreler"
 
-#: src/options.cpp:1471
+#: src/options.cpp:1474
 msgid "Own Ship"
 msgstr "Tekne"
 
-#: src/options.cpp:1477
+#: src/options.cpp:1480
 msgid "Display Options"
 msgstr "Görünüm Seçenekleri"
 
-#: src/options.cpp:1485
+#: src/options.cpp:1488
 msgid "COG Predictor Length (min)"
 msgstr "COG Gösterge Ok Uzunluğu (dakika)"
 
-#: src/options.cpp:1491
+#: src/options.cpp:1494
 msgid "Heading Predictor Length (NMi)"
 msgstr ""
 
-#: src/options.cpp:1497
+#: src/options.cpp:1500
 msgid "Ship Icon Type"
 msgstr "Tekne Simgesinin Türü"
 
-#: src/options.cpp:1500
+#: src/options.cpp:1503
 msgid "Real Scale Bitmap"
 msgstr "Gerçek Ölçekli Resim"
 
-#: src/options.cpp:1500
+#: src/options.cpp:1503
 msgid "Real Scale Vector"
 msgstr "Gerçek Ölçekli Vektör"
 
-#: src/options.cpp:1509
+#: src/options.cpp:1512
 msgid "Length Over All (m)"
 msgstr "Tüm Uzunluk (m)"
 
-#: src/options.cpp:1513
+#: src/options.cpp:1516
 msgid "Width Over All (m)"
 msgstr "Tüm Genişlik (m)"
 
-#: src/options.cpp:1517
+#: src/options.cpp:1520
 msgid "GPS Offset from Bow (m)"
 msgstr "Pruvadan GPS Ayarı (m)"
 
-#: src/options.cpp:1521
+#: src/options.cpp:1524
 msgid "GPS Offset from Midship (m)"
 msgstr "Tekne Merkezinden GPS ayarı (m)"
 
-#: src/options.cpp:1525
+#: src/options.cpp:1528
 msgid "Minimum Screen Size (mm)"
 msgstr "Enküçük Ekran Büyüklüğü (mm)"
 
-#: src/options.cpp:1535
+#: src/options.cpp:1538
 msgid "Show radar rings"
 msgstr "Radar Halkalarını Göster"
 
-#: src/options.cpp:1538
+#: src/options.cpp:1541
 msgid "None"
 msgstr "Yok"
 
-#: src/options.cpp:1546
+#: src/options.cpp:1549
 msgid "Distance Between Rings"
 msgstr "Halkalar Arası Uzaklık"
 
-#: src/options.cpp:1552
+#: src/options.cpp:1555
 msgid "Distance Unit"
 msgstr "Uzaklık Birimi"
 
-#: src/options.cpp:1555
+#: src/options.cpp:1558
 msgid "Nautical Miles"
 msgstr "Deniz Mili"
 
-#: src/options.cpp:1555 src/options.cpp:2361
+#: src/options.cpp:1558 src/options.cpp:2368
 msgid "Kilometers"
 msgstr "Kilometre"
 
-#: src/options.cpp:1564
+#: src/options.cpp:1567
 msgid "Automatic Daily Tracks"
 msgstr "Otomatik Günlük Seyirizleri"
 
-#: src/options.cpp:1567
+#: src/options.cpp:1570
 msgid "Highlight Tracks"
 msgstr "Seyirizlerini Aydınlat"
 
-#: src/options.cpp:1574
+#: src/options.cpp:1577
 msgid "Tracking Precision"
 msgstr "Seyirizi Kesinliği"
 
-#: src/options.cpp:1577
+#: src/options.cpp:1580
 msgid "Low"
 msgstr "Düşük"
 
-#: src/options.cpp:1577
+#: src/options.cpp:1580
 msgid "Medium"
 msgstr "Ortalama"
 
-#: src/options.cpp:1577
+#: src/options.cpp:1580
 msgid "High"
 msgstr "Yüksek"
 
-#: src/options.cpp:1590
+#: src/options.cpp:1593
 msgid "Waypoint Arrival Circle Radius (NMi)"
 msgstr "Seyirnoktası Varış Daire Çapı (Mil)"
 
-#: src/options.cpp:1602
+#: src/options.cpp:1605
 msgid "Loaded Charts"
 msgstr "Yüklü Haritalar"
 
-#: src/options.cpp:1607
+#: src/options.cpp:1610
 msgid "Directories"
 msgstr "Klasörler"
 
-#: src/options.cpp:1631
+#: src/options.cpp:1636
 msgid "Add Directory..."
 msgstr "Klasör Ekle"
 
-#: src/options.cpp:1634 src/options.cpp:1819
+#: src/options.cpp:1639 src/options.cpp:1826
 msgid "Remove Selected"
 msgstr "Seçileni Kaldır"
 
-#: src/options.cpp:1638
+#: src/options.cpp:1645
 msgid "Update Control"
 msgstr "Denetlemeyi Güncelle"
 
-#: src/options.cpp:1644
+#: src/options.cpp:1651
 msgid "Scan Charts and Update Database"
 msgstr "Haritaları Gözden Geçir ve Veritabanını Güncelle"
 
-#: src/options.cpp:1648
+#: src/options.cpp:1655
 msgid "Force Full Database Rebuild"
 msgstr "Tüm Veritabanını Yeniden Yapılandırmaya Zorla"
 
-#: src/options.cpp:1657
+#: src/options.cpp:1664
 msgid "Vector Charts"
 msgstr "Vektör Haritaları"
 
-#: src/options.cpp:1665
+#: src/options.cpp:1672
 msgid "Mariner's Standard"
 msgstr "Denizci Standardı"
 
-#: src/options.cpp:1676 src/options.cpp:5148
+#: src/options.cpp:1683 src/options.cpp:5182
 msgid "Select All"
 msgstr "Tümünü Seç   "
 
-#: src/options.cpp:1678 src/options.cpp:5151
+#: src/options.cpp:1685 src/options.cpp:5185
 msgid "Clear All"
 msgstr "Tümünü Sil"
 
-#: src/options.cpp:1685 src/AIS_Target_Data.cpp:852
+#: src/options.cpp:1692 src/AIS_Target_Data.cpp:852
 msgid "Base"
 msgstr "Üs"
 
-#: src/options.cpp:1685
+#: src/options.cpp:1692
 msgid "Standard"
 msgstr "Standart"
 
-#: src/options.cpp:1685
+#: src/options.cpp:1692
 msgid "All"
 msgstr "Tümü"
 
-#: src/options.cpp:1685
+#: src/options.cpp:1692
 msgid "Mariners Standard"
 msgstr "Denizci Standardı"
 
-#: src/options.cpp:1686
+#: src/options.cpp:1693
 msgid "Display Category"
 msgstr "Görünüm Sınıfı"
 
-#: src/options.cpp:1690
+#: src/options.cpp:1697
 msgid "Depth Soundings"
 msgstr "Derinlik Ölçümleri"
 
-#: src/options.cpp:1694
+#: src/options.cpp:1701
 msgid "Chart Information Objects"
 msgstr "Harita Bilgi Nesneleri"
 
-#: src/options.cpp:1699
+#: src/options.cpp:1706
 msgid "Important Text Only"
 msgstr "Sadece Önemli Metinler"
 
-#: src/options.cpp:1703
+#: src/options.cpp:1710
 msgid "Reduced Detail at Small Scale"
 msgstr "Küçük Ölçekte Azaltılmış Ayrıntı "
 
-#: src/options.cpp:1707
+#: src/options.cpp:1714
 msgid "Buoy/Light Labels"
 msgstr "Şamandıra/Fener Etiketleri"
 
-#: src/options.cpp:1711
+#: src/options.cpp:1718
 msgid "Light Descriptions"
 msgstr "Fener Açıklamaları"
 
-#: src/options.cpp:1715
+#: src/options.cpp:1722
 msgid "Extended Light Sectors"
 msgstr "Uzatılı Fener Alanları"
 
-#: src/options.cpp:1719
+#: src/options.cpp:1726
 msgid "De-Cluttered Text"
 msgstr "Dağınık Metin"
 
-#: src/options.cpp:1723
+#: src/options.cpp:1730
 msgid "National text on chart"
 msgstr "Haritadaki Ulusal Metin"
 
-#: src/options.cpp:1730
+#: src/options.cpp:1737
 msgid "Paper Chart"
 msgstr "Kağıt harita"
 
-#: src/options.cpp:1730
+#: src/options.cpp:1737
 msgid "Simplified"
 msgstr "Basitleştirilmiş"
 
-#: src/options.cpp:1731
+#: src/options.cpp:1738
 msgid "Points"
 msgstr "Noktalar"
 
-#: src/options.cpp:1735
+#: src/options.cpp:1742
 msgid "Plain"
 msgstr "Düz"
 
-#: src/options.cpp:1735
+#: src/options.cpp:1742
 msgid "Symbolized"
 msgstr "Simgeleştirilmiş"
 
-#: src/options.cpp:1736
+#: src/options.cpp:1743
 msgid "Boundaries"
 msgstr "Sınırlar"
 
-#: src/options.cpp:1740
+#: src/options.cpp:1747
 msgid "2 Color"
 msgstr "2 Renkli"
 
-#: src/options.cpp:1740
+#: src/options.cpp:1747
 msgid "4 Color"
 msgstr "4 Renkli"
 
-#: src/options.cpp:1741
+#: src/options.cpp:1748
 msgid "Colors"
 msgstr "Renkler"
 
-#: src/options.cpp:1745
+#: src/options.cpp:1752
 msgid "Depth Settings(m)"
 msgstr "Derinlik Ayarları (m)"
 
-#: src/options.cpp:1749
+#: src/options.cpp:1756
 msgid "Shallow Depth"
 msgstr "Sığ Derinlik"
 
-#: src/options.cpp:1758
+#: src/options.cpp:1765
 msgid "Safety Depth"
 msgstr "Güvenli Derinlik"
 
-#: src/options.cpp:1767
+#: src/options.cpp:1774
 msgid "Deep Depth"
 msgstr "Derin Su"
 
-#: src/options.cpp:1778
+#: src/options.cpp:1785
 msgid "Chart Depth Units"
 msgstr "Haritadaki Derinlik Birimi"
 
-#: src/options.cpp:1798
+#: src/options.cpp:1805
 msgid "Tides && Currents"
 msgstr "Gelgitler && Akıntılar"
 
-#: src/options.cpp:1803
+#: src/options.cpp:1810
 msgid "Active Datasets"
 msgstr "Etkin Veritabanı"
 
-#: src/options.cpp:1818
+#: src/options.cpp:1825
 msgid "Add Dataset..."
 msgstr "Veritabanı Ekle"
 
-#: src/options.cpp:1864
+#: src/options.cpp:1871
 msgid "All Available Charts"
 msgstr "Tüm Ulaşılabilir Haritalar"
 
-#: src/options.cpp:1878
+#: src/options.cpp:1885
 msgid "Remove Chart"
 msgstr "Haritayı Kaldır"
 
-#: src/options.cpp:1899
+#: src/options.cpp:1906
 msgid "All Charts"
 msgstr "Tüm Haritalar"
 
-#: src/options.cpp:1915
+#: src/options.cpp:1922
 msgid "New Group..."
 msgstr "Yeni Grup"
 
-#: src/options.cpp:1916
+#: src/options.cpp:1923
 msgid "Delete Group"
 msgstr "Grubu Sil"
 
-#: src/options.cpp:1938 src/options.cpp:2136 src/options.cpp:2483
+#: src/options.cpp:1945 src/options.cpp:2143 src/options.cpp:2499
 msgid "Display"
 msgstr "Görünüm"
 
-#: src/options.cpp:1945
+#: src/options.cpp:1952
 msgid "Chart Display Options"
 msgstr "Harita Görünüm Seçenekleri"
 
-#: src/options.cpp:1951
+#: src/options.cpp:1958
 msgid "Course UP Mode"
 msgstr "Yön Yukarı Durumu"
 
-#: src/options.cpp:1960
+#: src/options.cpp:1967
 msgid "Course-Up Mode Display Update Period (sec)"
 msgstr "Yön Yukarı Durumu İçin Güncelleme Sıklığı (saniye)"
 
-#: src/options.cpp:1969
+#: src/options.cpp:1976
 msgid "Look Ahead Mode"
 msgstr "Puruva Yönünde Durumu"
 
-#: src/options.cpp:1973
+#: src/options.cpp:1980
 msgid "Show Grid"
 msgstr "Enlem/Boylamı Göster"
 
-#: src/options.cpp:1977
+#: src/options.cpp:1984
 msgid "Show Depth Units"
 msgstr "Derinlik Birimlerini Göster"
 
-#: src/options.cpp:1984
+#: src/options.cpp:1991
 msgid "Use Accelerated Graphics (OpenGL)"
 msgstr "Hızlandırılmış Grafikleri Kullan (OpenGL)"
 
-#: src/options.cpp:1988
+#: src/options.cpp:1995
 msgid "Options ..."
 msgstr "Seçenekler"
 
-#: src/options.cpp:1994
+#: src/options.cpp:2001
 msgid "Smooth Panning / Zooming"
 msgstr "Tıklamayla Düzgün Yakınlaştırma"
 
-#: src/options.cpp:1998
+#: src/options.cpp:2005
 msgid "Zoom to Cursor"
 msgstr "Fareye Yakınlaştır"
 
-#: src/options.cpp:2003
+#: src/options.cpp:2010
 msgid "Preserve Scale when Switching Charts"
 msgstr "Haritaları Değiştirirken Ölçüyü Koru "
 
-#: src/options.cpp:2007
+#: src/options.cpp:2014
 msgid "Enable Chart Quilting"
 msgstr "Haritaları Birbirine Ekle"
 
-#: src/options.cpp:2012
+#: src/options.cpp:2019
 msgid "Disable Full Screen Quilting"
 msgstr "Haritaları Tam Ekranda Birbirine Ekleme"
 
-#: src/options.cpp:2016
+#: src/options.cpp:2023
 msgid "Show Chart Outlines"
 msgstr "Harita Sınırlarını Göster"
 
-#: src/options.cpp:2021
+#: src/options.cpp:2028
 msgid "Show Skewed Raster Charts as North-Up"
 msgstr "Çarpık Raster Haritalarını Kuzey Yukarı Durumunda Göster"
 
-#: src/options.cpp:2025
+#: src/options.cpp:2032
 msgid "Enable Touchscreen/Tablet interface"
 msgstr "Dokunmatik Ekran/Tablet Arayüzünü Etkinleştir"
 
-#: src/options.cpp:2028
+#: src/options.cpp:2035
 msgid "Enable Responsive graphics interface"
 msgstr "Duyarlı Grafik Arayüzünü Etkinleştir"
 
-#: src/options.cpp:2032
+#: src/options.cpp:2039
 msgid "Show Magnetic bearings and headings"
 msgstr "Manyetik Kerteriz ve Pruvayı Göster"
 
-#: src/options.cpp:2041
+#: src/options.cpp:2048
 msgid "Assumed Magnetic Variation, deg."
 msgstr "Varsayılan Manyetik Sapma (derece)"
 
-#: src/options.cpp:2074
+#: src/options.cpp:2081
 msgid "AIS Targets"
 msgstr "AIS Hedefleri"
 
-#: src/options.cpp:2080
+#: src/options.cpp:2087
 msgid "CPA Calculation"
 msgstr "CPA Hesaplaması"
 
-#: src/options.cpp:2089
+#: src/options.cpp:2096
 msgid "No CPA Calculation if target range is greater than (NMi)"
 msgstr "CPA Hesaplaması Yapılacak En Uzun Hedef Mesafesi (NMi)."
 
-#: src/options.cpp:2095
+#: src/options.cpp:2102
 msgid "Warn if CPA less than (NMi)"
 msgstr "CPA Uyarısı İçin En Uzak Mesafe (NMi)"
 
-#: src/options.cpp:2107
+#: src/options.cpp:2114
 msgid "...and TCPA is less than (min)"
 msgstr "TCPA'nın En Düşük Değeri (dakika) :"
 
-#: src/options.cpp:2114
+#: src/options.cpp:2121
 msgid "Lost Targets"
 msgstr "Kayıp Hedefler"
 
-#: src/options.cpp:2122
+#: src/options.cpp:2129
 msgid "Mark targets as lost after (min)"
 msgstr "Hedefleri Kayıp Olarak İşaretleme Süresi (dakika) :"
 
-#: src/options.cpp:2129
+#: src/options.cpp:2136
 msgid "Remove lost targets after (min)"
 msgstr "Kayıp Hedeflerin Kaldırılacağı Süre (dakika)"
 
-#: src/options.cpp:2144
+#: src/options.cpp:2151
 msgid "Show target COG predictor arrow, length (min)"
 msgstr "Hedef COG Oklarını Göster, Uzunluk (dakika)"
 
-#: src/options.cpp:2150
+#: src/options.cpp:2157
 msgid "Show target tracks, length (min)"
 msgstr "Hedef İzsürümünü Göster, Uzunluk (dakika)"
 
-#: src/options.cpp:2156
+#: src/options.cpp:2163
 msgid "Hide anchored/moored targets, speed max (kn)"
 msgstr "Demirdeki/Tonozdaki Hedefleri Gizle, En Yüksek Hız (knot)"
 
-#: src/options.cpp:2163
+#: src/options.cpp:2170
 msgid "Show area notices (from AIS binary messages)"
 msgstr "Bölgesel Uyarıları Göster (AIS sayısal mesajlarından)"
 
-#: src/options.cpp:2169
+#: src/options.cpp:2176
 msgid "Show AIS targets real size"
 msgstr "AIS Hedeflerini Gerçek Boyutta Göster"
 
-#: src/options.cpp:2175
+#: src/options.cpp:2182
 msgid "Show names with AIS targets at scale greater than 1:"
 msgstr "Ölçeği 1 den Büyük Olan AIS Hedef Adlarını Göster"
 
-#: src/options.cpp:2181
+#: src/options.cpp:2188
 msgid "Treat WPL sentences as APRS position reports"
 msgstr "WPL Cümlelerini APRS Mevkileri Olarak Değerlendir"
 
-#: src/options.cpp:2191
+#: src/options.cpp:2198
 msgid "Rollover"
 msgstr "Uzatmalar"
 
-#: src/options.cpp:2195
+#: src/options.cpp:2202
 msgid "\"Ship Name\" MMSI (Call Sign)"
 msgstr "\"Gemi Adı\" MMSI (Çağrı İşareti)"
 
-#: src/options.cpp:2198
+#: src/options.cpp:2205
 msgid "[Class] Type (Status)"
 msgstr "[Sınıf] Tür (Durum)"
 
-#: src/options.cpp:2201
+#: src/options.cpp:2208
 msgid "SOG COG"
 msgstr "SOG / COG "
 
-#: src/options.cpp:2204
+#: src/options.cpp:2211
 msgid "CPA TCPA"
 msgstr "CPA/TCPA"
 
-#: src/options.cpp:2208
+#: src/options.cpp:2215
 msgid "CPA/TCPA Alerts"
 msgstr "CPA/TCPA Alarmları"
 
-#: src/options.cpp:2217
+#: src/options.cpp:2224
 msgid "Show CPA/TCPA Alert Dialog"
 msgstr "CPA/TCPA Alarm Durumunu Göster"
 
-#: src/options.cpp:2221
+#: src/options.cpp:2228
 msgid "Select Alert Sound"
 msgstr "Alarm Sesini Seçin"
 
-#: src/options.cpp:2225
+#: src/options.cpp:2232
 msgid "Play Sound on CPA/TCPA Alerts and DSC/SART emergencies."
 msgstr "CPA/TCPA ve DSC/SART Alarmlarını Sesle Ver."
 
-#: src/options.cpp:2229
+#: src/options.cpp:2236
 msgid "Test Alert Sound"
 msgstr "Alarm Sesini Dene"
 
-#: src/options.cpp:2233
+#: src/options.cpp:2240
 msgid "Supress Alerts for anchored/moored targets"
 msgstr "Demirdeki/Tonozdaki Hedefler İçin Alarm Verme. "
 
-#: src/options.cpp:2240
+#: src/options.cpp:2247
 msgid "Enable Target Alert Acknowledge timeout (min)"
 msgstr "Hedef Alarm Bilgisini Etkinleştir, Sıklığı (Dakika ):"
 
-#: src/options.cpp:2253
+#: src/options.cpp:2260
 msgid "General Options"
 msgstr "Genel Seçenekler"
 
-#: src/options.cpp:2263
+#: src/options.cpp:2270
 msgid "Language"
 msgstr "Dil"
 
-#: src/options.cpp:2274
+#: src/options.cpp:2281
 msgid "Fonts"
 msgstr "Yazım Şekli Değiştirilebilir Birimler"
 
-#: src/options.cpp:2295
+#: src/options.cpp:2302
 msgid "Choose Font..."
 msgstr "Yazı Türünü Seçin"
 
-#: src/options.cpp:2299
+#: src/options.cpp:2306
 msgid "Choose Font Color..."
 msgstr "Yazı Rengini Seçin"
 
-#: src/options.cpp:2303
+#: src/options.cpp:2310
 msgid "Toolbar and Window Style"
 msgstr "Araç Çubuğu ve Pencere Düzeni"
 
-#: src/options.cpp:2318
+#: src/options.cpp:2325
 msgid "Miscellaneous Options"
 msgstr "Diğer Seçenekler"
 
-#: src/options.cpp:2322
+#: src/options.cpp:2329
 msgid "Show Status Bar"
 msgstr "Durum Çubuğunu Göster"
 
-#: src/options.cpp:2326
+#: src/options.cpp:2333
 msgid "Show Compass/GPS Status Window"
 msgstr "Pusula/GPS Durumu Penceresini Göster"
 
-#: src/options.cpp:2331
+#: src/options.cpp:2338
 msgid "Show Toolbar in Fullscreen Mode"
 msgstr "Araç Çubuğunu Tam Ekran Durumunda Göster"
 
-#: src/options.cpp:2335
+#: src/options.cpp:2342
 msgid "Enable Transparent Toolbar"
 msgstr "Şeffaf Araç Çubuğunu Etkinleştir"
 
-#: src/options.cpp:2344
+#: src/options.cpp:2351
 msgid "Show Lat/Long as"
 msgstr "Enlem/Boylamın gösteriliş şekli"
 
-#: src/options.cpp:2348
+#: src/options.cpp:2355
 msgid "Degrees, Decimal Minutes"
 msgstr "Dereceler, Ondalık Dakika"
 
-#: src/options.cpp:2348
+#: src/options.cpp:2355
 msgid "Decimal Degrees"
 msgstr "Ondalık Dakika"
 
-#: src/options.cpp:2349
+#: src/options.cpp:2356
 msgid "Degrees, Minutes, Seconds"
 msgstr "Derece, Dakika, Saniye"
 
-#: src/options.cpp:2356
+#: src/options.cpp:2363
 msgid "Show distance as"
 msgstr "Mesafe Gösterim Birimi"
 
-#: src/options.cpp:2360
+#: src/options.cpp:2367
 msgid "Nautical miles"
 msgstr "Deniz Mili "
 
-#: src/options.cpp:2360
+#: src/options.cpp:2367
 msgid "Statute miles"
 msgstr "Kara Mili"
 
-#: src/options.cpp:2368
+#: src/options.cpp:2375
 msgid "Show speed as"
 msgstr "Hız Gösterim Birimi"
 
-#: src/options.cpp:2372
+#: src/options.cpp:2379
 msgid "Knots"
 msgstr "Knot"
 
-#: src/options.cpp:2372
+#: src/options.cpp:2379
 msgid "Mph"
 msgstr "Mil/Saat"
 
-#: src/options.cpp:2380
+#: src/options.cpp:2387
 msgid "Play Ships Bells"
 msgstr "Gemi Çanlarını Çal "
 
-#: src/options.cpp:2384
+#: src/options.cpp:2391
 msgid "Lock Waypoints (Unless waypoint property dialog visible)"
 msgstr "Tüm Seyirnoktalarını Kilitle (Seyirnoktası özellikler penceresi görünmedikçe)"
 
-#: src/options.cpp:2390
+#: src/options.cpp:2397
 msgid "Confirm deletion of tracks and routes"
 msgstr "Rota ve Seyirizlerinin İptalini Onaylat"
 
-#: src/options.cpp:2473
+#: src/options.cpp:2401
+msgid "Chart Zoom Detail Level"
+msgstr ""
+
+#: src/options.cpp:2489
 msgid "Ok"
 msgstr "Tamam"
 
-#: src/options.cpp:2480
+#: src/options.cpp:2496
 msgid "Apply"
 msgstr "Uygula"
 
-#: src/options.cpp:2486
+#: src/options.cpp:2502
 msgid "Connections"
 msgstr "Bağlantılar"
 
-#: src/options.cpp:2489
+#: src/options.cpp:2505
 msgid "Charts"
 msgstr "Haritalar"
 
-#: src/options.cpp:2496
+#: src/options.cpp:2512
 msgid "Ships"
 msgstr "Tekneler"
 
-#: src/options.cpp:2501
+#: src/options.cpp:2517
 msgid "User Interface"
 msgstr "Kullanıcı Seçenekleri"
 
-#: src/options.cpp:2504 src/options.cpp:2505
+#: src/options.cpp:2520 src/options.cpp:2521
 msgid "Plugins"
 msgstr "Eklentiler"
 
-#: src/options.cpp:3026
+#: src/options.cpp:3058
 msgid "Add a directory containing chart files"
 msgstr "Harita dosyalarını içeren klasörü ekle."
 
-#: src/options.cpp:3121
+#: src/options.cpp:3153
 msgid "Data connection must be input, output or both"
 msgstr "Veri bağlantısı gerekir giriş, çıkış veya her ikisi de"
 
-#: src/options.cpp:3121 src/options.cpp:3127 src/options.cpp:3135
-#: src/options.cpp:3142
+#: src/options.cpp:3153 src/options.cpp:3159 src/options.cpp:3167
+#: src/options.cpp:3174
 msgid "Error!"
 msgstr "Hata!"
 
-#: src/options.cpp:3127
+#: src/options.cpp:3159
 msgid "You must select or enter the port..."
 msgstr "Seçin ya da bir bağlantı noktası girin..."
 
-#: src/options.cpp:3135
+#: src/options.cpp:3167
 msgid "You must enter a port..."
 msgstr "Seçin ya da bir bağlantı noktası girin..."
 
-#: src/options.cpp:3142
+#: src/options.cpp:3174
 msgid "You must enter the address..."
 msgstr "Adres girmelisiniz"
 
-#: src/options.cpp:3224
+#: src/options.cpp:3256
 msgid "\n - your ship's length must be > 0"
 msgstr "\n - Teknenizin boyu > 0 olmalıdır."
 
-#: src/options.cpp:3226
+#: src/options.cpp:3258
 msgid "\n - your ship's beam must be > 0"
 msgstr "\n - Teknenizin eni > 0 olmalıdır."
 
-#: src/options.cpp:3228
+#: src/options.cpp:3260
 msgid "\n - your GPS offset from midship must be within your ship's beam"
 msgstr "\n - Tekne ortası GPS ayarı tekne genişliği içinde kalmalıdır."
 
-#: src/options.cpp:3230
+#: src/options.cpp:3262
 msgid "\n - your GPS offset from bow must be within your ship's length"
 msgstr "\n - Baş GPS ayarı tekne uzunluğu içinde kalmalıdır"
 
-#: src/options.cpp:3232
+#: src/options.cpp:3264
 msgid "\n - your minimum ship icon size must be between 1 and 100 mm"
 msgstr "\n - Teknenizin en küçük simge büyüklüğü 1 ile 100 arasında olmalıdır."
 
-#: src/options.cpp:3234
+#: src/options.cpp:3266
 msgid "The settings for own ship real size are not correct:"
 msgstr "Gerçek boyutlu tekne verileriniz doğru değil"
 
-#: src/options.cpp:4038
+#: src/options.cpp:4072
 msgid "Select Sound File"
 msgstr "Ses Dosyasını Seçin"
 
-#: src/options.cpp:4039
+#: src/options.cpp:4073
 msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
 msgstr "WAV dosyaları (*.wav)|*.wav|Tüm dosyalar (*.*)|*.*"
 
-#: src/options.cpp:4443
+#: src/options.cpp:4477
 msgid "Enter Group Name"
 msgstr "Grup Adını Gir"
 
-#: src/options.cpp:4444
+#: src/options.cpp:4478
 msgid "New Chart Group"
 msgstr "Yeni Harita Grubu"
 
-#: src/options.cpp:4601
+#: src/options.cpp:4635
 msgid "Select Tide/Current Data"
 msgstr "Gelgit/Akıntı Verisini Seçin."
 
-#: src/options.cpp:5296
+#: src/options.cpp:5330
 msgid "Enter the NMEA sentence (2, 3 or 5 characters)"
 msgstr "NMEA Cümlesi Gir (2, 3 ya da 5 harfli)"
 
-#: src/options.cpp:5296
+#: src/options.cpp:5330
 msgid "Enter the NMEA sentence"
 msgstr "NMEA Cümlesi Gir"
 
-#: src/options.cpp:5305
+#: src/options.cpp:5339
 msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.) It can also have a two letter prefix identifying the source, or TALKER, of the message (The whole sentences then looks like GPGGA or AITXT). You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.). The filter accepts just these three formats."
 msgstr "Bir NMEA cümlesi genellikle 3 harf uzunluğundadır (örnek RMC, GGA). Mesajın TALKER'ını ya da kaynağı gösteren iki harf daha içerebilir (Bu durumda tüm cümle GPGGA ya da AITXT gibi görünür). Tüm cümleleri belirli bir TALKER la (örneğin GP, AI) filtreleyebilirsiniz. Filtre sadece bu üç formatı kabul eder."
 
-#: src/options.cpp:5305
+#: src/options.cpp:5339
 msgid "Wrong length of the NMEA filter value"
 msgstr "Hatalı uzunlukta NMEA filtre değeri"
 
-#: src/options.cpp:5356
+#: src/options.cpp:5390
 msgid "Accept Sentences"
 msgstr "Cümleleri Kabul Edin"
 
-#: src/options.cpp:5358
+#: src/options.cpp:5392
 msgid "Ignore Sentences"
 msgstr "Cümleleri Dikkate Alma"
 
-#: src/options.cpp:5362
+#: src/options.cpp:5396
 msgid "Transmit Sentences"
 msgstr "İleti Cümleleri"
 
-#: src/options.cpp:5364
+#: src/options.cpp:5398
 msgid "Drop Sentences"
 msgstr "Cümleleri Dikkate Alma"
 
-#: src/options.cpp:5395
+#: src/options.cpp:5429
 msgid "Use Accelerated Panning"
 msgstr "Hızlandırılmış Grafikleri Kullan (OpenGL)"
 
-#: src/options.cpp:5409
+#: src/options.cpp:5443
 msgid "Texture Compression"
 msgstr "Yapı Sıkıştırma"
 
-#: src/options.cpp:5413
+#: src/options.cpp:5447
 msgid "Texture Compression Caching"
 msgstr "Yapı Sıkıştırma Önbelleğe Alma"
 
-#: src/options.cpp:5426
+#: src/options.cpp:5460
 msgid "Texture Compression with Caching"
 msgstr ""
 
-#: src/options.cpp:5442
+#: src/options.cpp:5484
 msgid "Texture Memory Size (MB)"
 msgstr "Yapı Bellek Boyutu (MB)"
 
-#: src/options.cpp:5453
+#: src/options.cpp:5495
 msgid "Rebuild Texture Cache"
 msgstr ""
 
-#: src/options.cpp:5457
+#: src/options.cpp:5501
 msgid "Clear Texture Cache"
 msgstr ""
 
