@@ -424,7 +424,7 @@ bool                      g_bsmoothpanzoom;
 
 int                       g_nCOMPortCheck;
 
-bool                      g_b_legacy_input_filter_behaviour;
+bool                      g_b_legacy_input_filter_behaviour;  // Support original input filter process or new process
 
 bool                      g_bbigred;
 
