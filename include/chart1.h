@@ -88,39 +88,45 @@ const int ID_TOOLBAR = 500;
 
 enum
 {
-      ID_ZOOMIN = 1550,
-      ID_ZOOMOUT,
-      ID_STKUP,
-      ID_STKDN,
-      ID_ROUTE,
-      ID_MEASURE,
-      ID_MARK_BOAT,
-      ID_MARK_CURSOR,
-      ID_FOLLOW,
-      ID_NORTHUP,
-	  ID_COGUP,
-      ID_SETTINGS,
-      ID_AIS,           // pjotrc 2010.02.09
-      ID_ENC_TEXT,
-      ID_ENC_LIGHTS,
-      ID_ENC_SOUNDINGS,
-      ID_ENC_ANCHOR,
-      ID_OUTLINES,
-      ID_QUILTING,
-      ID_CHARTBAR,
-      ID_FULLSCREEN,
-      ID_CURRENT,
-      ID_TIDE,
-      ID_HELP,
-      ID_TBEXIT,
-      ID_TBSTAT,
-      ID_PRINT,
-      ID_COLSCHEME,
-      ID_ROUTEMANAGER,
-      ID_TRACK,
-      ID_TBSTATBOX,
-      ID_MOB,
-      ID_PLUGIN_BASE
+    // The following constants represent the toolbar items (some are also used in menus).
+    // They MUST be in the SAME ORDER as on the toolbar and new items MUST NOT be added
+    // amongst them, due to the way the toolbar button visibility is saved and calculated.
+    ID_ZOOMIN = 1550,
+    ID_ZOOMOUT,
+    ID_STKUP,
+    ID_STKDN,
+    ID_ROUTE,
+    ID_FOLLOW,
+    ID_SETTINGS,
+    ID_AIS,
+    ID_ENC_TEXT,
+    ID_CURRENT,
+    ID_TIDE,
+    ID_HELP,
+    ID_TBEXIT,
+    ID_TBSTAT,
+    ID_PRINT,
+    ID_COLSCHEME,
+    ID_ROUTEMANAGER,
+    ID_TRACK,
+    ID_TBSTATBOX,
+    ID_MOB,
+    ID_PLUGIN_BASE,
+
+    // The following are constants which are used in the menus but not in the toolbar.
+    // So long as they come after the constants above, all will be well.
+    ID_MEASURE,
+    ID_MARK_BOAT,
+    ID_MARK_CURSOR,
+    ID_NORTHUP,
+    ID_COGUP,
+    ID_ENC_LIGHTS,
+    ID_ENC_SOUNDINGS,
+    ID_ENC_ANCHOR,
+    ID_OUTLINES,
+    ID_QUILTING,
+    ID_CHARTBAR,
+    ID_FULLSCREEN
 };
 
 
