@@ -88,7 +88,7 @@ TTYWindow::~TTYWindow()
 
 void TTYWindow::CreateLegendBitmap()
 {
-    m_bm_legend.Create(400, 105);
+    m_bm_legend.Create(400, 130);
     wxMemoryDC dc;
     dc.SelectObject( m_bm_legend );
     if( m_bm_legend.IsOk()) {
@@ -116,10 +116,10 @@ void TTYWindow::CreateLegendBitmap()
         dc.DrawText(  _("Input message filtered, output message filtered and dropped"), 30, y );
 
         y += yp;
-        wxBrush b3(wxColour( _T("RED")) );
+        wxBrush b3(wxColour( _T("DARK RED")) );
         dc.SetBrush(b3);
         dc.DrawRectangle( 5, y, 20, 20 );
-        dc.SetTextForeground( wxColour(_T("RED")) );
+        dc.SetTextForeground( wxColour(_T("DARK RED")) );
         dc.DrawText(  _("Input Message filtered and dropped"), 30, y );
 
         y += yp;
@@ -128,6 +128,13 @@ void TTYWindow::CreateLegendBitmap()
         dc.DrawRectangle( 5, y, 20, 20 );
         dc.SetTextForeground( wxColour(_T("BLUE")) );
         dc.DrawText(  _("Output Message"), 30, y );
+
+        y += yp;
+        wxBrush b5(wxColour( _T("RED")) );
+        dc.SetBrush(b5);
+        dc.DrawRectangle( 5, y, 20, 20 );
+        dc.SetTextForeground( wxColour(_T("RED")) );
+        dc.DrawText(  _("Information Message or Message with errors"), 30, y );
     }
     dc.SelectObject( wxNullBitmap );
 }

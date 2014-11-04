@@ -96,6 +96,10 @@ void TTYScroll::OnDraw( wxDC& dc )
             dc.SetTextForeground( wxColour(_T("RED")) );
             lss = ls.Mid(5);
         }
+        else if(ls.Mid(0, 10) == _T("<DARK RED>") ){
+            dc.SetTextForeground( wxColour(_T("#8b0000")) );
+            lss = ls.Mid(10);
+        }
 
         dc.DrawText( lss, 0, y );
        y += m_hLine;

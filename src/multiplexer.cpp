@@ -180,7 +180,7 @@ void Multiplexer::LogInputMessage(const wxString &msg, const wxString & stream_n
             if (g_b_legacy_input_filter_behaviour)
                 ss.Prepend( _T("<AMBER>") );
             else
-                ss.Prepend( _T("<RED>") );
+                ss.Prepend( _T("<DARK RED>") );
         else
             ss.Prepend( _T("<GREEN>") );
 
