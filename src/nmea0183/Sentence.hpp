@@ -43,7 +43,7 @@
 
 class LATLONG;
 
-class SENTENCE 
+class SENTENCE
 {
 //   DECLARE_DYNAMIC( SENTENCE )
 
@@ -76,12 +76,13 @@ class SENTENCE
       virtual NORTHSOUTH NorthOrSouth( int field_number ) const;
       virtual REFERENCE Reference( int field_number ) const;
       virtual TRANSDUCER_TYPE TransducerType( int field_number ) const;
+      virtual SENTENCE& Add ( double value, int precision);
 
       /*
       ** Operators
       */
 
-      operator wxString() const; 
+      operator wxString() const;
       virtual const SENTENCE& operator  = ( const SENTENCE& source );
       virtual const SENTENCE& operator  = ( const wxString& source );
       virtual const SENTENCE& operator += ( const wxString& source );
@@ -94,5 +95,5 @@ class SENTENCE
       virtual const SENTENCE& operator += ( NMEA0183_BOOLEAN boolean );
       virtual const SENTENCE& operator += ( LATLONG& source );
 };
- 
+
 #endif // SENTENCE_CLASS_HEADER

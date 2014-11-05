@@ -209,7 +209,7 @@ public:
 
     wxWindow* GetContentWindow() const;
     void OnClose( wxCloseEvent& event );
-    
+
     void CreateControls();
     size_t CreatePanel(const wxString & title);
     wxScrolledWindow *AddPage(size_t parent, const wxString & title);
@@ -236,8 +236,8 @@ public:
     }
 
     void UpdateDisplayedChartDirList(ArrayOfCDI p);
-    
-    
+
+
     void SetConfigPtr( MyConfig *p )
     {
         m_pConfig = p;
@@ -252,7 +252,7 @@ public:
     void OnCancelClick( wxCommandEvent& event );
     void OnChooseFont( wxCommandEvent& event );
     void OnCPAWarnClick( wxCommandEvent& event );
-    
+
 #ifdef __WXGTK__
     void OnChooseFontColor( wxCommandEvent& event );
 #endif
@@ -273,7 +273,7 @@ public:
     void OnCharHook( wxKeyEvent& event );
     void OnChartsPageChange( wxListbookEvent& event );
     void OnChartDirListSelect( wxCommandEvent& event );
-    
+
     void UpdateWorkArrayFromTextCtl();
 
 // Should we show tooltips?
@@ -319,10 +319,10 @@ public:
     wxTextCtrl              *pMagVar;
     wxCheckBox              *pMobile;
     wxCheckBox              *pResponsive;
-    wxSlider                *m_pSlider_Zoom;    
+    wxSlider                *m_pSlider_Zoom;
     int                      k_tides;
 
-    
+
 //    For GPS Page
     wxListCtrl* m_lcSources;
     wxButton* m_buttonAdd;
@@ -362,6 +362,8 @@ public:
     wxButton* m_btnInputStcList;
     wxCheckBox* m_cbInput;
     wxCheckBox* m_cbOutput;
+    wxStaticText* m_stPrecision;
+    wxChoice* m_choicePrecision;
     wxRadioButton* m_rbOAccept;
     wxRadioButton* m_rbOIgnore;
     wxTextCtrl* m_tcOutputStc;
@@ -482,7 +484,7 @@ public:
     wxScrolledWindow        *itemPanelShip;
     wxBoxSizer              *ownShip;
     wxTextCtrl              *m_pText_ACRadius;
-    
+
 //    For Fonts page
     wxBoxSizer              *m_itemBoxSizerFontPanel;
     wxChoice                *m_itemFontElementListBox;
@@ -573,7 +575,7 @@ private:
     void SetDSFormRWStates();
     void FillSourceList();
     ConnectionParams *CreateConnectionParamsFromSelectedItem();
-    
+
     wxNotebookPage*             m_groupsPage;
 };
 
@@ -942,7 +944,7 @@ public:
 
     wxCheckBox *m_cbRebuildTextureCache;
     wxCheckBox *m_cbClearTextureCache;
-    
+
     wxSpinCtrl *m_sTextureDimension;
     wxSpinCtrl *m_sTextureMemorySize;
 
@@ -973,20 +975,20 @@ public:
     MMSIListCtrl( wxWindow* parent, wxWindowID id, const wxPoint& pos,
                   const wxSize& size, long style );
     ~MMSIListCtrl();
-    
+
     wxString OnGetItemText( long item, long column ) const;
     //    int OnGetItemColumnImage( long item, long column ) const;
-    
+
     void OnListItemClick( wxListEvent &event);
     void OnListItemActivated( wxListEvent &event);
     void OnListItemRightClick( wxListEvent &event);
     void PopupMenuHandler( wxCommandEvent& event );
-    
+
     wxWindow *m_parent;
     int         m_context_item;
-    
+
     DECLARE_EVENT_TABLE()
-    
+
 };
 
 
@@ -1008,7 +1010,7 @@ class MMSIEditDialog: public wxDialog
 {
     DECLARE_DYNAMIC_CLASS( MMSIEditDialog )
     DECLARE_EVENT_TABLE()
-    
+
 public:
     MMSIEditDialog( );
     MMSIEditDialog( MMSIProperties *props, wxWindow* parent, wxWindowID id = -1,
@@ -1016,36 +1018,36 @@ public:
                     const wxPoint& pos = wxDefaultPosition,
                     const wxSize& size = wxDefaultSize,
                     long style = 0 );
-    
+
     ~MMSIEditDialog();
-    
+
     bool Create( MMSIProperties *props, wxWindow* parent, wxWindowID id = -1,
                  const wxString& caption = _T(""),
                  const wxPoint& pos = wxDefaultPosition,
                  const wxSize& size = wxDefaultSize, long style = 0 );
-    
+
     void SetColorScheme(ColorScheme cs);
-    
+
     void CreateControls();
-    
+
     void OnMMSIEditCancelClick( wxCommandEvent& event );
     void OnMMSIEditOKClick( wxCommandEvent& event );
     void OnCtlUpdated( wxCommandEvent& event );
-    
+
     MMSIProperties      *m_props;
-    
+
     wxTextCtrl          *m_MMSICtl;
     wxRadioButton       *m_rbTypeTrackDefault;
     wxRadioButton       *m_rbTypeTrackAlways;
     wxRadioButton       *m_rbTypeTrackNever;
-    
+
     wxCheckBox            *m_IgnoreButton;
     wxCheckBox            *m_MOBButton;
     wxCheckBox            *m_VDMButton;
-    
+
     wxButton*     m_CancelButton;
     wxButton*     m_OKButton;
-    
+
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1054,24 +1056,24 @@ public:
 
 class MMSI_Props_Panel: public wxPanel
 {
-    
+
 public:
     MMSI_Props_Panel( wxWindow *parent );
     ~MMSI_Props_Panel( );
-    
+
 //    void OnClose(wxCloseEvent &event);
     void OnNewButton( wxCommandEvent &event );
-    
+
     void SetColorScheme( ColorScheme cs );
     void UpdateMMSIList( void );
-    
+
     MMSIListCtrl      *m_pListCtrlMMSI;
     wxButton          *m_pButtonNew;
-    
+
 private:
-    
+
     wxWindow          *m_pparent;
-    
+
 };
 
 

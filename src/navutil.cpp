@@ -336,6 +336,8 @@ extern ArrayOfMMSIProperties   g_MMSI_Props_Array;
 
 extern int              g_chart_zoom_modifier;
 
+extern int              g_NMEAAPBPrecision;
+
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
 #endif
@@ -1215,6 +1217,8 @@ int MyConfig::LoadMyConfig( int iteration )
         g_bopengl = false;
 
     Read( _T ( "ActiveChartGroup" ), &g_GroupIndex, 0 );
+
+    Read( _T( "NMEAAPBPrecision" ), &g_NMEAAPBPrecision, 3 );
 
     /* opengl options */
 #ifdef ocpnUSE_GL
@@ -2497,6 +2501,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "InitialStackIndex" ), g_restore_stackindex );
     Write( _T ( "InitialdBIndex" ), g_restore_dbindex );
     Write( _T ( "ActiveChartGroup" ), g_GroupIndex );
+    Write( _T( "NMEAAPBPrecision" ), g_NMEAAPBPrecision );
 
     Write( _T ( "AnchorWatch1GUID" ), g_AW1GUID );
     Write( _T ( "AnchorWatch2GUID" ), g_AW2GUID );
