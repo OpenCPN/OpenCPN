@@ -2501,6 +2501,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "InitialStackIndex" ), g_restore_stackindex );
     Write( _T ( "InitialdBIndex" ), g_restore_dbindex );
     Write( _T ( "ActiveChartGroup" ), g_GroupIndex );
+
     Write( _T( "NMEAAPBPrecision" ), g_NMEAAPBPrecision );
 
     Write( _T ( "AnchorWatch1GUID" ), g_AW1GUID );

@@ -31,7 +31,6 @@
 
 
 #include "nmea0183.h"
-#include <math.h>
 
 /*
 ** Author: Samuel R. Blackburn
