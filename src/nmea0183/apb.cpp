@@ -40,6 +40,8 @@
 ** You can use it any way you like.
 */
 
+extern int              g_NMEAAPBPrecision;
+
 
 APB::APB()
 {
@@ -107,12 +109,12 @@ bool APB::Parse( const SENTENCE& sentence )
    */
 
    NMEA0183_BOOLEAN check = sentence.IsChecksumBad( 15 );
-   
+
    if ( check == NTrue )
    {
       SetErrorMessage( _T("Invalid Checksum") );
       return( FALSE );
-   } 
+   }
 
    /*
    ** Line has already been checked for checksum validity
@@ -143,7 +145,7 @@ bool APB::Write( SENTENCE& sentence )
    /*
    ** Let the parent do its thing
    */
-   
+
    RESPONSE::Write( sentence );
 
    sentence += IsLoranBlinkOK;
@@ -154,16 +156,16 @@ bool APB::Write( SENTENCE& sentence )
        sentence += _T("L");
    else
        sentence += _T("R");
-   
+
    sentence += CrossTrackUnits;
    sentence += IsArrivalCircleEntered;
    sentence += IsPerpendicular;
-   sentence += BearingOriginToDestination;
+   sentence.Add( BearingOriginToDestination, g_NMEAAPBPrecision);
    sentence += BearingOriginToDestinationUnits;
    sentence += To;
-   sentence += BearingPresentPositionToDestination;
+   sentence.Add( BearingPresentPositionToDestination, g_NMEAAPBPrecision );
    sentence += BearingPresentPositionToDestinationUnits;
-   sentence += HeadingToSteer;
+   sentence.Add( HeadingToSteer, g_NMEAAPBPrecision );
    sentence += HeadingToSteerUnits;
 
    sentence.Finish();

@@ -493,6 +493,21 @@ const SENTENCE& SENTENCE::operator += ( double value )
    return( *this );
 }
 
+SENTENCE& SENTENCE::Add ( double value, int precision )
+{
+//   ASSERT_VALID( this );
+
+    wxString temp_string;
+    wxString s_Precision;
+
+    s_Precision.Printf(_T("%c.%if"), '%', precision );
+    temp_string.Printf( s_Precision, value );
+
+    Sentence += _T(",");
+    Sentence += temp_string;
+
+    return( *this );
+}
 const SENTENCE& SENTENCE::operator += ( COMMUNICATIONS_MODE mode )
 {
 //   ASSERT_VALID( this );
