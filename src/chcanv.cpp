@@ -2133,7 +2133,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             }
         }
 
-        if( m_modkeys == wxMOD_CONTROL )
+        if ( event.ControlDown() )
             key_char -= 64;
 
         switch( key_char ) {
@@ -2271,11 +2271,19 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             }
             break;
 
-        case 26:                       // Ctrl Z
-            if( undo->AnythingToUndo() ) {
-                undo->UndoLastAction();
-                InvalidateGL();
-                Refresh( false );
+        case 26:
+            if ( event.ShiftDown() ) { // Shift-Ctrl-Z
+                if( undo->AnythingToRedo() ) {
+                    undo->RedoNextAction();
+                    InvalidateGL();
+                    Refresh( false );
+                }
+            } else {                   // Ctrl Z
+                if( undo->AnythingToUndo() ) {
+                    undo->UndoLastAction();
+                    InvalidateGL();
+                    Refresh( false );
+                }
             }
             break;
 
@@ -6446,22 +6454,14 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 #endif
 
     if( seltype == SELTYPE_ROUTECREATE ) {
-#ifndef __WXOSX__
         MenuAppend( contextMenu, ID_RC_MENU_FINISH, _menuText( _( "End Route" ), _T("Esc") ) );
-#else
-        MenuAppend( contextMenu, ID_RC_MENU_FINISH,  _( "End Route" ) );
-#endif
     }
 
     if( ! m_pMouseRoute ) {
         if( m_bMeasure_Active )
-#ifndef __WXOSX__
             MenuPrepend( contextMenu, ID_DEF_MENU_DEACTIVATE_MEASURE, _menuText( _("Measure Off"), _T("Esc") ) );
-#else
-            MenuPrepend( contextMenu, ID_DEF_MENU_DEACTIVATE_MEASURE,  _("Measure Off") );
-#endif
         else
-            MenuPrepend( contextMenu, ID_DEF_MENU_ACTIVATE_MEASURE, _menuText( _( "Measure" ), _T("F4") ) );
+            MenuPrepend( contextMenu, ID_DEF_MENU_ACTIVATE_MEASURE, _menuText( _( "Measure" ), _T("M") ) );
 //            contextMenu->Prepend( ID_DEF_MENU_ACTIVATE_MEASURE, _menuText( _( "Measure" ), _T("F4") ) );
     }
 
@@ -6474,7 +6474,11 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     if( undo->AnythingToRedo() ) {
         wxString redoItem;
         redoItem << _("Redo") << _T(" ") << undo->GetNextRedoableAction()->Description();
+#ifdef __WXOSX__
+        MenuPrepend( contextMenu, ID_REDO, _menuText( redoItem, _T("Shift-Ctrl-Z") ) );
+#else
         MenuPrepend( contextMenu, ID_REDO, _menuText( redoItem, _T("Ctrl-Y") ) );
+#endif
     }
 
     bool ais_areanotice = false;
@@ -6528,8 +6532,8 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     if( !VPoint.b_quilt ) {
         if( parent_frame->GetnChartStack() > 1 ) {
             MenuAppend( contextMenu, ID_DEF_MENU_MAX_DETAIL, _( "Max Detail Here" ) );
-            MenuAppend( contextMenu, ID_DEF_MENU_SCALE_IN, _menuText( _( "Scale In" ), _T("F7") ) );
-            MenuAppend( contextMenu, ID_DEF_MENU_SCALE_OUT, _menuText( _( "Scale Out" ), _T("F8") ) );
+            MenuAppend( contextMenu, ID_DEF_MENU_SCALE_IN, _menuText( _( "Scale In" ), _T("Ctrl-Left") ) );
+            MenuAppend( contextMenu, ID_DEF_MENU_SCALE_OUT, _menuText( _( "Scale Out" ), _T("Ctrl-Right") ) );
         }
 
         if( ( Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR ) ) || ais_areanotice ) {
@@ -6542,8 +6546,8 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
             MenuAppend( contextMenu, ID_DEF_MENU_QUERY, _( "Object Query..." ) );
         } else {
             if( parent_frame->GetnChartStack() > 1 ) {
-                MenuAppend( contextMenu, ID_DEF_MENU_SCALE_IN, _menuText( _( "Scale In" ), _T("F7") ) );
-                MenuAppend( contextMenu, ID_DEF_MENU_SCALE_OUT, _menuText( _( "Scale Out" ), _T("F8") ) );
+                MenuAppend( contextMenu, ID_DEF_MENU_SCALE_IN, _menuText( _( "Scale In" ), _T("Ctrl-Left") ) );
+                MenuAppend( contextMenu, ID_DEF_MENU_SCALE_OUT, _menuText( _( "Scale Out" ), _T("Ctrl-Right") ) );
             }
         }
     }
