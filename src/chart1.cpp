@@ -2549,6 +2549,16 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     osx_menuBar->Append(view_menu, _("View"));
 
 
+    wxMenu* ais_menu = new wxMenu();
+    ais_menu->AppendCheckItem(ID_AIS, _("Show AIS Targets"));
+    ais_menu->AppendCheckItem(ID_AISMENU_TARGETTRACKS, _("Show Target Tracks"));
+    ais_menu->AppendCheckItem(ID_AISMENU_CPADIALOG, _("Show CPA Alert Dialogs"));
+    ais_menu->AppendCheckItem(ID_AISMENU_CPASOUND, _("Sound CPA Alarms"));
+    ais_menu->AppendSeparator();
+    ais_menu->Append(ID_AISMENU_TARGETLIST, _("AIS Target List..."));
+    osx_menuBar->Append(ais_menu, _("AIS"));
+
+
     wxMenu* tools_menu = new wxMenu();
     tools_menu->Append(ID_MEASURE, _("Measure Distance") + "\tM");
     tools_menu->AppendSeparator();
@@ -2573,21 +2583,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
 
 
     // Set initial values for menu check items and radio items
-    osx_menuBar->FindItem( ID_NORTHUP )->Check( !g_bCourseUp );
-    osx_menuBar->FindItem( ID_COGUP )->Check( g_bCourseUp );
-    osx_menuBar->FindItem( ID_TRACK )->Check( g_bTrackActive );
-    osx_menuBar->FindItem( ID_OUTLINES )->Check( g_bShowOutlines );
-    osx_menuBar->FindItem( ID_QUILTING )->Check( g_bQuiltEnable );
-    osx_menuBar->FindItem( ID_CHARTBAR )->Check( true );
-    if ( pConfig ) osx_menuBar->FindItem( ID_FOLLOW )->Check( pConfig->st_bFollow );
-#ifdef USE_S57
-    if( ps52plib ) {
-        osx_menuBar->FindItem( ID_ENC_TEXT )->Check( ps52plib->GetShowS57Text() );
-        osx_menuBar->FindItem( ID_ENC_SOUNDINGS )->Check( ps52plib->GetShowSoundings() );
-        osx_menuBar->FindItem( ID_ENC_LIGHTS )->Check( !ps52plib->IsObjNoshow("LIGHTS") );
-        osx_menuBar->FindItem( ID_ENC_ANCHOR )->Check( !ps52plib->IsObjNoshow("SBDARE") );
-    }
-#endif
+    UpdateGlobalMenuItems();
 
 #endif    // end ifdef __WXOSX__
 
@@ -3938,6 +3934,29 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             break;
         }
 
+        case ID_AISMENU_TARGETLIST: {
+            if ( cc1 ) cc1->ShowAISTargetList();
+            break;
+        }
+
+        case ID_AISMENU_TARGETTRACKS: {
+            g_bAISShowTracks = !g_bAISShowTracks;
+            SetToolbarItemState(ID_AISMENU_TARGETTRACKS, g_bAISShowTracks);
+            break;
+        }
+
+        case ID_AISMENU_CPADIALOG: {
+            g_bAIS_CPA_Alert = !g_bAIS_CPA_Alert;
+            SetToolbarItemState(ID_AISMENU_CPADIALOG, g_bAIS_CPA_Alert);
+            break;
+        }
+
+        case ID_AISMENU_CPASOUND: {
+            g_bAIS_CPA_Alert_Audio = !g_bAIS_CPA_Alert_Audio;
+            SetToolbarItemState(ID_AISMENU_CPASOUND, g_bAIS_CPA_Alert_Audio);
+            break;
+        }
+
         case wxID_PREFERENCES:
         case ID_SETTINGS: {
 
@@ -4565,6 +4584,33 @@ void MyFrame::ApplyGlobalSettings( bool bFlyingUpdate, bool bnewtoolbar )
 
     if( bnewtoolbar ) UpdateToolbar( global_color_scheme );
 
+    if (osx_menuBar) UpdateGlobalMenuItems();
+
+}
+
+void MyFrame::UpdateGlobalMenuItems()
+{
+    if (osx_menuBar) {
+        if ( pConfig ) osx_menuBar->FindItem( ID_FOLLOW )->Check( pConfig->st_bFollow );
+        osx_menuBar->FindItem( ID_NORTHUP )->Check( !g_bCourseUp );
+        osx_menuBar->FindItem( ID_COGUP )->Check( g_bCourseUp );
+        osx_menuBar->FindItem( ID_TRACK )->Check( g_bTrackActive );
+        osx_menuBar->FindItem( ID_OUTLINES )->Check( g_bShowOutlines );
+        osx_menuBar->FindItem( ID_QUILTING )->Check( g_bQuiltEnable );
+        osx_menuBar->FindItem( ID_CHARTBAR )->Check( true );
+        osx_menuBar->FindItem( ID_AIS )->Check( g_bShowAIS );
+        osx_menuBar->FindItem( ID_AISMENU_TARGETTRACKS )->Check( g_bAISShowTracks );
+        osx_menuBar->FindItem( ID_AISMENU_CPADIALOG )->Check( g_bAIS_CPA_Alert );
+        osx_menuBar->FindItem( ID_AISMENU_CPASOUND )->Check( g_bAIS_CPA_Alert_Audio );
+#ifdef USE_S57
+        if( ps52plib ) {
+            osx_menuBar->FindItem( ID_ENC_TEXT )->Check( ps52plib->GetShowS57Text() );
+            osx_menuBar->FindItem( ID_ENC_SOUNDINGS )->Check( ps52plib->GetShowSoundings() );
+            osx_menuBar->FindItem( ID_ENC_LIGHTS )->Check( !ps52plib->IsObjNoshow("LIGHTS") );
+            osx_menuBar->FindItem( ID_ENC_ANCHOR )->Check( !ps52plib->IsObjNoshow("SBDARE") );
+        }
+#endif
+    }
 }
 
 void MyFrame::SubmergeToolbarIfOverlap( int x, int y, int margin )

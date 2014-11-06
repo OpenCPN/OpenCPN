@@ -126,7 +126,11 @@ enum
     ID_OUTLINES,
     ID_QUILTING,
     ID_CHARTBAR,
-    ID_FULLSCREEN
+    ID_FULLSCREEN,
+    ID_AISMENU_TARGETLIST,
+    ID_AISMENU_TARGETTRACKS,
+    ID_AISMENU_CPADIALOG,
+    ID_AISMENU_CPASOUND
 };
 
 
@@ -273,6 +277,7 @@ class MyFrame: public wxFrame
     void ProcessCanvasResize(void);
 
     void ApplyGlobalSettings(bool bFlyingUpdate, bool bnewtoolbar);
+    void UpdateGlobalMenuItems();
     void SetChartThumbnail(int index);
     int  DoOptionsDialog();
     int  ProcessOptionsDialog(int resultFlags , options* dialog );
