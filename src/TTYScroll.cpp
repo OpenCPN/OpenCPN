@@ -84,8 +84,8 @@ void TTYScroll::OnDraw( wxDC& dc )
             dc.SetTextForeground( wxColour(_T("DARK GREEN")) );
             lss = ls.Mid(7);
         }
-        else if(ls.Mid(0, 7) == _T("<AMBER>") ){
-            dc.SetTextForeground( wxColour(_T("#a0832a")) );
+        else if(ls.Mid(0, 7) == _T("<SIENNA>") ){
+            dc.SetTextForeground( wxColour(_T("SIENNA")) );
             lss = ls.Mid(7);
         }
         else if(ls.Mid(0, 6) == _T("<BLUE>") ){
@@ -96,8 +96,8 @@ void TTYScroll::OnDraw( wxDC& dc )
             dc.SetTextForeground( wxColour(_T("RED")) );
             lss = ls.Mid(5);
         }
-        else if(ls.Mid(0, 10) == _T("<DARK RED>") ){
-            dc.SetTextForeground( wxColour(_T("#8b0000")) );
+        else if(ls.Mid(0, 10) == _T("<MAROON>") ){
+            dc.SetTextForeground( wxColour(_T("MAROON")) );
             lss = ls.Mid(10);
         }
 
