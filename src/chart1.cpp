@@ -658,6 +658,8 @@ bool             b_inCompressAllCharts;
 bool             g_bexpert;
 int              g_chart_zoom_modifier;
 
+int              g_NMEAAPBPrecision;
+
 #ifdef LINUX_CRASHRPT
 wxCrashPrint g_crashprint;
 #endif
