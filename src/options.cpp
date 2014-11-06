@@ -4749,6 +4749,13 @@ void options::ShowNMEACommon(bool visible)
         m_cbOutput->Show();
         m_stPrecision->Show();
         m_choicePrecision->Show();
+        if (m_cbOutput->IsChecked()) {
+            m_stPrecision->Enable(True);
+            m_choicePrecision->Enable(True);
+        } else {
+            m_stPrecision->Enable(False);
+            m_choicePrecision->Enable(False);
+        }
         m_choicePriority->Show();
         m_stPriority->Show();
         m_cbCheckCRC->Show();
@@ -5158,6 +5165,13 @@ void options::OnCbInput( wxCommandEvent& event )
 void options::OnCbOutput( wxCommandEvent& event )
 {
     OnConnValChange(event);
+    if (m_cbOutput->IsChecked()) {
+        m_stPrecision->Enable(True);
+        m_choicePrecision->Enable(True);
+    } else {
+        m_stPrecision->Enable(False);
+        m_choicePrecision->Enable(False);
+    }
 }
 
 //SentenceListDlg
