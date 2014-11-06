@@ -2141,6 +2141,10 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             parent_frame->ToggleAnchor();
             break;
 
+        case 'C':
+            parent_frame->ToggleColorScheme();
+            break;
+
         case 'D': {
                 int x,y;
                 event.GetPosition( &x, &y );
@@ -2169,8 +2173,16 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             parent_frame->ToggleLights();
             break;
 
+        case 'M':
+            StartMeasureRoute();
+            break;
+
         case 'O':
             parent_frame->ToggleChartOutlines();
+            break;
+
+        case 'Q':
+            parent_frame->ToggleQuiltMode();
             break;
 
 #if 0

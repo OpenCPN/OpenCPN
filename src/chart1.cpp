@@ -2529,7 +2529,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
 
 
     wxMenu* view_menu = new wxMenu();
-    view_menu->AppendCheckItem(ID_QUILTING, _("Enable Chart Quilting") + "\tF9");
+    view_menu->AppendCheckItem(ID_QUILTING, _("Enable Chart Quilting") + "\tQ");
     view_menu->AppendCheckItem(ID_OUTLINES, _("Show Chart Outlines") + "\tO");
     view_menu->AppendCheckItem(ID_CHARTBAR, _("Show Chart Bar") + "\tCtrl-B");
 #ifdef USE_S57
@@ -2543,14 +2543,14 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     view_menu->AppendCheckItem(ID_TIDE, _("Show Tides"));
     view_menu->AppendCheckItem(ID_CURRENT, _("Show Currents"));
     view_menu->AppendSeparator();
-    view_menu->Append(ID_COLSCHEME, _("Change Color Scheme") + "\tF5");
+    view_menu->Append(ID_COLSCHEME, _("Change Color Scheme") + "\tC");
     view_menu->AppendSeparator();
     view_menu->Append(ID_FULLSCREEN, _("Enter Full Screen") + "\tRawCtrl-Ctrl-F");
     osx_menuBar->Append(view_menu, _("View"));
 
 
     wxMenu* tools_menu = new wxMenu();
-    tools_menu->Append(ID_MEASURE, _("Measure Distance") + "\tF4");
+    tools_menu->Append(ID_MEASURE, _("Measure Distance") + "\tM");
     tools_menu->AppendSeparator();
     tools_menu->Append(ID_ROUTEMANAGER, _("Route && Mark Manager…"));
     tools_menu->Append(ID_ROUTE, _("Create Route") + "\tCtrl-R");
