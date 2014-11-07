@@ -277,6 +277,7 @@ class MyFrame: public wxFrame
     void ProcessCanvasResize(void);
 
     void ApplyGlobalSettings(bool bFlyingUpdate, bool bnewtoolbar);
+    void RegisterGlobalMenuItems();
     void UpdateGlobalMenuItems();
     void SetChartThumbnail(int index);
     int  DoOptionsDialog();
@@ -350,6 +351,7 @@ class MyFrame: public wxFrame
     void UpdateAISMOBRoute( AIS_Target_Data *ptarget );
     
     wxStatusBar         *m_pStatusBar;
+    wxMenuBar           *m_pMenuBar;
     int                 nRoute_State;
     int                 nBlinkerTick;
     bool                m_bTimeIsSet;

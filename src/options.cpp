@@ -901,6 +901,7 @@ void options::Init()
     m_pWorkDirList = NULL;
 
     pShowStatusBar = NULL;
+    pShowMenuBar = NULL;
     pShowCompassWin = NULL;
     pSelCtl = NULL;
     pActiveChartsList = NULL;
@@ -2330,6 +2331,12 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
     pShowStatusBar->SetValue( FALSE );
     miscOptions->Add( pShowStatusBar, 0, wxALL, border_size );
 
+#ifndef __WXOSX__
+    pShowMenuBar = new wxCheckBox( itemPanelFont, wxID_ANY, _("Show Menu Bar") );
+    pShowMenuBar->SetValue( FALSE );
+    miscOptions->Add( pShowMenuBar, 0, wxALL, border_size );
+#endif
+
     pShowCompassWin = new wxCheckBox( itemPanelFont, wxID_ANY, _("Show Compass/GPS Status Window") );
     pShowCompassWin->SetValue( FALSE );
     miscOptions->Add( pShowCompassWin, 0, wxALL, border_size );
@@ -2594,6 +2601,9 @@ void options::SetInitialSettings()
 
     if( m_pConfig ) {
         pShowStatusBar->SetValue( m_pConfig->m_bShowStatusBar );
+#ifndef __WXOSX__
+        pShowMenuBar->SetValue( m_pConfig->m_bShowMenuBar );
+#endif
         pShowCompassWin->SetValue( m_pConfig->m_bShowCompassWin );
     }
 
@@ -3331,6 +3341,9 @@ void options::OnApplyClick( wxCommandEvent& event )
 
     if( m_pConfig ) {
         m_pConfig->m_bShowStatusBar = pShowStatusBar->GetValue();
+#ifndef __WXOSX__
+        m_pConfig->m_bShowMenuBar = pShowMenuBar->GetValue();
+#endif
         m_pConfig->m_bShowCompassWin = pShowCompassWin->GetValue();
     }
 

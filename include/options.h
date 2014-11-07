@@ -294,6 +294,7 @@ public:
 //    For General Options
     wxScrolledWindow        *pDisplayPanel;
     wxCheckBox              *pShowStatusBar;
+    wxCheckBox              *pShowMenuBar;
     wxCheckBox              *pShowCompassWin;
     wxCheckBox              *pPrintShowIcon;
     wxCheckBox              *pCDOOutlines;

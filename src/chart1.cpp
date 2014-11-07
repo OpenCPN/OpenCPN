@@ -2476,7 +2476,6 @@ void MyApp::TrackOff( void )
 //------------------------------------------------------------------------------
 // MyFrame
 //------------------------------------------------------------------------------
-wxMenuBar *osx_menuBar;
 
 //      Frame implementation
 BEGIN_EVENT_TABLE(MyFrame, wxFrame) EVT_CLOSE(MyFrame::OnCloseWindow)
@@ -2507,90 +2506,9 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
         wxFrame( frame, -1, title, pos, size, style ) //wxSIMPLE_BORDER | wxCLIP_CHILDREN | wxRESIZE_BORDER)
 //wxCAPTION | wxSYSTEM_MENU | wxRESIZE_BORDER
 {
-
-#ifdef __WXOSX__
-    osx_menuBar = new wxMenuBar();
-
-
-    wxMenu* nav_menu = new wxMenu();
-    nav_menu->AppendCheckItem(ID_FOLLOW, _("Auto Follow") + "\tCtrl-A");
-    nav_menu->AppendCheckItem(ID_TRACK, _("Record Track"));
-    nav_menu->AppendSeparator();
-    nav_menu->AppendRadioItem(ID_NORTHUP, _("North Up Mode"));
-    nav_menu->AppendRadioItem(ID_COGUP, _("Course Up Mode"));
-    nav_menu->AppendSeparator();
-    nav_menu->Append(ID_ZOOMIN, _("Zoom In") + "\t+");
-    nav_menu->Append(ID_ZOOMOUT, _("Zoom Out") + "\t-");
-    nav_menu->AppendSeparator();
-    nav_menu->Append(ID_STKDN, _("Larger Scale Chart") + "\tCtrl-Left");
-    nav_menu->Append(ID_STKUP, _("Smaller Scale Chart") + "\tCtrl-Right");
-    nav_menu->AppendSeparator();
-    osx_menuBar->Append(nav_menu, _("Navigate"));
-
-
-    wxMenu* view_menu = new wxMenu();
-    view_menu->AppendCheckItem(ID_QUILTING, _("Enable Chart Quilting") + "\tQ");
-    view_menu->AppendCheckItem(ID_OUTLINES, _("Show Chart Outlines") + "\tO");
-    view_menu->AppendCheckItem(ID_CHARTBAR, _("Show Chart Bar") + "\tCtrl-B");
-#ifdef USE_S57
-    view_menu->AppendSeparator();
-    view_menu->AppendCheckItem(ID_ENC_TEXT, _("Show ENC Text") + "\tT");
-    view_menu->AppendCheckItem(ID_ENC_LIGHTS, _("Show ENC Lights") + "\tL");
-    view_menu->AppendCheckItem(ID_ENC_SOUNDINGS, _("Show ENC Soundings") + "\tS");
-    view_menu->AppendCheckItem(ID_ENC_ANCHOR, _("Show ENC Anchoring Info") + "\tA");
-#endif
-    view_menu->AppendSeparator();
-    view_menu->AppendCheckItem(ID_TIDE, _("Show Tides"));
-    view_menu->AppendCheckItem(ID_CURRENT, _("Show Currents"));
-    view_menu->AppendSeparator();
-    view_menu->Append(ID_COLSCHEME, _("Change Color Scheme") + "\tC");
-    view_menu->AppendSeparator();
-    view_menu->Append(ID_FULLSCREEN, _("Enter Full Screen") + "\tRawCtrl-Ctrl-F");
-    osx_menuBar->Append(view_menu, _("View"));
-
-
-    wxMenu* ais_menu = new wxMenu();
-    ais_menu->AppendCheckItem(ID_AIS, _("Show AIS Targets"));
-    ais_menu->AppendCheckItem(ID_AISMENU_TARGETTRACKS, _("Show Target Tracks"));
-    ais_menu->AppendCheckItem(ID_AISMENU_CPADIALOG, _("Show CPA Alert Dialogs"));
-    ais_menu->AppendCheckItem(ID_AISMENU_CPASOUND, _("Sound CPA Alarms"));
-    ais_menu->AppendSeparator();
-    ais_menu->Append(ID_AISMENU_TARGETLIST, _("AIS Target List..."));
-    osx_menuBar->Append(ais_menu, _("AIS"));
-
-
-    wxMenu* tools_menu = new wxMenu();
-    tools_menu->Append(ID_MEASURE, _("Measure Distance") + "\tM");
-    tools_menu->AppendSeparator();
-    tools_menu->Append(ID_ROUTEMANAGER, _("Route && Mark Manager…"));
-    tools_menu->Append(ID_ROUTE, _("Create Route") + "\tCtrl-R");
-    tools_menu->AppendSeparator();
-    tools_menu->Append(ID_MARK_BOAT, _("Drop Mark at Boat") + "\tCtrl-O");
-    tools_menu->Append(ID_MARK_CURSOR, _("Drop Mark at Cursor") + "\tCtrl-M");
-    tools_menu->AppendSeparator();
-    tools_menu->Append(ID_MOB, _("Drop MOB Marker") + "\tRawCtrl-Space"); // NOTE Cmd+Space is reserved for Spotlight
-    osx_menuBar->Append(tools_menu, _("Tools"));
-
-
-    wxMenu* help_menu = new wxMenu();
-    help_menu->Append(wxID_ABOUT, _("About OpenCPN"));
-    help_menu->Append(wxID_HELP, _("OpenCPN Help"));
-    help_menu->Append(wxID_PREFERENCES, _("Preferences…") + "\tCtrl-,");
-    osx_menuBar->Append(help_menu, _("Help"));
-
-
-    SetMenuBar(osx_menuBar);
-
-
-    // Set initial values for menu check items and radio items
-    UpdateGlobalMenuItems();
-
-#endif    // end ifdef __WXOSX__
-
-    
     m_ulLastNEMATicktime = 0;
     m_pStatusBar = NULL;
-
+    m_pMenuBar = NULL;
     g_toolbar = NULL;
     m_toolbar_scale_tools_shown = false;
 
@@ -4528,10 +4446,7 @@ void MyFrame::ToggleChartOutlines( void )
 void MyFrame::SetToolbarItemState( int tool_id, bool state )
 {
     if( g_toolbar ) g_toolbar->ToggleTool( tool_id, state );
-    if( osx_menuBar ) {
-        wxMenuItem* item = osx_menuBar->FindItem( tool_id );
-		if ( item ) item->Check( state );
-    }
+    if( m_pMenuBar ) m_pMenuBar->Check( tool_id, state );
 }
 
 void MyFrame::SetToolbarItemBitmaps( int tool_id, wxBitmap *bmp, wxBitmap *bmpRollover )
@@ -4570,6 +4485,37 @@ void MyFrame::ApplyGlobalSettings( bool bFlyingUpdate, bool bnewtoolbar )
         }
     }
 
+
+    /*
+     * Menu Bar - add or remove is if necessary, and update the state of the menu items
+     */
+#ifdef __WXOSX__
+    bool showMenuBar = true;    // the menu bar is always visible in OS X
+#else
+    bool showMenuBar = pConfig->m_bShowMenuBar;
+#endif
+
+    if ( showMenuBar ) {
+        if ( !m_pMenuBar ) {    // add the menu bar if it is enabled
+            m_pMenuBar = new wxMenuBar();
+            RegisterGlobalMenuItems();
+            SetMenuBar(m_pMenuBar); // must be after RegisterGlobalMenuItems for wx to populate the OS X App Menu correctly
+
+            SendSizeEvent();        // only needed for MSW ?
+        }
+        UpdateGlobalMenuItems(); // update the state of the menu items (checkmarks etc)
+    } else {
+        if ( m_pMenuBar ) {     // remove the menu bar if it is disabled
+            SetMenuBar( NULL );
+            m_pMenuBar->Destroy();
+            m_pMenuBar = NULL;
+
+            SendSizeEvent();        // only needed for MSW ?
+            Refresh( false );
+        }
+    }
+
+
     if( bFlyingUpdate ) {
         if( pConfig->m_bShowCompassWin ) {
             if(!g_FloatingCompassDialog) {
@@ -4584,33 +4530,112 @@ void MyFrame::ApplyGlobalSettings( bool bFlyingUpdate, bool bnewtoolbar )
 
     if( bnewtoolbar ) UpdateToolbar( global_color_scheme );
 
-    if (osx_menuBar) UpdateGlobalMenuItems();
+}
 
+void MyFrame::RegisterGlobalMenuItems()
+{
+    if ( !m_pMenuBar ) return;  // if there isn't a menu bar
+
+
+    wxMenu* nav_menu = new wxMenu();
+    nav_menu->AppendCheckItem(ID_FOLLOW, _("Auto Follow") + "\tCtrl-A");
+    nav_menu->AppendCheckItem(ID_TRACK, _("Record Track"));
+    nav_menu->AppendSeparator();
+    nav_menu->AppendRadioItem(ID_NORTHUP, _("North Up Mode"));
+    nav_menu->AppendRadioItem(ID_COGUP, _("Course Up Mode"));
+    nav_menu->AppendSeparator();
+    nav_menu->Append(ID_ZOOMIN, _("Zoom In") + "\t+");
+    nav_menu->Append(ID_ZOOMOUT, _("Zoom Out") + "\t-");
+    nav_menu->AppendSeparator();
+    nav_menu->Append(ID_STKDN, _("Larger Scale Chart") + "\tCtrl-Left");
+    nav_menu->Append(ID_STKUP, _("Smaller Scale Chart") + "\tCtrl-Right");
+    nav_menu->AppendSeparator();
+    m_pMenuBar->Append(nav_menu, _("Navigate"));
+
+
+    wxMenu* view_menu = new wxMenu();
+    view_menu->AppendCheckItem(ID_QUILTING, _("Enable Chart Quilting") + "\tQ");
+    view_menu->AppendCheckItem(ID_OUTLINES, _("Show Chart Outlines") + "\tO");
+    view_menu->AppendCheckItem(ID_CHARTBAR, _("Show Chart Bar") + "\tCtrl-B");
+#ifdef USE_S57
+    view_menu->AppendSeparator();
+    view_menu->AppendCheckItem(ID_ENC_TEXT, _("Show ENC Text") + "\tT");
+    view_menu->AppendCheckItem(ID_ENC_LIGHTS, _("Show ENC Lights") + "\tL");
+    view_menu->AppendCheckItem(ID_ENC_SOUNDINGS, _("Show ENC Soundings") + "\tS");
+    view_menu->AppendCheckItem(ID_ENC_ANCHOR, _("Show ENC Anchoring Info") + "\tA");
+#endif
+    view_menu->AppendSeparator();
+    view_menu->AppendCheckItem(ID_TIDE, _("Show Tides"));
+    view_menu->AppendCheckItem(ID_CURRENT, _("Show Currents"));
+    view_menu->AppendSeparator();
+    view_menu->Append(ID_COLSCHEME, _("Change Color Scheme") + "\tC");
+    view_menu->AppendSeparator();
+#ifdef __WXOSX__
+    view_menu->Append(ID_FULLSCREEN, _("Enter Full Screen") + "\tRawCtrl-Ctrl-F");
+#else
+    view_menu->Append(ID_FULLSCREEN, _("Enter Full Screen") + "\tF11");
+#endif
+    m_pMenuBar->Append(view_menu, _("View"));
+
+
+    wxMenu* ais_menu = new wxMenu();
+    ais_menu->AppendCheckItem(ID_AIS, _("Show AIS Targets"));
+    ais_menu->AppendCheckItem(ID_AISMENU_TARGETTRACKS, _("Show Target Tracks"));
+    ais_menu->AppendCheckItem(ID_AISMENU_CPADIALOG, _("Show CPA Alert Dialogs"));
+    ais_menu->AppendCheckItem(ID_AISMENU_CPASOUND, _("Sound CPA Alarms"));
+    ais_menu->AppendSeparator();
+    ais_menu->Append(ID_AISMENU_TARGETLIST, _("AIS Target List..."));
+    m_pMenuBar->Append(ais_menu, _("AIS"));
+
+
+    wxMenu* tools_menu = new wxMenu();
+    tools_menu->Append(ID_MEASURE, _("Measure Distance") + "\tM");
+    tools_menu->AppendSeparator();
+    tools_menu->Append(ID_ROUTEMANAGER, _("Route && Mark Manager..."));
+    tools_menu->Append(ID_ROUTE, _("Create Route") + "\tCtrl-R");
+    tools_menu->AppendSeparator();
+    tools_menu->Append(ID_MARK_BOAT, _("Drop Mark at Boat") + "\tCtrl-O");
+    tools_menu->Append(ID_MARK_CURSOR, _("Drop Mark at Cursor") + "\tCtrl-M");
+    tools_menu->AppendSeparator();
+    tools_menu->Append(ID_MOB, _("Drop MOB Marker") + "\tRawCtrl-Space"); // NOTE Cmd+Space is reserved for Spotlight
+    tools_menu->AppendSeparator();
+    tools_menu->Append(wxID_PREFERENCES, _("Preferences...") + "\tCtrl-,");
+    m_pMenuBar->Append(tools_menu, _("Tools"));
+
+
+    wxMenu* help_menu = new wxMenu();
+    help_menu->Append(wxID_ABOUT, _("About OpenCPN"));
+    help_menu->Append(wxID_HELP, _("OpenCPN Help"));
+    m_pMenuBar->Append(help_menu, _("Help"));
+
+
+    // Set initial values for menu check items and radio items
+    UpdateGlobalMenuItems();
 }
 
 void MyFrame::UpdateGlobalMenuItems()
 {
-    if (osx_menuBar) {
-        if ( pConfig ) osx_menuBar->FindItem( ID_FOLLOW )->Check( pConfig->st_bFollow );
-        osx_menuBar->FindItem( ID_NORTHUP )->Check( !g_bCourseUp );
-        osx_menuBar->FindItem( ID_COGUP )->Check( g_bCourseUp );
-        osx_menuBar->FindItem( ID_TRACK )->Check( g_bTrackActive );
-        osx_menuBar->FindItem( ID_OUTLINES )->Check( g_bShowOutlines );
-        osx_menuBar->FindItem( ID_QUILTING )->Check( g_bQuiltEnable );
-        osx_menuBar->FindItem( ID_CHARTBAR )->Check( true );
-        osx_menuBar->FindItem( ID_AIS )->Check( g_bShowAIS );
-        osx_menuBar->FindItem( ID_AISMENU_TARGETTRACKS )->Check( g_bAISShowTracks );
-        osx_menuBar->FindItem( ID_AISMENU_CPADIALOG )->Check( g_bAIS_CPA_Alert );
-        osx_menuBar->FindItem( ID_AISMENU_CPASOUND )->Check( g_bAIS_CPA_Alert_Audio );
+    if ( !m_pMenuBar ) return;  // if there isn't a menu bar
+
+    if ( pConfig ) m_pMenuBar->FindItem( ID_FOLLOW )->Check( pConfig->st_bFollow );
+    m_pMenuBar->FindItem( ID_NORTHUP )->Check( !g_bCourseUp );
+    m_pMenuBar->FindItem( ID_COGUP )->Check( g_bCourseUp );
+    m_pMenuBar->FindItem( ID_TRACK )->Check( g_bTrackActive );
+    m_pMenuBar->FindItem( ID_OUTLINES )->Check( g_bShowOutlines );
+    m_pMenuBar->FindItem( ID_QUILTING )->Check( g_bQuiltEnable );
+    m_pMenuBar->FindItem( ID_CHARTBAR )->Check( true );
+    m_pMenuBar->FindItem( ID_AIS )->Check( g_bShowAIS );
+    m_pMenuBar->FindItem( ID_AISMENU_TARGETTRACKS )->Check( g_bAISShowTracks );
+    m_pMenuBar->FindItem( ID_AISMENU_CPADIALOG )->Check( g_bAIS_CPA_Alert );
+    m_pMenuBar->FindItem( ID_AISMENU_CPASOUND )->Check( g_bAIS_CPA_Alert_Audio );
 #ifdef USE_S57
-        if( ps52plib ) {
-            osx_menuBar->FindItem( ID_ENC_TEXT )->Check( ps52plib->GetShowS57Text() );
-            osx_menuBar->FindItem( ID_ENC_SOUNDINGS )->Check( ps52plib->GetShowSoundings() );
-            osx_menuBar->FindItem( ID_ENC_LIGHTS )->Check( !ps52plib->IsObjNoshow("LIGHTS") );
-            osx_menuBar->FindItem( ID_ENC_ANCHOR )->Check( !ps52plib->IsObjNoshow("SBDARE") );
-        }
-#endif
+    if( ps52plib ) {
+        m_pMenuBar->FindItem( ID_ENC_TEXT )->Check( ps52plib->GetShowS57Text() );
+        m_pMenuBar->FindItem( ID_ENC_SOUNDINGS )->Check( ps52plib->GetShowSoundings() );
+        m_pMenuBar->FindItem( ID_ENC_LIGHTS )->Check( !ps52plib->IsObjNoshow("LIGHTS") );
+        m_pMenuBar->FindItem( ID_ENC_ANCHOR )->Check( !ps52plib->IsObjNoshow("SBDARE") );
     }
+#endif
 }
 
 void MyFrame::SubmergeToolbarIfOverlap( int x, int y, int margin )
