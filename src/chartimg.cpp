@@ -1740,10 +1740,14 @@ InitReturn ChartBaseBSB::PostInit(void)
       bool bline_index_ok = true;
       m_nLineOffset = 0;
 
+      wxULongLong bitmap_filesize = m_filesize;
+      if( (m_ChartType == CHART_TYPE_GEO) && pBitmapFilePath )
+          bitmap_filesize = wxFileName::GetSize( *pBitmapFilePath );
+      
       //  look logically at the line offset table 
       for(int iplt=0 ; iplt< Size_Y - 1 ; iplt++)
       {
-          if( pline_table[iplt] > m_filesize )
+          if( pline_table[iplt] > bitmap_filesize )
           {
               wxString msg(_("   Chart File corrupt in PostInit() on chart "));
               msg.Append(m_FullPath);
