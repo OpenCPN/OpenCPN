@@ -58,6 +58,9 @@ wxColour GetGlobalColor(wxString colorName);
 
 int GetApplicationMemoryUse(void);
 
+// Helper to create menu label + hotkey string when registering menus
+wxString _menuText(wxString name, wxString shortcut);
+
 // The point for anchor watch should really be a class...
 double AnchorDistFix( double const d, double const AnchorPointMinDist, double const AnchorPointMaxDist);   //  pjotrc 2010.02.22
 

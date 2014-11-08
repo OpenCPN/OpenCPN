@@ -6390,12 +6390,6 @@ void ChartCanvas::LostMouseCapture( wxMouseCaptureLostEvent& event )
 //          Popup Menu Handling
 //-------------------------------------------------------------------------------
 
-wxString _menuText( wxString name, wxString shortcut ) {
-    wxString menutext;
-    menutext << name << _T("\t") << shortcut;
-    return menutext;
-}
-
 void MenuPrepend( wxMenu *menu, int id, wxString label)
 {
     wxMenuItem *item = new wxMenuItem(menu, id, label);
