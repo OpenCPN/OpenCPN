@@ -112,6 +112,7 @@
 #include "vwt.hpp"
 #include "zda.hpp"
 #include "vlw.hpp"
+#include "xte.hpp"
 /*
 #include "ROT.hpp"
 #include "RPM.hpp"
