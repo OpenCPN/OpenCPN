@@ -109,10 +109,10 @@ void TTYWindow::CreateLegendBitmap()
         dc.DrawText(  _("Message accepted"), 30, y );
 
         y += yp;
-        wxBrush b2(wxColour( _T("SIENNA")) );
+        wxBrush b2(wxColour( _T("CORAL")) );
         dc.SetBrush(b2);
         dc.DrawRectangle( 5, y, 20, 20 );
-        dc.SetTextForeground( wxColour(_T("SIENNA")) );
+        dc.SetTextForeground( wxColour(_T("CORAL")) );
         dc.DrawText(  _("Input message filtered, output message filtered and dropped"), 30, y );
 
         y += yp;

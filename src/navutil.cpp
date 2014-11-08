@@ -2531,7 +2531,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "Locale" ), g_locale );
 
     Write( _T ( "KeepNavobjBackups" ), g_navobjbackups );
-
+Write( _T ( "LegacyInputCOMPortFilterBehaviour" ), g_b_legacy_input_filter_behaviour );
 //    S57 Object Filter Settings
 
     SetPath( _T ( "/Settings/ObjectFilter" ) );
@@ -3315,7 +3315,7 @@ static wxString scaleable_pointsize[SCALEABLE_SIZES] =
     wxT ( "36" )
 };
 
-#define NUM_COLS 48
+#define NUM_COLS 49
 static wxString wxColourDialogNames[NUM_COLS]= {wxT ( "ORANGE" ),
     wxT ( "GOLDENROD" ),
     wxT ( "WHEAT" ),
@@ -3369,6 +3369,7 @@ static wxString wxColourDialogNames[NUM_COLS]= {wxT ( "ORANGE" ),
     wxT ( "LIGHT GREY" ),
     wxT ( "MEDIUM SLATE BLUE" ),
     wxT ( "WHITE" )
+    wxT ( "SIENNA" )
 };
 
 /*
