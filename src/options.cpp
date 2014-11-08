@@ -88,6 +88,7 @@ extern bool             g_bsmoothpanzoom;
 extern bool             g_bShowMag;
 extern double           g_UserVar;
 extern int              g_chart_zoom_modifier;
+extern int              g_NMEAAPBPrecision;
 
 extern wxString         *pInit_Chart_Dir;
 extern wxArrayOfConnPrm *g_pConnectionParams;
@@ -1267,6 +1268,16 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     m_cbOutput = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Output on this port ( as Autopilot or NMEA Repeater)"), wxDefaultPosition, wxDefaultSize, 0 );
     fgSizer5->Add( m_cbOutput, 0, wxALL, 5 );
 
+    m_stPrecision = new wxStaticText( m_pNMEAForm, wxID_ANY, _("APB bearing precision"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_stPrecision->Wrap( -1 );
+    fgSizer5->Add( m_stPrecision, 0, wxALL, 5 );
+
+    wxString m_choicePrecisionChoices[] = { _("x"), _("x.x"), _("x.xx"), _("x.xxx"), _("x.xxxx") };
+    int m_choicePrecisionNChoices = sizeof( m_choicePrecisionChoices ) / sizeof( wxString );
+    m_choicePrecision = new wxChoice( m_pNMEAForm, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_choicePrecisionNChoices, m_choicePrecisionChoices, 0 );
+    m_choicePrecision->SetSelection( 3 );
+    fgSizer5->Add( m_choicePrecision, 0, wxALL, 5 );
+
     sbSizerConnectionProps->Add( gSizerSerProps, 0, wxEXPAND, 5 );
     sbSizerConnectionProps->Add( fgSizer5, 0, wxEXPAND, 5 );
 
@@ -1785,6 +1796,8 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
     pDepthUnitSelect = new wxRadioBox( ps57Ctl, ID_RADARDISTUNIT, _("Chart Depth Units"),
             wxDefaultPosition, wxDefaultSize, 3, pDepthUnitStrings, 1, wxRA_SPECIFY_COLS );
     vectorPanel->Add( pDepthUnitSelect, 1, wxALL | wxEXPAND, border_size );
+
+    m_choicePrecision->SetSelection( g_NMEAAPBPrecision );
 
 #ifdef USE_S57
     wxStaticBox *cm93DetailBox = new wxStaticBox( ps57Ctl, wxID_ANY, _("CM93 Detail Level") );
@@ -2768,6 +2781,8 @@ void options::SetInitialSettings()
 
     m_pSlider_Zoom->SetValue( g_chart_zoom_modifier );
     
+    m_choicePrecision->SetSelection( g_NMEAAPBPrecision );
+    
 #ifdef USE_S57
     m_pSlider_CM93_Zoom->SetValue( g_cm93_zoom_factor );
 
@@ -3556,6 +3571,8 @@ void options::OnApplyClick( wxCommandEvent& event )
         g_GPS_Ident = _T("Generic");
 
     g_chart_zoom_modifier = m_pSlider_Zoom->GetValue();
+    
+    g_NMEAAPBPrecision = m_choicePrecision->GetCurrentSelection();
     
 #ifdef USE_S57
     //    Handle Vector Charts Tab
@@ -4730,6 +4747,15 @@ void options::ShowNMEACommon(bool visible)
         m_btnOutputStcList->Show();
         m_cbInput->Show();
         m_cbOutput->Show();
+        m_stPrecision->Show();
+        m_choicePrecision->Show();
+        if (m_cbOutput->IsChecked()) {
+            m_stPrecision->Enable(True);
+            m_choicePrecision->Enable(True);
+        } else {
+            m_stPrecision->Enable(False);
+            m_choicePrecision->Enable(False);
+        }
         m_choicePriority->Show();
         m_stPriority->Show();
         m_cbCheckCRC->Show();
@@ -4749,6 +4775,8 @@ void options::ShowNMEACommon(bool visible)
         m_cbInput->Hide();
         m_cbOutput->Hide();
         m_choicePriority->Hide();
+        m_stPrecision->Hide();
+        m_choicePrecision->Hide();
         m_stPriority->Hide();
         m_cbCheckCRC->Hide();
         sbSizerOutFilter->SetDimension(0,0,0,0);
@@ -5137,6 +5165,13 @@ void options::OnCbInput( wxCommandEvent& event )
 void options::OnCbOutput( wxCommandEvent& event )
 {
     OnConnValChange(event);
+    if (m_cbOutput->IsChecked()) {
+        m_stPrecision->Enable(True);
+        m_choicePrecision->Enable(True);
+    } else {
+        m_stPrecision->Enable(False);
+        m_choicePrecision->Enable(False);
+    }
 }
 
 //SentenceListDlg
