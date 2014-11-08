@@ -102,7 +102,7 @@ enum
     ID_ENC_TEXT,
     ID_CURRENT,
     ID_TIDE,
-    ID_HELP,
+    ID_ABOUT,
     ID_TBEXIT,
     ID_TBSTAT,
     ID_PRINT,
@@ -111,26 +111,8 @@ enum
     ID_TRACK,
     ID_TBSTATBOX,
     ID_MOB,
-    ID_PLUGIN_BASE,
 
-    // The following are constants which are used in the menus but not in the toolbar.
-    // So long as they come after the constants above, all will be well.
-    ID_MEASURE,
-    ID_MARK_BOAT,
-    ID_MARK_CURSOR,
-    ID_NORTHUP,
-    ID_COGUP,
-    ID_ENC_LIGHTS,
-    ID_ENC_SOUNDINGS,
-    ID_ENC_ANCHOR,
-    ID_OUTLINES,
-    ID_QUILTING,
-    ID_CHARTBAR,
-    ID_FULLSCREEN,
-    ID_AISMENU_TARGETLIST,
-    ID_AISMENU_TARGETTRACKS,
-    ID_AISMENU_CPADIALOG,
-    ID_AISMENU_CPASOUND
+    ID_PLUGIN_BASE // This MUST be the last item in the enum
 };
 
 
@@ -153,6 +135,49 @@ enum
     IDM_TOOLBAR_SHOW_BOTH,
 
     ID_COMBO = 1000
+};
+
+
+// Menu item IDs for the main menu bar
+enum
+{
+    ID_MENU_ZOOM_IN = 2000,
+    ID_MENU_ZOOM_OUT,
+    ID_MENU_SCALE_IN,
+    ID_MENU_SCALE_OUT,
+
+    ID_MENU_NAV_FOLLOW,
+    ID_MENU_NAV_TRACK,
+
+    ID_MENU_CHART_NORTHUP,
+    ID_MENU_CHART_COGUP,
+    ID_MENU_CHART_QUILTING,
+    ID_MENU_CHART_OUTLINES,
+
+    ID_MENU_UI_CHARTBAR,
+    ID_MENU_UI_COLSCHEME,
+    ID_MENU_UI_FULLSCREEN,
+
+    ID_MENU_ENC_TEXT,
+    ID_MENU_ENC_LIGHTS,
+    ID_MENU_ENC_SOUNDINGS,
+    ID_MENU_ENC_ANCHOR,
+
+    ID_MENU_SHOW_TIDES,
+    ID_MENU_SHOW_CURRENTS,
+
+    ID_MENU_TOOL_MEASURE,
+    ID_MENU_ROUTE_MANAGER,
+    ID_MENU_ROUTE_NEW,
+    ID_MENU_MARK_BOAT,
+    ID_MENU_MARK_CURSOR,
+    ID_MENU_MARK_MOB,
+
+    ID_MENU_AIS_TARGETS,
+    ID_MENU_AIS_TRACKS,
+    ID_MENU_AIS_CPADIALOG,
+    ID_MENU_AIS_CPASOUND,
+    ID_MENU_AIS_TARGETLIST
 };
 
 
@@ -301,6 +326,7 @@ class MyFrame: public wxFrame
     void TrackMidnightRestart(void);
     void ToggleColorScheme();
     int GetnChartStack(void);
+    void SetMenubarItemState ( int item_id, bool state );
     void SetToolbarItemState ( int tool_id, bool state );
     void SetToolbarItemBitmaps ( int tool_id, wxBitmap *bitmap, wxBitmap *bmpDisabled );
     void ToggleQuiltMode(void);
