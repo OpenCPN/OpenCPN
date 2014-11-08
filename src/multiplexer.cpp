@@ -37,6 +37,7 @@ extern bool             g_bGarminHostUpload;
 extern bool             g_bWplIsAprsPosition;
 extern wxArrayOfConnPrm  *g_pConnectionParams;
 extern bool             g_bserial_access_checked;
+extern bool             g_b_legacy_input_filter_behaviour;
 
 extern "C" bool CheckSerialAccess( void );
 
@@ -105,7 +106,7 @@ void Multiplexer::StartAllStreams( void )
     {
         ConnectionParams *cp = g_pConnectionParams->Item(i);
         if( cp->bEnabled ) {
-            
+
 #ifdef __WXGTK__
             if( cp->GetDSPort().Contains(_T("Serial"))) {
                 if( ! g_bserial_access_checked ){
@@ -114,8 +115,8 @@ void Multiplexer::StartAllStreams( void )
                     g_bserial_access_checked = true;
                 }
             }
-#endif    
-            
+#endif
+
             dsPortType port_type = cp->IOSelect;
             DataStream *dstr = new DataStream( this,
                                                cp->GetDSPort(),
@@ -129,17 +130,17 @@ void Multiplexer::StartAllStreams( void )
                                                dstr->SetOutputFilter(cp->OutputSentenceList);
                                                dstr->SetOutputFilterType(cp->OutputSentenceListType);
                                                dstr->SetChecksumCheck(cp->ChecksumCheck);
-                                               
+
             cp->b_IsSetup = true;
-                                               
+
             AddStream(dstr);
         }
     }
-    
+
 }
 
-    
-    
+
+
 void Multiplexer::LogOutputMessageColor(const wxString &msg, const wxString & stream_name, const wxString & color)
 {
     if (NMEALogWindow::Get().Active()) {
@@ -176,7 +177,10 @@ void Multiplexer::LogInputMessage(const wxString &msg, const wxString & stream_n
         ss.Append( _T(") ") );
         ss.Append( msg );
         if(b_filter)
-            ss.Prepend( _T("<AMBER>") );
+            if (g_b_legacy_input_filter_behaviour)
+                ss.Prepend( _T("<AMBER>") );
+            else
+                ss.Prepend( _T("<DARK RED>") );
         else
             ss.Prepend( _T("<GREEN>") );
 
@@ -263,41 +267,44 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
             }
         }
 
-            //Send to the Debug Window, if open
-        LogInputMessage( message, port, !bpass );
+        if ((g_b_legacy_input_filter_behaviour && !bpass) || bpass) {
 
-        //Send to plugins
-        if ( g_pi_manager )
-            g_pi_manager->SendNMEASentenceToAllPlugIns( message );
+            //Send to plugins
+            if ( g_pi_manager )
+                g_pi_manager->SendNMEASentenceToAllPlugIns( message );
 
-       //Send to all the other outputs
-        for (size_t i = 0; i < m_pdatastreams->Count(); i++)
-        {
-            DataStream* s = m_pdatastreams->Item(i);
-            if ( s->IsOk() ) {
-                if((s->GetConnectionType() == SERIAL)  || (s->GetPort() != port)) {
-                    if ( s->GetIoSelect() == DS_TYPE_INPUT_OUTPUT || s->GetIoSelect() == DS_TYPE_OUTPUT ) {
-                        bool bout_filter = true;
+           //Send to all the other outputs
+            for (size_t i = 0; i < m_pdatastreams->Count(); i++)
+            {
+                DataStream* s = m_pdatastreams->Item(i);
+                if ( s->IsOk() ) {
+                    if((s->GetConnectionType() == SERIAL)  || (s->GetPort() != port)) {
+                        if ( s->GetIoSelect() == DS_TYPE_INPUT_OUTPUT || s->GetIoSelect() == DS_TYPE_OUTPUT ) {
+                            bool bout_filter = true;
 
-                        bool bxmit_ok = true;
-                        if(s->SentencePassesFilter( message, FILTER_OUTPUT ) ) {
-                            bxmit_ok = s->SendSentence(message);
-                            bout_filter = false;
-                        }
+                            bool bxmit_ok = true;
+                            if(s->SentencePassesFilter( message, FILTER_OUTPUT ) ) {
+                                bxmit_ok = s->SendSentence(message);
+                                bout_filter = false;
+                            }
 
-                        //Send to the Debug Window, if open
-                        if( !bout_filter ) {
-                            if( bxmit_ok )
-                                LogOutputMessageColor( message, s->GetPort(), _T("<BLUE>") );
+                            //Send to the Debug Window, if open
+                            if( !bout_filter ) {
+                                if( bxmit_ok )
+                                    LogOutputMessageColor( message, s->GetPort(), _T("<BLUE>") );
+                                else
+                                    LogOutputMessageColor( message, s->GetPort(), _T("<RED>") );
+                            }
                             else
-                                LogOutputMessageColor( message, s->GetPort(), _T("<RED>") );
+                                LogOutputMessageColor( message, s->GetPort(), _T("<AMBER>") );
                         }
-                        else
-                            LogOutputMessageColor( message, s->GetPort(), _T("<AMBER>") );
                     }
                 }
             }
         }
+
+            //Send to the Debug Window, if open
+        LogInputMessage( message, port, !bpass );
     }
 }
 
@@ -516,11 +523,11 @@ ret_point:
                 msg += com_name;
                 msg += _T(" ...Could not be opened for writing");
                 wxLogMessage(msg);
-                
+
                 dstr->Close();
                 goto ret_point_1;
             }
-                
+
             SENTENCE snt;
             NMEA0183 oNMEA0183;
             oNMEA0183.TalkerID = _T ( "EC" );
@@ -614,13 +621,13 @@ ret_point:
             // Try to create a single sentence, and then check the length to see if too long
             unsigned int max_length = 76;
             unsigned int max_wp = 2;                     // seems to be required for garmin...
-            
+
             //  Furuno GPS can only accept 5 (five) waypoint linkage sentences....
             //  So, we need to compact a few more points into each link sentence.
             if(g_GPS_Ident == _T("FurunoGP3X")){
                 max_wp = 6;
             }
-                
+
             oNMEA0183.Rte.Empty();
             oNMEA0183.Rte.TypeOfRoute = CompleteRoute;
 
@@ -659,7 +666,7 @@ ret_point:
 
             oNMEA0183.Rte.Write ( snt );
 
-            if( (snt.Sentence.Len() > max_length) 
+            if( (snt.Sentence.Len() > max_length)
                 || (pr->pRoutePointList->GetCount() > max_wp) )        // Do we need split sentences?
             {
                 // Make a route with zero waypoints to get tare load.
@@ -1037,13 +1044,13 @@ int Multiplexer::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name, wx
         msg += com_name;
         msg += _T(" ...Could not be opened for writing");
         wxLogMessage(msg);
-        
+
         dstr->Close();
         goto ret_point;
     }
-    
-    
-    
+
+
+
         SENTENCE snt;
         NMEA0183 oNMEA0183;
         oNMEA0183.TalkerID = _T ( "EC" );

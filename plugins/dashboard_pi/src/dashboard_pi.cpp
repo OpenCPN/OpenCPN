@@ -79,6 +79,7 @@ enum {
     ID_DBP_D_RSA, ID_DBP_I_SAT, ID_DBP_D_GPS, ID_DBP_I_PTR, ID_DBP_I_CLK, ID_DBP_I_SUN,
     ID_DBP_D_MON, ID_DBP_I_ATMP, ID_DBP_I_AWA, ID_DBP_I_TWA, ID_DBP_I_TWD, ID_DBP_I_TWS,
     ID_DBP_D_TWD, ID_DBP_I_HDM, ID_DBP_D_HDT, ID_DBP_D_WDH, ID_DBP_I_VLW1, ID_DBP_I_VLW2, ID_DBP_D_MDA, ID_DBP_I_MDA,ID_DBP_D_BPH, ID_DBP_I_FOS,
+    ID_DBP_M_COG,
     ID_DBP_LAST_ENTRY //this has a reference in one of the routines; defining a "LAST_ENTRY" and setting the reference to it, is one codeline less to change (and find) when adding new instruments :-)
 };
 
@@ -100,6 +101,8 @@ wxString getInstrumentCaption( unsigned int id )
             return _("Speedometer");
         case ID_DBP_I_COG:
             return _("COG");
+        case ID_DBP_M_COG:
+            return _("Magnetic COG");
         case ID_DBP_D_COG:
             return _("GPS Compass");
         case ID_DBP_D_HDT:
@@ -183,6 +186,7 @@ void getListItemForInstrument( wxListItem &item, unsigned int id )
         case ID_DBP_I_POS:
         case ID_DBP_I_SOG:
         case ID_DBP_I_COG:
+        case ID_DBP_M_COG:
         case ID_DBP_I_STW:
         case ID_DBP_I_HDT:
         case ID_DBP_I_HDM:
@@ -818,6 +822,15 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                         } else {
                             //->SetData(_T("---"));
                         }
+                        if( m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue < 999. && m_NMEA0183.Rmc.MagneticVariation < 999.) {
+                            double dMagneticCOG;
+                            if (m_NMEA0183.Rmc.MagneticVariationDirection == East) dMagneticCOG = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue - m_NMEA0183.Rmc.MagneticVariation;
+                            else dMagneticCOG = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue + m_NMEA0183.Rmc.MagneticVariation;
+                            SendSentenceToAllInstruments( OCPN_DBP_STC_COG,
+                                    dMagneticCOG, _T("\u00B0 Mag") );
+                        } else {
+                            //->SetData(_T("---"));
+                        }
                     }
 
                     if( mPriVar >= 3 ) {
@@ -1000,9 +1013,12 @@ void dashboard_pi::SetPositionFix( PlugIn_Position_Fix &pfix )
         SendSentenceToAllInstruments( OCPN_DBP_STC_LON, pfix.Lon, _T("SDMM") );
     }
     if( mPriCOGSOG >= 1 ) {
+        double dMagneticCOG;
         mPriCOGSOG = 1;
         SendSentenceToAllInstruments( OCPN_DBP_STC_SOG, toUsrSpeed_Plugin( pfix.Sog, g_iDashSpeedUnit ), getUsrSpeedUnit_Plugin( g_iDashSpeedUnit ) );
         SendSentenceToAllInstruments( OCPN_DBP_STC_COG, pfix.Cog, _T("\u00B0") );
+        dMagneticCOG = pfix.Cog - pfix.Var;
+        SendSentenceToAllInstruments( OCPN_DBP_STC_MCOG, dMagneticCOG , _T("\u00B0 Mag") );
     }
     if( mPriVar >= 1 ) {
         if( !wxIsNaN( pfix.Var ) ){
@@ -2092,6 +2108,10 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
             case ID_DBP_I_COG:
                 instrument = new DashboardInstrument_Single( this, wxID_ANY,
                         getInstrumentCaption( id ), OCPN_DBP_STC_COG, _T("%.0f") );
+                break;
+            case ID_DBP_M_COG:
+                instrument = new DashboardInstrument_Single( this, wxID_ANY,
+                        getInstrumentCaption( id ), OCPN_DBP_STC_MCOG, _T("%.0f Mag") );
                 break;
             case ID_DBP_D_COG:
                 instrument = new DashboardInstrument_Compass( this, wxID_ANY,
