@@ -262,7 +262,7 @@ bool ChartDB::LoadBinary(const wxString & filename, ArrayOfCDI& dir_array_check)
 void ChartDB::PurgeCache()
 {
 //    Empty the cache
-      wxLogMessage(_T("Chart cache purge"));
+//      wxLogMessage(_T("Chart cache purge"));
 
       if( wxMUTEX_NO_ERROR == m_cache_mutex.TryLock() ){
         unsigned int nCache = pChartCache->GetCount();

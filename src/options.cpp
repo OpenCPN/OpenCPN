@@ -740,8 +740,6 @@ void MMSI_Props_Panel::OnNewButton( wxCommandEvent &event )
 
 void MMSI_Props_Panel::UpdateMMSIList( void )
 {
-    int sb_position = m_pListCtrlMMSI->GetScrollPos( wxVERTICAL );
-        
         //    Capture the MMSI of the curently selected list item
         long selItemID = -1;
         selItemID = m_pListCtrlMMSI->GetNextItem( selItemID, wxLIST_NEXT_ALL,
@@ -754,23 +752,24 @@ void MMSI_Props_Panel::UpdateMMSIList( void )
         
         m_pListCtrlMMSI->SetItemCount( g_MMSI_Props_Array.GetCount() );
         
-                
-        //    Restore selected item
-        long item_sel = 0;
-        if( ( selItemID != -1 ) && ( selMMSI != -1 ) ) {
-            for( unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++ ) {
-                if( g_MMSI_Props_Array.Item( i )->MMSI == selMMSI ) {
-                    item_sel = i;
-                    break;
+        if( g_MMSI_Props_Array.GetCount() ){       
+            //    Restore selected item
+            long item_sel = 0;
+            if( ( selItemID != -1 ) && ( selMMSI != -1 ) ) {
+                for( unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++ ) {
+                    if( g_MMSI_Props_Array.Item( i )->MMSI == selMMSI ) {
+                        item_sel = i;
+                        break;
+                        }
                     }
                 }
-            }
-                
-        m_pListCtrlMMSI->SetItemState( item_sel,
-                    wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED,
-                    wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED );
+                    
+            m_pListCtrlMMSI->SetItemState( item_sel,
+                        wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED,
+                        wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED );
 
-                
+        }
+        
 #ifdef __WXMSW__
         m_pListCtrlMMSI->Refresh( false );
 #endif
@@ -988,7 +987,9 @@ wxScrolledWindow *options::AddPage( size_t parent, const wxString & title)
     int style = wxVSCROLL | wxTAB_TRAVERSAL;
     if( page->IsKindOf( CLASSINFO(wxNotebook))) {
         window = new wxScrolledWindow( page, wxID_ANY, wxDefaultPosition, wxDefaultSize, style );
+#ifndef __OCPN__ANDROID__
         window->SetScrollRate(5,5);
+#endif        
         ((wxNotebook *)page)->AddPage( window, title );
     } else if (page->IsKindOf(CLASSINFO(wxScrolledWindow))) {
         wxString toptitle = m_pListbook->GetPageText( parent );
@@ -1003,12 +1004,16 @@ wxScrolledWindow *options::AddPage( size_t parent, const wxString & title)
          * we must explicitely Show() it */
         page->Show();
         window = new wxScrolledWindow( nb, wxID_ANY, wxDefaultPosition, wxDefaultSize, style );
-        window->SetScrollRate(5, 5);
+#ifndef __OCPN__ANDROID__
+        window->SetScrollRate(5,5);
+#endif        
         nb->AddPage( window, title );
         nb->ChangeSelection( 0 );
     } else { // This is the default content, we can replace it now
         window = new wxScrolledWindow( m_pListbook, wxID_ANY, wxDefaultPosition, wxDefaultSize, style, title );
-        window->SetScrollRate(5, 5);
+#ifndef __OCPN__ANDROID__
+        window->SetScrollRate(5,5);
+#endif        
         wxString toptitle = m_pListbook->GetPageText( parent );
         m_pListbook->DeletePage( parent );
         m_pListbook->InsertPage( parent, window, toptitle, false, parent );
@@ -1485,7 +1490,7 @@ void options::CreatePanel_Ownship( size_t parent, int border_size, int group_ite
     dispOptions = new wxStaticBoxSizer( osdBox, wxVERTICAL );
     ownShip->Add( dispOptions, 0, wxTOP | wxALL | wxEXPAND, border_size );
 
-    wxFlexGridSizer* dispOptionsGrid = new wxFlexGridSizer( 2, 2, group_item_spacing, group_item_spacing );
+    wxFlexGridSizer* dispOptionsGrid = new wxFlexGridSizer( 3, 2, group_item_spacing, group_item_spacing );
     dispOptionsGrid->AddGrowableCol( 1 );
     dispOptions->Add( dispOptionsGrid, 0, wxALL | wxEXPAND, border_size );
 
@@ -1656,6 +1661,9 @@ void options::CreatePanel_ChartsLoad( size_t parent, int border_size, int group_
     itemStaticBoxSizerUpdate->Add( pUpdateCheckBox, 1, wxALL, 5 );
 
     chartPanel->Layout();
+    
+    chartPanelWin->SetScrollRate(5, 5);
+    
 }
 
 void options::CreatePanel_VectorCharts( size_t parent, int border_size, int group_item_spacing,
@@ -2436,16 +2444,22 @@ void options::CreateControls()
     wxBoxSizer* itemBoxSizer2 = new wxBoxSizer( wxVERTICAL );
     itemDialog1->SetSizer( itemBoxSizer2 );
 
-    m_pListbook = new wxListbook( itemDialog1, ID_NOTEBOOK, wxDefaultPosition, wxSize(-1, -1),
-            wxLB_TOP );
+    int flags = 0;
+#ifndef __WXQT__
+    flags = wxLB_TOP;
+#endif    
+    
+    m_pListbook = new wxListbook( itemDialog1, ID_NOTEBOOK, wxDefaultPosition, wxSize(-1, -1), flags);
     
     //  Reduce the Font size on ListBook(ListView) selectors to allow single line layout
+#ifndef __WXQT__    
     if( g_bresponsive ) {
         wxListView* lv = m_pListbook->GetListView();
         wxFont *sFont = wxTheFontList->FindOrCreateFont( 10, wxFONTFAMILY_DEFAULT,
                                                      wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
         lv->SetFont( *sFont );
     }
+#endif    
     
     
     m_topImgList = new wxImageList( 40, 40, true, 1 );
@@ -2530,7 +2544,10 @@ void options::CreateControls()
     //      Build the PlugIn Manager Panel
     m_pPlugInCtrl = new PluginListPanel( itemPanelPlugins, ID_PANELPIM, wxDefaultPosition,
             wxDefaultSize, g_pi_manager->GetPlugInArray() );
+    
+#ifndef __OCPN__ANDROID__
     m_pPlugInCtrl->SetScrollRate( 15, 15 );
+#endif    
 
     itemBoxSizerPanelPlugins->Add( m_pPlugInCtrl, 1, wxEXPAND|wxALL, border_size );
 
@@ -3726,6 +3743,7 @@ void options::OnXidOkClick( wxCommandEvent& event )
 
     lastWindowPos = GetPosition();
     lastWindowSize = GetSize();
+    SetReturnCode( m_returnChanges );
     EndModal( m_returnChanges );
 }
 

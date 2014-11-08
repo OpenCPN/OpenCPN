@@ -1182,8 +1182,20 @@ bool MyApp::OnInit()
 #ifdef __WXMSW__
     pHome_Locn->Append( std_path.GetConfigDir() );   // on w98, produces "/windows/Application Data"
 #else
-            pHome_Locn->Append(std_path.GetUserConfigDir());
+    pHome_Locn->Append(std_path.GetUserConfigDir());
 #endif
+    
+    //  On android, make the private data dir on the sdcard, if it exists.
+    //  This make debugging easier, as it is not deleted whenever the APK is re-deployed.    
+    //  This behaviour should go away at Release.    
+#ifdef __OCPN__ANDROID__
+    if( wxDirExists(_T("/mnt/sdcard")) ){
+        pHome_Locn->Clear();
+        pHome_Locn->Append( _T("/mnt/sdcard/.opencpn") );
+    }
+#endif
+    
+    
 
     if( g_bportable ) {
         pHome_Locn->Clear();
@@ -1192,6 +1204,8 @@ bool MyApp::OnInit()
     }
 
     appendOSDirSlash( pHome_Locn );
+    
+    
 
     //      Establish Log File location
     glog_file = *pHome_Locn;
@@ -1210,12 +1224,6 @@ bool MyApp::OnInit()
                                   // which makes it accessible to Applications/Utilities/Console....
 #endif
 
-//#ifdef __OCPN__ANDROID__
-//    pHome_Locn->Clear();
-//    pHome_Locn->Append(_T("/data/data/org.opencpn.opencpn/files/"));
-//    pHome_Locn->Append(_T("/sdcard/"));
-//    glog_file = *pHome_Locn;
-//#endif
 
     // create the opencpn "home" directory if we need to
     wxFileName wxHomeFiledir( *pHome_Locn );
@@ -1266,7 +1274,7 @@ bool MyApp::OnInit()
 
 //        wxLog::AddTraceMask("timer");               // verbose message traces to log output
 
-#ifndef __WXMSW__
+#if defined(__WXGTK__) || defined(__WXOSX__)
     logger->SetTimestamp(_T("%H:%M:%S %Z"));
 #endif
 
@@ -1291,7 +1299,14 @@ bool MyApp::OnInit()
 
     wxPlatformInfo platforminfo = wxPlatformInfo::Get();
 
-    wxString platform = platforminfo.GetOperatingSystemIdName() + _T(" ") +
+    wxString os_name;
+#ifndef __WXQT__    
+    os_name = platforminfo.GetOperatingSystemIdName();
+#else
+    os_name = platforminfo.GetOperatingSystemFamilyName();
+#endif
+    
+    wxString platform = os_name + _T(" ") +
                         platforminfo.GetArchName()+ _T(" ") +
                         platforminfo.GetPortIdName();
 
@@ -1317,7 +1332,8 @@ bool MyApp::OnInit()
     appendOSDirSlash( &g_SData_Locn );
 
 #ifdef __OCPN__ANDROID__
-    wxFileName fdir = wxFileName::DirName(*pHome_Locn);
+    wxFileName fdir = wxFileName::DirName(std_path.GetUserConfigDir());
+    
     fdir.RemoveLastDir();
     g_SData_Locn = fdir.GetPath();
     g_SData_Locn += _T("/cache/");
@@ -1348,6 +1364,10 @@ bool MyApp::OnInit()
 
     if( g_bportable )
         g_PrivateDataDir = *pHome_Locn;
+
+#ifdef __OCPN__ANDROID__
+//    g_PrivateDataDir = *pHome_Locn;
+#endif
 
     imsg = _T("PrivateDataDir is ");
     imsg += g_PrivateDataDir;
@@ -1430,6 +1450,11 @@ bool MyApp::OnInit()
 #endif
 
     }
+
+#ifdef __OCPN__ANDROID__
+    gConfig_File = *pHome_Locn;
+    gConfig_File += _T("opencpn.conf");
+#endif    
 
     bool b_novicemode = false;
 
@@ -1762,10 +1787,21 @@ bool MyApp::OnInit()
         pChartListFileName->Prepend( *pHome_Locn );
     }
 
+#ifdef __OCPN__ANDROID__
+    pChartListFileName->Clear();
+    pChartListFileName->Append(_T("chartlist.dat"));
+    pChartListFileName->Prepend( *pHome_Locn );
+#endif
+    
 //      Establish guessed location of chart tree
     if( pInit_Chart_Dir->IsEmpty() ) {
         if( !g_bportable )
+#ifndef __OCPN__ANDROID__            
             pInit_Chart_Dir->Append( std_path.GetDocumentsDir() );
+#else
+            pInit_Chart_Dir->Append( _T("/mnt/sdcard") );
+#endif            
+            
     }
 
 //      Establish the GSHHS Dataset location
@@ -1823,6 +1859,11 @@ bool MyApp::OnInit()
         }
 #endif
 
+#ifdef __OCPN__ANDROID__
+        g_bresponsive = true;
+        wxFont *pif = FontMgr::Get().GetFont( _T("Dialog" ), 20);
+#endif
+        
     }
     pConfig->UpdateSettings();
     pConfig->LoadMyConfig( 1 );
@@ -1894,6 +1935,7 @@ bool MyApp::OnInit()
     else
         new_frame_size.Set( cw * 9 / 10, ch * 9 / 10 );
 
+        
     //  Try to detect any change in physical screen configuration
     //  This can happen when drivers are changed, for instance....
     //  and can confuse the WUI layout perspective stored in the config file.
@@ -1904,7 +1946,10 @@ bool MyApp::OnInit()
         g_bframemax = false;
     }
 
-
+#ifdef __OCPN__ANDROID__
+    new_frame_size.Set( cw, ch );
+#endif    
+    
     g_lastClientRectx = cx;
     g_lastClientRecty = cy;
     g_lastClientRectw = cw;
@@ -2154,9 +2199,11 @@ bool MyApp::OnInit()
             wxString msg1(
                     _("No Charts Installed.\nPlease select chart folders in Options > Charts.") );
 
+#ifndef __OCPN__ANDROID__            
             OCPNMessageBox(gFrame, msg1, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK );
+#endif            
 
-///            gFrame->DoOptionsDialog();
+            gFrame->DoOptionsDialog();
 
             b_SetInitialPoint = true;
 
@@ -2431,6 +2478,9 @@ int MyApp::OnExit()
     delete pDummyChart;
 
     wxLogMessage( _T("opencpn::MyApp exiting cleanly...\n") );
+    
+    wxLog::FlushActive();
+    
     if( logger ) {
         wxLog::SetActiveTarget( Oldlogger );
         delete logger;
@@ -4574,7 +4624,7 @@ int MyFrame::DoOptionsDialog()
     if( g_FloatingToolbarDialog)
         g_FloatingToolbarDialog->DisableTooltips();
 
-    int rr = g_options->ShowModal();
+    g_options->ShowModal();
 
     if( g_FloatingToolbarDialog)
         g_FloatingToolbarDialog->EnableTooltips();
@@ -4593,6 +4643,7 @@ int MyFrame::DoOptionsDialog()
 #endif
 
     bool ret_val = false;
+    int rr = g_options->GetReturnCode();
     if( rr ) {
         ProcessOptionsDialog( rr, g_options );
         ret_val = true;
@@ -9943,6 +9994,8 @@ wxFont *GetOCPNScaledFont( wxString item, int default_size )
 {
     wxFont *dFont = FontMgr::Get().GetFont( item, default_size );
 
+    int req_size = dFont->GetPointSize();
+    
     if( g_bresponsive ){
         //      Adjust font size to be reasonably readable, but no smaller than the default specified
         double scaled_font_size = (double)default_size;
@@ -9950,11 +10003,15 @@ wxFont *GetOCPNScaledFont( wxString item, int default_size )
         if( cc1) {
             scaled_font_size = 2.5 * cc1->GetPixPerMM();
             int nscaled_font_size = wxMax( wxRound(scaled_font_size), default_size );
-            wxFont *qFont = wxTheFontList->FindOrCreateFont( nscaled_font_size,
+            if(req_size >= nscaled_font_size)
+                return dFont;
+            else{
+                wxFont *qFont = wxTheFontList->FindOrCreateFont( nscaled_font_size,
                                                              dFont->GetFamily(),
                                                              dFont->GetStyle(),
                                                              dFont->GetWeight());
-            return qFont;
+                return qFont;
+            }
         }
     }
     return dFont;

@@ -661,8 +661,10 @@ void ocpnFloatingToolbarDialog::Realize()
                 }
             }
 
+#ifndef __OCPN__ANDROID__            
             if(shape.GetWidth() && shape.GetHeight())
                 SetShape( wxRegion( shape, *wxWHITE, 10 ) );
+#endif            
         }
     }
 }
