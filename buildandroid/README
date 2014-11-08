@@ -235,6 +235,14 @@
 
     I.  Install to device
 
+        You may need to do:
+        su
+        cd android-sdk-linux-linux/tools
+        ./adb kill-server
+        ./adb start-server
+        ./adb devices
+        exit
+
         __ Uninstall old version
         $/home/dsr/Projects/android-ndk/android-sdk-linux/platform-tools/adb  uninstall org.opencpn.opencpn
 
@@ -245,14 +253,7 @@
         __Access the log, etc...
         $/home/dsr/Projects/android-ndk/android-sdk-linux/platform-tools/adb shell
 
-        log is at  /data/data/org.opencpn.opencpn/files/opencpn.logic
-
-
-    Addendum:
-    27 October, 2014.
-
-    1.  We can relax the wxWidgets config string to:
-    ../configure --with-qt --build=x86_64-unknown-linux-gnu --host=arm-linux-androideabi --enable-compat28 --disable-shared --disable-arttango --enable-image --disable-dragimage --disable-sockets --with-libtiff=no --without-opengl --disable-baseevtloop --disable-xrc --disable-cmdline --disable-miniframe --disable-mdi --enable-debug --disable-stc --disable-ribbon --disable-propgrid
+        log is at  /data/data/org.opencpn.opencpn/files/opencpn.log
 
 
 
