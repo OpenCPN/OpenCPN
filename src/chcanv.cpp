@@ -1137,6 +1137,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_pos_image_user_yellow_dusk = NULL;
     m_pos_image_user_yellow_night = NULL;
 
+    SetOwnShipState( SHIP_INVALID );
+    
     undo = new Undo;
 
     VPoint.Invalidate();
