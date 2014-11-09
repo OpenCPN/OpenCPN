@@ -377,6 +377,8 @@ enum
 
     ID_DEF_MENU_GROUPBASE,
 
+    ID_DEF_ZERO_XTE,
+    
     ID_DEF_MENU_LAST
 };
 
@@ -1064,6 +1066,8 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
     EVT_MENU ( ID_DEF_MENU_TIDEINFO,        ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_DEF_MENU_CURRENTINFO,     ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_DEF_MENU_GROUPBASE,       ChartCanvas::PopupMenuHandler )
+    
+    EVT_MENU ( ID_DEF_ZERO_XTE, ChartCanvas::PopupMenuHandler )
 END_EVENT_TABLE()
 
 // Define a constructor for my canvas
@@ -6553,6 +6557,8 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
         else
             MenuAppend( contextMenu, ID_DEF_MENU_NORTHUP, _("North Up Mode") );
     }
+    
+    if ( g_pRouteMan->IsAnyRouteActive() && g_pRouteMan->GetCurrentXTEToActivePoint() > 0. ) MenuAppend( contextMenu, ID_DEF_ZERO_XTE, _("Zero XTE") );
 
     Kml* kml = new Kml;
     int pasteBuffer = kml->ParsePasteBuffer();
@@ -8095,6 +8101,10 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         FinishRoute();
         gFrame->SurfaceToolbar();
         Refresh( false );
+        break;
+
+    case ID_DEF_ZERO_XTE:
+        g_pRouteMan->ZeroCurrentXTEToActivePoint();
         break;
 
     default: {
