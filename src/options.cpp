@@ -4750,11 +4750,11 @@ void options::ShowNMEACommon(bool visible)
         m_stPrecision->Show();
         m_choicePrecision->Show();
         if (m_cbOutput->IsChecked()) {
-            m_stPrecision->Enable(True);
-            m_choicePrecision->Enable(True);
+            m_stPrecision->Enable(true);
+            m_choicePrecision->Enable(true);
         } else {
-            m_stPrecision->Enable(False);
-            m_choicePrecision->Enable(False);
+            m_stPrecision->Enable(false);
+            m_choicePrecision->Enable(false);
         }
         m_choicePriority->Show();
         m_stPriority->Show();
@@ -5166,11 +5166,11 @@ void options::OnCbOutput( wxCommandEvent& event )
 {
     OnConnValChange(event);
     if (m_cbOutput->IsChecked()) {
-        m_stPrecision->Enable(True);
-        m_choicePrecision->Enable(True);
+        m_stPrecision->Enable(true);
+        m_choicePrecision->Enable(true);
     } else {
-        m_stPrecision->Enable(False);
-        m_choicePrecision->Enable(False);
+        m_stPrecision->Enable(false);
+        m_choicePrecision->Enable(false);
     }
 }
 
