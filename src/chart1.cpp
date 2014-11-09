@@ -944,9 +944,11 @@ bool MyApp::OnInit()
     }
 #endif
 
+#if wxCHECK_VERSION(3,0,0)
     // Set the name of the app as displayed to the user.
     // This is necessary at least on OS X, for the capitalisation to be correct in the system menus.
     MyApp::SetAppDisplayName("OpenCPN");
+#endif
 
 #ifdef OCPN_USE_CRASHRPT
 #ifndef _DEBUG
@@ -4568,7 +4570,7 @@ void MyFrame::ApplyGlobalSettings( bool bFlyingUpdate, bool bnewtoolbar )
 
 wxString _menuText( wxString name, wxString shortcut ) {
     wxString menutext;
-    menutext << name << "\t" << shortcut;
+    menutext << name << _T("\t") << shortcut;
     return menutext;
 }
 
@@ -4578,42 +4580,42 @@ void MyFrame::RegisterGlobalMenuItems()
 
 
     wxMenu* nav_menu = new wxMenu();
-    nav_menu->AppendCheckItem( ID_MENU_NAV_FOLLOW, _menuText(_("Auto Follow"), "Ctrl-A") );
+    nav_menu->AppendCheckItem( ID_MENU_NAV_FOLLOW, _menuText(_("Auto Follow"), _T("Ctrl-A")) );
     nav_menu->AppendCheckItem( ID_MENU_NAV_TRACK, _("Record Track") );
     nav_menu->AppendSeparator();
     nav_menu->AppendRadioItem( ID_MENU_CHART_NORTHUP, _("North Up Mode") );
     nav_menu->AppendRadioItem( ID_MENU_CHART_COGUP, _("Course Up Mode") );
     nav_menu->AppendSeparator();
-    nav_menu->Append( ID_MENU_ZOOM_IN, _menuText(_("Zoom In"), "+") );
-    nav_menu->Append( ID_MENU_ZOOM_OUT, _menuText(_("Zoom Out"), "-") );
+    nav_menu->Append( ID_MENU_ZOOM_IN, _menuText(_("Zoom In"), _T("+")) );
+    nav_menu->Append( ID_MENU_ZOOM_OUT, _menuText(_("Zoom Out"), _T("-")) );
     nav_menu->AppendSeparator();
-    nav_menu->Append( ID_MENU_SCALE_IN, _menuText(_("Larger Scale Chart"), "Ctrl-Left") );
-    nav_menu->Append( ID_MENU_SCALE_OUT, _menuText(_("Smaller Scale Chart"), "Ctrl-Right") );
+    nav_menu->Append( ID_MENU_SCALE_IN, _menuText(_("Larger Scale Chart"), _T("Ctrl-Left")) );
+    nav_menu->Append( ID_MENU_SCALE_OUT, _menuText(_("Smaller Scale Chart"), _T("Ctrl-Right")) );
     nav_menu->AppendSeparator();
     m_pMenuBar->Append( nav_menu, _("Navigate") );
 
 
     wxMenu* view_menu = new wxMenu();
-    view_menu->AppendCheckItem( ID_MENU_CHART_QUILTING, _menuText(_("Enable Chart Quilting"), "Q") );
-    view_menu->AppendCheckItem( ID_MENU_CHART_OUTLINES, _menuText(_("Show Chart Outlines"), "O") );
-    view_menu->AppendCheckItem( ID_MENU_UI_CHARTBAR, _menuText(_("Show Chart Bar"), "Ctrl-B") );
+    view_menu->AppendCheckItem( ID_MENU_CHART_QUILTING, _menuText(_("Enable Chart Quilting"), _T("Q")) );
+    view_menu->AppendCheckItem( ID_MENU_CHART_OUTLINES, _menuText(_("Show Chart Outlines"), _T("O")) );
+    view_menu->AppendCheckItem( ID_MENU_UI_CHARTBAR, _menuText(_("Show Chart Bar"), _T("Ctrl-B")) );
 #ifdef USE_S57
     view_menu->AppendSeparator();
-    view_menu->AppendCheckItem( ID_MENU_ENC_TEXT, _menuText(_("Show ENC Text"), "T") );
-    view_menu->AppendCheckItem( ID_MENU_ENC_LIGHTS, _menuText(_("Show ENC Lights"), "L") );
-    view_menu->AppendCheckItem( ID_MENU_ENC_SOUNDINGS, _menuText(_("Show ENC Soundings"), "S") );
-    view_menu->AppendCheckItem( ID_MENU_ENC_ANCHOR, _menuText(_("Show ENC Anchoring Info"), "A") );
+    view_menu->AppendCheckItem( ID_MENU_ENC_TEXT, _menuText(_("Show ENC Text"), _T("T")) );
+    view_menu->AppendCheckItem( ID_MENU_ENC_LIGHTS, _menuText(_("Show ENC Lights"), _T("L")) );
+    view_menu->AppendCheckItem( ID_MENU_ENC_SOUNDINGS, _menuText(_("Show ENC Soundings"), _T("S")) );
+    view_menu->AppendCheckItem( ID_MENU_ENC_ANCHOR, _menuText(_("Show ENC Anchoring Info"), _T("A")) );
 #endif
     view_menu->AppendSeparator();
     view_menu->AppendCheckItem( ID_MENU_SHOW_TIDES, _("Show Tides") );
     view_menu->AppendCheckItem( ID_MENU_SHOW_CURRENTS, _("Show Currents") );
     view_menu->AppendSeparator();
-    view_menu->Append( ID_MENU_UI_COLSCHEME, _menuText(_("Change Color Scheme"), "C") );
+    view_menu->Append( ID_MENU_UI_COLSCHEME, _menuText(_("Change Color Scheme"), _T("C")) );
     view_menu->AppendSeparator();
 #ifdef __WXOSX__
-    view_menu->Append(ID_MENU_UI_FULLSCREEN, _menuText(_("Enter Full Screen"), "RawCtrl-Ctrl-F") );
+    view_menu->Append(ID_MENU_UI_FULLSCREEN, _menuText(_("Enter Full Screen"), _T("RawCtrl-Ctrl-F")) );
 #else
-    view_menu->Append(ID_MENU_UI_FULLSCREEN, _menuText(_("Enter Full Screen"), "F11") );
+    view_menu->Append(ID_MENU_UI_FULLSCREEN, _menuText(_("Enter Full Screen"), _T("F11")) );
 #endif
     m_pMenuBar->Append( view_menu, _("View") );
 
@@ -4629,17 +4631,17 @@ void MyFrame::RegisterGlobalMenuItems()
 
 
     wxMenu* tools_menu = new wxMenu();
-    tools_menu->Append( ID_MENU_TOOL_MEASURE, _menuText(_("Measure Distance"), "M") );
+    tools_menu->Append( ID_MENU_TOOL_MEASURE, _menuText(_("Measure Distance"), _T("M")) );
     tools_menu->AppendSeparator();
     tools_menu->Append( ID_MENU_ROUTE_MANAGER, _("Route && Mark Manager...") );
-    tools_menu->Append( ID_MENU_ROUTE_NEW, _menuText(_("Create Route"), "Ctrl-R") );
+    tools_menu->Append( ID_MENU_ROUTE_NEW, _menuText(_("Create Route"), _T("Ctrl-R")) );
     tools_menu->AppendSeparator();
-    tools_menu->Append( ID_MENU_MARK_BOAT, _menuText(_("Drop Mark at Boat"), "Ctrl-O") );
-    tools_menu->Append( ID_MENU_MARK_CURSOR, _menuText(_("Drop Mark at Cursor"), "Ctrl-M") );
+    tools_menu->Append( ID_MENU_MARK_BOAT, _menuText(_("Drop Mark at Boat"), _T("Ctrl-O")) );
+    tools_menu->Append( ID_MENU_MARK_CURSOR, _menuText(_("Drop Mark at Cursor"), _T("Ctrl-M")) );
     tools_menu->AppendSeparator();
-    tools_menu->Append( ID_MENU_MARK_MOB, _menuText(_("Drop MOB Marker"), "RawCtrl-Space") ); // NOTE Cmd+Space is reserved for Spotlight
+    tools_menu->Append( ID_MENU_MARK_MOB, _menuText(_("Drop MOB Marker"), _T("RawCtrl-Space")) ); // NOTE Cmd+Space is reserved for Spotlight
     tools_menu->AppendSeparator();
-    tools_menu->Append( wxID_PREFERENCES, _menuText(_("Preferences..."), "Ctrl-,") );
+    tools_menu->Append( wxID_PREFERENCES, _menuText(_("Preferences..."), _T("Ctrl-,")) );
     m_pMenuBar->Append( tools_menu, _("Tools") );
 
 
