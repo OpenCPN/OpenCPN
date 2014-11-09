@@ -3843,23 +3843,23 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             g_bShowAIS = !g_bShowAIS;
 
             if( g_toolbar ) {
-                if( g_bShowAIS )
+                wxString iconName;
+                if( g_bShowAIS ) {
                     g_toolbar->SetToolShortHelp( ID_AIS, _("Hide AIS Targets") );
-                else
+                    iconName = _T("AIS");
+                } else {
                     g_toolbar->SetToolShortHelp( ID_AIS, _("Show AIS Targets") );
+                    iconName = _T("AIS_Disabled");
+                }
+
+                if( m_pAISTool ) {
+                    g_toolbar->SetToolNormalBitmapEx( m_pAISTool, iconName );
+                    g_toolbar->Refresh();
+                    m_lastAISiconName = iconName;
+                }
             }
 
-            wxString iconName;
-            if( g_bShowAIS )
-                iconName = _T("AIS");
-            else
-                iconName = _T("AIS_Disabled");
-
-            if( m_pAISTool && g_toolbar) {
-                g_toolbar->SetToolNormalBitmapEx( m_pAISTool, iconName );
-                g_toolbar->Refresh();
-                m_lastAISiconName = iconName;
-            }
+            SetMenubarItemState(ID_MENU_AIS_TARGETS, g_bShowAIS);
 
             cc1->ReloadVP();
 
