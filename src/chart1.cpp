@@ -944,6 +944,10 @@ bool MyApp::OnInit()
     }
 #endif
 
+    // Set the name of the app as displayed to the user.
+    // This is necessary at least on OS X, for the capitalisation to be correct in the system menus.
+    MyApp::SetAppDisplayName("OpenCPN");
+
 #ifdef OCPN_USE_CRASHRPT
 #ifndef _DEBUG
     // Install Windows crash reporting
