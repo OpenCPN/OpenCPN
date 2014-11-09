@@ -1203,8 +1203,6 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
     if(!pGRX || !pGRY)
         return;
 
-    m_tParticleTimer.Stop();
-
     wxStopWatch sw;
     sw.Start();
 
@@ -1416,8 +1414,20 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
         } while(1);
     outer_break:
 
-        if( !m_pdc )
+        if( !m_pdc ){
             glEnd();
+        }
+
+    //  On some platforms, especially slow ones, the GPU will lag behind the CPU.
+    //  This affects the UI in strange ways.
+    //  So, force the GPU to flush all of its outstanding commands on the outer loop
+    //  This will have no real affect on most machines.
+#ifdef __WXMSW__
+    if( !m_pdc ){
+        glFlush();
+    }
+#endif
+
     }
 
     if( !m_pdc )
@@ -1427,7 +1437,7 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
 
     //  Try to run at 20 fps,
     //  But also arrange not to consume more than 33% CPU(core) duty cycle
-    m_tParticleTimer.Start(wxMax(50 - time, 2 * time), true);
+    m_tParticleTimer.Start(wxMax(50 - time, 2 * time), wxTIMER_ONE_SHOT);
 
 #if 0
     static int total_time;

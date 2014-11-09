@@ -1584,13 +1584,9 @@ bool Quilt::Compose( const ViewPort &vp_in )
                     if( vpu_region.IsEmpty() )
                         pqc->b_include = false; // skip this chart, no true overlap
                     else {
-                        if( ChartData->IsChartInCache( pqc->dbIndex ) ){
-                            ChartBase *pc = ChartData->OpenChartFromDB( pqc->dbIndex, FULL_INIT );
-                            s57chart *ps57 = dynamic_cast<s57chart *>( pc );
-                            bool b_overlay = ( ps57->GetUsageChar() == 'L' || ps57->GetUsageChar() == 'A' );
-                            if( b_overlay )
-                                pqc->b_include = true;
-                        }
+                        bool b_overlay = s57chart::IsCellOverlayType(cte.GetpFullPath() );
+                        if( b_overlay )
+                            pqc->b_include = true;
                     }
                 }
             }
@@ -2164,6 +2160,7 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion 
 
         if( ! chartsDrawn ) cc1->GetVP().SetProjectionType( PROJECTION_MERCATOR );
 
+        
         //    Render any Overlay patches for s57 charts(cells)
         if( m_bquilt_has_overlays && !chart_region.IsEmpty() ) {
             chart = GetFirstChart();

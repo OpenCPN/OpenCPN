@@ -703,7 +703,28 @@ bool Routeman::UpdateAutopilot()
             g_pMUX->SendNMEAMessage( snt.Sentence );
         }
         
+        // XTE
+        {
+            m_NMEA0183.TalkerID = _T("EC");
+            
+            SENTENCE snt;
+             
+            m_NMEA0183.Xte.IsLoranBlinkOK = NTrue;
+            m_NMEA0183.Xte.IsLoranCCycleLockOK = NTrue;
+            
+            m_NMEA0183.Xte.CrossTrackErrorDistance = CurrentXTEToActivePoint;
+            
+            if( XTEDir < 0 ) m_NMEA0183.Xte.DirectionToSteer = Left;
+            else
+                m_NMEA0183.Xte.DirectionToSteer = Right;
+            
+            m_NMEA0183.Xte.CrossTrackUnits = _T("N");
+
+            m_NMEA0183.Xte.Write( snt );
+            g_pMUX->SendNMEAMessage( snt.Sentence );
+        }
         
+       
     return true;
 }
 

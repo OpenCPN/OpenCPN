@@ -49,7 +49,7 @@ WX_DEFINE_ARRAY_INT(int, ArrayOfInts);
 extern "C" void MyCPLErrorHandler( CPLErr eErrClass, int nError,
                              const char * pszErrorMsg );
 
-wxFont *GetOCPNScaledFont( wxString item, int default_size );
+wxFont *GetOCPNScaledFont( wxString item, int default_size = 0 );
 
 #endif
 
