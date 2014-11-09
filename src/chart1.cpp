@@ -9592,7 +9592,7 @@ OCPNMessageDialog::OCPNMessageDialog( wxWindow *parent,
 : wxDialog( parent, wxID_ANY, caption, pos, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxSTAY_ON_TOP )
 {
     m_style = style;
-    wxFont *qFont = GetOCPNScaledFont(_("Dialog"), 10);
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     SetFont( *qFont );
 
     wxBoxSizer *topsizer = new wxBoxSizer( wxVERTICAL );

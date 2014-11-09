@@ -574,7 +574,7 @@ void MMSIListCtrl::OnListItemRightClick( wxListEvent &event)
     menu->Append(item_delete);
 
 #ifdef __WXMSW__
-    wxFont *qFont = GetOCPNScaledFont(_("Menu"), 10);
+    wxFont *qFont = GetOCPNScaledFont(_("Menu"));
     item_edit->SetFont(*qFont);
     item_delete->SetFont(*qFont);
 #endif
@@ -632,7 +632,7 @@ MMSI_Props_Panel::MMSI_Props_Panel( wxWindow *parent ):
 {
     m_pparent = parent;
     
-    wxFont *qFont = GetOCPNScaledFont(_("Dialog"), 10);
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     SetFont( *qFont );
 
     wxBoxSizer* topSizer = new wxBoxSizer( wxVERTICAL );
@@ -845,7 +845,7 @@ options::options( MyFrame* parent, wxWindowID id, const wxString& caption, const
 
     wxDialog::Create( parent, id, caption, pos, size, wstyle );
 
-    wxFont *qFont = GetOCPNScaledFont(_("Dialog"), 10);
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     SetFont( *qFont );
     
     CreateControls();
@@ -5453,7 +5453,7 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
     wxDialog::Create( parent, wxID_ANY, _T("OpenGL Options"), wxDefaultPosition, wxDefaultSize,
                       style );
     
-    wxFont *qFont = GetOCPNScaledFont(_("Dialog"), 10);
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     SetFont( *qFont );
     
 #ifdef ocpnUSE_GL
