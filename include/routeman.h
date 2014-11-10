@@ -96,6 +96,7 @@ public:
       double GetCurrentBrgToActivePoint(){ return CurrentBrgToActivePoint;}
       double GetCurrentRngToActiveNormalArrival(){ return CurrentRangeToActiveNormalCrossing;}
       double GetCurrentXTEToActivePoint(){ return CurrentXTEToActivePoint;}
+      void   ZeroCurrentXTEToActivePoint();
       double GetCurrentSegmentCourse(){ return CurrentSegmentCourse;}
       int   GetXTEDir(){ return XTEDir;}
 
