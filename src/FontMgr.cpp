@@ -126,32 +126,24 @@ wxFont *FontMgr::GetFont( const wxString &TextElement, int user_default_size )
     }
 
     // Found no font, so create a nice one and add to the list
+
+    // the configkey is our internal id for the font
     wxString configkey = GetFontConfigKey( TextElement );
 
-    //    Now create a benign, always present native string
-    //    Optional user requested default size
-    
-    //    Get the system default font.
-    wxFont sys_font = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
-    int sys_font_size = sys_font.GetPointSize();
-    
-    int new_size;
-    if( 0 == user_default_size )
-        new_size = sys_font_size;
-    else
-        new_size = user_default_size;
+    // get the system default font
+    wxFont *newfont = new wxFont( *wxNORMAL_FONT );
 
-    wxString nativefont = GetSimpleNativeFont( new_size );
-
-    wxFont *nf = wxFont::New( nativefont );
+    // set the size if requested
+    if ( 0 != user_default_size )
+        newfont->SetPointSize(user_default_size);
 
     wxColor color( *wxBLACK );
 
-    MyFontDesc *pnewfd = new MyFontDesc( TextElement, configkey, nf, color );
+    // create a font descriptor and add it to rhe list of fonts
+    MyFontDesc *pnewfd = new MyFontDesc( TextElement, configkey, newfont, color );
     m_fontlist->Append( pnewfd );
 
     return pnewfd->m_font;
-
 }
 
 wxString FontMgr::GetSimpleNativeFont( int size )
