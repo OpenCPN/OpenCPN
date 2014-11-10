@@ -3074,8 +3074,6 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
 
         double zoom_factor = factor;
 
-        double min_allowed_scale = 500.0;                // meters per meter
-        
         ChartBase *pc = NULL;
 
         if( !VPoint.b_quilt ) {
@@ -3090,7 +3088,7 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
         }
 
         if( pc ) {
-            min_allowed_scale = pc->GetNormalScaleMin( GetCanvasScaleFactor(), false/*g_b_overzoom_x*/ );
+            double min_allowed_scale = pc->GetNormalScaleMin( GetCanvasScaleFactor(), false/*g_b_overzoom_x*/ );
             
             double target_scale_ppm = GetVPScale() * zoom_factor;
             double new_scale_ppm = target_scale_ppm; //pc->GetNearestPreferredScalePPM(target_scale_ppm);
@@ -3106,11 +3104,9 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
                     proposed_scale_onscreen = min_allowed_scale;
             }
             
-            m_last_max_scale = min_allowed_scale;
         }
         else {
-            proposed_scale_onscreen = wxMax( proposed_scale_onscreen, m_last_max_scale);
-            
+            proposed_scale_onscreen = wxMax( proposed_scale_onscreen, 200.);
         }
             
         
