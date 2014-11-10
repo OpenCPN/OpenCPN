@@ -358,7 +358,7 @@ RouteProp::RouteProp( wxWindow* parent, wxWindowID id, const wxString& caption, 
     SetExtraStyle( GetExtraStyle() | wxWS_EX_BLOCK_EVENTS );
     wxDialog::Create( parent, id, caption, pos, size, style );
 
-    wxFont *qFont = GetOCPNScaledFont(_T("Dialog"), 10);
+    wxFont *qFont = GetOCPNScaledFont(_T("Dialog"));
     SetFont( *qFont );
         
     CreateControls();
@@ -1825,7 +1825,7 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
 
     Create( parent, id, title, pos, size, wstyle );
 
-    wxFont *qFont = GetOCPNScaledFont(_("Dialog"), 10);
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     SetFont( *qFont );
     
 

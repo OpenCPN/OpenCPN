@@ -377,6 +377,8 @@ enum
 
     ID_DEF_MENU_GROUPBASE,
 
+    ID_DEF_ZERO_XTE,
+    
     ID_DEF_MENU_LAST
 };
 
@@ -1064,6 +1066,8 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
     EVT_MENU ( ID_DEF_MENU_TIDEINFO,        ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_DEF_MENU_CURRENTINFO,     ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_DEF_MENU_GROUPBASE,       ChartCanvas::PopupMenuHandler )
+    
+    EVT_MENU ( ID_DEF_ZERO_XTE, ChartCanvas::PopupMenuHandler )
 END_EVENT_TABLE()
 
 // Define a constructor for my canvas
@@ -1137,6 +1141,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_pos_image_user_yellow_dusk = NULL;
     m_pos_image_user_yellow_night = NULL;
 
+    SetOwnShipState( SHIP_INVALID );
+    
     undo = new Undo;
 
     VPoint.Invalidate();
@@ -1866,12 +1872,45 @@ bool ChartCanvas::IsChartLargeEnoughToRender( ChartBase* chart, ViewPort& vp )
     return ( chartMaxScale*g_ChartNotRenderScaleFactor > vp.chart_scale );
 }
 
+void ChartCanvas::StartMeasureRoute()
+{
+    if( !parent_frame->nRoute_State ) {  // no measure tool if currently creating route
+        if( m_bMeasure_Active ) {
+            g_pRouteMan->DeleteRoute( m_pMeasureRoute );
+            m_pMeasureRoute = NULL;
+        }
+        
+        m_bMeasure_Active = true;
+        m_nMeasureState = 1;
+        SetCursor( *pCursorPencil );
+        Refresh();
+    }
+}
+
 void ChartCanvas::CancelMeasureRoute()
 {
     m_bMeasure_Active = false;
     m_nMeasureState = 0;
     g_pRouteMan->DeleteRoute( m_pMeasureRoute );
     m_pMeasureRoute = NULL;
+}
+
+void ChartCanvas::DropMarker( bool atOwnShip )
+{
+    double lat, lon;
+    lat = atOwnShip ? gLat : m_cursor_lat;
+    lon = atOwnShip ? gLon : m_cursor_lon;
+    
+    RoutePoint *pWP = new RoutePoint( lat, lon, g_default_wp_icon, wxEmptyString, GPX_EMPTY_STRING );
+    pWP->m_bIsolatedMark = true;                      // This is an isolated mark
+    pSelect->AddSelectableRoutePoint( lat, lon, pWP );
+    pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
+    
+    if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
+    undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
+    undo->AfterUndoableAction( NULL );
+    InvalidateGL();
+    Refresh( false );
 }
 
 ViewPort &ChartCanvas::GetVP()
@@ -1981,18 +2020,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         break;
     }
     case WXK_F4:
-        if( !parent_frame->nRoute_State )   // no measure tool if currently creating route
-        {
-            if( m_bMeasure_Active ) {
-                g_pRouteMan->DeleteRoute( m_pMeasureRoute );
-                m_pMeasureRoute = NULL;
-            }
-
-            m_bMeasure_Active = true;
-            m_nMeasureState = 1;
-            SetCursor( *pCursorPencil );
-            Refresh();
-        }
+        StartMeasureRoute();
         break;
 
     case WXK_F5:
@@ -2111,12 +2139,16 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             }
         }
 
-        if( m_modkeys == wxMOD_CONTROL )
+        if ( event.ControlDown() )
             key_char -= 64;
 
         switch( key_char ) {
         case 'A':
             parent_frame->ToggleAnchor();
+            break;
+
+        case 'C':
+            parent_frame->ToggleColorScheme();
             break;
 
         case 'D': {
@@ -2147,8 +2179,16 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             parent_frame->ToggleLights();
             break;
 
+        case 'M':
+            StartMeasureRoute();
+            break;
+
         case 'O':
             parent_frame->ToggleChartOutlines();
+            break;
+
+        case 'Q':
+            parent_frame->ToggleQuiltMode();
             break;
 
 #if 0
@@ -2184,20 +2224,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 
         case 13:             // Ctrl M // Drop Marker at cursor
         {
-            double lat, lon;
-            lat = m_cursor_lat;
-            lon = m_cursor_lon;
-            RoutePoint *pWP = new RoutePoint( lat, lon, g_default_wp_icon, wxEmptyString,
-                                              GPX_EMPTY_STRING );
-            pWP->m_bIsolatedMark = true;                      // This is an isolated mark
-            pSelect->AddSelectableRoutePoint( lat, lon, pWP );
-            pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
-
-            if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
-            undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
-            undo->AfterUndoableAction( NULL );
-            InvalidateGL();
-            Refresh( false );
+            DropMarker(false);
             break;
         }
 
@@ -2216,17 +2243,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 
         case 15:             // Ctrl O - Drop Marker at boat's position
         {
-            RoutePoint *pWP = new RoutePoint( gLat, gLon, g_default_wp_icon, wxEmptyString,
-                                              GPX_EMPTY_STRING );
-            pWP->m_bIsolatedMark = true;                      // This is an isolated mark
-            pSelect->AddSelectableRoutePoint( gLat, gLon, pWP );
-            pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
-
-            if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
-            undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
-            undo->AfterUndoableAction( NULL );
-            InvalidateGL();
-            Refresh( false );
+            DropMarker(true);
             break;
         }
 
@@ -2260,11 +2277,19 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             }
             break;
 
-        case 26:                       // Ctrl Z
-            if( undo->AnythingToUndo() ) {
-                undo->UndoLastAction();
-                InvalidateGL();
-                Refresh( false );
+        case 26:
+            if ( event.ShiftDown() ) { // Shift-Ctrl-Z
+                if( undo->AnythingToRedo() ) {
+                    undo->RedoNextAction();
+                    InvalidateGL();
+                    Refresh( false );
+                }
+            } else {                   // Ctrl Z
+                if( undo->AnythingToUndo() ) {
+                    undo->UndoLastAction();
+                    InvalidateGL();
+                    Refresh( false );
+                }
             }
             break;
 
@@ -3072,8 +3097,6 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
 
         double zoom_factor = factor;
 
-        double min_allowed_scale = 500.0;                // meters per meter
-        
         ChartBase *pc = NULL;
 
         if( !VPoint.b_quilt ) {
@@ -3088,7 +3111,7 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
         }
 
         if( pc ) {
-            min_allowed_scale = pc->GetNormalScaleMin( GetCanvasScaleFactor(), false/*g_b_overzoom_x*/ );
+            double min_allowed_scale = pc->GetNormalScaleMin( GetCanvasScaleFactor(), false/*g_b_overzoom_x*/ );
             
             double target_scale_ppm = GetVPScale() * zoom_factor;
             double new_scale_ppm = target_scale_ppm; //pc->GetNearestPreferredScalePPM(target_scale_ppm);
@@ -3104,11 +3127,9 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
                     proposed_scale_onscreen = min_allowed_scale;
             }
             
-            m_last_max_scale = min_allowed_scale;
         }
         else {
-            proposed_scale_onscreen = wxMax( proposed_scale_onscreen, m_last_max_scale);
-            
+            proposed_scale_onscreen = wxMax( proposed_scale_onscreen, 200.);
         }
             
         
@@ -6371,17 +6392,11 @@ void ChartCanvas::LostMouseCapture( wxMouseCaptureLostEvent& event )
 //          Popup Menu Handling
 //-------------------------------------------------------------------------------
 
-wxString _menuText( wxString name, wxString shortcut ) {
-    wxString menutext;
-    menutext << name << _T("\t") << shortcut;
-    return menutext;
-}
-
 void MenuPrepend( wxMenu *menu, int id, wxString label)
 {
     wxMenuItem *item = new wxMenuItem(menu, id, label);
 #ifdef __WXMSW__
-    wxFont *qFont = GetOCPNScaledFont(_T("Menu"), 10);
+    wxFont *qFont = GetOCPNScaledFont(_T("Menu"));
     item->SetFont(*qFont);
 #endif
     menu->Prepend(item);
@@ -6391,7 +6406,7 @@ void MenuAppend( wxMenu *menu, int id, wxString label)
 {
     wxMenuItem *item = new wxMenuItem(menu, id, label);
 #ifdef __WXMSW__
-    wxFont *qFont = GetOCPNScaledFont(_("Menu"), 10);
+    wxFont *qFont = GetOCPNScaledFont(_("Menu"));
     item->SetFont(*qFont);
 #endif
     menu->Append(item);
@@ -6400,7 +6415,7 @@ void MenuAppend( wxMenu *menu, int id, wxString label)
 void SetMenuItemFont(wxMenuItem *item)
 {
 #ifdef __WXMSW__
-    wxFont *qFont = GetOCPNScaledFont(_("Menu"), 10);
+    wxFont *qFont = GetOCPNScaledFont(_("Menu"));
     item->SetFont(*qFont);
 #endif
 }
@@ -6435,22 +6450,14 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 #endif
 
     if( seltype == SELTYPE_ROUTECREATE ) {
-#ifndef __WXOSX__
         MenuAppend( contextMenu, ID_RC_MENU_FINISH, _menuText( _( "End Route" ), _T("Esc") ) );
-#else
-        MenuAppend( contextMenu, ID_RC_MENU_FINISH,  _( "End Route" ) );
-#endif
     }
 
     if( ! m_pMouseRoute ) {
         if( m_bMeasure_Active )
-#ifndef __WXOSX__
             MenuPrepend( contextMenu, ID_DEF_MENU_DEACTIVATE_MEASURE, _menuText( _("Measure Off"), _T("Esc") ) );
-#else
-            MenuPrepend( contextMenu, ID_DEF_MENU_DEACTIVATE_MEASURE,  _("Measure Off") );
-#endif
         else
-            MenuPrepend( contextMenu, ID_DEF_MENU_ACTIVATE_MEASURE, _menuText( _( "Measure" ), _T("F4") ) );
+            MenuPrepend( contextMenu, ID_DEF_MENU_ACTIVATE_MEASURE, _menuText( _( "Measure" ), _T("M") ) );
 //            contextMenu->Prepend( ID_DEF_MENU_ACTIVATE_MEASURE, _menuText( _( "Measure" ), _T("F4") ) );
     }
 
@@ -6463,7 +6470,11 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     if( undo->AnythingToRedo() ) {
         wxString redoItem;
         redoItem << _("Redo") << _T(" ") << undo->GetNextRedoableAction()->Description();
+#ifdef __WXOSX__
+        MenuPrepend( contextMenu, ID_REDO, _menuText( redoItem, _T("Shift-Ctrl-Z") ) );
+#else
         MenuPrepend( contextMenu, ID_REDO, _menuText( redoItem, _T("Ctrl-Y") ) );
+#endif
     }
 
     bool ais_areanotice = false;
@@ -6517,8 +6528,8 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     if( !VPoint.b_quilt ) {
         if( parent_frame->GetnChartStack() > 1 ) {
             MenuAppend( contextMenu, ID_DEF_MENU_MAX_DETAIL, _( "Max Detail Here" ) );
-            MenuAppend( contextMenu, ID_DEF_MENU_SCALE_IN, _menuText( _( "Scale In" ), _T("F7") ) );
-            MenuAppend( contextMenu, ID_DEF_MENU_SCALE_OUT, _menuText( _( "Scale Out" ), _T("F8") ) );
+            MenuAppend( contextMenu, ID_DEF_MENU_SCALE_IN, _menuText( _( "Scale In" ), _T("Ctrl-Left") ) );
+            MenuAppend( contextMenu, ID_DEF_MENU_SCALE_OUT, _menuText( _( "Scale Out" ), _T("Ctrl-Right") ) );
         }
 
         if( ( Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR ) ) || ais_areanotice ) {
@@ -6531,8 +6542,8 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
             MenuAppend( contextMenu, ID_DEF_MENU_QUERY, _( "Object Query..." ) );
         } else {
             if( parent_frame->GetnChartStack() > 1 ) {
-                MenuAppend( contextMenu, ID_DEF_MENU_SCALE_IN, _menuText( _( "Scale In" ), _T("F7") ) );
-                MenuAppend( contextMenu, ID_DEF_MENU_SCALE_OUT, _menuText( _( "Scale Out" ), _T("F8") ) );
+                MenuAppend( contextMenu, ID_DEF_MENU_SCALE_IN, _menuText( _( "Scale In" ), _T("Ctrl-Left") ) );
+                MenuAppend( contextMenu, ID_DEF_MENU_SCALE_OUT, _menuText( _( "Scale Out" ), _T("Ctrl-Right") ) );
             }
         }
     }
@@ -6553,6 +6564,8 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
         else
             MenuAppend( contextMenu, ID_DEF_MENU_NORTHUP, _("North Up Mode") );
     }
+    
+    if ( g_pRouteMan->IsAnyRouteActive() && g_pRouteMan->GetCurrentXTEToActivePoint() > 0. ) MenuAppend( contextMenu, ID_DEF_ZERO_XTE, _("Zero XTE") );
 
     Kml* kml = new Kml;
     int pasteBuffer = kml->ParsePasteBuffer();
@@ -8095,6 +8108,10 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         FinishRoute();
         gFrame->SurfaceToolbar();
         Refresh( false );
+        break;
+
+    case ID_DEF_ZERO_XTE:
+        g_pRouteMan->ZeroCurrentXTEToActivePoint();
         break;
 
     default: {

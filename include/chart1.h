@@ -49,7 +49,7 @@ WX_DEFINE_ARRAY_INT(int, ArrayOfInts);
 extern "C" void MyCPLErrorHandler( CPLErr eErrClass, int nError,
                              const char * pszErrorMsg );
 
-wxFont *GetOCPNScaledFont( wxString item, int default_size );
+wxFont *GetOCPNScaledFont( wxString item, int default_size = 0 );
 
 #endif
 
@@ -57,6 +57,9 @@ wxArrayString *EnumerateSerialPorts(void);
 wxColour GetGlobalColor(wxString colorName);
 
 int GetApplicationMemoryUse(void);
+
+// Helper to create menu label + hotkey string when registering menus
+wxString _menuText(wxString name, wxString shortcut);
 
 // The point for anchor watch should really be a class...
 double AnchorDistFix( double const d, double const AnchorPointMinDist, double const AnchorPointMaxDist);   //  pjotrc 2010.02.22
@@ -88,28 +91,31 @@ const int ID_TOOLBAR = 500;
 
 enum
 {
-      ID_ZOOMIN = 1550,
-      ID_ZOOMOUT,
-      ID_STKUP,
-      ID_STKDN,
-      ID_ROUTE,
-      ID_FOLLOW,
-      ID_SETTINGS,
-      ID_AIS,           // pjotrc 2010.02.09
-      ID_TEXT,
-      ID_CURRENT,
-      ID_TIDE,
-      ID_HELP,
-      ID_TBEXIT,
-      ID_TBSTAT,
-      ID_PRINT,
-      ID_COLSCHEME,
-      ID_ROUTEMANAGER,
-      ID_TRACK,
-      ID_TBSTATBOX,
-      ID_MOB,
-      ID_PLUGIN_BASE
+    // The following constants represent the toolbar items (some are also used in menus).
+    // They MUST be in the SAME ORDER as on the toolbar and new items MUST NOT be added
+    // amongst them, due to the way the toolbar button visibility is saved and calculated.
+    ID_ZOOMIN = 1550,
+    ID_ZOOMOUT,
+    ID_STKUP,
+    ID_STKDN,
+    ID_ROUTE,
+    ID_FOLLOW,
+    ID_SETTINGS,
+    ID_AIS,
+    ID_ENC_TEXT,
+    ID_CURRENT,
+    ID_TIDE,
+    ID_ABOUT,
+    ID_TBEXIT,
+    ID_TBSTAT,
+    ID_PRINT,
+    ID_COLSCHEME,
+    ID_ROUTEMANAGER,
+    ID_TRACK,
+    ID_TBSTATBOX,
+    ID_MOB,
 
+    ID_PLUGIN_BASE // This MUST be the last item in the enum
 };
 
 
@@ -132,6 +138,49 @@ enum
     IDM_TOOLBAR_SHOW_BOTH,
 
     ID_COMBO = 1000
+};
+
+
+// Menu item IDs for the main menu bar
+enum
+{
+    ID_MENU_ZOOM_IN = 2000,
+    ID_MENU_ZOOM_OUT,
+    ID_MENU_SCALE_IN,
+    ID_MENU_SCALE_OUT,
+
+    ID_MENU_NAV_FOLLOW,
+    ID_MENU_NAV_TRACK,
+
+    ID_MENU_CHART_NORTHUP,
+    ID_MENU_CHART_COGUP,
+    ID_MENU_CHART_QUILTING,
+    ID_MENU_CHART_OUTLINES,
+
+    ID_MENU_UI_CHARTBAR,
+    ID_MENU_UI_COLSCHEME,
+    ID_MENU_UI_FULLSCREEN,
+
+    ID_MENU_ENC_TEXT,
+    ID_MENU_ENC_LIGHTS,
+    ID_MENU_ENC_SOUNDINGS,
+    ID_MENU_ENC_ANCHOR,
+
+    ID_MENU_SHOW_TIDES,
+    ID_MENU_SHOW_CURRENTS,
+
+    ID_MENU_TOOL_MEASURE,
+    ID_MENU_ROUTE_MANAGER,
+    ID_MENU_ROUTE_NEW,
+    ID_MENU_MARK_BOAT,
+    ID_MENU_MARK_CURSOR,
+    ID_MENU_MARK_MOB,
+
+    ID_MENU_AIS_TARGETS,
+    ID_MENU_AIS_TRACKS,
+    ID_MENU_AIS_CPADIALOG,
+    ID_MENU_AIS_CPASOUND,
+    ID_MENU_AIS_TARGETLIST
 };
 
 
@@ -256,10 +305,13 @@ class MyFrame: public wxFrame
     void ProcessCanvasResize(void);
 
     void ApplyGlobalSettings(bool bFlyingUpdate, bool bnewtoolbar);
+    void RegisterGlobalMenuItems();
+    void UpdateGlobalMenuItems();
     void SetChartThumbnail(int index);
     int  DoOptionsDialog();
     int  ProcessOptionsDialog(int resultFlags , options* dialog );
     void DoPrint(void);
+    void LaunchLocalHelp(void);
     void StopSockets(void);
     void ResumeSockets(void);
     void TogglebFollow(void);
@@ -277,6 +329,7 @@ class MyFrame: public wxFrame
     void TrackMidnightRestart(void);
     void ToggleColorScheme();
     int GetnChartStack(void);
+    void SetMenubarItemState ( int item_id, bool state );
     void SetToolbarItemState ( int tool_id, bool state );
     void SetToolbarItemBitmaps ( int tool_id, wxBitmap *bitmap, wxBitmap *bmpDisabled );
     void ToggleQuiltMode(void);
@@ -327,6 +380,7 @@ class MyFrame: public wxFrame
     void UpdateAISMOBRoute( AIS_Target_Data *ptarget );
     
     wxStatusBar         *m_pStatusBar;
+    wxMenuBar           *m_pMenuBar;
     int                 nRoute_State;
     int                 nBlinkerTick;
     bool                m_bTimeIsSet;
