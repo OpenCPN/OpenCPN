@@ -277,7 +277,10 @@ public:
 
       void ShowChartInfoWindow(int x, int y, int dbIndex);
       void HideChartInfoWindow(void);
+    
+      void StartMeasureRoute();
       void CancelMeasureRoute();
+      void DropMarker(bool atOwnShip = true);
 
       //Todo build more accessors
       bool        m_bFollow;

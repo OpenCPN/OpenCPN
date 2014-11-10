@@ -54,6 +54,7 @@ wxString str_version_patch = wxString::Format(wxT("%i"),VERSION_PATCH);
 wxString str_version_date(VERSION_DATE, wxConvUTF8);
 wxString OpenCPNVersion = str_version_start + str_version_major + wxT(".") + str_version_minor + wxT(".") + str_version_patch + wxT(" Build ") + str_version_date;
 
+extern MyFrame          *gFrame;
 extern wxString         glog_file;
 extern wxString         gConfig_File;
 extern ocpnStyle::StyleManager* g_StyleManager;
@@ -424,39 +425,8 @@ void about::OnPageChange( wxNotebookEvent& event )
 {
     int i = event.GetSelection();
 
-    if( 3 == i )                        // 3 is the index of "Help" page
-            {
-        wxString def_lang_canonical = wxLocale::GetLanguageInfo( wxLANGUAGE_DEFAULT )->CanonicalName;
-
-        wxString help_locn = _T("doc/help_");
-        help_locn.Prepend( *m_pDataLocn );
-
-        wxString help_try = help_locn;
-        help_try += def_lang_canonical;
-        help_try += _T(".html");
-
-        if( ::wxFileExists( help_try ) ) {
-            wxLaunchDefaultBrowser(wxString( _T("file:///") ) + help_try );
-            pNotebook->ChangeSelection(0);
-        }
-
-        else {
-            help_try = help_locn;
-            help_try += _T("en_US");
-            help_try += _T(".html");
-
-            if( ::wxFileExists( help_try ) ){
-                pNotebook->ChangeSelection(0);
-                wxLaunchDefaultBrowser( wxString( _T("file:///") ) + help_try );
-            }
-            else {
-                help_try = _T("doc/help_web.html");
-                help_try.Prepend( *m_pDataLocn );
-                if( ::wxFileExists( help_try ) ) {
-                    pNotebook->ChangeSelection(0);
-                    wxLaunchDefaultBrowser(wxString( _T("file:///") ) + help_try );
-                 }
-            }
-        }
+    if( 3 == i ) { // 3 is the index of "Help" page
+        gFrame->LaunchLocalHelp();
+        pNotebook->ChangeSelection(0);
     }
 }

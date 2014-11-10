@@ -1280,6 +1280,9 @@ int MyConfig::LoadMyConfig( int iteration )
 
     Read( _T ( "SetSystemTime" ), &s_bSetSystemTime, 0 );
     Read( _T ( "ShowStatusBar" ), &m_bShowStatusBar, 1 );
+#ifndef __WXOSX__
+    Read( _T ( "ShowMenuBar" ), &m_bShowMenuBar, 0 );
+#endif
     Read( _T ( "ShowCompassWindow" ), &m_bShowCompassWin, 1 );
     Read( _T ( "ShowGrid" ), &g_bDisplayGrid, 0 );
     Read( _T ( "PlayShipsBells" ), &g_bPlayShipsBells, 0 );
@@ -2414,6 +2417,9 @@ void MyConfig::UpdateSettings()
     Write( _T ( "ChartNotRenderScaleFactor" ), g_ChartNotRenderScaleFactor );
 
     Write( _T ( "ShowStatusBar" ), m_bShowStatusBar );
+#ifndef __WXOSX__
+    Write( _T ( "ShowMenuBar" ), m_bShowMenuBar );
+#endif
     Write( _T ( "ShowCompassWindow" ), m_bShowCompassWin );
     Write( _T ( "SetSystemTime" ), s_bSetSystemTime );
     Write( _T ( "ShowGrid" ), g_bDisplayGrid );
