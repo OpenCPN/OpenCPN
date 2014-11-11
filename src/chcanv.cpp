@@ -2114,17 +2114,22 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
                 ZoomCanvas( 0.5 );
                 break;
 
+#ifdef __WXMAC__
+            // On other platforms these are handled in OnKeyChar, which (apparently) works better in some locales.
+            // On OS X it is better to handle them here, since pressing Alt (which should change the rotation speed)
+            // changes the key char and so prevents the keys from working.
             case ']':
-//                RotateCanvas( 1 );
+                RotateCanvas( 1 );
                 break;
                 
             case '[':
-//                RotateCanvas( -1 );
+                RotateCanvas( -1 );
                 break;
                 
             case '\\':
-//                DoRotateCanvas(0);
+                DoRotateCanvas(0);
                 break;
+#endif
             }
         } else {
             switch( key_char ) {
@@ -2360,6 +2365,8 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
     }
 
 #ifndef __WXMAC__
+    // Allow OnKeyChar to catch the key events too.
+    // On OS X this is unnecessary since we handle all key events here.
     event.Skip();
 #endif
 }
