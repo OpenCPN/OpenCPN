@@ -4595,7 +4595,6 @@ void MyFrame::RegisterGlobalMenuItems()
     nav_menu->AppendSeparator();
     nav_menu->Append( ID_MENU_SCALE_IN, _menuText(_("Larger Scale Chart"), _T("Ctrl-Left")) );
     nav_menu->Append( ID_MENU_SCALE_OUT, _menuText(_("Smaller Scale Chart"), _T("Ctrl-Right")) );
-    nav_menu->AppendSeparator();
     m_pMenuBar->Append( nav_menu, _("Navigate") );
 
 
@@ -4643,7 +4642,11 @@ void MyFrame::RegisterGlobalMenuItems()
     tools_menu->Append( ID_MENU_MARK_BOAT, _menuText(_("Drop Mark at Boat"), _T("Ctrl-O")) );
     tools_menu->Append( ID_MENU_MARK_CURSOR, _menuText(_("Drop Mark at Cursor"), _T("Ctrl-M")) );
     tools_menu->AppendSeparator();
+#ifdef __WXOSX__
     tools_menu->Append( ID_MENU_MARK_MOB, _menuText(_("Drop MOB Marker"), _T("RawCtrl-Space")) ); // NOTE Cmd+Space is reserved for Spotlight
+#else
+    tools_menu->Append( ID_MENU_MARK_MOB, _menuText(_("Drop MOB Marker"), _T("Ctrl-Space")) );
+#endif
     tools_menu->AppendSeparator();
     tools_menu->Append( wxID_PREFERENCES, _menuText(_("Preferences..."), _T("Ctrl-,")) );
     m_pMenuBar->Append( tools_menu, _("Tools") );
