@@ -3339,9 +3339,9 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     if( g_bAutoAnchorMark ) {
         bool watching_anchor = false;                                           // pjotrc 2010.02.15
         if( pAnchorWatchPoint1 )                                               // pjotrc 2010.02.15
-        watching_anchor = ( pAnchorWatchPoint1->m_IconName.StartsWith( _T("anchor") ) ); // pjotrc 2010.02.15
+        watching_anchor = ( pAnchorWatchPoint1->GetIconName().StartsWith( _T("anchor") ) ); // pjotrc 2010.02.15
         if( pAnchorWatchPoint2 )                                               // pjotrc 2010.02.15
-        watching_anchor |= ( pAnchorWatchPoint2->m_IconName.StartsWith( _T("anchor") ) ); // pjotrc 2010.02.15
+        watching_anchor |= ( pAnchorWatchPoint2->GetIconName().StartsWith( _T("anchor") ) ); // pjotrc 2010.02.15
 
         wxDateTime now = wxDateTime::Now();
         wxTimeSpan uptime = now.Subtract( g_start_time );

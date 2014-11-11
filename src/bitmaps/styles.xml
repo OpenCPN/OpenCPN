@@ -447,6 +447,10 @@
 				<icon-location x="120" y="160"/>
 				<size x="16" y="16"/>
 			</icon>
+                        <icon name="qmark">
+                                <icon-location x="142" y="160"/>
+                                <size x="16" y="16"/>
+                        </icon>
 			<icon name="tidesml">
 				<icon-location x="240" y="160"/>
 				<size x="16" y="16"/>
@@ -933,6 +937,10 @@
 				<icon-location x="120" y="160"/>
 				<size x="16" y="16"/>
 			</icon>
+                        <icon name="qmark">
+                                <icon-location x="142" y="160"/>
+                                <size x="16" y="16"/>
+                        </icon>
 			<icon name="tidesml">
 				<icon-location x="240" y="160"/>
 				<size x="16" y="16"/>
@@ -1411,6 +1419,10 @@
 				<icon-location x="120" y="160"/>
 				<size x="16" y="16"/>
 			</icon>
+                        <icon name="qmark">
+                                <icon-location x="142" y="160"/>
+                                <size x="16" y="16"/>
+                        </icon>
 			<icon name="tidesml">
 				<icon-location x="240" y="160"/>
 				<size x="16" y="16"/>

@@ -44,6 +44,7 @@ extern Multiplexer *g_pMUX;
 extern MyFrame *gFrame;
 extern bool g_btouch;
 extern bool g_bresponsive;
+extern ocpnStyle::StyleManager* g_StyleManager;
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST ( RoutePointList );
@@ -245,6 +246,25 @@ void RoutePoint::CalculateNameExtents( void )
 
 void RoutePoint::ReLoadIcon( void )
 {
+    bool icon_exists = pWayPointMan->DoesIconExist(m_IconName);
+    if( !icon_exists ){
+        
+        //  Try all lower case as a favor in the case where imported waypoints use mixed case names
+        wxString tentative_icon = m_IconName.Lower();
+        if(pWayPointMan->DoesIconExist(tentative_icon)){
+            // if found, convert point's icon name permanently.
+            m_IconName = tentative_icon;
+        }
+        //      Icon name is not in the standard or user lists, so add it to the list a generic placeholder
+        else{
+            ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+            if(style){
+                wxBitmap bmp = style->GetIcon( _T("qmark") );
+                pWayPointMan->ProcessIcon( bmp, m_IconName, m_IconName );
+            }
+        }
+    }
+        
     m_pbmIcon = pWayPointMan->GetIconBitmap( m_IconName );
 
 #ifdef ocpnUSE_GL

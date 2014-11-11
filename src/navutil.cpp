@@ -665,13 +665,13 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP )
 
     //  Establish basic colour
     wxColour basic_colour;
-    if( m_bRunning || prp->m_IconName.StartsWith( _T("xmred") ) ) {
+    if( m_bRunning || prp->GetIconName().StartsWith( _T("xmred") ) ) {
             basic_colour = GetGlobalColor( _T ( "URED" ) );
     } else
-        if( prp->m_IconName.StartsWith( _T("xmblue") ) ) {
+        if( prp->GetIconName().StartsWith( _T("xmblue") ) ) {
                 basic_colour = GetGlobalColor( _T ( "BLUE3" ) );
         } else
-            if( prp->m_IconName.StartsWith( _T("xmgreen") ) ) {
+            if( prp->GetIconName().StartsWith( _T("xmgreen") ) ) {
                     basic_colour = GetGlobalColor( _T ( "UGREN" ) );
             } else {
                     basic_colour = GetGlobalColor( _T ( "CHMGD" ) );

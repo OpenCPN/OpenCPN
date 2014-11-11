@@ -5432,7 +5432,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             } else if( !pMarkPropDialog->IsShown() && g_bWayPointPreventDragging ) DraggingAllowed =
                     false;
 
-            if( m_pRoutePointEditTarget && ( m_pRoutePointEditTarget->m_IconName == _T("mob") ) ) DraggingAllowed =
+            if( m_pRoutePointEditTarget && ( m_pRoutePointEditTarget->GetIconName() == _T("mob") ) ) DraggingAllowed =
                     false;
 
             if( m_pRoutePointEditTarget->m_bIsInLayer ) DraggingAllowed = false;
@@ -5516,7 +5516,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                     false;
 
             if( m_pRoutePointEditTarget
-                    && ( m_pRoutePointEditTarget->m_IconName == _T("mob") ) ) DraggingAllowed =
+                    && ( m_pRoutePointEditTarget->GetIconName() == _T("mob") ) ) DraggingAllowed =
                             false;
 
             if( m_pRoutePointEditTarget->m_bIsInLayer ) DraggingAllowed = false;
@@ -6809,7 +6809,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 
             MenuAppend( menuWaypoint, ID_WPT_MENU_COPY, _( "Copy as KML" ) );
 
-            if( m_pFoundRoutePoint->m_IconName != _T("mob") )
+            if( m_pFoundRoutePoint->GetIconName() != _T("mob") )
                 MenuAppend( menuWaypoint, ID_RT_MENU_DELPOINT,  _( "Delete" ) );
 
             wxString port = FindValidUploadPort();
@@ -6851,7 +6851,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 
             MenuAppend( menuWaypoint, ID_WPT_MENU_COPY, _( "Copy as KML" ) );
 
-            if( m_pFoundRoutePoint->m_IconName != _T("mob") )
+            if( m_pFoundRoutePoint->GetIconName() != _T("mob") )
                 MenuAppend( menuWaypoint, ID_WP_MENU_DELPOINT, _( "Delete" ) );
 
             wxString port = FindValidUploadPort();
@@ -7364,7 +7364,7 @@ void pupHandler_PasteRoute() {
 
             newPoint = new RoutePoint( curPoint );
             newPoint->m_bIsolatedMark = false;
-            newPoint->m_IconName = _T("circle");
+            newPoint->SetIconName( _T("circle") );
             newPoint->m_bIsVisible = true;
             newPoint->m_bShowName = false;
             newPoint->m_bKeepXRoute = false;
@@ -7607,7 +7607,7 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         }
 
         if( m_pFoundRoutePoint && !( m_pFoundRoutePoint->m_bIsInLayer )
-                && ( m_pFoundRoutePoint->m_IconName != _T("mob") ) ) {
+                && ( m_pFoundRoutePoint->GetIconName() != _T("mob") ) ) {
 
             // If the WP belongs to an invisible route, we come here instead of to ID_RT_MENU_DELPOINT
             //  Check it, and if so then remove the point from its routes

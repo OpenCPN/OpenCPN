@@ -619,8 +619,8 @@ bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flags )
     
     if (flags & OUT_SYM_FORCE) {
         child = node.append_child("sym");
-        if (!pr->m_IconName.IsEmpty()) {
-            child.append_child(pugi::node_pcdata).set_value(pr->m_IconName.mb_str());
+        if (!pr->GetIconName().IsEmpty()) {
+            child.append_child(pugi::node_pcdata).set_value(pr->GetIconName().mb_str());
         }
         else {
             child.append_child("empty");
@@ -1074,7 +1074,7 @@ void UpdateRouteA( Route *pTentRoute )
                                    if( ex_rp ) {
                                        ex_rp->m_lat = prp->m_lat;
                                        ex_rp->m_lon = prp->m_lon;
-                                       ex_rp->m_IconName = prp->m_IconName;
+                                       ex_rp->SetIconName( prp->GetIconName() );
                                        ex_rp->m_MarkDescription = prp->m_MarkDescription;
                                        ex_rp->SetName( prp->GetName() );
                                    } else {
