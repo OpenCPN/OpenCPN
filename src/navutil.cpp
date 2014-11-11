@@ -340,6 +340,8 @@ extern ArrayOfMMSIProperties   g_MMSI_Props_Array;
 
 extern int              g_chart_zoom_modifier;
 
+extern int              g_NMEAAPBPrecision;
+
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
 #endif
@@ -1220,6 +1222,8 @@ int MyConfig::LoadMyConfig( int iteration )
 
     Read( _T ( "ActiveChartGroup" ), &g_GroupIndex, 0 );
 
+    Read( _T( "NMEAAPBPrecision" ), &g_NMEAAPBPrecision, 3 );
+
     /* opengl options */
 #ifdef ocpnUSE_GL
     Read( _T ( "OpenGLExpert" ), &g_bexpert, false );
@@ -1282,6 +1286,9 @@ int MyConfig::LoadMyConfig( int iteration )
 
     Read( _T ( "SetSystemTime" ), &s_bSetSystemTime, 0 );
     Read( _T ( "ShowStatusBar" ), &m_bShowStatusBar, 1 );
+#ifndef __WXOSX__
+    Read( _T ( "ShowMenuBar" ), &m_bShowMenuBar, 0 );
+#endif
     Read( _T ( "ShowCompassWindow" ), &m_bShowCompassWin, 1 );
     Read( _T ( "ShowGrid" ), &g_bDisplayGrid, 0 );
     Read( _T ( "PlayShipsBells" ), &g_bPlayShipsBells, 0 );
@@ -2416,6 +2423,9 @@ void MyConfig::UpdateSettings()
     Write( _T ( "ChartNotRenderScaleFactor" ), g_ChartNotRenderScaleFactor );
 
     Write( _T ( "ShowStatusBar" ), m_bShowStatusBar );
+#ifndef __WXOSX__
+    Write( _T ( "ShowMenuBar" ), m_bShowMenuBar );
+#endif
     Write( _T ( "ShowCompassWindow" ), m_bShowCompassWin );
     Write( _T ( "SetSystemTime" ), s_bSetSystemTime );
     Write( _T ( "ShowGrid" ), g_bDisplayGrid );
@@ -2506,6 +2516,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "InitialdBIndex" ), g_restore_dbindex );
     Write( _T ( "ActiveChartGroup" ), g_GroupIndex );
 
+    Write( _T( "NMEAAPBPrecision" ), g_NMEAAPBPrecision );
+
     Write( _T ( "AnchorWatch1GUID" ), g_AW1GUID );
     Write( _T ( "AnchorWatch2GUID" ), g_AW2GUID );
 
@@ -2539,7 +2551,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "Locale" ), g_locale );
 
     Write( _T ( "KeepNavobjBackups" ), g_navobjbackups );
-
+Write( _T ( "LegacyInputCOMPortFilterBehaviour" ), g_b_legacy_input_filter_behaviour );
 //    S57 Object Filter Settings
 
     SetPath( _T ( "/Settings/ObjectFilter" ) );
@@ -3323,7 +3335,7 @@ static wxString scaleable_pointsize[SCALEABLE_SIZES] =
     wxT ( "36" )
 };
 
-#define NUM_COLS 48
+#define NUM_COLS 49
 static wxString wxColourDialogNames[NUM_COLS]= {wxT ( "ORANGE" ),
     wxT ( "GOLDENROD" ),
     wxT ( "WHEAT" ),
@@ -3377,6 +3389,7 @@ static wxString wxColourDialogNames[NUM_COLS]= {wxT ( "ORANGE" ),
     wxT ( "LIGHT GREY" ),
     wxT ( "MEDIUM SLATE BLUE" ),
     wxT ( "WHITE" )
+    wxT ( "SIENNA" )
 };
 
 /*

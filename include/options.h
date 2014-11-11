@@ -295,6 +295,7 @@ public:
 //    For General Options
     wxScrolledWindow        *pDisplayPanel;
     wxCheckBox              *pShowStatusBar;
+    wxCheckBox              *pShowMenuBar;
     wxCheckBox              *pShowCompassWin;
     wxCheckBox              *pPrintShowIcon;
     wxCheckBox              *pCDOOutlines;
@@ -363,6 +364,8 @@ public:
     wxButton* m_btnInputStcList;
     wxCheckBox* m_cbInput;
     wxCheckBox* m_cbOutput;
+    wxStaticText* m_stPrecision;
+    wxChoice* m_choicePrecision;
     wxRadioButton* m_rbOAccept;
     wxRadioButton* m_rbOIgnore;
     wxTextCtrl* m_tcOutputStc;

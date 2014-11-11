@@ -111,7 +111,7 @@ wxString FontMgr::GetFontConfigKey( const wxString &description )
     return configkey;
 }
 
-wxFont *FontMgr::GetFont( const wxString &TextElement, int default_size )
+wxFont *FontMgr::GetFont( const wxString &TextElement, int user_default_size )
 {
     //    Look thru the font list for a match
     MyFontDesc *pmfd;
@@ -128,12 +128,19 @@ wxFont *FontMgr::GetFont( const wxString &TextElement, int default_size )
     // Found no font, so create a nice one and add to the list
     wxString configkey = GetFontConfigKey( TextElement );
 
-    //    Now create a benign, always present native string
-    //    Optional user requested default size
+    //    Now create a benign, always present native font
+    //    with optional user requested default size
+    
+    //    Get the system default font.
+    wxFont sys_font = *wxNORMAL_FONT;
+    int sys_font_size = sys_font.GetPointSize();
+    sys_font_size = wxMax( sys_font_size, 10 );   //  In no case should the default font be smaller than 10 pt.
+    
     int new_size;
-    if( 0 == default_size ) new_size = 12;
+    if( 0 == user_default_size )
+        new_size = sys_font_size;
     else
-        new_size = default_size;
+        new_size = user_default_size;
 
     wxString nativefont = GetSimpleNativeFont( new_size );
 

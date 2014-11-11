@@ -703,7 +703,28 @@ bool Routeman::UpdateAutopilot()
             g_pMUX->SendNMEAMessage( snt.Sentence );
         }
         
+        // XTE
+        {
+            m_NMEA0183.TalkerID = _T("EC");
+            
+            SENTENCE snt;
+             
+            m_NMEA0183.Xte.IsLoranBlinkOK = NTrue;
+            m_NMEA0183.Xte.IsLoranCCycleLockOK = NTrue;
+            
+            m_NMEA0183.Xte.CrossTrackErrorDistance = CurrentXTEToActivePoint;
+            
+            if( XTEDir < 0 ) m_NMEA0183.Xte.DirectionToSteer = Left;
+            else
+                m_NMEA0183.Xte.DirectionToSteer = Right;
+            
+            m_NMEA0183.Xte.CrossTrackUnits = _T("N");
+
+            m_NMEA0183.Xte.Write( snt );
+            g_pMUX->SendNMEAMessage( snt.Sentence );
+        }
         
+       
     return true;
 }
 
@@ -997,6 +1018,17 @@ Route *Routeman::FindRouteByGUID(wxString &guid)
     return pRoute;
 }
 
+void Routeman::ZeroCurrentXTEToActivePoint()
+{
+    // When zeroing XTE create a "virtual" waypoint at present position
+    if( pRouteActivatePoint ) delete pRouteActivatePoint;
+    pRouteActivatePoint = new RoutePoint( gLat, gLon, wxString( _T("") ), wxString( _T("") ),
+    GPX_EMPTY_STRING, false ); // Current location
+    pRouteActivatePoint->m_bShowName = false;
+
+    pActiveRouteSegmentBeginPoint = pRouteActivatePoint;
+    m_arrival_min = 1e6;
+}
 
 //--------------------------------------------------------------------------------
 //      WayPointman   Implementation

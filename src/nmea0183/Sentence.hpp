@@ -76,6 +76,7 @@ class SENTENCE
       virtual NORTHSOUTH NorthOrSouth( int field_number ) const;
       virtual REFERENCE Reference( int field_number ) const;
       virtual TRANSDUCER_TYPE TransducerType( int field_number ) const;
+      virtual SENTENCE& Add ( double value, int precision); // Added to allow precision to be changed
 
       /*
       ** Operators

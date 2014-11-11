@@ -659,6 +659,8 @@ bool             b_inCompressAllCharts;
 bool             g_bexpert;
 int              g_chart_zoom_modifier;
 
+int              g_NMEAAPBPrecision;
+
 #ifdef LINUX_CRASHRPT
 wxCrashPrint g_crashprint;
 #endif
@@ -739,7 +741,7 @@ catch_signals(int signo)
         case SIGSEGV:
         siglongjmp(env, 1);// jump back to the setjmp() point
         break;
-        
+
         case SIGTERM:
         LogMessageOnce(_T("Sigterm received"));
         gFrame->Close();
@@ -817,7 +819,7 @@ bool MyApp::OnCmdLineParsed( wxCmdLineParser& parser )
     g_bdisable_opengl = parser.Found( _T("no_opengl") );
     g_start_fullscreen = parser.Found( _T("fullscreen") );
     g_rebuild_gl_cache = parser.Found( _T("rebuild_gl_raster_cache") );
-    
+
     return true;
 }
 
@@ -853,7 +855,7 @@ void MyApp::OnActivateApp( wxActivateEvent& event )
                 }
             }
         }
-            
+
         if(gFrame){
             for ( wxWindowList::iterator it = gFrame->GetChildren().begin(); it != gFrame->GetChildren().end(); ++it ) {
                 if( (*it)->IsShown() ) {
@@ -864,8 +866,8 @@ void MyApp::OnActivateApp( wxActivateEvent& event )
                 }
             }
         }
-            
-#if 0            
+
+#if 0
         if(console && console->IsShown()) {
             console->Hide();
         }
@@ -888,18 +890,18 @@ void MyApp::OnActivateApp( wxActivateEvent& event )
         gFrame->SurfaceToolbar();
 
         wxWindow *pOptions = NULL;
-        
+
         wxWindowListNode *node = AppActivateList.GetFirst();
         while (node) {
             wxWindow *win = node->GetData();
             win->Show();
             if( win->IsKindOf( CLASSINFO(options) ) )
                 pOptions = win;
-                
+
             node = node->GetNext();
         }
-        
-#if 0        
+
+#if 0
         if(g_FloatingCompassDialog){
             g_FloatingCompassDialog->Hide();
             g_FloatingCompassDialog->Show();
@@ -936,7 +938,7 @@ bool MyApp::OnInit()
 {
     if( !wxApp::OnInit() ) return false;
 
-    
+
     //  On Windows
     //  We allow only one instance unless the portable option is used
 #ifdef __WXMSW__
@@ -945,6 +947,12 @@ bool MyApp::OnInit()
         if ( m_checker->IsAnotherRunning() )
             return false;               // exit quietly
     }
+#endif
+
+#if wxCHECK_VERSION(3,0,0)
+    // Set the name of the app as displayed to the user.
+    // This is necessary at least on OS X, for the capitalisation to be correct in the system menus.
+    MyApp::SetAppDisplayName("OpenCPN");
 #endif
 
 #ifdef OCPN_USE_CRASHRPT
@@ -958,14 +966,14 @@ bool MyApp::OnInit()
 
     wxString version_crash = str_version_major + _T(".") + str_version_minor + _T(".") + str_version_patch;
     info.pszAppVersion = version_crash.c_str();
-    
+
     int type = MiniDumpWithDataSegs;  // Include the data sections from all loaded modules.
                                                 // This results in the inclusion of global variables
 
     type |=  MiniDumpNormal;// | MiniDumpWithPrivateReadWriteMemory | MiniDumpWithIndirectlyReferencedMemory;
     info.uMiniDumpType = (MINIDUMP_TYPE)type;
-                                                
-                                                
+
+
     // URL for sending error reports over HTTP.
     info.pszEmailTo = _T("opencpn@bigdumboat.com");
     info.pszSmtpProxy = _T("mail.bigdumboat.com:587");
@@ -1039,7 +1047,7 @@ bool MyApp::OnInit()
 
     //    On MSW, force the entire process to run on one CPU core only
     //    This resolves some difficulty with wxThread syncronization
-#if 0    
+#if 0
 #ifdef __WXMSW__
     //Gets the current process handle
     HANDLE hProc = GetCurrentProcess();
@@ -1078,17 +1086,17 @@ bool MyApp::OnInit()
 
 //      CALLGRIND_STOP_INSTRUMENTATION
 
-    
+
     //    Set up some drawing factors
     int mmx, mmy;
     wxDisplaySizeMM( &mmx, &mmy );
-    
+
     int sx, sy;
     wxDisplaySize( &sx, &sy );
-    
+
     g_pix_per_mm = ( (double) sx ) / ( (double) mmx );
-    
-    
+
+
     g_start_time = wxDateTime::Now();
 
     g_loglast_time = g_start_time;   // pjotrc 2010.02.09
@@ -1127,7 +1135,7 @@ bool MyApp::OnInit()
     sigaction(SIGUSR1, &sa_all, NULL);
 
     sigaction(SIGUSR1, NULL, &sa_all_old);// inspect existing action for this signal
-    
+
     sigaction(SIGTERM, &sa_all, NULL);
     sigaction(SIGTERM, NULL, &sa_all_old);
 #endif
@@ -1166,14 +1174,14 @@ bool MyApp::OnInit()
 
 //      Establish a "home" location
     wxStandardPaths& std_path = *dynamic_cast<wxStandardPaths*>(&wxApp::GetTraits()->GetStandardPaths());
-    
+
     //TODO  Why is the following preferred?  Will not compile with gcc...
 //    wxStandardPaths& std_path = wxApp::GetTraits()->GetStandardPaths();
-    
+
 #ifdef __WXGTK__
     std_path.SetInstallPrefix(wxString(PREFIX, wxConvUTF8));
 #endif
-    
+
     gExe_path = std_path.GetExecutablePath();
 
     pHome_Locn = new wxString;
@@ -1230,7 +1238,7 @@ bool MyApp::OnInit()
     wxString large_log_message;
     if( ::wxFileExists( glog_file ) ) {
         if( wxFileName::GetSize( glog_file ) > 1000000 ) {
-            wxString oldlog = glog_file;                      
+            wxString oldlog = glog_file;
             oldlog.Append( _T(".log") );
             //  Defer the showing of this messagebox until the system locale is established.
             large_log_message = ( _("Old log will be moved to opencpn.log.log") );
@@ -1340,16 +1348,16 @@ bool MyApp::OnInit()
     //      Init the Selectable Route Items List
     pSelect = new Select();
     pSelect->SetSelectPixelRadius( 12 );
-    
+
     //      Init the Selectable Tide/Current Items List
     pSelectTC = new Select();
     //  Increase the select radius for tide/current stations
     pSelectTC->SetSelectPixelRadius( 25 );
-    
+
     //      Init the Selectable AIS Target List
     pSelectAIS = new Select();
     pSelectAIS->SetSelectPixelRadius( 12 );
-    
+
 //      Initially AIS display is always on
     g_bShowAIS = true;
     g_pais_query_dialog_active = NULL;
@@ -1427,12 +1435,12 @@ bool MyApp::OnInit()
         exit( EXIT_FAILURE );
     }
 
-#ifdef __WXGTK__    
+#ifdef __WXGTK__
 //    if( !CheckSerialAccess() ){
 //    }
-        
-#endif    
-    
+
+#endif
+
     //      Init the WayPoint Manager (Must be after UI Style init).
     pWayPointMan = new WayPointman();
     pWayPointMan->ProcessIcons( g_StyleManager->GetCurrentStyle() );
@@ -1442,16 +1450,16 @@ bool MyApp::OnInit()
     pConfig = (MyConfig *) pCF;
     pConfig->LoadMyConfig( 0 );
 
-    
+
     if(g_btouch){
         int SelectPixelRadius = 50;
-    
+
         pSelect->SetSelectPixelRadius(SelectPixelRadius);
         pSelectTC->SetSelectPixelRadius( wxMax(25, SelectPixelRadius) );
         pSelectAIS->SetSelectPixelRadius(SelectPixelRadius);
     }
-        
-    
+
+
     //        Is this the first run after a clean install?
     if( !n_NavMessageShown ) g_bFirstRun = true;
 
@@ -1549,29 +1557,29 @@ bool MyApp::OnInit()
     //  Show deferred log restart message, if it exists.
     if( !large_log_message.IsEmpty() )
         OCPNMessageBox ( NULL, large_log_message, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK, 5 );
-    
+
     //  Validate OpenGL functionality, if selected
 #ifdef ocpnUSE_GL
-        
+
 #ifdef __WXMSW__
     if( /*g_bopengl &&*/ !g_bdisable_opengl ) {
         wxFileName fn(std_path.GetExecutablePath());
         bool b_test_result = TestGLCanvas(fn.GetPathWithSep() );
-        
+
         if( !b_test_result )
             wxLogMessage( _T("OpenGL disabled due to test app failure.") );
-        
+
         g_bdisable_opengl = !b_test_result;
     }
 #endif
-    
+
 #else
     g_bdisable_opengl = true;;
 #endif
 
 
-    
-    
+
+
  #ifdef USE_S57
 
 //      Set up a useable CPL library error handler for S57 stuff
@@ -1703,11 +1711,11 @@ bool MyApp::OnInit()
         g_memCacheLimit = (int) ( (g_mem_total - g_mem_initial) * 0.5 );
         g_memCacheLimit = wxMin(g_memCacheLimit, 1024 * 1024); // Max is 1 GB if unspecified
     }
-#endif    
+#endif
 
-    
-    
-    
+
+
+
 //      Establish location and name of chart database
 #ifdef __WXMSW__
     pChartListFileName = new wxString( _T("CHRTLIST.DAT") );
@@ -1798,7 +1806,7 @@ bool MyApp::OnInit()
     wxString default_tcdata =  ( g_SData_Locn + _T("tcdata") +
              wxFileName::GetPathSeparator() + _T("HARMONIC.IDX"));
     wxFileName fdefault( default_tcdata );
-    
+
     if(!TideCurrentDataSet.GetCount()) {
         if( g_bportable ) {
             fdefault.MakeRelativeTo( g_PrivateDataDir );
@@ -1922,7 +1930,7 @@ bool MyApp::OnInit()
 
     cc1 = new ChartCanvas( gFrame );                         // the chart display canvas
     gFrame->SetCanvasWindow( cc1 );
-    
+
     cc1->SetQuiltMode( g_bQuiltEnable );                     // set initial quilt mode
     cc1->m_bFollow = pConfig->st_bFollow;               // set initial state
     cc1->SetViewPoint( vLat, vLon, initial_scale_ppm, 0., initial_rotation );
@@ -1936,7 +1944,7 @@ bool MyApp::OnInit()
     pthumbwin = new ThumbWin( cc1 );
 
     gFrame->ApplyGlobalSettings( false, false );               // done once on init with resize
-    
+
     g_toolbar_x = wxMax(g_toolbar_x, 0);
     g_toolbar_y = wxMax(g_toolbar_y, 0);
 
@@ -1944,7 +1952,7 @@ bool MyApp::OnInit()
     g_toolbar_y = wxMin(g_toolbar_y, ch);
 
     gFrame->SetToolbarScale();
-    
+
     //  The position and size of the static frame children (i.e. the canvas, and the status bar) are now set
     //  So now we can establish the AUI panes for them.
     //  It is important to have set the chartcanvas and status bar sizes before this point,
@@ -1967,12 +1975,12 @@ bool MyApp::OnInit()
     gFrame->Show( TRUE );
 
     gFrame->SetAndApplyColorScheme( global_color_scheme );
-    
+
     if( g_bframemax ) gFrame->Maximize( true );
 
     if( g_bresponsive  && ( g_pix_per_mm > 4.0))
         gFrame->Maximize( true );
-        
+
     stats = new StatWin( cc1 );
     stats->SetColorScheme( global_color_scheme );
 
@@ -1990,7 +1998,7 @@ bool MyApp::OnInit()
 
     //  Yield to pick up the OnSize() calls that result from Maximize()
     Yield();
-    
+
     wxString perspective;
     pConfig->SetPath( _T ( "/AUI" ) );
     pConfig->Read( _T ( "AUIPerspective" ), &perspective );
@@ -2144,7 +2152,7 @@ bool MyApp::OnInit()
         if(g_restore_dbindex > (ChartData->GetChartTableEntries()-1))
             g_restore_dbindex = 0;
     }
-    
+
     //  Apply the inital Group Array structure to the chart data base
     ChartData->ApplyGroupArray( g_pGroupArray );
 
@@ -2175,18 +2183,18 @@ extern ocpnGLOptions g_GLOptions;
         g_GLOptions.m_bTextureCompression && g_GLOptions.m_bTextureCompressionCaching ) {
 
         cc1->ReloadVP();                  //  Get a nice chart background loaded
-    
+
         //      Turn off the toolbar as a clear signal that the system is busy right now.
         // Note: I commented this out because the toolbar never comes back for me
         // and is unusable until I restart opencpn without generating the cache
-//        if( g_FloatingToolbarDialog ) 
+//        if( g_FloatingToolbarDialog )
 //            g_FloatingToolbarDialog->Hide();
-            
+
         BuildCompressedCache();
 
         }
 #endif
-    
+
 
 //      establish GPS timeout value as multiple of frame timer
 //      This will override any nonsense or unset value from the config file
@@ -2224,7 +2232,7 @@ extern ocpnGLOptions g_GLOptions;
     stats->Show( true );
 
     Yield();
-    
+
     gFrame->DoChartUpdate();
 
 //    g_FloatingToolbarDialog->LockPosition(false);
@@ -2290,7 +2298,7 @@ extern ocpnGLOptions g_GLOptions;
         g_FloatingCompassDialog = new ocpnFloatingCompassWindow( cc1 );
         if( g_FloatingCompassDialog ) g_FloatingCompassDialog->UpdateStatus( true );
     }
-    
+
     g_FloatingToolbarDialog->Raise();
     g_FloatingToolbarDialog->Show();
 
@@ -2304,7 +2312,7 @@ extern ocpnGLOptions g_GLOptions;
     //  We need a deferred resize to get glDrawPixels() to work right.
     //  So we set a trigger to generate a resize after 5 seconds....
     //  See the "UniChrome" hack elsewhere
-#ifdef ocpnUSE_GL    
+#ifdef ocpnUSE_GL
     if ( !g_bdisable_opengl )
     {
         glChartCanvas *pgl = (glChartCanvas *) cc1->GetglCanvas();
@@ -2318,7 +2326,7 @@ extern ocpnGLOptions g_GLOptions;
     }
 #endif
     g_pi_manager->CallLateInit();
-    
+
     if ( g_start_fullscreen )
         gFrame->ToggleFullScreen();
 
@@ -2436,7 +2444,7 @@ int MyApp::OnExit()
     delete g_pPlatform;
 
     delete plocale_def_lang;
-    
+
     FontMgr::Shutdown();
 
 #ifdef __WXMSW__
@@ -2479,7 +2487,6 @@ void MyApp::TrackOff( void )
 //------------------------------------------------------------------------------
 // MyFrame
 //------------------------------------------------------------------------------
-wxMenuBar *osx_menuBar;
 
 //      Frame implementation
 BEGIN_EVENT_TABLE(MyFrame, wxFrame) EVT_CLOSE(MyFrame::OnCloseWindow)
@@ -2510,19 +2517,9 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
         wxFrame( frame, -1, title, pos, size, style ) //wxSIMPLE_BORDER | wxCLIP_CHILDREN | wxRESIZE_BORDER)
 //wxCAPTION | wxSYSTEM_MENU | wxRESIZE_BORDER
 {
-
-    // wxWidgets 3.0.X seems to require that the main app wxFrame have some menubar in order to
-    // popuplate the Mac default menu items, like "Hide", "Quit". etc.
-    // Its OK if this menubar is devoid of OCPN specific items, however.
-    // Just needs to be there, empty or not...
-#ifdef __WXOSX__
-    osx_menuBar = new wxMenuBar();
-    SetMenuBar(osx_menuBar);
-#endif    
-    
     m_ulLastNEMATicktime = 0;
     m_pStatusBar = NULL;
-
+    m_pMenuBar = NULL;
     g_toolbar = NULL;
     m_toolbar_scale_tools_shown = false;
 
@@ -2575,7 +2572,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     {
         ConnectionParams *cp = g_pConnectionParams->Item(i);
         if( cp->bEnabled ) {
-            
+
 #ifdef __WXGTK__
             if( cp->GetDSPort().Contains(_T("Serial"))) {
                 if( ! g_bserial_access_checked ){
@@ -2584,8 +2581,8 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
                     g_bserial_access_checked = true;
                 }
             }
-#endif    
-                
+#endif
+
             dsPortType port_type = cp->IOSelect;
             DataStream *dstr = new DataStream( g_pMUX,
                                            cp->GetDSPort(),
@@ -2599,9 +2596,9 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
             dstr->SetOutputFilter(cp->OutputSentenceList);
             dstr->SetOutputFilterType(cp->OutputSentenceListType);
             dstr->SetChecksumCheck(cp->ChecksumCheck);
-            
+
             cp->b_IsSetup = true;
-            
+
             g_pMUX->AddStream(dstr);
         }
     }
@@ -2618,7 +2615,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
 
     Connect( EVT_THREADMSG, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtTHREADMSG );
 
-    
+
     //        Establish the system icons for the frame.
 
 #ifdef __WXMSW__
@@ -2697,10 +2694,10 @@ void MyFrame::OnActivate( wxActivateEvent& event )
         while (node) {
             wxWindow *win = node->GetData();
             win->Show();
-           
+
             node = node->GetNext();
         }
-        
+
 #if 0
         if(g_FloatingCompassDialog)
             g_FloatingCompassDialog->Show();
@@ -2764,7 +2761,7 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
     }
 
     if( ps52plib ) ps52plib->SetPLIBColorScheme( SchemeName );
-    
+
     //    Set up a pointer to the proper hash table
     pcurrent_user_color_hash = (wxColorHashMap *) UserColourHashTableArray->Item(
             Usercolortable_index );
@@ -2927,8 +2924,8 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
 
     CheckAndAddPlugInTool( tb );
     tipString = wxString( _("Show ENC Text") ) << _T(" (T)");
-    if( _toolbarConfigMenuUtil( ID_TEXT, tipString ) )
-        tb->AddTool( ID_TEXT, _T("text"),
+    if( _toolbarConfigMenuUtil( ID_ENC_TEXT, tipString ) )
+        tb->AddTool( ID_ENC_TEXT, _T("text"),
             style->GetToolIcon( _T("text"), TOOLICON_NORMAL ),
             style->GetToolIcon( _T("text"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
 
@@ -2984,8 +2981,8 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
 
     CheckAndAddPlugInTool( tb );
     tipString = _("About OpenCPN");
-    if( _toolbarConfigMenuUtil( ID_HELP, tipString ) )
-        tb->AddTool( ID_HELP, _T("help"),
+    if( _toolbarConfigMenuUtil( ID_ABOUT, tipString ) )
+        tb->AddTool( ID_ABOUT, _T("help"),
             style->GetToolIcon( _T("help"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
 
     //      Add any PlugIn toolbar tools that request default positioning
@@ -2996,8 +2993,8 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     if( _toolbarConfigMenuUtil( ID_MOB, tipString ) )
         tb->AddTool( ID_MOB, _T("mob_btn"),
                      style->GetToolIcon( _T("mob_btn"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
-                     
-                     
+
+
 // Realize() the toolbar
     g_FloatingToolbarDialog->Realize();
 
@@ -3013,7 +3010,7 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
         tb->ToggleTool( ID_FOLLOW, cc1->m_bFollow );
 
 #ifdef USE_S57
-    if( ( pConfig ) && ( ps52plib ) ) if( ps52plib->m_bOK ) tb->ToggleTool( ID_TEXT,
+    if( ( pConfig ) && ( ps52plib ) ) if( ps52plib->m_bOK ) tb->ToggleTool( ID_ENC_TEXT,
             ps52plib->GetShowS57Text() );
 #endif
 
@@ -3095,11 +3092,11 @@ bool MyFrame::AddDefaultPositionPlugInTools( ocpnToolBarSimple *tb )
 
     for( unsigned int i = 0; i < tool_array.GetCount(); i++ ) {
         PlugInToolbarToolContainer *pttc = tool_array.Item( i );
-        
+
         //      Tool is currently tagged as invisible
         if( !pttc->b_viz )
             continue;
-        
+
         if( pttc->position == -1 )                  // PlugIn has requested default positioning
                 {
             wxBitmap *ptool_bmp;
@@ -3135,7 +3132,7 @@ void MyFrame::RequestNewToolbar()
     bool b_reshow = true;
     if( g_FloatingToolbarDialog ) {
         b_reshow = g_FloatingToolbarDialog->IsShown();
-        
+
         float ff = fabs(g_FloatingToolbarDialog->GetScaleFactor() - g_toolbar_scalefactor);
         if(ff > 0.01f){
             DestroyMyToolbar();
@@ -3148,7 +3145,7 @@ void MyFrame::RequestNewToolbar()
         g_FloatingToolbarDialog = new ocpnFloatingToolbarDialog( cc1,
              wxPoint( g_toolbar_x, g_toolbar_y ), g_toolbar_orient, g_toolbar_scalefactor );
     }
-        
+
     if( g_FloatingToolbarDialog ) {
         if( g_FloatingToolbarDialog->IsToolbarShown() )
             DestroyMyToolbar();
@@ -3194,10 +3191,10 @@ void MyFrame::EnableToolbar( bool newstate )
         g_toolbar->EnableTool( ID_ROUTE, newstate );
         g_toolbar->EnableTool( ID_FOLLOW, newstate );
         g_toolbar->EnableTool( ID_SETTINGS, newstate );
-        g_toolbar->EnableTool( ID_TEXT, newstate );
+        g_toolbar->EnableTool( ID_ENC_TEXT, newstate );
         g_toolbar->EnableTool( ID_CURRENT, newstate );
         g_toolbar->EnableTool( ID_TIDE, newstate );
-        g_toolbar->EnableTool( ID_HELP, newstate );
+        g_toolbar->EnableTool( ID_ABOUT, newstate );
         g_toolbar->EnableTool( ID_TBEXIT, newstate );
         g_toolbar->EnableTool( ID_TBSTAT, newstate );
         g_toolbar->EnableTool( ID_PRINT, newstate );
@@ -3213,16 +3210,16 @@ void MyFrame::SetToolbarScale()
     //  Get the basic size of a tool icon
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
     wxSize style_tool_size = style->GetToolSize();
-    
+
     g_toolbar_scalefactor = 1.0;
     if(g_bresponsive ){
         //      Adjust the scale factor so that the basic tool size is xx millimetres, assumed square
         float target_size = 9.0;                // mm
-        
+
         float basic_tool_size_mm = style_tool_size.x / cc1->GetPixPerMM();
         g_toolbar_scalefactor =  target_size / basic_tool_size_mm;
         g_toolbar_scalefactor = wxMax(g_toolbar_scalefactor, 1.0);
-        
+
         //  Round to the nearest "quarter", to avoid rendering artifacts
         g_toolbar_scalefactor = wxRound( g_toolbar_scalefactor * 4.0 )/ 4.0;
     }
@@ -3253,7 +3250,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 
     if( bDBUpdateInProgress )
         return;
-    
+
     b_inCloseWindow = true;
 
     ::wxSetCursor( wxCURSOR_WAIT );
@@ -3274,10 +3271,10 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 
     g_bquiting = true;
 
-#ifdef ocpnUSE_GL    
+#ifdef ocpnUSE_GL
     if(g_bopengl && g_CompressorPool){
         g_CompressorPool->PurgeJobList();
-        
+
         if(g_CompressorPool->GetRunningJobCount())
             g_bcompression_wait = true;
     }
@@ -3291,7 +3288,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         wxYield();
     }
 
-    
+
     #define THREAD_WAIT_SECONDS  5
 #ifdef ocpnUSE_GL
     //  Try to wait a bit to see if all compression threads exit nicely
@@ -3300,21 +3297,21 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         time_t stall = now.GetTicks();
         time_t start = stall;
         time_t end = stall + THREAD_WAIT_SECONDS;
-        
+
         while(stall < end ){
             wxDateTime later = wxDateTime::Now();
             stall = later.GetTicks();
-            
+
             wxYield();
             wxSleep(1);
             if(!g_CompressorPool->GetRunningJobCount())
                 break;
         }
-        
-        int yyp = 5;    
+
+        int yyp = 5;
     }
 #endif
-    
+
     //   Save the saved Screen Brightness
     RestoreScreenBrightness();
 
@@ -3388,7 +3385,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 
     FrameTimer1.Stop();
     FrameCOGTimer.Stop();
-    
+
     g_bframemax = IsMaximized();
 
     //    Record the current state of tracking
@@ -3449,10 +3446,10 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     if( ChartData )
         ChartData->PurgeCache();
 
-        
-            
-            
-     
+
+
+
+
     SetStatusBar( NULL );
     stats = NULL;
 
@@ -3460,7 +3457,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         pRouteManagerDialog->Destroy();
         pRouteManagerDialog = NULL;
     }
-        
+
     cc1->Destroy();
     cc1 = NULL;
 
@@ -3581,7 +3578,7 @@ void MyFrame::ODoSetSize( void )
         }
     }
 
-    
+
     if( g_FloatingToolbarDialog ) {
         wxSize oldSize = g_FloatingToolbarDialog->GetSize();
         g_FloatingToolbarDialog->RePosition();
@@ -3594,8 +3591,8 @@ void MyFrame::ODoSetSize( void )
         g_FloatingToolbarDialog->RePosition();
 
     }
- 
-   
+
+
     UpdateGPSCompassStatusBox( true );
 
     if( console ) PositionConsole();
@@ -3623,15 +3620,15 @@ void MyFrame::ODoSetSize( void )
 
     if( pthumbwin )
         pthumbwin->SetMaxSize( cc1->GetParent()->GetSize() );
-    
+
     //  Reset the options dialog size logic
     options_lastWindowSize = wxSize(0,0);
-    options_lastWindowPos = wxPoint(0,0);    
-    
+    options_lastWindowPos = wxPoint(0,0);
+
     if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ){
         pRouteManagerDialog->Centre();
     }
-        
+
 }
 
 void MyFrame::PositionConsole( void )
@@ -3666,12 +3663,12 @@ void MyFrame::UpdateAllFonts()
         pRoutePropDialog->Destroy();
         pRoutePropDialog = NULL;
     }
-    
+
     if( pTrackPropDialog ) {
         pTrackPropDialog->Destroy();
         pTrackPropDialog = NULL;
     }
-    
+
     if( pMarkInfoDialog ) {
         pMarkInfoDialog->Destroy();
         pMarkInfoDialog = NULL;
@@ -3681,8 +3678,8 @@ void MyFrame::UpdateAllFonts()
         g_pObjectQueryDialog->Destroy();
         g_pObjectQueryDialog = NULL;
     }
-    
-       
+
+
     if( pWayPointMan ) pWayPointMan->ClearRoutePointFonts();
 
     cc1->Refresh();
@@ -3714,14 +3711,14 @@ void MyFrame::SetGroupIndex( int index )
     cc1->UpdateCanvasOnGroupChange();
 
     int dbi_hint = cc1->FindClosestCanvasChartdbIndex( current_chart_native_scale );
-    
+
     double best_scale = cc1->GetBestStartScale(dbi_hint, vp);
-    
+
     cc1->SetVPScale( best_scale );
-    
+
     if(cc1->GetQuiltMode())
         dbi_hint = cc1->GetQuiltReferenceChartIndex();
-    
+
     //    Refresh the canvas, selecting the "best" chart,
     //    applying the prior ViewPort exactly
     ChartsRefresh( dbi_hint, vp, true );
@@ -3741,83 +3738,165 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
     if( s_ProgDialog ) return;
 
     switch( event.GetId() ){
+        case ID_MENU_SCALE_IN:
         case ID_STKUP:
             DoStackDelta( 1 );
             DoChartUpdate();
             break;
 
+        case ID_MENU_SCALE_OUT:
         case ID_STKDN:
             DoStackDelta( -1 );
             DoChartUpdate();
             break;
 
+        case ID_MENU_ZOOM_IN:
         case ID_ZOOMIN: {
             cc1->DoZoomCanvas( 2.0, false );
             DoChartUpdate();
             break;
         }
 
+        case ID_MENU_ZOOM_OUT:
         case ID_ZOOMOUT: {
             cc1->DoZoomCanvas( 0.5, false );
             DoChartUpdate();
             break;
         }
 
+        case ID_MENU_ROUTE_NEW:
         case ID_ROUTE: {
             if( 0 == nRoute_State ){
                 nRoute_State = 1;
                 cc1->SetCursor( *cc1->pCursorPencil );
-                g_toolbar->ToggleTool( ID_ROUTE, true );
+                SetToolbarItemState( ID_ROUTE, true );
             }
             else {
                 cc1->FinishRoute();
-                g_toolbar->ToggleTool( ID_ROUTE, false );
+                SetToolbarItemState( ID_ROUTE, false );
             }
-            
+
             break;
         }
 
+        case ID_MENU_TOOL_MEASURE: {
+            cc1->StartMeasureRoute();
+            break;
+        }
+
+        case ID_MENU_MARK_BOAT: {
+            cc1->DropMarker(true);
+            break;
+        }
+
+        case ID_MENU_MARK_CURSOR: {
+            cc1->DropMarker(false);
+            break;
+        }
+
+        case ID_MENU_NAV_FOLLOW:
         case ID_FOLLOW: {
             TogglebFollow();
             break;
         }
 
+        case ID_MENU_CHART_OUTLINES: {
+            ToggleChartOutlines();
+            break;
+        }
+
+        case ID_MENU_CHART_QUILTING: {
+            ToggleQuiltMode();
+            break;
+        }
+
+        case ID_MENU_UI_CHARTBAR: {
+            if( stats ) {
+                if( stats->IsShown() )
+                    stats->Hide();
+                else {
+                    stats->Move(0,0);
+                    stats->RePosition();
+                    stats->Show();
+                    gFrame->Raise();
+                }
+                Refresh();
+            }
+            break;
+        }
+            
 #ifdef USE_S57
-        case ID_TEXT: {
-            ps52plib->SetShowS57Text( !ps52plib->GetShowS57Text() );
-            if( g_toolbar ) g_toolbar->ToggleTool( ID_TEXT, ps52plib->GetShowS57Text() );
-            cc1->ReloadVP();
+        case ID_MENU_ENC_TEXT:
+        case ID_ENC_TEXT: {
+            ToggleENCText();
+            break;
+        }
+        case ID_MENU_ENC_LIGHTS: {
+            ToggleLights();
+            break;
+        }
+        case ID_MENU_ENC_SOUNDINGS: {
+            ToggleSoundings();
+            break;
+        }
+        case ID_MENU_ENC_ANCHOR: {
+            ToggleAnchor();
             break;
         }
 #endif
 
+        case ID_MENU_AIS_TARGETS:
         case ID_AIS: {
             g_bShowAIS = !g_bShowAIS;
 
             if( g_toolbar ) {
-                if( g_bShowAIS )
+                wxString iconName;
+                if( g_bShowAIS ) {
                     g_toolbar->SetToolShortHelp( ID_AIS, _("Hide AIS Targets") );
-                else
+                    iconName = _T("AIS");
+                } else {
                     g_toolbar->SetToolShortHelp( ID_AIS, _("Show AIS Targets") );
+                    iconName = _T("AIS_Disabled");
+                }
+
+                if( m_pAISTool ) {
+                    g_toolbar->SetToolNormalBitmapEx( m_pAISTool, iconName );
+                    g_toolbar->Refresh();
+                    m_lastAISiconName = iconName;
+                }
             }
 
-            wxString iconName;
-            if( g_bShowAIS )
-                iconName = _T("AIS");
-            else
-                iconName = _T("AIS_Disabled");
-
-            if( m_pAISTool && g_toolbar) {
-                g_toolbar->SetToolNormalBitmapEx( m_pAISTool, iconName );
-                g_toolbar->Refresh();
-                m_lastAISiconName = iconName;
-            }
+            SetMenubarItemState(ID_MENU_AIS_TARGETS, g_bShowAIS);
 
             cc1->ReloadVP();
 
             break;
         }
 
+        case ID_MENU_AIS_TARGETLIST: {
+            if ( cc1 ) cc1->ShowAISTargetList();
+            break;
+        }
+
+        case ID_MENU_AIS_TRACKS: {
+            g_bAISShowTracks = !g_bAISShowTracks;
+            SetMenubarItemState(ID_MENU_AIS_TRACKS, g_bAISShowTracks);
+            break;
+        }
+
+        case ID_MENU_AIS_CPADIALOG: {
+            g_bAIS_CPA_Alert = !g_bAIS_CPA_Alert;
+            SetMenubarItemState(ID_MENU_AIS_CPADIALOG, g_bAIS_CPA_Alert);
+            break;
+        }
+
+        case ID_MENU_AIS_CPASOUND: {
+            g_bAIS_CPA_Alert_Audio = !g_bAIS_CPA_Alert_Audio;
+            SetMenubarItemState(ID_MENU_AIS_CPASOUND, g_bAIS_CPA_Alert_Audio);
+            break;
+        }
+
+        case wxID_PREFERENCES:
         case ID_SETTINGS: {
 
             bool bnewtoolbar = !( DoOptionsDialog() == 0 );
@@ -3834,17 +3913,25 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             break;
         }
 
+        case ID_MENU_UI_FULLSCREEN: {
+            ToggleFullScreen();
+            break;
+        }
+
+        case ID_MENU_SHOW_CURRENTS:
         case ID_CURRENT: {
             LoadHarmonics();
 
             if( ptcmgr->IsReady() ) {
                 cc1->SetbShowCurrent( !cc1->GetbShowCurrent() );
-                if( g_toolbar ) g_toolbar->ToggleTool( ID_CURRENT, cc1->GetbShowCurrent() );
+                SetToolbarItemState( ID_CURRENT, cc1->GetbShowCurrent() );
+                SetMenubarItemState( ID_MENU_SHOW_CURRENTS, cc1->GetbShowCurrent() );
                 cc1->ReloadVP();
             } else {
                 wxLogMessage( _T("Chart1::Event...TCMgr Not Available") );
                 cc1->SetbShowCurrent( false );
-                if( g_toolbar ) g_toolbar->ToggleTool( ID_CURRENT, false );
+                SetToolbarItemState( ID_CURRENT, false );
+                SetMenubarItemState( ID_MENU_SHOW_CURRENTS, false );
             }
 
             if( cc1->GetbShowCurrent() ) {
@@ -3859,17 +3946,20 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         }
 
+        case ID_MENU_SHOW_TIDES:
         case ID_TIDE: {
             LoadHarmonics();
 
             if( ptcmgr->IsReady() ) {
                 cc1->SetbShowTide( !cc1->GetbShowTide() );
-                if( g_toolbar ) g_toolbar->ToggleTool( ID_TIDE, cc1->GetbShowTide() );
+                SetToolbarItemState( ID_TIDE, cc1->GetbShowTide() );
+                SetMenubarItemState( ID_MENU_SHOW_TIDES, cc1->GetbShowTide() );
                 cc1->ReloadVP();
             } else {
                 wxLogMessage( _("Chart1::Event...TCMgr Not Available") );
                 cc1->SetbShowTide( false );
-                if( g_toolbar ) g_toolbar->ToggleTool( ID_TIDE, false );
+                SetToolbarItemState( ID_TIDE, false );
+                SetMenubarItemState( ID_MENU_SHOW_TIDES, false );
             }
 
             if( cc1->GetbShowTide() ) {
@@ -3884,7 +3974,8 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         }
 
-        case ID_HELP: {
+        case wxID_ABOUT:
+        case ID_ABOUT: {
             if( !g_pAboutDlg ) g_pAboutDlg = new about( this, &g_SData_Locn );
 
             g_pAboutDlg->Update();
@@ -3893,11 +3984,17 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             break;
         }
 
+        case wxID_HELP: {
+            LaunchLocalHelp();
+            break;
+        }
+
         case ID_PRINT: {
             DoPrint();
             break;
         }
 
+        case ID_MENU_UI_COLSCHEME:
         case ID_COLSCHEME: {
             ToggleColorScheme();
             break;
@@ -3908,6 +4005,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             break;
         }
 
+        case ID_MENU_ROUTE_MANAGER:
         case ID_ROUTEMANAGER: {
             if( NULL == pRouteManagerDialog )         // There is one global instance of the Dialog
             pRouteManagerDialog = new RouteManagerDialog( cc1 );
@@ -3926,6 +4024,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             break;
         }
 
+        case ID_MENU_NAV_TRACK:
         case ID_TRACK: {
             if( !g_bTrackActive ) {
                 TrackOn();
@@ -3937,12 +4036,15 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             }
             break;
         }
-        
+
+        case ID_MENU_CHART_NORTHUP:
+        case ID_MENU_CHART_COGUP:
         case ID_TBSTATBOX: {
             ToggleCourseUp();
             break;
         }
 
+        case ID_MENU_MARK_MOB:
         case ID_MOB: {
             ActivateMOB();
             break;
@@ -4067,11 +4169,11 @@ void MyFrame::TrackOn( void )
     pRouteList->Append( g_pActiveTrack );
     if(pConfig)
         pConfig->AddNewRoute( g_pActiveTrack, 0 );
-    
+
     g_pActiveTrack->Start();
-    
-    if( g_toolbar )
-        g_toolbar->ToggleTool( ID_TRACK, g_bTrackActive );
+
+    SetToolbarItemState( ID_TRACK, g_bTrackActive );
+    SetMenubarItemState( ID_MENU_NAV_TRACK, g_bTrackActive );
 
     if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
     {
@@ -4135,8 +4237,8 @@ Track *MyFrame::TrackOff( bool do_add_point )
         pRouteManagerDialog->UpdateRouteListCtrl();
     }
 
-    if( g_toolbar )
-        g_toolbar->ToggleTool( ID_TRACK, g_bTrackActive );
+    SetToolbarItemState( ID_TRACK, g_bTrackActive );
+    SetMenubarItemState( ID_MENU_NAV_TRACK, g_bTrackActive );
 
     return return_val;
 }
@@ -4181,6 +4283,9 @@ void MyFrame::ToggleCourseUp( void )
     } else
         cc1->SetVPRotation(0); /* reset to north up */
 
+    SetMenubarItemState( ID_MENU_CHART_COGUP, g_bCourseUp );
+    SetMenubarItemState( ID_MENU_CHART_NORTHUP, !g_bCourseUp );
+
     DoCOGSet();
     UpdateGPSCompassStatusBox( true );
     DoChartUpdate();
@@ -4192,7 +4297,8 @@ void MyFrame::ToggleENCText( void )
 #ifdef USE_S57
     if( ps52plib ) {
         ps52plib->SetShowS57Text( !ps52plib->GetShowS57Text() );
-        if( g_toolbar ) g_toolbar->ToggleTool( ID_TEXT, ps52plib->GetShowS57Text() );
+        SetToolbarItemState( ID_ENC_TEXT, ps52plib->GetShowS57Text() );
+        SetMenubarItemState( ID_MENU_ENC_TEXT, ps52plib->GetShowS57Text() );
         cc1->ReloadVP();
     }
 
@@ -4204,6 +4310,7 @@ void MyFrame::ToggleSoundings( void )
 #ifdef USE_S57
     if( ps52plib ) {
         ps52plib->SetShowSoundings( !ps52plib->GetShowSoundings() );
+        SetMenubarItemState( ID_MENU_ENC_SOUNDINGS, ps52plib->GetShowSoundings() );
         cc1->ReloadVP();
     }
 #endif
@@ -4229,16 +4336,18 @@ bool MyFrame::ToggleLights( bool doToggle, bool temporary )
             }
         }
     }
-    
+
     if( doToggle ){
         if( !ps52plib->IsObjNoshow("LIGHTS") )
             ps52plib->AddObjNoshow("LIGHTS");
         else
             ps52plib->RemoveObjNoshow("LIGHTS");
-    }
         
-            
-    
+        SetMenubarItemState( ID_MENU_ENC_LIGHTS, !ps52plib->IsObjNoshow("LIGHTS") );
+    }
+
+
+
 #endif
     return oldstate;
 }
@@ -4301,7 +4410,7 @@ void MyFrame::ToggleAnchor( void )
             }
             if( cnt == num ) break;
         }
-        
+
         if( !ps52plib->IsObjNoshow("SBDARE") ){
             ps52plib->AddObjNoshow("SBDARE");
             for( unsigned int c = 0; c < num; c++ ) {
@@ -4314,9 +4423,11 @@ void MyFrame::ToggleAnchor( void )
                 ps52plib->RemoveObjNoshow(categories[c]);
             }
         }
-        
+
         ps52plib->GenerateStateHash();
         cc1->ReloadVP();
+
+        SetMenubarItemState( ID_MENU_ENC_ANCHOR, !ps52plib->IsObjNoshow("SBDARE") );
     }
 #endif
 }
@@ -4331,11 +4442,11 @@ void MyFrame::TogglebFollow( void )
 void MyFrame::SetbFollow( void )
 {
     cc1->m_bFollow = true;
-    if( g_toolbar ) g_toolbar->ToggleTool( ID_FOLLOW, cc1->m_bFollow );
+    SetToolbarItemState( ID_FOLLOW, true );
+    SetMenubarItemState( ID_MENU_NAV_FOLLOW, true );
 
     DoChartUpdate();
     cc1->ReloadVP();
-
 }
 
 void MyFrame::ClearbFollow( void )
@@ -4343,11 +4454,13 @@ void MyFrame::ClearbFollow( void )
     //    Center the screen on the GPS position, for lack of a better place
     vLat = gLat;
     vLon = gLon;
+
     cc1->m_bFollow = false;
-    if( g_toolbar ) g_toolbar->ToggleTool( ID_FOLLOW, cc1->m_bFollow );
+    SetToolbarItemState( ID_FOLLOW, false );
+    SetMenubarItemState( ID_MENU_NAV_FOLLOW, false );
+
     DoChartUpdate();
     cc1->ReloadVP();
-
 }
 
 void MyFrame::ToggleChartOutlines( void )
@@ -4359,9 +4472,16 @@ void MyFrame::ToggleChartOutlines( void )
     cc1->Refresh( false );
 
 #ifdef ocpnUSE_GL         // opengl renders chart outlines as part of the chart this needs a full refresh
-    if( g_bopengl ) 
+    if( g_bopengl )
         cc1->GetglCanvas()->Invalidate();
 #endif
+
+    SetMenubarItemState( ID_MENU_CHART_OUTLINES, g_bShowOutlines );
+}
+
+void MyFrame::SetMenubarItemState( int item_id, bool state )
+{
+    if( m_pMenuBar ) m_pMenuBar->Check( item_id, state );
 }
 
 void MyFrame::SetToolbarItemState( int tool_id, bool state )
@@ -4405,6 +4525,37 @@ void MyFrame::ApplyGlobalSettings( bool bFlyingUpdate, bool bnewtoolbar )
         }
     }
 
+
+    /*
+     * Menu Bar - add or remove is if necessary, and update the state of the menu items
+     */
+#ifdef __WXOSX__
+    bool showMenuBar = true;    // the menu bar is always visible in OS X
+#else
+    bool showMenuBar = pConfig->m_bShowMenuBar;
+#endif
+
+    if ( showMenuBar ) {
+        if ( !m_pMenuBar ) {    // add the menu bar if it is enabled
+            m_pMenuBar = new wxMenuBar();
+            RegisterGlobalMenuItems();
+            SetMenuBar(m_pMenuBar); // must be after RegisterGlobalMenuItems for wx to populate the OS X App Menu correctly
+
+            SendSizeEvent();        // only needed for MSW ?
+        }
+        UpdateGlobalMenuItems(); // update the state of the menu items (checkmarks etc)
+    } else {
+        if ( m_pMenuBar ) {     // remove the menu bar if it is disabled
+            SetMenuBar( NULL );
+            m_pMenuBar->Destroy();
+            m_pMenuBar = NULL;
+
+            SendSizeEvent();        // only needed for MSW ?
+            Refresh( false );
+        }
+    }
+
+
     if( bFlyingUpdate ) {
         if( pConfig->m_bShowCompassWin ) {
             if(!g_FloatingCompassDialog) {
@@ -4419,6 +4570,119 @@ void MyFrame::ApplyGlobalSettings( bool bFlyingUpdate, bool bnewtoolbar )
 
     if( bnewtoolbar ) UpdateToolbar( global_color_scheme );
 
+}
+
+
+wxString _menuText( wxString name, wxString shortcut ) {
+    wxString menutext;
+    menutext << name << _T("\t") << shortcut;
+    return menutext;
+}
+
+void MyFrame::RegisterGlobalMenuItems()
+{
+    if ( !m_pMenuBar ) return;  // if there isn't a menu bar
+
+
+    wxMenu* nav_menu = new wxMenu();
+    nav_menu->AppendCheckItem( ID_MENU_NAV_FOLLOW, _menuText(_("Auto Follow"), _T("Ctrl-A")) );
+    nav_menu->AppendCheckItem( ID_MENU_NAV_TRACK, _("Record Track") );
+    nav_menu->AppendSeparator();
+    nav_menu->AppendRadioItem( ID_MENU_CHART_NORTHUP, _("North Up Mode") );
+    nav_menu->AppendRadioItem( ID_MENU_CHART_COGUP, _("Course Up Mode") );
+    nav_menu->AppendSeparator();
+    nav_menu->Append( ID_MENU_ZOOM_IN, _menuText(_("Zoom In"), _T("+")) );
+    nav_menu->Append( ID_MENU_ZOOM_OUT, _menuText(_("Zoom Out"), _T("-")) );
+    nav_menu->AppendSeparator();
+    nav_menu->Append( ID_MENU_SCALE_IN, _menuText(_("Larger Scale Chart"), _T("Ctrl-Left")) );
+    nav_menu->Append( ID_MENU_SCALE_OUT, _menuText(_("Smaller Scale Chart"), _T("Ctrl-Right")) );
+    nav_menu->AppendSeparator();
+    m_pMenuBar->Append( nav_menu, _("Navigate") );
+
+
+    wxMenu* view_menu = new wxMenu();
+    view_menu->AppendCheckItem( ID_MENU_CHART_QUILTING, _menuText(_("Enable Chart Quilting"), _T("Q")) );
+    view_menu->AppendCheckItem( ID_MENU_CHART_OUTLINES, _menuText(_("Show Chart Outlines"), _T("O")) );
+    view_menu->AppendCheckItem( ID_MENU_UI_CHARTBAR, _menuText(_("Show Chart Bar"), _T("Ctrl-B")) );
+#ifdef USE_S57
+    view_menu->AppendSeparator();
+    view_menu->AppendCheckItem( ID_MENU_ENC_TEXT, _menuText(_("Show ENC Text"), _T("T")) );
+    view_menu->AppendCheckItem( ID_MENU_ENC_LIGHTS, _menuText(_("Show ENC Lights"), _T("L")) );
+    view_menu->AppendCheckItem( ID_MENU_ENC_SOUNDINGS, _menuText(_("Show ENC Soundings"), _T("S")) );
+    view_menu->AppendCheckItem( ID_MENU_ENC_ANCHOR, _menuText(_("Show ENC Anchoring Info"), _T("A")) );
+#endif
+    view_menu->AppendSeparator();
+    view_menu->AppendCheckItem( ID_MENU_SHOW_TIDES, _("Show Tides") );
+    view_menu->AppendCheckItem( ID_MENU_SHOW_CURRENTS, _("Show Currents") );
+    view_menu->AppendSeparator();
+    view_menu->Append( ID_MENU_UI_COLSCHEME, _menuText(_("Change Color Scheme"), _T("C")) );
+    view_menu->AppendSeparator();
+#ifdef __WXOSX__
+    view_menu->Append(ID_MENU_UI_FULLSCREEN, _menuText(_("Enter Full Screen"), _T("RawCtrl-Ctrl-F")) );
+#else
+    view_menu->Append(ID_MENU_UI_FULLSCREEN, _menuText(_("Enter Full Screen"), _T("F11")) );
+#endif
+    m_pMenuBar->Append( view_menu, _("View") );
+
+
+    wxMenu* ais_menu = new wxMenu();
+    ais_menu->AppendCheckItem( ID_MENU_AIS_TARGETS, _("Show AIS Targets") );
+    ais_menu->AppendCheckItem( ID_MENU_AIS_TRACKS, _("Show Target Tracks") );
+    ais_menu->AppendCheckItem( ID_MENU_AIS_CPADIALOG, _("Show CPA Alert Dialogs") );
+    ais_menu->AppendCheckItem( ID_MENU_AIS_CPASOUND, _("Sound CPA Alarms") );
+    ais_menu->AppendSeparator();
+    ais_menu->Append( ID_MENU_AIS_TARGETLIST, _("AIS Target List...") );
+    m_pMenuBar->Append( ais_menu, _("AIS") );
+
+
+    wxMenu* tools_menu = new wxMenu();
+    tools_menu->Append( ID_MENU_TOOL_MEASURE, _menuText(_("Measure Distance"), _T("M")) );
+    tools_menu->AppendSeparator();
+    tools_menu->Append( ID_MENU_ROUTE_MANAGER, _("Route && Mark Manager...") );
+    tools_menu->Append( ID_MENU_ROUTE_NEW, _menuText(_("Create Route"), _T("Ctrl-R")) );
+    tools_menu->AppendSeparator();
+    tools_menu->Append( ID_MENU_MARK_BOAT, _menuText(_("Drop Mark at Boat"), _T("Ctrl-O")) );
+    tools_menu->Append( ID_MENU_MARK_CURSOR, _menuText(_("Drop Mark at Cursor"), _T("Ctrl-M")) );
+    tools_menu->AppendSeparator();
+    tools_menu->Append( ID_MENU_MARK_MOB, _menuText(_("Drop MOB Marker"), _T("RawCtrl-Space")) ); // NOTE Cmd+Space is reserved for Spotlight
+    tools_menu->AppendSeparator();
+    tools_menu->Append( wxID_PREFERENCES, _menuText(_("Preferences..."), _T("Ctrl-,")) );
+    m_pMenuBar->Append( tools_menu, _("Tools") );
+
+
+    wxMenu* help_menu = new wxMenu();
+    help_menu->Append( wxID_ABOUT, _("About OpenCPN") );
+    help_menu->Append( wxID_HELP, _("OpenCPN Help") );
+    m_pMenuBar->Append( help_menu, _("Help") );
+
+
+    // Set initial values for menu check items and radio items
+    UpdateGlobalMenuItems();
+}
+
+void MyFrame::UpdateGlobalMenuItems()
+{
+    if ( !m_pMenuBar ) return;  // if there isn't a menu bar
+
+    if ( pConfig ) m_pMenuBar->FindItem( ID_MENU_NAV_FOLLOW )->Check( pConfig->st_bFollow );
+    m_pMenuBar->FindItem( ID_MENU_CHART_NORTHUP )->Check( !g_bCourseUp );
+    m_pMenuBar->FindItem( ID_MENU_CHART_COGUP )->Check( g_bCourseUp );
+    m_pMenuBar->FindItem( ID_MENU_NAV_TRACK )->Check( g_bTrackActive );
+    m_pMenuBar->FindItem( ID_MENU_CHART_OUTLINES )->Check( g_bShowOutlines );
+    m_pMenuBar->FindItem( ID_MENU_CHART_QUILTING )->Check( g_bQuiltEnable );
+    m_pMenuBar->FindItem( ID_MENU_UI_CHARTBAR )->Check( true );
+    m_pMenuBar->FindItem( ID_MENU_AIS_TARGETS )->Check( g_bShowAIS );
+    m_pMenuBar->FindItem( ID_MENU_AIS_TRACKS )->Check( g_bAISShowTracks );
+    m_pMenuBar->FindItem( ID_MENU_AIS_CPADIALOG )->Check( g_bAIS_CPA_Alert );
+    m_pMenuBar->FindItem( ID_MENU_AIS_CPASOUND )->Check( g_bAIS_CPA_Alert_Audio );
+#ifdef USE_S57
+    if( ps52plib ) {
+        m_pMenuBar->FindItem( ID_MENU_ENC_TEXT )->Check( ps52plib->GetShowS57Text() );
+        m_pMenuBar->FindItem( ID_MENU_ENC_SOUNDINGS )->Check( ps52plib->GetShowSoundings() );
+        m_pMenuBar->FindItem( ID_MENU_ENC_LIGHTS )->Check( !ps52plib->IsObjNoshow("LIGHTS") );
+        m_pMenuBar->FindItem( ID_MENU_ENC_ANCHOR )->Check( !ps52plib->IsObjNoshow("SBDARE") );
+    }
+#endif
 }
 
 void MyFrame::SubmergeToolbarIfOverlap( int x, int y, int margin )
@@ -4456,7 +4720,7 @@ void MyFrame::JumpToPosition( double lat, double lon, double scale )
 
     //  is the current chart available at the target location?
     int currently_selected_index = pCurrentStack->GetCurrentEntrydbIndex();
-    
+
     //  If not, then select the smallest scale chart at the target location (may be empty)
     ChartData->BuildChartStack( pCurrentStack, lat, lon );
     if(!pCurrentStack->DoesStackContaindbIndex(currently_selected_index)){
@@ -4465,13 +4729,13 @@ void MyFrame::JumpToPosition( double lat, double lon, double scale )
         if( cc1->GetQuiltMode() )
             cc1->SetQuiltRefChart( selected_index );
     }
-    
+
     if( !cc1->GetQuiltMode() ) {
         cc1->SetViewPoint( lat, lon, scale, Current_Ch->GetChartSkew() * PI / 180., cc1->GetVPRotation() );
     } else {
         cc1->SetViewPoint( lat, lon, scale, 0, cc1->GetVPRotation() );
     }
-    
+
     cc1->ReloadVP();
 
     SetToolbarItemState( ID_FOLLOW, false );
@@ -4484,7 +4748,7 @@ void MyFrame::JumpToPosition( double lat, double lon, double scale )
 int MyFrame::DoOptionsDialog()
 {
     g_boptionsactive = true;
-    
+
     ::wxBeginBusyCursor();
     g_options = new options( this, -1, _("Options") );
     ::wxEndBusyCursor();
@@ -4536,23 +4800,23 @@ int MyFrame::DoOptionsDialog()
         }
     }
     else {
-        
+
         wxSize canvas_size = cc1->GetSize();
         wxPoint canvas_pos = cc1->GetPosition();
         wxSize fitted_size = g_options->GetSize();;
- 
+
         fitted_size.x = wxMin(fitted_size.x, canvas_size.x);
         fitted_size.y = wxMin(fitted_size.y, canvas_size.y);
-        
+
         g_options->SetSize( fitted_size );
         int xp = (canvas_size.x - fitted_size.x)/2;
         int yp = (canvas_size.y - fitted_size.y)/2;
-        
+
         wxPoint xxp = ClientToScreen(canvas_pos);
         g_options->Move(xxp.x + xp, xxp.y + yp);
-        
+
     }
-    
+
     if( g_FloatingToolbarDialog)
         g_FloatingToolbarDialog->DisableTooltips();
 
@@ -4584,7 +4848,7 @@ int MyFrame::DoOptionsDialog()
 
     SetToolbarScale();
     RequestNewToolbar();
-    
+
     bDBUpdateInProgress = false;
     if( g_FloatingToolbarDialog ) {
         if( IsFullScreen() && !g_bFullscreenToolbar )
@@ -4597,12 +4861,12 @@ int MyFrame::DoOptionsDialog()
 #endif
 
     Refresh( false );
-    
+
     g_boptionsactive = false;
-    
+
     delete g_options;
     g_options = NULL;
-    
+
     return ret_val;
 }
 
@@ -4616,7 +4880,7 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
     } else
         if( Current_Ch )
             chart_file_name = Current_Ch->GetFullPath();
-        
+
     ArrayOfCDI *pWorkDirArray = dialog->GetWorkDirListPtr();
 
     if( ( rr & VISIT_CHARTS )
@@ -4696,15 +4960,36 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
     if(cc1)
         SetChartUpdatePeriod( cc1->GetVP() );              // Pick up changes to skew compensator
 
-     if(rr & GL_CHANGED){    
+     if(rr & GL_CHANGED){
         //    Refresh the chart display, after flushing cache.
         //      This will allow all charts to recognise new OpenGL configuration, if any
         int dbii = ChartData->FinddbIndex( chart_file_name );
         ChartsRefresh( dbii, cc1->GetVP(), true );
     }
-    
+
     return 0;
 }
+
+void MyFrame::LaunchLocalHelp( void ) {
+    wxString def_lang_canonical = wxLocale::GetLanguageInfo( wxLANGUAGE_DEFAULT )->CanonicalName;
+
+    wxString help_locn = g_SData_Locn + _T("doc/help_");
+
+    wxString help_try = help_locn + def_lang_canonical + _T(".html");
+
+    if( ! ::wxFileExists( help_try ) ) {
+        help_try = help_locn + _T("en_US") + _T(".html");
+
+        if( ! ::wxFileExists( help_try ) ) {
+            help_try = help_locn + _T("web") + _T(".html");
+        }
+
+        if( ! ::wxFileExists( help_try ) ) return;
+    }
+
+    wxLaunchDefaultBrowser(wxString( _T("file:///") ) + help_try );
+}
+
 
 wxString MyFrame::GetGroupName( int igroup )
 {
@@ -4717,10 +5002,10 @@ bool MyFrame::CheckGroup( int igroup )
     if( igroup == 0 ) return true;              // "all charts" is always OK
 
     ChartGroup *pGroup = g_pGroupArray->Item( igroup - 1 );
-    
+
     if( !pGroup->m_element_array.GetCount() )   //  truly empty group is OK
         return true;
-    
+
     bool b_chart_in_group = false;
 
     for( unsigned int j = 0; j < pGroup->m_element_array.GetCount(); j++ ) {
@@ -4780,7 +5065,7 @@ bool MyFrame::ScrubGroupArray()
 
         igroup++;                                 // next group
     }
-    
+
     return b_change;
 }
 
@@ -4874,7 +5159,7 @@ bool MyFrame::UpdateChartDatabaseInplace( ArrayOfCDI &DirArray, bool b_force, bo
     cc1->InvalidateQuilt();
     cc1->SetQuiltRefChart( -1 );
     ChartData->PurgeCache();
-    
+
     Current_Ch = NULL;
 
     delete pCurrentStack;
@@ -4891,7 +5176,7 @@ bool MyFrame::UpdateChartDatabaseInplace( ArrayOfCDI &DirArray, bool b_force, bo
                 wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME );
     }
 
-    
+
     wxLogMessage( _T("   ") );
     wxLogMessage( _T("Starting chart database Update...") );
     ChartData->Update( DirArray, b_force, pprog );
@@ -4999,12 +5284,12 @@ void MyFrame::SetupQuiltMode( void )
             SelectQuiltRefdbChart( -1 );
 
         Current_Ch = NULL;                  // Bye....
-        
+
         SetChartThumbnail( -1 );            //Turn off thumbnails for sure
 
         //  Re-qualify the quilt reference chart selection
         cc1->AdjustQuiltRefChart(  );
-        
+
     } else                                                  // going to SC Mode
     {
         ArrayOfInts empty_array;
@@ -5028,7 +5313,7 @@ void MyFrame::SetupQuiltMode( void )
         if( ChartData && ChartData->IsValid() ) {
             ChartData->UnLockCache();
             ChartData->UnLockAllCacheCharts();
-            
+
             double tLat, tLon;
             if( cc1->m_bFollow == true ) {
                 tLat = gLat;
@@ -5115,10 +5400,10 @@ void MyFrame::DoStackDelta( int direction )
             return;
         if( (current_stack_index + direction) < 0 )
             return;
-        
+
         if( m_bpersistent_quilt && g_bQuiltEnable ) {
             int new_dbIndex = pCurrentStack->GetDBIndex(current_stack_index + direction );
-            
+
             if( cc1->IsChartQuiltableRef( new_dbIndex ) ) {
                 ToggleQuiltMode();
                 SelectQuiltRefdbChart( new_dbIndex );
@@ -5131,7 +5416,7 @@ void MyFrame::DoStackDelta( int direction )
     } else {
         ArrayOfInts piano_chart_index_array = cc1->GetQuiltExtendedStackdbIndexArray();
         int refdb = cc1->GetQuiltRefChartdbIndex();
-        
+
         //      Find the ref chart in the stack
         int current_index = -1;
         for(unsigned int i=0 ; i < piano_chart_index_array.Count() ; i++){
@@ -5142,16 +5427,16 @@ void MyFrame::DoStackDelta( int direction )
         }
         if(current_index == -1)
             return;
-        
+
         const ChartTableEntry &ctet = ChartData->GetChartTableEntry( refdb );
         int target_family= ctet.GetChartFamily();
-        
+
         int new_index = -1;
         int check_index = current_index + direction;
         bool found = false;
         int check_dbIndex = -1;
         int new_dbIndex = -1;
-        
+
         //      When quilted. switch within the same chart family
         while(!found && (unsigned int)check_index < piano_chart_index_array.Count() && (check_index >= 0)){
             check_dbIndex = piano_chart_index_array.Item( check_index );
@@ -5162,14 +5447,14 @@ void MyFrame::DoStackDelta( int direction )
                 new_dbIndex = check_dbIndex;
                 break;
             }
-            
+
             check_index += direction;
         }
-        
+
         if(!found)
             return;
-        
-        
+
+
         if( !cc1->IsChartQuiltableRef( new_dbIndex ) ) {
             ToggleQuiltMode();
             SelectdbChart( new_dbIndex );
@@ -5178,9 +5463,9 @@ void MyFrame::DoStackDelta( int direction )
             SelectQuiltRefChart( new_index );
         }
     }
-    
+
     cc1->SetQuiltChartHiLiteIndex( -1 );
-    
+
     cc1->ReloadVP();
 }
 
@@ -5348,7 +5633,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
                 }
             }
         }
-        
+
         if(gFrame){
             for ( wxWindowList::iterator it = gFrame->GetChildren().begin(); it != gFrame->GetChildren().end(); ++it ) {
                 if( (*it)->IsShown() ) {
@@ -5359,7 +5644,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
                 }
             }
         }
-#if 0        
+#if 0
         if(console && console->IsShown()) {
             console->Hide();
         }
@@ -5371,7 +5656,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
         if(stats && stats->IsShown()) {
             stats->Hide();
         }
-#endif        
+#endif
     }
 #endif
 
@@ -5398,9 +5683,9 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
         }
         else {                                  // tracking has been manually activated
             g_bDeferredStartTrack = false;
-        }            
+        }
     }
-        
+
 //  Update and check watchdog timer for GPS data source
     gGPS_Watchdog--;
     if( gGPS_Watchdog <= 0 ) {
@@ -5504,7 +5789,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 
     if( (pAnchorWatchPoint1 || pAnchorWatchPoint2) && !bGPSValid )
         AnchorAlertOn1 = true;
-        
+
 //  Send current nav status data to log file on every half hour   // pjotrc 2010.02.09
 
     wxDateTime lognow = wxDateTime::Now();   // pjotrc 2010.02.09
@@ -5593,7 +5878,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
     nBlinkerTick++;
     if( cc1 )
         cc1->DrawBlinkObjects();
-    
+
 //      Update the active route, if any
     if( g_pRouteMan->UpdateProgress() ) {
         //    This RefreshRect will cause any active routepoint to blink
@@ -5665,7 +5950,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 //    In non-follow mode, invalidate the rectangles containing the AIS targets and the ownship, etc...
 //    In follow mode, if there has already been a full screen refresh, there is no need to check ownship or AIS,
 //       since they will be always drawn on the full screen paint.
-        
+
         if( ( !cc1->m_bFollow ) || g_bCourseUp ) {
             cc1->UpdateShips();
             cc1->UpdateAIS();
@@ -5719,7 +6004,7 @@ double MyFrame::GetTrueOrMag(double a)
         else{
             if((a - g_UserVar) >360.)
                 return (a - g_UserVar - 360.);
-            else                
+            else
                 return ((a - g_UserVar) >= 0.) ? (a - g_UserVar) : (a - g_UserVar + 360.);
         }
     }
@@ -5826,10 +6111,10 @@ void MyFrame::DoCOGSet( void )
 {
     if( !g_bCourseUp )
         return;
- 
+
     if(!cc1)
         return;
-    
+
     double old_VPRotate = g_VPRotate;
     g_VPRotate = -g_COGAvg * PI / 180.;
     if(!g_bskew_comp)
@@ -5881,25 +6166,25 @@ void MyFrame::UpdateGPSCompassStatusBox( bool b_force_new )
     int y_offset;
     int size_x, size_y;
     int cc1_edge_comp = 2;
-    
+
     if( g_FloatingToolbarDialog ) {
         x_offset = g_FloatingCompassDialog->GetXOffset();
         y_offset = g_FloatingCompassDialog->GetYOffset();
         g_FloatingCompassDialog->GetSize(&size_x, &size_y);
         wxSize parent_size = g_FloatingCompassDialog->GetParent()->GetSize();
-        
+
         // check to see if it would overlap if it was in its home position (upper right)
          tentative_pt_in_screen = g_FloatingCompassDialog->GetParent()->ClientToScreen(
                 wxPoint( parent_size.x - size_x - x_offset - cc1_edge_comp, y_offset ) );
-        
+
         tentative_rect = wxRect( tentative_pt_in_screen.x, tentative_pt_in_screen.y, size_x, size_y );
 
         //  If the toolbar location has changed, or the proposed compassDialog location has changed
         if( (g_FloatingToolbarDialog->GetScreenRect() != g_last_tb_rect) ||
             (tentative_rect != g_FloatingCompassDialog->GetScreenRect()) ) {
-    
+
             wxRect tb_rect = g_FloatingToolbarDialog->GetScreenRect();
-    
+
             //    if they would not intersect, go ahead and move it to the upper right
             //      Else it has to be on lower right
             if( !tb_rect.Intersects( tentative_rect ) ) {
@@ -5911,11 +6196,11 @@ void MyFrame::UpdateGPSCompassStatusBox( bool b_force_new )
                              cc1->GetSize().y - ( size_y + y_offset + cc1_edge_comp ) );
                 g_FloatingCompassDialog->Move( cc1->ClientToScreen( posn_in_canvas ) );
             }
-            
+
             b_update = true;
-        
+
             g_last_tb_rect = tb_rect;
-        
+
         }
     }
 
@@ -6022,8 +6307,8 @@ void MyFrame::HandlePianoClick( int selected_index, int selected_dbIndex )
     } else {
         if( cc1->IsChartQuiltableRef( selected_dbIndex ) ){
             if( ChartData ) ChartData->PurgeCache();
-            
-            
+
+
             //  If the chart is a vector chart, and of very large scale,
             //  then we had better set the new scale directly to avoid excessive underzoom
             //  on, eg, Inland ENCs
@@ -6035,19 +6320,19 @@ void MyFrame::HandlePianoClick( int selected_index, int selected_dbIndex )
                     }
                 }
             }
-            
+
             if(!set_scale){
                 SelectQuiltRefdbChart( selected_dbIndex, true );  // autoscale
             }
             else {
                 SelectQuiltRefdbChart( selected_dbIndex, false );  // no autoscale
-                
-            
+
+
             //  Adjust scale so that the selected chart is underzoomed/overzoomed by a controlled amount
                 ChartBase *pc = ChartData->OpenChartFromDB( selected_dbIndex, FULL_INIT );
                 if( pc ) {
                     double proposed_scale_onscreen = cc1->GetCanvasScaleFactor() / cc1->GetVPScale();
-                    
+
                     if(g_bPreserveScaleOnX){
                         proposed_scale_onscreen = wxMin(proposed_scale_onscreen,
                                                 100 * pc->GetNormalScaleMax(cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth()));
@@ -6055,11 +6340,11 @@ void MyFrame::HandlePianoClick( int selected_index, int selected_dbIndex )
                     else{
                         proposed_scale_onscreen = wxMin(proposed_scale_onscreen,
                                                         20 * pc->GetNormalScaleMax(cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth()));
-                        
+
                         proposed_scale_onscreen = wxMax(proposed_scale_onscreen,
                                                 pc->GetNormalScaleMin(cc1->GetCanvasScaleFactor(), g_b_overzoom_x));
                     }
-                
+
                     cc1->SetVPScale( cc1->GetCanvasScaleFactor() / proposed_scale_onscreen );
                 }
             }
@@ -6094,7 +6379,7 @@ void MyFrame::HandlePianoRollover( int selected_index, int selected_dbIndex )
     if( !cc1 ) return;
     if( !pCurrentStack ) return;
     if( s_ProgDialog ) return;
-    
+
     if(ChartData && ChartData->IsBusy())
         return;
 
@@ -6147,7 +6432,7 @@ double MyFrame::GetBestVPScale( ChartBase *pchart )
         double proposed_scale_onscreen = cc1->GetCanvasScaleFactor() / cc1->GetVPScale();
 
         if( ( g_bPreserveScaleOnX ) || ( CHART_TYPE_CM93COMP == pchart->GetChartType() ) ) {
-            double new_scale_ppm = cc1->GetVPScale(); //pchart->GetNearestPreferredScalePPM( cc1->GetVPScale() );
+            double new_scale_ppm = cc1->GetVPScale(); 
             proposed_scale_onscreen = cc1->GetCanvasScaleFactor() / new_scale_ppm;
         } else {
             //  This logic will bring the new chart onscreen at roughly twice the true paper scale equivalent.
@@ -6159,15 +6444,16 @@ double MyFrame::GetBestVPScale( ChartBase *pchart )
 
         // Do not allow excessive underzoom, even if the g_bPreserveScaleOnX flag is set.
         // Otherwise, we get severe performance problems on all platforms
-        
+
         double max_underzoom_multiplier = 2.0;
-        
         proposed_scale_onscreen =
                wxMin(proposed_scale_onscreen,
                      pchart->GetNormalScaleMax(cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth()) *
                      max_underzoom_multiplier);
-//        proposed_scale_onscreen =
-//                wxMax(proposed_scale_onscreen, pchart->GetNormalScaleMin(cc1->GetCanvasScaleFactor(), g_b_overzoom_x));
+               
+        //  And, do not allow excessive overzoom either       
+        proposed_scale_onscreen =
+                wxMax(proposed_scale_onscreen, pchart->GetNormalScaleMin(cc1->GetCanvasScaleFactor(), false));
 
         return cc1->GetCanvasScaleFactor() / proposed_scale_onscreen;
     } else
@@ -6197,16 +6483,16 @@ void MyFrame::SelectQuiltRefdbChart( int db_index, bool b_autoscale )
     }
     else
         cc1->SetQuiltRefChart( -1 );
-    
+
 
 }
 
 void MyFrame::SelectChartFromStack( int index, bool bDir, ChartTypeEnum New_Type,
         ChartFamilyEnum New_Family )
 {
-    if( !pCurrentStack ) 
+    if( !pCurrentStack )
         return;
-    
+
     if( index < pCurrentStack->nEntry ) {
 //      Open the new chart
         ChartBase *pTentative_Chart;
@@ -6257,9 +6543,9 @@ void MyFrame::SelectChartFromStack( int index, bool bDir, ChartTypeEnum New_Type
 
 void MyFrame::SelectdbChart( int dbindex )
 {
-    if( !pCurrentStack ) 
+    if( !pCurrentStack )
         return;
-    
+
     if( dbindex >= 0 ) {
 //      Open the new chart
         ChartBase *pTentative_Chart;
@@ -6499,7 +6785,7 @@ bool MyFrame::DoChartUpdate( void )
     if( !cc1 ) return false;
     if( bDBUpdateInProgress ) return false;
     if( !ChartData ) return false;
-    
+
     if(ChartData->IsBusy())
         return false;
 
@@ -6899,9 +7185,9 @@ static int menu_selected_index;
 
 void MyFrame::PianoPopupMenu( int x, int y, int selected_index, int selected_dbIndex )
 {
-    if( !pCurrentStack ) 
+    if( !pCurrentStack )
         return;
-    
+
     //    No context menu if quilting is disabled
     if( !cc1->GetQuiltMode() ) return;
 
@@ -6964,9 +7250,9 @@ void MyFrame::OnPianoMenuEnableChart( wxCommandEvent& event )
 
 void MyFrame::OnPianoMenuDisableChart( wxCommandEvent& event )
 {
-    if( !pCurrentStack ) 
+    if( !pCurrentStack )
         return;
-    
+
     RemoveChartFromQuilt( menu_selected_dbIndex );
 
 //      It could happen that the chart being disabled is the reference chart....
@@ -8228,60 +8514,60 @@ void MyFrame::ActivateAISMOBRoute( AIS_Target_Data *ptarget )
 {
     if(!ptarget)
         return;
-    
+
     //    The MOB point
     wxDateTime mob_time = wxDateTime::Now();
     wxString mob_label( _( "AIS MAN OVERBOARD" ) );
     mob_label += _T(" at ");
     mob_label += mob_time.FormatTime();
-    
+
     RoutePoint *pWP_MOB = new RoutePoint( ptarget->Lat, ptarget->Lon, _T ( "mob" ), mob_label, GPX_EMPTY_STRING );
     pWP_MOB->m_bKeepXRoute = true;
     pWP_MOB->m_bIsolatedMark = true;
     pSelect->AddSelectableRoutePoint( ptarget->Lat, ptarget->Lon, pWP_MOB );
     pConfig->AddNewWayPoint( pWP_MOB, -1 );       // use auto next num
-    
-    
+
+
     if( bGPSValid && !wxIsNaN(gCog) && !wxIsNaN(gSog) ) {
         RoutePoint *pWP_src = new RoutePoint( gLat, gLon, g_default_wp_icon,
                                               wxString( _( "Ownship" ) ), GPX_EMPTY_STRING );
         pSelect->AddSelectableRoutePoint( gLat, gLon, pWP_src );
-        
+
         pAISMOBRoute = new Route();
         pRouteList->Append( pAISMOBRoute );
-        
+
         pAISMOBRoute->AddPoint( pWP_src );
         pAISMOBRoute->AddPoint( pWP_MOB );
-        
+
         pSelect->AddSelectableRouteSegment(ptarget->Lat, ptarget->Lon, gLat, gLon, pWP_src, pWP_MOB, pAISMOBRoute );
-        
+
         pAISMOBRoute->m_RouteNameString = _("Temporary AISMOB Route");
         pAISMOBRoute->m_RouteStartString = _("Present Ownship");
         pAISMOBRoute->m_RouteEndString = mob_label;
-        
+
         pAISMOBRoute->m_bDeleteOnArrival = false;
-        
+
         pAISMOBRoute->SetRouteArrivalRadius( -1.0 );                    // never arrives
-        
+
         pAISMOBRoute->RebuildGUIDList();         // ensure the GUID list is intact and good
-        
+
         if( g_pRouteMan->GetpActiveRoute() )
             g_pRouteMan->DeactivateRoute();
         //       g_pRouteMan->ActivateRoute( pAISMOBRoute, pWP_MOB );
-        
+
         wxJSONValue v;
         v[_T("GUID")] = pAISMOBRoute->m_GUID;
         wxString msg_id( _T("OCPN_MAN_OVERBOARD") );
         g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
     }
-    
+
     if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
         pRouteManagerDialog->UpdateRouteListCtrl();
         pRouteManagerDialog->UpdateWptListCtrl();
     }
-    
+
     cc1->Refresh( false );
-    
+
     wxString mob_message( _( "AIS MAN OVERBOARD" ) );
     mob_message += _T(" Time: ");
     mob_message += mob_time.Format();
@@ -8294,39 +8580,39 @@ void MyFrame::ActivateAISMOBRoute( AIS_Target_Data *ptarget )
     mob_message += _T("   ");
     mob_message += toSDMM( 2, ptarget->Lon );
     wxLogMessage( mob_message );
-    
+
 }
 
 void MyFrame::UpdateAISMOBRoute( AIS_Target_Data *ptarget )
 {
     if(pAISMOBRoute && ptarget){
-        
+
         //   Update Current Ownship point
         RoutePoint *OwnPoint = pAISMOBRoute->GetPoint( 1 );
         OwnPoint->m_lat = gLat;
         OwnPoint->m_lon = gLon;
-        
+
         pSelect->DeleteSelectableRoutePoint( OwnPoint );
         pSelect->AddSelectableRoutePoint( gLat, gLon, OwnPoint );
-        
+
         //   Update Current MOB point
         RoutePoint *MOB_Point = pAISMOBRoute->GetPoint( 2 );
         MOB_Point->m_lat = ptarget->Lat;
         MOB_Point->m_lon = ptarget->Lon;
-        
+
         pSelect->DeleteSelectableRoutePoint( MOB_Point );
         pSelect->AddSelectableRoutePoint( ptarget->Lat, ptarget->Lon, MOB_Point );
-        
+
         pSelect->UpdateSelectableRouteSegments( OwnPoint );
         pSelect->UpdateSelectableRouteSegments( MOB_Point );
-        
+
     }
 
     cc1->Refresh( false );
- 
+
     if( ptarget ){
         wxDateTime mob_time = wxDateTime::Now();
-        
+
         wxString mob_message( _( "AIS MAN OVERBOARD UPDATE" ) );
         mob_message += _T(" Time: ");
         mob_message += mob_time.Format();
@@ -8338,10 +8624,10 @@ void MyFrame::UpdateAISMOBRoute( AIS_Target_Data *ptarget )
         mob_message += toSDMM( 1, ptarget->Lat );
         mob_message += _T("   ");
         mob_message += toSDMM( 2, ptarget->Lon );
-        
+
         wxLogMessage( mob_message );
     }
-    
+
 }
 
 
@@ -8351,7 +8637,7 @@ void MyFrame::OnSuspending(wxPowerEvent& event)
 {
  //   wxDateTime now = wxDateTime::Now();
  //   printf("OnSuspending...%d\n", now.GetTicks());
-    
+
     wxLogMessage(_T("System suspend starting..."));
     if ( wxMessageBox(_T("Veto suspend?"), _T("Please answer"),
         wxYES_NO, this) == wxYES )
@@ -8381,14 +8667,14 @@ void MyFrame::OnResume(wxPowerEvent& WXUNUSED(event))
     wxDateTime now = wxDateTime::Now();
 //    printf("OnResume...%d\n", now.GetTicks());
     wxLogMessage(_T("System resumed from suspend."));
-    
+
     if((now.GetTicks() - g_last_resume_ticks) > 5){
         wxLogMessage(_T("Restarting streams."));
  //       printf("   Restarting streams\n");
         g_last_resume_ticks = now.GetTicks();
         if(g_pMUX){
             g_pMUX->ClearStreams();
-        
+
             g_pMUX->StartAllStreams();
         }
     }
@@ -8508,7 +8794,7 @@ void MyPrintout::DrawPageOne( wxDC *dc )
 //  Get the latest bitmap as rendered by the ChartCanvas
 
     if(g_bopengl) {
-#ifdef ocpnUSE_GL        
+#ifdef ocpnUSE_GL
         int gsx = cc1->GetglCanvas()->GetSize().x;
         int gsy = cc1->GetglCanvas()->GetSize().y;
 
@@ -8522,7 +8808,7 @@ void MyPrintout::DrawPageOne( wxDC *dc )
         mdc.SelectObject( bmp );
         dc->Blit( 0, 0, bmp.GetWidth(), bmp.GetHeight(), &mdc, 0, 0 );
         mdc.SelectObject( wxNullBitmap );
-#endif        
+#endif
     }
     else {
 
@@ -9017,7 +9303,7 @@ wxArrayString *EnumerateSerialPorts( void )
                         wxString desc_name( desc, wxConvUTF8 );         // append "description"
                         port += _T(" ");
                         port += desc_name;
-                            
+
                         preturn->Add( port );
                     }
                 }
@@ -9063,40 +9349,40 @@ bool CheckSerialAccess( void )
 {
     bool bret = true;
 #ifdef __WXGTK__
- 
-#if 0    
+
+#if 0
     termios ttyset_old;
     termios ttyset;
     termios ttyset_check;
-    
+
     // Get a list of the ports
     wxArrayString *ports = EnumerateSerialPorts();
     if( ports->GetCount() == 0 )
         bret = false;
-    
+
     for(unsigned int i=0 ; i < ports->GetCount() ; i++){
         wxCharBuffer buf = ports->Item(i).ToUTF8();
-        
+
         //      For the first real port found, try to open it, write some config, and
         //      be sure it reads back correctly.
         if( isTTYreal( buf.data() ) ){
             int fd = open(buf.data(), O_RDWR | O_NONBLOCK | O_NOCTTY);
-            
+
             // device name is pointing to a real device
             if(fd > 0) {
-                
+
                 if (isatty(fd) != 0)
                 {
                     /* Save original terminal parameters */
                     tcgetattr(fd,&ttyset_old);
                     // Write some data
                     memcpy(&ttyset, &ttyset_old, sizeof(termios));
-                    
+
                     ttyset.c_cflag &=~ CSIZE;
                     ttyset.c_cflag |= CSIZE & CS7;
-                    
+
                     tcsetattr(fd, TCSANOW, &ttyset);
-                    
+
                     // Read it back
                     tcgetattr(fd, &ttyset_check);
                     if(( ttyset_check.c_cflag & CSIZE) != CS7 ){
@@ -9106,29 +9392,29 @@ bool CheckSerialAccess( void )
                             // and again
                         ttyset.c_cflag &=~ CSIZE;
                         ttyset.c_cflag |= CSIZE & CS8;
-                            
+
                         tcsetattr(fd, TCSANOW, &ttyset);
-                            
+
                             // Read it back
                         tcgetattr(fd, &ttyset_check);
                         if(( ttyset_check.c_cflag & CSIZE) != CS8 ){
                             bret = false;
                         }
                     }
-                    
+
                     tcsetattr(fd, TCSANOW, &ttyset_old);
-                }                    
-                        
+                }
+
                 close (fd);
             }   // if open
         }
     }
-            
+
 #endif
 
     //  Who owns /dev/ttyS0?
     bret = false;
-    
+
     wxArrayString result1;
     wxExecute(_T("stat -c %G /dev/ttyS0"), result1);
     if(!result1.size())
@@ -9141,7 +9427,7 @@ bool CheckSerialAccess( void )
     if(!result1.size()) {
         wxString msg = msg1 + _("No Serial Ports can be found on this system.\n\
 You must install a serial port (modprobe correct kernel module) or plug in a usb serial device.\n");
-            
+
         OCPNMessageBox ( NULL, msg, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK, 30 );
         return false;
     }
@@ -9151,14 +9437,14 @@ You must install a serial port (modprobe correct kernel module) or plug in a usb
 
     wxArrayString result2;
     wxExecute(_T("groups ") + user, result2);
-    
+
     if(result2.size()) {
         wxString user_groups = result2[0];
 
         if(user_groups.Find(group) != wxNOT_FOUND)
             bret = true;
     }
- 
+
     if(!bret){
 
         wxString msg = msg1 + _("\
@@ -9167,19 +9453,19 @@ It is suggested that you exit OpenCPN now,\n\
 and add yourself to the correct group to enable serial port access.\n\n\
 You may do so by executing the following command from the linux command line:\n\n\
                 sudo usermod -a -G ");
-        
+
         msg += group;
         msg += _T(" ");
         msg += user;
         msg += _T("\n");
-    
+
         OCPNMessageBox ( NULL, msg, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK, 30 );
     }
-    
-    
+
+
 
 #endif
-    
+
     return bret;
 }
 
@@ -9559,17 +9845,17 @@ void SetSystemColors( ColorScheme cs )
 
 class  OCPNMessageDialog: public wxDialog
 {
-    
+
 public:
     OCPNMessageDialog(wxWindow *parent, const wxString& message,
                            const wxString& caption = wxMessageBoxCaptionStr,
                            long style = wxOK|wxCENTRE, const wxPoint& pos = wxDefaultPosition);
-    
+
     void OnYes(wxCommandEvent& event);
     void OnNo(wxCommandEvent& event);
     void OnCancel(wxCommandEvent& event);
     void OnClose( wxCloseEvent& event );
-    
+
 private:
     int m_style;
     DECLARE_EVENT_TABLE()
@@ -9591,13 +9877,13 @@ OCPNMessageDialog::OCPNMessageDialog( wxWindow *parent,
 : wxDialog( parent, wxID_ANY, caption, pos, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxSTAY_ON_TOP )
 {
     m_style = style;
-    wxFont *qFont = GetOCPNScaledFont(_("Dialog"), 10);
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     SetFont( *qFont );
-    
+
     wxBoxSizer *topsizer = new wxBoxSizer( wxVERTICAL );
-    
+
     wxBoxSizer *icon_text = new wxBoxSizer( wxHORIZONTAL );
-    
+
     #if wxUSE_STATBMP
     // 1) icon
     if (style & wxICON_MASK)
@@ -9608,19 +9894,19 @@ OCPNMessageDialog::OCPNMessageDialog( wxWindow *parent,
             default:
                 wxFAIL_MSG(_T("incorrect log style"));
                 // fall through
-                
+
             case wxICON_ERROR:
                 bitmap = wxArtProvider::GetIcon(wxART_ERROR, wxART_MESSAGE_BOX);
                 break;
-                
+
             case wxICON_INFORMATION:
                 bitmap = wxArtProvider::GetIcon(wxART_INFORMATION, wxART_MESSAGE_BOX);
                 break;
-                
+
             case wxICON_WARNING:
                 bitmap = wxArtProvider::GetIcon(wxART_WARNING, wxART_MESSAGE_BOX);
                 break;
-                
+
             case wxICON_QUESTION:
                 bitmap = wxArtProvider::GetIcon(wxART_QUESTION, wxART_MESSAGE_BOX);
                 break;
@@ -9629,14 +9915,14 @@ OCPNMessageDialog::OCPNMessageDialog( wxWindow *parent,
         icon_text->Add( icon, 0, wxCENTER );
     }
     #endif // wxUSE_STATBMP
-    
+
     #if wxUSE_STATTEXT
     // 2) text
     icon_text->Add( CreateTextSizer( message ), 0, wxALIGN_CENTER | wxLEFT, 10 );
-    
+
     topsizer->Add( icon_text, 1, wxCENTER | wxLEFT|wxRIGHT|wxTOP, 10 );
     #endif // wxUSE_STATTEXT
-    
+
     // 3) buttons
     int AllButtonSizerFlags = wxOK|wxCANCEL|wxYES|wxNO|wxHELP|wxNO_DEFAULT;
     int center_flag = wxEXPAND;
@@ -9645,10 +9931,10 @@ OCPNMessageDialog::OCPNMessageDialog( wxWindow *parent,
     wxSizer *sizerBtn = CreateSeparatedButtonSizer(style & AllButtonSizerFlags);
     if ( sizerBtn )
         topsizer->Add(sizerBtn, 0, center_flag | wxALL, 10 );
-    
+
     SetAutoLayout( true );
     SetSizer( topsizer );
-    
+
     topsizer->SetSizeHints( this );
     topsizer->Fit( this );
     wxSize size( GetSize() );
@@ -9657,7 +9943,7 @@ OCPNMessageDialog::OCPNMessageDialog( wxWindow *parent,
         size.x = size.y*3/2;
         SetSize( size );
     }
-    
+
     Centre( wxBOTH | wxCENTER_FRAME);
 }
 
@@ -9698,7 +9984,7 @@ public:
     ~TimedMessageBox();
     int GetRetVal(void){ return ret_val; }
     void OnTimer(wxTimerEvent &evt);
-    
+
     wxTimer     m_timer;
     OCPNMessageDialog *dlg;
     int         ret_val;
@@ -9715,18 +10001,18 @@ TimedMessageBox::TimedMessageBox(wxWindow* parent, const wxString& message,
 {
     ret_val = 0;
     m_timer.SetOwner( this, -1 );
-    
+
     if(timeout_sec > 0)
         m_timer.Start( timeout_sec * 1000, wxTIMER_ONE_SHOT );
-                              
+
     dlg = new OCPNMessageDialog( parent, message, caption, style, pos );
     int ret = dlg->ShowModal();
-    
+
     int yyp = 5;
-    
+
     delete dlg;
     dlg = NULL;
-    
+
     ret_val = ret;
 }
 
@@ -9742,7 +10028,7 @@ void TimedMessageBox::OnTimer(wxTimerEvent &evt)
 }
 
 
-    
+
 
 
 
@@ -9755,7 +10041,7 @@ int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& c
     bool b_toolviz = false;
     bool b_compassviz = false;
     bool b_statsviz = false;
-    
+
     if(g_FloatingToolbarDialog && g_FloatingToolbarDialog->IsShown()){
         g_FloatingToolbarDialog->Hide();
         b_toolviz = true;
@@ -9770,19 +10056,19 @@ int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& c
         stats->Hide();
         b_statsviz = true;
     }
-    
+
     if(parent) {
         parent_style = parent->GetWindowStyle();
         parent->SetWindowStyle( parent_style & !wxSTAY_ON_TOP );
     }
-    
+
 #endif
 
-      int ret =  wxID_OK;  
-        
+      int ret =  wxID_OK;
+
       TimedMessageBox tbox(parent, message, caption, style, timeout_sec, wxPoint( x, y )  );
       ret = tbox.GetRetVal() ;
-      
+
 //    wxMessageDialog dlg( parent, message, caption, style | wxSTAY_ON_TOP, wxPoint( x, y ) );
 //    ret = dlg.ShowModal();
 
@@ -9947,7 +10233,7 @@ bool TestGLCanvas(wxString &prog_dir)
 {
     wxString test_app = prog_dir;
     test_app += _T("ocpn_gltest1.exe");
-    
+
     if(::wxFileExists(test_app)){
         long proc_return = ::wxExecute(test_app, wxEXEC_SYNC);
         printf("OpenGL Test Process returned %0X\n", proc_return);
@@ -9955,13 +10241,13 @@ bool TestGLCanvas(wxString &prog_dir)
             printf("GLCanvas OK\n");
         else
             printf("GLCanvas failed to start, disabling OpenGL.\n");
-        
+
         return (proc_return == 0);
     }
     else
         return true;
-    
-    
+
+
 }
 #endif
 
@@ -9970,11 +10256,11 @@ bool TestGLCanvas(wxString &prog_dir)
 wxFont *GetOCPNScaledFont( wxString item, int default_size )
 {
     wxFont *dFont = FontMgr::Get().GetFont( item, default_size );
-    
+
     if( g_bresponsive ){
         //      Adjust font size to be reasonably readable, but no smaller than the default specified
         double scaled_font_size = (double)default_size;
-        
+
         if( cc1) {
             scaled_font_size = 2.5 * cc1->GetPixPerMM();
             int nscaled_font_size = wxMax( wxRound(scaled_font_size), default_size );
@@ -9987,9 +10273,9 @@ wxFont *GetOCPNScaledFont( wxString item, int default_size )
     }
     return dFont;
 }
-    
-    
-    
+
+
+
 
 
 #if 0

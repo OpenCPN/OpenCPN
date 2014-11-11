@@ -1353,25 +1353,40 @@ double Quilt::GetBestStartScale(int dbi_ref_hint, const ViewPort &vp_in)
         BuildExtendedChartStackAndCandidateArray(bfull, tentative_ref_index, vp_local);
     }
  
-    // Suggest a scale so that the largest scale candidate is "nominally" scaled,
-    // meaning not overzoomed, and not underzoomed more than a factor of its base scale
+    double proposed_scale_onscreen = vp_in.chart_scale;
     
     if(m_pcandidate_array->GetCount()){
         m_refchart_dbIndex = tentative_ref_index;
-        
-        QuiltCandidate *pqc = m_pcandidate_array->Item( 0 );
-        
-        const ChartTableEntry &cte = ChartData->GetChartTableEntry( pqc->dbIndex );
-        
-        double base_scale = cte.GetScale() * 40;
-        
-        double proposed_scale_onscreen = vp_in.chart_scale;
-        proposed_scale_onscreen = wxMin(proposed_scale_onscreen, base_scale);
-        
-        return cc1->GetCanvasScaleFactor() / proposed_scale_onscreen;
     }
-    else            
-        return vp_in.view_scale_ppm;
+    else{
+        //    Need to choose some chart, find a quiltable candidate
+        bool bfq = false;
+        for( unsigned int i = 0; i < m_pcandidate_array->GetCount(); i++ ) {
+            QuiltCandidate *qc = m_pcandidate_array->Item( i );
+            if( IsChartQuiltableRef(qc->dbIndex) ){
+                m_refchart_dbIndex = qc->dbIndex;
+                bfq = true;
+                break;
+            }
+        }
+                
+        if(!bfq)        // fallback to first chart in stack            
+            m_refchart_dbIndex = pCurrentStack->GetDBIndex(0);
+    }
+    
+    if(m_refchart_dbIndex >= 0) {
+        // Suggest a scale so that the largest scale candidate is "nominally" scaled,
+        // meaning not overzoomed, and not underzoomed
+        ChartBase *pc = ChartData->OpenChartFromDB( m_refchart_dbIndex, FULL_INIT );
+        if( pc ) {
+            double min_ref_scale = pc->GetNormalScaleMin( cc1->GetCanvasScaleFactor(), false );
+            double max_ref_scale = pc->GetNormalScaleMax( cc1->GetCanvasScaleFactor(), m_canvas_width );
+            
+            proposed_scale_onscreen = wxMin(proposed_scale_onscreen, max_ref_scale);
+            proposed_scale_onscreen = wxMax(proposed_scale_onscreen, min_ref_scale);
+        }
+    }
+    return cc1->GetCanvasScaleFactor() / proposed_scale_onscreen;
 }    
 
 bool Quilt::Compose( const ViewPort &vp_in )
@@ -1584,13 +1599,9 @@ bool Quilt::Compose( const ViewPort &vp_in )
                     if( vpu_region.IsEmpty() )
                         pqc->b_include = false; // skip this chart, no true overlap
                     else {
-                        if( ChartData->IsChartInCache( pqc->dbIndex ) ){
-                            ChartBase *pc = ChartData->OpenChartFromDB( pqc->dbIndex, FULL_INIT );
-                            s57chart *ps57 = dynamic_cast<s57chart *>( pc );
-                            bool b_overlay = ( ps57->GetUsageChar() == 'L' || ps57->GetUsageChar() == 'A' );
-                            if( b_overlay )
-                                pqc->b_include = true;
-                        }
+                        bool b_overlay = s57chart::IsCellOverlayType(cte.GetpFullPath() );
+                        if( b_overlay )
+                            pqc->b_include = true;
                     }
                 }
             }
@@ -2164,6 +2175,7 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion 
 
         if( ! chartsDrawn ) cc1->GetVP().SetProjectionType( PROJECTION_MERCATOR );
 
+        
         //    Render any Overlay patches for s57 charts(cells)
         if( m_bquilt_has_overlays && !chart_region.IsEmpty() ) {
             chart = GetFirstChart();
