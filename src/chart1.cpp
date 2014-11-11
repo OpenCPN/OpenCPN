@@ -3737,13 +3737,13 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
     if( s_ProgDialog ) return;
 
     switch( event.GetId() ){
-        case ID_MENU_SCALE_IN:
+        case ID_MENU_SCALE_OUT:
         case ID_STKUP:
             DoStackDelta( 1 );
             DoChartUpdate();
             break;
 
-        case ID_MENU_SCALE_OUT:
+        case ID_MENU_SCALE_IN:
         case ID_STKDN:
             DoStackDelta( -1 );
             DoChartUpdate();
