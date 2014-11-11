@@ -1509,6 +1509,12 @@ bool MyApp::OnInit()
 
     if( pli ) {
         b_initok = plocale_def_lang->Init( pli->Language, 1 );
+        // If the locale was not initialized OK, it may be that the wxstd.mo translations
+        // of the wxWidgets strings is not present.
+        // So try again, without attempting to load defaults wxstd.mo.
+        if( !b_initok ){
+            b_initok = plocale_def_lang->Init( pli->Language, 0 );
+        }
         loc_lang_canonical = pli->CanonicalName;
     }
 
