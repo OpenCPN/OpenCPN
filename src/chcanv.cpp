@@ -3670,7 +3670,10 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
             VPoint.chart_scale = 1.0;
 
         if( parent_frame->m_pStatusBar ) {
-            double true_scale_display = floor( VPoint.chart_scale / 100. ) * 100.;
+            double true_scale_display;
+            // Allow for extra scaling and show decimal in scale
+            if ( VPoint.chart_scale < 100. ) true_scale_display = floor(VPoint.chart_scale * 100) / 100;
+            else true_scale_display = floor( VPoint.chart_scale / 100. ) * 100.;
             wxString text;
 
             if( Current_Ch ) {
@@ -3681,8 +3684,12 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                 else
                     text.Printf( _("Scale %4.0f (%1.2fx)"), true_scale_display,
                                  scale_factor );
-            } else
-                text.Printf( _("Scale %4.0f"), true_scale_display );
+            } else {
+                // Allow for extra scaling and show decimal in scale
+                if (true_scale_display < 100.) text.Printf( _("Scale %4.2f"), true_scale_display );
+                else text.Printf( _("Scale %4.0f"), true_scale_display );
+            }
+
 
             parent_frame->SetStatusText( text, STAT_FIELD_SCALE );
         }

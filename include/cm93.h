@@ -36,6 +36,9 @@
 
 #define CM93_ZOOM_FACTOR_MAX_RANGE 5
 
+#define CM93_OVERZOOM_FACTOR_MAX_RANGE 10
+#define CM93_OVERZOOM_FACTOR_MIN_RANGE 0
+
 //    Static functions
 int Get_CM93_CellIndex(double lat, double lon, int scale);
 void Get_CM93_Cell_Origin(int cellindex, int scale, double *lat, double *lon);

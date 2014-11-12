@@ -162,6 +162,7 @@ extern int              g_iDistanceFormat;
 extern int              g_iSpeedFormat;
 
 extern int              g_cm93_zoom_factor;
+extern int              g_cm93_overzoom_factor;
 
 extern int              g_COGAvgSec;
 
@@ -1801,14 +1802,26 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
     m_choicePrecision->SetSelection( g_NMEAAPBPrecision );
 
 #ifdef USE_S57
-    wxStaticBox *cm93DetailBox = new wxStaticBox( ps57Ctl, wxID_ANY, _("CM93 Detail Level") );
+    wxStaticBox *cm93DetailBox = new wxStaticBox( ps57Ctl, wxID_ANY, _("CM93 details") );
     wxStaticBoxSizer* cm93Sizer = new wxStaticBoxSizer( cm93DetailBox, wxVERTICAL );
+    cm93Sizer->SetSizeHints(cm93DetailBox);
+
+    wxStaticText *cm93DetailText = new wxStaticText( ps57Ctl, wxID_STATIC, _("Detail Level") );
+    cm93Sizer->Add(cm93DetailText, 0, wxALL | wxEXPAND, border_size);
     m_pSlider_CM93_Zoom = new wxSlider( ps57Ctl, ID_CM93ZOOM, 0, -CM93_ZOOM_FACTOR_MAX_RANGE,
             CM93_ZOOM_FACTOR_MAX_RANGE, wxDefaultPosition, wxSize( 140, 50),
             wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS );
     cm93Sizer->Add( m_pSlider_CM93_Zoom, 0, wxALL | wxEXPAND, border_size );
-    cm93Sizer->SetSizeHints(cm93DetailBox);
-    vectorPanel->Add( cm93Sizer, 1, wxALL | wxEXPAND, border_size );
+
+    wxStaticText *cm93OverzoomText = new wxStaticText( ps57Ctl, wxID_STATIC, _("Extreme Overzoom") );
+    cm93Sizer->Add(cm93OverzoomText, 0, wxALL | wxEXPAND, border_size);
+    m_pSlider_CM93_Overzoom = new wxSlider( ps57Ctl, ID_CM93OVERZOOM, 0, CM93_OVERZOOM_FACTOR_MIN_RANGE,
+            CM93_OVERZOOM_FACTOR_MAX_RANGE, wxDefaultPosition, wxSize( 140, 50),
+            wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS );
+    cm93Sizer->Add( m_pSlider_CM93_Overzoom, 0, wxALL | wxEXPAND, border_size );
+
+    vectorPanel->Add(cm93Sizer, 1, wxALL | wxEXPAND, border_size );
+
 #endif
 
 }
@@ -2795,6 +2808,7 @@ void options::SetInitialSettings()
     
 #ifdef USE_S57
     m_pSlider_CM93_Zoom->SetValue( g_cm93_zoom_factor );
+    m_pSlider_CM93_Overzoom->SetValue( g_cm93_overzoom_factor );
 
 //    Diplay Category
     if( ps52plib ) {
@@ -3591,6 +3605,7 @@ void options::OnApplyClick( wxCommandEvent& event )
     //    Handle Vector Charts Tab
 
     g_cm93_zoom_factor = m_pSlider_CM93_Zoom->GetValue();
+    g_cm93_overzoom_factor = m_pSlider_CM93_Overzoom->GetValue();
 
     int nOBJL = ps57CtlListBox->GetCount();
 

@@ -85,6 +85,7 @@ enum {
     ID_CLEARLIST,
     ID_CM93CHECKBOX1,
     ID_CM93ZOOM,
+    ID_CM93OVERZOOM,
     ID_COURSEUPCHECKBOX,
     ID_DAILYCHECKBOX,
     ID_DEBUGCHECKBOX1,
@@ -429,6 +430,7 @@ public:
     wxTextCtrl              *m_DeepCtl;
     wxRadioBox              *pDepthUnitSelect;
     wxSlider                *m_pSlider_CM93_Zoom;
+    wxSlider                *m_pSlider_CM93_Overzoom;
     wxCheckBox              *pSEnableCM93Offset;
     int                       k_vectorcharts;
 

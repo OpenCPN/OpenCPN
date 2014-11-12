@@ -226,7 +226,11 @@ extern s52plib          *ps52plib;
 #endif
 
 extern int              g_cm93_zoom_factor;
+
+extern int              g_cm93_overzoom_factor;
+
 extern bool             g_b_legacy_input_filter_behaviour;
+
 extern bool             g_bShowCM93DetailSlider;
 extern int              g_cm93detail_dialog_x, g_cm93detail_dialog_y;
 
@@ -1271,6 +1275,8 @@ int MyConfig::LoadMyConfig( int iteration )
             5;
 
     Read( _T ( "ShowCM93DetailSlider" ), &g_bShowCM93DetailSlider, 0 );
+
+    Read( _T ( "CM93OverzoomFactor" ), &g_cm93_overzoom_factor, 0 );
 
     Read( _T ( "SENC_LOD_Pixels" ), &g_SENC_LOD_pixels, 2 );
 
@@ -2447,6 +2453,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "CM93DetailZoomPosX" ), g_cm93detail_dialog_x );
     Write( _T ( "CM93DetailZoomPosY" ), g_cm93detail_dialog_y );
     Write( _T ( "ShowCM93DetailSlider" ), g_bShowCM93DetailSlider );
+
+    Write( _T ( "CM93OverzoomFactor" ), g_cm93_overzoom_factor );
 
     Write( _T ( "SkewToNorthUp" ), g_bskew_comp );
     Write( _T ( "OpenGL" ), g_bopengl );
