@@ -2162,7 +2162,7 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
                     rect.width, rect.height );
 
             glColor3f( r, g, b ); /* nodta color */
-            glChartCanvas::SetClipRegion( temp_vp, OCPNRegion(rect), false, true); /* no rotation, clear */
+            glChartCanvas::SetClipRegion( temp_vp, OCPNRegion(rect), false, !b_overlay); /* no rotation, clear */
             DoRenderRectOnGL( glc, temp_vp, rect );
             glChartCanvas::DisableClipRegion();
 
@@ -2201,7 +2201,7 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
         //            temp_vp.GetBBox().EnLarge(margin);
 
         glColor3f( r, g, b ); /* nodta color */
-        glChartCanvas::SetClipRegion( temp_vp, Region, false, true ); /* no rotation */
+        glChartCanvas::SetClipRegion( temp_vp, Region, false, !b_overlay ); /* no rotation */
         DoRenderRectOnGL( glc, temp_vp, rect );
         glChartCanvas::DisableClipRegion();
         

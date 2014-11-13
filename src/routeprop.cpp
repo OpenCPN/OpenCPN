@@ -2236,7 +2236,7 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
         m_textName->SetValue( m_pRoutePoint->GetName() );
         m_textDescription->SetValue( m_pRoutePoint->m_MarkDescription );
         m_textCtrlExtDescription->SetValue( m_pRoutePoint->m_MarkDescription );
-        m_bitmapIcon->SetBitmap( *m_pRoutePoint->m_pbmIcon );
+        m_bitmapIcon->SetBitmap( *m_pRoutePoint->GetIconBitmap() );
         wxWindowList kids = m_scrolledWindowLinks->GetChildren();
         for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
             wxWindowListNode *node = kids.Item( i );
@@ -2280,17 +2280,33 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
         // Integrate all of the rebuilt hyperlink controls
         bSizerLinks->Layout();
         
-        //      Iterate on the Icon Descriptions, filling in the control
-        int iconToSelect = 0;
+        m_bcomboBoxIcon->Clear();
+        //      Iterate on the Icon Descriptions, filling in the combo control
         bool fillCombo = m_bcomboBoxIcon->GetCount() == 0;
-        wxImageList *icons = NULL;
-        if( fillCombo ) icons = pWayPointMan->Getpmarkicon_image_list();
-        for( int i = 0; i < pWayPointMan->GetNumIcons(); i++ ) {
-            wxString *ps = pWayPointMan->GetIconDescription( i );
-            if( *pWayPointMan->GetIconKey( i ) == m_pRoutePoint->m_IconName ) iconToSelect = i;
+        wxImageList *icons = pWayPointMan->Getpmarkicon_image_list();
 
-            if( fillCombo && icons ) m_bcomboBoxIcon->Append( *ps, icons->GetBitmap( i ) );
+        if( fillCombo  && icons){
+            for( int i = 0; i < pWayPointMan->GetNumIcons(); i++ ) {
+                wxString *ps = pWayPointMan->GetIconDescription( i );
+                m_bcomboBoxIcon->Append( *ps, icons->GetBitmap( i ) );
+            }
         }
+        
+        // find the correct item in the combo box
+        int iconToSelect = -1;
+        for( int i = 0; i < pWayPointMan->GetNumIcons(); i++ ) {
+            if( *pWayPointMan->GetIconKey( i ) == m_pRoutePoint->GetIconName() )
+                iconToSelect = i;
+        }
+
+        //  not found, so add  it to the list, with a generic bitmap and using the name as description
+        // n.b.  This should never happen...
+        if( -1 == iconToSelect){    
+            m_bcomboBoxIcon->Append( m_pRoutePoint->GetIconName(), icons->GetBitmap( 0 ) );
+            iconToSelect = m_bcomboBoxIcon->GetCount() - 1;
+        }
+        
+        
         m_bcomboBoxIcon->Select( iconToSelect );
         icons = NULL;
     }
@@ -2304,7 +2320,7 @@ void MarkInfoImpl::SetRoutePoint( RoutePoint *pRP )
     if( m_pRoutePoint ) {
         m_lat_save = m_pRoutePoint->m_lat;
         m_lon_save = m_pRoutePoint->m_lon;
-        m_IconName_save = m_pRoutePoint->m_IconName;
+        m_IconName_save = m_pRoutePoint->GetIconName();
         m_bShowName_save = m_pRoutePoint->m_bShowName;
         m_bIsVisible_save = m_pRoutePoint->m_bIsVisible;
         if( m_pMyLinkList )
@@ -2515,8 +2531,9 @@ bool MarkInfoImpl::SaveChanges()
         m_pRoutePoint->SetNameShown( m_checkBoxShowName->GetValue() );
         m_pRoutePoint->SetPosition( fromDMM( m_textLatitude->GetValue() ),
                 fromDMM( m_textLongitude->GetValue() ) );
-        m_pRoutePoint->m_IconName =
-                *( pWayPointMan->GetIconKey( m_bcomboBoxIcon->GetSelection() ) );
+        wxString *icon_name = pWayPointMan->GetIconKey( m_bcomboBoxIcon->GetSelection() );
+        if(icon_name && icon_name->Length())
+            m_pRoutePoint->SetIconName( *icon_name );
         m_pRoutePoint->ReLoadIcon();
 
         // Here is some logic....
@@ -2590,7 +2607,7 @@ void MarkInfoImpl::OnMarkInfoCancelClick( wxCommandEvent& event )
         m_pRoutePoint->SetVisible( m_bIsVisible_save );
         m_pRoutePoint->SetNameShown( m_bShowName_save );
         m_pRoutePoint->SetPosition( m_lat_save, m_lon_save );
-        m_pRoutePoint->m_IconName = m_IconName_save;
+        m_pRoutePoint->SetIconName( m_IconName_save );
         m_pRoutePoint->ReLoadIcon();
 
         m_pRoutePoint->m_HyperlinkList->Clear();

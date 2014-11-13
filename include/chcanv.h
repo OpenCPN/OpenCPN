@@ -617,6 +617,7 @@ private:
       int         m_AISRollover_MMSI;
       bool        m_bsectors_shown;
       bool        m_bedge_pan;
+      double      m_displayed_scale_factor;
       
 DECLARE_EVENT_TABLE()
 };

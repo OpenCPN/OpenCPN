@@ -421,6 +421,7 @@ bool                      g_bLookAhead;
 bool                      g_bskew_comp;
 bool                      g_bopengl;
 bool                      g_bsmoothpanzoom;
+bool                      g_fog_overzoom;
 
 int                       g_nCOMPortCheck;
 
@@ -1509,6 +1510,12 @@ bool MyApp::OnInit()
 
     if( pli ) {
         b_initok = plocale_def_lang->Init( pli->Language, 1 );
+        // If the locale was not initialized OK, it may be that the wxstd.mo translations
+        // of the wxWidgets strings is not present.
+        // So try again, without attempting to load defaults wxstd.mo.
+        if( !b_initok ){
+            b_initok = plocale_def_lang->Init( pli->Language, 0 );
+        }
         loc_lang_canonical = pli->CanonicalName;
     }
 
@@ -3339,9 +3346,9 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     if( g_bAutoAnchorMark ) {
         bool watching_anchor = false;                                           // pjotrc 2010.02.15
         if( pAnchorWatchPoint1 )                                               // pjotrc 2010.02.15
-        watching_anchor = ( pAnchorWatchPoint1->m_IconName.StartsWith( _T("anchor") ) ); // pjotrc 2010.02.15
+        watching_anchor = ( pAnchorWatchPoint1->GetIconName().StartsWith( _T("anchor") ) ); // pjotrc 2010.02.15
         if( pAnchorWatchPoint2 )                                               // pjotrc 2010.02.15
-        watching_anchor |= ( pAnchorWatchPoint2->m_IconName.StartsWith( _T("anchor") ) ); // pjotrc 2010.02.15
+        watching_anchor |= ( pAnchorWatchPoint2->GetIconName().StartsWith( _T("anchor") ) ); // pjotrc 2010.02.15
 
         wxDateTime now = wxDateTime::Now();
         wxTimeSpan uptime = now.Subtract( g_start_time );
@@ -3737,13 +3744,13 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
     if( s_ProgDialog ) return;
 
     switch( event.GetId() ){
-        case ID_MENU_SCALE_IN:
+        case ID_MENU_SCALE_OUT:
         case ID_STKUP:
             DoStackDelta( 1 );
             DoChartUpdate();
             break;
 
-        case ID_MENU_SCALE_OUT:
+        case ID_MENU_SCALE_IN:
         case ID_STKDN:
             DoStackDelta( -1 );
             DoChartUpdate();
@@ -4524,7 +4531,6 @@ void MyFrame::ApplyGlobalSettings( bool bFlyingUpdate, bool bnewtoolbar )
         }
     }
 
-
     /*
      * Menu Bar - add or remove is if necessary, and update the state of the menu items
      */
@@ -4595,7 +4601,6 @@ void MyFrame::RegisterGlobalMenuItems()
     nav_menu->AppendSeparator();
     nav_menu->Append( ID_MENU_SCALE_IN, _menuText(_("Larger Scale Chart"), _T("Ctrl-Left")) );
     nav_menu->Append( ID_MENU_SCALE_OUT, _menuText(_("Smaller Scale Chart"), _T("Ctrl-Right")) );
-    nav_menu->AppendSeparator();
     m_pMenuBar->Append( nav_menu, _("Navigate") );
 
 
@@ -4643,7 +4648,11 @@ void MyFrame::RegisterGlobalMenuItems()
     tools_menu->Append( ID_MENU_MARK_BOAT, _menuText(_("Drop Mark at Boat"), _T("Ctrl-O")) );
     tools_menu->Append( ID_MENU_MARK_CURSOR, _menuText(_("Drop Mark at Cursor"), _T("Ctrl-M")) );
     tools_menu->AppendSeparator();
+#ifdef __WXOSX__
     tools_menu->Append( ID_MENU_MARK_MOB, _menuText(_("Drop MOB Marker"), _T("RawCtrl-Space")) ); // NOTE Cmd+Space is reserved for Spotlight
+#else
+    tools_menu->Append( ID_MENU_MARK_MOB, _menuText(_("Drop MOB Marker"), _T("Ctrl-Space")) );
+#endif
     tools_menu->AppendSeparator();
     tools_menu->Append( wxID_PREFERENCES, _menuText(_("Preferences..."), _T("Ctrl-,")) );
     m_pMenuBar->Append( tools_menu, _("Tools") );

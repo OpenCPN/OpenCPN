@@ -2297,7 +2297,7 @@ bool UpdateSingleWaypoint( PlugIn_Waypoint *pwaypoint )
 
         prp->m_lat = pwaypoint->m_lat;
         prp->m_lon = pwaypoint->m_lon;
-        prp->m_IconName = pwaypoint->m_IconName;
+        prp->SetIconName( pwaypoint->m_IconName );
         prp->SetName( pwaypoint->m_MarkName );
         prp->m_MarkDescription = pwaypoint->m_MarkDescription;
 

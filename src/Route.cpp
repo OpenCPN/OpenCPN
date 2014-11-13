@@ -118,7 +118,7 @@ void Route::CloneRoute( Route *psourceroute, int start_nPoint, int end_nPoint, c
         else {
             RoutePoint *psourcepoint = psourceroute->GetPoint( i );
             RoutePoint *ptargetpoint = new RoutePoint( psourcepoint->m_lat, psourcepoint->m_lon,
-                    psourcepoint->m_IconName, psourcepoint->GetName(), GPX_EMPTY_STRING, false );
+                    psourcepoint->GetIconName(), psourcepoint->GetName(), GPX_EMPTY_STRING, false );
 
             AddPoint( ptargetpoint, false );
 
@@ -152,7 +152,7 @@ void Route::CloneTrack( Route *psourceroute, int start_nPoint, int end_nPoint, c
 
         RoutePoint *psourcepoint = psourceroute->GetPoint( i );
         RoutePoint *ptargetpoint = new RoutePoint( psourcepoint->m_lat, psourcepoint->m_lon,
-                psourcepoint->m_IconName, psourcepoint->GetName(), GPX_EMPTY_STRING, false );
+                psourcepoint->GetIconName(), psourcepoint->GetName(), GPX_EMPTY_STRING, false );
 
         AddPoint( ptargetpoint, false );
         
@@ -183,7 +183,6 @@ void Route::CloneAddedRoutePoint( RoutePoint *ptargetpoint, RoutePoint *psourcep
     ptargetpoint->m_bKeepXRoute = psourcepoint->m_bKeepXRoute;
     ptargetpoint->m_bIsVisible = psourcepoint->m_bIsVisible;
     ptargetpoint->m_bPtIsSelected = false;
-    ptargetpoint->m_pbmIcon = psourcepoint->m_pbmIcon;
     ptargetpoint->m_bShowName = psourcepoint->m_bShowName;
     ptargetpoint->m_bBlink = psourcepoint->m_bBlink;
     ptargetpoint->m_bBlink = psourcepoint->m_bDynamicName;
@@ -192,7 +191,8 @@ void Route::CloneAddedRoutePoint( RoutePoint *ptargetpoint, RoutePoint *psourcep
     ptargetpoint->m_NameLocationOffsetX = psourcepoint->m_NameLocationOffsetY;
     ptargetpoint->SetCreateTime(psourcepoint->GetCreateTime());
     ptargetpoint->m_HyperlinkList = new HyperlinkList;
-
+    ptargetpoint->ReLoadIcon();
+    
     if( !psourcepoint->m_HyperlinkList->IsEmpty() ) {
         HyperlinkList::iterator iter = psourcepoint->m_HyperlinkList->begin();
         psourcepoint->m_HyperlinkList->splice( iter, *( ptargetpoint->m_HyperlinkList ) );
@@ -208,7 +208,6 @@ void Route::CloneAddedTrackPoint( RoutePoint *ptargetpoint, RoutePoint *psourcep
     ptargetpoint->m_bKeepXRoute = psourcepoint->m_bKeepXRoute;
     ptargetpoint->m_bIsVisible = psourcepoint->m_bIsVisible;
     ptargetpoint->m_bPtIsSelected = false;
-    ptargetpoint->m_pbmIcon = psourcepoint->m_pbmIcon;
     ptargetpoint->m_bShowName = psourcepoint->m_bShowName;
     ptargetpoint->m_bBlink = psourcepoint->m_bBlink;
     ptargetpoint->m_bBlink = psourcepoint->m_bDynamicName;
@@ -217,6 +216,7 @@ void Route::CloneAddedTrackPoint( RoutePoint *ptargetpoint, RoutePoint *psourcep
     ptargetpoint->m_NameLocationOffsetX = psourcepoint->m_NameLocationOffsetY;
     ptargetpoint->SetCreateTime(psourcepoint->GetCreateTime());
     ptargetpoint->m_HyperlinkList = new HyperlinkList;
+    ptargetpoint->ReLoadIcon();
     // Hyperlinks not implemented currently in GPX for trackpoints
     //if (!psourcepoint->m_HyperlinkList->IsEmpty()) {
     //      HyperlinkList::iterator iter = psourcepoint->m_HyperlinkList->begin();
@@ -485,11 +485,11 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
                 wxRoutePointListNode *node = pRoutePointList->GetFirst();
                 RoutePoint *prp = node->GetData();
                 
-                if( prp->m_IconName.StartsWith( _T("xmred") ) ) 
+                if( prp->GetIconName().StartsWith( _T("xmred") ) ) 
                     col = GetGlobalColor( _T ( "URED" ) );
-                else if( prp->m_IconName.StartsWith( _T("xmblue") ) ) 
+                else if( prp->GetIconName().StartsWith( _T("xmblue") ) ) 
                     col = GetGlobalColor( _T ( "BLUE3" ) );
-                else if( prp->m_IconName.StartsWith( _T("xmgreen") ) ) 
+                else if( prp->GetIconName().StartsWith( _T("xmgreen") ) ) 
                     col = GetGlobalColor( _T ( "UGREN" ) );
                 else 
                     col = GetGlobalColor( _T ( "CHMGD" ) );

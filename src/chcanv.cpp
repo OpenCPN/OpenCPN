@@ -2114,17 +2114,22 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
                 ZoomCanvas( 0.5 );
                 break;
 
+#ifdef __WXMAC__
+            // On other platforms these are handled in OnKeyChar, which (apparently) works better in some locales.
+            // On OS X it is better to handle them here, since pressing Alt (which should change the rotation speed)
+            // changes the key char and so prevents the keys from working.
             case ']':
-//                RotateCanvas( 1 );
+                RotateCanvas( 1 );
                 break;
                 
             case '[':
-//                RotateCanvas( -1 );
+                RotateCanvas( -1 );
                 break;
                 
             case '\\':
-//                DoRotateCanvas(0);
+                DoRotateCanvas(0);
                 break;
+#endif
             }
         } else {
             switch( key_char ) {
@@ -2360,6 +2365,8 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
     }
 
 #ifndef __WXMAC__
+    // Allow OnKeyChar to catch the key events too.
+    // On OS X this is unnecessary since we handle all key events here.
     event.Skip();
 #endif
 }
@@ -3111,14 +3118,12 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
         }
 
         if( pc ) {
-            double min_allowed_scale = pc->GetNormalScaleMin( GetCanvasScaleFactor(), false/*g_b_overzoom_x*/ );
-            
             double target_scale_ppm = GetVPScale() * zoom_factor;
-            double new_scale_ppm = target_scale_ppm; //pc->GetNearestPreferredScalePPM(target_scale_ppm);
-            
-            proposed_scale_onscreen = GetCanvasScaleFactor() / new_scale_ppm;
+            proposed_scale_onscreen = GetCanvasScaleFactor() / target_scale_ppm;
             
             //  Query the chart to determine the appropriate zoom range
+            double min_allowed_scale = 800;    // Roughly, latitude dependent for mercator charts
+            
             if( proposed_scale_onscreen < min_allowed_scale ) {
                 if( min_allowed_scale == GetCanvasScaleFactor() / ( GetVPScale() ) ) {
                     m_zoom_factor = 1; /* stop zooming */
@@ -3129,7 +3134,7 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
             
         }
         else {
-            proposed_scale_onscreen = wxMax( proposed_scale_onscreen, 200.);
+            proposed_scale_onscreen = wxMax( proposed_scale_onscreen, 800.);
         }
             
         
@@ -3651,14 +3656,17 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
 
         //        A fall back in case of very high zoom-out, giving delta_y == 0
         //        which can probably only happen with vector charts
-        if( 0.0 == m_true_scale_ppm ) m_true_scale_ppm = scale_ppm;
+        if( 0.0 == m_true_scale_ppm )
+            m_true_scale_ppm = scale_ppm;
 
         //        Another fallback, for highly zoomed out charts
         //        This adjustment makes the displayed TrueScale correspond to the
         //        same algorithm used to calculate the chart zoom-out limit for ChartDummy.
-        if( scale_ppm < 1e-4 ) m_true_scale_ppm = scale_ppm;
+        if( scale_ppm < 1e-4 )
+            m_true_scale_ppm = scale_ppm;
 
-        if( m_true_scale_ppm ) VPoint.chart_scale = m_canvas_scale_factor / ( m_true_scale_ppm );
+        if( m_true_scale_ppm )
+            VPoint.chart_scale = m_canvas_scale_factor / ( m_true_scale_ppm );
         else
             VPoint.chart_scale = 1.0;
 
@@ -3666,17 +3674,21 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
             double true_scale_display = floor( VPoint.chart_scale / 100. ) * 100.;
             wxString text;
 
-            if( Current_Ch ) {
-                double chart_native_ppm = m_canvas_scale_factor / Current_Ch->GetNativeScale();
-                double scale_factor = scale_ppm / chart_native_ppm;
-                if( scale_factor > 1.0 ) text.Printf( _("Scale %4.0f (%1.1fx)"),
-                                                          true_scale_display, scale_factor );
-                else
-                    text.Printf( _("Scale %4.0f (%1.2fx)"), true_scale_display,
-                                 scale_factor );
-            } else
-                text.Printf( _("Scale %4.0f"), true_scale_display );
-
+            
+            if( Current_Ch )
+                m_displayed_scale_factor = Current_Ch->GetNativeScale()/VPoint.chart_scale;
+            else 
+                m_displayed_scale_factor = m_pQuilt->GetRefNativeScale()/VPoint.chart_scale;
+            
+            if( m_displayed_scale_factor > 10.0 )
+                text.Printf( _("Scale %4.0f (%1.0fx)"), true_scale_display, m_displayed_scale_factor );
+            else if( m_displayed_scale_factor > 1.0 )
+                text.Printf( _("Scale %4.0f (%1.1fx)"), true_scale_display, m_displayed_scale_factor );
+            else  {
+                double sfr = wxRound(m_displayed_scale_factor * 10.) / 10.;
+                text.Printf( _("Scale %4.0f (%1.2fx)"), true_scale_display, sfr );
+            }
+                
             parent_frame->SetStatusText( text, STAT_FIELD_SCALE );
         }
     }
@@ -5432,7 +5444,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             } else if( !pMarkPropDialog->IsShown() && g_bWayPointPreventDragging ) DraggingAllowed =
                     false;
 
-            if( m_pRoutePointEditTarget && ( m_pRoutePointEditTarget->m_IconName == _T("mob") ) ) DraggingAllowed =
+            if( m_pRoutePointEditTarget && ( m_pRoutePointEditTarget->GetIconName() == _T("mob") ) ) DraggingAllowed =
                     false;
 
             if( m_pRoutePointEditTarget->m_bIsInLayer ) DraggingAllowed = false;
@@ -5516,7 +5528,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                     false;
 
             if( m_pRoutePointEditTarget
-                    && ( m_pRoutePointEditTarget->m_IconName == _T("mob") ) ) DraggingAllowed =
+                    && ( m_pRoutePointEditTarget->GetIconName() == _T("mob") ) ) DraggingAllowed =
                             false;
 
             if( m_pRoutePointEditTarget->m_bIsInLayer ) DraggingAllowed = false;
@@ -6809,7 +6821,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 
             MenuAppend( menuWaypoint, ID_WPT_MENU_COPY, _( "Copy as KML" ) );
 
-            if( m_pFoundRoutePoint->m_IconName != _T("mob") )
+            if( m_pFoundRoutePoint->GetIconName() != _T("mob") )
                 MenuAppend( menuWaypoint, ID_RT_MENU_DELPOINT,  _( "Delete" ) );
 
             wxString port = FindValidUploadPort();
@@ -6851,7 +6863,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 
             MenuAppend( menuWaypoint, ID_WPT_MENU_COPY, _( "Copy as KML" ) );
 
-            if( m_pFoundRoutePoint->m_IconName != _T("mob") )
+            if( m_pFoundRoutePoint->GetIconName() != _T("mob") )
                 MenuAppend( menuWaypoint, ID_WP_MENU_DELPOINT, _( "Delete" ) );
 
             wxString port = FindValidUploadPort();
@@ -7364,7 +7376,7 @@ void pupHandler_PasteRoute() {
 
             newPoint = new RoutePoint( curPoint );
             newPoint->m_bIsolatedMark = false;
-            newPoint->m_IconName = _T("circle");
+            newPoint->SetIconName( _T("circle") );
             newPoint->m_bIsVisible = true;
             newPoint->m_bShowName = false;
             newPoint->m_bKeepXRoute = false;
@@ -7607,7 +7619,7 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         }
 
         if( m_pFoundRoutePoint && !( m_pFoundRoutePoint->m_bIsInLayer )
-                && ( m_pFoundRoutePoint->m_IconName != _T("mob") ) ) {
+                && ( m_pFoundRoutePoint->GetIconName() != _T("mob") ) ) {
 
             // If the WP belongs to an invisible route, we come here instead of to ID_RT_MENU_DELPOINT
             //  Check it, and if so then remove the point from its routes
