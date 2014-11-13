@@ -3118,14 +3118,12 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
         }
 
         if( pc ) {
-            double min_allowed_scale = pc->GetNormalScaleMin( GetCanvasScaleFactor(), false/*g_b_overzoom_x*/ );
-            
             double target_scale_ppm = GetVPScale() * zoom_factor;
-            double new_scale_ppm = target_scale_ppm; //pc->GetNearestPreferredScalePPM(target_scale_ppm);
-            
-            proposed_scale_onscreen = GetCanvasScaleFactor() / new_scale_ppm;
+            proposed_scale_onscreen = GetCanvasScaleFactor() / target_scale_ppm;
             
             //  Query the chart to determine the appropriate zoom range
+            double min_allowed_scale = 800;    // Roughly, latitude dependent for mercator charts
+            
             if( proposed_scale_onscreen < min_allowed_scale ) {
                 if( min_allowed_scale == GetCanvasScaleFactor() / ( GetVPScale() ) ) {
                     m_zoom_factor = 1; /* stop zooming */
@@ -3136,7 +3134,7 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
             
         }
         else {
-            proposed_scale_onscreen = wxMax( proposed_scale_onscreen, 200.);
+            proposed_scale_onscreen = wxMax( proposed_scale_onscreen, 800.);
         }
             
         
@@ -3658,14 +3656,17 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
 
         //        A fall back in case of very high zoom-out, giving delta_y == 0
         //        which can probably only happen with vector charts
-        if( 0.0 == m_true_scale_ppm ) m_true_scale_ppm = scale_ppm;
+        if( 0.0 == m_true_scale_ppm )
+            m_true_scale_ppm = scale_ppm;
 
         //        Another fallback, for highly zoomed out charts
         //        This adjustment makes the displayed TrueScale correspond to the
         //        same algorithm used to calculate the chart zoom-out limit for ChartDummy.
-        if( scale_ppm < 1e-4 ) m_true_scale_ppm = scale_ppm;
+        if( scale_ppm < 1e-4 )
+            m_true_scale_ppm = scale_ppm;
 
-        if( m_true_scale_ppm ) VPoint.chart_scale = m_canvas_scale_factor / ( m_true_scale_ppm );
+        if( m_true_scale_ppm )
+            VPoint.chart_scale = m_canvas_scale_factor / ( m_true_scale_ppm );
         else
             VPoint.chart_scale = 1.0;
 
@@ -3673,17 +3674,21 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
             double true_scale_display = floor( VPoint.chart_scale / 100. ) * 100.;
             wxString text;
 
-            if( Current_Ch ) {
-                double chart_native_ppm = m_canvas_scale_factor / Current_Ch->GetNativeScale();
-                double scale_factor = scale_ppm / chart_native_ppm;
-                if( scale_factor > 1.0 ) text.Printf( _("Scale %4.0f (%1.1fx)"),
-                                                          true_scale_display, scale_factor );
-                else
-                    text.Printf( _("Scale %4.0f (%1.2fx)"), true_scale_display,
-                                 scale_factor );
-            } else
-                text.Printf( _("Scale %4.0f"), true_scale_display );
-
+            
+            if( Current_Ch )
+                m_displayed_scale_factor = Current_Ch->GetNativeScale()/VPoint.chart_scale;
+            else 
+                m_displayed_scale_factor = m_pQuilt->GetRefNativeScale()/VPoint.chart_scale;
+            
+            if( m_displayed_scale_factor > 10.0 )
+                text.Printf( _("Scale %4.0f (%1.0fx)"), true_scale_display, m_displayed_scale_factor );
+            else if( m_displayed_scale_factor > 1.0 )
+                text.Printf( _("Scale %4.0f (%1.1fx)"), true_scale_display, m_displayed_scale_factor );
+            else  {
+                double sfr = wxRound(m_displayed_scale_factor * 10.) / 10.;
+                text.Printf( _("Scale %4.0f (%1.2fx)"), true_scale_display, sfr );
+            }
+                
             parent_frame->SetStatusText( text, STAT_FIELD_SCALE );
         }
     }
