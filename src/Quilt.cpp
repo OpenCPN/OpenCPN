@@ -43,6 +43,7 @@ extern ChartCanvas *cc1;
 extern int g_GroupIndex;
 extern ColorScheme global_color_scheme;
 extern int g_chart_zoom_modifier;
+extern bool g_fog_overzoom;
 
 //      We define and use this one Macro in this module
 //      Reason:  some compilers refuse to inline "GetChartTableEntry()"
@@ -2318,6 +2319,82 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion 
             }  // box not empty
         }     // m_nHiLiteIndex
 
+        //    Fogging....
+        if( g_fog_overzoom ) {
+            double scale_factor = GetRefNativeScale()/vp.chart_scale;
+            
+            if(scale_factor > 10){
+                float fog = ((scale_factor - 10.) * 255.) / 20.;
+                fog = wxMin(fog, 255.);
+                
+                //    Is scratch member bitmap OK?
+                if( m_pBM ) {
+                    if( ( m_pBM->GetWidth() != vp.rv_rect.width )
+                        || ( m_pBM->GetHeight() != vp.rv_rect.height ) ) {
+                        delete m_pBM;
+                    m_pBM = NULL;
+                        }
+                }
+                
+                if( NULL == m_pBM )
+                    m_pBM = new wxBitmap( vp.rv_rect.width, vp.rv_rect.height );
+                
+                //    Copy the entire quilt to my scratch bm
+                wxMemoryDC q_dc;
+                q_dc.SelectObject( *m_pBM );
+                q_dc.Blit( 0, 0, vp.rv_rect.width, vp.rv_rect.height, &dc, 0, 0 );
+                q_dc.SelectObject( wxNullBitmap );
+  
+
+                wxImage src = m_pBM->ConvertToImage();
+                unsigned char *bg = src.GetData();
+                wxColour color(170,195,240);            // this is gshhs (backgound world chart) ocean color
+                
+                float transparency = fog;
+
+                // destination image
+                wxImage dest(vp.rv_rect.width, vp.rv_rect.height);
+                unsigned char *dest_data = (unsigned char *) malloc( vp.rv_rect.width * vp.rv_rect.height * 3 * sizeof(unsigned char) );
+                unsigned char *d = dest_data;
+                
+                float alpha = 1.0 - (float)transparency / 255.0;
+                int sb = vp.rv_rect.width * vp.rv_rect.height;
+                for( int i = 0; i < sb; i++ ) {
+                    float a = alpha;
+                    
+                    int r = ( ( *bg++ ) * a ) + (1.0-a) * color.Red();
+                    *d++ = r;
+                    int g = ( ( *bg++ ) * a ) + (1.0-a) * color.Green();
+                    *d++ = g;
+                    int b = ( ( *bg++ ) * a ) + (1.0-a) * color.Blue();
+                    *d++ = b;
+                }
+                
+                dest.SetData( dest_data );
+
+                wxBitmap dim(dest);
+                wxMemoryDC ddc;
+                ddc.SelectObject( dim );
+                
+                q_dc.SelectObject( *m_pBM );
+                OCPNRegionIterator upd ( rendered_region );
+                while ( upd.HaveRects() )
+                {
+                    wxRect rect = upd.GetRect();
+                    q_dc.Blit( rect.x, rect.y, rect.width, rect.height, &ddc, rect.x, rect.y );
+                    upd.NextRect();
+                }
+                
+                ddc.SelectObject( wxNullBitmap );
+                q_dc.SelectObject( wxNullBitmap );
+                
+                //    Select the scratch BM as the return dc contents
+                dc.SelectObject( *m_pBM );
+                
+            }              
+         }     // m_nHiLiteIndex
+        
+        
         if( !dc.IsOk() )          // some error, probably bad charts, to be disabled on next compose
         {
             SubstituteClearDC( dc, vp );

@@ -421,6 +421,7 @@ bool                      g_bLookAhead;
 bool                      g_bskew_comp;
 bool                      g_bopengl;
 bool                      g_bsmoothpanzoom;
+bool                      g_fog_overzoom;
 
 int                       g_nCOMPortCheck;
 
@@ -4529,7 +4530,6 @@ void MyFrame::ApplyGlobalSettings( bool bFlyingUpdate, bool bnewtoolbar )
             Refresh( false );
         }
     }
-
 
     /*
      * Menu Bar - add or remove is if necessary, and update the state of the menu items

@@ -114,7 +114,7 @@ public:
     time_t m_last_render_time;
 
 protected:
-    void RenderQuiltViewGL(ViewPort &vp, const OCPNRegion &Region, bool b_clear = true);
+    void RenderQuiltViewGL(ViewPort &vp, const OCPNRegion &Region );
     void BuildFBO();
     void SetupOpenGL();
     bool TextureCrunch(double factor);
@@ -124,7 +124,6 @@ protected:
     void RenderCharts(ocpnDC &dc, OCPNRegion &region);
     void RenderWorldChart(ocpnDC &dc, OCPNRegion &region);
     ViewPort BuildClippedVP(ViewPort &VP, wxRect &rect);
-//    void DeleteChartTextures(ChartBase *pc);
 
     void DrawFloatingOverlayObjects( ocpnDC &dc, OCPNRegion &region );
     void DrawGroundedOverlayObjectsRect(ocpnDC &dc, wxRect &rect);
