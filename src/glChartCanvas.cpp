@@ -3035,7 +3035,9 @@ void glChartCanvas::Render()
             double scale_factor = cc1->m_pQuilt->GetRefNativeScale()/VPoint.chart_scale;
             bool fog_it = (g_fog_overzoom && (scale_factor > 10) && VPoint.b_quilt);
             
-            if(accelerated_pan && !fog_it) {
+            bool bpost_hilite = !cc1->m_pQuilt->GetHiliteRegion( VPoint ).IsEmpty();
+            
+            if(accelerated_pan && !fog_it && !bpost_hilite) {
                 m_cache_page = !m_cache_page; /* page flip */
 
                 /* perform accelerated pan rendering to the new framebuffer */
