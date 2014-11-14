@@ -2570,15 +2570,14 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
         if(fog_it){
             float fog = ((scale_factor - 10.) * 255.) / 20.;
             fog = wxMin(fog, 255.);
-            float ffog = ((float)fog)/255.;
-            wxColour color(170,195,240);            // this is gshhs (backgound world chart) ocean color
+            wxColour color = cc1->GetFogColor(); 
             
             if( !m_gl_rendered_region.IsEmpty() ) {
                 glPushAttrib( GL_COLOR_BUFFER_BIT );
                 glEnable( GL_BLEND );
                 glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
                 
-                glColor4f( ((float) color.Red())/256, ((float) color.Green())/256, ((float) color.Blue())/256, ffog );
+                glColor4ub( color.Red(), color.Green(), color.Blue(), (int)fog );
                 
                 OCPNRegionIterator upd ( m_gl_rendered_region );
                 while ( upd.HaveRects() )
