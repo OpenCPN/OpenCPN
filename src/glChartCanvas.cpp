@@ -177,7 +177,7 @@ int g_mipmap_max_level = 4;
 bool glChartCanvas::s_b_useScissorTest;
 bool glChartCanvas::s_b_useStencil;
 bool glChartCanvas::s_b_useStencilAP;
-bool glChartCanvas::s_b_UploadFullCompressedMipmaps;
+bool glChartCanvas::s_b_UploadFullMipmaps;
 //static int s_nquickbind;
 
 long populate_tt_total, mipmap_tt_total, hwmipmap_tt_total, upload_tt_total;
@@ -1042,12 +1042,26 @@ void glChartCanvas::SetupOpenGL()
 
     SetupCompression();
 
-    s_b_UploadFullCompressedMipmaps = false;
+    //  Some platforms under some conditions, require a full set of MipMaps, from 0
+    s_b_UploadFullMipmaps = false;
 #ifdef __WXOSX__    
-    if( GetRendererString().Find( _T("Intel GMA 950") ) != wxNOT_FOUND )
-        s_b_UploadFullCompressedMipmaps = true;
+    s_b_UploadFullMipmaps = true;
 #endif    
 
+#ifdef __WXMSW__    
+    if(g_GLOptions.m_bTextureCompression && (g_raster_format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT) )
+        s_b_UploadFullMipmaps = true;
+#endif    
+
+    //  Parallels virtual machine on Mac host.    
+    if( GetRendererString().Find( _T("Parallels") ) != wxNOT_FOUND )
+        s_b_UploadFullMipmaps = true;
+        
+#ifdef ocpnUSE_GLES /* gles requires a complete set of mipmaps starting at 0 */
+    s_b_UploadFullMipmaps = true;
+#endif
+        
+        
     if(!g_bexpert)
         g_GLOptions.m_bUseAcceleratedPanning =  !m_b_DisableFBO && m_b_BuiltFBO;
 }

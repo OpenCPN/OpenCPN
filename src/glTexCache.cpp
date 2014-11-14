@@ -1252,24 +1252,10 @@ void glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     }
 
          
-#ifdef ocpnUSE_GLES /* gles requires a complete set of mipmaps starting at 0 */
-    base_level = 0;
-#endif
-
-    //  On Windows, we need a color flip, so it should start at the base level
-#ifdef __WXMSW__    
-    if(g_GLOptions.m_bTextureCompression && (m_raster_format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT) )
-        base_level = 0;
-#endif    
-        
-    /* Also, some non-compliant OpenGL drivers need the complete mipmap set when using compressed textures */
-    if( glChartCanvas::s_b_UploadFullCompressedMipmaps && g_GLOptions.m_bTextureCompression )
+    /* Some non-compliant OpenGL drivers need the complete mipmap set when using compressed textures */
+    if( glChartCanvas::s_b_UploadFullMipmaps )
         base_level = 0;
 
-    //  And finally, it seems that Mac OSX OpenGL drivers require mipmaps starting at zero always
-#ifdef __WXOSX__
-     base_level = 0;
-#endif     
         
     //  Now is a good time to update the cache, syncronously
     if(g_GLOptions.m_bTextureCompression && g_GLOptions.m_bTextureCompressionCaching) {
