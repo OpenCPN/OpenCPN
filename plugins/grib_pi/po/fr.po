@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-02 18:40-0600\n"
-"PO-Revision-Date: 2014-11-02 19:42-0500\n"
+"POT-Creation-Date: 2014-11-15 13:22-0600\n"
+"PO-Revision-Date: 2014-11-15 14:25-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -48,7 +48,7 @@ msgstr "N/A"
 
 #: src/GribUIDialog.cpp:589
 msgid "Data at"
-msgstr ""
+msgstr "Données à"
 
 #: src/GribUIDialog.cpp:605
 msgid "Wind Speed at"
@@ -450,7 +450,7 @@ msgstr "Espacement minimum"
 
 #: src/GribUIDialogBase.cpp:511
 msgid "Particle Map"
-msgstr "Courants de vent"
+msgstr "Visualiser et animer les flux"
 
 #: src/GribUIDialogBase.cpp:514
 msgid "Density"
@@ -462,7 +462,7 @@ msgstr "Afficher"
 
 #: src/GribUIDialogBase.cpp:535
 msgid "Overlay Transparency (%)"
-msgstr ""
+msgstr "Niveau de transparence pour les superpositions (%)"
 
 #: src/GribUIDialogBase.cpp:613
 msgid "Use High Definition Graphics"

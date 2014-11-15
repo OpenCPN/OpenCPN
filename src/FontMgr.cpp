@@ -134,7 +134,10 @@ wxFont *FontMgr::GetFont( const wxString &TextElement, int user_default_size )
     //    Get the system default font.
     wxFont sys_font = *wxNORMAL_FONT;
     int sys_font_size = sys_font.GetPointSize();
+
+#ifdef __WXMSW__
     sys_font_size = wxMax( sys_font_size, 10 );   //  In no case should the default font be smaller than 10 pt.
+#endif
     
     int new_size;
     if( 0 == user_default_size )

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-02 18:40-0600\n"
-"PO-Revision-Date: 2014-11-02 19:42-0500\n"
+"POT-Creation-Date: 2014-11-15 13:22-0600\n"
+"PO-Revision-Date: 2014-11-15 14:25-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Dutch\n"
 "Language: nl_NL\n"
@@ -34,7 +34,7 @@ msgstr "Sluiten"
 #: src/GribUIDialog.cpp:525 src/grib_pi.h:95 src/grib_pi.cpp:347
 #: src/GribRequestDialog.cpp:136
 msgid "Dialog"
-msgstr ""
+msgstr "Dialoog"
 
 #: src/GribUIDialog.cpp:582 src/GribUIDialog.cpp:584 src/GribUIDialog.cpp:586
 #: src/GribUIDialog.cpp:668 src/GribUIDialog.cpp:669 src/GribUIDialog.cpp:681
@@ -48,7 +48,7 @@ msgstr "nvt"
 
 #: src/GribUIDialog.cpp:589
 msgid "Data at"
-msgstr ""
+msgstr "Gegevens op"
 
 #: src/GribUIDialog.cpp:605
 msgid "Wind Speed at"
@@ -322,7 +322,7 @@ msgstr "Zeetemp."
 
 #: src/GribUIDialogBase.cpp:190
 msgid "Sea or Air Temperature at Surface Level"
-msgstr ""
+msgstr "Zee of luchttemperatuur aan de oppervlakte"
 
 #: src/GribUIDialogBase.cpp:201
 msgid "Convective Available Potential Energy"
@@ -450,11 +450,11 @@ msgstr "minimale tussenafstand"
 
 #: src/GribUIDialogBase.cpp:511
 msgid "Particle Map"
-msgstr ""
+msgstr "Bewegende stromingen"
 
 #: src/GribUIDialogBase.cpp:514
 msgid "Density"
-msgstr ""
+msgstr "Dichtheid"
 
 #: src/GribUIDialogBase.cpp:528
 msgid "Display"
@@ -462,7 +462,7 @@ msgstr "Toon op scherm"
 
 #: src/GribUIDialogBase.cpp:535
 msgid "Overlay Transparency (%)"
-msgstr ""
+msgstr "Overlay transparantie (%)"
 
 #: src/GribUIDialogBase.cpp:613
 msgid "Use High Definition Graphics"
@@ -602,7 +602,7 @@ msgstr "Geopotentiële hoogte"
 
 #: src/GribUIDialogBase.cpp:942
 msgid "850 hPa"
-msgstr ""
+msgstr "850 hPa"
 
 #: src/GribUIDialogBase.cpp:945
 msgid "700 hPa"
@@ -742,7 +742,7 @@ msgstr "Voer uw verwachte koers in"
 
 #: src/GribRequestDialog.cpp:289
 msgid "You request a forecast for more than 8 days horizon.\nThis is conflicting with Wave data which will be removed from your request.\nDon't forget that beyond the first 8 days, the resolution will be only 2.5°x2.5° and the time intervall 12 hours."
-msgstr ""
+msgstr "U vraagt om een verwachting langer dan 8 dagen vooruit.\nDit conflicteert met de golfgegevens, die daarom uit uw verzoek worden verwijderd.\nVergeet niet dat na de eerste 8 dagen de resolutie slechts 2.5\\u00B0x2.5\\u00B0 zal zijn met een interval van 12 uur."
 
 #: src/GribRequestDialog.cpp:565 src/GribRequestDialog.cpp:568
 msgid "MB"

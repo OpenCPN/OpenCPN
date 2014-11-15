@@ -2993,9 +2993,14 @@ void glChartCanvas::Render()
 
     TextureCrunch(0.8);
 
+    //  If we plan to post process the display, don't use accelerated panning
+    double scale_factor = cc1->m_pQuilt->GetRefNativeScale()/VPoint.chart_scale;
+    bool fog_it = (g_fog_overzoom && (scale_factor > 10) && VPoint.b_quilt);
+    bool bpost_hilite = !cc1->m_pQuilt->GetHiliteRegion( VPoint ).IsEmpty();
+    
     // Try to use the framebuffer object's cache of the last frame
     // to accelerate drawing this frame (if overlapping)
-    if( m_b_BuiltFBO ) {
+    if( m_b_BuiltFBO && !fog_it && !bpost_hilite) {
         int sx = GetSize().x;
         int sy = GetSize().y;
 
@@ -3044,13 +3049,7 @@ void glChartCanvas::Render()
 
             // do we allow accelerated panning?  can we perform it here?
             
-            //  If we plan to post process the display, don't use accelerated panning
-            double scale_factor = cc1->m_pQuilt->GetRefNativeScale()/VPoint.chart_scale;
-            bool fog_it = (g_fog_overzoom && (scale_factor > 10) && VPoint.b_quilt);
-            
-            bool bpost_hilite = !cc1->m_pQuilt->GetHiliteRegion( VPoint ).IsEmpty();
-            
-            if(accelerated_pan && !fog_it && !bpost_hilite) {
+            if(accelerated_pan) {
                 m_cache_page = !m_cache_page; /* page flip */
 
                 /* perform accelerated pan rendering to the new framebuffer */
@@ -3150,6 +3149,7 @@ void glChartCanvas::Render()
 
         if(VPoint.b_quilt)
             cc1->m_pQuilt->SetRenderedVP( VPoint );
+        
     } else          // useFBO
         RenderCharts(gldc, chart_get_region);
 
