@@ -2845,11 +2845,14 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
 
     if( flags == HEADER_ONLY ) {
         if( fn.GetExt() == _T("000") ) {
-            if( !GetBaseFileAttr( fn ) ) ret_value = INIT_FAIL_REMOVE;
-
-            if( !CreateHeaderDataFromENC() ) ret_value = INIT_FAIL_REMOVE;
-            else
-                ret_value = INIT_OK;
+            if( !GetBaseFileAttr( fn ) )
+                ret_value = INIT_FAIL_REMOVE;
+            else {
+                if( !CreateHeaderDataFromENC() )
+                    ret_value = INIT_FAIL_REMOVE;
+                else
+                    ret_value = INIT_OK;
+            }
         } else if( fn.GetExt() == _T("S57") ) {
             m_SENCFileName = name;
             if( !CreateHeaderDataFromSENC() ) ret_value = INIT_FAIL_REMOVE;

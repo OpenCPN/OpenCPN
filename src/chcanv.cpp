@@ -2611,6 +2611,22 @@ void ChartCanvas::SetColorScheme( ColorScheme cs )
 
     CreateDepthUnitEmbossMaps( cs );
     CreateOZEmbossMapData( cs );
+    
+    //  Set up fog effect base color
+    m_fog_color = wxColor( 170, 195, 240 );  // this is gshhs (backgound world chart) ocean color
+    float dim = 1.0;
+    switch( cs ){
+        case GLOBAL_COLOR_SCHEME_DUSK:
+            dim = 0.5;
+            break;
+        case GLOBAL_COLOR_SCHEME_NIGHT:
+            dim = 0.25;
+            break;
+        default:
+            break;
+    }
+    m_fog_color.Set( m_fog_color.Red()*dim, m_fog_color.Green()*dim, m_fog_color.Blue()*dim );
+    
 
 #ifdef ocpnUSE_GL
     if( g_bopengl && m_glcc ){

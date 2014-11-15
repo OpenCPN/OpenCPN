@@ -2348,7 +2348,7 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion 
 
                 wxImage src = m_pBM->ConvertToImage();
                 unsigned char *bg = src.GetData();
-                wxColour color(170,195,240);            // this is gshhs (backgound world chart) ocean color
+                wxColour color = cc1->GetFogColor();
                 
                 float transparency = fog;
 
