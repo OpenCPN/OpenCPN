@@ -3548,20 +3548,32 @@ void MyFrame::ODoSetSize( void )
 //      Resize the children
 
     if( m_pStatusBar ) {
-        //  Maybe resize the font
+        //  Maybe resize the font so the text fits in the boxes
+
         wxRect stat_box;
         m_pStatusBar->GetFieldRect( 0, stat_box );
-        int font_size = stat_box.width / 28;                // 30 for linux
+        // maximum size is 1/28 of the box width, or the box height - whicever is less
+        int max_font_size = wxMin( (stat_box.width / 28), (stat_box.height) );
 
-#ifdef __WXMAC__
-        font_size = wxMax(10, font_size);             // beats me...
+#ifdef __WXMSW__
+        int try_font_size = 12;   // the Windows system default is too small so fix it at 12pt
+#else
+        wxFont sys_font = *wxNORMAL_FONT;
+        int try_font_size = sys_font.GetPointSize() + 1; // start 1pt larger than system default
 #endif
 
-        wxFont* templateFont = FontMgr::Get().GetFont( _("StatusBar"), 12 );
-        font_size += templateFont->GetPointSize() - 10;
+#ifdef __WXOSX__
+        int min_font_size = 10; // much less than 10pt is unreadably small on OS X
+#else
+        int min_font_size = 6;  // on Win/Linux the text does not shrink so fast and 6pt is fine
+#endif
 
-        font_size = wxMin( font_size, 12 );
-        font_size = wxMax( font_size, 5 );
+        // get the user's preferred font, or if none set then the system default with the size overridden
+        wxFont* templateFont = FontMgr::Get().GetFont( _("StatusBar"), try_font_size );
+        int font_size = templateFont->GetPointSize();
+
+        font_size = wxMin( font_size, max_font_size );  // maximum to fit in the statusbar boxes
+        font_size = wxMax( font_size, min_font_size );  // minimum to stop it being unreadable
 
         wxFont *pstat_font = wxTheFontList->FindOrCreateFont( font_size,
               wxFONTFAMILY_SWISS, templateFont->GetStyle(), templateFont->GetWeight(), false,
