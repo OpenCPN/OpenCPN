@@ -2557,6 +2557,9 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &Region )
 
             glDisable( GL_BLEND );
             glPopAttrib();
+            
+            if(m_b_BuiltFBO)
+                cc1->Refresh(true);
         }
         cc1->m_pQuilt->SetRenderedVP( vp );
 
@@ -2612,6 +2615,9 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                 glDisable( GL_BLEND );
                 glPopAttrib();
             }
+            
+            if(m_b_BuiltFBO)
+                cc1->Refresh(true);
         }
     }
     
