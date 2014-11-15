@@ -4073,6 +4073,10 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         }
 
     }         // switch
+
+    // If we didn't handle the event, allow it to bubble up to other handlers.
+    // This is ncessary eg for the system default menu items (Hide, etc) on OS X to work.
+    event.Skip();
 }
 
 void MyFrame::ToggleColorScheme()
