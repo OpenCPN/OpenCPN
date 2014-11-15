@@ -374,10 +374,10 @@ enum
     ID_DEF_MENU_NORTHUP,
     ID_DEF_MENU_TIDEINFO,
     ID_DEF_MENU_CURRENTINFO,
-
-    ID_DEF_MENU_GROUPBASE,
-
     ID_DEF_ZERO_XTE,
+    
+    ID_DEF_MENU_GROUPBASE,  // Must be last entry, as chart group identifiers are created dynamically
+
     
     ID_DEF_MENU_LAST
 };
