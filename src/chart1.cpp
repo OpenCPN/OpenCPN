@@ -292,6 +292,7 @@ bool                      g_bFullscreenToolbar;
 bool                      g_bShowLayers;
 bool                      g_bTransparentToolbar;
 bool                      g_bPermanentMOBIcon;
+bool                      g_bTempShowMenuBar;
 
 int                       g_iSDMMFormat;
 int                       g_iDistanceFormat;
@@ -4546,12 +4547,15 @@ void MyFrame::ApplyGlobalSettings( bool bFlyingUpdate, bool bnewtoolbar )
     SendSizeEvent();               
     
     /*
-     * Menu Bar - add or remove is if necessary, and update the state of the menu items
+     * Menu Bar - add or remove it if necessary, and update the state of the menu items
      */
 #ifdef __WXOSX__
     bool showMenuBar = true;    // the menu bar is always visible in OS X
 #else
-    bool showMenuBar = pConfig->m_bShowMenuBar;
+    bool showMenuBar = pConfig->m_bShowMenuBar; // get visibility from options
+
+    if (!showMenuBar && g_bTempShowMenuBar)     // allows pressing alt to temporarily show
+        showMenuBar = true;
 #endif
 
     if ( showMenuBar ) {
@@ -4611,7 +4615,7 @@ void MyFrame::RegisterGlobalMenuItems()
     nav_menu->AppendSeparator();
     nav_menu->Append( ID_MENU_SCALE_IN, _menuText(_("Larger Scale Chart"), _T("Ctrl-Left")) );
     nav_menu->Append( ID_MENU_SCALE_OUT, _menuText(_("Smaller Scale Chart"), _T("Ctrl-Right")) );
-    m_pMenuBar->Append( nav_menu, _("Navigate") );
+    m_pMenuBar->Append( nav_menu, _("&Navigate") );
 
 
     wxMenu* view_menu = new wxMenu();
@@ -4636,7 +4640,7 @@ void MyFrame::RegisterGlobalMenuItems()
 #else
     view_menu->Append(ID_MENU_UI_FULLSCREEN, _menuText(_("Enter Full Screen"), _T("F11")) );
 #endif
-    m_pMenuBar->Append( view_menu, _("View") );
+    m_pMenuBar->Append( view_menu, _("&View") );
 
 
     wxMenu* ais_menu = new wxMenu();
@@ -4646,7 +4650,7 @@ void MyFrame::RegisterGlobalMenuItems()
     ais_menu->AppendCheckItem( ID_MENU_AIS_CPASOUND, _("Sound CPA Alarms") );
     ais_menu->AppendSeparator();
     ais_menu->Append( ID_MENU_AIS_TARGETLIST, _("AIS Target List...") );
-    m_pMenuBar->Append( ais_menu, _("AIS") );
+    m_pMenuBar->Append( ais_menu, _("&AIS") );
 
 
     wxMenu* tools_menu = new wxMenu();
@@ -4665,13 +4669,13 @@ void MyFrame::RegisterGlobalMenuItems()
 #endif
     tools_menu->AppendSeparator();
     tools_menu->Append( wxID_PREFERENCES, _menuText(_("Preferences..."), _T("Ctrl-,")) );
-    m_pMenuBar->Append( tools_menu, _("Tools") );
+    m_pMenuBar->Append( tools_menu, _("&Tools") );
 
 
     wxMenu* help_menu = new wxMenu();
     help_menu->Append( wxID_ABOUT, _("About OpenCPN") );
     help_menu->Append( wxID_HELP, _("OpenCPN Help") );
-    m_pMenuBar->Append( help_menu, _("Help") );
+    m_pMenuBar->Append( help_menu, _("&Help") );
 
 
     // Set initial values for menu check items and radio items
