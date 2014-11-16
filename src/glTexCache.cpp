@@ -1690,6 +1690,8 @@ bool glTexFactory::LoadHeader(void)
             
             else{               // some problem opening file, probably permissions on Win7
                 delete m_fs;
+                wxRemoveFile(m_CompressedCacheFilePath);
+                
                 m_fs = new wxFile(m_CompressedCacheFilePath, wxFile::write);
                 n_catalog_entries = 0;
                 m_catalog_offset = 0;
