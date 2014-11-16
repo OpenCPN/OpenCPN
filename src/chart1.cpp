@@ -36,6 +36,7 @@
 // Include CrashRpt Header
 #ifdef OCPN_USE_CRASHRPT
 #include "CrashRpt.h"
+#include <new.h>
 #endif
 
 #ifdef LINUX_CRASHRPT
@@ -717,6 +718,17 @@ enum {
 //              Fwd Refs
 //------------------------------------------------------------------------------
 
+
+#ifdef __WXMSW__
+int MyNewHandler( size_t size )
+{
+    //  Pass to wxWidgets Main Loop handler
+    throw std::bad_alloc();
+ 
+    return 0;
+}
+#endif
+
 //-----------------------------------------------------------------------
 //      Signal Handlers
 //-----------------------------------------------------------------------
@@ -823,6 +835,17 @@ bool MyApp::OnCmdLineParsed( wxCmdLineParser& parser )
 
     return true;
 }
+
+#ifdef __WXMSW__
+    //  Handle any exception not handled by CrashRpt
+    //  Most probable:  Malloc/new failure
+    
+bool MyApp::OnExceptionInMainLoop()
+{
+    wxLogWarning(_T("Caught MainLoopException, continuing..."));
+    return true;
+}
+#endif
 
 void MyApp::OnActivateApp( wxActivateEvent& event )
 {
@@ -983,11 +1006,18 @@ bool MyApp::OnInit()
     info.uPriorities[CR_SMTP] = CR_NEGATIVE_PRIORITY;  // Second try send report over SMTP
     info.uPriorities[CR_SMAPI] = CR_NEGATIVE_PRIORITY; //1; // Third try send report over Simple MAPI
 
-    // Install all available exception handlers.
-    info.dwFlags |= CR_INST_ALL_POSSIBLE_HANDLERS;
+    // Install all available exception handlers....
+    info.dwFlags = CR_INST_ALL_POSSIBLE_HANDLERS;
+    
+    //  Except memory allocation failures
+    info.dwFlags &= ~CR_INST_NEW_OPERATOR_ERROR_HANDLER;
 
-    // Use binary encoding for HTTP uploads (recommended).
-    info.dwFlags |= CR_INST_HTTP_BINARY_ENCODING;
+    //  Allow user to attach files
+    info.dwFlags |= CR_INST_ALLOW_ATTACH_MORE_FILES;
+    
+    //  Allow user to add more info
+    info.dwFlags |= CR_INST_SHOW_ADDITIONAL_INFO_FIELDS;
+    
 
     // Provide privacy policy URL
     wxStandardPathsBase& std_path_crash = wxApp::GetTraits()->GetStandardPaths();
@@ -1038,6 +1068,13 @@ bool MyApp::OnInit()
 #endif
 #endif
 
+#ifdef __WXMSW__
+    //  Invoke my own handler for failers of malloc/new
+    _set_new_handler( MyNewHandler );
+    //  configure malloc to call the New failure handler on failure
+    _set_new_mode(1);
+#endif    
+    
     //  Seed the random number generator
     wxDateTime x = wxDateTime::UNow();
     long seed = x.GetMillisecond();

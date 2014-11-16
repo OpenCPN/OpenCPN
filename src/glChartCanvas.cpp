@@ -2358,35 +2358,24 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, O
                     if( bGLMemCrunch )
                         pTexFact->DeleteTexture( rect );
                 } else { // this tile is needed
-                    pTexFact->PrepareTexture( base_level, rect, global_color_scheme ); 
+                    if(pTexFact->PrepareTexture( base_level, rect, global_color_scheme )){ 
                     
-                    /*   user setting is in MB while we count exact bytes,
-                         recompute here because we may free some of the
-                         mipmaps just created.    It could be useful to also
-                         delete unused mipmaps from previous tiles in this frame... */
-//                    bool bGLMemCrunch = g_tex_mem_used > g_GLOptions.m_iTextureMemorySize * 1024 * 1024;
+                        double sx = rect.width;
+                        double sy = rect.height;
 
-#if 0
-                    /* delete unneeded mipmap levels when this tile is used */
-                    if( bGLMemCrunch)
-                        DeleteTexture(ptd, base_level);
-#endif
+                        glBegin( GL_QUADS );
 
-                    double sx = rect.width;
-                    double sy = rect.height;
+                        glTexCoord2f( x1 / sx, y1 / sy );
+                        glVertex2f( ( x2 ), ( y2 ) );
+                        glTexCoord2f( ( x1 + w ) / sx, y1 / sy );
+                        glVertex2f( ( w + x2 ), ( y2 ) );
+                        glTexCoord2f( ( x1 + w ) / sx, ( y1 + h ) / sy );
+                        glVertex2f( ( w + x2 ), ( h + y2 ) );
+                        glTexCoord2f( x1 / sx, ( y1 + h ) / sy );
+                        glVertex2f( ( x2 ), ( h + y2 ) );
 
-                    glBegin( GL_QUADS );
-
-                    glTexCoord2f( x1 / sx, y1 / sy );
-                    glVertex2f( ( x2 ), ( y2 ) );
-                    glTexCoord2f( ( x1 + w ) / sx, y1 / sy );
-                    glVertex2f( ( w + x2 ), ( y2 ) );
-                    glTexCoord2f( ( x1 + w ) / sx, ( y1 + h ) / sy );
-                    glVertex2f( ( w + x2 ), ( h + y2 ) );
-                    glTexCoord2f( x1 / sx, ( y1 + h ) / sy );
-                    glVertex2f( ( x2 ), ( h + y2 ) );
-
-                    glEnd();
+                        glEnd();
+                    }
                 }
             }
             rect.x += rect.width;
