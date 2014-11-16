@@ -2325,7 +2325,7 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion 
             
             if(scale_factor > 10){
                 float fog = ((scale_factor - 10.) * 255.) / 20.;
-                fog = wxMin(fog, 255.);
+                fog = wxMin(fog, 200.);         // Don't fog out completely
                 
                 //    Is scratch member bitmap OK?
                 if( m_pBM ) {

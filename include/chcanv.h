@@ -349,7 +349,8 @@ private:
       bool        m_bRouteEditing;
       bool        m_bMarkEditing;
       bool        m_bIsInRadius;
-      
+      bool        m_bMayToggleMenuBar;
+
       RoutePoint  *m_pRoutePointEditTarget;
       RoutePoint  *m_lastRoutePointEditTarget;
       SelectItem  *m_pFoundPoint;

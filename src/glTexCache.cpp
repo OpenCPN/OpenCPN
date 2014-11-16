@@ -210,6 +210,7 @@ void GetLevel0Map( glTextureDescriptor *ptd,  const wxRect &rect, wxString &char
 {
     // Load level 0 uncompressed data
     wxRect ncrect(rect);
+    ptd->map_array[0] = 0;
     
     ChartBase *pChart = ChartData->OpenChartFromDB( chart_path, FULL_INIT );
     if( !pChart ) {
@@ -220,7 +221,7 @@ void GetLevel0Map( glTextureDescriptor *ptd,  const wxRect &rect, wxString &char
         //    Prime the pump with the "zero" level bits, ie. 1x native chart bits
     ChartBaseBSB *pBSBChart = dynamic_cast<ChartBaseBSB*>( pChart );
     ChartPlugInWrapper *pPlugInWrapper = dynamic_cast<ChartPlugInWrapper*>( pChart );
-    
+        
     if( !pPlugInWrapper && !pBSBChart ) {
         ptd->map_array[0] = (unsigned char *) calloc( ncrect.width * ncrect.height * 4, 1 );
         return;
@@ -410,6 +411,9 @@ CompressionPoolThread::CompressionPoolThread(JobTicket *ticket, wxEvtHandler *me
 
 void * CompressionPoolThread::Entry()
 {
+    try
+    {
+        
     for(int i=0 ; i < 10 ; i++)
         m_bit_array[i] = 0;
     
@@ -558,6 +562,22 @@ SendEvtAndReturn:
     m_pticket->b_isaborted = true;
     
     return 0;
+
+    }           // try
+    
+    catch (...)
+    {
+        if( m_pMessageTarget ) {
+            OCPN_CompressionThreadEvent Nevent(wxEVT_OCPN_COMPRESSIONTHREAD, 0);
+            Nevent.SetTicket(m_pticket);
+            
+            m_pMessageTarget->AddPendingEvent(Nevent);
+        }
+        
+        m_pticket->b_isaborted = true;
+        
+        return 0;
+    }
 }
 
 
@@ -1234,13 +1254,16 @@ void glTexFactory::OnTimer(wxTimerEvent &event)
 
 }
 
-void glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorScheme color_scheme, bool b_throttle_thread )
+bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorScheme color_scheme, bool b_throttle_thread )
 {
-    m_colorscheme = color_scheme;
-    
     int array_index = ((rect.y / m_tex_dim) * m_stride) + (rect.x / m_tex_dim);
     glTextureDescriptor *ptd = m_td_array[array_index];
 
+    m_colorscheme = color_scheme;
+    
+    try
+    {
+    
     // if not found in the hash map, then get the bits as a texture descriptor
     if( !ptd ){
         glTextureDescriptor *p = new glTextureDescriptor;
@@ -1313,7 +1336,7 @@ void glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
             ptd->FreeAll();
         }
             
-        return;
+        return true;
     }
     
 
@@ -1463,6 +1486,17 @@ void glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
       
     {
         ptd->FreeAll();
+    }
+    
+    return true;
+    }   //try
+    
+    catch (...)
+    {
+        //      Clean up
+        ptd->FreeAll();
+        DeleteSingleTexture( ptd );
+        return false;
     }
    
 }
@@ -1690,6 +1724,8 @@ bool glTexFactory::LoadHeader(void)
             
             else{               // some problem opening file, probably permissions on Win7
                 delete m_fs;
+                wxRemoveFile(m_CompressedCacheFilePath);
+                
                 m_fs = new wxFile(m_CompressedCacheFilePath, wxFile::write);
                 n_catalog_entries = 0;
                 m_catalog_offset = 0;

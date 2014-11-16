@@ -36,6 +36,7 @@
 // Include CrashRpt Header
 #ifdef OCPN_USE_CRASHRPT
 #include "CrashRpt.h"
+#include <new.h>
 #endif
 
 #ifdef LINUX_CRASHRPT
@@ -292,6 +293,7 @@ bool                      g_bFullscreenToolbar;
 bool                      g_bShowLayers;
 bool                      g_bTransparentToolbar;
 bool                      g_bPermanentMOBIcon;
+bool                      g_bTempShowMenuBar;
 
 int                       g_iSDMMFormat;
 int                       g_iDistanceFormat;
@@ -716,6 +718,17 @@ enum {
 //              Fwd Refs
 //------------------------------------------------------------------------------
 
+
+#ifdef __WXMSW__
+int MyNewHandler( size_t size )
+{
+    //  Pass to wxWidgets Main Loop handler
+    throw std::bad_alloc();
+ 
+    return 0;
+}
+#endif
+
 //-----------------------------------------------------------------------
 //      Signal Handlers
 //-----------------------------------------------------------------------
@@ -822,6 +835,17 @@ bool MyApp::OnCmdLineParsed( wxCmdLineParser& parser )
 
     return true;
 }
+
+#ifdef __WXMSW__
+    //  Handle any exception not handled by CrashRpt
+    //  Most probable:  Malloc/new failure
+    
+bool MyApp::OnExceptionInMainLoop()
+{
+    wxLogWarning(_T("Caught MainLoopException, continuing..."));
+    return true;
+}
+#endif
 
 void MyApp::OnActivateApp( wxActivateEvent& event )
 {
@@ -982,11 +1006,18 @@ bool MyApp::OnInit()
     info.uPriorities[CR_SMTP] = CR_NEGATIVE_PRIORITY;  // Second try send report over SMTP
     info.uPriorities[CR_SMAPI] = CR_NEGATIVE_PRIORITY; //1; // Third try send report over Simple MAPI
 
-    // Install all available exception handlers.
-    info.dwFlags |= CR_INST_ALL_POSSIBLE_HANDLERS;
+    // Install all available exception handlers....
+    info.dwFlags = CR_INST_ALL_POSSIBLE_HANDLERS;
+    
+    //  Except memory allocation failures
+    info.dwFlags &= ~CR_INST_NEW_OPERATOR_ERROR_HANDLER;
 
-    // Use binary encoding for HTTP uploads (recommended).
-    info.dwFlags |= CR_INST_HTTP_BINARY_ENCODING;
+    //  Allow user to attach files
+    info.dwFlags |= CR_INST_ALLOW_ATTACH_MORE_FILES;
+    
+    //  Allow user to add more info
+    info.dwFlags |= CR_INST_SHOW_ADDITIONAL_INFO_FIELDS;
+    
 
     // Provide privacy policy URL
     wxStandardPathsBase& std_path_crash = wxApp::GetTraits()->GetStandardPaths();
@@ -1037,6 +1068,13 @@ bool MyApp::OnInit()
 #endif
 #endif
 
+#ifdef __WXMSW__
+    //  Invoke my own handler for failers of malloc/new
+    _set_new_handler( MyNewHandler );
+    //  configure malloc to call the New failure handler on failure
+    _set_new_mode(1);
+#endif    
+    
     //  Seed the random number generator
     wxDateTime x = wxDateTime::UNow();
     long seed = x.GetMillisecond();
@@ -3548,20 +3586,32 @@ void MyFrame::ODoSetSize( void )
 //      Resize the children
 
     if( m_pStatusBar ) {
-        //  Maybe resize the font
+        //  Maybe resize the font so the text fits in the boxes
+
         wxRect stat_box;
         m_pStatusBar->GetFieldRect( 0, stat_box );
-        int font_size = stat_box.width / 28;                // 30 for linux
+        // maximum size is 1/28 of the box width, or the box height - whicever is less
+        int max_font_size = wxMin( (stat_box.width / 28), (stat_box.height) );
 
-#ifdef __WXMAC__
-        font_size = wxMax(10, font_size);             // beats me...
+#ifdef __WXMSW__
+        int try_font_size = 12;   // the Windows system default is too small so fix it at 12pt
+#else
+        wxFont sys_font = *wxNORMAL_FONT;
+        int try_font_size = sys_font.GetPointSize() + 1; // start 1pt larger than system default
 #endif
 
-        wxFont* templateFont = FontMgr::Get().GetFont( _("StatusBar"), 12 );
-        font_size += templateFont->GetPointSize() - 10;
+#ifdef __WXOSX__
+        int min_font_size = 10; // much less than 10pt is unreadably small on OS X
+#else
+        int min_font_size = 6;  // on Win/Linux the text does not shrink so fast and 6pt is fine
+#endif
 
-        font_size = wxMin( font_size, 12 );
-        font_size = wxMax( font_size, 5 );
+        // get the user's preferred font, or if none set then the system default with the size overridden
+        wxFont* templateFont = FontMgr::Get().GetFont( _("StatusBar"), try_font_size );
+        int font_size = templateFont->GetPointSize();
+
+        font_size = wxMin( font_size, max_font_size );  // maximum to fit in the statusbar boxes
+        font_size = wxMax( font_size, min_font_size );  // minimum to stop it being unreadable
 
         wxFont *pstat_font = wxTheFontList->FindOrCreateFont( font_size,
               wxFONTFAMILY_SWISS, templateFont->GetStyle(), templateFont->GetWeight(), false,
@@ -4534,12 +4584,15 @@ void MyFrame::ApplyGlobalSettings( bool bFlyingUpdate, bool bnewtoolbar )
     SendSizeEvent();               
     
     /*
-     * Menu Bar - add or remove is if necessary, and update the state of the menu items
+     * Menu Bar - add or remove it if necessary, and update the state of the menu items
      */
 #ifdef __WXOSX__
     bool showMenuBar = true;    // the menu bar is always visible in OS X
 #else
-    bool showMenuBar = pConfig->m_bShowMenuBar;
+    bool showMenuBar = pConfig->m_bShowMenuBar; // get visibility from options
+
+    if (!showMenuBar && g_bTempShowMenuBar)     // allows pressing alt to temporarily show
+        showMenuBar = true;
 #endif
 
     if ( showMenuBar ) {
@@ -4599,7 +4652,7 @@ void MyFrame::RegisterGlobalMenuItems()
     nav_menu->AppendSeparator();
     nav_menu->Append( ID_MENU_SCALE_IN, _menuText(_("Larger Scale Chart"), _T("Ctrl-Left")) );
     nav_menu->Append( ID_MENU_SCALE_OUT, _menuText(_("Smaller Scale Chart"), _T("Ctrl-Right")) );
-    m_pMenuBar->Append( nav_menu, _("Navigate") );
+    m_pMenuBar->Append( nav_menu, _("&Navigate") );
 
 
     wxMenu* view_menu = new wxMenu();
@@ -4624,7 +4677,7 @@ void MyFrame::RegisterGlobalMenuItems()
 #else
     view_menu->Append(ID_MENU_UI_FULLSCREEN, _menuText(_("Enter Full Screen"), _T("F11")) );
 #endif
-    m_pMenuBar->Append( view_menu, _("View") );
+    m_pMenuBar->Append( view_menu, _("&View") );
 
 
     wxMenu* ais_menu = new wxMenu();
@@ -4634,7 +4687,7 @@ void MyFrame::RegisterGlobalMenuItems()
     ais_menu->AppendCheckItem( ID_MENU_AIS_CPASOUND, _("Sound CPA Alarms") );
     ais_menu->AppendSeparator();
     ais_menu->Append( ID_MENU_AIS_TARGETLIST, _("AIS Target List...") );
-    m_pMenuBar->Append( ais_menu, _("AIS") );
+    m_pMenuBar->Append( ais_menu, _("&AIS") );
 
 
     wxMenu* tools_menu = new wxMenu();
@@ -4653,13 +4706,13 @@ void MyFrame::RegisterGlobalMenuItems()
 #endif
     tools_menu->AppendSeparator();
     tools_menu->Append( wxID_PREFERENCES, _menuText(_("Preferences..."), _T("Ctrl-,")) );
-    m_pMenuBar->Append( tools_menu, _("Tools") );
+    m_pMenuBar->Append( tools_menu, _("&Tools") );
 
 
     wxMenu* help_menu = new wxMenu();
     help_menu->Append( wxID_ABOUT, _("About OpenCPN") );
     help_menu->Append( wxID_HELP, _("OpenCPN Help") );
-    m_pMenuBar->Append( help_menu, _("Help") );
+    m_pMenuBar->Append( help_menu, _("&Help") );
 
 
     // Set initial values for menu check items and radio items

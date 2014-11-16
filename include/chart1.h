@@ -248,6 +248,12 @@ class MyApp: public wxApp
     void OnFatalException();
 #endif
 
+#ifdef __WXMSW__
+    //  Catch malloc/new fail exceptions
+    //  All the rest will be caught be CrashRpt
+    bool OnExceptionInMainLoop();
+#endif    
+    
     void TrackOff(void);
     
     wxSingleInstanceChecker *m_checker;

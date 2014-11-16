@@ -2358,35 +2358,24 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, O
                     if( bGLMemCrunch )
                         pTexFact->DeleteTexture( rect );
                 } else { // this tile is needed
-                    pTexFact->PrepareTexture( base_level, rect, global_color_scheme ); 
+                    if(pTexFact->PrepareTexture( base_level, rect, global_color_scheme )){ 
                     
-                    /*   user setting is in MB while we count exact bytes,
-                         recompute here because we may free some of the
-                         mipmaps just created.    It could be useful to also
-                         delete unused mipmaps from previous tiles in this frame... */
-//                    bool bGLMemCrunch = g_tex_mem_used > g_GLOptions.m_iTextureMemorySize * 1024 * 1024;
+                        double sx = rect.width;
+                        double sy = rect.height;
 
-#if 0
-                    /* delete unneeded mipmap levels when this tile is used */
-                    if( bGLMemCrunch)
-                        DeleteTexture(ptd, base_level);
-#endif
+                        glBegin( GL_QUADS );
 
-                    double sx = rect.width;
-                    double sy = rect.height;
+                        glTexCoord2f( x1 / sx, y1 / sy );
+                        glVertex2f( ( x2 ), ( y2 ) );
+                        glTexCoord2f( ( x1 + w ) / sx, y1 / sy );
+                        glVertex2f( ( w + x2 ), ( y2 ) );
+                        glTexCoord2f( ( x1 + w ) / sx, ( y1 + h ) / sy );
+                        glVertex2f( ( w + x2 ), ( h + y2 ) );
+                        glTexCoord2f( x1 / sx, ( y1 + h ) / sy );
+                        glVertex2f( ( x2 ), ( h + y2 ) );
 
-                    glBegin( GL_QUADS );
-
-                    glTexCoord2f( x1 / sx, y1 / sy );
-                    glVertex2f( ( x2 ), ( y2 ) );
-                    glTexCoord2f( ( x1 + w ) / sx, y1 / sy );
-                    glVertex2f( ( w + x2 ), ( y2 ) );
-                    glTexCoord2f( ( x1 + w ) / sx, ( y1 + h ) / sy );
-                    glVertex2f( ( w + x2 ), ( h + y2 ) );
-                    glTexCoord2f( x1 / sx, ( y1 + h ) / sy );
-                    glVertex2f( ( x2 ), ( h + y2 ) );
-
-                    glEnd();
+                        glEnd();
+                    }
                 }
             }
             rect.x += rect.width;
@@ -2583,7 +2572,7 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
         
         if(fog_it){
             float fog = ((scale_factor - 10.) * 255.) / 20.;
-            fog = wxMin(fog, 255.);
+            fog = wxMin(fog, 200.);         // Don't fog out completely
             wxColour color = cc1->GetFogColor(); 
             
             if( !m_gl_rendered_region.IsEmpty() ) {
@@ -2636,46 +2625,6 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
     for(OCPNRegionIterator clipit( region ); clipit.HaveRects() && n_rect<=max_rect; clipit.NextRect())
         n_rect++;
 
-    // Fogging
-        if(0){
-            
-            if(scale_factor > 10){
-                float fog = ((scale_factor - 10.) * 255.) / 20.;
-                fog = wxMin(fog, 255.);
-                float ffog = ((float)fog)/255.;
-                wxColour color(170,195,240);            // this is gshhs (backgound world chart) ocean color
-                
-                if( !m_gl_rendered_region.IsEmpty() ) {
-                    glPushAttrib( GL_COLOR_BUFFER_BIT );
-                    glEnable( GL_BLEND );
-                    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-                    
-                    glColor4f( ((float) color.Red())/256, ((float) color.Green())/256, ((float) color.Blue())/256, ffog );
-                    
-                    OCPNRegionIterator upd ( m_gl_rendered_region );
-                    while ( upd.HaveRects() )
-                    {
-                        wxRect rect = upd.GetRect();
-                        
-                        glBegin( GL_QUADS );
-                        glVertex2i( rect.x, rect.y );
-                        glVertex2i( rect.x + rect.width, rect.y );
-                        glVertex2i( rect.x + rect.width, rect.y + rect.height );
-                        glVertex2i( rect.x, rect.y + rect.height );
-                        glEnd();
-                        
-                        upd.NextRect();
-                        
-                    }
-                    
-                    glDisable( GL_BLEND );
-                    glPopAttrib();
-                }
-            }
-        }
-        
-        
-    
     if (n_rect > max_rect) {  // I don't expect this, and have never seen it
         wxLogMessage(wxString::Format(_T("warning: grounded nrect count: %d\n"), n_rect));
         region = OCPNRegion(region.GetBox()); /* flatten region to rectangle  */

@@ -182,6 +182,7 @@ extern CM93OffsetDialog  *g_pCM93OffsetDialog;
 extern bool             bGPSValid;
 extern bool             g_bShowOutlines;
 extern bool             g_bShowDepthUnits;
+extern bool             g_bTempShowMenuBar;
 
 extern AIS_Decoder      *g_pAIS;
 extern bool             g_bShowAIS;
@@ -1083,7 +1084,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_bRouteEditing = false;
     m_bMarkEditing = false;
     m_bIsInRadius = false;
-    
+    m_bMayToggleMenuBar = true;
+
     m_bFollow = false;
     m_bTCupdate = false;
     m_bAppendingRoute = false;          // was true in MSW, why??
@@ -1957,6 +1959,8 @@ void ChartCanvas::OnKeyChar( wxKeyEvent &event )
         }
     }
 #endif    
+
+    event.Skip();
 }    
 
 
@@ -1966,6 +1970,29 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
     m_modkeys = event.GetModifiers();
 
     int panspeed = m_modkeys == wxMOD_ALT ? 2 : 100;
+
+#ifndef __WXOSX__
+    // If the permanent menubar is disabled, we show it temporarily when Alt is pressed or when
+    // Alt + a letter is presssed (for the top-menu-level hotkeys).
+    // The toggling normally takes place in OnKeyUp, but here we handle some special cases.
+    if ( event.AltDown()  &&  !pConfig->m_bShowMenuBar ) {
+        // If Alt + a letter is pressed, and the menubar is hidden, show it now
+        if ( event.GetKeyCode() >= 'A' && event.GetKeyCode() <= 'Z' ) {
+            if ( !g_bTempShowMenuBar ) {
+                g_bTempShowMenuBar = true;
+                parent_frame->ApplyGlobalSettings(false, false);
+            }
+            m_bMayToggleMenuBar = false; // don't hide it again when we release Alt
+            event.Skip();
+            return;
+        }
+        // If another key is pressed while Alt is down, do NOT toggle the menus when Alt is released
+        if ( event.GetKeyCode() != WXK_ALT ) {
+            m_bMayToggleMenuBar = false;
+        }
+    }
+#endif
+
 
     // HOTKEYS
     switch( event.GetKeyCode() ) {
@@ -2143,6 +2170,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
                 break;
             }
         }
+
 
         if ( event.ControlDown() )
             key_char -= 64;
@@ -2400,6 +2428,15 @@ void ChartCanvas::OnKeyUp( wxKeyEvent &event )
 
     case WXK_ALT:
         m_modkeys &= ~wxMOD_ALT;
+#ifndef __WXOSX__
+        // If the permanent menu bar is disabled, and we are not in the middle of another key combo,
+        // then show the menu bar temporarily when Alt is released (or hide it if already visible).
+        if ( !pConfig->m_bShowMenuBar  &&  m_bMayToggleMenuBar ) {
+            g_bTempShowMenuBar = !g_bTempShowMenuBar;
+            parent_frame->ApplyGlobalSettings(false, false);
+        }
+        m_bMayToggleMenuBar = true;
+#endif
         break;
 
     case WXK_CONTROL:
@@ -4948,6 +4985,18 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
     // Protect from leftUp's coming from event handlers in child
     // windows who return focus to the canvas.
     static bool leftIsDown = false;
+
+#ifndef __WXOSX__
+    if (event.LeftDown()) {
+        if ( pConfig->m_bShowMenuBar == false && g_bTempShowMenuBar == true ) {
+            // The menu bar is temporarily visible due to alt having been pressed.
+            // Clicking will hide it, and do nothing else.
+            g_bTempShowMenuBar = false;
+            parent_frame->ApplyGlobalSettings(false, false);
+            return;
+        }
+    }
+#endif
 
     // Protect from very small cursor slips during double click, which produce a
     // single Drag event.
