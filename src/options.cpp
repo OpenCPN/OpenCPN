@@ -2454,6 +2454,13 @@ void options::CreateControls()
             group_item_spacing = 1;
         }
     }
+ 
+    // for very small displays
+    if( height <= 400 ) {
+        border_size = 0;
+        check_spacing = 0;
+        group_item_spacing = 0;
+    }
 
     options* itemDialog1 = this;
 
@@ -2499,7 +2506,8 @@ void options::CreateControls()
     bmp = wxBitmap( img ); m_topImgList->Add( bmp );
 #endif
 
-    m_pListbook->SetImageList( m_topImgList );
+    if(height > 400)
+        m_pListbook->SetImageList( m_topImgList );
     itemBoxSizer2->Add( m_pListbook, 1,
             wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL | wxALL | wxEXPAND, border_size );
 
@@ -2567,7 +2575,10 @@ void options::CreateControls()
     m_pPlugInCtrl->UpdateSelections();
 
     //Set the maximum size of the entire settings dialog
-    SetSizeHints( -1, -1, width-100, height-100 );
+    int margew = width > 500 ? 100 : 0;
+    int margeh = height > 500 ? 100 : 0;
+
+    SetSizeHints( -1, -1, width-margew, height-margeh );
 
     //  The s57 chart panel is the one which controls the minimum width required to avoid horizontal scroll bars
     vectorPanel->SetSizeHints( ps57Ctl );
