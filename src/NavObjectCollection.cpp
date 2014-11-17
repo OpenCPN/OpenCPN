@@ -79,6 +79,7 @@ RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
 
     double rlat = wpt_node.attribute( "lat" ).as_double();
     double rlon = wpt_node.attribute( "lon" ).as_double();;
+    double ArrivalRadius = 0;
 
     for( pugi::xml_node child = wpt_node.first_child(); child != 0; child = child.next_sibling() ) {
         const char *pcn = child.name();
@@ -168,6 +169,9 @@ RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
                     if( s.ToLong( &v ) )
                         bshared = ( v != 0 );
                 }
+                if( ext_name  == _T ( "opencpn:arrival_radius" ) ) {
+                    wxString::FromUTF8(ext_child.first_child().value()).ToDouble(&ArrivalRadius ) ;
+                }
             }// for 
         } //extensions
     }   // for
@@ -182,6 +186,7 @@ RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
     pWP = new RoutePoint( rlat, rlon, SymString, NameString, GuidString, false ); // do not add to global WP list yet...
     pWP->m_MarkDescription = DescString;
     pWP->m_bIsolatedMark = bshared;      // This is an isolated mark
+    pWP->SetWaypointArrivalRadius( ArrivalRadius );
     
 
     if( b_propvizname )
@@ -642,24 +647,29 @@ bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flags )
             child.append_child(pugi::node_pcdata).set_value(pr->m_GUID.mb_str());
         }
          
-         if((flags & OUT_VIZ) && !pr->m_bIsVisible) {
-             child = child_ext.append_child("opencpn:viz");
-             child.append_child(pugi::node_pcdata).set_value("0");
-         }
-            
-         if((flags & OUT_VIZ_NAME) && pr->m_bShowName) {
-             child = child_ext.append_child("opencpn:viz_name");
-             child.append_child(pugi::node_pcdata).set_value("1");
-         }
+        if((flags & OUT_VIZ) && !pr->m_bIsVisible) {
+            child = child_ext.append_child("opencpn:viz");
+            child.append_child(pugi::node_pcdata).set_value("0");
+        }
+           
+        if((flags & OUT_VIZ_NAME) && pr->m_bShowName) {
+            child = child_ext.append_child("opencpn:viz_name");
+            child.append_child(pugi::node_pcdata).set_value("1");
+        }
          
-         if((flags & OUT_AUTO_NAME) && pr->m_bDynamicName) {
-             child = child_ext.append_child("opencpn:auto_name");
-             child.append_child(pugi::node_pcdata).set_value("1");
-         }
-         if((flags & OUT_SHARED) && pr->m_bKeepXRoute) {
-             child = child_ext.append_child("opencpn:shared");
-             child.append_child(pugi::node_pcdata).set_value("1");
-         }
+        if((flags & OUT_AUTO_NAME) && pr->m_bDynamicName) {
+            child = child_ext.append_child("opencpn:auto_name");
+            child.append_child(pugi::node_pcdata).set_value("1");
+        }
+        if((flags & OUT_SHARED) && pr->m_bKeepXRoute) {
+            child = child_ext.append_child("opencpn:shared");
+            child.append_child(pugi::node_pcdata).set_value("1");
+        }
+        if(flags & OUT_ARRIVAL_RADIUS) {
+            child = child_ext.append_child("opencpn:arrival_radius");
+            s.Printf(_T("%.3f"), pr->GetWaypointArrivalRadius());
+            child.append_child(pugi::node_pcdata).set_value( s.mbc_str() );
+        }
     }
     
     return true;

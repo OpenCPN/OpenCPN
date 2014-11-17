@@ -44,6 +44,7 @@ extern Multiplexer *g_pMUX;
 extern MyFrame *gFrame;
 extern bool g_btouch;
 extern bool g_bresponsive;
+extern double g_n_arrival_circle_radius;
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST ( RoutePointList );
@@ -89,6 +90,8 @@ RoutePoint::RoutePoint()
 
     m_bIsInLayer = false;
     m_LayerID = 0;
+    
+    m_WaypointArrivalRadius = g_n_arrival_circle_radius;
 }
 
 // Copy Constructor
@@ -130,6 +133,8 @@ RoutePoint::RoutePoint( RoutePoint* orig )
     
     m_SelectNode = NULL;
     m_ManagerNode = NULL;
+
+    m_WaypointArrivalRadius = orig->GetWaypointArrivalRadius();
     
 }
 
@@ -196,6 +201,8 @@ RoutePoint::RoutePoint( double lat, double lon, const wxString& icon_ident, cons
         m_bIsListed = false;
     } else
         m_LayerID = 0;
+        
+    SetWaypointArrivalRadius( g_n_arrival_circle_radius );
 }
 
 RoutePoint::~RoutePoint( void )
@@ -627,5 +634,14 @@ bool RoutePoint::SendToGPS(const wxString & com_name, wxGauge *pProgress)
     OCPNMessageBox( NULL, msg, _("OpenCPN Info"), wxOK | wxICON_INFORMATION );
 
     return (result == 0);
+}
+
+double RoutePoint::GetWaypointArrivalRadius() { 
+    if (m_WaypointArrivalRadius < 0.001) {
+        SetWaypointArrivalRadius( g_n_arrival_circle_radius );
+        return g_n_arrival_circle_radius;
+    }
+    else
+        return m_WaypointArrivalRadius; 
 }
 
