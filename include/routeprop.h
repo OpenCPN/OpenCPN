@@ -297,6 +297,8 @@ class MarkInfoDef : public wxDialog
         wxToggleButton*         m_toggleBtnEdit;
         wxStaticBoxSizer*       sbSizerLinks;
         wxSize                  m_defaultClientSize;
+        wxStaticText*           m_staticTextArrivalRadius;
+        wxTextCtrl*             m_textArrivalRadius;
 
     // Virtual event handlers, overide them in your derived class
         virtual void OnPositionCtlUpdated( wxCommandEvent& event ) { event.Skip(); }
@@ -309,6 +311,7 @@ class MarkInfoDef : public wxDialog
         virtual void OnDescChangedExt( wxCommandEvent& event ) { event.Skip(); }
         virtual void OnMarkInfoCancelClick( wxCommandEvent& event ) { event.Skip(); }
         virtual void OnMarkInfoOKClick( wxCommandEvent& event ) { event.Skip(); }
+        virtual void OnArrivalRadiusChange( wxCommandEvent& event ) { event.Skip(); }
         void OnCopyPasteLatLon( wxCommandEvent& event );
 
     public:
