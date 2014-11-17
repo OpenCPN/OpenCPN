@@ -515,6 +515,8 @@ public:
     wxChoice                *pDistanceFormat;
     wxChoice                *pSpeedFormat;
 
+    wxCheckBox              *pSailing;
+    
     wxCheckBox              *pTrackShowIcon;
     wxCheckBox              *pTrackDaily;
     wxCheckBox              *pTrackHighlite;

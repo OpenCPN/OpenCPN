@@ -88,6 +88,7 @@ extern Multiplexer     *g_pMUX;
 extern PlugInManager    *g_pi_manager;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern wxString         g_uploadConnection;
+extern bool             g_bSailing;
 
 //    List definitions for Waypoint Manager Icons
 WX_DECLARE_LIST(wxBitmap, markicon_bitmap_list_type);
@@ -463,7 +464,7 @@ bool Routeman::UpdateProgress()
             //      have been mving away for 2 seconds.  
             //      If so, we should declare "Arrival"
                 if( (CurrentRangeToActiveNormalCrossing - m_arrival_min) >  pActiveRoute->GetRouteArrivalRadius() ){
-                    if(++m_arrival_test > 2) {
+                    if(++m_arrival_test > 2 && !g_bSailing) {
                         m_bArrival = true;
                         UpdateAutopilot();
                         
