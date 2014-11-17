@@ -1977,6 +1977,14 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         m_modkeys |= wxMOD_CONTROL;
         break;
 
+    case WXK_MENU:
+    {
+        // emulate right click
+        wxMouseEvent event(wxEVT_RIGHT_DOWN);
+        event.m_rightDown = true;
+        MouseEvent( event );
+    } break;
+
     case WXK_LEFT:
         if( m_modkeys == wxMOD_CONTROL ) parent_frame->DoStackDown();
         else if(g_bsmoothpanzoom) {
