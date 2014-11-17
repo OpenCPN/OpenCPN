@@ -463,8 +463,13 @@ void RouteManagerDialog::Create()
     sort_layer_name_dir = 0;
     sort_layer_len_dir = 1;
 
+    wxScreenDC screen;
+    // This addresses the width of the route manager
+    // for low resolution screens
+    wxSize ctrlsize( screen.GetSize().x < 600 ? screen.GetSize().x-200 : 400, -1 );
+
     // Setup GUI
-    m_pRouteListCtrl = new wxListCtrl( m_pPanelRte, -1, wxDefaultPosition, wxSize( 400, -1 ),
+    m_pRouteListCtrl = new wxListCtrl( m_pPanelRte, -1, wxDefaultPosition, ctrlsize,
             wxLC_REPORT  | wxLC_SORT_ASCENDING | wxLC_HRULES
                     | wxBORDER_SUNKEN/*|wxLC_VRULES*/);
     m_pRouteListCtrl->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED,
@@ -554,7 +559,7 @@ void RouteManagerDialog::Create()
     m_pPanelTrk->SetSizer( itemBoxSizer3 );
     m_pNotebook->AddPage( m_pPanelTrk, _("Tracks") );
 
-    m_pTrkListCtrl = new wxListCtrl( m_pPanelTrk, -1, wxDefaultPosition, wxSize( 400, -1 ),
+    m_pTrkListCtrl = new wxListCtrl( m_pPanelTrk, -1, wxDefaultPosition, ctrlsize,
             wxLC_REPORT | wxLC_SORT_ASCENDING | wxLC_HRULES | wxBORDER_SUNKEN/*|wxLC_VRULES*/);
     m_pTrkListCtrl->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED,
             wxListEventHandler(RouteManagerDialog::OnTrkSelected), NULL, this );
@@ -619,7 +624,7 @@ void RouteManagerDialog::Create()
     m_pPanelWpt->SetSizer( itemBoxSizer4 );
     m_pNotebook->AddPage( m_pPanelWpt, _("Waypoints") );
 
-    m_pWptListCtrl = new wxListCtrl( m_pPanelWpt, -1, wxDefaultPosition, wxSize( 400, -1 ),
+    m_pWptListCtrl = new wxListCtrl( m_pPanelWpt, -1, wxDefaultPosition, ctrlsize,
             wxLC_REPORT | wxLC_SORT_ASCENDING | wxLC_HRULES | wxBORDER_SUNKEN/*|wxLC_VRULES*/);
     m_pWptListCtrl->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED,
             wxListEventHandler(RouteManagerDialog::OnWptSelected), NULL, this );
@@ -710,7 +715,7 @@ void RouteManagerDialog::Create()
     m_pPanelLay->SetSizer( itemBoxSizer7 );
     m_pNotebook->AddPage( m_pPanelLay, _("Layers") );
 
-    m_pLayListCtrl = new wxListCtrl( m_pPanelLay, -1, wxDefaultPosition, wxSize( 400, -1 ),
+    m_pLayListCtrl = new wxListCtrl( m_pPanelLay, -1, wxDefaultPosition, ctrlsize,
             wxLC_REPORT | wxLC_SINGLE_SEL | wxLC_SORT_ASCENDING | wxLC_HRULES
                     | wxBORDER_SUNKEN/*|wxLC_VRULES*/);
     m_pLayListCtrl->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED,
