@@ -232,7 +232,7 @@ public:
       bool                    m_bSkipChangeSetUpdate;
       
 //    These members are set/reset in Options dialog
-      bool  m_bShowStatusBar, m_bShowCompassWin;
+      bool  m_bShowStatusBar, m_bShowMenuBar, m_bShowCompassWin;
 
 
 

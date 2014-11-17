@@ -1,0 +1,27 @@
+Creating the documentation starting with the wiki. Some points to remember.
+
+0. Everything included in the "Book" "User Manual" will be included. Anything that is not strictly a documentation 
+of OpenCPN, needs to be (temporarily) moved to, for ex, "Supplementary Hardware".
+
+1 Download "Live Snapshot" from download page.
+http://opencpn.org/ocpn/ocpn_manual_export/
+
+2 Run all pictures in the folder "OpenCPN User Manual_files" through "optipng"
+Open a commandline in the folder and run   $optipng -o7 *.png
+for max size reduction.Watch out for the possibility of corrupted pictures as a result from running the command.
+
+3 Links in the Documentation wiki, must follow a very precise format to work as internal links in the final document.
+The name of the link must be exactly the title of the page linked to. 
+To link to "Installing Charts", the link that users see and click on _must_ be "Installing Charts", not even including a final "." !!
+On occasion this will look a bit funny, but generally it's possible to adjust the sentences accordingly.
+
+4 Check for and delete hidden links, introduced into the wiki by copy/paste from the forum!!
+These may not show in the wiki but use to be easy to spot in the produced single page.
+Test by setting all links to be colored or underlined.
+
+5 When naming picture files, pick names that are unique, taking into account that Windows does not differ between cases.
+Test1.png is considered equal to test1.png. 
+
+6 No spaces in picture files names.
+
+TH20130127

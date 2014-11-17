@@ -574,7 +574,7 @@ void MMSIListCtrl::OnListItemRightClick( wxListEvent &event)
     menu->Append(item_delete);
 
 #ifdef __WXMSW__
-    wxFont *qFont = GetOCPNScaledFont(_("Menu"), 10);
+    wxFont *qFont = GetOCPNScaledFont(_("Menu"));
     item_edit->SetFont(*qFont);
     item_delete->SetFont(*qFont);
 #endif
@@ -632,7 +632,7 @@ MMSI_Props_Panel::MMSI_Props_Panel( wxWindow *parent ):
 {
     m_pparent = parent;
     
-    wxFont *qFont = GetOCPNScaledFont(_("Dialog"), 10);
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     SetFont( *qFont );
 
     wxBoxSizer* topSizer = new wxBoxSizer( wxVERTICAL );
@@ -845,7 +845,7 @@ options::options( MyFrame* parent, wxWindowID id, const wxString& caption, const
 
     wxDialog::Create( parent, id, caption, pos, size, wstyle );
 
-    wxFont *qFont = GetOCPNScaledFont(_("Dialog"), 10);
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     SetFont( *qFont );
     
     CreateControls();
@@ -902,6 +902,7 @@ void options::Init()
     m_pWorkDirList = NULL;
 
     pShowStatusBar = NULL;
+    pShowMenuBar = NULL;
     pShowCompassWin = NULL;
     pSelCtl = NULL;
     pActiveChartsList = NULL;
@@ -2343,6 +2344,12 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
     pShowStatusBar->SetValue( FALSE );
     miscOptions->Add( pShowStatusBar, 0, wxALL, border_size );
 
+#ifndef __WXOSX__
+    pShowMenuBar = new wxCheckBox( itemPanelFont, wxID_ANY, _("Show Menu Bar") );
+    pShowMenuBar->SetValue( FALSE );
+    miscOptions->Add( pShowMenuBar, 0, wxALL, border_size );
+#endif
+
     pShowCompassWin = new wxCheckBox( itemPanelFont, wxID_ANY, _("Show Compass/GPS Status Window") );
     pShowCompassWin->SetValue( FALSE );
     miscOptions->Add( pShowCompassWin, 0, wxALL, border_size );
@@ -2607,6 +2614,9 @@ void options::SetInitialSettings()
 
     if( m_pConfig ) {
         pShowStatusBar->SetValue( m_pConfig->m_bShowStatusBar );
+#ifndef __WXOSX__
+        pShowMenuBar->SetValue( m_pConfig->m_bShowMenuBar );
+#endif
         pShowCompassWin->SetValue( m_pConfig->m_bShowCompassWin );
     }
 
@@ -3346,6 +3356,9 @@ void options::OnApplyClick( wxCommandEvent& event )
 
     if( m_pConfig ) {
         m_pConfig->m_bShowStatusBar = pShowStatusBar->GetValue();
+#ifndef __WXOSX__
+        m_pConfig->m_bShowMenuBar = pShowMenuBar->GetValue();
+#endif
         m_pConfig->m_bShowCompassWin = pShowCompassWin->GetValue();
     }
 
@@ -5453,7 +5466,7 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
     wxDialog::Create( parent, wxID_ANY, _T("OpenGL Options"), wxDefaultPosition, wxDefaultSize,
                       style );
     
-    wxFont *qFont = GetOCPNScaledFont(_("Dialog"), 10);
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     SetFont( *qFont );
     
 #ifdef ocpnUSE_GL

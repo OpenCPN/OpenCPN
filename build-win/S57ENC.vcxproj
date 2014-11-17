@@ -1,0 +1,335 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|Win32">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|Win32">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{0A6B9CF5-A3EC-4C91-83E6-507B1EED9160}</ProjectGUID>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>Win32</Platform>
+    <ProjectName>S57ENC</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+    <PropertyGroup>
+      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\Debug\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">S57ENC.dir\Debug\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">S57ENC</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.lib</TargetExt>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\Release\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">S57ENC.dir\Release\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">S57ENC</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.lib</TargetExt>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\MinSizeRel\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">S57ENC.dir\MinSizeRel\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">S57ENC</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">.lib</TargetExt>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\RelWithDebInfo\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">S57ENC.dir\RelWithDebInfo\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">S57ENC</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">.lib</TargetExt>
+    </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Debug/</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;ocpnUSE_GL;USE_GLU_TESS;WXUSINGDLL;UNICODE;_UNICODE;OCPN_USE_CRASHRPT;__MSVC__;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_DEPRECATE;PSAPI_VERSION=1;TIXML_USE_STL;USE_S57;USE_GARMINHOST;__WIN32__;_DEBUG;__WXDEBUG__;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;ocpnUSE_GL;USE_GLU_TESS;WXUSINGDLL;UNICODE;_UNICODE;OCPN_USE_CRASHRPT;__MSVC__;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_DEPRECATE;PSAPI_VERSION=1;TIXML_USE_STL;USE_S57;USE_GARMINHOST;__WIN32__;_DEBUG;__WXDEBUG__;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Release/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat></DebugInformationFormat>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;ocpnUSE_GL;USE_GLU_TESS;WXUSINGDLL;UNICODE;_UNICODE;OCPN_USE_CRASHRPT;__MSVC__;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_DEPRECATE;PSAPI_VERSION=1;TIXML_USE_STL;USE_S57;USE_GARMINHOST;__WIN32__;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;ocpnUSE_GL;USE_GLU_TESS;WXUSINGDLL;UNICODE;_UNICODE;OCPN_USE_CRASHRPT;__MSVC__;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_DEPRECATE;PSAPI_VERSION=1;TIXML_USE_STL;USE_S57;USE_GARMINHOST;__WIN32__;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat></DebugInformationFormat>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;ocpnUSE_GL;USE_GLU_TESS;WXUSINGDLL;UNICODE;_UNICODE;OCPN_USE_CRASHRPT;__MSVC__;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_DEPRECATE;PSAPI_VERSION=1;TIXML_USE_STL;USE_S57;USE_GARMINHOST;__WIN32__;CMAKE_INTDIR="MinSizeRel";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;ocpnUSE_GL;USE_GLU_TESS;WXUSINGDLL;UNICODE;_UNICODE;OCPN_USE_CRASHRPT;__MSVC__;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_DEPRECATE;PSAPI_VERSION=1;TIXML_USE_STL;USE_S57;USE_GARMINHOST;__WIN32__;CMAKE_INTDIR=\"MinSizeRel\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat></DebugInformationFormat>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG%3B/Zi;ocpnUSE_GL;USE_GLU_TESS;WXUSINGDLL;UNICODE;_UNICODE;OCPN_USE_CRASHRPT;__MSVC__;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_DEPRECATE;PSAPI_VERSION=1;TIXML_USE_STL;USE_S57;USE_GARMINHOST;__WIN32__;CMAKE_INTDIR="RelWithDebInfo";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG%3B/Zi;ocpnUSE_GL;USE_GLU_TESS;WXUSINGDLL;UNICODE;_UNICODE;OCPN_USE_CRASHRPT;__MSVC__;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_DEPRECATE;PSAPI_VERSION=1;TIXML_USE_STL;USE_S57;USE_GARMINHOST;__WIN32__;CMAKE_INTDIR=\"RelWithDebInfo\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule P:/working area/opencpn/remote/jongough/OpenCPN/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\CMake 2.8\bin\cmake.exe" "-HP:/working area/opencpn/remote/jongough/OpenCPN" "-BP:/working area/opencpn/remote/jongough/OpenCPN/build-win" --check-stamp-file "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/CMakeLists.txt;P:\working area\opencpn\remote\jongough\OpenCPN\CMakeLists.txt;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\2.8.12.2\CMakeSystem.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\2.8.12.2\CMakeCCompiler.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\2.8.12.2\CMakeCXXCompiler.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\Platform\Windows.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeCInformation.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\Platform\Windows-MSVC.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\2.8.12.2\CMakeRCCompiler.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeCommonLanguageInclude.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\VERSION.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindOpenGL.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageMessage.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindwxWidgets.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageMessage.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\UsewxWidgets.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindGettext.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageMessage.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\src\opencpn.rc.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_GERMAN.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_FRENCH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_CZECH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_DANISH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_SPANISH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_ITALIAN.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_DUTCH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_POLISH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_PORTUGUESEBR.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_PORTUGUESE.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_RUSSIAN.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_SWEDISH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_FINNISH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_NORWEGIAN.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_CHINESETW.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_TURKISH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\version.h.in;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CPack.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CPackComponent.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Templates\CPackConfig.cmake.in;C:\Program Files\CMake 2.8\share\cmake-2.8\Templates\CPackConfig.cmake.in;P:\working area\opencpn\remote\jongough\OpenCPN\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule P:/working area/opencpn/remote/jongough/OpenCPN/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\CMake 2.8\bin\cmake.exe" "-HP:/working area/opencpn/remote/jongough/OpenCPN" "-BP:/working area/opencpn/remote/jongough/OpenCPN/build-win" --check-stamp-file "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/CMakeLists.txt;P:\working area\opencpn\remote\jongough\OpenCPN\CMakeLists.txt;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\2.8.12.2\CMakeSystem.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\2.8.12.2\CMakeCCompiler.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\2.8.12.2\CMakeCXXCompiler.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\Platform\Windows.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeCInformation.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\Platform\Windows-MSVC.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\2.8.12.2\CMakeRCCompiler.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeCommonLanguageInclude.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\VERSION.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindOpenGL.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageMessage.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindwxWidgets.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageMessage.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\UsewxWidgets.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindGettext.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageMessage.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\src\opencpn.rc.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_GERMAN.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_FRENCH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_CZECH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_DANISH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_SPANISH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_ITALIAN.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_DUTCH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_POLISH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_PORTUGUESEBR.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_PORTUGUESE.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_RUSSIAN.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_SWEDISH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_FINNISH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_NORWEGIAN.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_CHINESETW.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_TURKISH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\version.h.in;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CPack.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CPackComponent.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Templates\CPackConfig.cmake.in;C:\Program Files\CMake 2.8\share\cmake-2.8\Templates\CPackConfig.cmake.in;P:\working area\opencpn\remote\jongough\OpenCPN\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Building Custom Rule P:/working area/opencpn/remote/jongough/OpenCPN/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\CMake 2.8\bin\cmake.exe" "-HP:/working area/opencpn/remote/jongough/OpenCPN" "-BP:/working area/opencpn/remote/jongough/OpenCPN/build-win" --check-stamp-file "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/CMakeLists.txt;P:\working area\opencpn\remote\jongough\OpenCPN\CMakeLists.txt;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\2.8.12.2\CMakeSystem.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\2.8.12.2\CMakeCCompiler.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\2.8.12.2\CMakeCXXCompiler.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\Platform\Windows.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeCInformation.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\Platform\Windows-MSVC.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\2.8.12.2\CMakeRCCompiler.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeCommonLanguageInclude.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\VERSION.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindOpenGL.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageMessage.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindwxWidgets.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageMessage.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\UsewxWidgets.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindGettext.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageMessage.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\src\opencpn.rc.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_GERMAN.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_FRENCH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_CZECH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_DANISH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_SPANISH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_ITALIAN.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_DUTCH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_POLISH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_PORTUGUESEBR.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_PORTUGUESE.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_RUSSIAN.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_SWEDISH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_FINNISH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_NORWEGIAN.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_CHINESETW.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_TURKISH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\version.h.in;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CPack.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CPackComponent.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Templates\CPackConfig.cmake.in;C:\Program Files\CMake 2.8\share\cmake-2.8\Templates\CPackConfig.cmake.in;P:\working area\opencpn\remote\jongough\OpenCPN\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Building Custom Rule P:/working area/opencpn/remote/jongough/OpenCPN/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\CMake 2.8\bin\cmake.exe" "-HP:/working area/opencpn/remote/jongough/OpenCPN" "-BP:/working area/opencpn/remote/jongough/OpenCPN/build-win" --check-stamp-file "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/CMakeLists.txt;P:\working area\opencpn\remote\jongough\OpenCPN\CMakeLists.txt;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\2.8.12.2\CMakeSystem.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\2.8.12.2\CMakeCCompiler.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\2.8.12.2\CMakeCXXCompiler.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\Platform\Windows.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeCInformation.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\Platform\Windows-MSVC.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\2.8.12.2\CMakeRCCompiler.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeCommonLanguageInclude.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\VERSION.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindOpenGL.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageMessage.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindwxWidgets.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageMessage.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\UsewxWidgets.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindGettext.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageMessage.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\src\opencpn.rc.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_GERMAN.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_FRENCH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_CZECH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_DANISH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_SPANISH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_ITALIAN.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_DUTCH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_POLISH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_PORTUGUESEBR.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_PORTUGUESE.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_RUSSIAN.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_SWEDISH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_FINNISH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_NORWEGIAN.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_CHINESETW.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\NSIS_Unicode\Language files\Langstrings_TURKISH.nsh.in;P:\working area\opencpn\remote\jongough\OpenCPN\version.h.in;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CPack.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CPackComponent.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Templates\CPackConfig.cmake.in;C:\Program Files\CMake 2.8\share\cmake-2.8\Templates\CPackConfig.cmake.in;P:\working area\opencpn\remote\jongough\OpenCPN\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\generate.stamp</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\TexFont.h" />
+    <ClInclude Include="..\include\s52plib.h" />
+    <ClInclude Include="..\include\s52utils.h" />
+    <ClInclude Include="..\include\s57chart.h" />
+    <ClInclude Include="..\include\mygeom.h" />
+    <ClInclude Include="..\include\cm93.h" />
+    <ClInclude Include="..\src\mygdal\cpl_config.h" />
+    <ClInclude Include="..\src\mygdal\gdal_priv.h" />
+    <ClInclude Include="..\src\mygdal\cpl_conv.h" />
+    <ClInclude Include="..\src\mygdal\iso8211.h" />
+    <ClInclude Include="..\src\mygdal\cpl_csv.h" />
+    <ClInclude Include="..\src\mygdal\ogr_api.h" />
+    <ClInclude Include="..\src\mygdal\cpl_error.h" />
+    <ClInclude Include="..\src\mygdal\ogr_attrind.h" />
+    <ClInclude Include="..\src\mygdal\cpl_list.h" />
+    <ClInclude Include="..\src\mygdal\cpl_minixml.h" />
+    <ClInclude Include="..\src\mygdal\ogr_feature.h" />
+    <ClInclude Include="..\src\mygdal\cpl_multiproc.h" />
+    <ClInclude Include="..\src\mygdal\ogr_geometry.h" />
+    <ClInclude Include="..\src\mygdal\cpl_odbc.h" />
+    <ClInclude Include="..\src\mygdal\ogr_p.h" />
+    <ClInclude Include="..\src\mygdal\ogr_core.h" />
+    <ClInclude Include="..\src\mygdal\cpl_port.h" />
+    <ClInclude Include="..\src\mygdal\ogr_s57.h" />
+    <ClInclude Include="..\src\mygdal\cpl_string.h" />
+    <ClInclude Include="..\src\mygdal\ogr_spatialref.h" />
+    <ClInclude Include="..\src\mygdal\cpl_vsi.h" />
+    <ClInclude Include="..\src\mygdal\ogrsf_frmts.h" />
+    <ClInclude Include="..\src\mygdal\gdal.h" />
+    <ClInclude Include="..\src\mygdal\s57.h" />
+    <ClInclude Include="..\src\mygdal\gdal_frmts.h" />
+    <ClCompile Include="..\src\TexFont.cpp"  />
+    <ClCompile Include="..\src\s52cnsy.cpp"  />
+    <ClCompile Include="..\src\s52plib.cpp"  />
+    <ClCompile Include="..\src\s52utils.cpp"  />
+    <ClCompile Include="..\src\s57chart.cpp"  />
+    <ClCompile Include="..\src\cm93.cpp"  />
+    <ClCompile Include="..\src\mygeom.cpp"  />
+    <ClCompile Include="..\src\tri.c" >
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="..\src\myiso8211\ddffielddefn.cpp"  />
+    <ClCompile Include="..\src\myiso8211\ddfmodule.cpp"  />
+    <ClCompile Include="..\src\myiso8211\ddfrecord.cpp"  />
+    <ClCompile Include="..\src\myiso8211\ddfsubfielddefn.cpp"  />
+    <ClCompile Include="..\src\myiso8211\ddffield.cpp"  />
+    <ClCompile Include="..\src\myiso8211\ddfutils.cpp"  />
+    <ClCompile Include="..\src\mygdal\ddfrecordindex.cpp"  />
+    <ClCompile Include="..\src\mygdal\cpl_conv.cpp"  />
+    <ClCompile Include="..\src\mygdal\cpl_csv.cpp"  />
+    <ClCompile Include="..\src\mygdal\cpl_error.cpp"  />
+    <ClCompile Include="..\src\mygdal\cpl_findfile.cpp"  />
+    <ClCompile Include="..\src\mygdal\cpl_minixml.cpp"  />
+    <ClCompile Include="..\src\mygdal\cpl_path.cpp"  />
+    <ClCompile Include="..\src\mygdal\cpl_string.cpp"  />
+    <ClCompile Include="..\src\mygdal\cpl_vsisimple.cpp"  />
+    <ClCompile Include="..\src\mygdal\cplgetsymbol.cpp"  />
+    <ClCompile Include="..\src\mygdal\ograssemblepolygon.cpp"  />
+    <ClCompile Include="..\src\mygdal\ogrcurve.cpp"  />
+    <ClCompile Include="..\src\mygdal\ogrfeature.cpp"  />
+    <ClCompile Include="..\src\mygdal\ogrfeaturedefn.cpp"  />
+    <ClCompile Include="..\src\mygdal\ogrfielddefn.cpp"  />
+    <ClCompile Include="..\src\mygdal\ogrgeometry.cpp"  />
+    <ClCompile Include="..\src\mygdal\ogrgeometrycollection.cpp"  />
+    <ClCompile Include="..\src\mygdal\ogrgeometryfactory.cpp"  />
+    <ClCompile Include="..\src\mygdal\ogrlinearring.cpp"  />
+    <ClCompile Include="..\src\mygdal\ogrlinestring.cpp"  />
+    <ClCompile Include="..\src\mygdal\ogrmultilinestring.cpp"  />
+    <ClCompile Include="..\src\mygdal\ogrmultipoint.cpp"  />
+    <ClCompile Include="..\src\mygdal\ogrmultipolygon.cpp"  />
+    <ClCompile Include="..\src\mygdal\ogrpoint.cpp"  />
+    <ClCompile Include="..\src\mygdal\ogrpolygon.cpp"  />
+    <ClCompile Include="..\src\mygdal\ogrs57datasource.cpp"  />
+    <ClCompile Include="..\src\mygdal\ogrlayer.cpp"  />
+    <ClCompile Include="..\src\mygdal\ogrs57layer.cpp"  />
+    <ClCompile Include="..\src\mygdal\ogrutils.cpp"  />
+    <ClCompile Include="..\src\mygdal\s57classregistrar.cpp"  />
+    <ClCompile Include="..\src\mygdal\s57featuredefns.cpp"  />
+    <ClCompile Include="..\src\mygdal\s57reader.cpp"  />
+    <ClCompile Include="..\src\mygdal\gdal_misc.cpp"  />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="P:/working area/opencpn/remote/jongough/OpenCPN/build-win/ZERO_CHECK.vcxproj">
+      <Project>58B487F4-A313-4C49-B882-1E0BE4A940A1</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

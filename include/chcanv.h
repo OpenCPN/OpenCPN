@@ -274,10 +274,14 @@ public:
       void UpdateCanvasOnGroupChange(void);
       int AdjustQuiltRefChart( void );
       
-
+      wxColour GetFogColor(){ return m_fog_color; }      
+      
       void ShowChartInfoWindow(int x, int y, int dbIndex);
       void HideChartInfoWindow(void);
+    
+      void StartMeasureRoute();
       void CancelMeasureRoute();
+      void DropMarker(bool atOwnShip = true);
 
       //Todo build more accessors
       bool        m_bFollow;
@@ -345,7 +349,8 @@ private:
       bool        m_bRouteEditing;
       bool        m_bMarkEditing;
       bool        m_bIsInRadius;
-      
+      bool        m_bMayToggleMenuBar;
+
       RoutePoint  *m_pRoutePointEditTarget;
       RoutePoint  *m_lastRoutePointEditTarget;
       SelectItem  *m_pFoundPoint;
@@ -613,8 +618,10 @@ private:
       
       int         m_AISRollover_MMSI;
       bool        m_bsectors_shown;
-      double      m_last_max_scale;
       bool        m_bedge_pan;
+      double      m_displayed_scale_factor;
+      
+      wxColour    m_fog_color;      
       
 DECLARE_EVENT_TABLE()
 };

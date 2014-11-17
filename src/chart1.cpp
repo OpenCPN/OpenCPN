@@ -36,6 +36,7 @@
 // Include CrashRpt Header
 #ifdef OCPN_USE_CRASHRPT
 #include "CrashRpt.h"
+#include <new.h>
 #endif
 
 #ifdef LINUX_CRASHRPT
@@ -292,6 +293,7 @@ bool                      g_bFullscreenToolbar;
 bool                      g_bShowLayers;
 bool                      g_bTransparentToolbar;
 bool                      g_bPermanentMOBIcon;
+bool                      g_bTempShowMenuBar;
 
 int                       g_iSDMMFormat;
 int                       g_iDistanceFormat;
@@ -421,6 +423,7 @@ bool                      g_bLookAhead;
 bool                      g_bskew_comp;
 bool                      g_bopengl;
 bool                      g_bsmoothpanzoom;
+bool                      g_fog_overzoom;
 
 int                       g_nCOMPortCheck;
 
@@ -715,6 +718,17 @@ enum {
 //              Fwd Refs
 //------------------------------------------------------------------------------
 
+
+#ifdef __WXMSW__
+int MyNewHandler( size_t size )
+{
+    //  Pass to wxWidgets Main Loop handler
+    throw std::bad_alloc();
+ 
+    return 0;
+}
+#endif
+
 //-----------------------------------------------------------------------
 //      Signal Handlers
 //-----------------------------------------------------------------------
@@ -821,6 +835,17 @@ bool MyApp::OnCmdLineParsed( wxCmdLineParser& parser )
 
     return true;
 }
+
+#ifdef __WXMSW__
+    //  Handle any exception not handled by CrashRpt
+    //  Most probable:  Malloc/new failure
+    
+bool MyApp::OnExceptionInMainLoop()
+{
+    wxLogWarning(_T("Caught MainLoopException, continuing..."));
+    return true;
+}
+#endif
 
 void MyApp::OnActivateApp( wxActivateEvent& event )
 {
@@ -948,6 +973,12 @@ bool MyApp::OnInit()
     }
 #endif
 
+#if wxCHECK_VERSION(3,0,0)
+    // Set the name of the app as displayed to the user.
+    // This is necessary at least on OS X, for the capitalisation to be correct in the system menus.
+    MyApp::SetAppDisplayName("OpenCPN");
+#endif
+
 #ifdef OCPN_USE_CRASHRPT
 #ifndef _DEBUG
     // Install Windows crash reporting
@@ -975,11 +1006,18 @@ bool MyApp::OnInit()
     info.uPriorities[CR_SMTP] = CR_NEGATIVE_PRIORITY;  // Second try send report over SMTP
     info.uPriorities[CR_SMAPI] = CR_NEGATIVE_PRIORITY; //1; // Third try send report over Simple MAPI
 
-    // Install all available exception handlers.
-    info.dwFlags |= CR_INST_ALL_POSSIBLE_HANDLERS;
+    // Install all available exception handlers....
+    info.dwFlags = CR_INST_ALL_POSSIBLE_HANDLERS;
+    
+    //  Except memory allocation failures
+    info.dwFlags &= ~CR_INST_NEW_OPERATOR_ERROR_HANDLER;
 
-    // Use binary encoding for HTTP uploads (recommended).
-    info.dwFlags |= CR_INST_HTTP_BINARY_ENCODING;
+    //  Allow user to attach files
+    info.dwFlags |= CR_INST_ALLOW_ATTACH_MORE_FILES;
+    
+    //  Allow user to add more info
+    info.dwFlags |= CR_INST_SHOW_ADDITIONAL_INFO_FIELDS;
+    
 
     // Provide privacy policy URL
     wxStandardPathsBase& std_path_crash = wxApp::GetTraits()->GetStandardPaths();
@@ -1030,6 +1068,13 @@ bool MyApp::OnInit()
 #endif
 #endif
 
+#ifdef __WXMSW__
+    //  Invoke my own handler for failers of malloc/new
+    _set_new_handler( MyNewHandler );
+    //  configure malloc to call the New failure handler on failure
+    _set_new_mode(1);
+#endif    
+    
     //  Seed the random number generator
     wxDateTime x = wxDateTime::UNow();
     long seed = x.GetMillisecond();
@@ -1503,6 +1548,12 @@ bool MyApp::OnInit()
 
     if( pli ) {
         b_initok = plocale_def_lang->Init( pli->Language, 1 );
+        // If the locale was not initialized OK, it may be that the wxstd.mo translations
+        // of the wxWidgets strings is not present.
+        // So try again, without attempting to load defaults wxstd.mo.
+        if( !b_initok ){
+            b_initok = plocale_def_lang->Init( pli->Language, 0 );
+        }
         loc_lang_canonical = pli->CanonicalName;
     }
 
@@ -2480,7 +2531,6 @@ void MyApp::TrackOff( void )
 //------------------------------------------------------------------------------
 // MyFrame
 //------------------------------------------------------------------------------
-wxMenuBar *osx_menuBar;
 
 //      Frame implementation
 BEGIN_EVENT_TABLE(MyFrame, wxFrame) EVT_CLOSE(MyFrame::OnCloseWindow)
@@ -2511,19 +2561,9 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
         wxFrame( frame, -1, title, pos, size, style ) //wxSIMPLE_BORDER | wxCLIP_CHILDREN | wxRESIZE_BORDER)
 //wxCAPTION | wxSYSTEM_MENU | wxRESIZE_BORDER
 {
-
-    // wxWidgets 3.0.X seems to require that the main app wxFrame have some menubar in order to
-    // popuplate the Mac default menu items, like "Hide", "Quit". etc.
-    // Its OK if this menubar is devoid of OCPN specific items, however.
-    // Just needs to be there, empty or not...
-#ifdef __WXOSX__
-    osx_menuBar = new wxMenuBar();
-    SetMenuBar(osx_menuBar);
-#endif
-
     m_ulLastNEMATicktime = 0;
     m_pStatusBar = NULL;
-
+    m_pMenuBar = NULL;
     g_toolbar = NULL;
     m_toolbar_scale_tools_shown = false;
 
@@ -2928,8 +2968,8 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
 
     CheckAndAddPlugInTool( tb );
     tipString = wxString( _("Show ENC Text") ) << _T(" (T)");
-    if( _toolbarConfigMenuUtil( ID_TEXT, tipString ) )
-        tb->AddTool( ID_TEXT, _T("text"),
+    if( _toolbarConfigMenuUtil( ID_ENC_TEXT, tipString ) )
+        tb->AddTool( ID_ENC_TEXT, _T("text"),
             style->GetToolIcon( _T("text"), TOOLICON_NORMAL ),
             style->GetToolIcon( _T("text"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
 
@@ -2985,8 +3025,8 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
 
     CheckAndAddPlugInTool( tb );
     tipString = _("About OpenCPN");
-    if( _toolbarConfigMenuUtil( ID_HELP, tipString ) )
-        tb->AddTool( ID_HELP, _T("help"),
+    if( _toolbarConfigMenuUtil( ID_ABOUT, tipString ) )
+        tb->AddTool( ID_ABOUT, _T("help"),
             style->GetToolIcon( _T("help"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
 
     //      Add any PlugIn toolbar tools that request default positioning
@@ -3014,7 +3054,7 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
         tb->ToggleTool( ID_FOLLOW, cc1->m_bFollow );
 
 #ifdef USE_S57
-    if( ( pConfig ) && ( ps52plib ) ) if( ps52plib->m_bOK ) tb->ToggleTool( ID_TEXT,
+    if( ( pConfig ) && ( ps52plib ) ) if( ps52plib->m_bOK ) tb->ToggleTool( ID_ENC_TEXT,
             ps52plib->GetShowS57Text() );
 #endif
 
@@ -3195,10 +3235,10 @@ void MyFrame::EnableToolbar( bool newstate )
         g_toolbar->EnableTool( ID_ROUTE, newstate );
         g_toolbar->EnableTool( ID_FOLLOW, newstate );
         g_toolbar->EnableTool( ID_SETTINGS, newstate );
-        g_toolbar->EnableTool( ID_TEXT, newstate );
+        g_toolbar->EnableTool( ID_ENC_TEXT, newstate );
         g_toolbar->EnableTool( ID_CURRENT, newstate );
         g_toolbar->EnableTool( ID_TIDE, newstate );
-        g_toolbar->EnableTool( ID_HELP, newstate );
+        g_toolbar->EnableTool( ID_ABOUT, newstate );
         g_toolbar->EnableTool( ID_TBEXIT, newstate );
         g_toolbar->EnableTool( ID_TBSTAT, newstate );
         g_toolbar->EnableTool( ID_PRINT, newstate );
@@ -3344,9 +3384,9 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     if( g_bAutoAnchorMark ) {
         bool watching_anchor = false;                                           // pjotrc 2010.02.15
         if( pAnchorWatchPoint1 )                                               // pjotrc 2010.02.15
-        watching_anchor = ( pAnchorWatchPoint1->m_IconName.StartsWith( _T("anchor") ) ); // pjotrc 2010.02.15
+        watching_anchor = ( pAnchorWatchPoint1->GetIconName().StartsWith( _T("anchor") ) ); // pjotrc 2010.02.15
         if( pAnchorWatchPoint2 )                                               // pjotrc 2010.02.15
-        watching_anchor |= ( pAnchorWatchPoint2->m_IconName.StartsWith( _T("anchor") ) ); // pjotrc 2010.02.15
+        watching_anchor |= ( pAnchorWatchPoint2->GetIconName().StartsWith( _T("anchor") ) ); // pjotrc 2010.02.15
 
         wxDateTime now = wxDateTime::Now();
         wxTimeSpan uptime = now.Subtract( g_start_time );
@@ -3546,20 +3586,32 @@ void MyFrame::ODoSetSize( void )
 //      Resize the children
 
     if( m_pStatusBar ) {
-        //  Maybe resize the font
+        //  Maybe resize the font so the text fits in the boxes
+
         wxRect stat_box;
         m_pStatusBar->GetFieldRect( 0, stat_box );
-        int font_size = stat_box.width / 28;                // 30 for linux
+        // maximum size is 1/28 of the box width, or the box height - whicever is less
+        int max_font_size = wxMin( (stat_box.width / 28), (stat_box.height) );
 
-#ifdef __WXMAC__
-        font_size = wxMax(10, font_size);             // beats me...
+#ifdef __WXMSW__
+        int try_font_size = 12;   // the Windows system default is too small so fix it at 12pt
+#else
+        wxFont sys_font = *wxNORMAL_FONT;
+        int try_font_size = sys_font.GetPointSize() + 1; // start 1pt larger than system default
 #endif
 
-        wxFont* templateFont = FontMgr::Get().GetFont( _("StatusBar"), 12 );
-        font_size += templateFont->GetPointSize() - 10;
+#ifdef __WXOSX__
+        int min_font_size = 10; // much less than 10pt is unreadably small on OS X
+#else
+        int min_font_size = 6;  // on Win/Linux the text does not shrink so fast and 6pt is fine
+#endif
 
-        font_size = wxMin( font_size, 12 );
-        font_size = wxMax( font_size, 5 );
+        // get the user's preferred font, or if none set then the system default with the size overridden
+        wxFont* templateFont = FontMgr::Get().GetFont( _("StatusBar"), try_font_size );
+        int font_size = templateFont->GetPointSize();
+
+        font_size = wxMin( font_size, max_font_size );  // maximum to fit in the statusbar boxes
+        font_size = wxMax( font_size, min_font_size );  // minimum to stop it being unreadable
 
         wxFont *pstat_font = wxTheFontList->FindOrCreateFont( font_size,
               wxFONTFAMILY_SWISS, templateFont->GetStyle(), templateFont->GetWeight(), false,
@@ -3742,83 +3794,165 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
     if( s_ProgDialog ) return;
 
     switch( event.GetId() ){
+        case ID_MENU_SCALE_OUT:
         case ID_STKUP:
             DoStackDelta( 1 );
             DoChartUpdate();
             break;
 
+        case ID_MENU_SCALE_IN:
         case ID_STKDN:
             DoStackDelta( -1 );
             DoChartUpdate();
             break;
 
+        case ID_MENU_ZOOM_IN:
         case ID_ZOOMIN: {
             cc1->DoZoomCanvas( 2.0, false );
             DoChartUpdate();
             break;
         }
 
+        case ID_MENU_ZOOM_OUT:
         case ID_ZOOMOUT: {
             cc1->DoZoomCanvas( 0.5, false );
             DoChartUpdate();
             break;
         }
 
+        case ID_MENU_ROUTE_NEW:
         case ID_ROUTE: {
             if( 0 == nRoute_State ){
                 nRoute_State = 1;
                 cc1->SetCursor( *cc1->pCursorPencil );
-                g_toolbar->ToggleTool( ID_ROUTE, true );
+                SetToolbarItemState( ID_ROUTE, true );
             }
             else {
                 cc1->FinishRoute();
-                g_toolbar->ToggleTool( ID_ROUTE, false );
+                SetToolbarItemState( ID_ROUTE, false );
             }
 
             break;
         }
 
+        case ID_MENU_TOOL_MEASURE: {
+            cc1->StartMeasureRoute();
+            break;
+        }
+
+        case ID_MENU_MARK_BOAT: {
+            cc1->DropMarker(true);
+            break;
+        }
+
+        case ID_MENU_MARK_CURSOR: {
+            cc1->DropMarker(false);
+            break;
+        }
+
+        case ID_MENU_NAV_FOLLOW:
         case ID_FOLLOW: {
             TogglebFollow();
             break;
         }
 
+        case ID_MENU_CHART_OUTLINES: {
+            ToggleChartOutlines();
+            break;
+        }
+
+        case ID_MENU_CHART_QUILTING: {
+            ToggleQuiltMode();
+            break;
+        }
+
+        case ID_MENU_UI_CHARTBAR: {
+            if( stats ) {
+                if( stats->IsShown() )
+                    stats->Hide();
+                else {
+                    stats->Move(0,0);
+                    stats->RePosition();
+                    stats->Show();
+                    gFrame->Raise();
+                }
+                Refresh();
+            }
+            break;
+        }
+            
 #ifdef USE_S57
-        case ID_TEXT: {
-            ps52plib->SetShowS57Text( !ps52plib->GetShowS57Text() );
-            if( g_toolbar ) g_toolbar->ToggleTool( ID_TEXT, ps52plib->GetShowS57Text() );
-            cc1->ReloadVP();
+        case ID_MENU_ENC_TEXT:
+        case ID_ENC_TEXT: {
+            ToggleENCText();
+            break;
+        }
+        case ID_MENU_ENC_LIGHTS: {
+            ToggleLights();
+            break;
+        }
+        case ID_MENU_ENC_SOUNDINGS: {
+            ToggleSoundings();
+            break;
+        }
+        case ID_MENU_ENC_ANCHOR: {
+            ToggleAnchor();
             break;
         }
 #endif
 
+        case ID_MENU_AIS_TARGETS:
         case ID_AIS: {
             g_bShowAIS = !g_bShowAIS;
 
             if( g_toolbar ) {
-                if( g_bShowAIS )
+                wxString iconName;
+                if( g_bShowAIS ) {
                     g_toolbar->SetToolShortHelp( ID_AIS, _("Hide AIS Targets") );
-                else
+                    iconName = _T("AIS");
+                } else {
                     g_toolbar->SetToolShortHelp( ID_AIS, _("Show AIS Targets") );
+                    iconName = _T("AIS_Disabled");
+                }
+
+                if( m_pAISTool ) {
+                    g_toolbar->SetToolNormalBitmapEx( m_pAISTool, iconName );
+                    g_toolbar->Refresh();
+                    m_lastAISiconName = iconName;
+                }
             }
 
-            wxString iconName;
-            if( g_bShowAIS )
-                iconName = _T("AIS");
-            else
-                iconName = _T("AIS_Disabled");
-
-            if( m_pAISTool && g_toolbar) {
-                g_toolbar->SetToolNormalBitmapEx( m_pAISTool, iconName );
-                g_toolbar->Refresh();
-                m_lastAISiconName = iconName;
-            }
+            SetMenubarItemState(ID_MENU_AIS_TARGETS, g_bShowAIS);
 
             cc1->ReloadVP();
 
             break;
         }
 
+        case ID_MENU_AIS_TARGETLIST: {
+            if ( cc1 ) cc1->ShowAISTargetList();
+            break;
+        }
+
+        case ID_MENU_AIS_TRACKS: {
+            g_bAISShowTracks = !g_bAISShowTracks;
+            SetMenubarItemState(ID_MENU_AIS_TRACKS, g_bAISShowTracks);
+            break;
+        }
+
+        case ID_MENU_AIS_CPADIALOG: {
+            g_bAIS_CPA_Alert = !g_bAIS_CPA_Alert;
+            SetMenubarItemState(ID_MENU_AIS_CPADIALOG, g_bAIS_CPA_Alert);
+            break;
+        }
+
+        case ID_MENU_AIS_CPASOUND: {
+            g_bAIS_CPA_Alert_Audio = !g_bAIS_CPA_Alert_Audio;
+            SetMenubarItemState(ID_MENU_AIS_CPASOUND, g_bAIS_CPA_Alert_Audio);
+            break;
+        }
+
+        case wxID_PREFERENCES:
         case ID_SETTINGS: {
 
             bool bnewtoolbar = !( DoOptionsDialog() == 0 );
@@ -3835,17 +3969,25 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             break;
         }
 
+        case ID_MENU_UI_FULLSCREEN: {
+            ToggleFullScreen();
+            break;
+        }
+
+        case ID_MENU_SHOW_CURRENTS:
         case ID_CURRENT: {
             LoadHarmonics();
 
             if( ptcmgr->IsReady() ) {
                 cc1->SetbShowCurrent( !cc1->GetbShowCurrent() );
-                if( g_toolbar ) g_toolbar->ToggleTool( ID_CURRENT, cc1->GetbShowCurrent() );
+                SetToolbarItemState( ID_CURRENT, cc1->GetbShowCurrent() );
+                SetMenubarItemState( ID_MENU_SHOW_CURRENTS, cc1->GetbShowCurrent() );
                 cc1->ReloadVP();
             } else {
                 wxLogMessage( _T("Chart1::Event...TCMgr Not Available") );
                 cc1->SetbShowCurrent( false );
-                if( g_toolbar ) g_toolbar->ToggleTool( ID_CURRENT, false );
+                SetToolbarItemState( ID_CURRENT, false );
+                SetMenubarItemState( ID_MENU_SHOW_CURRENTS, false );
             }
 
             if( cc1->GetbShowCurrent() ) {
@@ -3860,17 +4002,20 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         }
 
+        case ID_MENU_SHOW_TIDES:
         case ID_TIDE: {
             LoadHarmonics();
 
             if( ptcmgr->IsReady() ) {
                 cc1->SetbShowTide( !cc1->GetbShowTide() );
-                if( g_toolbar ) g_toolbar->ToggleTool( ID_TIDE, cc1->GetbShowTide() );
+                SetToolbarItemState( ID_TIDE, cc1->GetbShowTide() );
+                SetMenubarItemState( ID_MENU_SHOW_TIDES, cc1->GetbShowTide() );
                 cc1->ReloadVP();
             } else {
                 wxLogMessage( _("Chart1::Event...TCMgr Not Available") );
                 cc1->SetbShowTide( false );
-                if( g_toolbar ) g_toolbar->ToggleTool( ID_TIDE, false );
+                SetToolbarItemState( ID_TIDE, false );
+                SetMenubarItemState( ID_MENU_SHOW_TIDES, false );
             }
 
             if( cc1->GetbShowTide() ) {
@@ -3885,7 +4030,8 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         }
 
-        case ID_HELP: {
+        case wxID_ABOUT:
+        case ID_ABOUT: {
             if( !g_pAboutDlg ) g_pAboutDlg = new about( this, &g_SData_Locn );
 
             g_pAboutDlg->Update();
@@ -3894,11 +4040,17 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             break;
         }
 
+        case wxID_HELP: {
+            LaunchLocalHelp();
+            break;
+        }
+
         case ID_PRINT: {
             DoPrint();
             break;
         }
 
+        case ID_MENU_UI_COLSCHEME:
         case ID_COLSCHEME: {
             ToggleColorScheme();
             break;
@@ -3909,6 +4061,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             break;
         }
 
+        case ID_MENU_ROUTE_MANAGER:
         case ID_ROUTEMANAGER: {
             if( NULL == pRouteManagerDialog )         // There is one global instance of the Dialog
             pRouteManagerDialog = new RouteManagerDialog( cc1 );
@@ -3927,6 +4080,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             break;
         }
 
+        case ID_MENU_NAV_TRACK:
         case ID_TRACK: {
             if( !g_bTrackActive ) {
                 TrackOn();
@@ -3939,11 +4093,14 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             break;
         }
 
+        case ID_MENU_CHART_NORTHUP:
+        case ID_MENU_CHART_COGUP:
         case ID_TBSTATBOX: {
             ToggleCourseUp();
             break;
         }
 
+        case ID_MENU_MARK_MOB:
         case ID_MOB: {
             ActivateMOB();
             break;
@@ -3966,6 +4123,10 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         }
 
     }         // switch
+
+    // If we didn't handle the event, allow it to bubble up to other handlers.
+    // This is ncessary eg for the system default menu items (Hide, etc) on OS X to work.
+    event.Skip();
 }
 
 void MyFrame::ToggleColorScheme()
@@ -4071,8 +4232,8 @@ void MyFrame::TrackOn( void )
 
     g_pActiveTrack->Start();
 
-    if( g_toolbar )
-        g_toolbar->ToggleTool( ID_TRACK, g_bTrackActive );
+    SetToolbarItemState( ID_TRACK, g_bTrackActive );
+    SetMenubarItemState( ID_MENU_NAV_TRACK, g_bTrackActive );
 
     if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
     {
@@ -4136,8 +4297,8 @@ Track *MyFrame::TrackOff( bool do_add_point )
         pRouteManagerDialog->UpdateRouteListCtrl();
     }
 
-    if( g_toolbar )
-        g_toolbar->ToggleTool( ID_TRACK, g_bTrackActive );
+    SetToolbarItemState( ID_TRACK, g_bTrackActive );
+    SetMenubarItemState( ID_MENU_NAV_TRACK, g_bTrackActive );
 
     return return_val;
 }
@@ -4182,6 +4343,9 @@ void MyFrame::ToggleCourseUp( void )
     } else
         cc1->SetVPRotation(0); /* reset to north up */
 
+    SetMenubarItemState( ID_MENU_CHART_COGUP, g_bCourseUp );
+    SetMenubarItemState( ID_MENU_CHART_NORTHUP, !g_bCourseUp );
+
     DoCOGSet();
     UpdateGPSCompassStatusBox( true );
     DoChartUpdate();
@@ -4193,7 +4357,8 @@ void MyFrame::ToggleENCText( void )
 #ifdef USE_S57
     if( ps52plib ) {
         ps52plib->SetShowS57Text( !ps52plib->GetShowS57Text() );
-        if( g_toolbar ) g_toolbar->ToggleTool( ID_TEXT, ps52plib->GetShowS57Text() );
+        SetToolbarItemState( ID_ENC_TEXT, ps52plib->GetShowS57Text() );
+        SetMenubarItemState( ID_MENU_ENC_TEXT, ps52plib->GetShowS57Text() );
         cc1->ReloadVP();
     }
 
@@ -4205,6 +4370,7 @@ void MyFrame::ToggleSoundings( void )
 #ifdef USE_S57
     if( ps52plib ) {
         ps52plib->SetShowSoundings( !ps52plib->GetShowSoundings() );
+        SetMenubarItemState( ID_MENU_ENC_SOUNDINGS, ps52plib->GetShowSoundings() );
         cc1->ReloadVP();
     }
 #endif
@@ -4236,6 +4402,8 @@ bool MyFrame::ToggleLights( bool doToggle, bool temporary )
             ps52plib->AddObjNoshow("LIGHTS");
         else
             ps52plib->RemoveObjNoshow("LIGHTS");
+        
+        SetMenubarItemState( ID_MENU_ENC_LIGHTS, !ps52plib->IsObjNoshow("LIGHTS") );
     }
 
 
@@ -4318,6 +4486,8 @@ void MyFrame::ToggleAnchor( void )
 
         ps52plib->GenerateStateHash();
         cc1->ReloadVP();
+
+        SetMenubarItemState( ID_MENU_ENC_ANCHOR, !ps52plib->IsObjNoshow("SBDARE") );
     }
 #endif
 }
@@ -4332,11 +4502,11 @@ void MyFrame::TogglebFollow( void )
 void MyFrame::SetbFollow( void )
 {
     cc1->m_bFollow = true;
-    if( g_toolbar ) g_toolbar->ToggleTool( ID_FOLLOW, cc1->m_bFollow );
+    SetToolbarItemState( ID_FOLLOW, true );
+    SetMenubarItemState( ID_MENU_NAV_FOLLOW, true );
 
     DoChartUpdate();
     cc1->ReloadVP();
-
 }
 
 void MyFrame::ClearbFollow( void )
@@ -4344,11 +4514,13 @@ void MyFrame::ClearbFollow( void )
     //    Center the screen on the GPS position, for lack of a better place
     vLat = gLat;
     vLon = gLon;
+
     cc1->m_bFollow = false;
-    if( g_toolbar ) g_toolbar->ToggleTool( ID_FOLLOW, cc1->m_bFollow );
+    SetToolbarItemState( ID_FOLLOW, false );
+    SetMenubarItemState( ID_MENU_NAV_FOLLOW, false );
+
     DoChartUpdate();
     cc1->ReloadVP();
-
 }
 
 void MyFrame::ToggleChartOutlines( void )
@@ -4363,6 +4535,13 @@ void MyFrame::ToggleChartOutlines( void )
     if( g_bopengl )
         cc1->GetglCanvas()->Invalidate();
 #endif
+
+    SetMenubarItemState( ID_MENU_CHART_OUTLINES, g_bShowOutlines );
+}
+
+void MyFrame::SetMenubarItemState( int item_id, bool state )
+{
+    if( m_pMenuBar ) m_pMenuBar->Check( item_id, state );
 }
 
 void MyFrame::SetToolbarItemState( int tool_id, bool state )
@@ -4392,7 +4571,6 @@ void MyFrame::ApplyGlobalSettings( bool bFlyingUpdate, bool bnewtoolbar )
         if( !m_pStatusBar ) {
             m_pStatusBar = CreateStatusBar( m_StatusBarFieldCount, 0 );   // No wxST_SIZEGRIP needed
             ApplyGlobalColorSchemetoStatusBar();
-            SendSizeEvent();                        // seem only needed for MSW...
         }
 
     } else {
@@ -4400,12 +4578,40 @@ void MyFrame::ApplyGlobalSettings( bool bFlyingUpdate, bool bnewtoolbar )
             m_pStatusBar->Destroy();
             m_pStatusBar = NULL;
             SetStatusBar( NULL );
-
-            SendSizeEvent();                        // seem only needed for MSW...
-            Refresh( false );
         }
     }
 
+    SendSizeEvent();               
+    
+    /*
+     * Menu Bar - add or remove it if necessary, and update the state of the menu items
+     */
+#ifdef __WXOSX__
+    bool showMenuBar = true;    // the menu bar is always visible in OS X
+#else
+    bool showMenuBar = pConfig->m_bShowMenuBar; // get visibility from options
+
+    if (!showMenuBar && g_bTempShowMenuBar)     // allows pressing alt to temporarily show
+        showMenuBar = true;
+#endif
+
+    if ( showMenuBar ) {
+        if ( !m_pMenuBar ) {    // add the menu bar if it is enabled
+            m_pMenuBar = new wxMenuBar();
+            RegisterGlobalMenuItems();
+            SetMenuBar(m_pMenuBar); // must be after RegisterGlobalMenuItems for wx to populate the OS X App Menu correctly
+        }
+        UpdateGlobalMenuItems(); // update the state of the menu items (checkmarks etc)
+    } else {
+        if ( m_pMenuBar ) {     // remove the menu bar if it is disabled
+            SetMenuBar( NULL );
+            m_pMenuBar->Destroy();
+            m_pMenuBar = NULL;
+        }
+    }
+
+    SendSizeEvent();               
+    
     if( bFlyingUpdate ) {
         if( pConfig->m_bShowCompassWin ) {
             if(!g_FloatingCompassDialog) {
@@ -4420,6 +4626,122 @@ void MyFrame::ApplyGlobalSettings( bool bFlyingUpdate, bool bnewtoolbar )
 
     if( bnewtoolbar ) UpdateToolbar( global_color_scheme );
 
+}
+
+
+wxString _menuText( wxString name, wxString shortcut ) {
+    wxString menutext;
+    menutext << name << _T("\t") << shortcut;
+    return menutext;
+}
+
+void MyFrame::RegisterGlobalMenuItems()
+{
+    if ( !m_pMenuBar ) return;  // if there isn't a menu bar
+
+
+    wxMenu* nav_menu = new wxMenu();
+    nav_menu->AppendCheckItem( ID_MENU_NAV_FOLLOW, _menuText(_("Auto Follow"), _T("Ctrl-A")) );
+    nav_menu->AppendCheckItem( ID_MENU_NAV_TRACK, _("Record Track") );
+    nav_menu->AppendSeparator();
+    nav_menu->AppendRadioItem( ID_MENU_CHART_NORTHUP, _("North Up Mode") );
+    nav_menu->AppendRadioItem( ID_MENU_CHART_COGUP, _("Course Up Mode") );
+    nav_menu->AppendSeparator();
+    nav_menu->Append( ID_MENU_ZOOM_IN, _menuText(_("Zoom In"), _T("+")) );
+    nav_menu->Append( ID_MENU_ZOOM_OUT, _menuText(_("Zoom Out"), _T("-")) );
+    nav_menu->AppendSeparator();
+    nav_menu->Append( ID_MENU_SCALE_IN, _menuText(_("Larger Scale Chart"), _T("Ctrl-Left")) );
+    nav_menu->Append( ID_MENU_SCALE_OUT, _menuText(_("Smaller Scale Chart"), _T("Ctrl-Right")) );
+    m_pMenuBar->Append( nav_menu, _("&Navigate") );
+
+
+    wxMenu* view_menu = new wxMenu();
+    view_menu->AppendCheckItem( ID_MENU_CHART_QUILTING, _menuText(_("Enable Chart Quilting"), _T("Q")) );
+    view_menu->AppendCheckItem( ID_MENU_CHART_OUTLINES, _menuText(_("Show Chart Outlines"), _T("O")) );
+    view_menu->AppendCheckItem( ID_MENU_UI_CHARTBAR, _menuText(_("Show Chart Bar"), _T("Ctrl-B")) );
+#ifdef USE_S57
+    view_menu->AppendSeparator();
+    view_menu->AppendCheckItem( ID_MENU_ENC_TEXT, _menuText(_("Show ENC Text"), _T("T")) );
+    view_menu->AppendCheckItem( ID_MENU_ENC_LIGHTS, _menuText(_("Show ENC Lights"), _T("L")) );
+    view_menu->AppendCheckItem( ID_MENU_ENC_SOUNDINGS, _menuText(_("Show ENC Soundings"), _T("S")) );
+    view_menu->AppendCheckItem( ID_MENU_ENC_ANCHOR, _menuText(_("Show ENC Anchoring Info"), _T("A")) );
+#endif
+    view_menu->AppendSeparator();
+    view_menu->AppendCheckItem( ID_MENU_SHOW_TIDES, _("Show Tides") );
+    view_menu->AppendCheckItem( ID_MENU_SHOW_CURRENTS, _("Show Currents") );
+    view_menu->AppendSeparator();
+    view_menu->Append( ID_MENU_UI_COLSCHEME, _menuText(_("Change Color Scheme"), _T("C")) );
+    view_menu->AppendSeparator();
+#ifdef __WXOSX__
+    view_menu->Append(ID_MENU_UI_FULLSCREEN, _menuText(_("Enter Full Screen"), _T("RawCtrl-Ctrl-F")) );
+#else
+    view_menu->Append(ID_MENU_UI_FULLSCREEN, _menuText(_("Enter Full Screen"), _T("F11")) );
+#endif
+    m_pMenuBar->Append( view_menu, _("&View") );
+
+
+    wxMenu* ais_menu = new wxMenu();
+    ais_menu->AppendCheckItem( ID_MENU_AIS_TARGETS, _("Show AIS Targets") );
+    ais_menu->AppendCheckItem( ID_MENU_AIS_TRACKS, _("Show Target Tracks") );
+    ais_menu->AppendCheckItem( ID_MENU_AIS_CPADIALOG, _("Show CPA Alert Dialogs") );
+    ais_menu->AppendCheckItem( ID_MENU_AIS_CPASOUND, _("Sound CPA Alarms") );
+    ais_menu->AppendSeparator();
+    ais_menu->Append( ID_MENU_AIS_TARGETLIST, _("AIS Target List...") );
+    m_pMenuBar->Append( ais_menu, _("&AIS") );
+
+
+    wxMenu* tools_menu = new wxMenu();
+    tools_menu->Append( ID_MENU_TOOL_MEASURE, _menuText(_("Measure Distance"), _T("M")) );
+    tools_menu->AppendSeparator();
+    tools_menu->Append( ID_MENU_ROUTE_MANAGER, _("Route && Mark Manager...") );
+    tools_menu->Append( ID_MENU_ROUTE_NEW, _menuText(_("Create Route"), _T("Ctrl-R")) );
+    tools_menu->AppendSeparator();
+    tools_menu->Append( ID_MENU_MARK_BOAT, _menuText(_("Drop Mark at Boat"), _T("Ctrl-O")) );
+    tools_menu->Append( ID_MENU_MARK_CURSOR, _menuText(_("Drop Mark at Cursor"), _T("Ctrl-M")) );
+    tools_menu->AppendSeparator();
+#ifdef __WXOSX__
+    tools_menu->Append( ID_MENU_MARK_MOB, _menuText(_("Drop MOB Marker"), _T("RawCtrl-Space")) ); // NOTE Cmd+Space is reserved for Spotlight
+#else
+    tools_menu->Append( ID_MENU_MARK_MOB, _menuText(_("Drop MOB Marker"), _T("Ctrl-Space")) );
+#endif
+    tools_menu->AppendSeparator();
+    tools_menu->Append( wxID_PREFERENCES, _menuText(_("Preferences..."), _T("Ctrl-,")) );
+    m_pMenuBar->Append( tools_menu, _("&Tools") );
+
+
+    wxMenu* help_menu = new wxMenu();
+    help_menu->Append( wxID_ABOUT, _("About OpenCPN") );
+    help_menu->Append( wxID_HELP, _("OpenCPN Help") );
+    m_pMenuBar->Append( help_menu, _("&Help") );
+
+
+    // Set initial values for menu check items and radio items
+    UpdateGlobalMenuItems();
+}
+
+void MyFrame::UpdateGlobalMenuItems()
+{
+    if ( !m_pMenuBar ) return;  // if there isn't a menu bar
+
+    if ( pConfig ) m_pMenuBar->FindItem( ID_MENU_NAV_FOLLOW )->Check( pConfig->st_bFollow );
+    m_pMenuBar->FindItem( ID_MENU_CHART_NORTHUP )->Check( !g_bCourseUp );
+    m_pMenuBar->FindItem( ID_MENU_CHART_COGUP )->Check( g_bCourseUp );
+    m_pMenuBar->FindItem( ID_MENU_NAV_TRACK )->Check( g_bTrackActive );
+    m_pMenuBar->FindItem( ID_MENU_CHART_OUTLINES )->Check( g_bShowOutlines );
+    m_pMenuBar->FindItem( ID_MENU_CHART_QUILTING )->Check( g_bQuiltEnable );
+    m_pMenuBar->FindItem( ID_MENU_UI_CHARTBAR )->Check( true );
+    m_pMenuBar->FindItem( ID_MENU_AIS_TARGETS )->Check( g_bShowAIS );
+    m_pMenuBar->FindItem( ID_MENU_AIS_TRACKS )->Check( g_bAISShowTracks );
+    m_pMenuBar->FindItem( ID_MENU_AIS_CPADIALOG )->Check( g_bAIS_CPA_Alert );
+    m_pMenuBar->FindItem( ID_MENU_AIS_CPASOUND )->Check( g_bAIS_CPA_Alert_Audio );
+#ifdef USE_S57
+    if( ps52plib ) {
+        m_pMenuBar->FindItem( ID_MENU_ENC_TEXT )->Check( ps52plib->GetShowS57Text() );
+        m_pMenuBar->FindItem( ID_MENU_ENC_SOUNDINGS )->Check( ps52plib->GetShowSoundings() );
+        m_pMenuBar->FindItem( ID_MENU_ENC_LIGHTS )->Check( !ps52plib->IsObjNoshow("LIGHTS") );
+        m_pMenuBar->FindItem( ID_MENU_ENC_ANCHOR )->Check( !ps52plib->IsObjNoshow("SBDARE") );
+    }
+#endif
 }
 
 void MyFrame::SubmergeToolbarIfOverlap( int x, int y, int margin )
@@ -4706,6 +5028,27 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
 
     return 0;
 }
+
+void MyFrame::LaunchLocalHelp( void ) {
+    wxString def_lang_canonical = wxLocale::GetLanguageInfo( wxLANGUAGE_DEFAULT )->CanonicalName;
+
+    wxString help_locn = g_SData_Locn + _T("doc/help_");
+
+    wxString help_try = help_locn + def_lang_canonical + _T(".html");
+
+    if( ! ::wxFileExists( help_try ) ) {
+        help_try = help_locn + _T("en_US") + _T(".html");
+
+        if( ! ::wxFileExists( help_try ) ) {
+            help_try = help_locn + _T("web") + _T(".html");
+        }
+
+        if( ! ::wxFileExists( help_try ) ) return;
+    }
+
+    wxLaunchDefaultBrowser(wxString( _T("file:///") ) + help_try );
+}
+
 
 wxString MyFrame::GetGroupName( int igroup )
 {
@@ -6148,7 +6491,7 @@ double MyFrame::GetBestVPScale( ChartBase *pchart )
         double proposed_scale_onscreen = cc1->GetCanvasScaleFactor() / cc1->GetVPScale();
 
         if( ( g_bPreserveScaleOnX ) || ( CHART_TYPE_CM93COMP == pchart->GetChartType() ) ) {
-            double new_scale_ppm = cc1->GetVPScale(); //pchart->GetNearestPreferredScalePPM( cc1->GetVPScale() );
+            double new_scale_ppm = cc1->GetVPScale(); 
             proposed_scale_onscreen = cc1->GetCanvasScaleFactor() / new_scale_ppm;
         } else {
             //  This logic will bring the new chart onscreen at roughly twice the true paper scale equivalent.
@@ -6162,13 +6505,14 @@ double MyFrame::GetBestVPScale( ChartBase *pchart )
         // Otherwise, we get severe performance problems on all platforms
 
         double max_underzoom_multiplier = 2.0;
-
         proposed_scale_onscreen =
                wxMin(proposed_scale_onscreen,
                      pchart->GetNormalScaleMax(cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth()) *
                      max_underzoom_multiplier);
-//        proposed_scale_onscreen =
-//                wxMax(proposed_scale_onscreen, pchart->GetNormalScaleMin(cc1->GetCanvasScaleFactor(), g_b_overzoom_x));
+               
+        //  And, do not allow excessive overzoom either       
+        proposed_scale_onscreen =
+                wxMax(proposed_scale_onscreen, pchart->GetNormalScaleMin(cc1->GetCanvasScaleFactor(), false));
 
         return cc1->GetCanvasScaleFactor() / proposed_scale_onscreen;
     } else
@@ -9592,7 +9936,7 @@ OCPNMessageDialog::OCPNMessageDialog( wxWindow *parent,
 : wxDialog( parent, wxID_ANY, caption, pos, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxSTAY_ON_TOP )
 {
     m_style = style;
-    wxFont *qFont = GetOCPNScaledFont(_("Dialog"), 10);
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     SetFont( *qFont );
 
     wxBoxSizer *topsizer = new wxBoxSizer( wxVERTICAL );

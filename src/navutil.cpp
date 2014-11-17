@@ -133,6 +133,7 @@ extern bool             g_bskew_comp;
 extern bool             g_bopengl;
 extern bool             g_bdisable_opengl;
 extern bool             g_bsmoothpanzoom;
+extern bool             g_fog_overzoom;
 
 extern bool             g_bShowOutlines;
 extern bool             g_bShowActiveRouteHighway;
@@ -665,13 +666,13 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP )
 
     //  Establish basic colour
     wxColour basic_colour;
-    if( m_bRunning || prp->m_IconName.StartsWith( _T("xmred") ) ) {
+    if( m_bRunning || prp->GetIconName().StartsWith( _T("xmred") ) ) {
             basic_colour = GetGlobalColor( _T ( "URED" ) );
     } else
-        if( prp->m_IconName.StartsWith( _T("xmblue") ) ) {
+        if( prp->GetIconName().StartsWith( _T("xmblue") ) ) {
                 basic_colour = GetGlobalColor( _T ( "BLUE3" ) );
         } else
-            if( prp->m_IconName.StartsWith( _T("xmgreen") ) ) {
+            if( prp->GetIconName().StartsWith( _T("xmgreen") ) ) {
                     basic_colour = GetGlobalColor( _T ( "UGREN" ) );
             } else {
                     basic_colour = GetGlobalColor( _T ( "CHMGD" ) );
@@ -1258,6 +1259,8 @@ int MyConfig::LoadMyConfig( int iteration )
     g_chart_zoom_modifier = wxMin(g_chart_zoom_modifier,5);
     g_chart_zoom_modifier = wxMax(g_chart_zoom_modifier,-5);
 
+    Read( _T ( "FogOnOverzoom" ), &g_fog_overzoom, 1 );
+    
 #ifdef USE_S57
     Read( _T ( "CM93DetailFactor" ), &g_cm93_zoom_factor, 0 );
     g_cm93_zoom_factor = wxMin(g_cm93_zoom_factor,CM93_ZOOM_FACTOR_MAX_RANGE);
@@ -1280,6 +1283,9 @@ int MyConfig::LoadMyConfig( int iteration )
 
     Read( _T ( "SetSystemTime" ), &s_bSetSystemTime, 0 );
     Read( _T ( "ShowStatusBar" ), &m_bShowStatusBar, 1 );
+#ifndef __WXOSX__
+    Read( _T ( "ShowMenuBar" ), &m_bShowMenuBar, 0 );
+#endif
     Read( _T ( "ShowCompassWindow" ), &m_bShowCompassWin, 1 );
     Read( _T ( "ShowGrid" ), &g_bDisplayGrid, 0 );
     Read( _T ( "PlayShipsBells" ), &g_bPlayShipsBells, 0 );
@@ -2414,6 +2420,9 @@ void MyConfig::UpdateSettings()
     Write( _T ( "ChartNotRenderScaleFactor" ), g_ChartNotRenderScaleFactor );
 
     Write( _T ( "ShowStatusBar" ), m_bShowStatusBar );
+#ifndef __WXOSX__
+    Write( _T ( "ShowMenuBar" ), m_bShowMenuBar );
+#endif
     Write( _T ( "ShowCompassWindow" ), m_bShowCompassWin );
     Write( _T ( "SetSystemTime" ), s_bSetSystemTime );
     Write( _T ( "ShowGrid" ), g_bDisplayGrid );

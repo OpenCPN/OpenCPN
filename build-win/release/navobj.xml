@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<gpx version="1.1" creator="OpenCPN" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.topografix.com/GPX/1/1" xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" xmlns:opencpn="http://www.opencpn.org">
+  <rte>
+    <extensions>
+      <opencpn:guid>7a62ffff-6f84-4ca1-96d4-7f6e1dc70000</opencpn:guid>
+      <opencpn:viz>1</opencpn:viz>
+      <opencpn:time_display>PC</opencpn:time_display>
+    </extensions>
+    <rtept lat="-23.918844228" lon="152.285966367">
+      <time>2014-11-15T10:03:54Z</time>
+      <name>001</name>
+      <sym>diamond</sym>
+      <type>WPT</type>
+      <extensions>
+        <opencpn:guid>2f730000-be0f-43d2-8b3c-50604e81ffff</opencpn:guid>
+        <opencpn:auto_name>1</opencpn:auto_name>
+      </extensions>
+    </rtept>
+    <rtept lat="-23.978556542" lon="152.441487426">
+      <time>2014-11-15T10:03:55Z</time>
+      <name>002</name>
+      <sym>diamond</sym>
+      <type>WPT</type>
+      <extensions>
+        <opencpn:guid>3d5d0000-f285-44b3-9bba-c3cd03d30000</opencpn:guid>
+        <opencpn:auto_name>1</opencpn:auto_name>
+      </extensions>
+    </rtept>
+    <rtept lat="-23.896129478" lon="152.522468805">
+      <time>2014-11-15T10:03:56Z</time>
+      <name>003</name>
+      <sym>diamond</sym>
+      <type>WPT</type>
+      <extensions>
+        <opencpn:guid>5dd3ffff-be67-41b4-9d3f-0508088f0000</opencpn:guid>
+        <opencpn:auto_name>1</opencpn:auto_name>
+      </extensions>
+    </rtept>
+    <rtept lat="-23.818701125" lon="152.465873864">
+      <time>2014-11-15T10:03:57Z</time>
+      <name>004</name>
+      <sym>diamond</sym>
+      <type>WPT</type>
+      <extensions>
+        <opencpn:guid>7dfbffff-1af4-48ca-a27e-f00969faffff</opencpn:guid>
+        <opencpn:auto_name>1</opencpn:auto_name>
+      </extensions>
+    </rtept>
+  </rte>
+</gpx>

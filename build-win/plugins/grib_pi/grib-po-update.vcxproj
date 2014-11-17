@@ -1,0 +1,1248 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|Win32">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|Win32">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{32E2E77F-E793-479A-B969-DCF4AF5CEF66}</ProjectGUID>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>Win32</Platform>
+    <ProjectName>grib-po-update</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+    <PropertyGroup>
+      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\.\src\zlib-1.2.3;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\.\src\bzip2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\.\src\zlib-1.2.3;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\.\src\bzip2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\.\src\zlib-1.2.3;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\.\src\bzip2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\.\src\zlib-1.2.3;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\.\src\bzip2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\plugins\grib_pi\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\CMake 2.8\bin\cmake.exe" "-HP:/working area/opencpn/remote/jongough/OpenCPN" "-BP:/working area/opencpn/remote/jongough/OpenCPN/build-win" --check-stamp-file "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\grib_pi\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/CMakeLists.txt;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\CMakeLists.txt;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\UsewxWidgets.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindGettext.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageMessage.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\PluginLocalization.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\grib_pi\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\CMake 2.8\bin\cmake.exe" "-HP:/working area/opencpn/remote/jongough/OpenCPN" "-BP:/working area/opencpn/remote/jongough/OpenCPN/build-win" --check-stamp-file "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\grib_pi\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/CMakeLists.txt;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\CMakeLists.txt;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\UsewxWidgets.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindGettext.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageMessage.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\PluginLocalization.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\grib_pi\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Building Custom Rule P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\CMake 2.8\bin\cmake.exe" "-HP:/working area/opencpn/remote/jongough/OpenCPN" "-BP:/working area/opencpn/remote/jongough/OpenCPN/build-win" --check-stamp-file "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\grib_pi\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/CMakeLists.txt;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\CMakeLists.txt;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\UsewxWidgets.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindGettext.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageMessage.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\PluginLocalization.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\grib_pi\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Building Custom Rule P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\CMake 2.8\bin\cmake.exe" "-HP:/working area/opencpn/remote/jongough/OpenCPN" "-BP:/working area/opencpn/remote/jongough/OpenCPN/build-win" --check-stamp-file "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\grib_pi\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/CMakeLists.txt;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\CMakeLists.txt;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\UsewxWidgets.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindGettext.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageMessage.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\PluginLocalization.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\grib_pi\CMakeFiles\generate.stamp</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\1c3ae9eb2dbc4a0eecff2f24a714c66d\da.po.dummy.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">grib-po-update [da]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/da.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/da.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\da.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\da.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">grib-po-update [da]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/da.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/da.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\da.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\da.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">grib-po-update [da]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/da.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/da.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\da.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\da.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">grib-po-update [da]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/da.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/da.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\da.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\da.po.dummy</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\1c3ae9eb2dbc4a0eecff2f24a714c66d\fr.po.dummy.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">grib-po-update [fr]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/fr.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/fr.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\fr.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\fr.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">grib-po-update [fr]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/fr.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/fr.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\fr.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\fr.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">grib-po-update [fr]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/fr.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/fr.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\fr.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\fr.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">grib-po-update [fr]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/fr.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/fr.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\fr.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\fr.po.dummy</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\1c3ae9eb2dbc4a0eecff2f24a714c66d\zh_TW.po.dummy.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">grib-po-update [zh_TW]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/zh_TW.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/zh_TW.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\zh_TW.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\zh_TW.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">grib-po-update [zh_TW]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/zh_TW.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/zh_TW.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\zh_TW.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\zh_TW.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">grib-po-update [zh_TW]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/zh_TW.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/zh_TW.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\zh_TW.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\zh_TW.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">grib-po-update [zh_TW]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/zh_TW.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/zh_TW.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\zh_TW.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\zh_TW.po.dummy</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\1c3ae9eb2dbc4a0eecff2f24a714c66d\sv.po.dummy.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">grib-po-update [sv]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/sv.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/sv.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\sv.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\sv.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">grib-po-update [sv]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/sv.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/sv.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\sv.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\sv.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">grib-po-update [sv]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/sv.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/sv.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\sv.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\sv.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">grib-po-update [sv]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/sv.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/sv.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\sv.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\sv.po.dummy</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\1c3ae9eb2dbc4a0eecff2f24a714c66d\pt_PT.po.dummy.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">grib-po-update [pt_PT]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/pt_PT.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/pt_PT.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pt_PT.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pt_PT.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">grib-po-update [pt_PT]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/pt_PT.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/pt_PT.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pt_PT.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pt_PT.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">grib-po-update [pt_PT]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/pt_PT.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/pt_PT.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pt_PT.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pt_PT.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">grib-po-update [pt_PT]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/pt_PT.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/pt_PT.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pt_PT.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pt_PT.po.dummy</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\1c3ae9eb2dbc4a0eecff2f24a714c66d\es.po.dummy.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">grib-po-update [es]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/es.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/es.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\es.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\es.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">grib-po-update [es]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/es.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/es.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\es.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\es.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">grib-po-update [es]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/es.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/es.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\es.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\es.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">grib-po-update [es]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/es.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/es.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\es.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\es.po.dummy</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\1c3ae9eb2dbc4a0eecff2f24a714c66d\fi_FI.po.dummy.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">grib-po-update [fi_FI]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/fi_FI.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/fi_FI.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\fi_FI.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\fi_FI.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">grib-po-update [fi_FI]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/fi_FI.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/fi_FI.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\fi_FI.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\fi_FI.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">grib-po-update [fi_FI]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/fi_FI.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/fi_FI.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\fi_FI.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\fi_FI.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">grib-po-update [fi_FI]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/fi_FI.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/fi_FI.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\fi_FI.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\fi_FI.po.dummy</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\1c3ae9eb2dbc4a0eecff2f24a714c66d\pt_BR.po.dummy.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">grib-po-update [pt_BR]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/pt_BR.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/pt_BR.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pt_BR.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pt_BR.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">grib-po-update [pt_BR]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/pt_BR.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/pt_BR.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pt_BR.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pt_BR.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">grib-po-update [pt_BR]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/pt_BR.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/pt_BR.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pt_BR.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pt_BR.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">grib-po-update [pt_BR]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/pt_BR.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/pt_BR.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pt_BR.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pt_BR.po.dummy</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\1c3ae9eb2dbc4a0eecff2f24a714c66d\ru.po.dummy.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">grib-po-update [ru]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/ru.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/ru.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\ru.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\ru.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">grib-po-update [ru]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/ru.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/ru.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\ru.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\ru.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">grib-po-update [ru]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/ru.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/ru.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\ru.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\ru.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">grib-po-update [ru]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/ru.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/ru.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\ru.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\ru.po.dummy</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\1c3ae9eb2dbc4a0eecff2f24a714c66d\et.po.dummy.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">grib-po-update [et]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/et.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/et.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\et.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\et.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">grib-po-update [et]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/et.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/et.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\et.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\et.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">grib-po-update [et]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/et.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/et.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\et.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\et.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">grib-po-update [et]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/et.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/et.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\et.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\et.po.dummy</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\1c3ae9eb2dbc4a0eecff2f24a714c66d\pl_PL.po.dummy.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">grib-po-update [pl_PL]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/pl_PL.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/pl_PL.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pl_PL.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pl_PL.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">grib-po-update [pl_PL]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/pl_PL.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/pl_PL.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pl_PL.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pl_PL.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">grib-po-update [pl_PL]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/pl_PL.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/pl_PL.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pl_PL.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pl_PL.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">grib-po-update [pl_PL]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/pl_PL.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/pl_PL.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pl_PL.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pl_PL.po.dummy</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\1c3ae9eb2dbc4a0eecff2f24a714c66d\nl.po.dummy.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">grib-po-update [nl]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/nl.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/nl.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\nl.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\nl.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">grib-po-update [nl]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/nl.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/nl.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\nl.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\nl.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">grib-po-update [nl]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/nl.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/nl.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\nl.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\nl.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">grib-po-update [nl]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/nl.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/nl.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\nl.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\nl.po.dummy</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\1c3ae9eb2dbc4a0eecff2f24a714c66d\it.po.dummy.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">grib-po-update [it]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/it.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/it.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\it.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\it.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">grib-po-update [it]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/it.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/it.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\it.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\it.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">grib-po-update [it]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/it.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/it.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\it.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\it.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">grib-po-update [it]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/it.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/it.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\it.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\it.po.dummy</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\1c3ae9eb2dbc4a0eecff2f24a714c66d\pl.po.dummy.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">grib-po-update [pl]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/pl.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/pl.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pl.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pl.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">grib-po-update [pl]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/pl.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/pl.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pl.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pl.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">grib-po-update [pl]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/pl.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/pl.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pl.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pl.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">grib-po-update [pl]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/pl.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/pl.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pl.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pl.po.dummy</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\1c3ae9eb2dbc4a0eecff2f24a714c66d\hu.po.dummy.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">grib-po-update [hu]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/hu.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/hu.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\hu.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\hu.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">grib-po-update [hu]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/hu.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/hu.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\hu.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\hu.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">grib-po-update [hu]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/hu.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/hu.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\hu.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\hu.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">grib-po-update [hu]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/hu.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/hu.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\hu.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\hu.po.dummy</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\1c3ae9eb2dbc4a0eecff2f24a714c66d\el_GR.po.dummy.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">grib-po-update [el_GR]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/el_GR.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/el_GR.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\el_GR.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\el_GR.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">grib-po-update [el_GR]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/el_GR.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/el_GR.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\el_GR.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\el_GR.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">grib-po-update [el_GR]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/el_GR.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/el_GR.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\el_GR.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\el_GR.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">grib-po-update [el_GR]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/el_GR.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/el_GR.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\el_GR.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\el_GR.po.dummy</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\1c3ae9eb2dbc4a0eecff2f24a714c66d\nb_NO.po.dummy.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">grib-po-update [nb_NO]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/nb_NO.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/nb_NO.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\nb_NO.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\nb_NO.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">grib-po-update [nb_NO]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/nb_NO.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/nb_NO.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\nb_NO.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\nb_NO.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">grib-po-update [nb_NO]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/nb_NO.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/nb_NO.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\nb_NO.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\nb_NO.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">grib-po-update [nb_NO]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/nb_NO.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/nb_NO.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\nb_NO.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\nb_NO.po.dummy</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\1c3ae9eb2dbc4a0eecff2f24a714c66d\cs.po.dummy.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">grib-po-update [cs]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/cs.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/cs.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\cs.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\cs.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">grib-po-update [cs]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/cs.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/cs.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\cs.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\cs.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">grib-po-update [cs]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/cs.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/cs.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\cs.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\cs.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">grib-po-update [cs]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/cs.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/cs.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\cs.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\cs.po.dummy</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\1c3ae9eb2dbc4a0eecff2f24a714c66d\de.po.dummy.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">grib-po-update [de]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/de.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/de.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\de.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\de.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">grib-po-update [de]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/de.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/de.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\de.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\de.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">grib-po-update [de]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/de.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/de.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\de.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\de.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">grib-po-update [de]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/de.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/de.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\de.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\de.po.dummy</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\1c3ae9eb2dbc4a0eecff2f24a714c66d\tr_TR.po.dummy.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">grib-po-update [tr_TR]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/tr_TR.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/tr_TR.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\tr_TR.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\tr_TR.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">grib-po-update [tr_TR]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/tr_TR.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/tr_TR.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\tr_TR.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\tr_TR.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">grib-po-update [tr_TR]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/tr_TR.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/tr_TR.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\tr_TR.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\tr_TR.po.dummy</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">grib-po-update [tr_TR]: Updated po file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgmerge.exe" --width=80 --strict --quiet --update --backup=none --no-location -s "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/tr_TR.po" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/po/grib_pi.pot"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/1c3ae9eb2dbc4a0eecff2f24a714c66d/tr_TR.po.dummy.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\tr_TR.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\tr_TR.po.dummy</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\9255465fb23cc9c7789da92d7fedd831\grib-po-update.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">[grib_pi]-po-update: Done.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/9255465fb23cc9c7789da92d7fedd831/grib-po-update.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\da.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\fr.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\zh_TW.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\sv.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pt_PT.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\es.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\fi_FI.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pt_BR.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\ru.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\et.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pl_PL.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\nl.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\it.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pl.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\hu.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\el_GR.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\nb_NO.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\cs.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\de.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\tr_TR.po.dummy;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\grib_pi\CMakeFiles\grib-po-update</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">[grib_pi]-po-update: Done.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/9255465fb23cc9c7789da92d7fedd831/grib-po-update.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\da.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\fr.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\zh_TW.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\sv.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pt_PT.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\es.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\fi_FI.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pt_BR.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\ru.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\et.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pl_PL.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\nl.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\it.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pl.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\hu.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\el_GR.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\nb_NO.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\cs.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\de.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\tr_TR.po.dummy;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\grib_pi\CMakeFiles\grib-po-update</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">[grib_pi]-po-update: Done.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/9255465fb23cc9c7789da92d7fedd831/grib-po-update.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\da.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\fr.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\zh_TW.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\sv.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pt_PT.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\es.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\fi_FI.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pt_BR.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\ru.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\et.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pl_PL.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\nl.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\it.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pl.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\hu.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\el_GR.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\nb_NO.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\cs.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\de.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\tr_TR.po.dummy;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\grib_pi\CMakeFiles\grib-po-update</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">[grib_pi]-po-update: Done.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/9255465fb23cc9c7789da92d7fedd831/grib-po-update.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\grib_pi.pot;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\da.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\fr.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\zh_TW.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\sv.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pt_PT.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\es.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\fi_FI.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pt_BR.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\ru.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\et.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pl_PL.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\nl.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\it.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\pl.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\hu.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\el_GR.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\nb_NO.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\cs.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\de.po.dummy;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\po\tr_TR.po.dummy;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\grib_pi\CMakeFiles\grib-po-update</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CMakeFiles\grib-po-update" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="P:/working area/opencpn/remote/jongough/OpenCPN/build-win/ZERO_CHECK.vcxproj">
+      <Project>58B487F4-A313-4C49-B882-1E0BE4A940A1</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

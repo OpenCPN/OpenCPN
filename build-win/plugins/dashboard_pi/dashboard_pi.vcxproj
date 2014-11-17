@@ -1,0 +1,410 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|Win32">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|Win32">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{A503295B-F2D3-4A86-BBB4-4B5A2D508A53}</ProjectGUID>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>Win32</Platform>
+    <ProjectName>dashboard_pi</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+    <PropertyGroup>
+      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\Debug\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">dashboard_pi.dir\Debug\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">dashboard_pi</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.dll</TargetExt>
+      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</GenerateManifest>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\Release\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">dashboard_pi.dir\Release\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">dashboard_pi</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.dll</TargetExt>
+      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</GenerateManifest>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\MinSizeRel\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">dashboard_pi.dir\MinSizeRel\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">dashboard_pi</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">.dll</TargetExt>
+      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkIncremental>
+      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">true</GenerateManifest>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\RelWithDebInfo\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">dashboard_pi.dir\RelWithDebInfo\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">dashboard_pi</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">.dll</TargetExt>
+      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">true</LinkIncremental>
+      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">true</GenerateManifest>
+    </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\src\nmea0183;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Debug/</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;ocpnUSE_GL;USE_GLU_TESS;WXUSINGDLL;UNICODE;_UNICODE;OCPN_USE_CRASHRPT;__MSVC__;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_DEPRECATE;PSAPI_VERSION=1;TIXML_USE_STL;USE_S57;USE_GARMINHOST;__WIN32__;_DEBUG;__WXDEBUG__;CMAKE_INTDIR="Debug";dashboard_pi_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;ocpnUSE_GL;USE_GLU_TESS;WXUSINGDLL;UNICODE;_UNICODE;OCPN_USE_CRASHRPT;__MSVC__;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_DEPRECATE;PSAPI_VERSION=1;TIXML_USE_STL;USE_S57;USE_GARMINHOST;__WIN32__;_DEBUG;__WXDEBUG__;CMAKE_INTDIR=\"Debug\";dashboard_pi_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\src\nmea0183;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\src\nmea0183;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalOptions> /machine:X86 /debug %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;../../$(Configuration)/opencpn.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxbase28ud.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28ud_core.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxbase28ud_net.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxbase28ud_xml.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28ud_html.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28ud_adv.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28ud_aui.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28ud_gl.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxpngd.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxtiffd.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxjpegd.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxzlibd.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxregexud.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxexpatd.lib;opengl32.lib;glu32.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:/wxWidgets-2.8.12/lib/vc_dll;C:/wxWidgets-2.8.12/lib/vc_dll/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ImportLibrary>P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/Debug/dashboard_pi.lib</ImportLibrary>
+      <ProgramDataBaseFile>P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/Debug/dashboard_pi.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+      <Version></Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\src\nmea0183;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Release/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat></DebugInformationFormat>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;ocpnUSE_GL;USE_GLU_TESS;WXUSINGDLL;UNICODE;_UNICODE;OCPN_USE_CRASHRPT;__MSVC__;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_DEPRECATE;PSAPI_VERSION=1;TIXML_USE_STL;USE_S57;USE_GARMINHOST;__WIN32__;CMAKE_INTDIR="Release";dashboard_pi_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;ocpnUSE_GL;USE_GLU_TESS;WXUSINGDLL;UNICODE;_UNICODE;OCPN_USE_CRASHRPT;__MSVC__;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_DEPRECATE;PSAPI_VERSION=1;TIXML_USE_STL;USE_S57;USE_GARMINHOST;__WIN32__;CMAKE_INTDIR=\"Release\";dashboard_pi_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\src\nmea0183;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\src\nmea0183;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalOptions> /machine:X86 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;../../$(Configuration)/opencpn.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxbase28u.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28u_core.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxbase28u_net.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxbase28u_xml.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28u_html.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28u_adv.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28u_aui.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28u_gl.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxpng.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxtiff.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxjpeg.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxzlib.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxregexu.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxexpat.lib;opengl32.lib;glu32.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:/wxWidgets-2.8.12/lib/vc_dll;C:/wxWidgets-2.8.12/lib/vc_dll/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <ImportLibrary>P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/Release/dashboard_pi.lib</ImportLibrary>
+      <ProgramDataBaseFile>P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/Release/dashboard_pi.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+      <Version></Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\src\nmea0183;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat></DebugInformationFormat>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;ocpnUSE_GL;USE_GLU_TESS;WXUSINGDLL;UNICODE;_UNICODE;OCPN_USE_CRASHRPT;__MSVC__;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_DEPRECATE;PSAPI_VERSION=1;TIXML_USE_STL;USE_S57;USE_GARMINHOST;__WIN32__;CMAKE_INTDIR="MinSizeRel";dashboard_pi_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;ocpnUSE_GL;USE_GLU_TESS;WXUSINGDLL;UNICODE;_UNICODE;OCPN_USE_CRASHRPT;__MSVC__;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_DEPRECATE;PSAPI_VERSION=1;TIXML_USE_STL;USE_S57;USE_GARMINHOST;__WIN32__;CMAKE_INTDIR=\"MinSizeRel\";dashboard_pi_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\src\nmea0183;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\src\nmea0183;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalOptions> /machine:X86 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;../../$(Configuration)/opencpn.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxbase28u.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28u_core.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxbase28u_net.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxbase28u_xml.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28u_html.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28u_adv.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28u_aui.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28u_gl.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxpng.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxtiff.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxjpeg.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxzlib.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxregexu.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxexpat.lib;opengl32.lib;glu32.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:/wxWidgets-2.8.12/lib/vc_dll;C:/wxWidgets-2.8.12/lib/vc_dll/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <ImportLibrary>P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/MinSizeRel/dashboard_pi.lib</ImportLibrary>
+      <ProgramDataBaseFile>P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/MinSizeRel/dashboard_pi.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+      <Version></Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\src\nmea0183;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat></DebugInformationFormat>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG%3B/Zi;ocpnUSE_GL;USE_GLU_TESS;WXUSINGDLL;UNICODE;_UNICODE;OCPN_USE_CRASHRPT;__MSVC__;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_DEPRECATE;PSAPI_VERSION=1;TIXML_USE_STL;USE_S57;USE_GARMINHOST;__WIN32__;CMAKE_INTDIR="RelWithDebInfo";dashboard_pi_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG%3B/Zi;ocpnUSE_GL;USE_GLU_TESS;WXUSINGDLL;UNICODE;_UNICODE;OCPN_USE_CRASHRPT;__MSVC__;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_DEPRECATE;PSAPI_VERSION=1;TIXML_USE_STL;USE_S57;USE_GARMINHOST;__WIN32__;CMAKE_INTDIR=\"RelWithDebInfo\";dashboard_pi_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\src\nmea0183;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\src\nmea0183;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalOptions> /machine:X86 /debug %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;../../$(Configuration)/opencpn.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxbase28u.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28u_core.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxbase28u_net.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxbase28u_xml.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28u_html.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28u_adv.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28u_aui.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28u_gl.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxpng.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxtiff.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxjpeg.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxzlib.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxregexu.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxexpat.lib;opengl32.lib;glu32.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:/wxWidgets-2.8.12/lib/vc_dll;C:/wxWidgets-2.8.12/lib/vc_dll/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ImportLibrary>P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/RelWithDebInfo/dashboard_pi.lib</ImportLibrary>
+      <ProgramDataBaseFile>P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/RelWithDebInfo/dashboard_pi.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+      <Version></Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\plugins\dashboard_pi\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\CMake 2.8\bin\cmake.exe" "-HP:/working area/opencpn/remote/jongough/OpenCPN" "-BP:/working area/opencpn/remote/jongough/OpenCPN/build-win" --check-stamp-file "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/CMakeLists.txt;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\CMakeLists.txt;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\UsewxWidgets.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindGettext.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageMessage.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\PluginLocalization.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\CMake 2.8\bin\cmake.exe" "-HP:/working area/opencpn/remote/jongough/OpenCPN" "-BP:/working area/opencpn/remote/jongough/OpenCPN/build-win" --check-stamp-file "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/CMakeLists.txt;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\CMakeLists.txt;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\UsewxWidgets.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindGettext.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageMessage.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\PluginLocalization.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Building Custom Rule P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\CMake 2.8\bin\cmake.exe" "-HP:/working area/opencpn/remote/jongough/OpenCPN" "-BP:/working area/opencpn/remote/jongough/OpenCPN/build-win" --check-stamp-file "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/CMakeLists.txt;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\CMakeLists.txt;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\UsewxWidgets.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindGettext.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageMessage.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\PluginLocalization.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Building Custom Rule P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\CMake 2.8\bin\cmake.exe" "-HP:/working area/opencpn/remote/jongough/OpenCPN" "-BP:/working area/opencpn/remote/jongough/OpenCPN/build-win" --check-stamp-file "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/CMakeLists.txt;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\CMakeLists.txt;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\UsewxWidgets.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindGettext.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageMessage.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\PluginLocalization.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\CMakeFiles\generate.stamp</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\dashboard_pi.h" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\instrument.h" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\compass.h" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\dial.h" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\gps.h" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\rudder_angle.h" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\speedometer.h" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\wind.h" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\depth.h" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\clock.h" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\icons.h" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\wind_history.h" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\baro_history.h" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\from_ownship.h" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\nmea0183\LatLong.hpp" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\nmea0183\nmea0183.hpp" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\nmea0183\Response.hpp" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\nmea0183\RMB.hpp" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\nmea0183\Sentence.hpp" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\nmea0183\wpl.hpp" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\nmea0183\rte.hpp" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\nmea0183\hdt.hpp" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\nmea0183\hdg.hpp" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\nmea0183\hdm.hpp" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\nmea0183\gll.hpp" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\nmea0183\vtg.hpp" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\nmea0183\gga.hpp" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\nmea0183\gsv.hpp" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\nmea0183\dbt.hpp" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\nmea0183\dpt.hpp" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\nmea0183\mtw.hpp" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\nmea0183\mwv.hpp" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\nmea0183\vhw.hpp" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\nmea0183\vwr.hpp" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\nmea0183\zda.hpp" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\nmea0183\rsa.hpp" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\nmea0183\SatInfo.h" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\nmea0183\mwd.hpp" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\nmea0183\vwt.hpp" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\nmea0183\mta.hpp" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\nmea0183\vlw.hpp" />
+    <ClInclude Include="..\..\..\plugins\dashboard_pi\src\nmea0183\mda.hpp" />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\dashboard_pi.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\instrument.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\compass.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\dial.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\gps.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\rudder_angle.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\speedometer.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\wind.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\depth.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\clock.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\icons.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\wind_history.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\baro_history.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\from_ownship.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\wxJSON\jsonval.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\wxJSON\jsonreader.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\nmea0183\latlong.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\nmea0183\long.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\nmea0183\nmea0183.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\nmea0183\response.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\nmea0183\rmb.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\nmea0183\sentence.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\nmea0183\talkerid.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\nmea0183\rmc.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\nmea0183\hexvalue.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\nmea0183\lat.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\nmea0183\expid.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\nmea0183\wpl.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\nmea0183\rte.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\nmea0183\hdt.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\nmea0183\hdg.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\nmea0183\hdm.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\nmea0183\gll.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\nmea0183\vtg.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\nmea0183\gga.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\nmea0183\gsv.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\nmea0183\dbt.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\nmea0183\dpt.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\nmea0183\mtw.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\nmea0183\mwv.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\nmea0183\vhw.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\nmea0183\vwr.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\nmea0183\zda.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\nmea0183\rsa.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\nmea0183\mwd.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\nmea0183\vwt.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\nmea0183\mta.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\nmea0183\vlw.cpp"  />
+    <ClCompile Include="..\..\..\plugins\dashboard_pi\src\nmea0183\mda.cpp"  />
+    <None Include="..\..\..\plugins\dashboard_pi\src\nmea0183\RMC.HPP" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="P:/working area/opencpn/remote/jongough/OpenCPN/build-win/ZERO_CHECK.vcxproj">
+      <Project>58B487F4-A313-4C49-B882-1E0BE4A940A1</Project>
+    </ProjectReference>
+    <ProjectReference Include="P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/dashboard-i18n.vcxproj">
+      <Project>C50BBDCF-201E-4A9A-AA0E-BC93937F86C1</Project>
+    </ProjectReference>
+    <ProjectReference Include="P:/working area/opencpn/remote/jongough/OpenCPN/build-win/opencpn.vcxproj">
+      <Project>BA80992B-6630-4C83-8610-2B31E8486A33</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

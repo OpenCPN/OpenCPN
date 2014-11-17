@@ -4539,11 +4539,42 @@ bool ChartBaseBSB::AnalyzeSkew(void)
             else
                 apparent_skew -= 360.;
         }
-        
+
+        if(fabs( apparent_skew - m_Chart_Skew ) > 2) {    // measured skew OK?
+        // it may be that the projection longitude is simply wrong.
+        // Check it.
+            double dskew = fabs( apparent_skew - m_Chart_Skew );
+            if( (m_proj_lon < lonmin) || (m_proj_lon > lonmax) ) {
+                
+                // Try a projection longitude that is mid-meridian in the chart.
+                double tentative_proj_lon = (lonmin + lonmax)/2.;  
+                
+                toTM(pRefTable[imax].latr, pRefTable[imax].lonr, m_proj_lat, tentative_proj_lon, &easting0, &northing0);
+                toTM(pRefTable[jmax].latr, pRefTable[jmax].lonr, m_proj_lat, tentative_proj_lon, &easting1, &northing1);
+                
+                skew_proj = atan2( (easting1-easting0), (northing1 - northing0) ) * 180./PI;
+                skew_points = atan2( (pRefTable[jmax].yr - pRefTable[imax].yr), (pRefTable[jmax].xr - pRefTable[imax].xr) ) * 180./PI; 
+                
+                apparent_skew =  skew_points - skew_proj + 90.;
+                
+                // normalize to +/- 180.
+                if(fabs(apparent_skew) > 180.){
+                    if(apparent_skew < 0.)
+                        apparent_skew += 360.;
+                    else
+                        apparent_skew -= 360.;
+                }
+ 
+                // Better?  If so, adopt the adjusted projection longitude
+                if(fabs( apparent_skew - m_Chart_Skew ) < dskew) { 
+                   m_proj_lon = tentative_proj_lon;
+                }
+            }
+        }
     }
     else                        // For all other projections, assume that skew specified in header is correct
         apparent_skew = m_Chart_Skew;
-    
+
     if(fabs( apparent_skew - m_Chart_Skew ) > 2) {           // measured skew is more than 2 degrees 
            m_Chart_Skew = apparent_skew;                         // different from stated skew
            

@@ -1,0 +1,56 @@
+# CMake generation dependency list for this directory.
+P:/working area/opencpn/remote/jongough/OpenCPN/CMakeLists.txt
+P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/2.8.12.2/CMakeSystem.cmake
+P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/2.8.12.2/CMakeCCompiler.cmake
+P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/2.8.12.2/CMakeCXXCompiler.cmake
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/CMakeSystemSpecificInformation.cmake
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/CMakeGenericSystem.cmake
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/Platform/Windows.cmake
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/Platform/WindowsPaths.cmake
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/CMakeCInformation.cmake
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/Platform/Windows-MSVC-C.cmake
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/Platform/Windows-MSVC.cmake
+P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/2.8.12.2/CMakeRCCompiler.cmake
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/CMakeRCInformation.cmake
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/CMakeCommonLanguageInclude.cmake
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/CMakeCXXInformation.cmake
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/Platform/Windows-MSVC-CXX.cmake
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/Platform/Windows-MSVC.cmake
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/CMakeCommonLanguageInclude.cmake
+P:/working area/opencpn/remote/jongough/OpenCPN/VERSION.cmake
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/FindOpenGL.cmake
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/FindPackageHandleStandardArgs.cmake
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/FindPackageMessage.cmake
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/CMakeParseArguments.cmake
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/FindwxWidgets.cmake
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/FindPackageHandleStandardArgs.cmake
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/FindPackageMessage.cmake
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/CMakeParseArguments.cmake
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/UsewxWidgets.cmake
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/FindGettext.cmake
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/FindPackageHandleStandardArgs.cmake
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/FindPackageMessage.cmake
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/CMakeParseArguments.cmake
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/CMakeParseArguments.cmake
+P:/working area/opencpn/remote/jongough/OpenCPN/src/opencpn.rc.in
+P:/working area/opencpn/remote/jongough/OpenCPN/buildwin/NSIS_Unicode/Language files/Langstrings_GERMAN.nsh.in
+P:/working area/opencpn/remote/jongough/OpenCPN/buildwin/NSIS_Unicode/Language files/Langstrings_FRENCH.nsh.in
+P:/working area/opencpn/remote/jongough/OpenCPN/buildwin/NSIS_Unicode/Language files/Langstrings_CZECH.nsh.in
+P:/working area/opencpn/remote/jongough/OpenCPN/buildwin/NSIS_Unicode/Language files/Langstrings_DANISH.nsh.in
+P:/working area/opencpn/remote/jongough/OpenCPN/buildwin/NSIS_Unicode/Language files/Langstrings_SPANISH.nsh.in
+P:/working area/opencpn/remote/jongough/OpenCPN/buildwin/NSIS_Unicode/Language files/Langstrings_ITALIAN.nsh.in
+P:/working area/opencpn/remote/jongough/OpenCPN/buildwin/NSIS_Unicode/Language files/Langstrings_DUTCH.nsh.in
+P:/working area/opencpn/remote/jongough/OpenCPN/buildwin/NSIS_Unicode/Language files/Langstrings_POLISH.nsh.in
+P:/working area/opencpn/remote/jongough/OpenCPN/buildwin/NSIS_Unicode/Language files/Langstrings_PORTUGUESEBR.nsh.in
+P:/working area/opencpn/remote/jongough/OpenCPN/buildwin/NSIS_Unicode/Language files/Langstrings_PORTUGUESE.nsh.in
+P:/working area/opencpn/remote/jongough/OpenCPN/buildwin/NSIS_Unicode/Language files/Langstrings_RUSSIAN.nsh.in
+P:/working area/opencpn/remote/jongough/OpenCPN/buildwin/NSIS_Unicode/Language files/Langstrings_SWEDISH.nsh.in
+P:/working area/opencpn/remote/jongough/OpenCPN/buildwin/NSIS_Unicode/Language files/Langstrings_FINNISH.nsh.in
+P:/working area/opencpn/remote/jongough/OpenCPN/buildwin/NSIS_Unicode/Language files/Langstrings_NORWEGIAN.nsh.in
+P:/working area/opencpn/remote/jongough/OpenCPN/buildwin/NSIS_Unicode/Language files/Langstrings_CHINESETW.nsh.in
+P:/working area/opencpn/remote/jongough/OpenCPN/buildwin/NSIS_Unicode/Language files/Langstrings_TURKISH.nsh.in
+P:/working area/opencpn/remote/jongough/OpenCPN/version.h.in
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/CPack.cmake
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/CPackComponent.cmake
+C:/Program Files/CMake 2.8/share/cmake-2.8/Templates/CPackConfig.cmake.in
+C:/Program Files/CMake 2.8/share/cmake-2.8/Templates/CPackConfig.cmake.in

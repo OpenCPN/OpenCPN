@@ -1,0 +1,283 @@
+The system is: Windows - 6.1 - x86
+Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+Compiler:  
+Build flags: 
+Id flags: 
+
+The output was:
+0
+Microsoft (R) Build Engine version 4.0.30319.18408
+[Microsoft .NET Framework, version 4.0.30319.18444]
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Build started 15/11/2014 8:22:53 AM.
+Project "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\2.8.12.2\CompilerIdC\CompilerIdC.vcxproj" on node 1 (default targets).
+PrepareForBuild:
+  Creating directory "Debug\".
+InitializeBuildStatus:
+  Creating "Debug\CompilerIdC.unsuccessfulbuild" because "AlwaysCreate" was specified.
+ClCompile:
+  c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /nologo /W0 /WX- /Od /Oy- /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TC /analyze- /errorReport:queue CMakeCCompilerId.c
+  CMakeCCompilerId.c
+Link:
+  c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:QUEUE /OUT:".\CompilerIdC.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\CompilerIdC.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /PDB:"P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\2.8.12.2\CompilerIdC\CompilerIdC.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\CompilerIdC.lib" /MACHINE:X86 Debug\CMakeCCompilerId.obj
+  CompilerIdC.vcxproj -> P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\2.8.12.2\CompilerIdC\.\CompilerIdC.exe
+Manifest:
+  C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:".\CompilerIdC.exe;#1" /manifest Debug\CompilerIdC.exe.intermediate.manifest
+PostBuildEvent:
+  for %%i in (cl.exe) do @echo CMAKE_C_COMPILER=%%~$PATH:i
+  :VCEnd
+  CMAKE_C_COMPILER=c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\cl.exe
+FinalizeBuildStatus:
+  Deleting file "Debug\CompilerIdC.unsuccessfulbuild".
+  Touching "Debug\CompilerIdC.lastbuildstate".
+Done Building Project "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\2.8.12.2\CompilerIdC\CompilerIdC.vcxproj" (default targets).
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.65
+
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.exe"
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.vcxproj"
+
+The C compiler identification is MSVC, found in "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/2.8.12.2/CompilerIdC/CompilerIdC.exe"
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+Compiler:  
+Build flags: 
+Id flags: 
+
+The output was:
+0
+Microsoft (R) Build Engine version 4.0.30319.18408
+[Microsoft .NET Framework, version 4.0.30319.18444]
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Build started 15/11/2014 8:22:57 AM.
+Project "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\2.8.12.2\CompilerIdCXX\CompilerIdCXX.vcxproj" on node 1 (default targets).
+PrepareForBuild:
+  Creating directory "Debug\".
+InitializeBuildStatus:
+  Creating "Debug\CompilerIdCXX.unsuccessfulbuild" because "AlwaysCreate" was specified.
+ClCompile:
+  c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /nologo /W0 /WX- /Od /Oy- /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:queue CMakeCXXCompilerId.cpp
+  CMakeCXXCompilerId.cpp
+Link:
+  c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:QUEUE /OUT:".\CompilerIdCXX.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\CompilerIdCXX.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /PDB:"P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\2.8.12.2\CompilerIdCXX\CompilerIdCXX.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\CompilerIdCXX.lib" /MACHINE:X86 Debug\CMakeCXXCompilerId.obj
+  CompilerIdCXX.vcxproj -> P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\2.8.12.2\CompilerIdCXX\.\CompilerIdCXX.exe
+Manifest:
+  C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:".\CompilerIdCXX.exe;#1" /manifest Debug\CompilerIdCXX.exe.intermediate.manifest
+PostBuildEvent:
+  for %%i in (cl.exe) do @echo CMAKE_CXX_COMPILER=%%~$PATH:i
+  :VCEnd
+  CMAKE_CXX_COMPILER=c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\cl.exe
+FinalizeBuildStatus:
+  Deleting file "Debug\CompilerIdCXX.unsuccessfulbuild".
+  Touching "Debug\CompilerIdCXX.lastbuildstate".
+Done Building Project "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\2.8.12.2\CompilerIdCXX\CompilerIdCXX.vcxproj" (default targets).
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.50
+
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.vcxproj"
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.exe"
+
+The CXX compiler identification is MSVC, found in "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/2.8.12.2/CompilerIdCXX/CompilerIdCXX.exe"
+
+Determining if the C compiler works passed with the following output:
+Change Dir: P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/CMakeTmp
+
+Run Build Command:C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe cmTryCompileExec4122755225.vcxproj /p:Configuration=Debug /p:VisualStudioVersion=10.0
+Microsoft (R) Build Engine version 4.0.30319.18408
+[Microsoft .NET Framework, version 4.0.30319.18444]
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Build started 15/11/2014 8:23:02 AM.
+Project "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\CMakeTmp\cmTryCompileExec4122755225.vcxproj" on node 1 (default targets).
+PrepareForBuild:
+  Creating directory "cmTryCompileExec4122755225.dir\Debug\".
+  Creating directory "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\CMakeTmp\Debug\".
+InitializeBuildStatus:
+  Creating "cmTryCompileExec4122755225.dir\Debug\cmTryCompileExec4122755225.unsuccessfulbuild" because "AlwaysCreate" was specified.
+ClCompile:
+  c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"cmTryCompileExec4122755225.dir\Debug\\" /Fd"cmTryCompileExec4122755225.dir\Debug\vc100.pdb" /Gd /TC /analyze- /errorReport:queue testCCompiler.c
+  Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 16.00.30319.01 for 80x86
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  
+  cl /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"cmTryCompileExec4122755225.dir\Debug\\" /Fd"cmTryCompileExec4122755225.dir\Debug\vc100.pdb" /Gd /TC /analyze- /errorReport:queue testCCompiler.c
+  
+  testCCompiler.c
+ManifestResourceCompile:
+  C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\rc.exe /nologo /fo"cmTryCompileExec4122755225.dir\Debug\cmTryCompileExec4122755225.exe.embed.manifest.res" cmTryCompileExec4122755225.dir\Debug\cmTryCompileExec4122755225_manifest.rc 
+Link:
+  c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:QUEUE /OUT:"P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\CMakeTmp\Debug\cmTryCompileExec4122755225.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /ManifestFile:"cmTryCompileExec4122755225.dir\Debug\cmTryCompileExec4122755225.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec4122755225.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec4122755225.lib" /MACHINE:X86 cmTryCompileExec4122755225.dir\Debug\cmTryCompileExec4122755225.exe.embed.manifest.res
+  cmTryCompileExec4122755225.dir\Debug\testCCompiler.obj  /machine:X86 /debug 
+Manifest:
+  C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /out:"cmTryCompileExec4122755225.dir\Debug\cmTryCompileExec4122755225.exe.embed.manifest" /manifest cmTryCompileExec4122755225.dir\Debug\cmTryCompileExec4122755225.exe.intermediate.manifest
+  C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\rc.exe /nologo /fo"cmTryCompileExec4122755225.dir\Debug\cmTryCompileExec4122755225.exe.embed.manifest.res" cmTryCompileExec4122755225.dir\Debug\cmTryCompileExec4122755225_manifest.rc 
+LinkEmbedManifest:
+  c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:QUEUE /OUT:"P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\CMakeTmp\Debug\cmTryCompileExec4122755225.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /ManifestFile:"cmTryCompileExec4122755225.dir\Debug\cmTryCompileExec4122755225.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec4122755225.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec4122755225.lib" /MACHINE:X86 cmTryCompileExec4122755225.dir\Debug\cmTryCompileExec4122755225.exe.embed.manifest.res
+  cmTryCompileExec4122755225.dir\Debug\testCCompiler.obj  /machine:X86 /debug 
+  cmTryCompileExec4122755225.vcxproj -> P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\CMakeTmp\Debug\cmTryCompileExec4122755225.exe
+FinalizeBuildStatus:
+  Deleting file "cmTryCompileExec4122755225.dir\Debug\cmTryCompileExec4122755225.unsuccessfulbuild".
+  Touching "cmTryCompileExec4122755225.dir\Debug\cmTryCompileExec4122755225.lastbuildstate".
+Done Building Project "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\CMakeTmp\cmTryCompileExec4122755225.vcxproj" (default targets).
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:06.80
+
+
+Detecting C compiler ABI info compiled with the following output:
+Change Dir: P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/CMakeTmp
+
+Run Build Command:C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe cmTryCompileExec3990988161.vcxproj /p:Configuration=Debug /p:VisualStudioVersion=10.0
+Microsoft (R) Build Engine version 4.0.30319.18408
+[Microsoft .NET Framework, version 4.0.30319.18444]
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Build started 15/11/2014 8:23:13 AM.
+Project "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\CMakeTmp\cmTryCompileExec3990988161.vcxproj" on node 1 (default targets).
+PrepareForBuild:
+  Creating directory "cmTryCompileExec3990988161.dir\Debug\".
+  Creating directory "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\CMakeTmp\Debug\".
+InitializeBuildStatus:
+  Creating "cmTryCompileExec3990988161.dir\Debug\cmTryCompileExec3990988161.unsuccessfulbuild" because "AlwaysCreate" was specified.
+ClCompile:
+  c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"cmTryCompileExec3990988161.dir\Debug\\" /Fd"cmTryCompileExec3990988161.dir\Debug\vc100.pdb" /Gd /TC /analyze- /errorReport:queue "C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeCCompilerABI.c"
+  Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 16.00.30319.01 for 80x86
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  
+  cl /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"cmTryCompileExec3990988161.dir\Debug\\" /Fd"cmTryCompileExec3990988161.dir\Debug\vc100.pdb" /Gd /TC /analyze- /errorReport:queue "C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeCCompilerABI.c"
+  
+  CMakeCCompilerABI.c
+ManifestResourceCompile:
+  C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\rc.exe /nologo /fo"cmTryCompileExec3990988161.dir\Debug\cmTryCompileExec3990988161.exe.embed.manifest.res" cmTryCompileExec3990988161.dir\Debug\cmTryCompileExec3990988161_manifest.rc 
+Link:
+  c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:QUEUE /OUT:"P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\CMakeTmp\Debug\cmTryCompileExec3990988161.exe" /INCREMENTAL /NOLOGO /MANIFEST /ManifestFile:"cmTryCompileExec3990988161.dir\Debug\cmTryCompileExec3990988161.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec3990988161.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec3990988161.lib" /MACHINE:X86 cmTryCompileExec3990988161.dir\Debug\cmTryCompileExec3990988161.exe.embed.manifest.res
+  cmTryCompileExec3990988161.dir\Debug\CMakeCCompilerABI.obj  /machine:X86 /debug 
+Manifest:
+  C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /out:"cmTryCompileExec3990988161.dir\Debug\cmTryCompileExec3990988161.exe.embed.manifest" /manifest cmTryCompileExec3990988161.dir\Debug\cmTryCompileExec3990988161.exe.intermediate.manifest
+  C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\rc.exe /nologo /fo"cmTryCompileExec3990988161.dir\Debug\cmTryCompileExec3990988161.exe.embed.manifest.res" cmTryCompileExec3990988161.dir\Debug\cmTryCompileExec3990988161_manifest.rc 
+LinkEmbedManifest:
+  c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:QUEUE /OUT:"P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\CMakeTmp\Debug\cmTryCompileExec3990988161.exe" /INCREMENTAL /NOLOGO /MANIFEST /ManifestFile:"cmTryCompileExec3990988161.dir\Debug\cmTryCompileExec3990988161.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec3990988161.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec3990988161.lib" /MACHINE:X86 cmTryCompileExec3990988161.dir\Debug\cmTryCompileExec3990988161.exe.embed.manifest.res
+  cmTryCompileExec3990988161.dir\Debug\CMakeCCompilerABI.obj  /machine:X86 /debug 
+  cmTryCompileExec3990988161.vcxproj -> P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\CMakeTmp\Debug\cmTryCompileExec3990988161.exe
+FinalizeBuildStatus:
+  Deleting file "cmTryCompileExec3990988161.dir\Debug\cmTryCompileExec3990988161.unsuccessfulbuild".
+  Touching "cmTryCompileExec3990988161.dir\Debug\cmTryCompileExec3990988161.lastbuildstate".
+Done Building Project "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\CMakeTmp\cmTryCompileExec3990988161.vcxproj" (default targets).
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:05.73
+
+
+Determining if the CXX compiler works passed with the following output:
+Change Dir: P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/CMakeTmp
+
+Run Build Command:C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe cmTryCompileExec1856749759.vcxproj /p:Configuration=Debug /p:VisualStudioVersion=10.0
+Microsoft (R) Build Engine version 4.0.30319.18408
+[Microsoft .NET Framework, version 4.0.30319.18444]
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Build started 15/11/2014 8:23:23 AM.
+Project "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\CMakeTmp\cmTryCompileExec1856749759.vcxproj" on node 1 (default targets).
+PrepareForBuild:
+  Creating directory "cmTryCompileExec1856749759.dir\Debug\".
+  Creating directory "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\CMakeTmp\Debug\".
+InitializeBuildStatus:
+  Creating "cmTryCompileExec1856749759.dir\Debug\cmTryCompileExec1856749759.unsuccessfulbuild" because "AlwaysCreate" was specified.
+ClCompile:
+  c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo"cmTryCompileExec1856749759.dir\Debug\\" /Fd"cmTryCompileExec1856749759.dir\Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:queue testCXXCompiler.cxx
+  Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 16.00.30319.01 for 80x86
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  
+  cl /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo"cmTryCompileExec1856749759.dir\Debug\\" /Fd"cmTryCompileExec1856749759.dir\Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:queue testCXXCompiler.cxx
+  
+  testCXXCompiler.cxx
+ManifestResourceCompile:
+  C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\rc.exe /nologo /fo"cmTryCompileExec1856749759.dir\Debug\cmTryCompileExec1856749759.exe.embed.manifest.res" cmTryCompileExec1856749759.dir\Debug\cmTryCompileExec1856749759_manifest.rc 
+Link:
+  c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:QUEUE /OUT:"P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\CMakeTmp\Debug\cmTryCompileExec1856749759.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /ManifestFile:"cmTryCompileExec1856749759.dir\Debug\cmTryCompileExec1856749759.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec1856749759.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec1856749759.lib" /MACHINE:X86 cmTryCompileExec1856749759.dir\Debug\cmTryCompileExec1856749759.exe.embed.manifest.res
+  cmTryCompileExec1856749759.dir\Debug\testCXXCompiler.obj  /machine:X86 /debug 
+Manifest:
+  C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /out:"cmTryCompileExec1856749759.dir\Debug\cmTryCompileExec1856749759.exe.embed.manifest" /manifest cmTryCompileExec1856749759.dir\Debug\cmTryCompileExec1856749759.exe.intermediate.manifest
+  C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\rc.exe /nologo /fo"cmTryCompileExec1856749759.dir\Debug\cmTryCompileExec1856749759.exe.embed.manifest.res" cmTryCompileExec1856749759.dir\Debug\cmTryCompileExec1856749759_manifest.rc 
+LinkEmbedManifest:
+  c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:QUEUE /OUT:"P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\CMakeTmp\Debug\cmTryCompileExec1856749759.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /ManifestFile:"cmTryCompileExec1856749759.dir\Debug\cmTryCompileExec1856749759.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec1856749759.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec1856749759.lib" /MACHINE:X86 cmTryCompileExec1856749759.dir\Debug\cmTryCompileExec1856749759.exe.embed.manifest.res
+  cmTryCompileExec1856749759.dir\Debug\testCXXCompiler.obj  /machine:X86 /debug 
+  cmTryCompileExec1856749759.vcxproj -> P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\CMakeTmp\Debug\cmTryCompileExec1856749759.exe
+FinalizeBuildStatus:
+  Deleting file "cmTryCompileExec1856749759.dir\Debug\cmTryCompileExec1856749759.unsuccessfulbuild".
+  Touching "cmTryCompileExec1856749759.dir\Debug\cmTryCompileExec1856749759.lastbuildstate".
+Done Building Project "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\CMakeTmp\cmTryCompileExec1856749759.vcxproj" (default targets).
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:04.88
+
+
+Detecting CXX compiler ABI info compiled with the following output:
+Change Dir: P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/CMakeTmp
+
+Run Build Command:C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe cmTryCompileExec731513406.vcxproj /p:Configuration=Debug /p:VisualStudioVersion=10.0
+Microsoft (R) Build Engine version 4.0.30319.18408
+[Microsoft .NET Framework, version 4.0.30319.18444]
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Build started 15/11/2014 8:23:31 AM.
+Project "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\CMakeTmp\cmTryCompileExec731513406.vcxproj" on node 1 (default targets).
+PrepareForBuild:
+  Creating directory "cmTryCompileExec731513406.dir\Debug\".
+  Creating directory "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\CMakeTmp\Debug\".
+InitializeBuildStatus:
+  Creating "cmTryCompileExec731513406.dir\Debug\cmTryCompileExec731513406.unsuccessfulbuild" because "AlwaysCreate" was specified.
+ClCompile:
+  c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo"cmTryCompileExec731513406.dir\Debug\\" /Fd"cmTryCompileExec731513406.dir\Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:queue "C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeCXXCompilerABI.cpp"
+  Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 16.00.30319.01 for 80x86
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  
+  cl /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo"cmTryCompileExec731513406.dir\Debug\\" /Fd"cmTryCompileExec731513406.dir\Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:queue "C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeCXXCompilerABI.cpp"
+  
+  CMakeCXXCompilerABI.cpp
+ManifestResourceCompile:
+  C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\rc.exe /nologo /fo"cmTryCompileExec731513406.dir\Debug\cmTryCompileExec731513406.exe.embed.manifest.res" cmTryCompileExec731513406.dir\Debug\cmTryCompileExec731513406_manifest.rc 
+Link:
+  c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:QUEUE /OUT:"P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\CMakeTmp\Debug\cmTryCompileExec731513406.exe" /INCREMENTAL /NOLOGO /MANIFEST /ManifestFile:"cmTryCompileExec731513406.dir\Debug\cmTryCompileExec731513406.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec731513406.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec731513406.lib" /MACHINE:X86 cmTryCompileExec731513406.dir\Debug\cmTryCompileExec731513406.exe.embed.manifest.res
+  cmTryCompileExec731513406.dir\Debug\CMakeCXXCompilerABI.obj  /machine:X86 /debug 
+Manifest:
+  C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /out:"cmTryCompileExec731513406.dir\Debug\cmTryCompileExec731513406.exe.embed.manifest" /manifest cmTryCompileExec731513406.dir\Debug\cmTryCompileExec731513406.exe.intermediate.manifest
+  C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\rc.exe /nologo /fo"cmTryCompileExec731513406.dir\Debug\cmTryCompileExec731513406.exe.embed.manifest.res" cmTryCompileExec731513406.dir\Debug\cmTryCompileExec731513406_manifest.rc 
+LinkEmbedManifest:
+  c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:QUEUE /OUT:"P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\CMakeTmp\Debug\cmTryCompileExec731513406.exe" /INCREMENTAL /NOLOGO /MANIFEST /ManifestFile:"cmTryCompileExec731513406.dir\Debug\cmTryCompileExec731513406.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec731513406.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec731513406.lib" /MACHINE:X86 cmTryCompileExec731513406.dir\Debug\cmTryCompileExec731513406.exe.embed.manifest.res
+  cmTryCompileExec731513406.dir\Debug\CMakeCXXCompilerABI.obj  /machine:X86 /debug 
+  cmTryCompileExec731513406.vcxproj -> P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\CMakeTmp\Debug\cmTryCompileExec731513406.exe
+FinalizeBuildStatus:
+  Deleting file "cmTryCompileExec731513406.dir\Debug\cmTryCompileExec731513406.unsuccessfulbuild".
+  Touching "cmTryCompileExec731513406.dir\Debug\cmTryCompileExec731513406.lastbuildstate".
+Done Building Project "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\CMakeFiles\CMakeTmp\cmTryCompileExec731513406.vcxproj" (default targets).
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:05.63
+
+

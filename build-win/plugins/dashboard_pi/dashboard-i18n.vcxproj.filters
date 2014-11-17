@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\plugins\dashboard_pi\CMakeLists.txt" />
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\da.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\fr.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\zh_TW.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\sv.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\pt_PT.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\es.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\fi_FI.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\pt_BR.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\ru.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\hu_HU.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\et.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\pl_PL.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\nl.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\it.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\pl.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\el_GR.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\nb_NO.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\cs.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\de.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\tr_TR.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\666200a5da780a661addadf4671cc5c4\dashboard-i18n.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CMakeFiles\dashboard-i18n" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{5CE925C3-5C65-463A-BFEC-9651CB7DD5DE}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

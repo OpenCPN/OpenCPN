@@ -1,0 +1,9 @@
+# CMake generation dependency list for this directory.
+P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/CMakeLists.txt
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/UsewxWidgets.cmake
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/FindGettext.cmake
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/FindPackageHandleStandardArgs.cmake
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/FindPackageMessage.cmake
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/CMakeParseArguments.cmake
+C:/Program Files/CMake 2.8/share/cmake-2.8/Modules/CMakeParseArguments.cmake
+P:/working area/opencpn/remote/jongough/OpenCPN/plugins/PluginLocalization.cmake

@@ -122,6 +122,8 @@ extern bool             g_bcompression_wait;
 float            g_GLMinSymbolLineWidth;
 float            g_GLMinCartographicLineWidth;
 
+extern bool             g_fog_overzoom;
+
 ocpnGLOptions g_GLOptions;
 
 //    For VBO(s)
@@ -175,7 +177,7 @@ int g_mipmap_max_level = 4;
 bool glChartCanvas::s_b_useScissorTest;
 bool glChartCanvas::s_b_useStencil;
 bool glChartCanvas::s_b_useStencilAP;
-bool glChartCanvas::s_b_UploadFullCompressedMipmaps;
+bool glChartCanvas::s_b_UploadFullMipmaps;
 //static int s_nquickbind;
 
 long populate_tt_total, mipmap_tt_total, hwmipmap_tt_total, upload_tt_total;
@@ -1040,12 +1042,26 @@ void glChartCanvas::SetupOpenGL()
 
     SetupCompression();
 
-    s_b_UploadFullCompressedMipmaps = false;
+    //  Some platforms under some conditions, require a full set of MipMaps, from 0
+    s_b_UploadFullMipmaps = false;
 #ifdef __WXOSX__    
-    if( GetRendererString().Find( _T("Intel GMA 950") ) != wxNOT_FOUND )
-        s_b_UploadFullCompressedMipmaps = true;
+    s_b_UploadFullMipmaps = true;
 #endif    
 
+#ifdef __WXMSW__    
+    if(g_GLOptions.m_bTextureCompression && (g_raster_format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT) )
+        s_b_UploadFullMipmaps = true;
+#endif    
+
+    //  Parallels virtual machine on Mac host.    
+    if( GetRendererString().Find( _T("Parallels") ) != wxNOT_FOUND )
+        s_b_UploadFullMipmaps = true;
+        
+#ifdef ocpnUSE_GLES /* gles requires a complete set of mipmaps starting at 0 */
+    s_b_UploadFullMipmaps = true;
+#endif
+        
+        
     if(!g_bexpert)
         g_GLOptions.m_bUseAcceleratedPanning =  !m_b_DisableFBO && m_b_BuiltFBO;
 }
@@ -2342,35 +2358,24 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, O
                     if( bGLMemCrunch )
                         pTexFact->DeleteTexture( rect );
                 } else { // this tile is needed
-                    pTexFact->PrepareTexture( base_level, rect, global_color_scheme ); 
+                    if(pTexFact->PrepareTexture( base_level, rect, global_color_scheme )){ 
                     
-                    /*   user setting is in MB while we count exact bytes,
-                         recompute here because we may free some of the
-                         mipmaps just created.    It could be useful to also
-                         delete unused mipmaps from previous tiles in this frame... */
-//                    bool bGLMemCrunch = g_tex_mem_used > g_GLOptions.m_iTextureMemorySize * 1024 * 1024;
+                        double sx = rect.width;
+                        double sy = rect.height;
 
-#if 0
-                    /* delete unneeded mipmap levels when this tile is used */
-                    if( bGLMemCrunch)
-                        DeleteTexture(ptd, base_level);
-#endif
+                        glBegin( GL_QUADS );
 
-                    double sx = rect.width;
-                    double sy = rect.height;
+                        glTexCoord2f( x1 / sx, y1 / sy );
+                        glVertex2f( ( x2 ), ( y2 ) );
+                        glTexCoord2f( ( x1 + w ) / sx, y1 / sy );
+                        glVertex2f( ( w + x2 ), ( y2 ) );
+                        glTexCoord2f( ( x1 + w ) / sx, ( y1 + h ) / sy );
+                        glVertex2f( ( w + x2 ), ( h + y2 ) );
+                        glTexCoord2f( x1 / sx, ( y1 + h ) / sy );
+                        glVertex2f( ( x2 ), ( h + y2 ) );
 
-                    glBegin( GL_QUADS );
-
-                    glTexCoord2f( x1 / sx, y1 / sy );
-                    glVertex2f( ( x2 ), ( y2 ) );
-                    glTexCoord2f( ( x1 + w ) / sx, y1 / sy );
-                    glVertex2f( ( w + x2 ), ( y2 ) );
-                    glTexCoord2f( ( x1 + w ) / sx, ( y1 + h ) / sy );
-                    glVertex2f( ( w + x2 ), ( h + y2 ) );
-                    glTexCoord2f( x1 / sx, ( y1 + h ) / sy );
-                    glVertex2f( ( x2 ), ( h + y2 ) );
-
-                    glEnd();
+                        glEnd();
+                    }
                 }
             }
             rect.x += rect.width;
@@ -2399,47 +2404,11 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, O
     DisableClipRegion();
 }
 
-void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &Region, bool b_clear )
+void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &Region )
 {
     if( cc1->m_pQuilt->GetnCharts() && !cc1->m_pQuilt->IsBusy() ) {
-#if 0 /* clearing is probably faster than doing this calculation */
-        //  Walk the region list to determine whether we need a clear before starting
-        if( b_clear ) {
-            OCPNRegion clear_test_region = Region;
-            
-            ChartBase *cchart = cc1->m_pQuilt->GetFirstChart();
-            while( cchart ) {
-                if( ! cc1->IsChartEnoughToRender( cchart, vp ) ) {
-                    cchart = cc1->m_pQuilt->GetNextChart();
-                    continue;
-                }
 
-                QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();
-                if( pqp->b_Valid ) {
-                    OCPNRegion get_region = pqp->ActiveRegion;
-
-                    if( !get_region.IsEmpty() )
-                        clear_test_region.Subtract( get_region );
-                }
-                cchart = cc1->m_pQuilt->GetNextChart();
-            }
-
-        //  We only need a screen clear if the test region is non-empty
-            if( !clear_test_region.IsEmpty() ) {
-                /* It is been reported on gallium drivers that this exposes
-                   a bug so should not be used, in any case, we should not
-                   really need a clear, and should fix the quilt logic so
-                   it reports the rendered region correctly in all cases */
-                wxColour clearcolor = GetGlobalColor ( _T ( "NODTA" ) );
-                glClearColor(clearcolor.Red()/255.0,
-                             clearcolor.Green()/255.0,
-                             clearcolor.Blue()/255.0, 0);
-                glClear( GL_COLOR_BUFFER_BIT );
-            }
-        }
-#endif
-
-        //  Now render the quilt
+        //  render the quilt
         ChartBase *chart = cc1->m_pQuilt->GetFirstChart();
         
         //  Check the first, smallest scale chart
@@ -2580,9 +2549,6 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &Region, b
         }
         cc1->m_pQuilt->SetRenderedVP( vp );
 
-        }
-    else if( !cc1->m_pQuilt->GetnCharts() && b_clear ) {
-//        glClear(GL_COLOR_BUFFER_BIT);
     }
     
 }
@@ -2592,12 +2558,54 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
     ViewPort VPoint = cc1->VPoint;
     m_gl_rendered_region.Clear();
  
+    double scale_factor = cc1->m_pQuilt->GetRefNativeScale()/VPoint.chart_scale;
+    
     glPushMatrix();
     if(VPoint.b_quilt) {
+        double scale_factor = cc1->m_pQuilt->GetRefNativeScale()/VPoint.chart_scale;
+        bool fog_it = (g_fog_overzoom && (scale_factor > 10));
+        
         RenderQuiltViewGL( VPoint, region );
+        
         if(m_gl_rendered_region.IsOk())
             m_gl_rendered_region.Offset(VPoint.rv_rect.x, VPoint.rv_rect.y);
-    } else {
+        
+        if(fog_it){
+            float fog = ((scale_factor - 10.) * 255.) / 20.;
+            fog = wxMin(fog, 200.);         // Don't fog out completely
+            wxColour color = cc1->GetFogColor(); 
+            
+            if( !m_gl_rendered_region.IsEmpty() ) {
+                glPushAttrib( GL_COLOR_BUFFER_BIT );
+                glEnable( GL_BLEND );
+                glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+                
+                glColor4ub( color.Red(), color.Green(), color.Blue(), (int)fog );
+                
+                OCPNRegionIterator upd ( m_gl_rendered_region );
+                while ( upd.HaveRects() )
+                {
+                    wxRect rect = upd.GetRect();
+                    
+                    glBegin( GL_QUADS );
+                    glVertex2i( rect.x, rect.y );
+                    glVertex2i( rect.x + rect.width, rect.y );
+                    glVertex2i( rect.x + rect.width, rect.y + rect.height );
+                    glVertex2i( rect.x, rect.y + rect.height );
+                    glEnd();
+                    
+                    upd.NextRect();
+                    
+                }
+                
+                glDisable( GL_BLEND );
+                glPopAttrib();
+            }
+        }
+    }
+    
+        
+    else {
         if( Current_Ch->GetChartFamily() == CHART_FAMILY_RASTER ) {
             RenderRasterChartRegionGL( Current_Ch, VPoint, region );
         }
@@ -2934,9 +2942,14 @@ void glChartCanvas::Render()
 
     TextureCrunch(0.8);
 
+    //  If we plan to post process the display, don't use accelerated panning
+    double scale_factor = cc1->m_pQuilt->GetRefNativeScale()/VPoint.chart_scale;
+    bool fog_it = (g_fog_overzoom && (scale_factor > 10) && VPoint.b_quilt);
+    bool bpost_hilite = !cc1->m_pQuilt->GetHiliteRegion( VPoint ).IsEmpty();
+    
     // Try to use the framebuffer object's cache of the last frame
     // to accelerate drawing this frame (if overlapping)
-    if( m_b_BuiltFBO ) {
+    if( m_b_BuiltFBO && !fog_it && !bpost_hilite) {
         int sx = GetSize().x;
         int sy = GetSize().y;
 
@@ -2984,6 +2997,7 @@ void glChartCanvas::Render()
             }
 
             // do we allow accelerated panning?  can we perform it here?
+            
             if(accelerated_pan) {
                 m_cache_page = !m_cache_page; /* page flip */
 
@@ -3079,12 +3093,12 @@ void glChartCanvas::Render()
         glEnd();
 
         glDisable( g_texture_rectangle_format );
-            
         m_cache_vp = VPoint;
         m_cache_current_ch = Current_Ch;
 
         if(VPoint.b_quilt)
             cc1->m_pQuilt->SetRenderedVP( VPoint );
+        
     } else          // useFBO
         RenderCharts(gldc, chart_get_region);
 

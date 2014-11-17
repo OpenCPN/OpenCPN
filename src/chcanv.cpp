@@ -182,6 +182,7 @@ extern CM93OffsetDialog  *g_pCM93OffsetDialog;
 extern bool             bGPSValid;
 extern bool             g_bShowOutlines;
 extern bool             g_bShowDepthUnits;
+extern bool             g_bTempShowMenuBar;
 
 extern AIS_Decoder      *g_pAIS;
 extern bool             g_bShowAIS;
@@ -374,9 +375,11 @@ enum
     ID_DEF_MENU_NORTHUP,
     ID_DEF_MENU_TIDEINFO,
     ID_DEF_MENU_CURRENTINFO,
+    ID_DEF_ZERO_XTE,
+    
+    ID_DEF_MENU_GROUPBASE,  // Must be last entry, as chart group identifiers are created dynamically
 
-    ID_DEF_MENU_GROUPBASE,
-
+    
     ID_DEF_MENU_LAST
 };
 
@@ -1064,6 +1067,8 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
     EVT_MENU ( ID_DEF_MENU_TIDEINFO,        ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_DEF_MENU_CURRENTINFO,     ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_DEF_MENU_GROUPBASE,       ChartCanvas::PopupMenuHandler )
+    
+    EVT_MENU ( ID_DEF_ZERO_XTE, ChartCanvas::PopupMenuHandler )
 END_EVENT_TABLE()
 
 // Define a constructor for my canvas
@@ -1079,7 +1084,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_bRouteEditing = false;
     m_bMarkEditing = false;
     m_bIsInRadius = false;
-    
+    m_bMayToggleMenuBar = true;
+
     m_bFollow = false;
     m_bTCupdate = false;
     m_bAppendingRoute = false;          // was true in MSW, why??
@@ -1137,6 +1143,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_pos_image_user_yellow_dusk = NULL;
     m_pos_image_user_yellow_night = NULL;
 
+    SetOwnShipState( SHIP_INVALID );
+    
     undo = new Undo;
 
     VPoint.Invalidate();
@@ -1866,12 +1874,45 @@ bool ChartCanvas::IsChartLargeEnoughToRender( ChartBase* chart, ViewPort& vp )
     return ( chartMaxScale*g_ChartNotRenderScaleFactor > vp.chart_scale );
 }
 
+void ChartCanvas::StartMeasureRoute()
+{
+    if( !parent_frame->nRoute_State ) {  // no measure tool if currently creating route
+        if( m_bMeasure_Active ) {
+            g_pRouteMan->DeleteRoute( m_pMeasureRoute );
+            m_pMeasureRoute = NULL;
+        }
+        
+        m_bMeasure_Active = true;
+        m_nMeasureState = 1;
+        SetCursor( *pCursorPencil );
+        Refresh();
+    }
+}
+
 void ChartCanvas::CancelMeasureRoute()
 {
     m_bMeasure_Active = false;
     m_nMeasureState = 0;
     g_pRouteMan->DeleteRoute( m_pMeasureRoute );
     m_pMeasureRoute = NULL;
+}
+
+void ChartCanvas::DropMarker( bool atOwnShip )
+{
+    double lat, lon;
+    lat = atOwnShip ? gLat : m_cursor_lat;
+    lon = atOwnShip ? gLon : m_cursor_lon;
+    
+    RoutePoint *pWP = new RoutePoint( lat, lon, g_default_wp_icon, wxEmptyString, GPX_EMPTY_STRING );
+    pWP->m_bIsolatedMark = true;                      // This is an isolated mark
+    pSelect->AddSelectableRoutePoint( lat, lon, pWP );
+    pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
+    
+    if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
+    undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
+    undo->AfterUndoableAction( NULL );
+    InvalidateGL();
+    Refresh( false );
 }
 
 ViewPort &ChartCanvas::GetVP()
@@ -1918,6 +1959,8 @@ void ChartCanvas::OnKeyChar( wxKeyEvent &event )
         }
     }
 #endif    
+
+    event.Skip();
 }    
 
 
@@ -1927,6 +1970,29 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
     m_modkeys = event.GetModifiers();
 
     int panspeed = m_modkeys == wxMOD_ALT ? 2 : 100;
+
+#ifndef __WXOSX__
+    // If the permanent menubar is disabled, we show it temporarily when Alt is pressed or when
+    // Alt + a letter is presssed (for the top-menu-level hotkeys).
+    // The toggling normally takes place in OnKeyUp, but here we handle some special cases.
+    if ( event.AltDown()  &&  !pConfig->m_bShowMenuBar ) {
+        // If Alt + a letter is pressed, and the menubar is hidden, show it now
+        if ( event.GetKeyCode() >= 'A' && event.GetKeyCode() <= 'Z' ) {
+            if ( !g_bTempShowMenuBar ) {
+                g_bTempShowMenuBar = true;
+                parent_frame->ApplyGlobalSettings(false, false);
+            }
+            m_bMayToggleMenuBar = false; // don't hide it again when we release Alt
+            event.Skip();
+            return;
+        }
+        // If another key is pressed while Alt is down, do NOT toggle the menus when Alt is released
+        if ( event.GetKeyCode() != WXK_ALT ) {
+            m_bMayToggleMenuBar = false;
+        }
+    }
+#endif
+
 
     // HOTKEYS
     switch( event.GetKeyCode() ) {
@@ -1981,18 +2047,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         break;
     }
     case WXK_F4:
-        if( !parent_frame->nRoute_State )   // no measure tool if currently creating route
-        {
-            if( m_bMeasure_Active ) {
-                g_pRouteMan->DeleteRoute( m_pMeasureRoute );
-                m_pMeasureRoute = NULL;
-            }
-
-            m_bMeasure_Active = true;
-            m_nMeasureState = 1;
-            SetCursor( *pCursorPencil );
-            Refresh();
-        }
+        StartMeasureRoute();
         break;
 
     case WXK_F5:
@@ -2086,17 +2141,22 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
                 ZoomCanvas( 0.5 );
                 break;
 
+#ifdef __WXMAC__
+            // On other platforms these are handled in OnKeyChar, which (apparently) works better in some locales.
+            // On OS X it is better to handle them here, since pressing Alt (which should change the rotation speed)
+            // changes the key char and so prevents the keys from working.
             case ']':
-//                RotateCanvas( 1 );
+                RotateCanvas( 1 );
                 break;
                 
             case '[':
-//                RotateCanvas( -1 );
+                RotateCanvas( -1 );
                 break;
                 
             case '\\':
-//                DoRotateCanvas(0);
+                DoRotateCanvas(0);
                 break;
+#endif
             }
         } else {
             switch( key_char ) {
@@ -2111,12 +2171,17 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             }
         }
 
-        if( m_modkeys == wxMOD_CONTROL )
+
+        if ( event.ControlDown() )
             key_char -= 64;
 
         switch( key_char ) {
         case 'A':
             parent_frame->ToggleAnchor();
+            break;
+
+        case 'C':
+            parent_frame->ToggleColorScheme();
             break;
 
         case 'D': {
@@ -2147,8 +2212,16 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             parent_frame->ToggleLights();
             break;
 
+        case 'M':
+            StartMeasureRoute();
+            break;
+
         case 'O':
             parent_frame->ToggleChartOutlines();
+            break;
+
+        case 'Q':
+            parent_frame->ToggleQuiltMode();
             break;
 
 #if 0
@@ -2184,20 +2257,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 
         case 13:             // Ctrl M // Drop Marker at cursor
         {
-            double lat, lon;
-            lat = m_cursor_lat;
-            lon = m_cursor_lon;
-            RoutePoint *pWP = new RoutePoint( lat, lon, g_default_wp_icon, wxEmptyString,
-                                              GPX_EMPTY_STRING );
-            pWP->m_bIsolatedMark = true;                      // This is an isolated mark
-            pSelect->AddSelectableRoutePoint( lat, lon, pWP );
-            pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
-
-            if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
-            undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
-            undo->AfterUndoableAction( NULL );
-            InvalidateGL();
-            Refresh( false );
+            DropMarker(false);
             break;
         }
 
@@ -2216,17 +2276,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 
         case 15:             // Ctrl O - Drop Marker at boat's position
         {
-            RoutePoint *pWP = new RoutePoint( gLat, gLon, g_default_wp_icon, wxEmptyString,
-                                              GPX_EMPTY_STRING );
-            pWP->m_bIsolatedMark = true;                      // This is an isolated mark
-            pSelect->AddSelectableRoutePoint( gLat, gLon, pWP );
-            pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
-
-            if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
-            undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
-            undo->AfterUndoableAction( NULL );
-            InvalidateGL();
-            Refresh( false );
+            DropMarker(true);
             break;
         }
 
@@ -2260,11 +2310,19 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             }
             break;
 
-        case 26:                       // Ctrl Z
-            if( undo->AnythingToUndo() ) {
-                undo->UndoLastAction();
-                InvalidateGL();
-                Refresh( false );
+        case 26:
+            if ( event.ShiftDown() ) { // Shift-Ctrl-Z
+                if( undo->AnythingToRedo() ) {
+                    undo->RedoNextAction();
+                    InvalidateGL();
+                    Refresh( false );
+                }
+            } else {                   // Ctrl Z
+                if( undo->AnythingToUndo() ) {
+                    undo->UndoLastAction();
+                    InvalidateGL();
+                    Refresh( false );
+                }
             }
             break;
 
@@ -2335,6 +2393,8 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
     }
 
 #ifndef __WXMAC__
+    // Allow OnKeyChar to catch the key events too.
+    // On OS X this is unnecessary since we handle all key events here.
     event.Skip();
 #endif
 }
@@ -2368,6 +2428,15 @@ void ChartCanvas::OnKeyUp( wxKeyEvent &event )
 
     case WXK_ALT:
         m_modkeys &= ~wxMOD_ALT;
+#ifndef __WXOSX__
+        // If the permanent menu bar is disabled, and we are not in the middle of another key combo,
+        // then show the menu bar temporarily when Alt is released (or hide it if already visible).
+        if ( !pConfig->m_bShowMenuBar  &&  m_bMayToggleMenuBar ) {
+            g_bTempShowMenuBar = !g_bTempShowMenuBar;
+            parent_frame->ApplyGlobalSettings(false, false);
+        }
+        m_bMayToggleMenuBar = true;
+#endif
         break;
 
     case WXK_CONTROL:
@@ -2579,6 +2648,22 @@ void ChartCanvas::SetColorScheme( ColorScheme cs )
 
     CreateDepthUnitEmbossMaps( cs );
     CreateOZEmbossMapData( cs );
+    
+    //  Set up fog effect base color
+    m_fog_color = wxColor( 170, 195, 240 );  // this is gshhs (backgound world chart) ocean color
+    float dim = 1.0;
+    switch( cs ){
+        case GLOBAL_COLOR_SCHEME_DUSK:
+            dim = 0.5;
+            break;
+        case GLOBAL_COLOR_SCHEME_NIGHT:
+            dim = 0.25;
+            break;
+        default:
+            break;
+    }
+    m_fog_color.Set( m_fog_color.Red()*dim, m_fog_color.Green()*dim, m_fog_color.Blue()*dim );
+    
 
 #ifdef ocpnUSE_GL
     if( g_bopengl && m_glcc ){
@@ -3072,8 +3157,6 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
 
         double zoom_factor = factor;
 
-        double min_allowed_scale = 500.0;                // meters per meter
-        
         ChartBase *pc = NULL;
 
         if( !VPoint.b_quilt ) {
@@ -3088,14 +3171,12 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
         }
 
         if( pc ) {
-            min_allowed_scale = pc->GetNormalScaleMin( GetCanvasScaleFactor(), false/*g_b_overzoom_x*/ );
-            
             double target_scale_ppm = GetVPScale() * zoom_factor;
-            double new_scale_ppm = target_scale_ppm; //pc->GetNearestPreferredScalePPM(target_scale_ppm);
-            
-            proposed_scale_onscreen = GetCanvasScaleFactor() / new_scale_ppm;
+            proposed_scale_onscreen = GetCanvasScaleFactor() / target_scale_ppm;
             
             //  Query the chart to determine the appropriate zoom range
+            double min_allowed_scale = 800;    // Roughly, latitude dependent for mercator charts
+            
             if( proposed_scale_onscreen < min_allowed_scale ) {
                 if( min_allowed_scale == GetCanvasScaleFactor() / ( GetVPScale() ) ) {
                     m_zoom_factor = 1; /* stop zooming */
@@ -3104,11 +3185,9 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
                     proposed_scale_onscreen = min_allowed_scale;
             }
             
-            m_last_max_scale = min_allowed_scale;
         }
         else {
-            proposed_scale_onscreen = wxMax( proposed_scale_onscreen, m_last_max_scale);
-            
+            proposed_scale_onscreen = wxMax( proposed_scale_onscreen, 800.);
         }
             
         
@@ -3630,14 +3709,17 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
 
         //        A fall back in case of very high zoom-out, giving delta_y == 0
         //        which can probably only happen with vector charts
-        if( 0.0 == m_true_scale_ppm ) m_true_scale_ppm = scale_ppm;
+        if( 0.0 == m_true_scale_ppm )
+            m_true_scale_ppm = scale_ppm;
 
         //        Another fallback, for highly zoomed out charts
         //        This adjustment makes the displayed TrueScale correspond to the
         //        same algorithm used to calculate the chart zoom-out limit for ChartDummy.
-        if( scale_ppm < 1e-4 ) m_true_scale_ppm = scale_ppm;
+        if( scale_ppm < 1e-4 )
+            m_true_scale_ppm = scale_ppm;
 
-        if( m_true_scale_ppm ) VPoint.chart_scale = m_canvas_scale_factor / ( m_true_scale_ppm );
+        if( m_true_scale_ppm )
+            VPoint.chart_scale = m_canvas_scale_factor / ( m_true_scale_ppm );
         else
             VPoint.chart_scale = 1.0;
 
@@ -3645,17 +3727,21 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
             double true_scale_display = floor( VPoint.chart_scale / 100. ) * 100.;
             wxString text;
 
-            if( Current_Ch ) {
-                double chart_native_ppm = m_canvas_scale_factor / Current_Ch->GetNativeScale();
-                double scale_factor = scale_ppm / chart_native_ppm;
-                if( scale_factor > 1.0 ) text.Printf( _("Scale %4.0f (%1.1fx)"),
-                                                          true_scale_display, scale_factor );
-                else
-                    text.Printf( _("Scale %4.0f (%1.2fx)"), true_scale_display,
-                                 scale_factor );
-            } else
-                text.Printf( _("Scale %4.0f"), true_scale_display );
-
+            
+            if( Current_Ch )
+                m_displayed_scale_factor = Current_Ch->GetNativeScale()/VPoint.chart_scale;
+            else 
+                m_displayed_scale_factor = m_pQuilt->GetRefNativeScale()/VPoint.chart_scale;
+            
+            if( m_displayed_scale_factor > 10.0 )
+                text.Printf( _("Scale %4.0f (%1.0fx)"), true_scale_display, m_displayed_scale_factor );
+            else if( m_displayed_scale_factor > 1.0 )
+                text.Printf( _("Scale %4.0f (%1.1fx)"), true_scale_display, m_displayed_scale_factor );
+            else  {
+                double sfr = wxRound(m_displayed_scale_factor * 10.) / 10.;
+                text.Printf( _("Scale %4.0f (%1.2fx)"), true_scale_display, sfr );
+            }
+                
             parent_frame->SetStatusText( text, STAT_FIELD_SCALE );
         }
     }
@@ -4900,6 +4986,18 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
     // windows who return focus to the canvas.
     static bool leftIsDown = false;
 
+#ifndef __WXOSX__
+    if (event.LeftDown()) {
+        if ( pConfig->m_bShowMenuBar == false && g_bTempShowMenuBar == true ) {
+            // The menu bar is temporarily visible due to alt having been pressed.
+            // Clicking will hide it, and do nothing else.
+            g_bTempShowMenuBar = false;
+            parent_frame->ApplyGlobalSettings(false, false);
+            return;
+        }
+    }
+#endif
+
     // Protect from very small cursor slips during double click, which produce a
     // single Drag event.
     
@@ -5411,7 +5509,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             } else if( !pMarkPropDialog->IsShown() && g_bWayPointPreventDragging ) DraggingAllowed =
                     false;
 
-            if( m_pRoutePointEditTarget && ( m_pRoutePointEditTarget->m_IconName == _T("mob") ) ) DraggingAllowed =
+            if( m_pRoutePointEditTarget && ( m_pRoutePointEditTarget->GetIconName() == _T("mob") ) ) DraggingAllowed =
                     false;
 
             if( m_pRoutePointEditTarget->m_bIsInLayer ) DraggingAllowed = false;
@@ -5495,7 +5593,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                     false;
 
             if( m_pRoutePointEditTarget
-                    && ( m_pRoutePointEditTarget->m_IconName == _T("mob") ) ) DraggingAllowed =
+                    && ( m_pRoutePointEditTarget->GetIconName() == _T("mob") ) ) DraggingAllowed =
                             false;
 
             if( m_pRoutePointEditTarget->m_bIsInLayer ) DraggingAllowed = false;
@@ -6371,17 +6469,11 @@ void ChartCanvas::LostMouseCapture( wxMouseCaptureLostEvent& event )
 //          Popup Menu Handling
 //-------------------------------------------------------------------------------
 
-wxString _menuText( wxString name, wxString shortcut ) {
-    wxString menutext;
-    menutext << name << _T("\t") << shortcut;
-    return menutext;
-}
-
 void MenuPrepend( wxMenu *menu, int id, wxString label)
 {
     wxMenuItem *item = new wxMenuItem(menu, id, label);
 #ifdef __WXMSW__
-    wxFont *qFont = GetOCPNScaledFont(_T("Menu"), 10);
+    wxFont *qFont = GetOCPNScaledFont(_T("Menu"));
     item->SetFont(*qFont);
 #endif
     menu->Prepend(item);
@@ -6391,7 +6483,7 @@ void MenuAppend( wxMenu *menu, int id, wxString label)
 {
     wxMenuItem *item = new wxMenuItem(menu, id, label);
 #ifdef __WXMSW__
-    wxFont *qFont = GetOCPNScaledFont(_("Menu"), 10);
+    wxFont *qFont = GetOCPNScaledFont(_("Menu"));
     item->SetFont(*qFont);
 #endif
     menu->Append(item);
@@ -6400,7 +6492,7 @@ void MenuAppend( wxMenu *menu, int id, wxString label)
 void SetMenuItemFont(wxMenuItem *item)
 {
 #ifdef __WXMSW__
-    wxFont *qFont = GetOCPNScaledFont(_("Menu"), 10);
+    wxFont *qFont = GetOCPNScaledFont(_("Menu"));
     item->SetFont(*qFont);
 #endif
 }
@@ -6435,22 +6527,14 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 #endif
 
     if( seltype == SELTYPE_ROUTECREATE ) {
-#ifndef __WXOSX__
         MenuAppend( contextMenu, ID_RC_MENU_FINISH, _menuText( _( "End Route" ), _T("Esc") ) );
-#else
-        MenuAppend( contextMenu, ID_RC_MENU_FINISH,  _( "End Route" ) );
-#endif
     }
 
     if( ! m_pMouseRoute ) {
         if( m_bMeasure_Active )
-#ifndef __WXOSX__
             MenuPrepend( contextMenu, ID_DEF_MENU_DEACTIVATE_MEASURE, _menuText( _("Measure Off"), _T("Esc") ) );
-#else
-            MenuPrepend( contextMenu, ID_DEF_MENU_DEACTIVATE_MEASURE,  _("Measure Off") );
-#endif
         else
-            MenuPrepend( contextMenu, ID_DEF_MENU_ACTIVATE_MEASURE, _menuText( _( "Measure" ), _T("F4") ) );
+            MenuPrepend( contextMenu, ID_DEF_MENU_ACTIVATE_MEASURE, _menuText( _( "Measure" ), _T("M") ) );
 //            contextMenu->Prepend( ID_DEF_MENU_ACTIVATE_MEASURE, _menuText( _( "Measure" ), _T("F4") ) );
     }
 
@@ -6463,7 +6547,11 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     if( undo->AnythingToRedo() ) {
         wxString redoItem;
         redoItem << _("Redo") << _T(" ") << undo->GetNextRedoableAction()->Description();
+#ifdef __WXOSX__
+        MenuPrepend( contextMenu, ID_REDO, _menuText( redoItem, _T("Shift-Ctrl-Z") ) );
+#else
         MenuPrepend( contextMenu, ID_REDO, _menuText( redoItem, _T("Ctrl-Y") ) );
+#endif
     }
 
     bool ais_areanotice = false;
@@ -6517,8 +6605,8 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     if( !VPoint.b_quilt ) {
         if( parent_frame->GetnChartStack() > 1 ) {
             MenuAppend( contextMenu, ID_DEF_MENU_MAX_DETAIL, _( "Max Detail Here" ) );
-            MenuAppend( contextMenu, ID_DEF_MENU_SCALE_IN, _menuText( _( "Scale In" ), _T("F7") ) );
-            MenuAppend( contextMenu, ID_DEF_MENU_SCALE_OUT, _menuText( _( "Scale Out" ), _T("F8") ) );
+            MenuAppend( contextMenu, ID_DEF_MENU_SCALE_IN, _menuText( _( "Scale In" ), _T("Ctrl-Left") ) );
+            MenuAppend( contextMenu, ID_DEF_MENU_SCALE_OUT, _menuText( _( "Scale Out" ), _T("Ctrl-Right") ) );
         }
 
         if( ( Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR ) ) || ais_areanotice ) {
@@ -6531,8 +6619,8 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
             MenuAppend( contextMenu, ID_DEF_MENU_QUERY, _( "Object Query..." ) );
         } else {
             if( parent_frame->GetnChartStack() > 1 ) {
-                MenuAppend( contextMenu, ID_DEF_MENU_SCALE_IN, _menuText( _( "Scale In" ), _T("F7") ) );
-                MenuAppend( contextMenu, ID_DEF_MENU_SCALE_OUT, _menuText( _( "Scale Out" ), _T("F8") ) );
+                MenuAppend( contextMenu, ID_DEF_MENU_SCALE_IN, _menuText( _( "Scale In" ), _T("Ctrl-Left") ) );
+                MenuAppend( contextMenu, ID_DEF_MENU_SCALE_OUT, _menuText( _( "Scale Out" ), _T("Ctrl-Right") ) );
             }
         }
     }
@@ -6553,6 +6641,8 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
         else
             MenuAppend( contextMenu, ID_DEF_MENU_NORTHUP, _("North Up Mode") );
     }
+    
+    if ( g_pRouteMan->IsAnyRouteActive() && g_pRouteMan->GetCurrentXTEToActivePoint() > 0. ) MenuAppend( contextMenu, ID_DEF_ZERO_XTE, _("Zero XTE") );
 
     Kml* kml = new Kml;
     int pasteBuffer = kml->ParsePasteBuffer();
@@ -6796,7 +6886,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 
             MenuAppend( menuWaypoint, ID_WPT_MENU_COPY, _( "Copy as KML" ) );
 
-            if( m_pFoundRoutePoint->m_IconName != _T("mob") )
+            if( m_pFoundRoutePoint->GetIconName() != _T("mob") )
                 MenuAppend( menuWaypoint, ID_RT_MENU_DELPOINT,  _( "Delete" ) );
 
             wxString port = FindValidUploadPort();
@@ -6838,7 +6928,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 
             MenuAppend( menuWaypoint, ID_WPT_MENU_COPY, _( "Copy as KML" ) );
 
-            if( m_pFoundRoutePoint->m_IconName != _T("mob") )
+            if( m_pFoundRoutePoint->GetIconName() != _T("mob") )
                 MenuAppend( menuWaypoint, ID_WP_MENU_DELPOINT, _( "Delete" ) );
 
             wxString port = FindValidUploadPort();
@@ -7351,7 +7441,7 @@ void pupHandler_PasteRoute() {
 
             newPoint = new RoutePoint( curPoint );
             newPoint->m_bIsolatedMark = false;
-            newPoint->m_IconName = _T("circle");
+            newPoint->SetIconName( _T("circle") );
             newPoint->m_bIsVisible = true;
             newPoint->m_bShowName = false;
             newPoint->m_bKeepXRoute = false;
@@ -7594,7 +7684,7 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         }
 
         if( m_pFoundRoutePoint && !( m_pFoundRoutePoint->m_bIsInLayer )
-                && ( m_pFoundRoutePoint->m_IconName != _T("mob") ) ) {
+                && ( m_pFoundRoutePoint->GetIconName() != _T("mob") ) ) {
 
             // If the WP belongs to an invisible route, we come here instead of to ID_RT_MENU_DELPOINT
             //  Check it, and if so then remove the point from its routes
@@ -8095,6 +8185,10 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         FinishRoute();
         gFrame->SurfaceToolbar();
         Refresh( false );
+        break;
+
+    case ID_DEF_ZERO_XTE:
+        g_pRouteMan->ZeroCurrentXTEToActivePoint();
         break;
 
     default: {

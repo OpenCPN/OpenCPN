@@ -1,0 +1,351 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|Win32">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|Win32">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{DCF89C79-D494-455E-92A5-5B3777BF7B4C}</ProjectGUID>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>Win32</Platform>
+    <ProjectName>grib_pi</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+    <PropertyGroup>
+      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\grib_pi\Debug\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">grib_pi.dir\Debug\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">grib_pi</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.dll</TargetExt>
+      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</GenerateManifest>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\grib_pi\Release\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">grib_pi.dir\Release\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">grib_pi</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.dll</TargetExt>
+      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</GenerateManifest>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\grib_pi\MinSizeRel\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">grib_pi.dir\MinSizeRel\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">grib_pi</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">.dll</TargetExt>
+      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkIncremental>
+      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">true</GenerateManifest>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\grib_pi\RelWithDebInfo\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">grib_pi.dir\RelWithDebInfo\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">grib_pi</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">.dll</TargetExt>
+      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">true</LinkIncremental>
+      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">true</GenerateManifest>
+    </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\.\src\zlib-1.2.3;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\.\src\bzip2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Debug/</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;ocpnUSE_GL;USE_GLU_TESS;WXUSINGDLL;UNICODE;_UNICODE;OCPN_USE_CRASHRPT;__MSVC__;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_DEPRECATE;PSAPI_VERSION=1;TIXML_USE_STL;USE_S57;USE_GARMINHOST;__WIN32__;_DEBUG;__WXDEBUG__;CMAKE_INTDIR="Debug";grib_pi_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;ocpnUSE_GL;USE_GLU_TESS;WXUSINGDLL;UNICODE;_UNICODE;OCPN_USE_CRASHRPT;__MSVC__;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_DEPRECATE;PSAPI_VERSION=1;TIXML_USE_STL;USE_S57;USE_GARMINHOST;__WIN32__;_DEBUG;__WXDEBUG__;CMAKE_INTDIR=\"Debug\";grib_pi_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\.\src\zlib-1.2.3;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\.\src\bzip2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\.\src\zlib-1.2.3;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\.\src\bzip2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalOptions> /machine:X86 /debug %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;Debug\LIB_BZIP.lib;../../$(Configuration)/opencpn.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxbase28ud.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28ud_core.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxbase28ud_net.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxbase28ud_xml.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28ud_html.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28ud_adv.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28ud_aui.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28ud_gl.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxpngd.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxtiffd.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxjpegd.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxzlibd.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxregexud.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxexpatd.lib;opengl32.lib;glu32.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/grib_pi/Debug;P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/grib_pi/Debug/$(Configuration);;C:/wxWidgets-2.8.12/lib/vc_dll;C:/wxWidgets-2.8.12/lib/vc_dll/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ImportLibrary>P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/grib_pi/Debug/grib_pi.lib</ImportLibrary>
+      <ProgramDataBaseFile>P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/grib_pi/Debug/grib_pi.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+      <Version></Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\.\src\zlib-1.2.3;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\.\src\bzip2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Release/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat></DebugInformationFormat>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;ocpnUSE_GL;USE_GLU_TESS;WXUSINGDLL;UNICODE;_UNICODE;OCPN_USE_CRASHRPT;__MSVC__;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_DEPRECATE;PSAPI_VERSION=1;TIXML_USE_STL;USE_S57;USE_GARMINHOST;__WIN32__;CMAKE_INTDIR="Release";grib_pi_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;ocpnUSE_GL;USE_GLU_TESS;WXUSINGDLL;UNICODE;_UNICODE;OCPN_USE_CRASHRPT;__MSVC__;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_DEPRECATE;PSAPI_VERSION=1;TIXML_USE_STL;USE_S57;USE_GARMINHOST;__WIN32__;CMAKE_INTDIR=\"Release\";grib_pi_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\.\src\zlib-1.2.3;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\.\src\bzip2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\.\src\zlib-1.2.3;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\.\src\bzip2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalOptions> /machine:X86 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;Release\LIB_BZIP.lib;../../$(Configuration)/opencpn.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxbase28u.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28u_core.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxbase28u_net.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxbase28u_xml.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28u_html.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28u_adv.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28u_aui.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28u_gl.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxpng.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxtiff.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxjpeg.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxzlib.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxregexu.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxexpat.lib;opengl32.lib;glu32.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/grib_pi/Release;P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/grib_pi/Release/$(Configuration);;C:/wxWidgets-2.8.12/lib/vc_dll;C:/wxWidgets-2.8.12/lib/vc_dll/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <ImportLibrary>P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/grib_pi/Release/grib_pi.lib</ImportLibrary>
+      <ProgramDataBaseFile>P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/grib_pi/Release/grib_pi.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+      <Version></Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\.\src\zlib-1.2.3;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\.\src\bzip2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat></DebugInformationFormat>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;ocpnUSE_GL;USE_GLU_TESS;WXUSINGDLL;UNICODE;_UNICODE;OCPN_USE_CRASHRPT;__MSVC__;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_DEPRECATE;PSAPI_VERSION=1;TIXML_USE_STL;USE_S57;USE_GARMINHOST;__WIN32__;CMAKE_INTDIR="MinSizeRel";grib_pi_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;ocpnUSE_GL;USE_GLU_TESS;WXUSINGDLL;UNICODE;_UNICODE;OCPN_USE_CRASHRPT;__MSVC__;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_DEPRECATE;PSAPI_VERSION=1;TIXML_USE_STL;USE_S57;USE_GARMINHOST;__WIN32__;CMAKE_INTDIR=\"MinSizeRel\";grib_pi_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\.\src\zlib-1.2.3;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\.\src\bzip2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\.\src\zlib-1.2.3;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\.\src\bzip2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalOptions> /machine:X86 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;MinSizeRel\LIB_BZIP.lib;../../$(Configuration)/opencpn.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxbase28u.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28u_core.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxbase28u_net.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxbase28u_xml.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28u_html.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28u_adv.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28u_aui.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28u_gl.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxpng.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxtiff.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxjpeg.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxzlib.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxregexu.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxexpat.lib;opengl32.lib;glu32.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/grib_pi/MinSizeRel;P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/grib_pi/MinSizeRel/$(Configuration);;C:/wxWidgets-2.8.12/lib/vc_dll;C:/wxWidgets-2.8.12/lib/vc_dll/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <ImportLibrary>P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/grib_pi/MinSizeRel/grib_pi.lib</ImportLibrary>
+      <ProgramDataBaseFile>P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/grib_pi/MinSizeRel/grib_pi.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+      <Version></Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\.\src\zlib-1.2.3;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\.\src\bzip2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat></DebugInformationFormat>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG%3B/Zi;ocpnUSE_GL;USE_GLU_TESS;WXUSINGDLL;UNICODE;_UNICODE;OCPN_USE_CRASHRPT;__MSVC__;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_DEPRECATE;PSAPI_VERSION=1;TIXML_USE_STL;USE_S57;USE_GARMINHOST;__WIN32__;CMAKE_INTDIR="RelWithDebInfo";grib_pi_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG%3B/Zi;ocpnUSE_GL;USE_GLU_TESS;WXUSINGDLL;UNICODE;_UNICODE;OCPN_USE_CRASHRPT;__MSVC__;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_DEPRECATE;PSAPI_VERSION=1;TIXML_USE_STL;USE_S57;USE_GARMINHOST;__WIN32__;CMAKE_INTDIR=\"RelWithDebInfo\";grib_pi_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\.\src\zlib-1.2.3;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\.\src\bzip2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\.\src\zlib-1.2.3;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\.\src\bzip2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalOptions> /machine:X86 /debug %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;RelWithDebInfo\LIB_BZIP.lib;../../$(Configuration)/opencpn.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxbase28u.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28u_core.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxbase28u_net.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxbase28u_xml.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28u_html.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28u_adv.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28u_aui.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxmsw28u_gl.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxpng.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxtiff.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxjpeg.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxzlib.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxregexu.lib;C:\wxWidgets-2.8.12\lib\vc_dll\wxexpat.lib;opengl32.lib;glu32.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/grib_pi/RelWithDebInfo;P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/grib_pi/RelWithDebInfo/$(Configuration);;C:/wxWidgets-2.8.12/lib/vc_dll;C:/wxWidgets-2.8.12/lib/vc_dll/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ImportLibrary>P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/grib_pi/RelWithDebInfo/grib_pi.lib</ImportLibrary>
+      <ProgramDataBaseFile>P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/grib_pi/RelWithDebInfo/grib_pi.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+      <Version></Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\plugins\grib_pi\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\CMake 2.8\bin\cmake.exe" "-HP:/working area/opencpn/remote/jongough/OpenCPN" "-BP:/working area/opencpn/remote/jongough/OpenCPN/build-win" --check-stamp-file "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\grib_pi\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/CMakeLists.txt;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\CMakeLists.txt;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\UsewxWidgets.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindGettext.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageMessage.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\PluginLocalization.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\grib_pi\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\CMake 2.8\bin\cmake.exe" "-HP:/working area/opencpn/remote/jongough/OpenCPN" "-BP:/working area/opencpn/remote/jongough/OpenCPN/build-win" --check-stamp-file "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\grib_pi\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/CMakeLists.txt;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\CMakeLists.txt;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\UsewxWidgets.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindGettext.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageMessage.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\PluginLocalization.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\grib_pi\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Building Custom Rule P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\CMake 2.8\bin\cmake.exe" "-HP:/working area/opencpn/remote/jongough/OpenCPN" "-BP:/working area/opencpn/remote/jongough/OpenCPN/build-win" --check-stamp-file "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\grib_pi\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/CMakeLists.txt;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\CMakeLists.txt;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\UsewxWidgets.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindGettext.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageMessage.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\PluginLocalization.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\grib_pi\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Building Custom Rule P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\CMake 2.8\bin\cmake.exe" "-HP:/working area/opencpn/remote/jongough/OpenCPN" "-BP:/working area/opencpn/remote/jongough/OpenCPN/build-win" --check-stamp-file "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\grib_pi\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/plugins/grib_pi/CMakeLists.txt;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\CMakeLists.txt;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\UsewxWidgets.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindGettext.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageMessage.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\PluginLocalization.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\grib_pi\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\grib_pi\CMakeFiles\generate.stamp</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\plugins\grib_pi\src\grib_pi.h" />
+    <ClInclude Include="..\..\..\plugins\grib_pi\src\GribOverlayFactory.h" />
+    <ClInclude Include="..\..\..\plugins\grib_pi\src\GribUIDialogBase.h" />
+    <ClInclude Include="..\..\..\plugins\grib_pi\src\GribUIDialog.h" />
+    <ClInclude Include="..\..\..\plugins\grib_pi\src\GribSettingsDialog.h" />
+    <ClInclude Include="..\..\..\plugins\grib_pi\src\GribRequestDialog.h" />
+    <ClInclude Include="..\..\..\plugins\grib_pi\src\icons.h" />
+    <ClInclude Include="..\..\..\plugins\grib_pi\src\msg.h" />
+    <ClInclude Include="..\..\..\plugins\grib_pi\src\email.h" />
+    <ClInclude Include="..\..\..\plugins\grib_pi\src\TexFont.h" />
+    <ClInclude Include="..\..\..\plugins\grib_pi\src\GribTable.h" />
+    <ClInclude Include="..\..\..\plugins\grib_pi\src\smapi.h" />
+    <ClCompile Include="..\..\..\plugins\grib_pi\src\grib_pi.cpp"  />
+    <ClCompile Include="..\..\..\plugins\grib_pi\src\GribOverlayFactory.cpp"  />
+    <ClCompile Include="..\..\..\plugins\grib_pi\src\GribUIDialogBase.cpp"  />
+    <ClCompile Include="..\..\..\plugins\grib_pi\src\GribUIDialog.cpp"  />
+    <ClCompile Include="..\..\..\plugins\grib_pi\src\GribSettingsDialog.cpp"  />
+    <ClCompile Include="..\..\..\plugins\grib_pi\src\GribRequestDialog.cpp"  />
+    <ClCompile Include="..\..\..\plugins\grib_pi\src\email.cpp"  />
+    <ClCompile Include="..\..\..\plugins\grib_pi\src\TexFont.cpp"  />
+    <ClCompile Include="..\..\..\plugins\grib_pi\src\GribTable.cpp"  />
+    <ClCompile Include="..\..\..\plugins\grib_pi\src\icons.cpp"  />
+    <ClCompile Include="..\..\..\plugins\grib_pi\src\GribReader.cpp"  />
+    <ClCompile Include="..\..\..\plugins\grib_pi\src\GribRecord.cpp"  />
+    <ClCompile Include="..\..\..\plugins\grib_pi\src\zuFile.cpp"  />
+    <ClCompile Include="..\..\..\plugins\grib_pi\src\IsoLine.cpp"  />
+    <ClCompile Include="..\..\..\src\wxJSON\jsonval.cpp"  />
+    <ClCompile Include="..\..\..\src\wxJSON\jsonreader.cpp"  />
+    <ClCompile Include="..\..\..\src\wxJSON\jsonwriter.cpp"  />
+    <ClCompile Include="..\..\..\plugins\grib_pi\src\smapi.cpp"  />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/grib_pi/LIB_BZIP.vcxproj">
+      <Project>B47AAF79-CD06-4BBF-AFCD-A27D3AC0A293</Project>
+    </ProjectReference>
+    <ProjectReference Include="P:/working area/opencpn/remote/jongough/OpenCPN/build-win/ZERO_CHECK.vcxproj">
+      <Project>58B487F4-A313-4C49-B882-1E0BE4A940A1</Project>
+    </ProjectReference>
+    <ProjectReference Include="P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/grib_pi/grib-i18n.vcxproj">
+      <Project>E163B130-0290-4C90-A87E-F9FC318F0E55</Project>
+    </ProjectReference>
+    <ProjectReference Include="P:/working area/opencpn/remote/jongough/OpenCPN/build-win/opencpn.vcxproj">
+      <Project>BA80992B-6630-4C83-8610-2B31E8486A33</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

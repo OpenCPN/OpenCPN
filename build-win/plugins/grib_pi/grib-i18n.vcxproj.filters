@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\plugins\grib_pi\CMakeLists.txt" />
+    <CustomBuild Include="..\..\CMakeFiles\572373c67fddd045233b7bcaa999b71d\da.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\572373c67fddd045233b7bcaa999b71d\fr.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\572373c67fddd045233b7bcaa999b71d\zh_TW.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\572373c67fddd045233b7bcaa999b71d\sv.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\572373c67fddd045233b7bcaa999b71d\pt_PT.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\572373c67fddd045233b7bcaa999b71d\es.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\572373c67fddd045233b7bcaa999b71d\fi_FI.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\572373c67fddd045233b7bcaa999b71d\pt_BR.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\572373c67fddd045233b7bcaa999b71d\ru.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\572373c67fddd045233b7bcaa999b71d\et.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\572373c67fddd045233b7bcaa999b71d\pl_PL.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\572373c67fddd045233b7bcaa999b71d\nl.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\572373c67fddd045233b7bcaa999b71d\it.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\572373c67fddd045233b7bcaa999b71d\pl.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\572373c67fddd045233b7bcaa999b71d\hu.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\572373c67fddd045233b7bcaa999b71d\el_GR.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\572373c67fddd045233b7bcaa999b71d\nb_NO.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\572373c67fddd045233b7bcaa999b71d\cs.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\572373c67fddd045233b7bcaa999b71d\de.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\572373c67fddd045233b7bcaa999b71d\tr_TR.mo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\9255465fb23cc9c7789da92d7fedd831\grib-i18n.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CMakeFiles\grib-i18n" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{5CE925C3-5C65-463A-BFEC-9651CB7DD5DE}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

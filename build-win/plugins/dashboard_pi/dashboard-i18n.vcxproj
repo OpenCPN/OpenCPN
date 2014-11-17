@@ -1,0 +1,1248 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|Win32">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|Win32">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{C50BBDCF-201E-4A9A-AA0E-BC93937F86C1}</ProjectGUID>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>Win32</Platform>
+    <ProjectName>dashboard-i18n</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+    <PropertyGroup>
+      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\src\nmea0183;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\src\nmea0183;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\src\nmea0183;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\lib\vc_dll\mswu;c:\wxWidgets-2.8.12\include;P:\working area\opencpn\remote\jongough\OpenCPN\include;P:\working area\opencpn\remote\jongough\OpenCPN\src;P:\working area\opencpn\remote\jongough\OpenCPN\buildwin\crashrpt;P:\working area\opencpn\remote\jongough\OpenCPN\src\nmea0183;P:\working area\opencpn\remote\jongough\OpenCPN\src\mygdal;P:\working area\opencpn\remote\jongough\OpenCPN\src\garmin\jeeps;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\lz4;P:\working area\opencpn\remote\jongough\OpenCPN\src\texcmp\squish;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\src\nmea0183;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\plugins\dashboard_pi\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\CMake 2.8\bin\cmake.exe" "-HP:/working area/opencpn/remote/jongough/OpenCPN" "-BP:/working area/opencpn/remote/jongough/OpenCPN/build-win" --check-stamp-file "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/CMakeLists.txt;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\CMakeLists.txt;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\UsewxWidgets.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindGettext.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageMessage.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\PluginLocalization.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\CMake 2.8\bin\cmake.exe" "-HP:/working area/opencpn/remote/jongough/OpenCPN" "-BP:/working area/opencpn/remote/jongough/OpenCPN/build-win" --check-stamp-file "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/CMakeLists.txt;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\CMakeLists.txt;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\UsewxWidgets.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindGettext.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageMessage.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\PluginLocalization.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Building Custom Rule P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\CMake 2.8\bin\cmake.exe" "-HP:/working area/opencpn/remote/jongough/OpenCPN" "-BP:/working area/opencpn/remote/jongough/OpenCPN/build-win" --check-stamp-file "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/CMakeLists.txt;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\CMakeLists.txt;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\UsewxWidgets.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindGettext.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageMessage.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\PluginLocalization.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Building Custom Rule P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\CMake 2.8\bin\cmake.exe" "-HP:/working area/opencpn/remote/jongough/OpenCPN" "-BP:/working area/opencpn/remote/jongough/OpenCPN/build-win" --check-stamp-file "P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\CMakeFiles\generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/CMakeLists.txt;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\CMakeLists.txt;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\UsewxWidgets.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindGettext.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\FindPackageMessage.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake 2.8\share\cmake-2.8\Modules\CMakeParseArguments.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\PluginLocalization.cmake;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\CMakeFiles\generate.stamp</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\da.mo.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">dashboard-i18n [da]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/da.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/da.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/da.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\da.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\da.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">dashboard-i18n [da]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/da.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/da.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/da.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\da.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\da.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">dashboard-i18n [da]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/da.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/da.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/da.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\da.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\da.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">dashboard-i18n [da]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/da.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/da.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/da.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\da.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\da.mo</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\fr.mo.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">dashboard-i18n [fr]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/fr.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/fr.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/fr.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\fr.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\fr.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">dashboard-i18n [fr]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/fr.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/fr.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/fr.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\fr.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\fr.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">dashboard-i18n [fr]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/fr.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/fr.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/fr.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\fr.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\fr.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">dashboard-i18n [fr]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/fr.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/fr.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/fr.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\fr.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\fr.mo</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\zh_TW.mo.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">dashboard-i18n [zh_TW]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/zh_TW.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/zh_TW.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/zh_TW.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\zh_TW.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\zh_TW.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">dashboard-i18n [zh_TW]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/zh_TW.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/zh_TW.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/zh_TW.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\zh_TW.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\zh_TW.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">dashboard-i18n [zh_TW]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/zh_TW.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/zh_TW.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/zh_TW.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\zh_TW.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\zh_TW.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">dashboard-i18n [zh_TW]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/zh_TW.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/zh_TW.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/zh_TW.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\zh_TW.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\zh_TW.mo</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\sv.mo.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">dashboard-i18n [sv]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/sv.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/sv.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/sv.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\sv.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\sv.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">dashboard-i18n [sv]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/sv.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/sv.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/sv.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\sv.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\sv.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">dashboard-i18n [sv]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/sv.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/sv.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/sv.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\sv.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\sv.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">dashboard-i18n [sv]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/sv.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/sv.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/sv.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\sv.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\sv.mo</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\pt_PT.mo.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">dashboard-i18n [pt_PT]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/pt_PT.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/pt_PT.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/pt_PT.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\pt_PT.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\pt_PT.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">dashboard-i18n [pt_PT]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/pt_PT.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/pt_PT.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/pt_PT.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\pt_PT.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\pt_PT.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">dashboard-i18n [pt_PT]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/pt_PT.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/pt_PT.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/pt_PT.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\pt_PT.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\pt_PT.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">dashboard-i18n [pt_PT]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/pt_PT.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/pt_PT.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/pt_PT.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\pt_PT.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\pt_PT.mo</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\es.mo.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">dashboard-i18n [es]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/es.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/es.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/es.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\es.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\es.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">dashboard-i18n [es]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/es.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/es.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/es.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\es.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\es.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">dashboard-i18n [es]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/es.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/es.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/es.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\es.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\es.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">dashboard-i18n [es]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/es.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/es.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/es.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\es.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\es.mo</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\fi_FI.mo.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">dashboard-i18n [fi_FI]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/fi_FI.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/fi_FI.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/fi_FI.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\fi_FI.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\fi_FI.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">dashboard-i18n [fi_FI]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/fi_FI.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/fi_FI.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/fi_FI.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\fi_FI.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\fi_FI.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">dashboard-i18n [fi_FI]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/fi_FI.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/fi_FI.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/fi_FI.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\fi_FI.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\fi_FI.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">dashboard-i18n [fi_FI]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/fi_FI.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/fi_FI.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/fi_FI.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\fi_FI.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\fi_FI.mo</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\pt_BR.mo.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">dashboard-i18n [pt_BR]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/pt_BR.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/pt_BR.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/pt_BR.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\pt_BR.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\pt_BR.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">dashboard-i18n [pt_BR]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/pt_BR.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/pt_BR.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/pt_BR.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\pt_BR.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\pt_BR.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">dashboard-i18n [pt_BR]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/pt_BR.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/pt_BR.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/pt_BR.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\pt_BR.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\pt_BR.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">dashboard-i18n [pt_BR]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/pt_BR.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/pt_BR.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/pt_BR.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\pt_BR.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\pt_BR.mo</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\ru.mo.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">dashboard-i18n [ru]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/ru.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/ru.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/ru.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\ru.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\ru.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">dashboard-i18n [ru]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/ru.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/ru.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/ru.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\ru.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\ru.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">dashboard-i18n [ru]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/ru.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/ru.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/ru.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\ru.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\ru.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">dashboard-i18n [ru]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/ru.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/ru.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/ru.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\ru.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\ru.mo</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\hu_HU.mo.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">dashboard-i18n [hu_HU]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/hu_HU.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/hu_HU.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/hu_HU.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\hu_HU.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\hu_HU.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">dashboard-i18n [hu_HU]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/hu_HU.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/hu_HU.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/hu_HU.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\hu_HU.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\hu_HU.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">dashboard-i18n [hu_HU]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/hu_HU.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/hu_HU.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/hu_HU.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\hu_HU.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\hu_HU.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">dashboard-i18n [hu_HU]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/hu_HU.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/hu_HU.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/hu_HU.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\hu_HU.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\hu_HU.mo</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\et.mo.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">dashboard-i18n [et]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/et.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/et.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/et.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\et.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\et.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">dashboard-i18n [et]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/et.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/et.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/et.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\et.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\et.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">dashboard-i18n [et]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/et.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/et.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/et.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\et.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\et.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">dashboard-i18n [et]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/et.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/et.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/et.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\et.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\et.mo</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\pl_PL.mo.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">dashboard-i18n [pl_PL]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/pl_PL.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/pl_PL.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/pl_PL.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\pl_PL.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\pl_PL.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">dashboard-i18n [pl_PL]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/pl_PL.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/pl_PL.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/pl_PL.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\pl_PL.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\pl_PL.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">dashboard-i18n [pl_PL]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/pl_PL.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/pl_PL.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/pl_PL.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\pl_PL.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\pl_PL.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">dashboard-i18n [pl_PL]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/pl_PL.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/pl_PL.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/pl_PL.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\pl_PL.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\pl_PL.mo</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\nl.mo.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">dashboard-i18n [nl]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/nl.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/nl.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/nl.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\nl.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\nl.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">dashboard-i18n [nl]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/nl.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/nl.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/nl.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\nl.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\nl.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">dashboard-i18n [nl]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/nl.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/nl.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/nl.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\nl.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\nl.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">dashboard-i18n [nl]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/nl.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/nl.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/nl.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\nl.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\nl.mo</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\it.mo.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">dashboard-i18n [it]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/it.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/it.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/it.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\it.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\it.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">dashboard-i18n [it]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/it.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/it.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/it.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\it.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\it.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">dashboard-i18n [it]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/it.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/it.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/it.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\it.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\it.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">dashboard-i18n [it]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/it.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/it.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/it.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\it.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\it.mo</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\pl.mo.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">dashboard-i18n [pl]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/pl.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/pl.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/pl.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\pl.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\pl.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">dashboard-i18n [pl]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/pl.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/pl.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/pl.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\pl.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\pl.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">dashboard-i18n [pl]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/pl.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/pl.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/pl.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\pl.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\pl.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">dashboard-i18n [pl]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/pl.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/pl.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/pl.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\pl.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\pl.mo</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\el_GR.mo.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">dashboard-i18n [el_GR]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/el_GR.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/el_GR.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/el_GR.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\el_GR.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\el_GR.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">dashboard-i18n [el_GR]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/el_GR.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/el_GR.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/el_GR.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\el_GR.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\el_GR.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">dashboard-i18n [el_GR]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/el_GR.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/el_GR.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/el_GR.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\el_GR.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\el_GR.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">dashboard-i18n [el_GR]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/el_GR.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/el_GR.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/el_GR.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\el_GR.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\el_GR.mo</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\nb_NO.mo.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">dashboard-i18n [nb_NO]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/nb_NO.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/nb_NO.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/nb_NO.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\nb_NO.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\nb_NO.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">dashboard-i18n [nb_NO]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/nb_NO.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/nb_NO.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/nb_NO.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\nb_NO.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\nb_NO.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">dashboard-i18n [nb_NO]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/nb_NO.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/nb_NO.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/nb_NO.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\nb_NO.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\nb_NO.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">dashboard-i18n [nb_NO]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/nb_NO.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/nb_NO.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/nb_NO.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\nb_NO.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\nb_NO.mo</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\cs.mo.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">dashboard-i18n [cs]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/cs.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/cs.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/cs.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\cs.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\cs.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">dashboard-i18n [cs]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/cs.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/cs.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/cs.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\cs.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\cs.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">dashboard-i18n [cs]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/cs.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/cs.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/cs.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\cs.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\cs.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">dashboard-i18n [cs]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/cs.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/cs.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/cs.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\cs.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\cs.mo</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\de.mo.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">dashboard-i18n [de]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/de.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/de.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/de.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\de.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\de.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">dashboard-i18n [de]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/de.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/de.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/de.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\de.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\de.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">dashboard-i18n [de]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/de.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/de.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/de.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\de.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\de.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">dashboard-i18n [de]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/de.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/de.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/de.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\de.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\de.mo</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\b0f99903006281e58281818f98a9a4d2\tr_TR.mo.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">dashboard-i18n [tr_TR]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/tr_TR.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/tr_TR.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/tr_TR.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\tr_TR.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\tr_TR.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">dashboard-i18n [tr_TR]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/tr_TR.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/tr_TR.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/tr_TR.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\tr_TR.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\tr_TR.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">dashboard-i18n [tr_TR]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/tr_TR.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/tr_TR.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/tr_TR.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\tr_TR.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\tr_TR.mo</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">dashboard-i18n [tr_TR]: Created mo file.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\Poedit\GettextTools\bin\msgfmt.exe" --check -o "P:/working area/opencpn/remote/jongough/OpenCPN/build-win/plugins/dashboard_pi/tr_TR.mo" "P:/working area/opencpn/remote/jongough/OpenCPN/plugins/dashboard_pi/po/tr_TR.po"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/b0f99903006281e58281818f98a9a4d2/tr_TR.mo.rule;P:\working area\opencpn\remote\jongough\OpenCPN\plugins\dashboard_pi\po\tr_TR.po;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\tr_TR.mo</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\CMakeFiles\666200a5da780a661addadf4671cc5c4\dashboard-i18n.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">dashboard_pi-i18n: Done.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/666200a5da780a661addadf4671cc5c4/dashboard-i18n.rule;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\da.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\fr.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\zh_TW.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\sv.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\pt_PT.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\es.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\fi_FI.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\pt_BR.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\ru.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\hu_HU.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\et.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\pl_PL.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\nl.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\it.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\pl.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\el_GR.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\nb_NO.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\cs.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\de.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\tr_TR.mo;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\CMakeFiles\dashboard-i18n</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">dashboard_pi-i18n: Done.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/666200a5da780a661addadf4671cc5c4/dashboard-i18n.rule;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\da.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\fr.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\zh_TW.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\sv.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\pt_PT.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\es.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\fi_FI.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\pt_BR.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\ru.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\hu_HU.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\et.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\pl_PL.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\nl.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\it.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\pl.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\el_GR.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\nb_NO.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\cs.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\de.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\tr_TR.mo;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\CMakeFiles\dashboard-i18n</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">dashboard_pi-i18n: Done.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/666200a5da780a661addadf4671cc5c4/dashboard-i18n.rule;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\da.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\fr.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\zh_TW.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\sv.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\pt_PT.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\es.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\fi_FI.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\pt_BR.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\ru.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\hu_HU.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\et.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\pl_PL.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\nl.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\it.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\pl.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\el_GR.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\nb_NO.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\cs.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\de.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\tr_TR.mo;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\CMakeFiles\dashboard-i18n</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">dashboard_pi-i18n: Done.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:/working area/opencpn/remote/jongough/OpenCPN/build-win/CMakeFiles/666200a5da780a661addadf4671cc5c4/dashboard-i18n.rule;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\da.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\fr.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\zh_TW.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\sv.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\pt_PT.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\es.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\fi_FI.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\pt_BR.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\ru.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\hu_HU.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\et.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\pl_PL.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\nl.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\it.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\pl.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\el_GR.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\nb_NO.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\cs.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\de.mo;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\tr_TR.mo;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">P:\working area\opencpn\remote\jongough\OpenCPN\build-win\plugins\dashboard_pi\CMakeFiles\dashboard-i18n</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CMakeFiles\dashboard-i18n" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="P:/working area/opencpn/remote/jongough/OpenCPN/build-win/ZERO_CHECK.vcxproj">
+      <Project>58B487F4-A313-4C49-B882-1E0BE4A940A1</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

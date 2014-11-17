@@ -1,0 +1,135 @@
+10:02:11: 
+
+________
+
+10:02:11: 2014-11-15
+10:02:11:  ------- Starting OpenCPN -------
+10:02:11: Version 3.3.2302 Build 2014-11-02
+10:02:11: wxWidgets version: wxWidgets 2.8.12
+10:02:11: MemoryStatus:  mem_total: 2047 mb,  mem_initial: 8 mb
+10:02:11: SData_Locn is P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\
+10:02:11: Creating new Config_File: P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\opencpn.ini
+10:02:11: Styles loading from P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\uidata\styles.xml
+10:02:11: No styles found at: P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\
+10:02:11: No styles found at: P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\.opencpn\
+10:02:11: Setting Viewpoint Lat/Lon 33.358, -79.282
+10:02:11: Setting Ownship Lat/Lon 33.358, -79.282
+10:02:11: Loading navobjects from navobj.xml
+10:02:11: Done loading navobjects
+10:02:11: System default Language:  en_AU
+10:02:11 AM: looking for catalog 'wxstd' in path 'P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\share/locale\en_US.WINDOWS-1252\LC_MESSAGES;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\share/locale\;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\share/locale\en_US.WINDOWS-1252;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\en_US.WINDOWS-1252;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\share/locale\en_US\LC_MESSAGES;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\share/locale\;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\share/locale\en_US;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\en_US;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\share/locale\en\LC_MESSAGES;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\share/locale\;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\share/locale\en;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\en'.
+10:02:11 AM: catalog file for domain 'wxstd' not found.
+10:02:11 AM: looking for catalog 'wxmsw' in path 'P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\share/locale\en_US.WINDOWS-1252\LC_MESSAGES;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\share/locale\;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\share/locale\en_US.WINDOWS-1252;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\en_US.WINDOWS-1252;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\share/locale\en_US\LC_MESSAGES;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\share/locale\;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\share/locale\en_US;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\en_US;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\share/locale\en\LC_MESSAGES;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\share/locale\;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\share/locale\en;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\en'.
+10:02:11 AM: catalog file for domain 'wxmsw' not found.
+10:02:11 AM: Opencpn language set to:  en_US
+10:02:11 AM: looking for catalog 'opencpn' in path 'P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\share/locale\en_US.WINDOWS-1252\LC_MESSAGES;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\share/locale\;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\share/locale\en_US.WINDOWS-1252;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\en_US.WINDOWS-1252;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\share/locale\en_US\LC_MESSAGES;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\share/locale\;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\share/locale\en_US;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\en_US;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\share/locale\en\LC_MESSAGES;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\share/locale\;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\share/locale\en;P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\en'.
+10:02:11 AM: catalog file for domain 'opencpn' not found.
+10:02:14 AM: ChartSymbols loaded from .\s57data\chartsymbols.xml
+10:02:14 AM: Using s57data in .\s57data
+10:02:14 AM: Setting Viewpoint Lat/Lon 33.358, -79.282
+10:02:14 AM: Setting Ownship Lat/Lon 33.358, -79.282
+10:02:15 AM: Creating glChartCanvas
+10:02:15 AM: PlugInManager searching for PlugIns in location P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\plugins
+10:02:15 AM:    Directory P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\plugins does not exist.
+10:02:16 AM: ChartDB Cache policy:  Application target is 1023 MBytes
+10:02:16 AM: Chartlist file not found, config chart dir array is empty.  Chartlist target file is:P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\CHRTLIST.DAT
+10:02:18 AM: EnumerateSerialPorts() Found Garmin USB Driver.
+10:02:18 AM: PlugInManager searching for PlugIns in location P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\plugins
+10:02:18 AM:    Directory P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\plugins does not exist.
+10:02:57 AM: Chart cache purge
+10:02:57 AM:    
+10:02:57 AM: Starting chart database Update...
+10:02:57 AM: Searching directory: ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011 for *.kap
+10:02:57 AM: Searching directory: ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011 for *.geo
+10:02:57 AM: Searching directory: ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011 for *.000
+10:02:57 AM: Searching directory: ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011 for *.s57
+10:02:57 AM: Searching directory: ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011 for 00300000.a
+10:02:57 AM: Loading chart data for ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\
+10:02:57 AM: CM93Composite Chart Root is ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\
+10:02:59 AM:    Adding chart file: ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\
+10:02:59 AM: Finished chart database Update
+10:02:59 AM:    
+10:02:59 AM: Chart cache purge
+10:02:59 AM: Initializing Chart ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\
+10:02:59 AM: CM93Composite Chart Root is ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\
+10:02:59 AM: Loaded CM93 Dictionary from ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\
+10:02:59 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\02700720/Z/02700720.Z
+10:02:59 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\02700840/Z/02700840.Z
+10:03:00 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\03900720/Z/03900720.Z
+10:03:00 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\03900840/Z/03900840.Z
+10:03:00 AM: Chart cache purge
+10:03:00 AM: Initializing Chart ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\
+10:03:00 AM: CM93Composite Chart Root is ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\
+10:03:00 AM: Loaded CM93 Dictionary from ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\
+10:03:00 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\02700720/Z/02700720.Z
+10:03:00 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\02700840/Z/02700840.Z
+10:03:02 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\01500480/Z/01500480.Z
+10:03:02 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\02700480/Z/02700480.Z
+10:03:02 AM: GPS Watchdog Timeout is: 6 sec.
+10:03:06 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\01500360/Z/01500360.Z
+10:03:06 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\01500600/Z/01500600.Z
+10:03:06 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\02700360/Z/02700360.Z
+10:03:06 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\02700600/Z/02700600.Z
+10:03:06 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\00300240/Z/00300240.Z
+10:03:06 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\00300360/Z/00300360.Z
+10:03:06 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\00300480/Z/00300480.Z
+10:03:06 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\00300600/Z/00300600.Z
+10:03:06 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\00300720/Z/00300720.Z
+10:03:06 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\01500240/Z/01500240.Z
+10:03:07 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\01500720/Z/01500720.Z
+10:03:07 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\02700240/Z/02700240.Z
+10:03:07 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\03900240/Z/03900240.Z
+10:03:07 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\03900360/Z/03900360.Z
+10:03:07 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\03900480/Z/03900480.Z
+10:03:07 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\03900600/Z/03900600.Z
+10:03:07 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\03900720/Z/03900720.Z
+10:03:12 AM: LOGBOOK:  2014-11-14 23:03:12 UTC  DR Lat    0.00000 Lon  180.00000
+10:03:12 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\00300120/Z/00300120.Z
+10:03:12 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\01500120/Z/01500120.Z
+10:03:12 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\02700120/Z/02700120.Z
+10:03:16 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\01500420/A/01500420.A
+10:03:17 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\01500420/B/01800450.B
+10:03:18 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\01500420/C/01980444.C
+10:03:28 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\01500420/D/01980450.D
+10:03:28 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\01500420/D/01980453.D
+10:03:36 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\01500420/C/01860456.C
+10:03:36 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\01500420/C/01980456.C
+10:03:37 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\01500420/D/01950456.D
+10:03:37 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\01500420/D/01980456.D
+10:03:43 AM: Loading World Chart Q=0 in 0 ms.
+10:03:43 AM: Background world map loaded from GSHHS datafiles found in: P:\working area\opencpn\remote\jongough\OpenCPN\build-win\release\gshhs\
+10:04:26 AM: EnumerateSerialPorts() Found Garmin USB Driver.
+10:04:37 AM: Chart cache purge
+10:04:38 AM: Initializing Chart ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\
+10:04:38 AM: CM93Composite Chart Root is ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\
+10:04:38 AM: Loaded CM93 Dictionary from ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\
+10:04:38 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\01500420/D/01950456.D
+10:04:38 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\01500420/D/01980456.D
+10:04:38 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\01500420/C/01860456.C
+10:04:39 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\01500420/C/01980456.C
+10:04:40 AM: Chart cache purge
+10:04:40 AM: Initializing Chart ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\
+10:04:40 AM: CM93Composite Chart Root is ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\
+10:04:40 AM: Loaded CM93 Dictionary from ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\
+10:04:40 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\01500420/D/01950456.D
+10:04:40 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\01500420/D/01980456.D
+10:04:40 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\01500420/C/01860456.C
+10:04:40 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\01500420/C/01980456.C
+10:04:49 AM: Chart cache purge
+10:05:04 AM: Initializing Chart ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\
+10:05:04 AM: CM93Composite Chart Root is ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\
+10:05:05 AM: Loaded CM93 Dictionary from ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\
+10:05:05 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\01500420/C/01860456.C
+10:05:05 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\01500420/C/01980456.C
+10:05:05 AM: Chart cache purge
+10:05:05 AM: Initializing Chart ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\
+10:05:05 AM: CM93Composite Chart Root is ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\
+10:05:05 AM: Loaded CM93 Dictionary from ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\
+10:05:05 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\01500420/C/01860456.C
+10:05:05 AM: Loading CM93 cell ..\..\..\..\..\..\..\Downloads\Yachting\Navigation\CM93 charts\Cm93 jan 2011\\01500420/C/01980456.C
+10:09:54 AM: opencpn::MyFrame exiting cleanly.
+10:09:54 AM: Chart cache purge
+10:09:54 AM: Chart cache purge
+10:09:54 AM: LOGBOOK:  2014-11-14 23:09:54 UTC OFF: Lat  -23.95555 Lon  152.30879
+10:09:54 AM: opencpn::MyApp exiting cleanly...
+

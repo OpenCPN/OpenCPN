@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\plugins\dashboard_pi\CMakeLists.txt" />
+    <CustomBuild Include="..\..\CMakeFiles\4e2db79c4b0ca6055bdee2741cd737e8\dashboard_pi.pot.dummy.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\CMakeFiles\666200a5da780a661addadf4671cc5c4\dashboard-pot-update.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CMakeFiles\dashboard-pot-update" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{5CE925C3-5C65-463A-BFEC-9651CB7DD5DE}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

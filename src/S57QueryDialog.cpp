@@ -82,7 +82,7 @@ bool S57QueryDialog::Create( wxWindow* parent, wxWindowID id, const wxString& ca
 
     if( !wxDialog::Create( parent, id, caption, pos, size, wstyle ) ) return false;
 
-    wxFont *dFont = GetOCPNScaledFont(_("ObjectQuery"), 10);
+    wxFont *dFont = GetOCPNScaledFont(_("ObjectQuery"));
 
     SetFont( *dFont );
     CreateControls();
