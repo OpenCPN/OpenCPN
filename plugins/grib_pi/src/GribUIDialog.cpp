@@ -684,10 +684,11 @@ void GRIBUIDialog::PopulateTrackingControls( bool Populate_Altitude )
     GetTextExtent( _T("abcdefghijklm"), &wl, NULL, 0, 0, font); // long width text control size for double unit wave display
     //
 
+    int w1, w2;
+     m_OverlaySettings.Settings[GribOverlaySettings::WIND].m_Units == GribOverlaySettings::BFS ? w1 = wn, w2 = 0 : w1 = wd, w2 = ws;
     AddTrackingControl(m_cbWind, m_tcWindSpeed, m_tcWindDirection,
         m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX) != wxNOT_FOUND
-        && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VY) != wxNOT_FOUND,
-        m_OverlaySettings.Settings[GribOverlaySettings::WIND].m_Units == GribOverlaySettings::BFS ? wn, 0 : wd, ws,
+        && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VY) != wxNOT_FOUND, w1, w2,
         m_cbAltitude->GetCount() > 1 );
     AddTrackingControl(m_cbWindGust, m_tcWindGust, 0, m_pTimelineSet
         && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_GUST) != wxNOT_FOUND, wn);
