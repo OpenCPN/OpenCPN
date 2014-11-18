@@ -492,8 +492,16 @@ void GRIBUIDialog::OnMouseEvent( wxMouseEvent& event )
     }
 
     //if the current box is checked then resolve display conflicts
-    if( ((wxCheckBox*) this->FindItem( id ) )->IsChecked() )
-        ResolveDisplayConflicts( this, id );
+    wxWindowListNode *wnode =  this->GetChildren().GetFirst();
+    while( wnode ) {
+        wxWindow *win = wnode->GetData();
+        if( id == win->GetId() ) {
+            if( ((wxCheckBox*) win )->IsChecked() )
+                ResolveDisplayConflicts( this, id );
+            break;
+        }
+        wnode = wnode->GetNext();
+    }
 
     //save new config
     m_OverlaySettings.Write();
@@ -512,25 +520,22 @@ void GRIBUIDialog::MenuAppend( wxMenu *menu, int id, wxString label, int setting
 
     menu->Append(item);
 
-    switch( id ) {
-        case B_ARROWS:
-            item->Check( m_OverlaySettings.Settings[setting].m_bBarbedArrows );
-            break;
-        case ISO_LINE:
-            item->Check( m_OverlaySettings.Settings[setting].m_bIsoBars );
-            break;
-        case D_ARROWS:
-            item->Check( m_OverlaySettings.Settings[setting].m_bDirectionArrows );
-            break;
-        case OVERLAY:
-            item->Check( m_OverlaySettings.Settings[setting].m_bOverlayMap );
-            break;
-        case NUMBERS:
-            item->Check( m_OverlaySettings.Settings[setting].m_bNumbers );
-            break;
-        case PARTICLES:
-            item->Check( m_OverlaySettings.Settings[setting].m_bParticles );
-    }
+    bool check;
+    if( id == B_ARROWS )
+        check = m_OverlaySettings.Settings[setting].m_bBarbedArrows;
+    else if( id == ISO_LINE )
+        check = m_OverlaySettings.Settings[setting].m_bIsoBars;
+    else if( id == D_ARROWS )
+        check = m_OverlaySettings.Settings[setting].m_bDirectionArrows;
+    else if( id == OVERLAY )
+        check = m_OverlaySettings.Settings[setting].m_bOverlayMap;
+    else if( id == NUMBERS )
+        check = m_OverlaySettings.Settings[setting].m_bNumbers;
+    else if( id == PARTICLES )
+        check = m_OverlaySettings.Settings[setting].m_bParticles;
+    else
+        check = false;
+    item->Check( check );
 }
 
 void GRIBUIDialog::ContextMenuItemCallback(int id)
