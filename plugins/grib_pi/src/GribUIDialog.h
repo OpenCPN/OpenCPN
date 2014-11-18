@@ -81,7 +81,7 @@ public:
     ~GRIBUIDialog();
 
     void OpenFile( bool newestFile = false );
-    
+
     void ContextMenuItemCallback(int id);
     void SetCursorLatLon( double lat, double lon );
     void SetFactoryOptions();
@@ -115,6 +115,9 @@ private:
     void OnPlayStop( wxCommandEvent& event );
     void OnPlayStopTimer( wxTimerEvent & event);
     void OnCursorTrackTimer( wxTimerEvent & event);
+    void OnMouseEvent( wxMouseEvent& event );
+    void MenuAppend( wxMenu *menu, int id, wxString label, int setting);
+    void ResolveDisplayConflicts( wxWindow *window, int enventId );
 
     void AddTrackingControl( wxControl *ctrl1,  wxControl *ctrl2,  wxControl *ctrl3, bool show,
             int wictrl2, int wictrl3 = 0, bool altitude = false );

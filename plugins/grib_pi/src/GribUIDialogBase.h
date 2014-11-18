@@ -102,6 +102,7 @@ class GRIBUIDialogBase : public wxDialog
 		virtual void OnRequest( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnAltitudeChange( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnCBAny( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnMouseEvent( wxMouseEvent& event ) { event.Skip(); }
 		
 	
 	public:
