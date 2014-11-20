@@ -2255,7 +2255,7 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
 
         wxString s_ArrivalRadius;
         s_ArrivalRadius.Printf( _T("%.3f"), m_pRoutePoint->GetWaypointArrivalRadius() );
-        m_textArrivalRadius->SetValue( s_ArrivalRadius.mbc_str() );        
+        m_textArrivalRadius->SetValue( s_ArrivalRadius );        
         
         m_textDescription->SetValue( m_pRoutePoint->m_MarkDescription );
         m_textCtrlExtDescription->SetValue( m_pRoutePoint->m_MarkDescription );
