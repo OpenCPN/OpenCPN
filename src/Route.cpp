@@ -44,6 +44,7 @@ extern MyConfig *pConfig;
 extern Multiplexer *g_pMUX;
 extern double g_n_arrival_circle_radius;
 extern float g_GLMinSymbolLineWidth;
+extern double g_PlanSpeed;
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST ( RouteList );
@@ -87,6 +88,9 @@ Route::Route( void )
     m_NextLegGreatCircle = false;
     
     m_PlannedSpeed = ROUTE_DEFAULT_SPEED;
+    if(g_PlanSpeed != ROUTE_DEFAULT_SPEED)
+        m_PlannedSpeed = g_PlanSpeed;
+    
     m_PlannedDeparture = RTE_UNDEF_DEPARTURE;
     m_TimeDisplayFormat = RTE_TIME_DISP_PC;
     
