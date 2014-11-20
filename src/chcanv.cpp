@@ -1967,6 +1967,8 @@ void ChartCanvas::OnKeyChar( wxKeyEvent &event )
 
 void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 {
+    bool b_handled = false;
+    
     m_modkeys = event.GetModifiers();
 
     int panspeed = m_modkeys == wxMOD_ALT ? 2 : 100;
@@ -2100,6 +2102,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 
     case WXK_F11:
         parent_frame->ToggleFullScreen();
+        b_handled = true;
         break;
 
     case WXK_F12: {
@@ -2395,7 +2398,8 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 #ifndef __WXMAC__
     // Allow OnKeyChar to catch the key events too.
     // On OS X this is unnecessary since we handle all key events here.
-    event.Skip();
+    if(!b_handled)
+        event.Skip();
 #endif
 }
 
