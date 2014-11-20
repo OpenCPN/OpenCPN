@@ -182,7 +182,7 @@ wxString FontMgr::GetSimpleNativeFont( int size )
 //      nativefont = _T ( "0;-11;0;0;0;400;0;0;0;0;0;0;0;0;MS Sans Serif" );
 
     double asize = -size * 96.0/72.0;
-    lfHeight = int(asize);
+    long lfHeight = int(asize);
     
     nativefont.Printf( _T("%d;%ld;%ld;%ld;%ld;%ld;%d;%d;%d;%d;%d;%d;%d;%d;"), 0, // version, in case we want to change the format later
             lfHeight,            //lf.lfHeight
