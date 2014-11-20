@@ -296,15 +296,25 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	m_bpRequest->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnRequest ), NULL, this );
 	m_cbAltitude->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GRIBUIDialogBase::OnAltitudeChange ), NULL, this );
 	m_cbWind->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnCBAny ), NULL, this );
+	m_cbWind->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUIDialogBase::OnMouseEvent ), NULL, this );
 	m_cbWave->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnCBAny ), NULL, this );
+	m_cbWave->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUIDialogBase::OnMouseEvent ), NULL, this );
 	m_cbCurrent->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnCBAny ), NULL, this );
+	m_cbCurrent->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUIDialogBase::OnMouseEvent ), NULL, this );
 	m_cbWindGust->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnCBAny ), NULL, this );
+	m_cbWindGust->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUIDialogBase::OnMouseEvent ), NULL, this );
 	m_cbPressure->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnCBAny ), NULL, this );
+	m_cbPressure->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUIDialogBase::OnMouseEvent ), NULL, this );
 	m_cbPrecipitation->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnCBAny ), NULL, this );
+	m_cbPrecipitation->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUIDialogBase::OnMouseEvent ), NULL, this );
 	m_cbCloud->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnCBAny ), NULL, this );
+	m_cbCloud->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUIDialogBase::OnMouseEvent ), NULL, this );
 	m_cbAirTemperature->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnCBAny ), NULL, this );
+	m_cbAirTemperature->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUIDialogBase::OnMouseEvent ), NULL, this );
 	m_cbSeaTemperature->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnCBAny ), NULL, this );
+	m_cbSeaTemperature->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUIDialogBase::OnMouseEvent ), NULL, this );
 	m_cbCAPE->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnCBAny ), NULL, this );
+	m_cbCAPE->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUIDialogBase::OnMouseEvent ), NULL, this );
 }
 
 GRIBUIDialogBase::~GRIBUIDialogBase()
@@ -332,15 +342,25 @@ GRIBUIDialogBase::~GRIBUIDialogBase()
 	m_bpRequest->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnRequest ), NULL, this );
 	m_cbAltitude->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GRIBUIDialogBase::OnAltitudeChange ), NULL, this );
 	m_cbWind->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnCBAny ), NULL, this );
+	m_cbWind->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUIDialogBase::OnMouseEvent ), NULL, this );
 	m_cbWave->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnCBAny ), NULL, this );
+	m_cbWave->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUIDialogBase::OnMouseEvent ), NULL, this );
 	m_cbCurrent->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnCBAny ), NULL, this );
+	m_cbCurrent->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUIDialogBase::OnMouseEvent ), NULL, this );
 	m_cbWindGust->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnCBAny ), NULL, this );
+	m_cbWindGust->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUIDialogBase::OnMouseEvent ), NULL, this );
 	m_cbPressure->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnCBAny ), NULL, this );
+	m_cbPressure->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUIDialogBase::OnMouseEvent ), NULL, this );
 	m_cbPrecipitation->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnCBAny ), NULL, this );
+	m_cbPrecipitation->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUIDialogBase::OnMouseEvent ), NULL, this );
 	m_cbCloud->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnCBAny ), NULL, this );
+	m_cbCloud->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUIDialogBase::OnMouseEvent ), NULL, this );
 	m_cbAirTemperature->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnCBAny ), NULL, this );
+	m_cbAirTemperature->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUIDialogBase::OnMouseEvent ), NULL, this );
 	m_cbSeaTemperature->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnCBAny ), NULL, this );
+	m_cbSeaTemperature->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUIDialogBase::OnMouseEvent ), NULL, this );
 	m_cbCAPE->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnCBAny ), NULL, this );
+	m_cbCAPE->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUIDialogBase::OnMouseEvent ), NULL, this );
 	
 }
 
