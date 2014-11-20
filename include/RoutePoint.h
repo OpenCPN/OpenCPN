@@ -80,6 +80,9 @@ public:
       void SetDistance( double distance) { m_routeprop_distance = distance; };
       double GetDistance() { return m_routeprop_distance; };
 
+      void SetWaypointArrivalRadius(double dArrivalDistance) { m_WaypointArrivalRadius = dArrivalDistance; };
+      void SetWaypointArrivalRadius( wxString wxArrivalDistance ) { wxArrivalDistance.ToDouble( &m_WaypointArrivalRadius ); };
+      double GetWaypointArrivalRadius();
 
       bool SendToGPS(const wxString& com_name, wxGauge *pProgress);
 
@@ -142,6 +145,8 @@ public:
       static bool s_bUpdateWaypointsDisplayList;
 #endif
 
+      double m_WaypointArrivalRadius;
+      
 private:
       wxString          m_MarkName;
       wxDateTime        m_CreateTimeX;
