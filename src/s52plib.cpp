@@ -1902,7 +1902,16 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool
                     else
                         fontweight = wxFONTWEIGHT_BOLD;
 
-                wxFont* templateFont = FontMgr::Get().GetFont( _("ChartTexts"), 24 );
+                wxFont sys_font = *wxNORMAL_FONT;
+                int default_size = sys_font.GetPointSize();
+
+#ifdef __WXOSX__
+                default_size += 1;     // default to 1pt larger than system UI font
+#else
+                default_size += 2;     // default to 2pt larger than system UI font
+#endif
+                
+                wxFont* templateFont = FontMgr::Get().GetFont( _("ChartTexts"), default_size );
 
                 // NOAA ENC fles requests font size up to 20 points, which looks very
                 // disproportioned. Let's scale those sizes down to more reasonable values.
@@ -1913,7 +1922,7 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool
                     if( fontSize > 13 ) fontSize -= 3;
 
                 // Now factor in the users selected font size.
-                fontSize += templateFont->GetPointSize() - 12;
+                fontSize += templateFont->GetPointSize() - 10;
                 
                 // In no case should font size be less than 10, since it becomes unreadable
                 fontSize = wxMax(10, fontSize);
