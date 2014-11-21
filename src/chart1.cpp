@@ -3593,17 +3593,15 @@ void MyFrame::ODoSetSize( void )
         // maximum size is 1/28 of the box width, or the box height - whicever is less
         int max_font_size = wxMin( (stat_box.width / 28), (stat_box.height) );
 
-#ifdef __WXMSW__
-        int try_font_size = 12;   // the Windows system default is too small so fix it at 12pt
-#else
         wxFont sys_font = *wxNORMAL_FONT;
-        int try_font_size = sys_font.GetPointSize() + 1; // start 1pt larger than system default
-#endif
+        int try_font_size = sys_font.GetPointSize();
 
 #ifdef __WXOSX__
         int min_font_size = 10; // much less than 10pt is unreadably small on OS X
+        try_font_size += 1;     // default to 1pt larger than system UI font
 #else
-        int min_font_size = 6;  // on Win/Linux the text does not shrink so fast and 6pt is fine
+        int min_font_size = 7;  // on Win/Linux the text does not shrink quite so fast
+        try_font_size += 2;     // default to 2pt larger than system UI font
 #endif
 
         // get the user's preferred font, or if none set then the system default with the size overridden
