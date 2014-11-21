@@ -33,6 +33,7 @@
 #include "chcanv.h"
 #include "styles.h"
 BEGIN_EVENT_TABLE(ocpnFloatingCompassWindow, wxWindow) EVT_PAINT ( ocpnFloatingCompassWindow::OnPaint )
+    EVT_LEFT_DOWN ( ocpnFloatingCompassWindow::MouseEvent )
 END_EVENT_TABLE()
 
 extern ocpnStyle::StyleManager* g_StyleManager;
@@ -42,6 +43,7 @@ extern bool g_bSatValid;
 extern int g_SatsInView;
 extern bool g_bCourseUp;
 extern bool g_bskew_comp;
+extern MyFrame *gFrame;
 
 ocpnFloatingCompassWindow::ocpnFloatingCompassWindow( wxWindow *parent )
 {
@@ -84,6 +86,11 @@ void ocpnFloatingCompassWindow::OnPaint( wxPaintEvent& event )
     wxPaintDC dc( this );
 
     dc.DrawBitmap( m_StatBmp, 0, 0, false );
+}
+
+void ocpnFloatingCompassWindow::MouseEvent( wxMouseEvent& event )
+{
+    gFrame->ToggleCourseUp();
 }
 
 void ocpnFloatingCompassWindow::SetColorScheme( ColorScheme cs )

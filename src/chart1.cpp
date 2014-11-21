@@ -4118,17 +4118,22 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
                     PlugInToolbarToolContainer *pttc = tool_array.Item( i );
                     if( event.GetId() == pttc->id ) {
                         if( pttc->m_pplugin ) pttc->m_pplugin->OnToolbarToolCallback( pttc->id );
+                        return; // required to prevent event.Skip() being called
                     }
                 }
             }
+
+            // If we didn't handle the event, allow it to bubble up to other handlers.
+            // This is required for the system menu items (Hide, etc) on OS X to work.
+            // This must only be called if we did NOT handle the event, otherwise it
+            // stops the menu items from working on Windows.
+            event.Skip();
+
             break;
         }
 
     }         // switch
 
-    // If we didn't handle the event, allow it to bubble up to other handlers.
-    // This is ncessary eg for the system default menu items (Hide, etc) on OS X to work.
-    event.Skip();
 }
 
 void MyFrame::ToggleColorScheme()
@@ -4145,7 +4150,7 @@ void MyFrame::ToggleColorScheme()
 void MyFrame::ToggleFullScreen()
 {
     bool to = !IsFullScreen();
-    long style = wxFULLSCREEN_NOBORDER | wxFULLSCREEN_NOCAPTION | wxFULLSCREEN_NOMENUBAR;
+    long style = wxFULLSCREEN_NOBORDER | wxFULLSCREEN_NOCAPTION;; // | wxFULLSCREEN_NOMENUBAR;
 
     if( g_FloatingToolbarDialog ) g_FloatingToolbarDialog->Show( g_bFullscreenToolbar | !to );
 

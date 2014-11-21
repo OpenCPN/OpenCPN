@@ -181,12 +181,9 @@ wxString FontMgr::GetSimpleNativeFont( int size )
 #ifdef __WXMSW__
 //      nativefont = _T ( "0;-11;0;0;0;400;0;0;0;0;0;0;0;0;MS Sans Serif" );
 
-    int h, w, hm, wm;
-    ::wxDisplaySize( &w, &h );            // pixels
-    ::wxDisplaySizeMM( &wm, &hm );        // MM
-    double pix_per_inch_v = wxMax( 72.0, ( h / hm ) * 25.4);
-    int lfHeight = -(int) ( ( size * ( pix_per_inch_v / 72.0 ) ) + 0.5 );
-
+    double asize = -size * 96.0/72.0;
+    long lfHeight = int(asize);
+    
     nativefont.Printf( _T("%d;%ld;%ld;%ld;%ld;%ld;%d;%d;%d;%d;%d;%d;%d;%d;"), 0, // version, in case we want to change the format later
             lfHeight,            //lf.lfHeight
             0,                   //lf.lfWidth,
@@ -202,7 +199,9 @@ wxString FontMgr::GetSimpleNativeFont( int size )
             0,                   //lf.lfQuality,
             0 );                    //lf.lfPitchAndFamily,
 
-    nativefont.Append( _T("Verdana") );
+//    nativefont.Append( _T("Verdana") );
+    nativefont.Append( _T("MS Sans Serif") );
+    
 #endif
 
     return nativefont;
