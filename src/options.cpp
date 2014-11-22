@@ -1573,7 +1573,7 @@ void options::CreatePanel_Ownship( size_t parent, int border_size, int group_ite
     m_itemRadarRingsUnits = new wxChoice( itemPanelShip, ID_RADARDISTUNIT, wxDefaultPosition, m_pShipIconType->GetSize(), 2, pDistUnitsStrings );
     radarGrid->Add( m_itemRadarRingsUnits, 0, wxALIGN_RIGHT | wxALL, border_size );
 
-    pSailing = new wxCheckBox( itemPanelShip, ID_DAILYCHECKBOX, _("Sailing - Allow tracking away from a waypoint without switching to the next waypoint") );
+    pSailing = new wxCheckBox( itemPanelShip, ID_DAILYCHECKBOX, _("Advance route waypoint on arrival only") );
     ownShip->Add( pSailing, 0 );
 
     //  Tracks
