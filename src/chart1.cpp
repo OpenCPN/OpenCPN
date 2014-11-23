@@ -806,26 +806,29 @@ int CALLBACK CrashCallback(CR_CRASH_CALLBACK_INFO* pInfo)
 
 #endif
 
-wxString *newPrivateFileName(wxStandardPaths &std_path, wxString *home_locn, const char *name, const char *windowsName) {
-    wxString *filePathAndName = new wxString( name );
+wxString *newPrivateFileName(wxStandardPaths &std_path, wxString *home_locn, const char *name, const char *windowsName)
+{
+    wxString fname = wxString::FromUTF8(name);
+    wxString fwname = wxString::FromUTF8(windowsName);
+    wxString *filePathAndName = new wxString( fname );
 
 #ifdef __WXMSW__
-    filePathAndName = new wxString( windowsName );
+    filePathAndName = new wxString( fwname );
     filePathAndName->Prepend( *pHome_Locn );
 
 #else
     filePathAndName = new wxString(_T(""));
     filePathAndName->Append(std_path.GetUserDataDir());
     appendOSDirSlash(filePathAndName);
-    filePathAndName->Append( name );
+    filePathAndName->Append( fname );
 #endif
 
     if( g_bportable ) {
         filePathAndName->Clear();
 #ifdef __WXMSW__
-        filePathAndName->Append( windowsName );
+        filePathAndName->Append( fwname );
 #else
-        filePathAndName->Append( name );
+        filePathAndName->Append( fname );
 #endif
         filePathAndName->Prepend( *home_locn );
     }

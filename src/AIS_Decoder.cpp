@@ -108,7 +108,7 @@ AIS_Decoder::AIS_Decoder( wxFrame *parent )
     if( infile ) {
         std::string line;
         while ( getline( infile, line ) ) {
-            wxStringTokenizer tokenizer( line, "," );
+            wxStringTokenizer tokenizer( wxString::FromUTF8(line.c_str()), _T(",") );
             int mmsi = wxAtoi( tokenizer.GetNextToken() );
             wxString name = tokenizer.GetNextToken();
             ( *AISTargetNames )[mmsi] = name;
