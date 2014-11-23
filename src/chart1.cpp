@@ -220,6 +220,7 @@ bool                      bDrawCurrentValues;
 wxString                  g_PrivateDataDir;
 wxString                  g_SData_Locn;
 wxString                  *pChartListFileName;
+wxString                  *pAISTargetNameFileName;
 wxString                  *pHome_Locn;
 wxString                  *pWorldMapLocation;
 wxString                  *pInit_Chart_Dir;
@@ -805,6 +806,31 @@ int CALLBACK CrashCallback(CR_CRASH_CALLBACK_INFO* pInfo)
 
 #endif
 
+wxString *newPrivateFileName(wxStandardPaths &std_path, wxString *home_locn, const char *name, const char *windowsName) {
+    wxString *filePathAndName = new wxString( name );
+
+#ifdef __WXMSW__
+    filePathAndName = new wxString( windowsName );
+    filePathAndName->Prepend( *pHome_Locn );
+
+#else
+    filePathAndName = new wxString(_T(""));
+    filePathAndName->Append(std_path.GetUserDataDir());
+    appendOSDirSlash(filePathAndName);
+    filePathAndName->Append( name );
+#endif
+
+    if( g_bportable ) {
+        filePathAndName->Clear();
+#ifdef __WXMSW__
+        filePathAndName->Append( windowsName );
+#else
+        filePathAndName->Append( name );
+#endif
+        filePathAndName->Prepend( *home_locn );
+    }
+    return filePathAndName;
+}
 
 // `Main program' equivalent, creating windows and returning main app frame
 //------------------------------------------------------------------------------
@@ -1763,26 +1789,10 @@ bool MyApp::OnInit()
 
 
 //      Establish location and name of chart database
-#ifdef __WXMSW__
-    pChartListFileName = new wxString( _T("CHRTLIST.DAT") );
-    pChartListFileName->Prepend( *pHome_Locn );
+    pChartListFileName = newPrivateFileName(std_path, pHome_Locn, "chartlist.dat", "CHRTLIST.DAT");
 
-#else
-    pChartListFileName = new wxString(_T(""));
-    pChartListFileName->Append(std_path.GetUserDataDir());
-    appendOSDirSlash(pChartListFileName);
-    pChartListFileName->Append(_T("chartlist.dat"));
-#endif
-
-    if( g_bportable ) {
-        pChartListFileName->Clear();
-#ifdef __WXMSW__
-        pChartListFileName->Append( _T("CHRTLIST.DAT") );
-#else
-        pChartListFileName->Append(_T("chartlist.dat"));
-#endif
-        pChartListFileName->Prepend( *pHome_Locn );
-    }
+//      Establish location and name of AIS MMSI -> Target Name mapping
+    pAISTargetNameFileName = newPrivateFileName(std_path, pHome_Locn, "mmsitoname.csv", "MMSINAME.CSV");
 
 //      Establish guessed location of chart tree
     if( pInit_Chart_Dir->IsEmpty() ) {

@@ -28,6 +28,7 @@
 #include "Select.h"
 #include "georef.h"
 #include "OCPN_DataStreamEvent.h"
+#include <fstream>
 
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;
@@ -79,6 +80,7 @@ extern bool g_bAIS_CPA_Alert;
 extern bool g_bAIS_CPA_Alert_Audio;
 extern ArrayOfMMSIProperties   g_MMSI_Props_Array;
 extern Route    *pAISMOBRoute;
+extern wxString *pAISTargetNameFileName;
 
 BEGIN_EVENT_TABLE(AIS_Decoder, wxEvtHandler)
     EVT_TIMER(TIMER_AIS1, AIS_Decoder::OnTimerAIS)
@@ -99,6 +101,21 @@ static double arpa_ref_hdg = NAN;
 AIS_Decoder::AIS_Decoder( wxFrame *parent )
 {
     AISTargetList = new AIS_Target_Hash;
+
+    // Load cached AIS target names from a file
+    AISTargetNames = new AIS_Target_Name_Hash;
+    std::ifstream infile( pAISTargetNameFileName->mb_str() );
+    if( infile ) {
+        std::string line;
+        while ( getline( infile, line ) ) {
+            wxStringTokenizer tokenizer( line, "," );
+            int mmsi = wxAtoi( tokenizer.GetNextToken() );
+            wxString name = tokenizer.GetNextToken();
+            ( *AISTargetNames )[mmsi] = name;
+        }
+    }
+    infile.close();
+
     AIS_AreaNotice_Sources = new AIS_Target_Hash;
     BuildERIShipTypeHash();
 
@@ -911,6 +928,26 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
             //  If the message was decoded correctly
             //  Update the AIS Target information
             if( bdecode_result ) {
+
+                // Check for valid name data
+                AIS_Target_Name_Hash::iterator it = AISTargetNames->find( mmsi );
+                if( !pTargetData->b_nameValid && ( it != AISTargetNames->end() ) ) {
+                    // If we don't have a name yet but have one in the MMSI->ShipName hash, use the one in the hash
+                    wxString ship_name = ( *AISTargetNames )[mmsi];
+                    strncpy( pTargetData->ShipName, ship_name.mb_str(), ship_name.length() + 1 );
+                    pTargetData->b_nameValid = true;
+                } else if ( pTargetData->b_nameValid && ( it == AISTargetNames->end() ) ) {
+                    // If have a name but haven't saved it to the hash, save it
+                    wxString ship_name = trimAISField( pTargetData->ShipName );
+                    ( *AISTargetNames )[mmsi] = ship_name;
+                    // Write the MMSI->ShipName hash file
+                    std::ofstream outfile( pAISTargetNameFileName->mb_str(), std::ios_base::app );
+                    if( outfile.is_open() ) {
+                        outfile << mmsi << "," << ship_name << "\r\n";
+                    }
+                    outfile.close();
+                }
+
                 ( *AISTargetList )[pTargetData->MMSI] = pTargetData;            // update the hash table entry
 
                 if( !pTargetData->area_notices.empty() ) {
