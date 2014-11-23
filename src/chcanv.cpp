@@ -7114,21 +7114,20 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
         wxColor bg = g_pObjectQueryDialog->GetBackgroundColour();
         wxColor fg = FontMgr::Get().GetFontColor( _("ObjectQuery") );
 
-        objText.Printf( _T("<html><body bgcolor=#%02x%02x%02x><font color=#%02x%02x%02x face="), bg.Red(), bg.Blue(),
-                        bg.Green(), fg.Red(), fg.Blue(), fg.Green() );
-        objText += _T("\"");
-        objText += face;
-        objText += _T("\" ");
+        objText.Printf( _T("<html><body bgcolor=#%02x%02x%02x><font color=#%02x%02x%02x>"),
+                       bg.Red(), bg.Blue(), bg.Green(), fg.Red(), fg.Blue(), fg.Green() );
 
+#ifdef __WXOSX__
         int points = dFont->GetPointSize();
-        int size = (points + 0.5) / 3; // +0.5 to round instead of truncate
-        if (size < 2) size = 2;
-        if (size > 6) size = 6;
-        wxString ss;
-        ss.Printf(_T("size=\"%d\""), size);
+#else
+        int points = dFont->GetPointSize() + 1;
+#endif
 
-        objText += ss;
-        objText += _T(">");
+        int sizes[7];
+        for ( int i=-2; i<5; i++ ) {
+            sizes[i+2] = points + i + (i>0?i:0);
+        }
+        g_pObjectQueryDialog->m_phtml->SetFonts(face, face, sizes);
 
         if(wxFONTSTYLE_ITALIC == dFont->GetStyle())
             objText += _T("<i>");

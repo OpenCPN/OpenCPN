@@ -178,7 +178,7 @@ wxString FontMgr::GetSimpleNativeFont( int size )
 //      nativefont = _T ( "0;-11;0;0;0;400;0;0;0;0;0;0;0;0;MS Sans Serif" );
 
     wxFont sys_font = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
-    if (size != 0) sys_font.SetPointSize(size);
+    sys_font.SetPointSize( size + 1 );
 
     int size_px = sys_font.GetPixelSize().GetHeight();
 
