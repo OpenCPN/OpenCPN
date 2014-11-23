@@ -110,7 +110,7 @@ AIS_Decoder::AIS_Decoder( wxFrame *parent )
         while ( getline( infile, line ) ) {
             wxStringTokenizer tokenizer( wxString::FromUTF8(line.c_str()), _T(",") );
             int mmsi = wxAtoi( tokenizer.GetNextToken() );
-            wxString name = tokenizer.GetNextToken();
+            wxString name = tokenizer.GetNextToken().Trim();
             ( *AISTargetNames )[mmsi] = name;
         }
     }
