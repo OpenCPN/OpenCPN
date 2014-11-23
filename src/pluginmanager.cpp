@@ -221,8 +221,10 @@ PlugInManager::~PlugInManager()
 }
 
 
-bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled)
+bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled, bool b_enable_blackdialog)
 {
+    m_benable_blackdialog = b_enable_blackdialog;
+    
     m_plugin_location = plugin_dir;
 
     wxString msg(_T("PlugInManager searching for PlugIns in location "));
@@ -579,6 +581,14 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
     return b_compat;
 }
 
+void PlugInManager::ShowDeferredBlacklistMessages()
+{
+    for( unsigned int i=0 ; i < m_deferred_blacklist_messages.GetCount() ; i++){
+        OCPNMessageBox ( NULL, m_deferred_blacklist_messages.Item(i), wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK, 5 );  // 5 second timeout
+    }
+        
+}
+
 bool PlugInManager::CheckBlacklistedPlugin(opencpn_plugin* plugin)
 {
     int len = sizeof(PluginBlacklist) / sizeof(BlackListedPlugin);
@@ -605,7 +615,10 @@ bool PlugInManager::CheckBlacklistedPlugin(opencpn_plugin* plugin)
             }
             
             wxLogMessage(msg1);
-            OCPNMessageBox ( NULL, msg, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK, 5 );  // 5 second timeout
+            if(m_benable_blackdialog)
+                OCPNMessageBox ( NULL, msg, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK, 5 );  // 5 second timeout
+            else
+                m_deferred_blacklist_messages.Add(msg);
             
             return PluginBlacklist[i].hard;
         }

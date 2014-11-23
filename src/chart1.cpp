@@ -2026,7 +2026,8 @@ bool MyApp::OnInit()
 
 //      Load and initialize any PlugIns
     g_pi_manager = new PlugInManager( gFrame );
-    g_pi_manager->LoadAllPlugIns( g_Plugin_Dir, true );
+    g_pi_manager->LoadAllPlugIns( g_Plugin_Dir, true, false );         // do not allow blicklist dialog, since
+                                                                        // frame and canvas are not yet rendered...
 
 // Show the frame
 
@@ -2086,6 +2087,10 @@ bool MyApp::OnInit()
     //   Notify all the AUI PlugIns so that they may syncronize with the Perspective
     g_pi_manager->NotifyAuiPlugIns();
 
+    //  Give the use dialog on any blacklisted PlugIns
+    g_pi_manager->ShowDeferredBlacklistMessages();
+    
+    
     bool b_SetInitialPoint = false;
 
     //   Build the initial chart dir array
