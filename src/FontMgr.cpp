@@ -135,10 +135,6 @@ wxFont *FontMgr::GetFont( const wxString &TextElement, int user_default_size )
     wxFont sys_font = *wxNORMAL_FONT;
     int sys_font_size = sys_font.GetPointSize();
 
-#ifdef __WXMSW__
-    sys_font_size = wxMax( sys_font_size, 10 );   //  In no case should the default font be smaller than 10 pt.
-#endif
-    
     int new_size;
     if( 0 == user_default_size )
         new_size = sys_font_size;
@@ -181,11 +177,13 @@ wxString FontMgr::GetSimpleNativeFont( int size )
 #ifdef __WXMSW__
 //      nativefont = _T ( "0;-11;0;0;0;400;0;0;0;0;0;0;0;0;MS Sans Serif" );
 
-    double asize = -size * 96.0/72.0;
-    long lfHeight = int(asize);
-    
+    wxFont sys_font = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
+    sys_font.SetPointSize( size + 1 );
+
+    int size_px = sys_font.GetPixelSize().GetHeight();
+
     nativefont.Printf( _T("%d;%ld;%ld;%ld;%ld;%ld;%d;%d;%d;%d;%d;%d;%d;%d;"), 0, // version, in case we want to change the format later
-            lfHeight,            //lf.lfHeight
+            size_px,             //lf.lfHeight
             0,                   //lf.lfWidth,
             0,                   //lf.lfEscapement,
             0,                   //lf.lfOrientation,
@@ -199,9 +197,8 @@ wxString FontMgr::GetSimpleNativeFont( int size )
             0,                   //lf.lfQuality,
             0 );                    //lf.lfPitchAndFamily,
 
-//    nativefont.Append( _T("Verdana") );
-    nativefont.Append( _T("MS Sans Serif") );
-    
+    nativefont.Append( sys_font.GetFaceName() );
+
 #endif
 
     return nativefont;

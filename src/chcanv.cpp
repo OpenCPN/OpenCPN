@@ -7100,7 +7100,7 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
         if( !lightsVis ) gFrame->ToggleLights( true, true );
 
         wxString objText;
-        wxFont *dFont = FontMgr::Get().GetFont( _("ObjectQuery"), 12 );
+        wxFont *dFont = FontMgr::Get().GetFont( _("ObjectQuery") );
         wxString face = dFont->GetFaceName();
 
         if( NULL == g_pObjectQueryDialog ) {
@@ -7114,30 +7114,20 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
         wxColor bg = g_pObjectQueryDialog->GetBackgroundColour();
         wxColor fg = FontMgr::Get().GetFontColor( _("ObjectQuery") );
 
-        objText.Printf( _T("<html><body bgcolor=#%02x%02x%02x><font color=#%02x%02x%02x face="), bg.Red(), bg.Blue(),
-                        bg.Green(), fg.Red(), fg.Blue(), fg.Green() );
-        objText += _T("\"");
-        objText += face;
-        objText += _T("\" ");
+        objText.Printf( _T("<html><body bgcolor=#%02x%02x%02x><font color=#%02x%02x%02x>"),
+                       bg.Red(), bg.Blue(), bg.Green(), fg.Red(), fg.Blue(), fg.Green() );
 
+#ifdef __WXOSX__
         int points = dFont->GetPointSize();
-        wxString ss;
-        switch (points & 0xFE){
-            case 8:  ss = _T("size=\"2\""); break;
-            case 10: ss = _T("size=\"3\""); break;
-            case 12: ss = _T("size=\"3\""); break;
-            case 14: ss = _T("size=\"4\""); break;
-            case 16: ss = _T("size=\"4\""); break;
-            case 18: ss = _T("size=\"5\""); break;
-            case 20: ss = _T("size=\"6\""); break;
-            default: ss = _T(" "); break;
+#else
+        int points = dFont->GetPointSize() + 1;
+#endif
+
+        int sizes[7];
+        for ( int i=-2; i<5; i++ ) {
+            sizes[i+2] = points + i + (i>0?i:0);
         }
-        
-        if(points > 20)
-            ss = _T("size=\"6\"");
-        
-        objText += ss;
-        objText += _T(">");
+        g_pObjectQueryDialog->m_phtml->SetFonts(face, face, sizes);
 
         if(wxFONTSTYLE_ITALIC == dFont->GetStyle())
             objText += _T("<i>");
@@ -8566,7 +8556,7 @@ wxString ChartCanvas::FormatDistanceAdaptive( double distance ) {
 
 void RenderExtraRouteLegInfo( ocpnDC &dc, wxPoint ref_point, wxString s )
 {
-    wxFont *dFont = FontMgr::Get().GetFont( _("RouteLegInfoRollover"), 12 );
+    wxFont *dFont = FontMgr::Get().GetFont( _("RouteLegInfoRollover") );
     dc.SetFont( *dFont );
 
     int w, h;
@@ -8653,7 +8643,7 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
 
         routeInfo << _T(" ") << FormatDistanceAdaptive( dist );
 
-        wxFont *dFont = FontMgr::Get().GetFont( _("RouteLegInfoRollover"), 12 );
+        wxFont *dFont = FontMgr::Get().GetFont( _("RouteLegInfoRollover") );
         dc.SetFont( *dFont );
 
         int w, h;
@@ -9919,7 +9909,7 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
     wxBrush *brc_1 = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "BLUE2" ) ), wxSOLID );
     wxBrush *brc_2 = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "YELO1" ) ), wxSOLID );
 
-    wxFont *dFont = FontMgr::Get().GetFont( _("ExtendedTideIcon"), 12 );
+    wxFont *dFont = FontMgr::Get().GetFont( _("ExtendedTideIcon") );
     dc.SetTextForeground( FontMgr::Get().GetFontColor( _("ExtendedTideIcon") ) );
     int font_size = wxMax(8, dFont->GetPointSize());
     wxFont *plabelFont = wxTheFontList->FindOrCreateFont( font_size, dFont->GetFamily(),
@@ -10180,7 +10170,7 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
     if( !g_bskew_comp )
         skew_angle += GetVPSkew();
 
-    pTCFont = FontMgr::Get().GetFont( _("CurrentValue"), 12 );
+    pTCFont = FontMgr::Get().GetFont( _("CurrentValue") );
     
     int now = time( NULL );
 
