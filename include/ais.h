@@ -232,4 +232,6 @@ wxString ais_get_short_type(int index);
 void AISDrawAreaNotices (ocpnDC& dc );
 void AISDraw(ocpnDC& dc);
 
+WX_DECLARE_HASH_MAP( int, wxString, wxIntegerHash, wxIntegerEqual, AIS_Target_Name_Hash );
+
 #endif
