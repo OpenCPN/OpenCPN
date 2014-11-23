@@ -943,7 +943,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                     // Write the MMSI->ShipName hash file
                     std::ofstream outfile( pAISTargetNameFileName->mb_str(), std::ios_base::app );
                     if( outfile.is_open() ) {
-                        outfile << mmsi << "," << ship_name << "\r\n";
+                        outfile << mmsi << "," << ship_name.mb_str() << "\r\n";
                     }
                     outfile.close();
                 }
