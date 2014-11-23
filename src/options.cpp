@@ -549,7 +549,7 @@ void MMSIListCtrl::OnListItemActivated( wxListEvent &event)
     MMSIProperties *props = g_MMSI_Props_Array.Item( event.GetIndex() );
     MMSIProperties *props_new = new MMSIProperties( *props);
     
-    MMSIEditDialog *pd = new MMSIEditDialog( props_new, m_parent, -1, _T("Edit MMSI Properties"),
+    MMSIEditDialog *pd = new MMSIEditDialog( props_new, m_parent, -1, _("Edit MMSI Properties"),
                                              wxDefaultPosition, wxSize(200,200) );
     
     if ( pd->ShowModal() == wxID_OK ){
@@ -569,10 +569,10 @@ void MMSIListCtrl::OnListItemRightClick( wxListEvent &event)
     
     wxMenu* menu = new wxMenu( _("MMSI Properties") );
 
-    wxMenuItem *item_edit = new wxMenuItem(menu, ID_DEF_MENU_MMSI_EDIT, _T("Edit..."));
+    wxMenuItem *item_edit = new wxMenuItem(menu, ID_DEF_MENU_MMSI_EDIT, _("Edit..."));
     menu->Append(item_edit);
     
-    wxMenuItem *item_delete = new wxMenuItem(menu, ID_DEF_MENU_MMSI_DELETE, _T("Delete"));
+    wxMenuItem *item_delete = new wxMenuItem(menu, ID_DEF_MENU_MMSI_DELETE, _("Delete"));
     menu->Append(item_delete);
 
 #ifdef __WXMSW__
@@ -600,7 +600,7 @@ void MMSIListCtrl::PopupMenuHandler( wxCommandEvent& event )
    switch( event.GetId() ) {
        case ID_DEF_MENU_MMSI_EDIT:
            if(props){
-            pd = new MMSIEditDialog( props_new, m_parent, -1, _T("Edit MMSI Properties"), wxDefaultPosition, wxSize(200,200) );
+            pd = new MMSIEditDialog( props_new, m_parent, -1, _("Edit MMSI Properties"), wxDefaultPosition, wxSize(200,200) );
            
             if ( pd->ShowModal() == wxID_OK ){
                 g_MMSI_Props_Array.RemoveAt( m_context_item );
@@ -726,7 +726,7 @@ void MMSI_Props_Panel::OnNewButton( wxCommandEvent &event )
 {
     MMSIProperties *props = new MMSIProperties(-1);
     
-    MMSIEditDialog *pd = new MMSIEditDialog( props, m_parent, -1, _T("Add MMSI Properties"), wxDefaultPosition, wxSize(200,200) );
+    MMSIEditDialog *pd = new MMSIEditDialog( props, m_parent, -1, _("Add MMSI Properties"), wxDefaultPosition, wxSize(200,200) );
     
     if ( pd->ShowModal() == wxID_OK )
         g_MMSI_Props_Array.Add( props );
@@ -779,28 +779,6 @@ void MMSI_Props_Panel::SetColorScheme( ColorScheme cs )
 {
     DimeControl( this );
 }
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 BEGIN_EVENT_TABLE( options, wxDialog )
     EVT_CHECKBOX( ID_DEBUGCHECKBOX1, options::OnDebugcheckbox1Click )
