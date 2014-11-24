@@ -4724,14 +4724,15 @@ void MyFrame::RegisterGlobalMenuItems()
     tools_menu->AppendSeparator();
 #ifdef __WXOSX__
     tools_menu->Append( ID_MENU_MARK_MOB, _menuText(_("Drop MOB Marker"), _T("RawCtrl-Space")) ); // NOTE Cmd+Space is reserved for Spotlight
-#else
-    tools_menu->Append( ID_MENU_MARK_MOB, _menuText(_("Drop MOB Marker"), _T("Ctrl-Space")) );
-#endif
     tools_menu->AppendSeparator();
     tools_menu->Append( wxID_PREFERENCES, _menuText(_("Preferences..."), _T("Ctrl-,")) );
+#else
+    tools_menu->Append( ID_MENU_MARK_MOB, _menuText(_("Drop MOB Marker"), _T("Ctrl-Space")) );
+    tools_menu->AppendSeparator();
+    tools_menu->Append( wxID_PREFERENCES, _menuText(_("Options..."), _T("Ctrl-,")) );
+#endif
+
     m_pMenuBar->Append( tools_menu, _("&Tools") );
-
-
     wxMenu* help_menu = new wxMenu();
     help_menu->Append( wxID_ABOUT, _("About OpenCPN") );
     help_menu->Append( wxID_HELP, _("OpenCPN Help") );
