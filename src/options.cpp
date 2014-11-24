@@ -2367,10 +2367,10 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
 
     //  Mobile/Touchscreen checkboxes
     pMobile = new wxCheckBox( itemPanelFont, ID_MOBILEBOX, _("Enable Touchscreen/Tablet interface") );
-    miscOptions->Add( pMobile, 1, wxALL, border_size );
+    miscOptions->Add( pMobile, 0, wxALL, border_size );
     
     pResponsive = new wxCheckBox( itemPanelFont, ID_REPONSIVEBOX, _("Enable Responsive graphics interface") );
-    miscOptions->Add( pResponsive, 1, wxALL, border_size );
+    miscOptions->Add( pResponsive, 0, wxALL, border_size );
     
     
     
