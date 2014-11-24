@@ -1903,7 +1903,7 @@ int MyConfig::LoadMyConfig( int iteration )
         delete pval;
     }
 
-    if( 0 == iteration )
+    if( 1 == iteration )
         FontMgr::Get().ScrubList();
 
 //  Tide/Current Data Sources
