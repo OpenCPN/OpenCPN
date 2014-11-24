@@ -140,6 +140,7 @@ AIS_Target_Data::AIS_Target_Data()
     b_show_track = g_bAISShowTracks;
     b_SarAircraftPosnReport = false;
     altitude = 0;
+    b_nameFromCache = false;
 }
 
 void AIS_Target_Data::CloneFrom( AIS_Target_Data* q )

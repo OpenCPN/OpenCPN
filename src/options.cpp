@@ -1551,10 +1551,7 @@ void options::CreatePanel_Ownship( size_t parent, int border_size, int group_ite
     m_itemRadarRingsUnits = new wxChoice( itemPanelShip, ID_RADARDISTUNIT, wxDefaultPosition, m_pShipIconType->GetSize(), 2, pDistUnitsStrings );
     radarGrid->Add( m_itemRadarRingsUnits, 0, wxALIGN_RIGHT | wxALL, border_size );
 
-    pSailing = new wxCheckBox( itemPanelShip, ID_DAILYCHECKBOX, _("Advance route waypoint on arrival only") );
-    ownShip->Add( pSailing, 0 );
-
-    //  Tracks
+     //  Tracks
     wxStaticBox* trackText = new wxStaticBox( itemPanelShip, wxID_ANY, _("Tracks") );
     wxStaticBoxSizer* trackSizer = new wxStaticBoxSizer( trackText, wxVERTICAL );
     ownShip->Add( trackSizer, 0, wxGROW | wxALL, border_size );
@@ -1590,6 +1587,10 @@ void options::CreatePanel_Ownship( size_t parent, int border_size, int group_ite
 
     m_pText_ACRadius = new wxTextCtrl( itemPanelShip, -1 );
     pRouteGrid->Add( m_pText_ACRadius, 0, wxALL | wxALIGN_RIGHT, group_item_spacing );
+    
+    pSailing = new wxCheckBox( itemPanelShip, ID_DAILYCHECKBOX, _("Advance route waypoint on arrival only") );
+    routeSizer->Add( pSailing, 0 );
+    
     
     DimeControl( itemPanelShip );
 }
@@ -1665,10 +1666,6 @@ void options::CreatePanel_ChartDisplay( size_t parent, int border_size, int grou
     wxStaticBox* itemStaticBoxSizerCDOStatic = new wxStaticBox( m_ChartDisplayPage, wxID_ANY, _("Chart Display Options") );
     wxStaticBoxSizer* itemStaticBoxSizerCDO = new wxStaticBoxSizer( itemStaticBoxSizerCDOStatic,  wxVERTICAL );
     itemBoxSizerUI->Add( itemStaticBoxSizerCDO, 0, wxEXPAND | wxALL, border_size );
-
-    //  "Course Up" checkbox
-    pCBCourseUp = new wxCheckBox( m_ChartDisplayPage, ID_COURSEUPCHECKBOX, _("Course UP Mode") );
-    itemStaticBoxSizerCDO->Add( pCBCourseUp, 0, wxALL, group_item_spacing );
 
     //  Course Up display update period
     wxFlexGridSizer *pCOGUPFilterGrid = new wxFlexGridSizer( 2 );
@@ -2020,10 +2017,9 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
     pCDOOutlines = new wxCheckBox( pDisplayPanel, ID_OUTLINECHECKBOX1, _("Show Chart Outlines") );
     itemStaticBoxSizerCDO->Add( pCDOOutlines, 1, wxALL, group_item_spacing );
 
-    
-    
-    
-   
+    //  "Course Up" checkbox
+    pCBCourseUp = new wxCheckBox( pDisplayPanel, ID_COURSEUPCHECKBOX, _("Course UP Mode") );
+    itemStaticBoxSizerCDO->Add( pCBCourseUp, 0, wxALL, group_item_spacing );
     
     
     // Control Options Box
@@ -2050,14 +2046,6 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
     pPreserveScale = new wxCheckBox( pDisplayPanel, ID_PRESERVECHECKBOX,
                                      _("Preserve Scale when Switching Charts") );
     itemStaticBoxSizerCO->Add( pPreserveScale, 1, wxALL, group_item_spacing );
-    
-    
-    //  Mobile/Touchscreen checkboxes
-    pMobile = new wxCheckBox( pDisplayPanel, ID_MOBILEBOX, _("Enable Touchscreen/Tablet interface") );
-    itemStaticBoxSizerCO->Add( pMobile, 1, wxALL, group_item_spacing );
-    
-    pResponsive = new wxCheckBox( pDisplayPanel, ID_REPONSIVEBOX, _("Enable Responsive graphics interface") );
-    itemStaticBoxSizerCO->Add( pResponsive, 1, wxALL, group_item_spacing );
     
     
 
@@ -2348,7 +2336,7 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
     m_itemStyleListBox->SetStringSelection( g_StyleManager->GetCurrentStyle()->name );
     itemStyleStaticBoxSizer->Add( m_itemStyleListBox, 1, wxEXPAND | wxALL, border_size );
 
-    wxStaticBox* miscOptionsBox = new wxStaticBox( itemPanelFont, wxID_ANY, _("Miscellaneous Options") );
+    wxStaticBox* miscOptionsBox = new wxStaticBox( itemPanelFont, wxID_ANY, _("Interface Options") );
     wxStaticBoxSizer* miscOptions = new wxStaticBoxSizer( miscOptionsBox, wxVERTICAL );
     m_itemBoxSizerFontPanel->Add( miscOptions, 0, wxALL | wxEXPAND, border_size );
 
@@ -2366,55 +2354,26 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
     pShowCompassWin->SetValue( FALSE );
     miscOptions->Add( pShowCompassWin, 0, wxALL, border_size );
 
+#if 0    
     pFullScreenToolbar = new wxCheckBox( itemPanelFont, ID_FSTOOLBARCHECKBOX,
             _("Show Toolbar in Fullscreen Mode") );
     miscOptions->Add( pFullScreenToolbar, 0, wxALL, border_size );
+#endif
 
     pTransparentToolbar = new wxCheckBox( itemPanelFont, ID_TRANSTOOLBARCHECKBOX,
             _("Enable Transparent Toolbar") );
     miscOptions->Add( pTransparentToolbar, 0, wxALL, border_size );
     if( g_bopengl ) pTransparentToolbar->Disable();
 
-    wxFlexGridSizer *pFormatGrid = new wxFlexGridSizer( 2 );
-    pFormatGrid->AddGrowableCol( 1 );
-    miscOptions->Add( pFormatGrid, 0, wxALL | wxEXPAND, border_size );
-
-    wxStaticText* itemStaticTextSDMMFormat = new wxStaticText( itemPanelFont, wxID_STATIC,
-            _("Show Lat/Long as") );
-    pFormatGrid->Add( itemStaticTextSDMMFormat, 0,
-            wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, border_size );
-
-    wxString pSDMMFormats[] = { _("Degrees, Decimal Minutes"), _("Decimal Degrees"),
-            _("Degrees, Minutes, Seconds") };
-    int m_SDMMFormatsNChoices = sizeof( pSDMMFormats ) / sizeof(wxString);
-    pSDMMFormat = new wxChoice( itemPanelFont, ID_SDMMFORMATCHOICE, wxDefaultPosition,
-            wxDefaultSize, m_SDMMFormatsNChoices, pSDMMFormats );
-    pFormatGrid->Add( pSDMMFormat, 0, wxALIGN_RIGHT, 2 );
-
-    wxStaticText* itemStaticTextDistanceFormat = new wxStaticText( itemPanelFont, wxID_STATIC,
-            _("Show distance as") );
-    pFormatGrid->Add( itemStaticTextDistanceFormat, 0,
-            wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, border_size );
-
-    wxString pDistanceFormats[] = { _("Nautical miles"), _("Statute miles"),
-            _("Kilometers"), _("Meters") };
-    int m_DistanceFormatsNChoices = sizeof( pDistanceFormats ) / sizeof(wxString);
-    pDistanceFormat = new wxChoice( itemPanelFont, ID_DISTANCEFORMATCHOICE, wxDefaultPosition,
-            wxDefaultSize, m_DistanceFormatsNChoices, pDistanceFormats );
-    pFormatGrid->Add( pDistanceFormat, 0, wxALIGN_RIGHT, 2 );
-
-    wxStaticText* itemStaticTextSpeedFormat = new wxStaticText( itemPanelFont, wxID_STATIC,
-            _("Show speed as") );
-    pFormatGrid->Add( itemStaticTextSpeedFormat, 0,
-            wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, border_size );
-
-    wxString pSpeedFormats[] = { _("Knots"), _("Mph"),
-            _("km/h"), _("m/s") };
-    int m_SpeedFormatsNChoices = sizeof( pSpeedFormats ) / sizeof(wxString);
-    pSpeedFormat = new wxChoice( itemPanelFont, ID_SPEEDFORMATCHOICE, wxDefaultPosition,
-            wxDefaultSize, m_SpeedFormatsNChoices, pSpeedFormats );
-    pFormatGrid->Add( pSpeedFormat, 0, wxALIGN_RIGHT, 2 );
-
+    //  Mobile/Touchscreen checkboxes
+    pMobile = new wxCheckBox( itemPanelFont, ID_MOBILEBOX, _("Enable Touchscreen/Tablet interface") );
+    miscOptions->Add( pMobile, 1, wxALL, border_size );
+    
+    pResponsive = new wxCheckBox( itemPanelFont, ID_REPONSIVEBOX, _("Enable Responsive graphics interface") );
+    miscOptions->Add( pResponsive, 1, wxALL, border_size );
+    
+    
+    
 
     pPlayShipsBells = new wxCheckBox( itemPanelFont, ID_BELLSCHECKBOX, _("Play Ships Bells"));
     miscOptions->Add( pPlayShipsBells, 0, wxALIGN_LEFT|wxALL, border_size);
@@ -2445,7 +2404,52 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
     pMagVar = new wxTextCtrl( itemPanelFont, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxDefaultSize );
     pUserVarGrid->Add( pMagVar, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
                                                             
-                                                            
+
+    wxStaticBox* unitOptionsBox = new wxStaticBox( itemPanelFont, wxID_ANY, _("Unit Display Options") );
+    wxStaticBoxSizer* unitOptions = new wxStaticBoxSizer( unitOptionsBox, wxVERTICAL );
+    m_itemBoxSizerFontPanel->Add( unitOptions, 0, wxALL | wxEXPAND, border_size );
+    
+    
+    wxFlexGridSizer *pFormatGrid = new wxFlexGridSizer( 2 );
+    pFormatGrid->AddGrowableCol( 1 );
+    unitOptions->Add( pFormatGrid, 0, wxALL | wxEXPAND, border_size );
+    
+    wxStaticText* itemStaticTextSDMMFormat = new wxStaticText( itemPanelFont, wxID_STATIC,
+                                                               _("Show Lat/Long as") );
+    pFormatGrid->Add( itemStaticTextSDMMFormat, 0,
+                      wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, border_size );
+    
+    wxString pSDMMFormats[] = { _("Degrees, Decimal Minutes"), _("Decimal Degrees"),
+    _("Degrees, Minutes, Seconds") };
+    int m_SDMMFormatsNChoices = sizeof( pSDMMFormats ) / sizeof(wxString);
+    pSDMMFormat = new wxChoice( itemPanelFont, ID_SDMMFORMATCHOICE, wxDefaultPosition,
+                                wxDefaultSize, m_SDMMFormatsNChoices, pSDMMFormats );
+    pFormatGrid->Add( pSDMMFormat, 0, wxALIGN_RIGHT, 2 );
+    
+    wxStaticText* itemStaticTextDistanceFormat = new wxStaticText( itemPanelFont, wxID_STATIC,
+                                                                   _("Show distance as") );
+    pFormatGrid->Add( itemStaticTextDistanceFormat, 0,
+                      wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, border_size );
+    
+    wxString pDistanceFormats[] = { _("Nautical miles"), _("Statute miles"),
+      _("Kilometers"), _("Meters") };
+      int m_DistanceFormatsNChoices = sizeof( pDistanceFormats ) / sizeof(wxString);
+      pDistanceFormat = new wxChoice( itemPanelFont, ID_DISTANCEFORMATCHOICE, wxDefaultPosition,
+                                      wxDefaultSize, m_DistanceFormatsNChoices, pDistanceFormats );
+      pFormatGrid->Add( pDistanceFormat, 0, wxALIGN_RIGHT, 2 );
+      
+      wxStaticText* itemStaticTextSpeedFormat = new wxStaticText( itemPanelFont, wxID_STATIC,
+                                                                  _("Show speed as") );
+      pFormatGrid->Add( itemStaticTextSpeedFormat, 0,
+                        wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, border_size );
+      
+      wxString pSpeedFormats[] = { _("Knots"), _("Mph"),
+      _("km/h"), _("m/s") };
+      int m_SpeedFormatsNChoices = sizeof( pSpeedFormats ) / sizeof(wxString);
+      pSpeedFormat = new wxChoice( itemPanelFont, ID_SPEEDFORMATCHOICE, wxDefaultPosition,
+                                   wxDefaultSize, m_SpeedFormatsNChoices, pSpeedFormats );
+      pFormatGrid->Add( pSpeedFormat, 0, wxALIGN_RIGHT, 2 );
+      
     
 }
 
@@ -2727,7 +2731,7 @@ void options::SetInitialSettings()
 
     pPreserveScale->SetValue( g_bPreserveScaleOnX );
     pPlayShipsBells->SetValue( g_bPlayShipsBells );
-    pFullScreenToolbar->SetValue( g_bFullscreenToolbar );
+//    pFullScreenToolbar->SetValue( g_bFullscreenToolbar );
     pTransparentToolbar->SetValue( g_bTransparentToolbar );
     pSDMMFormat->Select( g_iSDMMFormat );
     pDistanceFormat->Select( g_iDistanceFormat );
@@ -3443,7 +3447,7 @@ void options::OnApplyClick( wxCommandEvent& event )
     g_bPreserveScaleOnX = pPreserveScale->GetValue();
 
     g_bPlayShipsBells = pPlayShipsBells->GetValue();
-    g_bFullscreenToolbar = pFullScreenToolbar->GetValue();
+//    g_bFullscreenToolbar = pFullScreenToolbar->GetValue();
     g_bTransparentToolbar = pTransparentToolbar->GetValue();
     g_iSDMMFormat = pSDMMFormat->GetSelection();
     g_iDistanceFormat = pDistanceFormat->GetSelection();

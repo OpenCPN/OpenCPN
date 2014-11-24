@@ -930,22 +930,31 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
             if( bdecode_result ) {
 
                 // Check for valid name data
-                AIS_Target_Name_Hash::iterator it = AISTargetNames->find( mmsi );
-                if( !pTargetData->b_nameValid && ( it != AISTargetNames->end() ) ) {
+                if( !pTargetData->b_nameValid ){
+                    AIS_Target_Name_Hash::iterator it = AISTargetNames->find( mmsi );
+                    if(  it != AISTargetNames->end()  ) {
                     // If we don't have a name yet but have one in the MMSI->ShipName hash, use the one in the hash
-                    wxString ship_name = ( *AISTargetNames )[mmsi];
-                    strncpy( pTargetData->ShipName, ship_name.mb_str(), ship_name.length() + 1 );
-                    pTargetData->b_nameValid = true;
-                } else if ( pTargetData->b_nameValid && ( it == AISTargetNames->end() ) ) {
-                    // If have a name but haven't saved it to the hash, save it
-                    wxString ship_name = trimAISField( pTargetData->ShipName );
-                    ( *AISTargetNames )[mmsi] = ship_name;
-                    // Write the MMSI->ShipName hash file
-                    std::ofstream outfile( pAISTargetNameFileName->mb_str(), std::ios_base::app );
-                    if( outfile.is_open() ) {
-                        outfile << mmsi << "," << ship_name.mb_str() << "\r\n";
+                        wxString ship_name = ( *AISTargetNames )[mmsi];
+                        strncpy( pTargetData->ShipName, ship_name.mb_str(), ship_name.length() + 1 );
+                        pTargetData->b_nameValid = true;
+                        pTargetData->b_nameFromCache = true;
                     }
-                    outfile.close();
+                } 
+                else if( (pTargetData->MID == 5) || (pTargetData->MID == 21) || (pTargetData->MID == 24) ){
+                    //  This message contains ship static data, so has a name field
+                    pTargetData->b_nameFromCache = false;
+                    AIS_Target_Name_Hash::iterator it = AISTargetNames->find( mmsi );
+                    if(  it == AISTargetNames->end()  ) {
+                    // If have a name but haven't saved it to the hash, save it
+                        wxString ship_name = trimAISField( pTargetData->ShipName );
+                        ( *AISTargetNames )[mmsi] = ship_name;
+                    // Write the MMSI->ShipName hash file
+                        std::ofstream outfile( pAISTargetNameFileName->mb_str(), std::ios_base::app );
+                        if( outfile.is_open() ) {
+                            outfile << mmsi << "," << ship_name.mb_str() << "\r\n";
+                        }
+                        outfile.close();
+                    }
                 }
 
                 ( *AISTargetList )[pTargetData->MMSI] = pTargetData;            // update the hash table entry

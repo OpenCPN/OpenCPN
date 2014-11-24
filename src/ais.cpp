@@ -848,6 +848,10 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         if( td->b_isEuroInland )
             target_brush = wxBrush( GetGlobalColor( _T ( "TEAL1" ) ) );
 
+        // Target name comes from cache
+            if( td->b_nameFromCache )
+                target_brush = wxBrush( GetGlobalColor( _T ( "GREEN5" ) ) );
+            
         //and....
         if( !td->b_nameValid )
             target_brush = wxBrush( GetGlobalColor( _T ( "CHYLW" ) ) );
