@@ -2576,6 +2576,74 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
             wxColour color = cc1->GetFogColor(); 
             
             if( !m_gl_rendered_region.IsEmpty() ) {
+     
+                GLuint err;
+                int wi = VPoint.rv_rect.width;
+                int hi = VPoint.rv_rect.height;
+                
+#if 1
+                // Use MipMap LOD tweaking to produce a blurred, downsampling effect at high speed.
+                
+                if(s_glGenerateMipmap){
+                    
+                    //          Capture the rendered screen image to a texture
+                    glReadBuffer( GL_BACK);
+                    
+                    GLuint screen_capture;
+                    glGenTextures( 1, &screen_capture );
+                    
+                    glEnable(GL_TEXTURE_2D);
+                    glBindTexture(GL_TEXTURE_2D, screen_capture);
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); 
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+                    
+                    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, wi, hi, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
+                    
+                    
+                    glCopyTexSubImage2D(GL_TEXTURE_2D,  0,  0,  0,  0,  0,  wi, hi);
+ 
+                    glClear(GL_DEPTH_BUFFER_BIT);
+                    glDisable(GL_DEPTH_TEST);
+                    
+                    //  Build MipMaps, and re-rendered at reduced LOD (i.e. higher mipmap number)
+                    double bias = fog/70;
+                    
+                    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0 );
+                    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 4 );
+                    
+                    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, -1);
+                    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, 5);
+                    
+                    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                    
+                    /* some ATI drivers require this filter mode to build MipMaps, so to be safe... */
+                    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+                    
+                    s_glGenerateMipmap( GL_TEXTURE_2D );
+                    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
+
+                    glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, bias);
+                    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+                    
+                    glColor4f (1.0f,1.0f,1.0f,1.0f);
+
+                    glBegin(GL_QUADS);
+                    glTexCoord2f(0 , 1 ); glVertex2f(0,  0);
+                    glTexCoord2f(0 , 0 ); glVertex2f(0,  hi);
+                    glTexCoord2f(1 , 0 ); glVertex2f(wi, hi);
+                    glTexCoord2f(1 , 1 ); glVertex2f(wi, 0);
+                    glEnd ();
+                    
+                    glDeleteTextures(1, &screen_capture);
+                }
+                 
+#endif                
+                
+                
+                
+#if 0           // Fogging by alpha blending                
                 glPushAttrib( GL_COLOR_BUFFER_BIT );
                 glEnable( GL_BLEND );
                 glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
@@ -2600,6 +2668,7 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                 
                 glDisable( GL_BLEND );
                 glPopAttrib();
+#endif                
             }
         }
     }
