@@ -10897,20 +10897,15 @@ void DimeControl( wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_col
     ColorScheme cs = cc1->GetColorScheme();
     
     //  If the color scheme is DAY or RGB, use the default platform native colour for backgrounds
+#ifdef __WXOSX__
+    wxColour window_back_color = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWFRAME);
+#else
     wxColour window_back_color = wxNullColour;
+#endif
     if( cs != GLOBAL_COLOR_SCHEME_DAY && cs != GLOBAL_COLOR_SCHEME_RGB )
         window_back_color = back_color;
 
     ctrl->SetBackgroundColour( window_back_color );
-    
-#ifdef __WXMAC__
-#if wxCHECK_VERSION(2,9,0)
-    if( cs != GLOBAL_COLOR_SCHEME_DAY && cs != GLOBAL_COLOR_SCHEME_RGB )
-        ctrl->SetBackgroundColour( back_color );
-    else
-        ctrl->SetBackgroundColour( wxColour( 0xff, 0xff, 0xff ));
-#endif
-#endif
 
     wxWindowList kids = ctrl->GetChildren();
     for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
