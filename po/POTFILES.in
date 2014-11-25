@@ -179,6 +179,7 @@ src/TrackPropDlg.cpp
 src/LinkPropDlg.cpp
 src/GoToPositionDialog.cpp
 src/AISTargetListDialog.cpp
+src/AISTargetAlertDialog.cpp
 src/AIS_Target_Data.cpp
 src/AISTargetQueryDialog.cpp
 src/RolloverWin.cpp
