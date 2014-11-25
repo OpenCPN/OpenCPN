@@ -348,12 +348,11 @@ wxString FontCandidates[] = {
     _T("END_OF_LIST")
 };
 
+
 void FontMgr::ScrubList( )
 {
-    //  Logic:
-    //  For each element entry in the candidate list, 
-    //          Look through the font list
-    //          If the the element appears and the locale prefix on the element is NOT en_US, fix it
+    wxString now_locale = g_locale;
+    wxArrayString string_array;
     
     bool done = false;
     unsigned int i = 0;
@@ -364,52 +363,59 @@ void FontMgr::ScrubList( )
             break;
         }
         
+        //  For each font identifier string in the FontCandidate array...
+        
+        //  In the current locale, walk the loaded list looking for a translation
+        //  that is correct, according to the currently load .mo file.
+        //  If found, add to a temporary array
+        
+        wxString trans = wxGetTranslation(candidate);
+        
         MyFontDesc *pmfd;
         wxNode *node = (wxNode *) ( m_fontlist->GetFirst() );
         while( node ) {
             pmfd = (MyFontDesc *) node->GetData();
-            if( pmfd->m_dialogstring == candidate ) {
-                wxString tlocale = pmfd->m_configstring.BeforeFirst('-');
-                if( tlocale != _T("en_US") ) {
-                    // Here is a potential bad entry, seems to NOT be en_US, but is in the list of english candidates
-                    // Try to get a translation
-                    wxString trans = wxGetTranslation(pmfd->m_dialogstring);
-                    if( trans == pmfd->m_dialogstring ){   //no translation. so keep it
-                    }
-                    //  Translated into something.
-                    //  If the something is in the list already, with the correct locale prefix, then
-                    //  the item under consideration is bogus
-                    //  Search the list for exact match
-                    else {
-                        MyFontDesc *plmfd;
-                        wxNode *lnode = (wxNode *) ( m_fontlist->GetFirst() );
-                        while( lnode ) {
-                            plmfd = (MyFontDesc *) lnode->GetData();
-                            wxString tllocale = plmfd->m_configstring.BeforeFirst('-');
-                            if( (tlocale == tllocale) && (plmfd->m_dialogstring == trans) ){
-                                //  found a usable translation, so drop the bad one
-                                pmfd->m_dialogstring = _T("");
-                                pmfd->m_configstring = _T("");
-                                break;
-                            }
-                            
-                            lnode = lnode->GetNext();
-                        }
-                            
-                            
-                    }
-                    
+            wxString tlocale = pmfd->m_configstring.BeforeFirst('-');
+            if( tlocale == now_locale) {
+                if(trans == pmfd->m_dialogstring){
+                    string_array.Add(pmfd->m_dialogstring);
                 }
             }
+ 
             node = node->GetNext();
         }
         
         i++;
-    }
+    }        
 
-    //  Remove the marked list items
+    // now we have an array of correct translations    
+    // Walk the loaded list again.
+    // If a list item's translation is not in the "good" array, mark it for removal
+    
     MyFontDesc *pmfd;
     wxNode *node = (wxNode *) ( m_fontlist->GetFirst() );
+    while( node ) {
+        pmfd = (MyFontDesc *) node->GetData();
+        wxString tlocale = pmfd->m_configstring.BeforeFirst('-');
+        if( tlocale == now_locale) {
+            bool bfound = false;
+            for(unsigned int i=0 ; i < string_array.GetCount() ; i++){
+                if( string_array[i] == pmfd->m_dialogstring){
+                    bfound = true;
+                    break;
+                }
+            }
+            if(!bfound){        // mark for removal
+                pmfd->m_dialogstring = _T("");
+                pmfd->m_configstring = _T("");
+            }
+        }
+        
+        node = node->GetNext();
+    }
+    
+    //  Remove the marked list items
+    node = (wxNode *) ( m_fontlist->GetFirst() );
     while( node ) {
         pmfd = (MyFontDesc *) node->GetData();
         if( pmfd->m_dialogstring == _T("") ) {
@@ -421,7 +427,24 @@ void FontMgr::ScrubList( )
             node = node->GetNext();
         
     }
-            
-            
+ 
+    //  And finally, for good measure, make sure that everything in the candidate array has a valid entry in the list
+    done = false;
+    i = 0;
+    while( ! done ){
+        wxString candidate = FontCandidates[i];
+        if(candidate == _T("END_OF_LIST") ) {
+            done = true;
+            break;
+        }
+
+        GetFont( wxGetTranslation(candidate), 0 );
+     
+        i++;
+    }
+ 
+     
 }
+
+
 
