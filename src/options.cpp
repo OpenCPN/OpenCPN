@@ -2605,6 +2605,9 @@ void options::CreateControls()
 void options::SetColorScheme( ColorScheme cs )
 {
     DimeControl( this );
+
+    wxListView* lv = m_pListbook->GetListView();
+    lv->SetBackgroundColour(this->GetBackgroundColour());
 }
 
 void options::SetInitialSettings()

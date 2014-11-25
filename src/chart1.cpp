@@ -9594,7 +9594,11 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "BLUE3;   0;  0;255;", "GREY1; 200;200;200;", "GREY2; 230;230;230;", "RED1;  220;200;200;",
         "UBLCK;   0;  0;  0;", "UWHIT; 255;255;255;", "URED;  255;  0;  0;", "UGREN;   0;255;  0;",
         "YELO1; 243;229; 47;", "YELO2; 128; 80;  0;", "TEAL1;   0;128;128;", "GREEN5;178;205; 81;",
+#ifdef __WXOSX__
+        "DILG0; 255;255;255;",              // Dialog Background white
+#else
         "DILG0; 238;239;242;",              // Dialog Background white
+#endif
         "DILG1; 212;208;200;",              // Dialog Background
         "DILG2; 255;255;255;",              // Control Background
         "DILG3;   0;  0;  0;",              // Text
