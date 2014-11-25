@@ -2726,6 +2726,8 @@ void MyConfig::UpdateSettings()
     font_path = ( _T ( "/Settings/MacFonts" ) );
 #endif
 
+    DeleteGroup(font_path);
+    
     SetPath( font_path );
 
     int nFonts = FontMgr::Get().GetNumFonts();
