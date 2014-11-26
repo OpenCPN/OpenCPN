@@ -1598,7 +1598,7 @@ void options::CreatePanel_Ownship( size_t parent, int border_size, int group_ite
 void options::CreatePanel_ChartsLoad( size_t parent, int border_size, int group_item_spacing,
         wxSize small_button_size )
 {
-    wxScrolledWindow *chartPanelWin = AddPage( m_pageCharts, _("Charts") );
+    wxScrolledWindow *chartPanelWin = AddPage( m_pageCharts, _("Chart Files") );
 
     chartPanel = new wxBoxSizer( wxVERTICAL );
     chartPanelWin->SetSizer( chartPanel );
@@ -1654,7 +1654,7 @@ void options::CreatePanel_ChartsLoad( size_t parent, int border_size, int group_
     chartPanel->Layout();
 }
 
-void options::CreatePanel_ChartDisplay( size_t parent, int border_size, int group_item_spacing,
+void options::CreatePanel_Advanced( size_t parent, int border_size, int group_item_spacing,
                                         wxSize small_button_size )
 {
     m_ChartDisplayPage = AddPage( parent, _("Advanced") );
@@ -2077,6 +2077,95 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
 
 }
 
+void options::CreatePanel_Units( size_t parent, int border_size, int group_item_spacing,
+                                  wxSize small_button_size )
+{
+    wxScrolledWindow *panelUnits = AddPage( parent, _("Units") );
+
+    wxBoxSizer* unitsSizer = new wxBoxSizer( wxVERTICAL );
+    panelUnits->SetSizer( unitsSizer );
+
+
+    wxFlexGridSizer *pFormatGrid = new wxFlexGridSizer( 2 );
+    pFormatGrid->AddGrowableCol( 0, 1 );
+    pFormatGrid->AddGrowableCol( 1, 1 );
+    unitsSizer->Add( pFormatGrid, 0, wxALL | wxEXPAND, border_size );
+
+    wxSizerFlags labelFlags(0);
+    labelFlags.Align(wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL).Border(wxALL, border_size);
+
+    wxSizerFlags inputFlags(0);
+    inputFlags.Align(wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL).Border(wxALL, border_size);
+
+
+    // distance units
+    wxStaticText* itemStaticTextDistanceFormat = new wxStaticText( panelUnits, wxID_STATIC, _("Distance") );
+    pFormatGrid->Add( itemStaticTextDistanceFormat, labelFlags );
+
+    wxString pDistanceFormats[] = { _("Nautical miles"), _("Statute miles"), _("Kilometers"), _("Meters") };
+    int m_DistanceFormatsNChoices = sizeof(pDistanceFormats) / sizeof(wxString);
+    pDistanceFormat = new wxChoice( panelUnits, ID_DISTANCEFORMATCHOICE, wxDefaultPosition,
+                                   wxDefaultSize, m_DistanceFormatsNChoices, pDistanceFormats );
+    pFormatGrid->Add( pDistanceFormat, inputFlags );
+
+
+    // speed units
+    wxStaticText* itemStaticTextSpeedFormat = new wxStaticText( panelUnits, wxID_STATIC, _("Speed") );
+    pFormatGrid->Add( itemStaticTextSpeedFormat, labelFlags );
+
+    wxString pSpeedFormats[] = { _("Knots"), _("Mph"), _("km/h"), _("m/s") };
+    int m_SpeedFormatsNChoices = sizeof( pSpeedFormats ) / sizeof(wxString);
+    pSpeedFormat = new wxChoice( panelUnits, ID_SPEEDFORMATCHOICE, wxDefaultPosition,
+                                wxDefaultSize, m_SpeedFormatsNChoices, pSpeedFormats );
+    pFormatGrid->Add( pSpeedFormat, inputFlags );
+
+
+    // spacer
+    pFormatGrid->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
+    pFormatGrid->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
+
+    
+    // lat/long units
+    wxStaticText* itemStaticTextSDMMFormat = new wxStaticText( panelUnits, wxID_STATIC, _("Lat/Long") );
+    pFormatGrid->Add( itemStaticTextSDMMFormat, labelFlags );
+
+    wxString pSDMMFormats[] = { _("Degrees, Decimal Minutes"), _("Decimal Degrees"), _("Degrees, Minutes, Seconds") };
+    int m_SDMMFormatsNChoices = sizeof( pSDMMFormats ) / sizeof(wxString);
+    pSDMMFormat = new wxChoice( panelUnits, ID_SDMMFORMATCHOICE, wxDefaultPosition,
+                               wxDefaultSize, m_SDMMFormatsNChoices, pSDMMFormats );
+    pFormatGrid->Add( pSDMMFormat, inputFlags );
+
+
+    // spacer
+    pFormatGrid->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
+    pFormatGrid->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
+
+
+    // bearings (magnetic/true, variation)
+    pFormatGrid->Add( new wxStaticText(panelUnits, wxID_ANY, _("Bearings")), labelFlags.Align(wxALIGN_RIGHT | wxALIGN_TOP) );
+
+    wxBoxSizer* bearingsSizer = new wxBoxSizer( wxVERTICAL );
+    pFormatGrid->Add( bearingsSizer, 0, wxALL, group_item_spacing );
+
+    //  "Mag Heading" checkbox
+    pCBMagShow = new wxCheckBox( panelUnits, ID_MAGSHOWCHECKBOX, _("Show Magnetic bearings and headings") );
+    bearingsSizer->Add( pCBMagShow, 0, wxALL, group_item_spacing );
+
+    //  Mag Heading user variation
+    wxBoxSizer* magVarSizer = new wxBoxSizer( wxHORIZONTAL );
+    bearingsSizer->Add( magVarSizer, 0, wxALL, group_item_spacing );
+
+    wxStaticText* itemStaticTextUserVar = new wxStaticText( panelUnits, wxID_STATIC, _("Assumed magnetic variation") );
+    magVarSizer->Add( itemStaticTextUserVar, 0, wxALL | wxALIGN_CENTRE_VERTICAL, group_item_spacing );
+
+    pMagVar = new wxTextCtrl( panelUnits, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxDefaultSize );
+    magVarSizer->Add( pMagVar, 0, wxALIGN_CENTRE_VERTICAL, group_item_spacing );
+
+    magVarSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("deg")),
+                     0, wxALL | wxALIGN_CENTRE_VERTICAL, group_item_spacing );
+
+}
+
 void options::CreatePanel_MMSI( size_t parent, int border_size, int group_item_spacing, wxSize small_button_size )
 {
     wxScrolledWindow *panelMMSI = AddPage( parent, _("MMSI Properties") );
@@ -2396,69 +2485,6 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
     pConfirmObjectDeletion->SetValue( FALSE );
     miscOptions->Add( pConfirmObjectDeletion, 0, wxALL, border_size );
     
-    //  "Mag Heading" checkbox
-    pCBMagShow = new wxCheckBox( itemPanelFont, ID_MAGSHOWCHECKBOX, _("Show Magnetic bearings and headings") );
-    miscOptions->Add( pCBMagShow, 0, wxALL, group_item_spacing );
-    
-    //  Mag Heading user variation
-    wxFlexGridSizer *pUserVarGrid = new wxFlexGridSizer( 2 );
-    pUserVarGrid->AddGrowableCol( 1 );
-    miscOptions->Add( pUserVarGrid, 0, wxALL | wxEXPAND, group_item_spacing );
-    
-    wxStaticText* itemStaticTextUserVar = new wxStaticText( itemPanelFont, wxID_STATIC,
-                                                            _("Assumed Magnetic Variation, deg.") );
-    pUserVarGrid->Add( itemStaticTextUserVar, 0, wxADJUST_MINSIZE, group_item_spacing );
-                                                            
-    pMagVar = new wxTextCtrl( itemPanelFont, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxDefaultSize );
-    pUserVarGrid->Add( pMagVar, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
-                                                            
-
-    wxStaticBox* unitOptionsBox = new wxStaticBox( itemPanelFont, wxID_ANY, _("Unit Display Options") );
-    wxStaticBoxSizer* unitOptions = new wxStaticBoxSizer( unitOptionsBox, wxVERTICAL );
-    m_itemBoxSizerFontPanel->Add( unitOptions, 0, wxALL | wxEXPAND, border_size );
-    
-    
-    wxFlexGridSizer *pFormatGrid = new wxFlexGridSizer( 2 );
-    pFormatGrid->AddGrowableCol( 1 );
-    unitOptions->Add( pFormatGrid, 0, wxALL | wxEXPAND, border_size );
-    
-    wxStaticText* itemStaticTextSDMMFormat = new wxStaticText( itemPanelFont, wxID_STATIC,
-                                                               _("Show Lat/Long as") );
-    pFormatGrid->Add( itemStaticTextSDMMFormat, 0,
-                      wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, border_size );
-    
-    wxString pSDMMFormats[] = { _("Degrees, Decimal Minutes"), _("Decimal Degrees"),
-    _("Degrees, Minutes, Seconds") };
-    int m_SDMMFormatsNChoices = sizeof( pSDMMFormats ) / sizeof(wxString);
-    pSDMMFormat = new wxChoice( itemPanelFont, ID_SDMMFORMATCHOICE, wxDefaultPosition,
-                                wxDefaultSize, m_SDMMFormatsNChoices, pSDMMFormats );
-    pFormatGrid->Add( pSDMMFormat, 0, wxALIGN_RIGHT, 2 );
-    
-    wxStaticText* itemStaticTextDistanceFormat = new wxStaticText( itemPanelFont, wxID_STATIC,
-                                                                   _("Show distance as") );
-    pFormatGrid->Add( itemStaticTextDistanceFormat, 0,
-                      wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, border_size );
-    
-    wxString pDistanceFormats[] = { _("Nautical miles"), _("Statute miles"),
-      _("Kilometers"), _("Meters") };
-      int m_DistanceFormatsNChoices = sizeof( pDistanceFormats ) / sizeof(wxString);
-      pDistanceFormat = new wxChoice( itemPanelFont, ID_DISTANCEFORMATCHOICE, wxDefaultPosition,
-                                      wxDefaultSize, m_DistanceFormatsNChoices, pDistanceFormats );
-      pFormatGrid->Add( pDistanceFormat, 0, wxALIGN_RIGHT, 2 );
-      
-      wxStaticText* itemStaticTextSpeedFormat = new wxStaticText( itemPanelFont, wxID_STATIC,
-                                                                  _("Show speed as") );
-      pFormatGrid->Add( itemStaticTextSpeedFormat, 0,
-                        wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, border_size );
-      
-      wxString pSpeedFormats[] = { _("Knots"), _("Mph"),
-      _("km/h"), _("m/s") };
-      int m_SpeedFormatsNChoices = sizeof( pSpeedFormats ) / sizeof(wxString);
-      pSpeedFormat = new wxChoice( itemPanelFont, ID_SPEEDFORMATCHOICE, wxDefaultPosition,
-                                   wxDefaultSize, m_SpeedFormatsNChoices, pSpeedFormats );
-      pFormatGrid->Add( pSpeedFormat, 0, wxALIGN_RIGHT, 2 );
-      
-    
 }
 
 void options::CreateControls()
@@ -2549,16 +2575,17 @@ void options::CreateControls()
     m_ApplyButton = new wxButton( itemDialog1, ID_APPLY, _("Apply") );
     buttons->Add( m_ApplyButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, border_size );
 
-    m_pageDisplay = CreatePanel( _("Chart Display") );
+    m_pageDisplay = CreatePanel( _("Display") );
     CreatePanel_Display( m_pageDisplay, border_size, group_item_spacing, small_button_size );
-    CreatePanel_VectorCharts( m_pageDisplay, border_size, group_item_spacing, small_button_size );
-    CreatePanel_ChartDisplay( m_pageDisplay, border_size, group_item_spacing, small_button_size );
+    CreatePanel_Units( m_pageDisplay, border_size, group_item_spacing, small_button_size );
+    CreatePanel_Advanced( m_pageDisplay, border_size, group_item_spacing, small_button_size );
 
-    m_pageCharts = CreatePanel( _("Chart Files") );
+    m_pageCharts = CreatePanel( _("Charts") );
     CreatePanel_ChartsLoad( m_pageCharts, border_size, group_item_spacing, small_button_size );
-    CreatePanel_TidesCurrents( m_pageCharts, border_size, group_item_spacing, small_button_size );
-    // ChartGroups must be created after ChartsLoad
+    CreatePanel_VectorCharts( m_pageCharts, border_size, group_item_spacing, small_button_size );
+    // ChartGroups must be created after ChartsLoad and must be at least third
     CreatePanel_ChartGroups( m_pageCharts, border_size, group_item_spacing, small_button_size );
+    CreatePanel_TidesCurrents( m_pageCharts, border_size, group_item_spacing, small_button_size );
 
     m_pageConnections = CreatePanel( _("Connections") );
     CreatePanel_NMEA( m_pageConnections, border_size, group_item_spacing, small_button_size );
