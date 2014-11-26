@@ -1875,11 +1875,8 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
     depthsSizer->Add( m_DeepCtl, 0, wxLEFT | wxRIGHT | wxBOTTOM,
             group_item_spacing );
 
-    wxString pDepthUnitStrings[] = { _("Feet"), _("Meters"), _("Fathoms"), };
-
-    pDepthUnitSelect = new wxRadioBox( ps57Ctl, ID_RADARDISTUNIT, _("Chart Depth Units"),
-            wxDefaultPosition, wxDefaultSize, 3, pDepthUnitStrings, 1, wxRA_SPECIFY_COLS );
-    vectorPanel->Add( pDepthUnitSelect, 1, wxALL | wxEXPAND, border_size );
+    // space
+    vectorPanel->Add( new wxStaticText(ps57Ctl, wxID_ANY, _T("")) );
 
 //    m_choicePrecision->SetSelection( g_NMEAAPBPrecision );
 
@@ -2142,6 +2139,16 @@ void options::CreatePanel_Units( size_t parent, int border_size, int group_item_
     pFormatGrid->Add( pSpeedFormat, inputFlags );
 
 
+    // depth units
+    pFormatGrid->Add( new wxStaticText(panelUnits, wxID_ANY, _("Depth")), labelFlags.Align(wxALIGN_RIGHT | wxALIGN_TOP) );
+
+    wxString pDepthUnitStrings[] = { _("Feet"), _("Meters"), _("Fathoms"), };
+    pDepthUnitSelect = new wxChoice( panelUnits, ID_RADARDISTUNIT, wxDefaultPosition,
+                                    wxDefaultSize, 3, pDepthUnitStrings );
+    pFormatGrid->Add( pDepthUnitSelect, inputFlags );
+    
+
+
     // spacer
     pFormatGrid->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
     pFormatGrid->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
@@ -2170,7 +2177,7 @@ void options::CreatePanel_Units( size_t parent, int border_size, int group_item_
     pFormatGrid->Add( bearingsSizer, 0, wxALL, group_item_spacing );
 
     //  "Mag Heading" checkbox
-    pCBMagShow = new wxCheckBox( panelUnits, ID_MAGSHOWCHECKBOX, _("Show Magnetic bearings and headings") );
+    pCBMagShow = new wxCheckBox( panelUnits, ID_MAGSHOWCHECKBOX, _("Show magnetic bearings and headings") );
     bearingsSizer->Add( pCBMagShow, 0, wxALL, group_item_spacing );
 
     //  Mag Heading user variation
@@ -2183,7 +2190,7 @@ void options::CreatePanel_Units( size_t parent, int border_size, int group_item_
     pMagVar = new wxTextCtrl( panelUnits, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxDefaultSize );
     magVarSizer->Add( pMagVar, 0, wxALIGN_CENTRE_VERTICAL, group_item_spacing );
 
-    magVarSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("deg")),
+    magVarSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("deg (+W, -E)")),
                      0, wxALL | wxALIGN_CENTRE_VERTICAL, group_item_spacing );
 
 }

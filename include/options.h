@@ -316,8 +316,6 @@ public:
     wxCheckBox              *pSmoothPanZoom;
     wxCheckBox              *pFullScreenQuilt;
     wxChoice                *m_pcTCDatasets;
-    wxCheckBox              *pCBMagShow;
-    wxTextCtrl              *pMagVar;
     wxCheckBox              *pMobile;
     wxCheckBox              *pResponsive;
     wxSlider                *m_pSlider_Zoom;    
@@ -427,10 +425,17 @@ public:
     wxTextCtrl              *m_ShallowCtl;
     wxTextCtrl              *m_SafetyCtl;
     wxTextCtrl              *m_DeepCtl;
-    wxRadioBox              *pDepthUnitSelect;
     wxSlider                *m_pSlider_CM93_Zoom;
     wxCheckBox              *pSEnableCM93Offset;
     int                       k_vectorcharts;
+
+// For "Units" page
+    wxChoice                *pSDMMFormat;
+    wxChoice                *pDistanceFormat;
+    wxChoice                *pSpeedFormat;
+    wxChoice                *pDepthUnitSelect;
+    wxCheckBox              *pCBMagShow;
+    wxTextCtrl              *pMagVar;
 
 //    For "Charts" page
     wxStaticBoxSizer          *activeSizer;
@@ -515,9 +520,6 @@ public:
     wxCheckBox              *pPlayShipsBells;
     wxCheckBox              *pFullScreenToolbar;
     wxCheckBox              *pTransparentToolbar;
-    wxChoice                *pSDMMFormat;
-    wxChoice                *pDistanceFormat;
-    wxChoice                *pSpeedFormat;
 
     wxCheckBox              *pSailing;
     
