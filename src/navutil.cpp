@@ -425,12 +425,18 @@ void Track::Start( void )
 
 void Track::Stop( bool do_add_point )
 {
-    double delta = 0.0;
-    if( m_lastStoredTP )
-        delta = DistGreatCircle( gLat, gLon, m_lastStoredTP->m_lat, m_lastStoredTP->m_lon );
+    if(m_bRunning){
+        if(do_add_point)
+            AddPointNow( true );                   // Force add last point
+        else{    
+            double delta = 0.0;
+            if( m_lastStoredTP )
+                delta = DistGreatCircle( gLat, gLon, m_lastStoredTP->m_lat, m_lastStoredTP->m_lon );
 
-    if( ( m_bRunning ) && ( ( delta > m_minTrackpoint_delta ) || do_add_point ) ) AddPointNow(
-            true );                   // Add last point
+            if(  delta > m_minTrackpoint_delta ) 
+                AddPointNow( true );                   // Add last point
+        }
+    }
 
     m_TimerTrack.Stop();
     m_bRunning = false;
