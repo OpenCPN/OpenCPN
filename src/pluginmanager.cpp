@@ -3724,7 +3724,10 @@ bool PI_PLIBObjectRenderCheck( PI_S57Obj *pObj, PlugIn_ViewPort *vp )
         rzRules.child = NULL;
         rzRules.next = NULL;
         
-        return ps52plib->ObjectRenderCheck( &rzRules, &cvp );
+        if(pContext->LUP)
+            return ps52plib->ObjectRenderCheck( &rzRules, &cvp );
+        else
+            return false;
     }
     else
         return false;
@@ -4022,10 +4025,12 @@ void PI_PLIBSetLineFeaturePriority( PI_S57Obj *pObj, int prio )
     rzRules.next = NULL;
     rzRules.mps = pContext->MPSRulesList;
     
-    ps52plib->SetLineFeaturePriority( &rzRules, prio );
+    if(pContext->LUP){
+        ps52plib->SetLineFeaturePriority( &rzRules, prio );
 
     //  Update the PLIB context after the render operation
-    UpdatePIObjectPlibContext( pObj, &cobj, &rzRules );
+        UpdatePIObjectPlibContext( pObj, &cobj, &rzRules );
+    }
 
 }
 
@@ -4107,13 +4112,15 @@ int PI_PLIBRenderObjectToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp )
     rzRules.next = NULL;
     rzRules.mps = pContext->MPSRulesList;
     
-    ViewPort cvp = CreateCompatibleViewport( *vp );
+    if(pContext->LUP){
+        ViewPort cvp = CreateCompatibleViewport( *vp );
     
     //  Do the render
-    ps52plib->RenderObjectToDC( pdc, &rzRules, &cvp );
+        ps52plib->RenderObjectToDC( pdc, &rzRules, &cvp );
     
     //  Update the PLIB context after the render operation
-    UpdatePIObjectPlibContext( pObj, &cobj, &rzRules );
+        UpdatePIObjectPlibContext( pObj, &cobj, &rzRules );
+    }
 
     return 1;
 }
@@ -4182,11 +4189,13 @@ int PI_PLIBRenderAreaToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp, wxRe
         }
     }
     
+    if(pContext->LUP){
     //  Do the render
-    ps52plib->RenderAreaToDC( pdc, &rzRules, &cvp, &pb_spec );
+        ps52plib->RenderAreaToDC( pdc, &rzRules, &cvp, &pb_spec );
 
     //  Update the PLIB context after the render operation
-    UpdatePIObjectPlibContext( pObj, &cobj, &rzRules );
+        UpdatePIObjectPlibContext( pObj, &cobj, &rzRules );
+    }
     
     return 1;
 }
@@ -4244,14 +4253,16 @@ int PI_PLIBRenderAreaToGL( const wxGLContext &glcc, PI_S57Obj *pObj, PlugIn_View
     rzRules.next = NULL;
     rzRules.mps = pContext->MPSRulesList;
     
-    ViewPort cvp = CreateCompatibleViewport( *vp );
+    if(pContext->LUP){
+        ViewPort cvp = CreateCompatibleViewport( *vp );
     
     //  Do the render
-    ps52plib->RenderAreaToGL( glcc, &rzRules, &cvp, render_rect );
+        ps52plib->RenderAreaToGL( glcc, &rzRules, &cvp, render_rect );
     
     
     //  Update the PLIB context after the render operation
-    UpdatePIObjectPlibContext( pObj, &cobj, &rzRules );
+        UpdatePIObjectPlibContext( pObj, &cobj, &rzRules );
+    }
     
 #endif    
     return 1;
@@ -4281,13 +4292,15 @@ int PI_PLIBRenderObjectToGL( const wxGLContext &glcc, PI_S57Obj *pObj,
     rzRules.next = NULL;
     rzRules.mps = pContext->MPSRulesList;
     
-    ViewPort cvp = CreateCompatibleViewport( *vp );
+    if(pContext->LUP){
+        ViewPort cvp = CreateCompatibleViewport( *vp );
     
     //  Do the render
-    ps52plib->RenderObjectToGL( glcc, &rzRules, &cvp, render_rect );
+        ps52plib->RenderObjectToGL( glcc, &rzRules, &cvp, render_rect );
     
     //  Update the PLIB context after the render operation
-    UpdatePIObjectPlibContext( pObj, &cobj, &rzRules );
+        UpdatePIObjectPlibContext( pObj, &cobj, &rzRules );
+    }
     
     return 1;
     
