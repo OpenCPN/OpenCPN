@@ -404,15 +404,15 @@ public:
     bool m_connection_enabled;
 
 //    For "S57" page
-    wxFlexGridSizer         *vectorPanel;
+    wxBoxSizer              *vectorPanel;
     wxScrolledWindow        *ps57Ctl;
     wxCheckListBox          *ps57CtlListBox;
-    wxRadioBox              *pDispCat;
+    wxChoice                *pDispCat;
     wxButton                *itemButtonClearList;
     wxButton                *itemButtonSelectList;
-    wxRadioBox              *pPointStyle;
-    wxRadioBox              *pBoundStyle;
-    wxRadioBox              *p24Color;
+    wxChoice                *pPointStyle;
+    wxChoice                *pBoundStyle;
+    wxChoice                *p24Color;
     wxCheckBox              *pCheck_SOUNDG;
     wxCheckBox              *pCheck_META;
     wxCheckBox              *pCheck_SHOWIMPTEXT;
