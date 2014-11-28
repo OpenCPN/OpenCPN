@@ -10879,38 +10879,40 @@ void DimeControl( wxWindow* ctrl )
 {
     if( NULL == ctrl ) return;
 
-    wxColour col, col1, gridline, uitext, udkrd, back_color, text_color;
+    wxColour col, window_back_color, gridline, uitext, udkrd, ctrl_back_color, text_color;
     col = GetGlobalColor( _T("DILG0") );       // Dialog Background white
-    col1 = GetGlobalColor( _T("DILG1") );      // Dialog Background
-    back_color = GetGlobalColor( _T("DILG1") );      // Control Background
+    window_back_color = GetGlobalColor( _T("DILG1") );      // Dialog Background
+    ctrl_back_color = GetGlobalColor( _T("DILG1") );      // Control Background
     text_color = GetGlobalColor( _T("DILG3") );      // Text
     uitext = GetGlobalColor( _T("UITX1") );    // Menu Text, derived from UINFF
     udkrd = GetGlobalColor( _T("UDKRD") );
     gridline = GetGlobalColor( _T("GREY2") );
 
-    DimeControl( ctrl, col, col1, back_color, text_color, uitext, udkrd, gridline );
+    DimeControl( ctrl, col, window_back_color, ctrl_back_color, text_color, uitext, udkrd, gridline );
 }
 
-void DimeControl( wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_color,
+void DimeControl( wxWindow* ctrl, wxColour col, wxColour window_back_color, wxColour ctrl_back_color,
                   wxColour text_color, wxColour uitext, wxColour udkrd, wxColour gridline )
 {
-    ColorScheme cs = cc1->GetColorScheme();
-    
-    //  If the color scheme is DAY or RGB, use the default platform native colour for backgrounds
-    wxColour window_back_color = wxNullColour;
-    if( cs != GLOBAL_COLOR_SCHEME_DAY && cs != GLOBAL_COLOR_SCHEME_RGB )
-        window_back_color = back_color;
 
-    ctrl->SetBackgroundColour( window_back_color );
-    
-#ifdef __WXMAC__
-#if wxCHECK_VERSION(2,9,0)
-    if( cs != GLOBAL_COLOR_SCHEME_DAY && cs != GLOBAL_COLOR_SCHEME_RGB )
-        ctrl->SetBackgroundColour( back_color );
-    else
-        ctrl->SetBackgroundColour( wxColour( 0xff, 0xff, 0xff ));
+    ColorScheme cs = cc1->GetColorScheme();
+
+    static int depth = 0; // recursion count
+    if ( depth == 0 ) {   // only for the window root, not for every child
+
+        // If the color scheme is DAY or RGB, use the default platform native colour for backgrounds
+        if( cs == GLOBAL_COLOR_SCHEME_DAY || cs == GLOBAL_COLOR_SCHEME_RGB ) {
+#ifdef __WXOSX__
+            window_back_color = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWFRAME);
+#else
+            window_back_color = wxNullColour;
 #endif
-#endif
+
+            col = wxSystemSettings::GetColour(wxSYS_COLOUR_LISTBOX);
+        }
+
+        ctrl->SetBackgroundColour( window_back_color );
+    }
 
     wxWindowList kids = ctrl->GetChildren();
     for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
@@ -10920,23 +10922,20 @@ void DimeControl( wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_col
         if( win->IsKindOf( CLASSINFO(wxListBox) ) )
             ( (wxListBox*) win )->SetBackgroundColour( col );
 
-        if( win->IsKindOf( CLASSINFO(wxListCtrl) ) )
-            ( (wxListCtrl*) win )->SetBackgroundColour( col1 );
+        else if( win->IsKindOf( CLASSINFO(wxListCtrl) ) )
+            ( (wxListCtrl*) win )->SetBackgroundColour( col );
 
-        if( win->IsKindOf( CLASSINFO(wxTextCtrl) ) )
+        else if( win->IsKindOf( CLASSINFO(wxTextCtrl) ) )
             ( (wxTextCtrl*) win )->SetBackgroundColour( col );
 
-        if( win->IsKindOf( CLASSINFO(wxStaticText) ) )
+        else if( win->IsKindOf( CLASSINFO(wxStaticText) ) )
             ( (wxStaticText*) win )->SetForegroundColour( uitext );
 
-        else if( win->IsKindOf( CLASSINFO(wxBitmapComboBox) ) ) {
-#if wxCHECK_VERSION(2,9,0) && !wxCHECK_VERSION(3,0,0) // maybe remove as it only works in wx2.9 ?
-            if( ( ( wxBitmapComboBox*) win )->GetTextCtrl() )
-                ( (wxBitmapComboBox*) win )->GetTextCtrl()->SetBackgroundColour(col);
-#else
+#ifndef __WXOSX__
+        // on OS X most controls can't be styled, and trying to do so only creates weird coloured boxes around them
+
+        else if( win->IsKindOf( CLASSINFO(wxBitmapComboBox) ) )
             ( (wxBitmapComboBox*) win )->SetBackgroundColour( col );
-#endif
-        }
 
         else if( win->IsKindOf( CLASSINFO(wxChoice) ) )
             ( (wxChoice*) win )->SetBackgroundColour( col );
@@ -10944,57 +10943,55 @@ void DimeControl( wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_col
         else if( win->IsKindOf( CLASSINFO(wxComboBox) ) )
             ( (wxComboBox*) win )->SetBackgroundColour( col );
 
-        else if( win->IsKindOf( CLASSINFO(wxScrolledWindow) ) )
-            ( (wxScrolledWindow*) win )->SetBackgroundColour( window_back_color );
+        else if( win->IsKindOf( CLASSINFO(wxRadioButton) ) )
+            ( (wxRadioButton*) win )->SetBackgroundColour( window_back_color );
+
+        else if( win->IsKindOf( CLASSINFO(wxScrolledWindow) ) ) {
+            if( cs != GLOBAL_COLOR_SCHEME_DAY && cs != GLOBAL_COLOR_SCHEME_RGB )
+                ( (wxScrolledWindow*) win )->SetBackgroundColour( window_back_color );
+        }
+#endif
 
         else if( win->IsKindOf( CLASSINFO(wxGenericDirCtrl) ) )
-            ( (wxGenericDirCtrl*) win )->SetBackgroundColour( col1 );
+            ( (wxGenericDirCtrl*) win )->SetBackgroundColour( window_back_color );
 
         else if( win->IsKindOf( CLASSINFO(wxListbook) ) )
-            ( (wxListbook*) win )->SetBackgroundColour( col1 );
+            ( (wxListbook*) win )->SetBackgroundColour( window_back_color );
 
         else if( win->IsKindOf( CLASSINFO(wxTreeCtrl) ) )
             ( (wxTreeCtrl*) win )->SetBackgroundColour( col );
 
-        else if( win->IsKindOf( CLASSINFO(wxRadioButton) ) )
-            ( (wxRadioButton*) win )->SetBackgroundColour( window_back_color );
-
         else if( win->IsKindOf( CLASSINFO(wxNotebook) ) ) {
-            ( (wxNotebook*) win )->SetBackgroundColour( col1 );
+            ( (wxNotebook*) win )->SetBackgroundColour( window_back_color );
             ( (wxNotebook*) win )->SetForegroundColour( text_color );
         }
 
         else if( win->IsKindOf( CLASSINFO(wxButton) ) ) {
-            ( (wxButton*) win )->SetBackgroundColour( col1 );
+            ( (wxButton*) win )->SetBackgroundColour( window_back_color );
         }
 
         else if( win->IsKindOf( CLASSINFO(wxToggleButton) ) ) {
             ( (wxToggleButton*) win )->SetBackgroundColour( window_back_color );
         }
 
-        else if( win->IsKindOf( CLASSINFO(wxPanel) ) ) {
-//                  ((wxPanel*)win)->SetBackgroundColour(col1);
-            if( cs != GLOBAL_COLOR_SCHEME_DAY
-                    && cs != GLOBAL_COLOR_SCHEME_RGB ) ( (wxPanel*) win )->SetBackgroundColour(
-                            back_color );
-            else
-                ( (wxPanel*) win )->SetBackgroundColour(
-                    wxNullColour );
-        }
+//        else if( win->IsKindOf( CLASSINFO(wxPanel) ) ) {
+////                  ((wxPanel*)win)->SetBackgroundColour(col1);
+//            if( cs != GLOBAL_COLOR_SCHEME_DAY && cs != GLOBAL_COLOR_SCHEME_RGB )
+//                ( (wxPanel*) win )->SetBackgroundColour( ctrl_back_color );
+//            else
+//                ( (wxPanel*) win )->SetBackgroundColour( wxNullColour );
+//        }
 
         else if( win->IsKindOf( CLASSINFO(wxHtmlWindow) ) ) {
-            if( cs != GLOBAL_COLOR_SCHEME_DAY
-                    && cs != GLOBAL_COLOR_SCHEME_RGB ) ( (wxPanel*) win )->SetBackgroundColour(
-                            back_color );
+            if( cs != GLOBAL_COLOR_SCHEME_DAY && cs != GLOBAL_COLOR_SCHEME_RGB )
+                ( (wxPanel*) win )->SetBackgroundColour( ctrl_back_color );
             else
-                ( (wxPanel*) win )->SetBackgroundColour(
-                    wxNullColour );
-
+                ( (wxPanel*) win )->SetBackgroundColour( wxNullColour );
         }
 
         else if( win->IsKindOf( CLASSINFO(wxGrid) ) ) {
             ( (wxGrid*) win )->SetDefaultCellBackgroundColour(
-                col1 );
+                window_back_color );
             ( (wxGrid*) win )->SetDefaultCellTextColour(
                 uitext );
             ( (wxGrid*) win )->SetLabelBackgroundColour(
@@ -11012,8 +11009,10 @@ void DimeControl( wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_col
         }
 
         if( win->GetChildren().GetCount() > 0 ) {
+            depth++;
             wxWindow * w = win;
-            DimeControl( w, col, col1, back_color, text_color, uitext, udkrd, gridline );
+            DimeControl( w, col, window_back_color, ctrl_back_color, text_color, uitext, udkrd, gridline );
+            depth--;
         }
     }
 }
