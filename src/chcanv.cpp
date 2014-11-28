@@ -3690,6 +3690,12 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
 
     if( VPoint.GetBBox().GetValid() ) {
 
+        //      Update the viewpoint reference scale
+        if( Current_Ch )
+            VPoint.ref_scale = Current_Ch->GetNativeScale();
+        else 
+            VPoint.ref_scale = m_pQuilt->GetRefNativeScale();
+        
         //    Calculate the on-screen displayed actual scale
         //    by a simple traverse northward from the center point
         //    of roughly 10 % of the Viewport extent
@@ -3731,11 +3737,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
             double true_scale_display = floor( VPoint.chart_scale / 100. ) * 100.;
             wxString text;
 
-            
-            if( Current_Ch )
-                m_displayed_scale_factor = Current_Ch->GetNativeScale()/VPoint.chart_scale;
-            else 
-                m_displayed_scale_factor = m_pQuilt->GetRefNativeScale()/VPoint.chart_scale;
+            m_displayed_scale_factor = VPoint.ref_scale / VPoint.chart_scale;
             
             if( m_displayed_scale_factor > 10.0 )
                 text.Printf( _("Scale %4.0f (%1.0fx)"), true_scale_display, m_displayed_scale_factor );
@@ -9412,23 +9414,18 @@ void ChartCanvas::DrawEmboss( ocpnDC &dc, emboss_data *pemboss)
 
 emboss_data *ChartCanvas::EmbossOverzoomIndicator( ocpnDC &dc )
 {
+    double zoom_factor = GetVP().ref_scale / GetVP().chart_scale;
+    
     if( GetQuiltMode() ) {
-        double chart_native_ppm;
-        chart_native_ppm = m_canvas_scale_factor / m_pQuilt->GetRefNativeScale();
-
-        double zoom_factor = GetVP().view_scale_ppm / chart_native_ppm;
-
-        if( zoom_factor <= 3.9 ) return NULL;
+        if( zoom_factor <= 3.9 )
+            return NULL;
     } else {
-        double chart_native_ppm;
-        if( Current_Ch ) chart_native_ppm = m_canvas_scale_factor / Current_Ch->GetNativeScale();
-        else
-            chart_native_ppm = m_true_scale_ppm;
-
-        double zoom_factor = GetVP().view_scale_ppm / chart_native_ppm;
         if( Current_Ch ) {
-            if( zoom_factor <= 3.9 ) return NULL;
+            if( zoom_factor <= 3.9 )
+                return NULL;
         }
+        else
+            return NULL;
     }
 
     if(m_pEM_OverZoom){

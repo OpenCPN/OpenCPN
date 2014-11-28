@@ -48,6 +48,7 @@
 #include "razdsparser.h"
 #include "FontMgr.h"
 #include "TexFont.h"
+#include "ocpndc.h"
 
 #include <wx/image.h>
 #include <wx/tokenzr.h>
@@ -2606,6 +2607,9 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     if( !m_benableGLLS )                        // root chart cannot support VBO model, for whatever reason
         return RenderLS(rzRules, rules, vp);
 
+    double scale_factor = vp->ref_scale/vp->chart_scale;
+    if(scale_factor > 10.0)
+        return RenderLS(rzRules, rules, vp);
     
     bool b_useVBO = false;
     float *vertex_buffer = 0;
@@ -2723,7 +2727,6 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 #endif
                 
  
-        
     glPushMatrix();
     
     // Set up the OpenGL transform matrix for this object
@@ -2828,29 +2831,64 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     w = atoi( str + 5 ); // Width
     wxPen *pdotpen = NULL;
 
-    if( m_pdc ) //DC mode
+    double scale_factor = vp->ref_scale/vp->chart_scale;
+    double scaled_line_width = wxMax((scale_factor - 10), 1);
+    bool b_wide_line = vp->b_quilt && (scale_factor > 10.0);
+    
+    wxPen *wide_pen;
+    wxDash dashw[2];
+    dashw[0] = 3;
+    dashw[1] = 1; 
+    
+    if( b_wide_line)
+    {
+        int w = wxMax(scaled_line_width, 2);            // looks better
+        wxColour color( c->R, c->G, c->B );
+        wide_pen = new wxPen(*wxBLACK_PEN);
+        wide_pen->SetWidth( w );
+        wide_pen->SetColour( color );
+        
+        if( !strncmp( str, "DOTT", 4 ) ) {
+            dashw[0] = 1;
+            wide_pen->SetStyle(wxUSER_DASH);
+            wide_pen->SetDashes( 2, dashw );
+        }        
+        else if( !strncmp( str, "DASH", 4 ) ){
+            wide_pen->SetStyle(wxUSER_DASH);
+            if( m_pdc){ //DC mode
+                dashw[0] = 1;
+                dashw[1] = 2;
+            }
+                
+            wide_pen->SetDashes( 2, dashw );
+        }
+    }
+ 
+    wxPen *thispen;
+    wxDash dash1[2];
+    dash1[0] = 1;
+    dash1[1] = 2; 
+    
+    if( m_pdc) //DC mode
     {
         wxColour color( c->R, c->G, c->B );
-
+        thispen = new wxPen(*wxBLACK_PEN);
+        thispen->SetWidth( w );
+        thispen->SetColour( color );
+        
         if( !strncmp( str, "DOTT", 4 ) ) {
-            wxDash dash1[2];
-            dash1[0] = 1;
-            dash1[1] = 2; 
-            
-            pdotpen = new wxPen(*wxBLACK_PEN);
-            pdotpen->SetStyle(wxUSER_DASH);
-            pdotpen->SetDashes( 2, dash1 );
-            pdotpen->SetWidth( w );
-            pdotpen->SetColour( color );
-            m_pdc->SetPen( *pdotpen );
+            thispen->SetStyle(wxUSER_DASH);
+            thispen->SetDashes( 2, dash1 );
         }        
-        else {
-            int style = wxSOLID; // Style default
-            if( !strncmp( str, "DASH", 4 ) )
-                style = wxSHORT_DASH;
-            wxPen *pthispen = wxThePenList->FindOrCreatePen( color, w, style );
-            m_pdc->SetPen( *pthispen );
+        else if( !strncmp( str, "DASH", 4 ) ){
+            thispen->SetStyle(wxSHORT_DASH);
         }
+         
+        if(b_wide_line)
+            m_pdc->SetPen( *wide_pen );
+        else
+            m_pdc->SetPen( *thispen );
+        
     }
 
 #ifdef ocpnUSE_GL
@@ -2953,7 +2991,8 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         VC_Element *pnode;
 
 #ifdef ocpnUSE_GL
-        glBegin( GL_LINES );
+        if(!b_wide_line)
+            glBegin( GL_LINES );
 #endif
         for( int iseg = 0; iseg < rzRules->obj->m_n_lsindex; iseg++ ) {
             int seg_index = iseg * 3;
@@ -3044,15 +3083,22 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                         m_pdc->DrawLine( x0, y0, x1, y1 );
 #ifdef ocpnUSE_GL
                     else {
-                        glVertex2i( x0, y0 );
-                        glVertex2i( x1, y1 );
+                        if(!b_wide_line){
+                            glVertex2i( x0, y0 );
+                            glVertex2i( x1, y1 );
+                        }
+                        else {
+                            DrawGLThickLine( x0, y0, x1, y1, *wide_pen, true );
+                        }
+                        
                     }
 #endif                    
                 }
             }
         }
 #ifdef ocpnUSE_GL
-        glEnd();
+        if(!b_wide_line)
+            glEnd();
 #endif                    
         free( ptp );
     }

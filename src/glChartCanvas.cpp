@@ -2558,11 +2558,10 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
     ViewPort VPoint = cc1->VPoint;
     m_gl_rendered_region.Clear();
  
-    double scale_factor = cc1->m_pQuilt->GetRefNativeScale()/VPoint.chart_scale;
+    double scale_factor = VPoint.ref_scale/VPoint.chart_scale;
     
     glPushMatrix();
     if(VPoint.b_quilt) {
-        double scale_factor = cc1->m_pQuilt->GetRefNativeScale()/VPoint.chart_scale;
         bool fog_it = (g_fog_overzoom && (scale_factor > 10));
         
         RenderQuiltViewGL( VPoint, region );
@@ -2625,7 +2624,6 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
 
                     glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, bias);
-                    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
                     
                     glColor4f (1.0f,1.0f,1.0f,1.0f);
 
@@ -3012,7 +3010,7 @@ void glChartCanvas::Render()
     TextureCrunch(0.8);
 
     //  If we plan to post process the display, don't use accelerated panning
-    double scale_factor = cc1->m_pQuilt->GetRefNativeScale()/VPoint.chart_scale;
+    double scale_factor = VPoint.ref_scale/VPoint.chart_scale;
     bool fog_it = (g_fog_overzoom && (scale_factor > 10) && VPoint.b_quilt);
     bool bpost_hilite = !cc1->m_pQuilt->GetHiliteRegion( VPoint ).IsEmpty();
     
