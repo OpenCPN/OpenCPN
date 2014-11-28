@@ -4565,9 +4565,10 @@ void MyFrame::ToggleChartOutlines( void )
 void MyFrame::SetMenubarItemState( int item_id, bool state )
 {
     if( m_pMenuBar ) {
-         m_pMenuBar->Enable( item_id, false );
-         m_pMenuBar->Check( item_id, state );
-         m_pMenuBar->Enable( item_id, true );
+        bool enabled = m_pMenuBar->IsEnabled( item_id );
+        m_pMenuBar->Enable( item_id, false );
+        m_pMenuBar->Check( item_id, state );
+        m_pMenuBar->Enable( item_id, enabled );
      }
 }
 
