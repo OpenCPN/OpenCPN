@@ -1660,10 +1660,14 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
     m_ChartDisplayPage = AddPage( parent, _("Advanced") );
     
     wxFlexGridSizer* itemBoxSizerUI = new wxFlexGridSizer( 2 );
-    itemBoxSizerUI->AddGrowableCol( 0, 1 );
-    itemBoxSizerUI->AddGrowableCol( 1, 1 );
-    m_ChartDisplayPage->SetSizer( itemBoxSizerUI );
+//    itemBoxSizerUI->AddGrowableCol( 0, 1 );
+//    itemBoxSizerUI->AddGrowableCol( 1, 1 );
+//    m_ChartDisplayPage->SetSizer( itemBoxSizerUI );
 
+    // wxFlexGridSizer grows wrongly in wx2.8, so we need to centre it in another sizer instead of letting it grow.
+    wxBoxSizer* wrapperSizer = new wxBoxSizer( wxVERTICAL );
+    m_ChartDisplayPage->SetSizer( wrapperSizer );
+    wrapperSizer->Add( itemBoxSizerUI, 1, wxALL | wxALIGN_CENTER, border_size );
 
     wxSizerFlags inputFlags(0);
     inputFlags.Align(wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL).Border(wxALL, group_item_spacing);
@@ -1726,8 +1730,10 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
     itemBoxSizerUI->Add( new wxStaticText(m_ChartDisplayPage, wxID_ANY, _T("")) );
     wxStaticText* zoomText = new wxStaticText( m_ChartDisplayPage, wxID_ANY,
         _("With a lower value, the same zoom level shows a less detailed chart.\nWith a higher value, the same zoom level shows a more detailed chart.") );
-    wxFont* font = FontMgr::Get().GetFont(_T("Dialog"));
-    zoomText->SetFont(font->Smaller());
+    wxFont* dialogFont = FontMgr::Get().GetFont(_T("Dialog"));
+    wxFont* smallFont = new wxFont( * dialogFont ); // we can't use Smaller() because wx2.8 doesn't support it
+    smallFont->SetPointSize( (smallFont->GetPointSize() / 1.2) + 0.5 ); // + 0.5 to round instead of truncate
+    zoomText->SetFont( * smallFont );
 //    zoomText->Wrap(200);
     itemBoxSizerUI->Add( zoomText, 0, wxALL | wxEXPAND, group_item_spacing );
     
@@ -2127,15 +2133,15 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
 {
     pDisplayPanel = AddPage( parent, _("General") );
 
-//    wxBoxSizer* itemBoxSizerUI = new wxBoxSizer( wxVERTICAL );
-//    pDisplayPanel->SetSizer( itemBoxSizerUI );
-
     wxFlexGridSizer *generalSizer = new wxFlexGridSizer( 2 );
-    generalSizer->AddGrowableCol( 0, 1 );
-    generalSizer->AddGrowableCol( 1, 1 );
-    pDisplayPanel->SetSizer( generalSizer );
-//    unitsSizer->Add( pFormatGrid, wxSizerFlags(0).Expand().Border(wxALL, border_size).DoubleBorder(wxTOP) );
+//    generalSizer->AddGrowableCol( 0, 1 );
+//    generalSizer->AddGrowableCol( 1, 1 );
+//    pDisplayPanel->SetSizer( generalSizer );
 
+    // wxFlexGridSizer grows wrongly in wx2.8, so we need to centre it in another sizer instead of letting it grow.
+    wxBoxSizer* wrapperSizer = new wxBoxSizer( wxVERTICAL );
+    pDisplayPanel->SetSizer( wrapperSizer );
+    wrapperSizer->Add( generalSizer, 1, wxALL | wxALIGN_CENTER, border_size );
 
     wxSizerFlags inputFlags(0);
     inputFlags.Align(wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL).Border(wxALL, group_item_spacing);
@@ -2234,15 +2240,23 @@ void options::CreatePanel_Units( size_t parent, int border_size, int group_item_
     wxScrolledWindow *panelUnits = AddPage( parent, _("Units") );
 
     wxFlexGridSizer *unitsSizer = new wxFlexGridSizer( 2 );
-    unitsSizer->AddGrowableCol( 0, 1 );
-    unitsSizer->AddGrowableCol( 1, 1 );
-    panelUnits->SetSizer( unitsSizer );
+//    unitsSizer->AddGrowableCol( 0, 1 );
+//    unitsSizer->AddGrowableCol( 1, 1 );
+//    panelUnits->SetSizer( unitsSizer );
+
+    // wxFlexGridSizer grows wrongly in wx2.8, so we need to centre it in another sizer instead of letting it grow.
+    wxBoxSizer* wrapperSizer = new wxBoxSizer( wxVERTICAL );
+    panelUnits->SetSizer( wrapperSizer );
+    wrapperSizer->Add( unitsSizer, 1, wxALL | wxALIGN_CENTER, border_size );
+
+    wxSizerFlags inputFlags(0);
+    inputFlags.Align(wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL).Border(wxALL, group_item_spacing);
 
     wxSizerFlags labelFlags(0);
     labelFlags.Align(wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL).Border(wxALL, group_item_spacing);
 
-    wxSizerFlags inputFlags(0);
-    inputFlags.Align(wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL).Border(wxALL, group_item_spacing);
+    wxSizerFlags multiLabelFlags(0);
+    multiLabelFlags.Border(wxALL, group_item_spacing).Align(wxALIGN_TOP | wxALIGN_RIGHT);
 
 
     // spacer
@@ -2273,7 +2287,7 @@ void options::CreatePanel_Units( size_t parent, int border_size, int group_item_
 
 
     // depth units
-    unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("Depth")), labelFlags.Align(wxALIGN_RIGHT | wxALIGN_TOP) );
+    unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("Depth")), labelFlags );
     wxString pDepthUnitStrings[] = { _("Feet"), _("Meters"), _("Fathoms"), };
     pDepthUnitSelect = new wxChoice( panelUnits, ID_RADARDISTUNIT, wxDefaultPosition,
                                     wxDefaultSize, 3, pDepthUnitStrings );
@@ -2302,7 +2316,7 @@ void options::CreatePanel_Units( size_t parent, int border_size, int group_item_
 
 
     // bearings (magnetic/true, variation)
-    unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("Bearings")), labelFlags.Align(wxALIGN_RIGHT | wxALIGN_TOP) );
+    unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("Bearings")), multiLabelFlags );
 
     wxBoxSizer* bearingsSizer = new wxBoxSizer( wxVERTICAL );
     unitsSizer->Add( bearingsSizer, 0, wxALL, group_item_spacing );
