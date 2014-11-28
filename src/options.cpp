@@ -1776,6 +1776,9 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
     wxSizerFlags unitFlags(0);
     unitFlags.Border(wxALL, group_item_spacing).Align(wxALIGN_CENTER_VERTICAL | wxALIGN_LEFT);
 
+    wxSizerFlags cbGroupFlags(0);
+    cbGroupFlags.Border(wxBOTTOM, border_size*2).Expand();
+
 
 
     // 1st column, all other options
@@ -1804,9 +1807,6 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
 
 
     // display options
-    wxSizerFlags cbGroupFlags(0);
-    cbGroupFlags.Border(wxBOTTOM, border_size*2).Expand();
-
     optionsColumn->Add( new wxStaticText(ps57Ctl, wxID_ANY, _("Display")), multiLabelFlags );
 
     wxBoxSizer* miscSizer = new wxBoxSizer( wxVERTICAL );
@@ -2098,62 +2098,105 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
 {
     pDisplayPanel = AddPage( parent, _("General") );
 
-    wxBoxSizer* itemBoxSizerUI = new wxBoxSizer( wxVERTICAL );
-    pDisplayPanel->SetSizer( itemBoxSizerUI );
+//    wxBoxSizer* itemBoxSizerUI = new wxBoxSizer( wxVERTICAL );
+//    pDisplayPanel->SetSizer( itemBoxSizerUI );
 
-    // Nav Options Box
-    wxStaticBox* itemStaticBoxSizerNOStatic = new wxStaticBox( pDisplayPanel, wxID_ANY, _("Navigation Options") );
-    wxStaticBoxSizer* itemStaticBoxSizerNO = new wxStaticBoxSizer( itemStaticBoxSizerNOStatic, wxVERTICAL );
-    itemBoxSizerUI->Add( itemStaticBoxSizerNO, 0, wxEXPAND | wxALL, border_size );
+    wxFlexGridSizer *generalSizer = new wxFlexGridSizer( 2 );
+    generalSizer->AddGrowableCol( 0, 1 );
+    generalSizer->AddGrowableCol( 1, 1 );
+    pDisplayPanel->SetSizer( generalSizer );
+//    unitsSizer->Add( pFormatGrid, wxSizerFlags(0).Expand().Border(wxALL, border_size).DoubleBorder(wxTOP) );
 
-    //  "Course Up" checkbox
-    pCBCourseUp = new wxCheckBox( pDisplayPanel, ID_COURSEUPCHECKBOX, _("Course Up Mode") );
-    itemStaticBoxSizerNO->Add( pCBCourseUp, 0, wxALL, group_item_spacing );
 
-    //  "LookAhead" checkbox
+    wxSizerFlags inputFlags(0);
+    inputFlags.Align(wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL).Border(wxALL, group_item_spacing);
+
+    wxSizerFlags labelFlags(0);
+    labelFlags.Align(wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL).Border(wxALL, group_item_spacing);
+
+    wxSizerFlags multiLabelFlags(0);
+    multiLabelFlags.Border(wxALL, group_item_spacing).Align(wxALIGN_TOP | wxALIGN_RIGHT);
+
+    wxSizerFlags cbGroupFlags(0);
+    cbGroupFlags.Border(wxBOTTOM, group_item_spacing*2).Expand();
+
+
+    // spacer
+    generalSizer->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _T("")) );
+    generalSizer->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _T("")) );
+
+
+    // Nav Mode
+    generalSizer->Add( new wxStaticText( pDisplayPanel, wxID_ANY, _("Navigation Mode") ), multiLabelFlags );
+    wxBoxSizer* boxNavMode = new wxBoxSizer( wxVERTICAL );
+    generalSizer->Add( boxNavMode, cbGroupFlags );
+
+    wxBoxSizer* rowOrientation = new wxBoxSizer( wxHORIZONTAL );
+    boxNavMode->Add( rowOrientation );
+
+    pCBNorthUp = new wxRadioButton( pDisplayPanel, wxID_ANY, _("North Up") );
+    rowOrientation->Add( pCBNorthUp, inputFlags );
+    pCBCourseUp = new wxRadioButton( pDisplayPanel, ID_COURSEUPCHECKBOX, _("Course Up") );
+    rowOrientation->Add( pCBCourseUp, wxSizerFlags(0).Align(wxALIGN_CENTRE_VERTICAL).Border(wxLEFT, group_item_spacing*2) );
+
     pCBLookAhead = new wxCheckBox( pDisplayPanel, ID_CHECK_LOOKAHEAD, _("Look Ahead Mode") );
-    itemStaticBoxSizerNO->Add( pCBLookAhead, 0, wxALL, group_item_spacing );
+    boxNavMode->Add( pCBLookAhead, inputFlags );
     
     
-    // Display Options Box
-    wxStaticBox* itemStaticBoxSizerCDOStatic = new wxStaticBox( pDisplayPanel, wxID_ANY, _("Display Options") );
-    wxStaticBoxSizer* itemStaticBoxSizerCDO = new wxStaticBoxSizer( itemStaticBoxSizerCDOStatic, wxVERTICAL );
-    itemBoxSizerUI->Add( itemStaticBoxSizerCDO, 0, wxEXPAND | wxALL, border_size );
+    // spacer
+    generalSizer->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _T("")) );
+    generalSizer->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _T("")) );
 
-    //  Grid display  checkbox
-    pSDisplayGrid = new wxCheckBox( pDisplayPanel, ID_CHECK_DISPLAYGRID, _("Show Grid") );
-    itemStaticBoxSizerCDO->Add( pSDisplayGrid, 1, wxALL, group_item_spacing );
+    
+    // Control Options
+    generalSizer->Add( new wxStaticText( pDisplayPanel, wxID_ANY, _("Chart Display") ), multiLabelFlags );
+    wxBoxSizer* boxCharts = new wxBoxSizer( wxVERTICAL );
+    generalSizer->Add( boxCharts, cbGroupFlags );
 
-    // Chart Outlines checkbox
-    pCDOOutlines = new wxCheckBox( pDisplayPanel, ID_OUTLINECHECKBOX1, _("Show Chart Outlines") );
-    itemStaticBoxSizerCDO->Add( pCDOOutlines, 1, wxALL, group_item_spacing );
-
-    //  Depth Unit checkbox
-    pSDepthUnits = new wxCheckBox( pDisplayPanel, ID_SHOWDEPTHUNITSBOX1, _("Show Depth Units") );
-    itemStaticBoxSizerCDO->Add( pSDepthUnits, 1, wxALL, group_item_spacing );
-
-
-    // Control Options Box
-    wxStaticBox* itemStaticBoxSizerCOStatic = new wxStaticBox( pDisplayPanel, wxID_ANY, _("Control Options") );
-    wxStaticBoxSizer* itemStaticBoxSizerCO = new wxStaticBoxSizer( itemStaticBoxSizerCOStatic, wxVERTICAL );
-    itemBoxSizerUI->Add( itemStaticBoxSizerCO, 0, wxEXPAND | wxALL, border_size );
-
-    //  Quilting checkbox
     pCDOQuilting = new wxCheckBox( pDisplayPanel, ID_QUILTCHECKBOX1, _("Enable Chart Quilting") );
-    itemStaticBoxSizerCO->Add( pCDOQuilting, 1, wxALL, group_item_spacing );
+    boxCharts->Add( pCDOQuilting, inputFlags );
 
     pPreserveScale = new wxCheckBox( pDisplayPanel, ID_PRESERVECHECKBOX, _("Preserve Scale when Switching Charts") );
-    itemStaticBoxSizerCO->Add( pPreserveScale, 1, wxALL, group_item_spacing );
+    boxCharts->Add( pPreserveScale, inputFlags );
 
-    // Smooth Pan/Zoom checkbox
+
+    // spacer
+    generalSizer->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _T("")) );
+    generalSizer->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _T("")) );
+
+    
+    // Control Options
+    generalSizer->Add( new wxStaticText( pDisplayPanel, wxID_ANY, _("Controls") ), multiLabelFlags );
+    wxBoxSizer* boxCtrls = new wxBoxSizer( wxVERTICAL );
+    generalSizer->Add( boxCtrls, cbGroupFlags );
+    
     pSmoothPanZoom = new wxCheckBox( pDisplayPanel, ID_SMOOTHPANZOOMBOX, _("Smooth Panning / Zooming") );
-    itemStaticBoxSizerCO->Add( pSmoothPanZoom, 1, wxALL, group_item_spacing );
+    boxCtrls->Add( pSmoothPanZoom, inputFlags );
     
     pEnableZoomToCursor = new wxCheckBox( pDisplayPanel, ID_ZTCCHECKBOX, _("Zoom to Cursor") );
     pEnableZoomToCursor->SetValue( FALSE );
-    itemStaticBoxSizerCO->Add( pEnableZoomToCursor, 1, wxALL, group_item_spacing );
+    boxCtrls->Add( pEnableZoomToCursor, inputFlags );
     
 
+    // spacer
+    generalSizer->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _T("")) );
+    generalSizer->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _T("")) );
+
+    
+    // Display Options
+    generalSizer->Add( new wxStaticText( pDisplayPanel, wxID_ANY, _("Display Features") ), multiLabelFlags );
+    wxBoxSizer* boxDisp = new wxBoxSizer( wxVERTICAL );
+    generalSizer->Add( boxDisp, cbGroupFlags );
+
+    pSDisplayGrid = new wxCheckBox( pDisplayPanel, ID_CHECK_DISPLAYGRID, _("Show Grid") );
+    boxDisp->Add( pSDisplayGrid, inputFlags );
+
+    pCDOOutlines = new wxCheckBox( pDisplayPanel, ID_OUTLINECHECKBOX1, _("Show Chart Outlines") );
+    boxDisp->Add( pCDOOutlines, inputFlags );
+
+    pSDepthUnits = new wxCheckBox( pDisplayPanel, ID_SHOWDEPTHUNITSBOX1, _("Show Depth Units") );
+    boxDisp->Add( pSDepthUnits, inputFlags );
+    
 }
 
 void options::CreatePanel_Units( size_t parent, int border_size, int group_item_spacing,
@@ -2161,79 +2204,79 @@ void options::CreatePanel_Units( size_t parent, int border_size, int group_item_
 {
     wxScrolledWindow *panelUnits = AddPage( parent, _("Units") );
 
-    wxBoxSizer* unitsSizer = new wxBoxSizer( wxVERTICAL );
+    wxFlexGridSizer *unitsSizer = new wxFlexGridSizer( 2 );
+    unitsSizer->AddGrowableCol( 0, 1 );
+    unitsSizer->AddGrowableCol( 1, 1 );
     panelUnits->SetSizer( unitsSizer );
 
-
-    wxFlexGridSizer *pFormatGrid = new wxFlexGridSizer( 2 );
-    pFormatGrid->AddGrowableCol( 0, 1 );
-    pFormatGrid->AddGrowableCol( 1, 1 );
-    unitsSizer->Add( pFormatGrid, wxSizerFlags(0).Expand().Border(wxALL, border_size).DoubleBorder(wxTOP) );
-
     wxSizerFlags labelFlags(0);
-    labelFlags.Align(wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL).Border(wxALL, border_size);
+    labelFlags.Align(wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL).Border(wxALL, group_item_spacing);
 
     wxSizerFlags inputFlags(0);
-    inputFlags.Align(wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL).Border(wxALL, border_size);
+    inputFlags.Align(wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL).Border(wxALL, group_item_spacing);
+
+
+    // spacer
+    unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
+    unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
 
 
     // distance units
-    wxStaticText* itemStaticTextDistanceFormat = new wxStaticText( panelUnits, wxID_STATIC, _("Distance") );
-    pFormatGrid->Add( itemStaticTextDistanceFormat, labelFlags );
+    wxStaticText* itemStaticTextDistanceFormat = new wxStaticText( panelUnits, wxID_ANY, _("Distance") );
+    unitsSizer->Add( itemStaticTextDistanceFormat, labelFlags );
 
     wxString pDistanceFormats[] = { _("Nautical miles"), _("Statute miles"), _("Kilometers"), _("Meters") };
     int m_DistanceFormatsNChoices = sizeof(pDistanceFormats) / sizeof(wxString);
     pDistanceFormat = new wxChoice( panelUnits, ID_DISTANCEFORMATCHOICE, wxDefaultPosition,
                                    wxDefaultSize, m_DistanceFormatsNChoices, pDistanceFormats );
-    pFormatGrid->Add( pDistanceFormat, inputFlags );
+    unitsSizer->Add( pDistanceFormat, inputFlags );
 
 
     // speed units
-    wxStaticText* itemStaticTextSpeedFormat = new wxStaticText( panelUnits, wxID_STATIC, _("Speed") );
-    pFormatGrid->Add( itemStaticTextSpeedFormat, labelFlags );
+    wxStaticText* itemStaticTextSpeedFormat = new wxStaticText( panelUnits, wxID_ANY, _("Speed") );
+    unitsSizer->Add( itemStaticTextSpeedFormat, labelFlags );
 
     wxString pSpeedFormats[] = { _("Knots"), _("Mph"), _("km/h"), _("m/s") };
     int m_SpeedFormatsNChoices = sizeof( pSpeedFormats ) / sizeof(wxString);
     pSpeedFormat = new wxChoice( panelUnits, ID_SPEEDFORMATCHOICE, wxDefaultPosition,
                                 wxDefaultSize, m_SpeedFormatsNChoices, pSpeedFormats );
-    pFormatGrid->Add( pSpeedFormat, inputFlags );
+    unitsSizer->Add( pSpeedFormat, inputFlags );
 
 
     // depth units
-    pFormatGrid->Add( new wxStaticText(panelUnits, wxID_ANY, _("Depth")), labelFlags.Align(wxALIGN_RIGHT | wxALIGN_TOP) );
+    unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("Depth")), labelFlags.Align(wxALIGN_RIGHT | wxALIGN_TOP) );
     wxString pDepthUnitStrings[] = { _("Feet"), _("Meters"), _("Fathoms"), };
     pDepthUnitSelect = new wxChoice( panelUnits, ID_RADARDISTUNIT, wxDefaultPosition,
                                     wxDefaultSize, 3, pDepthUnitStrings );
-    pFormatGrid->Add( pDepthUnitSelect, inputFlags );
+    unitsSizer->Add( pDepthUnitSelect, inputFlags );
     
 
-
     // spacer
-    pFormatGrid->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
-    pFormatGrid->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
+    unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
+    unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
 
     
     // lat/long units
-    wxStaticText* itemStaticTextSDMMFormat = new wxStaticText( panelUnits, wxID_STATIC, _("Lat/Long") );
-    pFormatGrid->Add( itemStaticTextSDMMFormat, labelFlags );
+    wxStaticText* itemStaticTextSDMMFormat = new wxStaticText( panelUnits, wxID_ANY, _("Lat/Long") );
+    unitsSizer->Add( itemStaticTextSDMMFormat, labelFlags );
 
     wxString pSDMMFormats[] = { _("Degrees, Decimal Minutes"), _("Decimal Degrees"), _("Degrees, Minutes, Seconds") };
     int m_SDMMFormatsNChoices = sizeof( pSDMMFormats ) / sizeof(wxString);
     pSDMMFormat = new wxChoice( panelUnits, ID_SDMMFORMATCHOICE, wxDefaultPosition,
                                wxDefaultSize, m_SDMMFormatsNChoices, pSDMMFormats );
-    pFormatGrid->Add( pSDMMFormat, inputFlags );
+    unitsSizer->Add( pSDMMFormat, inputFlags );
 
 
     // spacer
-    pFormatGrid->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
-    pFormatGrid->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
+    unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
+    unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
 
 
     // bearings (magnetic/true, variation)
-    pFormatGrid->Add( new wxStaticText(panelUnits, wxID_ANY, _("Bearings")), labelFlags.Align(wxALIGN_RIGHT | wxALIGN_TOP) );
+    unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("Bearings")), labelFlags.Align(wxALIGN_RIGHT | wxALIGN_TOP) );
 
     wxBoxSizer* bearingsSizer = new wxBoxSizer( wxVERTICAL );
-    pFormatGrid->Add( bearingsSizer, 0, wxALL, group_item_spacing );
+    unitsSizer->Add( bearingsSizer, 0, wxALL, group_item_spacing );
 
     //  "Mag Heading" checkbox
     pCBMagShow = new wxCheckBox( panelUnits, ID_MAGSHOWCHECKBOX, _("Show magnetic bearings and headings") );
@@ -2243,10 +2286,10 @@ void options::CreatePanel_Units( size_t parent, int border_size, int group_item_
     wxBoxSizer* magVarSizer = new wxBoxSizer( wxHORIZONTAL );
     bearingsSizer->Add( magVarSizer, 0, wxALL, group_item_spacing );
 
-    wxStaticText* itemStaticTextUserVar = new wxStaticText( panelUnits, wxID_STATIC, _("Assumed magnetic variation") );
+    wxStaticText* itemStaticTextUserVar = new wxStaticText( panelUnits, wxID_ANY, _("Assumed magnetic variation") );
     magVarSizer->Add( itemStaticTextUserVar, 0, wxALL | wxALIGN_CENTRE_VERTICAL, group_item_spacing );
 
-    pMagVar = new wxTextCtrl( panelUnits, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxDefaultSize );
+    pMagVar = new wxTextCtrl( panelUnits, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize(60, -1), wxTE_RIGHT );
     magVarSizer->Add( pMagVar, 0, wxALIGN_CENTRE_VERTICAL, group_item_spacing );
 
     magVarSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("deg (+W, -E)")),
@@ -2797,6 +2840,7 @@ void options::SetInitialSettings()
     pSDisplayGrid->SetValue( g_bDisplayGrid );
 
     pCBCourseUp->SetValue( g_bCourseUp );
+    pCBNorthUp->SetValue( !g_bCourseUp );
     pCBLookAhead->SetValue( g_bLookAhead );
 
     if( fabs( wxRound( g_ownship_predictor_minutes ) - g_ownship_predictor_minutes ) > 1e-4 )

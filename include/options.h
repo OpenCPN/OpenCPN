@@ -305,7 +305,8 @@ public:
     wxCheckBox              *pCBRaster;
     wxCheckBox              *pCBVector;
     wxCheckBox              *pCBCM93;
-    wxCheckBox              *pCBCourseUp;
+    wxRadioButton           *pCBCourseUp;
+    wxRadioButton           *pCBNorthUp;
     wxTextCtrl              *pCOGUPUpdateSecs;
     wxCheckBox              *pCBLookAhead;
     wxTextCtrl              *m_pText_OSCOG_Predictor;
