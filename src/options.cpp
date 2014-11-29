@@ -1669,6 +1669,10 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
     m_ChartDisplayPage->SetSizer( wrapperSizer );
     wrapperSizer->Add( itemBoxSizerUI, 1, wxALL | wxALIGN_CENTER, border_size );
 
+#ifdef __WXMSW__
+    itemBoxSizerUI->SetHGap(border_size);
+#endif
+
     wxSizerFlags inputFlags(0);
     inputFlags.Align(wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL).Border(wxALL, group_item_spacing);
 
@@ -1821,6 +1825,10 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
     optionsColumn->AddGrowableCol( 0, 2 );
     optionsColumn->AddGrowableCol( 1, 3 );
     vectorPanel->Add( optionsColumn, 3, wxALL | wxEXPAND, border_size );
+
+#ifdef __WXMSW__
+    optionsColumn->SetHGap(border_size);
+#endif
 
 
     // spacer
@@ -2143,6 +2151,10 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
     pDisplayPanel->SetSizer( wrapperSizer );
     wrapperSizer->Add( generalSizer, 1, wxALL | wxALIGN_CENTER, border_size );
 
+#ifdef __WXMSW__
+    generalSizer->SetHGap(border_size);
+#endif
+
     wxSizerFlags inputFlags(0);
     inputFlags.Align(wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL).Border(wxALL, group_item_spacing);
 
@@ -2248,6 +2260,10 @@ void options::CreatePanel_Units( size_t parent, int border_size, int group_item_
     wxBoxSizer* wrapperSizer = new wxBoxSizer( wxVERTICAL );
     panelUnits->SetSizer( wrapperSizer );
     wrapperSizer->Add( unitsSizer, 1, wxALL | wxALIGN_CENTER, border_size );
+
+#ifdef __WXMSW__
+    unitsSizer->SetHGap(border_size);
+#endif
 
     wxSizerFlags inputFlags(0);
     inputFlags.Align(wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL).Border(wxALL, group_item_spacing);
