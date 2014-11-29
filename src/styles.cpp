@@ -81,39 +81,39 @@ wxBitmap MergeBitmaps( wxBitmap back, wxBitmap front, wxSize offset )
     aresult = im_result.GetAlpha();
 
     // Do alpha blending, associative version of "over" operator.
+    if(presult && pback && pfront){ 
+        for( int i = 0; i < back.GetHeight(); i++ ) {
+            for( int j = 0; j < back.GetWidth(); j++ ) {
 
-    for( int i = 0; i < back.GetHeight(); i++ ) {
-        for( int j = 0; j < back.GetWidth(); j++ ) {
+                int fX = j - offset.x;
+                int fY = i - offset.y;
 
-            int fX = j - offset.x;
-            int fY = i - offset.y;
+                bool inFront = true;
+                if( fX < 0 || fY < 0 ) inFront = false;
+                if( fX >= front.GetWidth() ) inFront = false;
+                if( fY >= front.GetHeight() ) inFront = false;
 
-            bool inFront = true;
-            if( fX < 0 || fY < 0 ) inFront = false;
-            if( fX >= front.GetWidth() ) inFront = false;
-            if( fY >= front.GetHeight() ) inFront = false;
-
-            if( inFront ) {
-                double alphaF = (double) ( *afront++ ) / 256.0;
-                double alphaB = (double) ( *aback++ ) / 256.0;
-                double alphaRes = alphaF + alphaB * ( 1.0 - alphaF );
-                unsigned char a = alphaRes * 256;
-                *aresult++ = a;
-                unsigned char r = (*pfront++ * alphaF + *pback++ * alphaB * ( 1.0 - alphaF )) / alphaRes;
-                *presult++ = r;
-                unsigned char g = (*pfront++ * alphaF + *pback++ * alphaB * ( 1.0 - alphaF )) / alphaRes;
-                *presult++ = g;
-                unsigned char b = (*pfront++ * alphaF + *pback++ * alphaB * ( 1.0 - alphaF )) / alphaRes;
-                *presult++ = b;
-            } else {
-                *aresult++ = *aback++;
-                *presult++ = *pback++;
-                *presult++ = *pback++;
-                *presult++ = *pback++;
+                if( inFront ) {
+                    double alphaF = (double) ( *afront++ ) / 256.0;
+                    double alphaB = (double) ( *aback++ ) / 256.0;
+                    double alphaRes = alphaF + alphaB * ( 1.0 - alphaF );
+                    unsigned char a = alphaRes * 256;
+                    *aresult++ = a;
+                    unsigned char r = (*pfront++ * alphaF + *pback++ * alphaB * ( 1.0 - alphaF )) / alphaRes;
+                    *presult++ = r;
+                    unsigned char g = (*pfront++ * alphaF + *pback++ * alphaB * ( 1.0 - alphaF )) / alphaRes;
+                    *presult++ = g;
+                    unsigned char b = (*pfront++ * alphaF + *pback++ * alphaB * ( 1.0 - alphaF )) / alphaRes;
+                    *presult++ = b;
+                } else {
+                    *aresult++ = *aback++;
+                    *presult++ = *pback++;
+                    *presult++ = *pback++;
+                    *presult++ = *pback++;
+                }
             }
         }
     }
-
     merged = wxBitmap( im_result );
 
 #else

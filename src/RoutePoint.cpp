@@ -547,8 +547,10 @@ void RoutePoint::DrawGL( ViewPort &vp, OCPNRegion &region )
             wxImage image = tbm.ConvertToImage();
             unsigned char *d = image.GetData();
             unsigned char *e = new unsigned char[w * h];
-            for( int p = 0; p < w*h; p++)
-                e[p] = d[3*p + 0];
+            if(d && e){
+                for( int p = 0; p < w*h; p++)
+                    e[p] = d[3*p + 0];
+            }
             
             /* create texture for rendered text */
             glGenTextures(1, &m_iTextTexture);

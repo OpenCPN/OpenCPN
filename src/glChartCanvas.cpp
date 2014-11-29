@@ -1792,13 +1792,15 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
             unsigned char *d = image.GetData();
             unsigned char *a = image.GetAlpha();
             unsigned char *e = new unsigned char[4 * w * h];
-            for( int p = 0; p < w*h; p++ ) {
-                e[4*p+0] = d[3*p+0];
-                e[4*p+1] = d[3*p+1];
-                e[4*p+2] = d[3*p+2];
-                e[4*p+3] = a[p];
-            }
             
+            if(d && e && a){
+                for( int p = 0; p < w*h; p++ ) {
+                    e[4*p+0] = d[3*p+0];
+                    e[4*p+1] = d[3*p+1];
+                    e[4*p+2] = d[3*p+2];
+                    e[4*p+3] = a[p];
+                }
+            }
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
                          glw, glh, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 

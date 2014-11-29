@@ -1587,23 +1587,25 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
                     unsigned char *pdest = ptext->m_pRGBA;
                     S52color *ccolor = ptext->pcol;
                     
-                    for( int y = 0; y < hs; y++ )
-                        for( int x = 0; x < ws; x++ ) {
-                            unsigned char r, g, b;
-                            int off = ( y * ws + x );
-                            r = d[off * 3 + 0];
-                            g = d[off * 3 + 1];
-                            b = d[off * 3 + 2];
-                            
-                            pdest[off * 4 + 0] = ccolor->R;
-                            pdest[off * 4 + 1] = ccolor->G;
-                            pdest[off * 4 + 2] = ccolor->B;
-                            
-                            int alpha = ( r + g + b ) / 3;
-                            pdest[off * 4 + 3] = (unsigned char) ( alpha & 0xff );
-                        }
-                        
-                        mdc.SelectObject( wxNullBitmap );
+                    if(d){
+                        for( int y = 0; y < hs; y++ )
+                            for( int x = 0; x < ws; x++ ) {
+                                unsigned char r, g, b;
+                                int off = ( y * ws + x );
+                                r = d[off * 3 + 0];
+                                g = d[off * 3 + 1];
+                                b = d[off * 3 + 2];
+                                
+                                pdest[off * 4 + 0] = ccolor->R;
+                                pdest[off * 4 + 1] = ccolor->G;
+                                pdest[off * 4 + 2] = ccolor->B;
+                                
+                                int alpha = ( r + g + b ) / 3;
+                                pdest[off * 4 + 3] = (unsigned char) ( alpha & 0xff );
+                            }
+                    }
+                    
+                    mdc.SelectObject( wxNullBitmap );
                 } // mdc OK
                 
             } // Building m_RGBA
@@ -2024,6 +2026,7 @@ int s52plib::RenderTE( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     return RenderT_All( rzRules, rules, vp, false );
 }
 
+#if 0
 unsigned char *GetRGBA_Array( wxImage &Image )
 {
     //    Get the glRGBA format data from the wxImage
@@ -2056,6 +2059,7 @@ unsigned char *GetRGBA_Array( wxImage &Image )
 
     return e;
 }
+#endif
 
 bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPort *vp,
         float rot_angle )
@@ -2283,24 +2287,26 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
                 Image.SetMaskColour( m_unused_wxColor.Red(), m_unused_wxColor.Green(),
                                      m_unused_wxColor.Blue() );
                 unsigned char mr, mg, mb;
-                if( !Image.GetOrFindMaskColour( &mr, &mg, &mb ) && !a ) printf(
-                    "trying to use mask to draw a bitmap without alpha or mask\n" );
+                if( !Image.GetOrFindMaskColour( &mr, &mg, &mb ) && !a )
+                    printf( "trying to use mask to draw a bitmap without alpha or mask\n" );
                 
                 unsigned char *e = (unsigned char *) malloc( w * h * 4 );
-                for( int y = 0; y < h; y++ ) {
-                    for( int x = 0; x < w; x++ ) {
-                        unsigned char r, g, b;
-                        int off = ( y * Image.GetWidth() + x );
-                        r = d[off * 3 + 0];
-                        g = d[off * 3 + 1];
-                        b = d[off * 3 + 2];
-                        
-                        e[off * 4 + 0] = r;
-                        e[off * 4 + 1] = g;
-                        e[off * 4 + 2] = b;
-                        
-                        e[off * 4 + 3] =
-                            a ? a[off] : ( ( r == mr ) && ( g == mg ) && ( b == mb ) ? 0 : 255 );
+                if( d && a){
+                    for( int y = 0; y < h; y++ ) {
+                        for( int x = 0; x < w; x++ ) {
+                            unsigned char r, g, b;
+                            int off = ( y * Image.GetWidth() + x );
+                            r = d[off * 3 + 0];
+                            g = d[off * 3 + 1];
+                            b = d[off * 3 + 2];
+                            
+                            e[off * 4 + 0] = r;
+                            e[off * 4 + 1] = g;
+                            e[off * 4 + 2] = b;
+                            
+                            e[off * 4 + 3] =
+                                a ? a[off] : ( ( r == mr ) && ( g == mg ) && ( b == mb ) ? 0 : 255 );
+                        }
                     }
                 }
                 
@@ -2495,17 +2501,19 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
 
                 //    Do alpha blending, the hard way
 
-                for( int i = 0; i < b_height; i++ ) {
-                    for( int j = 0; j < b_width; j++ ) {
-                        double alpha = 1.0;
-                        if(asym)
-                            alpha = ( *asym++ ) / 256.0;
-                        unsigned char r = ( *psym++ * alpha ) + ( *pback++ * ( 1.0 - alpha ) );
-                        *pdest++ = r;
-                        unsigned char g = ( *psym++ * alpha ) + ( *pback++ * ( 1.0 - alpha ) );
-                        *pdest++ = g;
-                        unsigned char b = ( *psym++ * alpha ) + ( *pback++ * ( 1.0 - alpha ) );
-                        *pdest++ = b;
+                if(pdest && psym && pback){
+                    for( int i = 0; i < b_height; i++ ) {
+                        for( int j = 0; j < b_width; j++ ) {
+                            double alpha = 1.0;
+                            if(asym)
+                                alpha = ( *asym++ ) / 256.0;
+                            unsigned char r = ( *psym++ * alpha ) + ( *pback++ * ( 1.0 - alpha ) );
+                            *pdest++ = r;
+                            unsigned char g = ( *psym++ * alpha ) + ( *pback++ * ( 1.0 - alpha ) );
+                            *pdest++ = g;
+                            unsigned char b = ( *psym++ * alpha ) + ( *pback++ * ( 1.0 - alpha ) );
+                            *pdest++ = b;
+                        }
                     }
                 }
 
@@ -6687,36 +6695,38 @@ render_canvas_parms* s52plib::CreatePatternBufferSpec( ObjRazRules *rzRules, Rul
         unsigned char mg = m_unused_wxColor.Green();
         unsigned char mb = m_unused_wxColor.Blue();
 
-        for( int iy = 0; iy < sizey; iy++ ) {
-            pd = pd0 + ( iy * patt_spec->pb_pitch );
-            ps = ps0 + ( iy * sizex * 3 );
-            for( int ix = 0; ix < sizex; ix++ ) {
-                if( ix < sizex ) {
-                    unsigned char r = *ps++;
-                    unsigned char g = *ps++;
-                    unsigned char b = *ps++;
-#ifdef ocpnUSE_ocpnBitmap
-                    if( b_revrgb ) {
-                        *pd++ = b;
-                        *pd++ = g;
-                        *pd++ = r;
-                    } else {
-                        *pd++ = r;
-                        *pd++ = g;
-                        *pd++ = b;
-                    }
+        if( pd0 && ps0 ){
+            for( int iy = 0; iy < sizey; iy++ ) {
+                pd = pd0 + ( iy * patt_spec->pb_pitch );
+                ps = ps0 + ( iy * sizex * 3 );
+                for( int ix = 0; ix < sizex; ix++ ) {
+                    if( ix < sizex ) {
+                        unsigned char r = *ps++;
+                        unsigned char g = *ps++;
+                        unsigned char b = *ps++;
+    #ifdef ocpnUSE_ocpnBitmap
+                        if( b_revrgb ) {
+                            *pd++ = b;
+                            *pd++ = g;
+                            *pd++ = r;
+                        } else {
+                            *pd++ = r;
+                            *pd++ = g;
+                            *pd++ = b;
+                        }
 
-#else
-                    *pd++ = r;
-                    *pd++ = g;
-                    *pd++ = b;
-#endif
-                    if( b_use_alpha && imgAlpha ) {
-                        *pd++ = *imgAlpha++;
-                    } else {
-                        *pd++ = ( ( r == mr ) && ( g == mg ) && ( b == mb ) ? 0 : 255 );
-                    }
+    #else
+                        *pd++ = r;
+                        *pd++ = g;
+                        *pd++ = b;
+    #endif
+                        if( b_use_alpha && imgAlpha ) {
+                            *pd++ = *imgAlpha++;
+                        } else {
+                            *pd++ = ( ( r == mr ) && ( g == mg ) && ( b == mb ) ? 0 : 255 );
+                        }
 
+                    }
                 }
             }
         }
