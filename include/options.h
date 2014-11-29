@@ -291,6 +291,12 @@ public:
     ChartGroupArray         *m_pGroupArray;
     int                     m_groups_changed;
 
+//  Sizer Flags
+    wxSizerFlags inputFlags;
+    wxSizerFlags labelFlags;
+    wxSizerFlags groupInputFlags;
+    wxSizerFlags groupLabelFlags;
+
 //    For General Options
     wxScrolledWindow        *pDisplayPanel;
     wxCheckBox              *pShowStatusBar;
@@ -305,7 +311,8 @@ public:
     wxCheckBox              *pCBRaster;
     wxCheckBox              *pCBVector;
     wxCheckBox              *pCBCM93;
-    wxCheckBox              *pCBCourseUp;
+    wxRadioButton           *pCBCourseUp;
+    wxRadioButton           *pCBNorthUp;
     wxTextCtrl              *pCOGUPUpdateSecs;
     wxCheckBox              *pCBLookAhead;
     wxTextCtrl              *m_pText_OSCOG_Predictor;
@@ -316,8 +323,6 @@ public:
     wxCheckBox              *pSmoothPanZoom;
     wxCheckBox              *pFullScreenQuilt;
     wxChoice                *m_pcTCDatasets;
-    wxCheckBox              *pCBMagShow;
-    wxTextCtrl              *pMagVar;
     wxCheckBox              *pMobile;
     wxCheckBox              *pResponsive;
     wxSlider                *m_pSlider_Zoom;    
@@ -406,15 +411,15 @@ public:
     bool m_connection_enabled;
 
 //    For "S57" page
-    wxFlexGridSizer         *vectorPanel;
+    wxBoxSizer              *vectorPanel;
     wxScrolledWindow        *ps57Ctl;
     wxCheckListBox          *ps57CtlListBox;
-    wxRadioBox              *pDispCat;
+    wxChoice                *pDispCat;
     wxButton                *itemButtonClearList;
     wxButton                *itemButtonSelectList;
-    wxRadioBox              *pPointStyle;
-    wxRadioBox              *pBoundStyle;
-    wxRadioBox              *p24Color;
+    wxChoice                *pPointStyle;
+    wxChoice                *pBoundStyle;
+    wxChoice                *p24Color;
     wxCheckBox              *pCheck_SOUNDG;
     wxCheckBox              *pCheck_META;
     wxCheckBox              *pCheck_SHOWIMPTEXT;
@@ -427,10 +432,17 @@ public:
     wxTextCtrl              *m_ShallowCtl;
     wxTextCtrl              *m_SafetyCtl;
     wxTextCtrl              *m_DeepCtl;
-    wxRadioBox              *pDepthUnitSelect;
     wxSlider                *m_pSlider_CM93_Zoom;
     wxCheckBox              *pSEnableCM93Offset;
     int                       k_vectorcharts;
+
+// For "Units" page
+    wxChoice                *pSDMMFormat;
+    wxChoice                *pDistanceFormat;
+    wxChoice                *pSpeedFormat;
+    wxChoice                *pDepthUnitSelect;
+    wxCheckBox              *pCBMagShow;
+    wxTextCtrl              *pMagVar;
 
 //    For "Charts" page
     wxStaticBoxSizer          *activeSizer;
@@ -515,9 +527,6 @@ public:
     wxCheckBox              *pPlayShipsBells;
     wxCheckBox              *pFullScreenToolbar;
     wxCheckBox              *pTransparentToolbar;
-    wxChoice                *pSDMMFormat;
-    wxChoice                *pDistanceFormat;
-    wxChoice                *pSpeedFormat;
 
     wxCheckBox              *pSailing;
     
@@ -560,8 +569,9 @@ private:
             wxSize small_button_size );
     void CreatePanel_UI( size_t parent, int border_size, int group_item_spacing,
             wxSize small_button_size );
-
-    void CreatePanel_ChartDisplay( size_t parent, int border_size, int group_item_spacing,
+    void CreatePanel_Units( size_t parent, int border_size, int group_item_spacing,
+            wxSize small_button_size );
+    void CreatePanel_Advanced( size_t parent, int border_size, int group_item_spacing,
             wxSize small_button_size );
     
     int m_returnChanges;
