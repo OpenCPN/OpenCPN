@@ -291,6 +291,12 @@ public:
     ChartGroupArray         *m_pGroupArray;
     int                     m_groups_changed;
 
+//  Sizer Flags
+    wxSizerFlags inputFlags;
+    wxSizerFlags labelFlags;
+    wxSizerFlags groupInputFlags;
+    wxSizerFlags groupLabelFlags;
+
 //    For General Options
     wxScrolledWindow        *pDisplayPanel;
     wxCheckBox              *pShowStatusBar;
