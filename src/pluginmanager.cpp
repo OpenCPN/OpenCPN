@@ -29,7 +29,9 @@
 #include <wx/filename.h>
 #include <wx/aui/aui.h>
 #include <wx/statline.h>
-
+#ifndef __WXMSW__
+#include <cxxabi.h>
+#endif // __WXMSW__
 #include "dychart.h"
 
 #include "pluginmanager.h"
@@ -594,10 +596,20 @@ bool PlugInManager::CheckBlacklistedPlugin(opencpn_plugin* plugin)
     int len = sizeof(PluginBlacklist) / sizeof(BlackListedPlugin);
     int major = plugin->GetPlugInVersionMajor();
     int minor = plugin->GetPlugInVersionMinor();
+    
+#ifdef __WXMSW__
     wxString name = wxString::FromAscii(typeid(*plugin).name());
+    name.Replace(_T("class "), wxEmptyString);
+#else
+    const std::type_info &ti = typeid(*plugin);
+    int status;
+    char *realname = abi::__cxa_demangle(ti.name(), 0, 0, &status);
+    wxString name = wxString::FromAscii(realname);
+    free(realname);
+#endif // __WXMSW__
     for (int i = 0; i < len; i++) {
-        if( ( PluginBlacklist[i].all_lower && name.EndsWith(PluginBlacklist[i].name) && PluginBlacklist[i].version_major >= major && PluginBlacklist[i].version_minor >= minor ) ||
-            ( !PluginBlacklist[i].all_lower && name.EndsWith(PluginBlacklist[i].name) && PluginBlacklist[i].version_major == major && PluginBlacklist[i].version_minor == minor ) )
+        if( ( PluginBlacklist[i].all_lower && name == PluginBlacklist[i].name && PluginBlacklist[i].version_major >= major && PluginBlacklist[i].version_minor >= minor ) ||
+            ( !PluginBlacklist[i].all_lower && name == PluginBlacklist[i].name && PluginBlacklist[i].version_major == major && PluginBlacklist[i].version_minor == minor ) )
         {
             wxString msg;
             wxString msg1;
