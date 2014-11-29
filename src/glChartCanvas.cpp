@@ -930,6 +930,13 @@ void glChartCanvas::SetupOpenGL()
 //        m_b_DisableFBO = true;
     
     GetglEntryPoints();
+    
+    //  ATI cards do not do glGenerateMipmap very well, or at all.
+    if( GetRendererString().Upper().Find( _T("RADEON") ) != wxNOT_FOUND )
+        s_glGenerateMipmap = 0;
+    if( GetRendererString().Upper().Find( _T("ATI") ) != wxNOT_FOUND )
+        s_glGenerateMipmap = 0;
+    
 
     if( !s_glGenFramebuffers  || !s_glGenRenderbuffers        || !s_glFramebufferTexture2D ||
         !s_glBindFramebuffer  || !s_glFramebufferRenderbuffer || !s_glRenderbufferStorage  ||
@@ -2585,7 +2592,7 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
 #if 1
                 // Use MipMap LOD tweaking to produce a blurred, downsampling effect at high speed.
                 
-                if(s_glGenerateMipmap){
+                if(1){
                     
                     //          Capture the rendered screen image to a texture
                     glReadBuffer( GL_BACK);
@@ -2601,30 +2608,52 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
                     
                     glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, wi, hi, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
-                    
-                    
                     glCopyTexSubImage2D(GL_TEXTURE_2D,  0,  0,  0,  0,  0,  wi, hi);
- 
+
+                    
                     glClear(GL_DEPTH_BUFFER_BIT);
                     glDisable(GL_DEPTH_TEST);
                     
-                    //  Build MipMaps, and re-rendered at reduced LOD (i.e. higher mipmap number)
-                    double bias = fog/70;
-                    
+                    //  Build MipMaps 
+                    int max_mipmap = 3;
                     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0 );
-                    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 4 );
+                    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, max_mipmap );
                     
                     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, -1);
-                    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, 5);
+                    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, max_mipmap);
                     
-                    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-                    
-                    /* some ATI drivers require this filter mode to build MipMaps, so to be safe... */
-                    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-                    
-                    s_glGenerateMipmap( GL_TEXTURE_2D );
+                    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
                     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
+                    
+                    //  Use hardware accelerated mipmap generation, if available
+                    //  Otherwise, roll our own.
+                    if( s_glGenerateMipmap)
+                        s_glGenerateMipmap(GL_TEXTURE_2D);
+                    else{
+                        unsigned char *mips[6];
+                        mips[0] = (unsigned char *)malloc(wi * hi * 3);
+                        glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_BYTE, mips[0]);
+                        
+                        int dimw = wi, dimh=hi;
+                        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, dimw, dimh, 0, GL_RGB, GL_UNSIGNED_BYTE, mips[0] );
+                        dimh /= 2, dimw /= 2;
+                        
+                        int level = 1;
+                        while( level <= max_mipmap ){
+                            mips[level] = (unsigned char *) malloc( dimw * dimh * 3 );
+                            HalfScaleChartBits( 2*dimw, 2*dimh, mips[level - 1], mips[level] );
+                            
+                            glTexImage2D( GL_TEXTURE_2D, level, GL_RGB, dimw, dimh, 0, GL_RGB, GL_UNSIGNED_BYTE, mips[level] );
+                            
+                            dimh /= 2, dimw /= 2;
+                            level++;
+                        }
+                        for(int i=0 ; i < max_mipmap+1; i++)
+                            free(mips[i]);
+                    }
 
+                    // Render at reduced LOD (i.e. higher mipmap number)
+                    double bias = fog/70;
                     glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, bias);
                     
                     glColor4f (1.0f,1.0f,1.0f,1.0f);
@@ -2637,6 +2666,7 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                     glEnd ();
                     
                     glDeleteTextures(1, &screen_capture);
+                    
                 }
                  
 #endif                

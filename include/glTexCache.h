@@ -40,6 +40,8 @@
 
 #define FACTORY_TIMER                   10000
 
+void HalfScaleChartBits( int width, int height, unsigned char *source, unsigned char *target );
+
 struct CompressedCacheHeader
 {
     uint32_t magic;
