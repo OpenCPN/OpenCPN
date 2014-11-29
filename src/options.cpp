@@ -1660,6 +1660,7 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
     m_ChartDisplayPage = AddPage( parent, _("Advanced") );
     
     wxFlexGridSizer* itemBoxSizerUI = new wxFlexGridSizer( 2 );
+    itemBoxSizerUI->SetHGap(border_size);
 //    itemBoxSizerUI->AddGrowableCol( 0, 1 );
 //    itemBoxSizerUI->AddGrowableCol( 1, 1 );
 //    m_ChartDisplayPage->SetSizer( itemBoxSizerUI );
@@ -1668,10 +1669,6 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
     wxBoxSizer* wrapperSizer = new wxBoxSizer( wxVERTICAL );
     m_ChartDisplayPage->SetSizer( wrapperSizer );
     wrapperSizer->Add( itemBoxSizerUI, 1, wxALL | wxALIGN_CENTER, border_size );
-
-#ifdef __WXMSW__
-    itemBoxSizerUI->SetHGap(border_size);
-#endif
 
 
     // spacer
@@ -1792,13 +1789,10 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
 
     // 1st column, all options except Mariner's Standard
     wxFlexGridSizer* optionsColumn = new wxFlexGridSizer(2);
+    optionsColumn->SetHGap(border_size);
     optionsColumn->AddGrowableCol( 0, 2 );
     optionsColumn->AddGrowableCol( 1, 3 );
     vectorPanel->Add( optionsColumn, 3, wxALL | wxEXPAND, border_size );
-
-#ifdef __WXMSW__
-    optionsColumn->SetHGap(border_size);
-#endif
 
 
     // spacer
@@ -2112,6 +2106,7 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
     pDisplayPanel = AddPage( parent, _("General") );
 
     wxFlexGridSizer *generalSizer = new wxFlexGridSizer( 2 );
+    generalSizer->SetHGap(border_size);
 //    generalSizer->AddGrowableCol( 0, 1 );
 //    generalSizer->AddGrowableCol( 1, 1 );
 //    pDisplayPanel->SetSizer( generalSizer );
@@ -2120,10 +2115,6 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
     wxBoxSizer* wrapperSizer = new wxBoxSizer( wxVERTICAL );
     pDisplayPanel->SetSizer( wrapperSizer );
     wrapperSizer->Add( generalSizer, 1, wxALL | wxALIGN_CENTER, border_size );
-
-#ifdef __WXMSW__
-    generalSizer->SetHGap(border_size);
-#endif
 
 
     // spacer
@@ -2210,6 +2201,7 @@ void options::CreatePanel_Units( size_t parent, int border_size, int group_item_
     wxScrolledWindow *panelUnits = AddPage( parent, _("Units") );
 
     wxFlexGridSizer *unitsSizer = new wxFlexGridSizer( 2 );
+    unitsSizer->SetHGap(border_size);
 //    unitsSizer->AddGrowableCol( 0, 1 );
 //    unitsSizer->AddGrowableCol( 1, 1 );
 //    panelUnits->SetSizer( unitsSizer );
@@ -2218,10 +2210,6 @@ void options::CreatePanel_Units( size_t parent, int border_size, int group_item_
     wxBoxSizer* wrapperSizer = new wxBoxSizer( wxVERTICAL );
     panelUnits->SetSizer( wrapperSizer );
     wrapperSizer->Add( unitsSizer, 1, wxALL | wxALIGN_CENTER, border_size );
-
-#ifdef __WXMSW__
-    unitsSizer->SetHGap(border_size);
-#endif
 
 
     // spacer
@@ -2638,6 +2626,10 @@ void options::CreateControls()
     inputFlags = wxSizerFlags(0).Align(wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL).Border(wxALL, group_item_spacing);
     groupLabelFlags = wxSizerFlags(0).Align(wxALIGN_RIGHT | wxALIGN_TOP).Border(wxALL, group_item_spacing);
     groupInputFlags = wxSizerFlags(0).Align(wxALIGN_LEFT | wxALIGN_TOP).Border(wxBOTTOM, group_item_spacing*2).Expand();
+
+#ifdef __WXGTK__
+    groupLabelFlags.Border(wxTOP, group_item_spacing + 3);
+#endif
 
     options* itemDialog1 = this;
 
