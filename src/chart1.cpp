@@ -10350,12 +10350,12 @@ wxFont *GetOCPNScaledFont( wxString item, int default_size )
     wxFont *dFont = FontMgr::Get().GetFont( item, default_size );
 
     if( g_bresponsive ){
-        //      Adjust font size to be reasonably readable, but no smaller than the default specified
-        double scaled_font_size = (double)default_size;
+        //      Adjust font size to be no smaller than xx mm actual size
+        double scaled_font_size = dFont->GetPointSize();
 
         if( cc1) {
-            scaled_font_size = 2.5 * cc1->GetPixPerMM();
-            int nscaled_font_size = wxMax( wxRound(scaled_font_size), default_size );
+            double min_scaled_font_size = 3 * cc1->GetPixPerMM();
+            int nscaled_font_size = wxMax( wxRound(scaled_font_size), min_scaled_font_size );
             wxFont *qFont = wxTheFontList->FindOrCreateFont( nscaled_font_size,
                                                              dFont->GetFamily(),
                                                              dFont->GetStyle(),

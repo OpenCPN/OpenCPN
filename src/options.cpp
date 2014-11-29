@@ -2487,15 +2487,28 @@ void options::CreateControls()
 
     m_pListbook = new wxListbook( itemDialog1, ID_NOTEBOOK, wxDefaultPosition, wxSize(-1, -1),
             wxLB_TOP );
+ 
+#ifdef __WXMSW__
+    //  Windows clips the width of listbook selectors to about twice icon size
+    //  This makes the text render with ellipses if too large
     
-    //  Reduce the Font size on ListBook(ListView) selectors to allow single line layout
-    if( g_bresponsive ) {
+    //  So, Measure and reduce the Font size on ListBook(ListView) selectors
+    //  to allow text layout without ellipsis...
+    wxBitmap tbmp = g_StyleManager->GetCurrentStyle()->GetIcon( _T("Display") );
+    wxScreenDC sdc;
+    int text_width = tbmp.GetWidth();
+    if(sdc.IsOk())
+        sdc.GetTextExtent(_T("Connections"), &text_width, NULL, NULL, NULL, GetOCPNScaledFont(_("Dialog")));
+
+    if(text_width > tbmp.GetWidth() * 2 ){
         wxListView* lv = m_pListbook->GetListView();
-        wxFont *sFont = wxTheFontList->FindOrCreateFont( 10, wxFONTFAMILY_DEFAULT,
-                                                     wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
+        wxFont *qFont = GetOCPNScaledFont(_("Dialog"));         // to get type, weight, etc...
+        
+        wxFont *sFont = wxTheFontList->FindOrCreateFont( 10, qFont->GetFamily(), qFont->GetStyle(), qFont->GetWeight());
         lv->SetFont( *sFont );
     }
-    
+#endif
+
     
     m_topImgList = new wxImageList( 40, 40, true, 1 );
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
