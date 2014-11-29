@@ -373,6 +373,7 @@ enum
     ID_DEF_MENU_QUILTREMOVE,
     ID_DEF_MENU_COGUP,
     ID_DEF_MENU_NORTHUP,
+    ID_DEF_MENU_TOGGLE_FULL,
     ID_DEF_MENU_TIDEINFO,
     ID_DEF_MENU_CURRENTINFO,
     ID_DEF_ZERO_XTE,
@@ -1009,7 +1010,8 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
     EVT_MENU ( ID_DEF_MENU_GOTOPOSITION,       ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_DEF_MENU_COGUP,              ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_DEF_MENU_NORTHUP,            ChartCanvas::PopupMenuHandler )
-
+    EVT_MENU ( ID_DEF_MENU_TOGGLE_FULL,        ChartCanvas::PopupMenuHandler )
+    
     EVT_MENU ( ID_RT_MENU_ACTIVATE,     ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_RT_MENU_DEACTIVATE,   ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_RT_MENU_INSERT,       ChartCanvas::PopupMenuHandler )
@@ -6647,6 +6649,10 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
         else
             MenuAppend( contextMenu, ID_DEF_MENU_NORTHUP, _("North Up Mode") );
     }
+
+    if(g_btouch){
+        MenuAppend( contextMenu, ID_DEF_MENU_TOGGLE_FULL, _("Toggle Full Screen") );
+    }
     
     if ( g_pRouteMan->IsAnyRouteActive() && g_pRouteMan->GetCurrentXTEToActivePoint() > 0. ) MenuAppend( contextMenu, ID_DEF_ZERO_XTE, _("Zero XTE") );
 
@@ -7661,6 +7667,10 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
 
     case ID_DEF_MENU_NORTHUP:
         gFrame->ToggleCourseUp();
+        break;
+        
+    case ID_DEF_MENU_TOGGLE_FULL:
+        gFrame->ToggleFullScreen();
         break;
 
     case ID_DEF_MENU_GOTOPOSITION:
