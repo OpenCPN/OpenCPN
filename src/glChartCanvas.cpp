@@ -2585,14 +2585,12 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
             
             if( !m_gl_rendered_region.IsEmpty() ) {
      
-                GLuint err;
                 int wi = VPoint.rv_rect.width;
                 int hi = VPoint.rv_rect.height;
                 
-#if 1
                 // Use MipMap LOD tweaking to produce a blurred, downsampling effect at high speed.
                 
-                if(1){
+                if(s_glGenerateMipmap){
                     
                     //          Capture the rendered screen image to a texture
                     glReadBuffer( GL_BACK);
@@ -2626,31 +2624,7 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
                     
                     //  Use hardware accelerated mipmap generation, if available
-                    //  Otherwise, roll our own.
-                    if( s_glGenerateMipmap)
-                        s_glGenerateMipmap(GL_TEXTURE_2D);
-                    else{
-                        unsigned char *mips[6];
-                        mips[0] = (unsigned char *)malloc(wi * hi * 3);
-                        glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_BYTE, mips[0]);
-                        
-                        int dimw = wi, dimh=hi;
-                        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, dimw, dimh, 0, GL_RGB, GL_UNSIGNED_BYTE, mips[0] );
-                        dimh /= 2, dimw /= 2;
-                        
-                        int level = 1;
-                        while( level <= max_mipmap ){
-                            mips[level] = (unsigned char *) malloc( dimw * dimh * 3 );
-                            HalfScaleChartBits( 2*dimw, 2*dimh, mips[level - 1], mips[level] );
-                            
-                            glTexImage2D( GL_TEXTURE_2D, level, GL_RGB, dimw, dimh, 0, GL_RGB, GL_UNSIGNED_BYTE, mips[level] );
-                            
-                            dimh /= 2, dimw /= 2;
-                            level++;
-                        }
-                        for(int i=0 ; i < max_mipmap+1; i++)
-                            free(mips[i]);
-                    }
+                    s_glGenerateMipmap(GL_TEXTURE_2D);
 
                     // Render at reduced LOD (i.e. higher mipmap number)
                     double bias = fog/70;
@@ -2669,36 +2643,34 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                     
                 }
                  
-#endif                
-                
-                
-                
-#if 0           // Fogging by alpha blending                
-                glPushAttrib( GL_COLOR_BUFFER_BIT );
-                glEnable( GL_BLEND );
-                glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-                
-                glColor4ub( color.Red(), color.Green(), color.Blue(), (int)fog );
-                
-                OCPNRegionIterator upd ( m_gl_rendered_region );
-                while ( upd.HaveRects() )
-                {
-                    wxRect rect = upd.GetRect();
+
+                else { 
+            // Fogging by alpha blending                
+                    glPushAttrib( GL_COLOR_BUFFER_BIT );
+                    glEnable( GL_BLEND );
+                    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
                     
-                    glBegin( GL_QUADS );
-                    glVertex2i( rect.x, rect.y );
-                    glVertex2i( rect.x + rect.width, rect.y );
-                    glVertex2i( rect.x + rect.width, rect.y + rect.height );
-                    glVertex2i( rect.x, rect.y + rect.height );
-                    glEnd();
+                    glColor4ub( color.Red(), color.Green(), color.Blue(), (int)fog );
                     
-                    upd.NextRect();
+                    OCPNRegionIterator upd ( m_gl_rendered_region );
+                    while ( upd.HaveRects() )
+                    {
+                        wxRect rect = upd.GetRect();
+                        
+                        glBegin( GL_QUADS );
+                        glVertex2i( rect.x, rect.y );
+                        glVertex2i( rect.x + rect.width, rect.y );
+                        glVertex2i( rect.x + rect.width, rect.y + rect.height );
+                        glVertex2i( rect.x, rect.y + rect.height );
+                        glEnd();
+                        
+                        upd.NextRect();
+                        
+                    }
                     
+                    glDisable( GL_BLEND );
+                    glPopAttrib();
                 }
-                
-                glDisable( GL_BLEND );
-                glPopAttrib();
-#endif                
             }
         }
     }
