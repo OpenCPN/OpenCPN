@@ -61,6 +61,7 @@ public:
       void OnClose(wxCloseEvent& event);
       void OnIdOKClick( wxCommandEvent& event );
       void OnIdWptCreateClick( wxCommandEvent& event );
+      void OnIdTrkCreateClick( wxCommandEvent& event );
       void OnMove( wxMoveEvent& event );
 
       void CreateControls();
@@ -80,6 +81,7 @@ public:
       int               m_nl;
       wxButton          *m_okButton;
       wxButton          *m_createWptBtn;
+      wxButton          *m_createTrkBtn;
 };
 
 #endif
