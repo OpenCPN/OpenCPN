@@ -207,6 +207,8 @@ public:
 
     void Init();
 
+    void SetInitialPage( int page_sel);
+    
     wxWindow* GetContentWindow() const;
     void OnClose( wxCloseEvent& event );
     

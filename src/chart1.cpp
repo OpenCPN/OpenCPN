@@ -467,7 +467,7 @@ struct sigaction          sa_all_old;
 
 bool                      g_boptionsactive;
 options                   *g_options;
-int                       options_lastPage = -1;
+int                       options_lastPage = 0;
 wxPoint                   options_lastWindowPos( 0,0 );
 wxSize                    options_lastWindowSize( 0,0 );
 
@@ -4874,7 +4874,7 @@ int MyFrame::DoOptionsDialog()
 #endif
 
     if( options_lastPage >= 0 )
-        g_options->m_pListbook->SetSelection( options_lastPage );
+        g_options->SetInitialPage(options_lastPage );
 
     if(!g_bresponsive){
         g_options->lastWindowPos = options_lastWindowPos;

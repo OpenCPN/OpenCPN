@@ -2766,6 +2766,22 @@ void options::CreateControls()
     m_pListbook->Connect( wxEVT_COMMAND_LISTBOOK_PAGE_CHANGED, wxListbookEventHandler( options::OnPageChange ), NULL, this );
 }
 
+void options::SetInitialPage( int page_sel)
+{
+    m_pListbook->SetSelection( page_sel );
+    
+    for (size_t i = 0; i < m_pListbook->GetPageCount(); i++)
+    {
+        wxNotebookPage* pg = m_pListbook->GetPage( i );
+        
+        if( pg->IsKindOf( CLASSINFO(wxNotebook))) {
+            wxNotebook *nb = ((wxNotebook *)pg);
+            nb->ChangeSelection(0);
+        }
+    }
+}
+
+
 void options::SetColorScheme( ColorScheme cs )
 {
     DimeControl( this );
