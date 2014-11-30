@@ -1527,7 +1527,7 @@ void options::CreatePanel_Ownship( size_t parent, int border_size, int group_ite
     rrSelect->AddGrowableCol( 1 );
     dispOptions->Add( rrSelect, 0, wxLEFT|wxRIGHT | wxEXPAND, border_size );
 
-    wxStaticText *rrTxt = new wxStaticText( itemPanelShip, wxID_ANY, _("Show radar rings") );
+    wxStaticText *rrTxt = new wxStaticText( itemPanelShip, wxID_ANY, _("Show range rings") );
     rrSelect->Add( rrTxt, 1, wxEXPAND | wxALL, group_item_spacing );
 
     wxString rrAlt[] = { _("None"), _T("1"), _T("2"), _T("3"), _T("4"), _T("5"), _T("6"), _T("7"), _T("8"), _T("9"), _T("10") };
@@ -2584,10 +2584,10 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
     if( g_bopengl ) pTransparentToolbar->Disable();
 
     //  Mobile/Touchscreen checkboxes
-    pMobile = new wxCheckBox( itemPanelFont, ID_MOBILEBOX, _("Enable Touchscreen/Tablet interface") );
+    pMobile = new wxCheckBox( itemPanelFont, ID_MOBILEBOX, _("Enable Touchscreen interface") );
     miscOptions->Add( pMobile, 0, wxALL, border_size );
     
-    pResponsive = new wxCheckBox( itemPanelFont, ID_REPONSIVEBOX, _("Enable Responsive graphics interface") );
+    pResponsive = new wxCheckBox( itemPanelFont, ID_REPONSIVEBOX, _("Enable Tablet Scaled Graphics interface") );
     miscOptions->Add( pResponsive, 0, wxALL, border_size );
     
     
