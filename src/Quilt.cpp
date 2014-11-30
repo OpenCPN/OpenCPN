@@ -106,7 +106,9 @@ OCPNRegion &QuiltCandidate::GetCandidateVPRegion( ViewPort &vp )
             float *pfp = cte.GetpAuxPlyTableEntry( ip );
             int nAuxPly = cte.GetAuxCntTableEntry( ip );
             
-            candidate_region.Union(vp.GetVPRegionIntersect( screen_region, nAuxPly, pfp, cte.GetScale() ));
+            OCPNRegion intersect = vp.GetVPRegionIntersect( screen_region, nAuxPly, pfp, cte.GetScale() );
+            if(!intersect.IsEmpty())
+                candidate_region.Union( intersect );
         }
     }
     
