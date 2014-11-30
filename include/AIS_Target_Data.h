@@ -104,6 +104,7 @@ public:
     bool                      b_positionOnceValid;
     bool                      b_nameValid;
     bool                      b_OwnShip;
+    bool                      b_PersistTrack;
 
     int                       m_utc_hour;
     int                       m_utc_min;

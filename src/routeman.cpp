@@ -52,6 +52,7 @@
 #include "multiplexer.h"
 #include "MarkIcon.h"
 #include "cutil.h"
+#include "AIS_Decoder.h"
 
 #include <wx/dir.h>
 #include <wx/filename.h>
@@ -84,6 +85,7 @@ extern RoutePoint      *pAnchorWatchPoint1;
 extern RoutePoint      *pAnchorWatchPoint2;
 extern int              g_route_line_width;
 extern Multiplexer     *g_pMUX;
+extern AIS_Decoder     *g_pAIS;
 
 extern PlugInManager    *g_pi_manager;
 extern ocpnStyle::StyleManager* g_StyleManager;
@@ -871,6 +873,7 @@ void Routeman::DeleteAllTracks( void )
 
         if( proute->m_bIsTrack ) {
             pConfig->m_bSkipChangeSetUpdate = true;
+            g_pAIS->DeletePersistentTrack( (Track *)proute );
             pConfig->DeleteConfigRoute( proute );
             DeleteTrack( proute );
             node = pRouteList->GetFirst();                   // Route
