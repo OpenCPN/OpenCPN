@@ -29,7 +29,9 @@
 #include <wx/filename.h>
 #include <wx/aui/aui.h>
 #include <wx/statline.h>
-
+#ifndef __WXMSW__
+#include <cxxabi.h>
+#endif // __WXMSW__
 #include "dychart.h"
 
 #include "pluginmanager.h"
@@ -221,8 +223,10 @@ PlugInManager::~PlugInManager()
 }
 
 
-bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled)
+bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled, bool b_enable_blackdialog)
 {
+    m_benable_blackdialog = b_enable_blackdialog;
+    
     m_plugin_location = plugin_dir;
 
     wxString msg(_T("PlugInManager searching for PlugIns in location "));
@@ -579,15 +583,33 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
     return b_compat;
 }
 
+void PlugInManager::ShowDeferredBlacklistMessages()
+{
+    for( unsigned int i=0 ; i < m_deferred_blacklist_messages.GetCount() ; i++){
+        OCPNMessageBox ( NULL, m_deferred_blacklist_messages.Item(i), wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK, 5 );  // 5 second timeout
+    }
+        
+}
+
 bool PlugInManager::CheckBlacklistedPlugin(opencpn_plugin* plugin)
 {
     int len = sizeof(PluginBlacklist) / sizeof(BlackListedPlugin);
     int major = plugin->GetPlugInVersionMajor();
     int minor = plugin->GetPlugInVersionMinor();
+    
+#ifdef __WXMSW__
     wxString name = wxString::FromAscii(typeid(*plugin).name());
+    name.Replace(_T("class "), wxEmptyString);
+#else
+    const std::type_info &ti = typeid(*plugin);
+    int status;
+    char *realname = abi::__cxa_demangle(ti.name(), 0, 0, &status);
+    wxString name = wxString::FromAscii(realname);
+    free(realname);
+#endif // __WXMSW__
     for (int i = 0; i < len; i++) {
-        if( ( PluginBlacklist[i].all_lower && name.EndsWith(PluginBlacklist[i].name) && PluginBlacklist[i].version_major >= major && PluginBlacklist[i].version_minor >= minor ) ||
-            ( !PluginBlacklist[i].all_lower && name.EndsWith(PluginBlacklist[i].name) && PluginBlacklist[i].version_major == major && PluginBlacklist[i].version_minor == minor ) )
+        if( ( PluginBlacklist[i].all_lower && name == PluginBlacklist[i].name && PluginBlacklist[i].version_major >= major && PluginBlacklist[i].version_minor >= minor ) ||
+            ( !PluginBlacklist[i].all_lower && name == PluginBlacklist[i].name && PluginBlacklist[i].version_major == major && PluginBlacklist[i].version_minor == minor ) )
         {
             wxString msg;
             wxString msg1;
@@ -605,7 +627,10 @@ bool PlugInManager::CheckBlacklistedPlugin(opencpn_plugin* plugin)
             }
             
             wxLogMessage(msg1);
-            OCPNMessageBox ( NULL, msg, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK, 5 );  // 5 second timeout
+            if(m_benable_blackdialog)
+                OCPNMessageBox ( NULL, msg, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK, 5 );  // 5 second timeout
+            else
+                m_deferred_blacklist_messages.Add(msg);
             
             return PluginBlacklist[i].hard;
         }
@@ -3711,7 +3736,10 @@ bool PI_PLIBObjectRenderCheck( PI_S57Obj *pObj, PlugIn_ViewPort *vp )
         rzRules.child = NULL;
         rzRules.next = NULL;
         
-        return ps52plib->ObjectRenderCheck( &rzRules, &cvp );
+        if(pContext->LUP)
+            return ps52plib->ObjectRenderCheck( &rzRules, &cvp );
+        else
+            return false;
     }
     else
         return false;
@@ -4009,10 +4037,12 @@ void PI_PLIBSetLineFeaturePriority( PI_S57Obj *pObj, int prio )
     rzRules.next = NULL;
     rzRules.mps = pContext->MPSRulesList;
     
-    ps52plib->SetLineFeaturePriority( &rzRules, prio );
+    if(pContext->LUP){
+        ps52plib->SetLineFeaturePriority( &rzRules, prio );
 
     //  Update the PLIB context after the render operation
-    UpdatePIObjectPlibContext( pObj, &cobj, &rzRules );
+        UpdatePIObjectPlibContext( pObj, &cobj, &rzRules );
+    }
 
 }
 
@@ -4094,13 +4124,15 @@ int PI_PLIBRenderObjectToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp )
     rzRules.next = NULL;
     rzRules.mps = pContext->MPSRulesList;
     
-    ViewPort cvp = CreateCompatibleViewport( *vp );
+    if(pContext->LUP){
+        ViewPort cvp = CreateCompatibleViewport( *vp );
     
     //  Do the render
-    ps52plib->RenderObjectToDC( pdc, &rzRules, &cvp );
+        ps52plib->RenderObjectToDC( pdc, &rzRules, &cvp );
     
     //  Update the PLIB context after the render operation
-    UpdatePIObjectPlibContext( pObj, &cobj, &rzRules );
+        UpdatePIObjectPlibContext( pObj, &cobj, &rzRules );
+    }
 
     return 1;
 }
@@ -4169,11 +4201,13 @@ int PI_PLIBRenderAreaToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp, wxRe
         }
     }
     
+    if(pContext->LUP){
     //  Do the render
-    ps52plib->RenderAreaToDC( pdc, &rzRules, &cvp, &pb_spec );
+        ps52plib->RenderAreaToDC( pdc, &rzRules, &cvp, &pb_spec );
 
     //  Update the PLIB context after the render operation
-    UpdatePIObjectPlibContext( pObj, &cobj, &rzRules );
+        UpdatePIObjectPlibContext( pObj, &cobj, &rzRules );
+    }
     
     return 1;
 }
@@ -4231,14 +4265,16 @@ int PI_PLIBRenderAreaToGL( const wxGLContext &glcc, PI_S57Obj *pObj, PlugIn_View
     rzRules.next = NULL;
     rzRules.mps = pContext->MPSRulesList;
     
-    ViewPort cvp = CreateCompatibleViewport( *vp );
+    if(pContext->LUP){
+        ViewPort cvp = CreateCompatibleViewport( *vp );
     
     //  Do the render
-    ps52plib->RenderAreaToGL( glcc, &rzRules, &cvp, render_rect );
+        ps52plib->RenderAreaToGL( glcc, &rzRules, &cvp, render_rect );
     
     
     //  Update the PLIB context after the render operation
-    UpdatePIObjectPlibContext( pObj, &cobj, &rzRules );
+        UpdatePIObjectPlibContext( pObj, &cobj, &rzRules );
+    }
     
 #endif    
     return 1;
@@ -4268,13 +4304,15 @@ int PI_PLIBRenderObjectToGL( const wxGLContext &glcc, PI_S57Obj *pObj,
     rzRules.next = NULL;
     rzRules.mps = pContext->MPSRulesList;
     
-    ViewPort cvp = CreateCompatibleViewport( *vp );
+    if(pContext->LUP){
+        ViewPort cvp = CreateCompatibleViewport( *vp );
     
     //  Do the render
-    ps52plib->RenderObjectToGL( glcc, &rzRules, &cvp, render_rect );
+        ps52plib->RenderObjectToGL( glcc, &rzRules, &cvp, render_rect );
     
     //  Update the PLIB context after the render operation
-    UpdatePIObjectPlibContext( pObj, &cobj, &rzRules );
+        UpdatePIObjectPlibContext( pObj, &cobj, &rzRules );
+    }
     
     return 1;
     

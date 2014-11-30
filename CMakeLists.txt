@@ -672,6 +672,7 @@ SET(SRCS
                 src/OCPNRegion.cpp
                 src/TrackPropDlg.cpp
                 src/LinkPropDlg.cpp
+                src/ssl/sha1.c
     )
 
 IF(NOT WIN32 AND NOT APPLE)

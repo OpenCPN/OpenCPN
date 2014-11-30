@@ -132,6 +132,7 @@ public:
     AIS_Area_Notice_Hash     area_notices;
     bool                     b_SarAircraftPosnReport;
     int                      altitude;                  // Metres, from special position report(9)
+    bool                     b_nameFromCache;
     
 };
 

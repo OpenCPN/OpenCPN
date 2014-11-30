@@ -220,6 +220,7 @@ bool                      bDrawCurrentValues;
 wxString                  g_PrivateDataDir;
 wxString                  g_SData_Locn;
 wxString                  *pChartListFileName;
+wxString                  *pAISTargetNameFileName;
 wxString                  *pHome_Locn;
 wxString                  *pWorldMapLocation;
 wxString                  *pInit_Chart_Dir;
@@ -466,7 +467,7 @@ struct sigaction          sa_all_old;
 
 bool                      g_boptionsactive;
 options                   *g_options;
-int                       options_lastPage = -1;
+int                       options_lastPage = 0;
 wxPoint                   options_lastWindowPos( 0,0 );
 wxSize                    options_lastWindowSize( 0,0 );
 
@@ -663,6 +664,8 @@ int              g_chart_zoom_modifier;
 
 int              g_NMEAAPBPrecision;
 
+bool             g_bSailing;
+
 #ifdef LINUX_CRASHRPT
 wxCrashPrint g_crashprint;
 #endif
@@ -803,6 +806,34 @@ int CALLBACK CrashCallback(CR_CRASH_CALLBACK_INFO* pInfo)
 
 #endif
 
+wxString *newPrivateFileName(wxStandardPaths &std_path, wxString *home_locn, const char *name, const char *windowsName)
+{
+    wxString fname = wxString::FromUTF8(name);
+    wxString fwname = wxString::FromUTF8(windowsName);
+    wxString *filePathAndName = new wxString( fname );
+
+#ifdef __WXMSW__
+    filePathAndName = new wxString( fwname );
+    filePathAndName->Prepend( *pHome_Locn );
+
+#else
+    filePathAndName = new wxString(_T(""));
+    filePathAndName->Append(std_path.GetUserDataDir());
+    appendOSDirSlash(filePathAndName);
+    filePathAndName->Append( fname );
+#endif
+
+    if( g_bportable ) {
+        filePathAndName->Clear();
+#ifdef __WXMSW__
+        filePathAndName->Append( fwname );
+#else
+        filePathAndName->Append( fname );
+#endif
+        filePathAndName->Prepend( *home_locn );
+    }
+    return filePathAndName;
+}
 
 // `Main program' equivalent, creating windows and returning main app frame
 //------------------------------------------------------------------------------
@@ -1761,26 +1792,10 @@ bool MyApp::OnInit()
 
 
 //      Establish location and name of chart database
-#ifdef __WXMSW__
-    pChartListFileName = new wxString( _T("CHRTLIST.DAT") );
-    pChartListFileName->Prepend( *pHome_Locn );
+    pChartListFileName = newPrivateFileName(std_path, pHome_Locn, "chartlist.dat", "CHRTLIST.DAT");
 
-#else
-    pChartListFileName = new wxString(_T(""));
-    pChartListFileName->Append(std_path.GetUserDataDir());
-    appendOSDirSlash(pChartListFileName);
-    pChartListFileName->Append(_T("chartlist.dat"));
-#endif
-
-    if( g_bportable ) {
-        pChartListFileName->Clear();
-#ifdef __WXMSW__
-        pChartListFileName->Append( _T("CHRTLIST.DAT") );
-#else
-        pChartListFileName->Append(_T("chartlist.dat"));
-#endif
-        pChartListFileName->Prepend( *pHome_Locn );
-    }
+//      Establish location and name of AIS MMSI -> Target Name mapping
+    pAISTargetNameFileName = newPrivateFileName(std_path, pHome_Locn, "mmsitoname.csv", "MMSINAME.CSV");
 
 //      Establish guessed location of chart tree
     if( pInit_Chart_Dir->IsEmpty() ) {
@@ -2011,7 +2026,8 @@ bool MyApp::OnInit()
 
 //      Load and initialize any PlugIns
     g_pi_manager = new PlugInManager( gFrame );
-    g_pi_manager->LoadAllPlugIns( g_Plugin_Dir, true );
+    g_pi_manager->LoadAllPlugIns( g_Plugin_Dir, true, false );         // do not allow blicklist dialog, since
+                                                                        // frame and canvas are not yet rendered...
 
 // Show the frame
 
@@ -2071,6 +2087,10 @@ bool MyApp::OnInit()
     //   Notify all the AUI PlugIns so that they may syncronize with the Perspective
     g_pi_manager->NotifyAuiPlugIns();
 
+    //  Give the use dialog on any blacklisted PlugIns
+    g_pi_manager->ShowDeferredBlacklistMessages();
+    
+    
     bool b_SetInitialPoint = false;
 
     //   Build the initial chart dir array
@@ -3593,17 +3613,15 @@ void MyFrame::ODoSetSize( void )
         // maximum size is 1/28 of the box width, or the box height - whicever is less
         int max_font_size = wxMin( (stat_box.width / 28), (stat_box.height) );
 
-#ifdef __WXMSW__
-        int try_font_size = 12;   // the Windows system default is too small so fix it at 12pt
-#else
         wxFont sys_font = *wxNORMAL_FONT;
-        int try_font_size = sys_font.GetPointSize() + 1; // start 1pt larger than system default
-#endif
+        int try_font_size = sys_font.GetPointSize();
 
 #ifdef __WXOSX__
         int min_font_size = 10; // much less than 10pt is unreadably small on OS X
+        try_font_size += 1;     // default to 1pt larger than system UI font
 #else
-        int min_font_size = 6;  // on Win/Linux the text does not shrink so fast and 6pt is fine
+        int min_font_size = 7;  // on Win/Linux the text does not shrink quite so fast
+        try_font_size += 2;     // default to 2pt larger than system UI font
 #endif
 
         // get the user's preferred font, or if none set then the system default with the size overridden
@@ -4116,19 +4134,22 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
                     PlugInToolbarToolContainer *pttc = tool_array.Item( i );
                     if( event.GetId() == pttc->id ) {
                         if( pttc->m_pplugin ) pttc->m_pplugin->OnToolbarToolCallback( pttc->id );
+                        return; // required to prevent event.Skip() being called
                     }
                 }
             }
+
+            // If we didn't handle the event, allow it to bubble up to other handlers.
+            // This is required for the system menu items (Hide, etc) on OS X to work.
+            // This must only be called if we did NOT handle the event, otherwise it
+            // stops the menu items from working on Windows.
+            event.Skip();
+
             break;
         }
 
     }         // switch
 
-    // If we didn't handle the event, allow it to bubble up to other handlers.
-    // This is ncessary eg for the system default menu items (Hide, etc) on OS X to work.
-#ifdef __WXOSX__
-    event.Skip();
-#endif    
 }
 
 void MyFrame::ToggleColorScheme()
@@ -4146,8 +4167,6 @@ void MyFrame::ToggleFullScreen()
 {
     bool to = !IsFullScreen();
     long style = wxFULLSCREEN_NOBORDER | wxFULLSCREEN_NOCAPTION;; // | wxFULLSCREEN_NOMENUBAR;
-
-    if( g_FloatingToolbarDialog ) g_FloatingToolbarDialog->Show( g_bFullscreenToolbar | !to );
 
     ShowFullScreen( to, style );
     UpdateToolbar( global_color_scheme );
@@ -4543,7 +4562,12 @@ void MyFrame::ToggleChartOutlines( void )
 
 void MyFrame::SetMenubarItemState( int item_id, bool state )
 {
-    if( m_pMenuBar ) m_pMenuBar->Check( item_id, state );
+    if( m_pMenuBar ) {
+        bool enabled = m_pMenuBar->IsEnabled( item_id );
+        m_pMenuBar->Enable( item_id, false );
+        m_pMenuBar->Check( item_id, state );
+        m_pMenuBar->Enable( item_id, enabled );
+     }
 }
 
 void MyFrame::SetToolbarItemState( int tool_id, bool state )
@@ -4703,14 +4727,15 @@ void MyFrame::RegisterGlobalMenuItems()
     tools_menu->AppendSeparator();
 #ifdef __WXOSX__
     tools_menu->Append( ID_MENU_MARK_MOB, _menuText(_("Drop MOB Marker"), _T("RawCtrl-Space")) ); // NOTE Cmd+Space is reserved for Spotlight
-#else
-    tools_menu->Append( ID_MENU_MARK_MOB, _menuText(_("Drop MOB Marker"), _T("Ctrl-Space")) );
-#endif
     tools_menu->AppendSeparator();
     tools_menu->Append( wxID_PREFERENCES, _menuText(_("Preferences..."), _T("Ctrl-,")) );
+#else
+    tools_menu->Append( ID_MENU_MARK_MOB, _menuText(_("Drop MOB Marker"), _T("Ctrl-Space")) );
+    tools_menu->AppendSeparator();
+    tools_menu->Append( wxID_PREFERENCES, _menuText(_("Options..."), _T("Ctrl-,")) );
+#endif
+
     m_pMenuBar->Append( tools_menu, _("&Tools") );
-
-
     wxMenu* help_menu = new wxMenu();
     help_menu->Append( wxID_ABOUT, _("About OpenCPN") );
     help_menu->Append( wxID_HELP, _("OpenCPN Help") );
@@ -4849,7 +4874,7 @@ int MyFrame::DoOptionsDialog()
 #endif
 
     if( options_lastPage >= 0 )
-        g_options->m_pListbook->SetSelection( options_lastPage );
+        g_options->SetInitialPage(options_lastPage );
 
     if(!g_bresponsive){
         g_options->lastWindowPos = options_lastWindowPos;
@@ -9571,8 +9596,12 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "GREEN3;200;220;200;", "GREEN4;  0;255;  0;", "BLUE1; 170;170;255;", "BLUE2;  45; 45;170;",
         "BLUE3;   0;  0;255;", "GREY1; 200;200;200;", "GREY2; 230;230;230;", "RED1;  220;200;200;",
         "UBLCK;   0;  0;  0;", "UWHIT; 255;255;255;", "URED;  255;  0;  0;", "UGREN;   0;255;  0;",
-        "YELO1; 243;229; 47;", "YELO2; 128; 80;  0;", "TEAL1;   0;128;128;",
+        "YELO1; 243;229; 47;", "YELO2; 128; 80;  0;", "TEAL1;   0;128;128;", "GREEN5;170;254;  0;",
+#ifdef __WXOSX__
+        "DILG0; 255;255;255;",              // Dialog Background white
+#else
         "DILG0; 238;239;242;",              // Dialog Background white
+#endif
         "DILG1; 212;208;200;",              // Dialog Background
         "DILG2; 255;255;255;",              // Control Background
         "DILG3;   0;  0;  0;",              // Text
@@ -9592,7 +9621,7 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "GREEN4;  0;128;  0;", "BLUE1;  80; 80;160;", "BLUE2;  30; 30;120;", "BLUE3;   0;  0;128;",
         "GREY1; 100;100;100;", "GREY2; 128;128;128;", "RED1;  150;100;100;", "UBLCK;   0;  0;  0;",
         "UWHIT; 255;255;255;", "URED;  120; 54; 11;", "UGREN;  35;110; 20;", "YELO1; 120;115; 24;",
-        "YELO2;  64; 40;  0;", "TEAL1;   0; 64; 64;",
+        "YELO2;  64; 40;  0;", "TEAL1;   0; 64; 64;", "GREEN5; 85;128; 0;",
         "DILG0; 110;110;110;",              // Dialog Background
         "DILG1; 110;110;110;",              // Dialog Background
         "DILG2;   0;  0;  0;",              // Control Background
@@ -9613,7 +9642,7 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "GREEN4;  0; 64;  0;", "BLUE1;  60; 60;100;", "BLUE2;  22; 22; 85;", "BLUE3;   0;  0; 40;",
         "GREY1;  48; 48; 48;", "GREY2;  64; 64; 64;", "RED1;  100; 50; 50;", "UWHIT; 255;255;255;",
         "UBLCK;   0;  0;  0;", "URED;   60; 27;  5;", "UGREN;  17; 55; 10;", "YELO1;  60; 65; 12;",
-        "YELO2;  32; 20;  0;", "TEAL1;   0; 32; 32;",
+        "YELO2;  32; 20;  0;", "TEAL1;   0; 32; 32;", "GREEN5; 44; 64; 0;",
         "DILG0;  80; 80; 80;",              // Dialog Background
         "DILG1;  80; 80; 80;",              // Dialog Background
         "DILG2;   0;  0;  0;",              // Control Background
@@ -10319,12 +10348,12 @@ wxFont *GetOCPNScaledFont( wxString item, int default_size )
     wxFont *dFont = FontMgr::Get().GetFont( item, default_size );
 
     if( g_bresponsive ){
-        //      Adjust font size to be reasonably readable, but no smaller than the default specified
-        double scaled_font_size = (double)default_size;
+        //      Adjust font size to be no smaller than xx mm actual size
+        double scaled_font_size = dFont->GetPointSize();
 
         if( cc1) {
-            scaled_font_size = 2.5 * cc1->GetPixPerMM();
-            int nscaled_font_size = wxMax( wxRound(scaled_font_size), default_size );
+            double min_scaled_font_size = 3 * cc1->GetPixPerMM();
+            int nscaled_font_size = wxMax( wxRound(scaled_font_size), min_scaled_font_size );
             wxFont *qFont = wxTheFontList->FindOrCreateFont( nscaled_font_size,
                                                              dFont->GetFamily(),
                                                              dFont->GetStyle(),

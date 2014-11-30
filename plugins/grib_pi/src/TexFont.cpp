@@ -130,10 +130,11 @@ void TexFont::Build( wxFont &font, bool blur, bool luminance )
     unsigned char *imgdata = image.GetData();
     unsigned char *teximage = (unsigned char *) malloc( stride * tex_w * tex_h );
 
-    for( int j = 0; j < tex_w*tex_h; j++ )
-        for( int k = 0; k < stride; k++ )
-            teximage[j * stride + k] = imgdata[3*j];
-
+    if(teximage && imgdata ){
+        for( int j = 0; j < tex_w*tex_h; j++ )
+            for( int k = 0; k < stride; k++ )
+                teximage[j * stride + k] = imgdata[3*j];
+    }
     if(texobj)
         Delete();
 
@@ -218,11 +219,13 @@ void TexFont::RenderGlyph( wchar_t c )
         unsigned char *imgdata = image.GetData();
 
         char *data = new char[gw*gh*2];
-        for(int i=0; i<gw*gh; i++) {
-            data[2*i+0] = imgdata[3*i];
-            data[2*i+1] = imgdata[3*i];
+        
+        if(data && imgdata ){
+            for(int i=0; i<gw*gh; i++) {
+                data[2*i+0] = imgdata[3*i];
+                data[2*i+1] = imgdata[3*i];
+            }
         }
-
         glBindTexture( GL_TEXTURE_2D, 0);
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );

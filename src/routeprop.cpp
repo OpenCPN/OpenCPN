@@ -1930,6 +1930,18 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
 
     bSizerTextProperties->Add( bSizerLatLon, 0, wxEXPAND, 5 );
 
+    wxBoxSizer* bSizerArrivalRadius;
+    bSizerArrivalRadius = new wxBoxSizer( wxHORIZONTAL );
+    m_staticTextArrivalRadius = new wxStaticText( m_panelBasicProperties, wxID_ANY, _("Arrival Radius"),
+            wxDefaultPosition, wxDefaultSize, 0 );
+    m_staticTextArrivalRadius->Wrap( -1 );
+    bSizerArrivalRadius->Add( m_staticTextArrivalRadius, 1, wxALL, 5 );
+
+    m_textArrivalRadius = new wxTextCtrl( m_panelBasicProperties, wxID_ANY, wxEmptyString,
+            wxDefaultPosition, wxDefaultSize, 0 );
+    bSizerArrivalRadius->Add( m_textArrivalRadius, 1, wxALL, 5 );
+    bSizerTextProperties->Add( bSizerArrivalRadius, 0, wxEXPAND, 5 );
+
     m_staticTextDescription = new wxStaticText( m_panelBasicProperties, wxID_ANY, _("Description"),
             wxDefaultPosition, wxDefaultSize, 0 );
     m_staticTextDescription->Wrap( -1 );
@@ -2097,6 +2109,8 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
             wxCommandEventHandler( MarkInfoImpl::OnRightClick ), NULL, this );
     m_textLongitude->Connect( wxEVT_CONTEXT_MENU,
             wxCommandEventHandler( MarkInfoImpl::OnRightClick ), NULL, this );
+    m_textArrivalRadius->Connect( wxEVT_COMMAND_TEXT_ENTER,
+            wxCommandEventHandler( MarkInfoDef::OnArrivalRadiusChange ), NULL, this );
 
     m_textDescription->Connect( wxEVT_COMMAND_TEXT_UPDATED,
             wxCommandEventHandler( MarkInfoDef::OnDescChangedBasic ), NULL, this );
@@ -2139,6 +2153,8 @@ MarkInfoDef::~MarkInfoDef()
             wxCommandEventHandler( MarkInfoDef::OnPositionCtlUpdated ), NULL, this );
     m_textDescription->Disconnect( wxEVT_COMMAND_TEXT_UPDATED,
             wxCommandEventHandler( MarkInfoDef::OnDescChangedBasic ), NULL, this );
+    m_textArrivalRadius->Disconnect( wxEVT_COMMAND_TEXT_ENTER,
+            wxCommandEventHandler( MarkInfoDef::OnArrivalRadiusChange ), NULL, this );
     m_buttonExtDescription->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler( MarkInfoDef::OnExtDescriptionClick ), NULL, this );
     this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED,
@@ -2219,6 +2235,7 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
             m_toggleBtnEdit->SetValue( false );
             m_checkBoxShowName->Enable( false );
             m_checkBoxVisible->Enable( false );
+            m_textArrivalRadius->SetEditable ( false );
         } else {
             m_staticTextLayer->Enable( false );
             m_staticTextLayer->Show( false );
@@ -2232,8 +2249,14 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
             m_toggleBtnEdit->Enable( true );
             m_checkBoxShowName->Enable( true );
             m_checkBoxVisible->Enable( true );
+            m_textArrivalRadius->SetEditable ( true );
         }
         m_textName->SetValue( m_pRoutePoint->GetName() );
+
+        wxString s_ArrivalRadius;
+        s_ArrivalRadius.Printf( _T("%.3f"), m_pRoutePoint->GetWaypointArrivalRadius() );
+        m_textArrivalRadius->SetValue( s_ArrivalRadius );        
+        
         m_textDescription->SetValue( m_pRoutePoint->m_MarkDescription );
         m_textCtrlExtDescription->SetValue( m_pRoutePoint->m_MarkDescription );
         m_bitmapIcon->SetBitmap( *m_pRoutePoint->GetIconBitmap() );
@@ -2526,6 +2549,7 @@ bool MarkInfoImpl::SaveChanges()
 
         // Get User input Text Fields
         m_pRoutePoint->SetName( m_textName->GetValue() );
+        m_pRoutePoint->SetWaypointArrivalRadius( m_textArrivalRadius->GetValue() );
         m_pRoutePoint->m_MarkDescription = m_textDescription->GetValue();
         m_pRoutePoint->SetVisible( m_checkBoxVisible->GetValue() );
         m_pRoutePoint->SetNameShown( m_checkBoxShowName->GetValue() );

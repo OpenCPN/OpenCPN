@@ -339,6 +339,8 @@ extern int              g_chart_zoom_modifier;
 
 extern int              g_NMEAAPBPrecision;
 
+extern bool             g_bSailing;
+
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
 #endif
@@ -423,12 +425,18 @@ void Track::Start( void )
 
 void Track::Stop( bool do_add_point )
 {
-    double delta = 0.0;
-    if( m_lastStoredTP )
-        delta = DistGreatCircle( gLat, gLon, m_lastStoredTP->m_lat, m_lastStoredTP->m_lon );
+    if(m_bRunning){
+        if(do_add_point)
+            AddPointNow( true );                   // Force add last point
+        else{    
+            double delta = 0.0;
+            if( m_lastStoredTP )
+                delta = DistGreatCircle( gLat, gLon, m_lastStoredTP->m_lat, m_lastStoredTP->m_lon );
 
-    if( ( m_bRunning ) && ( ( delta > m_minTrackpoint_delta ) || do_add_point ) ) AddPointNow(
-            true );                   // Add last point
+            if(  delta > m_minTrackpoint_delta ) 
+                AddPointNow( true );                   // Add last point
+        }
+    }
 
     m_TimerTrack.Stop();
     m_bRunning = false;
@@ -1353,6 +1361,9 @@ int MyConfig::LoadMyConfig( int iteration )
 
     // Boolean to cater for legacy Input COM Port filer behaviour, i.e. show msg filtered but put msg on bus.
     Read( _T ( "LegacyInputCOMPortFilterBehaviour" ), &g_b_legacy_input_filter_behaviour, 0 );
+    
+    // Boolean to cater for sailing when not approaching waypoint
+    Read( _T( "Sailing" ), &g_bSailing, 0);
 
     SetPath( _T ( "/Settings/GlobalState" ) );
     Read( _T ( "bFollow" ), &st_bFollow );
@@ -1898,7 +1909,7 @@ int MyConfig::LoadMyConfig( int iteration )
         delete pval;
     }
 
-    if( 0 == iteration )
+    if( 1 == iteration )
         FontMgr::Get().ScrubList();
 
 //  Tide/Current Data Sources
@@ -2546,7 +2557,9 @@ void MyConfig::UpdateSettings()
     Write( _T ( "Locale" ), g_locale );
 
     Write( _T ( "KeepNavobjBackups" ), g_navobjbackups );
-Write( _T ( "LegacyInputCOMPortFilterBehaviour" ), g_b_legacy_input_filter_behaviour );
+    Write( _T ( "LegacyInputCOMPortFilterBehaviour" ), g_b_legacy_input_filter_behaviour );
+    Write( _T( "Sailing" ), g_bSailing);
+    
 //    S57 Object Filter Settings
 
     SetPath( _T ( "/Settings/ObjectFilter" ) );
@@ -2719,6 +2732,8 @@ Write( _T ( "LegacyInputCOMPortFilterBehaviour" ), g_b_legacy_input_filter_behav
     font_path = ( _T ( "/Settings/MacFonts" ) );
 #endif
 
+    DeleteGroup(font_path);
+    
     SetPath( font_path );
 
     int nFonts = FontMgr::Get().GetNumFonts();

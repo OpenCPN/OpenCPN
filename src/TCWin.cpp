@@ -10,6 +10,7 @@
 #include "tcmgr.h"
 #include "dychart.h"
 #include "cutil.h"
+#include "FontMgr.h"
 
 extern ColorScheme global_color_scheme;
 extern IDX_entry *gpIDX;
@@ -171,13 +172,16 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
 
     // Build graphics tools
 
-    pSFont = wxTheFontList->FindOrCreateFont( 8, wxFONTFAMILY_SWISS, wxNORMAL,
+    wxFont *dlg_font = FontMgr::Get().GetFont( _("Dialog") );
+    int dlg_font_size = dlg_font->GetPointSize();
+
+    pSFont = wxTheFontList->FindOrCreateFont( dlg_font_size-2, wxFONTFAMILY_SWISS, wxNORMAL,
                                                     wxFONTWEIGHT_NORMAL, FALSE, wxString( _T ( "Arial" ) ) );
-    pSMFont = wxTheFontList->FindOrCreateFont( 10, wxFONTFAMILY_SWISS, wxNORMAL,
+    pSMFont = wxTheFontList->FindOrCreateFont( dlg_font_size-1, wxFONTFAMILY_SWISS, wxNORMAL,
                                                        wxFONTWEIGHT_NORMAL, FALSE, wxString( _T ( "Arial" ) ) );
-    pMFont = wxTheFontList->FindOrCreateFont( 11, wxFONTFAMILY_SWISS, wxNORMAL, wxBOLD,
+    pMFont = wxTheFontList->FindOrCreateFont( dlg_font_size, wxFONTFAMILY_SWISS, wxNORMAL, wxBOLD,
                                                       FALSE, wxString( _T ( "Arial" ) ) );
-    pLFont = wxTheFontList->FindOrCreateFont( 12, wxFONTFAMILY_SWISS, wxNORMAL, wxBOLD,
+    pLFont = wxTheFontList->FindOrCreateFont( dlg_font_size+1, wxFONTFAMILY_SWISS, wxNORMAL, wxBOLD,
                                                       FALSE, wxString( _T ( "Arial" ) ) );
 
     pblack_1 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFD" ) ), 1,

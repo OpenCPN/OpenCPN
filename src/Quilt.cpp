@@ -106,7 +106,9 @@ OCPNRegion &QuiltCandidate::GetCandidateVPRegion( ViewPort &vp )
             float *pfp = cte.GetpAuxPlyTableEntry( ip );
             int nAuxPly = cte.GetAuxCntTableEntry( ip );
             
-            candidate_region.Union(vp.GetVPRegionIntersect( screen_region, nAuxPly, pfp, cte.GetScale() ));
+            OCPNRegion intersect = vp.GetVPRegionIntersect( screen_region, nAuxPly, pfp, cte.GetScale() );
+            if(!intersect.IsEmpty())
+                candidate_region.Union( intersect );
         }
     }
     
@@ -2321,7 +2323,7 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion 
 
         //    Fogging....
         if( g_fog_overzoom ) {
-            double scale_factor = GetRefNativeScale()/vp.chart_scale;
+            double scale_factor = vp.ref_scale/vp.chart_scale;
             
             if(scale_factor > 10){
                 float fog = ((scale_factor - 10.) * 255.) / 20.;
@@ -2347,6 +2349,13 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion 
   
 
                 wxImage src = m_pBM->ConvertToImage();
+#if 1
+                int blur_factor = wxMin((scale_factor-10), 15);
+                wxImage dest = src.Blur( blur_factor );
+#endif                
+                
+                
+#if 0           // this is fogging effect                
                 unsigned char *bg = src.GetData();
                 wxColour color = cc1->GetFogColor();
                 
@@ -2371,7 +2380,9 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion 
                 }
                 
                 dest.SetData( dest_data );
-
+#endif
+                
+                
                 wxBitmap dim(dest);
                 wxMemoryDC ddc;
                 ddc.SelectObject( dim );
@@ -2392,7 +2403,7 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion 
                 dc.SelectObject( *m_pBM );
                 
             }              
-         }     // m_nHiLiteIndex
+         }     // overzoom
         
         
         if( !dc.IsOk() )          // some error, probably bad charts, to be disabled on next compose

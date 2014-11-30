@@ -49,6 +49,7 @@ class Track;
 #define         OUT_ACTION_DEL  1 << 15
 #define         OUT_ACTION_UPD  1 << 16
 #define         OUT_EXTENSION   1 << 17
+#define         OUT_ARRIVAL_RADIUS 1 << 18
 
 #define  OPT_TRACKPT    OUT_TIME
 #define  OPT_WPT        (OUT_TYPE) +\
@@ -61,7 +62,8 @@ class Track;
                         (OUT_VIZ_NAME) +\
                         (OUT_SHARED) +\
                         (OUT_AUTO_NAME) +\
-                        (OUT_HYPERLINKS)
+                        (OUT_HYPERLINKS) +\
+                        (OUT_ARRIVAL_RADIUS)
 #define OPT_ROUTEPT     OPT_WPT                        
 
 //      Bitfield definitions controlling the GPX nodes output for Route.Track objects

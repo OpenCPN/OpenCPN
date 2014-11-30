@@ -88,6 +88,7 @@ extern Multiplexer     *g_pMUX;
 extern PlugInManager    *g_pi_manager;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern wxString         g_uploadConnection;
+extern bool             g_bSailing;
 
 //    List definitions for Waypoint Manager Icons
 WX_DECLARE_LIST(wxBitmap, markicon_bitmap_list_type);
@@ -449,8 +450,8 @@ bool Routeman::UpdateProgress()
 
         // Special signal:  if ArrivalRadius < 0, NEVER arrive...
         //  Used for MOB auto-created routes.
-        if( pActiveRoute->GetRouteArrivalRadius() > 0){
-            if( CurrentRangeToActiveNormalCrossing <= pActiveRoute->GetRouteArrivalRadius() ) {
+        if( pActivePoint->GetWaypointArrivalRadius() > 0){
+            if( CurrentRangeToActiveNormalCrossing <= pActivePoint->GetWaypointArrivalRadius() ) {
                 m_bArrival = true;
                 UpdateAutopilot();
 
@@ -460,10 +461,10 @@ bool Routeman::UpdateProgress()
             }
             else {
             //      Test to see if we are moving away from the arrival point, and
-            //      have been mving away for 2 seconds.  
+            //      have been moving away for 2 seconds.  
             //      If so, we should declare "Arrival"
-                if( (CurrentRangeToActiveNormalCrossing - m_arrival_min) >  pActiveRoute->GetRouteArrivalRadius() ){
-                    if(++m_arrival_test > 2) {
+                if( (CurrentRangeToActiveNormalCrossing - m_arrival_min) >  pActivePoint->GetWaypointArrivalRadius() ){
+                    if(++m_arrival_test > 2 && !g_bSailing) {
                         m_bArrival = true;
                         UpdateAutopilot();
                         
@@ -1436,20 +1437,22 @@ unsigned int WayPointman::GetIconTexture( const wxBitmap *pbm, int &glw, int &gl
         image.GetOrFindMaskColour( &mr, &mg, &mb );
     
         unsigned char *e = new unsigned char[4 * w * h];
-        for( int y = 0; y < h; y++ )
-            for( int x = 0; x < w; x++ ) {
-                unsigned char r, g, b;
-                int off = ( y * image.GetWidth() + x );
-                r = d[off * 3 + 0];
-                g = d[off * 3 + 1];
-                b = d[off * 3 + 2];
-                
-                e[off * 4 + 0] = r;
-                e[off * 4 + 1] = g;
-                e[off * 4 + 2] = b;
-                
-                e[off * 4 + 3] =  a ? a[off] : ( ( r == mr ) && ( g == mg ) && ( b == mb ) ? 0 : 255 );
-            }
+        if(d && e){
+            for( int y = 0; y < h; y++ )
+                for( int x = 0; x < w; x++ ) {
+                    unsigned char r, g, b;
+                    int off = ( y * image.GetWidth() + x );
+                    r = d[off * 3 + 0];
+                    g = d[off * 3 + 1];
+                    b = d[off * 3 + 2];
+                    
+                    e[off * 4 + 0] = r;
+                    e[off * 4 + 1] = g;
+                    e[off * 4 + 2] = b;
+                    
+                    e[off * 4 + 3] =  a ? a[off] : ( ( r == mr ) && ( g == mg ) && ( b == mb ) ? 0 : 255 );
+                }
+        }
     
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, pmi->tex_w, pmi->tex_h,
                      0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);

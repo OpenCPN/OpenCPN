@@ -129,7 +129,7 @@ bool AISTargetQueryDialog::Create( wxWindow* parent, wxWindowID id, const wxStri
 
     if( !wxDialog::Create( parent, id, caption, pos, size, wstyle ) ) return false;
 
-    wxFont *dFont = FontMgr::Get().GetFont( _("AISTargetQuery"), 12 );
+    wxFont *dFont = FontMgr::Get().GetFont( _("AISTargetQuery") );
     int font_size = wxMax(8, dFont->GetPointSize());
     wxString face = dFont->GetFaceName();
 #ifdef __WXGTK__
@@ -189,7 +189,7 @@ void AISTargetQueryDialog::UpdateText()
 //    if( m_MMSI == 0 ) { //  Faulty MMSI could be reported as 0
         AIS_Target_Data *td = g_pAIS->Get_Target_Data_From_MMSI( m_MMSI );
         if( td ) {
-            wxFont *dFont = FontMgr::Get().GetFont( _("AISTargetQuery"), 12 );
+            wxFont *dFont = FontMgr::Get().GetFont( _("AISTargetQuery") );
             wxString face = dFont->GetFaceName();
             int sizes[7];
             for( int i=-2; i<5; i++ ) {

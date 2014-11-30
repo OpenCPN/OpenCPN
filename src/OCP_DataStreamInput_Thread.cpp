@@ -964,8 +964,10 @@ int OCP_DataStreamInput_Thread::OpenComPortPhysical(const wxString &com_name, in
 
     if(!SetupComm(hSerialComm, 1024, 1024))
     {
-        ThreadMessage(_T("Error:SetupComm"));
-//        return (0 - abs((int)::GetLastError()));
+//        ThreadMessage(_T("Error:SetupComm"));
+        if(hSerialComm != INVALID_HANDLE_VALUE)
+            CloseHandle( hSerialComm );
+        return (0 - abs((int)::GetLastError()));
     }
 
     DCB dcbConfig;
@@ -990,14 +992,18 @@ int OCP_DataStreamInput_Thread::OpenComPortPhysical(const wxString &com_name, in
 
     else
     {
-        ThreadMessage(_T("Error:GetCommState"));
-//        return (0 - abs((int)::GetLastError()));
+//        ThreadMessage(_T("Error:GetCommState"));
+        if(hSerialComm != INVALID_HANDLE_VALUE)
+            CloseHandle( hSerialComm );
+        return (0 - abs((int)::GetLastError()));
     }
 
     if(!SetCommState(hSerialComm, &dcbConfig))
     {
-        ThreadMessage(_T("Error:SetCommState"));
-//        return (0 - abs((int)::GetLastError()));
+//        ThreadMessage(_T("Error:SetCommState"));
+        if(hSerialComm != INVALID_HANDLE_VALUE)
+            CloseHandle( hSerialComm );
+        return (0 - abs((int)::GetLastError()));
     }
 
     COMMTIMEOUTS commTimeout;
@@ -1010,8 +1016,10 @@ int OCP_DataStreamInput_Thread::OpenComPortPhysical(const wxString &com_name, in
 
     if(!SetCommTimeouts(hSerialComm, &commTimeout))
     {
-        ThreadMessage(_T("Error:SetCommTimeouts"));
-//        return (0 - abs((int)::GetLastError()));
+//        ThreadMessage(_T("Error:SetCommTimeouts"));
+        if(hSerialComm != INVALID_HANDLE_VALUE)
+            CloseHandle( hSerialComm );
+        return (0 - abs((int)::GetLastError()));
     }
 
     return (int)hSerialComm;

@@ -985,7 +985,7 @@ void ocpnDC::DrawBitmap( const wxBitmap &bitmap, wxCoord x, wxCoord y, bool usem
                     "trying to use mask to draw a bitmap without alpha or mask\n" );
 
             unsigned char *e = new unsigned char[4 * w * h];
-            {
+            if(e && d){
                 for( int y = 0; y < h; y++ )
                     for( int x = 0; x < w; x++ ) {
                         unsigned char r, g, b;
@@ -1009,7 +1009,8 @@ void ocpnDC::DrawBitmap( const wxBitmap &bitmap, wxCoord x, wxCoord y, bool usem
         } else {
             glRasterPos2i( x, y );
             glPixelZoom( 1, -1 ); /* draw data from top to bottom */
-            glDrawPixels( w, h, GL_RGB, GL_UNSIGNED_BYTE, image.GetData() );
+            if(image.GetData())
+                glDrawPixels( w, h, GL_RGB, GL_UNSIGNED_BYTE, image.GetData() );
             glPixelZoom( 1, 1 );
         }
     }
@@ -1067,9 +1068,11 @@ void ocpnDC::DrawText( const wxString &text, wxCoord x, wxCoord y )
             }
 
             unsigned char *data = new unsigned char[w * h];
-            unsigned char *im = image.GetData();
-            for( int i = 0; i < w * h; i++ )
-                data[i] = im[3 * i];
+           unsigned char *im = image.GetData();
+            if(im){
+                for( int i = 0; i < w * h; i++ )
+                    data[i] = im[3 * i];
+            }
 
             glColor4ub( m_textforegroundcolour.Red(), m_textforegroundcolour.Green(),
                     m_textforegroundcolour.Blue(), 255 );
