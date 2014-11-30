@@ -91,6 +91,7 @@ extern PlugInManager    *g_pi_manager;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern wxString         g_uploadConnection;
 extern bool             g_bSailing;
+extern Route            *pAISMOBRoute;
 
 //    List definitions for Waypoint Manager Icons
 WX_DECLARE_LIST(wxBitmap, markicon_bitmap_list_type);
@@ -772,14 +773,25 @@ bool Routeman::DoesRouteContainSharedPoints( Route *pRoute )
   
 
 
-void Routeman::DeleteRoute( Route *pRoute )
+bool Routeman::DeleteRoute( Route *pRoute )
 {
     if( pRoute ) {
+        if( pRoute == pAISMOBRoute )
+        {
+            int ret = wxMessageBox(_("You are trying to delete an active AIS MOB route, are you REALLY sure?"), _("Warning"), wxYES_NO | wxCENTRE );
+            if( ret == wxNO )
+                return false;
+            else
+                pAISMOBRoute = NULL;
+        }
         ::wxBeginBusyCursor();
 
         if( GetpActiveRoute() == pRoute ) DeactivateRoute();
 
-        if( pRoute->m_bIsInLayer ) return;
+        if( pRoute->m_bIsInLayer )
+            return false;
+            
+        pConfig->DeleteConfigRoute( pRoute );
 
         //    Remove the route from associated lists
         pSelect->DeleteAllSelectableRouteSegments( pRoute );
@@ -827,6 +839,7 @@ void Routeman::DeleteRoute( Route *pRoute )
         ::wxEndBusyCursor();
 
     }
+    return true;
 }
 
 void Routeman::DeleteAllRoutes( void )
@@ -837,6 +850,16 @@ void Routeman::DeleteAllRoutes( void )
     wxRouteListNode *node = pRouteList->GetFirst();
     while( node ) {
         Route *proute = node->GetData();
+        if( proute == pAISMOBRoute )
+        {
+            ::wxEndBusyCursor();
+            int ret = wxMessageBox(_("You are trying to delete an active AIS MOB route, are you REALLY sure?"), _("Warning"), wxYES_NO | wxCENTRE );
+            if( ret == wxNO )
+                return;
+            else
+                pAISMOBRoute = NULL;
+            ::wxBeginBusyCursor();
+        }
 
         if( proute->m_bIsInLayer ) {
             node = node->GetNext();

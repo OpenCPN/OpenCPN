@@ -8671,8 +8671,8 @@ void MyFrame::ActivateAISMOBRoute( AIS_Target_Data *ptarget )
 
 void MyFrame::UpdateAISMOBRoute( AIS_Target_Data *ptarget )
 {
-    if(pAISMOBRoute && ptarget){
-
+    if(pAISMOBRoute && ptarget)
+    {
         //   Update Current Ownship point
         RoutePoint *OwnPoint = pAISMOBRoute->GetPoint( 1 );
         OwnPoint->m_lat = gLat;
@@ -8691,7 +8691,6 @@ void MyFrame::UpdateAISMOBRoute( AIS_Target_Data *ptarget )
 
         pSelect->UpdateSelectableRouteSegments( OwnPoint );
         pSelect->UpdateSelectableRouteSegments( MOB_Point );
-
     }
 
     cc1->Refresh( false );
