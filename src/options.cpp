@@ -3929,8 +3929,7 @@ void options::OnApplyClick( wxCommandEvent& event )
         gFrame->ProcessOptionsDialog( m_returnChanges, this );
         cc1->ReloadVP();
     }
-
-    k_charts = k_charts & VISIT_CHARTS;
+    
     ::wxEndBusyCursor();
 }
 
@@ -4131,13 +4130,8 @@ void options::OnPageChange( wxListbookEvent& event )
 
     //    User selected Chart Page?
     //    If so, build the "Charts" page variants
-    if( 2 == i ) {                       // 2 is the index of "Charts" page
+    if( 1 == i ) {                       // 2 is the index of "Charts" page
         k_charts = VISIT_CHARTS;
-    }
-
-    //    User selected Vector Chart Page?
-    else if( 3 == i ) {                      // 3 is the index of "VectorCharts" page
-        k_vectorcharts = S52_CHANGED;
     }
 
     else if( m_pageUI == i ) {                       // 5 is the index of "User Interface" page
