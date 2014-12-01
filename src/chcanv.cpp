@@ -7884,10 +7884,11 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         if( dlg_return == wxID_YES ) {
             if( g_pRouteMan->GetpActiveRoute() == m_pSelectedRoute ) g_pRouteMan->DeactivateRoute();
 
-            if( m_pSelectedRoute->m_bIsInLayer ) break;
+            if( m_pSelectedRoute->m_bIsInLayer )
+                break;
 
-            pConfig->DeleteConfigRoute( m_pSelectedRoute );
-            g_pRouteMan->DeleteRoute( m_pSelectedRoute );
+            if( !g_pRouteMan->DeleteRoute( m_pSelectedRoute ) )
+                break;
             if( pRoutePropDialog && ( pRoutePropDialog->IsShown()) && (m_pSelectedRoute == pRoutePropDialog->GetRoute()) ) {
                 pRoutePropDialog->Hide();
             }

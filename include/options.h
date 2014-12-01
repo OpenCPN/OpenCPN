@@ -1062,13 +1062,14 @@ public:
     wxRadioButton       *m_rbTypeTrackDefault;
     wxRadioButton       *m_rbTypeTrackAlways;
     wxRadioButton       *m_rbTypeTrackNever;
+    wxCheckBox          *m_cbTrackPersist;
     
-    wxCheckBox            *m_IgnoreButton;
-    wxCheckBox            *m_MOBButton;
-    wxCheckBox            *m_VDMButton;
+    wxCheckBox          *m_IgnoreButton;
+    wxCheckBox          *m_MOBButton;
+    wxCheckBox          *m_VDMButton;
     
-    wxButton*     m_CancelButton;
-    wxButton*     m_OKButton;
+    wxButton            *m_CancelButton;
+    wxButton            *m_OKButton;
     
 };
 

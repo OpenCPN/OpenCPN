@@ -350,8 +350,8 @@ void MMSIEditDialog::CreateControls()
      
      wxStaticBoxSizer *sbSizerPropsTrack = new wxStaticBoxSizer( new wxStaticBox( itemDialog1, wxID_ANY, _("Tracking") ), wxVERTICAL );
      
-     wxBoxSizer* bSizer15;
-     bSizer15 = new wxBoxSizer( wxHORIZONTAL );
+     wxGridSizer* bSizer15;
+     bSizer15 = new wxGridSizer( 0, 3, 0, 0 );
      
      m_rbTypeTrackDefault = new wxRadioButton( itemDialog1, wxID_ANY, _("Default tracking"), wxDefaultPosition, wxDefaultSize, 0 );
      m_rbTypeTrackDefault->SetValue( true );
@@ -363,6 +363,8 @@ void MMSIEditDialog::CreateControls()
      m_rbTypeTrackNever = new wxRadioButton( itemDialog1, wxID_ANY, _("Never track"), wxDefaultPosition, wxDefaultSize, 0 );
      bSizer15->Add( m_rbTypeTrackNever, 0, wxALL, 5 );
      
+     m_cbTrackPersist = new wxCheckBox( itemDialog1, wxID_ANY, _("Persistent") );
+     bSizer15->Add( m_cbTrackPersist, 0, wxALL, 5 );
      
      sbSizerPropsTrack->Add( bSizer15, 0, wxEXPAND, 0 );
      itemStaticBoxSizer4->Add(sbSizerPropsTrack, 0, wxEXPAND, 0);
@@ -410,7 +412,9 @@ void MMSIEditDialog::CreateControls()
          default:
              break;
      }
-             
+     
+     m_cbTrackPersist->SetValue(m_props->m_bPersistentTrack);
+     
      m_IgnoreButton->SetValue(m_props->m_bignore);
      m_MOBButton->SetValue(m_props->m_bMOB);
      m_VDMButton->SetValue(m_props->m_bVDM);
@@ -450,6 +454,7 @@ void MMSIEditDialog::CreateControls()
          m_props->m_bignore = m_IgnoreButton->GetValue();
          m_props->m_bMOB = m_MOBButton->GetValue();
          m_props->m_bVDM = m_VDMButton->GetValue();
+         m_props->m_bPersistentTrack = m_cbTrackPersist->GetValue();
      }
      
      EndModal(wxID_OK);
@@ -513,6 +518,8 @@ wxString MMSIListCtrl::OnGetItemText( long item, long column ) const
                     ret = _("Never");
                 else
                     ret = _T("???");
+                if( props->m_bPersistentTrack )
+                    ret.Append(_T(", ")).Append(_("Persistent"));
                 break;
                 
             case mlIgnore:

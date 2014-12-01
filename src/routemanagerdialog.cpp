@@ -44,6 +44,7 @@
 #include "Layer.h"
 #include "SendToGpsDlg.h"
 #include "TrackPropDlg.h"
+#include "AIS_Decoder.h"
 
 #define DIALOG_MARGIN 3
 
@@ -134,6 +135,7 @@ extern double           gLat, gLon;
 extern double           gCog, gSog;
 extern bool             g_bShowLayers;
 extern wxString         g_default_wp_icon;
+extern AIS_Decoder      *g_pAIS;
 
 // sort callback. Sort by route name.
 int sort_route_name_dir;
@@ -1727,6 +1729,7 @@ void RouteManagerDialog::OnTrkDeleteClick( wxCommandEvent &event )
         for(unsigned int i=0 ; i < list.GetCount() ; i++) {
             Track *track = (Track *)(list.Item(i)->GetData());
             if( track ) {
+                g_pAIS->DeletePersistentTrack( track );
                 pConfig->DeleteConfigRoute( track );
                 g_pRouteMan->DeleteTrack( track );
             }
