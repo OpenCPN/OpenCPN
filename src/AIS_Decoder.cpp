@@ -1793,7 +1793,7 @@ void AIS_Decoder::UpdateOneTrack( AIS_Target_Data *ptarget )
     if( ptarget->b_PersistTrack )
     {
         Track *t;
-        if ( !(bool)m_persistent_tracks.count( ptarget->MMSI ) )
+        if ( 0 == m_persistent_tracks.count( ptarget->MMSI ) )
         {
             t = new Track();
             t->m_RouteNameString = wxString::Format( _T("AIS %s (%u) %s %s"), ptarget->GetFullName().c_str(), ptarget->MMSI, wxDateTime::Now().FormatISODate().c_str(), wxDateTime::Now().FormatISOTime().c_str() );
