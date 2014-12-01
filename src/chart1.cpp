@@ -2738,6 +2738,9 @@ void MyFrame::OnEraseBackground( wxEraseEvent& event )
 void MyFrame::OnMaximize( wxMaximizeEvent& event )
 {
     g_click_stop = 0;
+#ifdef __WXOSX__
+    event.Skip();
+#endif
 }
 
 void MyFrame::OnActivate( wxActivateEvent& event )
