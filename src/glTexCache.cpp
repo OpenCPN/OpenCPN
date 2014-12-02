@@ -1568,7 +1568,9 @@ void glTexFactory::UpdateCacheLevel( const wxRect &rect, int level, ColorScheme 
                UpdateCachePrecomp(pd, ptd->compcomp_size[level], ptd, level, color_scheme);
            }
            else {
-               UpdateCache(ptd->CompressedArrayAccess( CA_READ, NULL, level), size, ptd, level, color_scheme);
+               unsigned char *source = ptd->CompressedArrayAccess( CA_READ, NULL, level);
+               if(source)
+                    UpdateCache(source, size, ptd, level, color_scheme);
            }
        }
     }

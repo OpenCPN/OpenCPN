@@ -46,14 +46,17 @@ extern Select *pSelect;
 extern MyConfig *pConfig;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern ChartCanvas *cc1;
+extern RouteList *pRouteList;
 
 #define xID_OK 10009
 #define xID_WPT_CREATE 10010
+#define xID_TRK_CREATE 10011
 IMPLEMENT_CLASS ( AISTargetQueryDialog, wxDialog )
 // AISTargetQueryDialog event table definition
 BEGIN_EVENT_TABLE ( AISTargetQueryDialog, wxDialog )
     EVT_BUTTON( xID_OK, AISTargetQueryDialog::OnIdOKClick )
     EVT_BUTTON( xID_WPT_CREATE, AISTargetQueryDialog::OnIdWptCreateClick )
+    EVT_BUTTON( xID_TRK_CREATE, AISTargetQueryDialog::OnIdTrkCreateClick )
     EVT_CLOSE(AISTargetQueryDialog::OnClose)
     EVT_MOVE( AISTargetQueryDialog::OnMove )
 END_EVENT_TABLE()
@@ -109,6 +112,39 @@ void AISTargetQueryDialog::OnIdWptCreateClick( wxCommandEvent& event )
                 pRouteManagerDialog->UpdateWptListCtrl();
             cc1->undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
             cc1->undo->AfterUndoableAction( NULL );
+            Refresh( false );
+        }
+    }
+}
+
+void AISTargetQueryDialog::OnIdTrkCreateClick( wxCommandEvent& event )
+{
+    if( m_MMSI != 0 ) { //  Faulty MMSI could be reported as 0
+        AIS_Target_Data *td = g_pAIS->Get_Target_Data_From_MMSI( m_MMSI );
+        if( td )
+        {
+            int ip = 0;
+            float prev_rlat = 0., prev_rlon = 0.;
+            RoutePoint *prev_pConfPoint = NULL;
+                
+            Track *t = new Track();
+
+            t->m_RouteNameString = wxString::Format( _T("AIS %s (%u) %s %s"), td->GetFullName().c_str(), td->MMSI, wxDateTime::Now().FormatISODate().c_str(), wxDateTime::Now().FormatISOTime().c_str() );
+            wxAISTargetTrackListNode *node = td->m_ptrack->GetFirst();
+            while( node )
+            {
+                AISTargetTrackPoint *ptrack_point = node->GetData();
+                vector2D point( ptrack_point->m_lon, ptrack_point->m_lat );
+                t->AddNewPoint( point, wxDateTime(ptrack_point->m_time).ToUTC() );
+                node = node->GetNext();
+            }
+            
+            pRouteList->Append( t );
+            pConfig->AddNewRoute( t, -1 );
+            t->RebuildGUIDList(); // ensure the GUID list is intact and good
+
+            if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+                pRouteManagerDialog->UpdateTrkListCtrl();
             Refresh( false );
         }
     }
@@ -173,6 +209,10 @@ void AISTargetQueryDialog::CreateControls()
     wxSizer* ok = CreateButtonSizer( wxOK );
     m_createWptBtn = new wxButton( this, xID_WPT_CREATE, _("Create Waypoint"), wxDefaultPosition, wxDefaultSize, 0 );
     ok->Add( m_createWptBtn, 0, wxALL|wxEXPAND, 5 );
+    
+    m_createTrkBtn = new wxButton( this, xID_TRK_CREATE, _("Persist Track"), wxDefaultPosition, wxDefaultSize, 0 );
+    ok->Add( m_createTrkBtn, 0, wxALL|wxEXPAND, 5 );
+    
     topSizer->Add( ok, 0, wxALIGN_CENTER_HORIZONTAL | wxBOTTOM, 5 );
 }
 
@@ -223,6 +263,7 @@ void AISTargetQueryDialog::UpdateText()
             m_pQueryTextCtl->SetMinSize( sz );
             
             m_createWptBtn->Enable( td->b_positionOnceValid );
+            m_createTrkBtn->Enable( td->b_show_track );
         }
   //  }
 }

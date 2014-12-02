@@ -81,6 +81,8 @@ extern bool g_bAIS_CPA_Alert_Audio;
 extern ArrayOfMMSIProperties   g_MMSI_Props_Array;
 extern Route    *pAISMOBRoute;
 extern wxString *pAISTargetNameFileName;
+extern MyConfig *pConfig;
+extern RouteList *pRouteList;
 
 BEGIN_EVENT_TABLE(AIS_Decoder, wxEvtHandler)
     EVT_TIMER(TIMER_AIS1, AIS_Decoder::OnTimerAIS)
@@ -913,10 +915,13 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
             if( str.Mid( 3, 3 ).IsSameAs( _T("VDO") ) )
                 pTargetData->b_OwnShip = true;
 
-            // Check to see if this MMSI wants VDM translated to VDO...
+            // Check to see if this MMSI wants VDM translated to VDO or whether we want to persist it's track...
             for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
                 MMSIProperties *props =  g_MMSI_Props_Array.Item(i);
-                if(mmsi == props->MMSI){
+                if(mmsi == props->MMSI)
+                {
+                    if(props->m_bPersistentTrack)
+                        pTargetData->b_PersistTrack = true;
                     if(props->m_bVDM)
                         pTargetData->b_OwnShip = true;
                     else
@@ -1784,6 +1789,29 @@ void AIS_Decoder::UpdateOneTrack( AIS_Target_Data *ptarget )
     ptrackpoint->m_time = wxDateTime::Now().GetTicks();
 
     ptarget->m_ptrack->Append( ptrackpoint );
+    
+    if( ptarget->b_PersistTrack )
+    {
+        Track *t;
+        if ( 0 == m_persistent_tracks.count( ptarget->MMSI ) )
+        {
+            t = new Track();
+            t->m_RouteNameString = wxString::Format( _T("AIS %s (%u) %s %s"), ptarget->GetFullName().c_str(), ptarget->MMSI, wxDateTime::Now().FormatISODate().c_str(), wxDateTime::Now().FormatISOTime().c_str() );
+            pRouteList->Append( t );
+            pConfig->AddNewRoute( t, -1 );
+            m_persistent_tracks[ptarget->MMSI] = t;
+        }
+        else
+        {
+            t = m_persistent_tracks[ptarget->MMSI];
+        }
+        vector2D point( ptrackpoint->m_lon, ptrackpoint->m_lat );
+        t->AddNewPoint( point, wxDateTime(ptrackpoint->m_time).ToUTC() );
+        
+//We do not want dependency on the GUI here, do we?
+//        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+//                pRouteManagerDialog->UpdateTrkListCtrl();
+    }
 
     //    Walk the list, removing any track points that are older than the stipulated time
 
@@ -1799,6 +1827,18 @@ void AIS_Decoder::UpdateOneTrack( AIS_Target_Data *ptarget )
             }
         } else
             node = node->GetNext();
+    }
+}
+
+void AIS_Decoder::DeletePersistentTrack( Track *track )
+{
+    for(std::map<int, Track*>::iterator iterator = m_persistent_tracks.begin(); iterator != m_persistent_tracks.end(); iterator++)
+    {
+        if( iterator->second == track )
+        {
+            m_persistent_tracks.erase(iterator);
+            break;
+        }
     }
 }
 
@@ -2358,6 +2398,12 @@ MMSIProperties::MMSIProperties( wxString &spec )
             m_bVDM = true;
     }
     
+    s = tkz.GetNextToken();
+    if(s.Len()){
+        if(s.Upper() == _T("PERSIST"))
+            m_bPersistentTrack = true;
+    }
+    
 }
 
 MMSIProperties::~MMSIProperties()
@@ -2371,7 +2417,7 @@ void MMSIProperties::Init(void )
     m_bignore = false;
     m_bMOB = false;
     m_bVDM = false;
-    
+    m_bPersistentTrack = false;
 }
 
 wxString MMSIProperties::Serialize( void )
@@ -2402,6 +2448,12 @@ wxString MMSIProperties::Serialize( void )
     
     if(m_bVDM){
         sMMSI << _T("VDM");
+    }
+    
+    sMMSI << _T(";");
+    
+    if(m_bPersistentTrack){
+        sMMSI << _T("PERSIST");
     }
     
     return sMMSI;
