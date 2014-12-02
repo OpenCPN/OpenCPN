@@ -902,7 +902,7 @@ void GRIBUIDialog::UpdateTrackingControls( void )
             precip = m_OverlaySettings.CalibrateValue(GribOverlaySettings::PRECIPITATION, precip);
             int p = precip < 10. ? 2 : precip < 100. ? 1 : 0;
             p += m_OverlaySettings.Settings[GribOverlaySettings::PRECIPITATION].m_Units == 1 ? 1 : 0 ;  // if PRESSURE & in = one decimal more
-            m_tcPrecipitation->SetValue( wxString::Format( _T("%6.*f ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::PRECIPITATION), p, precip ) );
+            m_tcPrecipitation->SetValue( wxString::Format( _T("%4.*f ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::PRECIPITATION), p, precip ) );
         } else
             m_tcPrecipitation->SetValue( _("N/A") );
     }
