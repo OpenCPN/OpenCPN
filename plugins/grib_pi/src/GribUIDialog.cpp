@@ -1028,9 +1028,9 @@ void GRIBUIDialog::OnRequest(  wxCommandEvent& event )
 
     delete pReq_Dialog;                                              //delete to be re-created
 
-    pReq_Dialog = new GribRequestSetting( this );
-    pReq_Dialog->SetVpSize(m_vp);
+    pReq_Dialog = new GribRequestSetting( *this );
     pReq_Dialog->InitRequestConfig();
+    pReq_Dialog->OnVpChange(m_vp);
     pPlugIn->SetDialogFont( pReq_Dialog );
     pReq_Dialog->Show();
 }
