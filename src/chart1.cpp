@@ -425,6 +425,8 @@ bool                      g_bskew_comp;
 bool                      g_bopengl;
 bool                      g_bsmoothpanzoom;
 bool                      g_fog_overzoom;
+double                    g_overzoom_emphasis_base;
+bool                      g_oz_vector_scale;
 
 int                       g_nCOMPortCheck;
 

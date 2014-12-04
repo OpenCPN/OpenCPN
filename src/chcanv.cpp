@@ -901,9 +901,12 @@ void ViewPort::SetBoxes( void )
         if( dy % 4 ) dy += 4 - ( dy % 4 );
         if( dx % 4 ) dx += 4 - ( dx % 4 );
 
+        int inflate_x = wxMax(( dx - pix_width ) / 2, 0);
+        int inflate_y = wxMax(( dy - pix_height ) / 2, 0);
+        
         //  Grow the source rectangle appropriately
-        if( fabs( rotator ) > .001 ) rv_rect.Inflate( ( dx - pix_width ) / 2,
-                    ( dy - pix_height ) / 2 );
+        if( fabs( rotator ) > .001 )
+            rv_rect.Inflate( inflate_x, inflate_y );
 
     }
 
