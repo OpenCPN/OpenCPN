@@ -3100,12 +3100,26 @@ void ChartBaseBSB::GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion *pVal
       double raster_scale =  VPoint.view_scale_ppm / GetPPM();
 
       int rxl, rxr;
-      int ryb, ryt;
-      rxl = wxMax(-Rsrc.x * raster_scale, VPoint.rv_rect.x);
-      rxr = wxMin((Size_X - Rsrc.x) * raster_scale, VPoint.rv_rect.width + VPoint.rv_rect.x);
+      if(Rsrc.x < 0)
+            rxl = (int)(-Rsrc.x * raster_scale);
+      else
+            rxl = 0;
 
-      ryt = wxMax(-Rsrc.y * raster_scale, VPoint.rv_rect.y);
-      ryb = wxMin((Size_Y - Rsrc.y) * raster_scale, VPoint.rv_rect.height + VPoint.rv_rect.y);
+      if(((Size_X - Rsrc.x) * raster_scale) < VPoint.pix_width)
+            rxr = (int)((Size_X - Rsrc.x) * raster_scale);
+      else
+            rxr = VPoint.pix_width;
+
+      int ryb, ryt;
+      if(Rsrc.y < 0)
+            ryt = (int)(-Rsrc.y * raster_scale);
+      else
+            ryt = 0;
+
+      if(((Size_Y - Rsrc.y) * raster_scale) < VPoint.pix_height)
+            ryb = (int)((Size_Y - Rsrc.y) * raster_scale);
+      else
+            ryb = VPoint.pix_height;
 
       pValidRegion->Clear();
       pValidRegion->Union(rxl, ryt, rxr - rxl, ryb - ryt);
