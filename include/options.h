@@ -155,6 +155,7 @@ enum {
     ID_MAGAPBCHECKBOX,
     ID_MOBILEBOX,
     ID_REPONSIVEBOX,
+    ID_WAYPOINTRADARRINGS,
     xID_OK
 };
 
@@ -268,6 +269,7 @@ public:
     void OnShowGpsWindowCheckboxClick( wxCommandEvent& event );
     void OnZTCCheckboxClick( wxCommandEvent& event );
     void OnRadarringSelect( wxCommandEvent& event );
+    void OnWaypointRadarringSelect( wxCommandEvent& event );
     void OnShipTypeSelect( wxCommandEvent& event );
     void OnButtonGroups( wxCommandEvent& event );
     void OnInsertTideDataLocation( wxCommandEvent &event );
@@ -500,6 +502,7 @@ public:
     wxTextCtrl              *m_pOSGPSOffsetY;
     wxTextCtrl              *m_pOSMinSize;
     wxStaticBoxSizer        *dispOptions;
+    wxStaticBoxSizer        *dispWaypointOptions;
     wxScrolledWindow        *itemPanelShip;
     wxBoxSizer              *ownShip;
     wxTextCtrl              *m_pText_ACRadius;
@@ -519,9 +522,13 @@ public:
     int                     k_plugins;
 
     wxChoice                *pNavAidRadarRingsNumberVisible;
+    wxChoice                *pWaypointRadarRingsNumberVisible;
     wxFlexGridSizer         *radarGrid;
+    wxFlexGridSizer         *waypointradarGrid;
     wxTextCtrl              *pNavAidRadarRingsStep;
     wxChoice                *m_itemRadarRingsUnits;
+    wxTextCtrl              *pWaypointRadarRingsStep;
+    wxChoice                *m_itemWaypointRadarRingsUnits;
     wxCheckBox              *pWayPointPreventDragging;
     wxCheckBox              *pConfirmObjectDeletion;
     wxCheckBox              *pEnableZoomToCursor;

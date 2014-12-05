@@ -303,6 +303,9 @@ int                       g_iSpeedFormat;
 int                       g_iNavAidRadarRingsNumberVisible;
 float                     g_fNavAidRadarRingsStep;
 int                       g_pNavAidRadarRingsStepUnits;
+int                       g_iWaypointRadarRingsNumberVisible;
+float                     g_fWaypointRadarRingsStep;
+int                       g_pWaypointRadarRingsStepUnits;
 bool                      g_bWayPointPreventDragging;
 bool                      g_bConfirmObjectDelete;
 

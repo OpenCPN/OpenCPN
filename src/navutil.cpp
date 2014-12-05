@@ -203,6 +203,9 @@ extern int              g_S57_dialog_sx, g_S57_dialog_sy;
 extern int              g_iNavAidRadarRingsNumberVisible;
 extern float            g_fNavAidRadarRingsStep;
 extern int              g_pNavAidRadarRingsStepUnits;
+extern int              g_iWaypointRadarRingsNumberVisible;
+extern float            g_fWaypointRadarRingsStep;
+extern int              g_pWaypointRadarRingsStepUnits;
 extern bool             g_bWayPointPreventDragging;
 extern bool             g_bConfirmObjectDelete;
 
@@ -2001,6 +2004,18 @@ int MyConfig::LoadMyConfig( int iteration )
     g_pNavAidRadarRingsStepUnits = 0;
     Read( _T ( "RadarRingsStepUnits" ), &g_pNavAidRadarRingsStepUnits );
 
+    // Waypoint Radar rings
+    g_iWaypointRadarRingsNumberVisible = 0;
+    Read( _T ( "WaypointRadarRingsNumberVisible" ), &val );
+    if( val.Length() > 0 ) g_iWaypointRadarRingsNumberVisible = atoi( val.mb_str() );
+
+    g_fWaypointRadarRingsStep = 1.0;
+    Read( _T ( "WaypointRadarRingsStep" ), &val );
+    if( val.Length() > 0 ) g_fWaypointRadarRingsStep = atof( val.mb_str() );
+
+    g_pWaypointRadarRingsStepUnits = 0;
+    Read( _T ( "WaypointRadarRingsStepUnits" ), &g_pWaypointRadarRingsStepUnits );
+
     //  Support Version 3.0 and prior config setting for Radar Rings
     bool b300RadarRings= true;
     Read ( _T ( "ShowRadarRings" ), &b300RadarRings );
@@ -2761,6 +2776,12 @@ void MyConfig::UpdateSettings()
     Write( _T ( "RadarRingsNumberVisible" ), g_iNavAidRadarRingsNumberVisible );
     Write( _T ( "RadarRingsStep" ), g_fNavAidRadarRingsStep );
     Write( _T ( "RadarRingsStepUnits" ), g_pNavAidRadarRingsStepUnits );
+
+    // Waypoint Radar rings
+    Write( _T ( "WaypointShowRadarRings" ), (bool)(g_iWaypointRadarRingsNumberVisible > 0) );  //3.0.0 config support
+    Write( _T ( "WaypointRadarRingsNumberVisible" ), g_iWaypointRadarRingsNumberVisible );
+    Write( _T ( "WaypointRadarRingsStep" ), g_fWaypointRadarRingsStep );
+    Write( _T ( "WaypointRadarRingsStepUnits" ), g_pWaypointRadarRingsStepUnits );
 
     Write( _T ( "ConfirmObjectDeletion" ), g_bConfirmObjectDelete );
 

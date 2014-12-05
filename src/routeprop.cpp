@@ -1942,6 +1942,13 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     bSizerArrivalRadius->Add( m_textArrivalRadius, 1, wxALL, 5 );
     bSizerTextProperties->Add( bSizerArrivalRadius, 0, wxEXPAND, 5 );
 
+    wxBoxSizer* bSizerWaypointRangeRings;
+    bSizerWaypointRangeRings = new wxBoxSizer( wxHORIZONTAL );
+    m_checkBoxShowWaypointRangeRings = new wxCheckBox( m_panelBasicProperties, wxID_ANY, _("Show Waypoint range rings"),
+            wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT );
+    bSizerWaypointRangeRings->Add( m_checkBoxShowWaypointRangeRings, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
+    bSizerTextProperties->Add( bSizerWaypointRangeRings, 0, wxEXPAND, 5 );
+
     m_staticTextDescription = new wxStaticText( m_panelBasicProperties, wxID_ANY, _("Description"),
             wxDefaultPosition, wxDefaultSize, 0 );
     m_staticTextDescription->Wrap( -1 );
@@ -2236,6 +2243,7 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
             m_checkBoxShowName->Enable( false );
             m_checkBoxVisible->Enable( false );
             m_textArrivalRadius->SetEditable ( false );
+            m_checkBoxShowWaypointRangeRings->Enable( false );
         } else {
             m_staticTextLayer->Enable( false );
             m_staticTextLayer->Show( false );
@@ -2250,6 +2258,7 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
             m_checkBoxShowName->Enable( true );
             m_checkBoxVisible->Enable( true );
             m_textArrivalRadius->SetEditable ( true );
+            m_checkBoxShowWaypointRangeRings->Enable( true );
         }
         m_textName->SetValue( m_pRoutePoint->GetName() );
 
@@ -2276,6 +2285,7 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
         m_checkBoxShowName->SetValue( m_pRoutePoint->m_bShowName );
         m_checkBoxVisible->SetValue( m_pRoutePoint->m_bIsVisible );
         m_textCtrlGuid->SetValue( m_pRoutePoint->m_GUID );
+        m_checkBoxShowWaypointRangeRings->SetValue( m_pRoutePoint->m_bShowWaypointRangeRings );
 
         int NbrOfLinks = m_pRoutePoint->m_HyperlinkList->GetCount();
         HyperlinkList *hyperlinklist = m_pRoutePoint->m_HyperlinkList;
@@ -2550,6 +2560,7 @@ bool MarkInfoImpl::SaveChanges()
         // Get User input Text Fields
         m_pRoutePoint->SetName( m_textName->GetValue() );
         m_pRoutePoint->SetWaypointArrivalRadius( m_textArrivalRadius->GetValue() );
+        m_pRoutePoint->SetShowWaypointRangeRings( m_checkBoxShowWaypointRangeRings->GetValue() );
         m_pRoutePoint->m_MarkDescription = m_textDescription->GetValue();
         m_pRoutePoint->SetVisible( m_checkBoxVisible->GetValue() );
         m_pRoutePoint->SetNameShown( m_checkBoxShowName->GetValue() );

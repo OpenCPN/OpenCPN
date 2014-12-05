@@ -65,6 +65,7 @@ RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
     bool bshared = false;
     bool b_propvizname = false;
     bool b_propviz = false;
+    bool bviz_waypointrangerings = false;
 
     wxString SymString = def_symbol_name;       // default icon
     wxString NameString;
@@ -172,6 +173,12 @@ RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
                 if( ext_name == _T ( "opencpn:arrival_radius" ) ) {
                     wxString::FromUTF8(ext_child.first_child().value()).ToDouble(&ArrivalRadius ) ;
                 }
+                if ( ext_name == _T("opencpn:waypoint_range_rings" ) ) {
+                    wxString s = wxString::FromUTF8( ext_child.first_child().value() );
+                    long v = 0;
+                    if( s.ToLong( &v ) )
+                        bviz_waypointrangerings = ( v != 0 );
+                }
             }// for 
         } //extensions
     }   // for
@@ -187,7 +194,8 @@ RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
     pWP->m_MarkDescription = DescString;
     pWP->m_bIsolatedMark = bshared;      // This is an isolated mark
     pWP->SetWaypointArrivalRadius( ArrivalRadius );
-    
+    pWP->m_bShowWaypointRangeRings = bviz_waypointrangerings;
+
 
     if( b_propvizname )
         pWP->m_bShowName = bviz_name;
@@ -669,6 +677,11 @@ bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flags )
             child = child_ext.append_child("opencpn:arrival_radius");
             s.Printf(_T("%.3f"), pr->GetWaypointArrivalRadius());
             child.append_child(pugi::node_pcdata).set_value( s.mbc_str() );
+        }
+        if(flags & OUT_WAYPOINT_RANGE_RINGS) {
+            child = child_ext.append_child("opencpn:waypoint_range_rings");
+            if ( pr->m_bShowWaypointRangeRings ) {child.append_child(pugi::node_pcdata).set_value("1");}
+            else {child.append_child(pugi::node_pcdata).set_value("0");}
         }
     }
     

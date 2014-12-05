@@ -83,6 +83,7 @@ public:
       void SetWaypointArrivalRadius(double dArrivalDistance) { m_WaypointArrivalRadius = dArrivalDistance; };
       void SetWaypointArrivalRadius( wxString wxArrivalDistance ) { wxArrivalDistance.ToDouble( &m_WaypointArrivalRadius ); };
       double GetWaypointArrivalRadius();
+      void SetShowWaypointRangeRings(bool b_showWaypointRangeRings) { m_bShowWaypointRangeRings = b_showWaypointRangeRings; };
 
       bool SendToGPS(const wxString& com_name, wxGauge *pProgress);
 
@@ -133,6 +134,8 @@ public:
 
       HyperlinkList     *m_HyperlinkList;
       bool              m_btemp;
+      
+      bool              m_bShowWaypointRangeRings;
 
 #ifdef ocpnUSE_GL
       void DrawGL( ViewPort &vp, OCPNRegion &region );

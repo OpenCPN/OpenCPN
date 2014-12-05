@@ -33,6 +33,7 @@
 #include "navutil.h"
 #include "FontMgr.h"
 #include "cutil.h"
+#include "georef.h"
 
 extern WayPointman *pWayPointMan;
 extern bool g_bIsNewLayer;
@@ -46,6 +47,10 @@ extern bool g_btouch;
 extern bool g_bresponsive;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern double g_n_arrival_circle_radius;
+extern int g_iWaypointRadarRingsNumberVisible;
+extern float g_fWaypointRadarRingsStep;
+extern int g_pWaypointRadarRingsStepUnits;
+
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST ( RoutePointList );
@@ -377,6 +382,35 @@ void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
         }
     }
 
+    // Draw waypoint radar rings if activated
+    if( g_iWaypointRadarRingsNumberVisible && m_bShowWaypointRangeRings ) {
+        double factor = 1.00;
+        if( g_pWaypointRadarRingsStepUnits == 1 )          // nautical miles
+            factor = 1 / 1.852;
+
+        factor *= g_fWaypointRadarRingsStep;
+
+        double tlat, tlon;
+        wxPoint r1;
+        ll_gc_ll( m_lat, m_lon, 0, factor, &tlat, &tlon );
+        cc1->GetCanvasPointPix( tlat, tlon, &r1 );
+
+        double lpp = sqrt( pow( (double) (r.x - r1.x), 2) +
+                           pow( (double) (r.y - r1.y), 2 ) );
+        int pix_radius = (int) lpp;
+
+        wxPen ppPen1( GetGlobalColor( _T ( "URED" ) ), 2 );
+        wxBrush saveBrush = dc.GetBrush();
+        wxPen savePen = dc.GetPen();
+        dc.SetPen( ppPen1 );
+        dc.SetBrush( wxBrush( GetGlobalColor( _T ( "URED" ) ), wxTRANSPARENT ) );
+
+        for( int i = 1; i <= g_iWaypointRadarRingsNumberVisible; i++ )
+            dc.StrokeCircle( r.x, r.y, i * pix_radius );
+        dc.SetPen( savePen );
+        dc.SetBrush( saveBrush );
+    }
+    
     //  Save the current draw rectangle in the current DC
     //    This will be useful for fast icon redraws
     CurrentRect_in_DC.x = r.x + hilitebox.x;

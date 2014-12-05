@@ -299,7 +299,8 @@ class MarkInfoDef : public wxDialog
         wxSize                  m_defaultClientSize;
         wxStaticText*           m_staticTextArrivalRadius;
         wxTextCtrl*             m_textArrivalRadius;
-
+        wxCheckBox*             m_checkBoxShowWaypointRangeRings;
+        
     // Virtual event handlers, overide them in your derived class
         virtual void OnPositionCtlUpdated( wxCommandEvent& event ) { event.Skip(); }
         virtual void OnDescChangedBasic( wxCommandEvent& event ) { event.Skip(); }
