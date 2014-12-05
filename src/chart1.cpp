@@ -4415,12 +4415,6 @@ bool MyFrame::ToggleLights( bool doToggle, bool temporary )
                 break;
             }
         }
-        if( doToggle ) {
-            if( ! temporary ) {
-                ps52plib->GenerateStateHash();
-                cc1->ReloadVP();
-            }
-        }
     }
 
     if( doToggle ){
@@ -4432,7 +4426,13 @@ bool MyFrame::ToggleLights( bool doToggle, bool temporary )
         SetMenubarItemState( ID_MENU_ENC_LIGHTS, !ps52plib->IsObjNoshow("LIGHTS") );
     }
 
-
+    if( doToggle ) {
+        if( ! temporary ) {
+            ps52plib->GenerateStateHash();
+            cc1->ReloadVP();
+        }
+    }
+    
 
 #endif
     return oldstate;

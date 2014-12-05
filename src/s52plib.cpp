@@ -407,19 +407,54 @@ void s52plib::UpdateMarinerParams( void )
 
 void s52plib::GenerateStateHash()
 {
-    unsigned char state_buffer[200];  // Needs to be at least sizeof(int) + (S52_MAR_NUM * sizeof(double))
+    unsigned char state_buffer[512];  // Needs to be at least this big...
+    memset(state_buffer, 0, sizeof(state_buffer));
+    
     int time = ::wxGetUTCTime();
     memcpy(state_buffer, &time, sizeof(int));
     
     int offset = sizeof(int);           // skipping the time int, first element
     
     for(int i=0 ; i < S52_MAR_NUM ; i++){
-        if( ((i*sizeof(double)) + offset) < sizeof(state_buffer)){
+        if( (offset + sizeof(double)) < sizeof(state_buffer)){
             double t = S52_getMarinerParam((S52_MAR_param_t) i);
-            memcpy( &state_buffer[(i * sizeof(double)) + offset], &t, sizeof(double));
+            memcpy( &state_buffer[offset], &t, sizeof(double));
+        }
+        offset += sizeof(double);
+    }
+    
+    for(unsigned int i=0 ; i < m_noshow_array.GetCount() ; i++){
+        if( (offset + 6) < sizeof(state_buffer)){
+            memcpy(&state_buffer[offset], m_noshow_array[i].obj, 6) ;
+            offset += 6;
         }
     }
-    m_state_hash = crc32buf(state_buffer, offset + (S52_MAR_NUM * sizeof(double)) );
+    
+    if(offset + sizeof(bool) < sizeof(state_buffer))
+        memcpy(&state_buffer[offset], &m_bShowSoundg, sizeof(bool));  offset += sizeof(bool);
+    
+    if(offset + sizeof(bool) < sizeof(state_buffer))
+        memcpy(&state_buffer[offset], &m_bShowS57Text, sizeof(bool));  offset += sizeof(bool);
+    
+    if(offset + sizeof(bool) < sizeof(state_buffer))
+        memcpy(&state_buffer[offset], &m_bShowS57ImportantTextOnly, sizeof(bool));  offset += sizeof(bool);
+    
+    if(offset + sizeof(bool) < sizeof(state_buffer))
+        memcpy(&state_buffer[offset], &m_bDeClutterText, sizeof(bool)); offset += sizeof(bool);
+    
+    if(offset + sizeof(bool) < sizeof(state_buffer))
+        memcpy(&state_buffer[offset], &m_bShowNationalTexts, sizeof(bool));  offset += sizeof(bool);
+    
+    if(offset + sizeof(bool) < sizeof(state_buffer))
+        memcpy(&state_buffer[offset], &m_bShowAtonText, sizeof(bool));  offset += sizeof(bool);
+
+    if(offset + sizeof(bool) < sizeof(state_buffer))
+        memcpy(&state_buffer[offset], &m_bShowLdisText, sizeof(bool));  offset += sizeof(bool);
+    
+    if(offset + sizeof(bool) < sizeof(state_buffer))
+        memcpy(&state_buffer[offset], &m_bExtendLightSectors, sizeof(bool));  offset += sizeof(bool);
+            
+    m_state_hash = crc32buf(state_buffer, offset );
     
 }
 
