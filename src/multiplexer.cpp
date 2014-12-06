@@ -72,7 +72,7 @@ void Multiplexer::ClearStreams()
 {
     for (size_t i = 0; i < m_pdatastreams->Count(); i++)
     {
-        m_pdatastreams->Item(i)->Close();
+        delete m_pdatastreams->Item(i);         // Implicit Close(), see datastream dtor
     }
     m_pdatastreams->Clear();
 }

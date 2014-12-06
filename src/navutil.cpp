@@ -134,6 +134,8 @@ extern bool             g_bopengl;
 extern bool             g_bdisable_opengl;
 extern bool             g_bsmoothpanzoom;
 extern bool             g_fog_overzoom;
+extern double           g_overzoom_emphasis_base;
+extern bool             g_oz_vector_scale;
 
 extern bool             g_bShowOutlines;
 extern bool             g_bShowActiveRouteHighway;
@@ -1268,6 +1270,8 @@ int MyConfig::LoadMyConfig( int iteration )
     g_chart_zoom_modifier = wxMax(g_chart_zoom_modifier,-5);
 
     Read( _T ( "FogOnOverzoom" ), &g_fog_overzoom, 1 );
+    Read( _T ( "OverzoomVectorScale" ), &g_oz_vector_scale, 1 );
+    Read( _T ( "OverzoomEmphasisBase" ), &g_overzoom_emphasis_base, 10.0 );
     
 #ifdef USE_S57
     Read( _T ( "CM93DetailFactor" ), &g_cm93_zoom_factor, 0 );
@@ -1590,21 +1594,24 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "nColorScheme" ), &read_int, 0 );
     global_color_scheme = (ColorScheme) read_int;
 
-    SetPath( _T ( "/Settings/NMEADataSource" ) );
 
-    wxString connectionconfigs;
-    Read ( _T( "DataConnections" ),  &connectionconfigs, wxEmptyString );
-    wxArrayString confs = wxStringTokenize(connectionconfigs, _T("|"));
-    g_pConnectionParams->Clear();
-    for (size_t i = 0; i < confs.Count(); i++)
-    {
-        ConnectionParams * prm = new ConnectionParams(confs[i]);
-        if (!prm->Valid) {
-            wxLogMessage( _T( "Skipped invalid DataStream config") );
-            delete prm;
-            continue;
+    if( iteration == 0){
+        SetPath( _T ( "/Settings/NMEADataSource" ) );
+
+        wxString connectionconfigs;
+        Read ( _T( "DataConnections" ),  &connectionconfigs, wxEmptyString );
+        wxArrayString confs = wxStringTokenize(connectionconfigs, _T("|"));
+        g_pConnectionParams->Clear();
+        for (size_t i = 0; i < confs.Count(); i++)
+        {
+            ConnectionParams * prm = new ConnectionParams(confs[i]);
+            if (!prm->Valid) {
+                wxLogMessage( _T( "Skipped invalid DataStream config") );
+                delete prm;
+                continue;
+            }
+            g_pConnectionParams->Add(prm);
         }
-        g_pConnectionParams->Add(prm);
     }
 
     //  Automatically handle the upgrade to DataSources architecture...
@@ -1976,11 +1983,11 @@ int MyConfig::LoadMyConfig( int iteration )
            if(size != 0){
                 wxLogMessage( _T("Applying NavObjChanges") );
                 pNavObjectChangesSet->ApplyChanges();
-                delete pNavObjectChangesSet;
-
-
                 UpdateNavObj();
            }
+
+           delete pNavObjectChangesSet;
+           
         }
 
         m_pNavObjectChangesSet = new NavObjectChanges(m_sNavObjSetChangesFile);
@@ -2466,6 +2473,10 @@ void MyConfig::UpdateSettings()
     Write( _T ( "OpenGL" ), g_bopengl );
 
     Write( _T ( "ZoomDetailFactor" ), g_chart_zoom_modifier );
+    
+    Write( _T ( "FogOnOverzoom" ), g_fog_overzoom );
+    Write( _T ( "OverzoomVectorScale" ), g_oz_vector_scale );
+    Write( _T ( "OverzoomEmphasisBase" ), g_overzoom_emphasis_base );
 
 #ifdef ocpnUSE_GL
     /* opengl options */

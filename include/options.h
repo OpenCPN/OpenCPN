@@ -329,6 +329,9 @@ public:
     wxCheckBox              *pResponsive;
     wxSlider                *m_pSlider_Zoom;    
     int                      k_tides;
+    wxCheckBox              *pOverzoomEmphasis;
+    wxCheckBox              *pOZScaleVector;
+    
 
     
 //    For GPS Page

@@ -69,6 +69,8 @@ extern wxString g_csv_locn;
 extern float g_GLMinCartographicLineWidth;
 extern float g_GLMinSymbolLineWidth;
 extern bool  g_b_EnableVBO;
+extern double  g_overzoom_emphasis_base;
+extern bool    g_oz_vector_scale;
 
 extern PFNGLGENBUFFERSPROC                 s_glGenBuffers;
 extern PFNGLBINDBUFFERPROC                 s_glBindBuffer;
@@ -405,19 +407,54 @@ void s52plib::UpdateMarinerParams( void )
 
 void s52plib::GenerateStateHash()
 {
-    unsigned char state_buffer[200];  // Needs to be at least sizeof(int) + (S52_MAR_NUM * sizeof(double))
+    unsigned char state_buffer[512];  // Needs to be at least this big...
+    memset(state_buffer, 0, sizeof(state_buffer));
+    
     int time = ::wxGetUTCTime();
     memcpy(state_buffer, &time, sizeof(int));
     
     int offset = sizeof(int);           // skipping the time int, first element
     
     for(int i=0 ; i < S52_MAR_NUM ; i++){
-        if( ((i*sizeof(double)) + offset) < sizeof(state_buffer)){
+        if( (offset + sizeof(double)) < sizeof(state_buffer)){
             double t = S52_getMarinerParam((S52_MAR_param_t) i);
-            memcpy( &state_buffer[(i * sizeof(double)) + offset], &t, sizeof(double));
+            memcpy( &state_buffer[offset], &t, sizeof(double));
+        }
+        offset += sizeof(double);
+    }
+    
+    for(unsigned int i=0 ; i < m_noshow_array.GetCount() ; i++){
+        if( (offset + 6) < sizeof(state_buffer)){
+            memcpy(&state_buffer[offset], m_noshow_array[i].obj, 6) ;
+            offset += 6;
         }
     }
-    m_state_hash = crc32buf(state_buffer, offset + (S52_MAR_NUM * sizeof(double)) );
+    
+    if(offset + sizeof(bool) < sizeof(state_buffer))
+        memcpy(&state_buffer[offset], &m_bShowSoundg, sizeof(bool));  offset += sizeof(bool);
+    
+    if(offset + sizeof(bool) < sizeof(state_buffer))
+        memcpy(&state_buffer[offset], &m_bShowS57Text, sizeof(bool));  offset += sizeof(bool);
+    
+    if(offset + sizeof(bool) < sizeof(state_buffer))
+        memcpy(&state_buffer[offset], &m_bShowS57ImportantTextOnly, sizeof(bool));  offset += sizeof(bool);
+    
+    if(offset + sizeof(bool) < sizeof(state_buffer))
+        memcpy(&state_buffer[offset], &m_bDeClutterText, sizeof(bool)); offset += sizeof(bool);
+    
+    if(offset + sizeof(bool) < sizeof(state_buffer))
+        memcpy(&state_buffer[offset], &m_bShowNationalTexts, sizeof(bool));  offset += sizeof(bool);
+    
+    if(offset + sizeof(bool) < sizeof(state_buffer))
+        memcpy(&state_buffer[offset], &m_bShowAtonText, sizeof(bool));  offset += sizeof(bool);
+
+    if(offset + sizeof(bool) < sizeof(state_buffer))
+        memcpy(&state_buffer[offset], &m_bShowLdisText, sizeof(bool));  offset += sizeof(bool);
+    
+    if(offset + sizeof(bool) < sizeof(state_buffer))
+        memcpy(&state_buffer[offset], &m_bExtendLightSectors, sizeof(bool));  offset += sizeof(bool);
+            
+    m_state_hash = crc32buf(state_buffer, offset );
     
 }
 
@@ -1537,31 +1574,64 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
 #endif
     bool bdraw = true;
 
+    wxFont *scaled_font = ptext->pFont;
+    wxCoord w_scaled = 0;
+    wxCoord h_scaled = 0;
+    wxCoord descent = 0;
+    wxCoord exlead = 0;
+    
+    double sfactor = vp->ref_scale/vp->chart_scale;
+    double scale_factor = wxMax((sfactor - g_overzoom_emphasis_base)  / 4., 1.);
+    
+    if(!g_oz_vector_scale || !vp->b_quilt)
+        scale_factor = 1.0;
+        
     if( !pdc ) // OpenGL
     {
 #ifdef ocpnUSE_GL
 
+        bool b_force_no_texture = false;
+        if(scale_factor > 1.){
+            b_force_no_texture = true;
+  
+            int old_size = ptext->pFont->GetPointSize();
+            int new_size = old_size * scale_factor;
+            scaled_font = wxTheFontList->FindOrCreateFont( new_size, ptext->pFont->GetFamily(),
+                                                           ptext->pFont->GetStyle(), ptext->pFont->GetWeight(), false,
+                                                           ptext->pFont->GetFaceName() );
+            wxScreenDC sdc;
+            sdc.GetTextExtent( ptext->frmtd, &w_scaled, &h_scaled, &descent, &exlead, scaled_font ); // measure the text
+            
+            
+            // Has font size changed?  If so, clear the cached bitmap, and rebuild it
+            if( (h_scaled - descent) != ptext->rendered_char_height){
+                free(ptext->m_pRGBA);
+                ptext->m_pRGBA = NULL;
+            }
+                
+            ptext->rendered_char_height = h_scaled - descent;
+                
+        }
         // We render National text the old, hard way, since the text will probably have full UTF-8 codepage elements
         // and we don't necessarily have the glyphs in our font, or if we do we would need a hashmap to cache and extract them
         
         // We also do this if the string has been detected to contain "special" characters
-        if( (ptext->bnat) || (ptext->bspecial_char) ) {       
+        
+        // And we also do this if the text is to be scaled up artificially.
+        if( (ptext->bnat) || (ptext->bspecial_char) || b_force_no_texture) {       
             if( !ptext->m_pRGBA ) // is RGBA bitmap ready?
             {
                 wxScreenDC sdc;
-                
-                wxCoord w = 0;
-                wxCoord h = 0;
-                wxCoord descent = 0;
-                wxCoord exlead = 0;
-                
-                sdc.GetTextExtent( ptext->frmtd, &w, &h, &descent, &exlead, ptext->pFont ); // measure the text
-                ptext->rendered_char_height = h - descent;
+
+                if(scale_factor <= 1.){
+                    sdc.GetTextExtent( ptext->frmtd, &w_scaled, &h_scaled, &descent, &exlead, scaled_font ); // measure the text
+                    ptext->rendered_char_height = h_scaled - descent;
+                }
                 
                 wxMemoryDC mdc;
-                wxBitmap bmp( w, h );
+                wxBitmap bmp( w_scaled, h_scaled );
                 mdc.SelectObject( bmp );
-                mdc.SetFont( *( ptext->pFont ) );
+                mdc.SetFont( *( scaled_font ) );
                 
                 if( mdc.IsOk() ) {
                     //  Render the text as white on black, so that underlying anti-aliasing of
@@ -1665,13 +1735,12 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
                         
                         glPixelStorei( GL_UNPACK_ROW_LENGTH, ptext->RGBA_width );
                         
-                        glRasterPos2i( xp + x_offset, yp + y_offset );
+                        glRasterPos2i( xp + x_offset + 1, yp + y_offset + 1 );
                         
                         glPixelStorei( GL_UNPACK_SKIP_PIXELS, x_offset );
                         glPixelStorei( GL_UNPACK_SKIP_ROWS, y_offset );
                         
-                        glDrawPixels( draw_width, draw_height, GL_RGBA, GL_UNSIGNED_BYTE,
-                                      ptext->m_pRGBA );
+                        glDrawPixels( draw_width, draw_height, GL_RGBA, GL_UNSIGNED_BYTE, ptext->m_pRGBA );
                         glPixelZoom( 1, 1 );
                         glDisable( GL_BLEND );
                         
@@ -1741,7 +1810,19 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
         } else {
             wxFont oldfont = pdc->GetFont(); // save current font
 
-            pdc->SetFont( *( ptext->pFont ) );
+            
+            if(scale_factor > 1){
+                wxFont *pf = ptext->pFont;
+                int old_size = pf->GetPointSize();
+                int new_size = old_size * scale_factor;
+                wxFont *scaled_font = wxTheFontList->FindOrCreateFont( new_size, pf->GetFamily(),
+                                                                       pf->GetStyle(), pf->GetWeight(), false,
+                                                                       pf->GetFaceName() );
+                pdc->SetFont( *scaled_font);
+            }
+            else{
+                pdc->SetFont( *( ptext->pFont ) );
+            }
 
             wxCoord w, h, descent, exlead;
             pdc->GetTextExtent( ptext->frmtd, &w, &h, &descent, &exlead ); // measure the text
@@ -2237,9 +2318,16 @@ wxImage s52plib::RuleXBMToImage( Rule *prule )
 bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPort *vp,
                                   float rot_angle )
 {
-
-    int pivot_x = prule->pos.line.pivot_x.SYCL;
-    int pivot_y = prule->pos.line.pivot_y.SYRW;
+    double scale_factor = 1.0;
+    
+    if(g_oz_vector_scale && vp->b_quilt){
+        double sfactor = vp->ref_scale/vp->chart_scale;
+        scale_factor = wxMax((sfactor - g_overzoom_emphasis_base)  / 4., 1);
+        scale_factor = wxMin(scale_factor, 20);
+    }
+    
+    int pivot_x = prule->pos.line.pivot_x.SYCL * scale_factor;
+    int pivot_y = prule->pos.line.pivot_y.SYRW * scale_factor;
 
     // For opengl, hopefully the symbols are loaded in a texture
     unsigned int texture = 0;
@@ -2247,8 +2335,8 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
     if(!m_pdc) {
       texture = ChartSymbols::GetGLTextureRect(texrect, prule->name.SYNM);
       if(texture) {
-          prule->parm2 = texrect.width;
-          prule->parm3 = texrect.height;
+          prule->parm2 = texrect.width * scale_factor;
+          prule->parm3 = texrect.height * scale_factor;
       }
     }
     
@@ -2275,6 +2363,12 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
             // delete any old private data
             ClearRulesCache( prule );
 
+            if(scale_factor > 1.0){
+                int w0 = Image.GetWidth();
+                int h0 = Image.GetHeight();
+                Image.Rescale(w0 * scale_factor, h0 * scale_factor);
+            }
+            
             int w = Image.GetWidth();
             int h = Image.GetHeight();
 
@@ -2405,14 +2499,14 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
 #ifdef ocpnUSE_GL
         glEnable( GL_BLEND );
         glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-
+        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
+        
         if(texture) {
             extern GLenum       g_texture_rectangle_format;
             glPushAttrib( GL_ENABLE_BIT ); //Save
 
             glEnable(g_texture_rectangle_format);
             glBindTexture(g_texture_rectangle_format, texture);
-            glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
 
             int w = texrect.width, h = texrect.height;
             
@@ -2431,7 +2525,8 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
                 glTranslatef(r.x, r.y, 0);
                 glRotatef(vp->rotation * 180/PI, 0, 0, -1);
                 glTranslatef(-pivot_x, -pivot_y, 0);
-
+                glScalef(scale_factor, scale_factor, 1);
+                
                 glBegin(GL_QUADS);
                     glTexCoord2f(tx1, ty1);    glVertex2i( 0, 0);
                     glTexCoord2f(tx2, ty1);    glVertex2i( w, 0);
@@ -2442,14 +2537,34 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
                 glPopMatrix();
             }
             else {
-                float ddx = pivot_x;
-                float ddy = pivot_y;
-                glBegin(GL_QUADS);
-                    glTexCoord2f(tx1, ty1);    glVertex2i(  r.x - ddx, r.y - ddy );
-                    glTexCoord2f(tx2, ty1);    glVertex2i(  r.x - ddx + w, r.y - ddy );
-                    glTexCoord2f(tx2, ty2);    glVertex2i(  r.x - ddx + w, r.y - ddy + h );
-                    glTexCoord2f(tx1, ty2);    glVertex2i(  r.x - ddx, r.y - ddy + h);
-                glEnd();
+                
+                if(scale_factor > 1.0){
+                    glPushMatrix();
+                    
+                    glTranslatef(r.x, r.y, 0);
+                    glTranslatef(-pivot_x, -pivot_y, 0);
+                    glScalef(scale_factor, scale_factor, 1);
+                    
+                    glBegin(GL_QUADS);
+                    glTexCoord2f(tx1, ty1);    glVertex2i( 0, 0);
+                    glTexCoord2f(tx2, ty1);    glVertex2i( w, 0);
+                    glTexCoord2f(tx2, ty2);    glVertex2i( w, h);
+                    glTexCoord2f(tx1, ty2);    glVertex2i( 0, h);
+                    glEnd();
+                    
+                    glPopMatrix();
+                }
+                else {
+                    float ddx = pivot_x;
+                    float ddy = pivot_y;
+                
+                    glBegin(GL_QUADS);
+                        glTexCoord2f(tx1, ty1);    glVertex2i(  r.x - ddx, r.y - ddy );
+                        glTexCoord2f(tx2, ty1);    glVertex2i(  r.x - ddx + w, r.y - ddy );
+                        glTexCoord2f(tx2, ty2);    glVertex2i(  r.x - ddx + w, r.y - ddy + h );
+                        glTexCoord2f(tx1, ty2);    glVertex2i(  r.x - ddx, r.y - ddy + h);
+                    glEnd();
+                }                
             }
 
             glPopAttrib();
@@ -2479,8 +2594,8 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
         {
             //    Don't bother if the symbol is off the true screen,
             //    as for instance when an area-centered symbol is called for.
-            if( ( ( r.x - pivot_x + b_width ) < vp->pix_width )
-                    && ( ( r.y - pivot_y + b_height ) < vp->pix_height ) ) {
+            if( ( ( r.x - pivot_x /*+ b_width*/ ) < vp->pix_width )
+                    && ( ( r.y - pivot_y/* + b_height*/ ) < vp->pix_height ) ) {
                 // Get the current screen contents
                 wxBitmap b1( b_width, b_height, -1 );
                 wxMemoryDC mdc1( b1 );
@@ -2489,6 +2604,9 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
 
                 //    Get the symbol
                 wxImage im_sym = ChartSymbols::GetImage( prule->name.SYNM );
+                if(scale_factor > 1){
+                    im_sym.Rescale(b_width, b_height);
+                }
 
                 wxImage im_result( b_width, b_height );
                 unsigned char *pdest = im_result.GetData();
@@ -2559,6 +2677,10 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
         }
     }
 
+    //  Dump the cache for next time
+    if(g_oz_vector_scale && (scale_factor > 1.0))
+        ClearRulesCache( prule );
+    
     return true;
 }
 
@@ -2840,8 +2962,8 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     w = atoi( str + 5 ); // Width
 
     double scale_factor = vp->ref_scale/vp->chart_scale;
-    double scaled_line_width = wxMax((scale_factor - 10), 1);
-    bool b_wide_line = vp->b_quilt && (scale_factor > 10.0);
+    double scaled_line_width = wxMax((scale_factor - g_overzoom_emphasis_base), 1);
+    bool b_wide_line = g_oz_vector_scale && vp->b_quilt && (scale_factor > g_overzoom_emphasis_base);
     
     wxPen wide_pen(*wxBLACK_PEN);
     wxDash dashw[2];
@@ -2852,6 +2974,7 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     {
         int w = wxMax(scaled_line_width, 2);            // looks better
         wide_pen.SetWidth( w );
+        wide_pen.SetColour(color);
         
         if( !strncmp( str, "DOTT", 4 ) ) {
             dashw[0] = 1;
@@ -2869,7 +2992,7 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         }
     }
  
- wxPen thispen(color, w, wxSOLID);
+    wxPen thispen(color, w, wxSOLID);
     wxDash dash1[2];
     
     if( m_pdc) //DC mode
@@ -2931,10 +3054,10 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
     //    Get a true pixel clipping/bounding box from the vp
     wxPoint pbb = vp->GetPixFromLL( vp->clat, vp->clon );
-    int xmin_ = pbb.x - vp->rv_rect.width / 2;
-    int xmax_ = xmin_ + vp->rv_rect.width;
-    int ymin_ = pbb.y - vp->rv_rect.height / 2;
-    int ymax_ = ymin_ + vp->rv_rect.height;
+    int xmin_ = pbb.x - (vp->rv_rect.width / 2) - (4 * scaled_line_width);
+    int xmax_ = xmin_ + vp->rv_rect.width + (8 * scaled_line_width);
+    int ymin_ = pbb.y - (vp->rv_rect.height / 2) - (4 * scaled_line_width) ;
+    int ymax_ = ymin_ + vp->rv_rect.height + (8 * scaled_line_width);
 
     int x0, y0, x1, y1;
 
@@ -3853,6 +3976,13 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     //  We need a private unrotated copy of the Viewport
     ViewPort vp_local = *vp;
     vp_local.SetRotationAngle( 0. );
+
+    //  We may be rendering the soundings symbols scaled up, so
+    //  adjust the inclusion test bounding box
+    
+    double scale_factor = vp->ref_scale/vp->chart_scale;
+    double box_mult = wxMax((scale_factor - g_overzoom_emphasis_base), 1);
+    int box_dim = 32 * box_mult;
     
     for( int ip = 0; ip < npt; ip++ ) {
         
@@ -3861,7 +3991,7 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
         wxPoint r = vp_local.GetPixFromLL( lat, lon );
         //      Use estimated symbol size
-        wxRect rr(r.x-16, r.y-16, 32, 32);
+        wxRect rr(r.x-(box_dim/2), r.y-(box_dim/2), box_dim, box_dim);
         
         //      The render inclusion test is trivial....
         if(!vp->rv_rect.Intersects(rr))
