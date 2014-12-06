@@ -123,6 +123,8 @@ float            g_GLMinSymbolLineWidth;
 float            g_GLMinCartographicLineWidth;
 
 extern bool             g_fog_overzoom;
+extern double           g_overzoom_emphasis_base;
+extern bool             g_oz_vector_scale;
 
 ocpnGLOptions g_GLOptions;
 
@@ -2579,14 +2581,13 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
             m_gl_rendered_region.Offset(VPoint.rv_rect.x, VPoint.rv_rect.y);
         
         if(fog_it){
-            float fog = ((scale_factor - 10.) * 255.) / 20.;
-            fog = wxMin(fog, 200.);         // Don't fog out completely
-            wxColour color = cc1->GetFogColor(); 
+            float fog = ((scale_factor - g_overzoom_emphasis_base) * 255.) / 20.;
+            fog = wxMin(fog, 200.);         // Don't blur completely
             
             if( !m_gl_rendered_region.IsEmpty() ) {
      
-                int wi = VPoint.rv_rect.width;
-                int hi = VPoint.rv_rect.height;
+                int wi = VPoint.pix_width; //VPoint.rv_rect.width;
+                int hi = VPoint.pix_height; //rv_rect.height;
                 
                 // Use MipMap LOD tweaking to produce a blurred, downsampling effect at high speed.
                 
@@ -2605,9 +2606,11 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
                     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
                     
-                    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, wi, hi, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
-                    glCopyTexSubImage2D(GL_TEXTURE_2D,  0,  0,  0,  0,  0,  wi, hi);
-
+                    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, VPoint.rv_rect.width, VPoint.rv_rect.height,
+                                  0, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
+                    glCopyTexSubImage2D(GL_TEXTURE_2D,  0,  0,  0,
+                                        VPoint.rv_rect.x,  VPoint.rv_rect.y,  VPoint.rv_rect.width, VPoint.rv_rect.height);
+                    
                     
                     glClear(GL_DEPTH_BUFFER_BIT);
                     glDisable(GL_DEPTH_TEST);
@@ -2629,14 +2632,16 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                     // Render at reduced LOD (i.e. higher mipmap number)
                     double bias = fog/70;
                     glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, bias);
+                    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
                     
                     glColor4f (1.0f,1.0f,1.0f,1.0f);
 
                     glBegin(GL_QUADS);
-                    glTexCoord2f(0 , 1 ); glVertex2f(0,  0);
-                    glTexCoord2f(0 , 0 ); glVertex2f(0,  hi);
-                    glTexCoord2f(1 , 0 ); glVertex2f(wi, hi);
-                    glTexCoord2f(1 , 1 ); glVertex2f(wi, 0);
+                    
+                    glTexCoord2f(0 , 1 ); glVertex2i(VPoint.rv_rect.x,                        VPoint.rv_rect.y);
+                    glTexCoord2f(0 , 0 ); glVertex2i(VPoint.rv_rect.x,                        VPoint.rv_rect.y + VPoint.rv_rect.height);
+                    glTexCoord2f(1 , 0 ); glVertex2i(VPoint.rv_rect.x + VPoint.rv_rect.width, VPoint.rv_rect.y + VPoint.rv_rect.height);
+                    glTexCoord2f(1 , 1 ); glVertex2i(VPoint.rv_rect.x + VPoint.rv_rect.width, VPoint.rv_rect.y);
                     glEnd ();
                     
                     glDeleteTextures(1, &screen_capture);
@@ -2652,13 +2657,15 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                     glEnable( GL_BLEND );
                     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
                     
-                    glColor4ub( color.Red(), color.Green(), color.Blue(), (int)fog );
+                    fog = wxMin(fog, 150.);         // Don't fog out completely
                     
+                    wxColour color = cc1->GetFogColor(); 
+                    glColor4ub( color.Red(), color.Green(), color.Blue(), (int)fog );
+
                     OCPNRegionIterator upd ( m_gl_rendered_region );
                     while ( upd.HaveRects() )
                     {
                         wxRect rect = upd.GetRect();
-                        
                         glBegin( GL_QUADS );
                         glVertex2i( rect.x, rect.y );
                         glVertex2i( rect.x + rect.width, rect.y );
@@ -2669,7 +2676,6 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                         upd.NextRect();
                         
                     }
-                    
                     glDisable( GL_BLEND );
                     glPopAttrib();
                 }
@@ -3017,7 +3023,8 @@ void glChartCanvas::Render()
 
     //  If we plan to post process the display, don't use accelerated panning
     double scale_factor = VPoint.ref_scale/VPoint.chart_scale;
-    bool fog_it = (g_fog_overzoom && (scale_factor > 10) && VPoint.b_quilt);
+    bool fog_it = (g_fog_overzoom && (scale_factor > g_overzoom_emphasis_base) && VPoint.b_quilt);
+    fog_it |= g_oz_vector_scale;
     bool bpost_hilite = !cc1->m_pQuilt->GetHiliteRegion( VPoint ).IsEmpty();
     
     // Try to use the framebuffer object's cache of the last frame

@@ -43,6 +43,15 @@ NMEALogWindow::NMEALogWindow()
     , pos_y(0)
 {}
 
+void NMEALogWindow::Shutdown()
+{
+    if (instance)
+    {
+        delete instance;
+        instance = NULL;
+    }
+}
+
 bool NMEALogWindow::Active() const
 {
     return window != NULL;

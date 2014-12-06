@@ -428,6 +428,7 @@ public:
     {
         if (m_region)
             gdk_region_destroy( m_region );
+        free( m_region );
     }
 
     OGdkRegion  *m_region;
@@ -476,7 +477,6 @@ OCPNRegion::OCPNRegion( size_t n, const wxPoint *points, int fillStyle )
 {
 }
 
-
 wxRegion &OCPNRegion::ConvertTowxRegion()
 {
     return *(wxRegion *)this;
@@ -522,6 +522,11 @@ OCPNRegion::OCPNRegion( const wxRegion& region )
         ri++;
     }
 }
+
+OCPNRegion::~OCPNRegion()
+{
+}
+
 
 void OCPNRegion::InitRect(wxCoord x, wxCoord y, wxCoord w, wxCoord h)
 {

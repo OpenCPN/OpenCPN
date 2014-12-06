@@ -44,6 +44,7 @@ extern int g_GroupIndex;
 extern ColorScheme global_color_scheme;
 extern int g_chart_zoom_modifier;
 extern bool g_fog_overzoom;
+extern double  g_overzoom_emphasis_base;
 
 //      We define and use this one Macro in this module
 //      Reason:  some compilers refuse to inline "GetChartTableEntry()"
@@ -79,17 +80,21 @@ OCPNRegion &QuiltCandidate::GetCandidateVPRegion( ViewPort &vp )
     // Special case for charts which extend around the world, or near to it
     //  Mostly this means cm93....
     //  Take the whole screen, clipped at +/- 80 degrees lat
+    //  Add a little bit to longitude extents,
+    //  to ensure that the chart covers the entire vp as it is presumed to.
     if(fabs(cte.GetLonMax() - cte.GetLonMin()) > 180.) {
+        float lonpix = 2./(1852. * 60. * vp.view_scale_ppm);    // two pixels
+        
         int n_ply_entries = 4;
         float ply[8];
         ply[0] = 80.;
-        ply[1] = vp.GetBBox().GetMinX();
+        ply[1] = vp.GetBBox().GetMinX() - lonpix;
         ply[2] = 80.;
-        ply[3] = vp.GetBBox().GetMaxX();
+        ply[3] = vp.GetBBox().GetMaxX() + lonpix;
         ply[4] = -80.;
-        ply[5] = vp.GetBBox().GetMaxX();
+        ply[5] = vp.GetBBox().GetMaxX() + lonpix;
         ply[6] = -80.;
-        ply[7] = vp.GetBBox().GetMinX();
+        ply[7] = vp.GetBBox().GetMinX() - lonpix;
         
         
         candidate_region = vp.GetVPRegionIntersect( screen_region, 4, &ply[0],
@@ -2325,8 +2330,8 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion 
         if( g_fog_overzoom ) {
             double scale_factor = vp.ref_scale/vp.chart_scale;
             
-            if(scale_factor > 10){
-                float fog = ((scale_factor - 10.) * 255.) / 20.;
+            if(scale_factor > g_overzoom_emphasis_base){
+                float fog = ((scale_factor - g_overzoom_emphasis_base) * 255.) / 20.;
                 fog = wxMin(fog, 200.);         // Don't fog out completely
                 
                 //    Is scratch member bitmap OK?
@@ -2350,7 +2355,7 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion 
 
                 wxImage src = m_pBM->ConvertToImage();
 #if 1
-                int blur_factor = wxMin((scale_factor-10), 15);
+                int blur_factor = wxMin((scale_factor-g_overzoom_emphasis_base)/4, 4);
                 wxImage dest = src.Blur( blur_factor );
 #endif                
                 

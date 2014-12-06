@@ -189,10 +189,15 @@ bool AISTargetQueryDialog::Create( wxWindow* parent, wxWindowID id, const wxStri
 
 void AISTargetQueryDialog::SetColorScheme( ColorScheme cs )
 {
+    DimeControl( this );
+    wxColor bg = GetBackgroundColour();
+    m_pQueryTextCtl->SetBackgroundColour( bg );
+
     if( cs != m_colorscheme ) {
-        DimeControl( this );
         Refresh();
     }
+    m_colorscheme = cs;
+    
 }
 
 void AISTargetQueryDialog::CreateControls()
@@ -206,13 +211,16 @@ void AISTargetQueryDialog::CreateControls()
 
     topSizer->Add( m_pQueryTextCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxALL | wxEXPAND, 5 );
 
-    wxSizer* ok = CreateButtonSizer( wxOK );
+    wxSizer* opt = new wxBoxSizer( wxHORIZONTAL );
     m_createWptBtn = new wxButton( this, xID_WPT_CREATE, _("Create Waypoint"), wxDefaultPosition, wxDefaultSize, 0 );
-    ok->Add( m_createWptBtn, 0, wxALL|wxEXPAND, 5 );
+    opt->Add( m_createWptBtn, 0, wxALL|wxEXPAND, 5 );
     
     m_createTrkBtn = new wxButton( this, xID_TRK_CREATE, _("Persist Track"), wxDefaultPosition, wxDefaultSize, 0 );
-    ok->Add( m_createTrkBtn, 0, wxALL|wxEXPAND, 5 );
+    opt->Add( m_createTrkBtn, 0, wxALL|wxEXPAND, 5 );
+    topSizer->Add( opt, 0, wxALIGN_CENTER_HORIZONTAL | wxBOTTOM, 5 );
     
+
+    wxSizer* ok = CreateButtonSizer( wxOK );
     topSizer->Add( ok, 0, wxALIGN_CENTER_HORIZONTAL | wxBOTTOM, 5 );
 }
 
@@ -236,8 +244,7 @@ void AISTargetQueryDialog::UpdateText()
                 sizes[i+2] = dFont->GetPointSize() + i + (i>0?i:0);
             }
 
-            html.Printf( _T("<html><body bgcolor=#%02x%02x%02x><center>"), bg.Red(), bg.Blue(),
-                            bg.Green() );
+            html.Printf( _T("<html><body bgcolor=#%02x%02x%02x><center>"), bg.Red(), bg.Green(), bg.Blue() );
 
             html << td->BuildQueryResult();
             html << _T("</center></font></body></html>");

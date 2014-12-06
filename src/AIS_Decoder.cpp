@@ -149,8 +149,12 @@ AIS_Decoder::~AIS_Decoder( void )
         delete td;
     }
 
-    delete current_targets;
+    delete AISTargetList;
+    
     delete AIS_AreaNotice_Sources;
+
+    AISTargetNames->clear();
+    delete AISTargetNames;
     
     m_dsc_timer.Stop();
     m_AIS_Audio_Alert_Timer.Stop();
@@ -335,42 +339,42 @@ AIS_Error AIS_Decoder::DecodeSingleVDO( const wxString& str, GenericPosDatEx *po
     //  Create the bit accessible string
     AIS_Bitstring strbit( string_to_parse.mb_str() );
 
-    AIS_Target_Data *pTargetData = new AIS_Target_Data;
+    AIS_Target_Data TargetData;
 
-    bool bdecode_result = Parse_VDXBitstring( &strbit, pTargetData );
+    bool bdecode_result = Parse_VDXBitstring( &strbit, &TargetData );
 
     if(bdecode_result) {
-        switch(pTargetData->MID)
+        switch(TargetData.MID)
         {
             case 1:
             case 2:
             case 3:
             case 18:
             {
-                if( !pTargetData->b_positionDoubtful ) {
-                    pos->kLat = pTargetData->Lat;
-                    pos->kLon = pTargetData->Lon;
+                if( !TargetData.b_positionDoubtful ) {
+                    pos->kLat = TargetData.Lat;
+                    pos->kLon = TargetData.Lon;
                 }
                 else {
                     pos->kLat = NAN;
                     pos->kLon = NAN;
                 }
 
-                if(pTargetData->COG == 360.0)
+                if(TargetData.COG == 360.0)
                     pos->kCog = NAN;
                 else
-                    pos->kCog = pTargetData->COG;
+                    pos->kCog = TargetData.COG;
 
 
-                if(pTargetData->SOG > 102.2)
+                if(TargetData.SOG > 102.2)
                     pos->kSog = NAN;
                 else
-                    pos->kSog = pTargetData->SOG;
+                    pos->kSog = TargetData.SOG;
 
-                if((int)pTargetData->HDG == 511)
+                if((int)TargetData.HDG == 511)
                     pos->kHdt = NAN;
                 else
-                    pos->kHdt = pTargetData->HDG;
+                    pos->kHdt = TargetData.HDG;
 
                 //  VDO messages do not contain variation or magnetic heading
                 pos->kVar = NAN;
