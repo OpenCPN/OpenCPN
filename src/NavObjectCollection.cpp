@@ -408,15 +408,22 @@ Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
             wxString ChildName = wxString::FromUTF8( tschild.name() );
 
             if( ChildName == _T ( "rtept" ) ) {
-                    pWp = ::GPXLoadWaypoint1(  tschild, _T("square"), _T(""), b_fullviz, b_layer, b_layerviz, layer_id);
-                    RoutePoint *erp = ::WaypointExists( pWp->m_GUID );
-                    if( erp != NULL )
-                        pWp = erp;
-                    pTentRoute->AddPoint( pWp, false, true, true );          // defer BBox calculation
-                    pWp->m_bIsInRoute = true;                      // Hack
-                    pWp->m_bIsInTrack = false;
-                    if( erp == NULL )
-                        pWayPointMan->AddRoutePoint( pWp );
+                RoutePoint *tpWp = ::GPXLoadWaypoint1(  tschild, _T("square"), _T(""), b_fullviz, b_layer, b_layerviz, layer_id);
+                RoutePoint *erp = ::WaypointExists( tpWp->m_GUID );
+                if( erp != NULL )
+                    pWp = erp;
+                else
+                    pWp = tpWp;
+                
+                pTentRoute->AddPoint( pWp, false, true, true );          // defer BBox calculation
+                pWp->m_bIsInRoute = true;                      // Hack
+                pWp->m_bIsInTrack = false;
+                
+                if( erp == NULL )
+                    pWayPointMan->AddRoutePoint( pWp );
+                else
+                    delete tpWp;
+                    
             }
             else
             if( ChildName == _T ( "name" ) ) {

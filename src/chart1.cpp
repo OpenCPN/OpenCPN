@@ -22,7 +22,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-
 #include "wx/wxprec.h"
 
 #ifndef  WX_PRECOMP
@@ -425,6 +424,8 @@ bool                      g_bskew_comp;
 bool                      g_bopengl;
 bool                      g_bsmoothpanzoom;
 bool                      g_fog_overzoom;
+double                    g_overzoom_emphasis_base;
+bool                      g_oz_vector_scale;
 
 int                       g_nCOMPortCheck;
 
@@ -812,7 +813,7 @@ wxString *newPrivateFileName(wxStandardPaths &std_path, wxString *home_locn, con
 {
     wxString fname = wxString::FromUTF8(name);
     wxString fwname = wxString::FromUTF8(windowsName);
-    wxString *filePathAndName = new wxString( fname );
+    wxString *filePathAndName;
 
 #ifdef __WXMSW__
     filePathAndName = new wxString( fwname );
@@ -1186,7 +1187,7 @@ bool MyApp::OnInit()
 #endif
 
 #ifdef __WXMSW__
-//     _CrtSetBreakAlloc(141542);
+//     _CrtSetBreakAlloc(25503);
 #endif
 
 #ifndef __WXMSW__
@@ -2451,7 +2452,15 @@ int MyApp::OnExit()
     delete ps52plib;
 #endif
 
-    delete g_pGroupArray;
+    if(g_pGroupArray){
+        for(unsigned int igroup = 0; igroup < g_pGroupArray->GetCount(); igroup++){
+            delete g_pGroupArray->Item(igroup);
+        }
+            
+        g_pGroupArray->Clear();
+        delete g_pGroupArray;
+    }
+    
     delete pDummyChart;
 
     if( logger ) {
@@ -2465,6 +2474,8 @@ int MyApp::OnExit()
     delete pInit_Chart_Dir;
     delete pWorldMapLocation;
 
+    delete pAISTargetNameFileName;
+    
     delete g_pRouteMan;
     delete pWayPointMan;
 
@@ -3395,8 +3406,6 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 
     FrameTimer1.Stop();
 
-    g_pMUX->ClearStreams();
-
     /*
      Automatically drop an anchorage waypoint, if enabled
      On following conditions:
@@ -3552,8 +3561,33 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 
     delete g_pMUX;
 
+    //  Clear some global arrays, lists, and hash maps...
+    for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+    {
+        ConnectionParams *cp = g_pConnectionParams->Item(i);
+        delete cp;
+    }
+    delete g_pConnectionParams;
+    
+    if(pLayerList){
+        LayerList::iterator it;
+        while(pLayerList->GetCount()){
+            Layer *lay = pLayerList->GetFirst()->GetData();
+            delete lay;                 // automatically removes the layer from list, see Layer dtor
+        }
+    }
+    
+    MsgPriorityHash::iterator it;
+    for( it = NMEA_Msg_Hash.begin(); it != NMEA_Msg_Hash.end(); ++it ){
+        NMEA_Msg_Container *pc = it->second;
+        delete pc;
+    }
+    NMEA_Msg_Hash.clear();
+    
     pthumbwin = NULL;
 
+    NMEALogWindow::Shutdown();
+    
     g_FloatingToolbarDialog = NULL;
 
     this->Destroy();
@@ -4415,12 +4449,6 @@ bool MyFrame::ToggleLights( bool doToggle, bool temporary )
                 break;
             }
         }
-        if( doToggle ) {
-            if( ! temporary ) {
-                ps52plib->GenerateStateHash();
-                cc1->ReloadVP();
-            }
-        }
     }
 
     if( doToggle ){
@@ -4432,7 +4460,13 @@ bool MyFrame::ToggleLights( bool doToggle, bool temporary )
         SetMenubarItemState( ID_MENU_ENC_LIGHTS, !ps52plib->IsObjNoshow("LIGHTS") );
     }
 
-
+    if( doToggle ) {
+        if( ! temporary ) {
+            ps52plib->GenerateStateHash();
+            cc1->ReloadVP();
+        }
+    }
+    
 
 #endif
     return oldstate;

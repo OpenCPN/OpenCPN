@@ -901,9 +901,12 @@ void ViewPort::SetBoxes( void )
         if( dy % 4 ) dy += 4 - ( dy % 4 );
         if( dx % 4 ) dx += 4 - ( dx % 4 );
 
+        int inflate_x = wxMax(( dx - pix_width ) / 2, 0);
+        int inflate_y = wxMax(( dy - pix_height ) / 2, 0);
+        
         //  Grow the source rectangle appropriately
-        if( fabs( rotator ) > .001 ) rv_rect.Inflate( ( dx - pix_width ) / 2,
-                    ( dy - pix_height ) / 2 );
+        if( fabs( rotator ) > .001 )
+            rv_rect.Inflate( inflate_x, inflate_y );
 
     }
 
@@ -2095,12 +2098,6 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
     case WXK_F8:
         parent_frame->DoStackUp();
         break;
-
-    case WXK_F9: {
-        parent_frame->ToggleQuiltMode();
-        ReloadVP();
-        break;
-    }
 
     case WXK_F11:
         parent_frame->ToggleFullScreen();
@@ -8924,53 +8921,54 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
             Current_Ch->RenderRegionViewOnDC( temp_dc, svp, chart_get_region );
         }            
     }
-    
-    if( !temp_dc.IsOk() ) return;
 
+    if(temp_dc.IsOk() ) {
+    
 //    Arrange to render the World Chart vector data behind the rendered current chart
 //    so that uncovered canvas areas show at least the world chart.
-    OCPNRegion chartValidRegion;
-    if( !VPoint.b_quilt )
-        Current_Ch->GetValidCanvasRegion( svp, &chartValidRegion ); // Make a region covering the current chart on the canvas
-    else
-        chartValidRegion = m_pQuilt->GetFullQuiltRenderedRegion();
+        OCPNRegion chartValidRegion;
+        if( !VPoint.b_quilt )
+            Current_Ch->GetValidCanvasRegion( svp, &chartValidRegion ); // Make a region covering the current chart on the canvas
+        else
+            chartValidRegion = m_pQuilt->GetFullQuiltRenderedRegion();
 
-    temp_dc.DestroyClippingRegion();
+        temp_dc.DestroyClippingRegion();
     
-    //    Copy current chart region
-    OCPNRegion backgroundRegion(  0, 0, svp.pix_width, svp.pix_height  );
+        //    Copy current chart region
+        OCPNRegion backgroundRegion(  0, 0, svp.pix_width, svp.pix_height  );
 
-    if( chartValidRegion.IsOk() )
-        backgroundRegion.Subtract( chartValidRegion );
+        if( chartValidRegion.IsOk() )
+            backgroundRegion.Subtract( chartValidRegion );
 
-    if( ( ( fabs( GetVP().skew ) < .01 ) || ! g_bskew_comp )
-        && ! backgroundRegion.IsEmpty() ) {
+        if( ( ( fabs( GetVP().skew ) < .01 ) || ! g_bskew_comp )
+            && ! backgroundRegion.IsEmpty() ) {
         
-        //    Associate with temp_dc
-        wxRegion *clip_region = backgroundRegion.GetNew_wxRegion();
-        temp_dc.SetClippingRegion( *clip_region );
-        delete clip_region;
+            //    Associate with temp_dc
+            wxRegion *clip_region = backgroundRegion.GetNew_wxRegion();
+            temp_dc.SetClippingRegion( *clip_region );
+            delete clip_region;
 
-    //    Draw the Background Chart only in the areas NOT covered by the current chart view
+            //    Draw the Background Chart only in the areas NOT covered by the current chart view
 
-        /* unfortunately wxDC::DrawRectangle and wxDC::Clear do not respect
-           clipping regions with more than 1 rectangle so... */
-        wxColour water = cc1->pWorldBackgroundChart->water;
-        temp_dc.SetPen( *wxTRANSPARENT_PEN );
-        temp_dc.SetBrush( wxBrush( water ) );
-        OCPNRegionIterator upd( backgroundRegion ); // get the update rect list
-        while( upd.HaveRects() ) {
-            wxRect rect = upd.GetRect();
-            temp_dc.DrawRectangle(rect);
-            upd.NextRect();
+            /* unfortunately wxDC::DrawRectangle and wxDC::Clear do not respect
+               clipping regions with more than 1 rectangle so... */
+            wxColour water = cc1->pWorldBackgroundChart->water;
+            temp_dc.SetPen( *wxTRANSPARENT_PEN );
+            temp_dc.SetBrush( wxBrush( water ) );
+            OCPNRegionIterator upd( backgroundRegion ); // get the update rect list
+            while( upd.HaveRects() ) {
+                wxRect rect = upd.GetRect();
+                temp_dc.DrawRectangle(rect);
+                upd.NextRect();
+            }
+
+            ocpnDC bgdc( temp_dc );
+            double r =         VPoint.rotation;
+            SetVPRotation( 0.0 );
+            pWorldBackgroundChart->RenderViewOnDC( bgdc, VPoint );
+            SetVPRotation( r );
         }
-
-        ocpnDC bgdc( temp_dc );
-        double r =         VPoint.rotation;
-        SetVPRotation( 0.0 );
-        pWorldBackgroundChart->RenderViewOnDC( bgdc, VPoint );
-        SetVPRotation( r );
-    }
+    } // temp_dc.IsOk();
 
     wxMemoryDC *pChartDC = &temp_dc;
     wxMemoryDC rotd_dc;
