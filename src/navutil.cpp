@@ -339,6 +339,8 @@ extern int              g_chart_zoom_modifier;
 
 extern int              g_NMEAAPBPrecision;
 
+extern wxString         g_TalkerIdText;
+
 extern bool             g_bSailing;
 
 #ifdef ocpnUSE_GL
@@ -1228,6 +1230,8 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "ActiveChartGroup" ), &g_GroupIndex, 0 );
 
     Read( _T( "NMEAAPBPrecision" ), &g_NMEAAPBPrecision, 3 );
+    
+    Read( _T( "TalkerIdText" ), &g_TalkerIdText, _T("EC") );
 
     /* opengl options */
 #ifdef ocpnUSE_GL
@@ -2523,6 +2527,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "ActiveChartGroup" ), g_GroupIndex );
 
     Write( _T( "NMEAAPBPrecision" ), g_NMEAAPBPrecision );
+    
+    Write( _T("TalkerIdText"), g_TalkerIdText );
 
     Write( _T ( "AnchorWatch1GUID" ), g_AW1GUID );
     Write( _T ( "AnchorWatch2GUID" ), g_AW2GUID );

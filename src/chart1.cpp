@@ -664,6 +664,8 @@ int              g_chart_zoom_modifier;
 
 int              g_NMEAAPBPrecision;
 
+wxString         g_TalkerIdText;
+
 bool             g_bSailing;
 
 #ifdef LINUX_CRASHRPT
