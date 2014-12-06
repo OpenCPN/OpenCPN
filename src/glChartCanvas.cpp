@@ -2632,6 +2632,7 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                     // Render at reduced LOD (i.e. higher mipmap number)
                     double bias = fog/70;
                     glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, bias);
+                    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
                     
                     glColor4f (1.0f,1.0f,1.0f,1.0f);
 
