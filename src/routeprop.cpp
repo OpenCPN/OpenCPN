@@ -1942,12 +1942,9 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     bSizerArrivalRadius->Add( m_textArrivalRadius, 1, wxALL, 5 );
     bSizerTextProperties->Add( bSizerArrivalRadius, 0, wxEXPAND, 5 );
 
-    wxBoxSizer* bSizerWaypointRangeRings;
-    bSizerWaypointRangeRings = new wxBoxSizer( wxHORIZONTAL );
-    m_checkBoxShowWaypointRangeRings = new wxCheckBox( m_panelBasicProperties, wxID_ANY, _("Show Waypoint range rings"),
+    m_checkBoxShowWaypointRangeRings = new wxCheckBox( m_panelBasicProperties, wxID_ANY, _("Show Waypoint Range Rings"),
             wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT );
-    bSizerWaypointRangeRings->Add( m_checkBoxShowWaypointRangeRings, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
-    bSizerTextProperties->Add( bSizerWaypointRangeRings, 0, wxEXPAND, 5 );
+    bSizerTextProperties->Add( m_checkBoxShowWaypointRangeRings, 0, wxALL, 5 );
 
     m_staticTextDescription = new wxStaticText( m_panelBasicProperties, wxID_ANY, _("Description"),
             wxDefaultPosition, wxDefaultSize, 0 );

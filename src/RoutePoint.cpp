@@ -98,6 +98,8 @@ RoutePoint::RoutePoint()
     m_LayerID = 0;
     
     m_WaypointArrivalRadius = g_n_arrival_circle_radius;
+
+    m_bShowWaypointRangeRings = false;
 }
 
 // Copy Constructor
@@ -141,6 +143,8 @@ RoutePoint::RoutePoint( RoutePoint* orig )
     m_ManagerNode = NULL;
     
     m_WaypointArrivalRadius = orig->GetWaypointArrivalRadius();
+
+    m_bShowWaypointRangeRings = false;
     
 }
 
@@ -209,6 +213,8 @@ RoutePoint::RoutePoint( double lat, double lon, const wxString& icon_ident, cons
         m_LayerID = 0;
     
     SetWaypointArrivalRadius( g_n_arrival_circle_radius );
+
+    m_bShowWaypointRangeRings = false;
 }
 
 RoutePoint::~RoutePoint( void )
