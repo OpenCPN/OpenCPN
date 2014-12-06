@@ -1594,21 +1594,24 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "nColorScheme" ), &read_int, 0 );
     global_color_scheme = (ColorScheme) read_int;
 
-    SetPath( _T ( "/Settings/NMEADataSource" ) );
 
-    wxString connectionconfigs;
-    Read ( _T( "DataConnections" ),  &connectionconfigs, wxEmptyString );
-    wxArrayString confs = wxStringTokenize(connectionconfigs, _T("|"));
-    g_pConnectionParams->Clear();
-    for (size_t i = 0; i < confs.Count(); i++)
-    {
-        ConnectionParams * prm = new ConnectionParams(confs[i]);
-        if (!prm->Valid) {
-            wxLogMessage( _T( "Skipped invalid DataStream config") );
-            delete prm;
-            continue;
+    if( iteration == 0){
+        SetPath( _T ( "/Settings/NMEADataSource" ) );
+
+        wxString connectionconfigs;
+        Read ( _T( "DataConnections" ),  &connectionconfigs, wxEmptyString );
+        wxArrayString confs = wxStringTokenize(connectionconfigs, _T("|"));
+        g_pConnectionParams->Clear();
+        for (size_t i = 0; i < confs.Count(); i++)
+        {
+            ConnectionParams * prm = new ConnectionParams(confs[i]);
+            if (!prm->Valid) {
+                wxLogMessage( _T( "Skipped invalid DataStream config") );
+                delete prm;
+                continue;
+            }
+            g_pConnectionParams->Add(prm);
         }
-        g_pConnectionParams->Add(prm);
     }
 
     //  Automatically handle the upgrade to DataSources architecture...
@@ -1980,11 +1983,11 @@ int MyConfig::LoadMyConfig( int iteration )
            if(size != 0){
                 wxLogMessage( _T("Applying NavObjChanges") );
                 pNavObjectChangesSet->ApplyChanges();
-                delete pNavObjectChangesSet;
-
-
                 UpdateNavObj();
            }
+
+           delete pNavObjectChangesSet;
+           
         }
 
         m_pNavObjectChangesSet = new NavObjectChanges(m_sNavObjSetChangesFile);
