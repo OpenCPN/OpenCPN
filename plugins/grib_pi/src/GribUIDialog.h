@@ -98,6 +98,7 @@ public:
     void SetDataBackGroundColor();
     void SetTimeLineMax( bool SetValue );
 
+    wxWindow *pParent;
     GribOverlaySettings m_OverlaySettings;
 
     wxTimer m_tPlayStop;
@@ -147,7 +148,6 @@ private:
             m_Selection_label = m_cRecordForecast->GetString( m_Selection_index); }
 
     //    Data
-    wxWindow *pParent;
 
     PlugIn_ViewPort  *m_vp;
     int m_lastdatatype;

@@ -893,8 +893,100 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	
 	fgSizer101->Add( sbSizer7, 1, wxEXPAND, 5 );
 	
+	wxStaticBoxSizer* sbSizer81;
+	sbSizer81 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Area Selection") ), wxVERTICAL );
+
+	wxFlexGridSizer* fgSizer36;
+	fgSizer36 = new wxFlexGridSizer( 0, 2, 0, 0 );
+	fgSizer36->SetFlexibleDirection( wxBOTH );
+	fgSizer36->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+	wxFlexGridSizer* fgSizer34;
+	fgSizer34 = new wxFlexGridSizer( 0, 1, 0, 0 );
+	fgSizer34->SetFlexibleDirection( wxBOTH );
+	fgSizer34->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+	m_cManualZoneSel = new wxCheckBox( this, wxID_ANY, _("Manual Selection"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_cManualZoneSel->SetValue(true);
+	fgSizer34->Add( m_cManualZoneSel, 0, wxLEFT, 5 );
+
+	m_toggleSelection = new wxToggleButton( this, wxID_ANY, _("Start graphic Sel."), wxDefaultPosition, wxDefaultSize, 0 );
+	m_toggleSelection->SetValue( true );
+	fgSizer34->Add( m_toggleSelection, 0, wxLEFT, 5 );
+
+
+	fgSizer36->Add( fgSizer34, 1, wxEXPAND, 5 );
+
+	fgZoneCoordinatesSizer = new wxFlexGridSizer( 0, 6, 0, 0 );
+	fgZoneCoordinatesSizer->SetFlexibleDirection( wxBOTH );
+	fgZoneCoordinatesSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+	wxStaticText* m_staticText34;
+	m_staticText34 = new wxStaticText( this, wxID_ANY, _("Max Lat"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText34->Wrap( -1 );
+	fgZoneCoordinatesSizer->Add( m_staticText34, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5 );
+
+	m_spMaxLat = new wxSpinCtrl( this, MAXLAT, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, -180, 180, 0 );
+	m_spMaxLat->SetMinSize( wxSize( 70,-1 ) );
+
+	fgZoneCoordinatesSizer->Add( m_spMaxLat, 0, wxLEFT|wxRIGHT, 5 );
+
+	m_stMaxLatNS = new wxStaticText( this, wxID_ANY, _("N"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_stMaxLatNS->Wrap( -1 );
+	fgZoneCoordinatesSizer->Add( m_stMaxLatNS, 0, wxALIGN_CENTER_VERTICAL|wxRIGHT, 20 );
+
+	m_staticText36 = new wxStaticText( this, wxID_ANY, _("Max Long"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText36->Wrap( -1 );
+	fgZoneCoordinatesSizer->Add( m_staticText36, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5 );
+
+	m_spMaxLon = new wxSpinCtrl( this, MAXLON, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, -180, 180, 0 );
+	m_spMaxLon->SetMinSize( wxSize( 70,-1 ) );
+
+	fgZoneCoordinatesSizer->Add( m_spMaxLon, 0, wxLEFT|wxRIGHT, 5 );
+
+	m_stMaxLonEW = new wxStaticText( this, wxID_ANY, _("E"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_stMaxLonEW->Wrap( -1 );
+	fgZoneCoordinatesSizer->Add( m_stMaxLonEW, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+
+	wxStaticText* m_staticText38;
+	m_staticText38 = new wxStaticText( this, wxID_ANY, _("Min Lat"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText38->Wrap( -1 );
+	fgZoneCoordinatesSizer->Add( m_staticText38, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5 );
+
+	m_spMinLat = new wxSpinCtrl( this, MINLAT, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, -180, 180, 0 );
+	m_spMinLat->SetMinSize( wxSize( 70,-1 ) );
+
+	fgZoneCoordinatesSizer->Add( m_spMinLat, 0, wxLEFT|wxRIGHT, 5 );
+
+	m_stMinLatNS = new wxStaticText( this, wxID_ANY, _("S"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_stMinLatNS->Wrap( -1 );
+	fgZoneCoordinatesSizer->Add( m_stMinLatNS, 0, wxALIGN_CENTER_VERTICAL|wxRIGHT, 20 );
+
+	wxStaticText* m_staticText40;
+	m_staticText40 = new wxStaticText( this, wxID_ANY, _("Min Long"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText40->Wrap( -1 );
+	fgZoneCoordinatesSizer->Add( m_staticText40, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5 );
+
+	m_spMinLon = new wxSpinCtrl( this, MINLON, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, -180, 180, 0 );
+	m_spMinLon->SetMinSize( wxSize( 70,-1 ) );
+
+	fgZoneCoordinatesSizer->Add( m_spMinLon, 0, wxLEFT|wxRIGHT, 5 );
+
+	m_stMinLonEW = new wxStaticText( this, wxID_ANY, _("W"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_stMinLonEW->Wrap( -1 );
+	fgZoneCoordinatesSizer->Add( m_stMinLonEW, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+
+
+	fgSizer36->Add( fgZoneCoordinatesSizer, 1, wxEXPAND|wxLEFT, 20 );
+
+
+	sbSizer81->Add( fgSizer36, 1, wxEXPAND, 5 );
+
+
+	fgSizer101->Add( sbSizer81, 1, wxEXPAND, 5 );
+
 	wxStaticBoxSizer* sbSizer8;
-	sbSizer8 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Data available") ), wxVERTICAL );
+	sbSizer8 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Data Selection") ), wxVERTICAL );
 	
 	wxFlexGridSizer* fgSizer10;
 	fgSizer10 = new wxFlexGridSizer( 0, 3, 0, 0 );
@@ -1038,6 +1130,7 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	this->Centre( wxBOTH );
 	
 	// Connect Events
+	this->Connect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( GribRequestSettingBase::OnClose ) );
 	m_pMailTo->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnTopChange ), NULL, this );
 	m_pModel->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnTopChange ), NULL, this );
 	m_cMovingGribEnabled->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnMovingClick ), NULL, this );
@@ -1048,6 +1141,12 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	m_pResolution->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pInterval->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pTimeRange->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnTimeRangeChange ), NULL, this );
+	m_cManualZoneSel->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnZoneSelectionModeChange ), NULL, this );
+	m_toggleSelection->Connect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnTooggleSelection ), NULL, this );
+	m_spMaxLat->Connect( wxEVT_COMMAND_SPINCTRL_UPDATED, wxSpinEventHandler( GribRequestSettingBase::OnCoordinatesChange ), NULL, this );
+	m_spMaxLon->Connect( wxEVT_COMMAND_SPINCTRL_UPDATED, wxSpinEventHandler( GribRequestSettingBase::OnCoordinatesChange ), NULL, this );
+	m_spMinLat->Connect( wxEVT_COMMAND_SPINCTRL_UPDATED, wxSpinEventHandler( GribRequestSettingBase::OnCoordinatesChange ), NULL, this );
+	m_spMinLon->Connect( wxEVT_COMMAND_SPINCTRL_UPDATED, wxSpinEventHandler( GribRequestSettingBase::OnCoordinatesChange ), NULL, this );
 	m_pWind->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pPress->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pWindGust->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
@@ -1065,12 +1164,14 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	m_p500hpa->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_p300hpa->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_rButtonApply->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnSaveMail ), NULL, this );
+	m_rButtonCancel->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnCancel ), NULL, this );
 	m_rButtonYes->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnSendMaiL ), NULL, this );
 }
 
 GribRequestSettingBase::~GribRequestSettingBase()
 {
 	// Disconnect Events
+	this->Disconnect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( GribRequestSettingBase::OnClose ) );
 	m_pMailTo->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnTopChange ), NULL, this );
 	m_pModel->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnTopChange ), NULL, this );
 	m_cMovingGribEnabled->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnMovingClick ), NULL, this );
@@ -1081,6 +1182,12 @@ GribRequestSettingBase::~GribRequestSettingBase()
 	m_pResolution->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pInterval->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pTimeRange->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnTimeRangeChange ), NULL, this );
+	m_cManualZoneSel->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnZoneSelectionModeChange ), NULL, this );
+	m_toggleSelection->Disconnect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnTooggleSelection ), NULL, this );
+	m_spMaxLat->Disconnect( wxEVT_COMMAND_SPINCTRL_UPDATED, wxSpinEventHandler( GribRequestSettingBase::OnCoordinatesChange ), NULL, this );
+	m_spMaxLon->Disconnect( wxEVT_COMMAND_SPINCTRL_UPDATED, wxSpinEventHandler( GribRequestSettingBase::OnCoordinatesChange ), NULL, this );
+	m_spMinLat->Disconnect( wxEVT_COMMAND_SPINCTRL_UPDATED, wxSpinEventHandler( GribRequestSettingBase::OnCoordinatesChange ), NULL, this );
+	m_spMinLon->Disconnect( wxEVT_COMMAND_SPINCTRL_UPDATED, wxSpinEventHandler( GribRequestSettingBase::OnCoordinatesChange ), NULL, this );
 	m_pWind->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pPress->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pWindGust->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
@@ -1098,6 +1205,7 @@ GribRequestSettingBase::~GribRequestSettingBase()
 	m_p500hpa->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_p300hpa->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_rButtonApply->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnSaveMail ), NULL, this );
+	m_rButtonCancel->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnCancel ), NULL, this );
 	m_rButtonYes->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnSendMaiL ), NULL, this );
 	
 }
