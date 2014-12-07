@@ -5323,7 +5323,8 @@ void MyFrame::ToggleQuiltMode( void )
     if( cc1 ) {
         bool cur_mode = cc1->GetQuiltMode();
 
-        if( !cc1->GetQuiltMode() && g_bQuiltEnable ) cc1->SetQuiltMode( true );
+        if( !cc1->GetQuiltMode() && g_bQuiltEnable )
+            cc1->SetQuiltMode( true );
         else
             if( cc1->GetQuiltMode() ) {
                 cc1->SetQuiltMode( false );
@@ -5331,7 +5332,10 @@ void MyFrame::ToggleQuiltMode( void )
             }
 
 
-        if( cur_mode != cc1->GetQuiltMode() ) SetupQuiltMode();
+        if( cur_mode != cc1->GetQuiltMode() ){
+            SetupQuiltMode();
+            DoChartUpdate();
+        }
     }
 }
 
@@ -5370,35 +5374,29 @@ void MyFrame::SetupQuiltMode( void )
         if( pCurrentStack ) {
             target_new_dbindex = pCurrentStack->GetCurrentEntrydbIndex();
 
-#ifdef QUILT_ONLY_MERC
-            if(-1 != target_new_dbindex)
-            {
-                //    Check to see if the target new chart is Merc
-                int proj = ChartData->GetDBChartProj(target_new_dbindex);
-                int type = ChartData->GetDBChartType(target_new_dbindex);
+            if(-1 != target_new_dbindex){
+                if( !cc1->IsChartQuiltableRef( target_new_dbindex ) ){
+                    
+                    int proj = ChartData->GetDBChartProj(target_new_dbindex);
+                    int type = ChartData->GetDBChartType(target_new_dbindex);
 
-                if(PROJECTION_MERCATOR != proj)
-                {
-                    // If it is not Merc, cannot use it for quilting
-                    // walk the stack up looking for a satisfactory chart
+                // walk the stack up looking for a satisfactory chart
                     int stack_index = pCurrentStack->CurrentStackEntry;
 
-                    while((stack_index < pCurrentStack->nEntry-1) && (stack_index >= 0))
-                    {
+                    while((stack_index < pCurrentStack->nEntry-1) && (stack_index >= 0)) {
                         int proj_tent = ChartData->GetDBChartProj( pCurrentStack->GetDBIndex(stack_index));
                         int type_tent = ChartData->GetDBChartType( pCurrentStack->GetDBIndex(stack_index));
 
-                        if((PROJECTION_MERCATOR ==proj_tent) && (type_tent == type))
-                        {
-                            target_new_dbindex = pCurrentStack->GetDBIndex(stack_index);
-                            break;
+                        if(cc1->IsChartQuiltableRef(pCurrentStack->GetDBIndex(stack_index))){
+                            if((proj == proj_tent) && (type_tent == type)){
+                                target_new_dbindex = pCurrentStack->GetDBIndex(stack_index);
+                                break;
+                            }
                         }
                         stack_index++;
                     }
                 }
-
             }
-#endif
         }
 
         if( cc1->IsChartQuiltableRef( target_new_dbindex ) )
