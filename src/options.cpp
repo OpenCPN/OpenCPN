@@ -1920,21 +1920,24 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
     optionsColumn->Add( depShalRow );
     m_ShallowCtl = new wxTextCtrl( ps57Ctl, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize( 60, -1 ), wxTE_RIGHT );
     depShalRow->Add( m_ShallowCtl, inputFlags );
-    depShalRow->Add( new wxStaticText( ps57Ctl, wxID_ANY, _("metres") ), inputFlags );
+    m_depthUnitsShal = new wxStaticText( ps57Ctl, wxID_ANY, _("metres") );
+    depShalRow->Add( m_depthUnitsShal, inputFlags );
 
     optionsColumn->Add( new wxStaticText( ps57Ctl, wxID_ANY, _("Safety Depth") ), labelFlags );
     wxBoxSizer* depSafeRow = new wxBoxSizer( wxHORIZONTAL );
     optionsColumn->Add( depSafeRow );
     m_SafetyCtl = new wxTextCtrl( ps57Ctl, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize( 60, -1 ), wxTE_RIGHT );
     depSafeRow->Add( m_SafetyCtl, inputFlags );
-    depSafeRow->Add( new wxStaticText( ps57Ctl, wxID_ANY, _("metres") ), inputFlags );
+    m_depthUnitsSafe = new wxStaticText( ps57Ctl, wxID_ANY, _("metres") );
+    depSafeRow->Add( m_depthUnitsSafe, inputFlags );
 
     optionsColumn->Add( new wxStaticText( ps57Ctl, wxID_ANY, _("Deep Depth") ), labelFlags );
     wxBoxSizer* depDeepRow = new wxBoxSizer( wxHORIZONTAL );
     optionsColumn->Add( depDeepRow );
     m_DeepCtl = new wxTextCtrl( ps57Ctl, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize( 60, -1 ), wxTE_RIGHT );
     depDeepRow->Add( m_DeepCtl, inputFlags );
-    depDeepRow->Add( new wxStaticText( ps57Ctl, wxID_ANY, _("metres") ), inputFlags );
+    m_depthUnitsDeep = new wxStaticText( ps57Ctl, wxID_ANY, _("metres") );
+    depDeepRow->Add( m_depthUnitsDeep, inputFlags );
 
 
     // spacer
@@ -3105,17 +3108,36 @@ void options::SetInitialSettings()
         else
             p24Color->SetSelection( 1 );
 
+        // Depths
+        float depthShal = S52_getMarinerParam( S52_MAR_SHALLOW_CONTOUR );
+        float depthSafe = S52_getMarinerParam( S52_MAR_SAFETY_CONTOUR );
+        float depthDeep = S52_getMarinerParam( S52_MAR_DEEP_CONTOUR );
+
+        float conv = 1;
+        if ( ps52plib->m_nDepthUnitDisplay == 0 ) { // feet
+            conv *= 3 * 39.37 / 36;
+        } else if ( ps52plib->m_nDepthUnitDisplay == 2 ) { // fathoms
+            conv *= 3 * 39.37 / 36;
+            conv /= 6.0;
+        }
+
         wxString s;
-        s.Printf( _T("%6.2f"), S52_getMarinerParam( S52_MAR_SAFETY_CONTOUR ) );
+        s.Printf( _T("%6.2f"), depthSafe * conv );
         m_SafetyCtl->SetValue( s );
 
-        s.Printf( _T("%6.2f"), S52_getMarinerParam( S52_MAR_SHALLOW_CONTOUR ) );
+        s.Printf( _T("%6.2f"), depthShal * conv );
         m_ShallowCtl->SetValue( s );
 
-        s.Printf( _T("%6.2f"), S52_getMarinerParam( S52_MAR_DEEP_CONTOUR ) );
+        s.Printf( _T("%6.2f"), depthDeep * conv );
         m_DeepCtl->SetValue( s );
 
         pDepthUnitSelect->SetSelection( ps52plib->m_nDepthUnitDisplay );
+
+        wxString depthUnitStrings[] = { _("feet"), _("meters"), _("fathoms") };
+        wxString depthUnitString = depthUnitStrings[ps52plib->m_nDepthUnitDisplay];
+        m_depthUnitsShal->SetLabel(depthUnitString);
+        m_depthUnitsSafe->SetLabel(depthUnitString);
+        m_depthUnitsDeep->SetLabel(depthUnitString);
     }
 #endif
 
@@ -3882,30 +3904,42 @@ void options::OnApplyClick( wxCommandEvent& event )
         ps52plib->m_bDeClutterText = pCheck_DECLTEXT->GetValue();
         ps52plib->m_bShowNationalTexts = pCheck_NATIONALTEXT->GetValue();
 
-        if( 0 == pPointStyle->GetSelection() ) ps52plib->m_nSymbolStyle = PAPER_CHART;
+        if( 0 == pPointStyle->GetSelection() )
+            ps52plib->m_nSymbolStyle = PAPER_CHART;
         else
             ps52plib->m_nSymbolStyle = SIMPLIFIED;
 
-        if( 0 == pBoundStyle->GetSelection() ) ps52plib->m_nBoundaryStyle = PLAIN_BOUNDARIES;
+        if( 0 == pBoundStyle->GetSelection() )
+            ps52plib->m_nBoundaryStyle = PLAIN_BOUNDARIES;
         else
             ps52plib->m_nBoundaryStyle = SYMBOLIZED_BOUNDARIES;
 
-        if( 0 == p24Color->GetSelection() ) S52_setMarinerParam( S52_MAR_TWO_SHADES, 1.0 );
+        if( 0 == p24Color->GetSelection() )
+            S52_setMarinerParam( S52_MAR_TWO_SHADES, 1.0 );
         else
             S52_setMarinerParam( S52_MAR_TWO_SHADES, 0.0 );
 
+        // Depths
         double dval;
 
-        if( ( m_SafetyCtl->GetValue() ).ToDouble( &dval ) ) {
-            S52_setMarinerParam( S52_MAR_SAFETY_DEPTH, dval );          // controls sounding display
-            S52_setMarinerParam( S52_MAR_SAFETY_CONTOUR, dval );          // controls colour
+        float conv = 1;
+        if ( ps52plib->m_nDepthUnitDisplay == 0 ) { // feet
+            conv *= 3 * 39.37 / 36;
+        } else if ( ps52plib->m_nDepthUnitDisplay == 2 ) { // fathoms
+            conv *= 3 * 39.37 / 36;
+            conv /= 6.0;
         }
 
-        if( ( m_ShallowCtl->GetValue() ).ToDouble( &dval ) ) S52_setMarinerParam(
-                S52_MAR_SHALLOW_CONTOUR, dval );
+        if( ( m_SafetyCtl->GetValue() ).ToDouble( &dval ) ) {
+            S52_setMarinerParam( S52_MAR_SAFETY_DEPTH, dval / conv );          // controls sounding display
+            S52_setMarinerParam( S52_MAR_SAFETY_CONTOUR, dval / conv );          // controls colour
+        }
 
-        if( ( m_DeepCtl->GetValue() ).ToDouble( &dval ) ) S52_setMarinerParam( S52_MAR_DEEP_CONTOUR,
-                dval );
+        if( ( m_ShallowCtl->GetValue() ).ToDouble( &dval ) )
+            S52_setMarinerParam( S52_MAR_SHALLOW_CONTOUR, dval / conv );
+
+        if( ( m_DeepCtl->GetValue() ).ToDouble( &dval ) )
+            S52_setMarinerParam( S52_MAR_DEEP_CONTOUR, dval / conv );
 
         ps52plib->UpdateMarinerParams();
 

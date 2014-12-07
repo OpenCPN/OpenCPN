@@ -437,6 +437,9 @@ public:
     wxTextCtrl              *m_ShallowCtl;
     wxTextCtrl              *m_SafetyCtl;
     wxTextCtrl              *m_DeepCtl;
+    wxStaticText            *m_depthUnitsShal;
+    wxStaticText            *m_depthUnitsSafe;
+    wxStaticText            *m_depthUnitsDeep;
     wxSlider                *m_pSlider_CM93_Zoom;
     wxCheckBox              *pSEnableCM93Offset;
     int                       k_vectorcharts;
