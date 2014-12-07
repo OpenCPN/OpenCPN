@@ -2089,8 +2089,10 @@ void ChartGroupsUI::CompletePanel( void )
     defaultAllCtl = new wxGenericDirCtrl( allActiveGroup, -1, _T(""), wxDefaultPosition, wxDefaultSize, wxVSCROLL );
 
     //    Set the Font for the All Active Chart Group tree to be italic, dimmed
-    iFont = wxTheFontList->FindOrCreateFont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_ITALIC,
-    wxFONTWEIGHT_LIGHT );
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
+    iFont = new wxFont(*qFont);
+    iFont->SetStyle(wxFONTSTYLE_ITALIC);
+    iFont->SetWeight(wxFONTWEIGHT_LIGHT);
 
     page0BoxSizer->Add( defaultAllCtl, 1, wxALIGN_TOP | wxALL | wxEXPAND );
 
@@ -4531,6 +4533,7 @@ ChartGroupsUI::ChartGroupsUI( wxWindow* parent )
 ChartGroupsUI::~ChartGroupsUI()
 {
     m_DirCtrlArray.Clear();
+    delete iFont;
 }
 
 void ChartGroupsUI::SetInitialSettings()
