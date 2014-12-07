@@ -809,6 +809,7 @@ BEGIN_EVENT_TABLE( options, wxDialog )
 #endif
     EVT_BUTTON( ID_OPENGLOPTIONS, options::OnOpenGLOptions )
     EVT_CHOICE( ID_RADARDISTUNIT, options::OnDisplayCategoryRadioButton )
+    EVT_CHOICE( ID_DEPTHUNITSCHOICE, options::OnUnitsChoice )
     EVT_BUTTON( ID_CLEARLIST, options::OnButtonClearClick )
     EVT_BUTTON( ID_SELECTLIST, options::OnButtonSelectClick )
     EVT_BUTTON( ID_AISALERTSELECTSOUND, options::OnButtonSelectSound )
@@ -2243,7 +2244,7 @@ void options::CreatePanel_Units( size_t parent, int border_size, int group_item_
     unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("Distance")), labelFlags );
     wxString pDistanceFormats[] = { _("Nautical miles"), _("Statute miles"), _("Kilometers"), _("Meters") };
     int m_DistanceFormatsNChoices = sizeof(pDistanceFormats) / sizeof(wxString);
-    pDistanceFormat = new wxChoice( panelUnits, ID_DISTANCEFORMATCHOICE, wxDefaultPosition,
+    pDistanceFormat = new wxChoice( panelUnits, ID_DISTANCEUNITSCHOICE, wxDefaultPosition,
                                    wxDefaultSize, m_DistanceFormatsNChoices, pDistanceFormats );
     unitsSizer->Add( pDistanceFormat, inputFlags );
 
@@ -2252,7 +2253,7 @@ void options::CreatePanel_Units( size_t parent, int border_size, int group_item_
     unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("Speed")), labelFlags );
     wxString pSpeedFormats[] = { _("Knots"), _("Mph"), _("km/h"), _("m/s") };
     int m_SpeedFormatsNChoices = sizeof( pSpeedFormats ) / sizeof(wxString);
-    pSpeedFormat = new wxChoice( panelUnits, ID_SPEEDFORMATCHOICE, wxDefaultPosition,
+    pSpeedFormat = new wxChoice( panelUnits, ID_SPEEDUNITSCHOICE, wxDefaultPosition,
                                 wxDefaultSize, m_SpeedFormatsNChoices, pSpeedFormats );
     unitsSizer->Add( pSpeedFormat, inputFlags );
 
@@ -2260,7 +2261,7 @@ void options::CreatePanel_Units( size_t parent, int border_size, int group_item_
     // depth units
     unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("Depth")), labelFlags );
     wxString pDepthUnitStrings[] = { _("Feet"), _("Meters"), _("Fathoms"), };
-    pDepthUnitSelect = new wxChoice( panelUnits, ID_RADARDISTUNIT, wxDefaultPosition,
+    pDepthUnitSelect = new wxChoice( panelUnits, ID_DEPTHUNITSCHOICE, wxDefaultPosition,
                                     wxDefaultSize, 3, pDepthUnitStrings );
     unitsSizer->Add( pDepthUnitSelect, inputFlags );
     
@@ -3109,38 +3110,49 @@ void options::SetInitialSettings()
             p24Color->SetSelection( 1 );
 
         // Depths
-        float depthShal = S52_getMarinerParam( S52_MAR_SHALLOW_CONTOUR );
-        float depthSafe = S52_getMarinerParam( S52_MAR_SAFETY_CONTOUR );
-        float depthDeep = S52_getMarinerParam( S52_MAR_DEEP_CONTOUR );
-
-        float conv = 1;
-        if ( ps52plib->m_nDepthUnitDisplay == 0 ) { // feet
-            conv *= 3 * 39.37 / 36;
-        } else if ( ps52plib->m_nDepthUnitDisplay == 2 ) { // fathoms
-            conv *= 3 * 39.37 / 36;
-            conv /= 6.0;
-        }
-
-        wxString s;
-        s.Printf( _T("%6.2f"), depthSafe * conv );
-        m_SafetyCtl->SetValue( s );
-
-        s.Printf( _T("%6.2f"), depthShal * conv );
-        m_ShallowCtl->SetValue( s );
-
-        s.Printf( _T("%6.2f"), depthDeep * conv );
-        m_DeepCtl->SetValue( s );
-
         pDepthUnitSelect->SetSelection( ps52plib->m_nDepthUnitDisplay );
-
-        wxString depthUnitStrings[] = { _("feet"), _("meters"), _("fathoms") };
-        wxString depthUnitString = depthUnitStrings[ps52plib->m_nDepthUnitDisplay];
-        m_depthUnitsShal->SetLabel(depthUnitString);
-        m_depthUnitsSafe->SetLabel(depthUnitString);
-        m_depthUnitsDeep->SetLabel(depthUnitString);
+        UpdateOptionsUnits(); // sets depth values using the user's unit preference
     }
 #endif
 
+}
+
+void options::UpdateOptionsUnits()
+{
+    int depthUnit = pDepthUnitSelect->GetSelection();
+
+    // set depth unit labels
+    wxString depthUnitStrings[] = { _("feet"), _("meters"), _("fathoms") };
+    wxString depthUnitString = depthUnitStrings[depthUnit];
+    m_depthUnitsShal->SetLabel(depthUnitString);
+    m_depthUnitsSafe->SetLabel(depthUnitString);
+    m_depthUnitsDeep->SetLabel(depthUnitString);
+
+    // depth unit conversion factor
+    float conv = 1;
+    if ( depthUnit == 0 ) // feet
+        conv = 0.3048; // international definiton of 1 foot is 0.3048 metres
+    else if ( depthUnit == 2 ) // fathoms
+        conv = 0.3048 * 6; // 1 fathom is 6 feet
+
+    // set depth input values
+    wxString s;
+    s.Printf( _T("%6.2f"), S52_getMarinerParam( S52_MAR_SHALLOW_CONTOUR ) / conv );
+    s.Trim(false);
+    m_ShallowCtl->SetValue( s );
+
+    s.Printf( _T("%6.2f"), S52_getMarinerParam( S52_MAR_SAFETY_CONTOUR ) / conv );
+    s.Trim(false);
+    m_SafetyCtl->SetValue( s );
+
+    s.Printf( _T("%6.2f"), S52_getMarinerParam( S52_MAR_DEEP_CONTOUR ) / conv );
+    s.Trim(false);
+    m_DeepCtl->SetValue( s );
+}
+
+void options::OnUnitsChoice( wxCommandEvent& event )
+{
+    UpdateOptionsUnits();
 }
 
 void options::OnCPAWarnClick( wxCommandEvent& event )
@@ -3921,29 +3933,28 @@ void options::OnApplyClick( wxCommandEvent& event )
 
         // Depths
         double dval;
+        int depthUnit = pDepthUnitSelect->GetSelection();
 
         float conv = 1;
-        if ( ps52plib->m_nDepthUnitDisplay == 0 ) { // feet
-            conv *= 3 * 39.37 / 36;
-        } else if ( ps52plib->m_nDepthUnitDisplay == 2 ) { // fathoms
-            conv *= 3 * 39.37 / 36;
-            conv /= 6.0;
-        }
+        if ( depthUnit == 0 ) // feet
+            conv = 0.3048; // international definiton of 1 foot is 0.3048 metres
+        else if ( depthUnit == 2 ) // fathoms
+            conv = 0.3048 * 6; // 1 fathom is 6 feet
 
         if( ( m_SafetyCtl->GetValue() ).ToDouble( &dval ) ) {
-            S52_setMarinerParam( S52_MAR_SAFETY_DEPTH, dval / conv );          // controls sounding display
-            S52_setMarinerParam( S52_MAR_SAFETY_CONTOUR, dval / conv );          // controls colour
+            S52_setMarinerParam( S52_MAR_SAFETY_DEPTH, dval * conv );   // controls sounding display
+            S52_setMarinerParam( S52_MAR_SAFETY_CONTOUR, dval * conv ); // controls colour
         }
 
         if( ( m_ShallowCtl->GetValue() ).ToDouble( &dval ) )
-            S52_setMarinerParam( S52_MAR_SHALLOW_CONTOUR, dval / conv );
+            S52_setMarinerParam( S52_MAR_SHALLOW_CONTOUR, dval * conv );
 
         if( ( m_DeepCtl->GetValue() ).ToDouble( &dval ) )
-            S52_setMarinerParam( S52_MAR_DEEP_CONTOUR, dval / conv );
+            S52_setMarinerParam( S52_MAR_DEEP_CONTOUR, dval * conv );
 
         ps52plib->UpdateMarinerParams();
 
-        ps52plib->m_nDepthUnitDisplay = pDepthUnitSelect->GetSelection();
+        ps52plib->m_nDepthUnitDisplay = depthUnit;
 
         ps52plib->GenerateStateHash();
     }
