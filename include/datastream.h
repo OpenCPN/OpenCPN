@@ -439,7 +439,7 @@ public:
 #ifdef __WXMSW__
     HANDLE garmin_usb_start();
     bool ResetGarminUSBDriver();
-    bool IsGarminPlugged();
+    static bool IsGarminPlugged();
     bool gusb_syncup(void);
 
     int gusb_win_get(garmin_usb_packet *ibuf, size_t sz);
