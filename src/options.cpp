@@ -3133,9 +3133,9 @@ void options::UpdateOptionsUnits()
     // depth unit conversion factor
     float conv = 1;
     if ( depthUnit == 0 ) // feet
-        conv = 0.3048; // international definiton of 1 foot is 0.3048 metres
+        conv = 0.3048f; // international definiton of 1 foot is 0.3048 metres
     else if ( depthUnit == 2 ) // fathoms
-        conv = 0.3048 * 6; // 1 fathom is 6 feet
+        conv = 0.3048f * 6; // 1 fathom is 6 feet
 
     // set depth input values
     wxString s;
@@ -3939,9 +3939,9 @@ void options::OnApplyClick( wxCommandEvent& event )
 
         float conv = 1;
         if ( depthUnit == 0 ) // feet
-            conv = 0.3048; // international definiton of 1 foot is 0.3048 metres
+            conv = 0.3048f; // international definiton of 1 foot is 0.3048 metres
         else if ( depthUnit == 2 ) // fathoms
-            conv = 0.3048 * 6; // 1 fathom is 6 feet
+            conv = 0.3048f * 6; // 1 fathom is 6 feet
 
         if( ( m_SafetyCtl->GetValue() ).ToDouble( &dval ) ) {
             S52_setMarinerParam( S52_MAR_SAFETY_DEPTH, dval * conv );   // controls sounding display
