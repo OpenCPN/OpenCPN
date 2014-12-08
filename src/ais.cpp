@@ -1355,3 +1355,24 @@ void AISDraw( ocpnDC& dc )
         if( ( td->Class == AIS_GPSG_BUDDY ) || ( td->Class == AIS_DSC ) ) AISDrawTarget( td, dc );
     }
 }
+
+bool AnyAISTargetsOnscreen( ViewPort &vp )
+{
+    if( !g_pAIS )
+        return false;
+    
+    if( !g_bShowAIS )
+        return false;//
+        
+    //      Iterate over the AIS Target Hashmap
+    AIS_Target_Hash::iterator it;
+    AIS_Target_Hash *current_targets = g_pAIS->GetTargetList();
+    
+    for( it = ( *current_targets ).begin(); it != ( *current_targets ).end(); ++it ) {
+        AIS_Target_Data *td = it->second;
+        if( vp.GetBBox().PointInBox( td->Lon, td->Lat, 0 ) )
+            return true;                       // yep
+    }
+    
+    return false;
+}
