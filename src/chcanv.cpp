@@ -40,7 +40,7 @@
 #include <wx/listimpl.cpp>
 
 #include "chcanv.h"
-
+#include "TCWin.h"
 #include "geodesic.h"
 #include "styles.h"
 #include "routeman.h"
