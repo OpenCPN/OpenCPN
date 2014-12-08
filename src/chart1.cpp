@@ -3034,14 +3034,14 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
             style->GetToolIcon( _T("print"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
 
     CheckAndAddPlugInTool( tb );
-    tipString = _("Route Manager");
+    tipString = _("Route & Mark Manager");
     if( _toolbarConfigMenuUtil( ID_ROUTEMANAGER, tipString ) )
         tb->AddTool( ID_ROUTEMANAGER,
             _T("route_manager"), style->GetToolIcon( _T("route_manager"), TOOLICON_NORMAL ),
             tipString, wxITEM_NORMAL );
 
     CheckAndAddPlugInTool( tb );
-    tipString = _("Toggle Tracking");
+    tipString = _("Enable Tracking");
     if( _toolbarConfigMenuUtil( ID_TRACK, tipString ) )
         tb->AddTool( ID_TRACK, _T("track"),
             style->GetToolIcon( _T("track"), TOOLICON_NORMAL ),
@@ -4036,6 +4036,12 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             if( ptcmgr->IsReady() ) {
                 cc1->SetbShowCurrent( !cc1->GetbShowCurrent() );
                 SetToolbarItemState( ID_CURRENT, cc1->GetbShowCurrent() );
+                wxString tip = _("Show Currents");
+                if(cc1->GetbShowCurrent())
+                    tip = _("Hide Currents");
+                if( g_toolbar )
+                    g_toolbar->SetToolShortHelp( ID_CURRENT, tip );
+                
                 SetMenubarItemState( ID_MENU_SHOW_CURRENTS, cc1->GetbShowCurrent() );
                 cc1->ReloadVP();
             } else {
@@ -4064,6 +4070,12 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             if( ptcmgr->IsReady() ) {
                 cc1->SetbShowTide( !cc1->GetbShowTide() );
                 SetToolbarItemState( ID_TIDE, cc1->GetbShowTide() );
+                wxString tip = _("Show Tides");
+                if(cc1->GetbShowTide())
+                    tip = _("Hide Tides");
+                if( g_toolbar )
+                    g_toolbar->SetToolShortHelp( ID_TIDE, tip );
+                
                 SetMenubarItemState( ID_MENU_SHOW_TIDES, cc1->GetbShowTide() );
                 cc1->ReloadVP();
             } else {
@@ -4291,6 +4303,9 @@ void MyFrame::TrackOn( void )
     g_pActiveTrack->Start();
 
     SetToolbarItemState( ID_TRACK, g_bTrackActive );
+    if( g_toolbar )
+        g_toolbar->SetToolShortHelp( ID_TRACK, _("Disable Tracking") );
+    
     SetMenubarItemState( ID_MENU_NAV_TRACK, g_bTrackActive );
 
     if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
@@ -4356,6 +4371,8 @@ Track *MyFrame::TrackOff( bool do_add_point )
     }
 
     SetToolbarItemState( ID_TRACK, g_bTrackActive );
+    if( g_toolbar )
+        g_toolbar->SetToolShortHelp( ID_TRACK, _("Enable Tracking") );
     SetMenubarItemState( ID_MENU_NAV_TRACK, g_bTrackActive );
 
     return return_val;
@@ -4416,6 +4433,12 @@ void MyFrame::ToggleENCText( void )
     if( ps52plib ) {
         ps52plib->SetShowS57Text( !ps52plib->GetShowS57Text() );
         SetToolbarItemState( ID_ENC_TEXT, ps52plib->GetShowS57Text() );
+        wxString tip = _("Show ENC Text (T)");
+        if(ps52plib->GetShowS57Text())
+            tip = _("Hide ENC Text (T)");
+        if( g_toolbar )
+            g_toolbar->SetToolShortHelp( ID_ENC_TEXT, tip );
+        
         SetMenubarItemState( ID_MENU_ENC_TEXT, ps52plib->GetShowS57Text() );
         cc1->ReloadVP();
     }
@@ -4705,7 +4728,7 @@ void MyFrame::RegisterGlobalMenuItems()
 
     wxMenu* nav_menu = new wxMenu();
     nav_menu->AppendCheckItem( ID_MENU_NAV_FOLLOW, _menuText(_("Auto Follow"), _T("Ctrl-A")) );
-    nav_menu->AppendCheckItem( ID_MENU_NAV_TRACK, _("Record Track") );
+    nav_menu->AppendCheckItem( ID_MENU_NAV_TRACK, _("Enable Tracking") );
     nav_menu->AppendSeparator();
     nav_menu->AppendRadioItem( ID_MENU_CHART_NORTHUP, _("North Up Mode") );
     nav_menu->AppendRadioItem( ID_MENU_CHART_COGUP, _("Course Up Mode") );
