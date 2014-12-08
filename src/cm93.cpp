@@ -6071,7 +6071,6 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
                                   glCallList(psc->m_outline_display_list);
                                   glChartCanvas::FixRenderIDL(psc->m_outline_display_list);
 
-                                  psc = NULL; /* skip rendering, we used display list */
                                   
                                   // was anything actually rendered onscreen?
                                   // Should we stop the loop?
@@ -6087,6 +6086,9 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
                                                     bdrawn = true;
                                       }
                                   }
+                                  
+                                  psc = NULL; /* skip rendering, we used display list */
+                                  
                               }
                           }
 #endif
