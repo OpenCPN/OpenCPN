@@ -2091,9 +2091,11 @@ bool MyConfig::LoadLayers(wxString &path)
             if( f.GetExt().IsSameAs( wxT("gpx") ) )
                 file_array.Add( filename); // single-gpx-file layer
             else{
-                wxDir dir( filename );
-                if( dir.IsOpened() ){
-                    nfiles = dir.GetAllFiles( filename, &file_array, wxT("*.gpx") );      // layers subdirectory set
+                if(wxDir::Exists( filename ) ){
+                    wxDir dir( filename );
+                    if( dir.IsOpened() ){
+                        nfiles = dir.GetAllFiles( filename, &file_array, wxT("*.gpx") );      // layers subdirectory set
+                    }
                 }
             }
 
