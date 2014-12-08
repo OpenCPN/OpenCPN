@@ -5955,11 +5955,13 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
 
       if ( m_cmscale < 7 )
       {
-
+          int nss_max;
+#if 0      
+          
             //    Something like an effective true_scale
-            double top_scale = vp.chart_scale * 0.25;
+            double top_scale = vp.chart_scale * .10; //0.25;
 
-            int nss_max = m_cmscale;
+            nss_max = m_cmscale;
             while ( nss_max < 7 )
             {
                   double candidate_cell_scale;
@@ -5990,6 +5992,7 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
                   printf ( "    nss_max is %c\n", ( char ) ( 'A' +nss_max - 1 ) );
             }
 
+#endif
 
             int nss = m_cmscale +1;
 
@@ -6003,7 +6006,7 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
 
             nss_max = 7;
 
-#if 1 /* only if chart outlines are rendered grounded to the charts */
+#if 0 /* only if chart outlines are rendered grounded to the charts */
             if(g_bopengl) { /* for opengl: lets keep this simple yet also functioning
                                unlike the unbounded version (which is interesting)
                                the small update rectangles normally encountered when panning
@@ -6068,8 +6071,22 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
                                   glCallList(psc->m_outline_display_list);
                                   glChartCanvas::FixRenderIDL(psc->m_outline_display_list);
 
-                                  psc = NULL; /* skip rendering */
-                                  bdrawn = true;
+                                  psc = NULL; /* skip rendering, we used display list */
+                                  
+                                  // was anything actually rendered onscreen?
+                                  // Should we stop the loop?
+                                  
+                                  covr_set *pcover = psc->GetCoverSet();
+                                  for ( unsigned int im=0 ; im < pcover->GetCoverCount() ; im++ )
+                                  {
+                                      M_COVR_Desc *mcd = pcover->GetCover ( im );
+                                      
+                                      if(! ( vp_positive.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) ||
+                                              ! ( vp.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) ) {
+                                          
+                                                    bdrawn = true;
+                                      }
+                                  }
                               }
                           }
 #endif
@@ -6092,10 +6109,15 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
                                       // In opengl it is for the display list so we don't skip
                                       if (g_bopengl) {
                                           RenderCellOutlinesOnGL(nvp, mcd); 
-                                          bdrawn = true;
+                                          
+                                          // was anything actaully drawn?
+                                          if(! ( vp_positive.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) ||
+                                              ! ( vp.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) ) {
+                                                  bdrawn = true;
+                                          }
                                       } else
 #endif
-                                      //    Case:  vpBBox is completely inside the mcd box
+                                      //    Anything actually to be drawn?
                                       if(! ( vp_positive.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) ||
                                          ! ( vp.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) ) {
                                           wxPoint *pwp = psc->GetDrawBuffer ( mcd->m_nvertices );
