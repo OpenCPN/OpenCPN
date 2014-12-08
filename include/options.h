@@ -608,6 +608,7 @@ private:
     ConnectionParams *CreateConnectionParamsFromSelectedItem();
     
     wxNotebookPage*             m_groupsPage;
+    wxFont*     smallFont;
 };
 
 class ChartGroupsUI: public wxScrolledWindow {
