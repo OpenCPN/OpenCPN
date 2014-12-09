@@ -239,6 +239,8 @@ extern CompressionWorkerPool   *g_CompressorPool;
 
 bool                      g_bcompression_wait;
 
+bool                      g_bModalDialogOpen;
+
 wxString                  g_uploadConnection;
 
 int                       user_user_id;
@@ -10316,6 +10318,8 @@ int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& c
 {
     int ret = wxID_OK;
 
+    g_bModalDialogOpen = true;
+
     if (timeout_sec > 0) {
         // wxMessageDialog is a wrapper around the system's native message dialog, so we can't
         // subclass it and create a timed version, so we use a custom dialog instead.
@@ -10327,6 +10331,8 @@ int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& c
         wxMessageDialog dlg( parent, message, caption, style, wxPoint( x, y ) );
         ret = dlg.ShowModal();
     }
+
+    g_bModalDialogOpen = false;
 
     return ret;
 }

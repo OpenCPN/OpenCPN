@@ -277,6 +277,8 @@ extern bool              g_bShowMag;
 extern bool              g_btouch;
 extern bool              g_bresponsive;
 
+extern bool              g_bModalDialogOpen;
+
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
 #endif
@@ -1153,7 +1155,6 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_pRouteRolloverWin = NULL;
     m_pAISRolloverWin = NULL;
     m_bedge_pan = false;
-    m_disable_edge_pan = false;
     m_brecapture = false;
     
     m_pCIWin = NULL;
@@ -4927,9 +4928,6 @@ void ChartCanvas::MovementStopTimerEvent( wxTimerEvent& )
 
 bool ChartCanvas::CheckEdgePan( int x, int y, bool bdragging, int margin, int delta )
 {
-    if(m_disable_edge_pan)
-        return false;
-    
     bool bft = false;
     int pan_margin = m_canvas_width * margin / 100;
     int pan_timer_set = 200;
@@ -5048,6 +5046,9 @@ void ChartCanvas::MouseTimedEvent( wxTimerEvent& event )
 
 void ChartCanvas::MouseEvent( wxMouseEvent& event )
 {
+    // Don't do anything if a modal dialog is visible
+    if (g_bModalDialogOpen) return;
+
     int x, y;
     int mx, my;
 
@@ -5440,12 +5441,8 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                                 << FormatDistanceAdaptive( rhumbDist - gcDistNM ) << _(" shorter than rhumbline.\n\n")
                                 << _("Would you like include the Great Circle routing points for this leg?");
                                 
-                            m_disable_edge_pan = true;  // This helps on OS X if MessageBox does not fully capture mouse
-
                             int answer = OCPNMessageBox( this, msg, _("OpenCPN Route Create"), wxYES_NO | wxNO_DEFAULT );
 
-                            m_disable_edge_pan = false;
-                            
                             if( answer == wxID_YES ) {
                                 RoutePoint* gcPoint;
                                 RoutePoint* prevGcPoint = m_prev_pMousePoint;
