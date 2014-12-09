@@ -2682,10 +2682,10 @@ void MarkInfoImpl::OnPositionCtlUpdated( wxCommandEvent& event )
 void MarkInfoImpl::OnRightClick( wxCommandEvent& event )
 {
     wxMenu* popup = new wxMenu();
-    popup->Append( ID_RCLK_MENU_COPY, _T("Copy") );
-    popup->Append( ID_RCLK_MENU_COPY_LL, _T("Copy lat/long") );
-    popup->Append( ID_RCLK_MENU_PASTE, _T("Paste") );
-    popup->Append( ID_RCLK_MENU_PASTE_LL, _T("Paste lat/long") );
+    popup->Append( ID_RCLK_MENU_COPY, _("Copy") );
+    popup->Append( ID_RCLK_MENU_COPY_LL, _("Copy lat/long") );
+    popup->Append( ID_RCLK_MENU_PASTE, _("Paste") );
+    popup->Append( ID_RCLK_MENU_PASTE_LL, _("Paste lat/long") );
     m_contextObject = event.GetEventObject();
     PopupMenu( popup );
     delete popup;
