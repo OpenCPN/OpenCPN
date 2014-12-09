@@ -7458,6 +7458,7 @@ void pupHandler_PasteRoute() {
 
         if( answer == wxID_CANCEL ) {
             delete kml;
+            ::wxEndBusyCursor();
             return;
         }
     }
