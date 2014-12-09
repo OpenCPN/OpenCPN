@@ -168,6 +168,7 @@ int g_uncompressed_tile_size;
 extern wxProgressDialog *pprog;
 extern bool b_skipout;
 extern wxSize pprog_size;
+extern int pprog_count;
 
 //#if defined(__MSVC__) && !defined(ocpnUSE_GLES) /* this compiler doesn't support vla */
 //const
@@ -205,7 +206,7 @@ wxEvent* OCPN_CompressProgressEvent::Clone() const
     
         
 bool CompressChart(wxThread *pThread, ChartBase *pchart, wxString CompressedCacheFilePath, wxString filename,
-                   wxEvtHandler *pMessageTarget, const wxString &msg, int count, int thread)
+                   wxEvtHandler *pMessageTarget, const wxString &msg, int thread)
 {
     bool ret = true;
     ChartBaseBSB *pBSBChart = dynamic_cast<ChartBaseBSB*>( pchart );
@@ -275,7 +276,6 @@ bool CompressChart(wxThread *pThread, ChartBase *pchart, wxString CompressedCach
                 std::string stlstring = std::string(m1.mb_str());
                 OCPN_CompressProgressEvent Nevent(wxEVT_OCPN_COMPRESSPROGRESS, 0);
                 Nevent.m_string = stlstring;
-                Nevent.count = count;
                 Nevent.thread = thread;
                 
                 pMessageTarget->AddPendingEvent(Nevent);
@@ -295,13 +295,13 @@ skipout:
 class CompressedCacheWorkerThread : public wxThread
 {
 public:
-    CompressedCacheWorkerThread(ChartBase *pc, wxString CCFP, wxString fn, wxString msg, int count, int thread)
+    CompressedCacheWorkerThread(ChartBase *pc, wxString CCFP, wxString fn, wxString msg, int thread)
         : wxThread(wxTHREAD_JOINABLE), pchart(pc), CompressedCacheFilePath(CCFP), filename(fn),
-        m_msg(msg), m_count(count), m_thread(thread)
+        m_msg(msg), m_thread(thread)
         { Create(); }
         
     void *Entry() {
-        CompressChart(this, pchart, CompressedCacheFilePath, filename, cc1, m_msg, m_count, m_thread);
+        CompressChart(this, pchart, CompressedCacheFilePath, filename, cc1, m_msg, m_thread);
         return 0;
     }
 
@@ -309,7 +309,6 @@ public:
     wxString CompressedCacheFilePath;
     wxString filename;
     wxString m_msg;
-    int m_count;
     int m_thread;
 };
 
@@ -432,7 +431,7 @@ void BuildCompressedCache()
     long style = wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME | wxPD_CAN_SKIP;
 //    style |= wxSTAY_ON_TOP;
     
-    pprog = new wxProgressDialog(_("OpenCPN Compressed Cache Update"), _T(""), count, GetOCPNCanvasWindow(), style );
+    pprog = new wxProgressDialog(_("OpenCPN Compressed Cache Update"), _T(""), count+1, GetOCPNCanvasWindow(), style );
     
     
     //    Make sure the dialog is big enough to be readable
@@ -443,7 +442,7 @@ void BuildCompressedCache()
     sz.y += thread_count * 40;          // allow for multiline messages
     pprog->SetSize( sz );
     pprog_size = sz;
-    
+
     pprog->Centre();
     wxString msg0;
     for(int i=0 ; i < thread_count ; i++){msg0 += _T("\n\n");}
@@ -458,12 +457,10 @@ void BuildCompressedCache()
              (wxObjectEventFunction) (wxEventFunction) &ChartCanvas::OnEvtCompressProgress );
     
     // build cached compressed charts
-    count = 0;
+    pprog_count = 0;
     for(unsigned int j = 0; j<ct_array.GetCount(); j++) {
         if(b_skipout)
             break;
-
-        count++;
         
         wxString filename = ct_array.Item(j).chart_path;
         wxString CompressedCacheFilePath = CompressedCachePath(filename);
@@ -479,7 +476,7 @@ void BuildCompressedCache()
         msg += pchart->GetFullPath();
         
         if(!ramonly)
-            pprog->Update(count-1, _T("0000/0000 \n") + msg, &skip );
+            pprog->Update(pprog_count, _T("0000/0000 \n") + msg, &skip );
         
         if(skip)
             break;
@@ -490,9 +487,9 @@ void BuildCompressedCache()
             for(;;) {
                 if(!workers[t]) {
                     workers[t] = new CompressedCacheWorkerThread
-                        (pchart, CompressedCacheFilePath, filename, msg, count, t);
+                        (pchart, CompressedCacheFilePath, filename, msg, t);
 
-                    msgt.Printf( _T("Starting chart compression on thread %d, count %d  "), t, count);
+                    msgt.Printf( _T("Starting chart compression on thread %d, count %d  "), t, pprog_count);
                     msgt += filename;
                     wxLogMessage(msgt);
                     workers[t]->Run();
@@ -503,6 +500,7 @@ void BuildCompressedCache()
                     ChartData->DeleteCacheChart(workers[t]->pchart);
                     delete workers[t];
                     workers[t] = NULL;
+                    pprog_count++;
                 }
                 if(++t == thread_count) {
                     ::wxYield();                // allow ChartCanvas main message loop to run 
@@ -511,7 +509,7 @@ void BuildCompressedCache()
                 }
             }
         } else {
-            bool bcontinue = CompressChart(NULL, pchart, CompressedCacheFilePath, filename, cc1, msg, count, 0);
+            bool bcontinue = CompressChart(NULL, pchart, CompressedCacheFilePath, filename, cc1, msg, 0);
             ChartData->DeleteCacheChart(pchart);
             if(!bcontinue)
                 break;

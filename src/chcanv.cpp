@@ -284,9 +284,8 @@ extern ocpnGLOptions g_GLOptions;
 wxProgressDialog *pprog;
 bool b_skipout;
 wxSize pprog_size;
-
+int pprog_count;
 wxArrayString compress_msg_array;
-extern wxSize pprog_size;
 
 //  TODO why are these static?
 static int mouse_x;
@@ -1689,7 +1688,7 @@ void ChartCanvas::OnEvtCompressProgress( OCPN_CompressProgressEvent & event )
     }
     
     bool skip = false;
-    pprog->Update(event.count-1, combined_msg, &skip );
+    pprog->Update(pprog_count, combined_msg, &skip );
     pprog->SetSize(pprog_size);
     if(skip)
         b_skipout = skip;
