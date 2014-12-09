@@ -2206,7 +2206,7 @@ bool MyApp::OnInit()
             wxString msg1(
                     _("No Charts Installed.\nPlease select chart folders in Options > Charts.") );
 
-            OCPNMessageBox(gFrame, msg1, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK );
+            OCPNMessageBox(gFrame, msg1, wxString( _("No Charts Installed") ), wxICON_INFORMATION | wxOK );
 
             gFrame->DoOptionsDialog();
 
@@ -3844,7 +3844,7 @@ void MyFrame::SetGroupIndex( int index )
         msg += GetGroupName( old_group_index );
         msg += _("\" is empty, switching to \"All Active Charts\" group.");
 
-        OCPNMessageBox( this, msg, _("OpenCPN Group Notice"), wxOK );
+        OCPNMessageBox( this, msg, _("Empty Chart Group"), wxOK );
     }
 }
 
@@ -5093,7 +5093,7 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
     if( ( rr & LOCALE_CHANGED ) || ( rr & STYLE_CHANGED ) ) {
         if( ( prev_locale != g_locale ) || ( rr & STYLE_CHANGED ) ) {
             OCPNMessageBox(NULL, _("Please restart OpenCPN to activate language or style changes."),
-                    _("OpenCPN Info"), wxOK | wxICON_INFORMATION );
+                    _("Restart OpenCPN"), wxOK | wxICON_INFORMATION );
             if( rr & LOCALE_CHANGED ) g_blocale_changed = true;;
         }
     }
@@ -7720,9 +7720,9 @@ void MyFrame::DoPrint( void )
     if( !printer.Print( this, &printout, true ) ) {
         if( wxPrinter::GetLastError() == wxPRINTER_ERROR ) OCPNMessageBox(NULL,
                 _("There was a problem printing.\nPerhaps your current printer is not set correctly?"),
-                _T("OpenCPN"), wxOK );
+                _T("Print Error"), wxOK );
 //        else
-//            OCPNMessageBox(_T("Print Cancelled"), _T("OpenCPN"), wxOK);
+//            OCPNMessageBox(_T("Print Cancelled"), _T("Print Cancelled"), wxOK);
     } else {
         ( *g_printData ) = printer.GetPrintDialogData().GetPrintData();
     }
@@ -7734,7 +7734,7 @@ void MyFrame::DoPrint( void )
      if (!preview->Ok())
      {
      delete preview;
-     OCPNMessageBox(_T("There was a problem previewing.\nPerhaps your current printer is not set correctly?"), _T("Previewing"), wxOK);
+     OCPNMessageBox(_T("There was a problem previewing.\nPerhaps your current printer is not set correctly?"), _T("Print Error"), wxOK);
      return;
      }
 
@@ -9710,7 +9710,7 @@ bool CheckSerialAccess( void )
         wxString msg = msg1 + _("No Serial Ports can be found on this system.\n\
 You must install a serial port (modprobe correct kernel module) or plug in a usb serial device.\n");
 
-        OCPNMessageBox ( NULL, msg, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK, 30 );
+        OCPNMessageBox ( NULL, msg, wxString( _("Unable to access serial ports") ), wxICON_INFORMATION | wxOK, 30 );
         return false;
     }
 
@@ -9741,7 +9741,7 @@ You may do so by executing the following command from the linux command line:\n\
         msg += user;
         msg += _T("\n");
 
-        OCPNMessageBox ( NULL, msg, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK, 30 );
+        OCPNMessageBox ( NULL, msg, wxString( _("Unable to access serial ports") ), wxICON_INFORMATION | wxOK, 30 );
     }
 
 

@@ -5390,9 +5390,10 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                         && !pNearbyPoint->m_bIsInTrack && !pNearbyPoint->m_bIsInLayer )
                 {
                     int dlg_return;
-                    dlg_return = OCPNMessageBox( this, _("Use nearby waypoint?"),
-                                                    _("OpenCPN Route Create"),
-                                                    (long) wxYES_NO | wxYES_DEFAULT );
+                    dlg_return = OCPNMessageBox( this,
+                                                _("Would you like to use the nearby waypoint, instead of creating a new one for this route?"),
+                                                _("Use nearby waypoint?"),
+                                                (long) wxYES_NO | wxYES_DEFAULT );
                     if( dlg_return == wxID_YES ) {
                         pMousePoint = pNearbyPoint;
 
@@ -5437,7 +5438,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                                 << FormatDistanceAdaptive( rhumbDist - gcDistNM ) << _(" shorter than rhumbline.\n\n")
                                 << _("Would you like include the Great Circle routing points for this leg?");
                                 
-                            int answer = OCPNMessageBox( this, msg, _("OpenCPN Route Create"), wxYES_NO | wxNO_DEFAULT );
+                            int answer = OCPNMessageBox( this, msg, _("Use great circle route?"), wxYES_NO | wxNO_DEFAULT );
 
                             if( answer == wxID_YES ) {
                                 RoutePoint* gcPoint;
@@ -5791,8 +5792,9 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                     && !pNearbyPoint->m_bIsInTrack && !pNearbyPoint->m_bIsInLayer )
                 {
                     int dlg_return;
-                    dlg_return = OCPNMessageBox( this, _("Use nearby waypoint?"),
-                                                _("OpenCPN Route Create"),
+                    dlg_return = OCPNMessageBox( this,
+                                                _("Would you like to use the nearby waypoint, instead of creating a new one for this route?"),
+                                                _("Use nearby waypoint?"),
                                                 (long) wxYES_NO | wxYES_DEFAULT );
 
                     if( dlg_return == wxID_YES ) {
@@ -5838,7 +5840,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                         << FormatDistanceAdaptive( rhumbDist - gcDistNM ) << _(" shorter than rhumbline.\n\n")
                         << _("Would you like include the Great Circle routing points for this leg?");
 
-                        int answer = OCPNMessageBox( this, msg, _("OpenCPN Route Create"), wxYES_NO | wxNO_DEFAULT );
+                        int answer = OCPNMessageBox( this, msg, _("Use great circle route?"), wxYES_NO | wxNO_DEFAULT );
 
                         if( answer == wxID_YES ) {
                             RoutePoint* gcPoint;
@@ -7905,7 +7907,7 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         if( m_pSelectedRoute->m_bIsInLayer ) break;
 
         int ask_return = OCPNMessageBox( this, g_pRouteMan->GetRouteReverseMessage(),
-                               _("Rename Waypoints?"), wxYES_NO | wxCANCEL );
+                               _("Rename waypoints?"), wxYES_NO | wxCANCEL );
 
         if( ask_return != wxID_CANCEL ) {
             pSelect->DeleteAllSelectableRouteSegments( m_pSelectedRoute );
@@ -7926,7 +7928,7 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         int dlg_return = wxID_YES;
         if( g_bConfirmObjectDelete ) {
             dlg_return = OCPNMessageBox( this,  _("Are you sure you want to delete this route?"),
-                _("OpenCPN Route Delete"), (long) wxYES_NO | wxYES_DEFAULT );
+                _("Delete route?"), (long) wxYES_NO | wxYES_DEFAULT );
         }
 
         if( dlg_return == wxID_YES ) {
@@ -8184,7 +8186,7 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         int dlg_return = wxID_YES;
         if( g_bConfirmObjectDelete ) {
             dlg_return = OCPNMessageBox( this, _("Are you sure you want to delete this track?"),
-                _("OpenCPN Track Delete"), (long) wxYES_NO | wxYES_DEFAULT );
+                _("Delete track?"), (long) wxYES_NO | wxYES_DEFAULT );
         }
 
         if( dlg_return == wxID_YES ) {
