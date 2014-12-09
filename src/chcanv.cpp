@@ -5392,7 +5392,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                     int dlg_return;
                     dlg_return = OCPNMessageBox( this, _("Use nearby waypoint?"),
                                                     _("OpenCPN Route Create"),
-                                                    (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
+                                                    (long) wxYES_NO | wxYES_DEFAULT );
                     if( dlg_return == wxID_YES ) {
                         pMousePoint = pNearbyPoint;
 
@@ -5793,7 +5793,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                     int dlg_return;
                     dlg_return = OCPNMessageBox( this, _("Use nearby waypoint?"),
                                                 _("OpenCPN Route Create"),
-                                                (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
+                                                (long) wxYES_NO | wxYES_DEFAULT );
 
                     if( dlg_return == wxID_YES ) {
                         pMousePoint = pNearbyPoint;
@@ -7925,7 +7925,7 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         int dlg_return = wxID_YES;
         if( g_bConfirmObjectDelete ) {
             dlg_return = OCPNMessageBox( this,  _("Are you sure you want to delete this route?"),
-                _("OpenCPN Route Delete"), (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
+                _("OpenCPN Route Delete"), (long) wxYES_NO | wxYES_DEFAULT );
         }
 
         if( dlg_return == wxID_YES ) {
@@ -8183,7 +8183,7 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         int dlg_return = wxID_YES;
         if( g_bConfirmObjectDelete ) {
             dlg_return = OCPNMessageBox( this, _("Are you sure you want to delete this track?"),
-                _("OpenCPN Track Delete"), (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
+                _("OpenCPN Track Delete"), (long) wxYES_NO | wxYES_DEFAULT );
         }
 
         if( dlg_return == wxID_YES ) {
