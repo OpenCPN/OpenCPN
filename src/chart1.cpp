@@ -701,7 +701,6 @@ void DeInitializeUserColors( void );
 void SetSystemColors( ColorScheme cs );
 extern "C" bool CheckSerialAccess( void );
 
-DEFINE_EVENT_TYPE(EVT_THREADMSG)
 
 //------------------------------------------------------------------------------
 //    PNG Icon resources
@@ -2688,9 +2687,9 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     //  Create/connect a dynamic event handler slot for OCPN_MsgEvent(s) coming from PlugIn system
     Connect( wxEVT_OCPN_MSG, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtPlugInMessage );
 
-    Connect( EVT_THREADMSG, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtTHREADMSG );
+    Connect( wxEVT_OCPN_THREADMSG, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtTHREADMSG );
 
-
+    
     //        Establish the system icons for the frame.
 
 #ifdef __WXMSW__
@@ -7861,9 +7860,9 @@ void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
     }
 }
 
-void MyFrame::OnEvtTHREADMSG( wxCommandEvent & event )
+void MyFrame::OnEvtTHREADMSG( OCPN_ThreadMessageEvent & event )
 {
-    wxLogMessage( event.GetString() );
+    wxLogMessage( wxString(event.GetSString().c_str(), wxConvUTF8 ));
 }
 
 
@@ -10428,6 +10427,22 @@ wxFont *GetOCPNScaledFont( wxString item, int default_size )
     return dFont;
 }
 
+
+OCPN_ThreadMessageEvent::OCPN_ThreadMessageEvent(wxEventType commandType, int id)
+:wxEvent(id, commandType)
+{
+}
+
+OCPN_ThreadMessageEvent::~OCPN_ThreadMessageEvent()
+{
+}
+
+wxEvent* OCPN_ThreadMessageEvent::Clone() const
+{
+    OCPN_ThreadMessageEvent *newevent=new OCPN_ThreadMessageEvent(*this);
+    newevent->m_string=this->m_string;
+    return newevent;
+}
 
 
 

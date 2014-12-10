@@ -144,4 +144,18 @@ typedef struct {
 } s57Sector_t;
 
 
+
+//    A generic Position Data structure
+typedef struct {
+    double kLat;
+    double kLon;
+    double kCog;
+    double kSog;
+    double kVar;            // Variation, typically from RMC message
+    double kHdm;            // Magnetic heading
+    double kHdt;            // true heading
+    time_t FixTime;
+    int    nSats;
+} GenericPosDatEx;
+
 #endif

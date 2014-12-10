@@ -100,6 +100,8 @@ static int first_rx_ticks;
 static int rx_ticks;
 static double arpa_ref_hdg = NAN;
 
+extern  const wxEventType wxEVT_OCPN_DATASTREAM;
+
 AIS_Decoder::AIS_Decoder( wxFrame *parent )
 {
     AISTargetList = new AIS_Target_Hash;
