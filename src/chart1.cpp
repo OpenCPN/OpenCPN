@@ -8944,10 +8944,22 @@ void MyPrintout::DrawPageOne( wxDC *dc )
         int gsx = cc1->GetglCanvas()->GetSize().x;
         int gsy = cc1->GetglCanvas()->GetSize().y;
 
-        unsigned char *buffer = (unsigned char *)malloc( gsx * gsy * 3 );
-        glReadPixels(0, 0, gsx, gsy, GL_RGB, GL_UNSIGNED_BYTE, buffer );
+        unsigned char *buffer = (unsigned char *)malloc( gsx * gsy * 4 );
+        glReadPixels(0, 0, gsx, gsy, GL_RGBA, GL_UNSIGNED_BYTE, buffer );
+        
+        unsigned char *e = (unsigned char *)malloc( gsx * gsy * 3 );
+       
+        if(buffer && e){
+            for( int p = 0; p < gsx*gsy; p++ ) {
+                e[3*p+0] = buffer[4*p+0];
+                e[3*p+1] = buffer[4*p+1];
+                e[3*p+2] = buffer[4*p+2];
+            }
+        }
+        free(buffer);
+        
         wxImage image( gsx,gsy );
-        image.SetData(buffer);
+        image.SetData(e);
         wxImage mir_imag = image.Mirror( false );
         wxBitmap bmp( mir_imag );
         wxMemoryDC mdc;
