@@ -4459,25 +4459,31 @@ void MyFrame::ToggleSoundings( void )
 bool MyFrame::ToggleLights( bool doToggle, bool temporary )
 {
     bool oldstate = true;
+    OBJLElement *pOLE = NULL;
+    
 #ifdef USE_S57
     if( ps52plib ) {
         for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
-            OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
+            pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
             if( !strncmp( pOLE->OBJLName, "LIGHTS", 6 ) ) {
                 oldstate = pOLE->nViz != 0;
-                if( doToggle ) pOLE->nViz = !pOLE->nViz;
                 break;
             }
         }
     }
 
+    oldstate &= !ps52plib->IsObjNoshow("LIGHTS");
+    
     if( doToggle ){
-        if( !ps52plib->IsObjNoshow("LIGHTS") )
+        if(oldstate)                            // On, going off
             ps52plib->AddObjNoshow("LIGHTS");
-        else
+        else{                                   // Off, going on
+            if(pOLE)
+                pOLE->nViz = 1;
             ps52plib->RemoveObjNoshow("LIGHTS");
+        }
         
-        SetMenubarItemState( ID_MENU_ENC_LIGHTS, !ps52plib->IsObjNoshow("LIGHTS") );
+        SetMenubarItemState( ID_MENU_ENC_LIGHTS, !oldstate );
     }
 
     if( doToggle ) {
@@ -4525,49 +4531,58 @@ void MyFrame::ToggleAnchor( void )
 {
 #ifdef USE_S57
     if( ps52plib ) {
-        int vis =  0;
+        int old_vis =  0;
+        OBJLElement *pOLE = NULL;
+        
         // Need to loop once for SBDARE, which is our "master", then for
         // other categories, since order is unknown?
         for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
             OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
             if( !strncmp( pOLE->OBJLName, "SBDARE", 6 ) ) {
-                pOLE->nViz = !pOLE->nViz;
-                vis = pOLE->nViz;
+                old_vis = pOLE->nViz;
                 break;
             }
         }
+
         const char * categories[] = { "ACHBRT", "ACHARE", "CBLSUB", "PIPARE", "PIPSOL", "TUNNEL" };
         unsigned int num = sizeof(categories) / sizeof(categories[0]);
-        unsigned int cnt = 0;
-        for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
-            OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
-            for( unsigned int c = 0; c < num; c++ ) {
-                if( !strncmp( pOLE->OBJLName, categories[c], 6 ) ) {
-                    pOLE->nViz = vis;
-                    cnt++;
-                    break;
-                }
-            }
-            if( cnt == num ) break;
-        }
-
-        if( !ps52plib->IsObjNoshow("SBDARE") ){
+        
+        old_vis &= !ps52plib->IsObjNoshow("SBDARE");
+        
+        if(old_vis){                            // On, going off
             ps52plib->AddObjNoshow("SBDARE");
             for( unsigned int c = 0; c < num; c++ ) {
                 ps52plib->AddObjNoshow(categories[c]);
             }
-        }
-        else{
+        }    
+        else{                                   // Off, going on
+            if(pOLE)
+                pOLE->nViz = 1;
             ps52plib->RemoveObjNoshow("SBDARE");
             for( unsigned int c = 0; c < num; c++ ) {
                 ps52plib->RemoveObjNoshow(categories[c]);
             }
+            
+            unsigned int cnt = 0;
+            for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
+                OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
+                for( unsigned int c = 0; c < num; c++ ) {
+                    if( !strncmp( pOLE->OBJLName, categories[c], 6 ) ) {
+                        pOLE->nViz = 1;         // force on
+                        cnt++;
+                        break;
+                    }
+                }
+                if( cnt == num ) break;
+            }
+            
         }
 
+        SetMenubarItemState( ID_MENU_ENC_ANCHOR, !old_vis );
+        
         ps52plib->GenerateStateHash();
         cc1->ReloadVP();
 
-        SetMenubarItemState( ID_MENU_ENC_ANCHOR, !ps52plib->IsObjNoshow("SBDARE") );
     }
 #endif
 }
@@ -4824,7 +4839,19 @@ void MyFrame::UpdateGlobalMenuItems()
     if( ps52plib ) {
         m_pMenuBar->FindItem( ID_MENU_ENC_TEXT )->Check( ps52plib->GetShowS57Text() );
         m_pMenuBar->FindItem( ID_MENU_ENC_SOUNDINGS )->Check( ps52plib->GetShowSoundings() );
-        m_pMenuBar->FindItem( ID_MENU_ENC_LIGHTS )->Check( !ps52plib->IsObjNoshow("LIGHTS") );
+
+        bool light_state = false;
+        if( ps52plib ) {
+            for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
+                OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
+                if( !strncmp( pOLE->OBJLName, "LIGHTS", 6 ) ) {
+                    light_state = pOLE->nViz;
+                    break;
+                }
+            }
+        }
+        m_pMenuBar->FindItem( ID_MENU_ENC_LIGHTS )->Check( (!ps52plib->IsObjNoshow("LIGHTS")) && light_state );
+        
         m_pMenuBar->FindItem( ID_MENU_ENC_ANCHOR )->Check( !ps52plib->IsObjNoshow("SBDARE") );
     }
 #endif
