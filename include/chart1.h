@@ -427,6 +427,8 @@ class MyFrame: public wxFrame
 
     void ActivateMOB(void);
     void UpdateGPSCompassStatusBox(bool b_force_new = false);
+    void UpdateRotationState( double rotation );
+    
     bool UpdateChartDatabaseInplace(ArrayOfCDI &DirArray,
                                     bool b_force, bool b_prog,
                                     const wxString &ChartListFileName);

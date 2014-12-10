@@ -1992,7 +1992,7 @@ bool MyApp::OnInit()
 
     cc1->SetQuiltMode( g_bQuiltEnable );                     // set initial quilt mode
     cc1->m_bFollow = pConfig->st_bFollow;               // set initial state
-    cc1->SetViewPoint( vLat, vLon, initial_scale_ppm, 0., initial_rotation );
+    cc1->SetViewPoint( vLat, vLon, initial_scale_ppm, 0., 0. );
 
     gFrame->Enable();
 
@@ -4420,6 +4420,9 @@ void MyFrame::ToggleCourseUp( void )
     SetMenubarItemState( ID_MENU_CHART_COGUP, g_bCourseUp );
     SetMenubarItemState( ID_MENU_CHART_NORTHUP, !g_bCourseUp );
 
+    if(m_pMenuBar)
+        m_pMenuBar->SetLabel( ID_MENU_CHART_NORTHUP, _("North Up Mode") );
+    
     DoCOGSet();
     UpdateGPSCompassStatusBox( true );
     DoChartUpdate();
@@ -4739,8 +4742,7 @@ void MyFrame::RegisterGlobalMenuItems()
 {
     if ( !m_pMenuBar ) return;  // if there isn't a menu bar
 
-
-    wxMenu* nav_menu = new wxMenu();
+    wxMenu *nav_menu = new wxMenu();
     nav_menu->AppendCheckItem( ID_MENU_NAV_FOLLOW, _menuText(_("Auto Follow"), _T("Ctrl-A")) );
     nav_menu->AppendCheckItem( ID_MENU_NAV_TRACK, _("Enable Tracking") );
     nav_menu->AppendSeparator();
@@ -6325,6 +6327,31 @@ void RenderShadowText( wxDC *pdc, wxFont *pFont, wxString& str, int x, int y )
 
     pdc->SetFont( oldfont );                  // restore last font
 
+}
+
+void MyFrame::UpdateRotationState( double rotation )
+{
+    //  If rotated manually, we switch to NORTHUP
+    g_bCourseUp = false;
+    
+    if(fabs(rotation) > .001){
+        SetMenubarItemState( ID_MENU_CHART_COGUP, false );
+        SetMenubarItemState( ID_MENU_CHART_NORTHUP, true );
+        if(m_pMenuBar){
+            m_pMenuBar->SetLabel( ID_MENU_CHART_NORTHUP, _("North Up Mode (Rotated)") );
+        }
+    }
+    else{
+        SetMenubarItemState( ID_MENU_CHART_COGUP, g_bCourseUp );
+        SetMenubarItemState( ID_MENU_CHART_NORTHUP, !g_bCourseUp );
+        if(m_pMenuBar){
+            m_pMenuBar->SetLabel( ID_MENU_CHART_NORTHUP, _("North Up Mode") );
+        }
+    }
+    
+    UpdateGPSCompassStatusBox( true );
+    DoChartUpdate();
+    cc1->ReloadVP();
 }
 
 

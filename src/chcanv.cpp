@@ -3289,8 +3289,7 @@ void ChartCanvas::DoRotateCanvas( double rotation )
     while(rotation > 2*PI) rotation -= 2*PI;
 
     SetVPRotation( rotation );
-    ReloadVP();
-    parent_frame->UpdateGPSCompassStatusBox( false );
+    parent_frame->UpdateRotationState( VPoint.rotation);
 }
 
 void ChartCanvas::ClearbFollow( void )
