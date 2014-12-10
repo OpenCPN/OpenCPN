@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-15 13:22-0600\n"
-"PO-Revision-Date: 2014-11-15 14:25-0500\n"
+"PO-Revision-Date: 2014-12-02 11:58-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Dutch\n"
 "Language: nl_NL\n"
@@ -37,7 +37,7 @@ msgstr "Koers over grond"
 
 #: src/dashboard_pi.cpp:105
 msgid "Magnetic COG"
-msgstr ""
+msgstr "COG magnetisch"
 
 #: src/dashboard_pi.cpp:107
 msgid "GPS Compass"
