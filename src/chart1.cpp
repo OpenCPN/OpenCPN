@@ -6338,7 +6338,7 @@ void MyFrame::UpdateRotationState( double rotation )
         SetMenubarItemState( ID_MENU_CHART_COGUP, false );
         SetMenubarItemState( ID_MENU_CHART_NORTHUP, true );
         if(m_pMenuBar){
-            m_pMenuBar->SetLabel( ID_MENU_CHART_NORTHUP, _("North Up Mode (Rotated)") );
+            m_pMenuBar->SetLabel( ID_MENU_CHART_NORTHUP, _("Rotated Mode") );
         }
     }
     else{
