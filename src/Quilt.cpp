@@ -2356,7 +2356,8 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion 
                 wxImage src = m_pBM->ConvertToImage();
 #if 1
                 int blur_factor = wxMin((scale_factor-g_overzoom_emphasis_base)/4, 4);
-                wxImage dest = src.Blur( blur_factor );
+                if(src.IsOk()){
+                    wxImage dest = src.Blur( blur_factor );
 #endif                
                 
                 
@@ -2388,25 +2389,25 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion 
 #endif
                 
                 
-                wxBitmap dim(dest);
-                wxMemoryDC ddc;
-                ddc.SelectObject( dim );
+                    wxBitmap dim(dest);
+                    wxMemoryDC ddc;
+                    ddc.SelectObject( dim );
                 
-                q_dc.SelectObject( *m_pBM );
-                OCPNRegionIterator upd ( rendered_region );
-                while ( upd.HaveRects() )
-                {
-                    wxRect rect = upd.GetRect();
-                    q_dc.Blit( rect.x, rect.y, rect.width, rect.height, &ddc, rect.x, rect.y );
-                    upd.NextRect();
-                }
-                
-                ddc.SelectObject( wxNullBitmap );
-                q_dc.SelectObject( wxNullBitmap );
+                    q_dc.SelectObject( *m_pBM );
+                    OCPNRegionIterator upd ( rendered_region );
+                    while ( upd.HaveRects() )
+                    {
+                        wxRect rect = upd.GetRect();
+                        q_dc.Blit( rect.x, rect.y, rect.width, rect.height, &ddc, rect.x, rect.y );
+                        upd.NextRect();
+                    }
+                    
+                    ddc.SelectObject( wxNullBitmap );
+                    q_dc.SelectObject( wxNullBitmap );
                 
                 //    Select the scratch BM as the return dc contents
-                dc.SelectObject( *m_pBM );
-                
+                    dc.SelectObject( *m_pBM );
+                }                
             }              
          }     // overzoom
         
