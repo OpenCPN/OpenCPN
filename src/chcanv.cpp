@@ -7213,21 +7213,21 @@ void ChartCanvas::ShowMarkPropertiesDialog( RoutePoint* markPoint ) {
     if( NULL == pMarkPropDialog )    // There is one global instance of the MarkProp Dialog
         pMarkPropDialog = new MarkInfoImpl( this );
 
-    if( g_bresponsive ) {
+    if( 1/*g_bresponsive*/ ) {
 
-        wxSize canvas_size = cc1->GetSize();
-        wxPoint canvas_pos = cc1->GetPosition();
+        wxSize canvas_size = GetSize();
+        wxPoint canvas_pos = GetPosition();
         wxSize fitted_size = pMarkPropDialog->GetSize();;
 
         if(canvas_size.x < fitted_size.x){
-            fitted_size.x = canvas_size.x;
+            fitted_size.x = canvas_size.x - 40;
             if(canvas_size.y < fitted_size.y)
-                fitted_size.y -= 20;                // scrollbar added
+                fitted_size.y -= 40;                // scrollbar added
         }
         if(canvas_size.y < fitted_size.y){
-            fitted_size.y = canvas_size.y;
+            fitted_size.y = canvas_size.y - 40;
             if(canvas_size.x < fitted_size.x)
-                fitted_size.x -= 20;                // scrollbar added
+                fitted_size.x -= 40;                // scrollbar added
         }
 
         pMarkPropDialog->SetSize( fitted_size );
