@@ -198,7 +198,6 @@ WayPointman               *pWayPointMan;
 MarkInfoImpl              *pMarkPropDialog;
 RouteProp                 *pRoutePropDialog;
 TrackPropDlg              *pTrackPropDialog;
-MarkInfoImpl              *pMarkInfoDialog;
 RouteManagerDialog        *pRouteManagerDialog;
 GoToPositionDialog        *pGoToPositionDialog;
 
@@ -2860,8 +2859,6 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
 
     if( pMarkPropDialog ) pMarkPropDialog->SetColorScheme( cs );
 
-    if( pMarkInfoDialog ) pMarkInfoDialog->SetColorScheme( cs );
-
     //    For the AIS target query dialog, we must rebuild it to incorporate the style desired for the colorscheme selected
     if( g_pais_query_dialog_active ) {
         bool b_isshown = g_pais_query_dialog_active->IsShown();
@@ -3780,9 +3777,9 @@ void MyFrame::UpdateAllFonts()
         pTrackPropDialog = NULL;
     }
 
-    if( pMarkInfoDialog ) {
-        pMarkInfoDialog->Destroy();
-        pMarkInfoDialog = NULL;
+    if( pMarkPropDialog ) {
+        pMarkPropDialog->Destroy();
+        pMarkPropDialog = NULL;
     }
 
     if( g_pObjectQueryDialog ) {

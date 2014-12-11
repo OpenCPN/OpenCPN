@@ -1826,7 +1826,7 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     wstyle |= wxSTAY_ON_TOP;
 #endif
 
-    Create( parent, id, title, pos, size, wstyle );
+    wxDialog::Create( parent, id, title, pos, size, wstyle );
 
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     SetFont( *qFont );
