@@ -4845,7 +4845,7 @@ void MyFrame::UpdateGlobalMenuItems()
             for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
                 OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
                 if( !strncmp( pOLE->OBJLName, "LIGHTS", 6 ) ) {
-                    light_state = pOLE->nViz;
+                    light_state = (pOLE->nViz == 1);
                     break;
                 }
             }
