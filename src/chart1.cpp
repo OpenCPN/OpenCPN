@@ -5861,8 +5861,11 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
     gGPS_Watchdog--;
     if( gGPS_Watchdog <= 0 ) {
         bGPSValid = false;
-        if( g_nNMEADebug && ( gGPS_Watchdog == 0 ) ) wxLogMessage(
-                _T("   ***GPS Watchdog timeout...") );
+        if( /*g_nNMEADebug && */( gGPS_Watchdog == 0 ) ){
+            wxString msg;
+            msg.Printf( _T("   ***GPS Watchdog timeout at Lat:%g   Lon: %g"), gLat, gLon );
+            wxLogMessage(msg);
+        }
         gSog = NAN;
         gCog = NAN;
     }
