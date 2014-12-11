@@ -1111,6 +1111,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_pRouteRolloverWin = NULL;
     m_pAISRolloverWin = NULL;
     m_bedge_pan = false;
+    m_disable_edge_pan = false;
     
     m_pCIWin = NULL;
 
@@ -4865,6 +4866,9 @@ void ChartCanvas::MovementStopTimerEvent( wxTimerEvent& )
 
 bool ChartCanvas::CheckEdgePan( int x, int y, bool bdragging, int margin, int delta )
 {
+    if(m_disable_edge_pan)
+        return false;
+    
     bool bft = false;
     int pan_margin = m_canvas_width * margin / 100;
     int pan_timer_set = 200;
@@ -5374,13 +5378,13 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                             msg << _("For this leg the Great Circle route is ")
                                 << FormatDistanceAdaptive( rhumbDist - gcDistNM ) << _(" shorter than rhumbline.\n\n")
                                 << _("Would you like include the Great Circle routing points for this leg?");
+                                
+                            m_disable_edge_pan = true;  // This helps on OS X if MessageBox does not fully capture mouse
 
-        #ifndef __WXOSX__
                             int answer = OCPNMessageBox( this, msg, _("OpenCPN Route Create"), wxYES_NO | wxNO_DEFAULT );
-        #else
-                            int answer = wxID_NO;
-        #endif
 
+                            m_disable_edge_pan = false;
+                            
                             if( answer == wxID_YES ) {
                                 RoutePoint* gcPoint;
                                 RoutePoint* prevGcPoint = m_prev_pMousePoint;
@@ -7751,16 +7755,6 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
                 m_pFoundRoutePoint->SetName( nn );
             }
         }
-        break;
-
-    case ID_WP_MENU_ADDITIONAL_INFO:
-        if( NULL == pMarkInfoDialog )    // There is one global instance of the MarkInfo Dialog
-            pMarkInfoDialog = new MarkInfoImpl( this );
-
-        pMarkInfoDialog->SetRoutePoint( m_pFoundRoutePoint );
-        pMarkInfoDialog->UpdateProperties();
-
-        pMarkInfoDialog->Show();
         break;
 
     case ID_DEF_MENU_ACTIVATE_MEASURE:

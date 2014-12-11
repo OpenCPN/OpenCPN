@@ -621,6 +621,8 @@ private:
       double      m_displayed_scale_factor;
       
       wxColour    m_fog_color;      
+      bool        m_disable_edge_pan;
+      
       
 DECLARE_EVENT_TABLE()
 };
