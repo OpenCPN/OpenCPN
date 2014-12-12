@@ -349,7 +349,6 @@ WX_DEFINE_OBJARRAY(ArrayOfCompressTargets);
 
 void BuildCompressedCache()
 {
-    b_inCompressAllCharts = true;
 
     idx_sorted_by_distance.Clear();
     
@@ -375,11 +374,14 @@ void BuildCompressedCache()
         count++;
     }  
 
-    if( g_bDebugOGL ) wxLogMessage(wxString::Format(_T("BuildCompressedCache() count = %d"), count ));
                                    
     if(count == 0)
         return;
 
+    wxLogMessage(wxString::Format(_T("BuildCompressedCache() count = %d"), count ));
+    
+    b_inCompressAllCharts = true;
+    
     //  Build another array of sorted compression targets.
     //  We need to do this, as the chart table will not be invariant
     //  after the compression threads start, so our index array will be invalid.
