@@ -9843,9 +9843,9 @@ void InitializeUserColors( void )
             }
 
         } else {
-            char name[80];
+            char name[20];
             int j = 0;
-            while( buf[j] != ';' ) {
+            while( buf[j] != ';' && j < 20 ) {
                 name[j] = buf[j];
                 j++;
             }
