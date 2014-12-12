@@ -2504,6 +2504,11 @@ bool ChartCanvas::StartTimedMovement( bool stoptimer )
     if(stoptimer)
         pMovementStopTimer->Start( 1000, wxTIMER_ONE_SHOT ); 
 
+    if(!pMovementTimer->IsRunning()){
+//        printf("timer not running, starting\n");
+        pMovementTimer->Start( 1, wxTIMER_ONE_SHOT ); 
+    }
+    
     if(m_panx || m_pany || m_zoom_factor!=1 || m_rotation_speed) {
         // already moving, gets called again because of key-repeat event
         return false;
