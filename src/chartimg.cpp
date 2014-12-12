@@ -539,7 +539,10 @@ InitReturn ChartGEO::Init( const wxString& name, ChartInitFlag init_flags)
 //      a file with.GEO extension that is not really a chart
 
       if(pBitmapFilePath == NULL)
+      {
+            free(pPlyTable);
             return INIT_FAIL_REMOVE;
+      }
 
       wxString NOS_Name(*pBitmapFilePath);            // take a copy
 
@@ -621,6 +624,7 @@ InitReturn ChartGEO::Init( const wxString& name, ChartInitFlag init_flags)
 
             }
 
+            free(pPlyTable);
             return INIT_FAIL_REMOVE;                  // not found at all
 
 found_uclc_file:
@@ -634,10 +638,16 @@ found_uclc_file:
 
 
       if(ifs_bitmap == NULL)
-            return INIT_FAIL_REMOVE;
+      {
+          free(pPlyTable);
+          return INIT_FAIL_REMOVE;
+      }
 
       if(!ifss_bitmap->Ok())
-            return INIT_FAIL_REMOVE;
+      {
+          free(pPlyTable);
+          return INIT_FAIL_REMOVE;
+      }
 
 
       while( (ReadBSBHdrLine(ifss_bitmap, &buffer[0], BUF_LEN_MAX)) != 0 )
@@ -700,15 +710,19 @@ found_uclc_file:
 
 //    Validate some of the header data
       if((Size_X == 0) || (Size_Y == 0))
+      {
+          free(pPlyTable);
           return INIT_FAIL_REMOVE;
+      }
 
       if(nPlypoint < 3)
       {
-            wxString msg(_("   Chart File contains less than 3 PLY points: "));
-            msg.Append(m_FullPath);
-            wxLogMessage(msg);
+          wxString msg(_("   Chart File contains less than 3 PLY points: "));
+          msg.Append(m_FullPath);
+          wxLogMessage(msg);
+          free(pPlyTable);
 
-            return INIT_FAIL_REMOVE;
+          return INIT_FAIL_REMOVE;
       }
 
 //    Convert captured plypoint information into chart COVR structures
