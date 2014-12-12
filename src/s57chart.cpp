@@ -4118,6 +4118,7 @@ bool s57chart::GetBaseFileAttr( wxFileName fn )
         wxString msg( _T("   s57chart::BuildS57File  Unable to open ") );
         msg.Append( FullPath000 );
         wxLogMessage( msg );
+        delete poModule;
         return false;
     }
 
