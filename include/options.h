@@ -966,6 +966,8 @@ class SentenceListDlg : public wxDialog
 ///////////////////////////////////////////////////////////////////////////////
 class OpenGLOptionsDlg : public wxDialog
 {
+    DECLARE_EVENT_TABLE()
+
 public:
     wxGridSizer *m_bSizer1;
     wxBoxSizer *m_bSizer2;
@@ -974,13 +976,23 @@ public:
 
     wxCheckBox *m_cbTextureCompression, *m_cbTextureCompressionCaching;
 
-    wxCheckBox *m_cbRebuildTextureCache;
-    wxCheckBox *m_cbClearTextureCache;
+    wxButton *m_bRebuildTextureCache;
+    wxButton *m_bClearTextureCache;
+
+    wxStaticText *m_stTextureCacheSize;
     
     wxSpinCtrl *m_sTextureDimension;
     wxSpinCtrl *m_sTextureMemorySize;
 
     OpenGLOptionsDlg( wxWindow* parent, bool glTicked );
+    
+    void OnButtonRebuild( wxCommandEvent& event );
+    void OnButtonClear( wxCommandEvent& event );
+
+    wxString TextureCacheSize();
+    
+    bool m_brebuild_cache;
+
 };
 
 

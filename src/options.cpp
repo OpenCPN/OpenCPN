@@ -51,6 +51,7 @@
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
+extern GLuint g_raster_format;
 #endif
 
 #include "chartdbs.h"
@@ -3227,16 +3228,6 @@ void options::OnOpenGLOptions( wxCommandEvent& event )
         else
             g_GLOptions.m_bUseAcceleratedPanning = cc1->GetglCanvas()->CanAcceleratePanning();
 
-        if(g_bopengl &&
-           g_GLOptions.m_bTextureCompression != dlg.m_cbTextureCompression->GetValue()) {
-            ::wxBeginBusyCursor();
-            cc1->GetglCanvas()->ClearAllRasterTextures();
-            ::wxEndBusyCursor();
-            
-            g_GLOptions.m_bTextureCompression = dlg.m_cbTextureCompression->GetValue();
-            cc1->GetglCanvas()->SetupCompression();
-        }
-
         g_GLOptions.m_bTextureCompression = dlg.m_cbTextureCompression->GetValue();
         
         if(g_bexpert){
@@ -3246,32 +3237,24 @@ void options::OnOpenGLOptions( wxCommandEvent& event )
         else{
             g_GLOptions.m_bTextureCompressionCaching = g_GLOptions.m_bTextureCompression;
         }
-        
-        
-        
-        if(g_GLOptions.m_bTextureCompressionCaching && dlg.m_cbClearTextureCache->GetValue()){
-            wxString path =  g_PrivateDataDir + wxFileName::GetPathSeparator() + _T("raster_texture_cache");
-            if(::wxDirExists( path )){
-                ::wxBeginBusyCursor();
-                cc1->GetglCanvas()->ClearAllRasterTextures();
-                
-                wxArrayString files;
-                size_t nfiles = wxDir::GetAllFiles(path, &files);
-                for(unsigned int i=0 ; i < files.GetCount() ; i++){
-                    ::wxRemoveFile(files[i]);
-                }
-                ::wxEndBusyCursor();
-                
-            }
-        }
+    
+        if(g_bopengl &&
+           g_GLOptions.m_bTextureCompression != dlg.m_cbTextureCompression->GetValue()) {
+            g_GLOptions.m_bTextureCompression = dlg.m_cbTextureCompression->GetValue();
+            cc1->GetglCanvas()->SetupCompression();
             
-        if(g_GLOptions.m_bTextureCompressionCaching && dlg.m_cbRebuildTextureCache->GetValue()){
-            this->Hide();
-            cc1->Disable();
-            BuildCompressedCache();
-            cc1->Enable();
-            this->Show();
+            ::wxBeginBusyCursor();
+            cc1->GetglCanvas()->ClearAllRasterTextures();
+            ::wxEndBusyCursor();
+            
         }
+    }
+
+    if(dlg.m_brebuild_cache) {
+        Hide();
+        cc1->Disable();
+        BuildCompressedCache();
+        cc1->Enable();
     }
 #endif
 }
@@ -5735,6 +5718,13 @@ void SentenceListDlg::OnCancelClick( wxCommandEvent& event ) { event.Skip(); }
 void SentenceListDlg::OnOkClick( wxCommandEvent& event ) { event.Skip(); }
  
 //OpenGLOptionsDlg
+enum { ID_BUTTON_REBUILD, ID_BUTTON_CLEAR };
+
+BEGIN_EVENT_TABLE( OpenGLOptionsDlg, wxDialog )
+    EVT_BUTTON( ID_BUTTON_REBUILD, OpenGLOptionsDlg::OnButtonRebuild )
+    EVT_BUTTON( ID_BUTTON_CLEAR, OpenGLOptionsDlg::OnButtonClear )
+END_EVENT_TABLE()
+
 
 OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
 {
@@ -5748,9 +5738,11 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
     
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     SetFont( *qFont );
+
+    m_brebuild_cache = false;
     
 #ifdef ocpnUSE_GL
-    m_bSizer1 = new wxFlexGridSizer( 2 );
+    m_bSizer1 = new wxFlexGridSizer( 3 );
     this->SetSizeHints( wxDefaultSize, wxDefaultSize );
 
     if(g_bexpert) {
@@ -5795,9 +5787,6 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
     extern PFNGLCOMPRESSEDTEXIMAGE2DPROC s_glCompressedTexImage2D;
     extern bool  b_glEntryPointsSet;
     
-    if(!glTicked)
-        m_cbTextureCompression->Disable();
-    
     if(b_glEntryPointsSet){
         if(!s_glCompressedTexImage2D) {
             g_GLOptions.m_bTextureCompressionCaching = false;
@@ -5819,18 +5808,24 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
         m_bSizer1->Add(m_sTextureMemorySize, 0, wxALL | wxEXPAND, 5);
 
     }
+
+    m_bSizer1->AddSpacer(0);
+    m_bSizer1->AddSpacer(0);
     
-    m_cbRebuildTextureCache = new wxCheckBox(this, wxID_ANY, _("Rebuild Texture Cache") );
-    m_bSizer1->Add(m_cbRebuildTextureCache, 0, wxALL | wxEXPAND, 5);
-    m_cbRebuildTextureCache->Enable(g_GLOptions.m_bTextureCompressionCaching);
-    if(!glTicked)
-        m_cbRebuildTextureCache->Disable();
+    m_bRebuildTextureCache = new wxButton(this, ID_BUTTON_REBUILD, _("Rebuild Texture Cache") );
+    m_bSizer1->Add(m_bRebuildTextureCache, 0, wxALL | wxEXPAND, 5);
+    m_bRebuildTextureCache->Enable(g_GLOptions.m_bTextureCompressionCaching);
     
-    m_cbClearTextureCache = new wxCheckBox(this, wxID_ANY, _("Clear Texture Cache") );
-    m_bSizer1->Add(m_cbClearTextureCache, 0, wxALL | wxEXPAND, 5);
-    m_cbClearTextureCache->Enable(g_GLOptions.m_bTextureCompressionCaching);
-    if(!glTicked)
-        m_cbClearTextureCache->Disable();
+    if(!g_bopengl || g_raster_format == GL_RGB)
+        m_bRebuildTextureCache->Disable();
+    
+    m_bClearTextureCache = new wxButton(this, ID_BUTTON_CLEAR, _("Clear Texture Cache") );
+    m_bSizer1->Add(m_bClearTextureCache, 0, wxALL | wxEXPAND, 5);
+    m_bClearTextureCache->Enable(g_GLOptions.m_bTextureCompressionCaching);
+
+    m_stTextureCacheSize = new wxStaticText(this, wxID_STATIC, TextureCacheSize());
+    m_bSizer1->Add( m_stTextureCacheSize, 0,
+                    wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, 5 );
     
     wxStdDialogButtonSizer * m_sdbSizer4 = new wxStdDialogButtonSizer();
     wxButton *bOK = new wxButton( this, wxID_OK );
@@ -5848,4 +5843,52 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
 
     Fit();
 #endif
+}
+
+void OpenGLOptionsDlg::OnButtonRebuild( wxCommandEvent& event )
+{
+    if(g_GLOptions.m_bTextureCompressionCaching) {
+        m_brebuild_cache = true;
+        EndModal(wxID_CANCEL);
+    }
+}
+
+void OpenGLOptionsDlg::OnButtonClear( wxCommandEvent& event )
+{
+#ifdef ocpnUSE_GL
+    ::wxBeginBusyCursor();
+    if(g_bopengl)
+        cc1->GetglCanvas()->ClearAllRasterTextures();
+
+    wxString path =  g_PrivateDataDir + wxFileName::GetPathSeparator() + _T("raster_texture_cache");
+    if(::wxDirExists( path )){
+        cc1->GetglCanvas()->ClearAllRasterTextures();
+        
+        wxArrayString files;
+        size_t nfiles = wxDir::GetAllFiles(path, &files);
+        for(unsigned int i=0 ; i < files.GetCount() ; i++){
+            ::wxRemoveFile(files[i]);
+        }                
+    }
+    
+    m_stTextureCacheSize->SetLabel(TextureCacheSize());
+    ::wxEndBusyCursor();
+#endif
+}
+
+wxString OpenGLOptionsDlg::TextureCacheSize()
+{
+    wxString path =  g_PrivateDataDir + wxFileName::GetPathSeparator() + _T("raster_texture_cache");
+    int total = 0;
+    if(::wxDirExists( path )){
+        cc1->GetglCanvas()->ClearAllRasterTextures();
+                
+        wxArrayString files;
+        size_t nfiles = wxDir::GetAllFiles(path, &files);
+        for(unsigned int i=0 ; i < files.GetCount() ; i++){
+            total += wxFile(files[i]).Length();
+        }
+    }
+
+    return wxString::Format(_T("%.1f MB"), total/1024.0/1024.0);
 }

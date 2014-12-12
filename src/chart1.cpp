@@ -2256,7 +2256,7 @@ extern ocpnGLOptions g_GLOptions;
 
         BuildCompressedCache();
 
-        }
+    }
 #endif
 
 
