@@ -4774,7 +4774,7 @@ void ChartGroupsUI::OnNewGroup( wxCommandEvent &event )
         AddEmptyGroupPage( pd->GetValue() );
         ChartGroup *pGroup = new ChartGroup;
         pGroup->m_group_name = pd->GetValue();
-        if( m_pGroupArray ) m_pGroupArray->Add( pGroup );
+        m_pGroupArray->Add( pGroup );
 
         m_GroupSelectedPage = m_GroupNB->GetPageCount() - 1;      // select the new page
         m_GroupNB->ChangeSelection( m_GroupSelectedPage );
