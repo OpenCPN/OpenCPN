@@ -2351,6 +2351,14 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
                 if( prule->parm0 != ID_RGBA ) b_dump_cache = true;
             }
         }
+        
+        // This handles the case when zooming into overzoom scale mode from normal
+        // We want to make sure the old unzoomed cache is not used.
+        //  Logic:  If parm0 != ID_EMPTY, it must be true that the last render was un-zoomed,
+        //          since zoomed renders clear the cache and set parm0 to ID_EMPTY before exiting.
+        //          So, in this case, dump the cached symbol bitmap so that a new scaled bitmap will be built.
+        if((scale_factor > 1.0) && (prule->parm0 != ID_EMPTY))
+            b_dump_cache = true;
 
         wxBitmap *pbm = NULL;
         wxImage Image;
