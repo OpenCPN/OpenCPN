@@ -271,8 +271,6 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
     char *buf = (char *) malloc( MAX_LINE + 1 );
     int llmax = 0;
 
-    char szFeatureName[20];
-
     char *br;
     char szAtt[20];
     char geoMatch[20];
@@ -291,9 +289,8 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
 
             FEIndex = atoi( buf + 19 );
 
-            strncpy( szFeatureName, buf + 11, 6 );
-            szFeatureName[6] = 0;
-            strcpy( FeatureName, szFeatureName );
+            strncpy( FeatureName, buf + 11, 6 );
+            FeatureName[6] = 0;
 
             //      Build/Maintain a list of found OBJL types for later use
             //      And back-reference the appropriate list index in S57Obj for Display Filtering
