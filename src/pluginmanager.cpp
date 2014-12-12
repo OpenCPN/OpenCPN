@@ -650,8 +650,15 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
     // load the library
     wxDynamicLibrary *plugin = new wxDynamicLibrary(plugin_file);
     pic->m_plibrary = plugin;     // Save a pointer to the wxDynamicLibrary for later deletion
-
-    if(!plugin->IsLoaded())
+    
+    if( !wxIsReadable(plugin_file) )
+    {
+        msg = _("Unreadable PlugIn library detected, check the file permissions:\n");
+        msg += plugin_file;
+        msg += _T("\n\n");
+        OCPNMessageBox ( NULL, msg, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK, 10 );  // 10 second timeout
+    }
+    else if(!plugin->IsLoaded())
     {
         //  Look in the Blacklist, try to match a filename, to give some kind of message
         //  extract the probable plugin name
@@ -673,7 +680,7 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
             if( prob_pi_name.Lower().EndsWith(candidate)){
                 wxString msg = _("Incompatible PlugIn detected:\n");
                 msg += plugin_file;
-                msg += _("\n\n");
+                msg += _T("\n\n");
                 
                 wxString msg1;
                 msg1 = wxString::Format(_("PlugIn [ %s ] version %i.%i"),
@@ -684,7 +691,7 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
                     msg += _(", and all previous versions,");
                 msg += _(" is incompatible with this version of OpenCPN."),
                                         
-                OCPNMessageBox ( NULL, msg, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK, 20 );  // 5 second timeout
+                OCPNMessageBox ( NULL, msg, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK, 10 );  // 10 second timeout
                 break;
             }
         }

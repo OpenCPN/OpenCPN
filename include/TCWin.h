@@ -106,6 +106,7 @@ private:
       wxBrush *pltgray;
       wxBrush *pltgray2;
 
+      int         m_button_height;
 
 DECLARE_EVENT_TABLE()
 };

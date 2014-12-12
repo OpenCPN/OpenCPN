@@ -76,6 +76,7 @@ class ocpnFloatingToolbarDialog;
 class OCPN_MsgEvent;
 class options;
 class Track;
+class OCPN_ThreadMessageEvent;
 
 //----------------------------------------------------------------------------
 //   constants
@@ -230,6 +231,26 @@ class ChartDirInfo
       wxString    magic_number;
 };
 
+class OCPN_ThreadMessageEvent: public wxEvent
+{
+public:
+    OCPN_ThreadMessageEvent( wxEventType commandType = wxEVT_NULL, int id = 0 );
+    ~OCPN_ThreadMessageEvent( );
+    
+    // accessors
+    void SetSString(std::string string) { m_string = string; }
+    std::string GetSString() { return m_string; }
+    
+    // required for sending with wxPostEvent()
+    wxEvent *Clone() const;
+    
+private:
+    std::string m_string;
+};
+
+
+
+
 WX_DECLARE_OBJARRAY(ChartDirInfo, ArrayOfCDI);
 WX_DECLARE_OBJARRAY(wxRect, ArrayOfRect);
 
@@ -280,7 +301,7 @@ class MyFrame: public wxFrame
     void OnMove(wxMoveEvent& event);
     void OnFrameTimer1(wxTimerEvent& event);
     bool DoChartUpdate(void);
-    void OnEvtTHREADMSG(wxCommandEvent& event);
+    void OnEvtTHREADMSG(OCPN_ThreadMessageEvent& event);
     void OnEvtOCPN_NMEA(OCPN_DataStreamEvent & event);
     void OnEvtPlugInMessage( OCPN_MsgEvent & event );
     void OnMemFootTimer(wxTimerEvent& event);
@@ -406,6 +427,8 @@ class MyFrame: public wxFrame
 
     void ActivateMOB(void);
     void UpdateGPSCompassStatusBox(bool b_force_new = false);
+    void UpdateRotationState( double rotation );
+    
     bool UpdateChartDatabaseInplace(ArrayOfCDI &DirArray,
                                     bool b_force, bool b_prog,
                                     const wxString &ChartListFileName);

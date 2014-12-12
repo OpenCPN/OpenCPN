@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-15 13:22-0600\n"
-"PO-Revision-Date: 2014-11-15 14:25-0500\n"
+"POT-Creation-Date: 2014-12-10 19:39-0600\n"
+"PO-Revision-Date: 2014-12-10 20:41-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -13,6 +13,8 @@ msgstr ""
 "\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: crowdin.com\n"
+"X-Crowdin-Project: opencpn\n"
+"X-Crowdin-File: /plugins/dashboard_pi/po/dashboard_pi.pot\n"
 
 #: src/clock.cpp:126 src/dial.cpp:504 src/gps.cpp:141 src/wind.cpp:64
 #: src/wind_history.cpp:401
@@ -37,7 +39,7 @@ msgstr "COG"
 
 #: src/dashboard_pi.cpp:105
 msgid "Magnetic COG"
-msgstr ""
+msgstr "COG magnétique"
 
 #: src/dashboard_pi.cpp:107
 msgid "GPS Compass"
@@ -157,7 +159,7 @@ msgstr "Distance cumulée"
 
 #: src/dashboard_pi.cpp:176
 msgid "From Ownship"
-msgstr "Depuis votre propre bateau"
+msgstr "Depuis votre bateau"
 
 #: src/dashboard_pi.cpp:343 src/dashboard_pi.cpp:456 src/dashboard_pi.cpp:1309
 #: src/dashboard_pi.cpp:1318 src/dashboard_pi.cpp:1476
@@ -300,7 +302,7 @@ msgstr "Pouces"
 
 #: src/dashboard_pi.cpp:1661
 msgid "Distance units:"
-msgstr "Unités de distance"
+msgstr "Unités de distance :"
 
 #: src/dashboard_pi.cpp:1664
 msgid "Nautical miles"

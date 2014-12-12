@@ -123,29 +123,43 @@ void AISTargetQueryDialog::OnIdTrkCreateClick( wxCommandEvent& event )
         AIS_Target_Data *td = g_pAIS->Get_Target_Data_From_MMSI( m_MMSI );
         if( td )
         {
-            int ip = 0;
-            float prev_rlat = 0., prev_rlon = 0.;
-            RoutePoint *prev_pConfPoint = NULL;
-                
-            Track *t = new Track();
-
-            t->m_RouteNameString = wxString::Format( _T("AIS %s (%u) %s %s"), td->GetFullName().c_str(), td->MMSI, wxDateTime::Now().FormatISODate().c_str(), wxDateTime::Now().FormatISOTime().c_str() );
-            wxAISTargetTrackListNode *node = td->m_ptrack->GetFirst();
-            while( node )
+            if ( td->b_PersistTrack ) //The target was tracked and the user wants to stop it
             {
-                AISTargetTrackPoint *ptrack_point = node->GetData();
-                vector2D point( ptrack_point->m_lon, ptrack_point->m_lat );
-                t->AddNewPoint( point, wxDateTime(ptrack_point->m_time).ToUTC() );
-                node = node->GetNext();
+                td->b_PersistTrack = false;
+                g_pAIS->m_persistent_tracks.erase(td->MMSI);
+                m_createTrkBtn->SetLabel(_("Persist Track"));
             }
-            
-            pRouteList->Append( t );
-            pConfig->AddNewRoute( t, -1 );
-            t->RebuildGUIDList(); // ensure the GUID list is intact and good
+            else
+            {
+                int ip = 0;
+                float prev_rlat = 0., prev_rlon = 0.;
+                RoutePoint *prev_pConfPoint = NULL;
+                    
+                Track *t = new Track();
 
-            if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
-                pRouteManagerDialog->UpdateTrkListCtrl();
-            Refresh( false );
+                t->m_RouteNameString = wxString::Format( _T("AIS %s (%u) %s %s"), td->GetFullName().c_str(), td->MMSI, wxDateTime::Now().FormatISODate().c_str(), wxDateTime::Now().FormatISOTime().c_str() );
+                wxAISTargetTrackListNode *node = td->m_ptrack->GetFirst();
+                while( node )
+                {
+                    AISTargetTrackPoint *ptrack_point = node->GetData();
+                    vector2D point( ptrack_point->m_lon, ptrack_point->m_lat );
+                    t->AddNewPoint( point, wxDateTime(ptrack_point->m_time).ToUTC() );
+                    node = node->GetNext();
+                }
+                
+                pRouteList->Append( t );
+                pConfig->AddNewRoute( t, -1 );
+                t->RebuildGUIDList(); // ensure the GUID list is intact and good
+
+                if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+                    pRouteManagerDialog->UpdateTrkListCtrl();
+                Refresh( false );
+                if( wxYES == wxMessageBox( _("The current track of the target has been persisted, do you want to keep persisting the track until the end of the current session?"), _("OpenCPN Info"), wxYES_NO | wxCENTER ) )
+                {
+                    td->b_PersistTrack = true;
+                    g_pAIS->m_persistent_tracks[td->MMSI] = t;
+                }
+            }
         }
     }
 }
@@ -189,10 +203,15 @@ bool AISTargetQueryDialog::Create( wxWindow* parent, wxWindowID id, const wxStri
 
 void AISTargetQueryDialog::SetColorScheme( ColorScheme cs )
 {
+    DimeControl( this );
+    wxColor bg = GetBackgroundColour();
+    m_pQueryTextCtl->SetBackgroundColour( bg );
+
     if( cs != m_colorscheme ) {
-        DimeControl( this );
         Refresh();
     }
+    m_colorscheme = cs;
+    
 }
 
 void AISTargetQueryDialog::CreateControls()
@@ -206,13 +225,16 @@ void AISTargetQueryDialog::CreateControls()
 
     topSizer->Add( m_pQueryTextCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxALL | wxEXPAND, 5 );
 
-    wxSizer* ok = CreateButtonSizer( wxOK );
+    wxSizer* opt = new wxBoxSizer( wxHORIZONTAL );
     m_createWptBtn = new wxButton( this, xID_WPT_CREATE, _("Create Waypoint"), wxDefaultPosition, wxDefaultSize, 0 );
-    ok->Add( m_createWptBtn, 0, wxALL|wxEXPAND, 5 );
+    opt->Add( m_createWptBtn, 0, wxALL|wxEXPAND, 5 );
     
     m_createTrkBtn = new wxButton( this, xID_TRK_CREATE, _("Persist Track"), wxDefaultPosition, wxDefaultSize, 0 );
-    ok->Add( m_createTrkBtn, 0, wxALL|wxEXPAND, 5 );
+    opt->Add( m_createTrkBtn, 0, wxALL|wxEXPAND, 5 );
+    topSizer->Add( opt, 0, wxALIGN_CENTER_HORIZONTAL | wxBOTTOM, 5 );
     
+
+    wxSizer* ok = CreateButtonSizer( wxOK );
     topSizer->Add( ok, 0, wxALIGN_CENTER_HORIZONTAL | wxBOTTOM, 5 );
 }
 
@@ -228,7 +250,16 @@ void AISTargetQueryDialog::UpdateText()
 
 //    if( m_MMSI == 0 ) { //  Faulty MMSI could be reported as 0
         AIS_Target_Data *td = g_pAIS->Get_Target_Data_From_MMSI( m_MMSI );
-        if( td ) {
+        if( td )
+        {
+            if( td->b_PersistTrack )
+            {
+                m_createTrkBtn->SetLabel(_("Stop Tracking"));
+            }
+            else
+            {
+                m_createTrkBtn->SetLabel(_("Persist Track"));
+            }
             wxFont *dFont = FontMgr::Get().GetFont( _("AISTargetQuery") );
             wxString face = dFont->GetFaceName();
             int sizes[7];
@@ -236,8 +267,7 @@ void AISTargetQueryDialog::UpdateText()
                 sizes[i+2] = dFont->GetPointSize() + i + (i>0?i:0);
             }
 
-            html.Printf( _T("<html><body bgcolor=#%02x%02x%02x><center>"), bg.Red(), bg.Blue(),
-                            bg.Green() );
+            html.Printf( _T("<html><body bgcolor=#%02x%02x%02x><center>"), bg.Red(), bg.Green(), bg.Blue() );
 
             html << td->BuildQueryResult();
             html << _T("</center></font></body></html>");

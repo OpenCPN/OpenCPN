@@ -40,7 +40,7 @@
 #include <wx/listimpl.cpp>
 
 #include "chcanv.h"
-
+#include "TCWin.h"
 #include "geodesic.h"
 #include "styles.h"
 #include "routeman.h"
@@ -900,9 +900,12 @@ void ViewPort::SetBoxes( void )
         if( dy % 4 ) dy += 4 - ( dy % 4 );
         if( dx % 4 ) dx += 4 - ( dx % 4 );
 
+        int inflate_x = wxMax(( dx - pix_width ) / 2, 0);
+        int inflate_y = wxMax(( dy - pix_height ) / 2, 0);
+        
         //  Grow the source rectangle appropriately
-        if( fabs( rotator ) > .001 ) rv_rect.Inflate( ( dx - pix_width ) / 2,
-                    ( dy - pix_height ) / 2 );
+        if( fabs( rotator ) > .001 )
+            rv_rect.Inflate( inflate_x, inflate_y );
 
     }
 
@@ -1107,6 +1110,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_pRouteRolloverWin = NULL;
     m_pAISRolloverWin = NULL;
     m_bedge_pan = false;
+    m_disable_edge_pan = false;
     
     m_pCIWin = NULL;
 
@@ -2094,12 +2098,6 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
     case WXK_F8:
         parent_frame->DoStackUp();
         break;
-
-    case WXK_F9: {
-        parent_frame->ToggleQuiltMode();
-        ReloadVP();
-        break;
-    }
 
     case WXK_F11:
         parent_frame->ToggleFullScreen();
@@ -3291,8 +3289,7 @@ void ChartCanvas::DoRotateCanvas( double rotation )
     while(rotation > 2*PI) rotation -= 2*PI;
 
     SetVPRotation( rotation );
-    ReloadVP();
-    parent_frame->UpdateGPSCompassStatusBox( false );
+    parent_frame->UpdateRotationState( VPoint.rotation);
 }
 
 void ChartCanvas::ClearbFollow( void )
@@ -4868,6 +4865,9 @@ void ChartCanvas::MovementStopTimerEvent( wxTimerEvent& )
 
 bool ChartCanvas::CheckEdgePan( int x, int y, bool bdragging, int margin, int delta )
 {
+    if(m_disable_edge_pan)
+        return false;
+    
     bool bft = false;
     int pan_margin = m_canvas_width * margin / 100;
     int pan_timer_set = 200;
@@ -5377,13 +5377,13 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                             msg << _("For this leg the Great Circle route is ")
                                 << FormatDistanceAdaptive( rhumbDist - gcDistNM ) << _(" shorter than rhumbline.\n\n")
                                 << _("Would you like include the Great Circle routing points for this leg?");
+                                
+                            m_disable_edge_pan = true;  // This helps on OS X if MessageBox does not fully capture mouse
 
-        #ifndef __WXOSX__
                             int answer = OCPNMessageBox( this, msg, _("OpenCPN Route Create"), wxYES_NO | wxNO_DEFAULT );
-        #else
-                            int answer = wxID_NO;
-        #endif
 
+                            m_disable_edge_pan = false;
+                            
                             if( answer == wxID_YES ) {
                                 RoutePoint* gcPoint;
                                 RoutePoint* prevGcPoint = m_prev_pMousePoint;
@@ -7212,21 +7212,21 @@ void ChartCanvas::ShowMarkPropertiesDialog( RoutePoint* markPoint ) {
     if( NULL == pMarkPropDialog )    // There is one global instance of the MarkProp Dialog
         pMarkPropDialog = new MarkInfoImpl( this );
 
-    if( g_bresponsive ) {
+    if( 1/*g_bresponsive*/ ) {
 
-        wxSize canvas_size = cc1->GetSize();
-        wxPoint canvas_pos = cc1->GetPosition();
+        wxSize canvas_size = GetSize();
+        wxPoint canvas_pos = GetPosition();
         wxSize fitted_size = pMarkPropDialog->GetSize();;
 
         if(canvas_size.x < fitted_size.x){
-            fitted_size.x = canvas_size.x;
+            fitted_size.x = canvas_size.x - 40;
             if(canvas_size.y < fitted_size.y)
-                fitted_size.y -= 20;                // scrollbar added
+                fitted_size.y -= 40;                // scrollbar added
         }
         if(canvas_size.y < fitted_size.y){
-            fitted_size.y = canvas_size.y;
+            fitted_size.y = canvas_size.y - 40;
             if(canvas_size.x < fitted_size.x)
-                fitted_size.x -= 20;                // scrollbar added
+                fitted_size.x -= 40;                // scrollbar added
         }
 
         pMarkPropDialog->SetSize( fitted_size );
@@ -7754,16 +7754,6 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
                 m_pFoundRoutePoint->SetName( nn );
             }
         }
-        break;
-
-    case ID_WP_MENU_ADDITIONAL_INFO:
-        if( NULL == pMarkInfoDialog )    // There is one global instance of the MarkInfo Dialog
-            pMarkInfoDialog = new MarkInfoImpl( this );
-
-        pMarkInfoDialog->SetRoutePoint( m_pFoundRoutePoint );
-        pMarkInfoDialog->UpdateProperties();
-
-        pMarkInfoDialog->Show();
         break;
 
     case ID_DEF_MENU_ACTIVATE_MEASURE:
