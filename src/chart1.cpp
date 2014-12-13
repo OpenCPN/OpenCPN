@@ -283,6 +283,7 @@ wxPageSetupData*          g_pageSetupData = (wxPageSetupData*) NULL;
 bool                      g_bShowOutlines;
 bool                      g_bShowDepthUnits;
 bool                      g_bDisplayGrid;  // Flag indicating weather the lat/lon grid should be displayed
+bool                      g_bShowChartBar;
 bool                      g_bShowActiveRouteHighway;
 int                       g_nNMEADebug;
 int                       g_nAWDefault;
@@ -2308,9 +2309,7 @@ extern ocpnGLOptions g_GLOptions;
     if( !g_AW2GUID.IsEmpty() ) {
         pAnchorWatchPoint2 = pWayPointMan->FindRoutePointByGUID( g_AW2GUID );
     }
-
-    stats->Show( true );
-
+    
     Yield();
 
     gFrame->DoChartUpdate();
@@ -2410,6 +2409,8 @@ extern ocpnGLOptions g_GLOptions;
     if ( g_start_fullscreen )
         gFrame->ToggleFullScreen();
 
+    stats->Show( g_bShowChartBar );
+    
     return TRUE;
 }
 
@@ -3935,17 +3936,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         }
 
         case ID_MENU_UI_CHARTBAR: {
-            if( stats ) {
-                if( stats->IsShown() )
-                    stats->Hide();
-                else {
-                    stats->Move(0,0);
-                    stats->RePosition();
-                    stats->Show();
-                    gFrame->Raise();
-                }
-                Refresh();
-            }
+            ToggleStats();
             break;
         }
             
@@ -4212,6 +4203,29 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
     }         // switch
 
+}
+
+void MyFrame::ToggleStats()
+{
+    if( stats ) {
+        if( stats->IsShown() ){
+            stats->Hide();
+            g_bShowChartBar = false;
+        }
+        else {
+            stats->Move(0,0);
+            stats->RePosition();
+            stats->Show();
+            gFrame->Raise();
+            DoChartUpdate();
+            UpdateControlBar();
+            g_bShowChartBar = true;
+        }
+        Refresh();
+        
+        SetMenubarItemState( ID_MENU_UI_CHARTBAR, g_bShowChartBar );
+        
+    }
 }
 
 void MyFrame::ToggleColorScheme()
@@ -4850,7 +4864,7 @@ void MyFrame::UpdateGlobalMenuItems()
     m_pMenuBar->FindItem( ID_MENU_NAV_TRACK )->Check( g_bTrackActive );
     m_pMenuBar->FindItem( ID_MENU_CHART_OUTLINES )->Check( g_bShowOutlines );
     m_pMenuBar->FindItem( ID_MENU_CHART_QUILTING )->Check( g_bQuiltEnable );
-    m_pMenuBar->FindItem( ID_MENU_UI_CHARTBAR )->Check( true );
+    m_pMenuBar->FindItem( ID_MENU_UI_CHARTBAR )->Check( g_bShowChartBar );
     m_pMenuBar->FindItem( ID_MENU_AIS_TARGETS )->Check( g_bShowAIS );
     m_pMenuBar->FindItem( ID_MENU_AIS_TRACKS )->Check( g_bAISShowTracks );
     m_pMenuBar->FindItem( ID_MENU_AIS_CPADIALOG )->Check( g_bAIS_CPA_Alert );
@@ -5167,6 +5181,18 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
     }
         
     cc1->SetDisplaySizeMM( g_display_size_mm );
+    
+    if(stats){
+        stats->Show(g_bShowChartBar);
+        if(g_bShowChartBar){
+            stats->Move(0,0);
+            stats->RePosition();
+            gFrame->Raise();
+            DoChartUpdate();
+            UpdateControlBar();
+            Refresh();
+        }
+    }
         
     return 0;
 }

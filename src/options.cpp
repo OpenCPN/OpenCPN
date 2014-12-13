@@ -82,6 +82,7 @@ extern ChartCanvas      *cc1;
 extern wxString         g_PrivateDataDir;
 
 extern bool             g_bShowOutlines;
+extern bool             g_bShowChartBar;
 extern bool             g_bShowDepthUnits;
 extern bool             g_bskew_comp;
 extern bool             g_bopengl;
@@ -2618,6 +2619,10 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
     miscOptions->Add( pShowMenuBar, 0, wxALL, border_size );
 #endif
 
+    pShowChartBar = new wxCheckBox( itemPanelFont, wxID_ANY, _("Show Chart Bar") );
+    pShowChartBar->SetValue( g_bShowChartBar );
+    miscOptions->Add( pShowChartBar, 0, wxALL, border_size );
+    
     pShowCompassWin = new wxCheckBox( itemPanelFont, wxID_ANY, _("Show Compass/GPS Status Window") );
     pShowCompassWin->SetValue( FALSE );
     miscOptions->Add( pShowCompassWin, 0, wxALL, border_size );
@@ -3668,6 +3673,8 @@ void options::OnApplyClick( wxCommandEvent& event )
 #endif
         m_pConfig->m_bShowCompassWin = pShowCompassWin->GetValue();
     }
+    
+    g_bShowChartBar = pShowChartBar->GetValue();
 
     wxString screenmm = pScreenMM->GetValue();
     long mm = -1;

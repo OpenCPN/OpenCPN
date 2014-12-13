@@ -260,6 +260,7 @@ extern bool             g_bCourseUp;
 extern bool             g_bLookAhead;
 extern int              g_COGAvgSec;
 extern bool             g_bMagneticAPB;
+extern bool             g_bShowChartBar;
 
 extern int              g_MemFootSec;
 extern int              g_MemFootMB;
@@ -1323,7 +1324,8 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "ShowChartOutlines" ), &g_bShowOutlines, 0 );
     Read( _T ( "ShowActiveRouteHighway" ), &g_bShowActiveRouteHighway, 1 );
     Read( _T ( "MostRecentGPSUploadConnection" ), &g_uploadConnection, _T("") );
-
+    Read( _T ( "ShowChartBar" ), &g_bShowChartBar, 1 );
+    
     Read( _T ( "SDMMFormat" ), &g_iSDMMFormat, 0 ); //0 = "Degrees, Decimal minutes"), 1 = "Decimal degrees", 2 = "Degrees,Minutes, Seconds"
     Read( _T ( "DistanceFormat" ), &g_iDistanceFormat, 0 ); //0 = "Nautical miles"), 1 = "Statute miles", 2 = "Kilometers", 3 = "Meters"
     Read( _T ( "SpeedFormat" ), &g_iSpeedFormat, 0 ); //0 = "kts"), 1 = "mph", 2 = "km/h", 3 = "m/s"
@@ -2472,7 +2474,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "DistanceFormat" ), g_iDistanceFormat );
     Write( _T ( "SpeedFormat" ), g_iSpeedFormat );
     Write( _T ( "MostRecentGPSUploadConnection" ), g_uploadConnection );
-
+    Write( _T ( "ShowChartBar" ), g_bShowChartBar );
+    
     Write( _T ( "FilterNMEA_Avg" ), g_bfilter_cogsog );
     Write( _T ( "FilterNMEA_Sec" ), g_COGFilterSec );
 

@@ -343,6 +343,7 @@ class MyFrame: public wxFrame
     void ResumeSockets(void);
     void TogglebFollow(void);
     void ToggleFullScreen();
+    void ToggleStats();
     void SetbFollow(void);
     void ClearbFollow(void);
     void ToggleChartOutlines(void);

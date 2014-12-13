@@ -2254,17 +2254,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             break;
 
         case 2:                      // Ctrl B
-            if( stats ) {
-                if( stats->IsShown() )
-                    stats->Hide();
-                else {
-                    stats->Move(0,0);
-                    stats->RePosition();
-                    stats->Show();
-                    gFrame->Raise();
-                }
-                Refresh();
-            }
+            parent_frame->ToggleStats();
             break;
 
         case 13:             // Ctrl M // Drop Marker at cursor
