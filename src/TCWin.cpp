@@ -56,6 +56,10 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     if( ( global_color_scheme != GLOBAL_COLOR_SCHEME_DAY )
             && ( global_color_scheme != GLOBAL_COLOR_SCHEME_RGB ) ) wstyle |= ( wxNO_BORDER );
 
+#ifdef __WXOSX__
+     wstyle |= wxSTAY_ON_TOP;
+#endif
+            
     wxDialog::Create( parent, wxID_ANY, wxString( _T ( "test" ) ), wxPoint( x, y ),
                       wxSize( 550, 480 ), wstyle );
 
@@ -143,10 +147,10 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     test_button->GetSize( &tsx, &tsy );
     delete test_button;
     
-    OK_button = new wxButton( this, wxID_OK, _( "OK" ), wxPoint( sx - 100, sy - (tsy + 4) ),
+    OK_button = new wxButton( this, wxID_OK, _( "OK" ), wxPoint( sx - 100, sy - (tsy + 10) ),
                               wxDefaultSize );
 
-    PR_button = new wxButton( this, ID_TCWIN_PR, _( "Prev" ), wxPoint( 10, sy - (tsy + 4) ),
+    PR_button = new wxButton( this, ID_TCWIN_PR, _( "Prev" ), wxPoint( 10, sy - (tsy + 10) ),
                               wxSize( -1, -1 ) );
 
     m_ptextctrl = new wxTextCtrl( this, -1, _T(""), wxPoint( sx * 3 / 100, 6 ),
@@ -156,17 +160,21 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     PR_button->GetSize( &bsx, &bsy );
     PR_button->GetPosition( &bpx, &bpy );
 
-    NX_button = new wxButton( this, ID_TCWIN_NX, _( "Next" ), wxPoint( bpx + bsx + 5, bpy ),
+    NX_button = new wxButton( this, ID_TCWIN_NX, _( "Next" ), wxPoint( bpx + bsx + 5, sy - (tsy + 10) ),
                               wxSize( -1, -1 ) );
 
     m_TCWinPopupTimer.SetOwner( this, TCWININF_TIMER );
 
+    wxScreenDC dc;
+    int text_height;
+    dc.GetTextExtent(_T("W"), NULL, &text_height);
+    m_button_height = text_height + 20;
 
     //  establish some graphic element sizes/locations
     int x_graph = sx * 1 / 10;
     int y_graph = sy * 32 / 100;
     int x_graph_w = sx * 8 / 10;
-    int y_graph_h = sy * 50 / 100;
+    int y_graph_h = (sy * .7)  - (3 * m_button_height);
     m_graph_rect = wxRect(x_graph, y_graph, x_graph_w, y_graph_h);
 
 
@@ -637,7 +645,7 @@ void TCWin::OnPaint( wxPaintEvent& event )
 //                dc.GetTextExtent ( wxString ( sday, wxConvUTF8 ), &w, &h );       2.9.1
 //                dc.DrawText ( wxString ( sday, wxConvUTF8 ), 55 - w/2, y * 88/100 );    2.9.1
         dc.GetTextExtent( sday, &w, &h );
-        dc.DrawText( sday, 55 - w / 2, y * 88 / 100 );
+        dc.DrawText( sday, 55 - w / 2, y - 2 * m_button_height );
 
     }
 }

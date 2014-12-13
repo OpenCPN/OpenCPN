@@ -51,6 +51,7 @@
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
+extern GLuint g_raster_format;
 #endif
 
 #include "chartdbs.h"
@@ -812,6 +813,7 @@ BEGIN_EVENT_TABLE( options, wxDialog )
 #endif
     EVT_BUTTON( ID_OPENGLOPTIONS, options::OnOpenGLOptions )
     EVT_CHOICE( ID_RADARDISTUNIT, options::OnDisplayCategoryRadioButton )
+    EVT_CHOICE( ID_DEPTHUNITSCHOICE, options::OnUnitsChoice )
     EVT_BUTTON( ID_CLEARLIST, options::OnButtonClearClick )
     EVT_BUTTON( ID_SELECTLIST, options::OnButtonSelectClick )
     EVT_BUTTON( ID_AISALERTSELECTSOUND, options::OnButtonSelectSound )
@@ -891,6 +893,7 @@ options::~options()
     m_groupsPage = NULL;
     g_pOptions = NULL;
     if( m_topImgList ) delete m_topImgList;
+    delete smallFont;
 }
 
 void options::Init()
@@ -910,6 +913,7 @@ void options::Init()
     k_vectorcharts = 0;
     k_plugins = 0;
     k_tides = 0;
+    smallFont = 0;
 
     activeSizer = NULL;
     itemActiveChartStaticBox = NULL;
@@ -1775,7 +1779,7 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
     wxStaticText* zoomText = new wxStaticText( m_ChartDisplayPage, wxID_ANY,
         _("With a lower value, the same zoom level shows a less detailed chart.\nWith a higher value, the same zoom level shows a more detailed chart.") );
     wxFont* dialogFont = FontMgr::Get().GetFont(_T("Dialog"));
-    wxFont* smallFont = new wxFont( * dialogFont ); // we can't use Smaller() because wx2.8 doesn't support it
+    smallFont = new wxFont( * dialogFont ); // we can't use Smaller() because wx2.8 doesn't support it
     smallFont->SetPointSize( (smallFont->GetPointSize() / 1.2) + 0.5 ); // + 0.5 to round instead of truncate
     zoomText->SetFont( * smallFont );
 //    zoomText->Wrap(200);
@@ -1958,21 +1962,24 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
     optionsColumn->Add( depShalRow );
     m_ShallowCtl = new wxTextCtrl( ps57Ctl, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize( 60, -1 ), wxTE_RIGHT );
     depShalRow->Add( m_ShallowCtl, inputFlags );
-    depShalRow->Add( new wxStaticText( ps57Ctl, wxID_ANY, _("metres") ), inputFlags );
+    m_depthUnitsShal = new wxStaticText( ps57Ctl, wxID_ANY, _("metres") );
+    depShalRow->Add( m_depthUnitsShal, inputFlags );
 
     optionsColumn->Add( new wxStaticText( ps57Ctl, wxID_ANY, _("Safety Depth") ), labelFlags );
     wxBoxSizer* depSafeRow = new wxBoxSizer( wxHORIZONTAL );
     optionsColumn->Add( depSafeRow );
     m_SafetyCtl = new wxTextCtrl( ps57Ctl, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize( 60, -1 ), wxTE_RIGHT );
     depSafeRow->Add( m_SafetyCtl, inputFlags );
-    depSafeRow->Add( new wxStaticText( ps57Ctl, wxID_ANY, _("metres") ), inputFlags );
+    m_depthUnitsSafe = new wxStaticText( ps57Ctl, wxID_ANY, _("metres") );
+    depSafeRow->Add( m_depthUnitsSafe, inputFlags );
 
     optionsColumn->Add( new wxStaticText( ps57Ctl, wxID_ANY, _("Deep Depth") ), labelFlags );
     wxBoxSizer* depDeepRow = new wxBoxSizer( wxHORIZONTAL );
     optionsColumn->Add( depDeepRow );
     m_DeepCtl = new wxTextCtrl( ps57Ctl, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize( 60, -1 ), wxTE_RIGHT );
     depDeepRow->Add( m_DeepCtl, inputFlags );
-    depDeepRow->Add( new wxStaticText( ps57Ctl, wxID_ANY, _("metres") ), inputFlags );
+    m_depthUnitsDeep = new wxStaticText( ps57Ctl, wxID_ANY, _("metres") );
+    depDeepRow->Add( m_depthUnitsDeep, inputFlags );
 
 
     // spacer
@@ -2127,8 +2134,10 @@ void ChartGroupsUI::CompletePanel( void )
     defaultAllCtl = new wxGenericDirCtrl( allActiveGroup, -1, _T(""), wxDefaultPosition, wxDefaultSize, wxVSCROLL );
 
     //    Set the Font for the All Active Chart Group tree to be italic, dimmed
-    iFont = wxTheFontList->FindOrCreateFont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_ITALIC,
-    wxFONTWEIGHT_LIGHT );
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
+    iFont = new wxFont(*qFont);
+    iFont->SetStyle(wxFONTSTYLE_ITALIC);
+    iFont->SetWeight(wxFONTWEIGHT_LIGHT);
 
     page0BoxSizer->Add( defaultAllCtl, 1, wxALIGN_TOP | wxALL | wxEXPAND );
 
@@ -2276,7 +2285,7 @@ void options::CreatePanel_Units( size_t parent, int border_size, int group_item_
     unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("Distance")), labelFlags );
     wxString pDistanceFormats[] = { _("Nautical miles"), _("Statute miles"), _("Kilometers"), _("Meters") };
     int m_DistanceFormatsNChoices = sizeof(pDistanceFormats) / sizeof(wxString);
-    pDistanceFormat = new wxChoice( panelUnits, ID_DISTANCEFORMATCHOICE, wxDefaultPosition,
+    pDistanceFormat = new wxChoice( panelUnits, ID_DISTANCEUNITSCHOICE, wxDefaultPosition,
                                    wxDefaultSize, m_DistanceFormatsNChoices, pDistanceFormats );
     unitsSizer->Add( pDistanceFormat, inputFlags );
 
@@ -2285,7 +2294,7 @@ void options::CreatePanel_Units( size_t parent, int border_size, int group_item_
     unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("Speed")), labelFlags );
     wxString pSpeedFormats[] = { _("Knots"), _("Mph"), _("km/h"), _("m/s") };
     int m_SpeedFormatsNChoices = sizeof( pSpeedFormats ) / sizeof(wxString);
-    pSpeedFormat = new wxChoice( panelUnits, ID_SPEEDFORMATCHOICE, wxDefaultPosition,
+    pSpeedFormat = new wxChoice( panelUnits, ID_SPEEDUNITSCHOICE, wxDefaultPosition,
                                 wxDefaultSize, m_SpeedFormatsNChoices, pSpeedFormats );
     unitsSizer->Add( pSpeedFormat, inputFlags );
 
@@ -2293,7 +2302,7 @@ void options::CreatePanel_Units( size_t parent, int border_size, int group_item_
     // depth units
     unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("Depth")), labelFlags );
     wxString pDepthUnitStrings[] = { _("Feet"), _("Meters"), _("Fathoms"), };
-    pDepthUnitSelect = new wxChoice( panelUnits, ID_RADARDISTUNIT, wxDefaultPosition,
+    pDepthUnitSelect = new wxChoice( panelUnits, ID_DEPTHUNITSCHOICE, wxDefaultPosition,
                                     wxDefaultSize, 3, pDepthUnitStrings );
     unitsSizer->Add( pDepthUnitSelect, inputFlags );
     
@@ -3148,20 +3157,50 @@ void options::SetInitialSettings()
         else
             p24Color->SetSelection( 1 );
 
-        wxString s;
-        s.Printf( _T("%6.2f"), S52_getMarinerParam( S52_MAR_SAFETY_CONTOUR ) );
-        m_SafetyCtl->SetValue( s );
-
-        s.Printf( _T("%6.2f"), S52_getMarinerParam( S52_MAR_SHALLOW_CONTOUR ) );
-        m_ShallowCtl->SetValue( s );
-
-        s.Printf( _T("%6.2f"), S52_getMarinerParam( S52_MAR_DEEP_CONTOUR ) );
-        m_DeepCtl->SetValue( s );
-
+        // Depths
         pDepthUnitSelect->SetSelection( ps52plib->m_nDepthUnitDisplay );
+        UpdateOptionsUnits(); // sets depth values using the user's unit preference
     }
 #endif
 
+}
+
+void options::UpdateOptionsUnits()
+{
+    int depthUnit = pDepthUnitSelect->GetSelection();
+
+    // set depth unit labels
+    wxString depthUnitStrings[] = { _("feet"), _("meters"), _("fathoms") };
+    wxString depthUnitString = depthUnitStrings[depthUnit];
+    m_depthUnitsShal->SetLabel(depthUnitString);
+    m_depthUnitsSafe->SetLabel(depthUnitString);
+    m_depthUnitsDeep->SetLabel(depthUnitString);
+
+    // depth unit conversion factor
+    float conv = 1;
+    if ( depthUnit == 0 ) // feet
+        conv = 0.3048f; // international definiton of 1 foot is 0.3048 metres
+    else if ( depthUnit == 2 ) // fathoms
+        conv = 0.3048f * 6; // 1 fathom is 6 feet
+
+    // set depth input values
+    wxString s;
+    s.Printf( _T("%6.2f"), S52_getMarinerParam( S52_MAR_SHALLOW_CONTOUR ) / conv );
+    s.Trim(false);
+    m_ShallowCtl->SetValue( s );
+
+    s.Printf( _T("%6.2f"), S52_getMarinerParam( S52_MAR_SAFETY_CONTOUR ) / conv );
+    s.Trim(false);
+    m_SafetyCtl->SetValue( s );
+
+    s.Printf( _T("%6.2f"), S52_getMarinerParam( S52_MAR_DEEP_CONTOUR ) / conv );
+    s.Trim(false);
+    m_DeepCtl->SetValue( s );
+}
+
+void options::OnUnitsChoice( wxCommandEvent& event )
+{
+    UpdateOptionsUnits();
 }
 
 void options::OnCPAWarnClick( wxCommandEvent& event )
@@ -3248,16 +3287,6 @@ void options::OnOpenGLOptions( wxCommandEvent& event )
         else
             g_GLOptions.m_bUseAcceleratedPanning = cc1->GetglCanvas()->CanAcceleratePanning();
 
-        if(g_bopengl &&
-           g_GLOptions.m_bTextureCompression != dlg.m_cbTextureCompression->GetValue()) {
-            ::wxBeginBusyCursor();
-            cc1->GetglCanvas()->ClearAllRasterTextures();
-            ::wxEndBusyCursor();
-            
-            g_GLOptions.m_bTextureCompression = dlg.m_cbTextureCompression->GetValue();
-            cc1->GetglCanvas()->SetupCompression();
-        }
-
         g_GLOptions.m_bTextureCompression = dlg.m_cbTextureCompression->GetValue();
         
         if(g_bexpert){
@@ -3267,32 +3296,24 @@ void options::OnOpenGLOptions( wxCommandEvent& event )
         else{
             g_GLOptions.m_bTextureCompressionCaching = g_GLOptions.m_bTextureCompression;
         }
-        
-        
-        
-        if(g_GLOptions.m_bTextureCompressionCaching && dlg.m_cbClearTextureCache->GetValue()){
-            wxString path =  g_PrivateDataDir + wxFileName::GetPathSeparator() + _T("raster_texture_cache");
-            if(::wxDirExists( path )){
-                ::wxBeginBusyCursor();
-                cc1->GetglCanvas()->ClearAllRasterTextures();
-                
-                wxArrayString files;
-                size_t nfiles = wxDir::GetAllFiles(path, &files);
-                for(unsigned int i=0 ; i < files.GetCount() ; i++){
-                    ::wxRemoveFile(files[i]);
-                }
-                ::wxEndBusyCursor();
-                
-            }
-        }
+    
+        if(g_bopengl &&
+           g_GLOptions.m_bTextureCompression != dlg.m_cbTextureCompression->GetValue()) {
+            g_GLOptions.m_bTextureCompression = dlg.m_cbTextureCompression->GetValue();
+            cc1->GetglCanvas()->SetupCompression();
             
-        if(g_GLOptions.m_bTextureCompressionCaching && dlg.m_cbRebuildTextureCache->GetValue()){
-            this->Hide();
-            cc1->Disable();
-            BuildCompressedCache();
-            cc1->Enable();
-            this->Show();
+            ::wxBeginBusyCursor();
+            cc1->GetglCanvas()->ClearAllRasterTextures();
+            ::wxEndBusyCursor();
+            
         }
+    }
+
+    if(dlg.m_brebuild_cache) {
+        Hide();
+        cc1->Disable();
+        BuildCompressedCache();
+        cc1->Enable();
     }
 #endif
 }
@@ -3942,34 +3963,45 @@ void options::OnApplyClick( wxCommandEvent& event )
         ps52plib->m_bDeClutterText = pCheck_DECLTEXT->GetValue();
         ps52plib->m_bShowNationalTexts = pCheck_NATIONALTEXT->GetValue();
 
-        if( 0 == pPointStyle->GetSelection() ) ps52plib->m_nSymbolStyle = PAPER_CHART;
+        if( 0 == pPointStyle->GetSelection() )
+            ps52plib->m_nSymbolStyle = PAPER_CHART;
         else
             ps52plib->m_nSymbolStyle = SIMPLIFIED;
 
-        if( 0 == pBoundStyle->GetSelection() ) ps52plib->m_nBoundaryStyle = PLAIN_BOUNDARIES;
+        if( 0 == pBoundStyle->GetSelection() )
+            ps52plib->m_nBoundaryStyle = PLAIN_BOUNDARIES;
         else
             ps52plib->m_nBoundaryStyle = SYMBOLIZED_BOUNDARIES;
 
-        if( 0 == p24Color->GetSelection() ) S52_setMarinerParam( S52_MAR_TWO_SHADES, 1.0 );
+        if( 0 == p24Color->GetSelection() )
+            S52_setMarinerParam( S52_MAR_TWO_SHADES, 1.0 );
         else
             S52_setMarinerParam( S52_MAR_TWO_SHADES, 0.0 );
 
+        // Depths
         double dval;
+        int depthUnit = pDepthUnitSelect->GetSelection();
+
+        float conv = 1;
+        if ( depthUnit == 0 ) // feet
+            conv = 0.3048f; // international definiton of 1 foot is 0.3048 metres
+        else if ( depthUnit == 2 ) // fathoms
+            conv = 0.3048f * 6; // 1 fathom is 6 feet
 
         if( ( m_SafetyCtl->GetValue() ).ToDouble( &dval ) ) {
-            S52_setMarinerParam( S52_MAR_SAFETY_DEPTH, dval );          // controls sounding display
-            S52_setMarinerParam( S52_MAR_SAFETY_CONTOUR, dval );          // controls colour
+            S52_setMarinerParam( S52_MAR_SAFETY_DEPTH, dval * conv );   // controls sounding display
+            S52_setMarinerParam( S52_MAR_SAFETY_CONTOUR, dval * conv ); // controls colour
         }
 
-        if( ( m_ShallowCtl->GetValue() ).ToDouble( &dval ) ) S52_setMarinerParam(
-                S52_MAR_SHALLOW_CONTOUR, dval );
+        if( ( m_ShallowCtl->GetValue() ).ToDouble( &dval ) )
+            S52_setMarinerParam( S52_MAR_SHALLOW_CONTOUR, dval * conv );
 
-        if( ( m_DeepCtl->GetValue() ).ToDouble( &dval ) ) S52_setMarinerParam( S52_MAR_DEEP_CONTOUR,
-                dval );
+        if( ( m_DeepCtl->GetValue() ).ToDouble( &dval ) )
+            S52_setMarinerParam( S52_MAR_DEEP_CONTOUR, dval * conv );
 
         ps52plib->UpdateMarinerParams();
 
-        ps52plib->m_nDepthUnitDisplay = pDepthUnitSelect->GetSelection();
+        ps52plib->m_nDepthUnitDisplay = depthUnit;
 
         ps52plib->GenerateStateHash();
     }
@@ -4593,6 +4625,7 @@ ChartGroupsUI::ChartGroupsUI( wxWindow* parent )
 ChartGroupsUI::~ChartGroupsUI()
 {
     m_DirCtrlArray.Clear();
+    delete iFont;
 }
 
 void ChartGroupsUI::SetInitialSettings()
@@ -4803,7 +4836,7 @@ void ChartGroupsUI::OnNewGroup( wxCommandEvent &event )
         AddEmptyGroupPage( pd->GetValue() );
         ChartGroup *pGroup = new ChartGroup;
         pGroup->m_group_name = pd->GetValue();
-        if( m_pGroupArray ) m_pGroupArray->Add( pGroup );
+        m_pGroupArray->Add( pGroup );
 
         m_GroupSelectedPage = m_GroupNB->GetPageCount() - 1;      // select the new page
         m_GroupNB->ChangeSelection( m_GroupSelectedPage );
@@ -5747,6 +5780,13 @@ void SentenceListDlg::OnCancelClick( wxCommandEvent& event ) { event.Skip(); }
 void SentenceListDlg::OnOkClick( wxCommandEvent& event ) { event.Skip(); }
  
 //OpenGLOptionsDlg
+enum { ID_BUTTON_REBUILD, ID_BUTTON_CLEAR };
+
+BEGIN_EVENT_TABLE( OpenGLOptionsDlg, wxDialog )
+    EVT_BUTTON( ID_BUTTON_REBUILD, OpenGLOptionsDlg::OnButtonRebuild )
+    EVT_BUTTON( ID_BUTTON_CLEAR, OpenGLOptionsDlg::OnButtonClear )
+END_EVENT_TABLE()
+
 
 OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
 {
@@ -5760,9 +5800,11 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
     
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     SetFont( *qFont );
+
+    m_brebuild_cache = false;
     
 #ifdef ocpnUSE_GL
-    m_bSizer1 = new wxFlexGridSizer( 2 );
+    m_bSizer1 = new wxFlexGridSizer( 3 );
     this->SetSizeHints( wxDefaultSize, wxDefaultSize );
 
     if(g_bexpert) {
@@ -5807,9 +5849,6 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
     extern PFNGLCOMPRESSEDTEXIMAGE2DPROC s_glCompressedTexImage2D;
     extern bool  b_glEntryPointsSet;
     
-    if(!glTicked)
-        m_cbTextureCompression->Disable();
-    
     if(b_glEntryPointsSet){
         if(!s_glCompressedTexImage2D) {
             g_GLOptions.m_bTextureCompressionCaching = false;
@@ -5831,18 +5870,24 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
         m_bSizer1->Add(m_sTextureMemorySize, 0, wxALL | wxEXPAND, 5);
 
     }
+
+    m_bSizer1->AddSpacer(0);
+    m_bSizer1->AddSpacer(0);
     
-    m_cbRebuildTextureCache = new wxCheckBox(this, wxID_ANY, _("Rebuild Texture Cache") );
-    m_bSizer1->Add(m_cbRebuildTextureCache, 0, wxALL | wxEXPAND, 5);
-    m_cbRebuildTextureCache->Enable(g_GLOptions.m_bTextureCompressionCaching);
-    if(!glTicked)
-        m_cbRebuildTextureCache->Disable();
+    m_bRebuildTextureCache = new wxButton(this, ID_BUTTON_REBUILD, _("Rebuild Texture Cache") );
+    m_bSizer1->Add(m_bRebuildTextureCache, 0, wxALL | wxEXPAND, 5);
+    m_bRebuildTextureCache->Enable(g_GLOptions.m_bTextureCompressionCaching);
     
-    m_cbClearTextureCache = new wxCheckBox(this, wxID_ANY, _("Clear Texture Cache") );
-    m_bSizer1->Add(m_cbClearTextureCache, 0, wxALL | wxEXPAND, 5);
-    m_cbClearTextureCache->Enable(g_GLOptions.m_bTextureCompressionCaching);
-    if(!glTicked)
-        m_cbClearTextureCache->Disable();
+    if(!g_bopengl || g_raster_format == GL_RGB)
+        m_bRebuildTextureCache->Disable();
+    
+    m_bClearTextureCache = new wxButton(this, ID_BUTTON_CLEAR, _("Clear Texture Cache") );
+    m_bSizer1->Add(m_bClearTextureCache, 0, wxALL | wxEXPAND, 5);
+    m_bClearTextureCache->Enable(g_GLOptions.m_bTextureCompressionCaching);
+
+    m_stTextureCacheSize = new wxStaticText(this, wxID_STATIC, TextureCacheSize());
+    m_bSizer1->Add( m_stTextureCacheSize, 0,
+                    wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, 5 );
     
     wxStdDialogButtonSizer * m_sdbSizer4 = new wxStdDialogButtonSizer();
     wxButton *bOK = new wxButton( this, wxID_OK );
@@ -5860,4 +5905,52 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
 
     Fit();
 #endif
+}
+
+void OpenGLOptionsDlg::OnButtonRebuild( wxCommandEvent& event )
+{
+    if(g_GLOptions.m_bTextureCompressionCaching) {
+        m_brebuild_cache = true;
+        EndModal(wxID_CANCEL);
+    }
+}
+
+void OpenGLOptionsDlg::OnButtonClear( wxCommandEvent& event )
+{
+#ifdef ocpnUSE_GL
+    ::wxBeginBusyCursor();
+    if(g_bopengl)
+        cc1->GetglCanvas()->ClearAllRasterTextures();
+
+    wxString path =  g_PrivateDataDir + wxFileName::GetPathSeparator() + _T("raster_texture_cache");
+    if(::wxDirExists( path )){
+        cc1->GetglCanvas()->ClearAllRasterTextures();
+        
+        wxArrayString files;
+        size_t nfiles = wxDir::GetAllFiles(path, &files);
+        for(unsigned int i=0 ; i < files.GetCount() ; i++){
+            ::wxRemoveFile(files[i]);
+        }                
+    }
+    
+    m_stTextureCacheSize->SetLabel(TextureCacheSize());
+    ::wxEndBusyCursor();
+#endif
+}
+
+wxString OpenGLOptionsDlg::TextureCacheSize()
+{
+    wxString path =  g_PrivateDataDir + wxFileName::GetPathSeparator() + _T("raster_texture_cache");
+    int total = 0;
+    if(::wxDirExists( path )){
+        cc1->GetglCanvas()->ClearAllRasterTextures();
+                
+        wxArrayString files;
+        size_t nfiles = wxDir::GetAllFiles(path, &files);
+        for(unsigned int i=0 ; i < files.GetCount() ; i++){
+            total += wxFile(files[i]).Length();
+        }
+    }
+
+    return wxString::Format(_T("%.1f MB"), total/1024.0/1024.0);
 }

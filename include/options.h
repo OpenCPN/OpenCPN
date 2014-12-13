@@ -128,8 +128,9 @@ enum {
     ID_SCAMINCHECKBOX,
     ID_SCANCHECKBOX,
     ID_SDMMFORMATCHOICE,
-    ID_DISTANCEFORMATCHOICE,
-    ID_SPEEDFORMATCHOICE,
+    ID_DISTANCEUNITSCHOICE,
+    ID_SPEEDUNITSCHOICE,
+    ID_DEPTHUNITSCHOICE,
     ID_SELECTLIST,
     ID_SHOWDEPTHUNITSBOX1,
     ID_SHOWGPSWINDOW,
@@ -239,8 +240,9 @@ public:
     }
 
     void UpdateDisplayedChartDirList(ArrayOfCDI p);
-    
-    
+
+    void UpdateOptionsUnits();
+
     void SetConfigPtr( MyConfig *p )
     {
         m_pConfig = p;
@@ -277,6 +279,7 @@ public:
     void OnCharHook( wxKeyEvent& event );
     void OnChartsPageChange( wxListbookEvent& event );
     void OnChartDirListSelect( wxCommandEvent& event );
+    void OnUnitsChoice( wxCommandEvent& event );
     
     void UpdateWorkArrayFromTextCtl();
 
@@ -439,6 +442,9 @@ public:
     wxTextCtrl              *m_ShallowCtl;
     wxTextCtrl              *m_SafetyCtl;
     wxTextCtrl              *m_DeepCtl;
+    wxStaticText            *m_depthUnitsShal;
+    wxStaticText            *m_depthUnitsSafe;
+    wxStaticText            *m_depthUnitsDeep;
     wxSlider                *m_pSlider_CM93_Zoom;
     wxCheckBox              *pSEnableCM93Offset;
     int                       k_vectorcharts;
@@ -609,6 +615,7 @@ private:
     ConnectionParams *CreateConnectionParamsFromSelectedItem();
     
     wxNotebookPage*             m_groupsPage;
+    wxFont*     smallFont;
 };
 
 class ChartGroupsUI: public wxScrolledWindow {
@@ -966,6 +973,8 @@ class SentenceListDlg : public wxDialog
 ///////////////////////////////////////////////////////////////////////////////
 class OpenGLOptionsDlg : public wxDialog
 {
+    DECLARE_EVENT_TABLE()
+
 public:
     wxGridSizer *m_bSizer1;
     wxBoxSizer *m_bSizer2;
@@ -974,13 +983,23 @@ public:
 
     wxCheckBox *m_cbTextureCompression, *m_cbTextureCompressionCaching;
 
-    wxCheckBox *m_cbRebuildTextureCache;
-    wxCheckBox *m_cbClearTextureCache;
+    wxButton *m_bRebuildTextureCache;
+    wxButton *m_bClearTextureCache;
+
+    wxStaticText *m_stTextureCacheSize;
     
     wxSpinCtrl *m_sTextureDimension;
     wxSpinCtrl *m_sTextureMemorySize;
 
     OpenGLOptionsDlg( wxWindow* parent, bool glTicked );
+    
+    void OnButtonRebuild( wxCommandEvent& event );
+    void OnButtonClear( wxCommandEvent& event );
+
+    wxString TextureCacheSize();
+    
+    bool m_brebuild_cache;
+
 };
 
 

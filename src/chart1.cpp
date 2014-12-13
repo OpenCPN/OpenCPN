@@ -198,7 +198,6 @@ WayPointman               *pWayPointMan;
 MarkInfoImpl              *pMarkPropDialog;
 RouteProp                 *pRoutePropDialog;
 TrackPropDlg              *pTrackPropDialog;
-MarkInfoImpl              *pMarkInfoDialog;
 RouteManagerDialog        *pRouteManagerDialog;
 GoToPositionDialog        *pGoToPositionDialog;
 
@@ -667,6 +666,7 @@ bool             g_bexpert;
 int              g_chart_zoom_modifier;
 
 int              g_NMEAAPBPrecision;
+int              g_NMEAAPBXTEPrecision;
 
 bool             g_bSailing;
 
@@ -704,7 +704,6 @@ void DeInitializeUserColors( void );
 void SetSystemColors( ColorScheme cs );
 extern "C" bool CheckSerialAccess( void );
 
-DEFINE_EVENT_TYPE(EVT_THREADMSG)
 
 //------------------------------------------------------------------------------
 //    PNG Icon resources
@@ -1996,7 +1995,7 @@ bool MyApp::OnInit()
 
     cc1->SetQuiltMode( g_bQuiltEnable );                     // set initial quilt mode
     cc1->m_bFollow = pConfig->st_bFollow;               // set initial state
-    cc1->SetViewPoint( vLat, vLon, initial_scale_ppm, 0., initial_rotation );
+    cc1->SetViewPoint( vLat, vLon, initial_scale_ppm, 0., 0. );
 
     gFrame->Enable();
 
@@ -2260,7 +2259,7 @@ extern ocpnGLOptions g_GLOptions;
 
         BuildCompressedCache();
 
-        }
+    }
 #endif
 
 
@@ -2691,9 +2690,9 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     //  Create/connect a dynamic event handler slot for OCPN_MsgEvent(s) coming from PlugIn system
     Connect( wxEVT_OCPN_MSG, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtPlugInMessage );
 
-    Connect( EVT_THREADMSG, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtTHREADMSG );
+    Connect( wxEVT_OCPN_THREADMSG, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtTHREADMSG );
 
-
+    
     //        Establish the system icons for the frame.
 
 #ifdef __WXMSW__
@@ -2862,8 +2861,6 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
     if( g_pRouteMan ) g_pRouteMan->SetColorScheme( cs );
 
     if( pMarkPropDialog ) pMarkPropDialog->SetColorScheme( cs );
-
-    if( pMarkInfoDialog ) pMarkInfoDialog->SetColorScheme( cs );
 
     //    For the AIS target query dialog, we must rebuild it to incorporate the style desired for the colorscheme selected
     if( g_pais_query_dialog_active ) {
@@ -3037,14 +3034,14 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
             style->GetToolIcon( _T("print"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
 
     CheckAndAddPlugInTool( tb );
-    tipString = _("Route Manager");
+    tipString = _("Route & Mark Manager");
     if( _toolbarConfigMenuUtil( ID_ROUTEMANAGER, tipString ) )
         tb->AddTool( ID_ROUTEMANAGER,
             _T("route_manager"), style->GetToolIcon( _T("route_manager"), TOOLICON_NORMAL ),
             tipString, wxITEM_NORMAL );
 
     CheckAndAddPlugInTool( tb );
-    tipString = _("Toggle Tracking");
+    tipString = _("Enable Tracking");
     if( _toolbarConfigMenuUtil( ID_TRACK, tipString ) )
         tb->AddTool( ID_TRACK, _T("track"),
             style->GetToolIcon( _T("track"), TOOLICON_NORMAL ),
@@ -3783,9 +3780,9 @@ void MyFrame::UpdateAllFonts()
         pTrackPropDialog = NULL;
     }
 
-    if( pMarkInfoDialog ) {
-        pMarkInfoDialog->Destroy();
-        pMarkInfoDialog = NULL;
+    if( pMarkPropDialog ) {
+        pMarkPropDialog->Destroy();
+        pMarkPropDialog = NULL;
     }
 
     if( g_pObjectQueryDialog ) {
@@ -4039,6 +4036,12 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             if( ptcmgr->IsReady() ) {
                 cc1->SetbShowCurrent( !cc1->GetbShowCurrent() );
                 SetToolbarItemState( ID_CURRENT, cc1->GetbShowCurrent() );
+                wxString tip = _("Show Currents");
+                if(cc1->GetbShowCurrent())
+                    tip = _("Hide Currents");
+                if( g_toolbar )
+                    g_toolbar->SetToolShortHelp( ID_CURRENT, tip );
+                
                 SetMenubarItemState( ID_MENU_SHOW_CURRENTS, cc1->GetbShowCurrent() );
                 cc1->ReloadVP();
             } else {
@@ -4067,6 +4070,12 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             if( ptcmgr->IsReady() ) {
                 cc1->SetbShowTide( !cc1->GetbShowTide() );
                 SetToolbarItemState( ID_TIDE, cc1->GetbShowTide() );
+                wxString tip = _("Show Tides");
+                if(cc1->GetbShowTide())
+                    tip = _("Hide Tides");
+                if( g_toolbar )
+                    g_toolbar->SetToolShortHelp( ID_TIDE, tip );
+                
                 SetMenubarItemState( ID_MENU_SHOW_TIDES, cc1->GetbShowTide() );
                 cc1->ReloadVP();
             } else {
@@ -4294,6 +4303,9 @@ void MyFrame::TrackOn( void )
     g_pActiveTrack->Start();
 
     SetToolbarItemState( ID_TRACK, g_bTrackActive );
+    if( g_toolbar )
+        g_toolbar->SetToolShortHelp( ID_TRACK, _("Disable Tracking") );
+    
     SetMenubarItemState( ID_MENU_NAV_TRACK, g_bTrackActive );
 
     if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
@@ -4359,6 +4371,8 @@ Track *MyFrame::TrackOff( bool do_add_point )
     }
 
     SetToolbarItemState( ID_TRACK, g_bTrackActive );
+    if( g_toolbar )
+        g_toolbar->SetToolShortHelp( ID_TRACK, _("Enable Tracking") );
     SetMenubarItemState( ID_MENU_NAV_TRACK, g_bTrackActive );
 
     return return_val;
@@ -4407,6 +4421,9 @@ void MyFrame::ToggleCourseUp( void )
     SetMenubarItemState( ID_MENU_CHART_COGUP, g_bCourseUp );
     SetMenubarItemState( ID_MENU_CHART_NORTHUP, !g_bCourseUp );
 
+    if(m_pMenuBar)
+        m_pMenuBar->SetLabel( ID_MENU_CHART_NORTHUP, _("North Up Mode") );
+    
     DoCOGSet();
     UpdateGPSCompassStatusBox( true );
     DoChartUpdate();
@@ -4419,6 +4436,12 @@ void MyFrame::ToggleENCText( void )
     if( ps52plib ) {
         ps52plib->SetShowS57Text( !ps52plib->GetShowS57Text() );
         SetToolbarItemState( ID_ENC_TEXT, ps52plib->GetShowS57Text() );
+        wxString tip = _("Show ENC Text (T)");
+        if(ps52plib->GetShowS57Text())
+            tip = _("Hide ENC Text (T)");
+        if( g_toolbar )
+            g_toolbar->SetToolShortHelp( ID_ENC_TEXT, tip );
+        
         SetMenubarItemState( ID_MENU_ENC_TEXT, ps52plib->GetShowS57Text() );
         cc1->ReloadVP();
     }
@@ -4440,25 +4463,31 @@ void MyFrame::ToggleSoundings( void )
 bool MyFrame::ToggleLights( bool doToggle, bool temporary )
 {
     bool oldstate = true;
+    OBJLElement *pOLE = NULL;
+    
 #ifdef USE_S57
     if( ps52plib ) {
         for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
-            OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
+            pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
             if( !strncmp( pOLE->OBJLName, "LIGHTS", 6 ) ) {
                 oldstate = pOLE->nViz != 0;
-                if( doToggle ) pOLE->nViz = !pOLE->nViz;
                 break;
             }
         }
     }
 
+    oldstate &= !ps52plib->IsObjNoshow("LIGHTS");
+    
     if( doToggle ){
-        if( !ps52plib->IsObjNoshow("LIGHTS") )
+        if(oldstate)                            // On, going off
             ps52plib->AddObjNoshow("LIGHTS");
-        else
+        else{                                   // Off, going on
+            if(pOLE)
+                pOLE->nViz = 1;
             ps52plib->RemoveObjNoshow("LIGHTS");
+        }
         
-        SetMenubarItemState( ID_MENU_ENC_LIGHTS, !ps52plib->IsObjNoshow("LIGHTS") );
+        SetMenubarItemState( ID_MENU_ENC_LIGHTS, !oldstate );
     }
 
     if( doToggle ) {
@@ -4506,49 +4535,58 @@ void MyFrame::ToggleAnchor( void )
 {
 #ifdef USE_S57
     if( ps52plib ) {
-        int vis =  0;
+        int old_vis =  0;
+        OBJLElement *pOLE = NULL;
+        
         // Need to loop once for SBDARE, which is our "master", then for
         // other categories, since order is unknown?
         for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
             OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
             if( !strncmp( pOLE->OBJLName, "SBDARE", 6 ) ) {
-                pOLE->nViz = !pOLE->nViz;
-                vis = pOLE->nViz;
+                old_vis = pOLE->nViz;
                 break;
             }
         }
+
         const char * categories[] = { "ACHBRT", "ACHARE", "CBLSUB", "PIPARE", "PIPSOL", "TUNNEL" };
         unsigned int num = sizeof(categories) / sizeof(categories[0]);
-        unsigned int cnt = 0;
-        for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
-            OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
-            for( unsigned int c = 0; c < num; c++ ) {
-                if( !strncmp( pOLE->OBJLName, categories[c], 6 ) ) {
-                    pOLE->nViz = vis;
-                    cnt++;
-                    break;
-                }
-            }
-            if( cnt == num ) break;
-        }
-
-        if( !ps52plib->IsObjNoshow("SBDARE") ){
+        
+        old_vis &= !ps52plib->IsObjNoshow("SBDARE");
+        
+        if(old_vis){                            // On, going off
             ps52plib->AddObjNoshow("SBDARE");
             for( unsigned int c = 0; c < num; c++ ) {
                 ps52plib->AddObjNoshow(categories[c]);
             }
-        }
-        else{
+        }    
+        else{                                   // Off, going on
+            if(pOLE)
+                pOLE->nViz = 1;
             ps52plib->RemoveObjNoshow("SBDARE");
             for( unsigned int c = 0; c < num; c++ ) {
                 ps52plib->RemoveObjNoshow(categories[c]);
             }
+            
+            unsigned int cnt = 0;
+            for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
+                OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
+                for( unsigned int c = 0; c < num; c++ ) {
+                    if( !strncmp( pOLE->OBJLName, categories[c], 6 ) ) {
+                        pOLE->nViz = 1;         // force on
+                        cnt++;
+                        break;
+                    }
+                }
+                if( cnt == num ) break;
+            }
+            
         }
 
+        SetMenubarItemState( ID_MENU_ENC_ANCHOR, !old_vis );
+        
         ps52plib->GenerateStateHash();
         cc1->ReloadVP();
 
-        SetMenubarItemState( ID_MENU_ENC_ANCHOR, !ps52plib->IsObjNoshow("SBDARE") );
     }
 #endif
 }
@@ -4705,10 +4743,9 @@ void MyFrame::RegisterGlobalMenuItems()
 {
     if ( !m_pMenuBar ) return;  // if there isn't a menu bar
 
-
-    wxMenu* nav_menu = new wxMenu();
+    wxMenu *nav_menu = new wxMenu();
     nav_menu->AppendCheckItem( ID_MENU_NAV_FOLLOW, _menuText(_("Auto Follow"), _T("Ctrl-A")) );
-    nav_menu->AppendCheckItem( ID_MENU_NAV_TRACK, _("Record Track") );
+    nav_menu->AppendCheckItem( ID_MENU_NAV_TRACK, _("Enable Tracking") );
     nav_menu->AppendSeparator();
     nav_menu->AppendRadioItem( ID_MENU_CHART_NORTHUP, _("North Up Mode") );
     nav_menu->AppendRadioItem( ID_MENU_CHART_COGUP, _("Course Up Mode") );
@@ -4805,7 +4842,19 @@ void MyFrame::UpdateGlobalMenuItems()
     if( ps52plib ) {
         m_pMenuBar->FindItem( ID_MENU_ENC_TEXT )->Check( ps52plib->GetShowS57Text() );
         m_pMenuBar->FindItem( ID_MENU_ENC_SOUNDINGS )->Check( ps52plib->GetShowSoundings() );
-        m_pMenuBar->FindItem( ID_MENU_ENC_LIGHTS )->Check( !ps52plib->IsObjNoshow("LIGHTS") );
+
+        bool light_state = false;
+        if( ps52plib ) {
+            for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
+                OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
+                if( !strncmp( pOLE->OBJLName, "LIGHTS", 6 ) ) {
+                    light_state = (pOLE->nViz == 1);
+                    break;
+                }
+            }
+        }
+        m_pMenuBar->FindItem( ID_MENU_ENC_LIGHTS )->Check( (!ps52plib->IsObjNoshow("LIGHTS")) && light_state );
+        
         m_pMenuBar->FindItem( ID_MENU_ENC_ANCHOR )->Check( !ps52plib->IsObjNoshow("SBDARE") );
     }
 #endif
@@ -5326,7 +5375,8 @@ void MyFrame::ToggleQuiltMode( void )
     if( cc1 ) {
         bool cur_mode = cc1->GetQuiltMode();
 
-        if( !cc1->GetQuiltMode() && g_bQuiltEnable ) cc1->SetQuiltMode( true );
+        if( !cc1->GetQuiltMode() && g_bQuiltEnable )
+            cc1->SetQuiltMode( true );
         else
             if( cc1->GetQuiltMode() ) {
                 cc1->SetQuiltMode( false );
@@ -5334,7 +5384,11 @@ void MyFrame::ToggleQuiltMode( void )
             }
 
 
-        if( cur_mode != cc1->GetQuiltMode() ) SetupQuiltMode();
+        if( cur_mode != cc1->GetQuiltMode() ){
+            SetupQuiltMode();
+            DoChartUpdate();
+            Refresh();
+        }
     }
 }
 
@@ -5373,35 +5427,29 @@ void MyFrame::SetupQuiltMode( void )
         if( pCurrentStack ) {
             target_new_dbindex = pCurrentStack->GetCurrentEntrydbIndex();
 
-#ifdef QUILT_ONLY_MERC
-            if(-1 != target_new_dbindex)
-            {
-                //    Check to see if the target new chart is Merc
-                int proj = ChartData->GetDBChartProj(target_new_dbindex);
-                int type = ChartData->GetDBChartType(target_new_dbindex);
+            if(-1 != target_new_dbindex){
+                if( !cc1->IsChartQuiltableRef( target_new_dbindex ) ){
+                    
+                    int proj = ChartData->GetDBChartProj(target_new_dbindex);
+                    int type = ChartData->GetDBChartType(target_new_dbindex);
 
-                if(PROJECTION_MERCATOR != proj)
-                {
-                    // If it is not Merc, cannot use it for quilting
-                    // walk the stack up looking for a satisfactory chart
+                // walk the stack up looking for a satisfactory chart
                     int stack_index = pCurrentStack->CurrentStackEntry;
 
-                    while((stack_index < pCurrentStack->nEntry-1) && (stack_index >= 0))
-                    {
+                    while((stack_index < pCurrentStack->nEntry-1) && (stack_index >= 0)) {
                         int proj_tent = ChartData->GetDBChartProj( pCurrentStack->GetDBIndex(stack_index));
                         int type_tent = ChartData->GetDBChartType( pCurrentStack->GetDBIndex(stack_index));
 
-                        if((PROJECTION_MERCATOR ==proj_tent) && (type_tent == type))
-                        {
-                            target_new_dbindex = pCurrentStack->GetDBIndex(stack_index);
-                            break;
+                        if(cc1->IsChartQuiltableRef(pCurrentStack->GetDBIndex(stack_index))){
+                            if((proj == proj_tent) && (type_tent == type)){
+                                target_new_dbindex = pCurrentStack->GetDBIndex(stack_index);
+                                break;
+                            }
                         }
                         stack_index++;
                     }
                 }
-
             }
-#endif
         }
 
         if( cc1->IsChartQuiltableRef( target_new_dbindex ) )
@@ -5816,8 +5864,11 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
     gGPS_Watchdog--;
     if( gGPS_Watchdog <= 0 ) {
         bGPSValid = false;
-        if( g_nNMEADebug && ( gGPS_Watchdog == 0 ) ) wxLogMessage(
-                _T("   ***GPS Watchdog timeout...") );
+        if( /*g_nNMEADebug && */( gGPS_Watchdog == 0 ) ){
+            wxString msg;
+            msg.Printf( _T("   ***GPS Watchdog timeout at Lat:%g   Lon: %g"), gLat, gLon );
+            wxLogMessage(msg);
+        }
         gSog = NAN;
         gCog = NAN;
     }
@@ -6067,7 +6118,10 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 #ifdef ocpnUSE_GL
         if(m_fixtime - cc1->GetglCanvas()->m_last_render_time > 0)
             bnew_view = true;
-
+        
+        if( AnyAISTargetsOnscreen( cc1->GetVP() ) )
+            bnew_view = true;
+        
         if(bnew_view) /* full frame in opengl mode */
             cc1->Refresh(false);
 #endif
@@ -6277,6 +6331,31 @@ void RenderShadowText( wxDC *pdc, wxFont *pFont, wxString& str, int x, int y )
 
     pdc->SetFont( oldfont );                  // restore last font
 
+}
+
+void MyFrame::UpdateRotationState( double rotation )
+{
+    //  If rotated manually, we switch to NORTHUP
+    g_bCourseUp = false;
+    
+    if(fabs(rotation) > .001){
+        SetMenubarItemState( ID_MENU_CHART_COGUP, false );
+        SetMenubarItemState( ID_MENU_CHART_NORTHUP, true );
+        if(m_pMenuBar){
+            m_pMenuBar->SetLabel( ID_MENU_CHART_NORTHUP, _("Rotated Mode") );
+        }
+    }
+    else{
+        SetMenubarItemState( ID_MENU_CHART_COGUP, g_bCourseUp );
+        SetMenubarItemState( ID_MENU_CHART_NORTHUP, !g_bCourseUp );
+        if(m_pMenuBar){
+            m_pMenuBar->SetLabel( ID_MENU_CHART_NORTHUP, _("North Up Mode") );
+        }
+    }
+    
+    UpdateGPSCompassStatusBox( true );
+    DoChartUpdate();
+    cc1->ReloadVP();
 }
 
 
@@ -7839,9 +7918,9 @@ void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
     }
 }
 
-void MyFrame::OnEvtTHREADMSG( wxCommandEvent & event )
+void MyFrame::OnEvtTHREADMSG( OCPN_ThreadMessageEvent & event )
 {
-    wxLogMessage( event.GetString() );
+    wxLogMessage( wxString(event.GetSString().c_str(), wxConvUTF8 ));
 }
 
 
@@ -8923,10 +9002,22 @@ void MyPrintout::DrawPageOne( wxDC *dc )
         int gsx = cc1->GetglCanvas()->GetSize().x;
         int gsy = cc1->GetglCanvas()->GetSize().y;
 
-        unsigned char *buffer = (unsigned char *)malloc( gsx * gsy * 3 );
-        glReadPixels(0, 0, gsx, gsy, GL_RGB, GL_UNSIGNED_BYTE, buffer );
+        unsigned char *buffer = (unsigned char *)malloc( gsx * gsy * 4 );
+        glReadPixels(0, 0, gsx, gsy, GL_RGBA, GL_UNSIGNED_BYTE, buffer );
+        
+        unsigned char *e = (unsigned char *)malloc( gsx * gsy * 3 );
+       
+        if(buffer && e){
+            for( int p = 0; p < gsx*gsy; p++ ) {
+                e[3*p+0] = buffer[4*p+0];
+                e[3*p+1] = buffer[4*p+1];
+                e[3*p+2] = buffer[4*p+2];
+            }
+        }
+        free(buffer);
+        
         wxImage image( gsx,gsy );
-        image.SetData(buffer);
+        image.SetData(e);
         wxImage mir_imag = image.Mirror( false );
         wxBitmap bmp( mir_imag );
         wxMemoryDC mdc;
@@ -9039,7 +9130,7 @@ int isTTYreal(const char *dev)
     int fd = open(dev, O_RDWR | O_NONBLOCK | O_NOCTTY);
 
     // device name is pointing to a real device
-    if(fd > 0) {
+    if(fd >= 0) {
         if (ioctl(fd, TIOCGSERIAL, &serinfo)==0) {
             // If device type is no PORT_UNKNOWN we accept the port
             if (serinfo.type != PORT_UNKNOWN)
@@ -9445,8 +9536,11 @@ wxArrayString *EnumerateSerialPorts( void )
             DIGCF_PRESENT | DIGCF_INTERFACEDEVICE );
 
     if( hdeviceinfo != INVALID_HANDLE_VALUE ) {
-        wxLogMessage( _T("EnumerateSerialPorts() Found Garmin USB Driver.") );
-        preturn->Add( _T("Garmin-USB") );         // Add generic Garmin selectable device
+        
+        if(GarminProtocolHandler::IsGarminPlugged()){
+            wxLogMessage( _T("EnumerateSerialPorts() Found Garmin USB Device.") );
+            preturn->Add( _T("Garmin-USB") );         // Add generic Garmin selectable device
+        }
     }
 
 #if 0
@@ -9752,9 +9846,9 @@ void InitializeUserColors( void )
             }
 
         } else {
-            char name[80];
+            char name[20];
             int j = 0;
-            while( buf[j] != ';' ) {
+            while( buf[j] != ';' && j < 20 ) {
                 name[j] = buf[j];
                 j++;
             }
@@ -10403,6 +10497,22 @@ wxFont *GetOCPNScaledFont( wxString item, int default_size )
     return dFont;
 }
 
+
+OCPN_ThreadMessageEvent::OCPN_ThreadMessageEvent(wxEventType commandType, int id)
+:wxEvent(id, commandType)
+{
+}
+
+OCPN_ThreadMessageEvent::~OCPN_ThreadMessageEvent()
+{
+}
+
+wxEvent* OCPN_ThreadMessageEvent::Clone() const
+{
+    OCPN_ThreadMessageEvent *newevent=new OCPN_ThreadMessageEvent(*this);
+    newevent->m_string=this->m_string;
+    return newevent;
+}
 
 
 

@@ -343,6 +343,7 @@ extern ArrayOfMMSIProperties   g_MMSI_Props_Array;
 extern int              g_chart_zoom_modifier;
 
 extern int              g_NMEAAPBPrecision;
+extern int              g_NMEAAPBXTEPrecision;
 
 extern bool             g_bSailing;
 
@@ -1233,6 +1234,7 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "ActiveChartGroup" ), &g_GroupIndex, 0 );
 
     Read( _T( "NMEAAPBPrecision" ), &g_NMEAAPBPrecision, 3 );
+    Read( _T( "NMEAAPBXTEPrecision" ), &g_NMEAAPBXTEPrecision, 2 );
 
     /* opengl options */
 #ifdef ocpnUSE_GL
@@ -2106,9 +2108,11 @@ bool MyConfig::LoadLayers(wxString &path)
             if( f.GetExt().IsSameAs( wxT("gpx") ) )
                 file_array.Add( filename); // single-gpx-file layer
             else{
-                wxDir dir( filename );
-                if( dir.IsOpened() ){
-                    nfiles = dir.GetAllFiles( filename, &file_array, wxT("*.gpx") );      // layers subdirectory set
+                if(wxDir::Exists( filename ) ){
+                    wxDir dir( filename );
+                    if( dir.IsOpened() ){
+                        nfiles = dir.GetAllFiles( filename, &file_array, wxT("*.gpx") );      // layers subdirectory set
+                    }
                 }
             }
 

@@ -2351,6 +2351,14 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
                 if( prule->parm0 != ID_RGBA ) b_dump_cache = true;
             }
         }
+        
+        // This handles the case when zooming into overzoom scale mode from normal
+        // We want to make sure the old unzoomed cache is not used.
+        //  Logic:  If parm0 != ID_EMPTY, it must be true that the last render was un-zoomed,
+        //          since zoomed renders clear the cache and set parm0 to ID_EMPTY before exiting.
+        //          So, in this case, dump the cached symbol bitmap so that a new scaled bitmap will be built.
+        if((scale_factor > 1.0) && (prule->parm0 != ID_EMPTY))
+            b_dump_cache = true;
 
         wxBitmap *pbm = NULL;
         wxImage Image;
@@ -3900,12 +3908,13 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     //  Build the cached rules list if necessary
     if( !rzRules->obj->bCS_Added ) {
 
-        ObjRazRules *point_rzRules = new ObjRazRules;
-        *point_rzRules = *rzRules; // take a copy of attributes, etc
+        ObjRazRules point_rzRules;
+        point_rzRules = *rzRules; // take a copy of attributes, etc
         
-        S57Obj *point_obj = new S57Obj;
-        *point_obj = *( rzRules->obj );
-        point_rzRules->obj = point_obj;
+        S57Obj point_obj;
+        point_obj = *( rzRules->obj );
+        point_obj.bIsClone = true;
+        point_rzRules.obj = &point_obj;
         
         Rules *ru_cs = StringToRules( _T ( "CS(SOUNDG03;" ) );
 
@@ -3923,17 +3932,17 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             double nort = *pd++;
             double depth = *pd++;
             
-            point_obj->x = east;
-            point_obj->y = nort;
-            point_obj->z = depth;
+            point_obj.x = east;
+            point_obj.y = nort;
+            point_obj.z = depth;
             
             double lon = *pdl++;
             double lat = *pdl++;
-            point_obj->BBObj.SetMin( lon, lat );
-            point_obj->BBObj.SetMax( lon, lat );
-            point_obj->bBBObj_valid = false;
+            point_obj.BBObj.SetMin( lon, lat );
+            point_obj.BBObj.SetMax( lon, lat );
+            point_obj.bBBObj_valid = false;
             
-            char *rule_str1 = RenderCS( point_rzRules, ru_cs );
+            char *rule_str1 = RenderCS( &point_rzRules, ru_cs );
             wxString cs_string( rule_str1, wxConvUTF8 );
             free( rule_str1 ); 
     
