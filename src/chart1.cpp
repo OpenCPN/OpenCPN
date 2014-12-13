@@ -5397,7 +5397,7 @@ void MyFrame::ToggleQuiltMode( void )
     if( cc1 ) {
         bool cur_mode = cc1->GetQuiltMode();
 
-        if( !cc1->GetQuiltMode() && g_bQuiltEnable )
+        if( !cc1->GetQuiltMode() )
             cc1->SetQuiltMode( true );
         else
             if( cc1->GetQuiltMode() ) {
@@ -5412,6 +5412,7 @@ void MyFrame::ToggleQuiltMode( void )
             Refresh();
         }
     }
+    g_bQuiltEnable = cc1->GetQuiltMode();
 }
 
 void MyFrame::SetQuiltMode( bool bquilt )
