@@ -413,11 +413,13 @@ void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
                            pow( (double) (r.y - r1.y), 2 ) );
         int pix_radius = (int) lpp;
 
-        wxPen ppPen1( GetGlobalColor( _T ( "URED" ) ), 2 );
+        //wxPen ppPen1( GetGlobalColor( _T ( "URED" ) ), 2 );
+        wxPen ppPen1( m_wxcWaypointRadarRingsColour, 2 );
         wxBrush saveBrush = dc.GetBrush();
         wxPen savePen = dc.GetPen();
         dc.SetPen( ppPen1 );
-        dc.SetBrush( wxBrush( GetGlobalColor( _T ( "URED" ) ), wxTRANSPARENT ) );
+        //dc.SetBrush( wxBrush( GetGlobalColor( _T ( "URED" ) ), wxTRANSPARENT ) );
+        dc.SetBrush( wxBrush( m_wxcWaypointRadarRingsColour, wxTRANSPARENT ) );
 
         for( int i = 1; i <= m_iWaypointRangeRingsNumber; i++ )
             dc.StrokeCircle( r.x, r.y, i * pix_radius );

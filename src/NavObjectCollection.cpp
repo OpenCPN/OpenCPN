@@ -88,6 +88,7 @@ RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
     float   l_fWaypointRadarRingsStep = -1;
     int     l_pWaypointRadarRingsStepUnits = -1;
     bool    l_bWaypointRadarRingsVisible = false;
+    wxColour    l_wxcWaypointRadarRingsColour = *wxRED;
 
     for( pugi::xml_node child = wpt_node.first_child(); child != 0; child = child.next_sibling() ) {
         const char *pcn = child.name();
@@ -190,6 +191,8 @@ RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
                             l_pWaypointRadarRingsStepUnits = attr.as_int();
                         else if ( wxString::FromUTF8(attr.name()) == _T("visible") )
                             l_bWaypointRadarRingsVisible =  attr.as_bool();
+                        else if ( wxString::FromUTF8(attr.name()) == _T("colour") )
+                            l_wxcWaypointRadarRingsColour.Set( attr.as_string() );
                     }
                 }
              }// for 
@@ -211,6 +214,7 @@ RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
     pWP->SetWaypointRangeRingsStep( l_fWaypointRadarRingsStep );
     pWP->SetWaypointRangeRingsStepUnits( l_pWaypointRadarRingsStepUnits );
     pWP->SetShowWaypointRangeRings( l_bWaypointRadarRingsVisible );
+    pWP->SetWaypointRangeRingsColour( l_wxcWaypointRadarRingsColour );
 
     if( b_propvizname )
         pWP->m_bShowName = bviz_name;
@@ -710,6 +714,8 @@ bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flags )
             step.set_value( pr->m_fWaypointRangeRingsStep );
             pugi::xml_attribute units = child.append_attribute( "units" );
             units.set_value( pr->m_pWaypointRadarRingsStepUnits );
+            pugi::xml_attribute colour = child.append_attribute( "colour" );
+            colour.set_value( pr->m_wxcWaypointRadarRingsColour.GetAsString( wxC2S_HTML_SYNTAX ).utf8_str() ) ;
         }
     }
     

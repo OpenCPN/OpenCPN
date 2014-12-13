@@ -28,6 +28,7 @@
 #include <wx/datetime.h>
 #include <wx/gdicmn.h>
 #include <wx/gauge.h>
+#include <wx/clrpicker.h>
 #include "Hyperlink.h"
 #include "gpxdocument.h"
 
@@ -87,10 +88,12 @@ public:
       int   GetWaypointRangeRingsNumber(void);
       float GetWaypointRangeRingsStep(void);
       int   GetWaypointRangeRingsStepUnits(void);
+      wxColour GetWaypointRangeRingsColour(void) { return m_wxcWaypointRadarRingsColour; };
       void  SetShowWaypointRangeRings(bool b_showWaypointRangeRings) { m_bShowWaypointRangeRings = b_showWaypointRangeRings; };
       void  SetWaypointRangeRingsNumber(int i_WaypointRangeRingsNumber) { m_iWaypointRangeRingsNumber = i_WaypointRangeRingsNumber; };
       void  SetWaypointRangeRingsStep(float f_WaypointRangeRingsStep) { m_fWaypointRangeRingsStep = f_WaypointRangeRingsStep; };
       void  SetWaypointRangeRingsStepUnits(int i_WaypointRangeRingsStepUnits) { m_pWaypointRadarRingsStepUnits = i_WaypointRangeRingsStepUnits; };
+      void  SetWaypointRangeRingsColour( wxColour wxc_WaypointRadarRingsColour ) { m_wxcWaypointRadarRingsColour = wxc_WaypointRadarRingsColour; };
 
       bool SendToGPS(const wxString& com_name, wxGauge *pProgress);
 
@@ -146,6 +149,7 @@ public:
       int               m_iWaypointRangeRingsNumber;
       float             m_fWaypointRangeRingsStep;
       int               m_pWaypointRadarRingsStepUnits;
+      wxColour          m_wxcWaypointRadarRingsColour;
 
 #ifdef ocpnUSE_GL
       void DrawGL( ViewPort &vp, OCPNRegion &region );

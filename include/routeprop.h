@@ -37,6 +37,7 @@
 #include <wx/bmpcbox.h>
 #include <wx/notebook.h>
 #include <wx/filesys.h>
+#include <wx/clrpicker.h>
 #include "LinkPropDlg.h"
 
 #if wxCHECK_VERSION(2, 9, 0)
@@ -302,7 +303,7 @@ class MarkInfoDef : public wxDialog
         wxSize                  m_defaultClientSize;
         wxStaticText*           m_staticTextArrivalRadius;
         wxTextCtrl*             m_textArrivalRadius;
-        wxBoxSizer*             bSizerTextProperties;
+        wxBoxSizer*             bSizerBasicProperties;
         wxCheckBox*             m_checkBoxShowWaypointRangeRings;
     
         wxChoice*               m_choiceWaypointRadarRingsNumber;
@@ -310,6 +311,7 @@ class MarkInfoDef : public wxDialog
         wxTextCtrl*             m_textWaypointRadarRingsStep;
         wxChoice*               m_choiceWaypointRadarRingsUnits;
         wxFlexGridSizer*        waypointrrSelect;
+        wxColourPickerCtrl*     m_colourWaypointRadarRingsColour;
         
     // Virtual event handlers, overide them in your derived class
         virtual void OnPositionCtlUpdated( wxCommandEvent& event ) { event.Skip(); }
