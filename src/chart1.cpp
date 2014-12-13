@@ -52,6 +52,7 @@
 #include <version.h> //Gunther
 #include <wx/dialog.h>
 #include <wx/progdlg.h>
+#include <wx/clrpicker.h>
 
 #include <wx/dialog.h>
 
@@ -304,6 +305,7 @@ int                       g_pNavAidRadarRingsStepUnits;
 int                       g_iWaypointRadarRingsNumberVisible;
 float                     g_fWaypointRadarRingsStep;
 int                       g_pWaypointRadarRingsStepUnits;
+wxColour                  g_colourWaypointRadarRingsColour;
 bool                      g_bWayPointPreventDragging;
 bool                      g_bConfirmObjectDelete;
 

@@ -50,6 +50,7 @@ extern double g_n_arrival_circle_radius;
 extern int g_iWaypointRadarRingsNumberVisible;
 extern float g_fWaypointRadarRingsStep;
 extern int g_pWaypointRadarRingsStepUnits;
+extern wxColour g_colourWaypointRadarRingsColour;
 
 
 #include <wx/listimpl.cpp>
@@ -104,6 +105,7 @@ RoutePoint::RoutePoint()
     m_iWaypointRangeRingsNumber = g_iWaypointRadarRingsNumberVisible;
     m_fWaypointRangeRingsStep = g_fWaypointRadarRingsStep;
     m_pWaypointRadarRingsStepUnits = g_pWaypointRadarRingsStepUnits;
+    m_wxcWaypointRadarRingsColour = g_colourWaypointRadarRingsColour;
 }
 
 // Copy Constructor
@@ -153,6 +155,7 @@ RoutePoint::RoutePoint( RoutePoint* orig )
     m_iWaypointRangeRingsNumber = g_iWaypointRadarRingsNumberVisible;
     m_fWaypointRangeRingsStep = g_fWaypointRadarRingsStep;
     m_pWaypointRadarRingsStepUnits = g_pWaypointRadarRingsStepUnits;
+    m_wxcWaypointRadarRingsColour = g_colourWaypointRadarRingsColour;
     
 }
 
@@ -738,3 +741,9 @@ int   RoutePoint::GetWaypointRangeRingsStepUnits() {
         return m_pWaypointRadarRingsStepUnits ; 
 }
 
+wxColour RoutePoint::GetWaypointRangeRingsColour(void) { 
+    if ( m_wxcWaypointRadarRingsColour.GetAsString(wxC2S_HTML_SYNTAX) == _T("#FFFFFF") )
+        return g_colourWaypointRadarRingsColour;
+    else
+        return m_wxcWaypointRadarRingsColour; 
+}

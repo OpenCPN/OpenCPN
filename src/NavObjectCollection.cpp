@@ -88,7 +88,8 @@ RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
     float   l_fWaypointRadarRingsStep = -1;
     int     l_pWaypointRadarRingsStepUnits = -1;
     bool    l_bWaypointRadarRingsVisible = false;
-    wxColour    l_wxcWaypointRadarRingsColour = *wxRED;
+    wxColour    l_wxcWaypointRadarRingsColour;
+    l_wxcWaypointRadarRingsColour.Set( _T( "#FFFFFF" ) );
 
     for( pugi::xml_node child = wpt_node.first_child(); child != 0; child = child.next_sibling() ) {
         const char *pcn = child.name();

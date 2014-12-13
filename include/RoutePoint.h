@@ -88,7 +88,7 @@ public:
       int   GetWaypointRangeRingsNumber(void);
       float GetWaypointRangeRingsStep(void);
       int   GetWaypointRangeRingsStepUnits(void);
-      wxColour GetWaypointRangeRingsColour(void) { return m_wxcWaypointRadarRingsColour; };
+      wxColour GetWaypointRangeRingsColour(void);
       void  SetShowWaypointRangeRings(bool b_showWaypointRangeRings) { m_bShowWaypointRangeRings = b_showWaypointRangeRings; };
       void  SetWaypointRangeRingsNumber(int i_WaypointRangeRingsNumber) { m_iWaypointRangeRingsNumber = i_WaypointRangeRingsNumber; };
       void  SetWaypointRangeRingsStep(float f_WaypointRangeRingsStep) { m_fWaypointRangeRingsStep = f_WaypointRangeRingsStep; };

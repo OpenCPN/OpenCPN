@@ -39,6 +39,7 @@
 #include <wx/display.h>
 #include <wx/choice.h>
 #include <wx/dirdlg.h>
+#include <wx/clrpicker.h>
 #if wxCHECK_VERSION(2,9,4) /* does this work in 2.8 too.. do we need a test? */
 #include <wx/renderer.h>
 #endif
@@ -138,6 +139,7 @@ extern int              g_pNavAidRadarRingsStepUnits;
 extern int              g_iWaypointRadarRingsNumberVisible;
 extern float            g_fWaypointRadarRingsStep;
 extern int              g_pWaypointRadarRingsStepUnits;
+extern wxColour         g_colourWaypointRadarRingsColour;
 extern bool             g_bWayPointPreventDragging;
 
 extern bool             g_bPreserveScaleOnX;
@@ -1645,6 +1647,13 @@ void options::CreatePanel_Ownship( size_t parent, int border_size, int group_ite
     m_itemWaypointRadarRingsUnits = new wxChoice( itemPanelShip, ID_RADARDISTUNIT, wxDefaultPosition, m_pShipIconType->GetSize(), 2, pDistUnitsStrings );
     waypointradarGrid->Add( m_itemWaypointRadarRingsUnits, 0, wxALIGN_RIGHT | wxALL, border_size );
 
+    wxStaticText* waypointrangeringsColour = new wxStaticText( itemPanelShip, wxID_STATIC, _("Waypoint Range Ring Colours") );
+    waypointradarGrid->Add( waypointrangeringsColour, 1, wxEXPAND | wxALL, 1 );
+    
+    m_colourWaypointRadarRingsColour = new wxColourPickerCtrl( itemPanelShip, wxID_ANY, *wxRED, wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_COLOURWAYPOINTRADARRINGSCOLOUR") );
+    waypointradarGrid->Add( m_colourWaypointRadarRingsColour, 0, wxALIGN_RIGHT | wxALL, 1);
+
+
    
     DimeControl( itemPanelShip );
 }
@@ -2971,6 +2980,7 @@ void options::SetInitialSettings()
     buf.Printf( _T("%.3f"), g_fWaypointRadarRingsStep );
     pWaypointRadarRingsStep->SetValue( buf );
     m_itemWaypointRadarRingsUnits->SetSelection( g_pWaypointRadarRingsStepUnits );
+    m_colourWaypointRadarRingsColour->SetColour( g_colourWaypointRadarRingsColour );
     OnWaypointRadarringSelect( eDummy );
 
     pWayPointPreventDragging->SetValue( g_bWayPointPreventDragging );
@@ -3729,6 +3739,7 @@ void options::OnApplyClick( wxCommandEvent& event )
     g_iWaypointRadarRingsNumberVisible = pWaypointRadarRingsNumberVisible->GetSelection();
     g_fWaypointRadarRingsStep = atof( pWaypointRadarRingsStep->GetValue().mb_str() );
     g_pWaypointRadarRingsStepUnits = m_itemWaypointRadarRingsUnits->GetSelection();
+    g_colourWaypointRadarRingsColour = m_colourWaypointRadarRingsColour->GetColour();
     g_bWayPointPreventDragging = pWayPointPreventDragging->GetValue();
     g_bConfirmObjectDelete = pConfirmObjectDeletion->GetValue();
 

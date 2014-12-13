@@ -33,6 +33,7 @@
 #include <wx/listctrl.h>
 #include <wx/choice.h>
 #include <wx/collpane.h>
+#include <wx/clrpicker.h>
 
 #include "pluginmanager.h"
 
@@ -538,6 +539,7 @@ public:
     wxChoice                *m_itemRadarRingsUnits;
     wxTextCtrl              *pWaypointRadarRingsStep;
     wxChoice                *m_itemWaypointRadarRingsUnits;
+    wxColourPickerCtrl      *m_colourWaypointRadarRingsColour;
     wxCheckBox              *pWayPointPreventDragging;
     wxCheckBox              *pConfirmObjectDeletion;
     wxCheckBox              *pEnableZoomToCursor;

@@ -68,6 +68,7 @@ extern Track              *g_pActiveTrack;
 extern RouteList          *pRouteList;
 extern PlugInManager      *g_pi_manager;
 extern bool                g_bShowMag;
+extern wxColour            g_colourWaypointRadarRingsColour;
 
 extern MyFrame            *gFrame;
 
@@ -2202,7 +2203,6 @@ void MarkInfoDef::OnShowWaypointRadarringSelect( wxCommandEvent& event )
         waypointrrSelect->ShowItems( true );
         waypointradarGrid->ShowItems( true );
     }
-    //bSizerTextProperties->Layout();
     bSizerBasicProperties->Layout();
     Refresh();
     event.Skip();
@@ -2215,7 +2215,6 @@ void MarkInfoDef::OnWaypointRadarringSelect( wxCommandEvent& event )
     } else {
         waypointradarGrid->ShowItems( true );
     }
-    //bSizerTextProperties->Layout();
     bSizerBasicProperties->Layout();
     Refresh();
     event.Skip();
