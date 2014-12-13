@@ -260,13 +260,7 @@ s52plib::s52plib( const wxString& PLib, bool b_forceLegacy )
     m_VersionMajor = 3;
     m_VersionMinor = 2;
 
-    //    Compute display scale factor
-    int mmx, mmy;
-    wxDisplaySizeMM( &mmx, &mmy );
-    int sx, sy;
-    wxDisplaySize( &sx, &sy );
-
-    m_display_pix_per_mm = ( (double) sx ) / ( (double) mmx );
+    canvas_pix_per_mm = 3.;
 
     //        Set up some default flags
     m_bDeClutterText = false;
@@ -4106,7 +4100,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     if( ( rules->razRule->pixelPtr == NULL ) || ( rules->razRule->parm1 != m_colortable_index ) ) {
         //  Render the sector light to a bitmap
 
-        rad = (int) ( radius * m_display_pix_per_mm );
+        rad = (int) ( radius * canvas_pix_per_mm );
 
         width = ( rad * 2 ) + 28;
         height = ( rad * 2 ) + 28;
@@ -4259,7 +4253,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
             glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
 
-            rad = (int) ( radius * m_display_pix_per_mm );
+            rad = (int) ( radius * canvas_pix_per_mm );
 
             //    Render the symbology as a zero based Display List
 
@@ -4292,7 +4286,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
             //    Draw the sector legs
             if( sector_radius > 0 ) {
-                int leg_len = (int) ( sector_radius * m_display_pix_per_mm );
+                int leg_len = (int) ( sector_radius * canvas_pix_per_mm );
 
                 wxColour c = GetGlobalColor( _T ( "CHBLK" ) );
                 glColor4ub( c.Red(), c.Green(), c.Blue(), c.Alpha() );
@@ -4369,11 +4363,11 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         //    Draw the sector legs directly on the target DC
         //    so that anti-aliasing works against the drawn image (cannot be cached...)
         if( sector_radius > 0 ) {
-            int leg_len = (int) ( sector_radius * m_display_pix_per_mm );
+            int leg_len = (int) ( sector_radius * canvas_pix_per_mm );
 
             wxDash dash1[2];
-            dash1[0] = (int) ( 3.6 * m_display_pix_per_mm ); //8// Long dash  <---------+
-            dash1[1] = (int) ( 1.8 * m_display_pix_per_mm ); //2// Short gap            |
+            dash1[0] = (int) ( 3.6 * canvas_pix_per_mm ); //8// Long dash  <---------+
+            dash1[1] = (int) ( 1.8 * canvas_pix_per_mm ); //2// Short gap            |
 
             /*
              wxPen *pthispen = new wxPen(*wxBLACK_PEN);

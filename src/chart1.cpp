@@ -345,6 +345,8 @@ int                       g_lastClientRectx;
 int                       g_lastClientRecty;
 int                       g_lastClientRectw;
 int                       g_lastClientRecth;
+double                    g_display_size_mm;
+double                    g_config_display_size_mm;
 
 #ifdef USE_S57
 s52plib                   *ps52plib;
@@ -475,8 +477,6 @@ options                   *g_options;
 int                       options_lastPage = 0;
 wxPoint                   options_lastWindowPos( 0,0 );
 wxSize                    options_lastWindowSize( 0,0 );
-
-double                    g_pix_per_mm;
 
 bool GetMemoryStatus(int *mem_total, int *mem_used);
 
@@ -840,6 +840,27 @@ wxString *newPrivateFileName(wxStandardPaths &std_path, wxString *home_locn, con
     return filePathAndName;
 }
 
+#ifdef __WXMSW__
+bool GetWindowsMonitorSize( int *w, int *h );
+#endif
+
+    
+double  GetDisplaySizeMM()
+{
+    double ret = wxGetDisplaySizeMM().GetWidth();
+    
+#ifdef __WXMSW__    
+    int w,h;
+    if( GetWindowsMonitorSize( &w, &h) ){
+        ret = w;
+    }
+#endif
+        
+    return ret;
+}
+ 
+
+
 // `Main program' equivalent, creating windows and returning main app frame
 //------------------------------------------------------------------------------
 // MyApp
@@ -1160,15 +1181,6 @@ bool MyApp::OnInit()
 
 //      CALLGRIND_STOP_INSTRUMENTATION
 
-
-    //    Set up some drawing factors
-    int mmx, mmy;
-    wxDisplaySizeMM( &mmx, &mmy );
-
-    int sx, sy;
-    wxDisplaySize( &sx, &sy );
-
-    g_pix_per_mm = ( (double) sx ) / ( (double) mmx );
 
 
     g_start_time = wxDateTime::Now();
@@ -1514,6 +1526,8 @@ bool MyApp::OnInit()
 //    }
 
 #endif
+
+    g_display_size_mm = GetDisplaySizeMM();
 
     //      Init the WayPoint Manager (Must be after UI Style init).
     pWayPointMan = new WayPointman();
@@ -1995,6 +2009,8 @@ bool MyApp::OnInit()
     cc1 = new ChartCanvas( gFrame );                         // the chart display canvas
     gFrame->SetCanvasWindow( cc1 );
 
+    cc1->SetDisplaySizeMM(g_display_size_mm);
+    
     cc1->SetQuiltMode( g_bQuiltEnable );                     // set initial quilt mode
     cc1->m_bFollow = pConfig->st_bFollow;               // set initial state
     cc1->SetViewPoint( vLat, vLon, initial_scale_ppm, 0., 0. );
@@ -2043,7 +2059,7 @@ bool MyApp::OnInit()
 
     if( g_bframemax ) gFrame->Maximize( true );
 
-    if( g_bresponsive  && ( g_pix_per_mm > 4.0))
+    if( g_bresponsive  && ( cc1->GetPixPerMM() > 4.0))
         gFrame->Maximize( true );
 
     stats = new StatWin( cc1 );
@@ -5143,7 +5159,16 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
         int dbii = ChartData->FinddbIndex( chart_file_name );
         ChartsRefresh( dbii, cc1->GetVP(), true );
     }
-
+    
+    if(g_config_display_size_mm > 0){
+        g_display_size_mm = g_config_display_size_mm;
+    }
+    else{
+        g_display_size_mm = GetDisplaySizeMM();
+    }
+        
+    cc1->SetDisplaySizeMM( g_display_size_mm );
+        
     return 0;
 }
 
@@ -5377,7 +5402,7 @@ void MyFrame::ToggleQuiltMode( void )
     if( cc1 ) {
         bool cur_mode = cc1->GetQuiltMode();
 
-        if( !cc1->GetQuiltMode() && g_bQuiltEnable )
+        if( !cc1->GetQuiltMode() )
             cc1->SetQuiltMode( true );
         else
             if( cc1->GetQuiltMode() ) {
@@ -5392,6 +5417,7 @@ void MyFrame::ToggleQuiltMode( void )
             Refresh();
         }
     }
+    g_bQuiltEnable = cc1->GetQuiltMode();
 }
 
 void MyFrame::SetQuiltMode( bool bquilt )
@@ -5866,7 +5892,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
     gGPS_Watchdog--;
     if( gGPS_Watchdog <= 0 ) {
         bGPSValid = false;
-        if( /*g_nNMEADebug && */( gGPS_Watchdog == 0 ) ){
+        if( gGPS_Watchdog == 0  ){
             wxString msg;
             msg.Printf( _T("   ***GPS Watchdog timeout at Lat:%g   Lon: %g"), gLat, gLon );
             wxLogMessage(msg);
@@ -10934,6 +10960,134 @@ void SearchPnpKeyW9x(HKEY hkPnp, BOOL bUsbDevice,
     }
 }
 
+#endif
 
+#ifdef __WXMSW__
+
+#define NAME_SIZE 128
+
+const GUID GUID_CLASS_MONITOR = {0x4d36e96e, 0xe325, 0x11ce, 0xbf, 0xc1, 0x08, 0x00, 0x2b, 0xe1, 0x03, 0x18};
+
+// Assumes hDevRegKey is valid
+bool GetMonitorSizeFromEDID(const HKEY hDevRegKey, int *WidthMm, int *HeightMm)
+{
+    DWORD dwType, AcutalValueNameLength = NAME_SIZE;
+    TCHAR valueName[NAME_SIZE];
+    
+    BYTE EDIDdata[1024];
+    DWORD edidsize=sizeof(EDIDdata);
+    
+    for (LONG i = 0, retValue = ERROR_SUCCESS; retValue != ERROR_NO_MORE_ITEMS; ++i)
+    {
+        retValue = RegEnumValue ( hDevRegKey, i, &valueName[0],
+        &AcutalValueNameLength, NULL, &dwType,
+        EDIDdata, // buffer
+        &edidsize); // buffer size
+        
+        if (retValue != ERROR_SUCCESS || 0 != _tcscmp(valueName,_T("EDID")))
+            continue;
+        
+        *WidthMm  = ((EDIDdata[68] & 0xF0) << 4) + EDIDdata[66];
+        *HeightMm = ((EDIDdata[68] & 0x0F) << 8) + EDIDdata[67];
+        
+        return true; // valid EDID found
+    }
+        
+    return false; // EDID not found
+}
+        
+bool GetSizeForDevID(wxString &TargetDevID, int *WidthMm, int *HeightMm)
+        {
+            HDEVINFO devInfo = SetupDiGetClassDevsEx(
+                &GUID_CLASS_MONITOR, //class GUID
+                NULL, //enumerator
+                NULL, //HWND
+                DIGCF_PRESENT, // Flags //DIGCF_ALLCLASSES|
+                NULL, // device info, create a new one.
+                NULL, // machine name, local machine
+                NULL);// reserved
+            
+            if (NULL == devInfo)
+            return false;
+            
+            bool bRes = false;
+            
+            for (ULONG i=0; ERROR_NO_MORE_ITEMS != GetLastError(); ++i)
+            {
+                SP_DEVINFO_DATA devInfoData;
+                memset(&devInfoData,0,sizeof(devInfoData));
+                devInfoData.cbSize = sizeof(devInfoData);
+                
+                if (SetupDiEnumDeviceInfo(devInfo,i,&devInfoData))
+                {
+                    wchar_t    Instance[80];
+                    SetupDiGetDeviceInstanceId(devInfo, &devInfoData, Instance, MAX_PATH, NULL);
+                    wxString instance(Instance);
+                    if(instance.Upper().Find( TargetDevID.Upper() ) == wxNOT_FOUND )
+                        continue;
+                    
+                    HKEY hDevRegKey = SetupDiOpenDevRegKey(devInfo,&devInfoData,
+                    DICS_FLAG_GLOBAL, 0, DIREG_DEV, KEY_READ);
+                    
+                    if(!hDevRegKey || (hDevRegKey == INVALID_HANDLE_VALUE))
+                        continue;
+                    
+                    bRes = GetMonitorSizeFromEDID(hDevRegKey, WidthMm, HeightMm);
+                    
+                    RegCloseKey(hDevRegKey);
+                }
+            }
+            SetupDiDestroyDeviceInfoList(devInfo);
+            return bRes;
+        }
+        
+bool GetWindowsMonitorSize( int *width, int *height)
+{
+            int WidthMm, HeightMm;
+            
+            DISPLAY_DEVICE dd;
+            dd.cb = sizeof(dd);
+            DWORD dev = 0; // device index
+            int id = 1; // monitor number, as used by Display Properties > Settings
+            
+            wxString DeviceID;
+            bool bFoundDevice = false;
+            while (EnumDisplayDevices(0, dev, &dd, 0) && !bFoundDevice)
+            {
+                DISPLAY_DEVICE ddMon;
+                ZeroMemory(&ddMon, sizeof(ddMon));
+                ddMon.cb = sizeof(ddMon);
+                DWORD devMon = 0;
+                
+                while (EnumDisplayDevices(dd.DeviceName, devMon, &ddMon, 0) && !bFoundDevice)
+                {
+                    if (ddMon.StateFlags & DISPLAY_DEVICE_ACTIVE &&
+                        !(ddMon.StateFlags & DISPLAY_DEVICE_MIRRORING_DRIVER))
+                        {
+                            DeviceID = wxString(ddMon.DeviceID, wxConvUTF8);
+                            DeviceID = DeviceID.Mid (8);
+                            DeviceID = DeviceID.Mid (0, DeviceID.Find ( '\\' ));
+                            
+                            bFoundDevice = GetSizeForDevID(DeviceID, &WidthMm, &HeightMm);
+                        }
+                        devMon++;
+                    
+                    ZeroMemory(&ddMon, sizeof(ddMon));
+                    ddMon.cb = sizeof(ddMon);
+                }
+                
+                ZeroMemory(&dd, sizeof(dd));
+                dd.cb = sizeof(dd);
+                dev++;
+            }
+            
+            if(width)
+                *width = WidthMm;
+            if(height)
+                *height = HeightMm;
+            
+            return bFoundDevice;
+}
+        
 
 #endif
