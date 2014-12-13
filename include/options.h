@@ -156,6 +156,7 @@ enum {
     ID_MAGAPBCHECKBOX,
     ID_MOBILEBOX,
     ID_REPONSIVEBOX,
+    ID_SIZEMANUALRADIOBUTTON,
     xID_OK
 };
 
@@ -257,6 +258,10 @@ public:
     void OnChooseFont( wxCommandEvent& event );
     void OnCPAWarnClick( wxCommandEvent& event );
     
+    void OnSizeAutoButton( wxCommandEvent& event );
+    void OnSizeManualButton( wxCommandEvent& event );
+    
+    
 #ifdef __WXGTK__
     void OnChooseFontColor( wxCommandEvent& event );
 #endif
@@ -334,8 +339,10 @@ public:
     int                      k_tides;
     wxCheckBox              *pOverzoomEmphasis;
     wxCheckBox              *pOZScaleVector;
+    wxTextCtrl              *pScreenMM;
+    wxRadioButton           *pRBSizeAuto;
+    wxRadioButton           *pRBSizeManual;
     
-
     
 //    For GPS Page
     wxListCtrl* m_lcSources;

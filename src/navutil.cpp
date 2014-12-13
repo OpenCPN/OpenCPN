@@ -343,6 +343,8 @@ extern int              g_NMEAAPBPrecision;
 extern int              g_NMEAAPBXTEPrecision;
 
 extern bool             g_bSailing;
+extern double           g_display_size_mm;
+extern double           g_config_display_size_mm;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
@@ -1190,6 +1192,15 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "UseNMEA_GLL" ), &g_bUseGLL, 1 );
     Read( _T ( "UseBigRedX" ), &g_bbigred, 0 );
 
+    if(iteration == 0){
+        int size_mm;
+        Read( _T ( "DisplaySizeMM" ), &size_mm, -1 );
+        g_config_display_size_mm = size_mm;
+        if((size_mm > 100) && (size_mm < 2000)){
+            g_display_size_mm = size_mm;
+        }
+    }
+    
     Read( _T ( "FilterNMEA_Avg" ), &g_bfilter_cogsog, 0 );
     Read( _T ( "FilterNMEA_Sec" ), &g_COGFilterSec, 1 );
     g_COGFilterSec = wxMin(g_COGFilterSec, MAX_COGSOG_FILTER_SECONDS);
@@ -2552,6 +2563,8 @@ void MyConfig::UpdateSettings()
 
     Write( _T ( "MobileTouch" ), g_btouch );
     Write( _T ( "ResponsiveGraphics" ), g_bresponsive );
+    
+    Write( _T ( "DisplaySizeMM" ), g_config_display_size_mm );
 
     wxString st0;
     st0.Printf( _T ( "%g" ), g_PlanSpeed );

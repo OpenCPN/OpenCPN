@@ -299,7 +299,8 @@ int gamma_state;
 bool g_brightness_init;
 int   last_brightness;
 
-int                      g_cog_predictor_width;
+int                     g_cog_predictor_width;
+extern double           g_display_size_mm;
 
 
 // "Curtain" mode parameters
@@ -1340,15 +1341,6 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 
     m_b_rot_hidef = true;
 
-//    Set up current arrow drawing factors
-    int mmx, mmy;
-    wxDisplaySizeMM( &mmx, &mmy );
-
-    int sx, sy;
-    wxDisplaySize( &sx, &sy );
-
-    m_pix_per_mm = ( (double) sx ) / ( (double) mmx );
-
     int mm_per_knot = 10;
     current_draw_scaler = mm_per_knot * m_pix_per_mm * g_current_arrow_scale / 100.0;
     pscratch_bm = NULL;
@@ -1671,6 +1663,24 @@ ChartCanvas::~ChartCanvas()
         delete m_glcc;
 #endif
 
+}
+
+void ChartCanvas::SetDisplaySizeMM( double size )
+{
+    m_display_size_mm = size;
+    
+    int sx, sy;
+    wxDisplaySize( &sx, &sy );
+    
+    m_pix_per_mm = ( (double) sx ) / ( (double) m_display_size_mm );
+    m_canvas_scale_factor = ( (double) sx ) / (m_display_size_mm /1000.);
+    
+#ifdef USE_S57
+    if( ps52plib )
+        ps52plib->SetPPMM( m_pix_per_mm );
+#endif
+    
+    
 }
 
 void ChartCanvas::OnEvtCompressProgress( OCPN_CompressProgressEvent & event )
@@ -3698,27 +3708,21 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
             VPoint.ref_scale = Current_Ch->GetNativeScale();
         else 
             VPoint.ref_scale = m_pQuilt->GetRefNativeScale();
-        
+
         //    Calculate the on-screen displayed actual scale
         //    by a simple traverse northward from the center point
         //    of roughly 10 % of the Viewport extent
         double tlat, tlon;
         wxPoint r, r1;
-        double delta_y = ( VPoint.GetBBox().GetMaxY() - VPoint.GetBBox().GetMinY() ) * 60.0 * .10; // roughly 10 % of lat range, in NM
-
-        //  Make sure the two points are in phase longitudinally
-        double lon_norm = VPoint.clon;
-        if( lon_norm > 180. ) lon_norm -= 360;
-        else if( lon_norm < -180. ) lon_norm += 360.;
-
-        ll_gc_ll( VPoint.clat, lon_norm, 0, delta_y, &tlat, &tlon );
-
-        GetCanvasPointPix( tlat, tlon, &r1 );
-        GetCanvasPointPix( VPoint.clat, lon_norm, &r );
-
-        m_true_scale_ppm = sqrt(
-                               pow( (double) ( r.y - r1.y ), 2 ) + pow( (double) ( r.x - r1.x ), 2 ) )
-                           / ( delta_y * 1852. );
+        double delta_lat = ( VPoint.GetBBox().GetMaxY() - VPoint.GetBBox().GetMinY() ) * .10; // roughly 10 % of lat range, 
+                           
+        double rhumbBearing, rhumbDist;
+        DistanceBearingMercator( VPoint.clat, VPoint.clon,
+                                     VPoint.clat + delta_lat, VPoint.clon, &rhumbBearing, &rhumbDist );
+                           
+        GetCanvasPointPix( VPoint.clat, VPoint.clon, &r1 );
+        GetCanvasPointPix( VPoint.clat + delta_lat, VPoint.clon, &r );
+        m_true_scale_ppm = (r1.y - r.y) / (rhumbDist * 1852);
 
         //        A fall back in case of very high zoom-out, giving delta_y == 0
         //        which can probably only happen with vector charts
@@ -3737,7 +3741,13 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
             VPoint.chart_scale = 1.0;
 
         if( parent_frame->m_pStatusBar ) {
-            double true_scale_display = floor( VPoint.chart_scale / 100. ) * 100.;
+            double round_factor = 100.;
+            if(VPoint.chart_scale < 1000.)
+                round_factor = 10.;
+            else if (VPoint.chart_scale < 10000.)
+                round_factor = 50.;
+            
+            double true_scale_display =  wxRound(VPoint.chart_scale / round_factor ) * round_factor;
             wxString text;
 
             m_displayed_scale_factor = VPoint.ref_scale / VPoint.chart_scale;
@@ -3924,7 +3934,7 @@ void ChartCanvas::ComputeShipScaleFactor(float icon_hdt,
                                          wxPoint &GPSOffsetPixels, wxPoint lGPSPoint,
                                          float &scale_factor_x, float &scale_factor_y)
 {
-    float screenResolution = (float) ::wxGetDisplaySize().y / ::wxGetDisplaySizeMM().y;
+    float screenResolution = (float) ::wxGetDisplaySize().x / g_display_size_mm;
 
     //  Calculate the true ship length in exact pixels
     double ship_bow_lat, ship_bow_lon;
@@ -4746,15 +4756,7 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
 //          for new canvas size
     SetVPScale( GetVPScale() );
 
-    double display_size_meters = wxGetDisplaySizeMM().GetWidth() / 1000.; // gives screen size(width) in meters
-//        m_canvas_scale_factor = m_canvas_width / display_size_meters;
-    m_canvas_scale_factor = wxGetDisplaySize().GetWidth() / display_size_meters;
-
     m_absolute_min_scale_ppm = m_canvas_width / ( 1.5 * WGS84_semimajor_axis_meters * PI ); // something like 180 degrees
-
-#ifdef USE_S57
-    if( ps52plib ) ps52plib->SetPPMM( m_canvas_scale_factor / 1000. );
-#endif
 
     //  Inform the parent Frame that I am being resized...
     gFrame->ProcessCanvasResize();

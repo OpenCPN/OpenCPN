@@ -232,6 +232,8 @@ bool                    g_bLoadedDisabledPlugins;
 extern bool             g_btouch;
 extern bool             g_bresponsive;
 
+extern double           g_config_display_size_mm;
+
 extern "C" bool CheckSerialAccess( void );
 
 #include <wx/arrimpl.cpp>
@@ -1779,7 +1781,29 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
     // spacer
     itemBoxSizerUI->Add( 0, border_size*3 );
     itemBoxSizerUI->Add( 0, border_size*3 );
+
+    //  Display size/DPI
+    itemBoxSizerUI->Add( new wxStaticText( m_ChartDisplayPage, wxID_ANY, _("Screen horizontal size (mm)") ), labelFlags );
+    wxBoxSizer *pDPIRow = new wxBoxSizer( wxHORIZONTAL );
+    itemBoxSizerUI->Add( pDPIRow, 0, wxALL | wxEXPAND, group_item_spacing );
     
+    pRBSizeAuto = new wxRadioButton( m_ChartDisplayPage, wxID_ANY, _("Auto") );
+    pDPIRow->Add( pRBSizeAuto, inputFlags );
+    pRBSizeManual = new wxRadioButton( m_ChartDisplayPage, ID_SIZEMANUALRADIOBUTTON, _("Manual") );
+    pDPIRow->Add( pRBSizeManual, inputFlags );
+    pDPIRow->AddSpacer( 10 );
+    
+    pScreenMM = new wxTextCtrl( m_ChartDisplayPage, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize( 80, -1 ), wxTE_RIGHT  );
+    pDPIRow->Add( pScreenMM, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
+    
+    pRBSizeAuto->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED,
+                           wxCommandEventHandler( options::OnSizeAutoButton ), NULL, this );
+    pRBSizeManual->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED,
+                          wxCommandEventHandler( options::OnSizeManualButton ), NULL, this );
+    
+    // spacer
+    itemBoxSizerUI->Add( 0, border_size*3 );
+    itemBoxSizerUI->Add( 0, border_size*3 );
     
     // OpenGL Options
     itemBoxSizerUI->Add( new wxStaticText( m_ChartDisplayPage, wxID_ANY, _("Graphics") ), labelFlags );
@@ -3033,6 +3057,19 @@ void options::SetInitialSettings()
     
     m_choicePrecision->SetSelection( g_NMEAAPBPrecision );
     
+    wxString screenmm;
+    if(g_config_display_size_mm > 0){
+        screenmm.Printf(_T("%d"), int(g_config_display_size_mm));
+        pRBSizeManual->SetValue( true );
+    }
+    else{
+        screenmm = _("Auto");
+        pRBSizeAuto->SetValue( true );
+        pScreenMM->Disable();
+    }
+    
+    pScreenMM->SetValue(screenmm);
+    
 #ifdef USE_S57
     m_pSlider_CM93_Zoom->SetValue( g_cm93_zoom_factor );
 
@@ -3151,6 +3188,24 @@ void options::UpdateOptionsUnits()
     s.Printf( _T("%6.2f"), S52_getMarinerParam( S52_MAR_DEEP_CONTOUR ) / conv );
     s.Trim(false);
     m_DeepCtl->SetValue( s );
+}
+
+void options::OnSizeAutoButton( wxCommandEvent& event )
+{
+    pScreenMM->SetValue(_("Auto"));
+    pScreenMM->Disable();
+}
+
+void options::OnSizeManualButton( wxCommandEvent& event )
+{
+    wxString screenmm;
+    if(g_config_display_size_mm > 0){
+        screenmm.Printf(_T("%d"), int(g_config_display_size_mm));
+    }
+    
+    pScreenMM->SetValue(screenmm);
+    pScreenMM->Enable();
+    
 }
 
 void options::OnUnitsChoice( wxCommandEvent& event )
@@ -3614,6 +3669,18 @@ void options::OnApplyClick( wxCommandEvent& event )
         m_pConfig->m_bShowCompassWin = pShowCompassWin->GetValue();
     }
 
+    wxString screenmm = pScreenMM->GetValue();
+    long mm = -1;
+    screenmm.ToLong(&mm);
+    if(mm >0){
+        g_config_display_size_mm = mm;
+    }
+    else{
+        g_config_display_size_mm = -1;
+    }
+        
+    
+    
 //TODO    g_bGarminHost = pGarminHost->GetValue();
 
     g_bShowOutlines = pCDOOutlines->GetValue();
