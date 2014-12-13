@@ -9127,7 +9127,7 @@ int isTTYreal(const char *dev)
     int fd = open(dev, O_RDWR | O_NONBLOCK | O_NOCTTY);
 
     // device name is pointing to a real device
-    if(fd > 0) {
+    if(fd >= 0) {
         if (ioctl(fd, TIOCGSERIAL, &serinfo)==0) {
             // If device type is no PORT_UNKNOWN we accept the port
             if (serinfo.type != PORT_UNKNOWN)
@@ -9843,9 +9843,9 @@ void InitializeUserColors( void )
             }
 
         } else {
-            char name[80];
+            char name[20];
             int j = 0;
-            while( buf[j] != ';' ) {
+            while( buf[j] != ';' && j < 20 ) {
                 name[j] = buf[j];
                 j++;
             }
