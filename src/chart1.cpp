@@ -4551,15 +4551,19 @@ void MyFrame::ToggleAnchor( void )
         int old_vis =  0;
         OBJLElement *pOLE = NULL;
         
-        // Need to loop once for SBDARE, which is our "master", then for
-        // other categories, since order is unknown?
-        for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
-            OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
-            if( !strncmp( pOLE->OBJLName, "SBDARE", 6 ) ) {
-                old_vis = pOLE->nViz;
-                break;
+        if(  MARINERS_STANDARD == ps52plib->GetDisplayCategory()){
+            // Need to loop once for SBDARE, which is our "master", then for
+            // other categories, since order is unknown?
+            for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
+                OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
+                if( !strncmp( pOLE->OBJLName, "SBDARE", 6 ) ) {
+                    old_vis = pOLE->nViz;
+                    break;
+                }
             }
         }
+        else if(OTHER == ps52plib->GetDisplayCategory())
+            old_vis = true;
 
         const char * categories[] = { "ACHBRT", "ACHARE", "CBLSUB", "PIPARE", "PIPSOL", "TUNNEL" };
         unsigned int num = sizeof(categories) / sizeof(categories[0]);
