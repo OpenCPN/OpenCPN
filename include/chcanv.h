@@ -174,7 +174,8 @@ public:
       void LostMouseCapture(wxMouseCaptureLostEvent& event);
 
       void CancelMouseRoute();
-
+      void SetDisplaySizeMM( double size );
+      
       bool SetViewPoint(double lat, double lon, double scale_ppm, double skew, double rotation,
                         bool b_adjust = true, bool b_refresh = true);
       bool SetVPScale(double sc, bool b_refresh = true);
@@ -387,6 +388,9 @@ private:
                                              // useage....
                                              // true_chart_scale_on_display = m_canvas_scale_factor / pixels_per_meter of displayed chart
                                              // also may be considered as the "pixels-per-meter" of the canvas on-screen
+      double      m_pix_per_mm;     // pixels per millimeter on the screen
+      double      m_display_size_mm;
+      
       double      m_absolute_min_scale_ppm;
 
       bool singleClickEventIsValid;
@@ -519,7 +523,6 @@ private:
 //      emboss_data *m_pEM_CM93Offset;	// Flav
 
 
-      double      m_pix_per_mm;     // pixels per millimeter on the screen
 
       double      m_true_scale_ppm;
 
