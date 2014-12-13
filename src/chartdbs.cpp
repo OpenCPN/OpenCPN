@@ -1994,6 +1994,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
             }
             else
             {
+                delete pnewChart;
 //                  wxString msg = _T("   Not adding chart file: ");
 //                  msg.Append(full_name);
 //                  wxLogMessage(msg);
@@ -2139,6 +2140,7 @@ bool ChartDatabase::AddChart( wxString &chartfilename, ChartClassDescriptor &cha
             }
             else
             {
+                delete pnewChart;
                 //                  wxString msg = _T("   Not adding chart file: ");
                 //                  msg.Append(full_name);
                 //                  wxLogMessage(msg);

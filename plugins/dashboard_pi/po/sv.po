@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-15 13:22-0600\n"
-"PO-Revision-Date: 2014-11-15 14:26-0500\n"
+"POT-Creation-Date: 2014-12-10 19:39-0600\n"
+"PO-Revision-Date: 2014-12-10 20:41-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Swedish\n"
 "Language: sv_SE\n"
@@ -13,6 +13,8 @@ msgstr ""
 "\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: crowdin.com\n"
+"X-Crowdin-Project: opencpn\n"
+"X-Crowdin-File: /plugins/dashboard_pi/po/dashboard_pi.pot\n"
 
 #: src/clock.cpp:126 src/dial.cpp:504 src/gps.cpp:141 src/wind.cpp:64
 #: src/wind_history.cpp:401
@@ -37,7 +39,7 @@ msgstr "COG"
 
 #: src/dashboard_pi.cpp:105
 msgid "Magnetic COG"
-msgstr ""
+msgstr "Magnetisk kurs COG"
 
 #: src/dashboard_pi.cpp:107
 msgid "GPS Compass"

@@ -123,29 +123,43 @@ void AISTargetQueryDialog::OnIdTrkCreateClick( wxCommandEvent& event )
         AIS_Target_Data *td = g_pAIS->Get_Target_Data_From_MMSI( m_MMSI );
         if( td )
         {
-            int ip = 0;
-            float prev_rlat = 0., prev_rlon = 0.;
-            RoutePoint *prev_pConfPoint = NULL;
-                
-            Track *t = new Track();
-
-            t->m_RouteNameString = wxString::Format( _T("AIS %s (%u) %s %s"), td->GetFullName().c_str(), td->MMSI, wxDateTime::Now().FormatISODate().c_str(), wxDateTime::Now().FormatISOTime().c_str() );
-            wxAISTargetTrackListNode *node = td->m_ptrack->GetFirst();
-            while( node )
+            if ( td->b_PersistTrack ) //The target was tracked and the user wants to stop it
             {
-                AISTargetTrackPoint *ptrack_point = node->GetData();
-                vector2D point( ptrack_point->m_lon, ptrack_point->m_lat );
-                t->AddNewPoint( point, wxDateTime(ptrack_point->m_time).ToUTC() );
-                node = node->GetNext();
+                td->b_PersistTrack = false;
+                g_pAIS->m_persistent_tracks.erase(td->MMSI);
+                m_createTrkBtn->SetLabel(_("Persist Track"));
             }
-            
-            pRouteList->Append( t );
-            pConfig->AddNewRoute( t, -1 );
-            t->RebuildGUIDList(); // ensure the GUID list is intact and good
+            else
+            {
+                int ip = 0;
+                float prev_rlat = 0., prev_rlon = 0.;
+                RoutePoint *prev_pConfPoint = NULL;
+                    
+                Track *t = new Track();
 
-            if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
-                pRouteManagerDialog->UpdateTrkListCtrl();
-            Refresh( false );
+                t->m_RouteNameString = wxString::Format( _T("AIS %s (%u) %s %s"), td->GetFullName().c_str(), td->MMSI, wxDateTime::Now().FormatISODate().c_str(), wxDateTime::Now().FormatISOTime().c_str() );
+                wxAISTargetTrackListNode *node = td->m_ptrack->GetFirst();
+                while( node )
+                {
+                    AISTargetTrackPoint *ptrack_point = node->GetData();
+                    vector2D point( ptrack_point->m_lon, ptrack_point->m_lat );
+                    t->AddNewPoint( point, wxDateTime(ptrack_point->m_time).ToUTC() );
+                    node = node->GetNext();
+                }
+                
+                pRouteList->Append( t );
+                pConfig->AddNewRoute( t, -1 );
+                t->RebuildGUIDList(); // ensure the GUID list is intact and good
+
+                if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+                    pRouteManagerDialog->UpdateTrkListCtrl();
+                Refresh( false );
+                if( wxYES == wxMessageBox( _("The current track of the target has been persisted, do you want to keep persisting the track until the end of the current session?"), _("OpenCPN Info"), wxYES_NO | wxCENTER ) )
+                {
+                    td->b_PersistTrack = true;
+                    g_pAIS->m_persistent_tracks[td->MMSI] = t;
+                }
+            }
         }
     }
 }
@@ -236,7 +250,16 @@ void AISTargetQueryDialog::UpdateText()
 
 //    if( m_MMSI == 0 ) { //  Faulty MMSI could be reported as 0
         AIS_Target_Data *td = g_pAIS->Get_Target_Data_From_MMSI( m_MMSI );
-        if( td ) {
+        if( td )
+        {
+            if( td->b_PersistTrack )
+            {
+                m_createTrkBtn->SetLabel(_("Stop Tracking"));
+            }
+            else
+            {
+                m_createTrkBtn->SetLabel(_("Persist Track"));
+            }
             wxFont *dFont = FontMgr::Get().GetFont( _("AISTargetQuery") );
             wxString face = dFont->GetFaceName();
             int sizes[7];

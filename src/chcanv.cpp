@@ -40,7 +40,7 @@
 #include <wx/listimpl.cpp>
 
 #include "chcanv.h"
-
+#include "TCWin.h"
 #include "geodesic.h"
 #include "styles.h"
 #include "routeman.h"
@@ -284,9 +284,8 @@ extern ocpnGLOptions g_GLOptions;
 wxProgressDialog *pprog;
 bool b_skipout;
 wxSize pprog_size;
-
+int pprog_count;
 wxArrayString compress_msg_array;
-extern wxSize pprog_size;
 
 //  TODO why are these static?
 static int mouse_x;
@@ -300,7 +299,8 @@ int gamma_state;
 bool g_brightness_init;
 int   last_brightness;
 
-int                      g_cog_predictor_width;
+int                     g_cog_predictor_width;
+extern double           g_display_size_mm;
 
 
 // "Curtain" mode parameters
@@ -1111,6 +1111,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_pRouteRolloverWin = NULL;
     m_pAISRolloverWin = NULL;
     m_bedge_pan = false;
+    m_disable_edge_pan = false;
     
     m_pCIWin = NULL;
 
@@ -1339,15 +1340,6 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_rollover_popup_timer_msec = 20;
 
     m_b_rot_hidef = true;
-
-//    Set up current arrow drawing factors
-    int mmx, mmy;
-    wxDisplaySizeMM( &mmx, &mmy );
-
-    int sx, sy;
-    wxDisplaySize( &sx, &sy );
-
-    m_pix_per_mm = ( (double) sx ) / ( (double) mmx );
 
     int mm_per_knot = 10;
     current_draw_scaler = mm_per_knot * m_pix_per_mm * g_current_arrow_scale / 100.0;
@@ -1673,6 +1665,24 @@ ChartCanvas::~ChartCanvas()
 
 }
 
+void ChartCanvas::SetDisplaySizeMM( double size )
+{
+    m_display_size_mm = size;
+    
+    int sx, sy;
+    wxDisplaySize( &sx, &sy );
+    
+    m_pix_per_mm = ( (double) sx ) / ( (double) m_display_size_mm );
+    m_canvas_scale_factor = ( (double) sx ) / (m_display_size_mm /1000.);
+    
+#ifdef USE_S57
+    if( ps52plib )
+        ps52plib->SetPPMM( m_pix_per_mm );
+#endif
+    
+    
+}
+
 void ChartCanvas::OnEvtCompressProgress( OCPN_CompressProgressEvent & event )
 {
     wxString msg(event.m_string.c_str(), wxConvUTF8);
@@ -1692,7 +1702,7 @@ void ChartCanvas::OnEvtCompressProgress( OCPN_CompressProgressEvent & event )
     }
     
     bool skip = false;
-    pprog->Update(event.count-1, combined_msg, &skip );
+    pprog->Update(pprog_count, combined_msg, &skip );
     pprog->SetSize(pprog_size);
     if(skip)
         b_skipout = skip;
@@ -2503,6 +2513,11 @@ bool ChartCanvas::StartTimedMovement( bool stoptimer )
     if(stoptimer)
         pMovementStopTimer->Start( 1000, wxTIMER_ONE_SHOT ); 
 
+    if(!pMovementTimer->IsRunning()){
+//        printf("timer not running, starting\n");
+        pMovementTimer->Start( 1, wxTIMER_ONE_SHOT ); 
+    }
+    
     if(m_panx || m_pany || m_zoom_factor!=1 || m_rotation_speed) {
         // already moving, gets called again because of key-repeat event
         return false;
@@ -3289,8 +3304,7 @@ void ChartCanvas::DoRotateCanvas( double rotation )
     while(rotation > 2*PI) rotation -= 2*PI;
 
     SetVPRotation( rotation );
-    ReloadVP();
-    parent_frame->UpdateGPSCompassStatusBox( false );
+    parent_frame->UpdateRotationState( VPoint.rotation);
 }
 
 void ChartCanvas::ClearbFollow( void )
@@ -3694,28 +3708,27 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
             VPoint.ref_scale = Current_Ch->GetNativeScale();
         else 
             VPoint.ref_scale = m_pQuilt->GetRefNativeScale();
-        
+
         //    Calculate the on-screen displayed actual scale
         //    by a simple traverse northward from the center point
-        //    of roughly 10 % of the Viewport extent
+        //    of roughly the canvas height
         double tlat, tlon;
         wxPoint r, r1;
-        double delta_y = ( VPoint.GetBBox().GetMaxY() - VPoint.GetBBox().GetMinY() ) * 60.0 * .10; // roughly 10 % of lat range, in NM
 
-        //  Make sure the two points are in phase longitudinally
-        double lon_norm = VPoint.clon;
-        if( lon_norm > 180. ) lon_norm -= 360;
-        else if( lon_norm < -180. ) lon_norm += 360.;
+        double delta_check = (VPoint.pix_height / VPoint.view_scale_ppm) / (1852. * 60);
 
-        ll_gc_ll( VPoint.clat, lon_norm, 0, delta_y, &tlat, &tlon );
-
-        GetCanvasPointPix( tlat, tlon, &r1 );
-        GetCanvasPointPix( VPoint.clat, lon_norm, &r );
-
-        m_true_scale_ppm = sqrt(
-                               pow( (double) ( r.y - r1.y ), 2 ) + pow( (double) ( r.x - r1.x ), 2 ) )
-                           / ( delta_y * 1852. );
-
+        double rhumbDist;
+        DistanceBearingMercator( VPoint.clat, VPoint.clon,
+                                     VPoint.clat + delta_check,
+                                     VPoint.clon,
+                                     0, &rhumbDist );
+                           
+        GetCanvasPointPix( VPoint.clat, VPoint.clon, &r1 );
+        GetCanvasPointPix( VPoint.clat + delta_check, VPoint.clon, &r );
+        double delta_p = sqrt( ((r1.y - r.y) * (r1.y - r.y)) + ((r1.x - r.x) * (r1.x - r.x)) );
+        
+        m_true_scale_ppm = delta_p / (rhumbDist * 1852);
+        
         //        A fall back in case of very high zoom-out, giving delta_y == 0
         //        which can probably only happen with vector charts
         if( 0.0 == m_true_scale_ppm )
@@ -3733,7 +3746,13 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
             VPoint.chart_scale = 1.0;
 
         if( parent_frame->m_pStatusBar ) {
-            double true_scale_display = floor( VPoint.chart_scale / 100. ) * 100.;
+            double round_factor = 100.;
+            if(VPoint.chart_scale < 1000.)
+                round_factor = 10.;
+            else if (VPoint.chart_scale < 10000.)
+                round_factor = 50.;
+            
+            double true_scale_display =  wxRound(VPoint.chart_scale / round_factor ) * round_factor;
             wxString text;
 
             m_displayed_scale_factor = VPoint.ref_scale / VPoint.chart_scale;
@@ -3920,7 +3939,7 @@ void ChartCanvas::ComputeShipScaleFactor(float icon_hdt,
                                          wxPoint &GPSOffsetPixels, wxPoint lGPSPoint,
                                          float &scale_factor_x, float &scale_factor_y)
 {
-    float screenResolution = (float) ::wxGetDisplaySize().y / ::wxGetDisplaySizeMM().y;
+    float screenResolution = (float) ::wxGetDisplaySize().x / g_display_size_mm;
 
     //  Calculate the true ship length in exact pixels
     double ship_bow_lat, ship_bow_lon;
@@ -4742,15 +4761,7 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
 //          for new canvas size
     SetVPScale( GetVPScale() );
 
-    double display_size_meters = wxGetDisplaySizeMM().GetWidth() / 1000.; // gives screen size(width) in meters
-//        m_canvas_scale_factor = m_canvas_width / display_size_meters;
-    m_canvas_scale_factor = wxGetDisplaySize().GetWidth() / display_size_meters;
-
     m_absolute_min_scale_ppm = m_canvas_width / ( 1.5 * WGS84_semimajor_axis_meters * PI ); // something like 180 degrees
-
-#ifdef USE_S57
-    if( ps52plib ) ps52plib->SetPPMM( m_canvas_scale_factor / 1000. );
-#endif
 
     //  Inform the parent Frame that I am being resized...
     gFrame->ProcessCanvasResize();
@@ -4866,6 +4877,9 @@ void ChartCanvas::MovementStopTimerEvent( wxTimerEvent& )
 
 bool ChartCanvas::CheckEdgePan( int x, int y, bool bdragging, int margin, int delta )
 {
+    if(m_disable_edge_pan)
+        return false;
+    
     bool bft = false;
     int pan_margin = m_canvas_width * margin / 100;
     int pan_timer_set = 200;
@@ -5375,13 +5389,13 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                             msg << _("For this leg the Great Circle route is ")
                                 << FormatDistanceAdaptive( rhumbDist - gcDistNM ) << _(" shorter than rhumbline.\n\n")
                                 << _("Would you like include the Great Circle routing points for this leg?");
+                                
+                            m_disable_edge_pan = true;  // This helps on OS X if MessageBox does not fully capture mouse
 
-        #ifndef __WXOSX__
                             int answer = OCPNMessageBox( this, msg, _("OpenCPN Route Create"), wxYES_NO | wxNO_DEFAULT );
-        #else
-                            int answer = wxID_NO;
-        #endif
 
+                            m_disable_edge_pan = false;
+                            
                             if( answer == wxID_YES ) {
                                 RoutePoint* gcPoint;
                                 RoutePoint* prevGcPoint = m_prev_pMousePoint;
@@ -6647,9 +6661,18 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
             MenuAppend( contextMenu, ID_DEF_MENU_NORTHUP, _("North Up Mode") );
     }
 
+    bool full_toggle_added = false;
     if(g_btouch){
         MenuAppend( contextMenu, ID_DEF_MENU_TOGGLE_FULL, _("Toggle Full Screen") );
+        full_toggle_added = true;
     }
+    
+    if(!full_toggle_added){
+        if(gFrame->IsFullScreen()){
+            MenuAppend( contextMenu, ID_DEF_MENU_TOGGLE_FULL, _("Toggle Full Screen") );
+        }
+    }
+        
     
     if ( g_pRouteMan->IsAnyRouteActive() && g_pRouteMan->GetCurrentXTEToActivePoint() > 0. ) MenuAppend( contextMenu, ID_DEF_ZERO_XTE, _("Zero XTE") );
 
@@ -7210,21 +7233,21 @@ void ChartCanvas::ShowMarkPropertiesDialog( RoutePoint* markPoint ) {
     if( NULL == pMarkPropDialog )    // There is one global instance of the MarkProp Dialog
         pMarkPropDialog = new MarkInfoImpl( this );
 
-    if( g_bresponsive ) {
+    if( 1/*g_bresponsive*/ ) {
 
-        wxSize canvas_size = cc1->GetSize();
-        wxPoint canvas_pos = cc1->GetPosition();
+        wxSize canvas_size = GetSize();
+        wxPoint canvas_pos = GetPosition();
         wxSize fitted_size = pMarkPropDialog->GetSize();;
 
         if(canvas_size.x < fitted_size.x){
-            fitted_size.x = canvas_size.x;
+            fitted_size.x = canvas_size.x - 40;
             if(canvas_size.y < fitted_size.y)
-                fitted_size.y -= 20;                // scrollbar added
+                fitted_size.y -= 40;                // scrollbar added
         }
         if(canvas_size.y < fitted_size.y){
-            fitted_size.y = canvas_size.y;
+            fitted_size.y = canvas_size.y - 40;
             if(canvas_size.x < fitted_size.x)
-                fitted_size.x -= 20;                // scrollbar added
+                fitted_size.x -= 40;                // scrollbar added
         }
 
         pMarkPropDialog->SetSize( fitted_size );
@@ -7752,16 +7775,6 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
                 m_pFoundRoutePoint->SetName( nn );
             }
         }
-        break;
-
-    case ID_WP_MENU_ADDITIONAL_INFO:
-        if( NULL == pMarkInfoDialog )    // There is one global instance of the MarkInfo Dialog
-            pMarkInfoDialog = new MarkInfoImpl( this );
-
-        pMarkInfoDialog->SetRoutePoint( m_pFoundRoutePoint );
-        pMarkInfoDialog->UpdateProperties();
-
-        pMarkInfoDialog->Show();
         break;
 
     case ID_DEF_MENU_ACTIVATE_MEASURE:

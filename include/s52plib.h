@@ -99,7 +99,7 @@ public:
      s52plib( const wxString& PLib, bool b_forceLegacy = false );
     ~s52plib();
 
-    void SetPPMM( float ppmm ) { canvas_pix_per_mm = ppmm; 	}
+    void SetPPMM( float ppmm ) { canvas_pix_per_mm = ppmm;}
     float GetPPMM() { return canvas_pix_per_mm; }
 
     LUPrec *S52_LUPLookup( LUPname LUP_name, const char * objectName,
@@ -331,8 +331,6 @@ private:
     int m_colortable_index_save;
 
     TextObjList m_textObjList;
-
-    double m_display_pix_per_mm;
 
     wxString m_ColorScheme;
 
