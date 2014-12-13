@@ -83,7 +83,14 @@ public:
       void SetWaypointArrivalRadius(double dArrivalDistance) { m_WaypointArrivalRadius = dArrivalDistance; };
       void SetWaypointArrivalRadius( wxString wxArrivalDistance ) { wxArrivalDistance.ToDouble( &m_WaypointArrivalRadius ); };
       double GetWaypointArrivalRadius();
-      void SetShowWaypointRangeRings(bool b_showWaypointRangeRings) { m_bShowWaypointRangeRings = b_showWaypointRangeRings; };
+      bool  GetShowWaypointRangeRings(void) { return m_bShowWaypointRangeRings; };
+      int   GetWaypointRangeRingsNumber(void);
+      float GetWaypointRangeRingsStep(void);
+      int   GetWaypointRangeRingsStepUnits(void);
+      void  SetShowWaypointRangeRings(bool b_showWaypointRangeRings) { m_bShowWaypointRangeRings = b_showWaypointRangeRings; };
+      void  SetWaypointRangeRingsNumber(int i_WaypointRangeRingsNumber) { m_iWaypointRangeRingsNumber = i_WaypointRangeRingsNumber; };
+      void  SetWaypointRangeRingsStep(float f_WaypointRangeRingsStep) { m_fWaypointRangeRingsStep = f_WaypointRangeRingsStep; };
+      void  SetWaypointRangeRingsStepUnits(int i_WaypointRangeRingsStepUnits) { m_pWaypointRadarRingsStepUnits = i_WaypointRangeRingsStepUnits; };
 
       bool SendToGPS(const wxString& com_name, wxGauge *pProgress);
 
@@ -136,6 +143,9 @@ public:
       bool              m_btemp;
       
       bool              m_bShowWaypointRangeRings;
+      int               m_iWaypointRangeRingsNumber;
+      float             m_fWaypointRangeRingsStep;
+      int               m_pWaypointRadarRingsStepUnits;
 
 #ifdef ocpnUSE_GL
       void DrawGL( ViewPort &vp, OCPNRegion &region );

@@ -525,7 +525,7 @@ public:
     int                     k_plugins;
 
     wxChoice                *pNavAidRadarRingsNumberVisible;
-    wxChoice                *pWaypointRadarRingsNumberVisible;
+    wxChoice                *pWaypointRadarRingsNumberVisible; 
     wxFlexGridSizer         *radarGrid;
     wxFlexGridSizer         *waypointradarGrid;
     wxTextCtrl              *pNavAidRadarRingsStep;

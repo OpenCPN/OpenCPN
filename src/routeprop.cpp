@@ -1814,6 +1814,10 @@ void LatLonTextCtrl::OnKillFocus( wxFocusEvent& event )
 //    Mark Information Dialog Implementation
 //
 //-------------------------------------------------------------------------------
+BEGIN_EVENT_TABLE( MarkInfoDef, wxDialog )
+    EVT_CHECKBOX( ID_SHOWWAYPOINTRADARRINGS, MarkInfoDef::OnShowWaypointRadarringSelect )
+    EVT_CHOICE( ID_WAYPOINTRADARRINGS, MarkInfoDef::OnWaypointRadarringSelect )
+END_EVENT_TABLE()
 
 MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title,
         const wxPoint& pos, const wxSize& size, long style )
@@ -1857,7 +1861,6 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
             wxDefaultPosition, wxDefaultSize, 0 );
     bSizerInnerProperties->Add( m_bitmapIcon, 0, wxALL, 5 );
 
-    wxBoxSizer* bSizerTextProperties;
     bSizerTextProperties = new wxBoxSizer( wxVERTICAL );
 
     m_staticTextLayer = new wxStaticText( m_panelBasicProperties, wxID_ANY,
@@ -1942,9 +1945,38 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     bSizerArrivalRadius->Add( m_textArrivalRadius, 1, wxALL, 5 );
     bSizerTextProperties->Add( bSizerArrivalRadius, 0, wxEXPAND, 5 );
 
-    m_checkBoxShowWaypointRangeRings = new wxCheckBox( m_panelBasicProperties, wxID_ANY, _("Show Waypoint Range Rings"),
+    //  Waypoints
+    m_checkBoxShowWaypointRangeRings = new wxCheckBox( m_panelBasicProperties, ID_SHOWWAYPOINTRADARRINGS, _("Show Waypoint Range Rings"),
             wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT );
     bSizerTextProperties->Add( m_checkBoxShowWaypointRangeRings, 0, wxALL, 5 );
+
+    waypointrrSelect = new wxFlexGridSizer( 1, 2, 1, 1 );
+    waypointrrSelect->AddGrowableCol( 1 );
+    bSizerTextProperties->Add( waypointrrSelect, 0, wxLEFT|wxRIGHT | wxEXPAND, 5 );
+
+    wxStaticText *waypointrrTxt = new wxStaticText( m_panelBasicProperties, wxID_ANY, _("Waypoint range rings") );
+    waypointrrSelect->Add( waypointrrTxt, 1, wxEXPAND | wxALL, 1 );
+        
+    wxString rrAlt[] = { _("None"), _T("1"), _T("2"), _T("3"), _T("4"), _T("5"), _T("6"), _T("7"), _T("8"), _T("9"), _T("10") };
+    m_choiceWaypointRadarRingsNumber = new wxChoice( m_panelBasicProperties, ID_WAYPOINTRADARRINGS, wxDefaultPosition, wxDefaultSize, 11, rrAlt );
+    waypointrrSelect->Add( m_choiceWaypointRadarRingsNumber, 0, wxALIGN_RIGHT | wxALL, 1 );
+
+    waypointradarGrid = new wxFlexGridSizer( 1, 2, 1, 1 );
+    waypointradarGrid->AddGrowableCol( 1 );
+    bSizerTextProperties->Add( waypointradarGrid, 0, wxLEFT | wxRIGHT| wxEXPAND, 5 );
+
+    wxStaticText* waypointdistanceText = new wxStaticText( m_panelBasicProperties, wxID_STATIC, _("Distance Between Waypoint Rings") );
+    waypointradarGrid->Add( waypointdistanceText, 1, wxEXPAND | wxALL, 1 );
+
+    m_textWaypointRadarRingsStep = new wxTextCtrl( m_panelBasicProperties, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize( 100, -1 ), 0 );
+    waypointradarGrid->Add( m_textWaypointRadarRingsStep, 0, wxALIGN_RIGHT | wxALL, 1 );
+
+    wxStaticText* waypointunitText = new wxStaticText( m_panelBasicProperties, wxID_STATIC, _("Distance Unit") );
+    waypointradarGrid->Add( waypointunitText, 1, wxEXPAND | wxALL, 1 );
+
+    wxString pDistUnitsStrings[] = { _T("Nautical Miles"), _T("Kilometers") };
+    m_choiceWaypointRadarRingsUnits = new wxChoice( m_panelBasicProperties, wxID_ANY, wxDefaultPosition, wxDefaultSize, 2, pDistUnitsStrings );
+    waypointradarGrid->Add( m_choiceWaypointRadarRingsUnits, 0, wxALIGN_RIGHT | wxALL, 1 );
 
     m_staticTextDescription = new wxStaticText( m_panelBasicProperties, wxID_ANY, _("Description"),
             wxDefaultPosition, wxDefaultSize, 0 );
@@ -2115,6 +2147,8 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
             wxCommandEventHandler( MarkInfoImpl::OnRightClick ), NULL, this );
     m_textArrivalRadius->Connect( wxEVT_COMMAND_TEXT_ENTER,
             wxCommandEventHandler( MarkInfoDef::OnArrivalRadiusChange ), NULL, this );
+    m_textWaypointRadarRingsStep->Connect( wxEVT_COMMAND_TEXT_ENTER,
+            wxCommandEventHandler( MarkInfoDef::OnWaypointRadarRingsStepChange ), NULL, this );
 
     m_textDescription->Connect( wxEVT_COMMAND_TEXT_UPDATED,
             wxCommandEventHandler( MarkInfoDef::OnDescChangedBasic ), NULL, this );
@@ -2148,6 +2182,32 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
             wxCommandEventHandler( MarkInfoDef::OnMarkInfoOKClick ), NULL, this );
 }
 
+void MarkInfoDef::OnShowWaypointRadarringSelect( wxCommandEvent& event )
+{
+    if( m_checkBoxShowWaypointRangeRings->GetValue() == FALSE ) {
+        waypointrrSelect->ShowItems( false );
+        waypointradarGrid->ShowItems( false );
+    } else {
+        waypointrrSelect->ShowItems( true );
+        waypointradarGrid->ShowItems( true );
+    }
+    bSizerTextProperties->Layout();
+    Refresh();
+    event.Skip();
+}
+
+void MarkInfoDef::OnWaypointRadarringSelect( wxCommandEvent& event )
+{
+    if( m_choiceWaypointRadarRingsNumber->GetSelection() == 0 ) {
+        waypointradarGrid->ShowItems( false );
+    } else {
+        waypointradarGrid->ShowItems( true );
+    }
+    bSizerTextProperties->Layout();
+    Refresh();
+    event.Skip();
+}
+
 MarkInfoDef::~MarkInfoDef()
 {
     // Disconnect Events
@@ -2159,6 +2219,8 @@ MarkInfoDef::~MarkInfoDef()
             wxCommandEventHandler( MarkInfoDef::OnDescChangedBasic ), NULL, this );
     m_textArrivalRadius->Disconnect( wxEVT_COMMAND_TEXT_ENTER,
             wxCommandEventHandler( MarkInfoDef::OnArrivalRadiusChange ), NULL, this );
+    m_textWaypointRadarRingsStep->Disconnect( wxEVT_COMMAND_TEXT_ENTER,
+            wxCommandEventHandler( MarkInfoDef::OnWaypointRadarRingsStepChange ), NULL, this );
     m_buttonExtDescription->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler( MarkInfoDef::OnExtDescriptionClick ), NULL, this );
     this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED,
@@ -2241,6 +2303,9 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
             m_checkBoxVisible->Enable( false );
             m_textArrivalRadius->SetEditable ( false );
             m_checkBoxShowWaypointRangeRings->Enable( false );
+            m_choiceWaypointRadarRingsUnits->Enable( false );
+            m_choiceWaypointRadarRingsNumber->Enable( false );
+            m_textWaypointRadarRingsStep->SetEditable( false );
         } else {
             m_staticTextLayer->Enable( false );
             m_staticTextLayer->Show( false );
@@ -2256,6 +2321,9 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
             m_checkBoxVisible->Enable( true );
             m_textArrivalRadius->SetEditable ( true );
             m_checkBoxShowWaypointRangeRings->Enable( true );
+            m_choiceWaypointRadarRingsUnits->Enable( true );
+            m_choiceWaypointRadarRingsNumber->Enable( true );
+            m_textWaypointRadarRingsStep->SetEditable( true );
         }
         m_textName->SetValue( m_pRoutePoint->GetName() );
 
@@ -2282,7 +2350,15 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
         m_checkBoxShowName->SetValue( m_pRoutePoint->m_bShowName );
         m_checkBoxVisible->SetValue( m_pRoutePoint->m_bIsVisible );
         m_textCtrlGuid->SetValue( m_pRoutePoint->m_GUID );
-        m_checkBoxShowWaypointRangeRings->SetValue( m_pRoutePoint->m_bShowWaypointRangeRings );
+        m_checkBoxShowWaypointRangeRings->SetValue( m_pRoutePoint->GetShowWaypointRangeRings() );
+        m_choiceWaypointRadarRingsNumber->SetSelection( m_pRoutePoint->GetWaypointRangeRingsNumber() );
+        m_choiceWaypointRadarRingsUnits->SetSelection( m_pRoutePoint->GetWaypointRangeRingsStepUnits() );
+        wxString buf;
+        buf.Printf( _T("%.3f" ), m_pRoutePoint->GetWaypointRangeRingsStep() );
+        m_textWaypointRadarRingsStep->SetValue( buf );
+        wxCommandEvent eDummy;
+        OnShowWaypointRadarringSelect( eDummy );
+        
 
         int NbrOfLinks = m_pRoutePoint->m_HyperlinkList->GetCount();
         HyperlinkList *hyperlinklist = m_pRoutePoint->m_HyperlinkList;
@@ -2613,6 +2689,9 @@ bool MarkInfoImpl::SaveChanges()
 void MarkInfoImpl::OnMarkInfoOKClick( wxCommandEvent& event )
 {
     if( m_pRoutePoint ) {
+        m_pRoutePoint->m_iWaypointRangeRingsNumber = m_choiceWaypointRadarRingsNumber->GetSelection();
+        m_pRoutePoint->m_fWaypointRangeRingsStep = atof( m_textWaypointRadarRingsStep->GetValue().mb_str() );
+        m_pRoutePoint->m_pWaypointRadarRingsStepUnits = m_choiceWaypointRadarRingsUnits->GetSelection();
         OnPositionCtlUpdated( event );
         SaveChanges(); // write changes to globals and update config
         cc1->RefreshRect( m_pRoutePoint->CurrentRect_in_DC.Inflate( 1000, 100 ), false );

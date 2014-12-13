@@ -38,6 +38,9 @@ extern Select *pSelect;
 //extern bool g_bIsNewLayer;
 //extern bool g_bLayerViz;
 
+extern int g_iWaypointRadarRingsNumberVisible;
+extern float g_fWaypointRadarRingsStep;
+extern int g_pWaypointRadarRingsStepUnits;
 
 NavObjectCollection1::NavObjectCollection1()
 : pugi::xml_document()
@@ -81,6 +84,10 @@ RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
     double rlat = wpt_node.attribute( "lat" ).as_double();
     double rlon = wpt_node.attribute( "lon" ).as_double();
     double ArrivalRadius = 0;
+    int     l_iWaypointRadarRingsNumber = -1;
+    float   l_fWaypointRadarRingsStep = -1;
+    int     l_pWaypointRadarRingsStepUnits = -1;
+    bool    l_bWaypointRadarRingsVisible = false;
 
     for( pugi::xml_node child = wpt_node.first_child(); child != 0; child = child.next_sibling() ) {
         const char *pcn = child.name();
@@ -173,13 +180,19 @@ RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
                 if( ext_name == _T ( "opencpn:arrival_radius" ) ) {
                     wxString::FromUTF8(ext_child.first_child().value()).ToDouble(&ArrivalRadius ) ;
                 }
-                if ( ext_name == _T("opencpn:waypoint_range_rings" ) ) {
-                    wxString s = wxString::FromUTF8( ext_child.first_child().value() );
-                    long v = 0;
-                    if( s.ToLong( &v ) )
-                        bviz_waypointrangerings = ( v != 0 );
+                if ( ext_name == _T("opencpn:waypoint_range_rings") ) {
+                    for ( pugi::xml_attribute attr = ext_child.first_attribute(); attr; attr = attr.next_attribute() ) {
+                        if ( wxString::FromUTF8(attr.name()) == _T("number") )
+                            l_iWaypointRadarRingsNumber = attr.as_int();
+                        else if ( wxString::FromUTF8(attr.name()) == _T("step") )
+                            l_fWaypointRadarRingsStep = attr.as_float();
+                        else if ( wxString::FromUTF8(attr.name()) == _T("units") )
+                            l_pWaypointRadarRingsStepUnits = attr.as_int();
+                        else if ( wxString::FromUTF8(attr.name()) == _T("visible") )
+                            l_bWaypointRadarRingsVisible =  attr.as_bool();
+                    }
                 }
-            }// for 
+             }// for 
         } //extensions
     }   // for
 
@@ -194,8 +207,10 @@ RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
     pWP->m_MarkDescription = DescString;
     pWP->m_bIsolatedMark = bshared;      // This is an isolated mark
     pWP->SetWaypointArrivalRadius( ArrivalRadius );
-    pWP->m_bShowWaypointRangeRings = bviz_waypointrangerings;
-
+    pWP->SetWaypointRangeRingsNumber( l_iWaypointRadarRingsNumber );
+    pWP->SetWaypointRangeRingsStep( l_fWaypointRadarRingsStep );
+    pWP->SetWaypointRangeRingsStepUnits( l_pWaypointRadarRingsStepUnits );
+    pWP->SetShowWaypointRangeRings( l_bWaypointRadarRingsVisible );
 
     if( b_propvizname )
         pWP->m_bShowName = bviz_name;
@@ -687,8 +702,14 @@ bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flags )
         }
         if(flags & OUT_WAYPOINT_RANGE_RINGS) {
             child = child_ext.append_child("opencpn:waypoint_range_rings");
-            if ( pr->m_bShowWaypointRangeRings ) {child.append_child(pugi::node_pcdata).set_value("1");}
-            else {child.append_child(pugi::node_pcdata).set_value("0");}
+            pugi::xml_attribute viz = child.append_attribute( "visible" );
+            viz.set_value( pr->m_bShowWaypointRangeRings );
+            pugi::xml_attribute number = child.append_attribute( "number" );
+            number.set_value( pr->m_iWaypointRangeRingsNumber );
+            pugi::xml_attribute step = child.append_attribute( "step" );
+            step.set_value( pr->m_fWaypointRangeRingsStep );
+            pugi::xml_attribute units = child.append_attribute( "units" );
+            units.set_value( pr->m_pWaypointRadarRingsStepUnits );
         }
     }
     

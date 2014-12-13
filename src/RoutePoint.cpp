@@ -100,6 +100,10 @@ RoutePoint::RoutePoint()
     m_WaypointArrivalRadius = g_n_arrival_circle_radius;
 
     m_bShowWaypointRangeRings = false;
+   
+    m_iWaypointRangeRingsNumber = g_iWaypointRadarRingsNumberVisible;
+    m_fWaypointRangeRingsStep = g_fWaypointRadarRingsStep;
+    m_pWaypointRadarRingsStepUnits = g_pWaypointRadarRingsStepUnits;
 }
 
 // Copy Constructor
@@ -145,6 +149,10 @@ RoutePoint::RoutePoint( RoutePoint* orig )
     m_WaypointArrivalRadius = orig->GetWaypointArrivalRadius();
 
     m_bShowWaypointRangeRings = false;
+   
+    m_iWaypointRangeRingsNumber = g_iWaypointRadarRingsNumberVisible;
+    m_fWaypointRangeRingsStep = g_fWaypointRadarRingsStep;
+    m_pWaypointRadarRingsStepUnits = g_pWaypointRadarRingsStepUnits;
     
 }
 
@@ -389,12 +397,12 @@ void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
     }
 
     // Draw waypoint radar rings if activated
-    if( g_iWaypointRadarRingsNumberVisible && m_bShowWaypointRangeRings ) {
+    if( m_iWaypointRangeRingsNumber && m_bShowWaypointRangeRings ) {
         double factor = 1.00;
-        if( g_pWaypointRadarRingsStepUnits == 1 )          // nautical miles
+        if( m_pWaypointRadarRingsStepUnits == 1 )          // nautical miles
             factor = 1 / 1.852;
 
-        factor *= g_fWaypointRadarRingsStep;
+        factor *= m_fWaypointRangeRingsStep;
 
         double tlat, tlon;
         wxPoint r1;
@@ -411,7 +419,7 @@ void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
         dc.SetPen( ppPen1 );
         dc.SetBrush( wxBrush( GetGlobalColor( _T ( "URED" ) ), wxTRANSPARENT ) );
 
-        for( int i = 1; i <= g_iWaypointRadarRingsNumberVisible; i++ )
+        for( int i = 1; i <= m_iWaypointRangeRingsNumber; i++ )
             dc.StrokeCircle( r.x, r.y, i * pix_radius );
         dc.SetPen( savePen );
         dc.SetBrush( saveBrush );
@@ -705,5 +713,26 @@ double RoutePoint::GetWaypointArrivalRadius() {
     }
     else
         return m_WaypointArrivalRadius;
+}
+
+int   RoutePoint::GetWaypointRangeRingsNumber() { 
+    if ( m_iWaypointRangeRingsNumber == -1 )
+        return g_iWaypointRadarRingsNumberVisible;
+    else
+        return m_iWaypointRangeRingsNumber; 
+}
+
+float RoutePoint::GetWaypointRangeRingsStep() { 
+    if ( m_fWaypointRangeRingsStep == -1 )
+        return g_fWaypointRadarRingsStep;
+    else
+        return m_fWaypointRangeRingsStep; 
+}
+
+int   RoutePoint::GetWaypointRangeRingsStepUnits() { 
+    if ( m_pWaypointRadarRingsStepUnits == -1 )
+        return g_pWaypointRadarRingsStepUnits;
+    else
+        return m_pWaypointRadarRingsStepUnits ; 
 }
 
