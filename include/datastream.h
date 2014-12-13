@@ -108,18 +108,6 @@ enum {
 
 // Class declarations
 
-//    A generic Position Data structure
-typedef struct {
-    double kLat;
-    double kLon;
-    double kCog;
-    double kSog;
-    double kVar;            // Variation, typically from RMC message
-    double kHdm;            // Magnetic heading
-    double kHdt;            // true heading
-    time_t FixTime;
-    int    nSats;
-} GenericPosDatEx;
 
 
 
@@ -130,6 +118,7 @@ class DataStream;
 class GarminProtocolHandler;
 
 extern  const wxEventType wxEVT_OCPN_DATASTREAM;
+extern  const wxEventType wxEVT_OCPN_THREADMSG;
 
 //----------------------------------------------------------------------------
 // DataStream
@@ -260,7 +249,7 @@ DECLARE_EVENT_TABLE()
 };
 
 
-extern const wxEventType EVT_THREADMSG;
+//extern const wxEventType EVT_THREADMSG;
 
 //----------------------------------------------------------------------------
 // Garmin Device Management
@@ -439,7 +428,7 @@ public:
 #ifdef __WXMSW__
     HANDLE garmin_usb_start();
     bool ResetGarminUSBDriver();
-    bool IsGarminPlugged();
+    static bool IsGarminPlugged();
     bool gusb_syncup(void);
 
     int gusb_win_get(garmin_usb_packet *ibuf, size_t sz);

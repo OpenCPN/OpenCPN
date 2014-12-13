@@ -33,6 +33,7 @@
 #define DS_RX_BUFFER_SIZE 4096
 
 extern const wxEventType wxEVT_OCPN_DATASTREAM;
+extern const wxEventType wxEVT_OCPN_THREADMSG;
 
 #include "chart1.h"
 extern MyFrame *gFrame;
@@ -722,13 +723,13 @@ void OCP_DataStreamInput_Thread::Parse_And_Send_Posn(const char *buf)
     return;
 }
 
+const wxEventType wxEVT_OCPN_THREADMSG = wxNewEventType();
 
 void OCP_DataStreamInput_Thread::ThreadMessage(const wxString &msg)
 {
     //    Signal the main program thread
-    wxCommandEvent event( EVT_THREADMSG,  GetId());
-    event.SetEventObject( (wxObject *)this );
-    event.SetString(msg);
+    OCPN_ThreadMessageEvent event(wxEVT_OCPN_THREADMSG, 0);
+    event.SetSString( std::string(msg.mb_str()));
     if( gFrame )
         gFrame->GetEventHandler()->AddPendingEvent(event);
 }

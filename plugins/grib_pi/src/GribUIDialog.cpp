@@ -436,7 +436,6 @@ void GRIBUIDialog::OnMouseEvent( wxMouseEvent& event )
         case GribOverlaySettings::PRESSURE:
             MenuAppend( menu, ISO_LINE, _("Display Isobars"), id );
             MenuAppend( menu, NUMBERS, _("Numbers"), id );
-            menu->Remove( 2 );
             break;
         case GribOverlaySettings::AIR_TEMPERATURE:
         case GribOverlaySettings::SEA_TEMPERATURE:

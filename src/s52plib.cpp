@@ -260,13 +260,7 @@ s52plib::s52plib( const wxString& PLib, bool b_forceLegacy )
     m_VersionMajor = 3;
     m_VersionMinor = 2;
 
-    //    Compute display scale factor
-    int mmx, mmy;
-    wxDisplaySizeMM( &mmx, &mmy );
-    int sx, sy;
-    wxDisplaySize( &sx, &sy );
-
-    m_display_pix_per_mm = ( (double) sx ) / ( (double) mmx );
+    canvas_pix_per_mm = 3.;
 
     //        Set up some default flags
     m_bDeClutterText = false;
@@ -2351,6 +2345,14 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
                 if( prule->parm0 != ID_RGBA ) b_dump_cache = true;
             }
         }
+        
+        // This handles the case when zooming into overzoom scale mode from normal
+        // We want to make sure the old unzoomed cache is not used.
+        //  Logic:  If parm0 != ID_EMPTY, it must be true that the last render was un-zoomed,
+        //          since zoomed renders clear the cache and set parm0 to ID_EMPTY before exiting.
+        //          So, in this case, dump the cached symbol bitmap so that a new scaled bitmap will be built.
+        if((scale_factor > 1.0) && (prule->parm0 != ID_EMPTY))
+            b_dump_cache = true;
 
         wxBitmap *pbm = NULL;
         wxImage Image;
@@ -3900,12 +3902,13 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     //  Build the cached rules list if necessary
     if( !rzRules->obj->bCS_Added ) {
 
-        ObjRazRules *point_rzRules = new ObjRazRules;
-        *point_rzRules = *rzRules; // take a copy of attributes, etc
+        ObjRazRules point_rzRules;
+        point_rzRules = *rzRules; // take a copy of attributes, etc
         
-        S57Obj *point_obj = new S57Obj;
-        *point_obj = *( rzRules->obj );
-        point_rzRules->obj = point_obj;
+        S57Obj point_obj;
+        point_obj = *( rzRules->obj );
+        point_obj.bIsClone = true;
+        point_rzRules.obj = &point_obj;
         
         Rules *ru_cs = StringToRules( _T ( "CS(SOUNDG03;" ) );
 
@@ -3923,17 +3926,17 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             double nort = *pd++;
             double depth = *pd++;
             
-            point_obj->x = east;
-            point_obj->y = nort;
-            point_obj->z = depth;
+            point_obj.x = east;
+            point_obj.y = nort;
+            point_obj.z = depth;
             
             double lon = *pdl++;
             double lat = *pdl++;
-            point_obj->BBObj.SetMin( lon, lat );
-            point_obj->BBObj.SetMax( lon, lat );
-            point_obj->bBBObj_valid = false;
+            point_obj.BBObj.SetMin( lon, lat );
+            point_obj.BBObj.SetMax( lon, lat );
+            point_obj.bBBObj_valid = false;
             
-            char *rule_str1 = RenderCS( point_rzRules, ru_cs );
+            char *rule_str1 = RenderCS( &point_rzRules, ru_cs );
             wxString cs_string( rule_str1, wxConvUTF8 );
             free( rule_str1 ); 
     
@@ -4097,7 +4100,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     if( ( rules->razRule->pixelPtr == NULL ) || ( rules->razRule->parm1 != m_colortable_index ) ) {
         //  Render the sector light to a bitmap
 
-        rad = (int) ( radius * m_display_pix_per_mm );
+        rad = (int) ( radius * canvas_pix_per_mm );
 
         width = ( rad * 2 ) + 28;
         height = ( rad * 2 ) + 28;
@@ -4250,7 +4253,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
             glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
 
-            rad = (int) ( radius * m_display_pix_per_mm );
+            rad = (int) ( radius * canvas_pix_per_mm );
 
             //    Render the symbology as a zero based Display List
 
@@ -4283,7 +4286,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
             //    Draw the sector legs
             if( sector_radius > 0 ) {
-                int leg_len = (int) ( sector_radius * m_display_pix_per_mm );
+                int leg_len = (int) ( sector_radius * canvas_pix_per_mm );
 
                 wxColour c = GetGlobalColor( _T ( "CHBLK" ) );
                 glColor4ub( c.Red(), c.Green(), c.Blue(), c.Alpha() );
@@ -4360,11 +4363,11 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         //    Draw the sector legs directly on the target DC
         //    so that anti-aliasing works against the drawn image (cannot be cached...)
         if( sector_radius > 0 ) {
-            int leg_len = (int) ( sector_radius * m_display_pix_per_mm );
+            int leg_len = (int) ( sector_radius * canvas_pix_per_mm );
 
             wxDash dash1[2];
-            dash1[0] = (int) ( 3.6 * m_display_pix_per_mm ); //8// Long dash  <---------+
-            dash1[1] = (int) ( 1.8 * m_display_pix_per_mm ); //2// Short gap            |
+            dash1[0] = (int) ( 3.6 * canvas_pix_per_mm ); //8// Long dash  <---------+
+            dash1[1] = (int) ( 1.8 * canvas_pix_per_mm ); //2// Short gap            |
 
             /*
              wxPen *pthispen = new wxPen(*wxBLACK_PEN);

@@ -1531,8 +1531,11 @@ bool NavObjectChanges::ApplyChanges(void)
                     
                         else if(!strcmp(child.first_child().value(), "delete") ){
                             Route *pExisting = RouteExists( pRoute->m_GUID );
-                            if(pExisting)
+                            if(pExisting){
+                                pConfig->m_bSkipChangeSetUpdate = true;
                                 g_pRouteMan->DeleteRoute( pExisting );
+                                pConfig->m_bSkipChangeSetUpdate = false;
+                            }
                         }
                     
                         else
