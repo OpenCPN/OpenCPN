@@ -314,6 +314,7 @@ public:
     wxScrolledWindow        *pDisplayPanel;
     wxCheckBox              *pShowStatusBar;
     wxCheckBox              *pShowMenuBar;
+    wxCheckBox              *pShowChartBar;
     wxCheckBox              *pShowCompassWin;
     wxCheckBox              *pPrintShowIcon;
     wxCheckBox              *pCDOOutlines;

@@ -188,8 +188,9 @@ public:
       double GetVPSkew(void) { return GetVP().skew; }
       void ClearbFollow(void);
 
-      void GetCanvasPointPix(double rlat, double rlon, wxPoint *r);
-      void GetCanvasPixPoint(int x, int y, double &lat, double &lon);
+      void GetDoubleCanvasPointPix(double rlat, double rlon, wxPoint2DDouble *r);
+      void GetCanvasPointPix( double rlat, double rlon, wxPoint *r );
+      void GetCanvasPixPoint(double x, double y, double &lat, double &lon);
       void WarpPointerDeferred(int x, int y);
       void UpdateShips();
       void UpdateAIS();
@@ -242,7 +243,7 @@ public:
       void SetCursorStatus( double cursor_lat, double cursor_lon );
       void GetCursorLatLon(double *lat, double *lon);
 
-      bool PanCanvas(int dx, int dy);
+      bool PanCanvas(double dx, double dy);
       void StopAutoPan(void);
 
       void ZoomCanvas(double factor, bool can_zoom_to_cursor=true, bool stoptimer=true );
