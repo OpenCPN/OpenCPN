@@ -1783,19 +1783,21 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
     itemBoxSizerUI->Add( 0, border_size*3 );
 
     //  Display size/DPI
-    itemBoxSizerUI->Add( new wxStaticText( m_ChartDisplayPage, wxID_ANY, _("Screen horizontal size (mm)") ), labelFlags );
+    itemBoxSizerUI->Add( new wxStaticText( m_ChartDisplayPage, wxID_ANY, _("Physical Screen Width") ), labelFlags );
     wxBoxSizer *pDPIRow = new wxBoxSizer( wxHORIZONTAL );
-    itemBoxSizerUI->Add( pDPIRow, 0, wxALL | wxEXPAND, group_item_spacing );
+    itemBoxSizerUI->Add( pDPIRow, 0, wxEXPAND );
     
     pRBSizeAuto = new wxRadioButton( m_ChartDisplayPage, wxID_ANY, _("Auto") );
     pDPIRow->Add( pRBSizeAuto, inputFlags );
-    pRBSizeManual = new wxRadioButton( m_ChartDisplayPage, ID_SIZEMANUALRADIOBUTTON, _("Manual") );
-    pDPIRow->Add( pRBSizeManual, inputFlags );
     pDPIRow->AddSpacer( 10 );
-    
-    pScreenMM = new wxTextCtrl( m_ChartDisplayPage, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize( 80, -1 ), wxTE_RIGHT  );
+    pRBSizeManual = new wxRadioButton( m_ChartDisplayPage, ID_SIZEMANUALRADIOBUTTON, _("Manual:") );
+    pDPIRow->Add( pRBSizeManual, inputFlags );
+
+    pScreenMM = new wxTextCtrl( m_ChartDisplayPage, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize( 50, -1 ), wxTE_RIGHT  );
     pDPIRow->Add( pScreenMM, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
-    
+
+    pDPIRow->Add( new wxStaticText( m_ChartDisplayPage, wxID_ANY, _("mm") ), inputFlags );
+
     pRBSizeAuto->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED,
                            wxCommandEventHandler( options::OnSizeAutoButton ), NULL, this );
     pRBSizeManual->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED,
