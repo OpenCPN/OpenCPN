@@ -1743,7 +1743,7 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
     itemBoxSizerUI->Add( 0, border_size*3 );
     wxStaticText* zoomText = new wxStaticText( m_ChartDisplayPage, wxID_ANY,
         _("With a lower value, the same zoom level shows a less detailed chart.\nWith a higher value, the same zoom level shows a more detailed chart.") );
-    wxFont* dialogFont = FontMgr::Get().GetFont(_T("Dialog"));
+    wxFont* dialogFont = FontMgr::Get().GetFont(_("Dialog"));
     smallFont = new wxFont( * dialogFont ); // we can't use Smaller() because wx2.8 doesn't support it
     smallFont->SetPointSize( (smallFont->GetPointSize() / 1.2) + 0.5 ); // + 0.5 to round instead of truncate
     zoomText->SetFont( * smallFont );
