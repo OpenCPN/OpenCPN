@@ -2254,17 +2254,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             break;
 
         case 2:                      // Ctrl B
-            if( stats ) {
-                if( stats->IsShown() )
-                    stats->Hide();
-                else {
-                    stats->Move(0,0);
-                    stats->RePosition();
-                    stats->Show();
-                    gFrame->Raise();
-                }
-                Refresh();
-            }
+            parent_frame->ToggleStats();
             break;
 
         case 13:             // Ctrl M // Drop Marker at cursor
@@ -3032,7 +3022,7 @@ void ChartCanvas::GetCursorLatLon( double *lat, double *lon )
     *lon = clon;
 }
 
-void ChartCanvas::GetCanvasPointPix( double rlat, double rlon, wxPoint *r )
+void ChartCanvas::GetDoubleCanvasPointPix( double rlat, double rlon, wxPoint2DDouble *r )
 {
     // If the Current Chart is a raster chart, and the
     // requested lat/long is within the boundaries of the chart,
@@ -3044,8 +3034,6 @@ void ChartCanvas::GetCanvasPointPix( double rlat, double rlon, wxPoint *r )
 
     // If for some reason the chart rejects the request by returning an error,
     // then fall back to Viewport Projection estimate from canvas parameters
-    bool bUseVP = true;
-
     if( Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_RASTER )
         && ( ( ( fabs( GetVP().rotation ) < .0001 ) &&
                ( ( !g_bskew_comp || ( fabs( GetVP().skew ) < .0001 ) ) ) )
@@ -3063,24 +3051,29 @@ void ChartCanvas::GetCanvasPointPix( double rlat, double rlon, wxPoint *r )
             //    If the VP is changing, the raster chart parameters may not yet be setup
             //    So do that before accessing the chart's embedded georeferencing
             Cur_BSB_Ch->SetVPRasterParms( GetVP() );
-            int rpixxd, rpixyd;
+            double rpixxd, rpixyd;
             if( 0 == Cur_BSB_Ch->latlong_to_pix_vp( rlat, rlon, rpixxd, rpixyd, GetVP() ) ) {
-                r->x = rpixxd;
-                r->y = rpixyd;
-                bUseVP = false;
+                r->m_x = rpixxd;
+                r->m_y = rpixyd;
+                return;
             }
         }
     }
 
     //    if needed, use the VPoint scaling estimator,
-    if( bUseVP ) {
-        wxPoint p = GetVP().GetPixFromLL( rlat, rlon );
-        *r = p;
-    }
-
+    *r = GetVP().GetDoublePixFromLL( rlat, rlon );
 }
 
-void ChartCanvas::GetCanvasPixPoint( int x, int y, double &lat, double &lon )
+// This routine might be deleted and all of the rendering improved
+// to have floating point accuracy
+void ChartCanvas::GetCanvasPointPix( double rlat, double rlon, wxPoint *r )
+{
+    wxPoint2DDouble p;
+    GetDoubleCanvasPointPix(rlat, rlon, &p);
+    *r = wxPoint(wxRound(p.m_x), wxRound(p.m_y));
+}
+
+void ChartCanvas::GetCanvasPixPoint( double x, double y, double &lat, double &lon )
 {
     // If the Current Chart is a raster chart, and the
     // requested x,y is within the boundaries of the chart,
@@ -3266,9 +3259,9 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
         if( can_zoom_to_cursor && g_bEnableZoomToCursor) {
             //  Arrange to combine the zoom and pan into one operation for smoother appearance
             SetVPScale( GetCanvasScaleFactor() / proposed_scale_onscreen, false );   // adjust, but deferred refresh
-            wxPoint r;
-            GetCanvasPointPix( zlat, zlon, &r );
-            PanCanvas( r.x - mouse_x, r.y - mouse_y );  // this will give the Refresh()
+            wxPoint2DDouble r;
+            GetDoubleCanvasPointPix( zlat, zlon, &r );
+            PanCanvas( r.m_x - mouse_x, r.m_y - mouse_y );  // this will give the Refresh()
             ClearbFollow();      // update the follow flag
         }
         else
@@ -3313,16 +3306,16 @@ void ChartCanvas::ClearbFollow( void )
     parent_frame->SetToolbarItemState( ID_FOLLOW, false );
 }
 
-bool ChartCanvas::PanCanvas( int dx, int dy )
+bool ChartCanvas::PanCanvas( double dx, double dy )
 {
     double dlat, dlon;
-    wxPoint p;
+    wxPoint2DDouble p;
 //      CALLGRIND_START_INSTRUMENTATION
 
     extendedSectorLegs.clear();
 
-    GetCanvasPointPix( GetVP().clat, GetVP().clon, &p );
-    GetCanvasPixPoint( p.x + dx, p.y + dy, dlat, dlon );
+    GetDoubleCanvasPointPix( GetVP().clat, GetVP().clon, &p );
+    GetCanvasPixPoint( p.m_x + dx, p.m_y + dy, dlat, dlon );
 
     if( dlon > 360. ) dlon -= 360.;
     if( dlon < -360. ) dlon += 360.;
@@ -3489,6 +3482,7 @@ void ChartCanvas::UpdateCanvasOnGroupChange( void )
 
     if( m_pQuilt ) {
         m_pQuilt->Compose( VPoint );
+        cc1->SetFocus();
     }
 }
 
@@ -3712,8 +3706,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
         //    Calculate the on-screen displayed actual scale
         //    by a simple traverse northward from the center point
         //    of roughly the canvas height
-        double tlat, tlon;
-        wxPoint r, r1;
+        wxPoint2DDouble r, r1;
 
         double delta_check = (VPoint.pix_height / VPoint.view_scale_ppm) / (1852. * 60);
 
@@ -3723,9 +3716,9 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                                      VPoint.clon,
                                      0, &rhumbDist );
                            
-        GetCanvasPointPix( VPoint.clat, VPoint.clon, &r1 );
-        GetCanvasPointPix( VPoint.clat + delta_check, VPoint.clon, &r );
-        double delta_p = sqrt( ((r1.y - r.y) * (r1.y - r.y)) + ((r1.x - r.x) * (r1.x - r.x)) );
+        GetDoubleCanvasPointPix( VPoint.clat, VPoint.clon, &r1 );
+        GetDoubleCanvasPointPix( VPoint.clat + delta_check, VPoint.clon, &r );
+        double delta_p = sqrt( ((r1.m_y - r.m_y) * (r1.m_y - r.m_y)) + ((r1.m_x - r.m_x) * (r1.m_x - r.m_x)) );
         
         m_true_scale_ppm = delta_p / (rhumbDist * 1852);
         
@@ -3774,6 +3767,10 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
     vLat = VPoint.clat;
     vLon = VPoint.clon;
 
+    //   If any PlugIn chart ran wxExecute(), then the canvas focus is likely lost.
+    //  Restore it here
+    cc1->SetFocus();
+    
     return b_ret;
 }
 
@@ -6666,6 +6663,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
         MenuAppend( contextMenu, ID_DEF_MENU_TOGGLE_FULL, _("Toggle Full Screen") );
         full_toggle_added = true;
     }
+        
     
     if(!full_toggle_added){
         if(gFrame->IsFullScreen()){
