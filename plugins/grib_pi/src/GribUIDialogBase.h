@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version Jun  5 2014)
+// C++ code generated with wxFormBuilder (version Jun  6 2014)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO "NOT" EDIT THIS FILE!
@@ -33,6 +33,7 @@
 #include <wx/radiobox.h>
 #include <wx/statline.h>
 #include <wx/tglbtn.h>
+#include <wx/scrolwin.h>
 #include <wx/grid.h>
 
 ///////////////////////////////////////////////////////////////////////////
@@ -219,8 +220,9 @@ class GribPreferencesDialogBase : public wxDialog
 class GribRequestSettingBase : public wxDialog 
 {
 	private:
-	
+
 	protected:
+		wxFlexGridSizer* m_fgScrollSizer;
 		wxFlexGridSizer* m_pSenderSizer;
 		wxTextCtrl* m_pSenderAddress;
 		wxChoice* m_pMailTo;
@@ -268,6 +270,7 @@ class GribRequestSettingBase : public wxDialog
 		wxCheckBox* m_p500hpa;
 		wxCheckBox* m_p300hpa;
 		wxTextCtrl* m_MailImage;
+		wxFlexGridSizer* m_fgFixedSizer;
 		wxStaticText* m_tFileSize;
 		wxStaticText* m_tLimit;
 		wxStdDialogButtonSizer* m_rButton;
@@ -287,11 +290,12 @@ class GribRequestSettingBase : public wxDialog
 		virtual void OnSaveMail( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnCancel( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnSendMaiL( wxCommandEvent& event ) { event.Skip(); }
-		
-	
+
+
 	public:
-		
-		GribRequestSettingBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Write and send eMail request"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxDEFAULT_DIALOG_STYLE ); 
+		wxScrolledWindow* m_sScrolledDialog;
+
+		GribRequestSettingBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Write and send eMail request"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxDEFAULT_DIALOG_STYLE );
 		~GribRequestSettingBase();
 	
 };

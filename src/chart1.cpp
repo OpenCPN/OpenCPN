@@ -851,7 +851,14 @@ double  GetDisplaySizeMM()
         ret = w;
     }
 #endif
-        
+#ifdef __WXOSX__
+    ret = GetMacMonitorSize();
+#endif
+
+    wxString msg;
+    msg.Printf(_T("Detected display size: %d mm"), (int) ret);
+    wxLogMessage(msg);
+    
     return ret;
 }
  
