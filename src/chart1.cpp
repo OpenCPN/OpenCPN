@@ -850,7 +850,10 @@ double  GetDisplaySizeMM()
         ret = w;
     }
 #endif
-        
+#ifdef __WXOSX__
+    ret = GetMacMonitorSize();
+#endif
+
     return ret;
 }
  
