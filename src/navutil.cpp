@@ -205,10 +205,10 @@ extern int              g_S57_dialog_sx, g_S57_dialog_sy;
 extern int              g_iNavAidRadarRingsNumberVisible;
 extern float            g_fNavAidRadarRingsStep;
 extern int              g_pNavAidRadarRingsStepUnits;
-extern int              g_iWaypointRadarRingsNumberVisible;
-extern float            g_fWaypointRadarRingsStep;
-extern int              g_pWaypointRadarRingsStepUnits;
-extern wxColour         g_colourWaypointRadarRingsColour;
+extern int              g_iWaypointRangeRingsVisible;
+extern float            g_fWaypointRangeRingsStep;
+extern int              g_pWaypointRangeRingsStepUnits;
+extern wxColour         g_colourWaypointRangeRingsColour;
 extern bool             g_bWayPointPreventDragging;
 extern bool             g_bConfirmObjectDelete;
 
@@ -2026,19 +2026,19 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "RadarRingsStepUnits" ), &g_pNavAidRadarRingsStepUnits );
 
     // Waypoint Radar rings
-    g_iWaypointRadarRingsNumberVisible = 0;
-    Read( _T ( "WaypointRangeRingsNumberVisible" ), &val );
-    if( val.Length() > 0 ) g_iWaypointRadarRingsNumberVisible = atoi( val.mb_str() );
+    g_iWaypointRangeRingsVisible = 0;
+    Read( _T ( "WaypointRangeRingsVisible" ), &val );
+    if( val.Length() > 0 ) g_iWaypointRangeRingsVisible = atoi( val.mb_str() );
 
-    g_fWaypointRadarRingsStep = 1.0;
+    g_fWaypointRangeRingsStep = 1.0;
     Read( _T ( "WaypointRangeRingsStep" ), &val );
-    if( val.Length() > 0 ) g_fWaypointRadarRingsStep = atof( val.mb_str() );
+    if( val.Length() > 0 ) g_fWaypointRangeRingsStep = atof( val.mb_str() );
 
-    g_pWaypointRadarRingsStepUnits = 0;
-    Read( _T ( "WaypointRangeRingsStepUnits" ), &g_pWaypointRadarRingsStepUnits );
+    g_pWaypointRangeRingsStepUnits = 0;
+    Read( _T ( "WaypointRangeRingsStepUnits" ), &g_pWaypointRangeRingsStepUnits );
     
-    g_colourWaypointRadarRingsColour = wxColour( *wxRED );
-    Read( _T( "WaypointRangeRingsColour" ), &g_colourWaypointRadarRingsColour );
+    g_colourWaypointRangeRingsColour = wxColour( *wxRED );
+    Read( _T( "WaypointRangeRingsColour" ), &g_colourWaypointRangeRingsColour );
 
     //  Support Version 3.0 and prior config setting for Radar Rings
     bool b300RadarRings= true;
@@ -2810,11 +2810,11 @@ void MyConfig::UpdateSettings()
     Write( _T ( "RadarRingsStepUnits" ), g_pNavAidRadarRingsStepUnits );
 
     // Waypoint Radar rings
-    Write( _T ( "WaypointShowRangeRings" ), (bool)(g_iWaypointRadarRingsNumberVisible > 0) );  //3.0.0 config support
-    Write( _T ( "WaypointRangeRingsNumberVisible" ), g_iWaypointRadarRingsNumberVisible );
-    Write( _T ( "WaypointRangeRingsStep" ), g_fWaypointRadarRingsStep );
-    Write( _T ( "WaypointRangeRingsStepUnits" ), g_pWaypointRadarRingsStepUnits );
-    Write( _T ( "WaypointRangeRingsColour" ), g_colourWaypointRadarRingsColour.GetAsString( wxC2S_HTML_SYNTAX ) );
+    Write( _T ( "WaypointShowRangeRings" ), (bool)(g_iWaypointRangeRingsVisible > 0) );  //3.0.0 config support
+    Write( _T ( "WaypointRangeRingsVisible" ), g_iWaypointRangeRingsVisible );
+    Write( _T ( "WaypointRangeRingsStep" ), g_fWaypointRangeRingsStep );
+    Write( _T ( "WaypointRangeRingsStepUnits" ), g_pWaypointRangeRingsStepUnits );
+    Write( _T ( "WaypointRangeRingsColour" ), g_colourWaypointRangeRingsColour.GetAsString( wxC2S_HTML_SYNTAX ) );
 
     Write( _T ( "ConfirmObjectDeletion" ), g_bConfirmObjectDelete );
 

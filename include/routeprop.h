@@ -78,8 +78,8 @@ class   HyperlinkList;
 #define ID_ROUTEPROP_EXTEND    7207
 #define ID_ROUTEPROP_COPYTXT   7307
 #define ID_ROUTEPROP_PRINT     7407
-#define ID_WAYPOINTRADARRINGS  7507 
-#define ID_SHOWWAYPOINTRADARRINGS  7607 
+#define ID_WAYPOINTRANGERINGS  7507 
+#define ID_SHOWWAYPOINTRANGERINGS  7607 
 #define ID_PLANSPEEDCTL        7008
 #define ID_TEXTCTRL4           7009
 #define ID_TEXTCTRLDESC        7010
@@ -306,12 +306,12 @@ class MarkInfoDef : public wxDialog
         wxBoxSizer*             bSizerBasicProperties;
         wxCheckBox*             m_checkBoxShowWaypointRangeRings;
     
-        wxChoice*               m_choiceWaypointRadarRingsNumber;
+        wxChoice*               m_choiceWaypointRangeRingsNumber;
         wxFlexGridSizer*        waypointradarGrid;
-        wxTextCtrl*             m_textWaypointRadarRingsStep;
-        wxChoice*               m_choiceWaypointRadarRingsUnits;
+        wxTextCtrl*             m_textWaypointRangeRingsStep;
+        wxChoice*               m_choiceWaypointRangeRingsUnits;
         wxFlexGridSizer*        waypointrrSelect;
-        wxColourPickerCtrl*     m_colourWaypointRadarRingsColour;
+        wxColourPickerCtrl*     m_colourWaypointRangeRingsColour;
         
     // Virtual event handlers, overide them in your derived class
         virtual void OnPositionCtlUpdated( wxCommandEvent& event ) { event.Skip(); }
@@ -325,10 +325,10 @@ class MarkInfoDef : public wxDialog
         virtual void OnMarkInfoCancelClick( wxCommandEvent& event ) { event.Skip(); }
         virtual void OnMarkInfoOKClick( wxCommandEvent& event ) { event.Skip(); }
         virtual void OnArrivalRadiusChange( wxCommandEvent& event ) { event.Skip(); }
-        virtual void OnWaypointRadarRingsStepChange( wxCommandEvent& event ) { event.Skip(); }
+        virtual void OnWaypointRangeRingsStepChange( wxCommandEvent& event ) { event.Skip(); }
         void OnCopyPasteLatLon( wxCommandEvent& event );
-        void OnWaypointRadarringSelect( wxCommandEvent& event );
-        void OnShowWaypointRadarringSelect( wxCommandEvent& event );
+        void OnWaypointRangeRingSelect( wxCommandEvent& event );
+        void OnShowWaypointRangeRingSelect( wxCommandEvent& event );
 
 
     public:

@@ -38,9 +38,9 @@ extern Select *pSelect;
 //extern bool g_bIsNewLayer;
 //extern bool g_bLayerViz;
 
-extern int g_iWaypointRadarRingsNumberVisible;
-extern float g_fWaypointRadarRingsStep;
-extern int g_pWaypointRadarRingsStepUnits;
+extern int g_iWaypointRangeRingsVisible;
+extern float g_fWaypointRangeRingsStep;
+extern int g_pWaypointRangeRingsStepUnits;
 
 NavObjectCollection1::NavObjectCollection1()
 : pugi::xml_document()
@@ -84,12 +84,12 @@ RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
     double rlat = wpt_node.attribute( "lat" ).as_double();
     double rlon = wpt_node.attribute( "lon" ).as_double();
     double ArrivalRadius = 0;
-    int     l_iWaypointRadarRingsNumber = -1;
-    float   l_fWaypointRadarRingsStep = -1;
-    int     l_pWaypointRadarRingsStepUnits = -1;
-    bool    l_bWaypointRadarRingsVisible = false;
-    wxColour    l_wxcWaypointRadarRingsColour;
-    l_wxcWaypointRadarRingsColour.Set( _T( "#FFFFFF" ) );
+    int     l_iWaypointRangeRingsNumber = -1;
+    float   l_fWaypointRangeRingsStep = -1;
+    int     l_pWaypointRangeRingsStepUnits = -1;
+    bool    l_bWaypointRangeRingsVisible = false;
+    wxColour    l_wxcWaypointRangeRingsColour;
+    l_wxcWaypointRangeRingsColour.Set( _T( "#FFFFFF" ) );
 
     for( pugi::xml_node child = wpt_node.first_child(); child != 0; child = child.next_sibling() ) {
         const char *pcn = child.name();
@@ -185,15 +185,15 @@ RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
                 if ( ext_name == _T("opencpn:waypoint_range_rings") ) {
                     for ( pugi::xml_attribute attr = ext_child.first_attribute(); attr; attr = attr.next_attribute() ) {
                         if ( wxString::FromUTF8(attr.name()) == _T("number") )
-                            l_iWaypointRadarRingsNumber = attr.as_int();
+                            l_iWaypointRangeRingsNumber = attr.as_int();
                         else if ( wxString::FromUTF8(attr.name()) == _T("step") )
-                            l_fWaypointRadarRingsStep = attr.as_float();
+                            l_fWaypointRangeRingsStep = attr.as_float();
                         else if ( wxString::FromUTF8(attr.name()) == _T("units") )
-                            l_pWaypointRadarRingsStepUnits = attr.as_int();
+                            l_pWaypointRangeRingsStepUnits = attr.as_int();
                         else if ( wxString::FromUTF8(attr.name()) == _T("visible") )
-                            l_bWaypointRadarRingsVisible =  attr.as_bool();
+                            l_bWaypointRangeRingsVisible =  attr.as_bool();
                         else if ( wxString::FromUTF8(attr.name()) == _T("colour") )
-                            l_wxcWaypointRadarRingsColour.Set( attr.as_string() );
+                            l_wxcWaypointRangeRingsColour.Set( attr.as_string() );
                     }
                 }
              }// for 
@@ -211,11 +211,11 @@ RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
     pWP->m_MarkDescription = DescString;
     pWP->m_bIsolatedMark = bshared;      // This is an isolated mark
     pWP->SetWaypointArrivalRadius( ArrivalRadius );
-    pWP->SetWaypointRangeRingsNumber( l_iWaypointRadarRingsNumber );
-    pWP->SetWaypointRangeRingsStep( l_fWaypointRadarRingsStep );
-    pWP->SetWaypointRangeRingsStepUnits( l_pWaypointRadarRingsStepUnits );
-    pWP->SetShowWaypointRangeRings( l_bWaypointRadarRingsVisible );
-    pWP->SetWaypointRangeRingsColour( l_wxcWaypointRadarRingsColour );
+    pWP->SetWaypointRangeRingsNumber( l_iWaypointRangeRingsNumber );
+    pWP->SetWaypointRangeRingsStep( l_fWaypointRangeRingsStep );
+    pWP->SetWaypointRangeRingsStepUnits( l_pWaypointRangeRingsStepUnits );
+    pWP->SetShowWaypointRangeRings( l_bWaypointRangeRingsVisible );
+    pWP->SetWaypointRangeRingsColour( l_wxcWaypointRangeRingsColour );
 
     if( b_propvizname )
         pWP->m_bShowName = bviz_name;
@@ -714,9 +714,9 @@ bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flags )
             pugi::xml_attribute step = child.append_attribute( "step" );
             step.set_value( pr->m_fWaypointRangeRingsStep );
             pugi::xml_attribute units = child.append_attribute( "units" );
-            units.set_value( pr->m_pWaypointRadarRingsStepUnits );
+            units.set_value( pr->m_pWaypointRangeRingsStepUnits );
             pugi::xml_attribute colour = child.append_attribute( "colour" );
-            colour.set_value( pr->m_wxcWaypointRadarRingsColour.GetAsString( wxC2S_HTML_SYNTAX ).utf8_str() ) ;
+            colour.set_value( pr->m_wxcWaypointRangeRingsColour.GetAsString( wxC2S_HTML_SYNTAX ).utf8_str() ) ;
         }
     }
     

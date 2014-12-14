@@ -47,10 +47,10 @@ extern bool g_btouch;
 extern bool g_bresponsive;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern double g_n_arrival_circle_radius;
-extern int g_iWaypointRadarRingsNumberVisible;
-extern float g_fWaypointRadarRingsStep;
-extern int g_pWaypointRadarRingsStepUnits;
-extern wxColour g_colourWaypointRadarRingsColour;
+extern int g_iWaypointRangeRingsVisible;
+extern float g_fWaypointRangeRingsStep;
+extern int g_pWaypointRangeRingsStepUnits;
+extern wxColour g_colourWaypointRangeRingsColour;
 
 
 #include <wx/listimpl.cpp>
@@ -102,10 +102,10 @@ RoutePoint::RoutePoint()
 
     m_bShowWaypointRangeRings = false;
    
-    m_iWaypointRangeRingsNumber = g_iWaypointRadarRingsNumberVisible;
-    m_fWaypointRangeRingsStep = g_fWaypointRadarRingsStep;
-    m_pWaypointRadarRingsStepUnits = g_pWaypointRadarRingsStepUnits;
-    m_wxcWaypointRadarRingsColour = g_colourWaypointRadarRingsColour;
+    m_iWaypointRangeRingsNumber = g_iWaypointRangeRingsVisible;
+    m_fWaypointRangeRingsStep = g_fWaypointRangeRingsStep;
+    m_pWaypointRangeRingsStepUnits = g_pWaypointRangeRingsStepUnits;
+    m_wxcWaypointRangeRingsColour = g_colourWaypointRangeRingsColour;
 }
 
 // Copy Constructor
@@ -152,10 +152,10 @@ RoutePoint::RoutePoint( RoutePoint* orig )
 
     m_bShowWaypointRangeRings = false;
    
-    m_iWaypointRangeRingsNumber = g_iWaypointRadarRingsNumberVisible;
-    m_fWaypointRangeRingsStep = g_fWaypointRadarRingsStep;
-    m_pWaypointRadarRingsStepUnits = g_pWaypointRadarRingsStepUnits;
-    m_wxcWaypointRadarRingsColour = g_colourWaypointRadarRingsColour;
+    m_iWaypointRangeRingsNumber = g_iWaypointRangeRingsVisible;
+    m_fWaypointRangeRingsStep = g_fWaypointRangeRingsStep;
+    m_pWaypointRangeRingsStepUnits = g_pWaypointRangeRingsStepUnits;
+    m_wxcWaypointRangeRingsColour = g_colourWaypointRangeRingsColour;
     
 }
 
@@ -402,7 +402,7 @@ void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
     // Draw waypoint radar rings if activated
     if( m_iWaypointRangeRingsNumber && m_bShowWaypointRangeRings ) {
         double factor = 1.00;
-        if( m_pWaypointRadarRingsStepUnits == 1 )          // nautical miles
+        if( m_pWaypointRangeRingsStepUnits == 1 )          // nautical miles
             factor = 1 / 1.852;
 
         factor *= m_fWaypointRangeRingsStep;
@@ -417,12 +417,12 @@ void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
         int pix_radius = (int) lpp;
 
         //wxPen ppPen1( GetGlobalColor( _T ( "URED" ) ), 2 );
-        wxPen ppPen1( m_wxcWaypointRadarRingsColour, 2 );
+        wxPen ppPen1( m_wxcWaypointRangeRingsColour, 2 );
         wxBrush saveBrush = dc.GetBrush();
         wxPen savePen = dc.GetPen();
         dc.SetPen( ppPen1 );
         //dc.SetBrush( wxBrush( GetGlobalColor( _T ( "URED" ) ), wxTRANSPARENT ) );
-        dc.SetBrush( wxBrush( m_wxcWaypointRadarRingsColour, wxTRANSPARENT ) );
+        dc.SetBrush( wxBrush( m_wxcWaypointRangeRingsColour, wxTRANSPARENT ) );
 
         for( int i = 1; i <= m_iWaypointRangeRingsNumber; i++ )
             dc.StrokeCircle( r.x, r.y, i * pix_radius );
@@ -722,28 +722,28 @@ double RoutePoint::GetWaypointArrivalRadius() {
 
 int   RoutePoint::GetWaypointRangeRingsNumber() { 
     if ( m_iWaypointRangeRingsNumber == -1 )
-        return g_iWaypointRadarRingsNumberVisible;
+        return g_iWaypointRangeRingsVisible;
     else
         return m_iWaypointRangeRingsNumber; 
 }
 
 float RoutePoint::GetWaypointRangeRingsStep() { 
     if ( m_fWaypointRangeRingsStep == -1 )
-        return g_fWaypointRadarRingsStep;
+        return g_fWaypointRangeRingsStep;
     else
         return m_fWaypointRangeRingsStep; 
 }
 
 int   RoutePoint::GetWaypointRangeRingsStepUnits() { 
-    if ( m_pWaypointRadarRingsStepUnits == -1 )
-        return g_pWaypointRadarRingsStepUnits;
+    if ( m_pWaypointRangeRingsStepUnits == -1 )
+        return g_pWaypointRangeRingsStepUnits;
     else
-        return m_pWaypointRadarRingsStepUnits ; 
+        return m_pWaypointRangeRingsStepUnits ; 
 }
 
 wxColour RoutePoint::GetWaypointRangeRingsColour(void) { 
-    if ( m_wxcWaypointRadarRingsColour.GetAsString(wxC2S_HTML_SYNTAX) == _T("#FFFFFF") )
-        return g_colourWaypointRadarRingsColour;
+    if ( m_wxcWaypointRangeRingsColour.GetAsString(wxC2S_HTML_SYNTAX) == _T("#FFFFFF") )
+        return g_colourWaypointRangeRingsColour;
     else
-        return m_wxcWaypointRadarRingsColour; 
+        return m_wxcWaypointRangeRingsColour; 
 }
