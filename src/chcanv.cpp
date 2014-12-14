@@ -3482,6 +3482,7 @@ void ChartCanvas::UpdateCanvasOnGroupChange( void )
 
     if( m_pQuilt ) {
         m_pQuilt->Compose( VPoint );
+        cc1->SetFocus();
     }
 }
 
@@ -3766,6 +3767,10 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
     vLat = VPoint.clat;
     vLon = VPoint.clon;
 
+    //   If any PlugIn chart ran wxExecute(), then the canvas focus is likely lost.
+    //  Restore it here
+    cc1->SetFocus();
+    
     return b_ret;
 }
 
