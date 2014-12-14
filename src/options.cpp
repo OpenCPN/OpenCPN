@@ -1469,9 +1469,13 @@ void options::OnConnectionToggleEnable( wxMouseEvent &event )
     if( clicked_index > -1 && event.GetX() < m_lcSources->GetColumnWidth( 0 ) ) {
         // Process the clicked item
         ConnectionParams *conn = g_pConnectionParams->Item( m_lcSources->GetItemData( clicked_index ) );
-        conn->bEnabled = !conn->bEnabled;
-        m_connection_enabled = conn->bEnabled;
-        m_lcSources->SetItemImage( clicked_index, conn->bEnabled ? 1 : 0 );
+        if(conn){
+            conn->bEnabled = !conn->bEnabled;
+            m_connection_enabled = conn->bEnabled;
+            conn->b_IsSetup = false;            // Mark as changed
+        
+            m_lcSources->SetItemImage( clicked_index, conn->bEnabled ? 1 : 0 );
+        }
 
         cc1->Refresh();
     }
