@@ -1784,19 +1784,21 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
     itemBoxSizerUI->Add( 0, border_size*3 );
 
     //  Display size/DPI
-    itemBoxSizerUI->Add( new wxStaticText( m_ChartDisplayPage, wxID_ANY, _("Screen horizontal size (mm)") ), labelFlags );
+    itemBoxSizerUI->Add( new wxStaticText( m_ChartDisplayPage, wxID_ANY, _("Physical Screen Width") ), labelFlags );
     wxBoxSizer *pDPIRow = new wxBoxSizer( wxHORIZONTAL );
-    itemBoxSizerUI->Add( pDPIRow, 0, wxALL | wxEXPAND, group_item_spacing );
+    itemBoxSizerUI->Add( pDPIRow, 0, wxEXPAND );
     
     pRBSizeAuto = new wxRadioButton( m_ChartDisplayPage, wxID_ANY, _("Auto") );
     pDPIRow->Add( pRBSizeAuto, inputFlags );
-    pRBSizeManual = new wxRadioButton( m_ChartDisplayPage, ID_SIZEMANUALRADIOBUTTON, _("Manual") );
-    pDPIRow->Add( pRBSizeManual, inputFlags );
     pDPIRow->AddSpacer( 10 );
-    
-    pScreenMM = new wxTextCtrl( m_ChartDisplayPage, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize( 80, -1 ), wxTE_RIGHT  );
+    pRBSizeManual = new wxRadioButton( m_ChartDisplayPage, ID_SIZEMANUALRADIOBUTTON, _("Manual:") );
+    pDPIRow->Add( pRBSizeManual, inputFlags );
+
+    pScreenMM = new wxTextCtrl( m_ChartDisplayPage, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize( 50, -1 ), wxTE_RIGHT  );
     pDPIRow->Add( pScreenMM, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
-    
+
+    pDPIRow->Add( new wxStaticText( m_ChartDisplayPage, wxID_ANY, _("mm") ), inputFlags );
+
     pRBSizeAuto->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED,
                            wxCommandEventHandler( options::OnSizeAutoButton ), NULL, this );
     pRBSizeManual->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED,
@@ -1914,8 +1916,8 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
 
 
     // spacer
-    optionsColumn->Add( new wxStaticText(ps57Ctl, wxID_ANY, _T("")) );
-    optionsColumn->Add( new wxStaticText(ps57Ctl, wxID_ANY, _T("")) );
+    optionsColumn->Add( 0, border_size*4 );
+    optionsColumn->Add( 0, border_size*4 );
 
 
     // graphics options
@@ -1939,8 +1941,8 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
 
 
     // spacer
-    optionsColumn->Add( new wxStaticText(ps57Ctl, wxID_ANY, _T("")) );
-    optionsColumn->Add( new wxStaticText(ps57Ctl, wxID_ANY, _T("")) );
+    optionsColumn->Add( 0, border_size*4 );
+    optionsColumn->Add( 0, border_size*4 );
 
 
     // depth options
@@ -1970,8 +1972,8 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
 
 
     // spacer
-    optionsColumn->Add( new wxStaticText(ps57Ctl, wxID_ANY, _T("")) );
-    optionsColumn->Add( new wxStaticText(ps57Ctl, wxID_ANY, _T("")) );
+    optionsColumn->Add( 0, border_size*4 );
+    optionsColumn->Add( 0, border_size*4 );
 
 
 #ifdef USE_S57
@@ -2169,8 +2171,8 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
 
 
     // spacer
-    generalSizer->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _T("")) );
-    generalSizer->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _T("")) );
+    generalSizer->Add( 0, border_size*4 );
+    generalSizer->Add( 0, border_size*4 );
 
 
     // Nav Mode
@@ -2191,8 +2193,8 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
     
     
     // spacer
-    generalSizer->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _T("")) );
-    generalSizer->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _T("")) );
+    generalSizer->Add( 0, border_size*4 );
+    generalSizer->Add( 0, border_size*4 );
 
     
     // Control Options
@@ -2208,8 +2210,8 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
 
 
     // spacer
-    generalSizer->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _T("")) );
-    generalSizer->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _T("")) );
+    generalSizer->Add( 0, border_size*4 );
+    generalSizer->Add( 0, border_size*4 );
 
     
     // Control Options
@@ -2226,8 +2228,8 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
     
 
     // spacer
-    generalSizer->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _T("")) );
-    generalSizer->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _T("")) );
+    generalSizer->Add( 0, border_size*4 );
+    generalSizer->Add( 0, border_size*4 );
 
     
     // Display Options
@@ -2264,8 +2266,8 @@ void options::CreatePanel_Units( size_t parent, int border_size, int group_item_
 
 
     // spacer
-    unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
-    unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
+    unitsSizer->Add( 0, border_size*4 );
+    unitsSizer->Add( 0, border_size*4 );
 
 
     // distance units
@@ -2309,8 +2311,8 @@ void options::CreatePanel_Units( size_t parent, int border_size, int group_item_
 
 
     // spacer
-    unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
-    unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
+    unitsSizer->Add( 0, border_size*4 );
+    unitsSizer->Add( 0, border_size*4 );
 
 
     // bearings (magnetic/true, variation)
