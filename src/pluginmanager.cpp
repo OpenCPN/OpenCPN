@@ -3483,12 +3483,15 @@ bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc, const View
         gs_plib_flags = 0;               // reset the CAPs flag
         PlugIn_ViewPort pivp = CreatePlugInViewport( VPoint);
         OCPNRegion rg = Region;
-        wxRegion r = rg.ConvertTowxRegion();
-        PlugInChartBaseGL *ppicb_gl = dynamic_cast<PlugInChartBaseGL*>(m_ppicb);
-        if(ppicb_gl){
-            ppicb_gl->RenderRegionViewOnGL( glc, pivp, r, glChartCanvas::s_b_useStencil);
+        if(rg.IsOk())
+        {
+            wxRegion r = rg.ConvertTowxRegion();
+            PlugInChartBaseGL *ppicb_gl = dynamic_cast<PlugInChartBaseGL*>(m_ppicb);
+            if(ppicb_gl){
+                ppicb_gl->RenderRegionViewOnGL( glc, pivp, r, glChartCanvas::s_b_useStencil);
+            }
+            return true;
         }
-        return true;
     }
     else
         return false;
@@ -3505,9 +3508,14 @@ bool ChartPlugInWrapper::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VP
         gs_plib_flags = 0;               // reset the CAPs flag
         PlugIn_ViewPort pivp = CreatePlugInViewport( VPoint);
         OCPNRegion rg = Region;
-        wxRegion r = rg.ConvertTowxRegion();
-        dc.SelectObject(m_ppicb->RenderRegionView( pivp, r));
-        return true;
+        if(rg.IsOk())
+        {
+            wxRegion r = rg.ConvertTowxRegion();
+            dc.SelectObject(m_ppicb->RenderRegionView( pivp, r));
+            return true;
+        }
+        else
+            return false;
     }
     else
         return false;
