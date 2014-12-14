@@ -3705,7 +3705,6 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
         //    Calculate the on-screen displayed actual scale
         //    by a simple traverse northward from the center point
         //    of roughly the canvas height
-        double tlat, tlon;
         wxPoint2DDouble r, r1;
 
         double delta_check = (VPoint.pix_height / VPoint.view_scale_ppm) / (1852. * 60);
