@@ -2038,7 +2038,9 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "WaypointRangeRingsStepUnits" ), &g_pWaypointRangeRingsStepUnits );
     
     g_colourWaypointRangeRingsColour = wxColour( *wxRED );
-    Read( _T( "WaypointRangeRingsColour" ), &g_colourWaypointRangeRingsColour );
+    wxString l_wxsWaypointRangeRingsColour;
+    Read( _T( "WaypointRangeRingsColour" ), &l_wxsWaypointRangeRingsColour );
+    g_colourWaypointRangeRingsColour.Set( l_wxsWaypointRangeRingsColour );
 
     //  Support Version 3.0 and prior config setting for Radar Rings
     bool b300RadarRings= true;

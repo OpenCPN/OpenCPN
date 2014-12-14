@@ -193,7 +193,7 @@ RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
                         else if ( wxString::FromUTF8(attr.name()) == _T("visible") )
                             l_bWaypointRangeRingsVisible =  attr.as_bool();
                         else if ( wxString::FromUTF8(attr.name()) == _T("colour") )
-                            l_wxcWaypointRangeRingsColour.Set( attr.as_string() );
+                            l_wxcWaypointRangeRingsColour.Set( wxString::FromUTF8( attr.as_string() ) );
                     }
                 }
              }// for 

@@ -3725,7 +3725,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                            
         GetCanvasPointPix( VPoint.clat, VPoint.clon, &r1 );
         GetCanvasPointPix( VPoint.clat + delta_check, VPoint.clon, &r );
-        double delta_p = sqrt( ((r1.y - r.y) * (r1.y - r.y)) + ((r1.x - r.x) * (r1.x - r.x)) );
+        double delta_p = sqrt( double( ((r1.y - r.y) * (r1.y - r.y)) + ((r1.x - r.x) * (r1.x - r.x)) ) );
         
         m_true_scale_ppm = delta_p / (rhumbDist * 1852);
         
