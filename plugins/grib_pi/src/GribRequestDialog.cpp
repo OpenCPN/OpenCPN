@@ -110,12 +110,23 @@ void GribRequestSetting::InitRequestConfig()
     m_tResUnit->SetLabel(wxString::Format( _T("\u00B0")));
     m_sCourseUnit->SetLabel(wxString::Format( _T("\u00B0")));
 
+    //Set wxSpinCtrl sizing
+    int w;
+    GetTextExtent( _T("-3600"), &w, NULL, 0, 0, OCPNGetFont(_("Dialog"), 10)); // optimal width text control size
+    m_sMovingSpeed->SetMinSize( wxSize( w + 30 , -1) );
+    m_sMovingCourse->SetMinSize( wxSize( w + 30 , -1) );
+    m_spMaxLat->SetMinSize( wxSize( w + 30 , -1) );
+    m_spMinLat->SetMinSize( wxSize( w + 30 , -1) );
+    m_spMaxLon->SetMinSize( wxSize( w + 30 , -1) );
+    m_spMinLon->SetMinSize( wxSize( w + 30 , -1) );
+
     //add tooltips
     m_pSenderAddress->SetToolTip(_("Address used to send request eMail. (Mandatory for LINUX)"));
     m_pLogin->SetToolTip(_("This is your zyGrib's forum access Login"));
     m_pCode->SetToolTip(_("Get this Code in zyGrib's forum ( This is not your password! )"));
     m_sMovingSpeed->SetToolTip(_("Enter your forescasted Speed (in Knots)"));
     m_sMovingCourse->SetToolTip(_("Enter your forecasted Course"));
+    m_toggleSelection->SetToolTip(_("Allow Start or Stop drawing an area by dragging on the map"));
 
     long i,j,k;
     ( (wxString) m_RequestConfigBase.GetChar(0) ).ToLong( &i );             //MailTo
@@ -154,8 +165,6 @@ void GribRequestSetting::InitRequestConfig()
 
     m_AllowSend = true;
     m_MailImage->SetValue( WriteMail() );
-
-    SetMailImageSize();
 }
 
 void GribRequestSetting::OnClose( wxCloseEvent& event )
@@ -165,13 +174,23 @@ void GribRequestSetting::OnClose( wxCloseEvent& event )
     this->Hide();
 }
 
-void GribRequestSetting::SetMailImageSize()
+void GribRequestSetting::SetRequestDialogSize()
 {
+    int h, w;
 #ifndef __WXMSW__                   //default resizing do not work properly on no Windows plateforms
-    int h;
     GetTextExtent( _T("abc"), NULL, &h, 0, 0, OCPNGetFont(_("Dialog"), 10) );
     m_MailImage->SetMinSize( wxSize( -1, (h * m_MailImage->GetNumberOfLines()) + 5 ) );
 #endif
+    //default sizing do not work with wxScolledWindow so we need to compute it
+    m_fgScrollSizer->Fit(m_sScrolledDialog);
+    m_fgScrollSizer->Fit( this );
+    wxSize scroll = m_fgScrollSizer->GetSize();                                                // the area size to be scrolled
+    int hfixed = m_rButton->GetSize().GetY() + m_fgFixedSizer->GetSize().GetY() + 130;         // the fixed bottom area height
+    ::wxDisplaySize( &w, &h);                                                                  // the screen size
+    h -= hfixed;                                                                               // height available for scrolling
+    int hscroll = wxMin( scroll.GetHeight(), h );                                              // set the scrolled window height
+    m_sScrolledDialog->SetMinSize( wxSize( scroll.GetWidth() + 20, hscroll ) );                //set scrolled area size
+    //
     this->Fit();
     this->Refresh();
 }
@@ -196,8 +215,6 @@ void GribRequestSetting::SetVpSize(PlugIn_ViewPort *vp)
 
     SetCoordinatesText();
     m_MailImage->SetValue( WriteMail() );
-    SetMailImageSize();
-
 }
 
 bool GribRequestSetting::MouseEventHook( wxMouseEvent &event )
@@ -252,7 +269,7 @@ void GribRequestSetting::OnMouseEventTimer( wxTimerEvent & event)
 
     SetCoordinatesText();
     m_MailImage->SetValue( WriteMail() );
-    SetMailImageSize();
+    SetRequestDialogSize();
 }
 
 void GribRequestSetting::SetCoordinatesText()
@@ -371,7 +388,7 @@ void GribRequestSetting::OnTopChange(wxCommandEvent &event)
 
     if(m_AllowSend) m_MailImage->SetValue( WriteMail() );
 
-    SetMailImageSize();
+    SetRequestDialogSize();
 }
 
 void GribRequestSetting::OnZoneSelectionModeChange( wxCommandEvent& event )
@@ -385,8 +402,9 @@ void GribRequestSetting::OnZoneSelectionModeChange( wxCommandEvent& event )
     fgZoneCoordinatesSizer->ShowItems( m_cManualZoneSel->GetValue() );
     m_toggleSelection->Show( m_cManualZoneSel->GetValue() );
 
-    this->Fit();
-    this->Refresh();
+    if(m_AllowSend) m_MailImage->SetValue( WriteMail() );
+
+    SetRequestDialogSize();
 }
 
 bool GribRequestSetting::DoRenderZoneOverlay()
@@ -464,10 +482,10 @@ void GribRequestSetting::OnMovingClick( wxCommandEvent& event )
     m_fgMovingParams->ShowItems( m_cMovingGribEnabled->IsChecked() && m_cMovingGribEnabled->IsShown() );
 
     if(m_AllowSend) m_MailImage->SetValue( WriteMail() );
-    SetMailImageSize();
+    SetRequestDialogSize();
 
-    this->Layout();
-    this->Fit();
+    //this->Layout();
+    //this->Fit();
     this->Refresh();
 }
 
@@ -479,8 +497,10 @@ void GribRequestSetting::OnCoordinatesChange( wxSpinEvent& event )
     wxCommandEvent evt;
     OnTooggleSelection( evt );                           //eventually stop graphical zone display
 
+    if( !m_AllowSend ) return;
+
     m_MailImage->SetValue( WriteMail() );
-    SetMailImageSize();
+    SetRequestDialogSize();
 }
 
 
@@ -493,7 +513,7 @@ void GribRequestSetting::OnAnyChange(wxCommandEvent &event)
 
     if(m_AllowSend) m_MailImage->SetValue( WriteMail() );
 
-    SetMailImageSize();
+    SetRequestDialogSize();
 }
 
 void GribRequestSetting::OnTimeRangeChange(wxCommandEvent &event)
@@ -513,7 +533,7 @@ void GribRequestSetting::OnTimeRangeChange(wxCommandEvent &event)
 
     if(m_AllowSend) m_MailImage->SetValue( WriteMail() );
 
-    SetMailImageSize();
+    SetRequestDialogSize();
 }
 
 void GribRequestSetting::OnSaveMail( wxCommandEvent& event )
@@ -646,7 +666,7 @@ wxString GribRequestSetting::WriteMail()
         }
         r_topmess.Append(wxT("meteo : "));
         r_topmess.append(m_pModel->GetStringSelection() + _T("\n"));
-        if ( m_pLogin->GetValue().IsEmpty() || m_pCode->GetValue().IsEmpty() ) m_MailError_Nb =1;
+        if ( m_pLogin->GetValue().IsEmpty() || m_pCode->GetValue().IsEmpty() ) m_MailError_Nb = 6;
         break;
     }
     //write the parameters part of the mail
@@ -700,11 +720,11 @@ wxString GribRequestSetting::WriteMail()
         }
     }
 
-    if( !EstimateFileSize() ) m_MailError_Nb += 2;
+    m_MailError_Nb += EstimateFileSize();
     return wxString( r_topmess + r_parameters );
 }
 
-bool GribRequestSetting::EstimateFileSize()
+int GribRequestSetting::EstimateFileSize()
 {
     //define size limits for zyGrib
     int limit = IsZYGRIB ? 2 : 0;                                            //new limit  2 mb
@@ -714,6 +734,15 @@ bool GribRequestSetting::EstimateFileSize()
     m_pResolution->GetStringSelection().ToDouble(&reso);
     m_pTimeRange->GetStringSelection().ToDouble(&time);
     m_pInterval->GetStringSelection().ToDouble(&inter);
+
+    if( m_spMaxLon->GetValue() - m_spMinLon->GetValue() < 0 || m_spMaxLat->GetValue() - m_spMinLat->GetValue() < 0 )
+        return 3;                               // maxlat must be > minlat & maxlon must be > minlon
+
+	if ( m_spMaxLon->GetValue() - m_spMinLon->GetValue() > 180 || m_spMaxLat->GetValue() - m_spMinLat->GetValue() > 180 )
+        return 4;                               //ovoid too big area
+
+	if ( m_spMaxLon->GetValue() - m_spMinLon->GetValue() < 2*reso || m_spMaxLat->GetValue() - m_spMinLat->GetValue() < 2*reso  )
+        return 5;                           //ovoid too small area
 
     int npts = (int) (  ceil(((double)(m_spMaxLat->GetValue() - m_spMinLat->GetValue() )/reso))
                        * ceil(((double)(m_spMaxLon->GetValue() - m_spMinLon->GetValue() )/reso)) );
@@ -783,16 +812,11 @@ bool GribRequestSetting::EstimateFileSize()
 
     if( IsZYGRIB ) {
         m_tLimit->SetLabel(wxString( _T("( ") ) + _("Max") + wxString::Format(_T(" %d "), limit) + _("MB") + _T(" )") );
-        if(estime > limit) return false;
+        if(estime > limit) return 2;
     } else
         m_tLimit->SetLabel(wxEmptyString);
 
-    if ( m_spMaxLon->GetValue() - m_spMinLon->GetValue() < 3*reso || m_spMaxLon->GetValue() - m_spMinLon->GetValue() > 180 ||
-        m_spMaxLat->GetValue() - m_spMinLat->GetValue() < 3*reso || m_spMaxLat->GetValue() - m_spMinLat->GetValue() > 180 )
-        return false;                               //ovoid too small or too big area
-
-
-    return true;
+    return 0;
 }
 
 void GribRequestSetting::OnSendMaiL( wxCommandEvent& event  )
@@ -810,27 +834,31 @@ void GribRequestSetting::OnSendMaiL( wxCommandEvent& event  )
         m_AllowSend = true;
 
         m_MailImage->SetValue( WriteMail() );
-        SetMailImageSize();
+        SetRequestDialogSize();
 
         return;
     }
 
     const wxString error[] = { _T("\n\n"), _("Before sending an email to Zygrib you have to enter your Login and Code.\nPlease visit www.zygrib.org/ and follow instructions..."),
-        _("The file size limits are overcome!\n(2Mb for SyGrib and 180\u00B0 x 180\u00B0 for all)\nYou can zoom in and/or change parameters...") };
+        _("Too big file! zyGrib limit is 2Mb!"), _("Error! Max Lat lower than Min Lat or Max Lon lower than Min Lon!"),
+        _("Too large area! Each side must be less than 180\u00B0!"), _("Too small area for this resolution!") };
 
     m_MailImage->SetForegroundColour(wxColor( 255, 0, 0 ));
     m_AllowSend = false;
 
     if( m_MailError_Nb ) {
-       // m_MailImage->SetForegroundColour(wxColor( 255, 0, 0 ));
-        if( m_MailError_Nb == 3 )
-            m_MailImage->SetValue( error[1] + error[0] + error[2] );
-        else
+        if( m_MailError_Nb > 7 ) {
+            m_MailImage->SetValue( error[1] + error[0] + error[m_MailError_Nb - 6] );
+        } else {
+            if( m_MailError_Nb == 6 ) m_MailError_Nb = 1;
             m_MailImage->SetValue( error[m_MailError_Nb] );
+        }
+
         m_rButtonCancel->Hide();
         m_rButtonApply->Hide();
         m_rButtonYes->SetLabel(_("Continue..."));
-        SetMailImageSize();
+        m_rButton->Layout();
+        SetRequestDialogSize();
         return;
     }
 
@@ -861,5 +889,6 @@ void GribRequestSetting::OnSendMaiL( wxCommandEvent& event  )
         m_rButtonYes->Hide();
     }
     m_rButtonYes->SetLabel(_("Continue..."));
-    SetMailImageSize();
+    m_rButton->Layout();
+    SetRequestDialogSize();
 }
