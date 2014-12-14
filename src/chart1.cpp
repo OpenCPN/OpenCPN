@@ -4763,8 +4763,8 @@ void MyFrame::RegisterGlobalMenuItems()
     nav_menu->AppendRadioItem( ID_MENU_CHART_NORTHUP, _("North Up Mode") );
     nav_menu->AppendRadioItem( ID_MENU_CHART_COGUP, _("Course Up Mode") );
     nav_menu->AppendSeparator();
-    nav_menu->Append( ID_MENU_ZOOM_IN, _menuText(_("Zoom In"), _T("+")) );
-    nav_menu->Append( ID_MENU_ZOOM_OUT, _menuText(_("Zoom Out"), _T("-")) );
+    nav_menu->Append( ID_MENU_ZOOM_IN, _menuText(_("Zoom In"), _T("")) );
+    nav_menu->Append( ID_MENU_ZOOM_OUT, _menuText(_("Zoom Out"), _T("")) );
     nav_menu->AppendSeparator();
     nav_menu->Append( ID_MENU_SCALE_IN, _menuText(_("Larger Scale Chart"), _T("Ctrl-Left")) );
     nav_menu->Append( ID_MENU_SCALE_OUT, _menuText(_("Smaller Scale Chart"), _T("Ctrl-Right")) );
