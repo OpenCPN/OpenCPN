@@ -2707,7 +2707,7 @@ void MarkInfoImpl::OnMarkInfoOKClick( wxCommandEvent& event )
     if( m_pRoutePoint ) {
         m_pRoutePoint->m_iWaypointRangeRingsNumber = m_choiceWaypointRangeRingsNumber->GetSelection();
         m_pRoutePoint->m_fWaypointRangeRingsStep = atof( m_textWaypointRangeRingsStep->GetValue().mb_str() );
-        m_pRoutePoint->m_pWaypointRangeRingsStepUnits = m_choiceWaypointRangeRingsUnits->GetSelection();
+        m_pRoutePoint->m_iWaypointRangeRingsStepUnits = m_choiceWaypointRangeRingsUnits->GetSelection();
         m_pRoutePoint->m_wxcWaypointRangeRingsColour = m_colourWaypointRangeRingsColour->GetColour();
         OnPositionCtlUpdated( event );
         SaveChanges(); // write changes to globals and update config

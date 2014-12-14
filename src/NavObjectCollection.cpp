@@ -38,9 +38,9 @@ extern Select *pSelect;
 //extern bool g_bIsNewLayer;
 //extern bool g_bLayerViz;
 
-extern int g_iWaypointRangeRingsVisible;
+extern int g_iWaypointRangeRingsNumber;
 extern float g_fWaypointRangeRingsStep;
-extern int g_pWaypointRangeRingsStepUnits;
+extern int g_iWaypointRangeRingsStepUnits;
 
 NavObjectCollection1::NavObjectCollection1()
 : pugi::xml_document()
@@ -714,7 +714,7 @@ bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flags )
             pugi::xml_attribute step = child.append_attribute( "step" );
             step.set_value( pr->m_fWaypointRangeRingsStep );
             pugi::xml_attribute units = child.append_attribute( "units" );
-            units.set_value( pr->m_pWaypointRangeRingsStepUnits );
+            units.set_value( pr->m_iWaypointRangeRingsStepUnits );
             pugi::xml_attribute colour = child.append_attribute( "colour" );
             colour.set_value( pr->m_wxcWaypointRangeRingsColour.GetAsString( wxC2S_HTML_SYNTAX ).utf8_str() ) ;
         }

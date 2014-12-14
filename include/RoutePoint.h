@@ -92,7 +92,7 @@ public:
       void  SetShowWaypointRangeRings(bool b_showWaypointRangeRings) { m_bShowWaypointRangeRings = b_showWaypointRangeRings; };
       void  SetWaypointRangeRingsNumber(int i_WaypointRangeRingsNumber) { m_iWaypointRangeRingsNumber = i_WaypointRangeRingsNumber; };
       void  SetWaypointRangeRingsStep(float f_WaypointRangeRingsStep) { m_fWaypointRangeRingsStep = f_WaypointRangeRingsStep; };
-      void  SetWaypointRangeRingsStepUnits(int i_WaypointRangeRingsStepUnits) { m_pWaypointRangeRingsStepUnits = i_WaypointRangeRingsStepUnits; };
+      void  SetWaypointRangeRingsStepUnits(int i_WaypointRangeRingsStepUnits) { m_iWaypointRangeRingsStepUnits = i_WaypointRangeRingsStepUnits; };
       void  SetWaypointRangeRingsColour( wxColour wxc_WaypointRangeRingsColour ) { m_wxcWaypointRangeRingsColour = wxc_WaypointRangeRingsColour; };
 
       bool SendToGPS(const wxString& com_name, wxGauge *pProgress);
@@ -148,7 +148,7 @@ public:
       bool              m_bShowWaypointRangeRings;
       int               m_iWaypointRangeRingsNumber;
       float             m_fWaypointRangeRingsStep;
-      int               m_pWaypointRangeRingsStepUnits;
+      int               m_iWaypointRangeRingsStepUnits;
       wxColour          m_wxcWaypointRangeRingsColour;
 
 #ifdef ocpnUSE_GL

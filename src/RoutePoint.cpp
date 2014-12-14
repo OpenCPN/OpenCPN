@@ -47,9 +47,9 @@ extern bool g_btouch;
 extern bool g_bresponsive;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern double g_n_arrival_circle_radius;
-extern int g_iWaypointRangeRingsVisible;
+extern int g_iWaypointRangeRingsNumber;
 extern float g_fWaypointRangeRingsStep;
-extern int g_pWaypointRangeRingsStepUnits;
+extern int g_iWaypointRangeRingsStepUnits;
 extern wxColour g_colourWaypointRangeRingsColour;
 
 
@@ -102,9 +102,9 @@ RoutePoint::RoutePoint()
 
     m_bShowWaypointRangeRings = false;
    
-    m_iWaypointRangeRingsNumber = g_iWaypointRangeRingsVisible;
+    m_iWaypointRangeRingsNumber = g_iWaypointRangeRingsNumber;
     m_fWaypointRangeRingsStep = g_fWaypointRangeRingsStep;
-    m_pWaypointRangeRingsStepUnits = g_pWaypointRangeRingsStepUnits;
+    m_iWaypointRangeRingsStepUnits = g_iWaypointRangeRingsStepUnits;
     m_wxcWaypointRangeRingsColour = g_colourWaypointRangeRingsColour;
 }
 
@@ -152,9 +152,9 @@ RoutePoint::RoutePoint( RoutePoint* orig )
 
     m_bShowWaypointRangeRings = false;
    
-    m_iWaypointRangeRingsNumber = g_iWaypointRangeRingsVisible;
+    m_iWaypointRangeRingsNumber = g_iWaypointRangeRingsNumber;
     m_fWaypointRangeRingsStep = g_fWaypointRangeRingsStep;
-    m_pWaypointRangeRingsStepUnits = g_pWaypointRangeRingsStepUnits;
+    m_iWaypointRangeRingsStepUnits = g_iWaypointRangeRingsStepUnits;
     m_wxcWaypointRangeRingsColour = g_colourWaypointRangeRingsColour;
     
 }
@@ -226,6 +226,10 @@ RoutePoint::RoutePoint( double lat, double lon, const wxString& icon_ident, cons
     SetWaypointArrivalRadius( g_n_arrival_circle_radius );
 
     m_bShowWaypointRangeRings = false;
+    m_iWaypointRangeRingsNumber = g_iWaypointRangeRingsNumber;
+    m_fWaypointRangeRingsStep = g_fWaypointRangeRingsStep;
+    m_iWaypointRangeRingsStepUnits = g_iWaypointRangeRingsStepUnits;
+    m_wxcWaypointRangeRingsColour = g_colourWaypointRangeRingsColour;
 }
 
 RoutePoint::~RoutePoint( void )
@@ -402,7 +406,7 @@ void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
     // Draw waypoint radar rings if activated
     if( m_iWaypointRangeRingsNumber && m_bShowWaypointRangeRings ) {
         double factor = 1.00;
-        if( m_pWaypointRangeRingsStepUnits == 1 )          // nautical miles
+        if( m_iWaypointRangeRingsStepUnits == 1 )          // nautical miles
             factor = 1 / 1.852;
 
         factor *= m_fWaypointRangeRingsStep;
@@ -722,7 +726,7 @@ double RoutePoint::GetWaypointArrivalRadius() {
 
 int   RoutePoint::GetWaypointRangeRingsNumber() { 
     if ( m_iWaypointRangeRingsNumber == -1 )
-        return g_iWaypointRangeRingsVisible;
+        return g_iWaypointRangeRingsNumber;
     else
         return m_iWaypointRangeRingsNumber; 
 }
@@ -735,10 +739,10 @@ float RoutePoint::GetWaypointRangeRingsStep() {
 }
 
 int   RoutePoint::GetWaypointRangeRingsStepUnits() { 
-    if ( m_pWaypointRangeRingsStepUnits == -1 )
-        return g_pWaypointRangeRingsStepUnits;
+    if ( m_iWaypointRangeRingsStepUnits == -1 )
+        return g_iWaypointRangeRingsStepUnits;
     else
-        return m_pWaypointRangeRingsStepUnits ; 
+        return m_iWaypointRangeRingsStepUnits ; 
 }
 
 wxColour RoutePoint::GetWaypointRangeRingsColour(void) { 
