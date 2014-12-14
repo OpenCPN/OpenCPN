@@ -1915,8 +1915,8 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
 
 
     // spacer
-    optionsColumn->Add( new wxStaticText(ps57Ctl, wxID_ANY, _T("")) );
-    optionsColumn->Add( new wxStaticText(ps57Ctl, wxID_ANY, _T("")) );
+    optionsColumn->Add( 0, border_size*4 );
+    optionsColumn->Add( 0, border_size*4 );
 
 
     // graphics options
@@ -1940,8 +1940,8 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
 
 
     // spacer
-    optionsColumn->Add( new wxStaticText(ps57Ctl, wxID_ANY, _T("")) );
-    optionsColumn->Add( new wxStaticText(ps57Ctl, wxID_ANY, _T("")) );
+    optionsColumn->Add( 0, border_size*4 );
+    optionsColumn->Add( 0, border_size*4 );
 
 
     // depth options
@@ -1971,8 +1971,8 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
 
 
     // spacer
-    optionsColumn->Add( new wxStaticText(ps57Ctl, wxID_ANY, _T("")) );
-    optionsColumn->Add( new wxStaticText(ps57Ctl, wxID_ANY, _T("")) );
+    optionsColumn->Add( 0, border_size*4 );
+    optionsColumn->Add( 0, border_size*4 );
 
 
 #ifdef USE_S57
@@ -2170,8 +2170,8 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
 
 
     // spacer
-    generalSizer->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _T("")) );
-    generalSizer->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _T("")) );
+    generalSizer->Add( 0, border_size*4 );
+    generalSizer->Add( 0, border_size*4 );
 
 
     // Nav Mode
@@ -2192,8 +2192,8 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
     
     
     // spacer
-    generalSizer->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _T("")) );
-    generalSizer->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _T("")) );
+    generalSizer->Add( 0, border_size*4 );
+    generalSizer->Add( 0, border_size*4 );
 
     
     // Control Options
@@ -2209,8 +2209,8 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
 
 
     // spacer
-    generalSizer->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _T("")) );
-    generalSizer->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _T("")) );
+    generalSizer->Add( 0, border_size*4 );
+    generalSizer->Add( 0, border_size*4 );
 
     
     // Control Options
@@ -2227,8 +2227,8 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
     
 
     // spacer
-    generalSizer->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _T("")) );
-    generalSizer->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _T("")) );
+    generalSizer->Add( 0, border_size*4 );
+    generalSizer->Add( 0, border_size*4 );
 
     
     // Display Options
@@ -2265,8 +2265,8 @@ void options::CreatePanel_Units( size_t parent, int border_size, int group_item_
 
 
     // spacer
-    unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
-    unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
+    unitsSizer->Add( 0, border_size*4 );
+    unitsSizer->Add( 0, border_size*4 );
 
 
     // distance units
@@ -2310,8 +2310,8 @@ void options::CreatePanel_Units( size_t parent, int border_size, int group_item_
 
 
     // spacer
-    unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
-    unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
+    unitsSizer->Add( 0, border_size*4 );
+    unitsSizer->Add( 0, border_size*4 );
 
 
     // bearings (magnetic/true, variation)
