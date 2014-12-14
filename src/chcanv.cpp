@@ -6669,6 +6669,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
         MenuAppend( contextMenu, ID_DEF_MENU_TOGGLE_FULL, _("Toggle Full Screen") );
         full_toggle_added = true;
     }
+        
     
     if(!full_toggle_added){
         if(gFrame->IsFullScreen()){
