@@ -524,9 +524,11 @@ class MyPrintout: public wxPrintout
   void GetPageInfo(int *minPage, int *maxPage, int *selPageFrom, int *selPageTo);
 
   void DrawPageOne(wxDC *dc);
-
-
-
+  
+  void GenerateGLbmp(void);
+  
+private:
+  wxBitmap m_GLbmp;
 
 };
 

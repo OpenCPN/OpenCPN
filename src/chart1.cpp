@@ -7719,6 +7719,12 @@ void MyFrame::DoPrint( void )
     wxPrinter printer( &printDialogData );
 
     MyPrintout printout( _("Chart Print") );
+    
+    //  In OperGL mode, make the bitmap capture of the screen before the print method starts,
+    //  so as to be sure the "Abort..." dialog does not appear on the image
+    if(g_bopengl) 
+        printout.GenerateGLbmp( );
+                
     if( !printer.Print( this, &printout, true ) ) {
         if( wxPrinter::GetLastError() == wxPRINTER_ERROR ) OCPNMessageBox(NULL,
                 _("There was a problem printing.\nPerhaps your current printer is not set correctly?"),
@@ -9052,31 +9058,12 @@ void MyPrintout::DrawPageOne( wxDC *dc )
 
     if(g_bopengl) {
 #ifdef ocpnUSE_GL
-        int gsx = cc1->GetglCanvas()->GetSize().x;
-        int gsy = cc1->GetglCanvas()->GetSize().y;
-
-        unsigned char *buffer = (unsigned char *)malloc( gsx * gsy * 4 );
-        glReadPixels(0, 0, gsx, gsy, GL_RGBA, GL_UNSIGNED_BYTE, buffer );
-        
-        unsigned char *e = (unsigned char *)malloc( gsx * gsy * 3 );
-       
-        if(buffer && e){
-            for( int p = 0; p < gsx*gsy; p++ ) {
-                e[3*p+0] = buffer[4*p+0];
-                e[3*p+1] = buffer[4*p+1];
-                e[3*p+2] = buffer[4*p+2];
-            }
+        if(m_GLbmp.IsOk()){
+            wxMemoryDC mdc;
+            mdc.SelectObject( m_GLbmp );
+            dc->Blit( 0, 0, m_GLbmp.GetWidth(), m_GLbmp.GetHeight(), &mdc, 0, 0 );
+            mdc.SelectObject( wxNullBitmap );
         }
-        free(buffer);
-        
-        wxImage image( gsx,gsy );
-        image.SetData(e);
-        wxImage mir_imag = image.Mirror( false );
-        wxBitmap bmp( mir_imag );
-        wxMemoryDC mdc;
-        mdc.SelectObject( bmp );
-        dc->Blit( 0, 0, bmp.GetWidth(), bmp.GetHeight(), &mdc, 0, 0 );
-        mdc.SelectObject( wxNullBitmap );
 #endif
     }
     else {
@@ -9091,6 +9078,37 @@ void MyPrintout::DrawPageOne( wxDC *dc )
     }
 
 }
+
+void MyPrintout::GenerateGLbmp( )
+{
+    if(g_bopengl) {
+#ifdef ocpnUSE_GL
+        int gsx = cc1->GetglCanvas()->GetSize().x;
+        int gsy = cc1->GetglCanvas()->GetSize().y;
+        
+        unsigned char *buffer = (unsigned char *)malloc( gsx * gsy * 4 );
+        glReadPixels(0, 0, gsx, gsy, GL_RGBA, GL_UNSIGNED_BYTE, buffer );
+        
+        unsigned char *e = (unsigned char *)malloc( gsx * gsy * 3 );
+        
+        if(buffer && e){
+            for( int p = 0; p < gsx*gsy; p++ ) {
+                e[3*p+0] = buffer[4*p+0];
+                e[3*p+1] = buffer[4*p+1];
+                e[3*p+2] = buffer[4*p+2];
+            }
+        }
+        free(buffer);
+        
+        wxImage image( gsx,gsy );
+        image.SetData(e);
+        wxImage mir_imag = image.Mirror( false );
+        m_GLbmp = wxBitmap( mir_imag );
+#endif
+    }
+}
+
+
 
 //---------------------------------------------------------------------------------------
 //
