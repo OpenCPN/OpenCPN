@@ -156,6 +156,7 @@ enum {
     ID_MAGAPBCHECKBOX,
     ID_MOBILEBOX,
     ID_REPONSIVEBOX,
+    ID_SIZEMANUALRADIOBUTTON,
     xID_OK
 };
 
@@ -257,6 +258,10 @@ public:
     void OnChooseFont( wxCommandEvent& event );
     void OnCPAWarnClick( wxCommandEvent& event );
     
+    void OnSizeAutoButton( wxCommandEvent& event );
+    void OnSizeManualButton( wxCommandEvent& event );
+    
+    
 #ifdef __WXGTK__
     void OnChooseFontColor( wxCommandEvent& event );
 #endif
@@ -306,6 +311,7 @@ public:
     wxScrolledWindow        *pDisplayPanel;
     wxCheckBox              *pShowStatusBar;
     wxCheckBox              *pShowMenuBar;
+    wxCheckBox              *pShowChartBar;
     wxCheckBox              *pShowCompassWin;
     wxCheckBox              *pPrintShowIcon;
     wxCheckBox              *pCDOOutlines;
@@ -334,8 +340,10 @@ public:
     int                      k_tides;
     wxCheckBox              *pOverzoomEmphasis;
     wxCheckBox              *pOZScaleVector;
+    wxTextCtrl              *pScreenMM;
+    wxRadioButton           *pRBSizeAuto;
+    wxRadioButton           *pRBSizeManual;
     
-
     
 //    For GPS Page
     wxListCtrl* m_lcSources;
@@ -966,6 +974,8 @@ class SentenceListDlg : public wxDialog
 ///////////////////////////////////////////////////////////////////////////////
 class OpenGLOptionsDlg : public wxDialog
 {
+    DECLARE_EVENT_TABLE()
+
 public:
     wxGridSizer *m_bSizer1;
     wxBoxSizer *m_bSizer2;
@@ -974,13 +984,23 @@ public:
 
     wxCheckBox *m_cbTextureCompression, *m_cbTextureCompressionCaching;
 
-    wxCheckBox *m_cbRebuildTextureCache;
-    wxCheckBox *m_cbClearTextureCache;
+    wxButton *m_bRebuildTextureCache;
+    wxButton *m_bClearTextureCache;
+
+    wxStaticText *m_stTextureCacheSize;
     
     wxSpinCtrl *m_sTextureDimension;
     wxSpinCtrl *m_sTextureMemorySize;
 
     OpenGLOptionsDlg( wxWindow* parent, bool glTicked );
+    
+    void OnButtonRebuild( wxCommandEvent& event );
+    void OnButtonClear( wxCommandEvent& event );
+
+    wxString TextureCacheSize();
+    
+    bool m_brebuild_cache;
+
 };
 
 

@@ -51,6 +51,7 @@
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
+extern GLuint g_raster_format;
 #endif
 
 #include "chartdbs.h"
@@ -81,6 +82,7 @@ extern ChartCanvas      *cc1;
 extern wxString         g_PrivateDataDir;
 
 extern bool             g_bShowOutlines;
+extern bool             g_bShowChartBar;
 extern bool             g_bShowDepthUnits;
 extern bool             g_bskew_comp;
 extern bool             g_bopengl;
@@ -230,6 +232,8 @@ bool                    g_bLoadedDisabledPlugins;
 
 extern bool             g_btouch;
 extern bool             g_bresponsive;
+
+extern double           g_config_display_size_mm;
 
 extern "C" bool CheckSerialAccess( void );
 
@@ -1459,9 +1463,13 @@ void options::OnConnectionToggleEnable( wxMouseEvent &event )
     if( clicked_index > -1 && event.GetX() < m_lcSources->GetColumnWidth( 0 ) ) {
         // Process the clicked item
         ConnectionParams *conn = g_pConnectionParams->Item( m_lcSources->GetItemData( clicked_index ) );
-        conn->bEnabled = !conn->bEnabled;
-        m_connection_enabled = conn->bEnabled;
-        m_lcSources->SetItemImage( clicked_index, conn->bEnabled ? 1 : 0 );
+        if(conn){
+            conn->bEnabled = !conn->bEnabled;
+            m_connection_enabled = conn->bEnabled;
+            conn->b_IsSetup = false;            // Mark as changed
+        
+            m_lcSources->SetItemImage( clicked_index, conn->bEnabled ? 1 : 0 );
+        }
 
         cc1->Refresh();
     }
@@ -1739,7 +1747,7 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
     itemBoxSizerUI->Add( 0, border_size*3 );
     wxStaticText* zoomText = new wxStaticText( m_ChartDisplayPage, wxID_ANY,
         _("With a lower value, the same zoom level shows a less detailed chart.\nWith a higher value, the same zoom level shows a more detailed chart.") );
-    wxFont* dialogFont = FontMgr::Get().GetFont(_T("Dialog"));
+    wxFont* dialogFont = FontMgr::Get().GetFont(_("Dialog"));
     smallFont = new wxFont( * dialogFont ); // we can't use Smaller() because wx2.8 doesn't support it
     smallFont->SetPointSize( (smallFont->GetPointSize() / 1.2) + 0.5 ); // + 0.5 to round instead of truncate
     zoomText->SetFont( * smallFont );
@@ -1778,7 +1786,31 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
     // spacer
     itemBoxSizerUI->Add( 0, border_size*3 );
     itemBoxSizerUI->Add( 0, border_size*3 );
+
+    //  Display size/DPI
+    itemBoxSizerUI->Add( new wxStaticText( m_ChartDisplayPage, wxID_ANY, _("Physical Screen Width") ), labelFlags );
+    wxBoxSizer *pDPIRow = new wxBoxSizer( wxHORIZONTAL );
+    itemBoxSizerUI->Add( pDPIRow, 0, wxEXPAND );
     
+    pRBSizeAuto = new wxRadioButton( m_ChartDisplayPage, wxID_ANY, _("Auto") );
+    pDPIRow->Add( pRBSizeAuto, inputFlags );
+    pDPIRow->AddSpacer( 10 );
+    pRBSizeManual = new wxRadioButton( m_ChartDisplayPage, ID_SIZEMANUALRADIOBUTTON, _("Manual:") );
+    pDPIRow->Add( pRBSizeManual, inputFlags );
+
+    pScreenMM = new wxTextCtrl( m_ChartDisplayPage, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize( 50, -1 ), wxTE_RIGHT  );
+    pDPIRow->Add( pScreenMM, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
+
+    pDPIRow->Add( new wxStaticText( m_ChartDisplayPage, wxID_ANY, _("mm") ), inputFlags );
+
+    pRBSizeAuto->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED,
+                           wxCommandEventHandler( options::OnSizeAutoButton ), NULL, this );
+    pRBSizeManual->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED,
+                          wxCommandEventHandler( options::OnSizeManualButton ), NULL, this );
+    
+    // spacer
+    itemBoxSizerUI->Add( 0, border_size*3 );
+    itemBoxSizerUI->Add( 0, border_size*3 );
     
     // OpenGL Options
     itemBoxSizerUI->Add( new wxStaticText( m_ChartDisplayPage, wxID_ANY, _("Graphics") ), labelFlags );
@@ -1888,8 +1920,8 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
 
 
     // spacer
-    optionsColumn->Add( new wxStaticText(ps57Ctl, wxID_ANY, _T("")) );
-    optionsColumn->Add( new wxStaticText(ps57Ctl, wxID_ANY, _T("")) );
+    optionsColumn->Add( 0, border_size*4 );
+    optionsColumn->Add( 0, border_size*4 );
 
 
     // graphics options
@@ -1913,8 +1945,8 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
 
 
     // spacer
-    optionsColumn->Add( new wxStaticText(ps57Ctl, wxID_ANY, _T("")) );
-    optionsColumn->Add( new wxStaticText(ps57Ctl, wxID_ANY, _T("")) );
+    optionsColumn->Add( 0, border_size*4 );
+    optionsColumn->Add( 0, border_size*4 );
 
 
     // depth options
@@ -1944,8 +1976,8 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
 
 
     // spacer
-    optionsColumn->Add( new wxStaticText(ps57Ctl, wxID_ANY, _T("")) );
-    optionsColumn->Add( new wxStaticText(ps57Ctl, wxID_ANY, _T("")) );
+    optionsColumn->Add( 0, border_size*4 );
+    optionsColumn->Add( 0, border_size*4 );
 
 
 #ifdef USE_S57
@@ -2143,8 +2175,8 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
 
 
     // spacer
-    generalSizer->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _T("")) );
-    generalSizer->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _T("")) );
+    generalSizer->Add( 0, border_size*4 );
+    generalSizer->Add( 0, border_size*4 );
 
 
     // Nav Mode
@@ -2165,8 +2197,8 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
     
     
     // spacer
-    generalSizer->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _T("")) );
-    generalSizer->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _T("")) );
+    generalSizer->Add( 0, border_size*4 );
+    generalSizer->Add( 0, border_size*4 );
 
     
     // Control Options
@@ -2182,8 +2214,8 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
 
 
     // spacer
-    generalSizer->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _T("")) );
-    generalSizer->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _T("")) );
+    generalSizer->Add( 0, border_size*4 );
+    generalSizer->Add( 0, border_size*4 );
 
     
     // Control Options
@@ -2200,8 +2232,8 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
     
 
     // spacer
-    generalSizer->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _T("")) );
-    generalSizer->Add( new wxStaticText(pDisplayPanel, wxID_ANY, _T("")) );
+    generalSizer->Add( 0, border_size*4 );
+    generalSizer->Add( 0, border_size*4 );
 
     
     // Display Options
@@ -2238,8 +2270,8 @@ void options::CreatePanel_Units( size_t parent, int border_size, int group_item_
 
 
     // spacer
-    unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
-    unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
+    unitsSizer->Add( 0, border_size*4 );
+    unitsSizer->Add( 0, border_size*4 );
 
 
     // distance units
@@ -2283,8 +2315,8 @@ void options::CreatePanel_Units( size_t parent, int border_size, int group_item_
 
 
     // spacer
-    unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
-    unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
+    unitsSizer->Add( 0, border_size*4 );
+    unitsSizer->Add( 0, border_size*4 );
 
 
     // bearings (magnetic/true, variation)
@@ -2593,6 +2625,10 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
     miscOptions->Add( pShowMenuBar, 0, wxALL, border_size );
 #endif
 
+    pShowChartBar = new wxCheckBox( itemPanelFont, wxID_ANY, _("Show Chart Bar") );
+    pShowChartBar->SetValue( g_bShowChartBar );
+    miscOptions->Add( pShowChartBar, 0, wxALL, border_size );
+    
     pShowCompassWin = new wxCheckBox( itemPanelFont, wxID_ANY, _("Show Compass/GPS Status Window") );
     pShowCompassWin->SetValue( FALSE );
     miscOptions->Add( pShowCompassWin, 0, wxALL, border_size );
@@ -3032,6 +3068,19 @@ void options::SetInitialSettings()
     
     m_choicePrecision->SetSelection( g_NMEAAPBPrecision );
     
+    wxString screenmm;
+    if(g_config_display_size_mm > 0){
+        screenmm.Printf(_T("%d"), int(g_config_display_size_mm));
+        pRBSizeManual->SetValue( true );
+    }
+    else{
+        screenmm = _("Auto");
+        pRBSizeAuto->SetValue( true );
+        pScreenMM->Disable();
+    }
+    
+    pScreenMM->SetValue(screenmm);
+    
 #ifdef USE_S57
     m_pSlider_CM93_Zoom->SetValue( g_cm93_zoom_factor );
 
@@ -3152,6 +3201,24 @@ void options::UpdateOptionsUnits()
     m_DeepCtl->SetValue( s );
 }
 
+void options::OnSizeAutoButton( wxCommandEvent& event )
+{
+    pScreenMM->SetValue(_("Auto"));
+    pScreenMM->Disable();
+}
+
+void options::OnSizeManualButton( wxCommandEvent& event )
+{
+    wxString screenmm;
+    if(g_config_display_size_mm > 0){
+        screenmm.Printf(_T("%d"), int(g_config_display_size_mm));
+    }
+    
+    pScreenMM->SetValue(screenmm);
+    pScreenMM->Enable();
+    
+}
+
 void options::OnUnitsChoice( wxCommandEvent& event )
 {
     UpdateOptionsUnits();
@@ -3227,16 +3294,6 @@ void options::OnOpenGLOptions( wxCommandEvent& event )
         else
             g_GLOptions.m_bUseAcceleratedPanning = cc1->GetglCanvas()->CanAcceleratePanning();
 
-        if(g_bopengl &&
-           g_GLOptions.m_bTextureCompression != dlg.m_cbTextureCompression->GetValue()) {
-            ::wxBeginBusyCursor();
-            cc1->GetglCanvas()->ClearAllRasterTextures();
-            ::wxEndBusyCursor();
-            
-            g_GLOptions.m_bTextureCompression = dlg.m_cbTextureCompression->GetValue();
-            cc1->GetglCanvas()->SetupCompression();
-        }
-
         g_GLOptions.m_bTextureCompression = dlg.m_cbTextureCompression->GetValue();
         
         if(g_bexpert){
@@ -3246,32 +3303,24 @@ void options::OnOpenGLOptions( wxCommandEvent& event )
         else{
             g_GLOptions.m_bTextureCompressionCaching = g_GLOptions.m_bTextureCompression;
         }
-        
-        
-        
-        if(g_GLOptions.m_bTextureCompressionCaching && dlg.m_cbClearTextureCache->GetValue()){
-            wxString path =  g_PrivateDataDir + wxFileName::GetPathSeparator() + _T("raster_texture_cache");
-            if(::wxDirExists( path )){
-                ::wxBeginBusyCursor();
-                cc1->GetglCanvas()->ClearAllRasterTextures();
-                
-                wxArrayString files;
-                size_t nfiles = wxDir::GetAllFiles(path, &files);
-                for(unsigned int i=0 ; i < files.GetCount() ; i++){
-                    ::wxRemoveFile(files[i]);
-                }
-                ::wxEndBusyCursor();
-                
-            }
-        }
+    
+        if(g_bopengl &&
+           g_GLOptions.m_bTextureCompression != dlg.m_cbTextureCompression->GetValue()) {
+            g_GLOptions.m_bTextureCompression = dlg.m_cbTextureCompression->GetValue();
+            cc1->GetglCanvas()->SetupCompression();
             
-        if(g_GLOptions.m_bTextureCompressionCaching && dlg.m_cbRebuildTextureCache->GetValue()){
-            this->Hide();
-            cc1->Disable();
-            BuildCompressedCache();
-            cc1->Enable();
-            this->Show();
+            ::wxBeginBusyCursor();
+            cc1->GetglCanvas()->ClearAllRasterTextures();
+            ::wxEndBusyCursor();
+            
         }
+    }
+
+    if(dlg.m_brebuild_cache) {
+        Hide();
+        cc1->Disable();
+        BuildCompressedCache();
+        cc1->Enable();
     }
 #endif
 }
@@ -3630,7 +3679,21 @@ void options::OnApplyClick( wxCommandEvent& event )
 #endif
         m_pConfig->m_bShowCompassWin = pShowCompassWin->GetValue();
     }
+    
+    g_bShowChartBar = pShowChartBar->GetValue();
 
+    wxString screenmm = pScreenMM->GetValue();
+    long mm = -1;
+    screenmm.ToLong(&mm);
+    if(mm >0){
+        g_config_display_size_mm = mm;
+    }
+    else{
+        g_config_display_size_mm = -1;
+    }
+        
+    
+    
 //TODO    g_bGarminHost = pGarminHost->GetValue();
 
     g_bShowOutlines = pCDOOutlines->GetValue();
@@ -4791,7 +4854,7 @@ void ChartGroupsUI::OnNewGroup( wxCommandEvent &event )
         AddEmptyGroupPage( pd->GetValue() );
         ChartGroup *pGroup = new ChartGroup;
         pGroup->m_group_name = pd->GetValue();
-        if( m_pGroupArray ) m_pGroupArray->Add( pGroup );
+        m_pGroupArray->Add( pGroup );
 
         m_GroupSelectedPage = m_GroupNB->GetPageCount() - 1;      // select the new page
         m_GroupNB->ChangeSelection( m_GroupSelectedPage );
@@ -5735,6 +5798,13 @@ void SentenceListDlg::OnCancelClick( wxCommandEvent& event ) { event.Skip(); }
 void SentenceListDlg::OnOkClick( wxCommandEvent& event ) { event.Skip(); }
  
 //OpenGLOptionsDlg
+enum { ID_BUTTON_REBUILD, ID_BUTTON_CLEAR };
+
+BEGIN_EVENT_TABLE( OpenGLOptionsDlg, wxDialog )
+    EVT_BUTTON( ID_BUTTON_REBUILD, OpenGLOptionsDlg::OnButtonRebuild )
+    EVT_BUTTON( ID_BUTTON_CLEAR, OpenGLOptionsDlg::OnButtonClear )
+END_EVENT_TABLE()
+
 
 OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
 {
@@ -5748,9 +5818,11 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
     
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     SetFont( *qFont );
+
+    m_brebuild_cache = false;
     
 #ifdef ocpnUSE_GL
-    m_bSizer1 = new wxFlexGridSizer( 2 );
+    m_bSizer1 = new wxFlexGridSizer( 3 );
     this->SetSizeHints( wxDefaultSize, wxDefaultSize );
 
     if(g_bexpert) {
@@ -5795,9 +5867,6 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
     extern PFNGLCOMPRESSEDTEXIMAGE2DPROC s_glCompressedTexImage2D;
     extern bool  b_glEntryPointsSet;
     
-    if(!glTicked)
-        m_cbTextureCompression->Disable();
-    
     if(b_glEntryPointsSet){
         if(!s_glCompressedTexImage2D) {
             g_GLOptions.m_bTextureCompressionCaching = false;
@@ -5819,18 +5888,24 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
         m_bSizer1->Add(m_sTextureMemorySize, 0, wxALL | wxEXPAND, 5);
 
     }
+
+    m_bSizer1->AddSpacer(0);
+    m_bSizer1->AddSpacer(0);
     
-    m_cbRebuildTextureCache = new wxCheckBox(this, wxID_ANY, _("Rebuild Texture Cache") );
-    m_bSizer1->Add(m_cbRebuildTextureCache, 0, wxALL | wxEXPAND, 5);
-    m_cbRebuildTextureCache->Enable(g_GLOptions.m_bTextureCompressionCaching);
-    if(!glTicked)
-        m_cbRebuildTextureCache->Disable();
+    m_bRebuildTextureCache = new wxButton(this, ID_BUTTON_REBUILD, _("Rebuild Texture Cache") );
+    m_bSizer1->Add(m_bRebuildTextureCache, 0, wxALL | wxEXPAND, 5);
+    m_bRebuildTextureCache->Enable(g_GLOptions.m_bTextureCompressionCaching);
     
-    m_cbClearTextureCache = new wxCheckBox(this, wxID_ANY, _("Clear Texture Cache") );
-    m_bSizer1->Add(m_cbClearTextureCache, 0, wxALL | wxEXPAND, 5);
-    m_cbClearTextureCache->Enable(g_GLOptions.m_bTextureCompressionCaching);
-    if(!glTicked)
-        m_cbClearTextureCache->Disable();
+    if(!g_bopengl || g_raster_format == GL_RGB)
+        m_bRebuildTextureCache->Disable();
+    
+    m_bClearTextureCache = new wxButton(this, ID_BUTTON_CLEAR, _("Clear Texture Cache") );
+    m_bSizer1->Add(m_bClearTextureCache, 0, wxALL | wxEXPAND, 5);
+    m_bClearTextureCache->Enable(g_GLOptions.m_bTextureCompressionCaching);
+
+    m_stTextureCacheSize = new wxStaticText(this, wxID_STATIC, TextureCacheSize());
+    m_bSizer1->Add( m_stTextureCacheSize, 0,
+                    wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, 5 );
     
     wxStdDialogButtonSizer * m_sdbSizer4 = new wxStdDialogButtonSizer();
     wxButton *bOK = new wxButton( this, wxID_OK );
@@ -5848,4 +5923,52 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
 
     Fit();
 #endif
+}
+
+void OpenGLOptionsDlg::OnButtonRebuild( wxCommandEvent& event )
+{
+    if(g_GLOptions.m_bTextureCompressionCaching) {
+        m_brebuild_cache = true;
+        EndModal(wxID_CANCEL);
+    }
+}
+
+void OpenGLOptionsDlg::OnButtonClear( wxCommandEvent& event )
+{
+#ifdef ocpnUSE_GL
+    ::wxBeginBusyCursor();
+    if(g_bopengl)
+        cc1->GetglCanvas()->ClearAllRasterTextures();
+
+    wxString path =  g_PrivateDataDir + wxFileName::GetPathSeparator() + _T("raster_texture_cache");
+    if(::wxDirExists( path )){
+        cc1->GetglCanvas()->ClearAllRasterTextures();
+        
+        wxArrayString files;
+        size_t nfiles = wxDir::GetAllFiles(path, &files);
+        for(unsigned int i=0 ; i < files.GetCount() ; i++){
+            ::wxRemoveFile(files[i]);
+        }                
+    }
+    
+    m_stTextureCacheSize->SetLabel(TextureCacheSize());
+    ::wxEndBusyCursor();
+#endif
+}
+
+wxString OpenGLOptionsDlg::TextureCacheSize()
+{
+    wxString path =  g_PrivateDataDir + wxFileName::GetPathSeparator() + _T("raster_texture_cache");
+    int total = 0;
+    if(::wxDirExists( path )){
+        cc1->GetglCanvas()->ClearAllRasterTextures();
+                
+        wxArrayString files;
+        size_t nfiles = wxDir::GetAllFiles(path, &files);
+        for(unsigned int i=0 ; i < files.GetCount() ; i++){
+            total += wxFile(files[i]).Length();
+        }
+    }
+
+    return wxString::Format(_T("%.1f MB"), total/1024.0/1024.0);
 }

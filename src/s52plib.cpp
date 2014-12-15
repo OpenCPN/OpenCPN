@@ -260,13 +260,7 @@ s52plib::s52plib( const wxString& PLib, bool b_forceLegacy )
     m_VersionMajor = 3;
     m_VersionMinor = 2;
 
-    //    Compute display scale factor
-    int mmx, mmy;
-    wxDisplaySizeMM( &mmx, &mmy );
-    int sx, sy;
-    wxDisplaySize( &sx, &sy );
-
-    m_display_pix_per_mm = ( (double) sx ) / ( (double) mmx );
+    canvas_pix_per_mm = 3.;
 
     //        Set up some default flags
     m_bDeClutterText = false;
@@ -4106,7 +4100,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     if( ( rules->razRule->pixelPtr == NULL ) || ( rules->razRule->parm1 != m_colortable_index ) ) {
         //  Render the sector light to a bitmap
 
-        rad = (int) ( radius * m_display_pix_per_mm );
+        rad = (int) ( radius * canvas_pix_per_mm );
 
         width = ( rad * 2 ) + 28;
         height = ( rad * 2 ) + 28;
@@ -4259,7 +4253,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
             glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
 
-            rad = (int) ( radius * m_display_pix_per_mm );
+            rad = (int) ( radius * canvas_pix_per_mm );
 
             //    Render the symbology as a zero based Display List
 
@@ -4292,7 +4286,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
             //    Draw the sector legs
             if( sector_radius > 0 ) {
-                int leg_len = (int) ( sector_radius * m_display_pix_per_mm );
+                int leg_len = (int) ( sector_radius * canvas_pix_per_mm );
 
                 wxColour c = GetGlobalColor( _T ( "CHBLK" ) );
                 glColor4ub( c.Red(), c.Green(), c.Blue(), c.Alpha() );
@@ -4369,11 +4363,11 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         //    Draw the sector legs directly on the target DC
         //    so that anti-aliasing works against the drawn image (cannot be cached...)
         if( sector_radius > 0 ) {
-            int leg_len = (int) ( sector_radius * m_display_pix_per_mm );
+            int leg_len = (int) ( sector_radius * canvas_pix_per_mm );
 
             wxDash dash1[2];
-            dash1[0] = (int) ( 3.6 * m_display_pix_per_mm ); //8// Long dash  <---------+
-            dash1[1] = (int) ( 1.8 * m_display_pix_per_mm ); //2// Short gap            |
+            dash1[0] = (int) ( 3.6 * canvas_pix_per_mm ); //8// Long dash  <---------+
+            dash1[1] = (int) ( 1.8 * canvas_pix_per_mm ); //2// Short gap            |
 
             /*
              wxPen *pthispen = new wxPen(*wxBLACK_PEN);
@@ -6483,11 +6477,11 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
         glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
 
-        int xr = obj_xmin; //0;
-        int yr = obj_ymin; //0;
         int h = ppatt_spec->height;
         int w = ppatt_spec->width;
-
+        int xr = obj_xmin;
+        int yr = obj_ymin;
+        
         float ww = (float) ppatt_spec->width / (float) ppatt_spec->w_pot;
         float hh = (float) ppatt_spec->height / (float) ppatt_spec->h_pot;
         float x_stagger_off = 0;
@@ -6496,28 +6490,28 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
         if(w>0 && h>0) {
             while( yr < vp->pix_height ) {
-                xr = obj_xmin;
-                while( xr < vp->pix_width ) {
-                    //    Render a quad.
+                if( ( (yr + h) >= 0 ) && ( yr <= obj_ymax ) )  {
+                    xr = obj_xmin;   //reset
+                    while( xr < vp->pix_width ) {
                     
-                    int xp = xr;
-                    if( yc & 1 ) xp += x_stagger_off;
+                        int xp = xr;
+                        if( yc & 1 ) xp += x_stagger_off;
                     
                     //    Render a quad.
-                    if( ( ( xr >= obj_xmin ) && ( xr <= obj_xmax ) )
-                        && ( ( yr >= obj_ymin ) && ( yr <= obj_ymax ) ) ) {
-                        glBegin( GL_QUADS );
-                        glTexCoord2f( 0, 0 );
-                        glVertex3f( xp, yr, z_tex_geom );
-                        glTexCoord2f( ww, 0 );
-                        glVertex3f( xp + w, yr, z_tex_geom );
-                        glTexCoord2f( ww, hh );
-                        glVertex3f( xp + w, yr + h, z_tex_geom );
-                        glTexCoord2f( 0, hh );
-                        glVertex3f( xp, yr + h, z_tex_geom );
-                        glEnd();
+                        if( ( (xr + w) >= 0 ) && ( xr <= obj_xmax ) ){
+                            glBegin( GL_QUADS );
+                            glTexCoord2f( 0, 0 );
+                            glVertex3f( xp, yr, z_tex_geom );
+                            glTexCoord2f( ww, 0 );
+                            glVertex3f( xp + w, yr, z_tex_geom );
+                            glTexCoord2f( ww, hh );
+                            glVertex3f( xp + w, yr + h, z_tex_geom );
+                            glTexCoord2f( 0, hh );
+                            glVertex3f( xp, yr + h, z_tex_geom );
+                            glEnd();
+                        }
+                        xr += ppatt_spec->width;
                     }
-                    xr += ppatt_spec->width;
                 }
                 yr += ppatt_spec->height;
                 yc++;
