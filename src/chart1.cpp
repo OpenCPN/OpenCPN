@@ -10300,7 +10300,6 @@ TimedMessageBox::TimedMessageBox(wxWindow* parent, const wxString& message,
     ret_val = ret;
 }
 
-
 TimedMessageBox::~TimedMessageBox()
 {
 }
@@ -10312,65 +10311,22 @@ void TimedMessageBox::OnTimer(wxTimerEvent &evt)
 }
 
 
-
-
-
-
 int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& caption, int style,
                     int timeout_sec, int x, int y  )
 {
+    int ret = wxID_OK;
 
-#ifdef __WXOSX__
-    long parent_style;
-    bool b_toolviz = false;
-    bool b_compassviz = false;
-    bool b_statsviz = false;
-
-    if(g_FloatingToolbarDialog && g_FloatingToolbarDialog->IsShown()){
-        g_FloatingToolbarDialog->Hide();
-        b_toolviz = true;
+    if (timeout_sec > 0) {
+        // wxMessageDialog is a wrapper around the system's native message dialog, so we can't
+        // subclass it and create a timed version, so we use a custom dialog instead.
+        TimedMessageBox tbox(parent, message, caption, style, timeout_sec, wxPoint( x, y )  );
+        ret = tbox.GetRetVal();
+    } else {
+        // If we don't need a timed dialog, use the system's native message dialog
+        // for better compatibility and greater user familiarity.
+        wxMessageDialog dlg( parent, message, caption, style, wxPoint( x, y ) );
+        ret = dlg.ShowModal();
     }
-
-    if( g_FloatingCompassDialog && g_FloatingCompassDialog->IsShown()){
-        g_FloatingCompassDialog->Hide();
-        b_compassviz = true;
-    }
-
-    if( stats && stats->IsShown()) {
-        stats->Hide();
-        b_statsviz = true;
-    }
-
-    if(parent) {
-        parent_style = parent->GetWindowStyle();
-        parent->SetWindowStyle( parent_style & !wxSTAY_ON_TOP );
-    }
-
-#endif
-
-      int ret =  wxID_OK;
-
-      TimedMessageBox tbox(parent, message, caption, style, timeout_sec, wxPoint( x, y )  );
-      ret = tbox.GetRetVal() ;
-
-//    wxMessageDialog dlg( parent, message, caption, style | wxSTAY_ON_TOP, wxPoint( x, y ) );
-//    ret = dlg.ShowModal();
-
-#ifdef __WXOSX__
-    if(gFrame && b_toolviz)
-        gFrame->SurfaceToolbar();
-
-    if( g_FloatingCompassDialog && b_compassviz)
-        g_FloatingCompassDialog->Show();
-
-    if( stats && b_statsviz)
-        stats->Show();
-
-    if(parent){
-        parent->Raise();
-        parent->SetWindowStyle( parent_style );
-    }
-#endif
 
     return ret;
 }
