@@ -2417,6 +2417,10 @@ extern ocpnGLOptions g_GLOptions;
         gFrame->ToggleFullScreen();
 
     stats->Show( g_bShowChartBar );
+
+    gFrame->Raise();
+    cc1->Enable();
+    cc1->SetFocus();
     
     return TRUE;
 }
@@ -2620,7 +2624,8 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     m_pMenuBar = NULL;
     g_toolbar = NULL;
     m_toolbar_scale_tools_shown = false;
-
+    piano_ctx_menu = NULL;
+    
     //      Redirect the global heartbeat timer to this frame
     FrameTimer1.SetOwner( this, FRAME_TIMER_1 );
 
@@ -2790,34 +2795,10 @@ void MyFrame::OnActivate( wxActivateEvent& event )
     if(event.GetActive())
     {
         SurfaceToolbar();
-
-        wxWindowListNode *node = AppActivateList.GetFirst();
-        while (node) {
-            wxWindow *win = node->GetData();
-            win->Show();
-
-            node = node->GetNext();
-        }
-
-#if 0
-        if(g_FloatingCompassDialog)
-            g_FloatingCompassDialog->Show();
-
+        
         if(stats)
-            stats->Show();
-
-        if(console) {
-            if( g_pRouteMan->IsAnyRouteActive() )
-                console->Show();
-        }
-#endif
-        gFrame->Raise();
-
+            stats->Show(g_bShowChartBar);
     }
-    else {
-    }
-
-
 #endif
 
     event.Skip();
@@ -7459,7 +7440,7 @@ void MyFrame::PianoPopupMenu( int x, int y, int selected_index, int selected_dbI
     menu_selected_dbIndex = selected_dbIndex;
     menu_selected_index = selected_index;
 
-    wxMenu *pctx_menu = new wxMenu();
+    piano_ctx_menu = new wxMenu();
 
     //    Search the no-show array
     bool b_is_in_noshow = false;
@@ -7472,12 +7453,12 @@ void MyFrame::PianoPopupMenu( int x, int y, int selected_index, int selected_dbI
     }
 
     if( b_is_in_noshow ) {
-        pctx_menu->Append( ID_PIANO_ENABLE_QUILT_CHART, _("Show This Chart") );
+        piano_ctx_menu->Append( ID_PIANO_ENABLE_QUILT_CHART, _("Show This Chart") );
         Connect( ID_PIANO_ENABLE_QUILT_CHART, wxEVT_COMMAND_MENU_SELECTED,
                 wxCommandEventHandler(MyFrame::OnPianoMenuEnableChart) );
     } else
         if( pCurrentStack->nEntry > 1 ) {
-            pctx_menu->Append( ID_PIANO_DISABLE_QUILT_CHART, _("Hide This Chart") );
+            piano_ctx_menu->Append( ID_PIANO_DISABLE_QUILT_CHART, _("Hide This Chart") );
             Connect( ID_PIANO_DISABLE_QUILT_CHART, wxEVT_COMMAND_MENU_SELECTED,
                     wxCommandEventHandler(MyFrame::OnPianoMenuDisableChart) );
         }
@@ -7490,8 +7471,11 @@ void MyFrame::PianoPopupMenu( int x, int y, int selected_index, int selected_dbI
     pos.y -= 30;
 
 //        Invoke the drop-down menu
-    if( pctx_menu->GetMenuItems().GetCount() ) PopupMenu( pctx_menu, pos );
+    if( piano_ctx_menu->GetMenuItems().GetCount() ) PopupMenu( piano_ctx_menu, pos );
 
+    delete piano_ctx_menu;
+    piano_ctx_menu = NULL;
+    
     cc1->HideChartInfoWindow();
     stats->pPiano->ResetRollover();
 
@@ -7499,7 +7483,6 @@ void MyFrame::PianoPopupMenu( int x, int y, int selected_index, int selected_dbI
 
     cc1->ReloadVP();
 
-    delete pctx_menu;
 }
 
 void MyFrame::OnPianoMenuEnableChart( wxCommandEvent& event )

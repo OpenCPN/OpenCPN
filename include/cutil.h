@@ -48,6 +48,8 @@ typedef struct {
 #ifdef __cplusplus
       extern "C" int G_PtInPolygon(MyPoint *, int, float, float) ;
       extern "C" int G_PtInPolygon_FL(float_2Dpt *, int, float, float) ;
+      extern "C" int Intersect_FL(float_2Dpt, float_2Dpt, float_2Dpt, float_2Dpt);
+          
       extern "C" int mysnprintf( char *buffer, int count, const char *format, ... );
       extern "C" int NextPow2(int size);
 #else /* __cplusplus */
