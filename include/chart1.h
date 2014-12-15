@@ -380,7 +380,8 @@ class MyFrame: public wxFrame
     void PianoPopupMenu ( int x, int y, int selected_index, int selected_dbIndex );
     void OnPianoMenuDisableChart(wxCommandEvent& event);
     void OnPianoMenuEnableChart(wxCommandEvent& event);
-
+    bool IsPianoContextMenuActive(){ return piano_ctx_menu != 0; }
+    
     void SetGroupIndex(int index);
 
     double GetBestVPScale(ChartBase *pchart);
@@ -502,7 +503,8 @@ class MyFrame: public wxFrame
     wxString            m_VDO_accumulator;
     
     time_t              m_fixtime;
-
+    wxMenu              *piano_ctx_menu;
+    
     DECLARE_EVENT_TABLE()
 };
 
