@@ -751,10 +751,10 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
             //  Look harder
             float_2Dpt f0; f0.y = llpoints[i * 2];     f0.x = llpoints[(i * 2) + 1];
             float_2Dpt f1; f1.y = llpoints[(i+1) * 2]; f1.x = llpoints[((i+1) * 2) + 1];
-            b_intersect |= Intersect_FL( p0, p1, f0, f1);
-            b_intersect |= Intersect_FL( p1, p2, f0, f1);
-            b_intersect |= Intersect_FL( p2, p3, f0, f1);
-            b_intersect |= Intersect_FL( p3, p0, f0, f1);
+            b_intersect |= Intersect_FL( p0, p1, f0, f1) != 0;
+            b_intersect |= Intersect_FL( p1, p2, f0, f1) != 0;
+            b_intersect |= Intersect_FL( p2, p3, f0, f1) != 0;
+            b_intersect |= Intersect_FL( p3, p0, f0, f1) != 0;
             
             if(b_intersect)
                 break;
@@ -765,10 +765,10 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
             
             float_2Dpt f0; f0.y = llpoints[(nPoints-1) * 2];     f0.x = llpoints[((nPoints-1) * 2) + 1];
             float_2Dpt f1; f1.y = llpoints[0]; f1.x = llpoints[1];
-            b_intersect |= Intersect_FL( p0, p1, f0, f1);
-            b_intersect |= Intersect_FL( p1, p2, f0, f1);
-            b_intersect |= Intersect_FL( p2, p3, f0, f1);
-            b_intersect |= Intersect_FL( p3, p0, f0, f1);
+            b_intersect |= Intersect_FL( p0, p1, f0, f1) != 0;
+            b_intersect |= Intersect_FL( p1, p2, f0, f1) != 0;
+            b_intersect |= Intersect_FL( p2, p3, f0, f1) != 0;
+            b_intersect |= Intersect_FL( p3, p0, f0, f1) != 0;
             
         }
                 
