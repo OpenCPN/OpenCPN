@@ -49,7 +49,8 @@ GribRequestSetting::GribRequestSetting(GRIBUIDialog &parent )
     : GribRequestSettingBase(&parent),
       m_parent(parent)
 {
-
+    InitRequestConfig();
+    m_sScrolledDialog->SetScrollRate( 0, 5);
 }
 
 void GribRequestSetting::InitRequestConfig()
@@ -152,6 +153,7 @@ void GribRequestSetting::InitRequestConfig()
 
     m_RenderZoneOverlay = 0;
     m_toggleSelection->SetValue( false );
+    m_ScrollYMargin = -1;
 
     ApplyRequestConfig( i, j ,k);
 
@@ -181,15 +183,16 @@ void GribRequestSetting::SetRequestDialogSize()
     GetTextExtent( _T("abc"), NULL, &h, 0, 0, OCPNGetFont(_("Dialog"), 10) );
     m_MailImage->SetMinSize( wxSize( -1, (h * m_MailImage->GetNumberOfLines()) + 5 ) );
 #endif
-    //default sizing do not work with wxScolledWindow so we need to compute it
-    m_fgScrollSizer->Fit(m_sScrolledDialog);
+    /*default sizing do not work with wxScolledWindow so we need to compute it
+    using a conditional Y margin to stabilise the display width and a fixed X margin to include differents OS bars*/
+    m_ScrollYMargin = m_ScrollYMargin == -1 ? 0 : m_sScrolledDialog->GetScrollLines( wxVERTICAL )? 0 : 20;
+    int ScrollXMargin = 130;
+    wxSize scroll = m_fgScrollSizer->Fit(m_sScrolledDialog);                                   // the area size to be scrolled
     m_fgScrollSizer->Fit( this );
-    wxSize scroll = m_fgScrollSizer->GetSize();                                                // the area size to be scrolled
-    int hfixed = m_rButton->GetSize().GetY() + m_fgFixedSizer->GetSize().GetY() + 130;         // the fixed bottom area height
     ::wxDisplaySize( &w, &h);                                                                  // the screen size
-    h -= hfixed;                                                                               // height available for scrolling
-    int hscroll = wxMin( scroll.GetHeight(), h );                                              // set the scrolled window height
-    m_sScrolledDialog->SetMinSize( wxSize( scroll.GetWidth() + 20, hscroll ) );                //set scrolled area size
+    h -= m_rButton->GetSize().GetY() + m_fgFixedSizer->GetSize().GetY() + ScrollXMargin;       //height available for the scrolled window
+    m_sScrolledDialog->SetMinSize( wxSize( scroll.GetWidth() + m_ScrollYMargin,                //set scrolled area size with margins
+            wxMin(scroll.GetHeight(), h )) );
     //
     this->Fit();
     this->Refresh();
@@ -269,7 +272,6 @@ void GribRequestSetting::OnMouseEventTimer( wxTimerEvent & event)
 
     SetCoordinatesText();
     m_MailImage->SetValue( WriteMail() );
-    SetRequestDialogSize();
 }
 
 void GribRequestSetting::SetCoordinatesText()
@@ -500,7 +502,6 @@ void GribRequestSetting::OnCoordinatesChange( wxSpinEvent& event )
     if( !m_AllowSend ) return;
 
     m_MailImage->SetValue( WriteMail() );
-    SetRequestDialogSize();
 }
 
 
