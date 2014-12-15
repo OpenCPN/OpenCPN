@@ -2417,6 +2417,10 @@ extern ocpnGLOptions g_GLOptions;
         gFrame->ToggleFullScreen();
 
     stats->Show( g_bShowChartBar );
+
+    gFrame->Raise();
+    cc1->Enable();
+    cc1->SetFocus();
     
     return TRUE;
 }
@@ -2790,34 +2794,10 @@ void MyFrame::OnActivate( wxActivateEvent& event )
     if(event.GetActive())
     {
         SurfaceToolbar();
-
-        wxWindowListNode *node = AppActivateList.GetFirst();
-        while (node) {
-            wxWindow *win = node->GetData();
-            win->Show();
-
-            node = node->GetNext();
-        }
-
-#if 0
-        if(g_FloatingCompassDialog)
-            g_FloatingCompassDialog->Show();
-
+        
         if(stats)
-            stats->Show();
-
-        if(console) {
-            if( g_pRouteMan->IsAnyRouteActive() )
-                console->Show();
-        }
-#endif
-        gFrame->Raise();
-
+            stats->Show(g_bShowChartBar);
     }
-    else {
-    }
-
-
 #endif
 
     event.Skip();
