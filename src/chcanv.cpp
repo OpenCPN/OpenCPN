@@ -5390,13 +5390,9 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                         && !pNearbyPoint->m_bIsInTrack && !pNearbyPoint->m_bIsInLayer )
                 {
                     int dlg_return;
-    #ifndef __WXOSX__
                     dlg_return = OCPNMessageBox( this, _("Use nearby waypoint?"),
                                                     _("OpenCPN Route Create"),
                                                     (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
-    #else
-                    dlg_return = wxID_YES;
-    #endif
                     if( dlg_return == wxID_YES ) {
                         pMousePoint = pNearbyPoint;
 
@@ -5795,25 +5791,22 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                     && !pNearbyPoint->m_bIsInTrack && !pNearbyPoint->m_bIsInLayer )
                 {
                     int dlg_return;
-                    #ifndef __WXOSX__
                     dlg_return = OCPNMessageBox( this, _("Use nearby waypoint?"),
                                                 _("OpenCPN Route Create"),
                                                 (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
-                                                #else
-                                                dlg_return = wxID_YES;
-                                                #endif
-                                                if( dlg_return == wxID_YES ) {
-                                                    pMousePoint = pNearbyPoint;
 
-                                                    // Using existing waypoint, so nothing to delete for undo.
-                                                    if( parent_frame->nRoute_State > 1 )
-                                                        undo->BeforeUndoableAction( Undo_AppendWaypoint, pMousePoint, Undo_HasParent, NULL );
+                    if( dlg_return == wxID_YES ) {
+                        pMousePoint = pNearbyPoint;
 
-                                                    // check all other routes to see if this point appears in any other route
-                                                        // If it appears in NO other route, then it should e considered an isolated mark
-                                                        if( !g_pRouteMan->FindRouteContainingWaypoint( pMousePoint ) ) pMousePoint->m_bKeepXRoute =
-                                                            true;
-                                                }
+                        // Using existing waypoint, so nothing to delete for undo.
+                        if( parent_frame->nRoute_State > 1 )
+                            undo->BeforeUndoableAction( Undo_AppendWaypoint, pMousePoint, Undo_HasParent, NULL );
+
+                        // check all other routes to see if this point appears in any other route
+                        // If it appears in NO other route, then it should e considered an isolated mark
+                        if( !g_pRouteMan->FindRouteContainingWaypoint( pMousePoint ) ) pMousePoint->m_bKeepXRoute =
+                            true;
+                    }
                 }
 
                 if( NULL == pMousePoint ) {                 // need a new point
@@ -5845,11 +5838,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                         << FormatDistanceAdaptive( rhumbDist - gcDistNM ) << _(" shorter than rhumbline.\n\n")
                         << _("Would you like include the Great Circle routing points for this leg?");
 
-                        #ifndef __WXOSX__
                         int answer = OCPNMessageBox( this, msg, _("OpenCPN Route Create"), wxYES_NO | wxNO_DEFAULT );
-                        #else
-                        int answer = wxID_NO;
-                        #endif
 
                         if( answer == wxID_YES ) {
                             RoutePoint* gcPoint;
