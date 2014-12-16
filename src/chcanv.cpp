@@ -719,8 +719,26 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
     OCPNRegionIterator screen_region_it1( Region );
     while( screen_region_it1.HaveRects() ) {
         wxRect rect = screen_region_it1.GetRect();
+
+        double lat, lon;
+        
+        //  The screen region corners
+        GetLLFromPix( wxPoint(rect.x, rect.y), &lat, &lon );
+        float_2Dpt p0; p0.y = lat; p0.x = lon;
+        
+        GetLLFromPix( wxPoint(rect.x + rect.width, rect.y), &lat, &lon );
+        float_2Dpt p1; p1.y = lat; p1.x = lon;
+        
+        GetLLFromPix( wxPoint(rect.x + rect.width, rect.y + rect.height), &lat, &lon );
+        float_2Dpt p2; p2.y = lat; p2.x = lon;
+        
+        GetLLFromPix( wxPoint(rect.x, rect.y + rect.height), &lat, &lon );
+        float_2Dpt p3; p3.y = lat; p3.x = lon;
+        
         
         for(size_t i=0 ; i < nPoints-1 ; i++){
+            
+            //  Quick check
             int x0 = pp[i].x;  int y0 = pp[i].y; int x1 = pp[i+1].x; int y1 = pp[i+1].y;
             if( ((x0 < rect.x) && (x1 < rect.x)) ||
                 ((x0 > rect.x+rect.width) && (x1 > rect.x+rect.width)) )
@@ -730,24 +748,28 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
                 ((y0 > rect.y+rect.height) && (y1 > rect.y+rect.height)) )
                 continue;
             
-            b_intersect = true;
-            break;
+            //  Look harder
+            float_2Dpt f0; f0.y = llpoints[i * 2];     f0.x = llpoints[(i * 2) + 1];
+            float_2Dpt f1; f1.y = llpoints[(i+1) * 2]; f1.x = llpoints[((i+1) * 2) + 1];
+            b_intersect |= Intersect_FL( p0, p1, f0, f1) != 0;
+            b_intersect |= Intersect_FL( p1, p2, f0, f1) != 0;
+            b_intersect |= Intersect_FL( p2, p3, f0, f1) != 0;
+            b_intersect |= Intersect_FL( p3, p0, f0, f1) != 0;
+            
+            if(b_intersect)
+                break;
         }
         
         // Check segment, last point back to first point
         if(!b_intersect){
-            int x0 = pp[nPoints-1].x;  int y0 = pp[nPoints-1].y; int x1 = pp[0].x; int y1 = pp[0].y;
-            if( ((x0 < rect.x) && (x1 < rect.x)) ||
-                ((x0 > rect.x+rect.width) && (x1 > rect.x+rect.width)) ){
-            }
-            else{
-                if( ((y0 < rect.y) && (y1 < rect.y)) ||
-                    ((y0 > rect.y+rect.height) && (y1 > rect.y+rect.height)) ){
-                }
-                else{
-                    b_intersect = true;
-                }
-            }
+            
+            float_2Dpt f0; f0.y = llpoints[(nPoints-1) * 2];     f0.x = llpoints[((nPoints-1) * 2) + 1];
+            float_2Dpt f1; f1.y = llpoints[0]; f1.x = llpoints[1];
+            b_intersect |= Intersect_FL( p0, p1, f0, f1) != 0;
+            b_intersect |= Intersect_FL( p1, p2, f0, f1) != 0;
+            b_intersect |= Intersect_FL( p2, p3, f0, f1) != 0;
+            b_intersect |= Intersect_FL( p3, p0, f0, f1) != 0;
+            
         }
                 
         screen_region_it1.NextRect();
@@ -785,7 +807,26 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
         if(rpoly.Contains(rRegion)){
         //  subject poygon may be large enough to fully encompass the target Region,
         //  but it might not, especially for irregular or concave charts.
-        //  So we cannot shortcut here
+        //  So we cannot directly shortcut here
+        //  Better check....
+        
+#if 1
+        //  If the subject polygon does not contain the screen region center point,
+        //  then there must be no intersction, so return empty region
+        
+            if(!G_PtInPolygon_FL((float_2Dpt *)llpoints, nPoints, clon, clat)){
+                if( NULL == ppoints ) delete[] pp;
+                wxRegion r;
+                return r;
+            }
+            
+            //  Other wise, it must be the full screen.
+            else{
+                if( NULL == ppoints ) delete[] pp;
+                return Region;
+            }
+#endif        
+            
         }
         else{
         //  Subject polygon is entirely outside of target Region
@@ -1002,7 +1043,8 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
     EVT_KEY_UP(ChartCanvas::OnKeyUp )
     EVT_CHAR(ChartCanvas::OnKeyChar)
     EVT_MOUSE_CAPTURE_LOST(ChartCanvas::LostMouseCapture )
-
+    EVT_KILL_FOCUS(ChartCanvas::OnFocusKill )
+    
     EVT_MENU ( ID_DEF_MENU_MAX_DETAIL,         ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_DEF_MENU_SCALE_IN,           ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_DEF_MENU_SCALE_OUT,          ChartCanvas::PopupMenuHandler )
@@ -1112,6 +1154,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_pAISRolloverWin = NULL;
     m_bedge_pan = false;
     m_disable_edge_pan = false;
+    m_brecapture = false;
     
     m_pCIWin = NULL;
 
@@ -1663,6 +1706,11 @@ ChartCanvas::~ChartCanvas()
         delete m_glcc;
 #endif
 
+}
+
+void ChartCanvas::OnFocusKill(wxFocusEvent& event )
+{
+    m_brecapture = true;
 }
 
 void ChartCanvas::SetDisplaySizeMM( double size )
@@ -3769,10 +3817,15 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
 
     //   If any PlugIn chart ran wxExecute(), then the canvas focus is likely lost.
     //  Restore it here
-    cc1->SetFocus();
+    if(m_brecapture  && !gFrame->IsPianoContextMenuActive()){
+      cc1->SetFocus();
+      m_brecapture = false;
+    }
+      
     
     return b_ret;
 }
+
 
 //          Static Icon definitions for some symbols requiring scaling/rotation/translation
 //          Very specific wxDC draw commands are necessary to properly render these icons...See the code in ShipDraw()

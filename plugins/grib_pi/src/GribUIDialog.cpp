@@ -1028,9 +1028,16 @@ void GRIBUIDialog::OnRequest(  wxCommandEvent& event )
     delete pReq_Dialog;                                              //delete to be re-created
 
     pReq_Dialog = new GribRequestSetting( *this );
+    pPlugIn->SetDialogFont( pReq_Dialog );
+    pPlugIn->SetDialogFont( pReq_Dialog->m_sScrolledDialog );
     pReq_Dialog->InitRequestConfig();
     pReq_Dialog->OnVpChange(m_vp);
-    pPlugIn->SetDialogFont( pReq_Dialog );
+    pReq_Dialog->SetRequestDialogSize();
+    //need to set a position at start
+    int w;
+    ::wxDisplaySize( &w, NULL);
+    pReq_Dialog->Move( (w - pReq_Dialog->GetSize().GetX() ) / 3, 30 );
+    //
     pReq_Dialog->Show();
 }
 
