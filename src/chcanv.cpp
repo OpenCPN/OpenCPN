@@ -5433,10 +5433,12 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                             // Empirically found expression to get reasonable route segments.
                             int segmentCount = (3.0 + (rhumbDist - gcDistNM)) / pow(rhumbDist-gcDistNM-1, 0.5 );
 
-                            wxString msg;
-                            msg << _("For this leg the Great Circle route is ")
-                                << FormatDistanceAdaptive( rhumbDist - gcDistNM ) << _(" shorter than rhumbline.\n\n")
-                                << _("Would you like include the Great Circle routing points for this leg?");
+                            wxString msg = wxString::Format( (wxString)
+                                _("For this leg the great circle route is %s shorter than rhumb line."),
+                                FormatDistanceAdaptive( rhumbDist - gcDistNM )
+                            );
+                            msg << _T("\n\n")
+                                << _("Would you like include the great circle routing points for this leg?");
                                 
                             int answer = OCPNMessageBox( this, msg, _("Use great circle route?"), wxYES_NO | wxNO_DEFAULT );
 
@@ -5835,10 +5837,12 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                         // Empirically found expression to get reasonable route segments.
                         int segmentCount = (3.0 + (rhumbDist - gcDistNM)) / pow(rhumbDist-gcDistNM-1, 0.5 );
 
-                        wxString msg;
-                        msg << _("For this leg the Great Circle route is ")
-                        << FormatDistanceAdaptive( rhumbDist - gcDistNM ) << _(" shorter than rhumbline.\n\n")
-                        << _("Would you like include the Great Circle routing points for this leg?");
+                        wxString msg = wxString::Format( (wxString)
+                            _("For this leg the great circle route is %s shorter than rhumb line."),
+                            FormatDistanceAdaptive( rhumbDist - gcDistNM )
+                        );
+                        msg << _T("\n\n")
+                        << _("Would you like include the great circle routing points for this leg?");
 
                         int answer = OCPNMessageBox( this, msg, _("Use great circle route?"), wxYES_NO | wxNO_DEFAULT );
 
