@@ -30914,6 +30914,63 @@
 			<display-cat>Standard</display-cat>
 			<comment>10000</comment>
 		</lookup>
+                <lookup id="1996" RCID="54023" name="ANNOTA">
+                        <type>Point</type>
+                        <disp-prio>Area 2</disp-prio>
+                        <radar-prio>On Top</radar-prio>
+                        <table-name>Paper</table-name>
+                        <instruction>TX(OBJNAM,3,2,2,'15114',1,0,CHBLK,26)</instruction>
+                        <display-cat>Standard</display-cat>
+                        <comment>54023</comment>
+                </lookup>
+                <lookup id="1733" RCID="54024" name="RESTRC">
+                        <type>Line</type>
+                        <disp-prio>Area Symbol</disp-prio>
+                        <radar-prio>On Top</radar-prio>
+                        <table-name>Lines</table-name>
+                        <instruction>LS(DASH,1,CHMGD)</instruction>
+                        <display-cat>Standard</display-cat>
+                        <comment>24010</comment>
+                </lookup>
+                <lookup id="1733" RCID="54025" name="TRFLNE">
+                        <type>Line</type>
+                        <disp-prio>Area Symbol</disp-prio>
+                        <radar-prio>On Top</radar-prio>
+                        <table-name>Lines</table-name>
+                        <instruction>LS(DASH,2,CHMGD)</instruction>
+                        <display-cat>Standard</display-cat>
+                        <comment>24010</comment>
+                </lookup>
+                <lookup id="1733" RCID="54026" name="GENNAV">
+                        <type>Point</type>
+                        <disp-prio>Hazards</disp-prio>
+                        <radar-prio>On Top</radar-prio>
+                        <table-name>Paper</table-name>
+                        <attrib-code index="0">BCNSHP3</attrib-code>
+                        <instruction>SY(BCNTOW01);TE('%s','OBJNAM',2,1,2,'15110',-1,-2,CHBLK,21)</instruction>
+                        <display-cat>Standard</display-cat>
+                        <comment>17020</comment>
+                </lookup>
+                <lookup id="1996" RCID="54027" name="ANNOTA">
+                        <type>Point</type>
+                        <disp-prio>Area 2</disp-prio>
+                        <radar-prio>On Top</radar-prio>
+                        <table-name>Simplified</table-name>
+                        <instruction>TX(OBJNAM,3,2,2,'15114',1,0,CHBLK,26)</instruction>
+                        <display-cat>Standard</display-cat>
+                        <comment>54023</comment>
+                </lookup>
+                <lookup id="1997" RCID="54028" name="GENNAV">
+                        <type>Point</type>
+                        <disp-prio>Hazards</disp-prio>
+                        <radar-prio>On Top</radar-prio>
+                        <table-name>Simplified</table-name>
+                        <instruction>SY(BCNTOW01);TE('%s','OBJNAM',2,1,2,'15110',-1,-2,CHBLK,21)</instruction>
+                        <display-cat>Standard</display-cat>
+                        <comment>17020</comment>
+                </lookup>
+
+
 	</lookups>
 
 	<line-styles>
