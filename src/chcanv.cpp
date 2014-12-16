@@ -8999,7 +8999,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         temp_dc.DestroyClippingRegion();
     
         //    Copy current chart region
-        OCPNRegion backgroundRegion(  0, 0, svp.pix_width, svp.pix_height  );
+        OCPNRegion backgroundRegion( svp.rv_rect );
 
         if( chartValidRegion.IsOk() )
             backgroundRegion.Subtract( chartValidRegion );
