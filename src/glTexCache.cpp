@@ -326,6 +326,7 @@ bool DoCompress(JobTicket *pticket, glTextureDescriptor *ptd, int level)
         GLuint raster_format = pticket->pFact->GetRasterFormat();
     
         unsigned char *tex_data = (unsigned char*)malloc(size);
+        
         if(raster_format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT) {
             // color range fit is worse quality but twice as fast
             int flags = squish::kDxt1 | squish::kColourRangeFit;
@@ -348,9 +349,14 @@ bool DoCompress(JobTicket *pticket, glTextureDescriptor *ptd, int level)
         else if(raster_format == GL_ETC1_RGB8_OES) 
             CompressDataETC(ptd->map_array[level], dim, size, tex_data);
         
-        
-        ptd->CompressedArrayAccess( CA_WRITE, tex_data, level);
+        else if(raster_format == GL_COMPRESSED_RGB_FXT1_3DFX) {
+            // TODO upload to the texture, then download it
+            //s_glGetCompressedTexImage( raster_format, level, tex_data);
+        }
 
+        //  Store the pointer to compressed data in the ptd
+        ptd->CompressedArrayAccess( CA_WRITE, tex_data, level);
+        
         if(pticket->bpost_zip_compress) {
             int max_compressed_size = LZ4_COMPRESSBOUND(g_tile_size);
             if(max_compressed_size){
