@@ -3753,11 +3753,12 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
 
         //    Calculate the on-screen displayed actual scale
         //    by a simple traverse northward from the center point
-        //    of roughly the canvas height
+        //    of roughly one half of the canvas height
         wxPoint2DDouble r, r1;
 
         double delta_check = (VPoint.pix_height / VPoint.view_scale_ppm) / (1852. * 60);
-
+        delta_check /= 2.;
+        
         double rhumbDist;
         DistanceBearingMercator( VPoint.clat, VPoint.clon,
                                      VPoint.clat + delta_check,
