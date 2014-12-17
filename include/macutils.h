@@ -28,6 +28,8 @@
 extern "C" int FindSerialPortNames(char** pNames, int iMaxNames) ;
 extern "C" bool ValidateSerialPortName(const char* pPortName, int iMaxNamesToSearch) ;
 
+extern "C" int GetMacMonitorSize();
+
 #endif // __WXOSX__
 
 #endif // MACUTILS_H_INCLUDED_H__

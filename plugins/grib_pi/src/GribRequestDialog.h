@@ -47,13 +47,13 @@ public:
       ~GribRequestSetting() {}
 
       void OnClose( wxCloseEvent& event );
-      void InitRequestConfig();
       void SetVpSize(PlugIn_ViewPort *vp);
       void OnVpChange(PlugIn_ViewPort *vp);
       bool MouseEventHook( wxMouseEvent &event );
       bool RenderZoneOverlay( wxDC &dc );
       bool RenderGlZoneOverlay();
       bool DoRenderZoneOverlay();
+      void SetRequestDialogSize();
 
       wxString m_RequestConfigBase;
       wxString m_MailToAddresses;
@@ -68,8 +68,9 @@ private:
 
       void ApplyRequestConfig( unsigned rs, unsigned it, unsigned tr );
       wxString WriteMail();
-      bool EstimateFileSize();
+      int EstimateFileSize();
 
+      void InitRequestConfig();
       void OnExit(wxCommandEvent &event) { wxCloseEvent evt; OnClose ( evt ); }
       void OnTopChange(wxCommandEvent &event);
       void OnMovingClick( wxCommandEvent& event );
@@ -82,7 +83,6 @@ private:
       void OnTooggleSelection( wxCommandEvent& event );
       void OnCoordinatesChange( wxSpinEvent& event );
       void OnMouseEventTimer( wxTimerEvent & event);
-      void SetMailImageSize();
       void SetCoordinatesText();
 
       GRIBUIDialog &m_parent;
@@ -97,6 +97,7 @@ private:
       int  m_MailError_Nb;
       int  m_SendMethod;
       bool m_AllowSend;
+      int  m_ScrollYMargin;
 };
 
 #endif

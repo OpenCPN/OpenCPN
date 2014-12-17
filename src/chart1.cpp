@@ -283,6 +283,7 @@ wxPageSetupData*          g_pageSetupData = (wxPageSetupData*) NULL;
 bool                      g_bShowOutlines;
 bool                      g_bShowDepthUnits;
 bool                      g_bDisplayGrid;  // Flag indicating weather the lat/lon grid should be displayed
+bool                      g_bShowChartBar;
 bool                      g_bShowActiveRouteHighway;
 int                       g_nNMEADebug;
 int                       g_nAWDefault;
@@ -852,7 +853,14 @@ double  GetDisplaySizeMM()
         ret = w;
     }
 #endif
-        
+#ifdef __WXOSX__
+    ret = GetMacMonitorSize();
+#endif
+
+    wxString msg;
+    msg.Printf(_T("Detected display size: %d mm"), (int) ret);
+    wxLogMessage(msg);
+    
     return ret;
 }
  
@@ -2310,9 +2318,7 @@ extern ocpnGLOptions g_GLOptions;
     if( !g_AW2GUID.IsEmpty() ) {
         pAnchorWatchPoint2 = pWayPointMan->FindRoutePointByGUID( g_AW2GUID );
     }
-
-    stats->Show( true );
-
+    
     Yield();
 
     gFrame->DoChartUpdate();
@@ -2412,6 +2418,12 @@ extern ocpnGLOptions g_GLOptions;
     if ( g_start_fullscreen )
         gFrame->ToggleFullScreen();
 
+    stats->Show( g_bShowChartBar );
+
+    gFrame->Raise();
+    cc1->Enable();
+    cc1->SetFocus();
+    
     return TRUE;
 }
 
@@ -2614,7 +2626,8 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     m_pMenuBar = NULL;
     g_toolbar = NULL;
     m_toolbar_scale_tools_shown = false;
-
+    piano_ctx_menu = NULL;
+    
     //      Redirect the global heartbeat timer to this frame
     FrameTimer1.SetOwner( this, FRAME_TIMER_1 );
 
@@ -2784,34 +2797,10 @@ void MyFrame::OnActivate( wxActivateEvent& event )
     if(event.GetActive())
     {
         SurfaceToolbar();
-
-        wxWindowListNode *node = AppActivateList.GetFirst();
-        while (node) {
-            wxWindow *win = node->GetData();
-            win->Show();
-
-            node = node->GetNext();
-        }
-
-#if 0
-        if(g_FloatingCompassDialog)
-            g_FloatingCompassDialog->Show();
-
+        
         if(stats)
-            stats->Show();
-
-        if(console) {
-            if( g_pRouteMan->IsAnyRouteActive() )
-                console->Show();
-        }
-#endif
-        gFrame->Raise();
-
+            stats->Show(g_bShowChartBar);
     }
-    else {
-    }
-
-
 #endif
 
     event.Skip();
@@ -3878,14 +3867,14 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         case ID_MENU_ZOOM_IN:
         case ID_ZOOMIN: {
-            cc1->DoZoomCanvas( 2.0, false );
+            cc1->ZoomCanvas( 2.0 );
             DoChartUpdate();
             break;
         }
 
         case ID_MENU_ZOOM_OUT:
         case ID_ZOOMOUT: {
-            cc1->DoZoomCanvas( 0.5, false );
+            cc1->ZoomCanvas( 0.5 );
             DoChartUpdate();
             break;
         }
@@ -3937,17 +3926,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         }
 
         case ID_MENU_UI_CHARTBAR: {
-            if( stats ) {
-                if( stats->IsShown() )
-                    stats->Hide();
-                else {
-                    stats->Move(0,0);
-                    stats->RePosition();
-                    stats->Show();
-                    gFrame->Raise();
-                }
-                Refresh();
-            }
+            ToggleStats();
             break;
         }
             
@@ -4214,6 +4193,29 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
     }         // switch
 
+}
+
+void MyFrame::ToggleStats()
+{
+    if( stats ) {
+        if( stats->IsShown() ){
+            stats->Hide();
+            g_bShowChartBar = false;
+        }
+        else {
+            stats->Move(0,0);
+            stats->RePosition();
+            stats->Show();
+            gFrame->Raise();
+            DoChartUpdate();
+            UpdateControlBar();
+            g_bShowChartBar = true;
+        }
+        Refresh();
+        
+        SetMenubarItemState( ID_MENU_UI_CHARTBAR, g_bShowChartBar );
+        
+    }
 }
 
 void MyFrame::ToggleColorScheme()
@@ -4553,15 +4555,19 @@ void MyFrame::ToggleAnchor( void )
         int old_vis =  0;
         OBJLElement *pOLE = NULL;
         
-        // Need to loop once for SBDARE, which is our "master", then for
-        // other categories, since order is unknown?
-        for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
-            OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
-            if( !strncmp( pOLE->OBJLName, "SBDARE", 6 ) ) {
-                old_vis = pOLE->nViz;
-                break;
+        if(  MARINERS_STANDARD == ps52plib->GetDisplayCategory()){
+            // Need to loop once for SBDARE, which is our "master", then for
+            // other categories, since order is unknown?
+            for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
+                OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
+                if( !strncmp( pOLE->OBJLName, "SBDARE", 6 ) ) {
+                    old_vis = pOLE->nViz;
+                    break;
+                }
             }
         }
+        else if(OTHER == ps52plib->GetDisplayCategory())
+            old_vis = true;
 
         const char * categories[] = { "ACHBRT", "ACHARE", "CBLSUB", "PIPARE", "PIPSOL", "TUNNEL" };
         unsigned int num = sizeof(categories) / sizeof(categories[0]);
@@ -4848,7 +4854,7 @@ void MyFrame::UpdateGlobalMenuItems()
     m_pMenuBar->FindItem( ID_MENU_NAV_TRACK )->Check( g_bTrackActive );
     m_pMenuBar->FindItem( ID_MENU_CHART_OUTLINES )->Check( g_bShowOutlines );
     m_pMenuBar->FindItem( ID_MENU_CHART_QUILTING )->Check( g_bQuiltEnable );
-    m_pMenuBar->FindItem( ID_MENU_UI_CHARTBAR )->Check( true );
+    m_pMenuBar->FindItem( ID_MENU_UI_CHARTBAR )->Check( g_bShowChartBar );
     m_pMenuBar->FindItem( ID_MENU_AIS_TARGETS )->Check( g_bShowAIS );
     m_pMenuBar->FindItem( ID_MENU_AIS_TRACKS )->Check( g_bAISShowTracks );
     m_pMenuBar->FindItem( ID_MENU_AIS_CPADIALOG )->Check( g_bAIS_CPA_Alert );
@@ -5165,6 +5171,18 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
     }
         
     cc1->SetDisplaySizeMM( g_display_size_mm );
+    
+    if(stats){
+        stats->Show(g_bShowChartBar);
+        if(g_bShowChartBar){
+            stats->Move(0,0);
+            stats->RePosition();
+            gFrame->Raise();
+            DoChartUpdate();
+            UpdateControlBar();
+            Refresh();
+        }
+    }
         
     return 0;
 }
@@ -7424,7 +7442,7 @@ void MyFrame::PianoPopupMenu( int x, int y, int selected_index, int selected_dbI
     menu_selected_dbIndex = selected_dbIndex;
     menu_selected_index = selected_index;
 
-    wxMenu *pctx_menu = new wxMenu();
+    piano_ctx_menu = new wxMenu();
 
     //    Search the no-show array
     bool b_is_in_noshow = false;
@@ -7437,12 +7455,12 @@ void MyFrame::PianoPopupMenu( int x, int y, int selected_index, int selected_dbI
     }
 
     if( b_is_in_noshow ) {
-        pctx_menu->Append( ID_PIANO_ENABLE_QUILT_CHART, _("Show This Chart") );
+        piano_ctx_menu->Append( ID_PIANO_ENABLE_QUILT_CHART, _("Show This Chart") );
         Connect( ID_PIANO_ENABLE_QUILT_CHART, wxEVT_COMMAND_MENU_SELECTED,
                 wxCommandEventHandler(MyFrame::OnPianoMenuEnableChart) );
     } else
         if( pCurrentStack->nEntry > 1 ) {
-            pctx_menu->Append( ID_PIANO_DISABLE_QUILT_CHART, _("Hide This Chart") );
+            piano_ctx_menu->Append( ID_PIANO_DISABLE_QUILT_CHART, _("Hide This Chart") );
             Connect( ID_PIANO_DISABLE_QUILT_CHART, wxEVT_COMMAND_MENU_SELECTED,
                     wxCommandEventHandler(MyFrame::OnPianoMenuDisableChart) );
         }
@@ -7455,8 +7473,11 @@ void MyFrame::PianoPopupMenu( int x, int y, int selected_index, int selected_dbI
     pos.y -= 30;
 
 //        Invoke the drop-down menu
-    if( pctx_menu->GetMenuItems().GetCount() ) PopupMenu( pctx_menu, pos );
+    if( piano_ctx_menu->GetMenuItems().GetCount() ) PopupMenu( piano_ctx_menu, pos );
 
+    delete piano_ctx_menu;
+    piano_ctx_menu = NULL;
+    
     cc1->HideChartInfoWindow();
     stats->pPiano->ResetRollover();
 
@@ -7464,7 +7485,6 @@ void MyFrame::PianoPopupMenu( int x, int y, int selected_index, int selected_dbI
 
     cc1->ReloadVP();
 
-    delete pctx_menu;
 }
 
 void MyFrame::OnPianoMenuEnableChart( wxCommandEvent& event )
@@ -7691,6 +7711,12 @@ void MyFrame::DoPrint( void )
     wxPrinter printer( &printDialogData );
 
     MyPrintout printout( _("Chart Print") );
+    
+    //  In OperGL mode, make the bitmap capture of the screen before the print method starts,
+    //  so as to be sure the "Abort..." dialog does not appear on the image
+    if(g_bopengl) 
+        printout.GenerateGLbmp( );
+                
     if( !printer.Print( this, &printout, true ) ) {
         if( wxPrinter::GetLastError() == wxPRINTER_ERROR ) OCPNMessageBox(NULL,
                 _("There was a problem printing.\nPerhaps your current printer is not set correctly?"),
@@ -9024,31 +9050,12 @@ void MyPrintout::DrawPageOne( wxDC *dc )
 
     if(g_bopengl) {
 #ifdef ocpnUSE_GL
-        int gsx = cc1->GetglCanvas()->GetSize().x;
-        int gsy = cc1->GetglCanvas()->GetSize().y;
-
-        unsigned char *buffer = (unsigned char *)malloc( gsx * gsy * 4 );
-        glReadPixels(0, 0, gsx, gsy, GL_RGBA, GL_UNSIGNED_BYTE, buffer );
-        
-        unsigned char *e = (unsigned char *)malloc( gsx * gsy * 3 );
-       
-        if(buffer && e){
-            for( int p = 0; p < gsx*gsy; p++ ) {
-                e[3*p+0] = buffer[4*p+0];
-                e[3*p+1] = buffer[4*p+1];
-                e[3*p+2] = buffer[4*p+2];
-            }
+        if(m_GLbmp.IsOk()){
+            wxMemoryDC mdc;
+            mdc.SelectObject( m_GLbmp );
+            dc->Blit( 0, 0, m_GLbmp.GetWidth(), m_GLbmp.GetHeight(), &mdc, 0, 0 );
+            mdc.SelectObject( wxNullBitmap );
         }
-        free(buffer);
-        
-        wxImage image( gsx,gsy );
-        image.SetData(e);
-        wxImage mir_imag = image.Mirror( false );
-        wxBitmap bmp( mir_imag );
-        wxMemoryDC mdc;
-        mdc.SelectObject( bmp );
-        dc->Blit( 0, 0, bmp.GetWidth(), bmp.GetHeight(), &mdc, 0, 0 );
-        mdc.SelectObject( wxNullBitmap );
 #endif
     }
     else {
@@ -9063,6 +9070,37 @@ void MyPrintout::DrawPageOne( wxDC *dc )
     }
 
 }
+
+void MyPrintout::GenerateGLbmp( )
+{
+    if(g_bopengl) {
+#ifdef ocpnUSE_GL
+        int gsx = cc1->GetglCanvas()->GetSize().x;
+        int gsy = cc1->GetglCanvas()->GetSize().y;
+        
+        unsigned char *buffer = (unsigned char *)malloc( gsx * gsy * 4 );
+        glReadPixels(0, 0, gsx, gsy, GL_RGBA, GL_UNSIGNED_BYTE, buffer );
+        
+        unsigned char *e = (unsigned char *)malloc( gsx * gsy * 3 );
+        
+        if(buffer && e){
+            for( int p = 0; p < gsx*gsy; p++ ) {
+                e[3*p+0] = buffer[4*p+0];
+                e[3*p+1] = buffer[4*p+1];
+                e[3*p+2] = buffer[4*p+2];
+            }
+        }
+        free(buffer);
+        
+        wxImage image( gsx,gsy );
+        image.SetData(e);
+        wxImage mir_imag = image.Mirror( false );
+        m_GLbmp = wxBitmap( mir_imag );
+#endif
+    }
+}
+
+
 
 //---------------------------------------------------------------------------------------
 //

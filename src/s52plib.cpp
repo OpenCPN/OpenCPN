@@ -6477,11 +6477,11 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
         glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
 
-        int xr = obj_xmin; //0;
-        int yr = obj_ymin; //0;
         int h = ppatt_spec->height;
         int w = ppatt_spec->width;
-
+        int xr = obj_xmin;
+        int yr = obj_ymin;
+        
         float ww = (float) ppatt_spec->width / (float) ppatt_spec->w_pot;
         float hh = (float) ppatt_spec->height / (float) ppatt_spec->h_pot;
         float x_stagger_off = 0;
@@ -6490,28 +6490,28 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
         if(w>0 && h>0) {
             while( yr < vp->pix_height ) {
-                xr = obj_xmin;
-                while( xr < vp->pix_width ) {
-                    //    Render a quad.
+                if( ( (yr + h) >= 0 ) && ( yr <= obj_ymax ) )  {
+                    xr = obj_xmin;   //reset
+                    while( xr < vp->pix_width ) {
                     
-                    int xp = xr;
-                    if( yc & 1 ) xp += x_stagger_off;
+                        int xp = xr;
+                        if( yc & 1 ) xp += x_stagger_off;
                     
                     //    Render a quad.
-                    if( ( ( xr >= obj_xmin ) && ( xr <= obj_xmax ) )
-                        && ( ( yr >= obj_ymin ) && ( yr <= obj_ymax ) ) ) {
-                        glBegin( GL_QUADS );
-                        glTexCoord2f( 0, 0 );
-                        glVertex3f( xp, yr, z_tex_geom );
-                        glTexCoord2f( ww, 0 );
-                        glVertex3f( xp + w, yr, z_tex_geom );
-                        glTexCoord2f( ww, hh );
-                        glVertex3f( xp + w, yr + h, z_tex_geom );
-                        glTexCoord2f( 0, hh );
-                        glVertex3f( xp, yr + h, z_tex_geom );
-                        glEnd();
+                        if( ( (xr + w) >= 0 ) && ( xr <= obj_xmax ) ){
+                            glBegin( GL_QUADS );
+                            glTexCoord2f( 0, 0 );
+                            glVertex3f( xp, yr, z_tex_geom );
+                            glTexCoord2f( ww, 0 );
+                            glVertex3f( xp + w, yr, z_tex_geom );
+                            glTexCoord2f( ww, hh );
+                            glVertex3f( xp + w, yr + h, z_tex_geom );
+                            glTexCoord2f( 0, hh );
+                            glVertex3f( xp, yr + h, z_tex_geom );
+                            glEnd();
+                        }
+                        xr += ppatt_spec->width;
                     }
-                    xr += ppatt_spec->width;
                 }
                 yr += ppatt_spec->height;
                 yc++;
