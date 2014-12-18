@@ -281,6 +281,9 @@ bool CompressChart(wxThread *pThread, ChartBase *pchart, wxString CompressedCach
                 Nevent.thread = thread;
                 
                 pMessageTarget->AddPendingEvent(Nevent);
+                
+                if(!pThread)
+                    ::wxYield();
 
             }
             
