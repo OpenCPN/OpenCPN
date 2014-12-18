@@ -268,6 +268,20 @@ bool Quilt::IsVPBlittable( ViewPort &VPoint, int dx, int dy, bool b_allow_vector
     return ret_val;
 }
 
+bool Quilt::IsChartS57Overlay( int db_index )
+{
+    if( db_index < 0 )
+        return false;
+    
+    const ChartTableEntry &cte = ChartData->GetChartTableEntry( db_index );
+    if( CHART_TYPE_S57 == cte.GetChartType() ){ 
+        return  s57chart::IsCellOverlayType( cte.GetpFullPath() );
+    }
+    else
+        return false;
+}
+            
+    
 bool Quilt::IsChartQuiltableRef( int db_index )
 {
     if( db_index < 0 ) return false;
@@ -878,7 +892,8 @@ int Quilt::AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family,  ChartTypeEnum t
 
         if( b_allow_fullscreen_ref || pCurrentStack->DoesStackContaindbIndex( test_db_index ) ) {
             if( ( family == ChartData->GetDBChartFamily( test_db_index ) )
-                && IsChartQuiltableRef( test_db_index ) ) {
+                && IsChartQuiltableRef( test_db_index ) 
+                && !IsChartS57Overlay( test_db_index ) ){
                 
                 index_array.Add(test_db_index);
                 int nscale = ChartData->GetDBChartScale(test_db_index);
@@ -1477,7 +1492,21 @@ bool Quilt::Compose( const ViewPort &vp_in )
             }
         }
     }
-    
+
+    bool b_has_overlays = false;
+    //  If this is an S57 quilt, we need to know if there are overlays in it
+    if(  CHART_TYPE_S57 == m_reference_type ) {
+        for( unsigned int ir = 0; ir < m_pcandidate_array->GetCount(); ir++ ) {
+            QuiltCandidate *pqc = m_pcandidate_array->Item( ir );
+            const ChartTableEntry &cte = ChartData->GetChartTableEntry( pqc->dbIndex );
+        
+            if(s57chart::IsCellOverlayType(cte.GetpFullPath() )){
+                b_has_overlays = true;
+                break;;
+            }
+        }
+    }
+            
 
     //    Using Region logic, and starting from the largest scale chart
     //    figuratively "draw" charts until the ViewPort window is completely quilted over
@@ -1515,7 +1544,6 @@ bool Quilt::Compose( const ViewPort &vp_in )
     }
     
     //    Now the rest of the candidates
-    bool b_has_overlays = false;
     if( !vp_region.IsEmpty() ) {
         for( ir = 0; ir < m_pcandidate_array->GetCount(); ir++ ) {
             QuiltCandidate *pqc = m_pcandidate_array->Item( ir );
@@ -1530,7 +1558,6 @@ bool Quilt::Compose( const ViewPort &vp_in )
             //  Overlays will be picked up in the next pass, if any are found
             if(  CHART_TYPE_S57 == m_reference_type ) {
                 if(s57chart::IsCellOverlayType(cte.GetpFullPath() )){
-                    b_has_overlays = true;
                     continue;
                 }
             }

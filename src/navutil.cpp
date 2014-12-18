@@ -260,6 +260,7 @@ extern bool             g_bCourseUp;
 extern bool             g_bLookAhead;
 extern int              g_COGAvgSec;
 extern bool             g_bMagneticAPB;
+extern bool             g_bShowChartBar;
 
 extern int              g_MemFootSec;
 extern int              g_MemFootMB;
@@ -343,6 +344,8 @@ extern int              g_NMEAAPBPrecision;
 extern int              g_NMEAAPBXTEPrecision;
 
 extern bool             g_bSailing;
+extern double           g_display_size_mm;
+extern double           g_config_display_size_mm;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
@@ -1190,6 +1193,15 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "UseNMEA_GLL" ), &g_bUseGLL, 1 );
     Read( _T ( "UseBigRedX" ), &g_bbigred, 0 );
 
+    if(iteration == 0){
+        int size_mm;
+        Read( _T ( "DisplaySizeMM" ), &size_mm, -1 );
+        g_config_display_size_mm = size_mm;
+        if((size_mm > 100) && (size_mm < 2000)){
+            g_display_size_mm = size_mm;
+        }
+    }
+    
     Read( _T ( "FilterNMEA_Avg" ), &g_bfilter_cogsog, 0 );
     Read( _T ( "FilterNMEA_Sec" ), &g_COGFilterSec, 1 );
     g_COGFilterSec = wxMin(g_COGFilterSec, MAX_COGSOG_FILTER_SECONDS);
@@ -1312,7 +1324,8 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "ShowChartOutlines" ), &g_bShowOutlines, 0 );
     Read( _T ( "ShowActiveRouteHighway" ), &g_bShowActiveRouteHighway, 1 );
     Read( _T ( "MostRecentGPSUploadConnection" ), &g_uploadConnection, _T("") );
-
+    Read( _T ( "ShowChartBar" ), &g_bShowChartBar, 1 );
+    
     Read( _T ( "SDMMFormat" ), &g_iSDMMFormat, 0 ); //0 = "Degrees, Decimal minutes"), 1 = "Decimal degrees", 2 = "Degrees,Minutes, Seconds"
     Read( _T ( "DistanceFormat" ), &g_iDistanceFormat, 0 ); //0 = "Nautical miles"), 1 = "Statute miles", 2 = "Kilometers", 3 = "Meters"
     Read( _T ( "SpeedFormat" ), &g_iSpeedFormat, 0 ); //0 = "kts"), 1 = "mph", 2 = "km/h", 3 = "m/s"
@@ -2461,7 +2474,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "DistanceFormat" ), g_iDistanceFormat );
     Write( _T ( "SpeedFormat" ), g_iSpeedFormat );
     Write( _T ( "MostRecentGPSUploadConnection" ), g_uploadConnection );
-
+    Write( _T ( "ShowChartBar" ), g_bShowChartBar );
+    
     Write( _T ( "FilterNMEA_Avg" ), g_bfilter_cogsog );
     Write( _T ( "FilterNMEA_Sec" ), g_COGFilterSec );
 
@@ -2552,6 +2566,8 @@ void MyConfig::UpdateSettings()
 
     Write( _T ( "MobileTouch" ), g_btouch );
     Write( _T ( "ResponsiveGraphics" ), g_bresponsive );
+    
+    Write( _T ( "DisplaySizeMM" ), g_config_display_size_mm );
 
     wxString st0;
     st0.Printf( _T ( "%g" ), g_PlanSpeed );
