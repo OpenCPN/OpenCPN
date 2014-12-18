@@ -277,6 +277,8 @@ extern bool              g_bShowMag;
 extern bool              g_btouch;
 extern bool              g_bresponsive;
 
+extern bool              g_bModalDialogOpen;
+
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
 #endif
@@ -1153,7 +1155,6 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_pRouteRolloverWin = NULL;
     m_pAISRolloverWin = NULL;
     m_bedge_pan = false;
-    m_disable_edge_pan = false;
     m_brecapture = false;
     
     m_pCIWin = NULL;
@@ -4928,9 +4929,6 @@ void ChartCanvas::MovementStopTimerEvent( wxTimerEvent& )
 
 bool ChartCanvas::CheckEdgePan( int x, int y, bool bdragging, int margin, int delta )
 {
-    if(m_disable_edge_pan)
-        return false;
-    
     bool bft = false;
     int pan_margin = m_canvas_width * margin / 100;
     int pan_timer_set = 200;
@@ -5049,6 +5047,9 @@ void ChartCanvas::MouseTimedEvent( wxTimerEvent& event )
 
 void ChartCanvas::MouseEvent( wxMouseEvent& event )
 {
+    // Don't do anything if a modal dialog is visible
+    if (g_bModalDialogOpen) return;
+
     int x, y;
     int mx, my;
 
@@ -5390,13 +5391,10 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                         && !pNearbyPoint->m_bIsInTrack && !pNearbyPoint->m_bIsInLayer )
                 {
                     int dlg_return;
-    #ifndef __WXOSX__
-                    dlg_return = OCPNMessageBox( this, _("Use nearby waypoint?"),
-                                                    _("OpenCPN Route Create"),
-                                                    (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
-    #else
-                    dlg_return = wxID_YES;
-    #endif
+                    dlg_return = OCPNMessageBox( this,
+                                                _("Would you like to use the nearby waypoint, instead of creating a new one for this route?"),
+                                                _("Use nearby waypoint?"),
+                                                (long) wxYES_NO | wxYES_DEFAULT );
                     if( dlg_return == wxID_YES ) {
                         pMousePoint = pNearbyPoint;
 
@@ -5436,17 +5434,15 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                             // Empirically found expression to get reasonable route segments.
                             int segmentCount = (3.0 + (rhumbDist - gcDistNM)) / pow(rhumbDist-gcDistNM-1, 0.5 );
 
-                            wxString msg;
-                            msg << _("For this leg the Great Circle route is ")
-                                << FormatDistanceAdaptive( rhumbDist - gcDistNM ) << _(" shorter than rhumbline.\n\n")
-                                << _("Would you like include the Great Circle routing points for this leg?");
+                            wxString msg = wxString::Format( (wxString)
+                                _("For this leg the great circle route is %s shorter than rhumb line."),
+                                FormatDistanceAdaptive( rhumbDist - gcDistNM )
+                            );
+                            msg << _T("\n\n")
+                                << _("Would you like include the great circle routing points for this leg?");
                                 
-                            m_disable_edge_pan = true;  // This helps on OS X if MessageBox does not fully capture mouse
+                            int answer = OCPNMessageBox( this, msg, _("Use great circle route?"), wxYES_NO | wxNO_DEFAULT );
 
-                            int answer = OCPNMessageBox( this, msg, _("OpenCPN Route Create"), wxYES_NO | wxNO_DEFAULT );
-
-                            m_disable_edge_pan = false;
-                            
                             if( answer == wxID_YES ) {
                                 RoutePoint* gcPoint;
                                 RoutePoint* prevGcPoint = m_prev_pMousePoint;
@@ -5799,25 +5795,23 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                     && !pNearbyPoint->m_bIsInTrack && !pNearbyPoint->m_bIsInLayer )
                 {
                     int dlg_return;
-                    #ifndef __WXOSX__
-                    dlg_return = OCPNMessageBox( this, _("Use nearby waypoint?"),
-                                                _("OpenCPN Route Create"),
-                                                (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
-                                                #else
-                                                dlg_return = wxID_YES;
-                                                #endif
-                                                if( dlg_return == wxID_YES ) {
-                                                    pMousePoint = pNearbyPoint;
+                    dlg_return = OCPNMessageBox( this,
+                                                _("Would you like to use the nearby waypoint, instead of creating a new one for this route?"),
+                                                _("Use nearby waypoint?"),
+                                                (long) wxYES_NO | wxYES_DEFAULT );
 
-                                                    // Using existing waypoint, so nothing to delete for undo.
-                                                    if( parent_frame->nRoute_State > 1 )
-                                                        undo->BeforeUndoableAction( Undo_AppendWaypoint, pMousePoint, Undo_HasParent, NULL );
+                    if( dlg_return == wxID_YES ) {
+                        pMousePoint = pNearbyPoint;
 
-                                                    // check all other routes to see if this point appears in any other route
-                                                        // If it appears in NO other route, then it should e considered an isolated mark
-                                                        if( !g_pRouteMan->FindRouteContainingWaypoint( pMousePoint ) ) pMousePoint->m_bKeepXRoute =
-                                                            true;
-                                                }
+                        // Using existing waypoint, so nothing to delete for undo.
+                        if( parent_frame->nRoute_State > 1 )
+                            undo->BeforeUndoableAction( Undo_AppendWaypoint, pMousePoint, Undo_HasParent, NULL );
+
+                        // check all other routes to see if this point appears in any other route
+                        // If it appears in NO other route, then it should e considered an isolated mark
+                        if( !g_pRouteMan->FindRouteContainingWaypoint( pMousePoint ) ) pMousePoint->m_bKeepXRoute =
+                            true;
+                    }
                 }
 
                 if( NULL == pMousePoint ) {                 // need a new point
@@ -5844,16 +5838,14 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                         // Empirically found expression to get reasonable route segments.
                         int segmentCount = (3.0 + (rhumbDist - gcDistNM)) / pow(rhumbDist-gcDistNM-1, 0.5 );
 
-                        wxString msg;
-                        msg << _("For this leg the Great Circle route is ")
-                        << FormatDistanceAdaptive( rhumbDist - gcDistNM ) << _(" shorter than rhumbline.\n\n")
-                        << _("Would you like include the Great Circle routing points for this leg?");
+                        wxString msg = wxString::Format( (wxString)
+                            _("For this leg the great circle route is %s shorter than rhumb line."),
+                            FormatDistanceAdaptive( rhumbDist - gcDistNM )
+                        );
+                        msg << _T("\n\n")
+                        << _("Would you like include the great circle routing points for this leg?");
 
-                        #ifndef __WXOSX__
-                        int answer = OCPNMessageBox( this, msg, _("OpenCPN Route Create"), wxYES_NO | wxNO_DEFAULT );
-                        #else
-                        int answer = wxID_NO;
-                        #endif
+                        int answer = OCPNMessageBox( this, msg, _("Use great circle route?"), wxYES_NO | wxNO_DEFAULT );
 
                         if( answer == wxID_YES ) {
                             RoutePoint* gcPoint;
@@ -7473,6 +7465,7 @@ void pupHandler_PasteRoute() {
 
         if( answer == wxID_CANCEL ) {
             delete kml;
+            ::wxEndBusyCursor();
             return;
         }
     }
@@ -7919,7 +7912,7 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         if( m_pSelectedRoute->m_bIsInLayer ) break;
 
         int ask_return = OCPNMessageBox( this, g_pRouteMan->GetRouteReverseMessage(),
-                               _("Rename Waypoints?"), wxYES_NO | wxCANCEL );
+                               _("Rename waypoints?"), wxYES_NO | wxCANCEL );
 
         if( ask_return != wxID_CANCEL ) {
             pSelect->DeleteAllSelectableRouteSegments( m_pSelectedRoute );
@@ -7940,7 +7933,7 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         int dlg_return = wxID_YES;
         if( g_bConfirmObjectDelete ) {
             dlg_return = OCPNMessageBox( this,  _("Are you sure you want to delete this route?"),
-                _("OpenCPN Route Delete"), (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
+                _("Delete route?"), (long) wxYES_NO | wxYES_DEFAULT );
         }
 
         if( dlg_return == wxID_YES ) {
@@ -8198,7 +8191,7 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         int dlg_return = wxID_YES;
         if( g_bConfirmObjectDelete ) {
             dlg_return = OCPNMessageBox( this, _("Are you sure you want to delete this track?"),
-                _("OpenCPN Track Delete"), (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
+                _("Delete track?"), (long) wxYES_NO | wxYES_DEFAULT );
         }
 
         if( dlg_return == wxID_YES ) {

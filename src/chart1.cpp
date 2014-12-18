@@ -239,6 +239,8 @@ extern CompressionWorkerPool   *g_CompressorPool;
 
 bool                      g_bcompression_wait;
 
+bool                      g_bModalDialogOpen;
+
 wxString                  g_uploadConnection;
 
 int                       user_user_id;
@@ -2204,7 +2206,7 @@ bool MyApp::OnInit()
             wxString msg1(
                     _("No Charts Installed.\nPlease select chart folders in Options > Charts.") );
 
-            OCPNMessageBox(gFrame, msg1, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK );
+            OCPNMessageBox(gFrame, msg1, wxString( _("No Charts Installed") ), wxICON_INFORMATION | wxOK );
 
             gFrame->DoOptionsDialog();
 
@@ -3842,7 +3844,7 @@ void MyFrame::SetGroupIndex( int index )
         msg += GetGroupName( old_group_index );
         msg += _("\" is empty, switching to \"All Active Charts\" group.");
 
-        OCPNMessageBox( this, msg, _("OpenCPN Group Notice"), wxOK );
+        OCPNMessageBox( this, msg, _("Empty Chart Group"), wxOK );
     }
 }
 
@@ -5091,7 +5093,7 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
     if( ( rr & LOCALE_CHANGED ) || ( rr & STYLE_CHANGED ) ) {
         if( ( prev_locale != g_locale ) || ( rr & STYLE_CHANGED ) ) {
             OCPNMessageBox(NULL, _("Please restart OpenCPN to activate language or style changes."),
-                    _("OpenCPN Info"), wxOK | wxICON_INFORMATION );
+                    _("Restart OpenCPN"), wxOK | wxICON_INFORMATION );
             if( rr & LOCALE_CHANGED ) g_blocale_changed = true;;
         }
     }
@@ -7718,9 +7720,9 @@ void MyFrame::DoPrint( void )
     if( !printer.Print( this, &printout, true ) ) {
         if( wxPrinter::GetLastError() == wxPRINTER_ERROR ) OCPNMessageBox(NULL,
                 _("There was a problem printing.\nPerhaps your current printer is not set correctly?"),
-                _T("OpenCPN"), wxOK );
+                _T("Print Error"), wxOK );
 //        else
-//            OCPNMessageBox(_T("Print Cancelled"), _T("OpenCPN"), wxOK);
+//            OCPNMessageBox(_T("Print Cancelled"), _T("Print Cancelled"), wxOK);
     } else {
         ( *g_printData ) = printer.GetPrintDialogData().GetPrintData();
     }
@@ -7732,7 +7734,7 @@ void MyFrame::DoPrint( void )
      if (!preview->Ok())
      {
      delete preview;
-     OCPNMessageBox(_T("There was a problem previewing.\nPerhaps your current printer is not set correctly?"), _T("Previewing"), wxOK);
+     OCPNMessageBox(_T("There was a problem previewing.\nPerhaps your current printer is not set correctly?"), _T("Print Error"), wxOK);
      return;
      }
 
@@ -9708,7 +9710,7 @@ bool CheckSerialAccess( void )
         wxString msg = msg1 + _("No Serial Ports can be found on this system.\n\
 You must install a serial port (modprobe correct kernel module) or plug in a usb serial device.\n");
 
-        OCPNMessageBox ( NULL, msg, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK, 30 );
+        OCPNMessageBox ( NULL, msg, wxString( _("Unable to access serial ports") ), wxICON_INFORMATION | wxOK, 30 );
         return false;
     }
 
@@ -9739,7 +9741,7 @@ You may do so by executing the following command from the linux command line:\n\
         msg += user;
         msg += _T("\n");
 
-        OCPNMessageBox ( NULL, msg, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK, 30 );
+        OCPNMessageBox ( NULL, msg, wxString( _("Unable to access serial ports") ), wxICON_INFORMATION | wxOK, 30 );
     }
 
 
@@ -10300,7 +10302,6 @@ TimedMessageBox::TimedMessageBox(wxWindow* parent, const wxString& message,
     ret_val = ret;
 }
 
-
 TimedMessageBox::~TimedMessageBox()
 {
 }
@@ -10312,65 +10313,26 @@ void TimedMessageBox::OnTimer(wxTimerEvent &evt)
 }
 
 
-
-
-
-
 int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& caption, int style,
                     int timeout_sec, int x, int y  )
 {
+    int ret = wxID_OK;
 
-#ifdef __WXOSX__
-    long parent_style;
-    bool b_toolviz = false;
-    bool b_compassviz = false;
-    bool b_statsviz = false;
+    g_bModalDialogOpen = true;
 
-    if(g_FloatingToolbarDialog && g_FloatingToolbarDialog->IsShown()){
-        g_FloatingToolbarDialog->Hide();
-        b_toolviz = true;
+    if (timeout_sec > 0) {
+        // wxMessageDialog is a wrapper around the system's native message dialog, so we can't
+        // subclass it and create a timed version, so we use a custom dialog instead.
+        TimedMessageBox tbox(parent, message, caption, style, timeout_sec, wxPoint( x, y )  );
+        ret = tbox.GetRetVal();
+    } else {
+        // If we don't need a timed dialog, use the system's native message dialog
+        // for better compatibility and greater user familiarity.
+        wxMessageDialog dlg( parent, message, caption, style, wxPoint( x, y ) );
+        ret = dlg.ShowModal();
     }
 
-    if( g_FloatingCompassDialog && g_FloatingCompassDialog->IsShown()){
-        g_FloatingCompassDialog->Hide();
-        b_compassviz = true;
-    }
-
-    if( stats && stats->IsShown()) {
-        stats->Hide();
-        b_statsviz = true;
-    }
-
-    if(parent) {
-        parent_style = parent->GetWindowStyle();
-        parent->SetWindowStyle( parent_style & !wxSTAY_ON_TOP );
-    }
-
-#endif
-
-      int ret =  wxID_OK;
-
-      TimedMessageBox tbox(parent, message, caption, style, timeout_sec, wxPoint( x, y )  );
-      ret = tbox.GetRetVal() ;
-
-//    wxMessageDialog dlg( parent, message, caption, style | wxSTAY_ON_TOP, wxPoint( x, y ) );
-//    ret = dlg.ShowModal();
-
-#ifdef __WXOSX__
-    if(gFrame && b_toolviz)
-        gFrame->SurfaceToolbar();
-
-    if( g_FloatingCompassDialog && b_compassviz)
-        g_FloatingCompassDialog->Show();
-
-    if( stats && b_statsviz)
-        stats->Show();
-
-    if(parent){
-        parent->Raise();
-        parent->SetWindowStyle( parent_style );
-    }
-#endif
+    g_bModalDialogOpen = false;
 
     return ret;
 }
