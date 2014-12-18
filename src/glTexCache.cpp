@@ -2005,6 +2005,9 @@ bool CompressUsingGPU( glTextureDescriptor *ptd, GLuint raster_format, int level
     if(!ptd)
         return false;
     
+    if( !s_glGetCompressedTexImage )
+        return false;
+    
     int dim = g_GLOptions.m_iTextureDimension;
     int size = g_tile_size;
     
@@ -2044,7 +2047,7 @@ bool CompressUsingGPU( glTextureDescriptor *ptd, GLuint raster_format, int level
             unsigned char *compressedBytes = (unsigned char *)malloc(sizeof(GLubyte) * compressedSize);
             
             // Read back the compressed texture.
-            glGetCompressedTexImage(GL_TEXTURE_2D, 0, compressedBytes);
+            s_glGetCompressedTexImage(GL_TEXTURE_2D, 0, compressedBytes);
             
             // Save the compressed texture pointer in the ptd
             ptd->CompressedArrayAccess( CA_WRITE, compressedBytes, level);
