@@ -713,8 +713,10 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
     //  We want to avoid processing regions with very large rectangle counts,
     //  so make some tests for special cases
 
+    float_2Dpt p0, p1, p2, p3;
     
     //  First, calculate whether any segment of the input polygon intersects the specified Region
+    int nrect = 0;
     bool b_intersect = false;
     OCPNRegionIterator screen_region_it1( Region );
     while( screen_region_it1.HaveRects() ) {
@@ -724,37 +726,43 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
         
         //  The screen region corners
         GetLLFromPix( wxPoint(rect.x, rect.y), &lat, &lon );
-        float_2Dpt p0; p0.y = lat; p0.x = lon;
+        p0.y = lat; p0.x = lon;
         
         GetLLFromPix( wxPoint(rect.x + rect.width, rect.y), &lat, &lon );
-        float_2Dpt p1; p1.y = lat; p1.x = lon;
+        p1.y = lat; p1.x = lon;
         
         GetLLFromPix( wxPoint(rect.x + rect.width, rect.y + rect.height), &lat, &lon );
-        float_2Dpt p2; p2.y = lat; p2.x = lon;
+        p2.y = lat; p2.x = lon;
         
         GetLLFromPix( wxPoint(rect.x, rect.y + rect.height), &lat, &lon );
-        float_2Dpt p3; p3.y = lat; p3.x = lon;
+        p3.y = lat; p3.x = lon;
         
         
         for(size_t i=0 ; i < nPoints-1 ; i++){
             
-            //  Quick check
-            int x0 = pp[i].x;  int y0 = pp[i].y; int x1 = pp[i+1].x; int y1 = pp[i+1].y;
-            if( ((x0 < rect.x) && (x1 < rect.x)) ||
-                ((x0 > rect.x+rect.width) && (x1 > rect.x+rect.width)) )
-                continue;
+            //  Quick check on y dimension
+            int y0 = pp[i].y; int y1 = pp[i+1].y;
             
             if( ((y0 < rect.y) && (y1 < rect.y)) ||
                 ((y0 > rect.y+rect.height) && (y1 > rect.y+rect.height)) )
-                continue;
+                continue;               // both ends of line outside of box, top or bottom
             
             //  Look harder
             float_2Dpt f0; f0.y = llpoints[i * 2];     f0.x = llpoints[(i * 2) + 1];
             float_2Dpt f1; f1.y = llpoints[(i+1) * 2]; f1.x = llpoints[((i+1) * 2) + 1];
-            b_intersect |= Intersect_FL( p0, p1, f0, f1) != 0;
-            b_intersect |= Intersect_FL( p1, p2, f0, f1) != 0;
-            b_intersect |= Intersect_FL( p2, p3, f0, f1) != 0;
-            b_intersect |= Intersect_FL( p3, p0, f0, f1) != 0;
+            b_intersect |= Intersect_FL( p0, p1, f0, f1) != 0; if(b_intersect) break;
+            b_intersect |= Intersect_FL( p1, p2, f0, f1) != 0; if(b_intersect) break;
+            b_intersect |= Intersect_FL( p2, p3, f0, f1) != 0; if(b_intersect) break;
+            b_intersect |= Intersect_FL( p3, p0, f0, f1) != 0; if(b_intersect) break;
+            
+            //  Must check the case where the input polygon has been pre-normalized, eg (0 < lon < 360), as cm93
+            f0.x -= 360.;
+            f1.x -= 360.;
+            b_intersect |= Intersect_FL( p0, p1, f0, f1) != 0; if(b_intersect) break;
+            b_intersect |= Intersect_FL( p1, p2, f0, f1) != 0; if(b_intersect) break;
+            b_intersect |= Intersect_FL( p2, p3, f0, f1) != 0; if(b_intersect) break;
+            b_intersect |= Intersect_FL( p3, p0, f0, f1) != 0; if(b_intersect) break;
+            
             
             if(b_intersect)
                 break;
@@ -769,10 +777,18 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
             b_intersect |= Intersect_FL( p1, p2, f0, f1) != 0;
             b_intersect |= Intersect_FL( p2, p3, f0, f1) != 0;
             b_intersect |= Intersect_FL( p3, p0, f0, f1) != 0;
+ 
+            f0.x -= 360.;
+            f1.x -= 360.;
+            b_intersect |= Intersect_FL( p0, p1, f0, f1) != 0;
+            b_intersect |= Intersect_FL( p1, p2, f0, f1) != 0;
+            b_intersect |= Intersect_FL( p2, p3, f0, f1) != 0;
+            b_intersect |= Intersect_FL( p3, p0, f0, f1) != 0;
             
         }
                 
         screen_region_it1.NextRect();
+        nrect++;
     }
 
     //  If there is no itersection, we need to consider the case where
@@ -811,20 +827,30 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
         //  Better check....
         
 #if 1
-        //  If the subject polygon does not contain the screen region center point,
-        //  then there must be no intersction, so return empty region
+            if(nrect == 1){                 // most common case
+            // If the subject polygon contains the center of the target rectangle, then
+            // the intersection must be the target rectangle
+                float rlat = (p0.y + p2.y)/2.;
+                float rlon = (p0.x + p1.x)/2.;
+                
+                if(G_PtInPolygon_FL((float_2Dpt *)llpoints, nPoints, rlon, rlat)){
+                    if( NULL == ppoints ) delete[] pp;
+                    return Region;
+                }
+                rlon += 360.;
+                if(G_PtInPolygon_FL((float_2Dpt *)llpoints, nPoints, rlon, rlat)){
+                    if( NULL == ppoints ) delete[] pp;
+                    return Region;
+                }
+                
+                //  otherwise, there is no intersection
+                else{
+                    if( NULL == ppoints ) delete[] pp;
+                    wxRegion r;
+                    return r;
+                }
+            }
         
-            if(!G_PtInPolygon_FL((float_2Dpt *)llpoints, nPoints, clon, clat)){
-                if( NULL == ppoints ) delete[] pp;
-                wxRegion r;
-                return r;
-            }
-            
-            //  Other wise, it must be the full screen.
-            else{
-                if( NULL == ppoints ) delete[] pp;
-                return Region;
-            }
 #endif        
             
         }
@@ -845,7 +871,6 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
     }
         
 #endif    
-        
         
     
 #ifdef __WXGTK__
@@ -4812,7 +4837,7 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
 //          for new canvas size
     SetVPScale( GetVPScale() );
 
-    m_absolute_min_scale_ppm = m_canvas_width / ( 1.5 * WGS84_semimajor_axis_meters * PI ); // something like 180 degrees
+    m_absolute_min_scale_ppm = m_canvas_width / ( 1.2 * WGS84_semimajor_axis_meters * PI ); // something like 180 degrees
 
     //  Inform the parent Frame that I am being resized...
     gFrame->ProcessCanvasResize();
