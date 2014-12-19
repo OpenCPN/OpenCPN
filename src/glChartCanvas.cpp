@@ -281,6 +281,9 @@ bool CompressChart(wxThread *pThread, ChartBase *pchart, wxString CompressedCach
                 Nevent.thread = thread;
                 
                 pMessageTarget->AddPendingEvent(Nevent);
+                
+                if(!pThread)
+                    ::wxYield();
 
             }
             
@@ -940,6 +943,9 @@ void glChartCanvas::SetupOpenGL()
         s_glGenerateMipmap = 0;
     
 
+    if( !s_glGenerateMipmap )
+        wxLogMessage( _T("OpenGL-> glGenerateMipmap unavailable") );
+    
     if( !s_glGenFramebuffers  || !s_glGenRenderbuffers        || !s_glFramebufferTexture2D ||
         !s_glBindFramebuffer  || !s_glFramebufferRenderbuffer || !s_glRenderbufferStorage  ||
         !s_glBindRenderbuffer || !s_glCheckFramebufferStatus  || !s_glDeleteFramebuffers   ||
