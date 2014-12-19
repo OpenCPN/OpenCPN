@@ -3286,6 +3286,12 @@ InitReturn ChartPlugInWrapper::Init( const wxString& name, ChartInitFlag init_fl
 
         }
 
+
+        //  PlugIn may invoke wxExecute(), which steals the keyboard focus
+        //  So take it back
+        if(cc1)
+            cc1->SetFocus();
+        
         return ret_val;
     }
     else

@@ -1068,7 +1068,6 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
     EVT_KEY_UP(ChartCanvas::OnKeyUp )
     EVT_CHAR(ChartCanvas::OnKeyChar)
     EVT_MOUSE_CAPTURE_LOST(ChartCanvas::LostMouseCapture )
-    EVT_KILL_FOCUS(ChartCanvas::OnFocusKill )
     
     EVT_MENU ( ID_DEF_MENU_MAX_DETAIL,         ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_DEF_MENU_SCALE_IN,           ChartCanvas::PopupMenuHandler )
@@ -1179,7 +1178,6 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_pAISRolloverWin = NULL;
     m_bedge_pan = false;
     m_disable_edge_pan = false;
-    m_brecapture = false;
     
     m_pCIWin = NULL;
 
@@ -1731,11 +1729,6 @@ ChartCanvas::~ChartCanvas()
         delete m_glcc;
 #endif
 
-}
-
-void ChartCanvas::OnFocusKill(wxFocusEvent& event )
-{
-    m_brecapture = true;
 }
 
 void ChartCanvas::SetDisplaySizeMM( double size )
@@ -3841,13 +3834,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
     vLat = VPoint.clat;
     vLon = VPoint.clon;
 
-    //   If any PlugIn chart ran wxExecute(), then the canvas focus is likely lost.
-    //  Restore it here
-    if(m_brecapture  && !gFrame->IsPianoContextMenuActive()){
-      cc1->SetFocus();
-      m_brecapture = false;
-    }
-      
+   
     
     return b_ret;
 }
