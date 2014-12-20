@@ -90,6 +90,7 @@ extern bool             g_boptionsactive;
 extern options         *g_options;
 extern ColorScheme      global_color_scheme;
 extern ChartCanvas     *cc1;
+extern wxArrayString    g_locale_catalog_array;
 
 unsigned int      gs_plib_flags;
 
@@ -1804,8 +1805,13 @@ wxAuiManager *GetFrameAuiManager(void)
 
 bool AddLocaleCatalog( wxString catalog )
 {
-    if(plocale_def_lang)
-        return plocale_def_lang->AddCatalog( catalog );
+    if(plocale_def_lang){
+        // Add this catalog to the persistent catalog array
+        g_locale_catalog_array.Add(catalog);
+        
+        //  And then reload all catalogs.
+        return ReloadLocale(); // plocale_def_lang->AddCatalog( catalog );
+    }
     else
         return false;
 }

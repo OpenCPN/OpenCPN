@@ -668,6 +668,8 @@ int              g_NMEAAPBXTEPrecision;
 
 bool             g_bSailing;
 
+wxArrayString    g_locale_catalog_array;
+
 #ifdef LINUX_CRASHRPT
 wxCrashPrint g_crashprint;
 #endif
@@ -11129,3 +11131,71 @@ bool GetWindowsMonitorSize( int *width, int *height)
         
 
 #endif
+
+bool ReloadLocale()
+{
+    bool ret = false;
+    
+    //  Old locale is done.
+    delete plocale_def_lang;    
+    
+    plocale_def_lang = new wxLocale;
+    wxString loc_lang_canonical;
+    
+    const wxLanguageInfo *pli = wxLocale::FindLanguageInfo( g_locale );
+    bool b_initok = false;
+    
+    if( pli ) {
+        b_initok = plocale_def_lang->Init( pli->Language, 1 );
+        // If the locale was not initialized OK, it may be that the wxstd.mo translations
+        // of the wxWidgets strings is not present.
+        // So try again, without attempting to load defaults wxstd.mo.
+        if( !b_initok ){
+            b_initok = plocale_def_lang->Init( pli->Language, 0 );
+        }
+        loc_lang_canonical = pli->CanonicalName;
+    }
+    
+    if( !pli || !b_initok ) {
+        delete plocale_def_lang;
+        plocale_def_lang = new wxLocale;
+        b_initok = plocale_def_lang->Init( wxLANGUAGE_ENGLISH_US, 0 );
+        loc_lang_canonical = wxLocale::GetLanguageInfo( wxLANGUAGE_ENGLISH_US )->CanonicalName;
+    }
+    
+    if(b_initok){
+        wxString imsg = _T("Opencpn language reload for:  ");
+        imsg += loc_lang_canonical;
+        wxLogMessage( imsg );
+    
+        //  wxWidgets assigneds precedence to message catalogs in reverse order of loading.
+        //  That is, the last catalog containing a certain translatable item takes precedence.
+        
+        //  So, Load the catalogs saved in a global string array which is populated as PlugIns request a catalog load.
+        //  We want to load the PlugIn catalogs first, so that core opencpn translations loaded later will become precedent.
+    
+        wxLog::SetVerbose(true);            // log all messages for debugging language stuff
+        
+        for(unsigned int i=0 ; i < g_locale_catalog_array.GetCount() ; i++){
+            wxString imsg = _T("Loading catalog for:  ");
+            imsg += g_locale_catalog_array.Item(i);
+            wxLogMessage( imsg );
+            plocale_def_lang->AddCatalog( g_locale_catalog_array.Item(i) );
+        }
+    
+    
+    // Get core opencpn catalog translation (.mo) file
+        wxLogMessage( _T("Loading catalog for opencpn core.") );
+        plocale_def_lang->AddCatalog( _T("opencpn") );
+        
+        wxLog::SetVerbose(false);
+       
+        ret = true;
+    }
+    
+    //    Always use dot as decimal
+    setlocale( LC_NUMERIC, "C" );
+    
+    return ret;
+    
+}
