@@ -5927,10 +5927,12 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
 
 void OpenGLOptionsDlg::OnButtonRebuild( wxCommandEvent& event )
 {
+#ifdef ocpnUSE_GL
     if(g_GLOptions.m_bTextureCompressionCaching) {
         m_brebuild_cache = true;
         EndModal(wxID_CANCEL);
     }
+#endif
 }
 
 void OpenGLOptionsDlg::OnButtonClear( wxCommandEvent& event )
@@ -5942,8 +5944,6 @@ void OpenGLOptionsDlg::OnButtonClear( wxCommandEvent& event )
 
     wxString path =  g_PrivateDataDir + wxFileName::GetPathSeparator() + _T("raster_texture_cache");
     if(::wxDirExists( path )){
-        cc1->GetglCanvas()->ClearAllRasterTextures();
-        
         wxArrayString files;
         size_t nfiles = wxDir::GetAllFiles(path, &files);
         for(unsigned int i=0 ; i < files.GetCount() ; i++){
@@ -5960,9 +5960,7 @@ wxString OpenGLOptionsDlg::TextureCacheSize()
 {
     wxString path =  g_PrivateDataDir + wxFileName::GetPathSeparator() + _T("raster_texture_cache");
     int total = 0;
-    if(::wxDirExists( path )){
-        cc1->GetglCanvas()->ClearAllRasterTextures();
-                
+    if(::wxDirExists( path )) {
         wxArrayString files;
         size_t nfiles = wxDir::GetAllFiles(path, &files);
         for(unsigned int i=0 ; i < files.GetCount() ; i++){

@@ -1047,6 +1047,7 @@ void NotifySetupOptionsPlugin( PlugInContainer *pic )
             case 109:
             case 110:
             case 111:
+            case 112:
             {
                 opencpn_plugin_19 *ppi = dynamic_cast<opencpn_plugin_19 *>(pic->m_pplugin);
                 if(ppi) {
@@ -1208,6 +1209,7 @@ void PlugInManager::SendMessageToAllPlugins(const wxString &message_id, const wx
                 case 109:
                 case 110:
                 case 111:
+                case 112:
                 {
                     opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                     if(ppi)

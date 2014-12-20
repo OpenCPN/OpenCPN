@@ -9017,15 +9017,28 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 //    Arrange to render the World Chart vector data behind the rendered current chart
 //    so that uncovered canvas areas show at least the world chart.
         OCPNRegion chartValidRegion;
-        if( !VPoint.b_quilt )
-            Current_Ch->GetValidCanvasRegion( svp, &chartValidRegion ); // Make a region covering the current chart on the canvas
+        if( !VPoint.b_quilt ) {
+            // Make a region covering the current chart on the canvas
+
+            if(Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR)
+                Current_Ch->GetValidCanvasRegion( svp, &chartValidRegion );
+            else {
+                // The raster calculations  in ChartBaseBSB::ComputeSourceRectangle
+                // require that the viewport passed here have pix_width and pix_height
+                // set to the actual display, not the virtual (rv_rect) sizes
+                // (the vector calculations require the virtual sizes in svp)
+
+                Current_Ch->GetValidCanvasRegion( VPoint, &chartValidRegion );
+                chartValidRegion.Offset(-VPoint.rv_rect.x, -VPoint.rv_rect.y);
+            }
+        }
         else
             chartValidRegion = m_pQuilt->GetFullQuiltRenderedRegion();
 
         temp_dc.DestroyClippingRegion();
     
         //    Copy current chart region
-        OCPNRegion backgroundRegion(  0, 0, svp.pix_width, svp.pix_height  );
+        OCPNRegion backgroundRegion( wxRect(0, 0, svp.pix_width, svp.pix_height) );
 
         if( chartValidRegion.IsOk() )
             backgroundRegion.Subtract( chartValidRegion );
@@ -9033,11 +9046,6 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         if( ( ( fabs( GetVP().skew ) < .01 ) || ! g_bskew_comp )
             && ! backgroundRegion.IsEmpty() ) {
         
-            //    Associate with temp_dc
-            wxRegion *clip_region = backgroundRegion.GetNew_wxRegion();
-            temp_dc.SetClippingRegion( *clip_region );
-            delete clip_region;
-
             //    Draw the Background Chart only in the areas NOT covered by the current chart view
 
             /* unfortunately wxDC::DrawRectangle and wxDC::Clear do not respect
@@ -9051,6 +9059,11 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
                 temp_dc.DrawRectangle(rect);
                 upd.NextRect();
             }
+
+            //    Associate with temp_dc
+            wxRegion *clip_region = backgroundRegion.GetNew_wxRegion();
+            temp_dc.SetClippingRegion( *clip_region );
+            delete clip_region;
 
             ocpnDC bgdc( temp_dc );
             double r =         VPoint.rotation;
