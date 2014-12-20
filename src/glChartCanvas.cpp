@@ -3123,8 +3123,8 @@ void glChartCanvas::Render()
 
     //  If we plan to post process the display, don't use accelerated panning
     double scale_factor = VPoint.ref_scale/VPoint.chart_scale;
-    bool fog_it = (g_fog_overzoom && (scale_factor > g_overzoom_emphasis_base) && VPoint.b_quilt);
-    fog_it |= g_oz_vector_scale;
+    bool fog_it = g_fog_overzoom && (scale_factor > g_overzoom_emphasis_base) && VPoint.b_quilt;
+    fog_it |=  g_oz_vector_scale && (scale_factor > g_overzoom_emphasis_base) && VPoint.b_quilt;
     bool bpost_hilite = !cc1->m_pQuilt->GetHiliteRegion( VPoint ).IsEmpty();
     
     // Try to use the framebuffer object's cache of the last frame
