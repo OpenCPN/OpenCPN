@@ -6360,7 +6360,9 @@ bool cm93compchart::AdjustVP ( ViewPort &vp_last, ViewPort &vp_proposed )
 {
     //  All the below logic is slow, and really redundant.
     //  so, declare that cm93 charts do not require adjustment for optimum performance.
-    return false;
+    
+    if( m_pcm93chart_current )
+        return false;
     
       //    This may be a partial screen render
       //    If it is, the cmscale value on this render must match the same parameter
