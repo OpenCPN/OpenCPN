@@ -3736,15 +3736,16 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                 //  This will normally be only a fractional (i.e. sub-pixel) adjustment...
                 if( b_adjust ) m_pQuilt->AdjustQuiltVP( last_vp, VPoint );
 
-                ChartData->ClearCacheInUseFlags();
-                unsigned long hash1 = m_pQuilt->GetXStackHash();
+//                ChartData->ClearCacheInUseFlags();
+//                unsigned long hash1 = m_pQuilt->GetXStackHash();
+ 
                 m_pQuilt->Compose( VPoint );
 
                 //      If the extended chart stack has changed, invalidate any cached render bitmap
-                if(m_pQuilt->GetXStackHash() != hash1) {
+//                if(m_pQuilt->GetXStackHash() != hash1) {
 //                    m_bm_cache_vp.Invalidate();
 //                    InvalidateGL();
-                }
+//                }
 
                 ChartData->PurgeCacheUnusedCharts( 0.7 );
 
