@@ -3754,12 +3754,13 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                 
                 b_ret = true;
             }
-            parent_frame->UpdateControlBar();
         }
 
         VPoint.skew = 0.;  // Quilting supports 0 Skew
     }
 
+    parent_frame->UpdateControlBar();
+    
     if( !VPoint.GetBBox().GetValid() ) VPoint.SetBoxes();
 
     if( VPoint.GetBBox().GetValid() ) {

@@ -6948,6 +6948,8 @@ void MyFrame::UpdateControlBar( void )
     ArrayOfInts piano_chart_index_array;
     ArrayOfInts empty_piano_chart_index_array;
 
+    wxString old_hash = stats->pPiano->GetStoredHash();
+     
     if( cc1->GetQuiltMode() ) {
         piano_chart_index_array = cc1->GetQuiltExtendedStackdbIndexArray();
         stats->pPiano->SetKeyArray( piano_chart_index_array );
@@ -7001,7 +7003,10 @@ void MyFrame::UpdateControlBar( void )
     stats->pPiano->SetPolyIndexArray( piano_poly_chart_index_array );
 
     stats->FormatStat();
-    stats->Refresh( true );
+    
+    wxString new_hash = stats->pPiano->GenerateAndStoreNewHash();
+    if(new_hash != old_hash)
+        stats->Refresh( false );
 
 }
 
