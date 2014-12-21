@@ -108,6 +108,7 @@ void StatWin::ReSize()
     new_size.x = cs.x;
     new_size.y = 22 * GetRows();
     SetSize(new_size);
+    
 }
 
 void StatWin::OnPaint( wxPaintEvent& event )
@@ -244,6 +245,7 @@ PianoWin::~PianoWin()
 
 void PianoWin::OnSize( wxSizeEvent& event )
 {
+    m_hash.Clear();
 }
 
 void PianoWin::SetColorScheme( ColorScheme cs )
