@@ -2626,6 +2626,8 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
 
                         glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
                         glCopyTexSubImage2D(GL_TEXTURE_2D,  0,  0,  0, 0,  0,  width, height);
+                    
+                        glPushAttrib( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_LINE_BIT| GL_CURRENT_BIT);
                         
                         glClear(GL_DEPTH_BUFFER_BIT);
                         glDisable(GL_DEPTH_TEST);
@@ -2648,7 +2650,6 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                         glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, bias);
                         glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
                         
-                        glColor4f (1.0f,1.0f,1.0f,1.0f);
 
                         glBegin(GL_QUADS);
                         
@@ -2661,6 +2662,10 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                         glDeleteTextures(1, &screen_capture);
 
                         glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, 0);
+                        glDisable(GL_TEXTURE_2D);
+                        
+                        glPopAttrib( );
+                        
                     }
                     else {              // must use POT textures
                                         // and we cannot really trust the value that comes from GL_MAX_TEXTURE_SIZE
@@ -2676,7 +2681,9 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                         double bias = fog/70;
                         glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS, bias);
                         glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
-                        glColor4f (1.0f,1.0f,1.0f,1.0f);
+                        
+                        glPushAttrib( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_LINE_BIT | GL_CURRENT_BIT);
+                        
                         glClear(GL_DEPTH_BUFFER_BIT);
                         glDisable(GL_DEPTH_TEST);
                         int max_mipmap = 3;
@@ -2751,7 +2758,10 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                         
                         glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS, 0);
                         glDeleteTextures(ntx * nty, screen_capture);
+                        glDisable(GL_TEXTURE_2D);
                         delete [] screen_capture;
+                        
+                        glPopAttrib();
                     }
                 }
                  
