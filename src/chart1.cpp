@@ -5618,7 +5618,7 @@ void MyFrame::DoStackDelta( int direction )
         if( (current_stack_index + direction) < 0 )
             return;
 
-        if( m_bpersistent_quilt && g_bQuiltEnable ) {
+        if( m_bpersistent_quilt /*&& g_bQuiltEnable*/ ) {
             int new_dbIndex = pCurrentStack->GetDBIndex(current_stack_index + direction );
 
             if( cc1->IsChartQuiltableRef( new_dbIndex ) ) {
@@ -5681,6 +5681,7 @@ void MyFrame::DoStackDelta( int direction )
         }
     }
 
+    UpdateGlobalMenuItems(); // update the state of the menu items (checkmarks etc)
     cc1->SetQuiltChartHiLiteIndex( -1 );
 
     cc1->ReloadVP();
@@ -6540,7 +6541,7 @@ void MyFrame::HandlePianoClick( int selected_index, int selected_dbIndex )
     if( s_ProgDialog ) return;
 
     if( !cc1->GetQuiltMode() ) {
-        if( m_bpersistent_quilt && g_bQuiltEnable ) {
+        if( m_bpersistent_quilt/* && g_bQuiltEnable*/ ) {
             if( cc1->IsChartQuiltableRef( selected_dbIndex ) ) {
                 ToggleQuiltMode();
                 SelectQuiltRefdbChart( selected_dbIndex );
@@ -6605,6 +6606,7 @@ void MyFrame::HandlePianoClick( int selected_index, int selected_dbIndex )
     }
 
     cc1->SetQuiltChartHiLiteIndex( -1 );
+    UpdateGlobalMenuItems(); // update the state of the menu items (checkmarks etc)
     cc1->HideChartInfoWindow();
     DoChartUpdate();
     cc1->ReloadVP();                  // Pick up the new selections
