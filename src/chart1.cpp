@@ -4237,6 +4237,7 @@ void MyFrame::ToggleFullScreen()
 
     ShowFullScreen( to, style );
     UpdateToolbar( global_color_scheme );
+    UpdateControlBar();
     Layout();
 }
 
@@ -8894,7 +8895,6 @@ void MyFrame::UpdateAISMOBRoute( AIS_Target_Data *ptarget )
 }
 
 
-
 #ifdef wxHAS_POWER_EVENTS
 void MyFrame::OnSuspending(wxPowerEvent& event)
 {
@@ -8915,6 +8915,7 @@ void MyFrame::OnSuspended(wxPowerEvent& WXUNUSED(event))
 //    wxDateTime now = wxDateTime::Now();
 //    printf("OnSuspended...%d\n", now.GetTicks());
     wxLogMessage(_T("System is going to suspend."));
+    
 }
 
 void MyFrame::OnSuspendCancel(wxPowerEvent& WXUNUSED(event))
@@ -8941,6 +8942,10 @@ void MyFrame::OnResume(wxPowerEvent& WXUNUSED(event))
             g_pMUX->StartAllStreams();
         }
     }
+
+    cc1->InvalidateGL();
+    cc1->Refresh(true);
+    
 }
 #endif // wxHAS_POWER_EVENTS
 
