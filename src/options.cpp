@@ -81,6 +81,8 @@ extern MyFrame          *gFrame;
 extern ChartCanvas      *cc1;
 extern wxString         g_PrivateDataDir;
 
+extern bool             g_bShowFPS;
+
 extern bool             g_bShowOutlines;
 extern bool             g_bShowChartBar;
 extern bool             g_bShowDepthUnits;
@@ -3296,6 +3298,8 @@ void options::OnOpenGLOptions( wxCommandEvent& event )
 
         g_GLOptions.m_bTextureCompression = dlg.m_cbTextureCompression->GetValue();
         
+        g_bShowFPS = dlg.m_cbShowFPS->GetValue();
+        
         if(g_bexpert){
             g_GLOptions.m_bTextureCompressionCaching = dlg.m_cbTextureCompressionCaching->GetValue();
             g_GLOptions.m_iTextureMemorySize = dlg.m_sTextureMemorySize->GetValue();
@@ -5906,6 +5910,10 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
     m_stTextureCacheSize = new wxStaticText(this, wxID_STATIC, TextureCacheSize());
     m_bSizer1->Add( m_stTextureCacheSize, 0,
                     wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, 5 );
+
+    m_cbShowFPS = new wxCheckBox( this, wxID_ANY, _("Show FPS") );
+    m_bSizer1->Add( m_cbShowFPS, 0,  wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, 5 );
+    m_cbShowFPS->SetValue(g_bShowFPS);
     
     wxStdDialogButtonSizer * m_sdbSizer4 = new wxStdDialogButtonSizer();
     wxButton *bOK = new wxButton( this, wxID_OK );
@@ -5927,10 +5935,12 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
 
 void OpenGLOptionsDlg::OnButtonRebuild( wxCommandEvent& event )
 {
+#ifdef ocpnUSE_GL
     if(g_GLOptions.m_bTextureCompressionCaching) {
         m_brebuild_cache = true;
         EndModal(wxID_CANCEL);
     }
+#endif
 }
 
 void OpenGLOptionsDlg::OnButtonClear( wxCommandEvent& event )
@@ -5942,8 +5952,6 @@ void OpenGLOptionsDlg::OnButtonClear( wxCommandEvent& event )
 
     wxString path =  g_PrivateDataDir + wxFileName::GetPathSeparator() + _T("raster_texture_cache");
     if(::wxDirExists( path )){
-        cc1->GetglCanvas()->ClearAllRasterTextures();
-        
         wxArrayString files;
         size_t nfiles = wxDir::GetAllFiles(path, &files);
         for(unsigned int i=0 ; i < files.GetCount() ; i++){
@@ -5960,9 +5968,7 @@ wxString OpenGLOptionsDlg::TextureCacheSize()
 {
     wxString path =  g_PrivateDataDir + wxFileName::GetPathSeparator() + _T("raster_texture_cache");
     int total = 0;
-    if(::wxDirExists( path )){
-        cc1->GetglCanvas()->ClearAllRasterTextures();
-                
+    if(::wxDirExists( path )) {
         wxArrayString files;
         size_t nfiles = wxDir::GetAllFiles(path, &files);
         for(unsigned int i=0 ; i < files.GetCount() ; i++){
