@@ -2609,7 +2609,7 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                     int width = wi;
                     int height = hi;
 
-                    if(g_texture_rectangle_format){             //nPOT texture supported
+                    if(g_texture_rectangle_format == GL_TEXTURE_2D){             //nPOT texture supported
 
                         //          Capture the rendered screen image to a texture
                         glReadBuffer( GL_BACK);
@@ -2623,12 +2623,9 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); 
                         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
                         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-                        
-                        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height,
-                                    0, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
-                        glCopyTexSubImage2D(GL_TEXTURE_2D,  0,  0,  0,
-                                            VPoint.rv_rect.x,  VPoint.rv_rect.y,  width, height);
-                        
+
+                        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
+                        glCopyTexSubImage2D(GL_TEXTURE_2D,  0,  0,  0, 0,  0,  width, height);
                         
                         glClear(GL_DEPTH_BUFFER_BIT);
                         glDisable(GL_DEPTH_TEST);
@@ -2644,7 +2641,6 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                         glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
                         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
                         
-                        //  Use hardware accelerated mipmap generation, if available
                         s_glGenerateMipmap(GL_TEXTURE_2D);
 
                         // Render at reduced LOD (i.e. higher mipmap number)
@@ -2656,10 +2652,10 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
 
                         glBegin(GL_QUADS);
                         
-                        glTexCoord2f(0 , 1 ); glVertex2i(VPoint.rv_rect.x,         VPoint.rv_rect.y);
-                        glTexCoord2f(0 , 0 ); glVertex2i(VPoint.rv_rect.x,         VPoint.rv_rect.y + height);
-                        glTexCoord2f(1 , 0 ); glVertex2i(VPoint.rv_rect.x + width, VPoint.rv_rect.y + height);
-                        glTexCoord2f(1 , 1 ); glVertex2i(VPoint.rv_rect.x + width, VPoint.rv_rect.y);
+                        glTexCoord2f(0 , 1 ); glVertex2i(0,     0);
+                        glTexCoord2f(0 , 0 ); glVertex2i(0,     height);
+                        glTexCoord2f(1 , 0 ); glVertex2i(width, height);
+                        glTexCoord2f(1 , 1 ); glVertex2i(width, 0);
                         glEnd ();
                         
                         glDeleteTextures(1, &screen_capture);
@@ -2670,8 +2666,8 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                                         // and we cannot really trust the value that comes from GL_MAX_TEXTURE_SIZE
 
                         int tex_size = 512;  // reasonable assumption
-                        int ntx = (VPoint.rv_rect.width / tex_size) + 1;
-                        int nty = (VPoint.rv_rect.height / tex_size) + 1;
+                        int ntx = (width / tex_size) + 1;
+                        int nty = (height / tex_size) + 1;
 
                         GLuint *screen_capture = new GLuint[ntx * nty];
                         glGenTextures( ntx * nty, screen_capture );
@@ -2688,8 +2684,8 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                         for(int i=0 ; i < ntx ; i++){
                             for(int j=0 ; j < nty ; j++){
                                 
-                                int screen_x = VPoint.rv_rect.x + (i * tex_size);
-                                int screen_y = VPoint.rv_rect.y + (j * tex_size);
+                                int screen_x = i * tex_size;
+                                int screen_y = j * tex_size;
                                 
                                 glEnable(GL_TEXTURE_2D);
                                 glBindTexture(GL_TEXTURE_2D, screen_capture[(i * ntx) + j]);
@@ -2729,11 +2725,11 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                         }
                         
                         for(int i=0 ; i < ntx ; i++){
-                            int ybase =  VPoint.rv_rect.height - tex_size; 
+                            int ybase =  height - tex_size; 
                             for(int j=0 ; j < nty ; j++){
                                 
-                                int screen_x = VPoint.rv_rect.x + (i * tex_size);
-                                int screen_y = VPoint.rv_rect.y + (j * tex_size);
+                                int screen_x = i * tex_size;
+                                int screen_y = j * tex_size;
                                 
                                 glEnable(GL_TEXTURE_2D);
                                 glBindTexture(GL_TEXTURE_2D, screen_capture[(i * ntx) + j]);
