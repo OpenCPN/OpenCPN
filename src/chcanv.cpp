@@ -2014,7 +2014,8 @@ void ChartCanvas::OnKeyChar( wxKeyEvent &event )
     int key_char = event.GetKeyCode();
     
     //      Handle both QWERTY and AZERTY keyboard separately for a few control codes
-    if( !g_b_assume_azerty ) {
+//    if( !g_b_assume_azerty )
+    {
         switch( key_char ) {
             case ']':
                 RotateCanvas( 1 );
