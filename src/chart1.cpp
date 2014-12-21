@@ -424,6 +424,7 @@ double                    g_COGAvg;
 bool                      g_bLookAhead;
 bool                      g_bskew_comp;
 bool                      g_bopengl;
+bool                      g_bShowFPS;
 bool                      g_bsmoothpanzoom;
 bool                      g_fog_overzoom;
 double                    g_overzoom_emphasis_base;

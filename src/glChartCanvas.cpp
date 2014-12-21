@@ -80,6 +80,7 @@ extern s52plib *ps52plib;
 extern bool g_bopengl;
 extern int g_GPU_MemSize;
 extern bool g_bDebugOGL;
+extern bool g_bShowFPS;
 
 GLenum       g_texture_rectangle_format;
 
@@ -719,7 +720,7 @@ glChartCanvas::glChartCanvas( wxWindow *parent ) :
     ownship_large_scale_display_lists[0] = 0;
     ownship_large_scale_display_lists[1] = 0;
     
-    b_timeGL = false; true;
+    b_timeGL = true;
 }
 
 glChartCanvas::~glChartCanvas()
@@ -863,6 +864,13 @@ void glChartCanvas::SetupOpenGL()
 
     if( ps52plib ) ps52plib->SetGLRendererString( m_renderer );
 
+    char version_string[80];
+    strncpy( version_string, (char *) glGetString( GL_VERSION ), 79 );
+    msg.Printf( _T("OpenGL-> Version reported:  "));
+    m_version = wxString( version_string, wxConvUTF8 );
+    msg += m_version;
+    wxLogMessage( msg );
+    
     //  Set the minimum line width
     GLint parms[2];
     glGetIntegerv( GL_SMOOTH_LINE_WIDTH_RANGE, &parms[0] );
@@ -2685,37 +2693,38 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                                 
                                 glEnable(GL_TEXTURE_2D);
                                 glBindTexture(GL_TEXTURE_2D, screen_capture[(i * ntx) + j]);
-                                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
-                                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); 
                                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
                                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    
-    #if 1                            
-                                glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, tex_size, tex_size,
-                                    0, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
-                            
-                                glCopyTexSubImage2D(GL_TEXTURE_2D,  0,  0,  0, screen_x,  screen_y, tex_size, tex_size);
-    #else 
-                                unsigned char *buffer = (unsigned char *)malloc( tex_size * tex_size * 3 );
-                                glReadPixels(screen_x, screen_y, tex_size, tex_size, GL_RGB, GL_UNSIGNED_BYTE, buffer );
-                                glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB,
-                                            tex_size, tex_size, 0, GL_RGB, GL_UNSIGNED_BYTE, buffer );
-                                free(buffer);
-    #endif                            
-                        
-                        
-                        //  Build MipMaps 
+ 
                                 glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0 );
                                 glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, max_mipmap );
-                        
-//                                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, -1);
-//                                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, max_mipmap);
-                        
+                                
+                                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, -1);
+                                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, max_mipmap);
+                                
                                 glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-                                glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST );
-                        
-                                s_glGenerateMipmap(GL_TEXTURE_2D);
-                        
+                                glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
+                                
+    
+                                unsigned char *ps = (unsigned char *)malloc( tex_size * tex_size * 3 );
+                                glReadPixels(screen_x, screen_y, tex_size, tex_size, GL_RGB, GL_UNSIGNED_BYTE, ps );
+                                glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, tex_size, tex_size, 0, GL_RGB, GL_UNSIGNED_BYTE, ps );
+
+                                unsigned char *pd;
+                                int dim = tex_size / 2;
+                                for( int level = 1 ; level <= max_mipmap ; level++){
+                                    pd = (unsigned char *) malloc( dim * dim * 3 );
+                                    HalfScaleChartBits( 2*dim, 2*dim, ps, pd );
+
+                                    glTexImage2D( GL_TEXTURE_2D, level, GL_RGB, dim, dim, 0, GL_RGB, GL_UNSIGNED_BYTE, pd );
+                                    
+                                    free(ps);
+                                    ps = pd;
+                                    
+                                    dim /= 2;
+                                }
+                                
+                                free(pd);
                             }
                         }
                         
@@ -2730,7 +2739,7 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                                 glBindTexture(GL_TEXTURE_2D, screen_capture[(i * ntx) + j]);
                                 
                                 double bias = fog/70;
-//                                glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS, bias);
+                                glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS, bias);
                                 glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
                                 
                                 glBegin(GL_QUADS);
@@ -2744,7 +2753,7 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                             }
                         }
                         
-//                        glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS, 0);
+                        glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS, 0);
                         glDeleteTextures(ntx * nty, screen_capture);
                         delete [] screen_capture;
                     }
@@ -3070,7 +3079,7 @@ bool glChartCanvas::FactoryCrunch(double factor)
 }
 
 
-
+int n_render;
 void glChartCanvas::Render()
 {
     if( !m_bsetup ||
@@ -3084,9 +3093,11 @@ void glChartCanvas::Render()
 
     m_last_render_time = wxDateTime::Now().GetTicks();
 
-    if(b_timeGL){
-        glFinish();   
-        g_glstopwatch.Start();
+    if(b_timeGL && g_bShowFPS){
+        if(n_render % 10){
+            glFinish();   
+            g_glstopwatch.Start();
+        }
     }
     
     wxPaintDC( this );
@@ -3339,18 +3350,22 @@ void glChartCanvas::Render()
     
     SwapBuffers();
 
-    if(b_timeGL){
-        glFinish();
+    if(b_timeGL && g_bShowFPS){
+        if(n_render % 10){
+            glFinish();
         
-        double filter = .05;
+            double filter = .05;
         
         // Simple low pass filter
-        g_gl_ms_per_frame = g_gl_ms_per_frame * (1. - filter) + ((double)(g_glstopwatch.Time()) * filter);
-        printf(" OpenGL frame time: %3.0f\n", g_gl_ms_per_frame );
+            g_gl_ms_per_frame = g_gl_ms_per_frame * (1. - filter) + ((double)(g_glstopwatch.Time()) * filter);
+//            if(g_gl_ms_per_frame > 0)
+//                printf(" OpenGL frame time: %3.0f  %3.0f\n", g_gl_ms_per_frame, 1000./ g_gl_ms_per_frame);
+        }
     }
 
     TextureCrunch(0.8);
     FactoryCrunch(0.6);
     
     cc1->PaintCleanup();
+    n_render++;
 }
