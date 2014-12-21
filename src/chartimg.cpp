@@ -1280,9 +1280,15 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
                               if(dt.ParseDate(date_wxstr))       // successful parse?
                               {
                                   int iyear = dt.GetYear(); // GetYear() fails on W98, DMC compiler, wx2.8.3
-//    BSB charts typically list publish date as xx/yy/zz, we want 19zz.
-                                  if(iyear < 100)
-                                  {
+                                  //    BSB charts typically list publish date as xx/yy/zz
+                                  //  This our own little version of the Y2K problem.
+                                  //  Just apply some sensible logic
+                                  
+                                  if(iyear < 50){
+                                      iyear += 2000;
+                                      dt.SetYear(iyear);
+                                  }
+                                  else if((iyear >= 50) && (iyear < 100)){
                                       iyear += 1900;
                                       dt.SetYear(iyear);
                                   }

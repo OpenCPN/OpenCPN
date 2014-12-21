@@ -90,6 +90,7 @@ extern bool             g_boptionsactive;
 extern options         *g_options;
 extern ColorScheme      global_color_scheme;
 extern ChartCanvas     *cc1;
+extern wxArrayString    g_locale_catalog_array;
 
 unsigned int      gs_plib_flags;
 
@@ -1047,6 +1048,7 @@ void NotifySetupOptionsPlugin( PlugInContainer *pic )
             case 109:
             case 110:
             case 111:
+            case 112:
             {
                 opencpn_plugin_19 *ppi = dynamic_cast<opencpn_plugin_19 *>(pic->m_pplugin);
                 if(ppi) {
@@ -1208,6 +1210,7 @@ void PlugInManager::SendMessageToAllPlugins(const wxString &message_id, const wx
                 case 109:
                 case 110:
                 case 111:
+                case 112:
                 {
                     opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                     if(ppi)
@@ -1802,8 +1805,13 @@ wxAuiManager *GetFrameAuiManager(void)
 
 bool AddLocaleCatalog( wxString catalog )
 {
-    if(plocale_def_lang)
-        return plocale_def_lang->AddCatalog( catalog );
+    if(plocale_def_lang){
+        // Add this catalog to the persistent catalog array
+        g_locale_catalog_array.Add(catalog);
+        
+        //  And then reload all catalogs.
+        return ReloadLocale(); // plocale_def_lang->AddCatalog( catalog );
+    }
     else
         return false;
 }
@@ -3284,6 +3292,12 @@ InitReturn ChartPlugInWrapper::Init( const wxString& name, ChartInitFlag init_fl
 
         }
 
+
+        //  PlugIn may invoke wxExecute(), which steals the keyboard focus
+        //  So take it back
+        if(cc1)
+            cc1->SetFocus();
+        
         return ret_val;
     }
     else

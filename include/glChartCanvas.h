@@ -141,6 +141,7 @@ protected:
     bool m_bsetup;
 
     wxString m_renderer;
+    wxString m_version;
 
     void GrowData(int size);
 

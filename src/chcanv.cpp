@@ -281,6 +281,9 @@ extern bool              g_bresponsive;
 extern ocpnGLOptions g_GLOptions;
 #endif
 
+extern bool              g_bShowFPS;
+extern double            g_gl_ms_per_frame;
+
 wxProgressDialog *pprog;
 bool b_skipout;
 wxSize pprog_size;
@@ -1068,7 +1071,6 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
     EVT_KEY_UP(ChartCanvas::OnKeyUp )
     EVT_CHAR(ChartCanvas::OnKeyChar)
     EVT_MOUSE_CAPTURE_LOST(ChartCanvas::LostMouseCapture )
-    EVT_KILL_FOCUS(ChartCanvas::OnFocusKill )
     
     EVT_MENU ( ID_DEF_MENU_MAX_DETAIL,         ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_DEF_MENU_SCALE_IN,           ChartCanvas::PopupMenuHandler )
@@ -1179,7 +1181,6 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_pAISRolloverWin = NULL;
     m_bedge_pan = false;
     m_disable_edge_pan = false;
-    m_brecapture = false;
     
     m_pCIWin = NULL;
 
@@ -1731,11 +1732,6 @@ ChartCanvas::~ChartCanvas()
         delete m_glcc;
 #endif
 
-}
-
-void ChartCanvas::OnFocusKill(wxFocusEvent& event )
-{
-    m_brecapture = true;
 }
 
 void ChartCanvas::SetDisplaySizeMM( double size )
@@ -3743,15 +3739,16 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                 //  This will normally be only a fractional (i.e. sub-pixel) adjustment...
                 if( b_adjust ) m_pQuilt->AdjustQuiltVP( last_vp, VPoint );
 
-                ChartData->ClearCacheInUseFlags();
-                unsigned long hash1 = m_pQuilt->GetXStackHash();
+//                ChartData->ClearCacheInUseFlags();
+//                unsigned long hash1 = m_pQuilt->GetXStackHash();
+ 
                 m_pQuilt->Compose( VPoint );
 
                 //      If the extended chart stack has changed, invalidate any cached render bitmap
-                if(m_pQuilt->GetXStackHash() != hash1) {
+//                if(m_pQuilt->GetXStackHash() != hash1) {
 //                    m_bm_cache_vp.Invalidate();
 //                    InvalidateGL();
-                }
+//                }
 
                 ChartData->PurgeCacheUnusedCharts( 0.7 );
 
@@ -3760,12 +3757,13 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                 
                 b_ret = true;
             }
-            parent_frame->UpdateControlBar();
         }
 
         VPoint.skew = 0.;  // Quilting supports 0 Skew
     }
 
+    parent_frame->UpdateControlBar();
+    
     if( !VPoint.GetBBox().GetValid() ) VPoint.SetBoxes();
 
     if( VPoint.GetBBox().GetValid() ) {
@@ -3832,7 +3830,18 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                 double sfr = wxRound(m_displayed_scale_factor * 10.) / 10.;
                 text.Printf( _("Scale %4.0f (%1.2fx)"), true_scale_display, sfr );
             }
-                
+            
+            if( g_bopengl && g_bShowFPS){
+                wxString fps_str;
+                double fps = 0.;
+                if( g_gl_ms_per_frame > 0){
+                    fps = 1000./ g_gl_ms_per_frame;
+                    fps_str.Printf(_T("  %3d fps"), (int)fps);
+                }
+                text += fps_str;
+            }
+            
+            
             parent_frame->SetStatusText( text, STAT_FIELD_SCALE );
         }
     }
@@ -3841,13 +3850,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
     vLat = VPoint.clat;
     vLon = VPoint.clon;
 
-    //   If any PlugIn chart ran wxExecute(), then the canvas focus is likely lost.
-    //  Restore it here
-    if(m_brecapture  && !gFrame->IsPianoContextMenuActive()){
-      cc1->SetFocus();
-      m_brecapture = false;
-    }
-      
+   
     
     return b_ret;
 }
@@ -9017,15 +9020,28 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 //    Arrange to render the World Chart vector data behind the rendered current chart
 //    so that uncovered canvas areas show at least the world chart.
         OCPNRegion chartValidRegion;
-        if( !VPoint.b_quilt )
-            Current_Ch->GetValidCanvasRegion( svp, &chartValidRegion ); // Make a region covering the current chart on the canvas
+        if( !VPoint.b_quilt ) {
+            // Make a region covering the current chart on the canvas
+
+            if(Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR)
+                Current_Ch->GetValidCanvasRegion( svp, &chartValidRegion );
+            else {
+                // The raster calculations  in ChartBaseBSB::ComputeSourceRectangle
+                // require that the viewport passed here have pix_width and pix_height
+                // set to the actual display, not the virtual (rv_rect) sizes
+                // (the vector calculations require the virtual sizes in svp)
+
+                Current_Ch->GetValidCanvasRegion( VPoint, &chartValidRegion );
+                chartValidRegion.Offset(-VPoint.rv_rect.x, -VPoint.rv_rect.y);
+            }
+        }
         else
             chartValidRegion = m_pQuilt->GetFullQuiltRenderedRegion();
 
         temp_dc.DestroyClippingRegion();
     
         //    Copy current chart region
-        OCPNRegion backgroundRegion(  0, 0, svp.pix_width, svp.pix_height  );
+        OCPNRegion backgroundRegion( wxRect(0, 0, svp.pix_width, svp.pix_height) );
 
         if( chartValidRegion.IsOk() )
             backgroundRegion.Subtract( chartValidRegion );
@@ -9033,11 +9049,6 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         if( ( ( fabs( GetVP().skew ) < .01 ) || ! g_bskew_comp )
             && ! backgroundRegion.IsEmpty() ) {
         
-            //    Associate with temp_dc
-            wxRegion *clip_region = backgroundRegion.GetNew_wxRegion();
-            temp_dc.SetClippingRegion( *clip_region );
-            delete clip_region;
-
             //    Draw the Background Chart only in the areas NOT covered by the current chart view
 
             /* unfortunately wxDC::DrawRectangle and wxDC::Clear do not respect
@@ -9051,6 +9062,11 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
                 temp_dc.DrawRectangle(rect);
                 upd.NextRect();
             }
+
+            //    Associate with temp_dc
+            wxRegion *clip_region = backgroundRegion.GetNew_wxRegion();
+            temp_dc.SetClippingRegion( *clip_region );
+            delete clip_region;
 
             ocpnDC bgdc( temp_dc );
             double r =         VPoint.rotation;
