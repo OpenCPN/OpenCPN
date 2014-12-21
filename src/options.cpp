@@ -1268,7 +1268,7 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     m_cbOutput = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Output on this port ( as Autopilot or NMEA Repeater)"), wxDefaultPosition, wxDefaultSize, 0 );
     fgSizer5->Add( m_cbOutput, 0, wxALL, 5 );
 
-    m_stPrecision = new wxStaticText( m_pNMEAForm, wxID_ANY, _("APB bearing precision"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_stPrecision = new wxStaticText( m_pNMEAForm, wxID_ANY, _("APB bearing and XTE precision"), wxDefaultPosition, wxDefaultSize, 0 );
     m_stPrecision->Wrap( -1 );
     fgSizer5->Add( m_stPrecision, 0, wxALL, 5 );
 

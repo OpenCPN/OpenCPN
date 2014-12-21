@@ -341,7 +341,6 @@ extern ArrayOfMMSIProperties   g_MMSI_Props_Array;
 extern int              g_chart_zoom_modifier;
 
 extern int              g_NMEAAPBPrecision;
-extern int              g_NMEAAPBXTEPrecision;
 
 extern bool             g_bSailing;
 extern double           g_display_size_mm;
@@ -1243,7 +1242,6 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "ActiveChartGroup" ), &g_GroupIndex, 0 );
 
     Read( _T( "NMEAAPBPrecision" ), &g_NMEAAPBPrecision, 3 );
-    Read( _T( "NMEAAPBXTEPrecision" ), &g_NMEAAPBXTEPrecision, 2 );
 
     /* opengl options */
 #ifdef ocpnUSE_GL

@@ -664,7 +664,6 @@ bool             g_bexpert;
 int              g_chart_zoom_modifier;
 
 int              g_NMEAAPBPrecision;
-int              g_NMEAAPBXTEPrecision;
 
 bool             g_bSailing;
 
