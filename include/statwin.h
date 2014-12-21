@@ -89,10 +89,17 @@ public:
 
       wxPoint GetKeyOrigin(int key_index);
       void ResetRollover(void);
-      void SetRoundedRectangles(bool val){ m_brounded = val; }
+      void SetRoundedRectangles(bool val){ m_brounded = val; m_hash.Clear();}
+      
+      wxString &GenerateAndStoreNewHash();
+      wxString &GetStoredHash();
+      
 
       int         Size_X, Size_Y, Pos_X, Pos_Y;
 private:
+      wxString GetStateHash();
+      wxString    m_hash;
+      
       int         m_nRegions;
       int         m_index_last;
       int         m_hover_icon_last;
