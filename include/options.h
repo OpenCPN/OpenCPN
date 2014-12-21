@@ -985,7 +985,8 @@ public:
     wxCheckBox *m_cbUseAcceleratedPanning;
 
     wxCheckBox *m_cbTextureCompression, *m_cbTextureCompressionCaching;
-
+    wxCheckBox *m_cbShowFPS;
+    
     wxButton *m_bRebuildTextureCache;
     wxButton *m_bClearTextureCache;
 

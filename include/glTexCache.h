@@ -41,6 +41,7 @@
 #define FACTORY_TIMER                   10000
 
 void HalfScaleChartBits( int width, int height, unsigned char *source, unsigned char *target );
+bool CompressUsingGPU( glTextureDescriptor *ptd, GLuint raster_format, int level, bool b_post_comp);
 
 struct CompressedCacheHeader
 {
