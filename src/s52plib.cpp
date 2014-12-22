@@ -3987,6 +3987,13 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     double box_mult = wxMax((scale_factor - g_overzoom_emphasis_base), 1);
     int box_dim = 32 * box_mult;
     
+    // We need a pixel bounding rectangle of the passed ViewPort.
+    // Very important for partial screen renders, as with dc mode pans or OpenGL FBO operation.
+    
+    wxPoint cr0 = vp_local.GetPixFromLL( vp_local.GetBBox().GetMaxY(), vp_local.GetBBox().GetMinX());
+    wxPoint cr1 = vp_local.GetPixFromLL( vp_local.GetBBox().GetMinY(), vp_local.GetBBox().GetMaxX());
+    wxRect clip_rect(cr0, cr1);
+    
     for( int ip = 0; ip < npt; ip++ ) {
         
         double lon = *pdl++;
@@ -3996,8 +4003,8 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         //      Use estimated symbol size
         wxRect rr(r.x-(box_dim/2), r.y-(box_dim/2), box_dim, box_dim);
         
-        //      The render inclusion test is trivial....
-        if(!vp->rv_rect.Intersects(rr))
+        //      After all the setup, the render inclusion test is trivial....
+        if(!clip_rect.Intersects(rr))
             continue;
         
         double angle = 0;
