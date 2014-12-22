@@ -27,6 +27,7 @@
 #include <wx/html/htmlwin.h>
 
 #include "AISTargetQueryDialog.h"
+#include "chart1.h"
 #include "chcanv.h"
 #include "navutil.h"
 #include "ais.h"
@@ -127,7 +128,7 @@ void AISTargetQueryDialog::OnIdTrkCreateClick( wxCommandEvent& event )
             {
                 td->b_PersistTrack = false;
                 g_pAIS->m_persistent_tracks.erase(td->MMSI);
-                m_createTrkBtn->SetLabel(_("Persist Track"));
+                m_createTrkBtn->SetLabel(_("Record Track"));
             }
             else
             {
@@ -154,7 +155,15 @@ void AISTargetQueryDialog::OnIdTrkCreateClick( wxCommandEvent& event )
                 if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
                     pRouteManagerDialog->UpdateTrkListCtrl();
                 Refresh( false );
-                if( wxYES == wxMessageBox( _("The current track of the target has been persisted, do you want to keep persisting the track until the end of the current session?"), _("OpenCPN Info"), wxYES_NO | wxCENTER ) )
+         
+                if( wxYES == OCPNMessageBox(NULL,
+                    _("The recently captured track of this target has been recorded.\nDo you want to continue recording until the end of the current OpenCPN session?"),
+                    _("OpenCPN Info"), wxYES_NO | wxCENTER, 60 ) );
+                
+                
+                
+ //               if( wxYES == wxMessageBox( _("The current track of the target has been persisted, do you want to keep persisting the track until the end of the current session?"),
+ //                   _("OpenCPN Info"), wxYES_NO | wxCENTER ) )
                 {
                     td->b_PersistTrack = true;
                     g_pAIS->m_persistent_tracks[td->MMSI] = t;
@@ -229,7 +238,7 @@ void AISTargetQueryDialog::CreateControls()
     m_createWptBtn = new wxButton( this, xID_WPT_CREATE, _("Create Waypoint"), wxDefaultPosition, wxDefaultSize, 0 );
     opt->Add( m_createWptBtn, 0, wxALL|wxEXPAND, 5 );
     
-    m_createTrkBtn = new wxButton( this, xID_TRK_CREATE, _("Persist Track"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_createTrkBtn = new wxButton( this, xID_TRK_CREATE, _("Record Track"), wxDefaultPosition, wxDefaultSize, 0 );
     opt->Add( m_createTrkBtn, 0, wxALL|wxEXPAND, 5 );
     topSizer->Add( opt, 0, wxALIGN_CENTER_HORIZONTAL | wxBOTTOM, 5 );
     
@@ -258,7 +267,7 @@ void AISTargetQueryDialog::UpdateText()
             }
             else
             {
-                m_createTrkBtn->SetLabel(_("Persist Track"));
+                m_createTrkBtn->SetLabel(_("Record Track"));
             }
             wxFont *dFont = FontMgr::Get().GetFont( _("AISTargetQuery") );
             wxString face = dFont->GetFaceName();
