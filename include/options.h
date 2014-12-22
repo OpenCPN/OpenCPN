@@ -535,6 +535,9 @@ public:
     PluginListPanel         *m_pPlugInCtrl;
     int                     k_plugins;
 
+    wxScrolledWindow        *itemPanelPlugins;
+    wxBoxSizer              *itemBoxSizerPanelPlugins;
+    
     wxChoice                *pNavAidRadarRingsNumberVisible;
     wxFlexGridSizer         *radarGrid;
     wxTextCtrl              *pNavAidRadarRingsStep;
@@ -617,6 +620,8 @@ private:
     
     wxNotebookPage*             m_groupsPage;
     wxFont*     smallFont;
+    wxSize      m_small_button_size;
+    
 };
 
 class ChartGroupsUI: public wxScrolledWindow {
@@ -983,7 +988,8 @@ public:
     wxCheckBox *m_cbUseAcceleratedPanning;
 
     wxCheckBox *m_cbTextureCompression, *m_cbTextureCompressionCaching;
-
+    wxCheckBox *m_cbShowFPS;
+    
     wxButton *m_bRebuildTextureCache;
     wxButton *m_bClearTextureCache;
 

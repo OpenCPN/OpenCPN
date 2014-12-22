@@ -108,6 +108,7 @@ void StatWin::ReSize()
     new_size.x = cs.x;
     new_size.y = 22 * GetRows();
     SetSize(new_size);
+    
 }
 
 void StatWin::OnPaint( wxPaintEvent& event )
@@ -244,6 +245,7 @@ PianoWin::~PianoWin()
 
 void PianoWin::OnSize( wxSizeEvent& event )
 {
+    m_hash.Clear();
 }
 
 void PianoWin::SetColorScheme( ColorScheme cs )
@@ -456,6 +458,62 @@ void PianoWin::SetPolyIndexArray( ArrayOfInts array )
 {
     m_poly_index_array = array;
 }
+
+wxString PianoWin::GetStateHash()
+{
+    wxString hash;
+    
+    for(unsigned int i=0 ; i < m_key_array.GetCount() ; i++){
+        wxString a;
+        a.Printf(_T("%d|"), m_key_array.Item(i));
+        hash += a;
+    }
+    
+    for(unsigned int i=0 ; i < m_noshow_index_array.GetCount() ; i++){
+        wxString a;
+        a.Printf(_T("%d|"), m_noshow_index_array.Item(i));
+        hash += a;
+    }
+    for(unsigned int i=0 ; i < m_active_index_array.GetCount() ; i++){
+        wxString a;
+        a.Printf(_T("%d|"), m_active_index_array.Item(i));
+        hash += a;
+    }
+    for(unsigned int i=0 ; i < m_sublite_index_array.GetCount() ; i++){
+        wxString a;
+        a.Printf(_T("%d|"), m_sublite_index_array.Item(i));
+        hash += a;
+    }
+    for(unsigned int i=0 ; i < m_skew_index_array.GetCount() ; i++){
+        wxString a;
+        a.Printf(_T("%d|"), m_skew_index_array.Item(i));
+        hash += a;
+    }
+    for(unsigned int i=0 ; i < m_tmerc_index_array.GetCount() ; i++){
+        wxString a;
+        a.Printf(_T("%d|"), m_tmerc_index_array.Item(i));
+        hash += a;
+    }
+    for(unsigned int i=0 ; i < m_poly_index_array.GetCount() ; i++){
+        wxString a;
+        a.Printf(_T("%d|"), m_poly_index_array.Item(i));
+        hash += a;
+    }
+    
+    return hash;
+}
+    
+wxString &PianoWin::GenerateAndStoreNewHash()
+{
+    m_hash = GetStateHash();
+    return m_hash;
+}
+
+wxString &PianoWin::GetStoredHash()
+{
+    return m_hash;
+}
+
 
 void PianoWin::FormatKeys( void )
 {

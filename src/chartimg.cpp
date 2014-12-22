@@ -717,13 +717,38 @@ found_uclc_file:
 
       if(nPlypoint < 3)
       {
-          wxString msg(_("   Chart File contains less than 3 PLY points: "));
+          wxString msg(_T("   Chart File contains less than 3 PLY points: "));
           msg.Append(m_FullPath);
           wxLogMessage(msg);
           free(pPlyTable);
 
           return INIT_FAIL_REMOVE;
       }
+      
+      if(m_datum_str.IsEmpty()){
+          wxString msg(_T("   Chart datum not specified on chart "));
+          msg.Append(m_FullPath);
+          wxLogMessage(msg);
+          
+          return INIT_FAIL_REMOVE;
+      }
+      
+      char d_str[100];
+      strncpy(d_str, m_datum_str.mb_str(), 99);
+      d_str[99] = 0;
+      
+      int datum_index = GetDatumIndex(d_str);
+
+      if(datum_index < 0){
+          wxString msg(_T("   Chart datum {"));
+          msg += m_datum_str;
+          msg += _T("} invalid on chart ");
+          msg.Append(m_FullPath);
+          wxLogMessage(msg);
+          
+          return INIT_FAIL_REMOVE;
+      }
+      
 
 //    Convert captured plypoint information into chart COVR structures
       m_nCOVREntries = 1;
@@ -1036,7 +1061,6 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
                                     m_projection = PROJECTION_TRANSVERSE_MERCATOR;
                                     bp_set = true;
                               }
-
                               if(!bp_set)
                               {
                                   m_projection = PROJECTION_UNKNOWN;
@@ -1048,7 +1072,6 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
 
                                   return INIT_FAIL_REMOVE;
                               }
-
                         }
                         else if(token.IsSameAs(_T("DX"), TRUE))                  // extract Pixel scale parameter, if present
                         {
@@ -1280,9 +1303,15 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
                               if(dt.ParseDate(date_wxstr))       // successful parse?
                               {
                                   int iyear = dt.GetYear(); // GetYear() fails on W98, DMC compiler, wx2.8.3
-//    BSB charts typically list publish date as xx/yy/zz, we want 19zz.
-                                  if(iyear < 100)
-                                  {
+                                  //    BSB charts typically list publish date as xx/yy/zz
+                                  //  This our own little version of the Y2K problem.
+                                  //  Just apply some sensible logic
+                                  
+                                  if(iyear < 50){
+                                      iyear += 2000;
+                                      dt.SetYear(iyear);
+                                  }
+                                  else if((iyear >= 50) && (iyear < 100)){
                                       iyear += 1900;
                                       dt.SetYear(iyear);
                                   }
@@ -1354,6 +1383,29 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
             return INIT_FAIL_REMOVE;
       }
 
+      if(m_datum_str.IsEmpty()){
+          wxString msg(_T("   Chart datum not specified on chart "));
+          msg.Append(m_FullPath);
+          wxLogMessage(msg);
+          
+          return INIT_FAIL_REMOVE;
+      }
+      
+      char d_str[100];
+      strncpy(d_str, m_datum_str.mb_str(), 99);
+      d_str[99] = 0;
+      
+      int datum_index = GetDatumIndex(d_str);
+      
+      if(datum_index < 0){
+          wxString msg(_T("   Chart datum {"));
+          msg += m_datum_str;
+          msg += _T("} invalid on chart ");
+          msg.Append(m_FullPath);
+          wxLogMessage(msg);
+          
+          return INIT_FAIL_REMOVE;
+      }
 
 //    Convert captured plypoint information into chart COVR structures
       m_nCOVREntries = 1;
@@ -1477,7 +1529,7 @@ ChartBaseBSB::ChartBaseBSB()
 
       m_mapped_color_index = COLOR_RGB_DEFAULT;
 
-      m_datum_str = _T("WGS84");                // assume until proven otherwise
+//      m_datum_str = _T("WGS84");                // assume until proven otherwise
 
       m_dtm_lat = 0.;
       m_dtm_lon = 0.;

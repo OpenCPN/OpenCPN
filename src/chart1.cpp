@@ -424,6 +424,7 @@ double                    g_COGAvg;
 bool                      g_bLookAhead;
 bool                      g_bskew_comp;
 bool                      g_bopengl;
+bool                      g_bShowFPS;
 bool                      g_bsmoothpanzoom;
 bool                      g_fog_overzoom;
 double                    g_overzoom_emphasis_base;
@@ -667,6 +668,8 @@ int              g_NMEAAPBPrecision;
 int              g_NMEAAPBXTEPrecision;
 
 bool             g_bSailing;
+
+wxArrayString    g_locale_catalog_array;
 
 #ifdef LINUX_CRASHRPT
 wxCrashPrint g_crashprint;
@@ -4234,6 +4237,7 @@ void MyFrame::ToggleFullScreen()
 
     ShowFullScreen( to, style );
     UpdateToolbar( global_color_scheme );
+    UpdateControlBar();
     Layout();
 }
 
@@ -5616,7 +5620,7 @@ void MyFrame::DoStackDelta( int direction )
         if( (current_stack_index + direction) < 0 )
             return;
 
-        if( m_bpersistent_quilt && g_bQuiltEnable ) {
+        if( m_bpersistent_quilt /*&& g_bQuiltEnable*/ ) {
             int new_dbIndex = pCurrentStack->GetDBIndex(current_stack_index + direction );
 
             if( cc1->IsChartQuiltableRef( new_dbIndex ) ) {
@@ -5679,6 +5683,7 @@ void MyFrame::DoStackDelta( int direction )
         }
     }
 
+    UpdateGlobalMenuItems(); // update the state of the menu items (checkmarks etc)
     cc1->SetQuiltChartHiLiteIndex( -1 );
 
     cc1->ReloadVP();
@@ -6538,7 +6543,7 @@ void MyFrame::HandlePianoClick( int selected_index, int selected_dbIndex )
     if( s_ProgDialog ) return;
 
     if( !cc1->GetQuiltMode() ) {
-        if( m_bpersistent_quilt && g_bQuiltEnable ) {
+        if( m_bpersistent_quilt/* && g_bQuiltEnable*/ ) {
             if( cc1->IsChartQuiltableRef( selected_dbIndex ) ) {
                 ToggleQuiltMode();
                 SelectQuiltRefdbChart( selected_dbIndex );
@@ -6603,6 +6608,7 @@ void MyFrame::HandlePianoClick( int selected_index, int selected_dbIndex )
     }
 
     cc1->SetQuiltChartHiLiteIndex( -1 );
+    UpdateGlobalMenuItems(); // update the state of the menu items (checkmarks etc)
     cc1->HideChartInfoWindow();
     DoChartUpdate();
     cc1->ReloadVP();                  // Pick up the new selections
@@ -6948,6 +6954,8 @@ void MyFrame::UpdateControlBar( void )
     ArrayOfInts piano_chart_index_array;
     ArrayOfInts empty_piano_chart_index_array;
 
+    wxString old_hash = stats->pPiano->GetStoredHash();
+     
     if( cc1->GetQuiltMode() ) {
         piano_chart_index_array = cc1->GetQuiltExtendedStackdbIndexArray();
         stats->pPiano->SetKeyArray( piano_chart_index_array );
@@ -7001,7 +7009,10 @@ void MyFrame::UpdateControlBar( void )
     stats->pPiano->SetPolyIndexArray( piano_poly_chart_index_array );
 
     stats->FormatStat();
-    stats->Refresh( true );
+    
+    wxString new_hash = stats->pPiano->GenerateAndStoreNewHash();
+    if(new_hash != old_hash)
+        stats->Refresh( false );
 
 }
 
@@ -8884,7 +8895,6 @@ void MyFrame::UpdateAISMOBRoute( AIS_Target_Data *ptarget )
 }
 
 
-
 #ifdef wxHAS_POWER_EVENTS
 void MyFrame::OnSuspending(wxPowerEvent& event)
 {
@@ -8892,12 +8902,6 @@ void MyFrame::OnSuspending(wxPowerEvent& event)
  //   printf("OnSuspending...%d\n", now.GetTicks());
 
     wxLogMessage(_T("System suspend starting..."));
-    if ( wxMessageBox(_T("Veto suspend?"), _T("Please answer"),
-        wxYES_NO, this) == wxYES )
-    {
-        event.Veto();
-        wxLogMessage(_T("Vetoed suspend."));
-    }
 }
 
 void MyFrame::OnSuspended(wxPowerEvent& WXUNUSED(event))
@@ -8905,6 +8909,7 @@ void MyFrame::OnSuspended(wxPowerEvent& WXUNUSED(event))
 //    wxDateTime now = wxDateTime::Now();
 //    printf("OnSuspended...%d\n", now.GetTicks());
     wxLogMessage(_T("System is going to suspend."));
+    
 }
 
 void MyFrame::OnSuspendCancel(wxPowerEvent& WXUNUSED(event))
@@ -8931,6 +8936,23 @@ void MyFrame::OnResume(wxPowerEvent& WXUNUSED(event))
             g_pMUX->StartAllStreams();
         }
     }
+
+    //  If OpenGL is enabled, Windows Resume does not properly refresh the application GL context.
+    //  We need to force a Resize event that actually does something.
+    if(g_bopengl){
+        if( IsMaximized() ){            // This is not real pretty on-screen, but works
+            Maximize(false);
+            wxYield();
+            Maximize(true);
+        }
+        else {
+            wxSize sz = GetSize();
+            SetSize( wxSize(sz.x - 1, sz.y));
+            wxYield();
+            SetSize( sz );
+        }
+    }
+    
 }
 #endif // wxHAS_POWER_EVENTS
 
@@ -11124,3 +11146,71 @@ bool GetWindowsMonitorSize( int *width, int *height)
         
 
 #endif
+
+bool ReloadLocale()
+{
+    bool ret = false;
+    
+    //  Old locale is done.
+    delete plocale_def_lang;    
+    
+    plocale_def_lang = new wxLocale;
+    wxString loc_lang_canonical;
+    
+    const wxLanguageInfo *pli = wxLocale::FindLanguageInfo( g_locale );
+    bool b_initok = false;
+    
+    if( pli ) {
+        b_initok = plocale_def_lang->Init( pli->Language, 1 );
+        // If the locale was not initialized OK, it may be that the wxstd.mo translations
+        // of the wxWidgets strings is not present.
+        // So try again, without attempting to load defaults wxstd.mo.
+        if( !b_initok ){
+            b_initok = plocale_def_lang->Init( pli->Language, 0 );
+        }
+        loc_lang_canonical = pli->CanonicalName;
+    }
+    
+    if( !pli || !b_initok ) {
+        delete plocale_def_lang;
+        plocale_def_lang = new wxLocale;
+        b_initok = plocale_def_lang->Init( wxLANGUAGE_ENGLISH_US, 0 );
+        loc_lang_canonical = wxLocale::GetLanguageInfo( wxLANGUAGE_ENGLISH_US )->CanonicalName;
+    }
+    
+    if(b_initok){
+        wxString imsg = _T("Opencpn language reload for:  ");
+        imsg += loc_lang_canonical;
+        wxLogMessage( imsg );
+    
+        //  wxWidgets assigneds precedence to message catalogs in reverse order of loading.
+        //  That is, the last catalog containing a certain translatable item takes precedence.
+        
+        //  So, Load the catalogs saved in a global string array which is populated as PlugIns request a catalog load.
+        //  We want to load the PlugIn catalogs first, so that core opencpn translations loaded later will become precedent.
+    
+        wxLog::SetVerbose(true);            // log all messages for debugging language stuff
+        
+        for(unsigned int i=0 ; i < g_locale_catalog_array.GetCount() ; i++){
+            wxString imsg = _T("Loading catalog for:  ");
+            imsg += g_locale_catalog_array.Item(i);
+            wxLogMessage( imsg );
+            plocale_def_lang->AddCatalog( g_locale_catalog_array.Item(i) );
+        }
+    
+    
+    // Get core opencpn catalog translation (.mo) file
+        wxLogMessage( _T("Loading catalog for opencpn core.") );
+        plocale_def_lang->AddCatalog( _T("opencpn") );
+        
+        wxLog::SetVerbose(false);
+       
+        ret = true;
+    }
+    
+    //    Always use dot as decimal
+    setlocale( LC_NUMERIC, "C" );
+    
+    return ret;
+    
+}
