@@ -156,7 +156,7 @@ void AISTargetQueryDialog::OnIdTrkCreateClick( wxCommandEvent& event )
                     pRouteManagerDialog->UpdateTrkListCtrl();
                 Refresh( false );
          
-                if( wxYES == OCPNMessageBox(NULL,
+                if( wxID_YES == OCPNMessageBox(NULL,
                     _("The recently captured track of this target has been recorded.\nDo you want to continue recording until the end of the current OpenCPN session?"),
                     _("OpenCPN Info"), wxYES_NO | wxCENTER, 60 ) )
                 
