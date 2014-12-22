@@ -164,11 +164,6 @@ void AISTargetQueryDialog::OnIdTrkCreateClick( wxCommandEvent& event )
                 if( wxID_YES == OCPNMessageBox(NULL,
                     _("The recently captured track of this target has been recorded.\nDo you want to continue recording until the end of the current OpenCPN session?"),
                     _("OpenCPN Info"), wxYES_NO | wxCENTER, 60 ) )
-                
-                
-                
- //               if( wxYES == wxMessageBox( _("The current track of the target has been persisted, do you want to keep persisting the track until the end of the current session?"),
- //                   _("OpenCPN Info"), wxYES_NO | wxCENTER ) )
                 {
                     td->b_PersistTrack = true;
                     g_pAIS->m_persistent_tracks[td->MMSI] = t;

@@ -8902,12 +8902,6 @@ void MyFrame::OnSuspending(wxPowerEvent& event)
  //   printf("OnSuspending...%d\n", now.GetTicks());
 
     wxLogMessage(_T("System suspend starting..."));
-    if ( wxMessageBox(_T("Veto suspend?"), _T("Please answer"),
-        wxYES_NO, this) == wxYES )
-    {
-        event.Veto();
-        wxLogMessage(_T("Vetoed suspend."));
-    }
 }
 
 void MyFrame::OnSuspended(wxPowerEvent& WXUNUSED(event))

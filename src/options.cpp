@@ -3495,13 +3495,14 @@ ConnectionParams *options::CreateConnectionParamsFromSelectedItem()
 
     //  DataStreams should be Input, Output, or Both
     if (!(m_cbInput->GetValue() || m_cbOutput->GetValue())) {
-        wxMessageBox( _("Data connection must be input, output or both"), _("Error!") );
+        OCPNMessageBox( NULL, _("Data connection must be input, output or both"), _("OpenCPN Info"), wxICON_HAND );
+        
         return NULL;
     }
 
     if ( m_rbTypeSerial->GetValue() && m_comboPort->GetValue() == wxEmptyString )
     {
-        wxMessageBox( _("You must select or enter the port..."), _("Error!") );
+        OCPNMessageBox( NULL, _("You must select or enter the port..."), _("OpenCPN Info"), wxICON_HAND );
         return NULL;
     }
     //  TCP, GPSD and UDP require port field to be set.
@@ -3509,14 +3510,14 @@ ConnectionParams *options::CreateConnectionParamsFromSelectedItem()
     else if ( m_rbTypeNet->GetValue()) {
         if (wxAtoi(m_tNetPort->GetValue()) == 0)
         {
-            wxMessageBox( _("You must enter a port..."), _("Error!") );
+            OCPNMessageBox( NULL, _("You must enter a port..."), _("OpenCPN Info"), wxICON_HAND );
             return NULL;
         }
         if (m_tNetAddress->GetValue() == wxEmptyString) {
             if ((m_rbNetProtoGPSD->GetValue()) ||
                 (m_rbNetProtoUDP->GetValue() && m_cbOutput->GetValue()))
             {
-                wxMessageBox( _("You must enter the address..."), _("Error!") );
+                OCPNMessageBox( NULL, _("You must enter the address..."), _("OpenCPN Info"), wxICON_HAND );
                 return NULL;
             } else {
                 m_tNetAddress->SetValue(_T("0.0.0.0"));
@@ -5749,7 +5750,8 @@ void SentenceListDlg::OnAddClick( wxCommandEvent& event )
         m_clbSentences->Check(item);
     }
     else
-        wxMessageBox(_("An NMEA sentence is generally 3 characters long (like RMC, GGA etc.) It can also have a two letter prefix identifying the source, or TALKER, of the message (The whole sentences then looks like GPGGA or AITXT). You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.). The filter accepts just these three formats."), _("Wrong length of the NMEA filter value"));
+        OCPNMessageBox( NULL, _("An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n It can also have a two letter prefix identifying the source, or TALKER, of the message.\n The whole sentences then looks like GPGGA or AITXT.\n You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.).\n\n The filter accepts just these three formats."),
+                    _("OpenCPN Info"));
 }
 
 void SentenceListDlg::OnDeleteClick( wxCommandEvent& event )
