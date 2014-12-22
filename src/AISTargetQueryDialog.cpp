@@ -132,9 +132,8 @@ void AISTargetQueryDialog::OnIdTrkCreateClick( wxCommandEvent& event )
             }
             else
             {
-                int ip = 0;
-                float prev_rlat = 0., prev_rlon = 0.;
-                RoutePoint *prev_pConfPoint = NULL;
+                RoutePoint *rp = NULL;
+                RoutePoint *rp1 = NULL;
                     
                 Track *t = new Track();
 
@@ -144,7 +143,13 @@ void AISTargetQueryDialog::OnIdTrkCreateClick( wxCommandEvent& event )
                 {
                     AISTargetTrackPoint *ptrack_point = node->GetData();
                     vector2D point( ptrack_point->m_lon, ptrack_point->m_lat );
-                    t->AddNewPoint( point, wxDateTime(ptrack_point->m_time).ToUTC() );
+                    rp1 = t->AddNewPoint( point, wxDateTime(ptrack_point->m_time).ToUTC() );
+                    if( rp )
+                    {
+                        pSelect->AddSelectableTrackSegment( rp->m_lat, rp->m_lon, rp1->m_lat,
+                            rp1->m_lon, rp, rp1, t );
+                    }
+                    rp = rp1;
                     node = node->GetNext();
                 }
                 

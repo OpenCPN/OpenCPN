@@ -8233,9 +8233,8 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         if( dlg_return == wxID_YES ) {
 
             if( (Track *) ( m_pSelectedTrack ) == g_pActiveTrack ) parent_frame->TrackOff();
-
+            g_pAIS->DeletePersistentTrack( (Track *) m_pSelectedTrack );
             pConfig->DeleteConfigRoute( m_pSelectedTrack );
-
             g_pRouteMan->DeleteTrack( m_pSelectedTrack );
 
             if( pTrackPropDialog && ( pTrackPropDialog->IsShown()) && (m_pSelectedTrack == pTrackPropDialog->GetTrack()) ) {

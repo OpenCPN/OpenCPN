@@ -895,8 +895,8 @@ void Routeman::DeleteAllTracks( void )
         }
 
         if( proute->m_bIsTrack ) {
-            pConfig->m_bSkipChangeSetUpdate = true;
             g_pAIS->DeletePersistentTrack( (Track *)proute );
+            pConfig->m_bSkipChangeSetUpdate = true;
             pConfig->DeleteConfigRoute( proute );
             DeleteTrack( proute );
             node = pRouteList->GetFirst();                   // Route
