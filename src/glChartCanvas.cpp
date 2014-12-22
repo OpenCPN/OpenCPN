@@ -949,7 +949,15 @@ void glChartCanvas::SetupOpenGL()
         s_glGenerateMipmap = 0;
     if( GetRendererString().Upper().Find( _T("ATI") ) != wxNOT_FOUND )
         s_glGenerateMipmap = 0;
+
     
+    // Intel drivers on Windows may export glGenerateMipmap, but it doesn't work...
+#ifdef __WXMSW__
+        if( GetRendererString().Upper().Find( _T("INTEL") ) != wxNOT_FOUND )
+            s_glGenerateMipmap = 0;
+#endif        
+            
+            
 
     if( !s_glGenerateMipmap )
         wxLogMessage( _T("OpenGL-> glGenerateMipmap unavailable") );
@@ -2600,16 +2608,12 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
             
             if( !m_gl_rendered_region.IsEmpty() ) {
      
-                int wi = VPoint.pix_width; 
-                int hi = VPoint.pix_height;
+                int width = VPoint.pix_width; 
+                int height = VPoint.pix_height;
                 
-                // Use MipMap LOD tweaking to produce a blurred, downsampling effect at high speed.
-                
-                if(s_glGenerateMipmap){
-                    int width = wi;
-                    int height = hi;
+                // Use MipMap LOD tweaking to produce a blurred, downsampling effect at reasonable speed.
 
-                    if(g_texture_rectangle_format == GL_TEXTURE_2D){             //nPOT texture supported
+                    if((s_glGenerateMipmap) && (g_texture_rectangle_format == GL_TEXTURE_2D)){       //nPOT texture supported
 
                         //          Capture the rendered screen image to a texture
                         glReadBuffer( GL_BACK);
@@ -2763,9 +2767,8 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                         
                         glPopAttrib();
                     }
-                }
                  
-
+#if 0
                 else { 
             // Fogging by alpha blending                
                     glPushAttrib( GL_COLOR_BUFFER_BIT );
@@ -2794,6 +2797,7 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                     glDisable( GL_BLEND );
                     glPopAttrib();
                 }
+#endif                
             }
         }
     }
