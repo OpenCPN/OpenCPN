@@ -407,14 +407,14 @@ void s52plib::GenerateStateHash()
     int time = ::wxGetUTCTime();
     memcpy(state_buffer, &time, sizeof(int));
     
-    int offset = sizeof(int);           // skipping the time int, first element
+    size_t offset = sizeof(int);           // skipping the time int, first element
     
     for(int i=0 ; i < S52_MAR_NUM ; i++){
         if( (offset + sizeof(double)) < sizeof(state_buffer)){
             double t = S52_getMarinerParam((S52_MAR_param_t) i);
             memcpy( &state_buffer[offset], &t, sizeof(double));
+	    offset += sizeof(double);
         }
-        offset += sizeof(double);
     }
     
     for(unsigned int i=0 ; i < m_noshow_array.GetCount() ; i++){
