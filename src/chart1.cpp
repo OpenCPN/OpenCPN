@@ -8943,8 +8943,21 @@ void MyFrame::OnResume(wxPowerEvent& WXUNUSED(event))
         }
     }
 
-    cc1->InvalidateGL();
-    cc1->Refresh(true);
+    //  If OpenGL is enabled, Windows Resume does not properly refresh the application GL context.
+    //  We need to force a Resize event that actually does something.
+    if(g_bopengl){
+        if( IsMaximized() ){            // This is not real pretty on-screen, but works
+            Maximize(false);
+            wxYield();
+            Maximize(true);
+        }
+        else {
+            wxSize sz = GetSize();
+            SetSize( wxSize(sz.x - 1, sz.y));
+            wxYield();
+            SetSize( sz );
+        }
+    }
     
 }
 #endif // wxHAS_POWER_EVENTS

@@ -854,7 +854,8 @@ options::options( MyFrame* parent, wxWindowID id, const wxString& caption, const
 
 options::~options()
 {
-    // Disconnect Events
+    // Disconnect Connection page Events
+    if(m_pNMEAForm){
     m_lcSources->Disconnect( wxEVT_COMMAND_LIST_ITEM_SELECTED, wxListEventHandler( options::OnSelectDatasource ), NULL, this );
     m_buttonAdd->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnAddDatasourceClick ), NULL, this );
     m_buttonRemove->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnRemoveDatasourceClick ), NULL, this );
@@ -886,7 +887,8 @@ options::~options()
     m_tcOutputStc->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
     m_btnOutputStcList->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnBtnOStcs ), NULL, this );
     m_cbNMEADebug->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnShowGpsWindowCheckboxClick ), NULL, this );
-
+    }
+    
     delete m_pSerialArray;
     groupsPanel->EmptyChartGroupArray( m_pGroupArray );
     delete m_pGroupArray;
@@ -934,9 +936,13 @@ void options::Init()
     m_pageShips = -1;
     m_pageUI = -1;
     m_pagePlugins = -1;
-
+    m_pageConnections = -1;
+    
     lastPage = -1;
-
+    
+    m_pPlugInCtrl = NULL;       // for deferred loading
+    m_pNMEAForm = NULL;
+    
     // This variable is used by plugin callback function AddOptionsPage
     g_pOptions = this;
 }
@@ -1079,6 +1085,7 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     bSizer171 = new wxBoxSizer( wxHORIZONTAL );
 
     m_cbFilterSogCog = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Filter NMEA Course and Speed data"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_cbFilterSogCog->SetValue( g_bfilter_cogsog );
     bSizer171->Add( m_cbFilterSogCog, 0, wxALL, 5 );
 
     m_stFilterSec = new wxStaticText( m_pNMEAForm, wxID_ANY, _("Filter period (sec)"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -1091,12 +1098,16 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     bSizer171->Add( m_stFilterSec, 0, wxALL, nspace );
 
     m_tFilterSec = new wxTextCtrl( m_pNMEAForm, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+    wxString sfilt;
+    sfilt.Printf( _T("%d"), g_COGFilterSec );
+    m_tFilterSec->SetValue( sfilt );
     bSizer171->Add( m_tFilterSec, 0, wxALL, 4 );
 
     bSizer161->Add( bSizer171, 1, wxEXPAND, 5 );
 
     int cb_space = 2;
     m_cbNMEADebug = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Show NMEA Debug Window"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_cbNMEADebug->SetValue(NMEALogWindow::Get().Active());
     bSizer161->Add( m_cbNMEADebug, 0, wxALL, cb_space );
 
     m_cbFurunoGP3X = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Format uploads for Furuno GP3X"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -1277,7 +1288,7 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     wxString m_choicePrecisionChoices[] = { _("x"), _("x.x"), _("x.xx"), _("x.xxx"), _("x.xxxx") };
     int m_choicePrecisionNChoices = sizeof( m_choicePrecisionChoices ) / sizeof( wxString );
     m_choicePrecision = new wxChoice( m_pNMEAForm, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_choicePrecisionNChoices, m_choicePrecisionChoices, 0 );
-    m_choicePrecision->SetSelection( 3 );
+    m_choicePrecision->SetSelection( g_NMEAAPBPrecision );
     fgSizer5->Add( m_choicePrecision, 0, wxALL, 5 );
 
     sbSizerConnectionProps->Add( gSizerSerProps, 0, wxEXPAND, 5 );
@@ -1445,10 +1456,12 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
 
     FillSourceList();
 
-    for(size_t i = 0; i < m_pSerialArray->Count() ; i++)
-    {
-       m_comboPort->Append(m_pSerialArray->Item(i));
+    if(m_pSerialArray){
+        for(size_t i = 0; i < m_pSerialArray->Count() ; i++){
+            m_comboPort->Append(m_pSerialArray->Item(i));
+        }
     }
+    
     ShowNMEACommon( false );
     ShowNMEASerial( false );
     ShowNMEANet( false );
@@ -2666,7 +2679,7 @@ void options::CreateControls()
 
     int font_size_y, font_descent, font_lead;
     GetTextExtent( _T("0"), NULL, &font_size_y, &font_descent, &font_lead );
-    wxSize small_button_size( -1, (int) ( 1.4 * ( font_size_y + font_descent + font_lead ) ) );
+    m_small_button_size = wxSize( -1, (int) ( 1.4 * ( font_size_y + font_descent + font_lead ) ) );
 
     //      Some members (pointers to controls) need to initialized
     pEnableZoomToCursor = NULL;
@@ -2769,32 +2782,31 @@ void options::CreateControls()
     buttons->Add( m_ApplyButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, border_size );
 
     m_pageDisplay = CreatePanel( _("Display") );
-    CreatePanel_Display( m_pageDisplay, border_size, group_item_spacing, small_button_size );
-    CreatePanel_Units( m_pageDisplay, border_size, group_item_spacing, small_button_size );
-    CreatePanel_Advanced( m_pageDisplay, border_size, group_item_spacing, small_button_size );
-
+    CreatePanel_Display( m_pageDisplay, border_size, group_item_spacing, m_small_button_size );
+    CreatePanel_Units( m_pageDisplay, border_size, group_item_spacing, m_small_button_size );
+    CreatePanel_Advanced( m_pageDisplay, border_size, group_item_spacing, m_small_button_size );
+    
     m_pageCharts = CreatePanel( _("Charts") );
-    CreatePanel_ChartsLoad( m_pageCharts, border_size, group_item_spacing, small_button_size );
-    CreatePanel_VectorCharts( m_pageCharts, border_size, group_item_spacing, small_button_size );
+    CreatePanel_ChartsLoad( m_pageCharts, border_size, group_item_spacing, m_small_button_size );
+    CreatePanel_VectorCharts( m_pageCharts, border_size, group_item_spacing, m_small_button_size );
     // ChartGroups must be created after ChartsLoad and must be at least third
-    CreatePanel_ChartGroups( m_pageCharts, border_size, group_item_spacing, small_button_size );
-    CreatePanel_TidesCurrents( m_pageCharts, border_size, group_item_spacing, small_button_size );
+    CreatePanel_ChartGroups( m_pageCharts, border_size, group_item_spacing, m_small_button_size );
+    CreatePanel_TidesCurrents( m_pageCharts, border_size, group_item_spacing, m_small_button_size );
 
     m_pageConnections = CreatePanel( _("Connections") );
-    CreatePanel_NMEA( m_pageConnections, border_size, group_item_spacing, small_button_size );
-
+    CreatePanel_NMEA( m_pageConnections, border_size, group_item_spacing, m_small_button_size );
     m_pageShips = CreatePanel( _("Ships") );
-    CreatePanel_Ownship( m_pageShips, border_size, group_item_spacing, small_button_size );
-    CreatePanel_AIS( m_pageShips, border_size, group_item_spacing, small_button_size );
-    CreatePanel_MMSI( m_pageShips, border_size, group_item_spacing, small_button_size );
+    CreatePanel_Ownship( m_pageShips, border_size, group_item_spacing, m_small_button_size );
+    CreatePanel_AIS( m_pageShips, border_size, group_item_spacing, m_small_button_size );
+    CreatePanel_MMSI( m_pageShips, border_size, group_item_spacing, m_small_button_size );
     
     m_pageUI = CreatePanel( _("User Interface") );
-    CreatePanel_UI( m_pageUI, border_size, group_item_spacing, small_button_size );
+    CreatePanel_UI( m_pageUI, border_size, group_item_spacing, m_small_button_size );
 
     m_pagePlugins = CreatePanel( _("Plugins") );
-    wxScrolledWindow *itemPanelPlugins = AddPage( m_pagePlugins, _("Plugins") );
+    itemPanelPlugins = AddPage( m_pagePlugins, _("Plugins") );
 
-    wxBoxSizer* itemBoxSizerPanelPlugins = new wxBoxSizer( wxVERTICAL );
+    itemBoxSizerPanelPlugins = new wxBoxSizer( wxVERTICAL );
     itemPanelPlugins->SetSizer( itemBoxSizerPanelPlugins );
 
     // load the disabled plugins finally because the user might want to enable them
@@ -2805,21 +2817,19 @@ void options::CreateControls()
         g_bLoadedDisabledPlugins = true;
     }
 
+/*    Deferred
     //      Build the PlugIn Manager Panel
     m_pPlugInCtrl = new PluginListPanel( itemPanelPlugins, ID_PANELPIM, wxDefaultPosition,
             wxDefaultSize, g_pi_manager->GetPlugInArray() );
     m_pPlugInCtrl->SetScrollRate( 15, 15 );
 
     itemBoxSizerPanelPlugins->Add( m_pPlugInCtrl, 1, wxEXPAND|wxALL, border_size );
-
+*/
     //      PlugIns can add panels, too
     if( g_pi_manager ) g_pi_manager->NotifySetupOptions();
 
     SetColorScheme( (ColorScheme) 0 );
     
-    //  Update the PlugIn page to reflect the state of individual selections
-    m_pPlugInCtrl->UpdateSelections();
-
     //Set the maximum size of the entire settings dialog
     SetSizeHints( -1, -1, width-100, height-100 );
 
@@ -2893,15 +2903,6 @@ void options::SetInitialSettings()
         pShowCompassWin->SetValue( m_pConfig->m_bShowCompassWin );
     }
 
-    m_cbNMEADebug->SetValue(NMEALogWindow::Get().Active());
-/*TODO
-    if( g_bGarminHost ) pGarminHost->SetValue( true );
-*/
-    m_cbFilterSogCog->SetValue( g_bfilter_cogsog );
-
-    s.Printf( _T("%d"), g_COGFilterSec );
-    m_tFilterSec->SetValue( s );
-
     s.Printf( _T("%d"), g_COGAvgSec );
     pCOGUPUpdateSecs->SetValue( s );
 
@@ -2923,7 +2924,6 @@ void options::SetInitialSettings()
         pSmoothPanZoom->Disable();
     }
 #endif
-    m_cbAPBMagnetic->SetValue(g_bMagneticAPB);
     pCBMagShow->SetValue( g_bShowMag );
     
     s.Printf( _T("%4.1f"), g_UserVar );
@@ -3067,8 +3067,6 @@ void options::SetInitialSettings()
     m_pCheck_Rollover_CPA->SetValue( g_bAISRolloverShowCPA );
 
     m_pSlider_Zoom->SetValue( g_chart_zoom_modifier );
-    
-    m_choicePrecision->SetSelection( g_NMEAAPBPrecision );
     
     wxString screenmm;
     if(g_config_display_size_mm > 0){
@@ -3696,33 +3694,7 @@ void options::OnApplyClick( wxCommandEvent& event )
         g_config_display_size_mm = -1;
     }
         
-    
-    
-//TODO    g_bGarminHost = pGarminHost->GetValue();
-
-    g_bShowOutlines = pCDOOutlines->GetValue();
-    g_bDisplayGrid = pSDisplayGrid->GetValue();
-
-    bool temp_bquilting = pCDOQuilting->GetValue();
-    if(!g_bQuiltEnable && temp_bquilting)
-        cc1->ReloadVP(); /* compose the quilt */
-    g_bQuiltEnable = temp_bquilting;
-
-    g_bFullScreenQuilt = !pFullScreenQuilt->GetValue();
-
-    g_bShowDepthUnits = pSDepthUnits->GetValue();
-    g_bskew_comp = pSkewComp->GetValue();
-    g_btouch = pMobile->GetValue();
-    g_bresponsive = pResponsive->GetValue();
-
-    g_fog_overzoom = !pOverzoomEmphasis->GetValue();
-    g_oz_vector_scale = !pOZScaleVector->GetValue();
-    
-    bool bopengl_changed = g_bopengl != pOpenGL->GetValue();
-    g_bopengl = pOpenGL->GetValue();
-
-    g_bsmoothpanzoom = pSmoothPanZoom->GetValue();
-
+// Connections page.
     g_bfilter_cogsog = m_cbFilterSogCog->GetValue();
 
     long filter_val = 1;
@@ -3731,108 +3703,11 @@ void options::OnApplyClick( wxCommandEvent& event )
     g_COGFilterSec = wxMax(g_COGFilterSec, 1);
     g_SOGFilterSec = g_COGFilterSec;
 
-    long update_val = 1;
-    pCOGUPUpdateSecs->GetValue().ToLong( &update_val );
-    g_COGAvgSec = wxMin((int)update_val, MAX_COG_AVERAGE_SECONDS);
-
-    if(g_bCourseUp != pCBCourseUp->GetValue())
-        gFrame->ToggleCourseUp();
-        
-    g_bLookAhead = pCBLookAhead->GetValue();
-
-    g_bShowMag = pCBMagShow->GetValue();
-    pMagVar->GetValue().ToDouble( &g_UserVar );
-    
     g_bMagneticAPB = m_cbAPBMagnetic->GetValue();
+    g_NMEAAPBPrecision = m_choicePrecision->GetCurrentSelection();
     
-    m_pText_OSCOG_Predictor->GetValue().ToDouble( &g_ownship_predictor_minutes );
-    m_pText_OSHDT_Predictor->GetValue().ToDouble( &g_ownship_HDTpredictor_miles );
     
-    g_iNavAidRadarRingsNumberVisible = pNavAidRadarRingsNumberVisible->GetSelection();
-    g_fNavAidRadarRingsStep = atof( pNavAidRadarRingsStep->GetValue().mb_str() );
-    g_pNavAidRadarRingsStepUnits = m_itemRadarRingsUnits->GetSelection();
-    g_bWayPointPreventDragging = pWayPointPreventDragging->GetValue();
-    g_bConfirmObjectDelete = pConfirmObjectDeletion->GetValue();
-
-    g_bPreserveScaleOnX = pPreserveScale->GetValue();
-
-    g_bPlayShipsBells = pPlayShipsBells->GetValue();
-//    g_bFullscreenToolbar = pFullScreenToolbar->GetValue();
-    g_bTransparentToolbar = pTransparentToolbar->GetValue();
-    g_iSDMMFormat = pSDMMFormat->GetSelection();
-    g_iDistanceFormat = pDistanceFormat->GetSelection();
-    g_iSpeedFormat = pSpeedFormat->GetSelection();
-    
-    g_bSailing = pSailing->GetValue();
-
-    g_nTrackPrecision = pTrackPrecision->GetSelection();
-
-    g_bTrackDaily = pTrackDaily->GetValue();
-    g_bHighliteTracks = pTrackHighlite->GetValue();
-
-    g_bEnableZoomToCursor = pEnableZoomToCursor->GetValue();
-
-    //    AIS Parameters
-    //      CPA Box
-    g_bCPAMax = m_pCheck_CPA_Max->GetValue();
-    m_pText_CPA_Max->GetValue().ToDouble( &g_CPAMax_NM );
-    g_bCPAWarn = m_pCheck_CPA_Warn->GetValue();
-    m_pText_CPA_Warn->GetValue().ToDouble( &g_CPAWarn_NM );
-    g_bTCPA_Max = m_pCheck_CPA_WarnT->GetValue();
-    m_pText_CPA_WarnT->GetValue().ToDouble( &g_TCPA_Max );
-
-    //      Lost Targets
-    g_bMarkLost = m_pCheck_Mark_Lost->GetValue();
-    m_pText_Mark_Lost->GetValue().ToDouble( &g_MarkLost_Mins );
-    g_bRemoveLost = m_pCheck_Remove_Lost->GetValue();
-    m_pText_Remove_Lost->GetValue().ToDouble( &g_RemoveLost_Mins );
-
-    //      Display
-    g_bShowCOG = m_pCheck_Show_COG->GetValue();
-    m_pText_COG_Predictor->GetValue().ToDouble( &g_ShowCOG_Mins );
-
-    g_bAISShowTracks = m_pCheck_Show_Tracks->GetValue();
-    m_pText_Track_Length->GetValue().ToDouble( &g_AISShowTracks_Mins );
-    
-    //  Update all the current targets
-    if( g_pAIS ){
-        AIS_Target_Hash::iterator it;
-        AIS_Target_Hash *current_targets = g_pAIS->GetTargetList();
-        for( it = ( *current_targets ).begin(); it != ( *current_targets ).end(); ++it ) {
-            AIS_Target_Data *pAISTarget = it->second;
-            if( NULL != pAISTarget ) {
-                pAISTarget->b_show_track = g_bAISShowTracks;
-            }
-        }
-    }
-    
-
-    g_bShowMoored = !m_pCheck_Show_Moored->GetValue();
-    m_pText_Moored_Speed->GetValue().ToDouble( &g_ShowMoored_Kts );
-
-    g_bShowAreaNotices = m_pCheck_Show_Area_Notices->GetValue();
-    g_bDrawAISSize = m_pCheck_Draw_Target_Size->GetValue();
-    g_bShowAISName = m_pCheck_Show_Target_Name->GetValue();
-    long ais_name_scale = 5000;
-    m_pText_Show_Target_Name_Scale->GetValue().ToLong( &ais_name_scale );
-    g_Show_Target_Name_Scale = (int)wxMax( 5000, ais_name_scale );
-
-    g_bWplIsAprsPosition = m_pCheck_Wpl_Aprs->GetValue();
-
-    //      Alert
-    g_bAIS_CPA_Alert = m_pCheck_AlertDialog->GetValue();
-    g_bAIS_CPA_Alert_Audio = m_pCheck_AlertAudio->GetValue();
-    g_bAIS_CPA_Alert_Suppress_Moored = m_pCheck_Alert_Moored->GetValue();
-
-    g_bAIS_ACK_Timeout = m_pCheck_Ack_Timout->GetValue();
-    m_pText_ACK_Timeout->GetValue().ToDouble( &g_AckTimeout_Mins );
-
-    // Rollover
-    g_bAISRolloverShowClass = m_pCheck_Rollover_Class->GetValue();
-    g_bAISRolloverShowCOG = m_pCheck_Rollover_COG->GetValue();
-    g_bAISRolloverShowCPA = m_pCheck_Rollover_CPA->GetValue();
-
-    // NMEA Source
+        // NMEA Source
     long itemIndex = m_lcSources->GetNextItem( -1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
     
     //  If the stream selected exists, capture some of its existing parameters
@@ -3924,9 +3799,132 @@ void options::OnApplyClick( wxCommandEvent& event )
     else
         g_GPS_Ident = _T("Generic");
 
-    g_chart_zoom_modifier = m_pSlider_Zoom->GetValue();
+
+// End of Connections page    
+
+    g_bShowOutlines = pCDOOutlines->GetValue();
+    g_bDisplayGrid = pSDisplayGrid->GetValue();
+
+    bool temp_bquilting = pCDOQuilting->GetValue();
+    if(!g_bQuiltEnable && temp_bquilting)
+        cc1->ReloadVP(); /* compose the quilt */
+    g_bQuiltEnable = temp_bquilting;
+
+    g_bFullScreenQuilt = !pFullScreenQuilt->GetValue();
+
+    g_bShowDepthUnits = pSDepthUnits->GetValue();
+    g_bskew_comp = pSkewComp->GetValue();
+    g_btouch = pMobile->GetValue();
+    g_bresponsive = pResponsive->GetValue();
+
+    g_fog_overzoom = !pOverzoomEmphasis->GetValue();
+    g_oz_vector_scale = !pOZScaleVector->GetValue();
     
-    g_NMEAAPBPrecision = m_choicePrecision->GetCurrentSelection();
+    bool bopengl_changed = g_bopengl != pOpenGL->GetValue();
+    g_bopengl = pOpenGL->GetValue();
+
+    g_bsmoothpanzoom = pSmoothPanZoom->GetValue();
+
+    long update_val = 1;
+    pCOGUPUpdateSecs->GetValue().ToLong( &update_val );
+    g_COGAvgSec = wxMin((int)update_val, MAX_COG_AVERAGE_SECONDS);
+
+    if(g_bCourseUp != pCBCourseUp->GetValue())
+        gFrame->ToggleCourseUp();
+        
+    g_bLookAhead = pCBLookAhead->GetValue();
+
+    g_bShowMag = pCBMagShow->GetValue();
+    pMagVar->GetValue().ToDouble( &g_UserVar );
+    
+    m_pText_OSCOG_Predictor->GetValue().ToDouble( &g_ownship_predictor_minutes );
+    m_pText_OSHDT_Predictor->GetValue().ToDouble( &g_ownship_HDTpredictor_miles );
+    
+    g_iNavAidRadarRingsNumberVisible = pNavAidRadarRingsNumberVisible->GetSelection();
+    g_fNavAidRadarRingsStep = atof( pNavAidRadarRingsStep->GetValue().mb_str() );
+    g_pNavAidRadarRingsStepUnits = m_itemRadarRingsUnits->GetSelection();
+    g_bWayPointPreventDragging = pWayPointPreventDragging->GetValue();
+    g_bConfirmObjectDelete = pConfirmObjectDeletion->GetValue();
+
+    g_bPreserveScaleOnX = pPreserveScale->GetValue();
+
+    g_bPlayShipsBells = pPlayShipsBells->GetValue();
+//    g_bFullscreenToolbar = pFullScreenToolbar->GetValue();
+    g_bTransparentToolbar = pTransparentToolbar->GetValue();
+    g_iSDMMFormat = pSDMMFormat->GetSelection();
+    g_iDistanceFormat = pDistanceFormat->GetSelection();
+    g_iSpeedFormat = pSpeedFormat->GetSelection();
+    
+    g_bSailing = pSailing->GetValue();
+
+    g_nTrackPrecision = pTrackPrecision->GetSelection();
+
+    g_bTrackDaily = pTrackDaily->GetValue();
+    g_bHighliteTracks = pTrackHighlite->GetValue();
+
+    g_bEnableZoomToCursor = pEnableZoomToCursor->GetValue();
+
+    //    AIS Parameters
+    //      CPA Box
+    g_bCPAMax = m_pCheck_CPA_Max->GetValue();
+    m_pText_CPA_Max->GetValue().ToDouble( &g_CPAMax_NM );
+    g_bCPAWarn = m_pCheck_CPA_Warn->GetValue();
+    m_pText_CPA_Warn->GetValue().ToDouble( &g_CPAWarn_NM );
+    g_bTCPA_Max = m_pCheck_CPA_WarnT->GetValue();
+    m_pText_CPA_WarnT->GetValue().ToDouble( &g_TCPA_Max );
+
+    //      Lost Targets
+    g_bMarkLost = m_pCheck_Mark_Lost->GetValue();
+    m_pText_Mark_Lost->GetValue().ToDouble( &g_MarkLost_Mins );
+    g_bRemoveLost = m_pCheck_Remove_Lost->GetValue();
+    m_pText_Remove_Lost->GetValue().ToDouble( &g_RemoveLost_Mins );
+
+    //      Display
+    g_bShowCOG = m_pCheck_Show_COG->GetValue();
+    m_pText_COG_Predictor->GetValue().ToDouble( &g_ShowCOG_Mins );
+
+    g_bAISShowTracks = m_pCheck_Show_Tracks->GetValue();
+    m_pText_Track_Length->GetValue().ToDouble( &g_AISShowTracks_Mins );
+    
+    //  Update all the current targets
+    if( g_pAIS ){
+        AIS_Target_Hash::iterator it;
+        AIS_Target_Hash *current_targets = g_pAIS->GetTargetList();
+        for( it = ( *current_targets ).begin(); it != ( *current_targets ).end(); ++it ) {
+            AIS_Target_Data *pAISTarget = it->second;
+            if( NULL != pAISTarget ) {
+                pAISTarget->b_show_track = g_bAISShowTracks;
+            }
+        }
+    }
+    
+
+    g_bShowMoored = !m_pCheck_Show_Moored->GetValue();
+    m_pText_Moored_Speed->GetValue().ToDouble( &g_ShowMoored_Kts );
+
+    g_bShowAreaNotices = m_pCheck_Show_Area_Notices->GetValue();
+    g_bDrawAISSize = m_pCheck_Draw_Target_Size->GetValue();
+    g_bShowAISName = m_pCheck_Show_Target_Name->GetValue();
+    long ais_name_scale = 5000;
+    m_pText_Show_Target_Name_Scale->GetValue().ToLong( &ais_name_scale );
+    g_Show_Target_Name_Scale = (int)wxMax( 5000, ais_name_scale );
+
+    g_bWplIsAprsPosition = m_pCheck_Wpl_Aprs->GetValue();
+
+    //      Alert
+    g_bAIS_CPA_Alert = m_pCheck_AlertDialog->GetValue();
+    g_bAIS_CPA_Alert_Audio = m_pCheck_AlertAudio->GetValue();
+    g_bAIS_CPA_Alert_Suppress_Moored = m_pCheck_Alert_Moored->GetValue();
+
+    g_bAIS_ACK_Timeout = m_pCheck_Ack_Timout->GetValue();
+    m_pText_ACK_Timeout->GetValue().ToDouble( &g_AckTimeout_Mins );
+
+    // Rollover
+    g_bAISRolloverShowClass = m_pCheck_Rollover_Class->GetValue();
+    g_bAISRolloverShowCOG = m_pCheck_Rollover_COG->GetValue();
+    g_bAISRolloverShowCPA = m_pCheck_Rollover_CPA->GetValue();
+
+    g_chart_zoom_modifier = m_pSlider_Zoom->GetValue();
     
 #ifdef USE_S57
     //    Handle Vector Charts Tab
@@ -4404,7 +4402,27 @@ void options::OnPageChange( wxListbookEvent& event )
         }
     }
 
+ 
     else if( m_pagePlugins == i ) {                    // 7 is the index of "Plugins" page
+
+        if( !m_pPlugInCtrl){
+    //      Build the PlugIn Manager Panel
+            ::wxBeginBusyCursor();
+     
+            m_pPlugInCtrl = new PluginListPanel( itemPanelPlugins, ID_PANELPIM, wxDefaultPosition,
+                                         wxDefaultSize, g_pi_manager->GetPlugInArray() );
+            m_pPlugInCtrl->SetScrollRate( 15, 15 );
+    
+            itemBoxSizerPanelPlugins->Add( m_pPlugInCtrl, 1, wxEXPAND|wxALL, 4 );
+            
+            itemBoxSizerPanelPlugins->Layout();
+            
+            //  Update the PlugIn page to reflect the state of individual selections
+            m_pPlugInCtrl->UpdateSelections();
+            
+            ::wxEndBusyCursor();
+        }
+    
         k_plugins = TOOLBAR_CHANGED;
     }
 }

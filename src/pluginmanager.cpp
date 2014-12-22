@@ -2896,6 +2896,7 @@ PluginListPanel::PluginListPanel( wxWindow *parent, wxWindowID id, const wxPoint
     :wxScrolledWindow( parent, id, pos, size, wxTAB_TRAVERSAL|wxVSCROLL )
 
 {
+    Hide();
     m_pPluginArray = pPluginArray;
     m_PluginSelected = NULL;
 
@@ -2935,6 +2936,8 @@ PluginListPanel::PluginListPanel( wxWindow *parent, wxWindowID id, const wxPoint
     }
 
     itemBoxSizer01->AddSpacer(max_dy);
+    
+    Show();
 }
 
 PluginListPanel::~PluginListPanel()

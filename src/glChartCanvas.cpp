@@ -949,7 +949,15 @@ void glChartCanvas::SetupOpenGL()
         s_glGenerateMipmap = 0;
     if( GetRendererString().Upper().Find( _T("ATI") ) != wxNOT_FOUND )
         s_glGenerateMipmap = 0;
+
     
+    // Intel drivers on Windows may export glGenerateMipmap, but it doesn't work...
+#ifdef __WXMSW__
+        if( GetRendererString().Upper().Find( _T("INTEL") ) != wxNOT_FOUND )
+            s_glGenerateMipmap = 0;
+#endif        
+            
+            
 
     if( !s_glGenerateMipmap )
         wxLogMessage( _T("OpenGL-> glGenerateMipmap unavailable") );
@@ -2600,16 +2608,12 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
             
             if( !m_gl_rendered_region.IsEmpty() ) {
      
-                int wi = VPoint.pix_width; 
-                int hi = VPoint.pix_height;
+                int width = VPoint.pix_width; 
+                int height = VPoint.pix_height;
                 
-                // Use MipMap LOD tweaking to produce a blurred, downsampling effect at high speed.
-                
-                if(s_glGenerateMipmap){
-                    int width = wi;
-                    int height = hi;
+                // Use MipMap LOD tweaking to produce a blurred, downsampling effect at reasonable speed.
 
-                    if(g_texture_rectangle_format){             //nPOT texture supported
+                    if((s_glGenerateMipmap) && (g_texture_rectangle_format == GL_TEXTURE_2D)){       //nPOT texture supported
 
                         //          Capture the rendered screen image to a texture
                         glReadBuffer( GL_BACK);
@@ -2623,12 +2627,11 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); 
                         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
                         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-                        
-                        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height,
-                                    0, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
-                        glCopyTexSubImage2D(GL_TEXTURE_2D,  0,  0,  0,
-                                            VPoint.rv_rect.x,  VPoint.rv_rect.y,  width, height);
-                        
+
+                        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
+                        glCopyTexSubImage2D(GL_TEXTURE_2D,  0,  0,  0, 0,  0,  width, height);
+                    
+                        glPushAttrib( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_LINE_BIT| GL_CURRENT_BIT);
                         
                         glClear(GL_DEPTH_BUFFER_BIT);
                         glDisable(GL_DEPTH_TEST);
@@ -2644,7 +2647,6 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                         glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
                         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
                         
-                        //  Use hardware accelerated mipmap generation, if available
                         s_glGenerateMipmap(GL_TEXTURE_2D);
 
                         // Render at reduced LOD (i.e. higher mipmap number)
@@ -2652,26 +2654,29 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                         glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, bias);
                         glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
                         
-                        glColor4f (1.0f,1.0f,1.0f,1.0f);
 
                         glBegin(GL_QUADS);
                         
-                        glTexCoord2f(0 , 1 ); glVertex2i(VPoint.rv_rect.x,         VPoint.rv_rect.y);
-                        glTexCoord2f(0 , 0 ); glVertex2i(VPoint.rv_rect.x,         VPoint.rv_rect.y + height);
-                        glTexCoord2f(1 , 0 ); glVertex2i(VPoint.rv_rect.x + width, VPoint.rv_rect.y + height);
-                        glTexCoord2f(1 , 1 ); glVertex2i(VPoint.rv_rect.x + width, VPoint.rv_rect.y);
+                        glTexCoord2f(0 , 1 ); glVertex2i(0,     0);
+                        glTexCoord2f(0 , 0 ); glVertex2i(0,     height);
+                        glTexCoord2f(1 , 0 ); glVertex2i(width, height);
+                        glTexCoord2f(1 , 1 ); glVertex2i(width, 0);
                         glEnd ();
                         
                         glDeleteTextures(1, &screen_capture);
 
                         glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, 0);
+                        glDisable(GL_TEXTURE_2D);
+                        
+                        glPopAttrib( );
+                        
                     }
                     else {              // must use POT textures
                                         // and we cannot really trust the value that comes from GL_MAX_TEXTURE_SIZE
 
                         int tex_size = 512;  // reasonable assumption
-                        int ntx = (VPoint.rv_rect.width / tex_size) + 1;
-                        int nty = (VPoint.rv_rect.height / tex_size) + 1;
+                        int ntx = (width / tex_size) + 1;
+                        int nty = (height / tex_size) + 1;
 
                         GLuint *screen_capture = new GLuint[ntx * nty];
                         glGenTextures( ntx * nty, screen_capture );
@@ -2680,7 +2685,9 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                         double bias = fog/70;
                         glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS, bias);
                         glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
-                        glColor4f (1.0f,1.0f,1.0f,1.0f);
+                        
+                        glPushAttrib( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_LINE_BIT | GL_CURRENT_BIT);
+                        
                         glClear(GL_DEPTH_BUFFER_BIT);
                         glDisable(GL_DEPTH_TEST);
                         int max_mipmap = 3;
@@ -2688,8 +2695,8 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                         for(int i=0 ; i < ntx ; i++){
                             for(int j=0 ; j < nty ; j++){
                                 
-                                int screen_x = VPoint.rv_rect.x + (i * tex_size);
-                                int screen_y = VPoint.rv_rect.y + (j * tex_size);
+                                int screen_x = i * tex_size;
+                                int screen_y = j * tex_size;
                                 
                                 glEnable(GL_TEXTURE_2D);
                                 glBindTexture(GL_TEXTURE_2D, screen_capture[(i * ntx) + j]);
@@ -2729,11 +2736,11 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                         }
                         
                         for(int i=0 ; i < ntx ; i++){
-                            int ybase =  VPoint.rv_rect.height - tex_size; 
+                            int ybase =  height - tex_size; 
                             for(int j=0 ; j < nty ; j++){
                                 
-                                int screen_x = VPoint.rv_rect.x + (i * tex_size);
-                                int screen_y = VPoint.rv_rect.y + (j * tex_size);
+                                int screen_x = i * tex_size;
+                                int screen_y = j * tex_size;
                                 
                                 glEnable(GL_TEXTURE_2D);
                                 glBindTexture(GL_TEXTURE_2D, screen_capture[(i * ntx) + j]);
@@ -2755,11 +2762,13 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                         
                         glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS, 0);
                         glDeleteTextures(ntx * nty, screen_capture);
+                        glDisable(GL_TEXTURE_2D);
                         delete [] screen_capture;
+                        
+                        glPopAttrib();
                     }
-                }
                  
-
+#if 0
                 else { 
             // Fogging by alpha blending                
                     glPushAttrib( GL_COLOR_BUFFER_BIT );
@@ -2788,6 +2797,7 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                     glDisable( GL_BLEND );
                     glPopAttrib();
                 }
+#endif                
             }
         }
     }
