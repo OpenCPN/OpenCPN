@@ -158,7 +158,7 @@ void AISTargetQueryDialog::OnIdTrkCreateClick( wxCommandEvent& event )
          
                 if( wxYES == OCPNMessageBox(NULL,
                     _("The recently captured track of this target has been recorded.\nDo you want to continue recording until the end of the current OpenCPN session?"),
-                    _("OpenCPN Info"), wxYES_NO | wxCENTER, 60 ) );
+                    _("OpenCPN Info"), wxYES_NO | wxCENTER, 60 ) )
                 
                 
                 
