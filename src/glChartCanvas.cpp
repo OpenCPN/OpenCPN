@@ -605,6 +605,24 @@ GenericFunction ocpnGetProcAddress(const char *addr, const char *extension)
     if(!extension)
         return (GenericFunction)NULL;
 
+    //  If this is an extension entry point,
+    //  We look explicitly in the extensions list to confirm
+    //  that the request is actually supported.
+    // This may be redundant, but is conservative, and only happens once per session.    
+    if(extension && strlen(extension)){
+        wxString s_extension(&addr[2], wxConvUTF8);
+        wxString s_family;
+        s_family = wxString(extension, wxConvUTF8);
+        s_extension.Prepend(_T("_"));
+        s_extension.Prepend(s_family);
+
+        s_extension.Prepend(_T("GL_"));
+        
+        if(!QueryExtension( s_extension.mb_str() )){
+            return (GenericFunction)NULL;
+        }
+    }
+    
     snprintf(addrbuf, sizeof addrbuf, "%s%s", addr, extension);
     return (GenericFunction)systemGetProcAddress(addrbuf);
 }
@@ -851,6 +869,7 @@ void glChartCanvas::BuildFBO( )
     m_b_BuiltFBO = true;
 }
 
+
 void glChartCanvas::SetupOpenGL()
 {
     char render_string[80];
@@ -870,6 +889,9 @@ void glChartCanvas::SetupOpenGL()
     m_version = wxString( version_string, wxConvUTF8 );
     msg += m_version;
     wxLogMessage( msg );
+    
+    const GLubyte *ext_str = glGetString(GL_EXTENSIONS);
+    m_extensions = wxString( (const char *)ext_str, wxConvUTF8 );
     
     //  Set the minimum line width
     GLint parms[2];
