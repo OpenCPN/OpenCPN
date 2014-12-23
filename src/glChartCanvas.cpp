@@ -1199,6 +1199,9 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
     
     if( !m_bsetup ) {
         SetupOpenGL();
+        if( ps52plib )
+            ps52plib->FlushSymbolCaches();
+        
         m_bsetup = true;
 //        g_bDebugOGL = true;
     }
@@ -2613,7 +2616,7 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                 
                 // Use MipMap LOD tweaking to produce a blurred, downsampling effect at reasonable speed.
 
-                    if((s_glGenerateMipmap) && (g_texture_rectangle_format == GL_TEXTURE_2D)){       //nPOT texture supported
+                    if( (s_glGenerateMipmap) && (g_texture_rectangle_format == GL_TEXTURE_2D)){       //nPOT texture supported
 
                         //          Capture the rendered screen image to a texture
                         glReadBuffer( GL_BACK);
@@ -2671,8 +2674,12 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                         glPopAttrib( );
                         
                     }
-                    else {              // must use POT textures
+#if 0                    
+                    else if(scale_factor > 25)  { 
+                                        // must use POT textures
                                         // and we cannot really trust the value that comes from GL_MAX_TEXTURE_SIZE
+                                        // This method of fogging is very slow, so only activate it if the scale_factor is
+                                        // very large.
 
                         int tex_size = 512;  // reasonable assumption
                         int ntx = (width / tex_size) + 1;
@@ -2767,10 +2774,13 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                         
                         glPopAttrib();
                     }
-                 
-#if 0
-                else { 
+#endif
+                    
+#if 1
+            else if(scale_factor > 20){ 
             // Fogging by alpha blending                
+                    fog = ((scale_factor - 20) * 255.) / 20.;
+            
                     glPushAttrib( GL_COLOR_BUFFER_BIT );
                     glEnable( GL_BLEND );
                     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
