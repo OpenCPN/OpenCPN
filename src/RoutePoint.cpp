@@ -262,11 +262,11 @@ void RoutePoint::ReLoadIcon( void )
             // if found, convert point's icon name permanently.
             m_IconName = tentative_icon;
         }
-        //      Icon name is not in the standard or user lists, so add it to the list a generic placeholder
+        //      Icon name is not in the standard or user lists, so add to the list a generic placeholder
         else{
             ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
             if(style){
-                wxBitmap bmp = style->GetIcon( _T("qmark") );
+                wxBitmap bmp = style->GetIcon( _T("circle") );
                 pWayPointMan->ProcessIcon( bmp, m_IconName, m_IconName );
             }
         }
