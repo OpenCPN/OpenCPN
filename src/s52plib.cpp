@@ -2581,10 +2581,19 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
             //  Since draw pixels is so slow, lets not draw anything we don't have to
             wxRect sym_rect(r.x - ddx, r.y - ddy, b_width, b_height);
             if(vp->rv_rect.Intersects(sym_rect) ) {
+                
+                glPushAttrib( GL_SCISSOR_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+                
+                glDisable( GL_SCISSOR_TEST );
+                glDisable( GL_STENCIL_TEST );
+                glDisable( GL_DEPTH_TEST );
+                
                 glRasterPos2f( r.x - ddx, r.y - ddy );
                 glPixelZoom( 1, -1 );
                 glDrawPixels( b_width, b_height, GL_RGBA, GL_UNSIGNED_BYTE, prule->pixelPtr );
                 glPixelZoom( 1, 1 );
+
+                glPopAttrib();
             }
         }
 
