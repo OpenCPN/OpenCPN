@@ -1086,6 +1086,10 @@ void ocpnDC::DrawText( const wxString &text, wxCoord x, wxCoord y )
 void ocpnDC::GetTextExtent( const wxString &string, wxCoord *w, wxCoord *h, wxCoord *descent,
         wxCoord *externalLeading, wxFont *font ) const
 {
+    //  Give at least reasonable results on failure.
+    if(w) *w = 100;
+    if(h) *h = 100;
+    
     if( dc ) dc->GetTextExtent( string, w, h, descent, externalLeading, font );
     else {
         wxFont f = m_font;
@@ -1093,7 +1097,13 @@ void ocpnDC::GetTextExtent( const wxString &string, wxCoord *w, wxCoord *h, wxCo
 
         wxMemoryDC temp_dc;
         temp_dc.GetTextExtent( string, w, h, descent, externalLeading, &f );
-    }
+        
+     }
+     
+     //  Sometimes GetTextExtent returns really wrong, uninitialized results.
+     //  Dunno why....
+     if( w && (*w > 500) ) *w = 500;
+     if( h && (*h > 500) ) *h = 500;
 }
 
 void ocpnDC::ResetBoundingBox()
