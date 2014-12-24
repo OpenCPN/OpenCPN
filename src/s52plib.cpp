@@ -2984,6 +2984,7 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     if( b_wide_line)
     {
         int w = wxMax(scaled_line_width, 2);            // looks better
+        w = wxMin(w, 50);                               // upper bound
         wide_pen.SetWidth( w );
         wide_pen.SetColour(color);
         
