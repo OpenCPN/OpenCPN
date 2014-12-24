@@ -63,11 +63,15 @@ class RTE : public RESPONSE
       wxArrayString Waypoints;
       int message_number;
       int total_number_of_messages;
-
+      int m_skip_checksum;
+      char m_complete_char;
+      
       virtual void Empty( void );
       virtual bool Parse( const SENTENCE& sentence );
       virtual bool Write( SENTENCE& sentence );
       virtual bool AddWaypoint(const wxString& name);
+      
+      
 };
 
 #endif // RTE_CLASS_HEADER

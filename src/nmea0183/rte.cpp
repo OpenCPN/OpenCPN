@@ -43,6 +43,9 @@
 
 RTE::RTE()
 {
+   m_complete_char = 'c';
+   m_skip_checksum = 0;
+   
    Mnemonic = _T("RTE");
    Empty();
 }
@@ -150,7 +153,8 @@ bool RTE::Write( SENTENCE& sentence )
       case CompleteRoute:
 
 //            sentence += _T("C");             // uppercase required for GPS MLR FFX312
-            sentence += _T("c");             // trying lowercase for generic NMEA device
+//            sentence += _T("c");             // trying lowercase for generic NMEA device
+            sentence += wxString((wxChar)m_complete_char);
             break;
 
       case WorkingRoute:
@@ -169,7 +173,13 @@ bool RTE::Write( SENTENCE& sentence )
    for(unsigned int i=0 ; i < Waypoints.GetCount() ; i++)
          sentence += Waypoints[i];
 
-   sentence.Finish();
+   if(m_skip_checksum){
+       wxString temp_string;
+       temp_string.Printf(_T("%c%c"), CARRIAGE_RETURN, LINE_FEED );
+       sentence += temp_string;
+   }
+   else
+       sentence.Finish();
 
    return( TRUE );
 }
