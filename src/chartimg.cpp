@@ -4074,7 +4074,8 @@ int ChartBaseBSB::ReadBSBHdrLine(wxFileInputStream* ifs, char* buf, int buf_len_
 
 
       // Terminate line
-      *(lbuf-1) = '\0';
+      if(line_length)
+          *(lbuf-1) = '\0';
 
       return line_length;
 }
