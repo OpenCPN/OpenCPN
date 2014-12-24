@@ -1523,6 +1523,7 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
 
             for( unsigned int i = 0; i < deleteList.Count(); i++ ) {
                 Track* deleteTrack = (Track*) deleteList.Item( i );
+                g_pAIS->DeletePersistentTrack( deleteTrack );
                 pConfig->DeleteConfigRoute( deleteTrack );
                 g_pRouteMan->DeleteTrack( deleteTrack );
             }

@@ -37,6 +37,7 @@ static const long long lNaN = 0xfff8000000000000;
 
 extern AISTargetAlertDialog *g_pais_alert_dialog_active;
 extern Select *pSelectAIS;
+extern Select *pSelect;
 extern MyFrame *gFrame;
 extern int g_ais_alert_dialog_x;
 extern int g_ais_alert_dialog_y;
@@ -1811,8 +1812,14 @@ void AIS_Decoder::UpdateOneTrack( AIS_Target_Data *ptarget )
         {
             t = m_persistent_tracks[ptarget->MMSI];
         }
+        RoutePoint *rp = t->GetLastPoint();
         vector2D point( ptrackpoint->m_lon, ptrackpoint->m_lat );
-        t->AddNewPoint( point, wxDateTime(ptrackpoint->m_time).ToUTC() );
+        RoutePoint *rp1 = t->AddNewPoint( point, wxDateTime(ptrackpoint->m_time).ToUTC() );        
+        if( rp )
+        {
+            pSelect->AddSelectableTrackSegment( rp->m_lat, rp->m_lon, rp1->m_lat,
+                rp1->m_lon, rp, rp1, t );
+        }
         
 //We do not want dependency on the GUI here, do we?
 //        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
