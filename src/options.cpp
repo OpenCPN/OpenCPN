@@ -1725,7 +1725,7 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
     pFullScreenQuilt = new wxCheckBox( m_ChartDisplayPage, ID_FULLSCREENQUILT, _("Disable Full Screen Quilting") );
     boxCharts->Add( pFullScreenQuilt, inputFlags );
 
-    pOverzoomEmphasis = new wxCheckBox( m_ChartDisplayPage, ID_FULLSCREENQUILT, _("Suppress overzoom display emphasis effects") );
+    pOverzoomEmphasis = new wxCheckBox( m_ChartDisplayPage, ID_FULLSCREENQUILT, _("Suppress blur/fog effects on overzoom") );
     boxCharts->Add( pOverzoomEmphasis, inputFlags );
     
     pOZScaleVector = new wxCheckBox( m_ChartDisplayPage, ID_FULLSCREENQUILT, _("Suppress scaled vector charts on overzoom") );
