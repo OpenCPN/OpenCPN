@@ -855,7 +855,27 @@ bool ChartDB::IsChartInCache(wxString path)
     return bInCache;
 }
 
-
+bool ChartDB::IsChartLocked( int index )
+{
+    
+    if( wxMUTEX_NO_ERROR == m_cache_mutex.TryLock() ){
+        unsigned int nCache = pChartCache->GetCount();
+        for(unsigned int i=0 ; i<nCache ; i++)
+        {
+            CacheEntry *pce = (CacheEntry *)(pChartCache->Item(i));
+            if(pce->dbIndex == index)
+            {
+                bool ret = pce->n_lock > 0;
+                m_cache_mutex.Unlock();
+                return ret;
+            }
+        }
+        m_cache_mutex.Unlock();
+    }
+    
+    return false;
+}
+    
 void ChartDB::LockCacheChart( int index )
 {
     //    Search the cache

@@ -132,9 +132,8 @@ void AISTargetQueryDialog::OnIdTrkCreateClick( wxCommandEvent& event )
             }
             else
             {
-                int ip = 0;
-                float prev_rlat = 0., prev_rlon = 0.;
-                RoutePoint *prev_pConfPoint = NULL;
+                RoutePoint *rp = NULL;
+                RoutePoint *rp1 = NULL;
                     
                 Track *t = new Track();
 
@@ -144,7 +143,13 @@ void AISTargetQueryDialog::OnIdTrkCreateClick( wxCommandEvent& event )
                 {
                     AISTargetTrackPoint *ptrack_point = node->GetData();
                     vector2D point( ptrack_point->m_lon, ptrack_point->m_lat );
-                    t->AddNewPoint( point, wxDateTime(ptrack_point->m_time).ToUTC() );
+                    rp1 = t->AddNewPoint( point, wxDateTime(ptrack_point->m_time).ToUTC() );
+                    if( rp )
+                    {
+                        pSelect->AddSelectableTrackSegment( rp->m_lat, rp->m_lon, rp1->m_lat,
+                            rp1->m_lon, rp, rp1, t );
+                    }
+                    rp = rp1;
                     node = node->GetNext();
                 }
                 
@@ -156,14 +161,9 @@ void AISTargetQueryDialog::OnIdTrkCreateClick( wxCommandEvent& event )
                     pRouteManagerDialog->UpdateTrkListCtrl();
                 Refresh( false );
          
-                if( wxYES == OCPNMessageBox(NULL,
+                if( wxID_YES == OCPNMessageBox(NULL,
                     _("The recently captured track of this target has been recorded.\nDo you want to continue recording until the end of the current OpenCPN session?"),
                     _("OpenCPN Info"), wxYES_NO | wxCENTER, 60 ) )
-                
-                
-                
- //               if( wxYES == wxMessageBox( _("The current track of the target has been persisted, do you want to keep persisting the track until the end of the current session?"),
- //                   _("OpenCPN Info"), wxYES_NO | wxCENTER ) )
                 {
                     td->b_PersistTrack = true;
                     g_pAIS->m_persistent_tracks[td->MMSI] = t;

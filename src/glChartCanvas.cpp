@@ -605,6 +605,24 @@ GenericFunction ocpnGetProcAddress(const char *addr, const char *extension)
     if(!extension)
         return (GenericFunction)NULL;
 
+    //  If this is an extension entry point,
+    //  We look explicitly in the extensions list to confirm
+    //  that the request is actually supported.
+    // This may be redundant, but is conservative, and only happens once per session.    
+    if(extension && strlen(extension)){
+        wxString s_extension(&addr[2], wxConvUTF8);
+        wxString s_family;
+        s_family = wxString(extension, wxConvUTF8);
+        s_extension.Prepend(_T("_"));
+        s_extension.Prepend(s_family);
+
+        s_extension.Prepend(_T("GL_"));
+        
+        if(!QueryExtension( s_extension.mb_str() )){
+            return (GenericFunction)NULL;
+        }
+    }
+    
     snprintf(addrbuf, sizeof addrbuf, "%s%s", addr, extension);
     return (GenericFunction)systemGetProcAddress(addrbuf);
 }
@@ -851,6 +869,7 @@ void glChartCanvas::BuildFBO( )
     m_b_BuiltFBO = true;
 }
 
+
 void glChartCanvas::SetupOpenGL()
 {
     char render_string[80];
@@ -870,6 +889,9 @@ void glChartCanvas::SetupOpenGL()
     m_version = wxString( version_string, wxConvUTF8 );
     msg += m_version;
     wxLogMessage( msg );
+    
+    const GLubyte *ext_str = glGetString(GL_EXTENSIONS);
+    m_extensions = wxString( (const char *)ext_str, wxConvUTF8 );
     
     //  Set the minimum line width
     GLint parms[2];
@@ -1199,6 +1221,9 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
     
     if( !m_bsetup ) {
         SetupOpenGL();
+        if( ps52plib )
+            ps52plib->FlushSymbolCaches();
+        
         m_bsetup = true;
 //        g_bDebugOGL = true;
     }
@@ -2613,7 +2638,7 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                 
                 // Use MipMap LOD tweaking to produce a blurred, downsampling effect at reasonable speed.
 
-                    if((s_glGenerateMipmap) && (g_texture_rectangle_format == GL_TEXTURE_2D)){       //nPOT texture supported
+                    if( (s_glGenerateMipmap) && (g_texture_rectangle_format == GL_TEXTURE_2D)){       //nPOT texture supported
 
                         //          Capture the rendered screen image to a texture
                         glReadBuffer( GL_BACK);
@@ -2671,8 +2696,12 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                         glPopAttrib( );
                         
                     }
-                    else {              // must use POT textures
+#if 0                    
+                    else if(scale_factor > 25)  { 
+                                        // must use POT textures
                                         // and we cannot really trust the value that comes from GL_MAX_TEXTURE_SIZE
+                                        // This method of fogging is very slow, so only activate it if the scale_factor is
+                                        // very large.
 
                         int tex_size = 512;  // reasonable assumption
                         int ntx = (width / tex_size) + 1;
@@ -2767,10 +2796,13 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                         
                         glPopAttrib();
                     }
-                 
-#if 0
-                else { 
+#endif
+                    
+#if 1
+            else if(scale_factor > 20){ 
             // Fogging by alpha blending                
+                    fog = ((scale_factor - 20) * 255.) / 20.;
+            
                     glPushAttrib( GL_COLOR_BUFFER_BIT );
                     glEnable( GL_BLEND );
                     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );

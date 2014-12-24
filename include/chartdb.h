@@ -150,6 +150,8 @@ public:
       wxXmlDocument GetXMLDescription(int dbIndex, bool b_getGeom);
 
       void LockCacheChart( int index );
+      bool IsChartLocked( int index );
+      
       void UnLockCacheChart( int index );
       void UnLockAllCacheCharts();
       

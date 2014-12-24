@@ -146,6 +146,11 @@ ViewPort CreateCompatibleViewport( const PlugIn_ViewPort &pivp)
     vp.b_quilt =                pivp.b_quilt;
     vp.m_projection_type =      pivp.m_projection_type;
  
+    if(cc1)
+        vp.ref_scale = cc1->GetVP().ref_scale;
+    else
+        vp.ref_scale = vp.chart_scale;
+    
     vp.SetBoxes();
     vp.Validate();                 // This VP is valid
     

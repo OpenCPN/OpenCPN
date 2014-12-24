@@ -53,7 +53,7 @@ void bmdump(wxBitmap bm, wxString name)
 wxBitmap MergeBitmaps( wxBitmap back, wxBitmap front, wxSize offset )
 {
     wxBitmap merged( back.GetWidth(), back.GetHeight(), back.GetDepth() );
-#if (!wxCHECK_VERSION(2,9,4) && (defined(__WXGTK__) || defined(__WXMAC__)))
+#if 1 // (!wxCHECK_VERSION(2,9,4) && (defined(__WXGTK__) || defined(__WXMAC__)))
 
     // Manual alpha blending for broken wxWidgets platforms.
     merged.UseAlpha();
