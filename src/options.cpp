@@ -3751,7 +3751,8 @@ void options::OnApplyClick( wxCommandEvent& event )
             connectionsaved = true;
         } else {
             ::wxEndBusyCursor();
-            event.SetInt (wxID_STOP );
+            if( m_bNMEAParams_shown )
+                event.SetInt (wxID_STOP );
         }
     }
 

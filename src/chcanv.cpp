@@ -1409,9 +1409,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_rollover_popup_timer_msec = 20;
 
     m_b_rot_hidef = true;
-
-    int mm_per_knot = 10;
-    current_draw_scaler = mm_per_knot * m_pix_per_mm * g_current_arrow_scale / 100.0;
+    
     pscratch_bm = NULL;
     proute_bm = NULL;
 
@@ -1743,6 +1741,9 @@ void ChartCanvas::SetDisplaySizeMM( double size )
     
     m_pix_per_mm = ( (double) sx ) / ( (double) m_display_size_mm );
     m_canvas_scale_factor = ( (double) sx ) / (m_display_size_mm /1000.);
+    
+    int mm_per_knot = 10;
+    current_draw_scaler = mm_per_knot * m_pix_per_mm * g_current_arrow_scale / 100.0;
     
 #ifdef USE_S57
     if( ps52plib )

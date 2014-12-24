@@ -640,6 +640,8 @@ ret_point:
             {
                 oNMEA0183.Rte.RouteName = _T ( "01" );
                 oNMEA0183.TalkerID = _T ( "GP" );
+                oNMEA0183.Rte.m_complete_char = 'C';   // override the default "c"
+                oNMEA0183.Rte.m_skip_checksum = 1;     // no checksum needed
             }
 
             oNMEA0183.Rte.total_number_of_messages = 1;
@@ -813,13 +815,15 @@ ret_point:
 
                 for(unsigned int ii=0 ; ii < sentence_array.GetCount(); ii++)
                 {
-                    if(dstr->SendSentence( sentence_array.Item(ii) ) )
-                        LogOutputMessage( sentence_array.Item(ii), dstr->GetPort(), false );
+                    wxString sentence = sentence_array.Item(ii);
+                    
+                    if(dstr->SendSentence( sentence ) )
+                        LogOutputMessage( sentence, dstr->GetPort(), false );
 
                     wxString msg(_T("-->GPS Port:"));
                     msg += com_name;
                     msg += _T(" Sentence: ");
-                    msg += sentence_array.Item(ii);
+                    msg += sentence;
                     msg.Trim();
                     wxLogMessage(msg);
 

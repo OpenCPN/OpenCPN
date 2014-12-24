@@ -1015,7 +1015,20 @@ void MyApp::OnActivateApp( wxActivateEvent& event )
 #endif
 
     if( !event.GetActive() ) {
-        if( g_FloatingToolbarDialog ) g_FloatingToolbarDialog->HideTooltip(); // Hide any existing tip
+
+        //  Remove a temporary Menubar when the application goes inactive
+        //  This is one way to handle properly ALT-TAB navigation on the Windows desktop
+        //  without accidentally leaving an unwanted Menubar shown.
+#ifdef __WXMSW__        
+        if( g_bTempShowMenuBar ) {
+            g_bTempShowMenuBar = false;
+            if(gFrame)
+                gFrame->ApplyGlobalSettings(false, false);
+        }
+#endif        
+        
+        if( g_FloatingToolbarDialog )
+            g_FloatingToolbarDialog->HideTooltip(); // Hide any existing tip
     }
 
     event.Skip();
