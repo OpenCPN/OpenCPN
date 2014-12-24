@@ -550,7 +550,7 @@ public:
     wxCheckBox              *pFullScreenToolbar;
     wxCheckBox              *pTransparentToolbar;
 
-    wxCheckBox              *pSailing;
+    wxCheckBox              *pAdvanceRouteWaypointOnArrivalOnly;
     
     wxCheckBox              *pTrackShowIcon;
     wxCheckBox              *pTrackDaily;

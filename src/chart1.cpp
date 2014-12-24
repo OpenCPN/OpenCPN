@@ -667,7 +667,7 @@ int              g_chart_zoom_modifier;
 int              g_NMEAAPBPrecision;
 int              g_NMEAAPBXTEPrecision;
 
-bool             g_bSailing;
+bool             g_bAdvanceRouteWaypointOnArrivalOnly;
 
 wxArrayString    g_locale_catalog_array;
 
