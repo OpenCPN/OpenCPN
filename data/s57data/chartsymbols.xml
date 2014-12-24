@@ -30919,7 +30919,7 @@
                         <disp-prio>Area 2</disp-prio>
                         <radar-prio>On Top</radar-prio>
                         <table-name>Paper</table-name>
-                        <instruction>TX(OBJNAM,3,2,2,'15114',1,0,CHBLK,26)</instruction>
+                        <instruction>TX(ANTXT1,3,2,2,'15114',1,0,CHBLK,26)</instruction>
                         <display-cat>Standard</display-cat>
                         <comment>54023</comment>
                 </lookup>
@@ -30956,7 +30956,7 @@
                         <disp-prio>Area 2</disp-prio>
                         <radar-prio>On Top</radar-prio>
                         <table-name>Simplified</table-name>
-                        <instruction>TX(OBJNAM,3,2,2,'15114',1,0,CHBLK,26)</instruction>
+                        <instruction>TX(ANTXT1,3,2,2,'15114',1,0,CHBLK,26)</instruction>
                         <display-cat>Standard</display-cat>
                         <comment>54023</comment>
                 </lookup>
