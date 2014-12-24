@@ -233,6 +233,7 @@ public:
     bool isPluginTool;
     bool b_hilite;
     bool m_btooltip_hiviz;
+    wxRect last_rect;
 };
 
 //---------------------------------------------------------------------------------------
@@ -1525,7 +1526,7 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
                 if( bmp.GetDepth() == 1 ) {
                     if( tool->rollover ) {
                         bmp = m_style->BuildPluginIcon( tool->pluginRolloverIcon, TOOLICON_TOGGLED );
-						if( ! bmp.IsOk() ) bmp = m_style->BuildPluginIcon( tool->pluginNormalIcon, TOOLICON_TOGGLED );
+                        if( ! bmp.IsOk() ) bmp = m_style->BuildPluginIcon( tool->pluginNormalIcon, TOOLICON_TOGGLED );
                     }
                     else
                         bmp = m_style->BuildPluginIcon( tool->pluginNormalIcon, TOOLICON_TOGGLED );
@@ -1549,7 +1550,7 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
                     bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_TOGGLED, tool->rollover );
                 else
                     bmp = m_style->GetToolIcon( tool->GetIconName(), TOOLICON_NORMAL, tool->rollover );
-
+                
                 tool->SetNormalBitmap( bmp );
                 tool->bitmapOK = true;
             } else {
@@ -1574,13 +1575,27 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
     }
 
     //  could cache this in the tool...
-    if( bmp.GetWidth() != tool->m_width || bmp.GetHeight() != tool->m_height) {
+#if 0   // no scaling....   
+    if(bmp.GetWidth() != tool->m_width || bmp.GetHeight() != tool->m_height) {
         wxImage scaled_image = bmp.ConvertToImage();
         wxBitmap sbmp = wxBitmap(scaled_image.Scale(tool->m_width, tool->m_height, wxIMAGE_QUALITY_NORMAL));
         dc.DrawBitmap( sbmp, drawAt );
     }
     else
+#endif        
+    {
+        //      Clear the last drawn tool if necessary
+        if((tool->last_rect.x != drawAt.x) || (tool->last_rect.y != drawAt.y)){
+            wxBrush bb(GetGlobalColor( _T("GREY2") ));
+            dc.SetBrush(bb);
+            dc.SetPen( *wxTRANSPARENT_PEN );
+            dc.DrawRectangle(tool->last_rect.x, tool->last_rect.y, tool->last_rect.width, tool->last_rect.height);
+        }
+
         dc.DrawBitmap( bmp, drawAt );
+    }
+    
+    tool->last_rect = wxRect(drawAt.x, drawAt.y, bmp.GetWidth(), bmp.GetHeight());
 }
 
 // ----------------------------------------------------------------------------
