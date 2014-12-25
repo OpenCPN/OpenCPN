@@ -215,6 +215,8 @@ void AISTargetQueryDialog::SetColorScheme( ColorScheme cs )
     DimeControl( this );
     wxColor bg = GetBackgroundColour();
     m_pQueryTextCtl->SetBackgroundColour( bg );
+    SetBackgroundColour( bg );                  // This looks like non-sense, but is needed for __WXGTK__
+                                                // to get colours to propagate down the control's family tree.
 
     if( cs != m_colorscheme ) {
         Refresh();
@@ -231,7 +233,6 @@ void AISTargetQueryDialog::CreateControls()
     m_pQueryTextCtl = new wxHtmlWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                                 wxHW_SCROLLBAR_AUTO );
     m_pQueryTextCtl->SetBorders( 5 );
-
     topSizer->Add( m_pQueryTextCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxALL | wxEXPAND, 5 );
 
     wxSizer* opt = new wxBoxSizer( wxHORIZONTAL );
@@ -256,6 +257,7 @@ void AISTargetQueryDialog::UpdateText()
     DimeControl( this );
     wxColor bg = GetBackgroundColour();
     m_pQueryTextCtl->SetBackgroundColour( bg );
+    SetBackgroundColour( bg );
 
 //    if( m_MMSI == 0 ) { //  Faulty MMSI could be reported as 0
         AIS_Target_Data *td = g_pAIS->Get_Target_Data_From_MMSI( m_MMSI );
