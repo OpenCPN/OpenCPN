@@ -4034,7 +4034,7 @@ msgstr "Rilevato PlugIn Incompatibile\n"
 #: src/pluginmanager.cpp:692
 #, c-format
 msgid "PlugIn [ %s ] version %i.%i"
-msgstr "%i.%i versione PlugIn [%s]"
+msgstr "PlugIn [ %s ] %i.%i versione"
 
 #: src/pluginmanager.cpp:697
 msgid ", and all previous versions,"
