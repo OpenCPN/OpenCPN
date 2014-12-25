@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: opencpn 3.3.2410\n"
+"Project-Id-Version: opencpn 3.3.2424\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-24 18:03-0600\n"
+"POT-Creation-Date: 2014-12-24 23:40-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -542,7 +542,7 @@ msgstr ""
 
 #: src/chart1.cpp:10199 src/routeprop.cpp:361 src/routeprop.cpp:1831
 #: src/routemanagerdialog.cpp:428 src/options.cpp:655 src/options.cpp:847
-#: src/options.cpp:1765 src/options.cpp:2145 src/options.cpp:2728
+#: src/options.cpp:1766 src/options.cpp:2145 src/options.cpp:2728
 #: src/options.cpp:2732 src/options.cpp:5844 src/TrackPropDlg.cpp:85
 #: src/LinkPropDlg.cpp:38 src/AISTargetListDialog.cpp:297 src/TCWin.cpp:66
 #: src/TCWin.cpp:183
@@ -1858,7 +1858,7 @@ msgstr ""
 #: src/routemanagerdialog.cpp:1705 src/routemanagerdialog.cpp:1813
 #: src/routemanagerdialog.cpp:2097 src/routemanagerdialog.cpp:2130
 #: src/routemanagerdialog.cpp:2262 src/routemanagerdialog.cpp:2396
-#: src/toolbar.cpp:690 src/toolbar.cpp:2021
+#: src/toolbar.cpp:692 src/toolbar.cpp:2026
 msgid "OpenCPN Alert"
 msgstr ""
 
@@ -4144,33 +4144,33 @@ msgstr ""
 msgid "Disable"
 msgstr ""
 
-#: src/toolbar.cpp:689
+#: src/toolbar.cpp:691
 msgid ""
 "You can't hide the last tool from the toolbar\n"
 "as this would make it inaccessible."
 msgstr ""
 
-#: src/toolbar.cpp:810 src/toolbar.cpp:821
+#: src/toolbar.cpp:812 src/toolbar.cpp:823
 msgid "ToolTips"
 msgstr ""
 
-#: src/toolbar.cpp:1971
+#: src/toolbar.cpp:1976
 msgid "Visible buttons"
 msgstr ""
 
-#: src/toolbar.cpp:2028
+#: src/toolbar.cpp:2033
 msgid "No, I don't want to hide it."
 msgstr ""
 
-#: src/toolbar.cpp:2031
+#: src/toolbar.cpp:2036
 msgid "No, and permanently remove the option to hide it."
 msgstr ""
 
-#: src/toolbar.cpp:2034
+#: src/toolbar.cpp:2039
 msgid "Yes, hide it."
 msgstr ""
 
-#: src/toolbar.cpp:2040
+#: src/toolbar.cpp:2045
 msgid ""
 "The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
@@ -4201,7 +4201,7 @@ msgid "KML with extended waypoint data (QtVlm)"
 msgstr ""
 
 #: src/undo.cpp:82 src/AISTargetAlertDialog.cpp:206
-#: src/AISTargetQueryDialog.cpp:238
+#: src/AISTargetQueryDialog.cpp:239
 msgid "Create Waypoint"
 msgstr ""
 
@@ -4476,7 +4476,7 @@ msgid "&Jump To"
 msgstr ""
 
 #: src/AISTargetAlertDialog.cpp:235 src/AISTargetQueryDialog.cpp:191
-#: src/AISTargetQueryDialog.cpp:272
+#: src/AISTargetQueryDialog.cpp:274
 msgid "AISTargetQuery"
 msgstr ""
 
@@ -5549,8 +5549,8 @@ msgstr ""
 msgid "Venezuela"
 msgstr ""
 
-#: src/AISTargetQueryDialog.cpp:131 src/AISTargetQueryDialog.cpp:241
-#: src/AISTargetQueryDialog.cpp:270
+#: src/AISTargetQueryDialog.cpp:131 src/AISTargetQueryDialog.cpp:242
+#: src/AISTargetQueryDialog.cpp:272
 msgid "Record Track"
 msgstr ""
 
@@ -5561,7 +5561,7 @@ msgid ""
 "session?"
 msgstr ""
 
-#: src/AISTargetQueryDialog.cpp:266
+#: src/AISTargetQueryDialog.cpp:268
 msgid "Stop Tracking"
 msgstr ""
 
