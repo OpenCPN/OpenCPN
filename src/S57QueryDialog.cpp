@@ -126,7 +126,9 @@ void S57QueryDialog::SetColorScheme( void )
     DimeControl( this );
     wxColor bg = GetBackgroundColour();
     m_phtml->SetBackgroundColour( bg );
-
+    SetBackgroundColour( bg );                  // This looks like non-sense, but is needed for __WXGTK__
+                                                // to get colours to propagate down the control's family tree.
+    
 }
 
 void S57QueryDialog::SetHTMLPage( wxString& page )

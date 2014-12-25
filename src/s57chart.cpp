@@ -3999,6 +3999,8 @@ int s57chart::ValidateAndCountUpdates( const wxFileName file000, const wxString 
         //      ogr file open/ingest.  Delete after SENC file create finishes.
         //      Set starts with .000, which has the effect of copying the base file to the working dir
 
+        bool chain_broken_mssage_shown = false;
+        
         if( b_copyfiles ) {
             m_tmpup_array = new wxArrayString;       // save a list of created files for later erase
 
@@ -4040,7 +4042,21 @@ int s57chart::ValidateAndCountUpdates( const wxFileName file000, const wxString 
 
                 else {
                     // Create a dummy ISO8211 file with no real content
+                    // Correct this.  We should break the walk, and notify the user  See FS#1406
 
+                    if( !chain_broken_mssage_shown ){
+                        OCPNMessageBox(NULL, 
+                        _("S57 Cell Update chain incomplete.\nENC features may be incomplete or inaccurate.\nCheck the logfile for details."),
+                        _("OpenCPN Create SENC Warning"), wxOK | wxICON_EXCLAMATION, 30 );
+                        chain_broken_mssage_shown = true;
+                    }
+                    
+                    wxString msg( _T("WARNING---ENC Update chain incomplete. Substituting NULL update file: "));
+                    msg += ufile.GetFullName();
+                    wxLogMessage(msg);
+                    wxLogMessage(_T("   Subsequent ENC updates may produce errors.") );
+                    wxLogMessage(_T("   This ENC exchange set should be updated and SENCs rebuilt.") );
+                    
                     bool bstat;
                     DDFModule *dupdate = new DDFModule;
                     dupdate->Initialize( '3', 'L', 'E', '1', '0', "!!!", 3, 4, 4 );
@@ -4052,7 +4068,6 @@ int s57chart::ValidateAndCountUpdates( const wxFileName file000, const wxString 
                         msg.Append( cp_ufile );
                         wxLogMessage( msg );
                     }
-
                 }
 
                 m_tmpup_array->Add( cp_ufile );

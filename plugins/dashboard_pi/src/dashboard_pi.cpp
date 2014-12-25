@@ -102,7 +102,7 @@ wxString getInstrumentCaption( unsigned int id )
         case ID_DBP_I_COG:
             return _("COG");
         case ID_DBP_M_COG:
-            return _("Magnetic COG");
+            return _("Mag COG");
         case ID_DBP_D_COG:
             return _("GPS Compass");
         case ID_DBP_D_HDT:
