@@ -176,7 +176,7 @@ bool RTE::Write( SENTENCE& sentence )
    if(m_skip_checksum){
        wxString temp_string;
        temp_string.Printf(_T("%c%c"), CARRIAGE_RETURN, LINE_FEED );
-       sentence += temp_string;
+       sentence.Sentence += temp_string;
    }
    else
        sentence.Finish();
