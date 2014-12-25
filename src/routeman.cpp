@@ -778,8 +778,9 @@ bool Routeman::DeleteRoute( Route *pRoute )
     if( pRoute ) {
         if( pRoute == pAISMOBRoute )
         {
-            int ret = wxMessageBox(_("You are trying to delete an active AIS MOB route, are you REALLY sure?"), _("Warning"), wxYES_NO | wxCENTRE );
-            if( ret == wxNO )
+            int ret = OCPNMessageBox( NULL, _("You are trying to delete an active AIS MOB route, are you REALLY sure?"), _("OpenCPN Warning"), wxYES_NO );
+            
+            if( ret == wxID_NO )
                 return false;
             else
                 pAISMOBRoute = NULL;
@@ -853,8 +854,8 @@ void Routeman::DeleteAllRoutes( void )
         if( proute == pAISMOBRoute )
         {
             ::wxEndBusyCursor();
-            int ret = wxMessageBox(_("You are trying to delete an active AIS MOB route, are you REALLY sure?"), _("Warning"), wxYES_NO | wxCENTRE );
-            if( ret == wxNO )
+            int ret = OCPNMessageBox( NULL, _("You are trying to delete an active AIS MOB route, are you REALLY sure?"), _("OpenCPN Warning"), wxYES_NO );
+            if( ret == wxID_NO )
                 return;
             else
                 pAISMOBRoute = NULL;
@@ -895,8 +896,8 @@ void Routeman::DeleteAllTracks( void )
         }
 
         if( proute->m_bIsTrack ) {
-            pConfig->m_bSkipChangeSetUpdate = true;
             g_pAIS->DeletePersistentTrack( (Track *)proute );
+            pConfig->m_bSkipChangeSetUpdate = true;
             pConfig->DeleteConfigRoute( proute );
             DeleteTrack( proute );
             node = pRouteList->GetFirst();                   // Route

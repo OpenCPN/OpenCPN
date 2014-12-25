@@ -180,6 +180,7 @@ public:
 
       virtual void SetToolTooltipHiViz( int id, bool b_hiviz );
       
+      virtual void SetSizeFactor( float factor){ m_sizefactor = factor; }
       // toolbar geometry
       // ----------------
 
@@ -291,6 +292,8 @@ protected:
       bool m_btoolbar_is_zooming;
 
       ocpnStyle::Style* m_style;
+      
+      float m_sizefactor;
 
 private:
 DECLARE_EVENT_TABLE()

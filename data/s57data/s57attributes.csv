@@ -289,5 +289,21 @@
 18025,Speed range value 2,lc_sp2,F,F
 18026,Water displacement range value 1,lc_wd1,F,F
 18027,Water displacement value 2,lc_wd2,F,F
+22031,Annotation Attribute 1,ANATR1,S,F
+22032,Annotation Attribute 2,ANATR2,S,F
+22033,Annotation Attribute 3,ANATR3,S,F
+22034,Annotation Attribute 4,ANATR4,S,F
+22035,Annotation Attribute 5,ANATR5,S,F
+22036,Annotation Attribute 6,ANATR6,S,F
+22037,Annotation Attribute 7,ANATR7,S,F
+22038,Annotation Attribute 8,ANATR8,S,F
+22039,Annotation Attribute 9,ANATR9,S,F
+22040,Annotation Attribute a,ANATRA,S,F
+22076,Annotation Text,ANTXT1,S,F
+22135,Annotation Layer,ANLYR1,S,F
+22227,New type 1,NEWTY1,S,F
 33066,Type of Ship,shptyp,E,F
 40000,Update message,updmsg,S,F
+
+
+

@@ -233,6 +233,7 @@ public:
     bool isPluginTool;
     bool b_hilite;
     bool m_btooltip_hiviz;
+    wxRect last_rect;
 };
 
 //---------------------------------------------------------------------------------------
@@ -288,8 +289,8 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
 
     m_marginsInvisible = m_style->marginsInvisible;
 
-    if(m_sizefactor > 1.0 )
-        m_marginsInvisible = true;
+//    if(m_sizefactor > 1.0 )
+ //       m_marginsInvisible = true;
         
     Hide();
 }
@@ -356,6 +357,8 @@ void ocpnFloatingToolbarDialog::SetGeometry()
         else
             m_ptoolbar->SetMaxRowsCols( 100, max_cols);
     }
+    
+    m_ptoolbar->SetSizeFactor(m_sizefactor);
 }
 
 void ocpnFloatingToolbarDialog::RePosition()
@@ -923,7 +926,8 @@ void ocpnToolBarSimple::Init()
     m_last_ro_tool = NULL;
 
     m_btoolbar_is_zooming = false;
-
+    m_sizefactor = 1.0f;
+    
     EnableTooltips();
 }
 
@@ -1525,7 +1529,7 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
                 if( bmp.GetDepth() == 1 ) {
                     if( tool->rollover ) {
                         bmp = m_style->BuildPluginIcon( tool->pluginRolloverIcon, TOOLICON_TOGGLED );
-						if( ! bmp.IsOk() ) bmp = m_style->BuildPluginIcon( tool->pluginNormalIcon, TOOLICON_TOGGLED );
+                        if( ! bmp.IsOk() ) bmp = m_style->BuildPluginIcon( tool->pluginNormalIcon, TOOLICON_TOGGLED );
                     }
                     else
                         bmp = m_style->BuildPluginIcon( tool->pluginNormalIcon, TOOLICON_TOGGLED );
@@ -1549,7 +1553,7 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
                     bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_TOGGLED, tool->rollover );
                 else
                     bmp = m_style->GetToolIcon( tool->GetIconName(), TOOLICON_NORMAL, tool->rollover );
-
+                
                 tool->SetNormalBitmap( bmp );
                 tool->bitmapOK = true;
             } else {
@@ -1573,14 +1577,30 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
         drawAt.y -= ( bmp.GetHeight() - m_style->GetToolSize().y ) / 2;
     }
 
+    //      Clear the last drawn tool if necessary
+    if((tool->last_rect.x != drawAt.x) || (tool->last_rect.y != drawAt.y)){
+        wxBrush bb(GetGlobalColor( _T("GREY2") ));
+        dc.SetBrush(bb);
+        dc.SetPen( *wxTRANSPARENT_PEN );
+        dc.DrawRectangle(tool->last_rect.x, tool->last_rect.y, tool->last_rect.width, tool->last_rect.height);
+    }
+    
     //  could cache this in the tool...
-    if( bmp.GetWidth() != tool->m_width || bmp.GetHeight() != tool->m_height) {
+    //  A bit of a hack here.  We only scale tools if they are to be magnified globally
+    if(m_sizefactor > 1.0 )
+    {
         wxImage scaled_image = bmp.ConvertToImage();
-        wxBitmap sbmp = wxBitmap(scaled_image.Scale(tool->m_width, tool->m_height, wxIMAGE_QUALITY_NORMAL));
+        wxBitmap sbmp = wxBitmap(scaled_image.Scale(tool->m_width, tool->m_height, wxIMAGE_QUALITY_HIGH));
         dc.DrawBitmap( sbmp, drawAt );
+        tool->last_rect = wxRect(drawAt.x, drawAt.y, sbmp.GetWidth(), sbmp.GetHeight());
+        
     }
     else
+    {
         dc.DrawBitmap( bmp, drawAt );
+        tool->last_rect = wxRect(drawAt.x, drawAt.y, bmp.GetWidth(), bmp.GetHeight());
+    }
+    
 }
 
 // ----------------------------------------------------------------------------

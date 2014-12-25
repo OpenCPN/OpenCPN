@@ -835,11 +835,6 @@ int ChartSymbols::LoadRasterFileForColorTable( int tableNo, bool flush )
     }
         
     
-#ifdef ocpnUSE_GL            
-    if(g_bopengl && !g_texture_rectangle_format)
-        wxLogMessage(_("Warning: unable to use NPOT texture for chart symbols"));
-#endif    
-    
     colTable* coltab = (colTable *) colorTables->Item( tableNo );
 
     wxString filename = configFileDirectory + wxFileName::GetPathSeparator()

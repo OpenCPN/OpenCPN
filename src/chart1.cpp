@@ -1020,7 +1020,20 @@ void MyApp::OnActivateApp( wxActivateEvent& event )
 #endif
 
     if( !event.GetActive() ) {
-        if( g_FloatingToolbarDialog ) g_FloatingToolbarDialog->HideTooltip(); // Hide any existing tip
+
+        //  Remove a temporary Menubar when the application goes inactive
+        //  This is one way to handle properly ALT-TAB navigation on the Windows desktop
+        //  without accidentally leaving an unwanted Menubar shown.
+#ifdef __WXMSW__        
+        if( g_bTempShowMenuBar ) {
+            g_bTempShowMenuBar = false;
+            if(gFrame)
+                gFrame->ApplyGlobalSettings(false, false);
+        }
+#endif        
+        
+        if( g_FloatingToolbarDialog )
+            g_FloatingToolbarDialog->HideTooltip(); // Hide any existing tip
     }
 
     event.Skip();
@@ -6073,7 +6086,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 
             if( g_bPlayShipsBells && ( ( minuteLOC == 0 ) || ( minuteLOC == 30 ) ) ) {
                 m_BellsToPlay = bells;
-                BellsTimer.Start(0, wxTIMER_ONE_SHOT);
+                BellsTimer.Start(5, wxTIMER_ONE_SHOT);
             }
         }
     }
@@ -8907,12 +8920,6 @@ void MyFrame::OnSuspending(wxPowerEvent& event)
  //   printf("OnSuspending...%d\n", now.GetTicks());
 
     wxLogMessage(_T("System suspend starting..."));
-    if ( wxMessageBox(_T("Veto suspend?"), _T("Please answer"),
-        wxYES_NO, this) == wxYES )
-    {
-        event.Veto();
-        wxLogMessage(_T("Vetoed suspend."));
-    }
 }
 
 void MyFrame::OnSuspended(wxPowerEvent& WXUNUSED(event))
@@ -8948,8 +8955,21 @@ void MyFrame::OnResume(wxPowerEvent& WXUNUSED(event))
         }
     }
 
-    cc1->InvalidateGL();
-    cc1->Refresh(true);
+    //  If OpenGL is enabled, Windows Resume does not properly refresh the application GL context.
+    //  We need to force a Resize event that actually does something.
+    if(g_bopengl){
+        if( IsMaximized() ){            // This is not real pretty on-screen, but works
+            Maximize(false);
+            wxYield();
+            Maximize(true);
+        }
+        else {
+            wxSize sz = GetSize();
+            SetSize( wxSize(sz.x - 1, sz.y));
+            wxYield();
+            SetSize( sz );
+        }
+    }
     
 }
 #endif // wxHAS_POWER_EVENTS

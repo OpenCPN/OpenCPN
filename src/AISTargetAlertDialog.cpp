@@ -163,7 +163,10 @@ bool AISTargetAlertDialog::Create( int target_mmsi, wxWindow *parent, AIS_Decode
     CreateControls();
     if( !g_bopengl && CanSetTransparent() ) SetTransparent( 192 );
     DimeControl( this );
-
+    wxColor bg = GetBackgroundColour();
+    m_pAlertTextCtl->SetBackgroundColour( bg );
+    SetBackgroundColour( bg );
+    
     return true;
 }
 
@@ -228,10 +231,12 @@ bool AISTargetAlertDialog::GetAlertText()
 
 void AISTargetAlertDialog::UpdateText()
 {
+    DimeControl( this );
+    wxColor bg = GetBackgroundColour();
+    m_pAlertTextCtl->SetBackgroundColour( bg );
+    SetBackgroundColour( bg );
+    
     if( GetAlertText() ) {
-        wxColor bg = GetBackgroundColour();
-        m_pAlertTextCtl->SetBackgroundColour( bg );
-
         wxFont *dFont = FontMgr::Get().GetFont( _("AISTargetQuery"), 12 );
         wxString face = dFont->GetFaceName();
         int sizes[7];
@@ -240,9 +245,8 @@ void AISTargetAlertDialog::UpdateText()
         }
 
         wxString html;
-        html.Printf( _T("<html><body bgcolor=#%02x%02x%02x><center>"), bg.Red(), bg.Blue(),
-                bg.Green() );
-
+        html.Printf( _T("<html><body bgcolor=#%02x%02x%02x><center>"), bg.Red(), bg.Green(), bg.Blue() );
+        
         html << m_alert_text;
         html << _T("</center></font></body></html>");
 
@@ -267,7 +271,7 @@ void AISTargetAlertDialog::UpdateText()
         m_pAlertTextCtl->SetMinSize( sz );
     }
 
-    DimeControl( this );
+//    DimeControl( this );
     if( !g_bopengl && CanSetTransparent() ) SetTransparent( 192 );
 }
 

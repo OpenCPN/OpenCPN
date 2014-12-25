@@ -539,6 +539,9 @@ public:
     PluginListPanel         *m_pPlugInCtrl;
     int                     k_plugins;
 
+    wxScrolledWindow        *itemPanelPlugins;
+    wxBoxSizer              *itemBoxSizerPanelPlugins;
+    
     wxChoice                *pNavAidRadarRingsNumberVisible;
     wxChoice                *pWaypointRangeRingsNumber; 
     wxFlexGridSizer         *radarGrid;
@@ -626,6 +629,8 @@ private:
     
     wxNotebookPage*             m_groupsPage;
     wxFont*     smallFont;
+    wxSize      m_small_button_size;
+    
 };
 
 class ChartGroupsUI: public wxScrolledWindow {

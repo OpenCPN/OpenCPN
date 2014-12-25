@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 3.1.1224\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-30 09:13-0400\n"
+"POT-Creation-Date: 2014-12-24 23:40-0500\n"
 "PO-Revision-Date: 2013-12-02 17:22+0200\n"
 "Last-Translator: Hasan Çetin <boraxtr@yahoo.com>\n"
 "Language-Team: \n"
@@ -155,6 +155,10 @@ msgstr "Knot"
 #
 msgid "Label:"
 msgstr "Etiket:"
+#
+#, fuzzy
+msgid "Mag COG"
+msgstr "Manyetik Pruva"
 #
 msgid "Mag HDG"
 msgstr "Manyetik Pruva"

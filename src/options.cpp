@@ -860,7 +860,8 @@ options::options( MyFrame* parent, wxWindowID id, const wxString& caption, const
 
 options::~options()
 {
-    // Disconnect Events
+    // Disconnect Connection page Events
+    if(m_pNMEAForm){
     m_lcSources->Disconnect( wxEVT_COMMAND_LIST_ITEM_SELECTED, wxListEventHandler( options::OnSelectDatasource ), NULL, this );
     m_buttonAdd->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnAddDatasourceClick ), NULL, this );
     m_buttonRemove->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnRemoveDatasourceClick ), NULL, this );
@@ -892,7 +893,8 @@ options::~options()
     m_tcOutputStc->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
     m_btnOutputStcList->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnBtnOStcs ), NULL, this );
     m_cbNMEADebug->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnShowGpsWindowCheckboxClick ), NULL, this );
-
+    }
+    
     delete m_pSerialArray;
     groupsPanel->EmptyChartGroupArray( m_pGroupArray );
     delete m_pGroupArray;
@@ -940,9 +942,13 @@ void options::Init()
     m_pageShips = -1;
     m_pageUI = -1;
     m_pagePlugins = -1;
-
+    m_pageConnections = -1;
+    
     lastPage = -1;
-
+    
+    m_pPlugInCtrl = NULL;       // for deferred loading
+    m_pNMEAForm = NULL;
+    
     // This variable is used by plugin callback function AddOptionsPage
     g_pOptions = this;
 }
@@ -1085,6 +1091,7 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     bSizer171 = new wxBoxSizer( wxHORIZONTAL );
 
     m_cbFilterSogCog = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Filter NMEA Course and Speed data"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_cbFilterSogCog->SetValue( g_bfilter_cogsog );
     bSizer171->Add( m_cbFilterSogCog, 0, wxALL, 5 );
 
     m_stFilterSec = new wxStaticText( m_pNMEAForm, wxID_ANY, _("Filter period (sec)"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -1097,12 +1104,16 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     bSizer171->Add( m_stFilterSec, 0, wxALL, nspace );
 
     m_tFilterSec = new wxTextCtrl( m_pNMEAForm, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+    wxString sfilt;
+    sfilt.Printf( _T("%d"), g_COGFilterSec );
+    m_tFilterSec->SetValue( sfilt );
     bSizer171->Add( m_tFilterSec, 0, wxALL, 4 );
 
     bSizer161->Add( bSizer171, 1, wxEXPAND, 5 );
 
     int cb_space = 2;
     m_cbNMEADebug = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Show NMEA Debug Window"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_cbNMEADebug->SetValue(NMEALogWindow::Get().Active());
     bSizer161->Add( m_cbNMEADebug, 0, wxALL, cb_space );
 
     m_cbFurunoGP3X = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Format uploads for Furuno GP3X"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -1283,7 +1294,7 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     wxString m_choicePrecisionChoices[] = { _("x"), _("x.x"), _("x.xx"), _("x.xxx"), _("x.xxxx") };
     int m_choicePrecisionNChoices = sizeof( m_choicePrecisionChoices ) / sizeof( wxString );
     m_choicePrecision = new wxChoice( m_pNMEAForm, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_choicePrecisionNChoices, m_choicePrecisionChoices, 0 );
-    m_choicePrecision->SetSelection( 3 );
+    m_choicePrecision->SetSelection( g_NMEAAPBPrecision );
     fgSizer5->Add( m_choicePrecision, 0, wxALL, 5 );
 
     sbSizerConnectionProps->Add( gSizerSerProps, 0, wxEXPAND, 5 );
@@ -1451,10 +1462,12 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
 
     FillSourceList();
 
-    for(size_t i = 0; i < m_pSerialArray->Count() ; i++)
-    {
-       m_comboPort->Append(m_pSerialArray->Item(i));
+    if(m_pSerialArray){
+        for(size_t i = 0; i < m_pSerialArray->Count() ; i++){
+            m_comboPort->Append(m_pSerialArray->Item(i));
+        }
     }
+    
     ShowNMEACommon( false );
     ShowNMEASerial( false );
     ShowNMEANet( false );
@@ -1759,7 +1772,7 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
     pFullScreenQuilt = new wxCheckBox( m_ChartDisplayPage, ID_FULLSCREENQUILT, _("Disable Full Screen Quilting") );
     boxCharts->Add( pFullScreenQuilt, inputFlags );
 
-    pOverzoomEmphasis = new wxCheckBox( m_ChartDisplayPage, ID_FULLSCREENQUILT, _("Suppress overzoom display emphasis effects") );
+    pOverzoomEmphasis = new wxCheckBox( m_ChartDisplayPage, ID_FULLSCREENQUILT, _("Suppress blur/fog effects on overzoom") );
     boxCharts->Add( pOverzoomEmphasis, inputFlags );
     
     pOZScaleVector = new wxCheckBox( m_ChartDisplayPage, ID_FULLSCREENQUILT, _("Suppress scaled vector charts on overzoom") );
@@ -1796,11 +1809,11 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
     itemBoxSizerUI->Add( 0, border_size*3 );
     wxStaticText* zoomText = new wxStaticText( m_ChartDisplayPage, wxID_ANY,
         _("With a lower value, the same zoom level shows a less detailed chart.\nWith a higher value, the same zoom level shows a more detailed chart.") );
-    wxFont* dialogFont = FontMgr::Get().GetFont(_("Dialog"));
+    
+    wxFont *dialogFont = GetOCPNScaledFont(_("Dialog"));
     smallFont = new wxFont( * dialogFont ); // we can't use Smaller() because wx2.8 doesn't support it
     smallFont->SetPointSize( (smallFont->GetPointSize() / 1.2) + 0.5 ); // + 0.5 to round instead of truncate
     zoomText->SetFont( * smallFont );
-//    zoomText->Wrap(200);
     itemBoxSizerUI->Add( zoomText, 0, wxALL | wxEXPAND, group_item_spacing );
     
     
@@ -2713,7 +2726,7 @@ void options::CreateControls()
 
     int font_size_y, font_descent, font_lead;
     GetTextExtent( _T("0"), NULL, &font_size_y, &font_descent, &font_lead );
-    wxSize small_button_size( -1, (int) ( 1.4 * ( font_size_y + font_descent + font_lead ) ) );
+    m_small_button_size = wxSize( -1, (int) ( 1.4 * ( font_size_y + font_descent + font_lead ) ) );
 
     //      Some members (pointers to controls) need to initialized
     pEnableZoomToCursor = NULL;
@@ -2816,32 +2829,31 @@ void options::CreateControls()
     buttons->Add( m_ApplyButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, border_size );
 
     m_pageDisplay = CreatePanel( _("Display") );
-    CreatePanel_Display( m_pageDisplay, border_size, group_item_spacing, small_button_size );
-    CreatePanel_Units( m_pageDisplay, border_size, group_item_spacing, small_button_size );
-    CreatePanel_Advanced( m_pageDisplay, border_size, group_item_spacing, small_button_size );
-
+    CreatePanel_Display( m_pageDisplay, border_size, group_item_spacing, m_small_button_size );
+    CreatePanel_Units( m_pageDisplay, border_size, group_item_spacing, m_small_button_size );
+    CreatePanel_Advanced( m_pageDisplay, border_size, group_item_spacing, m_small_button_size );
+    
     m_pageCharts = CreatePanel( _("Charts") );
-    CreatePanel_ChartsLoad( m_pageCharts, border_size, group_item_spacing, small_button_size );
-    CreatePanel_VectorCharts( m_pageCharts, border_size, group_item_spacing, small_button_size );
+    CreatePanel_ChartsLoad( m_pageCharts, border_size, group_item_spacing, m_small_button_size );
+    CreatePanel_VectorCharts( m_pageCharts, border_size, group_item_spacing, m_small_button_size );
     // ChartGroups must be created after ChartsLoad and must be at least third
-    CreatePanel_ChartGroups( m_pageCharts, border_size, group_item_spacing, small_button_size );
-    CreatePanel_TidesCurrents( m_pageCharts, border_size, group_item_spacing, small_button_size );
+    CreatePanel_ChartGroups( m_pageCharts, border_size, group_item_spacing, m_small_button_size );
+    CreatePanel_TidesCurrents( m_pageCharts, border_size, group_item_spacing, m_small_button_size );
 
     m_pageConnections = CreatePanel( _("Connections") );
-    CreatePanel_NMEA( m_pageConnections, border_size, group_item_spacing, small_button_size );
-
+    CreatePanel_NMEA( m_pageConnections, border_size, group_item_spacing, m_small_button_size );
     m_pageShips = CreatePanel( _("Ships") );
-    CreatePanel_Ownship( m_pageShips, border_size, group_item_spacing, small_button_size );
-    CreatePanel_AIS( m_pageShips, border_size, group_item_spacing, small_button_size );
-    CreatePanel_MMSI( m_pageShips, border_size, group_item_spacing, small_button_size );
+    CreatePanel_Ownship( m_pageShips, border_size, group_item_spacing, m_small_button_size );
+    CreatePanel_AIS( m_pageShips, border_size, group_item_spacing, m_small_button_size );
+    CreatePanel_MMSI( m_pageShips, border_size, group_item_spacing, m_small_button_size );
     
     m_pageUI = CreatePanel( _("User Interface") );
-    CreatePanel_UI( m_pageUI, border_size, group_item_spacing, small_button_size );
+    CreatePanel_UI( m_pageUI, border_size, group_item_spacing, m_small_button_size );
 
     m_pagePlugins = CreatePanel( _("Plugins") );
-    wxScrolledWindow *itemPanelPlugins = AddPage( m_pagePlugins, _("Plugins") );
+    itemPanelPlugins = AddPage( m_pagePlugins, _("Plugins") );
 
-    wxBoxSizer* itemBoxSizerPanelPlugins = new wxBoxSizer( wxVERTICAL );
+    itemBoxSizerPanelPlugins = new wxBoxSizer( wxVERTICAL );
     itemPanelPlugins->SetSizer( itemBoxSizerPanelPlugins );
 
     // load the disabled plugins finally because the user might want to enable them
@@ -2852,21 +2864,19 @@ void options::CreateControls()
         g_bLoadedDisabledPlugins = true;
     }
 
+/*    Deferred
     //      Build the PlugIn Manager Panel
     m_pPlugInCtrl = new PluginListPanel( itemPanelPlugins, ID_PANELPIM, wxDefaultPosition,
             wxDefaultSize, g_pi_manager->GetPlugInArray() );
     m_pPlugInCtrl->SetScrollRate( 15, 15 );
 
     itemBoxSizerPanelPlugins->Add( m_pPlugInCtrl, 1, wxEXPAND|wxALL, border_size );
-
+*/
     //      PlugIns can add panels, too
     if( g_pi_manager ) g_pi_manager->NotifySetupOptions();
 
     SetColorScheme( (ColorScheme) 0 );
     
-    //  Update the PlugIn page to reflect the state of individual selections
-    m_pPlugInCtrl->UpdateSelections();
-
     //Set the maximum size of the entire settings dialog
     SetSizeHints( -1, -1, width-100, height-100 );
 
@@ -2940,15 +2950,6 @@ void options::SetInitialSettings()
         pShowCompassWin->SetValue( m_pConfig->m_bShowCompassWin );
     }
 
-    m_cbNMEADebug->SetValue(NMEALogWindow::Get().Active());
-/*TODO
-    if( g_bGarminHost ) pGarminHost->SetValue( true );
-*/
-    m_cbFilterSogCog->SetValue( g_bfilter_cogsog );
-
-    s.Printf( _T("%d"), g_COGFilterSec );
-    m_tFilterSec->SetValue( s );
-
     s.Printf( _T("%d"), g_COGAvgSec );
     pCOGUPUpdateSecs->SetValue( s );
 
@@ -2970,7 +2971,6 @@ void options::SetInitialSettings()
         pSmoothPanZoom->Disable();
     }
 #endif
-    m_cbAPBMagnetic->SetValue(g_bMagneticAPB);
     pCBMagShow->SetValue( g_bShowMag );
     
     s.Printf( _T("%4.1f"), g_UserVar );
@@ -3122,8 +3122,6 @@ void options::SetInitialSettings()
     m_pCheck_Rollover_CPA->SetValue( g_bAISRolloverShowCPA );
 
     m_pSlider_Zoom->SetValue( g_chart_zoom_modifier );
-    
-    m_choicePrecision->SetSelection( g_NMEAAPBPrecision );
     
     wxString screenmm;
     if(g_config_display_size_mm > 0){
@@ -3566,13 +3564,14 @@ ConnectionParams *options::CreateConnectionParamsFromSelectedItem()
 
     //  DataStreams should be Input, Output, or Both
     if (!(m_cbInput->GetValue() || m_cbOutput->GetValue())) {
-        wxMessageBox( _("Data connection must be input, output or both"), _("Error!") );
+        OCPNMessageBox( NULL, _("Data connection must be input, output or both"), _("OpenCPN Info"), wxICON_HAND );
+        
         return NULL;
     }
 
     if ( m_rbTypeSerial->GetValue() && m_comboPort->GetValue() == wxEmptyString )
     {
-        wxMessageBox( _("You must select or enter the port..."), _("Error!") );
+        OCPNMessageBox( NULL, _("You must select or enter the port..."), _("OpenCPN Info"), wxICON_HAND );
         return NULL;
     }
     //  TCP, GPSD and UDP require port field to be set.
@@ -3580,14 +3579,14 @@ ConnectionParams *options::CreateConnectionParamsFromSelectedItem()
     else if ( m_rbTypeNet->GetValue()) {
         if (wxAtoi(m_tNetPort->GetValue()) == 0)
         {
-            wxMessageBox( _("You must enter a port..."), _("Error!") );
+            OCPNMessageBox( NULL, _("You must enter a port..."), _("OpenCPN Info"), wxICON_HAND );
             return NULL;
         }
         if (m_tNetAddress->GetValue() == wxEmptyString) {
             if ((m_rbNetProtoGPSD->GetValue()) ||
                 (m_rbNetProtoUDP->GetValue() && m_cbOutput->GetValue()))
             {
-                wxMessageBox( _("You must enter the address..."), _("Error!") );
+                OCPNMessageBox( NULL, _("You must enter the address..."), _("OpenCPN Info"), wxICON_HAND );
                 return NULL;
             } else {
                 m_tNetAddress->SetValue(_T("0.0.0.0"));
@@ -3765,9 +3764,114 @@ void options::OnApplyClick( wxCommandEvent& event )
         g_config_display_size_mm = -1;
     }
         
+// Connections page.
+    g_bfilter_cogsog = m_cbFilterSogCog->GetValue();
+
+    long filter_val = 1;
+    m_tFilterSec->GetValue().ToLong( &filter_val );
+    g_COGFilterSec = wxMin((int)filter_val, MAX_COGSOG_FILTER_SECONDS);
+    g_COGFilterSec = wxMax(g_COGFilterSec, 1);
+    g_SOGFilterSec = g_COGFilterSec;
+
+    g_bMagneticAPB = m_cbAPBMagnetic->GetValue();
+    g_NMEAAPBPrecision = m_choicePrecision->GetCurrentSelection();
     
     
-//TODO    g_bGarminHost = pGarminHost->GetValue();
+        // NMEA Source
+    long itemIndex = m_lcSources->GetNextItem( -1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
+    
+    //  If the stream selected exists, capture some of its existing parameters
+    //  to facility identification and allow stop and restart of the stream
+    wxString lastAddr;
+    int lastPort = 0;
+    if(itemIndex >=0){
+        int params_index = m_lcSources->GetItemData( itemIndex );
+        ConnectionParams *cpo = g_pConnectionParams->Item(params_index);
+        if(cpo){
+            lastAddr = cpo->NetworkAddress;
+            lastPort = cpo->NetworkPort;
+        }
+    }
+
+    if(!connectionsaved)
+    {
+        ConnectionParams * cp = CreateConnectionParamsFromSelectedItem();
+        if(cp != NULL)
+        {
+            if (itemIndex >= 0)
+            {
+                int params_index = m_lcSources->GetItemData( itemIndex );
+                g_pConnectionParams->RemoveAt(params_index);
+                g_pConnectionParams->Insert(cp, params_index);
+            }
+            else
+            {
+                g_pConnectionParams->Add(cp);
+                itemIndex = g_pConnectionParams->Count() - 1;
+            }
+            
+            //  Record the previous parameters, if any
+            cp->LastNetworkAddress = lastAddr;
+            cp->LastNetworkPort = lastPort;
+            
+            FillSourceList();
+            m_lcSources->SetItemState(itemIndex, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
+            m_lcSources->Refresh();
+            connectionsaved = true;
+        } else {
+            ::wxEndBusyCursor();
+            if( m_bNMEAParams_shown )
+                event.SetInt (wxID_STOP );
+        }
+    }
+
+    
+    //Recreate datastreams that are new, or have been edited
+    for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+    {
+        ConnectionParams *cp = g_pConnectionParams->Item(i);
+        if( !cp->b_IsSetup ) {                  // Stream is new, or edited
+
+            // Terminate and remove any existing stream with the same port name
+            DataStream *pds_existing = g_pMUX->FindStream( cp->GetDSPort() );
+            if(pds_existing) 
+                g_pMUX->StopAndRemoveStream( pds_existing );
+
+            //  Try to stop any previous stream to avoid orphans
+            pds_existing = g_pMUX->FindStream( cp->GetLastDSPort() );
+            if(pds_existing) 
+                g_pMUX->StopAndRemoveStream( pds_existing );
+                
+           if( cp->bEnabled ) {
+           dsPortType port_type = cp->IOSelect;
+                DataStream *dstr = new DataStream( g_pMUX,
+                                            cp->GetDSPort(),
+                                            wxString::Format(wxT("%i"), cp->Baudrate),
+                                            port_type,
+                                            cp->Priority,
+                                            cp->Garmin
+                                            );
+                dstr->SetInputFilter(cp->InputSentenceList);
+                dstr->SetInputFilterType(cp->InputSentenceListType);
+                dstr->SetOutputFilter(cp->OutputSentenceList);
+                dstr->SetOutputFilterType(cp->OutputSentenceListType);
+                dstr->SetChecksumCheck(cp->ChecksumCheck);
+
+                g_pMUX->AddStream(dstr);
+                
+                cp->b_IsSetup = true;
+            }
+        }
+    }
+
+    g_bGarminHostUpload = m_cbGarminUploadHost->GetValue();
+    if( m_cbFurunoGP3X->GetValue() )
+        g_GPS_Ident = _T("FurunoGP3X");
+    else
+        g_GPS_Ident = _T("Generic");
+
+
+// End of Connections page    
 
     g_bShowOutlines = pCDOOutlines->GetValue();
     g_bDisplayGrid = pSDisplayGrid->GetValue();
@@ -3792,14 +3896,6 @@ void options::OnApplyClick( wxCommandEvent& event )
 
     g_bsmoothpanzoom = pSmoothPanZoom->GetValue();
 
-    g_bfilter_cogsog = m_cbFilterSogCog->GetValue();
-
-    long filter_val = 1;
-    m_tFilterSec->GetValue().ToLong( &filter_val );
-    g_COGFilterSec = wxMin((int)filter_val, MAX_COGSOG_FILTER_SECONDS);
-    g_COGFilterSec = wxMax(g_COGFilterSec, 1);
-    g_SOGFilterSec = g_COGFilterSec;
-
     long update_val = 1;
     pCOGUPUpdateSecs->GetValue().ToLong( &update_val );
     g_COGAvgSec = wxMin((int)update_val, MAX_COG_AVERAGE_SECONDS);
@@ -3811,8 +3907,6 @@ void options::OnApplyClick( wxCommandEvent& event )
 
     g_bShowMag = pCBMagShow->GetValue();
     pMagVar->GetValue().ToDouble( &g_UserVar );
-    
-    g_bMagneticAPB = m_cbAPBMagnetic->GetValue();
     
     m_pText_OSCOG_Predictor->GetValue().ToDouble( &g_ownship_predictor_minutes );
     m_pText_OSHDT_Predictor->GetValue().ToDouble( &g_ownship_HDTpredictor_miles );
@@ -3905,101 +3999,7 @@ void options::OnApplyClick( wxCommandEvent& event )
     g_bAISRolloverShowCOG = m_pCheck_Rollover_COG->GetValue();
     g_bAISRolloverShowCPA = m_pCheck_Rollover_CPA->GetValue();
 
-    // NMEA Source
-    long itemIndex = m_lcSources->GetNextItem( -1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
-    
-    //  If the stream selected exists, capture some of its existing parameters
-    //  to facility identification and allow stop and restart of the stream
-    wxString lastAddr;
-    int lastPort = 0;
-    if(itemIndex >=0){
-        int params_index = m_lcSources->GetItemData( itemIndex );
-        ConnectionParams *cpo = g_pConnectionParams->Item(params_index);
-        if(cpo){
-            lastAddr = cpo->NetworkAddress;
-            lastPort = cpo->NetworkPort;
-        }
-    }
-
-    if(!connectionsaved)
-    {
-        ConnectionParams * cp = CreateConnectionParamsFromSelectedItem();
-        if(cp != NULL)
-        {
-            if (itemIndex >= 0)
-            {
-                int params_index = m_lcSources->GetItemData( itemIndex );
-                g_pConnectionParams->RemoveAt(params_index);
-                g_pConnectionParams->Insert(cp, params_index);
-            }
-            else
-            {
-                g_pConnectionParams->Add(cp);
-                itemIndex = g_pConnectionParams->Count() - 1;
-            }
-            
-            //  Record the previous parameters, if any
-            cp->LastNetworkAddress = lastAddr;
-            cp->LastNetworkPort = lastPort;
-            
-            FillSourceList();
-            m_lcSources->SetItemState(itemIndex, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
-            m_lcSources->Refresh();
-            connectionsaved = true;
-        } else {
-            ::wxEndBusyCursor();
-            event.SetInt (wxID_STOP );
-        }
-    }
-
-    
-    //Recreate datastreams that are new, or have been edited
-    for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
-    {
-        ConnectionParams *cp = g_pConnectionParams->Item(i);
-        if( !cp->b_IsSetup ) {                  // Stream is new, or edited
-
-            // Terminate and remove any existing stream with the same port name
-            DataStream *pds_existing = g_pMUX->FindStream( cp->GetDSPort() );
-            if(pds_existing) 
-                g_pMUX->StopAndRemoveStream( pds_existing );
-
-            //  Try to stop any previous stream to avoid orphans
-            pds_existing = g_pMUX->FindStream( cp->GetLastDSPort() );
-            if(pds_existing) 
-                g_pMUX->StopAndRemoveStream( pds_existing );
-                
-           if( cp->bEnabled ) {
-           dsPortType port_type = cp->IOSelect;
-                DataStream *dstr = new DataStream( g_pMUX,
-                                            cp->GetDSPort(),
-                                            wxString::Format(wxT("%i"), cp->Baudrate),
-                                            port_type,
-                                            cp->Priority,
-                                            cp->Garmin
-                                            );
-                dstr->SetInputFilter(cp->InputSentenceList);
-                dstr->SetInputFilterType(cp->InputSentenceListType);
-                dstr->SetOutputFilter(cp->OutputSentenceList);
-                dstr->SetOutputFilterType(cp->OutputSentenceListType);
-                dstr->SetChecksumCheck(cp->ChecksumCheck);
-
-                g_pMUX->AddStream(dstr);
-                
-                cp->b_IsSetup = true;
-            }
-        }
-    }
-
-    g_bGarminHostUpload = m_cbGarminUploadHost->GetValue();
-    if( m_cbFurunoGP3X->GetValue() )
-        g_GPS_Ident = _T("FurunoGP3X");
-    else
-        g_GPS_Ident = _T("Generic");
-
     g_chart_zoom_modifier = m_pSlider_Zoom->GetValue();
-    
-    g_NMEAAPBPrecision = m_choicePrecision->GetCurrentSelection();
     
 #ifdef USE_S57
     //    Handle Vector Charts Tab
@@ -4477,7 +4477,27 @@ void options::OnPageChange( wxListbookEvent& event )
         }
     }
 
+ 
     else if( m_pagePlugins == i ) {                    // 7 is the index of "Plugins" page
+
+        if( !m_pPlugInCtrl){
+    //      Build the PlugIn Manager Panel
+            ::wxBeginBusyCursor();
+     
+            m_pPlugInCtrl = new PluginListPanel( itemPanelPlugins, ID_PANELPIM, wxDefaultPosition,
+                                         wxDefaultSize, g_pi_manager->GetPlugInArray() );
+            m_pPlugInCtrl->SetScrollRate( 15, 15 );
+    
+            itemBoxSizerPanelPlugins->Add( m_pPlugInCtrl, 1, wxEXPAND|wxALL, 4 );
+            
+            itemBoxSizerPanelPlugins->Layout();
+            
+            //  Update the PlugIn page to reflect the state of individual selections
+            m_pPlugInCtrl->UpdateSelections();
+            
+            ::wxEndBusyCursor();
+        }
+    
         k_plugins = TOOLBAR_CHANGED;
     }
 }
@@ -5804,7 +5824,8 @@ void SentenceListDlg::OnAddClick( wxCommandEvent& event )
         m_clbSentences->Check(item);
     }
     else
-        wxMessageBox(_("An NMEA sentence is generally 3 characters long (like RMC, GGA etc.) It can also have a two letter prefix identifying the source, or TALKER, of the message (The whole sentences then looks like GPGGA or AITXT). You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.). The filter accepts just these three formats."), _("Wrong length of the NMEA filter value"));
+        OCPNMessageBox( NULL, _("An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n It can also have a two letter prefix identifying the source, or TALKER, of the message.\n The whole sentences then looks like GPGGA or AITXT.\n You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.).\n\n The filter accepts just these three formats."),
+                    _("OpenCPN Info"));
 }
 
 void SentenceListDlg::OnDeleteClick( wxCommandEvent& event )
