@@ -47,20 +47,27 @@ void bmdump(wxBitmap bm, wxString name)
     img.SaveFile( name << _T(".png"), wxBITMAP_TYPE_PNG );
 }
 
-// This function can be used to create custom bitmap blending for platforms
+// This function can be used to create custom bitmap blending for all platforms
 // where 32 bit bitmap ops are broken. Can hopefully be removed for wxWidgets 3.0...
 
 wxBitmap MergeBitmaps( wxBitmap back, wxBitmap front, wxSize offset )
 {
     wxBitmap merged( back.GetWidth(), back.GetHeight(), back.GetDepth() );
-#if (!wxCHECK_VERSION(2,9,4) && (defined(__WXGTK__) || defined(__WXMAC__)))
 
-    // Manual alpha blending for broken wxWidgets platforms.
+    //  If the front bitmap has no alpha channel, then merging will accomplish nothing
+    //  So, simply return the bitmap intact
+    wxImage im_front = front.ConvertToImage();
+    if(!im_front.HasAlpha())
+        return front;
+    
+#if !wxCHECK_VERSION(2,9,4)
+
+    // Manual alpha blending for broken wxWidgets alpha bitmap support, pervasive in wx2.8.
     merged.UseAlpha();
     back.UseAlpha();
     front.UseAlpha();
 
-    wxImage im_front = front.ConvertToImage();
+//    wxImage im_front = front.ConvertToImage();
     wxImage im_back = back.ConvertToImage();
     wxImage im_result = back.ConvertToImage();// Only way to make result have alpha channel in wxW 2.8.
 

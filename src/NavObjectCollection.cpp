@@ -1251,14 +1251,14 @@ bool NavObjectCollection1::SaveFile( const wxString filename )
     return true;
 }
 
-bool NavObjectCollection1::LoadAllGPXObjects()
+bool NavObjectCollection1::LoadAllGPXObjects( bool b_full_viz )
 {
     pugi::xml_node objects = this->child("gpx");
     
     for (pugi::xml_node object = objects.first_child(); object; object = object.next_sibling())
     {
         if( !strcmp(object.name(), "wpt") ) {
-            RoutePoint *pWp = ::GPXLoadWaypoint1( object, _T("circle"), _T(""), false, false, false, 0 );
+            RoutePoint *pWp = ::GPXLoadWaypoint1( object, _T("circle"), _T(""), b_full_viz, false, false, 0 );
             pWp->m_bIsolatedMark = true;      // This is an isolated mark
             
             if(pWp) {
@@ -1274,12 +1274,12 @@ bool NavObjectCollection1::LoadAllGPXObjects()
         }
         else
             if( !strcmp(object.name(), "trk") ) {
-                Track *pTrack = GPXLoadTrack1( object, false, false, false, 0);
+                Track *pTrack = GPXLoadTrack1( object, b_full_viz, false, false, 0);
                 InsertTrack( pTrack );
             }
             else
                 if( !strcmp(object.name(), "rte") ) {
-                    Route *pRoute = GPXLoadRoute1( object, false, false, false, 0 );
+                    Route *pRoute = GPXLoadRoute1( object, b_full_viz, false, false, 0 );
                     InsertRouteA( pRoute );
                 }
                 

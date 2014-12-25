@@ -104,7 +104,7 @@ bool GPWPL::Write( SENTENCE& sentence )
    sentence += Position;
    sentence += To;
    sentence += _T("");            // color = black
-   sentence += _T("");             // comment
+   sentence += _T("@q");             // comment, minimum
    sentence += _T("A");
    sentence += _T("");
    sentence += _T("");
