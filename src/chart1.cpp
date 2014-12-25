@@ -6081,7 +6081,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 
             if( g_bPlayShipsBells && ( ( minuteLOC == 0 ) || ( minuteLOC == 30 ) ) ) {
                 m_BellsToPlay = bells;
-                BellsTimer.Start(0, wxTIMER_ONE_SHOT);
+                BellsTimer.Start(5, wxTIMER_ONE_SHOT);
             }
         }
     }
