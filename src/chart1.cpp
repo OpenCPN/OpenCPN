@@ -6357,7 +6357,7 @@ void MyFrame::DoCOGSet( void )
     double old_VPRotate = g_VPRotate;
     g_VPRotate = -g_COGAvg * PI / 180.;
     if(!g_bskew_comp)
-        g_VPRotate += cc1->GetVPSkew();
+        g_VPRotate -= cc1->GetVPSkew();
 
     cc1->SetVPRotation( g_VPRotate );
     bool bnew_chart = DoChartUpdate();
