@@ -3123,6 +3123,18 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     m_lastAISiconName = initiconName;
 
     tb->ToggleTool( ID_TRACK, g_bTrackActive );
+    
+    //  Set PlugIn tool toggle states
+    ArrayOfPlugInToolbarTools tool_array = g_pi_manager->GetPluginToolbarToolArray();
+    for( unsigned int i = 0; i < tool_array.GetCount(); i++ ) {
+        PlugInToolbarToolContainer *pttc = tool_array.Item( i );
+        if( !pttc->b_viz )
+            continue;
+        
+        if( pttc->kind == wxITEM_CHECK )
+            tb->ToggleTool( pttc->id, pttc->b_toggle );
+    }
+    
 
     SetStatusBarPane( -1 );                   // don't show help on status bar
 
@@ -3164,7 +3176,6 @@ bool MyFrame::CheckAndAddPlugInTool( ocpnToolBarSimple *tb )
 
             tb->AddTool( pttc->id, wxString( pttc->label ), *( ptool_bmp ),
                     wxString( pttc->shortHelp ), pttc->kind );
-            if( pttc->kind == wxITEM_CHECK ) tb->ToggleTool( pttc->id, pttc->b_toggle );
             bret = true;
         }
     }
@@ -3216,7 +3227,6 @@ bool MyFrame::AddDefaultPositionPlugInTools( ocpnToolBarSimple *tb )
 
             tb->AddTool( pttc->id, wxString( pttc->label ), *( ptool_bmp ),
                     wxString( pttc->shortHelp ), pttc->kind );
-            if( pttc->kind == wxITEM_CHECK ) tb->ToggleTool( pttc->id, pttc->b_toggle );
             bret = true;
         }
     }
@@ -3605,8 +3615,11 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     NMEALogWindow::Shutdown();
     
     g_FloatingToolbarDialog = NULL;
-
+    g_bTempShowMenuBar = false;
+    
     this->Destroy();
+    
+    gFrame = NULL;
 
 }
 
@@ -6081,7 +6094,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 
             if( g_bPlayShipsBells && ( ( minuteLOC == 0 ) || ( minuteLOC == 30 ) ) ) {
                 m_BellsToPlay = bells;
-                BellsTimer.Start(0, wxTIMER_ONE_SHOT);
+                BellsTimer.Start(5, wxTIMER_ONE_SHOT);
             }
         }
     }
@@ -6357,7 +6370,7 @@ void MyFrame::DoCOGSet( void )
     double old_VPRotate = g_VPRotate;
     g_VPRotate = -g_COGAvg * PI / 180.;
     if(!g_bskew_comp)
-        g_VPRotate += cc1->GetVPSkew();
+        g_VPRotate -= cc1->GetVPSkew();
 
     cc1->SetVPRotation( g_VPRotate );
     bool bnew_chart = DoChartUpdate();

@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: dashboard_pi 3.3.2330\n"
+"Project-Id-Version: dashboard_pi 3.3.2424\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-10 19:39-0600\n"
+"POT-Creation-Date: 2014-12-24 23:40-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,7 +39,7 @@ msgid "COG"
 msgstr ""
 
 #: src/dashboard_pi.cpp:105
-msgid "Magnetic COG"
+msgid "Mag COG"
 msgstr ""
 
 #: src/dashboard_pi.cpp:107
