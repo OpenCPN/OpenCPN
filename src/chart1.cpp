@@ -3605,8 +3605,11 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     NMEALogWindow::Shutdown();
     
     g_FloatingToolbarDialog = NULL;
-
+    g_bTempShowMenuBar = false;
+    
     this->Destroy();
+    
+    gFrame = NULL;
 
 }
 
