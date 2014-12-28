@@ -3330,18 +3330,11 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
         if( can_zoom_to_cursor && g_bEnableZoomToCursor) {
             //  Arrange to combine the zoom and pan into one operation for smoother appearance
             SetVPScale( GetCanvasScaleFactor() / proposed_scale_onscreen, false );   // adjust, but deferred refresh
-            wxPoint2DDouble r;
-            GetDoubleCanvasPointPix( zlat, zlon, &r );
+ 
+            wxPoint r;
+            GetCanvasPointPix( zlat, zlon, &r );
+            PanCanvas( r.x - mouse_x, r.y - mouse_y );  // this will give the Refresh()
 
-            // If smooth zooming there is an accumulation of floating point errors
-            //  which cause "creep" in the target cursor position.
-            //  A simple workaround is to require pixel moves to be greater than one half pix in magnitude.
-            //  TODO  This needs more analysis.  Where is the error accumulating?
-            if((fabs(r.m_x - mouse_x) > .5) || (fabs(r.m_y - mouse_y) > 0.5))
-                PanCanvas( r.m_x - mouse_x, r.m_y - mouse_y );  // this will give the Refresh()
-            else
-                Refresh();
-            
             ClearbFollow();      // update the follow flag
         }
         else
