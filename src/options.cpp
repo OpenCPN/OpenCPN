@@ -887,6 +887,8 @@ options::~options()
     m_tcOutputStc->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
     m_btnOutputStcList->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnBtnOStcs ), NULL, this );
     m_cbNMEADebug->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnShowGpsWindowCheckboxClick ), NULL, this );
+    pOpenGL->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnGLClicked ), NULL, this );
+    
     }
     
     delete m_pSerialArray;
@@ -1383,7 +1385,8 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     m_rbOIgnore->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbOutput ), NULL, this );
     m_tcOutputStc->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnConnValChange ), NULL, this );
     m_btnOutputStcList->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnBtnOStcs ), NULL, this );
-
+    pOpenGL->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnGLClicked ), NULL, this );
+    
     m_cbNMEADebug->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnShowGpsWindowCheckboxClick ), NULL, this );
     m_cbFilterSogCog->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnValChange ), NULL, this );
     m_tFilterSec->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
@@ -1793,14 +1796,6 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
     itemBoxSizerUI->Add( 0, border_size*3 );
 
 
-    itemBoxSizerUI->Add( 0, border_size*3 );
-    pPlayShipsBells = new wxCheckBox( m_ChartDisplayPage, ID_BELLSCHECKBOX, _("Play Ships Bells"));
-    itemBoxSizerUI->Add( pPlayShipsBells, inputFlags );
-
-
-    // spacer
-    itemBoxSizerUI->Add( 0, border_size*3 );
-    itemBoxSizerUI->Add( 0, border_size*3 );
 
     //  Display size/DPI
     itemBoxSizerUI->Add( new wxStaticText( m_ChartDisplayPage, wxID_ANY, _("Physical Screen Width") ), labelFlags );
@@ -1839,6 +1834,15 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
     wxButton *bOpenGL = new wxButton( m_ChartDisplayPage, ID_OPENGLOPTIONS, _("Options...") );
     OpenGLSizer->Add( bOpenGL, inputFlags );
     bOpenGL->Enable(!g_bdisable_opengl);
+    
+ 
+    itemBoxSizerUI->Add( 0, border_size*3 );
+    pTransparentToolbar = new wxCheckBox( m_ChartDisplayPage, ID_TRANSTOOLBARCHECKBOX,
+                                          _("Enable Transparent Toolbar") );
+    itemBoxSizerUI->Add( pTransparentToolbar, 0, wxALL, border_size );
+    if( g_bopengl ) pTransparentToolbar->Disable();
+    
+    
 
 
 }
@@ -2648,17 +2652,9 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
     pShowCompassWin->SetValue( FALSE );
     miscOptions->Add( pShowCompassWin, 0, wxALL, border_size );
 
-#if 0    
-    pFullScreenToolbar = new wxCheckBox( itemPanelFont, ID_FSTOOLBARCHECKBOX,
-            _("Show Toolbar in Fullscreen Mode") );
-    miscOptions->Add( pFullScreenToolbar, 0, wxALL, border_size );
-#endif
-
-    pTransparentToolbar = new wxCheckBox( itemPanelFont, ID_TRANSTOOLBARCHECKBOX,
-            _("Enable Transparent Toolbar") );
-    miscOptions->Add( pTransparentToolbar, 0, wxALL, border_size );
-    if( g_bopengl ) pTransparentToolbar->Disable();
-
+    pPlayShipsBells = new wxCheckBox( itemPanelFont, ID_BELLSCHECKBOX, _("Play Ships Bells"));
+    miscOptions->Add( pPlayShipsBells, 0, wxALL, border_size );
+    
     //  Mobile/Touchscreen checkboxes
     pMobile = new wxCheckBox( itemPanelFont, ID_MOBILEBOX, _("Enable Touchscreen interface") );
     miscOptions->Add( pMobile, 0, wxALL, border_size );
@@ -3283,6 +3279,11 @@ void options::OnRadarringSelect( wxCommandEvent& event )
     event.Skip();
 }
 
+void options::OnGLClicked( wxCommandEvent& event )
+{
+    pTransparentToolbar->Enable(!pOpenGL->GetValue());
+}
+
 void options::OnOpenGLOptions( wxCommandEvent& event )
 {
 #ifdef ocpnUSE_GL
@@ -3851,7 +3852,6 @@ void options::OnApplyClick( wxCommandEvent& event )
     g_bPreserveScaleOnX = pPreserveScale->GetValue();
 
     g_bPlayShipsBells = pPlayShipsBells->GetValue();
-//    g_bFullscreenToolbar = pFullScreenToolbar->GetValue();
     g_bTransparentToolbar = pTransparentToolbar->GetValue();
     g_iSDMMFormat = pSDMMFormat->GetSelection();
     g_iDistanceFormat = pDistanceFormat->GetSelection();
