@@ -157,6 +157,7 @@ void GRIBUIDialog::OpenFile(bool newestFile)
     m_bpPlay->SetToolTip(_("Play"));
     m_cRecordForecast->Clear();
     m_cbAltitude->Clear();
+    pPlugIn->GetGRIBOverlayFactory()->ClearParticles();
     pPlugIn->GetGRIBOverlayFactory()->SetAltitude( 0 );
     m_FileIntervalIndex = m_OverlaySettings.m_SlicesPerUpdate;
     delete m_bGRIBActiveFile;
