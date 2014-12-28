@@ -3894,14 +3894,14 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         case ID_MENU_ZOOM_IN:
         case ID_ZOOMIN: {
-            cc1->ZoomCanvas( 2.0 );
+            cc1->ZoomCanvas( 2.0, false );
             DoChartUpdate();
             break;
         }
 
         case ID_MENU_ZOOM_OUT:
         case ID_ZOOMOUT: {
-            cc1->ZoomCanvas( 0.5 );
+            cc1->ZoomCanvas( 0.5, false );
             DoChartUpdate();
             break;
         }
