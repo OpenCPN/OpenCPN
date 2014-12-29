@@ -766,9 +766,6 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
             b_intersect |= Intersect_FL( p2, p3, f0, f1) != 0; if(b_intersect) break;
             b_intersect |= Intersect_FL( p3, p0, f0, f1) != 0; if(b_intersect) break;
             
-            
-            if(b_intersect)
-                break;
         }
         
         // Check segment, last point back to first point

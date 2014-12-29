@@ -9955,7 +9955,7 @@ void InitializeUserColors( void )
             }
 
         } else {
-            char name[20];
+            char name[21];
             int j = 0;
             while( buf[j] != ';' && j < 20 ) {
                 name[j] = buf[j];
