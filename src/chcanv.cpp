@@ -2241,14 +2241,14 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
                 break;
 #endif
             }
-        } else {
+        } else {   //AZERTY
             switch( key_char ) {
             case 43:
                 ZoomCanvas( 2.0, false );
                 break;
 
             case 54:                     // '-'  alpha/num pad
-            case 56:                     // '_'  alpha/num pad
+//            case 56:                     // '_'  alpha/num pad
                 ZoomCanvas( 0.5, false );
                 break;
             }
