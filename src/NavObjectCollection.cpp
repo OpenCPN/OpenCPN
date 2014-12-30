@@ -1259,9 +1259,9 @@ bool NavObjectCollection1::LoadAllGPXObjects( bool b_full_viz )
     {
         if( !strcmp(object.name(), "wpt") ) {
             RoutePoint *pWp = ::GPXLoadWaypoint1( object, _T("circle"), _T(""), b_full_viz, false, false, 0 );
-            pWp->m_bIsolatedMark = true;      // This is an isolated mark
             
             if(pWp) {
+                pWp->m_bIsolatedMark = true;      // This is an isolated mark
                 RoutePoint *pExisting = WaypointExists( pWp->GetName(), pWp->m_lat, pWp->m_lon );
                 if( !pExisting ) {
                     if( NULL != pWayPointMan )

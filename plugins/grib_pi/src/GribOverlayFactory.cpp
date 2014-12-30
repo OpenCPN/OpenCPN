@@ -201,8 +201,7 @@ GRIBOverlayFactory::~GRIBOverlayFactory()
 {
     ClearCachedData();
 
-    delete m_ParticleMap;
-    m_ParticleMap = NULL;
+    ClearParticles();
 }
 
 void GRIBOverlayFactory::Reset()
@@ -1207,8 +1206,7 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
     sw.Start();
 
     if(m_ParticleMap && m_ParticleMap->m_Setting != settings) {
-        delete m_ParticleMap;
-        m_ParticleMap = NULL;
+        ClearParticles();
     }
 
    if(!m_ParticleMap)

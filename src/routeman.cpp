@@ -505,9 +505,8 @@ void Routeman::DoAdvance(void)
         if( pthis_route->m_bDeleteOnArrival && !pthis_route->m_bIsBeingEdited) {
             pConfig->DeleteConfigRoute( pthis_route );
             DeleteRoute( pthis_route );
-            if( pRoutePropDialog ) {
-                pRoutePropDialog->SetRouteAndUpdate( NULL );
-                pRoutePropDialog->UpdateProperties();
+            if( pRoutePropDialog && ( pRoutePropDialog->IsShown()) && (pthis_route == pRoutePropDialog->GetRoute()) ) {
+                pRoutePropDialog->Hide();
             }
         }
 
