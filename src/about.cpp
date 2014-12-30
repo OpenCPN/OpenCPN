@@ -85,6 +85,8 @@ char AuthorText[] =
       OpenGL Architecture\n\n\
     Caesar Schinas\n\
       User Interface and OS X improvements\n\n\
+    Thomas Höckne\n\
+      Documentation and Wiki support\n\n\
     Jesper Weissglas\n\
       Vector Chart Rendering\n\n\
     Jean-Eudes Onfray\n\
