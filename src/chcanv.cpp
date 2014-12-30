@@ -1737,8 +1737,10 @@ void ChartCanvas::SetDisplaySizeMM( double size )
     int sx, sy;
     wxDisplaySize( &sx, &sy );
     
-    m_pix_per_mm = ( (double) sx ) / ( (double) m_display_size_mm );
-    m_canvas_scale_factor = ( (double) sx ) / (m_display_size_mm /1000.);
+    double max_physical = wxMax(sx, sy);
+    
+    m_pix_per_mm = ( max_physical ) / ( (double) m_display_size_mm );
+    m_canvas_scale_factor = ( max_physical ) / (m_display_size_mm /1000.);
     
     int mm_per_knot = 10;
     current_draw_scaler = mm_per_knot * m_pix_per_mm * g_current_arrow_scale / 100.0;
