@@ -265,6 +265,7 @@ public:
 #ifdef __WXGTK__
     void OnChooseFontColor( wxCommandEvent& event );
 #endif
+    void OnGLClicked( wxCommandEvent& event );
     void OnOpenGLOptions( wxCommandEvent& event );
     void OnDisplayCategoryRadioButton( wxCommandEvent& event );
     void OnButtonClearClick( wxCommandEvent& event );
