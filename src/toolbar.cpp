@@ -356,10 +356,10 @@ void ocpnFloatingToolbarDialog::SetGeometry()
             m_ptoolbar->SetMaxRowsCols(max_rows, 100);
         else
             m_ptoolbar->SetMaxRowsCols( 100, max_cols);
+ 
+        m_ptoolbar->SetSizeFactor(m_sizefactor);
     }
-    
-    m_ptoolbar->SetSizeFactor(m_sizefactor);
-}
+ }
 
 void ocpnFloatingToolbarDialog::RePosition()
 {

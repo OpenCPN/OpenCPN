@@ -169,7 +169,10 @@ struct DATUM const gDatum[] = {
       { "Wake-Eniwetok  60",     13,    101,     52,    -39 },    // 99
       { "WGS 72",                19,      0,      0,      5 },    // 100
       { "WGS 84",                20,      0,      0,      0 },    // 101
-      { "Zanderij",              14,   -265,    120,   -358 }     // 102
+      { "Zanderij",              14,   -265,    120,   -358 },    // 102
+      { "WGS_84",                20,      0,      0,      0 },    // 103
+      { "WGS-84",                20,      0,      0,      0 }     // 104
+      
 };
 
 struct ELLIPSOID const gEllipsoid[] = {

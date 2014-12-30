@@ -622,7 +622,6 @@ SendEvtAndReturn:
     
 #ifdef __WXMSW__    
     catch (SE_Exception e)
-#endif    
     {
         if( m_pMessageTarget ) {
             OCPN_CompressionThreadEvent Nevent(wxEVT_OCPN_COMPRESSIONTHREAD, 0);
@@ -635,6 +634,8 @@ SendEvtAndReturn:
         
         return 0;
     }
+#endif    
+    
 }
 
 
