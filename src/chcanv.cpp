@@ -3825,7 +3825,8 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                 double sfr = wxRound(m_displayed_scale_factor * 10.) / 10.;
                 text.Printf( _("Scale %4.0f (%1.2fx)"), true_scale_display, sfr );
             }
-            
+
+#ifdef ocpnUSE_GL
             if( g_bopengl && g_bShowFPS){
                 wxString fps_str;
                 double fps = 0.;
@@ -3835,7 +3836,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                 }
                 text += fps_str;
             }
-            
+#endif            
             
             parent_frame->SetStatusText( text, STAT_FIELD_SCALE );
         }
