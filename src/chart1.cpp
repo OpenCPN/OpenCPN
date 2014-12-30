@@ -852,7 +852,8 @@ double  GetDisplaySizeMM()
 #ifdef __WXMSW__    
     int w,h;
     if( GetWindowsMonitorSize( &w, &h) ){
-        ret = w;
+        if(w > 100)             // sanity check
+            ret = w;
     }
 #endif
 #ifdef __WXOSX__
@@ -1547,7 +1548,7 @@ bool MyApp::OnInit()
 
 #endif
 
-    g_display_size_mm = GetDisplaySizeMM();
+    g_display_size_mm = wxMax(100, GetDisplaySizeMM());
 
     //      Init the WayPoint Manager (Must be after UI Style init).
     pWayPointMan = new WayPointman();
@@ -5196,7 +5197,7 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
         g_display_size_mm = g_config_display_size_mm;
     }
     else{
-        g_display_size_mm = GetDisplaySizeMM();
+        g_display_size_mm = wxMax(100, GetDisplaySizeMM());
     }
         
     cc1->SetDisplaySizeMM( g_display_size_mm );
