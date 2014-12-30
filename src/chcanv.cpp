@@ -283,6 +283,7 @@ extern ocpnGLOptions g_GLOptions;
 
 extern bool              g_bShowFPS;
 extern double            g_gl_ms_per_frame;
+extern bool              g_benable_rotate;
 
 wxProgressDialog *pprog;
 bool b_skipout;
@@ -2011,9 +2012,8 @@ void ChartCanvas::OnKeyChar( wxKeyEvent &event )
 {
     int key_char = event.GetKeyCode();
     
-    //      Handle both QWERTY and AZERTY keyboard separately for a few control codes
-//    if( !g_b_assume_azerty )
-    {
+    if(g_benable_rotate){
+        
         switch( key_char ) {
             case ']':
                 RotateCanvas( 1 );
@@ -2028,20 +2028,6 @@ void ChartCanvas::OnKeyChar( wxKeyEvent &event )
                 break;
         }
     }
-#if 0    
-    else {
-        switch( key_char ) {
-            case 43:
-                ZoomCanvas( 2.0 );
-                break;
-            
-            case 54:                     // '-'  alpha/num pad
-            case 56:                     // '_'  alpha/num pad
-                ZoomCanvas( 0.5 );
-                break;
-        }
-    }
-#endif    
 
     event.Skip();
 }    
@@ -2221,23 +2207,29 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
                 ZoomCanvas( 0.5, false );
                 break;
 
+            }
+            
 #ifdef __WXMAC__
+            if(g_benable_rotate){
+                switch( key_char ) {
+                    
             // On other platforms these are handled in OnKeyChar, which (apparently) works better in some locales.
             // On OS X it is better to handle them here, since pressing Alt (which should change the rotation speed)
             // changes the key char and so prevents the keys from working.
-            case ']':
-                RotateCanvas( 1 );
-                break;
+                case ']':
+                    RotateCanvas( 1 );
+                    break;
                 
-            case '[':
-                RotateCanvas( -1 );
-                break;
+                case '[':
+                    RotateCanvas( -1 );
+                    break;
                 
-            case '\\':
-                DoRotateCanvas(0);
-                break;
-#endif
+                case '\\':
+                    DoRotateCanvas(0);
+                    break;
+                }
             }
+#endif
         } else {   //AZERTY
             switch( key_char ) {
             case 43:

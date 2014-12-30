@@ -631,6 +631,7 @@ wxRect                    g_last_tb_rect;
 float                     g_toolbar_scalefactor;
 
 MyDialogPtrArray          g_MacShowDialogArray;
+bool                      g_benable_rotate;
 
 bool                      g_bShowMag;
 double                    g_UserVar;
