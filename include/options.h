@@ -265,6 +265,7 @@ public:
 #ifdef __WXGTK__
     void OnChooseFontColor( wxCommandEvent& event );
 #endif
+    void OnGLClicked( wxCommandEvent& event );
     void OnOpenGLOptions( wxCommandEvent& event );
     void OnDisplayCategoryRadioButton( wxCommandEvent& event );
     void OnButtonClearClick( wxCommandEvent& event );
@@ -535,6 +536,9 @@ public:
     PluginListPanel         *m_pPlugInCtrl;
     int                     k_plugins;
 
+    wxScrolledWindow        *itemPanelPlugins;
+    wxBoxSizer              *itemBoxSizerPanelPlugins;
+    
     wxChoice                *pNavAidRadarRingsNumberVisible;
     wxFlexGridSizer         *radarGrid;
     wxTextCtrl              *pNavAidRadarRingsStep;
@@ -617,6 +621,8 @@ private:
     
     wxNotebookPage*             m_groupsPage;
     wxFont*     smallFont;
+    wxSize      m_small_button_size;
+    
 };
 
 class ChartGroupsUI: public wxScrolledWindow {

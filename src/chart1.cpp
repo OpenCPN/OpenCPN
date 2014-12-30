@@ -631,6 +631,7 @@ wxRect                    g_last_tb_rect;
 float                     g_toolbar_scalefactor;
 
 MyDialogPtrArray          g_MacShowDialogArray;
+bool                      g_benable_rotate;
 
 bool                      g_bShowMag;
 double                    g_UserVar;
@@ -1014,7 +1015,20 @@ void MyApp::OnActivateApp( wxActivateEvent& event )
 #endif
 
     if( !event.GetActive() ) {
-        if( g_FloatingToolbarDialog ) g_FloatingToolbarDialog->HideTooltip(); // Hide any existing tip
+
+        //  Remove a temporary Menubar when the application goes inactive
+        //  This is one way to handle properly ALT-TAB navigation on the Windows desktop
+        //  without accidentally leaving an unwanted Menubar shown.
+#ifdef __WXMSW__        
+        if( g_bTempShowMenuBar ) {
+            g_bTempShowMenuBar = false;
+            if(gFrame)
+                gFrame->ApplyGlobalSettings(false, false);
+        }
+#endif        
+        
+        if( g_FloatingToolbarDialog )
+            g_FloatingToolbarDialog->HideTooltip(); // Hide any existing tip
     }
 
     event.Skip();
@@ -3109,6 +3123,18 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     m_lastAISiconName = initiconName;
 
     tb->ToggleTool( ID_TRACK, g_bTrackActive );
+    
+    //  Set PlugIn tool toggle states
+    ArrayOfPlugInToolbarTools tool_array = g_pi_manager->GetPluginToolbarToolArray();
+    for( unsigned int i = 0; i < tool_array.GetCount(); i++ ) {
+        PlugInToolbarToolContainer *pttc = tool_array.Item( i );
+        if( !pttc->b_viz )
+            continue;
+        
+        if( pttc->kind == wxITEM_CHECK )
+            tb->ToggleTool( pttc->id, pttc->b_toggle );
+    }
+    
 
     SetStatusBarPane( -1 );                   // don't show help on status bar
 
@@ -3150,7 +3176,6 @@ bool MyFrame::CheckAndAddPlugInTool( ocpnToolBarSimple *tb )
 
             tb->AddTool( pttc->id, wxString( pttc->label ), *( ptool_bmp ),
                     wxString( pttc->shortHelp ), pttc->kind );
-            if( pttc->kind == wxITEM_CHECK ) tb->ToggleTool( pttc->id, pttc->b_toggle );
             bret = true;
         }
     }
@@ -3202,7 +3227,6 @@ bool MyFrame::AddDefaultPositionPlugInTools( ocpnToolBarSimple *tb )
 
             tb->AddTool( pttc->id, wxString( pttc->label ), *( ptool_bmp ),
                     wxString( pttc->shortHelp ), pttc->kind );
-            if( pttc->kind == wxITEM_CHECK ) tb->ToggleTool( pttc->id, pttc->b_toggle );
             bret = true;
         }
     }
@@ -3591,8 +3615,11 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     NMEALogWindow::Shutdown();
     
     g_FloatingToolbarDialog = NULL;
-
+    g_bTempShowMenuBar = false;
+    
     this->Destroy();
+    
+    gFrame = NULL;
 
 }
 
@@ -3867,14 +3894,14 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         case ID_MENU_ZOOM_IN:
         case ID_ZOOMIN: {
-            cc1->ZoomCanvas( 2.0 );
+            cc1->ZoomCanvas( 2.0, false );
             DoChartUpdate();
             break;
         }
 
         case ID_MENU_ZOOM_OUT:
         case ID_ZOOMOUT: {
-            cc1->ZoomCanvas( 0.5 );
+            cc1->ZoomCanvas( 0.5, false );
             DoChartUpdate();
             break;
         }
@@ -6067,7 +6094,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 
             if( g_bPlayShipsBells && ( ( minuteLOC == 0 ) || ( minuteLOC == 30 ) ) ) {
                 m_BellsToPlay = bells;
-                BellsTimer.Start(0, wxTIMER_ONE_SHOT);
+                BellsTimer.Start(5, wxTIMER_ONE_SHOT);
             }
         }
     }
@@ -6343,7 +6370,7 @@ void MyFrame::DoCOGSet( void )
     double old_VPRotate = g_VPRotate;
     g_VPRotate = -g_COGAvg * PI / 180.;
     if(!g_bskew_comp)
-        g_VPRotate += cc1->GetVPSkew();
+        g_VPRotate -= cc1->GetVPSkew();
 
     cc1->SetVPRotation( g_VPRotate );
     bool bnew_chart = DoChartUpdate();
@@ -8901,12 +8928,6 @@ void MyFrame::OnSuspending(wxPowerEvent& event)
  //   printf("OnSuspending...%d\n", now.GetTicks());
 
     wxLogMessage(_T("System suspend starting..."));
-    if ( wxMessageBox(_T("Veto suspend?"), _T("Please answer"),
-        wxYES_NO, this) == wxYES )
-    {
-        event.Veto();
-        wxLogMessage(_T("Vetoed suspend."));
-    }
 }
 
 void MyFrame::OnSuspended(wxPowerEvent& WXUNUSED(event))
@@ -8942,8 +8963,21 @@ void MyFrame::OnResume(wxPowerEvent& WXUNUSED(event))
         }
     }
 
-    cc1->InvalidateGL();
-    cc1->Refresh(true);
+    //  If OpenGL is enabled, Windows Resume does not properly refresh the application GL context.
+    //  We need to force a Resize event that actually does something.
+    if(g_bopengl){
+        if( IsMaximized() ){            // This is not real pretty on-screen, but works
+            Maximize(false);
+            wxYield();
+            Maximize(true);
+        }
+        else {
+            wxSize sz = GetSize();
+            SetSize( wxSize(sz.x - 1, sz.y));
+            wxYield();
+            SetSize( sz );
+        }
+    }
     
 }
 #endif // wxHAS_POWER_EVENTS
@@ -9921,7 +9955,7 @@ void InitializeUserColors( void )
             }
 
         } else {
-            char name[20];
+            char name[21];
             int j = 0;
             while( buf[j] != ';' && j < 20 ) {
                 name[j] = buf[j];

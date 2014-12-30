@@ -121,6 +121,7 @@ public:
     void Reset();
     void ClearCachedData( void );
     void ClearCachedLabel( void ) { m_labelCache.clear(); }
+    void ClearParticles() { delete m_ParticleMap; m_ParticleMap = NULL; }
 
     GribTimelineRecordSet *m_pGribTimelineRecordSet;
 

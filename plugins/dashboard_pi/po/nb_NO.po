@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 3.3.1006\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-30 09:13-0400\n"
+"POT-Creation-Date: 2014-12-24 23:40-0500\n"
 "PO-Revision-Date: 2013-10-15 00:32+0100\n"
 "Last-Translator: Frode Lynum <post@opencpn.kb-h.com>\n"
 "Language-Team: OpenCPN Norge <post@opencpn.kb-h.com>\n"
@@ -153,6 +153,10 @@ msgstr ""
 #
 msgid "Label:"
 msgstr "Etikett:"
+#
+#, fuzzy
+msgid "Mag COG"
+msgstr "Mag HDG"
 #
 msgid "Mag HDG"
 msgstr "Mag HDG"

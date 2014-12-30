@@ -146,6 +146,11 @@ ViewPort CreateCompatibleViewport( const PlugIn_ViewPort &pivp)
     vp.b_quilt =                pivp.b_quilt;
     vp.m_projection_type =      pivp.m_projection_type;
  
+    if(cc1)
+        vp.ref_scale = cc1->GetVP().ref_scale;
+    else
+        vp.ref_scale = vp.chart_scale;
+    
     vp.SetBoxes();
     vp.Validate();                 // This VP is valid
     
@@ -2896,6 +2901,7 @@ PluginListPanel::PluginListPanel( wxWindow *parent, wxWindowID id, const wxPoint
     :wxScrolledWindow( parent, id, pos, size, wxTAB_TRAVERSAL|wxVSCROLL )
 
 {
+    Hide();
     m_pPluginArray = pPluginArray;
     m_PluginSelected = NULL;
 
@@ -2935,6 +2941,8 @@ PluginListPanel::PluginListPanel( wxWindow *parent, wxWindowID id, const wxPoint
     }
 
     itemBoxSizer01->AddSpacer(max_dy);
+    
+    Show();
 }
 
 PluginListPanel::~PluginListPanel()

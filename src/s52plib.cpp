@@ -407,14 +407,14 @@ void s52plib::GenerateStateHash()
     int time = ::wxGetUTCTime();
     memcpy(state_buffer, &time, sizeof(int));
     
-    int offset = sizeof(int);           // skipping the time int, first element
+    size_t offset = sizeof(int);           // skipping the time int, first element
     
     for(int i=0 ; i < S52_MAR_NUM ; i++){
         if( (offset + sizeof(double)) < sizeof(state_buffer)){
             double t = S52_getMarinerParam((S52_MAR_param_t) i);
             memcpy( &state_buffer[offset], &t, sizeof(double));
+	    offset += sizeof(double);
         }
-        offset += sizeof(double);
     }
     
     for(unsigned int i=0 ; i < m_noshow_array.GetCount() ; i++){
@@ -2581,10 +2581,19 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
             //  Since draw pixels is so slow, lets not draw anything we don't have to
             wxRect sym_rect(r.x - ddx, r.y - ddy, b_width, b_height);
             if(vp->rv_rect.Intersects(sym_rect) ) {
+                
+                glPushAttrib( GL_SCISSOR_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+                
+                glDisable( GL_SCISSOR_TEST );
+                glDisable( GL_STENCIL_TEST );
+                glDisable( GL_DEPTH_TEST );
+                
                 glRasterPos2f( r.x - ddx, r.y - ddy );
                 glPixelZoom( 1, -1 );
                 glDrawPixels( b_width, b_height, GL_RGBA, GL_UNSIGNED_BYTE, prule->pixelPtr );
                 glPixelZoom( 1, 1 );
+
+                glPopAttrib();
             }
         }
 
@@ -2975,6 +2984,7 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     if( b_wide_line)
     {
         int w = wxMax(scaled_line_width, 2);            // looks better
+        w = wxMin(w, 50);                               // upper bound
         wide_pen.SetWidth( w );
         wide_pen.SetColour(color);
         
@@ -3987,6 +3997,13 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     double box_mult = wxMax((scale_factor - g_overzoom_emphasis_base), 1);
     int box_dim = 32 * box_mult;
     
+    // We need a pixel bounding rectangle of the passed ViewPort.
+    // Very important for partial screen renders, as with dc mode pans or OpenGL FBO operation.
+    
+    wxPoint cr0 = vp_local.GetPixFromLL( vp_local.GetBBox().GetMaxY(), vp_local.GetBBox().GetMinX());
+    wxPoint cr1 = vp_local.GetPixFromLL( vp_local.GetBBox().GetMinY(), vp_local.GetBBox().GetMaxX());
+    wxRect clip_rect(cr0, cr1);
+    
     for( int ip = 0; ip < npt; ip++ ) {
         
         double lon = *pdl++;
@@ -3996,8 +4013,8 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         //      Use estimated symbol size
         wxRect rr(r.x-(box_dim/2), r.y-(box_dim/2), box_dim, box_dim);
         
-        //      The render inclusion test is trivial....
-        if(!vp->rv_rect.Intersects(rr))
+        //      After all the setup, the render inclusion test is trivial....
+        if(!clip_rect.Intersects(rr))
             continue;
         
         double angle = 0;
