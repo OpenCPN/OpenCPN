@@ -351,6 +351,7 @@ extern int              g_NMEAAPBXTEPrecision;
 extern bool             g_bSailing;
 extern double           g_display_size_mm;
 extern double           g_config_display_size_mm;
+extern bool             g_benable_rotate;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
@@ -1391,6 +1392,8 @@ int MyConfig::LoadMyConfig( int iteration )
     // Boolean to cater for sailing when not approaching waypoint
     Read( _T( "Sailing" ), &g_bSailing, 0);
 
+    Read( _T ( "EnableRotateKeys" ),  &g_benable_rotate );
+    
     SetPath( _T ( "/Settings/GlobalState" ) );
     Read( _T ( "bFollow" ), &st_bFollow );
 

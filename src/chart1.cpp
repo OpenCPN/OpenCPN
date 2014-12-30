@@ -636,6 +636,7 @@ wxRect                    g_last_tb_rect;
 float                     g_toolbar_scalefactor;
 
 MyDialogPtrArray          g_MacShowDialogArray;
+bool                      g_benable_rotate;
 
 bool                      g_bShowMag;
 double                    g_UserVar;
@@ -3128,6 +3129,18 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     m_lastAISiconName = initiconName;
 
     tb->ToggleTool( ID_TRACK, g_bTrackActive );
+    
+    //  Set PlugIn tool toggle states
+    ArrayOfPlugInToolbarTools tool_array = g_pi_manager->GetPluginToolbarToolArray();
+    for( unsigned int i = 0; i < tool_array.GetCount(); i++ ) {
+        PlugInToolbarToolContainer *pttc = tool_array.Item( i );
+        if( !pttc->b_viz )
+            continue;
+        
+        if( pttc->kind == wxITEM_CHECK )
+            tb->ToggleTool( pttc->id, pttc->b_toggle );
+    }
+    
 
     SetStatusBarPane( -1 );                   // don't show help on status bar
 
@@ -3169,7 +3182,6 @@ bool MyFrame::CheckAndAddPlugInTool( ocpnToolBarSimple *tb )
 
             tb->AddTool( pttc->id, wxString( pttc->label ), *( ptool_bmp ),
                     wxString( pttc->shortHelp ), pttc->kind );
-            if( pttc->kind == wxITEM_CHECK ) tb->ToggleTool( pttc->id, pttc->b_toggle );
             bret = true;
         }
     }
@@ -3221,7 +3233,6 @@ bool MyFrame::AddDefaultPositionPlugInTools( ocpnToolBarSimple *tb )
 
             tb->AddTool( pttc->id, wxString( pttc->label ), *( ptool_bmp ),
                     wxString( pttc->shortHelp ), pttc->kind );
-            if( pttc->kind == wxITEM_CHECK ) tb->ToggleTool( pttc->id, pttc->b_toggle );
             bret = true;
         }
     }
@@ -3610,8 +3621,11 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     NMEALogWindow::Shutdown();
     
     g_FloatingToolbarDialog = NULL;
-
+    g_bTempShowMenuBar = false;
+    
     this->Destroy();
+    
+    gFrame = NULL;
 
 }
 
@@ -3886,14 +3900,14 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         case ID_MENU_ZOOM_IN:
         case ID_ZOOMIN: {
-            cc1->ZoomCanvas( 2.0 );
+            cc1->ZoomCanvas( 2.0, false );
             DoChartUpdate();
             break;
         }
 
         case ID_MENU_ZOOM_OUT:
         case ID_ZOOMOUT: {
-            cc1->ZoomCanvas( 0.5 );
+            cc1->ZoomCanvas( 0.5, false );
             DoChartUpdate();
             break;
         }
@@ -6362,7 +6376,7 @@ void MyFrame::DoCOGSet( void )
     double old_VPRotate = g_VPRotate;
     g_VPRotate = -g_COGAvg * PI / 180.;
     if(!g_bskew_comp)
-        g_VPRotate += cc1->GetVPSkew();
+        g_VPRotate -= cc1->GetVPSkew();
 
     cc1->SetVPRotation( g_VPRotate );
     bool bnew_chart = DoChartUpdate();
@@ -9947,7 +9961,7 @@ void InitializeUserColors( void )
             }
 
         } else {
-            char name[20];
+            char name[21];
             int j = 0;
             while( buf[j] != ';' && j < 20 ) {
                 name[j] = buf[j];
