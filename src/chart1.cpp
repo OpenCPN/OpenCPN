@@ -1106,7 +1106,20 @@ bool MyApp::OnInit()
 
     wxStandardPaths& crash_std_path = *dynamic_cast<wxStandardPaths*>(&wxApp::GetTraits()->GetStandardPaths());
     wxString crash_rpt_save_locn = crash_std_path.GetConfigDir();
-    info.pszErrorReportSaveDir = crash_rpt_save_locn + _T("//CrashReports");
+    wxString locn = crash_rpt_save_locn + _T("\\CrashReports");
+    
+    if(!wxDirExists( locn ) )
+        wxMkdir( locn );
+        
+    if(wxDirExists( locn ) ){
+        wxCharBuffer buf = locn.ToUTF8();
+        if(buf){
+            wchar_t wlocn[80];
+            LPCWSTR cstr;
+            MultiByteToWideChar( 0, 0, buf.data(), -1, wlocn, 79);
+            info.pszErrorReportSaveDir = (LPCWSTR)wlocn;
+        }
+    }
 
     // Provide privacy policy URL
     wxStandardPathsBase& std_path_crash = wxApp::GetTraits()->GetStandardPaths();
