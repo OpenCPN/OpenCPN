@@ -348,6 +348,7 @@ extern bool             g_bSailing;
 extern double           g_display_size_mm;
 extern double           g_config_display_size_mm;
 extern bool             g_benable_rotate;
+extern bool             g_bEmailCrashReport;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
@@ -1389,7 +1390,8 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T( "Sailing" ), &g_bSailing, 0);
 
     Read( _T ( "EnableRotateKeys" ),  &g_benable_rotate );
-    
+    Read( _T ( "EmailCrashReport" ),  &g_bEmailCrashReport );
+        
     SetPath( _T ( "/Settings/GlobalState" ) );
     Read( _T ( "bFollow" ), &st_bFollow );
 
