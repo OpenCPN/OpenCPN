@@ -200,6 +200,7 @@ extern bool             g_bDrawAISSize;
 extern bool             g_bShowAISName;
 extern int              g_Show_Target_Name_Scale;
 extern bool             g_bWplIsAprsPosition;
+extern bool             g_benableAISNameCache;
 
 extern int              g_S57_dialog_sx, g_S57_dialog_sy;
 
@@ -1391,7 +1392,10 @@ int MyConfig::LoadMyConfig( int iteration )
 
     Read( _T ( "EnableRotateKeys" ),  &g_benable_rotate );
     Read( _T ( "EmailCrashReport" ),  &g_bEmailCrashReport );
-        
+    
+    g_benableAISNameCache = true;
+    Read( _T ( "EnableAISNameCache" ),  &g_benableAISNameCache );
+    
     SetPath( _T ( "/Settings/GlobalState" ) );
     Read( _T ( "bFollow" ), &st_bFollow );
 
