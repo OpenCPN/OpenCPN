@@ -3202,7 +3202,7 @@ void ChartCanvas::ZoomCanvas( double factor, bool can_zoom_to_cursor, bool stopt
         if( m_modkeys == wxMOD_ALT )
             factor = pow(factor, .15);
         
-        DoZoomCanvas( factor );
+        DoZoomCanvas( factor, can_zoom_to_cursor );
     }
 
     extendedSectorLegs.clear();
