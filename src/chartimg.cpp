@@ -746,7 +746,7 @@ found_uclc_file:
           msg.Append(m_FullPath);
           wxLogMessage(msg);
           
-          return INIT_FAIL_REMOVE;
+//          return INIT_FAIL_REMOVE;
       }
       
 
@@ -1404,7 +1404,7 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
           msg.Append(m_FullPath);
           wxLogMessage(msg);
           
-          return INIT_FAIL_REMOVE;
+//          return INIT_FAIL_REMOVE;
       }
 
 //    Convert captured plypoint information into chart COVR structures
@@ -1529,7 +1529,7 @@ ChartBaseBSB::ChartBaseBSB()
 
       m_mapped_color_index = COLOR_RGB_DEFAULT;
 
-//      m_datum_str = _T("WGS84");                // assume until proven otherwise
+      m_datum_str = _T("WGS84");                // assume until proven otherwise
 
       m_dtm_lat = 0.;
       m_dtm_lon = 0.;
@@ -1938,8 +1938,13 @@ InitReturn ChartBaseBSB::PostInit(void)
       strncpy(d_str, m_datum_str.mb_str(), 99);
       d_str[99] = 0;
 
-      m_datum_index = GetDatumIndex(d_str);
-
+      int datum_index = GetDatumIndex(d_str);
+      if(datum_index < 0){
+          m_datum_index = DATUM_INDEX_WGS84;
+          m_ExtraInfo = _("---<<< Warning:  Chart Datum may be incorrect. >>>---");
+      }
+      else
+          m_datum_index = datum_index;
 
       //   Analyze Refpoints
       int analyze_ret_val = AnalyzeRefpoints();
