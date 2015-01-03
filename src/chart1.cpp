@@ -4056,18 +4056,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         case wxID_PREFERENCES:
         case ID_SETTINGS: {
-
-            bool bnewtoolbar = !( DoOptionsDialog() == 0 );
-
-//              Apply various system settings
-            ApplyGlobalSettings( true, bnewtoolbar );                 // flying update
-
-            if( g_FloatingToolbarDialog ) g_FloatingToolbarDialog->RefreshFadeTimer();
-
-            if( cc1->GetbShowCurrent() || cc1->GetbShowTide() ) LoadHarmonics();
-//  The chart display options may have changed, especially on S57 ENC,
-//  So, flush the cache and redraw
-            cc1->ReloadVP();
+            DoSettings();
             break;
         }
 
@@ -4175,6 +4164,11 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             break;
         }
 
+        case ID_MENU_OQUIT: {
+            Close();
+            break;
+        }
+        
         case ID_MENU_ROUTE_MANAGER:
         case ID_ROUTEMANAGER: {
             if( NULL == pRouteManagerDialog )         // There is one global instance of the Dialog
@@ -4247,6 +4241,25 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
     }         // switch
 
 }
+
+void MyFrame::DoSettings()
+{
+    bool bnewtoolbar = !( DoOptionsDialog() == 0 );
+
+    //              Apply various system settings
+    ApplyGlobalSettings( true, bnewtoolbar );                 // flying update
+
+    if( g_FloatingToolbarDialog )
+        g_FloatingToolbarDialog->RefreshFadeTimer();
+
+    if( cc1->GetbShowCurrent() || cc1->GetbShowTide() )
+        LoadHarmonics();
+    
+    //  The chart display options may have changed, especially on S57 ENC,
+    //  So, flush the cache and redraw
+    cc1->ReloadVP();
+}
+
 
 void MyFrame::ToggleStats()
 {
@@ -4830,6 +4843,10 @@ void MyFrame::RegisterGlobalMenuItems()
     nav_menu->AppendSeparator();
     nav_menu->Append( ID_MENU_SCALE_IN, _menuText(_("Larger Scale Chart"), _T("Ctrl-Left")) );
     nav_menu->Append( ID_MENU_SCALE_OUT, _menuText(_("Smaller Scale Chart"), _T("Ctrl-Right")) );
+#ifndef __WXOSX__
+    nav_menu->AppendSeparator();
+    nav_menu->Append( ID_MENU_OQUIT, _menuText(_("Exit OpenCPN"), _T("Ctrl-Q")) );
+#endif    
     m_pMenuBar->Append( nav_menu, _("&Navigate") );
 
 
