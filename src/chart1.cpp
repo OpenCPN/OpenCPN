@@ -669,6 +669,7 @@ int              g_NMEAAPBPrecision;
 int              g_NMEAAPBXTEPrecision;
 
 bool             g_bSailing;
+bool             g_bEmailCrashReport;
 
 wxArrayString    g_locale_catalog_array;
 
@@ -852,7 +853,8 @@ double  GetDisplaySizeMM()
 #ifdef __WXMSW__    
     int w,h;
     if( GetWindowsMonitorSize( &w, &h) ){
-        ret = w;
+        if(w > 100)             // sanity check
+            ret = w;
     }
 #endif
 #ifdef __WXOSX__
@@ -1074,27 +1076,50 @@ bool MyApp::OnInit()
     type |=  MiniDumpNormal;// | MiniDumpWithPrivateReadWriteMemory | MiniDumpWithIndirectlyReferencedMemory;
     info.uMiniDumpType = (MINIDUMP_TYPE)type;
 
-
-    // URL for sending error reports over HTTP.
-    info.pszEmailTo = _T("opencpn@bigdumboat.com");
-    info.pszSmtpProxy = _T("mail.bigdumboat.com:587");
-    info.pszUrl = _T("http://bigdumboat.com/crashrpt/ocpn_crashrpt.php");
-    info.uPriorities[CR_HTTP] = 1;  // First try send report over HTTP
-    info.uPriorities[CR_SMTP] = CR_NEGATIVE_PRIORITY;  // Second try send report over SMTP
-    info.uPriorities[CR_SMAPI] = CR_NEGATIVE_PRIORITY; //1; // Third try send report over Simple MAPI
-
     // Install all available exception handlers....
     info.dwFlags = CR_INST_ALL_POSSIBLE_HANDLERS;
     
     //  Except memory allocation failures
     info.dwFlags &= ~CR_INST_NEW_OPERATOR_ERROR_HANDLER;
-
+    
     //  Allow user to attach files
     info.dwFlags |= CR_INST_ALLOW_ATTACH_MORE_FILES;
     
     //  Allow user to add more info
     info.dwFlags |= CR_INST_SHOW_ADDITIONAL_INFO_FIELDS;
     
+    
+    // URL for sending error reports over HTTP.
+    if(g_bEmailCrashReport){
+        info.pszEmailTo = _T("opencpn@bigdumboat.com");
+        info.pszSmtpProxy = _T("mail.bigdumboat.com:587");
+        info.pszUrl = _T("http://bigdumboat.com/crashrpt/ocpn_crashrpt.php");
+        info.uPriorities[CR_HTTP] = 1;  // First try send report over HTTP
+    }
+    else{
+        info.dwFlags |= CR_INST_DONT_SEND_REPORT;
+        info.uPriorities[CR_HTTP] = CR_NEGATIVE_PRIORITY;       // don't send at all
+    }
+        
+    info.uPriorities[CR_SMTP] = CR_NEGATIVE_PRIORITY;  // Second try send report over SMTP
+    info.uPriorities[CR_SMAPI] = CR_NEGATIVE_PRIORITY; //1; // Third try send report over Simple MAPI
+
+    wxStandardPaths& crash_std_path = *dynamic_cast<wxStandardPaths*>(&wxApp::GetTraits()->GetStandardPaths());
+    wxString crash_rpt_save_locn = crash_std_path.GetConfigDir();
+    wxString locn = crash_rpt_save_locn + _T("\\CrashReports");
+    
+    if(!wxDirExists( locn ) )
+        wxMkdir( locn );
+        
+    if(wxDirExists( locn ) ){
+        wxCharBuffer buf = locn.ToUTF8();
+        if(buf){
+            wchar_t wlocn[80];
+            LPCWSTR cstr;
+            MultiByteToWideChar( 0, 0, buf.data(), -1, wlocn, 79);
+            info.pszErrorReportSaveDir = (LPCWSTR)wlocn;
+        }
+    }
 
     // Provide privacy policy URL
     wxStandardPathsBase& std_path_crash = wxApp::GetTraits()->GetStandardPaths();
@@ -1547,7 +1572,7 @@ bool MyApp::OnInit()
 
 #endif
 
-    g_display_size_mm = GetDisplaySizeMM();
+    g_display_size_mm = wxMax(100, GetDisplaySizeMM());
 
     //      Init the WayPoint Manager (Must be after UI Style init).
     pWayPointMan = new WayPointman();
@@ -5196,7 +5221,7 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
         g_display_size_mm = g_config_display_size_mm;
     }
     else{
-        g_display_size_mm = GetDisplaySizeMM();
+        g_display_size_mm = wxMax(100, GetDisplaySizeMM());
     }
         
     cc1->SetDisplaySizeMM( g_display_size_mm );
