@@ -83,10 +83,12 @@ char AuthorText[] =
       S52 Rasterization Improvements\n\n\
     Sean D'Epagnier\n\
       OpenGL Architecture\n\n\
-    Caesar Schinas\n\
-      User Interface and OS X improvements\n\n\
+    J.P. Joubert\n\
+      GRIB PlugIn enhancements\n\n\
     Thomas Höckne\n\
       Documentation and Wiki support\n\n\
+    Caesar Schinas\n\
+      User Interface and OS X improvements\n\n\
     Jesper Weissglas\n\
       Vector Chart Rendering\n\n\
     Jean-Eudes Onfray\n\

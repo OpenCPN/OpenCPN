@@ -2165,6 +2165,12 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         parent_frame->DoStackUp();
         break;
 
+#ifndef __WXOSX__        
+    case WXK_F9:
+        parent_frame->ToggleQuiltMode();
+        break;
+#endif        
+        
     case WXK_F11:
         parent_frame->ToggleFullScreen();
         b_handled = true;
@@ -2351,6 +2357,11 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             break;
         }
 
+        case -20:                       // Ctrl ,
+        {
+            parent_frame->DoSettings();
+            break;
+        }
         case 17:                       // Ctrl Q
             parent_frame->Close();
             return;
@@ -3202,7 +3213,7 @@ void ChartCanvas::ZoomCanvas( double factor, bool can_zoom_to_cursor, bool stopt
         if( m_modkeys == wxMOD_ALT )
             factor = pow(factor, .15);
         
-        DoZoomCanvas( factor );
+        DoZoomCanvas( factor, can_zoom_to_cursor );
     }
 
     extendedSectorLegs.clear();

@@ -669,6 +669,7 @@ int              g_NMEAAPBPrecision;
 int              g_NMEAAPBXTEPrecision;
 
 bool             g_bSailing;
+bool             g_bEmailCrashReport;
 
 wxArrayString    g_locale_catalog_array;
 
@@ -1075,27 +1076,50 @@ bool MyApp::OnInit()
     type |=  MiniDumpNormal;// | MiniDumpWithPrivateReadWriteMemory | MiniDumpWithIndirectlyReferencedMemory;
     info.uMiniDumpType = (MINIDUMP_TYPE)type;
 
-
-    // URL for sending error reports over HTTP.
-    info.pszEmailTo = _T("opencpn@bigdumboat.com");
-    info.pszSmtpProxy = _T("mail.bigdumboat.com:587");
-    info.pszUrl = _T("http://bigdumboat.com/crashrpt/ocpn_crashrpt.php");
-    info.uPriorities[CR_HTTP] = 1;  // First try send report over HTTP
-    info.uPriorities[CR_SMTP] = CR_NEGATIVE_PRIORITY;  // Second try send report over SMTP
-    info.uPriorities[CR_SMAPI] = CR_NEGATIVE_PRIORITY; //1; // Third try send report over Simple MAPI
-
     // Install all available exception handlers....
     info.dwFlags = CR_INST_ALL_POSSIBLE_HANDLERS;
     
     //  Except memory allocation failures
     info.dwFlags &= ~CR_INST_NEW_OPERATOR_ERROR_HANDLER;
-
+    
     //  Allow user to attach files
     info.dwFlags |= CR_INST_ALLOW_ATTACH_MORE_FILES;
     
     //  Allow user to add more info
     info.dwFlags |= CR_INST_SHOW_ADDITIONAL_INFO_FIELDS;
     
+    
+    // URL for sending error reports over HTTP.
+    if(g_bEmailCrashReport){
+        info.pszEmailTo = _T("opencpn@bigdumboat.com");
+        info.pszSmtpProxy = _T("mail.bigdumboat.com:587");
+        info.pszUrl = _T("http://bigdumboat.com/crashrpt/ocpn_crashrpt.php");
+        info.uPriorities[CR_HTTP] = 1;  // First try send report over HTTP
+    }
+    else{
+        info.dwFlags |= CR_INST_DONT_SEND_REPORT;
+        info.uPriorities[CR_HTTP] = CR_NEGATIVE_PRIORITY;       // don't send at all
+    }
+        
+    info.uPriorities[CR_SMTP] = CR_NEGATIVE_PRIORITY;  // Second try send report over SMTP
+    info.uPriorities[CR_SMAPI] = CR_NEGATIVE_PRIORITY; //1; // Third try send report over Simple MAPI
+
+    wxStandardPaths& crash_std_path = *dynamic_cast<wxStandardPaths*>(&wxApp::GetTraits()->GetStandardPaths());
+    wxString crash_rpt_save_locn = crash_std_path.GetConfigDir();
+    wxString locn = crash_rpt_save_locn + _T("\\CrashReports");
+    
+    if(!wxDirExists( locn ) )
+        wxMkdir( locn );
+        
+    if(wxDirExists( locn ) ){
+        wxCharBuffer buf = locn.ToUTF8();
+        wchar_t wlocn[256];
+        if(buf && (locn.Length() < sizeof(wlocn)) ){
+            LPCWSTR cstr;
+            MultiByteToWideChar( 0, 0, buf.data(), -1, wlocn, sizeof(wlocn)-1);
+            info.pszErrorReportSaveDir = (LPCWSTR)wlocn;
+        }
+    }
 
     // Provide privacy policy URL
     wxStandardPathsBase& std_path_crash = wxApp::GetTraits()->GetStandardPaths();
@@ -4032,18 +4056,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         case wxID_PREFERENCES:
         case ID_SETTINGS: {
-
-            bool bnewtoolbar = !( DoOptionsDialog() == 0 );
-
-//              Apply various system settings
-            ApplyGlobalSettings( true, bnewtoolbar );                 // flying update
-
-            if( g_FloatingToolbarDialog ) g_FloatingToolbarDialog->RefreshFadeTimer();
-
-            if( cc1->GetbShowCurrent() || cc1->GetbShowTide() ) LoadHarmonics();
-//  The chart display options may have changed, especially on S57 ENC,
-//  So, flush the cache and redraw
-            cc1->ReloadVP();
+            DoSettings();
             break;
         }
 
@@ -4151,6 +4164,11 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             break;
         }
 
+        case ID_MENU_OQUIT: {
+            Close();
+            break;
+        }
+        
         case ID_MENU_ROUTE_MANAGER:
         case ID_ROUTEMANAGER: {
             if( NULL == pRouteManagerDialog )         // There is one global instance of the Dialog
@@ -4223,6 +4241,25 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
     }         // switch
 
 }
+
+void MyFrame::DoSettings()
+{
+    bool bnewtoolbar = !( DoOptionsDialog() == 0 );
+
+    //              Apply various system settings
+    ApplyGlobalSettings( true, bnewtoolbar );                 // flying update
+
+    if( g_FloatingToolbarDialog )
+        g_FloatingToolbarDialog->RefreshFadeTimer();
+
+    if( cc1->GetbShowCurrent() || cc1->GetbShowTide() )
+        LoadHarmonics();
+    
+    //  The chart display options may have changed, especially on S57 ENC,
+    //  So, flush the cache and redraw
+    cc1->ReloadVP();
+}
+
 
 void MyFrame::ToggleStats()
 {
@@ -4806,6 +4843,10 @@ void MyFrame::RegisterGlobalMenuItems()
     nav_menu->AppendSeparator();
     nav_menu->Append( ID_MENU_SCALE_IN, _menuText(_("Larger Scale Chart"), _T("Ctrl-Left")) );
     nav_menu->Append( ID_MENU_SCALE_OUT, _menuText(_("Smaller Scale Chart"), _T("Ctrl-Right")) );
+#ifndef __WXOSX__
+    nav_menu->AppendSeparator();
+    nav_menu->Append( ID_MENU_OQUIT, _menuText(_("Exit OpenCPN"), _T("Ctrl-Q")) );
+#endif    
     m_pMenuBar->Append( nav_menu, _("&Navigate") );
 
 

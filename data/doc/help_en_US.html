@@ -1,8 +1,29 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head>
+<style>
+html {
+color: #424242;
+}
+
+body
+{
+background-color:#fcf8e9;
+font-family: Tahoma,Verdana,Arial,Helvetica,sans-serif;
+font-size: 75%;
+font-weight: normal;
+line-height: 160%;
+}
+
+a:link, a:visited {
+color: #3C6159;
+}
+</style>
+
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>OpenCPN User Manual</title>
+    
+    <link type="text/css" rel="stylesheet" href="images/print.html">
       </head>
   <body>
         
@@ -12,7 +33,7 @@
 <ul><li><a href="#OpenCPNUserManual">OpenCPN User Manual</a><ul><li><a href="#GettingStarted">Getting Started</a><ul><li><a href="#InstallingOpenCPN">Installing OpenCPN</a><ul><li><a href="#OpenGL">OpenGL</a></li>
 <li><a href="#LowPowerSystems">Low Power Systems</a></li>
 <li><a href="#PortableOpenCPN">Portable OpenCPN </a></li>
-<li><a href="#UseadedicatedLinuxMarineDistribution">Use a dedicated Linux Marine Distribution</a></li>
+<li><a href="#DedicatedMarineOS">Dedicated Marine OS</a></li>
 </ul></li>
 <li><a href="#UsingOpenCPNfortheFirstTime">Using OpenCPN for the First Time</a></li>
 <li><a href="#SettingUpGPS">Setting Up GPS</a></li>
@@ -65,6 +86,7 @@
 <li><a href="#AutomaticAnchorMark">Automatic Anchor Mark</a></li>
 <li><a href="#CM93Offsets">CM93 Offsets</a></li>
 <li><a href="#TheCommandLine">The Command Line </a></li>
+<li><a href="#TheConfigurationFile">The Configuration File</a></li>
 </ul></li>
 <li><a href="#Plugins">Plugins</a><ul><li><a href="#AboutPlugins">About Plugins</a></li>
 <li><a href="#DashboardPlugin">Dashboard Plugin</a></li>
@@ -680,51 +702,16 @@ This can be useful for side-by-side testing...<br>
 <br>
 <img alt="" src="images/opencpn_002.png" align="absMiddle" height="48" width="48">  <em>Go to </em><a href="#TableOfContents"><em>Table Of Contents</em></a><!-- google_ad_section_end -->  </div>
 <div id="node-243" class="section-4">
-  <h1 id="UseadedicatedLinuxMarineDistribution" class="book-heading">Use a dedicated Linux Marine Distribution</h1>
+  <h1 id="DedicatedMarineOS" class="book-heading">Dedicated Marine OS</h1>
   <!-- google_ad_section_start --><div><span>XINUTOP</span></div>
 <br>
 <br>
-    DESCRIPTION<br>
+<span id="result_box" lang="en"><span>Another way to</span> run <span>OpenCPN</span> <span>is to use a</span> <span>specialized</span> <span>marine</span> <span>OS</span><span>, also including</span> essential <span>marine
+ applications. Xinutop is a free an opensource linux-ubuntu based 
+solution and can run on a large variety of i386 processors compliant</span></span>.<br>
 <br>
-Xinutop-nav is a Linux portable or installed marine OS, including a lightweight base applications from <a href="http://www.xfce.org/" target="_blank">Xfce</a> family, and provide, with less of 400Mo, essential marine applications such as:<br>
-<br>
-   - <a href="http://opencpn.org/ocpn/" target="_blank">OpenCPN</a>: naturally !<br>
-   - <a href="http://www.w1hkj.com/Fldigi.html" target="_blank">Fldigi</a>: reception and display radio weather-fax and NAVTEX, via the sound card.<br>
-   - <a href="http://www.polarnavy.com/main/prod2" target="_blank">Polarcom</a>: virtual instrumentation, from NMEA datas.<br>
-   - <a href="http://www.flaterco.com/xtide/" target="_blank">XTide</a>: tides with numerical and graphical display, worlwide coverage.<br>
-   -<a href="#"> </a><a href="http://www.zygrib.org/" target="_blank">Zygrib</a>: download and display weather grib files.<br>
-   - <a href="http://marinux.pk973.org/index.html#MUPLEX" target="_blank">Muplex</a>: NMEA multiplexer<a href="http://marinux.tuxfamily.org/index.html#MUPLEX">.</a><br>
-   - <a href="http://marinux.pk973.org/index.html#OSD_DEPTH" target="_blank">OSD Depth</a>: display water depth with big digits above any application (aka "on top").<br>
-<br>
-Xinutop is made with a special care of lightness, simplicity, efficacy, 
-reliability and can operate from multiple datas supports (HDD, SSD, USB,
- Flash) on a great variety of i386 compatible computers, specially with 
-low power processors, or those unfairly considered as obsolete, poorly 
-supporting the growing greed of currents OS, less and less compatible 
-with embedded hardware. Xinutop can run as a portable operating system 
-on removable device, but also as a main operating system on hard drive 
-(same install). The memory usage after startup is about 100MB. To make 
-Xinutop unbreakable (may I say "unbrickable" - used term for deads 
-tablets - or almost ?), the necessary system files and directories are 
-locked and can't be deleted or modified by a normal way (even in root 
-mode).<br>
-<br>
-Xinutop is assembled with Ubuntu 12.04 packages (Precise), including the scripts "lrd" by Gauvain Pocentek and provide:<br>
-<br>
-    - A robust architecture: main file system in squashfs, no write access.<br>
-    - A fast boot provided by lrd scripts, more simple than casper, the default live system for Debian-Ubuntu<br>
-    - A persistent mode that allows to keep the datas and system changes in user layer (as Linux-Android system).<br>
-    - A restore mode, allowing to findnize exactly the original system (simply by deleting the user layer).<br>
-    - A "home-save" function, to automatically save and move user home datas during a restoration.<br>
-    - A ramdisk mode, which boost time access, running Xinutop from a virtual harddisk emulated in memory.<br>
-    - The full compatibility with applications of the Ubuntu 
-distribution. You can install and run any other application from your 
-user layer<br>
-<br>
-Xinutop is under GPL V3, then you are free to use, distribute and modify
- it, but at your own risk and under your own responsability !<br>
-<br>
-Infos and download at <a href="http://marinux.tuxfamily.org/">http://marinux.tuxfamily.org</a><!-- google_ad_section_end -->  </div>
+Infos and download at <a href="http://marinux.tuxfamily.org/">http://marinux.tuxfamily.org</a><br>
+See also in <a href="http://opencpn.org/ocpn/node/333">Supplementary Software</a><!-- google_ad_section_end -->  </div>
 </div>
 <div id="node-329" class="section-3">
   <h1 id="UsingOpenCPNfortheFirstTime" class="book-heading">Using OpenCPN for the First Time</h1>
@@ -746,7 +733,7 @@ If you're not quite ready to install yet just click "OK" in the Options dialog.<
 The worldwide background Map will greet you.<br>
 From here explore the different features in OpenCPN by clicking around, or read on...<br>
 <br>
-<img alt="" src="images/start3.png" width="600&quot;"><br>
+<img alt="" src="images/start3.jpg" width="600&quot;"><br>
 <br>
 <img alt="" src="images/opencpn_002.png" align="absMiddle" height="48" width="48">  <em>Go to </em><a href="#TableOfContents"><em>Table Of Contents</em></a><!-- google_ad_section_end -->  </div>
 <div id="node-13" class="section-3">
@@ -1125,26 +1112,37 @@ icon change from red to green.
 <div id="node-294" class="section-3">
   <h1 id="TouchScreensandTablets" class="book-heading">Touch Screens and Tablets</h1>
   <!-- google_ad_section_start --><br>
-<br>
-<br>
-<b>Running OpenCPN on a Windows 8 tablet</b><br>
-<br>
 It is no wonder that iPads and Android tablets have become so popular. 
 They offer superior ergonomics vs. laptops in many settings, including 
 areas with limited space and power such as boat cabins and cockpits. 
 Tablets usually offer superior battery life, lower power consumption, 
-and are easier to waterproof via inexpensive pouches. With the recent 
-proliferation of Windows 8 tablets, there is now an economical and 
-easily accessible tablet platform for OpenCPN that does not require 
-rooting, virtualization, or other cumbersome hacks.<br>
+and are easier to waterproof via inexpensive pouches.<br>
 <br>
-However, your user experience with OpenCPN on a Windows tablet will be enhanced by considering these tips and tricks.<br>
+Unfortunately OpenCPN currently cannot install natively in an Android or
+ iOS environment. However, there are a couple of ways to get OpenCPN 
+running under Linux on Android tablets. See <em><a href="http://opencpn.org/ocpn/node/193">Building on Motorola Xoom</a> </em>for more information.<br>
 <br>
-1. Install the Classic Shell free software. This facilitates using the 
-tablet with traditional Windows desktop programs, which will improve 
-your OpenCPN experience on the tablet. You can still use the newer 
-"Metro" tablet apps, but Classic Shell restores the Start menu that 
-Windows users are accustomed to having.<br>
+<b>Running OpenCPN on a Windows 8 tablet</b><br>
+<br>
+Although Windows 8 tablets are not as common as iPads or Android, they 
+have the advantage of running on the exact same Windows platform as PCs 
+and laptops. This means you can install OpenCPN onto a tablet using the 
+ same installer that is used for Windows laptops and desktops. Just 
+dowload the installer and appropriate charts, run the installer, and 
+select the chart location just like you would on any PC.<br>
+<br>
+Because of differences in Windows 8 vs. prior Windows versions, and 
+configuration differences in the tablet hardware, your user experience 
+with OpenCPN on a Windows tablet may be enhanced by considering these 
+optional tips and tricks:<br>
+<br>
+1. Install the <a href="http://www.classicshell.net/">Classic Shell</a> 
+free software. This facilitates using the tablet with traditional 
+Windows desktop programs, and will make the Win8 environment more 
+familiar for those who are coming from XP, Vista, or Win7. You can still
+ bring up the Start Screen to use the newer "Metro" tablet apps, but 
+Classic Shell restores the familiar Start menu that Windows users are 
+accustomed to having.<br>
 <br>
 <img alt="" src="images/ClassicShell_zpsbfed952c.png" width="500&quot;"><br>
 <br>
@@ -1156,7 +1154,7 @@ built in. (Some tablets have been discovered to have GPS even though the
 <img alt="" src="images/DeviceManager_zpsb0197e16.png"><br>
 However, the Windows 8 tablets initially are configured in a way that 
 only Metro apps can see the built-in GPS. In order to overcome this 
-limitation, try installing petrsimon's excellent GeolocationTCP utility.
+limitation, try installing petrsimon's excellent <a href="https://bitbucket.org/petrsimon/geolocationtcp/downloads">GeolocationTCP utility</a>.
  Set this utility to launch at bootup so it's always there by putting a 
 shortcut in the Startup folder created by Classic Shell.<br>
 <br>
@@ -1166,16 +1164,17 @@ Then you need to configure OpenCPN to receive the <a class="sk_tag" href="http:/
 <br>
 <img alt="" src="images/Options-Connections_zps80f51d7f.png" width="500&quot;"><br>
 <br>
-3. If you do not have an internal GPS, I recommend a Bluetooth GPS 
-transmitter. There are Android and iPhone apps that will do this on your
- smartphone, or you can purchase a freestanding Bluetooth GPS made by 
-GlobalSat or others. Transmitting GPS to the tablet via Bluetooth 
-facilitates putting the tablet into a waterproof pouch. Plus, constantly
- hanging a USB connector off the side of the tablet can weaken the plug 
-over time.<br>
+3. If you do not have an internal GPS and want one to interface with 
+your tablet, I recommend a Bluetooth GPS transmitter instead of a wired 
+dongle or puck. There are Android and iPhone apps that will transmit 
+from your smartphone, or you can purchase a freestanding Bluetooth GPS 
+made by GlobalSat or others. Transmitting GPS to the tablet via 
+Bluetooth also facilitates putting the tablet into a waterproof pouch. 
+Some have reported that hanging a USB connector off the side of the 
+tablet may weaken the microUSB plug over time.<br>
 <br>
 4. The excellent form factor of the tablet opens up some great 
-possibilities for use in the cockpit, if you can find a tablet with a 
+possibilities for use in the cockpit, if you select a tablet with a 
 sufficiently bright screen. A suggested tablet model and more 
 comprehensive list of tips can be found on <a href="http://www.cruisersforum.com/forums/f134/windows-8-tablets-for-opencpn-135663.html" target="_blank">this message thread</a>.<br>
 <br>
@@ -1187,8 +1186,8 @@ magnifying glass icons in the toolbar.<br>
 <br>
 Mouse hover (aka "rollover") is not generally supported on tablets, and 
 accidentally tapping the chart can lead to unexpected re-centering of 
-the chart. To address this, there are some custom features available in 
-Options-User Interface.<br>
+the chart. To address this and other tablet needs, OpenCPN adds some 
+some custom features available in the Options-User Interface menu:<br>
 <br>
 <img alt="" src="images/Options-UserInterface_zpsfc3672fb.png" width="500&quot;"><br>
 <br>
@@ -1199,7 +1198,7 @@ Activating "Enable Touchscreen Interface" alters the effect of tapping/clicking 
 -Tapping Routes and <a class="#AIS">AIS</a> targets shows popup info<br>
 -Tapping tide/current icons shows appropriate dialog<br>
 <br>
-Additional behaviors with "Enable Touchscreen Interface" activated:<br>
+Here are some additional behaviors with "Enable Touchscreen Interface" activated:<br>
 <br>
 -Optimize several common dialogs for screen rotation, i.e. landscape or portrait<br>
 -Route Create workflow: "Done" by clicking toolbar "Route" icon, or normal context menu.<br>
@@ -1217,8 +1216,9 @@ following:<br>
 -Increase toolbar icon size<br>
 -Increase context menu text item size<br>
 -Increase selectable item sizes for several common dialogs<br>
+________________________________________________________________________<br>
 <br>
-Following Dave's comments :<br>
+Following are Dave's comments on this setting:<br>
 It is important that the screen width dimension be properly set for this option to work.<br>
 This may be found at Options-&gt;Display-&gt;Advanced.<br>
 Dave found, on his W8.1 tablet, that the automatically calculated size 
@@ -1227,15 +1227,17 @@ with a physical measurement.<br>
 <br>
 In the "Tablet Scaled Graphics Interface", the toolbar icon target minimum size is 9mm square.<br>
 This is the generally accepted minimum button size for several mobile platforms.<br>
+________________________________________________________________________<br>
 <br>
-<br>
-Here are Dave's Release Notes:<br>
+Here are Dave's original Release Notes:<br>
 <br>
 242: This is a first cut on a Touchscreen/Tablet user interface. The 
 idea here is to have one checkbox in options-&gt;Display to enable this 
 mode, and thus avoid lots of fussy user configurable items for 
 individual behaviors/actions. In other words, just "do the right thing" 
-when enabled for Tablet/Touch systems.<br>
+when enabled for Tablet/Touch systems. (NOTE: For v4, the one-checkbox 
+feature was split into two separate checkboxes: "Enable Touchscreen 
+Interface" and "Tablet Scaled Graphics Interface")<br>
 <br>
 The code was tested on an 8" Windows 8.1 tablet, in both portrait and landscape display orientations.<br>
 <br>
@@ -1280,23 +1282,18 @@ can help making OpenCPN, even better.</p>
 <h2 id="Windows">Windows</h2>
  
 
-<div>OpenCPN has a semi-automatic Crash reporting for Windows.</div>
-
-<p>Occasionally we get reports of crashes in the field which are not 
-reproducible. This report allows the creation and export of a Crash 
-Report file, which may be sent to the developers for postmortem 
-analysis.<br>
-It works like this:<br>
-a. Install and run OpenCPN as normal. You will see no difference unless a crash occurs.<br>
-b. If a crash occurs, you will be presented with a new dialog that says "OpenCPN has stopped working"<br>
-c. Choose "What does the report contain", to see what will be sent.<br>
-d. Check the Privacy Policy<br>
-e. Press "Send Report" when you are ready if you have an Internet connection.<br>
-f. You may still use this "Export/email" process if you have no Internet
- at the time of the crash. Go to "What does this report contain" and 
-press "Export.<br>
+<div>In OpenCPN ver 4.0 the semi-automatic Crash reporting for Windows is disabled by default.<br>
+Crash Reports are saved in the OpenCPN config directory, i.e. where the 
+log file is stored now. End users may occasionally be asked privately to
+ send these reports to a designated recipient.<br>
 <br>
-Here is what you will see if OpenCPN causes a crash.<br>
+The  semi-automatic Crash reporting can be enabled by editing the opencpn.ini file.<br>
+--<br>
+[Settings]<br>
+.....<br>
+EmailCrashReport=1<br>
+---<br>
+<strong>Here is what you will see if OpenCPN causes a crash with the crashreport enabled.</strong><br>
 <br>
 <img alt="" src="images/Werror1.png"><br>
 <br>
@@ -1308,8 +1305,7 @@ This is what the report will contain. Use the "Export" button if yoy
 don't have an Internet connection at the time of the crash. Mail the 
 report later.<br>
 <br>
-<img alt="" src="images/Werror3.png"></p>
-
+<img alt="" src="images/Werror3.png">
 <table border="1" cellpadding="1" cellspacing="1">
 	
 		<tbody><tr>
@@ -1346,14 +1342,14 @@ $ddd opencpn<br>
 <br>
 ddd starts and this is what you will see.<br>
 <br>
-<img alt="" src="images/ddd1.png" width="750"><br>
+<img alt="" src="images/ddd1.jpg" width="750"><br>
 <br>
 Click "Run". If you don't get this small dialog, go to Program -&gt; Run, or hit F2<br>
 This will start OpenCPN. Just continue in OpenCPN and proceed to create a crash.<br>
 Then go back to the ddd window.<br>
 This is how it will look like after a crash.<br>
 <br>
-<img alt="" src="images/ddd2.png" width="750"><br>
+<img alt="" src="images/ddd2.jpg" width="750"><br>
 <br>
 Notice "Program received signal SIGSEGV, Segmentation fault."<br>
 This is programmers way of saying a "crash". Exactly what this means, 
@@ -1362,11 +1358,11 @@ To actually help the developers we need a back trace from the crash.
 This is the path that the program followed in the source code, leading 
 to the crash.<br>
 <br>
-<img alt="" src="images/ddd3.png" width="750"><br>
+<img alt="" src="images/ddd3.jpg" width="750"><br>
 Go to Status -&gt; Backtrace.<br>
 This is what comes up, from this particular crash.<br>
 <br>
-<img alt="" src="images/ddd4.png" width="750"><br>
+<img alt="" src="images/ddd4.jpg" width="750"><br>
 The crash happened at #0 and this very short back trace started at #9.<br>
 Your job now is to take a screen-dump, similar to the picture above, and send it on.<br>
 Try to get as much of the back trace as possible, by expanding the Back trace dialog.<br>
@@ -1389,7 +1385,7 @@ Just type "r", for run and hit Enter. Like this:<br>
 OpenCPN will now start, once again, make it crash.<br>
 The console will look similar to below.<br>
 <br>
-<img alt="" src="images/gdb.png" width="750"><br>
+<img alt="" src="images/gdb.jpg" width="750"><br>
 All the lines before the "Segmentation fault" line, are just "chatter" 
 from PortAudio and Gdk, and are not directly related to OpenCPN.<br>
 <br>
@@ -1397,7 +1393,7 @@ To get a back trace, simply<br>
 (gdb)bt<br>
 That is type "bt", for back trace, and hit enter.<br>
 <br>
-<img alt="" src="images/gdb1.png" width="750"><br>
+<img alt="" src="images/gdb1.jpg" width="750"><br>
 <br>
 You will now have access to the full back trace, with more details and reverse order to "ddd".<br>
 Copy the text, and send it on.<br>
@@ -1407,7 +1403,7 @@ Press "q" to exit gdb.<br>
 Tell the programmers about your findings through an entry in the tracker <a href="http://www.opencpn.org/flyspray/">http://www.opencpn.org/flyspray/</a> , or through posting on the forum <a href="http://www.cruisersforum.com/forums/f134">http://www.cruisersforum.com/forums/f134</a> , if you have found a new bug.<br>
 <br>
 <br>
-<img alt="" src="images/opencpn_002.png" align="absMiddle" height="48" width="48">  <em>Go to </em><a href="#TableOfContents"><em>Table Of Contents</em></a><!-- google_ad_section_end -->  </div>
+<img alt="" src="images/opencpn_002.png" align="absMiddle" height="48" width="48">  <em>Go to </em><a href="#TableOfContents"><em>Table Of Contents</em></a></div><!-- google_ad_section_end -->  </div>
 </div>
 <div id="node-14" class="section-2">
   <h1 id="BasicFeatures" class="book-heading">Basic Features</h1>
@@ -1736,7 +1732,7 @@ Apply corrections to CM93 chart cells through this dialog. Read more on the <a h
 		<tr>
 			<td><strong>Menu Bar</strong></td>
 			<td colspan="3">Alt</td>
-			<td>Toggle if Show Menu is unchecked - new</td>
+			<td>Toggle if Show Menu is unchecked.</td>
 		</tr>
 		<tr>
 			<td><b>Zoom In</b></td>
@@ -1770,15 +1766,15 @@ Apply corrections to CM93 chart cells through this dialog. Read more on the <a h
 		</tr>
 		<tr>
 			<td><b>Larger Scale Chart</b></td>
-			<td colspan="2">Ctrl-Left  (or F7)</td>
-			<td>Cmd-Left</td>
-			<td> </td>
+			<td colspan="2">Ctrl-LeftArrowKey (or F7)</td>
+			<td>Cmd-LeftArrowKey</td>
+			<td>Windows : raster Charts</td>
 		</tr>
 		<tr>
 			<td><b>Smaller Scale Chart</b></td>
-			<td colspan="2">Ctrl-Right  (or F8)</td>
-			<td>Cmd-Right</td>
-			<td> </td>
+			<td colspan="2">Ctrl-RightArrowKey  (or F8)</td>
+			<td>Cmd-RightArrowKey</td>
+			<td>Windows : raster Charts</td>
 		</tr>
 		<tr>
 			<td><b> </b></td>
@@ -1845,7 +1841,7 @@ Apply corrections to CM93 chart cells through this dialog. Read more on the <a h
 			<td><b>Chart Quilting</b> (on/off)</td>
 			<td colspan="2">Q  (or F9)</td>
 			<td>Q</td>
-			<td><strong>Q shortcut is new</strong></td>
+			<td> </td>
 		</tr>
 		<tr>
 			<td><b>Chart Outlines</b> (on/off)</td>
@@ -1910,14 +1906,14 @@ Apply corrections to CM93 chart cells through this dialog. Read more on the <a h
 			<td><b>Change Colour Scheme</b></td>
 			<td colspan="2">C  (or F5)</td>
 			<td>C</td>
-			<td><strong>C shortcut is new</strong></td>
+			<td> </td>
 		</tr>
 		<tr>
 			<td><b>Screen Dimming</b></td>
 			<td colspan="2">F6 (or Shift F6)</td>
 			<td> </td>
 			<td>Cycles through  10 different levels.<br>
-			Does not work on OS X or with OpenGL "on".</td>
+			OSX : Does not work.</td>
 		</tr>
 		<tr>
 			<td><b>Monochromatic Mode</b></td>
@@ -1934,7 +1930,7 @@ Apply corrections to CM93 chart cells through this dialog. Read more on the <a h
 			<td><b>Measure Distance</b></td>
 			<td colspan="2">M  (or F4)</td>
 			<td>M</td>
-			<td><strong>M shortcut is new</strong></td>
+			<td> </td>
 		</tr>
 		<tr>
 			<td><b>New Route</b></td>
@@ -1982,7 +1978,7 @@ Apply corrections to CM93 chart cells through this dialog. Read more on the <a h
 			<td><b>Redo (create/move/delete mark)</b></td>
 			<td colspan="2">Ctrl-Y</td>
 			<td>Shift-Cmd-Z</td>
-			<td><strong>OS X shortcut is new</strong></td>
+			<td> </td>
 		</tr>
 	
 </tbody></table>
@@ -2037,8 +2033,8 @@ Apply corrections to CM93 chart cells through this dialog. Read more on the <a h
 <ul>
 	<li><b>Ctrl + Space </b><u>Man Over Board</u>, sets MOB Marker at current GPS position.</li>
 	<li><b>Ctrl + scroll wheel</b>, zooming in/out in small steps</li>
-	<li><b>Ctrl + Left-Arrow</b> Larger Scale Chart (Scale In)   (F7)</li>
-	<li><b>Ctrl + Right-Arrow</b> Smaller Scale Chart (Scale Out)   (F8)</li>
+	<li><b>Ctrl + Left-Arrow-Key</b> Larger Scale Chart (Scale In)   (F7)</li>
+	<li><b>Ctrl + Right-Arrow</b><strong>-Key</strong> Smaller Scale Chart (Scale Out)   (F8)</li>
 	<li><b>Ctrl + B </b>toggle the Chart Bar.</li>
 	<li><strong>Ctrl + C</strong>  Change color scheme   - new similar to Ctrl+G, "C" and (F5)</li>
 	<li><b>Ctrl + G</b>* cycles through green, red and normal screen.</li>
@@ -2064,7 +2060,6 @@ Apply corrections to CM93 chart cells through this dialog. Read more on the <a h
 	<li><b>Double clicking on a route or track</b>, displays the Route/Track Properties Dialog</li>
 	<li><b>Right clicking on any chart</b>, access a context sensitive menu.</li>
 	<li><b>Esc</b> ends the process of route creation or stops the measure pencil.</li>
-	<li><b>Enter </b>Drops Marker at current cursor position.</li>
 	<li><font face="Arial"><strong>Right Mouse click on chart</strong> View center lat &amp; long</font></li>
 	<li><font face="Arial"><strong>Left Mouse click on chart </strong>moves to center of view</font><br>
 	 </li>
@@ -2118,6 +2113,7 @@ Other alternatives for zooming includes:</p>
 <ul>
 	<li>Page Up for zooming in.</li>
 	<li>Page Down for zooming</li>
+	<li>Menu Bar-&gt;Navigate click Zoom In / Zoom Out</li>
 </ul>
 For zooming in smaller steps try
 
@@ -2131,13 +2127,21 @@ For zooming in smaller steps try
 Display-&gt;General tab. Read more about "Smooth Panning/Zooming" and 
 "Zoom to Cursor" in <em><a href="#SettingOptions">Setting Options</a></em> .<br>
 <br>
+Note that</p>
+
+<ul>
+	<li>Keyboard, Menubar, and Toolbar zooms always zoom to the center of the screen.</li>
+	<li>Wheel zoom behaviour changes depending on "Zoom To Cursor" and "SmoothZoom" settings.</li>
+</ul>
+
+<p><br>
  </p>
 
 <h2 id="Overzooming">Overzooming</h2>
 <br>
-<img alt="" src="images/rasteroverz.png" height="455" width="600"><em>Overzooming a raster chart.</em><br>
+<img alt="" src="images/rasteroverz.jpg" height="455" width="600"><em>Overzooming a raster chart.</em><br>
 <br>
-<img alt="" src="images/vecoverz.png" height="455" width="600"><br>
+<img alt="" src="images/vecoverz.jpg" height="455" width="600"><br>
 <em>Overzooming a vector chart.</em><br>
 <br>
 If you zoom in enough there will appear a warning <strong>"OverZoom"</strong> in the upper left part of the chart area.<br>
@@ -2159,7 +2163,7 @@ increased details etc, in the underlying survey. OpenCPN warns for
 text an lines, to imitate what happens with raster charts, when zooming 
 in beyond a factor 10.0 x .<br>
 <br>
-<strong>Unlimeted zooming</strong> is available using the background Map. Just create an empty chartgroup and switch to this map at any time. More in <em><a href="#ChartGroups">Chart Groups</a></em>.</p>
+<strong>Unlimited zooming</strong> is available using the background Map. Just create an empty chartgroup and switch to this map at any time. More in <em><a href="#ChartGroups">Chart Groups</a></em>.</p>
 
 <h2 id="Underzooming"><br>
 Underzooming</h2>
@@ -2187,7 +2191,7 @@ the area are available, including the southern part.<br>
 <br>
 Compare this to the well thought out representation in the raster chart INT 702 in scale 1:3.500.000.<br>
 <br>
-<img alt="" src="images/OZ2-INT702.png" width="500&quot;"><br>
+<img alt="" src="images/OZ2-INT702.jpg" width="500&quot;"><br>
  
 <h4 id="Using CM93 in OpenCPN">Using CM93 in OpenCPN</h4>
 It all starts with passage planning. The bottom line is: Don't trust 
@@ -2247,7 +2251,7 @@ surveys they are based on, and their horizontal and vertical  accuracy.<br>
 </tbody></table>
  <br>
 <br>
-<img alt="" src="images/brazil.png" height="569" width="750">
+<img alt="" src="images/brazil.jpg" height="569" width="750">
 <div><em>Brazilian charts - a free download.</em></div>
 <br>
 <strong>OpenCPN </strong>does<strong> </strong>not come with any pre-installed charts<strong>. </strong>It is up to the user to find and install charts<strong>. </strong>Read
@@ -2257,7 +2261,7 @@ for OpenCPN, free downloads as well as commercial, that we know of.<br>
 <br>
 <strong>Background Chart</strong>. OpenCPN comes with a worldwide background map, displayed if no charts are available for an area.<br>
 <br>
-<img alt="" src="images/BGchart.png" height="568" width="750"><br>
+<img alt="" src="images/BGchart.jpg" height="568" width="750"><br>
 <br>
 To install charts, OpenCPN must be pointed to a directory containing Charts of one of the recognized  <a href="#ChartFormats"><em><strong>Chart Formats</strong></em></a><strong>.</strong> Don't point OpenCPN to individual charts. You must specify the directory that contains the charts.<br>
 <br>
@@ -2318,6 +2322,18 @@ raster charts (RNC) on a local disk<br>
 For <strong>BSB4</strong> and <strong>nv-charts</strong>, first install the <a href="http://opencpn.org/ocpn/downloadplugins">latest plugin version</a>, then point OpenCPN to the correct chart directories and finally do a "Full Database Rebuild".<br>
 <br>
 <strong>Eager to get some charts quickly, to get started?</strong> Go to:  <a href="#ChartSources"><em>Chart Sources</em></a><br>
+ 
+<h3 id="Checkyourchartsafterinstallation">Check your charts after installation</h3>
+This step is important if you just installed some old BSB charts, say 
+from the ninties, or charts of dubious origin. For example, there are a 
+lot of old Maptech charts that uses the Geodetic Datum "Unknown".<br>
+It is not a problem with recent charts.<br>
+OpenCPN Version 4.0 will reject charts <strong>without a projection</strong> and add a note in the log about the problem.<br>
+Charts with an unrecognized Geodetic Chart Datum will be loaded as if 
+they were WGS84. This may lead to unacceptable errors. The Chart 
+Information Dialog will contain the sentence:<strong>"Warning: Chart Datum may be incorrect."</strong> , and the log will contain a note with the words "Chart datum {XXXX} invalid on chart".<br>
+For practical use, it's very important that the implication of this is understood.<br>
+Read up on the subject in the <em> <a href="#ChartInfo">Chart Info</a> </em>page<br>
 <br>
 <strong>Start using your charts</strong>.<br>
 You can click and drag the chart with your mouse. The cursor changes to 
@@ -2373,9 +2389,9 @@ is in a format optimized for quick loading. OpenCPN is trading, creation
  The SENC files are saved in the SENC directory, in the same place as 
 the opencpn.conf file - opencpn.ini on windows.<br>
 To avoid getting a very long series of SENC charts being built at the 
-same time, use single chart mode, for better control. This is ceraintly 
-called for in areas that are densly populated with vector charts. Single
- chart mode and quilting are explained on this page <em><a href="#ChartQuilting">Chart Quilting</a></em> .<br>
+same time, use single chart mode, for better control. This is certainly 
+called for in areas that are densely populated with vector charts. 
+Single chart mode and quilting are explained on this page <em><a href="#ChartQuilting">Chart Quilting</a></em> .<br>
 You probably do not want to build SENCs for all of your loaded S57 ENCs unless you plan to actually go there....<br>
 For an advanced approach to building all SENC files in one go .. <a href="http://opencpn.org/ocpn/troubleshooting#init">look here.</a><br>
 <strong>Updating Vector Charts</strong><br>
@@ -2420,7 +2436,7 @@ directories each cover a geographical area of 40° x 40° . The first four
  numbers describes the latitude and the last four, the longitude of the 
 SW corner of the area covered.<br>
 <br>
-<img alt="" src="images/CM-top.png"><br>
+<img alt="" src="images/CM-top.jpg"><br>
 <em>This is a typical content of the CM93 V2 top directory</em>.<br>
 <br>
 The key to understanding the numbers is to realize that CM93's coordinate system<br>
@@ -2594,7 +2610,7 @@ click to  include in quilting again. Notice the rounded corners due to quilt mod
 <br>
 To illustrate a lot of this, here is a screen shot in quilting mode.<br>
 <br>
-<img alt="" src="images/Quilt1.png"><br>
+<img alt="" src="images/Quilt1.jpg"><br>
 <br>
 <em>The screen is a quilt of two Polyconical charts. Hovering the mouse 
 pointer over the left chart-button highlights the lager scale chart for 
@@ -2634,8 +2650,8 @@ The information on a vector chart is similar.<br>
 <br>
 For CM93, switch to single chart mode, to see the information.<br>
 If there seems to be a lot of information missing, it's because the 
-chart has not been viewed in the prsent session. Get the chart up on the
- screen, the try again.<br>
+chart has not been viewed in the present session. Get the chart up on 
+the screen, the try again.<br>
 The Chart Info Box can be inactivated by hiding the Chart Bar. Use Hot keys<br>
 <b>Ctrl + B</b> to hide/show the Chart Bar.<br>
  
@@ -2730,10 +2746,19 @@ Another example. This time we are looking at a chart in 1:10.000. Very accurate.
 <br>
 <img alt="" src="images/33Accuracy_10K.png"><br>
  
-<h3 id="No Datum or no Projection -&gt; Chart rejected.">No Datum or no Projection -&gt; Chart rejected.</h3>
-Because of the danger to navigation with these incorrectly coded charts,
- OpenCPN refuses to load them from version 4.0. Missing a chart? Check 
-your OpenCPN logfile.<br>
+<h3 id="No Projection -&gt; Chart rejected.">No Projection -&gt; Chart rejected.</h3>
+If the chart does not contain any information about the projection, 
+OpenCPN don't know how to display them. From Version 4.0, such a char 
+will not be loaded, but a note about the problem will appear in the log 
+file.<br>
+Missing a chart? Check your OpenCPN logfile.<br>
+ 
+<h3 id="No Datum -&gt; ---&lt;&lt;&lt; Warning:  Chart Datum may be incorrect. &gt;&gt;&gt;---">No Datum -&gt; ---&lt;&lt;&lt; Warning:  Chart Datum may be incorrect. &gt;&gt;&gt;---</h3>
+The message will be in the Chart Info Box.<br>
+This is a warning that the chart probably is not accurate enough for GPS
+ navigation. It still should be OK with traditional methods. A minimum 
+recommendation is to check the GPS position with traditional methods, a 
+couple of compass bearings, for example.<br>
 <br>
 One example, that unfortunately have lead to problems for a few yachts, 
 is DMA/NGA chart 28201, Puerto Morelos, in Mexico, from 1995. This 
@@ -2742,10 +2767,10 @@ chart, based on a Mexican survey from 1905, has a Datum Note, similar to
 <br>
 <img alt="" src="images/GD_NGA24390.png"><br>
 <br>
-<img alt="" src="images/Puerto%2520Morelos1.png" width="650"><br>
+<img alt="" src="images/Puerto_Morelos1.jpg" width="650"><br>
 Comparing 28201 with CM93 that is correct, in this particular case. Note the substantial corrections applied in CM93,<br>
 <br>
-<img alt="" src="images/Puerto%2520Morelos2.png"><!-- google_ad_section_end -->  </div>
+<img alt="" src="images/Puerto_Morelos2.png"><!-- google_ad_section_end -->  </div>
 <div id="node-17" class="section-4">
   <h1 id="ScalingCharts" class="book-heading">Scaling Charts</h1>
   <!-- google_ad_section_start --><p><img alt="" src="images/scin.png" height="32" width="32"> <img alt="" src="images/scout.png" height="32" width="32"> These buttons will allow you to change the scale of chart you are using, <strong>unless</strong>
@@ -2784,7 +2809,7 @@ the present zoom level. Look to the far right on the bar above:
 "TrueScale 22600 Zoom 0.73x. <br>
 There is also an always present quick reference visual indicator in the SW part of the display.<br>
 <br>
-<img alt="" src="images/1_2.png" height="380" hspace="15" vspace="15" width="255" border="15"><img alt="" src="images/10_1mile.png" height="380" hspace="15" vspace="15" width="227" border="15"></p>
+<img alt="" src="images/1_2.png" border="15" height="380" hspace="15" vspace="15" width="255"><img alt="" src="images/10_1mile.png" border="15" height="380" hspace="15" vspace="15" width="227"></p>
 
 <p>When the indicator is gray and orange the total length is 1 nautical mile an each segment is 1 cable.<br>
 When the indicator is gray and black the total length is 10 miles and each segment is 2 miles.<br>
@@ -2821,11 +2846,11 @@ chart can be displayed North Up or Course Up read more:  <a href="#AutoFollowand
 <strong>More details</strong><br>
 What is the use of this feature?<br>
 <br>
-<img alt="" src="images/Quilt2.png" height="530" width="700"><br>
+<img alt="" src="images/Quilt2.jpg" height="530" width="700"><br>
 <br>
 <em>In single chart mode, getting near the edge of the chart there is no information outside the chart.</em> Y<em>ou manually have to change to the next chart,</em> <em>by selecting one of the charts in the chart bar</em>.<br>
 <br>
-<img alt="" src="images/Quilt3.png" height="530" width="700">
+<img alt="" src="images/Quilt3.jpg" height="530" width="700">
 <h3 id=""> </h3>
 
 <p><em>The situation changes dramatically when quilting mode is 
@@ -2895,7 +2920,7 @@ Zoom level, normally displayed on the far right on the Status bar, is not presen
 <br>
 Many of these features are illustrated in this screen-dump.<br>
 <br>
-<img alt="" src="images/Quilt4.png" height="530" width="700"><br>
+<img alt="" src="images/Quilt4.jpg" height="530" width="700"><br>
 <br>
 <em>This is a quilt consisting of three raster charts, two that are 
 actually displayed and one smaller scale chart that is hidden behind the
@@ -3027,7 +3052,7 @@ very lage scale plotting, for example.<br>
  
 <h2 id="UsingyourGroups">Using your Groups</h2>
 <br>
-<img alt="" src="images/ChartGroups321.png" height="387" width="600"><br>
+<img alt="" src="images/ChartGroups321.jpg" height="387" width="600"><br>
 <br>
 <em>In this illustration the navigator generally uses the US charts, 
 when available. Coming into Baia do Porto Santo a detailed chart would 
@@ -3035,7 +3060,7 @@ be great, but no such US chart is available on board. A switch to the UK
  chart group solves the problem.</em><br>
 <br>
 <br>
-<img alt="" src="images/ChartGroups322.png" height="412" width="600"><br>
+<img alt="" src="images/ChartGroups322.jpg" height="412" width="600"><br>
 <br>
 <br>
 Select the Group you want to use, by a right-click context menu item 
@@ -3062,7 +3087,8 @@ represented by the yellow rectangle.<br>
 <img alt="" src="images/opencpn_002.png" align="absMiddle" height="48" width="48">  <em>Go to </em><a href="#TableOfContents"><em>Table Of Contents</em></a><!-- google_ad_section_end -->  </div>
 <div id="node-25" class="section-4">
   <h1 id="VectorCharts" class="book-heading">Vector Charts</h1>
-  <!-- google_ad_section_start --><p><br>
+  <!-- google_ad_section_start --><p>OpenCPN makes a serious effort to be compliant with IHO standards for ECDIS display of cartography.<br>
+<br>
 <strong>First</strong>, one very important setting for vector charts is handled directly from the main toolbar.<br>
 <img alt="" src="images/text.png" align="absMiddle" height="32" width="32"> This button toggles all text displayed on a vector chart On and Off.<br>
 The hotKey "T" is an alternative for toggling the text.<br>
@@ -3093,7 +3119,7 @@ but if the charts contain various weights and sizes, they will all scale
 <br>
 <strong>The Options-Charts-Vector Charts Tab is where everything else is handled.</strong><br>
 If the S63 chart plugin is active, there will also be a "S63 Charts" tab. Read more about<strong> </strong><em><a href="#S63VectorCharts">S63 Vector Charts</a></em>,when you have read this page.</p>
-<img alt="" src="images/4VectorChartsDisplay.png" width="500&quot;"><br>
+<img alt="" src="images/4VectorChartsDisplay.jpg" width="500&quot;"><br>
  
 <h3 id="DisplayCategories">Display Categories</h3>
 <strong>If you are new to OpenCPN and vector charts please start with the "All" Display Category</strong>, to avoid risks and possible confusion. More below.<br>
@@ -3193,7 +3219,7 @@ the charts you intend to use and/or the feature list is fully populated</td>
 It's possible to change the whole look of a vectorchart. One example below....<br>
 Detailed information is available in <a href="#VectorPalette">Vector Palette</a><br>
 <br>
-<img alt="" src="images/swlook.png" height="389" width="600"><br>
+<img alt="" src="images/swlook.jpg" height="389" width="600"><br>
  
 <h4 id="Practicalusage">Practical usage</h4>
 
@@ -3203,7 +3229,7 @@ Standard" with "Select All" marked , and then switch of certain features
  as required.</p>
 As an example let's look at passing through the British gas fields in the SW North Sea<br>
 <br>
-<img alt="" src="images/europe1.png" height="415" width="480"><br>
+<img alt="" src="images/europe1.jpg" height="415" width="480"><br>
 <br>
 This is not easy, so we want to get rid of all those red and yellow circles.<br>
 Doubble click on one of the platforms, square with a dot.<br>
@@ -3470,7 +3496,7 @@ The default style can be changed to look different! You can <u><span><a href="ht
 rocks). Unzip and move the two files into the s57data folder of your 
 installation and you get this:<br>
 <br>
-<img alt="" src="images/swlook.png" height="402" width="620"><br>
+<img alt="" src="images/swlook.jpg" height="402" width="620"><br>
  * <a href="http://opencpn.org/ocpn/sites/default/files/download/s57data.zip">Download "Swedish Style"</a><br>
 <br>
 We are looking for more "styles". There is a French style... somewhere.<br>
@@ -3844,7 +3870,7 @@ how all text on the vector chart, is aligned correctly. This only works
 in OpenGL mode. The red arrow, in the upper right corner, is always 
 pointing North.</li>
 </ul>
-<img alt="" src="images/course-up.png" height="605" width="800">
+<img alt="" src="images/course-up.jpg" height="605" width="800">
 <ul>
 	<li><span>If the option "Show skewed raster charts as North-up" in the Options-&gt;Display-&gt;Advanced tab, is <strong>not</strong>
  ticked, the right-click toggle option "Course Up Mode/North Up Mode" 
@@ -4390,7 +4416,7 @@ latitudes, the Create Rout  tool seamlessly switches to also offer a
 great circles alternative, instead of Mercator rhumb-line route legs. 
 Read more <a href="#Great-circleSailing"><em>Great-circle Sailing</em></a>.<br>
 <br>
-<img alt="" src="images/Route-rollover.png" height="535" width="650"><br>
+<img alt="" src="images/Route-rollover.jpg" height="535" width="650"><br>
 Holding the cursor over the route brings up a roll-over info. The name 
 of the route, if it is set in the properties dialog, the total length of
  the route, the course and distance for the leg under the cursor and 
@@ -4495,9 +4521,9 @@ selected port, go to the route manager and select "Send to GPS".</li>
 </ul>
 <br>
 <br>
-<img alt="" src="images/anegpass.png" height="569" width="750"><br>
+<img alt="" src="images/anegpass.jpg" height="569" width="750"><br>
 <br>
-<img alt="" src="images/route-legs.png" align="left" height="446" hspace="20" vspace="20" width="110" border="10"><br>
+<img alt="" src="images/route-legs.png" align="left" border="10" height="446" hspace="20" vspace="20" width="110"><br>
 <br>
 <br>
 XTE  Cross Track Error. How far off course your boat is.<br>
@@ -4656,7 +4682,7 @@ One option in this situation is to drag the triangle to the Own Boats position.<
 <br>
 A second MOB mark is dropped.<br>
 <br>
-<img alt="" src="images/4MOB4.png" width="650">
+<img alt="" src="images/4MOB4.jpg" width="650">
 <h3 id="MOB activated automatically."><br>
 <br>
 MOB activated automatically.</h3>
@@ -4736,21 +4762,26 @@ increase as you switches to smaller scale charts.<br>
 <strong>Controls</strong><br>
 <span><strong>Smooth Panning/Zooming:</strong></span>  This works best 
 together with OpenGL. Test to see how it works with your graphic card. 
-If you are using OpenGL, tick this box as well. This feature will not 
-work if <strong>"</strong>Zoom to Cursor", below, is activated.<br>
+If you are using OpenGL, tick this box as well.<br>
 <br>
 <strong>Zoom to Cursor</strong>: Normally when clicking on the screen, 
 the display centers on the clicked point. The wheel zooms in/out always 
 using the center of the display. With this box ticked,  the zooming 
 happens at the point of the cursor. This means that as soon as you start
- to zoom in the cursor stay in the same place on the screen and on 
+ to zoom in the cursor stays in the same place on the screen and on 
 approximately the same geographical position. The advantage is that the 
 zooming in position can be fine tuned just using the cursor.<br>
 The "Zoom in" and "Zoom Out" buttons, as well as the short cuts "+" and 
 "-", will still use the center of the display for zooming, even when 
 "Zoom to Cursor" is on.<br>
-<span>"Smooth Panning/Zooming</span>", see previous item,  will be completely disabled if ZoomToCursor is enabled.<br>
 <br>
+<br>
+Zoom to Cursor Summary:
+<ol>
+	<li>Keyboard, Menubar, and Toolbar zooms always zoom to center screen. <i>Always</i>.</li>
+	<li>Wheel zoom behaviour changes depending on ZTC (Zoom to Cursor) and SmoothZoom settings.</li>
+	<li>ZTC (Zoom to Cursor) applies <i>only</i> to wheel zooms.</li>
+</ol>
 <strong>Display Features</strong><br>
 <span><strong>Show Grid: </strong>Activate a latitude and longitude 
 layer on the display. This feature only works if the display is in North
@@ -4851,34 +4882,41 @@ Once a vector chart is zoomed in to a factor 2, no more details can be
 found. OpenCPN  makes the navigator aware of this fact in a few 
 different ways.<br>
 <br>
-<img alt="" src="images/overzoom.png" width="500"><br>
-This screen-shot shows an example how over-zooming is treated. At a zoom
- factor of 4 the embossed OverZoom warnings will be displayed in the NW 
-part of the screen. From a factor 10 to 30 a blur or gentle bluish fog 
-will be overlaid on the chart. This applies to vector charts and raster 
-charts using the Mercator projection.<br>
+<img alt="" src="images/overzoom.jpg" width="500"><br>
+This screen-shot shows an example how over-zooming warning is treated.<br>
+<strong>Overzoom Warning </strong>(default)<br>
+At a zoom factor of 4 the embossed OverZoom warnings will be displayed 
+in the NW part of the screen. From a factor 10 to 30 a blur or gentle 
+bluish fog will be overlaid on the chart. This applies to vector charts 
+and raster charts using the Mercator projection.<br>
+<strong>Overzoom blur/fog effect</strong> (default)<br>
 Overzoom blurring is performed only for those systems with modern and 
 fully capable OpenGL drivers/cards. Otherwise, a very gentle "fog" is 
 applied to extreme overzoom displays, as a visual que to the user that 
-she is highly overzoomed.<br>
+the chart is highly overzoomed.<br>
 From a factor 10, lines and depth numbers on vector charts will be 
-scaled an appear bigger, to further indicate the imprecision of chart 
+scaled and appear bigger, to further indicate the imprecision of chart 
 feature geographical location at high over-zoom. This  imitates what 
 happens with a raster chart, when the individual pixels gets bigger and 
 bigger.<br>
-Make sure you understand all the implications of the following two options, before activating them.<br>
+<strong>Scaled Vector charts on overzoom </strong>(default)<br>
+In an effort to be compliant with IHO standards for ECDIS display of 
+cartography "Chart sounding symbols" are represented by small raster 
+symbols. As a chart is zoomed in, these raster symbols will increase in 
+size by about 2x. Currently they increase in size well after the 
+"Overzoom" notice for the largest scale chart available.<br>
 <br>
+Options - Make sure you understand all the implications of the following two options, before activating them.<br>
 <strong>Suppress blur/fog effects on overzoom</strong><br>
 The blurring or bluish fog, will be turned off. Note that the blurring 
 effect does not aply to single chart mode, so an alternative to this 
 option is to toggle the "Q" hotkey.<br>
-<br>
 <strong>Suppress scaled vector charts on over-zoom</strong><br>
 The scaling of lines and number will be turned off. Applies to vector charts only.<br>
 <br>
 Below is how it looks like with both the above options activated.<br>
 <br>
-<img alt="" src="images/overzoom2.png" width="500"><br>
+<img alt="" src="images/overzoom2.jpg" width="500"><br>
 <br>
 <strong>Course-Up Mode Display Update Period:</strong> This relates to 
 how often the entire displayed chart is updated. The own-ship and AIS 
@@ -5060,7 +5098,7 @@ Read more about <a href="#TidesandCurrents"><em>Tides and Currents</em></a> !<br
  
 <h2 id="TheConnectionsTab"><strong><a name="#"></a>The Connections Tab</strong></h2>
 <br>
-<img alt="" src="images/4Options-Connections.png" width="500&quot;"><br>
+<img alt="" src="images/4Options-Connections.jpg" width="500&quot;"><br>
 For a full explanation of this tab read  <a href="#DataConnections"><em>Data Connections</em></a>.<br>
 <br>
 <a href="#top"><em>Go to top of page</em></a><br>
@@ -5249,7 +5287,7 @@ case.<br>
 
 <h3 id="AISTargetsTab">AIS Targets Tab</h3>
 <br>
-<img alt="Options-Ships-AIS Targets" src="images/Options-Ships-AisTargets.png" width="500&quot;"><br>
+<img alt="Options-Ships-AIS Targets" src="images/Options-Ships-AisTargets.jpg" width="500&quot;"><br>
 <br>
 <font color="#000000">Read more about <a href="#AIS"><em>AIS</em></a>. </font><br>
 <br>
@@ -5545,7 +5583,7 @@ plugin is not affected by this setting  - COG and SOG are updated about
 once per second.</li>
 </ul>
 <br>
-<img alt="" src="images/Debug_win.png" width="600"><br>
+<img alt="" src="images/Debug_win.jpg" width="600"><br>
  
 <ul>
 	<li><strong>Show NMEA Debug Window:</strong> If you check this box you 
@@ -6474,7 +6512,7 @@ and SART it could also be an AIS warning about a target coming to close.<br>
   <!-- google_ad_section_start --><p>For a general introduction to AIS, <a href="http://en.wikipedia.org/wiki/Automatic_Identification_System">Wikipedia</a> is a good place to start.<br>
 The screen-dump below gives you a first feel for how AIS targets are presented and used in OpenCPN.<br>
 <br>
-<img alt="" src="images/ais-alarm.png" width="700px"><br>
+<img alt="" src="images/ais-alarm.jpg" width="700px"><br>
 <br>
 <em>The Lookahead mode is activated here and our own vessel is 
 proceeding 352 deg at 13.8 kts, leaving an activated track behind, and 
@@ -6686,7 +6724,7 @@ The required update rates from an AIS target transmitter is shown below.</p>
 
 <h3 id="TheAISTargetList">The AIS Target List</h3>
 <br>
-<img alt="" src="images/33AISlist2.png" width="700"><br>
+<img alt="" src="images/33AISlist2.jpg" width="700"><br>
 Another way to present the AIS information. The AIS target list is available through the right click menu.<br>
  <br>
 <strong>Sorting targets</strong><br>
@@ -6769,7 +6807,7 @@ display. Click again and the original button and AIS display comes back.</p>
 <h3 id="TheToolBoxAISTab">The ToolBox AIS Tab</h3>
  
 
-<div><img alt="void(0)" src="images/Options-Ships-AisTargets.png" width="500"></div>
+<div><img alt="void(0)" src="images/Options-Ships-AisTargets.jpg" width="500"></div>
 
 <p> </p>
 
@@ -7002,6 +7040,11 @@ SART                   Search and Rescue Transponder Targets<br>
 identified target. The names are cached internally and helps Identify 
 targets quicker on next start. Targets not yet fuly identified, were the
  name comes from the cache, are displayed lime green. See example below.<br>
+The AIS name caching can be turned off in the opencpn.ini/opencpn.config file by adding a line like this.<br>
+[Settings]<br>
+.....<br>
+<span class="pl-s1">EnableAISNameCache=0</span><br>
+.......<br>
 <br>
 <strong>Quick Reference for targets:</strong><br>
 Note that AIS targets reporting position unavailable will be rendered in grey colour.<br>
@@ -7144,7 +7187,7 @@ And here is an AIS target query.<br>
 <br>
 AIS SART messages and DSC distress calls are always found at the top of the AIS target list.<br>
 <br>
-<img alt="" src="images/sart-alarm2.png" height="370" width="600"><br>
+<img alt="" src="images/sart-alarm2.jpg" height="370" width="600"><br>
 <br>
 <strong>Testing</strong><br>
 It is possible to test a SART, to make sure it works.<br>
@@ -7167,7 +7210,7 @@ Areas and the messages included for each area, are available.<br>
 In the US, Cape Cod is transmitting experimental Right Whale information. For testing, copy <a href="http://vislab-ccom.unh.edu/ais/notices.aivdm">vislab-ccom.unh.edu/ais/notices.aivdm</a> into a text file and point the VDR (Voyage Data Recording) plugin to this file.<br>
 These messages are updated quite often.<br>
 <br>
-<img alt="" src="images/area-query.png" height="480" width="700"><br>
+<img alt="" src="images/area-query.jpg" height="480" width="700"><br>
 <br>
 The area messages are found as the first entries in a normal object 
 query for vectorcharts. The easiest way to display this dialog  is to 
@@ -7329,7 +7372,7 @@ A green Buddy target on an island.<br>
 <img alt="" src="images/gpsg_buddy.jpg" height="209" width="400"><br>
 <br>
 The AIS Target List View<br>
-<img alt="" src="images/dsc-list.png" height="280" width="800"><br>
+<img alt="" src="images/dsc-list.jpg" height="280" width="800"><br>
 <br>
 <br>
 <img alt="" src="images/opencpn_002.png" align="absMiddle" height="48" width="48">  <em>Go to </em><a href="#TableOfContents"><em>Table Of Contents</em></a><!-- google_ad_section_end -->  </div>
@@ -7397,7 +7440,7 @@ Right-click an existing link for a related action menu.<br>
 In the illustrated case, the link was to a local JPG picture, that opens
  in the default program associated with the jpg extension.<br>
 <br>
-<img alt="" src="images/mark4.png" height="601" width="700"><br>
+<img alt="" src="images/mark4.jpg" height="601" width="700"><br>
 <br>
 If the mark belongs to a Layer, it can't be changed. A warning about this appears above the name of the mark<br>
 <br>
@@ -7454,7 +7497,7 @@ route is turned visible, all the shared waypoints are also made visible.
 waypoint.</li>
 	<li>To Sort routes click "Route Name" or "To"</li>
 	<li><strong>Properties</strong>:This button brings up a new dialog with settings that can be changed for each route.</li>
-	<li><img alt="" src="images/Route-Properties.png" height="385" width="600"></li>
+	<li><img alt="" src="images/Route-Properties.jpg" height="385" width="600"></li>
 	<li>Wpt 005 is right-clicked, and new dialog has popped up. The 
 waypoint properties can be reached and edited. For example, change the 
 default name, "005" in this case, to something more appropriate. Read 
@@ -7548,8 +7591,8 @@ tabulated along all route points in the route properties dialog. It is
 essential to enter a departure time and a planned speed. Once "Enter" is
  pressed the tidal column will show the nearest High or Low water 
 considering the ETA at each waypoint.<br>
-	  <img alt="" src="images/plan1.png" height="455" width="600"><br>
-	  <img alt="" src="images/plan2.png" height="292" width="600"></li>
+	  <img alt="" src="images/plan1.jpg" height="455" width="600"><br>
+	  <img alt="" src="images/plan2.jpg" height="292" width="600"></li>
 	<li>If no tide dialog for any station is open and a waypoints name 
 contains the string @~~&lt;name&gt;, for example "@~~York Spit Light", 
 then the tide report for the closest station with matching name is shown
@@ -7562,7 +7605,7 @@ setting of planned speed specific just to the next route leg (e.g.
  this waypoint (e.g. " ETD=2/14/2011 12:00;"), allowing for planning 
 extended stopovers. Time can be specified as UT, LMT or local zone time 
 at the PC (default).<br>
-	 <img alt="" src="images/plan5.png" height="283" width="600"></li>
+	 <img alt="" src="images/plan5.jpg" height="283" width="600"></li>
 </ul>
 
 <h2 id="Tracks"><br>
@@ -7678,7 +7721,7 @@ changed or deleted.</li>
 <img alt="" src="images/layers-show2.png"><br>
 The Route Managers Layer Tab<br>
 <br>
-<img alt="" src="images/layer22.png" height="455" width="600">
+<img alt="" src="images/layer22.jpg" height="455" width="600">
 <ul>
 	<li>Layers are useful for many things. It can for example be used to 
 update charts with new navigation marks and dangers as per Notices to 
@@ -7706,12 +7749,12 @@ dialog,
 	<img alt="" src="images/layer-track2.png"></p>
 	<img alt="" src="images/layer-prop.png" align="absBottom" height="121" width="400">
 	<p> </p>
-	<img alt="" src="images/layer-prop1.png" align="absBottom" height="65" width="400" border="10"></li>
+	<img alt="" src="images/layer-prop1.png" align="absBottom" border="10" height="65" width="400"></li>
 </ul>
 
 <ul>
 	<li>A route belonging to a layer is also identified as such, by just hovering with the cursor above the route.<br>
-	<img alt="" src="images/layer_route1.png" height="80" width="200" border="10"></li>
+	<img alt="" src="images/layer_route1.png" border="10" height="80" width="200"></li>
 	<li>A Route belonging to a layer also has the option "Activate". It can
  thus be used, but still, no changes can be made. A much more flexible 
 option, would be to import the route layer file as a normal gpx file.</li>
@@ -7911,7 +7954,7 @@ calculate a composite route, and the distance between the waypoints can
 be set by the user. The end result, however, is a "gpx" file that is 
 exported, and then imported into OpenCPN via the Route Manager.<br>
 <br>
-<img alt="" src="images/gc-comp.png" height="218" width="700"><br>
+<img alt="" src="images/gc-comp.jpg" height="218" width="700"><br>
 <br>
 A Great-circle from Cook Strait to Cape Horn limited by 60° S<br>
 <br>
@@ -7965,7 +8008,7 @@ routes. _B_plus is active. What remains is to delete route _B and to
 rename _B_plus to a suitable name, for example the name of your original
  route.<br>
 <br>
-<img src="images/incwpt7.png" alt="" height="172" width="600"><br>
+<img src="images/incwpt7.jpg" alt="" height="172" width="600"><br>
 <br>
 Deleting route _B.<br>
 <br>
@@ -8004,7 +8047,7 @@ that QtVlm doesn't know anything about tidal streams, currents local
 squalls nor about the state of the crew etc. These are more reasons why 
 the final route always is the responsibility of the skipper.<br>
 <br>
-<img alt="" src="images/Routing1.png" height="590" width="600"><br>
+<img alt="" src="images/Routing1.jpg" height="590" width="600"><br>
 <br>
 Right-click on the route and export in the kml format.<br>
 <br>
@@ -8123,7 +8166,7 @@ to quickly plot the contents of, for example an email, containing the
 forecast advisory. In any case, it is a good idea to have the forecast 
 track of a tropical system available where you normally do your 
 navigation and planning.<br>
-<img src="images/TS1.png" alt="" height="342" width="710"><br>
+<img src="images/TS1.jpg" alt="" height="342" width="710"><br>
 <br>
 <img src="images/TS2.png" alt="" height="350" width="710"><br>
 <strong>Download</strong> the gpx scripts <a href="http://opencpn.org/sites/default/files/users/taifun/GPX_utils_100628.zip">here</a>. The old great-circle script is included. For some help run each script without arguments.<br>
@@ -8411,12 +8454,12 @@ Starting with offsets.
     <li>Zoom/Pan to the region of interest.</li>
     <li>Right click and activate "CM93 Offset Dialog"</li>
 </ul>
-  <img src="images/cm93.png" alt="" height="304" hspace="20" vspace="20" width="294" border="20"><br>
+  <img src="images/cm93.png" alt="" border="20" height="304" hspace="20" vspace="20" width="294"><br>
 <ul>
     <li>In the list of cells/MCOVR IDs, selected the one MCOVR of 
 interest.    The coverage area for this MCOVR object will be outlined 
 with a heavy  yellow border.</li>
-    <img alt="" src="images/offsets2.png" height="607" hspace="20" vspace="20" width="800" border="20"><br>
+    <img alt="" src="images/offsets2.jpg" border="20" height="607" hspace="20" vspace="20" width="800"><br>
     <br>
     <li>Some cells have built in corrections already applied. The values
  wgsox and wgsoy, are offsets to bring the original chart cell to WGS84.
@@ -8442,13 +8485,13 @@ raster chart or georeferenced photo chart.<br>
 <br>
 To see how this feature works, here is an example from the South Pacific.<br>
 <br>
-<img alt="" src="images/offsets4.png" height="607" hspace="20" vspace="20" width="800" border="20"><br>
+<img alt="" src="images/offsets4.jpg" border="20" height="607" hspace="20" vspace="20" width="800"><br>
 This is Tongareva, also called Penhryn atoll. A mark, with a triangle is dropped at the westernmost point of the Island.<br>
-<img alt="" src="images/offsets5.png" height="607" hspace="20" vspace="20" width="800" border="20">Zooming
+<img alt="" src="images/offsets5.jpg" border="20" height="607" hspace="20" vspace="20" width="800">Zooming
  out to next smaller scale chart makes the triangle mark jump NNE. Time 
 for some corrections, as we, at least for the purpose of this example, 
 are confident that the larger scale chart is correct.<br>
-<img alt="" src="images/offsets6.png" height="607" hspace="20" vspace="20" width="800" border="20">Quite large corrections brings the chart into reasonable agreement.  <br>
+<img alt="" src="images/offsets6.jpg" border="20" height="607" hspace="20" vspace="20" width="800">Quite large corrections brings the chart into reasonable agreement.  <br>
 <ul>
     <li>Use the spin controls on the right side of the dialog to adjust 
 the desired user offsets. It is also possible to write numbers directly.
@@ -8498,6 +8541,93 @@ Read more in <em><a href="#SettingOptions">Setting Options</a></em><br>
 <br>
 <br>
 <img alt="" src="images/opencpn_002.png" align="absMiddle" height="48" width="48">  <em>Go to </em><a href="#TableOfContents"><em>Table Of Contents</em></a><!-- google_ad_section_end -->  </div>
+<div id="node-331" class="section-3">
+  <h1 id="TheConfigurationFile" class="book-heading">The Configuration File</h1>
+  <!-- google_ad_section_start --><strong>Random observations, that may develop...</strong><br>
+<br>
+The <strong>Ais name caching</strong> can be turned off in the opencpn.ini/opencpn.config file by adding a line like this.<br>
+[Settings]<br>
+.....<br>
+<span class="pl-s1">EnableAISNameCache=0</span><br>
+.......<br>
+<br>
+<strong>Crash reporting</strong> for Windows ican be enabled by editing 
+the opencpn.ini file. Add the line below to enable the crash-report. 
+Sett the value to "0" to disable it.<br>
+<br>
+[Settings]<br>
+.....<br>
+EmailCrashReport=1<br>
+.....<br>
+<br>
++++<br>
+<br>
+<strong>Rotating</strong> the canvas, is unsupported but possible.....<br>
+<br>
+[Settings]<br>
+EnableRotateKeys=1<br>
+<br>
+Enables<br>
+[ Rotate chart left.<br>
+] Rotate chart right.<br>
+Alt + [ Rotate chart left in fine steps.<br>
+Alt + ] Rotate chart right in fine steps.<br>
+\ Reset rotation<br>
+Some keyboards have to use AltGR + ], etc.<br>
+<br>
++++<br>
+<br>
+ If you have a lot of <strong>graphic memory</strong>, or very little, try to add the following to your config (ini on windows) file:<br>
+"GPUMemorySize=nnn"<br>
+where nnn is graphics card memory size, in MBytes.<br>
+256 MBytes is the default.<br>
+<br>
++++<br>
+<br>
+Application <strong>memory limit</strong> target. Try to limit the total memory used by OCPN to the specified value, approximately.<br>
+Specify this mode by:<br>
+......<br>
+[Settings]<br>
+MEMCacheLimit=xxx<br>
+<br>
++++<br>
+<strong>Open chart limit.</strong> This is the default mode under Linux, and the default value is 20 open charts at any one time.<br>
+<br>
+Modify this limit by the following:<br>
+......<br>
+[Settings]<br>
+NCacheLimit=yy<br>
+<br>
++++<br>
+<br>
+The <strong>width of the COG Predictor</strong> can be adjusted in the opencpn.ini configuration file. Find the line below and adjust the value.<br>
+OwnshipCOGPredictorWidth=3<br>
+<br>
++++<br>
+<br>
+For simple <strong>NMEA data stream debugging</strong>, add the following to your opencpn.ini file:Under [Settings] add a line<br>
+DebugNMEA=1500<br>
+This will provide up to 1500 debug messages pertaining to NMEA traffic to the<br>
+opencpn.log.<br>
+<br>
++++<br>
+<br>
+In the opencpn.ini/opencpn.config file you can find a configuration setting to control the <strong>number of backups kept</strong>, defaulting to KeepNavobjBackups=5. This value can be changed using a text editor.<br>
+<br>
++++<br>
+<br>
+<strong>AnchorWatch</strong><br>
+Find the section that starts with "[Settings] ".<br>
+Create two new lines, looking, for example like this.<br>
+AnchorWatchDefault=45 (default is 50 m)<br>
+<br>
++++<br>
+<br>
+<strong>Automatic Anchor Mark</strong><br>
+To use this feature find opencpn.conf or opencpn.ini as it is called in windows.<br>
+Search for a line like this:<br>
+AutoAnchorDrop=0<br>
+and change the value from "0" to "1".<!-- google_ad_section_end -->  </div>
 </div>
 <div id="node-232" class="section-2">
   <h1 id="Plugins" class="book-heading">Plugins</h1>
@@ -8624,7 +8754,7 @@ time, kills it.<br>
 The WMM Icon uses a new feature, by displaying the magnetic variation, at the position of OwnShip in the button itself.<br>
 <br>
 <br>
-<img alt="" src="images/gribplugin33.png"><br>
+<img alt="" src="images/gribplugin33.jpg"><br>
 <br>
  
 <h3 id="ProblemswithPlugins">Problems with Plugins</h3>
@@ -8669,16 +8799,16 @@ This process is reversible. Just grab the Dashboard dialog bar with the
 cursor, an pull towards the middle of the screen, and the Dashboard will
  become floating.<br>
 <br>
-<img alt="" src="images/dashboard32.png" height="454" width="600"><br>
+<img alt="" src="images/dashboard32.jpg" height="454" width="600"><br>
 <br>
 The same Dashboards docked left and bottom.<br>
 <br>
-<img alt="" src="images/dashboard-docked32.png" height="480" width="600"><br>
+<img alt="" src="images/dashboard-docked32.jpg" height="480" width="600"><br>
 <br>
 There is a grab handle in the SE corner of each Dashboard. Use it to resize each dialog.<br>
 The graphics will change size, but not the text, which is handled separately. See further down.<br>
 <br>
-<img alt="" src="images/dash-drag.png" height="454" width="600"><br>
+<img alt="" src="images/dash-drag.jpg" height="454" width="600"><br>
  
 <h3 id="TheDashboardTab">The Dashboard Tab</h3>
 <br>
@@ -8798,7 +8928,7 @@ Use this tab to set fonts.<br>
 <br>
 These controls together enables the user to adjust the view of the dashboard to suit individual needs.<br>
 <br>
-<img alt="" src="images/dash-big-fonts.png" height="691" width="700"><br>
+<img alt="" src="images/dash-big-fonts.jpg" height="691" width="700"><br>
  <br>
 <strong>Units Ranges and Formats</strong><br>
 Set the units to use, and the range of the speed dial.<br>
@@ -8818,7 +8948,7 @@ Just define a separate dashboard and add it as the only instrument.<br>
 <br>
 You can  resize the Instrument it with the mouse.<br>
 <br>
-<img alt="" src="images/WH.png" height="181" width="800"><br>
+<img alt="" src="images/WH.jpg" height="181" width="800"><br>
 <br>
 In real conditions, it monitors around 40 min of wind direction (red), 
 as well as wind speed (blue), showing a vertical time line every 5 min 
@@ -9100,10 +9230,12 @@ strength, and each particle has a limited "life span". The<strong> Density </str
  creates particle trails that are shorter but closer together with 
 increased value, which is the same as  further to the right.  The 
 particle Map below clearly shows a convergence zone with stronger winds 
-(red). Ths is probably a cold front.   </li>
+(red). Ths is probably a cold front.  <strong>Performance Warning</strong>:
+ Note that high density Particle Maps on Low Powered Machines and Large 
+Files may slow your machine to a crawl. First test on small files.</li>
 </ul>
 <br>
-<img alt="" src="images/ParticleMap.png"><br>
+<img alt="" src="images/ParticleMap.jpg"><br>
  
 <ul>
 	<li><strong>Overlay Transparency </strong>works as expected.</li>
@@ -9341,34 +9473,34 @@ $sudo dpkg-reconfigure exim4-config<br>
 This is a very simple setup where exim is just used to forward mail to 
 the ISP:s smtp server. Local system mail is also available.<br>
 <br>
-<img alt="" src="images/33Gribmail1.png" width="650"><br>
+<img alt="" src="images/33Gribmail1.jpg" width="650"><br>
 It's important to use the choice above.<br>
 <br>
-<img alt="" src="images/33Gribmail2.png" width="650"><br>
+<img alt="" src="images/33Gribmail2.jpg" width="650"><br>
 I just use "localhost".<br>
 <br>
-<img alt="" src="images/33Gribmail3.png" width="650"><br>
+<img alt="" src="images/33Gribmail3.jpg" width="650"><br>
 We have no incoming connections.<br>
 <br>
-<img alt="" src="images/33Gribmail4.png" width="650"><br>
+<img alt="" src="images/33Gribmail4.jpg" width="650"><br>
 We are not using this.<br>
 <br>
-<img alt="" src="images/33Gribmail5.png" width="650"><br>
+<img alt="" src="images/33Gribmail5.jpg" width="650"><br>
 We are not using this.<br>
 <br>
-<img alt="" src="images/33Gribmail6.png" width="650"><br>
+<img alt="" src="images/33Gribmail6.jpg" width="650"><br>
 This is important. It must point to your Internet Service Providers SMTP server.<br>
 <br>
-<img alt="" src="images/33Gribmail7.png" width="650"><br>
+<img alt="" src="images/33Gribmail7.jpg" width="650"><br>
 Your choice!<br>
 <br>
-<img alt="" src="images/33Gribmail8.png" width="650"><br>
+<img alt="" src="images/33Gribmail8.jpg" width="650"><br>
 RTFM and make up your mind. Not a big deal for this simple setup.<br>
 <br>
-<img alt="" src="images/33Gribmail9.png" width="650"><br>
+<img alt="" src="images/33Gribmail9.jpg" width="650"><br>
 RTFM.<br>
 <br>
-<img alt="" src="images/33Gribmail10.png" width="650"><br>
+<img alt="" src="images/33Gribmail10.jpg" width="650"><br>
 Your Choice, but no point in splitting this simple setup.<br>
 <br>
 Edit /etc/exim4/passwd.client so it contains your username and password  to your ISP:s mail server.
@@ -9611,7 +9743,7 @@ Or all options together.<br>
   <h1 id="VoyageDataRecorderPlugin" class="book-heading">Voyage Data Recorder Plugin</h1>
   <!-- google_ad_section_start --><strong>Use VDR to record and play NMEA files.</strong><br>
 <br>
-<img alt="" src="images/VDR-AIS_Simulation-2.png">
+<img alt="" src="images/VDR-AIS_Simulation-2.jpg">
 <ul>
 	<li>Use VDR for AIS Simulation - Run VDR to play AIS NMEA files. Or... 
 use the VDR plugin to record your passages and replay them later! The 
@@ -9724,7 +9856,7 @@ Climatology provides monthly data for Wind, Currents, Sea Level
 Pressure, Sea Temperature, Air Temperature, Cloud Cover, Precipitation, 
 Relative Humidity, Lightning, Sea Depth, and Cyclones.<br>
 <br>
-<a href="#"></a><br>
+<img alt="1" src="images/climatology1thumb.jpg"><br>
 <br>
 July Wind with Current overlay. (Click for enlarged view)<br>
 <br>
@@ -9747,62 +9879,52 @@ format and do not require that Overlay be checked, the other data types
 can also be configured to not require that Overlay be checked if OpenGL 
 is not operational. Click for an englarged view.<br>
 <br>
- 
-<table border="1" cellpadding="1" cellspacing="1">
-	<caption>Normal Vector Data Types (Opengl not required) - Malaysia</caption>
-	
-		<tbody><tr>
-			<td><br>
-			<a href="#"></a><br>
-			Wind - December</td>
-			<td><br>
-			<a href="#"></a><br>
-			Current - December</td>
-		</tr>
-		<tr>
-			<td><br>
-			<a href="#"></a><br>
-			Pressure - December</td>
-			<td><br>
-			<a href="#"></a><br>
-			Cyclones - December</td>
-		</tr>
-	
-</tbody></table>
+<strong>Normal Vector Data Types </strong><br>
+(Opengl not required) - Malaysia<br>
 <br>
-The table below shows data types which are normally shown with Overlay 
+<br>
+<img alt="Wind December" src="images/Climatology-Wind-Dec.png"><br>
+Wind - December<br>
+<br>
+<img alt="Current - Decembeer" src="images/Climatology-Current-Dec.png"><br>
+Current - December<br>
+<br>
+<img alt="Pressure - December" src="images/Climatology-Pressure-Dec.jpg"><br>
+Pressure - December<br>
+<br>
+<img alt="Cyclones - December" src="images/Climatology-Cyclones-Dec.jpg"><br>
+Cyclones - December<br>
+<br>
+<br>
+ The table below shows data types which are normally shown with Overlay 
 checked and OpenGL turned on, however they can be configured to show 
 vector data when Opengl is off, by unchecking "Overlay" for each data 
 type and configuring a few of the display settings.  Click for enlarged 
 view.<br>
 <br>
- 
-<table border="1" cellpadding="1" cellspacing="1">
-	<caption>Normal Overlay Data Types (requires Opengl) - Atlantic</caption>
-	
-		<tbody><tr>
-			<td><br>
-			<a href="#"></a><br>
-			Pressure</td>
-			<td><br>
-			<a href="#"></a><br>
-			Sea Temperature</td>
-			<td><br>
-			<a href="#"></a><br>
-			Cloud Cover</td>
-		</tr>
-		<tr>
-			<td><a href="#"></a><br>
-			Precipitation</td>
-			<td><br>
-			<a href="#"></a><br>
-			Relative Humidity<br>
-			 </td>
-			<td><a href="#"></a><br>
-			Sea Depth</td>
-		</tr>
-	
-</tbody></table>
+<strong>Normal Overlay Data Types</strong><br>
+(requires Opengl) - Atlantic<br>
+<br>
+<img alt="Climatology Sea Level Pressure" src="images/Climatology-SeaLevelPressure-in-July.jpg"><br>
+Pressure<br>
+<br>
+<img alt="Climatology Sea Level Temperature" src="images/Climatology-SeaLevelTemperature-in-July.jpg"><br>
+Sea Temperature<br>
+<br>
+<img alt="Climatology Clouds" src="images/Climatology-Clouds-in-July.jpg"><br>
+Cloud Cover<br>
+<br>
+<img alt="Climatology Precipitation" src="images/Climatology-Precipitation-in-July.jpg"><br>
+Precipitation<br>
+<br>
+<img alt="Climatology Relative Humidity" src="images/Climatology-RelativeHumidity-in-July.jpg"><br>
+Relative Humidity<br>
+<br>
+<img alt="" src="images/Climatology-SeaDepth.jpg"><br>
+Sea Depth<br>
+<br>
+<br>
+<br>
 Note: The Data-Types in the table above can be configured by the user to
  show data if Opengl is not turned on by selecting "Config", selecting 
 the appropriate data type from the Drop Down window, and unchecking 
@@ -9811,18 +9933,18 @@ the appropriate data type from the Drop Down window, and unchecking
 <strong>Configuration </strong><br>
 <br>
 Config &gt; Standard Tab &gt; Wind dropdown<br>
-<strong><img alt="" src="images/CCC-Castine-Climatology-Config-Standard-Wind.png"></strong><br>
+<strong><img alt="" src="images/CCC-Castine-Climatology-Config-Standard-Wind.jpg"></strong><br>
 <br>
 Config &gt; Standard Tab &gt; Current dropdown<br>
-<strong><img alt="" src="images/CCC-Castine-Climatology-Config-Standard-Current.png"></strong><br>
+<strong><img alt="" src="images/CCC-Castine-Climatology-Config-Standard-Current.jpg"></strong><br>
 <br>
 Config &gt; Standard Tab &gt; SeaSurfaceTemperature dropdown<br>
-<strong><img alt="" src="images/CCC-Castine-Climatology-Config-Standard-SeaSurfaceTemperatur.png"></strong><br>
+<strong><img alt="" src="images/CCC-Castine-Climatology-Config-Standard-SeaSurfaceTemperatur.jpg"></strong><br>
 Config &gt; Standard Tab &gt; SeaLevelPressure dropdown<br>
-<strong><img alt="" src="images/CCC-Castine-Climatology-Config-Standard-SeaLevelPressure.png"></strong><br>
+<strong><img alt="" src="images/CCC-Castine-Climatology-Config-Standard-SeaLevelPressure.jpg"></strong><br>
 <br>
 Config &gt; Wind Tab<br>
-<img alt="" src="images/CCC-Castine-Climatology-Config-Wind.png"><br>
+<img alt="" src="images/CCC-Castine-Climatology-Config-Wind.jpg"><br>
 <br>
 Config &gt; Cyclones Tab<br>
 <img alt="" src="images/ClimatologyCycloneConfig.jpg"><br>
@@ -9834,41 +9956,6 @@ The plugin works with OpenCPN 3.2 and newer.<br>
    2. Linux: dpkg -i &lt;package_name&gt;.deb or rpm -i 
 &lt;package_name&gt;.rpm or cd /usr; sudo tar xavf &lt;package_name&gt; 
  <br>
-<br>
-<strong>Older Installation instructions below</strong><br>
-<br>
-Download the library corresponding to your OS and save into the plugin folder of your OpenCPN installation
-<ol>
-	<li>Windows: [climatology_win32_pi19_v02_pi.dll]  <a href="http://sourceforge.net/projects/opencpnplugins/files/climatology_pi/climatology_win32_pi19_v02_pi.dll/download">http://sourceforge.net/projects/opencpnplugins/files/climatology_pi/climatology_win32_pi19_v02_pi.dll/download</a></li>
-	<li>32bit Linux: [libclimatology_i386_pi19_v02_pi.so]  <a href="http://sourceforge.net/projects/opencpnplugins/files/climatology_pi/libclimatology_i386_pi19_v02_pi.so/download">http://sourceforge.net/projects/opencpnplugins/files/climatology_pi/libclimatology_i386_pi19_v02_pi.so/download</a></li>
-	<li>64bit Linux: [libclimatology_amd64_pi19_v02_pi.so] <a href="http://http//sourceforge.net/projects/opencpnplugins/files/climatology_pi/libclimatology_amd64_pi19_v02_pi.so/download">http://sourceforge.net/projects/opencpnplugins/files/climatology_pi/libclimatology_amd64_pi19_v02_pi.so/download</a></li>
-</ol>
-<strong>Older Installatiion Instructions for the Data</strong><br>
-<br>
-Note that with the new Windows installer.exe and installer packages, the
- proper Climatology Data is included and you should find a "data" 
-directory in your plugin path with the necessary files. The instructions
- below are for earlier versions of the plugin and to assist if your 
-Climatology plugin does not have data for some reason.<br>
-<br>
-Go to <a href="https://sourceforge.net/projects/opencpnplugins/files/climatology_pi/">https://sourceforge.net/projects/opencpnplugins/files/climatology_pi/</a> and download the latest version of the data<br>
-(The most recent version of the data is CL-DATA-1.0.tar.xz the earlier 
-version is CL-DATA-0.tar.xz)  The current version of Climatology reads 
-both compressed *.gz files and uncompressed files.  The location to 
-place the downloaded data depends on your operating system:<br>
-<br>
-<strong>Linux</strong><br>
-Create a folder ***/usr/share/opencpn/plugins/climatology/data*** and extract the downloaded archive there.<br>
-(in case you built locally and installed to /usr/local, the path to the 
-data is /usr/local/share/opencpn/plugins/climatology/data)<br>
-    * sudo mkdir -p /usr/share/opencpn/<u><i><b>plugins</b></i></u>/climatology/data<br>
-    * sudo 7z e -o/usr/share/opencpn/climatology/data CL-DATA-6.7z<br>
-<br>
-<strong>Windows</strong><br>
-* Create a folder ***C:\Program 
-Files\OpenCPN\plugins\climatology\data*** (C:\Program Files 
-(x86)\OpenCPN\plugins\climatology\data if you are using a 64bit version 
-of Windows) and extract the downloaded archive there.<br>
 <br>
 <strong>Warning about use of Data:</strong><br>
 Weather_routing is only as good as the data provided by the Grib plugin and the Climatology plugin.
@@ -9885,44 +9972,449 @@ Climatology has averaged these effects.</li>
 	<li>These planning tools may be helpful, but should be taken with a 
 healthy "grain of salt" as any good sailor (who looks out to the 
 horizon) should know.  -Rick Gleason</li>
-</ol>
-<strong>About the Author</strong><br>
-The Climatology Plugin was written by Sean Depagnier who has written 
-many Opencpn plugins. There is a strong likelihood you have already used
- one of his plugins.  The plugin is over 1000 lines of code written with
- care and skill. Sean has a voyage fund and would appreciate any 
-contribution large or smalle, please see the Donate button under the 
-Configuration &gt; About Tab.     -Thank you Sean for this excellent 
-plugin!<!-- google_ad_section_end -->  </div>
-<div id="node-258" class="section-3">
+</ol><!-- google_ad_section_end -->  </div>
+<div id="node-267" class="section-3">
   <h1 id="WeatherRoutingPlugin" class="book-heading">Weather Routing Plugin</h1>
-  <!-- google_ad_section_start -->Need to add images and create instructions.<br>
+  <!-- google_ad_section_start --><h3 id="WeatherRouting"><strong>Weather Routing</strong></h3>
+This plugin creates optimized weather routes based on grib files and 
+performance data (polar data) for the boat, as well as conditions set 
+for time, where to start and where to finish.
+
+<ol>
+	<li>When downloaded, without changing anything, except downloading a 
+recent grib file, defining two weather_routing waypoints (hover mouse at
+ location, right click pick weatherrouting position),  create a new 
+Configuration under Weather_routing, select Edit Configuration and add 
+one of the waypoints to the start and the other to the end waypoint, 
+click Grib Time, close Configuration, and Compute the new configuration 
+and it will probably create isochrones and a new weather route.</li>
+	<li>Use the Grib Plugin and recently downloaded grib files for completing grib predictive routing (1-8 days).</li>
+	<li>Use the Climatology Plugin to find and plan long term cruising routes, (most useful in prevailing winds areas).</li>
+	<li>Use both grib and climatology data to get current data if the grib 
+does not contain it, or to use climatology to avoid areas of cyclones.</li>
+	<li>It is also possible to use both grib and climatology data, allowing
+ the grib's route to be extended past the time/range of the grib. This 
+builds on the assumption that the current general weather pattern is 
+"average", otherwise the result may be totally misleading. If you have 
+followed the weather for a while and know the current weather pattern, 
+through 500 mb patterns etc, this is more useful for actual routing than
+ just using a long term average like climatology alone.</li>
+</ol>
 <br>
-Plugin to use predicitive gridded data in the Grib and Climatology plugins to determine the best predicted routing.<!-- google_ad_section_end -->  </div>
+<img alt="" src="images/CCC-Castine-Wx-Rte-1d-23h.jpg" width="500&quot;"><br>
+<br>
+<strong>Create a New Route</strong>  (Edit &gt; New)
+
+<ol>
+	<li>Start the plugin by clicking it's icon on the toolbar.</li>
+	<li><span>start and end points can be set by hovering cursor at a location, and right mouse click, select "Weather Route Position"</span></li>
+	<li>Start Grib (with fresh grib file) and/or Climatology Plugins, and set the time to the desired starting time.</li>
+	<li>Select Configuration -&gt; New to create a new weather route configuration.</li>
+	<li>The Weather Routing Configuration Dialog should be shown.  Set the 
+start and end positions and hit "grib time" to set the time.  Be sure to
+ edit the boat to correctly configure it, see below.</li>
+	<li>Beginners should first try a simple route, with starting point and 
+end point, 5 degree steps, and possibly a 3 hour time interval until 
+they see it is working.  The time interval depends on the speed of the 
+boat and distance traveled.</li>
+	<li>From the first Weather Routing Window, select Configuration -&gt; Compute.</li>
+</ol>
+<br>
+<img alt="" src="images/WeatherRoutingConfiguration.jpg" width="500&quot;"><br>
+<br>
+<strong>Configuration Window  </strong>(Edit &gt; Configuration)<br>
+Provides setup flexibility for various factors:
+<ol>
+	<li>Start location, date and time. End location.</li>
+	<li>Step duration for isochrones in hours and minutes (12 hours for long routes, 1 hour for shorter)</li>
+	<li>Degree Steps  (5 degree steps is faster than 1 degree steps)</li>
+	<li>Boat Performance based on editing boat specifications or based on a polar data file.</li>
+	<li>Set constraints on various factors such as max wind, swell, waves, latitude, max diverted course etc...</li>
+	<li>Set data source Grib or Climatology, greys if not available.</li>
+	<li>Set options like detect land, currents, inverted regiions, anchoring.</li>
+	<li>Routes can be Edited (created, selected, renamed, reset and exported.)</li>
+</ol>
+<img alt="" src="images/WeatherRoutingConfiguration1.jpg" width="500&quot;"><br>
+<br>
+<strong>Grib or Climatology Data is Required</strong><br>
+Provided by use of the Grib_plugin and a fresh Grib file,  or by the 
+Climatology_plugin with the separate Climatology data installed in the 
+proper directory.<br>
+<br>
+<strong><img alt="" src="images/CCC-Castine-Grib.png"></strong><br>
+<br>
+When the weather route is displayed, grib and climatology calculations 
+use different color schemes.  In the route below, on the left, using 
+only climatology because we are outside the grib area.  In the middle, 
+the computation is based on grib data, and toward the end of the 
+passage, the grib data does not cover this time so again climatology 
+data is used.  If the transition from grib to climatology is not 
+uniform, then the climatology data is not as reliable in that situation.<br>
+<br>
+<img alt="" src="images/weather_route_data_types_1.jpg"><br>
+<br>
+<strong>Route Manager</strong><br>
+The Route Manager can be used for listing the weather route.<strong> </strong>Right click a weather route and pick "Properties"  Also weather routing can be exported.<br>
+<br>
+<strong>Warning about Data:</strong><br>
+Weather_routing is only as good as the data provided by the Grib plugin and the Climatology plugin.
+<ol>
+	<li><strong>Grib plugin</strong>: Depends on recent download grib files
+ from Noaa and other sources. Downloaded Grib predicitions can change 
+significantly over several days. The longer the grib prediction is, the 
+less reliable the grib can be.</li>
+	<li><strong>Climatology plugin</strong>: Can be used for analyzing long
+ crusing routes through various seasons and constraints, but does not 
+take into account the current weather conditions which often vary 
+significantly from the 30 year average, especially outside of prevailing
+ wind areas. </li>
+	<li>These planning tools may be helpful, but should be taken with a 
+healthy "grain of salt" as any good sailor (who looks out to the 
+horizon) should know.</li>
+</ol>
+<strong>Warning about Weather Routes:</strong><br>
+The weather routes created  may not consider or "see" normal navigation 
+considerations and issues, therefore every route should be checked very 
+carefully for navigation markers, shallow depths, bad currents, rocks, 
+land and other obstacles and hazards.<br>
+<br>
+<strong>Some other Examples</strong>:<br>
+Nassau to Newport, showing other windows (Boat Performance window, 
+Routing window with Properties opened showing track waypoints)<br>
+<br>
+<img alt="" src="images/Nassau_to_Newport_May.jpg" width="500"><br>
+ 
+<h4 id="PolarFiles"><strong>Polar Files</strong></h4>
+<br>
+<font face="Arial"><b><u>Opencpn</u></b>  weather_routing_pi    and the required polar format<br>
+<br>
+The weather_routing_pi plugin references several files located in c:/ProgramData/opencpn.</font><br>
+<br>
+<font face="Arial"><font face="Arial">To see where these files are set in the plugin, select a route or make a new one. Pick Configuration --&gt; Edit.<br>
+Then pick Boat  "Edit" a tabbed dialogue box will open.</font></font><br>
+<br>
+<font face="Arial"><font face="Arial"><font face="Arial">"Plot Details" 
+Tab  has Open, Save and Save as buttons. This is the pointer to the 
+&lt;boat&gt;.xml file which contains the boat characteristics, it is 
+initially set to "boat.xml".  After you have gone through all the tabs 
+and set the boat's Lwl, Loa, Displacement, etc. you should "Save as" 
+using your boat's name. Then "open" that file each time weather_routing 
+needs those settings..</font></font><br>
+<br>
+Initially under &lt;Configuration &gt; Edit &gt; Boat Edit &gt; Plot Details [tab] the file referenced is "boat.xml". <br>
+Make sure you have a file "boat.xml" in your opencpn data directory, if 
+you are having troubles, download a boat.xml file and "load" it.</font><br>
+<br>
+<br>
+<font face="Arial"><font face="Arial"><font face="Arial">The second file
+ is under &lt;Configuration &gt; Edit &gt; Boat Edit &gt; Polar [tab] 
+and this is an optional polar file  "&lt;boat&gt;.csv"</font></font><br>
+"Polar File" Tab shows the path of the Polar file being used, if one 
+exists, otherwise the program has builtin VPP calculation using the 
+boats characteristics which have been entered, which is in effect when 
+the path shows as  "&lt;computed&gt;". <br>
+<br>
+If you have prepared a polar file in the Opencpn format for your boat, 
+you can load it into the plugin from this tab, and after you "Save" from
+ the "Plot Details" tab, the pathname willl be remembered   [note the 
+pathname in the sample &lt;boat&gt;.XML file below].</font><br>
+<br>
+<br>
+<font face="Arial">Sometimes the plugin is picky about these files. If it is close the plugin and opencpn and reopen, to reset it. Then try again.<br>
+The two sample files are shown below. They are paired. If you load the 
+XML file the referenced polar file will be loaded if it is in the path 
+and the correct format.<br>
+<br>
+<u>Shannon38-opencpn-r</u><u>oundtrip.XML</u>   [This is the &lt;boat&gt;.XML file]<br>
+&lt;?xml version="1.0" encoding="utf-8" ?&gt;<br>
+&lt;OCPNWeatherRoutingBoat version="0.9" creator="Opencpn Weather Routing plugin"&gt;<br>
+    &lt;BoatCharacteristics displacement_tons="21" lwl_ft="34" loa_ft="38" beam_ft="11" /&gt;<br>
+    &lt;BoatDrag frictional_drag="0.0170" wake_drag="0.9500" /&gt;<br>
+    &lt;Plan Name="Initial Plan" computed="0" csvFileName="<i><u>C:\ProgramData\opencpn\Shannon38-opencpn.CSV</u></i>" /&gt;<br>
+&lt;/OCPNWeatherRoutingBoat&gt;<br>
+<br>
+<u>Shannon38-opencpn.CSV</u>     [This is the &lt;boat polar&gt;.csv file.]<u> </u><br>
+twa/tws;6;8;10;12;14;16;20<br>
+0;0.00;0.00;0.00;0.00;0.00;0.00;0.00<br>
+30;0.00;0.00;0.00;0.00;0.00;0.00;0.00<br>
+40;2.80;4.10;4.40;4.70;4.90;5.00;5.10<br>
+45;4.00;4.90;5.20;5.50;5.70;5.80;5.90<br>
+52;4.50;5.40;6.10;6.40;6.60;6.70;6.80<br>
+60;5.00;6.00;6.50;6.70;6.80;6.90;7.00<br>
+75;5.50;6.40;6.80;7.00;7.20;7.30;7.40<br>
+90;5.70;6.60;7.00;7.30;7.50;7.60;7.70<br>
+110;5.80;6.70;7.10;7.40;7.60;7.70;7.90<br>
+120;5.50;6.50;7.00;7.30;7.60;7.90;8.20<br>
+135;4.80;6.00;6.60;7.00;7.40;7.70;8.30<br>
+150;4.00;5.00;5.90;6.50;6.90;7.30;7.90<br>
+165;3.70;4.80;5.20;6.20;6.60;6.90;7.50<br>
+180;3.30;4.20;4.70;5.90;6.30;6.60;7.20</font><br>
+<br>
+<br>
+<font face="Arial"><b><u>qtVLM  </u></b><b><u>Polar Format</u></b><br>
+<a class="moz-txt-link-freetext" href="http://wiki.virtual-loup-de-mer.org/index.php/QtVlm_Polar_Diagram">http://wiki.virtual-loup-de-mer.org/index.php/QtVlm_Polar_Diagram</a><br>
+     Extension of the file name. Csv<br>
+    Separator ';' (semicolon)<br>
+    Double-entry table<br>
+        The first cell always contains 'TWA \ TWS'<br>
+        The first line lists the wind forces. Vlm does not go beyond 60 knots of wind.<br>
+<br>
+Beginning of each line ** gives the look, then each value corresponding to the shape and strength of the wind (column heading)<br>
+<br>
+    The digital data of the polar use a decimal point, 'that is the point.' An integer (no point ended) is valid.<br>
+    Whites are valid (value = 0.0) but discouraged. Thank you for being explicit<br>
+    Text file format is UNIX ie lines that are terminated by LF (Line 
+Feed) and not CR (Carriage Return) and LF. A good text editor windows 
+(PsPad or Notepad + +) knows rerecord this format.<br>
+<br>
+TWA\TWS;0;2;4;6;8;10;12;14;16;18;20;22;24;26;28;30;32;34;36;38;40;42;44;46;48;50;52;54;56;58;60<br>
+0;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000<br>
+5;0.000;0.210;0.420;0.630;0.800;0.860;0.920;0.940;0.950;0.970;0.980;0.980;0.990;0.950;0.880;0.810;0.740;0.670;0.600;0.530;0.460;0.370;0.280;0.190;0.090;0.000;0.000;0.000;0.000;0.000;0.000<br>
+<br>
+=====<br>
+<br>
+<b><u>Maxsea Polar Format</u></b>  (same as Adrena, or SailGrib WR)<br>
+<a class="moz-txt-link-freetext" href="http://www.sailgrib.com/wr-user-guide">http://www.sailgrib.com/wr-user-guide</a><br>
+<br>
+The first row defines the True Wind Speed.<br>
+The first column defines the True Wind Angle<br>
+In the example, the theoretical hull speed for various wind velocities and wind angles is in the cells.<br>
+Modify the True Wind Speed values in the first row. The example below uses 10 and 30 Kts.<br>
+Enter these values in the first row and delete the other columns.<br>
+<br>
+In an Excel spreadsheet<br>
+TWA    10     15     20      25<br>
+30        2.0    5.4   7.2      7.9<br>
+90        4.7    9.5    11.5   12.8<br>
+150      2.9    7.4     10.5   13.0<br>
+ </font><br>
+<br>
+<font face="Arial"><a class="moz-txt-link-freetext" href="http://www.sailingperformance.com/Products.html">http://www.sailingperformance.com/Products.html</a><br>
+Expedition <a class="moz-txt-link-freetext" href="http://www.expeditionmarine.com/index.html">http://www.expeditionmarine.com/index.html</a><br>
+Isler  <a class="moz-txt-link-freetext" href="http://www.islersailing.com/new_page_3.htm">http://www.islersailing.com/new_page_3.htm</a><br>
+BLUR Boats and Polars  <a class="moz-txt-link-freetext" href="http://www.blur.se/boats/">http://www.blur.se/boats/</a></font><br>
+<br>
+<br>
+<font face="Arial"><font face="Arial"><b><u><font face="Arial"><b><u><b>Bluewater Racing, and Expedition Polar file format</b><br>
+<a href="http://www.bluewaterracing.com/bluewater.htm#_Toc343740589" target="_blank">http://www.bluewaterracing.com/bluew...#_Toc343740589</a></u></b></font></u></b></font></font><br>
+ 
+<div>Quote:</div>
+<font face="Arial">A polar file is a sequence of lines. Each line describes the curve for one windspeed, <i>ws</i>.
+ Optionally, the first line may begin with the string "pol", in which 
+case it is treated as a comment line. This klunky format is not my idea;
+ it is for compatibility with <i>Expedition</i> and other <a class="sk_tag" href="http://www.cruisersforum.com/forums/tags/software.html" title="View more discussions on Software">software</a> tools, and because it loads easily into spreadsheet tools such as <i>Excel</i>.</font><br>
+<br>
+<font face="Arial">Each curve is described on one line of the text file 
+by a windspeed, followed by a sequence of pairs of True Wind Angle and 
+boatspeed. (TWA in degrees, BSP in knots)</font><br>
+<font face="Arial">eg: </font><br>
+<br>
+<font face="&amp;quot;">10 30 0 45 6 90 8.1 160 7 180 5</font><br>
+<font face="&amp;quot;">15 30 0 40 8 90 12 150 10 165 9 170 5</font><br>
+<br>
+<font face="Arial">This gives two curves, one for windspeed 10, one for 
+windspeed 15. Different curves may have different TWA points, and 
+different numbers of points. The line for windspeed 10 specifies a 
+boatspeed of zero knots at a true wind angle of 30 degrees, a boatspeed 
+of six knots at TWA 45, 8.1 knots at 90, seven knots at 160 degrees, and
+ five knots at 180 degrees.</font><br>
+<br>
+<font face="Arial">There can be a zero windspeed curve with non-zero boatspeed, i.e., “when the wind is gone, the motor's on.”</font><br>
+<br>
+<font face="Arial">Rules for the data in polar files:</font><br>
+<font face="Arial">1) </font><font face="Arial">One windspeed curve per line.</font><br>
+<font face="Arial">2) </font><font face="Arial">There must be a least 3 points per curve.</font><br>
+<font face="Arial">3) </font><font face="Arial">There must be at least one non-zero windspeed curve.</font><br>
+<font face="Arial">4) </font><font face="Arial">The minimum TWA is zero, and the maximum is 180.</font><br>
+<font face="Arial">5) </font><font face="Arial">The 2nd smallest TWA in a
+ line is the best VMG upwind angle for that windspeed. The 2nd largest 
+TWA is the best VMG downwind angle for that windspeed</font><br>
+<font face="Arial">6) </font><font face="Arial">The first TWA should be less than any 2nd TWA in any curve. Ideally, zero.</font><br>
+<font face="Arial">7) </font><font face="Arial">The last TWA should be greater than any 2nd-to-last TWA in any curve. Ideally, 180</font><br>
+<br>
+<font face="Arial">If these rules are broken, the behavior of the program is undetermined.</font><br>
+<br>
+<font face="Arial"><b><u>Example</u></b><br>
+2 24  28  32  36  40  44  48  52  56  60  64  68  72  76  80  84  88  92
+  96  100  104  108  112  116  120  124  128  132  136  140  144  148  
+152  156  160  164  168  172  176  180<br>
+4 24  28  32  36  40  44  48  52  56  60  64  68  72  76  80  84  88  92
+  96  100  104  108  112  116  120  124  128  132  136  140  144  148  
+152  156  160  164  168  172  176  180<br>
+6 24  28  32  36  40  44  48  52 <u>4.5</u> 56  60 <u>5</u> 64  68  72  76 <u>5.5</u> 80  84  88  92 <u>5.7</u> 96  100  104  108  112 <u>5.8</u> 116  120 <u>5.5</u> 124  128  132  136 <u>4.8</u> 140  144  148  152 <u>4</u> 156  160  164  168  172  176  180<br>
+8 24  28  32  36  40  44  48  52 <u>5.4</u> 56  60 <u>6</u> 64  68  72  76 <u>6.4</u> 80  84  88  92 <u>6.6</u> 96  100  104  108  112<u> 6.7</u> 116  120 <u>6.5</u> 124  128  132  136 <u>6</u> 140  144  148  152 <u>5</u> 156  160  164  168  172  176  180<br>
+10 24  28  32  36  40  44  48  52 <u>6.1</u> 56  60 <u>6.5</u> 64  68  72  76 <u>6.8</u> 80  84  88  92<u> 7</u> 96  100  104  108  112 <u>7.1</u> 116  120 7 124  128  132  136 <u>6.6</u> 140  144  148  152 <u>5.9</u> 156  160  164  168  172  176  180<br>
+12 24  28  32  36  40  44  48  52 6.4 56  60 6.7 64  68  72  76<u> 7</u> 80  84  88  92 <u>7.3</u> 96  100  104  108  112 <u>7.4</u> 116  120 7.3 124  128  132  136 7 140  144  148  152 <u>6.5</u> 156  160  164  168  172  176  180<br>
+14 24  28  32  36  40  44  48  52 6.8 56  60 6.8 64  68  72  76 7.2 80  
+84  88  92 7.5 96  100  104  108  112 7.6 116  120 7.6 124  128  132  
+136 7.4 140  144  148  152 6.9 156  160  164  168  172  176  180<br>
+16 24  28  32  36  40  44  48  52 6.7 56  60 6.9 64  68  72  76 7.3 80  
+84  88  92 7.6 96  100  104  108  112 7.7 116  120 7.9 124  128  132  
+136 7.7 140  144  148  152 7.3 156  160  164  168  172  176  180<br>
+18 24  28  32  36  40  44  48  52  56  60  64  68  72  76  80  84  88  
+92  96  100  104  108  112  116  120  124  128  132  136  140  144  148 
+ 152  156  160  164  168  172  176  180<br>
+20 24  28  32  36  40  44  48  52 6.7 56  60 7 64  68  72  76 7.4 80  84
+  88  92 7.7 96  100  104  108  112 7.9 116  120 8.2 124  128  132  136 
+8.3 140  144  148  152 7.9 156  160  164  168  172  176  180<br>
+22 24  28  32  36  40  44  48  52  56  60  64  68  72  76  80  84  88  
+92  96  100  104  108  112  116  120  124  128  132  136  140  144  148 
+ 152  156  160  164  168  172  176  180<br>
+24 24  28  32  36  40  44  48  52  56  60  64  68  72  76  80  84  88  
+92  96  100  104  108  112  116  120  124  128  132  136  140  144  148 
+ 152  156  160  164  168  172  176  180<br>
+26 24  28  32  36  40  44  48  52  56  60  64  68  72  76  80  84  88  
+92  96  100  104  108  112  116  120  124  128  132  136  140  144  148 
+ 152  156  160  164  168  172  176  180<br>
+28 24  28  32  36  40  44  48  52  56  60  64  68  72  76  80  84  88  
+92  96  100  104  108  112  116  120  124  128  132  136  140  144  148 
+ 152  156  160  164  168  172  176  180<br>
+30 24  28  32  36  40  44  48  52  56  60  64  68  72  76  80  84  88  
+92  96  100  104  108  112  116  120  124  128  132  136  140  144  148 
+ 152  156  160  164  168  172  176  180<br>
+32 24  28  32  36  40  44  48  52  56  60  64  68  72  76  80  84  88  
+92  96  100  104  108  112  116  120  124  128  132  136  140  144  148 
+ 152  156  160  164  168  172  176  180<br>
+34 24  28  32  36  40  44  48  52  56  60  64  68  72  76  80  84  88  
+92  96  100  104  108  112  116  120  124  128  132  136  140  144  148 
+ 152  156  160  164  168  172  176  180<br>
+36 24  28  32  36  40  44  48  52  56  60  64  68  72  76  80  84  88  
+92  96  100  104  108  112  116  120  124  128  132  136  140  144  148 
+ 152  156  160  164  168  172  176  180 </font><font face="Arial"> </font><br>
+<br>
+<strong>Other Information and Alternatives for Weather_Routing</strong><br>
+Refer to this link in the wiki  <a href="http://opencpn.org/ocpn/weather_routing" title="http://opencpn.org/ocpn/weather_routing">http://opencpn.org/ocpn/weather_routing</a><br>
+ <!-- google_ad_section_end -->  </div>
 <div id="node-247" class="section-3">
   <h1 id="WeatherfaxPlugin" class="book-heading">Weatherfax Plugin</h1>
-  <!-- google_ad_section_start -->Read weather fax encoded data as audio or image and Overlay the image on top of charts. <br>
+  <!-- google_ad_section_start --><strong>Weatherfax</strong><br>
+Retrieves internet image files, reads image files or decodes audio and then Overlays the image on top of charts. <br>
 <br>
-The plugin contains a builtin database for HF Radio Fax transmissions, 
-and can automatically alert the user and begin decoding these faxes.  
-The plugin also contains a builtin database for Internet retrieval from 
-various meterological sites which is a wonderful planning tool for 
-cruises or passagemaking.<br>
-<br>
-These images can then be calibrated and overlayed on charts.  The 
-resulting image can be exported to a chart, so the plugin also works as a
- general purpose conversion tool to make charts from images.
-<div><br>
-<strong>Preparation</strong><br>
+<img alt="Weatherfax Overlaid on Chart" src="images/Wx-0-Retrieve-Internet-Overlaid-on-Chart.jpg">
+<h3 id="Preparation"><br>
+<strong>Preparation</strong></h3>
 Install Weatherfax Plugin. Enable it in the Settings &gt; Plugin Tab.<br>
+Then open it and explore the top menus.<br>
 <br>
-<strong>Retrieve Weatherfax Image files with an internet connection</strong><br>
+With an internet connection it is quite easy to select the "HF Radio 
+Schedules" to select and set alarms for use with a reciever, or to 
+select the Internet Schedules and then retrieve Weatherfaxes via the 
+Internet and overlay on the chart. Audio Capture requires a connection.<br>
+<br>
+<img alt="Retrieve Menu" src="images/Wx-2-Retrieve-Menu.png"><br>
+<br>
+ 
+<h3 id="RetrieveWeatherfaxImagefileswithaninternetconnection"><strong>Retrieve Weatherfax Image files with an internet connection</strong></h3>
 If you have an internet connection, first Retrieve &gt; All &gt; HF Radio Schedules.<br>
 Then Retrieve &gt; Internet &gt; Select NOAA &gt; Select Boston (for example) &gt; Select 24hr 500mb Forecast<br>
 The Weatherfax image file will download and be overlaid directly onto a chart.<br>
 <br>
-<strong>Alternative Weatherfax Image files to use with the plugin</strong><br>
-Here are some examples of the gif, png, tif weatherfax files that can be used:<br>
+<img alt="" src="images/Wx-C0-Ret-Inet-Menu-1_0.jpg"><br>
+Lat 42 Long -70 --&gt; Servers: Noaa  ---&gt; Regions: Atlantic ----&gt;  Select Contents ----&gt; Retrieve<br>
+<br>
+<img alt="Internet Retrieval Menu 1" src="images/Wx-C0-Ret-Inet-Menu-1_0.jpg"><br>
+Lat 42 Long -70 --&gt; Servers: Passage  ---&gt; Regions: N. Atlantic ----&gt;  Select Contents ----&gt; Retrieve<br>
+<br>
+<br>
+The plugin data directory contains an WeatherFaxInternetRetrieval.xml 
+file that has database for meterological sites. The "Internet Retrieval"
+ Option uses this schedule. It is a wonderful planning tool for cruises 
+or passagemaking.  There are several options, but first Select 
+"Internet" to retrieve HF Radio Schedules via the internet. Then Select 
+"NOAA" Under "Servers" you will see "Stations" fill up. Then select 
+"Boston" and the Internet Retrieval choices are automatically listed in 
+the menu area.  Select several faxes and pick "Retrieve Scheduled" or 
+"Retrieve Selected".<br>
+<br>
+<br>
+ ___________________________________________________________________________<br>
+<br>
+<img alt="Internet Retrieval Aircraft" src="images/Wx-C1-Ret-Inet-Aviation-Americas.jpg"><br>
+Aviation Americas Forecast retrieved via the internet.<br>
+<br>
+<img alt="Inet Passage Atlantic 012 Wind" src="images/Wx-C2-Ret-Inet-Passsage-Atlantic-012Wind.jpg"><br>
+Passage Weather Atlantic 012 Wind via internet.<br>
+<br>
+<img alt="Ret Inet Bermuda 3 day" src="images/Wx-C3-Ret-Inet-Bermuda-3day.jpg"><br>
+Bernuda 3 day via internet.<br>
+<br>
+<img alt="Inet Ret Noaa Atlantic 244hr 500mb" src="images/Wx-C4-Ret-Inet-Noaa-Atlantic-24hr-500mb.jpg"><br>
+Noaa Atlantic 24hr 500mb via internet.<br>
+<br>
+<img alt="Inet Ret Noaa 24hr Surf" src="images/Wx-C5-Ret-Inet-Noaa-Atlantic-24hrSurf.jpg"><br>
+Noaa Atlantic 24hr Surface via internet.<br>
+<br>
+<img alt="Inet Ret Passage New England via internet." src="images/Wx-C6-Ret-Inet-Passage-NE.jpg"><br>
+Passage Weather New England Wind 012<br>
+<br>
+<img alt="Inet Ret Passage Nova Scotia" src="images/Wx-C7-Ret-Inet-Passage-NovaSoctia.jpg"><br>
+Passage Weather Nova Scotia Wind 021<br>
+<br>
+ ___________________________________________________________________________<br>
+<br>
+___________________________________________________________________________<br>
+<br>
+<br>
+<img alt="Weather Fax List" src="images/Wx-C8-Ret-Inet-Downloaded-List.png"><br>
+List of Weatherfaxes downloaded. Highlighted one shows overlaid on charts.<br>
+<br>
+The weatherfax will be overlayed generally in the proper location 
+provided the weather service has not changed their fax formats. (The 
+user can modify the associated WeatherFaxInternetRetrieval.xml file 
+appropriately to add or modify the actions.) Users should please post 
+changes to this file to the Weatherfax Thread for the next release.<br>
+ 
+<h3 id="HFRadioWeatherFaxes"><strong>HF Radio Weather Faxes</strong></h3>
+The plugin has a builtin database (WeatherFaxSchedules.xml) for HF Radio
+ Weather Service Fax transmissions, which when used properly can 
+automatically alert the user and begin decoding these faxes.<br>
+<br>
+<strong>Retrieve &gt; RF Radio Schedule  Menu</strong> on the Filter Tab.<br>
+<img alt="HF Radio Schedule Filter Tab" src="images/Wx-B1-Ret-HFRadioSch-FilterTab-Menu.png"><br>
+<br>
+<strong>Retrieve &gt; RF Radio Schedule  Menu</strong> on the 1 minute Alarm Tab.<br>
+<img alt="Ret HF Sched Alarm Tab" src="images/Wx-B2-Ret-HFRadioSch-AlarmTab-Menu.png"><br>
+<br>
+<strong>Retrieve &gt; RF Radio Schedule  Menu</strong> on the Capture Options Tab.<br>
+<img alt="Ret HFsched Capture Options Tab" src="images/Wx-B3-Ret-HFRadioSch-CaptureOptionsTab-Menu.png"><br>
+<br>
+<strong>Retrieve &gt; RF Radio Schedule  Menu</strong> on the Information Tab.<br>
+<img alt="Ret HFRadioSch Info Tab" src="images/Wx-B4-Ret-HFRadioSch-InfoTab-Menu.jpg"><br>
+<br>
+ 
+<h3 id="DecodingSoundviaSSB"><strong>Decoding Sound via SSB</strong></h3>
+
+<div>Select Retrieve -&gt; Audio Capture (Ctrl+A)<br>
+<br>
+A line from the ssb radio to the audio input of the sound card should be
+ attached, and the radio tuned to the appropriate frequency (1.9khz 
+below listed frequency and SSB mode)  The SSB BFO must be adjusted 
+correctly.</div>
+ 
+
+<h3 id="Retrieve &gt; Audio Capture shown while recieving">Retrieve &gt; Audio Capture shown while recieving</h3>
+<br>
+<img alt="Ret Audio Capture Recieving" src="images/Wx-A1-Ret-AudioCapture-Recieving.png"><br>
+<br>
+The images decoded can then be calibrated and overlayed on charts.  The 
+resulting image can be exported to a chart, so the plugin also works as a
+ general purpose conversion tool to make charts from images.
+<div> </div>
+
+<h3 id="WorkingwithFiles"><br>
+<br>
+<strong>Working with Files</strong></h3>
+
+<div>The plugin can read and open numerous common image files, and audio
+ files, and can save Kap files. The next step in development is to have 
+it read Kap for ease of use with respect to coordinates being recorded 
+and reused.<br>
+<img alt="File Menu" src="images/Wx-1-File-Menu.png"><br>
+ </div>
+
+<h3 id="WorkingwithWeatherfaxImagefiles"><strong>Working with Weatherfax Image files</strong></h3>
+
+<div>Here are some examples of the gif, png, tif weatherfax files that can be used:<br>
 <a href="http://weather.noaa.gov/fax/marine.shtml" target="_blank">NOAA Marine Radio Forecast Charts</a><br>
 <a href="http://weather.noaa.gov/fax/marshlatest.shtml" target="_blank">NOAA Boston Radio Forecast -Atlantic</a><br>
 <a href="http://weather.noaa.gov/pub/fax/PYAA05.gif" target="_blank">12Z Surface Analysis Atlantic -Part 1 </a><br>
@@ -9939,10 +10431,12 @@ Place these files in a new directory on your hard drive same directory as your C
 <br>
 <strong>Open the Plugin</strong><br>
 Then from the main screen select the Weatherfax Icon, a window pops up. 
-Select Open and browse the  FaxWx directory and select a fax file. <br>
-<br>
-<strong>Mercator Projections</strong><br>
-If the fax is a Mercator projection (orthogonal, not polar), click 
+Select Open and browse the  FaxWx directory and select a fax file. </div>
+
+<h4 id="MercatorProjections"><br>
+<strong>Mercator Projections</strong></h4>
+
+<div>If the fax is a Mercator projection (orthogonal, not polar), click 
 through the next screen that comes up and at the second screen set the 
 coordinates and lat/long properly.  (Screenshots will be added later) 
 and click on through to see the fax overlaid on the charts.  Note:<br>
@@ -9954,14 +10448,15 @@ I first use a separate image viewer with the selected fax image, to zoom
    If you plan to export to a chart file then you should select "Get 
 Aspect Ratio"<br>
 <br>
-<img alt="	57071" src="images/attachment.jpeg" title="	57071" height="286" width="510" border="0"><br>
-<br>
-<strong>Polar Projections</strong><br>
-There are other techniques used to modify a Polar fax onto a Mercator 
-projection chart which are reviewed on the forum and will be more fully 
-described later.  Review the posts following this <a href="http://www.cruisersforum.com/forums/f134/weatherfax-97533-18.html#post1185034">one</a> in the Forums. <br>
-<img alt="" id="lightboximg7" src="images/attachment_003.jpeg" title="Weatherfax-Polar-NewTry-1.jpg; 
-1600 x 900 (@70%)" height="284" width="506" border="0"><br>
+<img alt="Weatherfax-Polar-NewTry-2.jpg Size 385.9 KBID 57071" src="images/attachment.jpeg" width="600"></div>
+
+<h4 id="PolarProjections"><br>
+<strong>Polar Projections</strong></h4>
+
+<div>There are other techniques used to modify a Polar fax onto a 
+Mercator projection chart which are reviewed on the forum and will be 
+more fully described later.  Review the posts following this <a href="http://www.cruisersforum.com/forums/f134/weatherfax-97533-18.html#post1185034">one</a> in the Forums. <br>
+<img alt="" id="lightboximg7" src="images/attachment_003.jpeg" title="Weatherfax-Polar-NewTry-1.jpg; 1600 x 900 (@70%)" width="600"><br>
 <strong><em>Coordinate </em>1 </strong>(Red) -Select a high latitude which must also lie on the vertical meridian running through the pole (N or S)<br>
 <em><strong>Coordinate 2</strong> </em>(Blue) - Select an opposing corner (either side) with lower latitude.<br>
 Then hit Get Map, the Blue circles should follow the latitudes of 
@@ -9994,20 +10489,21 @@ lines. Once that is done don't hit "Get Mapping" again, hit "Apply" the
 lines should be straight and orthogonal.<br>
 <br>
 Here is an example of a WxFax overlay in Opencpn<br>
-<img alt="	57110" src="images/attachment_002.jpeg" title="	57110" height="231" width="376" border="0"><br>
 <br>
-<strong>Decoding Sound via SSB</strong><br>
-Select Retrieve -&gt; Audio Capture (Ctrl+A)<br>
+<img alt="image.jpg 24Size 301.6 KBID 57110" src="images/attachment_002.jpeg" width="600"></div>
+
+<h3 id=""><br>
+ </h3>
+
+<h3 id="FutureImprovements"><strong>Future Improvements</strong></h3>
+
+<div>Image files that are downloaded and overlaid onto charts with 
+specific coordinates, can now be saved as Kap files that save  long/lat 
+and coordinates with the file.  The next step is to have the plugin read
+ Kap files so they can be automatically overlaid on charts without 
+having to use the Fax Translation Wizard.<br>
 <br>
-A line from the ssb radio to the audio input of the sound card should be
- attached, and the radio tuned to the appropriate frequency (1.9khz 
-below listed frequency and SSB mode)  The SSB BFO must be adjusted 
-correctly.<br>
-<br>
-<strong>Future Improvements</strong><br>
-Image files that are downloaded and overlaid onto charts with specific 
-coordinates, will be saved as Kap files so that they can be overlaid on 
-charts easily again without having to use the chart Wizard.<br>
+Thanks to Sean for a great Plugin!<br>
 <br>
  </div><!-- google_ad_section_end -->  </div>
 <div id="node-270" class="section-3">
@@ -10055,6 +10551,7 @@ Follow the instructions on the <a href="#AboutPlugins">About Plugins</a> page.<b
 <h3 id="EnableGRadarplugin">Enable GRadar plugin</h3>
 Once installed enable the plugin in Options-&gt;Plugins. The Preference button does not work. For GRadar Settings, read on.<br>
 <br>
+<img alt="">
 <p>When enabled the GRadar icon appears in the toolbar. The icon is an 
 on/off switch and has two states indicting if the the plugin is working 
 or not:</p>
@@ -10064,7 +10561,7 @@ Off           On</h4>
 
 <p>As soon as the plugin is enabled there will also be a separate log window. This is how it looks when no radar is connected.</p>
 
-<h4 id="UsingGRadar"><br>
+<h4 id="UsingGRadar"><img alt=""><br>
 <br>
 Using GRadar</h4>
 Rightclick to get to the GRadar Settings.<br>
@@ -10212,7 +10709,7 @@ There are installation packages that can be run using the installation tool for 
 <br>
 Once you have installed and restarted OpenCPN it should be available in the "Plugins" list in the configuration dialog.<br>
 <br>
-<img alt="" src="images/br24_preferences_097.png" width="500&quot;"><br>
+<img alt="" src="images/br24_preferences_097.jpg" width="500&quot;"><br>
 <br>
 Click the enable button, then close the options dialog. Unless you want 
 to switch to kilometers or want to rotate the radar image there should 
@@ -10370,7 +10867,7 @@ In the preferences dialog (<em>Options &gt; Plugins &gt; BR24Radar &gt; Preferen
 picture like this, even if you have fulfilled none of the overlay 
 requirements:<br>
 <br>
-<img alt="" src="images/br24_emulator.png" width="500&quot;">
+<img alt="" src="images/br24_emulator.jpg" width="500&quot;">
 <h2 id="It still doesn't show a picture">It still doesn't show a picture</h2>
 <br>
 Rats. Use the following to increase the amount of logging to the opencpn.log file:
@@ -10403,7 +10900,7 @@ maximum age of any radar data in milliseconds. If "drawn" is higher than
   <h1 id="SailingDestinationsPlugin" class="book-heading">Sailing Destinations Plugin</h1>
   <!-- google_ad_section_start --><h4 id="FindthousandsofdestinationsrightinyourOpencpnchart">Find thousands of destinations right in your Opencpn chart</h4>
 
-<div><img alt="Opencpn" src="images/opencpn.png"></div>
+<div><img alt="Opencpn" src="images/opencpn.jpg"></div>
 
 <div>
 <p><a href="http://squidd.io/">sQuiddio</a> makes its global 
@@ -10495,7 +10992,7 @@ calculate a composite route, and the distance between the waypoints can
 be set by the user. The end result, however, is a "gpx" file that is 
 exported, and then imported into OpenCPN via the Route Manager.<br>
 <br>
-<img alt="" src="images/gc-comp.png" height="218" width="700"><br>
+<img alt="" src="images/gc-comp.jpg" height="218" width="700"><br>
 <br>
 A Great-circle from Cook Strait to Cape Horn limited by 60° S<br>
 <br>
@@ -10510,7 +11007,7 @@ plugin, which is still under development, useful for cross checking
 their position fixes obtained in other ways, or to to better visualize a
  celestial fix. You find the forum thread here:  <a href="http://www.cruisersforum.com/forums/f134/celestial-navigation-plugin-redux-p=98748.html">Cruisersforum thread: celestial navigation plugin</a><br>
 <br>
-<img alt="Four Circles of position" src="images/Four-Circles-of-Position.png" height="284" width="386">
+<img alt="Four Circles of position" src="images/Four-Circles-of-Position.jpg" height="284" width="386">
 <h4 id=""> </h4>
  
 
@@ -10606,7 +11103,7 @@ navigator may observe the same altitude of a heavenly body at a certain
 time. Using traditional methods, only the part of a COP the navigator is
  interested in is used, and replaced by a tangent line (LOP).<br>
 <br>
-<img alt="Four Circles of Position" src="images/Four-Circles-of-Position.png" height="441" width="601"><br>
+<img alt="Four Circles of Position" src="images/Four-Circles-of-Position.jpg" height="441" width="601"><br>
 <br>
  
 <h4 id="8. Four Circles of Position (showing DR position as MOB and fix as Waypoint)">8. Four Circles of Position (showing DR position as MOB and fix as Waypoint)</h4>
@@ -10617,7 +11114,7 @@ mark. If required, visually adjust this to get best latitude and
 longitude of the fix. In Sight Properties - Sight Tab, Degrees Certainty
  was set to 0.05.<br>
 <br>
-<img alt="Four Circles of Position Entered" src="images/Four-Sights-Entered.png" height="443" width="601">
+<img alt="Four Circles of Position Entered" src="images/Four-Sights-Entered.jpg" height="443" width="601">
 <h2 id="Methodology"><br>
 <br>
 Methodology</h2>
