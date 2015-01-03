@@ -173,13 +173,31 @@ struct DATUM const gDatum[] = {
       { "WGS_84",                20,      0,      0,      0 },    // 103
       { "WGS-84",                20,      0,      0,      0 },    // 104
       { "EUROPEAN DATUM 1950",   14,    -87,    -98,   -121 }, 
-      { "European 1950 (Norway Finland)", 14, -87, -98, -121 }, 
+      { "European 1950 (Norway Finland)", 14, -87, -98, -121}, 
       { "ED50",                  14,    -87,    -98,   -121 }, 
       { "RT90 (Sweden)",          3,    498,    -36,    568 }, 
       { "Monte Mario 1940",      14,   -104,    -49,     10 },
       { "Ord Surv of Gr Britain 1936", 0, 375, -111,    431 }, 
-      { "NAD27",                  4,    -10,    158,    187 }    
-      
+      { "South American 1969",  16,     -57,      1,    -41 },
+      { "PULKOVO 1942 (2)",     15,      25,   -141,    -79 },
+      { "EUROPEAN DATUM",       14,     -87,    -98,   -121 }, 
+      { "BERMUDA DATUM 1957",    4,     -73,    213,    296 },
+      { "COA",                  14,    -206,    172,     -6 },
+      { "COABR",                14,    -206,    172,     -6 },
+      { "Roma 1940",            14,    -225,    -65,      9 },
+      { "ITALIENISCHES LANDESNETZ",14,  -87,    -98,   -121 },
+      { "HERMANSKOGEL DATUM",     3,    682,   -203,    480 },
+      { "AGD66",                  2 ,  -128,    -52,    153 },
+      { "ED",                    14,    -87,    -98,   -121 },
+      { "EUROPEAN 1950 (SPAIN AND PORTUGAL)",14,-87,-98,-121},
+      { "ED-50",                 14,    -87,    -98,   -121 },
+      { "EUROPEAN",              14,    -87,    -98,   -121 },
+      { "POTSDAM",               14,    -87,    -98,   -121 },
+      { "GRACIOSA SW BASE DATUM",14,   -104,    167,    -38 }, 
+      { "WGS 1984",              20,      0,      0,      0 },
+      { "WGS 1972",              19,      0,      0,      5 },
+      { "WGS",                   19,      0,      0,      5 }
+
       
 };
 
@@ -207,7 +225,9 @@ struct ELLIPSOID const gEllipsoid[] = {
       {  "WGS 72",                     6378135.0,   298.26        },    // 19
       {  "WGS 84",                     6378137.0,   298.257223563 },    // 20
       {  "Bessel 1841 (Namibia)",      6377483.865, 299.1528128   },    // 21
-      {  "Everest (India 1956)",       6377301.243, 300.8017      }     // 22
+      {  "Everest (India 1956)",       6377301.243, 300.8017      },    // 22
+      {  "Struve 1860",                6378298.3,   294.73        }     // 23
+      
 };
 
 short nDatums = sizeof(gDatum)/sizeof(struct DATUM);
