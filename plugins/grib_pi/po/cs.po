@@ -3,14 +3,13 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-12-10 19:39-0600\n"
-"PO-Revision-Date: 2014-12-13 12:37-0500\n"
+"PO-Revision-Date: 2015-01-03 15:07-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Czech\n"
 "Language: cs_CZ\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
@@ -31,7 +30,7 @@ msgstr "Varování: Prázdný adresář!"
 
 #: src/GribUIDialog.cpp:425 src/GribUIDialogBase.cpp:453
 msgid "Barbed Arrows"
-msgstr ""
+msgstr "Šípy"
 
 #: src/GribUIDialog.cpp:426 src/GribUIDialog.cpp:432
 #: src/GribSettingsDialog.cpp:514 src/GribSettingsDialog.cpp:523
@@ -42,18 +41,18 @@ msgstr "Zobrazit Isotachy"
 #: src/GribUIDialog.cpp:450 src/GribUIDialog.cpp:455 src/GribUIDialog.cpp:460
 #: src/GribUIDialogBase.cpp:508
 msgid "OverlayMap"
-msgstr ""
+msgstr "Překryvná mapa"
 
 #: src/GribUIDialog.cpp:428 src/GribUIDialog.cpp:434 src/GribUIDialog.cpp:438
 #: src/GribUIDialog.cpp:446 src/GribUIDialog.cpp:451 src/GribUIDialog.cpp:456
 #: src/GribUIDialog.cpp:461 src/GribUIDialogBase.cpp:521
 msgid "Numbers"
-msgstr ""
+msgstr "Čísla"
 
 #: src/GribUIDialog.cpp:429 src/GribUIDialog.cpp:462
 #: src/GribUIDialogBase.cpp:531
 msgid "Particle Map"
-msgstr ""
+msgstr "Částicová mapa"
 
 #: src/GribUIDialog.cpp:437 src/GribSettingsDialog.cpp:530
 msgid "Display Isobars"
@@ -70,11 +69,11 @@ msgstr "Zobrazit Iso CAPE"
 #: src/GribUIDialog.cpp:454 src/GribUIDialog.cpp:459
 #: src/GribUIDialogBase.cpp:493
 msgid "Direction Arrows"
-msgstr ""
+msgstr "Směrové šipky"
 
 #: src/GribUIDialog.cpp:516 src/grib_pi.cpp:296
 msgid "Menu"
-msgstr ""
+msgstr "Nabídka"
 
 #: src/GribUIDialog.cpp:561
 msgid "Close"
@@ -83,7 +82,7 @@ msgstr "Zavřít"
 #: src/GribUIDialog.cpp:678 src/grib_pi.h:96 src/grib_pi.cpp:355
 #: src/GribRequestDialog.cpp:172
 msgid "Dialog"
-msgstr ""
+msgstr "Dialogové okno"
 
 #: src/GribUIDialog.cpp:736 src/GribUIDialog.cpp:738 src/GribUIDialog.cpp:740
 #: src/GribUIDialog.cpp:822 src/GribUIDialog.cpp:823 src/GribUIDialog.cpp:835
@@ -97,7 +96,7 @@ msgstr "N/A"
 
 #: src/GribUIDialog.cpp:743
 msgid "Data at"
-msgstr ""
+msgstr "Údaje na"
 
 #: src/GribUIDialog.cpp:759
 msgid "Wind Speed at"
@@ -311,15 +310,15 @@ msgstr "Otevřít soubor"
 
 #: src/GribUIDialogBase.cpp:67
 msgid "Settings"
-msgstr ""
+msgstr "Nastavení"
 
 #: src/GribUIDialogBase.cpp:72
 msgid "Request"
-msgstr ""
+msgstr "Požadavek"
 
 #: src/GribUIDialogBase.cpp:80
 msgid "GRIB Data at Cursor"
-msgstr ""
+msgstr "Data na pozici kurzoru"
 
 #: src/GribUIDialogBase.cpp:113
 msgid "Significant Wave Height"
@@ -331,11 +330,11 @@ msgstr "Směr větru"
 
 #: src/GribUIDialogBase.cpp:126
 msgid "Surface Current Speed"
-msgstr ""
+msgstr "Rychlost povrchového proudu"
 
 #: src/GribUIDialogBase.cpp:131
 msgid "Surface Current Direction"
-msgstr ""
+msgstr "Směr povrchového proudu"
 
 #: src/GribUIDialogBase.cpp:148
 msgid "Mean Sea Level Pressure (MSLP)"
@@ -343,11 +342,11 @@ msgstr "Tlak, mBar"
 
 #: src/GribUIDialogBase.cpp:159
 msgid "Cumulative Rainfall per Hour"
-msgstr ""
+msgstr "Kumulativní množství srážek za hodinu"
 
 #: src/GribUIDialogBase.cpp:177 src/GribUIDialogBase.cpp:515
 msgid "Air Temp"
-msgstr ""
+msgstr "Teplota vzduchu"
 
 #: src/GribUIDialogBase.cpp:186 src/GribUIDialogBase.cpp:515
 msgid "Sea Temp"
@@ -355,15 +354,15 @@ msgstr "Povrchová teplota moře, C"
 
 #: src/GribUIDialogBase.cpp:190
 msgid "Sea or Air Temperature at Surface Level"
-msgstr ""
+msgstr "Teplota moře nebo vzduchu na úrovni hladiny"
 
 #: src/GribUIDialogBase.cpp:201
 msgid "Convective Available Potential Energy"
-msgstr ""
+msgstr "Konvektivní dostupná potenciální energie"
 
 #: src/GribUIDialogBase.cpp:234
 msgid "Altitude"
-msgstr ""
+msgstr "Nadmořská výška"
 
 #: src/GribUIDialogBase.cpp:244
 msgid "Temperature"
@@ -371,87 +370,87 @@ msgstr "Povrchová teplota moře, C"
 
 #: src/GribUIDialogBase.cpp:254
 msgid "Rel. Humid."
-msgstr ""
+msgstr "Rel. vlhk."
 
 #: src/GribUIDialogBase.cpp:377
 msgid "playback"
-msgstr ""
+msgstr "přehrávání"
 
 #: src/GribUIDialogBase.cpp:384
 msgid "Loop Mode"
-msgstr ""
+msgstr "Režim opakování"
 
 #: src/GribUIDialogBase.cpp:387
 msgid "Loop Start"
-msgstr ""
+msgstr "Začátek smyčky"
 
 #: src/GribUIDialogBase.cpp:391
 msgid "Top of Grib File"
-msgstr ""
+msgstr "Začátek souboru Grib"
 
 #: src/GribUIDialogBase.cpp:391
 msgid "Current time forecast"
-msgstr ""
+msgstr "Předpověď v aktuálním čase"
 
 #: src/GribUIDialogBase.cpp:401
 msgid "Updates per Second"
-msgstr ""
+msgstr "Aktualizací za sekundu"
 
 #: src/GribUIDialogBase.cpp:408
 msgid "Interpolate between gribs"
-msgstr ""
+msgstr "Interpolovat mezi griby"
 
 #: src/GribUIDialogBase.cpp:411
 msgid "Time Interval"
-msgstr ""
+msgstr "Časový Interval"
 
 #: src/GribUIDialogBase.cpp:427
 msgid "Data"
-msgstr ""
+msgstr "Data"
 
 #: src/GribUIDialogBase.cpp:440
 msgid "Units"
-msgstr ""
+msgstr "Jednotky"
 
 #: src/GribUIDialogBase.cpp:456
 msgid "Default Colour"
-msgstr ""
+msgstr "Výchozí barva"
 
 #: src/GribUIDialogBase.cpp:456
 msgid "Controled Colours"
-msgstr ""
+msgstr "Kontrolované barvy"
 
 #: src/GribUIDialogBase.cpp:462 src/GribUIDialogBase.cpp:487
 msgid "Always visible"
-msgstr ""
+msgstr "Vždy viditelné"
 
 #: src/GribUIDialogBase.cpp:465
 msgid "IsoBars"
-msgstr ""
+msgstr "IsoBary"
 
 #: src/GribUIDialogBase.cpp:473
 msgid "Spacing"
-msgstr ""
+msgstr "Mezery"
 
 #: src/GribUIDialogBase.cpp:496
 msgid "Single Arrow"
-msgstr ""
+msgstr "Jednoduchá šipka"
 
 #: src/GribUIDialogBase.cpp:496
 msgid "Double Arrow"
-msgstr ""
+msgstr "Dvojitá šipka"
 
 #: src/GribUIDialogBase.cpp:496
 msgid "Proportional Arrow"
-msgstr ""
+msgstr "Proporcionální šipka"
 
 #: src/GribUIDialogBase.cpp:502
 msgid "Default Size"
-msgstr ""
+msgstr "Výchozí velikost"
 
 #: src/GribUIDialogBase.cpp:502
 msgid "Small Size"
-msgstr ""
+msgstr "Malá velikost"
 
 #: src/GribUIDialogBase.cpp:511
 msgid "Colors"
@@ -459,23 +458,23 @@ msgstr "&Zavřít"
 
 #: src/GribUIDialogBase.cpp:515
 msgid "Generic"
-msgstr ""
+msgstr "Obecný"
 
 #: src/GribUIDialogBase.cpp:524
 msgid "Minimum Spacing"
-msgstr ""
+msgstr "Minimální mezery"
 
 #: src/GribUIDialogBase.cpp:534
 msgid "Density"
-msgstr ""
+msgstr "Hustota"
 
 #: src/GribUIDialogBase.cpp:548
 msgid "Display"
-msgstr ""
+msgstr "Zobrazení"
 
 #: src/GribUIDialogBase.cpp:555
 msgid "Overlay Transparency (%)"
-msgstr ""
+msgstr "Průhlednost překrytí (%)"
 
 #: src/GribUIDialogBase.cpp:633
 msgid "Use High Definition Graphics"
@@ -483,47 +482,47 @@ msgstr "Použít grafiku ve velkém rozlišení"
 
 #: src/GribUIDialogBase.cpp:636
 msgid "Use Gradual Colors"
-msgstr ""
+msgstr "Použít postupné barvy"
 
 #: src/GribUIDialogBase.cpp:639
 msgid "Copy First Cumulative Missing Record"
-msgstr ""
+msgstr "Zkopírovat první kumulativní chybějící záznam"
 
 #: src/GribUIDialogBase.cpp:642
 msgid "Copy Missing Wave Records"
-msgstr ""
+msgstr "Kopírovat chybějící záznamy vln"
 
 #: src/GribUIDialogBase.cpp:645
 msgid "Load the More Recent File in Directory"
-msgstr ""
+msgstr "Nahrát novější soubor v adresáři"
 
 #: src/GribUIDialogBase.cpp:645
 msgid "Load the Last Opened File"
-msgstr ""
+msgstr "Načíst naposledy otevřený soubor"
 
 #: src/GribUIDialogBase.cpp:647
 msgid "Load File Options"
-msgstr ""
+msgstr "Možnosti načtení souboru"
 
 #: src/GribUIDialogBase.cpp:651
 msgid "Start at the first forecast in GRIB file"
-msgstr ""
+msgstr "Začít první předpovědí v souboru GRIB"
 
 #: src/GribUIDialogBase.cpp:651
 msgid "Start at the nearest forecast to current time"
-msgstr ""
+msgstr "Začít na nejbližší předpovědi pro aktuální čas"
 
 #: src/GribUIDialogBase.cpp:651
 msgid "Authorize Interpolation to start at current time"
-msgstr ""
+msgstr "Autorizovat začátek interpolace v aktuálním čase"
 
 #: src/GribUIDialogBase.cpp:653
 msgid "Start Options"
-msgstr ""
+msgstr "Možnosti spuštění"
 
 #: src/GribUIDialogBase.cpp:657
 msgid "Local Time"
-msgstr ""
+msgstr "Místní čas"
 
 #: src/GribUIDialogBase.cpp:657
 msgid "UTC"
@@ -599,15 +598,15 @@ msgstr "Dny"
 
 #: src/GribUIDialogBase.cpp:897
 msgid "Area Selection"
-msgstr ""
+msgstr "Výběr oblasti"
 
 #: src/GribUIDialogBase.cpp:909
 msgid "Manual Selection"
-msgstr ""
+msgstr "Ruční výběr"
 
 #: src/GribUIDialogBase.cpp:913 src/GribRequestDialog.cpp:270
 msgid "Start graphic Sel."
-msgstr ""
+msgstr "Spustit grafický výběr"
 
 #: src/GribUIDialogBase.cpp:925
 msgid "Max Lat"
@@ -647,7 +646,7 @@ msgstr ""
 
 #: src/GribUIDialogBase.cpp:989
 msgid "Data Selection"
-msgstr ""
+msgstr "Výběr dat"
 
 #: src/GribUIDialogBase.cpp:1011
 msgid "Air Temperature(2m)"
@@ -727,7 +726,7 @@ msgstr "Vytváří se mapa izobar"
 
 #: src/GribOverlayFactory.cpp:1024
 msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
-msgstr ""
+msgstr "Překryvy nepodporuje tento grafický hardware (zakázáno OpenGL)"
 
 #: src/GribOverlayFactory.cpp:1034
 msgid "Overlays too wide and can't be displayed:"
@@ -799,11 +798,11 @@ msgstr "Zadej předpokládaný kurs"
 
 #: src/GribRequestDialog.cpp:272
 msgid "Stop graphic Sel."
-msgstr ""
+msgstr "Zastavit grafický výběr"
 
 #: src/GribRequestDialog.cpp:507
 msgid "You request a forecast for more than 8 days horizon.\nThis is conflicting with Wave data which will be removed from your request.\nDon't forget that beyond the first 8 days, the resolution will be only 2.5°x2.5° and the time intervall 12 hours."
-msgstr ""
+msgstr "Požaduješ předpověď na víc než 8 dní.\nData vlnění nejsou pro tak dlouho k dispozici, proto budou z požadavku odstraněna.\nNezapoměň, že po prvních 8 dnech bude rozlišení jen 2.5\\u00B0x2.5\\u00B0 a časový interval 12 hodin."
 
 #: src/GribRequestDialog.cpp:782 src/GribRequestDialog.cpp:785
 msgid "MB"
@@ -815,25 +814,25 @@ msgstr ""
 
 #: src/GribRequestDialog.cpp:818
 msgid "Before sending an email to Zygrib you have to enter your Login and Code.\nPlease visit www.zygrib.org/ and follow instructions..."
-msgstr ""
+msgstr "Před odesláním e-mailu na Zygrib budeš muset zadat své přihlašovací jméno a kód.\nNavštiv prosím www.zygrib.org a postupuj podle pokynů..."
 
 #: src/GribRequestDialog.cpp:819
 msgid "The file size limits are overcome!\n(2Mb for SyGrib and 180° x 180° for all)\nYou can zoom in and/or change parameters..."
-msgstr ""
+msgstr "Překročeny meze pro velikost souboru!\n(2Mb pro SyGrib a 180° x 180° pro vše)\nMůžeš zvětšit přiblížení nebo změnit parametry..."
 
 #: src/GribRequestDialog.cpp:832 src/GribRequestDialog.cpp:863
 msgid "Continue..."
-msgstr ""
+msgstr "Pokračovat..."
 
 #: src/GribRequestDialog.cpp:848 src/GribRequestDialog.cpp:852
 msgid "Your request is ready. An email is prepared in your email environment. \nYou have just to verify and send it...\nSave or Cancel to finish...or Continue..."
-msgstr ""
+msgstr "Tvůj požadavek je hotov. E-mail je připraven v poštovním klientu. \nMusíš ho jen zkontrolovat a odeslat...\nUložit nebo Stornovat pro dokončení... nebo pokračovat..."
 
 #: src/GribRequestDialog.cpp:855
 msgid "Your request was sent \n(if your system has an MTA configured and is able to send email).\nSave or Cancel to finish...or Continue..."
-msgstr ""
+msgstr "Tvůj požadavek byl odeslán\n(pokud tvůj systém je správně nakonfigurován pro odesílání pošty).\nUlož nebo Storno pro dokončení... nebo pokračovat..."
 
 #: src/GribRequestDialog.cpp:860
 msgid "Request can't be sent. Please verify your email systeme parameters.\nYou should also have a look at your log file.\nSave or Cancel to finish..."
-msgstr ""
+msgstr "Žádost nelze odeslat. Zkontroluj, zda je tvůj poštovní systém správně nastaven.\nTaké by ses měl podívat na log soubor. \nUlož nebo Storno pro ukončení..."
 
