@@ -4363,6 +4363,7 @@ void MyFrame::ActivateMOB( void )
         pRouteManagerDialog->UpdateWptListCtrl();
     }
 
+    cc1->InvalidateGL();
     cc1->Refresh( false );
 
     wxString mob_message( _( "MAN OVERBOARD" ) );
