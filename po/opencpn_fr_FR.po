@@ -354,7 +354,7 @@ msgstr "Echelle de carte plus petite"
 
 #: src/chart1.cpp:4848
 msgid "Exit OpenCPN"
-msgstr ""
+msgstr "Quitter OpenCPN"
 
 #: src/chart1.cpp:4850
 msgid "&Navigate"
