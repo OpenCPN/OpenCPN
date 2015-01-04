@@ -1115,7 +1115,6 @@ bool MyApp::OnInit()
         wxCharBuffer buf = locn.ToUTF8();
         wchar_t wlocn[256];
         if(buf && (locn.Length() < sizeof(wlocn)) ){
-            LPCWSTR cstr;
             MultiByteToWideChar( 0, 0, buf.data(), -1, wlocn, sizeof(wlocn)-1);
             info.pszErrorReportSaveDir = (LPCWSTR)wlocn;
         }
