@@ -1106,6 +1106,11 @@ bool MyApp::OnInit()
 
     wxStandardPaths& crash_std_path = *dynamic_cast<wxStandardPaths*>(&wxApp::GetTraits()->GetStandardPaths());
     wxString crash_rpt_save_locn = crash_std_path.GetConfigDir();
+    if( g_bportable ) {
+        wxFileName exec_path_crash( crash_std_path.GetExecutablePath() );
+        crash_rpt_save_locn = exec_path_crash.GetPath( wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR );
+    }
+    
     wxString locn = crash_rpt_save_locn + _T("\\CrashReports");
     
     if(!wxDirExists( locn ) )
