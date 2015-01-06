@@ -153,7 +153,7 @@ unsigned char SENTENCE::ComputeChecksum( void ) const
        Sentence[ index ] != CARRIAGE_RETURN &&
        Sentence[ index ] != LINE_FEED )
    {
-       checksum_value ^= Sentence[ index ];
+       checksum_value ^= (char)Sentence[ index ];
          index++;
    }
 
