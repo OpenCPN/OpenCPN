@@ -145,19 +145,15 @@ unsigned char SENTENCE::ComputeChecksum( void ) const
 {
    unsigned char checksum_value = 0;
 
-   char str_ascii[101];
-   strncpy(str_ascii, (const char *)Sentence.mb_str(), 99);
-   str_ascii[100] = '\0';
-
-   int string_length = strlen(str_ascii);
+   int string_length = Sentence.Length();
    int index = 1; // Skip over the $ at the begining of the sentence
 
    while( index < string_length    &&
-          str_ascii[ index ] != '*' &&
-          str_ascii[ index ] != CARRIAGE_RETURN &&
-          str_ascii[ index ] != LINE_FEED )
+       Sentence[ index ] != '*' &&
+       Sentence[ index ] != CARRIAGE_RETURN &&
+       Sentence[ index ] != LINE_FEED )
    {
-         checksum_value ^= str_ascii[ index ];
+       checksum_value ^= Sentence[ index ];
          index++;
    }
 
