@@ -2795,6 +2795,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     m_COGFilterLast = 0.;
 
     g_sticky_chart = -1;
+    m_BellsToPlay = 0;
 }
 
 MyFrame::~MyFrame()
@@ -5859,7 +5860,7 @@ void MyFrame::OnBellsTimer(wxTimerEvent& event)
         m_BellsToPlay -= bells;
     }
 
-    BellsTimer.Start(20, wxTIMER_ONE_SHOT);
+    BellsTimer.Start(2000, wxTIMER_ONE_SHOT);
 }
 
 int ut_index;
