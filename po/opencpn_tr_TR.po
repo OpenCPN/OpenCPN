@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-01-03 13:45-0600\n"
-"PO-Revision-Date: 2015-01-03 15:08-0500\n"
+"POT-Creation-Date: 2015-01-06 17:25-0600\n"
+"PO-Revision-Date: 2015-01-06 18:28-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Turkish\n"
 "Language: tr_TR\n"
@@ -29,7 +29,7 @@ msgstr "Seyirnoktası Özellikleri"
 msgid "Waypoint Information"
 msgstr "Seyirnoktası Bilgisi "
 
-#: include/options.h:56 src/chart1.cpp:3042 src/chart1.cpp:5020
+#: include/options.h:56 src/chart1.cpp:3046 src/chart1.cpp:5025
 msgid "Options"
 msgstr "Seçenekler"
 
@@ -37,7 +37,7 @@ msgstr "Seçenekler"
 msgid "Sentence Filter"
 msgstr "Cümle Filtresi"
 
-#: include/about.h:39 src/chart1.cpp:3105 src/chart1.cpp:4909
+#: include/about.h:39 src/chart1.cpp:3109 src/chart1.cpp:4914
 msgid "About OpenCPN"
 msgstr "OpenCPN Kılavuzu"
 
@@ -128,36 +128,36 @@ msgstr "\n OpenCPN  HİÇBİR GARANTİ VERMEKSİZİN; hatta \n TİCARİLEŞTİR�
 msgid "Welcome to OpenCPN"
 msgstr "OpenCPN'e Hoşgeldiniz"
 
-#: src/chart1.cpp:1375
+#: src/chart1.cpp:1379
 msgid "Old log will be moved to opencpn.log.log"
 msgstr "Eski kütük opencpn.log.log dosyasına aktarılacak"
 
-#: src/chart1.cpp:1559 src/chart1.cpp:1563
+#: src/chart1.cpp:1563 src/chart1.cpp:1567
 msgid "Failed to initialize the user interface. "
 msgstr "Kullanıcı seçenekleri başlatılamadı."
 
-#: src/chart1.cpp:1560
+#: src/chart1.cpp:1564
 msgid "OpenCPN cannot start. "
 msgstr "OpenCPN başlatılamıyor"
 
-#: src/chart1.cpp:1561
+#: src/chart1.cpp:1565
 msgid "The necessary configuration files were not found. "
 msgstr "Gerekli ayar dosyaları bulunamadı. "
 
-#: src/chart1.cpp:1562
+#: src/chart1.cpp:1566
 msgid "See the log file at "
 msgstr "Kütük dosyasına bakınız "
 
-#: src/chart1.cpp:1562
+#: src/chart1.cpp:1566
 msgid " for details."
 msgstr " ayrıntılar için."
 
-#: src/chart1.cpp:1633
+#: src/chart1.cpp:1637
 msgid "Retrieving initial language selection from Windows Registry"
 msgstr "Başlangıçta seçilen dil, Windows kaydından alınıyor."
 
-#: src/chart1.cpp:1698 src/chart1.cpp:2249 src/chart1.cpp:5167
-#: src/chart1.cpp:9802 src/chart1.cpp:9833 src/tcmgr.cpp:762
+#: src/chart1.cpp:1702 src/chart1.cpp:2253 src/chart1.cpp:5172
+#: src/chart1.cpp:9807 src/chart1.cpp:9838 src/tcmgr.cpp:762
 #: src/options.cpp:3499 src/options.cpp:3506 src/options.cpp:3514
 #: src/options.cpp:3521 src/options.cpp:5755 src/pluginmanager.cpp:595
 #: src/pluginmanager.cpp:637 src/pluginmanager.cpp:665
@@ -166,353 +166,353 @@ msgstr "Başlangıçta seçilen dil, Windows kaydından alınıyor."
 msgid "OpenCPN Info"
 msgstr "OpenCPN Hakkında"
 
-#: src/chart1.cpp:2035
+#: src/chart1.cpp:2039
 msgid " -- [Portable(-p) executing from "
 msgstr " -- [Portable(-p) Uygulanıyor"
 
-#: src/chart1.cpp:2173
+#: src/chart1.cpp:2177
 msgid "Retrieving initial Chart Directory set from Windows Registry"
 msgstr "Başlangıçtaki Harita Klasörü, Windows Kaydından alınıyor."
 
-#: src/chart1.cpp:2224
+#: src/chart1.cpp:2228
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr "Yapılandırma dosya girişlerinden, yeniden harita veritabanı oluşturuluyor..."
 
-#: src/chart1.cpp:2227
+#: src/chart1.cpp:2231
 msgid "Elapsed time : "
 msgstr "Geçen süre:"
 
-#: src/chart1.cpp:2228
+#: src/chart1.cpp:2232
 msgid "Estimated time : "
 msgstr "Tahmini süre: "
 
-#: src/chart1.cpp:2229
+#: src/chart1.cpp:2233
 msgid "Remaining time : "
 msgstr "Kalan Süre : "
 
-#: src/chart1.cpp:2230 src/chart1.cpp:5460 src/chart1.cpp:5462
+#: src/chart1.cpp:2234 src/chart1.cpp:5465 src/chart1.cpp:5467
 msgid "OpenCPN Chart Update"
 msgstr "OpenCPN Harita Güncelliyor"
 
-#: src/chart1.cpp:2247
+#: src/chart1.cpp:2251
 msgid "No Charts Installed.\nPlease select chart folders in Options > Charts."
 msgstr "Harita Yüklenmedi \n Lütfen harita klasörlerini seçiniz (Seçenekler -> Haritalar)."
 
-#: src/chart1.cpp:2918 src/chcanv.cpp:10473
+#: src/chart1.cpp:2922 src/chcanv.cpp:10473
 msgid "AIS Target Query"
 msgstr "AIS Hedef Sorgusu"
 
-#: src/chart1.cpp:2997 src/chart1.cpp:4841
+#: src/chart1.cpp:3001 src/chart1.cpp:4846
 msgid "Zoom In"
 msgstr "Yakınlaştır"
 
-#: src/chart1.cpp:3003 src/chart1.cpp:4842
+#: src/chart1.cpp:3007 src/chart1.cpp:4847
 msgid "Zoom Out"
 msgstr "Uzaklaştır"
 
-#: src/chart1.cpp:3012
+#: src/chart1.cpp:3016
 msgid "Shift to Larger Scale Chart"
 msgstr "Büyük Ölçekli Haritaya Geç."
 
-#: src/chart1.cpp:3020
+#: src/chart1.cpp:3024
 msgid "Shift to Smaller Scale Chart"
 msgstr "Küçük Ölçekli Haritaya Geç"
 
-#: src/chart1.cpp:3028 src/chart1.cpp:4892
+#: src/chart1.cpp:3032 src/chart1.cpp:4897
 msgid "Create Route"
 msgstr "Rota Oluştur"
 
-#: src/chart1.cpp:3035 src/chart1.cpp:4835
+#: src/chart1.cpp:3039 src/chart1.cpp:4840
 msgid "Auto Follow"
 msgstr "Otomatik İzle"
 
-#: src/chart1.cpp:3048 src/chart1.cpp:4859
+#: src/chart1.cpp:3052 src/chart1.cpp:4864
 msgid "Show ENC Text"
 msgstr "Harita Metinlerini Göster"
 
-#: src/chart1.cpp:3056 src/chart1.cpp:3141 src/chart1.cpp:4013
+#: src/chart1.cpp:3060 src/chart1.cpp:3145 src/chart1.cpp:4017
 msgid "Hide AIS Targets"
 msgstr "AIS Hedeflerini Gizle"
 
-#: src/chart1.cpp:3063 src/chart1.cpp:4075 src/chart1.cpp:4866
+#: src/chart1.cpp:3067 src/chart1.cpp:4079 src/chart1.cpp:4871
 msgid "Show Currents"
 msgstr "Akıntıları Göster"
 
-#: src/chart1.cpp:3069 src/chart1.cpp:4109 src/chart1.cpp:4865
+#: src/chart1.cpp:3073 src/chart1.cpp:4113 src/chart1.cpp:4870
 msgid "Show Tides"
 msgstr "Gelgitleri Göster"
 
-#: src/chart1.cpp:3075
+#: src/chart1.cpp:3079
 msgid "Print Chart"
 msgstr "Haritayı Bas"
 
-#: src/chart1.cpp:3081 src/routemanagerdialog.cpp:425
+#: src/chart1.cpp:3085 src/routemanagerdialog.cpp:425
 msgid "Route & Mark Manager"
-msgstr ""
+msgstr "Rota & İşaret Düzenleyicisi"
 
-#: src/chart1.cpp:3088 src/chart1.cpp:4459 src/chart1.cpp:4836
+#: src/chart1.cpp:3092 src/chart1.cpp:4464 src/chart1.cpp:4841
 msgid "Enable Tracking"
-msgstr ""
+msgstr "İzlemeyi Etkinleştir"
 
-#: src/chart1.cpp:3095 src/chart1.cpp:4868
+#: src/chart1.cpp:3099 src/chart1.cpp:4873
 msgid "Change Color Scheme"
 msgstr "Renk Tonunu Değiştir"
 
-#: src/chart1.cpp:3114 src/chart1.cpp:4898 src/chart1.cpp:4902
+#: src/chart1.cpp:3118 src/chart1.cpp:4903 src/chart1.cpp:4907
 msgid "Drop MOB Marker"
 msgstr "DAD (Denize Adam Düştü) işareti bırak"
 
-#: src/chart1.cpp:3114
+#: src/chart1.cpp:3118
 msgid " (Ctrl-Space)"
 msgstr " (Ctrl-Boşluk)"
 
-#: src/chart1.cpp:3145 src/chart1.cpp:4016 src/chart1.cpp:4879
+#: src/chart1.cpp:3149 src/chart1.cpp:4020 src/chart1.cpp:4884
 msgid "Show AIS Targets"
 msgstr "AIS Hedeflerini Göster"
 
-#: src/chart1.cpp:3507
+#: src/chart1.cpp:3511
 msgid "Anchorage created "
 msgstr "Demiryeri oluşturuldu."
 
-#: src/chart1.cpp:3722
+#: src/chart1.cpp:3726
 msgid "StatusBar"
 msgstr "Durum Çubuğu"
 
-#: src/chart1.cpp:3896
+#: src/chart1.cpp:3900
 msgid "Group \""
 msgstr "Grup \""
 
-#: src/chart1.cpp:3898
+#: src/chart1.cpp:3902
 msgid "\" is empty, switching to \"All Active Charts\" group."
 msgstr "\" boş, geçiş yapılıyor\"Kullanımdaki Tüm Haritalar\"grup."
 
-#: src/chart1.cpp:3900
+#: src/chart1.cpp:3904
 msgid "OpenCPN Group Notice"
 msgstr "OpenCPN Grubunun dikkatine"
 
-#: src/chart1.cpp:4077
+#: src/chart1.cpp:4081
 msgid "Hide Currents"
-msgstr ""
+msgstr "Akıntıları Gizle"
 
-#: src/chart1.cpp:4111
+#: src/chart1.cpp:4115
 msgid "Hide Tides"
-msgstr ""
+msgstr "GelGitleri Gzile"
 
-#: src/chart1.cpp:4118
+#: src/chart1.cpp:4122
 msgid "Chart1::Event...TCMgr Not Available"
 msgstr "Harita1::Olay...TCMgr'ye ulaşılmıyor."
 
-#: src/chart1.cpp:4313 src/chart1.cpp:4368
+#: src/chart1.cpp:4317 src/chart1.cpp:4373
 msgid "MAN OVERBOARD"
 msgstr "DENİZE ADAM DÜŞTÜ"
 
-#: src/chart1.cpp:4330
+#: src/chart1.cpp:4334
 msgid "1.0 NM along COG"
 msgstr "COG boyunca 1.0 NM"
 
-#: src/chart1.cpp:4341
+#: src/chart1.cpp:4345
 msgid "Temporary MOB Route"
 msgstr "Geçici Denize Adam Düştü (DAD) Rotası"
 
-#: src/chart1.cpp:4342
+#: src/chart1.cpp:4346
 msgid "Assumed 1 Mile Point"
 msgstr "Varsayılan 1 mil noktası"
 
-#: src/chart1.cpp:4391
+#: src/chart1.cpp:4396
 msgid "Disable Tracking"
-msgstr ""
+msgstr "Seyirizini Durdur"
 
-#: src/chart1.cpp:4411 src/chart1.cpp:7888 src/chart1.cpp:8021
+#: src/chart1.cpp:4416 src/chart1.cpp:7893 src/chart1.cpp:8026
 #: src/routemanagerdialog.cpp:1590
 msgid "(Unnamed Track)"
 msgstr "(Adsız Seyirizi)"
 
-#: src/chart1.cpp:4509 src/chart1.cpp:4838 src/chart1.cpp:6467
+#: src/chart1.cpp:4514 src/chart1.cpp:4843 src/chart1.cpp:6472
 #: src/chcanv.cpp:6747
 msgid "North Up Mode"
 msgstr "Kuzey Yukarı Durumu"
 
-#: src/chart1.cpp:4523
+#: src/chart1.cpp:4528
 msgid "Show ENC Text (T)"
-msgstr ""
+msgstr "Harita Metinlerini Göster"
 
-#: src/chart1.cpp:4525
+#: src/chart1.cpp:4530
 msgid "Hide ENC Text (T)"
-msgstr ""
+msgstr "Harita Metinlerini Gizle"
 
-#: src/chart1.cpp:4839 src/chcanv.cpp:6742
+#: src/chart1.cpp:4844 src/chcanv.cpp:6742
 msgid "Course Up Mode"
 msgstr "Yön Yukarı Durumu"
 
-#: src/chart1.cpp:4844
+#: src/chart1.cpp:4849
 msgid "Larger Scale Chart"
-msgstr ""
-
-#: src/chart1.cpp:4845
-msgid "Smaller Scale Chart"
-msgstr ""
-
-#: src/chart1.cpp:4848
-msgid "Exit OpenCPN"
-msgstr ""
+msgstr "Daha Büyük Ölçekli Harita"
 
 #: src/chart1.cpp:4850
-msgid "&Navigate"
-msgstr ""
+msgid "Smaller Scale Chart"
+msgstr "Daha Küçük Ölçekli Harita"
 
-#: src/chart1.cpp:4854 src/options.cpp:2228
+#: src/chart1.cpp:4853
+msgid "Exit OpenCPN"
+msgstr "OpenCPN'den Çık"
+
+#: src/chart1.cpp:4855
+msgid "&Navigate"
+msgstr "&Gezin"
+
+#: src/chart1.cpp:4859 src/options.cpp:2228
 msgid "Enable Chart Quilting"
 msgstr "Haritaları Birbirine Ekle"
 
-#: src/chart1.cpp:4855 src/options.cpp:2266
+#: src/chart1.cpp:4860 src/options.cpp:2266
 msgid "Show Chart Outlines"
 msgstr "Harita Sınırlarını Göster"
 
-#: src/chart1.cpp:4856 src/options.cpp:2647
+#: src/chart1.cpp:4861 src/options.cpp:2647
 msgid "Show Chart Bar"
-msgstr ""
+msgstr "Harita Çubuğunu Göster"
 
-#: src/chart1.cpp:4860
+#: src/chart1.cpp:4865
 msgid "Show ENC Lights"
-msgstr ""
+msgstr "Fenerleri Göster"
 
-#: src/chart1.cpp:4861
+#: src/chart1.cpp:4866
 msgid "Show ENC Soundings"
-msgstr ""
+msgstr "Deinlikleri Göster"
 
-#: src/chart1.cpp:4862
+#: src/chart1.cpp:4867
 msgid "Show ENC Anchoring Info"
-msgstr ""
+msgstr "Demirleme Bilgisini Göster"
 
-#: src/chart1.cpp:4871 src/chart1.cpp:4873
+#: src/chart1.cpp:4876 src/chart1.cpp:4878
 msgid "Enter Full Screen"
-msgstr ""
-
-#: src/chart1.cpp:4875
-msgid "&View"
-msgstr ""
+msgstr "Tam Ekrana Geç"
 
 #: src/chart1.cpp:4880
+msgid "&View"
+msgstr "&Bak"
+
+#: src/chart1.cpp:4885
 msgid "Show Target Tracks"
-msgstr ""
+msgstr "Hedef İzlemeyi Göster"
 
-#: src/chart1.cpp:4881
+#: src/chart1.cpp:4886
 msgid "Show CPA Alert Dialogs"
-msgstr ""
+msgstr "CPA Uyarılarını Göster"
 
-#: src/chart1.cpp:4882
+#: src/chart1.cpp:4887
 msgid "Sound CPA Alarms"
-msgstr ""
+msgstr "CPA Sesli Uyarıları Göster"
 
-#: src/chart1.cpp:4884 src/chcanv.cpp:6872
+#: src/chart1.cpp:4889 src/chcanv.cpp:6872
 msgid "AIS Target List..."
 msgstr "AIS Hedef Listesi"
 
-#: src/chart1.cpp:4885
+#: src/chart1.cpp:4890
 msgid "&AIS"
-msgstr ""
-
-#: src/chart1.cpp:4889
-msgid "Measure Distance"
-msgstr ""
-
-#: src/chart1.cpp:4891
-msgid "Route && Mark Manager..."
-msgstr ""
+msgstr "&AIS"
 
 #: src/chart1.cpp:4894
-msgid "Drop Mark at Boat"
-msgstr ""
+msgid "Measure Distance"
+msgstr "Uzaklığı Ölç"
 
-#: src/chart1.cpp:4895
-msgid "Drop Mark at Cursor"
-msgstr ""
+#: src/chart1.cpp:4896
+msgid "Route && Mark Manager..."
+msgstr "Rota&&İşaret Düzenleyicisi"
+
+#: src/chart1.cpp:4899
+msgid "Drop Mark at Boat"
+msgstr "Tekneye İşaret Bırak"
 
 #: src/chart1.cpp:4900
+msgid "Drop Mark at Cursor"
+msgstr "Fareye İşaret Bırak"
+
+#: src/chart1.cpp:4905
 msgid "Preferences..."
-msgstr ""
+msgstr "Ayarlar..."
 
-#: src/chart1.cpp:4904 src/options.cpp:1834
+#: src/chart1.cpp:4909 src/options.cpp:1834
 msgid "Options..."
-msgstr ""
+msgstr "Seçenekler"
 
-#: src/chart1.cpp:4907
+#: src/chart1.cpp:4912
 msgid "&Tools"
-msgstr ""
+msgstr "&Araçlar"
 
-#: src/chart1.cpp:4910
+#: src/chart1.cpp:4915
 msgid "OpenCPN Help"
-msgstr ""
+msgstr "OpenCPN Yardım"
 
-#: src/chart1.cpp:4911
+#: src/chart1.cpp:4916
 msgid "&Help"
-msgstr ""
+msgstr "&Yardım"
 
-#: src/chart1.cpp:5166
+#: src/chart1.cpp:5171
 msgid "Please restart OpenCPN to activate language or style changes."
 msgstr "Seçilen dili ya da yazı türü değişikliğini etkinleştirmek için OpenCPN'i yeniden başlatın."
 
-#: src/chart1.cpp:6460
+#: src/chart1.cpp:6465
 msgid "Rotated Mode"
-msgstr ""
+msgstr "Döndürülmüş Durum"
 
-#: src/chart1.cpp:7536
+#: src/chart1.cpp:7541
 msgid "Show This Chart"
 msgstr "Bu Haritayı Göster"
 
-#: src/chart1.cpp:7541 src/chcanv.cpp:6798
+#: src/chart1.cpp:7546 src/chcanv.cpp:6798
 msgid "Hide This Chart"
 msgstr "Bu Haritayı Gizle"
 
-#: src/chart1.cpp:7791
+#: src/chart1.cpp:7796
 msgid "Chart Print"
 msgstr "Haritayı Yazdır"
 
-#: src/chart1.cpp:7800 src/routeprintout.cpp:469
+#: src/chart1.cpp:7805 src/routeprintout.cpp:469
 msgid "There was a problem printing.\nPerhaps your current printer is not set correctly?"
 msgstr "Yazdırırken bir sorun oluştu.\n Kullanılan yazıcı doğru yapılandırılmamış olabilir mi?"
 
-#: src/chart1.cpp:7951 src/chart1.cpp:8024 src/routemanagerdialog.cpp:890
+#: src/chart1.cpp:7956 src/chart1.cpp:8029 src/routemanagerdialog.cpp:890
 msgid "(Unnamed Route)"
 msgstr "(Adsız Rota)"
 
-#: src/chart1.cpp:8583
+#: src/chart1.cpp:8588
 msgid " Ship "
 msgstr "Tekne"
 
-#: src/chart1.cpp:8854 src/chart1.cpp:8905
+#: src/chart1.cpp:8859 src/chart1.cpp:8910
 msgid "AIS MAN OVERBOARD"
-msgstr ""
+msgstr "AIS DENİZE ADAM DÜŞTÜ"
 
-#: src/chart1.cpp:8867
+#: src/chart1.cpp:8872
 msgid "Ownship"
-msgstr ""
+msgstr "Teknem"
 
-#: src/chart1.cpp:8878
+#: src/chart1.cpp:8883
 msgid "Temporary AISMOB Route"
-msgstr ""
+msgstr "Geçici AISDAD Rotası"
 
-#: src/chart1.cpp:8879
+#: src/chart1.cpp:8884
 msgid "Present Ownship"
-msgstr ""
+msgstr "Şİmdiki Teknem"
 
-#: src/chart1.cpp:8949
+#: src/chart1.cpp:8954
 msgid "AIS MAN OVERBOARD UPDATE"
-msgstr ""
+msgstr "AIS DENİZE ADAM DÜŞTÜ GÜNCELLEMESİ"
 
-#: src/chart1.cpp:9797
+#: src/chart1.cpp:9802
 msgid "OpenCPN requires access to serial ports to use serial NMEA data.\n"
 msgstr "OpenCPN NMEA verisi kullanmak için seri bağlantı noktalarına erişimi gerektirir. \n"
 
-#: src/chart1.cpp:9799
+#: src/chart1.cpp:9804
 msgid "No Serial Ports can be found on this system.\nYou must install a serial port (modprobe correct kernel module) or plug in a usb serial device.\n"
 msgstr "Sistemde seri bağlantı noktası yok.\nSeri bağlantı noktası (modprobe correct kernel module) yüklemeniz veya bir usb seri aygıt takmanız gerekiyor\n"
 
-#: src/chart1.cpp:9821
+#: src/chart1.cpp:9826
 msgid "You do currently not have permission to access the serial ports on this system.\n\nIt is suggested that you exit OpenCPN now,\nand add yourself to the correct group to enable serial port access.\n\nYou may do so by executing the following command from the linux command line:\n\n                sudo usermod -a -G "
 msgstr "Şu sırada seri bağlantı noktalarına erişim izniniz yok. \n\nIt OpenCPN'den çıkmanızı öneriyor. \n ve ardından kendinizi seri bağlantı noktasına erişebilecekler listesine ekleyin\n\n Bunu yapmak için linux komut satırına aşağıdaki komutu ekleyin.\n\n sudo usermod -a -G "
 
-#: src/chart1.cpp:10255 src/routeprop.cpp:361 src/routeprop.cpp:1831
+#: src/chart1.cpp:10260 src/routeprop.cpp:361 src/routeprop.cpp:1831
 #: src/routemanagerdialog.cpp:428 src/options.cpp:655 src/options.cpp:847
 #: src/options.cpp:1769 src/options.cpp:2149 src/options.cpp:2724
 #: src/options.cpp:2728 src/options.cpp:5844 src/TrackPropDlg.cpp:85
@@ -527,7 +527,7 @@ msgstr "Harita Metinleri"
 
 #: src/tcmgr.cpp:761
 msgid "It seems you have no tide/current harmonic data installed."
-msgstr ""
+msgstr "Akıntı/Gelgit uyumlu verilerin yüklenmediği anlaşıldı."
 
 #: src/cm93.cpp:6722
 msgid "OpenCPN CM93 Cell Offset Adjustments"
@@ -610,7 +610,7 @@ msgstr "  Haritada hata oluşturan satır indeksi"
 
 #: src/chartimg.cpp:1944
 msgid "---<<< Warning:  Chart Datum may be incorrect. >>>---"
-msgstr ""
+msgstr "---<<< Dikkat:  Harita ölçeği yanlış olabilir. >>>---"
 
 #: src/chartimg.cpp:5003
 msgid "---<<< Warning:  Chart georef accuracy may be poor. >>>---"
@@ -707,7 +707,7 @@ msgstr "Bitiş"
 #: src/chcanv.cpp:3832
 #, c-format
 msgid "Scale %4.0f (%1.0fx)"
-msgstr ""
+msgstr "Ölçek %4.0f (%1.0fx)"
 
 #: src/chcanv.cpp:3834
 #, c-format
@@ -742,7 +742,7 @@ msgstr "Bu ayağa Büyük Daire Seyri rotası eklemek ister misiniz?"
 
 #: src/chcanv.cpp:6591 src/chcanv.cpp:6600 src/options.cpp:597
 msgid "Menu"
-msgstr ""
+msgstr "Menu"
 
 #: src/chcanv.cpp:6608
 msgid "Waypoint"
@@ -814,11 +814,11 @@ msgstr "Harita Yukarı Yönlü Durumu"
 
 #: src/chcanv.cpp:6752 src/chcanv.cpp:6759
 msgid "Toggle Full Screen"
-msgstr ""
+msgstr "Tam Ekrana Geç "
 
 #: src/chcanv.cpp:6764
 msgid "Zero XTE"
-msgstr ""
+msgstr "Sıfır XTE"
 
 #: src/chcanv.cpp:6771
 msgid "Paste Waypoint"
@@ -918,7 +918,7 @@ msgstr "GPS'e Gönder"
 
 #: src/chcanv.cpp:6946 src/chcanv.cpp:7022
 msgid "Send to new GPS"
-msgstr ""
+msgstr "Yeni GPS e gönder "
 
 #: src/chcanv.cpp:6963
 msgid "Layer Track"
@@ -1611,7 +1611,7 @@ msgstr "Açılır menü!"
 
 #: src/routeprop.cpp:1938
 msgid "Arrival Radius"
-msgstr ""
+msgstr "Varış Yarıçapı"
 
 #: src/routeprop.cpp:1962 src/options.cpp:1319 src/options.cpp:1346
 msgid "..."
@@ -1668,19 +1668,19 @@ msgstr "Bağlantılar düzeltme için açılır."
 
 #: src/routeprop.cpp:2685
 msgid "Copy"
-msgstr ""
+msgstr "Kopyala"
 
 #: src/routeprop.cpp:2686
 msgid "Copy lat/long"
-msgstr ""
+msgstr "Enlem/Boylamı Kopyala"
 
 #: src/routeprop.cpp:2687
 msgid "Paste"
-msgstr ""
+msgstr "Yapıştır"
 
 #: src/routeprop.cpp:2688
 msgid "Paste lat/long"
-msgstr ""
+msgstr "Enlem/Boylamı Yapıştır"
 
 #: src/routemanagerdialog.cpp:457 src/options.cpp:1618
 msgid "Routes"
@@ -1700,7 +1700,7 @@ msgstr "Kalkış - Varış Limanları"
 
 #: src/routemanagerdialog.cpp:506
 msgid "&Properties..."
-msgstr "&Özellikler"
+msgstr "&Özellikler..."
 
 #: src/routemanagerdialog.cpp:511
 msgid "&Activate"
@@ -1853,7 +1853,7 @@ msgstr "&Metin olarak kopyala"
 
 #: src/routemanagerdialog.cpp:1412
 msgid "Select the maximum error allowed (in meters)\nafter data reduction:"
-msgstr "Veri düzeltimi sonrasında\n kabul edilir en çok hata payı (metre)"
+msgstr "Veri düzeltimi sonrasında\n kabul edilir en çok hata payı (metre):"
 
 #: src/routemanagerdialog.cpp:1413
 msgid "Reduce Data Precision"
@@ -1862,7 +1862,7 @@ msgstr "Veri Kesinliğini Azalt"
 #: src/routemanagerdialog.cpp:1432
 #, c-format
 msgid "The amount of data used by the track\n was reduced by %d%%."
-msgstr "İzsürümün kullandığı veri miktarı\n%d%% değeriyle düzeltildi. "
+msgstr "Seyiizinin kullandığı veri miktarı\n%d%% değeriyle düzeltildi. "
 
 #: src/routemanagerdialog.cpp:1434 src/options.cpp:3614
 msgid "OpenCPN info"
@@ -1870,7 +1870,7 @@ msgstr "OpenCPN Hakkında "
 
 #: src/routemanagerdialog.cpp:1542
 msgid "The currently running Track was not merged.\nYou can merge it later when it is completed."
-msgstr "Halen sürdürülen rotaizi birleştirilmedi.\n Bittikten sonra birleştirebilirsiniz."
+msgstr "Halen sürdürülen seyirizi birleştirilmedi.\nBittikten sonra birleştirebilirsiniz."
 
 #: src/routemanagerdialog.cpp:1778
 msgid "OpenCPN Converting Track to Route...."
@@ -1898,7 +1898,7 @@ msgstr "Seyirnoktalarının<TÜMÜNÜ> silmek istediğinizden emin misiniz?"
 
 #: src/routemanagerdialog.cpp:2258
 msgid "There are some waypoints used in routes or anchor alarms.\n Do you want to delete them as well?\n This will change the routes and disable the anchor alarms.\n Answering No keeps the waypoints used in routes or alarms."
-msgstr "Rotalarda ya da demir alarmlarında kullanılan bazı seyir noktaları var. Onları de silmek istiyor musunuz? Silerseniz, rotalar değişecek, demir alarmları iptal edilecek. \"Hayır\" derseniz seyirnoktalarını ve alarmlarını kullanılmaya devam edebileceksiniz."
+msgstr "Rotalarda ya da demir alarmlarında kullanılan bazı seyir noktaları var.\nOnları de silmek istiyor musunuz?\nSilerseniz, rotalar değişecek, demir alarmları iptal edilecek. \n\"Hayır\" derseniz seyirnoktalarını ve alarmlarını kullanılmaya devam edebileceksiniz."
 
 #: src/routemanagerdialog.cpp:2311
 msgid "Hide from chart"
@@ -2206,7 +2206,7 @@ msgstr "Özel İşaret"
 
 #: src/ais.cpp:215
 msgid "Light Vessel/Rig"
-msgstr "Tekne/donanım Feneri"
+msgstr "Tekne/Donanım Feneri"
 
 #: src/ais.cpp:216
 msgid "GpsGate Buddy"
@@ -2594,7 +2594,7 @@ msgstr "Güvenlik Alarmı - Derece 3"
 
 #: src/ais.cpp:357
 msgid "Distress Area: Vessel disabled and adrift"
-msgstr "Sıkıntılı Bölge: Sürüklenen, hareket yeteneği olmayan tekne"
+msgstr "Sorunlu Bölge: Sürüklenen, hareket yeteneği olmayan tekne"
 
 #: src/ais.cpp:358
 msgid "Distress Area: Vessel sinking"
@@ -2602,47 +2602,47 @@ msgstr "Sıkıntılı Bölge: Batan tekne"
 
 #: src/ais.cpp:359
 msgid "Distress Area: Vessel abandoning ship"
-msgstr "Sıkıntılı Bölge: Gemiden ayrılan tekne"
+msgstr "Sorunlu  Bölge: Gemiden ayrılan tekne"
 
 #: src/ais.cpp:360
 msgid "Distress Area: Vessel requests medical assistance"
-msgstr "Sıkıntılı Bölge: Tıbbi yardım isteyen tekne"
+msgstr "Sorunlu  Bölge: Tıbbi yardım isteyen tekne"
 
 #: src/ais.cpp:361
 msgid "Distress Area: Vessel flooding"
-msgstr "Sıkıntılı Bölge: Su alan tekne"
+msgstr "Sorunlu  Bölge: Su alan tekne"
 
 #: src/ais.cpp:362
 msgid "Distress Area: Vessel fire/explosion"
-msgstr "Sıkıntılı Bölge: Tekne yangını/patlaması"
+msgstr "Sorunlu Bölge: Tekne yangını/patlaması"
 
 #: src/ais.cpp:363
 msgid "Distress Area: Vessel grounding"
-msgstr "Sıkıntılı Bölge: Karaya oturan tekne"
+msgstr "Sorunlu  Bölge: Karaya oturan tekne"
 
 #: src/ais.cpp:364
 msgid "Distress Area: Vessel collision"
-msgstr "Sıkıntılı Bölge: Tekne çarpışması"
+msgstr "Sorunlu Bölge: Tekne çarpışması"
 
 #: src/ais.cpp:365
 msgid "Distress Area: Vessel listing/capsizing"
-msgstr "Sıkıntılı Bölge: Alabora olan tekne"
+msgstr "Sorunlu  Bölge: Alabora olan tekne"
 
 #: src/ais.cpp:366
 msgid "Distress Area: Vessel under assault"
-msgstr "Sıkıntılı Bölge: Saldırıya uğrayan tekne"
+msgstr "Sorunlu  Bölge: Saldırıya uğrayan tekne"
 
 #: src/ais.cpp:367
 msgid "Distress Area: Person overboard"
-msgstr "Sıkıntılı Bölge: Denize adam düştü"
+msgstr "Sorunlu  Bölge: Denize adam düştü"
 
 #: src/ais.cpp:368
 msgid "Distress Area: SAR area"
-msgstr "Sıkıntılı Bölge: SAR bölgesi"
+msgstr "Sorunlu  Bölge: SAR bölgesi"
 
 #: src/ais.cpp:369
 msgid "Distress Area: Pollution response area"
-msgstr "Sıkıntılı Bölge: Kirliliğe duyarlı bölge"
+msgstr "Sorunlu  Bölge: Kirliliğe duyarlı bölge"
 
 #: src/ais.cpp:373
 msgid "Instruction: Contact VTS at this point/juncture"
@@ -2790,7 +2790,7 @@ msgstr "AIS Hedef Adı"
 
 #: src/options.cpp:347
 msgid "MMSI Extended Properties"
-msgstr ""
+msgstr "MMSI Ek Özellikler"
 
 #: src/options.cpp:353 src/options.cpp:686 src/AISTargetListDialog.cpp:372
 #: src/AIS_Target_Data.cpp:317 src/AIS_Target_Data.cpp:326
@@ -2799,79 +2799,79 @@ msgstr "MMSI"
 
 #: src/options.cpp:362
 msgid "Tracking"
-msgstr ""
+msgstr "Seyirizi çıkarıyor"
 
 #: src/options.cpp:367
 msgid "Default tracking"
-msgstr ""
+msgstr "Varsayılan seyirizi"
 
 #: src/options.cpp:371
 msgid "Always track"
-msgstr ""
+msgstr "Herzaman seyirizi al."
 
 #: src/options.cpp:374
 msgid "Never track"
-msgstr ""
+msgstr "Hiç seyirizi alma"
 
 #: src/options.cpp:377 src/options.cpp:533
 msgid "Persistent"
-msgstr ""
+msgstr "Kalıcı"
 
 #: src/options.cpp:384
 msgid "Ignore this MMSI"
-msgstr ""
+msgstr "Bu MMSI'ı yoksay"
 
 #: src/options.cpp:387
 msgid "Handle this MMSI as SART/PLB(AIS) MOB."
-msgstr ""
+msgstr "Bu MMSI'ı SART/PLB(AIS) DAD olarak dikkate al."
 
 #: src/options.cpp:390
 msgid "Convert AIVDM to AIVDO for this MMSI"
-msgstr ""
+msgstr "Bu MMSI için, AIVDM'i AIVDO'ya çevir."
 
 #: src/options.cpp:527
 msgid "Always"
-msgstr ""
+msgstr "Her zaman"
 
 #: src/options.cpp:529
 msgid "Never"
-msgstr ""
+msgstr "Hiçbir zaman"
 
 #: src/options.cpp:570 src/options.cpp:621
 msgid "Edit MMSI Properties"
-msgstr ""
+msgstr "MMSI Özelliklerini Değiştir"
 
 #: src/options.cpp:588 src/options.cpp:2368 src/options.cpp:2374
 msgid "MMSI Properties"
-msgstr ""
+msgstr "MMSI Özellikleri"
 
 #: src/options.cpp:590
 msgid "Edit..."
-msgstr ""
+msgstr "Değiştir..."
 
 #: src/options.cpp:694
 msgid "Track Mode"
-msgstr ""
+msgstr "İzleme Durumu"
 
 #: src/options.cpp:702
 msgid "Ignore"
-msgstr ""
+msgstr "Yoksay"
 
 #: src/options.cpp:710
 msgid "MOB"
-msgstr ""
+msgstr "DAD"
 
 #: src/options.cpp:718
 msgid "VDM->VDO"
-msgstr ""
+msgstr "VDM->VDO"
 
 #: src/options.cpp:724
 msgid "New..."
-msgstr ""
+msgstr "Yeni..."
 
 #: src/options.cpp:747
 msgid "Add MMSI Properties"
-msgstr ""
+msgstr "MMSI Özellikleri"
 
 #: src/options.cpp:1068
 msgid "NMEA"
@@ -3087,27 +3087,27 @@ msgstr "Bu bağlantı noktası çıkışı (Otopilot ya da NMEA cihazı)"
 
 #: src/options.cpp:1286
 msgid "APB bearing precision"
-msgstr ""
+msgstr "APB kerteriz kesinliği"
 
 #: src/options.cpp:1290
 msgid "x"
-msgstr ""
+msgstr "x"
 
 #: src/options.cpp:1290
 msgid "x.x"
-msgstr ""
+msgstr "x.x"
 
 #: src/options.cpp:1290
 msgid "x.xx"
-msgstr ""
+msgstr "x.xx"
 
 #: src/options.cpp:1290
 msgid "x.xxx"
-msgstr ""
+msgstr "x.xxx"
 
 #: src/options.cpp:1290
 msgid "x.xxxx"
-msgstr ""
+msgstr "x.xxxx"
 
 #: src/options.cpp:1299
 msgid "Input filtering"
@@ -3167,7 +3167,7 @@ msgstr "COG Gösterge Ok Uzunluğu (dakika)"
 
 #: src/options.cpp:1527
 msgid "Heading Predictor Length (NMi)"
-msgstr ""
+msgstr "Pruvadan Uzaklık Göstergesi (NMi)"
 
 #: src/options.cpp:1533
 msgid "Ship Icon Type"
@@ -3203,7 +3203,7 @@ msgstr "Enküçük Ekran Büyüklüğü (mm)"
 
 #: src/options.cpp:1571
 msgid "Show range rings"
-msgstr ""
+msgstr "Uzaklık Halkalarını Göster"
 
 #: src/options.cpp:1574
 msgid "None"
@@ -3255,11 +3255,11 @@ msgstr "Seyirnoktası Varış Daire Çapı (Mil)"
 
 #: src/options.cpp:1632
 msgid "Advance route waypoint on arrival only"
-msgstr ""
+msgstr "Ön Rota Seyirnoktası Sadece Varışta"
 
 #: src/options.cpp:1642
 msgid "Chart Files"
-msgstr ""
+msgstr "Harita Dosyaları"
 
 #: src/options.cpp:1647
 msgid "Directories"
@@ -3291,7 +3291,7 @@ msgstr "İleri"
 
 #: src/options.cpp:1721 src/options.cpp:2224
 msgid "Chart Display"
-msgstr ""
+msgstr "Haritayı Göster"
 
 #: src/options.cpp:1725
 msgid "Show Skewed Raster Charts as North-Up"
@@ -3303,31 +3303,31 @@ msgstr "Haritaları Tam Ekranda Birbirine Ekleme"
 
 #: src/options.cpp:1731
 msgid "Suppress blur/fog effects on overzoom"
-msgstr ""
+msgstr "Aşırı Yaklaştırmada Netlik Ayarını Engelle"
 
 #: src/options.cpp:1734
 msgid "Suppress scaled vector charts on overzoom"
-msgstr ""
+msgstr "Aşırı Yakınlaştırmada Ölçümlendirilmiş Vektör Haritalarını Engelle."
 
 #: src/options.cpp:1743
 msgid "Course-Up Update Period"
-msgstr ""
+msgstr "Yön-Yukarı Durumunu Güncelleme Sıklığı"
 
 #: src/options.cpp:1750
 msgid "seconds"
-msgstr ""
+msgstr "Saniye"
 
 #: src/options.cpp:1759
 msgid "Chart Zoom/Scale Weighting"
-msgstr ""
+msgstr "Harita Yakınlaştır/Ölçümle Derecesi"
 
 #: src/options.cpp:1767
 msgid "With a lower value, the same zoom level shows a less detailed chart.\nWith a higher value, the same zoom level shows a more detailed chart."
-msgstr ""
+msgstr "Daha düşük bir değerle, aynı aykınlaştırma derecesinde harita daha az ayrıntlı gözükür. \nDaha yüksek bir değerle, aynı yakınlaştırma derecesinde harita daha ayrıntılı gözükür."
 
 #: src/options.cpp:1782 src/options.cpp:2241
 msgid "Controls"
-msgstr ""
+msgstr "Denetimler"
 
 #: src/options.cpp:1786
 msgid "Lock Waypoints (Unless waypoint property dialog visible)"
@@ -3339,23 +3339,23 @@ msgstr "Rota ve Seyirizlerinin İptalini Onaylat"
 
 #: src/options.cpp:1801
 msgid "Physical Screen Width"
-msgstr ""
+msgstr "Fiziki Ekran Genişliği"
 
 #: src/options.cpp:1805 src/options.cpp:3073 src/options.cpp:3202
 msgid "Auto"
-msgstr ""
+msgstr "Otomatik"
 
 #: src/options.cpp:1808
 msgid "Manual:"
-msgstr ""
+msgstr "El ile:"
 
 #: src/options.cpp:1814
 msgid "mm"
-msgstr ""
+msgstr "mm"
 
 #: src/options.cpp:1826
 msgid "Graphics"
-msgstr ""
+msgstr "Grafikler"
 
 #: src/options.cpp:1830
 msgid "Use Accelerated Graphics (OpenGL)"
@@ -3367,7 +3367,7 @@ msgstr "Şeffaf Araç Çubuğunu Etkinleştir"
 
 #: src/options.cpp:1854
 msgid "Vector Chart Display"
-msgstr ""
+msgstr "Vektör Harita Görünümü"
 
 #: src/options.cpp:1875
 msgid "Display Category"
@@ -3403,7 +3403,7 @@ msgstr "Harita Bilgi Nesneleri"
 
 #: src/options.cpp:1901
 msgid "Buoys/Lights"
-msgstr ""
+msgstr "Şamandıralar/Işıklar"
 
 #: src/options.cpp:1906
 msgid "Buoy/Light Labels"
@@ -3419,7 +3419,7 @@ msgstr "Uzatılı Fener Alanları"
 
 #: src/options.cpp:1918
 msgid "Chart Texts"
-msgstr ""
+msgstr "Harita Metinleri"
 
 #: src/options.cpp:1923
 msgid "National text on chart"
@@ -3435,7 +3435,7 @@ msgstr "Dağınık Metin"
 
 #: src/options.cpp:1935
 msgid "Chart Detail"
-msgstr ""
+msgstr "Harita Ayrıntıları"
 
 #: src/options.cpp:1936
 msgid "Reduced Detail at Small Scale"
@@ -3443,7 +3443,7 @@ msgstr "Küçük Ölçekte Azaltılmış Ayrıntı "
 
 #: src/options.cpp:1947
 msgid "Graphics Style"
-msgstr ""
+msgstr "Grafik Türü"
 
 #: src/options.cpp:1948
 msgid "Paper Chart"
@@ -3483,7 +3483,7 @@ msgstr "Sığ Derinlik"
 
 #: src/options.cpp:1977 src/options.cpp:1985 src/options.cpp:1993
 msgid "metres"
-msgstr ""
+msgstr "metre"
 
 #: src/options.cpp:1980
 msgid "Safety Depth"
@@ -3535,15 +3535,15 @@ msgstr "Grubu Sil"
 
 #: src/options.cpp:2202
 msgid "Navigation Mode"
-msgstr ""
+msgstr "Seyir Durumu"
 
 #: src/options.cpp:2209
 msgid "North Up"
-msgstr ""
+msgstr "Kuzey Yukarı"
 
 #: src/options.cpp:2211
 msgid "Course Up"
-msgstr ""
+msgstr "Rota Yukarı"
 
 #: src/options.cpp:2214
 msgid "Look Ahead Mode"
@@ -3563,7 +3563,7 @@ msgstr "Fareye Yakınlaştır"
 
 #: src/options.cpp:2259
 msgid "Display Features"
-msgstr ""
+msgstr "Özelliklerini Göster"
 
 #: src/options.cpp:2263
 msgid "Show Grid"
@@ -3575,7 +3575,7 @@ msgstr "Derinlik Birimlerini Göster"
 
 #: src/options.cpp:2277
 msgid "Units"
-msgstr ""
+msgstr "Birimler"
 
 #: src/options.cpp:2298
 msgid "Nautical miles"
@@ -3595,11 +3595,11 @@ msgstr "Mil/Saat"
 
 #: src/options.cpp:2315
 msgid "Depth"
-msgstr ""
+msgstr "Derinlik"
 
 #: src/options.cpp:2328
 msgid "Lat/Long"
-msgstr ""
+msgstr "Enlem/Boylam"
 
 #: src/options.cpp:2329
 msgid "Degrees, Decimal Minutes"
@@ -3615,19 +3615,19 @@ msgstr "Derece, Dakika, Saniye"
 
 #: src/options.cpp:2342
 msgid "Bearings"
-msgstr ""
+msgstr "Kerterizler"
 
 #: src/options.cpp:2348
 msgid "Show magnetic bearings and headings"
-msgstr ""
+msgstr "Manyetik Kerteriz ve Pruvayı göster"
 
 #: src/options.cpp:2355
 msgid "Assumed magnetic variation"
-msgstr ""
+msgstr "Varsayılan Manyetik Sapma"
 
 #: src/options.cpp:2361
 msgid "deg (+W, -E)"
-msgstr ""
+msgstr "Derece (+B, -D)"
 
 #: src/options.cpp:2389
 msgid "AIS Targets"
@@ -3763,7 +3763,7 @@ msgstr "Araç Çubuğu ve Pencere Düzeni"
 
 #: src/options.cpp:2633
 msgid "Interface Options"
-msgstr ""
+msgstr "Arayüz Seçenekleri"
 
 #: src/options.cpp:2637
 msgid "Show Status Bar"
@@ -3771,7 +3771,7 @@ msgstr "Durum Çubuğunu Göster"
 
 #: src/options.cpp:2642
 msgid "Show Menu Bar"
-msgstr ""
+msgstr "Kumanda Çubuğunu Göster"
 
 #: src/options.cpp:2651
 msgid "Show Compass/GPS Status Window"
@@ -3783,11 +3783,11 @@ msgstr "Gemi Çanlarını Çal "
 
 #: src/options.cpp:2659
 msgid "Enable Touchscreen interface"
-msgstr ""
+msgstr "Dokunmatik Ekran Arayüzünü Etkinleştir"
 
 #: src/options.cpp:2662
 msgid "Enable Tablet Scaled Graphics interface"
-msgstr ""
+msgstr "Tablet Ölçüme Grafik Arayüzünü Etkinleştir"
 
 #: src/options.cpp:2777
 msgid "Apply"
@@ -3815,15 +3815,15 @@ msgstr "Eklentiler"
 
 #: src/options.cpp:3172
 msgid "feet"
-msgstr ""
+msgstr "feet"
 
 #: src/options.cpp:3172
 msgid "meters"
-msgstr ""
+msgstr "metre"
 
 #: src/options.cpp:3172
 msgid "fathoms"
-msgstr ""
+msgstr "kulaç"
 
 #: src/options.cpp:3404
 msgid "Add a directory containing chart files"
@@ -3899,7 +3899,7 @@ msgstr "NMEA Cümlesi Gir"
 
 #: src/options.cpp:5754
 msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n It can also have a two letter prefix identifying the source, or TALKER, of the message.\n The whole sentences then looks like GPGGA or AITXT.\n You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.).\n\n The filter accepts just these three formats."
-msgstr ""
+msgstr "Bir NMEA cümlesi genellikle 3 harften uzunluğundadır (RMC, GGA gibi)\nAynı zamanda kaynağını ya da mesaj TALKER'ının kimiğini tanıyan 2  harflik bir işaret taşır.\nTüm cümlelerbu nedenle GPGGA ya da AITXT görünümünde olur.\nTüm cümleleri (GP, AI vs. gibi) belirli bir TALKER'la filtreleyebilirsiniz.\nFiltre sadece bu üç formatı kabul eder."
 
 #: src/options.cpp:5806
 msgid "Accept Sentences"
@@ -3931,7 +3931,7 @@ msgstr "Yapı Sıkıştırma Önbelleğe Alma"
 
 #: src/options.cpp:5885
 msgid "Texture Compression with Caching"
-msgstr ""
+msgstr "Önbellekle Sıkıştırma"
 
 #: src/options.cpp:5906
 msgid "Texture Memory Size (MB)"
@@ -3939,15 +3939,15 @@ msgstr "Yapı Bellek Boyutu (MB)"
 
 #: src/options.cpp:5920
 msgid "Rebuild Texture Cache"
-msgstr ""
+msgstr "Önbellek Sıkıştırmasını Yenidenkur"
 
 #: src/options.cpp:5927
 msgid "Clear Texture Cache"
-msgstr ""
+msgstr "Önbellek Sıkıştırmasını Temizle"
 
 #: src/options.cpp:5935
 msgid "Show FPS"
-msgstr ""
+msgstr "FPS'yi Göster"
 
 #: src/about.cpp:267
 msgid "The Open Source Chart Plotter/Navigator"
@@ -3983,11 +3983,11 @@ msgstr "Kapat"
 
 #: src/s57chart.cpp:4049
 msgid "S57 Cell Update chain incomplete.\nENC features may be incomplete or inaccurate.\nCheck the logfile for details."
-msgstr ""
+msgstr "S57 Hücre güncelleme zinciri tamamlanmadı.\nENC özelliği tamamlanmamış ya da doğru olmayabilir.\nAyrıntılar için kütük dosyasına(logfile) bakın."
 
 #: src/s57chart.cpp:4050
 msgid "OpenCPN Create SENC Warning"
-msgstr ""
+msgstr "OpenCPN SENC uyarısı veriyor."
 
 #: src/s57chart.cpp:4290
 msgid "OpenCPN S57 SENC File Create..."
@@ -3999,11 +3999,11 @@ msgstr "<font size=-2>(Sektör açıları denizden alınmış gerçek kerterizle
 
 #: src/routeman.cpp:780 src/routeman.cpp:856
 msgid "You are trying to delete an active AIS MOB route, are you REALLY sure?"
-msgstr ""
+msgstr "Kullanılan AIS DAD rotasını iptal etmek üzeresiniz. GERÇEKTEN de emin misiniz?"
 
 #: src/routeman.cpp:780 src/routeman.cpp:856
 msgid "OpenCPN Warning"
-msgstr ""
+msgstr "OpenCPN Uyarısı"
 
 #: src/routeman.cpp:1018
 msgid "Waypoints can be renamed to reflect the new order, the names will be '001', '002' etc.\n\nDo you want to rename the waypoints?"
@@ -4029,24 +4029,24 @@ msgstr "%s Eklentisinin (%s), sürümü%i.%i belirlendi. \nBu sürüm geliştiri
 
 #: src/pluginmanager.cpp:662
 msgid "Unreadable PlugIn library detected, check the file permissions:\n"
-msgstr ""
+msgstr "Okunamayan eklenti kitaplığı belirlendi. izinleri kontrol ediniz:\n"
 
 #: src/pluginmanager.cpp:687
 msgid "Incompatible PlugIn detected:\n"
-msgstr ""
+msgstr "Uygun olmayan Eklenti belirlendi:\n"
 
 #: src/pluginmanager.cpp:692
 #, c-format
 msgid "PlugIn [ %s ] version %i.%i"
-msgstr ""
+msgstr "Eklenti [ %s ] sürümü %i.%i"
 
 #: src/pluginmanager.cpp:697
 msgid ", and all previous versions,"
-msgstr ""
+msgstr ", ve tüm önceki sürümler,"
 
 #: src/pluginmanager.cpp:698
 msgid " is incompatible with this version of OpenCPN."
-msgstr ""
+msgstr "OpenCPN'in bu sürümüyle uyumlu değil."
 
 #: src/pluginmanager.cpp:3013
 msgid "Preferences"
@@ -4353,7 +4353,7 @@ msgstr "Seyirizi Ayarı"
 
 #: src/AISTargetListDialog.cpp:491
 msgid "AutoSort"
-msgstr ""
+msgstr "Otomatik seçim"
 
 #: src/AISTargetListDialog.cpp:501
 msgid "Limit range: NM"
@@ -4369,19 +4369,19 @@ msgstr "AIS hedef listesi"
 
 #: src/AISTargetAlertDialog.cpp:152
 msgid "AISTargetAlert"
-msgstr ""
+msgstr "AIS hedef Uyarısı"
 
 #: src/AISTargetAlertDialog.cpp:190
 msgid "&Silence Alert"
-msgstr ""
+msgstr "&Sessizlik Uyarısı"
 
 #: src/AISTargetAlertDialog.cpp:197
 msgid "&Acknowledge"
-msgstr ""
+msgstr "&Tanım"
 
 #: src/AISTargetAlertDialog.cpp:203
 msgid "&Jump To"
-msgstr ""
+msgstr "&a Atla"
 
 #: src/AISTargetAlertDialog.cpp:240 src/AISTargetQueryDialog.cpp:191
 #: src/AISTargetQueryDialog.cpp:274
@@ -4398,7 +4398,7 @@ msgstr "IMO"
 
 #: src/AIS_Target_Data.cpp:333
 msgid "Flag"
-msgstr ""
+msgstr "Bayrak"
 
 #: src/AIS_Target_Data.cpp:391
 msgid "Safety Broadcast Message"
@@ -4508,967 +4508,967 @@ msgstr "Bilinmiyor"
 
 #: src/AIS_Target_Data.cpp:893
 msgid "Albania"
-msgstr ""
+msgstr "Albania"
 
 #: src/AIS_Target_Data.cpp:894
 msgid "Andorra"
-msgstr ""
+msgstr "Andorra"
 
 #: src/AIS_Target_Data.cpp:895
 msgid "Austria"
-msgstr ""
+msgstr "Austria"
 
 #: src/AIS_Target_Data.cpp:896
 msgid "Azores"
-msgstr ""
+msgstr "Azores"
 
 #: src/AIS_Target_Data.cpp:897
 msgid "Belgium"
-msgstr ""
+msgstr "Belgium"
 
 #: src/AIS_Target_Data.cpp:898
 msgid "Belarus"
-msgstr ""
+msgstr "Belarus"
 
 #: src/AIS_Target_Data.cpp:899
 msgid "Bulgaria"
-msgstr ""
+msgstr "Bulgaria"
 
 #: src/AIS_Target_Data.cpp:900
 msgid "Vatican City State"
-msgstr ""
+msgstr "Vatican City State"
 
 #: src/AIS_Target_Data.cpp:901 src/AIS_Target_Data.cpp:902
 #: src/AIS_Target_Data.cpp:904
 msgid "Cyprus"
-msgstr ""
+msgstr "Cyprus"
 
 #: src/AIS_Target_Data.cpp:903 src/AIS_Target_Data.cpp:909
 msgid "Germany"
-msgstr ""
+msgstr "Germany"
 
 #: src/AIS_Target_Data.cpp:905
 msgid "Georgia"
-msgstr ""
+msgstr "Georgia"
 
 #: src/AIS_Target_Data.cpp:906
 msgid "Moldova"
-msgstr ""
+msgstr "Moldova"
 
 #: src/AIS_Target_Data.cpp:907 src/AIS_Target_Data.cpp:917
 #: src/AIS_Target_Data.cpp:936 src/AIS_Target_Data.cpp:937
 #: src/AIS_Target_Data.cpp:944
 msgid "Malta"
-msgstr ""
+msgstr "Malta"
 
 #: src/AIS_Target_Data.cpp:908
 msgid "Armenia"
-msgstr ""
+msgstr "Armenia"
 
 #: src/AIS_Target_Data.cpp:910 src/AIS_Target_Data.cpp:911
 msgid "Denmark"
-msgstr ""
+msgstr "Denmark"
 
 #: src/AIS_Target_Data.cpp:912 src/AIS_Target_Data.cpp:913
 msgid "Spain"
-msgstr ""
+msgstr "Spain"
 
 #: src/AIS_Target_Data.cpp:914 src/AIS_Target_Data.cpp:915
 #: src/AIS_Target_Data.cpp:916
 msgid "France"
-msgstr ""
+msgstr "France"
 
 #: src/AIS_Target_Data.cpp:918
 msgid "Finland"
-msgstr ""
+msgstr "Finland"
 
 #: src/AIS_Target_Data.cpp:919
 msgid "Faroe Islands"
-msgstr ""
+msgstr "Faroe Islands"
 
 #: src/AIS_Target_Data.cpp:923
 msgid "Great Britain"
-msgstr ""
+msgstr "Great Britain"
 
 #: src/AIS_Target_Data.cpp:924
 msgid "Gibraltar"
-msgstr ""
+msgstr "Gibraltar"
 
 #: src/AIS_Target_Data.cpp:925 src/AIS_Target_Data.cpp:927
 #: src/AIS_Target_Data.cpp:928 src/AIS_Target_Data.cpp:929
 msgid "Greece"
-msgstr ""
+msgstr "Greece"
 
 #: src/AIS_Target_Data.cpp:926
 msgid "Croatia"
-msgstr ""
+msgstr "Croatia"
 
 #: src/AIS_Target_Data.cpp:930
 msgid "Morocco"
-msgstr ""
+msgstr "Morocco"
 
 #: src/AIS_Target_Data.cpp:931
 msgid "Hungary"
-msgstr ""
+msgstr "Hungary"
 
 #: src/AIS_Target_Data.cpp:932 src/AIS_Target_Data.cpp:933
 #: src/AIS_Target_Data.cpp:934
 msgid "Netherlands"
-msgstr ""
+msgstr "Netherlands"
 
 #: src/AIS_Target_Data.cpp:935
 msgid "Italy"
-msgstr ""
+msgstr "Italy"
 
 #: src/AIS_Target_Data.cpp:938
 msgid "Ireland"
-msgstr ""
+msgstr "Ireland"
 
 #: src/AIS_Target_Data.cpp:939
 msgid "Iceland"
-msgstr ""
+msgstr "Iceland"
 
 #: src/AIS_Target_Data.cpp:940
 msgid "Liechtenstein"
-msgstr ""
+msgstr "Liechtenstein"
 
 #: src/AIS_Target_Data.cpp:941
 msgid "Luxembourg"
-msgstr ""
+msgstr "Luxembourg"
 
 #: src/AIS_Target_Data.cpp:942
 msgid "Monaco"
-msgstr ""
+msgstr "Monaco"
 
 #: src/AIS_Target_Data.cpp:943
 msgid "Madeira"
-msgstr ""
+msgstr "Maderia"
 
 #: src/AIS_Target_Data.cpp:947
 msgid "Norway"
-msgstr ""
+msgstr "Norway"
 
 #: src/AIS_Target_Data.cpp:948
 msgid "Poland"
-msgstr ""
+msgstr "Poland"
 
 #: src/AIS_Target_Data.cpp:949
 msgid "Montenegro"
-msgstr ""
+msgstr "Montenegro"
 
 #: src/AIS_Target_Data.cpp:950
 msgid "Portugal"
-msgstr ""
+msgstr "Portugal"
 
 #: src/AIS_Target_Data.cpp:951
 msgid "Romania"
-msgstr ""
+msgstr "Romania"
 
 #: src/AIS_Target_Data.cpp:952 src/AIS_Target_Data.cpp:953
 msgid "Sweden"
-msgstr ""
+msgstr "Sweden"
 
 #: src/AIS_Target_Data.cpp:954
 msgid "Slovak Republic"
-msgstr ""
+msgstr "Slovak Republic"
 
 #: src/AIS_Target_Data.cpp:955
 msgid "San Marino"
-msgstr ""
+msgstr "San Marino"
 
 #: src/AIS_Target_Data.cpp:956
 msgid "Switzerland"
-msgstr ""
+msgstr "Switzerland"
 
 #: src/AIS_Target_Data.cpp:957
 msgid "Czech Republic"
-msgstr ""
+msgstr "Czech Republic"
 
 #: src/AIS_Target_Data.cpp:958
 msgid "Turkey"
-msgstr ""
+msgstr "Turkey"
 
 #: src/AIS_Target_Data.cpp:959
 msgid "Ukraine"
-msgstr ""
+msgstr "Ukraine"
 
 #: src/AIS_Target_Data.cpp:960
 msgid "Russian"
-msgstr ""
+msgstr "Russia"
 
 #: src/AIS_Target_Data.cpp:961
 msgid "Macedonia"
-msgstr ""
+msgstr "Macedonia"
 
 #: src/AIS_Target_Data.cpp:962
 msgid "Latvia"
-msgstr ""
+msgstr "Latvia"
 
 #: src/AIS_Target_Data.cpp:963
 msgid "Estonia"
-msgstr ""
+msgstr "Estonia"
 
 #: src/AIS_Target_Data.cpp:964
 msgid "Lithuania"
-msgstr ""
+msgstr "Lithuania"
 
 #: src/AIS_Target_Data.cpp:965
 msgid "Slovenia"
-msgstr ""
+msgstr "Slovenia"
 
 #: src/AIS_Target_Data.cpp:966
 msgid "Serbia"
-msgstr ""
+msgstr "Serbia"
 
 #: src/AIS_Target_Data.cpp:967
 msgid "Anguilla"
-msgstr ""
+msgstr "Anguilla"
 
 #: src/AIS_Target_Data.cpp:968
 msgid "Alaska"
-msgstr ""
+msgstr "Alaska"
 
 #: src/AIS_Target_Data.cpp:969 src/AIS_Target_Data.cpp:970
 msgid "Antigua and Barbuda"
-msgstr ""
+msgstr "Antigua and Barbuda"
 
 #: src/AIS_Target_Data.cpp:971
 msgid "Antilles"
-msgstr ""
+msgstr "Antilles"
 
 #: src/AIS_Target_Data.cpp:972
 msgid "Aruba"
-msgstr ""
+msgstr "Aruba"
 
 #: src/AIS_Target_Data.cpp:973 src/AIS_Target_Data.cpp:974
 #: src/AIS_Target_Data.cpp:976
 msgid "Bahamas"
-msgstr ""
+msgstr "Bahamas"
 
 #: src/AIS_Target_Data.cpp:975
 msgid "Bermuda"
-msgstr ""
+msgstr "Bermuda"
 
 #: src/AIS_Target_Data.cpp:977
 msgid "Belize"
-msgstr ""
+msgstr "Belize"
 
 #: src/AIS_Target_Data.cpp:978
 msgid "Barbados"
-msgstr ""
+msgstr "Barbados"
 
 #: src/AIS_Target_Data.cpp:979
 msgid "Canada"
-msgstr ""
+msgstr "Canada"
 
 #: src/AIS_Target_Data.cpp:980
 msgid "Cayman Islands"
-msgstr ""
+msgstr "Cayman Islands"
 
 #: src/AIS_Target_Data.cpp:981
 msgid "Costa Rica"
-msgstr ""
+msgstr "Kosta Rica"
 
 #: src/AIS_Target_Data.cpp:982
 msgid "Cuba"
-msgstr ""
+msgstr "Cuba"
 
 #: src/AIS_Target_Data.cpp:983
 msgid "Dominica"
-msgstr ""
+msgstr "Dominica"
 
 #: src/AIS_Target_Data.cpp:984
 msgid "Dominican Republic"
-msgstr ""
+msgstr "Dominican Republic"
 
 #: src/AIS_Target_Data.cpp:985
 msgid "Guadeloupe"
-msgstr ""
+msgstr "Guadeloupe"
 
 #: src/AIS_Target_Data.cpp:986
 msgid "Grenada"
-msgstr ""
+msgstr "Grenada"
 
 #: src/AIS_Target_Data.cpp:987
 msgid "Greenland"
-msgstr ""
+msgstr "Greenland"
 
 #: src/AIS_Target_Data.cpp:988
 msgid "Guatemala"
-msgstr ""
+msgstr "Guatemala"
 
 #: src/AIS_Target_Data.cpp:989
 msgid "Honduras"
-msgstr ""
+msgstr "Honduras"
 
 #: src/AIS_Target_Data.cpp:990
 msgid "Haiti"
-msgstr ""
+msgstr "Haiti"
 
 #: src/AIS_Target_Data.cpp:991 src/AIS_Target_Data.cpp:1014
 msgid "United States of America"
-msgstr ""
+msgstr "United States of America"
 
 #: src/AIS_Target_Data.cpp:992
 msgid "Jamaica"
-msgstr ""
+msgstr "Jamaica"
 
 #: src/AIS_Target_Data.cpp:993
 msgid "Saint Kitts and Nevis"
-msgstr ""
+msgstr "Saint Kitts and Nevis"
 
 #: src/AIS_Target_Data.cpp:994
 msgid "Saint Lucia"
-msgstr ""
+msgstr "Saint Lucia"
 
 #: src/AIS_Target_Data.cpp:995
 msgid "Mexico"
-msgstr ""
+msgstr "Mexico"
 
 #: src/AIS_Target_Data.cpp:996
 msgid "Martinique"
-msgstr ""
+msgstr "Martinique"
 
 #: src/AIS_Target_Data.cpp:997
 msgid "Montserrat"
-msgstr ""
+msgstr "Montserrat"
 
 #: src/AIS_Target_Data.cpp:998
 msgid "Nicaragua"
-msgstr ""
+msgstr "Nicaragua"
 
 #: src/AIS_Target_Data.cpp:1005 src/AIS_Target_Data.cpp:1018
 msgid "Panama"
-msgstr ""
+msgstr "Panama"
 
 #: src/AIS_Target_Data.cpp:1006
 msgid "Puerto Rico"
-msgstr ""
+msgstr "Puerto Rico"
 
 #: src/AIS_Target_Data.cpp:1007
 msgid "El Salvador"
-msgstr ""
+msgstr "El Salvador"
 
 #: src/AIS_Target_Data.cpp:1008
 msgid "Saint Pierre and Miquelon"
-msgstr ""
+msgstr "Saint Pierre and Miquelon"
 
 #: src/AIS_Target_Data.cpp:1009
 msgid "Trinidad and Tobago"
-msgstr ""
+msgstr "Trinidad and Tobago"
 
 #: src/AIS_Target_Data.cpp:1010
 msgid "Turks and Caicos Islands"
-msgstr ""
+msgstr "Turks and Caicos Islands"
 
 #: src/AIS_Target_Data.cpp:1021
 msgid "Saint Vincent and the Grenadines"
-msgstr ""
+msgstr "Saint Vincent and the Grenadines"
 
 #: src/AIS_Target_Data.cpp:1022
 msgid "British Virgin Islands"
-msgstr ""
+msgstr "British Virgin Islands"
 
 #: src/AIS_Target_Data.cpp:1023
 msgid "United States Virgin Islands"
-msgstr ""
+msgstr "United States Virgin Islands"
 
 #: src/AIS_Target_Data.cpp:1024
 msgid "Afghanistan"
-msgstr ""
+msgstr "Afghanistan"
 
 #: src/AIS_Target_Data.cpp:1025
 msgid "Saudi Arabia"
-msgstr ""
+msgstr "Saudi Arabia"
 
 #: src/AIS_Target_Data.cpp:1026
 msgid "Bangladesh"
-msgstr ""
+msgstr "Bangladesh"
 
 #: src/AIS_Target_Data.cpp:1027
 msgid "Bahrain"
-msgstr ""
+msgstr "Bahrain"
 
 #: src/AIS_Target_Data.cpp:1028
 msgid "Bhutan"
-msgstr ""
+msgstr "Bhutan"
 
 #: src/AIS_Target_Data.cpp:1031
 msgid "China"
-msgstr ""
+msgstr "China"
 
 #: src/AIS_Target_Data.cpp:1032
 msgid "Taiwan"
-msgstr ""
+msgstr "Taiwan"
 
 #: src/AIS_Target_Data.cpp:1033
 msgid "Sri Lanka"
-msgstr ""
+msgstr "Sri Lanka"
 
 #: src/AIS_Target_Data.cpp:1034
 msgid "India"
-msgstr ""
+msgstr "India"
 
 #: src/AIS_Target_Data.cpp:1035
 msgid "Iran"
-msgstr ""
+msgstr "Iran"
 
 #: src/AIS_Target_Data.cpp:1036
 msgid "Azerbaijani Republic"
-msgstr ""
+msgstr "Azerbaijani Republic"
 
 #: src/AIS_Target_Data.cpp:1037
 msgid "Iraq"
-msgstr ""
+msgstr "Iraq"
 
 #: src/AIS_Target_Data.cpp:1038
 msgid "Israel"
-msgstr ""
+msgstr "Israel"
 
 #: src/AIS_Target_Data.cpp:1039 src/AIS_Target_Data.cpp:1040
 msgid "Japan"
-msgstr ""
+msgstr "Japan"
 
 #: src/AIS_Target_Data.cpp:1041
 msgid "Turkmenistan"
-msgstr ""
+msgstr "Turkmenistan"
 
 #: src/AIS_Target_Data.cpp:1042
 msgid "Kazakhstan"
-msgstr ""
+msgstr "Kazakhstan"
 
 #: src/AIS_Target_Data.cpp:1043
 msgid "Uzbekistan"
-msgstr ""
+msgstr "Uzbekistan"
 
 #: src/AIS_Target_Data.cpp:1044
 msgid "Jordan"
-msgstr ""
+msgstr "Jordan"
 
 #: src/AIS_Target_Data.cpp:1045 src/AIS_Target_Data.cpp:1046
 msgid "Korea"
-msgstr ""
+msgstr "Korea"
 
 #: src/AIS_Target_Data.cpp:1047
 msgid "Palestine"
-msgstr ""
+msgstr "Palestine"
 
 #: src/AIS_Target_Data.cpp:1048
 msgid "People's Rep. of Korea"
-msgstr ""
+msgstr "People's Rep. of Korea"
 
 #: src/AIS_Target_Data.cpp:1049
 msgid "Kuwait"
-msgstr ""
+msgstr "Kuwait"
 
 #: src/AIS_Target_Data.cpp:1050
 msgid "Lebanon"
-msgstr ""
+msgstr "Lebanon"
 
 #: src/AIS_Target_Data.cpp:1051
 msgid "Kyrgyz Republic"
-msgstr ""
+msgstr "Kyrgyz Republic"
 
 #: src/AIS_Target_Data.cpp:1052
 msgid "Macao"
-msgstr ""
+msgstr "Macao"
 
 #: src/AIS_Target_Data.cpp:1053
 msgid "Maldives"
-msgstr ""
+msgstr "Maldives"
 
 #: src/AIS_Target_Data.cpp:1054
 msgid "Mongolia"
-msgstr ""
+msgstr "Mongolia"
 
 #: src/AIS_Target_Data.cpp:1055
 msgid "Nepal"
-msgstr ""
+msgstr "Nepal"
 
 #: src/AIS_Target_Data.cpp:1056
 msgid "Oman"
-msgstr ""
+msgstr "Oman"
 
 #: src/AIS_Target_Data.cpp:1057
 msgid "Pakistan"
-msgstr ""
+msgstr "Pakistan"
 
 #: src/AIS_Target_Data.cpp:1058
 msgid "Qatar"
-msgstr ""
+msgstr "Qatar"
 
 #: src/AIS_Target_Data.cpp:1059
 msgid "Syrian Arab Republic"
-msgstr ""
+msgstr "Syrian Arab Republic"
 
 #: src/AIS_Target_Data.cpp:1060
 msgid "United Arab Emirates"
-msgstr ""
+msgstr "United Arab Emirates"
 
 #: src/AIS_Target_Data.cpp:1061
 msgid "Tajikistan"
-msgstr ""
+msgstr "Tajikistan"
 
 #: src/AIS_Target_Data.cpp:1062 src/AIS_Target_Data.cpp:1063
 msgid "Yemen"
-msgstr ""
+msgstr "Yemen"
 
 #: src/AIS_Target_Data.cpp:1064
 msgid "Hong Kong"
-msgstr ""
+msgstr "Hong Kong"
 
 #: src/AIS_Target_Data.cpp:1065
 msgid "Bosnia and Herzegovina"
-msgstr ""
+msgstr "Bosnia and Herzegovina"
 
 #: src/AIS_Target_Data.cpp:1066
 msgid "Adelie Land"
-msgstr ""
+msgstr "Adelie Land"
 
 #: src/AIS_Target_Data.cpp:1067
 msgid "Australia"
-msgstr ""
+msgstr "Australia"
 
 #: src/AIS_Target_Data.cpp:1068
 msgid "Myanmar"
-msgstr ""
+msgstr "Myanmar"
 
 #: src/AIS_Target_Data.cpp:1069
 msgid "Brunei Darussalam"
-msgstr ""
+msgstr "Brunei Darussalam"
 
 #: src/AIS_Target_Data.cpp:1070
 msgid "Micronesia"
-msgstr ""
+msgstr "Micronesia"
 
 #: src/AIS_Target_Data.cpp:1071
 msgid "Palau"
-msgstr ""
+msgstr "Palau"
 
 #: src/AIS_Target_Data.cpp:1072
 msgid "New Zealand"
-msgstr ""
+msgstr "New Zealand"
 
 #: src/AIS_Target_Data.cpp:1073 src/AIS_Target_Data.cpp:1074
 msgid "Cambodia"
-msgstr ""
+msgstr "Cambodia"
 
 #: src/AIS_Target_Data.cpp:1075
 msgid "Christmas Island"
-msgstr ""
+msgstr "Christmas Island"
 
 #: src/AIS_Target_Data.cpp:1076
 msgid "Cook Islands"
-msgstr ""
+msgstr "Cook Islands"
 
 #: src/AIS_Target_Data.cpp:1077
 msgid "Fiji"
-msgstr ""
+msgstr "Fiji"
 
 #: src/AIS_Target_Data.cpp:1078
 msgid "Cocos"
-msgstr ""
+msgstr "Cocos"
 
 #: src/AIS_Target_Data.cpp:1079
 msgid "Indonesia"
-msgstr ""
+msgstr "Indonesia"
 
 #: src/AIS_Target_Data.cpp:1080
 msgid "Kiribati"
-msgstr ""
+msgstr "Kiribati"
 
 #: src/AIS_Target_Data.cpp:1081
 msgid "Lao People's Dem. Rep."
-msgstr ""
+msgstr "Lao People's Dem. Rep."
 
 #: src/AIS_Target_Data.cpp:1082
 msgid "Malaysia"
-msgstr ""
+msgstr "Malaysia"
 
 #: src/AIS_Target_Data.cpp:1083
 msgid "Northern Mariana Islands"
-msgstr ""
+msgstr "Northern Mariana Islands"
 
 #: src/AIS_Target_Data.cpp:1084
 msgid "Marshall Islands"
-msgstr ""
+msgstr "Marshall Islands"
 
 #: src/AIS_Target_Data.cpp:1085
 msgid "New Caledonia"
-msgstr ""
+msgstr "New Caledonia"
 
 #: src/AIS_Target_Data.cpp:1086
 msgid "Niue"
-msgstr ""
+msgstr "Niue"
 
 #: src/AIS_Target_Data.cpp:1087
 msgid "Nauru"
-msgstr ""
+msgstr "Nauru"
 
 #: src/AIS_Target_Data.cpp:1088
 msgid "French Polynesia"
-msgstr ""
+msgstr "French Polynesia"
 
 #: src/AIS_Target_Data.cpp:1089
 msgid "Philippines"
-msgstr ""
+msgstr "Philippines"
 
 #: src/AIS_Target_Data.cpp:1090
 msgid "Papua New Guinea"
-msgstr ""
+msgstr "Papua New Guinea"
 
 #: src/AIS_Target_Data.cpp:1091
 msgid "Pitcairn Island"
-msgstr ""
+msgstr "Pitcairn Island"
 
 #: src/AIS_Target_Data.cpp:1092
 msgid "Solomon Islands"
-msgstr ""
+msgstr "Solomon Islands"
 
 #: src/AIS_Target_Data.cpp:1093
 msgid "American Samoa"
-msgstr ""
+msgstr "American Samoa"
 
 #: src/AIS_Target_Data.cpp:1094
 msgid "Samoa"
-msgstr ""
+msgstr "Samoa"
 
 #: src/AIS_Target_Data.cpp:1098
 msgid "Singapore"
-msgstr ""
+msgstr "Singapore"
 
 #: src/AIS_Target_Data.cpp:1099
 msgid "Thailand"
-msgstr ""
+msgstr "Thailand"
 
 #: src/AIS_Target_Data.cpp:1100
 msgid "Tonga"
-msgstr ""
+msgstr "Tonga"
 
 #: src/AIS_Target_Data.cpp:1101
 msgid "Tuvalu"
-msgstr ""
+msgstr "Tuvalu"
 
 #: src/AIS_Target_Data.cpp:1102
 msgid "Viet Nam"
-msgstr ""
+msgstr "Viet Nam"
 
 #: src/AIS_Target_Data.cpp:1103 src/AIS_Target_Data.cpp:1104
 msgid "Vanuatu"
-msgstr ""
+msgstr "Vanuatu"
 
 #: src/AIS_Target_Data.cpp:1105
 msgid "Wallis and Futuna Islands"
-msgstr ""
+msgstr "Wallis and Futuna Islands"
 
 #: src/AIS_Target_Data.cpp:1106
 msgid "South Africa"
-msgstr ""
+msgstr "South Africa"
 
 #: src/AIS_Target_Data.cpp:1107
 msgid "Angola"
-msgstr ""
+msgstr "Angola"
 
 #: src/AIS_Target_Data.cpp:1108
 msgid "Algeria"
-msgstr ""
+msgstr "Algeria"
 
 #: src/AIS_Target_Data.cpp:1109
 msgid "Saint Paul"
-msgstr ""
+msgstr "Saint Paul"
 
 #: src/AIS_Target_Data.cpp:1110
 msgid "Ascension Island"
-msgstr ""
+msgstr "Ascension Island"
 
 #: src/AIS_Target_Data.cpp:1111
 msgid "Burundi"
-msgstr ""
+msgstr "Burundi"
 
 #: src/AIS_Target_Data.cpp:1112
 msgid "Benin"
-msgstr ""
+msgstr "Benin"
 
 #: src/AIS_Target_Data.cpp:1113
 msgid "Botswana"
-msgstr ""
+msgstr "Botswana"
 
 #: src/AIS_Target_Data.cpp:1114
 msgid "Central African Republic"
-msgstr ""
+msgstr "Central African Republic"
 
 #: src/AIS_Target_Data.cpp:1115
 msgid "Cameroon"
-msgstr ""
+msgstr "Cameroon"
 
 #: src/AIS_Target_Data.cpp:1116
 msgid "Congo"
-msgstr ""
+msgstr "Congo"
 
 #: src/AIS_Target_Data.cpp:1117
 msgid "Comoros"
-msgstr ""
+msgstr "Comoros"
 
 #: src/AIS_Target_Data.cpp:1118
 msgid "Cape Verde"
-msgstr ""
+msgstr "Cape Verde"
 
 #: src/AIS_Target_Data.cpp:1119
 msgid "Crozet Archipelago"
-msgstr ""
+msgstr "Crozet Archipelago"
 
 #: src/AIS_Target_Data.cpp:1120
 msgid "Ivory Coast"
-msgstr ""
+msgstr "Ivory Coast"
 
 #: src/AIS_Target_Data.cpp:1121
 msgid "Comoros (Union of the)"
-msgstr ""
+msgstr "Comoros (Union of the)"
 
 #: src/AIS_Target_Data.cpp:1122
 msgid "Djibouti"
-msgstr ""
+msgstr "Djibouti"
 
 #: src/AIS_Target_Data.cpp:1123
 msgid "Egypt"
-msgstr ""
+msgstr "Egypt"
 
 #: src/AIS_Target_Data.cpp:1124
 msgid "Ethiopia"
-msgstr ""
+msgstr "Ethiopia"
 
 #: src/AIS_Target_Data.cpp:1125
 msgid "Eritrea"
-msgstr ""
+msgstr "Eritrea"
 
 #: src/AIS_Target_Data.cpp:1126
 msgid "Gabonese Republic"
-msgstr ""
+msgstr "Gabonese Republic"
 
 #: src/AIS_Target_Data.cpp:1127
 msgid "Ghana"
-msgstr ""
+msgstr "Ghana"
 
 #: src/AIS_Target_Data.cpp:1128
 msgid "Gambia"
-msgstr ""
+msgstr "Gambia"
 
 #: src/AIS_Target_Data.cpp:1129
 msgid "Guinea-Bissau"
-msgstr ""
+msgstr "Guinea-Bissau"
 
 #: src/AIS_Target_Data.cpp:1130
 msgid "Equatorial Guinea"
-msgstr ""
+msgstr "Equatorial Guinea"
 
 #: src/AIS_Target_Data.cpp:1131
 msgid "Guinea"
-msgstr ""
+msgstr "Guinea"
 
 #: src/AIS_Target_Data.cpp:1132
 msgid "Burkina Faso"
-msgstr ""
+msgstr "Burkina Faso"
 
 #: src/AIS_Target_Data.cpp:1133
 msgid "Kenya"
-msgstr ""
+msgstr "Kenya"
 
 #: src/AIS_Target_Data.cpp:1134
 msgid "Kerguelen Islands"
-msgstr ""
+msgstr "Kerguelen Islands"
 
 #: src/AIS_Target_Data.cpp:1135 src/AIS_Target_Data.cpp:1136
 msgid "Liberia"
-msgstr ""
+msgstr "Liberia"
 
 #: src/AIS_Target_Data.cpp:1137
 msgid "South Sudan (Republic of)"
-msgstr ""
+msgstr "South Sudan (Republic of)"
 
 #: src/AIS_Target_Data.cpp:1138
 msgid "Libyan Arab Jamahiriya"
-msgstr ""
+msgstr "Libyan Arab Jamahiriya"
 
 #: src/AIS_Target_Data.cpp:1139
 msgid "Lesotho"
-msgstr ""
+msgstr "Lesotho"
 
 #: src/AIS_Target_Data.cpp:1140
 msgid "Mauritius"
-msgstr ""
+msgstr "Mauritius"
 
 #: src/AIS_Target_Data.cpp:1141
 msgid "Madagascar"
-msgstr ""
+msgstr "Madagascar"
 
 #: src/AIS_Target_Data.cpp:1142
 msgid "Mali"
-msgstr ""
+msgstr "Mali"
 
 #: src/AIS_Target_Data.cpp:1143
 msgid "Mozambique"
-msgstr ""
+msgstr "Mozambique"
 
 #: src/AIS_Target_Data.cpp:1144
 msgid "Mauritania"
-msgstr ""
+msgstr "Mauritania"
 
 #: src/AIS_Target_Data.cpp:1145
 msgid "Malawi"
-msgstr ""
+msgstr "Malawi"
 
 #: src/AIS_Target_Data.cpp:1146
 msgid "Niger"
-msgstr ""
+msgstr "Niger"
 
 #: src/AIS_Target_Data.cpp:1147
 msgid "Nigeria"
-msgstr ""
+msgstr "Nigeria"
 
 #: src/AIS_Target_Data.cpp:1148
 msgid "Namibia"
-msgstr ""
+msgstr "Namibia"
 
 #: src/AIS_Target_Data.cpp:1149
 msgid "Reunion"
-msgstr ""
+msgstr "Reunion"
 
 #: src/AIS_Target_Data.cpp:1150
 msgid "Rwanda"
-msgstr ""
+msgstr "Rwanda"
 
 #: src/AIS_Target_Data.cpp:1151
 msgid "Sudan"
-msgstr ""
+msgstr "Sudan"
 
 #: src/AIS_Target_Data.cpp:1152
 msgid "Senegal"
-msgstr ""
+msgstr "Senegal"
 
 #: src/AIS_Target_Data.cpp:1153
 msgid "Seychelles"
-msgstr ""
+msgstr "Seychelles"
 
 #: src/AIS_Target_Data.cpp:1154
 msgid "Saint Helena"
-msgstr ""
+msgstr "Saint Helena"
 
 #: src/AIS_Target_Data.cpp:1155
 msgid "Somali Democratic Republic"
-msgstr ""
+msgstr "Somali Democratic Republic"
 
 #: src/AIS_Target_Data.cpp:1156
 msgid "Sierra Leone"
-msgstr ""
+msgstr "Sierra Leone"
 
 #: src/AIS_Target_Data.cpp:1157
 msgid "Sao Tome and Principe"
-msgstr ""
+msgstr "Sao Tome and Principe"
 
 #: src/AIS_Target_Data.cpp:1158
 msgid "Swaziland"
-msgstr ""
+msgstr "Swaziland"
 
 #: src/AIS_Target_Data.cpp:1159
 msgid "Chad"
-msgstr ""
+msgstr "Chad"
 
 #: src/AIS_Target_Data.cpp:1160
 msgid "Togolese Republic"
-msgstr ""
+msgstr "Togolese Republic"
 
 #: src/AIS_Target_Data.cpp:1161
 msgid "Tunisia"
-msgstr ""
+msgstr "Tunisia"
 
 #: src/AIS_Target_Data.cpp:1162 src/AIS_Target_Data.cpp:1165
 msgid "Tanzania"
-msgstr ""
+msgstr "Tanzania"
 
 #: src/AIS_Target_Data.cpp:1163
 msgid "Uganda"
-msgstr ""
+msgstr "Uganda"
 
 #: src/AIS_Target_Data.cpp:1164
 msgid "Dem Rep.of the Congo"
-msgstr ""
+msgstr "Dem Rep.of the Congo"
 
 #: src/AIS_Target_Data.cpp:1166
 msgid "Zambia"
-msgstr ""
+msgstr "Zambia"
 
 #: src/AIS_Target_Data.cpp:1167
 msgid "Zimbabwe"
-msgstr ""
+msgstr "Zimbabwe"
 
 #: src/AIS_Target_Data.cpp:1168
 msgid "Argentine Republic"
-msgstr ""
+msgstr "Argentine Republic"
 
 #: src/AIS_Target_Data.cpp:1169
 msgid "Brazil"
-msgstr ""
+msgstr "Brazil"
 
 #: src/AIS_Target_Data.cpp:1170
 msgid "Bolivia"
-msgstr ""
+msgstr "Bolivia"
 
 #: src/AIS_Target_Data.cpp:1171
 msgid "Chile"
-msgstr ""
+msgstr "Chile"
 
 #: src/AIS_Target_Data.cpp:1172
 msgid "Colombia"
-msgstr ""
+msgstr "Colombia"
 
 #: src/AIS_Target_Data.cpp:1173
 msgid "Ecuador"
-msgstr ""
+msgstr "Ecuador"
 
 #: src/AIS_Target_Data.cpp:1174
 msgid "Falkland Islands"
-msgstr ""
+msgstr "Falkland Islands"
 
 #: src/AIS_Target_Data.cpp:1175
 msgid "Guiana"
-msgstr ""
+msgstr "Guiana"
 
 #: src/AIS_Target_Data.cpp:1176
 msgid "Guyana"
-msgstr ""
+msgstr "Guyana"
 
 #: src/AIS_Target_Data.cpp:1177
 msgid "Paraguay"
-msgstr ""
+msgstr "Paraguay"
 
 #: src/AIS_Target_Data.cpp:1178
 msgid "Peru"
-msgstr ""
+msgstr "Peru"
 
 #: src/AIS_Target_Data.cpp:1179
 msgid "Suriname"
-msgstr ""
+msgstr "Suriname"
 
 #: src/AIS_Target_Data.cpp:1180
 msgid "Uruguay"
-msgstr ""
+msgstr "Uruguay"
 
 #: src/AIS_Target_Data.cpp:1181
 msgid "Venezuela"
-msgstr ""
+msgstr "Venezuela"
 
 #: src/AISTargetQueryDialog.cpp:131 src/AISTargetQueryDialog.cpp:242
 #: src/AISTargetQueryDialog.cpp:272
 msgid "Record Track"
-msgstr ""
+msgstr "Rotaizlerini Kaydet"
 
 #: src/AISTargetQueryDialog.cpp:165
 msgid "The recently captured track of this target has been recorded.\nDo you want to continue recording until the end of the current OpenCPN session?"
-msgstr ""
+msgstr "Bu hedeften son olarak alınan izler kaydedildi.\nBu OpenCPN oturumunun sonuna kadar kaydetmeye devam etmek ister misiniz?"
 
 #: src/AISTargetQueryDialog.cpp:268
 msgid "Stop Tracking"
-msgstr ""
+msgstr "Rotaizini Durdur."
 
 #: src/RolloverWin.cpp:96 src/RolloverWin.cpp:147
 msgid "AISRollover"
@@ -5485,7 +5485,7 @@ msgstr "İşaretler"
 
 #: src/RoutePoint.cpp:648
 msgid "Waypoint(s) Transmitted."
-msgstr ""
+msgstr "Seyirnokta(lar)ı "
 
 #: src/RoutePoint.cpp:651
 msgid "Error on Waypoint Upload.  Garmin GPS not connected"
@@ -5497,73 +5497,73 @@ msgstr "Seyirnoktası yüklenirken hata oluştu. Lütfen kayıt dosyalarını ko
 
 #: src/TCWin.cpp:77
 msgid "Tide"
-msgstr ""
+msgstr "Gel/Git"
 
 #: src/TCWin.cpp:82
 msgid "Current"
-msgstr ""
+msgstr "Akıntı"
 
 #: src/TCWin.cpp:153
 msgid "Prev"
-msgstr ""
+msgstr "Önceki"
 
 #: src/TCWin.cpp:163
 msgid "Next"
-msgstr ""
+msgstr "Sonraki"
 
 #: src/TCWin.cpp:245
 msgid "Reference Station :"
-msgstr ""
+msgstr "Referans İstasyonu:"
 
 #: src/TCWin.cpp:261
 msgid "Data Source :"
-msgstr ""
+msgstr "Veri Kaynağı:"
 
 #: src/TCWin.cpp:458
 msgid "HW"
-msgstr ""
+msgstr "HW"
 
 #: src/TCWin.cpp:458
 msgid "LW"
-msgstr ""
+msgstr "LW"
 
 #: src/TCWin.cpp:636
 msgid "Today"
-msgstr ""
+msgstr "Bugün"
 
 #: src/TCWin.cpp:637 src/TCWin.cpp:642
 msgid "Tomorrow"
-msgstr ""
+msgstr "Yarın"
 
 #: src/TTYWindow.cpp:65
 msgid "Legend"
-msgstr ""
+msgstr "Yazım"
 
 #: src/TTYWindow.cpp:73 src/TTYWindow.cpp:152
 msgid "Pause"
-msgstr ""
+msgstr "Dur"
 
 #: src/TTYWindow.cpp:109
 msgid "Message accepted"
-msgstr ""
+msgstr "Mesaj kabu ledildi."
 
 #: src/TTYWindow.cpp:116
 msgid "Input message filtered, output message filtered and dropped"
-msgstr ""
+msgstr "Girdi mesajı filtrelendi, çıktı mesajı filtrelendi ve bırakıldı."
 
 #: src/TTYWindow.cpp:123
 msgid "Input Message filtered and dropped"
-msgstr ""
+msgstr "Girdi Mesajı filtrelendi ve bırakıldı."
 
 #: src/TTYWindow.cpp:130
 msgid "Output Message"
-msgstr ""
+msgstr "Çıktı Mesajı"
 
 #: src/TTYWindow.cpp:137
 msgid "Information Message or Message with errors"
-msgstr ""
+msgstr "Bilgi mesajı ya da hatalı mesaj."
 
 #: src/TTYWindow.cpp:147
 msgid "Resume"
-msgstr ""
+msgstr "Devam"
 
