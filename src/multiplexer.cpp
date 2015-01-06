@@ -310,23 +310,25 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
 
             //Send to the Debug Window, if open
             //  Special formatting for non-printable characters helps debugging NMEA problems
-        std::string str= event.GetNMEAString();    
-        wxString fmsg;
-        
-        bool b_error = false;
-        for ( std::string::iterator it=str.begin(); it!=str.end(); ++it){
-            if(isprint(*it))
-                fmsg += *it;
-            else{
-                wxString bin_print;
-                bin_print.Printf(_T("<0x%02X>"), *it);
-                fmsg += bin_print;
-                if((*it != 0x0a) && (*it != 0x0d))
-                    b_error = true;
-            }
+        if (NMEALogWindow::Get().Active()) {
+            std::string str= event.GetNMEAString();    
+            wxString fmsg;
             
+            bool b_error = false;
+            for ( std::string::iterator it=str.begin(); it!=str.end(); ++it){
+                if(isprint(*it))
+                    fmsg += *it;
+                else{
+                    wxString bin_print;
+                    bin_print.Printf(_T("<0x%02X>"), *it);
+                    fmsg += bin_print;
+                    if((*it != 0x0a) && (*it != 0x0d))
+                        b_error = true;
+                }
+                
+            }
+            LogInputMessage( fmsg, port, !bpass, b_error );
         }
-        LogInputMessage( fmsg, port, !bpass, b_error );
     }
 }
 
