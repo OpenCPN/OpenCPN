@@ -927,6 +927,95 @@ bool GPXCreateRoute( pugi::xml_node node, Route *pRoute )
 }
                        
 
+bool GPXCreateBoundary( pugi::xml_node node, Boundary *pBoundary )
+{
+    pugi::xml_node child;
+    
+    if( pBoundary->m_BoundaryNameString.Len() ) {
+        wxCharBuffer buffer=pBoundary->m_BoundaryNameString.ToUTF8();
+        if(buffer.data()) {
+            child = node.append_child("name");
+            child.append_child(pugi::node_pcdata).set_value(buffer.data());
+        }
+    }
+    
+    if( pBoundary->m_BoundaryDescription.Len() ) {
+        wxCharBuffer buffer=pBoundary->m_BoundaryDescription.ToUTF8();
+        if(buffer.data()) {
+            child = node.append_child("desc");
+            child.append_child(pugi::node_pcdata).set_value(buffer.data());
+        }
+    }
+    
+    // Hyperlinks
+    HyperlinkList *linklist = pBoundary->m_HyperlinkList;
+    if( linklist && linklist->GetCount() ) {
+        wxHyperlinkListNode *linknode = linklist->GetFirst();
+        while( linknode ) {
+            Hyperlink *link = linknode->GetData();
+        
+            pugi::xml_node child_link = node.append_child("link");
+            wxCharBuffer buffer = link->Link.ToUTF8();
+            if(buffer.data())
+                child_link.append_attribute("href") = buffer.data();
+            
+        
+            buffer=link->DescrText.ToUTF8();
+            if(buffer.data()) {
+                child = child_link.append_child("text");
+                child.append_child(pugi::node_pcdata).set_value(buffer.data());
+            }
+
+            buffer=link->LType.ToUTF8();
+            if(buffer.data() && strlen(buffer.data()) > 0) {
+                child = child_link.append_child("type");
+                child.append_child(pugi::node_pcdata).set_value(buffer.data());
+            }
+            
+            linknode = linknode->GetNext();
+        }
+    }
+    
+    pugi::xml_node child_ext = node.append_child("extensions");
+    
+    child = child_ext.append_child("opencpn:guid");
+    child.append_child(pugi::node_pcdata).set_value(pBoundary->m_GUID.mb_str());
+    
+    child = child_ext.append_child("opencpn:viz");
+    child.append_child(pugi::node_pcdata).set_value(pBoundary->IsVisible() == true ? "1" : "0");
+    
+    if( pBoundary->m_width != STYLE_UNDEFINED || pBoundary->m_style != STYLE_UNDEFINED ) {
+        child = child_ext.append_child("opencpn:style");
+        
+        if( pBoundary->m_width != STYLE_UNDEFINED )
+            child.append_attribute("width") = pBoundary->m_width;
+        if( pBoundary->m_style != STYLE_UNDEFINED )
+            child.append_attribute("style") = pBoundary->m_style;
+    }
+    
+    if( pBoundary->m_Colour != wxEmptyString ) {
+        pugi::xml_node gpxx_ext = child_ext.append_child("gpxx:BoundaryExtension");
+        child = gpxx_ext.append_child("gpxx:DisplayColor");
+        child.append_child(pugi::node_pcdata).set_value(pBoundary->m_Colour.mb_str());
+    }
+                                 
+    RoutePointList *pRoutePointList = pBoundary->pRoutePointList;
+    wxRoutePointListNode *node2 = pRoutePointList->GetFirst();
+    RoutePoint *prp;
+    
+    unsigned short int GPXTrkSegNo1 = 1;
+    
+    while( node2  ) {
+        prp = node2->GetData();
+            
+        GPXCreateWpt(node.append_child("bndpt"), prp, OPT_BOUNDARYPT);
+            
+        node2 = node2->GetNext();
+    }
+    
+    return true;
+}
+                       
 void InsertRouteA( Route *pTentRoute )
 {
     if( !pTentRoute )
@@ -1181,6 +1270,13 @@ bool NavObjectCollection1::AddGPXRoute(Route *pRoute)
     return true;
 }
 
+bool NavObjectCollection1::AddGPXBoundary(Boundary *pBoundary)
+{
+    SetRootGPXNode();
+    GPXCreateBoundary(m_gpx_root.append_child("bnd"), pBoundary);
+    return true;
+}
+
 bool NavObjectCollection1::AddGPXTrack(Track *pTrk)
 {
     SetRootGPXNode();
@@ -1209,6 +1305,20 @@ bool NavObjectCollection1::AddGPXRoutesList( RouteList *pRoutes )
             AddGPXTrack( (Track *)pRData );
         }
         pRoute = pRoute->GetNext();
+    }
+    
+    return true;
+}
+
+bool NavObjectCollection1::AddGPXBoundariesList( BoundaryList *pBoundaries )
+{
+    SetRootGPXNode();
+    
+    wxBoundaryListNode* pBoundary = pBoundaries->GetFirst();
+    while (pBoundary) {
+        Boundary* pBData = pBoundary->GetData();
+        AddGPXBoundary( pBData);
+        pBoundary = pBoundary->GetNext();
     }
     
     return true;
@@ -1369,6 +1479,25 @@ bool NavObjectChanges::AddRoute( Route *pr, const char *action )
     
     pugi::xml_node object = m_gpx_root.append_child("rte");
     GPXCreateRoute(object, pr );
+    
+    pugi::xml_node xchild = object.child("extensions");
+    //FIXME  What if extensions do not exist?
+    pugi::xml_node child = xchild.append_child("opencpn:action");
+    child.append_child(pugi::node_pcdata).set_value(action);
+
+    pugi::xml_writer_file writer(m_changes_file);
+    object.print(writer, " ");
+    fflush(m_changes_file);
+    
+    return true;
+}
+
+bool NavObjectChanges::AddBoundary( Boundary *pb, const char *action )
+{
+    SetRootGPXNode();
+    
+    pugi::xml_node object = m_gpx_root.append_child("bnd");
+    GPXCreateBoundary(object, pb );
     
     pugi::xml_node xchild = object.child("extensions");
     //FIXME  What if extensions do not exist?

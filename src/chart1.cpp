@@ -84,6 +84,7 @@
 #include "ais.h"
 #include "chartimg.h"               // for ChartBaseBSB
 #include "routeprop.h"
+#include "BoundaryProp.h"
 #include "toolbar.h"
 #include "compasswin.h"
 #include "datastream.h"
@@ -184,6 +185,7 @@ int                       g_restore_dbindex;
 double                    g_ChartNotRenderScaleFactor;
 
 RouteList                 *pRouteList;
+BoundaryList              *pBoundaryList;
 LayerList                 *pLayerList;
 bool                      g_bIsNewLayer;
 int                       g_LayerIdx;
@@ -197,6 +199,7 @@ Routeman                  *g_pRouteMan;
 WayPointman               *pWayPointMan;
 MarkInfoImpl              *pMarkPropDialog;
 RouteProp                 *pRoutePropDialog;
+BoundaryProp              *pBoundaryPropDialog;
 TrackPropDlg              *pTrackPropDialog;
 RouteManagerDialog        *pRouteManagerDialog;
 GoToPositionDialog        *pGoToPositionDialog;
@@ -543,6 +546,7 @@ bool                      g_bDeferredStartTrack;
 bool                      g_bTrackDaily;
 bool                      g_bHighliteTracks;
 int                       g_route_line_width;
+int                       g_boundary_line_width;
 int                       g_track_line_width;
 wxString                  g_default_wp_icon;
 
@@ -2685,6 +2689,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
 
     //      Set up some assorted member variables
     nRoute_State = 0;
+    nBoundary_State = 0;
     m_bTimeIsSet = false;
     m_bdefer_resize = false;
 
@@ -3116,6 +3121,13 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
         tb->AddTool( ID_MOB, _T("mob_btn"),
                      style->GetToolIcon( _T("mob_btn"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
 
+    CheckAndAddPlugInTool( tb );
+    tipString = wxString( _("Create Boundary") ) << _T(" (Shift-Ctrl-B)");
+    if( _toolbarConfigMenuUtil( ID_BOUNDARY, tipString ) )
+        tb->AddTool( ID_BOUNDARY, _T("boundary"),
+            style->GetToolIcon( _T("boundary"), TOOLICON_NORMAL ),
+            style->GetToolIcon( _T("boundary"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
+
 
 // Realize() the toolbar
     g_FloatingToolbarDialog->Realize();
@@ -3334,6 +3346,7 @@ void MyFrame::EnableToolbar( bool newstate )
         g_toolbar->EnableTool( ID_ROUTEMANAGER, newstate );
         g_toolbar->EnableTool( ID_TRACK, newstate );
         g_toolbar->EnableTool( ID_AIS, newstate );
+        g_toolbar->EnableTool( ID_BOUNDARY, newstate );
     }
 }
 
@@ -3832,6 +3845,11 @@ void MyFrame::UpdateAllFonts()
         pRoutePropDialog = NULL;
     }
 
+    if( pBoundaryPropDialog ) {
+        pBoundaryPropDialog->Destroy();
+        pBoundaryPropDialog = NULL;
+    }
+
     if( pTrackPropDialog ) {
         pTrackPropDialog->Destroy();
         pTrackPropDialog = NULL;
@@ -3942,6 +3960,20 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             else {
                 cc1->FinishRoute();
                 SetToolbarItemState( ID_ROUTE, false );
+            }
+
+            break;
+        }
+
+        case ID_BOUNDARY: {
+            if( 0 == nBoundary_State ){
+                nBoundary_State = 1;
+                cc1->SetCursor( *cc1->pCursorPencil );
+                SetToolbarItemState( ID_BOUNDARY, true );
+            }
+            else {
+                cc1->FinishBoundary();
+                SetToolbarItemState( ID_BOUNDARY, false );
             }
 
             break;
@@ -5651,6 +5683,11 @@ void MyFrame::SetupQuiltMode( void )
 void MyFrame::ClearRouteTool()
 {
     if( g_toolbar ) g_toolbar->ToggleTool( ID_ROUTE, false );
+}
+
+void MyFrame::ClearBoundaryTool()
+{
+    if( g_toolbar ) g_toolbar->ToggleTool( ID_BOUNDARY, false );
 }
 
 void MyFrame::DoStackDown( void )

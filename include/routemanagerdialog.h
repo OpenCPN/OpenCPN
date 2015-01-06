@@ -44,6 +44,7 @@ class Route;
 class Track;
 class Layer;
 class RoutePoint;
+class Boundary;
 
 class RouteManagerDialog : public wxDialog {
       DECLARE_EVENT_TABLE()
@@ -53,6 +54,7 @@ class RouteManagerDialog : public wxDialog {
             ~RouteManagerDialog();
             void SetColorScheme();
             void UpdateRouteListCtrl();     // Rebuild route list
+            void UpdateBoundaryListCtrl();     // Rebuild boundary list
             void UpdateTrkListCtrl();
             void UpdateWptListCtrl(RoutePoint *rp_select = NULL, bool b_retain_sort = false);
             void UpdateLayListCtrl();
@@ -66,7 +68,10 @@ class RouteManagerDialog : public wxDialog {
             void Create();
             void UpdateRteButtons();           // Correct button state
             void MakeAllRoutesInvisible();  // Mark all routes as invisible. Does not flush settings.
+            void MakeAllBoundariesInvisible();  // Mark all boundaries as invisible. Does not flush settings.
             void ZoomtoRoute(Route *route); // Attempt to zoom route into the view
+            void ZoomtoBoundary(Boundary *boundary); // Attempt to zoom boundary into the view
+            void UpdateBndButtons();
             void UpdateTrkButtons();           // Correct button state
             void UpdateWptButtons();           // Correct button state
             void UpdateLayButtons();           // Correct button state
@@ -88,6 +93,17 @@ class RouteManagerDialog : public wxDialog {
             void OnRteSendToGPSClick(wxCommandEvent &event);
             void OnRteDefaultAction(wxListEvent &event);
             void OnRteColumnClicked(wxListEvent &event);
+            void OnBndSelected(wxListEvent &event);
+            void OnBndDefaultAction(wxListEvent &event);
+            void OnBndToggleVisibility(wxMouseEvent &event);
+            void OnBndColumnClicked(wxListEvent &event);
+            void OnBndPropertiesClick(wxCommandEvent &event);
+            void OnBndBtnLeftDown(wxMouseEvent &event); // record control key state for some action buttons
+            void OnBndZoomtoClick(wxCommandEvent &event);
+            void OnBndDeleteClick(wxCommandEvent &event);
+            void OnBndExportClick(wxCommandEvent &event);
+            void OnBndDeleteAllClick(wxCommandEvent &event);
+            void OnBndActivateClick(wxCommandEvent &event);
             void OnTrkDefaultAction(wxListEvent &event);
             void OnTrkNewClick(wxCommandEvent &event);
             void OnTrkPropertiesClick(wxCommandEvent &event);
@@ -129,10 +145,12 @@ class RouteManagerDialog : public wxDialog {
             // properties
             wxNotebook *m_pNotebook;
             wxPanel    *m_pPanelRte;
+            wxPanel    *m_pPanelBnd;
             wxPanel    *m_pPanelTrk;
             wxPanel    *m_pPanelWpt;
             wxPanel     *m_pPanelLay;
             wxListCtrl *m_pRouteListCtrl;
+            wxListCtrl *m_pBoundaryListCtrl;
             wxListCtrl *m_pTrkListCtrl;
             wxListCtrl *m_pWptListCtrl;
             wxListCtrl  *m_pLayListCtrl;
@@ -145,6 +163,13 @@ class RouteManagerDialog : public wxDialog {
             wxButton *btnRteExport;
             wxButton *btnRteSendToGPS;
             wxButton *btnRteDeleteAll;
+            wxButton *btnBndDelete;
+            wxButton *btnBndExport;
+            wxButton *btnBndZoomto;
+            wxButton *btnBndProperties;
+            wxButton *btnBndDeleteAll;
+            wxButton *btnBndActivate;
+            
             wxButton *btnTrkNew;
             wxButton *btnTrkProperties;
             wxButton *btnTrkDelete;
@@ -176,6 +201,7 @@ class RouteManagerDialog : public wxDialog {
             int m_lastWptItem;
             int m_lastTrkItem;
             int m_lastRteItem;
+            int m_lastBndItem;
 };
 
 #endif // _RouteManagerDialog_h_

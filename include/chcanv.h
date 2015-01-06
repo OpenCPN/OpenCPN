@@ -92,6 +92,7 @@ void DimeControl(wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_colo
       class PixelCache;
       class ChInfoWin;
       class glChartCanvas;
+      class Boundary;
 
 enum                                //  specify the render behaviour of SetViewPoint()
 {
@@ -294,6 +295,7 @@ public:
       double      m_cursor_lon, m_cursor_lat;
       Undo        *undo;
       wxPoint     r_rband;
+      wxPoint     b_rband;  
       double      m_prev_rlat;
       double      m_prev_rlon;
       RoutePoint  *m_prev_pMousePoint;
@@ -301,9 +303,11 @@ public:
       bool PurgeGLCanvasChartCache(ChartBase *pc, bool b_purge_full = false);
 
       void RemovePointFromRoute( RoutePoint* point, Route* route );
+      void RemovePointFromBoundary( RoutePoint* point, Boundary* boundary );
 
       void DrawBlinkObjects( void );
       void FinishRoute(void);
+      void FinishBoundary( void );
       
       void InvalidateGL();
       
@@ -348,6 +352,8 @@ private:
       wxPoint     LastPredPoint;
       bool        m_bDrawingRoute;
       bool        m_bRouteEditing;
+      bool        m_bDrawingBoundary;
+      bool        m_bBoundaryEditing;
       bool        m_bMarkEditing;
       bool        m_bIsInRadius;
       bool        m_bMayToggleMenuBar;
@@ -359,8 +365,11 @@ private:
       wxString    m_active_upload_port;
       Route       *m_pMouseRoute;
       Route       *m_pSelectedRoute;
+      Boundary    *m_pMouseBoundary;
+      Route       *m_pSelectedBoundary;
       Route       *m_pSelectedTrack;
       wxArrayPtrVoid *m_pEditRouteArray;
+      wxArrayPtrVoid *m_pEditBoundaryArray;
       RoutePoint  *m_pFoundRoutePoint;
       RoutePoint  *m_pFoundRoutePointSecond;
 
@@ -459,6 +468,7 @@ private:
       void ShowObjectQueryWindow( int x, int y, float zlat, float zlon);
       void ShowMarkPropertiesDialog( RoutePoint* markPoint );
       void ShowRoutePropertiesDialog(wxString title, Route* selected);
+      void ShowBoundaryPropertiesDialog( wxString title, Route* selected );
       void ShowTrackPropertiesDialog( Route* selected );
 
       void ShowBrightnessLevelTimedPopup( int brightness, int min, int max );

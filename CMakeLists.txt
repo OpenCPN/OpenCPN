@@ -585,6 +585,8 @@ SET(HDRS
                 include/OCPNRegion.h
                 include/TrackPropDlg.h
                 include/LinkPropDlg.h
+                include/BoundaryProp.h
+                include/Boundary.h
 )
 
 SET(SRCS
@@ -673,6 +675,8 @@ SET(SRCS
                 src/TrackPropDlg.cpp
                 src/LinkPropDlg.cpp
                 src/ssl/sha1.c
+                src/BoundaryProp.cpp
+                src/Boundary.cpp
     )
 
 IF(NOT WIN32 AND NOT APPLE)

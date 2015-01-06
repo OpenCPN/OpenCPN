@@ -49,6 +49,7 @@
 class Route;
 class RoutePoint;
 class RoutePointList;
+class Boundary;
 
 //    List definitions for Waypoint Manager Icons
 
@@ -68,16 +69,22 @@ public:
 
       bool DeleteRoute(Route *pRoute);
       void DeleteAllRoutes(void);
+      bool DeleteBoundary(Boundary *pBoundary);
+      void DeleteAllBoundaries(void);
       void DeleteAllTracks(void);
 
       void DeleteTrack(Route *pRoute);
 
       bool IsRouteValid(Route *pRoute);
+      bool IsBoundaryValid(Boundary *pBoundary);
 
       Route *FindRouteByGUID(wxString &guid);
       Route *FindRouteContainingWaypoint(RoutePoint *pWP);
+      Boundary *FindBoundaryContainingWaypoint(RoutePoint *pWP);
       wxArrayPtrVoid *GetRouteArrayContaining(RoutePoint *pWP);
+      wxArrayPtrVoid *GetBoundaryArrayContaining(RoutePoint *pWP);
       bool DoesRouteContainSharedPoints( Route *pRoute );
+      bool DoesBoundaryContainSharedPoints( Boundary *pBoundary );
 
       bool ActivateRoute(Route *pRouteToActivate, RoutePoint *pStartPoint = NULL);
       bool ActivateRoutePoint(Route *pA, RoutePoint *pRP);
@@ -87,10 +94,13 @@ public:
       bool UpdateProgress();
       bool UpdateAutopilot();
       bool DeactivateRoute( bool b_arrival = false );
+      bool DeactivateBoundary( bool b_arrival = false );
       bool IsAnyRouteActive(void){ return (pActiveRoute != NULL); }
+      bool IsAnyBoundaryActive(void){ return (pActiveBoundary != NULL); }
       void SetColorScheme(ColorScheme cs);
 
       Route *GetpActiveRoute(){ return pActiveRoute;}
+      Boundary *GetpActiveBoundary(){ return pActiveBoundary; }
       RoutePoint *GetpActivePoint(){ return pActivePoint;}
       double GetCurrentRngToActivePoint(){ return CurrentRngToActivePoint;}
       double GetCurrentBrgToActivePoint(){ return CurrentBrgToActivePoint;}
@@ -111,6 +121,14 @@ public:
       wxBrush * GetActiveRoutePointBrush(void){return m_pActiveRoutePointBrush;}
       wxBrush * GetRoutePointBrush(void){return m_pRoutePointBrush;}
 
+      wxPen   * GetBoundaryPen(void){return m_pBoundaryPen;}
+      wxPen   * GetSelectedBoundaryPen(void){return m_pSelectedBoundaryPen;}
+      wxPen   * GetActiveBoundaryPen(void){return m_pActiveBoundaryPen;}
+      wxPen   * GetBoundaryPointPen(void){return m_pBoundaryPointPen;}
+      wxBrush * GetBoundaryBrush(void){return m_pBoundaryBrush;}
+      wxBrush * GetSelectedBoundaryBrush(void){return m_pSelectedBoundaryBrush;}
+      wxBrush * GetActiveBoundaryBrush(void){return m_pActiveBoundaryBrush;}
+
       wxString GetRouteReverseMessage(void);
 
       bool        m_bDataValid;
@@ -120,6 +138,7 @@ private:
     
       MyApp       *m_pparent_app;
       Route       *pActiveRoute;
+      Boundary    *pActiveBoundary;
       RoutePoint  *pActivePoint;
       double       RouteBrgToActivePoint;        //TODO all these need to be doubles
       double       CurrentSegmentBeginLat;
@@ -144,6 +163,14 @@ private:
       wxBrush     *m_pActiveRouteBrush;
       wxBrush     *m_pActiveRoutePointBrush;
       wxBrush     *m_pRoutePointBrush;
+
+      wxPen       *m_pBoundaryPen;
+      wxPen       *m_pSelectedBoundaryPen;
+      wxPen       *m_pActiveBoundaryPen;
+      wxPen       *m_pBoundaryPointPen;
+      wxBrush     *m_pBoundaryBrush;
+      wxBrush     *m_pSelectedBoundaryBrush;
+      wxBrush     *m_pActiveBoundaryBrush;
 
       NMEA0183    m_NMEA0183;                         // For autopilot output
       

@@ -117,6 +117,7 @@ enum
     ID_TRACK,
     ID_TBSTATBOX,
     ID_MOB,
+    ID_BOUNDARY,
 
     ID_PLUGIN_BASE // This MUST be the last item in the enum
 };
@@ -319,6 +320,7 @@ class MyFrame: public wxFrame
     void PositionConsole(void);
     void OnToolLeftClick(wxCommandEvent& event);
     void ClearRouteTool();
+    void ClearBoundaryTool();
     void DoStackUp(void);
     void DoStackDown(void);
     void DoStackDelta( int direction );
@@ -413,6 +415,7 @@ class MyFrame: public wxFrame
     wxStatusBar         *m_pStatusBar;
     wxMenuBar           *m_pMenuBar;
     int                 nRoute_State;
+    int                 nBoundary_State;
     int                 nBlinkerTick;
     bool                m_bTimeIsSet;
 

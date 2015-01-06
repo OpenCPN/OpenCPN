@@ -158,10 +158,61 @@ got_next_outer_node: continue;
     return true;
 }
 
+bool Select::DeleteAllSelectableRoutePoints( Boundary *pb )
+{
+    SelectItem *pFindSel;
+
+//    Iterate on the select list
+    wxSelectableItemListNode *node = pSelectList->GetFirst();
+
+    while( node ) {
+        pFindSel = node->GetData();
+        if( pFindSel->m_seltype == SELTYPE_ROUTEPOINT ) {
+            RoutePoint *ps = (RoutePoint *) pFindSel->m_pData1;
+
+            //    inner loop iterates on the route's point list
+            wxRoutePointListNode *pnode = ( pb->pRoutePointList )->GetFirst();
+            while( pnode ) {
+                RoutePoint *prp = pnode->GetData();
+
+                if( prp == ps ) {
+                    delete pFindSel;
+                    pSelectList->DeleteNode( node );   //delete node;
+                    prp->SetSelectNode( NULL );
+                    
+                    node = pSelectList->GetFirst();
+
+                    goto got_next_outer_node;
+                }
+                pnode = pnode->GetNext();
+            }
+        }
+
+        node = node->GetNext();
+got_next_outer_node: continue;
+    }
+    return true;
+}
+
 bool Select::AddAllSelectableRoutePoints( Route *pr )
 {
     if( pr->pRoutePointList->GetCount() ) {
         wxRoutePointListNode *node = ( pr->pRoutePointList )->GetFirst();
+
+        while( node ) {
+            RoutePoint *prp = node->GetData();
+            AddSelectableRoutePoint( prp->m_lat, prp->m_lon, prp );
+            node = node->GetNext();
+        }
+        return true;
+    } else
+        return false;
+}
+
+bool Select::AddAllSelectableRoutePoints( Boundary *pb )
+{
+    if( pb->pRoutePointList->GetCount() ) {
+        wxRoutePointListNode *node = ( pb->pRoutePointList )->GetFirst();
 
         while( node ) {
             RoutePoint *prp = node->GetData();
@@ -193,6 +244,90 @@ bool Select::AddAllSelectableRouteSegments( Route *pr )
             slon2 = prp->m_lon;
 
             AddSelectableRouteSegment( slat1, slon1, slat2, slon2, prp0, prp, pr );
+
+            slat1 = slat2;
+            slon1 = slon2;
+            prp0 = prp;
+
+            node = node->GetNext();
+        }
+        return true;
+    } else
+        return false;
+}
+
+bool Select::AddSelectableBoundarySegment( float slat1, float slon1, float slat2, float slon2,
+        RoutePoint *pRoutePointAdd1, RoutePoint *pRoutePointAdd2, Boundary *pBoundary )
+{
+    SelectItem *pSelItem = new SelectItem;
+    pSelItem->m_slat = slat1;
+    pSelItem->m_slon = slon1;
+    pSelItem->m_slat2 = slat2;
+    pSelItem->m_slon2 = slon2;
+    pSelItem->m_seltype = SELTYPE_BOUNDARYSEGMENT;
+    pSelItem->m_bIsSelected = false;
+    pSelItem->m_pData1 = pRoutePointAdd1;
+    pSelItem->m_pData2 = pRoutePointAdd2;
+    pSelItem->m_pData3 = pBoundary;
+
+    if( pBoundary->m_bIsInLayer ) pSelectList->Append( pSelItem );
+    else
+        pSelectList->Insert( pSelItem );
+
+    return true;
+}
+
+bool Select::DeleteAllSelectableBoundarySegments( Boundary *pr )
+{
+    SelectItem *pFindSel;
+
+//    Iterate on the select list
+    wxSelectableItemListNode *node = pSelectList->GetFirst();
+
+    while( node ) {
+        pFindSel = node->GetData();
+        if( pFindSel->m_seltype == SELTYPE_BOUNDARYSEGMENT ) {
+
+//                  RoutePoint *ps1 = (RoutePoint *)pFindSel->m_pData1;
+//                  RoutePoint *ps2 = (RoutePoint *)pFindSel->m_pData2;
+
+            if( (Boundary *) pFindSel->m_pData3 == pr ) {
+                delete pFindSel;
+                pSelectList->DeleteNode( node );   //delete node;
+
+                node = pSelectList->GetFirst();     // reset the top node
+
+                goto got_next_outer_node;
+            }
+        }
+
+        node = node->GetNext();
+        got_next_outer_node: continue;
+    }
+
+    return true;
+}
+
+bool Select::AddAllSelectableBoundarySegments( Boundary *pb )
+{
+    wxPoint rpt, rptn;
+    float slat1, slon1, slat2, slon2;
+
+    if( pb->pRoutePointList->GetCount() ) {
+        wxRoutePointListNode *node = ( pb->pRoutePointList )->GetFirst();
+
+        RoutePoint *prp0 = node->GetData();
+        slat1 = prp0->m_lat;
+        slon1 = prp0->m_lon;
+
+        node = node->GetNext();
+
+        while( node ) {
+            RoutePoint *prp = node->GetData();
+            slat2 = prp->m_lat;
+            slon2 = prp->m_lon;
+
+            AddSelectableBoundarySegment( slat1, slon1, slat2, slon2, prp0, prp, pb );
 
             slat1 = slat2;
             slon1 = slon2;
@@ -546,6 +681,7 @@ SelectItem *Select::FindSelection( float slat, float slon, int fseltype )
                             && ( fabs( slon - pFindSel->m_slon ) < selectRadius ) ) goto find_ok;
                     break;
                 case SELTYPE_ROUTESEGMENT:
+                case SELTYPE_BOUNDARYSEGMENT:
                 case SELTYPE_TRACKSEGMENT: {
                     a = pFindSel->m_slat;
                     b = pFindSel->m_slat2;
@@ -604,6 +740,7 @@ SelectableItemList Select::FindSelectionList( float slat, float slon, int fselty
                     }
                     break;
                 case SELTYPE_ROUTESEGMENT:
+                case SELTYPE_BOUNDARYSEGMENT:
                 case SELTYPE_TRACKSEGMENT: {
                     a = pFindSel->m_slat;
                     b = pFindSel->m_slat2;

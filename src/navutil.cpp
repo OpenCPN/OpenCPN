@@ -91,6 +91,7 @@ extern double           g_ChartNotRenderScaleFactor;
 extern int              g_restore_stackindex;
 extern int              g_restore_dbindex;
 extern RouteList        *pRouteList;
+extern BoundaryList     *pBoundaryList;
 extern LayerList        *pLayerList;
 extern int              g_LayerIdx;
 extern Select           *pSelect;
@@ -1970,6 +1971,10 @@ int MyConfig::LoadMyConfig( int iteration )
     if( 0 == iteration )
         pRouteList = new RouteList;
 
+    //  Boundaries
+    if( 0 == iteration )
+        pBoundaryList = new BoundaryList;
+
     //    Groups
     if( 0 == iteration )
         LoadConfigGroups( g_pGroupArray );
@@ -2279,6 +2284,37 @@ bool MyConfig::DeleteConfigRoute( Route *pr )
             m_pNavObjectChangesSet->AddTrack( (Track *)pr, "delete" );
 
     }
+    return true;
+}
+
+bool MyConfig::AddNewBoundary( Boundary *pb, int crm )
+{
+    if( pb->m_bIsInLayer )
+        return true;
+
+
+    if( !m_bSkipChangeSetUpdate ) {
+        m_pNavObjectChangesSet->AddBoundary( pb, "add" );
+    }
+
+    return true;
+}
+
+bool MyConfig::UpdateBoundary( Boundary *pb )
+{
+    if( pb->m_bIsInLayer ) return true;
+
+
+    if( !m_bSkipChangeSetUpdate ) {
+        m_pNavObjectChangesSet->AddBoundary( pb, "update" );
+
+    }
+
+    return true;
+}
+
+bool MyConfig::DeleteConfigBoundary( Boundary *pb )
+{
     return true;
 }
 
@@ -2885,6 +2921,46 @@ bool MyConfig::ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxSt
 
         NavObjectCollection1 *pgpx = new NavObjectCollection1;
         pgpx->AddGPXRoutesList( pRoutes );
+        pgpx->SaveFile(fn.GetFullPath());
+        delete pgpx;
+
+        return true;
+    } else
+        return false;
+}
+
+bool MyConfig::ExportGPXBoundaries( wxWindow* parent, BoundaryList *pBoundaries, const wxString suggestedName )
+{
+    wxFileDialog saveDialog( NULL, _( "Export GPX file" ), m_gpx_path, suggestedName,
+            wxT ( "GPX files (*.gpx)|*.gpx" ), wxFD_SAVE );
+
+#ifdef __WXOSX__
+    if(parent)
+        parent->HideWithEffect(wxSHOW_EFFECT_BLEND );
+#endif
+
+     int response = saveDialog.ShowModal();
+
+#ifdef __WXOSX__
+    if(parent)
+        parent->ShowWithEffect(wxSHOW_EFFECT_BLEND );
+#endif
+
+    wxString path = saveDialog.GetPath();
+    wxFileName fn( path );
+    m_gpx_path = fn.GetPath();
+
+    if( response == wxID_OK ) {
+        fn.SetExt( _T ( "gpx" ) );
+
+        if( wxFileExists( fn.GetFullPath() ) ) {
+            int answer = OCPNMessageBox( NULL, _("Overwrite existing file?"), _T("Confirm"),
+                    wxICON_QUESTION | wxYES_NO | wxCANCEL );
+            if( answer != wxID_YES ) return false;
+        }
+
+        NavObjectCollection1 *pgpx = new NavObjectCollection1;
+        pgpx->AddGPXBoundariesList( pBoundaries );
         pgpx->SaveFile(fn.GetFullPath());
         delete pgpx;
 

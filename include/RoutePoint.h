@@ -98,6 +98,7 @@ public:
       bool              m_bIsBeingEdited;
 
       bool              m_bIsInRoute;
+      bool              m_bIsInBoundary;
       bool              m_bIsInTrack;
 
       bool              m_bIsolatedMark;        // This is an isolated mark

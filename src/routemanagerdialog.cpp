@@ -38,6 +38,7 @@
 #include "dychart.h"
 #include "navutil.h"
 #include "routeprop.h"
+#include "BoundaryProp.h"
 #include "routeman.h"
 #include "georef.h"
 #include "chartbase.h"
@@ -112,15 +113,18 @@ static const char *eyex[]={
     "..################.."};
 
 enum { rmVISIBLE = 0, rmROUTENAME, rmROUTEDESC };// RMColumns;
+enum { colBNDVISIBLE = 0, colBOUNDAYNAME, colBOUNDARYDESC };
 enum { colTRKVISIBLE = 0, colTRKNAME, colTRKLENGTH };
 enum { colLAYVISIBLE = 0, colLAYNAME, colLAYITEMS };
 enum { colWPTICON = 0, colWPTNAME, colWPTDIST };
 
 // GLOBALS :0
 extern RouteList *pRouteList;
+extern BoundaryList *pBoundaryList;
 extern LayerList *pLayerList;
 extern wxString GetLayerName(int id);
 extern RouteProp *pRoutePropDialog;
+extern BoundaryProp *pBoundaryPropDialog;
 extern TrackPropDlg *pTrackPropDialog;
 extern Routeman  *g_pRouteMan;
 extern MyConfig  *pConfig;
@@ -166,12 +170,69 @@ int wxCALLBACK SortRoutesOnName(long item1, long item2, long list)
 
 }
 
+// sort callback. Sort by boundary name.
+int sort_boundary_name_dir;
+#if wxCHECK_VERSION(2, 9, 0)
+int wxCALLBACK SortBoundaryOnName(long item1, long item2, wxIntPtr list)
+#else
+int wxCALLBACK SortBoundaryOnName(long item1, long item2, long list)
+#endif
+{
+    wxListCtrl *lc = (wxListCtrl*)list;
+
+    wxListItem it1, it2;
+    it1.SetId(lc->FindItem(-1, item1));
+    it1.SetColumn(1);
+    it1.SetMask(it1.GetMask() | wxLIST_MASK_TEXT);
+
+    it2.SetId(lc->FindItem(-1, item2));
+    it2.SetColumn(1);
+    it2.SetMask(it2.GetMask() | wxLIST_MASK_TEXT);
+
+    lc->GetItem(it1);
+    lc->GetItem(it2);
+
+    if(sort_route_name_dir & 1)
+    return it2.GetText().CmpNoCase(it1.GetText());
+    else
+    return it1.GetText().CmpNoCase(it2.GetText());
+
+}
+
 // sort callback. Sort by route Destination.
 int sort_route_to_dir;
 #if wxCHECK_VERSION(2, 9, 0)
 int wxCALLBACK SortRoutesOnTo(long item1, long item2, wxIntPtr list)
 #else
 int wxCALLBACK SortRoutesOnTo(long item1, long item2, long list)
+#endif
+{
+    wxListCtrl *lc = (wxListCtrl*)list;
+
+    wxListItem it1, it2;
+    it1.SetId(lc->FindItem(-1, item1));
+    it1.SetColumn(2);
+    it1.SetMask(it1.GetMask() | wxLIST_MASK_TEXT);
+
+    it2.SetId(lc->FindItem(-1, item2));
+    it2.SetColumn(2);
+    it2.SetMask(it2.GetMask() | wxLIST_MASK_TEXT);
+
+    lc->GetItem(it1);
+    lc->GetItem(it2);
+
+    if(sort_route_to_dir & 1)
+    return it2.GetText().CmpNoCase(it1.GetText());
+    else
+    return it1.GetText().CmpNoCase(it2.GetText());
+}
+
+// sort callback. Sort by route Destination.
+int sort_boundary_to_dir;
+#if wxCHECK_VERSION(2, 9, 0)
+int wxCALLBACK SortBoundaryOnTo(long item1, long item2, wxIntPtr list)
+#else
+int wxCALLBACK SortBoundaryOnTo(long item1, long item2, long list)
 #endif
 {
     wxListCtrl *lc = (wxListCtrl*)list;
@@ -488,6 +549,7 @@ void RouteManagerDialog::Create()
     m_pRouteListCtrl->InsertColumn( rmVISIBLE, _("Show"), wxLIST_FORMAT_LEFT, 40 );
     m_pRouteListCtrl->InsertColumn( rmROUTENAME, _("Route Name"), wxLIST_FORMAT_LEFT, 120 );
     m_pRouteListCtrl->InsertColumn( rmROUTEDESC, _("To"), wxLIST_FORMAT_LEFT, 230 );
+
     /*Seth
      wxListItem itemCol;
      itemCol.SetImage(-1);
@@ -548,6 +610,76 @@ void RouteManagerDialog::Create()
     bsRouteButtons->Add( btnRteDeleteAll, 0, wxALL | wxEXPAND, DIALOG_MARGIN );
     btnRteDeleteAll->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler(RouteManagerDialog::OnRteDeleteAllClick), NULL, this );
+
+    //  Create "Boundary" panel
+    m_pPanelBnd = new wxPanel( m_pNotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+            wxNO_BORDER | wxTAB_TRAVERSAL );
+    wxBoxSizer *sbsBoundaries = new wxBoxSizer( wxHORIZONTAL );
+    m_pPanelBnd->SetSizer( sbsBoundaries );
+    m_pNotebook->AddPage( m_pPanelBnd, _("Boundaries") );
+
+    m_pBoundaryListCtrl = new wxListCtrl( m_pPanelBnd, -1, wxDefaultPosition, wxSize( 400, -1 ),
+            wxLC_REPORT  | wxLC_SORT_ASCENDING | wxLC_HRULES
+                    | wxBORDER_SUNKEN/*|wxLC_VRULES*/);
+    m_pBoundaryListCtrl->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED,
+            wxListEventHandler(RouteManagerDialog::OnBndSelected), NULL, this );
+    m_pBoundaryListCtrl->Connect( wxEVT_COMMAND_LIST_ITEM_DESELECTED,
+            wxListEventHandler(RouteManagerDialog::OnBndSelected), NULL, this );
+    m_pBoundaryListCtrl->Connect( wxEVT_COMMAND_LIST_ITEM_ACTIVATED,
+            wxListEventHandler(RouteManagerDialog::OnBndDefaultAction), NULL, this );
+    m_pBoundaryListCtrl->Connect( wxEVT_LEFT_DOWN,
+            wxMouseEventHandler(RouteManagerDialog::OnBndToggleVisibility), NULL, this );
+    m_pBoundaryListCtrl->Connect( wxEVT_COMMAND_LIST_COL_CLICK,
+            wxListEventHandler(RouteManagerDialog::OnBndColumnClicked), NULL, this );
+    sbsBoundaries->Add( m_pBoundaryListCtrl, 1, wxEXPAND | wxALL, DIALOG_MARGIN );
+
+    // Columns: visibility ctrl, name
+    // note that under MSW for SetColumnWidth() to work we need to create the
+    // items with images initially even if we specify dummy image id
+
+    m_pBoundaryListCtrl->InsertColumn( colBNDVISIBLE, _("Show"), wxLIST_FORMAT_LEFT, 40 );
+    m_pBoundaryListCtrl->InsertColumn( colBOUNDAYNAME, _("Boundary Name"), wxLIST_FORMAT_LEFT, 120 );
+    m_pBoundaryListCtrl->InsertColumn( colBOUNDARYDESC, _("Desc"), wxLIST_FORMAT_LEFT, 230 );
+
+    // Buttons: Delete, Properties...
+    wxBoxSizer *bsBoundaryButtons = new wxBoxSizer( wxVERTICAL );
+    sbsBoundaries->Add( bsBoundaryButtons, 0, wxALIGN_RIGHT );
+
+    btnBndProperties = new wxButton( m_pPanelBnd, -1, _("&Properties...") );
+    bsBoundaryButtons->Add( btnBndProperties, 0, wxALL | wxEXPAND, DIALOG_MARGIN );
+    btnBndProperties->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
+            wxCommandEventHandler(RouteManagerDialog::OnBndPropertiesClick), NULL, this );
+
+    btnBndActivate = new wxButton( m_pPanelBnd, -1, _("&Activate") );
+    bsBoundaryButtons->Add( btnBndActivate, 0, wxALL | wxEXPAND, DIALOG_MARGIN );
+    btnBndActivate->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
+            wxCommandEventHandler(RouteManagerDialog::OnBndActivateClick), NULL, this );
+    btnBndActivate->Connect( wxEVT_LEFT_DOWN,
+            wxMouseEventHandler(RouteManagerDialog::OnBndBtnLeftDown), NULL, this );
+
+    btnBndZoomto = new wxButton( m_pPanelBnd, -1, _("&Center View") );
+    bsBoundaryButtons->Add( btnBndZoomto, 0, wxALL | wxEXPAND, DIALOG_MARGIN );
+    btnBndZoomto->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
+            wxCommandEventHandler(RouteManagerDialog::OnBndZoomtoClick), NULL, this );
+    btnBndZoomto->Connect( wxEVT_LEFT_DOWN,
+            wxMouseEventHandler(RouteManagerDialog::OnBndBtnLeftDown), NULL, this );
+
+    btnBndDelete = new wxButton( m_pPanelBnd, -1, _("&Delete") );
+    bsBoundaryButtons->Add( btnBndDelete, 0, wxALL | wxEXPAND, DIALOG_MARGIN );
+    btnBndDelete->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
+            wxCommandEventHandler(RouteManagerDialog::OnBndDeleteClick), NULL, this );
+
+    btnBndExport = new wxButton( m_pPanelBnd, -1, _("&Export selected...") );
+    bsBoundaryButtons->Add( btnBndExport, 0, wxALL | wxEXPAND, DIALOG_MARGIN );
+    btnBndExport->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
+            wxCommandEventHandler(RouteManagerDialog::OnBndExportClick), NULL, this );
+
+    bsBoundaryButtons->AddSpacer( 10 );
+
+    btnBndDeleteAll = new wxButton( m_pPanelBnd, -1, _("&Delete All") );
+    bsBoundaryButtons->Add( btnBndDeleteAll, 0, wxALL | wxEXPAND, DIALOG_MARGIN );
+    btnBndDeleteAll->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
+            wxCommandEventHandler(RouteManagerDialog::OnBndDeleteAllClick), NULL, this );
 
     //  Create "Tracks" panel
     m_pPanelTrk = new wxPanel( m_pNotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize,
@@ -788,6 +920,7 @@ void RouteManagerDialog::Create()
     SetColorScheme();
 
     UpdateRouteListCtrl();
+    UpdateBoundaryListCtrl();
     UpdateTrkListCtrl();
     UpdateWptListCtrl();
     UpdateLayListCtrl();
@@ -911,6 +1044,59 @@ void RouteManagerDialog::UpdateRouteListCtrl()
     UpdateRteButtons();
 }
 
+void RouteManagerDialog::UpdateBoundaryListCtrl()
+{
+    // if an item was selected, make it selected again if it still exist
+    long item = -1;
+    item = m_pBoundaryListCtrl->GetNextItem( item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
+    long selected_id = -1;
+    if( item != -1 ) selected_id = m_pBoundaryListCtrl->GetItemData( item );
+
+    // Delete existing items
+    m_pBoundaryListCtrl->DeleteAllItems();
+
+    // then add routes to the listctrl
+    BoundaryList::iterator it;
+    int index = 0;
+    for( it = ( *pBoundaryList ).begin(); it != ( *pBoundaryList ).end(); ++it, ++index ) {
+        if( ( *it )->m_bIsTrack || !( *it )->IsListed() ) continue;
+
+        wxListItem li;
+        li.SetId( index );
+        li.SetImage( ( *it )->IsVisible() ? 0 : 1 );
+        li.SetData( index );
+        li.SetText( _T("") );
+
+        if( ( *it )->m_bBndIsActive ) {
+            wxFont font = *wxNORMAL_FONT;
+            font.SetWeight( wxFONTWEIGHT_BOLD );
+            li.SetFont( font );
+        }
+
+        long idx = m_pBoundaryListCtrl->InsertItem( li );
+
+        wxString name = ( *it )->m_BoundaryNameString;
+        if( name.IsEmpty() ) name = _("(Unnamed Route)");
+        m_pBoundaryListCtrl->SetItem( idx, colBOUNDAYNAME, name );
+
+        //m_pBoundaryListCtrl->SetItem( idx, colBOUNDARYDESC, startend );
+    }
+
+    m_pBoundaryListCtrl->SortItems( SortBoundaryOnName, (long) m_pBoundaryListCtrl );
+
+    // restore selection if possible
+    // NOTE this will select a different item, if one is deleted
+    // (the next route will get that index).
+    if( selected_id > -1 ) {
+        item = m_pBoundaryListCtrl->FindItem( -1, selected_id );
+        m_pBoundaryListCtrl->SetItemState( item, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED );
+    }
+
+    if( (m_lastBndItem >= 0) && (m_pBoundaryListCtrl->GetItemCount()) )
+        m_pBoundaryListCtrl->EnsureVisible( m_lastBndItem );
+    UpdateBndButtons();
+}
+
 void RouteManagerDialog::UpdateRteButtons()
 {
     // enable/disable buttons
@@ -950,6 +1136,42 @@ void RouteManagerDialog::UpdateRteButtons()
     }
 }
 
+void RouteManagerDialog::UpdateBndButtons()
+{
+    // enable/disable buttons
+    long selected_index_index = m_pBoundaryListCtrl->GetNextItem( -1, wxLIST_NEXT_ALL,
+            wxLIST_STATE_SELECTED );
+    bool enable1 =  m_pBoundaryListCtrl->GetSelectedItemCount() == 1;
+    bool enablemultiple =  m_pBoundaryListCtrl->GetSelectedItemCount() >= 1;
+
+    m_lastBndItem = selected_index_index;
+
+/*    btnBndDelete->Enable( m_pBoundaryListCtrl->GetSelectedItemCount() > 0 );
+    btnBndZoomto->Enable( enable1 ); // && !cc1->m_bFollow);
+    btnBndProperties->Enable( enable1 );
+    btnBndDeleteAll->Enable( enablemultiple );
+*/
+    // set activate button text
+    Boundary *boundary = NULL;
+    if( enable1 ) boundary =
+            pBoundaryList->Item( m_pBoundaryListCtrl->GetItemData( selected_index_index ) )->GetData();
+
+    if( !g_pRouteMan->IsAnyBoundaryActive() ) {
+        btnRteActivate->Enable( enable1 );
+        if( enable1 ) btnRteActivate->SetLabel( _("Activate") );
+
+    } else {
+        if( enable1 ) {
+            if( boundary && boundary->m_bBndIsActive ) {
+                btnRteActivate->Enable( enable1 );
+                btnRteActivate->SetLabel( _("Deactivate") );
+            } else
+                btnRteActivate->Enable( false );
+        } else
+            btnRteActivate->Enable( false );
+    }
+}
+
 void RouteManagerDialog::MakeAllRoutesInvisible()
 {
     RouteList::iterator it;
@@ -963,11 +1185,61 @@ void RouteManagerDialog::MakeAllRoutesInvisible()
     }
 }
 
+void RouteManagerDialog::MakeAllBoundariesInvisible()
+{
+    BoundaryList::iterator it;
+    long index = 0;
+    for( it = ( *pBoundaryList ).begin(); it != ( *pBoundaryList ).end(); ++it, ++index ) {
+        if( ( *it )->IsVisible() ) { // avoid config updating as much as possible!
+            ( *it )->SetVisible( false );
+            m_pBoundaryListCtrl->SetItemImage( m_pBoundaryListCtrl->FindItem( -1, index ), 1 ); // Likely not same order :0
+            pConfig->UpdateBoundary( *it ); // auch, flushes config to disk. FIXME
+        }
+    }
+}
+
 void RouteManagerDialog::ZoomtoRoute( Route *route )
 {
 
     // Calculate bbox center
     wxBoundingBox RBBox = route->GetBBox();
+    double clat = RBBox.GetMinY() + ( RBBox.GetHeight() / 2 );
+    double clon = RBBox.GetMinX() + ( RBBox.GetWidth() / 2 );
+
+    if( clon > 180. ) clon -= 360.;
+    else
+        if( clon < -180. ) clon += 360.;
+
+    // Calculate ppm
+    double rw, rh, ppm; // route width, height, final ppm scale to use
+    int ww, wh; // chart window width, height
+    // route bbox width in nm
+    DistanceBearingMercator( RBBox.GetMinY(), RBBox.GetMinX(), RBBox.GetMinY(),
+            RBBox.GetMaxX(), NULL, &rw );
+    // route bbox height in nm
+    DistanceBearingMercator( RBBox.GetMinY(), RBBox.GetMinX(), RBBox.GetMaxY(),
+            RBBox.GetMinX(), NULL, &rh );
+
+    cc1->GetSize( &ww, &wh );
+
+    ppm = wxMin(ww/(rw*1852), wh/(rh*1852)) * ( 100 - fabs( clat ) ) / 90;
+
+    ppm = wxMin(ppm, 1.0);
+
+//      cc1->ClearbFollow();
+//      cc1->SetViewPoint(clat, clon, ppm, 0, cc1->GetVPRotation(), CURRENT_RENDER);
+//      cc1->Refresh();
+
+    gFrame->JumpToPosition( clat, clon, ppm );
+
+    m_bNeedConfigFlush = true;
+}
+
+void RouteManagerDialog::ZoomtoBoundary( Boundary *boundary )
+{
+
+    // Calculate bbox center
+    wxBoundingBox RBBox = boundary->GetBBox();
     double clat = RBBox.GetMinY() + ( RBBox.GetHeight() / 2 );
     double clon = RBBox.GetMinX() + ( RBBox.GetWidth() / 2 );
 
@@ -1051,6 +1323,57 @@ void RouteManagerDialog::OnRteDeleteClick( wxCommandEvent &event )
 
 }
 
+void RouteManagerDialog::OnBndDeleteClick( wxCommandEvent &event )
+{
+    BoundaryList list;
+
+    int answer = OCPNMessageBox( this, _("Are you sure you want to delete the selected object(s)"), wxString( _("OpenCPN Alert") ), wxYES_NO );
+    if ( answer != wxID_YES )
+        return;
+
+    bool busy = false;
+    if( m_pBoundaryListCtrl->GetSelectedItemCount() ) {
+        ::wxBeginBusyCursor();
+        cc1->CancelMouseRoute();
+        m_bNeedConfigFlush = true;
+        busy = true;
+    }
+
+    long item = -1;
+    for ( ;; )
+    {
+        item = m_pBoundaryListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+        if ( item == -1 )
+            break;
+
+        Boundary *pboundary_to_delete = pBoundaryList->Item( m_pBoundaryListCtrl->GetItemData( item ) )->GetData();
+
+        if( pboundary_to_delete )
+            list.Append( pboundary_to_delete );
+    }
+
+    if( busy ) {
+
+        for(unsigned int i=0 ; i < list.GetCount() ; i++) {
+            Boundary *boundary = list.Item(i)->GetData();
+            if( boundary ) {
+                pConfig->DeleteConfigBoundary( boundary );
+                g_pRouteMan->DeleteBoundary( boundary );
+            }
+        }
+
+        m_lastRteItem = -1;
+        UpdateBoundaryListCtrl();
+        UpdateRouteListCtrl();
+        UpdateTrkListCtrl();
+
+        cc1->undo->InvalidateUndo();
+        cc1->Refresh();
+        ::wxEndBusyCursor();
+    }
+
+}
+
 void RouteManagerDialog::OnRteDeleteAllClick( wxCommandEvent &event )
 {
     int dialog_ret = OCPNMessageBox( this, _("Are you sure you want to delete <ALL> routes?"),
@@ -1069,6 +1392,36 @@ void RouteManagerDialog::OnRteDeleteAllClick( wxCommandEvent &event )
 
         m_lastRteItem = -1;
         UpdateRouteListCtrl();
+
+        //    Also need to update the track list control, since routes and tracks share a common global list (pRouteList)
+        UpdateTrkListCtrl();
+
+        if( pRoutePropDialog ) pRoutePropDialog->Hide();
+        cc1->undo->InvalidateUndo();
+        cc1->Refresh();
+
+        m_bNeedConfigFlush = true;
+    }
+}
+
+void RouteManagerDialog::OnBndDeleteAllClick( wxCommandEvent &event )
+{
+    int dialog_ret = OCPNMessageBox( this, _("Are you sure you want to delete <ALL> boundaries?"),
+            wxString( _("OpenCPN Alert") ), wxYES_NO );
+
+    if( dialog_ret == wxID_YES ) {
+
+        cc1->CancelMouseRoute();
+
+        g_pRouteMan->DeleteAllBoundaries();
+// TODO Seth
+//            m_pSelectedRoute = NULL;
+//            m_pFoundRoutePoint = NULL;
+//            m_pFoundRoutePointSecond = NULL;
+
+        m_lastBndItem = -1;
+        UpdateRouteListCtrl();
+        UpdateBoundaryListCtrl();
 
         //    Also need to update the track list control, since routes and tracks share a common global list (pRouteList)
         UpdateTrkListCtrl();
@@ -1112,6 +1465,34 @@ void RouteManagerDialog::OnRtePropertiesClick( wxCommandEvent &event )
     m_bNeedConfigFlush = true;
 }
 
+void RouteManagerDialog::OnBndPropertiesClick( wxCommandEvent &event )
+{
+    // Show routeproperties dialog for selected route
+    long item = -1;
+    item = m_pBoundaryListCtrl->GetNextItem( item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
+    if( item == -1 ) return;
+
+    Boundary *boundary = pBoundaryList->Item( m_pBoundaryListCtrl->GetItemData( item ) )->GetData();
+
+    if( !boundary ) return;
+
+    if( NULL == pBoundaryPropDialog )          // There is one global instance of the RouteProp Dialog
+        pBoundaryPropDialog = new BoundaryProp( GetParent() );
+
+    pBoundaryPropDialog->UpdateProperties();
+    if( !boundary->m_bIsInLayer )
+        pBoundaryPropDialog->SetDialogTitle( _("Boundary Properties") );
+    else {
+        wxString caption( _T("Boundary Properties, Layer: ") );
+        caption.Append( GetLayerName( boundary->m_LayerID ) );
+        pBoundaryPropDialog->SetDialogTitle( caption );
+    }
+
+    if( !pBoundaryPropDialog->IsShown() )
+        pBoundaryPropDialog->Show();
+    m_bNeedConfigFlush = true;
+}
+
 void RouteManagerDialog::OnRteZoomtoClick( wxCommandEvent &event )
 {
 //      if (cc1->m_bFollow)
@@ -1137,6 +1518,33 @@ void RouteManagerDialog::OnRteZoomtoClick( wxCommandEvent &event )
     }
 
     ZoomtoRoute( route );
+}
+
+void RouteManagerDialog::OnBndZoomtoClick( wxCommandEvent &event )
+{
+//      if (cc1->m_bFollow)
+//            return;
+
+    // Zoom into the bounding box of the selected route
+    long item = -1;
+    item = m_pBoundaryListCtrl->GetNextItem( item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
+    if( item == -1 ) return;
+
+    // optionally make this route exclusively visible
+    if( m_bCtrlDown ) MakeAllBoundariesInvisible();
+
+    Boundary *boundary = pBoundaryList->Item( m_pBoundaryListCtrl->GetItemData( item ) )->GetData();
+
+    if( !boundary ) return;
+
+    // Ensure route is visible
+    if( !boundary->IsVisible() ) {
+        boundary->SetVisible( true );
+        m_pBoundaryListCtrl->SetItemImage( item, boundary->IsVisible() ? 0 : 1 );
+        pConfig->UpdateBoundary( boundary );
+    }
+
+    ZoomtoBoundary( boundary );
 }
 
 void RouteManagerDialog::OnRteReverseClick( wxCommandEvent &event )
@@ -1197,6 +1605,31 @@ void RouteManagerDialog::OnRteExportClick( wxCommandEvent &event )
     pConfig->ExportGPXRoutes( this, &list, suggested_name );
 }
 
+void RouteManagerDialog::OnBndExportClick( wxCommandEvent &event )
+{
+    BoundaryList list;
+
+    wxString suggested_name = _T("boundaries");
+
+    long item = -1;
+    for ( ;; )
+    {
+        item = m_pBoundaryListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+        if ( item == -1 )
+            break;
+
+        Boundary *pboundary_to_export = pBoundaryList->Item( m_pBoundaryListCtrl->GetItemData( item ) )->GetData();
+
+        if( pboundary_to_export ) {
+            list.Append( pboundary_to_export );
+            if( pboundary_to_export->m_BoundaryNameString != wxEmptyString )
+                suggested_name = pboundary_to_export->m_BoundaryNameString;
+        }
+    }
+
+    pConfig->ExportGPXBoundaries( this, &list, suggested_name );
+}
+
 void RouteManagerDialog::OnRteActivateClick( wxCommandEvent &event )
 {
     // Activate the selected route, unless it already is
@@ -1228,6 +1661,43 @@ void RouteManagerDialog::OnRteActivateClick( wxCommandEvent &event )
     UpdateRouteListCtrl();
 
     pConfig->UpdateRoute( route );
+
+    cc1->Refresh();
+
+//      btnRteActivate->SetLabel(route->m_bRtIsActive ? _("Deactivate") : _("Activate"));
+
+    m_bNeedConfigFlush = true;
+}
+
+void RouteManagerDialog::OnBndActivateClick( wxCommandEvent &event )
+{
+    // Activate the selected boundary, unless it already is
+    long item = -1;
+    item = m_pBoundaryListCtrl->GetNextItem( item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
+    if( item == -1 ) return;
+
+    if( m_bCtrlDown ) MakeAllBoundariesInvisible();
+
+    Boundary *boundary = pBoundaryList->Item( m_pBoundaryListCtrl->GetItemData( item ) )->GetData();
+
+    if( !boundary ) return;
+
+    if( !boundary->m_bBndIsActive ) {
+        if( !boundary->IsVisible() ) {
+            boundary->SetVisible( true );
+            m_pBoundaryListCtrl->SetItemImage( item, 0, 0 );
+        }
+
+        ZoomtoBoundary( boundary );
+
+//            g_pRouteMan->ActivateRoute(route);
+    } else
+        g_pRouteMan->DeactivateBoundary();
+
+    UpdateRouteListCtrl();
+    UpdateBoundaryListCtrl();
+
+    pConfig->UpdateBoundary( boundary );
 
     cc1->Refresh();
 
@@ -1275,6 +1745,45 @@ void RouteManagerDialog::OnRteToggleVisibility( wxMouseEvent &event )
     event.Skip();
 }
 
+void RouteManagerDialog::OnBndToggleVisibility( wxMouseEvent &event )
+{
+    wxPoint pos = event.GetPosition();
+    int flags = 0;
+    long clicked_index = m_pBoundaryListCtrl->HitTest( pos, flags );
+
+    //    Clicking Visibility column?
+    if( clicked_index > -1 && event.GetX() < m_pBoundaryListCtrl->GetColumnWidth( rmVISIBLE ) ) {
+        // Process the clicked item
+        Boundary *boundary = pBoundaryList->Item( m_pBoundaryListCtrl->GetItemData( clicked_index ) )->GetData();
+
+        int wpts_set_viz = wxID_YES;
+        bool togglesharedwpts = true;
+        bool has_shared_wpts = g_pRouteMan->DoesBoundaryContainSharedPoints(boundary);
+        
+        if( has_shared_wpts && boundary->IsVisible() ) {
+            wpts_set_viz = OCPNMessageBox(  this, _("Do you also want to make the shared waypoints being part of this boundary invisible?"), _("Question"), wxYES_NO );
+            togglesharedwpts = (wpts_set_viz == wxID_YES);
+        }
+        boundary->SetVisible( !boundary->IsVisible(), togglesharedwpts );
+        m_pBoundaryListCtrl->SetItemImage( clicked_index, boundary->IsVisible() ? 0 : 1 );
+
+        ::wxBeginBusyCursor();
+
+        pConfig->UpdateBoundary( boundary );
+        cc1->Refresh();
+
+        //   We need to update the waypoint list control only if the visibility of shared waypoints might have changed.
+        if( has_shared_wpts )
+            UpdateWptListCtrlViz();
+
+        ::wxEndBusyCursor();
+
+    }
+
+    // Allow wx to process...
+    event.Skip();
+}
+
 // FIXME add/remove route segments/waypoints from selectable items, so there are no
 // hidden selectables! This should probably be done outside this class!
 // The problem is that the current waypoint class does not provide good support
@@ -1301,6 +1810,12 @@ void RouteManagerDialog::OnRteBtnLeftDown( wxMouseEvent &event )
     event.Skip();
 }
 
+void RouteManagerDialog::OnBndBtnLeftDown( wxMouseEvent &event )
+{
+    m_bCtrlDown = event.ControlDown();
+    event.Skip();
+}
+
 void RouteManagerDialog::OnRteSelected( wxListEvent &event )
 {
     long clicked_index = event.m_itemIndex;
@@ -1317,6 +1832,22 @@ void RouteManagerDialog::OnRteSelected( wxListEvent &event )
 
 }
 
+void RouteManagerDialog::OnBndSelected( wxListEvent &event )
+{
+    long clicked_index = event.m_itemIndex;
+    // Process the clicked item
+    Boundary *boundary = pBoundaryList->Item( m_pBoundaryListCtrl->GetItemData( clicked_index ) )->GetData();
+//    route->SetVisible(!route->IsVisible());
+    m_pBoundaryListCtrl->SetItemImage( clicked_index, boundary->IsVisible() ? 0 : 1 );
+//    pConfig->UpdateRoute(route);
+
+    if( cc1 )
+        cc1->Refresh();
+
+    UpdateBndButtons();
+
+}
+
 void RouteManagerDialog::OnRteColumnClicked( wxListEvent &event )
 {
     if( event.m_col == 1 ) {
@@ -1326,6 +1857,18 @@ void RouteManagerDialog::OnRteColumnClicked( wxListEvent &event )
         if( event.m_col == 2 ) {
             sort_route_to_dir++;
             m_pRouteListCtrl->SortItems( SortRoutesOnTo, (long) m_pRouteListCtrl );
+        }
+}
+
+void RouteManagerDialog::OnBndColumnClicked( wxListEvent &event )
+{
+    if( event.m_col == 1 ) {
+        sort_boundary_name_dir++;
+        m_pBoundaryListCtrl->SortItems( SortBoundaryOnName, (long) m_pBoundaryListCtrl );
+    } else
+        if( event.m_col == 2 ) {
+            sort_boundary_to_dir++;
+            m_pBoundaryListCtrl->SortItems( SortBoundaryOnTo, (long) m_pBoundaryListCtrl );
         }
 }
 
@@ -1362,6 +1905,12 @@ void RouteManagerDialog::OnRteDefaultAction( wxListEvent &event )
 {
     wxCommandEvent evt;
     OnRtePropertiesClick( evt );
+}
+
+void RouteManagerDialog::OnBndDefaultAction( wxListEvent &event )
+{
+    wxCommandEvent evt;
+    OnBndPropertiesClick( evt );
 }
 
 void RouteManagerDialog::OnTrkDefaultAction( wxListEvent &event )
