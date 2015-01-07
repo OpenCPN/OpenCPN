@@ -615,52 +615,87 @@ It is thus possible to run multiple portable instances and identify each version
  
 <h3 id="To create a portable Windows version (across only 32-bit or only 64-bit systems)">To create a portable Windows version (across only 32-bit <u><em>or</em></u> only 64-bit systems)</h3>
 <br>
-Create a new directory dedicated to the portable OpenCPN.<br>
-The following files/directories/folders must be copied to this new directory.<br>
+1. Create a new directory dedicated to the portable OpenCPN.<br>
 <br>
-1. OpenCPN.exe (of course)<br>
-2. Create MSDOS batch file "opencpn portable.bat" (or other name of user choice) containing the one line:<br>
-"opencpn -p" (without quotes)<br>
-3. msvcr100.dll<br>
-4. msvcp100.dll<br>
-5. Eight wxWidgets dlls<br>
-6. OCPN data directories<br>
-plugins/<br>
-s57data/<br>
-share/<br>
-sounds/<br>
-tcdata/<br>
-wvsdata/ (not used on OpenCPN &gt;3.2.0)<br>
-doc/<br>
-uidata/<br>
-7. license.txt
+2. In a separate window, navigate to C:\Program Files (x86)\OpenCPN (on 
+64-bit systems) or C:\Program Files\OpenCPN (on 32-bit systems), and <u>copy</u> (don't move) the following <u>data directories</u> (with containing files) into this new direcory:
+
 <ul>
-	<li>To run OpenCPN portably within this directory, simply execute the 
+	<li>doc/</li>
+	<li>plugins/</li>
+	<li>s57data/</li>
+	<li>share/</li>
+	<li>sounds/</li>
+	<li>tcdata/</li>
+	<li>uidata/</li>
+	<li>wvsdata/ (only for OpenCPN 3.2.0 and earlier)</li>
+</ul>
+<br>
+3. From the same OpenCPN folder, copy the following <u>files</u> into the new directory:
+
+<ul>
+	<li>crashrpt_lang.ini</li>
+	<li>CrashRpt1401.dll</li>
+	<li>CrashSender1401.exe</li>
+	<li>license.txt</li>
+	<li>OpenCPN.exe (of course)</li>
+	<li>Eight wxWidgets dlls beginning with the name "wxbase"</li>
+</ul>
+<br>
+4. Now navigate to C:\Windows\SysWOW64 (on 64-bit systems) or 
+C:\Windows\System32 (on 32-bit systems) and copy the following files 
+into the new directory:
+<ul>
+	<li>msvcp100.dll</li>
+	<li>msvcr100.dll</li>
+</ul>
+<br>
+5. If running Windows, create MSDOS batch file "opencpn portable.bat" (or other name of user choice) containing the one line:<br>
+<br>
+"opencpn -p" (without quotes)<br>
+<br>
+This file must be in the new directory. If you want your batch file to 
+be in a different directory, you must edit the batch file to include 
+"cd" commands to navigate into the new directory before the line 
+containing the "opencpn -p" command.<br>
+<br>
+To run OpenCPN portably within this directory, simply execute the 
 "opencpn portable" batch file. There may be a way to build a click-able 
 shortcut to OpenCPN, with the -p option specified in the shortcut. But I
  could not figure it out. Windows insists upon a drive letter in the 
 command line of the shortcut, which would defeat the whole purpose of 
-portability.Thus, the batch file....</li>
-	<li>If the charts are also in the current dir, then the entire 
-installation is "portable", meaning there are no hard-coded drive letter
- dependencies, and all write activities occur in the current dir only.</li>
-	<li>This setup works very well from a USB stick.</li>
-</ul>
-
-<h3 id="To create a portable Windows version (across 32-bit and 64-bit systems)">To create a portable Windows version (across 32-bit <em><u>and</u></em> 64-bit systems)</h3>
+portability.Thus, the batch file....<br>
 <br>
-In the setup described above, it's important to note that when 
-msvcr100.dll and msvcp100.dll are copied from a Windows 64-bit operating
- system, the user will get an error message when trying to run the batch
- file from a USB stick on a Windows 32-bit operating system.  No error 
-message occurs when the dll files are copied from a 32-bit operating 
-system and run on a 64-bit operating system.  To avoid problems, the 
-user can create separate batch files for the 32-bit and 64-bit versions 
-of msvcr100.dll and msvcp100.dll in the OpenCPN root directory as 
-described here:<br>
+If the charts are also in the current dir, then the entire installation 
+is "portable", meaning there are no hard-coded drive letter 
+dependencies, and all write activities occur in the current dir only.<br>
+<br>
+This setup works very well from a USB stick.<br>
+ 
+<h3 id="Alternate procedure to use the 64-bit libraries upon demand">Alternate procedure to use the 64-bit libraries upon demand</h3>
+<br>
+The setup described above will work on 32- or 64-bit systems, as long as
+ you are careful to copy msvcp100.dll and msvcr100.dll from the exact 
+folders that were specified. Those files are 32-bit libraries, which 
+will run without problems on both 32- and 64-bit systems.<br>
+<br>
+If you accidentally copied the <u>64-bit</u> msvc*100.dll library files (which are located in C:\Windows\System32 on <u>64-bit </u>systems)
+ a 32-bit system, you will get an error message when trying to run in 
+portable mode. If you want cross-compatibility between 32- and 64-bit 
+systems, it is strongly suggested to use the 32-bit libraries described 
+in step 4 above.<br>
+<br>
+If you insist on using 64-bit libraries on 64-bit systems, but want to 
+preserve 32-bit compatibility on 32-bit systems, you can do the 
+following setup procedure which creates separate batch files for the 
+32-bit and 64-bit versions of msvcr100.dll and msvcp100.dll in the 
+OpenCPN root directory as described here:<br>
 <br>
 1. Same as above<br>
-2. Create MSDOS batch files "opencpn portable 32.bat" and "opencpn 
+2. Same as above<br>
+3. Same as above<br>
+<br>
+4. Create MSDOS batch files "opencpn portable 32.bat" and "opencpn 
 portable 64.bat" (or other names of user choice that distinguish between
  the 32-bit and 64-bit operating systems).<br>
 <br>
@@ -674,21 +709,20 @@ In the MSDOS batch file "opencpn portable 64.bat", add the following lines (with
 "copy msvcr100_64bit.dll msvcr100.dll /Y"<br>
 "opencpn -p"<br>
 <br>
-3. Copy msvcp100.dll from the 32-bit system and rename it msvcp100_32bit.dll<br>
+5. Copy msvcp100.dll from the 32-bit system and rename it msvcp100_32bit.dll<br>
     Copy msvcr100.dll from the 32-bit system and rename it msvcr100_32bit.dll<br>
 <br>
-4. Copy msvcp100.dll from the 64-bit system and rename it msvcp100_64bit.dll<br>
+6. Copy msvcp100.dll from the 64-bit system and rename it msvcp100_64bit.dll<br>
     Copy msvcr100.dll from the 64-bit system and rename it msvcr100_64bit.dll<br>
 <br>
-5. Same as above<br>
-6. Same as above<br>
-7. Same as above
-<ul>
-	<li>To run OpenCPN portably on a Windows 32-bit system, execute the "opencpn portable 32" batch file.</li>
-	<li>To run OpenCPN portably on a Windows 64-bit system, execute the "opencpn portable 64" batch file.</li>
-</ul>
+To run OpenCPN portably on a Windows 32-bit system, execute the "opencpn portable 32" batch file.<br>
+To run OpenCPN portably on a Windows 64-bit system, execute the "opencpn portable 64" batch file.
+<h3 id="If you want to give a higher running priority see : http://opencpn.org/ocpn/commandline
 
-<h3 id="ALinuxversion">A Linux version</h3>
+A Linux version"><br>
+If you want to give a higher running priority see : <font color="#3c6159"><a href="http://opencpn.org/ocpn/commandline">http://opencpn.org/ocpn/commandline</a></font><br>
+<br>
+A Linux version</h3>
 <br>
 On Linux, a similar functionality exists. The 32 and 64 bits issue is similar.<br>
 32 bits version can be made to work on a 64 bits Linux by installing  
@@ -1216,63 +1250,33 @@ following:<br>
 -Increase toolbar icon size<br>
 -Increase context menu text item size<br>
 -Increase selectable item sizes for several common dialogs<br>
+<br>
+Tablet Scaled Graphics may enlarge the toolbar icons too much for some 
+tastes, especially on small tablets with limited screen space. As an 
+alternative, Microsoft provides a Magnifier utility that temporarily 
+zooms the view and allows for panning across the enlarged screen. It can
+ be found in Start-All Programs-Windows Ease of Access (if you have 
+Classis Shell installed), or by searching the Start Page in the Modern 
+iterface. I recommend pinning a shortcut to the taskbar for quick 
+one-tap access. While zooming the OpenCPN menu can enlarge many chart 
+features, Magnifier can enlarge additional elements like the very small 
+depth soundings and the green-over-black status text displayed by the 
+Active Route:<br>
+<br>
+<img alt="Screenshot of Windows Magnifier utility" src="images/MagnifierZoomB.jpg"><br>
+* Read more about the XTE in <em><a href="#SettingOptions">Setting Options</a></em>, "APB bearing precision"<br>
+<br>
 ________________________________________________________________________<br>
 <br>
-Following are Dave's comments on this setting:<br>
-It is important that the screen width dimension be properly set for this option to work.<br>
-This may be found at Options-&gt;Display-&gt;Advanced.<br>
-Dave found, on his W8.1 tablet, that the automatically calculated size 
-value was wrong, leading to extra large toolbar icons. Easy to correct 
+Following are Dave's comments on "Enable Tablet Scaled Graphics Interface":<br>
+- It is important that the screen width dimension be properly set for this option to work.<br>
+- Manual override of screen width can be done at <a href="http://opencpn.org/ocpn/setting_options#advanced">Options-&gt;Display-&gt;Advanced</a>.<br>
+- Dave found, on his W8.1 tablet, that the automatically calculated size
+ value was wrong, leading to extra large toolbar icons. Easy to correct 
 with a physical measurement.<br>
 <br>
 In the "Tablet Scaled Graphics Interface", the toolbar icon target minimum size is 9mm square.<br>
-This is the generally accepted minimum button size for several mobile platforms.<br>
-________________________________________________________________________<br>
-<br>
-Here are Dave's original Release Notes:<br>
-<br>
-242: This is a first cut on a Touchscreen/Tablet user interface. The 
-idea here is to have one checkbox in options-&gt;Display to enable this 
-mode, and thus avoid lots of fussy user configurable items for 
-individual behaviors/actions. In other words, just "do the right thing" 
-when enabled for Tablet/Touch systems. (NOTE: For v4, the one-checkbox 
-feature was split into two separate checkboxes: "Enable Touchscreen 
-Interface" and "Tablet Scaled Graphics Interface")<br>
-<br>
-The code was tested on an 8" Windows 8.1 tablet, in both portrait and landscape display orientations.<br>
-<br>
-The changes include the following:<br>
-<br>
-1. Increase toolbar icon size.<br>
-2. Increase context menu text item size.<br>
-3. Increase selectable item sizes for several common dialogs.<br>
-4. Optimize several common dialogs for screen rotation, i.e. landscape or portrait.<br>
-5. Touch stuff:<br>
-a. Route Create workflow: "Done" by clicking toolbar "Route" icon, or normal context menu.<br>
-b. Toolbar navigation items (e.g. Zoom/Scale) are available during route creation.<br>
-c. Chart drag (a.k.a. swipe) is available during route creation.<br>
-d. Routepoint/Waypoint edit by drag is supported.<br>
-e. Increase pixel select radius, to allow for finger tip selection of routes/waypoints.<br>
-f. Single-click behavior:<br>
--Does not ever move chart.<br>
--Selects Waypoint for subsequent dragging<br>
--Shows popup info for Routes and <a class="#AIS">AIS</a> targets.<br>
--Shows Tide/Current dialog.<br>
-g. Move chart by drag/swipe.<br>
-h. There is no notion of "rollover" in Touch/Tablet mode.<br>
-<br>
-There are some dialogs that have not yet been adjusted for font size, so they is on the TODO list.<br>
-<br>
-The UI is a bit different when using a mouse in Touch/Tablet mode, but 
-still useable I think. This would not be a normal mode of use, unless 
-maybe you have a Bluetooth mouse to use occasionally with your tablet.<br>
-<br>
-I don't consider this Beta to be the last word on the subject of Touch 
-interfacing. There is a lot to consider and learn here. I welcome 
-detailed comments on this new interface mode.<br>
-*****************<br>
-On this Beta, Touch/Tablet mode is a composite, intended for 7-10" Win 8.1 Tablets, and not desktop-sized touch <a class="sk_tag" href="http://www.cruisersforum.com/forums/tags/screen.html" title="View more discussions on Screen">screen</a> laptops.<br>
-**************<!-- google_ad_section_end -->  </div>
+This is the generally accepted minimum button size for several mobile platforms.<!-- google_ad_section_end -->  </div>
 <div id="node-251" class="section-3">
   <h1 id="Help the Developers Fixing Bugs!" class="book-heading">Help the Developers Fixing Bugs!</h1>
   <!-- google_ad_section_start --><p>If you experience a crash in 
@@ -1438,10 +1442,18 @@ As son as the screen is used, for example by panning or double clicking for an O
 <img alt="" src="images/MenuBar.png" width="700px"><br>
 <br>
 As seen above the Menubar consist of five entries.<br>
+When a menubar item is visible, the characters shown on the right of the
+ items are "hints" to remind user of the shortcut key to use when the 
+menu is closed. While the menu is open, this kay may be inactive. The 
+key to use is the first character of the item itself. This may be 
+platform dependent.<br>
+Alt + underlined letter, opens the concerned sub-menu. Alt +N will open 
+"Navigate". The exact behavior is platform dependent. For example Alt + A
+ will open the Ais menu on Windows. Linux requires Alt and then Alt + A.<br>
  
 <h4 id="Navigate">Navigate</h4>
 <br>
-<img alt="" src="images/MenuBarNavigate.png"><br>
+<img alt="" src="images/MenuNavigateExit.png"><br>
 <br>
 <strong>Auto Follow</strong>  Read more<em>: <a href="http://opencpn.org/ocpn/auto_follow">Auto follow and Display Orientation</a></em><br>
 <strong>Enable Tracking</strong> Read more: <em><a href="#ShipTrack">Ship Track</a></em><br>
@@ -1451,6 +1463,7 @@ As seen above the Menubar consist of five entries.<br>
 <strong>Zoom Out</strong> Read more: <em><a href="#Zooming">Zooming</a></em><br>
 <strong>Larger Scale Chart</strong> Read more: <em><a href="#ScalingCharts">Scaling Charts</a></em><br>
 <strong>Smaller Scale Chart</strong> Read more: <em><a href="#ScalingCharts">Scaling Charts</a></em><br>
+<strong>Exit OpenCPN</strong> Shortcut Ctrl+Q.<br>
 <br>
 <br>
 <img alt="" src="images/MenuBarView.png"><br>
@@ -1718,7 +1731,7 @@ Apply corrections to CM93 chart cells through this dialog. Read more on the <a h
 <img alt="" src="images/opencpn_002.png" align="absMiddle" height="48" width="48">  <em>Go to </em><a href="#TableOfContents"><em>Table Of Contents</em></a><!-- google_ad_section_end -->  </div>
 <div id="node-318" class="section-3">
   <h1 id="KeyboardShortcuts" class="book-heading">Keyboard Shortcuts</h1>
-  <!-- google_ad_section_start --><p>Note: The keys marked as <strong>new</strong> below have been implemented in the current source of OpenCPN but not yet in any release version.</p>
+  <!-- google_ad_section_start --><p> </p>
 
 <table border="1" cellpadding="1" cellspacing="1">
 	
@@ -1766,15 +1779,15 @@ Apply corrections to CM93 chart cells through this dialog. Read more on the <a h
 		</tr>
 		<tr>
 			<td><b>Larger Scale Chart</b></td>
-			<td colspan="2">Ctrl-LeftArrowKey (or F7)</td>
-			<td>Cmd-LeftArrowKey</td>
-			<td>Windows : raster Charts</td>
+			<td colspan="2">Ctrl+LeftArrowKey (or F7)</td>
+			<td>Cmd+LeftArrowKey</td>
+			<td> </td>
 		</tr>
 		<tr>
 			<td><b>Smaller Scale Chart</b></td>
-			<td colspan="2">Ctrl-RightArrowKey  (or F8)</td>
-			<td>Cmd-RightArrowKey</td>
-			<td>Windows : raster Charts</td>
+			<td colspan="2">Ctrl+RightArrowKey  (or F8)</td>
+			<td>Cmd+RightArrowKey</td>
+			<td> </td>
 		</tr>
 		<tr>
 			<td><b> </b></td>
@@ -1798,7 +1811,7 @@ Apply corrections to CM93 chart cells through this dialog. Read more on the <a h
 		</tr>
 		<tr>
 			<td><b>Quit OCPN</b></td>
-			<td colspan="2">Ctrl-Q</td>
+			<td colspan="2">Ctrl+Q (or F9)</td>
 			<td>Cmd-Q</td>
 			<td> </td>
 		</tr>
@@ -1811,9 +1824,8 @@ Apply corrections to CM93 chart cells through this dialog. Read more on the <a h
 		<tr>
 			<td><b>Full Screen</b></td>
 			<td colspan="2">F11</td>
-			<td>Ctrl-Cmd-F</td>
-			<td>Note OS X and Windows/Linux difference<br>
-			due to platform conventions</td>
+			<td>Ctrl+Cmd-F</td>
+			<td> </td>
 		</tr>
 		<tr>
 			<td><b> </b></td>
@@ -1822,24 +1834,18 @@ Apply corrections to CM93 chart cells through this dialog. Read more on the <a h
 		</tr>
 		<tr>
 			<td><b>Auto Follow</b> (on/off)</td>
-			<td colspan="2">Ctrl-A  (or F2)</td>
-			<td>Cmd-A</td>
-			<td> </td>
-		</tr>
-		<tr>
-			<td><b>Tracking</b> (on/off)</td>
-			<td colspan="3"><br>
-			 </td>
+			<td colspan="2">Ctrl+A  (or F2)</td>
+			<td>Cmd+A</td>
 			<td> </td>
 		</tr>
 		<tr>
 			<td><b>Option Window </b></td>
-			<td colspan="3">Ctrl-,</td>
+			<td colspan="3">Ctrl+,</td>
 			<td> </td>
 		</tr>
 		<tr>
 			<td><b>Chart Quilting</b> (on/off)</td>
-			<td colspan="2">Q  (or F9)</td>
+			<td colspan="2">Q</td>
 			<td>Q</td>
 			<td> </td>
 		</tr>
@@ -1887,14 +1893,14 @@ Apply corrections to CM93 chart cells through this dialog. Read more on the <a h
 		</tr>
 		<tr>
 			<td><b>Chart Bar</b> (on/off)</td>
-			<td colspan="2">Ctrl-B</td>
-			<td>Cmd-B</td>
+			<td colspan="2">Ctrl+B</td>
+			<td>Cmd+B</td>
 			<td> </td>
 		</tr>
 		<tr>
 			<td><b>GPS Status</b> (on/off)</td>
-			<td colspan="2">Ctrl-I</td>
-			<td>Cmd-I</td>
+			<td colspan="2">Ctrl+I</td>
+			<td>Cmd+I</td>
 			<td> </td>
 		</tr>
 		<tr>
@@ -1917,7 +1923,7 @@ Apply corrections to CM93 chart cells through this dialog. Read more on the <a h
 		</tr>
 		<tr>
 			<td><b>Monochromatic Mode</b></td>
-			<td colspan="2">Ctrl-G</td>
+			<td colspan="2">Ctrl-G*</td>
 			<td> </td>
 			<td>Works on some Windows systems (depending on graphic driver)</td>
 		</tr>
@@ -1934,32 +1940,32 @@ Apply corrections to CM93 chart cells through this dialog. Read more on the <a h
 		</tr>
 		<tr>
 			<td><b>New Route</b></td>
-			<td colspan="2">Ctrl-R</td>
-			<td>Cmd-R</td>
+			<td colspan="2">Ctrl+R</td>
+			<td>Cmd+R</td>
 			<td> </td>
 		</tr>
 		<tr>
 			<td><b>Next Waypoint (in active route)</b></td>
-			<td colspan="2">Ctrl-N</td>
-			<td>Cmd-N</td>
+			<td colspan="2">Ctrl+N</td>
+			<td>Cmd+N</td>
 			<td> </td>
 		</tr>
 		<tr>
 			<td><b>New Mark at Cursor</b></td>
-			<td colspan="2">Ctrl-M</td>
-			<td>Cmd-M</td>
+			<td colspan="2">Ctrl+M</td>
+			<td>Cmd+M</td>
 			<td> </td>
 		</tr>
 		<tr>
 			<td><b>New Mark at Boat Location</b></td>
-			<td colspan="2">Ctrl-O</td>
-			<td>Cmd-O</td>
+			<td colspan="2">Ctrl+O</td>
+			<td>Cmd+O</td>
 			<td> </td>
 		</tr>
 		<tr>
 			<td><b>Man Overboard</b></td>
-			<td colspan="2">Ctrl-Space</td>
-			<td>Ctrl-Space</td>
+			<td colspan="2">Ctrl+Space</td>
+			<td>Ctrl+Space</td>
 			<td>Note OS X uses Ctrl, not Cmd<br>
 			(the letter is reserved for Spotlight on OS X)</td>
 		</tr>
@@ -1970,14 +1976,14 @@ Apply corrections to CM93 chart cells through this dialog. Read more on the <a h
 		</tr>
 		<tr>
 			<td><b>Undo (create/move/delete mark)</b></td>
-			<td colspan="2">Ctrl-Z</td>
-			<td>Cmd-Z</td>
+			<td colspan="2">Ctrl+Z</td>
+			<td>Cmd+Z</td>
 			<td> </td>
 		</tr>
 		<tr>
 			<td><b>Redo (create/move/delete mark)</b></td>
-			<td colspan="2">Ctrl-Y</td>
-			<td>Shift-Cmd-Z</td>
+			<td colspan="2">Ctrl+Y</td>
+			<td>Shift+Cmd+Z</td>
 			<td> </td>
 		</tr>
 	
@@ -2000,7 +2006,7 @@ Apply corrections to CM93 chart cells through this dialog. Read more on the <a h
 	<li><b>F6</b> General Dimming, in steps, of the entire Screen.  (except Mac OS X ) OpenGL must be off.</li>
 	<li><b>F7</b> Larger Scale Raster Chart (Scale In) or <b>Ctrl + Left-Arrow</b></li>
 	<li><b>F8</b> Smaller Scale Raster Chart (Scale Out) or <b>Ctrl + Right-Arrow</b></li>
-	<li><b>F9 </b>Chart Quilting temporarily off/on, if quilting is on in Options   (may have been removed, use Q)</li>
+	<li><b>F9 </b>Chart Quilting . Toggle on/off</li>
 	<li><b>F11 </b>toggle Full Screen view.</li>
 	<li><b>F12 </b>toggle Chart Outlines</li>
 	<li><b>SHIFT + F6 </b>reverses the dimming.</li>
@@ -2013,20 +2019,20 @@ Apply corrections to CM93 chart cells through this dialog. Read more on the <a h
 	<li><b>O </b>toggle Chart Outlines. or <b>F12</b></li>
 	<li><b>T </b>toggle ENC Text or <b>F3</b></li>
 	<li><b>S </b>toggle ENC soundings.</li>
-	<li><b>A</b> toggle bottom features, useful when <a class="sk_tag" href="http://www.cruisersforum.com/forums/tags/anchoring.html" title="View more discussions on Anchoring">anchoring</a>. "Mariners Standard" display category.</li>
-	<li><b>D</b> toggle CM93 Detail Slider. Hide only works, if the slider <a class="sk_tag" href="http://www.cruisersforum.com/forums/tags/lost.html" title="View more discussions on Lost">lost</a> focus.</li>
+	<li><b>A</b> toggle bottom features, useful when anchoring. "Mariners Standard" display category.</li>
+	<li><b>D</b> toggle CM93 Detail Slider. Hide only works, if the slider lost focus.</li>
 	<li><strong>M</strong> toggle Measure Tool  <strong>F4</strong></li>
-	<li><strong>Q </strong>toggle Chart Quilting  <strong>[F9</strong>-may have been eliminated]</li>
+	<li><strong>Q </strong>toggle Chart Quilting</li>
 	<li><strong>+</strong> Zoom In</li>
 	<li><strong>- </strong>Zoom Out</li>
 </ul>
 <strong>Alt</strong> <strong>Keys</strong>
 
 <ul>
-	<li><b>Alt</b>. Togggles Menu Bar on/off  of Show menu is not checked.  -New</li>
+	<li><b>Alt</b>. Toggles Menu Bar on/off  of Show menu is not checked.</li>
 	<li><b>Alt + Arrow Keys</b>. Moves the chart view in very small steps.</li>
-	<li><b>Alt +</b> for fine scale zooming in.</li>
-	<li><b>Alt -</b> for fine scale zooming out.</li>
+	<li><b>Alt + "+"</b> for fine scale zooming in.</li>
+	<li><b>Alt + "-"</b> for fine scale zooming out.</li>
 </ul>
 <b>Control Keys</b>
 
@@ -2077,7 +2083,7 @@ Apply corrections to CM93 chart cells through this dialog. Read more on the <a h
 </ul>
 
 <p><br>
-<span>* Ctrl-G may not work on some Windows systems, depending upon the graphics driver implemented.</span><br>
+<span>* Ctrl-G </span>Works on some Windows systems (depending on graphic driver)<span>.</span><br>
 <br>
 NOTE: This list may not be completely detailed and correct for now, but it does try to establish all the shortcuts available.<br>
 We may need to add some things to Caesar's Functional and tabular list 
@@ -2393,7 +2399,7 @@ same time, use single chart mode, for better control. This is certainly
 called for in areas that are densely populated with vector charts. 
 Single chart mode and quilting are explained on this page <em><a href="#ChartQuilting">Chart Quilting</a></em> .<br>
 You probably do not want to build SENCs for all of your loaded S57 ENCs unless you plan to actually go there....<br>
-For an advanced approach to building all SENC files in one go .. <a href="http://opencpn.org/ocpn/troubleshooting#init">look here.</a><br>
+For an advanced approach to building all SENC files in one go .. <em><a href="#TheCommandLine">The Command Line</a></em><br>
 <strong>Updating Vector Charts</strong><br>
 Publishers of Vector Charts, such as NOAA and EAHC issues regular 
 updates. OpenCPN updates the created SENCs automatically. The chart 
@@ -2767,7 +2773,7 @@ chart, based on a Mexican survey from 1905, has a Datum Note, similar to
 <br>
 <img alt="" src="images/GD_NGA24390.png"><br>
 <br>
-<img alt="" src="images/Puerto_Morelos1.jpg" width="650"><br>
+<img alt="" src="images/Puerto_Morelos1.jpg"><br>
 Comparing 28201 with CM93 that is correct, in this particular case. Note the substantial corrections applied in CM93,<br>
 <br>
 <img alt="" src="images/Puerto_Morelos2.png"><!-- google_ad_section_end -->  </div>
@@ -3013,10 +3019,10 @@ Chart Groups solves the following problem: You may have many charts
 loaded in your active database. Some of them have overlapping coverage 
 at the same scale, so that when quilted the logic does not know which of
  potentially several charts at the same scale to choose from. For 
-example, in the <a class="sk_tag" href="http://www.cruisersforum.com/forums/tags/bahamas.html" title="View more discussions on Bahamas">Bahamas</a>
- there are a few publishers of charts, covering the same areas, with 
-radically different presentations. Sometimes you may want to see one set
- (say planning charts of small scale), and other times you only want <a class="sk_tag" href="http://www.cruisersforum.com/forums/tags/navigation.html" title="View more discussions on Navigation">navigation</a> charts of the best scale possible.<br>
+example, in the Bahamas there are a few publishers of charts, covering 
+the same areas, with radically different presentations. Sometimes you 
+may want to see one set (say planning charts of small scale), and other 
+times you only want navigation charts of the best scale possible.<br>
 Another example: Pilot charts as one Group, normal navigation charts as 
 another Group, makes it possible to quickly switch between them.<br>
 <br>
@@ -3260,6 +3266,12 @@ paper charts the soundings are printed in italics.</p>
 The bold number 20 refers to the land height of the unnamed cay SW of the number.<br>
 "Safety Depth" is set to 20 m, so the 20 m contour stands out in black.<br>
 <br>
+How soundings behave when zooming.<br>
+"Chart sounding symbols" are represented by small raster images. As a 
+chart is zoomed in, these raster symbols will increase in size by about 
+2x. Currently they increase in size well after the "Overzoom" notice, 
+for the largest scale chart available.<br>
+<br>
 <strong>Chart Information Objects</strong> relates to information about 
 the chart itself. With this switch on, an object query reveals such 
 information as the buoyage system for the area, the quality of the 
@@ -3303,7 +3315,7 @@ Light sectors as narrow as 0.3° are displayed.<br>
 			2. It is White.<br>
 			3. The light also has Red and/or Green sectors.<br>
 			These rules works quite well, but there are exceptions that are difficult to catch.<br>
-			As always, it's the responsibility of the navigator, how a light and its sectors are used for practical <a class="sk_tag" href="http://www.cruisersforum.com/forums/tags/navigation.html" title="View more discussions on Navigation">navigation</a>.</td>
+			As always, it's the responsibility of the navigator, how a light and its sectors are used for practical navigation.</td>
 		</tr>
 	
 </tbody></table>
@@ -4899,20 +4911,16 @@ scaled and appear bigger, to further indicate the imprecision of chart
 feature geographical location at high over-zoom. This  imitates what 
 happens with a raster chart, when the individual pixels gets bigger and 
 bigger.<br>
-<strong>Scaled Vector charts on overzoom </strong>(default)<br>
-In an effort to be compliant with IHO standards for ECDIS display of 
-cartography "Chart sounding symbols" are represented by small raster 
-symbols. As a chart is zoomed in, these raster symbols will increase in 
-size by about 2x. Currently they increase in size well after the 
-"Overzoom" notice for the largest scale chart available.<br>
 <br>
 Options - Make sure you understand all the implications of the following two options, before activating them.<br>
 <strong>Suppress blur/fog effects on overzoom</strong><br>
-The blurring or bluish fog, will be turned off. Note that the blurring 
-effect does not aply to single chart mode, so an alternative to this 
-option is to toggle the "Q" hotkey.<br>
+The blurring or bluish fog, will be turned off.<br>
 <strong>Suppress scaled vector charts on over-zoom</strong><br>
 The scaling of lines and number will be turned off. Applies to vector charts only.<br>
+<br>
+<strong>Note that</strong> the blurring effect and scaled vector charts 
+does not aply to single chart mode, so an alternative to this option is 
+to toggle the "Q" hotkey.<br>
 <br>
 Below is how it looks like with both the above options activated.<br>
 <br>
@@ -5232,7 +5240,7 @@ High: Only necessary when very tight maneuvering needs documenting.<br>
 <br>
 <strong>Routes</strong><br>
 <strong>Waypoint Arrival Circle Radius</strong>, gives an answer to this question.<br>
-When following a  Route, with he autopilot engaged, at what distance 
+When following a  Route, with the autopilot engaged, at what distance 
 from the upcoming waypoint should OpenCPN tell the autopilot to change 
 to the next waypoint?<br>
 The default is 0.05 nautical miles. This is equal to about 93 meters or 300 feet.<br>
@@ -5244,16 +5252,13 @@ your boat by testing.<br>
 <img alt="Options-Ships-Ownship-Routes" src="images/Options-Ships-OwnShip-Routes.png" width="500&quot;"><br>
 The arrival radius can also be set individually for each waypoint in the Waypoint Properties dialog.<br>
 <br>
+<br>
 <strong>Advance route waypoint on arrival only.</strong><br>
 Routes are explained in <em><a href="#MarksandRoutes">Marks and Routes</a></em>. With an active route, the Dialog "This Leg" is visible near the upper right corner of the screen.<br>
 This dialog contains "RNG", the <strong>"actual range"</strong>, or distance to the next waypoint.<br>
 The <strong>"normal range"</strong> is different. It is the distance 
 from ownship to a line which passes through the destination waypoint and
  is at right angles to the current route segment.<br>
-Here is another way to describe the same thing. Mark the point on the 
-current route equal to ships current "distance made good" towards the 
-destination waypoint. The distance from this point to the destination 
-waypoint is the "normal range".<br>
 The actual range is always equal to or greater than the normal range. 
 When the difference is greater than 10% both values are shown in "RNG"<br>
 <br>
@@ -5281,6 +5286,8 @@ Option 2 helps you if you really want to cut a corner by a large
 distance, in such a way that the "normal range" will never be less than 
 {arrival radius}. We want to automatically advance the route in this 
 case.<br>
+<br>
+<br>
 <br>
 <a href="#top"><em>Goto top of page</em></a><br>
 <a id="#"></a>
@@ -5717,10 +5724,21 @@ this mode. The reason is that Garmin uses their own serial protocol.</li>
  on this port" is checked. APB is the NMEA sentence "Autopilot Sentence 
 'B'". The precision can be set to between 0 and 4 decimals, were 3 is 
 the default. Some autopilots requires a different precision than the 
-default, to work. Check your AP documentation.<br>
-	<br>
-	 </li>
+default, to work. Check your AP documentation.</li>
+	<li>Note that the "XTE - Measured cross track error"  NMEA message, that is a part of the APB message <strong>is not adjusted</strong> by the <strong>APB bearing precision</strong> setting. It is however possible to set the precision of the XTE through the opencpn.ini / opencpn. conf file. Add a line</li>
 </ul>
+
+<table border="1" cellpadding="1" cellspacing="1">
+	
+		<tbody><tr>
+			<td>[Settings]<br>
+			......<br>
+			NMEAAPBXTEPrecision=3<br>
+			......</td>
+		</tr>
+	
+</tbody></table>
+   This will give you X.XXX for the XTE field precision. Default is "2", or X.XX<br>
 <br>
 <br>
  
@@ -8514,8 +8532,6 @@ Usage: opencpn [-unit_test_1] [-p] [-no_opengl] [-fullscreen] [-rebuild_gl_raste
   -fullscreen             <br>
   -rebuild_gl_raster_cache<br>
 <br>
-<br>
-<br>
 <strong>[-unit_test_1]</strong><br>
 This as a Beta test tool.<br>
 This command test cycles through all possible charts in the currently 
@@ -8539,17 +8555,45 @@ Starts OpenCPN in FullScreen mode.<br>
 <strong>[-rebuild_gl_raster_cache]</strong><br>
 Read more in <em><a href="#SettingOptions">Setting Options</a></em><br>
 <br>
+<strong>For Windows</strong><br>
+When using a a .bat file to launch OpenCPN, you may type this MSDOS line :<br>
+<font color="#3c6159">START /REALTIME C:"\Program Files"\OpenCPN/opencpn</font><br>
+<br>
+Where : START : MSDOS Command<br>
+             /REALTIME : gives the highest priority to the program<br>
+             C:"\program Files"\OpenCPN/opencpn : pathway where OpenCPN's Executable is dowloaded<br>
+                 (specific to each windows version) <font color="#3c6159">           </font><br>
+<br>
 <br>
 <img alt="" src="images/opencpn_002.png" align="absMiddle" height="48" width="48">  <em>Go to </em><a href="#TableOfContents"><em>Table Of Contents</em></a><!-- google_ad_section_end -->  </div>
 <div id="node-331" class="section-3">
   <h1 id="TheConfigurationFile" class="book-heading">The Configuration File</h1>
-  <!-- google_ad_section_start --><strong>Random observations, that may develop...</strong><br>
+  <!-- google_ad_section_start --><br>
+*  <strong>Always exit OpenCPN before editing the configuration file.</strong><br>
+*  <strong>Edit the file with a text editor, and save your changes.</strong><br>
+* <strong> Restart OpenCPN</strong>.<br>
+<br>
+Some of the user settings available through the config file.<br>
+<br>
++++<br>
+<br>
+Setting the <strong>precision of the XTE</strong> - "Cross Track Error" when using an autopilot<br>
+See more in <em><a href="#SettingOptions">Setting Options</a></em> APB precision.<br>
+[Settings]<br>
+......<br>
+NMEAAPBXTEPrecision=3<br>
+.....<br>
+This will give you X.XXX for the XTE field precision.<br>
+<br>
+Default is "2", or X.XX<br>
++++<br>
 <br>
 The <strong>Ais name caching</strong> can be turned off in the opencpn.ini/opencpn.config file by adding a line like this.<br>
 [Settings]<br>
 .....<br>
 <span class="pl-s1">EnableAISNameCache=0</span><br>
 .......<br>
++++<br>
 <br>
 <strong>Crash reporting</strong> for Windows ican be enabled by editing 
 the opencpn.ini file. Add the line below to enable the crash-report. 
@@ -8617,16 +8661,23 @@ In the opencpn.ini/opencpn.config file you can find a configuration setting to c
 +++<br>
 <br>
 <strong>AnchorWatch</strong><br>
-Find the section that starts with "[Settings] ".<br>
-Create two new lines, looking, for example like this.<br>
-AnchorWatchDefault=45 (default is 50 m)<br>
 <br>
+Both the default Anchor Watch Radius and Max distance  from mark can be changed by editing the configuration file<br>
+"[Settings] "<br>
+..<br>
+AnchorWatchDefault=45      <br>
+AnchorWatchMax=2500 <br>
+..<br>
+     <br>
+Enter your own preferences, 45 &amp; 2500 are just for illustration, defaults are 50 and 1852 respectively.<br>
 +++<br>
 <br>
 <strong>Automatic Anchor Mark</strong><br>
-To use this feature find opencpn.conf or opencpn.ini as it is called in windows.<br>
 Search for a line like this:<br>
+[Settings]<br>
+.....<br>
 AutoAnchorDrop=0<br>
+.....<br>
 and change the value from "0" to "1".<!-- google_ad_section_end -->  </div>
 </div>
 <div id="node-232" class="section-2">
@@ -8643,7 +8694,10 @@ Plugin to display navigation data. Included in the OpenCPN installation.<br>
 <a href="#GribWeatherPlugin"><em><strong>Grib Weather Plugin</strong></em></a>.<br>
 Plugin to display Grib weather data files. Included in the OpenCPN installation.<br>
  
-<h3 id="A selection of other plugins.">A selection of other plugins.</h3>
+<h3 id="Visit the Plugin Download Page to see ALL plugins that are regarded as stable.">Visit the Plugin <a href="http://opencpn.org/ocpn/downloadplugins">Download Page</a> to see <strong>ALL plugins</strong> that are regarded as stable.</h3>
+ 
+
+<h3 id="A selection of plugins.">A selection of plugins.</h3>
 <br>
 <em><strong><a href="#TheWMMPlugin">The WMM Plugin</a></strong></em><br>
 A plugin to display the magnetic variation, based on the World Magnetic Model.<br>
@@ -9093,7 +9147,10 @@ record in the gribfile. This corresponds to the time "interval" chosen
 when the grib file was downloaded.</li>
 	<li><strong>Data valid at</strong> The time of validity for all grib data on screen.</li>
 	<li><strong>Open Grib file</strong> The name of the grib file in use.</li>
-	<li><strong>Now </strong>Displays the record, nearest in time to "now"</li>
+	<li><strong>Now </strong>Displays the record, nearest in time to "now" 
+according to the Start option you have selected: ("Start at the nearest 
+forecast to current time" or "Authorize interpolation to start at 
+current time").</li>
 	<li><strong>Zoom to Center</strong> This button will home in on the loaded area that the loaded grib file covers.</li>
 	<li><strong>Play </strong>Goes through all records in turn, with the animation speed controlled in the "Grib Settings" dialog.</li>
 	<li><strong>Progress Slider</strong> Just to the right of the "Play" button is a slider that is just another way of going through the grip records.</li>
@@ -9169,11 +9226,14 @@ Playback</h3>
 The Loop Mode controls what happens when "Play" is pressed in the Grib Display Control.
 
 <ul>
-	<li><strong>Loop Mode</strong>. Sets the "Play" function into a loop mode.</li>
+	<li><strong>Loop Mode</strong>. Sets the "Play" function into a loop mode. Otherwise, playback will stop when reaching the end of the file.</li>
 	<li><strong>Loop Start</strong>. Were to start the loop. The option "Current time forecast" makes sure that only data now or in the future are shown</li>
 	<li><strong>Updates per Second.</strong> Controls the speed of "play".</li>
 	<li><strong>Loop Start</strong>. The loop can start either at the start of the grib file or from the current time forecast.</li>
-	<li><strong>Interpolate between gribs</strong>. This info will pop up.</li>
+	<li><strong>Interpolate between gribs</strong>. If you select this 
+option, you will be able to choose your own time interval, but you have 
+to consider that it can decrease data accuracy. To remind you, this info
+ will pop up.</li>
 </ul>
 <img alt="" src="images/33GribInterpolation.png">
 <ul>
@@ -9214,12 +9274,16 @@ for example, to help identifying fronts.</li>
 	<li><strong>Display</strong> <strong>Isotachs</strong> shows contour lines connectAlways visibleing points with the same wind speed. <strong>Spacing </strong>controls
  which wind speed Isotachs will be shown. Use knots for units and 10 for
  spacing and isotach contours will be shown at 10 kts, 20kts and so on.</li>
-	<li><strong>OverlayMap</strong> The overlay will only be visible at small scales. Zoom out to a scale of 1:13 millions, or smaller to see them. <strong>Colors</strong>
- is another selection menu containing pre-set color schemes. The idea is
- to use the scheme with the same name as the control, but this is just a
- hint, nothing more.</li>
+	<li><strong>OverlayMap  </strong>Depending on your system capability,if
+ you use "Accelerated Graphics (OpenGL)" (see General 
+Options/Display/Advanced ), the overlay will be visible at all scales. 
+But if you don't, the overlay will only be visible at small scales. A 
+small yellow pop up at the bottom left of the <a class="sk_tag" href="http://www.cruisersforum.com/forums/tags/screen.html" title="View more discussions on Screen">screen</a> will inform you. Zoom out to a scale of 1:13 millions, or smaller to see them.</li>
+	<li><strong>Colors</strong> is another selection menu containing 
+pre-set color schemes. The idea is to use the scheme with the same name 
+as the control, but this is just a hint, nothing more.</li>
 </ul>
-<img alt="" src="images/33GribOverlayColors.png"><br>
+     <img alt="" src="images/33GribOverlayColors.png"><br>
  
 <ul>
 	<li><strong>Numbers </strong>shows the wind speed in small square boxes. <strong>Minimum Spacing</strong> refers to the spacing between these boxes.</li>
@@ -9233,9 +9297,9 @@ particle Map below clearly shows a convergence zone with stronger winds
 (red). Ths is probably a cold front.  <strong>Performance Warning</strong>:
  Note that high density Particle Maps on Low Powered Machines and Large 
 Files may slow your machine to a crawl. First test on small files.</li>
+	<li> </li>
 </ul>
-<br>
-<img alt="" src="images/ParticleMap.jpg"><br>
+    <img alt="" src="images/ParticleMap.jpg"><br>
  
 <ul>
 	<li><strong>Overlay Transparency </strong>works as expected.</li>
@@ -10082,7 +10146,7 @@ land and other obstacles and hazards.<br>
 Nassau to Newport, showing other windows (Boat Performance window, 
 Routing window with Properties opened showing track waypoints)<br>
 <br>
-<img alt="" src="images/Nassau_to_Newport_May.jpg" width="500"><br>
+<img alt="" src="images/Nassau_to_Newport_May.jpg"><br>
  
 <h4 id="PolarFiles"><strong>Polar Files</strong></h4>
 <br>
@@ -10283,8 +10347,7 @@ TWA is the best VMG downwind angle for that windspeed</font><br>
  152  156  160  164  168  172  176  180 </font><font face="Arial"> </font><br>
 <br>
 <strong>Other Information and Alternatives for Weather_Routing</strong><br>
-Refer to this link in the wiki  <a href="http://opencpn.org/ocpn/weather_routing" title="http://opencpn.org/ocpn/weather_routing">http://opencpn.org/ocpn/weather_routing</a><br>
- <!-- google_ad_section_end -->  </div>
+Refer to this link in the wiki  <a href="http://opencpn.org/ocpn/weather_routing" title="http://opencpn.org/ocpn/weather_routing">http://opencpn.org/ocpn/weather_routing</a><!-- google_ad_section_end -->  </div>
 <div id="node-247" class="section-3">
   <h1 id="WeatherfaxPlugin" class="book-heading">Weatherfax Plugin</h1>
   <!-- google_ad_section_start --><strong>Weatherfax</strong><br>
