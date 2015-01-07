@@ -631,6 +631,7 @@ wxRect                    g_last_tb_rect;
 float                     g_toolbar_scalefactor;
 
 MyDialogPtrArray          g_MacShowDialogArray;
+bool                      g_benable_rotate;
 
 bool                      g_bShowMag;
 double                    g_UserVar;
@@ -668,6 +669,7 @@ int              g_NMEAAPBPrecision;
 int              g_NMEAAPBXTEPrecision;
 
 bool             g_bSailing;
+bool             g_bEmailCrashReport;
 
 wxArrayString    g_locale_catalog_array;
 
@@ -851,7 +853,8 @@ double  GetDisplaySizeMM()
 #ifdef __WXMSW__    
     int w,h;
     if( GetWindowsMonitorSize( &w, &h) ){
-        ret = w;
+        if(w > 100)             // sanity check
+            ret = w;
     }
 #endif
 #ifdef __WXOSX__
@@ -1073,27 +1076,54 @@ bool MyApp::OnInit()
     type |=  MiniDumpNormal;// | MiniDumpWithPrivateReadWriteMemory | MiniDumpWithIndirectlyReferencedMemory;
     info.uMiniDumpType = (MINIDUMP_TYPE)type;
 
-
-    // URL for sending error reports over HTTP.
-    info.pszEmailTo = _T("opencpn@bigdumboat.com");
-    info.pszSmtpProxy = _T("mail.bigdumboat.com:587");
-    info.pszUrl = _T("http://bigdumboat.com/crashrpt/ocpn_crashrpt.php");
-    info.uPriorities[CR_HTTP] = 1;  // First try send report over HTTP
-    info.uPriorities[CR_SMTP] = CR_NEGATIVE_PRIORITY;  // Second try send report over SMTP
-    info.uPriorities[CR_SMAPI] = CR_NEGATIVE_PRIORITY; //1; // Third try send report over Simple MAPI
-
     // Install all available exception handlers....
     info.dwFlags = CR_INST_ALL_POSSIBLE_HANDLERS;
     
     //  Except memory allocation failures
     info.dwFlags &= ~CR_INST_NEW_OPERATOR_ERROR_HANDLER;
-
+    
     //  Allow user to attach files
     info.dwFlags |= CR_INST_ALLOW_ATTACH_MORE_FILES;
     
     //  Allow user to add more info
     info.dwFlags |= CR_INST_SHOW_ADDITIONAL_INFO_FIELDS;
     
+    
+    // URL for sending error reports over HTTP.
+    if(g_bEmailCrashReport){
+        info.pszEmailTo = _T("opencpn@bigdumboat.com");
+        info.pszSmtpProxy = _T("mail.bigdumboat.com:587");
+        info.pszUrl = _T("http://bigdumboat.com/crashrpt/ocpn_crashrpt.php");
+        info.uPriorities[CR_HTTP] = 1;  // First try send report over HTTP
+    }
+    else{
+        info.dwFlags |= CR_INST_DONT_SEND_REPORT;
+        info.uPriorities[CR_HTTP] = CR_NEGATIVE_PRIORITY;       // don't send at all
+    }
+        
+    info.uPriorities[CR_SMTP] = CR_NEGATIVE_PRIORITY;  // Second try send report over SMTP
+    info.uPriorities[CR_SMAPI] = CR_NEGATIVE_PRIORITY; //1; // Third try send report over Simple MAPI
+
+    wxStandardPaths& crash_std_path = *dynamic_cast<wxStandardPaths*>(&wxApp::GetTraits()->GetStandardPaths());
+    wxString crash_rpt_save_locn = crash_std_path.GetConfigDir();
+    if( g_bportable ) {
+        wxFileName exec_path_crash( crash_std_path.GetExecutablePath() );
+        crash_rpt_save_locn = exec_path_crash.GetPath( wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR );
+    }
+    
+    wxString locn = crash_rpt_save_locn + _T("\\CrashReports");
+    
+    if(!wxDirExists( locn ) )
+        wxMkdir( locn );
+        
+    if(wxDirExists( locn ) ){
+        wxCharBuffer buf = locn.ToUTF8();
+        wchar_t wlocn[256];
+        if(buf && (locn.Length() < sizeof(wlocn)) ){
+            MultiByteToWideChar( 0, 0, buf.data(), -1, wlocn, sizeof(wlocn)-1);
+            info.pszErrorReportSaveDir = (LPCWSTR)wlocn;
+        }
+    }
 
     // Provide privacy policy URL
     wxStandardPathsBase& std_path_crash = wxApp::GetTraits()->GetStandardPaths();
@@ -1546,7 +1576,7 @@ bool MyApp::OnInit()
 
 #endif
 
-    g_display_size_mm = GetDisplaySizeMM();
+    g_display_size_mm = wxMax(100, GetDisplaySizeMM());
 
     //      Init the WayPoint Manager (Must be after UI Style init).
     pWayPointMan = new WayPointman();
@@ -1575,7 +1605,7 @@ bool MyApp::OnInit()
     //    Manage internationalization of embedded messages
     //    using wxWidgets/gettext methodology....
 
-    wxLog::SetVerbose(true);            // log all messages for debugging language stuff
+//    wxLog::SetVerbose(true);            // log all messages for debugging language stuff
 
     if( lang_list[0] ) {
     };                 // silly way to avoid compiler warnings
@@ -1650,7 +1680,7 @@ bool MyApp::OnInit()
     //    Always use dot as decimal
     setlocale( LC_NUMERIC, "C" );
 
-    wxLog::SetVerbose( false );           // log no more verbose messages
+//    wxLog::SetVerbose( false );           // log no more verbose messages
 
     //  French language locale is assumed to include the AZERTY keyboard
     //  This applies to either the system language, or to OpenCPN language selection
@@ -2765,6 +2795,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     m_COGFilterLast = 0.;
 
     g_sticky_chart = -1;
+    m_BellsToPlay = 0;
 }
 
 MyFrame::~MyFrame()
@@ -3894,14 +3925,14 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         case ID_MENU_ZOOM_IN:
         case ID_ZOOMIN: {
-            cc1->ZoomCanvas( 2.0 );
+            cc1->ZoomCanvas( 2.0, false );
             DoChartUpdate();
             break;
         }
 
         case ID_MENU_ZOOM_OUT:
         case ID_ZOOMOUT: {
-            cc1->ZoomCanvas( 0.5 );
+            cc1->ZoomCanvas( 0.5, false );
             DoChartUpdate();
             break;
         }
@@ -4030,18 +4061,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         case wxID_PREFERENCES:
         case ID_SETTINGS: {
-
-            bool bnewtoolbar = !( DoOptionsDialog() == 0 );
-
-//              Apply various system settings
-            ApplyGlobalSettings( true, bnewtoolbar );                 // flying update
-
-            if( g_FloatingToolbarDialog ) g_FloatingToolbarDialog->RefreshFadeTimer();
-
-            if( cc1->GetbShowCurrent() || cc1->GetbShowTide() ) LoadHarmonics();
-//  The chart display options may have changed, especially on S57 ENC,
-//  So, flush the cache and redraw
-            cc1->ReloadVP();
+            DoSettings();
             break;
         }
 
@@ -4149,6 +4169,11 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             break;
         }
 
+        case ID_MENU_OQUIT: {
+            Close();
+            break;
+        }
+        
         case ID_MENU_ROUTE_MANAGER:
         case ID_ROUTEMANAGER: {
             if( NULL == pRouteManagerDialog )         // There is one global instance of the Dialog
@@ -4221,6 +4246,25 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
     }         // switch
 
 }
+
+void MyFrame::DoSettings()
+{
+    bool bnewtoolbar = !( DoOptionsDialog() == 0 );
+
+    //              Apply various system settings
+    ApplyGlobalSettings( true, bnewtoolbar );                 // flying update
+
+    if( g_FloatingToolbarDialog )
+        g_FloatingToolbarDialog->RefreshFadeTimer();
+
+    if( cc1->GetbShowCurrent() || cc1->GetbShowTide() )
+        LoadHarmonics();
+    
+    //  The chart display options may have changed, especially on S57 ENC,
+    //  So, flush the cache and redraw
+    cc1->ReloadVP();
+}
+
 
 void MyFrame::ToggleStats()
 {
@@ -4324,6 +4368,7 @@ void MyFrame::ActivateMOB( void )
         pRouteManagerDialog->UpdateWptListCtrl();
     }
 
+    cc1->InvalidateGL();
     cc1->Refresh( false );
 
     wxString mob_message( _( "MAN OVERBOARD" ) );
@@ -4804,6 +4849,10 @@ void MyFrame::RegisterGlobalMenuItems()
     nav_menu->AppendSeparator();
     nav_menu->Append( ID_MENU_SCALE_IN, _menuText(_("Larger Scale Chart"), _T("Ctrl-Left")) );
     nav_menu->Append( ID_MENU_SCALE_OUT, _menuText(_("Smaller Scale Chart"), _T("Ctrl-Right")) );
+#ifndef __WXOSX__
+    nav_menu->AppendSeparator();
+    nav_menu->Append( ID_MENU_OQUIT, _menuText(_("Exit OpenCPN"), _T("Ctrl-Q")) );
+#endif    
     m_pMenuBar->Append( nav_menu, _("&Navigate") );
 
 
@@ -5195,7 +5244,7 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
         g_display_size_mm = g_config_display_size_mm;
     }
     else{
-        g_display_size_mm = GetDisplaySizeMM();
+        g_display_size_mm = wxMax(100, GetDisplaySizeMM());
     }
         
     cc1->SetDisplaySizeMM( g_display_size_mm );
@@ -5806,12 +5855,10 @@ void MyFrame::OnBellsTimer(wxTimerEvent& event)
         wxLogMessage( _T("Using bells sound file: ") + soundfile );
     }
 
-    if(!bells_sound[bells - 1].IsPlaying()) {
-        bells_sound[bells - 1].Play();
-        m_BellsToPlay -= bells;
-    }
-
-    BellsTimer.Start(20, wxTIMER_ONE_SHOT);
+    bells_sound[bells - 1].Play();
+    m_BellsToPlay -= bells;
+    
+    BellsTimer.Start(2000, wxTIMER_ONE_SHOT);
 }
 
 int ut_index;
@@ -9955,7 +10002,7 @@ void InitializeUserColors( void )
             }
 
         } else {
-            char name[20];
+            char name[21];
             int j = 0;
             while( buf[j] != ';' && j < 20 ) {
                 name[j] = buf[j];
@@ -11215,7 +11262,7 @@ bool ReloadLocale()
         //  So, Load the catalogs saved in a global string array which is populated as PlugIns request a catalog load.
         //  We want to load the PlugIn catalogs first, so that core opencpn translations loaded later will become precedent.
     
-        wxLog::SetVerbose(true);            // log all messages for debugging language stuff
+//        wxLog::SetVerbose(true);            // log all messages for debugging language stuff
         
         for(unsigned int i=0 ; i < g_locale_catalog_array.GetCount() ; i++){
             wxString imsg = _T("Loading catalog for:  ");
@@ -11229,7 +11276,7 @@ bool ReloadLocale()
         wxLogMessage( _T("Loading catalog for opencpn core.") );
         plocale_def_lang->AddCatalog( _T("opencpn") );
         
-        wxLog::SetVerbose(false);
+//        wxLog::SetVerbose(false);
        
         ret = true;
     }

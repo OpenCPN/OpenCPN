@@ -283,6 +283,7 @@ extern ocpnGLOptions g_GLOptions;
 
 extern bool              g_bShowFPS;
 extern double            g_gl_ms_per_frame;
+extern bool              g_benable_rotate;
 
 wxProgressDialog *pprog;
 bool b_skipout;
@@ -766,9 +767,6 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
             b_intersect |= Intersect_FL( p2, p3, f0, f1) != 0; if(b_intersect) break;
             b_intersect |= Intersect_FL( p3, p0, f0, f1) != 0; if(b_intersect) break;
             
-            
-            if(b_intersect)
-                break;
         }
         
         // Check segment, last point back to first point
@@ -1739,8 +1737,10 @@ void ChartCanvas::SetDisplaySizeMM( double size )
     int sx, sy;
     wxDisplaySize( &sx, &sy );
     
-    m_pix_per_mm = ( (double) sx ) / ( (double) m_display_size_mm );
-    m_canvas_scale_factor = ( (double) sx ) / (m_display_size_mm /1000.);
+    double max_physical = wxMax(sx, sy);
+    
+    m_pix_per_mm = ( max_physical ) / ( (double) m_display_size_mm );
+    m_canvas_scale_factor = ( max_physical ) / (m_display_size_mm /1000.);
     
     int mm_per_knot = 10;
     current_draw_scaler = mm_per_knot * m_pix_per_mm * g_current_arrow_scale / 100.0;
@@ -2014,9 +2014,8 @@ void ChartCanvas::OnKeyChar( wxKeyEvent &event )
 {
     int key_char = event.GetKeyCode();
     
-    //      Handle both QWERTY and AZERTY keyboard separately for a few control codes
-//    if( !g_b_assume_azerty )
-    {
+    if(g_benable_rotate){
+        
         switch( key_char ) {
             case ']':
                 RotateCanvas( 1 );
@@ -2031,20 +2030,6 @@ void ChartCanvas::OnKeyChar( wxKeyEvent &event )
                 break;
         }
     }
-#if 0    
-    else {
-        switch( key_char ) {
-            case 43:
-                ZoomCanvas( 2.0 );
-                break;
-            
-            case 54:                     // '-'  alpha/num pad
-            case 56:                     // '_'  alpha/num pad
-                ZoomCanvas( 0.5 );
-                break;
-        }
-    }
-#endif    
 
     event.Skip();
 }    
@@ -2180,6 +2165,12 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         parent_frame->DoStackUp();
         break;
 
+#ifndef __WXOSX__        
+    case WXK_F9:
+        parent_frame->ToggleQuiltMode();
+        break;
+#endif        
+        
     case WXK_F11:
         parent_frame->ToggleFullScreen();
         b_handled = true;
@@ -2196,12 +2187,12 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
     //NUMERIC PAD
     case WXK_NUMPAD_ADD:              // '+' on NUM PAD
     case WXK_PAGEUP:
-        ZoomCanvas( 2.0 );
+        ZoomCanvas( 2.0, false );
         break;
 
     case WXK_NUMPAD_SUBTRACT:   // '-' on NUM PAD
     case WXK_PAGEDOWN:
-        ZoomCanvas( .5 );
+        ZoomCanvas( .5, false );
         break;
 
     default:
@@ -2217,39 +2208,45 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         if( !g_b_assume_azerty ) {
             switch( key_char ) {
             case '+': case '=':
-                ZoomCanvas( 2.0 );
+                ZoomCanvas( 2.0, false );
                 break;
 
             case '-': case '_':
-                ZoomCanvas( 0.5 );
+                ZoomCanvas( 0.5, false );
                 break;
 
+            }
+            
 #ifdef __WXMAC__
+            if(g_benable_rotate){
+                switch( key_char ) {
+                    
             // On other platforms these are handled in OnKeyChar, which (apparently) works better in some locales.
             // On OS X it is better to handle them here, since pressing Alt (which should change the rotation speed)
             // changes the key char and so prevents the keys from working.
-            case ']':
-                RotateCanvas( 1 );
-                break;
+                case ']':
+                    RotateCanvas( 1 );
+                    break;
                 
-            case '[':
-                RotateCanvas( -1 );
-                break;
+                case '[':
+                    RotateCanvas( -1 );
+                    break;
                 
-            case '\\':
-                DoRotateCanvas(0);
-                break;
-#endif
+                case '\\':
+                    DoRotateCanvas(0);
+                    break;
+                }
             }
-        } else {
+#endif
+        } else {   //AZERTY
             switch( key_char ) {
             case 43:
-                ZoomCanvas( 2.0 );
+                ZoomCanvas( 2.0, false );
                 break;
 
             case 54:                     // '-'  alpha/num pad
-            case 56:                     // '_'  alpha/num pad
-                ZoomCanvas( 0.5 );
+//            case 56:                     // '_'  alpha/num pad
+                ZoomCanvas( 0.5, false );
                 break;
             }
         }
@@ -2360,6 +2357,11 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             break;
         }
 
+        case -20:                       // Ctrl ,
+        {
+            parent_frame->DoSettings();
+            break;
+        }
         case 17:                       // Ctrl Q
             parent_frame->Close();
             return;
@@ -3211,7 +3213,7 @@ void ChartCanvas::ZoomCanvas( double factor, bool can_zoom_to_cursor, bool stopt
         if( m_modkeys == wxMOD_ALT )
             factor = pow(factor, .15);
         
-        DoZoomCanvas( factor );
+        DoZoomCanvas( factor, can_zoom_to_cursor );
     }
 
     extendedSectorLegs.clear();
@@ -3330,9 +3332,11 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
         if( can_zoom_to_cursor && g_bEnableZoomToCursor) {
             //  Arrange to combine the zoom and pan into one operation for smoother appearance
             SetVPScale( GetCanvasScaleFactor() / proposed_scale_onscreen, false );   // adjust, but deferred refresh
-            wxPoint2DDouble r;
-            GetDoubleCanvasPointPix( zlat, zlon, &r );
-            PanCanvas( r.m_x - mouse_x, r.m_y - mouse_y );  // this will give the Refresh()
+ 
+            wxPoint r;
+            GetCanvasPointPix( zlat, zlon, &r );
+            PanCanvas( r.x - mouse_x, r.y - mouse_y );  // this will give the Refresh()
+
             ClearbFollow();      // update the follow flag
         }
         else
@@ -3832,7 +3836,8 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                 double sfr = wxRound(m_displayed_scale_factor * 10.) / 10.;
                 text.Printf( _("Scale %4.0f (%1.2fx)"), true_scale_display, sfr );
             }
-            
+
+#ifdef ocpnUSE_GL
             if( g_bopengl && g_bShowFPS){
                 wxString fps_str;
                 double fps = 0.;
@@ -3842,7 +3847,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                 }
                 text += fps_str;
             }
-            
+#endif            
             
             parent_frame->SetStatusText( text, STAT_FIELD_SCALE );
         }

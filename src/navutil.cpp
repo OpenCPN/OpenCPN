@@ -200,6 +200,7 @@ extern bool             g_bDrawAISSize;
 extern bool             g_bShowAISName;
 extern int              g_Show_Target_Name_Scale;
 extern bool             g_bWplIsAprsPosition;
+extern bool             g_benableAISNameCache;
 
 extern int              g_S57_dialog_sx, g_S57_dialog_sy;
 
@@ -347,6 +348,8 @@ extern int              g_NMEAAPBXTEPrecision;
 extern bool             g_bSailing;
 extern double           g_display_size_mm;
 extern double           g_config_display_size_mm;
+extern bool             g_benable_rotate;
+extern bool             g_bEmailCrashReport;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
@@ -1387,6 +1390,12 @@ int MyConfig::LoadMyConfig( int iteration )
     // Boolean to cater for sailing when not approaching waypoint
     Read( _T( "Sailing" ), &g_bSailing, 0);
 
+    Read( _T ( "EnableRotateKeys" ),  &g_benable_rotate );
+    Read( _T ( "EmailCrashReport" ),  &g_bEmailCrashReport );
+    
+    g_benableAISNameCache = true;
+    Read( _T ( "EnableAISNameCache" ),  &g_benableAISNameCache );
+    
     SetPath( _T ( "/Settings/GlobalState" ) );
     Read( _T ( "bFollow" ), &st_bFollow );
 
