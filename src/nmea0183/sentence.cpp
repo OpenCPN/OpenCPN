@@ -166,7 +166,12 @@ double SENTENCE::Double( int field_number ) const
       if(Field( field_number ).Len() == 0)
             return (NAN);
 
-      return( ::atof( Field( field_number ).mb_str() ) );
+      wxCharBuffer abuf = Field( field_number).ToUTF8();
+      if( !abuf.data() )                            // badly formed sentence?
+        return (NAN);
+      
+      return( ::atof( abuf.data() ));
+      
 }
 
 
@@ -276,8 +281,11 @@ void SENTENCE::Finish( void )
 int SENTENCE::Integer( int field_number ) const
 {
 //   ASSERT_VALID( this );
+    wxCharBuffer abuf = Field( field_number).ToUTF8();
+    if( !abuf.data() )                            // badly formed sentence?
+        return 0;
 
-    return( ::atoi( Field( field_number ).mb_str() ) );
+    return( ::atoi( abuf.data() ));
 }
 
 NMEA0183_BOOLEAN SENTENCE::IsChecksumBad( int checksum_field_number ) const

@@ -235,6 +235,10 @@ bool NMEA0183::IsGood( void ) const
 
 bool NMEA0183::PreParse( void )
 {
+      wxCharBuffer buf = sentence.Sentence.ToUTF8();
+      if( !buf.data() )                            // badly formed sentence?
+        return false;
+    
       if ( IsGood() )
       {
             wxString mnemonic = sentence.Field( 0 );
