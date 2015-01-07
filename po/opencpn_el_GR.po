@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-01-06 17:25-0600\n"
-"PO-Revision-Date: 2015-01-06 18:28-0500\n"
+"POT-Creation-Date: 2015-01-07 16:15-0600\n"
+"PO-Revision-Date: 2015-01-07 17:17-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Greek\n"
 "Language: el_GR\n"
@@ -29,7 +29,7 @@ msgstr "Ιδιότητες σημείου"
 msgid "Waypoint Information"
 msgstr "Πληροφορίες σημείου"
 
-#: include/options.h:56 src/chart1.cpp:3046 src/chart1.cpp:5025
+#: include/options.h:56 src/chart1.cpp:3047 src/chart1.cpp:5026
 msgid "Options"
 msgstr "Επιλογές"
 
@@ -37,7 +37,7 @@ msgstr "Επιλογές"
 msgid "Sentence Filter"
 msgstr "Φίλτρο δεδομένων"
 
-#: include/about.h:39 src/chart1.cpp:3109 src/chart1.cpp:4914
+#: include/about.h:39 src/chart1.cpp:3110 src/chart1.cpp:4915
 msgid "About OpenCPN"
 msgstr "Για το OpenCPN"
 
@@ -156,8 +156,8 @@ msgstr " για λεπτομέρειες."
 msgid "Retrieving initial language selection from Windows Registry"
 msgstr "Εξάγεται η αρχική επιλογή γλώσσας από τα κατάστιχα των Windows"
 
-#: src/chart1.cpp:1702 src/chart1.cpp:2253 src/chart1.cpp:5172
-#: src/chart1.cpp:9807 src/chart1.cpp:9838 src/tcmgr.cpp:762
+#: src/chart1.cpp:1702 src/chart1.cpp:2253 src/chart1.cpp:5173
+#: src/chart1.cpp:9806 src/chart1.cpp:9837 src/tcmgr.cpp:762
 #: src/options.cpp:3499 src/options.cpp:3506 src/options.cpp:3514
 #: src/options.cpp:3521 src/options.cpp:5755 src/pluginmanager.cpp:595
 #: src/pluginmanager.cpp:637 src/pluginmanager.cpp:665
@@ -190,7 +190,7 @@ msgstr "Εκτιμώμενος χρόνος: "
 msgid "Remaining time : "
 msgstr "Απομένων χρόνος: "
 
-#: src/chart1.cpp:2234 src/chart1.cpp:5465 src/chart1.cpp:5467
+#: src/chart1.cpp:2234 src/chart1.cpp:5466 src/chart1.cpp:5468
 msgid "OpenCPN Chart Update"
 msgstr "Ανανέωση του χάρτη"
 
@@ -198,321 +198,321 @@ msgstr "Ανανέωση του χάρτη"
 msgid "No Charts Installed.\nPlease select chart folders in Options > Charts."
 msgstr "Δεν υπάρχουν εγκατεστημένοι χάρτες.\nΔιαλέξτε φακέλους χαρτών στο «Επιλογές -> Χάρτες»."
 
-#: src/chart1.cpp:2922 src/chcanv.cpp:10473
+#: src/chart1.cpp:2923 src/chcanv.cpp:10473
 msgid "AIS Target Query"
 msgstr "Πληροφορίες για τον στόχο AIS"
 
-#: src/chart1.cpp:3001 src/chart1.cpp:4846
+#: src/chart1.cpp:3002 src/chart1.cpp:4847
 msgid "Zoom In"
 msgstr "Μεγέθυνση"
 
-#: src/chart1.cpp:3007 src/chart1.cpp:4847
+#: src/chart1.cpp:3008 src/chart1.cpp:4848
 msgid "Zoom Out"
 msgstr "Σμίκρυνση"
 
-#: src/chart1.cpp:3016
+#: src/chart1.cpp:3017
 msgid "Shift to Larger Scale Chart"
 msgstr "Πήγαινε σε χάρτη μεγαλύτερης κλίμακας"
 
-#: src/chart1.cpp:3024
+#: src/chart1.cpp:3025
 msgid "Shift to Smaller Scale Chart"
 msgstr "Πήγαινε σε χάρτη μικρότερης κλίμακας"
 
-#: src/chart1.cpp:3032 src/chart1.cpp:4897
+#: src/chart1.cpp:3033 src/chart1.cpp:4898
 msgid "Create Route"
 msgstr "Δημιουργία διαδρομής"
 
-#: src/chart1.cpp:3039 src/chart1.cpp:4840
+#: src/chart1.cpp:3040 src/chart1.cpp:4841
 msgid "Auto Follow"
 msgstr "Αυτόματη παρακολούθηση"
 
-#: src/chart1.cpp:3052 src/chart1.cpp:4864
+#: src/chart1.cpp:3053 src/chart1.cpp:4865
 msgid "Show ENC Text"
 msgstr "Εμφάνιση κειμένου ENC"
 
-#: src/chart1.cpp:3060 src/chart1.cpp:3145 src/chart1.cpp:4017
+#: src/chart1.cpp:3061 src/chart1.cpp:3146 src/chart1.cpp:4018
 msgid "Hide AIS Targets"
 msgstr "Απόκρυψη στόχων AIS"
 
-#: src/chart1.cpp:3067 src/chart1.cpp:4079 src/chart1.cpp:4871
+#: src/chart1.cpp:3068 src/chart1.cpp:4080 src/chart1.cpp:4872
 msgid "Show Currents"
 msgstr "Εμφάνιση ρευμάτων"
 
-#: src/chart1.cpp:3073 src/chart1.cpp:4113 src/chart1.cpp:4870
+#: src/chart1.cpp:3074 src/chart1.cpp:4114 src/chart1.cpp:4871
 msgid "Show Tides"
 msgstr "Εμφάνιση παλίρροιας"
 
-#: src/chart1.cpp:3079
+#: src/chart1.cpp:3080
 msgid "Print Chart"
 msgstr "Εκτύπωση χάρτη"
 
-#: src/chart1.cpp:3085 src/routemanagerdialog.cpp:425
+#: src/chart1.cpp:3086 src/routemanagerdialog.cpp:425
 msgid "Route & Mark Manager"
 msgstr "Διαχείριση διαδρομών και σημείων πορείας"
 
-#: src/chart1.cpp:3092 src/chart1.cpp:4464 src/chart1.cpp:4841
+#: src/chart1.cpp:3093 src/chart1.cpp:4465 src/chart1.cpp:4842
 msgid "Enable Tracking"
 msgstr "Ενεργοποίηση ίχνους"
 
-#: src/chart1.cpp:3099 src/chart1.cpp:4873
+#: src/chart1.cpp:3100 src/chart1.cpp:4874
 msgid "Change Color Scheme"
 msgstr "Αλλαγή χρωμάτων"
 
-#: src/chart1.cpp:3118 src/chart1.cpp:4903 src/chart1.cpp:4907
+#: src/chart1.cpp:3119 src/chart1.cpp:4904 src/chart1.cpp:4908
 msgid "Drop MOB Marker"
 msgstr "Ρίξε σημάδι «Άνθρωπος στη Θάλασσα» (MOB)"
 
-#: src/chart1.cpp:3118
+#: src/chart1.cpp:3119
 msgid " (Ctrl-Space)"
 msgstr ""
 
-#: src/chart1.cpp:3149 src/chart1.cpp:4020 src/chart1.cpp:4884
+#: src/chart1.cpp:3150 src/chart1.cpp:4021 src/chart1.cpp:4885
 msgid "Show AIS Targets"
 msgstr "Εμφάνιση στόχων AIS"
 
-#: src/chart1.cpp:3511
+#: src/chart1.cpp:3512
 msgid "Anchorage created "
 msgstr "Δημιουργήθηκε αγκυροβόλιο"
 
-#: src/chart1.cpp:3726
+#: src/chart1.cpp:3727
 msgid "StatusBar"
 msgstr "ΛωρίδαΚατάστασης"
 
-#: src/chart1.cpp:3900
+#: src/chart1.cpp:3901
 msgid "Group \""
 msgstr "Η ομάδα \""
 
-#: src/chart1.cpp:3902
+#: src/chart1.cpp:3903
 msgid "\" is empty, switching to \"All Active Charts\" group."
 msgstr "\" είναι άδεια. Επιστροφή στην ομάδα \"Όλοι οι ενεργοί Χάρτες \"."
 
-#: src/chart1.cpp:3904
+#: src/chart1.cpp:3905
 msgid "OpenCPN Group Notice"
 msgstr "Σημείωση ομάδας OpenCPN"
 
-#: src/chart1.cpp:4081
+#: src/chart1.cpp:4082
 msgid "Hide Currents"
 msgstr "Απόκρυψη ρευμάτων"
 
-#: src/chart1.cpp:4115
+#: src/chart1.cpp:4116
 msgid "Hide Tides"
 msgstr "Απόκρυψη παλίρροιας"
 
-#: src/chart1.cpp:4122
+#: src/chart1.cpp:4123
 msgid "Chart1::Event...TCMgr Not Available"
 msgstr "Χάρτης1::Γεγονός...Το TCMgr δεν υπάρχει"
 
-#: src/chart1.cpp:4317 src/chart1.cpp:4373
+#: src/chart1.cpp:4318 src/chart1.cpp:4374
 msgid "MAN OVERBOARD"
 msgstr "ΑΝΘΡΩΠΟΣ ΣΤΗ ΘΑΛΑΣΣΑ"
 
-#: src/chart1.cpp:4334
+#: src/chart1.cpp:4335
 msgid "1.0 NM along COG"
 msgstr "1.0 ν.μ. κατά μήκος της πραγμ. πορείας (COG)"
 
-#: src/chart1.cpp:4345
+#: src/chart1.cpp:4346
 msgid "Temporary MOB Route"
 msgstr "Προσωρινή διαδρομή για MOB"
 
-#: src/chart1.cpp:4346
+#: src/chart1.cpp:4347
 msgid "Assumed 1 Mile Point"
 msgstr "Υποθέτω σημείο 1 μιλίου"
 
-#: src/chart1.cpp:4396
+#: src/chart1.cpp:4397
 msgid "Disable Tracking"
 msgstr "Απενεργοποίηση ίχνους"
 
-#: src/chart1.cpp:4416 src/chart1.cpp:7893 src/chart1.cpp:8026
+#: src/chart1.cpp:4417 src/chart1.cpp:7892 src/chart1.cpp:8025
 #: src/routemanagerdialog.cpp:1590
 msgid "(Unnamed Track)"
 msgstr "(Ανώνυμο ίχνος)"
 
-#: src/chart1.cpp:4514 src/chart1.cpp:4843 src/chart1.cpp:6472
+#: src/chart1.cpp:4515 src/chart1.cpp:4844 src/chart1.cpp:6471
 #: src/chcanv.cpp:6747
 msgid "North Up Mode"
 msgstr "«Βορράς προς τα πάνω»"
 
-#: src/chart1.cpp:4528
+#: src/chart1.cpp:4529
 msgid "Show ENC Text (T)"
 msgstr "Εμφάνιση κειμένου ENC (T)"
 
-#: src/chart1.cpp:4530
+#: src/chart1.cpp:4531
 msgid "Hide ENC Text (T)"
 msgstr "Απόκρυψη κειμένου ENC (T)"
 
-#: src/chart1.cpp:4844 src/chcanv.cpp:6742
+#: src/chart1.cpp:4845 src/chcanv.cpp:6742
 msgid "Course Up Mode"
 msgstr "«Πορεία προς τα πάνω»"
 
-#: src/chart1.cpp:4849
+#: src/chart1.cpp:4850
 msgid "Larger Scale Chart"
 msgstr "Χάρτης μεγαλύτερης κλίμακας"
 
-#: src/chart1.cpp:4850
+#: src/chart1.cpp:4851
 msgid "Smaller Scale Chart"
 msgstr "Χάρτης μικρότερης κλίμακας"
 
-#: src/chart1.cpp:4853
+#: src/chart1.cpp:4854
 msgid "Exit OpenCPN"
 msgstr "Έξοδος από το OpenCPN"
 
-#: src/chart1.cpp:4855
+#: src/chart1.cpp:4856
 msgid "&Navigate"
 msgstr "&Πλεύση"
 
-#: src/chart1.cpp:4859 src/options.cpp:2228
+#: src/chart1.cpp:4860 src/options.cpp:2228
 msgid "Enable Chart Quilting"
 msgstr "Συρραφή χαρτών"
 
-#: src/chart1.cpp:4860 src/options.cpp:2266
+#: src/chart1.cpp:4861 src/options.cpp:2266
 msgid "Show Chart Outlines"
 msgstr "Εμφάνιση των ορίων των χαρτών"
 
-#: src/chart1.cpp:4861 src/options.cpp:2647
+#: src/chart1.cpp:4862 src/options.cpp:2647
 msgid "Show Chart Bar"
 msgstr "Εμφάνιση της λωρίδας πληροφοριών χάρτη"
 
-#: src/chart1.cpp:4865
+#: src/chart1.cpp:4866
 msgid "Show ENC Lights"
 msgstr "Εμφάνιση φάρων ENC"
 
-#: src/chart1.cpp:4866
+#: src/chart1.cpp:4867
 msgid "Show ENC Soundings"
 msgstr "Εμφάνιση βυθομετρήσεων ENC"
 
-#: src/chart1.cpp:4867
+#: src/chart1.cpp:4868
 msgid "Show ENC Anchoring Info"
 msgstr "Εμφάνιση πληροφοριών αγκυροβολίας ENC"
 
-#: src/chart1.cpp:4876 src/chart1.cpp:4878
+#: src/chart1.cpp:4877 src/chart1.cpp:4879
 msgid "Enter Full Screen"
 msgstr "Πλήρης οθόνη"
 
-#: src/chart1.cpp:4880
+#: src/chart1.cpp:4881
 msgid "&View"
 msgstr "&Εμφάνιση"
 
-#: src/chart1.cpp:4885
+#: src/chart1.cpp:4886
 msgid "Show Target Tracks"
 msgstr "Εμφάνιση ίχνους στόχων"
 
-#: src/chart1.cpp:4886
+#: src/chart1.cpp:4887
 msgid "Show CPA Alert Dialogs"
 msgstr "Διάλογος για συναγερμούς  CPA"
 
-#: src/chart1.cpp:4887
+#: src/chart1.cpp:4888
 msgid "Sound CPA Alarms"
 msgstr "'Ηχητικοί συναγερμοί CPA"
 
-#: src/chart1.cpp:4889 src/chcanv.cpp:6872
+#: src/chart1.cpp:4890 src/chcanv.cpp:6872
 msgid "AIS Target List..."
 msgstr "Κατάλογος στόχων AIS..."
 
-#: src/chart1.cpp:4890
+#: src/chart1.cpp:4891
 msgid "&AIS"
 msgstr ""
 
-#: src/chart1.cpp:4894
+#: src/chart1.cpp:4895
 msgid "Measure Distance"
 msgstr "Μέτρηση απόστασης"
 
-#: src/chart1.cpp:4896
+#: src/chart1.cpp:4897
 msgid "Route && Mark Manager..."
 msgstr "Ρυθμίσεις διαδρομής && σημείου..."
 
-#: src/chart1.cpp:4899
+#: src/chart1.cpp:4900
 msgid "Drop Mark at Boat"
 msgstr "Τοποθέτησε σημάδι στη θέση του πλοίου"
 
-#: src/chart1.cpp:4900
+#: src/chart1.cpp:4901
 msgid "Drop Mark at Cursor"
 msgstr "Τοποθέτησε σημάδι στον δρομέα"
 
-#: src/chart1.cpp:4905
+#: src/chart1.cpp:4906
 msgid "Preferences..."
 msgstr "Προτιμήσεις..."
 
-#: src/chart1.cpp:4909 src/options.cpp:1834
+#: src/chart1.cpp:4910 src/options.cpp:1834
 msgid "Options..."
 msgstr "Επιλογές..."
 
-#: src/chart1.cpp:4912
+#: src/chart1.cpp:4913
 msgid "&Tools"
 msgstr "&Εργαλεία"
 
-#: src/chart1.cpp:4915
+#: src/chart1.cpp:4916
 msgid "OpenCPN Help"
 msgstr "Βοήθεια για το OpenCPN"
 
-#: src/chart1.cpp:4916
+#: src/chart1.cpp:4917
 msgid "&Help"
 msgstr "&Βοήθεια"
 
-#: src/chart1.cpp:5171
+#: src/chart1.cpp:5172
 msgid "Please restart OpenCPN to activate language or style changes."
 msgstr "Επανεκκινείστε το OpenCPN για να ενεργοποιήσετε τις αλλαγές στη γλώσσα ή στο στιλ."
 
-#: src/chart1.cpp:6465
+#: src/chart1.cpp:6464
 msgid "Rotated Mode"
 msgstr "Λειτουργία περιστραμμένης εικόνας"
 
-#: src/chart1.cpp:7541
+#: src/chart1.cpp:7540
 msgid "Show This Chart"
 msgstr "Δείξε αυτόν τον χάρτη"
 
-#: src/chart1.cpp:7546 src/chcanv.cpp:6798
+#: src/chart1.cpp:7545 src/chcanv.cpp:6798
 msgid "Hide This Chart"
 msgstr "Κρύψε αυτόν τον χάρτη"
 
-#: src/chart1.cpp:7796
+#: src/chart1.cpp:7795
 msgid "Chart Print"
 msgstr "Εκτύπωση χάρτη"
 
-#: src/chart1.cpp:7805 src/routeprintout.cpp:469
+#: src/chart1.cpp:7804 src/routeprintout.cpp:469
 msgid "There was a problem printing.\nPerhaps your current printer is not set correctly?"
 msgstr "Πρόβλημα με την εκτύπωση.\nΕλέγξτε τις ρυθμίσεις του ενεργού εκτυπωτή!"
 
-#: src/chart1.cpp:7956 src/chart1.cpp:8029 src/routemanagerdialog.cpp:890
+#: src/chart1.cpp:7955 src/chart1.cpp:8028 src/routemanagerdialog.cpp:890
 msgid "(Unnamed Route)"
 msgstr "(Ανώνυμη διαδρομή)"
 
-#: src/chart1.cpp:8588
+#: src/chart1.cpp:8587
 msgid " Ship "
 msgstr " Πλοίο "
 
-#: src/chart1.cpp:8859 src/chart1.cpp:8910
+#: src/chart1.cpp:8858 src/chart1.cpp:8909
 msgid "AIS MAN OVERBOARD"
 msgstr "AIS: ΑΝΘΡΩΠΟΣ ΣΤΗ ΘΑΛΑΣΣΑ"
 
-#: src/chart1.cpp:8872
+#: src/chart1.cpp:8871
 msgid "Ownship"
 msgstr "Ίδιον πλοίο"
 
-#: src/chart1.cpp:8883
+#: src/chart1.cpp:8882
 msgid "Temporary AISMOB Route"
 msgstr "Προσωρινή διαδρομή AIS MOB"
 
-#: src/chart1.cpp:8884
+#: src/chart1.cpp:8883
 msgid "Present Ownship"
 msgstr "Θέση ιδίου πλοίου"
 
-#: src/chart1.cpp:8954
+#: src/chart1.cpp:8953
 msgid "AIS MAN OVERBOARD UPDATE"
 msgstr "AIS: ΑΝΑΝΕΩΣΗ του \"ΑΝΘΡΩΠΟΣ ΣΤΗ ΘΑΛΑΣΣΑ\""
 
-#: src/chart1.cpp:9802
+#: src/chart1.cpp:9801
 msgid "OpenCPN requires access to serial ports to use serial NMEA data.\n"
 msgstr "Το OpenCPN χρειάζεται πρόσβαση σε σειριακές θύρες για να χρησιμοποιήσει δεδομένα NMEA.\n"
 
-#: src/chart1.cpp:9804
+#: src/chart1.cpp:9803
 msgid "No Serial Ports can be found on this system.\nYou must install a serial port (modprobe correct kernel module) or plug in a usb serial device.\n"
 msgstr "Δεν βρέθηκαν σειριακές θύρες στο σύστημα.\nΕγκαταστήστε μια σειριακή θύρα (modprobe correct kernel module) ή συνδέστε μια συσκευή usb-serial.\n"
 
-#: src/chart1.cpp:9826
+#: src/chart1.cpp:9825
 msgid "You do currently not have permission to access the serial ports on this system.\n\nIt is suggested that you exit OpenCPN now,\nand add yourself to the correct group to enable serial port access.\n\nYou may do so by executing the following command from the linux command line:\n\n                sudo usermod -a -G "
 msgstr "Δεν έχετε άδεια πρόσβασης στις σειριακές θύρες στο σύστημα.\n\nΒγείτε από το OpenCPN τώρα,\nκαι αποκτήσετε προνόμια διαχειριστή για πρόσβαση στις θύρες.\n\nΣε Linux μπορείτε να το κάνετε αυτό  με την εξής εντολή:\n\n           sudo usermod -a -G "
 
-#: src/chart1.cpp:10260 src/routeprop.cpp:361 src/routeprop.cpp:1831
+#: src/chart1.cpp:10259 src/routeprop.cpp:361 src/routeprop.cpp:1831
 #: src/routemanagerdialog.cpp:428 src/options.cpp:655 src/options.cpp:847
 #: src/options.cpp:1769 src/options.cpp:2149 src/options.cpp:2724
 #: src/options.cpp:2728 src/options.cpp:5844 src/TrackPropDlg.cpp:85

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-01-06 17:25-0600\n"
-"PO-Revision-Date: 2015-01-06 18:28-0500\n"
+"PO-Revision-Date: 2015-01-07 17:17-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Czech\n"
 "Language: cs_CZ\n"
@@ -798,7 +798,7 @@ msgstr "Zadej předpokládaný kurs"
 
 #: src/GribRequestDialog.cpp:130
 msgid "Allow Start or Stop drawing an area by dragging on the map"
-msgstr ""
+msgstr "Umožnit zahájení nebo ukončení kreslení oblasti tažením na mapě"
 
 #: src/GribRequestDialog.cpp:291
 msgid "Stop graphic Sel."
@@ -822,19 +822,19 @@ msgstr "Před odesláním e-mailu na Zygrib budeš muset zadat své přihlašova
 
 #: src/GribRequestDialog.cpp:844
 msgid "Too big file! zyGrib limit is 2Mb!"
-msgstr ""
+msgstr "Příliš velký soubor! zyGrib limit je 2Mb!"
 
 #: src/GribRequestDialog.cpp:844
 msgid "Error! Max Lat lower than Min Lat or Max Lon lower than Min Lon!"
-msgstr ""
+msgstr "Chyba! Max Lat nižší než Min Lat nebo Max Lon nižší než Min Lon!"
 
 #: src/GribRequestDialog.cpp:845
 msgid "Too large area! Each side must be less than 180°!"
-msgstr ""
+msgstr "Příliš velká plocha! Každá strana musí být menší než 180°!"
 
 #: src/GribRequestDialog.cpp:845
 msgid "Too small area for this resolution!"
-msgstr ""
+msgstr "Příliš malá oblast pro toto rozlišení!"
 
 #: src/GribRequestDialog.cpp:860 src/GribRequestDialog.cpp:892
 msgid "Continue..."

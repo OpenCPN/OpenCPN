@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-01-06 17:25-0600\n"
-"PO-Revision-Date: 2015-01-06 18:28-0500\n"
+"PO-Revision-Date: 2015-01-07 17:18-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Swedish\n"
 "Language: sv_SE\n"
@@ -382,7 +382,7 @@ msgstr "Återuppspelning"
 
 #: src/GribUIDialogBase.cpp:387
 msgid "Loop Start"
-msgstr "Start slinga"
+msgstr "Starta stegning vid"
 
 #: src/GribUIDialogBase.cpp:391
 msgid "Top of Grib File"
@@ -798,7 +798,7 @@ msgstr "Ange beräknad kurs"
 
 #: src/GribRequestDialog.cpp:130
 msgid "Allow Start or Stop drawing an area by dragging on the map"
-msgstr ""
+msgstr "Markera ett område genom att klicka och dra med musen på kortet"
 
 #: src/GribRequestDialog.cpp:291
 msgid "Stop graphic Sel."
@@ -822,19 +822,19 @@ msgstr "Innan du skickar epost till Zygrib måste du ange dina inloggningsuppgif
 
 #: src/GribRequestDialog.cpp:844
 msgid "Too big file! zyGrib limit is 2Mb!"
-msgstr ""
+msgstr "För stor fil! Gränsen för zyGrib är 2Mb!"
 
 #: src/GribRequestDialog.cpp:844
 msgid "Error! Max Lat lower than Min Lat or Max Lon lower than Min Lon!"
-msgstr ""
+msgstr "Fel! Max Lat är mindre än Min Lat eller Max Lon mindre än Min Lon!"
 
 #: src/GribRequestDialog.cpp:845
 msgid "Too large area! Each side must be less than 180°!"
-msgstr ""
+msgstr "Alltför stort område! Ingen sida får vara större än 180°!"
 
 #: src/GribRequestDialog.cpp:845
 msgid "Too small area for this resolution!"
-msgstr ""
+msgstr "För litet område för denna skärmupplösning!"
 
 #: src/GribRequestDialog.cpp:860 src/GribRequestDialog.cpp:892
 msgid "Continue..."

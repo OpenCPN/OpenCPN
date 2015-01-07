@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-01-06 17:25-0600\n"
-"PO-Revision-Date: 2015-01-06 18:28-0500\n"
+"PO-Revision-Date: 2015-01-07 17:17-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -798,7 +798,7 @@ msgstr "Entrer votre cap fond prévisionnel"
 
 #: src/GribRequestDialog.cpp:130
 msgid "Allow Start or Stop drawing an area by dragging on the map"
-msgstr ""
+msgstr "Permettre ou non la définition d'une zone en faisant glisser la souris sur la zone de carte"
 
 #: src/GribRequestDialog.cpp:291
 msgid "Stop graphic Sel."
@@ -822,19 +822,19 @@ msgstr "Avant d'envoyer un mail à Zygrib, vous devez entrer votre login et votr
 
 #: src/GribRequestDialog.cpp:844
 msgid "Too big file! zyGrib limit is 2Mb!"
-msgstr ""
+msgstr "Fichier trop grand ! La limite permise par Zygrib est 2 Mo !"
 
 #: src/GribRequestDialog.cpp:844
 msgid "Error! Max Lat lower than Min Lat or Max Lon lower than Min Lon!"
-msgstr ""
+msgstr "Erreur ! Latitude maxi inférieure à la latitude mini ou longitude maxi inférieure à la longitude mini !"
 
 #: src/GribRequestDialog.cpp:845
 msgid "Too large area! Each side must be less than 180°!"
-msgstr ""
+msgstr "Zone trop grande ! Chaque côté doit être inférieur à 180° !"
 
 #: src/GribRequestDialog.cpp:845
 msgid "Too small area for this resolution!"
-msgstr ""
+msgstr "Zone trop petite pour cette résolution !"
 
 #: src/GribRequestDialog.cpp:860 src/GribRequestDialog.cpp:892
 msgid "Continue..."
