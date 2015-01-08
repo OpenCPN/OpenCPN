@@ -91,7 +91,6 @@ void DashboardInstrument_BaroHistory::SetData(int st, double data, wxString unit
 {
     if (st == OCPN_DBP_STC_MDA) {
       m_Press = data;
-      if(m_Press > 1100) return; // This value is obviously wrong. Don't process it
       if(m_SpdRecCnt++<=5) m_SpdStartVal+=data;
     }
     if ( m_SpdRecCnt == 5 ) {

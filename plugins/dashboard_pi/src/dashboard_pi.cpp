@@ -702,10 +702,10 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
 
                  */
 
-                SendSentenceToAllInstruments( OCPN_DBP_STC_MDA, m_NMEA0183.Mda.Pressure *1000,
-
-                       _T("hPa") ); //Convert to hpa befor sending to instruments.
-
+                if( m_NMEA0183.Mda.Pressure > .8 && m_NMEA0183.Mda.Pressure < 1.1 ) {
+                    SendSentenceToAllInstruments( OCPN_DBP_STC_MDA, m_NMEA0183.Mda.Pressure *1000,
+                           _T("hPa") ); //Convert to hpa befor sending to instruments.
+                }
 
             }
 
