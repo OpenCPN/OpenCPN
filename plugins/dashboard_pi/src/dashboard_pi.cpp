@@ -759,6 +759,11 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
         else if( m_NMEA0183.LastSentenceIDReceived == _T("MWV") ) {
             if( m_NMEA0183.Parse() ) {
                 if( m_NMEA0183.Mwv.IsDataValid == NTrue ) {
+                    //MWV windspeed has different units. Form it to knots to fit "toUsrSpeed_Plugin()"
+                    double m_wSpeedFactor = 1.0; //knots ("N")
+                    if (m_NMEA0183.Mwv.WindSpeedUnits == _T("K") ) m_wSpeedFactor = 0.53995 ; //km/h > knots
+                    if (m_NMEA0183.Mwv.WindSpeedUnits == _T("M") ) m_wSpeedFactor = 1.94384 ; //m/s > knots
+
                     if( m_NMEA0183.Mwv.Reference == _T("R") ) // Relative (apparent wind)
                     {
                         if( mPriAWA >= 1 ) {
@@ -766,9 +771,9 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
 
                             SendSentenceToAllInstruments( OCPN_DBP_STC_AWA,
                                     m_NMEA0183.Mwv.WindAngle, _T("\u00B0") );
-                            //  4) Wind Speed Units, K/M/N
                             SendSentenceToAllInstruments( OCPN_DBP_STC_AWS,
-                                    m_NMEA0183.Mwv.WindSpeed, m_NMEA0183.Mwv.WindSpeedUnits );
+                                    toUsrSpeed_Plugin( m_NMEA0183.Mwv.WindSpeed * m_wSpeedFactor, g_iDashWindSpeedUnit ),
+                                    getUsrSpeedUnit_Plugin( g_iDashWindSpeedUnit ) );
                         }
                     } else if( m_NMEA0183.Mwv.Reference == _T("T") ) // Theoretical (aka True)
                     {
@@ -776,9 +781,9 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                             mPriTWA = 1;
                             SendSentenceToAllInstruments( OCPN_DBP_STC_TWA,
                                     m_NMEA0183.Mwv.WindAngle, _T("\u00B0") );
-                            //  4) Wind Speed Units, K/M/N
                             SendSentenceToAllInstruments( OCPN_DBP_STC_TWS,
-                                    m_NMEA0183.Mwv.WindSpeed, m_NMEA0183.Mwv.WindSpeedUnits );
+                                    toUsrSpeed_Plugin( m_NMEA0183.Mwv.WindSpeed * m_wSpeedFactor, g_iDashWindSpeedUnit ),
+                                    getUsrSpeedUnit_Plugin( g_iDashWindSpeedUnit ) );
                         }
                     }
                 }
