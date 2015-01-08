@@ -1433,7 +1433,7 @@ void dashboard_pi::PopulateContextMenu( wxMenu* menu )
 {
     for( size_t i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++ ) {
         DashboardWindowContainer *cont = m_ArrayOfDashboardWindow.Item( i );
-        wxMenuItem* item = menu->AppendCheckItem( i, cont->m_sCaption );
+        wxMenuItem* item = menu->AppendCheckItem( i+1, cont->m_sCaption );
         item->Check( cont->m_bIsVisible );
     }
 }
