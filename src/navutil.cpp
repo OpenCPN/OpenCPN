@@ -314,6 +314,7 @@ extern int              g_cog_predictor_width;
 extern int              g_ais_cog_predictor_width;
 
 extern int              g_route_line_width;
+extern int              g_boundary_line_width;
 extern int              g_track_line_width;
 extern wxString         g_default_wp_icon;
 
@@ -2076,6 +2077,7 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "NavObjectFileName" ), m_sNavObjSetFile );
 
     Read( _T ( "RouteLineWidth" ), &g_route_line_width, 2 );
+    Read( _T ( "BoundaryLineWidth" ), &g_boundary_line_width, 2 );
     Read( _T ( "TrackLineWidth" ), &g_track_line_width, 2 );
     Read( _T ( "CurrentArrowScale" ), &g_current_arrow_scale, 100 );
     Read( _T ( "DefaultWPIcon" ), &g_default_wp_icon, _T("triangle") );
@@ -2854,6 +2856,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "TrackPrecision" ), g_nTrackPrecision );
 
     Write( _T ( "RouteLineWidth" ), g_route_line_width );
+    Write( _T ( "BoundaryLineWidth" ), g_boundary_line_width );
     Write( _T ( "TrackLineWidth" ), g_track_line_width );
     Write( _T ( "CurrentArrowScale" ), g_current_arrow_scale );
     Write( _T ( "DefaultWPIcon" ), g_default_wp_icon );
@@ -3273,6 +3276,35 @@ Route *RouteExists( Route * pTentRoute )
         }
 
         route_node = route_node->GetNext();       // next route
+    }
+    return NULL;
+}
+
+Boundary *BoundaryExists( const wxString& guid )
+{
+    wxBoundaryListNode *boundary_node = pBoundaryList->GetFirst();
+
+    while( boundary_node ) {
+        Boundary *pboundary = boundary_node->GetData();
+
+        if( guid == pboundary->m_GUID ) return pboundary;
+
+        boundary_node = boundary_node->GetNext();
+    }
+    return NULL;
+}
+
+Boundary *BoundaryExists( Boundary * pTentBoundary )
+{
+    wxBoundaryListNode *boundary_node = pBoundaryList->GetFirst();
+    while( boundary_node ) {
+        Boundary *pboundary = boundary_node->GetData();
+
+        if( pboundary->IsEqualTo( pTentBoundary ) ) {
+            if( !pboundary->m_bIsTrack ) return pboundary;
+        }
+
+        boundary_node = boundary_node->GetNext();       // next route
     }
     return NULL;
 }

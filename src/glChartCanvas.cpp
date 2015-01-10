@@ -2033,6 +2033,12 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc, OCPNRegion &region )
                        cc1->m_pRouteRolloverWin->GetPosition().y, false );
     }
 
+    if( cc1->m_pBoundaryRolloverWin && cc1->m_pBoundaryRolloverWin->IsActive() ) {
+        dc.DrawBitmap( *(cc1->m_pBoundaryRolloverWin->GetBitmap()),
+                       cc1->m_pBoundaryRolloverWin->GetPosition().x,
+                       cc1->m_pBoundaryRolloverWin->GetPosition().y, false );
+    }
+
     if( cc1->m_pAISRolloverWin && cc1->m_pAISRolloverWin->IsActive() ) {
         dc.DrawBitmap( *(cc1->m_pAISRolloverWin->GetBitmap()),
                        cc1->m_pAISRolloverWin->GetPosition().x,

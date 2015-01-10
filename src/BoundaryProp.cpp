@@ -107,6 +107,50 @@ Bit      Meaning
 #define    FALLING    4
 #define    RISING    8
 
+
+static double sign( double x )
+{
+    if( x < 0. ) return -1.;
+    else
+        return 1.;
+}
+
+static double FNipart( double x )
+{
+    return ( sign( x ) * (int) ( fabs( x ) ) );
+}
+
+static double FNday( int y, int m, int d, int h )
+{
+    long fd = ( 367 * y - 7 * ( y + ( m + 9 ) / 12 ) / 4 + 275 * m / 9 + d );
+    return ( (double) fd - 730531.5 + h / 24. );
+}
+
+static double FNrange( double x )
+{
+    double b = x / tpi;
+    double a = tpi * ( b - FNipart( b ) );
+    if( a < 0. ) a = tpi + a;
+    return ( a );
+}
+
+static double getLMT( double ut, double lon )
+{
+    double t = ut + lon / 15.;
+    if( t >= 0. ) if( t <= 24. ) return ( t );
+    else
+        return ( t - 24. );
+    else
+        return ( t + 24. );
+}
+
+#define    UTCINPUT         0
+#define    LTINPUT          1    // i.e. this PC local time
+#define    LMTINPUT         2    // i.e. the remote location LMT time
+#define    INPUT_FORMAT     1
+#define    DISPLAY_FORMAT   2
+#define    TIMESTAMP_FORMAT 3
+
 /*!
  * BoundaryProp type definition
  */
@@ -173,16 +217,12 @@ void BoundaryProp::OnBoundaryPropRightClick( wxListEvent &event )
 {
     wxMenu menu;
 
-    if( m_pBoundary->m_bIsTrack ) {
-        // No track specific items so far.
-    } else {
-        if( ! m_pBoundary->m_bIsInLayer ) {
-            wxMenuItem* editItem = menu.Append( ID_RCLK_MENU_EDIT_WP, _("&Waypoint Properties...") );
-            editItem->Enable( m_wpList->GetSelectedItemCount() == 1 );
+    if( ! m_pBoundary->m_bIsInLayer ) {
+        wxMenuItem* editItem = menu.Append( ID_RCLK_MENU_EDIT_WP, _("&Waypoint Properties...") );
+        editItem->Enable( m_wpList->GetSelectedItemCount() == 1 );
 
-            wxMenuItem* delItem = menu.Append( ID_RCLK_MENU_DELETE, _("&Remove Selected") );
-            delItem->Enable( m_wpList->GetSelectedItemCount() > 0 && m_wpList->GetItemCount() > 2 );
-        }
+        wxMenuItem* delItem = menu.Append( ID_RCLK_MENU_DELETE, _("&Remove Selected") );
+        delItem->Enable( m_wpList->GetSelectedItemCount() > 0 && m_wpList->GetItemCount() > 2 );
     }
 
     wxMenuItem* copyItem = menu.Append( ID_RCLK_MENU_COPY_TEXT, _("&Copy all as text") );
@@ -224,37 +264,42 @@ void BoundaryProp::CreateControls()
     wxFlexGridSizer* itemFlexGridSizer6 = new wxFlexGridSizer( 2, 2, 0, 0 );
     itemStaticBoxSizer3->Add( itemFlexGridSizer6, 1, wxALIGN_LEFT | wxALL, 5 );
 
-    wxStaticText* itemStaticText7 = new wxStaticText( itemDialog1, wxID_STATIC, _("Depart From"),
+    wxStaticText* itemStaticText7 = new wxStaticText( itemDialog1, wxID_STATIC, _("Description"),
             wxDefaultPosition, wxDefaultSize, 0 );
-    itemFlexGridSizer6->Add( itemStaticText7, 0,
+    itemStaticBoxSizer3->Add( itemStaticText7, 0,
             wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT, 5 );
 
-    wxStaticText* itemStaticText8 = new wxStaticText( itemDialog1, wxID_STATIC, _("Destination"),
-            wxDefaultPosition, wxDefaultSize, 0 );
-    itemFlexGridSizer6->Add( itemStaticText8, 0,
-            wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT, 5 );
-
-    m_BoundaryStartCtl = new wxTextCtrl( itemDialog1, ID_TEXTCTRL2, _T(""), wxDefaultPosition,
-            wxSize( 300, -1 ), 0 );
-    itemFlexGridSizer6->Add( m_BoundaryStartCtl, 0,
+    m_textDescription = new wxTextCtrl( itemDialog1, wxID_ANY , wxEmptyString,
+            wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE );
+    m_textDescription->SetMinSize( wxSize( -1, 60 ) );
+    itemStaticBoxSizer3->Add( m_textDescription, 1, wxALL | wxEXPAND, 5 );
+    
+    wxStaticText* itemStaticText8 = new wxStaticText( itemDialog1, wxID_STATIC,
+            _("Total Length"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemStaticBoxSizer3->Add( itemStaticText8, 0,
+            wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE,
+            5 );
+            
+    m_TotalDistCtl = new wxTextCtrl( itemDialog1, ID_TEXTCTRL3, _T(""), wxDefaultPosition,
+            wxDefaultSize, wxTE_READONLY );
+    itemStaticBoxSizer3->Add( m_TotalDistCtl, 0,
             wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxBOTTOM, 5 );
+            
+    
 
     wxFlexGridSizer* itemFlexGridSizer6a = new wxFlexGridSizer( 2, 4, 0, 0 );
     itemStaticBoxSizer3->Add( itemFlexGridSizer6a, 1, wxALIGN_LEFT | wxALL, 5 );
 
-    wxStaticText* itemStaticText11 = new wxStaticText( itemDialog1, wxID_STATIC,
-            _("Total Distance"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemFlexGridSizer6a->Add( itemStaticText11, 0,
-            wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE,
-            5 );
-
     wxBoxSizer* bSizer2;
     bSizer2 = new wxBoxSizer( wxHORIZONTAL );
 
-    m_staticText1 = new wxStaticText( itemDialog1, wxID_ANY, _("Color:"), wxDefaultPosition, wxDefaultSize,
+    m_staticText1 = new wxStaticText( itemDialog1, wxID_ANY, _("Colour:"), wxDefaultPosition, wxDefaultSize,
             0 );
     m_staticText1->Wrap( -1 );
     bSizer2->Add( m_staticText1, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
+    
+    m_colourBoundary = new wxColourPickerCtrl( itemDialog1, wxID_ANY, *wxRED, wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BNDCOLOUR") );
+    bSizer2->Add( m_colourBoundary, 0, wxALIGN_RIGHT | wxALL, 1 );
 
     wxString m_chColorChoices[] = { _("Default color"), _("Black"), _("Dark Red"), _("Dark Green"),
             _("Dark Yellow"), _("Dark Blue"), _("Dark Magenta"), _("Dark Cyan"),
@@ -342,14 +387,12 @@ void BoundaryProp::CreateControls()
 
     m_wpList->InsertColumn( 4, _("Latitude"), wxLIST_FORMAT_LEFT, char_size * 11 );
     m_wpList->InsertColumn( 5, _("Longitude"), wxLIST_FORMAT_LEFT, char_size * 11 );
-    m_wpList->InsertColumn( 6, _("ETE/ETD"), wxLIST_FORMAT_LEFT, char_size * 15 );
-    m_wpList->InsertColumn( 7, _("Speed"), wxLIST_FORMAT_CENTER, char_size * 9 );
-    m_wpList->InsertColumn( 8, _("Next tide event"), wxLIST_FORMAT_LEFT, char_size * 11 );
-    m_wpList->InsertColumn( 9, _("Description"), wxLIST_FORMAT_LEFT, char_size * 11 );
+    m_wpList->InsertColumn( 6, _("Next tide event"), wxLIST_FORMAT_LEFT, char_size * 11 );
     if(g_bShowMag)
-        m_wpList->InsertColumn( 10, _("Course (M)"), wxLIST_FORMAT_LEFT, char_size * 10 );
+        m_wpList->InsertColumn( 7, _("Course (M)"), wxLIST_FORMAT_LEFT, char_size * 10 );
     else
-        m_wpList->InsertColumn( 10, _("Course"), wxLIST_FORMAT_LEFT, char_size * 10 );
+        m_wpList->InsertColumn( 7, _("Course"), wxLIST_FORMAT_LEFT, char_size * 10 );
+    m_wpList->InsertColumn( 8, _("Description"), wxLIST_FORMAT_LEFT, char_size * 11 );
     //    m_wpList->Hide();
 
     m_pListSizer->Add( m_wpList, 2, wxEXPAND | wxALL, 5 );
@@ -366,13 +409,13 @@ void BoundaryProp::CreateControls()
 
     //  Fetch any config file values
 
-    if( g_StartTimeTZ == 0 )
+/*    if( g_StartTimeTZ == 0 )
         m_prb_tzUTC->SetValue( true);
     else if( g_StartTimeTZ == 1 )
         m_prb_tzLocal->SetValue( true);
     else if( g_StartTimeTZ == 2 )
         m_prb_tzLMT->SetValue( true);
-    
+*/    
 
     SetColorScheme( (ColorScheme) 0 );
 
@@ -468,6 +511,167 @@ bool BoundaryProp::UpdateProperties()
     if( NULL == m_pBoundary ) return false;
 
     ::wxBeginBusyCursor();
+
+    long LMT_Offset = 0;         // offset in seconds from UTC for given location (-1 hr / 15 deg W)
+    
+    m_BoundaryNameCtl->SetValue( m_pBoundary->m_BoundaryNameString );
+
+    double brg;
+    double join_distance = 0.;
+    RoutePoint *first_point = m_pBoundary->GetPoint( 1 );
+    if( first_point )
+        DistanceBearingMercator( first_point->m_lat, first_point->m_lon, gLat, gLon, &brg, &join_distance );
+
+    //    Update the "tides event" column header
+    wxListItem column_info;
+    if( m_wpList->GetColumn( 6, column_info ) ) {
+        wxString c = _("Next tide event");
+        if( gpIDX && m_starttime.IsValid() ) {
+            c = _T("@~~");
+            c.Append( wxString( gpIDX->IDX_station_name, wxConvUTF8 ) );
+            int i = c.Find( ',' );
+            if( i != wxNOT_FOUND ) c.Remove( i );
+
+        }
+        column_info.SetText( c );
+        m_wpList->SetColumn( 6, column_info );
+    }
+
+    //  Total length
+    double total_length = m_pBoundary->m_boundary_length;
+
+    wxString slen;
+    slen.Printf( wxT("%5.2f ") + getUsrDistanceUnit(), toUsrDistance( total_length ) );
+    m_TotalDistCtl->SetValue( slen );
+
+    wxString time_form;
+    wxString tide_form;
+
+    //  Iterate on Route Points
+    wxRoutePointListNode *node = m_pBoundary->pRoutePointList->GetFirst();
+
+    int i = 0;
+    double slat = gLat;
+    double slon = gLon;
+    double tdis = 0.;
+    double tsec = 0.;    // total time in seconds
+
+    int stopover_count = 0;
+    bool arrival = true; // marks which pass over the wpt we do - 1. arrival 2. departure
+    bool enroute = true; // for active route, skip all points up to the active point
+
+    wxString nullify = _T("----");
+
+    int i_prev_point = -1;
+    RoutePoint *prev_route_point = NULL;
+
+    while( node ) {
+        RoutePoint *prp = node->GetData();
+        long item_line_index = i + stopover_count;
+
+        //  Leg
+        wxString t;
+        t.Printf( _T("%d"), i );
+        if( i == 0 ) t = _T("---");
+        if( arrival ) m_wpList->SetItem( item_line_index, 0, t );
+
+        //  Mark Name
+        if( arrival ) m_wpList->SetItem( item_line_index, 1, prp->GetName() );
+    // Store Dewcription
+        if( arrival ) m_wpList->SetItem( item_line_index, 8, prp->GetDescription() );
+
+        //  Distance
+        //  Note that Distance/Bearing for Leg 000 is as from current position
+
+        double brg, leg_dist;
+        bool starting_point = false;
+
+        starting_point = ( i == 0 ) && enroute;
+        if( m_pEnroutePoint && !starting_point ) starting_point = ( prp->m_GUID
+                == m_pEnroutePoint->m_GUID );
+
+        DistanceBearingMercator( prp->m_lat, prp->m_lon, slat, slon, &brg, &leg_dist );
+
+    // calculation of course at current WayPoint.
+    double course=10, tmp_leg_dist=23;
+    wxRoutePointListNode *next_node = node->GetNext();
+    RoutePoint * _next_prp = (next_node)? next_node->GetData(): NULL;
+    if (_next_prp )
+    {
+    DistanceBearingMercator( _next_prp->m_lat, _next_prp->m_lon, prp->m_lat, prp->m_lon, &course, &tmp_leg_dist );
+    }else
+    {
+      course = 0.0;
+      tmp_leg_dist = 0.0;
+    }
+
+    prp->SetCourse(course); // save the course to the next waypoint for printing.
+    // end of calculation
+
+
+    t.Printf( _T("%6.2f ") + getUsrDistanceUnit(), toUsrDistance( leg_dist ) );
+    if( arrival )
+        m_wpList->SetItem( item_line_index, 2, t );
+    if( !enroute )
+        m_wpList->SetItem( item_line_index, 2, nullify );
+    prp->SetDistance(leg_dist); // save the course to the next waypoint for printing.
+
+        //  Bearing
+    if( g_bShowMag )
+        t.Printf( _T("%03.0f Deg. M"), gFrame->GetTrueOrMag( brg ) );
+    else
+        t.Printf( _T("%03.0f Deg. T"), gFrame->GetTrueOrMag( brg ) );
+
+    if( arrival )
+        m_wpList->SetItem( item_line_index, 3, t );
+    if( !enroute )
+        m_wpList->SetItem( item_line_index, 3, nullify );
+
+    // Course (bearing of next )
+    if (_next_prp){
+        if( g_bShowMag )
+            t.Printf( _T("%03.0f Deg. M"), gFrame->GetTrueOrMag( course ) );
+        else
+            t.Printf( _T("%03.0f Deg. T"), gFrame->GetTrueOrMag( course ) );
+        if( arrival )
+            m_wpList->SetItem( item_line_index, 7, t );
+    }
+    else
+        m_wpList->SetItem( item_line_index, 7, nullify );
+
+        //  Lat/Lon
+        wxString tlat = toSDMM( 1, prp->m_lat, prp->m_bIsInTrack );  // low precision for routes
+        if( arrival ) m_wpList->SetItem( item_line_index, 4, tlat );
+
+        wxString tlon = toSDMM( 2, prp->m_lon, prp->m_bIsInTrack );
+        if( arrival ) m_wpList->SetItem( item_line_index, 5, tlon );
+
+
+        tide_form = _T("");
+
+        LMT_Offset = long( ( prp->m_lon ) * 3600. / 15. );
+
+
+        //  Save for iterating distance/bearing calculation
+        slat = prp->m_lat;
+        slon = prp->m_lon;
+
+        // if stopover (ETD) found, loop for next output line for the same point
+        //   with departure time & tide information
+
+        if( arrival && ( prp->m_seg_etd.IsValid() ) ) {
+            stopover_count++;
+            arrival = false;
+        } else {
+            arrival = true;
+            i++;
+            node = node->GetNext();
+
+            //    Record this point info for use as previous point in next iteration.
+            i_prev_point = i - 1;
+            prev_route_point = prp;
+        }
+    }
 
     if( m_pBoundary->m_Colour == wxEmptyString ) m_chColor->Select( 0 );
     else {
@@ -594,3 +798,67 @@ void BoundaryProp::OnEvtColDragEnd( wxListEvent& event )
     m_wpList->Refresh();
 }
 
+void BoundaryProp::SetBoundaryAndUpdate( Boundary *pB, bool only_points )
+{
+    if( NULL == pB )
+        return;
+
+    //  Fetch any config file values
+    if ( !only_points )
+    {
+        //      long LMT_Offset = 0;                    // offset in seconds from UTC for given location (-1 hr / 15 deg W)
+        m_tz_selection = 1;
+
+        m_pBoundary = pB;
+        
+        m_BoundaryNameCtl->SetValue( m_pBoundary->m_BoundaryNameString );
+
+        m_BoundaryNameCtl->SetFocus();
+    }
+    m_wpList->DeleteAllItems();
+
+#if 0
+    // Select the proper list control, and add it to List sizer
+    m_pListSizer->Clear();
+
+    if( m_pBoundary ) {
+        m_wpList->Show();
+        m_pListSizer->Add( m_wpList, 2, wxEXPAND | wxALL, 5 );
+    }
+//    GetSizer()->Fit( this );
+    GetSizer()->Layout();
+#endif
+
+
+    InitializeList();
+
+    UpdateProperties();
+
+    if( m_pBoundary )
+        m_wpList->Show();
+
+//    GetSizer()->Fit( this );
+//    GetSizer()->Layout();
+
+    Refresh( false );
+
+}
+
+void BoundaryProp::InitializeList()
+{
+    if( NULL == m_pBoundary ) return;
+
+    //  Iterate on Route Points, inserting blank fields starting with index 0
+    wxRoutePointListNode *pnode = m_pBoundary->pRoutePointList->GetFirst();
+    int in = 0;
+    while( pnode ) {
+        m_wpList->InsertItem( in, _T(""), 0 );
+        m_wpList->SetItemPtrData( in, (wxUIntPtr)pnode->GetData() );
+        in++;
+        if( pnode->GetData()->m_seg_etd.IsValid() ) {
+            m_wpList->InsertItem( in, _T(""), 0 );
+            in++;
+        }
+        pnode = pnode->GetNext();
+    }
+}

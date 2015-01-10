@@ -1112,6 +1112,9 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
     EVT_MENU ( ID_RT_MENU_DEACTPOINT,   ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_RT_MENU_ACTNXTPOINT,  ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_RT_MENU_PROPERTIES,   ChartCanvas::PopupMenuHandler )
+    EVT_MENU ( ID_BND_MENU_PROPERTIES,   ChartCanvas::PopupMenuHandler )
+    EVT_MENU ( ID_BND_MENU_INSERT,       ChartCanvas::PopupMenuHandler )
+    EVT_MENU ( ID_BND_MENU_DELETE,       ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_WP_MENU_SET_ANCHORWATCH,    ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_WP_MENU_CLEAR_ANCHORWATCH,  ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_DEF_MENU_AISTARGETLIST,     ChartCanvas::PopupMenuHandler )
@@ -1185,6 +1188,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_bMeasure_Active = false;
     m_pMeasureRoute = NULL;
     m_pRouteRolloverWin = NULL;
+    m_pBoundaryRolloverWin = NULL;
     m_pAISRolloverWin = NULL;
     m_bedge_pan = false;
     m_disable_edge_pan = false;
@@ -1192,6 +1196,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_pCIWin = NULL;
 
     m_pSelectedRoute              = NULL;
+    m_pSelectedBoundary           = NULL;
     m_pSelectedTrack              = NULL;
     m_pRoutePointEditTarget       = NULL;
     m_pFoundPoint                 = NULL;
@@ -1204,6 +1209,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     
 
     m_pRolloverRouteSeg           = NULL;
+    m_pRolloverBoundarySeg        = NULL;
     m_bsectors_shown              = false;
     
     m_bbrightdir = false;
@@ -1421,6 +1427,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     
     pscratch_bm = NULL;
     proute_bm = NULL;
+    pboundary_bm = NULL;
 
     m_prot_bm = NULL;
 
@@ -1699,6 +1706,7 @@ ChartCanvas::~ChartCanvas()
     delete m_DoubleClickTimer;
 
     delete m_pRouteRolloverWin;
+    delete m_pBoundaryRolloverWin;
     delete m_pAISRolloverWin;
     delete m_pBrightPopup;
 
@@ -1707,7 +1715,9 @@ ChartCanvas::~ChartCanvas()
     delete pscratch_bm;
 
     m_dc_route.SelectObject( wxNullBitmap );
+    m_dc_boundary.SelectObject( wxNullBitmap );
     delete proute_bm;
+    delete pboundary_bm;
 
     delete pWorldBackgroundChart;
     delete pss_overlay_bmp;
@@ -2327,7 +2337,14 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             break;
 
         case 2:                      // Ctrl B
-            parent_frame->ToggleStats();
+            if ( event.ShiftDown() ) { // Shift-Ctrl-B
+                gFrame->nBoundary_State = 1;
+                cc1->SetCursor( *cc1->pCursorPencil );
+                return;
+
+            } else {
+                parent_frame->ToggleStats();
+            }
             break;
 
         case 13:             // Ctrl M // Drop Marker at cursor
@@ -2417,6 +2434,14 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             if( parent_frame->nRoute_State )         // creating route?
             {
                 FinishRoute();
+                gFrame->SurfaceToolbar();
+                InvalidateGL();
+                Refresh( false );
+            }
+
+            if( parent_frame->nBoundary_State )         // creating boundary?
+            {
+                FinishBoundary();
                 gFrame->SurfaceToolbar();
                 InvalidateGL();
                 Refresh( false );
@@ -2999,9 +3024,108 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
             showRollover = true;
     }
 
+    // Now the Boundary info rollover
+    // Show the boundary segment info
+    bool showBoundaryRollover = false;
+
+    if( NULL == m_pRolloverBoundarySeg ) {
+        //    Get a list of all selectable sgements, and search for the first visible segment as the rollover target.
+
+        SelectableItemList BoundarySelList = pSelect->FindSelectionList( m_cursor_lat, m_cursor_lon,
+                                     SELTYPE_BOUNDARYSEGMENT );
+        wxSelectableItemListNode *bnode = BoundarySelList.GetFirst();
+        while( bnode ) {
+            SelectItem *pBoundaryFindSel = bnode->GetData();
+
+            Boundary *pb = (Boundary *) pBoundaryFindSel->m_pData3;        //candidate
+
+            if( pb && pb->IsVisible() ) {
+                m_pRolloverBoundarySeg = pBoundaryFindSel;
+                showBoundaryRollover = true;
+
+                if( NULL == m_pBoundaryRolloverWin ) {
+                    m_pBoundaryRolloverWin = new RolloverWin( this );
+                    m_pBoundaryRolloverWin->IsActive( false );
+                }
+
+                if( !m_pBoundaryRolloverWin->IsActive() ) {
+                    wxString s;
+                    RoutePoint *segShow_point_a = (RoutePoint *) m_pRolloverBoundarySeg->m_pData1;
+                    RoutePoint *segShow_point_b = (RoutePoint *) m_pRolloverBoundarySeg->m_pData2;
+
+                    double brg, dist;
+                    DistanceBearingMercator( segShow_point_b->m_lat, segShow_point_b->m_lon,
+                                             segShow_point_a->m_lat, segShow_point_a->m_lon, &brg, &dist );
+
+                    if( !pb->m_bIsInLayer )
+                        s.Append( _("Boundary: ") );
+                    else
+                        s.Append( _("Layer Boundary: ") );
+
+                    if( pb->m_BoundaryNameString.IsEmpty() ) s.Append( _("(unnamed)") );
+                    else
+                        s.Append( pb->m_BoundaryNameString );
+
+                    s << _T("\n") << _("Total Length: ") << FormatDistanceAdaptive( pb->m_boundary_length)
+                    << _T("\n") << _("Leg: from ") << segShow_point_a->GetName()
+                    << _(" to ") << segShow_point_b->GetName()
+                    << _T("\n");
+
+                    if( g_bShowMag )
+                        s << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( brg ) );
+                    else
+                        s << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( brg ) );
+
+                    s << FormatDistanceAdaptive( dist );
+
+                    // Compute and display cumulative distance from route start point to current
+                    // leg end point.
+
+                    if( segShow_point_a != pb->pRoutePointList->GetFirst()->GetData() ) {
+                        wxRoutePointListNode *bnode = (pb->pRoutePointList)->GetFirst()->GetNext();
+                        RoutePoint *prp;
+                        float dist_to_endleg = 0;
+                        wxString t;
+
+                        while( bnode ) {
+                            prp = bnode->GetData();
+                            dist_to_endleg += prp->m_seg_len;
+                            if( prp->IsSame( segShow_point_a ) ) break;
+                            bnode = bnode->GetNext();
+                        }
+                        s << _T(" (+") << FormatDistanceAdaptive( dist_to_endleg ) << _T(")");
+                    }
+
+                    m_pBoundaryRolloverWin->SetString( s );
+
+                    wxSize win_size = GetSize();
+                    if( console->IsShown() ) win_size.x -= console->GetSize().x;
+                    m_pBoundaryRolloverWin->SetBestPosition( mouse_x, mouse_y, 16, 16, LEG_ROLLOVER,
+                                                     win_size );
+                    m_pBoundaryRolloverWin->SetBitmap( LEG_ROLLOVER );
+                    m_pBoundaryRolloverWin->IsActive( true );
+                    b_need_refresh = true;
+                    showBoundaryRollover = true;
+                    break;
+                }
+            } else
+                bnode = bnode->GetNext();
+        }
+    } else {
+        //    Is the cursor still in select radius?
+        if( !pSelect->IsSelectableSegmentSelected( m_cursor_lat, m_cursor_lon,
+                m_pRolloverBoundarySeg ) ) showBoundaryRollover = false;
+        else
+            showBoundaryRollover = true;
+    }
+
     //    If currently creating a route, do not show this rollover window
     if( parent_frame->nRoute_State )
         showRollover = false;
+
+    //    If currently creating a boundary, do not show this rollover window
+    if( parent_frame->nBoundary_State )
+        showBoundaryRollover = false;
 
     //    Similar for AIS target rollover window
     if( m_pAISRolloverWin && m_pAISRolloverWin->IsActive() )
@@ -3015,6 +3139,17 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
         b_need_refresh = true;
     } else if( m_pRouteRolloverWin && showRollover ) {
         m_pRouteRolloverWin->IsActive( true );
+        b_need_refresh = true;
+    }
+
+    if( m_pBoundaryRolloverWin && m_pBoundaryRolloverWin->IsActive() && !showBoundaryRollover ) {
+        m_pBoundaryRolloverWin->IsActive( false );
+        m_pRolloverBoundarySeg = NULL;
+        m_pBoundaryRolloverWin->Destroy();
+        m_pBoundaryRolloverWin = NULL;
+        b_need_refresh = true;
+    } else if( m_pBoundaryRolloverWin && showBoundaryRollover ) {
+        m_pBoundaryRolloverWin->IsActive( true );
         b_need_refresh = true;
     }
 
@@ -4875,6 +5010,12 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
     proute_bm = new wxBitmap( VPoint.pix_width, VPoint.pix_height, -1 );
     m_dc_route.SelectObject( *proute_bm );
 
+    // Resize the Boundary Calculation BM
+    m_dc_boundary.SelectObject( wxNullBitmap );
+    delete pboundary_bm;
+    pboundary_bm = new wxBitmap( VPoint.pix_width, VPoint.pix_height, -1 );
+    m_dc_boundary.SelectObject( *pboundary_bm );
+
     //  Resize the saved Bitmap
     m_cached_chart_bm.Create( VPoint.pix_width, VPoint.pix_height, -1 );
 
@@ -5236,9 +5377,9 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
         cursorItem = pSelect->FindSelection( zlat, zlon, SELTYPE_BOUNDARYSEGMENT );
 
         if( cursorItem ) {
-            Route *pr = (Route *) cursorItem->m_pData3;
-            if( pr->IsVisible() ) {
-                ShowBoundaryPropertiesDialog( _("Boundary Properties"), pr );
+            Boundary *pb = (Boundary *) cursorItem->m_pData3;
+            if( pb->IsVisible() ) {
+                ShowBoundaryPropertiesDialog( _("Boundary Properties"), pb );
                 return;
             }
         }
@@ -5312,7 +5453,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 //      Retrigger the route leg / AIS target popup timer
     if( !g_btouch )
     {
-        if( m_pRouteRolloverWin && m_pRouteRolloverWin->IsActive() )
+        if( ( m_pRouteRolloverWin && m_pRouteRolloverWin->IsActive() ) || ( m_pBoundaryRolloverWin && m_pBoundaryRolloverWin->IsActive() ) )
             m_RolloverPopupTimer.Start( 10, wxTIMER_ONE_SHOT );               // faster response while the rollover is turned on
         else
             m_RolloverPopupTimer.Start( m_rollover_popup_timer_msec, wxTIMER_ONE_SHOT );
@@ -5588,8 +5729,8 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                     pBoundaryList->Append( m_pMouseBoundary );
                     r_rband.x = x;
                     r_rband.y = y;
-                    b_rband.x = x;
-                    b_rband.y = y;
+                    m_dStartLat = m_cursor_lat;
+                    m_dStartLon = m_cursor_lon;
                 }
 
                 //    Check to see if there is a nearby point which may be reused
@@ -5785,7 +5926,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
         }
 
                     
-        if( ( m_bRouteEditing || m_bBoundaryEditing )&& m_pRoutePointEditTarget ) {
+        if( ( m_bRouteEditing || m_bBoundaryEditing ) && m_pRoutePointEditTarget ) {
 
             bool DraggingAllowed = g_btouch ? m_bIsInRadius : true;
             
@@ -5813,7 +5954,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                     for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
                         Route *pr = (Route *) m_pEditRouteArray->Item( ir );
                         //      Need to validate route pointer
-                        //      Route may be gone due to drgging close to ownship with
+                        //      Route may be gone due to dragging close to ownship with
                         //      "Delete On Arrival" state set, as in the case of
                         //      navigating to an isolated waypoint on a temporary route
                         if( g_pRouteMan->IsRouteValid(pr) ) {
@@ -5827,13 +5968,9 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 if( !g_bopengl && m_pEditBoundaryArray ) {
                     for( unsigned int ir = 0; ir < m_pEditBoundaryArray->GetCount(); ir++ ) {
                         Boundary *pb = (Boundary *) m_pEditBoundaryArray->Item( ir );
-                        //      Need to validate route pointer
-                        //      Route may be gone due to drgging close to ownship with
-                        //      "Delete On Arrival" state set, as in the case of
-                        //      navigating to an isolated waypoint on a temporary route
                         if( g_pRouteMan->IsBoundaryValid(pb) ) {
                             wxRect boundary_rect;
-                            pb->CalculateDCRect( m_dc_route, &boundary_rect, VPoint );
+                            pb->CalculateDCRect( m_dc_boundary, &boundary_rect, VPoint );
                             pre_rect.Union( boundary_rect );
                         }
                     }
@@ -5872,6 +6009,17 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                                 wxRect route_rect;
                                 pr->CalculateDCRect( m_dc_route, &route_rect, VPoint );
                                 post_rect.Union( route_rect );
+                            }
+                        }
+                    }
+
+                    if( m_pEditBoundaryArray ) {
+                        for( unsigned int ib = 0; ib < m_pEditBoundaryArray->GetCount(); ib++ ) {
+                            Boundary *pb = (Boundary *) m_pEditBoundaryArray->Item( ib );
+                            if( g_pRouteMan->IsBoundaryValid(pb) ) {
+                                wxRect boundary_rect;
+                                pb->CalculateDCRect( m_dc_boundary, &boundary_rect, VPoint );
+                                post_rect.Union( boundary_rect );
                             }
                         }
                     }
@@ -6164,8 +6312,8 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                     pBoundaryList->Append( m_pMouseBoundary );
                     r_rband.x = x;
                     r_rband.y = y;
-                    b_rband.x = x;
-                    b_rband.y = y;
+                    m_dStartLat = m_cursor_lat;
+                    m_dStartLon = m_cursor_lon;
                 }
 
                     
@@ -6215,7 +6363,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 }
 
                 if( parent_frame->nBoundary_State == 1 ) {
-                    // First point in the route.
+                    // First point in the boundary.
                     m_pMouseBoundary->AddPoint( pMousePoint );
                 } else {
                     if( m_pMouseBoundary->m_NextLegGreatCircle ) {
@@ -6335,8 +6483,11 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
                           
                         //  Hide the route rollover during route point edit, not needed, and may be confusing
-                        if( m_pRouteRolloverWin && m_pRouteRolloverWin->IsActive()  ) {
+                        if( m_pRouteRolloverWin && m_pRouteRolloverWin->IsActive() ) {
                             m_pRouteRolloverWin->IsActive( false );
+                        }
+                        if( m_pBoundaryRolloverWin && m_pBoundaryRolloverWin->IsActive() ){
+                            m_pBoundaryRolloverWin->IsActive( false );
                         }
                         
                         wxRect pre_rect;
@@ -6455,7 +6606,15 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                         }
                     }
                 }
-
+               if( ( NULL != pBoundaryPropDialog ) && ( pBoundaryPropDialog->IsShown() ) ) {
+                    if( m_pEditBoundaryArray ) {
+                        for( unsigned int ir = 0; ir < m_pEditBoundaryArray->GetCount(); ir++ ) {
+                            Boundary *pb = (Boundary *) m_pEditBoundaryArray->Item( ir );
+                            Boundary *prb = (Boundary *) m_pEditBoundaryArray->Item( ir );
+                            pBoundaryPropDialog->SetBoundaryAndUpdate( pb, true );
+                        }
+                    }
+                }
             }
         }
 
@@ -6545,20 +6704,20 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
         else if( m_bBoundaryEditing ) {            // End of RoutePoint drag
             if( m_pRoutePointEditTarget ) {
-                pSelect->UpdateSelectableRouteSegments( m_pRoutePointEditTarget );
+                pSelect->UpdateSelectableBoundarySegments( m_pRoutePointEditTarget );
                 m_pRoutePointEditTarget->m_bBlink = false;
                 
-                if( m_pEditRouteArray ) {
-                    for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
-                        Route *pr = (Route *) m_pEditRouteArray->Item( ir );
-                        if( g_pRouteMan->IsRouteValid(pr) ) {
-                            pr->FinalizeForRendering();
-                            pr->UpdateSegmentDistances();
-                            pr->m_bIsBeingEdited = false;
+                if( m_pEditBoundaryArray ) {
+                    for( unsigned int ib = 0; ib < m_pEditBoundaryArray->GetCount(); ib++ ) {
+                        Boundary *pb = (Boundary *) m_pEditBoundaryArray->Item( ib );
+                        if( g_pRouteMan->IsBoundaryValid(pb) ) {
+                            pb->FinalizeForRendering();
+                            pb->UpdateSegmentDistances();
+                            pb->m_bIsBeingEdited = false;
 
-                            pConfig->UpdateRoute( pr );
+                            pConfig->UpdateBoundary( pb );
                             
-                            pr->SetHiLite( 0 );
+                            pb->SetHiLite( 0 );
                         }
                     }
                     Refresh( false );
@@ -6566,16 +6725,12 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
                 //    Update the BoundaryProperties Dialog, if currently shown
                 if( ( NULL != pBoundaryPropDialog ) && ( pBoundaryPropDialog->IsShown() ) ) {
-                    if( m_pEditRouteArray ) {
-                        for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
-                            Route *pr = (Route *) m_pEditRouteArray->Item( ir );
-                            if( g_pRouteMan->IsRouteValid(pr) ) {
-/*                                if( !pr->IsTrack() && pBoundaryPropDialog->m_pBoundary == pr ) {
-                                    pBoundaryPropDialog->SetRouteAndUpdate( pr, true );
-                                } else if ( ( NULL != pTrackPropDialog ) && ( pTrackPropDialog->IsShown() ) && pTrackPropDialog->m_pRoute == pr ) {
-                                    pTrackPropDialog->SetTrackAndUpdate( pr );
-                                }
-*/                            }
+                    if( m_pEditBoundaryArray ) {
+                        for( unsigned int ib = 0; ib < m_pEditBoundaryArray->GetCount(); ib++ ) {
+                            Boundary *pb = (Boundary *) m_pEditBoundaryArray->Item( ib );
+                            if( g_pRouteMan->IsBoundaryValid(pb) ) {
+                                pBoundaryPropDialog->SetBoundaryAndUpdate( pb, true );
+                            }
                         }
                     }
                 }
@@ -6583,8 +6738,8 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 m_pRoutePointEditTarget->m_bPtIsSelected = false;
                 m_pRoutePointEditTarget->m_bIsBeingEdited = false;
                 
-                delete m_pEditRouteArray;
-                m_pEditRouteArray = NULL;
+                delete m_pEditBoundaryArray;
+                m_pEditBoundaryArray = NULL;
                 undo->AfterUndoableAction( m_pRoutePointEditTarget );
             }
 
@@ -6684,6 +6839,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             SelectItem *pFindAIS;
             SelectItem *pFindRP;
             SelectItem *pFindRouteSeg;
+            SelectItem *pFindBoundarySeg;
             SelectItem *pFindTrackSeg;
             SelectItem *pFindCurrent = NULL;
             SelectItem *pFindTide = NULL;
@@ -6705,6 +6861,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             pFindAIS = pSelectAIS->FindSelection( slat, slon, SELTYPE_AISTARGET );
             pFindRP = pSelect->FindSelection( slat, slon, SELTYPE_ROUTEPOINT );
             pFindRouteSeg = pSelect->FindSelection( slat, slon, SELTYPE_ROUTESEGMENT );
+            pFindBoundarySeg = pSelect->FindSelection( slat, slon, SELTYPE_BOUNDARYSEGMENT );
             pFindTrackSeg = pSelect->FindSelection( slat, slon, SELTYPE_TRACKSEGMENT );
 
             if( m_bShowCurrent ) pFindCurrent = pSelectTC->FindSelection( slat, slon,
@@ -6842,6 +6999,40 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                     if( m_pSelectedRoute->m_bRtIsSelected )
                         m_pSelectedRoute->Draw( dc, GetVP() );
                     seltype |= SELTYPE_ROUTESEGMENT;
+                }
+
+            }
+
+            if( pFindBoundarySeg )                  // there is at least one select item
+            {
+                SelectableItemList SelList = pSelect->FindSelectionList( slat, slon,
+                                             SELTYPE_BOUNDARYSEGMENT );
+
+                if( NULL == m_pSelectedBoundary )  // the case where a segment only is selected
+                {
+                    //  Choose the first visible route containing segment in the list
+                    wxSelectableItemListNode *node = SelList.GetFirst();
+                    while( node ) {
+                        SelectItem *pFindSel = node->GetData();
+
+                        Boundary *pb = (Boundary *) pFindSel->m_pData3;
+                        if( pb->IsVisible() ) {
+                            m_pSelectedBoundary = pb;
+                            break;
+                        }
+                        node = node->GetNext();
+                    }
+                }
+
+                if( m_pSelectedBoundary ) {
+                    if( NULL == m_pFoundRoutePoint ) m_pFoundRoutePoint =
+                            (RoutePoint *) pFindBoundarySeg->m_pData1;
+                    m_pFoundRoutePointSecond = (RoutePoint *) pFindBoundarySeg->m_pData2;
+
+                    m_pSelectedBoundary->m_bBndIsSelected = !(seltype & SELTYPE_ROUTEPOINT);
+                    if( m_pSelectedBoundary->m_bBndIsSelected )
+                        m_pSelectedBoundary->Draw( dc, GetVP() );
+                    seltype |= SELTYPE_BOUNDARYSEGMENT;
                 }
 
             }
@@ -7858,7 +8049,7 @@ void ChartCanvas::ShowRoutePropertiesDialog(wxString title, Route* selected)
     Refresh( false );
 }
 
-void ChartCanvas::ShowBoundaryPropertiesDialog(wxString title, Route* selected)
+void ChartCanvas::ShowBoundaryPropertiesDialog(wxString title, Boundary* selected)
 {
     if( NULL == pBoundaryPropDialog )  // There is one global instance of the RouteProp Dialog
         pBoundaryPropDialog = new BoundaryProp( this );
@@ -7893,7 +8084,7 @@ void ChartCanvas::ShowBoundaryPropertiesDialog(wxString title, Route* selected)
     }
 
 
-    //pBoundaryPropDialog->SetRouteAndUpdate( selected );
+    pBoundaryPropDialog->SetBoundaryAndUpdate( selected );
     pBoundaryPropDialog->UpdateProperties();
     if( !selected->m_bIsInLayer )
         pBoundaryPropDialog->SetDialogTitle( title );
@@ -8505,6 +8696,44 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         break;
     }
 
+    case ID_BND_MENU_DELETE: {
+        int dlg_return = wxID_YES;
+        if( g_bConfirmObjectDelete ) {
+            dlg_return = OCPNMessageBox( this,  _("Are you sure you want to delete this boundary?"),
+                _("OpenCPN Boundary Delete"), (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
+        }
+
+        if( dlg_return == wxID_YES ) {
+            if( g_pRouteMan->GetpActiveBoundary() == m_pSelectedBoundary ) g_pRouteMan->DeactivateBoundary();
+
+            if( m_pSelectedBoundary->m_bIsInLayer )
+                break;
+
+            if( !g_pRouteMan->DeleteBoundary( m_pSelectedBoundary ) )
+                break;
+            if( pBoundaryPropDialog && ( pBoundaryPropDialog->IsShown()) && (m_pSelectedBoundary == pBoundaryPropDialog->GetBoundary()) ) {
+                pBoundaryPropDialog->Hide();
+            }
+
+            m_pSelectedBoundary = NULL;
+            m_pFoundRoutePoint = NULL;
+            m_pFoundRoutePointSecond = NULL;
+
+            if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+                pRouteManagerDialog->UpdateBoundaryListCtrl();
+
+            if( pMarkPropDialog && pMarkPropDialog->IsShown() ) {
+                pMarkPropDialog->ValidateMark();
+                pMarkPropDialog->UpdateProperties();
+            }
+
+            undo->InvalidateUndo();
+
+            InvalidateGL();
+        }
+        break;
+    }
+
     case ID_RT_MENU_ACTIVATE: {
         if( g_pRouteMan->GetpActiveRoute() )
             g_pRouteMan->DeactivateRoute();
@@ -8562,6 +8791,27 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
 
         if( pRoutePropDialog && ( pRoutePropDialog->IsShown() ) ) {
             pRoutePropDialog->SetRouteAndUpdate( m_pSelectedRoute, true );
+        }
+
+        break;
+
+    case ID_BND_MENU_INSERT:
+
+        if( m_pSelectedBoundary->m_bIsInLayer ) break;
+
+        m_pSelectedBoundary->InsertPointBefore( m_pFoundRoutePointSecond, zlat, zlon );
+
+        pSelect->DeleteAllSelectableRoutePoints( m_pSelectedBoundary );
+        pSelect->DeleteAllSelectableBoundarySegments( m_pSelectedBoundary );
+
+        pSelect->AddAllSelectableBoundarySegments( m_pSelectedBoundary );
+        pSelect->AddAllSelectableRoutePoints( m_pSelectedBoundary );
+
+        m_pSelectedBoundary->RebuildGUIDList();          // ensure the GUID list is intact and good
+        pConfig->UpdateBoundary( m_pSelectedBoundary );
+
+        if( pBoundaryPropDialog && ( pBoundaryPropDialog->IsShown() ) ) {
+            pBoundaryPropDialog->SetBoundaryAndUpdate( m_pSelectedBoundary, true );
         }
 
         break;
@@ -8720,6 +8970,11 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         break;
     }
 
+    case ID_BND_MENU_PROPERTIES: {
+        ShowBoundaryPropertiesDialog( _("Boundary Properties"), m_pSelectedBoundary );
+        break;
+    }
+
     case ID_TK_MENU_PROPERTIES: {
         ShowTrackPropertiesDialog( m_pSelectedTrack );
         break;
@@ -8875,39 +9130,39 @@ void ChartCanvas::FinishBoundary( void )
     SetCursor( *pCursorArrow );
     m_bDrawingBoundary = false;
 
-    if( m_pMouseRoute ) {
-        if( m_bAppendingRoute ) 
-            pConfig->UpdateRoute( m_pMouseRoute );
-        else {
-            if( m_pMouseRoute->GetnPoints() > 1 ) {
-                pConfig->AddNewRoute( m_pMouseRoute, -1 );    // use auto next num
-            } else {
-                g_pRouteMan->DeleteRoute( m_pMouseRoute );
-                m_pMouseRoute = NULL;
-            }
+    if ( m_pMouseBoundary->m_pLastAddedPoint != m_pMouseBoundary->m_pFirstAddedPoint ) {
+        pSelect->AddSelectableBoundarySegment(m_dStartLat, m_dStartLon, m_prev_rlat, m_prev_rlon, m_pMouseBoundary->m_pFirstAddedPoint, m_pMouseBoundary->m_pLastAddedPoint, m_pMouseBoundary );
+        m_pMouseBoundary->AddPoint( m_pMouseBoundary->m_pFirstAddedPoint );
+        m_pMouseBoundary->m_lastMousePointIndex = m_pMouseBoundary->GetnPoints();
+    }
 
-            if( m_pMouseRoute )
-                m_pMouseRoute->RebuildGUIDList(); // ensure the GUID list is intact and good
+    if( m_pMouseBoundary ) {
+        if( m_pMouseBoundary->GetnPoints() > 1 ) {
+            pConfig->AddNewBoundary( m_pMouseBoundary, -1 );    // use auto next num
+        } else {
+            g_pRouteMan->DeleteBoundary( m_pMouseBoundary );
+            m_pMouseBoundary = NULL;
         }
-        if( m_pMouseRoute ){
-            m_pMouseRoute->RebuildGUIDList(); // ensure the GUID list is intact and good
-            m_pMouseRoute->SetHiLite(0);
+
+        if( m_pMouseBoundary ){
+            m_pMouseBoundary->RebuildGUIDList(); // ensure the GUID list is intact and good
+            m_pMouseBoundary->SetHiLite(0);
         }
             
 
-        if( pRoutePropDialog && ( pRoutePropDialog->IsShown() ) ) {
-            pRoutePropDialog->SetRouteAndUpdate( m_pMouseRoute, true );
-        }
-
         if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
-            pRouteManagerDialog->UpdateRouteListCtrl();
+            pRouteManagerDialog->UpdateBoundaryListCtrl();
 
     }
+    
     m_bAppendingRoute = false;
-    m_pMouseRoute = NULL;
+    m_pMouseBoundary = NULL;
 
-    m_pSelectedRoute = NULL;
+    m_pSelectedBoundary = NULL;
     m_pFoundRoutePointSecond = NULL;
+    
+    // fill boundary with colour
+    
 
     undo->InvalidateUndo();
     Refresh(true);
@@ -9231,6 +9486,31 @@ void RenderExtraRouteLegInfo( ocpnDC &dc, wxPoint ref_point, wxString s )
     dc.DrawText( s, xp, yp );
 }
 
+void RenderExtraBoundaryLegInfo( ocpnDC &dc, wxPoint ref_point, wxString s )
+{
+    wxFont *dFont = FontMgr::Get().GetFont( _("BoundaryLegInfoRollover") );
+    dc.SetFont( *dFont );
+
+    int w, h;
+    int xp, yp;
+    int hilite_offset = 3;
+#ifdef __WXMAC__
+    wxScreenDC sdc;
+    sdc.GetTextExtent(s, &w, &h, NULL, NULL, dFont);
+#else
+    dc.GetTextExtent( s, &w, &h );
+#endif
+
+    xp = ref_point.x - w;
+    yp = ref_point.y + h;
+    yp += hilite_offset;
+
+    AlphaBlending( dc, xp, yp, w, h, 0.0, GetGlobalColor( _T ( "YELO1" ) ), 172 );
+
+    dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ) ) );
+    dc.DrawText( s, xp, yp );
+}
+
 void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
 {
     if( (parent_frame->nRoute_State >= 2) || (parent_frame->nBoundary_State >= 2) ||
@@ -9302,13 +9582,18 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
                         Geodesic::GreatCircleTravel( m_prev_rlon, m_prev_rlat, gcDist*p, brg, &pLon, &pLat, &gcBearing2 );
                         destPoint = VPoint.GetPixFromLL( pLat, pLon );
                         boundary->DrawSegment( dc, &lastPoint, &destPoint, GetVP(), false );
+                        wxPoint rpn;
+                        boundary->GetPoint( 1 )->Draw( dc, &rpn );
+                        boundary->DrawSegment( dc, &rpn , &destPoint, GetVP(), false );
                         lastPoint = destPoint;
                     }
                 }
                 else {
                     boundary->DrawSegment( dc, &lastPoint, &r_rband, GetVP(), false );
-                    if ( parent_frame->nBoundary_State >= 2) {
-                        boundary->DrawSegment( dc, &lastPoint, &b_rband, GetVP(), false );
+                    if ( parent_frame->nBoundary_State >= 2) { 
+                        wxPoint rpn;
+                        boundary->GetPoint( 1 )->Draw( dc, &rpn );
+                        boundary->DrawSegment( dc, &rpn , &r_rband, GetVP(), false );
                     }
                 }
             }
@@ -9363,7 +9648,9 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
 
         if ( route ) s0 += FormatDistanceAdaptive( route->m_route_length + dist );
         else s0 += FormatDistanceAdaptive( boundary->m_boundary_length + dist );
-        RenderExtraRouteLegInfo( dc, r_rband, s0 );
+        
+        if ( route ) RenderExtraRouteLegInfo( dc, r_rband, s0 );
+        else RenderExtraBoundaryLegInfo( dc, r_rband, s0 );
     }
 }
 
@@ -10011,7 +10298,9 @@ void ChartCanvas::Refresh( bool eraseBackground, const wxRect *rect )
     //      The timer handler may Hide() the popup if the chart moved enough
     //      n.b.  We use slightly longer oneshot value to allow this method's Refresh() to complete before
     //      ptentially getting another Refresh() in the popup timer handler.
-    if( (m_pRouteRolloverWin && m_pRouteRolloverWin->IsActive()) || (m_pAISRolloverWin && m_pAISRolloverWin->IsActive()) )
+    if( (m_pRouteRolloverWin && m_pRouteRolloverWin->IsActive()) || 
+        (m_pAISRolloverWin && m_pAISRolloverWin->IsActive()) || 
+        (m_pBoundaryRolloverWin && m_pBoundaryRolloverWin->IsActive()) )
         m_RolloverPopupTimer.Start( 500, wxTIMER_ONE_SHOT );
 
 #ifdef ocpnUSE_GL
@@ -10171,6 +10460,11 @@ void ChartCanvas::DrawOverlayObjects( ocpnDC &dc, const wxRegion& ru )
         dc.DrawBitmap( *(m_pRouteRolloverWin->GetBitmap()),
                        m_pRouteRolloverWin->GetPosition().x,
                        m_pRouteRolloverWin->GetPosition().y, false );
+    }
+    if( m_pBoundaryRolloverWin && m_pBoundaryRolloverWin->IsActive() ) {
+        dc.DrawBitmap( *(m_pBoundaryRolloverWin->GetBitmap()),
+                       m_pBoundaryRolloverWin->GetPosition().x,
+                       m_pBoundaryRolloverWin->GetPosition().y, false );
     }
     if( m_pAISRolloverWin && m_pAISRolloverWin->IsActive() ) {
         dc.DrawBitmap( *(m_pAISRolloverWin->GetBitmap()),
@@ -10450,7 +10744,7 @@ void ChartCanvas::DrawAllRoutesInBBox( ocpnDC& dc, LLBBox& BltBBox, const wxRegi
 
             if( b_run ) test_box.Expand( gLon, gLat );
 
-            if( !BltBBox.IntersectOut( test_box ) ) // Route is not wholly outside window
+            if( !BltBBox.IntersectOut( test_box ) ) // Boundary is not wholly outside window
             {
                 b_drawn = true;
 
@@ -10462,7 +10756,7 @@ void ChartCanvas::DrawAllRoutesInBBox( ocpnDC& dc, LLBBox& BltBBox, const wxRegi
                 test_box1.Translate( xlate );
                 if( b_run ) test_box1.Expand( gLon, gLat );
 
-                if( !BltBBox.IntersectOut( test_box1 ) ) // Route is not wholly outside window
+                if( !BltBBox.IntersectOut( test_box1 ) ) // Boundary is not wholly outside window
                 {
                     b_drawn = true;
                     if( ( pBoundaryDraw != active_boundary ) ) pBoundaryDraw->Draw( dc, GetVP() );
@@ -10475,7 +10769,7 @@ void ChartCanvas::DrawAllRoutesInBBox( ocpnDC& dc, LLBBox& BltBBox, const wxRegi
                     wxPoint2DDouble xlate( -360., 0. );
                     wxBoundingBox test_box2 = pBoundaryDraw->GetBBox();
                     test_box2.Translate( xlate );
-                    if( !BltBBox.IntersectOut( test_box2 ) ) // Route is not wholly outside window
+                    if( !BltBBox.IntersectOut( test_box2 ) ) // Boundary is not wholly outside window
                     {
                         b_drawn = true;
                         if( ( pBoundaryDraw != active_boundary ) ) pBoundaryDraw->Draw( dc, GetVP() );
@@ -10484,7 +10778,7 @@ void ChartCanvas::DrawAllRoutesInBBox( ocpnDC& dc, LLBBox& BltBBox, const wxRegi
                     wxPoint2DDouble xlate( 360., 0. );
                     wxBoundingBox test_box3 = pBoundaryDraw->GetBBox();
                     test_box3.Translate( xlate );
-                    if( !BltBBox.IntersectOut( test_box3 ) ) // Route is not wholly outside window
+                    if( !BltBBox.IntersectOut( test_box3 ) ) // Boundary is not wholly outside window
                     {
                         b_drawn = true;
                         if( ( pBoundaryDraw != active_boundary ) ) pBoundaryDraw->Draw( dc, GetVP() );

@@ -26,6 +26,7 @@
 #ifndef BOUNDARYPROP_H
 #define BOUNDARYPROP_H
 
+#include <wx/clrpicker.h>
 
 /*!
  * Control identifiers
@@ -102,15 +103,18 @@ public:
     /// Should we show tooltips?
     static bool ShowToolTips();
 
-//    void SetBoundaryAndUpdate(Boundary *pB, bool only_points = false);
-//    Route *GetRoute(void){return m_pRoute;}
+    void SetBoundaryAndUpdate(Boundary *pB, bool only_points = false);
+    Boundary *GetBoundary(void){return m_pBoundary;}
 
     bool UpdateProperties(void);
-//    wxString MakeTideInfo(int jx, time_t tm, int tz_selection, long LMT_Offset);
+    wxString MakeTideInfo(int jx, time_t tm, int tz_selection, long LMT_Offset);
     bool SaveChanges(void);
 
+    wxTextCtrl  *m_TotalDistCtl;
+
     wxTextCtrl  *m_BoundaryNameCtl;
-    wxTextCtrl  *m_BoundaryStartCtl;
+    wxTextCtrl  *m_textDescription;
+
 
     wxListCtrl        *m_wpList;
 
@@ -138,6 +142,8 @@ public:
 
     wxStaticBoxSizer* m_pListSizer;
     wxScrolledWindow *itemDialog1;
+    
+    wxColourPickerCtrl  *m_colourBoundary;
     
 private:
     int GetTZSelection(void);

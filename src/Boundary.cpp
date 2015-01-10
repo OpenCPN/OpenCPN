@@ -66,6 +66,7 @@ Boundary::Boundary( void )
 
     pRoutePointList = new RoutePointList;
     m_pLastAddedPoint = NULL;
+    m_pFirstAddedPoint = NULL;
     m_GUID = pWayPointMan->CreateGUID( NULL );
     m_btemp = false;
     
@@ -158,6 +159,11 @@ void Boundary::AddPoint( RoutePoint *pNewPoint, bool b_rename_in_sequence, bool 
     if( !b_deferBoxCalc )
         FinalizeForRendering();
 
+    if ( m_pFirstAddedPoint == NULL )
+        m_pFirstAddedPoint = pNewPoint;
+    
+    if (!b_isLoading)
+        UpdateSegmentDistances();
     m_pLastAddedPoint = pNewPoint;
 
     if( b_rename_in_sequence && pNewPoint->GetName().IsEmpty() && !pNewPoint->m_bKeepXRoute ) {
@@ -260,13 +266,19 @@ void Boundary::Draw( ocpnDC& dc, ViewPort &VP )
     }
 
     wxPoint rpt1, rpt2;
+    wxPoint *bpts = new wxPoint[ pRoutePointList->GetCount() ];
+    int j = 0;
+    
     if ( m_bVisible )
         DrawPointWhich( dc, 1, &rpt1 );
 
     wxRoutePointListNode *node = pRoutePointList->GetFirst();
     RoutePoint *prp1 = node->GetData();
+    wxPoint frpt = rpt1;
     node = node->GetNext();
-
+    
+    bpts[ j++ ] = rpt1;
+        
     if ( !m_bVisible && prp1->m_bKeepXRoute )
             prp1->Draw( dc );
 
@@ -277,6 +289,7 @@ void Boundary::Draw( ocpnDC& dc, ViewPort &VP )
             prp2->Draw( dc );
         else if (m_bVisible)
             prp2->Draw( dc, &rpt2 );
+        bpts[ j++ ] = ( rpt2 );
 
         if ( m_bVisible )
         {
@@ -306,7 +319,7 @@ void Boundary::Draw( ocpnDC& dc, ViewPort &VP )
 
                 if( dp < dtest ) adder = 0;
 
-                RenderSegment( dc, rpt1.x, rpt1.y, rpt2.x + adder, rpt2.y, VP, true, m_hiliteWidth );
+                RenderSegment( dc, rpt1.x, rpt1.y, rpt2.x + adder, rpt2.y, VP, false, m_hiliteWidth );
             } else
                 if( !b_1_on ) {
                     if( rpt1.x < rpt2.x ) adder = (int) pix_full_circle;
@@ -319,7 +332,7 @@ void Boundary::Draw( ocpnDC& dc, ViewPort &VP )
                     
                     if( dp < dtest ) adder = 0;
 
-                    RenderSegment( dc, rpt1.x + adder, rpt1.y, rpt2.x, rpt2.y, VP, true, m_hiliteWidth );
+                    RenderSegment( dc, rpt1.x + adder, rpt1.y, rpt2.x, rpt2.y, VP, false, m_hiliteWidth );
                 }
         }
 
@@ -328,6 +341,14 @@ void Boundary::Draw( ocpnDC& dc, ViewPort &VP )
 
         node = node->GetNext();
     }
+    wxPen sPen;
+    wxBrush sBrush;
+    sPen = dc.GetPen();
+    sBrush = dc.GetBrush();
+    dc.SetPen(*wxTRANSPARENT_PEN);
+    
+    dc.DrawPolygon( j, bpts, 0, 0);
+    dc.SetPen( sPen );
 }
 
 extern ChartCanvas *cc1; /* hopefully can eventually remove? */
@@ -483,7 +504,7 @@ void Boundary::DrawGL( ViewPort &VP, OCPNRegion &region )
         }
     }
 
-    /*  Route points  */
+    /*  Boundary points  */
     for(wxRoutePointListNode *node = pRoutePointList->GetFirst(); node; node = node->GetNext()) {
         RoutePoint *prp = node->GetData();
         if ( !m_bVisible && prp->m_bKeepXRoute )
@@ -641,6 +662,18 @@ wxString Boundary::GetNewMarkSequenced( void )
     return ret;
 }
 
+RoutePoint *Boundary::GetLastPoint()
+{
+    RoutePoint *data_m1 = NULL;
+    wxRoutePointListNode *node = pRoutePointList->GetFirst();
+
+    while( node ) {
+        data_m1 = node->GetData();
+        node = node->GetNext();
+    }
+    return ( data_m1 );
+}
+
 int Boundary::GetIndexOf( RoutePoint *prp )
 {
     int ret = pRoutePointList->IndexOf( prp ) + 1;
@@ -678,6 +711,7 @@ void Boundary::DeletePoint( RoutePoint *rp, bool bRenamePoints )
         RebuildGUIDList();                  // ensure the GUID list is intact and good
 
         FinalizeForRendering();
+        UpdateSegmentDistances();
     }
 }
 
@@ -711,6 +745,7 @@ void Boundary::RemovePoint( RoutePoint *rp, bool bRenamePoints )
         RebuildGUIDList();                  // ensure the GUID list is intact and good
 
         FinalizeForRendering();
+        UpdateSegmentDistances();
     }
 
 }
@@ -971,3 +1006,74 @@ bool Boundary::IsEqualTo( Boundary *ptargetroute )
 
     return true;                              // success, they are the same
 }
+/*
+ Update the boundary segment lengths, storing each segment length in <destination> point.
+ Also, compute total boundary length by summing segment distances.
+ */
+void Boundary::UpdateSegmentDistances()
+{
+    wxPoint rpt, rptn;
+    float slat1, slon1, slat2, slon2;
+
+    double boundary_len = 0.0;
+
+    wxRoutePointListNode *node = pRoutePointList->GetFirst();
+
+    if( node ) {
+        RoutePoint *prp0 = node->GetData();
+        slat1 = prp0->m_lat;
+        slon1 = prp0->m_lon;
+
+        node = node->GetNext();
+
+        while( node ) {
+            RoutePoint *prp = node->GetData();
+            slat2 = prp->m_lat;
+            slon2 = prp->m_lon;
+
+//    Calculate the absolute distance from 1->2
+
+            double brg, dd;
+            DistanceBearingMercator( slat1, slon1, slat2, slon2, &brg, &dd );
+
+//    And store in Point 2
+            prp->m_seg_len = dd;
+
+            boundary_len += dd;
+
+            slat1 = slat2;
+            slon1 = slon2;
+
+            prp0 = prp;
+
+            node = node->GetNext();
+        }
+    }
+
+    m_boundary_length = boundary_len;
+}
+
+RoutePoint *Boundary::InsertPointBefore( RoutePoint *pRP, double rlat, double rlon,
+        bool bRenamePoints )
+{
+    RoutePoint *newpoint = new RoutePoint( rlat, rlon, wxString( _T ( "diamond" ) ),
+            GetNewMarkSequenced(), GPX_EMPTY_STRING );
+    newpoint->m_bIsInBoundary = true;
+    newpoint->m_bDynamicName = true;
+    newpoint->SetNameShown( false );
+
+    int nRP = pRoutePointList->IndexOf( pRP );
+    pRoutePointList->Insert( nRP, newpoint );
+
+    RoutePointGUIDList.Insert( pRP->m_GUID, nRP );
+
+    m_nPoints++;
+
+    if( bRenamePoints ) RenameRoutePoints();
+
+    FinalizeForRendering();
+    UpdateSegmentDistances();
+
+    return ( newpoint );
+}
+

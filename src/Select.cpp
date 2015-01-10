@@ -256,6 +256,38 @@ bool Select::AddAllSelectableRouteSegments( Route *pr )
         return false;
 }
 
+bool Select::AddAllSelectableBoundarySegments( Boundary *pb )
+{
+    wxPoint rpt, rptn;
+    float slat1, slon1, slat2, slon2;
+
+    if( pb->pRoutePointList->GetCount() ) {
+        wxRoutePointListNode *node = ( pb->pRoutePointList )->GetFirst();
+
+        RoutePoint *prp0 = node->GetData();
+        slat1 = prp0->m_lat;
+        slon1 = prp0->m_lon;
+
+        node = node->GetNext();
+
+        while( node ) {
+            RoutePoint *prp = node->GetData();
+            slat2 = prp->m_lat;
+            slon2 = prp->m_lon;
+
+            AddSelectableBoundarySegment( slat1, slon1, slat2, slon2, prp0, prp, pb );
+
+            slat1 = slat2;
+            slon1 = slon2;
+            prp0 = prp;
+
+            node = node->GetNext();
+        }
+        return true;
+    } else
+        return false;
+}
+
 bool Select::AddSelectableBoundarySegment( float slat1, float slon1, float slat2, float slon2,
         RoutePoint *pRoutePointAdd1, RoutePoint *pRoutePointAdd2, Boundary *pBoundary )
 {
@@ -308,37 +340,6 @@ bool Select::DeleteAllSelectableBoundarySegments( Boundary *pr )
     return true;
 }
 
-bool Select::AddAllSelectableBoundarySegments( Boundary *pb )
-{
-    wxPoint rpt, rptn;
-    float slat1, slon1, slat2, slon2;
-
-    if( pb->pRoutePointList->GetCount() ) {
-        wxRoutePointListNode *node = ( pb->pRoutePointList )->GetFirst();
-
-        RoutePoint *prp0 = node->GetData();
-        slat1 = prp0->m_lat;
-        slon1 = prp0->m_lon;
-
-        node = node->GetNext();
-
-        while( node ) {
-            RoutePoint *prp = node->GetData();
-            slat2 = prp->m_lat;
-            slon2 = prp->m_lon;
-
-            AddSelectableBoundarySegment( slat1, slon1, slat2, slon2, prp0, prp, pb );
-
-            slat1 = slat2;
-            slon1 = slon2;
-            prp0 = prp;
-
-            node = node->GetNext();
-        }
-        return true;
-    } else
-        return false;
-}
 
 bool Select::AddAllSelectableTrackSegments( Route *pr )
 {
@@ -383,6 +384,37 @@ bool Select::UpdateSelectableRouteSegments( RoutePoint *prp )
     while( node ) {
         pFindSel = node->GetData();
         if( pFindSel->m_seltype == SELTYPE_ROUTESEGMENT ) {
+            if( pFindSel->m_pData1 == prp ) {
+                pFindSel->m_slat = prp->m_lat;
+                pFindSel->m_slon = prp->m_lon;
+                ret = true;
+                ;
+            }
+
+            else
+                if( pFindSel->m_pData2 == prp ) {
+                    pFindSel->m_slat2 = prp->m_lat;
+                    pFindSel->m_slon2 = prp->m_lon;
+                    ret = true;
+                }
+        }
+        node = node->GetNext();
+    }
+
+    return ret;
+}
+
+bool Select::UpdateSelectableBoundarySegments( RoutePoint *prp )
+{
+    SelectItem *pFindSel;
+    bool ret = false;
+
+//    Iterate on the select list
+    wxSelectableItemListNode *node = pSelectList->GetFirst();
+
+    while( node ) {
+        pFindSel = node->GetData();
+        if( pFindSel->m_seltype == SELTYPE_BOUNDARYSEGMENT ) {
             if( pFindSel->m_pData1 == prp ) {
                 pFindSel->m_slat = prp->m_lat;
                 pFindSel->m_slon = prp->m_lon;

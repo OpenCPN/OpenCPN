@@ -85,6 +85,7 @@ extern RouteManagerDialog *pRouteManagerDialog;
 extern RoutePoint      *pAnchorWatchPoint1;
 extern RoutePoint      *pAnchorWatchPoint2;
 extern int              g_route_line_width;
+extern int              g_boundary_line_width;
 extern Multiplexer     *g_pMUX;
 extern AIS_Decoder     *g_pAIS;
 
@@ -1224,13 +1225,13 @@ void Routeman::SetColorScheme( ColorScheme cs )
 //      m_pActiveRoutePointBrush =  wxTheBrushList->FindOrCreatePen(GetGlobalColor(_T("PLRTE")), wxSOLID);
 //      m_pRoutePointBrush =        wxTheBrushList->FindOrCreatePen(GetGlobalColor(_T("CHBLK")), wxSOLID);
 
-    m_pBoundaryPen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T("UINFR") ), g_route_line_width,
+    m_pBoundaryPen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T("UINFR") ), g_boundary_line_width,
             wxSOLID );
     m_pSelectedBoundaryPen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T("UINFO") ),
-            g_route_line_width, wxSOLID );
+            g_boundary_line_width, wxSOLID );
 //      m_pActiveRoutePen =       wxThePenList->FindOrCreatePen(GetGlobalColor(_T("PLRTE")), g_route_line_width, wxSOLID);
     m_pActiveBoundaryPen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T("UARTE") ),
-            g_route_line_width, wxSOLID );
+            g_boundary_line_width, wxSOLID );
 
     m_pBoundaryBrush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T("UINFR") ), wxSOLID );
     m_pSelectedBoundaryBrush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T("UINFO") ),

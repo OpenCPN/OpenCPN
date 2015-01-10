@@ -65,7 +65,7 @@ public:
       void RemovePoint(RoutePoint *rp, bool bRenamePoints = false);
       void DeSelectBoundary();
       void FinalizeForRendering();
-      void UpdateSegmentDistances(double planspeed = -1.0);
+      void UpdateSegmentDistances();
       void CalculateDCRect(wxDC& dc_boundary, wxRect *prect, ViewPort &VP);
       int GetnPoints(void){ return m_nPoints; }
       wxBoundingBox GetBBox();
@@ -113,6 +113,7 @@ public:
       wxString    m_BoundaryDescription;
       bool        m_bIsTrack;             //TODO should use class type instead
       RoutePoint  *m_pLastAddedPoint;
+      RoutePoint  *m_pFirstAddedPoint;
       bool        m_bDeleteOnArrival;
       wxString    m_GUID;
       bool        m_bIsInLayer;

@@ -71,6 +71,7 @@ public:
     bool AddAllSelectableRoutePoints( Route *pr );
     bool AddAllSelectableRoutePoints( Boundary *pr );
     bool UpdateSelectableRouteSegments( RoutePoint *prp );
+    bool UpdateSelectableBoundarySegments( RoutePoint *prp );
     bool DeletePointSelectableTrackSegments( RoutePoint *pr );
     bool IsSegmentSelected( float a, float b, float c, float d, float slat, float slon );
     bool IsSelectableSegmentSelected( float slat, float slon, SelectItem *pFindSel );

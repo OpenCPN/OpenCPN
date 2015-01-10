@@ -83,6 +83,7 @@ public:
     
     bool CreateNavObjGPXPoints(void);
     bool CreateNavObjGPXRoutes(void);
+    bool CreateNavObjGPXBoundaries(void);
     bool CreateNavObjGPXTracks(void);
  
     bool AddGPXRoutesList( RouteList *pRoutes );
