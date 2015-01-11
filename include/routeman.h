@@ -87,6 +87,7 @@ public:
       bool DoesBoundaryContainSharedPoints( Boundary *pBoundary );
 
       bool ActivateRoute(Route *pRouteToActivate, RoutePoint *pStartPoint = NULL);
+      bool ActivateBoundary(Boundary *pBoundaryToActivate);
       bool ActivateRoutePoint(Route *pA, RoutePoint *pRP);
       bool ActivateNextPoint(Route *pr, bool skipped);
       RoutePoint *FindBestActivatePoint(Route *pR, double lat, double lon, double cog, double sog);
@@ -94,13 +95,11 @@ public:
       bool UpdateProgress();
       bool UpdateAutopilot();
       bool DeactivateRoute( bool b_arrival = false );
-      bool DeactivateBoundary( bool b_arrival = false );
+      bool DeactivateBoundary( Boundary *pBoundaryToDeactivate );
       bool IsAnyRouteActive(void){ return (pActiveRoute != NULL); }
-      bool IsAnyBoundaryActive(void){ return (pActiveBoundary != NULL); }
       void SetColorScheme(ColorScheme cs);
 
       Route *GetpActiveRoute(){ return pActiveRoute;}
-      Boundary *GetpActiveBoundary(){ return pActiveBoundary; }
       RoutePoint *GetpActivePoint(){ return pActivePoint;}
       double GetCurrentRngToActivePoint(){ return CurrentRngToActivePoint;}
       double GetCurrentBrgToActivePoint(){ return CurrentBrgToActivePoint;}
@@ -138,7 +137,6 @@ private:
     
       MyApp       *m_pparent_app;
       Route       *pActiveRoute;
-      Boundary    *pActiveBoundary;
       RoutePoint  *pActivePoint;
       double       RouteBrgToActivePoint;        //TODO all these need to be doubles
       double       CurrentSegmentBeginLat;

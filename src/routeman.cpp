@@ -304,6 +304,19 @@ bool Routeman::ActivateRoute( Route *pRouteToActivate, RoutePoint *pStartPoint )
     return true;
 }
 
+bool Routeman::ActivateBoundary( Boundary *pBoundaryToActivate )
+{
+    wxJSONValue v;
+    v[_T("Name")] = pBoundaryToActivate->m_BoundaryNameString;
+    v[_T("GUID")] = pBoundaryToActivate->m_GUID;
+    wxString msg_id( _T("OCPN_BND_ACTIVATED") );
+    g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
+
+    pBoundaryToActivate->m_bBndIsActive = true;
+
+    return true;
+}
+
 bool Routeman::ActivateRoutePoint( Route *pA, RoutePoint *pRP_target )
 {
     wxJSONValue v;
@@ -616,34 +629,16 @@ bool Routeman::DeactivateRoute( bool b_arrival )
     return true;
 }
 
-bool Routeman::DeactivateBoundary( bool b_arrival )
+bool Routeman::DeactivateBoundary( Boundary *pBoundaryToDeactivate )
 {
-    if( pActivePoint ) {
-        pActivePoint->m_bBlink = false;
-        pActivePoint->m_bIsActive = false;
-    }
-
-    if( pActiveBoundary ) {
-        pActiveBoundary->m_bBndIsActive = false;
-    }
-
     wxJSONValue v;
-    if( !b_arrival ) {
-        v[_T("Boundary_deactivated")] = pActiveBoundary->m_BoundaryNameString;
-        v[_T("GUID")] = pActiveBoundary->m_GUID;
-        wxString msg_id( _T("OCPN_BND_DEACTIVATED") );
-        g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
-    } else {
-        v[_T("GUID")] = pActiveBoundary->m_GUID;
-        v[_T("Route_ended")] = pActiveBoundary->m_BoundaryNameString;
-    }
+    v[_T("Boundary_deactivated")] = pBoundaryToDeactivate->m_BoundaryNameString;
+    v[_T("GUID")] = pBoundaryToDeactivate->m_GUID;
+    wxString msg_id( _T("OCPN_BND_DEACTIVATED") );
+    g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
 
-    pActiveBoundary = NULL;
-
-
+    pBoundaryToDeactivate->m_bBndIsActive = false;
     console->pCDI->ClearBackground();
-
-    console->Show( false );
 
     m_bDataValid = false;
 

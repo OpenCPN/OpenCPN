@@ -571,6 +571,8 @@ Boundary *GPXLoadBoundary1( pugi::xml_node &wpt_node, bool b_fullviz,
     wxString DescString;
     bool b_propviz = false;
     bool b_viz = true;
+    bool b_propactive = false;
+    bool b_active = false;
     Boundary *pTentBoundary = NULL;
     HyperlinkList *linklist = NULL;
     
@@ -616,7 +618,9 @@ Boundary *GPXLoadBoundary1( pugi::xml_node &wpt_node, bool b_fullviz,
             {
                 for( pugi::xml_node gpxx_child = tschild.first_child(); gpxx_child; gpxx_child = gpxx_child.next_sibling() ) {
                     wxString gpxx_name = wxString::FromUTF8( gpxx_child.name() );
-                    if( gpxx_name.EndsWith( _T ( "DisplayColor" ) ) )
+                    if( gpxx_name.EndsWith( _T ( "LineColour" ) ) )
+                         pTentBoundary->m_LineColour = wxString::FromUTF8(gpxx_child.first_child().value() );
+                    if( gpxx_name.EndsWith( _T ( "FillColour" ) ) )
                          pTentBoundary->m_Colour = wxString::FromUTF8(gpxx_child.first_child().value() );
                 }
             }
@@ -658,9 +662,25 @@ Boundary *GPXLoadBoundary1( pugi::xml_node &wpt_node, bool b_fullviz,
                     }
                     
                     else
+                    if( ext_name == _T ( "opencpn:active" ) ) {
+                                wxString active = wxString::FromUTF8(ext_child.first_child().value());
+                                b_propactive = true;
+                                b_active = ( active == _T("1") );
+                    }
+                    
+                    else
                     if( ext_name == _T ( "opencpn:style" ) ) {
                         for (pugi::xml_attribute attr = ext_child.first_attribute(); attr; attr = attr.next_attribute())
                         {
+                            if( !strcmp( attr.name(), "colour" ) ) {
+                                wxString colour = wxString::FromUTF8( ext_child.first_child().value() );
+                                pTentBoundary->m_Colour = colour;
+                            }
+                            if( !strcmp( attr.name(), "linecolour" ) ) {
+                                wxString linecolour = wxString::FromUTF8( ext_child.first_child().value() );
+                                pTentBoundary->m_LineColour = linecolour;
+                            }
+                                pTentBoundary->m_style = attr.as_int();
                             if( !strcmp( attr.name(), "style" ) )
                                 pTentBoundary->m_style = attr.as_int();
                             else
@@ -680,11 +700,13 @@ Boundary *GPXLoadBoundary1( pugi::xml_node &wpt_node, bool b_fullviz,
                         pTentBoundary->m_TimeDisplayFormat, wxString::FromUTF8(ext_child.first_child().value());
                      }
                      else
-                     if( ext_name.EndsWith( _T ( "RouteExtension" ) ) ) //Parse GPXX color
+                     if( ext_name.EndsWith( _T ( "BoundaryExtension" ) ) ) //Parse GPXX color
                      {
                         for( pugi::xml_node gpxx_child = ext_child.first_child(); gpxx_child; gpxx_child = gpxx_child.next_sibling() ) {
                             wxString gpxx_name = wxString::FromUTF8( gpxx_child.name() );
-                            if( gpxx_name.EndsWith( _T ( "DisplayColor" ) ) )
+                            if( gpxx_name.EndsWith( _T ( "LineColour" ) ) )
+                                 pTentBoundary->m_LineColour = wxString::FromUTF8(gpxx_child.first_child().value() );
+                            if( gpxx_name.EndsWith( _T ( "FilleColour" ) ) )
                                  pTentBoundary->m_Colour = wxString::FromUTF8(gpxx_child.first_child().value() );
                         }
                      }
@@ -702,6 +724,8 @@ Boundary *GPXLoadBoundary1( pugi::xml_node &wpt_node, bool b_fullviz,
                 pTentBoundary->SetVisible();
         }
  
+        pTentBoundary->m_bBndIsActive = b_active;
+        
         if( b_layer ){
             pTentBoundary->SetVisible( b_layerviz );
             pTentBoundary->m_bIsInLayer = true;
@@ -1139,22 +1163,21 @@ bool GPXCreateBoundary( pugi::xml_node node, Boundary *pBoundary )
     
     child = child_ext.append_child("opencpn:viz");
     child.append_child(pugi::node_pcdata).set_value(pBoundary->IsVisible() == true ? "1" : "0");
+
+    child = child_ext.append_child("opencpn:active");
+    child.append_child(pugi::node_pcdata).set_value(pBoundary->m_bBndIsActive == true ? "1" : "0");
     
-    if( pBoundary->m_width != STYLE_UNDEFINED || pBoundary->m_style != STYLE_UNDEFINED ) {
+//    if( pBoundary->m_width != STYLE_UNDEFINED || pBoundary->m_style != STYLE_UNDEFINED  || pBoundary->m_Colour.length() > 0 || pBoundary->m_LineColour.length() > 0 ) {
         child = child_ext.append_child("opencpn:style");
         
-        if( pBoundary->m_width != STYLE_UNDEFINED )
-            child.append_attribute("width") = pBoundary->m_width;
-        if( pBoundary->m_style != STYLE_UNDEFINED )
-            child.append_attribute("style") = pBoundary->m_style;
-    }
+        child.append_attribute("colour");
+        child.append_child(pugi::node_pcdata).set_value( pBoundary->m_Colour );
+        child.append_attribute("linecolour");
+        child.append_child(pugi::node_pcdata).set_value( pBoundary->m_LineColour );
+        child.append_attribute("width") = pBoundary->m_width;
+        child.append_attribute("style") = pBoundary->m_style;
+//    }
     
-    if( pBoundary->m_Colour != wxEmptyString ) {
-        pugi::xml_node gpxx_ext = child_ext.append_child("gpxx:BoundaryExtension");
-        child = gpxx_ext.append_child("gpxx:DisplayColor");
-        child.append_child(pugi::node_pcdata).set_value(pBoundary->m_Colour.mb_str());
-    }
-                                 
     RoutePointList *pRoutePointList = pBoundary->pRoutePointList;
     wxRoutePointListNode *node2 = pRoutePointList->GetFirst();
     RoutePoint *prp;

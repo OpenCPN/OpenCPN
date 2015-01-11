@@ -388,6 +388,8 @@ enum
     ID_BND_MENU_PROPERTIES,
     ID_BND_MENU_INSERT,
     ID_BND_MENU_DELETE,
+    ID_BND_MENU_ACTIVATE,
+    ID_BND_MENU_DEACTIVATE,
     
     ID_DEF_MENU_GROUPBASE,  // Must be last entry, as chart group identifiers are created dynamically
 
@@ -1115,6 +1117,8 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
     EVT_MENU ( ID_BND_MENU_PROPERTIES,   ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_BND_MENU_INSERT,       ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_BND_MENU_DELETE,       ChartCanvas::PopupMenuHandler )
+    EVT_MENU ( ID_BND_MENU_ACTIVATE,     ChartCanvas::PopupMenuHandler )
+    EVT_MENU ( ID_BND_MENU_DEACTIVATE,   ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_WP_MENU_SET_ANCHORWATCH,    ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_WP_MENU_CLEAR_ANCHORWATCH,  ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_DEF_MENU_AISTARGETLIST,     ChartCanvas::PopupMenuHandler )
@@ -3066,6 +3070,9 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
                     else
                         s.Append( pb->m_BoundaryNameString );
 
+                    if ( pb->m_bBndIsActive ) s.Append( _("\nBoundary Active") );
+                    else s.Append( _("\nBoundary Inactive") );
+                    
                     s << _T("\n") << _("Total Length: ") << FormatDistanceAdaptive( pb->m_boundary_length)
                     << _T("\n") << _("Leg: from ") << segShow_point_a->GetName()
                     << _(" to ") << segShow_point_b->GetName()
@@ -7010,7 +7017,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
                 if( NULL == m_pSelectedBoundary )  // the case where a segment only is selected
                 {
-                    //  Choose the first visible route containing segment in the list
+                    //  Choose the first visible boundary containing segment in the list
                     wxSelectableItemListNode *node = SelList.GetFirst();
                     while( node ) {
                         SelectItem *pFindSel = node->GetData();
@@ -7558,13 +7565,15 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 
         if( blay ) {
             delete menuBoundary;
-            menuBoundary = new wxMenu( _("Layer Track") );
+            menuBoundary = new wxMenu( _("Layer Boundary") );
             MenuAppend( menuBoundary, ID_BND_MENU_PROPERTIES, _( "Properties..." ) );
         }
         else {
             MenuAppend( menuBoundary, ID_BND_MENU_PROPERTIES, _( "Properties..." ) );
             MenuAppend( menuBoundary, ID_BND_MENU_INSERT, _( "Insert Waypoint" ) );
             MenuAppend( menuBoundary, ID_BND_MENU_DELETE, _( "Delete..." ) );
+            if ( m_pSelectedBoundary->m_bBndIsActive ) MenuAppend( menuBoundary, ID_BND_MENU_DEACTIVATE, _( "Deactivate") );
+            else  MenuAppend( menuBoundary, ID_BND_MENU_ACTIVATE, _( "Activate" ) );
         }
 
         //      Set this menu as the "focused context menu"
@@ -7725,6 +7734,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     }
 
     m_pSelectedRoute = NULL;
+    m_pSelectedBoundary = NULL;
 
     if( m_pFoundRoutePoint ) {
         m_pFoundRoutePoint->m_bPtIsSelected = false;
@@ -8085,7 +8095,7 @@ void ChartCanvas::ShowBoundaryPropertiesDialog(wxString title, Boundary* selecte
 
 
     pBoundaryPropDialog->SetBoundaryAndUpdate( selected );
-    pBoundaryPropDialog->UpdateProperties();
+    pBoundaryPropDialog->UpdateProperties( selected );
     if( !selected->m_bIsInLayer )
         pBoundaryPropDialog->SetDialogTitle( title );
     else {
@@ -8704,7 +8714,7 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         }
 
         if( dlg_return == wxID_YES ) {
-            if( g_pRouteMan->GetpActiveBoundary() == m_pSelectedBoundary ) g_pRouteMan->DeactivateBoundary();
+            if( m_pSelectedBoundary->IsActive() ) g_pRouteMan->DeactivateBoundary( m_pSelectedBoundary );
 
             if( m_pSelectedBoundary->m_bIsInLayer )
                 break;
@@ -8757,11 +8767,23 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         break;
     }
 
+    case ID_BND_MENU_ACTIVATE: {
+        g_pRouteMan->ActivateBoundary( m_pSelectedBoundary );
+
+        break;
+    }
+
     case ID_RT_MENU_DEACTIVATE:
         g_pRouteMan->DeactivateRoute();
         m_pSelectedRoute->m_bRtIsSelected = false;
 
         break;
+
+    case ID_BND_MENU_DEACTIVATE: {
+        g_pRouteMan->DeactivateBoundary( m_pSelectedBoundary );
+
+        break;
+    }
 
     case ID_RT_MENU_INSERT:
 
@@ -9131,7 +9153,7 @@ void ChartCanvas::FinishBoundary( void )
     m_bDrawingBoundary = false;
 
     if ( m_pMouseBoundary->m_pLastAddedPoint != m_pMouseBoundary->m_pFirstAddedPoint ) {
-        pSelect->AddSelectableBoundarySegment(m_dStartLat, m_dStartLon, m_prev_rlat, m_prev_rlon, m_pMouseBoundary->m_pFirstAddedPoint, m_pMouseBoundary->m_pLastAddedPoint, m_pMouseBoundary );
+        pSelect->AddSelectableBoundarySegment(m_prev_rlat, m_prev_rlon, m_dStartLat, m_dStartLon, m_pMouseBoundary->m_pLastAddedPoint, m_pMouseBoundary->m_pFirstAddedPoint, m_pMouseBoundary );
         m_pMouseBoundary->AddPoint( m_pMouseBoundary->m_pFirstAddedPoint );
         m_pMouseBoundary->m_lastMousePointIndex = m_pMouseBoundary->GetnPoints();
     }

@@ -218,14 +218,14 @@ void BoundaryProp::OnBoundaryPropRightClick( wxListEvent &event )
     wxMenu menu;
 
     if( ! m_pBoundary->m_bIsInLayer ) {
-        wxMenuItem* editItem = menu.Append( ID_RCLK_MENU_EDIT_WP, _("&Waypoint Properties...") );
+        wxMenuItem* editItem = menu.Append( ID_BOUNDARYPROP_MENU_EDIT_WP, _("&Waypoint Properties...") );
         editItem->Enable( m_wpList->GetSelectedItemCount() == 1 );
 
-        wxMenuItem* delItem = menu.Append( ID_RCLK_MENU_DELETE, _("&Remove Selected") );
+        wxMenuItem* delItem = menu.Append( ID_BOUNDARYPROP_MENU_DELETE, _("&Remove Selected") );
         delItem->Enable( m_wpList->GetSelectedItemCount() > 0 && m_wpList->GetItemCount() > 2 );
     }
 
-    wxMenuItem* copyItem = menu.Append( ID_RCLK_MENU_COPY_TEXT, _("&Copy all as text") );
+    wxMenuItem* copyItem = menu.Append( ID_BOUNDARYPROP_MENU_COPY_TEXT, _("&Copy all as text") );
 
     PopupMenu( &menu );
 }
@@ -256,7 +256,7 @@ void BoundaryProp::CreateControls()
     itemStaticBoxSizer3->Add( itemStaticText4, 0,
             wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, 5 );
 
-    m_BoundaryNameCtl = new wxTextCtrl( itemDialog1, ID_TEXTCTRL, _T(""), wxDefaultPosition,
+    m_BoundaryNameCtl = new wxTextCtrl( itemDialog1, ID_BOUNDARYPROP_TEXTCTRL, _T(""), wxDefaultPosition,
             wxSize( 710, -1 ), 0 );
     itemStaticBoxSizer3->Add( m_BoundaryNameCtl, 0,
             wxALIGN_LEFT | wxLEFT | wxRIGHT | wxBOTTOM | wxEXPAND, 5 );
@@ -280,12 +280,13 @@ void BoundaryProp::CreateControls()
             wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE,
             5 );
             
-    m_TotalDistCtl = new wxTextCtrl( itemDialog1, ID_TEXTCTRL3, _T(""), wxDefaultPosition,
+    m_TotalDistCtl = new wxTextCtrl( itemDialog1, ID_BOUNDARYPROP_TEXTCTRL3, _T(""), wxDefaultPosition,
             wxDefaultSize, wxTE_READONLY );
     itemStaticBoxSizer3->Add( m_TotalDistCtl, 0,
             wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxBOTTOM, 5 );
             
-    
+    m_pBoundaryActive = new wxCheckBox( itemDialog1, ID_BOUNDARYPROP_ACTIVE, _("Active") );
+    itemStaticBoxSizer3->Add( m_pBoundaryActive, 0 );
 
     wxFlexGridSizer* itemFlexGridSizer6a = new wxFlexGridSizer( 2, 4, 0, 0 );
     itemStaticBoxSizer3->Add( itemFlexGridSizer6a, 1, wxALIGN_LEFT | wxALL, 5 );
@@ -293,13 +294,10 @@ void BoundaryProp::CreateControls()
     wxBoxSizer* bSizer2;
     bSizer2 = new wxBoxSizer( wxHORIZONTAL );
 
-    m_staticText1 = new wxStaticText( itemDialog1, wxID_ANY, _("Colour:"), wxDefaultPosition, wxDefaultSize,
+    m_staticText1 = new wxStaticText( itemDialog1, wxID_ANY, _("Line Colour:"), wxDefaultPosition, wxDefaultSize,
             0 );
     m_staticText1->Wrap( -1 );
     bSizer2->Add( m_staticText1, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
-    
-    m_colourBoundary = new wxColourPickerCtrl( itemDialog1, wxID_ANY, *wxRED, wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BNDCOLOUR") );
-    bSizer2->Add( m_colourBoundary, 0, wxALIGN_RIGHT | wxALL, 1 );
 
     wxString m_chColorChoices[] = { _("Default color"), _("Black"), _("Dark Red"), _("Dark Green"),
             _("Dark Yellow"), _("Dark Blue"), _("Dark Magenta"), _("Dark Cyan"),
@@ -311,10 +309,20 @@ void BoundaryProp::CreateControls()
     m_chColor->SetSelection( 0 );
     bSizer2->Add( m_chColor, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
 
-    m_staticText2 = new wxStaticText( itemDialog1, wxID_ANY, _("Style:"), wxDefaultPosition, wxDefaultSize,
+    m_staticText2 = new wxStaticText( itemDialog1, wxID_ANY, _("Fill Colour:"), wxDefaultPosition, wxDefaultSize,
             0 );
     m_staticText2->Wrap( -1 );
     bSizer2->Add( m_staticText2, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
+    
+    m_chLineColor = new wxChoice( itemDialog1, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_chColorNChoices,
+            m_chColorChoices, 0 );
+    m_chLineColor->SetSelection( 0 );
+    bSizer2->Add( m_chLineColor, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
+
+    m_staticText3 = new wxStaticText( itemDialog1, wxID_ANY, _("Style:"), wxDefaultPosition, wxDefaultSize,
+            0 );
+    m_staticText3->Wrap( -1 );
+    bSizer2->Add( m_staticText3, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
 
     wxString m_chStyleChoices[] = { _("Default"), _("Solid"), _("Dot"), _("Long dash"),
             _("Short dash"), _("Dot dash") };
@@ -324,10 +332,10 @@ void BoundaryProp::CreateControls()
     m_chStyle->SetSelection( 0 );
     bSizer2->Add( m_chStyle, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
 
-    m_staticText2 = new wxStaticText( itemDialog1, wxID_ANY, _("Width:"), wxDefaultPosition, wxDefaultSize,
+    m_staticText4 = new wxStaticText( itemDialog1, wxID_ANY, _("Width:"), wxDefaultPosition, wxDefaultSize,
             0 );
-    m_staticText2->Wrap( -1 );
-    bSizer2->Add( m_staticText2, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
+    m_staticText4->Wrap( -1 );
+    bSizer2->Add( m_staticText4, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
 
     wxString m_chWidthChoices[] = { _("Default"), _("1 pixel"), _("2 pixels"), _("3 pixels"),
             _("4 pixels"), _("5 pixels"), _("6 pixels"), _("7 pixels"), _("8 pixels"),
@@ -371,7 +379,7 @@ void BoundaryProp::CreateControls()
 
 
     //      Create the list control
-    m_wpList = new wxListCtrl( itemDialog1, ID_LISTCTRL, wxDefaultPosition, wxSize( 800, 200 ),
+    m_wpList = new wxListCtrl( itemDialog1, ID_BOUNDARYPROP_LISTCTRL, wxDefaultPosition, wxSize( 800, 200 ),
             wxLC_REPORT | wxLC_HRULES | wxLC_VRULES | wxLC_EDIT_LABELS );
 
     int char_size = GetCharWidth();
@@ -454,7 +462,7 @@ void BoundaryProp::OnBoundarypropListClick( wxListEvent& event )
 void BoundaryProp::OnBoundaryPropMenuSelected( wxCommandEvent& event )
 {
     switch( event.GetId() ) {
-        case ID_RCLK_MENU_DELETE: {
+        case ID_BOUNDARYPROP_MENU_DELETE: {
             int dlg_return = OCPNMessageBox( this, _("Are you sure you want to remove this waypoint?"),
                     _("OpenCPN Remove Waypoint"), (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
 
@@ -471,7 +479,7 @@ void BoundaryProp::OnBoundaryPropMenuSelected( wxCommandEvent& event )
             }
             break;
         }
-        case ID_RCLK_MENU_EDIT_WP: {
+        case ID_BOUNDARYPROP_MENU_EDIT_WP: {
             long item = -1;
 
             item = m_wpList->GetNextItem( item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
@@ -506,19 +514,21 @@ void BoundaryProp::SetDialogTitle(const wxString & title)
     SetTitle(title);
 }
 
-bool BoundaryProp::UpdateProperties()
+bool BoundaryProp::UpdateProperties( Boundary *pBoundary )
 {
-    if( NULL == m_pBoundary ) return false;
+    if( NULL == pBoundary ) return false;
 
     ::wxBeginBusyCursor();
 
     long LMT_Offset = 0;         // offset in seconds from UTC for given location (-1 hr / 15 deg W)
     
-    m_BoundaryNameCtl->SetValue( m_pBoundary->m_BoundaryNameString );
+    m_BoundaryNameCtl->SetValue( pBoundary->m_BoundaryNameString );
+    m_textDescription->SetValue( pBoundary->m_BoundaryDescription);
+    m_pBoundaryActive->SetValue( pBoundary->IsActive() );
 
     double brg;
     double join_distance = 0.;
-    RoutePoint *first_point = m_pBoundary->GetPoint( 1 );
+    RoutePoint *first_point = pBoundary->GetPoint( 1 );
     if( first_point )
         DistanceBearingMercator( first_point->m_lat, first_point->m_lon, gLat, gLon, &brg, &join_distance );
 
@@ -538,7 +548,7 @@ bool BoundaryProp::UpdateProperties()
     }
 
     //  Total length
-    double total_length = m_pBoundary->m_boundary_length;
+    double total_length = pBoundary->m_boundary_length;
 
     wxString slen;
     slen.Printf( wxT("%5.2f ") + getUsrDistanceUnit(), toUsrDistance( total_length ) );
@@ -548,7 +558,7 @@ bool BoundaryProp::UpdateProperties()
     wxString tide_form;
 
     //  Iterate on Route Points
-    wxRoutePointListNode *node = m_pBoundary->pRoutePointList->GetFirst();
+    wxRoutePointListNode *node = pBoundary->pRoutePointList->GetFirst();
 
     int i = 0;
     double slat = gLat;
@@ -598,7 +608,7 @@ bool BoundaryProp::UpdateProperties()
     RoutePoint * _next_prp = (next_node)? next_node->GetData(): NULL;
     if (_next_prp )
     {
-    DistanceBearingMercator( _next_prp->m_lat, _next_prp->m_lon, prp->m_lat, prp->m_lon, &course, &tmp_leg_dist );
+        DistanceBearingMercator( _next_prp->m_lat, _next_prp->m_lon, prp->m_lat, prp->m_lon, &course, &tmp_leg_dist );
     }else
     {
       course = 0.0;
@@ -673,25 +683,35 @@ bool BoundaryProp::UpdateProperties()
         }
     }
 
-    if( m_pBoundary->m_Colour == wxEmptyString ) m_chColor->Select( 0 );
+    if( pBoundary->m_Colour == wxEmptyString ) m_chColor->Select( 0 );
     else {
         for( unsigned int i = 0; i < sizeof( ::GpxxColorNames ) / sizeof(wxString); i++ ) {
-            if( m_pBoundary->m_Colour == ::GpxxColorNames[i] ) {
+            if( pBoundary->m_Colour == ::GpxxColorNames[i] ) {
                 m_chColor->Select( i + 1 );
                 break;
             }
         }
     }
 
+    if( pBoundary->m_LineColour == wxEmptyString ) m_chLineColor->Select( 0 );
+    else {
+        for( unsigned int i = 0; i < sizeof( ::GpxxColorNames ) / sizeof(wxString); i++ ) {
+            if( pBoundary->m_LineColour == ::GpxxColorNames[i] ) {
+                m_chLineColor->Select( i + 1 );
+                break;
+            }
+        }
+    }
+
     for( unsigned int i = 0; i < sizeof( ::StyleValues ) / sizeof(int); i++ ) {
-        if( m_pBoundary->m_style == ::StyleValues[i] ) {
+        if( pBoundary->m_style == ::StyleValues[i] ) {
             m_chStyle->Select( i );
             break;
         }
     }
 
     for( unsigned int i = 0; i < sizeof( ::WidthValues ) / sizeof(int); i++ ) {
-        if( m_pBoundary->m_width == ::WidthValues[i] ) {
+        if( pBoundary->m_width == ::WidthValues[i] ) {
             m_chWidth->Select( i );
             break;
         }
@@ -708,9 +728,15 @@ bool BoundaryProp::SaveChanges( void )
     if( m_pBoundary && !m_pBoundary->m_bIsInLayer ) {
         //  Get User input Text Fields
         m_pBoundary->m_BoundaryNameString = m_BoundaryNameCtl->GetValue();
+        m_pBoundary->m_BoundaryDescription = m_textDescription->GetValue();
+        m_pBoundary->m_bBndIsActive = m_pBoundaryActive->GetValue();
+        
         if( m_chColor->GetSelection() == 0 ) m_pBoundary->m_Colour = wxEmptyString;
         else
             m_pBoundary->m_Colour = ::GpxxColorNames[m_chColor->GetSelection() - 1];
+        if( m_chLineColor->GetSelection() == 0 ) m_pBoundary->m_LineColour = wxEmptyString;
+        else
+            m_pBoundary->m_LineColour = ::GpxxColorNames[m_chLineColor->GetSelection() - 1];
         m_pBoundary->m_style = ::StyleValues[m_chStyle->GetSelection()];
         m_pBoundary->m_width = ::WidthValues[m_chWidth->GetSelection()];
 
@@ -723,7 +749,7 @@ bool BoundaryProp::SaveChanges( void )
         wxJSONValue v;
         v[_T("Name")] =  m_pBoundary->m_BoundaryNameString;
         v[_T("GUID")] =  m_pBoundary->m_GUID;
-        wxString msg_id( _T("OCPN_TRK_ACTIVATED") );
+        wxString msg_id( _T("OCPN_BND_ACTIVATED") );
         g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
     }
 
@@ -832,7 +858,7 @@ void BoundaryProp::SetBoundaryAndUpdate( Boundary *pB, bool only_points )
 
     InitializeList();
 
-    UpdateProperties();
+    UpdateProperties( pB );
 
     if( m_pBoundary )
         m_wpList->Show();

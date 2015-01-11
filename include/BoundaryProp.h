@@ -40,33 +40,25 @@
 #define SYMBOL_BOUNDARYPROP_SIZE wxSize(450, 300)
 #define SYMBOL_BOUNDARYPROP_POSITION wxDefaultPosition
 
-#define ID_TEXTCTRL            9001
-#define ID_TEXTCTRL2           9002
-#define ID_TEXTCTRL1           9003
-#define ID_TEXTCTRL3           9005
-#define ID_LISTCTRL            9004
-#define ID_BOUNDARYPROP_CANCEL    9006
-#define ID_BOUNDARYPROP_OK        9007
-#define ID_BOUNDARYPROP_SPLIT     9107
-#define ID_BOUNDARYPROP_EXTEND    9207
-#define ID_BOUNDARYPROP_COPYTXT   9307
-#define ID_BOUNDARYPROP_PRINT     9407
-//#define ID_PLANSPEEDCTL        9008
-#define ID_TEXTCTRL4           9009
-#define ID_TEXTCTRLDESC        9010
-#define ID_STARTTIMECTL        9011
-//#define ID_TIMEZONESEL         9012
-#define ID_TRACKLISTCTRL       9013
-#define ID_RCLK_MENU_COPY_TEXT 9014
-#define ID_RCLK_MENU_EDIT_WP   9015
-#define ID_RCLK_MENU_DELETE    9016
-#define ID_RCLK_MENU_COPY      9017
-#define ID_RCLK_MENU_COPY_LL   9018
-#define ID_RCLK_MENU_PASTE     9019
-#define ID_RCLK_MENU_PASTE_LL  9020
-//#define ID_TIMEZONESEL_UTC     9021
-//#define ID_TIMEZONESEL_LOCAL   9022
-//#define ID_TIMEZONESEL_LMT     9023
+#define ID_BOUNDARYPROP_TEXTCTRL            9001
+#define ID_BOUNDARYPROP_TEXTCTRL2           9002
+#define ID_BOUNDARYPROP_TEXTCTRL1           9003
+#define ID_BOUNDARYPROP_TEXTCTRL3           9005
+#define ID_BOUNDARYPROP_LISTCTRL            9004
+#define ID_BOUNDARYPROP_CANCEL              9006
+#define ID_BOUNDARYPROP_OK                  9007
+#define ID_BOUNDARYPROP_SPLIT               9008
+#define ID_BOUNDARYPROP_EXTEND              9009
+#define ID_BOUNDARYPROP_COPYTXT             9010
+#define ID_BOUNDARYPROP_PRINT               9011
+#define ID_BOUNDARYPROP_TEXTCTRL4           9012
+#define ID_BOUNDARYPROP_TEXTCTRLDESC        9013
+#define ID_BOUNDARYPROP_STARTTIMECTL        9014
+#define ID_BOUNDARYPROP_ACTIVE              9015 
+#define ID_BOUNDAYRPROP_MENU_COPY_TEXT      9016
+#define ID_BOUNDARYPROP_MENU_EDIT_WP        9017
+#define ID_BOUNDARYPROP_MENU_DELETE         9018
+#define ID_BOUNDARYPROP_MENU_COPY_TEXT      9019
 
 
 class BoundaryProp : public wxDialog
@@ -106,7 +98,7 @@ public:
     void SetBoundaryAndUpdate(Boundary *pB, bool only_points = false);
     Boundary *GetBoundary(void){return m_pBoundary;}
 
-    bool UpdateProperties(void);
+    bool UpdateProperties( Boundary *pboundary );
     wxString MakeTideInfo(int jx, time_t tm, int tz_selection, long LMT_Offset);
     bool SaveChanges(void);
 
@@ -115,8 +107,9 @@ public:
     wxTextCtrl  *m_BoundaryNameCtl;
     wxTextCtrl  *m_textDescription;
 
+    wxCheckBox  *m_pBoundaryActive;
 
-    wxListCtrl        *m_wpList;
+    wxListCtrl  *m_wpList;
 
     wxButton*     m_CancelButton;
     wxButton*     m_OKButton;
@@ -136,14 +129,14 @@ public:
     wxStaticText  *m_staticText1;
     wxStaticText  *m_staticText2;
     wxStaticText  *m_staticText3;
+    wxStaticText  *m_staticText4;
     wxChoice      *m_chColor;
+    wxChoice      *m_chLineColor;
     wxChoice      *m_chStyle;
     wxChoice      *m_chWidth;
 
     wxStaticBoxSizer* m_pListSizer;
     wxScrolledWindow *itemDialog1;
-    
-    wxColourPickerCtrl  *m_colourBoundary;
     
 private:
     int GetTZSelection(void);

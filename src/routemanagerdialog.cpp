@@ -483,7 +483,7 @@ RouteManagerDialog::RouteManagerDialog( wxWindow *parent )
     style |= wxSTAY_ON_TOP;
 #endif
 
-    wxDialog::Create( parent, -1, wxString( _("Route & Mark Manager") ), wxDefaultPosition, wxDefaultSize,
+    wxDialog::Create( parent, -1, wxString( _("Route, Boundary, Mark & Track Manager") ), wxDefaultPosition, wxDefaultSize,
             style );
     
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
@@ -913,6 +913,7 @@ void RouteManagerDialog::Create()
     imglist->Add( wxBitmap( eyex ) );
     m_pRouteListCtrl->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
     // Assign will handle destroy, Set will not. It's OK, that's what we want
+    m_pBoundaryListCtrl->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
     m_pTrkListCtrl->SetImageList( imglist, wxIMAGE_LIST_SMALL );
     m_pWptListCtrl->SetImageList( pWayPointMan->Getpmarkicon_image_list(), wxIMAGE_LIST_SMALL );
     m_pLayListCtrl->SetImageList( imglist, wxIMAGE_LIST_SMALL );
@@ -934,6 +935,7 @@ void RouteManagerDialog::Create()
 RouteManagerDialog::~RouteManagerDialog()
 {
     delete m_pRouteListCtrl;
+    delete m_pBoundaryListCtrl;
     delete m_pTrkListCtrl;
     delete m_pWptListCtrl;
     delete m_pLayListCtrl;
@@ -1146,30 +1148,26 @@ void RouteManagerDialog::UpdateBndButtons()
 
     m_lastBndItem = selected_index_index;
 
-/*    btnBndDelete->Enable( m_pBoundaryListCtrl->GetSelectedItemCount() > 0 );
-    btnBndZoomto->Enable( enable1 ); // && !cc1->m_bFollow);
+    btnBndDelete->Enable( m_pBoundaryListCtrl->GetSelectedItemCount() > 0 );
+    btnBndZoomto->Enable( enable1 ); 
     btnBndProperties->Enable( enable1 );
     btnBndDeleteAll->Enable( enablemultiple );
-*/
+
     // set activate button text
     Boundary *boundary = NULL;
-    if( enable1 ) boundary =
-            pBoundaryList->Item( m_pBoundaryListCtrl->GetItemData( selected_index_index ) )->GetData();
-
-    if( !g_pRouteMan->IsAnyBoundaryActive() ) {
-        btnRteActivate->Enable( enable1 );
-        if( enable1 ) btnRteActivate->SetLabel( _("Activate") );
-
-    } else {
-        if( enable1 ) {
-            if( boundary && boundary->m_bBndIsActive ) {
-                btnRteActivate->Enable( enable1 );
-                btnRteActivate->SetLabel( _("Deactivate") );
-            } else
-                btnRteActivate->Enable( false );
-        } else
-            btnRteActivate->Enable( false );
+    if( enable1 ) {
+        boundary = pBoundaryList->Item( m_pBoundaryListCtrl->GetItemData( selected_index_index ) )->GetData();
+        if ( boundary ) {
+            btnBndActivate->Enable( true );
+            if ( boundary->IsActive() ) btnBndActivate->SetLabel( _("&Deactivate") );
+            else btnBndActivate->SetLabel( _("&Activate") );
+        }
+        else
+            btnBndActivate->Enable( false );
     }
+    else
+        btnBndActivate->Enable( false );
+    
 }
 
 void RouteManagerDialog::MakeAllRoutesInvisible()
@@ -1467,7 +1465,7 @@ void RouteManagerDialog::OnRtePropertiesClick( wxCommandEvent &event )
 
 void RouteManagerDialog::OnBndPropertiesClick( wxCommandEvent &event )
 {
-    // Show routeproperties dialog for selected route
+    // Show boundary properties dialog for selected boundary
     long item = -1;
     item = m_pBoundaryListCtrl->GetNextItem( item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
     if( item == -1 ) return;
@@ -1479,7 +1477,7 @@ void RouteManagerDialog::OnBndPropertiesClick( wxCommandEvent &event )
     if( NULL == pBoundaryPropDialog )          // There is one global instance of the RouteProp Dialog
         pBoundaryPropDialog = new BoundaryProp( GetParent() );
 
-    pBoundaryPropDialog->UpdateProperties();
+    pBoundaryPropDialog->UpdateProperties( boundary );
     if( !boundary->m_bIsInLayer )
         pBoundaryPropDialog->SetDialogTitle( _("Boundary Properties") );
     else {
@@ -1690,9 +1688,12 @@ void RouteManagerDialog::OnBndActivateClick( wxCommandEvent &event )
 
         ZoomtoBoundary( boundary );
 
-//            g_pRouteMan->ActivateRoute(route);
-    } else
-        g_pRouteMan->DeactivateBoundary();
+        g_pRouteMan->ActivateBoundary(boundary);
+        btnBndActivate->SetLabel("&Deactivate");
+    } else {
+        g_pRouteMan->DeactivateBoundary( boundary );
+        btnBndActivate->SetLabel("&Activate");
+    }
 
     UpdateRouteListCtrl();
     UpdateBoundaryListCtrl();
@@ -2693,6 +2694,7 @@ void RouteManagerDialog::OnWptDeleteClick( wxCommandEvent &event )
         m_lastWptItem = item_next;
 
         UpdateRouteListCtrl();
+        UpdateBoundaryListCtrl();
         UpdateTrkListCtrl();
         UpdateWptListCtrl( wp_next, true );
 
@@ -2821,6 +2823,7 @@ void RouteManagerDialog::OnWptDeleteAllClick( wxCommandEvent &event )
 
     m_lastWptItem = -1;
     UpdateRouteListCtrl();
+    UpdateBoundaryListCtrl();
     UpdateWptListCtrl();
     cc1->undo->InvalidateUndo();
     cc1->Refresh();
@@ -2917,6 +2920,7 @@ void RouteManagerDialog::OnLayNewClick( wxCommandEvent &event )
     g_bShowLayers = show_flag;
 
     UpdateRouteListCtrl();
+    UpdateBoundaryListCtrl();
     UpdateTrkListCtrl();
     UpdateWptListCtrl();
     UpdateLayListCtrl();
@@ -3003,6 +3007,7 @@ void RouteManagerDialog::OnLayDeleteClick( wxCommandEvent &event )
     pLayerList->DeleteObject( layer );
 
     UpdateRouteListCtrl();
+    UpdateBoundaryListCtrl();
     UpdateTrkListCtrl();
     UpdateWptListCtrl();
     UpdateLayListCtrl();
@@ -3059,6 +3064,7 @@ void RouteManagerDialog::ToggleLayerContentsOnChart( Layer *layer )
     }
 
     UpdateRouteListCtrl();
+    UpdateBoundaryListCtrl();
     UpdateTrkListCtrl();
     UpdateWptListCtrl();
     UpdateLayListCtrl();
@@ -3168,6 +3174,7 @@ void RouteManagerDialog::ToggleLayerContentsOnListing( Layer *layer )
     }
 
     UpdateRouteListCtrl();
+    UpdateBoundaryListCtrl();
     UpdateTrkListCtrl();
     UpdateWptListCtrl();
     UpdateLayListCtrl();
@@ -3253,6 +3260,7 @@ void RouteManagerDialog::OnImportClick( wxCommandEvent &event )
 #endif
     
     UpdateRouteListCtrl();
+    UpdateBoundaryListCtrl();
     UpdateTrkListCtrl();
     UpdateWptListCtrl();
     UpdateLayListCtrl();

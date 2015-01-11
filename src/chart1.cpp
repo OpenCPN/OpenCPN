@@ -3083,7 +3083,7 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
             style->GetToolIcon( _T("print"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
 
     CheckAndAddPlugInTool( tb );
-    tipString = _("Route & Mark Manager");
+    tipString = _("Route, Boundary, Mark & Track Manager");
     if( _toolbarConfigMenuUtil( ID_ROUTEMANAGER, tipString ) )
         tb->AddTool( ID_ROUTEMANAGER,
             _T("route_manager"), style->GetToolIcon( _T("route_manager"), TOOLICON_NORMAL ),

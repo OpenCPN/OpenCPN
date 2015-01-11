@@ -78,6 +78,7 @@ Boundary::Boundary( void )
     m_bIsInLayer = false;
 
     m_Colour = wxEmptyString;
+    m_LineColour = wxEmptyString;
 
     m_lastMousePointIndex = 0;
     m_NextLegGreatCircle = false;
@@ -242,7 +243,7 @@ void Boundary::Draw( ocpnDC& dc, ViewPort &VP )
     {
         int style = wxSOLID;
         int width = g_boundary_line_width;
-        wxColour col;
+        wxColour col, linecol;
         if( m_style != STYLE_UNDEFINED ) style = m_style;
         if( m_width != STYLE_UNDEFINED ) width = m_width;
         if( m_Colour == wxEmptyString ) {
@@ -255,8 +256,18 @@ void Boundary::Draw( ocpnDC& dc, ViewPort &VP )
                 }
             }
         }
+        if( m_LineColour == wxEmptyString ) {
+            linecol = g_pRouteMan->GetBoundaryPen()->GetColour();
+        } else {
+            for( unsigned int i = 0; i < sizeof( ::GpxxColorNames ) / sizeof(wxString); i++ ) {
+                if( m_Colour == ::GpxxColorNames[i] ) {
+                    linecol = ::GpxxColors[i];
+                    break;
+                }
+            }
+        }
         dc.SetPen( *wxThePenList->FindOrCreatePen( col, width, style ) );
-        dc.SetBrush( *wxTheBrushList->FindOrCreateBrush( col, wxSOLID ) );
+        dc.SetBrush( *wxTheBrushList->FindOrCreateBrush( linecol, wxCROSSDIAG_HATCH ) );
     }
 
     if( m_bVisible && m_bBndIsActive )
@@ -341,14 +352,12 @@ void Boundary::Draw( ocpnDC& dc, ViewPort &VP )
 
         node = node->GetNext();
     }
-    wxPen sPen;
-    wxBrush sBrush;
-    sPen = dc.GetPen();
-    sBrush = dc.GetBrush();
+
+    // fill boundary with hatching
     dc.SetPen(*wxTRANSPARENT_PEN);
+    dc.SetBrush( *wxTheBrushList->FindOrCreateBrush( m_LineColour, wxCROSSDIAG_HATCH ) );
     
     dc.DrawPolygon( j, bpts, 0, 0);
-    dc.SetPen( sPen );
 }
 
 extern ChartCanvas *cc1; /* hopefully can eventually remove? */
@@ -1063,7 +1072,13 @@ RoutePoint *Boundary::InsertPointBefore( RoutePoint *pRP, double rlat, double rl
     newpoint->SetNameShown( false );
 
     int nRP = pRoutePointList->IndexOf( pRP );
-    pRoutePointList->Insert( nRP, newpoint );
+    if ( nRP == 0 ) {
+        pRoutePointList->Insert( pRoutePointList->GetCount() - 1, newpoint );
+        nRP = pRoutePointList->GetCount();
+    }
+    else {
+        pRoutePointList->Insert( nRP, newpoint );
+    }
 
     RoutePointGUIDList.Insert( pRP->m_GUID, nRP );
 
