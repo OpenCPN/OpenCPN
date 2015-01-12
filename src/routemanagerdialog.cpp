@@ -935,6 +935,7 @@ void RouteManagerDialog::Create()
 RouteManagerDialog::~RouteManagerDialog()
 {
     delete m_pRouteListCtrl;
+    m_pBoundaryListCtrl->DeleteAllItems();
     delete m_pBoundaryListCtrl;
     delete m_pTrkListCtrl;
     delete m_pWptListCtrl;

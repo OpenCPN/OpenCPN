@@ -260,7 +260,7 @@ void Boundary::Draw( ocpnDC& dc, ViewPort &VP )
             linecol = g_pRouteMan->GetBoundaryPen()->GetColour();
         } else {
             for( unsigned int i = 0; i < sizeof( ::GpxxColorNames ) / sizeof(wxString); i++ ) {
-                if( m_Colour == ::GpxxColorNames[i] ) {
+                if( m_LineColour == ::GpxxColorNames[i] ) {
                     linecol = ::GpxxColors[i];
                     break;
                 }
@@ -270,12 +270,13 @@ void Boundary::Draw( ocpnDC& dc, ViewPort &VP )
         dc.SetBrush( *wxTheBrushList->FindOrCreateBrush( linecol, wxCROSSDIAG_HATCH ) );
     }
 
+/* May need to redo this when working to show up better and be more consistent
     if( m_bVisible && m_bBndIsActive )
     {
         dc.SetPen( *g_pRouteMan->GetActiveBoundaryPen() );
         dc.SetBrush( *g_pRouteMan->GetActiveBoundaryBrush() );
     }
-
+*/
     wxPoint rpt1, rpt2;
     wxPoint *bpts = new wxPoint[ pRoutePointList->GetCount() ];
     int j = 0;

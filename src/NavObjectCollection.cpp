@@ -672,19 +672,13 @@ Boundary *GPXLoadBoundary1( pugi::xml_node &wpt_node, bool b_fullviz,
                     if( ext_name == _T ( "opencpn:style" ) ) {
                         for (pugi::xml_attribute attr = ext_child.first_attribute(); attr; attr = attr.next_attribute())
                         {
-                            if( !strcmp( attr.name(), "colour" ) ) {
-                                wxString colour = wxString::FromUTF8( ext_child.first_child().value() );
-                                pTentBoundary->m_Colour = colour;
-                            }
-                            if( !strcmp( attr.name(), "linecolour" ) ) {
-                                wxString linecolour = wxString::FromUTF8( ext_child.first_child().value() );
-                                pTentBoundary->m_LineColour = linecolour;
-                            }
+                            if ( wxString::FromUTF8( attr.name() ) == _T("colour" ) )
+                                pTentBoundary->m_Colour = attr.as_string();
+                            else if ( wxString::FromUTF8( attr.name() ) == _T("linecolour" ) )
+                                pTentBoundary->m_LineColour = attr.as_string();
+                            else if ( wxString::FromUTF8( attr.name() ) == _T("style" ) )
                                 pTentBoundary->m_style = attr.as_int();
-                            if( !strcmp( attr.name(), "style" ) )
-                                pTentBoundary->m_style = attr.as_int();
-                            else
-                            if( !strcmp( attr.name(), "width" ) )
+                            else if ( wxString::FromUTF8( attr.name() ) == _T("width" ) )
                                 pTentBoundary->m_width = attr.as_int();
                         }
                      }
@@ -698,17 +692,6 @@ Boundary *GPXLoadBoundary1( pugi::xml_node &wpt_node, bool b_fullviz,
                      else
                      if( ext_name == _T ( "opencpn:time_display" ) ) {
                         pTentBoundary->m_TimeDisplayFormat, wxString::FromUTF8(ext_child.first_child().value());
-                     }
-                     else
-                     if( ext_name.EndsWith( _T ( "BoundaryExtension" ) ) ) //Parse GPXX color
-                     {
-                        for( pugi::xml_node gpxx_child = ext_child.first_child(); gpxx_child; gpxx_child = gpxx_child.next_sibling() ) {
-                            wxString gpxx_name = wxString::FromUTF8( gpxx_child.name() );
-                            if( gpxx_name.EndsWith( _T ( "LineColour" ) ) )
-                                 pTentBoundary->m_LineColour = wxString::FromUTF8(gpxx_child.first_child().value() );
-                            if( gpxx_name.EndsWith( _T ( "FilleColour" ) ) )
-                                 pTentBoundary->m_Colour = wxString::FromUTF8(gpxx_child.first_child().value() );
-                        }
                      }
                 } //extensions
             }
@@ -739,6 +722,8 @@ Boundary *GPXLoadBoundary1( pugi::xml_node &wpt_node, bool b_fullviz,
         pTentBoundary->m_HyperlinkList = linklist;
     }
     pTentBoundary->UpdateSegmentDistances();
+    wxString teststring = pTentBoundary->m_Colour;
+    int i =0;
     return pTentBoundary;
 }
 
@@ -1170,10 +1155,10 @@ bool GPXCreateBoundary( pugi::xml_node node, Boundary *pBoundary )
 //    if( pBoundary->m_width != STYLE_UNDEFINED || pBoundary->m_style != STYLE_UNDEFINED  || pBoundary->m_Colour.length() > 0 || pBoundary->m_LineColour.length() > 0 ) {
         child = child_ext.append_child("opencpn:style");
         
-        child.append_attribute("colour");
-        child.append_child(pugi::node_pcdata).set_value( pBoundary->m_Colour );
-        child.append_attribute("linecolour");
-        child.append_child(pugi::node_pcdata).set_value( pBoundary->m_LineColour );
+        pugi::xml_attribute colour = child.append_attribute("colour");
+        colour.set_value( pBoundary->m_Colour.ToAscii() );
+        pugi::xml_attribute linecolour = child.append_attribute("linecolour");
+        linecolour.set_value( pBoundary->m_LineColour.ToAscii() );
         child.append_attribute("width") = pBoundary->m_width;
         child.append_attribute("style") = pBoundary->m_style;
 //    }
