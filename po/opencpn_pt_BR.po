@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-01-06 17:25-0600\n"
-"PO-Revision-Date: 2015-01-06 18:28-0500\n"
+"POT-Creation-Date: 2015-01-07 16:15-0600\n"
+"PO-Revision-Date: 2015-01-07 17:18-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Portuguese, Brazilian\n"
 "Language: pt_BR\n"
@@ -29,7 +29,7 @@ msgstr "Propriedades do waypoint"
 msgid "Waypoint Information"
 msgstr "Informações do Waypoint"
 
-#: include/options.h:56 src/chart1.cpp:3046 src/chart1.cpp:5025
+#: include/options.h:56 src/chart1.cpp:3047 src/chart1.cpp:5026
 msgid "Options"
 msgstr "Opções"
 
@@ -37,7 +37,7 @@ msgstr "Opções"
 msgid "Sentence Filter"
 msgstr "Filtro de sentença"
 
-#: include/about.h:39 src/chart1.cpp:3109 src/chart1.cpp:4914
+#: include/about.h:39 src/chart1.cpp:3110 src/chart1.cpp:4915
 msgid "About OpenCPN"
 msgstr "Sobre OpenCPN"
 
@@ -156,8 +156,8 @@ msgstr " para detalhes."
 msgid "Retrieving initial language selection from Windows Registry"
 msgstr "Recuperando a seleção inicial de idioma do registro do Windows"
 
-#: src/chart1.cpp:1702 src/chart1.cpp:2253 src/chart1.cpp:5172
-#: src/chart1.cpp:9807 src/chart1.cpp:9838 src/tcmgr.cpp:762
+#: src/chart1.cpp:1702 src/chart1.cpp:2253 src/chart1.cpp:5173
+#: src/chart1.cpp:9806 src/chart1.cpp:9837 src/tcmgr.cpp:762
 #: src/options.cpp:3499 src/options.cpp:3506 src/options.cpp:3514
 #: src/options.cpp:3521 src/options.cpp:5755 src/pluginmanager.cpp:595
 #: src/pluginmanager.cpp:637 src/pluginmanager.cpp:665
@@ -190,7 +190,7 @@ msgstr "Tempo estimado : "
 msgid "Remaining time : "
 msgstr "Tempo restante : "
 
-#: src/chart1.cpp:2234 src/chart1.cpp:5465 src/chart1.cpp:5467
+#: src/chart1.cpp:2234 src/chart1.cpp:5466 src/chart1.cpp:5468
 msgid "OpenCPN Chart Update"
 msgstr "OpenCPN Atualização das Cartas"
 
@@ -198,321 +198,321 @@ msgstr "OpenCPN Atualização das Cartas"
 msgid "No Charts Installed.\nPlease select chart folders in Options > Charts."
 msgstr "           Nunhuma Carta instalada.\nPor favor selecione uma pasta de cartas em Ferramentas->Cartas."
 
-#: src/chart1.cpp:2922 src/chcanv.cpp:10473
+#: src/chart1.cpp:2923 src/chcanv.cpp:10473
 msgid "AIS Target Query"
 msgstr "Interrogar Alvo AIS"
 
-#: src/chart1.cpp:3001 src/chart1.cpp:4846
+#: src/chart1.cpp:3002 src/chart1.cpp:4847
 msgid "Zoom In"
 msgstr "Aumentar"
 
-#: src/chart1.cpp:3007 src/chart1.cpp:4847
+#: src/chart1.cpp:3008 src/chart1.cpp:4848
 msgid "Zoom Out"
 msgstr "Diminuir"
 
-#: src/chart1.cpp:3016
+#: src/chart1.cpp:3017
 msgid "Shift to Larger Scale Chart"
 msgstr "Mudar para Carta de Maior Escala"
 
-#: src/chart1.cpp:3024
+#: src/chart1.cpp:3025
 msgid "Shift to Smaller Scale Chart"
 msgstr "Mudar para Carta de  Menor Escala"
 
-#: src/chart1.cpp:3032 src/chart1.cpp:4897
+#: src/chart1.cpp:3033 src/chart1.cpp:4898
 msgid "Create Route"
 msgstr "Criar rota"
 
-#: src/chart1.cpp:3039 src/chart1.cpp:4840
+#: src/chart1.cpp:3040 src/chart1.cpp:4841
 msgid "Auto Follow"
 msgstr "Acompanhar Automaticamente"
 
-#: src/chart1.cpp:3052 src/chart1.cpp:4864
+#: src/chart1.cpp:3053 src/chart1.cpp:4865
 msgid "Show ENC Text"
 msgstr "Mostrar Texto (Carta Vetorial)"
 
-#: src/chart1.cpp:3060 src/chart1.cpp:3145 src/chart1.cpp:4017
+#: src/chart1.cpp:3061 src/chart1.cpp:3146 src/chart1.cpp:4018
 msgid "Hide AIS Targets"
 msgstr "Esconder Alvos AIS"
 
-#: src/chart1.cpp:3067 src/chart1.cpp:4079 src/chart1.cpp:4871
+#: src/chart1.cpp:3068 src/chart1.cpp:4080 src/chart1.cpp:4872
 msgid "Show Currents"
 msgstr "Mostrar Correntes"
 
-#: src/chart1.cpp:3073 src/chart1.cpp:4113 src/chart1.cpp:4870
+#: src/chart1.cpp:3074 src/chart1.cpp:4114 src/chart1.cpp:4871
 msgid "Show Tides"
 msgstr "Mostrar Marés"
 
-#: src/chart1.cpp:3079
+#: src/chart1.cpp:3080
 msgid "Print Chart"
 msgstr "Imprimir Carta"
 
-#: src/chart1.cpp:3085 src/routemanagerdialog.cpp:425
+#: src/chart1.cpp:3086 src/routemanagerdialog.cpp:425
 msgid "Route & Mark Manager"
 msgstr "Rota & Gerente de Marca"
 
-#: src/chart1.cpp:3092 src/chart1.cpp:4464 src/chart1.cpp:4841
+#: src/chart1.cpp:3093 src/chart1.cpp:4465 src/chart1.cpp:4842
 msgid "Enable Tracking"
 msgstr "Ativar o Rastreamento"
 
-#: src/chart1.cpp:3099 src/chart1.cpp:4873
+#: src/chart1.cpp:3100 src/chart1.cpp:4874
 msgid "Change Color Scheme"
 msgstr "Mudar Esquema de Cores"
 
-#: src/chart1.cpp:3118 src/chart1.cpp:4903 src/chart1.cpp:4907
+#: src/chart1.cpp:3119 src/chart1.cpp:4904 src/chart1.cpp:4908
 msgid "Drop MOB Marker"
 msgstr "Lançar  Marca de HOMEM AO MAR"
 
-#: src/chart1.cpp:3118
+#: src/chart1.cpp:3119
 msgid " (Ctrl-Space)"
 msgstr " (Ctrl-espaço)"
 
-#: src/chart1.cpp:3149 src/chart1.cpp:4020 src/chart1.cpp:4884
+#: src/chart1.cpp:3150 src/chart1.cpp:4021 src/chart1.cpp:4885
 msgid "Show AIS Targets"
 msgstr "Mostrar Alvos AIS"
 
-#: src/chart1.cpp:3511
+#: src/chart1.cpp:3512
 msgid "Anchorage created "
 msgstr "Fundeadouro criado "
 
-#: src/chart1.cpp:3726
+#: src/chart1.cpp:3727
 msgid "StatusBar"
 msgstr "Barra de Status"
 
-#: src/chart1.cpp:3900
+#: src/chart1.cpp:3901
 msgid "Group \""
 msgstr "Grupo \""
 
-#: src/chart1.cpp:3902
+#: src/chart1.cpp:3903
 msgid "\" is empty, switching to \"All Active Charts\" group."
 msgstr "\" está vazio, mudando para o grupo \"Todos as cartas ativas\"."
 
-#: src/chart1.cpp:3904
+#: src/chart1.cpp:3905
 msgid "OpenCPN Group Notice"
 msgstr "Aviso de Grupo OpenCPN"
 
-#: src/chart1.cpp:4081
+#: src/chart1.cpp:4082
 msgid "Hide Currents"
 msgstr "Esconder Correntes"
 
-#: src/chart1.cpp:4115
+#: src/chart1.cpp:4116
 msgid "Hide Tides"
 msgstr "Esconder Marés"
 
-#: src/chart1.cpp:4122
+#: src/chart1.cpp:4123
 msgid "Chart1::Event...TCMgr Not Available"
 msgstr "Carta1::Evento...TCMgr não disponível"
 
-#: src/chart1.cpp:4317 src/chart1.cpp:4373
+#: src/chart1.cpp:4318 src/chart1.cpp:4374
 msgid "MAN OVERBOARD"
 msgstr "HOMEM AO MAR"
 
-#: src/chart1.cpp:4334
+#: src/chart1.cpp:4335
 msgid "1.0 NM along COG"
 msgstr "1.0 MN ao longo do Rf"
 
-#: src/chart1.cpp:4345
+#: src/chart1.cpp:4346
 msgid "Temporary MOB Route"
 msgstr "Rota temporária HOMEM AO MAR"
 
-#: src/chart1.cpp:4346
+#: src/chart1.cpp:4347
 msgid "Assumed 1 Mile Point"
 msgstr "Ponto assumido 1 milha"
 
-#: src/chart1.cpp:4396
+#: src/chart1.cpp:4397
 msgid "Disable Tracking"
 msgstr "Desabilitar o Rastreamento"
 
-#: src/chart1.cpp:4416 src/chart1.cpp:7893 src/chart1.cpp:8026
+#: src/chart1.cpp:4417 src/chart1.cpp:7892 src/chart1.cpp:8025
 #: src/routemanagerdialog.cpp:1590
 msgid "(Unnamed Track)"
 msgstr "(Acompanhamento sem Nome)"
 
-#: src/chart1.cpp:4514 src/chart1.cpp:4843 src/chart1.cpp:6472
+#: src/chart1.cpp:4515 src/chart1.cpp:4844 src/chart1.cpp:6471
 #: src/chcanv.cpp:6747
 msgid "North Up Mode"
 msgstr "Modo Norte Acima"
 
-#: src/chart1.cpp:4528
+#: src/chart1.cpp:4529
 msgid "Show ENC Text (T)"
 msgstr "Mostrar Texto ENC (T)"
 
-#: src/chart1.cpp:4530
+#: src/chart1.cpp:4531
 msgid "Hide ENC Text (T)"
 msgstr "Esconder Texto ENC (T)"
 
-#: src/chart1.cpp:4844 src/chcanv.cpp:6742
+#: src/chart1.cpp:4845 src/chcanv.cpp:6742
 msgid "Course Up Mode"
 msgstr "Modo Curso Acima"
 
-#: src/chart1.cpp:4849
+#: src/chart1.cpp:4850
 msgid "Larger Scale Chart"
 msgstr "Carta de escala maior"
 
-#: src/chart1.cpp:4850
+#: src/chart1.cpp:4851
 msgid "Smaller Scale Chart"
 msgstr "Carta de escala menor"
 
-#: src/chart1.cpp:4853
+#: src/chart1.cpp:4854
 msgid "Exit OpenCPN"
 msgstr "Sair do OpenCPN"
 
-#: src/chart1.cpp:4855
+#: src/chart1.cpp:4856
 msgid "&Navigate"
 msgstr "&Navegar"
 
-#: src/chart1.cpp:4859 src/options.cpp:2228
+#: src/chart1.cpp:4860 src/options.cpp:2228
 msgid "Enable Chart Quilting"
 msgstr "Habilitar Emenda de Cartas"
 
-#: src/chart1.cpp:4860 src/options.cpp:2266
+#: src/chart1.cpp:4861 src/options.cpp:2266
 msgid "Show Chart Outlines"
 msgstr "Mostrar Contorno das Cartas"
 
-#: src/chart1.cpp:4861 src/options.cpp:2647
+#: src/chart1.cpp:4862 src/options.cpp:2647
 msgid "Show Chart Bar"
 msgstr "Mostrar barra da carta"
 
-#: src/chart1.cpp:4865
+#: src/chart1.cpp:4866
 msgid "Show ENC Lights"
 msgstr "Mostrar luzes ENC"
 
-#: src/chart1.cpp:4866
+#: src/chart1.cpp:4867
 msgid "Show ENC Soundings"
 msgstr "Mostrar Sons ENC"
 
-#: src/chart1.cpp:4867
+#: src/chart1.cpp:4868
 msgid "Show ENC Anchoring Info"
 msgstr "Mostrar informação de ancoragem ENC"
 
-#: src/chart1.cpp:4876 src/chart1.cpp:4878
+#: src/chart1.cpp:4877 src/chart1.cpp:4879
 msgid "Enter Full Screen"
 msgstr "Entrar em tela cheia"
 
-#: src/chart1.cpp:4880
+#: src/chart1.cpp:4881
 msgid "&View"
 msgstr "&Vista"
 
-#: src/chart1.cpp:4885
+#: src/chart1.cpp:4886
 msgid "Show Target Tracks"
 msgstr "Mostrar faixas de alvo"
 
-#: src/chart1.cpp:4886
+#: src/chart1.cpp:4887
 msgid "Show CPA Alert Dialogs"
 msgstr "Mostrar diálogo de alerta do CPA"
 
-#: src/chart1.cpp:4887
+#: src/chart1.cpp:4888
 msgid "Sound CPA Alarms"
 msgstr "Som de alarmes CPA"
 
-#: src/chart1.cpp:4889 src/chcanv.cpp:6872
+#: src/chart1.cpp:4890 src/chcanv.cpp:6872
 msgid "AIS Target List..."
 msgstr "Lista dos Alvos AIS..."
 
-#: src/chart1.cpp:4890
+#: src/chart1.cpp:4891
 msgid "&AIS"
 msgstr "&AIS"
 
-#: src/chart1.cpp:4894
+#: src/chart1.cpp:4895
 msgid "Measure Distance"
 msgstr "Medida de distância"
 
-#: src/chart1.cpp:4896
+#: src/chart1.cpp:4897
 msgid "Route && Mark Manager..."
 msgstr "Rota && gerente de marca..."
 
-#: src/chart1.cpp:4899
+#: src/chart1.cpp:4900
 msgid "Drop Mark at Boat"
 msgstr "Marca de queda no barco"
 
-#: src/chart1.cpp:4900
+#: src/chart1.cpp:4901
 msgid "Drop Mark at Cursor"
 msgstr "Deixar marca no Cursor"
 
-#: src/chart1.cpp:4905
+#: src/chart1.cpp:4906
 msgid "Preferences..."
 msgstr "Preferências..."
 
-#: src/chart1.cpp:4909 src/options.cpp:1834
+#: src/chart1.cpp:4910 src/options.cpp:1834
 msgid "Options..."
 msgstr "Opções..."
 
-#: src/chart1.cpp:4912
+#: src/chart1.cpp:4913
 msgid "&Tools"
 msgstr "&Ferramentas"
 
-#: src/chart1.cpp:4915
+#: src/chart1.cpp:4916
 msgid "OpenCPN Help"
 msgstr "OpenCPN ajuda"
 
-#: src/chart1.cpp:4916
+#: src/chart1.cpp:4917
 msgid "&Help"
 msgstr "&Ajuda"
 
-#: src/chart1.cpp:5171
+#: src/chart1.cpp:5172
 msgid "Please restart OpenCPN to activate language or style changes."
 msgstr "Por favor reinicie o OpenCPN para ativar a seleção do novo idioma."
 
-#: src/chart1.cpp:6465
+#: src/chart1.cpp:6464
 msgid "Rotated Mode"
 msgstr "Modo de Rotação"
 
-#: src/chart1.cpp:7541
+#: src/chart1.cpp:7540
 msgid "Show This Chart"
 msgstr "Mostrar esta carta"
 
-#: src/chart1.cpp:7546 src/chcanv.cpp:6798
+#: src/chart1.cpp:7545 src/chcanv.cpp:6798
 msgid "Hide This Chart"
 msgstr "Esconder esta carta"
 
-#: src/chart1.cpp:7796
+#: src/chart1.cpp:7795
 msgid "Chart Print"
 msgstr "Imprimir Carta"
 
-#: src/chart1.cpp:7805 src/routeprintout.cpp:469
+#: src/chart1.cpp:7804 src/routeprintout.cpp:469
 msgid "There was a problem printing.\nPerhaps your current printer is not set correctly?"
 msgstr "Houve um problema na impressão.\nTalvez sua impressora não esteja ajustada corretamente?"
 
-#: src/chart1.cpp:7956 src/chart1.cpp:8029 src/routemanagerdialog.cpp:890
+#: src/chart1.cpp:7955 src/chart1.cpp:8028 src/routemanagerdialog.cpp:890
 msgid "(Unnamed Route)"
 msgstr "(Rota sem Nome)"
 
-#: src/chart1.cpp:8588
+#: src/chart1.cpp:8587
 msgid " Ship "
 msgstr "Navio:"
 
-#: src/chart1.cpp:8859 src/chart1.cpp:8910
+#: src/chart1.cpp:8858 src/chart1.cpp:8909
 msgid "AIS MAN OVERBOARD"
 msgstr "AIS Homem ao Mar"
 
-#: src/chart1.cpp:8872
+#: src/chart1.cpp:8871
 msgid "Ownship"
 msgstr "Navio próprio"
 
-#: src/chart1.cpp:8883
+#: src/chart1.cpp:8882
 msgid "Temporary AISMOB Route"
 msgstr "Rota temporária de MOB AIS"
 
-#: src/chart1.cpp:8884
+#: src/chart1.cpp:8883
 msgid "Present Ownship"
 msgstr "Navio próprio presente"
 
-#: src/chart1.cpp:8954
+#: src/chart1.cpp:8953
 msgid "AIS MAN OVERBOARD UPDATE"
 msgstr "ATUALIZAR AIS MAN OVERBOARD"
 
-#: src/chart1.cpp:9802
+#: src/chart1.cpp:9801
 msgid "OpenCPN requires access to serial ports to use serial NMEA data.\n"
 msgstr "OpenCPN requer acesso a portas seriais para usar dados NMEA serial. \n"
 
-#: src/chart1.cpp:9804
+#: src/chart1.cpp:9803
 msgid "No Serial Ports can be found on this system.\nYou must install a serial port (modprobe correct kernel module) or plug in a usb serial device.\n"
 msgstr "Portas seriais não foram encontradas neste sistema. \nVocê deve instalar uma porta serial (modprobe correct kernel module) ou conecte um dispositivo serial usb. \n"
 
-#: src/chart1.cpp:9826
+#: src/chart1.cpp:9825
 msgid "You do currently not have permission to access the serial ports on this system.\n\nIt is suggested that you exit OpenCPN now,\nand add yourself to the correct group to enable serial port access.\n\nYou may do so by executing the following command from the linux command line:\n\n                sudo usermod -a -G "
 msgstr "Você atualmente não tem permissão para acessar as portas seriais neste sistema.\n\n sugerimos que você saia do OpenCPN agora,\ne adicione-se ao grupo correto para habilitar o acesso a porta serial.\n\nVocê pode fazer isso executando o seguinte comando a partir da linha de comando do Linux:\n\n sudo usermod -a -G "
 
-#: src/chart1.cpp:10260 src/routeprop.cpp:361 src/routeprop.cpp:1831
+#: src/chart1.cpp:10259 src/routeprop.cpp:361 src/routeprop.cpp:1831
 #: src/routemanagerdialog.cpp:428 src/options.cpp:655 src/options.cpp:847
 #: src/options.cpp:1769 src/options.cpp:2149 src/options.cpp:2724
 #: src/options.cpp:2728 src/options.cpp:5844 src/TrackPropDlg.cpp:85
