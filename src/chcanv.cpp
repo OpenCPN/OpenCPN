@@ -2190,12 +2190,6 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         parent_frame->DoStackUp();
         break;
 
-#ifndef __WXOSX__        
-    case WXK_F9:
-        parent_frame->ToggleQuiltMode();
-        break;
-#endif        
-        
     case WXK_F11:
         parent_frame->ToggleFullScreen();
         b_handled = true;
