@@ -673,9 +673,9 @@ Boundary *GPXLoadBoundary1( pugi::xml_node &wpt_node, bool b_fullviz,
                         for (pugi::xml_attribute attr = ext_child.first_attribute(); attr; attr = attr.next_attribute())
                         {
                             if ( wxString::FromUTF8( attr.name() ) == _T("colour" ) )
-                                pTentBoundary->m_Colour = attr.as_string();
+								pTentBoundary->m_Colour = wxString::FromUTF8( attr.as_string() );
                             else if ( wxString::FromUTF8( attr.name() ) == _T("linecolour" ) )
-                                pTentBoundary->m_LineColour = attr.as_string();
+								pTentBoundary->m_LineColour = wxString::FromUTF8( attr.as_string() );
                             else if ( wxString::FromUTF8( attr.name() ) == _T("style" ) )
                                 pTentBoundary->m_style = attr.as_int();
                             else if ( wxString::FromUTF8( attr.name() ) == _T("width" ) )

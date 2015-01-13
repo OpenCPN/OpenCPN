@@ -1690,10 +1690,10 @@ void RouteManagerDialog::OnBndActivateClick( wxCommandEvent &event )
         ZoomtoBoundary( boundary );
 
         g_pRouteMan->ActivateBoundary(boundary);
-        btnBndActivate->SetLabel("&Deactivate");
+        btnBndActivate->SetLabel( _T("&Deactivate") );
     } else {
         g_pRouteMan->DeactivateBoundary( boundary );
-        btnBndActivate->SetLabel("&Activate");
+        btnBndActivate->SetLabel( _T("&Activate") );
     }
 
     UpdateRouteListCtrl();
