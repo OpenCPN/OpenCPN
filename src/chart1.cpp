@@ -3107,6 +3107,13 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     }
 
     CheckAndAddPlugInTool( tb );
+    tipString = wxString( _("Create Boundary") ) << _T(" (Shift-Ctrl-B)");
+    if( _toolbarConfigMenuUtil( ID_BOUNDARY, tipString ) )
+        tb->AddTool( ID_BOUNDARY, _T("boundary"),
+            style->GetToolIcon( _T("boundary"), TOOLICON_NORMAL ),
+            style->GetToolIcon( _T("boundary"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
+
+    CheckAndAddPlugInTool( tb );
     tipString = _("About OpenCPN");
     if( _toolbarConfigMenuUtil( ID_ABOUT, tipString ) )
         tb->AddTool( ID_ABOUT, _T("help"),
@@ -3120,13 +3127,6 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     if( _toolbarConfigMenuUtil( ID_MOB, tipString ) )
         tb->AddTool( ID_MOB, _T("mob_btn"),
                      style->GetToolIcon( _T("mob_btn"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
-
-    CheckAndAddPlugInTool( tb );
-    tipString = wxString( _("Create Boundary") ) << _T(" (Shift-Ctrl-B)");
-    if( _toolbarConfigMenuUtil( ID_BOUNDARY, tipString ) )
-        tb->AddTool( ID_BOUNDARY, _T("boundary"),
-            style->GetToolIcon( _T("boundary"), TOOLICON_NORMAL ),
-            style->GetToolIcon( _T("boundary"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
 
 
 // Realize() the toolbar

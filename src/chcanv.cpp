@@ -7038,7 +7038,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
                     m_pSelectedBoundary->m_bBndIsSelected = !(seltype & SELTYPE_ROUTEPOINT);
                     if( m_pSelectedBoundary->m_bBndIsSelected )
-                        m_pSelectedBoundary->Draw( dc, GetVP() );
+                        //m_pSelectedBoundary->Draw( dc, GetVP() );
                     seltype |= SELTYPE_BOUNDARYSEGMENT;
                 }
 

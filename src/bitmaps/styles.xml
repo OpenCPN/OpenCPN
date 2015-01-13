@@ -160,6 +160,11 @@
 				<rollover-location x="300" y="260"/>
 				<disabled-location x="300" y="360"/>
 			</tool>
+			<tool name="boundary">
+				<icon-location x="540" y="360"/>
+				<rollover-location x="500" y="360"/>
+				<disabled-location x="580" y="360"/>
+			</tool>
 		</tools>
 
 		<icons>

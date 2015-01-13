@@ -222,11 +222,36 @@ void Boundary::DrawPointWhich( ocpnDC& dc, int iPoint, wxPoint *rpn )
 
 void Boundary::DrawSegment( ocpnDC& dc, wxPoint *rp1, wxPoint *rp2, ViewPort &VP, bool bdraw_arrow )
 {
-    if( m_bBndIsSelected ) dc.SetPen( *g_pRouteMan->GetSelectedBoundaryPen() );
+/*    if( m_bBndIsSelected ) dc.SetPen( *g_pRouteMan->GetSelectedBoundaryPen() );
     else
         if( m_bBndIsActive ) dc.SetPen( *g_pRouteMan->GetActiveBoundaryPen() );
         else
             dc.SetPen( *g_pRouteMan->GetBoundaryPen() );
+*/    
+    wxColour col, linecol;
+
+    if( m_Colour == wxEmptyString ) {
+        col = g_pRouteMan->GetBoundaryPen()->GetColour();
+    } else {
+        for( unsigned int i = 0; i < sizeof( ::GpxxColorNames ) / sizeof(wxString); i++ ) {
+            if( m_Colour == ::GpxxColorNames[i] ) {
+                col = ::GpxxColors[i];
+                break;
+            }
+        }
+    }
+    if( m_LineColour == wxEmptyString ) {
+        linecol = g_pRouteMan->GetBoundaryPen()->GetColour();
+    } else {
+        for( unsigned int i = 0; i < sizeof( ::GpxxColorNames ) / sizeof(wxString); i++ ) {
+            if( m_LineColour == ::GpxxColorNames[i] ) {
+                linecol = ::GpxxColors[i];
+                break;
+            }
+        }
+    }
+    dc.SetPen( *wxThePenList->FindOrCreatePen( col, g_boundary_line_width, m_style ) );
+    dc.SetBrush( *wxTheBrushList->FindOrCreateBrush( linecol, wxCROSSDIAG_HATCH ) );
 
     RenderSegment( dc, rp1->x, rp1->y, rp2->x, rp2->y, VP, bdraw_arrow );
 }
