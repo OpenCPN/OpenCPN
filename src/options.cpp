@@ -4216,8 +4216,8 @@ void options::OnChooseFont( wxCommandEvent& event )
     if( pif ) init_font_data.SetInitialFont( *pif );
     init_font_data.SetColour( init_color );
 
-#ifdef __WXX11__
-    X11FontPicker dg(pParent, init_font_data);
+#ifdef __WXGTK__
+    wxFontDialog dg( this, init_font_data );
 #else
     wxFontDialog dg( pParent, init_font_data );
 #endif
@@ -4248,8 +4248,8 @@ void options::OnChooseFontColor( wxCommandEvent& event )
     wxColourData init_colour_data;
     init_colour_data.SetColour( init_color );
 
-    wxColourDialog dg( pParent, &init_colour_data );
-
+    wxColourDialog dg( this, &init_colour_data );
+    
     int retval = dg.ShowModal();
     if( wxID_CANCEL != retval ) {
         colour_data = dg.GetColourData();

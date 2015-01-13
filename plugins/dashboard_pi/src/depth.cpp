@@ -110,7 +110,13 @@ void DashboardInstrument_Depth::DrawBackground(wxGCDC* dc)
       dc->DrawLine(3, 40, size.x-3, 40);
       dc->DrawLine(3, 140, size.x-3, 140);
 
+#ifdef __WXMSW__      
       pen.SetStyle(wxSHORT_DASH);
+#else
+      pen.SetStyle(wxDOT);
+      pen.SetWidth(1);
+#endif      
+      
       dc->SetPen(pen);
       dc->DrawLine(3, 65, size.x-3, 65);
       dc->DrawLine(3, 90, size.x-3, 90);

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-10 19:39-0600\n"
-"PO-Revision-Date: 2014-12-30 08:58-0500\n"
+"POT-Creation-Date: 2015-01-06 17:25-0600\n"
+"PO-Revision-Date: 2015-01-07 17:17-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Estonian\n"
 "Language: et_EE\n"
@@ -37,8 +37,8 @@ msgid "COG"
 msgstr "COG"
 
 #: src/dashboard_pi.cpp:105
-msgid "Magnetic COG"
-msgstr "Magnetiline COG"
+msgid "Mag COG"
+msgstr "Magn. COG"
 
 #: src/dashboard_pi.cpp:107
 msgid "GPS Compass"

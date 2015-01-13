@@ -1110,6 +1110,11 @@ bool MyApp::OnInit()
 
     wxStandardPaths& crash_std_path = *dynamic_cast<wxStandardPaths*>(&wxApp::GetTraits()->GetStandardPaths());
     wxString crash_rpt_save_locn = crash_std_path.GetConfigDir();
+    if( g_bportable ) {
+        wxFileName exec_path_crash( crash_std_path.GetExecutablePath() );
+        crash_rpt_save_locn = exec_path_crash.GetPath( wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR );
+    }
+    
     wxString locn = crash_rpt_save_locn + _T("\\CrashReports");
     
     if(!wxDirExists( locn ) )
@@ -1117,10 +1122,9 @@ bool MyApp::OnInit()
         
     if(wxDirExists( locn ) ){
         wxCharBuffer buf = locn.ToUTF8();
-        if(buf){
-            wchar_t wlocn[80];
-            LPCWSTR cstr;
-            MultiByteToWideChar( 0, 0, buf.data(), -1, wlocn, 79);
+        wchar_t wlocn[256];
+        if(buf && (locn.Length() < sizeof(wlocn)) ){
+            MultiByteToWideChar( 0, 0, buf.data(), -1, wlocn, sizeof(wlocn)-1);
             info.pszErrorReportSaveDir = (LPCWSTR)wlocn;
         }
     }
@@ -1605,7 +1609,7 @@ bool MyApp::OnInit()
     //    Manage internationalization of embedded messages
     //    using wxWidgets/gettext methodology....
 
-    wxLog::SetVerbose(true);            // log all messages for debugging language stuff
+//    wxLog::SetVerbose(true);            // log all messages for debugging language stuff
 
     if( lang_list[0] ) {
     };                 // silly way to avoid compiler warnings
@@ -1680,7 +1684,7 @@ bool MyApp::OnInit()
     //    Always use dot as decimal
     setlocale( LC_NUMERIC, "C" );
 
-    wxLog::SetVerbose( false );           // log no more verbose messages
+//    wxLog::SetVerbose( false );           // log no more verbose messages
 
     //  French language locale is assumed to include the AZERTY keyboard
     //  This applies to either the system language, or to OpenCPN language selection
@@ -2796,6 +2800,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     m_COGFilterLast = 0.;
 
     g_sticky_chart = -1;
+    m_BellsToPlay = 0;
 }
 
 MyFrame::~MyFrame()
@@ -4088,18 +4093,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         case wxID_PREFERENCES:
         case ID_SETTINGS: {
-
-            bool bnewtoolbar = !( DoOptionsDialog() == 0 );
-
-//              Apply various system settings
-            ApplyGlobalSettings( true, bnewtoolbar );                 // flying update
-
-            if( g_FloatingToolbarDialog ) g_FloatingToolbarDialog->RefreshFadeTimer();
-
-            if( cc1->GetbShowCurrent() || cc1->GetbShowTide() ) LoadHarmonics();
-//  The chart display options may have changed, especially on S57 ENC,
-//  So, flush the cache and redraw
-            cc1->ReloadVP();
+            DoSettings();
             break;
         }
 
@@ -4207,6 +4201,11 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             break;
         }
 
+        case ID_MENU_OQUIT: {
+            Close();
+            break;
+        }
+        
         case ID_MENU_ROUTE_MANAGER:
         case ID_ROUTEMANAGER: {
             if( NULL == pRouteManagerDialog )         // There is one global instance of the Dialog
@@ -4279,6 +4278,25 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
     }         // switch
 
 }
+
+void MyFrame::DoSettings()
+{
+    bool bnewtoolbar = !( DoOptionsDialog() == 0 );
+
+    //              Apply various system settings
+    ApplyGlobalSettings( true, bnewtoolbar );                 // flying update
+
+    if( g_FloatingToolbarDialog )
+        g_FloatingToolbarDialog->RefreshFadeTimer();
+
+    if( cc1->GetbShowCurrent() || cc1->GetbShowTide() )
+        LoadHarmonics();
+    
+    //  The chart display options may have changed, especially on S57 ENC,
+    //  So, flush the cache and redraw
+    cc1->ReloadVP();
+}
+
 
 void MyFrame::ToggleStats()
 {
@@ -4382,6 +4400,7 @@ void MyFrame::ActivateMOB( void )
         pRouteManagerDialog->UpdateWptListCtrl();
     }
 
+    cc1->InvalidateGL();
     cc1->Refresh( false );
 
     wxString mob_message( _( "MAN OVERBOARD" ) );
@@ -4862,6 +4881,10 @@ void MyFrame::RegisterGlobalMenuItems()
     nav_menu->AppendSeparator();
     nav_menu->Append( ID_MENU_SCALE_IN, _menuText(_("Larger Scale Chart"), _T("Ctrl-Left")) );
     nav_menu->Append( ID_MENU_SCALE_OUT, _menuText(_("Smaller Scale Chart"), _T("Ctrl-Right")) );
+#ifndef __WXOSX__
+    nav_menu->AppendSeparator();
+    nav_menu->Append( ID_MENU_OQUIT, _menuText(_("Exit OpenCPN"), _T("Ctrl-Q")) );
+#endif    
     m_pMenuBar->Append( nav_menu, _("&Navigate") );
 
 
@@ -5869,12 +5892,10 @@ void MyFrame::OnBellsTimer(wxTimerEvent& event)
         wxLogMessage( _T("Using bells sound file: ") + soundfile );
     }
 
-    if(!bells_sound[bells - 1].IsPlaying()) {
-        bells_sound[bells - 1].Play();
-        m_BellsToPlay -= bells;
-    }
-
-    BellsTimer.Start(20, wxTIMER_ONE_SHOT);
+    bells_sound[bells - 1].Play();
+    m_BellsToPlay -= bells;
+    
+    BellsTimer.Start(2000, wxTIMER_ONE_SHOT);
 }
 
 int ut_index;
@@ -11278,7 +11299,7 @@ bool ReloadLocale()
         //  So, Load the catalogs saved in a global string array which is populated as PlugIns request a catalog load.
         //  We want to load the PlugIn catalogs first, so that core opencpn translations loaded later will become precedent.
     
-        wxLog::SetVerbose(true);            // log all messages for debugging language stuff
+//        wxLog::SetVerbose(true);            // log all messages for debugging language stuff
         
         for(unsigned int i=0 ; i < g_locale_catalog_array.GetCount() ; i++){
             wxString imsg = _T("Loading catalog for:  ");
@@ -11292,7 +11313,7 @@ bool ReloadLocale()
         wxLogMessage( _T("Loading catalog for opencpn core.") );
         plocale_def_lang->AddCatalog( _T("opencpn") );
         
-        wxLog::SetVerbose(false);
+//        wxLog::SetVerbose(false);
        
         ret = true;
     }

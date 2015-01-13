@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-10 19:39-0600\n"
-"PO-Revision-Date: 2014-12-30 08:59-0500\n"
+"POT-Creation-Date: 2015-01-06 17:25-0600\n"
+"PO-Revision-Date: 2015-01-06 18:28-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Italian\n"
 "Language: it_IT\n"
@@ -37,7 +37,7 @@ msgid "COG"
 msgstr ""
 
 #: src/dashboard_pi.cpp:105
-msgid "Magnetic COG"
+msgid "Mag COG"
 msgstr ""
 
 #: src/dashboard_pi.cpp:107
@@ -126,7 +126,7 @@ msgstr "Stato GPS"
 
 #: src/dashboard_pi.cpp:160
 msgid "Cursor"
-msgstr ""
+msgstr "Cursore"
 
 #: src/dashboard_pi.cpp:162
 msgid "Clock"
@@ -150,21 +150,21 @@ msgstr "Storia barometrica"
 
 #: src/dashboard_pi.cpp:172
 msgid "Trip Log"
-msgstr ""
+msgstr "Registro di viaggio"
 
 #: src/dashboard_pi.cpp:174
 msgid "Sum Log"
-msgstr ""
+msgstr "Totale  Viaggio"
 
 #: src/dashboard_pi.cpp:176
 msgid "From Ownship"
-msgstr ""
+msgstr "Dalla barca"
 
 #: src/dashboard_pi.cpp:343 src/dashboard_pi.cpp:456 src/dashboard_pi.cpp:1309
 #: src/dashboard_pi.cpp:1318 src/dashboard_pi.cpp:1476
 #: src/dashboard_pi.cpp:1515 src/dashboard_pi.cpp:1779
 msgid "Dashboard"
-msgstr ""
+msgstr "Pannello"
 
 #: src/dashboard_pi.cpp:461
 msgid "Dashboard PlugIn for OpenCPN"
@@ -180,11 +180,11 @@ msgstr "Preferenze Dashboard"
 
 #: src/dashboard_pi.cpp:1522
 msgid "show this dashboard"
-msgstr ""
+msgstr "Visualizza questo pannello"
 
 #: src/dashboard_pi.cpp:1528
 msgid "Caption:"
-msgstr ""
+msgstr "Didascalia:"
 
 #: src/dashboard_pi.cpp:1536
 msgid "Orientation:"
@@ -221,7 +221,7 @@ msgstr "Giù"
 
 #: src/dashboard_pi.cpp:1598
 msgid "Appearance"
-msgstr ""
+msgstr "Aspetto"
 
 #: src/dashboard_pi.cpp:1600
 msgid "Fonts"
@@ -245,7 +245,7 @@ msgstr "Piccolo:"
 
 #: src/dashboard_pi.cpp:1632
 msgid "Units, Ranges, Formats"
-msgstr ""
+msgstr "Unità, intervalli, formati"
 
 #: src/dashboard_pi.cpp:1638
 msgid "Speedometer max value:"
@@ -253,7 +253,7 @@ msgstr "Velocità"
 
 #: src/dashboard_pi.cpp:1643
 msgid "Boat speed units:"
-msgstr ""
+msgstr "Unità di velocità barca:"
 
 #: src/dashboard_pi.cpp:1646 src/dashboard_pi.cpp:1664
 msgid "Honor OpenCPN settings"
@@ -265,7 +265,7 @@ msgstr "Nodi"
 
 #: src/dashboard_pi.cpp:1646 src/dashboard_pi.cpp:1673
 msgid "mph"
-msgstr ""
+msgstr "mi/h"
 
 #: src/dashboard_pi.cpp:1646 src/dashboard_pi.cpp:1673
 msgid "km/h"
@@ -277,7 +277,7 @@ msgstr "m/s"
 
 #: src/dashboard_pi.cpp:1652
 msgid "Depth units:"
-msgstr ""
+msgstr "Unità di profondità:"
 
 #: src/dashboard_pi.cpp:1655 src/dashboard_pi.cpp:1664
 msgid "Meters"
@@ -285,11 +285,11 @@ msgstr "Metri"
 
 #: src/dashboard_pi.cpp:1655
 msgid "Feet"
-msgstr ""
+msgstr "Piedi (1 feet=0.305m)"
 
 #: src/dashboard_pi.cpp:1655
 msgid "Fathoms"
-msgstr ""
+msgstr "Fathoms (1 F=1.83m)"
 
 #: src/dashboard_pi.cpp:1655
 msgid "Centimeters"
@@ -297,19 +297,19 @@ msgstr "Centimetri"
 
 #: src/dashboard_pi.cpp:1655
 msgid "Inches"
-msgstr ""
+msgstr "Pollici"
 
 #: src/dashboard_pi.cpp:1661
 msgid "Distance units:"
-msgstr ""
+msgstr "Unità di misura di distanza:"
 
 #: src/dashboard_pi.cpp:1664
 msgid "Nautical miles"
-msgstr ""
+msgstr "Miglia Nautiche"
 
 #: src/dashboard_pi.cpp:1664
 msgid "Statute miles"
-msgstr ""
+msgstr "Miglia terrestri"
 
 #: src/dashboard_pi.cpp:1664
 msgid "Kilometers"
@@ -361,11 +361,11 @@ msgstr "NO"
 
 #: src/instrument.cpp:232
 msgid " true"
-msgstr ""
+msgstr " Vera"
 
 #: src/instrument.cpp:234
 msgid " mag"
-msgstr ""
+msgstr " Magnetica"
 
 #: src/wind_history.cpp:404
 msgid "NNE"
