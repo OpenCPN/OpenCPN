@@ -5147,18 +5147,21 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
         double zlat, zlon;
         GetCanvasPixPoint( x, y, zlat, zlon );
 
-        SelectItem *pFindAIS;
-        pFindAIS = pSelectAIS->FindSelection( zlat, zlon, SELTYPE_AISTARGET );
+        if( g_bShowAIS )
+        {
+            SelectItem *pFindAIS;
+            pFindAIS = pSelectAIS->FindSelection( zlat, zlon, SELTYPE_AISTARGET );
 
-        if( pFindAIS ) {
-            m_FoundAIS_MMSI = pFindAIS->GetUserData();
-            if( g_pAIS->Get_Target_Data_From_MMSI( m_FoundAIS_MMSI ) ) {
-                wxWindow *pwin = wxDynamicCast(this, wxWindow);
-                ShowAISTargetQueryDialog( pwin, m_FoundAIS_MMSI );
+            if( pFindAIS ) {
+                m_FoundAIS_MMSI = pFindAIS->GetUserData();
+                if( g_pAIS->Get_Target_Data_From_MMSI( m_FoundAIS_MMSI ) ) {
+                    wxWindow *pwin = wxDynamicCast(this, wxWindow);
+                    ShowAISTargetQueryDialog( pwin, m_FoundAIS_MMSI );
+                }
+                return;
             }
-            return;
         }
-
+        
         SelectableItemList rpSelList = pSelect->FindSelectionList( zlat, zlon, SELTYPE_ROUTEPOINT );
         wxSelectableItemListNode *node = rpSelList.GetFirst();
         bool b_onRPtarget = false;
@@ -6328,7 +6331,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             ocpnDC dc( cdc );
 #endif
 
-            SelectItem *pFindAIS;
+            SelectItem *pFindAIS = NULL;
             SelectItem *pFindRP;
             SelectItem *pFindRouteSeg;
             SelectItem *pFindTrackSeg;
@@ -6349,7 +6352,8 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             }
 
             //      Get all the selectable things at the cursor
-            pFindAIS = pSelectAIS->FindSelection( slat, slon, SELTYPE_AISTARGET );
+            if( g_bShowAIS )
+                pFindAIS = pSelectAIS->FindSelection( slat, slon, SELTYPE_AISTARGET );
             pFindRP = pSelect->FindSelection( slat, slon, SELTYPE_ROUTEPOINT );
             pFindRouteSeg = pSelect->FindSelection( slat, slon, SELTYPE_ROUTESEGMENT );
             pFindTrackSeg = pSelect->FindSelection( slat, slon, SELTYPE_TRACKSEGMENT );
