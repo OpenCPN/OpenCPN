@@ -137,7 +137,7 @@ GribTimelineRecordSet::GribTimelineRecordSet(GribRecordSet &GRS1, GribRecordSet 
         } else if(i == Idx_SEACURRENT_VY)
             continue;
 
-        m_GribRecordPtrArray[i] = GribRecord::InterpolatedRecord(*GR1, *GR2, interp_const);
+        m_GribRecordPtrArray[i] = GribRecord::InterpolatedRecord(*GR1, *GR2, interp_const, i == Idx_WVDIR);
     }
 
     m_Reference_Time = (1-interp_const)*GRS1.m_Reference_Time
@@ -870,7 +870,7 @@ void GRIBUIDialog::UpdateTrackingControls( void )
     // Update the Wave direction
     if( RecordArray[Idx_WVDIR] ) {
         double direction = RecordArray[Idx_WVDIR]->
-            getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
+            getInterpolatedValue(m_cursor_lon, m_cursor_lat, true, true );
         if( direction != GRIB_NOTDEF )
             m_tcWaveDirection->SetValue( wxString::Format( _T("%03d\u00B0"), (int)direction ));
         else
