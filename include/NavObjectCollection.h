@@ -97,6 +97,8 @@ public:
 
     void SetRootGPXNode(void);
     
+    bool IsOpenCPN();
+    
     pugi::xml_node      m_gpx_root;
 };
 
