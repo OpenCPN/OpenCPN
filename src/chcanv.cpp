@@ -5196,7 +5196,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             if( node ) {
                 SelectItem *pFind = node->GetData();
                 RoutePoint *frp = (RoutePoint *) pFind->m_pData1;
-                if(frp){
+                if(frp && frp->IsVisible()){
                     ShowMarkPropertiesDialog( frp );
                     return;
                 }
