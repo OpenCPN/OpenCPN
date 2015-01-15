@@ -113,7 +113,7 @@ static const char *eyex[]={
     "..################.."};
 
 enum { rmVISIBLE = 0, rmROUTENAME, rmROUTEDESC };// RMColumns;
-enum { colBNDVISIBLE = 0, colBOUNDAYNAME, colBOUNDARYDESC };
+enum { colBNDVISIBLE = 0, colBOUNDARYNAME, colBOUNDARYDESC };
 enum { colTRKVISIBLE = 0, colTRKNAME, colTRKLENGTH };
 enum { colLAYVISIBLE = 0, colLAYNAME, colLAYITEMS };
 enum { colWPTICON = 0, colWPTNAME, colWPTDIST };
@@ -638,7 +638,7 @@ void RouteManagerDialog::Create()
     // items with images initially even if we specify dummy image id
 
     m_pBoundaryListCtrl->InsertColumn( colBNDVISIBLE, _("Show"), wxLIST_FORMAT_LEFT, 40 );
-    m_pBoundaryListCtrl->InsertColumn( colBOUNDAYNAME, _("Boundary Name"), wxLIST_FORMAT_LEFT, 120 );
+    m_pBoundaryListCtrl->InsertColumn( colBOUNDARYNAME, _("Boundary Name"), wxLIST_FORMAT_LEFT, 120 );
     m_pBoundaryListCtrl->InsertColumn( colBOUNDARYDESC, _("Desc"), wxLIST_FORMAT_LEFT, 230 );
 
     // Buttons: Delete, Properties...
@@ -913,7 +913,7 @@ void RouteManagerDialog::Create()
     imglist->Add( wxBitmap( eyex ) );
     m_pRouteListCtrl->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
     // Assign will handle destroy, Set will not. It's OK, that's what we want
-    m_pBoundaryListCtrl->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
+    m_pBoundaryListCtrl->SetImageList( imglist, wxIMAGE_LIST_SMALL );
     m_pTrkListCtrl->SetImageList( imglist, wxIMAGE_LIST_SMALL );
     m_pWptListCtrl->SetImageList( pWayPointMan->Getpmarkicon_image_list(), wxIMAGE_LIST_SMALL );
     m_pLayListCtrl->SetImageList( imglist, wxIMAGE_LIST_SMALL );
@@ -935,7 +935,6 @@ void RouteManagerDialog::Create()
 RouteManagerDialog::~RouteManagerDialog()
 {
     delete m_pRouteListCtrl;
-    m_pBoundaryListCtrl->DeleteAllItems();
     delete m_pBoundaryListCtrl;
     delete m_pTrkListCtrl;
     delete m_pWptListCtrl;
@@ -1058,7 +1057,7 @@ void RouteManagerDialog::UpdateBoundaryListCtrl()
     // Delete existing items
     m_pBoundaryListCtrl->DeleteAllItems();
 
-    // then add routes to the listctrl
+    // then add boundaries to the listctrl
     BoundaryList::iterator it;
     int index = 0;
     for( it = ( *pBoundaryList ).begin(); it != ( *pBoundaryList ).end(); ++it, ++index ) {
@@ -1079,10 +1078,10 @@ void RouteManagerDialog::UpdateBoundaryListCtrl()
         long idx = m_pBoundaryListCtrl->InsertItem( li );
 
         wxString name = ( *it )->m_BoundaryNameString;
-        if( name.IsEmpty() ) name = _("(Unnamed Route)");
-        m_pBoundaryListCtrl->SetItem( idx, colBOUNDAYNAME, name );
-
-        //m_pBoundaryListCtrl->SetItem( idx, colBOUNDARYDESC, startend );
+        if( name.IsEmpty() ) name = _("(Unnamed Boundary)");
+        m_pBoundaryListCtrl->SetItem( idx, colBOUNDARYNAME, name );
+        wxString desc = ( *it ) ->m_BoundaryDescription;
+        m_pBoundaryListCtrl->SetItem( idx, colBOUNDARYDESC, desc );
     }
 
     m_pBoundaryListCtrl->SortItems( SortBoundaryOnName, (long) m_pBoundaryListCtrl );
@@ -1478,6 +1477,7 @@ void RouteManagerDialog::OnBndPropertiesClick( wxCommandEvent &event )
     if( NULL == pBoundaryPropDialog )          // There is one global instance of the RouteProp Dialog
         pBoundaryPropDialog = new BoundaryProp( GetParent() );
 
+    pBoundaryPropDialog->SetBoundaryAndUpdate( boundary );
     pBoundaryPropDialog->UpdateProperties( boundary );
     if( !boundary->m_bIsInLayer )
         pBoundaryPropDialog->SetDialogTitle( _("Boundary Properties") );

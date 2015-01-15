@@ -615,7 +615,7 @@ bool BoundaryProp::UpdateProperties( Boundary *pBoundary )
       tmp_leg_dist = 0.0;
     }
 
-    prp->SetCourse(course); // save the course to the next waypoint for printing.
+    //prp->SetCourse(course); // save the course to the next waypoint for printing.
     // end of calculation
 
 
@@ -632,10 +632,10 @@ bool BoundaryProp::UpdateProperties( Boundary *pBoundary )
     else
         t.Printf( _T("%03.0f Deg. T"), gFrame->GetTrueOrMag( brg ) );
 
-    if( arrival )
-        m_wpList->SetItem( item_line_index, 3, t );
-    if( !enroute )
-        m_wpList->SetItem( item_line_index, 3, nullify );
+//    if( arrival )
+//        m_wpList->SetItem( item_line_index, 3, t );
+//    if( !enroute )
+//        m_wpList->SetItem( item_line_index, 3, nullify );
 
     // Course (bearing of next )
     if (_next_prp){

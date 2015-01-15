@@ -49,7 +49,7 @@ WX_DEFINE_LIST ( BoundaryList );
 Boundary::Boundary( void )
 {
     m_bBndIsSelected = false;
-    m_bBndIsActive = false;
+    m_bBndIsActive = true;
     m_pRouteActivePoint = NULL;
     m_bIsBeingEdited = false;
     m_bIsBeingCreated = false;
@@ -93,56 +93,6 @@ Boundary::~Boundary( void )
     delete pRoutePointList;
     m_HyperlinkList->Clear();
     delete m_HyperlinkList;
-}
-
-// The following is used only for route splitting, assumes just created, empty route
-//
-void Boundary::CloneBoundary( Boundary *psourceroute, int start_nPoint, int end_nPoint, const wxString & suffix)
-{
-    m_bIsTrack = psourceroute->m_bIsTrack;
-
-    m_BoundaryNameString = psourceroute->m_BoundaryNameString + suffix;
-    m_RouteStartString = psourceroute->m_RouteStartString;
-    m_RouteEndString = psourceroute->m_RouteEndString;
-
-    int i;
-    for( i = start_nPoint; i <= end_nPoint; i++ ) {
-        if( !psourceroute->m_bIsInLayer ) AddPoint( psourceroute->GetPoint( i ), false );
-        else {
-            RoutePoint *psourcepoint = psourceroute->GetPoint( i );
-            RoutePoint *ptargetpoint = new RoutePoint( psourcepoint->m_lat, psourcepoint->m_lon,
-                    psourcepoint->GetIconName(), psourcepoint->GetName(), GPX_EMPTY_STRING, false );
-
-            AddPoint( ptargetpoint, false );
-
-            CloneAddedRoutePoint( m_pLastAddedPoint, psourcepoint );
-        }
-    }
-
-    FinalizeForRendering();
-
-}
-
-void Boundary::CloneAddedRoutePoint( RoutePoint *ptargetpoint, RoutePoint *psourcepoint )
-{
-    ptargetpoint->m_MarkDescription = psourcepoint->m_MarkDescription;
-    ptargetpoint->m_bKeepXRoute = psourcepoint->m_bKeepXRoute;
-    ptargetpoint->m_bIsVisible = psourcepoint->m_bIsVisible;
-    ptargetpoint->m_bPtIsSelected = false;
-    ptargetpoint->m_bShowName = psourcepoint->m_bShowName;
-    ptargetpoint->m_bBlink = psourcepoint->m_bBlink;
-    ptargetpoint->m_bBlink = psourcepoint->m_bDynamicName;
-    ptargetpoint->CurrentRect_in_DC = psourcepoint->CurrentRect_in_DC;
-    ptargetpoint->m_NameLocationOffsetX = psourcepoint->m_NameLocationOffsetX;
-    ptargetpoint->m_NameLocationOffsetX = psourcepoint->m_NameLocationOffsetY;
-    ptargetpoint->SetCreateTime(psourcepoint->GetCreateTime());
-    ptargetpoint->m_HyperlinkList = new HyperlinkList;
-    ptargetpoint->ReLoadIcon();
-    
-    if( !psourcepoint->m_HyperlinkList->IsEmpty() ) {
-        HyperlinkList::iterator iter = psourcepoint->m_HyperlinkList->begin();
-        psourcepoint->m_HyperlinkList->splice( iter, *( ptargetpoint->m_HyperlinkList ) );
-    }
 }
 
 void Boundary::AddPoint( RoutePoint *pNewPoint, bool b_rename_in_sequence, bool b_deferBoxCalc, bool b_isLoading )
@@ -258,50 +208,61 @@ void Boundary::DrawSegment( ocpnDC& dc, wxPoint *rp1, wxPoint *rp2, ViewPort &VP
 
 void Boundary::Draw( ocpnDC& dc, ViewPort &VP )
 {
+    wxColour col, linecol;
+    wxString colour, linecolour;
+    int style = wxSOLID;
+    int width = g_boundary_line_width;
+
+
     if( m_nPoints == 0 ) return;
 
-    if( m_bVisible && m_bBndIsSelected ) {
-        dc.SetPen( *g_pRouteMan->GetSelectedBoundaryPen() );
-        dc.SetBrush( *g_pRouteMan->GetSelectedBoundaryBrush() );
+    if( m_bVisible && m_bBndIsActive ) {
+        colour = m_Colour;
+        linecolour = m_LineColour;
     }
-    else if ( m_bVisible )
-    {
-        int style = wxSOLID;
-        int width = g_boundary_line_width;
-        wxColour col, linecol;
-        if( m_style != STYLE_UNDEFINED ) style = m_style;
-        if( m_width != STYLE_UNDEFINED ) width = m_width;
-        if( m_Colour == wxEmptyString ) {
-            col = g_pRouteMan->GetBoundaryPen()->GetColour();
-        } else {
-            for( unsigned int i = 0; i < sizeof( ::GpxxColorNames ) / sizeof(wxString); i++ ) {
-                if( m_Colour == ::GpxxColorNames[i] ) {
-                    col = ::GpxxColors[i];
-                    break;
-                }
+    else {
+        colour = wxString::FromUTF8( "LightGrey" );
+        linecolour = wxString::FromUTF8( "LightGrey" );
+        
+    }
+
+    if( colour == wxEmptyString ) {
+        col = g_pRouteMan->GetBoundaryPen()->GetColour();
+    } else {
+        for( unsigned int i = 0; i < sizeof( ::GpxxColorNames ) / sizeof(wxString); i++ ) {
+            if( colour == ::GpxxColorNames[i] ) {
+                col = ::GpxxColors[i];
+                break;
             }
         }
-        if( m_LineColour == wxEmptyString ) {
-            linecol = g_pRouteMan->GetBoundaryPen()->GetColour();
-        } else {
-            for( unsigned int i = 0; i < sizeof( ::GpxxColorNames ) / sizeof(wxString); i++ ) {
-                if( m_LineColour == ::GpxxColorNames[i] ) {
-                    linecol = ::GpxxColors[i];
-                    break;
-                }
+    }
+    if( linecolour == wxEmptyString ) {
+        linecol = g_pRouteMan->GetBoundaryPen()->GetColour();
+    } else {
+        for( unsigned int i = 0; i < sizeof( ::GpxxColorNames ) / sizeof(wxString); i++ ) {
+            if( linecolour == ::GpxxColorNames[i] ) {
+                linecol = ::GpxxColors[i];
+                break;
             }
         }
+    }
+
+    if( m_style != STYLE_UNDEFINED ) style = m_style;
+    if( m_width != STYLE_UNDEFINED ) width = m_width;
+
+/*    if( m_bVisible && m_bBndIsSelected ) {
         dc.SetPen( *wxThePenList->FindOrCreatePen( col, width, style ) );
         dc.SetBrush( *wxTheBrushList->FindOrCreateBrush( linecol, wxCROSSDIAG_HATCH ) );
     }
-
-/* May need to redo this when working to show up better and be more consistent
-    if( m_bVisible && m_bBndIsActive )
+    else if ( m_bVisible )
     {
-        dc.SetPen( *g_pRouteMan->GetActiveBoundaryPen() );
-        dc.SetBrush( *g_pRouteMan->GetActiveBoundaryBrush() );
+        dc.SetPen( *wxThePenList->FindOrCreatePen( col, width, style ) );
+        dc.SetBrush( *wxTheBrushList->FindOrCreateBrush( linecol, wxCROSSDIAG_HATCH ) );
     }
 */
+    dc.SetPen( *wxThePenList->FindOrCreatePen( col, width, style ) );
+    dc.SetBrush( *wxTheBrushList->FindOrCreateBrush( linecol, wxCROSSDIAG_HATCH ) );
+
     wxPoint rpt1, rpt2;
     wxPoint *bpts = new wxPoint[ pRoutePointList->GetCount() ];
     int j = 0;
@@ -381,7 +342,7 @@ void Boundary::Draw( ocpnDC& dc, ViewPort &VP )
 
     // fill boundary with hatching
     dc.SetPen(*wxTRANSPARENT_PEN);
-    dc.SetBrush( *wxTheBrushList->FindOrCreateBrush( m_LineColour, wxCROSSDIAG_HATCH ) );
+    dc.SetBrush( *wxTheBrushList->FindOrCreateBrush( linecolour, wxCROSSDIAG_HATCH ) );
     
     dc.DrawPolygon( j, bpts, 0, 0);
 }

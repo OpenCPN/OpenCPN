@@ -108,8 +108,6 @@ public:
       double      m_boundary_length;
       double      m_boundary_time;
       wxString    m_BoundaryNameString;
-      wxString    m_RouteStartString;
-      wxString    m_RouteEndString;
       wxString    m_BoundaryDescription;
       bool        m_bIsTrack;             //TODO should use class type instead
       RoutePoint  *m_pLastAddedPoint;
