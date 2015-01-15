@@ -397,7 +397,6 @@ GribRecord * GribRecord::InterpolatedRecord(const GribRecord &rec1, const GribRe
             if(data1 == GRIB_NOTDEF || data2 == GRIB_NOTDEF)
                 data[in] = GRIB_NOTDEF;
             else {
-			/*for wave direction we need a flag else because 360 wraps will mess it up */
 				if( !dir )
 					data[in] = (1-d)*data1 + d*data2;
 				else
@@ -1208,15 +1207,18 @@ double GribRecord::getInterpolatedValue(double px, double py, bool numericalInte
         double x10 = getValue(i1, j0);
         double x11 = getValue(i1, j1);
 		if( !dir ) {
-        double x1 = (1.0-dx)*x00 + dx*x10;
-        double x2 = (1.0-dx)*x01 + dx*x11;
-        return (1.0-dy)*x1 + dy*x2;
+			double x1 = (1.0-dx)*x00 + dx*x10;
+			double x2 = (1.0-dx)*x01 + dx*x11;
+			return (1.0-dy)*x1 + dy*x2;
 		} else {
 			double x1 = interp_angle(x00, x01, dx, 180.);
 			double x2 = interp_angle(x10, x11, dx, 180.);
 			return interp_angle(x1, x2, dy, 180.);
 		}
     }
+
+	//interpolation with only three points is too hazardous for angles
+	if( dir ) return GRIB_NOTDEF;
 
     // here nbval==3, check the corner without data
     if (!h00) {
