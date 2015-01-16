@@ -4213,6 +4213,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             pRouteManagerDialog = new RouteManagerDialog( cc1 );
 
             pRouteManagerDialog->UpdateRouteListCtrl();
+            pRouteManagerDialog->UpdateBoundaryListCtrl();
             pRouteManagerDialog->UpdateTrkListCtrl();
             pRouteManagerDialog->UpdateWptListCtrl();
             pRouteManagerDialog->UpdateLayListCtrl();
