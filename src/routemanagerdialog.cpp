@@ -1489,6 +1489,9 @@ void RouteManagerDialog::OnBndPropertiesClick( wxCommandEvent &event )
 
     if( !pBoundaryPropDialog->IsShown() )
         pBoundaryPropDialog->Show();
+    
+    UpdateBoundaryListCtrl();
+
     m_bNeedConfigFlush = true;
 }
 

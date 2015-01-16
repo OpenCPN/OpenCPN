@@ -3970,6 +3970,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             break;
         }
 
+        case ID_MENU_BOUNDARY_NEW:
         case ID_BOUNDARY: {
             if( 0 == nBoundary_State ){
                 nBoundary_State = 1;
@@ -4928,6 +4929,7 @@ void MyFrame::RegisterGlobalMenuItems()
     tools_menu->AppendSeparator();
     tools_menu->Append( ID_MENU_ROUTE_MANAGER, _("Route && Mark Manager...") );
     tools_menu->Append( ID_MENU_ROUTE_NEW, _menuText(_("Create Route"), _T("Ctrl-R")) );
+    tools_menu->Append( ID_MENU_BOUNDARY_NEW, _menuText(_("Create Boundary"), _T("Shift-Ctrl-B")) );
     tools_menu->AppendSeparator();
     tools_menu->Append( ID_MENU_MARK_BOAT, _menuText(_("Drop Mark at Boat"), _T("Ctrl-O")) );
     tools_menu->Append( ID_MENU_MARK_CURSOR, _menuText(_("Drop Mark at Cursor"), _T("Ctrl-M")) );

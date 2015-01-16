@@ -390,6 +390,8 @@ enum
     ID_BND_MENU_DELETE,
     ID_BND_MENU_ACTIVATE,
     ID_BND_MENU_DEACTIVATE,
+    ID_BND_MENU_DELPOINT,
+    ID_BND_MENU_REMPOINT,
     
     ID_DEF_MENU_GROUPBASE,  // Must be last entry, as chart group identifiers are created dynamically
 
@@ -6626,9 +6628,8 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 }
                if( ( NULL != pBoundaryPropDialog ) && ( pBoundaryPropDialog->IsShown() ) ) {
                     if( m_pEditBoundaryArray ) {
-                        for( unsigned int ir = 0; ir < m_pEditBoundaryArray->GetCount(); ir++ ) {
-                            Boundary *pb = (Boundary *) m_pEditBoundaryArray->Item( ir );
-                            Boundary *prb = (Boundary *) m_pEditBoundaryArray->Item( ir );
+                        for( unsigned int ib = 0; ib < m_pEditBoundaryArray->GetCount(); ib++ ) {
+                            Boundary *pb = (Boundary *) m_pEditBoundaryArray->Item( ib );
                             pBoundaryPropDialog->SetBoundaryAndUpdate( pb, true );
                         }
                     }
@@ -7971,6 +7972,10 @@ void ChartCanvas::RemovePointFromBoundary( RoutePoint* point, Boundary* boundary
     //  Add this point back into the selectables
     pSelect->AddSelectableRoutePoint( point->m_lat, point->m_lon, point );
 
+    if( pBoundaryPropDialog && ( pBoundaryPropDialog->IsShown() ) ) {
+        pBoundaryPropDialog->SetBoundaryAndUpdate( boundary, true );
+    }
+
     InvalidateGL();
 }
 
@@ -8971,10 +8976,49 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
 
         break;
 
+    case ID_BND_MENU_DELPOINT:
+        if( m_pSelectedBoundary ) {
+            if( m_pSelectedBoundary->m_bIsInLayer ) break;
+
+            pWayPointMan->DestroyWaypoint( m_pFoundRoutePoint );
+            m_pFoundRoutePoint = NULL;
+
+            //    Selected boundary may have been deleted as one-point route, so check it
+            if( !g_pRouteMan->IsBoundaryValid( m_pSelectedBoundary ) ) m_pSelectedBoundary = NULL;
+
+            if( pBoundaryPropDialog && ( pBoundaryPropDialog->IsShown() ) ) {
+                if( m_pSelectedBoundary) {
+                    pBoundaryPropDialog->SetBoundaryAndUpdate( m_pSelectedBoundary, true );
+                }
+                else
+                    pBoundaryPropDialog->Hide();
+
+            }
+
+            if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
+                pRouteManagerDialog->UpdateWptListCtrl();
+                pRouteManagerDialog->UpdateRouteListCtrl();
+                pRouteManagerDialog->UpdateBoundaryListCtrl();
+            }
+
+            InvalidateGL();
+        }
+
+        break;
+
+
     case ID_RT_MENU_REMPOINT:
         if( m_pSelectedRoute ) {
             if( m_pSelectedRoute->m_bIsInLayer ) break;
             RemovePointFromRoute( m_pFoundRoutePoint, m_pSelectedRoute );
+            InvalidateGL();
+        }
+        break;
+
+    case ID_BND_MENU_REMPOINT:
+        if( m_pSelectedBoundary ) {
+            if( m_pSelectedBoundary->m_bIsInLayer ) break;
+            RemovePointFromBoundary( m_pFoundRoutePoint, m_pSelectedBoundary );
             InvalidateGL();
         }
         break;
@@ -9183,20 +9227,20 @@ void ChartCanvas::FinishBoundary( void )
         }
             
 
+        if( pBoundaryPropDialog && ( pBoundaryPropDialog->IsShown() ) ) {
+            pBoundaryPropDialog->SetBoundaryAndUpdate( m_pMouseBoundary, true );
+        }
+
         if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
             pRouteManagerDialog->UpdateBoundaryListCtrl();
 
     }
     
-    m_bAppendingRoute = false;
     m_pMouseBoundary = NULL;
 
     m_pSelectedBoundary = NULL;
     m_pFoundRoutePointSecond = NULL;
     
-    // fill boundary with colour
-    
-
     undo->InvalidateUndo();
     Refresh(true);
 }
