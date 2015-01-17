@@ -130,7 +130,7 @@ public:
 
       wxRect      active_pt_rect;
       wxString    m_Colour;
-      wxString    m_LineColour;
+      wxString    m_FillColour;
       bool        m_btemp;
       int         m_hiliteWidth;
 

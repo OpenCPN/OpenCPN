@@ -619,7 +619,7 @@ Boundary *GPXLoadBoundary1( pugi::xml_node &wpt_node, bool b_fullviz,
                 for( pugi::xml_node gpxx_child = tschild.first_child(); gpxx_child; gpxx_child = gpxx_child.next_sibling() ) {
                     wxString gpxx_name = wxString::FromUTF8( gpxx_child.name() );
                     if( gpxx_name.EndsWith( _T ( "LineColour" ) ) )
-                         pTentBoundary->m_LineColour = wxString::FromUTF8(gpxx_child.first_child().value() );
+                         pTentBoundary->m_FillColour = wxString::FromUTF8(gpxx_child.first_child().value() );
                     if( gpxx_name.EndsWith( _T ( "FillColour" ) ) )
                          pTentBoundary->m_Colour = wxString::FromUTF8(gpxx_child.first_child().value() );
                 }
@@ -674,8 +674,8 @@ Boundary *GPXLoadBoundary1( pugi::xml_node &wpt_node, bool b_fullviz,
                         {
                             if ( wxString::FromUTF8( attr.name() ) == _T("colour" ) )
 								pTentBoundary->m_Colour = wxString::FromUTF8( attr.as_string() );
-                            else if ( wxString::FromUTF8( attr.name() ) == _T("linecolour" ) )
-								pTentBoundary->m_LineColour = wxString::FromUTF8( attr.as_string() );
+                            else if ( wxString::FromUTF8( attr.name() ) == _T("fillcolour" ) )
+								pTentBoundary->m_FillColour = wxString::FromUTF8( attr.as_string() );
                             else if ( wxString::FromUTF8( attr.name() ) == _T("style" ) )
                                 pTentBoundary->m_style = attr.as_int();
                             else if ( wxString::FromUTF8( attr.name() ) == _T("width" ) )
@@ -1152,13 +1152,13 @@ bool GPXCreateBoundary( pugi::xml_node node, Boundary *pBoundary )
     child = child_ext.append_child("opencpn:active");
     child.append_child(pugi::node_pcdata).set_value(pBoundary->m_bBndIsActive == true ? "1" : "0");
     
-//    if( pBoundary->m_width != STYLE_UNDEFINED || pBoundary->m_style != STYLE_UNDEFINED  || pBoundary->m_Colour.length() > 0 || pBoundary->m_LineColour.length() > 0 ) {
+//    if( pBoundary->m_width != STYLE_UNDEFINED || pBoundary->m_style != STYLE_UNDEFINED  || pBoundary->m_Colour.length() > 0 || pBoundary->m_FillColour.length() > 0 ) {
         child = child_ext.append_child("opencpn:style");
         
         pugi::xml_attribute colour = child.append_attribute("colour");
         colour.set_value( pBoundary->m_Colour.ToAscii() );
-        pugi::xml_attribute linecolour = child.append_attribute("linecolour");
-        linecolour.set_value( pBoundary->m_LineColour.ToAscii() );
+        pugi::xml_attribute fillcolour = child.append_attribute("fillcolour");
+        fillcolour.set_value( pBoundary->m_FillColour.ToAscii() );
         child.append_attribute("width") = pBoundary->m_width;
         child.append_attribute("style") = pBoundary->m_style;
 //    }

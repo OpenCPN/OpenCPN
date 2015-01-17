@@ -103,7 +103,6 @@ public:
       int         m_ConfigRouteNum;
       bool        m_bRtIsSelected;
       bool        m_bRtIsActive;
-      bool        m_bBndIsActive;
       RoutePoint  *m_pRouteActivePoint;
       bool        m_bIsBeingCreated;
       bool        m_bIsBeingEdited;

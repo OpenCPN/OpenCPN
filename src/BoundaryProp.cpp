@@ -693,10 +693,10 @@ bool BoundaryProp::UpdateProperties( Boundary *pBoundary )
         }
     }
 
-    if( pBoundary->m_LineColour == wxEmptyString ) m_chLineColor->Select( 0 );
+    if( pBoundary->m_FillColour == wxEmptyString ) m_chLineColor->Select( 0 );
     else {
         for( unsigned int i = 0; i < sizeof( ::GpxxColorNames ) / sizeof(wxString); i++ ) {
-            if( pBoundary->m_LineColour == ::GpxxColorNames[i] ) {
+            if( pBoundary->m_FillColour == ::GpxxColorNames[i] ) {
                 m_chLineColor->Select( i + 1 );
                 break;
             }
@@ -734,9 +734,9 @@ bool BoundaryProp::SaveChanges( void )
         if( m_chColor->GetSelection() == 0 ) m_pBoundary->m_Colour = wxEmptyString;
         else
             m_pBoundary->m_Colour = ::GpxxColorNames[m_chColor->GetSelection() - 1];
-        if( m_chLineColor->GetSelection() == 0 ) m_pBoundary->m_LineColour = wxEmptyString;
+        if( m_chLineColor->GetSelection() == 0 ) m_pBoundary->m_FillColour = wxEmptyString;
         else
-            m_pBoundary->m_LineColour = ::GpxxColorNames[m_chLineColor->GetSelection() - 1];
+            m_pBoundary->m_FillColour = ::GpxxColorNames[m_chLineColor->GetSelection() - 1];
         m_pBoundary->m_style = ::StyleValues[m_chStyle->GetSelection()];
         m_pBoundary->m_width = ::WidthValues[m_chWidth->GetSelection()];
 

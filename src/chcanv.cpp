@@ -7255,7 +7255,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     }
 
     if( seltype == SELTYPE_BOUNDARYCREATE ) {
-        MenuAppend( contextMenu, ID_BND_MENU_FINISH, _menuText( _( "End Boundary" ), _T("Esc") ) );
+        MenuAppend( contextMenu, ID_BND_MENU_FINISH, _menuText( _( "End Boundary" ), _("Esc") ) );
     }
 
     if( ! m_pMouseRoute ) {
