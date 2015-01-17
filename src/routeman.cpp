@@ -1011,7 +1011,7 @@ bool Routeman::DeleteBoundary( Boundary *pBoundary )
                 } else {
                     prp->m_bDynamicName = false;
                     prp->m_bIsolatedMark = true;        // This has become an isolated mark
-                    prp->m_bKeepXRoute = false;         // and is no longer part of a route
+                    prp->m_bKeepXRoute = false;         // and is no longer part of a Boundary
                 }
 
             }

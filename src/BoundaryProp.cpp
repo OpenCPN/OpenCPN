@@ -261,8 +261,8 @@ void BoundaryProp::CreateControls()
     itemStaticBoxSizer3->Add( m_BoundaryNameCtl, 0,
             wxALIGN_LEFT | wxLEFT | wxRIGHT | wxBOTTOM | wxEXPAND, 5 );
 
-    wxFlexGridSizer* itemFlexGridSizer6 = new wxFlexGridSizer( 2, 2, 0, 0 );
-    itemStaticBoxSizer3->Add( itemFlexGridSizer6, 1, wxALIGN_LEFT | wxALL, 5 );
+//    wxFlexGridSizer* itemFlexGridSizer6 = new wxFlexGridSizer( 2, 2, 0, 0 );
+//    itemStaticBoxSizer3->Add( itemFlexGridSizer6, 1, wxALIGN_LEFT | wxALL, 5 );
 
     wxStaticText* itemStaticText7 = new wxStaticText( itemDialog1, wxID_STATIC, _("Description"),
             wxDefaultPosition, wxDefaultSize, 0 );
@@ -288,8 +288,8 @@ void BoundaryProp::CreateControls()
     m_pBoundaryActive = new wxCheckBox( itemDialog1, ID_BOUNDARYPROP_ACTIVE, _("Active") );
     itemStaticBoxSizer3->Add( m_pBoundaryActive, 0 );
 
-    wxFlexGridSizer* itemFlexGridSizer6a = new wxFlexGridSizer( 2, 4, 0, 0 );
-    itemStaticBoxSizer3->Add( itemFlexGridSizer6a, 1, wxALIGN_LEFT | wxALL, 5 );
+    //wxFlexGridSizer* itemFlexGridSizer6a = new wxFlexGridSizer( 2, 4, 0, 0 );
+    //itemStaticBoxSizer3->Add( itemFlexGridSizer6a, 1, wxALIGN_LEFT | wxALL, 5 );
 
     wxBoxSizer* bSizer2;
     bSizer2 = new wxBoxSizer( wxHORIZONTAL );

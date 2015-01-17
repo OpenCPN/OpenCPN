@@ -5780,8 +5780,10 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                         if( parent_frame->nBoundary_State > 1 )
                             undo->BeforeUndoableAction( Undo_AppendWaypoint, pMousePoint, Undo_HasParent, NULL );
 
-                        // check all other routes to see if this point appears in any other route
+                        // check all other boundaries and routes to see if this point appears in any other route
                         // If it appears in NO other route, then it should e considered an isolated mark
+                        if( !g_pRouteMan->FindBoundaryContainingWaypoint( pMousePoint ) ) pMousePoint->m_bKeepXRoute =
+                                true;
                         if( !g_pRouteMan->FindRouteContainingWaypoint( pMousePoint ) ) pMousePoint->m_bKeepXRoute =
                                 true;
                     }
@@ -6366,6 +6368,8 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
                                                     // check all other routes and boundaries to see if this point appears in any other route
                                                         // If it appears in NO other route, then it should e considered an isolated mark
+                                                        if( !g_pRouteMan->FindBoundaryContainingWaypoint( pMousePoint ) ) pMousePoint->m_bKeepXRoute =
+                                                            true;
                                                         if( !g_pRouteMan->FindRouteContainingWaypoint( pMousePoint ) ) pMousePoint->m_bKeepXRoute =
                                                             true;
                                                 }
