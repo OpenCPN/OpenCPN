@@ -341,8 +341,8 @@ void Boundary::Draw( ocpnDC& dc, ViewPort &VP )
     }
 
     // fill boundary with hatching
-    dc.SetPen( *wxThePenList->FindOrCreatePen( colour, width, style ) );
-//    dc.SetPen(*wxTRANSPARENT_PEN);
+    //dc.SetPen( *wxThePenList->FindOrCreatePen( colour, width, style ) );
+    dc.SetPen(*wxTRANSPARENT_PEN);
     dc.SetBrush( *wxTheBrushList->FindOrCreateBrush( linecolour, wxCROSSDIAG_HATCH ) );
     
     dc.DrawPolygon( j, bpts, 0, 0);

@@ -392,6 +392,7 @@ enum
     ID_BND_MENU_DEACTIVATE,
     ID_BND_MENU_DELPOINT,
     ID_BND_MENU_REMPOINT,
+    ID_BND_MENU_FINISH,
     
     ID_DEF_MENU_GROUPBASE,  // Must be last entry, as chart group identifiers are created dynamically
 
@@ -1121,6 +1122,7 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
     EVT_MENU ( ID_BND_MENU_DELETE,       ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_BND_MENU_ACTIVATE,     ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_BND_MENU_DEACTIVATE,   ChartCanvas::PopupMenuHandler )
+    EVT_MENU ( ID_BND_MENU_FINISH,       ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_WP_MENU_SET_ANCHORWATCH,    ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_WP_MENU_CLEAR_ANCHORWATCH,  ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_DEF_MENU_AISTARGETLIST,     ChartCanvas::PopupMenuHandler )
@@ -7253,7 +7255,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     }
 
     if( seltype == SELTYPE_BOUNDARYCREATE ) {
-        MenuAppend( contextMenu, ID_RC_MENU_FINISH, _menuText( _( "End Boundary" ), _T("Esc") ) );
+        MenuAppend( contextMenu, ID_BND_MENU_FINISH, _menuText( _( "End Boundary" ), _T("Esc") ) );
     }
 
     if( ! m_pMouseRoute ) {
@@ -9118,6 +9120,12 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
 
     case ID_RC_MENU_FINISH:
         FinishRoute();
+        gFrame->SurfaceToolbar();
+        Refresh( false );
+        break;
+
+    case ID_BND_MENU_FINISH:
+        FinishBoundary();
         gFrame->SurfaceToolbar();
         Refresh( false );
         break;
