@@ -553,6 +553,7 @@ RoutePoint* Track::AddNewPoint( vector2D point, wxDateTime time ) {
 
     //    This is a hack, need to undo the action of Route::AddPoint
     rPoint->m_bIsInRoute = false;
+    rPoint->m_bIsInBoundary = false;
     rPoint->m_bIsInTrack = true;
     return rPoint;
 }

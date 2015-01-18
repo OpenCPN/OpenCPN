@@ -247,8 +247,10 @@ void Boundary::Draw( ocpnDC& dc, ViewPort &VP )
     if( m_style != STYLE_UNDEFINED ) style = m_style;
     if( m_width != STYLE_UNDEFINED ) width = m_width;
 
-    dc.SetPen( *wxThePenList->FindOrCreatePen( col, width, style ) );
-    dc.SetBrush( *wxTheBrushList->FindOrCreateBrush( fillcol, wxCROSSDIAG_HATCH ) );
+    if ( m_bVisible ) {
+        dc.SetPen( *wxThePenList->FindOrCreatePen( col, width, style ) );
+        dc.SetBrush( *wxTheBrushList->FindOrCreateBrush( fillcol, wxCROSSDIAG_HATCH ) );
+    }
 
     wxPoint rpt1, rpt2;
     wxPoint *bpts = new wxPoint[ pRoutePointList->GetCount() ];
@@ -328,10 +330,11 @@ void Boundary::Draw( ocpnDC& dc, ViewPort &VP )
     }
 
     // fill boundary with hatching
-    dc.SetPen(*wxTRANSPARENT_PEN);
-    dc.SetBrush( *wxTheBrushList->FindOrCreateBrush( fillcol, wxCROSSDIAG_HATCH ) );
-    
-    dc.DrawPolygon( j, bpts, 0, 0);
+    if ( m_bVisible ) {
+        dc.SetPen(*wxTRANSPARENT_PEN);
+        dc.SetBrush( *wxTheBrushList->FindOrCreateBrush( fillcol, wxCROSSDIAG_HATCH ) );
+        dc.DrawPolygon( j, bpts, 0, 0);
+    }
 }
 
 extern ChartCanvas *cc1; /* hopefully can eventually remove? */

@@ -1857,7 +1857,7 @@ bool WayPointman::SharedWptsExist()
     wxRoutePointListNode *node = m_pWayPointList->GetFirst();
     while( node ) {
         RoutePoint *prp = node->GetData();
-        if (prp->m_bKeepXRoute && ( prp->m_bIsInRoute || prp->m_bIsInTrack || prp == pAnchorWatchPoint1 || prp == pAnchorWatchPoint2))
+        if (prp->m_bKeepXRoute && ( prp->m_bIsInRoute || prp->m_bIsInTrack || prp ->m_bIsInBoundary || prp == pAnchorWatchPoint1 || prp == pAnchorWatchPoint2))
             return true;
         node = node->GetNext();
     }
@@ -1873,7 +1873,7 @@ void WayPointman::DeleteAllWaypoints( bool b_delete_used )
         // if argument is false, then only delete non-route waypoints
         if( !prp->m_bIsInLayer && ( prp->GetIconName() != _T("mob") )
             && ( ( b_delete_used && prp->m_bKeepXRoute )
-                        || ( ( !prp->m_bIsInRoute ) && ( !prp->m_bIsInTrack )
+                        || ( ( !prp->m_bIsInRoute ) && ( !prp->m_bIsInTrack ) && ( !prp->m_bIsInBoundary )
                                 && !( prp == pAnchorWatchPoint1 ) && !( prp == pAnchorWatchPoint2 ) ) ) ) {
             DestroyWaypoint(prp);
             delete prp;

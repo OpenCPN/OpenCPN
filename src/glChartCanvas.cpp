@@ -1374,7 +1374,7 @@ void glChartCanvas::DrawAllRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region 
     if( vp.GetBBox().GetValid() ) {
         for(wxRoutePointListNode *pnode = pWayPointMan->GetWaypointList()->GetFirst(); pnode; pnode = pnode->GetNext() ) {
             RoutePoint *pWP = pnode->GetData();
-            if( pWP && (!pWP->m_bIsInRoute && !pWP->m_bIsInTrack ) )
+            if( pWP && (!pWP->m_bIsInRoute && !pWP->m_bIsInTrack && !pWP->m_bIsInBoundary ) )
                 pWP->DrawGL( vp, region );
         }
     }

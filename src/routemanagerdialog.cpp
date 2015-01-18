@@ -1757,7 +1757,7 @@ void RouteManagerDialog::OnBndToggleVisibility( wxMouseEvent &event )
     long clicked_index = m_pBoundaryListCtrl->HitTest( pos, flags );
 
     //    Clicking Visibility column?
-    if( clicked_index > -1 && event.GetX() < m_pBoundaryListCtrl->GetColumnWidth( rmVISIBLE ) ) {
+    if( clicked_index > -1 && event.GetX() < m_pBoundaryListCtrl->GetColumnWidth( colBNDVISIBLE ) ) {
         // Process the clicked item
         Boundary *boundary = pBoundaryList->Item( m_pBoundaryListCtrl->GetItemData( clicked_index ) )->GetData();
 
@@ -2063,6 +2063,7 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
                     targetTrack->AddPoint( newPoint );
 
                     newPoint->m_bIsInRoute = false;
+                    newPoint->m_bIsInBoundary = false;
                     newPoint->m_bIsInTrack = true;
 
                     pSelect->AddSelectableTrackSegment( lastPoint->m_lat, lastPoint->m_lon, newPoint->m_lat,
@@ -2408,7 +2409,7 @@ void RouteManagerDialog::UpdateWptListCtrl( RoutePoint *rp_select, bool b_retain
     while( node ) {
         RoutePoint *rp = node->GetData();
         if( rp && rp->IsListed() ) {
-            if( rp->m_bIsInTrack || rp->m_bIsInRoute ) {
+            if( rp->m_bIsInTrack || rp->m_bIsInRoute || rp->m_bIsInBoundary ) {
                 if( !rp->m_bKeepXRoute ) {
                     node = node->GetNext();
                     continue;
@@ -2679,7 +2680,7 @@ void RouteManagerDialog::OnWptDeleteClick( wxCommandEvent &event )
             RoutePoint *wp = list.Item(i)->GetData();
             if( wp ) {
 
-                if ( wp->m_bIsInRoute || wp->m_bIsInTrack )
+                if ( wp->m_bIsInRoute || wp->m_bIsInTrack || wp->m_bIsInBoundary )
                 {
                     if ( wxYES == OCPNMessageBox(this,  _( "The waypoint you want to delete is used in a route, do you really want to delete it?" ), _( "OpenCPN Alert" ), wxYES_NO ))
                             pWayPointMan->DestroyWaypoint( wp );

@@ -8337,6 +8337,7 @@ void pupHandler_PasteTrack() {
 
         //    This is a hack, need to undo the action of Route::AddPoint
         newPoint->m_bIsInRoute = false;
+        newPoint->m_bIsInBoundary = false;
         newPoint->m_bIsInTrack = true;
 
         if( prevPoint )
@@ -10879,7 +10880,7 @@ void ChartCanvas::DrawAllRoutesInBBox( ocpnDC& dc, LLBBox& BltBBox, const wxRegi
         bnode = bnode->GetNext();
     }
 
-    //  Draw any active or selected route (or track) last, so that is is always on top
+    //  Draw any active or selected route, boundary or track last, so that is is always on top
     if( active_route ) active_route->Draw( dc, GetVP() );
     if( active_track ) active_track->Draw( dc, GetVP() );
     if( active_boundary ) active_boundary->Draw( dc, GetVP() );
@@ -10899,7 +10900,7 @@ void ChartCanvas::DrawAllWaypointsInBBox( ocpnDC& dc, LLBBox& BltBBox, const wxR
     while( node ) {
         RoutePoint *pWP = node->GetData();
         if( pWP ) {
-            if( ( bDrawMarksOnly ) && ( pWP->m_bIsInRoute || pWP->m_bIsInTrack ) ) {
+            if( ( bDrawMarksOnly ) && ( pWP->m_bIsInRoute || pWP->m_bIsInTrack || pWP->m_bIsInBoundary ) ) {
                 node = node->GetNext();
                 continue;
             } else {
