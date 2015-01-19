@@ -96,7 +96,7 @@ unsigned int      gs_plib_flags;
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(Plugin_WaypointList);
-
+WX_DEFINE_LIST(Plugin_HyperlinkList);
 
 //    Some static helper funtions
 //    Scope is local to this module
@@ -381,6 +381,7 @@ void PlugInManager::SendVectorChartObjectInfo(const wxString &chart, const wxStr
                 switch(pic->m_api_version)
                 {
                 case 112:
+                case 113:
                 {
                     opencpn_plugin_112 *ppi = dynamic_cast<opencpn_plugin_112 *>(pic->m_pplugin);
                     if(ppi)
@@ -789,6 +790,10 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
     case 112:
         pic->m_pplugin = dynamic_cast<opencpn_plugin_112*>(plug_in);
         break;
+
+    case 113:
+        pic->m_pplugin = dynamic_cast<opencpn_plugin_113*>(plug_in);
+        break;
     
     default:
         break;
@@ -852,6 +857,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                     case 110:
                     case 111:
                     case 112:
+                    case 113:
                     {
                         opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                         if(ppi)
@@ -903,6 +909,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                     case 110:
                     case 111:
                     case 112:
+                    case 113:
                     {
                         opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                         if(ppi)
@@ -964,6 +971,7 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, cons
                 case 110:
                 case 111:
                 case 112:
+                case 113:
                 {
                     opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                     if(ppi)
@@ -993,6 +1001,7 @@ bool PlugInManager::SendMouseEventToPlugins( wxMouseEvent &event)
                 switch(pic->m_api_version)
                 {
                     case 112:
+                    case 113:
                     {
                         opencpn_plugin_112 *ppi = dynamic_cast<opencpn_plugin_112*>(pic->m_pplugin);
                             if(ppi)
@@ -1054,6 +1063,7 @@ void NotifySetupOptionsPlugin( PlugInContainer *pic )
             case 110:
             case 111:
             case 112:
+            case 113:
             {
                 opencpn_plugin_19 *ppi = dynamic_cast<opencpn_plugin_19 *>(pic->m_pplugin);
                 if(ppi) {
@@ -1216,6 +1226,7 @@ void PlugInManager::SendMessageToAllPlugins(const wxString &message_id, const wx
                 case 110:
                 case 111:
                 case 112:
+                case 113:
                 {
                     opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                     if(ppi)
@@ -1291,6 +1302,9 @@ void PlugInManager::SendPositionFixToAllPlugIns(GenericPosDatEx *ppos)
                 case 108:
                 case 109:
                 case 110:
+                case 111:
+                case 112:
+                case 113:
                 {
                     opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                     if(ppi)
@@ -2383,6 +2397,48 @@ bool UpdateSingleWaypoint( PlugIn_Waypoint *pwaypoint )
     return b_found;
 }
 
+bool GetSingleWaypoint( wxString &GUID, PlugIn_Waypoint *pwaypoint )
+{
+    //  Find the RoutePoint
+    bool b_found = false;
+    RoutePoint *prp = pWayPointMan->FindRoutePointByGUID( GUID );
+
+    if(!prp)
+        return false;
+
+    pwaypoint->m_lat = prp->m_lat;
+    pwaypoint->m_lon = prp->m_lon;
+    pwaypoint->m_IconName = prp->GetIconName();
+    pwaypoint->m_MarkName = prp->GetName(  );
+    pwaypoint->m_MarkDescription = prp->m_MarkDescription;
+
+    //  Transcribe (clone) the html HyperLink List, if present
+
+    if( prp->m_HyperlinkList ) {
+        delete pwaypoint->m_HyperlinkList;
+        pwaypoint->m_HyperlinkList = NULL;
+
+        if( prp->m_HyperlinkList->GetCount() > 0 ) {
+            pwaypoint->m_HyperlinkList = new Plugin_HyperlinkList;
+
+            wxHyperlinkListNode *linknode = prp->m_HyperlinkList->GetFirst();
+            while( linknode ) {
+                Hyperlink *link = linknode->GetData();
+                
+                Plugin_Hyperlink* h = new Plugin_Hyperlink();
+                h->DescrText = link->DescrText;
+                h->Link = link->Link;
+                h->Type = link->LType;
+                    
+                pwaypoint->m_HyperlinkList->Append( h );
+                
+                linknode = linknode->GetNext();
+            }
+        }
+    }
+
+    return true;
+}
 
 bool AddPlugInRoute( PlugIn_Route *proute, bool b_permanent )
 {
@@ -2853,6 +2909,19 @@ void opencpn_plugin_112::SendVectorChartObjectInfo(wxString &chart, wxString &fe
 {
 }
 
+//    Opencpn_Plugin_113 Implementation
+opencpn_plugin_113::opencpn_plugin_113(void *pmgr)
+: opencpn_plugin_112(pmgr)
+{}
+
+opencpn_plugin_113::~opencpn_plugin_113(void)
+{}
+
+void opencpn_plugin_113::OnToolbarToolDownCallback(int id)
+{}
+
+void opencpn_plugin_113::OnToolbarToolUpCallback(int id)
+{}
 
 //          Helper and interface classes
 
@@ -4355,3 +4424,7 @@ int PI_PLIBRenderObjectToGL( const wxGLContext &glcc, PI_S57Obj *pObj,
     
 }
 
+void SetCanvasRotation(double rotation)
+{
+    cc1->DoRotateCanvas( rotation );
+}

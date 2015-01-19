@@ -1,7 +1,7 @@
 /**************************************************************************
 *
 * Project:  OpenCPN
-* Purpose:  RouteProerties Support
+* Purpose:  RouteProperties Support
 * Author:   David Register
 *
 ***************************************************************************
