@@ -120,6 +120,7 @@ public:
       // Called when the mouse cursor enters a tool bitmap.
       // Argument is wxID_ANY if mouse is exiting the toolbar.
       virtual void OnMouseEnter( int toolid );
+      virtual void DoPluginToolUp();
 
       size_t GetToolsCount() const {
             return m_tools.GetCount();
@@ -295,6 +296,8 @@ protected:
       ocpnStyle::Style* m_style;
 
       float m_sizefactor;
+
+      int m_last_plugin_down_id;
 
 private:
 DECLARE_EVENT_TABLE()
