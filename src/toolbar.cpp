@@ -1537,12 +1537,6 @@ void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
         return;
     }
 
-    int modkeys = 0;
-    if(event.ControlDown())
-        modkeys |= wxMOD_CONTROL;
-    if(event.AltDown())
-        modkeys |= wxMOD_ALT;
-
     // Left button pressed.
     if( event.LeftDown() && tool->IsEnabled() ) {
         if( tool->CanBeToggled() ) {
