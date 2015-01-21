@@ -5060,8 +5060,7 @@ int MyFrame::DoOptionsDialog()
     if(stats) stats->Hide();
 #endif
 
-    if( options_lastPage >= 0 )
-        g_options->SetInitialPage(options_lastPage );
+    g_options->SetInitialPage(options_lastPage );
 
     if(!g_bresponsive){
         g_options->lastWindowPos = options_lastWindowPos;
