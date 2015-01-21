@@ -9642,7 +9642,10 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
         if( milesDiff > 1 ) {
             brg = gcBearing;
             dist = gcDistm;
-            route->m_NextLegGreatCircle = true;
+            if ( route )
+                route->m_NextLegGreatCircle = true;
+            else
+                boundary->m_NextLegGreatCircle = true;
         }
 
         if( !g_btouch) {
