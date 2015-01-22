@@ -38,11 +38,13 @@ extern BoundaryList *pBoundaryList;
 extern Select *pSelect;
 //extern bool g_bIsNewLayer;
 //extern bool g_bLayerViz;
-
+pugi::xml_node  gpx_boundary_child;
+bool            m_bFirstBoundary;
 
 NavObjectCollection1::NavObjectCollection1()
 : pugi::xml_document()
 {
+    m_bFirstBoundary = true;
 }
 
 NavObjectCollection1::~NavObjectCollection1()
@@ -1567,8 +1569,11 @@ bool NavObjectCollection1::AddGPXRoute(Route *pRoute)
 bool NavObjectCollection1::AddGPXBoundary(Boundary *pBoundary)
 {
     SetRootGPXNode();
-    pugi::xml_node child_ext = m_gpx_root.append_child("extensions");
-    GPXCreateBoundary(child_ext.append_child("opencpn:bnd"), pBoundary);
+    if ( m_bFirstBoundary ) {
+        m_bFirstBoundary = false;
+        gpx_boundary_child = m_gpx_root.append_child("extensions");
+    }
+    GPXCreateBoundary(gpx_boundary_child.append_child("opencpn:bnd"), pBoundary);
 //    GPXCreateBoundary(m_gpx_root.append_child("bnd"), pBoundary);
     return true;
 }
@@ -1610,6 +1615,7 @@ bool NavObjectCollection1::AddGPXBoundariesList( BoundaryList *pBoundaries )
 {
     SetRootGPXNode();
     
+    m_bFirstBoundary = true;
     wxBoundaryListNode* pBoundary = pBoundaries->GetFirst();
     while (pBoundary) {
         Boundary* pBData = pBoundary->GetData();
