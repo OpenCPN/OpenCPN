@@ -577,8 +577,8 @@ Boundary *GPXLoadBoundary1( pugi::xml_node &wpt_node, bool b_fullviz,
     HyperlinkList *linklist = NULL;
     
     wxString Name = wxString::FromUTF8( wpt_node.name() );
-//    if( Name == _T ( "opencpn:bnd" ) ) {
-    if( Name == _T ( "bnd" ) ) {
+    if( Name == _T ( "opencpn:bnd" ) ) {
+//    if( Name == _T ( "bnd" ) ) {
         pTentBoundary = new Boundary();
         
         RoutePoint *pWp = NULL;
@@ -586,8 +586,8 @@ Boundary *GPXLoadBoundary1( pugi::xml_node &wpt_node, bool b_fullviz,
         for( pugi::xml_node tschild = wpt_node.first_child(); tschild; tschild = tschild.next_sibling() ) {
             wxString ChildName = wxString::FromUTF8( tschild.name() );
 
-//            if( ChildName == _T ( "opencpn:bndpt" ) ) {
-            if( ChildName == _T ( "bndpt" ) ) {
+            if( ChildName == _T ( "opencpn:bndpt" ) ) {
+//            if( ChildName == _T ( "bndpt" ) ) {
                 RoutePoint *tpWp = ::GPXLoadWaypoint1(  tschild, _T("square"), _T(""), b_fullviz, b_layer, b_layerviz, layer_id);
                 RoutePoint *erp = ::WaypointExists( tpWp->m_GUID );
                 if( erp != NULL )
@@ -1174,8 +1174,8 @@ bool GPXCreateBoundary( pugi::xml_node node, Boundary *pBoundary )
     while( node2  ) {
         prp = node2->GetData();
             
-//        GPXCreateWpt(node.append_child("opencpn:bndpt"), prp, OPT_BOUNDARYPT);
-        GPXCreateWpt(node.append_child("bndpt"), prp, OPT_BOUNDARYPT);
+        GPXCreateWpt(node.append_child("opencpn:bndpt"), prp, OPT_BOUNDARYPT);
+//        GPXCreateWpt(node.append_child("bndpt"), prp, OPT_BOUNDARYPT);
             
         node2 = node2->GetNext();
     }
@@ -1512,13 +1512,13 @@ bool NavObjectCollection1::CreateNavObjGPXBoundaries( void )
     pugi::xml_node child_ext;
     // Boundaries
     wxBoundaryListNode *node1 = pBoundaryList->GetFirst();
-//    child_ext = m_gpx_root.append_child("extensions");
+    child_ext = m_gpx_root.append_child("extensions");
      while( node1 ) {
         Boundary *pBoundary = node1->GetData();
         
         if( !pBoundary->m_bIsInLayer && !pBoundary->m_btemp )
-//            GPXCreateBoundary(child_ext.append_child("opencpn:bnd"), pBoundary);
-            GPXCreateBoundary(m_gpx_root.append_child("bnd"), pBoundary);
+            GPXCreateBoundary(child_ext.append_child("opencpn:bnd"), pBoundary);
+//            GPXCreateBoundary(m_gpx_root.append_child("bnd"), pBoundary);
         node1 = node1->GetNext();
     }
     
@@ -1567,9 +1567,9 @@ bool NavObjectCollection1::AddGPXRoute(Route *pRoute)
 bool NavObjectCollection1::AddGPXBoundary(Boundary *pBoundary)
 {
     SetRootGPXNode();
-//    pugi::xml_node child_ext = m_gpx_root.append_child("extensions");
-//    GPXCreateBoundary(child_ext.append_child("opencpn:bnd"), pBoundary);
-    GPXCreateBoundary(m_gpx_root.append_child("bnd"), pBoundary);
+    pugi::xml_node child_ext = m_gpx_root.append_child("extensions");
+    GPXCreateBoundary(child_ext.append_child("opencpn:bnd"), pBoundary);
+//    GPXCreateBoundary(m_gpx_root.append_child("bnd"), pBoundary);
     return true;
 }
 
@@ -1689,9 +1689,13 @@ bool NavObjectCollection1::LoadAllGPXObjects( bool b_full_viz )
                     InsertRouteA( pRoute );
                 }
                 else
-                    if( !strcmp(object.name(), "bnd") ) {
-                        Boundary *pBoundary = GPXLoadBoundary1( object, b_full_viz, false, false, 0 );
-                        InsertBoundaryA( pBoundary );
+                    if( !strcmp(object.name(), "extensions") ) {
+                        for ( pugi::xml_node bnd = object.first_child(); bnd; bnd = bnd.next_sibling() ) {
+                            if ( !strcmp(bnd.name(), "opencpn:bnd") ) {
+                                Boundary *pBoundary = GPXLoadBoundary1( bnd, b_full_viz, false, false, 0 );
+                                InsertBoundaryA( pBoundary );
+                            }
+                        }
                     }
                 
     }
@@ -1734,10 +1738,14 @@ int NavObjectCollection1::LoadAllGPXObjectsAsLayer(int layer_id, bool b_layerviz
                     InsertRouteA( pRoute );
                 }
             else
-                if( !strcmp(object.name(), "bnd") ) {
-                    Boundary *pBoundary = GPXLoadBoundary1( object, true, true, b_layerviz, layer_id );
-                    n_obj++;
-                    InsertBoundaryA( pBoundary );
+                if( !strcmp(object.name(), "extensions") ) {
+                    for ( pugi::xml_node bnd = object.first_child(); bnd; bnd = bnd.next_sibling() ) {
+                        if ( !strcmp(bnd.name(), "opencpn:bnd") ) {
+                            Boundary *pBoundary = GPXLoadBoundary1( bnd, true, true, b_layerviz, layer_id );
+                            n_obj++;
+                            InsertBoundaryA( pBoundary );
+                        }
+                    }
                 }
         }   
     }
@@ -1802,16 +1810,19 @@ bool NavObjectChanges::AddBoundary( Boundary *pb, const char *action )
 {
     SetRootGPXNode();
     
-    pugi::xml_node object = m_gpx_root.append_child("bnd");
-    GPXCreateBoundary(object, pb );
+//    pugi::xml_node object = m_gpx_root.append_child("bnd");
+//    GPXCreateBoundary(object, pb );
+    pugi::xml_node child_ext = m_gpx_root.append_child("extensions");
+    GPXCreateBoundary(child_ext.append_child("opencpn:bnd"), pb);
     
-    pugi::xml_node xchild = object.child("extensions");
+//    pugi::xml_node xchild = object.child("extensions");
+    pugi::xml_node xchild = child_ext.child("extensions");
     //FIXME  What if extensions do not exist?
     pugi::xml_node child = xchild.append_child("opencpn:action");
     child.append_child(pugi::node_pcdata).set_value(action);
 
     pugi::xml_writer_file writer(m_changes_file);
-    object.print(writer, " ");
+    child_ext.print(writer, " ");
     fflush(m_changes_file);
     
     return true;
@@ -1978,32 +1989,36 @@ bool NavObjectChanges::ApplyChanges(void)
                     }
                 }
             else
-                if( !strcmp(object.name(), "bnd") ) {
-                    Boundary *pBoundary = GPXLoadBoundary1( object, true, false, false, 0 );
-                    
-                    if(pBoundary && g_pRouteMan) {
-                        pugi::xml_node xchild = object.child("extensions");
-                        pugi::xml_node child = xchild.child("opencpn:action");
+//                if( !strcmp(object.name(), "bnd") ) {
+                if( !strcmp(object.name(), "extensions") ) {
+                    pugi::xml_node bchild = object.child("opencpn:bnd");
+                    if ( !strcmp(bchild.name(), "opencpn:bnd") ) {
+                        Boundary *pBoundary = GPXLoadBoundary1( bchild, true, false, false, 0 );
+                        
+                        if(pBoundary && g_pRouteMan) {
+                            pugi::xml_node xchild = object.child("extensions");
+                            pugi::xml_node child = xchild.child("opencpn:action");
 
-                        if(!strcmp(child.first_child().value(), "add") ){
-                            ::InsertBoundaryA( pBoundary );
-                        }                    
-                    
-                        else if(!strcmp(child.first_child().value(), "update") ){
-                            ::UpdateBoundaryA( pBoundary );
-                        }
-                    
-                        else if(!strcmp(child.first_child().value(), "delete") ){
-                            Boundary *pExisting = BoundaryExists( pBoundary->m_GUID );
-                            if(pExisting){
-                                pConfig->m_bSkipChangeSetUpdate = true;
-                                g_pRouteMan->DeleteBoundary( pExisting );
-                                pConfig->m_bSkipChangeSetUpdate = false;
+                            if(!strcmp(child.first_child().value(), "add") ){
+                                ::InsertBoundaryA( pBoundary );
+                            }                    
+                        
+                            else if(!strcmp(child.first_child().value(), "update") ){
+                                ::UpdateBoundaryA( pBoundary );
                             }
+                        
+                            else if(!strcmp(child.first_child().value(), "delete") ){
+                                Boundary *pExisting = BoundaryExists( pBoundary->m_GUID );
+                                if(pExisting){
+                                    pConfig->m_bSkipChangeSetUpdate = true;
+                                    g_pRouteMan->DeleteBoundary( pExisting );
+                                    pConfig->m_bSkipChangeSetUpdate = false;
+                                }
+                            }
+                        
+                            else
+                                delete pBoundary;
                         }
-                    
-                        else
-                            delete pBoundary;
                     }
                 }
             else
