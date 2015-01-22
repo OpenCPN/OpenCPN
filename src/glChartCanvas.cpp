@@ -116,6 +116,7 @@ extern PlugInManager* g_pi_manager;
 
 extern WayPointman      *pWayPointMan;
 extern RouteList        *pRouteList;
+extern BoundaryList     *pBoundaryList;
 extern bool             b_inCompressAllCharts;
 extern bool             g_bexpert;
 extern bool             g_bcompression_wait;
@@ -1367,6 +1368,45 @@ void glChartCanvas::DrawAllRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region 
         } else if( pRouteDraw->CrossesIDL() || vp_minx < -180. ) {
             if(test_maxx - 360 >= vp_minx && test_minx - 360 <= vp_maxx)
                 pRouteDraw->DrawGL( vp, region );
+        }
+    }
+
+    for(wxBoundaryListNode *node = pBoundaryList->GetFirst();
+        node; node = node->GetNext() ) {
+        Boundary *pBoundaryDraw = node->GetData();
+        if( !pBoundaryDraw )
+            continue;
+
+        /* defer rendering active routes until later */
+        if( pBoundaryDraw->IsActive() || pBoundaryDraw->IsSelected() )
+            continue;
+
+        /* this routine is called very often, so rather than using the
+           wxBoundingBox::Intersect routine, do the comparisons directly
+           to reduce the number of floating point comparisons */
+
+        const wxBoundingBox &vp_box = vp.GetBBox(), &test_box = pBoundaryDraw->GetBBox();
+
+        if(test_box.GetMaxY() < vp_box.GetMinY())
+            continue;
+
+        if(test_box.GetMinY() > vp_box.GetMaxY())
+            continue;
+
+        double vp_minx = vp_box.GetMinX(), vp_maxx = vp_box.GetMaxX();
+        double test_minx = test_box.GetMinX(), test_maxx = test_box.GetMaxX();
+
+        /* TODO: use DrawGL instead of Draw */
+
+        // Route is not wholly outside viewport
+        if(test_maxx >= vp_minx && test_minx <= vp_maxx) {
+            pBoundaryDraw->DrawGL( vp, region );
+        } else if( vp_maxx > 180. ) {
+            if(test_minx + 360 <= vp_maxx && test_maxx + 360 >= vp_minx)
+                pBoundaryDraw->DrawGL( vp, region );
+        } else if( pBoundaryDraw->CrossesIDL() || vp_minx < -180. ) {
+            if(test_maxx - 360 >= vp_minx && test_minx - 360 <= vp_maxx)
+                pBoundaryDraw->DrawGL( vp, region );
         }
     }
 

@@ -577,6 +577,7 @@ Boundary *GPXLoadBoundary1( pugi::xml_node &wpt_node, bool b_fullviz,
     HyperlinkList *linklist = NULL;
     
     wxString Name = wxString::FromUTF8( wpt_node.name() );
+//    if( Name == _T ( "opencpn:bnd" ) ) {
     if( Name == _T ( "bnd" ) ) {
         pTentBoundary = new Boundary();
         
@@ -585,6 +586,7 @@ Boundary *GPXLoadBoundary1( pugi::xml_node &wpt_node, bool b_fullviz,
         for( pugi::xml_node tschild = wpt_node.first_child(); tschild; tschild = tschild.next_sibling() ) {
             wxString ChildName = wxString::FromUTF8( tschild.name() );
 
+//            if( ChildName == _T ( "opencpn:bndpt" ) ) {
             if( ChildName == _T ( "bndpt" ) ) {
                 RoutePoint *tpWp = ::GPXLoadWaypoint1(  tschild, _T("square"), _T(""), b_fullviz, b_layer, b_layerviz, layer_id);
                 RoutePoint *erp = ::WaypointExists( tpWp->m_GUID );
@@ -1172,6 +1174,7 @@ bool GPXCreateBoundary( pugi::xml_node node, Boundary *pBoundary )
     while( node2  ) {
         prp = node2->GetData();
             
+//        GPXCreateWpt(node.append_child("opencpn:bndpt"), prp, OPT_BOUNDARYPT);
         GPXCreateWpt(node.append_child("bndpt"), prp, OPT_BOUNDARYPT);
             
         node2 = node2->GetNext();
@@ -1506,15 +1509,19 @@ bool NavObjectCollection1::CreateNavObjGPXRoutes( void )
 
 bool NavObjectCollection1::CreateNavObjGPXBoundaries( void )
 {
+    pugi::xml_node child_ext;
     // Boundaries
     wxBoundaryListNode *node1 = pBoundaryList->GetFirst();
-    while( node1 ) {
+//    child_ext = m_gpx_root.append_child("extensions");
+     while( node1 ) {
         Boundary *pBoundary = node1->GetData();
         
         if( !pBoundary->m_bIsInLayer && !pBoundary->m_btemp )
+//            GPXCreateBoundary(child_ext.append_child("opencpn:bnd"), pBoundary);
             GPXCreateBoundary(m_gpx_root.append_child("bnd"), pBoundary);
         node1 = node1->GetNext();
     }
+    
     
     return true;
 }
@@ -1560,6 +1567,8 @@ bool NavObjectCollection1::AddGPXRoute(Route *pRoute)
 bool NavObjectCollection1::AddGPXBoundary(Boundary *pBoundary)
 {
     SetRootGPXNode();
+//    pugi::xml_node child_ext = m_gpx_root.append_child("extensions");
+//    GPXCreateBoundary(child_ext.append_child("opencpn:bnd"), pBoundary);
     GPXCreateBoundary(m_gpx_root.append_child("bnd"), pBoundary);
     return true;
 }

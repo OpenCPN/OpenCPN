@@ -3088,6 +3088,24 @@ void MyConfig::ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
             node1 = node1->GetNext();
         }
 
+        //BND
+        wxBoundaryListNode *bnode1 = pBoundaryList->GetFirst();
+        while( bnode1 ) {
+            Boundary *pBoundary = bnode1->GetData();
+
+            bool b_add = true;
+
+            if( bviz_only && !pBoundary->IsVisible() )
+                b_add = false;
+
+            if(  pBoundary->m_bIsInLayer && !blayer )
+                b_add = false;
+
+            pgpx->AddGPXBoundary( pBoundary ); //gpxroot->AddBoundary( CreateGPXBnd( pBoundary ) );
+
+            bnode1 = bnode1->GetNext();
+        }
+
         pgpx->SaveFile( fn.GetFullPath() );
         delete pgpx;
         ::wxEndBusyCursor();
