@@ -1921,6 +1921,36 @@ void WayPointman::DestroyWaypoint( RoutePoint *pRp, bool b_update_changeset )
             delete proute_array;
         }
 
+        // Get a list of all boundaries containing this point
+        // and remove the point from them all
+        wxArrayPtrVoid *pboundary_array = g_pRouteMan->GetBoundaryArrayContaining( pRp );
+        if( pboundary_array ) {
+            for( unsigned int ib = 0; ib < pboundary_array->GetCount(); ib++ ) {
+                Boundary *pb = (Boundary *) pboundary_array->Item( ib );
+
+                /*  FS#348
+                 if ( g_pRouteMan->GetpActiveRoute() == pr )            // Deactivate any route containing this point
+                 g_pRouteMan->DeactivateRoute();
+                 */
+                pb->RemovePoint( pRp );
+
+            }
+
+            //    Scrub the routes, looking for one-point routes
+            for( unsigned int ib = 0; ib < pboundary_array->GetCount(); ib++ ) {
+                Boundary *pb = (Boundary *) pboundary_array->Item( ib );
+                if( pb->GetnPoints() < 2 ) {
+                    bool prev_bskip = pConfig->m_bSkipChangeSetUpdate;
+                    pConfig->m_bSkipChangeSetUpdate = true;
+                    pConfig->DeleteConfigBoundary( pb );
+                    g_pRouteMan->DeleteBoundary( pb );
+                    pConfig->m_bSkipChangeSetUpdate = prev_bskip;
+                }
+            }
+
+            delete pboundary_array;
+        }
+
         // Now it is safe to delete the point
         pConfig->DeleteWayPoint( pRp );
         pConfig->m_bSkipChangeSetUpdate = false;

@@ -1123,6 +1123,7 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
     EVT_MENU ( ID_BND_MENU_ACTIVATE,     ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_BND_MENU_DEACTIVATE,   ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_BND_MENU_FINISH,       ChartCanvas::PopupMenuHandler )
+    EVT_MENU ( ID_BND_MENU_DELPOINT,     ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_WP_MENU_SET_ANCHORWATCH,    ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_WP_MENU_CLEAR_ANCHORWATCH,  ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_DEF_MENU_AISTARGETLIST,     ChartCanvas::PopupMenuHandler )
@@ -6915,6 +6916,8 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 RoutePoint *pFoundVizRoutePoint = NULL;
                 Route *pSelectedActiveRoute = NULL;
                 Route *pSelectedVizRoute = NULL;
+                Boundary *pSelectedActiveBoundary = NULL;
+                Boundary *pSelectedVizBoundary = NULL;
 
                 //There is at least one routepoint, so get the whole list
                 SelectableItemList SelList = pSelect->FindSelectionList( slat, slon,
@@ -6927,9 +6930,11 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
                     //    Get an array of all routes using this point
                     wxArrayPtrVoid *proute_array = g_pRouteMan->GetRouteArrayContaining( prp );
+                    wxArrayPtrVoid *pboundary_array = g_pRouteMan->GetBoundaryArrayContaining( prp );
 
                     // Use route array (if any) to determine actual visibility for this point
                     bool brp_viz = false;
+                    bool bbp_viz = false;
                     if( proute_array ) {
                         for( unsigned int ir = 0; ir < proute_array->GetCount(); ir++ ) {
                             Route *pr = (Route *) proute_array->Item( ir );
@@ -6941,6 +6946,16 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                         if( !brp_viz )                          // is not visible as part of route
                             brp_viz = prp->IsVisible();         //  so treat as isolated point
 
+                    } else if ( pboundary_array ) {
+                        for( unsigned int ib = 0; ib < pboundary_array->GetCount(); ib++ ) {
+                            Boundary *pb = (Boundary *) pboundary_array->Item( ib );
+                            if( pb->IsVisible() ) {
+                                bbp_viz = true;
+                                break;
+                            }
+                        }
+                        if( !brp_viz && !bbp_viz )                          // is not visible as part of route
+                            brp_viz = prp->IsVisible();         //  so treat as isolated point
                     } else
                         brp_viz = prp->IsVisible();               // isolated point
 
@@ -6973,6 +6988,33 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                         delete proute_array;
                     }
 
+                    // Use boundary array to choose the appropriate route
+                    // Give preference to any active boundary, otherwise select the first visible boundary in the array for this point
+                    m_pSelectedBoundary = NULL;
+                    if( pboundary_array ) {
+                        for( unsigned int ib = 0; ib < pboundary_array->GetCount(); ib++ ) {
+                            Boundary *pb = (Boundary *) pboundary_array->Item( ib );
+                            if( pb->m_bBndIsActive ) {
+                                pSelectedActiveBoundary = pb;
+                                pFoundActiveRoutePoint = prp;
+                                break;
+                            }
+                        }
+
+                        if( NULL == pSelectedVizBoundary ) {
+                            for( unsigned int ib = 0; ib < pboundary_array->GetCount(); ib++ ) {
+                                Boundary *pb = (Boundary *) pboundary_array->Item( ib );
+                                if( pb->IsVisible() ) {
+                                    pSelectedVizBoundary = pb;
+                                    pFoundVizRoutePoint = prp;
+                                    break;
+                                }
+                            }
+                        }
+
+                        delete pboundary_array;
+                    }
+
                     node = node->GetNext();
                 }
 
@@ -6980,15 +7022,21 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 if( pFoundActiveRoutePoint ) {
                     m_pFoundRoutePoint = pFoundActiveRoutePoint;
                     m_pSelectedRoute = pSelectedActiveRoute;
+                    m_pSelectedBoundary = pSelectedActiveBoundary;
                 } else if( pFoundVizRoutePoint ) {
                     m_pFoundRoutePoint = pFoundVizRoutePoint;
                     m_pSelectedRoute = pSelectedVizRoute;
+                    m_pSelectedBoundary = pSelectedVizBoundary;
                 } else
                     // default is first visible point in list
                     m_pFoundRoutePoint = pFirstVizPoint;
 
                 if( m_pSelectedRoute ) {
-                    if( m_pSelectedRoute->IsVisible() ) seltype |= SELTYPE_ROUTEPOINT;
+                    if( m_pSelectedRoute->IsVisible() ) 
+                        seltype |= SELTYPE_ROUTEPOINT;
+                } else if ( m_pSelectedBoundary ) {
+                    if ( m_pSelectedBoundary->IsVisible() )
+                        seltype |= SELTYPE_ROUTEPOINT;
                 } else if( m_pFoundRoutePoint ) seltype |= SELTYPE_MARKPOINT;
             }
 
@@ -7645,13 +7693,20 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
                         MenuAppend( menuWaypoint, ID_RT_MENU_ACTNXTPOINT, _( "Activate Next Waypoint" ) );
                 }
             }
-            if( m_pSelectedRoute->GetnPoints() > 2 )
+            if( m_pSelectedRoute && m_pSelectedRoute->GetnPoints() > 2 )
                 MenuAppend( menuWaypoint, ID_RT_MENU_REMPOINT, _( "Remove from Route" ) );
 
+            if ( m_pSelectedBoundary && m_pSelectedBoundary->GetnPoints() >2 )
+                MenuAppend( menuWaypoint, ID_BND_MENU_REMPOINT, _( "Remove from Boundary") );
+            
             MenuAppend( menuWaypoint, ID_WPT_MENU_COPY, _( "Copy as KML" ) );
 
-            if( m_pFoundRoutePoint->GetIconName() != _T("mob") )
-                MenuAppend( menuWaypoint, ID_RT_MENU_DELPOINT,  _( "Delete" ) );
+            if ( m_pFoundRoutePoint->GetIconName() != _T("mob") ) {
+                if ( m_pSelectedRoute )
+                    MenuAppend( menuWaypoint, ID_RT_MENU_DELPOINT,  _( "Delete" ) );
+                else if ( m_pSelectedBoundary )
+                    MenuAppend( menuWaypoint, ID_BND_MENU_DELPOINT, _( "Delete") );
+            }
 
             wxString port = FindValidUploadPort();
             m_active_upload_port = port;
