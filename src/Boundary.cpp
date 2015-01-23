@@ -342,8 +342,10 @@ extern ChartCanvas *cc1; /* hopefully can eventually remove? */
 void Boundary::DrawGL( ViewPort &VP, OCPNRegion &region )
 {
 #ifdef ocpnUSE_GL
-    if( m_nPoints < 1 || !m_bVisible ) return;
+    wxPoint *bpts;
+    int j = 0;
     
+    if( m_nPoints < 1 || !m_bVisible ) return;
     //  Hiliting first
     //  Being special case to draw something for a 1 point route....
     ocpnDC dc;
@@ -363,8 +365,8 @@ void Boundary::DrawGL( ViewPort &VP, OCPNRegion &region )
 //            return;
         }
             
-        
         node = node->GetNext();
+    
         while( node ){
             
             RoutePoint *prp = node->GetData();
@@ -375,7 +377,6 @@ void Boundary::DrawGL( ViewPort &VP, OCPNRegion &region )
                     
             r0 = r1;
             node = node->GetNext();
-            
         }
     }
     
@@ -472,13 +473,23 @@ void Boundary::DrawGL( ViewPort &VP, OCPNRegion &region )
     glDisable (GL_LINE_STIPPLE);
     
     /*  Boundary points  */
+//    bpts = new wxPoint[ pRoutePointList->GetCount() ];
+//    DrawPointWhich( dc, 1, &rpt1 );
+
     for(wxRoutePointListNode *node = pRoutePointList->GetFirst(); node; node = node->GetNext()) {
         RoutePoint *prp = node->GetData();
         if ( !m_bVisible && prp->m_bKeepXRoute )
             prp->DrawGL( VP, region );
         else if (m_bVisible)
             prp->DrawGL( VP, region );
+//        bpts[ j++ ] = region;
     
+    }
+
+    if ( m_bVisible ) {
+        dc.SetPen(*wxTRANSPARENT_PEN);
+        dc.SetBrush( *wxTheBrushList->FindOrCreateBrush( fillcol, wxCROSSDIAG_HATCH ) );
+        dc.DrawPolygon( j, bpts, 0, 0);
     }
         
 #endif

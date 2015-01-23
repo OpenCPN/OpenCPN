@@ -1378,8 +1378,8 @@ void glChartCanvas::DrawAllRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region 
             continue;
 
         /* defer rendering active routes until later */
-        if( pBoundaryDraw->IsActive() || pBoundaryDraw->IsSelected() )
-            continue;
+//        if( pBoundaryDraw->IsActive() || pBoundaryDraw->IsSelected() )
+//            continue;
 
         /* this routine is called very often, so rather than using the
            wxBoundingBox::Intersect routine, do the comparisons directly
