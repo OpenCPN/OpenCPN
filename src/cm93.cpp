@@ -84,6 +84,9 @@ extern bool             g_bopengl;
 extern PlugInManager    *g_pi_manager;
 extern float            g_GLMinSymbolLineWidth;
 
+extern bool  g_b_EnableVBO;
+extern PFNGLBINDBUFFERPROC                 s_glBindBuffer;
+
 // TODO  These should be gotten from the ctor
 extern MyFrame          *gFrame;
 
@@ -113,6 +116,7 @@ void appendOSDirSep ( wxString* pString )
 M_COVR_Desc::M_COVR_Desc()
 {
       pvertices = NULL;
+      gl_screen_vertices = NULL;
 
       user_xoff = 0.;
       user_yoff = 0.;
@@ -124,6 +128,7 @@ M_COVR_Desc::M_COVR_Desc()
 M_COVR_Desc::~M_COVR_Desc()
 {
       delete[] pvertices;
+      delete[] gl_screen_vertices;
 }
 
 int M_COVR_Desc::GetWKBSize()
@@ -1926,10 +1931,6 @@ cm93chart::cm93chart()
       //    Make initial allocation of shared outline drawing buffer
       m_pDrawBuffer = ( wxPoint * ) malloc ( 4 * sizeof ( wxPoint ) );
       m_nDrawBufferSize = 1;
-
-#ifdef ocpnUSE_GL        
-      m_outline_display_list = 0;
-#endif
 
       //  Set up the chart context
       m_this_chart_context = (chart_context *)calloc( sizeof(chart_context), 1);
@@ -5952,206 +5953,149 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
       ViewPort vp_positive = vp;
       SetVPPositive ( &vp_positive );
 
-      if ( m_cmscale < 7 )
-      {
-          int nss_max;
-#if 0      
+      if ( m_cmscale >= 7 )
+          return false;
+
+#ifdef ocpnUSE_GL        
+      ViewPort nvp;
+      if(g_bopengl) /* opengl */ {
+          wxPen pen = dc.GetPen();
+          wxColour col = pen.GetColour();
           
-            //    Something like an effective true_scale
-            double top_scale = vp.chart_scale * .10; //0.25;
-
-            nss_max = m_cmscale;
-            while ( nss_max < 7 )
-            {
-                  double candidate_cell_scale;
-                  switch ( nss_max )
-                  {
-                        case  0: candidate_cell_scale = 20000000.; break;            // Z
-                        case  1: candidate_cell_scale =  3000000.; break;           // A
-                        case  2: candidate_cell_scale =  1000000.; break;            // B
-                        case  3: candidate_cell_scale =  200000. ; break;            // C
-                        case  4: candidate_cell_scale =  100000. ; break;            // D
-                        case  5: candidate_cell_scale =  50000.  ; break;            // E
-                        case  6: candidate_cell_scale =  20000.  ; break;            // F
-                        case  7: candidate_cell_scale =  7500.   ; break;           // G
-                        default: candidate_cell_scale =  10.;break;
-                  }
-
-                  if ( candidate_cell_scale < top_scale )
-                        break;
-                  nss_max ++;
-            }
-
-            nss_max = wxMax ( nss_max, m_cmscale+1 );
-
-            if ( g_bDebugCM93 )
-            {
-                  printf ( " RenderNextSmallerCellOutline, base chart scale is %c\n", ( char ) ( 'A' +m_cmscale - 1 ) );
-                  printf ( "    top_scale: %8.0f   VP.chart_scale: %8.0f\n", top_scale, vp.chart_scale );
-                  printf ( "    nss_max is %c\n", ( char ) ( 'A' +nss_max - 1 ) );
-            }
-
+          glEnable( GL_LINE_SMOOTH );
+          glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
+          glEnable( GL_BLEND );
+          glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+          
+          glColor3ub(col.Red(), col.Green(), col.Blue());
+          glLineWidth( g_GLMinSymbolLineWidth );
+          glDisable( GL_LINE_STIPPLE );
+          dc.SetGLStipple();
+          
+          if(g_b_EnableVBO)
+              s_glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
+          glEnableClientState(GL_VERTEX_ARRAY);
+          
+          // use a viewport that allows the vertexes to be reused over many frames
+          glPushMatrix();
+          glChartCanvas::MultMatrixViewPort(vp);
+          nvp = glChartCanvas::NormalizedViewPort(vp);
+      }
 #endif
 
-            int nss = m_cmscale +1;
+      int nss_max;
 
-            //    A little magic here.
-            //    Drawing all larger scale cell outlines is way too expensive.
-            //    So, stop the loop after we have rendered "something"
-            //    But don't stop at all if the viewport scale is less than 3 million.
-            //    This will have the effect of bringing in outlines of isolated large scale cells
-            //    embedded within small scale cells, like isolated islands in the Pacific.
-            bool bdrawn = false;
+      int nss = m_cmscale +1;
 
-            nss_max = 7;
+      //    A little magic here.
+      //    Drawing all larger scale cell outlines is way too expensive.
+      //    So, stop the loop after we have rendered "something"
+      //    But don't stop at all if the viewport scale is less than 3 million.
+      //    This will have the effect of bringing in outlines of isolated large scale cells
+      //    embedded within small scale cells, like isolated islands in the Pacific.
+      bool bdrawn = false;
+
+      nss_max = 7;
 
 #if 0 /* only if chart outlines are rendered grounded to the charts */
-            if(g_bopengl) { /* for opengl: lets keep this simple yet also functioning
-                               unlike the unbounded version (which is interesting)
-                               the small update rectangles normally encountered when panning
-                               can cause too many charts to load */
-                if(nss_max > m_cmscale+3)
-                    nss_max = m_cmscale+3;
-            }
+      if(g_bopengl) { /* for opengl: lets keep this simple yet also functioning
+                         unlike the unbounded version (which is interesting)
+                         the small update rectangles normally encountered when panning
+                         can cause too many charts to load */
+          if(nss_max > m_cmscale+3)
+              nss_max = m_cmscale+3;
+      }
 #endif
-            while ( nss <= nss_max && ( !bdrawn || ( vp.chart_scale < 3e6 ) ) )
-            {
-                  cm93chart *psc = m_pcm93chart_array[nss];
+      while ( nss <= nss_max && ( !bdrawn || ( vp.chart_scale < 3e6 ) ) )
+      {
+          cm93chart *psc = m_pcm93chart_array[nss];
 
-                  if ( !psc )
-                  {
-                        m_pcm93chart_array[nss] = new cm93chart();
-                        psc = m_pcm93chart_array[nss];
+          if ( !psc )
+          {
+              m_pcm93chart_array[nss] = new cm93chart();
+              psc = m_pcm93chart_array[nss];
 
-                        wxChar ext = ( wxChar ) ( 'A' + nss - 1 );
-                        if ( nss == 0 )
-                              ext = 'Z';
+              wxChar ext = ( wxChar ) ( 'A' + nss - 1 );
+              if ( nss == 0 )
+                  ext = 'Z';
 
-                        wxString file_dummy = _T ( "CM93." );
-                        file_dummy << ext;
+              wxString file_dummy = _T ( "CM93." );
+              file_dummy << ext;
 
-                        psc->SetCM93Dict ( m_pDictComposite );
-                        psc->SetCM93Prefix ( m_prefixComposite );
-                        psc->SetCM93Manager ( m_pcm93mgr );
+              psc->SetCM93Dict ( m_pDictComposite );
+              psc->SetCM93Prefix ( m_prefixComposite );
+              psc->SetCM93Manager ( m_pcm93mgr );
 
-                        psc->SetColorScheme ( m_global_color_scheme );
-                        psc->Init ( file_dummy, FULL_INIT );
+              psc->SetColorScheme ( m_global_color_scheme );
+              psc->Init ( file_dummy, FULL_INIT );
                         
-                  }
+          }
 
-                  if ( nss != 1 ) {       // skip rendering the A scale outlines
+          if ( nss != 1 ) {       // skip rendering the A scale outlines
 
-                       //      Make sure the covr bounding box is complete
-                       psc->UpdateCovrSet ( &vp );
+              //      Make sure the covr bounding box is complete
+              psc->UpdateCovrSet ( &vp );
                               
-                       /* test rectangle for entire set to reduce number of tests */
-                      if( !psc->m_covr_bbox.GetValid() ||
-                          !vp_positive.GetBBox().IntersectOut ( psc->m_covr_bbox ) ||
-                          !vp.GetBBox().IntersectOut ( psc->m_covr_bbox ) ) 
-                      {
+              /* test rectangle for entire set to reduce number of tests */
+              if( !psc->m_covr_bbox.GetValid() ||
+                  !vp_positive.GetBBox().IntersectOut ( psc->m_covr_bbox ) ||
+                  !vp.GetBBox().IntersectOut ( psc->m_covr_bbox ) ) 
+              {
+                  if ( psc ) 
+                  {
+                      //    Render the chart outlines
+                      covr_set *pcover = psc->GetCoverSet();
+                                  
+                      for ( unsigned int im=0 ; im < pcover->GetCoverCount() ; im++ ){
+                          M_COVR_Desc *mcd = pcover->GetCover ( im );
 #ifdef ocpnUSE_GL        
-                          ViewPort nvp;
-                          if(g_bopengl) /* opengl */ {
-                              wxPen pen = dc.GetPen();
-                              wxColour col = pen.GetColour();
-                              
-                              glEnable( GL_LINE_SMOOTH );
-                              glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
-                              glEnable( GL_BLEND );
-                              glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-
-                              glColor3ub(col.Red(), col.Green(), col.Blue());
-                              glLineWidth( g_GLMinSymbolLineWidth );
-                              glDisable( GL_LINE_STIPPLE );
-                              dc.SetGLStipple();
-
-                              glPushMatrix();
-                              glChartCanvas::MultMatrixViewPort(vp);
-                              nvp = glChartCanvas::NormalizedViewPort(vp);
-
-                              if(!psc->m_outline_display_list) {
-                                  psc->m_outline_display_list = glGenLists(1);
-                                  glNewList(psc->m_outline_display_list, GL_COMPILE_AND_EXECUTE);
-                              } else {
-                                  glCallList(psc->m_outline_display_list);
-                                  glChartCanvas::FixRenderIDL(psc->m_outline_display_list);
-
-                                  
-                                  // was anything actually rendered onscreen?
-                                  // Should we stop the loop?
-                                  
-                                  covr_set *pcover = psc->GetCoverSet();
-                                  for ( unsigned int im=0 ; im < pcover->GetCoverCount() ; im++ )
-                                  {
-                                      M_COVR_Desc *mcd = pcover->GetCover ( im );
+                          if (g_bopengl) {
+                              RenderCellOutlinesOnGL(nvp, mcd); 
                                       
-                                      if(! ( vp_positive.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) ||
-                                              ! ( vp.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) ) {
-                                          
-                                                    bdrawn = true;
-                                      }
-                                  }
-                                  
-                                  psc = NULL; /* skip rendering, we used display list */
-                                  
+                              // if signs don't agree we need to render a second pass
+                              // translating around the world
+                              if( vp.GetBBox().GetMaxX()*vp.clon < 0 ||
+                                  vp.GetBBox().GetMaxX() > 180) {
+                                  #define NORM_FACTOR 16.0                                              
+                                  double ts = 40058986*NORM_FACTOR; /* 360 degrees in normalized viewport */
+                                  glPushMatrix();
+                                  glTranslated(vp.clon < 0 ? -ts : ts, 0, 0);
+                                  RenderCellOutlinesOnGL(nvp, mcd); 
+                                  glPopMatrix();
                               }
-                          }
+    
+                              // TODO: this calculation doesn't work crossing IDL
+                              // was anything actually drawn?
+                              if(! ( vp_positive.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) ||
+                                 ! ( vp.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) ) {
+                                  bdrawn = true;
+
+                                  //  Does current vp cross international dateline?
+                                  // if so, translate to the other side of it.
+                              }
+                          } else
 #endif
-                          if ( psc ) 
-                          {
-                              //    Render the chart outlines
-                              covr_set *pcover = psc->GetCoverSet();
-                                  
-                              for ( unsigned int im=0 ; im < pcover->GetCoverCount() ; im++ ){
-                                  M_COVR_Desc *mcd = pcover->GetCover ( im );
-                                      
-#ifdef ocpnUSE_GL        
-                                      // In opengl it is rendering into a display list
-                                  if (g_bopengl) {
-                                      RenderCellOutlinesOnGL(nvp, mcd); 
-                                          
-                                          // was anything actually drawn?
-                                      if(! ( vp_positive.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) ||
-                                          ! ( vp.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) ) {
-                                              bdrawn = true;
-                                      }
-                                  } else
-#endif
-                                      //    Anything actually to be drawn?
-                                         if(! ( vp_positive.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) ||
-                                         ! ( vp.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) ) {
+                              //    Anything actually to be drawn?
+                              if(! ( vp_positive.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) ||
+                                 ! ( vp.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) ) {
                                             
-                                            wxPoint *pwp = psc->GetDrawBuffer ( mcd->m_nvertices );
-                                            bdrawn = RenderCellOutlinesOnDC(dc, vp_positive, pwp, mcd);
-                                        }
+                                  wxPoint *pwp = psc->GetDrawBuffer ( mcd->m_nvertices );
+                                  bdrawn = RenderCellOutlinesOnDC(dc, vp_positive, pwp, mcd);
                               }
-#ifdef ocpnUSE_GL        
-                              if(g_bopengl) {
-                                  glEndList();
-                                  glChartCanvas::FixRenderIDL(psc->m_outline_display_list);
-                              }
-#endif
-                          }                          
-#ifdef ocpnUSE_GL        
-                          if(g_bopengl) {
-                              glPopMatrix();
-                              glDisable( GL_LINE_STIPPLE );
-                              
-                              //  Cannot use the display list further, since it needs to be rebuilt on every change in the viewport
-                              //  We can only use the display list to potentially render the IDL crossing case
-                              //  But I leave the skeleton in place for maybe more thought....
-                              
-                              glDeleteLists(psc->m_outline_display_list, 1);
-                              psc->m_outline_display_list = 0;
-                              
-                          }
-#endif
                       }
-                  }
-                  nss ++;
-            }
+                  }                          
+              }
+          }
+          nss ++;
       }
 
+#ifdef ocpnUSE_GL        
+      if(g_bopengl) {
+          glDisableClientState(GL_VERTEX_ARRAY);
+          glPopMatrix();
+          glDisable( GL_LINE_STIPPLE );
+      }
+#endif
 
       return true;
 }
@@ -6189,41 +6133,109 @@ bool cm93compchart::RenderCellOutlinesOnDC( ocpnDC &dc, ViewPort& vp, wxPoint *p
 
 void cm93compchart::RenderCellOutlinesOnGL( ViewPort& vp, M_COVR_Desc *mcd )
 {
-#ifdef ocpnUSE_GL        
-    float_2Dpt *p = mcd->pvertices;
-    int np = mcd->m_nvertices;
-    double lastlon = 0;
-    glBegin(GL_LINE_STRIP);
-    for ( int ip = 0 ; ip < np ; ip++ , p++ ) {
-        double lat = p->y;
-        double lon = p->x;
-        if(lon >= 180)
-            lon -= 360;
+#ifdef ocpnUSE_GL
+    // TODO: use vp.GetDoublePixFromLL instead of vp.GetPixFromLL below
+    // for much better precision, however, this should be changed after
+    // all of the other rendering also is changed
+    // otherwise the outlines are more accurate but move relative to the rendered chart
 
-        /* crosses IDL? if so break up into two segments so display lists work */
-        if(fabs(lon - lastlon) > 180) {
-            wxPoint r = vp.GetPixFromLL(lat, lastlon > 0 ? fabs(lon) : -fabs(lon) );
-    //    Outlines stored in MCDs are not adjusted for offsets
-            r.x -= mcd->user_xoff * vp.view_scale_ppm;
-            r.y -= mcd->user_yoff * vp.view_scale_ppm;
-                                                  
-            glVertex2i(r.x, r.y);
-            glEnd();
-            glBegin(GL_LINE_STRIP);
+    // if needed, cache normalized vertices
+    if(!mcd->gl_screen_vertices) {
+        // first compute how many verticies we need to store
+        double lastlon = 0;
+        int count = 0;
+        float_2Dpt *p = mcd->pvertices;
+        for ( int ip = 0 ; ip < mcd->m_nvertices ; ip++, p++ ) {
+            double lon = p->x;
+            if(lon > 180)
+                lon -= 360;
+
+            // crosses IDL? if so break up into two segments
+            if(fabs(lon - lastlon) > 180) {
+                if(count > 1)
+                    count++;
+                count++;
+            }
+
+            if(count > 1)
+                count++;
+
+            count++;
+            lastlon = lon;
         }
-        lastlon = lon;
+
+        mcd->m_ngl_vertices = count;
+        mcd->gl_screen_vertices = new float_2Dpt[mcd->m_ngl_vertices];
+
+        wxPoint l;
+        p = mcd->pvertices;
+        float_2Dpt *q = mcd->gl_screen_vertices;
+        lastlon = 0;
+        int pos = 0;
+        for ( int ip = 0 ; ip < mcd->m_nvertices ; ip++ , p++ ) {
+            double lat = p->y;
+            double lon = p->x;
+            if(lon > 180)
+                lon -= 360;
+
+            // crosses IDL? if so break up into two segments
+            if(fabs(lon - lastlon) > 180) {
+                if(pos > 1) {
+                    q->y = l.x;
+                    q->x = l.y;
+                    q++;
+                    pos++;
+                }
+
+                wxPoint r = vp.GetPixFromLL(lat, lastlon > 0 ? fabs(lon) : -fabs(lon) );
+                //    Outlines stored in MCDs are not adjusted for offsets
+                r.x -= mcd->user_xoff * vp.view_scale_ppm;
+                r.y -= mcd->user_yoff * vp.view_scale_ppm;
+
+                q->y = r.x;
+                q->x = r.y;
+                q++;
+                pos++;
+
+                r = vp.GetPixFromLL(lat, lon > 0 ? fabs(lastlon) : -fabs(lastlon) );
+                r.x -= mcd->user_xoff * vp.view_scale_ppm;
+                l.x = r.x;
+            }
+
+            if(pos > 1) {
+                q->y = l.x;
+                q->x = l.y;
+                q++;
+                pos++;
+            }
+
+            lastlon = lon;
                                               
-        wxPoint q = vp.GetPixFromLL( lat, lon );
+            wxPoint s = vp.GetPixFromLL( lat, lon );
 
-        //    Outlines stored in MCDs are not adjusted for offsets
-        q.x -= mcd->user_xoff * vp.view_scale_ppm;
-        q.y -= mcd->user_yoff * vp.view_scale_ppm;
+            //    Outlines stored in MCDs are not adjusted for offsets
+            s.x -= mcd->user_xoff * vp.view_scale_ppm;
+            s.y -= mcd->user_yoff * vp.view_scale_ppm;
+            l = s;
 
-        int dir = 0;
+            q->y = s.x;
+            q->x = s.y;
 
-        glVertex2i(q.x, q.y);
+            q++;
+            pos++;
+        }
     }
+
+#if 1 // Push array (faster)
+    glVertexPointer(2, GL_FLOAT, 2*sizeof(float), mcd->gl_screen_vertices);
+    glDrawArrays(GL_LINES, 0, mcd->m_ngl_vertices);
+#else // immediate mode (may be useful for debugging buggy gfx cards)
+    glBegin(GL_LINES);
+    for(int i=0; i<mcd->m_ngl_vertices; i++)
+        glVertex2f(mcd->gl_screen_vertices[i].y, mcd->gl_screen_vertices[i].x);
     glEnd();
+#endif
+
 #endif
 }
 

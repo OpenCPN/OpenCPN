@@ -63,6 +63,10 @@ class M_COVR_Desc
 
       int         m_nvertices;
       float_2Dpt  *pvertices;
+
+      int   m_ngl_vertices;
+      float_2Dpt *gl_screen_vertices;
+
       int         m_npub_year;
       double      transform_WGS84_offset_x;
       double      transform_WGS84_offset_y;
@@ -341,9 +345,6 @@ class cm93chart : public s57chart
 
             OCPNRegion          m_render_region;
 
-#ifdef ocpnUSE_GL
-            unsigned int m_outline_display_list;
-#endif
             wxBoundingBox      m_covr_bbox; /* bounding box for entire covr_set */
 
       private:
