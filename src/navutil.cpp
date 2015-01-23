@@ -91,6 +91,7 @@ extern double           g_ChartNotRenderScaleFactor;
 extern int              g_restore_stackindex;
 extern int              g_restore_dbindex;
 extern RouteList        *pRouteList;
+extern BoundaryList     *pBoundaryList;
 extern LayerList        *pLayerList;
 extern int              g_LayerIdx;
 extern Select           *pSelect;
@@ -313,6 +314,7 @@ extern int              g_cog_predictor_width;
 extern int              g_ais_cog_predictor_width;
 
 extern int              g_route_line_width;
+extern int              g_boundary_line_width;
 extern int              g_track_line_width;
 extern wxString         g_default_wp_icon;
 
@@ -551,6 +553,7 @@ RoutePoint* Track::AddNewPoint( vector2D point, wxDateTime time ) {
 
     //    This is a hack, need to undo the action of Route::AddPoint
     rPoint->m_bIsInRoute = false;
+    rPoint->m_bIsInBoundary = false;
     rPoint->m_bIsInTrack = true;
     return rPoint;
 }
@@ -1970,6 +1973,10 @@ int MyConfig::LoadMyConfig( int iteration )
     if( 0 == iteration )
         pRouteList = new RouteList;
 
+    //  Boundaries
+    if( 0 == iteration )
+        pBoundaryList = new BoundaryList;
+
     //    Groups
     if( 0 == iteration )
         LoadConfigGroups( g_pGroupArray );
@@ -2071,6 +2078,7 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "NavObjectFileName" ), m_sNavObjSetFile );
 
     Read( _T ( "RouteLineWidth" ), &g_route_line_width, 2 );
+    Read( _T ( "BoundaryLineWidth" ), &g_boundary_line_width, 2 );
     Read( _T ( "TrackLineWidth" ), &g_track_line_width, 2 );
     Read( _T ( "CurrentArrowScale" ), &g_current_arrow_scale, 100 );
     Read( _T ( "DefaultWPIcon" ), &g_default_wp_icon, _T("triangle") );
@@ -2279,6 +2287,37 @@ bool MyConfig::DeleteConfigRoute( Route *pr )
             m_pNavObjectChangesSet->AddTrack( (Track *)pr, "delete" );
 
     }
+    return true;
+}
+
+bool MyConfig::AddNewBoundary( Boundary *pb, int crm )
+{
+    if( pb->m_bIsInLayer )
+        return true;
+
+
+    if( !m_bSkipChangeSetUpdate ) {
+        m_pNavObjectChangesSet->AddBoundary( pb, "add" );
+    }
+
+    return true;
+}
+
+bool MyConfig::UpdateBoundary( Boundary *pb )
+{
+    if( pb->m_bIsInLayer ) return true;
+
+
+    if( !m_bSkipChangeSetUpdate ) {
+        m_pNavObjectChangesSet->AddBoundary( pb, "update" );
+
+    }
+
+    return true;
+}
+
+bool MyConfig::DeleteConfigBoundary( Boundary *pb )
+{
     return true;
 }
 
@@ -2818,6 +2857,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "TrackPrecision" ), g_nTrackPrecision );
 
     Write( _T ( "RouteLineWidth" ), g_route_line_width );
+    Write( _T ( "BoundaryLineWidth" ), g_boundary_line_width );
     Write( _T ( "TrackLineWidth" ), g_track_line_width );
     Write( _T ( "CurrentArrowScale" ), g_current_arrow_scale );
     Write( _T ( "DefaultWPIcon" ), g_default_wp_icon );
@@ -2885,6 +2925,46 @@ bool MyConfig::ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxSt
 
         NavObjectCollection1 *pgpx = new NavObjectCollection1;
         pgpx->AddGPXRoutesList( pRoutes );
+        pgpx->SaveFile(fn.GetFullPath());
+        delete pgpx;
+
+        return true;
+    } else
+        return false;
+}
+
+bool MyConfig::ExportGPXBoundaries( wxWindow* parent, BoundaryList *pBoundaries, const wxString suggestedName )
+{
+    wxFileDialog saveDialog( NULL, _( "Export GPX file" ), m_gpx_path, suggestedName,
+            wxT ( "GPX files (*.gpx)|*.gpx" ), wxFD_SAVE );
+
+#ifdef __WXOSX__
+    if(parent)
+        parent->HideWithEffect(wxSHOW_EFFECT_BLEND );
+#endif
+
+     int response = saveDialog.ShowModal();
+
+#ifdef __WXOSX__
+    if(parent)
+        parent->ShowWithEffect(wxSHOW_EFFECT_BLEND );
+#endif
+
+    wxString path = saveDialog.GetPath();
+    wxFileName fn( path );
+    m_gpx_path = fn.GetPath();
+
+    if( response == wxID_OK ) {
+        fn.SetExt( _T ( "gpx" ) );
+
+        if( wxFileExists( fn.GetFullPath() ) ) {
+            int answer = OCPNMessageBox( NULL, _("Overwrite existing file?"), _T("Confirm"),
+                    wxICON_QUESTION | wxYES_NO | wxCANCEL );
+            if( answer != wxID_YES ) return false;
+        }
+
+        NavObjectCollection1 *pgpx = new NavObjectCollection1;
+        pgpx->AddGPXBoundariesList( pBoundaries );
         pgpx->SaveFile(fn.GetFullPath());
         delete pgpx;
 
@@ -3006,6 +3086,24 @@ void MyConfig::ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
                     pgpx->AddGPXTrack( (Track *)pRoute  );
                 }
             node1 = node1->GetNext();
+        }
+
+        //BND
+        wxBoundaryListNode *bnode1 = pBoundaryList->GetFirst();
+        while( bnode1 ) {
+            Boundary *pBoundary = bnode1->GetData();
+
+            bool b_add = true;
+
+            if( bviz_only && !pBoundary->IsVisible() )
+                b_add = false;
+
+            if(  pBoundary->m_bIsInLayer && !blayer )
+                b_add = false;
+
+            pgpx->AddGPXBoundary( pBoundary ); //gpxroot->AddBoundary( CreateGPXBnd( pBoundary ) );
+
+            bnode1 = bnode1->GetNext();
         }
 
         pgpx->SaveFile( fn.GetFullPath() );
@@ -3197,6 +3295,35 @@ Route *RouteExists( Route * pTentRoute )
         }
 
         route_node = route_node->GetNext();       // next route
+    }
+    return NULL;
+}
+
+Boundary *BoundaryExists( const wxString& guid )
+{
+    wxBoundaryListNode *boundary_node = pBoundaryList->GetFirst();
+
+    while( boundary_node ) {
+        Boundary *pboundary = boundary_node->GetData();
+
+        if( guid == pboundary->m_GUID ) return pboundary;
+
+        boundary_node = boundary_node->GetNext();
+    }
+    return NULL;
+}
+
+Boundary *BoundaryExists( Boundary * pTentBoundary )
+{
+    wxBoundaryListNode *boundary_node = pBoundaryList->GetFirst();
+    while( boundary_node ) {
+        Boundary *pboundary = boundary_node->GetData();
+
+        if( pboundary->IsEqualTo( pTentBoundary ) ) {
+            if( !pboundary->m_bIsTrack ) return pboundary;
+        }
+
+        boundary_node = boundary_node->GetNext();       // next route
     }
     return NULL;
 }

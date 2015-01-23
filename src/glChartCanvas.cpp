@@ -116,6 +116,7 @@ extern PlugInManager* g_pi_manager;
 
 extern WayPointman      *pWayPointMan;
 extern RouteList        *pRouteList;
+extern BoundaryList     *pBoundaryList;
 extern bool             b_inCompressAllCharts;
 extern bool             g_bexpert;
 extern bool             g_bcompression_wait;
@@ -1370,11 +1371,50 @@ void glChartCanvas::DrawAllRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region 
         }
     }
 
+    for(wxBoundaryListNode *node = pBoundaryList->GetFirst();
+        node; node = node->GetNext() ) {
+        Boundary *pBoundaryDraw = node->GetData();
+        if( !pBoundaryDraw )
+            continue;
+
+        /* defer rendering active routes until later */
+//        if( pBoundaryDraw->IsActive() || pBoundaryDraw->IsSelected() )
+//            continue;
+
+        /* this routine is called very often, so rather than using the
+           wxBoundingBox::Intersect routine, do the comparisons directly
+           to reduce the number of floating point comparisons */
+
+        const wxBoundingBox &vp_box = vp.GetBBox(), &test_box = pBoundaryDraw->GetBBox();
+
+        if(test_box.GetMaxY() < vp_box.GetMinY())
+            continue;
+
+        if(test_box.GetMinY() > vp_box.GetMaxY())
+            continue;
+
+        double vp_minx = vp_box.GetMinX(), vp_maxx = vp_box.GetMaxX();
+        double test_minx = test_box.GetMinX(), test_maxx = test_box.GetMaxX();
+
+        /* TODO: use DrawGL instead of Draw */
+
+        // Route is not wholly outside viewport
+        if(test_maxx >= vp_minx && test_minx <= vp_maxx) {
+            pBoundaryDraw->DrawGL( vp, region );
+        } else if( vp_maxx > 180. ) {
+            if(test_minx + 360 <= vp_maxx && test_maxx + 360 >= vp_minx)
+                pBoundaryDraw->DrawGL( vp, region );
+        } else if( pBoundaryDraw->CrossesIDL() || vp_minx < -180. ) {
+            if(test_maxx - 360 >= vp_minx && test_minx - 360 <= vp_maxx)
+                pBoundaryDraw->DrawGL( vp, region );
+        }
+    }
+
     /* Waypoints not drawn as part of routes */
     if( vp.GetBBox().GetValid() ) {
         for(wxRoutePointListNode *pnode = pWayPointMan->GetWaypointList()->GetFirst(); pnode; pnode = pnode->GetNext() ) {
             RoutePoint *pWP = pnode->GetData();
-            if( pWP && (!pWP->m_bIsInRoute && !pWP->m_bIsInTrack ) )
+            if( pWP && (!pWP->m_bIsInRoute && !pWP->m_bIsInTrack && !pWP->m_bIsInBoundary ) )
                 pWP->DrawGL( vp, region );
         }
     }
@@ -2031,6 +2071,12 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc, OCPNRegion &region )
         dc.DrawBitmap( *(cc1->m_pRouteRolloverWin->GetBitmap()),
                        cc1->m_pRouteRolloverWin->GetPosition().x,
                        cc1->m_pRouteRolloverWin->GetPosition().y, false );
+    }
+
+    if( cc1->m_pBoundaryRolloverWin && cc1->m_pBoundaryRolloverWin->IsActive() ) {
+        dc.DrawBitmap( *(cc1->m_pBoundaryRolloverWin->GetBitmap()),
+                       cc1->m_pBoundaryRolloverWin->GetPosition().x,
+                       cc1->m_pBoundaryRolloverWin->GetPosition().y, false );
     }
 
     if( cc1->m_pAISRolloverWin && cc1->m_pAISRolloverWin->IsActive() ) {

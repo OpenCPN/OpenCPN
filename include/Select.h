@@ -26,6 +26,7 @@
 
 #include "SelectItem.h"
 #include "Route.h"
+#include "Boundary.h"
 
 #define SELTYPE_UNKNOWN              0x0001
 #define SELTYPE_ROUTEPOINT           0x0002
@@ -36,6 +37,8 @@
 #define SELTYPE_AISTARGET            0x0040
 #define SELTYPE_MARKPOINT            0x0080
 #define SELTYPE_TRACKSEGMENT         0x0100
+#define SELTYPE_BOUNDARYSEGMENT      0x0200
+#define SELTYPE_BOUNDARYCREATE       0x0400
 
 class Select
 {
@@ -48,6 +51,8 @@ public:
     bool AddSelectableRoutePoint( float slat, float slon, RoutePoint *pRoutePointAdd );
     bool AddSelectableRouteSegment( float slat1, float slon1, float slat2, float slon2,
             RoutePoint *pRoutePointAdd1, RoutePoint *pRoutePointAdd2, Route *pRoute );
+    bool AddSelectableBoundarySegment( float slat1, float slon1, float slat2, float slon2,
+            RoutePoint *pRoutePointAdd1, RoutePoint *pRoutePointAdd2, Boundary *pBoundary );
 
     bool AddSelectableTrackSegment( float slat1, float slon1, float slat2, float slon2,
             RoutePoint *pRoutePointAdd1, RoutePoint *pRoutePointAdd2, Route *pRoute );
@@ -56,12 +61,17 @@ public:
     SelectableItemList FindSelectionList( float slat, float slon, int fseltype );
 
     bool DeleteAllSelectableRouteSegments( Route * );
+    bool DeleteAllSelectableBoundarySegments( Boundary * );
     bool DeleteAllSelectableTrackSegments( Route * );
     bool DeleteAllSelectableRoutePoints( Route * );
+    bool DeleteAllSelectableRoutePoints( Boundary * );
     bool AddAllSelectableRouteSegments( Route *pr );
+    bool AddAllSelectableBoundarySegments( Boundary *pr );
     bool AddAllSelectableTrackSegments( Route *pr );
     bool AddAllSelectableRoutePoints( Route *pr );
+    bool AddAllSelectableRoutePoints( Boundary *pr );
     bool UpdateSelectableRouteSegments( RoutePoint *prp );
+    bool UpdateSelectableBoundarySegments( RoutePoint *prp );
     bool DeletePointSelectableTrackSegments( RoutePoint *pr );
     bool IsSegmentSelected( float a, float b, float c, float d, float slat, float slon );
     bool IsSelectableSegmentSelected( float slat, float slon, SelectItem *pFindSel );

@@ -49,6 +49,7 @@
 class Route;
 class RoutePoint;
 class RoutePointList;
+class Boundary;
 
 //    List definitions for Waypoint Manager Icons
 
@@ -68,18 +69,25 @@ public:
 
       bool DeleteRoute(Route *pRoute);
       void DeleteAllRoutes(void);
+      bool DeleteBoundary(Boundary *pBoundary);
+      void DeleteAllBoundaries(void);
       void DeleteAllTracks(void);
 
       void DeleteTrack(Route *pRoute);
 
       bool IsRouteValid(Route *pRoute);
+      bool IsBoundaryValid(Boundary *pBoundary);
 
       Route *FindRouteByGUID(wxString &guid);
       Route *FindRouteContainingWaypoint(RoutePoint *pWP);
+      Boundary *FindBoundaryContainingWaypoint(RoutePoint *pWP);
       wxArrayPtrVoid *GetRouteArrayContaining(RoutePoint *pWP);
+      wxArrayPtrVoid *GetBoundaryArrayContaining(RoutePoint *pWP);
       bool DoesRouteContainSharedPoints( Route *pRoute );
+      bool DoesBoundaryContainSharedPoints( Boundary *pBoundary );
 
       bool ActivateRoute(Route *pRouteToActivate, RoutePoint *pStartPoint = NULL);
+      bool ActivateBoundary(Boundary *pBoundaryToActivate);
       bool ActivateRoutePoint(Route *pA, RoutePoint *pRP);
       bool ActivateNextPoint(Route *pr, bool skipped);
       RoutePoint *FindBestActivatePoint(Route *pR, double lat, double lon, double cog, double sog);
@@ -87,6 +95,7 @@ public:
       bool UpdateProgress();
       bool UpdateAutopilot();
       bool DeactivateRoute( bool b_arrival = false );
+      bool DeactivateBoundary( Boundary *pBoundaryToDeactivate );
       bool IsAnyRouteActive(void){ return (pActiveRoute != NULL); }
       void SetColorScheme(ColorScheme cs);
 
@@ -110,6 +119,14 @@ public:
       wxBrush * GetActiveRouteBrush(void){return m_pActiveRouteBrush;}
       wxBrush * GetActiveRoutePointBrush(void){return m_pActiveRoutePointBrush;}
       wxBrush * GetRoutePointBrush(void){return m_pRoutePointBrush;}
+
+      wxPen   * GetBoundaryPen(void){return m_pBoundaryPen;}
+      wxPen   * GetSelectedBoundaryPen(void){return m_pSelectedBoundaryPen;}
+      wxPen   * GetActiveBoundaryPen(void){return m_pActiveBoundaryPen;}
+      wxPen   * GetBoundaryPointPen(void){return m_pBoundaryPointPen;}
+      wxBrush * GetBoundaryBrush(void){return m_pBoundaryBrush;}
+      wxBrush * GetSelectedBoundaryBrush(void){return m_pSelectedBoundaryBrush;}
+      wxBrush * GetActiveBoundaryBrush(void){return m_pActiveBoundaryBrush;}
 
       wxString GetRouteReverseMessage(void);
 
@@ -144,6 +161,14 @@ private:
       wxBrush     *m_pActiveRouteBrush;
       wxBrush     *m_pActiveRoutePointBrush;
       wxBrush     *m_pRoutePointBrush;
+
+      wxPen       *m_pBoundaryPen;
+      wxPen       *m_pSelectedBoundaryPen;
+      wxPen       *m_pActiveBoundaryPen;
+      wxPen       *m_pBoundaryPointPen;
+      wxBrush     *m_pBoundaryBrush;
+      wxBrush     *m_pSelectedBoundaryBrush;
+      wxBrush     *m_pActiveBoundaryBrush;
 
       NMEA0183    m_NMEA0183;                         // For autopilot output
       

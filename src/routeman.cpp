@@ -62,6 +62,7 @@
 extern ConsoleCanvas    *console;
 
 extern RouteList        *pRouteList;
+extern BoundaryList     *pBoundaryList;
 extern Select           *pSelect;
 extern MyConfig         *pConfig;
 extern Routeman         *g_pRouteMan;
@@ -84,6 +85,7 @@ extern RouteManagerDialog *pRouteManagerDialog;
 extern RoutePoint      *pAnchorWatchPoint1;
 extern RoutePoint      *pAnchorWatchPoint2;
 extern int              g_route_line_width;
+extern int              g_boundary_line_width;
 extern Multiplexer     *g_pMUX;
 extern AIS_Decoder     *g_pAIS;
 
@@ -133,6 +135,16 @@ bool Routeman::IsRouteValid( Route *pRoute )
     return false;
 }
 
+bool Routeman::IsBoundaryValid( Boundary *pBoundary )
+{
+    wxBoundaryListNode *node = pBoundaryList->GetFirst();
+    while( node ) {
+        if( pBoundary == node->GetData() ) return true;
+        node = node->GetNext();
+    }
+    return false;
+}
+
 //    Make a 2-D search to find the route containing a given waypoint
 Route *Routeman::FindRouteContainingWaypoint( RoutePoint *pWP )
 {
@@ -144,6 +156,25 @@ Route *Routeman::FindRouteContainingWaypoint( RoutePoint *pWP )
         while( pnode ) {
             RoutePoint *prp = pnode->GetData();
             if( prp == pWP )  return proute;
+            pnode = pnode->GetNext();
+        }
+
+        node = node->GetNext();
+    }
+
+    return NULL;                              // not found
+}
+
+Boundary *Routeman::FindBoundaryContainingWaypoint( RoutePoint *pWP )
+{
+    wxBoundaryListNode *node = pBoundaryList->GetFirst();
+    while( node ) {
+        Boundary *pboundary = node->GetData();
+
+        wxRoutePointListNode *pnode = ( pboundary->pRoutePointList )->GetFirst();
+        while( pnode ) {
+            RoutePoint *prp = pnode->GetData();
+            if( prp == pWP )  return pboundary;
             pnode = pnode->GetNext();
         }
 
@@ -171,6 +202,34 @@ wxArrayPtrVoid *Routeman::GetRouteArrayContaining( RoutePoint *pWP )
         }
 
         route_node = route_node->GetNext();                         // next route
+    }
+
+    if( pArray->GetCount() ) return pArray;
+
+    else {
+        delete pArray;
+        return NULL;
+    }
+}
+
+wxArrayPtrVoid *Routeman::GetBoundaryArrayContaining( RoutePoint *pWP )
+{
+    wxArrayPtrVoid *pArray = new wxArrayPtrVoid;
+
+    wxBoundaryListNode *boundary_node = pBoundaryList->GetFirst();
+    while( boundary_node ) {
+        Boundary *pboundary = boundary_node->GetData();
+
+        wxRoutePointListNode *waypoint_node = ( pboundary->pRoutePointList )->GetFirst();
+        while( waypoint_node ) {
+            RoutePoint *prp = waypoint_node->GetData();
+            if( prp == pWP )                // success
+            pArray->Add( (void *) pboundary );
+
+            waypoint_node = waypoint_node->GetNext();           // next waypoint
+        }
+
+        boundary_node = boundary_node->GetNext();                         // next route
     }
 
     if( pArray->GetCount() ) return pArray;
@@ -241,6 +300,19 @@ bool Routeman::ActivateRoute( Route *pRouteToActivate, RoutePoint *pStartPoint )
     m_bDataValid = false;
 
     console->ShowWithFreshFonts();
+
+    return true;
+}
+
+bool Routeman::ActivateBoundary( Boundary *pBoundaryToActivate )
+{
+    wxJSONValue v;
+    v[_T("Name")] = pBoundaryToActivate->m_BoundaryNameString;
+    v[_T("GUID")] = pBoundaryToActivate->m_GUID;
+    wxString msg_id( _T("OCPN_BND_ACTIVATED") );
+    g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
+
+    pBoundaryToActivate->m_bBndIsActive = true;
 
     return true;
 }
@@ -557,6 +629,22 @@ bool Routeman::DeactivateRoute( bool b_arrival )
     return true;
 }
 
+bool Routeman::DeactivateBoundary( Boundary *pBoundaryToDeactivate )
+{
+    wxJSONValue v;
+    v[_T("Boundary_deactivated")] = pBoundaryToDeactivate->m_BoundaryNameString;
+    v[_T("GUID")] = pBoundaryToDeactivate->m_GUID;
+    wxString msg_id( _T("OCPN_BND_DEACTIVATED") );
+    g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
+
+    pBoundaryToDeactivate->m_bBndIsActive = false;
+    console->pCDI->ClearBackground();
+
+    m_bDataValid = false;
+
+    return true;
+}
+
 bool Routeman::UpdateAutopilot()
 {
     //Send all known Autopilot messages upstream
@@ -770,6 +858,45 @@ bool Routeman::DoesRouteContainSharedPoints( Route *pRoute )
     return false;
 }
   
+bool Routeman::DoesBoundaryContainSharedPoints( Boundary *pBoundary )
+{
+    if( pBoundary ) {
+        // walk the route, looking at each point to see if it is used by another route
+        // or is isolated
+        wxRoutePointListNode *pnode = ( pBoundary->pRoutePointList )->GetFirst();
+        while( pnode ) {
+            RoutePoint *prp = pnode->GetData();
+
+            // check all other routes to see if this point appears in any other route
+            wxArrayPtrVoid *pRA = GetRouteArrayContaining( prp );
+            
+             if( pRA ) {
+                 for( unsigned int ir = 0; ir < pRA->GetCount(); ir++ ) {
+                    Boundary *pb = (Boundary *) pRA->Item( ir );
+                    if( pb == pBoundary)
+                        continue;               // self
+                    else 
+                        return true;
+                }
+            }
+                
+            if( pnode ) pnode = pnode->GetNext();
+        }
+        
+        //      Now walk the route again, looking for isolated type shared waypoints
+        pnode = ( pBoundary->pRoutePointList )->GetFirst();
+        while( pnode ) {
+            RoutePoint *prp = pnode->GetData();
+            if( prp->m_bKeepXRoute == true )
+                return true;
+            
+           if( pnode ) pnode = pnode->GetNext();
+        }
+    }
+    
+    return false;
+}
+  
 
 
 bool Routeman::DeleteRoute( Route *pRoute )
@@ -842,6 +969,65 @@ bool Routeman::DeleteRoute( Route *pRoute )
     return true;
 }
 
+bool Routeman::DeleteBoundary( Boundary *pBoundary )
+{
+    if( pBoundary ) {
+        ::wxBeginBusyCursor();
+
+        if( pBoundary->m_bIsInLayer )
+            return false;
+            
+        pConfig->DeleteConfigBoundary( pBoundary );
+
+        //    Remove the route from associated lists
+        pSelect->DeleteAllSelectableBoundarySegments( pBoundary );
+        pBoundaryList->DeleteObject( pBoundary );
+
+        // walk the route, tentatively deleting/marking points used only by this route
+        wxRoutePointListNode *pnode = ( pBoundary->pRoutePointList )->GetFirst();
+        while( pnode ) {
+            RoutePoint *prp = pnode->GetData();
+
+            // check all other routes to see if this point appears in any other route
+            Boundary *pcontainer_boundary = FindBoundaryContainingWaypoint( prp );
+
+            if( pcontainer_boundary == NULL && prp->m_bIsInBoundary ) {
+                prp->m_bIsInBoundary = false;          // Take this point out of this (and only) route
+                if( !prp->m_bKeepXRoute ) {
+//    This does not need to be done with navobj.xml storage, since the waypoints are stored with the route
+//                              pConfig->DeleteWayPoint(prp);
+
+                    pSelect->DeleteSelectablePoint( prp, SELTYPE_ROUTEPOINT );
+
+                    // Remove all instances of this point from the list.
+                    wxRoutePointListNode *pdnode = pnode;
+                    while( pdnode ) {
+                        pBoundary->pRoutePointList->DeleteNode( pdnode );
+                        pdnode = pBoundary->pRoutePointList->Find( prp );
+                    }
+
+                    pnode = NULL;
+                    delete prp;
+                } else {
+                    prp->m_bDynamicName = false;
+                    prp->m_bIsolatedMark = true;        // This has become an isolated mark
+                    prp->m_bKeepXRoute = false;         // and is no longer part of a Boundary
+                }
+
+            }
+            if( pnode ) pnode = pnode->GetNext();
+            else
+                pnode = pBoundary->pRoutePointList->GetFirst();                // restart the list
+        }
+
+        delete pBoundary;
+
+        ::wxEndBusyCursor();
+
+    }
+    return true;
+}
+
 void Routeman::DeleteAllRoutes( void )
 {
     ::wxBeginBusyCursor();
@@ -874,6 +1060,30 @@ void Routeman::DeleteAllRoutes( void )
             pConfig->m_bSkipChangeSetUpdate = false;
         } else
             node = node->GetNext();
+    }
+
+    ::wxEndBusyCursor();
+
+}
+
+void Routeman::DeleteAllBoundaries( void )
+{
+    ::wxBeginBusyCursor();
+
+    //    Iterate on the RouteList
+    wxBoundaryListNode *node = pBoundaryList->GetFirst();
+    while( node ) {
+        Boundary *pboundary = node->GetData();
+        if( pboundary->m_bIsInLayer ) {
+            node = node->GetNext();
+            continue;
+        }
+
+        pConfig->m_bSkipChangeSetUpdate = true;
+        pConfig->DeleteConfigBoundary( pboundary );
+        DeleteBoundary( pboundary );
+        node = pBoundaryList->GetFirst();                   // Route
+        pConfig->m_bSkipChangeSetUpdate = false;
     }
 
     ::wxEndBusyCursor();
@@ -1010,6 +1220,19 @@ void Routeman::SetColorScheme( ColorScheme cs )
 //      m_pActiveRoutePointBrush =  wxTheBrushList->FindOrCreatePen(GetGlobalColor(_T("PLRTE")), wxSOLID);
 //      m_pRoutePointBrush =        wxTheBrushList->FindOrCreatePen(GetGlobalColor(_T("CHBLK")), wxSOLID);
 
+    m_pBoundaryPen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T("UINFR") ), g_boundary_line_width,
+            wxSOLID );
+    m_pSelectedBoundaryPen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T("UINFO") ),
+            g_boundary_line_width, wxSOLID );
+//      m_pActiveRoutePen =       wxThePenList->FindOrCreatePen(GetGlobalColor(_T("PLRTE")), g_route_line_width, wxSOLID);
+    m_pActiveBoundaryPen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T("UARTE") ),
+            g_boundary_line_width, wxSOLID );
+
+    m_pBoundaryBrush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T("UINFR") ), wxSOLID );
+    m_pSelectedBoundaryBrush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T("UINFO") ),
+            wxSOLID );
+    m_pActiveBoundaryBrush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T("PLRTE") ),
+            wxSOLID );
 }
 
 wxString Routeman::GetRouteReverseMessage( void )
@@ -1634,7 +1857,7 @@ bool WayPointman::SharedWptsExist()
     wxRoutePointListNode *node = m_pWayPointList->GetFirst();
     while( node ) {
         RoutePoint *prp = node->GetData();
-        if (prp->m_bKeepXRoute && ( prp->m_bIsInRoute || prp->m_bIsInTrack || prp == pAnchorWatchPoint1 || prp == pAnchorWatchPoint2))
+        if (prp->m_bKeepXRoute && ( prp->m_bIsInRoute || prp->m_bIsInTrack || prp ->m_bIsInBoundary || prp == pAnchorWatchPoint1 || prp == pAnchorWatchPoint2))
             return true;
         node = node->GetNext();
     }
@@ -1650,7 +1873,7 @@ void WayPointman::DeleteAllWaypoints( bool b_delete_used )
         // if argument is false, then only delete non-route waypoints
         if( !prp->m_bIsInLayer && ( prp->GetIconName() != _T("mob") )
             && ( ( b_delete_used && prp->m_bKeepXRoute )
-                        || ( ( !prp->m_bIsInRoute ) && ( !prp->m_bIsInTrack )
+                        || ( ( !prp->m_bIsInRoute ) && ( !prp->m_bIsInTrack ) && ( !prp->m_bIsInBoundary )
                                 && !( prp == pAnchorWatchPoint1 ) && !( prp == pAnchorWatchPoint2 ) ) ) ) {
             DestroyWaypoint(prp);
             delete prp;
@@ -1696,6 +1919,36 @@ void WayPointman::DestroyWaypoint( RoutePoint *pRp, bool b_update_changeset )
             }
 
             delete proute_array;
+        }
+
+        // Get a list of all boundaries containing this point
+        // and remove the point from them all
+        wxArrayPtrVoid *pboundary_array = g_pRouteMan->GetBoundaryArrayContaining( pRp );
+        if( pboundary_array ) {
+            for( unsigned int ib = 0; ib < pboundary_array->GetCount(); ib++ ) {
+                Boundary *pb = (Boundary *) pboundary_array->Item( ib );
+
+                /*  FS#348
+                 if ( g_pRouteMan->GetpActiveRoute() == pr )            // Deactivate any route containing this point
+                 g_pRouteMan->DeactivateRoute();
+                 */
+                pb->RemovePoint( pRp );
+
+            }
+
+            //    Scrub the routes, looking for one-point routes
+            for( unsigned int ib = 0; ib < pboundary_array->GetCount(); ib++ ) {
+                Boundary *pb = (Boundary *) pboundary_array->Item( ib );
+                if( pb->GetnPoints() < 2 ) {
+                    bool prev_bskip = pConfig->m_bSkipChangeSetUpdate;
+                    pConfig->m_bSkipChangeSetUpdate = true;
+                    pConfig->DeleteConfigBoundary( pb );
+                    g_pRouteMan->DeleteBoundary( pb );
+                    pConfig->m_bSkipChangeSetUpdate = prev_bskip;
+                }
+            }
+
+            delete pboundary_array;
         }
 
         // Now it is safe to delete the point

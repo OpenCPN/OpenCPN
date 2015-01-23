@@ -98,11 +98,12 @@ public:
       bool              m_bIsBeingEdited;
 
       bool              m_bIsInRoute;
+      bool              m_bIsInBoundary;
       bool              m_bIsInTrack;
 
       bool              m_bIsolatedMark;        // This is an isolated mark
 
-      bool              m_bKeepXRoute;          // This is a mark which is part of a route/track
+      bool              m_bKeepXRoute;          // This is a mark which is part of a route/boundary/track
                                                 //  and is also an isolated mark, so should not be deleted with
                                                 //  route
 

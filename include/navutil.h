@@ -48,6 +48,7 @@
 #include "RoutePoint.h"
 #include "vector2D.h"
 #include "Route.h"
+#include "Boundary.h"
 #include "SelectItem.h"
 
 enum
@@ -177,6 +178,8 @@ RoutePoint *WaypointExists( const wxString& name, double lat, double lon);
 RoutePoint *WaypointExists( const wxString& guid);
 Route *RouteExists( const wxString& guid);
 Route *RouteExists( Route * pTentRoute );
+Boundary *BoundaryExists( const wxString& guid);
+Boundary *BoundaryExists( Boundary * pTentBoundary );
 const wxChar *ParseGPXDateTime( wxDateTime &dt, const wxChar *datetime );
 
 //----------------------------------------------------------------------------
@@ -193,6 +196,10 @@ public:
       virtual bool AddNewRoute(Route *pr, int ConfigRouteNum = -1);
       virtual bool UpdateRoute(Route *pr);
       virtual bool DeleteConfigRoute(Route *pr);
+
+      virtual bool AddNewBoundary(Boundary *pr, int ConfigRouteNum = -1);
+      virtual bool UpdateBoundary(Boundary *pr);
+      virtual bool DeleteConfigBoundary(Boundary *pr);
 
       virtual bool AddNewWayPoint(RoutePoint *pWP, int ConfigRouteNum = -1);
       virtual bool UpdateWayPoint(RoutePoint *pWP);
@@ -215,6 +222,7 @@ public:
       void UI_ImportGPX(wxWindow* parent, bool islayer = false, wxString dirpath = _T(""), bool isdirectory = true);
 
       bool ExportGPXRoutes(wxWindow* parent, RouteList *pRoutes, const wxString suggestedName = _T("routes"));
+      bool ExportGPXBoundaries(wxWindow* parent, BoundaryList *pBoundaries, const wxString suggestedName = _T("boundaries"));
       bool ExportGPXWaypoints(wxWindow* parent, RoutePointList *pRoutePoints, const wxString suggestedName = _T("waypoints"));
 
       void CreateRotatingNavObjBackup();

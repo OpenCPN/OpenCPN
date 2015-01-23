@@ -28,6 +28,7 @@
 #include "pugixml.hpp"
 #include "Route.h"
 #include "RoutePoint.h"
+#include "Boundary.h"
 
 class Track;
 
@@ -65,6 +66,7 @@ class Track;
                         (OUT_HYPERLINKS) +\
                         (OUT_ARRIVAL_RADIUS)
 #define OPT_ROUTEPT     OPT_WPT                        
+#define OPT_BOUNDARYPT  OPT_WPT
 
 //      Bitfield definitions controlling the GPX nodes output for Route.Track objects
 #define         RT_OUT_ACTION_ADD         1 << 1          //  opencpn:action node support
@@ -81,11 +83,14 @@ public:
     
     bool CreateNavObjGPXPoints(void);
     bool CreateNavObjGPXRoutes(void);
+    bool CreateNavObjGPXBoundaries(void);
     bool CreateNavObjGPXTracks(void);
  
     bool AddGPXRoutesList( RouteList *pRoutes );
+    bool AddGPXBoundariesList( BoundaryList *pBoundaries );
     bool AddGPXPointsList( RoutePointList *pRoutePoints );
     bool AddGPXRoute(Route *pRoute);
+    bool AddGPXBoundary(Boundary *pBoundary);
     bool AddGPXTrack(Track *pTrk);
     bool AddGPXWaypoint(RoutePoint *pWP );
     
@@ -109,6 +114,7 @@ public:
     ~NavObjectChanges();
     
     bool AddRoute( Route *pr, const char *action );           // support "changes" file set
+    bool AddBoundary ( Boundary *pb, const char *action );
     bool AddTrack( Track *pr, const char *action );
     bool AddWP( RoutePoint *pr, const char *action );
     bool AddTrackPoint( RoutePoint *pWP, const char *action, const wxString& parent_GUID );

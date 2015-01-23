@@ -92,6 +92,7 @@ void DimeControl(wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_colo
       class PixelCache;
       class ChInfoWin;
       class glChartCanvas;
+      class Boundary;
 
 enum                                //  specify the render behaviour of SetViewPoint()
 {
@@ -294,6 +295,7 @@ public:
       double      m_cursor_lon, m_cursor_lat;
       Undo        *undo;
       wxPoint     r_rband;
+      wxPoint     b_rband;  
       double      m_prev_rlat;
       double      m_prev_rlon;
       RoutePoint  *m_prev_pMousePoint;
@@ -301,9 +303,11 @@ public:
       bool PurgeGLCanvasChartCache(ChartBase *pc, bool b_purge_full = false);
 
       void RemovePointFromRoute( RoutePoint* point, Route* route );
+      void RemovePointFromBoundary( RoutePoint* point, Boundary* boundary );
 
       void DrawBlinkObjects( void );
       void FinishRoute(void);
+      void FinishBoundary( void );
       
       void InvalidateGL();
       
@@ -348,6 +352,8 @@ private:
       wxPoint     LastPredPoint;
       bool        m_bDrawingRoute;
       bool        m_bRouteEditing;
+      bool        m_bDrawingBoundary;
+      bool        m_bBoundaryEditing;
       bool        m_bMarkEditing;
       bool        m_bIsInRadius;
       bool        m_bMayToggleMenuBar;
@@ -359,8 +365,11 @@ private:
       wxString    m_active_upload_port;
       Route       *m_pMouseRoute;
       Route       *m_pSelectedRoute;
+      Boundary    *m_pMouseBoundary;
+      Boundary    *m_pSelectedBoundary;
       Route       *m_pSelectedTrack;
       wxArrayPtrVoid *m_pEditRouteArray;
+      wxArrayPtrVoid *m_pEditBoundaryArray;
       RoutePoint  *m_pFoundRoutePoint;
       RoutePoint  *m_pFoundRoutePointSecond;
 
@@ -459,6 +468,7 @@ private:
       void ShowObjectQueryWindow( int x, int y, float zlat, float zlon);
       void ShowMarkPropertiesDialog( RoutePoint* markPoint );
       void ShowRoutePropertiesDialog(wxString title, Route* selected);
+      void ShowBoundaryPropertiesDialog( wxString title, Boundary* selected );
       void ShowTrackPropertiesDialog( Route* selected );
 
       void ShowBrightnessLevelTimedPopup( int brightness, int min, int max );
@@ -514,6 +524,8 @@ private:
 
       wxBitmap    *proute_bm;          // a bitmap and dc used to calculate route bounding box
       wxMemoryDC  m_dc_route;         // seen in mouse->edit->route
+      wxBitmap    *pboundary_bm;
+      wxMemoryDC  m_dc_boundary;
 
 
       emboss_data *m_pEM_Feet;                // maps for depth unit emboss pattern
@@ -542,6 +554,7 @@ private:
       wxBitmap    m_bmCurrentNight;
 
       RolloverWin *m_pRouteRolloverWin;
+      RolloverWin *m_pBoundaryRolloverWin;
       RolloverWin *m_pAISRolloverWin;
       
       TimedPopupWin *m_pBrightPopup;
@@ -588,6 +601,7 @@ private:
       bool        m_b_rot_hidef;
 
       SelectItem  *m_pRolloverRouteSeg;
+      SelectItem  *m_pRolloverBoundarySeg;
 
       double      m_wheel_lat, m_wheel_lon;
       int         m_wheel_x,m_wheel_y;
@@ -626,6 +640,9 @@ private:
       
       wxColour    m_fog_color;      
       bool        m_disable_edge_pan;
+      
+      double      m_dStartLat;
+      double      m_dStartLon;
       
       
 DECLARE_EVENT_TABLE()
