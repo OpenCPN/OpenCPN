@@ -5966,9 +5966,7 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
       if(g_bopengl) /* opengl */ {
           wxPen pen = dc.GetPen();
           wxColour col = pen.GetColour();
-          
-          glEnable( GL_LINE_SMOOTH );
-          glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
+
           glEnable( GL_BLEND );
           glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
           
@@ -5980,6 +5978,9 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
           if(g_b_EnableVBO)
               s_glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
           glEnableClientState(GL_VERTEX_ARRAY);
+
+          glEnable( GL_LINE_SMOOTH );
+          glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
           
           // use a viewport that allows the vertexes to be reused over many frames
           glPushMatrix();
@@ -6099,6 +6100,7 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
           glDisableClientState(GL_VERTEX_ARRAY);
           glPopMatrix();
           glDisable( GL_LINE_STIPPLE );
+          glDisable( GL_BLEND );
       }
 #endif
 
