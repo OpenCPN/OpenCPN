@@ -266,68 +266,102 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled
     get_flags =  wxDIR_FILES;
 #endif        
 #endif        
-    
+
+    bool ret = false; // return true if at least one new plugins gets loaded/unloaded
     wxDir::GetAllFiles( m_plugin_location, &file_list, pispec, get_flags );
     
     for(unsigned int i=0 ; i < file_list.GetCount() ; i++) {
         wxString file_name = file_list[i];
         wxString plugin_file = wxFileName(file_name).GetFullName();
-        
+        wxDateTime plugin_modification = wxFileName(file_name).GetModificationTime();
+
+        // this gets called every time we switch to the plugins tab.
+        // this allows plugins to be installed and enabled without restarting opencpn.
+        // For this reason we must check that we didn't already load this plugin
+        bool loaded = false;
+        for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
+        {
+            PlugInContainer *pic = plugin_array.Item(i);
+            if(pic->m_plugin_filename == plugin_file) {
+                if(pic->m_plugin_modification != plugin_modification) {
+                    // modification times don't match, reload plugin
+                    plugin_array.Remove(pic);
+                    i--;
+
+                    DeactivatePlugIn(pic);
+                    pic->m_destroy_fn(pic->m_pplugin);
+                    
+                    delete pic->m_plibrary;            // This will unload the PlugIn
+                    delete pic;
+                    ret = true;
+                } else {
+                    loaded = true;
+                    break;
+                }
+            }
+        }
+        if(loaded)
+            continue;
+
         //    Check the config file to see if this PlugIn is user-enabled
         wxString config_section = ( _T ( "/PlugIns/" ) );
         config_section += plugin_file;
         pConfig->SetPath ( config_section );
         bool enabled;
         pConfig->Read ( _T ( "bEnabled" ), &enabled, false );
-        if(enabled  == load_enabled) {
+
+        // only loading enabled plugins? check that it is enabled
+        if(load_enabled && !enabled)
+            continue;
             
-            bool b_compat = CheckPluginCompatibility(file_name);
+        bool b_compat = CheckPluginCompatibility(file_name);
             
-            if(!b_compat)
+        if(!b_compat)
+        {
+            wxString msg(_("    Incompatible PlugIn detected:"));
+            msg += file_name;
+            wxLogMessage(msg);
+        }
+            
+        PlugInContainer *pic = NULL;
+        if(b_compat)
+            pic = LoadPlugIn(file_name);
+        if(pic)
+        {
+            if(pic->m_pplugin)
             {
-                wxString msg(_("    Incompatible PlugIn detected:"));
-                msg += file_name;
-                wxLogMessage(msg);
+                plugin_array.Add(pic);
+                    
+                //    The common name is available without initialization and startup of the PlugIn
+                pic->m_common_name = pic->m_pplugin->GetCommonName();
+                    
+                pic->m_plugin_filename = plugin_file;
+                pic->m_plugin_modification = plugin_modification;
+                pic->m_bEnabled = enabled;
+                if(pic->m_bEnabled)
+                {
+                    pic->m_cap_flag = pic->m_pplugin->Init();
+                    pic->m_bInitState = true;
+                }
+                    
+                pic->m_short_description = pic->m_pplugin->GetShortDescription();
+                pic->m_long_description = pic->m_pplugin->GetLongDescription();
+                pic->m_version_major = pic->m_pplugin->GetPlugInVersionMajor();
+                pic->m_version_minor = pic->m_pplugin->GetPlugInVersionMinor();
+                pic->m_bitmap = pic->m_pplugin->GetPlugInBitmap();
+
+                ret = true;
             }
-            
-            PlugInContainer *pic = NULL;
-            if(b_compat)
-                pic = LoadPlugIn(file_name);
-            if(pic)
+            else        // not loaded
             {
-                if(pic->m_pplugin)
-                {
-                    plugin_array.Add(pic);
+                wxString msg;
+                msg.Printf(_T("    PlugInManager: Unloading invalid PlugIn, API version %d "), pic->m_api_version );
+                wxLogMessage(msg);
                     
-                    //    The common name is available without initialization and startup of the PlugIn
-                    pic->m_common_name = pic->m_pplugin->GetCommonName();
+                pic->m_destroy_fn(pic->m_pplugin);
                     
-                    pic->m_plugin_filename = plugin_file;
-                    pic->m_bEnabled = enabled;
-                    if(pic->m_bEnabled)
-                    {
-                        pic->m_cap_flag = pic->m_pplugin->Init();
-                        pic->m_bInitState = true;
-                    }
-                    
-                    pic->m_short_description = pic->m_pplugin->GetShortDescription();
-                    pic->m_long_description = pic->m_pplugin->GetLongDescription();
-                    pic->m_version_major = pic->m_pplugin->GetPlugInVersionMajor();
-                    pic->m_version_minor = pic->m_pplugin->GetPlugInVersionMinor();
-                    pic->m_bitmap = pic->m_pplugin->GetPlugInBitmap();
-                    
-                }
-                else        // not loaded
-                {
-                    wxString msg;
-                    msg.Printf(_T("    PlugInManager: Unloading invalid PlugIn, API version %d "), pic->m_api_version );
-                    wxLogMessage(msg);
-                    
-                    pic->m_destroy_fn(pic->m_pplugin);
-                    
-                    delete pic->m_plibrary;            // This will unload the PlugIn
-                    delete pic;
-                }
+                delete pic->m_plibrary;            // This will unload the PlugIn
+                delete pic;
             }
         }
     }
@@ -337,7 +371,7 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled
     // Inform plugins of the current color scheme
     g_pi_manager->SetColorSchemeForAllPlugIns( global_color_scheme );
     
-    return true;
+    return ret;
 }
 
 bool PlugInManager::CallLateInit(void)
