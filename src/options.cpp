@@ -1289,6 +1289,7 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     fgSizer5->Add( m_stTalkerIdText, 0, wxALL, 5 );
 
     m_TalkerIdText = new wxTextCtrl( m_pNMEAForm, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize( 50, -1 ), 0 );
+    m_TalkerIdText->SetMaxLength( 2 );
     fgSizer5->Add( m_TalkerIdText, 0, wxALIGN_LEFT | wxALL, group_item_spacing );
 
     m_stPrecision = new wxStaticText( m_pNMEAForm, wxID_ANY, _("APB bearing precision"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -3085,7 +3086,7 @@ void options::SetInitialSettings()
     
     pScreenMM->SetValue(screenmm);
 
-     m_TalkerIdText->SetValue( g_TalkerIdText );
+     m_TalkerIdText->SetValue( g_TalkerIdText.MakeUpper() );
     
 #ifdef USE_S57
     m_pSlider_CM93_Zoom->SetValue( g_cm93_zoom_factor );
@@ -3940,7 +3941,7 @@ void options::OnApplyClick( wxCommandEvent& event )
     
     g_NMEAAPBPrecision = m_choicePrecision->GetCurrentSelection();
     
-    g_TalkerIdText = m_TalkerIdText->GetValue();
+    g_TalkerIdText = m_TalkerIdText->GetValue().MakeUpper();
     
 #ifdef USE_S57
     //    Handle Vector Charts Tab
