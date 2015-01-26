@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version Jun  6 2014)
+// C++ code generated with wxFormBuilder (version Jun  5 2014)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO "NOT" EDIT THIS FILE!
@@ -373,24 +373,29 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	fgSizer4->SetFlexibleDirection( wxBOTH );
 	fgSizer4->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 	
-	wxStaticBoxSizer* sbSizer4;
-	sbSizer4 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("playback") ), wxVERTICAL );
+	m_scrolledSettingsDialog = new wxScrolledWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNO_BORDER|wxVSCROLL );
+	m_scrolledSettingsDialog->SetScrollRate( 0, 5 );
+	m_fgScrolledSettingsSizer = new wxFlexGridSizer( 0, 1, 0, 0 );
+	m_fgScrolledSettingsSizer->SetFlexibleDirection( wxBOTH );
+	m_fgScrolledSettingsSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+	sbSizer4 = new wxStaticBoxSizer( new wxStaticBox( m_scrolledSettingsDialog, wxID_ANY, _("playback") ), wxVERTICAL );
 	
 	wxFlexGridSizer* fgSizer13;
 	fgSizer13 = new wxFlexGridSizer( 0, 3, 0, 0 );
 	fgSizer13->SetFlexibleDirection( wxBOTH );
 	fgSizer13->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 	
-	m_cLoopMode = new wxCheckBox( this, wxID_ANY, _("Loop Mode"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_cLoopMode = new wxCheckBox( m_scrolledSettingsDialog, wxID_ANY, _("Loop Mode"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer13->Add( m_cLoopMode, 0, wxALL, 5 );
 	
-	m_staticText26 = new wxStaticText( this, wxID_ANY, _("Loop Start"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText26 = new wxStaticText( m_scrolledSettingsDialog, wxID_ANY, _("Loop Start"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText26->Wrap( -1 );
 	fgSizer13->Add( m_staticText26, 0, wxALL|wxEXPAND, 5 );
 	
 	wxString m_cLoopStartPointChoices[] = { _("Top of Grib File"), _("Current time forecast") };
 	int m_cLoopStartPointNChoices = sizeof( m_cLoopStartPointChoices ) / sizeof( wxString );
-	m_cLoopStartPoint = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cLoopStartPointNChoices, m_cLoopStartPointChoices, 0 );
+	m_cLoopStartPoint = new wxChoice( m_scrolledSettingsDialog, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cLoopStartPointNChoices, m_cLoopStartPointChoices, 0 );
 	m_cLoopStartPoint->SetSelection( 0 );
 	fgSizer13->Add( m_cLoopStartPoint, 0, wxALL|wxEXPAND, 5 );
 	
@@ -398,22 +403,22 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	fgSizer13->Add( 0, 0, 1, wxEXPAND, 5 );
 	
 	wxStaticText* m_staticText4;
-	m_staticText4 = new wxStaticText( this, wxID_ANY, _("Updates per Second"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText4 = new wxStaticText( m_scrolledSettingsDialog, wxID_ANY, _("Updates per Second"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText4->Wrap( -1 );
 	fgSizer13->Add( m_staticText4, 0, wxALL|wxEXPAND, 5 );
 	
-	m_sUpdatesPerSecond = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 90,-1 ), wxSP_ARROW_KEYS, 1, 60, 4 );
+	m_sUpdatesPerSecond = new wxSpinCtrl( m_scrolledSettingsDialog, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 90,-1 ), wxSP_ARROW_KEYS, 1, 60, 4 );
 	fgSizer13->Add( m_sUpdatesPerSecond, 0, wxALL, 5 );
 	
-	m_cInterpolate = new wxCheckBox( this, wxID_ANY, _("Interpolate between gribs"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_cInterpolate = new wxCheckBox( m_scrolledSettingsDialog, wxID_ANY, _("Interpolate between gribs"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer13->Add( m_cInterpolate, 0, wxALL, 5 );
 	
-	m_tSlicesPerUpdate = new wxStaticText( this, wxID_ANY, _("Time Interval"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_tSlicesPerUpdate = new wxStaticText( m_scrolledSettingsDialog, wxID_ANY, _("Time Interval"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_tSlicesPerUpdate->Wrap( -1 );
 	fgSizer13->Add( m_tSlicesPerUpdate, 0, wxALL|wxEXPAND, 5 );
 	
 	wxArrayString m_sSlicesPerUpdateChoices;
-	m_sSlicesPerUpdate = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_sSlicesPerUpdateChoices, 0 );
+	m_sSlicesPerUpdate = new wxChoice( m_scrolledSettingsDialog, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_sSlicesPerUpdateChoices, 0 );
 	m_sSlicesPerUpdate->SetSelection( 0 );
 	fgSizer13->Add( m_sSlicesPerUpdate, 0, wxALL|wxEXPAND, 5 );
 	
@@ -421,10 +426,10 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	sbSizer4->Add( fgSizer13, 1, wxEXPAND, 5 );
 	
 	
-	fgSizer4->Add( sbSizer4, 1, wxEXPAND, 5 );
+	m_fgScrolledSettingsSizer->Add( sbSizer4, 1, wxEXPAND, 5 );
 	
 	wxStaticBoxSizer* sbSizer5;
-	sbSizer5 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Data") ), wxVERTICAL );
+	sbSizer5 = new wxStaticBoxSizer( new wxStaticBox( m_scrolledSettingsDialog, wxID_ANY, _("Data") ), wxVERTICAL );
 	
 	wxFlexGridSizer* fgSizer15;
 	fgSizer15 = new wxFlexGridSizer( 0, 3, 0, 0 );
@@ -432,138 +437,236 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	fgSizer15->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 	
 	wxArrayString m_cDataTypeChoices;
-	m_cDataType = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cDataTypeChoices, 0 );
+	m_cDataType = new wxChoice( m_scrolledSettingsDialog, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cDataTypeChoices, 0 );
 	m_cDataType->SetSelection( 0 );
-	fgSizer15->Add( m_cDataType, 0, wxALL|wxEXPAND, 5 );
+	fgSizer15->Add( m_cDataType, 0, wxBOTTOM|wxEXPAND|wxTOP, 10 );
 	
 	wxStaticText* m_staticText12;
-	m_staticText12 = new wxStaticText( this, wxID_ANY, _("Units"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText12 = new wxStaticText( m_scrolledSettingsDialog, wxID_ANY, _("Units"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText12->Wrap( -1 );
 	m_staticText12->SetMinSize( wxSize( 110,-1 ) );
 	
-	fgSizer15->Add( m_staticText12, 0, wxALL|wxEXPAND, 5 );
+	fgSizer15->Add( m_staticText12, 0, wxALL|wxEXPAND, 15 );
 	
 	wxArrayString m_cDataUnitsChoices;
-	m_cDataUnits = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cDataUnitsChoices, 0 );
+	m_cDataUnits = new wxChoice( m_scrolledSettingsDialog, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cDataUnitsChoices, 0 );
 	m_cDataUnits->SetSelection( 0 );
-	m_cDataUnits->SetMinSize( wxSize( 100,-1 ) );
+	fgSizer15->Add( m_cDataUnits, 0, wxBOTTOM|wxEXPAND|wxTOP, 5 );
 	
-	fgSizer15->Add( m_cDataUnits, 0, wxALL|wxEXPAND, 5 );
+	m_cbBarbedArrows = new wxCheckBox( m_scrolledSettingsDialog, wxID_ANY, _("Barbed Arrows"), wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer15->Add( m_cbBarbedArrows, 0, wxBOTTOM|wxTOP, 5 );
 	
-	m_cbBarbedArrows = new wxCheckBox( this, wxID_ANY, _("Barbed Arrows"), wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer15->Add( m_cbBarbedArrows, 0, wxALL, 5 );
+	m_fgBarbedData1 = new wxFlexGridSizer( 0, 1, 0, 0 );
+	m_fgBarbedData1->SetFlexibleDirection( wxBOTH );
+	m_fgBarbedData1->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 	
 	wxString m_cBarbedColoursChoices[] = { _("Default Colour"), _("Controled Colours") };
 	int m_cBarbedColoursNChoices = sizeof( m_cBarbedColoursChoices ) / sizeof( wxString );
-	m_cBarbedColours = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cBarbedColoursNChoices, m_cBarbedColoursChoices, 0 );
+	m_cBarbedColours = new wxChoice( m_scrolledSettingsDialog, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cBarbedColoursNChoices, m_cBarbedColoursChoices, 0 );
 	m_cBarbedColours->SetSelection( 0 );
-	fgSizer15->Add( m_cBarbedColours, 0, wxALL|wxEXPAND, 5 );
+	m_fgBarbedData1->Add( m_cBarbedColours, 0, wxALL|wxEXPAND, 5 );
+
+	wxFlexGridSizer* fgSizer42;
+	fgSizer42 = new wxFlexGridSizer( 0, 2, 0, 0 );
+	fgSizer42->SetFlexibleDirection( wxBOTH );
+	fgSizer42->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+	wxStaticText* m_staticText41;
+	m_staticText41 = new wxStaticText( m_scrolledSettingsDialog, wxID_ANY, _("Spacing(pixels)"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText41->Wrap( -1 );
+	fgSizer42->Add( m_staticText41, 0, wxALL, 5 );
+
+	m_cBarbArrFixSpac = new wxCheckBox( m_scrolledSettingsDialog, BARBFIXSPACING, _("Fixed"), wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer42->Add( m_cBarbArrFixSpac, 0, wxALL|wxLEFT|wxRIGHT|wxTOP, 5 );
+
+
+	fgSizer42->Add( 0, 0, 1, wxEXPAND, 5 );
+
+	m_cBarbArrMinSpac = new wxCheckBox( m_scrolledSettingsDialog, BARBMINSPACING, _("Minimum"), wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer42->Add( m_cBarbArrMinSpac, 0, wxBOTTOM|wxLEFT|wxRIGHT, 5 );
+
+
+	m_fgBarbedData1->Add( fgSizer42, 1, wxEXPAND, 0 );
 	
-	m_cBarbedVisibility = new wxCheckBox( this, wxID_ANY, _("Always visible"), wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer15->Add( m_cBarbedVisibility, 0, wxALL|wxEXPAND, 5 );
 	
-	m_cbIsoBars = new wxCheckBox( this, wxID_ANY, _("IsoBars"), wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer15->Add( m_cbIsoBars, 0, wxALL, 5 );
+	fgSizer15->Add( m_fgBarbedData1, 1, wxEXPAND, 0 );
+
+	m_fgBarbedData2 = new wxFlexGridSizer( 0, 1, 0, 0 );
+	m_fgBarbedData2->SetFlexibleDirection( wxBOTH );
+	m_fgBarbedData2->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+	m_cBarbedVisibility = new wxCheckBox( m_scrolledSettingsDialog, wxID_ANY, _("Always visible"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_fgBarbedData2->Add( m_cBarbedVisibility, 0, wxALL|wxEXPAND, 5 );
+
+	m_sBarbArrSpacing = new wxSpinCtrl( m_scrolledSettingsDialog, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 30, 100, 30 );
+	m_fgBarbedData2->Add( m_sBarbArrSpacing, 0, wxBOTTOM|wxTOP, 15 );
+
+
+	fgSizer15->Add( m_fgBarbedData2, 1, wxEXPAND, 0 );
+
+	m_cbIsoBars = new wxCheckBox( m_scrolledSettingsDialog, wxID_ANY, _("IsoBars"), wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer15->Add( m_cbIsoBars, 0, wxBOTTOM|wxTOP, 5 );
 	
 	m_fIsoBarSpacing = new wxFlexGridSizer( 0, 2, 0, 0 );
 	m_fIsoBarSpacing->SetFlexibleDirection( wxBOTH );
 	m_fIsoBarSpacing->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 	
-	wxStaticText* m_tIsoBarSpacing;
-	m_tIsoBarSpacing = new wxStaticText( this, wxID_ANY, _("Spacing"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_tIsoBarSpacing = new wxStaticText( m_scrolledSettingsDialog, wxID_ANY, _("Spacing"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_tIsoBarSpacing->Wrap( -1 );
-	m_fIsoBarSpacing->Add( m_tIsoBarSpacing, 0, wxBOTTOM|wxEXPAND|wxRIGHT, 5 );
+	m_fIsoBarSpacing->Add( m_tIsoBarSpacing, 0, wxALL, 5 );
 	
-	m_sIsoBarSpacing = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 90,-1 ), wxSP_ARROW_KEYS, 1, 1000, 1 );
+	m_sIsoBarSpacing = new wxSpinCtrl( m_scrolledSettingsDialog, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 90,-1 ), wxSP_ARROW_KEYS, 1, 1000, 1 );
 	m_fIsoBarSpacing->Add( m_sIsoBarSpacing, 0, wxALL, 5 );
 	
 	
-	fgSizer15->Add( m_fIsoBarSpacing, 1, wxALL|wxEXPAND, 5 );
+	fgSizer15->Add( m_fIsoBarSpacing, 1, wxALL|wxEXPAND, 0 );
 	
 	m_fIsoBarVisibility = new wxFlexGridSizer( 0, 1, 0, 0 );
 	m_fIsoBarVisibility->SetFlexibleDirection( wxBOTH );
 	m_fIsoBarVisibility->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 	
-	m_sIsoBarVisibility = new wxCheckBox( this, wxID_ANY, _("Always visible"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_sIsoBarVisibility = new wxCheckBox( m_scrolledSettingsDialog, wxID_ANY, _("Always visible"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_fIsoBarVisibility->Add( m_sIsoBarVisibility, 0, wxALL|wxEXPAND, 5 );
 	
 	
 	fgSizer15->Add( m_fIsoBarVisibility, 1, wxALL|wxEXPAND, 5 );
 	
-	m_cbDirectionArrows = new wxCheckBox( this, wxID_ANY, _("Direction Arrows"), wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer15->Add( m_cbDirectionArrows, 0, wxALL, 5 );
+	m_cbDirectionArrows = new wxCheckBox( m_scrolledSettingsDialog, wxID_ANY, _("Direction Arrows"), wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer15->Add( m_cbDirectionArrows, 0, wxBOTTOM|wxTOP, 5 );
+
+	m_fgDirArrData1 = new wxFlexGridSizer( 0, 1, 0, 0 );
+	m_fgDirArrData1->SetFlexibleDirection( wxBOTH );
+	m_fgDirArrData1->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 	
 	wxString m_cDirectionArrowFormChoices[] = { _("Single Arrow"), _("Double Arrow"), _("Proportional Arrow") };
 	int m_cDirectionArrowFormNChoices = sizeof( m_cDirectionArrowFormChoices ) / sizeof( wxString );
-	m_cDirectionArrowForm = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cDirectionArrowFormNChoices, m_cDirectionArrowFormChoices, 0 );
+	m_cDirectionArrowForm = new wxChoice( m_scrolledSettingsDialog, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cDirectionArrowFormNChoices, m_cDirectionArrowFormChoices, 0 );
 	m_cDirectionArrowForm->SetSelection( 1 );
-	fgSizer15->Add( m_cDirectionArrowForm, 0, wxALL|wxEXPAND, 5 );
+	m_fgDirArrData1->Add( m_cDirectionArrowForm, 0, wxBOTTOM|wxEXPAND|wxTOP, 5 );
+
+	wxFlexGridSizer* fgSizer43;
+	fgSizer43 = new wxFlexGridSizer( 0, 2, 0, 0 );
+	fgSizer43->SetFlexibleDirection( wxBOTH );
+	fgSizer43->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+	wxStaticText* m_staticText42;
+	m_staticText42 = new wxStaticText( m_scrolledSettingsDialog, wxID_ANY, _("Spacing(pixels)"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText42->Wrap( -1 );
+	fgSizer43->Add( m_staticText42, 0, wxALL, 5 );
+
+	m_cDirArrFixSpac = new wxCheckBox( m_scrolledSettingsDialog, DIRFIXSPACING, _("Fixed"), wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer43->Add( m_cDirArrFixSpac, 0, wxLEFT|wxRIGHT|wxTOP, 5 );
+
+
+	fgSizer43->Add( 0, 0, 1, wxEXPAND, 5 );
+
+	m_cDirArrMinSpac = new wxCheckBox( m_scrolledSettingsDialog, DIRMINSPACING, _("Minimum"), wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer43->Add( m_cDirArrMinSpac, 0, wxBOTTOM|wxLEFT|wxRIGHT, 5 );
+
+
+	m_fgDirArrData1->Add( fgSizer43, 1, wxEXPAND, 0 );
+
+
+	fgSizer15->Add( m_fgDirArrData1, 1, wxEXPAND, 5 );
+
+	m_fgDirArrData2 = new wxFlexGridSizer( 0, 1, 0, 0 );
+	m_fgDirArrData2->SetFlexibleDirection( wxBOTH );
+	m_fgDirArrData2->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 	
 	wxString m_cDirectionArrowSizeChoices[] = { _("Default Size"), _("Small Size") };
 	int m_cDirectionArrowSizeNChoices = sizeof( m_cDirectionArrowSizeChoices ) / sizeof( wxString );
-	m_cDirectionArrowSize = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cDirectionArrowSizeNChoices, m_cDirectionArrowSizeChoices, 0 );
+	m_cDirectionArrowSize = new wxChoice( m_scrolledSettingsDialog, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cDirectionArrowSizeNChoices, m_cDirectionArrowSizeChoices, 0 );
 	m_cDirectionArrowSize->SetSelection( 0 );
-	fgSizer15->Add( m_cDirectionArrowSize, 0, wxALL|wxEXPAND, 5 );
+	m_fgDirArrData2->Add( m_cDirectionArrowSize, 0, wxALL|wxEXPAND, 5 );
+
+	m_sDirArrSpacing = new wxSpinCtrl( m_scrolledSettingsDialog, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 30, 100, 30 );
+	m_fgDirArrData2->Add( m_sDirArrSpacing, 0, wxALL, 5 );
+
 	
-	m_cbOverlayMap = new wxCheckBox( this, wxID_ANY, _("OverlayMap"), wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer15->Add( m_cbOverlayMap, 0, wxALL, 5 );
+	fgSizer15->Add( m_fgDirArrData2, 1, wxEXPAND, 0 );
 	
-	m_tOverlayColors = new wxStaticText( this, wxID_ANY, _("Colors"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_cbOverlayMap = new wxCheckBox( m_scrolledSettingsDialog, wxID_ANY, _("OverlayMap"), wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer15->Add( m_cbOverlayMap, 0, wxBOTTOM|wxTOP, 5 );
+
+	m_tOverlayColors = new wxStaticText( m_scrolledSettingsDialog, wxID_ANY, _("Colors"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_tOverlayColors->Wrap( -1 );
 	fgSizer15->Add( m_tOverlayColors, 0, wxALL|wxEXPAND, 5 );
 	
 	wxString m_cOverlayColorsChoices[] = { _("Generic"), _("Wind"), _("Air Temp"), _("Sea Temp"), _("Rainfall"), _("Cloud Cover"), _("Current") };
 	int m_cOverlayColorsNChoices = sizeof( m_cOverlayColorsChoices ) / sizeof( wxString );
-	m_cOverlayColors = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cOverlayColorsNChoices, m_cOverlayColorsChoices, 0 );
+	m_cOverlayColors = new wxChoice( m_scrolledSettingsDialog, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cOverlayColorsNChoices, m_cOverlayColorsChoices, 0 );
 	m_cOverlayColors->SetSelection( 0 );
 	fgSizer15->Add( m_cOverlayColors, 0, wxALL|wxEXPAND, 5 );
 	
-	m_cbNumbers = new wxCheckBox( this, wxID_ANY, _("Numbers"), wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer15->Add( m_cbNumbers, 0, wxALL, 5 );
+	m_cbNumbers = new wxCheckBox( m_scrolledSettingsDialog, wxID_ANY, _("Numbers"), wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer15->Add( m_cbNumbers, 0, wxBOTTOM|wxTOP, 5 );
+
+	m_fgNumData1 = new wxFlexGridSizer( 0, 2, 0, 0 );
+	m_fgNumData1->SetFlexibleDirection( wxBOTH );
+	m_fgNumData1->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+	wxStaticText* m_staticText43;
+	m_staticText43 = new wxStaticText( m_scrolledSettingsDialog, wxID_ANY, _("Spacing(pixels)"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText43->Wrap( -1 );
+	m_fgNumData1->Add( m_staticText43, 0, wxALL, 5 );
+
+	m_cNumFixSpac = new wxCheckBox( m_scrolledSettingsDialog, NUMFIXSPACING, _("Fixed\n"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_fgNumData1->Add( m_cNumFixSpac, 0, wxLEFT|wxTOP, 5 );
 	
-	m_ctNumbers = new wxStaticText( this, wxID_ANY, _("Minimum Spacing"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_ctNumbers->Wrap( -1 );
-	fgSizer15->Add( m_ctNumbers, 0, wxALL|wxEXPAND, 5 );
 	
-	m_sNumbersSpacing = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 90,-1 ), wxSP_ARROW_KEYS, 30, 100, 50 );
+	m_fgNumData1->Add( 0, 0, 1, wxEXPAND, 5 );
+
+	m_cNumMinSpac = new wxCheckBox( m_scrolledSettingsDialog, NUMMINSPACING, _("Minimum"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_fgNumData1->Add( m_cNumMinSpac, 0, wxBOTTOM|wxLEFT, 5 );
+
+
+	fgSizer15->Add( m_fgNumData1, 1, wxEXPAND, 0 );
+
+	m_sNumbersSpacing = new wxSpinCtrl( m_scrolledSettingsDialog, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 90,-1 ), wxSP_ARROW_KEYS, 30, 100, 50 );
 	fgSizer15->Add( m_sNumbersSpacing, 0, wxALL, 5 );
 	
-	m_cbParticles = new wxCheckBox( this, wxID_ANY, _("Particle Map"), wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer15->Add( m_cbParticles, 0, wxALL, 5 );
+	m_cbParticles = new wxCheckBox( m_scrolledSettingsDialog, wxID_ANY, _("Particle Map"), wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer15->Add( m_cbParticles, 0, wxBOTTOM|wxTOP, 5 );
 	
-	m_ctParticles = new wxStaticText( this, wxID_ANY, _("Density"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_ctParticles = new wxStaticText( m_scrolledSettingsDialog, wxID_ANY, _("Density"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_ctParticles->Wrap( -1 );
 	fgSizer15->Add( m_ctParticles, 0, wxALL, 5 );
 	
-	m_sParticleDensity = new wxSlider( this, wxID_ANY, 5, 1, 10, wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL );
+	m_sParticleDensity = new wxSlider( m_scrolledSettingsDialog, wxID_ANY, 5, 1, 10, wxDefaultPosition, wxDefaultSize, wxSL_BOTTOM|wxSL_HORIZONTAL|wxSL_LABELS );
 	fgSizer15->Add( m_sParticleDensity, 0, wxALL|wxEXPAND, 5 );
 	
 	
 	sbSizer5->Add( fgSizer15, 1, wxALL|wxEXPAND, 5 );
 	
 	
-	fgSizer4->Add( sbSizer5, 1, wxEXPAND, 5 );
+	m_fgScrolledSettingsSizer->Add( sbSizer5, 1, wxEXPAND, 5 );
 	
 	wxStaticBoxSizer* sbSizer7;
-	sbSizer7 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Display") ), wxVERTICAL );
+	sbSizer7 = new wxStaticBoxSizer( new wxStaticBox( m_scrolledSettingsDialog, wxID_ANY, _("Display") ), wxVERTICAL );
 	
 	wxFlexGridSizer* fgSizer34;
 	fgSizer34 = new wxFlexGridSizer( 0, 2, 0, 0 );
 	fgSizer34->SetFlexibleDirection( wxBOTH );
 	fgSizer34->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 	
-	m_staticText24 = new wxStaticText( this, wxID_ANY, _("Overlay Transparency (%)"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText24 = new wxStaticText( m_scrolledSettingsDialog, wxID_ANY, _("Overlay Transparency (%)"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText24->Wrap( -1 );
 	fgSizer34->Add( m_staticText24, 0, wxALL, 5 );
 	
-	m_sTransparency = new wxSlider( this, wxID_ANY, 50, 0, 100, wxDefaultPosition, wxSize( 200,-1 ), wxSL_BOTTOM|wxSL_HORIZONTAL|wxSL_LABELS );
+	m_sTransparency = new wxSlider( m_scrolledSettingsDialog, wxID_ANY, 50, 0, 100, wxDefaultPosition, wxSize( 200,-1 ), wxSL_BOTTOM|wxSL_HORIZONTAL|wxSL_LABELS );
 	fgSizer34->Add( m_sTransparency, 0, wxALL|wxEXPAND, 5 );
 	
 	
 	sbSizer7->Add( fgSizer34, 1, wxEXPAND, 5 );
 	
 	
-	fgSizer4->Add( sbSizer7, 1, wxEXPAND, 5 );
+	m_fgScrolledSettingsSizer->Add( sbSizer7, 1, wxEXPAND, 5 );
+
+
+	m_scrolledSettingsDialog->SetSizer( m_fgScrolledSettingsSizer );
+	m_scrolledSettingsDialog->Layout();
+	m_fgScrolledSettingsSizer->Fit( m_scrolledSettingsDialog );
+	fgSizer4->Add( m_scrolledSettingsDialog, 1, wxEXPAND | wxALL, 5 );
 	
 	m_sButton = new wxStdDialogButtonSizer();
 	m_sButtonOK = new wxButton( this, wxID_OK );
@@ -586,6 +689,13 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	// Connect Events
 	m_cInterpolate->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribSettingsDialogBase::OnIntepolateChange ), NULL, this );
 	m_cDataType->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribSettingsDialogBase::OnDataTypeChoice ), NULL, this );
+	m_cDataUnits->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribSettingsDialogBase::OnUnitChange ), NULL, this );
+	m_cBarbArrFixSpac->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribSettingsDialogBase::OnSpacingModeChange ), NULL, this );
+	m_cBarbArrMinSpac->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribSettingsDialogBase::OnSpacingModeChange ), NULL, this );
+	m_cDirArrFixSpac->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribSettingsDialogBase::OnSpacingModeChange ), NULL, this );
+	m_cDirArrMinSpac->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribSettingsDialogBase::OnSpacingModeChange ), NULL, this );
+	m_cNumFixSpac->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribSettingsDialogBase::OnSpacingModeChange ), NULL, this );
+	m_cNumMinSpac->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribSettingsDialogBase::OnSpacingModeChange ), NULL, this );
 	m_sTransparency->Connect( wxEVT_SCROLL_TOP, wxScrollEventHandler( GribSettingsDialogBase::OnTransparencyChange ), NULL, this );
 	m_sTransparency->Connect( wxEVT_SCROLL_BOTTOM, wxScrollEventHandler( GribSettingsDialogBase::OnTransparencyChange ), NULL, this );
 	m_sTransparency->Connect( wxEVT_SCROLL_LINEUP, wxScrollEventHandler( GribSettingsDialogBase::OnTransparencyChange ), NULL, this );
@@ -603,6 +713,13 @@ GribSettingsDialogBase::~GribSettingsDialogBase()
 	// Disconnect Events
 	m_cInterpolate->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribSettingsDialogBase::OnIntepolateChange ), NULL, this );
 	m_cDataType->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribSettingsDialogBase::OnDataTypeChoice ), NULL, this );
+	m_cDataUnits->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribSettingsDialogBase::OnUnitChange ), NULL, this );
+	m_cBarbArrFixSpac->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribSettingsDialogBase::OnSpacingModeChange ), NULL, this );
+	m_cBarbArrMinSpac->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribSettingsDialogBase::OnSpacingModeChange ), NULL, this );
+	m_cDirArrFixSpac->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribSettingsDialogBase::OnSpacingModeChange ), NULL, this );
+	m_cDirArrMinSpac->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribSettingsDialogBase::OnSpacingModeChange ), NULL, this );
+	m_cNumFixSpac->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribSettingsDialogBase::OnSpacingModeChange ), NULL, this );
+	m_cNumMinSpac->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribSettingsDialogBase::OnSpacingModeChange ), NULL, this );
 	m_sTransparency->Disconnect( wxEVT_SCROLL_TOP, wxScrollEventHandler( GribSettingsDialogBase::OnTransparencyChange ), NULL, this );
 	m_sTransparency->Disconnect( wxEVT_SCROLL_BOTTOM, wxScrollEventHandler( GribSettingsDialogBase::OnTransparencyChange ), NULL, this );
 	m_sTransparency->Disconnect( wxEVT_SCROLL_LINEUP, wxScrollEventHandler( GribSettingsDialogBase::OnTransparencyChange ), NULL, this );
@@ -703,10 +820,7 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	fgSizer101->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
 	m_sScrolledDialog = new wxScrolledWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxTAB_TRAVERSAL|wxVSCROLL );
-	m_sScrolledDialog->SetScrollRate( 5, 5 );
-	wxBoxSizer* bSizer3;
-	bSizer3 = new wxBoxSizer( wxVERTICAL );
-
+	m_sScrolledDialog->SetScrollRate( 0, 5 );
 	m_fgScrollSizer = new wxFlexGridSizer( 0, 1, 0, 0 );
 	m_fgScrollSizer->SetFlexibleDirection( wxBOTH );
 	m_fgScrollSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
@@ -916,7 +1030,6 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	fgSizer34->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
 	m_cManualZoneSel = new wxCheckBox( m_sScrolledDialog, wxID_ANY, _("Manual Selection"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_cManualZoneSel->SetValue(true);
 	fgSizer34->Add( m_cManualZoneSel, 0, wxLEFT, 5 );
 
 	m_toggleSelection = new wxToggleButton( m_sScrolledDialog, wxID_ANY, _("Start graphic Sel."), wxDefaultPosition, wxDefaultSize, 0 );
@@ -1093,12 +1206,9 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	m_fgScrollSizer->Add( sbSizer6, 1, wxEXPAND, 5 );
 
 
-	bSizer3->Add( m_fgScrollSizer, 1, 0, 5 );
-
-
-	m_sScrolledDialog->SetSizer( bSizer3 );
+	m_sScrolledDialog->SetSizer( m_fgScrollSizer );
 	m_sScrolledDialog->Layout();
-	bSizer3->Fit( m_sScrolledDialog );
+	m_fgScrollSizer->Fit( m_sScrolledDialog );
 	fgSizer101->Add( m_sScrolledDialog, 1, 0, 5 );
 
 	m_fgFixedSizer = new wxFlexGridSizer( 0, 3, 0, 0 );
@@ -1144,8 +1254,8 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	m_pMailTo->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnTopChange ), NULL, this );
 	m_pModel->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnTopChange ), NULL, this );
 	m_cMovingGribEnabled->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnMovingClick ), NULL, this );
-	m_sMovingSpeed->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
-	m_sMovingCourse->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
+	m_sMovingSpeed->Connect( wxEVT_COMMAND_SPINCTRL_UPDATED, wxSpinEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
+	m_sMovingCourse->Connect( wxEVT_COMMAND_SPINCTRL_UPDATED, wxSpinEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pLogin->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pCode->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pResolution->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
@@ -1185,8 +1295,8 @@ GribRequestSettingBase::~GribRequestSettingBase()
 	m_pMailTo->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnTopChange ), NULL, this );
 	m_pModel->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnTopChange ), NULL, this );
 	m_cMovingGribEnabled->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnMovingClick ), NULL, this );
-	m_sMovingSpeed->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
-	m_sMovingCourse->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
+	m_sMovingSpeed->Disconnect( wxEVT_COMMAND_SPINCTRL_UPDATED, wxSpinEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
+	m_sMovingCourse->Disconnect( wxEVT_COMMAND_SPINCTRL_UPDATED, wxSpinEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pLogin->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pCode->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pResolution->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );

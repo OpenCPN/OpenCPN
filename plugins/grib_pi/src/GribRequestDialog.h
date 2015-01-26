@@ -75,6 +75,7 @@ private:
       void OnTopChange(wxCommandEvent &event);
       void OnMovingClick( wxCommandEvent& event );
       void OnAnyChange( wxCommandEvent& event );
+	  void OnAnyChange( wxSpinEvent& event ) { wxCommandEvent evt; OnAnyChange( evt); }
       void OnTimeRangeChange( wxCommandEvent& event );
       void OnSendMaiL( wxCommandEvent& event );
       void OnSaveMail( wxCommandEvent& event );
@@ -97,7 +98,6 @@ private:
       int  m_MailError_Nb;
       int  m_SendMethod;
       bool m_AllowSend;
-      int  m_ScrollYMargin;
 };
 
 #endif

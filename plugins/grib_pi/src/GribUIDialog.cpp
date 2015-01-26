@@ -1047,7 +1047,14 @@ void GRIBUIDialog::OnSettings( wxCommandEvent& event )
 
     GribOverlaySettings initSettings = m_OverlaySettings;
     GribSettingsDialog *dialog = new GribSettingsDialog( *this, m_OverlaySettings,  m_lastdatatype, m_FileIntervalIndex);
+	pPlugIn->SetDialogFont( dialog->m_scrolledSettingsDialog );
     pPlugIn->SetDialogFont( dialog );
+	dialog->SetSettingsDialogSize();
+	//need to set a position at start
+    int w;
+    ::wxDisplaySize( &w, NULL);
+    dialog->Move( (w - dialog->GetSize().GetX() ) / 3, 30 );
+	//
     if(dialog->ShowModal() == wxID_OK)
     {
         dialog->WriteSettings();
