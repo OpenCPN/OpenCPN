@@ -484,7 +484,17 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
                     if ( nmea_end == 0 ) //The first character in the buffer is a terminator, skip it to avoid infinite loop
                         nmea_end = 1;
                     std::string nmea_line = m_sock_buffer.substr(0,nmea_end);
-                    m_sock_buffer = m_sock_buffer.substr(nmea_end);
+
+                    //  If, due to some logic error, the {nmea_end} parameter is larger than the length of the
+                    //  socket buffer, then std::string::substr() will throw an exception.
+                    //  We don't want that, so test for it.
+                    //  If found, the simple solution is to clear the socket buffer, and carry on
+                    //  This has been seen on high volume TCP feeds, Windows only.
+                    //  Hard to catch.....
+                    if(nmea_end > m_sock_buffer.size())
+                        m_sock_buffer.clear();
+                    else
+                        m_sock_buffer = m_sock_buffer.substr(nmea_end);
 
                     size_t nmea_start = nmea_line.find_last_of("$!"); // detect the potential start of a NMEA string, skipping preceding chars that may look like the start of a string.
                     if(nmea_start != wxString::npos){

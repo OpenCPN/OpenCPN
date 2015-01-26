@@ -183,7 +183,8 @@ enum
     ID_MENU_AIS_TRACKS,
     ID_MENU_AIS_CPADIALOG,
     ID_MENU_AIS_CPASOUND,
-    ID_MENU_AIS_TARGETLIST
+    ID_MENU_AIS_TARGETLIST,
+    ID_MENU_OQUIT
 };
 
 
@@ -322,6 +323,7 @@ class MyFrame: public wxFrame
     void DoStackUp(void);
     void DoStackDown(void);
     void DoStackDelta( int direction );
+    void DoSettings( void );
     
     void MouseEvent(wxMouseEvent& event);
     void SelectChartFromStack(int index,  bool bDir = false,  ChartTypeEnum New_Type = CHART_TYPE_DONTCARE, ChartFamilyEnum New_Family = CHART_FAMILY_DONTCARE);

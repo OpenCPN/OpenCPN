@@ -54,6 +54,30 @@ DashboardInstrument::DashboardInstrument(wxWindow *pparent, wxWindowID id, wxStr
 
       Connect(wxEVT_ERASE_BACKGROUND, wxEraseEventHandler(DashboardInstrument::OnEraseBackground));
       Connect(wxEVT_PAINT, wxPaintEventHandler(DashboardInstrument::OnPaint));
+      
+      //  On OSX, there is an orphan mouse event that comes from the automatic
+      //  exEVT_CONTEXT_MENU synthesis on the main wxWindow mouse handler.
+      //  The event goes to an instrument window (here) that may have been deleted by the
+      //  preferences dialog.  Result is NULL deref.
+      //  Solution:  Handle right-click here, and DO NOT skip()
+      //  Strangely, this does not work for GTK...
+      //  See: http://trac.wxwidgets.org/ticket/15417
+      
+#ifdef __WXOSX__
+      Connect(wxEVT_RIGHT_DOWN, wxMouseEventHandler(DashboardInstrument::MouseEvent), NULL, this);
+#endif      
+}
+
+void DashboardInstrument::MouseEvent( wxMouseEvent &event )
+{
+    if ( event.GetEventType() == wxEVT_RIGHT_DOWN )
+    {
+       wxContextMenuEvent evtCtx(wxEVT_CONTEXT_MENU,
+                                  this->GetId(),
+                                  this->ClientToScreen(event.GetPosition()));
+        evtCtx.SetEventObject(this);
+        GetParent()->GetEventHandler()->AddPendingEvent(evtCtx );
+    }
 }
 
 int DashboardInstrument::GetCapacity()

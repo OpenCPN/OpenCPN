@@ -1737,8 +1737,10 @@ void ChartCanvas::SetDisplaySizeMM( double size )
     int sx, sy;
     wxDisplaySize( &sx, &sy );
     
-    m_pix_per_mm = ( (double) sx ) / ( (double) m_display_size_mm );
-    m_canvas_scale_factor = ( (double) sx ) / (m_display_size_mm /1000.);
+    double max_physical = wxMax(sx, sy);
+    
+    m_pix_per_mm = ( max_physical ) / ( (double) m_display_size_mm );
+    m_canvas_scale_factor = ( max_physical ) / (m_display_size_mm /1000.);
     
     int mm_per_knot = 10;
     current_draw_scaler = mm_per_knot * m_pix_per_mm * g_current_arrow_scale / 100.0;
@@ -2163,6 +2165,12 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         parent_frame->DoStackUp();
         break;
 
+#ifndef __WXOSX__        
+    case WXK_F9:
+        parent_frame->ToggleQuiltMode();
+        break;
+#endif        
+        
     case WXK_F11:
         parent_frame->ToggleFullScreen();
         b_handled = true;
@@ -2349,6 +2357,11 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             break;
         }
 
+        case -20:                       // Ctrl ,
+        {
+            parent_frame->DoSettings();
+            break;
+        }
         case 17:                       // Ctrl Q
             parent_frame->Close();
             return;
@@ -3200,7 +3213,7 @@ void ChartCanvas::ZoomCanvas( double factor, bool can_zoom_to_cursor, bool stopt
         if( m_modkeys == wxMOD_ALT )
             factor = pow(factor, .15);
         
-        DoZoomCanvas( factor );
+        DoZoomCanvas( factor, can_zoom_to_cursor );
     }
 
     extendedSectorLegs.clear();
@@ -3823,7 +3836,8 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                 double sfr = wxRound(m_displayed_scale_factor * 10.) / 10.;
                 text.Printf( _("Scale %4.0f (%1.2fx)"), true_scale_display, sfr );
             }
-            
+
+#ifdef ocpnUSE_GL
             if( g_bopengl && g_bShowFPS){
                 wxString fps_str;
                 double fps = 0.;
@@ -3833,7 +3847,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                 }
                 text += fps_str;
             }
-            
+#endif            
             
             parent_frame->SetStatusText( text, STAT_FIELD_SCALE );
         }
