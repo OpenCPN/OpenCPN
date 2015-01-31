@@ -1087,7 +1087,7 @@ void LoadS57()
     }
 
     ps52plib = new s52plib( plib_data, b_force_legacy );
-    
+
     //  If the library load failed, try looking for the s57 data elsewhere
 
     //  First, look in UserDataDir
@@ -2337,8 +2337,6 @@ extern ocpnGLOptions g_GLOptions;
         pAnchorWatchPoint2 = pWayPointMan->FindRoutePointByGUID( g_AW2GUID );
     }
 
-    LoadS57();
-    
     Yield();
 
     gFrame->DoChartUpdate();
@@ -5758,6 +5756,7 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
     }
 
     console = new ConsoleCanvas( gFrame );                    // the console
+    console->SetColorScheme( global_color_scheme );
 
     g_pi_manager->LoadAllPlugIns( g_Plugin_Dir, true, false );
 
@@ -9864,22 +9863,19 @@ wxColour GetGlobalColor(wxString colorName)
 
 #ifdef USE_S57
     //    Use the S52 Presentation library if present
-    if( ps52plib ) {
+    if( ps52plib )
         ret_color = ps52plib->getwxColour( colorName );
-
-        if( !ret_color.Ok() )           //261 likes Ok(), 283 likes IsOk()...
-        {
-            if( NULL != pcurrent_user_color_hash ) ret_color =
-                    ( *pcurrent_user_color_hash )[colorName];
-        }
-    } else
 #endif
-    {
-        if( NULL != pcurrent_user_color_hash ) ret_color = ( *pcurrent_user_color_hash )[colorName];
-    }
+    if( !ret_color.Ok() && pcurrent_user_color_hash )
+        ret_color = ( *pcurrent_user_color_hash )[colorName];
 
     //    Default
-    if( !ret_color.Ok() ) ret_color.Set( 128, 128, 128 );  // Simple Grey
+    if( !ret_color.Ok() ) {
+        ret_color.Set( 128, 128, 128 );  // Simple Grey
+        wxLogMessage(_T("Warning: Color not found ") + colorName);
+        // Avoid duplicate warnings:
+        ( *pcurrent_user_color_hash )[colorName] = ret_color;
+    }
 
     return ret_color;
 }
@@ -9900,6 +9896,19 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "UITX1;   0;  0;  0;",              // Menu Text, derived from UINFF
         "UDKRD; 124; 16;  0;",
         "UARTE; 200;  0;  0;",              // Active Route, Grey on Dusk/Night
+
+        "NODTA; 163; 180; 183;",
+        "CHBLK;   7;   7;   7;",
+        "SNDG1; 125; 137; 140;",
+        "SNDG2;   7;   7;   7;",
+        "UIBDR; 125; 137; 140;",
+        "UINFB;  58; 120; 240;",
+        "UINFD;   7;   7;   7;",
+        "UINFO; 235; 125;  54;",
+        "PLRTE; 220;  64;  37;",
+        "CHMGD; 197; 69; 195;",
+        "UIBCK; 212; 234; 238;",
+
         "DASHB; 255;255;255;",              // Dashboard Instr background
         "DASHL; 190;190;190;",              // Dashboard Instr Label
         "DASHF;  50; 50; 50;",              // Dashboard Foreground
@@ -9921,6 +9930,19 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "UITX1;  41; 46; 46;",              // Menu Text, derived from UINFF
         "UDKRD;  80;  0;  0;",
         "UARTE;  64; 64; 64;",              // Active Route, Grey on Dusk/Night
+
+        "NODTA;  41;  46;  46;"
+        "CHBLK;  54;  60;  61;",
+        "SNDG1;  41;  46;  46;",
+        "SNDG2;  71;  78;  79;",
+        "UIBDR;  54;  60;  61;",
+        "UINFB;  19;  40;  80;",
+        "UINFD;  71;  78;  79;",
+        "UINFO;  75;  38;  19;",
+        "PLRTE;  73;  21;  12;",
+        "CHMGD; 74; 58; 81;",
+        "UIBCK; 7; 7; 7;",
+
         "DASHB;  77; 77; 77;",              // Dashboard Instr background
         "DASHL;  54; 54; 54;",              // Dashboard Instr Label
         "DASHF;   0;  0;  0;",              // Dashboard Foreground
@@ -9942,6 +9964,19 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "UITX1;  31; 34; 35;",              // Menu Text, derived from UINFF
         "UDKRD;  50;  0;  0;",
         "UARTE;  64; 64; 64;",              // Active Route, Grey on Dusk/Night
+
+        "NODTA;   7;   7;   7;"
+        "CHBLK; 163; 180; 183;",
+        "SNDG1; 125; 137; 140;",
+        "SNDG2; 212; 234; 238;",
+        "UIBDR; 163; 180; 183;",
+        "UINFB;  21;  29;  69;",
+        "UINFD; 212; 234; 238;",
+        "UINFO; 221; 118;  51;",
+        "PLRTE; 220;  64;  37;",
+        "CHMGD; 52; 18; 52;",
+        "UIBCK; 7; 7; 7;",
+
         "DASHB;   0;  0;  0;",              // Dashboard Instr background
         "DASHL;  20; 20; 20;",              // Dashboard Instr Label
         "DASHF;  64; 64; 64;",              // Dashboard Foreground
