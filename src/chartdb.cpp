@@ -61,7 +61,9 @@ extern int          g_GroupIndex;
 extern s52plib      *ps52plib;
 extern ChartDB      *ChartData;
 
-
+#ifdef USE_S57
+void LoadS57();
+#endif
 bool G_FloatPtInPolygon(MyFlPoint *rgpts, int wnumpts, float x, float y) ;
 bool GetMemoryStatus(int *mem_total, int *mem_used);
 
@@ -1184,6 +1186,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
 #ifdef USE_S57
             else if(chart_type == CHART_TYPE_S57)
             {
+                  LoadS57();
                   Ch = new s57chart();
                   s57chart *Chs57 = dynamic_cast<s57chart*>(Ch);
 
@@ -1203,6 +1206,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
 #ifdef USE_S57
             else if(chart_type == CHART_TYPE_CM93)
             {
+                  LoadS57();
                   Ch = new cm93chart();
                   cm93chart *Chcm93 = dynamic_cast<cm93chart*>(Ch);
 
@@ -1220,6 +1224,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
 
             else if(chart_type == CHART_TYPE_CM93COMP)
             {
+                  LoadS57();
                   Ch = new cm93compchart();
 
                   cm93compchart *Chcm93 = dynamic_cast<cm93compchart*>(Ch);

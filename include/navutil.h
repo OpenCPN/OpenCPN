@@ -190,6 +190,7 @@ public:
                               const wxString &LocalFileName);
 
       int LoadMyConfig(int iteration);
+      void LoadNavObjects();
       virtual bool AddNewRoute(Route *pr, int ConfigRouteNum = -1);
       virtual bool UpdateRoute(Route *pr);
       virtual bool DeleteConfigRoute(Route *pr);

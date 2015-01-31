@@ -214,6 +214,7 @@ TCMgr                     *ptcmgr;
 
 
 bool                      bDrawCurrentValues;
+bool                      b_novicemode = false;
 
 wxString                  g_PrivateDataDir;
 wxString                  g_SData_Locn;
@@ -580,7 +581,6 @@ bool                      g_bPreserveScaleOnX;
 
 about                     *g_pAboutDlg;
 
-wxPlatformInfo            *g_pPlatform;
 wxLocale                  *plocale_def_lang;
 wxString                  g_locale;
 bool                      g_b_assume_azerty;
@@ -876,7 +876,8 @@ double  GetDisplaySizeMM()
 //------------------------------------------------------------------------------
 
 IMPLEMENT_APP( MyApp )
-BEGIN_EVENT_TABLE(MyApp, wxApp) EVT_ACTIVATE_APP(MyApp::OnActivateApp)
+BEGIN_EVENT_TABLE(MyApp, wxApp)
+EVT_ACTIVATE_APP(MyApp::OnActivateApp)
 END_EVENT_TABLE()
 
 #include "wx/dynlib.h"
@@ -1037,10 +1038,146 @@ void MyApp::OnActivateApp( wxActivateEvent& event )
     event.Skip();
 }
 
+#ifdef USE_S57
+void LoadS57()
+{
+    if(ps52plib) // already loaded?
+        return;
+
+//      Set up a useable CPL library error handler for S57 stuff
+    CPLSetErrorHandler( MyCPLErrorHandler );
+
+//      Init the s57 chart object, specifying the location of the required csv files
+    g_csv_locn = g_SData_Locn;
+    g_csv_locn.Append( _T("s57data") );
+
+    if( g_bportable ) {
+        g_csv_locn = _T(".");
+        appendOSDirSlash( &g_csv_locn );
+        g_csv_locn.Append( _T("s57data") );
+    }
+
+//      If the config file contains an entry for SENC file prefix, use it.
+//      Otherwise, default to PrivateDataDir
+    if( g_SENCPrefix.IsEmpty() ) {
+        g_SENCPrefix = g_PrivateDataDir;
+        appendOSDirSlash( &g_SENCPrefix );
+        g_SENCPrefix.Append( _T("SENC") );
+    }
+
+    if( g_bportable ) {
+        wxFileName f( g_SENCPrefix );
+        if( f.MakeRelativeTo( g_PrivateDataDir ) ) g_SENCPrefix = f.GetFullPath();
+        else
+            g_SENCPrefix = _T("SENC");
+    }
+
+//      If the config file contains an entry for PresentationLibraryData, use it.
+//      Otherwise, default to conditionally set spot under g_pcsv_locn
+    wxString plib_data;
+    bool b_force_legacy = false;
+
+    if( g_UserPresLibData.IsEmpty() ) {
+        plib_data = g_csv_locn;
+        appendOSDirSlash( &plib_data );
+        plib_data.Append( _T("S52RAZDS.RLE") );
+    } else {
+        plib_data = g_UserPresLibData;
+        b_force_legacy = true;
+    }
+
+    ps52plib = new s52plib( plib_data, b_force_legacy );
+    
+    //  If the library load failed, try looking for the s57 data elsewhere
+
+    //  First, look in UserDataDir
+    /*    From wxWidgets documentation
+
+     wxStandardPaths::GetUserDataDir
+     wxString GetUserDataDir() const
+     Return the directory for the user-dependent application data files:
+     * Unix: ~/.appname
+     * Windows: C:\Documents and Settings\username\Application Data\appname
+     * Mac: ~/Library/Application Support/appname
+     */
+
+    if( !ps52plib->m_bOK ) {
+        delete ps52plib;
+
+        wxStandardPaths& std_path = *dynamic_cast<wxStandardPaths*>(&wxApp().GetTraits()->GetStandardPaths());
+
+        wxString look_data_dir;
+        look_data_dir.Append( std_path.GetUserDataDir() );
+        appendOSDirSlash( &look_data_dir );
+        wxString tentative_SData_Locn = look_data_dir;
+        look_data_dir.Append( _T("s57data") );
+
+        plib_data = look_data_dir;
+        appendOSDirSlash( &plib_data );
+        plib_data.Append( _T("S52RAZDS.RLE") );
+
+        wxLogMessage( _T("Looking for s57data in ") + look_data_dir );
+        ps52plib = new s52plib( plib_data );
+
+        if( ps52plib->m_bOK ) {
+            g_csv_locn = look_data_dir;
+            g_SData_Locn = tentative_SData_Locn;
+        }
+    }
+
+    //  And if that doesn't work, look again in the original SData Location
+    //  This will cover the case in which the .ini file entry is corrupted or moved
+
+    if( !ps52plib->m_bOK ) {
+        delete ps52plib;
+
+        wxString look_data_dir;
+        look_data_dir = g_SData_Locn;
+        look_data_dir.Append( _T("s57data") );
+
+        plib_data = look_data_dir;
+        appendOSDirSlash( &plib_data );
+        plib_data.Append( _T("S52RAZDS.RLE") );
+
+        wxLogMessage( _T("Looking for s57data in ") + look_data_dir );
+        ps52plib = new s52plib( plib_data );
+
+        if( ps52plib->m_bOK ) g_csv_locn = look_data_dir;
+    }
+
+    if( ps52plib->m_bOK ) {
+        wxLogMessage( _T("Using s57data in ") + g_csv_locn );
+        m_pRegistrarMan = new s57RegistrarMgr( g_csv_locn, flog );
+
+        if(b_novicemode) {
+            ps52plib->m_bShowSoundg = true;
+            ps52plib->SetDisplayCategory((enum _DisCat) STANDARD );
+            ps52plib->m_nSymbolStyle = (LUPname) PAPER_CHART;
+            ps52plib->m_nBoundaryStyle = (LUPname) PLAIN_BOUNDARIES;
+            ps52plib->m_bUseSCAMIN = true;
+            ps52plib->m_bShowAtonText = true;
+
+            //    Preset some object class visibilites for "Mariner's Standard" disply category
+            for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
+                OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
+                if( !strncmp( pOLE->OBJLName, "DEPARE", 6 ) ) pOLE->nViz = 1;
+                if( !strncmp( pOLE->OBJLName, "LNDARE", 6 ) ) pOLE->nViz = 1;
+                if( !strncmp( pOLE->OBJLName, "COALNE", 6 ) ) pOLE->nViz = 1;
+            }
+        }
+    } else {
+        wxLogMessage( _T("   S52PLIB Initialization failed, disabling Vector charts.") );
+        delete ps52plib;
+        ps52plib = NULL;
+    }
+}
+#endif
+
 bool MyApp::OnInit()
 {
-    if( !wxApp::OnInit() ) return false;
+    wxStopWatch sw;
 
+    if( !wxApp::OnInit() ) return false;
 
     //  On Windows
     //  We allow only one instance unless the portable option is used
@@ -1187,8 +1324,6 @@ bool MyApp::OnInit()
     seed *= x.GetTicks();
     srand(seed);
 
-    g_pPlatform = new wxPlatformInfo;
-
     //    On MSW, force the entire process to run on one CPU core only
     //    This resolves some difficulty with wxThread syncronization
 #if 0
@@ -1246,7 +1381,8 @@ bool MyApp::OnInit()
     //    processes.  The exception filter is in cutil.c
     //    Seems to only happen for W98
 
-    if( g_pPlatform->GetOperatingSystemId() == wxOS_WINDOWS_9X ) SetUnhandledExceptionFilter (&MyUnhandledExceptionFilter);
+    wxPlatformInfo Platform;
+    if( Platform.GetOperatingSystemId() == wxOS_WINDOWS_9X ) SetUnhandledExceptionFilter (&MyUnhandledExceptionFilter);
 #endif
 
 #ifdef __WXMSW__
@@ -1538,8 +1674,6 @@ bool MyApp::OnInit()
 
     }
 
-    bool b_novicemode = false;
-
     wxFileName config_test_file_name( gConfig_File );
     if( config_test_file_name.FileExists() ) wxLogMessage(
             _T("Using existing Config_File: ") + gConfig_File );
@@ -1579,12 +1713,12 @@ bool MyApp::OnInit()
     g_display_size_mm = wxMax(100, GetDisplaySizeMM());
 
     //      Init the WayPoint Manager (Must be after UI Style init).
-    pWayPointMan = new WayPointman();
-    pWayPointMan->ProcessIcons( g_StyleManager->GetCurrentStyle() );
+    pWayPointMan = NULL;
 
     //      Open/Create the Config Object (Must be after UI Style init).
     MyConfig *pCF = new MyConfig( wxString( _T("") ), wxString( _T("") ), gConfig_File );
     pConfig = (MyConfig *) pCF;
+
     pConfig->LoadMyConfig( 0 );
 
 
@@ -1720,123 +1854,6 @@ bool MyApp::OnInit()
     g_bdisable_opengl = true;;
 #endif
 
-
-
-
- #ifdef USE_S57
-
-//      Set up a useable CPL library error handler for S57 stuff
-    CPLSetErrorHandler( MyCPLErrorHandler );
-
-//      Init the s57 chart object, specifying the location of the required csv files
-    g_csv_locn = g_SData_Locn;
-    g_csv_locn.Append( _T("s57data") );
-
-    if( g_bportable ) {
-        g_csv_locn = _T(".");
-        appendOSDirSlash( &g_csv_locn );
-        g_csv_locn.Append( _T("s57data") );
-    }
-
-//      If the config file contains an entry for SENC file prefix, use it.
-//      Otherwise, default to PrivateDataDir
-    if( g_SENCPrefix.IsEmpty() ) {
-        g_SENCPrefix = g_PrivateDataDir;
-        appendOSDirSlash( &g_SENCPrefix );
-        g_SENCPrefix.Append( _T("SENC") );
-    }
-
-    if( g_bportable ) {
-        wxFileName f( g_SENCPrefix );
-        if( f.MakeRelativeTo( g_PrivateDataDir ) ) g_SENCPrefix = f.GetFullPath();
-        else
-            g_SENCPrefix = _T("SENC");
-    }
-
-//      If the config file contains an entry for PresentationLibraryData, use it.
-//      Otherwise, default to conditionally set spot under g_pcsv_locn
-    wxString plib_data;
-    bool b_force_legacy = false;
-
-    if( g_UserPresLibData.IsEmpty() ) {
-        plib_data = g_csv_locn;
-        appendOSDirSlash( &plib_data );
-        plib_data.Append( _T("S52RAZDS.RLE") );
-    } else {
-        plib_data = g_UserPresLibData;
-        b_force_legacy = true;
-    }
-
-    ps52plib = new s52plib( plib_data, b_force_legacy );
-
-    //  If the library load failed, try looking for the s57 data elsewhere
-
-    //  First, look in UserDataDir
-    /*    From wxWidgets documentation
-
-     wxStandardPaths::GetUserDataDir
-     wxString GetUserDataDir() const
-     Return the directory for the user-dependent application data files:
-     * Unix: ~/.appname
-     * Windows: C:\Documents and Settings\username\Application Data\appname
-     * Mac: ~/Library/Application Support/appname
-     */
-
-    if( !ps52plib->m_bOK ) {
-        delete ps52plib;
-
-        wxString look_data_dir;
-        look_data_dir.Append( std_path.GetUserDataDir() );
-        appendOSDirSlash( &look_data_dir );
-        wxString tentative_SData_Locn = look_data_dir;
-        look_data_dir.Append( _T("s57data") );
-
-        plib_data = look_data_dir;
-        appendOSDirSlash( &plib_data );
-        plib_data.Append( _T("S52RAZDS.RLE") );
-
-        wxLogMessage( _T("Looking for s57data in ") + look_data_dir );
-        ps52plib = new s52plib( plib_data );
-
-        if( ps52plib->m_bOK ) {
-            g_csv_locn = look_data_dir;
-            g_SData_Locn = tentative_SData_Locn;
-        }
-    }
-
-    //  And if that doesn't work, look again in the original SData Location
-    //  This will cover the case in which the .ini file entry is corrupted or moved
-
-    if( !ps52plib->m_bOK ) {
-        delete ps52plib;
-
-        wxString look_data_dir;
-        look_data_dir = g_SData_Locn;
-        look_data_dir.Append( _T("s57data") );
-
-        plib_data = look_data_dir;
-        appendOSDirSlash( &plib_data );
-        plib_data.Append( _T("S52RAZDS.RLE") );
-
-        wxLogMessage( _T("Looking for s57data in ") + look_data_dir );
-        ps52plib = new s52plib( plib_data );
-
-        if( ps52plib->m_bOK ) g_csv_locn = look_data_dir;
-    }
-
-    if( ps52plib->m_bOK ) wxLogMessage( _T("Using s57data in ") + g_csv_locn );
-    else
-        wxLogMessage( _T("   S52PLIB Initialization failed, disabling Vector charts.") );
-
-// Todo Maybe initialize only when an s57 chart is actually opened???
-    if( ps52plib->m_bOK ) m_pRegistrarMan = new s57RegistrarMgr( g_csv_locn, flog );
-
-    if( !ps52plib->m_bOK ) {
-        delete ps52plib;
-        ps52plib = NULL;
-    }
-
-#endif  // S57
 // Set default color scheme
     global_color_scheme = GLOBAL_COLOR_SCHEME_DAY;
 
@@ -1856,9 +1873,6 @@ bool MyApp::OnInit()
     }
 #endif
 
-
-
-
 //      Establish location and name of chart database
     pChartListFileName = newPrivateFileName(std_path, pHome_Locn, "chartlist.dat", "CHRTLIST.DAT");
 
@@ -1875,11 +1889,6 @@ bool MyApp::OnInit()
     pWorldMapLocation = new wxString( _T("gshhs") );
     pWorldMapLocation->Prepend( g_SData_Locn );
     pWorldMapLocation->Append( wxFileName::GetPathSeparator() );
-
-//      Reload the config data, to pick up any missing data class configuration info
-//      e.g. s52plib, which could not be created until first config load completes
-//      Think catch-22
-    pConfig->LoadMyConfig( 1 );
 
     //  Override some config options for initial user startup with empty config file
     if( b_novicemode ) {
@@ -1905,27 +1914,6 @@ bool MyApp::OnInit()
         g_bShowAreaNotices = false;
         g_bDrawAISSize = false;
         g_bShowAISName = false;
-
-#ifdef USE_S57
-        if( ps52plib && ps52plib->m_bOK ) {
-            ps52plib->m_bShowSoundg = true;
-            ps52plib->SetDisplayCategory((enum _DisCat) STANDARD );
-            ps52plib->m_nSymbolStyle = (LUPname) PAPER_CHART;
-            ps52plib->m_nBoundaryStyle = (LUPname) PLAIN_BOUNDARIES;
-            ps52plib->m_bUseSCAMIN = true;
-            ps52plib->m_bShowAtonText = true;
-
-            //    Preset some object class visibilites for "Mariner's Standard" disply category
-            for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
-                OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
-                if( !strncmp( pOLE->OBJLName, "DEPARE", 6 ) ) pOLE->nViz = 1;
-                if( !strncmp( pOLE->OBJLName, "LNDARE", 6 ) ) pOLE->nViz = 1;
-                if( !strncmp( pOLE->OBJLName, "COALNE", 6 ) ) pOLE->nViz = 1;
-            }
-
-        }
-#endif
-
     }
 
     //  Check the global Tide/Current data source array
@@ -2043,6 +2031,9 @@ bool MyApp::OnInit()
 
     gFrame = new MyFrame( NULL, myframe_window_title, position, new_frame_size, app_style ); //Gunther
 
+//  Initialize the Plugin Manager
+    g_pi_manager = new PlugInManager( gFrame );
+
     g_pauimgr = new wxAuiManager;
 //        g_pauidockart= new wxAuiDefaultDockArt;
 //        g_pauimgr->SetArtProvider(g_pauidockart);
@@ -2068,8 +2059,6 @@ bool MyApp::OnInit()
 
     cc1->SetFocus();
 
-    console = new ConsoleCanvas( gFrame );                    // the console
-
     pthumbwin = new ThumbWin( cc1 );
 
     gFrame->ApplyGlobalSettings( false, false );               // done once on init with resize
@@ -2094,15 +2083,10 @@ bool MyApp::OnInit()
     g_pauimgr->GetPane( cc1 ).CenterPane();
     g_pauimgr->GetPane( cc1 ).BestSize( cc1->GetSize() );
 
-//      Load and initialize any PlugIns
-    g_pi_manager = new PlugInManager( gFrame );
-    g_pi_manager->LoadAllPlugIns( g_Plugin_Dir, true, false );         // do not allow blicklist dialog, since
-                                                                        // frame and canvas are not yet rendered...
-
 // Show the frame
 
-    gFrame->ClearBackground();
-    gFrame->Show( TRUE );
+//    gFrame->ClearBackground();
+//    gFrame->Show( TRUE );
 
     gFrame->SetAndApplyColorScheme( global_color_scheme );
 
@@ -2153,13 +2137,6 @@ bool MyApp::OnInit()
 
 
     g_pauimgr->Update();
-
-    //   Notify all the AUI PlugIns so that they may syncronize with the Perspective
-    g_pi_manager->NotifyAuiPlugIns();
-
-    //  Give the use dialog on any blacklisted PlugIns
-    g_pi_manager->ShowDeferredBlacklistMessages();
-    
     
     bool b_SetInitialPoint = false;
 
@@ -2294,14 +2271,11 @@ bool MyApp::OnInit()
     if( g_GroupIndex > (int) g_pGroupArray->GetCount() ) g_GroupIndex = 0;
     if( !gFrame->CheckGroup( g_GroupIndex ) ) g_GroupIndex = 0;
 
-    //  Delete any stack built by no-chart startup case
-    if( pCurrentStack ) delete pCurrentStack;
-
     pCurrentStack = new ChartStack;
 
     //  A useability enhancement....
     //  if the chart database is truly empty on startup, switch to SCMode
-    //  so that the WVS chart will at least be shown
+    //  so that the GSHHS chart will at least be shown
     if( ChartData && ( 0 == ChartData->GetChartTableEntries() ) ) {
         cc1->SetQuiltMode( false );
         gFrame->SetupQuiltMode();
@@ -2362,14 +2336,18 @@ extern ocpnGLOptions g_GLOptions;
     if( !g_AW2GUID.IsEmpty() ) {
         pAnchorWatchPoint2 = pWayPointMan->FindRoutePointByGUID( g_AW2GUID );
     }
+    LoadS57();
     
     Yield();
 
     gFrame->DoChartUpdate();
 
-//    g_FloatingToolbarDialog->LockPosition(false);
+//      Reload the config data, to pick up any missing data class configuration info
+//      e.g. s52plib, which could not be created until first config load completes
+//      Think catch-22
+    pConfig->LoadMyConfig( 1 );
 
-    gFrame->RequestNewToolbar();
+//    g_FloatingToolbarDialog->LockPosition(false);
 
 //      Start up the ticker....
     gFrame->FrameTimer1.Start( TIMER_GFRAME_1, wxTIMER_CONTINUOUS );
@@ -2431,11 +2409,12 @@ extern ocpnGLOptions g_GLOptions;
         if( g_FloatingCompassDialog ) g_FloatingCompassDialog->UpdateStatus( true );
     }
 
-    g_FloatingToolbarDialog->Raise();
-    g_FloatingToolbarDialog->Show();
-
     gFrame->Refresh( false );
     gFrame->Raise();
+
+    gFrame->RequestNewToolbar();
+//    g_FloatingToolbarDialog->Raise();
+//    g_FloatingToolbarDialog->Show();
 
     cc1->Enable();
     cc1->SetFocus();
@@ -2457,7 +2436,6 @@ extern ocpnGLOptions g_GLOptions;
         }
     }
 #endif
-    g_pi_manager->CallLateInit();
 
     if ( g_start_fullscreen )
         gFrame->ToggleFullScreen();
@@ -2467,6 +2445,11 @@ extern ocpnGLOptions g_GLOptions;
     gFrame->Raise();
     cc1->Enable();
     cc1->SetFocus();
+
+    // Perform delayed initialization after 50 milliseconds
+    gFrame->InitTimer.Start( 50, wxTIMER_ONE_SHOT );
+
+    wxLogMessage( wxString::Format(_("OpenCPN Initialized in %ld ms."), sw.Time() ) );
     
     return TRUE;
 }
@@ -2589,8 +2572,6 @@ int MyApp::OnExit()
     DeInitAllocCheck();
 #endif
 
-    delete g_pPlatform;
-
     delete plocale_def_lang;
 
     FontMgr::Shutdown();
@@ -2642,6 +2623,7 @@ EVT_MENU(wxID_EXIT, MyFrame::OnExit)
 EVT_SIZE(MyFrame::OnSize)
 EVT_MOVE(MyFrame::OnMove)
 EVT_MENU(-1, MyFrame::OnToolLeftClick)
+EVT_TIMER(INIT_TIMER, MyFrame::OnInitTimer)
 EVT_TIMER(FRAME_TIMER_1, MyFrame::OnFrameTimer1)
 EVT_TIMER(FRAME_TC_TIMER, MyFrame::OnFrameTCTimer)
 EVT_TIMER(FRAME_COG_TIMER, MyFrame::OnFrameCOGTimer)
@@ -2671,6 +2653,9 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     g_toolbar = NULL;
     m_toolbar_scale_tools_shown = false;
     piano_ctx_menu = NULL;
+
+    //      Redirect the initialization timer to this frame
+    InitTimer.SetOwner( this, INIT_TIMER );
     
     //      Redirect the global heartbeat timer to this frame
     FrameTimer1.SetOwner( this, FRAME_TIMER_1 );
@@ -2715,42 +2700,6 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     g_pMUX = new Multiplexer();
 
     g_pAIS = new AIS_Decoder( this );
-
-
-    for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
-    {
-        ConnectionParams *cp = g_pConnectionParams->Item(i);
-        if( cp->bEnabled ) {
-
-#ifdef __WXGTK__
-            if( cp->GetDSPort().Contains(_T("Serial"))) {
-                if( ! g_bserial_access_checked ){
-                    if( !CheckSerialAccess() ){
-                    }
-                    g_bserial_access_checked = true;
-                }
-            }
-#endif
-
-            dsPortType port_type = cp->IOSelect;
-            DataStream *dstr = new DataStream( g_pMUX,
-                                           cp->GetDSPort(),
-                                           wxString::Format(wxT("%i"),cp->Baudrate),
-                                           port_type,
-                                           cp->Priority,
-                                           cp->Garmin
-                                         );
-            dstr->SetInputFilter(cp->InputSentenceList);
-            dstr->SetInputFilterType(cp->InputSentenceListType);
-            dstr->SetOutputFilter(cp->OutputSentenceList);
-            dstr->SetOutputFilterType(cp->OutputSentenceListType);
-            dstr->SetChecksumCheck(cp->ChecksumCheck);
-
-            cp->b_IsSetup = true;
-
-            g_pMUX->AddStream(dstr);
-        }
-    }
 
     g_pMUX->SetAISHandler(g_pAIS);
     g_pMUX->SetGPSHandler(this);
@@ -3409,6 +3358,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     g_bquiting = true;
 
 #ifdef ocpnUSE_GL
+    // cancel compression jobs
     if(g_bopengl && g_CompressorPool){
         g_CompressorPool->PurgeJobList();
 
@@ -3418,36 +3368,12 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 #endif
 
     if( cc1 ) {
-        cc1->SetCursor( wxCURSOR_WAIT );
+//        cc1->SetCursor( wxCURSOR_WAIT );
 
         cc1->Refresh( true );
         cc1->Update();
         wxYield();
     }
-
-
-    #define THREAD_WAIT_SECONDS  5
-#ifdef ocpnUSE_GL
-    //  Try to wait a bit to see if all compression threads exit nicely
-    if(g_bopengl && g_CompressorPool){
-        wxDateTime now = wxDateTime::Now();
-        time_t stall = now.GetTicks();
-        time_t start = stall;
-        time_t end = stall + THREAD_WAIT_SECONDS;
-
-        while(stall < end ){
-            wxDateTime later = wxDateTime::Now();
-            stall = later.GetTicks();
-
-            wxYield();
-            wxSleep(1);
-            if(!g_CompressorPool->GetRunningJobCount())
-                break;
-        }
-
-        int yyp = 5;
-    }
-#endif
 
     //   Save the saved Screen Brightness
     RestoreScreenBrightness();
@@ -3652,6 +3578,30 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     
     gFrame = NULL;
 
+    #define THREAD_WAIT_SECONDS  5
+#ifdef ocpnUSE_GL
+    // The last thing we do is finish the compression threads.
+    // This way the main window is already invisible and to the user
+    // it appears to have finished rather than hanging for several seconds
+    // while the compression threads exit
+    if(g_bopengl && g_CompressorPool){
+        wxDateTime now = wxDateTime::Now();
+        time_t stall = now.GetTicks();
+        time_t end = stall + THREAD_WAIT_SECONDS;
+
+        while(stall < end ) {
+            wxDateTime later = wxDateTime::Now();
+            stall = later.GetTicks();
+
+            if(!g_CompressorPool->GetRunningJobCount())
+                break;
+            wxYield();
+            wxSleep(1);
+        }
+
+        int yyp = 5;
+    }
+#endif
 }
 
 void MyFrame::OnMove( wxMoveEvent& event )
@@ -3689,7 +3639,7 @@ void MyFrame::ProcessCanvasResize( void )
 
     UpdateGPSCompassStatusBox( );
 
-    if( console->IsShown() ) PositionConsole();
+    if( console && console->IsShown() ) PositionConsole();
 }
 
 void MyFrame::OnSize( wxSizeEvent& event )
@@ -5762,6 +5712,61 @@ void MyFrame::DoStackDelta( int direction )
     cc1->SetQuiltChartHiLiteIndex( -1 );
 
     cc1->ReloadVP();
+}
+
+// Defered initialization for anything that is not required to render the initial frame
+// and takes a while to initialize.  This gets opencpn up and running much faster.
+void MyFrame::OnInitTimer(wxTimerEvent& event)
+{
+    // Load the waypoints.. both of these routines are very slow to execute which is why
+    // they have been to defered until here
+    pWayPointMan = new WayPointman();
+    pConfig->LoadNavObjects();
+
+    // Connect Datastreams
+    for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+    {
+        ConnectionParams *cp = g_pConnectionParams->Item(i);
+        if( cp->bEnabled ) {
+
+#ifdef __WXGTK__
+            if( cp->GetDSPort().Contains(_T("Serial"))) {
+                if( ! g_bserial_access_checked ){
+                    if( !CheckSerialAccess() ){
+                    }
+                    g_bserial_access_checked = true;
+                }
+            }
+#endif
+
+            dsPortType port_type = cp->IOSelect;
+            DataStream *dstr = new DataStream( g_pMUX,
+                                           cp->GetDSPort(),
+                                           wxString::Format(wxT("%i"),cp->Baudrate),
+                                           port_type,
+                                           cp->Priority,
+                                           cp->Garmin
+                                         );
+            dstr->SetInputFilter(cp->InputSentenceList);
+            dstr->SetInputFilterType(cp->InputSentenceListType);
+            dstr->SetOutputFilter(cp->OutputSentenceList);
+            dstr->SetOutputFilterType(cp->OutputSentenceListType);
+            dstr->SetChecksumCheck(cp->ChecksumCheck);
+
+            cp->b_IsSetup = true;
+
+            g_pMUX->AddStream(dstr);
+        }
+    }
+
+    console = new ConsoleCanvas( gFrame );                    // the console
+
+    g_pi_manager->LoadAllPlugIns( g_Plugin_Dir, true, false );
+
+    //   Notify all the AUI PlugIns so that they may syncronize with the Perspective
+    g_pi_manager->NotifyAuiPlugIns();
+    g_pi_manager->ShowDeferredBlacklistMessages(); //  Give the use dialog on any blacklisted PlugIns
+    g_pi_manager->CallLateInit();
 }
 
 //    Manage the application memory footprint on a periodic schedule

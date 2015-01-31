@@ -1974,53 +1974,6 @@ int MyConfig::LoadMyConfig( int iteration )
     if( 0 == iteration )
         LoadConfigGroups( g_pGroupArray );
 
-
-//      next thing to do is read tracks, etc from the NavObject XML file,
-    if( 0 == iteration ) {
-        wxLogMessage( _T("Loading navobjects from navobj.xml") );
-        CreateRotatingNavObjBackup();
-
-        if( NULL == m_pNavObjectInputSet )
-            m_pNavObjectInputSet = new NavObjectCollection1();
-
-        if( ::wxFileExists( m_sNavObjSetFile ) ) {
-            if( m_pNavObjectInputSet->load_file( m_sNavObjSetFile.fn_str() ) )
-                m_pNavObjectInputSet->LoadAllGPXObjects();
-        }
-        wxLogMessage( _T("Done loading navobjects") );
-        delete m_pNavObjectInputSet;
-
-
-        if( ::wxFileExists( m_sNavObjSetChangesFile ) ) {
-
-            wxULongLong size = wxFileName::GetSize(m_sNavObjSetChangesFile);
-
-            //We crashed last time :(
-            //That's why this file still exists...
-            //Let's reconstruct the unsaved changes
-            NavObjectChanges *pNavObjectChangesSet = new NavObjectChanges();
-            pNavObjectChangesSet->load_file( m_sNavObjSetChangesFile.fn_str() );
-
-            //  Remove the file before applying the changes,
-            //  just in case the changes file itself causes a fault.
-            //  If it does fault, at least the next restart will proceed without fault.
-           if( ::wxFileExists( m_sNavObjSetChangesFile ) )
-                ::wxRemoveFile( m_sNavObjSetChangesFile );
-
-           if(size != 0){
-                wxLogMessage( _T("Applying NavObjChanges") );
-                pNavObjectChangesSet->ApplyChanges();
-                UpdateNavObj();
-           }
-
-           delete pNavObjectChangesSet;
-           
-        }
-
-        m_pNavObjectChangesSet = new NavObjectChanges(m_sNavObjSetChangesFile);
-
-    }
-
     SetPath( _T ( "/Settings/Others" ) );
 
     // Radar rings
@@ -2098,6 +2051,51 @@ int MyConfig::LoadMyConfig( int iteration )
 
 
     return ( 0 );
+}
+
+void MyConfig::LoadNavObjects()
+{
+    //      next thing to do is read tracks, etc from the NavObject XML file,
+    wxLogMessage( _T("Loading navobjects from navobj.xml") );
+    CreateRotatingNavObjBackup();
+
+    if( NULL == m_pNavObjectInputSet )
+        m_pNavObjectInputSet = new NavObjectCollection1();
+
+    if( ::wxFileExists( m_sNavObjSetFile ) &&
+        m_pNavObjectInputSet->load_file( m_sNavObjSetFile.fn_str() ) )
+        m_pNavObjectInputSet->LoadAllGPXObjects();
+
+    wxLogMessage( _T("Done loading navobjects") );
+    delete m_pNavObjectInputSet;
+
+    if( ::wxFileExists( m_sNavObjSetChangesFile ) ) {
+
+        wxULongLong size = wxFileName::GetSize(m_sNavObjSetChangesFile);
+
+        //We crashed last time :(
+        //That's why this file still exists...
+        //Let's reconstruct the unsaved changes
+        NavObjectChanges *pNavObjectChangesSet = new NavObjectChanges();
+        pNavObjectChangesSet->load_file( m_sNavObjSetChangesFile.fn_str() );
+
+        //  Remove the file before applying the changes,
+        //  just in case the changes file itself causes a fault.
+        //  If it does fault, at least the next restart will proceed without fault.
+        if( ::wxFileExists( m_sNavObjSetChangesFile ) )
+            ::wxRemoveFile( m_sNavObjSetChangesFile );
+        
+        if(size != 0){
+            wxLogMessage( _T("Applying NavObjChanges") );
+            pNavObjectChangesSet->ApplyChanges();
+            UpdateNavObj();
+        }
+        
+        delete pNavObjectChangesSet;
+           
+    }
+
+    m_pNavObjectChangesSet = new NavObjectChanges(m_sNavObjSetChangesFile);
 }
 
 bool MyConfig::LoadLayers(wxString &path)
