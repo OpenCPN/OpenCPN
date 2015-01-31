@@ -1164,6 +1164,8 @@ void LoadS57()
                 if( !strncmp( pOLE->OBJLName, "LNDARE", 6 ) ) pOLE->nViz = 1;
                 if( !strncmp( pOLE->OBJLName, "COALNE", 6 ) ) pOLE->nViz = 1;
             }
+
+            pConfig->LoadS57Config();
         }
     } else {
         wxLogMessage( _T("   S52PLIB Initialization failed, disabling Vector charts.") );
@@ -1718,9 +1720,7 @@ bool MyApp::OnInit()
     //      Open/Create the Config Object (Must be after UI Style init).
     MyConfig *pCF = new MyConfig( wxString( _T("") ), wxString( _T("") ), gConfig_File );
     pConfig = (MyConfig *) pCF;
-
-    pConfig->LoadMyConfig( 0 );
-
+    pConfig->LoadMyConfig();
 
     if(g_btouch){
         int SelectPixelRadius = 50;
@@ -2336,16 +2336,14 @@ extern ocpnGLOptions g_GLOptions;
     if( !g_AW2GUID.IsEmpty() ) {
         pAnchorWatchPoint2 = pWayPointMan->FindRoutePointByGUID( g_AW2GUID );
     }
+
     LoadS57();
     
     Yield();
 
     gFrame->DoChartUpdate();
 
-//      Reload the config data, to pick up any missing data class configuration info
-//      e.g. s52plib, which could not be created until first config load completes
-//      Think catch-22
-    pConfig->LoadMyConfig( 1 );
+    FontMgr::Get().ScrubList(); // is this needed?
 
 //    g_FloatingToolbarDialog->LockPosition(false);
 

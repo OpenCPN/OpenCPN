@@ -1143,7 +1143,7 @@ void MyConfig::CreateRotatingNavObjBackup()
             break;
 }
 
-int MyConfig::LoadMyConfig( int iteration )
+int MyConfig::LoadMyConfig()
 {
 
     int read_int;
@@ -1156,24 +1156,20 @@ int MyConfig::LoadMyConfig( int iteration )
     SetPath( _T ( "/Settings" ) );
 
     // Some undocumented values
-    if( iteration == 0 ) {
-        Read( _T ( "ConfigVersionString" ), &g_config_version_string, _T("") );
-        Read( _T ( "NavMessageShown" ), &n_NavMessageShown, 0 );
-    }
+    Read( _T ( "ConfigVersionString" ), &g_config_version_string, _T("") );
+    Read( _T ( "NavMessageShown" ), &n_NavMessageShown, 0 );
 
     wxString uiStyle;
     Read( _T ( "UIStyle" ), &uiStyle, wxT("") );
     g_StyleManager->SetStyle( uiStyle );
 
-    if( iteration == 0 ) {
-        Read( _T ( "NCacheLimit" ), &g_nCacheLimit, CACHE_N_LIMIT_DEFAULT );
+    Read( _T ( "NCacheLimit" ), &g_nCacheLimit, CACHE_N_LIMIT_DEFAULT );
 
-        int mem_limit;
-        Read( _T ( "MEMCacheLimit" ), &mem_limit, 0 );
-
-        if(mem_limit > 0)
-            g_memCacheLimit = mem_limit * 1024;       // convert from MBytes to kBytes
-    }
+    int mem_limit;
+    Read( _T ( "MEMCacheLimit" ), &mem_limit, 0 );
+    
+    if(mem_limit > 0)
+        g_memCacheLimit = mem_limit * 1024;       // convert from MBytes to kBytes
 
     Read( _T ( "DebugGDAL" ), &g_bGDAL_Debug, 0 );
     Read( _T ( "DebugNMEA" ), &g_nNMEADebug, 0 );
@@ -1197,13 +1193,11 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "UseNMEA_GLL" ), &g_bUseGLL, 1 );
     Read( _T ( "UseBigRedX" ), &g_bbigred, 0 );
 
-    if(iteration == 0){
-        int size_mm;
-        Read( _T ( "DisplaySizeMM" ), &size_mm, -1 );
-        g_config_display_size_mm = size_mm;
-        if((size_mm > 100) && (size_mm < 2000)){
-            g_display_size_mm = size_mm;
-        }
+    int size_mm;
+    Read( _T ( "DisplaySizeMM" ), &size_mm, -1 );
+    g_config_display_size_mm = size_mm;
+    if((size_mm > 100) && (size_mm < 2000)){
+        g_display_size_mm = size_mm;
     }
     
     Read( _T ( "FilterNMEA_Avg" ), &g_bfilter_cogsog, 0 );
@@ -1370,10 +1364,8 @@ int MyConfig::LoadMyConfig( int iteration )
 
     Read( _T ( "PreserveScaleOnX" ), &g_bPreserveScaleOnX, 0 );
 
-    if( iteration == 0 ) {
-        g_locale = _T("en_US");
-        Read( _T ( "Locale" ), &g_locale );
-    }
+    g_locale = _T("en_US");
+    Read( _T ( "Locale" ), &g_locale );
 
     //We allow 0-99 backups ov navobj.xml
     Read( _T ( "KeepNavobjBackups" ), &g_navobjbackups, 5 );
@@ -1505,77 +1497,14 @@ int MyConfig::LoadMyConfig( int iteration )
     g_S57_dialog_sx = Read( _T ( "S57QueryDialogSizeX" ), 400L );
     g_S57_dialog_sy = Read( _T ( "S57QueryDialogSizeY" ), 400L );
 
-#ifdef USE_S57
-    if( NULL != ps52plib ) {
-        double dval;
-        SetPath( _T ( "/Settings/GlobalState" ) );
-
-        Read( _T ( "bShowS57Text" ), &read_int, 0 );
-        ps52plib->SetShowS57Text( !( read_int == 0 ) );
-
-        Read( _T ( "bShowS57ImportantTextOnly" ), &read_int, 0 );
-        ps52plib->SetShowS57ImportantTextOnly( !( read_int == 0 ) );
-
-        Read( _T ( "bShowLightDescription" ), &read_int, 0 );
-        ps52plib->SetShowLdisText( !( read_int == 0 ) );
-
-        Read( _T ( "bExtendLightSectors" ), &read_int, 0 );
-        ps52plib->SetExtendLightSectors( !( read_int == 0 ) );
-
-        Read( _T ( "nDisplayCategory" ), &read_int, (enum _DisCat) STANDARD );
-        ps52plib->SetDisplayCategory((enum _DisCat) read_int );
-
-        Read( _T ( "nSymbolStyle" ), &read_int, (enum _LUPname) PAPER_CHART );
-        ps52plib->m_nSymbolStyle = (LUPname) read_int;
-
-        Read( _T ( "nBoundaryStyle" ), &read_int, PLAIN_BOUNDARIES );
-        ps52plib->m_nBoundaryStyle = (LUPname) read_int;
-
-        Read( _T ( "bShowSoundg" ), &read_int, 0 );
-        ps52plib->m_bShowSoundg = !( read_int == 0 );
-
-        Read( _T ( "bShowMeta" ), &read_int, 0 );
-        ps52plib->m_bShowMeta = !( read_int == 0 );
-
-        Read( _T ( "bUseSCAMIN" ), &read_int, 0 );
-        ps52plib->m_bUseSCAMIN = !( read_int == 0 );
-
-        Read( _T ( "bShowAtonText" ), &read_int, 0 );
-        ps52plib->m_bShowAtonText = !( read_int == 0 );
-
-        Read( _T ( "bDeClutterText" ), &read_int, 0 );
-        ps52plib->m_bDeClutterText = !( read_int == 0 );
-
-        Read( _T ( "bShowNationalText" ), &read_int, 0 );
-        ps52plib->m_bShowNationalTexts = !( read_int == 0 );
-
-        if( Read( _T ( "S52_MAR_SAFETY_CONTOUR" ), &dval, 5.0 ) ) {
-            S52_setMarinerParam( S52_MAR_SAFETY_CONTOUR, dval );
-            S52_setMarinerParam( S52_MAR_SAFETY_DEPTH, dval ); // Set safety_contour and safety_depth the same
-        }
-
-        if( Read( _T ( "S52_MAR_SHALLOW_CONTOUR" ), &dval, 3.0 ) ) S52_setMarinerParam(
-                S52_MAR_SHALLOW_CONTOUR, dval );
-
-        if( Read( _T ( "S52_MAR_DEEP_CONTOUR" ), &dval, 10.0 ) ) S52_setMarinerParam(
-                S52_MAR_DEEP_CONTOUR, dval );
-
-        if( Read( _T ( "S52_MAR_TWO_SHADES" ), &dval, 0.0 ) ) S52_setMarinerParam(
-                S52_MAR_TWO_SHADES, dval );
-
-        ps52plib->UpdateMarinerParams();
-
-        SetPath( _T ( "/Settings/GlobalState" ) );
-        Read( _T ( "S52_DEPTH_UNIT_SHOW" ), &read_int, 1 );   // default is metres
-        ps52plib->m_nDepthUnitDisplay = read_int;
-    }
 
     wxString strpres( _T ( "PresentationLibraryData" ) );
     wxString valpres;
     SetPath( _T ( "/Directories" ) );
     Read( strpres, &valpres );              // Get the File name
-    if( iteration == 0 ) g_UserPresLibData = valpres;
+    g_UserPresLibData = valpres;
 
+#ifdef USE_S57
     /*
      wxString strd ( _T ( "S57DataLocation" ) );
      SetPath ( _T ( "/Directories" ) );
@@ -1597,7 +1526,7 @@ int MyConfig::LoadMyConfig( int iteration )
     wxString vals;
     Read( strs, &vals );              // Get the Directory name
 
-    if( iteration == 0 ) g_SENCPrefix = vals;
+    g_SENCPrefix = vals;
 
 #endif
 
@@ -1622,23 +1551,21 @@ int MyConfig::LoadMyConfig( int iteration )
     global_color_scheme = (ColorScheme) read_int;
 
 
-    if( iteration == 0){
-        SetPath( _T ( "/Settings/NMEADataSource" ) );
+    SetPath( _T ( "/Settings/NMEADataSource" ) );
 
-        wxString connectionconfigs;
-        Read ( _T( "DataConnections" ),  &connectionconfigs, wxEmptyString );
-        wxArrayString confs = wxStringTokenize(connectionconfigs, _T("|"));
-        g_pConnectionParams->Clear();
-        for (size_t i = 0; i < confs.Count(); i++)
-        {
-            ConnectionParams * prm = new ConnectionParams(confs[i]);
-            if (!prm->Valid) {
-                wxLogMessage( _T( "Skipped invalid DataStream config") );
-                delete prm;
-                continue;
-            }
-            g_pConnectionParams->Add(prm);
+    wxString connectionconfigs;
+    Read ( _T( "DataConnections" ),  &connectionconfigs, wxEmptyString );
+    wxArrayString confs = wxStringTokenize(connectionconfigs, _T("|"));
+    g_pConnectionParams->Clear();
+    for (size_t i = 0; i < confs.Count(); i++)
+    {
+        ConnectionParams * prm = new ConnectionParams(confs[i]);
+        if (!prm->Valid) {
+            wxLogMessage( _T( "Skipped invalid DataStream config") );
+            delete prm;
+            continue;
         }
+        g_pConnectionParams->Add(prm);
     }
 
     //  Automatically handle the upgrade to DataSources architecture...
@@ -1683,10 +1610,9 @@ int MyConfig::LoadMyConfig( int iteration )
                 g_bGarminHostUpload = (b_garmin_host == 1);
             }
         }
-        if( iteration == 1 ) {
-            Write ( _T ( "Source" ), _T("") );          // clear the old tag
-            Write ( _T ( "BaudRate" ), _T("") );
-        }
+
+        DeleteEntry ( _T ( "Source" ) );
+        DeleteEntry ( _T ( "BaudRate" ), _T("") );
     }
 
    //  Is there an existing AISPort definition?
@@ -1725,12 +1651,10 @@ int MyConfig::LoadMyConfig( int iteration )
                 g_pConnectionParams->Add(prm);
             }
         }
-
-        if( iteration == 1 ) {
-            Write ( _T ( "Port" ), _T("") );          // clear the old tag
-            Write ( _T ( "BaudRate" ), _T("") );
-        }
+        DeleteEntry ( _T ( "Source" ) );
+        DeleteEntry ( _T ( "BaudRate" ) );
     }
+
 
     //  Is there an existing NMEAAutoPilotPort definition?
     SetPath( _T ( "/Settings/NMEAAutoPilotPort" ) );
@@ -1770,9 +1694,6 @@ int MyConfig::LoadMyConfig( int iteration )
                 cp->OutputSentenceList.Add( _T("RMB") );
             }
         }
-
-        if( iteration == 1 )
-            Write ( _T ( "Port" ), _T("") );          // clear the old tag
     }
 
 //    Reasonable starting point
@@ -1844,53 +1765,6 @@ int MyConfig::LoadMyConfig( int iteration )
     s.Printf( _T ( "Setting Ownship Lat/Lon %g, %g" ), gLat, gLon );
     wxLogMessage( s );
 
-#ifdef USE_S57
-//    S57 Object Class Visibility
-
-    OBJLElement *pOLE;
-
-    SetPath( _T ( "/Settings/ObjectFilter" ) );
-
-    if( ps52plib ) {
-        int iOBJMax = GetNumberOfEntries();
-        if( iOBJMax ) {
-
-            wxString str;
-            long val;
-            long dummy;
-
-            wxString sObj;
-
-            bool bCont = pConfig->GetFirstEntry( str, dummy );
-            while( bCont ) {
-                pConfig->Read( str, &val );              // Get an Object Viz
-
-                bool bNeedNew = true;
-
-                if( str.StartsWith( _T ( "viz" ), &sObj ) ) {
-                    for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
-                        pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
-                        if( !strncmp( pOLE->OBJLName, sObj.mb_str(), 6 ) ) {
-                            pOLE->nViz = val;
-                            bNeedNew = false;
-                            break;
-                        }
-                    }
-
-                    if( bNeedNew ) {
-                        pOLE = (OBJLElement *) calloc( sizeof(OBJLElement), 1 );
-                        strncpy( pOLE->OBJLName, sObj.mb_str(), 6 );
-                        pOLE->nViz = 1;
-
-                        ps52plib->pOBJLArray->Add( (void *) pOLE );
-                    }
-                }
-                bCont = pConfig->GetNextEntry( str, dummy );
-            }
-        }
-    }
-#endif
-
 //    Fonts
 
 #ifdef __WXX11__
@@ -1909,42 +1783,37 @@ int MyConfig::LoadMyConfig( int iteration )
     SetPath ( _T ( "/Settings/MacFonts" ) );
 #endif
 
-    if( 0 == iteration ) {
-        wxString str;
-        long dummy;
-        wxString *pval = new wxString;
-        wxArrayString deleteList;
+    wxString str;
+    long dummy;
+    wxString *pval = new wxString;
+    wxArrayString deleteList;
 
-        bool bCont = GetFirstEntry( str, dummy );
-        while( bCont ) {
-            Read( str, pval );
+    bool bCont = GetFirstEntry( str, dummy );
+    while( bCont ) {
+        Read( str, pval );
 
-            if( str.StartsWith( _T("Font") ) ) {
-                // Convert pre 3.1 setting. Can't delete old entries from inside the
-                // GetNextEntry() loop, so we need to save those and delete outside.
-                deleteList.Add( str );
-                wxString oldKey = pval->BeforeFirst( _T(':') );
-                str = FontMgr::GetFontConfigKey( oldKey );
-            }
-
-            if( pval->IsEmpty() || pval->StartsWith(_T(":")) ) {
-                deleteList.Add( str );
-            }
-            else
-                FontMgr::Get().LoadFontNative( &str, pval );
-
-            bCont = GetNextEntry( str, dummy );
+        if( str.StartsWith( _T("Font") ) ) {
+            // Convert pre 3.1 setting. Can't delete old entries from inside the
+            // GetNextEntry() loop, so we need to save those and delete outside.
+            deleteList.Add( str );
+            wxString oldKey = pval->BeforeFirst( _T(':') );
+            str = FontMgr::GetFontConfigKey( oldKey );
         }
 
-        for( unsigned int i=0; i<deleteList.Count(); i++ ) {
-            DeleteEntry( deleteList[i] );
+        if( pval->IsEmpty() || pval->StartsWith(_T(":")) ) {
+            deleteList.Add( str );
         }
-        deleteList.Clear();
-        delete pval;
+        else
+            FontMgr::Get().LoadFontNative( &str, pval );
+
+        bCont = GetNextEntry( str, dummy );
     }
 
-    if( 1 == iteration )
-        FontMgr::Get().ScrubList();
+    for( unsigned int i=0; i<deleteList.Count(); i++ ) {
+        DeleteEntry( deleteList[i] );
+    }
+    deleteList.Clear();
+    delete pval;
 
 //  Tide/Current Data Sources
     SetPath( _T ( "/TideCurrentDataSources" ) );
@@ -1963,16 +1832,13 @@ int MyConfig::LoadMyConfig( int iteration )
 
 
     //    Layers
-    if( 0 == iteration )
-        pLayerList = new LayerList;
+    pLayerList = new LayerList;
 
     //  Routes
-    if( 0 == iteration )
-        pRouteList = new RouteList;
+    pRouteList = new RouteList;
 
     //    Groups
-    if( 0 == iteration )
-        LoadConfigGroups( g_pGroupArray );
+    LoadConfigGroups( g_pGroupArray );
 
     SetPath( _T ( "/Settings/Others" ) );
 
@@ -2028,29 +1894,140 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "CurrentArrowScale" ), &g_current_arrow_scale, 100 );
     Read( _T ( "DefaultWPIcon" ), &g_default_wp_icon, _T("triangle") );
 
-    if(0 == iteration){
-        SetPath( _T ( "/MMSIProperties" ) );
-        int iPMax = GetNumberOfEntries();
-        if( iPMax ) {
-            g_MMSI_Props_Array.Empty();
-            wxString str, val;
-            long dummy;
-            int iDir = 0;
-            bool bCont = pConfig->GetFirstEntry( str, dummy );
-            while( bCont ) {
-                pConfig->Read( str, &val );              // Get an entry
+    SetPath( _T ( "/MMSIProperties" ) );
+    int iPMax = GetNumberOfEntries();
+    if( iPMax ) {
+        g_MMSI_Props_Array.Empty();
+        wxString str, val;
+        long dummy;
+        int iDir = 0;
+        bool bCont = pConfig->GetFirstEntry( str, dummy );
+        while( bCont ) {
+            pConfig->Read( str, &val );              // Get an entry
 
-                MMSIProperties *pProps = new MMSIProperties( val );
-                g_MMSI_Props_Array.Add(pProps);
+            MMSIProperties *pProps = new MMSIProperties( val );
+            g_MMSI_Props_Array.Add(pProps);
 
-                bCont = pConfig->GetNextEntry( str, dummy );
+            bCont = pConfig->GetNextEntry( str, dummy );
 
-            }
         }
     }
 
-
     return ( 0 );
+}
+
+void MyConfig::LoadS57Config()
+{
+#ifdef USE_S57
+    if( !ps52plib )
+        return;
+
+    int read_int;
+    double dval;
+    SetPath( _T ( "/Settings/GlobalState" ) );
+
+    Read( _T ( "bShowS57Text" ), &read_int, 0 );
+    ps52plib->SetShowS57Text( !( read_int == 0 ) );
+
+    Read( _T ( "bShowS57ImportantTextOnly" ), &read_int, 0 );
+    ps52plib->SetShowS57ImportantTextOnly( !( read_int == 0 ) );
+
+    Read( _T ( "bShowLightDescription" ), &read_int, 0 );
+    ps52plib->SetShowLdisText( !( read_int == 0 ) );
+
+    Read( _T ( "bExtendLightSectors" ), &read_int, 0 );
+    ps52plib->SetExtendLightSectors( !( read_int == 0 ) );
+
+    Read( _T ( "nDisplayCategory" ), &read_int, (enum _DisCat) STANDARD );
+    ps52plib->SetDisplayCategory((enum _DisCat) read_int );
+
+    Read( _T ( "nSymbolStyle" ), &read_int, (enum _LUPname) PAPER_CHART );
+    ps52plib->m_nSymbolStyle = (LUPname) read_int;
+
+    Read( _T ( "nBoundaryStyle" ), &read_int, PLAIN_BOUNDARIES );
+    ps52plib->m_nBoundaryStyle = (LUPname) read_int;
+
+    Read( _T ( "bShowSoundg" ), &read_int, 0 );
+    ps52plib->m_bShowSoundg = !( read_int == 0 );
+
+    Read( _T ( "bShowMeta" ), &read_int, 0 );
+    ps52plib->m_bShowMeta = !( read_int == 0 );
+
+    Read( _T ( "bUseSCAMIN" ), &read_int, 0 );
+    ps52plib->m_bUseSCAMIN = !( read_int == 0 );
+
+    Read( _T ( "bShowAtonText" ), &read_int, 0 );
+    ps52plib->m_bShowAtonText = !( read_int == 0 );
+
+    Read( _T ( "bDeClutterText" ), &read_int, 0 );
+    ps52plib->m_bDeClutterText = !( read_int == 0 );
+
+    Read( _T ( "bShowNationalText" ), &read_int, 0 );
+    ps52plib->m_bShowNationalTexts = !( read_int == 0 );
+
+    if( Read( _T ( "S52_MAR_SAFETY_CONTOUR" ), &dval, 5.0 ) ) {
+        S52_setMarinerParam( S52_MAR_SAFETY_CONTOUR, dval );
+        S52_setMarinerParam( S52_MAR_SAFETY_DEPTH, dval ); // Set safety_contour and safety_depth the same
+    }
+
+    if( Read( _T ( "S52_MAR_SHALLOW_CONTOUR" ), &dval, 3.0 ) ) S52_setMarinerParam(
+        S52_MAR_SHALLOW_CONTOUR, dval );
+
+    if( Read( _T ( "S52_MAR_DEEP_CONTOUR" ), &dval, 10.0 ) ) S52_setMarinerParam(
+        S52_MAR_DEEP_CONTOUR, dval );
+
+    if( Read( _T ( "S52_MAR_TWO_SHADES" ), &dval, 0.0 ) ) S52_setMarinerParam(
+        S52_MAR_TWO_SHADES, dval );
+
+    ps52plib->UpdateMarinerParams();
+
+    SetPath( _T ( "/Settings/GlobalState" ) );
+    Read( _T ( "S52_DEPTH_UNIT_SHOW" ), &read_int, 1 );   // default is metres
+    ps52plib->m_nDepthUnitDisplay = read_int;
+
+//    S57 Object Class Visibility
+
+    OBJLElement *pOLE;
+
+    SetPath( _T ( "/Settings/ObjectFilter" ) );
+
+    int iOBJMax = GetNumberOfEntries();
+    if( iOBJMax ) {
+
+        wxString str;
+        long val;
+        long dummy;
+
+        wxString sObj;
+
+        bool bCont = pConfig->GetFirstEntry( str, dummy );
+        while( bCont ) {
+            pConfig->Read( str, &val );              // Get an Object Viz
+
+            bool bNeedNew = true;
+
+            if( str.StartsWith( _T ( "viz" ), &sObj ) ) {
+                for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
+                    pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
+                    if( !strncmp( pOLE->OBJLName, sObj.mb_str(), 6 ) ) {
+                        pOLE->nViz = val;
+                        bNeedNew = false;
+                        break;
+                    }
+                }
+
+                if( bNeedNew ) {
+                    pOLE = (OBJLElement *) calloc( sizeof(OBJLElement), 1 );
+                    strncpy( pOLE->OBJLName, sObj.mb_str(), 6 );
+                    pOLE->nViz = 1;
+
+                    ps52plib->pOBJLArray->Add( (void *) pOLE );
+                }
+            }
+            bCont = pConfig->GetNextEntry( str, dummy );
+        }
+    }
+#endif
 }
 
 void MyConfig::LoadNavObjects()
