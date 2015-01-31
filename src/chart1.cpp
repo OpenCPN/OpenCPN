@@ -2834,7 +2834,9 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
         }
     }
 
+#ifdef USE_S57
     if( ps52plib ) ps52plib->SetPLIBColorScheme( SchemeName );
+#endif
 
     //    Set up a pointer to the proper hash table
     pcurrent_user_color_hash = (wxColorHashMap *) UserColourHashTableArray->Item(
