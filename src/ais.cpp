@@ -130,7 +130,7 @@ WX_DEFINE_LIST(AISTargetTrackList);
 
 wxString ais_get_status(int index)
 {
-	static const wxString ais_status[] = {
+    static const wxString ais_status[] = {
         _("Underway"),
         _("At Anchor"),
         _("Not Under Command"),
@@ -153,9 +153,9 @@ wxString ais_get_status(int index)
         _("Real"),
         _("Real (On Position)"),
         _("Real(Off Position)")
-	};
+    };
 
-	return ais_status[index];
+    return ais_status[index];
 }
 
 wxString ais_get_type(int index)
@@ -583,37 +583,112 @@ static void TargetFrame( ocpnDC &dc, wxPen pen, int x, int y, int radius )
     dc.SetPen( pen_save );
 }
 
-static void AtoN_Diamond( ocpnDC &dc, wxPen pen, int x, int y, int radius, bool b_virtual )
-{
-    //    Constants?
-    int gap2 = 2 * radius / 8;
-    int pen_width = pen.GetWidth();
-
+static void Draw_Triangle_PointUp( ocpnDC &dc, int x, int y, int base)
+	{
+		dc.DrawLine( x - base, y , x + base, y  );
+		dc.DrawLine( x + base, y , x , y - base );
+		dc.DrawLine( x , y - base, x - base, y );
+	}
+static void Draw_Triangle_PointDown( ocpnDC &dc, int x, int y, int base)
+	{
+		dc.DrawLine( x , y , x + base, y - base );
+		dc.DrawLine( x + base, y - base , x - base, y - base );
+		dc.DrawLine( x - base, y - base, x , y );
+	}
+static void AtoN_Diamond( ocpnDC &dc, int x, int y, int radius, AIS_Target_Data* td )
+{    
+	//    Constants?
     wxPen pen_save = dc.GetPen();
 
-    dc.SetPen( pen );   // draw diamond
-
+    int rad1 = radius / 2; //size off topmarks of AtoN
+    int rad2 = radius / 4;
+    int rad3 = rad1 - 1;// slightly smaller size off topmarks to look better for the eye
+    
+    //Draw a thicker solid white line first, in order to get a small white border around the final line
+    wxPen whiteline = dc.GetPen();
+    whiteline = wxPen( GetGlobalColor( _T ( "UWHIT" ) ), 4 );
+    dc.SetPen(whiteline);
     dc.DrawLine( x - radius, y, x, y + radius );
     dc.DrawLine( x, y + radius, x + radius, y );
     dc.DrawLine( x + radius, y, x, y - radius );
     dc.DrawLine( x, y - radius, x - radius, y );
+    
+    if( ( td->NavStatus == ATON_VIRTUAL_OFFPOSITION ) || ( td->NavStatus == ATON_REAL_OFFPOSITION ) )
+    wxPen aton_pen = wxPen( GetGlobalColor( _T ( "URED" ) ), 2 );
+    else
+    aton_pen = wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 2 );
 
-    if( pen_width > 1 ) {
-        pen_width -= 1;
-        pen.SetWidth( pen_width );
-        dc.SetPen( pen );
-    }    // draw cross inside
+    bool b_virt = ( td->NavStatus == ATON_VIRTUAL )
+          | ( td->NavStatus == ATON_VIRTUAL_ONPOSITION )
+          | ( td->NavStatus == ATON_VIRTUAL_OFFPOSITION );
 
-    dc.DrawLine( x - gap2, y, x + gap2, y );
-    dc.DrawLine( x, y - gap2, x, y + gap2 );
+    if( b_virt ) 
+        aton_pen.SetStyle(wxSHORT_DASH );
+      
+    // draw diamond
+    dc.SetPen( aton_pen );   // draw diamond
+    dc.DrawLine( x - radius, y, x, y + radius );
+    dc.DrawLine( x, y + radius, x + radius, y );
+    dc.DrawLine( x + radius, y, x, y - radius );
+    dc.DrawLine( x, y - radius, x - radius, y );
+    aton_pen.SetStyle(wxSOLID );
 
-    if( b_virtual ) {
-        dc.DrawLine( x - gap2 - 3, y - 1, x, y + gap2 + 5 );
-        dc.DrawLine( x, y + gap2 + 5, x + gap2 + 4, y - 2 );
+    aton_pen.SetWidth( 1 );
+
+    dc.SetPen( aton_pen );
+    // draw cross inside
+    dc.DrawLine( x - rad2, y, x + rad2, y );
+    dc.DrawLine( x, y - rad2, x, y + rad2 );
+
+    switch (td->ShipType ) {
+        case 9 :
+        case 20://Card. N
+            Draw_Triangle_PointUp( dc, x, y-radius, rad1);
+            Draw_Triangle_PointUp( dc, x, y-radius-rad1-1, rad1);
+            break; 
+        case 10:
+        case 21: //Card E
+            Draw_Triangle_PointDown( dc, x, y-radius, rad1);
+            Draw_Triangle_PointUp( dc, x, y-radius-rad1-1, rad1);
+            break;
+        case 11:
+        case 22: //Card S
+            Draw_Triangle_PointDown( dc, x, y-radius, rad1);
+            Draw_Triangle_PointDown( dc, x, y-radius-rad1-1, rad1);
+            break;
+        case 12:
+        case 23:
+            Draw_Triangle_PointUp( dc, x, y-radius, rad1);
+            Draw_Triangle_PointDown( dc, x, y-radius-rad1-1, rad1);
+            break;
+        case 13: //PortHand Beacon IALA-A
+        case 24: //StarboardHand Beacon IALA-B
+            dc.DrawRectangle (x - rad3, y - radius, rad3+rad3, -rad3-rad3);
+            break;
+        case 14: //StarboardHand Beacon IALA-A
+        case 25: //PortHand Beacon IALA-B
+            Draw_Triangle_PointUp( dc, x, y-radius, rad1);
+            break;
+        case 17: 
+        case 28: //Isolated danger
+            dc.DrawCircle(x, y-radius-rad3, rad3);
+            dc.DrawCircle(x, y-radius-3*rad3-1, rad3);
+            break;
+        case 18: 
+        case 29: //Safe water
+            dc.DrawCircle(x, y-radius-rad3, rad3);
+            break;
+        case 19: 
+        case 30: //Special Mark
+            dc.DrawLine( x - rad1, y - radius, x + rad1, y - radius -rad1 -rad1 );
+            dc.DrawLine( x + rad1, y - radius, x - rad1, y - radius -rad1 -rad1 );
+            break;
+        default:
+        break;    
     }
-
     dc.SetPen( pen_save );
 }
+
 
 static void Base_Square( ocpnDC &dc, wxPen pen, int x, int y, int radius )
 {
@@ -855,7 +930,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         //and....
         if( !td->b_nameValid )
             target_brush = wxBrush( GetGlobalColor( _T ( "CHYLW" ) ) );
-        if( ( td->Class == AIS_DSC ) && ( td->ShipType == 12 ) )					// distress
+        if( ( td->Class == AIS_DSC ) && ( td->ShipType == 12 ) )                    // distress
             target_brush = wxBrush( GetGlobalColor( _T ( "URED" ) ) );
         if( td->b_SarAircraftPosnReport )
             target_brush = wxBrush( GetGlobalColor( _T ( "UINFG" ) ) );
@@ -1029,17 +1104,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                 dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 1 ) );
             }
         } else if( td->Class == AIS_ATON ) {                   // Aid to Navigation
-            wxPen aton_pen;
-            if( ( td->NavStatus == ATON_VIRTUAL_OFFPOSITION ) || ( td->NavStatus == ATON_REAL_OFFPOSITION ) )
-                aton_pen = wxPen( GetGlobalColor( _T ( "URED" ) ), 2 );
-            else
-                aton_pen = wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 2 );
-
-            bool b_virt = ( td->NavStatus == ATON_VIRTUAL )
-                          | ( td->NavStatus == ATON_VIRTUAL_ONPOSITION )
-                          | ( td->NavStatus == ATON_VIRTUAL_OFFPOSITION );
-
-            AtoN_Diamond( dc, aton_pen, TargetPoint.x, TargetPoint.y, 12, b_virt );
+            AtoN_Diamond( dc, TargetPoint.x, TargetPoint.y, 12, td );
         } else if( td->Class == AIS_BASE ) {                      // Base Station
             Base_Square( dc, wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 2 ), TargetPoint.x,
                          TargetPoint.y, 8 );
