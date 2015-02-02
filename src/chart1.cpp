@@ -2443,7 +2443,7 @@ extern ocpnGLOptions g_GLOptions;
     cc1->SetFocus();
 
     // Perform delayed initialization after 50 milliseconds
-    gFrame->InitTimer.Start( 50, wxTIMER_ONE_SHOT );
+    gFrame->InitTimer.Start( 50, wxTIMER_CONTINUOUS );
 
     wxLogMessage( wxString::Format(_("OpenCPN Initialized in %ld ms."), sw.Time() ) );
     
@@ -2652,6 +2652,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
 
     //      Redirect the initialization timer to this frame
     InitTimer.SetOwner( this, INIT_TIMER );
+    m_iInitCount = 0;
     
     //      Redirect the global heartbeat timer to this frame
     FrameTimer1.SetOwner( this, FRAME_TIMER_1 );
@@ -5716,56 +5717,70 @@ void MyFrame::DoStackDelta( int direction )
 // and takes a while to initialize.  This gets opencpn up and running much faster.
 void MyFrame::OnInitTimer(wxTimerEvent& event)
 {
-    // Load the waypoints.. both of these routines are very slow to execute which is why
-    // they have been to defered until here
-    pWayPointMan = new WayPointman();
-    pConfig->LoadNavObjects();
+    switch(m_iInitCount++) {
+    case 0:
+        // Load the waypoints.. both of these routines are very slow to execute which is why
+        // they have been to defered until here
+        pWayPointMan = new WayPointman();
+        pConfig->LoadNavObjects();
+        break;
 
-    // Connect Datastreams
-    for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
-    {
-        ConnectionParams *cp = g_pConnectionParams->Item(i);
-        if( cp->bEnabled ) {
+    case 1:
+        // Connect Datastreams
+        for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+        {
+            ConnectionParams *cp = g_pConnectionParams->Item(i);
+            if( cp->bEnabled ) {
 
 #ifdef __WXGTK__
-            if( cp->GetDSPort().Contains(_T("Serial"))) {
-                if( ! g_bserial_access_checked ){
-                    if( !CheckSerialAccess() ){
+                if( cp->GetDSPort().Contains(_T("Serial"))) {
+                    if( ! g_bserial_access_checked ){
+                        if( !CheckSerialAccess() ){
+                        }
+                        g_bserial_access_checked = true;
                     }
-                    g_bserial_access_checked = true;
                 }
-            }
 #endif
 
-            dsPortType port_type = cp->IOSelect;
-            DataStream *dstr = new DataStream( g_pMUX,
-                                           cp->GetDSPort(),
-                                           wxString::Format(wxT("%i"),cp->Baudrate),
-                                           port_type,
-                                           cp->Priority,
-                                           cp->Garmin
-                                         );
-            dstr->SetInputFilter(cp->InputSentenceList);
-            dstr->SetInputFilterType(cp->InputSentenceListType);
-            dstr->SetOutputFilter(cp->OutputSentenceList);
-            dstr->SetOutputFilterType(cp->OutputSentenceListType);
-            dstr->SetChecksumCheck(cp->ChecksumCheck);
+                dsPortType port_type = cp->IOSelect;
+                DataStream *dstr = new DataStream( g_pMUX,
+                                                   cp->GetDSPort(),
+                                                   wxString::Format(wxT("%i"),cp->Baudrate),
+                                                   port_type,
+                                                   cp->Priority,
+                                                   cp->Garmin
+                    );
+                dstr->SetInputFilter(cp->InputSentenceList);
+                dstr->SetInputFilterType(cp->InputSentenceListType);
+                dstr->SetOutputFilter(cp->OutputSentenceList);
+                dstr->SetOutputFilterType(cp->OutputSentenceListType);
+                dstr->SetChecksumCheck(cp->ChecksumCheck);
 
-            cp->b_IsSetup = true;
+                cp->b_IsSetup = true;
 
-            g_pMUX->AddStream(dstr);
+                g_pMUX->AddStream(dstr);
+            }
         }
+
+        console = new ConsoleCanvas( gFrame );                    // the console
+        console->SetColorScheme( global_color_scheme );
+        break;
+
+    default:
+        g_pi_manager->LoadAllPlugIns( g_Plugin_Dir, true, false );
+
+        RequestNewToolbar();
+
+        //   Notify all the AUI PlugIns so that they may syncronize with the Perspective
+        g_pi_manager->NotifyAuiPlugIns();
+        g_pi_manager->ShowDeferredBlacklistMessages(); //  Give the use dialog on any blacklisted PlugIns
+        g_pi_manager->CallLateInit();
+
+        InitTimer.Stop(); // Initialization complete
     }
 
-    console = new ConsoleCanvas( gFrame );                    // the console
-    console->SetColorScheme( global_color_scheme );
-
-    g_pi_manager->LoadAllPlugIns( g_Plugin_Dir, true, false );
-
-    //   Notify all the AUI PlugIns so that they may syncronize with the Perspective
-    g_pi_manager->NotifyAuiPlugIns();
-    g_pi_manager->ShowDeferredBlacklistMessages(); //  Give the use dialog on any blacklisted PlugIns
-    g_pi_manager->CallLateInit();
+    cc1->InvalidateGL();
+    Refresh();
 }
 
 //    Manage the application memory footprint on a periodic schedule

@@ -9866,6 +9866,9 @@ void ChartCanvas::DrawAllWaypointsInBBox( ocpnDC& dc, LLBBox& BltBBox, const wxR
         wxDCClipper( *pdc, clipregion );
     }
 
+    if(!pWayPointMan)
+        return;
+
     wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
 
     while( node ) {

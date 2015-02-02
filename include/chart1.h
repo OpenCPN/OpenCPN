@@ -420,6 +420,8 @@ class MyFrame: public wxFrame
     bool                m_bTimeIsSet;
 
     wxTimer             InitTimer;
+    int                 m_iInitCount;
+
     wxTimer             FrameTCTimer;
     wxTimer             FrameTimer1;
     wxTimer             FrameCOGTimer;
