@@ -1164,9 +1164,9 @@ void LoadS57()
                 if( !strncmp( pOLE->OBJLName, "LNDARE", 6 ) ) pOLE->nViz = 1;
                 if( !strncmp( pOLE->OBJLName, "COALNE", 6 ) ) pOLE->nViz = 1;
             }
-
-            pConfig->LoadS57Config();
         }
+
+        pConfig->LoadS57Config();
     } else {
         wxLogMessage( _T("   S52PLIB Initialization failed, disabling Vector charts.") );
         delete ps52plib;
