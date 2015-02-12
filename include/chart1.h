@@ -31,6 +31,7 @@
 #include <wx/cmdline.h>
 #include <wx/snglinst.h>
 #include <wx/power.h>
+#include <wx/clrpicker.h>
 
 #ifdef __WXMSW__
 #include "wx/msw/private.h"

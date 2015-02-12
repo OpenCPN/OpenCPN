@@ -207,6 +207,10 @@ extern int              g_S57_dialog_sx, g_S57_dialog_sy;
 extern int              g_iNavAidRadarRingsNumberVisible;
 extern float            g_fNavAidRadarRingsStep;
 extern int              g_pNavAidRadarRingsStepUnits;
+extern int              g_iWaypointRangeRingsNumber;
+extern float            g_fWaypointRangeRingsStep;
+extern int              g_iWaypointRangeRingsStepUnits;
+extern wxColour         g_colourWaypointRangeRingsColour;
 extern bool             g_bWayPointPreventDragging;
 extern bool             g_bConfirmObjectDelete;
 
@@ -2035,6 +2039,23 @@ int MyConfig::LoadMyConfig( int iteration )
     g_pNavAidRadarRingsStepUnits = 0;
     Read( _T ( "RadarRingsStepUnits" ), &g_pNavAidRadarRingsStepUnits );
 
+    // Waypoint Radar rings
+    g_iWaypointRangeRingsNumber = 0;
+    Read( _T ( "WaypointRangeRingsNumber" ), &val );
+    if( val.Length() > 0 ) g_iWaypointRangeRingsNumber = atoi( val.mb_str() );
+
+    g_fWaypointRangeRingsStep = 1.0;
+    Read( _T ( "WaypointRangeRingsStep" ), &val );
+    if( val.Length() > 0 ) g_fWaypointRangeRingsStep = atof( val.mb_str() );
+
+    g_iWaypointRangeRingsStepUnits = 0;
+    Read( _T ( "WaypointRangeRingsStepUnits" ), &g_iWaypointRangeRingsStepUnits );
+    
+    g_colourWaypointRangeRingsColour = wxColour( *wxRED );
+    wxString l_wxsWaypointRangeRingsColour;
+    Read( _T( "WaypointRangeRingsColour" ), &l_wxsWaypointRangeRingsColour );
+    g_colourWaypointRangeRingsColour.Set( l_wxsWaypointRangeRingsColour );
+
     //  Support Version 3.0 and prior config setting for Radar Rings
     bool b300RadarRings= true;
     Read ( _T ( "ShowRadarRings" ), &b300RadarRings );
@@ -2805,6 +2826,12 @@ void MyConfig::UpdateSettings()
     Write( _T ( "RadarRingsNumberVisible" ), g_iNavAidRadarRingsNumberVisible );
     Write( _T ( "RadarRingsStep" ), g_fNavAidRadarRingsStep );
     Write( _T ( "RadarRingsStepUnits" ), g_pNavAidRadarRingsStepUnits );
+
+    // Waypoint Radar rings
+    Write( _T ( "WaypointRangeRingsNumber" ), g_iWaypointRangeRingsNumber );
+    Write( _T ( "WaypointRangeRingsStep" ), g_fWaypointRangeRingsStep );
+    Write( _T ( "WaypointRangeRingsStepUnits" ), g_iWaypointRangeRingsStepUnits );
+    Write( _T ( "WaypointRangeRingsColour" ), g_colourWaypointRangeRingsColour.GetAsString( wxC2S_HTML_SYNTAX ) );
 
     Write( _T ( "ConfirmObjectDeletion" ), g_bConfirmObjectDelete );
 

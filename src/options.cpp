@@ -39,6 +39,7 @@
 #include <wx/display.h>
 #include <wx/choice.h>
 #include <wx/dirdlg.h>
+#include <wx/clrpicker.h>
 #if wxCHECK_VERSION(2,9,4) /* does this work in 2.8 too.. do we need a test? */
 #include <wx/renderer.h>
 #endif
@@ -138,6 +139,10 @@ extern bool             g_bWplIsAprsPosition;
 extern int              g_iNavAidRadarRingsNumberVisible;
 extern float            g_fNavAidRadarRingsStep;
 extern int              g_pNavAidRadarRingsStepUnits;
+extern int              g_iWaypointRangeRingsNumber;
+extern float            g_fWaypointRangeRingsStep;
+extern int              g_iWaypointRangeRingsStepUnits;
+extern wxColour         g_colourWaypointRangeRingsColour;
 extern bool             g_bWayPointPreventDragging;
 
 extern bool             g_bPreserveScaleOnX;
@@ -824,6 +829,7 @@ BEGIN_EVENT_TABLE( options, wxDialog )
     EVT_CHECKBOX( ID_ZTCCHECKBOX, options::OnZTCCheckboxClick )
     EVT_CHOICE( ID_SHIPICONTYPE, options::OnShipTypeSelect )
     EVT_CHOICE( ID_RADARRINGS, options::OnRadarringSelect )
+    EVT_CHOICE( ID_WAYPOINTRANGERINGS, options::OnWaypointRangeRingSelect )
     EVT_CHAR_HOOK( options::OnCharHook )
 END_EVENT_TABLE()
 
@@ -1632,7 +1638,48 @@ void options::CreatePanel_Ownship( size_t parent, int border_size, int group_ite
     pSailing = new wxCheckBox( itemPanelShip, ID_DAILYCHECKBOX, _("Advance route waypoint on arrival only") );
     routeSizer->Add( pSailing, 0 );
     
+    //  Waypoints
+    wxStaticBox* waypointText = new wxStaticBox( itemPanelShip, wxID_ANY, _("Waypoints") );
+    wxStaticBoxSizer* waypointSizer = new wxStaticBoxSizer( waypointText, wxVERTICAL );
+    ownShip->Add( waypointSizer, 0, wxTOP | wxALL | wxEXPAND, border_size );
     
+    wxFlexGridSizer* dispWaypointOptionsGrid = new wxFlexGridSizer( 2, 2, group_item_spacing, group_item_spacing );
+    dispWaypointOptionsGrid->AddGrowableCol( 1 );
+    
+    wxFlexGridSizer* waypointrrSelect = new wxFlexGridSizer( 1, 2, group_item_spacing, group_item_spacing );
+    waypointrrSelect->AddGrowableCol( 1 );
+    waypointSizer->Add( waypointrrSelect, 0, wxLEFT|wxRIGHT | wxEXPAND, border_size );
+
+    wxStaticText *waypointrrTxt = new wxStaticText( itemPanelShip, wxID_ANY, _("Waypoint range rings") );
+    waypointrrSelect->Add( waypointrrTxt, 1, wxEXPAND | wxALL, group_item_spacing );
+
+    pWaypointRangeRingsNumber = new wxChoice( itemPanelShip, ID_WAYPOINTRANGERINGS, wxDefaultPosition, m_pShipIconType->GetSize(), 11, rrAlt );
+    waypointrrSelect->Add( pWaypointRangeRingsNumber, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
+
+    waypointradarGrid = new wxFlexGridSizer( 2, 2, group_item_spacing, group_item_spacing );
+    waypointradarGrid->AddGrowableCol( 1 );
+    waypointSizer->Add( waypointradarGrid, 0, wxLEFT | wxEXPAND, 30 );
+
+    wxStaticText* waypointdistanceText = new wxStaticText( itemPanelShip, wxID_STATIC, _("Distance Between Waypoint Rings") );
+    waypointradarGrid->Add( waypointdistanceText, 1, wxEXPAND | wxALL, group_item_spacing );
+
+    pWaypointRangeRingsStep = new wxTextCtrl( itemPanelShip, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize( 100, -1 ), 0 );
+    waypointradarGrid->Add( pWaypointRangeRingsStep, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
+
+    wxStaticText* waypointunitText = new wxStaticText( itemPanelShip, wxID_STATIC, _("Distance Unit") );
+    waypointradarGrid->Add( waypointunitText, 1, wxEXPAND | wxALL, group_item_spacing );
+
+    m_itemWaypointRangeRingsUnits = new wxChoice( itemPanelShip, ID_RADARDISTUNIT, wxDefaultPosition, m_pShipIconType->GetSize(), 2, pDistUnitsStrings );
+    waypointradarGrid->Add( m_itemWaypointRangeRingsUnits, 0, wxALIGN_RIGHT | wxALL, border_size );
+
+    wxStaticText* waypointrangeringsColour = new wxStaticText( itemPanelShip, wxID_STATIC, _("Waypoint Range Ring Colours") );
+    waypointradarGrid->Add( waypointrangeringsColour, 1, wxEXPAND | wxALL, 1 );
+    
+    m_colourWaypointRangeRingsColour = new wxColourPickerCtrl( itemPanelShip, wxID_ANY, *wxRED, wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_COLOURWAYPOINTRANGERINGSCOLOUR") );
+    waypointradarGrid->Add( m_colourWaypointRangeRingsColour, 0, wxALIGN_RIGHT | wxALL, 1);
+
+
+   
     DimeControl( itemPanelShip );
 }
 
@@ -2961,6 +3008,14 @@ void options::SetInitialSettings()
     m_itemRadarRingsUnits->SetSelection( g_pNavAidRadarRingsStepUnits );
     OnRadarringSelect( eDummy );
 
+    if( g_iWaypointRangeRingsNumber > 10 ) g_iWaypointRangeRingsNumber = 10;
+    pWaypointRangeRingsNumber->SetSelection( g_iWaypointRangeRingsNumber );
+    buf.Printf( _T("%.3f"), g_fWaypointRangeRingsStep );
+    pWaypointRangeRingsStep->SetValue( buf );
+    m_itemWaypointRangeRingsUnits->SetSelection( g_iWaypointRangeRingsStepUnits );
+    m_colourWaypointRangeRingsColour->SetColour( g_colourWaypointRangeRingsColour );
+    OnWaypointRangeRingSelect( eDummy );
+
     pWayPointPreventDragging->SetValue( g_bWayPointPreventDragging );
     pConfirmObjectDeletion->SetValue( g_bConfirmObjectDelete );
 
@@ -3271,6 +3326,20 @@ void options::OnRadarringSelect( wxCommandEvent& event )
         radarGrid->ShowItems( false );
     } else {
         radarGrid->ShowItems( true );
+    }
+    dispOptions->Layout();
+    ownShip->Layout();
+    itemPanelShip->Layout();
+    itemPanelShip->Refresh();
+    event.Skip();
+}
+
+void options::OnWaypointRangeRingSelect( wxCommandEvent& event )
+{
+    if( pWaypointRangeRingsNumber->GetSelection() == 0 ) {
+        waypointradarGrid->ShowItems( false );
+    } else {
+        waypointradarGrid->ShowItems( true );
     }
     dispOptions->Layout();
     ownShip->Layout();
@@ -3846,6 +3915,10 @@ void options::OnApplyClick( wxCommandEvent& event )
     g_iNavAidRadarRingsNumberVisible = pNavAidRadarRingsNumberVisible->GetSelection();
     g_fNavAidRadarRingsStep = atof( pNavAidRadarRingsStep->GetValue().mb_str() );
     g_pNavAidRadarRingsStepUnits = m_itemRadarRingsUnits->GetSelection();
+    g_iWaypointRangeRingsNumber = pWaypointRangeRingsNumber->GetSelection();
+    g_fWaypointRangeRingsStep = atof( pWaypointRangeRingsStep->GetValue().mb_str() );
+    g_iWaypointRangeRingsStepUnits = m_itemWaypointRangeRingsUnits->GetSelection();
+    g_colourWaypointRangeRingsColour = m_colourWaypointRangeRingsColour->GetColour();
     g_bWayPointPreventDragging = pWayPointPreventDragging->GetValue();
     g_bConfirmObjectDelete = pConfirmObjectDeletion->GetValue();
 
