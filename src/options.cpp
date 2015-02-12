@@ -171,7 +171,7 @@ extern int              g_iSDMMFormat;
 extern int              g_iDistanceFormat;
 extern int              g_iSpeedFormat;
 
-extern bool             g_bSailing;
+extern bool             g_bAdvanceRouteWaypointOnArrivalOnly;
 
 extern int              g_cm93_zoom_factor;
 
@@ -1646,8 +1646,8 @@ void options::CreatePanel_Ownship( size_t parent, int border_size, int group_ite
     m_pText_ACRadius = new wxTextCtrl( itemPanelShip, -1 );
     pRouteGrid->Add( m_pText_ACRadius, 0, wxALL | wxALIGN_RIGHT, group_item_spacing );
     
-    pSailing = new wxCheckBox( itemPanelShip, ID_DAILYCHECKBOX, _("Advance route waypoint on arrival only") );
-    routeSizer->Add( pSailing, 0 );
+    pAdvanceRouteWaypointOnArrivalOnly = new wxCheckBox( itemPanelShip, ID_DAILYCHECKBOX, _("Advance route waypoint on arrival only") );
+    routeSizer->Add( pAdvanceRouteWaypointOnArrivalOnly, 0 );
     
     //  Waypoints
     wxStaticBox* waypointText = new wxStaticBox( itemPanelShip, wxID_ANY, _("Waypoints") );
@@ -3047,7 +3047,7 @@ void options::SetInitialSettings()
     pDistanceFormat->Select( g_iDistanceFormat );
     pSpeedFormat->Select( g_iSpeedFormat );
     
-    pSailing->SetValue( g_bSailing );
+    pAdvanceRouteWaypointOnArrivalOnly->SetValue( g_bAdvanceRouteWaypointOnArrivalOnly );
 
     pTrackDaily->SetValue( g_bTrackDaily );
     pTrackHighlite->SetValue( g_bHighliteTracks );
@@ -3943,7 +3943,7 @@ void options::OnApplyClick( wxCommandEvent& event )
     g_iDistanceFormat = pDistanceFormat->GetSelection();
     g_iSpeedFormat = pSpeedFormat->GetSelection();
     
-    g_bSailing = pSailing->GetValue();
+    g_bAdvanceRouteWaypointOnArrivalOnly = pAdvanceRouteWaypointOnArrivalOnly->GetValue();
 
     g_nTrackPrecision = pTrackPrecision->GetSelection();
 

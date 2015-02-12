@@ -674,8 +674,8 @@ int              g_NMEAAPBPrecision;
 
 wxString         g_TalkerIdText;
 
-bool             g_bSailing;
 bool             g_bEmailCrashReport;
+bool             g_bAdvanceRouteWaypointOnArrivalOnly;
 
 wxArrayString    g_locale_catalog_array;
 
