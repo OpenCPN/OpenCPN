@@ -947,7 +947,7 @@ void options::Init()
     m_pagePlugins = -1;
     m_pageConnections = -1;
     
-    lastPage = -1;
+    lastPage = 0;
     
     m_pPlugInCtrl = NULL;       // for deferred loading
     m_pNMEAForm = NULL;
