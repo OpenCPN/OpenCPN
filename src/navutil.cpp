@@ -350,7 +350,7 @@ extern int              g_NMEAAPBPrecision;
 
 extern wxString         g_TalkerIdText;
 
-extern bool             g_bSailing;
+extern bool             g_bAdvanceRouteWaypointOnArrivalOnly;
 extern double           g_display_size_mm;
 extern double           g_config_display_size_mm;
 extern bool             g_benable_rotate;
@@ -1394,7 +1394,7 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "LegacyInputCOMPortFilterBehaviour" ), &g_b_legacy_input_filter_behaviour, 0 );
     
     // Boolean to cater for sailing when not approaching waypoint
-    Read( _T( "Sailing" ), &g_bSailing, 0);
+    Read( _T( "AdvanceRouteWaypointOnArrivalOnly" ), &g_bAdvanceRouteWaypointOnArrivalOnly, 0);
 
     Read( _T ( "EnableRotateKeys" ),  &g_benable_rotate );
     Read( _T ( "EmailCrashReport" ),  &g_bEmailCrashReport );
@@ -2627,7 +2627,7 @@ void MyConfig::UpdateSettings()
 
     Write( _T ( "KeepNavobjBackups" ), g_navobjbackups );
     Write( _T ( "LegacyInputCOMPortFilterBehaviour" ), g_b_legacy_input_filter_behaviour );
-    Write( _T( "Sailing" ), g_bSailing);
+    Write( _T( "AdvanceRouteWaypointOnArrivalOnly" ), g_bAdvanceRouteWaypointOnArrivalOnly);
     
 //    S57 Object Filter Settings
 
