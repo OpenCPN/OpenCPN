@@ -671,7 +671,6 @@ bool             g_bexpert;
 int              g_chart_zoom_modifier;
 
 int              g_NMEAAPBPrecision;
-int              g_NMEAAPBXTEPrecision;
 
 wxString         g_TalkerIdText;
 
