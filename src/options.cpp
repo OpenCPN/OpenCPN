@@ -2416,7 +2416,7 @@ void options::CreatePanel_Units( size_t parent, int border_size, int group_item_
     pMagVar = new wxTextCtrl( panelUnits, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize(50, -1), wxTE_RIGHT );
     magVarSizer->Add( pMagVar, 0, wxALIGN_CENTRE_VERTICAL, group_item_spacing );
 
-    magVarSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("deg (+W, -E)")),
+    magVarSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("deg (-W, +E)")),
                      0, wxALL | wxALIGN_CENTRE_VERTICAL, group_item_spacing );
 
 }
