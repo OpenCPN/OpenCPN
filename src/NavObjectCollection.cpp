@@ -1152,7 +1152,10 @@ bool NavObjectCollection1::CreateNavObjGPXPoints( void )
     //    Iterate over the Routepoint list, creating Nodes for
     //    Routepoints that are not in any Route
     //    as indicated by m_bIsolatedMark == false
-    
+
+    if(!pWayPointMan)
+        return false;
+
     wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
     
     RoutePoint *pr;

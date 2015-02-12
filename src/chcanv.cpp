@@ -224,8 +224,6 @@ extern double           g_n_gps_antenna_offset_y;
 extern double           g_n_gps_antenna_offset_x;
 extern int              g_n_ownship_min_mm;
 
-extern wxPlatformInfo   *g_pPlatform;
-
 extern bool             g_bUseRaster;
 extern bool             g_bUseVector;
 extern bool             g_bUseCM93;
@@ -1776,7 +1774,6 @@ void ChartCanvas::OnEvtCompressProgress( OCPN_CompressProgressEvent & event )
     pprog->SetSize(pprog_size);
     if(skip)
         b_skipout = skip;
-    
 }
 
 void ChartCanvas::InvalidateGL()
@@ -9869,6 +9866,9 @@ void ChartCanvas::DrawAllWaypointsInBBox( ocpnDC& dc, LLBBox& BltBBox, const wxR
         wxDCClipper( *pdc, clipregion );
     }
 
+    if(!pWayPointMan)
+        return;
+
     wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
 
     while( node ) {
@@ -9892,7 +9892,10 @@ void ChartCanvas::DrawBlinkObjects( void )
 {
     //  All RoutePoints
     wxRect update_rect;
-    
+
+    if(!pWayPointMan)
+        return;
+
     wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
     
     while( node ) {

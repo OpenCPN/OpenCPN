@@ -189,7 +189,9 @@ public:
       MyConfig(const wxString &appName, const wxString &vendorName,
                               const wxString &LocalFileName);
 
-      int LoadMyConfig(int iteration);
+      int LoadMyConfig();
+      void LoadS57Config();
+      void LoadNavObjects();
       virtual bool AddNewRoute(Route *pr, int ConfigRouteNum = -1);
       virtual bool UpdateRoute(Route *pr);
       virtual bool DeleteConfigRoute(Route *pr);
