@@ -50,7 +50,6 @@ GribRequestSetting::GribRequestSetting(GRIBUIDialog &parent )
       m_parent(parent)
 {
     InitRequestConfig();
-    m_sScrolledDialog->SetScrollRate( 0, 5);
 }
 
 void GribRequestSetting::InitRequestConfig()
@@ -153,7 +152,6 @@ void GribRequestSetting::InitRequestConfig()
 
     m_RenderZoneOverlay = 0;
     m_toggleSelection->SetValue( false );
-    m_ScrollYMargin = -1;
 
     ApplyRequestConfig( i, j ,k);
 
@@ -178,22 +176,22 @@ void GribRequestSetting::OnClose( wxCloseEvent& event )
 
 void GribRequestSetting::SetRequestDialogSize()
 {
-    int h, w;
+    int h;
 #ifndef __WXMSW__                   //default resizing do not work properly on no Windows plateforms
     GetTextExtent( _T("abc"), NULL, &h, 0, 0, OCPNGetFont(_("Dialog"), 10) );
     m_MailImage->SetMinSize( wxSize( -1, (h * m_MailImage->GetNumberOfLines()) + 5 ) );
 #endif
     /*default sizing do not work with wxScolledWindow so we need to compute it
-    using a conditional Y margin to stabilise the display width and a fixed X margin to include differents OS bars*/
-    m_ScrollYMargin = m_ScrollYMargin == -1 ? 0 : m_sScrolledDialog->GetScrollLines( wxVERTICAL )? 0 : 20;
-    int ScrollXMargin = 130;
+    using a conditional X margin to stabilise the display width and a fixed Y margin to include different OS bars*/
+    int XMargin = m_sScrolledDialog->GetScrollLines( wxVERTICAL )? 0 : 18;
+    int YMargin = 130;
     wxSize scroll = m_fgScrollSizer->Fit(m_sScrolledDialog);                                   // the area size to be scrolled
-    m_fgScrollSizer->Fit( this );
-    ::wxDisplaySize( &w, &h);                                                                  // the screen size
-    h -= m_rButton->GetSize().GetY() + m_fgFixedSizer->GetSize().GetY() + ScrollXMargin;       //height available for the scrolled window
-    m_sScrolledDialog->SetMinSize( wxSize( scroll.GetWidth() + m_ScrollYMargin,                //set scrolled area size with margins
+    ::wxDisplaySize( NULL, &h);                                                                // the screen size
+    h -= m_rButton->GetSize().GetY() + m_fgFixedSizer->GetSize().GetY() + YMargin;             //height available for the scrolled window
+    m_sScrolledDialog->SetMinSize( wxSize( scroll.GetWidth() + XMargin,						   //set scrolled area size with margins
             wxMin(scroll.GetHeight(), h )) );
-    //
+
+	this->Layout();
     this->Fit();
     this->Refresh();
 }

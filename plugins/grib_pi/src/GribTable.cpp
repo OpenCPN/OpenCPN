@@ -365,7 +365,7 @@ wxString GRIBTable::GetWaves(GribRecord **recordarray)
 
             if( recordarray[Idx_WVDIR] ) {
                 double direction = recordarray[Idx_WVDIR]->
-                    getInterpolatedValue(m_pGDialog->m_cursor_lon, m_pGDialog->m_cursor_lat, true );
+                    getInterpolatedValue(m_pGDialog->m_cursor_lon, m_pGDialog->m_cursor_lat, true, true );
                 if( direction != GRIB_NOTDEF ){
                     skn.Prepend(wxString::Format( _T("%03d\u00B0\n\n"), (int)direction ));
                    

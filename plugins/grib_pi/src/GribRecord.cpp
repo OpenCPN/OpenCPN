@@ -30,6 +30,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "GribRecord.h"
 
+// interpolate two angles in range +- 180 or +-PI, with resulting angle in the same range
+static double interp_angle(double a0, double a1, double d, double p)
+{
+    if(a0 - a1 > p) a0 -= 2*p;
+    else if(a1 - a0 > p) a1 -= 2*p;
+    double a = (1-d)*a0 + d*a1;
+    if(a < ( p == 180. ? 0. : -p ) ) a += 2*p;
+    return a;
+}
+
 //-------------------------------------------------------------------------------
 // Adjust data type from different mete center
 //-------------------------------------------------------------------------------
@@ -360,7 +370,7 @@ bool GribRecord::GetInterpolatedParameters
 //-------------------------------------------------------------------------------
 // Constructeur de interpolate
 //-------------------------------------------------------------------------------
-GribRecord * GribRecord::InterpolatedRecord(const GribRecord &rec1, const GribRecord &rec2, double d)
+GribRecord * GribRecord::InterpolatedRecord(const GribRecord &rec1, const GribRecord &rec2, double d, bool dir)
 {
     double La1, Lo1, La2, Lo2, Di, Dj;
     int im1, jm1, im2, jm2;
@@ -370,7 +380,6 @@ GribRecord * GribRecord::InterpolatedRecord(const GribRecord &rec1, const GribRe
                                   Ni, Nj, rec1offi, rec1offj, rec2offi, rec2offj))
         return NULL;
 
-    /* TODO: for wave direction we need a flag else because 360 wraps will mess it up */
     // recopie les champs de bits
     int size = Ni*Nj;
     double *data = new double[size];
@@ -387,8 +396,12 @@ GribRecord * GribRecord::InterpolatedRecord(const GribRecord &rec1, const GribRe
             double data1 = rec1.data[i1], data2 = rec2.data[i2];
             if(data1 == GRIB_NOTDEF || data2 == GRIB_NOTDEF)
                 data[in] = GRIB_NOTDEF;
-            else
-                data[in] = (1-d)*data1 + d*data2;
+            else {
+				if( !dir )
+					data[in] = (1-d)*data1 + d*data2;
+				else
+					data[in] = interp_angle(data1, data2, d, 180.);
+			}
 
             if(BMSbits) {
                 int b1 = rec1.BMSbits[i1>>3] & 1<<(i1&7);
@@ -1123,7 +1136,7 @@ zuint GribRecord::periodSeconds(zuchar unit,zuchar P1,zuchar P2,zuchar range) {
 
 //===============================================================================================
 
-double GribRecord::getInterpolatedValue(double px, double py, bool numericalInterpolation) const
+double GribRecord::getInterpolatedValue(double px, double py, bool numericalInterpolation, bool dir) const
 {
     if (!ok || Di==0 || Dj==0)
         return GRIB_NOTDEF;
@@ -1193,10 +1206,19 @@ double GribRecord::getInterpolatedValue(double px, double py, bool numericalInte
         double x01 = getValue(i0, j1);
         double x10 = getValue(i1, j0);
         double x11 = getValue(i1, j1);
-        double x1 = (1.0-dx)*x00 + dx*x10;
-        double x2 = (1.0-dx)*x01 + dx*x11;
-        return (1.0-dy)*x1 + dy*x2;
+		if( !dir ) {
+			double x1 = (1.0-dx)*x00 + dx*x10;
+			double x2 = (1.0-dx)*x01 + dx*x11;
+			return (1.0-dy)*x1 + dy*x2;
+		} else {
+			double x1 = interp_angle(x00, x01, dx, 180.);
+			double x2 = interp_angle(x10, x11, dx, 180.);
+			return interp_angle(x1, x2, dy, 180.);
+		}
     }
+
+	//interpolation with only three points is too hazardous for angles
+	if( dir ) return GRIB_NOTDEF;
 
     // here nbval==3, check the corner without data
     if (!h00) {
@@ -1245,16 +1267,6 @@ double GribRecord::getInterpolatedValue(double px, double py, bool numericalInte
     // diagonal interpolation
     double k2 = kx / k;
     return  k2*vx + (1-k2)*vy;
-}
-
-// interpolate two angles in range +- PI, with resulting angle in the same range
-static double interp_angle(double a0, double a1, double d)
-{
-    if(a0 - a1 > M_PI) a0 -= 2*M_PI;
-    else if(a1 - a0 > M_PI) a1 -= 2*M_PI;
-    double a = (1-d)*a0 + d*a1;
-    if(a < -M_PI) a += 2*M_PI;
-    return a;
 }
 
 bool GribRecord::getInterpolatedValues(double &M, double &A,
@@ -1345,12 +1357,12 @@ bool GribRecord::getInterpolatedValues(double &M, double &A,
         double x11x = GRX->getValue(i1, j1), x11y = GRY->getValue(i1, j1);
         double x11m = sqrt(x11x*x11x + x11y*x11y), x11a = atan2(x11x, x11y);
 
-        double x0m = (1-dx)*x00m + dx*x10m, x0a = interp_angle(x00a, x10a, dx);
+        double x0m = (1-dx)*x00m + dx*x10m, x0a = interp_angle(x00a, x10a, dx, M_PI);
 
-        double x1m = (1-dx)*x01m + dx*x11m, x1a = interp_angle(x01a, x11a, dx);
+        double x1m = (1-dx)*x01m + dx*x11m, x1a = interp_angle(x01a, x11a, dx, M_PI);
 
         M = (1-dy)*x0m + dy*x1m;
-        A = interp_angle(x0a, x1a, dy);
+        A = interp_angle(x0a, x1a, dy, M_PI);
         A *= 180 / M_PI; // degrees
         A += 180;
 

@@ -75,15 +75,20 @@ struct GribOverlaySettings
         bool m_bBarbedArrows;
         bool m_iBarbedVisibility;
         int m_iBarbedColour;
+		bool m_bBarbArrFixSpac;
+		int m_iBarbArrSpacing;
         bool m_bIsoBars;
         bool m_iIsoBarVisibility;
         double m_iIsoBarSpacing;
         bool m_bDirectionArrows;
         int m_iDirectionArrowForm;
+		bool m_bDirArrFixSpac;
         int m_iDirectionArrowSize;
+		int m_iDirArrSpacing;
         bool m_bOverlayMap;
         int m_iOverlayMapColors;
         bool m_bNumbers;
+		bool m_bNumFixSpac;
         int m_iNumbersSpacing;
         bool m_bParticles;
         double m_dParticleDensity;
@@ -99,6 +104,8 @@ public:
     GribSettingsDialog(GRIBUIDialog &parent, GribOverlaySettings &extSettings, int &lastdatatype, int fileIntervalIndex);
     void WriteSettings();
 
+	void SetSettingsDialogSize();
+
 private:
     void SetDataTypeSettings(int settings);
     void ReadDataTypeSettings(int settings);
@@ -106,9 +113,11 @@ private:
     void ShowFittingSettings (int settings);
     void ShowSettings( int params, bool show = true );
     void OnDataTypeChoice( wxCommandEvent& event );
+	void OnUnitChange( wxCommandEvent& event );
     void OnTransparencyChange( wxScrollEvent& event  );
     void OnApply( wxCommandEvent& event );
     void OnIntepolateChange( wxCommandEvent& event );
+	void OnSpacingModeChange( wxCommandEvent& event );
 
     GRIBUIDialog &m_parent;
 

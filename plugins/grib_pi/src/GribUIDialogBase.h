@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version Jun  6 2014)
+// C++ code generated with wxFormBuilder (version Jun  5 2014)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO "NOT" EDIT THIS FILE!
@@ -30,10 +30,10 @@
 #include <wx/stattext.h>
 #include <wx/dialog.h>
 #include <wx/spinctrl.h>
+#include <wx/scrolwin.h>
 #include <wx/radiobox.h>
 #include <wx/statline.h>
 #include <wx/tglbtn.h>
-#include <wx/scrolwin.h>
 #include <wx/grid.h>
 
 ///////////////////////////////////////////////////////////////////////////
@@ -49,10 +49,16 @@
 #define ID_CB_AIR_TEMP 1008
 #define ID_CB_SEA_TEMP 1009
 #define ID_CB_CAPE 1010
-#define MAXLAT 1011
-#define MAXLON 1012
-#define MINLAT 1013
-#define MINLON 1014
+#define BARBFIXSPACING 1011
+#define BARBMINSPACING 1012
+#define DIRFIXSPACING 1013
+#define DIRMINSPACING 1014
+#define NUMFIXSPACING 1015
+#define NUMMINSPACING 1016
+#define MAXLAT 1017
+#define MAXLON 1018
+#define MINLAT 1019
+#define MINLON 1020
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class GRIBUIDialogBase
@@ -135,8 +141,10 @@ class GRIBUIDialogBase : public wxDialog
 class GribSettingsDialogBase : public wxDialog 
 {
 	private:
+		wxStaticBoxSizer* sbSizer4;
 	
 	protected:
+		wxFlexGridSizer* m_fgScrolledSettingsSizer;
 		wxStaticText* m_staticText26;
 		wxChoice* m_cLoopStartPoint;
 		wxSpinCtrl* m_sUpdatesPerSecond;
@@ -144,21 +152,34 @@ class GribSettingsDialogBase : public wxDialog
 		wxChoice* m_cDataType;
 		wxChoice* m_cDataUnits;
 		wxCheckBox* m_cbBarbedArrows;
+		wxFlexGridSizer* m_fgBarbedData1;
 		wxChoice* m_cBarbedColours;
+		wxCheckBox* m_cBarbArrFixSpac;
+		wxCheckBox* m_cBarbArrMinSpac;
+		wxFlexGridSizer* m_fgBarbedData2;
 		wxCheckBox* m_cBarbedVisibility;
+		wxSpinCtrl* m_sBarbArrSpacing;
 		wxCheckBox* m_cbIsoBars;
 		wxFlexGridSizer* m_fIsoBarSpacing;
+		wxStaticText* m_tIsoBarSpacing;
 		wxSpinCtrl* m_sIsoBarSpacing;
 		wxFlexGridSizer* m_fIsoBarVisibility;
 		wxCheckBox* m_sIsoBarVisibility;
 		wxCheckBox* m_cbDirectionArrows;
+		wxFlexGridSizer* m_fgDirArrData1;
 		wxChoice* m_cDirectionArrowForm;
+		wxCheckBox* m_cDirArrFixSpac;
+		wxCheckBox* m_cDirArrMinSpac;
+		wxFlexGridSizer* m_fgDirArrData2;
 		wxChoice* m_cDirectionArrowSize;
+		wxSpinCtrl* m_sDirArrSpacing;
 		wxCheckBox* m_cbOverlayMap;
 		wxStaticText* m_tOverlayColors;
 		wxChoice* m_cOverlayColors;
 		wxCheckBox* m_cbNumbers;
-		wxStaticText* m_ctNumbers;
+		wxFlexGridSizer* m_fgNumData1;
+		wxCheckBox* m_cNumFixSpac;
+		wxCheckBox* m_cNumMinSpac;
 		wxSpinCtrl* m_sNumbersSpacing;
 		wxCheckBox* m_cbParticles;
 		wxStaticText* m_ctParticles;
@@ -169,11 +190,14 @@ class GribSettingsDialogBase : public wxDialog
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnIntepolateChange( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnDataTypeChoice( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnUnitChange( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnSpacingModeChange( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnTransparencyChange( wxScrollEvent& event ) { event.Skip(); }
 		virtual void OnApply( wxCommandEvent& event ) { event.Skip(); }
 		
 	
 	public:
+		wxScrolledWindow* m_scrolledSettingsDialog;
 		wxCheckBox* m_cLoopMode;
 		wxCheckBox* m_cInterpolate;
 		wxChoice* m_sSlicesPerUpdate;
@@ -282,6 +306,7 @@ class GribRequestSettingBase : public wxDialog
 		virtual void OnClose( wxCloseEvent& event ) { event.Skip(); }
 		virtual void OnTopChange( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnMovingClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnAnyChange( wxSpinEvent& event ) { event.Skip(); }
 		virtual void OnAnyChange( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnTimeRangeChange( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnZoneSelectionModeChange( wxCommandEvent& event ) { event.Skip(); }
