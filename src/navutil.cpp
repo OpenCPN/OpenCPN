@@ -347,7 +347,6 @@ extern ArrayOfMMSIProperties   g_MMSI_Props_Array;
 extern int              g_chart_zoom_modifier;
 
 extern int              g_NMEAAPBPrecision;
-extern int              g_NMEAAPBXTEPrecision;
 
 extern wxString         g_TalkerIdText;
 
@@ -1255,7 +1254,6 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "ActiveChartGroup" ), &g_GroupIndex, 0 );
 
     Read( _T( "NMEAAPBPrecision" ), &g_NMEAAPBPrecision, 3 );
-    Read( _T( "NMEAAPBXTEPrecision" ), &g_NMEAAPBXTEPrecision, 2 );
     
     Read( _T( "TalkerIdText" ), &g_TalkerIdText, _T("EC") );
 
