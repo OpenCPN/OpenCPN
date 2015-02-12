@@ -401,6 +401,8 @@ public:
     wxStaticBoxSizer* sbSizerInFilter;
     wxStaticBoxSizer* sbSizerOutFilter;
     wxCheckBox *m_cbAPBMagnetic;
+    wxStaticText* m_stTalkerIdText;
+    wxTextCtrl* m_TalkerIdText;
 
     SentenceListDlg* m_stcdialog_in;
     SentenceListDlg* m_stcdialog_out;

@@ -94,6 +94,7 @@ extern bool             g_bShowMag;
 extern double           g_UserVar;
 extern int              g_chart_zoom_modifier;
 extern int              g_NMEAAPBPrecision;
+extern wxString         g_TalkerIdText;
 
 extern wxString         *pInit_Chart_Dir;
 extern wxArrayOfConnPrm *g_pConnectionParams;
@@ -1288,6 +1289,14 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
 
     m_cbOutput = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Output on this port ( as Autopilot or NMEA Repeater)"), wxDefaultPosition, wxDefaultSize, 0 );
     fgSizer5->Add( m_cbOutput, 0, wxALL, 5 );
+
+    m_stTalkerIdText = new wxStaticText( m_pNMEAForm, wxID_ANY, _("Talker ID (blank = default ID)"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_stTalkerIdText->Wrap( -1 );
+    fgSizer5->Add( m_stTalkerIdText, 0, wxALL, 5 );
+
+    m_TalkerIdText = new wxTextCtrl( m_pNMEAForm, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize( 50, -1 ), 0 );
+    m_TalkerIdText->SetMaxLength( 2 );
+    fgSizer5->Add( m_TalkerIdText, 0, wxALIGN_LEFT | wxALL, group_item_spacing );
 
     m_stPrecision = new wxStaticText( m_pNMEAForm, wxID_ANY, _("APB bearing precision"), wxDefaultPosition, wxDefaultSize, 0 );
     m_stPrecision->Wrap( -1 );
@@ -3131,6 +3140,8 @@ void options::SetInitialSettings()
     }
     
     pScreenMM->SetValue(screenmm);
+
+     m_TalkerIdText->SetValue( g_TalkerIdText.MakeUpper() );
     
 #ifdef USE_S57
     m_pSlider_CM93_Zoom->SetValue( g_cm93_zoom_factor );
@@ -4000,6 +4011,10 @@ void options::OnApplyClick( wxCommandEvent& event )
     g_bAISRolloverShowCPA = m_pCheck_Rollover_CPA->GetValue();
 
     g_chart_zoom_modifier = m_pSlider_Zoom->GetValue();
+    
+    g_NMEAAPBPrecision = m_choicePrecision->GetCurrentSelection();
+    
+    g_TalkerIdText = m_TalkerIdText->GetValue().MakeUpper();
     
 #ifdef USE_S57
     //    Handle Vector Charts Tab
@@ -5205,12 +5220,19 @@ void options::ShowNMEACommon(bool visible)
         if (m_cbOutput->IsChecked()) {
             m_stPrecision->Enable(true);
             m_choicePrecision->Enable(true);
+            m_stTalkerIdText->Enable(true);
+            m_TalkerIdText->Enable( true );
         } else {
-            m_stPrecision->Enable(false);
-            m_choicePrecision->Enable(false);
+            m_stPrecision->Enable( false );
+            m_choicePrecision->Enable( false );
+            m_stTalkerIdText->Enable( false );
+            m_TalkerIdText->Enable( false );
         }
         m_choicePriority->Show();
         m_stPriority->Show();
+        m_stPrecision->Show();
+        m_stTalkerIdText->Show();
+        m_TalkerIdText->Show();
         m_cbCheckCRC->Show();
     }
     else
@@ -5229,6 +5251,8 @@ void options::ShowNMEACommon(bool visible)
         m_cbOutput->Hide();
         m_choicePriority->Hide();
         m_stPrecision->Hide();
+        m_stTalkerIdText->Hide();
+        m_TalkerIdText->Hide();
         m_choicePrecision->Hide();
         m_stPriority->Hide();
         m_cbCheckCRC->Hide();
@@ -5621,9 +5645,13 @@ void options::OnCbOutput( wxCommandEvent& event )
     if (m_cbOutput->IsChecked()) {
         m_stPrecision->Enable(true);
         m_choicePrecision->Enable(true);
+        m_stTalkerIdText->Enable(true);
+        m_TalkerIdText->Enable( true );
     } else {
         m_stPrecision->Enable(false);
         m_choicePrecision->Enable(false);
+        m_stTalkerIdText->Enable( false );
+        m_TalkerIdText->Enable( false );
     }
 }
 
