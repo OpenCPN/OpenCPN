@@ -831,11 +831,11 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                             double dMagneticCOG;
                             if (m_NMEA0183.Rmc.MagneticVariationDirection == East) {
                                 dMagneticCOG = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue - m_NMEA0183.Rmc.MagneticVariation;
-                                if ( dMagneticCOG < 0 ) dMagneticCOG = 360 + dMagneticCOG;
+                                if ( dMagneticCOG < 0.0 ) dMagneticCOG = 360.0 + dMagneticCOG;
                             }
                             else {
                                 dMagneticCOG = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue + m_NMEA0183.Rmc.MagneticVariation;
-                                if ( dMagneticCOG > 360 ) dMagneticCOG = dMagneticCOG - 360;
+                                if ( dMagneticCOG > 360.0 ) dMagneticCOG = dMagneticCOG - 360.0;
                             }
                             SendSentenceToAllInstruments( OCPN_DBP_STC_MCOG,
                                     dMagneticCOG, _T("\u00B0M") );
@@ -1029,8 +1029,8 @@ void dashboard_pi::SetPositionFix( PlugIn_Position_Fix &pfix )
         SendSentenceToAllInstruments( OCPN_DBP_STC_SOG, toUsrSpeed_Plugin( pfix.Sog, g_iDashSpeedUnit ), getUsrSpeedUnit_Plugin( g_iDashSpeedUnit ) );
         SendSentenceToAllInstruments( OCPN_DBP_STC_COG, pfix.Cog, _T("\u00B0") );
         dMagneticCOG = pfix.Cog - pfix.Var;
-        if ( dMagneticCOG < 0 ) dMagneticCOG = 360.0 + dMagneticCOG;
-        if ( dMagneticCOG > 360 ) dMagneticCOG = dMagneticCOG - 360;
+        if ( dMagneticCOG < 0.0 ) dMagneticCOG = 360.0 + dMagneticCOG;
+        if ( dMagneticCOG > 360.0 ) dMagneticCOG = dMagneticCOG - 360.0;
         SendSentenceToAllInstruments( OCPN_DBP_STC_MCOG, dMagneticCOG , _T("\u00B0M") );
     }
     if( mPriVar >= 1 ) {
