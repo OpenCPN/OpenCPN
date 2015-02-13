@@ -829,9 +829,15 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                         }
                         if( m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue < 999. && m_NMEA0183.Rmc.MagneticVariation < 999.) {
                             double dMagneticCOG;
-                            if (m_NMEA0183.Rmc.MagneticVariationDirection == East) dMagneticCOG = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue - m_NMEA0183.Rmc.MagneticVariation;
-                            else dMagneticCOG = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue + m_NMEA0183.Rmc.MagneticVariation;
-                            SendSentenceToAllInstruments( OCPN_DBP_STC_COG,
+                            if (m_NMEA0183.Rmc.MagneticVariationDirection == East) {
+                                dMagneticCOG = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue - m_NMEA0183.Rmc.MagneticVariation;
+                                if ( dMagneticCOG < 0 ) dMagneticCOG = 360 + dMagneticCOG;
+                            }
+                            else {
+                                dMagneticCOG = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue + m_NMEA0183.Rmc.MagneticVariation;
+                                if ( dMagneticCOG > 360 ) dMagneticCOG = dMagneticCOG - 360;
+                            }
+                            SendSentenceToAllInstruments( OCPN_DBP_STC_MCOG,
                                     dMagneticCOG, _T("\u00B0M") );
                         } else {
                             //->SetData(_T("---"));
@@ -1023,6 +1029,8 @@ void dashboard_pi::SetPositionFix( PlugIn_Position_Fix &pfix )
         SendSentenceToAllInstruments( OCPN_DBP_STC_SOG, toUsrSpeed_Plugin( pfix.Sog, g_iDashSpeedUnit ), getUsrSpeedUnit_Plugin( g_iDashSpeedUnit ) );
         SendSentenceToAllInstruments( OCPN_DBP_STC_COG, pfix.Cog, _T("\u00B0") );
         dMagneticCOG = pfix.Cog - pfix.Var;
+        if ( dMagneticCOG < 0 ) dMagneticCOG = 360.0 + dMagneticCOG;
+        if ( dMagneticCOG > 360 ) dMagneticCOG = dMagneticCOG - 360;
         SendSentenceToAllInstruments( OCPN_DBP_STC_MCOG, dMagneticCOG , _T("\u00B0M") );
     }
     if( mPriVar >= 1 ) {
