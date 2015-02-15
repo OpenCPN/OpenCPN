@@ -38,10 +38,9 @@
 #endif
 
 #include "ocpn_types.h"
-
+#include "viewport.h"
 #include "nmea0183.h"
 
-WX_DEFINE_ARRAY_INT(int, ArrayOfInts);
 
 #ifdef USE_S57
 #include "cpl_error.h"

@@ -25,6 +25,7 @@
 #define __AISTARGETQUERYDIALOG_H__
 
 #include <wx/dialog.h>
+#include <wx/sizer.h>
 
 #include "ocpn_types.h"
 

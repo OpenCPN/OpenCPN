@@ -28,6 +28,7 @@
 #include <wx/glcanvas.h>
 #include "ocpn_types.h"
 #include "OCPNRegion.h"
+#include "viewport.h"
 
 #ifdef __WXMSW__
 #define FORMAT_BITS           GL_BGR

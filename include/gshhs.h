@@ -44,6 +44,7 @@
 
 #include "ocpn_types.h"
 #include "ocpndc.h"
+#include "viewport.h"
 
 #ifdef __MSVC__
 #pragma warning(disable: 4251)   // relates to std::string fpath

@@ -27,6 +27,7 @@
 
 #include <wx/glcanvas.h>
 #include <wx/file.h>
+#include <wx/timer.h>
 #include <stdint.h>
 
 #include "ocpn_types.h"

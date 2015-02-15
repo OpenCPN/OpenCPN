@@ -44,6 +44,8 @@
 
 #include <wx/progdlg.h>
 
+#include "chcanv.h"
+
 #ifdef USE_S57
 #include "s57chart.h"
 #include "cm93.h"

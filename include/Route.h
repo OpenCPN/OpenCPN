@@ -27,7 +27,7 @@
 #include <wx/object.h>
 #include <wx/list.h>
 
-#include "ocpn_types.h"
+#include "viewport.h"
 #include "RoutePoint.h"
 
 #define STYLE_UNDEFINED -1
