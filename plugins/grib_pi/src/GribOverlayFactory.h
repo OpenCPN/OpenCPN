@@ -89,10 +89,10 @@ public:
     int history_size;
 };
 
-class WindArrow {
+class LineBuffer {
 public:
-    WindArrow() { count = 0; lines = NULL; }
-    ~WindArrow() { delete [] lines; }
+    LineBuffer() { count = 0; lines = NULL; }
+    ~LineBuffer() { delete [] lines; }
 
     void pushLine( float x0, float y0, float x1, float y1 );
     void pushPetiteBarbule( int b );
@@ -143,7 +143,6 @@ public:
 
     GribTimelineRecordSet *m_pGribTimelineRecordSet;
 
-    void DrawGLLine( double x1, double y1, double x2, double y2, double width );
     void DrawMessageZoomOut( PlugIn_ViewPort *vp );
     wxColour GetGraphicColor(int config, double val);
 
@@ -159,18 +158,18 @@ private:
     void RenderGribOverlayMap( int config, GribRecord **pGR, PlugIn_ViewPort *vp);
     void RenderGribNumbers( int config, GribRecord **pGR, PlugIn_ViewPort *vp );
     void RenderGribParticles( int settings, GribRecord **pGR, PlugIn_ViewPort *vp );
+    void DrawLineBuffer(LineBuffer &buffer);
     void OnParticleTimer( wxTimerEvent & event );
 
     wxString GetRefString( GribRecord *rec, int map );
     void DrawMessageWindow( wxString msg, int x, int y , wxFont *mfont);
 
+    void drawDoubleArrow( int x, int y, double ang, wxColour arrowColor, int arrowWidth, int arrowSizeIdx );
+    void drawSingleArrow( int x, int y, double ang, wxColour arrowColor, int arrowWidth, int arrowSizeIdx );
     void drawWindArrowWithBarbs( int settings, int x, int y, double vkn, double ang,
                                  bool south, wxColour arrowColor, double rotate_angle );
-    void drawDoubleArrow( int i, int j, double dir, wxColour arrowColor, int arrowWidth, int arrowSize );
-    void drawSingleArrow( int i, int j, double dir, wxColour arrowColor, int arrowWidth, int arrowSize );
+    void drawLineBuffer(LineBuffer &buffer, int x, int y, double ang, bool south=false);
 
-    void drawTransformedLine( wxPen pen, double si, double co, int di, int dj,
-                              int i, int j, int k, int l );
     void DrawNumbers( wxPoint p, double value, int settings, wxColour back_color );
 
     wxString getLabelString(double value, int settings);
@@ -217,5 +216,6 @@ private:
     wxTimer m_tParticleTimer;
     bool m_bUpdateParticles;
 
-    WindArrow m_WindArrowCache[14];
+    LineBuffer m_WindArrowCache[14];
+    LineBuffer m_SingleArrow[2], m_DoubleArrow[2];
 };
