@@ -89,6 +89,24 @@ public:
     int history_size;
 };
 
+class WindArrow {
+public:
+    WindArrow() { count = 0; lines = NULL; }
+    ~WindArrow() { delete [] lines; }
+
+    void pushLine( float x0, float y0, float x1, float y1 );
+    void pushPetiteBarbule( int b );
+    void pushGrandeBarbule( int b );
+    void pushTriangle( int b );
+    void Finalize();
+
+    int count;
+    float *lines;
+
+private:
+    std::list <float> buffer;
+};
+
 //----------------------------------------------------------------------------------------------------------
 //    Grib Overlay Factory Specification
 //----------------------------------------------------------------------------------------------------------
@@ -146,17 +164,14 @@ private:
     wxString GetRefString( GribRecord *rec, int map );
     void DrawMessageWindow( wxString msg, int x, int y , wxFont *mfont);
 
-    void drawWindArrowWithBarbs( int config, int x, int y, double vkn, double ang,
-                                 bool south, int arrowSize, wxColour arrowColor, double rotate_angle );
+    void drawWindArrowWithBarbs( int settings, int x, int y, double vkn, double ang,
+                                 bool south, wxColour arrowColor, double rotate_angle );
     void drawDoubleArrow( int i, int j, double dir, wxColour arrowColor, int arrowWidth, int arrowSize );
     void drawSingleArrow( int i, int j, double dir, wxColour arrowColor, int arrowWidth, int arrowSize );
 
     void drawTransformedLine( wxPen pen, double si, double co, int di, int dj,
                               int i, int j, int k, int l );
-    void drawPetiteBarbule( wxPen pen, bool south, double si, double co, int di, int dj, int b );
-    void drawGrandeBarbule( wxPen pen, bool south, double si, double co, int di, int dj, int b );
-    void drawTriangle( wxPen pen, bool south, double si, double co, int di, int dj, int b );
-	void DrawNumbers( wxPoint p, double value, int settings, wxColour back_color );
+    void DrawNumbers( wxPoint p, double value, int settings, wxColour back_color );
 
     wxString getLabelString(double value, int settings);
     wxImage &getLabel(double value, int settings, wxColour back_colour);
@@ -201,4 +216,6 @@ private:
     ParticleMap *m_ParticleMap;
     wxTimer m_tParticleTimer;
     bool m_bUpdateParticles;
+
+    WindArrow m_WindArrowCache[14];
 };
