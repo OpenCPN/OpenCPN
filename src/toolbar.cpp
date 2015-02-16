@@ -927,6 +927,8 @@ void ocpnToolBarSimple::Init()
 
     m_btoolbar_is_zooming = false;
     m_sizefactor = 1.0f;
+
+    m_last_plugin_down_id = -1;
     
     EnableTooltips();
 }
@@ -1463,6 +1465,22 @@ void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
         }
 
         DrawTool( tool );
+
+        //        Look for PlugIn tools
+        //        If found, make the callback.
+        if( g_pi_manager ) {
+            ArrayOfPlugInToolbarTools tool_array = g_pi_manager->GetPluginToolbarToolArray();
+            for( unsigned int i = 0; i < tool_array.GetCount(); i++ ) {
+                PlugInToolbarToolContainer *pttc = tool_array.Item( i );
+                if( tool->GetId() == pttc->id ) {
+                    opencpn_plugin_113 *ppi = dynamic_cast<opencpn_plugin_113 *>(pttc->m_pplugin);
+                    if( ppi ) {
+                        ppi->OnToolbarToolDownCallback( pttc->id );
+                        m_last_plugin_down_id = pttc->id;
+                    }
+                }
+            }
+        }
     } else
         if( event.RightDown() ) {
             OnRightClick( tool->GetId(), x, y );
@@ -1479,6 +1497,8 @@ void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
             // then change it back
             tool->Toggle();
         }
+
+        DoPluginToolUp();
     }
 
     wxMouseEvent *pev = (wxMouseEvent *) event.Clone();
@@ -2004,6 +2024,28 @@ void ocpnToolBarSimple::OnMouseEnter( int id )
     }
 
     (void) GetEventHandler()->ProcessEvent( event );
+
+    DoPluginToolUp();
+}
+
+void ocpnToolBarSimple::DoPluginToolUp()
+{
+    //        Look for PlugIn tools
+    //        If found, make the callback.
+    if( !g_pi_manager)
+        return;
+
+    ArrayOfPlugInToolbarTools tool_array = g_pi_manager->GetPluginToolbarToolArray();
+    for( unsigned int i = 0; i < tool_array.GetCount(); i++ ) {
+        PlugInToolbarToolContainer *pttc = tool_array.Item( i );
+        if( m_last_plugin_down_id == pttc->id ) {
+            opencpn_plugin_113 *ppi = dynamic_cast<opencpn_plugin_113 *>(pttc->m_pplugin);
+            if( ppi )
+                ppi->OnToolbarToolUpCallback( pttc->id );
+        }
+    }
+
+    m_last_plugin_down_id = -1;
 }
 
 void ocpnToolBarSimple::SetToolNormalBitmapEx(wxToolBarToolBase *tool, const wxString & iconName)

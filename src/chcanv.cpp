@@ -2706,6 +2706,9 @@ void ChartCanvas::DoRotateCanvas( double rotation )
     while(rotation < 0) rotation += 2*PI;
     while(rotation > 2*PI) rotation -= 2*PI;
 
+    if(rotation == VPoint.rotation || isnan(rotation))
+        return;
+
     SetVPRotation( rotation );
     parent_frame->UpdateRotationState( VPoint.rotation);
 }

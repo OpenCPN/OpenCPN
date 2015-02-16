@@ -96,7 +96,7 @@ unsigned int      gs_plib_flags;
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(Plugin_WaypointList);
-
+WX_DEFINE_LIST(Plugin_HyperlinkList);
 
 //    Some static helper funtions
 //    Scope is local to this module
@@ -266,68 +266,102 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled
     get_flags =  wxDIR_FILES;
 #endif        
 #endif        
-    
+
+    bool ret = false; // return true if at least one new plugins gets loaded/unloaded
     wxDir::GetAllFiles( m_plugin_location, &file_list, pispec, get_flags );
     
     for(unsigned int i=0 ; i < file_list.GetCount() ; i++) {
         wxString file_name = file_list[i];
         wxString plugin_file = wxFileName(file_name).GetFullName();
-        
+        wxDateTime plugin_modification = wxFileName(file_name).GetModificationTime();
+
+        // this gets called every time we switch to the plugins tab.
+        // this allows plugins to be installed and enabled without restarting opencpn.
+        // For this reason we must check that we didn't already load this plugin
+        bool loaded = false;
+        for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
+        {
+            PlugInContainer *pic = plugin_array.Item(i);
+            if(pic->m_plugin_filename == plugin_file) {
+                if(pic->m_plugin_modification != plugin_modification) {
+                    // modification times don't match, reload plugin
+                    plugin_array.Remove(pic);
+                    i--;
+
+                    DeactivatePlugIn(pic);
+                    pic->m_destroy_fn(pic->m_pplugin);
+                    
+                    delete pic->m_plibrary;            // This will unload the PlugIn
+                    delete pic;
+                    ret = true;
+                } else {
+                    loaded = true;
+                    break;
+                }
+            }
+        }
+        if(loaded)
+            continue;
+
         //    Check the config file to see if this PlugIn is user-enabled
         wxString config_section = ( _T ( "/PlugIns/" ) );
         config_section += plugin_file;
         pConfig->SetPath ( config_section );
         bool enabled;
         pConfig->Read ( _T ( "bEnabled" ), &enabled, false );
-        if(enabled  == load_enabled) {
+
+        // only loading enabled plugins? check that it is enabled
+        if(load_enabled && !enabled)
+            continue;
             
-            bool b_compat = CheckPluginCompatibility(file_name);
+        bool b_compat = CheckPluginCompatibility(file_name);
             
-            if(!b_compat)
+        if(!b_compat)
+        {
+            wxString msg(_("    Incompatible PlugIn detected:"));
+            msg += file_name;
+            wxLogMessage(msg);
+        }
+            
+        PlugInContainer *pic = NULL;
+        if(b_compat)
+            pic = LoadPlugIn(file_name);
+        if(pic)
+        {
+            if(pic->m_pplugin)
             {
-                wxString msg(_("    Incompatible PlugIn detected:"));
-                msg += file_name;
-                wxLogMessage(msg);
+                plugin_array.Add(pic);
+                    
+                //    The common name is available without initialization and startup of the PlugIn
+                pic->m_common_name = pic->m_pplugin->GetCommonName();
+                    
+                pic->m_plugin_filename = plugin_file;
+                pic->m_plugin_modification = plugin_modification;
+                pic->m_bEnabled = enabled;
+                if(pic->m_bEnabled)
+                {
+                    pic->m_cap_flag = pic->m_pplugin->Init();
+                    pic->m_bInitState = true;
+                }
+                    
+                pic->m_short_description = pic->m_pplugin->GetShortDescription();
+                pic->m_long_description = pic->m_pplugin->GetLongDescription();
+                pic->m_version_major = pic->m_pplugin->GetPlugInVersionMajor();
+                pic->m_version_minor = pic->m_pplugin->GetPlugInVersionMinor();
+                pic->m_bitmap = pic->m_pplugin->GetPlugInBitmap();
+
+                ret = true;
             }
-            
-            PlugInContainer *pic = NULL;
-            if(b_compat)
-                pic = LoadPlugIn(file_name);
-            if(pic)
+            else        // not loaded
             {
-                if(pic->m_pplugin)
-                {
-                    plugin_array.Add(pic);
+                wxString msg;
+                msg.Printf(_T("    PlugInManager: Unloading invalid PlugIn, API version %d "), pic->m_api_version );
+                wxLogMessage(msg);
                     
-                    //    The common name is available without initialization and startup of the PlugIn
-                    pic->m_common_name = pic->m_pplugin->GetCommonName();
+                pic->m_destroy_fn(pic->m_pplugin);
                     
-                    pic->m_plugin_filename = plugin_file;
-                    pic->m_bEnabled = enabled;
-                    if(pic->m_bEnabled)
-                    {
-                        pic->m_cap_flag = pic->m_pplugin->Init();
-                        pic->m_bInitState = true;
-                    }
-                    
-                    pic->m_short_description = pic->m_pplugin->GetShortDescription();
-                    pic->m_long_description = pic->m_pplugin->GetLongDescription();
-                    pic->m_version_major = pic->m_pplugin->GetPlugInVersionMajor();
-                    pic->m_version_minor = pic->m_pplugin->GetPlugInVersionMinor();
-                    pic->m_bitmap = pic->m_pplugin->GetPlugInBitmap();
-                    
-                }
-                else        // not loaded
-                {
-                    wxString msg;
-                    msg.Printf(_T("    PlugInManager: Unloading invalid PlugIn, API version %d "), pic->m_api_version );
-                    wxLogMessage(msg);
-                    
-                    pic->m_destroy_fn(pic->m_pplugin);
-                    
-                    delete pic->m_plibrary;            // This will unload the PlugIn
-                    delete pic;
-                }
+                delete pic->m_plibrary;            // This will unload the PlugIn
+                delete pic;
             }
         }
     }
@@ -337,7 +371,7 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled
     // Inform plugins of the current color scheme
     g_pi_manager->SetColorSchemeForAllPlugIns( global_color_scheme );
     
-    return true;
+    return ret;
 }
 
 bool PlugInManager::CallLateInit(void)
@@ -381,6 +415,7 @@ void PlugInManager::SendVectorChartObjectInfo(const wxString &chart, const wxStr
                 switch(pic->m_api_version)
                 {
                 case 112:
+                case 113:
                 {
                     opencpn_plugin_112 *ppi = dynamic_cast<opencpn_plugin_112 *>(pic->m_pplugin);
                     if(ppi)
@@ -789,6 +824,10 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
     case 112:
         pic->m_pplugin = dynamic_cast<opencpn_plugin_112*>(plug_in);
         break;
+
+    case 113:
+        pic->m_pplugin = dynamic_cast<opencpn_plugin_113*>(plug_in);
+        break;
     
     default:
         break;
@@ -852,6 +891,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                     case 110:
                     case 111:
                     case 112:
+                    case 113:
                     {
                         opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                         if(ppi)
@@ -903,6 +943,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                     case 110:
                     case 111:
                     case 112:
+                    case 113:
                     {
                         opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                         if(ppi)
@@ -964,6 +1005,7 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, cons
                 case 110:
                 case 111:
                 case 112:
+                case 113:
                 {
                     opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                     if(ppi)
@@ -993,6 +1035,7 @@ bool PlugInManager::SendMouseEventToPlugins( wxMouseEvent &event)
                 switch(pic->m_api_version)
                 {
                     case 112:
+                    case 113:
                     {
                         opencpn_plugin_112 *ppi = dynamic_cast<opencpn_plugin_112*>(pic->m_pplugin);
                             if(ppi)
@@ -1054,6 +1097,7 @@ void NotifySetupOptionsPlugin( PlugInContainer *pic )
             case 110:
             case 111:
             case 112:
+            case 113:
             {
                 opencpn_plugin_19 *ppi = dynamic_cast<opencpn_plugin_19 *>(pic->m_pplugin);
                 if(ppi) {
@@ -1216,6 +1260,7 @@ void PlugInManager::SendMessageToAllPlugins(const wxString &message_id, const wx
                 case 110:
                 case 111:
                 case 112:
+                case 113:
                 {
                     opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                     if(ppi)
@@ -1291,6 +1336,9 @@ void PlugInManager::SendPositionFixToAllPlugIns(GenericPosDatEx *ppos)
                 case 108:
                 case 109:
                 case 110:
+                case 111:
+                case 112:
+                case 113:
                 {
                     opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                     if(ppi)
@@ -2383,6 +2431,48 @@ bool UpdateSingleWaypoint( PlugIn_Waypoint *pwaypoint )
     return b_found;
 }
 
+bool GetSingleWaypoint( wxString &GUID, PlugIn_Waypoint *pwaypoint )
+{
+    //  Find the RoutePoint
+    bool b_found = false;
+    RoutePoint *prp = pWayPointMan->FindRoutePointByGUID( GUID );
+
+    if(!prp)
+        return false;
+
+    pwaypoint->m_lat = prp->m_lat;
+    pwaypoint->m_lon = prp->m_lon;
+    pwaypoint->m_IconName = prp->GetIconName();
+    pwaypoint->m_MarkName = prp->GetName(  );
+    pwaypoint->m_MarkDescription = prp->m_MarkDescription;
+
+    //  Transcribe (clone) the html HyperLink List, if present
+
+    if( prp->m_HyperlinkList ) {
+        delete pwaypoint->m_HyperlinkList;
+        pwaypoint->m_HyperlinkList = NULL;
+
+        if( prp->m_HyperlinkList->GetCount() > 0 ) {
+            pwaypoint->m_HyperlinkList = new Plugin_HyperlinkList;
+
+            wxHyperlinkListNode *linknode = prp->m_HyperlinkList->GetFirst();
+            while( linknode ) {
+                Hyperlink *link = linknode->GetData();
+                
+                Plugin_Hyperlink* h = new Plugin_Hyperlink();
+                h->DescrText = link->DescrText;
+                h->Link = link->Link;
+                h->Type = link->LType;
+                    
+                pwaypoint->m_HyperlinkList->Append( h );
+                
+                linknode = linknode->GetNext();
+            }
+        }
+    }
+
+    return true;
+}
 
 bool AddPlugInRoute( PlugIn_Route *proute, bool b_permanent )
 {
@@ -2853,6 +2943,19 @@ void opencpn_plugin_112::SendVectorChartObjectInfo(wxString &chart, wxString &fe
 {
 }
 
+//    Opencpn_Plugin_113 Implementation
+opencpn_plugin_113::opencpn_plugin_113(void *pmgr)
+: opencpn_plugin_112(pmgr)
+{}
+
+opencpn_plugin_113::~opencpn_plugin_113(void)
+{}
+
+void opencpn_plugin_113::OnToolbarToolDownCallback(int id)
+{}
+
+void opencpn_plugin_113::OnToolbarToolUpCallback(int id)
+{}
 
 //          Helper and interface classes
 
@@ -4355,3 +4458,7 @@ int PI_PLIBRenderObjectToGL( const wxGLContext &glcc, PI_S57Obj *pObj,
     
 }
 
+void SetCanvasRotation(double rotation)
+{
+    cc1->DoRotateCanvas( rotation );
+}

@@ -53,7 +53,7 @@ class wxGLContext;
 //    PlugIns conforming to API Version less then the most modern will also
 //    be correctly supported.
 #define API_VERSION_MAJOR           1
-#define API_VERSION_MINOR           12
+#define API_VERSION_MINOR           13
 
 //    Fwd Definitions
 class       wxFileConfig;
@@ -499,6 +499,15 @@ public:
     
 };
 
+class DECL_EXP opencpn_plugin_113 : public opencpn_plugin_112
+{
+public:
+    opencpn_plugin_113(void *pmgr);
+    virtual ~opencpn_plugin_113();
+
+    virtual void OnToolbarToolDownCallback(int id);
+    virtual void OnToolbarToolUpCallback(int id);
+};
 
 //------------------------------------------------------------------
 //      Route and Waypoint PlugIn support
@@ -970,5 +979,9 @@ extern DECL_EXP void PlugInNormalizeViewport ( PlugIn_ViewPort *vp );
 class wxPoint2DDouble;
 extern "C"  DECL_EXP void GetDoubleCanvasPixLL(PlugIn_ViewPort *vp, wxPoint2DDouble *pp, double lat, double lon);
 
+
+/* API 1.13 */
+extern DECL_EXP void SetCanvasRotation(double rotation);
+extern DECL_EXP bool GetSingleWaypoint( wxString &GUID, PlugIn_Waypoint *pwaypoint );
 
 #endif //_PLUGIN_H_
