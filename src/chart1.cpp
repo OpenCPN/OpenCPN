@@ -2092,7 +2092,7 @@ bool MyApp::OnInit()
 // Show the frame
 
 //    gFrame->ClearBackground();
-//    gFrame->Show( TRUE );
+    gFrame->Show( TRUE );
 
     gFrame->SetAndApplyColorScheme( global_color_scheme );
 
