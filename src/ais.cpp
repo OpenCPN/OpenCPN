@@ -605,9 +605,9 @@ static void AtoN_Diamond( ocpnDC &dc, int x, int y, int radius, AIS_Target_Data*
     wxPen aton_WhiteBorderPen;
     wxBrush aton_Brush;
     
-    int rad1 = radius / 2; //size off topmarks of AtoN
-    int rad2 = radius / 4;
-    int rad3 = rad1 - 1;// slightly smaller size off topmarks to look better for the eye
+    int rad1a = radius / 2; //size off topmarks of AtoN
+    int rad2a = radius / 4;
+    int rad3a = rad1a - 1;// slightly smaller size off topmarks to look better for the eye
     
     //Set the Pen for what is needed
     if( ( td->NavStatus == ATON_VIRTUAL_OFFPOSITION ) || ( td->NavStatus == ATON_REAL_OFFPOSITION ) )
@@ -642,73 +642,73 @@ static void AtoN_Diamond( ocpnDC &dc, int x, int y, int radius, AIS_Target_Data*
 
     // draw cross inside
     wxPoint cross[5];
-                cross[0] = wxPoint(  -rad2, 0 );
-                cross[1] = wxPoint(  rad2, 0 );
+                cross[0] = wxPoint(  -rad2a, 0 );
+                cross[1] = wxPoint(  rad2a, 0 );
                 cross[2] = wxPoint( 0, 0 );
-                cross[3] = wxPoint(  0, rad2 );
-                cross[4] = wxPoint(  0, -rad2 );
+                cross[3] = wxPoint(  0, rad2a );
+                cross[4] = wxPoint(  0, -rad2a );
             dc.SetPen( aton_WhiteBorderPen );
             dc.DrawLines( 5, cross, x, y );
             dc.SetPen( aton_DrawPen );
             dc.DrawLines( 5, cross, x, y );
             
     wxPoint TriPointUp[4]; //Declare triangles here for multiple use
-                TriPointUp[0] = wxPoint(  -rad1, 0 );
-                TriPointUp[1] = wxPoint(  rad1, 0 );
-                TriPointUp[2] = wxPoint(  0, -rad1 );
-                TriPointUp[3] = wxPoint(  -rad1, 0 );
+                TriPointUp[0] = wxPoint(  -rad1a, 0 );
+                TriPointUp[1] = wxPoint(  rad1a, 0 );
+                TriPointUp[2] = wxPoint(  0, -rad1a );
+                TriPointUp[3] = wxPoint(  -rad1a, 0 );
             
     wxPoint TriPointDown[4]; //Declare triangles here for multiple use
-                TriPointDown[0] = wxPoint(  -rad1, -rad1 );
-                TriPointDown[1] = wxPoint(  rad1, -rad1 );
+    TriPointDown[0] = wxPoint(  -rad1a, -rad1a );
+    TriPointDown[1] = wxPoint(  rad1a, -rad1a );
                 TriPointDown[2] = wxPoint(  0, 0 );
-                TriPointDown[3] = wxPoint(  -rad1, -rad1 );
+                TriPointDown[3] = wxPoint(  -rad1a, -rad1a );
 
     switch (td->ShipType ) {
         case 9 :
         case 20://Card. N
             dc.SetPen( aton_WhiteBorderPen );
             dc.DrawLines( 4, TriPointUp, x, y - radius -1);
-            dc.DrawLines( 4, TriPointUp, x, y - radius -rad1-3);
+            dc.DrawLines( 4, TriPointUp, x, y - radius -rad1a-3);
             dc.SetPen( aton_DrawPen );
             dc.DrawLines( 4, TriPointUp, x, y - radius -1);
-            dc.DrawLines( 4, TriPointUp, x, y - radius -rad1-3);
+            dc.DrawLines( 4, TriPointUp, x, y - radius -rad1a-3);
             break; 
         case 10:
         case 21: //Card E
             dc.SetPen( aton_WhiteBorderPen );
             dc.DrawLines( 4, TriPointDown, x, y - radius -1);
-            dc.DrawLines( 4, TriPointUp, x, y - radius -rad1-3);
+            dc.DrawLines( 4, TriPointUp, x, y - radius -rad1a-3);
             dc.SetPen( aton_DrawPen );
             dc.DrawLines( 4, TriPointDown, x, y - radius -1);
-            dc.DrawLines( 4, TriPointUp, x, y - radius -rad1-3);
+            dc.DrawLines( 4, TriPointUp, x, y - radius -rad1a-3);
             break;
         case 11:
         case 22: //Card S
             dc.SetPen( aton_WhiteBorderPen );
             dc.DrawLines( 4, TriPointDown, x, y - radius -1);
-            dc.DrawLines( 4, TriPointDown, x, y - radius -rad1-3);
+            dc.DrawLines( 4, TriPointDown, x, y - radius -rad1a-3);
             dc.SetPen( aton_DrawPen );
             dc.DrawLines( 4, TriPointDown, x, y - radius -1);
-            dc.DrawLines( 4, TriPointDown, x, y - radius -rad1-3);
+            dc.DrawLines( 4, TriPointDown, x, y - radius -rad1a-3);
             break;
         case 12:
         case 23: //Card W
             dc.SetPen( aton_WhiteBorderPen );
             dc.DrawLines( 4, TriPointUp, x, y - radius -1 );
-            dc.DrawLines( 4, TriPointDown, x, y - radius -rad1-3);
+            dc.DrawLines( 4, TriPointDown, x, y - radius -rad1a-3);
             dc.SetPen( aton_DrawPen );
             dc.DrawLines( 4, TriPointUp, x, y - radius -1);
-            dc.DrawLines( 4, TriPointDown, x, y - radius -rad1-3);
+            dc.DrawLines( 4, TriPointDown, x, y - radius -rad1a-3);
             break;
         case 13: //PortHand Beacon IALA-A
         case 24: { //StarboardHand Beacon IALA-B
            wxPoint aRect[5]; //Square topmark
-                aRect[0] = wxPoint(  -rad3, 0 );
-                aRect[1] = wxPoint(  -rad3, -rad3-rad3 );
-                aRect[2] = wxPoint(  rad3, -rad3-rad3 );
-                aRect[3] = wxPoint(  rad3, 0 );
-                aRect[4] = wxPoint(  -rad3, 0 );
+                aRect[0] = wxPoint(  -rad3a, 0 );
+                aRect[1] = wxPoint(  -rad3a, -rad3a-rad3a );
+                aRect[2] = wxPoint(  rad3a, -rad3a-rad3a );
+                aRect[3] = wxPoint(  rad3a, 0 );
+                aRect[4] = wxPoint(  -rad3a, 0 );
             dc.SetPen( aton_WhiteBorderPen );
             dc.DrawLines( 5, aRect, x, y - radius-1 );
             dc.SetPen( aton_DrawPen );
@@ -726,26 +726,26 @@ static void AtoN_Diamond( ocpnDC &dc, int x, int y, int radius, AIS_Target_Data*
         case 28: //Isolated danger
             //TODO Draw transparant circles
             dc.SetPen( aton_DrawPen );
-            dc.DrawCircle(x, y-radius-rad3, rad3);
-            dc.DrawCircle(x, y-radius-3*rad3-1, rad3);
+            dc.DrawCircle(x, y-radius-rad3a, rad3a);
+            dc.DrawCircle(x, y-radius-3*rad3a-1, rad3a);
             break;
         case 18: 
         case 29: //Safe water
             //TODO Draw transparant circle
             dc.SetPen( aton_DrawPen );
-            dc.DrawCircle(x, y-radius-rad3, rad3);
+            dc.DrawCircle(x, y-radius-rad3a, rad3a);
             break;
         case 19: 
         case 30:{ //Special Mark
-            cross[0] = wxPoint( -rad2, -rad2 ); //reuse of cross array
-            cross[1] = wxPoint( rad2, rad2);
+            cross[0] = wxPoint( -rad2a, -rad2a ); //reuse of cross array
+            cross[1] = wxPoint( rad2a, rad2a);
             cross[2] = wxPoint( 0, 0 );
-            cross[3] = wxPoint( -rad2, rad2 );
-            cross[4] = wxPoint( rad2, -rad2 );
+            cross[3] = wxPoint( -rad2a, rad2a );
+            cross[4] = wxPoint( rad2a, -rad2a );
             dc.SetPen( aton_WhiteBorderPen );
-            dc.DrawLines( 5, cross, x, y - radius-rad3);
+            dc.DrawLines( 5, cross, x, y - radius-rad3a);
             dc.SetPen( aton_DrawPen );
-            dc.DrawLines( 5, cross, x, y - radius-rad3);
+            dc.DrawLines( 5, cross, x, y - radius-rad3a);
             }
             break;
         default:
