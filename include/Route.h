@@ -56,6 +56,7 @@ public:
       RoutePoint *GetPoint ( const wxString &guid );
       int GetIndexOf(RoutePoint *prp);
       RoutePoint *InsertPointBefore(RoutePoint *pRP, double rlat, double rlon, bool bRenamePoints = false);
+      RoutePoint *InsertPointAfter(RoutePoint *pRP, double rlat, double rlon, bool bRenamePoints = false);
       void DrawPointWhich(ocpnDC& dc, int iPoint, wxPoint *rpn);
       void DrawSegment(ocpnDC& dc, wxPoint *rp1, wxPoint *rp2, ViewPort &VP, bool bdraw_arrow);
       virtual void Draw(ocpnDC& dc, ViewPort &pVP);

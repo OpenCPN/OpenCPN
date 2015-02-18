@@ -746,6 +746,34 @@ RoutePoint *Route::InsertPointBefore( RoutePoint *pRP, double rlat, double rlon,
     return ( newpoint );
 }
 
+RoutePoint *Route::InsertPointAfter( RoutePoint *pRP, double rlat, double rlon,
+                                      bool bRenamePoints )
+{
+    int nRP = pRoutePointList->IndexOf( pRP );
+    if( nRP >= m_nPoints - 1 )
+        return NULL;
+    nRP++;
+    
+    RoutePoint *newpoint = new RoutePoint( rlat, rlon, wxString( _T ( "diamond" ) ),
+                                           GetNewMarkSequenced(), GPX_EMPTY_STRING );
+    newpoint->m_bIsInRoute = true;
+    newpoint->m_bDynamicName = true;
+    newpoint->SetNameShown( false );
+    
+    pRoutePointList->Insert( nRP, newpoint );
+    
+    RoutePointGUIDList.Insert( pRP->m_GUID, nRP );
+    
+    m_nPoints++;
+    
+    if( bRenamePoints ) RenameRoutePoints();
+    
+    FinalizeForRendering();
+    UpdateSegmentDistances();
+    
+    return ( newpoint );
+}
+
 wxString Route::GetNewMarkSequenced( void )
 {
     wxString ret;
