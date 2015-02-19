@@ -586,6 +586,7 @@ SET(HDRS
                 include/TrackPropDlg.h
                 include/LinkPropDlg.h
                 include/viewport.h
+                include/canvasMenu.h
 )
 
 SET(SRCS
@@ -675,6 +676,7 @@ SET(SRCS
                 src/LinkPropDlg.cpp
                 src/ssl/sha1.c
                 src/viewport.cpp
+                src/canvasMenu.cpp
     )
 
 IF(NOT WIN32 AND NOT APPLE)
