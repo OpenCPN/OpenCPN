@@ -61,9 +61,9 @@
 #endif
 
 //-------------------------------------------------------------------------
-class QLineF {
+class wxLineF {
 public:
-    QLineF( double x1, double y1, double x2, double y2 ) {
+    wxLineF( double x1, double y1, double x2, double y2 ) {
         m_p1 = wxRealPoint( x1, y1 );
         m_p2 = wxRealPoint( x2, y2 );
     }
@@ -103,12 +103,12 @@ public:
                        wxColor landColor, int cellcount );
 
     void drawSeaBorderLines( ocpnDC &pnt, double dx, ViewPort &vp );
-    std::vector<QLineF> * getCoasts() { return &coasts; }
+    std::vector<wxLineF> * getCoasts() { return &coasts; }
     contour_list &getPoly1() { return poly1; }
 
     /* we remap the segments into a high resolution map to
        greatly reduce intersection testing time */
-    std::vector<QLineF> *high_res_map[GSSH_SUBM*GSSH_SUBM];
+    std::vector<wxLineF> *high_res_map[GSSH_SUBM*GSSH_SUBM];
 
 private:
     int nbpoints;
@@ -116,7 +116,7 @@ private:
 
     FILE *fpoly;
 
-    std::vector<QLineF> coasts;
+    std::vector<wxLineF> coasts;
     PolygonFileHeader *header;
     contour_list poly1, poly2, poly3, poly4, poly5;
 
@@ -139,7 +139,7 @@ public:
     void drawGshhsPolyMapSeaBorders( ocpnDC &pnt, ViewPort &vp );
 
     void InitializeLoadQuality( int quality ); // 5 levels: 0=low ... 4=full
-    bool crossing1( QLineF trajectWorld );
+    bool crossing1( wxLineF trajectWorld );
     int currentQuality;
     int ReadPolyVersion();
     int GetPolyVersion() { return polyHeader.version; }
@@ -232,8 +232,8 @@ public:
 
     int getQuality() { return quality; }
 
-//    bool crossing( QLineF traject, QLineF trajectWorld ) const;
-    bool crossing1( QLineF trajectWorld );
+    //    bool crossing( wxLineF traject, wxLineF trajectWorld ) const;
+    bool crossing1( wxLineF trajectWorld );
     int ReadPolyVersion();
     bool qualityAvailable[6];
 
@@ -263,7 +263,7 @@ private:
 };
 
 
-inline bool GshhsReader::crossing1(QLineF trajectWorld )
+inline bool GshhsReader::crossing1(wxLineF trajectWorld )
 {
     return this->gshhsPoly_reader->crossing1(trajectWorld );
 }

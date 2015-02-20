@@ -351,7 +351,7 @@ void GshhsPolyReader::InitializeLoadQuality( int quality )  // 5 levels: 0=low .
     }
 }
 
-inline bool my_intersects( const QLineF &line1, const QLineF &line2 )
+inline bool my_intersects( const wxLineF &line1, const wxLineF &line2 )
 {
     double x1 = line1.m_p1.x, y1 = line1.m_p1.y, x2 = line1.m_p2.x, y2 = line1.m_p2.y;
     double x3 = line2.m_p1.x, y3 = line2.m_p1.y, x4 = line2.m_p2.x, y4 = line2.m_p2.y;
@@ -382,7 +382,7 @@ inline bool my_intersects( const QLineF &line1, const QLineF &line2 )
     return true;
 }
 
-bool GshhsPolyReader::crossing1( QLineF trajectWorld )
+bool GshhsPolyReader::crossing1( wxLineF trajectWorld )
 {
     double x1 = trajectWorld.p1().x, y1 = trajectWorld.p1().y;
     double x2 = trajectWorld.p2().x, y2 = trajectWorld.p2().y;
@@ -426,7 +426,7 @@ bool GshhsPolyReader::crossing1( QLineF trajectWorld )
             if(x2 < 180) x2 += 360;
         }
 
-        QLineF rtrajectWorld(x1, y1, x2, y2);
+        wxLineF rtrajectWorld(x1, y1, x2, y2);
 
         for( cy = cymin; cy < cymax; cy++ ) {
             int cxi = cxx/GSSH_SUBM, cyi = (GSSH_SUBM*90+cy)/GSSH_SUBM;
@@ -442,7 +442,7 @@ bool GshhsPolyReader::crossing1( QLineF trajectWorld )
             }
 
             int hash = GSSH_SUBM*(GSSH_SUBM*(90-cyi) + cy - cxi) + cxx;
-            std::vector<QLineF> *&high_res_map = cel->high_res_map[hash];
+            std::vector<wxLineF> *&high_res_map = cel->high_res_map[hash];
             wxASSERT(hash >= 0 && hash < GSSH_SUBM*GSSH_SUBM);
             if(!high_res_map) {
                 mutex2.Lock();
@@ -452,7 +452,7 @@ bool GshhsPolyReader::crossing1( QLineF trajectWorld )
 
                     double minlat = (double)cy/GSSH_SUBM, maxlat = (double)(cy+1)/GSSH_SUBM;
                     double minlon = (double)cxx/GSSH_SUBM, maxlon = (double)(cxx+1)/GSSH_SUBM;
-                    high_res_map = new std::vector<QLineF>;
+                    high_res_map = new std::vector<wxLineF>;
                     for( unsigned int pi = 0; pi < poly1.size(); pi++ ) {
                         contour &c = poly1[pi];
                         double lx = c[c.size()-1].x, ly = c[c.size()-1].y;
@@ -476,7 +476,7 @@ bool GshhsPolyReader::crossing1( QLineF trajectWorld )
 
                             if((!statex || lstatex != statex) &&
                                (!statey || lstatey != statey))
-                                high_res_map->push_back(QLineF(lx, ly, cx, cy));
+                                high_res_map->push_back(wxLineF(lx, ly, cx, cy));
 
                             lx = cx, ly = cy;
                             lstatex = statex, lstatey = statey;
@@ -486,7 +486,7 @@ bool GshhsPolyReader::crossing1( QLineF trajectWorld )
                 mutex2.Unlock();
             }
 
-            for(std::vector<QLineF>::iterator it2 = high_res_map->begin();
+            for(std::vector<wxLineF>::iterator it2 = high_res_map->begin();
                 it2 != high_res_map->end(); it2++)
                 if( my_intersects( rtrajectWorld, *it2 ) )
                     return true;
@@ -1052,6 +1052,6 @@ bool gshhsCrossesLand(double lat1, double lon1, double lat2, double lon2)
     if(lon2 < 0)
         lon2 += 360;
 
-    QLineF trajectWorld(lon1, lat1, lon2, lat2);
+    wxLineF trajectWorld(lon1, lat1, lon2, lat2);
     return reader->crossing1(trajectWorld);
 }
