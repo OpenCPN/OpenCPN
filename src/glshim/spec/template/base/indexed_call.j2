@@ -1,0 +1,22 @@
+void glIndexedCall(const indexed_call_t *packed, void *ret_v) {
+    switch (packed->func) {
+        {% for f in functions %}
+        #ifndef skip_index_{{ f.name }}
+        case {{ f.name }}_INDEX: {
+            INDEXED_{{ f.types }} *unpacked = (INDEXED_{{ f.types }} *)packed;
+            {% if f.args %}
+            ARGS_{{ f.types }} args = unpacked->args;
+            {% endif %}
+            {% if not f.void %}
+            {{ f.return }} *ret = ({{ f.return }} *)ret_v;
+            *ret =
+            {% endif %}
+            {{ f.name }}({% for arg in f.args -%}
+                args.a{{ loop.index }}{% if not arg.last %}, {% endif %}
+            {% endfor %});
+            break;
+        }
+        #endif
+        {% endfor %}
+    }
+}

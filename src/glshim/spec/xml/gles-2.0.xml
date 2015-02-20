@@ -1,0 +1,1216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Source: https://raw.github.com/laanwj/etna_viv/master/tools/data/gles2.xml -->
+<!-- Copyright (c) 2012-2013 Wladimir J. van der Laan
+
+ Permission is hereby granted, free of charge, to any person obtaining a
+ copy of this software and associated documentation files (the "Software"),
+ to deal in the Software without restriction, including without limitation
+ the rights to use, copy, modify, merge, publish, distribute, sub license,
+ and/or sell copies of the Software, and to permit persons to whom the
+ Software is furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice (including the
+ next paragraph) shall be included in all copies or substantial portions
+ of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
+ THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ DEALINGS IN THE SOFTWARE.
+-->
+<!-- List of OpenGL ES 2.0 functions with parameters.
+     GLES2 specification in machine-parseable format for state probing.
+ -->
+<root>
+
+<!-- format roughly based on rnndb -->
+<!-- should be extendable by extensions (later work)
+     values are not important here and would only cause clutter, as the values of state bits depend on the hw,
+     also the same tokens can (and should) be part of multiple enumerations without any harm,
+     they could be mapped with another map (tokens.xml) if important, ie to build hash tables
+  -->
+<enum name="Boolean">
+    <value name="FALSE"/>
+    <value name="TRUE"/>
+</enum>
+<bitset name="ClearBufferMask">
+    <bitfield name="DEPTH_BUFFER_BIT"/>
+    <bitfield name="STENCIL_BUFFER_BIT"/>
+    <bitfield name="COLOR_BUFFER_BIT"/>
+</bitset>
+<enum name="BeginMode"> <!-- primitive type -->
+    <value name="POINTS"/>
+    <value name="LINES"/>
+    <value name="LINE_LOOP"/>
+    <value name="LINE_STRIP"/>
+    <value name="TRIANGLES"/>
+    <value name="TRIANGLE_STRIP"/>
+    <value name="TRIANGLE_FAN"/>
+    <!-- XXX QUADS also supported by Vivante blob, not in GLES2 -->
+</enum>
+<enum name="BlendingFactorDest">
+    <value name="ZERO"/>
+    <value name="ONE"/>
+    <value name="SRC_COLOR"/>
+    <value name="ONE_MINUS_SRC_COLOR"/>
+    <value name="DST_COLOR"/>
+    <value name="ONE_MINUS_DST_COLOR"/>
+    <value name="SRC_ALPHA"/>
+    <value name="ONE_MINUS_SRC_ALPHA"/>
+    <value name="DST_ALPHA"/>
+    <value name="ONE_MINUS_DST_ALPHA"/>
+    <value name="CONSTANT_COLOR"/>
+    <value name="ONE_MINUS_CONSTANT_COLOR"/>
+    <value name="CONSTANT_ALPHA"/>
+    <value name="ONE_MINUS_CONSTANT_ALPHA"/>
+</enum>
+<enum name="BlendingFactorSrc">
+    <value name="ZERO"/>
+    <value name="ONE"/>
+    <value name="SRC_COLOR"/>
+    <value name="ONE_MINUS_SRC_COLOR"/>
+    <value name="DST_COLOR"/>
+    <value name="ONE_MINUS_DST_COLOR"/>
+    <value name="SRC_ALPHA"/>
+    <value name="ONE_MINUS_SRC_ALPHA"/>
+    <value name="DST_ALPHA"/>
+    <value name="ONE_MINUS_DST_ALPHA"/>
+    <value name="CONSTANT_COLOR"/>
+    <value name="ONE_MINUS_CONSTANT_COLOR"/>
+    <value name="CONSTANT_ALPHA"/>
+    <value name="ONE_MINUS_CONSTANT_ALPHA"/>
+    <value name="SRC_ALPHA_SATURATE"/>
+</enum>
+<enum name="BlendEquation">
+    <value name="FUNC_ADD"/>
+    <value name="FUNC_SUBTRACT"/>
+    <value name="FUNC_REVERSE_SUBTRACT"/>
+    <!-- MIN -->
+    <!-- MAX -->
+</enum>
+<enum name="CullFaceMode"> <!-- Used by CullFace and XXXSeparate to specify face -->
+    <value name="FRONT"/>
+    <value name="BACK"/>
+    <value name="FRONT_AND_BACK"/>
+</enum>
+<enum name="EnableCap"> <!-- Enable/Disable/IsEnabled -->
+    <value name="BLEND"/>
+    <value name="CULL_FACE"/>
+    <value name="DEPTH_TEST"/>
+    <value name="DITHER"/>
+    <value name="POLYGON_OFFSET_FILL"/>
+    <value name="SAMPLE_ALPHA_TO_COVERAGE"/>
+    <value name="SAMPLE_COVERAGE"/>
+    <value name="SCISSOR_TEST"/>
+    <value name="STENCIL_TEST"/>
+</enum>
+<enum name="DepthFunction">
+    <value name="NEVER"/>
+    <value name="LESS"/>
+    <value name="EQUAL"/>
+    <value name="LEQUAL"/>
+    <value name="GREATER"/>
+    <value name="NOTEQUAL"/>
+    <value name="GEQUAL"/>
+    <value name="ALWAYS"/>
+</enum>
+<enum name="ErrorCode">
+    <value name="NO_ERROR"/>
+    <value name="INVALID_ENUM"/>
+    <value name="INVALID_VALUE"/>
+    <value name="INVALID_OPERATION"/>
+    <value name="INVALID_FRAMEBUFFER_OPERATION"/>
+    <value name="OUT_OF_MEMORY"/>
+</enum>
+<enum name="FrontFaceDirection">
+    <value name="CW"/>
+    <value name="CCW"/>
+</enum>
+<enum name="HintMode">
+    <value name="DONT_CARE"/>
+    <value name="FASTEST"/>
+    <value name="NICEST"/>
+</enum>
+<enum name="HintTarget">
+    <value name="GENERATE_MIPMAP_HINT"/>
+</enum>
+<enum name="DataType">  
+    <value name="BYTE"/>
+    <value name="UNSIGNED_BYTE"/>
+    <value name="SHORT"/>
+    <value name="UNSIGNED_SHORT"/>
+    <value name="INT"/>
+    <value name="UNSIGNED_INT"/>
+    <value name="FLOAT"/>
+    <value name="FIXED"/>
+</enum>
+<enum name="PixelFormat"> 
+     <!-- XXX split up? used by various functions; 
+         ReadPixels only accepts ALPHA, RGB, RGBA 
+         TexImage2D only accepts ALPHA, RGB, RGBA, LUMINANCE, LUMINANCE_ALPHA
+         See also TextureInternalFormat
+       -->
+    <value name="DEPTH_COMPONENT"/>
+    <value name="ALPHA"/>
+    <value name="RGB"/>
+    <value name="RGBA"/>
+    <value name="LUMINANCE"/>
+    <value name="LUMINANCE_ALPHA"/>
+</enum>
+<enum name="PixelType">
+    <value name="UNSIGNED_BYTE"/>
+    <value name="UNSIGNED_SHORT_4_4_4_4"/>
+    <value name="UNSIGNED_SHORT_5_5_5_1"/>
+    <value name="UNSIGNED_SHORT_5_6_5"/>
+</enum>
+<enum name="StencilFunction">
+    <value name="NEVER"/>
+    <value name="LESS"/>
+    <value name="EQUAL"/>
+    <value name="LEQUAL"/>
+    <value name="GREATER"/>
+    <value name="NOTEQUAL"/>
+    <value name="GEQUAL"/>
+    <value name="ALWAYS"/>
+</enum>
+<enum name="StencilOp">
+    <value name="ZERO"/>
+    <value name="KEEP"/>
+    <value name="REPLACE"/>
+    <value name="INCR"/>
+    <value name="DECR"/>
+    <value name="INVERT"/>
+    <value name="INCR_WRAP"/>
+    <value name="DECR_WRAP"/>
+</enum>
+<enum name="StringName">
+    <value name="VENDOR"/>
+    <value name="RENDERER"/>
+    <value name="VERSION"/>
+    <value name="SHADING_LANGUAGE_VERSION"/>
+    <value name="EXTENSIONS"/>
+</enum>
+<enum name="TextureMagFilter">
+    <value name="NEAREST"/>
+    <value name="LINEAR"/>
+</enum>
+<enum name="TextureMinFilter">
+    <value name="NEAREST"/>
+    <value name="LINEAR"/>
+    <value name="NEAREST_MIPMAP_NEAREST"/>
+    <value name="LINEAR_MIPMAP_NEAREST"/>
+    <value name="NEAREST_MIPMAP_LINEAR"/>
+    <value name="LINEAR_MIPMAP_LINEAR"/>
+</enum>
+<enum name="TextureParameterName">
+    <value name="TEXTURE_MAG_FILTER"/>
+    <value name="TEXTURE_MIN_FILTER"/>
+    <value name="TEXTURE_WRAP_S"/>
+    <value name="TEXTURE_WRAP_T"/>
+</enum>
+<enum name="TextureTarget"> <!-- general texture target -->
+    <value name="TEXTURE_2D"/>
+    <value name="TEXTURE_CUBE_MAP"/>
+</enum>
+<enum name="TextureTargetFace"> <!-- used when a specific face is to be specified, ie when uploading or binding framebuffer texture -->
+    <value name="TEXTURE_2D"/>
+    <value name="TEXTURE_CUBE_MAP_POSITIVE_X"/>
+    <value name="TEXTURE_CUBE_MAP_NEGATIVE_X"/>
+    <value name="TEXTURE_CUBE_MAP_POSITIVE_Y"/>
+    <value name="TEXTURE_CUBE_MAP_NEGATIVE_Y"/>
+    <value name="TEXTURE_CUBE_MAP_POSITIVE_Z"/>
+    <value name="TEXTURE_CUBE_MAP_NEGATIVE_Z"/>
+</enum>
+<enum name="TextureUnit">
+    <value name="TEXTURE0"/>
+    <value name="TEXTURE1"/>
+    <value name="TEXTURE2"/>
+    <value name="TEXTURE3"/>
+    <value name="TEXTURE4"/>
+    <value name="TEXTURE5"/>
+    <value name="TEXTURE6"/>
+    <value name="TEXTURE7"/>
+    <value name="TEXTURE8"/>
+    <value name="TEXTURE9"/>
+    <value name="TEXTURE10"/>
+    <value name="TEXTURE11"/>
+    <value name="TEXTURE12"/>
+    <value name="TEXTURE13"/>
+    <value name="TEXTURE14"/>
+    <value name="TEXTURE15"/>
+    <value name="TEXTURE16"/>
+    <value name="TEXTURE17"/>
+    <value name="TEXTURE18"/>
+    <value name="TEXTURE19"/>
+    <value name="TEXTURE20"/>
+    <value name="TEXTURE21"/>
+    <value name="TEXTURE22"/>
+    <value name="TEXTURE23"/>
+    <value name="TEXTURE24"/>
+    <value name="TEXTURE25"/>
+    <value name="TEXTURE26"/>
+    <value name="TEXTURE27"/>
+    <value name="TEXTURE28"/>
+    <value name="TEXTURE29"/>
+    <value name="TEXTURE30"/>
+    <value name="TEXTURE31"/>
+</enum>
+<enum name="TextureWrapMode">
+    <value name="REPEAT"/>
+    <value name="CLAMP_TO_EDGE"/>
+    <value name="MIRRORED_REPEAT"/>
+</enum>
+<enum name="TextureInternalFormat"> <!-- (Copy)TexImage2D -->
+    <value name="ALPHA"/>
+    <value name="LUMINANCE"/>
+    <value name="LUMINANCE_ALPHA"/>
+    <value name="RGB"/>
+    <value name="RGBA"/>
+</enum>
+<enum name="RenderbufferInternalFormat"> <!-- RenderbufferStorage / GetRenderbufferParameter -->
+    <value name="RGBA4"/> 
+    <value name="RGB565"/> 
+    <value name="RGB5_A1"/> 
+    <value name="DEPTH_COMPONENT16"/> 
+    <value name="STENCIL_INDEX8"/> 
+</enum>
+<enum name="UniformType"> <!-- GetActiveAttrib/GetActiveUniform -->
+    <value name="FLOAT"/>
+    <value name="FLOAT_VEC2"/>
+    <value name="FLOAT_VEC3"/>
+    <value name="FLOAT_VEC4"/>
+    <value name="INT"/>
+    <value name="INT_VEC2"/>
+    <value name="INT_VEC3"/>
+    <value name="INT_VEC4"/>
+    <value name="BOOL"/>
+    <value name="BOOL_VEC2"/>
+    <value name="BOOL_VEC3"/>
+    <value name="BOOL_VEC4"/>
+    <value name="FLOAT_MAT2"/>
+    <value name="FLOAT_MAT3"/>
+    <value name="FLOAT_MAT4"/>
+    <value name="SAMPLER_2D"/>
+    <value name="SAMPLER_CUBE"/>
+</enum>
+<enum name="FramebufferAttachment">
+    <value name="COLOR_ATTACHMENT0"/>
+    <value name="DEPTH_ATTACHMENT"/>
+    <value name="STENCIL_ATTACHMENT"/>
+</enum>
+<enum name="FramebufferStatus"> <!-- as returned by CheckFramebufferStatus -->
+    <value name="FRAMEBUFFER_COMPLETE"/>
+    <value name="FRAMEBUFFER_INCOMPLETE_ATTACHMENT"/>
+    <value name="FRAMEBUFFER_INCOMPLETE_DIMENSIONS"/>
+    <value name="FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT"/>
+    <value name="FRAMEBUFFER_UNSUPPORTED"/>
+</enum>
+<enum name="FramebufferTarget">
+    <value name="FRAMEBUFFER"/>
+</enum>
+<enum name="RenderbufferTarget">
+    <value name="RENDERBUFFER"/>
+</enum>
+<enum name="GetVertexAttribParameterPName"> 
+    <value name="VERTEX_ATTRIB_ARRAY_ENABLED"/>
+    <value name="VERTEX_ATTRIB_ARRAY_SIZE"/>
+    <value name="VERTEX_ATTRIB_ARRAY_STRIDE"/>
+    <value name="VERTEX_ATTRIB_ARRAY_TYPE"/>
+    <value name="VERTEX_ATTRIB_ARRAY_NORMALIZED"/>
+    <value name="VERTEX_ATTRIB_ARRAY_BUFFER_BINDING"/>
+    <value name="CURRENT_VERTEX_ATTRIB"/>
+</enum>
+<enum name="GetBufferParameterPName">
+    <value name="BUFFER_SIZE"/>
+    <value name="BUFFER_USAGE"/>
+</enum>
+<enum name="BufferTarget">
+    <value name="ARRAY_BUFFER"/>
+    <value name="ELEMENT_ARRAY_BUFFER"/>
+</enum>
+<enum name="BufferUsage">
+    <value name="STREAM_DRAW"/>
+    <value name="STATIC_DRAW"/>
+    <value name="DYNAMIC_DRAW"/>
+</enum>
+<enum name="ShaderType">
+    <value name="VERTEX_SHADER"/>
+    <value name="FRAGMENT_SHADER"/>
+</enum>
+<enum name="PrecisionType"> <!-- GetShaderPrecisionFormat -->
+    <value name="LOW_FLOAT"/>
+    <value name="MEDIUM_FLOAT"/>
+    <value name="HIGH_FLOAT"/>
+    <value name="LOW_INT"/>
+    <value name="MEDIUM_INT"/>
+    <value name="HIGH_INT"/>
+</enum>
+<enum name="IndexType"> <!-- glDrawElephants type -->
+    <value name="UNSIGNED_SHORT" brief="16 bit indices"/>
+    <value name="UNSIGNED_BYTE" brief="32 bit indices"/>
+</enum>
+<enum name="GetPName">
+    <value name="ACTIVE_TEXTURE"/>
+    <value name="ALIASED_LINE_WIDTH_RANGE"/>
+    <value name="ALIASED_POINT_SIZE_RANGE"/>
+    <value name="ALPHA_BITS"/>
+    <value name="ARRAY_BUFFER_BINDING"/>
+    <value name="BLEND"/>
+    <value name="BLEND_COLOR"/>
+    <value name="BLEND_DST_ALPHA"/>
+    <value name="BLEND_DST_RGB"/>
+    <value name="BLEND_EQUATION_ALPHA"/>
+    <value name="BLEND_EQUATION_RGB"/>
+    <value name="BLEND_SRC_ALPHA"/>
+    <value name="BLEND_SRC_RGB"/>
+    <value name="BLUE_BITS"/>
+    <value name="COLOR_CLEAR_VALUE"/>
+    <value name="COLOR_WRITEMASK"/>
+    <value name="COMPRESSED_TEXTURE_FORMATS"/>
+    <value name="CULL_FACE"/>
+    <value name="CULL_FACE_MODE"/>
+    <value name="CURRENT_PROGRAM"/>
+    <value name="DEPTH_BITS"/>
+    <value name="DEPTH_CLEAR_VALUE"/>
+    <value name="DEPTH_FUNC"/>
+    <value name="DEPTH_RANGE"/>
+    <value name="DEPTH_TEST"/>
+    <value name="DEPTH_WRITEMASK"/>
+    <value name="DITHER"/>
+    <value name="ELEMENT_ARRAY_BUFFER_BINDING"/>
+    <value name="FRAMEBUFFER_BINDING"/>
+    <value name="FRONT_FACE"/>
+    <value name="GENERATE_MIPMAP_HINT"/>
+    <value name="GREEN_BITS"/>
+    <value name="IMPLEMENTATION_COLOR_READ_FORMAT"/>
+    <value name="IMPLEMENTATION_COLOR_READ_TYPE"/>
+    <value name="LINE_WIDTH"/>
+    <value name="MAX_COMBINED_TEXTURE_IMAGE_UNITS"/>
+    <value name="MAX_CUBE_MAP_TEXTURE_SIZE"/>
+    <value name="MAX_FRAGMENT_UNIFORM_VECTORS"/>
+    <value name="MAX_RENDERBUFFER_SIZE"/>
+    <value name="MAX_TEXTURE_IMAGE_UNITS"/>
+    <value name="MAX_TEXTURE_SIZE"/>
+    <value name="MAX_VARYING_VECTORS"/>
+    <value name="MAX_VERTEX_ATTRIBS"/>
+    <value name="MAX_VERTEX_TEXTURE_IMAGE_UNITS"/>
+    <value name="MAX_VERTEX_UNIFORM_VECTORS"/>
+    <value name="MAX_VIEWPORT_DIMS"/>
+    <value name="NUM_COMPRESSED_TEXTURE_FORMATS"/>
+    <value name="NUM_SHADER_BINARY_FORMATS"/>
+    <value name="PACK_ALIGNMENT"/>
+    <value name="POLYGON_OFFSET_FACTOR"/>
+    <value name="POLYGON_OFFSET_FILL"/>
+    <value name="POLYGON_OFFSET_UNITS"/>
+    <value name="RED_BITS"/>
+    <value name="RENDERBUFFER_BINDING"/>
+    <value name="SAMPLE_TO_ALPHA_COVERAGE"/>
+    <value name="SAMPLE_BUFFERS"/>
+    <value name="SAMPLE_COVERAGE"/>
+    <value name="SAMPLE_COVERAGE_INVERT"/>
+    <value name="SAMPLE_COVERAGE_VALUE"/>
+    <value name="SAMPLES"/>
+    <value name="SCISSOR_BOX"/>
+    <value name="SCISSOR_TEST"/>
+    <value name="SHADER_BINARY_FORMATS"/>
+    <value name="SHADER_COMPILER"/>
+    <value name="STENCIL_BACK_FAIL"/>
+    <value name="STENCIL_BACK_FUNC"/>
+    <value name="STENCIL_BACK_PASS_DEPTH_FAIL"/>
+    <value name="STENCIL_BACK_PASS_DEPTH_PASS"/>
+    <value name="STENCIL_BACK_REF"/>
+    <value name="STENCIL_BACK_VALUE_MASK"/>
+    <value name="STENCIL_BACK_WRITEMASK"/>
+    <value name="STENCIL_BITS"/>
+    <value name="STENCIL_CLEAR_VALUE"/>
+    <value name="STENCIL_FAIL"/>
+    <value name="STENCIL_FUNC"/>
+    <value name="STENCIL_PASS_DEPTH_FAIL"/>
+    <value name="STENCIL_PASS_DEPTH_PASS"/>
+    <value name="STENCIL_REF"/>
+    <value name="STENCIL_TEST"/>
+    <value name="STENCIL_VALUE_MASK"/>
+    <value name="STENCIL_WRITEMASK"/>
+    <value name="SUBPIXEL_BITS"/>
+    <value name="TEXTURE_BINDING_2D"/>
+    <value name="TEXTURE_BINDING_CUBE_MAP"/>
+    <value name="UNPACK_ALIGNMENT"/>
+    <value name="VIEWPORT"/>
+</enum>
+<enum name="FramebufferAttachmentParameter">
+    <value name="ATTACHMENT_OBJECT_TYPE"/>
+    <value name="ATTACHMENT_OBJECT_NAME"/>
+    <value name="ATTACHMENT_TEXTURE_LEVEL"/>
+    <value name="ATTACHMENT_TEXTURE_CUBE_MAP_FACE"/>
+</enum>
+<enum name="FramebufferAttachmentObjectType"> <!-- returned by GetFrameBufferAttachmentParameteriv -->
+    <value name="RENDERBUFFER"/>
+    <value name="TEXTURE"/>
+    <value name="NONE"/>
+</enum>
+<enum name="GetProgramPName">
+    <value name="DELETE_STATUS"/>
+    <value name="LINK_STATUS"/>
+    <value name="VALIDATE_STATUS"/>
+    <value name="INFO_LOG_LENGTH"/>
+    <value name="ATTACHED_SHADERS"/>
+    <value name="ACTIVE_ATTRIBUTES"/>
+    <value name="ACTIVE_ATTRIBUTE_MAX_LENGTH"/>
+    <value name="ACTIVE_UNIFORMS"/>
+    <value name="ACTIVE_UNIFORM_MAX_LENGTH"/>
+</enum>
+<enum name="GetRenderbufferParameterPName">
+    <value name="RENDERBUFFER_WIDTH"/>
+    <value name="RENDERBUFFER_HEIGHT"/>
+    <value name="RENDERBUFFER_INTERNAL_FORMAT"/>
+    <value name="RENDERBUFFER_RED_SIZE"/>
+    <value name="RENDERBUFFER_GREEN_SIZE"/>
+    <value name="RENDERBUFFER_BLUE_SIZE"/>
+    <value name="RENDERBUFFER_ALPHA_SIZE"/>
+    <value name="RENDERBUFFER_DEPTH_SIZE"/>
+    <value name="RENDERBUFFER_STENCIL_SIZE"/>
+</enum>
+<enum name="GetVertexAttribPointerPName">
+    <value name="VERTEX_ATTRIB_ARRAY_POINTER"/>
+</enum>
+<enum name="PixelStorePName">
+    <value name="PACK_ALIGNMENT"/>
+    <value name="UNPACK_ALIGNMENT"/>
+</enum>
+<enum name="ShaderBinaryFormat">
+    <!-- None by default, provided by extensions -->
+</enum>
+<enum name="CompressedTextureFormat">
+    <!-- None by default, provided by extensions -->
+</enum>
+<enum name="VertexAttribType"> <!-- subset of DataType -->
+    <!-- VertexAttribPointer only needs BYTE, UNSIGNED_BYTE, SHORT, UNSIGNED_SHORT, FIXED, FLOAT 
+         What about (UNSIGNED_)INT? Are these part of an extension?
+     -->
+    <value name="BYTE"/>
+    <value name="UNSIGNED_BYTE"/>
+    <value name="SHORT"/>
+    <value name="UNSIGNED_SHORT"/>
+    <!-- <value name="INT"/> -->
+    <!-- <value name="UNSIGNED_INT"/> -->
+    <value name="FLOAT"/>
+    <value name="FIXED"/>
+</enum>
+<enum name="GetFramebufferAttachmentParameterPName">
+    <value name="FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE"/>
+    <value name="FRAMEBUFFER_ATTACHMENT_OBJECT_NAME"/>
+    <value name="FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL"/>
+    <value name="FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE"/>
+</enum>
+<enum name="GetShaderPName">
+    <value name="SHADER_TYPE"/>
+    <value name="DELETE_STATUS"/>
+    <value name="COMPILE_STATUS"/>
+    <value name="INFO_LOG_LENGTH"/>
+    <value name="SHADER_SOURCE_LENGTH"/>
+</enum>
+
+<functions>
+<!-- based on mesa/src/mapi/glapi/gen/*.xml -->
+    <function name="glActiveTexture">
+        <param name="texture" type="GLenum" enum="TextureUnit"/>
+    </function>
+    <function name="glAttachShader">
+        <param name="program" type="GLuint"/>
+        <param name="shader" type="GLuint"/>
+    </function>
+    <function name="glBindAttribLocation">
+        <param name="program" type="GLuint"/>
+        <param name="index" type="GLuint"/>
+        <param name="name" type="const GLchar *"/>
+    </function>
+    <function name="glBindBuffer">
+        <param name="target" type="GLenum" enum="BufferTarget"/>
+        <param name="buffer" type="GLuint"/>
+    </function>
+    <function name="glBindFramebuffer">
+        <param name="target" type="GLenum" enum="FramebufferTarget"/>
+        <param name="framebuffer" type="GLuint"/>
+    </function>
+    <function name="glBindRenderbuffer">
+        <param name="target" type="GLenum" enum="RenderbufferTarget"/>
+        <param name="renderbuffer" type="GLuint"/>
+    </function>
+    <function name="glBindTexture">
+        <param name="target" type="GLenum" enum="TextureTarget"/>
+        <param name="texture" type="GLuint"/>
+    </function>
+    <function name="glBlendColor">
+        <param name="red" type="GLclampf"/>
+        <param name="green" type="GLclampf"/>
+        <param name="blue" type="GLclampf"/>
+        <param name="alpha" type="GLclampf"/>
+    </function>
+    <function name="glBlendEquation">
+        <param name="mode" type="GLenum" enum="BlendEquation"/>
+    </function>
+    <function name="glBlendEquationSeparate">
+        <param name="modeRGB" type="GLenum" enum="BlendEquation"/>
+        <param name="modeA" type="GLenum" enum="BlendEquation"/>
+    </function>
+    <function name="glBlendFunc">
+        <param name="sfactor" type="GLenum" enum="BlendingFactorSrc"/>
+        <param name="dfactor" type="GLenum" enum="BlendingFactorDest"/>
+    </function>
+    <function name="glBlendFuncSeparate">
+        <param name="sfactorRGB" type="GLenum" enum="BlendingFactorSrc"/>
+        <param name="dfactorRGB" type="GLenum" enum="BlendingFactorDest"/>
+        <param name="sfactorAlpha" type="GLenum" enum="BlendingFactorSrc"/>
+        <param name="dfactorAlpha" type="GLenum" enum="BlendingFactorDest"/>
+    </function>
+    <function name="glBufferData">
+        <param name="target" type="GLenum" enum="BufferTarget"/>
+        <param name="size" type="GLsizeiptr" counter="true"/>
+        <param name="data" type="const GLvoid *" count="size" img_null_flag="true"/>
+        <param name="usage" type="GLenum" enum="BufferUsage"/>
+    </function>
+    <function name="glBufferSubData">
+        <param name="target" type="GLenum" enum="BufferTarget"/>
+        <param name="offset" type="GLintptr"/>
+        <param name="size" type="GLsizeiptr" counter="true"/>
+        <param name="data" type="const GLvoid *" count="size"/>
+    </function>
+    <function name="glCheckFramebufferStatus">
+        <param name="target" type="GLenum" enum="FramebufferTarget"/>
+	<return type="GLenum" enum="FramebufferStatus"/>
+    </function>
+    <function name="glClear">
+        <param name="mask" type="GLbitfield" bitfield="ClearBufferMask"/>
+    </function>
+    <function name="glClearColor">
+        <param name="red" type="GLclampf"/>
+        <param name="green" type="GLclampf"/>
+        <param name="blue" type="GLclampf"/>
+        <param name="alpha" type="GLclampf"/>
+    </function>
+    <function name="glClearDepthf">
+        <param name="depth" type="GLclampf"/>
+    </function>
+    <function name="glClearStencil">
+        <param name="s" type="GLint"/>
+    </function>
+    <function name="glColorMask">
+        <param name="red" type="GLboolean"/>
+        <param name="green" type="GLboolean"/>
+        <param name="blue" type="GLboolean"/>
+        <param name="alpha" type="GLboolean"/>
+    </function>
+    <function name="glCompileShader">
+        <param name="shader" type="GLuint"/>
+    </function>
+    <function name="glCompressedTexImage2D">
+        <param name="target" type="GLenum" enum="TextureTargetFace"/>
+        <param name="level" type="GLint"/>
+        <param name="internalformat" type="GLenum" enum="CompressedTextureFormat"/>
+        <param name="width" type="GLsizei"/>
+        <param name="height" type="GLsizei"/>
+        <param name="border" type="GLint"/>
+        <param name="imageSize" type="GLsizei" counter="true"/>
+        <param name="data" type="const GLvoid *" count="imageSize"/>
+    </function>
+    <function name="glCompressedTexSubImage2D">
+        <param name="target" type="GLenum" enum="TextureTargetFace"/>
+        <param name="level" type="GLint"/>
+        <param name="xoffset" type="GLint"/>
+        <param name="yoffset" type="GLint"/>
+        <param name="width" type="GLsizei"/>
+        <param name="height" type="GLsizei"/>
+        <param name="format" type="GLenum" enum="CompressedTextureFormat"/>
+        <param name="imageSize" type="GLsizei" counter="true"/>
+        <param name="data" type="const GLvoid *" count="imageSize"/>
+    </function>
+    <function name="glCopyTexImage2D">
+        <param name="target" type="GLenum" enum="TextureTargetFace"/>
+        <param name="level" type="GLint"/>
+        <param name="internalformat" type="GLenum" enum="TextureInternalFormat"/>
+        <param name="x" type="GLint"/>
+        <param name="y" type="GLint"/>
+        <param name="width" type="GLsizei"/>
+        <param name="height" type="GLsizei"/>
+        <param name="border" type="GLint"/>
+    </function>
+    <function name="glCopyTexSubImage2D">
+        <param name="target" type="GLenum" enum="TextureTargetFace"/>
+        <param name="level" type="GLint"/>
+        <param name="xoffset" type="GLint"/>
+        <param name="yoffset" type="GLint"/>
+        <param name="x" type="GLint"/>
+        <param name="y" type="GLint"/>
+        <param name="width" type="GLsizei"/>
+        <param name="height" type="GLsizei"/>
+    </function>
+    <function name="glCreateProgram">
+        <return type="GLuint"/>
+    </function>
+    <function name="glCreateShader">
+        <param name="type" type="GLenum" enum="ShaderType"/>
+        <return type="GLuint"/>
+    </function>
+    <function name="glCullFace">
+        <param name="mode" type="GLenum" enum="CullFaceMode"/>
+    </function>
+    <function name="glDeleteBuffers">
+        <param name="n" type="GLsizei" counter="true"/>
+        <param name="buffer" type="const GLuint *" count="n"/>
+    </function>
+    <function name="glDeleteFramebuffers">
+        <param name="n" type="GLsizei" counter="true"/>
+        <param name="framebuffers" type="const GLuint *" count="n"/>
+    </function>
+    <function name="glDeleteProgram">
+        <param name="program" type="GLuint"/>
+    </function>
+    <function name="glDeleteRenderbuffers">
+        <param name="n" type="GLsizei" counter="true"/>
+        <param name="renderbuffers" type="const GLuint *" count="n"/>
+    </function>
+    <function name="glDeleteShader">
+        <param name="program" type="GLuint"/>
+    </function>
+    <function name="glDeleteTextures">
+        <param name="n" type="GLsizei" counter="true"/>
+        <param name="textures" type="const GLuint *" count="n"/>
+    </function>
+    <function name="glDepthFunc">
+        <param name="func" type="GLenum" enum="DepthFunction"/>
+    </function>
+    <function name="glDepthMask">
+        <param name="flag" type="GLboolean"/>
+    </function>
+    <function name="glDepthRangef">
+        <param name="zNear" type="GLclampf"/>
+        <param name="zFar" type="GLclampf"/>
+    </function>
+    <function name="glDetachShader">
+        <param name="program" type="GLuint"/>
+        <param name="shader" type="GLuint"/>
+    </function>
+    <function name="glDisable">
+        <param name="cap" type="GLenum" enum="EnableCap"/>
+    </function>
+    <function name="glDisableVertexAttribArray">
+        <param name="index" type="GLuint"/>
+    </function>
+    <function name="glDrawArrays">
+        <param name="mode" type="GLenum" enum="BeginMode"/>
+        <param name="first" type="GLint"/>
+        <param name="count" type="GLsizei"/>
+    </function>
+    <function name="glDrawElements">
+        <param name="mode" type="GLenum" enum="BeginMode"/>
+        <param name="count" type="GLsizei"/>
+        <param name="type" type="GLenum" enum="IndexType"/>
+        <param name="indices" type="const GLvoid *"/>
+    </function>
+    <function name="glEnable">
+        <param name="cap" type="GLenum" enum="EnableCap"/>
+    </function>
+    <function name="glEnableVertexAttribArray">
+        <param name="index" type="GLuint"/>
+    </function>
+    <function name="glFinish">
+    </function>
+    <function name="glFlush">
+    </function>
+    <function name="glFramebufferRenderbuffer">
+        <param name="target" type="GLenum" enum="FramebufferTarget"/>
+        <param name="attachment" type="GLenum" enum="FramebufferAttachment"/>
+        <param name="renderbuffertarget" type="GLenum" enum="RenderbufferTarget"/>
+        <param name="renderbuffer" type="GLuint"/>
+    </function>
+    <function name="glFramebufferTexture2D">
+        <param name="target" type="GLenum" enum="FramebufferTarget"/>
+        <param name="attachment" type="GLenum" enum="FramebufferAttachment"/>
+        <param name="textarget" type="GLenum" enum="TextureTargetFace"/>
+        <param name="texture" type="GLuint"/>
+        <param name="level" type="GLint"/>
+    </function>
+    <function name="glFrontFace">
+        <param name="mode" type="GLenum" enum="FrontFaceDirection"/>
+    </function>
+    <function name="glGenBuffers">
+        <param name="n" type="GLsizei" counter="true"/>
+        <param name="buffer" type="GLuint *" output="true" count="n"/>
+    </function>
+    <function name="glGenerateMipmap">
+        <param name="target" type="GLenum" enum="TextureTarget"/>
+    </function>
+    <function name="glGenFramebuffers">
+        <param name="n" type="GLsizei" counter="true"/>
+        <param name="framebuffers" type="GLuint *" count="n" output="true"/>
+    </function>
+    <function name="glGenRenderbuffers">
+        <param name="n" type="GLsizei" counter="true"/>
+        <param name="renderbuffers" type="GLuint *" count="n" output="true"/>
+    </function>
+    <function name="glGenTextures">
+        <param name="n" type="GLsizei" counter="true"/>
+        <param name="textures" type="GLuint *" output="true" count="n"/>
+    </function>
+    <function name="glGetActiveAttrib">
+        <param name="program" type="GLuint"/>
+        <param name="index" type="GLuint"/>
+        <param name="bufSize" type="GLsizei"/>
+        <param name="length" type="GLsizei *" output="true"/>
+        <param name="size" type="GLint *" output="true"/>
+        <param name="type" type="GLenum *" output="true" enum="UniformType"/>
+        <param name="name" type="GLchar *" output="true"/>
+    </function>
+    <function name="glGetActiveUniform">
+        <param name="program" type="GLuint"/>
+        <param name="index" type="GLuint"/>
+        <param name="bufSize" type="GLsizei"/>
+        <param name="length" type="GLsizei *" output="true"/>
+        <param name="size" type="GLint *" output="true"/>
+        <param name="type" type="GLenum *" output="true" enum="UniformType"/>
+        <param name="name" type="GLchar *" output="true"/>
+    </function>
+    <function name="glGetAttachedShaders">
+        <param name="program" type="GLuint"/>
+        <param name="maxCount" type="GLsizei"/>
+        <param name="count" type="GLsizei *" output="true"/>
+        <param name="obj" type="GLuint *" output="true"/>
+    </function>
+    <function name="glGetAttribLocation">
+        <param name="program" type="GLuint"/>
+        <param name="name" type="const GLchar *"/>
+        <return type="GLint"/>
+    </function>
+    <function name="glGetBooleanv">
+        <param name="pname" type="GLenum" enum="GetPName"/>
+        <param name="params" type="GLboolean *" output="true" variable_param="pname"/>
+    </function>
+    <function name="glGetBufferParameteriv">
+        <param name="target" type="GLenum" enum="BufferTarget"/>
+        <param name="pname" type="GLenum" enum="GetBufferParameterPName"/>
+        <param name="params" type="GLint *" output="true" variable_param="pname"/>
+    </function>
+    <function name="glGetError">
+        <return type="GLenum" enum="ErrorCode"/>
+    </function>
+    <function name="glGetFloatv">
+        <param name="pname" type="GLenum" enum="GetPName"/>
+        <param name="params" type="GLfloat *" output="true" variable_param="pname"/>
+    </function>
+    <function name="glGetFramebufferAttachmentParameteriv">
+        <param name="target" type="GLenum" enum="FramebufferTarget"/>
+        <param name="attachment" type="GLenum" enum="FramebufferAttachment"/>
+        <param name="pname" type="GLenum" enum="GetFramebufferAttachmentParameterPName"/>
+        <param name="params" type="GLint *" output="true"/>
+    </function>
+    <function name="glGetIntegerv">
+        <param name="pname" type="GLenum" enum="GetPName"/>
+        <param name="params" type="GLint *" output="true" variable_param="pname"/>
+    </function>
+    <function name="glGetProgramiv">
+        <param name="program" type="GLuint"/>
+        <param name="pname" type="GLenum" enum="GetProgramPName"/>
+        <param name="params" type="GLint *"/>
+    </function>
+    <function name="glGetProgramInfoLog">
+        <param name="program" type="GLuint"/>
+        <param name="bufSize" type="GLsizei"/>
+        <param name="length" type="GLsizei *"/>
+        <param name="infoLog" type="GLchar *"/>
+    </function>
+    <function name="glGetRenderbufferParameteriv">
+        <param name="target" type="GLenum" enum="RenderbufferTarget"/>
+        <param name="pname" type="GLenum" enum="GetRenderbufferParameterPName"/>
+        <param name="params" type="GLint *" output="true"/>
+    </function>
+    <function name="glGetShaderiv">
+        <param name="shader" type="GLuint"/>
+        <param name="pname" type="GLenum" enum="GetShaderPName"/>
+        <param name="params" type="GLint *"/>
+    </function>
+    <function name="glGetShaderInfoLog">
+        <param name="shader" type="GLuint"/>
+        <param name="bufSize" type="GLsizei"/>
+        <param name="length" type="GLsizei *"/>
+        <param name="infoLog" type="GLchar *"/>
+    </function>
+    <function name="glGetShaderPrecisionFormat">
+        <param name="shadertype" type="GLenum" enum="ShaderType"/>
+        <param name="precisiontype" type="GLenum" enum="PrecisionType"/>
+        <param name="range" type="GLint *"/>
+        <param name="precision" type="GLint *"/>
+    </function>
+    <function name="glGetShaderSource">
+        <param name="shader" type="GLuint"/>
+        <param name="bufSize" type="GLsizei"/>
+        <param name="length" type="GLsizei *" output="true"/>
+        <param name="source" type="GLchar *" output="true"/>
+    </function>
+    <function name="glGetString">
+        <param name="name" type="GLenum" enum="StringName"/>
+        <return type="const GLubyte *"/>
+    </function>
+    <function name="glGetTexParameterfv">
+        <param name="target" type="GLenum" enum="TextureTarget"/>
+        <param name="pname" type="GLenum" enum="TextureParameterName"/>
+        <param name="params" type="GLfloat *" output="true" variable_param="pname"/>
+    </function>
+    <function name="glGetTexParameteriv">
+        <param name="target" type="GLenum" enum="TextureTarget"/>
+        <param name="pname" type="GLenum" enum="TextureParameterName"/>
+        <param name="params" type="GLint *" output="true" variable_param="pname"/>
+    </function>
+    <function name="glGetUniformfv">
+        <param name="program" type="GLuint"/>
+        <param name="location" type="GLint"/>
+        <param name="params" type="GLfloat *" output="true"/>
+    </function>
+    <function name="glGetUniformiv">
+        <param name="program" type="GLuint"/>
+        <param name="location" type="GLint"/>
+        <param name="params" type="GLint *" output="true"/>
+    </function>
+    <function name="glGetUniformLocation">
+        <param name="program" type="GLuint"/>
+        <param name="name" type="const GLchar *"/>
+        <return type="GLint"/>
+    </function>
+    <function name="glGetVertexAttribfv">
+        <param name="index" type="GLuint"/>
+        <param name="pname" type="GLenum" enum="GetVertexAttribParameterPName"/>
+        <param name="params" type="GLfloat *" output="true" variable_param="pname"/>
+    </function>
+    <function name="glGetVertexAttribiv">
+        <param name="index" type="GLuint"/>
+        <param name="pname" type="GLenum" enum="GetVertexAttribParameterPName"/>
+        <param name="params" type="GLint *" output="true" variable_param="pname"/>
+    </function>
+    <function name="glGetVertexAttribPointerv">
+        <param name="index" type="GLuint"/>
+        <param name="pname" type="GLenum" enum="GetVertexAttribPointerPName"/>
+        <param name="pointer" type="GLvoid **" output="true"/>
+    </function>
+    <function name="glHint">
+        <param name="target" type="GLenum" enum="HintTarget"/>
+        <param name="mode" type="GLenum" enum="HintMode"/>
+    </function>
+    <function name="glIsBuffer">
+        <param name="buffer" type="GLuint"/>
+        <return type="GLboolean"/>
+    </function>
+    <function name="glIsEnabled">
+        <param name="cap" type="GLenum" enum="EnableCap"/>
+        <return type="GLboolean"/>
+    </function>
+    <function name="glIsFramebuffer">
+        <param name="framebuffer" type="GLuint"/>
+	<return type="GLboolean"/>
+    </function>
+    <function name="glIsProgram">
+        <param name="program" type="GLuint"/>
+        <return type="GLboolean"/>
+    </function>
+    <function name="glIsRenderbuffer">
+        <param name="renderbuffer" type="GLuint"/>
+	<return type="GLboolean"/>
+    </function>
+    <function name="glIsShader">
+        <param name="shader" type="GLuint"/>
+        <return type="GLboolean"/>
+    </function>
+    <function name="glIsTexture">
+        <param name="texture" type="GLuint"/>
+        <return type="GLboolean"/>
+    </function>
+    <function name="glLineWidth">
+        <param name="width" type="GLfloat"/>
+    </function>
+    <function name="glLinkProgram">
+        <param name="program" type="GLuint"/>
+    </function>
+    <function name="glPixelStorei">
+        <param name="pname" type="GLenum" enum="PixelStorePName"/>
+        <param name="param" type="GLint"/>
+    </function>
+    <function name="glPolygonOffset">
+        <param name="factor" type="GLfloat"/>
+        <param name="units" type="GLfloat"/>
+    </function>
+    <function name="glReadPixels">
+        <param name="x" type="GLint"/>
+        <param name="y" type="GLint"/>
+        <param name="width" type="GLsizei"/>
+        <param name="height" type="GLsizei"/>
+        <param name="format" type="GLenum" enum="PixelFormat"/>
+        <param name="type" type="GLenum" enum="PixelType"/>
+        <param name="pixels" type="GLvoid *" output="true"  img_width="width" img_height="height" img_format="format" img_type="type" img_target="0"/>
+    </function>
+    <function name="glReleaseShaderCompiler">
+    </function>
+    <function name="glRenderbufferStorage">
+        <param name="target" type="GLenum" enum="RenderbufferTarget"/>
+        <param name="internalformat" type="GLenum" enum="RenderbufferInternalFormat"/>
+        <param name="width" type="GLsizei"/>
+        <param name="height" type="GLsizei"/>
+    </function>
+    <function name="glSampleCoverage">
+        <param name="value" type="GLclampf"/>
+        <param name="invert" type="GLboolean"/>
+    </function>
+    <function name="glScissor">
+        <param name="x" type="GLint"/>
+        <param name="y" type="GLint"/>
+        <param name="width" type="GLsizei"/>
+        <param name="height" type="GLsizei"/>
+    </function>
+    <function name="glShaderBinary">
+        <param name="n" type="GLsizei"/>
+        <param name="shaders" type="const GLuint *"/>
+        <param name="binaryformat" type="GLenum" enum="ShaderBinaryFormat"/>
+        <param name="binary" type="const GLvoid *"/>
+        <param name="length" type="GLsizei"/>
+    </function>
+    <function name="glShaderSource">
+        <param name="shader" type="GLuint"/>
+        <param name="count" type="GLsizei"/>
+        <param name="string" type="const GLchar * const *"/>
+        <param name="length" type="const GLint *"/>
+    </function>
+    <function name="glStencilFunc">
+        <param name="func" type="GLenum" enum="StencilFunction"/>
+        <param name="ref" type="GLint"/>
+        <param name="mask" type="GLuint"/>
+    </function>
+    <function name="glStencilFuncSeparate">
+        <param name="face" type="GLenum" enum="CullFaceMode"/>
+        <param name="func" type="GLenum" enum="StencilFunction"/>
+        <param name="ref" type="GLint"/>
+        <param name="mask" type="GLuint"/>
+    </function>
+    <function name="glStencilMask">
+        <param name="mask" type="GLuint"/>
+    </function>
+    <function name="glStencilMaskSeparate">
+        <param name="face" type="GLenum" enum="CullFaceMode"/>
+        <param name="mask" type="GLuint"/>
+    </function>
+    <function name="glStencilOp">
+        <param name="fail" type="GLenum" enum="StencilOp"/>
+        <param name="zfail" type="GLenum" enum="StencilOp"/>
+        <param name="zpass" type="GLenum" enum="StencilOp"/>
+    </function>
+    <function name="glStencilOpSeparate">
+        <param name="face" type="GLenum" enum="CullFaceMode"/>
+        <param name="sfail" type="GLenum" enum="StencilOp"/>
+        <param name="zfail" type="GLenum" enum="StencilOp"/>
+        <param name="zpass" type="GLenum" enum="StencilOp"/>
+    </function>
+    <function name="glTexImage2D">
+        <param name="target" type="GLenum" enum="TextureTargetFace"/>
+        <param name="level" type="GLint"/>
+        <param name="internalformat" type="GLint" enum="TextureInternalFormat"/>
+        <param name="width" type="GLsizei"/>
+        <param name="height" type="GLsizei"/>
+        <param name="border" type="GLint"/>
+        <param name="format" type="GLenum" enum="PixelFormat"/>
+        <param name="type" type="GLenum" enum="PixelType"/>
+        <param name="pixels" type="const GLvoid *" img_width="width" img_height="height" img_format="format" img_type="type" img_target="target" img_send_null="true" img_pad_dimensions="true"/>
+    </function>
+    <function name="glTexParameterf">
+        <param name="target" type="GLenum" enum="TextureTarget"/>
+        <param name="pname" type="GLenum" enum="TextureParameterName"/>
+        <param name="param" type="GLfloat"/>
+    </function>
+    <function name="glTexParameterfv">
+        <param name="target" type="GLenum" enum="TextureTarget"/>
+        <param name="pname" type="GLenum" enum="TextureParameterName"/>
+        <param name="params" type="const GLfloat *" variable_param="pname"/>
+    </function>
+    <function name="glTexParameteri">
+        <param name="target" type="GLenum" enum="TextureTarget"/>
+        <param name="pname" type="GLenum" enum="TextureParameterName"/>
+        <param name="param" type="GLint"/>
+    </function>
+    <function name="glTexParameteriv">
+        <param name="target" type="GLenum" enum="TextureTarget"/>
+        <param name="pname" type="GLenum" enum="TextureParameterName"/>
+        <param name="params" type="const GLint *" variable_param="pname"/>
+    </function>
+    <function name="glTexSubImage2D">
+        <param name="target" type="GLenum" enum="TextureTargetFace"/>
+        <param name="level" type="GLint"/>
+        <param name="xoffset" type="GLint"/>
+        <param name="yoffset" type="GLint"/>
+        <param name="width" type="GLsizei"/>
+        <param name="height" type="GLsizei"/>
+        <param name="format" type="GLenum" enum="PixelFormat"/>
+        <param name="type" type="GLenum" enum="PixelType"/>
+        <param name="pixels" type="const GLvoid *" img_width="width" img_height="height" img_xoff="xoffset" img_yoff="yoffset" img_format="format" img_type="type" img_target="target" img_pad_dimensions="true"/>
+    </function>
+    <function name="glUniform1f">
+        <param name="location" type="GLint"/>
+        <param name="v0" type="GLfloat"/>
+    </function>
+    <function name="glUniform1fv">
+        <param name="location" type="GLint"/>
+        <param name="count" type="GLsizei"/>
+        <param name="value" type="const GLfloat *"/>
+    </function>
+    <function name="glUniform1i">
+        <param name="location" type="GLint"/>
+        <param name="v0" type="GLint"/>
+    </function>
+    <function name="glUniform1iv">
+        <param name="location" type="GLint"/>
+        <param name="count" type="GLsizei"/>
+        <param name="value" type="const GLint *"/>
+    </function>
+    <function name="glUniform2f">
+        <param name="location" type="GLint"/>
+        <param name="v0" type="GLfloat"/>
+        <param name="v1" type="GLfloat"/>
+    </function>
+    <function name="glUniform2fv">
+        <param name="location" type="GLint"/>
+        <param name="count" type="GLsizei"/>
+        <param name="value" type="const GLfloat *"/>
+    </function>
+    <function name="glUniform2i">
+        <param name="location" type="GLint"/>
+        <param name="v0" type="GLint"/>
+        <param name="v1" type="GLint"/>
+    </function>
+    <function name="glUniform2iv">
+        <param name="location" type="GLint"/>
+        <param name="count" type="GLsizei"/>
+        <param name="value" type="const GLint *"/>
+    </function>
+    <function name="glUniform3f">
+        <param name="location" type="GLint"/>
+        <param name="v0" type="GLfloat"/>
+        <param name="v1" type="GLfloat"/>
+        <param name="v2" type="GLfloat"/>
+    </function>
+    <function name="glUniform3fv">
+        <param name="location" type="GLint"/>
+        <param name="count" type="GLsizei"/>
+        <param name="value" type="const GLfloat *"/>
+    </function>
+    <function name="glUniform3i">
+        <param name="location" type="GLint"/>
+        <param name="v0" type="GLint"/>
+        <param name="v1" type="GLint"/>
+        <param name="v2" type="GLint"/>
+    </function>
+    <function name="glUniform3iv">
+        <param name="location" type="GLint"/>
+        <param name="count" type="GLsizei"/>
+        <param name="value" type="const GLint *"/>
+    </function>
+    <function name="glUniform4f">
+        <param name="location" type="GLint"/>
+        <param name="v0" type="GLfloat"/>
+        <param name="v1" type="GLfloat"/>
+        <param name="v2" type="GLfloat"/>
+        <param name="v3" type="GLfloat"/>
+    </function>
+    <function name="glUniform4fv">
+        <param name="location" type="GLint"/>
+        <param name="count" type="GLsizei"/>
+        <param name="value" type="const GLfloat *"/>
+    </function>
+    <function name="glUniform4i">
+        <param name="location" type="GLint"/>
+        <param name="v0" type="GLint"/>
+        <param name="v1" type="GLint"/>
+        <param name="v2" type="GLint"/>
+        <param name="v3" type="GLint"/>
+    </function>
+    <function name="glUniform4iv">
+        <param name="location" type="GLint"/>
+        <param name="count" type="GLsizei"/>
+        <param name="value" type="const GLint *"/>
+    </function>
+    <function name="glUniformMatrix2fv">
+        <param name="location" type="GLint"/>
+        <param name="count" type="GLsizei"/>
+        <param name="transpose" type="GLboolean"/>
+        <param name="value" type="const GLfloat *"/>
+    </function>
+    <function name="glUniformMatrix3fv">
+        <param name="location" type="GLint"/>
+        <param name="count" type="GLsizei"/>
+        <param name="transpose" type="GLboolean"/>
+        <param name="value" type="const GLfloat *"/>
+    </function>
+    <function name="glUniformMatrix4fv">
+        <param name="location" type="GLint"/>
+        <param name="count" type="GLsizei"/>
+        <param name="transpose" type="GLboolean"/>
+        <param name="value" type="const GLfloat *"/>
+    </function>
+    <function name="glUseProgram">
+        <param name="program" type="GLuint"/>
+    </function>
+    <function name="glValidateProgram">
+        <param name="program" type="GLuint"/>
+    </function>
+    <function name="glVertexAttrib1f">
+        <param name="index" type="GLuint"/>
+        <param name="x" type="GLfloat"/>
+    </function>
+    <function name="glVertexAttrib1fv">
+        <param name="index" type="GLuint"/>
+        <param name="v" type="const GLfloat *"/>
+    </function>
+    <function name="glVertexAttrib2f">
+        <param name="index" type="GLuint"/>
+        <param name="x" type="GLfloat"/>
+        <param name="y" type="GLfloat"/>
+    </function>
+    <function name="glVertexAttrib2fv">
+        <param name="index" type="GLuint"/>
+        <param name="v" type="const GLfloat *"/>
+    </function>
+    <function name="glVertexAttrib3f">
+        <param name="index" type="GLuint"/>
+        <param name="x" type="GLfloat"/>
+        <param name="y" type="GLfloat"/>
+        <param name="z" type="GLfloat"/>
+    </function>
+    <function name="glVertexAttrib3fv">
+        <param name="index" type="GLuint"/>
+        <param name="v" type="const GLfloat *"/>
+    </function>
+    <function name="glVertexAttrib4f">
+        <param name="index" type="GLuint"/>
+        <param name="x" type="GLfloat"/>
+        <param name="y" type="GLfloat"/>
+        <param name="z" type="GLfloat"/>
+        <param name="w" type="GLfloat"/>
+    </function>
+    <function name="glVertexAttrib4fv">
+        <param name="index" type="GLuint"/>
+        <param name="v" type="const GLfloat *"/>
+    </function>
+    <function name="glVertexAttribPointer">
+        <param name="index" type="GLuint"/>
+        <param name="size" type="GLint"/>
+        <param name="type" type="GLenum" enum="VertexAttribType"/>
+        <param name="normalized" type="GLboolean"/>
+        <param name="stride" type="GLsizei"/>
+        <param name="pointer" type="const GLvoid *"/>
+    </function>
+    <function name="glViewport">
+        <param name="x" type="GLint"/>
+        <param name="y" type="GLint"/>
+        <param name="width" type="GLsizei"/>
+        <param name="height" type="GLsizei"/>
+    </function>
+</functions>
+
+</root>
+

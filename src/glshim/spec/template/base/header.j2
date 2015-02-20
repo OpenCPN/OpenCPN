@@ -1,0 +1,10 @@
+{% extends "base/base.j2" %}
+{% block main %}
+{% include "base/headers.j2" %}
+
+{% set guard = name.upper().replace('.', '_') -%}
+#ifndef {{ guard }}
+#define {{ guard }}
+{% block content %}{% endblock %}
+#endif
+{% endblock %}

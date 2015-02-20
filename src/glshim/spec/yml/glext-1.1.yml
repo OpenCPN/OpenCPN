@@ -1,0 +1,4 @@
+# glTexGenfOES: [void, GLenum coord, GLenum pname, GLfloat param]
+# glTexGenfvOES: [void, GLenum coord, GLenum pname, "const GLfloat *params"]
+# glTexGeniOES: [void, GLenum coord, GLenum pname, GLint param]
+# glTexGenivOES: [void, GLenum coord, GLenum pname, "const GLint *params"]

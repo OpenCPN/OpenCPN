@@ -1,0 +1,1075 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<specification xmlns="http://www.opengl.org/registry/" name="GLX" specversion="1.3" fileversion="0.0.1" >
+	<typemap >
+        <type-def typename="Int32" C-lang="uint32_t" />
+		<type-def typename="GLXPixmap" C-lang="GLXPixmap" />
+		<type-def typename="FunctionPointer" C-lang="__GLXextFuncPtr" />
+		<type-def typename="GLXPbufferSGIX" C-lang="GLXPbufferSGIX" />
+		<type-def typename="long" C-lang="long" />
+		<type-def typename="DMbuffer" C-lang="DMbuffer" />
+		<type-def typename="GLXFBConfig" C-lang="GLXFBConfig" />
+		<type-def typename="VLServer" C-lang="VLServer" />
+		<type-def typename="GLXPbuffer" C-lang="GLXPbuffer" />
+		<type-def typename="int64_t" C-lang="int64_t" />
+		<type-def typename="GLXFBConfigSGIX" C-lang="GLXFBConfigSGIX" />
+		<type-def typename="GLubyte" C-lang="GLubyte" />
+		<type-def typename="GLenum" C-lang="GLenum" />
+		<type-def typename="VLPath" C-lang="VLPath" />
+		<type-def typename="GLXHyperpipeConfigSGIXPointer" C-lang="GLXHyperpipeConfigSGIX *" />
+		<type-def typename="constGLXContext" C-lang="const GLXContext" />
+		<type-def typename="GLXDrawable" C-lang="GLXDrawable" />
+		<type-def typename="Pixmap" C-lang="Pixmap" />
+		<type-def typename="Colormap" C-lang="Colormap" />
+		<type-def typename="GLXFBConfigPointer" C-lang="GLXFBConfig *" />
+		<type-def typename="Uint" C-lang="unsigned int" />
+		<type-def typename="int32_t" C-lang="int32_t" />
+		<type-def typename="GLint" C-lang="GLint" />
+		<type-def typename="uintPointer" C-lang="unsigned int *" />
+		<type-def typename="GLXVideoDeviceNV" C-lang="GLXVideoDeviceNV" />
+		<type-def typename="Window" C-lang="Window" />
+		<type-def typename="GLfunction" C-lang="GLfunction" />
+		<type-def typename="GLXVideoCaptureDeviceNVPointer" C-lang="GLXVideoCaptureDeviceNV *" />
+		<type-def typename="GLXVideoSourceSGIX" C-lang="GLXVideoSourceSGIX" />
+		<type-def typename="Display" C-lang="Display" />
+		<type-def typename="GLXFBConfigSGIXPointer" C-lang="GLXFBConfigSGIX *" />
+		<type-def typename="XVisualInfoPointer" C-lang="XVisualInfo *" />
+		<type-def typename="Status" C-lang="Status" />
+		<type-def typename="GLboolean" C-lang="GLboolean" />
+		<type-def typename="Bool" C-lang="Bool" />
+		<type-def typename="GLXVideoCaptureDeviceNV" C-lang="GLXVideoCaptureDeviceNV" />
+		<type-def typename="GLXHyperpipeNetworkSGIXPointer" C-lang="GLXHyperpipeNetworkSGIX *" />
+		<type-def typename="DisplayPointer" C-lang="Display *" />
+		<type-def typename="VLNode" C-lang="VLNode" />
+		<type-def typename="GLuint" C-lang="GLuint" />
+		<type-def typename="GLXContext" C-lang="GLXContext" />
+		<type-def typename="GLXContextID" C-lang="GLXContextID" />
+		<type-def typename="GLsizei" C-lang="GLsizei" />
+		<type-def typename="DMparams" C-lang="DMparams" />
+		<type-def typename="GLXHyperpipeConfigSGIX" C-lang="GLXHyperpipeConfigSGIX" />
+		<type-def typename="GLXWindow" C-lang="GLXWindow" />
+		<type-def typename="XVisualInfo" C-lang="XVisualInfo" />
+		<type-def typename="float" C-lang="float" />
+		<type-def typename="void" C-lang="void" />
+		<type-def typename="int" C-lang="int" />
+		<type-def typename="uint" C-lang="unsigned int" />
+		<type-def typename="ulong" C-lang="unsigned long" />
+	</typemap>
+	<extensions >
+		<ext name="GLXStringName" />
+		<ext name="GLXErrorCode" />
+		<ext name="GLXDrawableTypeMask" />
+		<ext name="GLXRenderTypeMask" />
+		<ext name="GLXSyncType" />
+		<ext name="GLXEventMask" />
+		<ext name="GLXPbufferClobberMask" />
+		<ext name="GLXHyperpipeTypeMask" />
+		<ext name="GLXHyperpipeAttrib" />
+		<ext name="GLXHyperpipeMisc" />
+		<ext name="GLXBindToTextureTargetMask" />
+		<ext name="GLXContextFlags" />
+		<ext name="GLXContextProfileMask" />
+		<ext name="GLXAttribute" />
+		<ext name="NV_present_video" />
+		<ext name="EXT_swap_control" />
+		<ext name="EXT_swap_control_tear" />
+		<ext name="EXT_buffer_age" />
+		<ext name="GLX_AMD_gpu_association" />
+		<ext name="GLX_ARB_create_context_robustness" />
+		<ext name="ARB_create_context_profile" />
+	</extensions>
+	<enumerations >
+		<enum name="VENDOR" value="0x1" >
+			<ext name="GLXStringName" />
+		</enum>
+		<enum name="VERSION" value="0x2" >
+			<ext name="GLXStringName" />
+		</enum>
+		<enum name="EXTENSIONS" value="0x3" >
+			<ext name="GLXStringName" />
+		</enum>
+		<enum name="BAD_SCREEN" value="1" >
+			<ext name="GLXErrorCode" />
+		</enum>
+		<enum name="BAD_ATTRIBUTE" value="2" >
+			<ext name="GLXErrorCode" />
+		</enum>
+		<enum name="NO_EXTENSION" value="3" >
+			<ext name="GLXErrorCode" />
+		</enum>
+		<enum name="BAD_VISUAL" value="4" >
+			<ext name="GLXErrorCode" />
+		</enum>
+		<enum name="BAD_CONTEXT" value="5" >
+			<ext name="GLXErrorCode" />
+		</enum>
+		<enum name="BAD_VALUE" value="6" >
+			<ext name="GLXErrorCode" />
+		</enum>
+		<enum name="BAD_ENUM" value="7" >
+			<ext name="GLXErrorCode" />
+		</enum>
+		<enum name="BAD_HYPERPIPE_CONFIG_SGIX" value="91" >
+			<ext name="GLXErrorCode" />
+		</enum>
+		<enum name="BAD_HYPERPIPE_SGIX" value="92" >
+			<ext name="GLXErrorCode" />
+		</enum>
+		<enum name="WINDOW_BIT" value="0x00000001" >
+			<ext name="GLXDrawableTypeMask" />
+		</enum>
+		<enum name="PIXMAP_BIT" value="0x00000002" >
+			<ext name="GLXDrawableTypeMask" />
+		</enum>
+		<enum name="PBUFFER_BIT" value="0x00000004" >
+			<ext name="GLXDrawableTypeMask" />
+		</enum>
+		<enum name="WINDOW_BIT_SGIX" value="0x00000001" >
+			<ext name="GLXDrawableTypeMask" />
+		</enum>
+		<enum name="PIXMAP_BIT_SGIX" value="0x00000002" >
+			<ext name="GLXDrawableTypeMask" />
+		</enum>
+		<enum name="PBUFFER_BIT_SGIX" value="0x00000004" >
+			<ext name="GLXDrawableTypeMask" />
+		</enum>
+		<enum name="RGBA_BIT" value="0x00000001" >
+			<ext name="GLXRenderTypeMask" />
+		</enum>
+		<enum name="COLOR_INDEX_BIT" value="0x00000002" >
+			<ext name="GLXRenderTypeMask" />
+		</enum>
+		<enum name="RGBA_BIT_SGIX" value="0x00000001" >
+			<ext name="GLXRenderTypeMask" />
+		</enum>
+		<enum name="COLOR_INDEX_BIT_SGIX" value="0x00000002" >
+			<ext name="GLXRenderTypeMask" />
+		</enum>
+		<enum name="RGBA_FLOAT_BIT_ARB" value="0x00000004" >
+			<ext name="GLXRenderTypeMask" />
+		</enum>
+		<enum name="RGBA_UNSIGNED_FLOAT_BIT_EXT" value="0x00000008" >
+			<ext name="GLXRenderTypeMask" />
+		</enum>
+		<enum name="SYNC_FRAME_SGIX" value="0x00000000" >
+			<ext name="GLXSyncType" />
+		</enum>
+		<enum name="SYNC_SWAP_SGIX" value="0x00000001" >
+			<ext name="GLXSyncType" />
+		</enum>
+		<enum name="PBUFFER_CLOBBER_MASK" value="0x08000000" >
+			<ext name="GLXEventMask" />
+		</enum>
+		<enum name="BUFFER_CLOBBER_MASK_SGIX" value="0x08000000" >
+			<ext name="GLXEventMask" />
+		</enum>
+		<enum name="BUFFER_SWAP_COMPLETE_INTEL_MASK" value="0x04000000" >
+			<ext name="GLXEventMask" />
+		</enum>
+		<enum name="FRONT_LEFT_BUFFER_BIT" value="0x00000001" >
+			<ext name="GLXPbufferClobberMask" />
+		</enum>
+		<enum name="FRONT_RIGHT_BUFFER_BIT" value="0x00000002" >
+			<ext name="GLXPbufferClobberMask" />
+		</enum>
+		<enum name="BACK_LEFT_BUFFER_BIT" value="0x00000004" >
+			<ext name="GLXPbufferClobberMask" />
+		</enum>
+		<enum name="BACK_RIGHT_BUFFER_BIT" value="0x00000008" >
+			<ext name="GLXPbufferClobberMask" />
+		</enum>
+		<enum name="AUX_BUFFERS_BIT" value="0x00000010" >
+			<ext name="GLXPbufferClobberMask" />
+		</enum>
+		<enum name="DEPTH_BUFFER_BIT" value="0x00000020" >
+			<ext name="GLXPbufferClobberMask" />
+		</enum>
+		<enum name="STENCIL_BUFFER_BIT" value="0x00000040" >
+			<ext name="GLXPbufferClobberMask" />
+		</enum>
+		<enum name="ACCUM_BUFFER_BIT" value="0x00000080" >
+			<ext name="GLXPbufferClobberMask" />
+		</enum>
+		<enum name="FRONT_LEFT_BUFFER_BIT_SGIX" value="0x00000001" >
+			<ext name="GLXPbufferClobberMask" />
+		</enum>
+		<enum name="FRONT_RIGHT_BUFFER_BIT_SGIX" value="0x00000002" >
+			<ext name="GLXPbufferClobberMask" />
+		</enum>
+		<enum name="BACK_LEFT_BUFFER_BIT_SGIX" value="0x00000004" >
+			<ext name="GLXPbufferClobberMask" />
+		</enum>
+		<enum name="BACK_RIGHT_BUFFER_BIT_SGIX" value="0x00000008" >
+			<ext name="GLXPbufferClobberMask" />
+		</enum>
+		<enum name="AUX_BUFFERS_BIT_SGIX" value="0x00000010" >
+			<ext name="GLXPbufferClobberMask" />
+		</enum>
+		<enum name="DEPTH_BUFFER_BIT_SGIX" value="0x00000020" >
+			<ext name="GLXPbufferClobberMask" />
+		</enum>
+		<enum name="STENCIL_BUFFER_BIT_SGIX" value="0x00000040" >
+			<ext name="GLXPbufferClobberMask" />
+		</enum>
+		<enum name="ACCUM_BUFFER_BIT_SGIX" value="0x00000080" >
+			<ext name="GLXPbufferClobberMask" />
+		</enum>
+		<enum name="SAMPLE_BUFFERS_BIT_SGIX" value="0x00000100" >
+			<ext name="GLXPbufferClobberMask" />
+		</enum>
+		<enum name="HYPERPIPE_DISPLAY_PIPE_SGIX" value="0x00000001" >
+			<ext name="GLXHyperpipeTypeMask" />
+		</enum>
+		<enum name="HYPERPIPE_RENDER_PIPE_SGIX" value="0x00000002" >
+			<ext name="GLXHyperpipeTypeMask" />
+		</enum>
+		<enum name="PIPE_RECT_SGIX" value="0x00000001" >
+			<ext name="GLXHyperpipeAttrib" />
+		</enum>
+		<enum name="PIPE_RECT_LIMITS_SGIX" value="0x00000002" >
+			<ext name="GLXHyperpipeAttrib" />
+		</enum>
+		<enum name="HYPERPIPE_STEREO_SGIX" value="0x00000003" >
+			<ext name="GLXHyperpipeAttrib" />
+		</enum>
+		<enum name="HYPERPIPE_PIXEL_AVERAGE_SGIX" value="0x00000004" >
+			<ext name="GLXHyperpipeAttrib" />
+		</enum>
+		<enum name="HYPERPIPE_PIPE_NAME_LENGTH_SGIX" value="80" >
+			<ext name="GLXHyperpipeMisc" />
+		</enum>
+		<enum name="TEXTURE_1D_BIT_EXT" value="0x00000001" >
+			<ext name="GLXBindToTextureTargetMask" />
+		</enum>
+		<enum name="TEXTURE_2D_BIT_EXT" value="0x00000002" >
+			<ext name="GLXBindToTextureTargetMask" />
+		</enum>
+		<enum name="TEXTURE_RECTANGLE_BIT_EXT" value="0x00000004" >
+			<ext name="GLXBindToTextureTargetMask" />
+		</enum>
+		<enum name="CONTEXT_DEBUG_BIT_ARB" value="0x00000001" >
+			<ext name="GLXContextFlags" />
+		</enum>
+		<enum name="CONTEXT_FORWARD_COMPATIBLE_BIT_ARB" value="0x00000002" >
+			<ext name="GLXContextFlags" />
+		</enum>
+		<enum name="CONTEXT_ROBUST_ACCESS_BIT_ARB" value="0x00000004" >
+			<ext name="GLXContextFlags" />
+		</enum>
+		<enum name="CONTEXT_RESET_ISOLATION_BIT_ARB" value="0x00000008" >
+			<ext name="GLXContextFlags" />
+		</enum>
+		<enum name="CONTEXT_CORE_PROFILE_BIT_ARB" value="0x00000001" >
+			<ext name="GLXContextProfileMask" />
+		</enum>
+		<enum name="CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB" value="0x00000002" >
+			<ext name="GLXContextProfileMask" />
+		</enum>
+		<enum name="CONTEXT_ES_PROFILE_BIT_EXT" value="0x00000004" >
+			<ext name="GLXContextProfileMask" />
+		</enum>
+		<enum name="CONTEXT_ES2_PROFILE_BIT_EXT" value="0x00000004" >
+			<ext name="GLXContextProfileMask" />
+		</enum>
+		<enum name="USE_GL" value="1" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="BUFFER_SIZE" value="2" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="LEVEL" value="3" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="RGBA" value="4" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="DOUBLEBUFFER" value="5" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="STEREO" value="6" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="AUX_BUFFERS" value="7" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="RED_SIZE" value="8" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="GREEN_SIZE" value="9" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="BLUE_SIZE" value="10" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="ALPHA_SIZE" value="11" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="DEPTH_SIZE" value="12" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="STENCIL_SIZE" value="13" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="ACCUM_RED_SIZE" value="14" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="ACCUM_GREEN_SIZE" value="15" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="ACCUM_BLUE_SIZE" value="16" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="ACCUM_ALPHA_SIZE" value="17" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="CONFIG_CAVEAT" value="0x20" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="X_VISUAL_TYPE" value="0x22" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="TRANSPARENT_TYPE" value="0x23" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="TRANSPARENT_INDEX_VALUE" value="0x24" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="TRANSPARENT_RED_VALUE" value="0x25" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="TRANSPARENT_GREEN_VALUE" value="0x26" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="TRANSPARENT_BLUE_VALUE" value="0x27" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="TRANSPARENT_ALPHA_VALUE" value="0x28" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="DONT_CARE" value="0xFFFFFFFF" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="NONE" value="0x8000" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="SLOW_CONFIG" value="0x8001" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="TRUE_COLOR" value="0x8002" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="DIRECT_COLOR" value="0x8003" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="PSEUDO_COLOR" value="0x8004" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="STATIC_COLOR" value="0x8005" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="GRAY_SCALE" value="0x8006" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="STATIC_GRAY" value="0x8007" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="TRANSPARENT_RGB" value="0x8008" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="TRANSPARENT_INDEX" value="0x8009" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="VISUAL_ID" value="0x800B" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="SCREEN" value="0x800C" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="NON_CONFORMANT_CONFIG" value="0x800D" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="DRAWABLE_TYPE" value="0x8010" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="RENDER_TYPE" value="0x8011" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="X_RENDERABLE" value="0x8012" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="FBCONFIG_ID" value="0x8013" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="RGBA_TYPE" value="0x8014" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="COLOR_INDEX_TYPE" value="0x8015" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="MAX_PBUFFER_WIDTH" value="0x8016" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="MAX_PBUFFER_HEIGHT" value="0x8017" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="MAX_PBUFFER_PIXELS" value="0x8018" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="PRESERVED_CONTENTS" value="0x801B" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="LARGEST_PBUFFER" value="0x801C" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="WIDTH" value="0x801D" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="HEIGHT" value="0x801E" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="EVENT_MASK" value="0x801F" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="DAMAGED" value="0x8020" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="SAVED" value="0x8021" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="WINDOW" value="0x8022" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="PBUFFER" value="0x8023" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="PBUFFER_HEIGHT" value="0x8040" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="PBUFFER_WIDTH" value="0x8041" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="VISUAL_CAVEAT_EXT" value="0x20" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="X_VISUAL_TYPE_EXT" value="0x22" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="TRANSPARENT_TYPE_EXT" value="0x23" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="TRANSPARENT_INDEX_VALUE_EXT" value="0x24" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="TRANSPARENT_RED_VALUE_EXT" value="0x25" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="TRANSPARENT_GREEN_VALUE_EXT" value="0x26" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="TRANSPARENT_BLUE_VALUE_EXT" value="0x27" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="TRANSPARENT_ALPHA_VALUE_EXT" value="0x28" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="NONE_EXT" value="0x8000" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="SLOW_VISUAL_EXT" value="0x8001" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="TRUE_COLOR_EXT" value="0x8002" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="DIRECT_COLOR_EXT" value="0x8003" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="PSEUDO_COLOR_EXT" value="0x8004" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="STATIC_COLOR_EXT" value="0x8005" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="GRAY_SCALE_EXT" value="0x8006" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="STATIC_GRAY_EXT" value="0x8007" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="TRANSPARENT_RGB_EXT" value="0x8008" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="TRANSPARENT_INDEX_EXT" value="0x8009" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="SHARE_CONTEXT_EXT" value="0x800A" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="VISUAL_ID_EXT" value="0x800B" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="SCREEN_EXT" value="0x800C" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="NON_CONFORMANT_VISUAL_EXT" value="0x800D" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="DRAWABLE_TYPE_SGIX" value="0x8010" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="RENDER_TYPE_SGIX" value="0x8011" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="X_RENDERABLE_SGIX" value="0x8012" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="FBCONFIG_ID_SGIX" value="0x8013" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="RGBA_TYPE_SGIX" value="0x8014" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="COLOR_INDEX_TYPE_SGIX" value="0x8015" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="MAX_PBUFFER_WIDTH_SGIX" value="0x8016" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="MAX_PBUFFER_HEIGHT_SGIX" value="0x8017" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="MAX_PBUFFER_PIXELS_SGIX" value="0x8018" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="OPTIMAL_PBUFFER_WIDTH_SGIX" value="0x8019" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="OPTIMAL_PBUFFER_HEIGHT_SGIX" value="0x801A" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="PRESERVED_CONTENTS_SGIX" value="0x801B" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="LARGEST_PBUFFER_SGIX" value="0x801C" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="WIDTH_SGIX" value="0x801D" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="HEIGHT_SGIX" value="0x801E" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="EVENT_MASK_SGIX" value="0x801F" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="DAMAGED_SGIX" value="0x8020" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="SAVED_SGIX" value="0x8021" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="WINDOW_SGIX" value="0x8022" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="PBUFFER_SGIX" value="0x8023" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="DIGITAL_MEDIA_PBUFFER_SGIX" value="0x8024" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="BLENDED_RGBA_SGIS" value="0x8025" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="MULTISAMPLE_SUB_RECT_WIDTH_SGIS" value="0x8026" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="MULTISAMPLE_SUB_RECT_HEIGHT_SGIS" value="0x8027" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="VISUAL_SELECT_GROUP_SGIX" value="0x8028" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="HYPERPIPE_ID_SGIX" value="0x8030" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="SAMPLE_BUFFERS_SGIS" value="100000" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="SAMPLES_SGIS" value="100001" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="SAMPLE_BUFFERS_ARB" value="100000" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="SAMPLES_ARB" value="100001" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="SAMPLE_BUFFERS" value="100000" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="SAMPLES" value="100001" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="COVERAGE_SAMPLES_NV" value="100001" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="CONTEXT_MAJOR_VERSION_ARB" value="0x2091" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="CONTEXT_MINOR_VERSION_ARB" value="0x2092" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="CONTEXT_FLAGS_ARB" value="0x2094" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="CONTEXT_ALLOW_BUFFER_BYTE_ORDER_MISMATCH_ARB" value="0x2095" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="FLOAT_COMPONENTS_NV" value="0x20B0" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="RGBA_UNSIGNED_FLOAT_TYPE_EXT" value="0x20B1" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="FRAMEBUFFER_SRGB_CAPABLE_ARB" value="0x20B2" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="FRAMEBUFFER_SRGB_CAPABLE_EXT" value="0x20B2" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="COLOR_SAMPLES_NV" value="0x20B3" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="RGBA_FLOAT_TYPE_ARB" value="0x20B9" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="VIDEO_OUT_COLOR_NV" value="0x20C3" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="VIDEO_OUT_ALPHA_NV" value="0x20C4" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="VIDEO_OUT_DEPTH_NV" value="0x20C5" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="VIDEO_OUT_COLOR_AND_ALPHA_NV" value="0x20C6" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="VIDEO_OUT_COLOR_AND_DEPTH_NV" value="0x20C7" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="VIDEO_OUT_FRAME_NV" value="0x20C8" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="VIDEO_OUT_FIELD_1_NV" value="0x20C9" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="VIDEO_OUT_FIELD_2_NV" value="0x20CA" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="VIDEO_OUT_STACKED_FIELDS_1_2_NV" value="0x20CB" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="VIDEO_OUT_STACKED_FIELDS_2_1_NV" value="0x20CC" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="DEVICE_ID_NV" value="0x20CD" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="UNIQUE_ID_NV" value="0x20CE" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="NUM_VIDEO_CAPTURE_SLOTS_NV" value="0x20CF" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="BIND_TO_TEXTURE_RGB_EXT" value="0x20D0" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="BIND_TO_TEXTURE_RGBA_EXT" value="0x20D1" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="BIND_TO_MIPMAP_TEXTURE_EXT" value="0x20D2" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="BIND_TO_TEXTURE_TARGETS_EXT" value="0x20D3" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="Y_INVERTED_EXT" value="0x20D4" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="TEXTURE_FORMAT_EXT" value="0x20D5" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="TEXTURE_TARGET_EXT" value="0x20D6" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="MIPMAP_TEXTURE_EXT" value="0x20D7" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="TEXTURE_FORMAT_NONE_EXT" value="0x20D8" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="TEXTURE_FORMAT_RGB_EXT" value="0x20D9" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="TEXTURE_FORMAT_RGBA_EXT" value="0x20DA" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="TEXTURE_1D_EXT" value="0x20DB" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="TEXTURE_2D_EXT" value="0x20DC" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="TEXTURE_RECTANGLE_EXT" value="0x20DD" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="FRONT_LEFT_EXT" value="0x20DE" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="FRONT_RIGHT_EXT" value="0x20DF" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="BACK_LEFT_EXT" value="0x20E0" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="BACK_RIGHT_EXT" value="0x20E1" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="FRONT_EXT" ref="FRONT_LEFT_EXT" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="BACK_EXT" ref="BACK_LEFT_EXT" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="AUX0_EXT" value="0x20E2" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="AUX1_EXT" value="0x20E3" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="AUX2_EXT" value="0x20E4" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="AUX3_EXT" value="0x20E5" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="AUX4_EXT" value="0x20E6" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="AUX5_EXT" value="0x20E7" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="AUX6_EXT" value="0x20E8" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="AUX7_EXT" value="0x20E9" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="AUX8_EXT" value="0x20EA" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="AUX9_EXT" value="0x20EB" >
+			<ext name="GLXAttribute" />
+		</enum>
+		<enum name="NUM_VIDEO_SLOTS_NV" value="0x20F0" >
+			<ext name="NV_present_video" />
+		</enum>
+		<enum name="SWAP_INTERVAL_EXT" value="0x20F1" >
+			<ext name="EXT_swap_control" />
+		</enum>
+		<enum name="MAX_SWAP_INTERVAL_EXT" value="0x20F2" >
+			<ext name="EXT_swap_control" />
+		</enum>
+		<enum name="LATE_SWAPS_TEAR_EXT" value="0x20F3" >
+			<ext name="EXT_swap_control_tear" />
+		</enum>
+		<enum name="BACK_BUFFER_AGE_EXT" value="0x20F4" >
+			<ext name="EXT_buffer_age" />
+		</enum>
+		<enum name="GPU_VENDOR_AMD" value="0x1F00" >
+			<ext name="GLX_AMD_gpu_association" />
+		</enum>
+		<enum name="GPU_RENDERER_STRING_AMD" value="0x1F01" >
+			<ext name="GLX_AMD_gpu_association" />
+		</enum>
+		<enum name="GPU_OPENGL_VERSION_STRING_AMD" value="0x1F02" >
+			<ext name="GLX_AMD_gpu_association" />
+		</enum>
+		<enum name="GPU_FASTEST_TARGET_GPUS_AMD" value="0x21A2" >
+			<ext name="GLX_AMD_gpu_association" />
+		</enum>
+		<enum name="GPU_RAM_AMD" value="0x21A3" >
+			<ext name="GLX_AMD_gpu_association" />
+		</enum>
+		<enum name="GPU_CLOCK_AMD" value="0x21A4" >
+			<ext name="GLX_AMD_gpu_association" />
+		</enum>
+		<enum name="GPU_NUM_PIPES_AMD" value="0x21A5" >
+			<ext name="GLX_AMD_gpu_association" />
+		</enum>
+		<enum name="GPU_NUM_SIMD_AMD" value="0x21A6" >
+			<ext name="GLX_AMD_gpu_association" />
+		</enum>
+		<enum name="GPU_NUM_RB_AMD" value="0x21A7" >
+			<ext name="GLX_AMD_gpu_association" />
+		</enum>
+		<enum name="GPU_NUM_SPI_AMD" value="0x21A8" >
+			<ext name="GLX_AMD_gpu_association" />
+		</enum>
+		<enum name="LOSE_CONTEXT_ON_RESET_ARB" value="0x8252" >
+			<ext name="GLX_ARB_create_context_robustness" />
+		</enum>
+		<enum name="CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB" value="0x8256" >
+			<ext name="GLX_ARB_create_context_robustness" />
+		</enum>
+		<enum name="NO_RESET_NOTIFICATION_ARB" value="0x8261" >
+			<ext name="GLX_ARB_create_context_robustness" />
+		</enum>
+		<enum name="CONTEXT_PROFILE_MASK_ARB" value="0x9126" >
+			<ext name="ARB_create_context_profile" />
+		</enum>
+	</enumerations>
+	<functions >
+		<passthru ><![CDATA[]]></passthru>
+		<property-defs >
+			<property name="glxvendorglx" any="true" />
+			<property name="vectorequiv" any="true" />
+			<property name="required-props" any="true" />
+			<property name="category" >
+				<value >pixel-rw</value>
+				<value >bgn-end</value>
+				<value >display-list</value>
+				<value >drawing</value>
+				<value >drawing-control</value>
+				<value >feedback</value>
+				<value >framebuf</value>
+				<value >misc</value>
+				<value >modeling</value>
+				<value >pixel-op</value>
+				<value >pixel-rw</value>
+				<value >state-req</value>
+				<value >xform</value>
+				<value >glx</value>
+				<value >glxopcode</value>
+			</property>
+			<property name="dlflags" >
+				<value >notlistable</value>
+				<value >handcode</value>
+				<value >nop</value>
+			</property>
+			<property name="glxopcode" any="true" />
+			<property name="glxflags" >
+				<value >client-handcode</value>
+				<value >server-handcode</value>
+			</property>
+			<property name="param" >
+				<value >retval</value>
+				<value >retained</value>
+			</property>
+		</property-defs>
+		<function-defs >
+			<function name="glXRender" return="void" category="glx" dlflags="notlistable" glxopcode="1" glxflags="client-handcode" />
+			<function name="glXRenderLarge" return="void" category="glx" dlflags="notlistable" glxopcode="2" glxflags="client-handcode" />
+			<function name="glXCreateContext" return="void" glxflags="client-handcode" category="glx" glxopcode="3" dlflags="notlistable" >
+				<param name="gc_id" kind="value" type="Int32" input="true" />
+				<param name="screen" kind="value" type="Int32" input="true" />
+				<param name="visual" kind="value" type="Int32" input="true" />
+				<param name="share_list" kind="value" type="Int32" input="true" />
+			</function>
+			<function name="glXDestroyContext" return="void" glxflags="client-handcode" category="glx" glxopcode="4" dlflags="notlistable" >
+				<param name="context" kind="value" type="Int32" input="true" />
+			</function>
+			<function name="glXMakeCurrent" return="void" glxflags="client-handcode" category="glx" glxopcode="5" dlflags="notlistable" >
+				<param name="drawable" kind="value" type="Int32" input="true" />
+				<param name="context" kind="value" type="Int32" input="true" />
+			</function>
+			<function name="glXIsDirect" return="void" glxflags="client-handcode" category="glx" glxopcode="6" dlflags="notlistable" >
+				<param name="dpy" kind="value" type="Int32" input="true" />
+				<param name="context" kind="value" type="Int32" input="true" />
+			</function>
+			<function name="glXQueryVersion" return="void" dlflags="notlistable" category="glx" glxopcode="7" glxflags="client-handcode" >
+				<param name="major" kind="reference" type="Int32" input="false" />
+				<param name="minor" kind="reference" type="Int32" input="false" />
+			</function>
+			<function name="glXWaitGL" return="void" dlflags="notlistable" category="glx" glxopcode="8" glxflags="client-handcode" >
+				<param name="context" kind="value" type="Int32" input="true" />
+			</function>
+			<function name="glXWaitX" return="void" category="glx" dlflags="notlistable" glxopcode="9" glxflags="client-handcode" />
+			<function name="glXCopyContext" return="void" dlflags="notlistable" category="glx" glxopcode="10" glxflags="client-handcode" >
+				<param name="source" kind="value" type="Int32" input="true" />
+				<param name="dest" kind="value" type="Int32" input="true" />
+				<param name="mask" kind="value" type="Int32" input="true" />
+			</function>
+			<function name="glXSwapBuffers" return="void" dlflags="notlistable" category="glx" glxopcode="11" glxflags="client-handcode" >
+				<param name="drawable" kind="value" type="Int32" input="true" />
+			</function>
+			<function name="glXUseXFont" return="void" dlflags="notlistable" category="glx" glxopcode="12" glxflags="client-handcode" >
+				<param name="font" kind="value" type="Int32" input="true" />
+				<param name="first" kind="value" type="Int32" input="true" />
+				<param name="count" kind="value" type="Int32" input="true" />
+				<param name="list_base" kind="value" type="Int32" input="true" />
+			</function>
+			<function name="glXCreateGLXPixmap" return="void" dlflags="notlistable" category="glx" glxopcode="13" glxflags="client-handcode" >
+				<param name="visual" kind="value" type="Int32" input="true" />
+				<param name="pixmap" kind="value" type="Int32" input="true" />
+				<param name="glxpixmap" kind="value" type="Int32" input="true" />
+			</function>
+			<function name="glXGetVisualConfigs" return="void" category="glx" dlflags="notlistable" glxopcode="14" glxflags="client-handcode" />
+			<function name="glXDestroyGLXPixmap" return="void" glxflags="client-handcode" category="glx" glxopcode="15" dlflags="notlistable" >
+				<param name="pixmap" kind="value" type="Int32" input="true" />
+			</function>
+			<function name="glXVendorPrivate" return="void" category="glx" glxflags="client-handcode" glxopcode="16" dlflags="notlistable" />
+			<function name="glXVendorPrivateWithReply" return="void" category="glx" glxflags="client-handcode" glxopcode="17" dlflags="notlistable" />
+			<function name="glXQueryExtensionsString" return="void" glxflags="client-handcode" category="glx" glxopcode="18" dlflags="notlistable" >
+				<param name="screen" kind="value" type="Int32" input="true" />
+			</function>
+			<function name="glXQueryServerString" return="void" glxflags="client-handcode" category="glx" glxopcode="19" dlflags="notlistable" >
+				<param name="screen" kind="value" type="Int32" input="true" />
+				<param name="name" kind="value" type="Int32" input="true" />
+			</function>
+			<function name="glXClientInfo" return="void" category="glx" glxflags="client-handcode" glxopcode="20" dlflags="notlistable" />
+			<function name="glXGetFBConfigs" return="void" category="glx" dlflags="notlistable" glxopcode="21" glxflags="client-handcode" />
+			<function name="glXCreatePixmap" return="void" dlflags="notlistable" category="glx" glxopcode="22" glxflags="client-handcode" >
+				<param name="config" kind="value" type="Int32" input="true" />
+				<param name="pixmap" kind="value" type="Int32" input="true" />
+				<param name="glxpixmap" kind="value" type="Int32" input="true" />
+			</function>
+			<function name="glXDestroyPixmap" return="void" dlflags="notlistable" category="glx" glxopcode="23" glxflags="client-handcode" >
+				<param name="glxpixmap" kind="value" type="Int32" input="true" />
+			</function>
+			<function name="glXCreateNewContext" return="void" dlflags="notlistable" category="glx" glxopcode="24" glxflags="client-handcode" >
+				<param name="config" kind="value" type="Int32" input="true" />
+				<param name="render_type" kind="value" type="Int32" input="true" />
+				<param name="share_list" kind="value" type="Int32" input="true" />
+				<param name="direct" kind="value" type="Int32" input="true" />
+			</function>
+			<function name="glXQueryContext" return="void" category="glx" dlflags="notlistable" glxopcode="25" glxflags="client-handcode" />
+			<function name="glXMakeContextCurrent" return="void" dlflags="notlistable" category="glx" glxopcode="26" glxflags="client-handcode" >
+				<param name="drawable" kind="value" type="Int32" input="true" />
+				<param name="readdrawable" kind="value" type="Int32" input="true" />
+				<param name="context" kind="value" type="Int32" input="true" />
+			</function>
+			<function name="glXCreatePbuffer" return="void" dlflags="notlistable" category="glx" glxopcode="27" glxflags="client-handcode" >
+				<param name="config" kind="value" type="Int32" input="true" />
+				<param name="pbuffer" kind="value" type="Int32" input="true" />
+			</function>
+			<function name="glXDestroyPbuffer" return="void" dlflags="notlistable" category="glx" glxopcode="28" glxflags="client-handcode" >
+				<param name="pbuffer" kind="value" type="Int32" input="true" />
+			</function>
+			<function name="glXGetDrawableAttributes" return="void" dlflags="notlistable" category="glx" glxopcode="29" glxflags="client-handcode" >
+				<param name="drawable" kind="value" type="Int32" input="true" />
+			</function>
+			<function name="glXChangeDrawableAttributes" return="void" dlflags="notlistable" category="glx" glxopcode="30" glxflags="client-handcode" >
+				<param name="drawable" kind="value" type="Int32" input="true" />
+			</function>
+			<function name="glXCreateWindow" return="void" dlflags="notlistable" category="glx" glxopcode="31" glxflags="client-handcode" >
+				<param name="config" kind="value" type="Int32" input="true" />
+				<param name="window" kind="value" type="Int32" input="true" />
+				<param name="glxwindow" kind="value" type="Int32" input="true" />
+			</function>
+			<function name="glXDestroyWindow" return="void" dlflags="notlistable" category="glx" glxopcode="32" glxflags="client-handcode" >
+				<param name="glxwindow" kind="value" type="Int32" input="true" />
+			</function>
+			<function name="glXSwapIntervalSGI" return="void" glxvendorglx="65536" category="glx" glxflags="client-handcode" dlflags="notlistable" />
+			<function name="glXMakeCurrentReadSGI" return="void" glxvendorglx="65537" glxflags="client-handcode" category="glx" dlflags="notlistable" >
+				<param name="drawable" kind="value" type="Int32" input="true" />
+				<param name="readdrawable" kind="value" type="Int32" input="true" />
+				<param name="context" kind="value" type="Int32" input="true" />
+			</function>
+			<function name="glXCreateGLXVideoSourceSGIX" return="void" glxvendorglx="65538" glxflags="client-handcode" category="glx" dlflags="notlistable" >
+				<param name="dpy" kind="value" type="Int32" input="true" />
+				<param name="screen" kind="value" type="Int32" input="true" />
+				<param name="server" kind="value" type="Int32" input="true" />
+				<param name="path" kind="value" type="Int32" input="true" />
+				<param name="class" kind="value" type="Int32" input="true" />
+				<param name="node" kind="value" type="Int32" input="true" />
+			</function>
+			<function name="glXDestroyGLXVideoSourceSGIX" return="void" glxvendorglx="65539" glxflags="client-handcode" category="glx" dlflags="notlistable" >
+				<param name="dpy" kind="value" type="Int32" input="true" />
+				<param name="glxvideosource" kind="value" type="Int32" input="true" />
+			</function>
+			<function name="glXQueryContextInfoEXT" return="void" glxvendorglx="1024" category="glx" dlflags="notlistable" glxflags="client-handcode" />
+			<function name="glXGetFBConfigsSGIX" return="void" glxvendorglx="65540" category="glx" dlflags="notlistable" glxflags="client-handcode" />
+			<function name="glXCreateContextWithConfigSGIX" return="void" glxvendorglx="65541" glxflags="client-handcode" category="glx" dlflags="notlistable" >
+				<param name="gc_id" kind="value" type="Int32" input="true" />
+				<param name="screen" kind="value" type="Int32" input="true" />
+				<param name="config" kind="value" type="Int32" input="true" />
+				<param name="share_list" kind="value" type="Int32" input="true" />
+			</function>
+			<function name="glXCreateGLXPixmapWithConfigSGIX" return="void" glxvendorglx="65542" dlflags="notlistable" category="glx" glxflags="client-handcode" >
+				<param name="config" kind="value" type="Int32" input="true" />
+				<param name="pixmap" kind="value" type="Int32" input="true" />
+				<param name="glxpixmap" kind="value" type="Int32" input="true" />
+			</function>
+			<function name="glXCreateGLXPbufferSGIX" return="void" glxvendorglx="65543" category="glx" dlflags="notlistable" glxflags="client-handcode" >
+				<param name="config" kind="value" type="Int32" input="true" />
+				<param name="pbuffer" kind="value" type="Int32" input="true" />
+			</function>
+			<function name="glXDestroyGLXPbufferSGIX" return="void" glxvendorglx="65544" category="glx" dlflags="notlistable" glxflags="client-handcode" >
+				<param name="pbuffer" kind="value" type="Int32" input="true" />
+			</function>
+			<function name="glXChangeDrawableAttributesSGIX" return="void" glxvendorglx="65545" category="glx" dlflags="notlistable" glxflags="client-handcode" >
+				<param name="drawable" kind="value" type="Int32" input="true" />
+			</function>
+			<function name="glXGetDrawableAttributesSGIX" return="void" glxvendorglx="65546" category="glx" dlflags="notlistable" glxflags="client-handcode" >
+				<param name="drawable" kind="value" type="Int32" input="true" />
+			</function>
+			<function name="glXJoinSwapGroupSGIX" return="void" glxvendorglx="65547" glxflags="client-handcode" category="glx" dlflags="notlistable" >
+				<param name="window" kind="value" type="Int32" input="true" />
+				<param name="group" kind="value" type="Int32" input="true" />
+			</function>
+			<function name="glXBindSwapBarrierSGIX" return="void" glxvendorglx="65548" glxflags="client-handcode" category="glx" dlflags="notlistable" >
+				<param name="window" kind="value" type="Int32" input="true" />
+				<param name="barrier" kind="value" type="Int32" input="true" />
+			</function>
+			<function name="glXQueryMaxSwapBarriersSGIX" return="void" glxvendorglx="65549" category="glx" glxflags="client-handcode" dlflags="notlistable" />
+			<function name="glXQueryHyperpipeNetworkSGIX" return="GLXHyperpipeNetworkSGIXPointer" glxvendorglx="65550" glxflags="client-handcode" category="glx" dlflags="notlistable" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="npipes" kind="reference" type="int" input="false" />
+			</function>
+			<function name="glXHyperpipeConfigSGIX" return="int" glxvendorglx="65552" glxflags="client-handcode" category="glx" dlflags="notlistable" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="networkId" kind="value" type="int" input="true" />
+				<param name="npipes" kind="value" type="int" input="true" />
+				<param name="cfg" kind="array[npipes]" type="GLXHyperpipeConfigSGIX" input="true" />
+				<param name="hpId" kind="reference" type="int" input="false" />
+			</function>
+			<function name="glXQueryHyperpipeConfigSGIX" return="GLXHyperpipeConfigSGIXPointer" glxvendorglx="65551" glxflags="client-handcode" category="glx" dlflags="notlistable" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="hpId" kind="value" type="int" input="true" />
+				<param name="npipes" kind="reference" type="int" input="false" />
+			</function>
+			<function name="glXDestroyHyperpipeConfigSGIX" return="int" glxvendorglx="65553" glxflags="client-handcode" category="glx" dlflags="notlistable" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="hpId" kind="value" type="int" input="true" />
+			</function>
+			<function name="glXBindHyperpipeSGIX" return="int" glxvendorglx="???" glxflags="client-handcode" category="glx" dlflags="notlistable" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="hpId" kind="value" type="int" input="true" />
+			</function>
+			<function name="glXQueryHyperpipeBestAttribSGIX" return="int" glxvendorglx="???" glxflags="client-handcode" category="glx" dlflags="notlistable" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="timeSlice" kind="value" type="int" input="true" />
+				<param name="attrib" kind="value" type="int" input="true" />
+				<param name="size" kind="value" type="int" input="true" />
+				<param name="attribList" kind="array[size]" type="void" input="true" />
+				<param name="returnAttribList" kind="array[size]" type="void" input="false" />
+			</function>
+			<function name="glXHyperpipeAttribSGIX" return="int" glxvendorglx="???" glxflags="client-handcode" category="glx" dlflags="notlistable" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="timeSlice" kind="value" type="int" input="true" />
+				<param name="attrib" kind="value" type="int" input="true" />
+				<param name="size" kind="value" type="int" input="true" />
+				<param name="attribList" kind="array[size]" type="void" input="true" />
+			</function>
+			<function name="glXQueryHyperpipeAttribSGIX" return="int" glxvendorglx="???" glxflags="client-handcode" category="glx" dlflags="notlistable" >
+				<param name="dpy" kind="reference" type="Display" input="false" />
+				<param name="timeSlice" kind="value" type="int" input="true" />
+				<param name="attrib" kind="value" type="int" input="true" />
+				<param name="size" kind="value" type="int" input="true" />
+				<param name="returnAttribList" kind="array[size]" type="void" input="true" />
+			</function>
+		</function-defs>
+	</functions>
+</specification>

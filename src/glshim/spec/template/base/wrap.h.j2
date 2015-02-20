@@ -1,0 +1,64 @@
+{% extends "base/header.j2" %}
+{% block content %}
+
+typedef struct {
+    int format;
+    void *func;
+    void *args;
+} packed_call_t;
+
+typedef struct {
+    int func;
+    void *args;
+} indexed_call_t;
+
+enum FORMAT {
+{% for f in formats %}
+    FORMAT_{{ f.types }},
+{% endfor %}
+};
+
+{% for f in formats %}
+typedef {{ f.return }} (*FUNC_{{ f.types }})({{ f.args|args }});
+{% if f.args %}
+typedef struct {
+    {% for arg in f.args %}
+    {{ arg.type|unconst }} a{{ loop.index }}{% if arg.type == 'GLdouble' %} __attribute__ ((aligned(8))){% endif %};
+    {% endfor %}
+} ARGS_{{ f.types }};
+{% endif %}
+typedef struct {
+    int format;
+    FUNC_{{ f.types }} func;
+    {% if f.args %}
+    ARGS_{{ f.types }} args;
+    {% endif %}
+} PACKED_{{ f.types }};
+typedef struct {
+    int func;
+    {% if f.args %}
+    ARGS_{{ f.types }} args;
+    {% endif %}
+} INDEXED_{{ f.types }};
+{% endfor %}
+
+extern void glPushCall(void *data);
+void glPackedCall(const packed_call_t *packed);
+void glIndexedCall(const indexed_call_t *packed, void *ret_v);
+
+{% for func in functions %}
+#define {{ func.name }}_INDEX {{ loop.index }}
+#define {{ func.name }}_RETURN {{ func.return }}
+#define {{ func.name }}_ARG_NAMES {{ func.args|args(0) }}
+#define {{ func.name }}_ARG_EXPAND {{ func.args|args }}
+#define {{ func.name }}_PACKED PACKED_{{ func.types }}
+#define {{ func.name }}_INDEXED INDEXED_{{ func.types }}
+#define {{ func.name }}_FORMAT FORMAT_{{ func.types }}
+{% endfor %}
+
+{% for func in functions %}
+{{ func.return }} {{ func.name }}({{ func.name }}_ARG_EXPAND);
+typedef {{ func.return }} (*{{ func.name }}_PTR)({{ func.name }}_ARG_EXPAND);
+{% endfor %}
+
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base/wrap.c.j2" %}
+{% block headers %}
+{{ super() }}
+void *egl_lib;
+#define WARN_NULL(name) if (name == NULL) printf("libGL: warning, " #name " is NULL\n");
+#define LOAD_EGL(type, name, args...)                               \
+    typedef type (*eglptr_##name)(args);                            \
+    static eglptr_##name egl_##name;                                \
+    if (egl##name == NULL) {                                        \
+        if (egl_lib == NULL) {                                      \
+            egl_lib = dlopen("libEGL.so", RTLD_LOCAL | RTLD_LAZY);  \
+            WARN_NULL(egl_lib);                                     \
+        }                                                           \
+        egl_##name = (eglptr_##name)dlsym(egl_lib, #name);          \
+        WARN_NULL(egl_lib_##name);                                  \
+    }                                                               \
+{% endblock %}
+
+{% block load %}
+    LOAD_EGL({{ func.return }}, {{ func.name }}
+        {%- if func.args %}, {{ func.args|args }}{% endif %});
+{% endblock %}
+{% block prefix %}egl{% endblock %}
