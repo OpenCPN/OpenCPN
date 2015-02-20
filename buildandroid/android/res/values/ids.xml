@@ -1,0 +1,4 @@
+ <resources>
+        <item type="id" name="chartdirlist" />
+        <item type="id" name="FragmentCharts" />
+ </resources>

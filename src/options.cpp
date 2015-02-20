@@ -196,7 +196,10 @@ extern bool             g_bConfirmObjectDelete;
 extern wxString         g_GPS_Ident;
 extern bool             g_bGarminHostUpload;
 
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
 extern wxLocale         *plocale_def_lang;
+#endif
+
 extern OCPN_Sound        g_anchorwatch_sound;
 extern bool             g_bMagneticAPB;
 
@@ -763,8 +766,6 @@ void MMSI_Props_Panel::OnNewButton( wxCommandEvent &event )
 
 void MMSI_Props_Panel::UpdateMMSIList( void )
 {
-    int sb_position = m_pListCtrlMMSI->GetScrollPos( wxVERTICAL );
-        
         //    Capture the MMSI of the curently selected list item
         long selItemID = -1;
         selItemID = m_pListCtrlMMSI->GetNextItem( selItemID, wxLIST_NEXT_ALL,
@@ -1492,8 +1493,9 @@ void options::OnConnectionToggleEnable( wxMouseEvent &event )
 {
     wxPoint pos = event.GetPosition();
     int flags = 0;
-    long clicked_index = m_lcSources->HitTest( pos, flags );
-
+    long ptrSubItem = -1;
+    long clicked_index = m_lcSources->HitTest( pos, flags, &ptrSubItem );
+    
     //    Clicking Enable Checkbox (full column)?
     if( clicked_index > -1 && event.GetX() < m_lcSources->GetColumnWidth( 0 ) ) {
         // Process the clicked item
@@ -1531,7 +1533,7 @@ void options::CreatePanel_Ownship( size_t parent, int border_size, int group_ite
     dispOptions = new wxStaticBoxSizer( osdBox, wxVERTICAL );
     ownShip->Add( dispOptions, 0, wxTOP | wxALL | wxEXPAND, border_size );
 
-    wxFlexGridSizer* dispOptionsGrid = new wxFlexGridSizer( 2, 2, group_item_spacing, group_item_spacing );
+    wxFlexGridSizer* dispOptionsGrid = new wxFlexGridSizer( 0, 2, group_item_spacing, group_item_spacing );
     dispOptionsGrid->AddGrowableCol( 1 );
     dispOptions->Add( dispOptionsGrid, 0, wxALL | wxEXPAND, border_size );
 
@@ -1667,7 +1669,7 @@ void options::CreatePanel_Ownship( size_t parent, int border_size, int group_ite
     pWaypointRangeRingsNumber = new wxChoice( itemPanelShip, ID_WAYPOINTRANGERINGS, wxDefaultPosition, m_pShipIconType->GetSize(), 11, rrAlt );
     waypointrrSelect->Add( pWaypointRangeRingsNumber, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
 
-    waypointradarGrid = new wxFlexGridSizer( 2, 2, group_item_spacing, group_item_spacing );
+    waypointradarGrid = new wxFlexGridSizer( 0, 2, group_item_spacing, group_item_spacing );
     waypointradarGrid->AddGrowableCol( 1 );
     waypointSizer->Add( waypointradarGrid, 0, wxLEFT | wxEXPAND, 30 );
 
@@ -2077,11 +2079,26 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
     dispSizer->Add( marinersSizer, 1, wxALL | wxEXPAND, border_size );
 
     wxString* ps57CtlListBoxStrings = NULL;
+    
+#ifndef __OCPN__ANDROID__
     ps57CtlListBox = new wxCheckListBox( ps57Ctl, ID_CHECKLISTBOX, wxDefaultPosition,
-                                        wxSize( 250, 350 ), 0, ps57CtlListBoxStrings, wxLB_SINGLE | wxLB_HSCROLL | wxLB_SORT );
+                                         wxSize( 250, 350 ), 0, ps57CtlListBoxStrings, wxLB_SINGLE | wxLB_HSCROLL | wxLB_SORT );
     marinersSizer->Add( ps57CtlListBox, 1, wxALL | wxEXPAND, group_item_spacing );
-
-    wxBoxSizer* btnRow = new wxBoxSizer( wxHORIZONTAL );
+#else
+    wxScrolledWindow *marinersWindow = new wxScrolledWindow( ps57Ctl, wxID_ANY, wxDefaultPosition, wxSize(550, 350), wxHSCROLL | wxVSCROLL);
+    marinersWindow->SetScrollRate(5, 5);
+    marinersSizer->Add( marinersWindow, 1, wxALL | wxEXPAND, group_item_spacing );
+    
+    wxBoxSizer* bSizerScrollMariners = new wxBoxSizer( wxVERTICAL );
+    marinersWindow->SetSizer( bSizerScrollMariners );
+    
+    ps57CtlListBox = new wxCheckListBox( marinersWindow, ID_CHECKLISTBOX, wxDefaultPosition,
+                                         wxSize(500, 8000), 0, ps57CtlListBoxStrings, wxLB_SINGLE | wxLB_SORT );
+    bSizerScrollMariners->Add( ps57CtlListBox, 1, wxALL | wxEXPAND, group_item_spacing );
+#endif
+    
+    
+     wxBoxSizer* btnRow = new wxBoxSizer( wxHORIZONTAL );
     itemButtonSelectList = new wxButton( ps57Ctl, ID_SELECTLIST, _("Select All") );
     btnRow->Add( itemButtonSelectList, 1, wxALL | wxEXPAND, group_item_spacing );
     itemButtonClearList = new wxButton( ps57Ctl, ID_CLEARLIST, _("Clear All") );
@@ -2766,8 +2783,12 @@ void options::CreateControls()
     wxBoxSizer* itemBoxSizer2 = new wxBoxSizer( wxVERTICAL );
     itemDialog1->SetSizer( itemBoxSizer2 );
 
-    m_pListbook = new wxListbook( itemDialog1, ID_NOTEBOOK, wxDefaultPosition, wxSize(-1, -1),
-            wxLB_TOP );
+    int flags = 0;
+#ifndef __WXQT__
+    flags = wxLB_TOP;
+#endif
+    
+    m_pListbook = new wxListbook( itemDialog1, ID_NOTEBOOK, wxDefaultPosition, wxSize(-1, -1), flags);
  
 #ifdef __WXMSW__
     //  Windows clips the width of listbook selectors to about twice icon size
@@ -2794,6 +2815,9 @@ void options::CreateControls()
     m_topImgList = new wxImageList( 40, 40, true, 1 );
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 
+#ifndef __OCPN__ANDROID__
+    m_topImgList = new wxImageList( 40, 40, true, 1 );
+    
 #if wxCHECK_VERSION(2, 8, 12)
     m_topImgList->Add( style->GetIcon( _T("Display") ) );
     m_topImgList->Add( style->GetIcon( _T("Charts") ) );
@@ -2818,6 +2842,25 @@ void options::CreateControls()
     bmp = wxBitmap( img ); m_topImgList->Add( bmp );
 #endif
 
+#else
+    m_topImgList = new wxImageList( 80, 80, true, 1 );
+    
+    wxBitmap bmp;
+    wxImage img, simg;
+    bmp = style->GetIcon( _T("Display") ); img = bmp.ConvertToImage();
+    simg = img.Scale(80,80); bmp = wxBitmap( simg ); m_topImgList->Add( bmp );
+    bmp = style->GetIcon( _T("Charts") ); img = bmp.ConvertToImage();
+    simg = img.Scale(80,80); bmp = wxBitmap( simg ); m_topImgList->Add( bmp );
+    bmp = style->GetIcon( _T("Connections") ); img = bmp.ConvertToImage();
+    simg = img.Scale(80,80); bmp = wxBitmap( simg ); m_topImgList->Add( bmp );
+    bmp = style->GetIcon( _T("Ship") ); img = bmp.ConvertToImage();
+    simg = img.Scale(80,80); bmp = wxBitmap( simg ); m_topImgList->Add( bmp );
+    bmp = style->GetIcon( _T("UI") ); img = bmp.ConvertToImage();
+    simg = img.Scale(80,80); bmp = wxBitmap( simg ); m_topImgList->Add( bmp );
+    bmp = style->GetIcon( _T("Plugins") ); img = bmp.ConvertToImage();
+    simg = img.Scale(80,80); bmp = wxBitmap( simg ); m_topImgList->Add( bmp );
+#endif
+    
     m_pListbook->SetImageList( m_topImgList );
     itemBoxSizer2->Add( m_pListbook, 1,
             wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL | wxALL | wxEXPAND, border_size );
@@ -3486,6 +3529,9 @@ void options::OnButtonaddClick( wxCommandEvent& event )
     wxDirDialog *dirSelector = new wxDirDialog( this, _("Add a directory containing chart files"),
             *pInit_Chart_Dir, wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST );
 
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
+    dirSelector->SetFont(*qFont);
+    
     if( dirSelector->ShowModal() == wxID_CANCEL ) goto done;
 
     selDir = dirSelector->GetPath();
@@ -4120,6 +4166,7 @@ void options::OnApplyClick( wxCommandEvent& event )
 #endif
 
 //    User Interface Panel
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
     if( m_bVisitLang ) {
         wxString new_canon = _T("en_US");
         wxString lang_sel = m_itemLangListBox->GetStringSelection();
@@ -4150,7 +4197,7 @@ void options::OnApplyClick( wxCommandEvent& event )
         wxSizeEvent nullEvent;
         gFrame->OnSize( nullEvent );
     }
-
+#endif
     //      PlugIn Manager Panel
 
     //      Pick up any changes to selections
@@ -4215,6 +4262,7 @@ void options::OnXidOkClick( wxCommandEvent& event )
 
     lastWindowPos = GetPosition();
     lastWindowSize = GetSize();
+    SetReturnCode( m_returnChanges );
     EndModal( m_returnChanges );
 }
 
@@ -4311,6 +4359,10 @@ void options::OnChooseFont( wxCommandEvent& event )
 #else
     wxFontDialog dg( pParent, init_font_data );
 #endif
+    
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
+    dg.SetFont(*qFont);
+    
     int retval = dg.ShowModal();
     if( wxID_CANCEL != retval ) {
         font_data = dg.GetFontData();
@@ -4391,6 +4443,8 @@ void options::OnPageChange( wxListbookEvent& event )
     }
 
     else if( m_pageUI == i ) {                       // 5 is the index of "User Interface" page
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
+
         if( !m_bVisitLang ) {
             ::wxBeginBusyCursor();
 
@@ -4492,6 +4546,7 @@ void options::OnPageChange( wxListbookEvent& event )
 
             ::wxEndBusyCursor();
         }
+#endif        
     }
 
  
@@ -4600,6 +4655,8 @@ wxString GetOCPNKnownLanguage( wxString lang_canonical, wxString *lang_dir )
     wxString return_string;
     wxString dir_suffix;
 
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
+    
     if( lang_canonical == _T("en_US") ) {
         dir_suffix = _T("en");
         return_string = wxString( "English (U.S.)", wxConvUTF8 );
@@ -4673,7 +4730,7 @@ wxString GetOCPNKnownLanguage( wxString lang_canonical, wxString *lang_dir )
     }
 
     if( NULL != lang_dir ) *lang_dir = dir_suffix;
-
+#endif
     return return_string;
 
 }

@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "xhtml1-transitional.dtd">
+<?xml-stylesheet type="text/xsl" href="mathml.xsl"?><html xmlns="http://www.w3.org/1999/xhtml" xmlns:pref="http://www.w3.org/2002/Math/preference" pref:renderer="mathplayer-dl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>gluQuadricCallback</title><meta name="generator" content="DocBook XSL Stylesheets V1.73.2" /></head><body><div class="refentry" lang="en" xml:lang="en"><a id="gluQuadricCallback"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>gluQuadricCallback - define a callback for a quadrics object</p></div><div class="refsynopsisdiv"><h2>C Specification</h2><div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0"><tr><td><code class="funcdef">void <b class="fsfunc">gluQuadricCallback</b>(</code></td><td>GLUquadric* &nbsp;</td><td><var class="pdparam">quad</var>, </td></tr><tr><td> </td><td>GLenum &nbsp;</td><td><var class="pdparam">which</var>, </td></tr><tr><td> </td><td>_GLUfuncptr &nbsp;</td><td><var class="pdparam">CallBackFunc</var><code>)</code>;</td></tr></table></div></div><div class="refsect1" lang="en" xml:lang="en"><a id="parameters"></a><h2>Parameters</h2><div class="variablelist"><dl><dt><span class="term"><em class="parameter"><code>quad</code></em></span></dt><dd><p>
+
+                    Specifies the quadrics object (created with <a class="citerefentry" href="gluNewQuadric.html"><span class="citerefentry"><span class="refentrytitle">gluNewQuadric</span></span></a>).
+                </p></dd><dt><span class="term"><em class="parameter"><code>which</code></em></span></dt><dd><p>
+                    Specifies the callback being defined.
+                    The only valid value is <code class="constant">GLU_ERROR</code>.
+                </p></dd><dt><span class="term"><em class="parameter"><code>CallBackFunc</code></em></span></dt><dd><p>
+                    Specifies the function to be called.
+                </p></dd></dl></div></div><div class="refsect1" lang="en" xml:lang="en"><a id="description"></a><h2>Description</h2><p>
+            <code class="function">gluQuadricCallback</code> is used to define a new callback to be used by a quadrics object.
+            If the specified callback is already defined, then it is replaced. If 
+            <em class="parameter"><code>CallBackFunc</code></em> is NULL, then any existing callback is erased.
+        </p><p>
+
+            The one legal callback is <code class="constant">GLU_ERROR</code>:
+        </p><div class="variablelist"><dl><dt><span class="term"><code class="constant">GLU_ERROR</code></span></dt><dd><p>
+                        The function is called when an error is encountered. Its single argument
+                        is of type GLenum, and it indicates the specific error that occurred.
+                        Character strings describing these errors can be retrieved with the
+                        <a class="citerefentry" href="gluErrorString.html"><span class="citerefentry"><span class="refentrytitle">gluErrorString</span></span></a> call.
+                    </p></dd></dl></div></div><div class="refsect1" lang="en" xml:lang="en"><a id="seealso"></a><h2>See Also</h2><p>
+            <a class="citerefentry" href="gluErrorString.html"><span class="citerefentry"><span class="refentrytitle">gluErrorString</span></span></a>,
+            <a class="citerefentry" href="gluNewQuadric.html"><span class="citerefentry"><span class="refentrytitle">gluNewQuadric</span></span></a>
+
+        </p></div><div class="refsect1" lang="en" xml:lang="en"><a id="Copyright"></a><h2>Copyright</h2><p>
+            Copyright <span class="trademark"></span>c 1991-2006
+            Silicon Graphics, Inc. This document is licensed under the SGI
+            Free Software B License. For details, see
+            <a class="ulink" href="http://oss.sgi.com/projects/FreeB/" target="_top">http://oss.sgi.com/projects/FreeB/</a>.
+        </p></div></div></body></html>

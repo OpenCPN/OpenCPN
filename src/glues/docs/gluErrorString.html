@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "xhtml1-transitional.dtd">
+<?xml-stylesheet type="text/xsl" href="mathml.xsl"?><html xmlns="http://www.w3.org/1999/xhtml" xmlns:pref="http://www.w3.org/2002/Math/preference" pref:renderer="mathplayer-dl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>gluErrorString</title><meta name="generator" content="DocBook XSL Stylesheets V1.73.2" /></head><body><div class="refentry" lang="en" xml:lang="en"><a id="gluErrorString"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>gluErrorString - produce an error string from a OpenGL ES or GLU error code</p></div><div class="refsynopsisdiv"><h2>C Specification</h2><div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0"><tr><td><code class="funcdef">const GLubyte*&nbsp;<b class="fsfunc">gluErrorString</b>(</code></td><td>GLenum &nbsp;</td><td><var class="pdparam">error</var><code>)</code>;</td></tr></table></div></div><div class="refsect1" lang="en" xml:lang="en"><a id="parameters"></a><h2>Parameters</h2><div class="variablelist"><dl><dt><span class="term"><em class="parameter"><code>error</code></em></span></dt><dd><p>
+                    Specifies a OpenGL ES or GLU error code.
+                </p></dd></dl></div></div><div class="refsect1" lang="en" xml:lang="en"><a id="description"></a><h2>Description</h2><p>
+
+            <code class="function">gluErrorString</code> produces an error string from a OpenGL ES or GLU error code. The string
+            is in ISO Latin 1 format. For example,
+            <code class="function">gluErrorString</code>(<code class="constant">GLU_OUT_OF_MEMORY</code>) returns the string 
+            <span class="emphasis"><em>out of memory</em></span>.
+        </p><p>
+            The standard GLU error codes are <code class="constant">GLU_INVALID_ENUM</code>, 
+            <code class="constant">GLU_INVALID_VALUE</code>,
+            and <code class="constant">GLU_OUT_OF_MEMORY</code>.
+            Certain other GLU functions can return specialized error codes
+            through callbacks.
+            See the <code>glGetError</code> reference page for the list of 
+            OpenGL ES error codes.
+        </p></div><div class="refsect1" lang="en" xml:lang="en"><a id="errors"></a><h2>Errors</h2><p>
+
+            <code class="constant">NULL</code> is returned if <em class="parameter"><code>error</code></em> is not a valid OpenGL ES or GLU error code.
+        </p></div><div class="refsect1" lang="en" xml:lang="en"><a id="seealso"></a><h2>See Also</h2><p>
+            <a class="citerefentry" href="gluNurbsCallback.html"><span class="citerefentry"><span class="refentrytitle">gluNurbsCallback</span></span></a>,
+            <a class="citerefentry" href="gluQuadricCallback.html"><span class="citerefentry"><span class="refentrytitle">gluQuadricCallback</span></span></a>,
+            <a class="citerefentry" href="gluTessCallback.html"><span class="citerefentry"><span class="refentrytitle">gluTessCallback</span></span></a>.
+
+        </p></div><div class="refsect1" lang="en" xml:lang="en"><a id="Copyright"></a><h2>Copyright</h2><p>
+            Copyright <span class="trademark"></span>c 1991-2006
+            Silicon Graphics, Inc. This document is licensed under the SGI
+            Free Software B License. For details, see
+            <a class="ulink" href="http://oss.sgi.com/projects/FreeB/" target="_top">http://oss.sgi.com/projects/FreeB/</a>.
+        </p></div></div></body></html>

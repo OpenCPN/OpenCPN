@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "xhtml1-transitional.dtd">
+<?xml-stylesheet type="text/xsl" href="mathml.xsl"?><html xmlns="http://www.w3.org/1999/xhtml" xmlns:pref="http://www.w3.org/2002/Math/preference" pref:renderer="mathplayer-dl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>gluPartialDisk</title><meta name="generator" content="DocBook XSL Stylesheets V1.73.2" /></head><body><div class="refentry" lang="en" xml:lang="en"><a id="gluPartialDisk"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>gluPartialDisk - draw an arc of a disk</p></div><div class="refsynopsisdiv"><h2>C Specification</h2><div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0"><tr><td><code class="funcdef">void <b class="fsfunc">gluPartialDisk</b>(</code></td><td>GLUquadric* &nbsp;</td><td><var class="pdparam">quad</var>, </td></tr><tr><td> </td><td>GLfloat  </td><td><var class="pdparam">inner</var>, </td></tr><tr><td> </td><td>GLfloat  </td><td><var class="pdparam">outer</var>, </td></tr><tr><td> </td><td>GLint  </td><td><var class="pdparam">slices</var>, </td></tr><tr><td> </td><td>GLint  </td><td><var class="pdparam">loops</var>, </td></tr><tr><td> </td><td>GLfloat  </td><td><var class="pdparam">start</var>, </td></tr><tr><td> </td><td>GLfloat  </td><td><var class="pdparam">sweep</var><code>)</code>;</td></tr></table></div></div><div class="refsect1" lang="en" xml:lang="en"><a id="parameters"></a><h2>Parameters</h2><div class="variablelist"><dl><dt><span class="term"><em class="parameter"><code>quad</code></em></span></dt><dd><p>
+
+                    Specifies a quadrics object (created with <a class="citerefentry" href="gluNewQuadric.html"><span class="citerefentry"><span class="refentrytitle">gluNewQuadric</span></span></a>).
+                </p></dd><dt><span class="term"><em class="parameter"><code>inner</code></em></span></dt><dd><p>
+                    Specifies the inner radius of the partial disk (can be 0).
+                </p></dd><dt><span class="term"><em class="parameter"><code>outer</code></em></span></dt><dd><p>
+                    Specifies the outer radius of the partial disk.
+                </p></dd><dt><span class="term"><em class="parameter"><code>slices</code></em></span></dt><dd><p>
+                    Specifies the number of subdivisions around the <span class="emphasis"><em>z</em></span> axis.
+                </p></dd><dt><span class="term"><em class="parameter"><code>loops</code></em></span></dt><dd><p>
+
+                    Specifies the number of concentric rings about the origin into which
+                    the partial disk is subdivided.
+                </p></dd><dt><span class="term"><em class="parameter"><code>start</code></em></span></dt><dd><p>
+                    Specifies the starting angle, in degrees, of the disk portion.
+                </p></dd><dt><span class="term"><em class="parameter"><code>sweep</code></em></span></dt><dd><p>
+                    Specifies the sweep angle, in degrees, of the disk portion.
+                </p></dd></dl></div></div><div class="refsect1" lang="en" xml:lang="en"><a id="description"></a><h2>Description</h2><p>
+            <code class="function">gluPartialDisk</code> renders a partial disk on the <em>z = 0</em> plane. A partial disk is 
+            similar to a full disk, except that only the subset of the disk from
+            <em class="parameter"><code>start</code></em> through <em class="parameter"><code>start</code></em> + <em class="parameter"><code>sweep</code></em> is included (where 0 degrees is along the 
+            +<span class="emphasis"><em>y</em></span> axis, 90 degrees along the +<span class="emphasis"><em>x</em></span> axis, 180 degrees along the -<span class="emphasis"><em>y</em></span> axis, and 
+            270 degrees along the -<span class="emphasis"><em>x</em></span> axis).
+        </p><p>
+
+            The partial disk has a radius of 
+            <em class="parameter"><code>outer</code></em> and contains a concentric circular hole with a radius 
+            of <em class="parameter"><code>inner</code></em>. If <em class="parameter"><code>inner</code></em> is 0, then no hole is generated. The partial disk is
+            subdivided around the <span class="emphasis"><em>z</em></span> axis into slices (like pizza slices) and also
+            about the <span class="emphasis"><em>z</em></span> axis into rings 
+            (as specified by <em class="parameter"><code>slices</code></em> and <em class="parameter"><code>loops</code></em>, respectively).
+        </p><p>
+
+            With respect to orientation, the +<span class="emphasis"><em>z</em></span> 
+            side of the partial disk is considered to 
+            be outside (see <a class="citerefentry" href="gluQuadricOrientation.html"><span class="citerefentry"><span class="refentrytitle">gluQuadricOrientation</span></span></a>).
+            This means that if the 
+            orientation is set to <code class="constant">GLU_OUTSIDE</code>, then any normals generated 
+            point along the +<span class="emphasis"><em>z</em></span> axis. Otherwise, they point along the -<span class="emphasis"><em>z</em></span> 
+            axis.
+        </p><p>
+            If texturing is turned on (with <a class="citerefentry" href="gluQuadricTexture.html"><span class="citerefentry"><span class="refentrytitle">gluQuadricTexture</span></span></a>), texture
+            coordinates are generated linearly such that where <em>r = 0</em>
+            the value at (<span class="emphasis"><em>r</em></span>, 0, 0) is 
+            (1.0, 0.5), at (0, <span class="emphasis"><em>r</em></span>, 0) it is (0.5, 1.0), at (-<span class="emphasis"><em>r</em></span>, 0, 0) 
+            it is (0.0, 0.5), and 
+            at (0, -<span class="emphasis"><em>r</em></span>, 0) it is (0.5, 0.0).
+        </p></div><div class="refsect1" lang="en" xml:lang="en"><a id="seealso"></a><h2>See Also</h2><p>
+
+            <a class="citerefentry" href="gluCylinder.html"><span class="citerefentry"><span class="refentrytitle">gluCylinder</span></span></a>,
+            <a class="citerefentry" href="gluDisk.html"><span class="citerefentry"><span class="refentrytitle">gluDisk</span></span></a>,
+            <a class="citerefentry" href="gluNewQuadric.html"><span class="citerefentry"><span class="refentrytitle">gluNewQuadric</span></span></a>,
+            <a class="citerefentry" href="gluQuadricOrientation.html"><span class="citerefentry"><span class="refentrytitle">gluQuadricOrientation</span></span></a>,
+            <a class="citerefentry" href="gluQuadricTexture.html"><span class="citerefentry"><span class="refentrytitle">gluQuadricTexture</span></span></a>,
+            <a class="citerefentry" href="gluSphere.html"><span class="citerefentry"><span class="refentrytitle">gluSphere</span></span></a>.
+        </p></div><div class="refsect1" lang="en" xml:lang="en"><a id="Copyright"></a><h2>Copyright</h2><p>
+            Copyright <span class="trademark"></span>c 1991-2006
+            Silicon Graphics, Inc. This document is licensed under the SGI
+            Free Software B License. For details, see
+            <a class="ulink" href="http://oss.sgi.com/projects/FreeB/" target="_top">http://oss.sgi.com/projects/FreeB/</a>.
+        </p></div></div></body></html>
+

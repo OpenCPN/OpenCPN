@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "xhtml1-transitional.dtd">
+<?xml-stylesheet type="text/xsl" href="mathml.xsl"?><html xmlns="http://www.w3.org/1999/xhtml" xmlns:pref="http://www.w3.org/2002/Math/preference" pref:renderer="mathplayer-dl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>gluGetString</title><meta name="generator" content="DocBook XSL Stylesheets V1.73.2" /></head><body><div class="refentry" lang="en" xml:lang="en"><a id="gluGetString"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>gluGetString - return a string describing the GLU version or GLU extensions </p></div><div class="refsynopsisdiv"><h2>C Specification</h2><div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0"><tr><td><code class="funcdef">const GLubyte* <b class="fsfunc">gluGetString</b>(</code></td><td>GLenum  </td><td><var class="pdparam">name</var><code>)</code>;</td></tr></table></div></div><div class="refsect1" lang="en" xml:lang="en"><a id="parameters"></a><h2>Parameters</h2><div class="variablelist"><dl><dt><span class="term"><em class="parameter"><code>name</code></em></span></dt><dd><p>
+                    Specifies a symbolic constant, one of 
+                    <code class="constant">GLU_VERSION</code>, or <code class="constant">GLU_EXTENSIONS</code>.
+                </p></dd></dl></div></div><div class="refsect1" lang="en" xml:lang="en"><a id="description"></a><h2>Description</h2><p>
+
+            <code class="function">gluGetString</code> returns a pointer to a static string describing the 
+            GLU version or the GLU extensions that are supported.
+        </p><p>
+            The version number is one of the following
+            forms: 
+        </p><p>
+            <span class="emphasis"><em>major_number.minor_number</em></span>  
+            <span class="emphasis"><em>major_number.minor_number.release_number</em></span>. 
+        </p><p>
+            The version string is of the following form: 
+        </p><p>
+
+            <span class="emphasis"><em>version number&lt;space&gt;vendor-specific information</em></span>
+        </p><p>
+            Vendor-specific information is optional.
+            Its format and contents depend on the implementation.
+        </p><p>
+            The standard GLU contains a basic set of features and capabilities.
+            If a company or group of companies wish to support other features,
+            these may be included as extensions to the GLU.  
+            If <em class="parameter"><code>name</code></em> is 
+            <code class="constant">GLU_EXTENSIONS</code>, then <code class="function">gluGetString</code>
+
+            returns a space-separated list of names of supported GLU extensions.
+            (Extension names never contain spaces.)
+        </p><p>
+            All strings are null-terminated.
+        </p></div><div class="refsect1" lang="en" xml:lang="en"><a id="notes"></a><h2>Notes</h2><p>
+            <code class="function">gluGetString</code> only returns information about GLU extensions. Call <code class="function">glGetString</code>
+             to get a list of GL extensions.
+        </p><p>
+            <code class="function">gluGetString</code> is an initialization routine. Calling it after
+            a <a class="citerefentry" href="glNewList.html"><span class="citerefentry"><span class="refentrytitle">glNewList</span></span></a> results in undefined behavior.
+        </p></div><div class="refsect1" lang="en" xml:lang="en"><a id="errors"></a><h2>Errors</h2><p>
+
+            NULL is returned if <em class="parameter"><code>name</code></em> is not
+            <code class="constant">GLU_VERSION</code> or <code class="constant">GLU_EXTENSIONS</code>.
+        </p><p>
+        </p></div><div class="refsect1" lang="en" xml:lang="en"><a id="Copyright"></a><h2>Copyright</h2><p>
+            Copyright <span class="trademark"></span>c 1991-2006
+            Silicon Graphics, Inc. This document is licensed under the SGI
+            Free Software B License. For details, see
+            <a class="ulink" href="http://oss.sgi.com/projects/FreeB/" target="_top">http://oss.sgi.com/projects/FreeB/</a>.
+        </p></div></div></body></html>

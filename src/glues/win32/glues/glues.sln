@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glues", "glues\glues.vcproj", "{C31F2B7A-7220-4E70-98A9-4734CA829336}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+		Static Debug|Win32 = Static Debug|Win32
+		Static Release|Win32 = Static Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C31F2B7A-7220-4E70-98A9-4734CA829336}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C31F2B7A-7220-4E70-98A9-4734CA829336}.Debug|Win32.Build.0 = Debug|Win32
+		{C31F2B7A-7220-4E70-98A9-4734CA829336}.Release|Win32.ActiveCfg = Release|Win32
+		{C31F2B7A-7220-4E70-98A9-4734CA829336}.Release|Win32.Build.0 = Release|Win32
+		{C31F2B7A-7220-4E70-98A9-4734CA829336}.Static Debug|Win32.ActiveCfg = Static Debug|Win32
+		{C31F2B7A-7220-4E70-98A9-4734CA829336}.Static Debug|Win32.Build.0 = Static Debug|Win32
+		{C31F2B7A-7220-4E70-98A9-4734CA829336}.Static Release|Win32.ActiveCfg = Static Release|Win32
+		{C31F2B7A-7220-4E70-98A9-4734CA829336}.Static Release|Win32.Build.0 = Static Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

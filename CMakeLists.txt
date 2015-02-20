@@ -42,7 +42,7 @@ ENDIF (COMMAND cmake_policy)
 
 PROJECT(OpenCPN)
 
-#SET(CMAKE_VERBOSE_MAKEFILE ON)
+SET(CMAKE_VERBOSE_MAKEFILE ON)
 
 IF(APPLE)
   SET(PACKAGE_NAME OpenCPN)
@@ -242,7 +242,51 @@ ELSE(BUNDLE_TCDATA MATCHES "ON")
   ENDIF(UNIX AND NOT APPLE)
 ENDIF(BUNDLE_TCDATA MATCHES "ON")
 
+
+#  To build for android, use this cmake invocation..
+#$cmake -D_wx_selected_config=androideabi-qt -DCMAKE_TOOLCHAIN_FILE=../buildandroid/build_android.cmake ..
+
+IF(DEFINED _wx_selected_config)
+
+MESSAGE (STATUS "selected config ${_wx_selected_config}")
+
+IF(_wx_selected_config MATCHES "androideabi-qt")
+  MESSAGE (STATUS "Building for wxQt-Android")
+  SET(QT_ANDROID "ON")
+  SET(QT_LINUX "OFF")
+  SET(QT "ON")
+ELSE(_wx_selected_config MATCHES "androideabi-qt")
+  IF(_wx_selected_config MATCHES "qt")
+    MESSAGE (STATUS "Building for wxQt-linux")
+    SET(QT_ANDROID "OFF")
+    SET(QT_LINUX "ON")
+    SET(QT "ON")
+  ENDIF(_wx_selected_config MATCHES "qt")
+ENDIF(_wx_selected_config MATCHES "androideabi-qt")
+
+ENDIF(DEFINED _wx_selected_config)
+
+IF(UNIX)
+  if(NOT QT)
+   MESSAGE (STATUS "Building for wxGTK2")
+   SET(GTK2 "ON")
+  ENDIF(NOT QT)
+ENDIF(UNIX)
+
+IF((_wx_selected_config MATCHES "qt-armv7"))
+SET(CMAKE_BUILD_TYPE Debug)
+ENDIF()
+
+IF((_wx_selected_config MATCHES "qt-armv7"))
+SET(CMAKE_BUILD_TYPE Debug)
+
+SET(wxWidgets_USE_LIBS base core     xml html adv aui)
+ELSE()
 SET(wxWidgets_USE_LIBS base core net xml html adv aui)
+ENDIF()
+
+
+IF(NOT QT_ANDROID)
 
 FIND_PACKAGE(OpenGL)
 IF(OPENGL_GLU_FOUND)
@@ -287,6 +331,7 @@ FIND_PACKAGE(wxWidgets REQUIRED)
 INCLUDE(${wxWidgets_USE_FILE})
     MESSAGE (STATUS "Found wxWidgets..." )
     MESSAGE (STATUS "${wxWidgets_LIBRARIES}")
+ENDIF(NOT QT_ANDROID)
 
 MESSAGE (STATUS "")
 MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME}  ***")
@@ -348,11 +393,11 @@ IF(WIN32)
     SET(EXTRA_LIBS ${EXTRA_LIBS} ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/CrashRpt1401.lib)
     SET(CMAKE_EXE_LINKER_FLAGS /DEBUG)
 ELSE(WIN32)
-    IF(NOT APPLE)
+    IF(NOT APPLE AND NOT QT_ANDROID)
         IF(CMAKE_BUILD_TYPE MATCHES "Rel*")
             ADD_DEFINITIONS(-DLINUX_CRASHRPT)
         ENDIF(CMAKE_BUILD_TYPE MATCHES "Rel*")
-    ENDIF(NOT APPLE)
+    ENDIF(NOT APPLE AND NOT QT_ANDROID)
 ENDIF(WIN32)
 
 # Add some definitions to satisfy MS
@@ -370,6 +415,7 @@ SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/")
 
 IF (NOT WIN32 AND NOT APPLE)
 
+IF(GTK2)
 FIND_PACKAGE(GTK2 2.6)
 IF (GTK2_FOUND)
     MESSAGE (STATUS "Found GTK2")
@@ -386,6 +432,36 @@ IF (GTK2_FOUND)
 ELSE(GTK2_FOUND)
     MESSAGE (STATUS "GTK2 Not found...")
 ENDIF (GTK2_FOUND)
+ENDIF(GTK2)
+
+IF(QT_ANDROID)
+  ADD_DEFINITIONS(-D__WXQT__)
+  ADD_DEFINITIONS(-DOCPN_USE_WRAPPER)
+  ADD_DEFINITIONS(-D__OCPN__ANDROID__)
+  ADD_DEFINITIONS(-DANDROID)
+
+  SET(CMAKE_CXX_FLAGS "-pthread -fPIC")
+
+  INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include/QtCore")
+  INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include")
+  INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include/QtWidgets")
+  INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include/QtGui")
+  INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include/QtOpenGL")
+  INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include/QtTest")
+
+  ADD_DEFINITIONS(-DQT_WIDGETS_LIB)
+
+  INCLUDE_DIRECTORIES("${wxQt_Base}/include")
+  INCLUDE_DIRECTORIES( "${wxQt_Base}/${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-static-3.1")
+
+  add_subdirectory(src/glshim)
+
+  add_subdirectory(src/glues)
+  INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/glues/source )
+
+ENDIF()
+
+
 
 IF(UNIX)
 INCLUDE("FindPortaudio.cmake")
@@ -408,11 +484,13 @@ ENDIF (NOT WIN32 AND NOT APPLE)
 FIND_PACKAGE(Gettext REQUIRED)
 
 IF(UNIX)
+  IF(NOT QT_ANDROID) # this should be detected by the grib plugin
     FIND_PACKAGE(BZip2 REQUIRED)
     INCLUDE_DIRECTORIES(${BZIP2_INCLUDE_DIR})
     FIND_PACKAGE(ZLIB REQUIRED)
     INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
     FIND_PACKAGE(TinyXML)
+  ENDIF(NOT QT_ANDROID)  
 ENDIF(UNIX)
 
 # For convenience we define the sources as a variable. You can add
@@ -570,8 +648,6 @@ SET(HDRS
 		include/wx/json_defs.h
 		include/wx/jsonwriter.h
 		include/wx/jsonreader.h
-		include/chartsymbols.h
-		include/razdsparser.h
 		include/styles.h
 		include/toolbar.h
 		include/compasswin.h
@@ -659,8 +735,6 @@ SET(SRCS
 		src/wxJSON/jsonwriter.cpp
 		src/wxJSON/jsonreader.cpp
 		src/wxJSON/jsonval.cpp
-		src/chartsymbols.cpp
-		src/razdsparser.cpp
 		src/styles.cpp
 		src/toolbar.cpp
 		src/compasswin.cpp
@@ -679,17 +753,35 @@ SET(SRCS
                 src/canvasMenu.cpp
     )
 
-IF(NOT WIN32 AND NOT APPLE)
+IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
   SET(HDRS ${HDRS} include/crashprint.h )
   SET(SRCS ${SRCS} src/crashprint.cpp)
-ENDIF(NOT WIN32 AND NOT APPLE)
+ENDIF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
+
+IF(QT_ANDROID)
+    ADD_DEFINITIONS(-DocpnUSE_GL)
+    ADD_DEFINITIONS(-DUSE_GLU_TESS)
+
+    SET(HDRS ${HDRS} include/glChartCanvas.h
+                   include/glTextureDescriptor.h
+                   include/glTexCache.h
+                   include/TexFont.h
+                   include/androidUTIL.h
+    )
+    SET(SRCS ${SRCS} src/glChartCanvas.cpp
+                   src/glTextureDescriptor.cpp
+                   src/glTexCache.cpp
+                   src/TexFont.cpp
+                   src/androidUTIL.cpp
+    )
+ENDIF(QT_ANDROID)
 
 #  Search for wxWidgets 2.9 or newer
 STRING(REGEX MATCHALL "-2.9|-3." wx_Version_2.9+ "${wxWidgets_INCLUDE_DIRS}")
 IF(wx_Version_2.9+)
 ELSE(wx_Version_2.9+)
-  SET(HDRS ${HDRS} include/scrollingdialog.h )
-  SET(SRCS ${SRCS} src/scrollingdialog.cpp)
+#  SET(HDRS ${HDRS} include/scrollingdialog.h )
+#  SET(SRCS ${SRCS} src/scrollingdialog.cpp)
 ENDIF(wx_Version_2.9+)
 
 SET( PACKAGE_HEADERS "" )
@@ -705,10 +797,12 @@ IF(OPENGL_GLU_FOUND)
   SET(HDRS ${HDRS} include/glChartCanvas.h
                    include/glTextureDescriptor.h
                    include/glTexCache.h
+                   include/TexFont.h
         )
   SET(SRCS ${SRCS} src/glChartCanvas.cpp
                    src/glTextureDescriptor.cpp
                    src/glTexCache.cpp
+                   src/TexFont.cpp
         )
 ENDIF(OPENGL_GLU_FOUND)
 
@@ -878,8 +972,22 @@ ELSE (USE_GARMINHOST)
 	message (STATUS "Garmin Host Mode support: disabled")
 ENDIF (USE_GARMINHOST)
 
+#Chart Symbols library
+SET(SRC_SYMBOLS
+    src/chartsymbols.cpp
+    include/chartsymbols.h
+    src/razdsparser.cpp
+    include/razdsparser.h
+    )
+
+ADD_LIBRARY(SYMBOLS ${SRC_SYMBOLS})
+SET(EXTRA_LIBS ${EXTRA_LIBS} SYMBOLS)
+
+
+
+
 # Compile texcompression support library
-IF (OPENGL_GLU_FOUND)
+IF (OPENGL_GLU_FOUND OR QT_ANDROID)
 
   SET(SRC_TEXCMP
     src/texcmp/lz4/lz4.c
@@ -905,7 +1013,7 @@ IF (OPENGL_GLU_FOUND)
   # not sure what to use for visual studio, but optimizations should be enabled here
   IF ( NOT MSVC )
       # try to use sse on x86 based systems
-      IF ( ARCH MATCHES "i386" OR ARCH MATCHES "amd64" OR ARCH MATCHES "x86_64")
+      IF (( ARCH MATCHES "i386" OR ARCH MATCHES "amd64" OR ARCH MATCHES "x86_64") AND NOT QT_ANDROID)
         # using sse which makes the compression run about 50% faster
         message (STATUS "Compiling texture compression library with sse support")
         set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "-O3 -msse2 -DSQUISH_USE_SSE=2")
@@ -922,7 +1030,7 @@ IF (OPENGL_GLU_FOUND)
       ENDIF ()
   ENDIF (NOT MSVC)
 
-ENDIF (OPENGL_GLU_FOUND)
+ENDIF (OPENGL_GLU_FOUND OR QT_ANDROID)
 
 #TODO
 #dnl
@@ -1191,18 +1299,22 @@ IF(UNIX AND NOT APPLE)
 ADD_EXECUTABLE(${PACKAGE_NAME} ${HDRS} ${SRCS})
 ENDIF(UNIX AND NOT APPLE)
 
+IF(QT_ANDROID)
+ADD_LIBRARY(gorp ${HDRS} ${SRCS})
+ENDIF()
 
 
 
 
 
-If(NOT APPLE)
+
+If(NOT APPLE AND NOT QT_ANDROID)
 TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
       ${wxWidgets_LIBRARIES}
       NMEA0183
       ${EXTRA_LIBS}
       )
-ENDIF(NOT APPLE)
+ENDIF(NOT APPLE AND NOT QT_ANDROID)
 
 IF(WIN32)
 TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
@@ -1236,6 +1348,9 @@ IF(GTK2_FOUND)
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} gobject-2.0 )
 ENDIF(GTK2_FOUND)
 
+IF(QT_LINUX)
+  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} Qt5Widgets Qt5OpenGL Qt5Gui Qt5Test Qt5Core )
+ENDIF(QT_LINUX)
 
 IF(NOT APPLE)
 
@@ -1243,9 +1358,9 @@ IF(WIN32)
 INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME DESTINATION ".")
 ENDIF(WIN32)
 
-IF(UNIX AND NOT APPLE)
+IF(UNIX AND NOT APPLE AND NOT QT_ANDROID)
 INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME DESTINATION ${PREFIX_BIN} PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-ENDIF(UNIX AND NOT APPLE)
+ENDIF(UNIX AND NOT APPLE AND NOT QT_ANDROID)
 
 
 IF(WIN32)
@@ -1387,8 +1502,11 @@ GETTEXT_BUILD_MO(po/opencpn_hu_HU.po hu_HU)
 GETTEXT_BUILD_MO(po/opencpn_gl_ES.po gl_ES)
 GETTEXT_BUILD_MO(po/opencpn_ca_ES.po ca_ES)
 ADD_CUSTOM_TARGET(i18n COMMENT "i18n: Done." DEPENDS ${_gmoFiles})
-#ADD_DEPENDENCIES(i18n ${PACKAGE_PO_FILES})
+
+IF(NOT QT_ANDROID)
 ADD_DEPENDENCIES(${PACKAGE_NAME} i18n)
+ENDIF(NOT QT_ANDROID)
+
 ENDIF(GETTEXT_MSGFMT_EXECUTABLE)
 
 
@@ -1430,9 +1548,11 @@ ENDIF(WIN32 AND NOT UNIX)
 
 MESSAGE (STATUS "")
 
+IF(NOT QT_ANDROID) 
 IF(NOT SKIP_PLUGINS)
  add_subdirectory (plugins)
 ENDIF(NOT SKIP_PLUGINS)
+ENDIF(NOT QT_ANDROID)
 
 # build a CPack driven installer package
 #include (InstallRequiredSystemLibraries)

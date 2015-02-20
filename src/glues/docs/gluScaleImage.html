@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "xhtml1-transitional.dtd">
+<?xml-stylesheet type="text/xsl" href="mathml.xsl"?><html xmlns="http://www.w3.org/1999/xhtml" xmlns:pref="http://www.w3.org/2002/Math/preference" pref:renderer="mathplayer-dl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>gluScaleImage</title><meta name="generator" content="DocBook XSL Stylesheets V1.73.2" /></head><body><div class="refentry" lang="en" xml:lang="en"><a id="gluScaleImage"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>gluScaleImage - scale an image to an arbitrary size</p></div><div class="refsynopsisdiv"><h2>C Specification</h2><div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0"><tr><td><code class="funcdef">GLint &nbsp;<b class="fsfunc">gluScaleImage</b>(</code></td><td>GLenum &nbsp;</td><td><var class="pdparam">format</var>, </td></tr><tr><td> </td><td>GLsizei &nbsp;</td><td><var class="pdparam">wIn</var>, </td></tr><tr><td> </td><td>GLsizei &nbsp;</td><td><var class="pdparam">hIn</var>, </td></tr><tr><td> </td><td>GLenum &nbsp;</td><td><var class="pdparam">typeIn</var>, </td></tr><tr><td> </td><td>const void* &nbsp;</td><td><var class="pdparam">dataIn</var>, </td></tr><tr><td> </td><td>GLsizei &nbsp;</td><td><var class="pdparam">wOut</var>, </td></tr><tr><td> </td><td>GLsizei &nbsp;</td><td><var class="pdparam">hOut</var>, </td></tr><tr><td> </td><td>GLenum &nbsp;</td><td><var class="pdparam">typeOut</var>, </td></tr><tr><td> </td><td>GLvoid* &nbsp;</td><td><var class="pdparam">dataOut</var><code>)</code>;</td></tr></table></div></div><div class="refsect1" lang="en" xml:lang="en"><a id="parameters"></a><h2>Parameters</h2><div class="variablelist"><dl><dt><span class="term"><em class="parameter"><code>format</code></em></span></dt><dd><p>
+
+                    Specifies the format of the pixel data.
+                    The following symbolic values are valid:
+                    <code class="constant">GL_RGB</code>,
+                    <code class="constant">GL_RGBA</code>,
+                    <code class="constant">GL_LUMINANCE</code>, and
+                    <code class="constant">GL_LUMINANCE_ALPHA</code>.
+                </p></dd><dt><span class="term"><em class="parameter"><code>wIn</code></em>, </span><span class="term"><em class="parameter"><code>hIn</code></em></span></dt><dd><p>
+
+                    Specify in pixels the width and height, respectively, of the source image.
+                </p></dd><dt><span class="term"><em class="parameter"><code>typeIn</code></em></span></dt><dd><p>
+                    Specifies the data type for <em class="parameter"><code>dataIn</code></em>. Must be one of
+                    <code class="constant">GL_UNSIGNED_BYTE</code>,
+                    <code class="constant">GL_UNSIGNED_SHORT_5_6_5</code>,
+                    <code class="constant">GL_UNSIGNED_SHORT_4_4_4_4</code>, or
+                    <code class="constant">GL_UNSIGNED_SHORT_5_5_5_1</code>.
+                </p></dd><dt><span class="term"><em class="parameter"><code>dataIn</code></em></span></dt><dd><p>
+
+                    Specifies a pointer to the source image.
+                </p></dd><dt><span class="term"><em class="parameter"><code>wOut</code></em>, </span><span class="term"><em class="parameter"><code>hOut</code></em></span></dt><dd><p>
+                    Specify the width and height, respectively, in pixels of the destination image.
+                </p></dd><dt><span class="term"><em class="parameter"><code>typeOut</code></em></span></dt><dd><p>
+                    Specifies the data type for <em class="parameter"><code>dataOut</code></em>. Must be one of
+                    <code class="constant">GL_UNSIGNED_BYTE</code>,
+                    <code class="constant">GL_UNSIGNED_SHORT_5_6_5</code>,
+                    <code class="constant">GL_UNSIGNED_SHORT_4_4_4_4</code>, or
+                    <code class="constant">GL_UNSIGNED_SHORT_5_5_5_1</code>.
+                </p></dd><dt><span class="term"><em class="parameter"><code>dataOut</code></em></span></dt><dd><p>
+
+                    Specifies a pointer to the destination image.
+                </p></dd></dl></div></div><div class="refsect1" lang="en" xml:lang="en"><a id="description"></a><h2>Description</h2><p>
+            <code class="function">gluScaleImage</code> scales a pixel image using the appropriate pixel store modes to 
+            unpack data from the source image and pack data into the destination image.
+        </p><p>
+            When shrinking an image, <code class="function">gluScaleImage</code> uses a box filter to sample the source image
+            and create pixels for the destination image.  When magnifying an image,
+            the pixels from the source image are linearly interpolated to create the
+            destination image.
+        </p><p>
+            A return value of zero indicates success, otherwise a GLU error code is returned (see <a class="citerefentry" href="gluErrorString.html"><span class="citerefentry"><span class="refentrytitle">gluErrorString</span></span></a>).
+        </p><p>
+
+            See the <code>glReadPixels</code> reference page for a description of
+            the acceptable values for the <em class="parameter"><code>format</code></em>, <em class="parameter"><code>typeIn</code></em>, and <em class="parameter"><code>typeOut</code></em> parameters.
+        </p></div><div class="refsect1" lang="en" xml:lang="en"><a id="errors"></a><h2>Errors</h2><p>
+
+            <code class="constant">GLU_INVALID_VALUE</code> is returned if <em class="parameter"><code>wIn</code></em>, <em class="parameter"><code>hIn</code></em>, <em class="parameter"><code>wOut</code></em>, or <em class="parameter"><code>hOut</code></em>
+            is negative.
+        </p><p>
+            <code class="constant">GLU_INVALID_ENUM</code> is returned if <em class="parameter"><code>format</code></em>, <em class="parameter"><code>typeIn</code></em>, or <em class="parameter"><code>typeOut</code></em> is not
+            legal.
+        </p><p>
+            <code class="constant">GLU_INVALID_OPERATION</code> is returned if <em class="parameter"><code>typeIn</code></em> or <em class="parameter"><code>typeOut</code></em> is 
+            <code class="constant">GL_UNSIGNED_SHORT_5_6_5</code>
+            and <em class="parameter"><code>format</code></em> is not <code class="constant">GL_RGB</code>.
+        </p><p>
+            <code class="constant">GLU_INVALID_OPERATION</code> is returned if <em class="parameter"><code>typeIn</code></em> or <em class="parameter"><code>typeOut</code></em> is
+            <code class="constant">GL_UNSIGNED_SHORT_4_4_4_4</code>
+            and <em class="parameter"><code>format</code></em> is not <code class="constant">GL_RGBA</code>.
+        </p><p>
+            <code class="constant">GLU_INVALID_OPERATION</code> is returned if <em class="parameter"><code>typeIn</code></em> or <em class="parameter"><code>typeOut</code></em> is
+            <code class="constant">GL_UNSIGNED_SHORT_5_5_5_1</code>
+            and <em class="parameter"><code>format</code></em> is not <code class="constant">GL_RGBA</code>.
+        </p></div><div class="refsect1" lang="en" xml:lang="en"><a id="seealso"></a><h2>See Also</h2><p>
+            <a class="citerefentry" href="gluBuild2DMipmaps.html"><span class="citerefentry"><span class="refentrytitle">gluBuild2DMipmaps</span></span></a>,
+            <a class="citerefentry" href="gluErrorString.html"><span class="citerefentry"><span class="refentrytitle">gluErrorString</span></span></a>.
+        </p></div><div class="refsect1" lang="en" xml:lang="en"><a id="Copyright"></a><h2>Copyright</h2><p>
+            Copyright <span class="trademark"></span>c 1991-2006
+            Silicon Graphics, Inc. This document is licensed under the SGI
+            Free Software B License. For details, see
+            <a class="ulink" href="http://oss.sgi.com/projects/FreeB/" target="_top">http://oss.sgi.com/projects/FreeB/</a>.
+        </p></div></div></body></html>
+

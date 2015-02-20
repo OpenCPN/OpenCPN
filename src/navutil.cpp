@@ -1789,6 +1789,10 @@ int MyConfig::LoadMyConfig()
     SetPath ( _T ( "/Settings/MacFonts" ) );
 #endif
 
+#ifdef __WXQT__
+    SetPath ( _T ( "/Settings/QTFonts" ) );
+#endif
+    
     wxString str;
     long dummy;
     wxString *pval = new wxString;
@@ -2776,6 +2780,10 @@ void MyConfig::UpdateSettings()
     font_path = ( _T ( "/Settings/MacFonts" ) );
 #endif
 
+#ifdef __WXQT__
+    SetPath ( _T ( "/Settings/QTFonts" ) );
+#endif
+    
     DeleteGroup(font_path);
     
     SetPath( font_path );

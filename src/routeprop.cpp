@@ -366,10 +366,23 @@ RouteProp::RouteProp( wxWindow* parent, wxWindowID id, const wxString& caption, 
     CreateControls();
 
     //  Make an estimate of the dialog size, without scrollbars showing
+    
     wxSize esize;
     esize.x = GetCharWidth() * 110;
     esize.y = GetCharHeight() * 40;
-    SetSize( esize );
+//    SetSize( esize );
+    
+    wxSize dsize = GetParent()->GetClientSize();
+    esize.y = wxMin(esize.y, dsize.y - (2 * GetCharHeight()));
+    esize.x = wxMin(esize.x, dsize.x - (2 * GetCharHeight()));
+    SetClientSize(esize);
+    
+    wxSize fsize = GetSize();
+    fsize.y = wxMin(fsize.y, dsize.y - (2 * GetCharHeight()));
+    fsize.x = wxMin(fsize.x, dsize.x - (2 * GetCharHeight()));
+    SetSize(fsize);
+    
+    
     Centre();
 }
 
@@ -2141,9 +2154,35 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     Layout();
     wxSize sz = bSizer1->CalcMin();
     sz.IncBy( 20 );   // Account for some decorations?
+    
+#if 1
+    wxSize dsize = ::wxGetDisplaySize();
+    sz.y = wxMin(sz.y, dsize.y-80);
+//    sz = wxSize(600, 400);
     SetClientSize(sz);
     m_defaultClientSize = sz;
     m_panelBasicProperties->SetScrollRate(5, 5);
+
+    wxSize fsize = GetSize();
+    fsize.y = wxMin(fsize.y, dsize.y-80);
+    fsize.x = wxMin(fsize.x, dsize.x-80);
+    SetSize(fsize);
+#endif
+
+    #if 0
+     wxSize dsize = ::wxGetDisplaySize();
+//    sz.y = wxMin(sz.y, dsize.y-80);
+//    sz = wxSize(600, 400);
+//    SetClientSize(sz);
+     m_panelBasicProperties->SetScrollRate(5, 5);
+
+    wxSize fsize = GetSize();
+    fsize.y = wxMin(fsize.y, dsize.y-80);
+    fsize.x = wxMin(fsize.x, dsize.x-80);
+    SetSize(fsize);
+    m_defaultClientSize = GetClientSize();
+#endif
+
 
     Centre( wxBOTH );
 
@@ -2277,8 +2316,9 @@ void MarkInfoImpl::InitialFocus( void )
 {
     m_textName->SetFocus();
     m_textName->SetInsertionPointEnd();
+#ifndef __OCPN__ANDROID__    
     m_panelBasicProperties->Scroll(0, 0);
-
+#endif
 }
 
 void MarkInfoImpl::SetColorScheme( ColorScheme cs )
@@ -2359,9 +2399,9 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
                         wxHyperlinkEventHandler( MarkInfoImpl::OnHyperLinkClick ) );
                 ( (wxHyperlinkCtrl*) win )->Disconnect( wxEVT_RIGHT_DOWN,
                         wxMouseEventHandler( MarkInfoImpl::m_hyperlinkContextMenu ) );
+                win->Destroy();
             }
         }
-        m_scrolledWindowLinks->DestroyChildren();
         m_checkBoxShowName->SetValue( m_pRoutePoint->m_bShowName );
         m_checkBoxVisible->SetValue( m_pRoutePoint->m_bIsVisible );
         m_textCtrlGuid->SetValue( m_pRoutePoint->m_GUID );

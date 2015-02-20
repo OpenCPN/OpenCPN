@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "xhtml1-transitional.dtd">
+<?xml-stylesheet type="text/xsl" href="mathml.xsl"?><html xmlns="http://www.w3.org/1999/xhtml" xmlns:pref="http://www.w3.org/2002/Math/preference" pref:renderer="mathplayer-dl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>gluLookAt</title><meta name="generator" content="DocBook XSL Stylesheets V1.73.2" /></head><body><div class="refentry" lang="en" xml:lang="en"><a id="gluLookAt"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>gluLookAt - define a viewing transformation</p></div><div class="refsynopsisdiv"><h2>C Specification</h2><div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0"><tr><td><code class="funcdef">void <b class="fsfunc">gluLookAt</b>(</code></td><td>GLfloat &nbsp; </td><td><var class="pdparam">eyeX</var>, </td></tr><tr><td> </td><td>GLfloat &nbsp; </td><td><var class="pdparam">eyeY</var>, </td></tr><tr><td> </td><td>GLfloat &nbsp; </td><td><var class="pdparam">eyeZ</var>, </td></tr><tr><td> </td><td>GLfloat &nbsp; </td><td><var class="pdparam">centerX</var>, </td></tr><tr><td> </td><td>GLfloat &nbsp; </td><td><var class="pdparam">centerY</var>, </td></tr><tr><td> </td><td>GLfloat &nbsp; </td><td><var class="pdparam">centerZ</var>, </td></tr><tr><td> </td><td>GLfloat &nbsp; </td><td><var class="pdparam">upX</var>, </td></tr><tr><td> </td><td>GLfloat &nbsp; </td><td><var class="pdparam">upY</var>, </td></tr><tr><td> </td><td>GLfloat &nbsp; </td><td><var class="pdparam">upZ</var><code>)</code>;</td></tr></table></div></div><div class="refsect1" lang="en" xml:lang="en"><a id="parameters"></a><h2>Parameters</h2><div class="variablelist"><dl><dt><span class="term"><em class="parameter"><code>eyeX</code></em>, </span><span class="term"><em class="parameter"><code>eyeY</code></em>, </span><span class="term"><em class="parameter"><code>eyeZ</code></em></span></dt><dd><p>
+
+                    Specifies the position of the eye point.
+                </p></dd><dt><span class="term"><em class="parameter"><code>centerX</code></em>, </span><span class="term"><em class="parameter"><code>centerY</code></em>, </span><span class="term"><em class="parameter"><code>centerZ</code></em></span></dt><dd><p>
+                    Specifies the position of the reference point.
+                </p></dd><dt><span class="term"><em class="parameter"><code>upX</code></em>, </span><span class="term"><em class="parameter"><code>upY</code></em>, </span><span class="term"><em class="parameter"><code>upZ</code></em></span></dt><dd><p>
+                    Specifies the direction of the <span class="emphasis"><em>up</em></span> vector.
+                </p></dd></dl></div></div><div class="refsect1" lang="en" xml:lang="en"><a id="description"></a><h2>Description</h2><p>
+
+            <code class="function">gluLookAt</code> creates a viewing matrix derived from an eye point, a reference
+            point indicating the center of the scene, and an <span class="emphasis"><em>UP</em></span> vector.  
+        </p><p>
+            The matrix
+            maps the reference point to the negative <span class="emphasis"><em>z</em></span> axis and the
+            eye point to the origin.
+            When a typical projection matrix is used,
+            the center of the scene therefore maps to the center of the viewport.
+            Similarly, the direction described by the <span class="emphasis"><em>UP</em></span>
+            vector projected onto the viewing plane is mapped to the positive <span class="emphasis"><em>y</em></span> 
+            axis so that it points upward in the viewport.
+            The <span class="emphasis"><em>UP</em></span> vector must not be parallel to the line of sight from the
+            eye point to the reference point.
+        </p><p>
+
+            Let 
+        </p>
+         <pre><em>
+            / centerX - eyeX \
+            |                 |
+       F =  | centerY - eyeY  |
+            |                 |
+            \ centerZ - eyeZ /
+         </em></pre>
+        <p>
+        </p><p>
+            Let <span class="emphasis"><em>UP</em></span> be the vector <em>(upX, upY, upZ)</em>. 
+        </p><p>
+            Then normalize as follows: 
+        </p>
+         <pre><em>
+              F
+       f = -------
+           || F ||   
+
+                UP
+       UP" = --------
+             || UP ||
+
+         </em></pre>
+        <p>
+            Finally, let <em>s = f x UP", and u = s x f. </em>
+        </p><p>
+        </p><p>
+            M is then constructed as follows:
+        </p>
+        <pre><em>
+
+           /  s[0]   s[1]   s[2]   0  \
+           |                          |
+           |  u[0]   u[1]   u[2]   0  |
+       M = |                          |
+           | -f[0]  -f[1]  -f[2]   0  |
+           |                          |
+           \  0      0      0      1  /
+
+        </em></pre>
+            and <code class="function">gluLookAt</code> is equivalent to 
+            <pre class="programlisting"><code>
+glMultMatrixf(M);
+glTranslatef(-eyex, -eyey, -eyez);
+            </code></pre><p>
+        </p></div><div class="refsect1" lang="en" xml:lang="en"><a id="Copyright"></a><h2>Copyright</h2><p>
+            Copyright <span class="trademark"></span>c 1991-2006
+            Silicon Graphics, Inc. This document is licensed under the SGI
+            Free Software B License. For details, see
+            <a class="ulink" href="http://oss.sgi.com/projects/FreeB/" target="_top">http://oss.sgi.com/projects/FreeB/</a>.
+        </p></div></div></body></html>
+

@@ -1506,8 +1506,12 @@ ChartBaseBSB::ChartBaseBSB()
       n_pwx = 0;
       n_pwy = 0;
 
-
+#ifdef __OCPN__ANDROID__
+      bUseLineCache = false;
+#else
       bUseLineCache = true;
+#endif
+
       m_Chart_Skew = 0.0;
 
       pPixCache = NULL;

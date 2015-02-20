@@ -52,8 +52,13 @@
 #include "GL/gl.h"
 #include "GL/glu.h"
 #else
-#include <GL/gl.h>
-#include <GL/glu.h>
+#ifndef __OCPN__ANDROID__
+    #include <GL/gl.h>
+    #include <GL/glu.h>
+#else
+    #include "glues.h"          // local version of glu for GLES
+#endif
+
 #endif
 
 #endif
@@ -148,7 +153,7 @@ typedef void GLvoid;
 #ifdef USE_GLU_TESS
 static int            s_nvcall;
 static int            s_nvmax;
-static double         *s_pwork_buf;
+static GLdouble       *s_pwork_buf;
 static int            s_buf_len;
 static int            s_buf_idx;
 static unsigned int   s_gltri_type;
@@ -2021,8 +2026,11 @@ int PolyTessGeo::PolyTessGeoGL(OGRPolygon *poly, bool bSENC_SM, double ref_lat, 
     float *p_run = vbuf;
     while( p_tp ) {
         float *pfbuf = p_run;
+        GLdouble *pdouble_buf = (GLdouble *)p_tp->p_vertex;
+        
         for( int i=0 ; i < p_tp->nVert * 2 ; ++i){
-            float x = (float)(p_tp->p_vertex[i]);
+            float x = (float)( *((GLdouble *)pdouble_buf) );
+            pdouble_buf++;
             *p_run++ = x;
         }
         
@@ -2438,9 +2446,12 @@ int PolyTessGeo::BuildTessGL(void)
       float *p_run = vbuf;
       while( p_tp ) {
           float *pfbuf = p_run;
+          GLdouble *pdouble_buf = (GLdouble *)p_tp->p_vertex;
+          
           for( int i=0 ; i < p_tp->nVert * 2 ; ++i){
-              float x = (float)(p_tp->p_vertex[i]);
+              float x = (float)( *((GLdouble *)pdouble_buf) );
               *p_run++ = x;
+              pdouble_buf++;
           }
           
           free(p_tp->p_vertex);
@@ -2578,7 +2589,7 @@ void __CALL_CONVENTION endCallback(void)
 
             if(s_bSENC_SM)
             {
-                double *pds = s_pwork_buf;
+                GLdouble *pds = s_pwork_buf;
                 pTPG->p_vertex = (double *)malloc(s_nvcall * 2 * sizeof(double));
                 double *pdd = pTPG->p_vertex;
 

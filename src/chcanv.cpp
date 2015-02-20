@@ -585,7 +585,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 
-#if defined( __WXGTK__) || defined(__WXOSX__)
+#if !defined(__WXMSW__) && !defined(__WXQT__)
 
     wxImage ICursorLeft = style->GetIcon( _T("left") ).ConvertToImage();
     wxImage ICursorRight = style->GetIcon( _T("right") ).ConvertToImage();
@@ -1898,8 +1898,10 @@ void ChartCanvas::StopMovement( )
     m_zoom_factor = 1;
     m_rotation_speed = 0;
     m_mustmove = 0;
+#ifndef __OCPN__ANDROID__    
     SetFocus();
     gFrame->Raise();
+#endif    
 }
 
 /* instead of integrating in timer callbacks
@@ -2177,6 +2179,10 @@ void ChartCanvas::RotateTimerEvent( wxTimerEvent& event )
 
 void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
 {
+#ifdef __OCPN__ANDROID__
+    return;
+#endif
+    
     bool b_need_refresh = false;
 
     //  Handle the AIS Rollover Window first
@@ -2378,7 +2384,7 @@ void ChartCanvas::OnCursorTrackTimerEvent( wxTimerEvent& event )
 //      This is here because GTK status window update is expensive..
 //            cairo using pango rebuilds the font every time so is very inefficient
 //      Anyway, only update the status bar when this timer expires
-#ifdef __WXGTK__
+#if defined(__WXGTK__) || defined(__WXQT__)
     {
         //    Check the absolute range of the cursor position
         //    There could be a window wherein the chart geoereferencing is not valid....
@@ -2762,6 +2768,10 @@ bool ChartCanvas::PanCanvas( double dx, double dy )
     ClearbFollow();      // update the follow flag
 
     Refresh( false );
+#ifdef __OCPN__ANDROID__    
+    Update();
+#endif    
+    
 
     pCurTrackTimer->Start( m_curtrack_timer_msec, wxTIMER_ONE_SHOT );
 
@@ -4334,7 +4344,11 @@ bool ChartCanvas::CheckEdgePan( int x, int y, bool bdragging, int margin, int de
         if( !g_btouch )
         {
             wxMouseState state = ::wxGetMouseState();
+#if  wxCHECK_VERSION(3,0,0)
+            if( !state.LeftIsDown() )
+#else
             if( !state.LeftDown() )
+#endif
                 bft = false;
         }
     }
@@ -4649,7 +4663,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 //      after an interval timer (pCurTrackTimer) pops, which will happen
 //      whenever the mouse has stopped moving for specified interval.
 //      See the method OnCursorTrackTimerEvent()
-#ifndef __WXGTK__
+#if !defined(__WXGTK__) && !defined(__WXQT__)
     SetCursorStatus(m_cursor_lat, m_cursor_lon);
 #endif
 
@@ -5606,10 +5620,8 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             double slat, slon;
             slat = m_cursor_lat;
             slon = m_cursor_lon;
-//                      SelectItem *pFind;
- //           wxClientDC cdc( this );
-//            ocpnDC dc( cdc );
-#ifdef __WXMAC__
+
+#if defined(__WXMAC__) || defined(__OCPN__ANDROID__)
             wxScreenDC sdc;
             ocpnDC dc( sdc );
 #else
@@ -5617,6 +5629,8 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             ocpnDC dc( cdc );
 #endif
 
+            OCPNRegion vp_region( wxRect( 0, 0, VPoint.pix_width, VPoint.pix_height ) );
+            
             SelectItem *pFindAIS;
             SelectItem *pFindRP;
             SelectItem *pFindRouteSeg;
@@ -5628,6 +5642,13 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             if( m_pSelectedRoute ) {
                 m_pSelectedRoute->m_bRtIsSelected = false;        // Only one selection at a time
                 m_pSelectedRoute->DeSelectRoute();
+#ifdef ocpnUSE_GL
+                if(g_bopengl){
+                    InvalidateGL();
+                    Update();
+                }
+                else
+#endif
                 m_pSelectedRoute->Draw( dc, VPoint );
             }
 
@@ -5744,6 +5765,15 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 if( m_pSelectedRoute ) {
                     if( m_pSelectedRoute->IsVisible() ) seltype |= SELTYPE_ROUTEPOINT;
                 } else if( m_pFoundRoutePoint ) seltype |= SELTYPE_MARKPOINT;
+                
+                //      Highlite the selected point, to verify the proper right click selection
+                if( m_pFoundRoutePoint) {
+                    m_pFoundRoutePoint->m_bPtIsSelected = true;
+                    wxRect wp_rect;
+                    m_pFoundRoutePoint->CalculateDCRect( m_dc_route, &wp_rect );
+                    RefreshRect( wp_rect, true );
+                }
+                
             }
 
             // Note here that we use SELTYPE_ROUTESEGMENT to select tracks as well as routes
@@ -5774,8 +5804,17 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                         m_pFoundRoutePoint =   (RoutePoint *) pFindRouteSeg->m_pData1;
 
                     m_pSelectedRoute->m_bRtIsSelected = !(seltype & SELTYPE_ROUTEPOINT);
-                    if( m_pSelectedRoute->m_bRtIsSelected )
-                        m_pSelectedRoute->Draw( dc, GetVP() );
+                    if( m_pSelectedRoute->m_bRtIsSelected ){
+                        #ifdef ocpnUSE_GL
+                        if(g_bopengl){
+                            InvalidateGL();
+                            Update();
+                        }
+                        else
+                            #endif
+                            m_pSelectedRoute->Draw( dc, GetVP() );
+                    }
+                    
                     seltype |= SELTYPE_ROUTESEGMENT;
                 }
 
@@ -7848,7 +7887,7 @@ void ChartCanvas::CreateOZEmbossMapData( ColorScheme cs )
 }
 
 emboss_data *ChartCanvas::CreateEmbossMapData( wxFont &font, int width, int height,
-        const wxChar *str, ColorScheme cs )
+        const wxString &str, ColorScheme cs )
 {
     int *pmap;
 
@@ -7869,9 +7908,9 @@ emboss_data *ChartCanvas::CreateEmbossMapData( wxFont &font, int width, int heig
     temp_dc.SetFont( font );
 
     int str_w, str_h;
-    temp_dc.GetTextExtent( wxString( str, wxConvUTF8 ), &str_w, &str_h );
-    temp_dc.DrawText( wxString( str, wxConvUTF8 ), width - str_w - 10, 10 );
-
+    temp_dc.GetTextExtent( str, &str_w, &str_h );
+    temp_dc.DrawText( str, width - str_w - 10, 10 );
+    
     //  Deselect the bitmap
     temp_dc.SelectObject( wxNullBitmap );
 
@@ -8668,7 +8707,7 @@ void ShowAISTargetQueryDialog( wxWindow *win, int mmsi )
     g_pais_query_dialog_active->Show();
 }
 
-#ifdef __WXGTK__
+#ifdef __UNIX__
 #define BRIGHT_XCALIB
 #define __OPCPN_USEICC__
 #endif
@@ -9147,6 +9186,10 @@ int CreateSimpleICCProfileFile(const char *file_name, double co_red, double co_g
 
 void DimeControl( wxWindow* ctrl )
 {
+#ifdef __WXQT__
+    return; // this is seriously broken on wxqt
+#endif
+    
     if( NULL == ctrl ) return;
 
     wxColour col, window_back_color, gridline, uitext, udkrd, ctrl_back_color, text_color;
@@ -9260,18 +9303,14 @@ void DimeControl( wxWindow* ctrl, wxColour col, wxColour window_back_color, wxCo
         }
 
         else if( win->IsKindOf( CLASSINFO(wxGrid) ) ) {
-            ( (wxGrid*) win )->SetDefaultCellBackgroundColour(
-                window_back_color );
-            ( (wxGrid*) win )->SetDefaultCellTextColour(
-                uitext );
-            ( (wxGrid*) win )->SetLabelBackgroundColour(
-                col );
-            ( (wxGrid*) win )->SetLabelTextColour(
-                uitext );
-            ( (wxGrid*) win )->SetDividerPen(
-                wxPen( col ) );
-            ( (wxGrid*) win )->SetGridLineColour(
-                gridline );
+            ( (wxGrid*) win )->SetDefaultCellBackgroundColour( window_back_color );
+            ( (wxGrid*) win )->SetDefaultCellTextColour( uitext );
+            ( (wxGrid*) win )->SetLabelBackgroundColour( col );
+            ( (wxGrid*) win )->SetLabelTextColour( uitext );
+#if !wxCHECK_VERSION(3,0,0)
+            ( (wxGrid*) win )->SetDividerPen( wxPen( col ) );
+#endif            
+            ( (wxGrid*) win )->SetGridLineColour( gridline );
         }
 
         else {

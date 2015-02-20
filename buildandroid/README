@@ -1,0 +1,537 @@
+0....Tools, etc.
+        __ Uninstall old version
+        $/home/dsr/Projects/android-ndk/android-sdk-linux/platform-tools/adb  uninstall org.opencpn.opencpn
+
+
+        __Install new version
+        $/home/dsr/Projects/android-ndk/android-sdk-linux/platform-tools/adb install -r ./apk_build/bin/QtApp-debug.apk
+
+        __Access the log, etc...
+        $/home/dsr/Projects/android-ndk/android-sdk-linux/platform-tools/adb shell
+
+        log is at  /data/data/org.opencpn.opencpn/files/opencpn.log
+               or  /mnt/sdcard/.opencpn/opencpn.log
+
+        GL tracing on android
+        $ /home/dsr/Projects/android-ndk/android-sdk-linux/tools/monitor
+
+
+        $ /home/dsr/Projects/android-ndk/android-sdk-linux/platform-tools/adb shell dumpsys meminfo org.opencpn.opencpn
+
+
+        http://bricolsoftconsulting.com/how-to-enable-native-heap-tracking-in-ddms/
+
+        details:
+        {
+        $adb shell
+
+        #setprop libc.debug.malloc 1
+
+        #stop
+        #start
+            (reboots here, be patient)
+
+
+
+        $export PATH=/home/dsr/Projects/android-ndk/ndk-toolchain/bin:$PATH
+
+        $export ANDROID_SYMBOLS=/home/dsr/Projects/opencpn_android/build-opencpn-Android_for_armeabi_v7a_GCC_4_8_Qt_5_3_1-Debug
+        $/home/dsr/Projects/android-ndk/android-sdk-linux/tools/ddms
+        }
+
+
+
+    A.  Get Android SDK:
+        https://developer.android.com/sdk/index.html#downloads
+        Unpack and install somewhere, say ~/Projects/android-ndk/android-sdk-linux
+
+        Need to execute tools/android to actually download and set up platforms, etc.
+        $~/Projects/android-ndk/android-sdk-linux/tools/android
+
+        We need platform tools and libraries for Android 4.4.2, API level 19
+
+    B.  Get Android NDK
+        https://developer.android.com/tools/sdk/ndk/index.html
+        We need Android NDK R10
+
+        Extract somewhere, say ~/Projects/android-ndk
+
+        __Extract and Build the required cross-compiler toolchain:
+        $~/Projects/android-ndk/android-ndk-r10/build/tools/make-standalone-toolchain.sh --toolchain=arm-linux-androideabi-4.8 --platform=android-19 --install-dir={tools.path.of.your.choice}
+
+    C.  Get Qt 5.2.1
+        https://qt-project.org/wiki/Install_Qt_5_on_Ubuntu
+        In the following, assume that Qt is installed in ~/
+
+    D:  Get wxWidgets trunk known to work:
+
+        $cd ~/Projects
+        $mkdir wxqt
+        $cd wxqt
+        $git clone https://github.com/bdbcat/wxWidgets.git
+
+    E.  Build wxQt
+        ___Make a build directory
+        $cd ~/Projects/wxqt/wxWidgets
+        $mkdir build_android
+        $cd build_android
+
+        ___Tell wxWidgets configure process where to find Qt libraries/includes
+        $export PKG_CONFIG_PATH=~/Qt/5.2.1/android_armv7/lib/pkgconfig
+
+        ___Set a few environment variables.
+        $export CPPFLAGS=-D__ANDROID__                  (this is for some special stuff in wxWidgets,
+                                                         seems only needed for configure step, not make)
+
+        $export PATH={tools.path.of.your.choice}/bin:$PATH
+        e.g.
+        $export PATH=/home/dsr/Projects/android-ndk/ndk-toolchain/bin:$PATH
+
+        $export CC=arm-linux-androideabi-gcc
+        $export CXX=arm-linux-androideabi-g++
+
+        ___Configure wxWidgets for Qt
+
+        $../configure --with-qt --build=x86_64-unknown-linux-gnu --host=arm-linux-androideabi --enable-compat28 --disable-shared --disable-arttango --enable-image --disable-dragimage --disable-sockets --with-libtiff=no --without-opengl --disable-baseevtloop --disable-xrc --disable-cmdline --disable-miniframe --disable-mdi --enable-debug --disable-stc --disable-ribbon --disable-propgrid --disable-timepick --disable-datepick --disable-xlocale --disable-intl
+
+
+        ___Build wxWidgets for Qt
+        $make
+
+        NOTES ON WXWIDGETS CONFIGURATION:
+
+        I. wxWidgets trunk needs a few patches..
+
+            1.  Android implementation of mbstowcs/wcstombs is broken.
+            So, we need to actually partially revert a commit made to wxWidgets 3.x, and reintroduce private
+            versions of mbstowcs/wcstombs for wxQt-Android. This happens in wxcrt.cpp, controlled by wxNEED_WX_MBSTOWCS
+            2.  One method in qt/window.cpp need correction for potential NULL pointer de-reference.
+            3.  In src/qt/dcscreen.cpp, the include file <QtWidgets> tries to include <GLES/gl2.h>
+                This file is not present in the Qt/5.2.1/android_armv7 tree.  We disable the dcscreen code.
+
+            4.  wxString.ToLong() and friends do not work, since wcstol is broken on android.  We will replace it with our own.  We will replace/substitute:
+                wxCRT_StrtoulW
+                wxCRT_StrtolW
+
+            This is controlled by definition:    wxNEED_WX_STRTOXXW
+            Definitions are in wxcrtbase.h
+            Implementations are in wxcrt.cpp
+
+
+            These patches/commits may be found in https://github.com/bdbcat/wxWidgets.
+
+
+            These patches should be refined and submitted as pull requests to wxWidgets trunk.
+
+        II.
+            1. wxQt build configuration must specify "--disable-xlocale --disable-intl".
+            This is caused by the faulty
+            Android implementation of the system library function setlocale().  Instead of returning a pointer to
+            the current locale string, it always returns NULL.  This breaks the ctor of CNumericLocaleSetter() in src/common/xlocale.cpp.  i.e.  wxStrdupA(setlocale(LC_NUMERIC, NULL)) faults.
+            This needs to be fixed in wxWidgets, really.  But we can work around with the limited configuration specified.
+
+            2. wxQt build configuration must specify "--disable-timepick --disable-datepick". The file "src/generic/timectrlg.cpp" does not honor "--disable-xlocale" directive, so fails to compile.
+
+
+        To build for Qt5.3, change the pkgconfig path so:
+        $export PKG_CONFIG_PATH=~/Qt/5.3/android_armv7/lib/pkgconfig
+
+    F.  Build OCPN
+
+        ___Checkout the OpenCPN "wxqt" branch from github opencpn site.
+
+        1.  The object of the OCPN build is to create a set of static linkable libraries,
+        instead of a full OCPN application.  We will later built a "wrapper" program
+        which provide a main() entry point, and calls the opencpn initialization method.
+
+        2.  This is a cross compiling project, so this means several things:
+        a)  We cannot use the normal method to find wxWidgets for the OCPN build.
+        This is not so troublesome, since we need at this point only the include files specific
+        to the Qt_Android wxWidgets build.  We will need the wxWidgets libraries in a later step.
+        b)  We must of course use the arm cross compilers and tools to build OCPN.
+
+
+        3. We can accomplish all of the above by using a hand-crafted include file in the opencpn cmake
+        command invocation.
+
+        First, edit the file {opencpn_root}/buildandroid/build_android.cmake.
+
+        Adjust the paths to the following:
+        a)  The androideabi toolchain location for the gcc and g++ compilers.
+        b)  (wxQt_Base).....The wxWidgets root directory
+        c)  (wxQt_Build)....The relative location of the specific wxWidgets build for Qt_Android
+        d)  (Qt_Base).......The Qt installation base location
+
+
+
+        4. Configure OpenCPN build
+        $cd {opencpn_root}
+        $mkdir build_android
+        $cd build_android
+
+        $cmake -D_wx_selected_config=androideabi-qt -DCMAKE_TOOLCHAIN_FILE=../buildandroid/build_android.cmake ..
+
+
+        5. Build OCPN
+
+        $make
+
+        The result of this build is a set of statically linkable libraries containing the opencpn native
+        classes, without wxWidgets linked.
+
+
+
+    G.  Build a needed support library
+        (Note:  This step has already been done, and the library .so is included in the github repo as a blob.)
+
+        We need our fixed assets in the APK....
+
+        Add the asset file definitions to the opencpn.pro like this:
+
+        deployment.files += /home/dsr/Projects/opencpn_sf/opencpn/data/s57data/chartsymbols.xml
+        .
+        .
+        deployment.path = /assets
+        INSTALLS += deployment
+
+
+        We will use a library called assetbridge to make them easily accessible from the C++ application.
+
+        Get assetbridge.        https://bitbucket.org/smh377/assetbridge
+
+
+        copy the three assetbridge source files:
+            /home/dsr/Projects/opencpn_sf/opencpn/build_Qt521_armv7/assetbridge/jni/assetbridge/Android.mk
+            /home/dsr/Projects/opencpn_sf/opencpn/build_Qt521_armv7/assetbridge/jni/assetbridge/assetbridge.c
+            /home/dsr/Projects/opencpn_sf/opencpn/build_Qt521_armv7/assetbridge/jni/assetbridge/assetbridge.h
+
+        to home/dsr/Projects/opencpn_sf/opencpn/build_Qt521_armv7/assetbridge/jni
+
+        Build the library like this:
+
+        cd home/dsr/Projects/opencpn_sf/opencpn/build_Qt521_armv7/assetbridge
+        $export PATH=/home/dsr/Projects/android-ndk/ndk-toolchain/bin:$PATH
+        $export CC=arm-linux-androideabi-gcc
+        $export CXX=arm-linux-androideabi-g++
+
+        $export NDK_PROJECT_PATH=/home/dsr/Projects/opencpn_sf/opencpn/build_Qt521_armv7/assetbridge
+
+        Build the library
+        $/home/dsr/Projects/android-ndk/android-ndk-r10/ndk-build
+
+        add the resulting library: /home/dsr/Projects/opencpn_sf/opencpn/build_Qt521_armv7/assetbridge/libs/armeabi/libassetbridge.so
+        to opencpn.pro like this:
+
+        ANDROID_EXTRA_LIBS = /home/dsr/Projects/opencpn_sf/opencpn/build_Qt521_armv7/assetbridge/libs/armeabi/libassetbridge.so
+
+
+        Now, the resulting asset files will be found by the C++ application at the location:
+        /data/data/org.opencpn.opencpn/cache/
+
+
+
+    H.  Build APK
+
+        Building the APK will use the Qt toolchain to simplify the process.
+        The overall process goes like this:
+        a)  Use qmake to build a makefile (called makefile.android)
+            This makefile will combine the OCPN static libraries, the wxQT libraries,
+            and the Qt libraries into a single dynamic (libopencpn.so) library.
+            Also included is a "wrapper" object which effectively provides the
+            entire application with a main() entry point, and calls the opencpn OnInit() method.
+            qmake uses a project file called opencpn.pro for its instructions.
+            We will need to edit that file in order to set some paths and parameters.
+
+        b)  Run makefile.android
+
+        c)  Use the qt tool "androiddeployqt" to constuct an actual .APK file from the
+            libopencpn.so library, and other configuration and bundled library files as needed.
+
+
+        In detail:
+        d)  Edit the file {opencpn_base}/buildandroid/opencpn.pro
+
+        Set the 4 (four) path strings to your wxQt and OpenCPN build locations.
+
+        wxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
+        wxQt_Build=build_test26
+
+        OCPN_Base=/home/dsr/Projects/opencpn_sf/opencpn
+        #OCPN_Build=build_android
+        OCPN_Build=build_test
+
+        e)  Switch to build directory, and set tool paths
+        $cd {opencpn_base}/build_android
+
+
+        $export ANDROID_NDK_ROOT=/home/dsr/Projects/android-ndk/android-ndk-r10
+        $export ANDROID_SDK_ROOT=/home/dsr/Projects/android-ndk/android-sdk-linux
+        $export PATH=/home/dsr/Projects/android-ndk/ndk-toolchain/bin:$PATH
+
+        f)  Run qmake
+
+        $/home/dsr/Qt/5.2.1/android_armv7/bin/qmake -makefile ../buildandroid/opencpn.pro -o Makefile.android -r -spec android-g++ CONFIG+=debug
+
+        This will result in the creating of makefile.android, and android-libopencpn.so-deployment-settings.json
+
+        g)  Build and install the opencpn (libopencpn.so) library from makefile.android
+
+        $make -f Makefile.android
+        This results in making the file libopencpn.so, which will be about 93 MBytes in size.
+
+        $make -f Makefile.android install INSTALL_ROOT=./apk_build
+
+        h)  Build the .APK
+
+        $/home/dsr/Qt/5.2.1/android_armv7/bin/androiddeployqt --input ./android-libopencpn.so-deployment-settings.json  --output ./apk_build --android-platform android-19 --deployment bundled
+
+        This leaves the APK in ./apk_build/bin/QtApp-debug.apk  It is about 12 MBytes.
+
+    I.  Install to device
+
+        You may need to do:
+        su
+        cd android-sdk-linux-linux/tools
+        ./adb kill-server
+        ./adb start-server
+        ./adb devices
+        exit
+
+
+
+
+Continued 12/28/14....
+
+1.  OpenGL experiments..
+    a) The samples "cube" and "hellogl_es2" will not run on the emulator
+    b) They will run on an actual device.
+            ZT180, rooted
+            Android 4.0.4
+            Qt 5.2.1
+            armeabi-v7a
+    c0  The QtCreator .pro files are found in the QT examples.
+
+2.  Want to make a version of wx libraries for x86 desktop for quick testing...
+
+        ___Make a build directory
+        $cd ~/Projects/wxqt/wxWidgets
+        $mkdir build_x86
+        $cd build_x86
+
+        ___Tell wxWidgets configure process where to find Qt libraries/includes
+        $export PKG_CONFIG_PATH=~/Qt/5.2.1/android_x86/lib/pkgconfig
+
+       ___Configure wxWidgets for Qt
+        $../configure --with-qt --enable-debug --disable-graphics_ctx --enable-compat28 --disable-shared --disable-arttango --enable-image --disable-dragimage --disable-sockets --with-libtiff=no --without-opengl --disable-baseevtloop --disable-xrc --disable-cmdline --disable-miniframe --disable-mdi --enable-debug --disable-stc --disable-ribbon --disable-propgrid --disable-timepick --disable-datepick --disable-xlocale --disable-intl
+
+
+        ___Build wxWidgets for Qt
+        $make
+
+
+3.  We want to build a couple of generic wxWidgets test programs to confirm OpenGL, etc.
+
+        $cd Projects
+        $mkdir wxqt_samples
+        $cd wxqt_samples
+
+        Minimal:
+        This is the simplest wxWidgets test program
+        $mkdir minimal
+        $cd minimal
+
+        Cube:
+        A simple wxGLCanvas program
+        $ cd ..
+        $mkdir cube
+        $cd cube
+
+
+        In these dirs, build  QtCreator projects that runs on the desktop, and then on android target.
+
+        minimal.pro builds and runs fine on both platforms.
+
+4.  Now try OpenGL on x86
+
+        __Build wxWidgets for x86 qt, with opengl
+
+        $export PKG_CONFIG_PATH=~/Qt/5.2.1/android_x86/lib/pkgconfig
+
+        $../configure --with-qt --enable-debug --disable-graphics_ctx --enable-compat28 --disable-shared --disable-arttango --enable-image --disable-dragimage --disable-sockets --with-libtiff=no --disable-baseevtloop --disable-xrc --disable-cmdline --disable-miniframe --disable-mdi --enable-debug --disable-stc --disable-ribbon --disable-propgrid --disable-timepick --disable-datepick --disable-xlocale --disable-intl --with-opengl
+
+        $ make CXXFLAGS='-I/home/dsr/Qt/5.2.1/Src/qtbase/include/QtANGLE -DwxHAS_OPENGL_ES'
+
+        Build notes:
+        a.  Needed to edit src/common/glcmn.cpp to remove (some) implementation of class GLAPI
+        b.  Note the arguments to make command above
+
+
+        cube.pro builds and runs on x86, with grey textures.
+
+
+GL tracing on android
+$ /home/dsr/Projects/android-ndk/android-sdk-linux/tools/monitor
+
+
+
+
+
+
+
+
+
+
+
+5.  Now Build wxWigets for  Qt, with OpenGLES enabled  for armeabi-v7a
+
+        A. __Set the environment
+
+        ___Make a build directory
+        $cd ~/Projects/wxqt/wxWidgets
+        $mkdir build_androidgl
+        $cd build_androidgl
+
+        ___Tell wxWidgets configure process where to find Qt libraries/includes
+        $export PKG_CONFIG_PATH=~/Qt/5.3/android_armv7/lib/pkgconfig
+
+        ___Set a few environment variables.
+        $export CPPFLAGS=-D__ANDROID__                  (this is for some special stuff in wxWidgets)
+
+        $export PATH={tools.path.of.your.choice}/bin:$PATH
+        e.g.
+        $export PATH=/home/dsr/Projects/android-ndk/ndk-toolchain/bin:$PATH
+
+        $export CC=arm-linux-androideabi-gcc
+        $export CXX=arm-linux-androideabi-g++
+
+        B. ___Gonna need to hack the configure.in script to force it to build for opengl
+        The configure.in script does not understand how to build for OpenGL in a cross-build environment.
+        It always looks to host architecture to find the GL libraries.
+        Seem simplest for now to hack the configure.in, and rebuild the configure script.
+
+        after hacking, do:
+
+        $aclocal -I build/aclocal/
+        $autoconf
+
+        C. Source mods.
+            1.  Modify qt/glcanvas.cpp to force canvas context setting to GLES1.1.
+                This will filter down to eventually creating the correct QOpenGLContext instance for the wxGLCanvas
+            2.  Modify src/common/glcmn.cpp to remove (some) implementation of class GLAPI
+
+        D.___Configure wxWidgets for Qt
+
+        $../configure --with-qt --build=x86_64-unknown-linux-gnu --host=arm-linux-androideabi --enable-compat28 --disable-shared --disable-arttango --enable-image --disable-dragimage --disable-sockets --with-libtiff=no --disable-baseevtloop --disable-xrc --disable-cmdline --disable-miniframe --disable-mdi --enable-debug --disable-stc --disable-ribbon --disable-propgrid --disable-timepick --disable-datepick --disable-xlocale --disable-intl --with-opengl
+
+        ___Build wxWidgets for Qt
+        $make
+
+
+
+5.      We are going to need glshim, since android only supports GLES
+        Rather than building as a library, we start by including some selected source files
+        in to build project.  This makes debugging a lot easier.
+
+        So, add the needed files to the Qt project of interest, e.g. gltest
+        Note:  Needed a MACRO hack for glOrtho(), since the arm compiler refused to compile correctly GLdouble arguments.
+
+
+
+
+        We can move to a library later...
+
+        Here's how:
+        cd ../../glshim
+        $ cmake .
+        $ make GL
+        $ sudo cp glshim/lib/libGL.so.1 /usr/local/lib/
+        $ sudo cp -r glshim/include/GLES/ /usr/local/include/
+
+
+
+
+
+6.      Test application:
+        gltest.....
+            A simple app to prove {wxWidgets/Qt/OpenGL/AndroidNDK/AndroidNative} toolchain.
+            All it does is some very primitive graphics calls.
+
+
+
+7.      Getting it working on Qt5.3
+
+        Change the pkgconfig path
+        $export PKG_CONFIG_PATH=~/Qt/5.3/android_armv7/lib/pkgconfig
+
+        Build wxWidgets for Qt.
+
+        When you run the app, you get in the log:
+        org.qtproject.qt5.android.bindings.QtActivity}: java.lang.RuntimeException: Binary XML file line #2: You must supply a layout_width attribute.
+
+        Using the apktool, exploded the apk, like this:
+
+        /usr/lib/jvm/java-1.7.0-openjdk-i386/jre/bin/java -jar /usr/local/bin/apktool.jar d -f /home/dsr/Projects/opencpn_android/build-opencpn-Android_for_armeabi_v7a_GCC_4_8_Qt_5_2_1-Debug/android-build/bin/QtApp-debug.apk
+
+        The problem seems to be in the file:
+        /home/dsr/Projects/opencpn_android/build_android/QtApp-debug/res/layout/splash.xml
+
+        for 5.2 it looks like this:
+
+        <?xml version="1.0" encoding="utf-8"?>
+        <LinearLayout android:layout_gravity="center" android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent"
+            xmlns:android="http://schemas.android.com/apk/res/android">
+            <ImageView android:layout_width="fill_parent" android:layout_height="fill_parent" android:scaleType="fitXY" />
+        </LinearLayout>
+
+
+        For 5.3 it only looks like this:
+        <?xml version="1.0" encoding="utf-8"?>
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android" />
+
+        SOLVED....
+        The file
+                /home/dsr/Qt/5.3/android_armv7/src/android/java/res/layout/splash.xml
+
+        was incorrect.  So simply replace it with:
+                /home/dsr/Qt/5.2.1/android_armv7/src/android/java/res/layout/splash.xml  (115 bytes)
+                /home/dsr/Qt/5.2.1/android_armv7/src/android/java/res/layout/splash.xml  (431 bytes)
+
+
+
+8.      Getting network NMEA working.
+
+        New wxWidgets config entry:
+        $../configure --with-qt --build=x86_64-unknown-linux-gnu --host=arm-linux-androideabi --enable-compat28 --disable-shared --disable-arttango --enable-image --disable-dragimage --disable-sockets --with-libtiff=no --disable-baseevtloop --disable-xrc --disable-cmdline --disable-miniframe --disable-mdi --enable-debug --disable-stc --disable-ribbon --disable-propgrid --disable-timepick --disable-datepick --disable-xlocale --disable-intl --with-opengl
+
+
+        A.
+         wxWidgets make fails due to missing definition:
+        int gethostbyaddr_r(const char *, int, int, struct hostent *, char *, size_t, struct hostent **, int *);
+
+        in include file:
+        /home/dsr/Projects/android-ndk/ndk-toolchain/sysroot/usr/include/netdb.h
+
+        So, we hack the include file...
+        <<NOTE>>>  This will break if we update the android NDK
+
+        Then we get OPCN link errors, so we include a stub in our src/datastream:
+
+        #ifdef __OCPN__ANDROID__
+        #include <netdb.h>
+        int gethostbyaddr_r(const char *, int, int, struct hostent *, char *, size_t, struct hostent **, int *)
+        {
+            wxLogMessage(_T("Called stub gethostbyaddr_r()"));
+            return 0;
+        }
+        #endif
+
+        B.  There is some trouble with configure script.  Need to manually edit setup.h to enable:
+
+        #define wxUSE_SELECT_DISPATCHER 1
+
+
+
+
+
+

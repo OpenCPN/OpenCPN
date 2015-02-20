@@ -1,0 +1,8 @@
+STATE=Experimental
+INSTALLDIR=x86/bin/
+INSTALLNAME=cylinder
+NAME=cylinder
+USER=root
+HOST=localhost
+DATE=2009/06/08-10:10:44-EEST
+DESCRIPTION=GLU ES Cylinder Test

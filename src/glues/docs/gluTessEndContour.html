@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "xhtml1-transitional.dtd">
+<?xml-stylesheet type="text/xsl" href="mathml.xsl"?><html xmlns="http://www.w3.org/1999/xhtml" xmlns:pref="http://www.w3.org/2002/Math/preference" pref:renderer="mathplayer-dl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>gluTessEndContour</title><meta name="generator" content="DocBook XSL Stylesheets V1.73.2" /></head><body><div class="refentry" lang="en" xml:lang="en"><a id="gluTessEndContour"></a><div class="titlepage"></div><div class="refsynopsisdiv"><h2>C Specification</h2><div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0"><tr><td><code class="funcdef">void <b class="fsfunc">gluTessEndContour</b>(</code></td><td>GLUtesselator* &nbsp;</td><td><var class="pdparam">tess</var><code>)</code>;</td></tr></table></div></div><div class="refsect1" lang="en" xml:lang="en"><a id="parameters"></a><h2>Parameters</h2><div class="variablelist"><dl><dt><span class="term"><em class="parameter"><code>tess</code></em></span></dt><dd><p>
+
+                    Specifies the tessellation object (created with <a class="citerefentry" href="gluNewTess.html"><span class="citerefentry"><span class="refentrytitle">gluNewTess</span></span></a>).
+                </p></dd></dl></div></div><div class="refsect1" lang="en" xml:lang="en"><a id="description"></a><h2>Description</h2><p>
+            <a class="citerefentry" href="gluTessBeginContour.html"><span class="citerefentry"><span class="refentrytitle">gluTessBeginContour</span></span></a> and <code class="function">gluTessEndContour</code> delimit the definition of a
+            polygon contour. Within each <a class="citerefentry" href="gluTessBeginContour.html"><span class="citerefentry"><span class="refentrytitle">gluTessBeginContour</span></span></a>/<code class="function">gluTessEndContour</code>
+            pair, there can be zero or more calls to <a class="citerefentry" href="gluTessVertex.html"><span class="citerefentry"><span class="refentrytitle">gluTessVertex</span></span></a>. The vertices
+            specify a closed contour (the last vertex of each contour is automatically linked 
+            to the first).  See the <a class="citerefentry" href="gluTessVertex.html"><span class="citerefentry"><span class="refentrytitle">gluTessVertex</span></span></a> reference page for more details.
+            <code class="function">gluTessBeginContour</code> can only be called between <a class="citerefentry" href="gluTessBeginPolygon.html"><span class="citerefentry"><span class="refentrytitle">gluTessBeginPolygon</span></span></a> and <a class="citerefentry" href="gluTessEndPolygon.html"><span class="citerefentry"><span class="refentrytitle">gluTessEndPolygon</span></span></a>.
+        </p></div><div class="refsect1" lang="en" xml:lang="en"><a id="seealso"></a><h2>See Also</h2><p>
+
+            <a class="citerefentry" href="gluNewTess.html"><span class="citerefentry"><span class="refentrytitle">gluNewTess</span></span></a>,
+            <a class="citerefentry" href="gluTessBeginContour.html"><span class="citerefentry"><span class="refentrytitle">gluTessBeginContour</span></span></a>,
+            <a class="citerefentry" href="gluTessBeginPolygon.html"><span class="citerefentry"><span class="refentrytitle">gluTessBeginPolygon</span></span></a>,
+            <a class="citerefentry" href="gluTessCallback.html"><span class="citerefentry"><span class="refentrytitle">gluTessCallback</span></span></a>,
+            <a class="citerefentry" href="gluTessEndPolygon.html"><span class="citerefentry"><span class="refentrytitle">gluTessEndPolygon</span></span></a>,
+            <a class="citerefentry" href="gluTessNormal.html"><span class="citerefentry"><span class="refentrytitle">gluTessNormal</span></span></a>,
+            <a class="citerefentry" href="gluTessProperty.html"><span class="citerefentry"><span class="refentrytitle">gluTessProperty</span></span></a>,
+            <a class="citerefentry" href="gluTessVertex.html"><span class="citerefentry"><span class="refentrytitle">gluTessVertex</span></span></a>
+        </p></div><div class="refsect1" lang="en" xml:lang="en"><a id="Copyright"></a><h2>Copyright</h2><p>
+
+            Copyright <span class="trademark"></span>c 1991-2006
+            Silicon Graphics, Inc. This document is licensed under the SGI
+            Free Software B License. For details, see
+            <a class="ulink" href="http://oss.sgi.com/projects/FreeB/" target="_top">http://oss.sgi.com/projects/FreeB/</a>.
+        </p></div></div></body></html>

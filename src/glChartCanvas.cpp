@@ -29,7 +29,13 @@
 
 #include <stdint.h>
 
+#ifdef __OCPN__ANDROID__
+#include <qopengl.h>
+#include "GL/gl_private.h"
+#else
 #include "GL/gl.h"
+#endif
+
 
 #include "glChartCanvas.h"
 #include "chcanv.h"
@@ -61,6 +67,15 @@
 #endif
 
 #include "lz4.h"
+
+#ifdef __OCPN__ANDROID__
+//  arm gcc compiler has a lot of trouble passing doubles as function aruments.
+//  We don't really need double precision here, so fix with a (faster) macro.
+extern "C" void glOrthof(float left,  float right,  float bottom,  float top,  float near,  float far);
+#define glOrtho(a,b,c,d,e,f);     glOrthof(a,b,c,d,e,f);
+
+#define ocpnUSE_GLES
+#endif
 
 #ifdef USE_S57
 #include "cm93.h"                   // for chart outline draw
@@ -624,7 +639,12 @@ GenericFunction ocpnGetProcAddress(const char *addr, const char *extension)
     }
     
     snprintf(addrbuf, sizeof addrbuf, "%s%s", addr, extension);
+#ifdef __OCPN__ANDROID__
+    return (GenericFunction)NULL;
+#else
     return (GenericFunction)systemGetProcAddress(addrbuf);
+#endif
+    
 }
 
 bool  b_glEntryPointsSet;
@@ -704,6 +724,23 @@ static void GetglEntryPoints( void )
         s_glGetCompressedTexImage = (PFNGLGETCOMPRESSEDTEXIMAGEPROC)
             ocpnGetProcAddress( "glGetCompressedTexImage", extensions[i]);
     }
+    
+#ifdef __OCPN__ANDROID__
+    s_glCompressedTexImage2D =          glCompressedTexImage2D;
+    
+    s_glGenFramebuffers =               glGenFramebuffers;
+    s_glGenRenderbuffers =              glGenRenderbuffers;
+    s_glFramebufferTexture2D =          glFramebufferTexture2D;
+    s_glBindFramebuffer =               glBindFramebuffer;
+    s_glFramebufferRenderbuffer =       glFramebufferRenderbuffer;
+    s_glRenderbufferStorage =           glRenderbufferStorage;
+    s_glBindRenderbuffer =              glBindRenderbuffer;
+    s_glCheckFramebufferStatus =        glCheckFramebufferStatus;
+    s_glDeleteFramebuffers =            glDeleteFramebuffers;
+    s_glDeleteRenderbuffers =           glDeleteRenderbuffers;
+    
+#endif
+    
 }
 
 // This attribute set works OK with vesa software only OpenGL renderer
@@ -715,8 +752,14 @@ BEGIN_EVENT_TABLE ( glChartCanvas, wxGLCanvas ) EVT_PAINT ( glChartCanvas::OnPai
 END_EVENT_TABLE()
 
 glChartCanvas::glChartCanvas( wxWindow *parent ) :
+#if !wxCHECK_VERSION(3,0,0)
     wxGLCanvas( parent, wxID_ANY, wxDefaultPosition, wxSize( 256, 256 ),
-                wxFULL_REPAINT_ON_RESIZE | wxBG_STYLE_CUSTOM, _T(""), attribs ),
+            wxFULL_REPAINT_ON_RESIZE | wxBG_STYLE_CUSTOM, _T(""), attribs ),
+#else
+    wxGLCanvas( parent, wxID_ANY, attribs, wxDefaultPosition, wxSize( 256, 256 ),
+                        wxFULL_REPAINT_ON_RESIZE | wxBG_STYLE_CUSTOM, _T("") ),
+#endif
+                        
     m_data( NULL ), m_datasize( 0 ), m_bsetup( false )
 {
     SetBackgroundStyle ( wxBG_STYLE_CUSTOM );  // on WXMSW, this prevents flashing
@@ -792,8 +835,10 @@ void glChartCanvas::OnSize( wxSizeEvent& event )
     }
 
     // this is also necessary to update the context on some platforms
+#if !wxCHECK_VERSION(3,0,0)    
     wxGLCanvas::OnSize( event );
-
+#endif
+    
     /* expand opengl widget to fill viewport */
     ViewPort &VP = cc1->GetVP();
     if( GetSize().x != VP.pix_width || GetSize().y != VP.pix_height ) {
@@ -958,9 +1003,15 @@ void glChartCanvas::SetupOpenGL()
     if(!g_texture_rectangle_format)
         m_b_DisableFBO = true;
     
-    if(!QueryExtension( "GL_EXT_framebuffer_object" ))
+#ifndef __OCPN__ANDROID__
+        if(!QueryExtension( "GL_EXT_framebuffer_object" ))
         m_b_DisableFBO = true;
-
+#endif
+ 
+#ifdef __OCPN__ANDROID__
+        m_b_DisableFBO = true;
+#endif
+        
 //    if(b_timeGL)
 //        m_b_DisableFBO = true;
     
@@ -1008,12 +1059,16 @@ void glChartCanvas::SetupOpenGL()
     
     
     //      Can we use the stencil buffer in a FBO?
-#ifdef ocpnUSE_GLES /* gles requires all levels */
+#ifdef ocpnUSE_GLES 
     m_b_useFBOStencil = QueryExtension( "GL_OES_packed_depth_stencil" );
 #else
     m_b_useFBOStencil = QueryExtension( "GL_EXT_packed_depth_stencil" ) == GL_TRUE;
 #endif
 
+#ifdef __OCPN__ANDROID__
+    m_b_useFBOStencil = false;
+#endif
+    
     //  On Intel Graphics platforms, don't use stencil buffer at all
     if( bad_stencil_code)    
         s_b_useStencil = false;
@@ -1091,6 +1146,11 @@ void glChartCanvas::SetupOpenGL()
     for(int dim=tex_dim; dim>0; dim/=2)
         max_level++;
     g_mipmap_max_level = max_level - 1;
+
+#ifdef __OCPN__ANDROID__    
+    g_mipmap_max_level = 0;
+#endif
+    
 #endif
 
     SetupCompression();
@@ -1794,7 +1854,10 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 
         glPushMatrix();
         glTranslatef(lGPSPoint.x, lGPSPoint.y, 0);
-            
+#ifdef __OCPN__ANDROID__                // glshim display_lists broken?
+        cc1->ShipDrawLargeScale(dc, wxPoint(0, 0));
+#else
+        
         if(ownship_large_scale_display_lists[list])
             glCallList(ownship_large_scale_display_lists[list]);
         else {
@@ -1804,6 +1867,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
             cc1->ShipDrawLargeScale(dc, wxPoint(0, 0));
             glEndList();
         }
+#endif        
         glPopMatrix();
         img_height = 20; /* is this needed? */
     } else {
@@ -3158,8 +3222,9 @@ void glChartCanvas::Render()
     glViewport( 0, 0, (GLint) w, (GLint) h );
 
     glLoadIdentity();
-    gluOrtho2D( 0, (GLint) w, (GLint) h, 0 );
-
+///    gluOrtho2D( 0, (GLint) w, (GLint) h, 0 );
+    glOrtho( 0, (GLint) w, (GLint) h, 0, -1, 1 );
+    
     if( s_b_useStencil ) {
         glEnable( GL_STENCIL_TEST );
         glStencilMask( 0xff );

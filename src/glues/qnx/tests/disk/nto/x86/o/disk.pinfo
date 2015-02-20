@@ -1,0 +1,8 @@
+STATE=Experimental
+INSTALLDIR=x86/bin/
+INSTALLNAME=disk
+NAME=disk
+USER=root
+HOST=localhost
+DATE=2009/06/08-10:10:45-EEST
+DESCRIPTION=GLU ES Disk Test

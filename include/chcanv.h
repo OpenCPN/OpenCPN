@@ -458,7 +458,7 @@ private:
       void DrawOverlayObjects ( ocpnDC &dc, const wxRegion& ru );
 
       emboss_data *EmbossDepthScale();
-      emboss_data *CreateEmbossMapData(wxFont &font, int width, int height, const wxChar *str, ColorScheme cs);
+      emboss_data *CreateEmbossMapData(wxFont &font, int width, int height, const wxString &str, ColorScheme cs);
       void CreateDepthUnitEmbossMaps(ColorScheme cs);
       wxBitmap CreateDimBitmap(wxBitmap &Bitmap, double factor);
 

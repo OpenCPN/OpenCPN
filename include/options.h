@@ -703,6 +703,8 @@ private:
     ChartGroupArray *m_pGroupArray;
 };
 
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
+
 static int lang_list[] = {
             wxLANGUAGE_DEFAULT,
             wxLANGUAGE_ABKHAZIAN,
@@ -934,7 +936,8 @@ static int lang_list[] = {
             wxLANGUAGE_ZHUANG,
             wxLANGUAGE_ZULU
             };
-
+#endif
+            
 ///////////////////////////////////////////////////////////////////////////////
 /// Class SentenceListDlg
 ///////////////////////////////////////////////////////////////////////////////
