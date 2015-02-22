@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <org.opencpn.ChartFilesDialogPreference
+        android:key="pref_ChartFiles"
+        android:title="Chart Files"
+        android:negativeButtonText ="No"
+        android:positiveButtonText ="OK" />
+
+     <CheckBoxPreference
+        android:key="pref_sync"
+        android:title="Other dialogs go here"
+        android:summary="with their summaries" />
+
+</PreferenceScreen>

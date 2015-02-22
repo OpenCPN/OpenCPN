@@ -50,7 +50,6 @@ GribRequestSetting::GribRequestSetting(GRIBUIDialog &parent )
       m_parent(parent)
 {
     InitRequestConfig();
-    m_sScrolledDialog->SetScrollRate( 0, 5);
 }
 
 void GribRequestSetting::InitRequestConfig()
@@ -153,7 +152,6 @@ void GribRequestSetting::InitRequestConfig()
 
     m_RenderZoneOverlay = 0;
     m_toggleSelection->SetValue( false );
-    m_ScrollYMargin = -1;
 
     ApplyRequestConfig( i, j ,k);
 
@@ -178,22 +176,22 @@ void GribRequestSetting::OnClose( wxCloseEvent& event )
 
 void GribRequestSetting::SetRequestDialogSize()
 {
-    int h, w;
+    int h;
 #ifndef __WXMSW__                   //default resizing do not work properly on no Windows plateforms
     GetTextExtent( _T("abc"), NULL, &h, 0, 0, OCPNGetFont(_("Dialog"), 10) );
     m_MailImage->SetMinSize( wxSize( -1, (h * m_MailImage->GetNumberOfLines()) + 5 ) );
 #endif
     /*default sizing do not work with wxScolledWindow so we need to compute it
-    using a conditional Y margin to stabilise the display width and a fixed X margin to include differents OS bars*/
-    m_ScrollYMargin = m_ScrollYMargin == -1 ? 0 : m_sScrolledDialog->GetScrollLines( wxVERTICAL )? 0 : 20;
-    int ScrollXMargin = 130;
+    using a conditional X margin to stabilise the display width and a fixed Y margin to include different OS bars*/
+    int XMargin = m_sScrolledDialog->GetScrollLines( wxVERTICAL )? 0 : 18;
+    int YMargin = 130;
     wxSize scroll = m_fgScrollSizer->Fit(m_sScrolledDialog);                                   // the area size to be scrolled
-    m_fgScrollSizer->Fit( this );
-    ::wxDisplaySize( &w, &h);                                                                  // the screen size
-    h -= m_rButton->GetSize().GetY() + m_fgFixedSizer->GetSize().GetY() + ScrollXMargin;       //height available for the scrolled window
-    m_sScrolledDialog->SetMinSize( wxSize( scroll.GetWidth() + m_ScrollYMargin,                //set scrolled area size with margins
+    ::wxDisplaySize( NULL, &h);                                                                // the screen size
+    h -= m_rButton->GetSize().GetY() + m_fgFixedSizer->GetSize().GetY() + YMargin;             //height available for the scrolled window
+    m_sScrolledDialog->SetMinSize( wxSize( scroll.GetWidth() + XMargin,						   //set scrolled area size with margins
             wxMin(scroll.GetHeight(), h )) );
-    //
+
+	this->Layout();
     this->Fit();
     this->Refresh();
 }
@@ -736,17 +734,20 @@ int GribRequestSetting::EstimateFileSize()
     m_pTimeRange->GetStringSelection().ToDouble(&time);
     m_pInterval->GetStringSelection().ToDouble(&inter);
 
-    if( m_spMaxLon->GetValue() - m_spMinLon->GetValue() < 0 || m_spMaxLat->GetValue() - m_spMinLat->GetValue() < 0 )
-        return 3;                               // maxlat must be > minlat & maxlon must be > minlon
+    double maxlon = m_spMaxLon->GetValue(), minlon = m_spMinLon->GetValue();
+    double maxlat = m_spMaxLat->GetValue(), minlat = m_spMinLat->GetValue();
 
-	if ( m_spMaxLon->GetValue() - m_spMinLon->GetValue() > 180 || m_spMaxLat->GetValue() - m_spMinLat->GetValue() > 180 )
-        return 4;                               //ovoid too big area
+    if( maxlat - minlat < 0 )
+        return 3;                               // maxlat must be > minlat
 
-	if ( m_spMaxLon->GetValue() - m_spMinLon->GetValue() < 2*reso || m_spMaxLat->GetValue() - m_spMinLat->GetValue() < 2*reso  )
+    if ((maxlon > minlon ? 0 : 360) + maxlon - minlon > 180 || ( maxlat - minlat > 180 ))
+        return 4;                           //ovoid too big area
+
+    if ( fabs(maxlon - minlon) < 2*reso || maxlat - minlat < 2*reso  )
         return 5;                           //ovoid too small area
 
-    int npts = (int) (  ceil(((double)(m_spMaxLat->GetValue() - m_spMinLat->GetValue() )/reso))
-                       * ceil(((double)(m_spMaxLon->GetValue() - m_spMinLon->GetValue() )/reso)) );
+    int npts = (int) (  ceil(((double)(maxlat - minlat )/reso))
+                      * ceil(((double)(maxlon - minlon )/reso)) );
 
     if(m_pModel->GetCurrentSelection() == COAMPS )                                           //limited area for COAMPS
         npts = wxMin(npts, (int) (  ceil(40.0/reso) * ceil(40.0/reso) ) );
@@ -792,8 +793,8 @@ int GribRequestSetting::EstimateFileSize()
     nbits = 5;
     estime += nbCape*(head+(nbits*npts)/8+2 );
 
-	nbits = 6;
-	estime += nbwave*(head+(nbits*npts)/8+2 );
+    nbits = 6;
+    estime += nbwave*(head+(nbits*npts)/8+2 );
 
     if( m_pAltitudeData->IsChecked() ) {
         int nbalt = 0;
@@ -807,7 +808,7 @@ int GribRequestSetting::EstimateFileSize()
     }
 
 
-	estime /= (1024.*1024.);
+    estime /= (1024.*1024.);
 
     m_tFileSize->SetLabel(wxString::Format( _T("%1.2f " ) , estime ) + _("MB") );
 

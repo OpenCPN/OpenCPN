@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "xhtml1-transitional.dtd">
+<?xml-stylesheet type="text/xsl" href="mathml.xsl"?><html xmlns="http://www.w3.org/1999/xhtml" xmlns:pref="http://www.w3.org/2002/Math/preference" pref:renderer="mathplayer-dl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>gluTessVertex</title><meta name="generator" content="DocBook XSL Stylesheets V1.73.2" /></head><body><div class="refentry" lang="en" xml:lang="en"><a id="gluTessVertex"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>gluTessVertex - specify a vertex on a polygon</p></div><div class="refsynopsisdiv"><h2>C Specification</h2><div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0"><tr><td><code class="funcdef">void <b class="fsfunc">gluTessVertex</b>(</code></td><td>GLUtesselator* &nbsp;</td><td><var class="pdparam">tess</var>, </td></tr><tr><td> </td><td>GLfloat* &nbsp;</td><td><var class="pdparam">location</var>, </td></tr><tr><td> </td><td>GLvoid* &nbsp;</td><td><var class="pdparam">data</var><code>)</code>;</td></tr></table></div></div><div class="refsect1" lang="en" xml:lang="en"><a id="parameters"></a><h2>Parameters</h2><div class="variablelist"><dl><dt><span class="term"><em class="parameter"><code>tess</code></em></span></dt><dd><p>
+
+                    Specifies the tessellation object (created with <a class="citerefentry" href="gluNewTess.html"><span class="citerefentry"><span class="refentrytitle">gluNewTess</span></span></a>).
+                </p></dd><dt><span class="term"><em class="parameter"><code>location</code></em></span></dt><dd><p>
+                    Specifies the location of the vertex.
+                </p></dd><dt><span class="term"><em class="parameter"><code>data</code></em></span></dt><dd><p>
+                    Specifies an opaque pointer passed back to the program with the vertex callback
+                    (as specified by <a class="citerefentry" href="gluTessCallback.html"><span class="citerefentry"><span class="refentrytitle">gluTessCallback</span></span></a>).
+                </p></dd></dl></div></div><div class="refsect1" lang="en" xml:lang="en"><a id="description"></a><h2>Description</h2><p>
+            <code class="function">gluTessVertex</code> describes a vertex on a polygon that the program defines. Successive
+            <code class="function">gluTessVertex</code> calls describe a closed contour. For example, 
+            to describe a quadrilateral, <code class="function">gluTessVertex</code> should be called four times.
+            <code class="function">gluTessVertex</code> can only be called between <a class="citerefentry" href="gluTessBeginContour.html"><span class="citerefentry"><span class="refentrytitle">gluTessBeginContour</span></span></a> and 
+            <a class="citerefentry" href="gluTessEndContour.html"><span class="citerefentry"><span class="refentrytitle">gluTessEndContour</span></span></a>.
+        </p><p>
+
+            <em class="parameter"><code>data</code></em> normally points to a structure containing the vertex
+            location, as well as other per-vertex attributes such as color and normal.
+            This pointer is passed back to the user through the <code class="constant">GLU_TESS_VERTEX</code>
+            or <code class="constant">GLU_TESS_VERTEX_DATA</code> callback after tessellation 
+            (see the <a class="citerefentry" href="gluTessCallback.html"><span class="citerefentry"><span class="refentrytitle">gluTessCallback</span></span></a> reference page).
+        </p></div><div class="refsect1" lang="en" xml:lang="en"><a id="example"></a><h2>Example</h2><p>
+            A quadrilateral with a triangular hole in it can be described as follows:
+            </p><pre class="programlisting">
+
+gluTessBeginPolygon(tobj, NULL);
+   gluTessBeginContour(tobj);
+      gluTessVertex(tobj, v1, v1);
+      gluTessVertex(tobj, v2, v2);
+      gluTessVertex(tobj, v3, v3);
+      gluTessVertex(tobj, v4, v4);
+   gluTessEndContour(tobj);
+   gluTessBeginContour(tobj);
+      gluTessVertex(tobj, v5, v5);
+      gluTessVertex(tobj, v6, v6);
+      gluTessVertex(tobj, v7, v7);
+   gluTessEndContour(tobj);
+gluTessEndPolygon(tobj);
+            </pre><p>
+        </p></div><div class="refsect1" lang="en" xml:lang="en"><a id="notes"></a><h2>Notes</h2><p>
+            It is a common error to use a local variable for <em class="parameter"><code>location</code></em> or <em class="parameter"><code>data</code></em> and store
+            values into it as part of a loop.
+            For example:
+            </p><pre class="programlisting">
+for (i = 0; i &lt; NVERTICES; ++i) {
+   GLfloat data[3];
+   data[0] = vertex[i][0];
+   data[1] = vertex[i][1];
+   data[2] = vertex[i][2];
+   gluTessVertex(tobj, data, data);
+}
+            </pre><p>
+        </p><p>
+            This doesn't work.
+            Because the pointers specified by <em class="parameter"><code>location</code></em> and <em class="parameter"><code>data</code></em> might not be 
+            dereferenced until <a class="citerefentry" href="gluTessEndPolygon.html"><span class="citerefentry"><span class="refentrytitle">gluTessEndPolygon</span></span></a> is executed,
+            all the vertex coordinates but the very last set could be overwritten
+            before tessellation begins.
+        </p><p>
+            Two common symptoms of this problem are when the data consists of a single
+            point (when a local variable is used for <em class="parameter"><code>data</code></em>) and a
+            <code class="constant">GLU_TESS_NEED_COMBINE_CALLBACK</code> error (when a local variable is
+            used for <em class="parameter"><code>location</code></em>).
+        </p></div><div class="refsect1" lang="en" xml:lang="en"><a id="seealso"></a><h2>See Also</h2><p>
+            <a class="citerefentry" href="gluNewTess.html"><span class="citerefentry"><span class="refentrytitle">gluNewTess</span></span></a>,
+            <a class="citerefentry" href="gluTessBeginContour.html"><span class="citerefentry"><span class="refentrytitle">gluTessBeginContour</span></span></a>,
+            <a class="citerefentry" href="gluTessBeginPolygon.html"><span class="citerefentry"><span class="refentrytitle">gluTessBeginPolygon</span></span></a>,
+            <a class="citerefentry" href="gluTessCallback.html"><span class="citerefentry"><span class="refentrytitle">gluTessCallback</span></span></a>,
+            <a class="citerefentry" href="gluTessEndPolygon.html"><span class="citerefentry"><span class="refentrytitle">gluTessEndPolygon</span></span></a>,
+            <a class="citerefentry" href="gluTessNormal.html"><span class="citerefentry"><span class="refentrytitle">gluTessNormal</span></span></a>,
+            <a class="citerefentry" href="gluTessProperty.html"><span class="citerefentry"><span class="refentrytitle">gluTessProperty</span></span></a>
+        </p></div><div class="refsect1" lang="en" xml:lang="en"><a id="Copyright"></a><h2>Copyright</h2><p>
+            Copyright <span class="trademark"></span>c 1991-2006
+            Silicon Graphics, Inc. This document is licensed under the SGI
+            Free Software B License. For details, see
+            <a class="ulink" href="http://oss.sgi.com/projects/FreeB/" target="_top">http://oss.sgi.com/projects/FreeB/</a>.
+        </p></div></div></body></html>

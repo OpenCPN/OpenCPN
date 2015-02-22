@@ -135,7 +135,7 @@ class GribRecord
         GribRecord(const GribRecord &rec);
         GribRecord() {}
 
-        static GribRecord *InterpolatedRecord(const GribRecord &rec1, const GribRecord &rec2, double d);
+        static GribRecord *InterpolatedRecord(const GribRecord &rec1, const GribRecord &rec2, double d, bool dir=false);
         static GribRecord *Interpolated2DRecord(GribRecord *&rety,
                                                 const GribRecord &rec1x, const GribRecord &rec1y,
                                                 const GribRecord &rec2x, const GribRecord &rec2y, double d);
@@ -184,7 +184,7 @@ class GribRecord
                               data[j*Ni+i] = v; }
 
         // Value for one point interpolated
-        double  getInterpolatedValue(double px, double py, bool numericalInterpolation=true) const;
+        double  getInterpolatedValue(double px, double py, bool numericalInterpolation=true, bool dir=false) const;
 
         // Value for polar interpolation of vectors
         static bool getInterpolatedValues(double &M, double &A,

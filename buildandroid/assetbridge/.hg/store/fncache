@@ -1,0 +1,6 @@
+data/jni/assetbridge/assetbridge.h.i
+data/src/com/arieslabs/assetbridge/Assetbridge.java.i
+data/jni/assetbridge/Android.mk.i
+data/LICENSE.i
+data/README.md.i
+data/jni/assetbridge/assetbridge.c.i

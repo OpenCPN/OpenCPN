@@ -1,0 +1,108 @@
+eglBindAPI: [EGLBoolean, EGLenum api]
+eglBindTexImage: [EGLBoolean, EGLDisplay dpy, EGLSurface surface, EGLint buffer]
+eglChooseConfig: [EGLBoolean, EGLDisplay dpy, const EGLint * attrib_list, EGLConfig
+    * configs, EGLint config_size, EGLint * num_config]
+eglClientWaitSyncKHR: [EGLint, EGLDisplay dpy, EGLSyncKHR sync, EGLint flags, EGLTimeKHR
+    timeout]
+eglClientWaitSyncNV: [EGLint, EGLSyncNV sync, EGLint flags, EGLTimeNV timeout]
+eglCopyBuffers: [EGLBoolean, EGLDisplay dpy, EGLSurface surface, EGLNativePixmapType
+    target]
+eglCreateContext: [EGLContext, EGLDisplay dpy, EGLConfig config, EGLContext share_context,
+  const EGLint * attrib_list]
+eglCreateDRMImageMESA: [EGLImageKHR, EGLDisplay dpy, const EGLint * attrib_list]
+eglCreateFenceSyncNV: [EGLSyncNV, EGLDisplay dpy, EGLenum condition, const EGLint
+    * attrib_list]
+eglCreateImageKHR: [EGLImageKHR, EGLDisplay dpy, EGLContext ctx, EGLenum target, EGLClientBuffer
+    buffer, const EGLint * attrib_list]
+eglCreatePbufferFromClientBuffer: [EGLSurface, EGLDisplay dpy, EGLenum buftype, EGLClientBuffer
+    buffer, EGLConfig config, const EGLint * attrib_list]
+eglCreatePbufferSurface: [EGLSurface, EGLDisplay dpy, EGLConfig config, const EGLint
+    * attrib_list]
+eglCreatePixmapSurface: [EGLSurface, EGLDisplay dpy, EGLConfig config, EGLNativePixmapType
+    pixmap, const EGLint * attrib_list]
+eglCreatePixmapSurfaceHI: [EGLSurface, EGLDisplay dpy, EGLConfig config, struct EGLClientPixmapHI
+    * pixmap]
+eglCreateStreamFromFileDescriptorKHR: [EGLStreamKHR, EGLDisplay dpy, EGLNativeFileDescriptorKHR
+    file_descriptor]
+eglCreateStreamKHR: [EGLStreamKHR, EGLDisplay dpy, const EGLint * attrib_list]
+eglCreateStreamProducerSurfaceKHR: [EGLSurface, EGLDisplay dpy, EGLConfig config,
+  EGLStreamKHR stream, const EGLint * attrib_list]
+eglCreateSyncKHR: [EGLSyncKHR, EGLDisplay dpy, EGLenum type, const EGLint * attrib_list]
+eglCreateWindowSurface: [EGLSurface, EGLDisplay dpy, EGLConfig config, EGLNativeWindowType
+    win, const EGLint * attrib_list]
+eglDestroyContext: [EGLBoolean, EGLDisplay dpy, EGLContext ctx]
+eglDestroyImageKHR: [EGLBoolean, EGLDisplay dpy, EGLImageKHR image]
+eglDestroyStreamKHR: [EGLBoolean, EGLDisplay dpy, EGLStreamKHR stream]
+eglDestroySurface: [EGLBoolean, EGLDisplay dpy, EGLSurface surface]
+eglDestroySyncKHR: [EGLBoolean, EGLDisplay dpy, EGLSyncKHR sync]
+eglDestroySyncNV: [EGLBoolean, EGLSyncNV sync]
+eglDupNativeFenceFDANDROID: [EGLint, EGLDisplay dpy, EGLSyncKHR sync]
+eglExportDRMImageMESA: [EGLBoolean, EGLDisplay dpy, EGLImageKHR image, EGLint * name,
+  EGLint * handle, EGLint * stride]
+eglFenceNV: [EGLBoolean, EGLSyncNV sync]
+eglGetConfigAttrib: [EGLBoolean, EGLDisplay dpy, EGLConfig config, EGLint attribute,
+  EGLint * value]
+eglGetConfigs: [EGLBoolean, EGLDisplay dpy, EGLConfig * configs, EGLint config_size,
+  EGLint * num_config]
+eglGetCurrentContext: [EGLContext]
+eglGetCurrentDisplay: [EGLDisplay]
+eglGetCurrentSurface: [EGLSurface, EGLint readdraw]
+eglGetDisplay: [EGLDisplay, EGLNativeDisplayType display_id]
+eglGetError: [EGLint]
+eglGetProcAddress: [__eglMustCastToProperFunctionPointerType, const char * procname]
+eglGetStreamFileDescriptorKHR: [EGLNativeFileDescriptorKHR, EGLDisplay dpy, EGLStreamKHR
+    stream]
+eglGetSyncAttribKHR: [EGLBoolean, EGLDisplay dpy, EGLSyncKHR sync, EGLint attribute,
+  EGLint * value]
+eglGetSyncAttribNV: [EGLBoolean, EGLSyncNV sync, EGLint attribute, EGLint * value]
+eglGetSystemTimeFrequencyNV: [EGLuint64NV]
+eglGetSystemTimeNV: [EGLuint64NV]
+eglInitialize: [EGLBoolean, EGLDisplay dpy, EGLint * major, EGLint * minor]
+eglLockSurfaceKHR: [EGLBoolean, EGLDisplay display, EGLSurface surface, const EGLint
+    * attrib_list]
+eglMakeCurrent: [EGLBoolean, EGLDisplay dpy, EGLSurface draw, EGLSurface read, EGLContext
+    ctx]
+eglPostSubBufferNV: [EGLBoolean, EGLDisplay dpy, EGLSurface surface, EGLint x, EGLint
+    y, EGLint width, EGLint height]
+eglQueryAPI: [EGLenum]
+eglQueryContext: [EGLBoolean, EGLDisplay dpy, EGLContext ctx, EGLint attribute, EGLint
+    * value]
+eglQueryNativeDisplayNV: [EGLBoolean, EGLDisplay dpy, EGLNativeDisplayType * display_id]
+eglQueryNativePixmapNV: [EGLBoolean, EGLDisplay dpy, EGLSurface surf, EGLNativePixmapType
+    * pixmap]
+eglQueryNativeWindowNV: [EGLBoolean, EGLDisplay dpy, EGLSurface surf, EGLNativeWindowType
+    * window]
+eglQueryStreamKHR: [EGLBoolean, EGLDisplay dpy, EGLStreamKHR stream, EGLenum attribute,
+  EGLint * value]
+eglQueryStreamTimeKHR: [EGLBoolean, EGLDisplay dpy, EGLStreamKHR stream, EGLenum attribute,
+  EGLTimeKHR * value]
+eglQueryStreamu64KHR: [EGLBoolean, EGLDisplay dpy, EGLStreamKHR stream, EGLenum attribute,
+  EGLuint64KHR * value]
+eglQueryString: [const char *, EGLDisplay dpy, EGLint name]
+eglQuerySurface: [EGLBoolean, EGLDisplay dpy, EGLSurface surface, EGLint attribute,
+  EGLint * value]
+eglQuerySurfacePointerANGLE: [EGLBoolean, EGLDisplay dpy, EGLSurface surface, EGLint
+    attribute, void ** value]
+eglReleaseTexImage: [EGLBoolean, EGLDisplay dpy, EGLSurface surface, EGLint buffer]
+eglReleaseThread: [EGLBoolean]
+eglSetBlobCacheFuncsANDROID: ['void ', EGLDisplay dpy, EGLSetBlobFuncANDROID set,
+  EGLGetBlobFuncANDROID get]
+eglSignalSyncKHR: [EGLBoolean, EGLDisplay dpy, EGLSyncKHR sync, EGLenum mode]
+eglSignalSyncNV: [EGLBoolean, EGLSyncNV sync, EGLenum mode]
+eglStreamAttribKHR: [EGLBoolean, EGLDisplay dpy, EGLStreamKHR stream, EGLenum attribute,
+  EGLint value]
+eglStreamConsumerAcquireKHR: [EGLBoolean, EGLDisplay dpy, EGLStreamKHR stream]
+eglStreamConsumerGLTextureExternalKHR: [EGLBoolean, EGLDisplay dpy, EGLStreamKHR stream]
+eglStreamConsumerReleaseKHR: [EGLBoolean, EGLDisplay dpy, EGLStreamKHR stream]
+eglSurfaceAttrib: [EGLBoolean, EGLDisplay dpy, EGLSurface surface, EGLint attribute,
+  EGLint value]
+eglSwapBuffers: [EGLBoolean, EGLDisplay dpy, EGLSurface surface]
+eglSwapBuffersWithDamageEXT: [EGLBoolean, EGLDisplay dpy, EGLSurface surface, EGLint
+    * rects, EGLint n_rects]
+eglSwapInterval: [EGLBoolean, EGLDisplay dpy, EGLint interval]
+eglTerminate: [EGLBoolean, EGLDisplay dpy]
+eglUnlockSurfaceKHR: [EGLBoolean, EGLDisplay display, EGLSurface surface]
+eglWaitClient: [EGLBoolean]
+eglWaitGL: [EGLBoolean]
+eglWaitNative: [EGLBoolean, EGLint engine]
+eglWaitSyncKHR: [EGLint, EGLDisplay dpy, EGLSyncKHR sync, EGLint flags]

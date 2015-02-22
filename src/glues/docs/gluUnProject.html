@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "xhtml1-transitional.dtd">
+<?xml-stylesheet type="text/xsl" href="mathml.xsl"?><html xmlns="http://www.w3.org/1999/xhtml" xmlns:pref="http://www.w3.org/2002/Math/preference" pref:renderer="mathplayer-dl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>gluUnProject</title><meta name="generator" content="DocBook XSL Stylesheets V1.73.2" /></head><body><div class="refentry" lang="en" xml:lang="en"><a id="gluUnProject"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>gluUnProject - map window coordinates to object coordinates</p></div><div class="refsynopsisdiv"><h2>C Specification</h2><div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0"><tr><td><code class="funcdef">GLint <b class="fsfunc">gluUnProject</b>(</code></td><td>GLfloat  </td><td><var class="pdparam">winX</var>, </td></tr><tr><td> </td><td>GLfloat  </td><td><var class="pdparam">winY</var>, </td></tr><tr><td> </td><td>GLfloat  </td><td><var class="pdparam">winZ</var>, </td></tr><tr><td> </td><td>const GLfloat* &nbsp;</td><td><var class="pdparam">model</var>, </td></tr><tr><td> </td><td>const GLfloat* &nbsp;</td><td><var class="pdparam">proj</var>, </td></tr><tr><td> </td><td>const GLint* &nbsp;</td><td><var class="pdparam">view</var>, </td></tr><tr><td> </td><td>GLfloat* &nbsp;</td><td><var class="pdparam">objX</var>, </td></tr><tr><td> </td><td>GLfloat* &nbsp;</td><td><var class="pdparam">objY</var>, </td></tr><tr><td> </td><td>GLfloat* &nbsp;</td><td><var class="pdparam">objZ</var><code>)</code>;</td></tr></table></div></div><div class="refsect1" lang="en" xml:lang="en"><a id="parameters"></a><h2>Parameters</h2><div class="variablelist"><dl><dt><span class="term"><em class="parameter"><code>winX</code></em>, </span><span class="term"><em class="parameter"><code>winY</code></em>, </span><span class="term"><em class="parameter"><code>winZ</code></em></span></dt><dd><p>
+
+                    Specify the window coordinates to be mapped.
+                </p></dd><dt><span class="term"><em class="parameter"><code>model</code></em></span></dt><dd><p>
+                    Specifies the modelview matrix (as from a <code>glGetFloatv</code> call, modelview matrix is queriable in OpenGL ES 1.1, not in OpenGL ES 1.0).
+                </p></dd><dt><span class="term"><em class="parameter"><code>proj</code></em></span></dt><dd><p>
+                    Specifies the projection matrix (as from a <code>glGetFloatv</code> call, projection matrix is queriable in OpenGL ES 1.1, not in OpenGL ES 1.0).
+                </p></dd><dt><span class="term"><em class="parameter"><code>view</code></em></span></dt><dd><p>
+                    Specifies the viewport (as from a <code>glGetIntegerv</code> call, viewport is queriable in OpenGL ES 1.1, not in OpenGL ES 1.0).
+                </p></dd><dt><span class="term"><em class="parameter"><code>objX</code></em>, </span><span class="term"><em class="parameter"><code>objY</code></em>, </span><span class="term"><em class="parameter"><code>objZ</code></em></span></dt><dd><p>
+                    Returns the computed object coordinates.
+                </p></dd></dl></div></div><div class="refsect1" lang="en" xml:lang="en"><a id="description"></a><h2>Description</h2><p>
+            <code class="function">gluUnProject</code> maps the specified window coordinates into object 
+            coordinates using <em class="parameter"><code>model</code></em>, <em class="parameter"><code>proj</code></em>, and <em class="parameter"><code>view</code></em>.
+            The result is stored in <em class="parameter"><code>objX</code></em>, <em class="parameter"><code>objY</code></em>, and <em class="parameter"><code>objZ</code></em>. A return value of 
+            <code class="constant">GLU_TRUE</code> indicates success; a return value of <code class="constant">GLU_FALSE</code>
+
+            indicates failure.
+        </p><p>
+            To compute the coordinates <em>(objX, objY, objZ)</em>,
+            <code class="function">gluUnProject</code> multiplies the normalized device coordinates by the inverse of
+            <em class="parameter"><code>model</code></em> * <em class="parameter"><code>proj</code></em> as follows:
+        </p><p>
+            </p>
+            <pre><em>
+      /      \                /  2 * (winX - view[0])      \
+      | objX |                | ---------------------- - 1 |
+      |      |                |        view[2]             |
+      |      |                |                            |
+      |      |                |  2 * (winY - view[1])      |
+      | objY |                | ---------------------- - 1 |
+      |      |                |        view[3]             |
+      |      |   =   INV (PM) |                            |
+      |      |                |                            |
+      | objZ |                |        2 * winZ - 1        |
+      |      |                |                            |
+      |      |                |                            |
+      |      |                |                            |
+      |  W   |                |             1              |
+      \      /                \                            /
+            </em></pre>
+        <p>
+            <em>INV</em> denotes matrix inversion. W is an unused variable, included for consistent matrix notation.
+        </p></div><div class="refsect1" lang="en" xml:lang="en"><a id="seealso"></a><h2>See Also</h2><p>
+            <a class="citerefentry" href="gluProject.html"><span class="citerefentry"><span class="refentrytitle">gluProject</span></span></a>.
+        </p></div><div class="refsect1" lang="en" xml:lang="en"><a id="Copyright"></a><h2>Copyright</h2><p>
+            Copyright <span class="trademark"></span>c 1991-2006
+            Silicon Graphics, Inc. This document is licensed under the SGI
+            Free Software B License. For details, see
+            <a class="ulink" href="http://oss.sgi.com/projects/FreeB/" target="_top">http://oss.sgi.com/projects/FreeB/</a>.
+        </p></div></div></body></html>

@@ -3,8 +3,6 @@
 
 #include "TCWin.h"
 #include "timers.h"
-#include "ocpn_types.h"
-#include "RolloverWin.h"
 #include "chcanv.h"
 #include "tide_time.h"
 #include "tcmgr.h"

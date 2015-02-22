@@ -159,7 +159,12 @@ wxString FontMgr::GetSimpleNativeFont( int size )
     //    Now create a benign, always present native string
     wxString nativefont;
 
-//    For those platforms which have no native font description string format
+    // this should work for all platforms
+    nativefont = wxFont(size, wxFONTFAMILY_DEFAULT, (int) wxFONTSTYLE_NORMAL, (int) wxFONTWEIGHT_NORMAL)
+    .GetNativeFontInfoDesc();
+    
+#if 0
+    //    For those platforms which have no native font description string format
     nativefont.Printf( _T ( "%d;%d;%d;%d;%d;%d;%s;%d" ),
             0,                                 // version
             size, wxFONTFAMILY_DEFAULT, (int) wxFONTSTYLE_NORMAL, (int) wxFONTWEIGHT_NORMAL, false,
@@ -200,7 +205,7 @@ wxString FontMgr::GetSimpleNativeFont( int size )
     nativefont.Append( sys_font.GetFaceName() );
 
 #endif
-
+#endif
     return nativefont;
 }
 
@@ -305,7 +310,15 @@ void FontMgr::LoadFontNative( wxString *pConfigString, wxString *pNativeDesc )
     if( !node ) {
 
         wxFont *nf0 = new wxFont();
+        
+#ifdef __OCPN__ANDROID__
+        wxFont *nf = new wxFont( nativefont );
+#else
         wxFont *nf = nf0->New( nativefont );
+#endif
+        
+        double font_size = nf->GetPointSize();
+        wxString s = nf->GetNativeFontInfoDesc();
 
         //    Scrub the native font string for bad unicode conversion
 #ifdef __WXMSW__

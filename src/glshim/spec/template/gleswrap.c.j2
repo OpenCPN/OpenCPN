@@ -1,0 +1,21 @@
+{% extends "base/wrap.c.j2" %}
+{% block headers %}
+{{ super() }}
+{% include "base/packed_call.j2" %}
+
+{% endblock %}
+{% block definition %}
+#ifndef skip_{{ func.name }}
+{{ super() -}}
+#endif
+{% endblock %}
+{% block load %}
+    LOAD_GLES({{ func.name }});
+{% endblock %}
+{% block call %}
+#ifndef direct_{{ func.name }}
+    PUSH_IF_COMPILING({{ func.name }})
+#endif
+    {{ super() }}
+{% endblock %}
+{% block prefix %}gles{% endblock %}

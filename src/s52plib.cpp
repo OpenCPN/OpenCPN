@@ -53,6 +53,13 @@
 #include <wx/image.h>
 #include <wx/tokenzr.h>
 
+#ifdef __OCPN__ANDROID__
+#include <qopengl.h>
+#include "GL/gl_private.h"
+#else
+#include "GL/gl.h"
+#endif
+
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
 #endif

@@ -33,9 +33,11 @@
 #ifndef __OCPNTYPES_H__
 #define __OCPNTYPES_H__
 
-#include "bbox.h"
+//#include "bbox.h"
 //#include "OCPNRegion.h"
-class OCPNRegion;
+//class OCPNRegion;
+
+WX_DEFINE_ARRAY_INT(int, ArrayOfInts);
 
 //    ChartType constants
 typedef enum ChartTypeEnum
@@ -70,62 +72,6 @@ typedef enum ColorScheme
 }_ColorScheme;
 
 
-//----------------------------------------------------------------------------
-// ViewPort
-//    Implementation is in chcanv.cpp
-//----------------------------------------------------------------------------
-class ViewPort
-{
-      public:
-            ViewPort();
-
-            wxPoint GetPixFromLL(double lat, double lon) const;
-            void GetLLFromPix(const wxPoint &p, double *lat, double *lon);
-            wxPoint2DDouble GetDoublePixFromLL(double lat, double lon);
-
-            OCPNRegion GetVPRegionIntersect( const OCPNRegion &Region, size_t n, float *llpoints, int chart_native_scale, wxPoint *ppoints = NULL );
-            wxRect GetVPRectIntersect( size_t n, float *llpoints );
-            
-            void SetBoxes(void);
-
-//  Accessors
-            void Invalidate() { bValid = false; }
-            void Validate() { bValid = true; }
-            bool IsValid() const { return bValid; }
-
-            void SetRotationAngle(double angle_rad) { rotation = angle_rad;}
-            void SetProjectionType(int type){ m_projection_type = type; }
-
-            LLBBox &GetBBox() { return vpBBox; }
-            void SetBBoxDirect( double latmin, double lonmin, double latmax, double lonmax);
-            
-//  Generic
-            double   clat;                   // center point
-            double   clon;
-            double   view_scale_ppm;
-            double   skew;
-            double   rotation;
-
-            double    chart_scale;            // conventional chart displayed scale
-            double    ref_scale;              //  the nominal scale of the "reference chart" for this view
-
-            int      pix_width;
-            int      pix_height;
-
-            bool     b_quilt;
-            bool     b_FullScreenQuilt;
-
-            int      m_projection_type;
-            bool     b_MercatorProjectionOverride;
-            wxRect   rv_rect;
-
-      private:
-            LLBBox   vpBBox;                // An un-skewed rectangular lat/lon bounding box
-                                            // which contains the entire vieport
-
-            bool     bValid;                 // This VP is valid
-};
-
 
 //----------------------------------------------------------------------------
 // ocpn Toolbar stuff
@@ -133,16 +79,6 @@ class ViewPort
 class ChartBase;
 class wxSocketEvent;
 class ocpnToolBarSimple;
-
-typedef struct {
-    wxPoint2DDouble pos;
-    double sector1, sector2;
-    double range;
-    wxColor color;
-    bool iswhite;
-    bool isleading;
-} s57Sector_t;
-
 
 
 //    A generic Position Data structure

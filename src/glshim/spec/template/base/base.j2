@@ -1,0 +1,7 @@
+{% if ifdef %}#ifdef {{ ifdef }}
+{% endif %}
+{% if ifndef %}#ifndef {{ ifndef }}
+{% endif %}
+{% block main %}{% endblock %}
+{% if ifdef %}#endif{% endif %}
+{% if ifndef %}#endif{% endif %}

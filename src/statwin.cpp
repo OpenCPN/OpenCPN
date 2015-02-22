@@ -39,7 +39,7 @@
 #include "chartbase.h"
 #include "styles.h"
 
-#include <wx/arrimpl.cpp> 
+#include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY(RegionArray);
 
 //------------------------------------------------------------------------------
@@ -48,6 +48,8 @@ WX_DEFINE_OBJARRAY(RegionArray);
 extern ChartDB *ChartData;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern MyFrame *gFrame;
+extern bool g_btouch;
+
 //------------------------------------------------------------------------------
 //    StatWin Implementation
 //------------------------------------------------------------------------------
@@ -68,13 +70,15 @@ StatWin::StatWin( wxWindow *win )
     wstyle |= wxSTAY_ON_TOP;
 #endif
 
-    wxDialog::Create( win, wxID_ANY, _T(""), wxPoint( 20, 20 ), wxSize( 5, 5 ), wstyle );
+//    wstyle = wxCAPTION | wxMINIMIZE_BOX | wxMAXIMIZE_BOX | wxRESIZE_BORDER;
+
+    wxDialog::Create( win, wxID_ANY, _T(""), wxPoint( 0, 0 ), wxSize( 200, 20 ), wstyle );
 
     m_backBrush = wxBrush( GetGlobalColor( _T("UIBDR") ), wxSOLID );
 
     SetBackgroundColour( GetGlobalColor( _T("UIBDR") ) );
 
-    SetBackgroundStyle( wxBG_STYLE_CUSTOM ); // on WXMSW, this prevents flashing on color scheme change
+//    SetBackgroundStyle( wxBG_STYLE_CUSTOM ); // on WXMSW, this prevents flashing on color scheme change
 
     m_rows = 1;
 
@@ -93,12 +97,18 @@ StatWin::~StatWin()
 void StatWin::RePosition()
 {
     wxSize cs = GetParent()->GetClientSize();
+    wxFrame *frame = dynamic_cast<wxFrame*>(GetParent());
     wxPoint position;
     position.x = 0;
-    position.y = cs.y - GetSize().y;
+    position.y = cs.y;
+    position.y -= GetSize().y;
 
     wxPoint screen_pos = GetParent()->ClientToScreen( position );
+    wxString msg;
+    msg.Printf(_T("Stat RePosition: %d %d"), screen_pos.x, screen_pos.y);
+    wxLogMessage(msg);
     Move( screen_pos );
+    Raise();
 }
 
 void StatWin::ReSize()
@@ -107,8 +117,11 @@ void StatWin::ReSize()
     wxSize new_size;
     new_size.x = cs.x;
     new_size.y = 22 * GetRows();
+    wxString msg;
+    msg.Printf(_T("Stat ReSize: %d %d"), new_size.x, new_size.y);
+    wxLogMessage(msg);
     SetSize(new_size);
-    
+
 }
 
 void StatWin::OnPaint( wxPaintEvent& event )
@@ -120,6 +133,10 @@ void StatWin::OnPaint( wxPaintEvent& event )
 
     dc.SetBackground( m_backBrush );
     dc.Clear();
+
+#ifdef __WXQT__ // temporary workaround
+    pPiano->Refresh();
+#endif
 }
 
 void StatWin::OnSize( wxSizeEvent& event )
@@ -311,13 +328,13 @@ void PianoWin::OnPaint( wxPaintEvent& event )
             }
             else {
                 dc.SetBrush( m_tBrush );
-                
+
                 for( unsigned int ino = 0; ino < m_active_index_array.GetCount(); ino++ ) {
                     if( m_active_index_array.Item( ino ) == key_db_index ) // chart is in the active list
                         dc.SetBrush( m_slBrush );
                 }
             }
-            
+
             if( ChartData->GetDBChartType( m_key_array.Item( i ) ) == CHART_TYPE_CM93 ) {
                     dc.SetBrush( m_cBrush );
 
@@ -462,13 +479,13 @@ void PianoWin::SetPolyIndexArray( ArrayOfInts array )
 wxString PianoWin::GetStateHash()
 {
     wxString hash;
-    
+
     for(unsigned int i=0 ; i < m_key_array.GetCount() ; i++){
         wxString a;
         a.Printf(_T("%d|"), m_key_array.Item(i));
         hash += a;
     }
-    
+
     for(unsigned int i=0 ; i < m_noshow_index_array.GetCount() ; i++){
         wxString a;
         a.Printf(_T("%d|"), m_noshow_index_array.Item(i));
@@ -499,10 +516,10 @@ wxString PianoWin::GetStateHash()
         a.Printf(_T("%d|"), m_poly_index_array.Item(i));
         hash += a;
     }
-    
+
     return hash;
 }
-    
+
 wxString &PianoWin::GenerateAndStoreNewHash()
 {
     m_hash = GetStateHash();
@@ -566,35 +583,60 @@ void PianoWin::MouseEvent( wxMouseEvent& event )
         }
     }
 
-    if( event.LeftDown() ) {
-
-        if( -1 != sel_index ) {
-            gFrame->HandlePianoClick( sel_index, sel_dbindex );
-            gFrame->Raise();
+    if(g_btouch){
+        if( event.LeftUp() ) {
+            if( -1 != sel_index )
+                gFrame->HandlePianoClick( sel_index, sel_dbindex );
         }
-    }
+        if( event.RightDown() ) {
+            if( sel_index != m_hover_last ) {
+                gFrame->HandlePianoRollover( sel_index, sel_dbindex );
+                m_hover_last = sel_index;
+            }
+        }
 
-    else if( event.RightDown() ) {
+        if( event.ButtonUp() ) {
+            gFrame->HandlePianoRollover( -1, -1 );
+            gFrame->HandlePianoRolloverIcon( -1, -1 );
+
+            m_index_last = -1;
+            m_hover_icon_last = -1;
+            m_hover_last = -1;
+        }
+
+
+    }
+    else{
+        if( event.LeftDown() ) {
+
             if( -1 != sel_index ) {
-                gFrame->HandlePianoRClick( x, y, sel_index, sel_dbindex );
+                gFrame->HandlePianoClick( sel_index, sel_dbindex );
                 gFrame->Raise();
             }
         }
 
-    else if(!event.ButtonUp()){
-         if( sel_index != m_hover_last ) {
-                gFrame->HandlePianoRollover( sel_index, sel_dbindex );
-                m_hover_last = sel_index;
-          }
-    }
+        else if( event.RightDown() ) {
+                if( -1 != sel_index ) {
+                    gFrame->HandlePianoRClick( x, y, sel_index, sel_dbindex );
+                    gFrame->Raise();
+                }
+            }
 
-    if( event.Leaving() ) {
-        gFrame->HandlePianoRollover( -1, -1 );
-        gFrame->HandlePianoRolloverIcon( -1, -1 );
+        else if(!event.ButtonUp()){
+            if( sel_index != m_hover_last ) {
+                    gFrame->HandlePianoRollover( sel_index, sel_dbindex );
+                    m_hover_last = sel_index;
+            }
+        }
 
-        m_index_last = -1;
-        m_hover_icon_last = -1;
-        m_hover_last = -1;
+        if( event.Leaving() ) {
+            gFrame->HandlePianoRollover( -1, -1 );
+            gFrame->HandlePianoRolloverIcon( -1, -1 );
+
+            m_index_last = -1;
+            m_hover_icon_last = -1;
+            m_hover_last = -1;
+        }
     }
 
     /*

@@ -65,6 +65,16 @@ const wxEventType wxEVT_OCPN_DATASTREAM = wxNewEventType();
 
 #define N_DOG_TIMEOUT   5
 
+#ifdef __OCPN__ANDROID__
+#include <netdb.h>
+int gethostbyaddr_r(const char *, int, int, struct hostent *, char *, size_t, struct hostent **, int *)
+{
+    wxLogMessage(_T("Called stub gethostbyaddr_r()"));
+    return 0;
+}
+#endif
+
+
 //------------------------------------------------------------------------------
 //    DataStream Implementation
 //------------------------------------------------------------------------------
@@ -221,7 +231,7 @@ void DataStream::Open(void)
         m_addr.Hostname(m_net_addr);
         m_addr.Service(m_net_port);
         
-#ifdef __WXGTK__
+#ifdef __UNIX__
 # if wxCHECK_VERSION(3,0,0)
         in_addr_t addr = ((struct sockaddr_in *) m_addr.GetAddressData())->sin_addr.s_addr;
 # else

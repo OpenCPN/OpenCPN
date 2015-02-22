@@ -1,0 +1,8 @@
+STATE=Experimental
+INSTALLDIR=x86/bin/
+INSTALLNAME=sphere
+NAME=sphere
+USER=root
+HOST=localhost
+DATE=2009/06/08-10:10:47-EEST
+DESCRIPTION=GLU ES Sphere Test

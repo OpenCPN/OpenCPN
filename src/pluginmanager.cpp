@@ -69,7 +69,11 @@ extern wxString        g_SData_Locn;
 extern wxString        g_PrivateDataDir;
 extern AIS_Decoder     *g_pAIS;
 extern wxAuiManager    *g_pauimgr;
+
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
 extern wxLocale        *plocale_def_lang;
+#endif
+
 extern ChartDB         *ChartData;
 extern MyFrame         *gFrame;
 extern ocpnStyle::StyleManager* g_StyleManager;
@@ -1810,6 +1814,8 @@ wxAuiManager *GetFrameAuiManager(void)
 
 bool AddLocaleCatalog( wxString catalog )
 {
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
+    
     if(plocale_def_lang){
         // Add this catalog to the persistent catalog array
         g_locale_catalog_array.Add(catalog);
@@ -1818,6 +1824,7 @@ bool AddLocaleCatalog( wxString catalog )
         return ReloadLocale(); // plocale_def_lang->AddCatalog( catalog );
     }
     else
+#endif        
         return false;
 }
 

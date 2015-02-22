@@ -52,6 +52,7 @@
 #include <version.h> //Gunther
 #include <wx/dialog.h>
 #include <wx/progdlg.h>
+#include <wx/clrpicker.h>
 
 #include <wx/dialog.h>
 
@@ -137,6 +138,10 @@
 #include "portaudio.h"
 #endif
 
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#endif
+
 WX_DECLARE_OBJARRAY(wxDialog *, MyDialogPtrArray);
 
 #include <wx/arrimpl.cpp>
@@ -147,7 +152,6 @@ WX_DEFINE_OBJARRAY( MyDialogPtrArray );
 #ifdef __WXMSW__
 void RedirectIOToConsole();
 #endif
-
 
 //------------------------------------------------------------------------------
 //      Static variable definition
@@ -214,6 +218,7 @@ TCMgr                     *ptcmgr;
 
 
 bool                      bDrawCurrentValues;
+bool                      b_novicemode = false;
 
 wxString                  g_PrivateDataDir;
 wxString                  g_SData_Locn;
@@ -302,6 +307,10 @@ int                       g_iSpeedFormat;
 int                       g_iNavAidRadarRingsNumberVisible;
 float                     g_fNavAidRadarRingsStep;
 int                       g_pNavAidRadarRingsStepUnits;
+int                       g_iWaypointRangeRingsNumber;
+float                     g_fWaypointRangeRingsStep;
+int                       g_iWaypointRangeRingsStepUnits;
+wxColour                  g_colourWaypointRangeRingsColour;
 bool                      g_bWayPointPreventDragging;
 bool                      g_bConfirmObjectDelete;
 
@@ -580,8 +589,10 @@ bool                      g_bPreserveScaleOnX;
 
 about                     *g_pAboutDlg;
 
-wxPlatformInfo            *g_pPlatform;
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
 wxLocale                  *plocale_def_lang;
+#endif
+
 wxString                  g_locale;
 bool                      g_b_assume_azerty;
 
@@ -666,10 +677,11 @@ bool             g_bexpert;
 int              g_chart_zoom_modifier;
 
 int              g_NMEAAPBPrecision;
-int              g_NMEAAPBXTEPrecision;
 
-bool             g_bSailing;
+wxString         g_TalkerIdText;
+
 bool             g_bEmailCrashReport;
+bool             g_bAdvanceRouteWaypointOnArrivalOnly;
 
 wxArrayString    g_locale_catalog_array;
 
@@ -700,6 +712,7 @@ static const long long lNaN = 0xfff8000000000000;
 #define NAN (*(double*)&lNaN)
 #endif
 
+
 //    Some static helpers
 void appendOSDirSlash( wxString* pString );
 void InitializeUserColors( void );
@@ -712,7 +725,7 @@ extern "C" bool CheckSerialAccess( void );
 //    PNG Icon resources
 //------------------------------------------------------------------------------
 
-#ifdef __WXGTK__
+#if defined(__WXGTK__) || defined(__WXQT__)
 #include "bitmaps/opencpn.xpm"
 #endif
 
@@ -861,8 +874,12 @@ double  GetDisplaySizeMM()
     ret = GetMacMonitorSize();
 #endif
 
+#ifdef __OCPN__ANDROID__
+    ret = GetAndroidDisplaySize();
+#endif    
+        
     wxString msg;
-    msg.Printf(_T("Detected display size: %d mm"), (int) ret);
+    msg.Printf(_T("Detected display size (horizontal): %d mm"), (int) ret);
     wxLogMessage(msg);
     
     return ret;
@@ -874,13 +891,17 @@ double  GetDisplaySizeMM()
 //------------------------------------------------------------------------------
 // MyApp
 //------------------------------------------------------------------------------
-
+#ifndef OCPN_USE_WRAPPER
 IMPLEMENT_APP( MyApp )
-BEGIN_EVENT_TABLE(MyApp, wxApp) EVT_ACTIVATE_APP(MyApp::OnActivateApp)
+#endif
+
+BEGIN_EVENT_TABLE(MyApp, wxApp)
+EVT_ACTIVATE_APP(MyApp::OnActivateApp)
 END_EVENT_TABLE()
 
 #include "wx/dynlib.h"
 
+#if wxUSE_CMDLINE_PARSER
 void MyApp::OnInitCmdLine( wxCmdLineParser& parser )
 {
     //    Add some OpenCPN specific command line options
@@ -901,6 +922,7 @@ bool MyApp::OnCmdLineParsed( wxCmdLineParser& parser )
 
     return true;
 }
+#endif
 
 #ifdef __WXMSW__
     //  Handle any exception not handled by CrashRpt
@@ -1037,10 +1059,148 @@ void MyApp::OnActivateApp( wxActivateEvent& event )
     event.Skip();
 }
 
+#ifdef USE_S57
+void LoadS57()
+{
+    if(ps52plib) // already loaded?
+        return;
+
+//      Set up a useable CPL library error handler for S57 stuff
+    CPLSetErrorHandler( MyCPLErrorHandler );
+
+//      Init the s57 chart object, specifying the location of the required csv files
+    g_csv_locn = g_SData_Locn;
+    g_csv_locn.Append( _T("s57data") );
+
+    if( g_bportable ) {
+        g_csv_locn = _T(".");
+        appendOSDirSlash( &g_csv_locn );
+        g_csv_locn.Append( _T("s57data") );
+    }
+
+//      If the config file contains an entry for SENC file prefix, use it.
+//      Otherwise, default to PrivateDataDir
+    if( g_SENCPrefix.IsEmpty() ) {
+        g_SENCPrefix = g_PrivateDataDir;
+        appendOSDirSlash( &g_SENCPrefix );
+        g_SENCPrefix.Append( _T("SENC") );
+    }
+
+    if( g_bportable ) {
+        wxFileName f( g_SENCPrefix );
+        if( f.MakeRelativeTo( g_PrivateDataDir ) ) g_SENCPrefix = f.GetFullPath();
+        else
+            g_SENCPrefix = _T("SENC");
+    }
+
+//      If the config file contains an entry for PresentationLibraryData, use it.
+//      Otherwise, default to conditionally set spot under g_pcsv_locn
+    wxString plib_data;
+    bool b_force_legacy = false;
+
+    if( g_UserPresLibData.IsEmpty() ) {
+        plib_data = g_csv_locn;
+        appendOSDirSlash( &plib_data );
+        plib_data.Append( _T("S52RAZDS.RLE") );
+    } else {
+        plib_data = g_UserPresLibData;
+        b_force_legacy = true;
+    }
+
+    ps52plib = new s52plib( plib_data, b_force_legacy );
+
+    //  If the library load failed, try looking for the s57 data elsewhere
+
+    //  First, look in UserDataDir
+    /*    From wxWidgets documentation
+
+     wxStandardPaths::GetUserDataDir
+     wxString GetUserDataDir() const
+     Return the directory for the user-dependent application data files:
+     * Unix: ~/.appname
+     * Windows: C:\Documents and Settings\username\Application Data\appname
+     * Mac: ~/Library/Application Support/appname
+     */
+
+    if( !ps52plib->m_bOK ) {
+        delete ps52plib;
+
+        wxStandardPaths& std_path = *dynamic_cast<wxStandardPaths*>(&wxApp().GetTraits()->GetStandardPaths());
+
+        wxString look_data_dir;
+        look_data_dir.Append( std_path.GetUserDataDir() );
+        appendOSDirSlash( &look_data_dir );
+        wxString tentative_SData_Locn = look_data_dir;
+        look_data_dir.Append( _T("s57data") );
+
+        plib_data = look_data_dir;
+        appendOSDirSlash( &plib_data );
+        plib_data.Append( _T("S52RAZDS.RLE") );
+
+        wxLogMessage( _T("Looking for s57data in ") + look_data_dir );
+        ps52plib = new s52plib( plib_data );
+
+        if( ps52plib->m_bOK ) {
+            g_csv_locn = look_data_dir;
+            g_SData_Locn = tentative_SData_Locn;
+        }
+    }
+
+    //  And if that doesn't work, look again in the original SData Location
+    //  This will cover the case in which the .ini file entry is corrupted or moved
+
+    if( !ps52plib->m_bOK ) {
+        delete ps52plib;
+
+        wxString look_data_dir;
+        look_data_dir = g_SData_Locn;
+        look_data_dir.Append( _T("s57data") );
+
+        plib_data = look_data_dir;
+        appendOSDirSlash( &plib_data );
+        plib_data.Append( _T("S52RAZDS.RLE") );
+
+        wxLogMessage( _T("Looking for s57data in ") + look_data_dir );
+        ps52plib = new s52plib( plib_data );
+
+        if( ps52plib->m_bOK ) g_csv_locn = look_data_dir;
+    }
+
+    if( ps52plib->m_bOK ) {
+        wxLogMessage( _T("Using s57data in ") + g_csv_locn );
+        m_pRegistrarMan = new s57RegistrarMgr( g_csv_locn, flog );
+
+        if(b_novicemode) {
+            ps52plib->m_bShowSoundg = true;
+            ps52plib->SetDisplayCategory((enum _DisCat) STANDARD );
+            ps52plib->m_nSymbolStyle = (LUPname) PAPER_CHART;
+            ps52plib->m_nBoundaryStyle = (LUPname) PLAIN_BOUNDARIES;
+            ps52plib->m_bUseSCAMIN = true;
+            ps52plib->m_bShowAtonText = true;
+
+            //    Preset some object class visibilites for "Mariner's Standard" disply category
+            for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
+                OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
+                if( !strncmp( pOLE->OBJLName, "DEPARE", 6 ) ) pOLE->nViz = 1;
+                if( !strncmp( pOLE->OBJLName, "LNDARE", 6 ) ) pOLE->nViz = 1;
+                if( !strncmp( pOLE->OBJLName, "COALNE", 6 ) ) pOLE->nViz = 1;
+            }
+        }
+
+        pConfig->LoadS57Config();
+    } else {
+        wxLogMessage( _T("   S52PLIB Initialization failed, disabling Vector charts.") );
+        delete ps52plib;
+        ps52plib = NULL;
+    }
+}
+#endif
+
 bool MyApp::OnInit()
 {
-    if( !wxApp::OnInit() ) return false;
+    wxStopWatch sw;
 
+    if( !wxApp::OnInit() ) return false;
 
     //  On Windows
     //  We allow only one instance unless the portable option is used
@@ -1187,8 +1347,6 @@ bool MyApp::OnInit()
     seed *= x.GetTicks();
     srand(seed);
 
-    g_pPlatform = new wxPlatformInfo;
-
     //    On MSW, force the entire process to run on one CPU core only
     //    This resolves some difficulty with wxThread syncronization
 #if 0
@@ -1246,7 +1404,8 @@ bool MyApp::OnInit()
     //    processes.  The exception filter is in cutil.c
     //    Seems to only happen for W98
 
-    if( g_pPlatform->GetOperatingSystemId() == wxOS_WINDOWS_9X ) SetUnhandledExceptionFilter (&MyUnhandledExceptionFilter);
+    wxPlatformInfo Platform;
+    if( Platform.GetOperatingSystemId() == wxOS_WINDOWS_9X ) SetUnhandledExceptionFilter (&MyUnhandledExceptionFilter);
 #endif
 
 #ifdef __WXMSW__
@@ -1313,7 +1472,7 @@ bool MyApp::OnInit()
     //TODO  Why is the following preferred?  Will not compile with gcc...
 //    wxStandardPaths& std_path = wxApp::GetTraits()->GetStandardPaths();
 
-#ifdef __WXGTK__
+#ifdef __unix__
     std_path.SetInstallPrefix(wxString(PREFIX, wxConvUTF8));
 #endif
 
@@ -1323,7 +1482,17 @@ bool MyApp::OnInit()
 #ifdef __WXMSW__
     pHome_Locn->Append( std_path.GetConfigDir() );   // on w98, produces "/windows/Application Data"
 #else
-            pHome_Locn->Append(std_path.GetUserConfigDir());
+    pHome_Locn->Append(std_path.GetUserConfigDir());
+#endif
+
+    //  On android, make the private data dir on the sdcard, if it exists.
+    //  This make debugging easier, as it is not deleted whenever the APK is re-deployed.
+    //  This behaviour should go away at Release.
+#ifdef __OCPN__ANDROID__
+    if( wxDirExists(_T("/mnt/sdcard")) ){
+        pHome_Locn->Clear();
+        pHome_Locn->Append( _T("/mnt/sdcard/.opencpn") );
+    }
 #endif
 
     if( g_bportable ) {
@@ -1368,7 +1537,8 @@ bool MyApp::OnInit()
         }
     }
     glog_file.Append( _T("opencpn.log") );
-
+    wxString logit = glog_file;
+    
     //  Constrain the size of the log file
     wxString large_log_message;
     if( ::wxFileExists( glog_file ) ) {
@@ -1381,9 +1551,22 @@ bool MyApp::OnInit()
         }
     }
 
+#ifdef __OCPN__ANDROID__
+    //  Force new logfile for each instance
+    // TODO Remove this behaviour on Release
+    if( ::wxFileExists( glog_file ) ){
+        ::wxRemoveFile( glog_file );
+    }
+#endif
+    
     flog = fopen( glog_file.mb_str(), "a" );
     logger = new wxLogStderr( flog );
 
+#ifdef __OCPN__ANDROID__
+    //  Trouble printing timestamp
+    logger->SetTimestamp((const char *)NULL);
+#endif
+    
     Oldlogger = wxLog::SetActiveTarget( logger );
 
 #ifdef __WXMSW__
@@ -1395,7 +1578,7 @@ bool MyApp::OnInit()
 
 //        wxLog::AddTraceMask("timer");               // verbose message traces to log output
 
-#ifndef __WXMSW__
+#if defined(__WXGTK__) || defined(__WXOSX__)
     logger->SetTimestamp(_T("%H:%M:%S %Z"));
 #endif
 
@@ -1417,7 +1600,21 @@ bool MyApp::OnInit()
 
     wxString wxver(wxVERSION_STRING);
     wxver.Prepend( _T("wxWidgets version: ") );
-    wxLogMessage( wxver );
+    
+    wxPlatformInfo platforminfo = wxPlatformInfo::Get();
+    
+    wxString os_name;
+#ifndef __WXQT__
+    os_name = platforminfo.GetOperatingSystemIdName();
+#else
+    os_name = platforminfo.GetOperatingSystemFamilyName();
+#endif
+    
+    wxString platform = os_name + _T(" ") +
+    platforminfo.GetArchName()+ _T(" ") +
+    platforminfo.GetPortIdName();
+    
+    wxLogMessage( wxver + _T(" ") + platform );
 
     wxLogMessage( _T("MemoryStatus:  mem_total: %d mb,  mem_initial: %d mb"), g_mem_total / 1024,
             g_mem_initial / 1024 );
@@ -1438,13 +1635,40 @@ bool MyApp::OnInit()
     g_SData_Locn = std_path.GetDataDir();
     appendOSDirSlash( &g_SData_Locn );
 
-    if( g_bportable ) g_SData_Locn = *pHome_Locn;
+#ifdef __OCPN__ANDROID__
+    wxFileName fdir = wxFileName::DirName(std_path.GetUserConfigDir());
+    
+    fdir.RemoveLastDir();
+    g_SData_Locn = fdir.GetPath();
+    g_SData_Locn += _T("/cache/");
+#endif
+    
+    if( g_bportable )
+        g_SData_Locn = *pHome_Locn;
 
     imsg = _T("SData_Locn is ");
     imsg += g_SData_Locn;
     wxLogMessage( imsg );
 
-//      Create some static strings
+#ifdef __OCPN__ANDROID__
+#if 0    
+    //  Now we can load a Qt StyleSheet, if present
+    wxString style_file = g_SData_Locn;
+    appendOSDirSlash( &style_file );
+    style_file += _T("styles");
+    appendOSDirSlash( &style_file );
+    style_file += _T("qtstylesheet.qss");
+    
+    if(LoadQtStyleSheet(style_file)){
+        wxString smsg = _T("Loaded Qt Stylesheet: ") + style_file;
+        wxLogMessage( smsg );
+    }
+    else
+        wxLogMessage(_T("Qt Stylesheet not found"));
+#endif    
+#endif
+        
+    //      Create some static strings
     pInit_Chart_Dir = new wxString();
 
     //  Establish an empty ChartCroupArray
@@ -1459,7 +1683,17 @@ bool MyApp::OnInit()
             g_PrivateDataDir = std_path.GetUserDataDir();       // should be ~/.opencpn
 #endif
 
-    if( g_bportable ) g_PrivateDataDir = *pHome_Locn;
+    if( g_bportable )
+        g_PrivateDataDir = *pHome_Locn;
+
+#ifdef __OCPN__ANDROID__
+    g_PrivateDataDir = *pHome_Locn;
+#endif
+
+    imsg = _T("PrivateDataDir is ");
+    imsg += g_PrivateDataDir;
+    wxLogMessage( imsg );
+
 
     //  Get the PlugIns directory location
     g_Plugin_Dir = std_path.GetPluginsDir();   // linux:   {prefix}/lib/opencpn
@@ -1538,8 +1772,13 @@ bool MyApp::OnInit()
 
     }
 
-    bool b_novicemode = false;
+#ifdef __OCPN__ANDROID__
+    gConfig_File = *pHome_Locn;
+    gConfig_File += _T("opencpn.conf");
+#endif
 
+    b_novicemode = false;
+    
     wxFileName config_test_file_name( gConfig_File );
     if( config_test_file_name.FileExists() ) wxLogMessage(
             _T("Using existing Config_File: ") + gConfig_File );
@@ -1550,9 +1789,9 @@ bool MyApp::OnInit()
             //    Flag to preset some options for initial config file creation
             b_novicemode = true;
 
-            if( true != config_test_file_name.DirExists( config_test_file_name.GetPath() ) ) if( !config_test_file_name.Mkdir(
-                    config_test_file_name.GetPath() ) ) wxLogMessage(
-                    _T("Cannot create config file directory for ") + gConfig_File );
+            if( true != config_test_file_name.DirExists( config_test_file_name.GetPath() ) )
+                if( !config_test_file_name.Mkdir(config_test_file_name.GetPath() ) )
+                    wxLogMessage( _T("Cannot create config file directory for ") + gConfig_File );
         }
     }
 
@@ -1570,23 +1809,15 @@ bool MyApp::OnInit()
         exit( EXIT_FAILURE );
     }
 
-#ifdef __WXGTK__
-//    if( !CheckSerialAccess() ){
-//    }
-
-#endif
-
     g_display_size_mm = wxMax(100, GetDisplaySizeMM());
 
     //      Init the WayPoint Manager (Must be after UI Style init).
-    pWayPointMan = new WayPointman();
-    pWayPointMan->ProcessIcons( g_StyleManager->GetCurrentStyle() );
+    pWayPointMan = NULL;
 
     //      Open/Create the Config Object (Must be after UI Style init).
     MyConfig *pCF = new MyConfig( wxString( _T("") ), wxString( _T("") ), gConfig_File );
     pConfig = (MyConfig *) pCF;
-    pConfig->LoadMyConfig( 0 );
-
+    pConfig->LoadMyConfig();
 
     if(g_btouch){
         int SelectPixelRadius = 50;
@@ -1607,6 +1838,7 @@ bool MyApp::OnInit()
 
 //    wxLog::SetVerbose(true);            // log all messages for debugging language stuff
 
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
     if( lang_list[0] ) {
     };                 // silly way to avoid compiler warnings
 
@@ -1686,6 +1918,9 @@ bool MyApp::OnInit()
     //  This applies to either the system language, or to OpenCPN language selection
     if( loc_lang_canonical == _T("fr_FR") ) g_b_assume_azerty = true;
     if( def_lang_canonical == _T("fr_FR") ) g_b_assume_azerty = true;
+#else
+    wxLogMessage( _T("wxLocale support not available") );
+#endif
 
 //  Send the Welcome/warning message if it has never been sent before,
 //  or if the version string has changed at all
@@ -1720,123 +1955,6 @@ bool MyApp::OnInit()
     g_bdisable_opengl = true;;
 #endif
 
-
-
-
- #ifdef USE_S57
-
-//      Set up a useable CPL library error handler for S57 stuff
-    CPLSetErrorHandler( MyCPLErrorHandler );
-
-//      Init the s57 chart object, specifying the location of the required csv files
-    g_csv_locn = g_SData_Locn;
-    g_csv_locn.Append( _T("s57data") );
-
-    if( g_bportable ) {
-        g_csv_locn = _T(".");
-        appendOSDirSlash( &g_csv_locn );
-        g_csv_locn.Append( _T("s57data") );
-    }
-
-//      If the config file contains an entry for SENC file prefix, use it.
-//      Otherwise, default to PrivateDataDir
-    if( g_SENCPrefix.IsEmpty() ) {
-        g_SENCPrefix = g_PrivateDataDir;
-        appendOSDirSlash( &g_SENCPrefix );
-        g_SENCPrefix.Append( _T("SENC") );
-    }
-
-    if( g_bportable ) {
-        wxFileName f( g_SENCPrefix );
-        if( f.MakeRelativeTo( g_PrivateDataDir ) ) g_SENCPrefix = f.GetFullPath();
-        else
-            g_SENCPrefix = _T("SENC");
-    }
-
-//      If the config file contains an entry for PresentationLibraryData, use it.
-//      Otherwise, default to conditionally set spot under g_pcsv_locn
-    wxString plib_data;
-    bool b_force_legacy = false;
-
-    if( g_UserPresLibData.IsEmpty() ) {
-        plib_data = g_csv_locn;
-        appendOSDirSlash( &plib_data );
-        plib_data.Append( _T("S52RAZDS.RLE") );
-    } else {
-        plib_data = g_UserPresLibData;
-        b_force_legacy = true;
-    }
-
-    ps52plib = new s52plib( plib_data, b_force_legacy );
-
-    //  If the library load failed, try looking for the s57 data elsewhere
-
-    //  First, look in UserDataDir
-    /*    From wxWidgets documentation
-
-     wxStandardPaths::GetUserDataDir
-     wxString GetUserDataDir() const
-     Return the directory for the user-dependent application data files:
-     * Unix: ~/.appname
-     * Windows: C:\Documents and Settings\username\Application Data\appname
-     * Mac: ~/Library/Application Support/appname
-     */
-
-    if( !ps52plib->m_bOK ) {
-        delete ps52plib;
-
-        wxString look_data_dir;
-        look_data_dir.Append( std_path.GetUserDataDir() );
-        appendOSDirSlash( &look_data_dir );
-        wxString tentative_SData_Locn = look_data_dir;
-        look_data_dir.Append( _T("s57data") );
-
-        plib_data = look_data_dir;
-        appendOSDirSlash( &plib_data );
-        plib_data.Append( _T("S52RAZDS.RLE") );
-
-        wxLogMessage( _T("Looking for s57data in ") + look_data_dir );
-        ps52plib = new s52plib( plib_data );
-
-        if( ps52plib->m_bOK ) {
-            g_csv_locn = look_data_dir;
-            g_SData_Locn = tentative_SData_Locn;
-        }
-    }
-
-    //  And if that doesn't work, look again in the original SData Location
-    //  This will cover the case in which the .ini file entry is corrupted or moved
-
-    if( !ps52plib->m_bOK ) {
-        delete ps52plib;
-
-        wxString look_data_dir;
-        look_data_dir = g_SData_Locn;
-        look_data_dir.Append( _T("s57data") );
-
-        plib_data = look_data_dir;
-        appendOSDirSlash( &plib_data );
-        plib_data.Append( _T("S52RAZDS.RLE") );
-
-        wxLogMessage( _T("Looking for s57data in ") + look_data_dir );
-        ps52plib = new s52plib( plib_data );
-
-        if( ps52plib->m_bOK ) g_csv_locn = look_data_dir;
-    }
-
-    if( ps52plib->m_bOK ) wxLogMessage( _T("Using s57data in ") + g_csv_locn );
-    else
-        wxLogMessage( _T("   S52PLIB Initialization failed, disabling Vector charts.") );
-
-// Todo Maybe initialize only when an s57 chart is actually opened???
-    if( ps52plib->m_bOK ) m_pRegistrarMan = new s57RegistrarMgr( g_csv_locn, flog );
-
-    if( !ps52plib->m_bOK ) {
-        delete ps52plib;
-        ps52plib = NULL;
-    }
-
-#endif  // S57
 // Set default color scheme
     global_color_scheme = GLOBAL_COLOR_SCHEME_DAY;
 
@@ -1856,8 +1974,9 @@ bool MyApp::OnInit()
     }
 #endif
 
-
-
+#ifdef __OCPN__ANDROID__
+    g_memCacheLimit = 100 * 1024;
+#endif
 
 //      Establish location and name of chart database
     pChartListFileName = newPrivateFileName(std_path, pHome_Locn, "chartlist.dat", "CHRTLIST.DAT");
@@ -1865,21 +1984,26 @@ bool MyApp::OnInit()
 //      Establish location and name of AIS MMSI -> Target Name mapping
     pAISTargetNameFileName = newPrivateFileName(std_path, pHome_Locn, "mmsitoname.csv", "MMSINAME.CSV");
 
+#ifdef __OCPN__ANDROID__
+    pChartListFileName->Clear();
+    pChartListFileName->Append(_T("chartlist.dat"));
+    pChartListFileName->Prepend( *pHome_Locn );
+#endif
+
 //      Establish guessed location of chart tree
     if( pInit_Chart_Dir->IsEmpty() ) {
         if( !g_bportable )
-            pInit_Chart_Dir->Append( std_path.GetDocumentsDir() );
+#ifndef __OCPN__ANDROID__
+        pInit_Chart_Dir->Append( std_path.GetDocumentsDir() );
+#else
+        pInit_Chart_Dir->Append( _T("/mnt/sdcard") );
+#endif
     }
 
 //      Establish the GSHHS Dataset location
     pWorldMapLocation = new wxString( _T("gshhs") );
     pWorldMapLocation->Prepend( g_SData_Locn );
     pWorldMapLocation->Append( wxFileName::GetPathSeparator() );
-
-//      Reload the config data, to pick up any missing data class configuration info
-//      e.g. s52plib, which could not be created until first config load completes
-//      Think catch-22
-    pConfig->LoadMyConfig( 1 );
 
     //  Override some config options for initial user startup with empty config file
     if( b_novicemode ) {
@@ -1905,27 +2029,6 @@ bool MyApp::OnInit()
         g_bShowAreaNotices = false;
         g_bDrawAISSize = false;
         g_bShowAISName = false;
-
-#ifdef USE_S57
-        if( ps52plib && ps52plib->m_bOK ) {
-            ps52plib->m_bShowSoundg = true;
-            ps52plib->SetDisplayCategory((enum _DisCat) STANDARD );
-            ps52plib->m_nSymbolStyle = (LUPname) PAPER_CHART;
-            ps52plib->m_nBoundaryStyle = (LUPname) PLAIN_BOUNDARIES;
-            ps52plib->m_bUseSCAMIN = true;
-            ps52plib->m_bShowAtonText = true;
-
-            //    Preset some object class visibilites for "Mariner's Standard" disply category
-            for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
-                OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
-                if( !strncmp( pOLE->OBJLName, "DEPARE", 6 ) ) pOLE->nViz = 1;
-                if( !strncmp( pOLE->OBJLName, "LNDARE", 6 ) ) pOLE->nViz = 1;
-                if( !strncmp( pOLE->OBJLName, "COALNE", 6 ) ) pOLE->nViz = 1;
-            }
-
-        }
-#endif
-
     }
 
     //  Check the global Tide/Current data source array
@@ -2027,6 +2130,16 @@ bool MyApp::OnInit()
             10 );
 #endif
 
+#ifdef __OCPN__ANDROID__
+    ::wxDisplaySize( &cw, &ch);
+    ch -= 24;                           // This accounts for an error in the wxQT-Android interface...
+    
+    if((cw > 200) && (ch > 200) )
+        new_frame_size.Set( cw, ch );
+    else
+        new_frame_size.Set( 800, 500 );
+#endif
+        
     //  For Windows and GTK, provide the expected application Minimize/Close bar
     long app_style = wxDEFAULT_FRAME_STYLE;
     app_style |= wxWANTS_CHARS;
@@ -2042,6 +2155,9 @@ bool MyApp::OnInit()
     }
 
     gFrame = new MyFrame( NULL, myframe_window_title, position, new_frame_size, app_style ); //Gunther
+
+//  Initialize the Plugin Manager
+    g_pi_manager = new PlugInManager( gFrame );
 
     g_pauimgr = new wxAuiManager;
 //        g_pauidockart= new wxAuiDefaultDockArt;
@@ -2068,8 +2184,6 @@ bool MyApp::OnInit()
 
     cc1->SetFocus();
 
-    console = new ConsoleCanvas( gFrame );                    // the console
-
     pthumbwin = new ThumbWin( cc1 );
 
     gFrame->ApplyGlobalSettings( false, false );               // done once on init with resize
@@ -2094,14 +2208,9 @@ bool MyApp::OnInit()
     g_pauimgr->GetPane( cc1 ).CenterPane();
     g_pauimgr->GetPane( cc1 ).BestSize( cc1->GetSize() );
 
-//      Load and initialize any PlugIns
-    g_pi_manager = new PlugInManager( gFrame );
-    g_pi_manager->LoadAllPlugIns( g_Plugin_Dir, true, false );         // do not allow blicklist dialog, since
-                                                                        // frame and canvas are not yet rendered...
-
 // Show the frame
 
-    gFrame->ClearBackground();
+//    gFrame->ClearBackground();
     gFrame->Show( TRUE );
 
     gFrame->SetAndApplyColorScheme( global_color_scheme );
@@ -2113,7 +2222,8 @@ bool MyApp::OnInit()
 
     stats = new StatWin( cc1 );
     stats->SetColorScheme( global_color_scheme );
-
+    stats->Show();
+    
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 
     if( cc1->GetQuiltMode() ) {
@@ -2153,13 +2263,6 @@ bool MyApp::OnInit()
 
 
     g_pauimgr->Update();
-
-    //   Notify all the AUI PlugIns so that they may syncronize with the Perspective
-    g_pi_manager->NotifyAuiPlugIns();
-
-    //  Give the use dialog on any blacklisted PlugIns
-    g_pi_manager->ShowDeferredBlacklistMessages();
-    
     
     bool b_SetInitialPoint = false;
 
@@ -2294,14 +2397,11 @@ bool MyApp::OnInit()
     if( g_GroupIndex > (int) g_pGroupArray->GetCount() ) g_GroupIndex = 0;
     if( !gFrame->CheckGroup( g_GroupIndex ) ) g_GroupIndex = 0;
 
-    //  Delete any stack built by no-chart startup case
-    if( pCurrentStack ) delete pCurrentStack;
-
     pCurrentStack = new ChartStack;
 
     //  A useability enhancement....
     //  if the chart database is truly empty on startup, switch to SCMode
-    //  so that the WVS chart will at least be shown
+    //  so that the GSHHS chart will at least be shown
     if( ChartData && ( 0 == ChartData->GetChartTableEntries() ) ) {
         cc1->SetQuiltMode( false );
         gFrame->SetupQuiltMode();
@@ -2362,14 +2462,14 @@ extern ocpnGLOptions g_GLOptions;
     if( !g_AW2GUID.IsEmpty() ) {
         pAnchorWatchPoint2 = pWayPointMan->FindRoutePointByGUID( g_AW2GUID );
     }
-    
+
     Yield();
 
     gFrame->DoChartUpdate();
 
-//    g_FloatingToolbarDialog->LockPosition(false);
+    FontMgr::Get().ScrubList(); // is this needed?
 
-    gFrame->RequestNewToolbar();
+//    g_FloatingToolbarDialog->LockPosition(false);
 
 //      Start up the ticker....
     gFrame->FrameTimer1.Start( TIMER_GFRAME_1, wxTIMER_CONTINUOUS );
@@ -2431,11 +2531,14 @@ extern ocpnGLOptions g_GLOptions;
         if( g_FloatingCompassDialog ) g_FloatingCompassDialog->UpdateStatus( true );
     }
 
-    g_FloatingToolbarDialog->Raise();
-    g_FloatingToolbarDialog->Show();
-
     gFrame->Refresh( false );
     gFrame->Raise();
+
+    gFrame->RequestNewToolbar();
+#ifdef __WXQT__
+    g_FloatingToolbarDialog->Raise();
+#endif
+//    g_FloatingToolbarDialog->Show();
 
     cc1->Enable();
     cc1->SetFocus();
@@ -2457,7 +2560,6 @@ extern ocpnGLOptions g_GLOptions;
         }
     }
 #endif
-    g_pi_manager->CallLateInit();
 
     if ( g_start_fullscreen )
         gFrame->ToggleFullScreen();
@@ -2467,12 +2569,19 @@ extern ocpnGLOptions g_GLOptions;
     gFrame->Raise();
     cc1->Enable();
     cc1->SetFocus();
+
+    // Perform delayed initialization after 50 milliseconds
+    gFrame->InitTimer.Start( 50, wxTIMER_CONTINUOUS );
+
+    wxLogMessage( wxString::Format(_("OpenCPN Initialized in %ld ms."), sw.Time() ) );
     
     return TRUE;
 }
 
 int MyApp::OnExit()
 {
+    wxLogMessage( _T("opencpn::MyApp starting exit.") );
+    
     //  Send current nav status data to log file   // pjotrc 2010.02.09
 
     wxDateTime lognow = wxDateTime::Now();
@@ -2513,7 +2622,6 @@ int MyApp::OnExit()
 
     if( ptcmgr ) delete ptcmgr;
 
-    wxLogMessage( _T("opencpn::MyApp exiting cleanly...\n") );
     delete pConfig;
     delete pSelect;
     delete pSelectTC;
@@ -2534,6 +2642,9 @@ int MyApp::OnExit()
     
     delete pDummyChart;
 
+    wxLogMessage( _T("opencpn::MyApp exiting cleanly...\n") );
+    wxLog::FlushActive();
+    
     if( logger ) {
         wxLog::SetActiveTarget( Oldlogger );
         delete logger;
@@ -2589,9 +2700,9 @@ int MyApp::OnExit()
     DeInitAllocCheck();
 #endif
 
-    delete g_pPlatform;
-
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
     delete plocale_def_lang;
+#endif    
 
     FontMgr::Shutdown();
 
@@ -2630,6 +2741,10 @@ void MyApp::TrackOff( void )
  return -1;
  }
  */
+
+
+
+
 #include <wx/power.h>
 
 //------------------------------------------------------------------------------
@@ -2642,6 +2757,7 @@ EVT_MENU(wxID_EXIT, MyFrame::OnExit)
 EVT_SIZE(MyFrame::OnSize)
 EVT_MOVE(MyFrame::OnMove)
 EVT_MENU(-1, MyFrame::OnToolLeftClick)
+EVT_TIMER(INIT_TIMER, MyFrame::OnInitTimer)
 EVT_TIMER(FRAME_TIMER_1, MyFrame::OnFrameTimer1)
 EVT_TIMER(FRAME_TC_TIMER, MyFrame::OnFrameTCTimer)
 EVT_TIMER(FRAME_COG_TIMER, MyFrame::OnFrameCOGTimer)
@@ -2671,6 +2787,10 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     g_toolbar = NULL;
     m_toolbar_scale_tools_shown = false;
     piano_ctx_menu = NULL;
+
+    //      Redirect the initialization timer to this frame
+    InitTimer.SetOwner( this, INIT_TIMER );
+    m_iInitCount = 0;
     
     //      Redirect the global heartbeat timer to this frame
     FrameTimer1.SetOwner( this, FRAME_TIMER_1 );
@@ -2687,6 +2807,11 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     //      Redirect the Bells timer to this frame
     BellsTimer.SetOwner( this, BELLS_TIMER );
 
+#ifdef __OCPN__ANDROID__
+//    m_PrefTimer.SetOwner( this, ANDROID_PREF_TIMER );
+//    Connect( m_PrefTimer.GetId(), wxEVT_TIMER, wxTimerEventHandler( MyFrame::OnPreferencesResultTimer ), NULL, this );
+#endif
+    
     //      Set up some assorted member variables
     nRoute_State = 0;
     m_bTimeIsSet = false;
@@ -2716,42 +2841,6 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
 
     g_pAIS = new AIS_Decoder( this );
 
-
-    for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
-    {
-        ConnectionParams *cp = g_pConnectionParams->Item(i);
-        if( cp->bEnabled ) {
-
-#ifdef __WXGTK__
-            if( cp->GetDSPort().Contains(_T("Serial"))) {
-                if( ! g_bserial_access_checked ){
-                    if( !CheckSerialAccess() ){
-                    }
-                    g_bserial_access_checked = true;
-                }
-            }
-#endif
-
-            dsPortType port_type = cp->IOSelect;
-            DataStream *dstr = new DataStream( g_pMUX,
-                                           cp->GetDSPort(),
-                                           wxString::Format(wxT("%i"),cp->Baudrate),
-                                           port_type,
-                                           cp->Priority,
-                                           cp->Garmin
-                                         );
-            dstr->SetInputFilter(cp->InputSentenceList);
-            dstr->SetInputFilterType(cp->InputSentenceListType);
-            dstr->SetOutputFilter(cp->OutputSentenceList);
-            dstr->SetOutputFilterType(cp->OutputSentenceListType);
-            dstr->SetChecksumCheck(cp->ChecksumCheck);
-
-            cp->b_IsSetup = true;
-
-            g_pMUX->AddStream(dstr);
-        }
-    }
-
     g_pMUX->SetAISHandler(g_pAIS);
     g_pMUX->SetGPSHandler(this);
     //  Create/connect a dynamic event handler slot
@@ -2771,7 +2860,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     SetIcon( wxICON(0) );           // this grabs the first icon in the integrated MSW resource file
 #endif
 
-#ifdef __WXGTK__
+#if defined(__WXGTK__) || defined(__WXQT__)
     wxIcon app_icon(opencpn);          // This comes from opencpn.xpm inclusion above
     SetIcon(app_icon);
 #endif
@@ -2889,7 +2978,9 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
         }
     }
 
+#ifdef USE_S57
     if( ps52plib ) ps52plib->SetPLIBColorScheme( SchemeName );
+#endif
 
     //    Set up a pointer to the proper hash table
     pcurrent_user_color_hash = (wxColorHashMap *) UserColourHashTableArray->Item(
@@ -3292,6 +3383,11 @@ void MyFrame::RequestNewToolbar()
         g_FloatingToolbarDialog->SetColorScheme( global_color_scheme );
         g_FloatingToolbarDialog->Show( b_reshow );
     }
+    
+#ifdef __OCPN__ANDROID__
+    DoChartUpdate();
+#endif    
+
 }
 
 //      Update inplace the current toolbar with bitmaps corresponding to the current color scheme
@@ -3408,7 +3504,9 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 
     g_bquiting = true;
 
+#ifndef __OCPN__ANDROID__    
 #ifdef ocpnUSE_GL
+    // cancel compression jobs
     if(g_bopengl && g_CompressorPool){
         g_CompressorPool->PurgeJobList();
 
@@ -3418,34 +3516,11 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 #endif
 
     if( cc1 ) {
-        cc1->SetCursor( wxCURSOR_WAIT );
+//        cc1->SetCursor( wxCURSOR_WAIT );
 
         cc1->Refresh( true );
         cc1->Update();
         wxYield();
-    }
-
-
-    #define THREAD_WAIT_SECONDS  5
-#ifdef ocpnUSE_GL
-    //  Try to wait a bit to see if all compression threads exit nicely
-    if(g_bopengl && g_CompressorPool){
-        wxDateTime now = wxDateTime::Now();
-        time_t stall = now.GetTicks();
-        time_t start = stall;
-        time_t end = stall + THREAD_WAIT_SECONDS;
-
-        while(stall < end ){
-            wxDateTime later = wxDateTime::Now();
-            stall = later.GetTicks();
-
-            wxYield();
-            wxSleep(1);
-            if(!g_CompressorPool->GetRunningJobCount())
-                break;
-        }
-
-        int yyp = 5;
     }
 #endif
 
@@ -3584,8 +3659,9 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 
 
 
-
+#ifndef __OCPN__ANDROID__
     SetStatusBar( NULL );
+#endif    
     stats = NULL;
 
     if( pRouteManagerDialog ) {
@@ -3652,6 +3728,36 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     
     gFrame = NULL;
 
+#ifndef __OCPN__ANDROID__    
+    #define THREAD_WAIT_SECONDS  5
+#ifdef ocpnUSE_GL
+    // The last thing we do is finish the compression threads.
+    // This way the main window is already invisible and to the user
+    // it appears to have finished rather than hanging for several seconds
+    // while the compression threads exit
+    if(g_bopengl && g_CompressorPool){
+        wxDateTime now = wxDateTime::Now();
+        time_t stall = now.GetTicks();
+        time_t end = stall + THREAD_WAIT_SECONDS;
+
+        while(stall < end ) {
+            wxDateTime later = wxDateTime::Now();
+            stall = later.GetTicks();
+
+            if(!g_CompressorPool->GetRunningJobCount())
+                break;
+            wxYield();
+            wxSleep(1);
+        }
+    }
+#endif
+#endif
+
+
+#ifdef __OCPN__ANDROID__
+    wxTheApp->OnExit();
+#endif
+
 }
 
 void MyFrame::OnMove( wxMoveEvent& event )
@@ -3689,7 +3795,7 @@ void MyFrame::ProcessCanvasResize( void )
 
     UpdateGPSCompassStatusBox( );
 
-    if( console->IsShown() ) PositionConsole();
+    if( console && console->IsShown() ) PositionConsole();
 }
 
 void MyFrame::OnSize( wxSizeEvent& event )
@@ -3735,6 +3841,10 @@ void MyFrame::ODoSetSize( void )
               templateFont->GetFaceName() );
 
         m_pStatusBar->SetFont( *pstat_font );
+#ifdef __WXQT__
+        m_pStatusBar->SetMinHeight( pstat_font->GetPointSize() + 10 );
+#endif
+        
     }
 
     int cccw = x;
@@ -5055,12 +5165,11 @@ int MyFrame::DoOptionsDialog()
         if( b_sub ) g_FloatingToolbarDialog->Submerge();
     }
 
-#ifdef __WXOSX__
+#if defined(__WXOSX__) || defined(__WXQT__)
     if(stats) stats->Hide();
 #endif
 
-    if( options_lastPage >= 0 )
-        g_options->SetInitialPage(options_lastPage );
+    g_options->SetInitialPage(options_lastPage );
 
     if(!g_bresponsive){
         g_options->lastWindowPos = options_lastWindowPos;
@@ -5111,6 +5220,7 @@ int MyFrame::DoOptionsDialog()
 #endif
 
     bool ret_val = false;
+    rr = g_options->GetReturnCode();
     if( rr ) {
         ProcessOptionsDialog( rr, g_options );
         ret_val = true;
@@ -5127,7 +5237,7 @@ int MyFrame::DoOptionsDialog()
             g_FloatingToolbarDialog->Submerge();
     }
 
-#ifdef __WXMAC__
+#if defined(__WXOSX__) || defined(__WXQT__)
     if(stats)
         stats->Show();
 #endif
@@ -5264,6 +5374,8 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
 }
 
 void MyFrame::LaunchLocalHelp( void ) {
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
+    
     wxString def_lang_canonical = wxLocale::GetLanguageInfo( wxLANGUAGE_DEFAULT )->CanonicalName;
 
     wxString help_locn = g_SData_Locn + _T("doc/help_");
@@ -5281,6 +5393,7 @@ void MyFrame::LaunchLocalHelp( void ) {
     }
 
     wxLaunchDefaultBrowser(wxString( _T("file:///") ) + help_try );
+#endif    
 }
 
 
@@ -5763,6 +5876,76 @@ void MyFrame::DoStackDelta( int direction )
     cc1->ReloadVP();
 }
 
+// Defered initialization for anything that is not required to render the initial frame
+// and takes a while to initialize.  This gets opencpn up and running much faster.
+void MyFrame::OnInitTimer(wxTimerEvent& event)
+{
+    switch(m_iInitCount++) {
+    case 0:
+        // Load the waypoints.. both of these routines are very slow to execute which is why
+        // they have been to defered until here
+        pWayPointMan = new WayPointman();
+        pConfig->LoadNavObjects();
+        break;
+
+    case 1:
+        // Connect Datastreams
+        for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+        {
+            ConnectionParams *cp = g_pConnectionParams->Item(i);
+            if( cp->bEnabled ) {
+
+#ifdef __unix__
+                if( cp->GetDSPort().Contains(_T("Serial"))) {
+                    if( ! g_bserial_access_checked ){
+                        if( !CheckSerialAccess() ){
+                        }
+                        g_bserial_access_checked = true;
+                    }
+                }
+#endif
+
+                dsPortType port_type = cp->IOSelect;
+                DataStream *dstr = new DataStream( g_pMUX,
+                                                   cp->GetDSPort(),
+                                                   wxString::Format(wxT("%i"),cp->Baudrate),
+                                                   port_type,
+                                                   cp->Priority,
+                                                   cp->Garmin
+                    );
+                dstr->SetInputFilter(cp->InputSentenceList);
+                dstr->SetInputFilterType(cp->InputSentenceListType);
+                dstr->SetOutputFilter(cp->OutputSentenceList);
+                dstr->SetOutputFilterType(cp->OutputSentenceListType);
+                dstr->SetChecksumCheck(cp->ChecksumCheck);
+
+                cp->b_IsSetup = true;
+
+                g_pMUX->AddStream(dstr);
+            }
+        }
+
+        console = new ConsoleCanvas( gFrame );                    // the console
+        console->SetColorScheme( global_color_scheme );
+        break;
+
+    default:
+        g_pi_manager->LoadAllPlugIns( g_Plugin_Dir, true, false );
+
+        RequestNewToolbar();
+
+        //   Notify all the AUI PlugIns so that they may syncronize with the Perspective
+        g_pi_manager->NotifyAuiPlugIns();
+        g_pi_manager->ShowDeferredBlacklistMessages(); //  Give the use dialog on any blacklisted PlugIns
+        g_pi_manager->CallLateInit();
+
+        InitTimer.Stop(); // Initialization complete
+    }
+
+    cc1->InvalidateGL();
+    Refresh();
+}
+
 //    Manage the application memory footprint on a periodic schedule
 void MyFrame::OnMemFootTimer( wxTimerEvent& event )
 {
@@ -6154,7 +6337,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
     }
 
     if( cc1 ) {
-#ifndef __WXGTK__
+#if !defined(__WXGTK__) && !defined(__WXQT__)
         double cursor_lat, cursor_lon;
         cc1->GetCursorLatLon( &cursor_lat, &cursor_lon );
         cc1->SetCursorStatus(cursor_lat, cursor_lon);
@@ -7618,11 +7801,18 @@ void MyFrame::OnPianoMenuDisableChart( wxCommandEvent& event )
     }
 }
 
+
+
+
+
 //      Memory monitor support
 
 bool GetMemoryStatus( int *mem_total, int *mem_used )
 {
-
+#ifdef __OCPN__ANDROID__
+    return androidGetMemoryStatus( mem_total, mem_used );
+#endif
+            
 #ifdef __LINUX__
 
 //      Use filesystem /proc/pid/status to determine memory status
@@ -7791,7 +7981,7 @@ void MyFrame::DoPrint( void )
 
     wxPrinter printer( &printDialogData );
 
-    MyPrintout printout( _("Chart Print") );
+    MyPrintout printout( wxT("Chart Print") );
     
     //  In OperGL mode, make the bitmap capture of the screen before the print method starts,
     //  so as to be sure the "Abort..." dialog does not appear on the image
@@ -9208,7 +9398,7 @@ void MyPrintout::GenerateGLbmp( )
  *     Very system specific, unavoidably.
  */
 
-#ifdef __WXGTK__
+#if defined(__UNIX__) && !defined(__OCPN__ANDROID__)
 extern "C" int wait(int *);                     // POSIX wait() for process
 
 #include <termios.h>
@@ -9245,7 +9435,7 @@ int paternAdd (const char* patern) {
 }
 
 
-#ifdef __WXGTK__
+#if defined(__UNIX__) && !defined(__OCPN__ANDROID__)
 // This filter verify is device is withing searched patern and verify it is openable
 // -----------------------------------------------------------------------------------
 int paternFilter (const struct dirent * dir) {
@@ -9304,7 +9494,7 @@ wxArrayString *EnumerateSerialPorts( void )
 {
     wxArrayString *preturn = new wxArrayString;
 
-#ifdef __WXGTK__
+#if defined(__UNIX__) && !defined(__OCPN__ANDROID__)
 
     //Initialize the pattern table
     if( devPatern[0] == NULL ) {
@@ -9722,7 +9912,7 @@ wxArrayString *EnumerateSerialPorts( void )
 bool CheckSerialAccess( void )
 {
     bool bret = true;
-#ifdef __WXGTK__
+#if defined(__UNIX__) && !defined(__OCPN__ANDROID__)
 
 #if 0
     termios ttyset_old;
@@ -9860,22 +10050,19 @@ wxColour GetGlobalColor(wxString colorName)
 
 #ifdef USE_S57
     //    Use the S52 Presentation library if present
-    if( ps52plib ) {
+    if( ps52plib )
         ret_color = ps52plib->getwxColour( colorName );
-
-        if( !ret_color.Ok() )           //261 likes Ok(), 283 likes IsOk()...
-        {
-            if( NULL != pcurrent_user_color_hash ) ret_color =
-                    ( *pcurrent_user_color_hash )[colorName];
-        }
-    } else
 #endif
-    {
-        if( NULL != pcurrent_user_color_hash ) ret_color = ( *pcurrent_user_color_hash )[colorName];
-    }
+    if( !ret_color.Ok() && pcurrent_user_color_hash )
+        ret_color = ( *pcurrent_user_color_hash )[colorName];
 
     //    Default
-    if( !ret_color.Ok() ) ret_color.Set( 128, 128, 128 );  // Simple Grey
+    if( !ret_color.Ok() ) {
+        ret_color.Set( 128, 128, 128 );  // Simple Grey
+        wxLogMessage(_T("Warning: Color not found ") + colorName);
+        // Avoid duplicate warnings:
+        ( *pcurrent_user_color_hash )[colorName] = ret_color;
+    }
 
     return ret_color;
 }
@@ -9896,6 +10083,19 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "UITX1;   0;  0;  0;",              // Menu Text, derived from UINFF
         "UDKRD; 124; 16;  0;",
         "UARTE; 200;  0;  0;",              // Active Route, Grey on Dusk/Night
+
+        "NODTA; 163; 180; 183;",
+        "CHBLK;   7;   7;   7;",
+        "SNDG1; 125; 137; 140;",
+        "SNDG2;   7;   7;   7;",
+        "UIBDR; 125; 137; 140;",
+        "UINFB;  58; 120; 240;",
+        "UINFD;   7;   7;   7;",
+        "UINFO; 235; 125;  54;",
+        "PLRTE; 220;  64;  37;",
+        "CHMGD; 197; 69; 195;",
+        "UIBCK; 212; 234; 238;",
+
         "DASHB; 255;255;255;",              // Dashboard Instr background
         "DASHL; 190;190;190;",              // Dashboard Instr Label
         "DASHF;  50; 50; 50;",              // Dashboard Foreground
@@ -9917,6 +10117,19 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "UITX1;  41; 46; 46;",              // Menu Text, derived from UINFF
         "UDKRD;  80;  0;  0;",
         "UARTE;  64; 64; 64;",              // Active Route, Grey on Dusk/Night
+
+        "NODTA;  41;  46;  46;"
+        "CHBLK;  54;  60;  61;",
+        "SNDG1;  41;  46;  46;",
+        "SNDG2;  71;  78;  79;",
+        "UIBDR;  54;  60;  61;",
+        "UINFB;  19;  40;  80;",
+        "UINFD;  71;  78;  79;",
+        "UINFO;  75;  38;  19;",
+        "PLRTE;  73;  21;  12;",
+        "CHMGD; 74; 58; 81;",
+        "UIBCK; 7; 7; 7;",
+
         "DASHB;  77; 77; 77;",              // Dashboard Instr background
         "DASHL;  54; 54; 54;",              // Dashboard Instr Label
         "DASHF;   0;  0;  0;",              // Dashboard Foreground
@@ -9938,6 +10151,19 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "UITX1;  31; 34; 35;",              // Menu Text, derived from UINFF
         "UDKRD;  50;  0;  0;",
         "UARTE;  64; 64; 64;",              // Active Route, Grey on Dusk/Night
+
+        "NODTA;   7;   7;   7;"
+        "CHBLK; 163; 180; 183;",
+        "SNDG1; 125; 137; 140;",
+        "SNDG2; 212; 234; 238;",
+        "UIBDR; 163; 180; 183;",
+        "UINFB;  21;  29;  69;",
+        "UINFD; 212; 234; 238;",
+        "UINFO; 221; 118;  51;",
+        "PLRTE; 220;  64;  37;",
+        "CHMGD; 52; 18; 52;",
+        "UIBCK; 7; 7; 7;",
+
         "DASHB;   0;  0;  0;",              // Dashboard Instr background
         "DASHL;  20; 20; 20;",              // Dashboard Instr Label
         "DASHF;  64; 64; 64;",              // Dashboard Foreground
@@ -10386,7 +10612,9 @@ TimedMessageBox::TimedMessageBox(wxWindow* parent, const wxString& message,
     dlg = new OCPNMessageDialog( parent, message, caption, style, pos );
     int ret = dlg->ShowModal();
 
-    int yyp = 5;
+    //  Not sure why we need this, maybe on wx3?
+    if((style == wxYES_NO) && (ret == wxID_OK))
+        ret = wxID_YES;
 
     delete dlg;
     dlg = NULL;
@@ -10634,7 +10862,8 @@ bool TestGLCanvas(wxString &prog_dir)
 wxFont *GetOCPNScaledFont( wxString item, int default_size )
 {
     wxFont *dFont = FontMgr::Get().GetFont( item, default_size );
-
+    int req_size = dFont->GetPointSize();
+    
     if( g_bresponsive ){
         //      Adjust font size to be no smaller than xx mm actual size
         double scaled_font_size = dFont->GetPointSize();
@@ -10642,11 +10871,15 @@ wxFont *GetOCPNScaledFont( wxString item, int default_size )
         if( cc1) {
             double min_scaled_font_size = 3 * cc1->GetPixPerMM();
             int nscaled_font_size = wxMax( wxRound(scaled_font_size), min_scaled_font_size );
-            wxFont *qFont = wxTheFontList->FindOrCreateFont( nscaled_font_size,
+            if(req_size >= nscaled_font_size)
+                return dFont;
+            else{
+                wxFont *qFont = wxTheFontList->FindOrCreateFont( nscaled_font_size,
                                                              dFont->GetFamily(),
                                                              dFont->GetStyle(),
                                                              dFont->GetWeight());
-            return qFont;
+                return qFont;
+            }
         }
     }
     return dFont;
@@ -11222,6 +11455,7 @@ bool GetWindowsMonitorSize( int *width, int *height)
 bool ReloadLocale()
 {
     bool ret = false;
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
     
     //  Old locale is done.
     delete plocale_def_lang;    
@@ -11282,7 +11516,10 @@ bool ReloadLocale()
     
     //    Always use dot as decimal
     setlocale( LC_NUMERIC, "C" );
-    
+
+#endif    
     return ret;
     
 }
+
+

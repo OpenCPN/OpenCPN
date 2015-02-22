@@ -90,7 +90,7 @@ extern AIS_Decoder     *g_pAIS;
 extern PlugInManager    *g_pi_manager;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern wxString         g_uploadConnection;
-extern bool             g_bSailing;
+extern bool             g_bAdvanceRouteWaypointOnArrivalOnly;
 extern Route            *pAISMOBRoute;
 
 //    List definitions for Waypoint Manager Icons
@@ -467,7 +467,7 @@ bool Routeman::UpdateProgress()
             //      have been moving away for 2 seconds.  
             //      If so, we should declare "Arrival"
                 if( (CurrentRangeToActiveNormalCrossing - m_arrival_min) >  pActivePoint->GetWaypointArrivalRadius() ){
-                    if(++m_arrival_test > 2 && !g_bSailing) {
+                    if(++m_arrival_test > 2 && !g_bAdvanceRouteWaypointOnArrivalOnly) {
                         m_bArrival = true;
                         UpdateAutopilot();
                         
@@ -1367,8 +1367,6 @@ wxBitmap *WayPointman::CreateDimBitmap( wxBitmap *pBitmap, double factor )
 
 void WayPointman::SetColorScheme( ColorScheme cs )
 {
-    ProcessIcons( g_StyleManager->GetCurrentStyle() );
-
     //    Iterate on the RoutePoint list, requiring each to reload icon
 
     wxRoutePointListNode *node = m_pWayPointList->GetFirst();

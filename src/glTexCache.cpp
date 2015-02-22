@@ -30,7 +30,12 @@
 
 #include <stdint.h>
 
+#ifdef __OCPN__ANDROID__
+#include <qopengl.h>
+#include "GL/gl_private.h"
+#else
 #include "GL/gl.h"
+#endif
 
 
 #include "glTexCache.h"
@@ -49,6 +54,10 @@
 #include "squish.h"
 #include "lz4.h"
 #include "lz4hc.h"
+
+#ifdef __OCPN__ANDROID__
+#define ocpnUSE_GLES
+#endif
 
 
 
@@ -478,10 +487,10 @@ void * CompressionPoolThread::Entry()
     ChartBase *pchart;
     int index;
 
-    m_comp_bits = (unsigned char **)calloc(5, sizeof(unsigned char *));
+    m_comp_bits = (unsigned char **)calloc(g_mipmap_max_level+1, sizeof(unsigned char *));
     m_pticket->comp_bits_array = m_comp_bits;
 
-    m_compcomp_bits = (unsigned char **)calloc(5, sizeof(unsigned char *));
+    m_compcomp_bits = (unsigned char **)calloc(g_mipmap_max_level+1, sizeof(unsigned char *));
     m_pticket->compcomp_bits_array = m_compcomp_bits;
     
     if(ChartData){
@@ -518,7 +527,7 @@ void * CompressionPoolThread::Entry()
 
         int dim = g_GLOptions.m_iTextureDimension;
         dim /= 2;
-        for( int i = 1 ; i < 5 ; i++ ){
+        for( int i = 1 ; i < g_mipmap_max_level+1 ; i++ ){
             m_bit_array[i] = (unsigned char *) malloc( dim * dim * 3 );
             HalfScaleChartBits( 2*dim, 2*dim, m_bit_array[i - 1], m_bit_array[i] );
             dim /= 2;
@@ -528,7 +537,7 @@ void * CompressionPoolThread::Entry()
         
         dim = g_GLOptions.m_iTextureDimension;
         int ssize = g_tile_size;
-        for( int i = 0 ; i < 5 ; i++ ){
+        for( int i = 0 ; i < g_mipmap_max_level+1 ; i++ ){
             GLuint raster_format = m_pticket->m_raster_format;
         
             unsigned char *tex_data = (unsigned char*)malloc(ssize);
@@ -562,7 +571,7 @@ void * CompressionPoolThread::Entry()
                 ssize = 8;
 
             if(m_pticket->b_abort){
-                for( int i = 0; i < 5; i++ ){
+                for( int i = 0; i < g_mipmap_max_level+1; i++ ){
                     free( m_bit_array[i] );
                     m_bit_array[i] = 0;
                 }
@@ -574,7 +583,7 @@ void * CompressionPoolThread::Entry()
 
         
         //  All done with the uncompressed data in the thread
-        for( int i = 0; i < 5; i++ ){
+        for( int i = 0; i < g_mipmap_max_level+1; i++ ){
             free( m_bit_array[i] );
             m_bit_array[i] = 0;
         }
@@ -588,7 +597,7 @@ void * CompressionPoolThread::Entry()
             
             int max_compressed_size = LZ4_COMPRESSBOUND(g_tile_size);
             int csize = g_tile_size;
-            for( int i = 0 ; i < 5 ; i++ ){
+            for( int i = 0 ; i < g_mipmap_max_level+1 ; i++ ){
                 if(m_pticket->b_abort){
                     m_pticket->b_isaborted = true;
                     goto SendEvtAndReturn;
@@ -684,7 +693,7 @@ void CompressionWorkerPool::OnEvtThread( OCPN_CompressionThreadEvent & event )
         free( ticket->comp_bits_array );
         
         if(ticket->bpost_zip_compress){
-            for(int i=0 ; i < 5 ; i++){
+            for(int i=0 ; i < g_mipmap_max_level+1 ; i++){
                 void *p = ticket->compcomp_bits_array[i];
                 free( ticket->compcomp_bits_array[i] );
             }
@@ -704,14 +713,14 @@ void CompressionWorkerPool::OnEvtThread( OCPN_CompressionThreadEvent & event )
     glTextureDescriptor *ptd = ticket->pFact->GetpTD( ticket->rect );
 
     if(ptd){
-        for(int i=0 ; i < 5 ; i++){
+        for(int i=0 ; i < g_mipmap_max_level+1 ; i++){
             ptd->CompressedArrayAccess( CA_WRITE, ticket->comp_bits_array[i], i);
         }
         
         free( ticket->comp_bits_array );
         
         if(ticket->bpost_zip_compress){
-            for(int i=0 ; i < 5 ; i++){
+            for(int i=0 ; i < g_mipmap_max_level+1 ; i++){
                 ptd->CompCompArrayAccess( CA_WRITE, ticket->compcomp_bits_array[i], i);
                 ptd->compcomp_size[i] = ticket->compcomp_size_array[i];
             }
@@ -1381,11 +1390,17 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
 #else /* looks nicer */
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
 #endif
+        
+#ifdef __OCPN__ANDROID__
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+#endif        
     }
     else
         glBindTexture( GL_TEXTURE_2D, ptd->tex_name );
     
-       
+    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
+    
         
     //  Texture requested has already been physically uploaded to the GPU
     //  so we are done
@@ -1528,9 +1543,10 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     
     if(b_need_compress){
          if( (GL_COMPRESSED_RGBA_S3TC_DXT1_EXT == g_raster_format) ||
-            (GL_COMPRESSED_RGB_S3TC_DXT1_EXT == g_raster_format) ){
-            if(g_CompressorPool)
-                g_CompressorPool->ScheduleJob( this, rect, 0, b_throttle_thread, false, true);   // with postZip
+            (GL_COMPRESSED_RGB_S3TC_DXT1_EXT == g_raster_format) ||
+            (GL_ETC1_RGB8_OES == g_raster_format) ){
+                if(g_CompressorPool)
+                    g_CompressorPool->ScheduleJob( this, rect, 0, b_throttle_thread, false, true);   // with postZip
         }
     }
     

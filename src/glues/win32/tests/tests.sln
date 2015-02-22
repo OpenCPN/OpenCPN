@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cylinder", "cylinder\cylinder.vcproj", "{7DB3BA0F-6092-4B54-8E49-6057306A1811}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "disk", "disk\disk.vcproj", "{CC016FEF-83BD-4241-A6D3-B43594C9CE20}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sphere", "sphere\sphere.vcproj", "{9890BA4E-EF5B-47CC-A832-1D76B5BEA257}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mipmap", "mipmap\mipmap.vcproj", "{31E9F45F-44BB-4653-9AA8-9455004BE949}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tess", "tess\tess.vcproj", "{3F47B1A8-6A7B-4F9A-8ACF-8EB9F6F67C82}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7DB3BA0F-6092-4B54-8E49-6057306A1811}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7DB3BA0F-6092-4B54-8E49-6057306A1811}.Debug|Win32.Build.0 = Debug|Win32
+		{7DB3BA0F-6092-4B54-8E49-6057306A1811}.Release|Win32.ActiveCfg = Release|Win32
+		{7DB3BA0F-6092-4B54-8E49-6057306A1811}.Release|Win32.Build.0 = Release|Win32
+		{CC016FEF-83BD-4241-A6D3-B43594C9CE20}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CC016FEF-83BD-4241-A6D3-B43594C9CE20}.Debug|Win32.Build.0 = Debug|Win32
+		{CC016FEF-83BD-4241-A6D3-B43594C9CE20}.Release|Win32.ActiveCfg = Release|Win32
+		{CC016FEF-83BD-4241-A6D3-B43594C9CE20}.Release|Win32.Build.0 = Release|Win32
+		{9890BA4E-EF5B-47CC-A832-1D76B5BEA257}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9890BA4E-EF5B-47CC-A832-1D76B5BEA257}.Debug|Win32.Build.0 = Debug|Win32
+		{9890BA4E-EF5B-47CC-A832-1D76B5BEA257}.Release|Win32.ActiveCfg = Release|Win32
+		{9890BA4E-EF5B-47CC-A832-1D76B5BEA257}.Release|Win32.Build.0 = Release|Win32
+		{31E9F45F-44BB-4653-9AA8-9455004BE949}.Debug|Win32.ActiveCfg = Debug|Win32
+		{31E9F45F-44BB-4653-9AA8-9455004BE949}.Debug|Win32.Build.0 = Debug|Win32
+		{31E9F45F-44BB-4653-9AA8-9455004BE949}.Release|Win32.ActiveCfg = Release|Win32
+		{31E9F45F-44BB-4653-9AA8-9455004BE949}.Release|Win32.Build.0 = Release|Win32
+		{3F47B1A8-6A7B-4F9A-8ACF-8EB9F6F67C82}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3F47B1A8-6A7B-4F9A-8ACF-8EB9F6F67C82}.Debug|Win32.Build.0 = Debug|Win32
+		{3F47B1A8-6A7B-4F9A-8ACF-8EB9F6F67C82}.Release|Win32.ActiveCfg = Release|Win32
+		{3F47B1A8-6A7B-4F9A-8ACF-8EB9F6F67C82}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

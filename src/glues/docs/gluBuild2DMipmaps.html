@@ -1,0 +1,107 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "xhtml1-transitional.dtd">
+<?xml-stylesheet type="text/xsl" href="mathml.xsl"?><html xmlns="http://www.w3.org/1999/xhtml" xmlns:pref="http://www.w3.org/2002/Math/preference" pref:renderer="mathplayer-dl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>gluBuild2DMipmaps</title><meta name="generator" content="DocBook XSL Stylesheets V1.73.2" /></head><body><div class="refentry" lang="en" xml:lang="en"><a id="gluBuild2DMipmaps"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>gluBuild2DMipmaps - builds a two-dimensional mipmap</p></div><div class="refsynopsisdiv"><h2>C Specification</h2><div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0"><tr><td><code class="funcdef">GLint <b class="fsfunc">gluBuild2DMipmaps</b>(</code></td><td>GLenum  </td><td><var class="pdparam">target</var>, </td></tr><tr><td> </td><td>GLint  </td><td><var class="pdparam">internalFormat</var>, </td></tr><tr><td> </td><td>GLsizei  </td><td><var class="pdparam">width</var>, </td></tr><tr><td> </td><td>GLsizei  </td><td><var class="pdparam">height</var>, </td></tr><tr><td> </td><td>GLenum  </td><td><var class="pdparam">format</var>, </td></tr><tr><td> </td><td>GLenum  </td><td><var class="pdparam">type</var>, </td></tr><tr><td> </td><td>const void* &nbsp;  </td><td><var class="pdparam">data</var><code>)</code>;</td></tr></table></div></div><div class="refsect1" lang="en" xml:lang="en"><a id="parameters"></a><h2>Parameters</h2><div class="variablelist"><dl><dt><span class="term"><em class="parameter"><code>target</code></em></span></dt><dd><p>
+
+                    Specifies the target texture.  Must be <code class="constant">GL_TEXTURE_2D</code>.
+                </p></dd><dt><span class="term"><em class="parameter"><code>internalFormat</code></em></span></dt><dd><p>
+                    Requests the internal storage format of the texture image.  The most
+                    current version of the implementation of GLU ES does not check this
+                    value for validity before passing it on to the underlying OpenGL ES
+                    implementation.  A value that is not accepted by the OpenGL ES
+                    implementation will lead to an OpenGL ES error.  The benefit of not
+                    checking this value at the GLU ES level is that OpenGL ES extensions can add
+                    new internal texture formats without requiring a revision of the GLU ES
+                    implementation.  Older implementations of GLU ES check this value and
+                    raise a GLU ES error if it is not one of the following symbolic constants:
+                    <code class="constant">GL_ALPHA</code>,
+                    <code class="constant">GL_LUMINANCE</code>,
+                    <code class="constant">GL_LUMINANCE_ALPHA</code>,
+                    <code class="constant">GL_RGB</code> or
+                    <code class="constant">GL_RGBA</code>.
+                </p></dd><dt><span class="term"><em class="parameter"><code>width</code></em>, </span><span class="term"><em class="parameter"><code>height</code></em></span></dt><dd><p>
+
+                    Specifies in pixels the width and height, respectively, of the texture image. 
+                </p></dd><dt><span class="term"><em class="parameter"><code>format</code></em></span></dt><dd><p>
+                    Specifies the format of the pixel data.
+                    Must be one of
+                    <code class="constant">GL_ALPHA</code>,
+                    <code class="constant">GL_RGB</code>,
+                    <code class="constant">GL_RGBA</code>,
+                    <code class="constant">GL_LUMINANCE</code>, or
+                    <code class="constant">GL_LUMINANCE_ALPHA</code>.
+                </p></dd><dt><span class="term"><em class="parameter"><code>type</code></em></span></dt><dd><p>
+
+                    Specifies the data type for <em class="parameter"><code>data</code></em>.
+                    Must be one of
+                    <code class="constant">GL_UNSIGNED_BYTE</code>,
+                    <code class="constant">GL_UNSIGNED_SHORT_5_6_5</code>,
+                    <code class="constant">GL_UNSIGNED_SHORT_4_4_4_4</code> or
+                    <code class="constant">GL_UNSIGNED_SHORT_5_5_5_1</code>.
+                </p></dd><dt><span class="term"><em class="parameter"><code>data</code></em></span></dt><dd><p>
+
+                    Specifies a pointer to the image data in memory.
+                </p></dd></dl></div></div><div class="refsect1" lang="en" xml:lang="en"><a id="description"></a><h2>Description</h2><p>
+            <code class="function">gluBuild2DMipmaps</code> builds a series of prefiltered two-dimensional texture maps of decreasing
+            resolutions called a mipmap. This is used for the antialiasing of
+            texture-mapped primitives.
+        </p><p>
+            A return value of zero indicates success, otherwise a GLU error code is
+            returned (see <a class="citerefentry" href="gluErrorString.html"><span class="citerefentry"><span class="refentrytitle">gluErrorString</span></span></a>).
+        </p><p>
+            Initially, the <em class="parameter"><code>width</code></em> and <em class="parameter"><code>height</code></em> of <em class="parameter"><code>data</code></em> are checked to see if they
+            are a power of 2. If not, a copy of <em class="parameter"><code>data</code></em> (not <em class="parameter"><code>data</code></em>), is scaled up
+            or down to the nearest power of 2. This copy will be used for subsequent
+            mipmapping operations described below. (If <em class="parameter"><code>width</code></em> or <em class="parameter"><code>height</code></em> is exactly
+            between powers of 2, then the copy of <em class="parameter"><code>data</code></em> will scale upwards.)  For
+            example, if <em class="parameter"><code>width</code></em> is 57 and <em class="parameter"><code>height</code></em> is 23, then a copy of <em class="parameter"><code>data</code></em> will
+            scale up to 64 in <em class="parameter"><code>width</code></em> and down to 16 in depth, before mipmapping takes
+            place.
+        </p><p>
+            Next, a series of mipmap levels is built by decimating a copy of <em class="parameter"><code>data</code></em>
+            in half along both dimensions until size 1 x 1 is reached. At
+            each level, each texel in the halved mipmap level is an average of the corresponding
+            four texels in the larger mipmap level. (In the case of rectangular
+            images, the decimation will ultimately reach an <em>N</em> x 1 or 1 x <em>N</em> configuration. Here, two texels are averaged instead.)
+        </p><p>
+
+            <code>glTexImage2D</code> is called to load each of these mipmap levels.
+            Level 0 is a copy of <em class="parameter"><code>data</code></em>. The highest level is <em>log2(max(width, height) * 2^level)</em>.
+            For example, if <em class="parameter"><code>width</code></em> is 64 and <em class="parameter"><code>height</code></em> is 16
+            and the implementation can store a texture of this size, the following mipmap levels are built: 64 x 16, 32 x 8, 16 x 4, 8 x 2, 4 x 1, 2 x 1, 1 x 1.
+            These correspond to levels 0 through 6, respectively.
+        </p><p>
+            See the <code>glTexImage2D</code> reference page for a description of the
+            acceptable values for <em class="parameter"><code>format</code></em> parameter.
+        </p></div><div class="refsect1" lang="en" xml:lang="en"><a id="notes"></a><h2>Notes</h2><p>
+
+            Note that there is no direct way of querying the maximum level. First, query
+            for the width and height actually used at level 0. Then the
+            maximum level can be derived from the formula <em>log2(max(width, height) * 2^level)</em>.
+        </p></div><div class="refsect1" lang="en" xml:lang="en"><a id="errors"></a><h2>Errors</h2><p>
+
+            <code class="constant">GLU_INVALID_VALUE</code> is returned if <em class="parameter"><code>width</code></em> or <em class="parameter"><code>height</code></em> is &lt; 1.
+        </p><p>
+            <code class="constant">GLU_INVALID_ENUM</code> is returned if <em class="parameter"><code>internalFormat</code></em>, <em class="parameter"><code>format</code></em>, or <em class="parameter"><code>type</code></em> is not 
+            legal.
+        </p><p>
+
+            <code class="constant">GLU_INVALID_OPERATION</code> is returned if <em class="parameter"><code>type</code></em> is <code class="constant">GL_UNSIGNED_SHORT_5_6_5</code>
+            and <em class="parameter"><code>format</code></em> is not <code class="constant">GL_RGB</code>.
+        </p><p>
+
+            <code class="constant">GLU_INVALID_OPERATION</code> is returned if <em class="parameter"><code>type</code></em> is <code class="constant">GL_UNSIGNED_SHORT_4_4_4_4</code>
+            and <em class="parameter"><code>format</code></em> is not <code class="constant">GL_RGBA</code>.
+        </p><p>
+
+            <code class="constant">GLU_INVALID_OPERATION</code> is returned if <em class="parameter"><code>type</code></em> is <code class="constant">GL_UNSIGNED_SHORT_5_5_5_1</code>
+            and <em class="parameter"><code>format</code></em> is not <code class="constant">GL_RGBA</code>.
+        </p></div><div class="refsect1" lang="en" xml:lang="en"><a id="seealso"></a><h2>See Also</h2><p>
+
+            <a class="citerefentry" href="gluBuild2DMipmapLevels.html"><span class="citerefentry"><span class="refentrytitle">gluBuild2DMipmapLevels</span></span></a>,
+            <a class="citerefentry" href="gluErrorString.html"><span class="citerefentry"><span class="refentrytitle">gluErrorString</span></span></a>.
+
+        </p></div><div class="refsect1" lang="en" xml:lang="en"><a id="Copyright"></a><h2>Copyright</h2><p>
+            Copyright <span class="trademark"></span>c 1991-2006
+            Silicon Graphics, Inc. This document is licensed under the SGI
+            Free Software B License. For details, see
+            <a class="ulink" href="http://oss.sgi.com/projects/FreeB/" target="_top">http://oss.sgi.com/projects/FreeB/</a>.
+        </p></div></div></body></html>

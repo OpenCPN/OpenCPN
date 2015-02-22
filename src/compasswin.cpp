@@ -239,7 +239,7 @@ wxBitmap ocpnFloatingCompassWindow::CreateBmp( bool newColorScheme )
             m_lastgpsIconName = gpsIconName;
         }
 
-#ifndef __WXMAC__       
+#if !defined(__WXMAC__) && !defined(__OCPN__ANDROID__)       
         if( style->marginsInvisible ) {
             m_MaskBmp = wxBitmap( StatBmp.GetWidth(), StatBmp.GetHeight() );
             wxMemoryDC sdc( m_MaskBmp );

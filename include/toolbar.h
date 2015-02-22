@@ -31,15 +31,16 @@
 
 class GrabberWin: public wxPanel {
 public:
-      GrabberWin( wxWindow *parent );
+      GrabberWin( wxWindow *parent, float scale_factor );
       void OnPaint( wxPaintEvent& event );
       void MouseEvent( wxMouseEvent& event );
       void SetColorScheme( ColorScheme cs );
 
-      wxBitmap m_pbitmap;
+      wxBitmap m_bitmap;
       bool m_bLeftDown;
       bool m_bRightDown;
       ocpnStyle::Style* m_style;
+      float m_scale_factor;
 
 DECLARE_EVENT_TABLE()
 };
@@ -93,7 +94,7 @@ public:
       void OnKillFocus( wxFocusEvent& event );
       void OnToolTipTimerEvent( wxTimerEvent& event );
       void OnToolTipOffTimerEvent( wxTimerEvent& event );
-      
+
       wxToolBarToolBase *AddTool( int toolid, const wxString& label, const wxBitmap& bitmap,
                   const wxBitmap& bmpDisabled, wxItemKind kind = wxITEM_NORMAL,
                   const wxString& shortHelp = wxEmptyString, const wxString& longHelp =
@@ -179,7 +180,7 @@ public:
       virtual wxString GetToolLongHelp( int toolid ) const;
 
       virtual void SetToolTooltipHiViz( int id, bool b_hiviz );
-      
+
       virtual void SetSizeFactor( float factor){ m_sizefactor = factor; }
       // toolbar geometry
       // ----------------
@@ -292,7 +293,7 @@ protected:
       bool m_btoolbar_is_zooming;
 
       ocpnStyle::Style* m_style;
-      
+
       float m_sizefactor;
 
 private:
@@ -319,7 +320,7 @@ public:
       void FadeTimerEvent( wxTimerEvent& event );
       bool IsToolbarShown() { return ( m_ptoolbar != 0 ); }
       float GetScaleFactor() { return m_sizefactor; }
-      
+
       void Realize();
       ocpnToolBarSimple *GetToolbar();
       void Submerge();
@@ -368,10 +369,10 @@ private:
       int m_dock_y;
       ocpnStyle::Style* m_style;
       bool m_block;
-      
+
       bool m_marginsInvisible;
       float m_sizefactor;
-      
+
 };
 
 //---------------------------------------------------------------------------

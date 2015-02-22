@@ -1,0 +1,8 @@
+STATE=Experimental
+INSTALLDIR=x86/bin/
+INSTALLNAME=tess
+NAME=tess
+USER=root
+HOST=localhost
+DATE=2009/06/08-10:10:49-EEST
+DESCRIPTION=GLU ES Tesselater Test

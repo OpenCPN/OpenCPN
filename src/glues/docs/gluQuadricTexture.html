@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "xhtml1-transitional.dtd">
+<?xml-stylesheet type="text/xsl" href="mathml.xsl"?><html xmlns="http://www.w3.org/1999/xhtml" xmlns:pref="http://www.w3.org/2002/Math/preference" pref:renderer="mathplayer-dl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>gluQuadricTexture</title><meta name="generator" content="DocBook XSL Stylesheets V1.73.2" /></head><body><div class="refentry" lang="en" xml:lang="en"><a id="gluQuadricTexture"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>gluQuadricTexture - specify if texturing is desired for quadrics</p></div><div class="refsynopsisdiv"><h2>C Specification</h2><div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0"><tr><td><code class="funcdef">void <b class="fsfunc">gluQuadricTexture</b>(</code></td><td>GLUquadric* &nbsp;</td><td><var class="pdparam">quad</var>, </td></tr><tr><td> </td><td>GLboolean &nbsp;</td><td><var class="pdparam">texture</var><code>)</code>;</td></tr></table></div></div><div class="refsect1" lang="en" xml:lang="en"><a id="parameters"></a><h2>Parameters</h2><div class="variablelist"><dl><dt><span class="term"><em class="parameter"><code>quad</code></em></span></dt><dd><p>
+
+                    Specifies the quadrics object (created with <a class="citerefentry" href="gluNewQuadric.html"><span class="citerefentry"><span class="refentrytitle">gluNewQuadric</span></span></a>).
+                </p></dd><dt><span class="term"><em class="parameter"><code>texture</code></em></span></dt><dd><p>
+                    Specifies a flag indicating if texture coordinates should be generated.
+                </p></dd></dl></div></div><div class="refsect1" lang="en" xml:lang="en"><a id="description"></a><h2>Description</h2><p>
+            <code class="function">gluQuadricTexture</code> specifies if texture coordinates should be generated
+            for quadrics rendered with <em class="parameter"><code>quad</code></em>.
+            If the value of <em class="parameter"><code>texture</code></em> is <code class="constant">GLU_TRUE</code>, then texture coordinates 
+            are generated, and if <em class="parameter"><code>texture</code></em> is <code class="constant">GLU_FALSE</code>, they are not.  The
+            initial value is <code class="constant">GLU_FALSE</code>.
+        </p><p>
+
+            The manner in which texture coordinates are generated depends 
+            upon the specific quadric rendered.
+        </p></div><div class="refsect1" lang="en" xml:lang="en"><a id="seealso"></a><h2>See Also</h2><p>
+            <a class="citerefentry" href="gluNewQuadric.html"><span class="citerefentry"><span class="refentrytitle">gluNewQuadric</span></span></a>,
+            <a class="citerefentry" href="gluQuadricDrawStyle.html"><span class="citerefentry"><span class="refentrytitle">gluQuadricDrawStyle</span></span></a>,
+            <a class="citerefentry" href="gluQuadricNormals.html"><span class="citerefentry"><span class="refentrytitle">gluQuadricNormals</span></span></a>,
+            <a class="citerefentry" href="gluQuadricOrientation.html"><span class="citerefentry"><span class="refentrytitle">gluQuadricOrientation</span></span></a>
+        </p></div><div class="refsect1" lang="en" xml:lang="en"><a id="Copyright"></a><h2>Copyright</h2><p>
+            Copyright <span class="trademark"></span>c 1991-2006
+            Silicon Graphics, Inc. This document is licensed under the SGI
+            Free Software B License. For details, see
+            <a class="ulink" href="http://oss.sgi.com/projects/FreeB/" target="_top">http://oss.sgi.com/projects/FreeB/</a>.
+        </p></div></div></body></html>
+

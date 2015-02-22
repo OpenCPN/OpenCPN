@@ -3835,11 +3835,11 @@ msgstr "Dataverbinding instellen als input, output of beide."
 
 #: src/options.cpp:3506
 msgid "You must select or enter the port..."
-msgstr "U moet de haven selecteren of invoeren ..."
+msgstr "U moet de poort selecteren of invoeren ..."
 
 #: src/options.cpp:3514
 msgid "You must enter a port..."
-msgstr "U moet de haven selecteren of invoeren ..."
+msgstr "U moet een poort invoeren ..."
 
 #: src/options.cpp:3521
 msgid "You must enter the address..."

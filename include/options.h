@@ -33,6 +33,7 @@
 #include <wx/listctrl.h>
 #include <wx/choice.h>
 #include <wx/collpane.h>
+#include <wx/clrpicker.h>
 
 #include "pluginmanager.h"
 
@@ -157,6 +158,7 @@ enum {
     ID_MOBILEBOX,
     ID_REPONSIVEBOX,
     ID_SIZEMANUALRADIOBUTTON,
+    ID_WAYPOINTRANGERINGS,
     xID_OK
 };
 
@@ -276,6 +278,7 @@ public:
     void OnShowGpsWindowCheckboxClick( wxCommandEvent& event );
     void OnZTCCheckboxClick( wxCommandEvent& event );
     void OnRadarringSelect( wxCommandEvent& event );
+    void OnWaypointRangeRingSelect( wxCommandEvent& event );
     void OnShipTypeSelect( wxCommandEvent& event );
     void OnButtonGroups( wxCommandEvent& event );
     void OnInsertTideDataLocation( wxCommandEvent &event );
@@ -398,6 +401,8 @@ public:
     wxStaticBoxSizer* sbSizerInFilter;
     wxStaticBoxSizer* sbSizerOutFilter;
     wxCheckBox *m_cbAPBMagnetic;
+    wxStaticText* m_stTalkerIdText;
+    wxTextCtrl* m_TalkerIdText;
 
     SentenceListDlg* m_stcdialog_in;
     SentenceListDlg* m_stcdialog_out;
@@ -518,6 +523,7 @@ public:
     wxTextCtrl              *m_pOSGPSOffsetY;
     wxTextCtrl              *m_pOSMinSize;
     wxStaticBoxSizer        *dispOptions;
+    wxStaticBoxSizer        *dispWaypointOptions;
     wxScrolledWindow        *itemPanelShip;
     wxBoxSizer              *ownShip;
     wxTextCtrl              *m_pText_ACRadius;
@@ -540,9 +546,14 @@ public:
     wxBoxSizer              *itemBoxSizerPanelPlugins;
     
     wxChoice                *pNavAidRadarRingsNumberVisible;
+    wxChoice                *pWaypointRangeRingsNumber; 
     wxFlexGridSizer         *radarGrid;
+    wxFlexGridSizer         *waypointradarGrid;
     wxTextCtrl              *pNavAidRadarRingsStep;
     wxChoice                *m_itemRadarRingsUnits;
+    wxTextCtrl              *pWaypointRangeRingsStep;
+    wxChoice                *m_itemWaypointRangeRingsUnits;
+    wxColourPickerCtrl      *m_colourWaypointRangeRingsColour;
     wxCheckBox              *pWayPointPreventDragging;
     wxCheckBox              *pConfirmObjectDeletion;
     wxCheckBox              *pEnableZoomToCursor;
@@ -551,7 +562,7 @@ public:
     wxCheckBox              *pFullScreenToolbar;
     wxCheckBox              *pTransparentToolbar;
 
-    wxCheckBox              *pSailing;
+    wxCheckBox              *pAdvanceRouteWaypointOnArrivalOnly;
     
     wxCheckBox              *pTrackShowIcon;
     wxCheckBox              *pTrackDaily;
@@ -691,6 +702,8 @@ private:
 
     ChartGroupArray *m_pGroupArray;
 };
+
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
 
 static int lang_list[] = {
             wxLANGUAGE_DEFAULT,
@@ -923,7 +936,8 @@ static int lang_list[] = {
             wxLANGUAGE_ZHUANG,
             wxLANGUAGE_ZULU
             };
-
+#endif
+            
 ///////////////////////////////////////////////////////////////////////////////
 /// Class SentenceListDlg
 ///////////////////////////////////////////////////////////////////////////////

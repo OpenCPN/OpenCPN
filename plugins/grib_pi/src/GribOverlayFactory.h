@@ -146,8 +146,8 @@ private:
     wxString GetRefString( GribRecord *rec, int map );
     void DrawMessageWindow( wxString msg, int x, int y , wxFont *mfont);
 
-    void drawWindArrowWithBarbs( int config, int x, int y, double vx, double vy,
-                                 bool polar, bool south, wxColour arrowColor, double rotate_angle );
+    void drawWindArrowWithBarbs( int config, int x, int y, double vkn, double ang,
+                                 bool south, int arrowSize, wxColour arrowColor, double rotate_angle );
     void drawDoubleArrow( int i, int j, double dir, wxColour arrowColor, int arrowWidth, int arrowSize );
     void drawSingleArrow( int i, int j, double dir, wxColour arrowColor, int arrowWidth, int arrowSize );
 
@@ -156,6 +156,7 @@ private:
     void drawPetiteBarbule( wxPen pen, bool south, double si, double co, int di, int dj, int b );
     void drawGrandeBarbule( wxPen pen, bool south, double si, double co, int di, int dj, int b );
     void drawTriangle( wxPen pen, bool south, double si, double co, int di, int dj, int b );
+	void DrawNumbers( wxPoint p, double value, int settings, wxColour back_color );
 
     wxString getLabelString(double value, int settings);
     wxImage &getLabel(double value, int settings, wxColour back_colour);

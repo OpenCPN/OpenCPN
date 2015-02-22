@@ -37,9 +37,19 @@
 #endif
 
 #ifdef __WXMSW__
-#include "GL/gl.h"            // local copy for Windows
+    #include "GL/gl.h"            // local copy for Windows
+    #include <GL/glu.h>
 #else
-#include <GL/gl.h>
+
+    #ifndef __OCPN__ANDROID__
+        #include <GL/gl.h>
+        #include <GL/glu.h>
+    #else
+        #include "qopengl.h"                  // this gives us the qt runtime gles2.h
+        #include "GL/gl_private.h"
+        #include "glues.h"
+    #endif
+
 #endif
 
 #ifdef ocpnUSE_GL
@@ -847,9 +857,9 @@ void APIENTRY ocpnDCcombineCallback( GLdouble coords[3], GLdouble *vertex_data[4
 
 void APIENTRY ocpnDCvertexCallback( GLvoid* arg )
 {
-	GLvertex* vertex;
-	vertex = (GLvertex*) arg;
-    glVertex2d( vertex->info.x, vertex->info.y );
+    GLvertex* vertex;
+    vertex = (GLvertex*) arg;
+    glVertex2f( (float)vertex->info.x, (float)vertex->info.y );
 }
 
 void APIENTRY ocpnDCerrorCallback( GLenum errorCode )

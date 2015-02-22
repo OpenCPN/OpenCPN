@@ -1,0 +1,239 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "xhtml1-transitional.dtd">
+<?xml-stylesheet type="text/xsl" href="mathml.xsl"?><html xmlns="http://www.w3.org/1999/xhtml" xmlns:pref="http://www.w3.org/2002/Math/preference" pref:renderer="mathplayer-dl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>gluTessCallback</title><meta name="generator" content="DocBook XSL Stylesheets V1.73.2" /></head><body><div class="refentry" lang="en" xml:lang="en"><a id="gluTessCallback"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>gluTessCallback - define a callback for a tessellation object</p></div><div class="refsynopsisdiv"><h2>C Specification</h2><div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0"><tr><td><code class="funcdef">void <b class="fsfunc">gluTessCallback</b>(</code></td><td>GLUtesselator* &nbsp;</td><td><var class="pdparam">tess</var>, </td></tr><tr><td> </td><td>GLenum &nbsp;</td><td><var class="pdparam">which</var>, </td></tr><tr><td> </td><td>_GLUfuncptr &nbsp;</td><td><var class="pdparam">CallBackFunc</var><code>)</code>;</td></tr></table></div></div><div class="refsect1" lang="en" xml:lang="en"><a id="parameters"></a><h2>Parameters</h2><div class="variablelist"><dl><dt><span class="term"><em class="parameter"><code>tess</code></em></span></dt><dd><p>
+
+                    Specifies the tessellation object (created with <a class="citerefentry" href="gluNewTess.html"><span class="citerefentry"><span class="refentrytitle">gluNewTess</span></span></a>).
+                </p></dd><dt><span class="term"><em class="parameter"><code>which</code></em></span></dt><dd><p>
+                    Specifies the callback being defined. The following values are valid:
+                    <code class="constant">GLU_TESS_BEGIN</code>,
+                    <code class="constant">GLU_TESS_BEGIN_DATA</code>,
+                    <code class="constant">GLU_TESS_EDGE_FLAG</code>,
+                    <code class="constant">GLU_TESS_EDGE_FLAG_DATA</code>,
+                    <code class="constant">GLU_TESS_VERTEX</code>,
+                    <code class="constant">GLU_TESS_VERTEX_DATA</code>,
+                    <code class="constant">GLU_TESS_END</code>, 
+                    <code class="constant">GLU_TESS_END_DATA</code>, 
+                    <code class="constant">GLU_TESS_COMBINE</code>, 
+                    <code class="constant">GLU_TESS_COMBINE_DATA</code>,
+                    <code class="constant">GLU_TESS_ERROR</code>, and
+                    <code class="constant">GLU_TESS_ERROR_DATA</code>.
+                </p></dd><dt><span class="term"><em class="parameter"><code>CallBackFunc</code></em></span></dt><dd><p>
+
+                    Specifies the function to be called.
+                </p></dd></dl></div></div><div class="refsect1" lang="en" xml:lang="en"><a id="description"></a><h2>Description</h2><p>
+            <code class="function">gluTessCallback</code> is used to indicate a callback to be used by a tessellation object.
+            If the specified callback is already defined, then it is replaced. If 
+            <em class="parameter"><code>CallBackFunc</code></em> is NULL, then the existing callback becomes undefined.
+        </p><p>
+            These callbacks are used by the tessellation object to describe how a 
+            polygon specified by the user is broken into triangles. Note that there 
+            are two versions of each callback: one with user-specified polygon data 
+            and one without. If both versions of a particular callback are specified, 
+            then the callback with user-specified polygon data will be used. Note 
+            that the <span class="emphasis"><em>polygon_data</em></span> parameter used by some of the functions is
+            a copy of the pointer that was specified when 
+            <a class="citerefentry" href="gluTessBeginPolygon.html"><span class="citerefentry"><span class="refentrytitle">gluTessBeginPolygon</span></span></a> was called. The legal callbacks are as follows:
+        </p><div class="variablelist"><dl><dt><span class="term"><code class="constant">GLU_TESS_BEGIN</code></span></dt><dd><p>
+
+                        The begin callback is invoked to indicate the start of a (triangle) primitive. The function takes a single argument of type
+                        GLenum. If the <code class="constant">GLU_TESS_BOUNDARY_ONLY</code> property is set to
+                        <code class="constant">GLU_FALSE</code>, then the argument is set to either
+                        <code class="constant">GL_TRIANGLE_FAN</code>, <code class="constant">GL_TRIANGLE_STRIP</code>, or <code class="constant">GL_TRIANGLES</code>.
+                        If the <code class="constant">GLU_TESS_BOUNDARY_ONLY</code> property is set to <code class="constant">GLU_TRUE</code>,
+                        then the argument will be set to <code class="constant">GL_LINE_LOOP</code>. The function
+                        prototype for this callback is:
+                        </p><pre class="programlisting">
+void begin(GLenum type);
+                        </pre><p>
+                    </p></dd><dt><span class="term"><code class="constant">GLU_TESS_BEGIN_DATA</code></span></dt><dd><p>
+                        The same as the <code class="constant">GLU_TESS_BEGIN</code> callback except that it 
+                        takes an additional pointer argument. This pointer is identical to the 
+                        opaque pointer provided when
+                        <a class="citerefentry" href="gluTessBeginPolygon.html"><span class="citerefentry"><span class="refentrytitle">gluTessBeginPolygon</span></span></a> was called. The function prototype for this callback
+                        is:
+                        </p><pre class="programlisting">
+void beginData(GLenum type, void* polygon_data);
+                        </pre><p>
+                    </p></dd><dt><span class="term"><code class="constant">GLU_TESS_EDGE_FLAG</code></span></dt><dd><p>
+
+                        The edge flag callback. The function
+                        takes a single boolean flag that indicates which edges lie on the
+                        polygon boundary. If the flag is <code class="constant">GLU_TRUE</code>, then each vertex
+                        that follows begins an edge that lies on the polygon boundary, that is,
+                        an edge that separates an interior region from an exterior one.
+                        If the flag is <code class="constant">GLU_FALSE</code>, then each vertex that follows begins an edge
+                        that lies in the polygon interior. The edge flag callback (if defined) is 
+                        invoked before the first vertex callback.
+                    </p><p>
+                        Since triangle fans and triangle strips do not support edge flags, the begin 
+                        callback is not called with <code class="constant">GL_TRIANGLE_FAN</code> or <code class="constant">GL_TRIANGLE_STRIP</code>
+                        if a non-NULL edge flag callback is provided. (If the callback is
+                        initialized to NULL, there is no impact on performance). Instead, the fans and
+                        strips are converted to independent triangles. The function prototype
+                        for this callback is:
+                        </p><pre class="programlisting">
+void edgeFlag(GLboolean flag);
+                        </pre><p>
+                    </p></dd><dt><span class="term"><code class="constant">GLU_TESS_EDGE_FLAG_DATA</code></span></dt><dd><p>
+                        The same as the <code class="constant">GLU_TESS_EDGE_FLAG</code> callback except that it takes an additional pointer
+                        argument. This pointer is identical to the opaque pointer provided when
+                        <a class="citerefentry" href="gluTessBeginPolygon.html"><span class="citerefentry"><span class="refentrytitle">gluTessBeginPolygon</span></span></a> was called. The function prototype for this callback
+                        is:
+                        </p><pre class="programlisting">
+void edgeFlagData(GLboolean flag, void* polygon_data);
+                        </pre><p>
+                    </p></dd><dt><span class="term"><code class="constant">GLU_TESS_VERTEX</code></span></dt><dd><p>
+
+                        The vertex callback is invoked between the begin and end callbacks.
+                        It is similar to <a class="citerefentry" href="glVertex.html"><span class="citerefentry"><span class="refentrytitle">glVertex</span></span></a>, and it defines the vertices of the triangles 
+                        created by the tessellation process. The function
+                        takes a pointer as its only argument.  This pointer is identical to
+                        the opaque pointer provided by the user when the vertex was described
+                        (see <a class="citerefentry" href="gluTessVertex.html"><span class="citerefentry"><span class="refentrytitle">gluTessVertex</span></span></a>). The function prototype for this callback is:
+                        </p><pre class="programlisting">
+void vertex(void* vertex_data);
+                        </pre><p>
+                    </p></dd><dt><span class="term"><code class="constant">GLU_TESS_VERTEX_DATA</code></span></dt><dd><p>
+                        The same as the <code class="constant">GLU_TESS_VERTEX</code> callback except that it takes an additional pointer 
+                        argument. This pointer is identical to the opaque pointer provided when
+                        <a class="citerefentry" href="gluTessBeginPolygon.html"><span class="citerefentry"><span class="refentrytitle">gluTessBeginPolygon</span></span></a> was called. The function prototype for this callback
+                        is:
+                        </p><pre class="programlisting">
+
+void vertexData(void* vertex_data, void* polygon_data);
+                        </pre><p>
+                    </p></dd><dt><span class="term"><code class="constant">GLU_TESS_END</code></span></dt><dd><p>
+                        The end callback. It indicates the 
+                        end of a primitive and it takes no arguments. The function prototype for this
+                        callback is:
+                        </p><pre class="programlisting">
+void end(void);
+                        </pre><p>
+                    </p></dd><dt><span class="term"><code class="constant">GLU_TESS_END_DATA</code></span></dt><dd><p>
+                        The same as the <code class="constant">GLU_TESS_END</code> callback except that it takes an additional pointer 
+                        argument. This pointer is identical to the opaque pointer provided when
+                        <a class="citerefentry" href="gluTessBeginPolygon.html"><span class="citerefentry"><span class="refentrytitle">gluTessBeginPolygon</span></span></a> was called. The function prototype for this callback
+                        is:
+                        </p><pre class="programlisting">
+void endData(void* polygon_data);
+                        </pre><p>
+                    </p></dd><dt><span class="term"><code class="constant">GLU_TESS_COMBINE</code></span></dt><dd><p>
+                        The combine callback is called to create a new vertex when the tessellation
+                        detects an intersection or wishes to merge features. The function takes
+                        four arguments: an array of three elements each of type GLfloat, an array 
+                        of four pointers, an array of four elements each of type GLfloat, and a 
+                        pointer to a pointer. The prototype is:
+                        </p><pre class="programlisting">
+void combine(GLfloat coords[3], void* vertex_data[4], GLfloat weight[4], void** outData);
+                        </pre><p>
+                        The vertex is defined as a linear combination of up to four existing vertices, 
+                        stored in <span class="emphasis"><em>vertex_data</em></span>. The coefficients of the linear
+                        combination are given by <span class="emphasis"><em>weight</em></span>; these weights always add up to 1.
+                        All vertex pointers are valid even when some of the weights are 0.
+                        <span class="emphasis"><em>coords</em></span> gives the location of the new vertex.
+                    </p><p>
+
+                        The user must allocate another vertex, interpolate parameters using 
+                        <span class="emphasis"><em>vertex_data</em></span> and <span class="emphasis"><em>weight</em></span>, and return the new vertex pointer in
+                        <span class="emphasis"><em>outData</em></span>. This handle is supplied during rendering callbacks.
+                        The user is responsible for freeing the memory some time after 
+                        <a class="citerefentry" href="gluTessEndPolygon.html"><span class="citerefentry"><span class="refentrytitle">gluTessEndPolygon</span></span></a> is called.
+                    </p><p>
+                        For example, if the polygon lies in an arbitrary plane in 3-space,
+                        and a color is associated with each vertex, the
+                        <code class="constant">GLU_TESS_COMBINE</code> callback might look like this:
+                        </p><pre class="programlisting">
+
+void myCombine(GLfloat coords[3], VERTEX* d[4], GLfloat w[4], VERTEX** dataOut)
+{
+   VERTEX* new = new_vertex();
+
+   new-&gt;x=coords[0];
+   new-&gt;y=coords[1];
+   new-&gt;z=coords[2];
+   new-&gt;r=w[0]*d[0]-&gt;r+w[1]*d[1]-&gt;r+w[2]*d[2]-&gt;r+w[3]*d[3]-&gt;r;
+   new-&gt;g=w[0]*d[0]-&gt;g+w[1]*d[1]-&gt;g+w[2]*d[2]-&gt;g+w[3]*d[3]-&gt;g;
+   new-&gt;b=w[0]*d[0]-&gt;b+w[1]*d[1]-&gt;b+w[2]*d[2]-&gt;b+w[3]*d[3]-&gt;b;
+   new-&gt;a=w[0]*d[0]-&gt;a+w[1]*d[1]-&gt;a+w[2]*d[2]-&gt;a+w[3]*d[3]-&gt;a;
+   *dataOut=new;
+}
+                        </pre><p>
+                    </p><p>
+                        If the tessellation detects an intersection, then the <code class="constant">GLU_TESS_COMBINE</code> or 
+                        <code class="constant">GLU_TESS_COMBINE_DATA</code> callback (see below) must be defined, and it must 
+                        write a non-NULL pointer into <span class="emphasis"><em>dataOut</em></span>. Otherwise the 
+                        <code class="constant">GLU_TESS_NEED_COMBINE_CALLBACK</code> error occurs, and no
+                        output is generated.
+                    </p></dd><dt><span class="term"><code class="constant">GLU_TESS_COMBINE_DATA</code></span></dt><dd><p>
+                        The same as the <code class="constant">GLU_TESS_COMBINE</code> callback except that it takes an additional pointer 
+                        argument. This pointer is identical to the opaque pointer provided when
+                        <a class="citerefentry" href="gluTessBeginPolygon.html"><span class="citerefentry"><span class="refentrytitle">gluTessBeginPolygon</span></span></a> was called. The function prototype for this callback
+                        is:
+                        </p><pre class="programlisting">
+void combineData(GLfloat coords[3], void* vertex_data[4], GLfloat weight[4], void** outData, void* polygon_data);
+                        </pre><p>
+                    </p></dd><dt><span class="term"><code class="constant">GLU_TESS_ERROR</code></span></dt><dd><p>
+                        The error callback is called when an error is encountered. The one argument
+                        is of type GLenum; it indicates the specific error that occurred and will be
+                        set to one of <code class="constant">GLU_TESS_MISSING_BEGIN_POLYGON</code>, <code class="constant">GLU_TESS_MISSING_END_POLYGON</code>, 
+                        <code class="constant">GLU_TESS_MISSING_BEGIN_CONTOUR</code>, <code class="constant">GLU_TESS_MISSING_END_CONTOUR</code>, 
+                        <code class="constant">GLU_TESS_COORD_TOO_LARGE</code>, <code class="constant">GLU_TESS_NEED_COMBINE_CALLBACK</code>, or
+                        <code class="constant">GLU_OUT_OF_MEMORY</code>. Character
+                        strings describing these errors can be retrieved with the
+                        <a class="citerefentry" href="gluErrorString.html"><span class="citerefentry"><span class="refentrytitle">gluErrorString</span></span></a> call. The function prototype for this callback is:
+                        </p><pre class="programlisting">
+void error(GLenum errno);
+                        </pre><p>
+                    </p><p>
+                        The GLU library will recover from the first four
+                        errors by inserting the missing call(s).
+                        <code class="constant">GLU_TESS_COORD_TOO_LARGE</code> indicates that some vertex coordinate exceeded
+                        the predefined constant <code class="constant">GLU_TESS_MAX_COORD</code> in absolute value, and
+                        that the value has been clamped. (Coordinate values must be small
+                        enough so that two can be multiplied together without overflow.)
+                        <code class="constant">GLU_TESS_NEED_COMBINE_CALLBACK</code> indicates that the tessellation
+                        detected an intersection between two edges in the input data, and the
+                        <code class="constant">GLU_TESS_COMBINE</code> or <code class="constant">GLU_TESS_COMBINE_DATA</code> callback was
+                        not provided. No output is generated. <code class="constant">GLU_OUT_OF_MEMORY</code> indicates
+                        that there is not enough memory so no output is generated.
+                    </p></dd><dt><span class="term"><code class="constant">GLU_TESS_ERROR_DATA</code></span></dt><dd><p>
+                        The same as the <code class="constant">GLU_TESS_ERROR</code> callback except that it takes an additional pointer 
+                        argument. This pointer is identical to the opaque pointer provided when
+                        <a class="citerefentry" href="gluTessBeginPolygon.html"><span class="citerefentry"><span class="refentrytitle">gluTessBeginPolygon</span></span></a> was called. The function prototype for this callback
+                        is:
+                        </p><pre class="programlisting">
+void errorData(GLenum errno, void* polygon_data);
+                        </pre><p>
+                    </p></dd></dl></div></div><div class="refsect1" lang="en" xml:lang="en"><a id="example"></a><h2>Example</h2><p>
+            Polygons tessellated can be rendered directly like this:
+            </p><pre class="programlisting">
+gluTessCallback(tobj, GLU_TESS_BEGIN, glBegin);
+gluTessCallback(tobj, GLU_TESS_VERTEX, glVertex3dv);
+gluTessCallback(tobj, GLU_TESS_END, glEnd);
+gluTessCallback(tobj, GLU_TESS_COMBINE, myCombine);
+gluTessBeginPolygon(tobj, NULL);
+   gluTessBeginContour(tobj);
+      gluTessVertex(tobj, v, v);
+      ...
+   gluTessEndContour(tobj);
+gluTessEndPolygon(tobj);
+            </pre><p>
+            Typically, the tessellated polygon should be stored in a vertex array so that
+            it does not need to be retessellated every time it is rendered.
+        </p></div><div class="refsect1" lang="en" xml:lang="en"><a id="seealso"></a><h2>See Also</h2><p>
+            <a class="citerefentry" href="gluErrorString.html"><span class="citerefentry"><span class="refentrytitle">gluErrorString</span></span></a>,
+            <a class="citerefentry" href="gluNewTess.html"><span class="citerefentry"><span class="refentrytitle">gluNewTess</span></span></a>,
+            <a class="citerefentry" href="gluTessBeginContour.html"><span class="citerefentry"><span class="refentrytitle">gluTessBeginContour</span></span></a>,
+            <a class="citerefentry" href="gluTessBeginPolygon.html"><span class="citerefentry"><span class="refentrytitle">gluTessBeginPolygon</span></span></a>,
+            <a class="citerefentry" href="gluTessNormal.html"><span class="citerefentry"><span class="refentrytitle">gluTessNormal</span></span></a>,
+            <a class="citerefentry" href="gluTessProperty.html"><span class="citerefentry"><span class="refentrytitle">gluTessProperty</span></span></a>,
+            <a class="citerefentry" href="gluTessVertex.html"><span class="citerefentry"><span class="refentrytitle">gluTessVertex</span></span></a>,
+            <a class="citerefentry" href="glBegin.html"><span class="citerefentry"><span class="refentrytitle">glBegin</span></span></a>,
+            <a class="citerefentry" href="glEdgeFlag.html"><span class="citerefentry"><span class="refentrytitle">glEdgeFlag</span></span></a>,
+            <a class="citerefentry" href="glVertex.html"><span class="citerefentry"><span class="refentrytitle">glVertex</span></span></a>
+
+        </p></div><div class="refsect1" lang="en" xml:lang="en"><a id="Copyright"></a><h2>Copyright</h2><p>
+            Copyright <span class="trademark"></span>c 1991-2006
+            Silicon Graphics, Inc. This document is licensed under the SGI
+            Free Software B License. For details, see
+            <a class="ulink" href="http://oss.sgi.com/projects/FreeB/" target="_top">http://oss.sgi.com/projects/FreeB/</a>.
+        </p></div></div></body></html>

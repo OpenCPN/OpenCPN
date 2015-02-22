@@ -1,0 +1,8 @@
+STATE=Experimental
+INSTALLDIR=x86/bin/
+INSTALLNAME=mipmap
+NAME=mipmap
+USER=root
+HOST=localhost
+DATE=2009/06/08-10:10:46-EEST
+DESCRIPTION=GLU ES MipMap Test

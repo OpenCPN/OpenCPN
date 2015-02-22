@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "xhtml1-transitional.dtd">
+<?xml-stylesheet type="text/xsl" href="mathml.xsl"?><html xmlns="http://www.w3.org/1999/xhtml" xmlns:pref="http://www.w3.org/2002/Math/preference" pref:renderer="mathplayer-dl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>gluPickMatrix</title><meta name="generator" content="DocBook XSL Stylesheets V1.73.2" /></head><body><div class="refentry" lang="en" xml:lang="en"><a id="gluPickMatrix"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>gluPickMatrix - define a picking region</p></div><div class="refsynopsisdiv"><h2>C Specification</h2><div class="funcsynopsis"><table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0"><tr><td><code class="funcdef">void <b class="fsfunc">gluPickMatrix</b>(</code></td><td>GLfloat &nbsp;</td><td><var class="pdparam">x</var>, </td></tr><tr><td> </td><td>GLfloat &nbsp;</td><td><var class="pdparam">y</var>, </td></tr><tr><td> </td><td>GLfloat &nbsp;</td><td><var class="pdparam">delX</var>, </td></tr><tr><td> </td><td>GLfloat &nbsp;</td><td><var class="pdparam">delY</var>, </td></tr><tr><td> </td><td>GLint* &nbsp;</td><td><var class="pdparam">viewport</var><code>)</code>;</td></tr></table></div></div><div class="refsect1" lang="en" xml:lang="en"><a id="parameters"></a><h2>Parameters</h2><div class="variablelist"><dl><dt><span class="term"><em class="parameter"><code>x</code></em>, </span><span class="term"><em class="parameter"><code>y</code></em></span></dt><dd><p>
+
+                    Specify the center of a picking region in window coordinates.
+                </p></dd><dt><span class="term"><em class="parameter"><code>delX</code></em>, </span><span class="term"><em class="parameter"><code>delY</code></em></span></dt><dd><p>
+                    Specify the width and height, respectively, of the picking region in window 
+                    coordinates.
+                </p></dd><dt><span class="term"><em class="parameter"><code>viewport</code></em></span></dt><dd><p>
+                    Specifies the current viewport (as from a <code>glGetIntegerv</code> call. Note: it is queriable in OpenGL ES 1.1, not in OpenGL ES 1.0).
+                </p></dd></dl></div></div><div class="refsect1" lang="en" xml:lang="en"><a id="description"></a><h2>Description</h2><p>
+
+            <code class="function">gluPickMatrix</code> creates a projection matrix that can be used to restrict drawing
+            to a small region of the viewport.
+            This is typically useful to determine what objects are being drawn near the cursor.
+        </p><p>
+            The matrix created by <code class="function">gluPickMatrix</code> is multiplied by the current matrix just
+            as if <code>glMultMatrixf</code> is called with the generated matrix.
+            To effectively use the generated pick matrix for picking,
+            first call <code>glLoadIdentity</code> to load an identity matrix onto the
+            perspective matrix stack.
+            Then call <code class="function">gluPickMatrix</code>,
+            and, finally, call a command (such as <a class="citerefentry" href="gluPerspective.html"><span class="citerefentry"><span class="refentrytitle">gluPerspective</span></span></a>)
+            to multiply the perspective matrix by the pick matrix.
+        </p><p>
+
+            When using <code class="function">gluPickMatrix</code> to pick NURBS, be careful to turn off the NURBS 
+            property
+            <code class="constant">GLU_AUTO_LOAD_MATRIX</code>.  If <code class="constant">GLU_AUTO_LOAD_MATRIX</code> is not
+            turned off, then any NURBS surface rendered is subdivided differently with
+            the pick matrix than the way it was subdivided without the pick matrix.
+        </p></div><div class="refsect1" lang="en" xml:lang="en"><a id="example"></a><h2>Example</h2><p>
+            When rendering a scene as follows:
+            </p><pre class="programlisting">
+glMatrixMode(GL_PROJECTION);
+glLoadIdentity();
+gluPerspective(...);
+glMatrixMode(GL_MODELVIEW);
+/* Draw the scene */
+            </pre><p>
+            a portion of the viewport can be selected as a pick region like this:
+            </p><pre class="programlisting">
+glMatrixMode(GL_PROJECTION);
+glLoadIdentity();
+gluPickMatrix(x, y, width, height, viewport);
+gluPerspective(...);
+glMatrixMode(GL_MODELVIEW);
+/* Draw the scene */
+            </pre><p>
+        </p></div><div class="refsect1" lang="en" xml:lang="en"><a id="seealso"></a><h2>See Also</h2><p>
+            <a class="citerefentry" href="gluPerspective.html"><span class="citerefentry"><span class="refentrytitle">gluPerspective</span></span></a>.
+        </p></div><div class="refsect1" lang="en" xml:lang="en"><a id="Copyright"></a><h2>Copyright</h2><p>
+            Copyright <span class="trademark"></span>c 1991-2006
+            Silicon Graphics, Inc. This document is licensed under the SGI
+            Free Software B License. For details, see
+            <a class="ulink" href="http://oss.sgi.com/projects/FreeB/" target="_top">http://oss.sgi.com/projects/FreeB/</a>.
+        </p></div></div></body></html>

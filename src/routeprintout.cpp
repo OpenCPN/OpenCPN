@@ -84,7 +84,7 @@ extern wxPageSetupData* g_pageSetupData;
 
 MyRoutePrintout::MyRoutePrintout( std::vector<bool> _toPrintOut,
                                   Route*            route,
-                                  const wxChar*     title
+                                  const wxString   &title
                                   ) : MyPrintout( title ),
                                       myRoute( route ),
                                       toPrintOut( _toPrintOut )

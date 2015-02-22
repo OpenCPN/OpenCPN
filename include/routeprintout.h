@@ -46,7 +46,7 @@ class MyRoutePrintout : public MyPrintout {
 public:
     MyRoutePrintout( std::vector<bool> _toPrintOut,
                      Route*            route,
-                     const wxChar*     title = _T( "My Route printout" ) );
+                     const wxString   &title = _T( "My Route printout" ) );
     virtual
     bool
     OnPrintPage( int page );

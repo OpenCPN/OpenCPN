@@ -28,6 +28,7 @@
 #include <wx/datetime.h>
 #include <wx/gdicmn.h>
 #include <wx/gauge.h>
+#include <wx/clrpicker.h>
 #include "Hyperlink.h"
 #include "gpxdocument.h"
 
@@ -83,6 +84,16 @@ public:
       void SetWaypointArrivalRadius(double dArrivalDistance) { m_WaypointArrivalRadius = dArrivalDistance; };
       void SetWaypointArrivalRadius( wxString wxArrivalDistance ) { wxArrivalDistance.ToDouble( &m_WaypointArrivalRadius ); };
       double GetWaypointArrivalRadius();
+      bool  GetShowWaypointRangeRings(void) { return m_bShowWaypointRangeRings; };
+      int   GetWaypointRangeRingsNumber(void);
+      float GetWaypointRangeRingsStep(void);
+      int   GetWaypointRangeRingsStepUnits(void);
+      wxColour GetWaypointRangeRingsColour(void);
+      void  SetShowWaypointRangeRings(bool b_showWaypointRangeRings) { m_bShowWaypointRangeRings = b_showWaypointRangeRings; };
+      void  SetWaypointRangeRingsNumber(int i_WaypointRangeRingsNumber) { m_iWaypointRangeRingsNumber = i_WaypointRangeRingsNumber; };
+      void  SetWaypointRangeRingsStep(float f_WaypointRangeRingsStep) { m_fWaypointRangeRingsStep = f_WaypointRangeRingsStep; };
+      void  SetWaypointRangeRingsStepUnits(int i_WaypointRangeRingsStepUnits) { m_iWaypointRangeRingsStepUnits = i_WaypointRangeRingsStepUnits; };
+      void  SetWaypointRangeRingsColour( wxColour wxc_WaypointRangeRingsColour ) { m_wxcWaypointRangeRingsColour = wxc_WaypointRangeRingsColour; };
 
       bool SendToGPS(const wxString& com_name, wxGauge *pProgress);
 
@@ -133,6 +144,12 @@ public:
 
       HyperlinkList     *m_HyperlinkList;
       bool              m_btemp;
+      
+      bool              m_bShowWaypointRangeRings;
+      int               m_iWaypointRangeRingsNumber;
+      float             m_fWaypointRangeRingsStep;
+      int               m_iWaypointRangeRingsStepUnits;
+      wxColour          m_wxcWaypointRangeRingsColour;
 
 #ifdef ocpnUSE_GL
       void DrawGL( ViewPort &vp, OCPNRegion &region );
