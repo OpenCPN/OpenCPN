@@ -82,6 +82,9 @@ import android.view.Window;
 import android.view.WindowManager.LayoutParams;
 import android.view.accessibility.AccessibilityEvent;
 import dalvik.system.DexClassLoader;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.provider.Settings;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -98,9 +101,10 @@ import android.view.ActionMode.Callback;
 
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.MulticastLock;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.opencpn.GPSServer;
-
+import org.opencpn.OCPNNativeLib;
 
 
 public class QtActivity extends Activity
@@ -196,6 +200,8 @@ public class QtActivity extends Activity
 
     private Boolean m_GPSServiceStarted = false;
     private GPSServer m_GPSServer;
+
+    OCPNNativeLib nativeLib;
 
     public QtActivity()
     {
@@ -293,8 +299,22 @@ public class QtActivity extends Activity
 
     }
 
+    public native String getJniString();
+    public native int test();
+
     public String getDisplayDPI(){
         Log.i("DEBUGGER_TAG", "getDisplayDPI");
+
+        int i = nativeLib.test();
+        String aa;
+        aa = String.format("%d", i);
+        Log.i("DEBUGGER_TAG", aa);
+
+        String bb = "$GPRMC...";
+        int j = nativeLib.processNMEA(bb);
+//      int j = nativeLib.processNMEA( 44);
+        aa = String.format("%d", j);
+        Log.i("DEBUGGER_TAG", aa);
 
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -305,18 +325,16 @@ public class QtActivity extends Activity
         return ret;
     }
 
-    public String queryGPSServer( int parm ){
-        String ret;
+    public String queryGPSServer( final int parm ){
+
         if(!m_GPSServiceStarted){
-            m_GPSServer = new GPSServer(getApplicationContext());
+            Log.i("DEBUGGER_TAG", "Start GPS Server");
+            m_GPSServer = new GPSServer(getApplicationContext(), nativeLib, this);
             m_GPSServiceStarted = true;
         }
 
-        ret = m_GPSServer.doService( parm );
-        return ret;
+        return m_GPSServer.doService( parm );
     }
-
-
 
     // this function is used to load and start the loader
     private void loadApplication(Bundle loaderParams)
@@ -986,6 +1004,8 @@ public class QtActivity extends Activity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        nativeLib = new OCPNNativeLib();
 
         try {
             m_activityInfo = getPackageManager().getActivityInfo(getComponentName(), PackageManager.GET_META_DATA);

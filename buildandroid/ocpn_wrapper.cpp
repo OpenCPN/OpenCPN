@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:        minimal.cpp
 // Purpose:     Minimal wxWidgets sample
-// Author:      Julian Smart
+// Author:      David S Register
 // Modified by:
 // Created:     04/01/98
 // RCS-ID:      $Id: minimal.cpp 65971 2010-11-01 12:30:38Z PMO $
