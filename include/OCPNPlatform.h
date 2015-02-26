@@ -32,6 +32,10 @@
 #include "wx/wx.h"
 #endif //precompiled headers
 
+#include <wx/log.h>
+#include <wx/stdpaths.h>
+
+#include <stdio.h>
 
 class OCPNPlatform
 {
@@ -57,9 +61,45 @@ public:
     //  Called from MyApp() just before end of MyApp::OnInit()
     static void Initialize_3( void );
     
-    
-};
 
+
+//--------------------------------------------------------------------------
+//      Per-Platform file/directory support
+//--------------------------------------------------------------------------
+
+    wxStandardPaths& GetStdPaths();
+    wxString &GetHomeDir();
+    wxString &GetExePath();
+    wxString &GetSharedDataDir();
+    wxString &GetPrivateDataDir();
+    wxString &GetPluginDir();
+    wxString &GetConfigFileName();
+    wxString *GetPluginDirPtr();
+    wxString *GetSharedDataDirPtr();
+    wxString *GetPrivateDataDirPtr();
+    
+    bool InitializeLogFile( void );
+    void CloseLogFile( void );
+    wxString    &GetLargeLogMessage( void ){ return large_log_message; }
+    FILE        *GetLogFilePtr(){ return flog; }
+
+private:
+    wxString    m_homeDir;
+    wxString    m_exePath;
+    wxString    m_SData_Dir;
+    wxString    m_PrivateDataDir;
+    wxString    m_PluginsDir;
+    wxString    m_config_file_name;
+    
+    wxString    mlog_file;
+    FILE        *flog;
+    wxLog       *m_logger;
+    wxLog       *m_Oldlogger;
+    wxString    large_log_message;
+    
+    
+
+};
 
 
 #endif          //guard

@@ -58,7 +58,10 @@
 #include <wx/filename.h>
 #include <wx/stdpaths.h>
 #include <wx/apptrait.h>
+#include "OCPNPlatform.h"
 
+
+extern OCPNPlatform     *g_Platform;
 extern ConsoleCanvas    *console;
 
 extern RouteList        *pRouteList;
@@ -1129,7 +1132,7 @@ bool WayPointman::RemoveRoutePoint(RoutePoint *prp)
 
 void WayPointman::ProcessUserIcons( ocpnStyle::Style* style )
 {
-    wxString UserIconPath = g_PrivateDataDir;
+    wxString UserIconPath = g_Platform->GetPrivateDataDir();
     wxChar sep = wxFileName::GetPathSeparator();
     if( UserIconPath.Last() != sep ) UserIconPath.Append( sep );
     UserIconPath.Append( _T("UserIcons") );

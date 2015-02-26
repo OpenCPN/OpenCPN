@@ -48,6 +48,7 @@
 #include "ocpn_pixel.h"                         // for ocpnUSE_DIBSECTION
 #include "ocpndc.h"
 #include "pluginmanager.h"  // for PlugInManager
+#include "OCPNPlatform.h"
 
 #include <stdio.h>
 
@@ -64,6 +65,7 @@
 #define new DEBUG_NEW
 #endif
 
+extern OCPNPlatform     *g_Platform;
 extern wxString         g_SENCPrefix;
 extern s52plib          *ps52plib;
 extern MyConfig         *pConfig;
@@ -357,7 +359,7 @@ bool covr_set::Init ( wxChar scale_char, wxString &prefix )
       prefix_string.Replace ( sep, _T ( "_" ) );
       prefix_string.Replace ( _T ( ":" ), _T ( "_" ) );       // for Windows
 
-      m_cachefile = g_PrivateDataDir;
+      m_cachefile = g_Platform->GetPrivateDataDir();
       appendOSDirSep ( &m_cachefile );
 
       m_cachefile += _T ( "cm93" );

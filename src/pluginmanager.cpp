@@ -59,6 +59,7 @@
 #include "s52utils.h"
 #include "gshhs.h"
 #include "mygeom.h"
+#include "OCPNPlatform.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -74,6 +75,7 @@ extern wxAuiManager    *g_pauimgr;
 extern wxLocale        *plocale_def_lang;
 #endif
 
+extern OCPNPlatform     *g_Platform;
 extern ChartDB         *ChartData;
 extern MyFrame         *gFrame;
 extern ocpnStyle::StyleManager* g_StyleManager;
@@ -87,7 +89,7 @@ extern RouteManagerDialog *pRouteManagerDialog;
 extern RouteList       *pRouteList;
 extern PlugInManager   *g_pi_manager;
 extern s52plib         *ps52plib;
-extern wxString        *pChartListFileName;
+extern wxString         ChartListFileName;
 extern wxString         gExe_path;
 extern wxString         g_Plugin_Dir;
 extern bool             g_boptionsactive;
@@ -1766,12 +1768,12 @@ wxFont *OCPNGetFont(wxString TextElement, int default_size)
 
 wxString *GetpSharedDataLocation(void)
 {
-    return &g_SData_Locn;
+    return g_Platform->GetSharedDataDirPtr();
 }
 
 wxString *GetpPrivateApplicationDataLocation(void)
 {
-    return &g_PrivateDataDir;
+    return g_Platform->GetPrivateDataDirPtr();
 }
 
 
@@ -1890,7 +1892,7 @@ int AddChartToDBInPlace( wxString &full_path, bool b_RefreshCanvas )
         if(bret){
             // Save to disk
             pConfig->UpdateChartDirs( ChartData->GetChartDirArray() );
-            ChartData->SaveBinary(*pChartListFileName);
+            ChartData->SaveBinary(ChartListFileName);
             
 
             //  Completely reload the chart database, for a fresh start
@@ -1898,7 +1900,7 @@ int AddChartToDBInPlace( wxString &full_path, bool b_RefreshCanvas )
             pConfig->LoadChartDirArray( XnewChartDirArray );
             delete ChartData;
             ChartData = new ChartDB( gFrame );
-            ChartData->LoadBinary(*pChartListFileName, XnewChartDirArray);
+            ChartData->LoadBinary(ChartListFileName, XnewChartDirArray);
 
             if(g_boptionsactive){
                 g_options->UpdateDisplayedChartDirList(ChartData->GetChartDirArray());
@@ -1923,7 +1925,7 @@ int RemoveChartFromDBInPlace( wxString &full_path )
         
     // Save to disk
         pConfig->UpdateChartDirs( ChartData->GetChartDirArray() );
-        ChartData->SaveBinary(*pChartListFileName);
+        ChartData->SaveBinary(ChartListFileName);
     
     
     //  Completely reload the chart database, for a fresh start
@@ -1931,7 +1933,7 @@ int RemoveChartFromDBInPlace( wxString &full_path )
         pConfig->LoadChartDirArray( XnewChartDirArray );
         delete ChartData;
         ChartData = new ChartDB( gFrame );
-        ChartData->LoadBinary(*pChartListFileName, XnewChartDirArray);
+        ChartData->LoadBinary(ChartListFileName, XnewChartDirArray);
     
         if(g_boptionsactive){
             g_options->UpdateDisplayedChartDirList(ChartData->GetChartDirArray());
@@ -3670,12 +3672,12 @@ int OCPNMessageBox_PlugIn(wxWindow *parent,
 
 wxString GetOCPN_ExePath( void )
 {
-    return gExe_path;
+    return g_Platform->GetExePath();
 }
 
 wxString *GetpPlugInLocation()
 {
-    return &g_Plugin_Dir;
+    return g_Platform->GetPluginDirPtr();
 }
 
 wxString GetPlugInPath(opencpn_plugin *pplugin)

@@ -81,7 +81,7 @@ extern bool g_bAIS_CPA_Alert;
 extern bool g_bAIS_CPA_Alert_Audio;
 extern ArrayOfMMSIProperties   g_MMSI_Props_Array;
 extern Route    *pAISMOBRoute;
-extern wxString *pAISTargetNameFileName;
+extern wxString AISTargetNameFileName;
 extern MyConfig *pConfig;
 extern RouteList *pRouteList;
 
@@ -113,7 +113,7 @@ AIS_Decoder::AIS_Decoder( wxFrame *parent )
     AISTargetNames = new AIS_Target_Name_Hash;
     
     if(g_benableAISNameCache){
-        std::ifstream infile( pAISTargetNameFileName->mb_str() );
+        std::ifstream infile( AISTargetNameFileName.mb_str() );
         if( infile ) {
             std::string line;
             while ( getline( infile, line ) ) {
@@ -966,7 +966,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                             wxString ship_name = trimAISField( pTargetData->ShipName );
                             ( *AISTargetNames )[mmsi] = ship_name;
                         // Write the MMSI->ShipName hash file
-                            std::ofstream outfile( pAISTargetNameFileName->mb_str(), std::ios_base::app );
+                            std::ofstream outfile( AISTargetNameFileName.mb_str(), std::ios_base::app );
                             if( outfile.is_open() ) {
                                 outfile << mmsi << "," << ship_name.mb_str() << "\r\n";
                             }
@@ -984,7 +984,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                                 //   (i.e. this one), takes precedence.
                                 // This also means that duplicates may be present in the cache file over time.
                                 //   A subject for later analysis...
-                                std::ofstream outfile( pAISTargetNameFileName->mb_str(), std::ios_base::app );
+                                std::ofstream outfile( AISTargetNameFileName.mb_str(), std::ios_base::app );
                                 if( outfile.is_open() ) {
                                     outfile << mmsi << "," << ship_name.mb_str() << ",Mismatch" << "\r\n";
                                 }

@@ -44,7 +44,7 @@
 #include "chartbase.h"
 #include "chartimg.h"
 #include "chartdb.h"
-
+#include "OCPNPlatform.h"
 
 #ifndef GL_ETC1_RGB8_OES
 #define GL_ETC1_RGB8_OES                                        0x8D64
@@ -61,7 +61,7 @@
 
 
 
-
+extern OCPNPlatform *g_Platform;
 extern bool g_bopengl;
 extern int g_GPU_MemSize;
 extern bool g_bDebugOGL;
@@ -178,7 +178,7 @@ wxString CompressedCachePath(wxString path)
         sha1 += s;
     }
     
-    return g_PrivateDataDir + separator + _T("raster_texture_cache") + separator + sha1;
+    return g_Platform->GetPrivateDataDir() + separator + _T("raster_texture_cache") + separator + sha1;
     
 }
 

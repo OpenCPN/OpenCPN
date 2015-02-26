@@ -30,6 +30,11 @@
 #include "wx/wx.h"
 #endif //precompiled headers
 
+#include <wx/app.h>
+#include <wx/apptrait.h>
+#include "wx/stdpaths.h"
+#include <wx/filename.h>
+
 #include "OCPNPlatform.h"
 
 #include "chart1.h"
@@ -55,6 +60,10 @@
 #include <setjmp.h>
 #endif
 
+DECLARE_APP(MyApp)
+
+void appendOSDirSlash( wxString* pString );
+
 
 #ifndef __WXMSW__
 struct sigaction          sa_all;
@@ -66,6 +75,7 @@ extern sigjmp_buf env;                    // the context saved by sigsetjmp();
 extern int                       quitflag;
 extern MyFrame                   *gFrame;
 extern wxLog                     *logger;
+extern bool                      g_bportable;
 
 
 
@@ -356,11 +366,298 @@ void Initialize_3( void ){
 }
 
 
+//--------------------------------------------------------------------------
+//      Per-Platform file/directory support
+//--------------------------------------------------------------------------
+
+wxStandardPaths& OCPNPlatform::GetStdPaths()
+{
+#ifndef __OCPN__ANDROID__    
+    return *dynamic_cast<wxStandardPaths*>(&(wxGetApp().GetTraits()->GetStandardPaths()));
+#else 
+//    return *dynamic_cast<wxStandardPaths*>(&wxApp::GetTraits()->GetStandardPaths());
+    return *dynamic_cast<wxStandardPaths*>(&(wxTheApp->GetTraits())->GetStandardPaths());
+#endif    
+    
+}
 
 
+wxString &OCPNPlatform::GetHomeDir()
+{
+    if(m_homeDir.IsEmpty()){
+
+        //      Establish a "home" location
+ //       wxStandardPaths& std_path = *dynamic_cast<wxStandardPaths*>(&wxApp::GetTraits()->GetStandardPaths());
+        wxStandardPaths& std_path = GetStdPaths();
+        //        wxStandardPaths &std_path = ( wxStandardPaths) wxGetApp().GetTraits()->GetStandardPaths();
+        
+        //TODO  Why is the following preferred?  Will not compile with gcc...
+//    wxStandardPaths& std_path = wxApp::GetTraits()->GetStandardPaths();
+
+#ifdef __unix__
+        std_path.SetInstallPrefix(wxString(PREFIX, wxConvUTF8));
+#endif
+
+#ifdef __WXMSW__
+        m_homeDir =  std_path.GetConfigDir();   // on w98, produces "/windows/Application Data"
+#else
+        m_homeDir = std_path.GetUserConfigDir();
+#endif
+
+//  On android, make the private data dir on the sdcard, if it exists.
+//  This make debugging easier, as it is not deleted whenever the APK is re-deployed.
+//  This behaviour should go away at Release.
+#ifdef __OCPN__ANDROID__
+        if( wxDirExists(_T("/mnt/sdcard")) ){
+            m_homeDir =  _T("/mnt/sdcard/.opencpn");
+        }
+#endif
+
+        if( g_bportable ) 
+            m_homeDir = GetExePath();
+        
+#ifdef  __WXOSX__
+        appendOSDirSlash(&m_homeDir);
+        m_homeDir.Append(_T("opencpn"));
+#endif            
+
+        appendOSDirSlash( &m_homeDir );
+    }
+    
+    return m_homeDir;
+}
+
+wxString &OCPNPlatform::GetExePath()
+{
+    if(m_exePath.IsEmpty()){
+        
+        wxStandardPaths& std_path = GetStdPaths();
+        m_exePath = std_path.GetExecutablePath();
+    }
+    
+    return m_exePath;
+}
+
+wxString &OCPNPlatform::GetSharedDataDir()
+{
+    if(m_SData_Dir.IsEmpty()){
+        //      Establish a "shared data" location
+        /*  From the wxWidgets documentation...
+         * 
+         *     wxStandardPaths::GetDataDir
+         *     wxString GetDataDir() const
+         *     Return the location of the applications global, i.e. not user-specific, data files.
+         * Unix: prefix/share/appname
+         * Windows: the directory where the executable file is located
+         * Mac: appname.app/Contents/SharedSupport bundle subdirectory
+         */
+        wxStandardPaths& std_path = GetStdPaths();
+        m_SData_Dir = std_path.GetDataDir();
+        appendOSDirSlash( &m_SData_Dir );
+        
+#ifdef __OCPN__ANDROID__
+        wxFileName fdir = wxFileName::DirName(std_path.GetUserConfigDir());
+        
+        fdir.RemoveLastDir();
+        m_SData_Dir = fdir.GetPath();
+        m_SData_Dir += _T("/cache/");
+#endif
+        
+        if( g_bportable )
+            m_SData_Dir = GetHomeDir();
+    }
+    
+    return m_SData_Dir;
+    
+}
+
+wxString &OCPNPlatform::GetPrivateDataDir()
+{
+    if(m_PrivateDataDir.IsEmpty()){
+        //      Establish the prefix of the location of user specific data files
+        wxStandardPaths& std_path = GetStdPaths();
+        
+#ifdef __WXMSW__
+        m_PrivateDataDir = GetHomeDir();                     // should be {Documents and Settings}\......
+#elif defined __WXOSX__
+        m_PrivateDataDir = std_path.GetUserConfigDir();     // should be ~/Library/Preferences
+#else
+        m_PrivateDataDir = std_path.GetUserDataDir();       // should be ~/.opencpn
+#endif
+        
+        if( g_bportable )
+            m_PrivateDataDir = GetHomeDir();
+        
+#ifdef __OCPN__ANDROID__
+        m_PrivateDataDir = GetHomeDir();
+#endif
+    }
+    
+    return m_PrivateDataDir;
+}
 
 
+wxString &OCPNPlatform::GetPluginDir()
+{
+    if(m_PluginsDir.IsEmpty()){
 
+        wxStandardPaths& std_path = GetStdPaths();
+        
+        //  Get the PlugIns directory location
+        m_PluginsDir = std_path.GetPluginsDir();   // linux:   {prefix}/lib/opencpn
+        // Mac:     appname.app/Contents/PlugIns
+#ifdef __WXMSW__
+        m_PluginsDir += _T("\\plugins");             // Windows: {exe dir}/plugins
+#endif
+        
+        if( g_bportable ) {
+            m_PluginsDir = GetHomeDir();
+            m_PluginsDir += _T("plugins");
+        }
+        
+    }
+    
+    return m_PluginsDir;
+}
+
+
+wxString &OCPNPlatform::GetConfigFileName()
+{
+    if(m_config_file_name.IsEmpty()){
+        //      Establish the location of the config file
+        wxStandardPaths& std_path = GetStdPaths();
+        
+#ifdef __WXMSW__
+        m_config_file_name = _T("opencpn.ini");
+        m_config_file_name.Prepend( GetHomeDir() );
+        
+#elif defined __WXOSX__
+        m_config_file_name = std_path.GetUserConfigDir(); // should be ~/Library/Preferences
+        appendOSDirSlash(&m_config_file_name);
+        m_config_file_name.Append(_T("opencpn.ini"));
+#else
+        m_config_file_name = std_path.GetUserDataDir(); // should be ~/.opencpn
+        appendOSDirSlash(&m_config_file_name);
+        m_config_file_name.Append(_T("opencpn.conf"));
+#endif
+        
+        if( g_bportable ) {
+            m_config_file_name = GetHomeDir();
+#ifdef __WXMSW__
+            m_config_file_name += _T("opencpn.ini");
+#elif defined __WXOSX__
+            m_config_file_name +=_T("opencpn.ini");
+#else
+            m_config_file_name += _T("opencpn.conf");
+#endif
+            
+        }
+        
+#ifdef __OCPN__ANDROID__
+        m_config_file_name = GetHomeDir();
+        m_config_file_name += _T("opencpn.conf");
+#endif
+        
+    }
+    
+    return m_config_file_name;
+}
+
+wxString *OCPNPlatform::GetPluginDirPtr()
+{
+    return &m_PluginsDir;
+}
+wxString *OCPNPlatform::GetSharedDataDirPtr()
+{
+    return &m_SData_Dir;
+}
+wxString *OCPNPlatform::GetPrivateDataDirPtr()
+{
+    return &m_PrivateDataDir;
+}
+
+
+bool OCPNPlatform::InitializeLogFile( void )
+{
+    //      Establish Log File location
+    mlog_file = GetHomeDir();
+    
+#ifdef  __WXOSX__
+    
+    wxFileName LibPref(mlog_file);          // starts like "~/Library/Preferences"
+    LibPref.RemoveLastDir();// takes off "Preferences"
+    
+    mlog_file = LibPref.GetFullPath();
+    appendOSDirSlash(&mlog_file);
+    
+    mlog_file.Append(_T("Logs/"));// so, on OS X, opencpn.log ends up in ~/Library/Logs
+                                   // which makes it accessible to Applications/Utilities/Console....
+#endif
+    
+    // create the opencpn "home" directory if we need to
+    wxFileName wxHomeFiledir( GetHomeDir() );
+    if( true != wxHomeFiledir.DirExists( wxHomeFiledir.GetPath() ) )
+        if( !wxHomeFiledir.Mkdir( wxHomeFiledir.GetPath() ) ) {
+            wxASSERT_MSG(false,_T("Cannot create opencpn home directory"));
+            return false;
+    }
+        
+        // create the opencpn "log" directory if we need to
+    wxFileName wxLogFiledir( mlog_file );
+    if( true != wxLogFiledir.DirExists( wxLogFiledir.GetPath() ) ) {
+        if( !wxLogFiledir.Mkdir( wxLogFiledir.GetPath() ) ) {
+            wxASSERT_MSG(false,_T("Cannot create opencpn log directory"));
+            return false;
+        }
+    }
+    
+    mlog_file.Append( _T("opencpn.log") );
+    wxString logit = mlog_file;
+        
+        //  Constrain the size of the log file
+    if( ::wxFileExists( mlog_file ) ) {
+            if( wxFileName::GetSize( mlog_file ) > 1000000 ) {
+                wxString oldlog = mlog_file;
+                oldlog.Append( _T(".log") );
+                //  Defer the showing of this messagebox until the system locale is established.
+                large_log_message = ( _("Old log will be moved to opencpn.log.log") );
+                ::wxRenameFile( mlog_file, oldlog );
+            }
+    }
+        
+#ifdef __OCPN__ANDROID__
+        //  Force new logfile for each instance
+        // TODO Remove this behaviour on Release
+    if( ::wxFileExists( mlog_file ) ){
+        ::wxRemoveFile( mlog_file );
+    }
+#endif
+        
+    flog = fopen( mlog_file.mb_str(), "a" );
+    m_logger = new wxLogStderr( flog );
+        
+#ifdef __OCPN__ANDROID__
+        //  Trouble printing timestamp
+    logger->SetTimestamp((const char *)NULL);
+#endif
+        
+#if defined(__WXGTK__) || defined(__WXOSX__)
+    m_logger->SetTimestamp(_T("%H:%M:%S %Z"));
+#endif
+        
+    m_Oldlogger = wxLog::SetActiveTarget( m_logger );
+
+    return true;
+    
+}
+
+void OCPNPlatform::CloseLogFile( void)
+{
+    if( m_logger ) {
+        wxLog::SetActiveTarget( m_Oldlogger );
+        delete m_logger;
+    }
+}
 
 
 

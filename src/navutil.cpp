@@ -72,6 +72,7 @@
 #include "NavObjectCollection.h"
 #include "NMEALogWindow.h"
 #include "AIS_Decoder.h"
+#include "OCPNPlatform.h"
 
 #ifdef USE_S57
 #include "s52plib.h"
@@ -84,6 +85,7 @@
 
 //    Statics
 
+extern OCPNPlatform     *g_Platform;
 extern ChartCanvas      *cc1;
 extern MyFrame          *gFrame;
 
@@ -2216,7 +2218,7 @@ bool MyConfig::LoadChartDirArray( ArrayOfCDI &ChartDirArray )
 
                     pConfig->DeleteEntry( str );
                     wxString new_dir = dirname.Mid( dirname.Find( _T ( "SampleCharts" ) ) );
-                    new_dir.Prepend( g_SData_Locn );
+                    new_dir.Prepend( g_Platform->GetSharedDataDir() );
                     dirname = new_dir;
                 }
 

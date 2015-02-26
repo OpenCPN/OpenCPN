@@ -80,6 +80,8 @@ extern GLuint g_raster_format;
 
 wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString *lang_dir);
 
+extern OCPNPlatform     *g_Platform;
+
 extern MyFrame          *gFrame;
 extern ChartCanvas      *cc1;
 extern wxString         g_PrivateDataDir;
@@ -2934,7 +2936,7 @@ void options::CreateControls()
     // I would prefer to change this so the plugins are only loaded if and when
     // they select the plugin page
     if(!g_bLoadedDisabledPlugins) {
-        g_pi_manager->LoadAllPlugIns( g_Plugin_Dir, false );
+        g_pi_manager->LoadAllPlugIns( g_Platform->GetPluginDir(), false );
         g_bLoadedDisabledPlugins = true;
     }
 
@@ -3567,7 +3569,7 @@ void options::OnButtonaddClick( wxCommandEvent& event )
 
     if( g_bportable ) {
         wxFileName f( selDir );
-        f.MakeRelativeTo( *pHome_Locn );
+        f.MakeRelativeTo( g_Platform->GetHomeDir() );
         pActiveChartsList->Append( f.GetFullPath() );
     } else
         pActiveChartsList->Append( selDir );
@@ -4643,7 +4645,7 @@ void options::OnPageChange( wxListbookEvent& event )
 
 void options::OnButtonSelectSound( wxCommandEvent& event )
 {
-    wxString sound_dir = g_SData_Locn;
+    wxString sound_dir = g_Platform->GetSharedDataDir();
     sound_dir.Append( _T("sounds") );
 
     wxFileDialog *openDialog = new wxFileDialog( NULL, _("Select Sound File"), sound_dir, wxT(""),
@@ -4652,7 +4654,7 @@ void options::OnButtonSelectSound( wxCommandEvent& event )
     if( response == wxID_OK ) {
         if( g_bportable ) {
             wxFileName f( openDialog->GetPath() );
-            f.MakeRelativeTo( *pHome_Locn );
+            f.MakeRelativeTo( g_Platform->GetHomeDir() );
             g_sAIS_Alert_Sound_File = f.GetFullPath();
         } else
             g_sAIS_Alert_Sound_File = openDialog->GetPath();
@@ -5221,7 +5223,7 @@ void options::OnInsertTideDataLocation( wxCommandEvent &event )
 
         if( g_bportable ) {
             wxFileName f( sel_file );
-            f.MakeRelativeTo( *pHome_Locn );
+            f.MakeRelativeTo( g_Platform->GetHomeDir() );
             tcDataSelected->Append( f.GetFullPath() );
         } else
             tcDataSelected->Append( sel_file );
@@ -5231,7 +5233,7 @@ void options::OnInsertTideDataLocation( wxCommandEvent &event )
         wxString data_dir = fn.GetPath();
         if( g_bportable ) {
             wxFileName f( data_dir );
-            f.MakeRelativeTo( *pHome_Locn );
+            f.MakeRelativeTo( g_Platform->GetHomeDir() );
             g_TCData_Dir = f.GetFullPath();
         }
         else
@@ -6256,7 +6258,7 @@ void OpenGLOptionsDlg::OnButtonClear( wxCommandEvent& event )
     if(g_bopengl)
         cc1->GetglCanvas()->ClearAllRasterTextures();
 
-    wxString path =  g_PrivateDataDir + wxFileName::GetPathSeparator() + _T("raster_texture_cache");
+    wxString path =  g_Platform->GetPrivateDataDir() + wxFileName::GetPathSeparator() + _T("raster_texture_cache");
     if(::wxDirExists( path )){
         wxArrayString files;
         size_t nfiles = wxDir::GetAllFiles(path, &files);
@@ -6272,7 +6274,7 @@ void OpenGLOptionsDlg::OnButtonClear( wxCommandEvent& event )
 
 wxString OpenGLOptionsDlg::TextureCacheSize()
 {
-    wxString path =  g_PrivateDataDir + wxFileName::GetPathSeparator() + _T("raster_texture_cache");
+    wxString path =  g_Platform->GetPrivateDataDir() + wxFileName::GetPathSeparator() + _T("raster_texture_cache");
     int total = 0;
     if(::wxDirExists( path )) {
         wxArrayString files;

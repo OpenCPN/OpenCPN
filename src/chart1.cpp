@@ -149,13 +149,11 @@ void RedirectIOToConsole();
 //      Static variable definition
 //------------------------------------------------------------------------------
 
-FILE                      *flog;
-wxLog                     *logger;
-wxLog                     *Oldlogger;
+OCPNPlatform              *g_Platform;
+
 bool                      g_bFirstRun;
 wxString                  glog_file;
-wxString                  gConfig_File;
-wxString                  gExe_path;
+//wxString                  gConfig_File;
 
 int                       g_unit_test_1;
 bool                      g_start_fullscreen;
@@ -212,17 +210,13 @@ TCMgr                     *ptcmgr;
 bool                      bDrawCurrentValues;
 bool                      b_novicemode = false;
 
-wxString                  g_PrivateDataDir;
-wxString                  g_SData_Locn;
-wxString                  *pChartListFileName;
-wxString                  *pAISTargetNameFileName;
-wxString                  *pHome_Locn;
+wxString                  ChartListFileName;
+wxString                  AISTargetNameFileName;
 wxString                  *pWorldMapLocation;
 wxString                  *pInit_Chart_Dir;
 wxString                  g_csv_locn;
 wxString                  g_SENCPrefix;
 wxString                  g_UserPresLibData;
-wxString                  g_Plugin_Dir;
 wxString                  g_VisibleLayers;
 wxString                  g_InvisibleLayers;
 
@@ -252,7 +246,6 @@ wxString                  *phost_name;
 static unsigned int       malloc_max;
 
 wxArrayOfConnPrm          *g_pConnectionParams;
-//OCP_GARMIN_Thread         *pGARMIN_Thread;
 
 wxDateTime                g_start_time;
 wxDateTime                g_loglast_time;
@@ -754,31 +747,30 @@ Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n") );
 }
 
 
-wxString *newPrivateFileName(wxStandardPaths &std_path, wxString *home_locn, const char *name, const char *windowsName)
+wxString newPrivateFileName(wxString home_locn, const char *name, const char *windowsName)
 {
     wxString fname = wxString::FromUTF8(name);
     wxString fwname = wxString::FromUTF8(windowsName);
-    wxString *filePathAndName;
+    wxString filePathAndName;
 
 #ifdef __WXMSW__
-    filePathAndName = new wxString( fwname );
-    filePathAndName->Prepend( *pHome_Locn );
+    filePathAndName = fwname;
+    filePathAndName.Prepend( home_locn );
 
 #else
-    filePathAndName = new wxString(_T(""));
-    filePathAndName->Append(std_path.GetUserDataDir());
-    appendOSDirSlash(filePathAndName);
-    filePathAndName->Append( fname );
+    filePathAndName = g_Platform->GetPrivateDataDir();
+    appendOSDirSlash(&filePathAndName);
+    filePathAndName.Append( fname );
 #endif
 
     if( g_bportable ) {
-        filePathAndName->Clear();
+        filePathAndName.Clear();
 #ifdef __WXMSW__
-        filePathAndName->Append( fwname );
+        filePathAndName.Append( fwname );
 #else
-        filePathAndName->Append( fname );
+        filePathAndName.Append( fname );
 #endif
-        filePathAndName->Prepend( *home_locn );
+        filePathAndName.Prepend( home_locn );
     }
     return filePathAndName;
 }
@@ -998,7 +990,7 @@ void LoadS57()
     CPLSetErrorHandler( MyCPLErrorHandler );
 
 //      Init the s57 chart object, specifying the location of the required csv files
-    g_csv_locn = g_SData_Locn;
+    g_csv_locn = g_Platform->GetSharedDataDir();
     g_csv_locn.Append( _T("s57data") );
 
     if( g_bportable ) {
@@ -1010,14 +1002,14 @@ void LoadS57()
 //      If the config file contains an entry for SENC file prefix, use it.
 //      Otherwise, default to PrivateDataDir
     if( g_SENCPrefix.IsEmpty() ) {
-        g_SENCPrefix = g_PrivateDataDir;
-        appendOSDirSlash( &g_SENCPrefix );
+        g_SENCPrefix = g_Platform->GetPrivateDataDir();
         g_SENCPrefix.Append( _T("SENC") );
     }
 
     if( g_bportable ) {
         wxFileName f( g_SENCPrefix );
-        if( f.MakeRelativeTo( g_PrivateDataDir ) ) g_SENCPrefix = f.GetFullPath();
+        if( f.MakeRelativeTo( g_Platform->GetPrivateDataDir() ) ) 
+            g_SENCPrefix = f.GetFullPath();
         else
             g_SENCPrefix = _T("SENC");
     }
@@ -1071,7 +1063,7 @@ void LoadS57()
 
         if( ps52plib->m_bOK ) {
             g_csv_locn = look_data_dir;
-            g_SData_Locn = tentative_SData_Locn;
+///???            g_SData_Locn = tentative_SData_Locn;
         }
     }
 
@@ -1082,7 +1074,7 @@ void LoadS57()
         delete ps52plib;
 
         wxString look_data_dir;
-        look_data_dir = g_SData_Locn;
+        look_data_dir = g_Platform->GetSharedDataDir();
         look_data_dir.Append( _T("s57data") );
 
         plib_data = look_data_dir;
@@ -1097,7 +1089,7 @@ void LoadS57()
 
     if( ps52plib->m_bOK ) {
         wxLogMessage( _T("Using s57data in ") + g_csv_locn );
-        m_pRegistrarMan = new s57RegistrarMgr( g_csv_locn, flog );
+        m_pRegistrarMan = new s57RegistrarMgr( g_csv_locn, g_Platform->GetLogFilePtr() );
 
         if(b_novicemode) {
             ps52plib->m_bShowSoundg = true;
@@ -1141,6 +1133,9 @@ bool MyApp::OnInit()
     }
 #endif
 
+    // Instantiate the global OCPNPlatform class
+    g_Platform = new OCPNPlatform;
+    
     //  Perform first stage initialization
     OCPNPlatform::Initialize_1( );
     
@@ -1168,9 +1163,9 @@ bool MyApp::OnInit()
 
     g_start_time = wxDateTime::Now();
 
-    g_loglast_time = g_start_time;   // pjotrc 2010.02.09
-    g_loglast_time.MakeGMT();        // pjotrc 2010.02.09
-    g_loglast_time.Subtract( wxTimeSpan( 0, 29, 0, 0 ) ); // give 1 minute for GPS to get a fix   // pjotrc 2010.02.09
+    g_loglast_time = g_start_time; 
+    g_loglast_time.MakeGMT();      
+    g_loglast_time.Subtract( wxTimeSpan( 0, 29, 0, 0 ) ); // give 1 minute for GPS to get a fix 
 
     AnchorPointMinDist = 5.0;
 
@@ -1181,129 +1176,25 @@ bool MyApp::OnInit()
     //      Record initial memory status
     GetMemoryStatus( &g_mem_total, &g_mem_initial );
 
-//      wxHandleFatalExceptions(true);
 
 // Set up default FONT encoding, which should have been done by wxWidgets some time before this......
     wxFont temp_font( 10, wxDEFAULT, wxNORMAL, wxNORMAL, FALSE, wxString( _T("") ),
             wxFONTENCODING_SYSTEM );
     temp_font.SetDefaultEncoding( wxFONTENCODING_SYSTEM );
 
-//      Establish a "home" location
-    wxStandardPaths& std_path = *dynamic_cast<wxStandardPaths*>(&wxApp::GetTraits()->GetStandardPaths());
-
-    //TODO  Why is the following preferred?  Will not compile with gcc...
-//    wxStandardPaths& std_path = wxApp::GetTraits()->GetStandardPaths();
-
-#ifdef __unix__
-    std_path.SetInstallPrefix(wxString(PREFIX, wxConvUTF8));
-#endif
-
-    gExe_path = std_path.GetExecutablePath();
-
-    pHome_Locn = new wxString;
-#ifdef __WXMSW__
-    pHome_Locn->Append( std_path.GetConfigDir() );   // on w98, produces "/windows/Application Data"
-#else
-    pHome_Locn->Append(std_path.GetUserConfigDir());
-#endif
-
-    //  On android, make the private data dir on the sdcard, if it exists.
-    //  This make debugging easier, as it is not deleted whenever the APK is re-deployed.
-    //  This behaviour should go away at Release.
-#ifdef __OCPN__ANDROID__
-    if( wxDirExists(_T("/mnt/sdcard")) ){
-        pHome_Locn->Clear();
-        pHome_Locn->Append( _T("/mnt/sdcard/.opencpn") );
-    }
-#endif
-
-    if( g_bportable ) {
-        pHome_Locn->Clear();
-        wxFileName f( std_path.GetExecutablePath() );
-        pHome_Locn->Append( f.GetPath() );
-    }
-
-    appendOSDirSlash( pHome_Locn );
 
     //      Establish Log File location
-    glog_file = *pHome_Locn;
-
-#ifdef  __WXOSX__
-    pHome_Locn->Append(_T("opencpn"));
-    appendOSDirSlash(pHome_Locn);
-
-    wxFileName LibPref(glog_file);          // starts like "~/Library/Preferences"
-    LibPref.RemoveLastDir();// takes off "Preferences"
-
-    glog_file = LibPref.GetFullPath();
-    appendOSDirSlash(&glog_file);
-
-    glog_file.Append(_T("Logs/"));// so, on OS X, opencpn.log ends up in ~/Library/Logs
-                                  // which makes it accessible to Applications/Utilities/Console....
-#endif
-
-    // create the opencpn "home" directory if we need to
-    wxFileName wxHomeFiledir( *pHome_Locn );
-    if( true != wxHomeFiledir.DirExists( wxHomeFiledir.GetPath() ) ) if( !wxHomeFiledir.Mkdir(
-            wxHomeFiledir.GetPath() ) ) {
-        wxASSERT_MSG(false,_T("Cannot create opencpn home directory"));
+    if(!g_Platform->InitializeLogFile())
         return false;
-    }
-
-    // create the opencpn "log" directory if we need to
-    wxFileName wxLogFiledir( glog_file );
-    if( true != wxLogFiledir.DirExists( wxLogFiledir.GetPath() ) ) {
-        if( !wxLogFiledir.Mkdir( wxLogFiledir.GetPath() ) ) {
-            wxASSERT_MSG(false,_T("Cannot create opencpn log directory"));
-            return false;
-        }
-    }
-    glog_file.Append( _T("opencpn.log") );
-    wxString logit = glog_file;
     
-    //  Constrain the size of the log file
-    wxString large_log_message;
-    if( ::wxFileExists( glog_file ) ) {
-        if( wxFileName::GetSize( glog_file ) > 1000000 ) {
-            wxString oldlog = glog_file;
-            oldlog.Append( _T(".log") );
-            //  Defer the showing of this messagebox until the system locale is established.
-            large_log_message = ( _("Old log will be moved to opencpn.log.log") );
-            ::wxRenameFile( glog_file, oldlog );
-        }
-    }
-
-#ifdef __OCPN__ANDROID__
-    //  Force new logfile for each instance
-    // TODO Remove this behaviour on Release
-    if( ::wxFileExists( glog_file ) ){
-        ::wxRemoveFile( glog_file );
-    }
-#endif
-    
-    flog = fopen( glog_file.mb_str(), "a" );
-    logger = new wxLogStderr( flog );
-
-#ifdef __OCPN__ANDROID__
-    //  Trouble printing timestamp
-    logger->SetTimestamp((const char *)NULL);
-#endif
-    
-    Oldlogger = wxLog::SetActiveTarget( logger );
 
 #ifdef __WXMSW__
-
-//  Un-comment the following to establish a separate console window as a target for printf() in Windows
-//     RedirectIOToConsole();
-
+    
+    //  Un-comment the following to establish a separate console window as a target for printf() in Windows
+    //     RedirectIOToConsole();
+    
 #endif
-
-//        wxLog::AddTraceMask("timer");               // verbose message traces to log output
-
-#if defined(__WXGTK__) || defined(__WXOSX__)
-    logger->SetTimestamp(_T("%H:%M:%S %Z"));
-#endif
-
+    
 //      Send init message
     wxLogMessage( _T("\n\n________\n") );
 
@@ -1344,32 +1235,9 @@ bool MyApp::OnInit()
     //    Initialize embedded PNG icon graphics
     ::wxInitAllImageHandlers();
 
-//      Establish a "shared data" location
-    /*  From the wxWidgets documentation...
-
-     wxStandardPaths::GetDataDir
-     wxString GetDataDir() const
-     Return the location of the applications global, i.e. not user-specific, data files.
-     * Unix: prefix/share/appname
-     * Windows: the directory where the executable file is located
-     * Mac: appname.app/Contents/SharedSupport bundle subdirectory
-     */
-    g_SData_Locn = std_path.GetDataDir();
-    appendOSDirSlash( &g_SData_Locn );
-
-#ifdef __OCPN__ANDROID__
-    wxFileName fdir = wxFileName::DirName(std_path.GetUserConfigDir());
-    
-    fdir.RemoveLastDir();
-    g_SData_Locn = fdir.GetPath();
-    g_SData_Locn += _T("/cache/");
-#endif
-    
-    if( g_bportable )
-        g_SData_Locn = *pHome_Locn;
 
     imsg = _T("SData_Locn is ");
-    imsg += g_SData_Locn;
+    imsg += g_Platform->GetSharedDataDir();
     wxLogMessage( imsg );
 
 #ifdef __OCPN__ANDROID__
@@ -1396,38 +1264,11 @@ bool MyApp::OnInit()
     //  Establish an empty ChartCroupArray
     g_pGroupArray = new ChartGroupArray;
 
-    //      Establish the prefix of the location of user specific data files
-#ifdef __WXMSW__
-    g_PrivateDataDir = *pHome_Locn;                     // should be {Documents and Settings}\......
-#elif defined __WXOSX__
-            g_PrivateDataDir = std_path.GetUserConfigDir();     // should be ~/Library/Preferences
-#else
-            g_PrivateDataDir = std_path.GetUserDataDir();       // should be ~/.opencpn
-#endif
-
-    if( g_bportable )
-        g_PrivateDataDir = *pHome_Locn;
-
-#ifdef __OCPN__ANDROID__
-    g_PrivateDataDir = *pHome_Locn;
-#endif
-
+ 
     imsg = _T("PrivateDataDir is ");
-    imsg += g_PrivateDataDir;
+    imsg += g_Platform->GetPrivateDataDir();
     wxLogMessage( imsg );
 
-
-    //  Get the PlugIns directory location
-    g_Plugin_Dir = std_path.GetPluginsDir();   // linux:   {prefix}/lib/opencpn
-                                               // Mac:     appname.app/Contents/PlugIns
-#ifdef __WXMSW__
-    g_Plugin_Dir += _T("\\plugins");             // Windows: {exe dir}/plugins
-#endif
-
-    if( g_bportable ) {
-        g_Plugin_Dir = *pHome_Locn;
-        g_Plugin_Dir += _T("plugins");
-    }
 
 //      Create an array string to hold repeating messages, so they don't
 //      overwhelm the log
@@ -1467,53 +1308,22 @@ bool MyApp::OnInit()
 #endif
 #endif
 
-//      Establish the location of the config file
-#ifdef __WXMSW__
-    gConfig_File = _T("opencpn.ini");
-    gConfig_File.Prepend( *pHome_Locn );
-
-#elif defined __WXOSX__
-    gConfig_File = std_path.GetUserConfigDir(); // should be ~/Library/Preferences
-    appendOSDirSlash(&gConfig_File);
-    gConfig_File.Append(_T("opencpn.ini"));
-#else
-    gConfig_File = std_path.GetUserDataDir(); // should be ~/.opencpn
-    appendOSDirSlash(&gConfig_File);
-    gConfig_File.Append(_T("opencpn.conf"));
-#endif
-
-    if( g_bportable ) {
-        gConfig_File = *pHome_Locn;
-#ifdef __WXMSW__
-        gConfig_File += _T("opencpn.ini");
-#elif defined __WXOSX__
-        gConfig_File +=_T("opencpn.ini");
-#else
-        gConfig_File += _T("opencpn.conf");
-#endif
-
-    }
-
-#ifdef __OCPN__ANDROID__
-    gConfig_File = *pHome_Locn;
-    gConfig_File += _T("opencpn.conf");
-#endif
 
     b_novicemode = false;
     
-    wxFileName config_test_file_name( gConfig_File );
+    wxFileName config_test_file_name( g_Platform->GetConfigFileName() );
     if( config_test_file_name.FileExists() ) wxLogMessage(
-            _T("Using existing Config_File: ") + gConfig_File );
+        _T("Using existing Config_File: ") + g_Platform->GetConfigFileName() );
     else {
         {
-            wxLogMessage( _T("Creating new Config_File: ") + gConfig_File );
+            wxLogMessage( _T("Creating new Config_File: ") + g_Platform->GetConfigFileName() );
 
             //    Flag to preset some options for initial config file creation
             b_novicemode = true;
 
             if( true != config_test_file_name.DirExists( config_test_file_name.GetPath() ) )
                 if( !config_test_file_name.Mkdir(config_test_file_name.GetPath() ) )
-                    wxLogMessage( _T("Cannot create config file directory for ") + gConfig_File );
+                    wxLogMessage( _T("Cannot create config file directory for ") + g_Platform->GetConfigFileName() );
         }
     }
 
@@ -1537,7 +1347,7 @@ bool MyApp::OnInit()
     pWayPointMan = NULL;
 
     //      Open/Create the Config Object (Must be after UI Style init).
-    MyConfig *pCF = new MyConfig( wxString( _T("") ), wxString( _T("") ), gConfig_File );
+    MyConfig *pCF = new MyConfig( wxString( _T("") ), wxString( _T("") ), g_Platform->GetConfigFileName() );
     pConfig = (MyConfig *) pCF;
     pConfig->LoadMyConfig();
 
@@ -1566,7 +1376,7 @@ bool MyApp::OnInit()
 
     // Add a new prefix for search order.
 #ifdef __WXMSW__
-    wxString locale_location = g_SData_Locn;
+    wxString locale_location = g_Platform->GetSharedDataDir();
     locale_location += _T("share/locale");
     wxLocale::AddCatalogLookupPathPrefix( locale_location );
 #endif
@@ -1655,15 +1465,15 @@ bool MyApp::OnInit()
     g_config_version_string = vs;
 
     //  Show deferred log restart message, if it exists.
-    if( !large_log_message.IsEmpty() )
-        OCPNMessageBox ( NULL, large_log_message, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK, 5 );
+    if( !g_Platform->GetLargeLogMessage().IsEmpty() )
+        OCPNMessageBox ( NULL, g_Platform->GetLargeLogMessage(), wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK, 5 );
 
     //  Validate OpenGL functionality, if selected
 #ifdef ocpnUSE_GL
 
 #ifdef __WXMSW__
     if( /*g_bopengl &&*/ !g_bdisable_opengl ) {
-        wxFileName fn(std_path.GetExecutablePath());
+        wxFileName fn(g_Platform->GetExePath());
         bool b_test_result = TestGLCanvas(fn.GetPathWithSep() );
 
         if( !b_test_result )
@@ -1701,19 +1511,21 @@ bool MyApp::OnInit()
 #endif
 
 //      Establish location and name of chart database
-    pChartListFileName = newPrivateFileName(std_path, pHome_Locn, "chartlist.dat", "CHRTLIST.DAT");
+    ChartListFileName = newPrivateFileName(g_Platform->GetHomeDir(), "chartlist.dat", "CHRTLIST.DAT");
 
 //      Establish location and name of AIS MMSI -> Target Name mapping
-    pAISTargetNameFileName = newPrivateFileName(std_path, pHome_Locn, "mmsitoname.csv", "MMSINAME.CSV");
+    AISTargetNameFileName = newPrivateFileName(g_Platform->GetHomeDir(), "mmsitoname.csv", "MMSINAME.CSV");
 
 #ifdef __OCPN__ANDROID__
-    pChartListFileName->Clear();
-    pChartListFileName->Append(_T("chartlist.dat"));
-    pChartListFileName->Prepend( *pHome_Locn );
+    ChartListFileName.Clear();
+    ChartListFileName.Append(_T("chartlist.dat"));
+    ChartListFileName.Prepend( g_Platform->GetHomeDir() );
 #endif
 
 //      Establish guessed location of chart tree
     if( pInit_Chart_Dir->IsEmpty() ) {
+        wxStandardPaths& std_path = g_Platform->GetStdPaths();
+        
         if( !g_bportable )
 #ifndef __OCPN__ANDROID__
         pInit_Chart_Dir->Append( std_path.GetDocumentsDir() );
@@ -1724,7 +1536,7 @@ bool MyApp::OnInit()
 
 //      Establish the GSHHS Dataset location
     pWorldMapLocation = new wxString( _T("gshhs") );
-    pWorldMapLocation->Prepend( g_SData_Locn );
+    pWorldMapLocation->Prepend( g_Platform->GetSharedDataDir() );
     pWorldMapLocation->Append( wxFileName::GetPathSeparator() );
 
     //  Override some config options for initial user startup with empty config file
@@ -1755,13 +1567,13 @@ bool MyApp::OnInit()
 
     //  Check the global Tide/Current data source array
     //  If empty, preset one default (US) Ascii data source
-    wxString default_tcdata =  ( g_SData_Locn + _T("tcdata") +
+    wxString default_tcdata =  ( g_Platform->GetSharedDataDir() + _T("tcdata") +
              wxFileName::GetPathSeparator() + _T("HARMONIC.IDX"));
     wxFileName fdefault( default_tcdata );
 
     if(!TideCurrentDataSet.GetCount()) {
         if( g_bportable ) {
-            fdefault.MakeRelativeTo( g_PrivateDataDir );
+            fdefault.MakeRelativeTo( g_Platform->GetPrivateDataDir() );
             TideCurrentDataSet.Add( fdefault.GetFullPath() );
         }
         else
@@ -1780,13 +1592,13 @@ bool MyApp::OnInit()
     //  Check the global AIS alarm sound file
     //  If empty, preset default
     if(g_sAIS_Alert_Sound_File.IsEmpty()) {
-        wxString default_sound =  ( g_SData_Locn + _T("sounds") +
+        wxString default_sound =  ( g_Platform->GetSharedDataDir() + _T("sounds") +
         wxFileName::GetPathSeparator() +
         _T("2bells.wav"));
 
         if( g_bportable ) {
             wxFileName f( default_sound );
-            f.MakeRelativeTo( g_PrivateDataDir );
+            f.MakeRelativeTo( g_Platform->GetPrivateDataDir() );
             g_sAIS_Alert_Sound_File = f.GetFullPath();
         }
         else
@@ -1872,7 +1684,7 @@ bool MyApp::OnInit()
 
     if( g_bportable ) {
         myframe_window_title += _(" -- [Portable(-p) executing from ");
-        myframe_window_title += *pHome_Locn;
+        myframe_window_title += g_Platform->GetHomeDir();
         myframe_window_title += _T("]");
     }
 
@@ -2030,11 +1842,11 @@ bool MyApp::OnInit()
 //    So it is best to simply delete it if present.
 //    TODO  There is a possibility of recreating the dir list from the database itself......
 
-    if( !ChartDirArray.GetCount() ) ::wxRemoveFile( *pChartListFileName );
+    if( !ChartDirArray.GetCount() ) ::wxRemoveFile( ChartListFileName );
 
 //      Try to load the current chart list Data file
     ChartData = new ChartDB( gFrame );
-    if (!ChartData->LoadBinary(*pChartListFileName, ChartDirArray)) {
+    if (!ChartData->LoadBinary(ChartListFileName, ChartDirArray)) {
         bDBUpdateInProgress = true;
 
         if( ChartDirArray.GetCount() ) {
@@ -2061,7 +1873,7 @@ bool MyApp::OnInit()
                     wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME );
 
             ChartData->Create( ChartDirArray, pprog );
-            ChartData->SaveBinary(*pChartListFileName);
+            ChartData->SaveBinary(ChartListFileName);
 
             delete pprog;
         }
@@ -2070,7 +1882,7 @@ bool MyApp::OnInit()
         {
             wxLogMessage(
                     _T("Chartlist file not found, config chart dir array is empty.  Chartlist target file is:")
-                            + *pChartListFileName );
+                            + ChartListFileName );
 
             wxString msg1(
                     _("No Charts Installed.\nPlease select chart folders in Options > Charts.") );
@@ -2205,8 +2017,7 @@ extern ocpnGLOptions g_GLOptions;
 //        gFrame->MemFootTimer.Start(1000, wxTIMER_CONTINUOUS);
 
     // Import Layer-wise any .gpx files from /Layers directory
-    wxString layerdir = g_PrivateDataDir;
-    appendOSDirSlash( &layerdir );
+    wxString layerdir = g_Platform->GetPrivateDataDir();
     layerdir.Append( _T("layers") );
 
 #if 0
@@ -2371,19 +2182,12 @@ int MyApp::OnExit()
     wxLogMessage( _T("opencpn::MyApp exiting cleanly...\n") );
     wxLog::FlushActive();
     
-    if( logger ) {
-        wxLog::SetActiveTarget( Oldlogger );
-        delete logger;
-    }
-
-    delete pChartListFileName;
-    delete pHome_Locn;
+    g_Platform->CloseLogFile();
+    
     delete phost_name;
     delete pInit_Chart_Dir;
     delete pWorldMapLocation;
 
-    delete pAISTargetNameFileName;
-    
     delete g_pRouteMan;
     delete pWayPointMan;
 
@@ -3976,7 +3780,8 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         case wxID_ABOUT:
         case ID_ABOUT: {
-            if( !g_pAboutDlg ) g_pAboutDlg = new about( this, &g_SData_Locn );
+            if( !g_pAboutDlg )
+                g_pAboutDlg = new about( this, g_Platform->GetSharedDataDir() );
 
             g_pAboutDlg->Update();
             g_pAboutDlg->Show();
@@ -4996,7 +4801,7 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
             && ( ( rr & CHANGE_CHARTS ) || ( rr & FORCE_UPDATE ) || ( rr & SCAN_UPDATE ) ) ) {
 
        UpdateChartDatabaseInplace( *pWorkDirArray, ( ( rr & FORCE_UPDATE ) == FORCE_UPDATE ),
-                true, *pChartListFileName );
+                true, ChartListFileName );
 
         //    Re-open the last open chart
         int dbii = ChartData->FinddbIndex( chart_file_name );
@@ -5105,7 +4910,7 @@ void MyFrame::LaunchLocalHelp( void ) {
     
     wxString def_lang_canonical = wxLocale::GetLanguageInfo( wxLANGUAGE_DEFAULT )->CanonicalName;
 
-    wxString help_locn = g_SData_Locn + _T("doc/help_");
+    wxString help_locn = g_Platform->GetSharedDataDir() + _T("doc/help_");
 
     wxString help_try = help_locn + def_lang_canonical + _T(".html");
 
@@ -5660,7 +5465,7 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
         break;
 
     default:
-        g_pi_manager->LoadAllPlugIns( g_Plugin_Dir, true, false );
+        g_pi_manager->LoadAllPlugIns( g_Platform->GetPluginDir(), true, false );
 
         RequestNewToolbar();
 
@@ -5757,7 +5562,7 @@ void MyFrame::OnBellsTimer(wxTimerEvent& event)
         wxString soundfile = _T("sounds");
         appendOSDirSlash( &soundfile );
         soundfile += wxString( bells_sound_file_name[bells - 1], wxConvUTF8 );
-        soundfile.Prepend( g_SData_Locn );
+        soundfile.Prepend( g_Platform->GetSharedDataDir() );
         bells_sound[bells - 1].Create( soundfile );
         if( !bells_sound[bells - 1].IsOk() ) {
             wxLogMessage( _T("Failed to load bells sound file: ") + soundfile );
