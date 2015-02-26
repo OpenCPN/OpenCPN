@@ -2353,9 +2353,10 @@ bool MyApp::OnInit()
             wxString msg1(
                     _("No Charts Installed.\nPlease select chart folders in Options > Charts.") );
 
-            OCPNMessageBox(gFrame, msg1, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK );
+ ///           OCPNMessageBox(gFrame, msg1, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK );
 
-            gFrame->DoOptionsDialog();
+            
+///            gFrame->DoOptionsDialog();
 
             b_SetInitialPoint = true;
 
@@ -2528,17 +2529,15 @@ extern ocpnGLOptions g_GLOptions;
     //  We need to defer their creation until here.
     if( pConfig->m_bShowCompassWin ) {
         g_FloatingCompassDialog = new ocpnFloatingCompassWindow( cc1 );
-        if( g_FloatingCompassDialog ) g_FloatingCompassDialog->UpdateStatus( true );
+        if( g_FloatingCompassDialog )
+            g_FloatingCompassDialog->UpdateStatus( true );
     }
 
     gFrame->Refresh( false );
     gFrame->Raise();
 
     gFrame->RequestNewToolbar();
-#ifdef __WXQT__
-    g_FloatingToolbarDialog->Raise();
-#endif
-//    g_FloatingToolbarDialog->Show();
+  
 
     cc1->Enable();
     cc1->SetFocus();
@@ -2570,11 +2569,16 @@ extern ocpnGLOptions g_GLOptions;
     cc1->Enable();
     cc1->SetFocus();
 
+#ifdef __WXQT__
+    g_FloatingToolbarDialog->Raise();
+    g_FloatingCompassDialog->Raise();
+#endif
+    
     // Perform delayed initialization after 50 milliseconds
     gFrame->InitTimer.Start( 50, wxTIMER_CONTINUOUS );
 
     wxLogMessage( wxString::Format(_("OpenCPN Initialized in %ld ms."), sw.Time() ) );
-    
+
     return TRUE;
 }
 
@@ -5891,6 +5895,8 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
 
     case 1:
         // Connect Datastreams
+        
+   
         for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
         {
             ConnectionParams *cp = g_pConnectionParams->Item(i);
@@ -5908,6 +5914,7 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
 
                 dsPortType port_type = cp->IOSelect;
                 DataStream *dstr = new DataStream( g_pMUX,
+                                                   cp->Type,
                                                    cp->GetDSPort(),
                                                    wxString::Format(wxT("%i"),cp->Baudrate),
                                                    port_type,
@@ -6048,6 +6055,7 @@ int ut_index;
 
 void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 {
+    
 
     if( s_ProgDialog ) {
         return;

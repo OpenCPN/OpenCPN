@@ -1,7 +1,7 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  OpenCPN Android support utilities
+ * Purpose:  OpenCPN Platform specific support utilities
  * Author:   David Register
  *
  ***************************************************************************
@@ -23,8 +23,6 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef ANDROIDUTIL_H
-#define ANDROIDUTIL_H
 
 #include "wx/wxprec.h"
 
@@ -32,20 +30,49 @@
 #include "wx/wx.h"
 #endif //precompiled headers
 
-#include <QtAndroidExtras/QAndroidJniObject>
+#include "OCPNPlatform.h"
 
-#define GPS_OFF                         0
-#define GPS_ON                          1
-#define GPS_PROVIDER_AVAILABLE          2
-#define GPS_SHOWPREFERENCES             3
-
-extern bool androidGetMemoryStatus( int *mem_total, int *mem_used );
-extern double GetAndroidDisplaySize();
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#include "qdebug.h"
+#endif
 
 
-extern bool androidStartNMEA(wxEvtHandler *consumer);
-extern bool androidStopNMEA();
-extern wxString androidGPSService(int parm);
-extern bool androidDeviceHasGPS();
+//  OCPN Platform implementation
 
-#endif   //guard
+OCPNPlatform::OCPNPlatform()
+{
+}
+
+OCPNPlatform::~OCPNPlatform()
+{
+}
+
+//--------------------------------------------------------------------------
+//      Internal GPS Support
+//--------------------------------------------------------------------------
+
+bool OCPNPlatform::hasInternalGPS(wxString profile)
+{
+    
+#ifdef __OCPN__ANDROID__
+    bool t = androidDeviceHasGPS();
+    qDebug() << "androidDeviceHasGPS" << t;
+    return t;
+#else
+
+    return false;
+    
+#endif    
+}
+
+
+//--------------------------------------------------------------------------
+//      Internal Bluetooth Support
+//--------------------------------------------------------------------------
+
+bool OCPNPlatform::hasInternalBT(wxString profile)
+{
+    
+    return false;
+}

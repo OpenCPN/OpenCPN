@@ -356,6 +356,8 @@ public:
     wxStaticBoxSizer* sbSizerConnectionProps;
     wxRadioButton* m_rbTypeSerial;
     wxRadioButton* m_rbTypeNet;
+    wxRadioButton* m_rbTypeInternalGPS;
+    wxRadioButton* m_rbTypeInternalBT;
     wxGridSizer* gSizerNetProps;
     wxStaticText* m_stNetProto;
     wxRadioButton* m_rbNetProtoTCP;
@@ -411,8 +413,12 @@ public:
     void OnSelectDatasource( wxListEvent& event );
     void OnAddDatasourceClick( wxCommandEvent& event );
     void OnRemoveDatasourceClick( wxCommandEvent& event );
+    
     void OnTypeSerialSelected( wxCommandEvent& event );
     void OnTypeNetSelected( wxCommandEvent& event );
+    void OnTypeGPSSelected( wxCommandEvent& event );
+    void OnTypeBTSelected( wxCommandEvent& event );
+    
     void OnNetProtocolSelected( wxCommandEvent& event );
     void OnBaudrateChoice( wxCommandEvent& event ) { OnConnValChange(event); }
     void OnProtocolChoice( wxCommandEvent& event ) { OnConnValChange(event); }
@@ -616,10 +622,17 @@ private:
 
     wxScrolledWindow *m_pNMEAForm;
     void ShowNMEACommon( bool visible );
+    
     void ShowNMEASerial( bool visible );
     void ShowNMEANet( bool visible );
+    void ShowNMEAGPS( bool visible );
+    void ShowNMEABT( bool visible );
+    
     void SetNMEAFormToSerial();
     void SetNMEAFormToNet();
+    void SetNMEAFormToGPS();
+    void SetNMEAFormToBT();
+    
     void ClearNMEAForm();
     bool m_bNMEAParams_shown;
 

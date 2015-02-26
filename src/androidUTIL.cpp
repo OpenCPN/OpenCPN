@@ -32,9 +32,19 @@
 #include <QtAndroidExtras/QAndroidJniObject>
 #include "qdebug.h"
 
+#include "androidUTIL.h"
+#include "OCPN_DataStreamEvent.h"
+#include "chart1.h"
+
 JavaVM *java_vm;
 JNIEnv* jenv;
 
+extern const wxEventType wxEVT_OCPN_DATASTREAM;
+
+
+
+
+wxEvtHandler    *s_pAndroidNMEAMessageConsumer;
 
 jint JNI_OnLoad(JavaVM *vm, void *reserved)
 {
@@ -67,6 +77,49 @@ if ((*env)->RegisterNatives(env, NativeUsb, nm , 1)) {
 #endif
     return JNI_VERSION_1_6;
 }
+
+
+
+//      OCPNNativeLib
+//      This is a set of methods which can be called from the android activity context.
+
+extern "C"{
+JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_test(JNIEnv *env, jobject obj)
+{
+    qDebug() << "test";
+    
+    return 55;
+}
+}
+
+extern "C"{
+    JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processNMEA(JNIEnv *env, jobject obj, jstring nmea_string)
+    {
+        const char *string = env->GetStringUTFChars(nmea_string, NULL);
+//        wxString wstring = wxString(string, wxConvUTF8);
+        
+//        qDebug() << "processNMEA" << string;
+ 
+        char tstr[100];
+        strncpy(tstr, string, 99);
+        strcat(tstr, "\r\n");
+        
+        if( s_pAndroidNMEAMessageConsumer ) {
+            OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
+            Nevent.SetNMEAString( tstr );
+            Nevent.SetStream( NULL );
+                
+            s_pAndroidNMEAMessageConsumer->AddPendingEvent(Nevent);
+        }
+        
+        return 66;
+    }
+}
+
+
+
+
+
 
 bool androidGetMemoryStatus( int *mem_total, int *mem_used )
 {
@@ -183,6 +236,87 @@ bool LoadQtStyleSheet(wxString &sheet_file)
         return false;
 }
 
+//---------------------------------------------------------------
+//      GPS Device Support
+//---------------------------------------------------------------
+bool androidDeviceHasGPS()
+{
+    wxString query = androidGPSService( GPS_PROVIDER_AVAILABLE );
+    wxLogMessage( query);
+    
+    bool result = query.Upper().IsSameAs(_T("YES"));
+    if(result){
+        qDebug() << "Android Device has internal GPS";
+        wxLogMessage(_T("Android Device has internal GPS"));
+    }
+    else{
+        qDebug() << "Android Device has NO internal GPS";
+        wxLogMessage(_T("Android Device has NO internal GPS"));
+    }
+    return result;
+}
+
+bool androidStartNMEA(wxEvtHandler *consumer)
+{
+    s_pAndroidNMEAMessageConsumer = consumer;
+
+    qDebug() << "androidStartNMEA";
+    wxString s;
+    
+    s = androidGPSService( GPS_ON );
+    wxLogMessage(s);
+    if(s.Upper().Find(_T("DISABLED")) != wxNOT_FOUND){
+        OCPNMessageBox(NULL,
+                       _("Your android device has an internal GPS, but it is disabled.\n\
+                       Please visit android Settings/Location dialog to enabled GPS"),
+                        _T("OpenCPN"), wxOK );        
+        
+        androidStopNMEA();
+        return false;
+    }
+    
+    return true;
+}
+
+bool androidStopNMEA()
+{
+    s_pAndroidNMEAMessageConsumer = NULL;
+    
+    wxString s = androidGPSService( GPS_OFF );
+    
+    return true;
+}
+
+
+wxString androidGPSService(int parm)
+{
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                           "activity", "()Landroid/app/Activity;");
+    
+    if ( !activity.isValid() ){
+        qDebug() << "Activity is not valid";
+        return _T("Activity is not valid");
+    }
+    
+    //  Call the desired method
+    QAndroidJniObject data = activity.callObjectMethod("queryGPSServer", "(I)Ljava/lang/String;", parm);
+    
+    wxString return_string;
+    jstring s = data.object<jstring>();
+    
+    //  Need a Java environment to decode the resulting string
+    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+        qDebug() << "GetEnv failed.";
+    }
+    else {
+        const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+        return_string = wxString(ret_string, wxConvUTF8);
+    }
+    
+     return return_string;
+}
+    
+    
 #if 0
 void invokeApp( void )
 {

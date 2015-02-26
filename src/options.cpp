@@ -76,6 +76,8 @@ extern GLuint g_raster_format;
 #include "cm93.h"
 #endif
 
+#include "OCPNPlatform.h"
+
 wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString *lang_dir);
 
 extern MyFrame          *gFrame;
@@ -1176,7 +1178,22 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     m_rbTypeNet = new wxRadioButton( m_pNMEAForm, wxID_ANY, _("Network"), wxDefaultPosition, wxDefaultSize, 0 );
     bSizer15->Add( m_rbTypeNet, 0, wxALL, 5 );
 
-
+    if(OCPNPlatform::hasInternalGPS()){      // has internal GPS
+        m_rbTypeInternalGPS = new wxRadioButton( m_pNMEAForm, wxID_ANY, _("Built-in GPS"), wxDefaultPosition, wxDefaultSize, 0 );
+        bSizer15->Add( m_rbTypeInternalGPS, 0, wxALL, 5 );
+    }
+    else
+        m_rbTypeInternalGPS = NULL;
+        
+    
+    if(OCPNPlatform::hasInternalBT()){      // has built-in Bluetooth
+        m_rbTypeInternalBT = new wxRadioButton( m_pNMEAForm, wxID_ANY, _("Built-in Bluetooth"), wxDefaultPosition, wxDefaultSize, 0 );
+        bSizer15->Add( m_rbTypeInternalBT, 0, wxALL, 5 );
+    }
+    else
+        m_rbTypeInternalBT = NULL;
+    
+    
     sbSizerConnectionProps->Add( bSizer15, 0, wxEXPAND, 0 );
 
     gSizerNetProps = new wxGridSizer( 0, 2, 0, 0 );
@@ -1377,8 +1394,15 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     m_lcSources->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED, wxListEventHandler( options::OnSelectDatasource ), NULL, this );
     m_buttonAdd->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnAddDatasourceClick ), NULL, this );
     m_buttonRemove->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnRemoveDatasourceClick ), NULL, this );
+    
     m_rbTypeSerial->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnTypeSerialSelected ), NULL, this );
     m_rbTypeNet->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnTypeNetSelected ), NULL, this );
+    
+    if(m_rbTypeInternalGPS)
+        m_rbTypeInternalGPS->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnTypeGPSSelected ), NULL, this );
+    if(m_rbTypeInternalBT)
+        m_rbTypeInternalBT->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnTypeBTSelected ), NULL, this );
+    
     m_rbNetProtoTCP->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnNetProtocolSelected ), NULL, this );
     m_rbNetProtoUDP->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnNetProtocolSelected ), NULL, this );
     m_rbNetProtoGPSD->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnNetProtocolSelected ), NULL, this );
@@ -3659,8 +3683,12 @@ ConnectionParams *options::CreateConnectionParamsFromSelectedItem()
     pConnectionParams->Valid = true;
     if ( m_rbTypeSerial->GetValue() )
         pConnectionParams->Type = SERIAL;
-    else
+    else if ( m_rbTypeNet->GetValue() )
         pConnectionParams->Type = NETWORK;
+    else if ( m_rbTypeInternalGPS->GetValue() )
+        pConnectionParams->Type = INTERNAL_GPS;
+    else if ( m_rbTypeInternalBT->GetValue() )
+        pConnectionParams->Type = INTERNAL_BT;
     
     //  Save the existing addr/port to allow closing of existing port
     pConnectionParams->LastNetworkAddress = pConnectionParams->NetworkAddress;
@@ -3703,6 +3731,13 @@ ConnectionParams *options::CreateConnectionParamsFromSelectedItem()
 
     pConnectionParams->bEnabled = m_connection_enabled;
     pConnectionParams->b_IsSetup = false;
+ 
+    if(pConnectionParams->Type == INTERNAL_GPS){
+        pConnectionParams->NetworkAddress = _T("");
+        pConnectionParams->NetworkPort = 0;
+        pConnectionParams->NetProtocol = PROTO_UNDEFINED;
+        pConnectionParams->Baudrate = 0;
+    }
     
     return pConnectionParams;
 }
@@ -3905,6 +3940,7 @@ void options::OnApplyClick( wxCommandEvent& event )
            if( cp->bEnabled ) {
            dsPortType port_type = cp->IOSelect;
                 DataStream *dstr = new DataStream( g_pMUX,
+                                            cp->Type,       
                                             cp->GetDSPort(),
                                             wxString::Format(wxT("%i"), cp->Baudrate),
                                             port_type,
@@ -5249,6 +5285,19 @@ void options::OnTypeNetSelected( wxCommandEvent& event )
     SetNMEAFormToNet();
 }
 
+void options::OnTypeGPSSelected( wxCommandEvent& event )
+{
+    OnConnValChange(event);
+    SetNMEAFormToGPS();
+}
+
+void options::OnTypeBTSelected( wxCommandEvent& event )
+{
+    OnConnValChange(event);
+    SetNMEAFormToBT();
+}
+
+
 void options::OnUploadFormatChange( wxCommandEvent& event )
 {
     if ( event.GetEventObject() == m_cbGarminUploadHost && event.IsChecked() )
@@ -5264,6 +5313,9 @@ void options::ShowNMEACommon(bool visible)
     {
         m_rbTypeSerial->Show();
         m_rbTypeNet->Show();
+        if(m_rbTypeInternalGPS) m_rbTypeInternalGPS->Show();
+        if(m_rbTypeInternalBT) m_rbTypeInternalBT->Show();
+        
         m_rbIAccept->Show();
         m_rbIIgnore->Show();
         m_rbOAccept->Show();
@@ -5298,6 +5350,9 @@ void options::ShowNMEACommon(bool visible)
     {
         m_rbTypeSerial->Hide();
         m_rbTypeNet->Hide();
+        if(m_rbTypeInternalGPS) m_rbTypeInternalGPS->Hide();
+        if(m_rbTypeInternalBT) m_rbTypeInternalBT->Hide();
+        
         m_rbIAccept->Hide();
         m_rbIIgnore->Hide();
         m_rbOAccept->Hide();
@@ -5375,11 +5430,35 @@ void options::ShowNMEASerial(bool visible)
     }
 }
 
+void options::ShowNMEAGPS(bool visible)
+{
+    if ( visible )
+    {
+    }
+    else
+    {
+    }
+}
+
+void options::ShowNMEABT(bool visible)
+{
+    if ( visible )
+    {
+    }
+    else
+    {
+    }
+}
+
 void options::SetNMEAFormToSerial()
 {
     ShowNMEACommon( true );
+    
     ShowNMEANet( false );
+    ShowNMEAGPS( false );
+    ShowNMEABT( false );
     ShowNMEASerial( true );
+    
     m_pNMEAForm->FitInside();
     m_pNMEAForm->Layout();
     Fit();
@@ -5391,6 +5470,36 @@ void options::SetNMEAFormToNet()
 {
     ShowNMEACommon( true );
     ShowNMEANet( true );
+    ShowNMEAGPS( false );
+    ShowNMEABT( false );
+    ShowNMEASerial( false );
+    m_pNMEAForm->FitInside();
+    m_pNMEAForm->Layout();
+    Fit();
+    Layout();
+    SetDSFormRWStates();
+}
+
+void options::SetNMEAFormToGPS()
+{
+    ShowNMEACommon( true );
+    ShowNMEANet( false );
+    ShowNMEAGPS( true );
+    ShowNMEABT( false );
+    ShowNMEASerial( false );
+    m_pNMEAForm->FitInside();
+    m_pNMEAForm->Layout();
+    Fit();
+    Layout();
+    SetDSFormRWStates();
+}
+
+void options::SetNMEAFormToBT()
+{
+    ShowNMEACommon( true );
+    ShowNMEANet( false );
+    ShowNMEAGPS( false );
+    ShowNMEABT( true );
     ShowNMEASerial( false );
     m_pNMEAForm->FitInside();
     m_pNMEAForm->Layout();
@@ -5403,11 +5512,14 @@ void options::ClearNMEAForm()
 {
     ShowNMEACommon( false );
     ShowNMEANet( false );
+    ShowNMEAGPS( false );
+    ShowNMEABT( false );
     ShowNMEASerial( false );
     m_pNMEAForm->FitInside();
     m_pNMEAForm->Layout();
     Fit();
     Layout();
+    
 }
 
 wxString StringArrayToString(wxArrayString arr)
@@ -5497,12 +5609,25 @@ void options::SetConnectionParams(ConnectionParams *cp)
         m_rbTypeSerial->SetValue( true );
         SetNMEAFormToSerial();
     }
-    else
+    else if ( cp->Type == NETWORK )
     {
         m_rbTypeNet->SetValue( true );
         SetNMEAFormToNet();
     }
-
+    else if ( cp->Type == INTERNAL_GPS )
+    {
+        m_rbTypeInternalGPS->SetValue( true );
+        SetNMEAFormToGPS();
+    }
+    else if ( cp->Type == INTERNAL_BT )
+    {
+        m_rbTypeInternalBT->SetValue( true );
+        SetNMEAFormToBT();
+    }
+    
+    else
+        ClearNMEAForm();
+    
     m_connection_enabled = cp->bEnabled;
 }
 

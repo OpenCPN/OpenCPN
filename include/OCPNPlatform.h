@@ -1,7 +1,7 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  OpenCPN Android support utilities
+ * Purpose:  OpenCPN Platform specific support utilities
  * Author:   David Register
  *
  ***************************************************************************
@@ -23,8 +23,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef ANDROIDUTIL_H
-#define ANDROIDUTIL_H
+#ifndef OCPNPLATFORM_H
+#define OCPNPLATFORM_H
 
 #include "wx/wxprec.h"
 
@@ -32,20 +32,22 @@
 #include "wx/wx.h"
 #endif //precompiled headers
 
-#include <QtAndroidExtras/QAndroidJniObject>
 
-#define GPS_OFF                         0
-#define GPS_ON                          1
-#define GPS_PROVIDER_AVAILABLE          2
-#define GPS_SHOWPREFERENCES             3
-
-extern bool androidGetMemoryStatus( int *mem_total, int *mem_used );
-extern double GetAndroidDisplaySize();
+class OCPNPlatform
+{
+public:    
+    OCPNPlatform();
+    ~OCPNPlatform();
 
 
-extern bool androidStartNMEA(wxEvtHandler *consumer);
-extern bool androidStopNMEA();
-extern wxString androidGPSService(int parm);
-extern bool androidDeviceHasGPS();
+//      Internal Device Support
 
-#endif   //guard
+    static bool hasInternalGPS(wxString profile = _T(""));      // GPS
+
+    static bool hasInternalBT(wxString profile = _T(""));       // Bluetooth
+    
+};
+
+
+
+#endif          //guard
