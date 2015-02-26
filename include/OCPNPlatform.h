@@ -41,10 +41,22 @@ public:
 
 
 //      Internal Device Support
-
     static bool hasInternalGPS(wxString profile = _T(""));      // GPS
 
     static bool hasInternalBT(wxString profile = _T(""));       // Bluetooth
+    
+    
+//  Per-Platform initialization support    
+    
+    //  Called from MyApp() immediately upon entry to MyApp::OnInit()
+    static void Initialize_1( void );
+    
+    //  Called from MyApp() immediately before creation of MyFrame()
+    static void Initialize_2( void );
+    
+    //  Called from MyApp() just before end of MyApp::OnInit()
+    static void Initialize_3( void );
+    
     
 };
 
