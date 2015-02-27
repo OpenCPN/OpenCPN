@@ -4760,6 +4760,18 @@ int MyFrame::DoOptionsDialog()
 
     delete pWorkDirArray;
 
+    if(stats){
+        stats->Show(g_bShowChartBar);
+        if(g_bShowChartBar){
+            stats->Move(0,0);
+            stats->RePosition();
+            gFrame->Raise();
+            DoChartUpdate();
+            UpdateControlBar();
+            Refresh();
+        }
+    }
+    
     SetToolbarScale();
     RequestNewToolbar();
 
@@ -4770,9 +4782,10 @@ int MyFrame::DoOptionsDialog()
     }
 
 #if defined(__WXOSX__) || defined(__WXQT__)
-    if(stats)
-        stats->Show();
+    if( g_FloatingCompassDialog )
+        g_FloatingCompassDialog->Raise();
 #endif
+
 
     Refresh( false );
 
@@ -4890,18 +4903,6 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
         
     cc1->SetDisplaySizeMM( g_display_size_mm );
     
-    if(stats){
-        stats->Show(g_bShowChartBar);
-        if(g_bShowChartBar){
-            stats->Move(0,0);
-            stats->RePosition();
-            gFrame->Raise();
-            DoChartUpdate();
-            UpdateControlBar();
-            Refresh();
-        }
-    }
-        
     return 0;
 }
 
