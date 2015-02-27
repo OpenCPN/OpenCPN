@@ -36,7 +36,6 @@ public class GPSServer extends Service implements LocationListener {
     public String status_string;
 
     boolean isThreadStarted = false;
-    UserLocationThread mThread;
     HandlerThread mLocationHandlerThread;
 
     OCPNGpsNmeaListener mNMEAListener;
