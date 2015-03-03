@@ -33,6 +33,7 @@
 #ifdef __OCPN__ANDROID__
 #include <qopengl.h>
 #include "GL/gl_private.h"
+#include <QDebug>
 #else
 #include "GL/gl.h"
 #endif
@@ -687,7 +688,7 @@ void CompressionWorkerPool::OnEvtThread( OCPN_CompressionThreadEvent & event )
         running_list.DeleteObject(ticket);
         m_njobs_running--;
 
-        for(int i=0 ; i < 5 ; i++){
+        for(int i=0 ; i < g_mipmap_max_level+1 ; i++){
             free(ticket->comp_bits_array[i]);
         }
         free( ticket->comp_bits_array );
@@ -736,6 +737,11 @@ void CompressionWorkerPool::OnEvtThread( OCPN_CompressionThreadEvent & event )
         printf( "    Finished job: %08X  Jobs running: %d             Job count: %lu   \n",
                 ticket->ident, m_njobs_running, (unsigned long)todo_list.GetCount());
 
+    int mem_used;
+    GetMemoryStatus(0, &mem_used);
+    
+//    qDebug() << "Finished" << m_njobs_running <<  (unsigned long)todo_list.GetCount() << mem_used;
+    
     StartTopJob();
     
 }
@@ -784,6 +790,7 @@ bool CompressionWorkerPool::ScheduleJob(glTexFactory* client, const wxRect &rect
                 printf( "Adding job: %08X  Job Count: %lu  mem_used %d\n", pt->ident, (unsigned long)todo_list.GetCount(), mem_used);
         }
         
+//        qDebug() << "Added, count now" << (unsigned long)todo_list.GetCount();
         StartTopJob();
         return false;
     }
@@ -820,6 +827,7 @@ bool CompressionWorkerPool::DoThreadJob(JobTicket* pticket)
     if(bthread_debug)
         printf( "  Starting job: %08X  Jobs running: %d Jobs left: %lu\n", pticket->ident, m_njobs_running, (unsigned long)todo_list.GetCount());
     
+//    qDebug() << "Starting job" << m_njobs_running <<  (unsigned long)todo_list.GetCount();
     CompressionPoolThread *t = new CompressionPoolThread( pticket, this);
     pticket->pthread = t;
     
@@ -1558,6 +1566,8 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     
     int mem_total, mem_used;
     GetMemoryStatus(&mem_total, &mem_used);
+//    qDebug() << mem_used;
+    
     unsigned int nCache = 0;
     unsigned int lcache_limit = (unsigned int)g_nCacheLimit * 8 / 10;
     if(ChartData)
