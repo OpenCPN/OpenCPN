@@ -4309,12 +4309,18 @@ void options::OnButtondeleteClick( wxCommandEvent& event )
 
     wxString dirname;
 
+#ifndef __WXQT__                // Multi selection is not implemented in wxQT
+    
     wxArrayInt pListBoxSelections;
     pActiveChartsList->GetSelections( pListBoxSelections );
     int nSelections = pListBoxSelections.GetCount();
     for( int i = 0; i < nSelections; i++ ) {
         pActiveChartsList->Delete( pListBoxSelections.Item( ( nSelections - i ) - 1 ) );
     }
+#else
+    int n = pActiveChartsList->GetSelection();
+    pActiveChartsList->Delete( n );    
+#endif
 
     UpdateWorkArrayFromTextCtl();
 
