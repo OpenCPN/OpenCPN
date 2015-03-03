@@ -276,8 +276,8 @@ public class QtActivity extends Activity
     public String callFromCpp(int pid){
         Log.i("DEBUGGER_TAG", "callFromCpp");
 
-        Intent intent = new Intent(QtActivity.this, org.opencpn.OCPNSettingsActivity.class);
-        startActivity(intent);
+//        Intent intent = new Intent(QtActivity.this, org.opencpn.OCPNSettingsActivity.class);
+//        startActivity(intent);
 
 
         MemoryInfo mi = new MemoryInfo();
@@ -298,6 +298,21 @@ public class QtActivity extends Activity
 
 
     }
+
+    public String getMemInfo(int pid){
+//        Log.i("DEBUGGER_TAG", "getMemInfo");
+        int pids[] = new int[1];
+        pids[0] = pid;
+
+        ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        android.os.Debug.MemoryInfo[] memoryInfoArray= activityManager.getProcessMemoryInfo( pids );
+        int pss = memoryInfoArray[0].getTotalPss();
+
+        String ret;
+        ret = String.format("%d", pss);
+        return ret;
+    }
+
 
     public native String getJniString();
     public native int test();
