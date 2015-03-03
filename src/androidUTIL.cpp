@@ -171,7 +171,43 @@ if(mem_used)
 //    if(mem_used)
     //        qDebug() << "Mem Status" << (*mem_used) / 1024  ;
     #endif
+
     
+    //  Get a reference to the running native activity
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                           "activity", "()Landroid/app/Activity;");
+    
+    if ( !activity.isValid() ){
+        qDebug() << "Activity is not valid";
+        return false;
+    }
+
+    unsigned long android_processID = wxGetProcessId();
+    
+    //  Call the desired method
+    QAndroidJniObject data = activity.callObjectMethod("getMemInfo", "(I)Ljava/lang/String;", (int)android_processID);
+    
+//    wxString return_string;
+    jstring s = data.object<jstring>();
+    
+    int mu = 100;
+    //  Need a Java environment to decode the resulting string
+    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+        qDebug() << "GetEnv failed.";
+    }
+    else {
+        const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+        mu = atoi(ret_string);
+        
+//        return_string = wxString(ret_string, wxConvUTF8);
+    }
+    
+    if(mem_used)
+        *mem_used = mu;
+
+//    if(mem_used)
+//        qDebug() << "Mem Status" << (*mem_used) / 1024  ;
+        
     return true;
 }
 
