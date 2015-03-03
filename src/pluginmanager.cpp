@@ -66,8 +66,6 @@
 #endif
 
 extern MyConfig        *pConfig;
-extern wxString        g_SData_Locn;
-extern wxString        g_PrivateDataDir;
 extern AIS_Decoder     *g_pAIS;
 extern wxAuiManager    *g_pauimgr;
 

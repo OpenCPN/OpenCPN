@@ -110,8 +110,6 @@ extern int              g_SOGFilterSec;
 extern PlugInManager    *g_pi_manager;
 extern ocpnStyle::StyleManager*   g_StyleManager;
 
-extern wxString         g_SData_Locn;
-
 extern bool             g_bDisplayGrid;
 
 //    AIS Global configuration
@@ -4503,7 +4501,7 @@ void options::OnPageChange( wxListbookEvent& event )
             // always add us english
             m_itemLangListBox->Append( _T("English (U.S.)") );
 
-            wxString lang_dir = g_SData_Locn + _T("share/locale/");
+            wxString lang_dir = g_Platform->GetSharedDataDir() + _T("share/locale/");
             for( int it = 1; it < nLang; it++ ) {
                 if( wxLocale::IsAvailable( lang_list[it] ) ) {
                     wxLocale ltest( lang_list[it], 0 );

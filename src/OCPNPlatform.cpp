@@ -74,10 +74,10 @@ extern sigjmp_buf env;                    // the context saved by sigsetjmp();
 
 extern int                       quitflag;
 extern MyFrame                   *gFrame;
-extern wxLog                     *logger;
 extern bool                      g_bportable;
 
 
+wxLog       *g_logger;
 
 
 
@@ -148,8 +148,8 @@ catch_signals(int signo)
 int CALLBACK CrashCallback(CR_CRASH_CALLBACK_INFO* pInfo)
 {
     //  Flush log file
-    if( logger)
-        logger->Flush();
+    if( g_logger)
+        g_logger->Flush();
     
     return CR_CB_DODEFAULT;
 }
@@ -634,7 +634,7 @@ bool OCPNPlatform::InitializeLogFile( void )
 #endif
         
     flog = fopen( mlog_file.mb_str(), "a" );
-    m_logger = new wxLogStderr( flog );
+    g_logger = new wxLogStderr( flog );
         
 #ifdef __OCPN__ANDROID__
         //  Trouble printing timestamp
@@ -642,10 +642,10 @@ bool OCPNPlatform::InitializeLogFile( void )
 #endif
         
 #if defined(__WXGTK__) || defined(__WXOSX__)
-    m_logger->SetTimestamp(_T("%H:%M:%S %Z"));
+    g_logger->SetTimestamp(_T("%H:%M:%S %Z"));
 #endif
         
-    m_Oldlogger = wxLog::SetActiveTarget( m_logger );
+    m_Oldlogger = wxLog::SetActiveTarget( g_logger );
 
     return true;
     
@@ -653,9 +653,9 @@ bool OCPNPlatform::InitializeLogFile( void )
 
 void OCPNPlatform::CloseLogFile( void)
 {
-    if( m_logger ) {
+    if( g_logger ) {
         wxLog::SetActiveTarget( m_Oldlogger );
-        delete m_logger;
+        delete g_logger;
     }
 }
 

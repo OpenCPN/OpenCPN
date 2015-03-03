@@ -93,7 +93,6 @@ private:
     
     wxString    mlog_file;
     FILE        *flog;
-    wxLog       *m_logger;
     wxLog       *m_Oldlogger;
     wxString    large_log_message;
     

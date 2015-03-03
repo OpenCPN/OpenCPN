@@ -37,7 +37,6 @@
 #include "styles.h"
 #include "chart1.h"
 
-extern wxString g_SData_Locn;
 extern OCPNPlatform     *g_Platform;
 
 using namespace ocpnStyle;

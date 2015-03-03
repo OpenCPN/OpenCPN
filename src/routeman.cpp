@@ -70,8 +70,6 @@ extern MyConfig         *pConfig;
 extern Routeman         *g_pRouteMan;
 
 extern wxRect           g_blink_rect;
-extern wxString         g_SData_Locn;
-extern wxString         g_PrivateDataDir;
 
 extern double           gLat, gLon, gSog, gCog;
 extern double           gVar;

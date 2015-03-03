@@ -115,7 +115,6 @@ extern wxString         g_SENCPrefix;
 extern wxString         g_UserPresLibData;
 
 extern AIS_Decoder      *g_pAIS;
-extern wxString         g_SData_Locn;
 extern wxString         *pInit_Chart_Dir;
 extern WayPointman      *pWayPointMan;
 extern Routeman         *g_pRouteMan;
