@@ -935,11 +935,28 @@ int Quilt::AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family,  ChartTypeEnum t
     // in the coverage.
     // We do this by extending upward the range of larger scale charts, so that they overlap
     // the next smaller scale chart.  Makes a nicer image...
+    // However, we don't want excessive underzoom, for performance reasons.
+    // So make sure any adjusted min_scale is not more than twice the already established value
     if(index_array.GetCount() > 1){
         for(size_t i=0 ; i < index_array.GetCount()-1 ; i++){
-              min_scale.Item(i) = wxMax(min_scale.Item(i), max_scale.Item(i+1) + 1);
+            int min_scale_test = wxMax(min_scale.Item(i), max_scale.Item(i+1) + 1);
+            min_scale_test = wxMin(min_scale_test, min_scale.Item(i) * 2 );
+            min_scale.Item(i) = min_scale_test;
+//              min_scale.Item(i) = wxMax(min_scale.Item(i), max_scale.Item(i+1) + 1);
         }
     }
+    
+    // There may still be holes...
+    // Traverse the list again, from smaller to larger scale, filling in any holes by
+    // increasing the max_scale of smaller scale charts.
+    // Skip cm93 if present
+    if(index_array.GetCount() > 2){
+        for(size_t i=index_array.GetCount()-2 ; i >= 1 ; i--){
+              max_scale.Item(i) = wxMin(max_scale.Item(i), min_scale.Item(i-1) - 1);
+        }
+    }
+    
+    
     
         
     int new_ref_dbIndex = -1;
