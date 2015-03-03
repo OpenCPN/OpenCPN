@@ -273,6 +273,7 @@ public:
       void SendVectorChartObjectInfo(const wxString &chart, const wxString &feature, const wxString &objname, double &lat, double &lon, double &scale, int &nativescale);
 
       bool SendMouseEventToPlugins( wxMouseEvent &event);
+      bool SendKeyEventToPlugins( wxKeyEvent &event);
       
       wxArrayString GetPlugInChartClassNameArray(void);
 

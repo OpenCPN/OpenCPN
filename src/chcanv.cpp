@@ -1348,6 +1348,10 @@ void ChartCanvas::SetVP(ViewPort &vp)
 
 void ChartCanvas::OnKeyChar( wxKeyEvent &event )
 {
+    if(g_pi_manager)
+        if(g_pi_manager->SendKeyEventToPlugins( event ))
+            return;                     // PlugIn did something, and does not want the canvas to do anything else
+            
     int key_char = event.GetKeyCode();
     
     if(g_benable_rotate){
@@ -1374,6 +1378,10 @@ void ChartCanvas::OnKeyChar( wxKeyEvent &event )
 
 void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 {
+    if(g_pi_manager)
+        if(g_pi_manager->SendKeyEventToPlugins( event ))
+            return;                     // PlugIn did something, and does not want the canvas to do anything else
+            
     bool b_handled = false;
     
     m_modkeys = event.GetModifiers();
@@ -1814,6 +1822,10 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 
 void ChartCanvas::OnKeyUp( wxKeyEvent &event )
 {
+    if(g_pi_manager)
+        if(g_pi_manager->SendKeyEventToPlugins( event ))
+            return;                     // PlugIn did something, and does not want the canvas to do anything else
+            
     switch( event.GetKeyCode() ) {
     case WXK_LEFT:
     case WXK_RIGHT:

@@ -1016,6 +1016,38 @@ bool PlugInManager::SendMouseEventToPlugins( wxMouseEvent &event)
     return bret;;
 }
 
+bool PlugInManager::SendKeyEventToPlugins( wxKeyEvent &event)
+{
+    bool bret = false;
+    for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
+    {
+        PlugInContainer *pic = plugin_array.Item(i);
+        if(pic->m_bEnabled && pic->m_bInitState)
+        {
+            if(pic->m_cap_flag & WANTS_KEYBOARD_EVENTS){
+                {
+                    switch(pic->m_api_version)
+                    {
+                        case 113:
+                        {
+                            opencpn_plugin_113 *ppi = dynamic_cast<opencpn_plugin_113*>(pic->m_pplugin);
+                            if(ppi)
+                                if(ppi->KeyboardEventHook( event ))
+                                    bret = true;
+                                break;
+                        }
+                        
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+    }
+    
+    return bret;;
+}
+
 
 void PlugInManager::SendViewPortToRequestingPlugIns( ViewPort &vp )
 {
@@ -2859,6 +2891,22 @@ bool opencpn_plugin_112::MouseEventHook( wxMouseEvent &event )
 void opencpn_plugin_112::SendVectorChartObjectInfo(wxString &chart, wxString &feature, wxString &objname, double lat, double lon, double scale, int nativescale)
 {
 }
+
+//    Opencpn_Plugin_113 Implementation
+opencpn_plugin_113::opencpn_plugin_113(void *pmgr)
+: opencpn_plugin_112(pmgr)
+{
+}
+
+opencpn_plugin_113::~opencpn_plugin_113(void)
+{
+}
+
+bool opencpn_plugin_113::KeyboardEventHook( wxKeyEvent &event )
+{
+    return false;
+}
+
 
 
 //          Helper and interface classes
