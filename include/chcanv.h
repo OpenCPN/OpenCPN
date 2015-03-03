@@ -164,6 +164,10 @@ public:
       void PaintCleanup();
       void Scroll(int dx, int dy);
 
+      bool MouseEventSetup( wxMouseEvent& event );
+      bool MouseEventProcessObjects( wxMouseEvent& event );
+      bool MouseEventProcessCanvas( wxMouseEvent& event );
+      
       void PopupMenuHandler(wxCommandEvent& event);
 
       void EnablePaint(bool b_enable);
