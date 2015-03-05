@@ -742,15 +742,9 @@ void GRIBOverlayFactory::RenderGribBarbedArrows( int settings, GribRecord **pGR,
 		//set spacing between arrows
 		int space = m_Settings.Settings[settings].m_iBarbArrSpacing;
 
-		PlugIn_ViewPort uvp = *vp;
-		uvp.rotation = uvp.skew = 0;
+		for( int i = 0; i < m_ParentSize.GetWidth(); i+= (space + arrowSize) ) {
+            for( int j = 0; j < m_ParentSize.GetHeight(); j+= (space + arrowSize) ) {
 
-		wxPoint ptl, pbr;
-		GetCanvasPixLL( &uvp, &ptl, pGRX->getLatMax(), pGRX->getLonMin() );				//top left corner position
-		GetCanvasPixLL( &uvp, &pbr, pGRX->getLatMin(), pGRX->getLonMax() );				//bottom right corner position
-
-		for( int i = wxMax(ptl.x, 0); i < wxMin(pbr.x, m_ParentSize.GetWidth() ) ; i+= (space + arrowSize) ) {
-			for( int j = wxMax(ptl.y, 0); j < wxMin(pbr.y, m_ParentSize.GetHeight() ); j+= (space + arrowSize) ) {
 				double lat, lon;
 				GetCanvasLLPix( vp, wxPoint( i, j ), &lat, &lon );
 
@@ -931,16 +925,9 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
 		//Set spacing between arrows
 		int space = m_Settings.Settings[settings].m_iDirArrSpacing;
 
-		PlugIn_ViewPort uvp = *vp;
-		uvp.rotation = uvp.skew = 0;
-
-		wxPoint ptl, pbr;
-		GetCanvasPixLL( &uvp, &ptl, pGRX->getLatMax(), pGRX->getLonMin() );				//top left corner position
-		GetCanvasPixLL( &uvp, &pbr, pGRX->getLatMin(), pGRX->getLonMax() );				//bottom right corner position
-
-		for( int i = wxMax(ptl.x, 0); i < wxMin(pbr.x, m_ParentSize.GetWidth() ) ; i+= (space + arrowSize) ) {
-			for( int j = wxMax(ptl.y, 0); j < wxMin(pbr.y, m_ParentSize.GetHeight() ); j+= (space + arrowSize) ) {
-				double lat, lon, sh, dir, wdh;
+		for( int i = 0; i < m_ParentSize.GetWidth(); i+= (space + arrowSize) ) {
+            for( int j = 0; j < m_ParentSize.GetHeight(); j+= (space + arrowSize) ) {
+				double lat, lon, sh, dir;
 				GetCanvasLLPix( vp, wxPoint( i, j ), &lat, &lon );
 
 				if(polar) {																//wave arrows
@@ -949,27 +936,19 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
 
 					if( dir == GRIB_NOTDEF || sh == GRIB_NOTDEF ) continue;
 
-					dir = (dir - 90) * M_PI / 180.;
-					wdh = sh+0.5;
+				} else 													                //current arrows
+                    if( !GribRecord::getInterpolatedValues(sh, dir, pGRX, pGRY, lon, lat) )
+                        continue;
 
-				} else {																//current arrows
-
-					double vx = pGRX->getValue( i,j ), vy = pGRY->getValue( i,j );
-
-                    if( vx == GRIB_NOTDEF || vy == GRIB_NOTDEF ) continue;
-
-					sh = sqrt( vx * vx + vy * vy );
-					dir = atan2(vy, -vx);
-					wdh = (8/2.5*sh)+0.5;
-				}
 				//draw arrows
 				if(m_Settings.Settings[settings].m_iDirectionArrowForm == 0)
-					drawSingleArrow( i, j, dir + vp->rotation, colour, arrowWidth, arrowSize );
+					drawSingleArrow( i, j, (dir - 90) * M_PI / 180. + vp->rotation, colour, arrowWidth, arrowSize );
                 else if( m_Settings.Settings[settings].m_iDirectionArrowForm == 1 )
 					drawDoubleArrow( i, j, dir + vp->rotation, colour, arrowWidth, arrowSize );
-                else
+                else {
 					drawSingleArrow( i, j, dir + vp->rotation, colour,
-								wxMax( 1, wxMin( 8, (int)wdh ) ), arrowSize );
+								wxMax( 1, wxMin( 8, (int)(sh+0.5) ) ), arrowSize );
+                }
 			}
 		}
 
