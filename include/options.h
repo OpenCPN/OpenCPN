@@ -646,6 +646,7 @@ private:
     wxNotebookPage*             m_groupsPage;
     wxFont*     smallFont;
     wxSize      m_small_button_size;
+    int         m_fontHeight;
     
 };
 

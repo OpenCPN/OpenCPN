@@ -638,7 +638,7 @@ bool OCPNPlatform::InitializeLogFile( void )
         
 #ifdef __OCPN__ANDROID__
         //  Trouble printing timestamp
-    logger->SetTimestamp((const char *)NULL);
+    g_logger->SetTimestamp((const char *)NULL);
 #endif
         
 #if defined(__WXGTK__) || defined(__WXOSX__)

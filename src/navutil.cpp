@@ -2782,7 +2782,7 @@ void MyConfig::UpdateSettings()
 #endif
 
 #ifdef __WXQT__
-    SetPath ( _T ( "/Settings/QTFonts" ) );
+    font_path = ( _T ( "/Settings/QTFonts" ) );
 #endif
     
     DeleteGroup(font_path);

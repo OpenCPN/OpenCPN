@@ -1671,7 +1671,7 @@ bool MyApp::OnInit()
 #ifdef __OCPN__ANDROID__
     ::wxDisplaySize( &cw, &ch);
     ch -= 24;                           // This accounts for an error in the wxQT-Android interface...
-    
+
     if((cw > 200) && (ch > 200) )
         new_frame_size.Set( cw, ch );
     else
