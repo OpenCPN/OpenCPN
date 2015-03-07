@@ -134,6 +134,10 @@
 #include "androidUTIL.h"
 #endif
 
+#ifdef LINUX_CRASHRPT
+#include "crashprint.h"
+#endif
+
 WX_DECLARE_OBJARRAY(wxDialog *, MyDialogPtrArray);
 
 #include <wx/arrimpl.cpp>
