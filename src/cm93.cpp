@@ -4885,7 +4885,11 @@ int cm93compchart::GetCMScaleFromVP ( const ViewPort &vpt )
 
 void cm93compchart::SetVPParms ( const ViewPort &vpt )
 {
-      m_vpt = vpt;                              // save a copy
+    // need to recompute the cm93 cell when switching quilting off
+    if(m_vpt.b_quilt && !vpt.b_quilt) {
+        ViewPort vp = vpt;
+        AdjustVP ( m_vpt, vp );
+    }
 }
 
 int cm93compchart::PrepareChartScale ( const ViewPort &vpt, int cmscale, bool bOZ_protect )
@@ -6376,6 +6380,8 @@ bool cm93compchart::AdjustVP ( ViewPort &vp_last, ViewPort &vp_proposed )
     // Is this needed?  It appears to do pixel alignment which shouldn't be needed for opengl
 //    if ( m_pcm93chart_array[cmscale_actual] )
 //        m_pcm93chart_array[cmscale_actual]->AdjustVP ( vp_last, vp_proposed );
+
+    m_vpt = vp_proposed;                              // save a copy
 
     return false;
 }
