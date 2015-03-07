@@ -41,7 +41,7 @@
 
 extern bool androidGetMemoryStatus( int *mem_total, int *mem_used );
 extern double GetAndroidDisplaySize();
-
+extern wxSize getAndroidDisplayDimensions( void );
 
 extern bool androidStartNMEA(wxEvtHandler *consumer);
 extern bool androidStopNMEA();
