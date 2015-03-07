@@ -1733,8 +1733,9 @@ void options::CreatePanel_ChartsLoad( size_t parent, int border_size, int group_
     chartPanel->Add( activeSizer, 1, wxALL | wxEXPAND, border_size );
 
     wxString* pListBoxStrings = NULL;
-    pActiveChartsList = new wxListBox( chartPanelWin, ID_LISTBOX, wxDefaultPosition, wxDefaultSize,
-             0, pListBoxStrings, wxLB_MULTIPLE );
+    
+    pActiveChartsList = new wxListBox( chartPanelWin, ID_LISTBOX, wxDefaultPosition,
+                                       wxDefaultSize, 0, pListBoxStrings, wxLB_MULTIPLE );
 
     activeSizer->Add( pActiveChartsList, 1, wxALL | wxEXPAND, border_size );
 
@@ -2180,6 +2181,7 @@ void options::CreatePanel_ChartGroups( size_t parent, int border_size, int group
 
     m_groupsPage->Connect( wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxListbookEventHandler( options::OnChartsPageChange ), NULL, this );
 
+    groupsPanel->CompletePanel();
 }
 
 void ChartGroupsUI::CreatePanel( size_t parent, int border_size, int group_item_spacing,
@@ -2774,8 +2776,10 @@ void options::CreateControls()
 
     int font_size_y, font_descent, font_lead;
     GetTextExtent( _T("0"), NULL, &font_size_y, &font_descent, &font_lead );
+    m_fontHeight =  font_size_y + font_descent + font_lead;
+    
     m_small_button_size = wxSize( -1, (int) ( 1.4 * ( font_size_y + font_descent + font_lead ) ) );
-
+    
     //      Some members (pointers to controls) need to initialized
     pEnableZoomToCursor = NULL;
     pSmoothPanZoom = NULL;
@@ -3555,6 +3559,10 @@ void options::OnButtonaddClick( wxCommandEvent& event )
 
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     dirSelector->SetFont(*qFont);
+    if(g_bresponsive){
+        dirSelector->SetSize( GetSize());
+        dirSelector->Centre();
+    }
     
     if( dirSelector->ShowModal() == wxID_CANCEL ) goto done;
 
@@ -4405,6 +4413,11 @@ void options::OnChooseFont( wxCommandEvent& event )
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     dg.SetFont(*qFont);
     
+    if(g_bresponsive){
+        dg.SetSize(GetSize());
+        dg.Centre();
+    }
+    
     int retval = dg.ShowModal();
     if( wxID_CANCEL != retval ) {
         font_data = dg.GetFontData();
@@ -4835,6 +4848,8 @@ ChartGroupsUI::ChartGroupsUI( wxWindow* parent )
 {
     Create( parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxVSCROLL, _("Chart Groups") );
 
+    SetScrollRate(5,5);
+    
     m_GroupSelectedPage = -1;
     m_pActiveChartsTree = 0;
     pParent = parent;
@@ -5064,14 +5079,16 @@ void ChartGroupsUI::OnNewGroup( wxCommandEvent &event )
             _("New Chart Group") );
 
     if( pd->ShowModal() == wxID_OK ) {
-        AddEmptyGroupPage( pd->GetValue() );
-        ChartGroup *pGroup = new ChartGroup;
-        pGroup->m_group_name = pd->GetValue();
-        m_pGroupArray->Add( pGroup );
+        if(pd->GetValue().Length()){
+            AddEmptyGroupPage( pd->GetValue() );
+            ChartGroup *pGroup = new ChartGroup;
+            pGroup->m_group_name = pd->GetValue();
+            m_pGroupArray->Add( pGroup );
 
-        m_GroupSelectedPage = m_GroupNB->GetPageCount() - 1;      // select the new page
-        m_GroupNB->ChangeSelection( m_GroupSelectedPage );
-        modified = true;
+            m_GroupSelectedPage = m_GroupNB->GetPageCount() - 1;      // select the new page
+            m_GroupNB->ChangeSelection( m_GroupSelectedPage );
+            modified = true;
+        }
     }
     delete pd;
 }
