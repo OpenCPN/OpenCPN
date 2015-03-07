@@ -6409,22 +6409,33 @@ bool s57chart::IsPointInObjArea( float lat, float lon, float select_radius, S57O
         double easting, northing;
         toSM( lat, lon, ref_lat, ref_lon, &easting, &northing );
 
+        //  It turns out that trapezoid tesselation is only used for cm93,
+        //  So we get better accuracy if we use the cell-referenced points instead of global SM points
+        {
+            double y_rate = obj->y_rate;
+            double y_origin = obj->y_origin;
+            double x_rate = obj->x_rate;
+            double x_origin = obj->x_origin;
+            
+            double northing_scaled = ( northing - y_origin ) / y_rate;
+            double easting_scaled = ( easting - x_origin ) / x_rate;
+            northing = northing_scaled;
+            easting = easting_scaled;
+        }
+        
         int ntraps = ptg->ntrap_count;
         trapz_t *ptraps = ptg->trap_array;
         MyPoint *segs = (MyPoint *) ptg->ptrapgroup_geom; //TODO convert MyPoint to wxPoint2DDouble globally
 
         MyPoint pvert_list[4];
 
-        double y_rate = obj->y_rate;
-        double y_origin = obj->y_origin;
-
         for( int i = 0; i < ntraps; i++, ptraps++ ) {
             //      Y test
 
-            double hiy = ( ptraps->hiy * y_rate ) + y_origin;
+            double hiy = ptraps->hiy; 
             if( northing > hiy ) continue;
 
-            double loy = ( ptraps->loy * y_rate ) + y_origin;
+            double loy = ptraps->loy; 
             if( northing < loy ) continue;
 
             //      Use the segment endpoints to calculate the corners of a trapezoid
@@ -6458,10 +6469,15 @@ bool s57chart::IsPointInObjArea( float lat, float lon, float select_radius, S57O
                 xcb = xmin + ( ptraps->hiy - ymin ) / slope;
             }
 
-            pvert_list[0].x = ( xca * obj->x_rate ) + obj->x_origin;
+            //  Test point is west of leftmost trap point
+            double x_quad_left = wxMin(xca, xcb);
+            if( x_quad_left > easting )
+                continue;
+                
+            pvert_list[0].x = xca;
             pvert_list[0].y = loy;
 
-            pvert_list[1].x = ( xcb * obj->x_rate ) + obj->x_origin;
+            pvert_list[1].x = xcb;
             pvert_list[1].y = hiy;
 
             //    Right edge
@@ -6488,10 +6504,15 @@ bool s57chart::IsPointInObjArea( float lat, float lon, float select_radius, S57O
                 xcb = xmin + ( ptraps->loy - ymin ) / slope;
             }
 
-            pvert_list[2].x = ( xca * obj->x_rate ) + obj->x_origin;
+            //  Test point is east of rightmost trap point
+            double x_quad_right = wxMax(xca, xcb);
+            if( x_quad_right < easting )
+                continue;
+            
+            pvert_list[2].x = xca;
             pvert_list[2].y = hiy;
 
-            pvert_list[3].x = ( xcb * obj->x_rate ) + obj->x_origin;
+            pvert_list[3].x = xcb;
             pvert_list[3].y = loy;
 
             if( G_PtInPolygon( (MyPoint *) pvert_list, 4, easting, northing ) ) {
