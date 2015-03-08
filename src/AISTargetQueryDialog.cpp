@@ -218,6 +218,16 @@ void AISTargetQueryDialog::SetColorScheme( ColorScheme cs )
     SetBackgroundColour( bg );                  // This looks like non-sense, but is needed for __WXGTK__
                                                 // to get colours to propagate down the control's family tree.
 
+#ifdef __WXQT__    
+    //  wxQT has some trouble clearing the background of HTML window...
+    wxBitmap tbm( GetSize().x, GetSize().y, -1 );
+    wxMemoryDC tdc( tbm );
+    //    wxColour cback = GetGlobalColor( _T("YELO1") );
+    tdc.SetBackground( bg );
+    tdc.Clear();
+    m_pQueryTextCtl->SetBackgroundImage(tbm);
+#endif
+    
     if( cs != m_colorscheme ) {
         Refresh();
     }
@@ -231,7 +241,7 @@ void AISTargetQueryDialog::CreateControls()
     SetSizer( topSizer );
 
     m_pQueryTextCtl = new wxHtmlWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                                wxHW_SCROLLBAR_AUTO );
+                                        wxHW_SCROLLBAR_AUTO | wxHW_NO_SELECTION );
     m_pQueryTextCtl->SetBorders( 5 );
     topSizer->Add( m_pQueryTextCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxALL | wxEXPAND, 5 );
 
