@@ -3010,7 +3010,7 @@ void glChartCanvas::RenderWorldChart(ocpnDC &dc, OCPNRegion &region)
     for(OCPNRegionIterator clipit( region ); clipit.HaveRects(); clipit.NextRect())
         n_rect++;
 
-    if(vp.view_scale_ppm > .003 || n_rect > 2)
+    if(/*vp.view_scale_ppm > .03 ||*/ n_rect > 2)
     {
         glColor3ub(water.Red(), water.Green(), water.Blue());
         SetClipRegion( vp, region, true, true ); /* clear background, no rotation */
