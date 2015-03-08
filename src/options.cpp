@@ -1005,7 +1005,7 @@ wxScrolledWindow *options::AddPage( size_t parent, const wxString & title)
     int style = wxVSCROLL | wxTAB_TRAVERSAL;
     if( page->IsKindOf( CLASSINFO(wxNotebook))) {
         window = new wxScrolledWindow( page, wxID_ANY, wxDefaultPosition, wxDefaultSize, style );
-        window->SetScrollRate(5,5);
+        window->SetScrollRate(15,15);
         ((wxNotebook *)page)->AddPage( window, title );
     } else if (page->IsKindOf(CLASSINFO(wxScrolledWindow))) {
         wxString toptitle = m_pListbook->GetPageText( parent );
@@ -1020,7 +1020,7 @@ wxScrolledWindow *options::AddPage( size_t parent, const wxString & title)
          * we must explicitely Show() it */
         page->Show();
         window = new wxScrolledWindow( nb, wxID_ANY, wxDefaultPosition, wxDefaultSize, style );
-        window->SetScrollRate(5, 5);
+        window->SetScrollRate(15, 15);
         nb->AddPage( window, title );
         nb->ChangeSelection( 0 );
     } else { // This is the default content, we can replace it now
@@ -2085,11 +2085,13 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
 
 
 #ifdef USE_S57
+    int slider_width = wxMax(m_fontHeight * 4, 150);
+   
     optionsColumn->Add( new wxStaticText(ps57Ctl, wxID_ANY, _("CM93 Detail Level")), labelFlags );
     m_pSlider_CM93_Zoom = new wxSlider( ps57Ctl, ID_CM93ZOOM, 0, -CM93_ZOOM_FACTOR_MAX_RANGE,
-                                       CM93_ZOOM_FACTOR_MAX_RANGE, wxDefaultPosition, wxSize( 140, 50),
+                                        CM93_ZOOM_FACTOR_MAX_RANGE, wxDefaultPosition, wxSize( slider_width, 50),
                                        wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS );
-    optionsColumn->Add( m_pSlider_CM93_Zoom, 0, wxALL | wxEXPAND, border_size );
+    optionsColumn->Add( m_pSlider_CM93_Zoom, 0, wxALL/* | wxEXPAND*/, border_size );
 //    cm93Sizer->SetSizeHints(cm93DetailBox);
 #endif
 
@@ -2110,7 +2112,7 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
                                          wxSize( 250, 350 ), 0, ps57CtlListBoxStrings, wxLB_SINGLE | wxLB_HSCROLL | wxLB_SORT );
     marinersSizer->Add( ps57CtlListBox, 1, wxALL | wxEXPAND, group_item_spacing );
 #else
-    wxScrolledWindow *marinersWindow = new wxScrolledWindow( ps57Ctl, wxID_ANY, wxDefaultPosition, wxSize(550, 350), wxHSCROLL | wxVSCROLL);
+    wxScrolledWindow *marinersWindow = new wxScrolledWindow( ps57Ctl, wxID_ANY, wxDefaultPosition, wxSize(250, 350), wxHSCROLL | wxVSCROLL);
     marinersWindow->SetScrollRate(5, 5);
     marinersSizer->Add( marinersWindow, 1, wxALL | wxEXPAND, group_item_spacing );
     
@@ -2118,7 +2120,7 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
     marinersWindow->SetSizer( bSizerScrollMariners );
     
     ps57CtlListBox = new wxCheckListBox( marinersWindow, ID_CHECKLISTBOX, wxDefaultPosition,
-                                         wxSize(500, 8000), 0, ps57CtlListBoxStrings, wxLB_SINGLE | wxLB_SORT );
+                                         wxSize(200, 8000), 0, ps57CtlListBoxStrings, wxLB_SINGLE | wxLB_SORT );
     bSizerScrollMariners->Add( ps57CtlListBox, 1, wxALL | wxEXPAND, group_item_spacing );
 #endif
     
