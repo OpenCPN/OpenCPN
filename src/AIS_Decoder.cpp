@@ -1099,6 +1099,9 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx( const wxString& str, bool b_take_dsc )
         
         dsc_quadrant = (int) (dsc_tmp / 1000000000.0);
         
+        if(dsc_quadrant > 3)                // Position is "Unspecified", or 9999999999
+            return NULL;
+        
         dsc_lat = (int) ( dsc_tmp / 100000.0 );
         dsc_lon = dsc_tmp - dsc_lat * 100000.0;
         dsc_lat = dsc_lat - dsc_quadrant * 10000;
