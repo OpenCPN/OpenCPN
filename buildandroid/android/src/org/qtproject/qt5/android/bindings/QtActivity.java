@@ -44,6 +44,7 @@ import org.kde.necessitas.ministro.IMinistro;
 import org.kde.necessitas.ministro.IMinistroCallback;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ComponentName;
@@ -62,6 +63,7 @@ import android.content.res.Resources.Theme;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -91,7 +93,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-//import org.opencpn.opencpn.R;
+import org.opencpn.opencpn.R;
 
 //@ANDROID-11
 import android.app.Fragment;
@@ -200,6 +202,8 @@ public class QtActivity extends Activity
 
     private Boolean m_GPSServiceStarted = false;
     private GPSServer m_GPSServer;
+    public ProgressDialog ringProgressDialog;
+
 
     OCPNNativeLib nativeLib;
 
@@ -217,6 +221,9 @@ public class QtActivity extends Activity
             QT_ANDROID_DEFAULT_THEME = "Theme_DeviceDefault_Light";
         }
         m_activity = QtActivity.this;
+
+//        ringProgressDialog = ProgressDialog.show(this, "", "", true);
+//        ringProgressDialog.dismiss();
     }
 
 //    public static QtActivity activity()
@@ -317,9 +324,9 @@ public class QtActivity extends Activity
     public native String getJniString();
     public native int test();
 
-    public String getDisplayDPI(){
+    public String getDisplayMetrics(){
         Log.i("DEBUGGER_TAG", "getDisplayDPI");
-
+/*
         int i = nativeLib.test();
         String aa;
         aa = String.format("%d", i);
@@ -330,18 +337,59 @@ public class QtActivity extends Activity
 //      int j = nativeLib.processNMEA( 44);
         aa = String.format("%d", j);
         Log.i("DEBUGGER_TAG", aa);
-
+*/
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
 
         String ret;
-        ret = String.format("%f", dm.xdpi);
+        ret = String.format("%f;%d;%d", dm.xdpi, dm.widthPixels, dm.heightPixels);
 
         return ret;
     }
 
-    public String queryGPSServer( final int parm ){
+    public String showBusyCircle(){
+        Log.i("DEBUGGER_TAG", "show");
 
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+//                 QtActivity.this.ringProgressDialog.show(QtActivity.this, "", "", true);
+
+                 ringProgressDialog = new ProgressDialog(QtActivity.this,R.style.MyTheme);
+                 ringProgressDialog.setCancelable(false);
+                 ringProgressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Small);
+
+                 Drawable myIcon = getResources().getDrawable( R.drawable.progressbar_custom );
+                 ringProgressDialog.setIndeterminateDrawable(myIcon);
+
+                 QtActivity.this.ringProgressDialog.show();
+
+             }});
+
+        String ret = "";
+        return ret;
+    }
+
+    public String hideBusyCircle(){
+        Log.i("DEBUGGER_TAG", "hide");
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+//                 QtActivity.this.ringProgressDialog.show(QtActivity.this, "", "", true);
+
+                 ringProgressDialog.dismiss();
+
+             }});
+
+//        ringProgressDialog.dismiss();
+        String ret = "";
+        return ret;
+    }
+
+    public String queryGPSServer( final int parm ){
         if(!m_GPSServiceStarted){
             Log.i("DEBUGGER_TAG", "Start GPS Server");
             m_GPSServer = new GPSServer(getApplicationContext(), nativeLib, this);
@@ -874,7 +922,7 @@ public class QtActivity extends Activity
             lastX = -1.0f;
             lastY = -1.0f;
         }
-        Log.i("Sending", String.format("%d  x = %5.2f, y=%5.2f", ev.getAction(), ev.getRawX(), ev.getRawY()));
+//        Log.i("Sending", String.format("%d  x = %5.2f, y=%5.2f", ev.getAction(), ev.getRawX(), ev.getRawY()));
 
         if (QtApplication.m_delegateObject != null && QtApplication.dispatchTouchEvent != null)
             return (Boolean) QtApplication.invokeDelegateMethod(QtApplication.dispatchTouchEvent, ev);
@@ -967,6 +1015,13 @@ public class QtActivity extends Activity
     @Override
     public void onConfigurationChanged(Configuration newConfig)
     {
+        Log.i("DEBUGGER_TAG", "onConfigurationChanged");
+
+        int i = nativeLib.onConfigChange();
+        String aa;
+        aa = String.format("%d", i);
+        Log.i("DEBUGGER_TAG", aa);
+
         if (!QtApplication.invokeDelegate(newConfig).invoked)
             super.onConfigurationChanged(newConfig);
     }
@@ -1065,7 +1120,10 @@ public class QtActivity extends Activity
             if (m_activityInfo.metaData.containsKey("android.app.splash_screen") )
                 setContentView(m_activityInfo.metaData.getInt("android.app.splash_screen"));
 
-   Assetbridge.unpack(this);
+  Log.i("DEBUGGER_TAG", "asset bridge start unpack");
+  Assetbridge.unpack(this);
+  Log.i("DEBUGGER_TAG", "asset bridge finish unpack");
+
 
    /* Turn off multicast filter */
    WifiManager wifi = (WifiManager)getSystemService(Context.WIFI_SERVICE);

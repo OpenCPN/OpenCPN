@@ -5,6 +5,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -182,13 +183,21 @@ public class GPSServer extends Service implements LocationListener {
 
 
      public boolean hasGPSDevice(Context context)
-         {
+     {
+
+         PackageManager packMan = getPackageManager();
+         return packMan.hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
+/*
+    // This code produces false positive for some generic android tablets.
          final LocationManager mgr = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
-         if ( mgr == null ) return false;
+         if ( mgr == null )
+            return false;
          final List<String> providers = mgr.getAllProviders();
-         if ( providers == null ) return false;
+         if ( providers == null )
+            return false;
          return providers.contains(LocationManager.GPS_PROVIDER);
-         }
+*/
+     }
 
 
     public Location getLocation() {
