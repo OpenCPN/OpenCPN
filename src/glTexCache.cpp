@@ -33,7 +33,6 @@
 #ifdef __OCPN__ANDROID__
 #include <qopengl.h>
 #include "GL/gl_private.h"
-#include <QDebug>
 #else
 #include "GL/gl.h"
 #endif
@@ -737,10 +736,10 @@ void CompressionWorkerPool::OnEvtThread( OCPN_CompressionThreadEvent & event )
         printf( "    Finished job: %08X  Jobs running: %d             Job count: %lu   \n",
                 ticket->ident, m_njobs_running, (unsigned long)todo_list.GetCount());
 
-    int mem_used;
-    GetMemoryStatus(0, &mem_used);
+//    int mem_used;
+//    GetMemoryStatus(0, &mem_used);
     
-//    qDebug() << "Finished" << m_njobs_running <<  (unsigned long)todo_list.GetCount() << mem_used;
+///    qDebug() << "Finished" << m_njobs_running <<  (unsigned long)todo_list.GetCount() << mem_used << g_tex_mem_used;
     
     StartTopJob();
     
@@ -749,8 +748,14 @@ void CompressionWorkerPool::OnEvtThread( OCPN_CompressionThreadEvent & event )
 bool CompressionWorkerPool::ScheduleJob(glTexFactory* client, const wxRect &rect, int level,
                                         bool b_throttle_thread, bool b_immediate, bool b_postZip)
 {
-    if(!b_immediate && (todo_list.GetCount() >= 50) )
+    if(!b_immediate && (todo_list.GetCount() >= 50) ){
+//        int mem_used;
+//        GetMemoryStatus(0, &mem_used);
+        
+///        qDebug() << "Could not add, count now" << (unsigned long)todo_list.GetCount() << mem_used << g_tex_mem_used;
+        
         return false;;
+    }
     
     wxString chart_path = client->GetChartPath();
 
@@ -789,8 +794,11 @@ bool CompressionWorkerPool::ScheduleJob(glTexFactory* client, const wxRect &rect
             if(bthread_debug)
                 printf( "Adding job: %08X  Job Count: %lu  mem_used %d\n", pt->ident, (unsigned long)todo_list.GetCount(), mem_used);
         }
-        
-//        qDebug() << "Added, count now" << (unsigned long)todo_list.GetCount();
+ 
+//        int mem_used;
+//        GetMemoryStatus(0, &mem_used);
+ 
+///        qDebug() << "Added, count now" << (unsigned long)todo_list.GetCount() << mem_used << g_tex_mem_used;
         StartTopJob();
         return false;
     }
@@ -827,7 +835,7 @@ bool CompressionWorkerPool::DoThreadJob(JobTicket* pticket)
     if(bthread_debug)
         printf( "  Starting job: %08X  Jobs running: %d Jobs left: %lu\n", pticket->ident, m_njobs_running, (unsigned long)todo_list.GetCount());
     
-//    qDebug() << "Starting job" << m_njobs_running <<  (unsigned long)todo_list.GetCount();
+///    qDebug() << "Starting job" << m_njobs_running <<  (unsigned long)todo_list.GetCount() << g_tex_mem_used;
     CompressionPoolThread *t = new CompressionPoolThread( pticket, this);
     pticket->pthread = t;
     
@@ -1272,6 +1280,21 @@ void glTexFactory::OnTimer(wxTimerEvent &event)
             }
         }
     }
+
+#ifdef __OCPN__ANDROID__    
+    bool bGLMemCrunch = g_tex_mem_used > 30/*g_GLOptions.m_iTextureMemorySize*/ * 1024 * 1024;
+    
+    if( bGLMemCrunch ){
+        for(int i=0 ; i < m_ntex ; i++){
+            glTextureDescriptor *ptd = m_td_array[i];
+            if(ptd){
+                if(ptd->nGPU_compressed == GPU_TEXTURE_UNCOMPRESSED){
+                    DeleteSingleTexture(ptd);
+                }
+            }
+        }
+    }
+#endif    
     
     // Once every minute, do more extensive garbage collection
     if(g_GLOptions.m_bTextureCompression && g_GLOptions.m_bTextureCompressionCaching) {
@@ -1306,7 +1329,9 @@ void glTexFactory::OnTimer(wxTimerEvent &event)
         }
     }
     
-#if 0    
+#if 0
+    if((m_ticks % 4/*120*/) == 0){
+    
     // inventory
     int mem_total, mem_used;
     GetMemoryStatus(&mem_total, &mem_used);
@@ -1324,12 +1349,15 @@ void glTexFactory::OnTimer(wxTimerEvent &event)
     }
 
     size_t m1 = 1024 * 1024;
-    printf("%6d %6ld Map: %6d  Comp:%6d  CompComp: %10d  %s\n", mem_used/1024, g_tex_mem_used/m1, map_size/m1, comp_size/m1, compcomp_size, m_ChartPath.mb_str().data());
+//    printf("%6d %6ld Map: %6d  Comp:%6d  CompComp: %10d  %s\n", mem_used/1024, g_tex_mem_used/m1, map_size/m1, comp_size/m1, compcomp_size, m_ChartPath.mb_str().data());
+  
+///    qDebug() << "inv" << map_size/m1 << comp_size/m1 << compcomp_size/m1 << g_tex_mem_used/m1 << mem_used/1024;
+    }
 #endif
 
 }
 
-bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorScheme color_scheme, bool b_throttle_thread )
+bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorScheme color_scheme, bool b_throttle_thread)
 {
     int array_index = ((rect.y / m_tex_dim) * m_stride) + (rect.x / m_tex_dim);
     glTextureDescriptor *ptd = m_td_array[array_index];
@@ -1421,6 +1449,7 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     }
     
 
+    
     int dim = g_GLOptions.m_iTextureDimension;
     int size = g_tile_size;
     int uncompressed_size = g_uncompressed_tile_size;

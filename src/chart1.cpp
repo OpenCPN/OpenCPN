@@ -1124,7 +1124,8 @@ void LoadS57()
 bool MyApp::OnInit()
 {
     wxStopWatch sw;
-
+//    qDebug() << "OnInit";
+    
     if( !wxApp::OnInit() ) return false;
 
     //  On Windows
@@ -1245,10 +1246,8 @@ bool MyApp::OnInit()
     wxLogMessage( imsg );
 
 #ifdef __OCPN__ANDROID__
-#if 0    
     //  Now we can load a Qt StyleSheet, if present
-    wxString style_file = g_SData_Locn;
-    appendOSDirSlash( &style_file );
+    wxString style_file = g_Platform->GetSharedDataDir();
     style_file += _T("styles");
     appendOSDirSlash( &style_file );
     style_file += _T("qtstylesheet.qss");
@@ -1257,9 +1256,10 @@ bool MyApp::OnInit()
         wxString smsg = _T("Loaded Qt Stylesheet: ") + style_file;
         wxLogMessage( smsg );
     }
-    else
-        wxLogMessage(_T("Qt Stylesheet not found"));
-#endif    
+    else{
+        wxString smsg = _T("Qt Stylesheet not found: ") + style_file;
+        wxLogMessage( smsg );
+    }
 #endif
         
     //      Create some static strings
@@ -1692,6 +1692,8 @@ bool MyApp::OnInit()
         myframe_window_title += _T("]");
     }
 
+//    qDebug() << "OpenCPN Initialized before new frame:" <<  sw.Time();
+    
     gFrame = new MyFrame( NULL, myframe_window_title, position, new_frame_size, app_style ); //Gunther
 
 //  Initialize the Plugin Manager
@@ -1709,6 +1711,8 @@ bool MyApp::OnInit()
 //                        to the parent client area automatically, (as a favor?)
 //                        Here, we'll do explicit sizing on SIZE events
 
+//    qDebug() << "OpenCPN Initialized before canvas:" <<  sw.Time();
+    
     cc1 = new ChartCanvas( gFrame );                         // the chart display canvas
     gFrame->SetCanvasWindow( cc1 );
 
@@ -1749,8 +1753,14 @@ bool MyApp::OnInit()
 // Show the frame
 
 //    gFrame->ClearBackground();
+ //   qDebug() << "OpenCPN Initialized before show:" <<  sw.Time();
     gFrame->Show( TRUE );
-
+ //   qDebug() << "OpenCPN Initialized after show:" <<  sw.Time();
+    
+#ifdef __OCPN__ANDROID__
+    androidShowBusyIcon();
+#endif    
+    
     gFrame->SetAndApplyColorScheme( global_color_scheme );
 
     if( g_bframemax ) gFrame->Maximize( true );
@@ -2116,6 +2126,12 @@ extern ocpnGLOptions g_GLOptions;
 
     wxLogMessage( wxString::Format(_("OpenCPN Initialized in %ld ms."), sw.Time() ) );
 
+//    qDebug() << "OpenCPN Initialized ms:" <<  sw.Time();
+    
+#ifdef __OCPN__ANDROID__
+    androidHideBusyIcon();
+#endif    
+    
     return TRUE;
 }
 
@@ -2301,6 +2317,7 @@ EVT_ACTIVATE(MyFrame::OnActivate)
 EVT_MAXIMIZE(MyFrame::OnMaximize)
 EVT_COMMAND(wxID_ANY, wxEVT_COMMAND_TOOL_RCLICKED, MyFrame::RequestNewToolbarArgEvent)
 EVT_ERASE_BACKGROUND(MyFrame::OnEraseBackground)
+EVT_TIMER(RESIZE_TIMER, MyFrame::OnResizeTimer)
 #ifdef wxHAS_POWER_EVENTS
 EVT_POWER_SUSPENDING(MyFrame::OnSuspending)
 EVT_POWER_SUSPENDED(MyFrame::OnSuspended)
@@ -2419,6 +2436,8 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
 
     g_sticky_chart = -1;
     m_BellsToPlay = 0;
+    
+    m_resizeTimer.SetOwner(this, RESIZE_TIMER);
 }
 
 MyFrame::~MyFrame()
@@ -3332,6 +3351,21 @@ void MyFrame::ProcessCanvasResize( void )
     if( console && console->IsShown() ) PositionConsole();
 }
 
+
+void MyFrame::TriggerResize(wxSize sz)
+{
+    m_newsize = sz;
+    m_resizeTimer.Start(10, wxTIMER_ONE_SHOT);
+}
+    
+
+void MyFrame::OnResizeTimer(wxTimerEvent &event)
+{
+    SetSize(m_newsize);
+}
+
+
+
 void MyFrame::OnSize( wxSizeEvent& event )
 {
     ODoSetSize();
@@ -3341,7 +3375,7 @@ void MyFrame::ODoSetSize( void )
 {
     int x, y;
     GetClientSize( &x, &y );
-
+    
 //      Resize the children
 
     if( m_pStatusBar ) {
@@ -4906,7 +4940,7 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
     }
         
     cc1->SetDisplaySizeMM( g_display_size_mm );
-    
+
     return 0;
 }
 

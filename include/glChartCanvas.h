@@ -135,7 +135,7 @@ protected:
     
     void ComputeRenderQuiltViewGLRegion( ViewPort &vp, OCPNRegion &Region );
     void RenderCharts(ocpnDC &dc, OCPNRegion &region);
-    void RenderWorldChart(ocpnDC &dc, OCPNRegion &region);
+    void RenderWorldChart(ocpnDC &dc, OCPNRegion &region, ViewPort &vp);
     ViewPort BuildClippedVP(ViewPort &VP, wxRect &rect);
 
     void DrawFloatingOverlayObjects( ocpnDC &dc, OCPNRegion &region );
@@ -194,6 +194,7 @@ protected:
     float       m_fbo_swidth;
     float       m_fbo_sheight;
     bool        m_binPinch;
+    OCPNRegion  m_canvasregion;
     
 
     DECLARE_EVENT_TABLE()

@@ -326,6 +326,9 @@ class MyFrame: public wxFrame
     void DoStackDelta( int direction );
     void DoSettings( void );
     
+    void TriggerResize(wxSize sz);
+    void OnResizeTimer(wxTimerEvent &event);
+    
     void MouseEvent(wxMouseEvent& event);
     void SelectChartFromStack(int index,  bool bDir = false,  ChartTypeEnum New_Type = CHART_TYPE_DONTCARE, ChartFamilyEnum New_Family = CHART_FAMILY_DONTCARE);
     void SelectdbChart(int dbindex);
@@ -426,7 +429,8 @@ class MyFrame: public wxFrame
     wxTimer             FrameTimer1;
     wxTimer             FrameCOGTimer;
     wxTimer             MemFootTimer;
-
+    wxTimer             m_resizeTimer;
+    
     int                 m_BellsToPlay;
     wxTimer             BellsTimer;
 
@@ -445,7 +449,8 @@ class MyFrame: public wxFrame
 
     bool                m_bdefer_resize;
     wxSize              m_defer_size;
-
+    wxSize              m_newsize;
+    
   private:
     void ODoSetSize(void);
     void DoCOGSet(void);
@@ -559,7 +564,8 @@ enum {
     FRAME_COG_TIMER,
     MEMORY_FOOTPRINT_TIMER,
     BELLS_TIMER,
-    ID_NMEA_THREADMSG
+    ID_NMEA_THREADMSG,
+    RESIZE_TIMER
 
 };
 
