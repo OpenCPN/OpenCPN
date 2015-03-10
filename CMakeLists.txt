@@ -664,6 +664,7 @@ SET(HDRS
                 include/viewport.h
                 include/canvasMenu.h
                 include/OCPNPlatform.h
+                include/S57Sector.h
 )
 
 SET(SRCS
