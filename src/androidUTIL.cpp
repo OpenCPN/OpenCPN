@@ -31,21 +31,22 @@
 #include <wx/tokenzr.h>
 
 #include <QtAndroidExtras/QAndroidJniObject>
-#include "qdebug.h"
 
+#include "dychart.h"
 #include "androidUTIL.h"
 #include "OCPN_DataStreamEvent.h"
 #include "chart1.h"
 
+
 JavaVM *java_vm;
 JNIEnv* jenv;
+bool     b_androidBusyShown;
 
+
+extern MyFrame                  *gFrame;
 extern const wxEventType wxEVT_OCPN_DATASTREAM;
+wxEvtHandler                    *s_pAndroidNMEAMessageConsumer;
 
-
-
-
-wxEvtHandler    *s_pAndroidNMEAMessageConsumer;
 
 jint JNI_OnLoad(JavaVM *vm, void *reserved)
 {
@@ -118,6 +119,25 @@ extern "C"{
 }
 
 
+extern "C"{
+    JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onConfigChange(JNIEnv *env, jobject obj)
+    {
+        qDebug() << "onConfigChange";
+        GetAndroidDisplaySize();
+        
+        wxSize new_size = getAndroidDisplayDimensions();
+        qDebug() << "onConfigChange" << new_size.x << new_size.y;
+        
+        gFrame->TriggerResize(new_size);
+        
+//        wxSizeEvent ev(new_size);
+        
+//        wxEvtHandler *evh = dynamic_cast<wxEvtHandler*>(cc1);
+        
+//        evh->AddPendingEvent(ev);
+        return 77;
+    }
+}
 
 
 
@@ -297,6 +317,49 @@ wxSize getAndroidDisplayDimensions( void )
     
     return sz_ret;
     
+}
+
+void androidShowBusyIcon()
+{
+    if(b_androidBusyShown)
+        return;
+    qDebug() << "Showit";
+    
+    //  Get a reference to the running native activity
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                           "activity", "()Landroid/app/Activity;");
+    
+    if ( !activity.isValid() ){
+        qDebug() << "Activity is not valid";
+        return;
+    }
+    
+    //  Call the desired method
+    QAndroidJniObject data = activity.callObjectMethod("showBusyCircle", "()Ljava/lang/String;");
+    
+    b_androidBusyShown = true;
+}
+
+void androidHideBusyIcon()
+{
+    if(!b_androidBusyShown)
+        return;
+    
+    qDebug() << "Hideit";
+    
+    //  Get a reference to the running native activity
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                           "activity", "()Landroid/app/Activity;");
+    
+    if ( !activity.isValid() ){
+        qDebug() << "Activity is not valid";
+        return;
+    }
+    
+    //  Call the desired method
+    QAndroidJniObject data = activity.callObjectMethod("hideBusyCircle", "()Ljava/lang/String;");
+
+    b_androidBusyShown = false;
 }
 
 

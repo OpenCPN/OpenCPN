@@ -35,6 +35,7 @@
 #include "wx/stdpaths.h"
 #include <wx/filename.h>
 
+#include "dychart.h"
 #include "OCPNPlatform.h"
 
 #include "chart1.h"
@@ -42,7 +43,6 @@
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
-#include "qdebug.h"
 #endif
 
 // Include CrashRpt Header
