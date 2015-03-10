@@ -1344,7 +1344,7 @@ char *_getParamVal( ObjRazRules *rzRules, char *str, char *buf, int bsz )
     } else {
 
         //    Special case for conversion of some vertical (height) attributes to feet
-        if( ( !strncmp( buf, "VERCLR", 6 ) ) || ( !strncmp( buf, "VERCCL", 6 ) ) ) {
+        if( ( !strncmp( buf, "VERCLR", 6 ) ) || ( !strncmp( buf, "VERCCL", 6 ) ) || ( !strncmp( buf, "VERCOP", 6 ) ) ) {
             switch( ps52plib->m_nDepthUnitDisplay ){
                 case 0: // feet
                 case 2: // fathoms
