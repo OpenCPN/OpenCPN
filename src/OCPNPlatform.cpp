@@ -72,12 +72,18 @@ extern sigjmp_buf env;                    // the context saved by sigsetjmp();
 #endif
 
 
+extern OCPNPlatform              *g_Platform;
+
 extern int                       quitflag;
 extern MyFrame                   *gFrame;
 extern bool                      g_bportable;
+extern wxString           str_version_major;
+extern wxString           str_version_minor;
+extern wxString           str_version_patch;
 
 
 wxLog       *g_logger;
+bool         g_bEmailCrashReport;
 
 
 
@@ -207,7 +213,8 @@ void OCPNPlatform::Initialize_1( void )
     info.uPriorities[CR_SMTP] = CR_NEGATIVE_PRIORITY;  // Second try send report over SMTP
     info.uPriorities[CR_SMAPI] = CR_NEGATIVE_PRIORITY; //1; // Third try send report over Simple MAPI
     
-    wxStandardPaths& crash_std_path = *dynamic_cast<wxStandardPaths*>(&wxApp::GetTraits()->GetStandardPaths());
+    wxStandardPaths& crash_std_path = g_Platform->GetStdPaths();
+    
     wxString crash_rpt_save_locn = crash_std_path.GetConfigDir();
     if( g_bportable ) {
         wxFileName exec_path_crash( crash_std_path.GetExecutablePath() );
@@ -229,9 +236,7 @@ void OCPNPlatform::Initialize_1( void )
     }
     
     // Provide privacy policy URL
-    wxStandardPathsBase& std_path_crash = wxApp::GetTraits()->GetStandardPaths();
-    std_path_crash.Get();
-    wxFileName exec_path_crash( std_path_crash.GetExecutablePath() );
+    wxFileName exec_path_crash( crash_std_path.GetExecutablePath() );
     wxString policy_file =  exec_path_crash.GetPath( wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR );
     policy_file += _T("PrivacyPolicy.txt");
     policy_file.Prepend(_T("file:"));
@@ -252,9 +257,9 @@ void OCPNPlatform::Initialize_1( void )
     crAddScreenshot2(CR_AS_PROCESS_WINDOWS|CR_AS_USE_JPEG_FORMAT, 95);
     
     //  Mark some files to add to the crash report
-    wxString home_data_crash = std_path_crash.GetConfigDir();
+    wxString home_data_crash = crash_std_path.GetConfigDir();
     if( g_bportable ) {
-        wxFileName f( std_path_crash.GetExecutablePath() );
+        wxFileName f( crash_std_path.GetExecutablePath() );
         home_data_crash = f.GetPath();
     }
     appendOSDirSlash( &home_data_crash );
@@ -358,11 +363,25 @@ void OCPNPlatform::Initialize_1( void )
 }
 
 //  Called from MyApp() immediately before creation of MyFrame()
-void Initialize_2( void ){
+void OCPNPlatform::Initialize_2( void ){
 }
 
 //  Called from MyApp() just before end of MyApp::OnInit()
-void Initialize_3( void ){
+void OCPNPlatform::Initialize_3( void ){
+}
+
+void OCPNPlatform::OnExit_1( void ){
+}
+    
+void OCPNPlatform::OnExit_2( void ){
+    
+#ifdef OCPN_USE_CRASHRPT
+#ifndef _DEBUG
+        // Uninstall Windows crash reporting
+    crUninstall();
+#endif
+#endif
+    
 }
 
 

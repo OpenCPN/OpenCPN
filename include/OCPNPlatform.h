@@ -61,7 +61,9 @@ public:
     //  Called from MyApp() just before end of MyApp::OnInit()
     static void Initialize_3( void );
     
-
+    static void OnExit_1( void );
+    static void OnExit_2( void );
+    
 
 //--------------------------------------------------------------------------
 //      Per-Platform file/directory support

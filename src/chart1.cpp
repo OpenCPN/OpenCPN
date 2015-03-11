@@ -665,7 +665,6 @@ int              g_NMEAAPBPrecision;
 
 wxString         g_TalkerIdText;
 
-bool             g_bEmailCrashReport;
 bool             g_bAdvanceRouteWaypointOnArrivalOnly;
 
 wxArrayString    g_locale_catalog_array;
@@ -2260,13 +2259,9 @@ int MyApp::OnExit()
     delete m_checker;
 #endif
 
-#ifdef OCPN_USE_CRASHRPT
-#ifndef _DEBUG
-    // Uninstall Windows crash reporting
-    crUninstall();
-#endif
-#endif
 
+    g_Platform->OnExit_2();
+    
     return TRUE;
 }
 
