@@ -375,7 +375,7 @@ void MMSIEditDialog::CreateControls()
      wxGridSizer* bSizer15;
      bSizer15 = new wxGridSizer( 0, 3, 0, 0 );
      
-     m_rbTypeTrackDefault = new wxRadioButton( itemDialog1, wxID_ANY, _("Default tracking"), wxDefaultPosition, wxDefaultSize, 0 );
+     m_rbTypeTrackDefault = new wxRadioButton( itemDialog1, wxID_ANY, _("Default tracking"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
      m_rbTypeTrackDefault->SetValue( true );
      bSizer15->Add( m_rbTypeTrackDefault, 0, wxALL, 5 );
 
@@ -1171,7 +1171,7 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     wxBoxSizer* bSizer15;
     bSizer15 = new wxBoxSizer( wxHORIZONTAL );
 
-    m_rbTypeSerial = new wxRadioButton( m_pNMEAForm, wxID_ANY, _("Serial"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_rbTypeSerial = new wxRadioButton( m_pNMEAForm, wxID_ANY, _("Serial"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
     m_rbTypeSerial->SetValue( true );
     bSizer15->Add( m_rbTypeSerial, 0, wxALL, 5 );
 
@@ -3695,9 +3695,9 @@ ConnectionParams *options::CreateConnectionParamsFromSelectedItem()
         pConnectionParams->Type = SERIAL;
     else if ( m_rbTypeNet->GetValue() )
         pConnectionParams->Type = NETWORK;
-    else if ( m_rbTypeInternalGPS->GetValue() )
+    else if ( m_rbTypeInternalGPS && m_rbTypeInternalGPS->GetValue() )
         pConnectionParams->Type = INTERNAL_GPS;
-    else if ( m_rbTypeInternalBT->GetValue() )
+    else if ( m_rbTypeInternalBT && m_rbTypeInternalBT->GetValue() )
         pConnectionParams->Type = INTERNAL_BT;
     
     //  Save the existing addr/port to allow closing of existing port
