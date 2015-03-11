@@ -28,7 +28,7 @@ public class GPSServer extends Service implements LocationListener {
 
     private final static int GPS_OFF = 0;
     private final static int GPS_ON = 1;
-    private final static int GPS_PROVIDER_AVAILABLE = 2;
+    public  final static int GPS_PROVIDER_AVAILABLE = 2;
     private final static int GPS_SHOWPREFERENCES = 3;
 
     private final Context mContext;
@@ -185,9 +185,10 @@ public class GPSServer extends Service implements LocationListener {
      public boolean hasGPSDevice(Context context)
      {
 
-         PackageManager packMan = getPackageManager();
-         return packMan.hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
-/*
+ //        This code crashes unless run from the GUI thread, so is moved to the QtActivity initialization
+ //        PackageManager packMan = getPackageManager();
+ //        return packMan.hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
+
     // This code produces false positive for some generic android tablets.
          final LocationManager mgr = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
          if ( mgr == null )
@@ -196,7 +197,7 @@ public class GPSServer extends Service implements LocationListener {
          if ( providers == null )
             return false;
          return providers.contains(LocationManager.GPS_PROVIDER);
-*/
+
      }
 
 

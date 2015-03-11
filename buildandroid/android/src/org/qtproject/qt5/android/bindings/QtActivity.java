@@ -203,6 +203,7 @@ public class QtActivity extends Activity
     private Boolean m_GPSServiceStarted = false;
     private GPSServer m_GPSServer;
     public ProgressDialog ringProgressDialog;
+    public boolean m_hasGPS;
 
 
     OCPNNativeLib nativeLib;
@@ -222,8 +223,7 @@ public class QtActivity extends Activity
         }
         m_activity = QtActivity.this;
 
-//        ringProgressDialog = ProgressDialog.show(this, "", "", true);
-//        ringProgressDialog.dismiss();
+
     }
 
 //    public static QtActivity activity()
@@ -390,6 +390,16 @@ public class QtActivity extends Activity
     }
 
     public String queryGPSServer( final int parm ){
+
+        if( GPSServer.GPS_PROVIDER_AVAILABLE == parm){
+            String ret_string = "NO";
+            if( m_hasGPS )
+                ret_string = "YES";
+            return ret_string;
+        }
+
+
+
         if(!m_GPSServiceStarted){
             Log.i("DEBUGGER_TAG", "Start GPS Server");
             m_GPSServer = new GPSServer(getApplicationContext(), nativeLib, this);
@@ -850,6 +860,9 @@ public class QtActivity extends Activity
                 loadApplication(loaderParams);
 
                 activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+
+                PackageManager packMan = getPackageManager();
+                m_hasGPS = packMan.hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
 
                 return;
             }
