@@ -1388,6 +1388,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 
     int panspeed = m_modkeys == wxMOD_ALT ? 2 : 100;
 
+#ifdef OCPN_ALT_MENUBAR        
 #ifndef __WXOSX__
     // If the permanent menubar is disabled, we show it temporarily when Alt is pressed or when
     // Alt + a letter is presssed (for the top-menu-level hotkeys).
@@ -1409,7 +1410,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         }
     }
 #endif
-
+#endif
 
     // HOTKEYS
     switch( event.GetKeyCode() ) {
@@ -1853,6 +1854,7 @@ void ChartCanvas::OnKeyUp( wxKeyEvent &event )
 
     case WXK_ALT:
         m_modkeys &= ~wxMOD_ALT;
+#ifdef OCPN_ALT_MENUBAR        
 #ifndef __WXOSX__
         // If the permanent menu bar is disabled, and we are not in the middle of another key combo,
         // then show the menu bar temporarily when Alt is released (or hide it if already visible).
@@ -1862,6 +1864,7 @@ void ChartCanvas::OnKeyUp( wxKeyEvent &event )
         }
         m_bMayToggleMenuBar = true;
 #endif
+#endif        
         break;
 
     case WXK_CONTROL:
