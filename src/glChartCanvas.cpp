@@ -1120,9 +1120,9 @@ void glChartCanvas::SetupOpenGL()
     
 
     g_GLOptions.m_bUseCanvasPanning = false;
-//#ifdef __OCPN__ANDROID__
+#ifdef __OCPN__ANDROID__
     g_GLOptions.m_bUseCanvasPanning = true;
-//#endif
+#endif
         
     //      Maybe build FBO(s)
 
