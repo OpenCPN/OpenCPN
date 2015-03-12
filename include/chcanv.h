@@ -194,7 +194,10 @@ public:
       void ClearbFollow(void);
 
       void GetDoubleCanvasPointPix(double rlat, double rlon, wxPoint2DDouble *r);
+      void GetDoubleCanvasPointPixVP( ViewPort &vp, double rlat, double rlon, wxPoint2DDouble *r );
       void GetCanvasPointPix( double rlat, double rlon, wxPoint *r );
+      void GetCanvasPointPixVP( ViewPort &vp, double rlat, double rlon, wxPoint *r );
+      
       void GetCanvasPixPoint(double x, double y, double &lat, double &lon);
       void WarpPointerDeferred(int x, int y);
       void UpdateShips();

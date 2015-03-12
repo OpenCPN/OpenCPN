@@ -67,7 +67,7 @@ class ChartBaseBSB;
 class glChartCanvas : public wxGLCanvas
 {
 public:
-    static void MultMatrixViewPort(const ViewPort &vp);
+    static void MultMatrixViewPort(ViewPort &vp);
     static ViewPort NormalizedViewPort(const ViewPort &vp);
 
     static void RotateToViewPort(const ViewPort &vp);

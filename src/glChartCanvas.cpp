@@ -1120,9 +1120,9 @@ void glChartCanvas::SetupOpenGL()
     
 
     g_GLOptions.m_bUseCanvasPanning = false;
-//#ifdef __OCPN__ANDROID__
+#ifdef __OCPN__ANDROID__
     g_GLOptions.m_bUseCanvasPanning = true;
-//#endif
+#endif
         
     //      Maybe build FBO(s)
 
@@ -1390,16 +1390,15 @@ bool glChartCanvas::PurgeChartTextures( ChartBase *pc, bool b_purge_factory )
 
 /*   This is needed for building display lists */
 #define NORM_FACTOR 16.0
-void glChartCanvas::MultMatrixViewPort(const ViewPort &vp)
+void glChartCanvas::MultMatrixViewPort(ViewPort &vp)
 {
     wxPoint point;
-    cc1->GetCanvasPointPix(0, 0, &point);
+    cc1->GetCanvasPointPixVP(vp, 0, 0, &point);
     glTranslatef(point.x, point.y, 0);
-    glScalef(vp.view_scale_ppm/NORM_FACTOR, vp.view_scale_ppm/NORM_FACTOR, 1);
-    double angle = vp.rotation;
-//    if(!g_bskew_comp)
-//        angle -= vp.skew;
 
+    glScalef(vp.view_scale_ppm/NORM_FACTOR, vp.view_scale_ppm/NORM_FACTOR, 1);
+
+    double angle = vp.rotation;
     glRotatef(angle*180/PI, 0, 0, 1);
 }
 
