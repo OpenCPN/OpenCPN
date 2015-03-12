@@ -40,10 +40,16 @@
 #include <wx/file.h>
 
 #ifdef ocpnUSE_GL
-#include <wx/glcanvas.h>
+#include "glChartCanvas.h"
 #endif
 
 #include "gshhs.h"
+
+#ifdef __OCPN__ANDROID__
+#include "qopengl.h"                  // this gives us the qt runtime gles2.h
+#include "GL/gl_private.h"
+#include "glues.h"
+#endif
 
 extern wxString *pWorldMapLocation;
 
@@ -106,6 +112,9 @@ GshhsPolyCell::GshhsPolyCell( FILE *fpoly_, int x0_, int y0_, PolygonFileHeader 
     fpoly = fpoly_;
     x0cell = x0_;
     y0cell = y0_;
+
+    for(int i=0; i<6; i++)
+        polyv[i] = NULL;
 
     ReadPolygonFile( );
 
@@ -170,6 +179,13 @@ wxPoint GetPixFromLL(ViewPort &vp, double lat, double lon)
     return p;
 }
 
+wxPoint2DDouble GetDoublePixFromLL(ViewPort &vp, double lat, double lon)
+{
+    wxPoint2DDouble p = vp.GetDoublePixFromLL(lat, lon);
+    p.m_x -= vp.rv_rect.x, p.m_y -= vp.rv_rect.y;
+    return p;
+}
+
 void GshhsPolyCell::DrawPolygonFilled( ocpnDC &pnt, contour_list * p, double dx, ViewPort &vp,  wxColor color )
 {
     if( !p->size() ) /* size of 0 is very common, and setting the brush is
@@ -215,16 +231,205 @@ void GshhsPolyCell::DrawPolygonFilled( ocpnDC &pnt, contour_list * p, double dx,
     }
 }
 
+#ifdef ocpnUSE_GL
+
+typedef union {
+    GLdouble data[6];
+    struct sGLvertex {
+        GLdouble x;
+        GLdouble y;
+        GLdouble z;
+        GLdouble r;
+        GLdouble g;
+        GLdouble b;
+    } info;
+} GLvertex;
+
+#include <list>
+
+static std::list<float_2Dpt> g_pv;
+static std::list<GLvertex*> g_vertexes;
+static int g_type, g_pos;
+static float_2Dpt g_p1, g_p2;
+
+void APIENTRY gshhscombineCallback( GLdouble coords[3], GLdouble *vertex_data[4], GLfloat weight[4],
+        GLdouble **dataOut )
+{
+    GLvertex *vertex;
+
+    vertex = new GLvertex();
+    g_vertexes.push_back(vertex);
+
+    vertex->info.x = coords[0];
+    vertex->info.y = coords[1];
+
+    *dataOut = vertex->data;
+}
+
+void APIENTRY gshhsvertexCallback( GLvoid* arg )
+{
+    GLvertex* vertex;
+    vertex = (GLvertex*) arg;
+    float_2Dpt p;
+    p.y = vertex->info.x;
+    p.x = vertex->info.y;
+
+    // convert strips and fans into triangles
+    if(g_type != GL_TRIANGLES) {
+        if(g_pos > 2) {
+            g_pv.push_back(g_p1);
+            g_pv.push_back(g_p2);
+        }
+
+        if(g_type == GL_TRIANGLE_STRIP)
+            g_p1 = g_p2;
+        else if(g_pos == 0)
+            g_p1 = p;
+        g_p2 = p;
+    }
+
+    g_pv.push_back(p);
+    g_pos++;
+}
+
+void APIENTRY gshhserrorCallback( GLenum errorCode )
+{
+   const GLubyte *estring;
+   estring = gluErrorString(errorCode);
+   wxLogMessage( _T("OpenGL Tessellation Error: %s"), estring );
+}
+
+void APIENTRY gshhsbeginCallback( GLenum type )
+{
+    switch(type) {
+    case GL_TRIANGLES:
+    case GL_TRIANGLE_STRIP:
+    case GL_TRIANGLE_FAN:
+        g_type = type;
+        break;
+    default:
+    printf("tess unhandled begin type: %d\n", type);
+    }
+
+    g_pos = 0;
+}
+
+void APIENTRY gshhsendCallback()
+{
+}
+
+void GshhsPolyCell::DrawPolygonFilledGL( contour_list * p, float_2Dpt **pv, int *pvc, ViewPort &vp,  wxColor color, bool idl )
+{
+    if( !p->size() ) // size of 0 is very common, exit early
+        return;
+
+    // build the contour vertex array converted to normalized coordinates (if needed)
+    if(!*pv) {
+        for(unsigned int c = 0; c < p->size(); c++ ) {
+            if( !p->at( c ).size() ) continue;
+
+            contour &cp = p->at( c );
+
+            GLUtesselator *tobj = gluNewTess();
+            
+            gluTessCallback( tobj, GLU_TESS_VERTEX, (_GLUfuncptr) &gshhsvertexCallback );
+            gluTessCallback( tobj, GLU_TESS_BEGIN, (_GLUfuncptr) &gshhsbeginCallback );
+            gluTessCallback( tobj, GLU_TESS_END, (_GLUfuncptr) &gshhsendCallback );
+            gluTessCallback( tobj, GLU_TESS_COMBINE, (_GLUfuncptr) &gshhscombineCallback );
+            gluTessCallback( tobj, GLU_TESS_ERROR, (_GLUfuncptr) &gshhserrorCallback );
+            
+            gluTessNormal( tobj, 0, 0, 1);
+            gluTessProperty( tobj, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_NONZERO );
+            
+            gluTessBeginPolygon( tobj, NULL );
+            gluTessBeginContour( tobj );
+
+            for(unsigned int v = 0; v < p->at( c ).size(); v++ ) {
+                wxRealPoint &ccp = cp.at( v );
+
+                if( v == 0 || ccp != cp.at(v-1) ) {
+                    GLvertex* vertex = new GLvertex();
+                    g_vertexes.push_back(vertex);
+
+
+                    wxPoint2DDouble q = GetDoublePixFromLL(vp,  ccp.y, ccp.x );
+                    if(idl && ccp.x == 180) {
+                        double ts = 40058986*16.0; /* 360 degrees in normalized viewport */
+                        q.m_x -= ts;
+                    }
+
+                    vertex->info.x = q.m_x;
+                    vertex->info.y = q.m_y;
+
+
+                    gluTessVertex( tobj, (GLdouble*)vertex, (GLdouble*)vertex);
+                }
+            }
+
+            gluTessEndContour( tobj );
+            gluTessEndPolygon( tobj );
+            gluDeleteTess( tobj );
+
+            for(std::list<GLvertex*>::iterator it = g_vertexes.begin(); it != g_vertexes.end(); it++)
+                delete *it;
+            g_vertexes.clear();
+        }
+
+        *pv = new float_2Dpt[g_pv.size()];
+        int i=0;
+        for(std::list<float_2Dpt>::iterator it = g_pv.begin(); it != g_pv.end(); it++)
+            (*pv)[i++] = *it;
+            
+        *pvc = g_pv.size();
+        g_pv.clear();
+    }
+
+    glColor3ub(color.Red(), color.Green(), color.Blue());
+
+#if 1
+    glVertexPointer(2, GL_FLOAT, 2*sizeof(float), *pv);
+    glDrawArrays(GL_TRIANGLES, 0, *pvc);
+#else
+    glBegin(GL_TRIANGLES);
+    for(int i=0; i<*pvc; i++)
+        glVertex2f((*pv)[i].y, (*pv)[i].x);
+    glEnd();
+#endif
+}
+#endif          //#ifdef ocpnUSE_GL
+
 #define DRAW_POLY_FILLED(POLY,COL) if(POLY) DrawPolygonFilled(pnt,POLY,dx,vp,COL);
+#define DRAW_POLY_FILLED_GL(NUM,COL) DrawPolygonFilledGL(&poly##NUM,&polyv[NUM],&polyc[NUM],vp,COL, idl);
 
 void GshhsPolyCell::drawMapPlain( ocpnDC &pnt, double dx, ViewPort &vp, wxColor seaColor,
-                                  wxColor landColor, int cellcount )
+                                  wxColor landColor, int cellcount, bool idl )
 {
-    DRAW_POLY_FILLED( &poly1, landColor )
-    DRAW_POLY_FILLED( &poly2, seaColor )
-    DRAW_POLY_FILLED( &poly3, landColor )
-    DRAW_POLY_FILLED( &poly4, seaColor )
-    DRAW_POLY_FILLED( &poly5, landColor )
+#ifdef ocpnUSE_GL        
+    if(!pnt.GetDC()) { // opengl
+        if(dx) {
+#define NORM_FACTOR 16.0                                              
+            double ts = 40058986*NORM_FACTOR; /* 360 degrees in normalized viewport */
+            glPushMatrix();
+            glTranslated(dx > 0 ? ts : -ts, 0, 0);
+        }
+
+        DRAW_POLY_FILLED_GL( 1, landColor );
+        DRAW_POLY_FILLED_GL( 2, seaColor );
+        DRAW_POLY_FILLED_GL( 3, landColor );
+        DRAW_POLY_FILLED_GL( 4, seaColor );
+        DRAW_POLY_FILLED_GL( 5, landColor );
+
+        if(dx)
+            glPopMatrix();
+    } else
+#endif
+    {
+        DRAW_POLY_FILLED( &poly1, landColor );
+        DRAW_POLY_FILLED( &poly2, seaColor );
+        DRAW_POLY_FILLED( &poly3, landColor );
+        DRAW_POLY_FILLED( &poly4, seaColor );
+        DRAW_POLY_FILLED( &poly5, landColor );
+    }
 }
 
 void GshhsPolyCell::DrawPolygonContour( ocpnDC &pnt, contour_list * p, double dx, ViewPort &vp )
@@ -522,6 +727,26 @@ void GshhsPolyReader::drawGshhsPolyMapPlain( ocpnDC &pnt, ViewPort &vp, wxColor 
 
     int cellcount = (cxmax - cxmin) * (cymax - cymin);
 //    printf("cellcount: %d\n", cellcount);
+
+    ViewPort nvp = vp;
+#ifdef ocpnUSE_GL
+    if(!pnt.GetDC()) { // opengl
+
+        // Is this needed to ensure a vbo isn't bound?
+        extern bool         g_b_EnableVBO;
+        extern PFNGLBINDBUFFERPROC                 s_glBindBuffer;
+        if(g_b_EnableVBO)
+            s_glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
+
+        glEnableClientState(GL_VERTEX_ARRAY);
+        
+        // use a viewport that allows the vertexes to be reused over many frames
+        glPushMatrix();
+        glChartCanvas::MultMatrixViewPort(vp);
+        nvp = glChartCanvas::NormalizedViewPort(vp);
+    }
+#endif
+
     for( cx = cxmin; cx < cxmax; cx++ ) {
         cxx = cx;
         while( cxx < 0 )
@@ -538,11 +763,35 @@ void GshhsPolyReader::drawGshhsPolyMapPlain( ocpnDC &pnt, ViewPort &vp, wxColor 
                 } else {
                     cel = allCells[cxx][cy + 90];
                 }
-                dx = cx - cxx;
-                cel->drawMapPlain( pnt, dx, vp, seaColor, landColor, cellcount );
+                bool idl = false;
+
+                if(pnt.GetDC())// dc
+                    dx = cx - cxx;
+                else { // opengl
+                    int cxn = cxx;
+                    if(cxn >= 180) {
+                        cxn -= 360;
+                        idl = true;
+                    }
+                    if(vp.clon - cxn > 180)
+                        dx = 1;
+                    else if(vp.clon - cxn < -180)
+                        dx = -1;
+                    else
+                        dx = 0;
+                }
+
+                cel->drawMapPlain( pnt, dx, nvp, seaColor, landColor, cellcount, idl );
             }
         }
     }
+
+#ifdef ocpnUSE_GL
+    if(!pnt.GetDC()) { // opengl
+        glPopMatrix();
+        glDisableClientState(GL_VERTEX_ARRAY);
+    }
+#endif
 }
 
 //-------------------------------------------------------------------------
