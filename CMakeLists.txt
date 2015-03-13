@@ -302,11 +302,10 @@ IF (ARCH MATCHES "arm*" OR QT_ANDROID)
     SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
     add_subdirectory(src/glshim)
 
-    add_subdirectory(src/glues)
-    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/glues/source )
+    add_subdirectory(src/glu)
 
     IF (NOT QT_ANDROID)
-      SET(OPENGL_LIBRARIES "GL_static" "GLUES_static" "EGL" "X11" "drm" "dri2")
+      SET(OPENGL_LIBRARIES "GL_static" "GLU_static" "EGL" "X11" "drm" "dri2")
     ENDIF ()
   ENDIF()
 ENDIF()
