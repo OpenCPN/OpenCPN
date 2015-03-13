@@ -26,8 +26,8 @@ if(BCMHOST)
 endif()
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-    target_link_libraries(GL X11)
-    target_link_libraries(GL2 X11)
+#    target_link_libraries(GL X11)
+#    target_link_libraries(GL2 X11)
 endif()
 
 if(CMAKE_SHARED_LIBRARY_SUFFIX MATCHES ".so")
