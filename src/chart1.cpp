@@ -8938,7 +8938,7 @@ void MyPrintout::GenerateGLbmp( )
  *     Very system specific, unavoidably.
  */
 
-#if defined(__UNIX__) && !defined(__OCPN__ANDROID__)
+#if defined(__UNIX__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
 extern "C" int wait(int *);                     // POSIX wait() for process
 
 #include <termios.h>
@@ -8975,7 +8975,7 @@ int paternAdd (const char* patern) {
 }
 
 
-#if defined(__UNIX__) && !defined(__OCPN__ANDROID__)
+#if defined(__UNIX__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
 // This filter verify is device is withing searched patern and verify it is openable
 // -----------------------------------------------------------------------------------
 int paternFilter (const struct dirent * dir) {
@@ -9034,7 +9034,7 @@ wxArrayString *EnumerateSerialPorts( void )
 {
     wxArrayString *preturn = new wxArrayString;
 
-#if defined(__UNIX__) && !defined(__OCPN__ANDROID__)
+#if defined(__UNIX__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
 
     //Initialize the pattern table
     if( devPatern[0] == NULL ) {

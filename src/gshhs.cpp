@@ -49,7 +49,19 @@
 #include "qopengl.h"                  // this gives us the qt runtime gles2.h
 #include "GL/gl_private.h"
 #include "glues.h"
+#else
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glext.h>
 #endif
+
+#ifdef __WXMSW__
+#define __CALL_CONVENTION __stdcall
+#else
+#define __CALL_CONVENTION
+#endif
+
+typedef void (GLAPIENTRY * PFNGLBINDBUFFERPROC) (GLenum target, GLuint buffer);
 
 extern wxString *pWorldMapLocation;
 
@@ -252,7 +264,7 @@ static std::list<GLvertex*> g_vertexes;
 static int g_type, g_pos;
 static float_2Dpt g_p1, g_p2;
 
-void APIENTRY gshhscombineCallback( GLdouble coords[3], GLdouble *vertex_data[4], GLfloat weight[4],
+void __CALL_CONVENTION gshhscombineCallback( GLdouble coords[3], GLdouble *vertex_data[4], GLfloat weight[4],
         GLdouble **dataOut )
 {
     GLvertex *vertex;
@@ -266,7 +278,7 @@ void APIENTRY gshhscombineCallback( GLdouble coords[3], GLdouble *vertex_data[4]
     *dataOut = vertex->data;
 }
 
-void APIENTRY gshhsvertexCallback( GLvoid* arg )
+void __CALL_CONVENTION gshhsvertexCallback( GLvoid* arg )
 {
     GLvertex* vertex;
     vertex = (GLvertex*) arg;
@@ -292,14 +304,14 @@ void APIENTRY gshhsvertexCallback( GLvoid* arg )
     g_pos++;
 }
 
-void APIENTRY gshhserrorCallback( GLenum errorCode )
+void __CALL_CONVENTION gshhserrorCallback( GLenum errorCode )
 {
    const GLubyte *estring;
    estring = gluErrorString(errorCode);
    wxLogMessage( _T("OpenGL Tessellation Error: %s"), estring );
 }
 
-void APIENTRY gshhsbeginCallback( GLenum type )
+void __CALL_CONVENTION gshhsbeginCallback( GLenum type )
 {
     switch(type) {
     case GL_TRIANGLES:
@@ -314,7 +326,7 @@ void APIENTRY gshhsbeginCallback( GLenum type )
     g_pos = 0;
 }
 
-void APIENTRY gshhsendCallback()
+void __CALL_CONVENTION gshhsendCallback()
 {
 }
 
