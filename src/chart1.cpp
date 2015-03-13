@@ -4923,10 +4923,14 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
 }
 
 void MyFrame::LaunchLocalHelp( void ) {
-#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
     
-    wxString def_lang_canonical = wxLocale::GetLanguageInfo( wxLANGUAGE_DEFAULT )->CanonicalName;
-
+    wxString def_lang_canonical = _T("en_US");
+    
+#if wxUSE_XLOCALE 
+    if(plocale_def_lang)
+        def_lang_canonical = plocale_def_lang->GetCanonicalName();
+#endif
+    
     wxString help_locn = g_Platform->GetSharedDataDir() + _T("doc/help_");
 
     wxString help_try = help_locn + def_lang_canonical + _T(".html");
@@ -4942,7 +4946,6 @@ void MyFrame::LaunchLocalHelp( void ) {
     }
 
     wxLaunchDefaultBrowser(wxString( _T("file:///") ) + help_try );
-#endif    
 }
 
 
