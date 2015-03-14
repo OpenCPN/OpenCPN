@@ -10975,7 +10975,8 @@ bool GetSizeForDevID(wxString &TargetDevID, int *WidthMm, int *HeightMm)
         
 bool GetWindowsMonitorSize( int *width, int *height)
 {
-            int WidthMm, HeightMm;
+            int WidthMm = 0;
+            int HeightMm = 0;
             
             DISPLAY_DEVICE dd;
             dd.cb = sizeof(dd);
