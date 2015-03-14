@@ -4421,3 +4421,12 @@ int PI_PLIBRenderObjectToGL( const wxGLContext &glcc, PI_S57Obj *pObj,
     
 }
 
+/* API 1.13  */
+
+/* API 1.13  adds some more common functions to avoid unnecessary code duplication */
+
+double fromDMM_Plugin( wxString sdms )
+{
+    return fromDMM( sdms );
+}
+
