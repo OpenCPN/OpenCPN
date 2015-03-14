@@ -1669,12 +1669,13 @@ bool MyApp::OnInit()
 
 #ifdef __OCPN__ANDROID__
     ::wxDisplaySize( &cw, &ch);
+    qDebug() << cw << ch;
     ch -= 24;                           // This accounts for an error in the wxQT-Android interface...
 
     if((cw > 200) && (ch > 200) )
         new_frame_size.Set( cw, ch );
     else
-        new_frame_size.Set( 800, 500 );
+        new_frame_size.Set( 800, 400 );
 #endif
         
     //  For Windows and GTK, provide the expected application Minimize/Close bar

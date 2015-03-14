@@ -1171,6 +1171,8 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     wxBoxSizer* bSizer15;
     bSizer15 = new wxBoxSizer( wxHORIZONTAL );
 
+    sbSizerConnectionProps->Add( bSizer15, 0, wxEXPAND, 0 );
+    
     m_rbTypeSerial = new wxRadioButton( m_pNMEAForm, wxID_ANY, _("Serial"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
     m_rbTypeSerial->SetValue( true );
     bSizer15->Add( m_rbTypeSerial, 0, wxALL, 5 );
@@ -1187,14 +1189,36 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
         
     
     if(OCPNPlatform::hasInternalBT()){      // has built-in Bluetooth
-        m_rbTypeInternalBT = new wxRadioButton( m_pNMEAForm, wxID_ANY, _("Built-in Bluetooth"), wxDefaultPosition, wxDefaultSize, 0 );
+        m_rbTypeInternalBT = new wxRadioButton( m_pNMEAForm, wxID_ANY, _("Built-in Bluetooth SPP"), wxDefaultPosition, wxDefaultSize, 0 );
         bSizer15->Add( m_rbTypeInternalBT, 0, wxALL, 5 );
+        
+        m_buttonScanBT = new wxButton( m_pNMEAForm, wxID_ANY, _("BT Scan"), wxDefaultPosition, wxDefaultSize );
+        m_buttonScanBT->Hide();
+        
+        wxBoxSizer* bSizer15a = new wxBoxSizer( wxHORIZONTAL );
+        sbSizerConnectionProps->Add( bSizer15a, 0, wxEXPAND, 5 );
+        
+        bSizer15a->Add( m_buttonScanBT, 0, wxALL, 5 );
+        
+        m_stBTPairs = new wxStaticText( m_pNMEAForm, wxID_ANY, _("Bluetooth Data Sources"), wxDefaultPosition, wxDefaultSize, 0 );
+        m_stBTPairs->Wrap( -1 );
+        m_stBTPairs->Hide();
+        bSizer15a->Add( m_stBTPairs, 0, wxALL, 5 );
+        
+        m_choiceBTDataSources = new wxChoice( m_pNMEAForm, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                                              g_Platform->getBluetoothScanResults());
+        m_choiceBTDataSources->SetSelection( 0 );
+        m_choiceBTDataSources->Hide();
+        bSizer15a->Add( m_choiceBTDataSources, 1, wxEXPAND|wxTOP, 5 );
+        
+        
+        m_buttonScanBT->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnScanBTClick ), NULL, this );
+        
     }
     else
         m_rbTypeInternalBT = NULL;
     
     
-    sbSizerConnectionProps->Add( bSizer15, 0, wxEXPAND, 0 );
 
     gSizerNetProps = new wxGridSizer( 0, 2, 0, 0 );
 
@@ -5284,6 +5308,13 @@ void options::OnValChange( wxCommandEvent& event )
     event.Skip();
 }
 
+
+void options::OnScanBTClick( wxCommandEvent& event )
+{
+    g_Platform->startBluetoothScan();
+}
+
+
 void options::OnConnValChange( wxCommandEvent& event )
 {
     connectionsaved = false;
@@ -5469,9 +5500,16 @@ void options::ShowNMEABT(bool visible)
 {
     if ( visible )
     {
+        m_buttonScanBT->Show();
+        m_stBTPairs->Show();
+        m_choiceBTDataSources->Show();
+        
     }
     else
     {
+        m_buttonScanBT->Hide();
+        m_stBTPairs->Hide();
+        m_choiceBTDataSources->Hide();
     }
 }
 

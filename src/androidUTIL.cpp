@@ -141,6 +141,35 @@ extern "C"{
 
 
 
+wxString callActivityMethod_is(const char *method, int parm)
+{
+    wxString return_string;
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                           "activity", "()Landroid/app/Activity;");
+    
+    if ( !activity.isValid() ){
+        qDebug() << "Activity is not valid";
+        return return_string;
+    }
+    
+    //  Call the desired method
+    QAndroidJniObject data = activity.callObjectMethod(method, "(I)Ljava/lang/String;", parm);
+    
+    jstring s = data.object<jstring>();
+    
+    //  Need a Java environment to decode the resulting string
+    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+        qDebug() << "GetEnv failed.";
+    }
+    else {
+        const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+        return_string = wxString(ret_string, wxConvUTF8);
+    }
+    
+    return return_string;
+    
+}
+
 
 bool androidGetMemoryStatus( int *mem_total, int *mem_used )
 {
@@ -262,6 +291,11 @@ double GetAndroidDisplaySize()
     }
     
     wxLogMessage(_T("Metrics:") + return_string);
+    wxSize screen_size = ::wxGetDisplaySize();
+    wxString msg;
+    msg.Printf(_T("wxGetDisplaySize(): %d %d"), screen_size.x, screen_size.y);
+    wxLogMessage(msg);
+    
     
     wxString istr = return_string.BeforeFirst('.');
     
@@ -464,7 +498,72 @@ wxString androidGPSService(int parm)
     
      return return_string;
 }
+
+
+bool androidDeviceHasBlueTooth()
+{
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                           "activity", "()Landroid/app/Activity;");
     
+    if ( !activity.isValid() ){
+        qDebug() << "Activity is not valid";
+        return _T("Activity is not valid");
+    }
+    
+    //  Call the desired method
+    QAndroidJniObject data = activity.callObjectMethod("hasBluetooth", "(I)Ljava/lang/String;", 0);
+    
+    wxString query;
+    jstring s = data.object<jstring>();
+    
+    //  Need a Java environment to decode the resulting string
+    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+        qDebug() << "GetEnv failed.";
+    }
+    else {
+        const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+        query = wxString(ret_string, wxConvUTF8);
+    }
+    
+    bool result = query.Upper().IsSameAs(_T("YES"));
+    
+    if(result){
+        qDebug() << "Android Device has internal Bluetooth";
+        wxLogMessage(_T("Android Device has internal Bluetooth"));
+    }
+    else{
+        qDebug() << "Android Device has NO internal Bluetooth";
+        wxLogMessage(_T("Android Device has NO internal Bluetooth"));
+    }
+    
+    return result;
+}
+
+bool androidStartBluetoothScan()
+{
+    wxString result = callActivityMethod_is("startBlueToothScan", 0);
+    
+    return true;
+    
+}
+
+wxArrayString androidGetBluetoothScanResults()
+{
+    wxArrayString ret_array;
+
+    wxString result = callActivityMethod_is("getBlueToothScanResults", 0);
+    
+    wxStringTokenizer tk(result, _T(";"));
+    while ( tk.HasMoreTokens() )
+    {
+        wxString token = tk.GetNextToken();
+        ret_array.Add(token);
+    }
+        
+        return ret_array;
+}
+
+
     
 #if 0
 void invokeApp( void )

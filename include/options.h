@@ -287,6 +287,7 @@ public:
     void OnChartsPageChange( wxListbookEvent& event );
     void OnChartDirListSelect( wxCommandEvent& event );
     void OnUnitsChoice( wxCommandEvent& event );
+    void OnScanBTClick( wxCommandEvent& event );
     
     void UpdateWorkArrayFromTextCtl();
 
@@ -358,6 +359,10 @@ public:
     wxRadioButton* m_rbTypeNet;
     wxRadioButton* m_rbTypeInternalGPS;
     wxRadioButton* m_rbTypeInternalBT;
+    wxButton* m_buttonScanBT;
+    wxStaticText* m_stBTPairs;
+    wxChoice* m_choiceBTDataSources;
+    
     wxGridSizer* gSizerNetProps;
     wxStaticText* m_stNetProto;
     wxRadioButton* m_rbNetProtoTCP;

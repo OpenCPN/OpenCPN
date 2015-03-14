@@ -52,4 +52,8 @@ extern bool androidStopNMEA();
 extern wxString androidGPSService(int parm);
 extern bool androidDeviceHasGPS();
 
+extern bool androidDeviceHasBlueTooth();
+extern bool androidStartBluetoothScan();
+extern wxArrayString androidGetBluetoothScanResults();
+
 #endif   //guard

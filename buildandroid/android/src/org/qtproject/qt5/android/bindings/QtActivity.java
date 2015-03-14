@@ -105,9 +105,13 @@ import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.MulticastLock;
 import java.util.concurrent.atomic.AtomicReference;
 
+import android.bluetooth.BluetoothAdapter;
+
 import org.opencpn.GPSServer;
 import org.opencpn.OCPNNativeLib;
 
+import android.bluetooth.BluetoothDevice;
+import org.opencpn.BTScanHelper;
 
 public class QtActivity extends Activity
 {
@@ -205,6 +209,8 @@ public class QtActivity extends Activity
     public ProgressDialog ringProgressDialog;
     public boolean m_hasGPS;
 
+    private BTScanHelper scanHelper;
+    private Boolean m_ScanHelperStarted = false;
 
     OCPNNativeLib nativeLib;
 
@@ -408,6 +414,65 @@ public class QtActivity extends Activity
 
         return m_GPSServer.doService( parm );
     }
+
+    public String hasBluetooth( final int parm ){
+        String ret = "Yes";
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter == null) {
+            ret = "No";
+        }
+
+//        PackageManager pm = context.getPackageManager();
+//        boolean hasBluetooth = pm.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH);
+        return ret;
+    }
+
+    public String startBlueToothScan( final int parm ){
+        Log.i("DEBUGGER_TAG", "startBlueToothScan");
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+                if(!m_ScanHelperStarted){
+                    scanHelper = new BTScanHelper(QtActivity.this);
+                    m_ScanHelperStarted = true;
+                }
+
+                scanHelper.doDiscovery();
+
+             }});
+
+
+        return( "OK" );
+
+    }
+
+    public String getBlueToothScanResults( final int parm ){
+        String ret_str = "";
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+                if(!m_ScanHelperStarted){
+                    scanHelper = new BTScanHelper(QtActivity.this);
+                    m_ScanHelperStarted = true;
+                }
+
+
+             }});
+
+        if(m_ScanHelperStarted)
+            ret_str = scanHelper.getDiscoveredDevices();;
+
+        return ret_str;
+
+   //     return ("line A;line B;"); //scanHelper.getDiscoveredDevices();
+
+
+    }
+
 
     // this function is used to load and start the loader
     private void loadApplication(Bundle loaderParams)
