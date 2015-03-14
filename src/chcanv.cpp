@@ -2455,44 +2455,7 @@ void ChartCanvas::GetCursorLatLon( double *lat, double *lon )
 
 void ChartCanvas::GetDoubleCanvasPointPix( double rlat, double rlon, wxPoint2DDouble *r )
 {
-    // If the Current Chart is a raster chart, and the
-    // requested lat/long is within the boundaries of the chart,
-    // and the VP is not rotated,
-    // then use the embedded BSB chart georeferencing algorithm
-    // for greater accuracy
-    // Additionally, use chart embedded georef if the projection is TMERC
-    //  i.e. NOT MERCATOR and NOT POLYCONIC
-
-    // If for some reason the chart rejects the request by returning an error,
-    // then fall back to Viewport Projection estimate from canvas parameters
-    if( Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_RASTER )
-        && ( ( ( fabs( GetVP().rotation ) < .0001 ) &&
-               ( ( !g_bskew_comp || ( fabs( GetVP().skew ) < .0001 ) ) ) )
-             || ( ( Current_Ch->GetChartProjectionType() != PROJECTION_MERCATOR )
-                  && ( Current_Ch->GetChartProjectionType() != PROJECTION_TRANSVERSE_MERCATOR )
-                  && ( Current_Ch->GetChartProjectionType() != PROJECTION_POLYCONIC ) ) ) )
-    {
-        ChartBaseBSB *Cur_BSB_Ch = dynamic_cast<ChartBaseBSB *>( Current_Ch );
-//                        bool bInside = G_FloatPtInPolygon ( ( MyFlPoint * ) Cur_BSB_Ch->GetCOVRTableHead ( 0 ),
-//                                                            Cur_BSB_Ch->GetCOVRTablenPoints ( 0 ), rlon, rlat );
-//                        bInside = true;
-//                        if ( bInside )
-        if( Cur_BSB_Ch ) {
-            //    This is a Raster chart....
-            //    If the VP is changing, the raster chart parameters may not yet be setup
-            //    So do that before accessing the chart's embedded georeferencing
-            Cur_BSB_Ch->SetVPRasterParms( GetVP() );
-            double rpixxd, rpixyd;
-            if( 0 == Cur_BSB_Ch->latlong_to_pix_vp( rlat, rlon, rpixxd, rpixyd, GetVP() ) ) {
-                r->m_x = rpixxd;
-                r->m_y = rpixyd;
-                return;
-            }
-        }
-    }
-
-    //    if needed, use the VPoint scaling estimator,
-    *r = GetVP().GetDoublePixFromLL( rlat, rlon );
+    return GetDoubleCanvasPointPixVP( GetVP(), rlat, rlon, r );
 }
 
 void ChartCanvas::GetDoubleCanvasPointPixVP( ViewPort &vp, double rlat, double rlon, wxPoint2DDouble *r )

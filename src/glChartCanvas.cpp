@@ -1392,10 +1392,10 @@ bool glChartCanvas::PurgeChartTextures( ChartBase *pc, bool b_purge_factory )
 #define NORM_FACTOR 16.0
 void glChartCanvas::MultMatrixViewPort(ViewPort &vp)
 {
-    wxPoint point;
-    cc1->GetCanvasPointPixVP(vp, 0, 0, &point);
-    glTranslatef(point.x, point.y, 0);
-
+    wxPoint2DDouble point;
+    cc1->GetDoubleCanvasPointPixVP(vp, 0, 0, &point);
+    glTranslatef(point.m_x, point.m_y, 0);
+    
     glScalef(vp.view_scale_ppm/NORM_FACTOR, vp.view_scale_ppm/NORM_FACTOR, 1);
 
     double angle = vp.rotation;
