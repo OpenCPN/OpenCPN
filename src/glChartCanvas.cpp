@@ -100,6 +100,7 @@ extern bool g_bopengl;
 extern int g_GPU_MemSize;
 extern bool g_bDebugOGL;
 extern bool g_bShowFPS;
+extern bool g_btouch;
 
 GLenum       g_texture_rectangle_format;
 
@@ -868,12 +869,16 @@ void glChartCanvas::MouseEvent( wxMouseEvent& event )
 {
     if(cc1->MouseEventSetup( event ))
         return;                 // handled, no further action required
-        
+
     bool obj_proc = cc1->MouseEventProcessObjects( event );
     
 #ifndef __OCPN__ANDROID__
     if(!obj_proc)
         cc1->MouseEventProcessCanvas( event );
+    
+    if( !g_btouch )
+        cc1->SetCanvasCursor( event );
+    
 #endif    
         
 }
@@ -1121,12 +1126,19 @@ void glChartCanvas::SetupOpenGL()
 
     g_GLOptions.m_bUseCanvasPanning = false;
 #ifdef __OCPN__ANDROID__
-    g_GLOptions.m_bUseCanvasPanning = true;
+    g_GLOptions.m_bUseCanvasPanning = false; //true;
 #endif
         
     //      Maybe build FBO(s)
 
     BuildFBO();
+    
+#ifdef __OCPN__ANDROID__
+    g_GLOptions.m_bUseCanvasPanning = false; //m_b_BuiltFBO;
+#endif
+    
+    
+    
 #if 1   /* this test sometimes fails when the fbo still works */
         //  But we need to be ultra-conservative here, so run all the tests we can think of
     

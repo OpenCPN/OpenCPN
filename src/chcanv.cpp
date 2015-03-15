@@ -6085,6 +6085,45 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
     
     if(!MouseEventProcessObjects( event ) )
         MouseEventProcessCanvas( event );
+    
+    if( !g_btouch )
+        SetCanvasCursor( event );
+}
+
+
+void ChartCanvas::SetCanvasCursor( wxMouseEvent& event )
+{
+    //    Switch to the appropriate cursor on mouse movement
+
+    int x, y;
+    event.GetPosition( &x, &y );
+    
+    wxCursor *ptarget_cursor = pCursorArrow;
+    
+    if( ( !parent_frame->nRoute_State )
+        && ( !m_bMeasure_Active ) /*&& ( !m_bCM93MeasureOffset_Active )*/) {
+        
+        if( x > xr_margin ) {
+            ptarget_cursor = pCursorRight;
+            cursor_region = MID_RIGHT;
+        } else if( x < xl_margin ) {
+            ptarget_cursor = pCursorLeft;
+            cursor_region = MID_LEFT;
+        } else if( y > yb_margin ) {
+            ptarget_cursor = pCursorDown;
+            cursor_region = MID_TOP;
+        } else if( y < yt_margin ) {
+            ptarget_cursor = pCursorUp;
+            cursor_region = MID_BOT;
+        } else {
+            ptarget_cursor = pCursorArrow;
+            cursor_region = CENTER;
+        }
+        } else if( m_bMeasure_Active || parent_frame->nRoute_State ) // If Measure tool use Pencil Cursor
+            ptarget_cursor = pCursorPencil;
+
+    SetCursor( *ptarget_cursor );
+
 }
 
 

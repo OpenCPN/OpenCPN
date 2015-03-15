@@ -167,6 +167,7 @@ public:
       bool MouseEventSetup( wxMouseEvent& event );
       bool MouseEventProcessObjects( wxMouseEvent& event );
       bool MouseEventProcessCanvas( wxMouseEvent& event );
+      void SetCanvasCursor( wxMouseEvent& event );
       
       void PopupMenuHandler(wxCommandEvent& event);
 
