@@ -1935,6 +1935,8 @@ InitReturn ChartBaseBSB::PostInit(void)
           m_depth_unit_id = DEPTH_UNIT_METERS;
       else if(test_str.IsSameAs(_T("METRES"), FALSE))                  // Special case for alternate spelling
           m_depth_unit_id = DEPTH_UNIT_METERS;
+      else if(test_str.IsSameAs(_T("METRIC"), FALSE))
+          m_depth_unit_id = DEPTH_UNIT_METERS;
       else if(test_str.IsSameAs(_T("FATHOMS"), FALSE))
           m_depth_unit_id = DEPTH_UNIT_FATHOMS;
       else if(test_str.Find(_T("FATHOMS")) != wxNOT_FOUND)             // Special case for "Fathoms and Feet"
