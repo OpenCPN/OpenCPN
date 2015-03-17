@@ -615,6 +615,8 @@ typedef void (*GenericFunction)(void);
 #elif defined(__WXOSX__)
 #include <dlfcn.h>
 #define systemGetProcAddress(ADDR) dlsym( RTLD_DEFAULT, ADDR)
+#elif defined(__OCPN__ANDROID__)
+#define systemGetProcAddress(ADDR) eglGetProcAddress(ADDR)
 #else
 #define systemGetProcAddress(ADDR) glXGetProcAddress((const GLubyte*)ADDR)
 #endif
@@ -625,6 +627,7 @@ GenericFunction ocpnGetProcAddress(const char *addr, const char *extension)
     if(!extension)
         return (GenericFunction)NULL;
 
+#ifndef __OCPN__ANDROID__    
     //  If this is an extension entry point,
     //  We look explicitly in the extensions list to confirm
     //  that the request is actually supported.
@@ -642,13 +645,10 @@ GenericFunction ocpnGetProcAddress(const char *addr, const char *extension)
             return (GenericFunction)NULL;
         }
     }
+#endif    
     
     snprintf(addrbuf, sizeof addrbuf, "%s%s", addr, extension);
-#ifdef __OCPN__ANDROID__
-    return (GenericFunction)NULL;
-#else
     return (GenericFunction)systemGetProcAddress(addrbuf);
-#endif
     
 }
 
@@ -661,7 +661,14 @@ static void GetglEntryPoints( void )
     // the following are all part of framebuffer object,
     // according to opengl spec, we cannot mix EXT and ARB extensions
     // (I don't know that it could ever happen, but if it did, bad things would happen)
+
+#ifndef __OCPN__ANDROID__
     const char *extensions[] = {"", "ARB", "EXT", 0 };
+#else
+    const char *extensions[] = {"OES", 0 };
+#endif
+    
+    unsigned int n_ext = (sizeof extensions) / (sizeof *extensions);
 
     unsigned int i;
     for(i=0; i<(sizeof extensions) / (sizeof *extensions); i++) {
@@ -670,7 +677,7 @@ static void GetglEntryPoints( void )
             break;
     }
 
-    if(i<3){
+    if(i<n_ext){
         s_glGenRenderbuffers = (PFNGLGENRENDERBUFFERSEXTPROC)
             ocpnGetProcAddress( "glGenRenderbuffers", extensions[i]);
         s_glFramebufferTexture2D = (PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)
@@ -718,32 +725,20 @@ static void GetglEntryPoints( void )
         }
     }
             
-            
+
+#ifndef __OCPN__ANDROID__            
     for(i=0; i<(sizeof extensions) / (sizeof *extensions); i++) {
         if((s_glCompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DPROC)
             ocpnGetProcAddress( "glCompressedTexImage2D", extensions[i])))
             break;
     }
 
-    if(i<3){
+    if(i<n_ext){
         s_glGetCompressedTexImage = (PFNGLGETCOMPRESSEDTEXIMAGEPROC)
             ocpnGetProcAddress( "glGetCompressedTexImage", extensions[i]);
     }
-    
-#ifdef __OCPN__ANDROID__
+#else    
     s_glCompressedTexImage2D =          glCompressedTexImage2D;
-    
-    s_glGenFramebuffers =               glGenFramebuffers;
-    s_glGenRenderbuffers =              glGenRenderbuffers;
-    s_glFramebufferTexture2D =          glFramebufferTexture2D;
-    s_glBindFramebuffer =               glBindFramebuffer;
-    s_glFramebufferRenderbuffer =       glFramebufferRenderbuffer;
-    s_glRenderbufferStorage =           glRenderbufferStorage;
-    s_glBindRenderbuffer =              glBindRenderbuffer;
-    s_glCheckFramebufferStatus =        glCheckFramebufferStatus;
-    s_glDeleteFramebuffers =            glDeleteFramebuffers;
-    s_glDeleteRenderbuffers =           glDeleteRenderbuffers;
-    
 #endif
     
 }
@@ -913,14 +908,15 @@ void glChartCanvas::BuildFBO( )
         m_cache_tex_x = 2048;
         m_cache_tex_y = 2048;
     } else {            
-            m_cache_tex_x = GetSize().x;
-            m_cache_tex_y = GetSize().y;
+        m_cache_tex_x = GetSize().x;
+        m_cache_tex_y = GetSize().y;
     }        
         
     ( s_glGenFramebuffers )( 1, &m_fb0 );
     ( s_glGenRenderbuffers )( 1, &m_renderbuffer );
 
     ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, m_fb0 );
+    
 
     // initialize color textures
     glGenTextures( 2, m_cache_tex );
@@ -930,6 +926,7 @@ void glChartCanvas::BuildFBO( )
         glTexParameteri( g_texture_rectangle_format, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
         glTexImage2D( g_texture_rectangle_format, 0, GL_RGBA, m_cache_tex_x, m_cache_tex_y, 0, GL_RGBA,
                       GL_UNSIGNED_BYTE, NULL );
+        
     }
 
     ( s_glBindRenderbuffer )( GL_RENDERBUFFER_EXT, m_renderbuffer );
@@ -950,6 +947,7 @@ void glChartCanvas::BuildFBO( )
                                          m_cache_tex_x, m_cache_tex_y );
         ( s_glFramebufferRenderbuffer )( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
                                              GL_RENDERBUFFER_EXT, m_renderbuffer );
+        
     }
     
     // Disable Render to FBO
@@ -987,6 +985,7 @@ void glChartCanvas::SetupOpenGL()
     
     const GLubyte *ext_str = glGetString(GL_EXTENSIONS);
     m_extensions = wxString( (const char *)ext_str, wxConvUTF8 );
+//    wxLogMessage( m_extensions );
     
     //  Set the minimum line width
     GLint parms[2];
@@ -1049,17 +1048,18 @@ void glChartCanvas::SetupOpenGL()
     wxLogMessage( wxString::Format(_T("OpenGL-> Texture rectangle format: %x"),
                                    g_texture_rectangle_format));
 
-    //      We require certain extensions to support FBO rendering
-    if(!g_texture_rectangle_format)
-        m_b_DisableFBO = true;
-    
 #ifndef __OCPN__ANDROID__
+        //      We require certain extensions to support FBO rendering
+        if(!g_texture_rectangle_format)
+            m_b_DisableFBO = true;
+        
         if(!QueryExtension( "GL_EXT_framebuffer_object" ))
-        m_b_DisableFBO = true;
+            m_b_DisableFBO = true;
 #endif
  
 #ifdef __OCPN__ANDROID__
-//        m_b_DisableFBO = true;
+            g_texture_rectangle_format = GL_TEXTURE_2D;
+//        m_b_DisableFBO = false;
 #endif
         
 //    if(b_timeGL)
@@ -1102,6 +1102,10 @@ void glChartCanvas::SetupOpenGL()
     }
 #endif
 
+#ifdef __OCPN__ANDROID__
+    g_b_EnableVBO = false;
+#endif
+
     if(g_b_EnableVBO)
         wxLogMessage( _T("OpenGL-> Using Vertexbuffer Objects") );
     else
@@ -1126,16 +1130,13 @@ void glChartCanvas::SetupOpenGL()
 
     g_GLOptions.m_bUseCanvasPanning = false;
 #ifdef __OCPN__ANDROID__
-    g_GLOptions.m_bUseCanvasPanning = false; //true;
+    g_GLOptions.m_bUseCanvasPanning = true;
 #endif
         
     //      Maybe build FBO(s)
 
     BuildFBO();
     
-#ifdef __OCPN__ANDROID__
-    g_GLOptions.m_bUseCanvasPanning = false; //m_b_BuiltFBO;
-#endif
     
     
     
@@ -1165,7 +1166,7 @@ void glChartCanvas::SetupOpenGL()
         
         GLenum fb_status = ( s_glCheckFramebufferStatus )( GL_FRAMEBUFFER_EXT );
         ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, 0 );
-
+        
         if( fb_status != GL_FRAMEBUFFER_COMPLETE_EXT ) {
             wxString msg;
             msg.Printf( _T("    OpenGL-> Framebuffer Incomplete:  %08X"), fb_status );
@@ -1174,6 +1175,13 @@ void glChartCanvas::SetupOpenGL()
             BuildFBO();
         }
     }
+#endif
+
+#ifdef __OCPN__ANDROID__
+    g_GLOptions.m_bUseCanvasPanning = m_b_BuiltFBO;
+    if(g_GLOptions.m_bUseCanvasPanning)
+        wxLogMessage( _T("OpenGL-> Using FastCanvas Panning/Zooming") );
+    
 #endif
 
     if( m_b_BuiltFBO && !m_b_useFBOStencil )
@@ -3984,17 +3992,28 @@ void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
     switch(event.GetState()){
         case GestureStarted:
             panx = pany = 0;
+            qDebug() << "start pan" << dx << dy;
             break;
             
         case GestureUpdated:
-            FastPan( dx, dy ); 
+            if(!g_GLOptions.m_bUseCanvasPanning)
+                cc1->PanCanvas( dx, -dy );
+            else{
+                FastPan( dx, dy ); 
+                qDebug() << "update pan" << dx << dy;
+            }
+                
+                
             panx -= dx;
             pany -= dy;
             cc1->ClearbFollow();
             break;
             
         case GestureFinished:
-            cc1->PanCanvas( -panx, pany );
+            if (g_GLOptions.m_bUseCanvasPanning){            
+                cc1->PanCanvas( -x,-y/*-panx, pany*/ );
+                qDebug() << "finish pan" << -x << -y << panx << pany;
+            }
 
             panx = pany = 0;
             
@@ -4021,13 +4040,15 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
             break;
             
         case GestureUpdated:
+
+            if(g_GLOptions.m_bUseCanvasPanning){
+                if( event.GetScaleFactor() > 1)
+                    zoom_val = ((event.GetScaleFactor() - 1.0) * zoom_gain) + 1.0;
+                else
+                    zoom_val = 1.0 - ((1.0 - event.GetScaleFactor()) * zoom_gain);
             
-            if( event.GetScaleFactor() > 1)
-                zoom_val = ((event.GetScaleFactor() - 1.0) * zoom_gain) + 1.0;
-            else
-                zoom_val = 1.0 - ((1.0 - event.GetScaleFactor()) * zoom_gain);
-            
-            FastZoom(zoom_val/*event.GetScaleFactor()*/);
+                FastZoom(zoom_val/*event.GetScaleFactor()*/);
+            }
             break;
             
         case GestureFinished:{
