@@ -3833,7 +3833,8 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                   p.y = ( int ) xgeom->ymax;
                   Transform ( &p, 0., 0., &lat, &lon );
                   pobj->BBObj.SetMax ( lon, lat );
-
+                  pobj->bBBObj_valid = true;
+                  
                   //  and declare x/y of the object to be average of all cm93points
                   pobj->x = ( xgeom->xmin + xgeom->xmax ) / 2.;
                   pobj->y = ( xgeom->ymin + xgeom->ymax ) / 2.;
