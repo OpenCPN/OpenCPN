@@ -2081,8 +2081,6 @@ extern ocpnGLOptions g_GLOptions;
 
     wxLogMessage( wxString::Format(_("OpenCPN Initialized in %ld ms."), sw.Time() ) );
 
-//    qDebug() << "OpenCPN Initialized ms:" <<  sw.Time();
-    
 #ifdef __OCPN__ANDROID__
     androidHideBusyIcon();
 #endif    
@@ -7034,8 +7032,7 @@ bool MyFrame::DoChartUpdate( void )
     if( NULL == pCurrentStack ) pCurrentStack = new ChartStack;
 
     // Build a chart stack based on tLat, tLon
-    if( 0 == ChartData->BuildChartStack( &WorkStack, tLat, tLon, g_sticky_chart ) )       // Bogus Lat, Lon?
-            {
+    if( 0 == ChartData->BuildChartStack( &WorkStack, tLat, tLon, g_sticky_chart ) ) {      // Bogus Lat, Lon?
         if( NULL == pDummyChart ) {
             pDummyChart = new ChartDummy;
             bNewChart = true;
@@ -7052,9 +7049,11 @@ bool MyFrame::DoChartUpdate( void )
         bNewView |= cc1->SetViewPoint( tLat, tLon, set_scale, 0, cc1->GetVPRotation() );
 
         //      If the chart stack has just changed, there is new status
-        if( !ChartData->EqualStacks( &WorkStack, pCurrentStack ) ) {
-            bNewPiano = true;
-            bNewChart = true;
+        if(WorkStack.nEntry && pCurrentStack->nEntry){
+            if( !ChartData->EqualStacks( &WorkStack, pCurrentStack ) ) {
+                bNewPiano = true;
+                bNewChart = true;
+            }
         }
 
         //      Copy the new (by definition empty) stack into the target stack
