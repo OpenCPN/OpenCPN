@@ -5500,16 +5500,16 @@ void options::ShowNMEABT(bool visible)
 {
     if ( visible )
     {
-        m_buttonScanBT->Show();
-        m_stBTPairs->Show();
-        m_choiceBTDataSources->Show();
+        if(m_buttonScanBT) m_buttonScanBT->Show();
+        if(m_stBTPairs) m_stBTPairs->Show();
+        if(m_choiceBTDataSources) m_choiceBTDataSources->Show();
         
     }
     else
     {
-        m_buttonScanBT->Hide();
-        m_stBTPairs->Hide();
-        m_choiceBTDataSources->Hide();
+        if(m_buttonScanBT) m_buttonScanBT->Hide();
+        if(m_stBTPairs) m_stBTPairs->Hide();
+        if(m_choiceBTDataSources) m_choiceBTDataSources->Hide();
     }
 }
 
