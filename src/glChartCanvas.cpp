@@ -862,7 +862,9 @@ void glChartCanvas::OnSize( wxSizeEvent& event )
 
 void glChartCanvas::MouseEvent( wxMouseEvent& event )
 {
-    if(cc1->MouseEventSetup( event ))
+    //TODO   Double click processing
+    
+    if(cc1->MouseEventSetup( event, false ))    // Double click processing handled privately
         return;                 // handled, no further action required
 
     bool obj_proc = cc1->MouseEventProcessObjects( event );
@@ -3046,7 +3048,7 @@ void glChartCanvas::RenderWorldChart(ocpnDC &dc, OCPNRegion &region, ViewPort &v
     for(OCPNRegionIterator clipit( region ); clipit.HaveRects(); clipit.NextRect())
         n_rect++;
 
-    if(/*vp.view_scale_ppm > .03 ||*/ n_rect > 2)
+    if( n_rect != 2 )
     {
         glColor3ub(water.Red(), water.Green(), water.Blue());
         SetClipRegion( vp, region, true, true ); /* clear background, no rotation */
@@ -3465,6 +3467,8 @@ void glChartCanvas::Render()
                     if(!m_cache_vp.IsValid())
                         b_reset = true;
                         
+//          b_reset = true;
+          
                     if( b_reset ){
                         m_fbo_offsetx = (m_cache_tex_x - GetSize().x)/2;
                         m_fbo_offsety = (m_cache_tex_y - GetSize().y)/2;
@@ -3481,9 +3485,20 @@ void glChartCanvas::Render()
                     glPushMatrix();
                     
                     glViewport( m_fbo_offsetx, m_fbo_offsety, (GLint) sx, (GLint) sy );
-                    
+
                     RenderCharts(gldc, chart_get_region);
+
+/*                    
+                    wxRect rect( 50, 50, cc1->VPoint.rv_rect.width-100, cc1->VPoint.rv_rect.height-100 );
+                    glColor3ub(250, 0, 0);
                     
+                    glBegin( GL_QUADS );
+                    glVertex2f( rect.x,                     rect.y );
+                    glVertex2f( rect.x + rect.width,        rect.y );
+                    glVertex2f( rect.x + rect.width,        rect.y + rect.height );
+                    glVertex2f( rect.x,                     rect.y + rect.height );
+                    glEnd();
+*/                    
                     glPopMatrix();
 
                     glViewport( 0, 0, (GLint) sx, (GLint) sy );
@@ -3660,6 +3675,16 @@ void glChartCanvas::RenderCanvasBackingChart( ocpnDC dc, OCPNRegion valid_region
     ViewPort cvp = cc1->GetVP().BuildExpandedVP( m_cache_tex_x,  m_cache_tex_y );
   
     RenderWorldChart(dc, texr, cvp);
+
+/*    
+    dc.SetPen(wxPen(wxColour(254,254,0), 3));
+    dc.DrawLine( 0, 0, m_cache_tex_x, m_cache_tex_y);
+    
+    dc.DrawLine( 0, 0, 0, m_cache_tex_y);
+    dc.DrawLine( 0, m_cache_tex_y, m_cache_tex_x, m_cache_tex_y);
+    dc.DrawLine( m_cache_tex_x, m_cache_tex_y, m_cache_tex_x, 0);
+    dc.DrawLine( m_cache_tex_x, 0, 0, 0);
+*/    
   
     // 3:  Use largest scale chart in the current quilt candidate list (which is identical to chart bar)
     //          which covers the entire canvas
@@ -3973,6 +3998,7 @@ void glChartCanvas::FastZoom(float factor)
 #ifdef __OCPN__ANDROID__
 
 int panx, pany;
+bool m_binPan;
 
 void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
 {
@@ -3991,8 +4017,11 @@ void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
     
     switch(event.GetState()){
         case GestureStarted:
+            if(m_binPan)
+                break;
+            
             panx = pany = 0;
-            qDebug() << "start pan" << dx << dy;
+            m_binPan = true;
             break;
             
         case GestureUpdated:
@@ -4000,7 +4029,6 @@ void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
                 cc1->PanCanvas( dx, -dy );
             else{
                 FastPan( dx, dy ); 
-                qDebug() << "update pan" << dx << dy;
             }
                 
                 
@@ -4011,11 +4039,12 @@ void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
             
         case GestureFinished:
             if (g_GLOptions.m_bUseCanvasPanning){            
-                cc1->PanCanvas( -x,-y/*-panx, pany*/ );
-                qDebug() << "finish pan" << -x << -y << panx << pany;
+                //               cc1->PanCanvas( -x,-y ); //works, but jumps
+                cc1->PanCanvas( -panx, pany );
             }
 
             panx = pany = 0;
+            m_binPan = false;
             
             break;
             

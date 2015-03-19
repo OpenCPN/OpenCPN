@@ -164,7 +164,7 @@ public:
       void PaintCleanup();
       void Scroll(int dx, int dy);
 
-      bool MouseEventSetup( wxMouseEvent& event );
+      bool MouseEventSetup( wxMouseEvent& event, bool b_handle_dclick = true );
       bool MouseEventProcessObjects( wxMouseEvent& event );
       bool MouseEventProcessCanvas( wxMouseEvent& event );
       void SetCanvasCursor( wxMouseEvent& event );

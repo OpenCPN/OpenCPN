@@ -2757,13 +2757,13 @@ bool ChartCanvas::PanCanvas( double dx, double dy )
 {
     double dlat, dlon;
     wxPoint2DDouble p;
-//      CALLGRIND_START_INSTRUMENTATION
 
     extendedSectorLegs.clear();
 
     GetDoubleCanvasPointPix( GetVP().clat, GetVP().clon, &p );
     GetCanvasPixPoint( p.m_x + dx, p.m_y + dy, dlat, dlon );
 
+    
     if( dlon > 360. ) dlon -= 360.;
     if( dlon < -360. ) dlon += 360.;
 
@@ -2778,10 +2778,8 @@ bool ChartCanvas::PanCanvas( double dx, double dy )
     }
 
     int cur_ref_dbIndex = m_pQuilt->GetRefChartdbIndex();
-    SetViewPoint( dlat, dlon, VPoint.view_scale_ppm, VPoint.skew, VPoint.rotation );
 
-//      vLat = dlat;
-//      vLon = dlon;
+    SetViewPoint( dlat, dlon, VPoint.view_scale_ppm, VPoint.skew, VPoint.rotation );
 
     if( VPoint.b_quilt ) {
         int new_ref_dbIndex = m_pQuilt->GetRefChartdbIndex();
@@ -2798,10 +2796,6 @@ bool ChartCanvas::PanCanvas( double dx, double dy )
     ClearbFollow();      // update the follow flag
 
     Refresh( false );
-#ifdef __OCPN__ANDROID__    
-    Update();
-#endif    
-    
 
     pCurTrackTimer->Start( m_curtrack_timer_msec, wxTIMER_ONE_SHOT );
 
@@ -4466,7 +4460,7 @@ bool leftIsDown;
 
 
 
-bool ChartCanvas::MouseEventSetup( wxMouseEvent& event )
+bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
 {
     int x, y;
     int mx, my;
@@ -4518,7 +4512,8 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event )
 
             
         // Capture LeftUp's and time them, unless it already came from the timer.
-    if( event.LeftUp() && !singleClickEventIsValid ) {
+            
+    if( b_handle_dclick && event.LeftUp() && !singleClickEventIsValid ) {
 
         // Ignore the second LeftUp after the DClick.
         if( m_DoubleClickTimer->IsRunning() ) {
