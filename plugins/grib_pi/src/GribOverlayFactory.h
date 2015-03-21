@@ -62,16 +62,17 @@ public:
     double m_dwidth, m_dheight;
 };
 
-#define MAX_PARTICLE_HISTORY 64
+#define MAX_PARTICLE_HISTORY 8
 #include <list>
 struct Particle {
     int m_Duration;
 
     // history is a ringbuffer.. because so many particles are
     // used, it is a slight optimization over std::list
-    int m_HistoryPos, m_HistorySize;
-    struct {
-        wxPoint2DDouble m_Pos;
+    int m_HistoryPos, m_HistorySize, m_Run;
+    struct ParticleNode {
+        float m_Pos[2];
+        float m_Screen[2];
         wxUint8 m_Color[3];
     } m_History[MAX_PARTICLE_HISTORY];
 };
@@ -79,7 +80,12 @@ struct Particle {
 struct ParticleMap {
 public:
     ParticleMap(int settings)
-    : m_Setting(settings) {}
+    : m_Setting(settings), array_size(0), color_array(NULL), vertex_array(NULL) { }
+
+    ~ParticleMap() {
+        delete [] color_array;
+        delete [] vertex_array;
+    }
 
     std::list<Particle> m_Particles;
 
@@ -87,6 +93,12 @@ public:
     time_t m_Reference_Time;
     int m_Setting;
     int history_size;
+
+    unsigned int array_size;
+    unsigned char *color_array;
+    float *vertex_array;
+
+    PlugIn_ViewPort last_viewport;
 };
 
 class LineBuffer {

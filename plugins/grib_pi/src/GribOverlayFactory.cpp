@@ -1457,13 +1457,14 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
     if(m_ParticleMap && m_ParticleMap->m_Setting != settings)
         ClearParticles();
 
-   if(!m_ParticleMap)
+    if(!m_ParticleMap)
         m_ParticleMap = new ParticleMap(settings);
 
     std::list<Particle> &particles = m_ParticleMap->m_Particles;
 
-    const int max_duration = 200;
-    int history_size = 32 / sqrt(m_Settings.Settings[settings].m_dParticleDensity);
+    const int max_duration = 50;
+    const int run_count = 6;
+    int history_size = 24 / sqrt(m_Settings.Settings[settings].m_dParticleDensity);
     history_size = wxMin(history_size, MAX_PARTICLE_HISTORY);
 
     std::list<Particle>::iterator it;
@@ -1486,11 +1487,55 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
         m_ParticleMap->history_size = history_size;
     }
 
+    // Did the viewport change?  update cached screen coordinates
+    // we could use normalized coordinates in opengl and avoid this
+    PlugIn_ViewPort &lvp = m_ParticleMap->last_viewport;
+    if(vp->view_scale_ppm != lvp.view_scale_ppm
+        || vp->skew != lvp.skew || vp->rotation != lvp.rotation) {
+        for(it = particles.begin(); it != particles.end(); it++)
+            for(int i=0; i<it->m_HistorySize; i++) {
+                Particle::ParticleNode &n = it->m_History[i];
+                float (&p)[2] = n.m_Pos;
+                if(p[0] == -10000)
+                    continue;
+
+                wxPoint ps;
+                GetCanvasPixLL( vp, &ps, p[1], p[0] );
+                n.m_Screen[0] = ps.x;
+                n.m_Screen[1] = ps.y;
+            }
+
+        lvp = *vp;
+    } else // just panning, do quicker update
+        if(vp->clat != lvp.clat || vp->clon != lvp.clon) {
+            wxPoint p1, p2;
+            GetCanvasPixLL( vp, &p1, 0, 0 );
+            GetCanvasPixLL( &lvp, &p2, 0, 0 );
+
+            p1 -= p2;
+
+            for(it = particles.begin(); it != particles.end(); it++)
+                for(int i=0; i<it->m_HistorySize; i++) {
+                    Particle::ParticleNode &n = it->m_History[i];
+                    float (&p)[2] = n.m_Pos;
+                    if(p[0] == -10000)
+                        continue;
+
+                    n.m_Screen[0] += p1.x;
+                    n.m_Screen[1] += p1.y;
+                }
+            lvp = *vp;
+        }
+
     // update particle map
     if(m_bUpdateParticles) {
-        it = particles.begin();
-        while(it != particles.end()) {
-        // don't allow particle to live too long
+        for(it = particles.begin(); it != particles.end(); it++) {
+            // Update the interpolation factor
+            if(++it->m_Run < run_count)
+                continue;
+            it->m_Run = 0;
+
+            // don't allow particle to live too long
             if(it->m_Duration > max_duration) {
                 it = particles.erase(it);
                 continue;
@@ -1498,7 +1543,7 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
 
             it->m_Duration++;
 
-            wxPoint2DDouble &pp = it->m_History[it->m_HistoryPos].m_Pos;
+            float (&pp)[2] = it->m_History[it->m_HistoryPos].m_Pos;
 
             // maximum history size
             if(++it->m_HistorySize > history_size)
@@ -1507,31 +1552,53 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
             if(++it->m_HistoryPos >= history_size)
                 it->m_HistoryPos = 0;
 
-            wxPoint2DDouble &p = it->m_History[it->m_HistoryPos].m_Pos;
+            Particle::ParticleNode &n = it->m_History[it->m_HistoryPos];
+            float (&p)[2] = n.m_Pos;
             double vkn=0, ang;
             if(it->m_Duration < max_duration - history_size &&
-               GribRecord::getInterpolatedValues(vkn, ang, pGRX, pGRY, pp.m_x, pp.m_y) &&
+               GribRecord::getInterpolatedValues(vkn, ang, pGRX, pGRY, pp[0], pp[1]) &&
                vkn > 0 && vkn < 100 ) {
                 vkn = m_Settings.CalibrateValue(settings, vkn);
                 double d;
                 if(settings == GribOverlaySettings::CURRENT)
-                    d = vkn;
+                    d = vkn*run_count;
                 else
-                    d = vkn/4;
+                    d = vkn*run_count/4;
 
-                PositionBearingDistanceMercator_Plugin(pp.m_y, pp.m_x, ang+180,
-                                                       d,
-                                                       &p.m_y, &p.m_x);
+                ang += 180;
+#if 0 // elliptical very accurate but incredibly slow
+                PositionBearingDistanceMercator_Plugin(pp.m_y, pp.m_x, ang,
+                                                       d, &p.m_y, &p.m_x);
+#elif 0 // really fast rectangular.. not really good at high latitudes
+
+                float angr = ang/180*M_PI;
+                p[0] = pp[0] + sinf(angr)*d/60;
+                p[1] = pp[1] + cosf(angr)*d/60;
+#else // spherical (close enough)
+                float angr = ang/180*M_PI;
+                float latr = pp[1]*M_PI/180;
+                float D = d/3443; // earth radius in nm
+                float sD = sinf(D), cD = cosf(D);
+                float sy = sinf(latr), cy = cosf(latr);
+                float sa = sinf(angr), ca = cosf(angr);
+
+                p[0] = pp[0] + asinf(sa*sD/cy) * 180/M_PI;
+                p[1] = asinf(sy*cD + cy*sD*ca) * 180/M_PI;
+#endif
+                wxPoint ps;
+
+                GetCanvasPixLL( vp, &ps, p[1], p[0] );
+
+                n.m_Screen[0] = ps.x;
+                n.m_Screen[1] = ps.y;
 
                 wxColor c = GetGraphicColor(settings, vkn);
 
-                it->m_History[it->m_HistoryPos].m_Color[0] = c.Red();
-                it->m_History[it->m_HistoryPos].m_Color[1] = c.Green();
-                it->m_History[it->m_HistoryPos].m_Color[2] = c.Blue();
+                n.m_Color[0] = c.Red();
+                n.m_Color[1] = c.Green();
+                n.m_Color[2] = c.Blue();
             } else
-                p.m_x = -10000;
-
-            it++;
+                p[0] = -10000;
         }
     }
 
@@ -1540,25 +1607,27 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
     int total_particles = m_Settings.Settings[settings].m_dParticleDensity * pGRX->getNi() * pGRX->getNj();
 
     // set max cap to avoid locking the program up
-    if(total_particles > 200000)
-        total_particles = 200000;
+    if(total_particles > 60000)
+        total_particles = 60000;
 
     // remove particles if needed;
-    int size = (int)particles.size();
-    for(int i = 0; i<size - total_particles; i++)
+    int remove_particles = (particles.size() - total_particles) / 16;
+    for(int i = 0; i<remove_particles; i++)
         particles.pop_back();
 
     // add new particles as needed
-    while(size < total_particles) {
+    int run = 0;
+    int new_particles = (total_particles - particles.size()) / 64;
 
-        wxPoint2DDouble p;
+    for(int npi=0; npi<new_particles; npi++) {
+        float p[2];
         double vkn, ang;
         for(int i=0; i<20; i++) {
             // random position in the grib area
-            p.m_x = (double)rand() / RAND_MAX * (pGRX->getLonMax() - pGRX->getLonMin()) + pGRX->getLonMin();
-            p.m_y = (double)rand() / RAND_MAX * (pGRX->getLatMax() - pGRX->getLatMin()) + pGRX->getLatMin();
+            p[0] = (float)rand() / RAND_MAX * (pGRX->getLonMax() - pGRX->getLonMin()) + pGRX->getLonMin();
+            p[1] = (float)rand() / RAND_MAX * (pGRX->getLatMax() - pGRX->getLatMin()) + pGRX->getLatMin();
 
-            if(GribRecord::getInterpolatedValues(vkn, ang, pGRX, pGRY, p.m_x, p.m_y) &&
+            if(GribRecord::getInterpolatedValues(vkn, ang, pGRX, pGRY, p[0], p[1]) &&
                vkn > 0 && vkn < 100)
                 vkn = m_Settings.CalibrateValue(settings, vkn);
             else
@@ -1573,7 +1642,16 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
         np.m_Duration = rand()%(max_duration/2);
         np.m_HistoryPos = 0;
         np.m_HistorySize = 1;
-        np.m_History[np.m_HistoryPos].m_Pos = p;
+        np.m_Run = run++;
+        if(run == run_count)
+            run = 0;
+
+        memcpy(np.m_History[np.m_HistoryPos].m_Pos, p, sizeof p);
+
+        wxPoint ps;
+        GetCanvasPixLL( vp, &ps, p[1], p[0]);
+        np.m_History[np.m_HistoryPos].m_Screen[0] = ps.x;
+        np.m_History[np.m_HistoryPos].m_Screen[1] = ps.y;
 
         wxColour c;
         c = GetGraphicColor(settings, vkn);
@@ -1582,7 +1660,6 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
         np.m_History[np.m_HistoryPos].m_Color[2] = c.Blue();
 
         particles.push_back(np);
-        size++;
     }
 
     // settings for opengl lines
@@ -1595,70 +1672,92 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
         glLineWidth( 2.3f );
     }
 
+    int cnt=0;
+    unsigned char *&ca = m_ParticleMap->color_array;
+    float *&va = m_ParticleMap->vertex_array;
+
+    if(m_ParticleMap->array_size < particles.size() && !m_pdc) {
+        delete [] ca;
+        delete [] va;
+        ca = new unsigned char[particles.size() * MAX_PARTICLE_HISTORY * 8];
+        va = new float[particles.size() * MAX_PARTICLE_HISTORY * 4];
+        m_ParticleMap->array_size = particles.size();
+    }
+
     // draw particles
     for(std::list<Particle>::iterator it = particles.begin();
         it != particles.end(); it++) {
 
-        int alpha = 250;
+        wxUint8 alpha = 250;
 
         int i = it->m_HistoryPos;
 
-        bool first = true;
-        wxPoint l;
+        bool lip_valid = false;
+        float *lp = NULL, lip[2];
+        wxUint8 lc[4];
 
-        if( !m_pdc )
-            glBegin( GL_LINE_STRIP );
+        for(;;) {
+            float (&dp)[2] = it->m_History[i].m_Pos;
+            if(dp[0] != -10000) {
+                float (&sp)[2] = it->m_History[i].m_Screen;
+                wxUint8 (&ci)[3] = it->m_History[i].m_Color;
 
-        do {
-            int runs = 4;
-            wxPoint2DDouble dp = it->m_History[i].m_Pos;
-            if(dp.m_x != -10000) {
-                wxPoint p;
-                GetCanvasPixLL( vp, &p, dp.m_y, dp.m_x);
+                wxUint8 c[4] = {ci[0], ci[1], (unsigned char)(ci[2] + 240-alpha/2), alpha};
 
-                wxUint8 (&c)[3] = it->m_History[i].m_Color;
-                bool wrap = first ? false : abs(l.x - p.x) > vp->pix_width;
+                if(lp) {
+                    float sip[2];
 
-                if( m_pdc ) {
-                    if(!first && !wrap) {
-                        m_pdc->SetPen(wxPen( wxColour(c[0], c[1], c[2] + 240-alpha/2), 2 ));
-                        m_pdc->DrawLine( p.x, p.y, l.x, l.y );
+                    // interpolate between points..  a cubic interpolation
+                    // might allow a much higher run_count
+                    float d = (float)it->m_Run/run_count;
+                    for(int j=0; j<2; j++)
+                        sip[j] = d*lp[j] + (1-d)*sp[j];
+
+                    if(lip_valid && fabsf(lip[0] - sip[0]) < vp->pix_width) {
+                        if( m_pdc ) {
+                            m_pdc->SetPen(wxPen( wxColour(c[0], c[1], c[2]), 2 ));
+                            m_pdc->DrawLine( sip[0], sip[1], lip[0], lip[1] );
+                        } else {
+                            memcpy(ca + 4*cnt, c, sizeof lc);
+                            memcpy(va + 2*cnt, lip, sizeof sp);
+                            cnt++;
+                            memcpy(ca + 4*cnt, lc, sizeof c);
+                            memcpy(va + 2*cnt, sip, sizeof sp);
+                            cnt++;
+                        }
                     }
 
-                } else {
-                    if(wrap) {
-                        glEnd();
-                        glBegin( GL_LINE_STRIP );
-                    }
-
-                    glColor4ub( c[0], c[1], c[2] + 240-alpha/2, alpha);
-                    glVertex2d( p.x, p.y );
+                    memcpy(lip, sip, sizeof lip);
+                    lip_valid = true;
                 }
 
-                l = p;
-                first = false;
-            } else
-                runs = 1;
-
-            alpha -= 240 / history_size;// * runs;
-
-            /* skip entries */
-            for(int c = 0; c<runs; c++) {
-                if(--i < 0) {
-                    i = history_size - 1;
-                    if(i >= it->m_HistorySize)
-                        goto outer_break;
-                }
-
-                if(i == it->m_HistoryPos)
-                    goto outer_break;
+                memcpy(lc, c, sizeof lc);
+                lp = sp;
             }
 
-        } while(1);
-    outer_break:
+            if(--i < 0) {
+                i = history_size - 1;
+                if(i >= it->m_HistorySize)
+                    break;
+            }
 
-        if( !m_pdc )
-            glEnd();
+            if(i == it->m_HistoryPos)
+                break;
+
+            alpha -= 240 / history_size;
+        }
+    }
+
+    if( !m_pdc ) {
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_COLOR_ARRAY);
+
+        glColorPointer(4, GL_UNSIGNED_BYTE, 4*sizeof(unsigned char), ca);
+        glVertexPointer(2, GL_FLOAT, 2*sizeof(float), va);
+        glDrawArrays(GL_LINES, 0, cnt);
+
+        glDisableClientState(GL_VERTEX_ARRAY);
+        glDisableClientState(GL_COLOR_ARRAY);
     }
 
     //  On some platforms, especially slow ones, the GPU will lag behind the CPU.
