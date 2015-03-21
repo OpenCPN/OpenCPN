@@ -559,8 +559,11 @@ wxArrayString androidGetBluetoothScanResults()
         wxString token = tk.GetNextToken();
         ret_array.Add(token);
     }
-        
-        return ret_array;
+    
+    if(!ret_array.GetCount())
+        ret_array.Add(_("Nothing found"));
+    
+    return ret_array;
 }
 
 

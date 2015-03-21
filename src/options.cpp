@@ -949,6 +949,10 @@ void options::Init()
     m_pageUI = -1;
     m_pagePlugins = -1;
     m_pageConnections = -1;
+
+    m_buttonScanBT = 0;
+    m_stBTPairs = 0;
+    m_choiceBTDataSources = 0;
     
     lastPage = 0;
     

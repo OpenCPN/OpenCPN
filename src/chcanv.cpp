@@ -4521,7 +4521,7 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
         }
 
         // Save the event for later running if there is no DClick.
-        m_DoubleClickTimer->Start( 250, wxTIMER_ONE_SHOT );
+        m_DoubleClickTimer->Start( 350, wxTIMER_ONE_SHOT );
         singleClickEvent = event;
         singleClickEventIsValid = true;
         return(true);
@@ -6077,8 +6077,8 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
     if(MouseEventSetup( event ))
         return;                 // handled, no further action required
     
-    if(!MouseEventProcessObjects( event ) )
-        MouseEventProcessCanvas( event );
+    if(!MouseEventProcessObjects( event ))
+         MouseEventProcessCanvas( event );
     
     if( !g_btouch )
         SetCanvasCursor( event );

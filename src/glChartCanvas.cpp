@@ -862,15 +862,13 @@ void glChartCanvas::OnSize( wxSizeEvent& event )
 
 void glChartCanvas::MouseEvent( wxMouseEvent& event )
 {
-    //TODO   Double click processing
-    
-    if(cc1->MouseEventSetup( event, false ))    // Double click processing handled privately
+    if(cc1->MouseEventSetup( event )) 
         return;                 // handled, no further action required
 
     bool obj_proc = cc1->MouseEventProcessObjects( event );
     
 #ifndef __OCPN__ANDROID__
-    if(!obj_proc)
+    if(!obj_proc && !cc1->singleClickEventIsValid ) 
         cc1->MouseEventProcessCanvas( event );
     
     if( !g_btouch )

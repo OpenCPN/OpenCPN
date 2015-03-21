@@ -346,9 +346,33 @@ public class QtActivity extends Activity
 */
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
+/*
+isplayMetrics dm = getResources().getDisplayMetrics();
+float screen_w = dm.widthPixels;
+float screen_h = dm.heightPixels;
+
+int resId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+if (resId > 0) {
+    screen_h -= getResources().getDimensionPixelSize(resId);
+}
+
+TypedValue typedValue = new TypedValue();
+if(getTheme().resolveAttribute(android.R.attr.actionBarSize, typedValue, true)){
+    screen_h -= getResources().getDimensionPixelSize(typedValue.resourceId);
+}
+==or==
+public int getStatusBarHeight() {
+*/
+        int statusBarHeight = 0;
+
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            statusBarHeight = getResources().getDimensionPixelSize(resourceId);
+        }
+
 
         String ret;
-        ret = String.format("%f;%d;%d", dm.xdpi, dm.widthPixels, dm.heightPixels);
+        ret = String.format("%f;%d;%d", dm.xdpi, dm.widthPixels, dm.heightPixels - statusBarHeight );
 
         return ret;
     }
