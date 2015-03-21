@@ -105,7 +105,9 @@ void StatWin::RePosition()
 
     wxPoint screen_pos = GetParent()->ClientToScreen( position );
     Move( screen_pos );
+#ifdef __OCPN__ANDROID__
     Raise();
+#endif    
 }
 
 void StatWin::ReSize()

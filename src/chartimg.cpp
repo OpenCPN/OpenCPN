@@ -724,32 +724,34 @@ found_uclc_file:
 
           return INIT_FAIL_REMOVE;
       }
-      
+
       if(m_datum_str.IsEmpty()){
           wxString msg(_T("   Chart datum not specified on chart "));
           msg.Append(m_FullPath);
           wxLogMessage(msg);
+          wxLogMessage(_T("   Default datum (WGS84) substituted."));
           
-          return INIT_FAIL_REMOVE;
+          //          return INIT_FAIL_REMOVE;
       }
-      
-      char d_str[100];
-      strncpy(d_str, m_datum_str.mb_str(), 99);
-      d_str[99] = 0;
-      
-      int datum_index = GetDatumIndex(d_str);
-
-      if(datum_index < 0){
-          wxString msg(_T("   Chart datum {"));
-          msg += m_datum_str;
-          msg += _T("} invalid on chart ");
-          msg.Append(m_FullPath);
-          wxLogMessage(msg);
+      else {
+          char d_str[100];
+          strncpy(d_str, m_datum_str.mb_str(), 99);
+          d_str[99] = 0;
           
-//          return INIT_FAIL_REMOVE;
-      }
-      
-
+          int datum_index = GetDatumIndex(d_str);
+          
+          if(datum_index < 0){
+              wxString msg(_T("   Chart datum {"));
+              msg += m_datum_str;
+              msg += _T("} invalid on chart ");
+              msg.Append(m_FullPath);
+              wxLogMessage(msg);
+              wxLogMessage(_T("   Default datum (WGS84) substituted."));
+              
+              //          return INIT_FAIL_REMOVE;
+              }
+          }
+          
 //    Convert captured plypoint information into chart COVR structures
       m_nCOVREntries = 1;
       m_pCOVRTablePoints = (int *)malloc(sizeof(int));
@@ -1387,24 +1389,27 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
           wxString msg(_T("   Chart datum not specified on chart "));
           msg.Append(m_FullPath);
           wxLogMessage(msg);
-          
-          return INIT_FAIL_REMOVE;
-      }
-      
-      char d_str[100];
-      strncpy(d_str, m_datum_str.mb_str(), 99);
-      d_str[99] = 0;
-      
-      int datum_index = GetDatumIndex(d_str);
-      
-      if(datum_index < 0){
-          wxString msg(_T("   Chart datum {"));
-          msg += m_datum_str;
-          msg += _T("} invalid on chart ");
-          msg.Append(m_FullPath);
-          wxLogMessage(msg);
+          wxLogMessage(_T("   Default datum (WGS84) substituted."));
           
 //          return INIT_FAIL_REMOVE;
+      }
+      else {
+        char d_str[100];
+        strncpy(d_str, m_datum_str.mb_str(), 99);
+        d_str[99] = 0;
+        
+        int datum_index = GetDatumIndex(d_str);
+        
+        if(datum_index < 0){
+            wxString msg(_T("   Chart datum {"));
+            msg += m_datum_str;
+            msg += _T("} invalid on chart ");
+            msg.Append(m_FullPath);
+            wxLogMessage(msg);
+            wxLogMessage(_T("   Default datum (WGS84) substituted."));
+            
+    //          return INIT_FAIL_REMOVE;
+        }
       }
 
 //    Convert captured plypoint information into chart COVR structures
@@ -1929,6 +1934,8 @@ InitReturn ChartBaseBSB::PostInit(void)
       else if(test_str.IsSameAs(_T("METERS"), FALSE))
           m_depth_unit_id = DEPTH_UNIT_METERS;
       else if(test_str.IsSameAs(_T("METRES"), FALSE))                  // Special case for alternate spelling
+          m_depth_unit_id = DEPTH_UNIT_METERS;
+      else if(test_str.IsSameAs(_T("METRIC"), FALSE))
           m_depth_unit_id = DEPTH_UNIT_METERS;
       else if(test_str.IsSameAs(_T("FATHOMS"), FALSE))
           m_depth_unit_id = DEPTH_UNIT_FATHOMS;

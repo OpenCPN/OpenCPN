@@ -2455,44 +2455,7 @@ void ChartCanvas::GetCursorLatLon( double *lat, double *lon )
 
 void ChartCanvas::GetDoubleCanvasPointPix( double rlat, double rlon, wxPoint2DDouble *r )
 {
-    // If the Current Chart is a raster chart, and the
-    // requested lat/long is within the boundaries of the chart,
-    // and the VP is not rotated,
-    // then use the embedded BSB chart georeferencing algorithm
-    // for greater accuracy
-    // Additionally, use chart embedded georef if the projection is TMERC
-    //  i.e. NOT MERCATOR and NOT POLYCONIC
-
-    // If for some reason the chart rejects the request by returning an error,
-    // then fall back to Viewport Projection estimate from canvas parameters
-    if( Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_RASTER )
-        && ( ( ( fabs( GetVP().rotation ) < .0001 ) &&
-               ( ( !g_bskew_comp || ( fabs( GetVP().skew ) < .0001 ) ) ) )
-             || ( ( Current_Ch->GetChartProjectionType() != PROJECTION_MERCATOR )
-                  && ( Current_Ch->GetChartProjectionType() != PROJECTION_TRANSVERSE_MERCATOR )
-                  && ( Current_Ch->GetChartProjectionType() != PROJECTION_POLYCONIC ) ) ) )
-    {
-        ChartBaseBSB *Cur_BSB_Ch = dynamic_cast<ChartBaseBSB *>( Current_Ch );
-//                        bool bInside = G_FloatPtInPolygon ( ( MyFlPoint * ) Cur_BSB_Ch->GetCOVRTableHead ( 0 ),
-//                                                            Cur_BSB_Ch->GetCOVRTablenPoints ( 0 ), rlon, rlat );
-//                        bInside = true;
-//                        if ( bInside )
-        if( Cur_BSB_Ch ) {
-            //    This is a Raster chart....
-            //    If the VP is changing, the raster chart parameters may not yet be setup
-            //    So do that before accessing the chart's embedded georeferencing
-            Cur_BSB_Ch->SetVPRasterParms( GetVP() );
-            double rpixxd, rpixyd;
-            if( 0 == Cur_BSB_Ch->latlong_to_pix_vp( rlat, rlon, rpixxd, rpixyd, GetVP() ) ) {
-                r->m_x = rpixxd;
-                r->m_y = rpixyd;
-                return;
-            }
-        }
-    }
-
-    //    if needed, use the VPoint scaling estimator,
-    *r = GetVP().GetDoublePixFromLL( rlat, rlon );
+    return GetDoubleCanvasPointPixVP( GetVP(), rlat, rlon, r );
 }
 
 void ChartCanvas::GetDoubleCanvasPointPixVP( ViewPort &vp, double rlat, double rlon, wxPoint2DDouble *r )
@@ -2794,13 +2757,13 @@ bool ChartCanvas::PanCanvas( double dx, double dy )
 {
     double dlat, dlon;
     wxPoint2DDouble p;
-//      CALLGRIND_START_INSTRUMENTATION
 
     extendedSectorLegs.clear();
 
     GetDoubleCanvasPointPix( GetVP().clat, GetVP().clon, &p );
     GetCanvasPixPoint( p.m_x + dx, p.m_y + dy, dlat, dlon );
 
+    
     if( dlon > 360. ) dlon -= 360.;
     if( dlon < -360. ) dlon += 360.;
 
@@ -2815,10 +2778,8 @@ bool ChartCanvas::PanCanvas( double dx, double dy )
     }
 
     int cur_ref_dbIndex = m_pQuilt->GetRefChartdbIndex();
-    SetViewPoint( dlat, dlon, VPoint.view_scale_ppm, VPoint.skew, VPoint.rotation );
 
-//      vLat = dlat;
-//      vLon = dlon;
+    SetViewPoint( dlat, dlon, VPoint.view_scale_ppm, VPoint.skew, VPoint.rotation );
 
     if( VPoint.b_quilt ) {
         int new_ref_dbIndex = m_pQuilt->GetRefChartdbIndex();
@@ -2835,10 +2796,6 @@ bool ChartCanvas::PanCanvas( double dx, double dy )
     ClearbFollow();      // update the follow flag
 
     Refresh( false );
-#ifdef __OCPN__ANDROID__    
-    Update();
-#endif    
-    
 
     pCurTrackTimer->Start( m_curtrack_timer_msec, wxTIMER_ONE_SHOT );
 
@@ -4503,7 +4460,7 @@ bool leftIsDown;
 
 
 
-bool ChartCanvas::MouseEventSetup( wxMouseEvent& event )
+bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
 {
     int x, y;
     int mx, my;
@@ -4555,7 +4512,8 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event )
 
             
         // Capture LeftUp's and time them, unless it already came from the timer.
-    if( event.LeftUp() && !singleClickEventIsValid ) {
+            
+    if( b_handle_dclick && event.LeftUp() && !singleClickEventIsValid ) {
 
         // Ignore the second LeftUp after the DClick.
         if( m_DoubleClickTimer->IsRunning() ) {
@@ -4564,7 +4522,7 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event )
         }
 
         // Save the event for later running if there is no DClick.
-        m_DoubleClickTimer->Start( 250, wxTIMER_ONE_SHOT );
+        m_DoubleClickTimer->Start( 350, wxTIMER_ONE_SHOT );
         singleClickEvent = event;
         singleClickEventIsValid = true;
         return(true);
@@ -6120,8 +6078,47 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
     if(MouseEventSetup( event ))
         return;                 // handled, no further action required
     
-    if(!MouseEventProcessObjects( event ) )
-        MouseEventProcessCanvas( event );
+    if(!MouseEventProcessObjects( event ))
+         MouseEventProcessCanvas( event );
+    
+    if( !g_btouch )
+        SetCanvasCursor( event );
+}
+
+
+void ChartCanvas::SetCanvasCursor( wxMouseEvent& event )
+{
+    //    Switch to the appropriate cursor on mouse movement
+
+    int x, y;
+    event.GetPosition( &x, &y );
+    
+    wxCursor *ptarget_cursor = pCursorArrow;
+    
+    if( ( !parent_frame->nRoute_State )
+        && ( !m_bMeasure_Active ) /*&& ( !m_bCM93MeasureOffset_Active )*/) {
+        
+        if( x > xr_margin ) {
+            ptarget_cursor = pCursorRight;
+            cursor_region = MID_RIGHT;
+        } else if( x < xl_margin ) {
+            ptarget_cursor = pCursorLeft;
+            cursor_region = MID_LEFT;
+        } else if( y > yb_margin ) {
+            ptarget_cursor = pCursorDown;
+            cursor_region = MID_TOP;
+        } else if( y < yt_margin ) {
+            ptarget_cursor = pCursorUp;
+            cursor_region = MID_BOT;
+        } else {
+            ptarget_cursor = pCursorArrow;
+            cursor_region = CENTER;
+        }
+        } else if( m_bMeasure_Active || parent_frame->nRoute_State ) // If Measure tool use Pencil Cursor
+            ptarget_cursor = pCursorPencil;
+
+    SetCursor( *ptarget_cursor );
+
 }
 
 

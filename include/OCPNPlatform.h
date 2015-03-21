@@ -48,7 +48,8 @@ public:
     static bool hasInternalGPS(wxString profile = _T(""));      // GPS
 
     static bool hasInternalBT(wxString profile = _T(""));       // Bluetooth
-    
+    bool startBluetoothScan();
+    wxArrayString getBluetoothScanResults();
     
 //  Per-Platform initialization support    
     

@@ -172,12 +172,86 @@ GLAPI void GLAPIENTRY glDisableClientState( GLenum cap );  /* 1.1 */
  */
 
 GLAPI void GLAPIENTRY glVertexPointer( GLint size, GLenum type, GLsizei stride, const GLvoid *ptr );
-
-
 GLAPI void GLAPIENTRY glRasterPos2f( GLfloat x, GLfloat y );
+
+// OES FBO extensions
+#ifndef GL_OES_framebuffer_object
+#define GL_NONE_OES                                             0
+#define GL_FRAMEBUFFER_OES                                      0x8D40
+#define GL_RENDERBUFFER_OES                                     0x8D41
+#define GL_RGBA4_OES                                            0x8056
+#define GL_RGB5_A1_OES                                          0x8057
+#define GL_RGB565_OES                                           0x8D62
+#define GL_DEPTH_COMPONENT16_OES                                0x81A5
+#define GL_RENDERBUFFER_WIDTH_OES                               0x8D42
+#define GL_RENDERBUFFER_HEIGHT_OES                              0x8D43
+#define GL_RENDERBUFFER_INTERNAL_FORMAT_OES                     0x8D44
+#define GL_RENDERBUFFER_RED_SIZE_OES                            0x8D50
+#define GL_RENDERBUFFER_GREEN_SIZE_OES                          0x8D51
+#define GL_RENDERBUFFER_BLUE_SIZE_OES                           0x8D52
+#define GL_RENDERBUFFER_ALPHA_SIZE_OES                          0x8D53
+#define GL_RENDERBUFFER_DEPTH_SIZE_OES                          0x8D54
+#define GL_RENDERBUFFER_STENCIL_SIZE_OES                        0x8D55
+#define GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE_OES               0x8CD0
+#define GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME_OES               0x8CD1
+#define GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL_OES             0x8CD2
+#define GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE_OES     0x8CD3
+#define GL_COLOR_ATTACHMENT0_OES                                0x8CE0
+#define GL_DEPTH_ATTACHMENT_OES                                 0x8D00
+#define GL_STENCIL_ATTACHMENT_OES                               0x8D20
+#define GL_FRAMEBUFFER_COMPLETE_OES                             0x8CD5
+#define GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_OES                0x8CD6
+#define GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_OES        0x8CD7
+#define GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_OES                0x8CD9
+#define GL_FRAMEBUFFER_INCOMPLETE_FORMATS_OES                   0x8CDA
+#define GL_FRAMEBUFFER_UNSUPPORTED_OES                          0x8CDD
+#define GL_FRAMEBUFFER_BINDING_OES                              0x8CA6
+#define GL_RENDERBUFFER_BINDING_OES                             0x8CA7
+#define GL_MAX_RENDERBUFFER_SIZE_OES                            0x84E8
+#define GL_INVALID_FRAMEBUFFER_OPERATION_OES                    0x0506
+#endif
+
+#ifndef GL_OES_framebuffer_object
+#define GL_OES_framebuffer_object 1
+GLAPI GLboolean GLAPIENTRY glIsRenderbufferOES (GLuint renderbuffer);
+GLAPI void GLAPIENTRY glBindRenderbufferOES (GLenum target, GLuint renderbuffer);
+GLAPI void GLAPIENTRY glDeleteRenderbuffersOES (GLsizei n, const GLuint* renderbuffers);
+GLAPI void GLAPIENTRY glGenRenderbuffersOES (GLsizei n, GLuint* renderbuffers);
+GLAPI void GLAPIENTRY glRenderbufferStorageOES (GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
+GLAPI void GLAPIENTRY glGetRenderbufferParameterivOES (GLenum target, GLenum pname, GLint* params);
+GLAPI GLboolean GLAPIENTRY glIsFramebufferOES (GLuint framebuffer);
+GLAPI void GLAPIENTRY glBindFramebufferOES (GLenum target, GLuint framebuffer);
+GLAPI void GLAPIENTRY glDeleteFramebuffersOES (GLsizei n, const GLuint* framebuffers);
+GLAPI void GLAPIENTRY glGenFramebuffersOES (GLsizei n, GLuint* framebuffers);
+GLAPI GLenum GLAPIENTRY glCheckFramebufferStatusOES (GLenum target);
+GLAPI void GLAPIENTRY glFramebufferRenderbufferOES (GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
+GLAPI void GLAPIENTRY glFramebufferTexture2DOES (GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
+GLAPI void GLAPIENTRY glGetFramebufferAttachmentParameterivOES (GLenum target, GLenum attachment, GLenum pname, GLint* params);
+GLAPI void GLAPIENTRY glGenerateMipmapOES (GLenum target);
+#endif
+
+#if 0
+typedef GLboolean (GL_APIENTRYP PFNGLISRENDERBUFFEROESPROC) (GLuint renderbuffer);
+typedef void (GL_APIENTRYP PFNGLBINDRENDERBUFFEROESPROC) (GLenum target, GLuint renderbuffer);
+typedef void (GL_APIENTRYP PFNGLDELETERENDERBUFFERSOESPROC) (GLsizei n, const GLuint* renderbuffers);
+typedef void (GL_APIENTRYP PFNGLGENRENDERBUFFERSOESPROC) (GLsizei n, GLuint* renderbuffers);
+typedef void (GL_APIENTRYP PFNGLRENDERBUFFERSTORAGEOESPROC) (GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
+typedef void (GL_APIENTRYP PFNGLGETRENDERBUFFERPARAMETERIVOESPROC) (GLenum target, GLenum pname, GLint* params);
+typedef GLboolean (GL_APIENTRYP PFNGLISFRAMEBUFFEROESPROC) (GLuint framebuffer);
+typedef void (GL_APIENTRYP PFNGLBINDFRAMEBUFFEROESPROC) (GLenum target, GLuint framebuffer);
+typedef void (GL_APIENTRYP PFNGLDELETEFRAMEBUFFERSOESPROC) (GLsizei n, const GLuint* framebuffers);
+typedef void (GL_APIENTRYP PFNGLGENFRAMEBUFFERSOESPROC) (GLsizei n, GLuint* framebuffers);
+typedef GLenum (GL_APIENTRYP PFNGLCHECKFRAMEBUFFERSTATUSOESPROC) (GLenum target);
+typedef void (GL_APIENTRYP PFNGLFRAMEBUFFERRENDERBUFFEROESPROC) (GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
+typedef void (GL_APIENTRYP PFNGLFRAMEBUFFERTEXTURE2DOESPROC) (GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
+typedef void (GL_APIENTRYP PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVOESPROC) (GLenum target, GLenum attachment, GLenum pname, GLint* params);
+typedef void (GL_APIENTRYP PFNGLGENERATEMIPMAPOESPROC) (GLenum target);
+#endif
+
 
 
 void (*glXGetProcAddress(const GLubyte *procname))( void );
+void (* eglGetProcAddress(   char const * procname))( void );
 
 #define GL_TEXTURE_COMPRESSED_ARB         0x86A1
 #define GL_RENDERBUFFER_EXT               0x8D41

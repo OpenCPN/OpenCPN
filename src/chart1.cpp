@@ -1669,12 +1669,13 @@ bool MyApp::OnInit()
 
 #ifdef __OCPN__ANDROID__
     ::wxDisplaySize( &cw, &ch);
+    qDebug() << cw << ch;
     ch -= 24;                           // This accounts for an error in the wxQT-Android interface...
 
     if((cw > 200) && (ch > 200) )
         new_frame_size.Set( cw, ch );
     else
-        new_frame_size.Set( 800, 500 );
+        new_frame_size.Set( 800, 400 );
 #endif
         
     //  For Windows and GTK, provide the expected application Minimize/Close bar
@@ -2080,8 +2081,6 @@ extern ocpnGLOptions g_GLOptions;
 
     wxLogMessage( wxString::Format(_("OpenCPN Initialized in %ld ms."), sw.Time() ) );
 
-//    qDebug() << "OpenCPN Initialized ms:" <<  sw.Time();
-    
 #ifdef __OCPN__ANDROID__
     androidHideBusyIcon();
 #endif    
@@ -4466,6 +4465,7 @@ void MyFrame::RegisterGlobalMenuItems()
 {
     if ( !m_pMenuBar ) return;  // if there isn't a menu bar
 
+
     wxMenu *nav_menu = new wxMenu();
     nav_menu->AppendCheckItem( ID_MENU_NAV_FOLLOW, _menuText(_("Auto Follow"), _T("Ctrl-A")) );
     nav_menu->AppendCheckItem( ID_MENU_NAV_TRACK, _("Enable Tracking") );
@@ -4473,8 +4473,13 @@ void MyFrame::RegisterGlobalMenuItems()
     nav_menu->AppendRadioItem( ID_MENU_CHART_NORTHUP, _("North Up Mode") );
     nav_menu->AppendRadioItem( ID_MENU_CHART_COGUP, _("Course Up Mode") );
     nav_menu->AppendSeparator();
+#ifndef __WXOSX__
     nav_menu->Append( ID_MENU_ZOOM_IN, _menuText(_("Zoom In"), _T("+")) );
     nav_menu->Append( ID_MENU_ZOOM_OUT, _menuText(_("Zoom Out"), _T("-")) );
+#else
+    nav_menu->Append( ID_MENU_ZOOM_IN, _menuText(_("Zoom In"), _T("Alt-+")) );
+    nav_menu->Append( ID_MENU_ZOOM_OUT, _menuText(_("Zoom Out"), _T("Alt--")) );
+#endif    
     nav_menu->AppendSeparator();
     nav_menu->Append( ID_MENU_SCALE_IN, _menuText(_("Larger Scale Chart"), _T("Ctrl-Left")) );
     nav_menu->Append( ID_MENU_SCALE_OUT, _menuText(_("Smaller Scale Chart"), _T("Ctrl-Right")) );
@@ -4486,21 +4491,39 @@ void MyFrame::RegisterGlobalMenuItems()
 
 
     wxMenu* view_menu = new wxMenu();
+#ifndef __WXOSX__
     view_menu->AppendCheckItem( ID_MENU_CHART_QUILTING, _menuText(_("Enable Chart Quilting"), _T("Q")) );
     view_menu->AppendCheckItem( ID_MENU_CHART_OUTLINES, _menuText(_("Show Chart Outlines"), _T("O")) );
+#else
+    view_menu->AppendCheckItem( ID_MENU_CHART_QUILTING, _menuText(_("Enable Chart Quilting"), _T("Alt-Q")) );
+    view_menu->AppendCheckItem( ID_MENU_CHART_OUTLINES, _menuText(_("Show Chart Outlines"), _T("Alt-O")) );
+#endif    
     view_menu->AppendCheckItem( ID_MENU_UI_CHARTBAR, _menuText(_("Show Chart Bar"), _T("Ctrl-B")) );
+    
 #ifdef USE_S57
     view_menu->AppendSeparator();
+#ifndef __WXOSX__
     view_menu->AppendCheckItem( ID_MENU_ENC_TEXT, _menuText(_("Show ENC Text"), _T("T")) );
     view_menu->AppendCheckItem( ID_MENU_ENC_LIGHTS, _menuText(_("Show ENC Lights"), _T("L")) );
     view_menu->AppendCheckItem( ID_MENU_ENC_SOUNDINGS, _menuText(_("Show ENC Soundings"), _T("S")) );
     view_menu->AppendCheckItem( ID_MENU_ENC_ANCHOR, _menuText(_("Show ENC Anchoring Info"), _T("A")) );
+#else
+    view_menu->AppendCheckItem( ID_MENU_ENC_TEXT, _menuText(_("Show ENC Text"), _T("Alt-T")) );
+    view_menu->AppendCheckItem( ID_MENU_ENC_LIGHTS, _menuText(_("Show ENC Lights"), _T("Alt-L")) );
+    view_menu->AppendCheckItem( ID_MENU_ENC_SOUNDINGS, _menuText(_("Show ENC Soundings"), _T("Alt-S")) );
+    view_menu->AppendCheckItem( ID_MENU_ENC_ANCHOR, _menuText(_("Show ENC Anchoring Info"), _T("Alt-A")) );
+    #endif
 #endif
     view_menu->AppendSeparator();
     view_menu->AppendCheckItem( ID_MENU_SHOW_TIDES, _("Show Tides") );
     view_menu->AppendCheckItem( ID_MENU_SHOW_CURRENTS, _("Show Currents") );
     view_menu->AppendSeparator();
+#ifndef __WXOSX__
     view_menu->Append( ID_MENU_UI_COLSCHEME, _menuText(_("Change Color Scheme"), _T("C")) );
+#else
+    view_menu->Append( ID_MENU_UI_COLSCHEME, _menuText(_("Change Color Scheme"), _T("Alt-C")) );
+#endif    
+    
     view_menu->AppendSeparator();
 #ifdef __WXOSX__
     view_menu->Append(ID_MENU_UI_FULLSCREEN, _menuText(_("Enter Full Screen"), _T("RawCtrl-Ctrl-F")) );
@@ -4519,9 +4542,13 @@ void MyFrame::RegisterGlobalMenuItems()
     ais_menu->Append( ID_MENU_AIS_TARGETLIST, _("AIS Target List...") );
     m_pMenuBar->Append( ais_menu, _("&AIS") );
 
-
     wxMenu* tools_menu = new wxMenu();
+#ifndef __WXOSX__    
     tools_menu->Append( ID_MENU_TOOL_MEASURE, _menuText(_("Measure Distance"), _T("M")) );
+#else
+    tools_menu->Append( ID_MENU_TOOL_MEASURE, _menuText(_("Measure Distance"), _T("Alt-M")) );
+#endif
+    
     tools_menu->AppendSeparator();
     tools_menu->Append( ID_MENU_ROUTE_MANAGER, _("Route && Mark Manager...") );
     tools_menu->Append( ID_MENU_ROUTE_NEW, _menuText(_("Create Route"), _T("Ctrl-R")) );
@@ -4895,10 +4922,14 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
 }
 
 void MyFrame::LaunchLocalHelp( void ) {
-#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
     
-    wxString def_lang_canonical = wxLocale::GetLanguageInfo( wxLANGUAGE_DEFAULT )->CanonicalName;
-
+    wxString def_lang_canonical = _T("en_US");
+    
+#if wxUSE_XLOCALE 
+    if(plocale_def_lang)
+        def_lang_canonical = plocale_def_lang->GetCanonicalName();
+#endif
+    
     wxString help_locn = g_Platform->GetSharedDataDir() + _T("doc/help_");
 
     wxString help_try = help_locn + def_lang_canonical + _T(".html");
@@ -4914,7 +4945,6 @@ void MyFrame::LaunchLocalHelp( void ) {
     }
 
     wxLaunchDefaultBrowser(wxString( _T("file:///") ) + help_try );
-#endif    
 }
 
 
@@ -7002,8 +7032,7 @@ bool MyFrame::DoChartUpdate( void )
     if( NULL == pCurrentStack ) pCurrentStack = new ChartStack;
 
     // Build a chart stack based on tLat, tLon
-    if( 0 == ChartData->BuildChartStack( &WorkStack, tLat, tLon, g_sticky_chart ) )       // Bogus Lat, Lon?
-            {
+    if( 0 == ChartData->BuildChartStack( &WorkStack, tLat, tLon, g_sticky_chart ) ) {      // Bogus Lat, Lon?
         if( NULL == pDummyChart ) {
             pDummyChart = new ChartDummy;
             bNewChart = true;
@@ -7020,9 +7049,11 @@ bool MyFrame::DoChartUpdate( void )
         bNewView |= cc1->SetViewPoint( tLat, tLon, set_scale, 0, cc1->GetVPRotation() );
 
         //      If the chart stack has just changed, there is new status
-        if( !ChartData->EqualStacks( &WorkStack, pCurrentStack ) ) {
-            bNewPiano = true;
-            bNewChart = true;
+        if(WorkStack.nEntry && pCurrentStack->nEntry){
+            if( !ChartData->EqualStacks( &WorkStack, pCurrentStack ) ) {
+                bNewPiano = true;
+                bNewChart = true;
+            }
         }
 
         //      Copy the new (by definition empty) stack into the target stack
@@ -8938,7 +8969,7 @@ void MyPrintout::GenerateGLbmp( )
  *     Very system specific, unavoidably.
  */
 
-#if defined(__UNIX__) && !defined(__OCPN__ANDROID__)
+#if defined(__UNIX__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
 extern "C" int wait(int *);                     // POSIX wait() for process
 
 #include <termios.h>
@@ -8975,7 +9006,7 @@ int paternAdd (const char* patern) {
 }
 
 
-#if defined(__UNIX__) && !defined(__OCPN__ANDROID__)
+#if defined(__UNIX__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
 // This filter verify is device is withing searched patern and verify it is openable
 // -----------------------------------------------------------------------------------
 int paternFilter (const struct dirent * dir) {
@@ -9034,7 +9065,7 @@ wxArrayString *EnumerateSerialPorts( void )
 {
     wxArrayString *preturn = new wxArrayString;
 
-#if defined(__UNIX__) && !defined(__OCPN__ANDROID__)
+#if defined(__UNIX__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
 
     //Initialize the pattern table
     if( devPatern[0] == NULL ) {
@@ -10943,7 +10974,8 @@ bool GetSizeForDevID(wxString &TargetDevID, int *WidthMm, int *HeightMm)
         
 bool GetWindowsMonitorSize( int *width, int *height)
 {
-            int WidthMm, HeightMm;
+            int WidthMm = 0;
+            int HeightMm = 0;
             
             DISPLAY_DEVICE dd;
             dd.cb = sizeof(dd);

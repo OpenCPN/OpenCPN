@@ -981,5 +981,11 @@ extern DECL_EXP void PlugInNormalizeViewport ( PlugIn_ViewPort *vp );
 class wxPoint2DDouble;
 extern "C"  DECL_EXP void GetDoubleCanvasPixLL(PlugIn_ViewPort *vp, wxPoint2DDouble *pp, double lat, double lon);
 
+/* API 1.13  */
+/* API 1.13  adds some more common functions to avoid unnecessary code duplication */
+
+
+extern DECL_EXP double fromDMM_Plugin( wxString sdms );
+
 
 #endif //_PLUGIN_H_
