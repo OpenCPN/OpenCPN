@@ -1096,6 +1096,8 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
                     if( !GribRecord::getInterpolatedValues(sh, dir, pGRX, pGRY, lon, lat) )
                         continue;
 
+                dir = (dir - 90) * M_PI / 180.;
+
                 //draw arrows
                 if(m_Settings.Settings[settings].m_iDirectionArrowForm == 0)
                     drawSingleArrow( i, j, dir + vp->rotation, colour, arrowWidth, arrowSizeIdx );
@@ -1147,7 +1149,6 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
 
                                 if( dir == GRIB_NOTDEF || sh == GRIB_NOTDEF ) continue;
 
-                                dir = (dir - 90) * M_PI / 180.;
                                 wdh = sh+0.5;
                             } else {
                                 if( !GribRecord::getInterpolatedValues(sh, dir, pGRX, pGRY, lon, lat) )
@@ -1155,6 +1156,8 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
 
                                 wdh = (8/2.5*sh)+0.5;
                             }
+
+                            dir = (dir - 90) * M_PI / 180.;
 
                             //draw arrows
                             if(m_Settings.Settings[settings].m_iDirectionArrowForm == 0)
