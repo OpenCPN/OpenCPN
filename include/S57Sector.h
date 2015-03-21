@@ -1,11 +1,11 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  OpenCPN Android support utilities
+ * Purpose:  S57 Chart Object
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2015 by David S. Register                               *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -23,37 +23,18 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef ANDROIDUTIL_H
-#define ANDROIDUTIL_H
+#ifndef __S57SECTOR_H__
+#define __S57SECTOR_H__
 
-#include "wx/wxprec.h"
+#include <wx/wx.h>
 
-#ifndef  WX_PRECOMP
-#include "wx/wx.h"
-#endif //precompiled headers
+typedef struct {
+    wxPoint2DDouble pos;
+    double sector1, sector2;
+    double range;
+    wxColor color;
+    bool iswhite;
+    bool isleading;
+} s57Sector_t;
 
-
-#define GPS_OFF                         0
-#define GPS_ON                          1
-#define GPS_PROVIDER_AVAILABLE          2
-#define GPS_SHOWPREFERENCES             3
-
-extern bool androidGetMemoryStatus( int *mem_total, int *mem_used );
-extern double GetAndroidDisplaySize();
-extern wxSize getAndroidDisplayDimensions( void );
-extern bool LoadQtStyleSheet(wxString &sheet_file);
-
-extern void androidShowBusyIcon();
-extern void androidHideBusyIcon();
-
-
-extern bool androidStartNMEA(wxEvtHandler *consumer);
-extern bool androidStopNMEA();
-extern wxString androidGPSService(int parm);
-extern bool androidDeviceHasGPS();
-
-extern bool androidDeviceHasBlueTooth();
-extern bool androidStartBluetoothScan();
-extern wxArrayString androidGetBluetoothScanResults();
-
-#endif   //guard
+#endif

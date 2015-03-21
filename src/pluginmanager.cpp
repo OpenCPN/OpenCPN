@@ -59,14 +59,13 @@
 #include "s52utils.h"
 #include "gshhs.h"
 #include "mygeom.h"
+#include "OCPNPlatform.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
 #endif
 
 extern MyConfig        *pConfig;
-extern wxString        g_SData_Locn;
-extern wxString        g_PrivateDataDir;
 extern AIS_Decoder     *g_pAIS;
 extern wxAuiManager    *g_pauimgr;
 
@@ -74,6 +73,7 @@ extern wxAuiManager    *g_pauimgr;
 extern wxLocale        *plocale_def_lang;
 #endif
 
+extern OCPNPlatform     *g_Platform;
 extern ChartDB         *ChartData;
 extern MyFrame         *gFrame;
 extern ocpnStyle::StyleManager* g_StyleManager;
@@ -87,7 +87,7 @@ extern RouteManagerDialog *pRouteManagerDialog;
 extern RouteList       *pRouteList;
 extern PlugInManager   *g_pi_manager;
 extern s52plib         *ps52plib;
-extern wxString        *pChartListFileName;
+extern wxString         ChartListFileName;
 extern wxString         gExe_path;
 extern wxString         g_Plugin_Dir;
 extern bool             g_boptionsactive;
@@ -385,6 +385,7 @@ void PlugInManager::SendVectorChartObjectInfo(const wxString &chart, const wxStr
                 switch(pic->m_api_version)
                 {
                 case 112:
+                case 113:
                 {
                     opencpn_plugin_112 *ppi = dynamic_cast<opencpn_plugin_112 *>(pic->m_pplugin);
                     if(ppi)
@@ -794,6 +795,10 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
         pic->m_pplugin = dynamic_cast<opencpn_plugin_112*>(plug_in);
         break;
     
+    case 113:
+        pic->m_pplugin = dynamic_cast<opencpn_plugin_113*>(plug_in);
+        break;
+        
     default:
         break;
     }
@@ -856,6 +861,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                     case 110:
                     case 111:
                     case 112:
+                    case 113:    
                     {
                         opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                         if(ppi)
@@ -907,6 +913,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                     case 110:
                     case 111:
                     case 112:
+                    case 113: 
                     {
                         opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                         if(ppi)
@@ -968,6 +975,7 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, cons
                 case 110:
                 case 111:
                 case 112:
+                case 113:
                 {
                     opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                     if(ppi)
@@ -997,12 +1005,45 @@ bool PlugInManager::SendMouseEventToPlugins( wxMouseEvent &event)
                 switch(pic->m_api_version)
                 {
                     case 112:
+                    case 113:
                     {
                         opencpn_plugin_112 *ppi = dynamic_cast<opencpn_plugin_112*>(pic->m_pplugin);
                             if(ppi)
                                 if(ppi->MouseEventHook( event ))
                                     bret = true;
                             break;
+                        }
+                        
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+    }
+    
+    return bret;;
+}
+
+bool PlugInManager::SendKeyEventToPlugins( wxKeyEvent &event)
+{
+    bool bret = false;
+    for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
+    {
+        PlugInContainer *pic = plugin_array.Item(i);
+        if(pic->m_bEnabled && pic->m_bInitState)
+        {
+            if(pic->m_cap_flag & WANTS_KEYBOARD_EVENTS){
+                {
+                    switch(pic->m_api_version)
+                    {
+                        case 113:
+                        {
+                            opencpn_plugin_113 *ppi = dynamic_cast<opencpn_plugin_113*>(pic->m_pplugin);
+                            if(ppi)
+                                if(ppi->KeyboardEventHook( event ))
+                                    bret = true;
+                                break;
                         }
                         
                         default:
@@ -1058,6 +1099,7 @@ void NotifySetupOptionsPlugin( PlugInContainer *pic )
             case 110:
             case 111:
             case 112:
+            case 113:
             {
                 opencpn_plugin_19 *ppi = dynamic_cast<opencpn_plugin_19 *>(pic->m_pplugin);
                 if(ppi) {
@@ -1220,6 +1262,7 @@ void PlugInManager::SendMessageToAllPlugins(const wxString &message_id, const wx
                 case 110:
                 case 111:
                 case 112:
+                case 113:
                 {
                     opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                     if(ppi)
@@ -1766,12 +1809,12 @@ wxFont *OCPNGetFont(wxString TextElement, int default_size)
 
 wxString *GetpSharedDataLocation(void)
 {
-    return &g_SData_Locn;
+    return g_Platform->GetSharedDataDirPtr();
 }
 
 wxString *GetpPrivateApplicationDataLocation(void)
 {
-    return &g_PrivateDataDir;
+    return g_Platform->GetPrivateDataDirPtr();
 }
 
 
@@ -1890,7 +1933,7 @@ int AddChartToDBInPlace( wxString &full_path, bool b_RefreshCanvas )
         if(bret){
             // Save to disk
             pConfig->UpdateChartDirs( ChartData->GetChartDirArray() );
-            ChartData->SaveBinary(*pChartListFileName);
+            ChartData->SaveBinary(ChartListFileName);
             
 
             //  Completely reload the chart database, for a fresh start
@@ -1898,7 +1941,7 @@ int AddChartToDBInPlace( wxString &full_path, bool b_RefreshCanvas )
             pConfig->LoadChartDirArray( XnewChartDirArray );
             delete ChartData;
             ChartData = new ChartDB( gFrame );
-            ChartData->LoadBinary(*pChartListFileName, XnewChartDirArray);
+            ChartData->LoadBinary(ChartListFileName, XnewChartDirArray);
 
             if(g_boptionsactive){
                 g_options->UpdateDisplayedChartDirList(ChartData->GetChartDirArray());
@@ -1923,7 +1966,7 @@ int RemoveChartFromDBInPlace( wxString &full_path )
         
     // Save to disk
         pConfig->UpdateChartDirs( ChartData->GetChartDirArray() );
-        ChartData->SaveBinary(*pChartListFileName);
+        ChartData->SaveBinary(ChartListFileName);
     
     
     //  Completely reload the chart database, for a fresh start
@@ -1931,7 +1974,7 @@ int RemoveChartFromDBInPlace( wxString &full_path )
         pConfig->LoadChartDirArray( XnewChartDirArray );
         delete ChartData;
         ChartData = new ChartDB( gFrame );
-        ChartData->LoadBinary(*pChartListFileName, XnewChartDirArray);
+        ChartData->LoadBinary(ChartListFileName, XnewChartDirArray);
     
         if(g_boptionsactive){
             g_options->UpdateDisplayedChartDirList(ChartData->GetChartDirArray());
@@ -2860,6 +2903,22 @@ void opencpn_plugin_112::SendVectorChartObjectInfo(wxString &chart, wxString &fe
 {
 }
 
+//    Opencpn_Plugin_113 Implementation
+opencpn_plugin_113::opencpn_plugin_113(void *pmgr)
+: opencpn_plugin_112(pmgr)
+{
+}
+
+opencpn_plugin_113::~opencpn_plugin_113(void)
+{
+}
+
+bool opencpn_plugin_113::KeyboardEventHook( wxKeyEvent &event )
+{
+    return false;
+}
+
+
 
 //          Helper and interface classes
 
@@ -3670,12 +3729,12 @@ int OCPNMessageBox_PlugIn(wxWindow *parent,
 
 wxString GetOCPN_ExePath( void )
 {
-    return gExe_path;
+    return g_Platform->GetExePath();
 }
 
 wxString *GetpPlugInLocation()
 {
-    return &g_Plugin_Dir;
+    return g_Platform->GetPluginDirPtr();
 }
 
 wxString GetPlugInPath(opencpn_plugin *pplugin)
@@ -4360,5 +4419,14 @@ int PI_PLIBRenderObjectToGL( const wxGLContext &glcc, PI_S57Obj *pObj,
     
     return 1;
     
+}
+
+/* API 1.13  */
+
+/* API 1.13  adds some more common functions to avoid unnecessary code duplication */
+
+double fromDMM_Plugin( wxString sdms )
+{
+    return fromDMM( sdms );
 }
 

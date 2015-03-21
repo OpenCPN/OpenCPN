@@ -45,6 +45,7 @@
 #include "ocpn_types.h"
 #include "ocpndc.h"
 #include "viewport.h"
+#include "cutil.h"
 
 #ifdef __MSVC__
 #pragma warning(disable: 4251)   // relates to std::string fpath
@@ -100,7 +101,7 @@ public:
     ~GshhsPolyCell();
 
     void drawMapPlain( ocpnDC &pnt, double dx, ViewPort &vp, wxColor seaColor,
-                       wxColor landColor, int cellcount );
+                       wxColor landColor, int cellcount, bool idl );
 
     void drawSeaBorderLines( ocpnDC &pnt, double dx, ViewPort &vp );
     std::vector<wxLineF> * getCoasts() { return &coasts; }
@@ -120,8 +121,15 @@ private:
     PolygonFileHeader *header;
     contour_list poly1, poly2, poly3, poly4, poly5;
 
+    // used for opengl vertex cache
+    float_2Dpt *polyv[6];
+    int polyc[6];
+
     void DrawPolygonFilled( ocpnDC &pnt, contour_list * poly, double dx, ViewPort &vp,
             wxColor color );
+#ifdef ocpnUSE_GL        
+    void DrawPolygonFilledGL( contour_list * p, float_2Dpt **pv, int *pvc, ViewPort &vp,  wxColor color, bool idl );
+#endif
     void DrawPolygonContour( ocpnDC &pnt, contour_list * poly, double dx, ViewPort &vp );
 
     void ReadPoly( contour_list &poly );

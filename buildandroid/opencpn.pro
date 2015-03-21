@@ -81,6 +81,7 @@ LIBS += /home/dsr/Qt/5.3/android_armv7/lib/libQt5AndroidExtras.so
 
 TARGETDEPS += $${OCPN_Base}/$${OCPN_Build}/libgorp.a
 TARGETDEPS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_core-3.1-arm-linux-androideabi.a
+TARGETDEPS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_gl-3.1-arm-linux-androideabi.a
 
 DEFINES += __WXQT__
 
@@ -118,13 +119,13 @@ ui_deployment.files += $$PWD/../src/bitmaps/toolicons_journeyman_flat.png
 ui_deployment.path = /assets/uidata
 INSTALLS += ui_deployment
 
-gshhs_deployment.files += $$PWD/../data/gshhs/wdb_borders_c.b
-gshhs_deployment.files += $$PWD/../data/gshhs/wdb_rivers_c.b
-gshhs_deployment.files += $$PWD/../data/gshhs/poly-c-1.dat
+gshhs_deployment.files += $$PWD/../data/gshhs/wdb_borders_i.b
+gshhs_deployment.files += $$PWD/../data/gshhs/wdb_rivers_i.b
+gshhs_deployment.files += $$PWD/../data/gshhs/poly-i-1.dat
 gshhs_deployment.path = /assets/gshhs
 INSTALLS += gshhs_deployment
 
-styles_deployment.files += $$PWD/../data/styles/*
+styles_deployment.files += $$PWD/../data/styles/qtstylesheet.qss
 styles_deployment.path = /assets/styles
 INSTALLS += styles_deployment
 

@@ -54,6 +54,10 @@
 #include "OCP_DataStreamInput_Thread.h"
 #include "garmin/jeeps/garmin_wrapper.h"
 
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#endif
+
 #include <vector>
 
 #if !defined(NAN)
@@ -89,6 +93,7 @@ END_EVENT_TABLE()
 
 // constructor
 DataStream::DataStream(wxEvtHandler *input_consumer,
+             const ConnectionType conn_type,         
              const wxString& Port,
              const wxString& BaudRate,
              dsPortType io_select,
@@ -97,8 +102,6 @@ DataStream::DataStream(wxEvtHandler *input_consumer,
              int EOS_type,
              int handshake_type,
              void *user_data )
-:m_net_protocol(GPSD),m_connection_type(SERIAL)
-
 {
     m_consumer = input_consumer;
     m_portstring = Port;
@@ -108,6 +111,7 @@ DataStream::DataStream(wxEvtHandler *input_consumer,
     m_handshake = handshake_type;
     m_user_data = user_data;
     m_bGarmin_GRMN_mode = bGarmin;
+    m_connection_type = conn_type;
 
     Init();
 
@@ -126,6 +130,7 @@ void DataStream::Init(void)
     m_is_multicast = false;
     m_socket_server = 0;
     m_txenter = 0;
+    m_net_protocol = GPSD;
     
     m_socket_timer.SetOwner(this, TIMER_SOCKET);
     m_socketread_watchdog_timer.SetOwner(this, TIMER_SOCKET + 1);
@@ -193,27 +198,29 @@ void DataStream::Open(void)
             m_bok = true;
         }
     }
-    else if(m_portstring.Contains(_T("GPSD"))){
-        m_net_addr = _T("127.0.0.1");              // defaults
-        m_net_port = _T("2947");
-        m_net_protocol = GPSD;
-        m_connection_type = NETWORK;
-    }
-    else if(m_portstring.StartsWith(_T("TCP"))) {
-        m_net_addr = _T("0.0.0.0");              // defaults
-        m_net_port = _T("10110");
-        m_net_protocol = TCP;
-        m_connection_type = NETWORK;
-    }
-    else if(m_portstring.StartsWith(_T("UDP"))) {
-        m_net_addr =  _T("0.0.0.0");              // any address
-        m_net_port = _T("10110");
-        m_net_protocol = UDP;
-        m_connection_type = NETWORK;
-    }
     
-    if(m_connection_type == NETWORK){
-    
+    else if(m_connection_type == NETWORK){
+        if(m_portstring.Contains(_T("GPSD"))){
+            m_net_addr = _T("127.0.0.1");              // defaults
+            m_net_port = _T("2947");
+            m_net_protocol = GPSD;
+        }
+        else if(m_portstring.StartsWith(_T("TCP"))) {
+            m_net_addr = _T("0.0.0.0");              // defaults
+            m_net_port = _T("10110");
+            m_net_protocol = TCP;
+        }
+        else if(m_portstring.StartsWith(_T("UDP"))) {
+            m_net_addr =  _T("0.0.0.0");              // any address
+            m_net_port = _T("10110");
+            m_net_protocol = UDP;
+        }
+        else {
+            m_net_addr =  _T("0.0.0.0");              // any address
+            m_net_port = _T("0");
+            m_net_protocol = UDP;
+        }
+        
         //  Capture the  parameters from the portstring
 
         wxStringTokenizer tkz(m_portstring, _T(":"));
@@ -336,10 +343,26 @@ void DataStream::Open(void)
                 }
                 
                 break;
-        }
-
+                
+            default:
+                break;
+                
+        } 
         m_bok = true;
+        
+    }  // NETWORK       
+    
+    else if(m_connection_type == INTERNAL_GPS){
+#ifdef __OCPN__ANDROID__
+        androidStartNMEA(m_consumer);
+        m_bok = true;
+#endif
+        
     }
+        
+    else
+        m_bok = false;
+
     m_connect_time = wxDateTime::Now();
     
 }
@@ -408,6 +431,13 @@ void DataStream::Close()
     
     m_socket_timer.Stop();
     m_socketread_watchdog_timer.Stop();
+    
+    if(m_connection_type == INTERNAL_GPS){
+#ifdef __OCPN__ANDROID__
+        androidStopNMEA();
+#endif
+    }
+        
 }
 
 void DataStream::OnSocketReadWatchdogTimer(wxTimerEvent& event)
@@ -695,7 +725,7 @@ bool DataStream::SendSentence( const wxString &sentence )
         payload += _T("\r\n");
 
     switch( m_connection_type ) {
-        case SERIAL:
+        case SERIAL:{
             if( m_pSecondary_Thread ) {
                 if( IsSecThreadActive() )
                 {
@@ -712,8 +742,9 @@ bool DataStream::SendSentence( const wxString &sentence )
                     return false;
             }
             break;
+        }
             
-        case NETWORK:
+        case NETWORK:{
             if(m_txenter)
                 return false;                 // do not allow recursion, could happen with non-blocking sockets
             m_txenter++;
@@ -759,6 +790,10 @@ bool DataStream::SendSentence( const wxString &sentence )
             }
             m_txenter--;
             return ret;
+            break;
+        }
+         
+        default:
             break;
     }
     

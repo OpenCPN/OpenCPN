@@ -1344,7 +1344,7 @@ char *_getParamVal( ObjRazRules *rzRules, char *str, char *buf, int bsz )
     } else {
 
         //    Special case for conversion of some vertical (height) attributes to feet
-        if( ( !strncmp( buf, "VERCLR", 6 ) ) || ( !strncmp( buf, "VERCCL", 6 ) ) ) {
+        if( ( !strncmp( buf, "VERCLR", 6 ) ) || ( !strncmp( buf, "VERCCL", 6 ) ) || ( !strncmp( buf, "VERCOP", 6 ) ) ) {
             switch( ps52plib->m_nDepthUnitDisplay ){
                 case 0: // feet
                 case 2: // fathoms
@@ -7207,7 +7207,14 @@ bool s52plib::ObjectRenderCheckCat( ObjRazRules *rzRules, ViewPort *vp )
     if( !strncmp( rzRules->LUP->OBCL, "SOUNDG", 6 ) )
         b_catfilter = m_bShowSoundg;
     
-
+    //  Some objects may be promoted to category "ALL", according to the S52 spec.
+    //  So we give the CS procedures a chance to run here.  After the CS is evaluated, they will display or not
+    //  depending on the results of UDWHAZ procedure, and whether they were promoted.    
+    if( !strncmp( rzRules->LUP->OBCL, "UWTROC", 6 ) ){  //  TODO Should add OBSTRN and WRECKS to this test
+        if( !rzRules->obj->bCS_Added )
+            b_catfilter = true;
+    }
+        
     bool b_visible = false;
     if( b_catfilter ) {
         b_visible = true;

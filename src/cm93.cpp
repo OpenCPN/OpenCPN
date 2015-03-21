@@ -48,6 +48,7 @@
 #include "ocpn_pixel.h"                         // for ocpnUSE_DIBSECTION
 #include "ocpndc.h"
 #include "pluginmanager.h"  // for PlugInManager
+#include "OCPNPlatform.h"
 
 #include <stdio.h>
 
@@ -64,6 +65,7 @@
 #define new DEBUG_NEW
 #endif
 
+extern OCPNPlatform     *g_Platform;
 extern wxString         g_SENCPrefix;
 extern s52plib          *ps52plib;
 extern MyConfig         *pConfig;
@@ -357,7 +359,7 @@ bool covr_set::Init ( wxChar scale_char, wxString &prefix )
       prefix_string.Replace ( sep, _T ( "_" ) );
       prefix_string.Replace ( _T ( ":" ), _T ( "_" ) );       // for Windows
 
-      m_cachefile = g_PrivateDataDir;
+      m_cachefile = g_Platform->GetPrivateDataDir();
       appendOSDirSep ( &m_cachefile );
 
       m_cachefile += _T ( "cm93" );
@@ -3831,7 +3833,8 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                   p.y = ( int ) xgeom->ymax;
                   Transform ( &p, 0., 0., &lat, &lon );
                   pobj->BBObj.SetMax ( lon, lat );
-
+                  pobj->bBBObj_valid = true;
+                  
                   //  and declare x/y of the object to be average of all cm93points
                   pobj->x = ( xgeom->xmin + xgeom->xmax ) / 2.;
                   pobj->y = ( xgeom->ymin + xgeom->ymax ) / 2.;

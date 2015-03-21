@@ -104,9 +104,6 @@ void StatWin::RePosition()
     position.y -= GetSize().y;
 
     wxPoint screen_pos = GetParent()->ClientToScreen( position );
-    wxString msg;
-    msg.Printf(_T("Stat RePosition: %d %d"), screen_pos.x, screen_pos.y);
-    wxLogMessage(msg);
     Move( screen_pos );
     Raise();
 }
@@ -117,9 +114,6 @@ void StatWin::ReSize()
     wxSize new_size;
     new_size.x = cs.x;
     new_size.y = 22 * GetRows();
-    wxString msg;
-    msg.Printf(_T("Stat ReSize: %d %d"), new_size.x, new_size.y);
-    wxLogMessage(msg);
     SetSize(new_size);
 
 }

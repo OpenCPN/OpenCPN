@@ -663,6 +663,8 @@ SET(HDRS
                 include/LinkPropDlg.h
                 include/viewport.h
                 include/canvasMenu.h
+                include/OCPNPlatform.h
+                include/S57Sector.h
 )
 
 SET(SRCS
@@ -751,6 +753,7 @@ SET(SRCS
                 src/ssl/sha1.c
                 src/viewport.cpp
                 src/canvasMenu.cpp
+                src/OCPNPlatform.cpp
     )
 
 IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)

@@ -72,6 +72,7 @@
 #include "NavObjectCollection.h"
 #include "NMEALogWindow.h"
 #include "AIS_Decoder.h"
+#include "OCPNPlatform.h"
 
 #ifdef USE_S57
 #include "s52plib.h"
@@ -84,6 +85,7 @@
 
 //    Statics
 
+extern OCPNPlatform     *g_Platform;
 extern ChartCanvas      *cc1;
 extern MyFrame          *gFrame;
 
@@ -113,7 +115,6 @@ extern wxString         g_SENCPrefix;
 extern wxString         g_UserPresLibData;
 
 extern AIS_Decoder      *g_pAIS;
-extern wxString         g_SData_Locn;
 extern wxString         *pInit_Chart_Dir;
 extern WayPointman      *pWayPointMan;
 extern Routeman         *g_pRouteMan;
@@ -2216,7 +2217,7 @@ bool MyConfig::LoadChartDirArray( ArrayOfCDI &ChartDirArray )
 
                     pConfig->DeleteEntry( str );
                     wxString new_dir = dirname.Mid( dirname.Find( _T ( "SampleCharts" ) ) );
-                    new_dir.Prepend( g_SData_Locn );
+                    new_dir.Prepend( g_Platform->GetSharedDataDir() );
                     dirname = new_dir;
                 }
 
@@ -2781,7 +2782,7 @@ void MyConfig::UpdateSettings()
 #endif
 
 #ifdef __WXQT__
-    SetPath ( _T ( "/Settings/QTFonts" ) );
+    font_path = ( _T ( "/Settings/QTFonts" ) );
 #endif
     
     DeleteGroup(font_path);

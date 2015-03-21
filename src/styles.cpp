@@ -32,12 +32,12 @@
 #include <wx/filename.h>
 #include <wx/dir.h>
 #include <stdlib.h>
+#include "OCPNPlatform.h"
 
 #include "styles.h"
 #include "chart1.h"
 
-extern wxString *pHome_Locn;
-extern wxString g_SData_Locn;
+extern OCPNPlatform     *g_Platform;
 
 using namespace ocpnStyle;
 
@@ -559,9 +559,9 @@ StyleManager::StyleManager(void)
 {
     isOK = false;
     currentStyle = NULL;
-    Init( g_SData_Locn + _T("uidata") + wxFileName::GetPathSeparator() );
-    Init( *pHome_Locn );
-    Init( *pHome_Locn + _T(".opencpn") + wxFileName::GetPathSeparator() );
+    Init( g_Platform->GetSharedDataDir() + _T("uidata") + wxFileName::GetPathSeparator() );
+    Init( g_Platform->GetHomeDir() );
+    Init( g_Platform->GetHomeDir() + _T(".opencpn") + wxFileName::GetPathSeparator() );
     SetStyle( _T("") );
 }
 

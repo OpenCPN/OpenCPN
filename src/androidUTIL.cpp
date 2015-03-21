@@ -28,12 +28,24 @@
 #include "wx/wx.h"
 #endif //precompiled headers
 
+#include <wx/tokenzr.h>
 
 #include <QtAndroidExtras/QAndroidJniObject>
-#include "qdebug.h"
+
+#include "dychart.h"
+#include "androidUTIL.h"
+#include "OCPN_DataStreamEvent.h"
+#include "chart1.h"
+
 
 JavaVM *java_vm;
 JNIEnv* jenv;
+bool     b_androidBusyShown;
+
+
+extern MyFrame                  *gFrame;
+extern const wxEventType wxEVT_OCPN_DATASTREAM;
+wxEvtHandler                    *s_pAndroidNMEAMessageConsumer;
 
 
 jint JNI_OnLoad(JavaVM *vm, void *reserved)
@@ -67,6 +79,97 @@ if ((*env)->RegisterNatives(env, NativeUsb, nm , 1)) {
 #endif
     return JNI_VERSION_1_6;
 }
+
+
+
+//      OCPNNativeLib
+//      This is a set of methods which can be called from the android activity context.
+
+extern "C"{
+JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_test(JNIEnv *env, jobject obj)
+{
+    qDebug() << "test";
+    
+    return 55;
+}
+}
+
+extern "C"{
+    JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processNMEA(JNIEnv *env, jobject obj, jstring nmea_string)
+    {
+        const char *string = env->GetStringUTFChars(nmea_string, NULL);
+//        wxString wstring = wxString(string, wxConvUTF8);
+        
+//        qDebug() << "processNMEA" << string;
+ 
+        char tstr[100];
+        strncpy(tstr, string, 99);
+        strcat(tstr, "\r\n");
+        
+        if( s_pAndroidNMEAMessageConsumer ) {
+            OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
+            Nevent.SetNMEAString( tstr );
+            Nevent.SetStream( NULL );
+                
+            s_pAndroidNMEAMessageConsumer->AddPendingEvent(Nevent);
+        }
+        
+        return 66;
+    }
+}
+
+
+extern "C"{
+    JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onConfigChange(JNIEnv *env, jobject obj)
+    {
+        qDebug() << "onConfigChange";
+        GetAndroidDisplaySize();
+        
+        wxSize new_size = getAndroidDisplayDimensions();
+        qDebug() << "onConfigChange" << new_size.x << new_size.y;
+        
+        gFrame->TriggerResize(new_size);
+        
+//        wxSizeEvent ev(new_size);
+        
+//        wxEvtHandler *evh = dynamic_cast<wxEvtHandler*>(cc1);
+        
+//        evh->AddPendingEvent(ev);
+        return 77;
+    }
+}
+
+
+
+wxString callActivityMethod_is(const char *method, int parm)
+{
+    wxString return_string;
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                           "activity", "()Landroid/app/Activity;");
+    
+    if ( !activity.isValid() ){
+        qDebug() << "Activity is not valid";
+        return return_string;
+    }
+    
+    //  Call the desired method
+    QAndroidJniObject data = activity.callObjectMethod(method, "(I)Ljava/lang/String;", parm);
+    
+    jstring s = data.object<jstring>();
+    
+    //  Need a Java environment to decode the resulting string
+    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+        qDebug() << "GetEnv failed.";
+    }
+    else {
+        const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+        return_string = wxString(ret_string, wxConvUTF8);
+    }
+    
+    return return_string;
+    
+}
+
 
 bool androidGetMemoryStatus( int *mem_total, int *mem_used )
 {
@@ -118,7 +221,43 @@ if(mem_used)
 //    if(mem_used)
     //        qDebug() << "Mem Status" << (*mem_used) / 1024  ;
     #endif
+
     
+    //  Get a reference to the running native activity
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                           "activity", "()Landroid/app/Activity;");
+    
+    if ( !activity.isValid() ){
+        qDebug() << "Activity is not valid";
+        return false;
+    }
+
+    unsigned long android_processID = wxGetProcessId();
+    
+    //  Call the desired method
+    QAndroidJniObject data = activity.callObjectMethod("getMemInfo", "(I)Ljava/lang/String;", (int)android_processID);
+    
+//    wxString return_string;
+    jstring s = data.object<jstring>();
+    
+    int mu = 100;
+    //  Need a Java environment to decode the resulting string
+    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+        qDebug() << "GetEnv failed.";
+    }
+    else {
+        const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+        mu = atoi(ret_string);
+        
+//        return_string = wxString(ret_string, wxConvUTF8);
+    }
+    
+    if(mem_used)
+        *mem_used = mu;
+
+//    if(mem_used)
+//        qDebug() << "Mem Status" << (*mem_used) / 1024  ;
+        
     return true;
 }
 
@@ -137,7 +276,7 @@ double GetAndroidDisplaySize()
     }
     
     //  Call the desired method
-    QAndroidJniObject data = activity.callObjectMethod("getDisplayDPI", "()Ljava/lang/String;");
+    QAndroidJniObject data = activity.callObjectMethod("getDisplayMetrics", "()Ljava/lang/String;");
     
     wxString return_string;
     jstring s = data.object<jstring>();
@@ -151,6 +290,13 @@ double GetAndroidDisplaySize()
         return_string = wxString(ret_string, wxConvUTF8);
     }
     
+    wxLogMessage(_T("Metrics:") + return_string);
+    wxSize screen_size = ::wxGetDisplaySize();
+    wxString msg;
+    msg.Printf(_T("wxGetDisplaySize(): %d %d"), screen_size.x, screen_size.y);
+    wxLogMessage(msg);
+    
+    
     wxString istr = return_string.BeforeFirst('.');
     
     long ldpi;
@@ -160,6 +306,96 @@ double GetAndroidDisplaySize()
 
     return ret;
 }
+
+
+wxSize getAndroidDisplayDimensions( void )
+{
+    wxSize sz_ret = ::wxGetDisplaySize();               // default, probably reasonable, but maybe not accurate
+    
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                           "activity", "()Landroid/app/Activity;");
+    
+    if ( !activity.isValid() ){
+        qDebug() << "Activity is not valid";
+        return sz_ret;
+    }
+    
+    //  Call the desired method
+    QAndroidJniObject data = activity.callObjectMethod("getDisplayMetrics", "()Ljava/lang/String;");
+    
+    wxString return_string;
+    jstring s = data.object<jstring>();
+    
+    //  Need a Java environment to decode the resulting string
+    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+        qDebug() << "GetEnv failed.";
+    }
+    else {
+        const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+        return_string = wxString(ret_string, wxConvUTF8);
+    }
+    
+     wxStringTokenizer tk(return_string, _T(";"));
+    if( tk.HasMoreTokens() ){
+        wxString token = tk.GetNextToken();     // xdpi
+        token = tk.GetNextToken();
+        long a = ::wxGetDisplaySize().x;        // wxWidgets idea
+        if(token.ToLong( &a ))
+            sz_ret.x = a;
+        
+        token = tk.GetNextToken();
+        long b = ::wxGetDisplaySize().y;        // wxWidgets idea
+        if(token.ToLong( &b ))
+            sz_ret.y = b;
+    }
+    
+    return sz_ret;
+    
+}
+
+void androidShowBusyIcon()
+{
+    if(b_androidBusyShown)
+        return;
+    qDebug() << "Showit";
+    
+    //  Get a reference to the running native activity
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                           "activity", "()Landroid/app/Activity;");
+    
+    if ( !activity.isValid() ){
+        qDebug() << "Activity is not valid";
+        return;
+    }
+    
+    //  Call the desired method
+    QAndroidJniObject data = activity.callObjectMethod("showBusyCircle", "()Ljava/lang/String;");
+    
+    b_androidBusyShown = true;
+}
+
+void androidHideBusyIcon()
+{
+    if(!b_androidBusyShown)
+        return;
+    
+    qDebug() << "Hideit";
+    
+    //  Get a reference to the running native activity
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                           "activity", "()Landroid/app/Activity;");
+    
+    if ( !activity.isValid() ){
+        qDebug() << "Activity is not valid";
+        return;
+    }
+    
+    //  Call the desired method
+    QAndroidJniObject data = activity.callObjectMethod("hideBusyCircle", "()Ljava/lang/String;");
+
+    b_androidBusyShown = false;
+}
+
 
 
 bool LoadQtStyleSheet(wxString &sheet_file)
@@ -183,6 +419,152 @@ bool LoadQtStyleSheet(wxString &sheet_file)
         return false;
 }
 
+//---------------------------------------------------------------
+//      GPS Device Support
+//---------------------------------------------------------------
+bool androidDeviceHasGPS()
+{
+    wxString query = androidGPSService( GPS_PROVIDER_AVAILABLE );
+    wxLogMessage( query);
+    
+    bool result = query.Upper().IsSameAs(_T("YES"));
+    if(result){
+        qDebug() << "Android Device has internal GPS";
+        wxLogMessage(_T("Android Device has internal GPS"));
+    }
+    else{
+        qDebug() << "Android Device has NO internal GPS";
+        wxLogMessage(_T("Android Device has NO internal GPS"));
+    }
+    return result;
+}
+
+bool androidStartNMEA(wxEvtHandler *consumer)
+{
+    s_pAndroidNMEAMessageConsumer = consumer;
+
+    qDebug() << "androidStartNMEA";
+    wxString s;
+    
+    s = androidGPSService( GPS_ON );
+    wxLogMessage(s);
+    if(s.Upper().Find(_T("DISABLED")) != wxNOT_FOUND){
+        OCPNMessageBox(NULL,
+                       _("Your android device has an internal GPS, but it is disabled.\n\
+                       Please visit android Settings/Location dialog to enabled GPS"),
+                        _T("OpenCPN"), wxOK );        
+        
+        androidStopNMEA();
+        return false;
+    }
+    
+    return true;
+}
+
+bool androidStopNMEA()
+{
+    s_pAndroidNMEAMessageConsumer = NULL;
+    
+    wxString s = androidGPSService( GPS_OFF );
+    
+    return true;
+}
+
+
+wxString androidGPSService(int parm)
+{
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                           "activity", "()Landroid/app/Activity;");
+    
+    if ( !activity.isValid() ){
+        qDebug() << "Activity is not valid";
+        return _T("Activity is not valid");
+    }
+    
+    //  Call the desired method
+    QAndroidJniObject data = activity.callObjectMethod("queryGPSServer", "(I)Ljava/lang/String;", parm);
+    
+    wxString return_string;
+    jstring s = data.object<jstring>();
+    
+    //  Need a Java environment to decode the resulting string
+    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+        qDebug() << "GetEnv failed.";
+    }
+    else {
+        const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+        return_string = wxString(ret_string, wxConvUTF8);
+    }
+    
+     return return_string;
+}
+
+
+bool androidDeviceHasBlueTooth()
+{
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                           "activity", "()Landroid/app/Activity;");
+    
+    if ( !activity.isValid() ){
+        qDebug() << "Activity is not valid";
+        return _T("Activity is not valid");
+    }
+    
+    //  Call the desired method
+    QAndroidJniObject data = activity.callObjectMethod("hasBluetooth", "(I)Ljava/lang/String;", 0);
+    
+    wxString query;
+    jstring s = data.object<jstring>();
+    
+    //  Need a Java environment to decode the resulting string
+    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+        qDebug() << "GetEnv failed.";
+    }
+    else {
+        const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+        query = wxString(ret_string, wxConvUTF8);
+    }
+    
+    bool result = query.Upper().IsSameAs(_T("YES"));
+    
+    if(result){
+        qDebug() << "Android Device has internal Bluetooth";
+        wxLogMessage(_T("Android Device has internal Bluetooth"));
+    }
+    else{
+        qDebug() << "Android Device has NO internal Bluetooth";
+        wxLogMessage(_T("Android Device has NO internal Bluetooth"));
+    }
+    
+    return result;
+}
+
+bool androidStartBluetoothScan()
+{
+    wxString result = callActivityMethod_is("startBlueToothScan", 0);
+    
+    return true;
+    
+}
+
+wxArrayString androidGetBluetoothScanResults()
+{
+    wxArrayString ret_array;
+
+    wxString result = callActivityMethod_is("getBlueToothScanResults", 0);
+    
+    wxStringTokenizer tk(result, _T(";"));
+    while ( tk.HasMoreTokens() )
+    {
+        wxString token = tk.GetNextToken();
+        ret_array.Add(token);
+    }
+        
+        return ret_array;
+}
+
+
+    
 #if 0
 void invokeApp( void )
 {

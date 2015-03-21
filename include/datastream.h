@@ -136,6 +136,7 @@ class DataStream: public wxEvtHandler
 {
 public:
     DataStream(wxEvtHandler *input_consumer,
+               const ConnectionType conn_type,
                const wxString& Port,
                const wxString& BaudRate,
                dsPortType io_select,
@@ -175,7 +176,6 @@ public:
     bool SentencePassesFilter(const wxString& sentence, FilterDirection direction);
     bool ChecksumOK(const std::string& sentence);
     bool GetGarminMode(){ return m_bGarmin_GRMN_mode; }
-
 
     wxString GetBaudRate(){ return m_BaudRate; }
     dsPortType GetPortType(){ return m_io_select; }

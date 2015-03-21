@@ -1348,6 +1348,10 @@ void ChartCanvas::SetVP(ViewPort &vp)
 
 void ChartCanvas::OnKeyChar( wxKeyEvent &event )
 {
+    if(g_pi_manager)
+        if(g_pi_manager->SendKeyEventToPlugins( event ))
+            return;                     // PlugIn did something, and does not want the canvas to do anything else
+            
     int key_char = event.GetKeyCode();
     
     if(g_benable_rotate){
@@ -1374,12 +1378,17 @@ void ChartCanvas::OnKeyChar( wxKeyEvent &event )
 
 void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 {
+    if(g_pi_manager)
+        if(g_pi_manager->SendKeyEventToPlugins( event ))
+            return;                     // PlugIn did something, and does not want the canvas to do anything else
+            
     bool b_handled = false;
     
     m_modkeys = event.GetModifiers();
 
     int panspeed = m_modkeys == wxMOD_ALT ? 2 : 100;
 
+#ifdef OCPN_ALT_MENUBAR        
 #ifndef __WXOSX__
     // If the permanent menubar is disabled, we show it temporarily when Alt is pressed or when
     // Alt + a letter is presssed (for the top-menu-level hotkeys).
@@ -1401,7 +1410,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         }
     }
 #endif
-
+#endif
 
     // HOTKEYS
     switch( event.GetKeyCode() ) {
@@ -1418,8 +1427,9 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         else if(g_bsmoothpanzoom) {
             StartTimedMovement();
             m_panx = -1;
-        } else
+        } else {
             PanCanvas( -panspeed, 0 );
+        }
         break;
 
     case WXK_UP:
@@ -1522,15 +1532,15 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 
     //NUMERIC PAD
     case WXK_NUMPAD_ADD:              // '+' on NUM PAD
-    case WXK_PAGEUP:
+    case WXK_PAGEUP:{
         ZoomCanvas( 2.0, false );
         break;
-
+    }
     case WXK_NUMPAD_SUBTRACT:   // '-' on NUM PAD
-    case WXK_PAGEDOWN:
+    case WXK_PAGEDOWN:{
         ZoomCanvas( .5, false );
         break;
-
+    }
     default:
         break;
 
@@ -1813,6 +1823,10 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 
 void ChartCanvas::OnKeyUp( wxKeyEvent &event )
 {
+    if(g_pi_manager)
+        if(g_pi_manager->SendKeyEventToPlugins( event ))
+            return;                     // PlugIn did something, and does not want the canvas to do anything else
+            
     switch( event.GetKeyCode() ) {
     case WXK_LEFT:
     case WXK_RIGHT:
@@ -1840,6 +1854,7 @@ void ChartCanvas::OnKeyUp( wxKeyEvent &event )
 
     case WXK_ALT:
         m_modkeys &= ~wxMOD_ALT;
+#ifdef OCPN_ALT_MENUBAR        
 #ifndef __WXOSX__
         // If the permanent menu bar is disabled, and we are not in the middle of another key combo,
         // then show the menu bar temporarily when Alt is released (or hide it if already visible).
@@ -1849,6 +1864,7 @@ void ChartCanvas::OnKeyUp( wxKeyEvent &event )
         }
         m_bMayToggleMenuBar = true;
 #endif
+#endif        
         break;
 
     case WXK_CONTROL:
@@ -2321,7 +2337,7 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
                     m_pRouteRolloverWin->SetString( s );
 
                     wxSize win_size = GetSize();
-                    if( console->IsShown() ) win_size.x -= console->GetSize().x;
+                    if( console && console->IsShown() ) win_size.x -= console->GetSize().x;
                     m_pRouteRolloverWin->SetBestPosition( mouse_x, mouse_y, 16, 16, LEG_ROLLOVER,
                                                      win_size );
                     m_pRouteRolloverWin->SetBitmap( LEG_ROLLOVER );
@@ -2439,6 +2455,11 @@ void ChartCanvas::GetCursorLatLon( double *lat, double *lon )
 
 void ChartCanvas::GetDoubleCanvasPointPix( double rlat, double rlon, wxPoint2DDouble *r )
 {
+    return GetDoubleCanvasPointPixVP( GetVP(), rlat, rlon, r );
+}
+
+void ChartCanvas::GetDoubleCanvasPointPixVP( ViewPort &vp, double rlat, double rlon, wxPoint2DDouble *r )
+{
     // If the Current Chart is a raster chart, and the
     // requested lat/long is within the boundaries of the chart,
     // and the VP is not rotated,
@@ -2446,38 +2467,39 @@ void ChartCanvas::GetDoubleCanvasPointPix( double rlat, double rlon, wxPoint2DDo
     // for greater accuracy
     // Additionally, use chart embedded georef if the projection is TMERC
     //  i.e. NOT MERCATOR and NOT POLYCONIC
-
+    
     // If for some reason the chart rejects the request by returning an error,
     // then fall back to Viewport Projection estimate from canvas parameters
     if( Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_RASTER )
-        && ( ( ( fabs( GetVP().rotation ) < .0001 ) &&
-               ( ( !g_bskew_comp || ( fabs( GetVP().skew ) < .0001 ) ) ) )
-             || ( ( Current_Ch->GetChartProjectionType() != PROJECTION_MERCATOR )
-                  && ( Current_Ch->GetChartProjectionType() != PROJECTION_TRANSVERSE_MERCATOR )
-                  && ( Current_Ch->GetChartProjectionType() != PROJECTION_POLYCONIC ) ) ) )
+        && ( ( ( fabs( vp.rotation ) < .0001 ) &&
+        ( ( !g_bskew_comp || ( fabs( vp.skew ) < .0001 ) ) ) )
+        || ( ( Current_Ch->GetChartProjectionType() != PROJECTION_MERCATOR )
+        && ( Current_Ch->GetChartProjectionType() != PROJECTION_TRANSVERSE_MERCATOR )
+        && ( Current_Ch->GetChartProjectionType() != PROJECTION_POLYCONIC ) ) ) )
     {
         ChartBaseBSB *Cur_BSB_Ch = dynamic_cast<ChartBaseBSB *>( Current_Ch );
-//                        bool bInside = G_FloatPtInPolygon ( ( MyFlPoint * ) Cur_BSB_Ch->GetCOVRTableHead ( 0 ),
-//                                                            Cur_BSB_Ch->GetCOVRTablenPoints ( 0 ), rlon, rlat );
-//                        bInside = true;
-//                        if ( bInside )
+        //                        bool bInside = G_FloatPtInPolygon ( ( MyFlPoint * ) Cur_BSB_Ch->GetCOVRTableHead ( 0 ),
+        //                                                            Cur_BSB_Ch->GetCOVRTablenPoints ( 0 ), rlon, rlat );
+        //                        bInside = true;
+        //                        if ( bInside )
         if( Cur_BSB_Ch ) {
             //    This is a Raster chart....
             //    If the VP is changing, the raster chart parameters may not yet be setup
             //    So do that before accessing the chart's embedded georeferencing
-            Cur_BSB_Ch->SetVPRasterParms( GetVP() );
+            Cur_BSB_Ch->SetVPRasterParms( vp );
             double rpixxd, rpixyd;
-            if( 0 == Cur_BSB_Ch->latlong_to_pix_vp( rlat, rlon, rpixxd, rpixyd, GetVP() ) ) {
+            if( 0 == Cur_BSB_Ch->latlong_to_pix_vp( rlat, rlon, rpixxd, rpixyd, vp ) ) {
                 r->m_x = rpixxd;
                 r->m_y = rpixyd;
                 return;
             }
         }
     }
-
+    
     //    if needed, use the VPoint scaling estimator,
-    *r = GetVP().GetDoublePixFromLL( rlat, rlon );
+    *r = vp.GetDoublePixFromLL( rlat, rlon );
 }
+
 
 // This routine might be deleted and all of the rendering improved
 // to have floating point accuracy
@@ -2487,6 +2509,14 @@ void ChartCanvas::GetCanvasPointPix( double rlat, double rlon, wxPoint *r )
     GetDoubleCanvasPointPix(rlat, rlon, &p);
     *r = wxPoint(wxRound(p.m_x), wxRound(p.m_y));
 }
+
+void ChartCanvas::GetCanvasPointPixVP( ViewPort &vp, double rlat, double rlon, wxPoint *r )
+{
+    wxPoint2DDouble p;
+    GetDoubleCanvasPointPixVP(vp, rlat, rlon, &p);
+    *r = wxPoint(wxRound(p.m_x), wxRound(p.m_y));
+}
+
 
 void ChartCanvas::GetCanvasPixPoint( double x, double y, double &lat, double &lon )
 {
@@ -2727,13 +2757,13 @@ bool ChartCanvas::PanCanvas( double dx, double dy )
 {
     double dlat, dlon;
     wxPoint2DDouble p;
-//      CALLGRIND_START_INSTRUMENTATION
 
     extendedSectorLegs.clear();
 
     GetDoubleCanvasPointPix( GetVP().clat, GetVP().clon, &p );
     GetCanvasPixPoint( p.m_x + dx, p.m_y + dy, dlat, dlon );
 
+    
     if( dlon > 360. ) dlon -= 360.;
     if( dlon < -360. ) dlon += 360.;
 
@@ -2748,10 +2778,8 @@ bool ChartCanvas::PanCanvas( double dx, double dy )
     }
 
     int cur_ref_dbIndex = m_pQuilt->GetRefChartdbIndex();
-    SetViewPoint( dlat, dlon, VPoint.view_scale_ppm, VPoint.skew, VPoint.rotation );
 
-//      vLat = dlat;
-//      vLon = dlon;
+    SetViewPoint( dlat, dlon, VPoint.view_scale_ppm, VPoint.skew, VPoint.rotation );
 
     if( VPoint.b_quilt ) {
         int new_ref_dbIndex = m_pQuilt->GetRefChartdbIndex();
@@ -2768,10 +2796,6 @@ bool ChartCanvas::PanCanvas( double dx, double dy )
     ClearbFollow();      // update the follow flag
 
     Refresh( false );
-#ifdef __OCPN__ANDROID__    
-    Update();
-#endif    
-    
 
     pCurTrackTimer->Start( m_curtrack_timer_msec, wxTIMER_ONE_SHOT );
 
@@ -4432,8 +4456,1677 @@ void ChartCanvas::MouseTimedEvent( wxTimerEvent& event )
     m_DoubleClickTimer->Stop();
 }
 
+bool leftIsDown;
+
+
+
+bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
+{
+    int x, y;
+    int mx, my;
+
+    if( s_ProgDialog )
+        return(true);
+
+    event.GetPosition( &x, &y );
+    mouse_x = x;
+    mouse_y = y;
+    mouse_leftisdown = event.LeftDown();
+    mx = x;
+    my = y;
+    GetCanvasPixPoint( x, y, m_cursor_lat, m_cursor_lon );
+    
+    // Protect from leftUp's coming from event handlers in child
+    // windows who return focus to the canvas.
+    leftIsDown = event.LeftDown();
+        
+    
+#ifndef __WXOSX__
+    if (event.LeftDown()) {
+        if ( pConfig->m_bShowMenuBar == false && g_bTempShowMenuBar == true ) {
+            // The menu bar is temporarily visible due to alt having been pressed.
+            // Clicking will hide it, and do nothing else.
+            g_bTempShowMenuBar = false;
+            parent_frame->ApplyGlobalSettings(false, false);
+            return(true);
+        }
+    }
+#endif
+    
+// Update modifiers here; some window managers never send the key event
+    m_modkeys = 0;
+    if(event.ControlDown())
+        m_modkeys |= wxMOD_CONTROL;
+    if(event.AltDown())
+        m_modkeys |= wxMOD_ALT;
+
+#ifdef __WXMSW__
+    //TODO Test carefully in other platforms, remove ifdef....
+    if( event.ButtonDown() && !HasCapture() ) CaptureMouse();
+    if( event.ButtonUp() && HasCapture() ) ReleaseMouse();
+#endif
+    
+    if(g_pi_manager)
+        if(g_pi_manager->SendMouseEventToPlugins( event ))
+            return(true);                     // PlugIn did something, and does not want the canvas to do anything else
+
+        // Capture LeftUp's and time them, unless it already came from the timer.
+            
+    if( b_handle_dclick && event.LeftUp() && !singleClickEventIsValid ) {
+
+        // Ignore the second LeftUp after the DClick.
+        if( m_DoubleClickTimer->IsRunning() ) {
+            m_DoubleClickTimer->Stop();
+            return(true);
+        }
+
+        // Save the event for later running if there is no DClick.
+        m_DoubleClickTimer->Start( 250, wxTIMER_ONE_SHOT );
+        singleClickEvent = event;
+        singleClickEventIsValid = true;
+        return(true);
+    }
+
+    //  This logic is necessary on MSW to handle the case where
+    //  a context (right-click) menu is dismissed without action
+    //  by clicking on the chart surface.
+    //  We need to avoid an unintentional pan by eating some clicks...
+#ifdef __WXMSW__
+    if( event.LeftDown() || event.LeftUp() || event.Dragging() ) {
+        if( g_click_stop > 0 ) {
+            g_click_stop--;
+            return(true);
+        }
+    }
+#endif
+
+
+
+    //  Kick off the Rotation control timer
+    if( g_bCourseUp ) {
+        m_b_rot_hidef = false;
+        pRotDefTimer->Start( 500, wxTIMER_ONE_SHOT );
+    } else
+        pRotDefTimer->Stop();
+
+ 
+//      Retrigger the route leg / AIS target popup timer
+    if( !g_btouch )
+    {
+        if( m_pRouteRolloverWin && m_pRouteRolloverWin->IsActive() )
+            m_RolloverPopupTimer.Start( 10, wxTIMER_ONE_SHOT );               // faster response while the rollover is turned on
+        else
+            m_RolloverPopupTimer.Start( m_rollover_popup_timer_msec, wxTIMER_ONE_SHOT );
+    }
+
+//  Retrigger the cursor tracking timer
+    pCurTrackTimer->Start( m_curtrack_timer_msec, wxTIMER_ONE_SHOT );
+
+
+/*    
+    //    Calculate meaningful SelectRadius
+    float SelectRadius;
+    int sel_rad_pix = 8;
+    if(g_btouch)
+        sel_rad_pix = 50;
+
+    SelectRadius = sel_rad_pix / ( m_true_scale_ppm * 1852 * 60 );  // Degrees, approximately
+*/
+
+//      Show cursor position on Status Bar, if present
+//      except for GTK, under which status bar updates are very slow
+//      due to Update() call.
+//      In this case, as a workaround, update the status window
+//      after an interval timer (pCurTrackTimer) pops, which will happen
+//      whenever the mouse has stopped moving for specified interval.
+//      See the method OnCursorTrackTimerEvent()
+#if !defined(__WXGTK__) && !defined(__WXQT__)
+    SetCursorStatus(m_cursor_lat, m_cursor_lon);
+#endif
+
+    //  Send the current cursor lat/lon to all PlugIns requesting it
+    if( g_pi_manager )
+        g_pi_manager->SendCursorLatLonToAllPlugIns( m_cursor_lat, m_cursor_lon );
+    
+    
+    if(!g_btouch){
+        if( ( m_bMeasure_Active && ( m_nMeasureState >= 2 ) ) || ( parent_frame->nRoute_State > 1 )
+            || ( parent_frame->nRoute_State ) > 1 ) {
+            wxPoint p = ClientToScreen( wxPoint( x, y ) );
+            gFrame->SubmergeToolbarIfOverlap( p.x, p.y, 20 );
+            }
+    }
+    
+    if(!g_btouch ){
+        //    Route Creation Rubber Banding
+        if( parent_frame->nRoute_State >= 2 ) {
+            r_rband.x = x;
+            r_rband.y = y;
+            m_bDrawingRoute = true;
+            
+            CheckEdgePan( x, y, event.Dragging(), 5, 2 );
+            Refresh( false );
+        }
+        
+        
+        //    Measure Tool Rubber Banding
+        if( m_bMeasure_Active && ( m_nMeasureState >= 2 ) ) {
+            r_rband.x = x;
+            r_rband.y = y;
+            m_bDrawingRoute = true;
+            
+            CheckEdgePan( x, y, event.Dragging(), 5, 2 );
+            Refresh( false );
+        }
+    }
+    
+    return false;
+        
+}
+
+bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
+{
+    //          Mouse Clicks
+    bool ret = false;        // return true if processed
+    
+    int x, y, mx, my;
+    event.GetPosition( &x, &y );
+    mx = x;
+    my = y;
+    
+    //    Calculate meaningful SelectRadius
+    float SelectRadius;
+    int sel_rad_pix = 8;
+    if(g_btouch)
+        sel_rad_pix = 50;
+    
+    SelectRadius = sel_rad_pix / ( m_true_scale_ppm * 1852 * 60 );  // Degrees, approximately
+    
+///
+    // We start with Double Click processing. The first left click just starts a timer and
+    // is remembered, then we actually do something if there is a LeftDClick.
+    // If there is, the two single clicks are ignored.
+    
+    if( event.LeftDClick() && ( cursor_region == CENTER ) ) {
+        m_DoubleClickTimer->Start();
+        singleClickEventIsValid = false;
+        
+        double zlat, zlon;
+        GetCanvasPixPoint( x, y, zlat, zlon );
+        
+        SelectItem *pFindAIS;
+        pFindAIS = pSelectAIS->FindSelection( zlat, zlon, SELTYPE_AISTARGET );
+        
+        if( pFindAIS ) {
+            m_FoundAIS_MMSI = pFindAIS->GetUserData();
+            if( g_pAIS->Get_Target_Data_From_MMSI( m_FoundAIS_MMSI ) ) {
+                wxWindow *pwin = wxDynamicCast(this, wxWindow);
+                ShowAISTargetQueryDialog( pwin, m_FoundAIS_MMSI );
+            }
+            return true;
+        }
+        
+        SelectableItemList rpSelList = pSelect->FindSelectionList( zlat, zlon, SELTYPE_ROUTEPOINT );
+        wxSelectableItemListNode *node = rpSelList.GetFirst();
+        bool b_onRPtarget = false;
+        while( node ) {
+            SelectItem *pFind = node->GetData();
+            RoutePoint *frp = (RoutePoint *) pFind->m_pData1;
+            if(m_pRoutePointEditTarget && (frp == m_pRoutePointEditTarget) ){
+                b_onRPtarget = true;
+                break;
+            }
+            node = node->GetNext();
+        }
+        
+        //      Double tap with selected RoutePoint or Mark
+        bool bt1 = m_bMarkEditing;
+        RoutePoint *pp = m_pRoutePointEditTarget;
+        
+        if(m_pRoutePointEditTarget){
+            if( b_onRPtarget ) {
+                ShowMarkPropertiesDialog( m_pRoutePointEditTarget );
+                return true;
+            }
+            else {
+                m_pRoutePointEditTarget->m_bIsBeingEdited = false;
+                m_pRoutePointEditTarget->m_bPtIsSelected = false;
+                wxRect wp_rect;
+                m_pRoutePointEditTarget->CalculateDCRect( m_dc_route, &wp_rect );
+                m_pRoutePointEditTarget = NULL;         //cancel selection
+                RefreshRect( wp_rect, true );
+                return true;
+            }
+        }
+        else{
+            node = rpSelList.GetFirst();
+            if( node ) {
+                SelectItem *pFind = node->GetData();
+                RoutePoint *frp = (RoutePoint *) pFind->m_pData1;
+                if( frp ){
+                    wxArrayPtrVoid *proute_array = g_pRouteMan->GetRouteArrayContaining( frp );
+
+                    // Use route array (if any) to determine actual visibility for this point
+                    bool brp_viz = false;
+                    if( proute_array ){
+                        for( unsigned int ir = 0; ir < proute_array->GetCount(); ir++ )
+                        {
+                            Route *pr = (Route *) proute_array->Item( ir );
+                            if( pr->IsVisible() )
+                            {
+                                brp_viz = true;
+                                break;
+                            }
+                        }
+                        if( !brp_viz && frp->m_bKeepXRoute ) // is not visible as part of route, but still exists as a waypoint
+                            brp_viz = frp->IsVisible(); // so treat as isolated point
+                        } else
+                            brp_viz = frp->IsVisible(); // isolated point
+
+                    if( brp_viz ){
+                        ShowMarkPropertiesDialog( frp );
+                        return true;
+                    }
+                }
+            }
+        }
+        
+        
+        
+        SelectItem* cursorItem;
+        cursorItem = pSelect->FindSelection( zlat, zlon, SELTYPE_ROUTESEGMENT );
+        
+        if( cursorItem ) {
+            Route *pr = (Route *) cursorItem->m_pData3;
+            if( pr->IsVisible() ) {
+                ShowRoutePropertiesDialog( _("Route Properties"), pr );
+                return true;
+            }
+        }
+        
+        cursorItem = pSelect->FindSelection( zlat, zlon, SELTYPE_TRACKSEGMENT );
+        
+        if( cursorItem ) {
+            Route *pr = (Route *) cursorItem->m_pData3;
+            if( pr->IsVisible() ) {
+                ShowTrackPropertiesDialog( pr );
+                return true;
+            }
+        }
+        
+        // Found no object to act on, so show chart info.
+        
+        ShowObjectQueryWindow( x, y, zlat, zlon );
+        return true;
+    }
+    
+    
+    
+///    
+    if( event.LeftDown() ) {
+        //  This really should not be needed, but....
+        //  on Windows, when using wxAUIManager, sometimes the focus is lost
+        //  when clicking into another pane, e.g.the AIS target list, and then back to this pane.
+        //  Oddly, some mouse events are not lost, however.  Like this one....
+        SetFocus();
+        
+        last_drag.x = mx;
+        last_drag.y = my;
+        leftIsDown = true;
+        
+        if(!g_btouch){
+            if( parent_frame->nRoute_State )                  // creating route?
+            {
+                double rlat, rlon;
+                
+                SetCursor( *pCursorPencil );
+                rlat = m_cursor_lat;
+                rlon = m_cursor_lon;
+                
+                m_bRouteEditing = true;
+                
+                if( parent_frame->nRoute_State == 1 ) {
+                    m_pMouseRoute = new Route();
+                    pRouteList->Append( m_pMouseRoute );
+                    r_rband.x = x;
+                    r_rband.y = y;
+                }
+                
+                //    Check to see if there is a nearby point which may be reused
+                RoutePoint *pMousePoint = NULL;
+                
+                //    Calculate meaningful SelectRadius
+                int nearby_sel_rad_pix = 8;
+                double nearby_radius_meters = nearby_sel_rad_pix / m_true_scale_ppm;
+                
+                RoutePoint *pNearbyPoint = pWayPointMan->GetNearbyWaypoint( rlat, rlon,
+                                                                            nearby_radius_meters );
+                if( pNearbyPoint && ( pNearbyPoint != m_prev_pMousePoint )
+                    && !pNearbyPoint->m_bIsInTrack && !pNearbyPoint->m_bIsInLayer && pNearbyPoint->IsVisible() )
+                {
+                    wxArrayPtrVoid *proute_array = g_pRouteMan->GetRouteArrayContaining( pNearbyPoint );
+
+                    // Use route array (if any) to determine actual visibility for this point
+                    bool brp_viz = false;
+                    if( proute_array ){
+                        for( unsigned int ir = 0; ir < proute_array->GetCount(); ir++ ){
+                            Route *pr = (Route *) proute_array->Item( ir );
+                            if( pr->IsVisible() ) {
+                                brp_viz = true;
+                                break;
+                            }
+                        }
+            
+                        if( !brp_viz && pNearbyPoint->m_bKeepXRoute ) // is not visible as part of route, but still exists as a waypoint
+                            brp_viz = pNearbyPoint->IsVisible(); // so treat as isolated point
+                    }
+                    else
+                        brp_viz = pNearbyPoint->IsVisible(); // isolated point
+                    
+                    
+                    if( brp_viz ){
+                        int dlg_return;
+#ifndef __WXOSX__
+                        dlg_return = OCPNMessageBox( this, _("Use nearby waypoint?"),
+                                                 _("OpenCPN Route Create"),
+                                                   (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
+#else
+                        dlg_return = wxID_YES;
+#endif
+                        if( dlg_return == wxID_YES ) {
+                            pMousePoint = pNearbyPoint;
+                                                     
+                            // Using existing waypoint, so nothing to delete for undo.
+                            if( parent_frame->nRoute_State > 1 )
+                                undo->BeforeUndoableAction( Undo_AppendWaypoint, pMousePoint, Undo_HasParent, NULL );
+                                                     
+                            // check all other routes to see if this point appears in any other route
+                            // If it appears in NO other route, then it should e considered an isolated mark
+                            if( !g_pRouteMan->FindRouteContainingWaypoint( pMousePoint ) )
+                                pMousePoint->m_bKeepXRoute = true;
+                        }
+                    }
+                }
+                
+                if( NULL == pMousePoint ) {                 // need a new point
+                    pMousePoint = new RoutePoint( rlat, rlon, _T("diamond"), _T(""), GPX_EMPTY_STRING );
+                    pMousePoint->SetNameShown( false );
+                    
+                    pConfig->AddNewWayPoint( pMousePoint, -1 );    // use auto next num
+                    pSelect->AddSelectableRoutePoint( rlat, rlon, pMousePoint );
+                    
+                    if( parent_frame->nRoute_State > 1 )
+                        undo->BeforeUndoableAction( Undo_AppendWaypoint, pMousePoint, Undo_IsOrphanded, NULL );
+                }
+                
+                if(m_pMouseRoute){
+                    if( parent_frame->nRoute_State == 1 ) {
+                        // First point in the route.
+                        m_pMouseRoute->AddPoint( pMousePoint );
+                    } else {
+                        if( m_pMouseRoute->m_NextLegGreatCircle ) {
+                            double rhumbBearing, rhumbDist, gcBearing, gcDist;
+                            DistanceBearingMercator( rlat, rlon, m_prev_rlat, m_prev_rlon, &rhumbBearing, &rhumbDist );
+                            Geodesic::GreatCircleDistBear( m_prev_rlon, m_prev_rlat, rlon, rlat, &gcDist, &gcBearing, NULL );
+                            double gcDistNM = gcDist / 1852.0;
+                            
+                            // Empirically found expression to get reasonable route segments.
+                            int segmentCount = (3.0 + (rhumbDist - gcDistNM)) / pow(rhumbDist-gcDistNM-1, 0.5 );
+                            
+                            wxString msg;
+                            msg << _("For this leg the Great Circle route is ")
+                            << FormatDistanceAdaptive( rhumbDist - gcDistNM ) << _(" shorter than rhumbline.\n\n")
+                            << _("Would you like include the Great Circle routing points for this leg?");
+                            
+                            m_disable_edge_pan = true;  // This helps on OS X if MessageBox does not fully capture mouse
+                            
+                            int answer = OCPNMessageBox( this, msg, _("OpenCPN Route Create"), wxYES_NO | wxNO_DEFAULT );
+                            
+                            m_disable_edge_pan = false;
+                            
+                            if( answer == wxID_YES ) {
+                                RoutePoint* gcPoint;
+                                RoutePoint* prevGcPoint = m_prev_pMousePoint;
+                                wxRealPoint gcCoord;
+                                
+                                for( int i = 1; i <= segmentCount; i++ ) {
+                                    double fraction = (double) i * ( 1.0 / (double) segmentCount );
+                                    Geodesic::GreatCircleTravel( m_prev_rlon, m_prev_rlat, gcDist * fraction,
+                                                                 gcBearing, &gcCoord.x, &gcCoord.y, NULL );
+                                    
+                                    if( i < segmentCount ) {
+                                        gcPoint = new RoutePoint( gcCoord.y, gcCoord.x, _T("xmblue"), _T(""),
+                                                                  GPX_EMPTY_STRING );
+                                        gcPoint->SetNameShown( false );
+                                        pConfig->AddNewWayPoint( gcPoint, -1 );
+                                        pSelect->AddSelectableRoutePoint( gcCoord.y, gcCoord.x, gcPoint );
+                                    } else {
+                                        gcPoint = pMousePoint; // Last point, previously exsisting!
+                                    }
+                                    
+                                    m_pMouseRoute->AddPoint( gcPoint );
+                                    pSelect->AddSelectableRouteSegment( prevGcPoint->m_lat, prevGcPoint->m_lon,
+                                                                        gcPoint->m_lat, gcPoint->m_lon, prevGcPoint, gcPoint, m_pMouseRoute );
+                                    prevGcPoint = gcPoint;
+                                }
+                                
+                                undo->CancelUndoableAction( true );
+                                
+                            } else {
+                                m_pMouseRoute->AddPoint( pMousePoint );
+                                pSelect->AddSelectableRouteSegment( m_prev_rlat, m_prev_rlon,
+                                                                    rlat, rlon, m_prev_pMousePoint, pMousePoint, m_pMouseRoute );
+                                undo->AfterUndoableAction( m_pMouseRoute );
+                            }
+                        } else {
+                            // Ordinary rhumblinesegment.
+                            m_pMouseRoute->AddPoint( pMousePoint );
+                            pSelect->AddSelectableRouteSegment( m_prev_rlat, m_prev_rlon,
+                                                                rlat, rlon, m_prev_pMousePoint, pMousePoint, m_pMouseRoute );
+                            undo->AfterUndoableAction( m_pMouseRoute );
+                        }
+                    }
+                }
+                
+                m_prev_rlat = rlat;
+                m_prev_rlon = rlon;
+                m_prev_pMousePoint = pMousePoint;
+                if(m_pMouseRoute)
+                    m_pMouseRoute->m_lastMousePointIndex = m_pMouseRoute->GetnPoints();
+                
+                parent_frame->nRoute_State++;
+                InvalidateGL();
+                Refresh( false );
+                ret = true;
+            }
+            
+            else if( m_bMeasure_Active && m_nMeasureState )   // measure tool?
+            {
+                double rlat, rlon;
+                
+                SetCursor( *pCursorPencil );
+                rlat = m_cursor_lat;
+                rlon = m_cursor_lon;
+                
+                if( m_nMeasureState == 1 ) {
+                    m_pMeasureRoute = new Route();
+                    pRouteList->Append( m_pMeasureRoute );
+                    r_rband.x = x;
+                    r_rband.y = y;
+                }
+                
+                RoutePoint *pMousePoint = new RoutePoint( m_cursor_lat, m_cursor_lon,
+                                                          wxString( _T ( "circle" ) ), wxEmptyString, GPX_EMPTY_STRING );
+                pMousePoint->m_bShowName = false;
+                
+                m_pMeasureRoute->AddPoint( pMousePoint );
+                
+                m_prev_rlat = m_cursor_lat;
+                m_prev_rlon = m_cursor_lon;
+                m_prev_pMousePoint = pMousePoint;
+                m_pMeasureRoute->m_lastMousePointIndex = m_pMeasureRoute->GetnPoints();
+                
+                m_nMeasureState++;
+                
+                InvalidateGL();
+                Refresh( false );
+                ret = true;
+            }
+            
+            else {
+                FindRoutePointsAtCursor( SelectRadius, true );    // Not creating Route
+            }
+        }  // !g_btouch
+        else {                  // g_btouch
+
+           if(( m_bMeasure_Active && m_nMeasureState ) || ( parent_frame->nRoute_State )){
+              
+               // if near screen edge, pan with injection
+               //                if( CheckEdgePan( x, y, true, 5, 10 ) ) {
+                                //                    return;
+                                //                }
+                                
+           }
+        }
+        
+        if(ret)
+            return true;
+    }
+    
+    if( event.Dragging() ) {
+        
+        //in touch screen mode ensure the finger/cursor is on the selected point's radius to allow dragging
+        if( g_btouch ) {
+            if( m_pRoutePointEditTarget && !m_bIsInRadius ) {
+                SelectItem *pFind = NULL;
+                SelectableItemList SelList = pSelect->FindSelectionList( m_cursor_lat, m_cursor_lon,
+                                                                         +                                 SELTYPE_ROUTEPOINT );
+                wxSelectableItemListNode *node = SelList.GetFirst();
+                while( node ) {
+                    pFind = node->GetData();
+                    RoutePoint *frp = (RoutePoint *) pFind->m_pData1;
+                    if( m_pRoutePointEditTarget == frp )
+                        m_bIsInRadius = true;
+                    node = node->GetNext();
+                }
+            }
+        }
+        
+        
+        if( m_bRouteEditing && m_pRoutePointEditTarget ) {
+            
+            bool DraggingAllowed = g_btouch ? m_bIsInRadius : true;
+            
+            if( NULL == pMarkPropDialog ) {
+                if( g_bWayPointPreventDragging ) DraggingAllowed = false;
+            } else if( !pMarkPropDialog->IsShown() && g_bWayPointPreventDragging )
+                DraggingAllowed = false;
+            
+            if( m_pRoutePointEditTarget && ( m_pRoutePointEditTarget->GetIconName() == _T("mob") ) )
+                DraggingAllowed = false;
+            
+            if( m_pRoutePointEditTarget->m_bIsInLayer )
+                DraggingAllowed = false;
+                                                
+            if( DraggingAllowed ) {
+                                                    
+                                                    if( !undo->InUndoableAction() ) {
+                                                        undo->BeforeUndoableAction( Undo_MoveWaypoint, m_pRoutePointEditTarget,
+                                                                                    Undo_NeedsCopy, m_pFoundPoint );
+                                                    }
+                                                    
+                                                    // Get the update rectangle for the union of the un-edited routes
+                                                    wxRect pre_rect;
+                                                    
+                                                    if( !g_bopengl && m_pEditRouteArray ) {
+                                                        for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
+                                                            Route *pr = (Route *) m_pEditRouteArray->Item( ir );
+                                                            //      Need to validate route pointer
+                                                            //      Route may be gone due to drgging close to ownship with
+                                                            //      "Delete On Arrival" state set, as in the case of
+                                                            //      navigating to an isolated waypoint on a temporary route
+                                                            if( g_pRouteMan->IsRouteValid(pr) ) {
+                                                                wxRect route_rect;
+                                                                pr->CalculateDCRect( m_dc_route, &route_rect, VPoint );
+                                                                pre_rect.Union( route_rect );
+                                                            }
+                                                        }
+                                                    }
+                                                    
+                                                    m_pRoutePointEditTarget->m_lat = m_cursor_lat;     // update the RoutePoint entry
+                                                    m_pRoutePointEditTarget->m_lon = m_cursor_lon;
+                                                    m_pFoundPoint->m_slat = m_cursor_lat;             // update the SelectList entry
+                                                    m_pFoundPoint->m_slon = m_cursor_lon;
+                                                    
+                                                    if( CheckEdgePan( x, y, true, 5, 2 ) ) {
+                                                        double new_cursor_lat, new_cursor_lon;
+                                                        GetCanvasPixPoint( x, y, new_cursor_lat, new_cursor_lon );
+                                                        m_pRoutePointEditTarget->m_lat = new_cursor_lat;  // update the RoutePoint entry
+                                                        m_pRoutePointEditTarget->m_lon = new_cursor_lon;
+                                                        m_pFoundPoint->m_slat = new_cursor_lat;           // update the SelectList entry
+                                                        m_pFoundPoint->m_slon = new_cursor_lon;
+                                                    }
+                                                    
+                                                    //    Update the MarkProperties Dialog, if currently shown
+                                                    if( ( NULL != pMarkPropDialog ) && ( pMarkPropDialog->IsShown() ) ) {
+                                                        if( m_pRoutePointEditTarget == pMarkPropDialog->GetRoutePoint() ) pMarkPropDialog->UpdateProperties();
+                                                    }
+                                                    
+                                                    if(g_bopengl) {
+                                                        InvalidateGL();
+                                                        Refresh( false );
+                                                    } else {
+                                                        // Get the update rectangle for the edited route
+                                                        wxRect post_rect;
+                                                        
+                                                        if( m_pEditRouteArray ) {
+                                                            for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
+                                                                Route *pr = (Route *) m_pEditRouteArray->Item( ir );
+                                                                if( g_pRouteMan->IsRouteValid(pr) ) {
+                                                                    wxRect route_rect;
+                                                                    pr->CalculateDCRect( m_dc_route, &route_rect, VPoint );
+                                                                    post_rect.Union( route_rect );
+                                                                }
+                                                            }
+                                                        }
+                                                        
+                                                        //    Invalidate the union region
+                                                        pre_rect.Union( post_rect );
+                                                        RefreshRect( pre_rect, false );
+                                                    }
+                                                }
+                                                ret = true;
+        }     // if Route Editing
+        
+        else if( m_bMarkEditing && m_pRoutePointEditTarget ) {
+            
+            bool DraggingAllowed = g_btouch ? m_bIsInRadius : true;
+            
+            if( NULL == pMarkPropDialog ) {
+                if( g_bWayPointPreventDragging )
+                    DraggingAllowed = false;
+            } else if( !pMarkPropDialog->IsShown() && g_bWayPointPreventDragging )
+                DraggingAllowed = false;
+            
+            if( m_pRoutePointEditTarget
+                && ( m_pRoutePointEditTarget->GetIconName() == _T("mob") ) )
+                DraggingAllowed = false;
+            
+            if( m_pRoutePointEditTarget->m_bIsInLayer )
+                DraggingAllowed = false;
+                    
+            if( DraggingAllowed ) {
+                        if( !undo->InUndoableAction() ) {
+                            undo->BeforeUndoableAction( Undo_MoveWaypoint, m_pRoutePointEditTarget,
+                                                        Undo_NeedsCopy, m_pFoundPoint );
+                        }
+                        
+                        //      The mark may be an anchorwatch
+                        double lpp1 = 0.;
+                        double lpp2 = 0.;
+                        double lppmax;
+                        
+                        if( pAnchorWatchPoint1 == m_pRoutePointEditTarget ) {
+                            lpp1 = fabs( GetAnchorWatchRadiusPixels( pAnchorWatchPoint1 ) );
+                            
+                        }
+                        if( pAnchorWatchPoint2 == m_pRoutePointEditTarget ) {
+                            lpp2 = fabs( GetAnchorWatchRadiusPixels( pAnchorWatchPoint2 ) );
+                        }
+                        lppmax = wxMax(lpp1 + 10, lpp2 + 10);         // allow for cruft
+                        
+                        // Get the update rectangle for the un-edited mark
+                        wxRect pre_rect;
+                        m_pRoutePointEditTarget->CalculateDCRect( m_dc_route, &pre_rect );
+                        if( ( lppmax > pre_rect.width / 2 ) || ( lppmax > pre_rect.height / 2 ) ) pre_rect.Inflate(
+                            (int) ( lppmax - ( pre_rect.width / 2 ) ),
+                                                                                                                   (int) ( lppmax - ( pre_rect.height / 2 ) ) );
+                        m_pRoutePointEditTarget->m_lat = m_cursor_lat;    // update the RoutePoint entry
+                        m_pRoutePointEditTarget->m_lon = m_cursor_lon;
+                        m_pFoundPoint->m_slat = m_cursor_lat;             // update the SelectList entry
+                        m_pFoundPoint->m_slon = m_cursor_lon;
+                        
+                        //    Update the MarkProperties Dialog, if currently shown
+                        if( ( NULL != pMarkPropDialog ) && ( pMarkPropDialog->IsShown() ) ) {
+                            if( m_pRoutePointEditTarget == pMarkPropDialog->GetRoutePoint() )
+                                pMarkPropDialog->UpdateProperties( true );
+                        }
+                        
+                        //    Invalidate the union region
+                        if(g_bopengl) {
+                            InvalidateGL();
+                            Refresh( false );
+                        } else {
+                            // Get the update rectangle for the edited mark
+                            wxRect post_rect;
+                            m_pRoutePointEditTarget->CalculateDCRect( m_dc_route, &post_rect );
+                            if( ( lppmax > post_rect.width / 2 ) || ( lppmax > post_rect.height / 2 ) )
+                                post_rect.Inflate(
+                                    (int) ( lppmax - ( post_rect.width / 2 ) ),
+                                                  (int) ( lppmax - ( post_rect.height / 2 ) ) );
+                                
+                                //                        post_rect.Inflate(200);
+                            //    Invalidate the union region
+                                pre_rect.Union( post_rect );
+                                RefreshRect( pre_rect, false );
+                        }
+                    }
+                    ret = true;
+        }
+        
+        if(ret)
+            return true;
+    }       //dragging
+    
+    if( event.LeftUp() ) {
+        bool b_startedit_route = false;
+        bool b_startedit_mark = false;
+        
+        if(g_btouch) {
+            m_bChartDragging = false;
+            m_bIsInRadius = false;
+            
+            if( parent_frame->nRoute_State )                  // creating route?
+            {
+                if(m_bedge_pan){
+                    m_bedge_pan = false;
+                    return false;
+                }
+                
+                double rlat, rlon;
+                
+                rlat = m_cursor_lat;
+                rlon = m_cursor_lon;
+                
+                if( m_pRoutePointEditTarget) {
+                    m_pRoutePointEditTarget->m_bIsBeingEdited = false;
+                    m_pRoutePointEditTarget->m_bPtIsSelected = false;
+                    wxRect wp_rect;
+                    m_pRoutePointEditTarget->CalculateDCRect( m_dc_route, &wp_rect );
+                    RefreshRect( wp_rect, true );
+                    m_pRoutePointEditTarget = NULL;
+                }
+                m_bRouteEditing = true;
+                
+                if( parent_frame->nRoute_State == 1 ) {
+                    m_pMouseRoute = new Route();
+                    m_pMouseRoute->SetHiLite(50);
+                    pRouteList->Append( m_pMouseRoute );
+                    r_rband.x = x;
+                    r_rband.y = y;
+                }
+                
+                
+                //    Check to see if there is a nearby point which may be reused
+                RoutePoint *pMousePoint = NULL;
+                
+                //    Calculate meaningful SelectRadius
+                int nearby_sel_rad_pix = 8;
+                double nearby_radius_meters = nearby_sel_rad_pix / m_true_scale_ppm;
+                
+                RoutePoint *pNearbyPoint = pWayPointMan->GetNearbyWaypoint( rlat, rlon,
+                                                                            nearby_radius_meters );
+                if( pNearbyPoint && ( pNearbyPoint != m_prev_pMousePoint )
+                    && !pNearbyPoint->m_bIsInTrack && !pNearbyPoint->m_bIsInLayer && pNearbyPoint->IsVisible() )
+                {
+                    int dlg_return;
+                    #ifndef __WXOSX__
+                    dlg_return = OCPNMessageBox( this, _("Use nearby waypoint?"),
+                                                 _("OpenCPN Route Create"),
+                                                 (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
+                                                 #else
+                                                 dlg_return = wxID_YES;
+                                                 #endif
+                                                 if( dlg_return == wxID_YES ) {
+                                                     pMousePoint = pNearbyPoint;
+                                                     
+                                                     // Using existing waypoint, so nothing to delete for undo.
+                                                     if( parent_frame->nRoute_State > 1 )
+                                                         undo->BeforeUndoableAction( Undo_AppendWaypoint, pMousePoint, Undo_HasParent, NULL );
+                                                     
+                                                     // check all other routes to see if this point appears in any other route
+                                                         // If it appears in NO other route, then it should e considered an isolated mark
+                                                         if( !g_pRouteMan->FindRouteContainingWaypoint( pMousePoint ) ) pMousePoint->m_bKeepXRoute =
+                                                             true;
+                                                 }
+                }
+                
+                if( NULL == pMousePoint ) {                 // need a new point
+                    pMousePoint = new RoutePoint( rlat, rlon, _T("diamond"), _T(""), GPX_EMPTY_STRING );
+                    pMousePoint->SetNameShown( false );
+                    
+                    pConfig->AddNewWayPoint( pMousePoint, -1 );    // use auto next num
+                    pSelect->AddSelectableRoutePoint( rlat, rlon, pMousePoint );
+                    
+                    if( parent_frame->nRoute_State > 1 )
+                        undo->BeforeUndoableAction( Undo_AppendWaypoint, pMousePoint, Undo_IsOrphanded, NULL );
+                }
+                
+                if( parent_frame->nRoute_State == 1 ) {
+                    // First point in the route.
+                    m_pMouseRoute->AddPoint( pMousePoint );
+                } else {
+                    if( m_pMouseRoute->m_NextLegGreatCircle ) {
+                        double rhumbBearing, rhumbDist, gcBearing, gcDist;
+                        DistanceBearingMercator( rlat, rlon, m_prev_rlat, m_prev_rlon, &rhumbBearing, &rhumbDist );
+                        Geodesic::GreatCircleDistBear( m_prev_rlon, m_prev_rlat, rlon, rlat, &gcDist, &gcBearing, NULL );
+                        double gcDistNM = gcDist / 1852.0;
+                        
+                        // Empirically found expression to get reasonable route segments.
+                        int segmentCount = (3.0 + (rhumbDist - gcDistNM)) / pow(rhumbDist-gcDistNM-1, 0.5 );
+                        
+                        wxString msg;
+                        msg << _("For this leg the Great Circle route is ")
+                        << FormatDistanceAdaptive( rhumbDist - gcDistNM ) << _(" shorter than rhumbline.\n\n")
+                        << _("Would you like include the Great Circle routing points for this leg?");
+                        
+                        #ifndef __WXOSX__
+                        int answer = OCPNMessageBox( this, msg, _("OpenCPN Route Create"), wxYES_NO | wxNO_DEFAULT );
+                        #else
+                        int answer = wxID_NO;
+                        #endif
+                        
+                        if( answer == wxID_YES ) {
+                            RoutePoint* gcPoint;
+                            RoutePoint* prevGcPoint = m_prev_pMousePoint;
+                            wxRealPoint gcCoord;
+                            
+                            for( int i = 1; i <= segmentCount; i++ ) {
+                                double fraction = (double) i * ( 1.0 / (double) segmentCount );
+                                Geodesic::GreatCircleTravel( m_prev_rlon, m_prev_rlat, gcDist * fraction,
+                                                             gcBearing, &gcCoord.x, &gcCoord.y, NULL );
+                                
+                                if( i < segmentCount ) {
+                                    gcPoint = new RoutePoint( gcCoord.y, gcCoord.x, _T("xmblue"), _T(""),
+                                                              GPX_EMPTY_STRING );
+                                    gcPoint->SetNameShown( false );
+                                    pConfig->AddNewWayPoint( gcPoint, -1 );
+                                    pSelect->AddSelectableRoutePoint( gcCoord.y, gcCoord.x, gcPoint );
+                                } else {
+                                    gcPoint = pMousePoint; // Last point, previously exsisting!
+                                }
+                                
+                                m_pMouseRoute->AddPoint( gcPoint );
+                                pSelect->AddSelectableRouteSegment( prevGcPoint->m_lat, prevGcPoint->m_lon,
+                                                                    gcPoint->m_lat, gcPoint->m_lon, prevGcPoint, gcPoint, m_pMouseRoute );
+                                prevGcPoint = gcPoint;
+                            }
+                            
+                            undo->CancelUndoableAction( true );
+                            
+                        } else {
+                            m_pMouseRoute->AddPoint( pMousePoint );
+                            pSelect->AddSelectableRouteSegment( m_prev_rlat, m_prev_rlon,
+                                                                rlat, rlon, m_prev_pMousePoint, pMousePoint, m_pMouseRoute );
+                            undo->AfterUndoableAction( m_pMouseRoute );
+                        }
+                    } else {
+                        // Ordinary rhumblinesegment.
+                        m_pMouseRoute->AddPoint( pMousePoint );
+                        pSelect->AddSelectableRouteSegment( m_prev_rlat, m_prev_rlon,
+                                                            rlat, rlon, m_prev_pMousePoint, pMousePoint, m_pMouseRoute );
+                        undo->AfterUndoableAction( m_pMouseRoute );
+                    }
+                }
+                
+                m_prev_rlat = rlat;
+                m_prev_rlon = rlon;
+                m_prev_pMousePoint = pMousePoint;
+                m_pMouseRoute->m_lastMousePointIndex = m_pMouseRoute->GetnPoints();
+                
+                parent_frame->nRoute_State++;
+                Refresh( true );
+                ret = true;
+            }
+            else if( m_bMeasure_Active && m_nMeasureState )   // measure tool?
+            {
+                if(m_bedge_pan){
+                    m_bedge_pan = false;
+                    return false;
+                }
+                
+                double rlat, rlon;
+                
+                rlat = m_cursor_lat;
+                rlon = m_cursor_lon;
+                
+                if( m_nMeasureState == 1 ) {
+                    m_pMeasureRoute = new Route();
+                    pRouteList->Append( m_pMeasureRoute );
+                    r_rband.x = x;
+                    r_rband.y = y;
+                }
+                
+                
+                RoutePoint *pMousePoint = new RoutePoint( m_cursor_lat, m_cursor_lon,
+                                                          wxString( _T ( "circle" ) ), wxEmptyString, GPX_EMPTY_STRING );
+                                                          pMousePoint->m_bShowName = false;
+                                                          
+                                                          m_pMeasureRoute->AddPoint( pMousePoint );
+                                                          
+                                                          m_prev_rlat = m_cursor_lat;
+                                                          m_prev_rlon = m_cursor_lon;
+                                                          m_prev_pMousePoint = pMousePoint;
+                                                          m_pMeasureRoute->m_lastMousePointIndex = m_pMeasureRoute->GetnPoints();
+                                                          
+                                                          m_nMeasureState++;
+                                                          
+                                                          Refresh( true );
+                                                          ret = true;
+            }
+            else {
+                bool b_was_editing_mark = m_bMarkEditing;
+                bool b_was_editing_route = m_bRouteEditing;
+                FindRoutePointsAtCursor( SelectRadius, true );    // Possibly selecting a point in a route for later dragging
+                
+                if( !b_was_editing_route ) {
+                    if( m_pEditRouteArray ) {
+                        b_startedit_route = true;
+                        
+                        
+                        //  Hide the route rollover during route point edit, not needed, and may be confusing
+                        if( m_pRouteRolloverWin && m_pRouteRolloverWin->IsActive()  ) {
+                            m_pRouteRolloverWin->IsActive( false );
+                        }
+                        
+                        wxRect pre_rect;
+                        for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
+                            Route *pr = (Route *) m_pEditRouteArray->Item( ir );
+                            //      Need to validate route pointer
+                            //      Route may be gone due to drgging close to ownship with
+                            //      "Delete On Arrival" state set, as in the case of
+                            //      navigating to an isolated waypoint on a temporary route
+                            if( g_pRouteMan->IsRouteValid(pr) ) {
+                                //                                pr->SetHiLite(50);
+                                wxRect route_rect;
+                                pr->CalculateDCRect( m_dc_route, &route_rect, VPoint );
+                                pre_rect.Union( route_rect );
+                            }
+                        }
+                        RefreshRect( pre_rect, true );
+                    }
+                }
+                else {
+                    b_startedit_route = false; 
+                }
+                
+                
+                //  Mark editing
+                if( m_pRoutePointEditTarget ) {
+                    
+                    if(b_was_editing_mark || b_was_editing_route) {            // kill previous hilight
+                        if( m_lastRoutePointEditTarget) {
+                            m_lastRoutePointEditTarget->m_bIsBeingEdited = false;
+                            m_lastRoutePointEditTarget->m_bPtIsSelected = false;
+                            wxRect wp_rect;
+                            m_lastRoutePointEditTarget->CalculateDCRect( m_dc_route, &wp_rect );
+                            RefreshRect( wp_rect, true );
+                        }
+                    }
+                    
+                    if( m_pRoutePointEditTarget) {
+                        m_pRoutePointEditTarget->m_bIsBeingEdited = true;
+                        m_pRoutePointEditTarget->m_bPtIsSelected = true;
+                        wxRect wp_rect;
+                        m_pRoutePointEditTarget->CalculateDCRect( m_dc_route, &wp_rect );
+                        RefreshRect( wp_rect, true );
+                    }
+                    
+                }
+                else {
+                    if( m_lastRoutePointEditTarget) {
+                        m_lastRoutePointEditTarget->m_bIsBeingEdited = false;
+                        m_lastRoutePointEditTarget->m_bPtIsSelected = false;
+                        wxRect wp_rect;
+                        m_lastRoutePointEditTarget->CalculateDCRect( m_dc_route, &wp_rect );
+                        RefreshRect( wp_rect, true );
+                    }
+                }
+            }
+            
+            //      Check to see if there is a route or AIS target under the cursor
+            //      If so, start the rollover timer which creates the popup
+            bool b_start_rollover = false;
+            if( g_pAIS && g_pAIS->GetNumTargets() && g_bShowAIS ) {
+                SelectItem *pFind = pSelectAIS->FindSelection( m_cursor_lat, m_cursor_lon,
+                                                               SELTYPE_AISTARGET );
+                if( pFind )
+                    b_start_rollover = true;
+            }
+            
+            if(!b_start_rollover && !b_startedit_route){
+                SelectableItemList SelList = pSelect->FindSelectionList( m_cursor_lat, m_cursor_lon,
+                                                                         SELTYPE_ROUTESEGMENT );
+                wxSelectableItemListNode *node = SelList.GetFirst();
+                while( node ) {
+                    SelectItem *pFindSel = node->GetData();
+                    
+                    Route *pr = (Route *) pFindSel->m_pData3;        //candidate
+                    
+                    if( pr && pr->IsVisible() ){
+                        b_start_rollover = true;
+                        break;
+                    }
+                    node = node->GetNext();
+                }       // while
+            }
+            
+            if( b_start_rollover )
+                m_RolloverPopupTimer.Start( m_rollover_popup_timer_msec, wxTIMER_ONE_SHOT );
+            
+            
+            if( m_bRouteEditing/* && !b_startedit_route*/) {            // End of RoutePoint drag
+            if( m_pRoutePointEditTarget ) {
+                pSelect->UpdateSelectableRouteSegments( m_pRoutePointEditTarget );
+                
+                if( m_pEditRouteArray ) {
+                    for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
+                        Route *pr = (Route *) m_pEditRouteArray->Item( ir );
+                        if( g_pRouteMan->IsRouteValid(pr) ) {
+                            pr->FinalizeForRendering();
+                            pr->UpdateSegmentDistances();
+                            pConfig->UpdateRoute( pr );
+                        }
+                    }
+                }
+                
+                //    Update the RouteProperties Dialog, if currently shown
+                if( ( NULL != pRoutePropDialog ) && ( pRoutePropDialog->IsShown() ) ) {
+                    if( m_pEditRouteArray ) {
+                        for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
+                            Route *pr = (Route *) m_pEditRouteArray->Item( ir );
+                            if( g_pRouteMan->IsRouteValid(pr) ) {
+                                if( !pr->IsTrack() && pRoutePropDialog->m_pRoute == pr ) {
+                                    pRoutePropDialog->SetRouteAndUpdate( pr, true );
+                                } else if ( ( NULL != pTrackPropDialog ) && ( pTrackPropDialog->IsShown() ) && pTrackPropDialog->m_pRoute == pr ) {
+                                    pTrackPropDialog->SetTrackAndUpdate( pr );
+                                }
+                            }
+                        }
+                    }
+                }
+                
+            }
+            }
+            
+            if( m_pRoutePointEditTarget ) {
+                pConfig->UpdateWayPoint( m_pRoutePointEditTarget );
+                undo->AfterUndoableAction( m_pRoutePointEditTarget );
+            }
+            
+            if(!m_pRoutePointEditTarget){
+                delete m_pEditRouteArray;
+                m_pEditRouteArray = NULL;
+                m_bRouteEditing = false;
+            }
+            
+            #if 0        
+            else if( m_bMarkEditing && !b_startedit_mark) {         // end of Waypoint drag
+            if( m_pRoutePointEditTarget ) {
+                pConfig->UpdateWayPoint( m_pRoutePointEditTarget );
+                undo->AfterUndoableAction( m_pRoutePointEditTarget );
+                //                m_pRoutePointEditTarget->m_bIsBeingEdited = false;
+                //                wxRect wp_rect;
+                //                m_pRoutePointEditTarget->CalculateDCRect( m_dc_route, &wp_rect );
+                //                m_pRoutePointEditTarget->m_bPtIsSelected = false;
+                //                RefreshRect( wp_rect, true );
+                
+        }
+        //            m_pRoutePointEditTarget = NULL;
+        //            m_bMarkEditing = false;
+        if( !g_FloatingToolbarDialog->IsShown() )
+            gFrame->SurfaceToolbar();
+        }
+        #endif
+        }       // g_btouch
+        
+        
+        else{                   // !g_btouch
+        if( m_bRouteEditing ) {            // End of RoutePoint drag
+            if( m_pRoutePointEditTarget ) {
+                pSelect->UpdateSelectableRouteSegments( m_pRoutePointEditTarget );
+                m_pRoutePointEditTarget->m_bBlink = false;
+                
+                if( m_pEditRouteArray ) {
+                    for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
+                        Route *pr = (Route *) m_pEditRouteArray->Item( ir );
+                        if( g_pRouteMan->IsRouteValid(pr) ) {
+                            pr->FinalizeForRendering();
+                            pr->UpdateSegmentDistances();
+                            pr->m_bIsBeingEdited = false;
+                            
+                            pConfig->UpdateRoute( pr );
+                            
+                            pr->SetHiLite( 0 );
+                        }
+                    }
+                    Refresh( false );
+                }
+                
+                //    Update the RouteProperties Dialog, if currently shown
+                if( ( NULL != pRoutePropDialog ) && ( pRoutePropDialog->IsShown() ) ) {
+                    if( m_pEditRouteArray ) {
+                        for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
+                            Route *pr = (Route *) m_pEditRouteArray->Item( ir );
+                            if( g_pRouteMan->IsRouteValid(pr) ) {
+                                if( !pr->IsTrack() && pRoutePropDialog->m_pRoute == pr ) {
+                                    pRoutePropDialog->SetRouteAndUpdate( pr, true );
+                                } else if ( ( NULL != pTrackPropDialog ) && ( pTrackPropDialog->IsShown() ) && pTrackPropDialog->m_pRoute == pr ) {
+                                    pTrackPropDialog->SetTrackAndUpdate( pr );
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                m_pRoutePointEditTarget->m_bPtIsSelected = false;
+                m_pRoutePointEditTarget->m_bIsBeingEdited = false;
+                
+                delete m_pEditRouteArray;
+                m_pEditRouteArray = NULL;
+                undo->AfterUndoableAction( m_pRoutePointEditTarget );
+            }
+            
+            InvalidateGL();
+            m_bRouteEditing = false;
+            m_pRoutePointEditTarget = NULL;
+            if( !g_FloatingToolbarDialog->IsShown() )
+                gFrame->SurfaceToolbar();
+            ret = true;
+        }
+        
+        else if( m_bMarkEditing) {         // end of Waypoint drag
+            if( m_pRoutePointEditTarget ) {
+                pConfig->UpdateWayPoint( m_pRoutePointEditTarget );
+                undo->AfterUndoableAction( m_pRoutePointEditTarget );
+                m_pRoutePointEditTarget->m_bIsBeingEdited = false;
+                wxRect wp_rect;
+                m_pRoutePointEditTarget->CalculateDCRect( m_dc_route, &wp_rect );
+                m_pRoutePointEditTarget->m_bPtIsSelected = false;
+                RefreshRect( wp_rect, true );
+                
+            }
+            m_pRoutePointEditTarget = NULL;
+            m_bMarkEditing = false;
+            if( !g_FloatingToolbarDialog->IsShown() )
+                gFrame->SurfaceToolbar();
+            ret = true;
+        }
+        
+        else if( leftIsDown ) {  // left click for chart center
+            leftIsDown = false;
+            ret = false;
+            
+            if( !g_btouch ){
+                if( !m_bChartDragging && !m_bMeasure_Active ) {
+                 } else {
+                    m_bChartDragging = false;
+                }
+            }
+            
+        }
+        }       // !btouch
+        
+        if(ret)
+            return true;
+    }           // left up
+    
+    if( event.RightDown() ) {
+        last_drag.x = mx;
+        last_drag.y = my;
+        
+        if(g_btouch ){
+            if( m_pRoutePointEditTarget )
+                return false;
+        }
+        
+        ret = true;
+        
+        if( parent_frame->nRoute_State ) {                    // creating route?
+            InvokeCanvasMenu(x, y, SELTYPE_ROUTECREATE);
+        }
+        else                                                  // General Right Click
+        {
+            // Look for selectable objects
+            double slat, slon;
+            slat = m_cursor_lat;
+            slon = m_cursor_lon;
+            
+            #if defined(__WXMAC__) || defined(__OCPN__ANDROID__)
+            wxScreenDC sdc;
+            ocpnDC dc( sdc );
+            #else
+            wxClientDC cdc( GetParent() );
+            ocpnDC dc( cdc );
+            #endif
+            
+            OCPNRegion vp_region( wxRect( 0, 0, VPoint.pix_width, VPoint.pix_height ) );
+            
+            SelectItem *pFindAIS;
+            SelectItem *pFindRP;
+            SelectItem *pFindRouteSeg;
+            SelectItem *pFindTrackSeg;
+            SelectItem *pFindCurrent = NULL;
+            SelectItem *pFindTide = NULL;
+            
+            //    Deselect any current objects
+            if( m_pSelectedRoute ) {
+                m_pSelectedRoute->m_bRtIsSelected = false;        // Only one selection at a time
+                m_pSelectedRoute->DeSelectRoute();
+                #ifdef ocpnUSE_GL
+                if(g_bopengl){
+                    InvalidateGL();
+                    Update();
+                }
+                else
+                    #endif
+                    m_pSelectedRoute->Draw( dc, VPoint );
+            }
+            
+            if( m_pFoundRoutePoint ) {
+                m_pFoundRoutePoint->m_bPtIsSelected = false;
+                m_pFoundRoutePoint->Draw( dc );
+                RefreshRect( m_pFoundRoutePoint->CurrentRect_in_DC );
+            }
+            
+            //      Get all the selectable things at the cursor
+            pFindAIS = pSelectAIS->FindSelection( slat, slon, SELTYPE_AISTARGET );
+            pFindRP = pSelect->FindSelection( slat, slon, SELTYPE_ROUTEPOINT );
+            pFindRouteSeg = pSelect->FindSelection( slat, slon, SELTYPE_ROUTESEGMENT );
+            pFindTrackSeg = pSelect->FindSelection( slat, slon, SELTYPE_TRACKSEGMENT );
+            
+            if( m_bShowCurrent ) pFindCurrent = pSelectTC->FindSelection( slat, slon,
+                SELTYPE_CURRENTPOINT );
+            
+            if( m_bShowTide )                                // look for tide stations
+                pFindTide = pSelectTC->FindSelection( slat, slon, SELTYPE_TIDEPOINT );
+            
+            int seltype = 0;
+            
+            //    Try for AIS targets first
+            if( pFindAIS ) {
+                m_FoundAIS_MMSI = pFindAIS->GetUserData();
+                
+                //      Make sure the target data is available
+                if( g_pAIS->Get_Target_Data_From_MMSI( m_FoundAIS_MMSI ) ) seltype |=
+                    SELTYPE_AISTARGET;
+            }
+            
+            //    Now the various Route Parts
+            
+            m_pFoundRoutePoint = NULL;
+            if( pFindRP ) {
+                RoutePoint *pFirstVizPoint = NULL;
+                RoutePoint *pFoundActiveRoutePoint = NULL;
+                RoutePoint *pFoundVizRoutePoint = NULL;
+                Route *pSelectedActiveRoute = NULL;
+                Route *pSelectedVizRoute = NULL;
+                
+                //There is at least one routepoint, so get the whole list
+                SelectableItemList SelList = pSelect->FindSelectionList( slat, slon,
+                                                                         SELTYPE_ROUTEPOINT );
+                wxSelectableItemListNode *node = SelList.GetFirst();
+                while( node ) {
+                    SelectItem *pFindSel = node->GetData();
+                    
+                    RoutePoint *prp = (RoutePoint *) pFindSel->m_pData1;        //candidate
+                    
+                    //    Get an array of all routes using this point
+                    wxArrayPtrVoid *proute_array = g_pRouteMan->GetRouteArrayContaining( prp );
+                    
+                    // Use route array (if any) to determine actual visibility for this point
+                    bool brp_viz = false;
+                    if( proute_array ) {
+                        for( unsigned int ir = 0; ir < proute_array->GetCount(); ir++ ) {
+                            Route *pr = (Route *) proute_array->Item( ir );
+                            if( pr->IsVisible() ) {
+                                brp_viz = true;
+                                break;
+                            }
+                        }
+                        if( !brp_viz  && prp->m_bKeepXRoute)    // is not visible as part of route, but still exists as a waypoint
+                            brp_viz = prp->IsVisible();         //  so treat as isolated point
+                            
+                    } else
+                        brp_viz = prp->IsVisible();               // isolated point
+                        
+                        if( ( NULL == pFirstVizPoint ) && brp_viz ) pFirstVizPoint = prp;
+                        
+                        // Use route array to choose the appropriate route
+                        // Give preference to any active route, otherwise select the first visible route in the array for this point
+                        m_pSelectedRoute = NULL;
+                    if( proute_array ) {
+                        for( unsigned int ir = 0; ir < proute_array->GetCount(); ir++ ) {
+                            Route *pr = (Route *) proute_array->Item( ir );
+                            if( pr->m_bRtIsActive ) {
+                                pSelectedActiveRoute = pr;
+                                pFoundActiveRoutePoint = prp;
+                                break;
+                            }
+                        }
+                        
+                        if( NULL == pSelectedVizRoute ) {
+                            for( unsigned int ir = 0; ir < proute_array->GetCount(); ir++ ) {
+                                Route *pr = (Route *) proute_array->Item( ir );
+                                if( pr->IsVisible() ) {
+                                    pSelectedVizRoute = pr;
+                                    pFoundVizRoutePoint = prp;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        delete proute_array;
+                    }
+                    
+                    node = node->GetNext();
+                }
+                
+                //      Now choose the "best" selections
+                if( pFoundActiveRoutePoint ) {
+                    m_pFoundRoutePoint = pFoundActiveRoutePoint;
+                    m_pSelectedRoute = pSelectedActiveRoute;
+                } else if( pFoundVizRoutePoint ) {
+                    m_pFoundRoutePoint = pFoundVizRoutePoint;
+                    m_pSelectedRoute = pSelectedVizRoute;
+                } else
+                    // default is first visible point in list
+                    m_pFoundRoutePoint = pFirstVizPoint;
+                
+                if( m_pSelectedRoute ) {
+                    if( m_pSelectedRoute->IsVisible() ) seltype |= SELTYPE_ROUTEPOINT;
+                } else if( m_pFoundRoutePoint ) seltype |= SELTYPE_MARKPOINT;
+                
+                //      Highlite the selected point, to verify the proper right click selection
+                if( m_pFoundRoutePoint) {
+                    m_pFoundRoutePoint->m_bPtIsSelected = true;
+                    wxRect wp_rect;
+                    m_pFoundRoutePoint->CalculateDCRect( m_dc_route, &wp_rect );
+                    RefreshRect( wp_rect, true );
+                }
+                
+            }
+            
+            // Note here that we use SELTYPE_ROUTESEGMENT to select tracks as well as routes
+            // But call the popup handler with identifier appropriate to the type
+            if( pFindRouteSeg )                  // there is at least one select item
+            {
+                SelectableItemList SelList = pSelect->FindSelectionList( slat, slon,
+                                                                         SELTYPE_ROUTESEGMENT );
+                
+                if( NULL == m_pSelectedRoute )  // the case where a segment only is selected
+                {
+                    //  Choose the first visible route containing segment in the list
+                    wxSelectableItemListNode *node = SelList.GetFirst();
+                    while( node ) {
+                        SelectItem *pFindSel = node->GetData();
+                        
+                        Route *pr = (Route *) pFindSel->m_pData3;
+                        if( pr->IsVisible() ) {
+                            m_pSelectedRoute = pr;
+                            break;
+                        }
+                        node = node->GetNext();
+                    }
+                }
+                
+                if( m_pSelectedRoute ) {
+                    if( NULL == m_pFoundRoutePoint )
+                        m_pFoundRoutePoint =   (RoutePoint *) pFindRouteSeg->m_pData1;
+                    
+                    m_pSelectedRoute->m_bRtIsSelected = !(seltype & SELTYPE_ROUTEPOINT);
+                    if( m_pSelectedRoute->m_bRtIsSelected ){
+                        #ifdef ocpnUSE_GL
+                        if(g_bopengl){
+                            InvalidateGL();
+                            Update();
+                        }
+                        else
+                            #endif
+                            m_pSelectedRoute->Draw( dc, GetVP() );
+                    }
+                    
+                    seltype |= SELTYPE_ROUTESEGMENT;
+                }
+                
+            }
+            
+            if( pFindTrackSeg ) {
+                m_pSelectedTrack = NULL;
+                SelectableItemList SelList = pSelect->FindSelectionList( slat, slon,
+                                                                         SELTYPE_TRACKSEGMENT );
+                
+                //  Choose the first visible track containing segment in the list
+                wxSelectableItemListNode *node = SelList.GetFirst();
+                while( node ) {
+                    SelectItem *pFindSel = node->GetData();
+                    
+                    Route *pt = (Route *) pFindSel->m_pData3;
+                    if( pt->IsVisible() ) {
+                        m_pSelectedTrack = pt;
+                        break;
+                    }
+                    node = node->GetNext();
+                }
+                
+                if( m_pSelectedTrack ) seltype |= SELTYPE_TRACKSEGMENT;
+            }
+            
+            bool bseltc = false;
+            //                      if(0 == seltype)
+            {
+                if( pFindCurrent ) {
+                    // There may be multiple current entries at the same point.
+                    // For example, there often is a current substation (with directions specified)
+                    // co-located with its master.  We want to select the substation, so that
+                    // the direction will be properly indicated on the graphic.
+                    // So, we search the select list looking for IDX_type == 'c' (i.e substation)
+                    IDX_entry *pIDX_best_candidate;
+                    
+                    SelectItem *pFind = NULL;
+                    SelectableItemList SelList = pSelectTC->FindSelectionList( m_cursor_lat,
+                                                                               m_cursor_lon, SELTYPE_CURRENTPOINT );
+                    
+                    //      Default is first entry
+                    wxSelectableItemListNode *node = SelList.GetFirst();
+                    pFind = node->GetData();
+                    pIDX_best_candidate = (IDX_entry *) ( pFind->m_pData1 );
+                    
+                    if( SelList.GetCount() > 1 ) {
+                        node = node->GetNext();
+                        while( node ) {
+                            pFind = node->GetData();
+                            IDX_entry *pIDX_candidate = (IDX_entry *) ( pFind->m_pData1 );
+                            if( pIDX_candidate->IDX_type == 'c' ) {
+                                pIDX_best_candidate = pIDX_candidate;
+                                break;
+                            }
+                            
+                            node = node->GetNext();
+                        }       // while (node)
+                    } else {
+                        wxSelectableItemListNode *node = SelList.GetFirst();
+                        pFind = node->GetData();
+                        pIDX_best_candidate = (IDX_entry *) ( pFind->m_pData1 );
+                    }
+                    
+                    m_pIDXCandidate = pIDX_best_candidate;
+                    
+                    if( 0 == seltype ) {
+                        DrawTCWindow( x, y, (void *) pIDX_best_candidate );
+                        Refresh( false );
+                        bseltc = true;
+                    } else
+                        seltype |= SELTYPE_CURRENTPOINT;
+                }
+                
+                else if( pFindTide ) {
+                    m_pIDXCandidate = (IDX_entry *) pFindTide->m_pData1;
+                    
+                    if( 0 == seltype ) {
+                        DrawTCWindow( x, y, (void *) pFindTide->m_pData1 );
+                        Refresh( false );
+                        bseltc = true;
+                    } else
+                        seltype |= SELTYPE_TIDEPOINT;
+                }
+            }
+            
+            if( 0 == seltype )
+                seltype |= SELTYPE_UNKNOWN;
+            
+            if( !bseltc ){
+                InvokeCanvasMenu(x, y, seltype);
+                
+                // Clean up
+                if( ( m_pSelectedRoute ) ) {
+                    m_pSelectedRoute->m_bRtIsSelected = false;
+                }
+                
+                m_pSelectedRoute = NULL;
+                
+                if( m_pFoundRoutePoint ) {
+                    m_pFoundRoutePoint->m_bPtIsSelected = false;
+                }
+                m_pFoundRoutePoint = NULL;
+                
+                
+            }                
+            
+            // Seth: Is this refresh needed?
+            Refresh( false );            // needed for MSW, not GTK  Why??
+        }
+    }   //Right down
+
+    return ret;
+        
+}
+
+bool ChartCanvas::MouseEventProcessCanvas( wxMouseEvent& event )
+{
+    int x, y;
+    event.GetPosition( &x, &y );
+    
+    //        Check for wheel rotation
+    // ideally, should be just longer than the time between
+    // processing accumulated mouse events from the event queue
+    // as would happen during screen redraws.
+    int wheel_dir = event.GetWheelRotation();
+    
+    if( wheel_dir ) {
+        int mouse_wheel_oneshot = abs(wheel_dir)*4;                  //msec
+        wheel_dir = wheel_dir > 0 ? 1 : -1; // normalize
+        
+        double factor = 2.0;
+        if(wheel_dir < 0)
+            factor = 1/factor;
+        
+        if(g_bsmoothpanzoom){
+            if( (m_wheelstopwatch.Time() < m_wheelzoom_stop_oneshot) ) {
+                if( wheel_dir == m_last_wheel_dir ) {
+                    m_wheelzoom_stop_oneshot += mouse_wheel_oneshot;
+                    //                    m_zoom_target /= factor;
+                }
+                else 
+                    StopMovement( );
+            }
+            else {    
+                m_wheelzoom_stop_oneshot = mouse_wheel_oneshot;
+                m_wheelstopwatch.Start(0);
+                //                m_zoom_target =  VPoint.chart_scale / factor;
+            }
+        }
+        
+        m_last_wheel_dir = wheel_dir;
+        
+        
+        ZoomCanvas( factor, true, false );
+        
+    }
+    
+    if( event.LeftUp() ) {
+        if( 1/*leftIsDown*/ ) {  // left click for chart center
+            leftIsDown = false;
+            
+            if( !g_btouch ){
+                if( !m_bChartDragging && !m_bMeasure_Active ) {
+                    switch( cursor_region ){
+                        case MID_RIGHT: {
+                            PanCanvas( 100, 0 );
+                            break;
+                        }
+                        
+                        case MID_LEFT: {
+                            PanCanvas( -100, 0 );
+                            break;
+                        }
+                        
+                        case MID_TOP: {
+                            PanCanvas( 0, 100 );
+                            break;
+                        }
+                        
+                        case MID_BOT: {
+                            PanCanvas( 0, -100 );
+                            break;
+                        }
+                        
+                        case CENTER: {
+                            PanCanvas( x - GetVP().pix_width / 2, y - GetVP().pix_height / 2 );
+                            break;
+                        }
+                    }
+                } else {
+                    m_bChartDragging = false;
+                }
+            }
+        }
+    }
+    
+    if( event.Dragging() ){
+        if( 1/*leftIsDown*/ ) {
+            if( ( last_drag.x != x ) || ( last_drag.y != y ) ) {
+                m_bChartDragging = true;
+                PanCanvas( last_drag.x - x, last_drag.y - y );
+                
+                last_drag.x = x;
+                last_drag.y = y;
+                
+                if( g_btouch ) {
+                    if(( m_bMeasure_Active && m_nMeasureState ) || ( parent_frame->nRoute_State )){
+                        //deactivate next LeftUp to ovoid creating an unexpected point
+                        m_DoubleClickTimer->Start();
+                        singleClickEventIsValid = false;
+                    }
+                }
+                
+            }
+        }
+    }
+        
+        
+
+    return true;
+    
+                
+}
+
+
 void ChartCanvas::MouseEvent( wxMouseEvent& event )
 {
+    if(MouseEventSetup( event ))
+        return;                 // handled, no further action required
+    
+    if(!MouseEventProcessObjects( event ) )
+        MouseEventProcessCanvas( event );
+    
+    if( !g_btouch )
+        SetCanvasCursor( event );
+}
+
+
+void ChartCanvas::SetCanvasCursor( wxMouseEvent& event )
+{
+    //    Switch to the appropriate cursor on mouse movement
+
+    int x, y;
+    event.GetPosition( &x, &y );
+    
+    wxCursor *ptarget_cursor = pCursorArrow;
+    
+    if( ( !parent_frame->nRoute_State )
+        && ( !m_bMeasure_Active ) /*&& ( !m_bCM93MeasureOffset_Active )*/) {
+        
+        if( x > xr_margin ) {
+            ptarget_cursor = pCursorRight;
+            cursor_region = MID_RIGHT;
+        } else if( x < xl_margin ) {
+            ptarget_cursor = pCursorLeft;
+            cursor_region = MID_LEFT;
+        } else if( y > yb_margin ) {
+            ptarget_cursor = pCursorDown;
+            cursor_region = MID_TOP;
+        } else if( y < yt_margin ) {
+            ptarget_cursor = pCursorUp;
+            cursor_region = MID_BOT;
+        } else {
+            ptarget_cursor = pCursorArrow;
+            cursor_region = CENTER;
+        }
+        } else if( m_bMeasure_Active || parent_frame->nRoute_State ) // If Measure tool use Pencil Cursor
+            ptarget_cursor = pCursorPencil;
+
+    SetCursor( *ptarget_cursor );
+
+}
+
+
+
+
+#if 0
+void ChartCanvas::MouseEvent( wxMouseEvent& event )
+{
+#if 0    
     int x, y;
     int mx, my;
 
@@ -4485,7 +6178,8 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
     if(g_pi_manager)
         if(g_pi_manager->SendMouseEventToPlugins( event ))
             return;                     // PlugIn did something, and does not want the canvas to do anything else
-    
+#endif
+
     // We start with Double Click processing. The first left click just starts a timer and
     // is remembered, then we actually do something if there is a LeftDClick.
     // If there is, the two single clicks are ignored.
@@ -4546,7 +6240,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             if( node ) {
                 SelectItem *pFind = node->GetData();
                 RoutePoint *frp = (RoutePoint *) pFind->m_pData1;
-                if(frp && frp->IsVisible()){
+                if(frp){
                     ShowMarkPropertiesDialog( frp );
                     return;
                 }
@@ -4582,6 +6276,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
         return;
     }
 
+#if 0    
     // Capture LeftUp's and time them, unless it already came from the timer.
     if( event.LeftUp() && !singleClickEventIsValid ) {
 
@@ -4669,6 +6364,8 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
     //  Send the current cursor lat/lon to all PlugIns requesting it
     if( g_pi_manager ) g_pi_manager->SendCursorLatLonToAllPlugIns( m_cursor_lat, m_cursor_lon );
+#endif
+
 
     //        Check for wheel rotation
     // ideally, should be just longer than the time between
@@ -4707,6 +6404,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
         
     }
 
+#if 0    
     if(!g_btouch ){
     //    Route Creation Rubber Banding
         if( parent_frame->nRoute_State >= 2 ) {
@@ -4729,7 +6427,9 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             Refresh( false );
         }
     }
+#endif
 
+#if 0
 //          Mouse Clicks
 
     
@@ -5110,7 +6810,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 }
             }
         }
-
+#endif
         // must be chart dragging...
         else if( leftIsDown ) {
             if( ( last_drag.x != mx ) || ( last_drag.y != my ) ) {
@@ -5132,6 +6832,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
         }
     }
 
+#if 0    
     if( event.LeftUp() ) {
         bool b_startedit_route = false;
         bool b_startedit_mark = false;
@@ -5601,6 +7302,11 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
         }       // !btouch
     }
 
+#endif
+    
+    
+    
+///    
     if( event.RightDown() ) {
         last_drag.x = mx;
         last_drag.y = my;
@@ -5957,6 +7663,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
 }
 
+#endif
 void ChartCanvas::LostMouseCapture( wxMouseCaptureLostEvent& event )
 {
     SetCursor( *pCursorArrow );

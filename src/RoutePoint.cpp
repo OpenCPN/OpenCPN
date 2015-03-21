@@ -420,12 +420,10 @@ void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
                            pow( (double) (r.y - r1.y), 2 ) );
         int pix_radius = (int) lpp;
 
-        //wxPen ppPen1( GetGlobalColor( _T ( "URED" ) ), 2 );
         wxPen ppPen1( m_wxcWaypointRangeRingsColour, 2 );
         wxBrush saveBrush = dc.GetBrush();
         wxPen savePen = dc.GetPen();
         dc.SetPen( ppPen1 );
-        //dc.SetBrush( wxBrush( GetGlobalColor( _T ( "URED" ) ), wxTRANSPARENT ) );
         dc.SetBrush( wxBrush( m_wxcWaypointRangeRingsColour, wxTRANSPARENT ) );
 
         for( int i = 1; i <= m_iWaypointRangeRingsNumber; i++ )
@@ -646,6 +644,35 @@ void RoutePoint::DrawGL( ViewPort &vp, OCPNRegion &region )
             glDisable(GL_BLEND);
             glDisable(GL_TEXTURE_2D);
         }
+    }
+    
+    // Draw waypoint radar rings if activated
+    if( m_iWaypointRangeRingsNumber && m_bShowWaypointRangeRings ) {
+        double factor = 1.00;
+        if( m_iWaypointRangeRingsStepUnits == 1 )          // nautical miles
+            factor = 1 / 1.852;
+        
+        factor *= m_fWaypointRangeRingsStep;
+        
+        double tlat, tlon;
+        wxPoint r1;
+        ll_gc_ll( m_lat, m_lon, 0, factor, &tlat, &tlon );
+        cc1->GetCanvasPointPix( tlat, tlon, &r1 );
+        
+        double lpp = sqrt( pow( (double) (r.x - r1.x), 2) +
+        pow( (double) (r.y - r1.y), 2 ) );
+        int pix_radius = (int) lpp;
+        
+        wxPen ppPen1( m_wxcWaypointRangeRingsColour, 2 );
+        wxBrush saveBrush = dc.GetBrush();
+        wxPen savePen = dc.GetPen();
+        dc.SetPen( ppPen1 );
+        dc.SetBrush( wxBrush( m_wxcWaypointRangeRingsColour, wxTRANSPARENT ) );
+        
+        for( int i = 1; i <= m_iWaypointRangeRingsNumber; i++ )
+            dc.StrokeCircle( r.x, r.y, i * pix_radius );
+        dc.SetPen( savePen );
+        dc.SetBrush( saveBrush );
     }
     
     if( m_bBlink ) g_blink_rect = CurrentRect_in_DC;               // also save for global blinker

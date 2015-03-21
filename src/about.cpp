@@ -45,7 +45,7 @@
 #include "chcanv.h"
 #include "styles.h"
 #include "version.h"
-
+#include "OCPNPlatform.h"
 
 wxString str_version_start = wxT("\n      Version ");
 wxString str_version_major = wxString::Format(wxT("%i"),VERSION_MAJOR);
@@ -54,6 +54,7 @@ wxString str_version_patch = wxString::Format(wxT("%i"),VERSION_PATCH);
 wxString str_version_date(VERSION_DATE, wxConvUTF8);
 wxString OpenCPNVersion = str_version_start + str_version_major + wxT(".") + str_version_minor + wxT(".") + str_version_patch + wxT(" Build ") + str_version_date;
 
+extern OCPNPlatform     *g_Platform;
 extern MyFrame          *gFrame;
 extern wxString         glog_file;
 extern wxString         gConfig_File;
@@ -170,10 +171,10 @@ about::about( )
 {
 }
 
-about::about( wxWindow* parent,wxString *pData_Locn, wxWindowID id, const wxString& caption,
+about::about( wxWindow* parent,wxString Data_Locn, wxWindowID id, const wxString& caption,
                   const wxPoint& pos, const wxSize& size, long style)
 {
-  m_pDataLocn = pData_Locn;
+  m_DataLocn = Data_Locn;
 #ifdef __WXOSX__
   style |= wxSTAY_ON_TOP;
 #endif
@@ -220,7 +221,7 @@ void about::Update()
 
     // Show the user where the config file is going to be
     wxString conf = _T("\n    Config file location: ");
-    conf.Append( gConfig_File );
+    conf.Append( g_Platform->GetConfigFileName() );
     pAboutTextCtl->WriteText( conf );
 
     pAuthorTextCtl->Clear();
@@ -229,7 +230,7 @@ void about::Update()
     delete pAuthorsString;
 
     pLicenseTextCtl->Clear();
-    wxString license_loc( *m_pDataLocn );
+    wxString license_loc(m_DataLocn );
     license_loc.Append( _T("license.txt") );
 
     wxTextFile license_file( license_loc );
@@ -381,7 +382,7 @@ void about::OnDonateClick( wxCommandEvent& event )
 
 void about::OnCopyClick( wxCommandEvent& event )
 {
-    wxString filename = gConfig_File;
+    wxString filename = g_Platform->GetConfigFileName();
     if( event.GetId() == ID_COPYLOG ) filename = glog_file;
 
     wxFFile file( filename );

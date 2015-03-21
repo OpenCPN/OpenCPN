@@ -5,21 +5,42 @@ import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.HandlerThread;
 import android.provider.Settings;
 import android.util.Log;
+import android.app.Activity;
+
+import java.util.List;
+
+import org.opencpn.OCPNGpsNmeaListener;
+import org.opencpn.OCPNNativeLib;
+import org.qtproject.qt5.android.bindings.QtActivity;
+
+
 
 public class GPSServer extends Service implements LocationListener {
 
     private final static int GPS_OFF = 0;
     private final static int GPS_ON = 1;
-    private final static int GET_LOCATION_PSEUDO_NMEA = 2;
+    public  final static int GPS_PROVIDER_AVAILABLE = 2;
+    private final static int GPS_SHOWPREFERENCES = 3;
 
     private final Context mContext;
+    private final Activity parent_activity;
+
+    public String status_string;
+
+    boolean isThreadStarted = false;
+    HandlerThread mLocationHandlerThread;
+
+    OCPNGpsNmeaListener mNMEAListener;
+    OCPNNativeLib mNativeLib;
 
     // flag for GPS status
     boolean isGPSEnabled = false;
@@ -35,42 +56,149 @@ public class GPSServer extends Service implements LocationListener {
     double longitude; // longitude
 
     // The minimum distance to change Updates in meters
-    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
+    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 1; // 1 meter
 
     // The minimum time between updates in milliseconds
-    private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minute
+    private static final long MIN_TIME_BW_UPDATES = 1000; // 1 second
 
     // Declaring a Location Manager
     protected LocationManager locationManager;
 
-    public GPSServer(Context context) {
+    public GPSServer(Context context, OCPNNativeLib nativelib, Activity activity) {
         this.mContext = context;
-        getLocation();
+        this.mNativeLib = nativelib;
+        this.parent_activity = activity;
+//        getLocation();
     }
 
     public String doService( int parm )
     {
         String ret_string = "???";
+        locationManager = (LocationManager) mContext.getSystemService(LOCATION_SERVICE);
 
         switch (parm){
             case GPS_OFF:
-            stopUsingGPS();
+            Log.i("DEBUGGER_TAG", "GPS OFF");
+
+            if(locationManager != null){
+                if(isThreadStarted){
+                    locationManager.removeUpdates(GPSServer.this);
+                    locationManager.removeNmeaListener (mNMEAListener);
+                    isThreadStarted = false;
+                }
+            }
+
             ret_string = "GPS_OFF OK";
             break;
 
             case GPS_ON:
-            getLocation();
-            ret_string = "GPS_ON OK";
-            break;
+                Log.i("DEBUGGER_TAG", "GPS ON");
 
-            case GET_LOCATION_PSEUDO_NMEA:
-            ret_string = String.format("%g,%g", getLatitude(), getLongitude());
+                isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
-            break;
-        }
+                if(isGPSEnabled){
+                    Log.i("DEBUGGER_TAG", "GPS is Enabled");
+                }
+                else{
+                    Log.i("DEBUGGER_TAG", "GPS is <<<<DISABLED>>>>");
+                    ret_string = "GPS is disabled";
+                    status_string = ret_string;
+                    return ret_string;
+                }
 
+/*
+                isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+                if(isNetworkEnabled)
+                    Log.i("DEBUGGER_TAG", "Network is Enabled");
+                else
+                    Log.i("DEBUGGER_TAG", "Network is <<<<DISABLED>>>>");
+*/
+
+                if(!isThreadStarted){
+
+                    parent_activity.runOnUiThread(new Runnable()   {
+                        LocationManager locationManager;
+                        public void run()   {
+
+                            locationManager = (LocationManager) mContext.getSystemService(LOCATION_SERVICE);
+                            Log.i("DEBUGGER_TAG", "Requesting Updates");
+                            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,1000,1, GPSServer.this);
+
+                            mNMEAListener = new OCPNGpsNmeaListener(mNativeLib);
+                            locationManager.addNmeaListener (mNMEAListener);
+
+
+                        }
+                    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//                    Log.i("DEBUGGER_TAG", "Requesting Updates");
+//                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,1000,1, this);
+
+//                    mNMEAListener = new OCPNGpsNmeaListener(mNativeLib);
+//                    locationManager.addNmeaListener (mNMEAListener);
+
+                    isThreadStarted = true;
+                }
+
+                ret_string = "GPS_ON OK";
+                break;
+
+            case GPS_PROVIDER_AVAILABLE:
+            if(hasGPSDevice( mContext )){
+                    ret_string = "YES";
+                    Log.i("DEBUGGER_TAG", "Provider yes");
+                }
+                else{
+                    ret_string = "NO";
+                    Log.i("DEBUGGER_TAG", "Provider no");
+                }
+
+                break;
+
+            case GPS_SHOWPREFERENCES:
+                showSettingsAlert();
+                break;
+
+        }   // switch
+
+
+        status_string = ret_string;
         return ret_string;
-    }
+     }
+
+
+
+     public boolean hasGPSDevice(Context context)
+     {
+
+ //        This code crashes unless run from the GUI thread, so is moved to the QtActivity initialization
+ //        PackageManager packMan = getPackageManager();
+ //        return packMan.hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
+
+    // This code produces false positive for some generic android tablets.
+         final LocationManager mgr = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
+         if ( mgr == null )
+            return false;
+         final List<String> providers = mgr.getAllProviders();
+         if ( providers == null )
+            return false;
+         return providers.contains(LocationManager.GPS_PROVIDER);
+
+     }
 
 
     public Location getLocation() {
@@ -180,7 +308,7 @@ public class GPSServer extends Service implements LocationListener {
      * On pressing Settings button will lauch Settings Options
      * */
     public void showSettingsAlert(){
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
 
         // Setting Dialog Title
         alertDialog.setTitle("GPS is settings");
@@ -209,19 +337,28 @@ public class GPSServer extends Service implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
+        Log.i("DEBUGGER_TAG", "onLocationChanged");
+
     }
 
     @Override
     public void onProviderDisabled(String provider) {
+        Log.i("DEBUGGER_TAG", "onProviderDisabled");
+
     }
 
     @Override
     public void onProviderEnabled(String provider) {
+        Log.i("DEBUGGER_TAG", "onProviderDisabled");
+
     }
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
+        Log.i("DEBUGGER_TAG", "onStatusChanged");
+
     }
+
 
     @Override
     public IBinder onBind(Intent arg0) {

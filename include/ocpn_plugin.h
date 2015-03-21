@@ -53,7 +53,7 @@ class wxGLContext;
 //    PlugIns conforming to API Version less then the most modern will also
 //    be correctly supported.
 #define API_VERSION_MAJOR           1
-#define API_VERSION_MINOR           12
+#define API_VERSION_MINOR           13
 
 //    Fwd Definitions
 class       wxFileConfig;
@@ -88,6 +88,7 @@ class       wxScrolledWindow;
 #define     INSTALLS_PLUGIN_CHART_GL                  0x00040000
 #define     WANTS_MOUSE_EVENTS                        0x00080000
 #define     WANTS_VECTOR_CHART_OBJECT_INFO            0x00100000
+#define     WANTS_KEYBOARD_EVENTS                     0x00200000
 
 //----------------------------------------------------------------------------------------------------------
 //    Some PlugIn API interface object class definitions
@@ -496,6 +497,16 @@ public:
     
     virtual bool MouseEventHook( wxMouseEvent &event );
     virtual void SendVectorChartObjectInfo(wxString &chart, wxString &feature, wxString &objname, double lat, double lon, double scale, int nativescale);
+    
+};
+
+class DECL_EXP opencpn_plugin_113 : public opencpn_plugin_112
+{
+public:
+    opencpn_plugin_113(void *pmgr);
+    virtual ~opencpn_plugin_113();
+    
+    virtual bool KeyboardEventHook( wxKeyEvent &event );
     
 };
 
@@ -969,6 +980,12 @@ extern DECL_EXP void PlugInNormalizeViewport ( PlugIn_ViewPort *vp );
 
 class wxPoint2DDouble;
 extern "C"  DECL_EXP void GetDoubleCanvasPixLL(PlugIn_ViewPort *vp, wxPoint2DDouble *pp, double lat, double lon);
+
+/* API 1.13  */
+/* API 1.13  adds some more common functions to avoid unnecessary code duplication */
+
+
+extern DECL_EXP double fromDMM_Plugin( wxString sdms );
 
 
 #endif //_PLUGIN_H_

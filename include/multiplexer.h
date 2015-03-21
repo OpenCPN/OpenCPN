@@ -75,6 +75,7 @@ class Multiplexer : public wxEvtHandler
         wxEvtHandler        *m_gpsconsumer;
 
         //      A set of temporarily saved parameters for a DataStream
+        ConnectionType type_save;
         wxString port_save;
         wxString baud_rate_save;
         dsPortType port_type_save;

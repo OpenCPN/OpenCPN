@@ -783,3 +783,16 @@ void ViewPort::SetBBoxDirect( double latmin, double lonmin, double latmax, doubl
     vpBBox.SetMin( lonmin, latmin );
     vpBBox.SetMax( lonmax, latmax );
 }
+
+ViewPort ViewPort::BuildExpandedVP(int width, int height)
+{
+    ViewPort new_vp = *this;
+    
+    new_vp.pix_width = width;
+    new_vp.pix_height = height;
+    new_vp.SetBoxes();
+    
+    return new_vp;
+}
+
+
