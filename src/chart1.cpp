@@ -1668,9 +1668,10 @@ bool MyApp::OnInit()
 #endif
 
 #ifdef __OCPN__ANDROID__
-    ::wxDisplaySize( &cw, &ch);
+    wxSize asz = getAndroidDisplayDimensions();
+    ch = asz.y;
+    cw = asz.x;
     qDebug() << cw << ch;
-    ch -= 24;                           // This accounts for an error in the wxQT-Android interface...
 
     if((cw > 200) && (ch > 200) )
         new_frame_size.Set( cw, ch );
@@ -3950,6 +3951,7 @@ void MyFrame::ActivateMOB( void )
     RoutePoint *pWP_MOB = new RoutePoint( gLat, gLon, _T ( "mob" ), mob_label, GPX_EMPTY_STRING );
     pWP_MOB->m_bKeepXRoute = true;
     pWP_MOB->m_bIsolatedMark = true;
+    
     pSelect->AddSelectableRoutePoint( gLat, gLon, pWP_MOB );
     pConfig->AddNewWayPoint( pWP_MOB, -1 );       // use auto next num
 
