@@ -743,9 +743,9 @@ bool RoutePoint::SendToGPS(const wxString & com_name, wxGauge *pProgress)
 }
 
 double RoutePoint::GetWaypointArrivalRadius() {
-    if (m_WaypointArrivalRadius < 0.001) {
+    if ((m_WaypointArrivalRadius >= 0) && (m_WaypointArrivalRadius < 0.001)) {
         SetWaypointArrivalRadius( g_n_arrival_circle_radius );
-        return g_n_arrival_circle_radius;
+        return m_WaypointArrivalRadius;
     }
     else
         return m_WaypointArrivalRadius;
