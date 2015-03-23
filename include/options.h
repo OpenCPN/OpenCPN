@@ -652,6 +652,7 @@ private:
     wxFont*     smallFont;
     wxSize      m_small_button_size;
     int         m_fontHeight;
+    int         m_scrollRate;
     
 };
 
