@@ -372,7 +372,7 @@ public int getStatusBarHeight() {
 
 
         String ret;
-        ret = String.format("%f;%d;%d", dm.xdpi, dm.widthPixels, dm.heightPixels - statusBarHeight );
+        ret = String.format("%f;%f;%d;%d;%d", dm.xdpi, dm.density, dm. densityDpi, dm.widthPixels, dm.heightPixels - statusBarHeight );
 
         return ret;
     }

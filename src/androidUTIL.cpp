@@ -296,13 +296,31 @@ double GetAndroidDisplaySize()
     msg.Printf(_T("wxGetDisplaySize(): %d %d"), screen_size.x, screen_size.y);
     wxLogMessage(msg);
     
-    
-    wxString istr = return_string.BeforeFirst('.');
-    
-    long ldpi;
-    if( istr.ToLong(&ldpi)){
-        ret = (::wxGetDisplaySize().x/(double)ldpi) * 25.4;
+    double density = 1.0;
+    wxStringTokenizer tk(return_string, _T(";"));
+    if( tk.HasMoreTokens() ){
+        wxString token = tk.GetNextToken();     // xdpi
+        token = tk.GetNextToken();              // density
+        
+        long b = ::wxGetDisplaySize().y;        
+        token.ToDouble( &density );
+            
     }
+    
+    double ldpi = 160. * density;
+    double maxDim = wxMax(::wxGetDisplaySize().x, ::wxGetDisplaySize().y);
+    ret = (maxDim / ldpi) * 25.4;
+ 
+    msg.Printf(_T("Android Auto Display Size (mm, est.): %g"), ret);
+    wxLogMessage(msg);
+    
+    
+//     wxString istr = return_string.BeforeFirst('.');
+//     
+//     long ldpi;
+//     if( istr.ToLong(&ldpi)){
+//         ret = (::wxGetDisplaySize().x/(double)ldpi) * 25.4;
+//     }
 
     return ret;
 }
@@ -338,6 +356,9 @@ wxSize getAndroidDisplayDimensions( void )
      wxStringTokenizer tk(return_string, _T(";"));
     if( tk.HasMoreTokens() ){
         wxString token = tk.GetNextToken();     // xdpi
+        token = tk.GetNextToken();              // density
+        token = tk.GetNextToken();              // densityDPI
+        
         token = tk.GetNextToken();
         long a = ::wxGetDisplaySize().x;        // default is wxWidgets idea
         if(token.ToLong( &a ))
