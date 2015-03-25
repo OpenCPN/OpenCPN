@@ -194,6 +194,8 @@ protected:
     float       m_fbo_swidth;
     float       m_fbo_sheight;
     bool        m_binPinch;
+    bool        m_binPan;
+    
     OCPNRegion  m_canvasregion;
     
 

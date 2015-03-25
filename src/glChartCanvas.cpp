@@ -782,6 +782,7 @@ glChartCanvas::glChartCanvas( wxWindow *parent ) :
     ownship_large_scale_display_lists[1] = 0;
 
     m_binPinch = false;
+    m_binPan = false;
     
     b_timeGL = true;
  
@@ -3292,6 +3293,9 @@ void glChartCanvas::Render()
     
     wxPaintDC( this );
 
+    if(m_binPinch || m_binPan)
+        return;
+    
     ViewPort VPoint = cc1->VPoint;
     ViewPort svp = VPoint;
     svp.pix_width = svp.rv_rect.width;
@@ -3996,7 +4000,6 @@ void glChartCanvas::FastZoom(float factor)
 #ifdef __OCPN__ANDROID__
 
 int panx, pany;
-bool m_binPan;
 
 void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
 {
