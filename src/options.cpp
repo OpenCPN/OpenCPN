@@ -4446,9 +4446,27 @@ void options::OnChooseFont( wxCommandEvent& event )
 #else
     wxFontDialog dg( pParent, init_font_data );
 #endif
-    
+
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     dg.SetFont(*qFont);
+    
+#ifdef __WXQT__    
+    // Make sure that font dialog will fit on the screen without scrolling
+    // We do this by setting the dialog font size "small enough" to show "n" lines
+    wxSize proposed_size = GetSize();
+    float n_lines = 30;
+    
+    wxFont *dialogFont = GetOCPNScaledFont(_("Dialog"));
+    float font_size = dialogFont->GetPointSize();
+    
+    if( (proposed_size.y / font_size) < n_lines){
+        float new_font_size = proposed_size.y / n_lines;
+        wxFont *smallFont = new wxFont( * dialogFont ); 
+        smallFont->SetPointSize( new_font_size ); 
+        dg.SetFont( *smallFont );
+    }
+#endif
+
     
     if(g_bresponsive){
         dg.SetSize(GetSize());
