@@ -1022,8 +1022,8 @@ wxScrolledWindow *options::AddPage( size_t parent, const wxString & title)
         wxString toptitle = m_pListbook->GetPageText( parent );
         wxNotebook *nb = new wxNotebook( m_pListbook, wxID_ANY, wxDefaultPosition, wxDefaultSize,wxNB_TOP );
         /* Only remove the tab from listbook, we still have original content in {page} */
-        m_pListbook->RemovePage( parent );
         m_pListbook->InsertPage( parent, nb, toptitle, false, parent );
+        m_pListbook->RemovePage( parent + 1 );
         wxString previoustitle = page->GetName();
         page->Reparent( nb );
         nb->AddPage( page, previoustitle );
@@ -1038,8 +1038,9 @@ wxScrolledWindow *options::AddPage( size_t parent, const wxString & title)
         window = new wxScrolledWindow( m_pListbook, wxID_ANY, wxDefaultPosition, wxDefaultSize, style, title );
         window->SetScrollRate(m_scrollRate, m_scrollRate);
         wxString toptitle = m_pListbook->GetPageText( parent );
-        m_pListbook->DeletePage( parent );
         m_pListbook->InsertPage( parent, window, toptitle, false, parent );
+        m_pListbook->DeletePage( parent + 1 );
+        
     }
 
     return window;
@@ -2849,11 +2850,14 @@ void options::CreateControls()
     itemDialog1->SetSizer( itemBoxSizer2 );
 
     int flags = 0;
-#ifndef __WXQT__
-    flags = wxLB_TOP;
-#endif
     
+#ifdef __OCPN__OPTIONS_USE_LISTBOOK__    
+    flags = wxLB_TOP;
     m_pListbook = new wxListbook( itemDialog1, ID_NOTEBOOK, wxDefaultPosition, wxSize(-1, -1), flags);
+#else    
+    flags = wxNB_TOP;
+    m_pListbook = new wxNotebook( itemDialog1, ID_NOTEBOOK, wxDefaultPosition, wxSize(-1, -1), flags);
+#endif    
  
 #ifdef __WXMSW__
     //  Windows clips the width of listbook selectors to about twice icon size
@@ -3021,8 +3025,10 @@ void options::SetColorScheme( ColorScheme cs )
 {
     DimeControl( this );
 
+#ifdef __OCPN__OPTIONS_USE_LISTBOOK__
     wxListView* lv = m_pListbook->GetListView();
     lv->SetBackgroundColour(this->GetBackgroundColour());
+#endif    
 }
 
 void options::SetInitialSettings()

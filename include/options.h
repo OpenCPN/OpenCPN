@@ -45,6 +45,10 @@
 
 #include "datastream.h"
 
+#ifndef __OCPN__ANDROID__
+#define __OCPN__OPTIONS_USE_LISTBOOK__
+#endif
+
 //      Forward Declarations
 class wxGenericDirCtrl;
 class MyConfig;
@@ -294,7 +298,12 @@ public:
 // Should we show tooltips?
     static bool ShowToolTips();
 
+#ifdef __OCPN__OPTIONS_USE_LISTBOOK__
     wxListbook*             m_pListbook;
+#else
+    wxNotebook*             m_pListbook;
+#endif
+    
     size_t                  m_pageDisplay, m_pageConnections, m_pageCharts, m_pageShips, m_pageUI, m_pagePlugins;
     int                     lastPage;
     wxPoint                 lastWindowPos;
