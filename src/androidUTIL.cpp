@@ -174,54 +174,14 @@ wxString callActivityMethod_is(const char *method, int parm)
 bool androidGetMemoryStatus( int *mem_total, int *mem_used )
 {
     
+    //  On android, We arbitrarilly declare that we have used 50% of available memory.
     if(mem_total)
         *mem_total = 100 * 1024;
     if(mem_used)
         *mem_used = 50 * 1024;
+    return true;
     
 #if 0
-        
-        
-    unsigned long android_processID = wxGetProcessId();
-        
-        QAndroidJniObject data = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/bindings/QtActivity",
-        "callFromCpp",
-        "(I)Ljava/lang/String;",
-        (int) android_processID);
-        
-        //   jint x = data.object<jint>();
-        //   int x = reinterpret_cast<int>(data.object<int>());
-        jstring f = data.object<jstring>();
-        
-        
-        //     jint x = QAndroidJniObject::callStaticObjectMethod<jint>("org/qtproject/qt5/appActivity",
-        //                                                                        "callFromCpp");
-        
-        if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
-            qDebug() << "GetEnv failed.";
-            return -1;
-}
-
-int mu = 0;
-const char *ret_val = (jenv)->GetStringUTFChars(f, NULL);
-if (ret_val != NULL) {
-    
-    qDebug() << "Mem" << ret_val;
-    
-    mu = atoi(ret_val);
-    
-    (jenv)->ReleaseStringUTFChars(f, ret_val);
-}
-
-if(mem_total)
-    *mem_total = 100 * 1024;
-if(mem_used)
-    *mem_used = mu;
-
-//    if(mem_used)
-    //        qDebug() << "Mem Status" << (*mem_used) / 1024  ;
-    #endif
-
     
     //  Get a reference to the running native activity
     QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
@@ -240,7 +200,7 @@ if(mem_used)
 //    wxString return_string;
     jstring s = data.object<jstring>();
     
-    int mu = 100;
+    int mu = 50;
     //  Need a Java environment to decode the resulting string
     if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
         qDebug() << "GetEnv failed.";
@@ -249,16 +209,14 @@ if(mem_used)
         const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
         mu = atoi(ret_string);
         
-//        return_string = wxString(ret_string, wxConvUTF8);
     }
     
     if(mem_used)
         *mem_used = mu;
 
-//    if(mem_used)
-//        qDebug() << "Mem Status" << (*mem_used) / 1024  ;
         
     return true;
+#endif    
 }
 
 double GetAndroidDisplaySize()
@@ -429,7 +387,7 @@ bool LoadQtStyleSheet(wxString &sheet_file)
             File.open(QFile::ReadOnly);
             QString StyleSheet = QLatin1String(File.readAll());
             
-            qApp->setStyleSheet(StyleSheet);
+ //           qApp->setStyleSheet(StyleSheet);
             
             return true;
         }
