@@ -276,7 +276,11 @@ public:
     void OnDisplayCategoryRadioButton( wxCommandEvent& event );
     void OnButtonClearClick( wxCommandEvent& event );
     void OnButtonSelectClick( wxCommandEvent& event );
+    
     void OnPageChange( wxListbookEvent& event );
+    void OnNBPageChange( wxNotebookEvent& event );
+    void DoOnPageChange( size_t page );
+    
     void OnButtonSelectSound( wxCommandEvent& event );
     void OnButtonTestSound( wxCommandEvent& event );
     void OnShowGpsWindowCheckboxClick( wxCommandEvent& event );

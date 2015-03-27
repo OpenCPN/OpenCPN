@@ -2854,9 +2854,11 @@ void options::CreateControls()
 #ifdef __OCPN__OPTIONS_USE_LISTBOOK__    
     flags = wxLB_TOP;
     m_pListbook = new wxListbook( itemDialog1, ID_NOTEBOOK, wxDefaultPosition, wxSize(-1, -1), flags);
+    m_pListbook->Connect( wxEVT_COMMAND_LISTBOOK_PAGE_CHANGED, wxListbookEventHandler( options::OnPageChange ), NULL, this );
 #else    
     flags = wxNB_TOP;
     m_pListbook = new wxNotebook( itemDialog1, ID_NOTEBOOK, wxDefaultPosition, wxSize(-1, -1), flags);
+    m_pListbook->Connect( wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler( options::OnNBPageChange ), NULL, this );
 #endif    
  
 #ifdef __WXMSW__
@@ -3002,7 +3004,6 @@ void options::CreateControls()
     //  The s57 chart panel is the one which controls the minimum width required to avoid horizontal scroll bars
     vectorPanel->SetSizeHints( ps57Ctl );
     
-    m_pListbook->Connect( wxEVT_COMMAND_LISTBOOK_PAGE_CHANGED, wxListbookEventHandler( options::OnPageChange ), NULL, this );
 }
 
 void options::SetInitialPage( int page_sel)
@@ -4546,10 +4547,20 @@ void options::OnChartsPageChange( wxListbookEvent& event )
     event.Skip();               // Allow continued event processing
 }
 
-
 void options::OnPageChange( wxListbookEvent& event )
 {
-    unsigned int i = event.GetSelection();
+    DoOnPageChange( event.GetSelection() );
+}
+
+void options::OnNBPageChange( wxNotebookEvent& event )
+{
+    DoOnPageChange( event.GetSelection() );
+}
+
+
+void options::DoOnPageChange( size_t page )
+{
+    unsigned int i = page;
     lastPage = i;
 
     //    User selected Chart Page?
