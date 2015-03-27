@@ -47,7 +47,6 @@
     #else
         #include "qopengl.h"                  // this gives us the qt runtime gles2.h
         #include "GL/gl_private.h"
-        #include "glues.h"
     #endif
 
 #endif
@@ -59,7 +58,6 @@
 #include <wx/graphics.h>
 #include <wx/dcclient.h>
 
-#include <GL/glu.h>
 #include <vector>
 
 #include "ocpndc.h"
