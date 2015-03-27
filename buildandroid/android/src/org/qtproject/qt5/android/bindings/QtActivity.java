@@ -64,6 +64,7 @@ import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -83,6 +84,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager.LayoutParams;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.Display;
 import dalvik.system.DexClassLoader;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -346,23 +348,6 @@ public class QtActivity extends Activity
 */
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
-/*
-isplayMetrics dm = getResources().getDisplayMetrics();
-float screen_w = dm.widthPixels;
-float screen_h = dm.heightPixels;
-
-int resId = getResources().getIdentifier("status_bar_height", "dimen", "android");
-if (resId > 0) {
-    screen_h -= getResources().getDimensionPixelSize(resId);
-}
-
-TypedValue typedValue = new TypedValue();
-if(getTheme().resolveAttribute(android.R.attr.actionBarSize, typedValue, true)){
-    screen_h -= getResources().getDimensionPixelSize(typedValue.resourceId);
-}
-==or==
-public int getStatusBarHeight() {
-*/
         int statusBarHeight = 0;
 
         int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
@@ -370,9 +355,51 @@ public int getStatusBarHeight() {
             statusBarHeight = getResources().getDimensionPixelSize(resourceId);
         }
 
+//        TypedValue typedValue = new TypedValue();
+//        if(getTheme().resolveAttribute(android.R.attr.actionBarSize, typedValue, true)){
+//            screen_h -= getResources().getDimensionPixelSize(typedValue.resourceId);
+//        }
+
+        int width = 600;
+        int height = 400;
+
+        Display display = getWindowManager().getDefaultDisplay();
+
+        if (Build.VERSION.SDK_INT >= 17) {
+            Log.i("DEBUGGER_TAG", "VERSION.SDK_INT >= 17");
+            width = dm.widthPixels;
+            height = dm.heightPixels;
+         }
+         else if (Build.VERSION.SDK_INT >= 14) {
+             Log.i("DEBUGGER_TAG", "VERSION.SDK_INT >= 14");
+             Point outPoint = new Point();
+             display.getRealSize(outPoint);
+             if (outPoint != null){
+                 width = outPoint.x;
+                 height = outPoint.y;
+             }
+         }
+
+         else if (Build.VERSION.SDK_INT >= 13) {
+             Log.i("DEBUGGER_TAG", "VERSION.SDK_INT >= 13");
+             Point outPoint = new Point();
+             display.getSize(outPoint);
+             width = outPoint.x;
+             height = outPoint.y;
+         }
+         else {
+             Log.i("DEBUGGER_TAG", "VERSION.SDK_INT < 13");
+             width = display.getWidth();
+             height = display.getHeight();
+         }
+
+
 
         String ret;
-        ret = String.format("%f;%f;%d;%d;%d", dm.xdpi, dm.density, dm. densityDpi, dm.widthPixels, dm.heightPixels - statusBarHeight );
+
+        ret = String.format("%f;%f;%d;%d;%d;%d;%d", dm.xdpi, dm.density, dm. densityDpi,
+               width, height - statusBarHeight,
+               width, height);
 
         return ret;
     }
