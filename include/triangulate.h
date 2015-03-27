@@ -245,4 +245,13 @@ extern int read_segments(char *, int *);
 extern int math_logstar_n(int);
 extern int math_N(int, int);
 
+extern inline int int_greater_than(ipoint_t *v0, ipoint_t *v1);
+extern inline int int_equal_to(ipoint_t *v0, ipoint_t *v1);
+extern inline int int_greater_than_equal_to(ipoint_t *v0, ipoint_t *v1);
+extern inline int int_less_than(ipoint_t *v0, ipoint_t *v1);
+#ifndef __clang__
+extern inline int int_locate_endpoint_a(ipoint_t *v, ipoint_t *vo, int r);
+#endif
+extern inline int int_locate_endpoint(ipoint_t *v, ipoint_t *vo, int r);
+
 #endif /* triangulate_h */
