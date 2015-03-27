@@ -324,7 +324,6 @@ IF(QT_ANDROID)
     add_subdirectory(src/glshim)
 
     add_subdirectory(src/glu)
-#    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/glues/source )
 
 ENDIF(QT_ANDROID)
 
