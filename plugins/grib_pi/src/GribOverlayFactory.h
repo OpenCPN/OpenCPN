@@ -62,16 +62,17 @@ public:
     double m_dwidth, m_dheight;
 };
 
-#define MAX_PARTICLE_HISTORY 64
+#define MAX_PARTICLE_HISTORY 8
 #include <list>
 struct Particle {
     int m_Duration;
 
     // history is a ringbuffer.. because so many particles are
     // used, it is a slight optimization over std::list
-    int m_HistoryPos, m_HistorySize;
-    struct {
-        wxPoint2DDouble m_Pos;
+    int m_HistoryPos, m_HistorySize, m_Run;
+    struct ParticleNode {
+        float m_Pos[2];
+        float m_Screen[2];
         wxUint8 m_Color[3];
     } m_History[MAX_PARTICLE_HISTORY];
 };
@@ -79,7 +80,12 @@ struct Particle {
 struct ParticleMap {
 public:
     ParticleMap(int settings)
-    : m_Setting(settings) {}
+    : m_Setting(settings), array_size(0), color_array(NULL), vertex_array(NULL) { }
+
+    ~ParticleMap() {
+        delete [] color_array;
+        delete [] vertex_array;
+    }
 
     std::list<Particle> m_Particles;
 
@@ -87,6 +93,30 @@ public:
     time_t m_Reference_Time;
     int m_Setting;
     int history_size;
+
+    unsigned int array_size;
+    unsigned char *color_array;
+    float *vertex_array;
+
+    PlugIn_ViewPort last_viewport;
+};
+
+class LineBuffer {
+public:
+    LineBuffer() { count = 0; lines = NULL; }
+    ~LineBuffer() { delete [] lines; }
+
+    void pushLine( float x0, float y0, float x1, float y1 );
+    void pushPetiteBarbule( int b );
+    void pushGrandeBarbule( int b );
+    void pushTriangle( int b );
+    void Finalize();
+
+    int count;
+    float *lines;
+
+private:
+    std::list <float> buffer;
 };
 
 //----------------------------------------------------------------------------------------------------------
@@ -125,7 +155,6 @@ public:
 
     GribTimelineRecordSet *m_pGribTimelineRecordSet;
 
-    void DrawGLLine( double x1, double y1, double x2, double y2, double width );
     void DrawMessageZoomOut( PlugIn_ViewPort *vp );
     wxColour GetGraphicColor(int config, double val);
 
@@ -141,22 +170,19 @@ private:
     void RenderGribOverlayMap( int config, GribRecord **pGR, PlugIn_ViewPort *vp);
     void RenderGribNumbers( int config, GribRecord **pGR, PlugIn_ViewPort *vp );
     void RenderGribParticles( int settings, GribRecord **pGR, PlugIn_ViewPort *vp );
+    void DrawLineBuffer(LineBuffer &buffer);
     void OnParticleTimer( wxTimerEvent & event );
 
     wxString GetRefString( GribRecord *rec, int map );
     void DrawMessageWindow( wxString msg, int x, int y , wxFont *mfont);
 
-    void drawWindArrowWithBarbs( int config, int x, int y, double vkn, double ang,
-                                 bool south, int arrowSize, wxColour arrowColor, double rotate_angle );
-    void drawDoubleArrow( int i, int j, double dir, wxColour arrowColor, int arrowWidth, int arrowSize );
-    void drawSingleArrow( int i, int j, double dir, wxColour arrowColor, int arrowWidth, int arrowSize );
+    void drawDoubleArrow( int x, int y, double ang, wxColour arrowColor, int arrowWidth, int arrowSizeIdx );
+    void drawSingleArrow( int x, int y, double ang, wxColour arrowColor, int arrowWidth, int arrowSizeIdx );
+    void drawWindArrowWithBarbs( int settings, int x, int y, double vkn, double ang,
+                                 bool south, wxColour arrowColor, double rotate_angle );
+    void drawLineBuffer(LineBuffer &buffer, int x, int y, double ang, bool south=false);
 
-    void drawTransformedLine( wxPen pen, double si, double co, int di, int dj,
-                              int i, int j, int k, int l );
-    void drawPetiteBarbule( wxPen pen, bool south, double si, double co, int di, int dj, int b );
-    void drawGrandeBarbule( wxPen pen, bool south, double si, double co, int di, int dj, int b );
-    void drawTriangle( wxPen pen, bool south, double si, double co, int di, int dj, int b );
-	void DrawNumbers( wxPoint p, double value, int settings, wxColour back_color );
+    void DrawNumbers( wxPoint p, double value, int settings, wxColour back_color );
 
     wxString getLabelString(double value, int settings);
     wxImage &getLabel(double value, int settings, wxColour back_colour);
@@ -201,4 +227,7 @@ private:
     ParticleMap *m_ParticleMap;
     wxTimer m_tParticleTimer;
     bool m_bUpdateParticles;
+
+    LineBuffer m_WindArrowCache[14];
+    LineBuffer m_SingleArrow[2], m_DoubleArrow[2];
 };
