@@ -287,8 +287,8 @@ ENDIF()
 
 
 # Search for opengles, short of running a program to test the speed
-# of acceleration, I simply use gles on arm systems
-IF (ARCH MATCHES "arm*" OR QT_ANDROID)
+# of acceleration, I simply use gles on "native linux" arm systems
+IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
   find_path(OPENGLESv1_INCLUDE_DIR GLES/gl.h )
   IF (OPENGLESv1_INCLUDE_DIR)
     MESSAGE (STATUS "Found OpenGLESv1")
@@ -305,14 +305,32 @@ IF (ARCH MATCHES "arm*" OR QT_ANDROID)
     add_subdirectory(src/glues)
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/glues/source )
 
-    IF (NOT QT_ANDROID)
-      SET(OPENGL_LIBRARIES "GL_static" "GLUES_static" "EGL" "X11" "drm" "dri2")
-    ENDIF ()
+    SET(OPENGL_LIBRARIES "GL_static" "GLUES_static" "EGL" "X11" "drm" "dri2")
   ENDIF()
 ENDIF()
 
+#  Building for QT_ANDROID involves a cross-building environment,
+#  So the include directories, flags, etc must be stated explicitly
+#  without trying to locate them on the host build system.
+IF(QT_ANDROID)
+    MESSAGE (STATUS "Using GLESv1 for Android")
+    ADD_DEFINITIONS(-DocpnUSE_GLES)
+    ADD_DEFINITIONS(-DocpnUSE_GL)
+    ADD_DEFINITIONS(-DUSE_GLU_TESS)
 
-IF (NOT OPENGLES_FOUND)
+    SET(OPENGLES_FOUND "YES")
+    SET(OPENGL_FOUND "YES")
+
+    SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
+    add_subdirectory(src/glshim)
+
+    add_subdirectory(src/glues)
+    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/glues/source )
+
+ENDIF(QT_ANDROID)
+
+
+IF ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
 
 FIND_PACKAGE(OpenGL)
 IF(OPENGL_FOUND)
