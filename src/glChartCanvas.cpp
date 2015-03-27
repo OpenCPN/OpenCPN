@@ -78,7 +78,6 @@
 extern "C" void glOrthof(float left,  float right,  float bottom,  float top,  float near,  float far);
 #define glOrtho(a,b,c,d,e,f);     glOrthof(a,b,c,d,e,f);
 
-#define ocpnUSE_GLES
 #endif
 
 #ifdef USE_S57

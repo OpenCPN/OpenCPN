@@ -331,16 +331,6 @@ class WXDLLEXPORT X11FontPicker : public wxFontDialogBase
                         DECLARE_DYNAMIC_CLASS(X11FontPicker)
 };
 
-//---------------------------------------------------------------------------------
-//      Vector Stuff for Hit Test Algorithm
-//---------------------------------------------------------------------------------
-
-extern "C" double vGetLengthOfNormal(pVector2D a, pVector2D b, pVector2D n);
-extern "C" double vDotProduct(pVector2D v0, pVector2D v1);
-extern "C" pVector2D vAddVectors(pVector2D v0, pVector2D v1, pVector2D v);
-extern "C" pVector2D vSubtractVectors(pVector2D v0, pVector2D v1, pVector2D v);
-extern "C" double vVectorMagnitude(pVector2D v0);
-extern "C" double vVectorSquared(pVector2D v0);
 
 //      Simple and fast CRC32 calculator
 
