@@ -98,6 +98,7 @@ public:
     bool SaveFile( const wxString filename );
 
     void SetRootGPXNode(void);
+    bool IsOpenCPN();
     
     pugi::xml_node      m_gpx_root;
 };
