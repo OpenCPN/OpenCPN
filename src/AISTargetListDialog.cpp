@@ -53,6 +53,7 @@ extern wxString g_default_wp_icon;
 extern Select *pSelect;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern bool g_bAISShowTracks;
+extern bool g_btouch;
 
 IMPLEMENT_CLASS ( AISTargetListDialog, wxPanel )
 
@@ -286,7 +287,7 @@ static int ArrayItemCompareMMSI( int MMSI1, int MMSI2 )
 
 AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr,
         AIS_Decoder *pdecoder ) :
-        wxPanel( parent, wxID_ANY, wxDefaultPosition, wxSize( 780, 250 ), wxBORDER_NONE )
+        wxPanel( parent, wxID_ANY, wxDefaultPosition, wxSize( -1, -1/*780, 250*/ ), wxBORDER_NONE )
 {
     m_pparent = parent;
     m_pAuiManager = auimgr;
@@ -296,15 +297,6 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
     
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     SetFont( *qFont );
-
-    //  Make an estimate of the default dialog size
-    //  for the case when the AUI Perspective for this dialog is undefined
-    wxSize esize;
-    esize.x = 700;
-    esize.y = GetCharHeight() * 18;
-    SetSize( esize );    
-    
-//    SetMinSize( wxSize(400,240));
 
     s_p_sort_decoder = pdecoder;
     m_pMMSI_array = new ArrayOfMMSI( ArrayItemCompareMMSI );
@@ -539,7 +531,8 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
 
     if( m_pAuiManager ) {
         wxAuiPaneInfo pane =
-                wxAuiPaneInfo().Name( _T("AISTargetList") ).CaptionVisible( true ).Float().FloatingPosition( 50, 50 );
+                wxAuiPaneInfo().Name( _T("AISTargetList") ).CaptionVisible( true ).Float().FloatingPosition( 50, 50 )
+                .FloatingSize(400, 200).BestSize(700, GetCharHeight() * 10);
         m_pAuiManager->LoadPaneInfo( g_AisTargetList_perspective, pane );
 
         //      Force and/or override any perspective information that is not applicable
@@ -549,7 +542,6 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
         pane.Show( true );
         
         bool b_reset_pos = false;
-
         if( (pane.floating_size.x != -1) && (pane.floating_size.y != -1)){
 #ifdef __WXMSW__
             //  Support MultiMonitor setups which an allow negative window positions.
@@ -589,18 +581,39 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
             pane.Row( 1 );
             pane.Position( 0 );
 
-            g_AisTargetList_perspective = m_pAuiManager->SavePaneInfo( pane );
-            pConfig->UpdateSettings();
         }
-
         pane.Caption( wxGetTranslation( _("AIS target list") ) );
         pane.Show();
+        
+        //  Some special setup for touch screens
+        if(g_btouch){
+            pane.Float();
+            pane.Dockable( false );
+            
+            wxSize screen_size = ::wxGetDisplaySize();
+            pane.FloatingSize(screen_size.x * 6/10, screen_size.y * 8/10);
+            pane.FloatingPosition(screen_size.x * 2/10, screen_size.y * 1/10);
+        }
+        
+        
         m_pAuiManager->AddPane( this, pane );
         m_pAuiManager->Update();
 
+        g_AisTargetList_perspective = m_pAuiManager->SavePaneInfo( pane );
+        pConfig->UpdateSettings();
+        
         m_pAuiManager->Connect( wxEVT_AUI_PANE_CLOSE,
                 wxAuiManagerEventHandler( AISTargetListDialog::OnPaneClose ), NULL, this );
     }
+    else {
+        //  Make an estimate of the default dialog size
+        //  for the case when the AUI Perspective for this dialog is undefined
+        wxSize esize;
+        esize.x = 700;
+        esize.y = GetCharHeight() * 10; //18;
+        SetSize( esize );    
+    }
+    
 }
 
 AISTargetListDialog::~AISTargetListDialog()
@@ -855,7 +868,7 @@ AIS_Target_Data *AISTargetListDialog::GetpTarget( unsigned int list_item )
 void AISTargetListDialog::UpdateAISTargetList( void )
 {
     if( m_pdecoder ) {
-        int sb_position = m_pListCtrlAISTargets->GetScrollPos( wxVERTICAL );
+///        int sb_position = m_pListCtrlAISTargets->GetScrollPos( wxVERTICAL );
 
         //    Capture the MMSI of the curently selected list item
         long selItemID = -1;
@@ -915,7 +928,7 @@ void AISTargetListDialog::UpdateAISTargetList( void )
         
         m_pCBAutosort->SetValue( g_bAisTargetList_autosort );
 
-        m_pListCtrlAISTargets->SetScrollPos( wxVERTICAL, sb_position, false );
+///        m_pListCtrlAISTargets->SetScrollPos( wxVERTICAL, sb_position, false );
 
         //    Restore selected item
         long item_sel = 0;
