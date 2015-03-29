@@ -10405,25 +10405,40 @@ void ShowAISTargetQueryDialog( wxWindow *win, int mmsi )
 
 #endif
 
-        if( b_reset_pos ) g_pais_query_dialog_active->Move( 50, 200 );
+        if( b_reset_pos )
+            g_pais_query_dialog_active->Move( 50, 200 );
+        
 
     } else {
         g_pais_query_dialog_active->SetMMSI( mmsi );
         g_pais_query_dialog_active->UpdateText();
     }
 
+
+    //  Make sure the query dialog size will fit on the screen
+    wxSize sz = g_pais_query_dialog_active->GetSize();
+    wxSize screen_size = ::wxGetDisplaySize();
+    if( sz.y > (screen_size.y * 8/10) ){
+        g_pais_query_dialog_active->SetSize( sz.x, screen_size.y * 8/10 );
+    }
+
+    if(g_btouch)
+        g_pais_query_dialog_active->Centre();
+        
+    
     g_pais_query_dialog_active->Show();
 }
+
+//--------------------------------------------------------------------------------------------------------
+//    Screen Brightness Control Support Routines
+//
+//--------------------------------------------------------------------------------------------------------
 
 #ifdef __UNIX__
 #define BRIGHT_XCALIB
 #define __OPCPN_USEICC__
 #endif
 
-//--------------------------------------------------------------------------------------------------------
-//    Screen Brightness Control Support Routines
-//
-//--------------------------------------------------------------------------------------------------------
 
 #ifdef __OPCPN_USEICC__
 int CreateSimpleICCProfileFile(const char *file_name, double co_red, double co_green, double co_blue);
