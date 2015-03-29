@@ -66,6 +66,8 @@ public:
     static void OnExit_2( void );
     
 
+    void SetDefaultOptions( void );
+    
 //--------------------------------------------------------------------------
 //      Per-Platform file/directory support
 //--------------------------------------------------------------------------

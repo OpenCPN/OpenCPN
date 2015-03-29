@@ -1542,31 +1542,8 @@ bool MyApp::OnInit()
     pWorldMapLocation->Prepend( g_Platform->GetSharedDataDir() );
     pWorldMapLocation->Append( wxFileName::GetPathSeparator() );
 
-    //  Override some config options for initial user startup with empty config file
-    if( b_novicemode ) {
-        g_bShowOutlines = true;
-
-        g_CPAMax_NM = 20.;
-        g_CPAWarn_NM = 2.;
-        g_TCPA_Max = 30.;
-        g_bMarkLost = true;
-        ;
-        g_MarkLost_Mins = 8;
-        g_bRemoveLost = true;
-        g_RemoveLost_Mins = 10;
-        g_bShowCOG = true;
-        g_ShowCOG_Mins = 6;
-        g_bShowMoored = true;
-        g_ShowMoored_Kts = 0.2;
-        g_bTrackDaily = false;
-        g_PlanSpeed = 6.;
-        g_bFullScreenQuilt = true;
-        g_bQuiltEnable = true;
-        g_bskew_comp = false;
-        g_bShowAreaNotices = false;
-        g_bDrawAISSize = false;
-        g_bShowAISName = false;
-    }
+    if( b_novicemode )
+        g_Platform->SetDefaultOptions();
 
     //  Check the global Tide/Current data source array
     //  If empty, preset one default (US) Ascii data source
