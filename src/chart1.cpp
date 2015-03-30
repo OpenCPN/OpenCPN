@@ -4789,6 +4789,9 @@ int MyFrame::DoOptionsDialog()
     delete g_options;
     g_options = NULL;
 
+    if (NMEALogWindow::Get().Active())
+        NMEALogWindow::Get().GetTTYWindow()->Raise();
+    
     return ret_val;
 }
 
