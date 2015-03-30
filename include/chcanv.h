@@ -238,6 +238,9 @@ public:
       ChartBase* GetChartAtCursor();
       ChartBase* GetOverlayChartAtCursor();
 
+      bool isRouteEditing( void ){ return m_bRouteEditing && m_pRoutePointEditTarget; }
+      bool isMarkEditing( void ){ return m_bMarkEditing && m_pRoutePointEditTarget; }
+      
       GSHHSChart* GetWorldBackgroundChart() { return pWorldBackgroundChart; }
 
       void  SetbTCUpdate(bool f){ m_bTCupdate = f;}
