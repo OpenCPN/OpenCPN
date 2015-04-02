@@ -6641,7 +6641,7 @@ wxString s57chart::GetObjectAttributeValueAsString( S57Obj *obj, int iatt, wxStr
                         if( !decode_val.IsEmpty() ) {
                             value = decode_val;
                             wxString iv;
-                            iv.Printf( _T("(%d)"), (int) ival );
+                            iv.Printf( _T(" (%d)"), (int) ival );
                             value.Append( iv );
                         } else
                             value.Printf( _T("%d"), (int) ival );
@@ -6655,22 +6655,32 @@ wxString s57chart::GetObjectAttributeValueAsString( S57Obj *obj, int iatt, wxStr
                     wxString value_increment;
                     wxStringTokenizer tk( val_str, wxT(",") );
                     int iv = 0;
-                    while( tk.HasMoreTokens() ) {
-                        wxString token = tk.GetNextToken();
-                        long ival;
-                        if( token.ToLong( &ival ) ) {
-                            wxString decode_val = GetAttributeDecode( curAttrName, ival );
-                            if( !decode_val.IsEmpty() ) value_increment = decode_val;
-                            else
-                                value_increment.Printf( _T(" %d"), (int) ival );
+                    if( tk.HasMoreTokens() ) {
+                        while( tk.HasMoreTokens() ) {
+                            wxString token = tk.GetNextToken();
+                            long ival;
+                            if( token.ToLong( &ival ) ) {
+                                wxString decode_val = GetAttributeDecode( curAttrName, ival );
 
-                            if( iv ) value_increment.Prepend( wxT(", ") );
+                                value_increment.Printf( _T(" (%d)"), (int) ival );
+
+                                if( !decode_val.IsEmpty() )
+                                    value_increment.Prepend(decode_val);
+                                
+                                if( iv ) value_increment.Prepend( wxT(", ") );
+                                value.Append( value_increment );
+                                
+                            }
+                            else{
+                                if(iv) value.Append(_T(","));
+                                value.Append( token );
+                            }
+
+                            iv++;
                         }
-                        value.Append( value_increment );
-
-                        iv++;
                     }
-                    value.Append( val_str );
+                    else
+                        value.Append( val_str );
                 }
             } else
                 value = _T("[NULL VALUE]");
