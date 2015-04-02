@@ -152,7 +152,7 @@ wxString ConnectionParams::GetAddressStr()
     else if ( Type == INTERNAL_GPS )
         return _("Internal");
     else if ( Type == INTERNAL_BT )
-        return _("Internal");
+        return NetworkAddress;
     else
         return _T("");
 }
@@ -172,7 +172,7 @@ wxString ConnectionParams::GetParametersStr()
     else if ( Type == INTERNAL_GPS )
         return _T("");
     else if ( Type == INTERNAL_BT )
-        return _T("");
+        return Port;
     else
         return _T("");
 }
@@ -243,8 +243,7 @@ wxString ConnectionParams::GetDSPort()
 {
     if ( Type == SERIAL )
         return wxString::Format( _T("Serial:%s"), Port.c_str() );
-    else
-    {
+    else if( Type == NETWORK){
         wxString proto;
         if ( NetProtocol == TCP )
             proto = _T("TCP");
@@ -254,6 +253,12 @@ wxString ConnectionParams::GetDSPort()
             proto = _T("GPSD");
         return wxString::Format( _T("%s:%s:%d"), proto.c_str(), NetworkAddress.c_str(), NetworkPort );
     }
+    else if( Type == INTERNAL_BT ){
+        return Port;
+    }
+    else
+        return _T("");
+    
 }
 
 wxString ConnectionParams::GetLastDSPort()

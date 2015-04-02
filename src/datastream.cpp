@@ -359,6 +359,13 @@ void DataStream::Open(void)
 #endif
         
     }
+
+    else if(m_connection_type == INTERNAL_BT){
+#ifdef __OCPN__ANDROID__
+        m_bok = androidStartBT(m_consumer, m_portstring );
+#endif
+    }
+    
         
     else
         m_bok = false;
