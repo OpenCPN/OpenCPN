@@ -170,6 +170,38 @@ wxString callActivityMethod_is(const char *method, int parm)
     
 }
 
+wxString callActivityMethod_ss(const char *method, wxString parm)
+{
+    wxString return_string;
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                           "activity", "()Landroid/app/Activity;");
+    
+    if ( !activity.isValid() ){
+        qDebug() << "Activity is not valid";
+        return return_string;
+    }
+
+    //  Need a Java environment to decode the resulting string
+    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+        qDebug() << "GetEnv failed.";
+        return _T("jenv Error");
+    }
+    
+    jstring p = (jenv)->NewStringUTF(parm.c_str());
+    
+    
+    //  Call the desired method
+    QAndroidJniObject data = activity.callObjectMethod(method, "(Ljava/lang/String;)Ljava/lang/String;", p);
+    
+    jstring s = data.object<jstring>();
+    
+    const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+    return_string = wxString(ret_string, wxConvUTF8);
+    
+    return return_string;
+    
+}
+
 
 bool androidGetMemoryStatus( int *mem_total, int *mem_used )
 {
@@ -525,6 +557,25 @@ bool androidStartBluetoothScan()
     return true;
     
 }
+
+bool androidStopBluetoothScan()
+{
+    wxString result = callActivityMethod_is("stopBlueToothScan", 0);
+    
+    return true;
+    
+}
+
+bool androidStartBT(wxEvtHandler *consumer, wxString mac_address )
+{
+    if(mac_address.Find(':') ==  wxNOT_FOUND)   //  does not look like a mac address
+        return false;
+    
+    wxString result = callActivityMethod_ss("startBTService", mac_address);
+    
+    return true;
+}
+    
 
 wxArrayString androidGetBluetoothScanResults()
 {

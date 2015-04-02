@@ -873,6 +873,17 @@ bool OCPNPlatform::startBluetoothScan()
 #endif    
 }
 
+bool OCPNPlatform::stopBluetoothScan()
+{
+#ifdef __OCPN__ANDROID__
+    return androidStopBluetoothScan();
+#else
+    
+    return false;
+#endif    
+}
+
+
 wxArrayString OCPNPlatform::getBluetoothScanResults()
 {
     wxArrayString ret_val;

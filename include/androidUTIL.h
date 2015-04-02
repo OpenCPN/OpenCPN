@@ -54,6 +54,9 @@ extern bool androidDeviceHasGPS();
 
 extern bool androidDeviceHasBlueTooth();
 extern bool androidStartBluetoothScan();
+extern bool androidStopBluetoothScan();
 extern wxArrayString androidGetBluetoothScanResults();
+extern bool androidStartBT(wxEvtHandler *consumer, wxString mac_address );
+
 
 #endif   //guard

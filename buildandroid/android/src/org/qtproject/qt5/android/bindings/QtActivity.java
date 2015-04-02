@@ -114,6 +114,8 @@ import org.opencpn.OCPNNativeLib;
 
 import android.bluetooth.BluetoothDevice;
 import org.opencpn.BTScanHelper;
+import app.akexorcist.bluetotohspp.library.BluetoothSPP;
+import app.akexorcist.bluetotohspp.library.BluetoothState;
 
 public class QtActivity extends Activity
 {
@@ -213,6 +215,8 @@ public class QtActivity extends Activity
 
     private BTScanHelper scanHelper;
     private Boolean m_ScanHelperStarted = false;
+    private BluetoothSPP m_BTSPP;
+    private Boolean m_BTServiceCreated = false;
 
     OCPNNativeLib nativeLib;
 
@@ -499,6 +503,26 @@ public class QtActivity extends Activity
 
     }
 
+    public String stopBlueToothScan( final int parm ){
+        Log.i("DEBUGGER_TAG", "stopBlueToothScan");
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+                if(m_ScanHelperStarted){
+                    scanHelper.doDiscovery();
+                }
+
+                scanHelper.stopDiscovery();
+
+             }});
+
+
+        return( "OK" );
+
+    }
+
     public String getBlueToothScanResults( final int parm ){
         String ret_str = "";
 
@@ -517,12 +541,54 @@ public class QtActivity extends Activity
         if(m_ScanHelperStarted)
             ret_str = scanHelper.getDiscoveredDevices();;
 
+        Log.i("DEBUGGER_TAG", "results");
+        Log.i("DEBUGGER_TAG", ret_str);
+
         return ret_str;
 
    //     return ("line A;line B;"); //scanHelper.getDiscoveredDevices();
 
 
     }
+
+
+    public String startBTService( final String address){
+        Log.i("DEBUGGER_TAG", "startBTService");
+        Log.i("DEBUGGER_TAG", address);
+        String ret_str = "";
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+///
+                if(!m_BTServiceCreated){
+                    Log.i("DEBUGGER_TAG", "Bluetooth createBTService");
+                    m_BTSPP = new BluetoothSPP(getApplicationContext());
+//                    m_BTSPP.cancelDiscovery();
+                    m_BTSPP.setupService();
+//                    m_BTSPP.startService(BluetoothState.DEVICE_ANDROID);
+
+                    m_BTServiceCreated = true;
+                }
+
+
+                Log.i("DEBUGGER_TAG", "Bluetooth startService");
+                m_BTSPP.startService(BluetoothState.DEVICE_OTHER);
+  //              m_BTSPP.setDeviceTarget(BluetoothState.DEVICE_OTHER);
+
+                Log.i("DEBUGGER_TAG", "Bluetooth connectA");
+                m_BTSPP.connect(address);
+
+///
+
+             }});
+
+        ret_str = "NOK";
+        return ret_str;
+    }
+
+
 
 
     // this function is used to load and start the loader
