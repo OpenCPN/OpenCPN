@@ -9140,6 +9140,7 @@ wxArrayString *EnumerateSerialPorts( void )
        free(filelist[ind]);
       }
 
+      free(filelist);
 
 //        We try to add a few more, arbitrarily, for those systems that have fixed, traditional COM ports
 
