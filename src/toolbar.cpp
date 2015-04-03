@@ -570,7 +570,6 @@ void ocpnFloatingToolbarDialog::FadeTimerEvent( wxTimerEvent& event )
         SubmergeToGrabber();
         m_fade_timer.Stop();
     }
-    
 }
 
 void ocpnFloatingToolbarDialog::DoFade( int value )

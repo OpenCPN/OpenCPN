@@ -1991,7 +1991,7 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
     pTransparentToolbar = new wxCheckBox( m_ChartDisplayPage, ID_TRANSTOOLBARCHECKBOX,
                                           _("Enable Transparent Toolbar") );
     itemBoxSizerUI->Add( pTransparentToolbar, 0, wxALL, border_size );
-    if( g_bopengl ) pTransparentToolbar->Disable();
+//    if( g_bopengl ) pTransparentToolbar->Disable();
     
     
 
@@ -3529,7 +3529,7 @@ void options::OnWaypointRangeRingSelect( wxCommandEvent& event )
 
 void options::OnGLClicked( wxCommandEvent& event )
 {
-    pTransparentToolbar->Enable(!pOpenGL->GetValue());
+//    pTransparentToolbar->Enable(!pOpenGL->GetValue());
 }
 
 void options::OnOpenGLOptions( wxCommandEvent& event )
