@@ -1221,9 +1221,28 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
         m_stBTPairs->Hide();
         bSizer15a->Add( m_stBTPairs, 0, wxALL, 5 );
         
-        m_choiceBTDataSources = new wxChoice( m_pNMEAForm, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                                              g_Platform->getBluetoothScanResults());
-        m_choiceBTDataSources->SetSelection( 0 );
+        wxArrayString mt;
+        mt.Add(_T("unscanned"));
+        m_choiceBTDataSources = new wxChoice( m_pNMEAForm, wxID_ANY, wxDefaultPosition, wxDefaultSize, mt);
+        
+        m_BTscan_results = g_Platform->getBluetoothScanResults();
+        
+        m_choiceBTDataSources->Clear();
+        m_choiceBTDataSources->Append(m_BTscan_results.Item(0));  // scan status
+        
+        unsigned int i=1;
+        while( (i+1) < m_BTscan_results.GetCount()){
+            wxString item1 = m_BTscan_results.Item(i) + _T(";");
+            wxString item2 = m_BTscan_results.Item(i+1);
+            m_choiceBTDataSources->Append(item1 + item2);
+            
+            i += 2;
+        }
+        
+        if( m_BTscan_results.GetCount() > 1){
+            m_choiceBTDataSources->SetSelection( 1 );
+        }
+        
         m_choiceBTDataSources->Hide();
         bSizer15a->Add( m_choiceBTDataSources, 1, wxEXPAND|wxTOP, 5 );
         
@@ -3606,12 +3625,39 @@ void options::OnButtonaddClick( wxCommandEvent& event )
 
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     dirSelector->SetFont(*qFont);
+
     if(g_bresponsive){
+    
+        dirSelector->Show();
         dirSelector->SetSize( GetSize());
         dirSelector->Centre();
+
+        wxSize sds = dirSelector->GetSize();
+        wxSize ss =GetSize();
+        
+        
+        if(sds.x > ss.x){
+            dirSelector->Hide();
+            delete dirSelector;
+            dirSelector = new wxDirDialog( this, _("Add a directory containing chart files"),
+                                         *pInit_Chart_Dir, wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST );
+            
+            
+            wxFont *dialogFont = GetOCPNScaledFont(_("Dialog"));
+            wxFont *smallFont = new wxFont( * dialogFont ); 
+            smallFont->SetPointSize( (smallFont->GetPointSize() / 2) + 0.5 ); // + 0.5 to round instead of truncate
+            dirSelector->SetFont( * smallFont );
+            
+            dirSelector->SetSize( GetSize());
+            dirSelector->Centre();
+            
+        }
+        dirSelector->Hide();
+        
     }
-    
-    if( dirSelector->ShowModal() == wxID_CANCEL ) goto done;
+
+    if( dirSelector->ShowModal() == wxID_CANCEL )
+        goto done;
 
     selDir = dirSelector->GetPath();
     dirname = wxFileName( selDir );
@@ -3632,6 +3678,7 @@ void options::OnButtonaddClick( wxCommandEvent& event )
     pScanCheckBox->Disable();
 
     done:
+
     delete dirSelector;
     event.Skip();
 }
@@ -5387,6 +5434,7 @@ void options::OnScanBTClick( wxCommandEvent& event )
         m_BTScanTimer.Start(1000, wxTIMER_CONTINUOUS);
         g_Platform->startBluetoothScan();
         m_BTscanning = 1;
+        if(m_buttonScanBT) m_buttonScanBT->Disable();
     }
 }
 
@@ -5395,7 +5443,7 @@ void options::onBTScanTimer(wxTimerEvent &event)
     if(m_BTscanning){
         m_BTscanning++;
         
-        int isel = m_choiceBTDataSources->GetSelection();
+//        int isel = m_choiceBTDataSources->GetSelection();
         
         m_BTscan_results = g_Platform->getBluetoothScanResults();
         
@@ -5411,17 +5459,18 @@ void options::onBTScanTimer(wxTimerEvent &event)
             i += 2;
         }
         
-        if( isel != wxNOT_FOUND){
-            m_choiceBTDataSources->SetSelection( isel );
+//        if( isel != wxNOT_FOUND){
+//            m_choiceBTDataSources->SetSelection( isel );
+//        }
+            
+        if( m_BTscan_results.GetCount() > 1){
+            m_choiceBTDataSources->SetSelection( 1 );
         }
             
-        
-        if(m_BTscanning >= 30){
-            m_BTScanTimer.Stop();
- 
-            m_choiceBTDataSources->SetString(0, _("Finished"));
-            m_BTscanning = 0;
+                
             
+        if(m_BTscanning >= 30){
+            StopBTScan();
         }
     }
     else{
@@ -5439,6 +5488,9 @@ void options::StopBTScan()
     if(m_choiceBTDataSources)
         m_choiceBTDataSources->SetString(0, _("Finished"));
     m_BTscanning = 0;
+    
+    if(m_buttonScanBT) m_buttonScanBT->Enable();
+    
 }
 
 
@@ -5629,7 +5681,11 @@ void options::ShowNMEABT(bool visible)
     {
         if(m_buttonScanBT) m_buttonScanBT->Show();
         if(m_stBTPairs) m_stBTPairs->Show();
-        if(m_choiceBTDataSources) m_choiceBTDataSources->Show();
+        if(m_choiceBTDataSources){
+            if(m_choiceBTDataSources->GetCount() > 1)
+                m_choiceBTDataSources->SetSelection(1);
+            m_choiceBTDataSources->Show();
+        }
         
     }
     else
