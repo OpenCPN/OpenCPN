@@ -2241,7 +2241,7 @@ void options::CreatePanel_ChartGroups( size_t parent, int border_size, int group
 
     m_groupsPage->Connect( wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxListbookEventHandler( options::OnChartsPageChange ), NULL, this );
 
-    groupsPanel->CompletePanel();
+//    groupsPanel->CompletePanel();     // Deferred until panel is selected....
 }
 
 void ChartGroupsUI::CreatePanel( size_t parent, int border_size, int group_item_spacing,
