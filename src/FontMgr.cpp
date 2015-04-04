@@ -30,6 +30,7 @@
 
 extern wxString g_locale;
 wxString s_locale;
+int g_default_font_size;
 
 FontMgr * FontMgr::instance = NULL;
 
@@ -449,7 +450,7 @@ void FontMgr::ScrubList( )
             break;
         }
 
-        GetFont( wxGetTranslation(candidate), 0 );
+        GetFont( wxGetTranslation(candidate), g_default_font_size );
      
         i++;
     }
