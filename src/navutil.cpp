@@ -357,6 +357,8 @@ extern double           g_config_display_size_mm;
 extern bool             g_benable_rotate;
 extern bool             g_bEmailCrashReport;
 
+extern int              g_default_font_size;
+
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
 #endif
@@ -1188,6 +1190,8 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "DebugBSBImg" ), &g_BSBImgDebug, 0 );
     Read( _T ( "DebugGPSD" ), &g_bDebugGPSD, 0 );
 
+    Read( _T ( "DefaultFontSize"), &g_default_font_size, 0 );
+    
     Read( _T ( "UseGreenShipIcon" ), &g_bUseGreenShip, 0 );
     g_b_overzoom_x = true;
     Read( _T ( "AutosaveIntervalSeconds" ), &g_nautosave_interval_seconds, 300 );
@@ -2473,6 +2477,8 @@ void MyConfig::UpdateSettings()
 #ifndef __WXOSX__
     Write( _T ( "ShowMenuBar" ), m_bShowMenuBar );
 #endif
+    Write( _T ( "DefaultFontSize" ), g_default_font_size );
+    
     Write( _T ( "ShowCompassWindow" ), m_bShowCompassWin );
     Write( _T ( "SetSystemTime" ), s_bSetSystemTime );
     Write( _T ( "ShowGrid" ), g_bDisplayGrid );
