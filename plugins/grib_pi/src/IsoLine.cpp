@@ -395,13 +395,19 @@ void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC *dc, PlugIn_ViewPort *vp
           pgc = wxGraphicsContext::Create(*pmdc);
           pgc->SetPen(ppISO);
 #endif
-
           dc->SetPen(ppISO);
       } else { /* opengl */
-
 #ifdef ocpnUSE_GL          
+          //      Enable anti-aliased lines, at best quality
+          glEnable( GL_LINE_SMOOTH );
+          glEnable( GL_BLEND );
+          glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+          glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
+          glLineWidth( 2 );
+          
           glColor4ub(isoLineColor.Red(), isoLineColor.Green(), isoLineColor.Blue(),
                      255/*isoLineColor.Alpha()*/);
+          glBegin( GL_LINES );
 #endif          
       }
 
@@ -438,8 +444,9 @@ void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC *dc, PlugIn_ViewPort *vp
 #endif
                       dc->DrawLine(ab.x, ab.y, cd.x, cd.y);
             } else { /* opengl */
-#ifdef ocpnUSE_GL                
-                pof->DrawGLLine(ab.x, ab.y, cd.x, cd.y, 2);
+#ifdef ocpnUSE_GL
+                glVertex2d(ab.x, ab.y);
+                glVertex2d(cd.x, cd.y);
 #endif                
             }
         }
@@ -563,6 +570,8 @@ void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC *dc, PlugIn_ViewPort *vp
       delete pgc;
 #endif
 
+      if(!dc) /* opengl */
+          glEnd();
 }
 
 //---------------------------------------------------------------

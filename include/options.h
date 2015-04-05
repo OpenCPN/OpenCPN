@@ -45,6 +45,10 @@
 
 #include "datastream.h"
 
+#ifndef __OCPN__ANDROID__
+#define __OCPN__OPTIONS_USE_LISTBOOK__
+#endif
+
 //      Forward Declarations
 class wxGenericDirCtrl;
 class MyConfig;
@@ -159,7 +163,8 @@ enum {
     ID_REPONSIVEBOX,
     ID_SIZEMANUALRADIOBUTTON,
     ID_WAYPOINTRANGERINGS,
-    xID_OK
+    xID_OK,
+    ID_BT_SCANTIMER
 };
 
 //    Define an int bit field for dialog return value
@@ -272,7 +277,11 @@ public:
     void OnDisplayCategoryRadioButton( wxCommandEvent& event );
     void OnButtonClearClick( wxCommandEvent& event );
     void OnButtonSelectClick( wxCommandEvent& event );
+    
     void OnPageChange( wxListbookEvent& event );
+    void OnNBPageChange( wxNotebookEvent& event );
+    void DoOnPageChange( size_t page );
+    
     void OnButtonSelectSound( wxCommandEvent& event );
     void OnButtonTestSound( wxCommandEvent& event );
     void OnShowGpsWindowCheckboxClick( wxCommandEvent& event );
@@ -288,13 +297,20 @@ public:
     void OnChartDirListSelect( wxCommandEvent& event );
     void OnUnitsChoice( wxCommandEvent& event );
     void OnScanBTClick( wxCommandEvent& event );
+    void onBTScanTimer(wxTimerEvent &event);
+    void StopBTScan( void );
     
     void UpdateWorkArrayFromTextCtl();
 
 // Should we show tooltips?
     static bool ShowToolTips();
 
+#ifdef __OCPN__OPTIONS_USE_LISTBOOK__
     wxListbook*             m_pListbook;
+#else
+    wxNotebook*             m_pListbook;
+#endif
+    
     size_t                  m_pageDisplay, m_pageConnections, m_pageCharts, m_pageShips, m_pageUI, m_pagePlugins;
     int                     lastPage;
     wxPoint                 lastWindowPos;
@@ -652,6 +668,11 @@ private:
     wxFont*     smallFont;
     wxSize      m_small_button_size;
     int         m_fontHeight;
+    int         m_scrollRate;
+    
+    wxTimer     m_BTScanTimer;
+    int         m_BTscanning;
+    wxArrayString m_BTscan_results;
     
 };
 

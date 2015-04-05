@@ -5,7 +5,7 @@
  * Author:   Sean D'Epagnier
  *
  ***************************************************************************
- *   Copyright (C) 2014 by Sean D'Epagnier                                 *
+ *   Copyright (C) 2015 by Sean D'Epagnier                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -104,8 +104,8 @@ void GribOverlaySettings::Read()
         pConf->Read ( Name + _T ( "BarbedArrows" ), &Settings[i].m_bBarbedArrows, i==WIND);
         pConf->Read ( Name + _T ( "BarbedVisibility" ), &Settings[i].m_iBarbedVisibility, i==WIND);
         pConf->Read ( Name + _T ( "BarbedColors" ), &Settings[i].m_iBarbedColour, 0);
-		pConf->Read ( Name + _T ( "BarbedArrowFixedSpacing" ), &Settings[i].m_bBarbArrFixSpac, 0);
-		pConf->Read ( Name + _T ( "BarbedArrowSpacing" ), &Settings[i].m_iBarbArrSpacing, 50);
+        pConf->Read ( Name + _T ( "BarbedArrowFixedSpacing" ), &Settings[i].m_bBarbArrFixSpac, 0);
+        pConf->Read ( Name + _T ( "BarbedArrowSpacing" ), &Settings[i].m_iBarbArrSpacing, 50);
 
         pConf->Read ( Name + _T ( "Display Isobars" ), &Settings[i].m_bIsoBars, i==PRESSURE);
         double defspacing[SETTINGS_COUNT] = {4, 4, 4, 0, 0, 0, 0, 2, 2, 100};
@@ -116,8 +116,8 @@ void GribOverlaySettings::Read()
         double defform[SETTINGS_COUNT] = {0, 0, 0, 0, 1, 0, 0, 0, 0, 0};
         pConf->Read ( Name + _T ( "DirectionArrowForm" ), &Settings[i].m_iDirectionArrowForm, defform[i]);
         pConf->Read ( Name + _T ( "DirectionArrowSize" ), &Settings[i].m_iDirectionArrowSize, 0);
-		pConf->Read ( Name + _T ( "DirectionArrowFixedSpacing" ), &Settings[i].m_bDirArrFixSpac, 0);
-		pConf->Read ( Name + _T ( "DirectionArrowSpacing" ), &Settings[i].m_iDirArrSpacing, 50);
+        pConf->Read ( Name + _T ( "DirectionArrowFixedSpacing" ), &Settings[i].m_bDirArrFixSpac, 0);
+        pConf->Read ( Name + _T ( "DirectionArrowSpacing" ), &Settings[i].m_iDirArrSpacing, 50);
 
         pConf->Read ( Name + _T ( "OverlayMap" ), &Settings[i].m_bOverlayMap, i!=WIND && i!=PRESSURE);
         int defcolor[SETTINGS_COUNT] = {1, 1, 0, 0, 6, 4, 5, 2, 3, 0};
@@ -192,8 +192,8 @@ void GribOverlaySettings::SaveSettingGroups(wxFileConfig *pConf, int settings, i
         pConf->Write ( Name + _T ( "BarbedArrows" ), Settings[settings].m_bBarbedArrows);
         pConf->Write ( Name + _T ( "BarbedVisibility" ), Settings[settings].m_iBarbedVisibility);
         pConf->Write ( Name + _T ( "BarbedColors" ), Settings[settings].m_iBarbedColour);
-		pConf->Write ( Name + _T ( "BarbedArrowFixedSpacing" ), Settings[settings].m_bBarbArrFixSpac);
-		pConf->Write ( Name + _T ( "BarbedArrowSpacing" ), Settings[settings].m_iBarbArrSpacing);
+        pConf->Write ( Name + _T ( "BarbedArrowFixedSpacing" ), Settings[settings].m_bBarbArrFixSpac);
+        pConf->Write ( Name + _T ( "BarbedArrowSpacing" ), Settings[settings].m_iBarbArrSpacing);
         break;
     case ISO_LINE_SHORT:
         pConf->Write ( Name + _T ( "Display Isobars" ), Settings[settings].m_bIsoBars);
@@ -206,8 +206,8 @@ void GribOverlaySettings::SaveSettingGroups(wxFileConfig *pConf, int settings, i
         pConf->Write ( Name + _T ( "DirectionArrows" ), Settings[settings].m_bDirectionArrows);
         pConf->Write ( Name + _T ( "DirectionArrowForm" ), Settings[settings].m_iDirectionArrowForm);
         pConf->Write ( Name + _T ( "DirectionArrowSize" ), Settings[settings].m_iDirectionArrowSize);
-		pConf->Write ( Name + _T ( "DirectionArrowFixedSpacing" ), Settings[settings].m_bDirArrFixSpac);
-		pConf->Write ( Name + _T ( "DirectionArrowSpacing" ), Settings[settings].m_iDirArrSpacing);
+        pConf->Write ( Name + _T ( "DirectionArrowFixedSpacing" ), Settings[settings].m_bDirArrFixSpac);
+        pConf->Write ( Name + _T ( "DirectionArrowSpacing" ), Settings[settings].m_iDirArrSpacing);
         break;
     case OVERLAY:
         pConf->Write ( Name + _T ( "OverlayMap" ), Settings[settings].m_bOverlayMap);
@@ -331,41 +331,41 @@ double GribOverlaySettings::GetbftomsFactor(double input)
 wxString GribOverlaySettings::GetUnitSymbol(int settings)
 {
     switch(unittype[settings]) {
-        case 0: switch(Settings[settings].m_Units) {
-            case KNOTS:  return _T("kts");
-            case M_S:    return _T("m/s");
-            case MPH:    return _T("mph");
-            case KPH:    return _T("km/h");
-            case BFS:    return _T("bf");
+    case 0: switch(Settings[settings].m_Units) {
+        case KNOTS:  return _T("kts");
+        case M_S:    return _T("m/s");
+        case MPH:    return _T("mph");
+        case KPH:    return _T("km/h");
+        case BFS:    return _T("bf");
         } break;
-        case 1: switch(Settings[settings].m_Units) {
-            case MILLIBARS: return _T("hPa");
-            case MMHG: return _T("mmHg");
-            case INHG: return _T("inHg");
+    case 1: switch(Settings[settings].m_Units) {
+        case MILLIBARS: return _T("hPa");
+        case MMHG: return _T("mmHg");
+        case INHG: return _T("inHg");
         } break;
-        case 2: switch(Settings[settings].m_Units) {
-            case METERS: return _T("m");
-            case FEET:   return _T("ft");
+    case 2: switch(Settings[settings].m_Units) {
+        case METERS: return _T("m");
+        case FEET:   return _T("ft");
         } break;
-        case 3: switch(Settings[settings].m_Units) {
-            case CELCIUS:     return _T("\u00B0C");
-            case FAHRENHEIT: return _T("\u00B0F");
+    case 3: switch(Settings[settings].m_Units) {
+        case CELCIUS:     return _T("\u00B0C");
+        case FAHRENHEIT: return _T("\u00B0F");
         } break;
-        case 4: switch(Settings[settings].m_Units) {
-            case MILLIMETERS: return _T("mm");
-            case INCHES:      return _T("in");
+    case 4: switch(Settings[settings].m_Units) {
+        case MILLIMETERS: return _T("mm");
+        case INCHES:      return _T("in");
         } break;
-        case 5: switch(Settings[settings].m_Units) {
-            case PERCENTAGE:  return _T("%");
+    case 5: switch(Settings[settings].m_Units) {
+        case PERCENTAGE:  return _T("%");
         } break;
-        case 6: switch(Settings[settings].m_Units) {
-            case JPKG:  return _T("j/kg");
+    case 6: switch(Settings[settings].m_Units) {
+        case JPKG:  return _T("j/kg");
         } break;
-        case 7: switch(Settings[settings].m_Units) {
-            case KNOTS:  return _T("kts");
-            case M_S:    return _T("m/s");
-            case MPH:    return _T("mph");
-            case KPH:    return _T("km/h");
+    case 7: switch(Settings[settings].m_Units) {
+        case KNOTS:  return _T("kts");
+        case M_S:    return _T("m/s");
+        case MPH:    return _T("mph");
+        case KPH:    return _T("km/h");
         } break;
     }
     return _T("");
@@ -431,15 +431,15 @@ GribSettingsDialog::GribSettingsDialog(GRIBUIDialog &parent, GribOverlaySettings
     ReadDataTypeSettings(m_lastdatatype);
     m_sButtonApply->SetLabel(_("Apply"));
 
-	//set all wxSpinCtrl width
-	int w;
-	GetTextExtent( _T("1234"), &w, NULL, 0, 0, OCPNGetFont(_("Dialog"), 10) );
-	wxWindowList list = m_scrolledSettingsDialog->GetChildren();
+    //set all wxSpinCtrl width
+    int w;
+    GetTextExtent( _T("1234"), &w, NULL, 0, 0, OCPNGetFont(_("Dialog"), 10) );
+    wxWindowList list = m_scrolledSettingsDialog->GetChildren();
     wxWindowListNode *node = list.GetFirst();
     for( size_t i = 0; i < list.GetCount(); i++ ) {
         wxWindow *win = node->GetData();
-		if( win->IsKindOf( CLASSINFO(wxSpinCtrl) ) )
-			win->SetMinSize( wxSize( w + 30, -1 ) );
+        if( win->IsKindOf( CLASSINFO(wxSpinCtrl) ) )
+            win->SetMinSize( wxSize( w + 30, -1 ) );
         node = node->GetNext();
     }
 
@@ -450,25 +450,25 @@ GribSettingsDialog::GribSettingsDialog(GRIBUIDialog &parent, GribOverlaySettings
 
 void GribSettingsDialog::SetSettingsDialogSize()
 {
-	/*default sizing do not work with wxScolledWindow so we need to compute it
-    using a conditional X margin to stabilize the display width and a fixed Y margin to include differents OS bars*/
+    /*default sizing do not work with wxScolledWindow so we need to compute it
+      using a conditional X margin to stabilize the display width and a fixed Y margin to include differents OS bars*/
     int XMargin = m_scrolledSettingsDialog->GetScrollLines( wxVERTICAL )? 0 : 18;
     int YMargin = 130;
     wxSize scroll = m_fgScrolledSettingsSizer->Fit(m_scrolledSettingsDialog);           // the area size to be scrolled
-	int h;
+    int h;
     ::wxDisplaySize( NULL, &h);                                                         // the screen size
     h -= m_sButton->GetSize().GetY() + YMargin;											//height available for the scrolled window
     m_scrolledSettingsDialog->SetMinSize( wxSize( scroll.GetWidth() + XMargin,          //set scrolled area size with margins
             wxMin(scroll.GetHeight(), h )) );
-	this->Layout();
+    this->Layout();
     this->Fit();
-	this->Refresh();
+    this->Refresh();
 }
 
 /* set settings to the dialog controls */
 void GribSettingsDialog::WriteSettings()
 {
-	m_Settings.m_bInterpolate = m_cInterpolate->GetValue();
+    m_Settings.m_bInterpolate = m_cInterpolate->GetValue();
     m_Settings.m_bLoopMode = m_cLoopMode->GetValue();
     m_Settings.m_LoopStartPoint = m_cLoopStartPoint->GetSelection();
     m_Settings.m_SlicesPerUpdate = m_sSlicesPerUpdate->GetCurrentSelection();
@@ -486,23 +486,23 @@ void GribSettingsDialog::SetDataTypeSettings(int settings)
     odc.m_bBarbedArrows = m_cbBarbedArrows->GetValue();
     odc.m_iBarbedVisibility = m_cBarbedVisibility->GetValue();
     odc.m_iBarbedColour = m_cBarbedColours->GetSelection();
-	odc.m_bBarbArrFixSpac = m_cBarbArrFixSpac->GetValue();
-	odc.m_iBarbArrSpacing = m_sBarbArrSpacing->GetValue();
+    odc.m_bBarbArrFixSpac = m_cBarbArrFixSpac->GetValue();
+    odc.m_iBarbArrSpacing = m_sBarbArrSpacing->GetValue();
     odc.m_bIsoBars = m_cbIsoBars->GetValue();
     odc.m_iIsoBarVisibility = m_sIsoBarVisibility->GetValue();
     odc.m_iIsoBarSpacing = m_sIsoBarSpacing->GetValue();
     odc.m_bDirectionArrows = m_cbDirectionArrows->GetValue();
     odc.m_iDirectionArrowForm = m_cDirectionArrowForm->GetSelection();
     odc.m_iDirectionArrowSize = m_cDirectionArrowSize->GetSelection();
-	odc.m_bDirArrFixSpac = m_cDirArrFixSpac->GetValue();
-	odc.m_iDirArrSpacing = m_sDirArrSpacing->GetValue();
+    odc.m_bDirArrFixSpac = m_cDirArrFixSpac->GetValue();
+    odc.m_iDirArrSpacing = m_sDirArrSpacing->GetValue();
     odc.m_bOverlayMap = m_cbOverlayMap->GetValue();
     odc.m_iOverlayMapColors = m_cOverlayColors->GetSelection();
     odc.m_bNumbers = m_cbNumbers->GetValue();
-	odc.m_bNumFixSpac = m_cNumFixSpac->GetValue();
+    odc.m_bNumFixSpac = m_cNumFixSpac->GetValue();
     odc.m_iNumbersSpacing = m_sNumbersSpacing->GetValue();
     odc.m_bParticles = m_cbParticles->GetValue();
-    odc.m_dParticleDensity = 2.0*exp(m_sParticleDensity->GetValue() / 2.0 - 3);
+    odc.m_dParticleDensity = 4.0*exp(m_sParticleDensity->GetValue() / 2.0 - 3);
 }
 
 void GribSettingsDialog::ReadDataTypeSettings(int settings)
@@ -513,26 +513,26 @@ void GribSettingsDialog::ReadDataTypeSettings(int settings)
     m_cbBarbedArrows->SetValue(odc.m_bBarbedArrows);
     m_cBarbedVisibility->SetValue(odc.m_iBarbedVisibility);
     m_cBarbedColours->SetSelection(odc.m_iBarbedColour);
-	m_cBarbArrFixSpac->SetValue(odc.m_bBarbArrFixSpac);
-	m_cBarbArrMinSpac->SetValue(!odc.m_bBarbArrFixSpac);
-	m_sBarbArrSpacing->SetValue(odc.m_iBarbArrSpacing);
+    m_cBarbArrFixSpac->SetValue(odc.m_bBarbArrFixSpac);
+    m_cBarbArrMinSpac->SetValue(!odc.m_bBarbArrFixSpac);
+    m_sBarbArrSpacing->SetValue(odc.m_iBarbArrSpacing);
     m_cbIsoBars->SetValue(odc.m_bIsoBars);
     m_sIsoBarVisibility->SetValue(odc.m_iIsoBarVisibility);
     m_sIsoBarSpacing->SetValue(odc.m_iIsoBarSpacing);
     m_cbDirectionArrows->SetValue(odc.m_bDirectionArrows);
     m_cDirectionArrowForm->SetSelection(odc.m_iDirectionArrowForm);
     m_cDirectionArrowSize->SetSelection(odc.m_iDirectionArrowSize);
-	m_cDirArrFixSpac->SetValue(odc.m_bDirArrFixSpac);
-	m_cDirArrMinSpac->SetValue(!odc.m_bDirArrFixSpac);
-	m_sDirArrSpacing->SetValue(odc.m_iDirArrSpacing);
+    m_cDirArrFixSpac->SetValue(odc.m_bDirArrFixSpac);
+    m_cDirArrMinSpac->SetValue(!odc.m_bDirArrFixSpac);
+    m_sDirArrSpacing->SetValue(odc.m_iDirArrSpacing);
     m_cbOverlayMap->SetValue(odc.m_bOverlayMap);
     m_cOverlayColors->SetSelection(odc.m_iOverlayMapColors);
     m_cbNumbers->SetValue(odc.m_bNumbers);
-	m_cNumFixSpac->SetValue(odc.m_bNumFixSpac);
-	m_cNumMinSpac->SetValue(!odc.m_bNumFixSpac);
+    m_cNumFixSpac->SetValue(odc.m_bNumFixSpac);
+    m_cNumMinSpac->SetValue(!odc.m_bNumFixSpac);
     m_sNumbersSpacing->SetValue(odc.m_iNumbersSpacing);
     m_cbParticles->SetValue(odc.m_bParticles);
-    m_sParticleDensity->SetValue(2.0*(log(odc.m_dParticleDensity/2.0) + 3));
+    m_sParticleDensity->SetValue(2.0*(log(odc.m_dParticleDensity/4.0) + 3));
 
     ShowFittingSettings(settings);
 }
@@ -611,8 +611,8 @@ void GribSettingsDialog::ShowSettings( int params, bool show)
     switch(params){
     case B_ARROWS:
         m_cbBarbedArrows->Show(show);
-		m_fgBarbedData1->ShowItems( show );
-		m_fgBarbedData2->ShowItems( show );
+        m_fgBarbedData1->ShowItems( show );
+        m_fgBarbedData2->ShowItems( show );
         break;
     case ISO_LINE:
         m_cbIsoBars->Show(show);
@@ -630,8 +630,8 @@ void GribSettingsDialog::ShowSettings( int params, bool show)
         break;
     case D_ARROWS:
         m_cbDirectionArrows->Show(show);
-		m_fgDirArrData1->ShowItems( show );
-		m_fgDirArrData2->ShowItems( show );
+        m_fgDirArrData1->ShowItems( show );
+        m_fgDirArrData2->ShowItems( show );
         break;
     case OVERLAY:
         m_cbOverlayMap->Show(show);
@@ -640,7 +640,7 @@ void GribSettingsDialog::ShowSettings( int params, bool show)
         break;
     case NUMBERS:
         m_cbNumbers->Show(show);
-		m_fgNumData1->ShowItems( show );
+        m_fgNumData1->ShowItems( show );
         m_sNumbersSpacing->Show(show);
         break;
     case PARTICLES:
@@ -669,10 +669,10 @@ void GribSettingsDialog::OnDataTypeChoice( wxCommandEvent& event )
 
 void GribSettingsDialog::OnUnitChange( wxCommandEvent& event )
 {
-	m_Settings.Settings[m_lastdatatype].m_Units = m_cDataUnits->GetSelection();
-	wxString l = (m_lastdatatype == GribOverlaySettings::PRESSURE && m_cDataUnits->GetSelection() == GribOverlaySettings::INHG) ? _T("(0.03 " ) : _T("(");
-	m_tIsoBarSpacing->SetLabel( wxString(_("Spacing")).Append(l).Append(m_Settings.GetUnitSymbol( m_lastdatatype ) ).Append( _T(")") ) );
-	SetSettingsDialogSize();
+    m_Settings.Settings[m_lastdatatype].m_Units = m_cDataUnits->GetSelection();
+    wxString l = (m_lastdatatype == GribOverlaySettings::PRESSURE && m_cDataUnits->GetSelection() == GribOverlaySettings::INHG) ? _T("(0.03 " ) : _T("(");
+    m_tIsoBarSpacing->SetLabel( wxString(_("Spacing")).Append(l).Append(m_Settings.GetUnitSymbol( m_lastdatatype ) ).Append( _T(")") ) );
+    SetSettingsDialogSize();
 }
 
 void GribSettingsDialog::OnTransparencyChange( wxScrollEvent& event  )
@@ -692,8 +692,8 @@ void GribSettingsDialog::OnApply( wxCommandEvent& event )
 void GribSettingsDialog::OnIntepolateChange( wxCommandEvent& event )
 {
     if( m_cInterpolate->IsChecked() ) {
-		wxMessageDialog mes(this, _("You have chosen to authorize interpolation.\nDon't forget that data displayed will not be real but recomputed and this can decrease accuracy!"),
-                _("Warning!"), wxOK);
+        wxMessageDialog mes(this, _("You have chosen to authorize interpolation.\nDon't forget that data displayed will not be real but recomputed and this can decrease accuracy!"),
+                            _("Warning!"), wxOK);
         mes.ShowModal();
         m_tSlicesPerUpdate->Show();
         m_sSlicesPerUpdate->Show();
@@ -706,33 +706,33 @@ void GribSettingsDialog::OnIntepolateChange( wxCommandEvent& event )
 
 void GribSettingsDialog::OnSpacingModeChange( wxCommandEvent& event )
 {
-	bool message = false;
-	switch( event.GetId() ) {
-	case BARBFIXSPACING:
-		m_cBarbArrMinSpac->SetValue( !m_cBarbArrFixSpac->IsChecked() );
-		if( m_cBarbArrFixSpac->IsChecked() ) message = true;
-		break;
-	case BARBMINSPACING:
-		m_cBarbArrFixSpac->SetValue( !m_cBarbArrMinSpac->IsChecked() );
-		break;
-	case DIRFIXSPACING:
-		m_cDirArrMinSpac->SetValue( !m_cDirArrFixSpac->IsChecked() );
-		if( m_cDirArrFixSpac->IsChecked() ) message = true;
-		break;
-	case DIRMINSPACING:
-		m_cDirArrFixSpac->SetValue( !m_cDirArrMinSpac->IsChecked() );
-		break;
-	case NUMFIXSPACING:
-		m_cNumMinSpac->SetValue( !m_cNumFixSpac->IsChecked() );
-		if( m_cNumFixSpac->IsChecked() ) message = true;
-		break;
-	case NUMMINSPACING:
-		m_cNumFixSpac->SetValue( !m_cNumMinSpac->IsChecked() );
-	}
+    bool message = false;
+    switch( event.GetId() ) {
+    case BARBFIXSPACING:
+        m_cBarbArrMinSpac->SetValue( !m_cBarbArrFixSpac->IsChecked() );
+        if( m_cBarbArrFixSpac->IsChecked() ) message = true;
+        break;
+    case BARBMINSPACING:
+        m_cBarbArrFixSpac->SetValue( !m_cBarbArrMinSpac->IsChecked() );
+        break;
+    case DIRFIXSPACING:
+        m_cDirArrMinSpac->SetValue( !m_cDirArrFixSpac->IsChecked() );
+        if( m_cDirArrFixSpac->IsChecked() ) message = true;
+        break;
+    case DIRMINSPACING:
+        m_cDirArrFixSpac->SetValue( !m_cDirArrMinSpac->IsChecked() );
+        break;
+    case NUMFIXSPACING:
+        m_cNumMinSpac->SetValue( !m_cNumFixSpac->IsChecked() );
+        if( m_cNumFixSpac->IsChecked() ) message = true;
+        break;
+    case NUMMINSPACING:
+        m_cNumFixSpac->SetValue( !m_cNumMinSpac->IsChecked() );
+    }
 
-	if( message ) {
-		wxMessageDialog mes(this, _("This option imply you authorize intrepolation\nDon't forget that data displayed will not be real but recomputed and this can decrease accuracy!"),
-                _("Warning!"), wxOK);
-            mes.ShowModal();
-	}
+    if( message ) {
+        wxMessageDialog mes(this, _("This option imply you authorize intrepolation\nDon't forget that data displayed will not be real but recomputed and this can decrease accuracy!"),
+                            _("Warning!"), wxOK);
+        mes.ShowModal();
+    }
 }

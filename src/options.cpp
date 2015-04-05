@@ -835,6 +835,8 @@ BEGIN_EVENT_TABLE( options, wxDialog )
     EVT_CHOICE( ID_RADARRINGS, options::OnRadarringSelect )
     EVT_CHOICE( ID_WAYPOINTRANGERINGS, options::OnWaypointRangeRingSelect )
     EVT_CHAR_HOOK( options::OnCharHook )
+    EVT_TIMER ( ID_BT_SCANTIMER, options::onBTScanTimer )
+    
 END_EVENT_TABLE()
 
 options::options()
@@ -958,6 +960,15 @@ void options::Init()
     
     m_pPlugInCtrl = NULL;       // for deferred loading
     m_pNMEAForm = NULL;
+
+#ifdef __OCPN__ANDROID__
+    m_scrollRate = 1;
+#else
+    m_scrollRate = 15;
+#endif    
+    
+    m_BTScanTimer.SetOwner(this, ID_BT_SCANTIMER);
+    m_BTscanning = 0;
     
     // This variable is used by plugin callback function AddOptionsPage
     g_pOptions = this;
@@ -1009,14 +1020,14 @@ wxScrolledWindow *options::AddPage( size_t parent, const wxString & title)
     int style = wxVSCROLL | wxTAB_TRAVERSAL;
     if( page->IsKindOf( CLASSINFO(wxNotebook))) {
         window = new wxScrolledWindow( page, wxID_ANY, wxDefaultPosition, wxDefaultSize, style );
-        window->SetScrollRate(15,15);
+        window->SetScrollRate(m_scrollRate, m_scrollRate);
         ((wxNotebook *)page)->AddPage( window, title );
     } else if (page->IsKindOf(CLASSINFO(wxScrolledWindow))) {
         wxString toptitle = m_pListbook->GetPageText( parent );
         wxNotebook *nb = new wxNotebook( m_pListbook, wxID_ANY, wxDefaultPosition, wxDefaultSize,wxNB_TOP );
         /* Only remove the tab from listbook, we still have original content in {page} */
-        m_pListbook->RemovePage( parent );
         m_pListbook->InsertPage( parent, nb, toptitle, false, parent );
+        m_pListbook->RemovePage( parent + 1 );
         wxString previoustitle = page->GetName();
         page->Reparent( nb );
         nb->AddPage( page, previoustitle );
@@ -1024,15 +1035,16 @@ wxScrolledWindow *options::AddPage( size_t parent, const wxString & title)
          * we must explicitely Show() it */
         page->Show();
         window = new wxScrolledWindow( nb, wxID_ANY, wxDefaultPosition, wxDefaultSize, style );
-        window->SetScrollRate(15, 15);
+        window->SetScrollRate(m_scrollRate, m_scrollRate);
         nb->AddPage( window, title );
         nb->ChangeSelection( 0 );
     } else { // This is the default content, we can replace it now
         window = new wxScrolledWindow( m_pListbook, wxID_ANY, wxDefaultPosition, wxDefaultSize, style, title );
-        window->SetScrollRate(5, 5);
+        window->SetScrollRate(m_scrollRate, m_scrollRate);
         wxString toptitle = m_pListbook->GetPageText( parent );
-        m_pListbook->DeletePage( parent );
         m_pListbook->InsertPage( parent, window, toptitle, false, parent );
+        m_pListbook->DeletePage( parent + 1 );
+        
     }
 
     return window;
@@ -1302,7 +1314,6 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     m_choiceSerialProtocol->Enable( false );
 
     fgSizer1->Add( m_choiceSerialProtocol, 1, wxEXPAND|wxTOP, 5 );
-
     m_stPriority = new wxStaticText( m_pNMEAForm, wxID_ANY, _("Priority"), wxDefaultPosition, wxDefaultSize, 0 );
     m_stPriority->Wrap( -1 );
     fgSizer1->Add( m_stPriority, 0, wxALL, 5 );
@@ -2141,7 +2152,7 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
     marinersSizer->Add( ps57CtlListBox, 1, wxALL | wxEXPAND, group_item_spacing );
 #else
     wxScrolledWindow *marinersWindow = new wxScrolledWindow( ps57Ctl, wxID_ANY, wxDefaultPosition, wxSize(250, 350), wxHSCROLL | wxVSCROLL);
-    marinersWindow->SetScrollRate(5, 5);
+    marinersWindow->SetScrollRate(m_scrollRate, m_scrollRate);
     marinersSizer->Add( marinersWindow, 1, wxALL | wxEXPAND, group_item_spacing );
     
     wxBoxSizer* bSizerScrollMariners = new wxBoxSizer( wxVERTICAL );
@@ -2842,11 +2853,16 @@ void options::CreateControls()
     itemDialog1->SetSizer( itemBoxSizer2 );
 
     int flags = 0;
-#ifndef __WXQT__
-    flags = wxLB_TOP;
-#endif
     
+#ifdef __OCPN__OPTIONS_USE_LISTBOOK__    
+    flags = wxLB_TOP;
     m_pListbook = new wxListbook( itemDialog1, ID_NOTEBOOK, wxDefaultPosition, wxSize(-1, -1), flags);
+    m_pListbook->Connect( wxEVT_COMMAND_LISTBOOK_PAGE_CHANGED, wxListbookEventHandler( options::OnPageChange ), NULL, this );
+#else    
+    flags = wxNB_TOP;
+    m_pListbook = new wxNotebook( itemDialog1, ID_NOTEBOOK, wxDefaultPosition, wxSize(-1, -1), flags);
+    m_pListbook->Connect( wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler( options::OnNBPageChange ), NULL, this );
+#endif    
  
 #ifdef __WXMSW__
     //  Windows clips the width of listbook selectors to about twice icon size
@@ -2976,7 +2992,7 @@ void options::CreateControls()
     //      Build the PlugIn Manager Panel
     m_pPlugInCtrl = new PluginListPanel( itemPanelPlugins, ID_PANELPIM, wxDefaultPosition,
             wxDefaultSize, g_pi_manager->GetPlugInArray() );
-    m_pPlugInCtrl->SetScrollRate( 15, 15 );
+    m_pPlugInCtrl->SetScrollRate( m_scrollRate, m_scrollRate );
 
     itemBoxSizerPanelPlugins->Add( m_pPlugInCtrl, 1, wxEXPAND|wxALL, border_size );
 */
@@ -2991,7 +3007,6 @@ void options::CreateControls()
     //  The s57 chart panel is the one which controls the minimum width required to avoid horizontal scroll bars
     vectorPanel->SetSizeHints( ps57Ctl );
     
-    m_pListbook->Connect( wxEVT_COMMAND_LISTBOOK_PAGE_CHANGED, wxListbookEventHandler( options::OnPageChange ), NULL, this );
 }
 
 void options::SetInitialPage( int page_sel)
@@ -3014,8 +3029,10 @@ void options::SetColorScheme( ColorScheme cs )
 {
     DimeControl( this );
 
+#ifdef __OCPN__OPTIONS_USE_LISTBOOK__
     wxListView* lv = m_pListbook->GetListView();
     lv->SetBackgroundColour(this->GetBackgroundColour());
+#endif    
 }
 
 void options::SetInitialSettings()
@@ -3776,6 +3793,20 @@ ConnectionParams *options::CreateConnectionParamsFromSelectedItem()
         pConnectionParams->NetProtocol = PROTO_UNDEFINED;
         pConnectionParams->Baudrate = 0;
     }
+
+    if(pConnectionParams->Type == INTERNAL_BT){
+        wxString parms = m_choiceBTDataSources->GetStringSelection();
+        wxStringTokenizer tkz( parms, _T(";") );
+        wxString name = tkz.GetNextToken();
+        wxString mac = tkz.GetNextToken();
+        
+        pConnectionParams->NetworkAddress = name;
+        pConnectionParams->Port = mac;
+        pConnectionParams->NetworkPort = 0;
+        pConnectionParams->NetProtocol = PROTO_UNDEFINED;
+        pConnectionParams->Baudrate = 0;
+//        pConnectionParams->SetAuxParameterStr(m_choiceBTDataSources->GetStringSelection());
+    }
     
     return pConnectionParams;
 }
@@ -3784,6 +3815,8 @@ void options::OnApplyClick( wxCommandEvent& event )
 {
     ::wxBeginBusyCursor();
 
+    StopBTScan();
+    
     m_returnChanges = 0;
 
     // Start with the stuff that requires intelligent validation.
@@ -4439,9 +4472,27 @@ void options::OnChooseFont( wxCommandEvent& event )
 #else
     wxFontDialog dg( pParent, init_font_data );
 #endif
-    
+
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     dg.SetFont(*qFont);
+    
+#ifdef __WXQT__    
+    // Make sure that font dialog will fit on the screen without scrolling
+    // We do this by setting the dialog font size "small enough" to show "n" lines
+    wxSize proposed_size = GetSize();
+    float n_lines = 30;
+    
+    wxFont *dialogFont = GetOCPNScaledFont(_("Dialog"));
+    float font_size = dialogFont->GetPointSize();
+    
+    if( (proposed_size.y / font_size) < n_lines){
+        float new_font_size = proposed_size.y / n_lines;
+        wxFont *smallFont = new wxFont( * dialogFont ); 
+        smallFont->SetPointSize( new_font_size ); 
+        dg.SetFont( *smallFont );
+    }
+#endif
+
     
     if(g_bresponsive){
         dg.SetSize(GetSize());
@@ -4515,10 +4566,20 @@ void options::OnChartsPageChange( wxListbookEvent& event )
     event.Skip();               // Allow continued event processing
 }
 
-
 void options::OnPageChange( wxListbookEvent& event )
 {
-    unsigned int i = event.GetSelection();
+    DoOnPageChange( event.GetSelection() );
+}
+
+void options::OnNBPageChange( wxNotebookEvent& event )
+{
+    DoOnPageChange( event.GetSelection() );
+}
+
+
+void options::DoOnPageChange( size_t page )
+{
+    unsigned int i = page;
     lastPage = i;
 
     //    User selected Chart Page?
@@ -4643,7 +4704,7 @@ void options::OnPageChange( wxListbookEvent& event )
      
             m_pPlugInCtrl = new PluginListPanel( itemPanelPlugins, ID_PANELPIM, wxDefaultPosition,
                                          wxDefaultSize, g_pi_manager->GetPlugInArray() );
-            m_pPlugInCtrl->SetScrollRate( 15, 15 );
+            m_pPlugInCtrl->SetScrollRate( m_scrollRate, m_scrollRate );
     
             itemBoxSizerPanelPlugins->Add( m_pPlugInCtrl, 1, wxEXPAND|wxALL, 4 );
             
@@ -4878,7 +4939,12 @@ ChartGroupsUI::ChartGroupsUI( wxWindow* parent )
 {
     Create( parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxVSCROLL, _("Chart Groups") );
 
-    SetScrollRate(5,5);
+    int scrollRate = 5;
+#ifdef __OCPN__ANDROID__
+    scrollRate = 1;
+#endif    
+    
+    SetScrollRate(scrollRate, scrollRate);
     
     m_GroupSelectedPage = -1;
     m_pActiveChartsTree = 0;
@@ -5315,7 +5381,64 @@ void options::OnValChange( wxCommandEvent& event )
 
 void options::OnScanBTClick( wxCommandEvent& event )
 {
-    g_Platform->startBluetoothScan();
+    if(m_BTscanning){
+    }
+    else {
+        m_BTScanTimer.Start(1000, wxTIMER_CONTINUOUS);
+        g_Platform->startBluetoothScan();
+        m_BTscanning = 1;
+    }
+}
+
+void options::onBTScanTimer(wxTimerEvent &event)
+{
+    if(m_BTscanning){
+        m_BTscanning++;
+        
+        int isel = m_choiceBTDataSources->GetSelection();
+        
+        m_BTscan_results = g_Platform->getBluetoothScanResults();
+        
+        m_choiceBTDataSources->Clear();
+        m_choiceBTDataSources->Append(m_BTscan_results.Item(0));  // scan status
+        
+        unsigned int i=1;
+        while( (i+1) < m_BTscan_results.GetCount()){
+            wxString item1 = m_BTscan_results.Item(i) + _T(";");
+            wxString item2 = m_BTscan_results.Item(i+1);
+            m_choiceBTDataSources->Append(item1 + item2);
+            
+            i += 2;
+        }
+        
+        if( isel != wxNOT_FOUND){
+            m_choiceBTDataSources->SetSelection( isel );
+        }
+            
+        
+        if(m_BTscanning >= 30){
+            m_BTScanTimer.Stop();
+ 
+            m_choiceBTDataSources->SetString(0, _("Finished"));
+            m_BTscanning = 0;
+            
+        }
+    }
+    else{
+    }
+    
+    return;
+}
+
+void options::StopBTScan()
+{ 
+    m_BTScanTimer.Stop();
+
+    g_Platform->stopBluetoothScan();
+    
+    if(m_choiceBTDataSources)
+        m_choiceBTDataSources->SetString(0, _("Finished"));
+    m_BTscanning = 0;
 }
 
 
@@ -5767,7 +5890,10 @@ void options::FillSourceList()
         wxString prio_str;
         prio_str.Printf(_T("%d"), g_pConnectionParams->Item(i)->Priority );
         m_lcSources->SetItem(itemIndex, 3, prio_str);
-        m_lcSources->SetItem(itemIndex, 4, g_pConnectionParams->Item(i)->GetParametersStr());
+        wxString parms = g_pConnectionParams->Item(i)->GetParametersStr();
+        if(parms.IsEmpty())
+            parms = g_pConnectionParams->Item(i)->GetPortStr();
+        m_lcSources->SetItem(itemIndex, 4, parms);
         m_lcSources->SetItem(itemIndex, 5, g_pConnectionParams->Item(i)->GetIOTypeValueStr());
         m_lcSources->SetItem(itemIndex, 6, g_pConnectionParams->Item(i)->GetFiltersStr());
     }

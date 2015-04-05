@@ -1542,31 +1542,8 @@ bool MyApp::OnInit()
     pWorldMapLocation->Prepend( g_Platform->GetSharedDataDir() );
     pWorldMapLocation->Append( wxFileName::GetPathSeparator() );
 
-    //  Override some config options for initial user startup with empty config file
-    if( b_novicemode ) {
-        g_bShowOutlines = true;
-
-        g_CPAMax_NM = 20.;
-        g_CPAWarn_NM = 2.;
-        g_TCPA_Max = 30.;
-        g_bMarkLost = true;
-        ;
-        g_MarkLost_Mins = 8;
-        g_bRemoveLost = true;
-        g_RemoveLost_Mins = 10;
-        g_bShowCOG = true;
-        g_ShowCOG_Mins = 6;
-        g_bShowMoored = true;
-        g_ShowMoored_Kts = 0.2;
-        g_bTrackDaily = false;
-        g_PlanSpeed = 6.;
-        g_bFullScreenQuilt = true;
-        g_bQuiltEnable = true;
-        g_bskew_comp = false;
-        g_bShowAreaNotices = false;
-        g_bDrawAISSize = false;
-        g_bShowAISName = false;
-    }
+    if( b_novicemode )
+        g_Platform->SetDefaultOptions();
 
     //  Check the global Tide/Current data source array
     //  If empty, preset one default (US) Ascii data source
@@ -1668,9 +1645,10 @@ bool MyApp::OnInit()
 #endif
 
 #ifdef __OCPN__ANDROID__
-    ::wxDisplaySize( &cw, &ch);
+    wxSize asz = getAndroidDisplayDimensions();
+    ch = asz.y;
+    cw = asz.x;
     qDebug() << cw << ch;
-    ch -= 24;                           // This accounts for an error in the wxQT-Android interface...
 
     if((cw > 200) && (ch > 200) )
         new_frame_size.Set( cw, ch );
@@ -3950,6 +3928,8 @@ void MyFrame::ActivateMOB( void )
     RoutePoint *pWP_MOB = new RoutePoint( gLat, gLon, _T ( "mob" ), mob_label, GPX_EMPTY_STRING );
     pWP_MOB->m_bKeepXRoute = true;
     pWP_MOB->m_bIsolatedMark = true;
+    pWP_MOB->SetWaypointArrivalRadius( -1.0 ); // Negative distance is code to signal "Never Arrive"
+    
     pSelect->AddSelectableRoutePoint( gLat, gLon, pWP_MOB );
     pConfig->AddNewWayPoint( pWP_MOB, -1 );       // use auto next num
 
@@ -4808,6 +4788,9 @@ int MyFrame::DoOptionsDialog()
     delete g_options;
     g_options = NULL;
 
+    if (NMEALogWindow::Get().Active())
+        NMEALogWindow::Get().GetTTYWindow()->Raise();
+    
     return ret_val;
 }
 
@@ -5168,6 +5151,7 @@ void MyFrame::ToggleQuiltMode( void )
         if( cur_mode != cc1->GetQuiltMode() ){
             SetupQuiltMode();
             DoChartUpdate();
+            cc1->InvalidateGL();
             Refresh();
         }
     }

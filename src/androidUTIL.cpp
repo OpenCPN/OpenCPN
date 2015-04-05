@@ -170,58 +170,50 @@ wxString callActivityMethod_is(const char *method, int parm)
     
 }
 
+wxString callActivityMethod_ss(const char *method, wxString parm)
+{
+    wxString return_string;
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                           "activity", "()Landroid/app/Activity;");
+    
+    if ( !activity.isValid() ){
+        qDebug() << "Activity is not valid";
+        return return_string;
+    }
+
+    //  Need a Java environment to decode the resulting string
+    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+        qDebug() << "GetEnv failed.";
+        return _T("jenv Error");
+    }
+    
+    jstring p = (jenv)->NewStringUTF(parm.c_str());
+    
+    
+    //  Call the desired method
+    QAndroidJniObject data = activity.callObjectMethod(method, "(Ljava/lang/String;)Ljava/lang/String;", p);
+    
+    jstring s = data.object<jstring>();
+    
+    const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+    return_string = wxString(ret_string, wxConvUTF8);
+    
+    return return_string;
+    
+}
+
 
 bool androidGetMemoryStatus( int *mem_total, int *mem_used )
 {
     
+    //  On android, We arbitrarilly declare that we have used 50% of available memory.
     if(mem_total)
         *mem_total = 100 * 1024;
     if(mem_used)
         *mem_used = 50 * 1024;
+    return true;
     
 #if 0
-        
-        
-    unsigned long android_processID = wxGetProcessId();
-        
-        QAndroidJniObject data = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/bindings/QtActivity",
-        "callFromCpp",
-        "(I)Ljava/lang/String;",
-        (int) android_processID);
-        
-        //   jint x = data.object<jint>();
-        //   int x = reinterpret_cast<int>(data.object<int>());
-        jstring f = data.object<jstring>();
-        
-        
-        //     jint x = QAndroidJniObject::callStaticObjectMethod<jint>("org/qtproject/qt5/appActivity",
-        //                                                                        "callFromCpp");
-        
-        if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
-            qDebug() << "GetEnv failed.";
-            return -1;
-}
-
-int mu = 0;
-const char *ret_val = (jenv)->GetStringUTFChars(f, NULL);
-if (ret_val != NULL) {
-    
-    qDebug() << "Mem" << ret_val;
-    
-    mu = atoi(ret_val);
-    
-    (jenv)->ReleaseStringUTFChars(f, ret_val);
-}
-
-if(mem_total)
-    *mem_total = 100 * 1024;
-if(mem_used)
-    *mem_used = mu;
-
-//    if(mem_used)
-    //        qDebug() << "Mem Status" << (*mem_used) / 1024  ;
-    #endif
-
     
     //  Get a reference to the running native activity
     QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
@@ -240,7 +232,7 @@ if(mem_used)
 //    wxString return_string;
     jstring s = data.object<jstring>();
     
-    int mu = 100;
+    int mu = 50;
     //  Need a Java environment to decode the resulting string
     if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
         qDebug() << "GetEnv failed.";
@@ -249,16 +241,14 @@ if(mem_used)
         const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
         mu = atoi(ret_string);
         
-//        return_string = wxString(ret_string, wxConvUTF8);
     }
     
     if(mem_used)
         *mem_used = mu;
 
-//    if(mem_used)
-//        qDebug() << "Mem Status" << (*mem_used) / 1024  ;
         
     return true;
+#endif    
 }
 
 double GetAndroidDisplaySize()
@@ -296,13 +286,31 @@ double GetAndroidDisplaySize()
     msg.Printf(_T("wxGetDisplaySize(): %d %d"), screen_size.x, screen_size.y);
     wxLogMessage(msg);
     
-    
-    wxString istr = return_string.BeforeFirst('.');
-    
-    long ldpi;
-    if( istr.ToLong(&ldpi)){
-        ret = (::wxGetDisplaySize().x/(double)ldpi) * 25.4;
+    double density = 1.0;
+    wxStringTokenizer tk(return_string, _T(";"));
+    if( tk.HasMoreTokens() ){
+        wxString token = tk.GetNextToken();     // xdpi
+        token = tk.GetNextToken();              // density
+        
+        long b = ::wxGetDisplaySize().y;        
+        token.ToDouble( &density );
+            
     }
+    
+    double ldpi = 160. * density;
+    double maxDim = wxMax(::wxGetDisplaySize().x, ::wxGetDisplaySize().y);
+    ret = (maxDim / ldpi) * 25.4;
+ 
+    msg.Printf(_T("Android Auto Display Size (mm, est.): %g"), ret);
+    wxLogMessage(msg);
+    
+    
+//     wxString istr = return_string.BeforeFirst('.');
+//     
+//     long ldpi;
+//     if( istr.ToLong(&ldpi)){
+//         ret = (::wxGetDisplaySize().x/(double)ldpi) * 25.4;
+//     }
 
     return ret;
 }
@@ -338,13 +346,16 @@ wxSize getAndroidDisplayDimensions( void )
      wxStringTokenizer tk(return_string, _T(";"));
     if( tk.HasMoreTokens() ){
         wxString token = tk.GetNextToken();     // xdpi
+        token = tk.GetNextToken();              // density
+        token = tk.GetNextToken();              // densityDPI
+        
         token = tk.GetNextToken();
-        long a = ::wxGetDisplaySize().x;        // wxWidgets idea
+        long a = ::wxGetDisplaySize().x;        // default is wxWidgets idea
         if(token.ToLong( &a ))
             sz_ret.x = a;
         
         token = tk.GetNextToken();
-        long b = ::wxGetDisplaySize().y;        // wxWidgets idea
+        long b = ::wxGetDisplaySize().y;        
         if(token.ToLong( &b ))
             sz_ret.y = b;
     }
@@ -408,7 +419,7 @@ bool LoadQtStyleSheet(wxString &sheet_file)
             File.open(QFile::ReadOnly);
             QString StyleSheet = QLatin1String(File.readAll());
             
-            qApp->setStyleSheet(StyleSheet);
+ //           qApp->setStyleSheet(StyleSheet);
             
             return true;
         }
@@ -546,6 +557,25 @@ bool androidStartBluetoothScan()
     return true;
     
 }
+
+bool androidStopBluetoothScan()
+{
+    wxString result = callActivityMethod_is("stopBlueToothScan", 0);
+    
+    return true;
+    
+}
+
+bool androidStartBT(wxEvtHandler *consumer, wxString mac_address )
+{
+    if(mac_address.Find(':') ==  wxNOT_FOUND)   //  does not look like a mac address
+        return false;
+    
+    wxString result = callActivityMethod_ss("startBTService", mac_address);
+    
+    return true;
+}
+    
 
 wxArrayString androidGetBluetoothScanResults()
 {

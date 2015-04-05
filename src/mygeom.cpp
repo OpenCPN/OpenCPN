@@ -35,8 +35,7 @@
 #include "wx/tokenzr.h"
 #include <wx/mstream.h>
 
-#include "dychart.h"
-#include "navutil.h"
+#include "vector2D.h"
 
 #include "s52s57.h"
 
@@ -56,7 +55,8 @@
     #include <GL/gl.h>
     #include <GL/glu.h>
 #else
-    #include "glues.h"          // local version of glu for GLES
+    #include "qopengl.h"                  // this gives us the qt runtime gles2.h
+    #include "GL/gl_private.h"
 #endif
 
 #endif
@@ -910,10 +910,10 @@ int PolyTessGeo::PolyTessGeoTri(OGRPolygon *poly, bool bSENC_SM, double ref_lat,
                 double xd = geoPt[ivp].x;
                 double yd = geoPt[ivp].y;
 
-                sxmax = fmax(xd, sxmax);
-                sxmin = fmin(xd, sxmin);
-                symax = fmax(yd, symax);
-                symin = fmin(yd, symin);
+                sxmax = wxMax(xd, sxmax);
+                sxmin = wxMin(xd, sxmin);
+                symax = wxMax(yd, symax);
+                symin = wxMin(yd, symin);
             }
 
             pTP->minx = sxmin;
@@ -1348,10 +1348,10 @@ int PolyTessGeo::BuildTessTri(void)
                 double lat = ( 2.0 * atan ( exp ( valy/CM93_semimajor_axis_meters ) ) - PI/2. ) / DEGREE;
                 double lon = ( valx / ( DEGREE * CM93_semimajor_axis_meters ) );
         
-                sxmax = fmax(lon, sxmax);
-                sxmin = fmin(lon, sxmin);
-                symax = fmax(lat, symax);
-                symin = fmin(lat, symin);
+                sxmax = wxMax(lon, sxmax);
+                sxmin = wxMin(lon, sxmin);
+                symax = wxMax(lat, symax);
+                symin = wxMin(lat, symin);
             }
         
 
@@ -2565,17 +2565,17 @@ void __CALL_CONVENTION endCallback(void)
                       double lat = ( 2.0 * atan ( exp ( valy/CM93_semimajor_axis_meters ) ) - PI/2. ) / DEGREE;
                       double lon = ( valx / ( DEGREE * CM93_semimajor_axis_meters ) );
 
-                      sxmax = fmax(lon, sxmax);
-                      sxmin = fmin(lon, sxmin);
-                      symax = fmax(lat, symax);
-                      symin = fmin(lat, symin);
+                      sxmax = wxMax(lon, sxmax);
+                      sxmin = wxMin(lon, sxmin);
+                      symax = wxMax(lat, symax);
+                      symin = wxMin(lat, symin);
                 }
                 else
                 {
-                      sxmax = fmax(xd, sxmax);
-                      sxmin = fmin(xd, sxmin);
-                      symax = fmax(yd, symax);
-                      symin = fmin(yd, symin);
+                      sxmax = wxMax(xd, sxmax);
+                      sxmin = wxMin(xd, sxmin);
+                      symax = wxMax(yd, symax);
+                      symin = wxMin(yd, symin);
                 }
             }
 

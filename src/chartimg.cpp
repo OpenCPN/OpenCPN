@@ -1957,14 +1957,15 @@ InitReturn ChartBaseBSB::PostInit(void)
       else
           m_datum_index = datum_index;
 
+      //    Establish defaults, may be overridden later
+      m_lon_datum_adjust = (-m_dtm_lon) / 3600.;
+      m_lat_datum_adjust = (-m_dtm_lat) / 3600.;
+          
       //   Analyze Refpoints
       int analyze_ret_val = AnalyzeRefpoints();
       if(0 != analyze_ret_val)
             return INIT_FAIL_REMOVE;
 
-      //    Establish defaults, may be overridden later
-      m_lon_datum_adjust = (-m_dtm_lon) / 3600.;
-      m_lat_datum_adjust = (-m_dtm_lat) / 3600.;
 
       bReadyToRender = true;
       return INIT_OK;
@@ -2941,7 +2942,7 @@ void ChartBaseBSB::ComputeSourceRectangle(const ViewPort &vp, wxRealPoint *pPos,
       pSize->x = vp.pix_width  * binary_scale_factor;
       pSize->y = vp.pix_height * binary_scale_factor;
 
-//    printf("Compute Rsrc:  vp.clat:  %g  clon: %g     Rsrc.y: %d  Rsrc.x:  %d\n", vp.clat, vp.clon, pSourceRect->y, pSourceRect->x);
+//      printf("Compute Rsrc:  vp.clat:  %g  clon: %g     pPos.x: %g  pPos.y:  %g\n", vp.clat, vp.clon, pPos->x, pPos->y);
 
 }
 

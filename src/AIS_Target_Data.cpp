@@ -612,11 +612,11 @@ wxString AIS_Target_Data::BuildQueryResult( void )
         html << rowEnd << _T("</table></td></tr>")
         << vertSpacer;
 
-    wxString tcpaStr;
-    if( bCPA_Valid ) tcpaStr << _T("</b> ") << _("in ") << _T("<b>") << FormatTimeAdaptive( (int)(TCPA*60.) );
-
     if( bCPA_Valid ) {
-        html<< vertSpacer << rowStart << _T("<font size=-2>") <<_("CPA") << _T("</font>") << rowEnd
+        wxString tcpaStr;
+        tcpaStr << _T("</b> ") << _("in ") << _T("</td><td align=right><b>") << FormatTimeAdaptive( (int)(TCPA*60.) );
+                                                                  
+        html<< /*vertSpacer << */rowStart << _T("<font size=-2>") <<_("CPA") << _T("</font>") << rowEnd
             << rowStartH << _T("<b>") << cc1->FormatDistanceAdaptive( CPA )
             << tcpaStr << rowEnd;
     }

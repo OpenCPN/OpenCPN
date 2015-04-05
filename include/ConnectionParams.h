@@ -105,11 +105,15 @@ public:
     wxString GetFiltersStr();
     wxString GetDSPort();
     wxString GetLastDSPort();
+    wxString GetPortStr(){ return Port; }
+    void SetPortStr( wxString str ){ Port = str; }
+    
     
     bool            Valid;
     bool            b_IsSetup;
 private:
     wxString FilterTypeToStr(ListType type, FilterDirection dir);
+    
 };
 
 WX_DEFINE_ARRAY(ConnectionParams *, wxArrayOfConnPrm);
