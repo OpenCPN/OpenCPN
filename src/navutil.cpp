@@ -105,6 +105,7 @@ extern ColorScheme      global_color_scheme;
 extern int              g_nbrightness;
 extern bool             g_bShowMag;
 extern double           g_UserVar;
+extern bool             g_bShowStatusBar;
 
 extern wxToolBarBase    *toolBar;
 
@@ -1319,7 +1320,7 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "SkewCompUpdatePeriod" ), &g_SkewCompUpdatePeriod, 10 );
 
     Read( _T ( "SetSystemTime" ), &s_bSetSystemTime, 0 );
-    Read( _T ( "ShowStatusBar" ), &m_bShowStatusBar, 1 );
+    Read( _T ( "ShowStatusBar" ), &g_bShowStatusBar, 1 );
 #ifndef __WXOSX__
     Read( _T ( "ShowMenuBar" ), &m_bShowMenuBar, 0 );
 #endif
@@ -2473,7 +2474,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "UIStyle" ), g_StyleManager->GetStyleNextInvocation() );
     Write( _T ( "ChartNotRenderScaleFactor" ), g_ChartNotRenderScaleFactor );
 
-    Write( _T ( "ShowStatusBar" ), m_bShowStatusBar );
+    Write( _T ( "ShowStatusBar" ), g_bShowStatusBar );
 #ifndef __WXOSX__
     Write( _T ( "ShowMenuBar" ), m_bShowMenuBar );
 #endif

@@ -593,6 +593,7 @@ int                       g_MemFootMB;
 ArrayOfInts               g_quilt_noshow_index_array;
 
 wxStaticBitmap            *g_pStatBoxTool;
+bool                      g_bShowStatusBar;
 
 bool                      g_bquiting;
 int                       g_BSBImgDebug;
@@ -3331,6 +3332,15 @@ void MyFrame::ODoSetSize( void )
         font_size = wxMin( font_size, max_font_size );  // maximum to fit in the statusbar boxes
         font_size = wxMax( font_size, min_font_size );  // minimum to stop it being unreadable
 
+#ifdef __OCPN__ANDROID__
+        //TODO
+        // This is a hack.  on WXQT, setting the status bar font size causes the
+        //  frame to be resized to accomodate, leading to a looping adjustment situation.
+        //  Solution is to be found in wx sources....
+        font_size = 3;
+#endif
+        
+        
         wxFont *pstat_font = wxTheFontList->FindOrCreateFont( font_size,
               wxFONTFAMILY_SWISS, templateFont->GetStyle(), templateFont->GetWeight(), false,
               templateFont->GetFaceName() );
@@ -4373,7 +4383,7 @@ void MyFrame::ApplyGlobalSettings( bool bFlyingUpdate, bool bnewtoolbar )
     UseNativeStatusBar( false );              // better for MSW, undocumented in frame.cpp
 #endif
 
-    if( pConfig->m_bShowStatusBar ) {
+    if( g_bShowStatusBar ) {
         if( !m_pStatusBar ) {
             m_pStatusBar = CreateStatusBar( m_StatusBarFieldCount, 0 );   // No wxST_SIZEGRIP needed
             ApplyGlobalColorSchemetoStatusBar();
