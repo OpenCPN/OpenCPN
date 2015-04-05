@@ -208,6 +208,7 @@ extern bool             g_bMagneticAPB;
 extern bool             g_fog_overzoom;
 extern double           g_overzoom_emphasis_base;
 extern bool             g_oz_vector_scale;
+extern bool             g_bShowStatusBar;
 
 
 
@@ -3087,7 +3088,7 @@ void options::SetInitialSettings()
     }
 
     if( m_pConfig ) {
-        pShowStatusBar->SetValue( m_pConfig->m_bShowStatusBar );
+        pShowStatusBar->SetValue( g_bShowStatusBar );
 #ifndef __WXOSX__
         pShowMenuBar->SetValue( m_pConfig->m_bShowMenuBar );
 #endif
@@ -3958,7 +3959,7 @@ void options::OnApplyClick( wxCommandEvent& event )
     // Handle Settings Tab
 
     if( m_pConfig ) {
-        m_pConfig->m_bShowStatusBar = pShowStatusBar->GetValue();
+        g_bShowStatusBar = pShowStatusBar->GetValue();
 #ifndef __WXOSX__
         m_pConfig->m_bShowMenuBar = pShowMenuBar->GetValue();
 #endif
