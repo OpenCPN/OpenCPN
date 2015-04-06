@@ -185,6 +185,7 @@ extern bool                     g_bopengl;
 extern bool                     g_btouch;
 extern bool                     g_bresponsive;
 extern bool                     g_bShowStatusBar;
+extern int                      g_cm93_zoom_factor;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions            g_GLOptions;
@@ -536,7 +537,7 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_default_font_size = 14;
 
     g_bShowStatusBar = false;
-    
+    g_cm93_zoom_factor = -5;    
 #endif
     
     

@@ -79,6 +79,7 @@ public:
     static bool         s_b_useStencil;
     static bool         s_b_useStencilAP;
     static bool         s_b_UploadFullMipmaps;
+    static bool         s_b_useDisplayList;
     
     glChartCanvas(wxWindow *parent);
     ~glChartCanvas();

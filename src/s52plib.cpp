@@ -6270,7 +6270,6 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
 #ifdef ocpnUSE_GL
-    
     if( rules->razRule == NULL )
         return 0;
 
@@ -6292,7 +6291,7 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     wxPoint *ptp;
     if( rzRules->obj->pPolyTessGeo ) {
         if( !rzRules->obj->pPolyTessGeo->IsOk() ) // perform deferred tesselation
-        rzRules->obj->pPolyTessGeo->BuildDeferredTess();
+            rzRules->obj->pPolyTessGeo->BuildDeferredTess();
 
         ptp = (wxPoint *) malloc(
                 ( rzRules->obj->pPolyTessGeo->GetnVertexMax() + 1 ) * sizeof(wxPoint) );
@@ -6340,9 +6339,8 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     }
 
     //  Render the geometry
-    {
         // Generate a Display list if using overall Depth Buffer clipping, for use later
-        if( !glChartCanvas::s_b_useStencilAP && !glChartCanvas::s_b_useStencil ) {
+        if( glChartCanvas::s_b_useDisplayList && !glChartCanvas::s_b_useStencilAP && !glChartCanvas::s_b_useStencil ) {
             clip_list = glGenLists( 1 );
             glNewList( clip_list, GL_COMPILE );
         }
@@ -6404,7 +6402,6 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 }
                 
 
-
                 switch( p_tp->type ){
                     case PTG_TRIANGLE_FAN: {
                         glBegin( GL_TRIANGLE_FAN );
@@ -6446,8 +6443,8 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
 //        obj_xmin = 0;
 //        obj_xmax = 2000;
-        
-        if( !glChartCanvas::s_b_useStencilAP &&  !glChartCanvas::s_b_useStencil ) {
+
+        if( glChartCanvas::s_b_useDisplayList && !glChartCanvas::s_b_useStencilAP &&  !glChartCanvas::s_b_useStencil ) {
             glEndList();
             glCallList( clip_list );
         }
@@ -6462,7 +6459,6 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE ); // re-enable color buffer
             glDepthMask( GL_FALSE ); // disable depth buffer
         }
-
         //    Get the pattern definition
         if( ( rules->razRule->pixelPtr == NULL ) || ( rules->razRule->parm1 != m_colortable_index )
                 || ( rules->razRule->parm0 != ID_GL_PATT_SPEC ) ) {
@@ -6512,6 +6508,7 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         if( ppatt_spec->b_stagger ) x_stagger_off = (float) ppatt_spec->width / 2;
         int yc = 0;
 
+        
         if(w>0 && h>0) {
             while( yr < vp->pix_height ) {
                 if( ( (yr + h) >= 0 ) && ( yr <= obj_ymax ) )  {
@@ -6569,23 +6566,27 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             glColor3f( 1, 1, 0 );
 
             glTranslatef( 0, 0, .25 ); // Cause depth buffer rending at z = 0.5
-            glCallList( clip_list ); // Re-Render the clip geometry
+            
+            if(glChartCanvas::s_b_useDisplayList){
+                glCallList( clip_list ); // Re-Render the clip geometry
+                glDeleteLists( clip_list, 1 );
+            }
+            else
+                RenderPolytessGL(rzRules, vp, z_clip_geom, ptp);
+            
             glTranslatef( 0, 0, -.25 ); // undo translation (may not be required....)
 
             glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE ); // re-enable color buffer
             glDepthMask( GL_FALSE ); // disable depth buffer
 
-            glDeleteLists( clip_list, 1 );
         }
         else if( !glChartCanvas::s_b_useStencil ){
             glClearDepth(1);
             glClear( GL_DEPTH_BUFFER_BIT ); // back to default
         }
-    
         //    Restore the previous state
         glPopAttrib();
 
-    }
 
     free( ptp );
 #endif                  //#ifdef ocpnUSE_GL
@@ -6593,12 +6594,125 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     return 1;
 }
 
+void s52plib::RenderPolytessGL(ObjRazRules *rzRules, ViewPort *vp, double z_clip_geom, wxPoint *ptp)
+{
+#ifdef ocpnUSE_GL
+
+    wxBoundingBox BBView = vp->GetBBox();
+    //  Allow a little slop in calculating whether a triangle
+    //  is within the requested Viewport
+    double margin = BBView.GetWidth() * .05;
+
+    int obj_xmin = 10000;
+    int obj_xmax = -10000;
+    int obj_ymin = 10000;
+    int obj_ymax = -10000;
+    
+    PolyTriGroup *ppg = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
+    
+    wxBoundingBox tp_box;
+    TriPrim *p_tp = ppg->tri_prim_head;
+    while( p_tp ) {
+        
+        tp_box.SetMin(p_tp->minx, p_tp->miny);
+        tp_box.SetMax(p_tp->maxx, p_tp->maxy);
+        
+        bool b_greenwich = false;
+        if( BBView.GetMaxX() > 360. ) {
+            wxBoundingBox bbRight( 0., vp->GetBBox().GetMinY(), vp->GetBBox().GetMaxX() - 360.,
+                                   vp->GetBBox().GetMaxY() );
+            
+            if( bbRight.Intersect( tp_box, margin ) != _OUT )
+                b_greenwich = true;
+        }
+        
+        if( b_greenwich || ( BBView.Intersect( tp_box, margin ) != _OUT ) ) {
+            
+            //      Get and convert the points
+            
+            wxPoint *pr = ptp;
+            if( ppg->data_type == DATA_TYPE_FLOAT ){
+                float *pvert_list = (float *)p_tp->p_vertex;
+                
+                for( int iv = 0; iv < p_tp->nVert; iv++ ) {
+                    float lon = *pvert_list++;
+                    float lat = *pvert_list++;
+                    GetPointPixSingle(rzRules, lat, lon, pr, vp );
+                    
+                    obj_xmin = wxMin(obj_xmin, pr->x);
+                    obj_xmax = wxMax(obj_xmax, pr->x);
+                    obj_ymin = wxMin(obj_ymin, pr->y);
+                    obj_ymax = wxMax(obj_ymax, pr->y);
+                    
+                    pr++;
+                }
+            }
+            else {
+                double *pvert_list = p_tp->p_vertex;
+                
+                for( int iv = 0; iv < p_tp->nVert; iv++ ) {
+                    double lon = *pvert_list++;
+                    double lat = *pvert_list++;
+                    GetPointPixSingle(rzRules, lat, lon, pr, vp );
+                    
+                    obj_xmin = wxMin(obj_xmin, pr->x);
+                    obj_xmax = wxMax(obj_xmax, pr->x);
+                    obj_ymin = wxMin(obj_ymin, pr->y);
+                    obj_ymax = wxMax(obj_ymax, pr->y);
+                    
+                    pr++;
+                }
+            }
+            
+            
+            
+            switch( p_tp->type ){
+                case PTG_TRIANGLE_FAN: {
+                    glBegin( GL_TRIANGLE_FAN );
+                    for( int it = 0; it < p_tp->nVert; it++ )
+                        glVertex3f( ptp[it].x, ptp[it].y, z_clip_geom );
+                    glEnd();
+                    break;
+                }
+                
+                case PTG_TRIANGLE_STRIP: {
+                    glBegin( GL_TRIANGLE_STRIP );
+                    for( int it = 0; it < p_tp->nVert; it++ )
+                        glVertex3f( ptp[it].x, ptp[it].y, z_clip_geom );
+                    glEnd();
+                    break;
+                }
+                case PTG_TRIANGLES: {
+                    glBegin( GL_TRIANGLES );
+                    for( int it = 0; it < p_tp->nVert; it += 3 ) {
+                        int xmin = wxMin(ptp[it].x, wxMin(ptp[it+1].x, ptp[it+2].x));
+                        int xmax = wxMax(ptp[it].x, wxMax(ptp[it+1].x, ptp[it+2].x));
+                        int ymin = wxMin(ptp[it].y, wxMin(ptp[it+1].y, ptp[it+2].y));
+                        int ymax = wxMax(ptp[it].y, wxMax(ptp[it+1].y, ptp[it+2].y));
+                        
+                        wxRect rect( xmin, ymin, xmax - xmin, ymax - ymin );
+                        if( rect.Intersects( m_render_rect ) ) {
+                            glVertex3f( ptp[it].x, ptp[it].y, z_clip_geom );
+                            glVertex3f( ptp[it + 1].x, ptp[it + 1].y, z_clip_geom );
+                            glVertex3f( ptp[it + 2].x, ptp[it + 2].y, z_clip_geom );
+                        }
+                    }
+                    glEnd();
+                    break;
+                }
+            }
+        } // if bbox
+        p_tp = p_tp->p_next; // pick up the next in chain
+    } // while
+    
+#endif    
+}
+
 #ifdef ocpnUSE_GL
 
 int s52plib::RenderAreaToGL( const wxGLContext &glcc, ObjRazRules *rzRules, ViewPort *vp,
         wxRect &render_rect )
 {
-
     if( !ObjectRenderCheckPos( rzRules, vp ) )
         return 0;
 
@@ -6764,11 +6878,12 @@ render_canvas_parms* s52plib::CreatePatternBufferSpec( ObjRazRules *rzRules, Rul
             mdc.Clear();
         }
 
+        mdc.SelectObject( wxNullBitmap );
+        
         //    Build a wxImage from the wxBitmap
         Image = pbm->ConvertToImage();
 
         delete pbm;
-        mdc.SelectObject( wxNullBitmap );
     }
 
 //  Convert the wxImage to a populated render_canvas_parms struct
@@ -6826,7 +6941,8 @@ render_canvas_parms* s52plib::CreatePatternBufferSpec( ObjRazRules *rzRules, Rul
         b_use_alpha = true;
     }
 
-#ifdef __WXMAC__
+#if defined(__WXMAC__) || defined(__WXQT__)
+
     if( prule->definition.SYDF == 'V' ) {
         b_use_alpha = true;
         imgAlpha = NULL;
@@ -6870,7 +6986,6 @@ render_canvas_parms* s52plib::CreatePatternBufferSpec( ObjRazRules *rzRules, Rul
                         } else {
                             *pd++ = ( ( r == mr ) && ( g == mg ) && ( b == mb ) ? 0 : 255 );
                         }
-
                     }
                 }
             }

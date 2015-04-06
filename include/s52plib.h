@@ -173,14 +173,14 @@ public:
     void DestroyRuleNode( Rule *pR );
     void DestroyRulesChain( Rules *top );
     
-//#ifdef ocpnUSE_GL
     //    For OpenGL
     int RenderObjectToGL( const wxGLContext &glcc, ObjRazRules *rzRules,
                           ViewPort *vp, wxRect &render_rect );
     int RenderAreaToGL( const wxGLContext &glcc, ObjRazRules *rzRules,
                         ViewPort *vp, wxRect &render_rect );
-//#endif
-
+   
+    void RenderPolytessGL( ObjRazRules *rzRules, ViewPort *vp,double z_clip_geom, wxPoint *ptp );
+    
     bool EnableGLLS(bool benable);
 
     bool IsObjNoshow( const char *objcl);
