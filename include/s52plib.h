@@ -259,6 +259,11 @@ private:
     int RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
     int RenderGLLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
     
+    void RenderCARCGL( double sectr1, double sectr2,
+                                wxString& outline_color, long outline_width,
+                                wxString& arc_color, long arc_width,
+                                long sector_radius, long radius );
+    
     void UpdateOBJLArray( S57Obj *obj );
 
     render_canvas_parms* CreatePatternBufferSpec( ObjRazRules *rzRules,
