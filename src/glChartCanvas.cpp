@@ -201,6 +201,7 @@ bool glChartCanvas::s_b_useScissorTest;
 bool glChartCanvas::s_b_useStencil;
 bool glChartCanvas::s_b_useStencilAP;
 bool glChartCanvas::s_b_UploadFullMipmaps;
+bool glChartCanvas::s_b_useDisplayList;
 //static int s_nquickbind;
 
 long populate_tt_total, mipmap_tt_total, hwmipmap_tt_total, upload_tt_total;
@@ -1035,6 +1036,11 @@ void glChartCanvas::SetupOpenGL()
     if( stencil && ( sb == 8 ) )
         s_b_useStencil = true;
 
+    //  Display lists OK?
+    s_b_useDisplayList = true;
+#ifdef ocpnUSE_GLES    
+    s_b_useDisplayList = false;
+#endif    
      
     if( QueryExtension( "GL_ARB_texture_non_power_of_two" ) )
         g_texture_rectangle_format = GL_TEXTURE_2D;
