@@ -73,6 +73,7 @@ public:
 //      Platform Display Support
 //--------------------------------------------------------------------------
     double getFontPointsperPixel( void );
+    wxSize getDisplaySize();
     
     
 //--------------------------------------------------------------------------
