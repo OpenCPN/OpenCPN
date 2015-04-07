@@ -869,6 +869,27 @@ bool OCPNPlatform::hasInternalGPS(wxString profile)
 
 
 //--------------------------------------------------------------------------
+//      Platform Display Support
+//--------------------------------------------------------------------------
+double OCPNPlatform::getFontPointsperPixel( void )
+{
+    //  Make a measurement...
+    wxScreenDC dc;
+    
+    wxFont *f = wxTheFontList->FindOrCreateFont( 12, wxDEFAULT, wxNORMAL, wxBOLD, FALSE,
+                                                wxString( _T ( "" ) ), wxFONTENCODING_SYSTEM );
+    dc.SetFont(*f);
+    
+    wxSize sz = dc.GetTextExtent(_T("H"));
+    double pt_per_pixel = 12.0 / (double)sz.y;
+    
+    return pt_per_pixel;
+    
+    
+}
+
+
+//--------------------------------------------------------------------------
 //      Internal Bluetooth Support
 //--------------------------------------------------------------------------
 
