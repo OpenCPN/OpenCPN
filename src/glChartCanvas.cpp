@@ -1209,6 +1209,12 @@ void glChartCanvas::SetupOpenGL()
 
     if(s_b_useScissorTest && s_b_useStencil)
         wxLogMessage( _T("OpenGL-> Using Scissor Clipping") );
+
+    
+    if( s_b_useDisplayList )
+        wxLogMessage( _T("OpenGL-> Using Display Lists") );
+    else
+        wxLogMessage( _T("OpenGL-> Not using Display Lists") );
     
     /* we upload non-aligned memory */
     glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
