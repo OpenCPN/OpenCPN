@@ -382,7 +382,7 @@ void ocpnFloatingToolbarDialog::SetGeometry()
         int max_rows = 10;
         int max_cols = 100;
         if(cc1){
-            max_rows = (cc1->GetSize().y / ( tool_size.y + m_style->GetToolSeparation()));
+            max_rows = (cc1->GetSize().y / ( tool_size.y + m_style->GetToolSeparation())) - 1;
             max_cols = (cc1->GetSize().x / ( tool_size.x + m_style->GetToolSeparation())) - 3;
         }
 
@@ -1231,6 +1231,8 @@ bool ocpnToolBarSimple::Realize()
         tool->lastInLine = false;
         firstNode = false;
 
+        tool->last_rect.width = 0;              // mark it invalid
+        
         if( tool->IsSeparator() ) {
             if( GetWindowStyleFlag() & wxTB_HORIZONTAL ) {
                 if( m_currentRowsOrColumns >= m_maxCols ) m_lastY += separatorSize;
@@ -1700,7 +1702,7 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
     }
 
     //      Clear the last drawn tool if necessary
-    if((tool->last_rect.x != drawAt.x) || (tool->last_rect.y != drawAt.y)){
+    if( tool->last_rect.width && ((tool->last_rect.x != drawAt.x) || (tool->last_rect.y != drawAt.y)) ){
         wxBrush bb(GetGlobalColor( _T("GREY2") ));
         dc.SetBrush(bb);
         dc.SetPen( *wxTRANSPARENT_PEN );
