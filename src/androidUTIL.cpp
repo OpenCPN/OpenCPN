@@ -359,6 +359,9 @@ wxSize getAndroidDisplayDimensions( void )
         if(token.ToLong( &b ))
             sz_ret.y = b;
     }
+
+    wxSize sz_wx = ::wxGetDisplaySize();               // default, probably reasonable, but maybe not accurate
+    qDebug() << sz_wx.x << sz_wx.y << sz_ret.x << sz_ret.y;
     
     return sz_ret;
     

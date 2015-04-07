@@ -888,6 +888,16 @@ double OCPNPlatform::getFontPointsperPixel( void )
     
 }
 
+wxSize OCPNPlatform::getDisplaySize()
+{
+#ifdef __OCPN__ANDROID__
+    return getAndroidDisplayDimensions();
+#else
+    return (::wxGetDisplaySize());               // default, for most platforms
+#endif
+
+}
+
 
 //--------------------------------------------------------------------------
 //      Internal Bluetooth Support
