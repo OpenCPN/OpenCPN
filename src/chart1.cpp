@@ -1346,7 +1346,8 @@ bool MyApp::OnInit()
     }
 
     g_display_size_mm = wxMax(100, GetDisplaySizeMM());
-
+    double dsmm = g_display_size_mm;
+    
     //      Init the WayPoint Manager (Must be after UI Style init).
     pWayPointMan = NULL;
 
@@ -1354,6 +1355,12 @@ bool MyApp::OnInit()
     MyConfig *pCF = new MyConfig( wxString( _T("") ), wxString( _T("") ), g_Platform->GetConfigFileName() );
     pConfig = (MyConfig *) pCF;
     pConfig->LoadMyConfig();
+
+    if(fabs(dsmm - g_display_size_mm) > 1){
+        wxString msg;
+        msg.Printf(_T("Display size (horizontal) config override: %d mm"), (int) g_display_size_mm);
+        wxLogMessage(msg);
+    }
 
     if(g_btouch){
         int SelectPixelRadius = 50;
@@ -10434,8 +10441,11 @@ wxFont *GetOCPNScaledFont( wxString item, int default_size )
         double scaled_font_size = dFont->GetPointSize();
 
         if( cc1) {
-            double min_scaled_font_size = 3 * cc1->GetPixPerMM();
+            
+            double points_per_mm  = g_Platform->getFontPointsperPixel() * cc1->GetPixPerMM();
+            double min_scaled_font_size = 3 * points_per_mm;    // smaller than 3 mm is unreadable
             int nscaled_font_size = wxMax( wxRound(scaled_font_size), min_scaled_font_size );
+
             if(req_size >= nscaled_font_size)
                 return dFont;
             else{
