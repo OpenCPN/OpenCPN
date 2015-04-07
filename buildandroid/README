@@ -80,8 +80,8 @@
         $export PKG_CONFIG_PATH=~/Qt/5.2.1/android_armv7/lib/pkgconfig
 
         ___Set a few environment variables.
-        $export CPPFLAGS=-D__ANDROID__                  (this is for some special stuff in wxWidgets,
-                                                         seems only needed for configure step, not make)
+        $export CPPFLAGS=-D__ANDROID__                  (this is for some special stuff in wxWidgets)
+
 
         $export PATH={tools.path.of.your.choice}/bin:$PATH
         e.g.
@@ -119,6 +119,12 @@
 
 
             These patches/commits may be found in https://github.com/bdbcat/wxWidgets.
+
+
+            Update, April 6, 2015...
+            Notes 1 and 4 above corrected in wxQT source by (corrected) commit from upstream.
+            wxNEED_WX_STRTOXXW is deprecated.
+
 
 
             These patches should be refined and submitted as pull requests to wxWidgets trunk.
