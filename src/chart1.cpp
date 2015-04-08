@@ -1448,9 +1448,9 @@ bool MyApp::OnInit()
 
     g_config_version_string = vs;
 
-    //  Show deferred log restart message, if it exists.
+    //  log deferred log restart message, if it exists.
     if( !g_Platform->GetLargeLogMessage().IsEmpty() )
-        OCPNMessageBox ( NULL, g_Platform->GetLargeLogMessage(), wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK, 5 );
+        wxLogMessage( g_Platform->GetLargeLogMessage() );
 
     //  Validate OpenGL functionality, if selected
 #ifdef ocpnUSE_GL
