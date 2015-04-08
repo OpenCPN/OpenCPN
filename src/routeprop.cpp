@@ -1980,7 +1980,7 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     m_choiceWaypointRangeRingsNumber = new wxChoice( m_panelBasicProperties, ID_WAYPOINTRANGERINGS, wxDefaultPosition, wxDefaultSize, 11, rrAlt );
     waypointrrSelect->Add( m_choiceWaypointRangeRingsNumber, 0, wxALIGN_RIGHT | wxALL, 1 );
 
-    waypointradarGrid = new wxFlexGridSizer( 1, 2, 1, 1 );
+    waypointradarGrid = new wxFlexGridSizer( 0, 2, 1, 1 );
     waypointradarGrid->AddGrowableCol( 1 );
     bSizerTextProperties->Add( waypointradarGrid, 0, wxLEFT | wxRIGHT| wxEXPAND, 5 );
 
