@@ -671,7 +671,7 @@ static void GetglEntryPoints( void )
     unsigned int n_ext = (sizeof extensions) / (sizeof *extensions);
 
     unsigned int i;
-    for(i=0; i<(sizeof extensions) / (sizeof *extensions); i++) {
+    for(i=0; i<n_ext; i++) {
         if((s_glGenFramebuffers = (PFNGLGENFRAMEBUFFERSEXTPROC)
             ocpnGetProcAddress( "glGenFramebuffers", extensions[i])))
             break;
@@ -713,12 +713,12 @@ static void GetglEntryPoints( void )
 
     //  Retry VBO entry points with all extensions
     if(0 == s_glGenBuffers){
-        for( i=0; i<(sizeof extensions) / (sizeof *extensions); i++) {
+        for( i=0; i<n_ext; i++) {
             if((s_glGenBuffers = (PFNGLGENBUFFERSPROC)ocpnGetProcAddress( "glGenBuffers", extensions[i])) )
                 break;
         }
         
-        if( i < 3 ){
+        if( i < n_ext ){
             s_glBindBuffer = (PFNGLBINDBUFFERPROC) ocpnGetProcAddress( "glBindBuffer", extensions[i]);
             s_glBufferData = (PFNGLBUFFERDATAPROC) ocpnGetProcAddress( "glBufferData", extensions[i]);
             s_glDeleteBuffers = (PFNGLDELETEBUFFERSPROC) ocpnGetProcAddress( "glDeleteBuffers", extensions[i]);
@@ -727,7 +727,7 @@ static void GetglEntryPoints( void )
             
 
 #ifndef __OCPN__ANDROID__            
-    for(i=0; i<(sizeof extensions) / (sizeof *extensions); i++) {
+    for(i=0; i<n_ext; i++) {
         if((s_glCompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DPROC)
             ocpnGetProcAddress( "glCompressedTexImage2D", extensions[i])))
             break;
@@ -940,12 +940,34 @@ void glChartCanvas::BuildFBO( )
         ( s_glFramebufferRenderbuffer )( GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT,
                                              GL_RENDERBUFFER_EXT, m_renderbuffer );
     } else {
+        
+        GLenum depth_format = GL_DEPTH_COMPONENT24;
+        
+        //      Need to check for availability of 24 bit depth buffer extension on GLES
+#ifdef ocpnUSE_GLES
+        if( !QueryExtension("GL_OES_depth24") )
+            depth_format = GL_DEPTH_COMPONENT16;
+#endif        
+        
         // initialize depth renderbuffer
-        ( s_glRenderbufferStorage )( GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24,
+        ( s_glRenderbufferStorage )( GL_RENDERBUFFER_EXT, depth_format,
                                          m_cache_tex_x, m_cache_tex_y );
+        int err = glGetError();
+        if(err){
+            wxString msg;
+            msg.Printf( _T("    OpenGL-> Framebuffer Depth Buffer Storage error:  %08X"), err );
+            wxLogMessage(msg);
+        }
+                
         ( s_glFramebufferRenderbuffer )( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
                                              GL_RENDERBUFFER_EXT, m_renderbuffer );
         
+        err = glGetError();
+        if(err){
+            wxString msg;
+            msg.Printf( _T("    OpenGL-> Framebuffer Depth Buffer Attach error:  %08X"), err );
+            wxLogMessage(msg);
+        }
     }
     
     // Disable Render to FBO
@@ -983,7 +1005,8 @@ void glChartCanvas::SetupOpenGL()
     
     const GLubyte *ext_str = glGetString(GL_EXTENSIONS);
     m_extensions = wxString( (const char *)ext_str, wxConvUTF8 );
-//    wxLogMessage( m_extensions );
+    wxLogMessage( _T("OpenGL extensions available: ") );
+    wxLogMessage(m_extensions );
     
     //  Set the minimum line width
     GLint parms[2];
@@ -1270,40 +1293,47 @@ void glChartCanvas::SetupCompression()
     int dim = g_GLOptions.m_iTextureDimension;
     g_uncompressed_tile_size = dim*dim*3;
     if(g_GLOptions.m_bTextureCompression) {
+
+        g_raster_format = GL_RGB;
+    
+    // On GLES, we prefer OES_ETC1 compression, if available
+#ifdef ocpnUSE_GLES
+        if(QueryExtension("GL_OES_compressed_ETC1_RGB8_texture") && s_glCompressedTexImage2D) {
+            g_raster_format = GL_ETC1_RGB8_OES;
+    
+        wxLogMessage( _("OpenGL-> Using oes etc1 compression") );
+        }
+#endif
+    
+        if(GL_RGB == g_raster_format){
         /* because s3tc is patented, many foss drivers disable
            support by default, however the extension dxt1 allows
            us to load this texture type which is enough because we
            compress in software using libsquish for superior quality anyway */
 
-        if((QueryExtension("GL_EXT_texture_compression_s3tc") ||
-            QueryExtension("GL_EXT_texture_compression_dxt1")) &&
-           s_glCompressedTexImage2D) {
-            /* buggy opensource nvidia driver, renders incorrectly,
-               workaround is to use format with alpha... */
-            if(GetRendererString().Find( _T("Gallium") ) != wxNOT_FOUND &&
-               GetRendererString().Find( _T("NV") ) != wxNOT_FOUND )
-                g_raster_format = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-            else
-                g_raster_format = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+            if((QueryExtension("GL_EXT_texture_compression_s3tc") ||
+                QueryExtension("GL_EXT_texture_compression_dxt1")) &&
+            s_glCompressedTexImage2D) {
+                /* buggy opensource nvidia driver, renders incorrectly,
+                workaround is to use format with alpha... */
+                if(GetRendererString().Find( _T("Gallium") ) != wxNOT_FOUND &&
+                GetRendererString().Find( _T("NV") ) != wxNOT_FOUND )
+                    g_raster_format = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+                else
+                    g_raster_format = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
 
-            wxLogMessage( _("OpenGL-> Using s3tc dxt1 compression") );
-        } else if(QueryExtension("GL_3DFX_texture_compression_FXT1") &&
-                  s_glCompressedTexImage2D && s_glGetCompressedTexImage) {
-            g_raster_format = GL_COMPRESSED_RGB_FXT1_3DFX;
+                wxLogMessage( _("OpenGL-> Using s3tc dxt1 compression") );
+            } else if(QueryExtension("GL_3DFX_texture_compression_FXT1") &&
+                    s_glCompressedTexImage2D && s_glGetCompressedTexImage) {
+                g_raster_format = GL_COMPRESSED_RGB_FXT1_3DFX;
 
-            wxLogMessage( _("OpenGL-> Using 3dfx fxt1 compression") );
-#ifdef ocpnUSE_GLES
-        } else if(QueryExtension("GL_OES_compressed_ETC1_RGB8_texture") &&
-                  s_glCompressedTexImage2D) {
-           g_raster_format = GL_ETC1_RGB8_OES;
-
-            wxLogMessage( _("OpenGL-> Using oes etc1 compression") );
-#endif
-        } else {
-            wxLogMessage( _("OpenGL-> No Useable compression format found") );
-            goto no_compression;
+                wxLogMessage( _("OpenGL-> Using 3dfx fxt1 compression") );
+            } else {
+                wxLogMessage( _("OpenGL-> No Useable compression format found") );
+                goto no_compression;
+            }
         }
-
+        
 #ifdef ocpnUSE_GLES /* gles doesn't have GetTexLevelParameter */
         g_tile_size = 512*512/2; /* 4bpp */
 #else
