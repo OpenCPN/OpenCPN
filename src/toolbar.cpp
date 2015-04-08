@@ -1453,20 +1453,22 @@ void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
 #endif
 
         //    Tool Rollover highlighting
-        if( tool != m_last_ro_tool ) {
-            if( tool->IsEnabled() ) {
-                tool->rollover = true;
-                tool->bitmapOK = false;
-            }
-            if( m_last_ro_tool ) {
-                if( m_last_ro_tool->IsEnabled() ) {
-                    m_last_ro_tool->rollover = false;
-                    m_last_ro_tool->bitmapOK = false;
+        if(!g_btouch){
+            if( tool != m_last_ro_tool ) {
+                if( tool->IsEnabled() ) {
+                    tool->rollover = true;
+                    tool->bitmapOK = false;
                 }
+                if( m_last_ro_tool ) {
+                    if( m_last_ro_tool->IsEnabled() ) {
+                        m_last_ro_tool->rollover = false;
+                        m_last_ro_tool->bitmapOK = false;
+                    }
+                }
+                m_last_ro_tool = tool;
+                if(g_toolbar)
+                    g_toolbar->Refresh( false );
             }
-            m_last_ro_tool = tool;
-            if(g_toolbar)
-                g_toolbar->Refresh( false );
         }
     } else {
         //    Tooltips
@@ -1543,6 +1545,8 @@ void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
     if( event.LeftDown() && tool->IsEnabled() ) {
         if( tool->CanBeToggled() ) {
             tool->Toggle();
+            tool->bitmapOK = false;
+            
         }
 
         DrawTool( tool );
@@ -1577,6 +1581,7 @@ void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
             // If it was a toggle, and OnLeftClick says No Toggle allowed,
             // then change it back
             tool->Toggle();
+            tool->bitmapOK = false;
         }
 
         DoPluginToolUp();
