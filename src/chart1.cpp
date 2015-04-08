@@ -4454,7 +4454,9 @@ void MyFrame::ApplyGlobalSettings( bool bFlyingUpdate, bool bnewtoolbar )
 
 wxString _menuText( wxString name, wxString shortcut ) {
     wxString menutext;
-    menutext << name << _T("\t") << shortcut;
+    menutext << name;
+    if(!g_bresponsive)
+        menutext << _T("\t") << shortcut;
     return menutext;
 }
 

@@ -239,7 +239,7 @@ CanvasMenuHandler::~CanvasMenuHandler()
 void MenuPrepend1( wxMenu *menu, int id, wxString label)
 {
     wxMenuItem *item = new wxMenuItem(menu, id, label);
-#ifdef __WXMSW__
+#if defined(__WXMSW__) || defined(__OCPN__ANDROID__)
     wxFont *qFont = GetOCPNScaledFont(_T("Menu"));
     item->SetFont(*qFont);
 #endif
@@ -249,7 +249,8 @@ void MenuPrepend1( wxMenu *menu, int id, wxString label)
 void MenuAppend1( wxMenu *menu, int id, wxString label)
 {
     wxMenuItem *item = new wxMenuItem(menu, id, label);
-#ifdef __WXMSW__
+#if defined(__WXMSW__) || defined(__OCPN__ANDROID__)
+   
     wxFont *qFont = GetOCPNScaledFont(_("Menu"));
     item->SetFont(*qFont);
 #endif
@@ -258,7 +259,8 @@ void MenuAppend1( wxMenu *menu, int id, wxString label)
 
 void SetMenuItemFont1(wxMenuItem *item)
 {
-#ifdef __WXMSW__
+#if defined(__WXMSW__) || defined(__OCPN__ANDROID__)
+    
     wxFont *qFont = GetOCPNScaledFont(_("Menu"));
     item->SetFont(*qFont);
 #endif
