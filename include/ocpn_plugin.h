@@ -988,4 +988,9 @@ extern "C"  DECL_EXP void GetDoubleCanvasPixLL(PlugIn_ViewPort *vp, wxPoint2DDou
 extern DECL_EXP double fromDMM_Plugin( wxString sdms );
 
 
+/* API 1.13 */
+extern DECL_EXP void SetCanvasRotation(double rotation);
+extern DECL_EXP bool GetSingleWaypoint( wxString &GUID, PlugIn_Waypoint *pwaypoint );
+extern DECL_EXP bool PlugInPlaySoundEx( wxString &sound_file, int deviceIndex=-1 );
+
 #endif //_PLUGIN_H_

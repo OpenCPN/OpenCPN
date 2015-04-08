@@ -588,6 +588,7 @@ public:
     wxCheckBox              *pEnableZoomToCursor;
     wxCheckBox              *pPreserveScale;
     wxCheckBox              *pPlayShipsBells;
+    wxSpinCtrl              *pSoundDeviceIndex;
     wxCheckBox              *pFullScreenToolbar;
     wxCheckBox              *pTransparentToolbar;
 
