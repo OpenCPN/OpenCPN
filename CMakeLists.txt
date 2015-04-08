@@ -274,12 +274,10 @@ IF(UNIX)
 ENDIF(UNIX)
 
 IF((_wx_selected_config MATCHES "qt-armv7"))
-SET(CMAKE_BUILD_TYPE Debug)
+#SET(CMAKE_BUILD_TYPE Debug)
 ENDIF()
 
 IF((_wx_selected_config MATCHES "qt-armv7"))
-SET(CMAKE_BUILD_TYPE Debug)
-
 SET(wxWidgets_USE_LIBS base core     xml html adv aui)
 ELSE()
 SET(wxWidgets_USE_LIBS base core net xml html adv aui)
@@ -397,7 +395,7 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 #  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
 IF(NOT WIN32 AND NOT APPLE )
   ADD_DEFINITIONS( "-Wall -Wno-unused -fexceptions -rdynamic" )
-  ADD_DEFINITIONS( " -g -O0 -fno-strict-aliasing")
+  ADD_DEFINITIONS( " -g -fno-strict-aliasing")
 
   ADD_DEFINITIONS( " -DPREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\"")
   # profiling with gprof
