@@ -8205,6 +8205,11 @@ bool ChartCanvas::InvokeCanvasMenu(int x, int y, int seltype)
 
     delete m_canvasMenu;
     m_canvasMenu = NULL;
+
+#ifdef __WXQT__
+    g_FloatingToolbarDialog->Raise();
+    g_FloatingCompassDialog->Raise();
+#endif
     
     return true;
 }
