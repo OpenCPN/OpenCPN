@@ -882,6 +882,23 @@ bool OCPNPlatform::hasInternalGPS(wxString profile)
 //--------------------------------------------------------------------------
 //      Platform Display Support
 //--------------------------------------------------------------------------
+
+void OCPNPlatform::ShowBusySpinner( void )
+{
+#ifdef __OCPN__ANDROID__
+    androidShowBusyIcon();
+#endif    
+}
+
+void OCPNPlatform::HideBusySpinner( void )
+{
+#ifdef __OCPN__ANDROID__
+    androidHideBusyIcon();
+#endif    
+}
+
+
+
 double OCPNPlatform::getFontPointsperPixel( void )
 {
     //  Make a measurement...
