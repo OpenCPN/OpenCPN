@@ -74,6 +74,7 @@ public:
 //--------------------------------------------------------------------------
     double getFontPointsperPixel( void );
     wxSize getDisplaySize();
+    double GetDisplaySizeMM();
     
     
 //--------------------------------------------------------------------------
