@@ -59,6 +59,7 @@
 #include "glTexCache.h"
 #include "gshhs.h"
 #include "ais.h"
+#include "OCPNPlatform.h"
 
 #ifndef GL_ETC1_RGB8_OES
 #define GL_ETC1_RGB8_OES                                        0x8D64
@@ -100,6 +101,7 @@ extern int g_GPU_MemSize;
 extern bool g_bDebugOGL;
 extern bool g_bShowFPS;
 extern bool g_btouch;
+extern OCPNPlatform *g_Platform;
 
 GLenum       g_texture_rectangle_format;
 
@@ -3548,8 +3550,10 @@ void glChartCanvas::Render()
                     
                     glViewport( m_fbo_offsetx, m_fbo_offsety, (GLint) sx, (GLint) sy );
 
+                    g_Platform->ShowBusySpinner();
                     RenderCharts(gldc, chart_get_region);
-
+                    g_Platform->HideBusySpinner();
+                    
 /*                    
                     wxRect rect( 50, 50, cc1->VPoint.rv_rect.width-100, cc1->VPoint.rv_rect.height-100 );
                     glColor3ub(250, 0, 0);
@@ -4130,6 +4134,7 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
     switch(event.GetState()){
         case GestureStarted:
             m_binPinch = true;
+            m_binPan = false;   // cancel any tentative pan gesture, in case the "pan cancel" event was lost
             break;
             
         case GestureUpdated:
