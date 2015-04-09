@@ -2960,7 +2960,6 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 
     g_bquiting = true;
 
-#ifndef __OCPN__ANDROID__    
 #ifdef ocpnUSE_GL
     // cancel compression jobs
     if(g_bopengl && g_CompressorPool){
@@ -2978,7 +2977,6 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         cc1->Update();
         wxYield();
     }
-#endif
 
     //   Save the saved Screen Brightness
     RestoreScreenBrightness();
@@ -3107,13 +3105,6 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     if( g_FloatingCompassDialog ) g_FloatingCompassDialog->Destroy();
     g_FloatingCompassDialog = NULL;
 
-    //      Delete all open charts in the cache
-    cc1->EnablePaint(false);
-    if( ChartData )
-        ChartData->PurgeCache();
-
-
-
 
 #ifndef __OCPN__ANDROID__
     SetStatusBar( NULL );
@@ -3180,11 +3171,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     g_FloatingToolbarDialog = NULL;
     g_bTempShowMenuBar = false;
     
-    this->Destroy();
-    
-    gFrame = NULL;
 
-#ifndef __OCPN__ANDROID__    
     #define THREAD_WAIT_SECONDS  5
 #ifdef ocpnUSE_GL
     // The last thing we do is finish the compression threads.
@@ -3207,8 +3194,9 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         }
     }
 #endif
-#endif
 
+    this->Destroy();
+    gFrame = NULL;
 
 #ifdef __OCPN__ANDROID__
     wxTheApp->OnExit();
