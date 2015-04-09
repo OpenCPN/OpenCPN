@@ -10155,9 +10155,9 @@ TimedMessageBox::TimedMessageBox(wxWindow* parent, const wxString& message,
     int ret = dlg->ShowModal();
 
     //  Not sure why we need this, maybe on wx3?
-    if((style == wxYES_NO) && (ret == wxID_OK))
+    if( ((style & wxYES_NO) == wxYES_NO) && (ret == wxID_OK))
         ret = wxID_YES;
-
+    
     delete dlg;
     dlg = NULL;
 
