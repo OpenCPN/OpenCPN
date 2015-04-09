@@ -475,8 +475,9 @@ void Route::DrawGLLines( ViewPort &VP, ocpnDC *dc )
             // don't need to perform calculations or render segment
             // if both points are past any edge of the vp
             // TODO: use these optimizations for dc mode
-            if( (prp1->m_lat < bbox.GetMinY() && prp2->m_lat < bbox.GetMinY()) ||
-                (prp1->m_lat > bbox.GetMaxY() && prp2->m_lat > bbox.GetMaxY()) ) {
+            bool lat1l = prp1->m_lat < bbox.GetMinY(), lat2l = prp2->m_lat < bbox.GetMinY();
+            bool lat1r = prp1->m_lat > bbox.GetMaxY(), lat2r = prp2->m_lat > bbox.GetMaxY();
+            if( (lat1l && lat2l) || (lat1r && lat2r) ) {
                 r1valid = false;
                 continue;
             }
@@ -484,7 +485,6 @@ void Route::DrawGLLines( ViewPort &VP, ocpnDC *dc )
             bool lon1l, lon1r, lon2l, lon2r;
             TestLongitude(prp1->m_lon, bbox.GetMinX(), bbox.GetMaxX(), lon1l, lon1r);
             TestLongitude(prp2->m_lon, bbox.GetMinX(), bbox.GetMaxX(), lon2l, lon2r);
-
             if( (lon1l && lon2l) || (lon1r && lon2r) ) {
                 r1valid = false;
                 continue;
@@ -523,6 +523,15 @@ void Route::DrawGLLines( ViewPort &VP, ocpnDC *dc )
             else {
                 glVertex2f(r1.m_x + adder1, r1.m_y);
                 glVertex2f(r2.m_x + adder2, r2.m_y);
+
+                // cache screen position for arrows and points
+                if(!r1valid) {
+                    prp1->m_pos_on_screen = !lat1l && !lat1r && !lon1l && !lon1r;
+                    prp1->m_screen_pos = r1;
+                }
+
+                prp2->m_pos_on_screen = !lat2l && !lat2r && !lon2l && !lon2r;
+                prp2->m_screen_pos = r2;
             }
 
             r1 = r2;
@@ -609,7 +618,7 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
     case wxDOT_DASH:   glLineStipple( 1, 0x8FF1 ); break;
     }
 
-    DrawGLLines(VP);
+    DrawGLLines(VP, NULL);
 
     glDisable (GL_LINE_STIPPLE);
     
@@ -619,8 +628,9 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
         wxPoint2DDouble rpt1, rpt2;
         while(node) {
             RoutePoint *prp = node->GetData();
-            cc1->GetDoubleCanvasPointPix( prp->m_lat, prp->m_lon, &rpt2 );
-            if(node != pRoutePointList->GetFirst())
+//            cc1->GetDoubleCanvasPointPix( prp->m_lat, prp->m_lon, &rpt2 );
+            rpt2 = prp->m_screen_pos;
+            if(node != pRoutePointList->GetFirst() && prp->m_pos_on_screen)
                 RenderSegmentArrowsGL( rpt1.m_x, rpt1.m_y, rpt2.m_x, rpt2.m_y, cc1->GetVP() );
             rpt1 = rpt2;
             node = node->GetNext();
@@ -630,10 +640,8 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
     /*  Route points  */
     for(wxRoutePointListNode *node = pRoutePointList->GetFirst(); node; node = node->GetNext()) {
         RoutePoint *prp = node->GetData();
-        if ( !m_bVisible && prp->m_bKeepXRoute )
-            prp->DrawGL( VP, region );
-        else if (m_bVisible)
-            prp->DrawGL( VP, region );    
+        if ( m_bVisible || prp->m_bKeepXRoute )
+            prp->DrawGL( VP, region, true );
     }        
 #endif
 }
