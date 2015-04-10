@@ -2244,6 +2244,7 @@ void MarkInfoDef::OnShowWaypointRangeRingSelect( wxCommandEvent& event )
             waypointradarGrid->ShowItems( true );
     }
     bSizerBasicProperties->Layout();
+    m_panelBasicProperties->FitInside();
     Refresh();
     event.Skip();
 }
@@ -2256,6 +2257,7 @@ void MarkInfoDef::OnWaypointRangeRingSelect( wxCommandEvent& event )
         waypointradarGrid->ShowItems( true );
     }
     bSizerBasicProperties->Layout();
+    m_panelBasicProperties->FitInside();
     Refresh();
     event.Skip();
 }
