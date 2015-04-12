@@ -8642,6 +8642,9 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
             }
         }
 
+        if(g_btouch)
+            return;
+        
         wxString routeInfo;
         if( g_bShowMag )
             routeInfo << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( brg ) );
