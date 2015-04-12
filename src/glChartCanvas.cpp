@@ -905,8 +905,8 @@ void glChartCanvas::BuildFBO( )
             
         m_cache_tex_x = wxMax(rb_x, rb_y);
         m_cache_tex_y = wxMax(rb_x, rb_y);
-        m_cache_tex_x = 2048;
-        m_cache_tex_y = 2048;
+        m_cache_tex_x = wxMax(2048, m_cache_tex_x);
+        m_cache_tex_y = wxMax(2048, m_cache_tex_y);
     } else {            
         m_cache_tex_x = GetSize().x;
         m_cache_tex_y = GetSize().y;
