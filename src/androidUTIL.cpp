@@ -102,8 +102,8 @@ extern "C"{
         
 //        qDebug() << "processNMEA" << string;
  
-        char tstr[100];
-        strncpy(tstr, string, 99);
+        char tstr[200];
+        strncpy(tstr, string, 190);
         strcat(tstr, "\r\n");
         
         if( s_pAndroidNMEAMessageConsumer ) {
