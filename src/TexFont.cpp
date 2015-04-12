@@ -40,12 +40,14 @@ void TexFont::Build( wxFont &font, bool blur )
     m_font = font;
     m_blur = blur;
 
+    m_maxglyphw = 0;
+    m_maxglyphh = 0;
+    
     wxBitmap bmp(256, 256);
     wxMemoryDC dc(bmp);
 
     dc.SetFont( font );
 
-    int maxglyphw = 0, maxglyphh = 0;
     for( int i = MIN_GLYPH; i < MAX_GLYPH; i++ ) {
         wxCoord gw, gh;
         wxString text;
@@ -54,24 +56,39 @@ void TexFont::Build( wxFont &font, bool blur )
         else
             text = wxString::Format(_T("%c"), i);
         wxCoord descent, exlead;
-        dc.GetTextExtent( text, &gw, &gh, &descent, &exlead, &font ); // measure the text
+        dc.GetTextExtent( text, &gw, &gh, &descent, &exlead/*, &font*/ ); // measure the text
 
         tgi[i].width = gw;
         tgi[i].height = gh;
 
         tgi[i].advance = gw;
+        
+#ifdef __WXQT__
+        tgi[i].width += 4;
+        tgi[i].height += 4;
+        tgi[i].advance += 4;
+#endif
+        
+        
 
-        maxglyphw = wxMax(gw, maxglyphw);
-        maxglyphh = wxMax(gh, maxglyphh);
+        m_maxglyphw = wxMax(gw, m_maxglyphw);
+        m_maxglyphh = wxMax(gh, m_maxglyphh);
     }
 
     /* add extra pixel to give a border between rows of characters
        without this, in some cases a faint line can be see on the edge
        from the character above */
-    maxglyphh++;
+    m_maxglyphh++;
 
-    int w = COLS_GLYPHS * maxglyphw;
-    int h = ROWS_GLYPHS * maxglyphh;
+    // TODO There is some trouble with wxQT calculation of text extents
+    //  So we force constants here to build the glyph texture correctly...
+#ifdef __WXQT__
+    m_maxglyphw = 32;
+    m_maxglyphh = 32;
+#endif
+    
+    int w = COLS_GLYPHS * m_maxglyphw;
+    int h = ROWS_GLYPHS * m_maxglyphh;
 
     wxASSERT(w < 2048 && h < 2048);
 
@@ -96,8 +113,8 @@ void TexFont::Build( wxFont &font, bool blur )
             row++;
         }
 
-        tgi[i].x = col * maxglyphw;
-        tgi[i].y = row * maxglyphh;
+        tgi[i].x = col * m_maxglyphw;
+        tgi[i].y = row * m_maxglyphh;
 
         wxString text;
         if(i == DEGREE_GLYPH)
@@ -109,6 +126,8 @@ void TexFont::Build( wxFont &font, bool blur )
         col++;
     }
 
+    dc.SelectObject(wxNullBitmap);
+    
     wxImage image = tbmp.ConvertToImage();
 
     GLuint format, internalformat;
@@ -138,7 +157,7 @@ void TexFont::Build( wxFont &font, bool blur )
 
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST/*GL_LINEAR*/ );
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 
         glTexImage2D( GL_TEXTURE_2D, 0, internalformat, tex_w, tex_h, 0,
@@ -193,11 +212,12 @@ void TexFont::RenderGlyph( int c )
     TexGlyphInfo &tgic = tgi[c];
 
     int x = tgic.x, y = tgic.y;
-    float w = tgic.width, h = tgic.height;
-    float tx1 = (float)x / tex_w;
-    float tx2 = (float)(x + w) / tex_w;
-    float ty1 = (float)y / tex_h;
-    float ty2 = (float)(y + h) / tex_h;
+//    float w = tgic.width, h = tgic.height;
+    float w = m_maxglyphw, h = m_maxglyphh;
+    float tx1 = (float)x / (float)tex_w;
+    float tx2 = (float)(x + w) / (float)tex_w;
+    float ty1 = (float)y / (float)tex_h;
+    float ty2 = (float)(y + h) / (float)tex_h;
 
     glBegin( GL_QUADS );
 
