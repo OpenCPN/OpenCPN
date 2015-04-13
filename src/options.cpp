@@ -1976,6 +1976,10 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
     OpenGLSizer->Add( pOpenGL, inputFlags );
     pOpenGL->Enable(!g_bdisable_opengl);
 
+#ifdef __OCPN__ANDROID__
+    pOpenGL->Disable();
+#endif    
+    
     wxButton *bOpenGL = new wxButton( m_ChartDisplayPage, ID_OPENGLOPTIONS, _("Options...") );
     OpenGLSizer->Add( bOpenGL, inputFlags );
     bOpenGL->Enable(!g_bdisable_opengl);
