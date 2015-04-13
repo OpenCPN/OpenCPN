@@ -4477,7 +4477,12 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
             msg.Append( _T(" to ") );
             msg.Append( SENCfile.GetFullPath() );
             wxLogMessage( msg );
+#ifdef __OCPN__ANDROID__
+            wxLogMessage(_T("   Android: Error overridden / ignored.") );
+            ret_code = BUILD_SENC_OK;
+#else      
             ret_code = BUILD_SENC_NOK_RETRY;
+#endif            
         } else
             ret_code = BUILD_SENC_OK;
 
