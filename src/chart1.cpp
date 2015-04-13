@@ -975,6 +975,7 @@ void LoadS57()
 //      Otherwise, default to PrivateDataDir
     if( g_SENCPrefix.IsEmpty() ) {
         g_SENCPrefix = g_Platform->GetPrivateDataDir();
+        appendOSDirSlash(&g_SENCPrefix);
         g_SENCPrefix.Append( _T("SENC") );
     }
 
