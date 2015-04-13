@@ -140,18 +140,13 @@ void ocpnDC::SetGLAttrs( bool highQuality )
     
     //      Enable anti-aliased polys, at best quality
     if( highQuality ) {
-        glEnable( GL_LINE_SMOOTH );
         glEnable( GL_POLYGON_SMOOTH );
         glEnable( GL_BLEND );
-        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-        glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
-        glHint( GL_POLYGON_SMOOTH_HINT, GL_NICEST );
     } else {
-        glDisable( GL_LINE_SMOOTH );
         glDisable( GL_POLYGON_SMOOTH );
         glDisable( GL_BLEND );
     }
-#endif    
+#endif
 }
 
 void ocpnDC::SetPen( const wxPen &pen )
@@ -350,76 +345,65 @@ void ocpnDC::DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2, bool b_hi
     if( dc )
         dc->DrawLine( x1, y1, x2, y2 );
 #ifdef ocpnUSE_GL
-    else {
-        glPushAttrib( GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_ENABLE_BIT | GL_HINT_BIT ); //Save state
+    else if( ConfigurePen() ) {
+        bool b_draw_thick = false;
 
-        if( ConfigurePen() ) {
+        float pen_width = wxMax(g_GLMinSymbolLineWidth, m_pen.GetWidth());
 
-            glDisable( GL_MULTISAMPLE );
-            glDisable( GL_LINE_STIPPLE );
+        //      Enable anti-aliased lines, at best quality
+        if( b_hiqual ) {
+            SetGLStipple();
+
+            glEnable( GL_BLEND );
+
+            if( pen_width > 1.0 ) {
+                GLint parms[2];
+                glGetIntegerv( GL_SMOOTH_LINE_WIDTH_RANGE, &parms[0] );
+                if( pen_width > parms[1] ) b_draw_thick = true;
+                else
+                    glLineWidth( pen_width );
+            } else
+                glLineWidth( pen_width );
+        } else {
+            glDisable( GL_LINE_SMOOTH );
             
-            bool b_draw_thick = false;
-
-            float pen_width = wxMax(g_GLMinSymbolLineWidth, m_pen.GetWidth());
-
-            //      Enable anti-aliased lines, at best quality
-            if( b_hiqual ) {
-                SetGLStipple();
-
-                glEnable( GL_LINE_SMOOTH );
-                glEnable( GL_BLEND );
-                glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-                glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
-
-                if( pen_width > 1.0 ) {
-                    GLint parms[2];
-                    glGetIntegerv( GL_SMOOTH_LINE_WIDTH_RANGE, &parms[0] );
-                    if( pen_width > parms[1] ) b_draw_thick = true;
+            if( pen_width > 1 ) {
+                GLint parms[2];
+                glGetIntegerv( GL_ALIASED_LINE_WIDTH_RANGE, &parms[0] );
+                if( pen_width > parms[1] ) b_draw_thick = true;
                     else
                         glLineWidth( pen_width );
-                } else
-                    glLineWidth( pen_width );
-            } else {
-                glDisable( GL_LINE_SMOOTH );
-                glDisable( GL_BLEND );
+            } else
+                glLineWidth( pen_width );
+        }
+        
+        if( b_draw_thick ) DrawGLThickLine( x1, y1, x2, y2, m_pen, b_hiqual );
+        else {
+            wxDash *dashes;
+            int n_dashes = m_pen.GetDashes( &dashes );
+            if( n_dashes ) {
+                float angle = atan2f( (float) ( y2 - y1 ), (float) ( x2 - x1 ) );
+                float cosa = cosf( angle );
+                float sina = sinf( angle );
+                float t1 = m_pen.GetWidth();
+                    
+                float lpix = sqrtf( powf(x1 - x2, 2) + powf(y1 - y2, 2) );
+                float lrun = 0.;
+                float xa = x1;
+                float ya = y1;
+                float ldraw = t1 * dashes[0];
+                float lspace = t1 * dashes[1];
+                    
+                glBegin( GL_LINES );
+                while( lrun < lpix ) {
+                    //    Dash
+                    float xb = xa + ldraw * cosa;
+                    float yb = ya + ldraw * sina;
 
-                if( pen_width > 1 ) {
-                    GLint parms[2];
-                    glGetIntegerv( GL_ALIASED_LINE_WIDTH_RANGE, &parms[0] );
-                    if( pen_width > parms[1] ) b_draw_thick = true;
-                    else
-                        glLineWidth( pen_width );
-                } else
-                    glLineWidth( pen_width );
-            }
-
-            if( b_draw_thick ) DrawGLThickLine( x1, y1, x2, y2, m_pen, b_hiqual );
-            else {
-                wxDash *dashes;
-                int n_dashes = m_pen.GetDashes( &dashes );
-                if( n_dashes ) {
-                    float angle = atan2f( (float) ( y2 - y1 ), (float) ( x2 - x1 ) );
-                    float cosa = cosf( angle );
-                    float sina = sinf( angle );
-                    float t1 = m_pen.GetWidth();
-
-                    float lpix = sqrtf( powf(x1 - x2, 2) + powf(y1 - y2, 2) );
-                    float lrun = 0.;
-                    float xa = x1;
-                    float ya = y1;
-                    float ldraw = t1 * dashes[0];
-                    float lspace = t1 * dashes[1];
-
-                    glBegin( GL_LINES );
-                    while( lrun < lpix ) {
-                        //    Dash
-                        float xb = xa + ldraw * cosa;
-                        float yb = ya + ldraw * sina;
-
-                        if( ( lrun + ldraw ) >= lpix )         // last segment is partial draw
-                        {
-                            xb = x2;
-                            yb = y2;
+                    if( ( lrun + ldraw ) >= lpix )         // last segment is partial draw
+                    {
+                        xb = x2;
+                        yb = y2;
                         }
 
                         glVertex2f( xa, ya );
@@ -430,18 +414,21 @@ void ocpnDC::DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2, bool b_hi
                         lrun += lspace + ldraw;
 
                     }
-                    glEnd();
-                } else                    // not dashed
-                {
-                    glBegin( GL_LINES );
-                    glVertex2i( x1, y1 );
-                    glVertex2i( x2, y2 );
-                    glEnd();
-                }
+                glEnd();
+            } else                    // not dashed
+            {
+                glBegin( GL_LINES );
+                glVertex2i( x1, y1 );
+                glVertex2i( x2, y2 );
+                glEnd();
             }
         }
 
-        glPopAttrib();
+        if( !b_hiqual )
+            glEnable( GL_LINE_SMOOTH );
+
+        glDisable( GL_LINE_STIPPLE );
+        glDisable( GL_BLEND );
     }
 #endif    
 }
@@ -553,7 +540,6 @@ void ocpnDC::DrawLines( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffse
 #ifdef ocpnUSE_GL
     else if( ConfigurePen() ) {
 
-        glPushAttrib( GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT );      //Save state
         SetGLAttrs( b_hiqual );
 
         bool b_draw_thick = false;
@@ -580,6 +566,7 @@ void ocpnDC::DrawLines( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffse
                     glLineWidth( wxMax(g_GLMinSymbolLineWidth, m_pen.GetWidth()) );
             } else
                 glLineWidth( wxMax(g_GLMinSymbolLineWidth, 1) );
+            glDisable(GL_LINE_SMOOTH);
         }
 
         if( b_draw_thick) {
@@ -590,7 +577,13 @@ void ocpnDC::DrawLines( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffse
                 glVertex2i( points[i].x + xoffset, points[i].y + yoffset );
             glEnd();
         }
-        glPopAttrib();            // restore state
+
+        if( !b_hiqual )
+            glEnable(GL_LINE_SMOOTH);
+
+        glDisable( GL_LINE_STIPPLE );
+        glDisable( GL_POLYGON_SMOOTH );
+        glDisable( GL_BLEND );
     }
 #endif    
 }
@@ -761,13 +754,8 @@ void ocpnDC::DrawEllipse( wxCoord x, wxCoord y, wxCoord width, wxCoord height )
         float r1 = width / 2, r2 = height / 2;
         float cx = x + r1, cy = y + r2;
 
-        glPushAttrib( GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT );      //Save state
-
         //      Enable anti-aliased lines, at best quality
-        glEnable( GL_LINE_SMOOTH );
         glEnable( GL_BLEND );
-        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-        glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
 
         /* formula for variable step count to produce smooth ellipse */
         float steps = floorf(wxMax(sqrtf(sqrtf((float)(width*width + height*height))), 1) * M_PI);
@@ -787,7 +775,7 @@ void ocpnDC::DrawEllipse( wxCoord x, wxCoord y, wxCoord width, wxCoord height )
             glEnd();
         }
 
-        glPopAttrib();            // restore state
+        glDisable( GL_BLEND );
     }
 #endif    
 }
@@ -798,8 +786,6 @@ void ocpnDC::DrawPolygon( int n, wxPoint points[], wxCoord xoffset, wxCoord yoff
         dc->DrawPolygon( n, points, xoffset, yoffset );
 #ifdef ocpnUSE_GL
     else {
-        glPushAttrib( GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT | GL_POLYGON_BIT ); //Save state
-
         SetGLAttrs( true );
 
         if( ConfigureBrush() ) {
@@ -815,7 +801,9 @@ void ocpnDC::DrawPolygon( int n, wxPoint points[], wxCoord xoffset, wxCoord yoff
                 glVertex2i( points[i].x + xoffset, points[i].y + yoffset );
             glEnd();
         }
-        glPopAttrib();
+
+        glDisable( GL_POLYGON_SMOOTH );
+        glDisable( GL_BLEND );
     }
 #endif    
 }
@@ -892,7 +880,6 @@ void ocpnDC::DrawPolygonTessellated( int n, wxPoint points[], wxCoord xoffset, w
             return;
         }
 
-        glPushAttrib( GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT | GL_POLYGON_BIT ); //Save state
         SetGLAttrs( false );
 
         static GLUtesselator *tobj = NULL;
@@ -926,7 +913,8 @@ void ocpnDC::DrawPolygonTessellated( int n, wxPoint points[], wxCoord xoffset, w
             gluTessEndPolygon( tobj );
         }
 
-        glPopAttrib();
+        glEnable( GL_LINE_SMOOTH );
+        glEnable( GL_POLYGON_SMOOTH );
 
         for( unsigned int i=0; i<gTesselatorVertices.Count(); i++ )
             delete (GLvertex*)gTesselatorVertices.Item(i);
@@ -1178,14 +1166,11 @@ void ocpnDC::GLDrawBlendData( wxCoord x, wxCoord y, wxCoord w, wxCoord h, int fo
         const unsigned char *data )
 {
 #ifdef ocpnUSE_GL
-    
     glEnable( GL_BLEND );
-    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     glRasterPos2i( x, y );
     glPixelZoom( 1, -1 );
     glDrawPixels( w, h, format, GL_UNSIGNED_BYTE, data );
     glPixelZoom( 1, 1 );
     glDisable( GL_BLEND );
-
 #endif
 }

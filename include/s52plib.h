@@ -399,7 +399,6 @@ private:
     bool renderToDC;
     bool renderToOpenGl;
     bool renderToGCDC;
-    bool havePushedOpenGlAttrib;
 };
 
 #endif //_S52PLIB_H_

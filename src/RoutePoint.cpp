@@ -571,7 +571,6 @@ void RoutePoint::DrawGL( ViewPort &vp, OCPNRegion &region,bool use_cached_screen
         
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
         
         glColor3f(1, 1, 1);
@@ -584,6 +583,7 @@ void RoutePoint::DrawGL( ViewPort &vp, OCPNRegion &region,bool use_cached_screen
         glTexCoord2f(u, v); glVertex2f(x+w, y+h);
         glTexCoord2f(0, v); glVertex2f(x, y+h);
         glEnd();
+
         glDisable(GL_BLEND);
         glDisable(GL_TEXTURE_2D);
     }
@@ -632,7 +632,6 @@ void RoutePoint::DrawGL( ViewPort &vp, OCPNRegion &region,bool use_cached_screen
             
             glEnable(GL_TEXTURE_2D);
             glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         
             glColor3ub(m_FontColor.Red(), m_FontColor.Green(), m_FontColor.Blue());
             
@@ -644,6 +643,7 @@ void RoutePoint::DrawGL( ViewPort &vp, OCPNRegion &region,bool use_cached_screen
             glTexCoord2f(u, v); glVertex2f(x+w, y+h);
             glTexCoord2f(0, v); glVertex2f(x, y+h);
             glEnd();
+
             glDisable(GL_BLEND);
             glDisable(GL_TEXTURE_2D);
         }
