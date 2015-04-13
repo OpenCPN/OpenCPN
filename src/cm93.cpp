@@ -2015,10 +2015,13 @@ void cm93chart::GetPointPix ( ObjRazRules *rzRules, float north, float east, wxP
            m_vp_current.GetBBox().GetMaxX() - 360 >= rzRules->obj->BBObj.GetMinX() )
           valx += mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;      //6375586.0;
 
+#if 0
       r->x = ( int ) wxRound ( ( ( valx - m_easting_vp_center ) * m_view_scale_ppm ) + m_pixx_vp_center );
       r->y = ( int ) wxRound ( m_pixy_vp_center - ( ( valy - m_northing_vp_center ) * m_view_scale_ppm ) );
-
-
+#else
+      r->x = ( valx - m_easting_vp_center ) * m_view_scale_ppm + m_pixx_vp_center + 0.5;
+      r->y = m_pixy_vp_center - ( valy - m_northing_vp_center ) * m_view_scale_ppm + 0.5;
+#endif
 }
 
 void cm93chart::GetPointPix ( ObjRazRules *rzRules, wxPoint2DDouble *en, wxPoint *r, int nPoints )

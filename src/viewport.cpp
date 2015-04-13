@@ -292,12 +292,7 @@ wxPoint2DDouble ViewPort::GetDoublePixFromLL( double lat, double lon )
         dyr = npix * cos( angle ) - epix * sin( angle );
     }
 
-    wxPoint2DDouble r;
-    //    We definitely need a round() function here
-    r.m_x = ( ( pix_width / 2 ) + dxr );
-    r.m_y = ( ( pix_height / 2 ) - dyr );
-
-    return r;
+    return wxPoint2DDouble(( pix_width / 2 ) + dxr, ( pix_height / 2 ) - dyr);
 }
 
 void ViewPort::GetLLFromPix( const wxPoint &p, double *lat, double *lon )
