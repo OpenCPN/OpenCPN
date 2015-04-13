@@ -2591,7 +2591,7 @@ void __CALL_CONVENTION endCallback(void)
             {
                 GLdouble *pds = s_pwork_buf;
                 pTPG->p_vertex = (double *)malloc(s_nvcall * 2 * sizeof(double));
-                double *pdd = pTPG->p_vertex;
+                GLdouble *pdd = (GLdouble*)pTPG->p_vertex;
 
                 for(int ip = 0 ; ip < s_nvcall ; ip++)
                 {
@@ -2600,10 +2600,8 @@ void __CALL_CONVENTION endCallback(void)
 
                     double easting, northing;
                     toSM(dlat, dlon, s_ref_lat, s_ref_lon, &easting, &northing);
-                    double deast = easting;
-                    double dnorth = northing;
-                    *pdd++ = deast;
-                    *pdd++ = dnorth;
+                    *pdd++ = easting;
+                    *pdd++ = northing;
                 }
             }
             else
