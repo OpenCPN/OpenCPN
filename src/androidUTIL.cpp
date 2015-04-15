@@ -139,6 +139,17 @@ extern "C"{
     }
 }
 
+extern "C"{
+    JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onMenuKey(JNIEnv *env, jobject obj)
+    {
+        qDebug() << "onMenuKey";
+
+        gFrame->ToggleToolbar();
+            
+        return 88;
+    }
+}
+
 
 
 wxString callActivityMethod_is(const char *method, int parm)
