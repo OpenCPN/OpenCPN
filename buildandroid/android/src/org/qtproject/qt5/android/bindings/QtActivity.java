@@ -1478,6 +1478,17 @@ public class QtActivity extends Activity
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)
     {
+        Log.i("DEBUGGER_TAG", "onKeyDown");
+
+        if (keyCode == KeyEvent.KEYCODE_MENU) {
+            Log.i("DEBUGGER_TAG", "KEYCODE_MENU");
+
+            int i = nativeLib.onMenuKey();
+
+            return true;
+        }
+
+
         if (QtApplication.m_delegateObject != null && QtApplication.onKeyDown != null)
             return (Boolean) QtApplication.invokeDelegateMethod(QtApplication.onKeyDown, keyCode, event);
         else
