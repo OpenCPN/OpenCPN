@@ -4592,6 +4592,20 @@ void MyFrame::SurfaceToolbar( void )
     gFrame->Raise();
 }
 
+void MyFrame::ToggleToolbar( bool b_smooth )
+{
+    if( g_FloatingToolbarDialog ) {
+        if( g_FloatingToolbarDialog->IsShown() ){
+            SubmergeToolbar();
+        }
+        else{
+            SurfaceToolbar();
+            g_FloatingToolbarDialog->Raise();
+        }
+    }
+}
+        
+
 void MyFrame::JumpToPosition( double lat, double lon, double scale )
 {
     vLat = lat;
