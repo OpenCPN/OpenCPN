@@ -271,8 +271,8 @@ void ConsoleCanvas::UpdateRouteData()
             {
                 double BRG;
                 BRG = g_pRouteMan->GetCurrentBrgToActivePoint();
-                VMG = toUsrSpeed( gSog * cos( ( BRG - gCog ) * PI / 180. ) );
-                str_buf.Printf( _T("%6.2f"), VMG );
+                VMG = gSog * cos( ( BRG - gCog ) * PI / 180. ) ;
+                str_buf.Printf( _T("%6.2f"), toUsrSpeed( VMG ) );
             }
             else
                 str_buf = _T("---");
@@ -302,7 +302,7 @@ void ConsoleCanvas::UpdateRouteData()
                 //RNG to the next WPT
                 pRNG->SetAValue( srng );
                 // XTE
-                str_buf.Printf( _T("%6.2f"), g_pRouteMan->GetCurrentXTEToActivePoint() );
+                str_buf.Printf( _T("%6.2f"), toUsrDistance( g_pRouteMan->GetCurrentXTEToActivePoint() ) );
                 pXTE->SetAValue( str_buf );
                 if( g_pRouteMan->GetXTEDir() < 0 )
                     pXTE->SetALabel( wxString( _("XTE         L") ) );
