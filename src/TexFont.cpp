@@ -43,10 +43,9 @@ void TexFont::Build( wxFont &font, bool blur )
     m_maxglyphw = 0;
     m_maxglyphh = 0;
     
-    wxBitmap bmp(256, 256);
-    wxMemoryDC dc(bmp);
+    wxScreenDC sdc;
 
-    dc.SetFont( font );
+    sdc.SetFont( font );
 
     for( int i = MIN_GLYPH; i < MAX_GLYPH; i++ ) {
         wxCoord gw, gh;
@@ -56,23 +55,16 @@ void TexFont::Build( wxFont &font, bool blur )
         else
             text = wxString::Format(_T("%c"), i);
         wxCoord descent, exlead;
-        dc.GetTextExtent( text, &gw, &gh, &descent, &exlead/*, &font*/ ); // measure the text
+        sdc.GetTextExtent( text, &gw, &gh, &descent, &exlead, &font ); // measure the text
 
         tgi[i].width = gw;
         tgi[i].height = gh;
 
         tgi[i].advance = gw;
         
-#ifdef __WXQT__
-        tgi[i].width += 4;
-        tgi[i].height += 4;
-        tgi[i].advance += 4;
-#endif
         
-        
-
-        m_maxglyphw = wxMax(gw, m_maxglyphw);
-        m_maxglyphh = wxMax(gh, m_maxglyphh);
+        m_maxglyphw = wxMax(tgi[i].width,  m_maxglyphw);
+        m_maxglyphh = wxMax(tgi[i].height, m_maxglyphh);
     }
 
     /* add extra pixel to give a border between rows of characters
@@ -80,13 +72,6 @@ void TexFont::Build( wxFont &font, bool blur )
        from the character above */
     m_maxglyphh++;
 
-    // TODO There is some trouble with wxQT calculation of text extents
-    //  So we force constants here to build the glyph texture correctly...
-#ifdef __WXQT__
-    m_maxglyphw = 32;
-    m_maxglyphh = 32;
-#endif
-    
     int w = COLS_GLYPHS * m_maxglyphw;
     int h = ROWS_GLYPHS * m_maxglyphh;
 
@@ -97,8 +82,10 @@ void TexFont::Build( wxFont &font, bool blur )
     for(tex_h = 1; tex_h < h; tex_h *= 2);
 
     wxBitmap tbmp(tex_w, tex_h);
+    wxMemoryDC dc;
     dc.SelectObject(tbmp);
-
+    dc.SetFont( font );
+    
     /* fill bitmap with black */
     dc.SetBackground( wxBrush( wxColour( 0, 0, 0 ) ) );
     dc.Clear();
@@ -106,6 +93,11 @@ void TexFont::Build( wxFont &font, bool blur )
     /* draw the text white */
     dc.SetTextForeground( wxColour( 255, 255, 255 ) );
 
+ /*    wxPen pen(wxColour( 255, 255, 255 ));
+     wxBrush brush(wxColour( 255, 255, 255 ), wxTRANSPARENT);
+     dc.SetPen(pen);
+     dc.SetBrush(brush);
+  */  
     int row = 0, col = 0;
     for( int i = MIN_GLYPH; i < MAX_GLYPH; i++ ) {
         if(col == COLS_GLYPHS) {
@@ -123,6 +115,8 @@ void TexFont::Build( wxFont &font, bool blur )
             text = wxString::Format(_T("%c"), i);
 
         dc.DrawText(text, tgi[i].x, tgi[i].y );
+        
+//        dc.DrawRectangle(tgi[i].x, tgi[i].y, tgi[i].advance, tgi[i].height);
         col++;
     }
 
@@ -212,7 +206,6 @@ void TexFont::RenderGlyph( int c )
     TexGlyphInfo &tgic = tgi[c];
 
     int x = tgic.x, y = tgic.y;
-//    float w = tgic.width, h = tgic.height;
     float w = m_maxglyphw, h = m_maxglyphh;
     float tx1 = (float)x / (float)tex_w;
     float tx2 = (float)(x + w) / (float)tex_w;
