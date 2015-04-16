@@ -1417,29 +1417,43 @@ void GRIBOverlayFactory::RenderGribLowHigh( int settings, GribRecord **pGR, Plug
             }
 
             if ( isMin || isMax ) { // draw a label at the current grid point
+
+                wxString label;
+                if( isMin ) label = wxString::FromUTF8( "L" );
+                if( isMax ) label = wxString::FromUTF8( "H" );
+
                 double lon = pGRA->getX( ci );
                 double lat = pGRA->getY( cj );
                 wxPoint p;
                 GetCanvasPixLL( vp, &p, lat, lon );
 
-                wxScreenDC sdc;
-                wxString label;
-                if ( isMin ) label = wxString::FromUTF8( "L" );
-                if ( isMax ) label = wxString::FromUTF8( "H" );
-                int w, h;
-                wxFont mfont( 14, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
-                sdc.GetTextExtent( label, &w, &h, NULL, NULL, &mfont );
-                wxBitmap bmp( w, h );
-                wxMemoryDC mdc( bmp );
-                mdc.SetFont( mfont );
-                mdc.SetTextForeground( *wxBLACK );
-                mdc.SetBackground( *wxWHITE_BRUSH ); // TODO set background color to canvas color
-                mdc.Clear();
-                mdc.DrawText( label, 0, 0 );
-                mdc.SelectObject( wxNullBitmap );
-                wxImage labelImg = bmp.ConvertToImage();
-                labelImg.SetMaskColour( 255, 255, 255 );
-                m_pdc->DrawBitmap( labelImg, p.x, p.y, true );
+                if( m_pdc ) {
+                    wxScreenDC sdc;
+                    int w, h;
+                    wxFont mfont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
+                    sdc.GetTextExtent( label, &w, &h, NULL, NULL, &mfont );
+                    wxBitmap bmp( w, h );
+                    wxMemoryDC mdc( bmp );
+                    mdc.SetFont( mfont );
+                    mdc.SetTextForeground( *wxBLACK );
+                    mdc.SetBackground( *wxWHITE_BRUSH );
+                    mdc.Clear();
+                    mdc.DrawText( label, 0, 0 );
+                    mdc.SelectObject( wxNullBitmap );
+                    wxImage labelImg = bmp.ConvertToImage();
+                    labelImg.SetMaskColour( 255, 255, 255 );
+                    m_pdc->DrawBitmap( labelImg, p.x, p.y, true );
+                } else {
+#ifdef ocpnUSE_GL
+                    glEnable( GL_BLEND );
+                    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+                    glColor4ub( 0, 0, 0, 0 );
+                    glEnable( GL_TEXTURE_2D );
+                    m_TexFontNumbers.RenderString( label, p.x, p.y );
+                    glDisable( GL_TEXTURE_2D );
+                    glDisable( GL_BLEND );
+#endif
+                }
             }
 
         }
