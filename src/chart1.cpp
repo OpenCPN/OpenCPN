@@ -1959,13 +1959,8 @@ extern ocpnGLOptions g_GLOptions;
     if( g_bTrackCarryOver )
         g_bDeferredStartTrack = true;
 
-//    Re-enable anchor watches if set in config file
-    if( !g_AW1GUID.IsEmpty() ) {
-        pAnchorWatchPoint1 = pWayPointMan->FindRoutePointByGUID( g_AW1GUID );
-    }
-    if( !g_AW2GUID.IsEmpty() ) {
-        pAnchorWatchPoint2 = pWayPointMan->FindRoutePointByGUID( g_AW2GUID );
-    }
+    pAnchorWatchPoint1 = NULL;
+    pAnchorWatchPoint2 = NULL;
 
     Yield();
 
@@ -5399,6 +5394,14 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
         pWayPointMan = new WayPointman();
         pConfig->LoadNavObjects();
         
+        //    Re-enable anchor watches if set in config file
+        if( !g_AW1GUID.IsEmpty() ) {
+            pAnchorWatchPoint1 = pWayPointMan->FindRoutePointByGUID( g_AW1GUID );
+        }
+        if( !g_AW2GUID.IsEmpty() ) {
+            pAnchorWatchPoint2 = pWayPointMan->FindRoutePointByGUID( g_AW2GUID );
+        }
+        
         // Import Layer-wise any .gpx files from /Layers directory
         wxString layerdir = g_Platform->GetPrivateDataDir();
         appendOSDirSlash( &layerdir );
@@ -5769,7 +5772,8 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
         if( d >= 0.0 ) toofar = ( dist * 1852. > d );
         if( d < 0.0 ) tooclose = ( dist * 1852 < -d );
 
-        if( tooclose || toofar ) AnchorAlertOn1 = true;
+        if( tooclose || toofar )
+            AnchorAlertOn1 = true;
         else
             AnchorAlertOn1 = false;
     } else
