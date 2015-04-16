@@ -36,11 +36,12 @@
 #include <wx/progdlg.h>
 #include "GribTable.h"
 
+extern double m_cursor_lat, m_cursor_lon;
 //----------------------------------------------------------------------------------------------------------
 //          GRIB Table Implementation
 //----------------------------------------------------------------------------------------------------------
 
-GRIBTable::GRIBTable(GRIBUIDialog &parent)
+GRIBTable::GRIBTable(GRIBUICtrlBar &parent)
     : GRIBTableBase(&parent), m_pGDialog(&parent){}
 
 void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa )
@@ -56,8 +57,8 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa )
    
     //populate "cursor position" display 
     wxString l;
-    l.Append(toSDMM_PlugIn(1, m_pGDialog->m_cursor_lat)).Append(_T("   "))
-        .Append(toSDMM_PlugIn(2, m_pGDialog->m_cursor_lon));
+    l.Append(toSDMM_PlugIn(1, m_cursor_lat)).Append(_T("   "))
+        .Append(toSDMM_PlugIn(2, m_cursor_lon));
     m_pCursorPosition->SetLabel(l);
     m_pCursorPosition->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
     m_pPositionText->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
@@ -292,7 +293,7 @@ wxString GRIBTable::GetWind(GribRecord **recordarray)
     if(GribRecord::getInterpolatedValues(vkn, ang,
                                          recordarray[Idx_WIND_VX + altitude],
                                          recordarray[Idx_WIND_VY + altitude],
-                                         m_pGDialog->m_cursor_lon, m_pGDialog->m_cursor_lat)) {
+                                         m_cursor_lon, m_cursor_lat)) {
 
        skn.Printf( _T("%03d\u00B0"), (int) ( ang ) );
 
@@ -313,7 +314,7 @@ wxString GRIBTable::GetWindBf(GribRecord **recordarray)
     if(GribRecord::getInterpolatedValues(vkn, ang,
                                          recordarray[Idx_WIND_VX + altitude],
                                          recordarray[Idx_WIND_VY + altitude],
-                                         m_pGDialog->m_cursor_lon, m_pGDialog->m_cursor_lat)) {
+                                         m_cursor_lon, m_cursor_lat)) {
        vkn = m_pGDialog->m_OverlaySettings.GetmstobfFactor(vkn)* vkn;
        skn.Printf( wxString::Format( _T("%2d bf"), (int)wxRound( vkn )) );
     }
@@ -325,7 +326,7 @@ wxString GRIBTable::GetPressure(GribRecord **recordarray)
     wxString skn(wxEmptyString);
     if( recordarray[Idx_PRESSURE] ) {
         double press = recordarray[Idx_PRESSURE]->
-            getInterpolatedValue(m_pGDialog->m_cursor_lon, m_pGDialog->m_cursor_lat, true );
+            getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
 
         if( press != GRIB_NOTDEF ) {
             press = m_pGDialog->m_OverlaySettings.CalibrateValue(GribOverlaySettings::PRESSURE, press);
@@ -341,7 +342,7 @@ wxString GRIBTable::GetWindGust(GribRecord **recordarray)
     wxString skn(wxEmptyString);
     if( recordarray[Idx_WIND_GUST] ) {
         double vkn = recordarray[Idx_WIND_GUST]->
-            getInterpolatedValue(m_pGDialog->m_cursor_lon, m_pGDialog->m_cursor_lat, true );
+            getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
 
             if( vkn != GRIB_NOTDEF ) {
                 vkn = m_pGDialog->m_OverlaySettings.CalibrateValue(GribOverlaySettings::WIND_GUST, vkn);
@@ -357,7 +358,7 @@ wxString GRIBTable::GetWaves(GribRecord **recordarray)
     wxString skn(wxEmptyString);
     if( recordarray[Idx_HTSIGW] ) {
         double height = recordarray[Idx_HTSIGW]->
-            getInterpolatedValue(m_pGDialog->m_cursor_lon, m_pGDialog->m_cursor_lat, true );
+            getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
         if( height != GRIB_NOTDEF ) {
             height = m_pGDialog->m_OverlaySettings.CalibrateValue(GribOverlaySettings::WAVE, height);
             skn.Printf( wxString::Format( _T("%4.1f ") + m_pGDialog->m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::WAVE), height ));
@@ -365,13 +366,13 @@ wxString GRIBTable::GetWaves(GribRecord **recordarray)
 
             if( recordarray[Idx_WVDIR] ) {
                 double direction = recordarray[Idx_WVDIR]->
-                    getInterpolatedValue(m_pGDialog->m_cursor_lon, m_pGDialog->m_cursor_lat, true, true );
+                    getInterpolatedValue(m_cursor_lon, m_cursor_lat, true, true );
                 if( direction != GRIB_NOTDEF ){
                     skn.Prepend(wxString::Format( _T("%03d\u00B0\n\n"), (int)direction ));
                    
                     if( recordarray[Idx_WVPER] ) {
                         double period = recordarray[Idx_WVPER]->
-                            getInterpolatedValue(m_pGDialog->m_cursor_lon, m_pGDialog->m_cursor_lat, true );
+                            getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
                         if( period != GRIB_NOTDEF ) {
                             skn.Append( wxString::Format( _T("\n%01ds") , (int) (period + 0.5)) );
                         }
@@ -388,7 +389,7 @@ wxString GRIBTable::GetRainfall(GribRecord **recordarray)
     wxString skn(wxEmptyString);
     if( recordarray[Idx_PRECIP_TOT] ) {
         double precip = recordarray[Idx_PRECIP_TOT]->
-            getInterpolatedValue(m_pGDialog->m_cursor_lon, m_pGDialog->m_cursor_lat, true );
+            getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
 
         if( precip != GRIB_NOTDEF ) {
             precip = m_pGDialog->m_OverlaySettings.CalibrateValue(GribOverlaySettings::PRECIPITATION, precip);
@@ -404,7 +405,7 @@ wxString GRIBTable::GetCloudCover(GribRecord **recordarray)
     wxString skn(wxEmptyString);
     if( recordarray[Idx_CLOUD_TOT] ) {
         double cloud = recordarray[Idx_CLOUD_TOT]->
-            getInterpolatedValue(m_pGDialog->m_cursor_lon, m_pGDialog->m_cursor_lat, true );
+            getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
 
         if( cloud != GRIB_NOTDEF ) {
             cloud = m_pGDialog->m_OverlaySettings.CalibrateValue(GribOverlaySettings::CLOUD, cloud);
@@ -421,7 +422,7 @@ wxString GRIBTable::GetAirTemp(GribRecord **recordarray)
     wxString skn(wxEmptyString);
     if( recordarray[Idx_AIR_TEMP] ) {
         double temp = recordarray[Idx_AIR_TEMP]->
-            getInterpolatedValue(m_pGDialog->m_cursor_lon, m_pGDialog->m_cursor_lat, true );
+            getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
 
         if( temp != GRIB_NOTDEF ) {
             temp = m_pGDialog->m_OverlaySettings.CalibrateValue(GribOverlaySettings::AIR_TEMPERATURE, temp);
@@ -437,7 +438,7 @@ wxString GRIBTable::GetSeaTemp(GribRecord **recordarray)
     wxString skn(wxEmptyString);
     if( recordarray[Idx_SEA_TEMP] ) {
         double temp = recordarray[Idx_SEA_TEMP]->
-            getInterpolatedValue(m_pGDialog->m_cursor_lon, m_pGDialog->m_cursor_lat, true );
+            getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
 
         if( temp != GRIB_NOTDEF ) {
             temp = m_pGDialog->m_OverlaySettings.CalibrateValue(GribOverlaySettings::SEA_TEMPERATURE, temp);
@@ -453,7 +454,7 @@ wxString GRIBTable::GetCAPE(GribRecord **recordarray)
     wxString skn(wxEmptyString);
     if( recordarray[Idx_CAPE] ) {
         double cape = recordarray[Idx_CAPE]->
-            getInterpolatedValue(m_pGDialog->m_cursor_lon, m_pGDialog->m_cursor_lat, true );
+            getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
 
         if( cape != GRIB_NOTDEF ) {
             cape = m_pGDialog->m_OverlaySettings.CalibrateValue(GribOverlaySettings::CAPE, cape);
@@ -472,7 +473,7 @@ wxString GRIBTable::GetCurrent(GribRecord **recordarray)
     if(GribRecord::getInterpolatedValues(vkn, ang,
                                          recordarray[Idx_SEACURRENT_VX],
                                          recordarray[Idx_SEACURRENT_VY],
-                                         m_pGDialog->m_cursor_lon, m_pGDialog->m_cursor_lat)) {
+                                         m_cursor_lon, m_cursor_lat)) {
         vkn = m_pGDialog->m_OverlaySettings.CalibrateValue(GribOverlaySettings::CURRENT, vkn);
 
         skn.Printf( _T("%03d\u00B0"), (int) ( ang ) );

@@ -123,13 +123,13 @@ private:
 //    Grib Overlay Factory Specification
 //----------------------------------------------------------------------------------------------------------
 
-class GRIBUIDialog;
+class GRIBUICtrlBar;
 class GribRecord;
 class GribTimelineRecordSet;
 
 class GRIBOverlayFactory : public wxEvtHandler {
 public:
-    GRIBOverlayFactory( GRIBUIDialog &dlg );
+    GRIBOverlayFactory( GRIBUICtrlBar &dlg );
     ~GRIBOverlayFactory();
 
     void SetSettings( bool hiDefGraphics, bool GradualColors )
@@ -142,7 +142,6 @@ public:
     void SetMessage( wxString message ) { m_Message = message; }
     void SetTimeZone( int TimeZone ) { m_TimeZone = TimeZone; }
     void SetParentSize( int w, int h ) { m_ParentSize.SetWidth(w) ; m_ParentSize.SetHeight(h) ;}
-    void SetAltitude(int altitude) { m_Altitude = altitude; }
 
     void SetGribTimelineRecordSet( GribTimelineRecordSet *pGribTimelineRecordSet1 );
     bool RenderGribOverlay( wxDC &dc, PlugIn_ViewPort *vp );
@@ -159,7 +158,7 @@ public:
     wxColour GetGraphicColor(int config, double val);
 
     wxSize  m_ParentSize;
-    int m_Altitude;
+
 private:
 
     void SettingsIdToGribId(int i, int &idx, int &idy, bool &polar);
@@ -221,7 +220,7 @@ private:
 
     TexFont m_TexFontMessage, m_TexFontNumbers;
 
-    GRIBUIDialog &m_dlg;
+    GRIBUICtrlBar &m_dlg;
     GribOverlaySettings &m_Settings;
 
     ParticleMap *m_ParticleMap;

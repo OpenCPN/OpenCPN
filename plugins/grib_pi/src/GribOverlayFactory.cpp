@@ -38,6 +38,8 @@
 #include "GribUIDialog.h"
 #include "GribOverlayFactory.h"
 
+extern int m_Altitude;
+
 enum GRIB_OVERLAP { _GIN, _GON, _GOUT };
 
 // Calculates if two boxes intersect. If so, the function returns _ON.
@@ -215,7 +217,7 @@ static const int windArrowSize = 26;   //set arrow size
 //----------------------------------------------------------------------------------------------------------
 //    Grib Overlay Factory Implementation
 //----------------------------------------------------------------------------------------------------------
-GRIBOverlayFactory::GRIBOverlayFactory( GRIBUIDialog &dlg )
+GRIBOverlayFactory::GRIBOverlayFactory( GRIBUICtrlBar &dlg )
     : m_dlg(dlg), m_Settings(dlg.m_OverlaySettings)
 {
     m_dFont_map = new wxFont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
@@ -381,23 +383,23 @@ void GRIBOverlayFactory::SettingsIdToGribId(int i, int &idx, int &idy, bool &pol
     case GribOverlaySettings::WIND:
         idx = Idx_WIND_VX + m_Altitude, idy = Idx_WIND_VY + m_Altitude; break;
     case GribOverlaySettings::WIND_GUST:
-        idx = Idx_WIND_GUST; break;
+        if( !m_Altitude ) idx = Idx_WIND_GUST; break;
     case GribOverlaySettings::PRESSURE:
-        idx = Idx_PRESSURE; break;
+        if( !m_Altitude ) idx = Idx_PRESSURE; break;
     case GribOverlaySettings::WAVE:
-        idx = Idx_HTSIGW, idy = Idx_WVDIR; polar = true; break;
+        if( !m_Altitude ) { idx = Idx_HTSIGW, idy = Idx_WVDIR, polar = true; } break;
     case GribOverlaySettings::CURRENT:
-        idx = Idx_SEACURRENT_VX, idy = Idx_SEACURRENT_VY; break;
+        if( !m_Altitude ) {  idx = Idx_SEACURRENT_VX, idy = Idx_SEACURRENT_VY; } break;
     case GribOverlaySettings::PRECIPITATION:
-        idx = Idx_PRECIP_TOT; break;
+        if( !m_Altitude ) idx = Idx_PRECIP_TOT; break;
     case GribOverlaySettings::CLOUD:
-        idx = Idx_CLOUD_TOT; break;
+        if( !m_Altitude ) idx = Idx_CLOUD_TOT; break;
     case GribOverlaySettings::AIR_TEMPERATURE:
-        idx = Idx_AIR_TEMP; break;
+        if( !m_Altitude ) idx = Idx_AIR_TEMP; break;
     case GribOverlaySettings::SEA_TEMPERATURE:
-        idx = Idx_SEA_TEMP; break;
+        if( !m_Altitude ) idx = Idx_SEA_TEMP; break;
     case GribOverlaySettings::CAPE:
-        idx = Idx_CAPE; break;
+        if( !m_Altitude ) idx = Idx_CAPE; break;
     }
 }
 
@@ -430,9 +432,9 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
         for(int i=0; i<GribOverlaySettings::SETTINGS_COUNT; i++) {
             if(i == GribOverlaySettings::WIND ) {
                 if(overlay) {   /* render overlays first */
-                    if(m_dlg.m_cbWind->GetValue()) RenderGribOverlayMap( i, pGR, vp );
+                    if(m_dlg.m_bDataPlot[i]) RenderGribOverlayMap( i, pGR, vp );
                 } else {
-                    if(m_dlg.m_cbWind->GetValue()){
+                    if(m_dlg.m_bDataPlot[i]){
                         RenderGribBarbedArrows( i, pGR, vp );
                         RenderGribIsobar( i, pGR, pIA, vp );
                         RenderGribNumbers( i, pGR, vp );
@@ -445,7 +447,7 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
             }
             if(i == GribOverlaySettings::PRESSURE ) {
                 if(!overlay) {   /*no overalay for pressure*/
-                    if( m_dlg.m_cbPressure->GetValue() ) {
+                    if( m_dlg.m_bDataPlot[i] ) {
                         RenderGribIsobar( i, pGR, pIA, vp );
                         RenderGribNumbers( i, pGR, vp );
                     } else {
@@ -454,14 +456,7 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
                 }
                 continue;
             }
-        if((i == GribOverlaySettings::WIND_GUST       && !m_dlg.m_cbWindGust->GetValue()) ||
-           (i == GribOverlaySettings::WAVE            && !m_dlg.m_cbWave->GetValue()) ||
-           (i == GribOverlaySettings::CURRENT         && !m_dlg.m_cbCurrent->GetValue()) ||
-           (i == GribOverlaySettings::PRECIPITATION   && !m_dlg.m_cbPrecipitation->GetValue()) ||
-           (i == GribOverlaySettings::CLOUD           && !m_dlg.m_cbCloud->GetValue()) ||
-           (i == GribOverlaySettings::AIR_TEMPERATURE && !m_dlg.m_cbAirTemperature->GetValue()) ||
-           (i == GribOverlaySettings::SEA_TEMPERATURE && !m_dlg.m_cbSeaTemperature->GetValue()) ||
-           (i == GribOverlaySettings::CAPE            && !m_dlg.m_cbCAPE->GetValue()))
+        if( !m_dlg.m_bDataPlot[i] )
             continue;
 
         if(overlay) /* render overlays first */
@@ -475,14 +470,15 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
         }
     }
     if( m_Altitude ) {
-        if( !m_Message_Hiden.IsEmpty() ) m_Message_Hiden.Append(_T("   "));
-        m_Message_Hiden.Append(_("WIND data at")).Append(_T(" "))
+        if( ! m_Message_Hiden.IsEmpty() ) m_Message_Hiden.Append(_T("\n"));
+		m_Message_Hiden.Append(_("Warning : Data at")).Append(_T(" "))
             .Append(m_Settings.GetAltitudeFromIndex(m_Altitude, m_Settings.Settings[GribOverlaySettings::PRESSURE].m_Units)).Append(_T(" "))
             .Append(m_Settings.GetUnitSymbol(GribOverlaySettings::PRESSURE))
-            .Append(_T(" !"));
+            .Append(_T(" ! "));
     }
-    if( !m_Message_Hiden.IsEmpty() )
-        DrawMessageWindow( m_Message_Hiden , vp->pix_width, vp->pix_height, m_dFont_map );
+    if( !m_Message_Hiden.IsEmpty() ) m_Message_Hiden.Append( _T("\n") );
+	m_Message_Hiden.Append( m_Message );
+    DrawMessageWindow( m_Message_Hiden , vp->pix_width, vp->pix_height, m_dFont_map );
     return true;
 }
 
