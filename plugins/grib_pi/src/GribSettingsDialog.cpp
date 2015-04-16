@@ -59,7 +59,7 @@ static const wxString altitude_from_index[3][5] = {
     {_T("Std"), _T("25.2"), _T("20.7"), _T("14.8"), _T("8.9")}
     };
 
-enum SettingsDisplay {B_ARROWS, ISO_LINE, ISO_LINE_VISI, ISO_LINE_SHORT, D_ARROWS, OVERLAY, NUMBERS, PARTICLES};
+enum SettingsDisplay {B_ARROWS, ISO_LINE, ISO_LINE_VISI, ISO_LINE_SHORT, D_ARROWS, OVERLAY, NUMBERS, PARTICLES, LOW_HIGH_LABELS};
 
 wxString GribOverlaySettings::GetAltitudeFromIndex( int index, int unit )
 {
@@ -111,6 +111,7 @@ void GribOverlaySettings::Read()
         double defspacing[SETTINGS_COUNT] = {4, 4, 4, 0, 0, 0, 0, 2, 2, 100};
         pConf->Read ( Name + _T ( "IsoBarSpacing" ), &Settings[i].m_iIsoBarSpacing, defspacing[i]);
         pConf->Read ( Name + _T ( "IsoBarVisibility" ), &Settings[i].m_iIsoBarVisibility, i==PRESSURE);
+        pConf->Read ( Name + _T ( "LowHighLabels" ), &Settings[i].m_bLowHighLabels, i==PRESSURE);
 
         pConf->Read ( Name + _T ( "DirectionArrows" ), &Settings[i].m_bDirectionArrows, i==CURRENT || i==WAVE);
         double defform[SETTINGS_COUNT] = {0, 0, 0, 0, 1, 0, 0, 0, 0, 0};
@@ -168,6 +169,7 @@ void GribOverlaySettings::Write()
             SaveSettingGroups(pConf, i, ISO_LINE_SHORT);
             SaveSettingGroups(pConf, i, ISO_LINE_VISI);
             SaveSettingGroups(pConf, i, NUMBERS);
+            SaveSettingGroups(pConf, i, LOW_HIGH_LABELS);
         }
         else if(i == WAVE || i == CURRENT) {
             SaveSettingGroups(pConf, i, D_ARROWS);
@@ -221,6 +223,9 @@ void GribOverlaySettings::SaveSettingGroups(wxFileConfig *pConf, int settings, i
     case PARTICLES:
         pConf->Write ( Name + _T ( "Particles" ), Settings[settings].m_bParticles);
         pConf->Write ( Name + _T ( "ParticleDensity" ), Settings[settings].m_dParticleDensity);
+        break;
+    case LOW_HIGH_LABELS:
+        pConf->Write ( Name + _T ( "LowHighLabels" ), Settings[settings].m_bLowHighLabels);
         break;
     }
 }
@@ -503,6 +508,7 @@ void GribSettingsDialog::SetDataTypeSettings(int settings)
     odc.m_iNumbersSpacing = m_sNumbersSpacing->GetValue();
     odc.m_bParticles = m_cbParticles->GetValue();
     odc.m_dParticleDensity = 4.0*exp(m_sParticleDensity->GetValue() / 2.0 - 3);
+    odc.m_bLowHighLabels = m_cbLowHighLabels->GetValue();
 }
 
 void GribSettingsDialog::ReadDataTypeSettings(int settings)
@@ -533,6 +539,7 @@ void GribSettingsDialog::ReadDataTypeSettings(int settings)
     m_sNumbersSpacing->SetValue(odc.m_iNumbersSpacing);
     m_cbParticles->SetValue(odc.m_bParticles);
     m_sParticleDensity->SetValue(2.0*(log(odc.m_dParticleDensity/4.0) + 3));
+    m_cbLowHighLabels->SetValue(odc.m_bLowHighLabels);
 
     ShowFittingSettings(settings);
 }
@@ -549,6 +556,7 @@ void GribSettingsDialog::ShowFittingSettings( int settings )
     ShowSettings( OVERLAY, false  );
     ShowSettings( NUMBERS, false );
     ShowSettings( PARTICLES, false );
+    ShowSettings( LOW_HIGH_LABELS, false );
     this->Fit();
     //Show only fitting parameters
     switch(settings){
@@ -573,6 +581,7 @@ void GribSettingsDialog::ShowFittingSettings( int settings )
         ShowSettings( ISO_LINE );
         m_cbIsoBars->SetLabel(_("Display Isobars"));
         ShowSettings( NUMBERS );
+        ShowSettings( LOW_HIGH_LABELS );
         break;
     case GribOverlaySettings::CURRENT:
         ShowSettings( PARTICLES ); // should we allow particles for waves?
@@ -600,6 +609,7 @@ void GribSettingsDialog::ShowFittingSettings( int settings )
         m_cbIsoBars->SetLabel(_("Display Iso CAPE"));
         ShowSettings( OVERLAY );
         ShowSettings( NUMBERS );
+        break;
     }
 
 	wxString l = (m_lastdatatype == GribOverlaySettings::PRESSURE && m_cDataUnits->GetSelection() == GribOverlaySettings::INHG) ? _T("(0.03 " ) : _T("(");
@@ -647,6 +657,9 @@ void GribSettingsDialog::ShowSettings( int params, bool show)
         m_cbParticles->Show(show);
         m_ctParticles->Show(show);
         m_sParticleDensity->Show(show);
+        break;
+    case LOW_HIGH_LABELS:
+        m_cbLowHighLabels->Show(show);
         break;
     }
 }
@@ -728,6 +741,7 @@ void GribSettingsDialog::OnSpacingModeChange( wxCommandEvent& event )
         break;
     case NUMMINSPACING:
         m_cNumFixSpac->SetValue( !m_cNumMinSpac->IsChecked() );
+        break;
     }
 
     if( message ) {

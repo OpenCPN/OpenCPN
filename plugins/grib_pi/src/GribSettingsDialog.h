@@ -92,6 +92,7 @@ struct GribOverlaySettings
         int m_iNumbersSpacing;
         bool m_bParticles;
         double m_dParticleDensity;
+        bool m_bLowHighLabels;
 
     } Settings[SETTINGS_COUNT];
 };

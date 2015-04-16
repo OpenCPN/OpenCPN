@@ -448,6 +448,7 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
                     if( m_dlg.m_cbPressure->GetValue() ) {
                         RenderGribIsobar( i, pGR, pIA, vp );
                         RenderGribNumbers( i, pGR, vp );
+                        RenderGribLowHigh( i, pGR, vp );
                     } else {
                         if(m_Settings.Settings[i].m_iIsoBarVisibility) RenderGribIsobar( i, pGR, pIA, vp );
                     }
@@ -472,7 +473,7 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
             RenderGribDirectionArrows( i, pGR, vp );
             RenderGribNumbers( i, pGR, vp );
             RenderGribParticles( i, pGR, vp );
-            RenderGribLowHigh( pGR, vp );
+            RenderGribLowHigh( i, pGR, vp );
         }
     }
     if( m_Altitude ) {
@@ -1387,8 +1388,10 @@ void GRIBOverlayFactory::RenderGribNumbers( int settings, GribRecord **pGR, Plug
 }
 
 /* Put an "L" in the center of a low and an "H" in the center of a high */
-void GRIBOverlayFactory::RenderGribLowHigh( GribRecord **pGR, PlugIn_ViewPort *vp )
+void GRIBOverlayFactory::RenderGribLowHigh( int settings, GribRecord **pGR, PlugIn_ViewPort *vp )
 {
+    if( !m_Settings.Settings[settings].m_bLowHighLabels ) return;
+
     GribRecord *pGRA = pGR[Idx_PRESSURE];
     int imax = pGRA->getNi(); // max longitude
     int jmax = pGRA->getNj(); // max latitude
@@ -1441,6 +1444,7 @@ void GRIBOverlayFactory::RenderGribLowHigh( GribRecord **pGR, PlugIn_ViewPort *v
 
         }
     }
+    return;
 }
 
 void GRIBOverlayFactory::DrawNumbers( wxPoint p, double value, int settings, wxColour back_color )

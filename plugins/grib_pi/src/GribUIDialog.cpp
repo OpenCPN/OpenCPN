@@ -63,7 +63,7 @@ int round (double x) {
 
 WX_DEFINE_OBJARRAY( ArrayOfGribRecordSets );
 
-enum SettingsDisplay {B_ARROWS, ISO_LINE, D_ARROWS, OVERLAY, NUMBERS, PARTICLES};
+enum SettingsDisplay {B_ARROWS, ISO_LINE, D_ARROWS, OVERLAY, NUMBERS, PARTICLES, LOW_HIGH_LABELS};
 
 //    Sort compare function for File Modification Time
 static int CompareFileStringTime( const wxString& first, const wxString& second )
@@ -439,6 +439,7 @@ void GRIBUIDialog::OnMouseEvent( wxMouseEvent& event )
         case GribOverlaySettings::PRESSURE:
             MenuAppend( menu, ISO_LINE, _("Display Isobars"), id );
             MenuAppend( menu, NUMBERS, _("Numbers"), id );
+            MenuAppend( menu, LOW_HIGH_LABELS, _("Low/High Labels"), id );
             break;
         case GribOverlaySettings::AIR_TEMPERATURE:
         case GribOverlaySettings::SEA_TEMPERATURE:
@@ -463,6 +464,7 @@ void GRIBUIDialog::OnMouseEvent( wxMouseEvent& event )
             MenuAppend( menu, OVERLAY, _("OverlayMap"), id );
             MenuAppend( menu, NUMBERS, _("Numbers"), id );
             MenuAppend( menu, PARTICLES, _("Particle Map"), id );
+            break;
     }
 
     PopupMenu( menu );
@@ -489,6 +491,10 @@ void GRIBUIDialog::OnMouseEvent( wxMouseEvent& event )
                 break;
             case PARTICLES:
                 m_OverlaySettings.Settings[id].m_bParticles = it->IsChecked();
+                break;
+            case LOW_HIGH_LABELS:
+                m_OverlaySettings.Settings[id].m_bLowHighLabels = it->IsChecked();
+                break;
         }
         node = node->GetNext();
     }
@@ -535,6 +541,8 @@ void GRIBUIDialog::MenuAppend( wxMenu *menu, int id, wxString label, int setting
         check = m_OverlaySettings.Settings[setting].m_bNumbers;
     else if( id == PARTICLES )
         check = m_OverlaySettings.Settings[setting].m_bParticles;
+    else if( id == LOW_HIGH_LABELS )
+        check = m_OverlaySettings.Settings[setting].m_bLowHighLabels;
     else
         check = false;
     item->Check( check );
@@ -635,7 +643,9 @@ void GRIBUIDialog::ResolveDisplayConflicts( wxWindow *window, int enventId )
                         || (m_OverlaySettings.Settings[enventId].m_bOverlayMap &&
                         m_OverlaySettings.Settings[winId].m_bOverlayMap)
                         || (m_OverlaySettings.Settings[enventId].m_bParticles &&
-                        m_OverlaySettings.Settings[winId].m_bParticles) )
+                        m_OverlaySettings.Settings[winId].m_bParticles)
+                        || (m_OverlaySettings.Settings[enventId].m_bLowHighLabels &&
+                        m_OverlaySettings.Settings[winId].m_bLowHighLabels) )
                     ((wxCheckBox*) win )->SetValue(false);
             }
         }

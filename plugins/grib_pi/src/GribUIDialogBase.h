@@ -186,6 +186,7 @@ class GribSettingsDialogBase : public wxDialog
 		wxSlider* m_sParticleDensity;
 		wxStaticText* m_staticText24;
 		wxSlider* m_sTransparency;
+		wxCheckBox* m_cbLowHighLabels;
 		
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnIntepolateChange( wxCommandEvent& event ) { event.Skip(); }
