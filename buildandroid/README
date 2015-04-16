@@ -1,4 +1,9 @@
 0....Tools, etc.
+
+        __emulator
+        export ANDROID_EMULATOR_FORCE_32BIT=true
+        /home/dsr/Projects/android-ndk/android-sdk-linux/tools/android
+
         __ Uninstall old version
         $/home/dsr/Projects/android-ndk/android-sdk-linux/platform-tools/adb  uninstall org.opencpn.opencpn
 
