@@ -172,6 +172,7 @@ private:
     void RenderGribParticles( int settings, GribRecord **pGR, PlugIn_ViewPort *vp );
     void DrawLineBuffer(LineBuffer &buffer);
     void OnParticleTimer( wxTimerEvent & event );
+    void RenderGribLowHigh( GribRecord **pGR, PlugIn_ViewPort *vp );
 
     wxString GetRefString( GribRecord *rec, int map );
     void DrawMessageWindow( wxString msg, int x, int y , wxFont *mfont);
