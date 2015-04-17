@@ -45,6 +45,7 @@ extern ColorScheme global_color_scheme;
 extern int g_chart_zoom_modifier;
 extern bool g_fog_overzoom;
 extern double  g_overzoom_emphasis_base;
+extern bool g_bopengl;
 
 //      We define and use this one Macro in this module
 //      Reason:  some compilers refuse to inline "GetChartTableEntry()"
@@ -216,7 +217,9 @@ Quilt::Quilt()
 
     m_zout_family = -1;
     m_zout_type = -1;
-    
+
+    //  Quilting of skewed raster charts is allowed for OpenGL only
+    m_bquiltskew = g_bopengl;
 }
 
 Quilt::~Quilt()
@@ -295,6 +298,8 @@ bool Quilt::IsChartQuiltableRef( int db_index )
     if( skew_norm > 180. ) skew_norm -= 360.;
 
     bool skew_match = fabs( skew_norm ) < 1.;  // Only un-skewed charts are acceptable for quilt
+    if(m_bquiltskew)
+        skew_match = true;
 
     //    In noshow array?
     bool b_noshow = false;
@@ -821,11 +826,14 @@ int Quilt::GetNewRefChart( void )
     if( im > 0 ) {
         for( unsigned int is = 0; is < im; is++ ) {
             const ChartTableEntry &m = ChartData->GetChartTableEntry( m_extended_stack_array.Item( is ) );
-//                  if((m.GetScale() >= m_reference_scale) && (m_reference_type == m.GetChartType()))
+
+            double skew_norm = m.GetChartSkew();
+            if( skew_norm > 180. ) skew_norm -= 360.;
+            
             if( ( m.GetScale() >= m_reference_scale )
                     && ( m_reference_family == m.GetChartFamily() )
                     && ( m_quilt_proj == m.GetChartProjectionType() )
-                    && ( m.GetChartSkew() == 0.0 ) ) {
+                    && ( m_bquiltskew || (fabs(skew_norm) < 1.0) ) ){
                 new_ref_dbIndex = m_extended_stack_array.Item( is );
                 break;
             }
@@ -1122,6 +1130,8 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
         quilt_proj = ChartData->GetDBChartProj( ref_db_index );
         reference_family = cte_ref.GetChartFamily();
     }
+    else
+        return false;
 
     bool b_need_resort = false;
 
@@ -1144,26 +1154,19 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
 
             const ChartTableEntry &cte = ChartData->GetChartTableEntry( i );
 
-            // const ChartTableEntry &cte = ChartData->GetChartTable()[i];
-            
-            //  A viable candidate?
-            double chart_skew = cte.GetChartSkew();
-            if( chart_skew > 180. ) chart_skew -= 360.;
-
-            // only unskewed charts of the proper projection and type may be quilted....
+            double skew_norm = cte.GetChartSkew();
+            if( skew_norm > 180. ) skew_norm -= 360.;
+               
+            // only charts of the proper projection and type may be quilted....
+            // Also, only unskewed charts if so directed
             // and we avoid adding CM93 Composite until later
             if( ( reference_type == cte.GetChartType() )
-            && ( fabs( chart_skew ) < 1.0 )
+            && ( m_bquiltskew ? 1: fabs( skew_norm ) < 1.0 )
             && ( cte.GetChartProjectionType() == quilt_proj )
             && ( cte.GetChartType() != CHART_TYPE_CM93COMP ) ) {
                 QuiltCandidate *qcnew = new QuiltCandidate;
                 qcnew->dbIndex = i;
                 qcnew->ChartScale = cte.GetScale();
-
-                //      Calculate and store the quilt region on-screen with the candidate
-                //const ChartTableEntry &cte = ChartData->GetChartTableEntry( i );
-                //OCPNRegion chart_region = GetChartQuiltRegion( cte, vp_local );
-                //qcnew->quilt_region = chart_region;
 
                 m_pcandidate_array->Add( qcnew );               // auto-sorted on scale
 
@@ -1201,9 +1204,11 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
             
             if( quilt_proj != cte.GetChartProjectionType() ) continue;
 
-            double chart_skew = cte.GetChartSkew();
-            if( chart_skew > 180. ) chart_skew -= 360.;
-            if( fabs( chart_skew ) > 1.0 ) continue;
+            double skew_norm = cte.GetChartSkew();
+            if( skew_norm > 180. ) skew_norm -= 360.;
+               
+             if( !m_bquiltskew && fabs( skew_norm ) > 1.0 )
+                continue;
 
             //    Calculate zoom factor for this chart
             double candidate_chart_scale = cte.GetScale();
