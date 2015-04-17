@@ -2483,17 +2483,43 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, O
     wxRealPoint Rp, Rs;
     double scalefactor;
     int size_X, size_Y;
+    
+    double skew_norm = chart->GetChartSkew();
+    if( skew_norm > 180. ) skew_norm -= 360.;
+    
     if( b_plugin ) {
         /* TODO: plugins need floating point version */
         wxRect R;
-        pPlugInWrapper->ComputeSourceRectangle( svp, &R );
+        if(vp.b_quilt && (fabs(skew_norm) > 1.0)){
+            //  make a larger viewport to ensure getting all of the chart tiles
+            ViewPort xvp = svp;
+            float maxdiag = sqrtf( (xvp.pix_width * xvp.pix_width) + (xvp.pix_height * xvp.pix_height) );
+            xvp.pix_width = maxdiag;
+            xvp.pix_height = maxdiag;
+            pPlugInWrapper->ComputeSourceRectangle( xvp, &R );
+        }
+        else { 
+            pPlugInWrapper->ComputeSourceRectangle( svp, &R );
+        }
+        
         Rp.x = R.x, Rp.y = R.y, Rs.x = R.width, Rs.y = R.height;
 
         scalefactor = pPlugInWrapper->GetRasterScaleFactor();
         size_X = pPlugInWrapper->GetSize_X();
         size_Y = pPlugInWrapper->GetSize_Y();
     } else {
-        pBSBChart->ComputeSourceRectangle( svp, &Rp, &Rs );
+        if(vp.b_quilt && (fabs(skew_norm) > 1.0)){
+            //  make a larger viewport to ensure getting all of the chart tiles
+            ViewPort xvp = svp;
+            float maxdiag = sqrtf( (xvp.pix_width * xvp.pix_width) + (xvp.pix_height * xvp.pix_height) );
+            xvp.pix_width = maxdiag;
+            xvp.pix_height = maxdiag;
+            pBSBChart->ComputeSourceRectangle( xvp, &Rp, &Rs );
+        }
+        else {
+            pBSBChart->ComputeSourceRectangle( svp, &Rp, &Rs );
+        }
+        
         scalefactor = pBSBChart->GetRasterScaleFactor();
         size_X = pBSBChart->GetSize_X();
         size_Y = pBSBChart->GetSize_Y();
@@ -2549,6 +2575,9 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, O
     if(g_bskew_comp)
         angle -= vp.skew;
 
+    if(vp.b_quilt)
+        angle -= skew_norm * PI / 180.;
+    
     if( angle != 0 ) /* test not really needed, but maybe a little faster for north up? */
     {
         //    Shift texture drawing positions to account for the larger chart rectangle
@@ -2605,10 +2634,18 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, O
 
 
                 //    And does this tile intersect the desired render region?
-                if( region.Contains( rt ) == wxOutRegion ) {
-                    /*   user setting is in MB while we count exact bytes */
+                
+                //    Special processing for skewed charts...
+                //    We are working in "chart native" (i.e. unrotated) rectilinear coordinates for skewed charts.
+                //    But we do not have a good (cheap) way to rotate a wxRegion.
+                //    So, we therefore must include all on-screen tiles in the render loop, and count on the clipregion
+                //    set earlier to prevent drawing outside the charts own space onscreen.
+                //    This will probably be cheaper than rotating the region, even if we could do it.
+                
+                if((fabs(skew_norm) < 1.0) && ( region.Contains( rt ) == wxOutRegion ) ) {
+                        /*   user setting is in MB while we count exact bytes */
                     bool bGLMemCrunch = g_tex_mem_used > g_GLOptions.m_iTextureMemorySize * 1024 * 1024;
-                    /* delete this unneeded tile if we need to free up memory */
+                        /* delete this unneeded tile if we need to free up memory */
                     if( bGLMemCrunch )
                         pTexFact->DeleteTexture( rect );
                 } else { // this tile is needed
@@ -2709,7 +2746,7 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &Region )
                 if( !get_region.IsEmpty() ) {
                     if( !pqp->b_overlay ) {
                         ChartBaseBSB *Patch_Ch_BSB = dynamic_cast<ChartBaseBSB*>( chart );
-                        if( Patch_Ch_BSB ) {
+                        if( Patch_Ch_BSB /*&& chart->GetChartSkew()*/ ) {
                             RenderRasterChartRegionGL( chart, cc1->VPoint, get_region );
                             b_rendered = true;
                         } else {
