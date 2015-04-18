@@ -2431,7 +2431,9 @@ void ChartCanvas::SetCursorStatus( double cursor_lat, double cursor_lon )
     s1 += toSDMM(1, cursor_lat);
     s1 += _T("   ");
     s1 += toSDMM(2, cursor_lon);
-    parent_frame->SetStatusText ( s1, STAT_FIELD_CURSOR_LL );
+    
+    if(STAT_FIELD_CURSOR_LL >= 0)
+        parent_frame->SetStatusText ( s1, STAT_FIELD_CURSOR_LL );
     
     double brg, dist;
     wxString s;
@@ -2442,7 +2444,9 @@ void ChartCanvas::SetCursorStatus( double cursor_lat, double cursor_lon )
         s.Printf( wxString("%03d°  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( brg ) );
     
     s << FormatDistanceAdaptive( dist );
-    parent_frame->SetStatusText ( s, STAT_FIELD_CURSOR_BRGRNG );
+    
+    if(STAT_FIELD_CURSOR_BRGRNG >= 0)
+        parent_frame->SetStatusText ( s, STAT_FIELD_CURSOR_BRGRNG );
 }
 
 void ChartCanvas::GetCursorLatLon( double *lat, double *lon )
