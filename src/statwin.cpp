@@ -80,8 +80,6 @@ StatWin::StatWin( wxWindow *win )
 
 //    SetBackgroundStyle( wxBG_STYLE_CUSTOM ); // on WXMSW, this prevents flashing on color scheme change
 
-    m_rows = 1;
-
     //   Create the Children
 
     pPiano = new PianoWin( (wxFrame *) this );
@@ -143,6 +141,8 @@ void StatWin::OnPaint( wxPaintEvent& event )
 
 void StatWin::OnSize( wxSizeEvent& event )
 {
+    if (!IsShown())
+        return;
     int width, height;
     GetClientSize( &width, &height );
     int x, y;
@@ -153,7 +153,11 @@ void StatWin::OnSize( wxSizeEvent& event )
         width_factor = 0.98;
     
     if( width ) {
+<<<<<<< HEAD
         pPiano->SetSize( 0, 0, width * width_factor, height * 1 / m_rows );
+=======
+        pPiano->SetSize( 0, 0, width * 6 / 10, height );
+>>>>>>> Fix the crash when the piano bar is not shown and remove the unused logic for handling multiple rows as there is always just one.
         pPiano->FormatKeys();
     }
 }
