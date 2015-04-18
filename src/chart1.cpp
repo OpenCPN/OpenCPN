@@ -2232,7 +2232,10 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
 //wxCAPTION | wxSYSTEM_MENU | wxRESIZE_BORDER
 {
     m_ulLastNEMATicktime = 0;
+    
     m_pStatusBar = NULL;
+    m_StatusBarFieldCount = STAT_FIELD_COUNT;
+    
     m_pMenuBar = NULL;
     g_toolbar = NULL;
     m_toolbar_scale_tools_shown = false;
@@ -2489,10 +2492,6 @@ void MyFrame::ApplyGlobalColorSchemetoStatusBar( void )
         m_pStatusBar->SetBackgroundColour(GetGlobalColor(_T("UIBDR")));    //UINFF
         m_pStatusBar->ClearBackground();
 
-        int styles[] = { wxSB_FLAT, wxSB_FLAT, wxSB_FLAT, wxSB_FLAT, wxSB_FLAT, wxSB_FLAT };
-        m_pStatusBar->SetStatusStyles( m_StatusBarFieldCount, styles );
-        int widths[] = { -6, -5, -5, -3, -4 };
-        m_pStatusBar->SetStatusWidths( m_StatusBarFieldCount, widths );
     }
 }
 
@@ -3239,16 +3238,40 @@ void MyFrame::ProcessCanvasResize( void )
 }
 
 
+int timer_sequence;
 void MyFrame::TriggerResize(wxSize sz)
 {
     m_newsize = sz;
+    
+    timer_sequence = 0;
     m_resizeTimer.Start(10, wxTIMER_ONE_SHOT);
 }
     
 
 void MyFrame::OnResizeTimer(wxTimerEvent &event)
 {
-    SetSize(m_newsize);
+    if(timer_sequence == 0){
+    //  On QT, we need to clear the status bar item texts to prevent the status bar from
+    //  growing the parent frame due to unexpected width changes.
+        if( m_pStatusBar != NULL ){
+            int widths[] = { 2,2,2,2,2 };
+           m_pStatusBar->SetStatusWidths( m_StatusBarFieldCount, widths );
+        
+            for(int i=0 ; i <  m_pStatusBar->GetFieldsCount() ; i++){
+                m_pStatusBar->SetStatusText(_T(""), i);
+            }
+        }
+            
+        timer_sequence++;
+        m_resizeTimer.Start(10, wxTIMER_ONE_SHOT);
+        return;
+    }
+    
+ 
+ 
+    if(timer_sequence == 1)
+        SetSize(m_newsize);
+    
 }
 
 
@@ -3264,6 +3287,33 @@ void MyFrame::ODoSetSize( void )
     GetClientSize( &x, &y );
     
 //      Resize the children
+ 
+        if( m_pStatusBar != NULL ) {
+            if(m_StatusBarFieldCount){
+                
+                //  If the status bar layout is "complex", meaning more than two columns,
+                //  then use custom crafted relative widths for the fields.
+                //  Otherwise, just split the frame client width into equal spaces
+                
+                if(m_StatusBarFieldCount > 2){
+                    int widths[] = { -6, -5, -5, -3, -4 };
+                    m_pStatusBar->SetStatusWidths( m_StatusBarFieldCount, widths );
+                }
+                else{
+                    int cwidth = x * 9 / 10;
+                    int widths[] = { 100, 100 };
+                    widths[0] = cwidth / m_StatusBarFieldCount;
+                    widths[1] = cwidth / m_StatusBarFieldCount;
+                    m_pStatusBar->SetStatusWidths( m_StatusBarFieldCount, widths );
+                }
+                
+                int styles[] = { wxSB_FLAT, wxSB_FLAT, wxSB_FLAT, wxSB_FLAT, wxSB_FLAT, wxSB_FLAT };
+                m_pStatusBar->SetStatusStyles( m_StatusBarFieldCount, styles );
+                
+            }
+        }
+        
+    
 
     if( m_pStatusBar ) {
         //  Maybe resize the font so the text fits in the boxes
@@ -3292,16 +3342,12 @@ void MyFrame::ODoSetSize( void )
         font_size = wxMax( font_size, min_font_size );  // minimum to stop it being unreadable
 
 #ifdef __OCPN__ANDROID__
-        //TODO
-        // This is a hack.  on WXQT, setting the status bar font size causes the
-        //  frame to be resized to accomodate, leading to a looping adjustment situation.
-        //  Solution is to be found in wx sources....
-        font_size = 3;
+        font_size = templateFont->GetPointSize();
 #endif
         
         
         wxFont *pstat_font = wxTheFontList->FindOrCreateFont( font_size,
-              wxFONTFAMILY_SWISS, templateFont->GetStyle(), templateFont->GetWeight(), false,
+              wxFONTFAMILY_DEFAULT, templateFont->GetStyle(), templateFont->GetWeight(), false,
               templateFont->GetFaceName() );
 
         m_pStatusBar->SetFont( *pstat_font );
@@ -4336,7 +4382,7 @@ void MyFrame::SetToolbarItemBitmaps( int tool_id, wxBitmap *bmp, wxBitmap *bmpRo
 void MyFrame::ApplyGlobalSettings( bool bFlyingUpdate, bool bnewtoolbar )
 {
     //             ShowDebugWindow as a wxStatusBar
-    m_StatusBarFieldCount = 5;
+    m_StatusBarFieldCount = STAT_FIELD_COUNT;
 
 #ifdef __WXMSW__
     UseNativeStatusBar( false );              // better for MSW, undocumented in frame.cpp
@@ -8326,7 +8372,9 @@ void MyFrame::PostProcessNNEA( bool pos_valid, const wxString &sfixtime )
         s1 += toSDMM( 1, gLat );
         s1 += _T("   ");
         s1 += toSDMM( 2, gLon );
-        SetStatusText( s1, STAT_FIELD_TICK );
+
+        if(STAT_FIELD_TICK >= 0 )
+            SetStatusText( s1, STAT_FIELD_TICK );
 
         wxString sogcog;
         if( wxIsNaN(gSog) ) sogcog.Printf( _T("SOG --- ") + getUsrSpeedUnit() + _T("  ") );
