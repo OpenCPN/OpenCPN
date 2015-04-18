@@ -734,10 +734,6 @@ extern "C"  DECL_EXP int RemoveChartFromDBInPlace( wxString &full_path );
 
 //      A flag field that defines the object capabilities passed by a chart to the S52 PLIB
 
-/* API 1.13 */
-/* adds more common functions to avoid unnecessary code duplication */
-extern DECL_EXP bool CheckEdgePan_PlugIn( int x, int y, bool dragging, int margin, int delta );
-
 #define PLIB_CAPS_LINE_VBO              1
 #define PLIB_CAPS_LINE_BUFFER           1 << 1
 #define PLIB_CAPS_SINGLEGEO_BUFFER      1 << 2
@@ -990,6 +986,7 @@ extern "C"  DECL_EXP void GetDoubleCanvasPixLL(PlugIn_ViewPort *vp, wxPoint2DDou
 
 
 extern DECL_EXP double fromDMM_Plugin( wxString sdms );
+extern DECL_EXP bool CheckEdgePan_PlugIn( int x, int y, bool dragging, int margin, int delta );
 
 
 #endif //_PLUGIN_H_
