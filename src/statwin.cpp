@@ -105,7 +105,7 @@ void StatWin::RePosition()
     Move( screen_pos );
 #ifdef __OCPN__ANDROID__
     Raise();
-#endif    
+#endif
 }
 
 void StatWin::ReSize()
@@ -113,13 +113,13 @@ void StatWin::ReSize()
     wxSize cs = GetParent()->GetClientSize();
     wxSize new_size;
     new_size.x = cs.x;
-    
+
     if(g_btouch)
-        new_size.y = 40 * GetRows();
+        new_size.y = 40;
     else
-        new_size.y = 22 * GetRows();
-    
-        
+        new_size.y = 22;
+
+
     SetSize(new_size);
 
 }
@@ -151,13 +151,9 @@ void StatWin::OnSize( wxSizeEvent& event )
     float width_factor = 0.6f;
     if(g_btouch)
         width_factor = 0.98f;
-    
+
     if( width ) {
-<<<<<<< HEAD
-        pPiano->SetSize( 0, 0, width * width_factor, height * 1 / m_rows );
-=======
-        pPiano->SetSize( 0, 0, width * 6 / 10, height );
->>>>>>> Fix the crash when the piano bar is not shown and remove the unused logic for handling multiple rows as there is always just one.
+        pPiano->SetSize( 0, 0, width * width_factor, height * 1 );
         pPiano->FormatKeys();
     }
 }
