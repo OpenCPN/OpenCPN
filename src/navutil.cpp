@@ -360,6 +360,9 @@ extern bool             g_bEmailCrashReport;
 
 extern int              g_default_font_size;
 
+extern bool             g_bAutoHideToolbar;
+extern int              g_nAutoHideToolbar;
+
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
 #endif
@@ -1204,6 +1207,9 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "UseNMEA_GLL" ), &g_bUseGLL, 1 );
     Read( _T ( "UseBigRedX" ), &g_bbigred, 0 );
 
+    Read( _T ( "AutoHideToolbar" ), &g_bAutoHideToolbar, 0 );
+    Read( _T ( "AutoHideToolbarSecs" ), &g_nAutoHideToolbar, 0 );
+    
     int size_mm;
     Read( _T ( "DisplaySizeMM" ), &size_mm, -1 );
     g_config_display_size_mm = size_mm;
@@ -2591,6 +2597,9 @@ void MyConfig::UpdateSettings()
 
     Write( _T ( "MobileTouch" ), g_btouch );
     Write( _T ( "ResponsiveGraphics" ), g_bresponsive );
+
+    Write( _T ( "AutoHideToolbar" ), g_bAutoHideToolbar );
+    Write( _T ( "AutoHideToolbarSecs" ), g_nAutoHideToolbar );
     
     Write( _T ( "DisplaySizeMM" ), g_config_display_size_mm );
 
