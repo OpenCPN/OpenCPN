@@ -354,6 +354,7 @@ wxSize getAndroidDisplayDimensions( void )
         return_string = wxString(ret_string, wxConvUTF8);
     }
     
+    //167.802994;1.000000;160;1024;527;1024;552;1024;552;56
      wxStringTokenizer tk(return_string, _T(";"));
     if( tk.HasMoreTokens() ){
         wxString token = tk.GetNextToken();     // xdpi
@@ -369,6 +370,20 @@ wxSize getAndroidDisplayDimensions( void )
         long b = ::wxGetDisplaySize().y;        
         if(token.ToLong( &b ))
             sz_ret.y = b;
+        
+        token = tk.GetNextToken();              
+        token = tk.GetNextToken();
+        
+        token = tk.GetNextToken();
+        token = tk.GetNextToken();
+        
+        long abh = 0;
+        token = tk.GetNextToken();              //  ActionBar height, if shown
+        if(token.ToLong( &abh ))
+            sz_ret.y -= abh;
+            
+        
+        
     }
 
     wxSize sz_wx = ::wxGetDisplaySize();               // default, probably reasonable, but maybe not accurate

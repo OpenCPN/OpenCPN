@@ -47,6 +47,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ActionBar;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -364,6 +365,11 @@ public class QtActivity extends Activity
 //            screen_h -= getResources().getDimensionPixelSize(typedValue.resourceId);
 //        }
 
+        int actionBarHeight = 0;
+        ActionBar actionBar = getActionBar();
+        if(actionBar.isShowing())
+            actionBarHeight = actionBar.getHeight();
+
         int width = 600;
         int height = 400;
 
@@ -414,10 +420,10 @@ public class QtActivity extends Activity
 
         String ret;
 
-        ret = String.format("%f;%f;%d;%d;%d;%d;%d;%d;%d", dm.xdpi, dm.density, dm.densityDpi,
+        ret = String.format("%f;%f;%d;%d;%d;%d;%d;%d;%d;%d", dm.xdpi, dm.density, dm.densityDpi,
                width, height - statusBarHeight,
                width, height,
-               dm.widthPixels, dm.heightPixels);
+               dm.widthPixels, dm.heightPixels, actionBarHeight);
 
         Log.i("DEBUGGER_TAG", ret);
 
@@ -527,9 +533,9 @@ public class QtActivity extends Activity
 
                 if(m_ScanHelperStarted){
                     scanHelper.doDiscovery();
+                    scanHelper.stopDiscovery();
                 }
 
-                scanHelper.stopDiscovery();
 
              }});
 
@@ -1478,6 +1484,7 @@ public class QtActivity extends Activity
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)
     {
+ /*
         Log.i("DEBUGGER_TAG", "onKeyDown");
 
         if (keyCode == KeyEvent.KEYCODE_MENU) {
@@ -1487,7 +1494,7 @@ public class QtActivity extends Activity
 
             return true;
         }
-
+*/
 
         if (QtApplication.m_delegateObject != null && QtApplication.onKeyDown != null)
             return (Boolean) QtApplication.invokeDelegateMethod(QtApplication.onKeyDown, keyCode, event);
