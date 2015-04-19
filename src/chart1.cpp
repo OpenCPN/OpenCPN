@@ -286,6 +286,9 @@ bool                      g_bPlayShipsBells;
 bool                      g_bFullscreenToolbar;
 bool                      g_bShowLayers;
 bool                      g_bTransparentToolbar;
+int                       g_nAutoHideToolbar;
+bool                      g_bAutoHideToolbar;
+
 bool                      g_bPermanentMOBIcon;
 bool                      g_bTempShowMenuBar;
 
@@ -2017,6 +2020,12 @@ extern ocpnGLOptions g_GLOptions;
 
     stats->Show( g_bShowChartBar );
 
+#ifdef __OCPN__ANDROID__
+    //  We need a resize to pick up height adjustment after building android ActionBar
+    if(pConfig->m_bShowMenuBar)
+        gFrame->SetSize(getAndroidDisplayDimensions());
+#endif    
+    
     gFrame->Raise();
     cc1->Enable();
     cc1->SetFocus();
