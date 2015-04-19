@@ -246,6 +246,8 @@ bool                    g_bLoadedDisabledPlugins;
 
 extern bool             g_btouch;
 extern bool             g_bresponsive;
+extern bool             g_bAutoHideToolbar;
+extern int              g_nAutoHideToolbar;
 
 extern double           g_config_display_size_mm;
 
@@ -2830,6 +2832,16 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
     miscOptions->Add( pResponsive, 0, wxALL, border_size );
     
     
+    wxBoxSizer *pToolbarAutoHide = new wxBoxSizer( wxHORIZONTAL );
+    miscOptions->Add( pToolbarAutoHide, 0, wxALL | wxEXPAND, group_item_spacing );
+
+    pToolbarAutoHideCB = new wxCheckBox( itemPanelFont, ID_REPONSIVEBOX, _("Enable Toolbar auto-hide") );
+    pToolbarAutoHide->Add( pToolbarAutoHideCB, 0, wxALL, group_item_spacing );
+    
+    pToolbarHideSecs = new wxTextCtrl( itemPanelFont, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize( 50, -1 ), wxTE_RIGHT  );
+    pToolbarAutoHide->Add( pToolbarHideSecs, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
+    
+    pToolbarAutoHide->Add( new wxStaticText( itemPanelFont, wxID_ANY, _("seconds") ),group_item_spacing );
     
 
 }
@@ -3372,6 +3384,11 @@ void options::SetInitialSettings()
         UpdateOptionsUnits(); // sets depth values using the user's unit preference
     }
 #endif
+
+    pToolbarAutoHideCB->SetValue(g_bAutoHideToolbar);
+    
+    s.Printf( _T("%d"), g_nAutoHideToolbar );
+    pToolbarHideSecs->SetValue( s );
 
 }
 
@@ -4114,6 +4131,13 @@ void options::OnApplyClick( wxCommandEvent& event )
     g_btouch = pMobile->GetValue();
     g_bresponsive = pResponsive->GetValue();
 
+    g_bAutoHideToolbar = pToolbarAutoHideCB->GetValue();
+ 
+    long hide_val = 10;
+    pToolbarHideSecs->GetValue().ToLong( &hide_val );
+    g_nAutoHideToolbar = wxMin((int)hide_val, 100);
+    g_nAutoHideToolbar = wxMax(g_nAutoHideToolbar, 2);
+    
     g_fog_overzoom = !pOverzoomEmphasis->GetValue();
     g_oz_vector_scale = !pOZScaleVector->GetValue();
     
