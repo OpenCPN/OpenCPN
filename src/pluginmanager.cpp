@@ -628,11 +628,16 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
     if (ldd != NULL)
     {
         char buf[1024];
+        
+        char strver[22]; //Enough space even for very big integers...
+        sprintf( strver, "%i.%i", wxMAJOR_VERSION, wxMINOR_VERSION );
+
         while( fscanf(ldd, "%s", buf) != EOF )
         {
-            if( strstr(buf, "libwx") != NULL && strstr(buf, "2.8") != NULL )
+            if( strstr(buf, "libwx") != NULL )
             {
-                b_compat = false;
+                if(  strstr(buf, strver) == NULL )
+                    b_compat = false;
                 break;
             }
         }
