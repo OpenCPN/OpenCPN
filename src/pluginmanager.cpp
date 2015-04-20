@@ -289,9 +289,8 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled
             
             if(!b_compat)
             {
-                wxString msg(_("    Incompatible PlugIn detected:"));
-                msg += file_name;
-                wxLogMessage(msg);
+                wxLogMessage(wxString::Format(_("    Incompatible PlugIn detected: %s"), file_name.c_str()));
+                wxMessageBox(wxString::Format(_("The plugin %s is not compatible with this version of OpenCPN, please get an updated version."), plugin_file.c_str()));
             }
             
             PlugInContainer *pic = NULL;
@@ -590,6 +589,22 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
     ::FreeLibrary(module);
 
 #endif
+#ifdef __WXGTK__
+    FILE *ldd = popen( "ldd " + plugin_file.c_str(), "r" );
+    if (ldd != NULL)
+    {
+        char buf[1024];
+        while( fscanf(ldd, "%s", buf) != EOF )
+        {
+            if( strstr(buf, "libwx") != NULL && strstr(buf, "2.8") != NULL )
+            {
+                b_compat = false;
+                break;
+            }
+        }
+        fclose(ldd);
+    }
+#endif // __WXGTK__
 
     return b_compat;
 }
