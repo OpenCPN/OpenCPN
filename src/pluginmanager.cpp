@@ -589,39 +589,75 @@ bool PlugInManager::DeactivateAllPlugIns()
     return true;
 }
 
+#ifdef __WXMSW__
+/*Convert Virtual Address to File Offset */
+DWORD Rva2Offset(DWORD rva, PIMAGE_SECTION_HEADER psh, PIMAGE_NT_HEADERS pnt)
+{
+    size_t i = 0;
+    PIMAGE_SECTION_HEADER pSeh;
+    if (rva == 0)
+    {
+        return (rva);
+    }
+    pSeh = psh;
+    for (i = 0; i < pnt->FileHeader.NumberOfSections; i++)
+    {
+        if (rva >= pSeh->VirtualAddress && rva < pSeh->VirtualAddress +
+            pSeh->Misc.VirtualSize)
+        {
+            break;
+        }
+        pSeh++;
+    }
+    return (rva - pSeh->VirtualAddress + pSeh->PointerToRawData);
+}
+#endif
 
 bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
 {
     bool b_compat = true;
 
 #ifdef __WXMSW__
-
-    //    Open the dll, and get the manifest
-    HMODULE module = ::LoadLibraryEx(plugin_file.fn_str(), NULL, LOAD_LIBRARY_AS_DATAFILE);
-    if (module == NULL)
-        return false;
-    HRSRC resInfo = ::FindResource(module, MAKEINTRESOURCE(1), RT_MANIFEST); // resource id #1 should be the manifest
-
-    if(!resInfo)
-        resInfo = ::FindResource(module, MAKEINTRESOURCE(2), RT_MANIFEST); // try resource id #2
-
-    if (resInfo) {
-        HGLOBAL resData = ::LoadResource(module, resInfo);
-        DWORD resSize = ::SizeofResource(module, resInfo);
-        if (resData && resSize) {
-            const char *res = (const char *)::LockResource(resData); // the manifest
-            if (res) {
-                // got the manifest as a char *
-                wxString manifest(res, wxConvUTF8);
-                if(wxNOT_FOUND != manifest.Find(_T("VC90.CRT")))	// cannot load with VC90 runtime (i.e. VS2008)
+    char strver[22]; //Enough space even for very big integers...
+    sprintf(strver, "%i%i", wxMAJOR_VERSION, wxMINOR_VERSION);
+    LPCWSTR fNmae = plugin_file.wc_str();
+    HANDLE handle = CreateFile(fNmae, GENERIC_READ, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+    DWORD byteread, size = GetFileSize(handle, NULL);
+    PVOID virtualpointer = VirtualAlloc(NULL, size, MEM_COMMIT, PAGE_READWRITE);
+    ReadFile(handle, virtualpointer, size, &byteread, NULL);
+    CloseHandle(handle);
+    // Get pointer to NT header
+    PIMAGE_NT_HEADERS           ntheaders = (PIMAGE_NT_HEADERS)(PCHAR(virtualpointer) + PIMAGE_DOS_HEADER(virtualpointer)->e_lfanew);
+    PIMAGE_SECTION_HEADER       pSech = IMAGE_FIRST_SECTION(ntheaders);//Pointer to first section header
+    PIMAGE_IMPORT_DESCRIPTOR    pImportDescriptor; //Pointer to import descriptor 
+    if (ntheaders->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].Size != 0)/*if size of the table is 0 - Import Table does not exist */
+    {
+        pImportDescriptor = (PIMAGE_IMPORT_DESCRIPTOR)((DWORD_PTR)virtualpointer + \
+            Rva2Offset(ntheaders->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress, pSech, ntheaders));
+        LPSTR libname[256];
+        size_t i = 0;
+        // Walk until you reached an empty IMAGE_IMPORT_DESCRIPTOR
+        while (pImportDescriptor->Name != NULL)
+        {
+            //Get the name of each DLL
+            libname[i] = (PCHAR)((DWORD_PTR)virtualpointer + Rva2Offset(pImportDescriptor->Name, pSech, ntheaders));
+            //wxMessageBox(wxString::Format(_T("%s"), libname[i]));
+            if (strstr(libname[i], "wx") != NULL)
+            {
+                if (strstr(libname[i], strver) == NULL)
                     b_compat = false;
+                break;
             }
-            UnlockResource(resData);
+            pImportDescriptor++; //advance to next IMAGE_IMPORT_DESCRIPTOR
+            i++;
         }
-        ::FreeResource(resData);
     }
-    ::FreeLibrary(module);
-
+    else
+    {
+        wxLogMessage(wxString::Format(_T("No Import Table! in %s"), plugin_file.c_str()));
+    }
+    if (virtualpointer)
+        VirtualFree(virtualpointer, size, MEM_DECOMMIT);
 #endif
 #ifdef __WXGTK__
     FILE *ldd = popen( "ldd " + plugin_file.c_str(), "r" );
