@@ -115,7 +115,13 @@ void StatWin::ReSize()
     wxSize cs = GetParent()->GetClientSize();
     wxSize new_size;
     new_size.x = cs.x;
-    new_size.y = 22 * GetRows();
+    
+    if(g_btouch)
+        new_size.y = 40 * GetRows();
+    else
+        new_size.y = 22 * GetRows();
+    
+        
     SetSize(new_size);
 
 }
@@ -142,8 +148,12 @@ void StatWin::OnSize( wxSizeEvent& event )
     int x, y;
     GetPosition( &x, &y );
 
+    float width_factor = 0.6;
+    if(g_btouch)
+        width_factor = 0.98;
+    
     if( width ) {
-        pPiano->SetSize( 0, 0, width * 6 / 10, height * 1 / m_rows );
+        pPiano->SetSize( 0, 0, width * width_factor, height * 1 / m_rows );
         pPiano->FormatKeys();
     }
 }
