@@ -1022,7 +1022,7 @@ void LoadS57()
     if( !ps52plib->m_bOK ) {
         delete ps52plib;
 
-        wxStandardPaths& std_path = *dynamic_cast<wxStandardPaths*>(&wxApp().GetTraits()->GetStandardPaths());
+        wxStandardPaths& std_path = g_Platform->GetStdPaths();
 
         wxString look_data_dir;
         look_data_dir.Append( std_path.GetUserDataDir() );
