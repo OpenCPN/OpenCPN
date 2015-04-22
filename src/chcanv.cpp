@@ -4602,7 +4602,7 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
             }
     }
     
-    if(!g_btouch ){
+    if(1/*!g_btouch*/ ){
         //    Route Creation Rubber Banding
         if( parent_frame->nRoute_State >= 2 ) {
             r_rband.x = x;
@@ -5367,17 +5367,17 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                                                           wxString( _T ( "circle" ) ), wxEmptyString, GPX_EMPTY_STRING );
                                                           pMousePoint->m_bShowName = false;
                                                           
-                                                          m_pMeasureRoute->AddPoint( pMousePoint );
+                m_pMeasureRoute->AddPoint( pMousePoint );
                                                           
-                                                          m_prev_rlat = m_cursor_lat;
-                                                          m_prev_rlon = m_cursor_lon;
-                                                          m_prev_pMousePoint = pMousePoint;
-                                                          m_pMeasureRoute->m_lastMousePointIndex = m_pMeasureRoute->GetnPoints();
+                m_prev_rlat = m_cursor_lat;
+                m_prev_rlon = m_cursor_lon;
+                m_prev_pMousePoint = pMousePoint;
+                m_pMeasureRoute->m_lastMousePointIndex = m_pMeasureRoute->GetnPoints();
                                                           
-                                                          m_nMeasureState++;
+                m_nMeasureState++;
                                                           
-                                                          Refresh( true );
-                                                          ret = true;
+                Refresh( true );
+                ret = true;
             }
             else {
                 bool b_was_editing_mark = m_bMarkEditing;
@@ -8608,12 +8608,26 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
         if(!route)
             return;
     
+        double render_lat = m_cursor_lat;
+        double render_lon = m_cursor_lon;
+        
+        if(route){
+            int np = route->GetnPoints();
+            if(np){
+                if(g_btouch && (np > 1))
+                    np --;
+                RoutePoint rp = route->GetPoint(np);
+                render_lat = rp.m_lat;
+                render_lon = rp.m_lon;
+            }
+        }
+                
         double rhumbBearing, rhumbDist, gcBearing, gcBearing2, gcDist;
-        DistanceBearingMercator( m_cursor_lat, m_cursor_lon, m_prev_rlat, m_prev_rlon, &rhumbBearing, &rhumbDist );
-        Geodesic::GreatCircleDistBear( m_prev_rlon, m_prev_rlat, m_cursor_lon, m_cursor_lat, &gcDist, &gcBearing, &gcBearing2);
+        DistanceBearingMercator( m_cursor_lat, m_cursor_lon, render_lat, render_lon, &rhumbBearing, &rhumbDist );
+        Geodesic::GreatCircleDistBear( render_lon, render_lat, m_cursor_lon, m_cursor_lat, &gcDist, &gcBearing, &gcBearing2);
         double gcDistm = gcDist / 1852.0;
 
-        if( ( m_prev_rlat == m_cursor_lat ) && ( m_prev_rlon == m_cursor_lon ) ) rhumbBearing = 90.;
+        if( ( render_lat == m_cursor_lat ) && ( render_lon == m_cursor_lon ) ) rhumbBearing = 90.;
 
         wxPoint destPoint, lastPoint;
 
@@ -8628,14 +8642,14 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
             route->m_NextLegGreatCircle = true;
         }
 
-        if( !g_btouch) {
+        if( 1/*!g_btouch*/) {
             route->DrawPointWhich( dc, route->m_lastMousePointIndex, &lastPoint );
 
             if( route->m_NextLegGreatCircle ) {
                 for( int i=1; i<=milesDiff; i++ ) {
                     double p = (double)i * (1.0/(double)milesDiff);
                     double pLat, pLon;
-                    Geodesic::GreatCircleTravel( m_prev_rlon, m_prev_rlat, gcDist*p, brg, &pLon, &pLat, &gcBearing2 );
+                    Geodesic::GreatCircleTravel( render_lon, render_lat, gcDist*p, brg, &pLon, &pLat, &gcBearing2 );
                     destPoint = VPoint.GetPixFromLL( pLat, pLon );
                     route->DrawSegment( dc, &lastPoint, &destPoint, GetVP(), false );
                     lastPoint = destPoint;
@@ -8646,8 +8660,6 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
             }
         }
 
-        if(g_btouch)
-            return;
         
         wxString routeInfo;
         if( g_bShowMag )
@@ -8684,7 +8696,10 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
         else
             s0.Append( _("Layer Route: ") );
 
-        s0 += FormatDistanceAdaptive( route->m_route_length + dist );
+        double disp_length = route->m_route_length;
+        if( !g_btouch)
+            disp_length += dist;
+        s0 += FormatDistanceAdaptive( disp_length );
         RenderExtraRouteLegInfo( dc, r_rband, s0 );
     }
 }
