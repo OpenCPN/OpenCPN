@@ -1470,25 +1470,6 @@ ViewPort glChartCanvas::NormalizedViewPort(const ViewPort &vp)
     return cvp;
 }
 
-void glChartCanvas::FixRenderIDL(int dl)
-{
-    //  Does current vp cross international dateline?
-    // if so, call the display list again translated
-    // to the other side of it..
-    ViewPort vp = cc1->GetVP();
-    if( vp.GetBBox().GetMinX() < -180. || vp.GetBBox().GetMaxX() > 180. ) {
-        double ts = 40058986*NORM_FACTOR; /* 360 degrees in normalized viewport */
-
-        glPushMatrix();
-        if( vp.GetBBox().GetMinX() < -180. )
-            glTranslated(-ts, 0, 0);
-        else
-            glTranslated(ts, 0, 0);
-        glCallList(dl);
-        glPopMatrix();
-    }
-}
-
 void glChartCanvas::DrawAllRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region )
 {
     ocpnDC dc(*this);
