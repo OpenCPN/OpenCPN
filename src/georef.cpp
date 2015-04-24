@@ -374,9 +374,9 @@ void toSM(double lat, double lon, double lat0, double lon0, double *x, double *y
 
 double toSMcache_y30(double lat0)
 {
-    const float z = WGS84_semimajor_axis_meters * mercator_k0;
-    const float s0 = sinf(lat0 * DEGREE);
-    const float y30 = (.5f * logf((1 + s0) / (1 - s0))) * z;
+    const double z = WGS84_semimajor_axis_meters * mercator_k0;
+    const double s0 = sin(lat0 * DEGREE);
+    const double y30 = (.5 * log((1 + s0) / (1 - s0))) * z;
     return y30;
 }
 
@@ -396,12 +396,8 @@ void toSMcache(double lat, double lon, double y30, double lon0, double *x, doubl
     *x = (xlon - lon0) * DEGREE * z;
 
      // y =.5 ln( (1 + sin t) / (1 - sin t) )
-#if 1
     const float s = sinf(lat * DEGREE);
     const float y3 = (.5f * logf((1 + s) / (1 - s))) * z;
-#else // this loses precision but it's fast
-    const float y3 = 1.2f * tanf(lat * DEGREE / 1.25) * z;
-#endif
 
     *y = y3 - y30;
 }
