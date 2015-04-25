@@ -1160,8 +1160,8 @@ bool s52plib::S52_flush_Plib()
     //    OpenGL Hashmaps
     CARC_Hash::iterator ita;
     for( ita = m_CARC_hashmap.begin(); ita != m_CARC_hashmap.end(); ++ita ) {
-        GLuint list = ita->second;
-        glDeleteLists( list, 1 );
+        CARC_Buffer buffer = ita->second;
+        delete [] buffer.data;
     }
     m_CARC_hashmap.clear();
 #endif
@@ -4244,93 +4244,81 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     } // instantiation
 
 #ifdef ocpnUSE_GL
+    CARC_Buffer buffer;
+
     if( !m_pdc ) // opengl
     {
-        if(glChartCanvas::s_b_useDisplayList){
-        //    Is there not already an generated display list in the CARC_hashmap for this object?
-            if( m_CARC_hashmap.find( carc_hash ) == m_CARC_hashmap.end() ) {
-            // Generate a Display list
-            GLuint carc_list = glGenLists( 1 );
-            glNewList( carc_list, GL_COMPILE );
-            glEnable( GL_BLEND );
-
-            rad = (int) ( radius * canvas_pix_per_mm );
-
-            //    Render the symbology as a zero based Display List
+        //    Is there not already an generated vbo the CARC_hashmap for this object?
+        if( m_CARC_hashmap.find( carc_hash ) == m_CARC_hashmap.end() ) {
+            int rad = (int) ( radius * canvas_pix_per_mm );
+    
+            if( sectr1 > sectr2 ) sectr2 += 360;
+    
+            /* to ensure that the final segment lands exactly on sectr2 */
 
             //    Draw wide outline arc
-            glLineWidth( wxMax(g_GLMinSymbolLineWidth, 0.5) );
             wxColour colorb = getwxColour( outline_color );
-//                  glColor4ub( colorb.Red(), colorb.Green(), colorb.Blue(), 255 );
-            glColor4ub( colorb.Red(), colorb.Green(), colorb.Blue(), 150 );
-            glLineWidth( wxMax(g_GLMinSymbolLineWidth, outline_width) );
+            buffer.color[0][0] = colorb.Red();
+            buffer.color[0][1] = colorb.Green();
+            buffer.color[0][2] = colorb.Blue();
+            buffer.color[0][3] = 150;
+            buffer.line_width[0] = wxMax(g_GLMinSymbolLineWidth, outline_width);
 
-            if( sectr1 > sectr2 ) sectr2 += 360;
+            int steps = ceil((sectr2 - sectr1) / 12) + 1; // max of 12 degree step
+            float step = (sectr2 - sectr1) / (steps - 1);
 
-            /* to ensure that the final segment lands exactly on sectr2 */
-            float step = 12 * (sectr2 - sectr1) * M_PI / 180. / 360.; /* 12 degree steps */
+            buffer.steps = steps;
+            buffer.size = 2*(steps + 4);
+            buffer.data = new float[buffer.size];
 
-            glBegin( GL_LINE_STRIP );
-            for( float a = sectr1 * M_PI / 180.0; a <= (sectr2+1) * M_PI / 180.; a += step )
-                glVertex2f( rad * sinf( a ), -rad * cosf( a ) );
-            glEnd();
-
+            int s = 0;
+            for(int i = 0; i < steps; i++) {
+                float a = (sectr1 + i * step) * M_PI / 180.0;
+                buffer.data[s++] = rad * sinf( a );
+                buffer.data[s++] = -rad * cosf( a );
+            }
+    
             //    Draw narrower color arc, overlaying the drawn outline.
             colorb = getwxColour( arc_color );
-            glColor4ub( colorb.Red(), colorb.Green(), colorb.Blue(), 255 );
-            glLineWidth( wxMax(g_GLMinSymbolLineWidth, (float)arc_width + 0.8) );
-
-            glBegin( GL_LINE_STRIP );
-            for( float a = sectr1 * M_PI / 180.0; a <= (sectr2+1) * M_PI / 180.; a += step )
-                glVertex2f( rad * sinf( a ), -rad * cosf( a ) );
-            glEnd();
-
+            buffer.color[1][0] = colorb.Red();
+            buffer.color[1][1] = colorb.Green();
+            buffer.color[1][2] = colorb.Blue();
+            buffer.color[1][3] = 150;
+            buffer.line_width[1] = wxMax(g_GLMinSymbolLineWidth, (float)arc_width + 0.8);
+        
             //    Draw the sector legs
             if( sector_radius > 0 ) {
                 int leg_len = (int) ( sector_radius * canvas_pix_per_mm );
-
+        
                 wxColour c = GetGlobalColor( _T ( "CHBLK" ) );
-                glColor4ub( c.Red(), c.Green(), c.Blue(), c.Alpha() );
-                glLineWidth( wxMax(g_GLMinSymbolLineWidth, (float)0.7) );
-
-#ifndef ocpnUSE_GLES // linestipple is emulated poorly
-                glLineStipple( 1, 0x3F3F );
-                glEnable( GL_LINE_STIPPLE );
-#endif
+                buffer.color[2][0] = c.Red();
+                buffer.color[2][1] = c.Green();
+                buffer.color[2][2] = c.Blue();
+                buffer.color[2][3] = c.Alpha();
+                buffer.line_width[2] = wxMax(g_GLMinSymbolLineWidth, (float)0.7);
+        
                 float a = ( sectr1 - 90 ) * PI / 180.;
-                int x = (int) ( leg_len * cosf( a ) );
-                int y = (int) ( leg_len * sinf( a ) );
-                glBegin( GL_LINES );
-                glVertex2i( 0, 0 );
-                glVertex2i( x, y );
+                buffer.data[s++] = 0;
+                buffer.data[s++] = 0;
+                buffer.data[s++] = leg_len * cosf( a );
+                buffer.data[s++] = leg_len * sinf( a );
 
                 a = ( sectr2 - 90 ) * PI / 180.;
-                x = (int) ( leg_len * cosf( a ) );
-                y = (int) ( leg_len * sinf( a ) );
-                glVertex2i( 0, 0 );
-                glVertex2i( x, y );
-                glEnd();
+                buffer.data[s++] = 0;
+                buffer.data[s++] = 0;
+                buffer.data[s++] = leg_len * cosf( a );
+                buffer.data[s++] = leg_len * sinf( a );
+            } else
+                buffer.line_width[2] = 0;
 
-                glDisable( GL_LINE_STIPPLE );
+            m_CARC_hashmap[carc_hash] = buffer;
 
-            }
-
-            glDisable( GL_BLEND );
-            glEndList();
-
-            //    Record the existence of this display list in the searchable hashmap
-                m_CARC_hashmap[carc_hash] = carc_list;
-            }
-
-        //      Save the list and OpenGL specific parameters in the rule
-            prule->pixelPtr = (void *) 1;
-            prule->parm0 = ID_GLIST;
-            prule->parm7 = m_CARC_hashmap[carc_hash];
-        
-            
-        }       // DisplayList 
-        
-
+        //      Save the vbo and OpenGL specific parameters in the rule
+//            prule->pixelPtr = (void *) 1;
+//            prule->parm0 = ID_GLIST;
+//            prule->parm7 = m_CARC_hashmap[carc_hash];
+        } else
+            buffer = m_CARC_hashmap[carc_hash];
     } // instantiation
 #endif
 
@@ -4346,11 +4334,35 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     {
 #ifdef ocpnUSE_GL
         glTranslatef( r.x, r.y, 0 );
-        
-        if(glChartCanvas::s_b_useDisplayList)
-            glCallList( rules->razRule->parm7 );
-        else
-            RenderCARCGL( sectr1, sectr2, outline_color, outline_width, arc_color, arc_width, sector_radius, radius );
+
+        glVertexPointer(2, GL_FLOAT, 2 * sizeof(float), buffer.data);
+
+        glEnable( GL_BLEND );
+        glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
+
+        glColor3ubv(buffer.color[0]);
+        glLineWidth(buffer.line_width[0]);
+        glDrawArrays(GL_LINE_STRIP, 0, buffer.steps);
+
+        glColor3ubv(buffer.color[1]);
+        glLineWidth(buffer.line_width[1]);
+        glDrawArrays(GL_LINE_STRIP, 0, buffer.steps);
+
+        if(buffer.line_width[2]) {
+#ifndef ocpnUSE_GLES // linestipple is emulated poorly
+            glLineStipple( 1, 0x3F3F );
+            glEnable( GL_LINE_STIPPLE );
+#endif
+            glColor3ubv(buffer.color[2]);
+            glLineWidth(buffer.line_width[2]);
+            glDrawArrays(GL_LINES, buffer.steps, 4);
+#ifndef ocpnUSE_GLES
+            glDisable( GL_LINE_STIPPLE );
+#endif
+        }
+
+        glDisableClientState(GL_VERTEX_ARRAY);
+        glDisable( GL_BLEND );
         
         glTranslatef( -r.x, -r.y, 0 );
 #endif        
@@ -4413,79 +4425,6 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
     return 1;
 }
-
-void s52plib::RenderCARCGL( double sectr1, double sectr2,
-                            wxString& outline_color, long outline_width,
-                            wxString& arc_color, long arc_width,
-                            long sector_radius, long radius )
-{
-    glEnable( GL_LINE_SMOOTH );
-    glEnable( GL_BLEND );
-    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-    glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
-    
-    int rad = (int) ( radius * canvas_pix_per_mm );
-    
-    //    Render the symbology as a zero based Display List
-    
-    //    Draw wide outline arc
-    glLineWidth( wxMax(g_GLMinSymbolLineWidth, 0.5) );
-    wxColour colorb = getwxColour( outline_color );
-    //                  glColor4ub( colorb.Red(), colorb.Green(), colorb.Blue(), 255 );
-    glColor4ub( colorb.Red(), colorb.Green(), colorb.Blue(), 150 );
-    glLineWidth( wxMax(g_GLMinSymbolLineWidth, outline_width) );
-    
-    if( sectr1 > sectr2 ) sectr2 += 360;
-    
-    /* to ensure that the final segment lands exactly on sectr2 */
-    float step = 12 * (sectr2 - sectr1) * M_PI / 180. / 360.; /* 12 degree steps */
-    
-    glBegin( GL_LINE_STRIP );
-    for( float a = sectr1 * M_PI / 180.0; a <= (sectr2+1) * M_PI / 180.; a += step )
-        glVertex2f( rad * sinf( a ), -rad * cosf( a ) );
-    glEnd();
-    
-    //    Draw narrower color arc, overlaying the drawn outline.
-    colorb = getwxColour( arc_color );
-    glColor4ub( colorb.Red(), colorb.Green(), colorb.Blue(), 255 );
-    glLineWidth( wxMax(g_GLMinSymbolLineWidth, (float)arc_width + 0.8) );
-    
-    glBegin( GL_LINE_STRIP );
-    for( float a = sectr1 * M_PI / 180.0; a <= (sectr2+1) * M_PI / 180.; a += step )
-        glVertex2f( rad * sinf( a ), -rad * cosf( a ) );
-    glEnd();
-    
-    //    Draw the sector legs
-    if( sector_radius > 0 ) {
-        int leg_len = (int) ( sector_radius * canvas_pix_per_mm );
-        
-        wxColour c = GetGlobalColor( _T ( "CHBLK" ) );
-        glColor4ub( c.Red(), c.Green(), c.Blue(), c.Alpha() );
-        glLineWidth( wxMax(g_GLMinSymbolLineWidth, (float)0.7) );
-        
-        #ifndef ocpnUSE_GLES // linestipple is emulated poorly
-        glLineStipple( 1, 0x3F3F );
-        glEnable( GL_LINE_STIPPLE );
-        #endif
-        float a = ( sectr1 - 90 ) * PI / 180.;
-        int x = (int) ( leg_len * cosf( a ) );
-        int y = (int) ( leg_len * sinf( a ) );
-        glBegin( GL_LINES );
-        glVertex2i( 0, 0 );
-        glVertex2i( x, y );
-        
-        a = ( sectr2 - 90 ) * PI / 180.;
-        x = (int) ( leg_len * cosf( a ) );
-        y = (int) ( leg_len * sinf( a ) );
-        glVertex2i( 0, 0 );
-        glVertex2i( x, y );
-        glEnd();
-        
-        glDisable( GL_LINE_STIPPLE );
-        
-    }
-}
-
 
 // Conditional Symbology
 char *s52plib::RenderCS( ObjRazRules *rzRules, Rules *rules )

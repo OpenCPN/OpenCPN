@@ -50,7 +50,15 @@ WX_DEFINE_SORTED_ARRAY( LUPrec *, wxArrayOfLUPrec );
 
 WX_DECLARE_LIST( S52_TextC, TextObjList );
 
-WX_DECLARE_STRING_HASH_MAP( int, CARC_Hash );
+struct CARC_Buffer {
+    unsigned char color[3][4];
+    float line_width[3];
+    int steps;
+
+    int size;
+    float *data;
+};
+WX_DECLARE_STRING_HASH_MAP( CARC_Buffer, CARC_Hash );
 
 class ViewPort;
 class PixelCache;
