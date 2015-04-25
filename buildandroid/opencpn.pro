@@ -80,6 +80,7 @@ LIBS += $${OCPN_Base}/$${OCPN_Build}/lib/libGL.a
 LIBS += /home/dsr/Qt/5.3/android_armv7/lib/libQt5AndroidExtras.so
 
 TARGETDEPS += $${OCPN_Base}/$${OCPN_Build}/libgorp.a
+TARGETDEPS += $${OCPN_Base}/$${OCPN_Build}/libS57ENC.a
 TARGETDEPS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_core-3.1-arm-linux-androideabi.a
 TARGETDEPS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_gl-3.1-arm-linux-androideabi.a
 

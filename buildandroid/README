@@ -1,4 +1,12 @@
 0....Tools, etc.
+
+        __Run ndk-gdb to debug a target app.
+        https://vilimpoc.org/blog/2010/09/23/hello-gdbserver-a-debuggable-jni-example-for-android/
+
+        __emulator
+        export ANDROID_EMULATOR_FORCE_32BIT=true
+        /home/dsr/Projects/android-ndk/android-sdk-linux/tools/android
+
         __ Uninstall old version
         $/home/dsr/Projects/android-ndk/android-sdk-linux/platform-tools/adb  uninstall org.opencpn.opencpn
 
@@ -80,8 +88,8 @@
         $export PKG_CONFIG_PATH=~/Qt/5.2.1/android_armv7/lib/pkgconfig
 
         ___Set a few environment variables.
-        $export CPPFLAGS=-D__ANDROID__                  (this is for some special stuff in wxWidgets,
-                                                         seems only needed for configure step, not make)
+        $export CPPFLAGS=-D__ANDROID__                  (this is for some special stuff in wxWidgets)
+
 
         $export PATH={tools.path.of.your.choice}/bin:$PATH
         e.g.
@@ -119,6 +127,12 @@
 
 
             These patches/commits may be found in https://github.com/bdbcat/wxWidgets.
+
+
+            Update, April 6, 2015...
+            Notes 1 and 4 above corrected in wxQT source by (corrected) commit from upstream.
+            wxNEED_WX_STRTOXXW is deprecated.
+
 
 
             These patches should be refined and submitted as pull requests to wxWidgets trunk.

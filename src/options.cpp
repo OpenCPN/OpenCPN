@@ -208,6 +208,7 @@ extern bool             g_bMagneticAPB;
 extern bool             g_fog_overzoom;
 extern double           g_overzoom_emphasis_base;
 extern bool             g_oz_vector_scale;
+extern bool             g_bShowStatusBar;
 
 
 
@@ -1221,9 +1222,28 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
         m_stBTPairs->Hide();
         bSizer15a->Add( m_stBTPairs, 0, wxALL, 5 );
         
-        m_choiceBTDataSources = new wxChoice( m_pNMEAForm, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                                              g_Platform->getBluetoothScanResults());
-        m_choiceBTDataSources->SetSelection( 0 );
+        wxArrayString mt;
+        mt.Add(_T("unscanned"));
+        m_choiceBTDataSources = new wxChoice( m_pNMEAForm, wxID_ANY, wxDefaultPosition, wxDefaultSize, mt);
+        
+        m_BTscan_results = g_Platform->getBluetoothScanResults();
+        
+        m_choiceBTDataSources->Clear();
+        m_choiceBTDataSources->Append(m_BTscan_results.Item(0));  // scan status
+        
+        unsigned int i=1;
+        while( (i+1) < m_BTscan_results.GetCount()){
+            wxString item1 = m_BTscan_results.Item(i) + _T(";");
+            wxString item2 = m_BTscan_results.Item(i+1);
+            m_choiceBTDataSources->Append(item1 + item2);
+            
+            i += 2;
+        }
+        
+        if( m_BTscan_results.GetCount() > 1){
+            m_choiceBTDataSources->SetSelection( 1 );
+        }
+        
         m_choiceBTDataSources->Hide();
         bSizer15a->Add( m_choiceBTDataSources, 1, wxEXPAND|wxTOP, 5 );
         
@@ -1932,7 +1952,8 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
     pRBSizeManual = new wxRadioButton( m_ChartDisplayPage, ID_SIZEMANUALRADIOBUTTON, _("Manual:") );
     pDPIRow->Add( pRBSizeManual, inputFlags );
 
-    pScreenMM = new wxTextCtrl( m_ChartDisplayPage, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize( 50, -1 ), wxTE_RIGHT  );
+    pScreenMM = new wxTextCtrl( m_ChartDisplayPage, ID_TEXTCTRL, _T(""), wxDefaultPosition,
+                                wxSize( 3 * m_fontHeight, -1 ), wxTE_RIGHT  );
     pDPIRow->Add( pScreenMM, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
 
     pDPIRow->Add( new wxStaticText( m_ChartDisplayPage, wxID_ANY, _("mm") ), inputFlags );
@@ -1955,6 +1976,10 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
     OpenGLSizer->Add( pOpenGL, inputFlags );
     pOpenGL->Enable(!g_bdisable_opengl);
 
+#ifdef __OCPN__ANDROID__
+    pOpenGL->Disable();
+#endif    
+    
     wxButton *bOpenGL = new wxButton( m_ChartDisplayPage, ID_OPENGLOPTIONS, _("Options...") );
     OpenGLSizer->Add( bOpenGL, inputFlags );
     bOpenGL->Enable(!g_bdisable_opengl);
@@ -2222,7 +2247,7 @@ void options::CreatePanel_ChartGroups( size_t parent, int border_size, int group
 
     m_groupsPage->Connect( wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxListbookEventHandler( options::OnChartsPageChange ), NULL, this );
 
-    groupsPanel->CompletePanel();
+//    groupsPanel->CompletePanel();     // Deferred until panel is selected....
 }
 
 void ChartGroupsUI::CreatePanel( size_t parent, int border_size, int group_item_spacing,
@@ -3068,7 +3093,7 @@ void options::SetInitialSettings()
     }
 
     if( m_pConfig ) {
-        pShowStatusBar->SetValue( m_pConfig->m_bShowStatusBar );
+        pShowStatusBar->SetValue( g_bShowStatusBar );
 #ifndef __WXOSX__
         pShowMenuBar->SetValue( m_pConfig->m_bShowMenuBar );
 #endif
@@ -3254,8 +3279,8 @@ void options::SetInitialSettings()
         pRBSizeManual->SetValue( true );
     }
     else{
-        screenmm = _("Auto");
         pRBSizeAuto->SetValue( true );
+        screenmm.Printf(_T("%d"), int(g_Platform->GetDisplaySizeMM()));
         pScreenMM->Disable();
     }
     
@@ -3386,6 +3411,9 @@ void options::UpdateOptionsUnits()
 void options::OnSizeAutoButton( wxCommandEvent& event )
 {
     pScreenMM->SetValue(_("Auto"));
+    wxString screenmm;
+    screenmm.Printf(_T("%d"), int(g_Platform->GetDisplaySizeMM()));
+    pScreenMM->SetValue(screenmm);
     pScreenMM->Disable();
 }
 
@@ -3394,6 +3422,9 @@ void options::OnSizeManualButton( wxCommandEvent& event )
     wxString screenmm;
     if(g_config_display_size_mm > 0){
         screenmm.Printf(_T("%d"), int(g_config_display_size_mm));
+    }
+    else {
+        screenmm.Printf(_T("%d"), int(g_Platform->GetDisplaySizeMM()));
     }
     
     pScreenMM->SetValue(screenmm);
@@ -3606,12 +3637,39 @@ void options::OnButtonaddClick( wxCommandEvent& event )
 
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     dirSelector->SetFont(*qFont);
+
     if(g_bresponsive){
+    
+        dirSelector->Show();
         dirSelector->SetSize( GetSize());
         dirSelector->Centre();
+
+        wxSize sds = dirSelector->GetSize();
+        wxSize ss =GetSize();
+        
+        
+        if(sds.x > ss.x){
+            dirSelector->Hide();
+            delete dirSelector;
+            dirSelector = new wxDirDialog( this, _("Add a directory containing chart files"),
+                                         *pInit_Chart_Dir, wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST );
+            
+            
+            wxFont *dialogFont = GetOCPNScaledFont(_("Dialog"));
+            wxFont *smallFont = new wxFont( * dialogFont ); 
+            smallFont->SetPointSize( (smallFont->GetPointSize() / 2) + 0.5 ); // + 0.5 to round instead of truncate
+            dirSelector->SetFont( * smallFont );
+            
+            dirSelector->SetSize( GetSize());
+            dirSelector->Centre();
+            
+        }
+        dirSelector->Hide();
+        
     }
-    
-    if( dirSelector->ShowModal() == wxID_CANCEL ) goto done;
+
+    if( dirSelector->ShowModal() == wxID_CANCEL )
+        goto done;
 
     selDir = dirSelector->GetPath();
     dirname = wxFileName( selDir );
@@ -3632,6 +3690,7 @@ void options::OnButtonaddClick( wxCommandEvent& event )
     pScanCheckBox->Disable();
 
     done:
+
     delete dirSelector;
     event.Skip();
 }
@@ -3911,7 +3970,7 @@ void options::OnApplyClick( wxCommandEvent& event )
     // Handle Settings Tab
 
     if( m_pConfig ) {
-        m_pConfig->m_bShowStatusBar = pShowStatusBar->GetValue();
+        g_bShowStatusBar = pShowStatusBar->GetValue();
 #ifndef __WXOSX__
         m_pConfig->m_bShowMenuBar = pShowMenuBar->GetValue();
 #endif
@@ -5387,6 +5446,7 @@ void options::OnScanBTClick( wxCommandEvent& event )
         m_BTScanTimer.Start(1000, wxTIMER_CONTINUOUS);
         g_Platform->startBluetoothScan();
         m_BTscanning = 1;
+        if(m_buttonScanBT) m_buttonScanBT->Disable();
     }
 }
 
@@ -5395,7 +5455,7 @@ void options::onBTScanTimer(wxTimerEvent &event)
     if(m_BTscanning){
         m_BTscanning++;
         
-        int isel = m_choiceBTDataSources->GetSelection();
+//        int isel = m_choiceBTDataSources->GetSelection();
         
         m_BTscan_results = g_Platform->getBluetoothScanResults();
         
@@ -5411,17 +5471,18 @@ void options::onBTScanTimer(wxTimerEvent &event)
             i += 2;
         }
         
-        if( isel != wxNOT_FOUND){
-            m_choiceBTDataSources->SetSelection( isel );
+//        if( isel != wxNOT_FOUND){
+//            m_choiceBTDataSources->SetSelection( isel );
+//        }
+            
+        if( m_BTscan_results.GetCount() > 1){
+            m_choiceBTDataSources->SetSelection( 1 );
         }
             
-        
-        if(m_BTscanning >= 30){
-            m_BTScanTimer.Stop();
- 
-            m_choiceBTDataSources->SetString(0, _("Finished"));
-            m_BTscanning = 0;
+                
             
+        if(m_BTscanning >= 30){
+            StopBTScan();
         }
     }
     else{
@@ -5439,6 +5500,9 @@ void options::StopBTScan()
     if(m_choiceBTDataSources)
         m_choiceBTDataSources->SetString(0, _("Finished"));
     m_BTscanning = 0;
+    
+    if(m_buttonScanBT) m_buttonScanBT->Enable();
+    
 }
 
 
@@ -5629,7 +5693,11 @@ void options::ShowNMEABT(bool visible)
     {
         if(m_buttonScanBT) m_buttonScanBT->Show();
         if(m_stBTPairs) m_stBTPairs->Show();
-        if(m_choiceBTDataSources) m_choiceBTDataSources->Show();
+        if(m_choiceBTDataSources){
+            if(m_choiceBTDataSources->GetCount() > 1)
+                m_choiceBTDataSources->SetSelection(1);
+            m_choiceBTDataSources->Show();
+        }
         
     }
     else

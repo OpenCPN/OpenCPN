@@ -70,6 +70,16 @@ public:
     void SetDefaultOptions( void );
     
 //--------------------------------------------------------------------------
+//      Platform Display Support
+//--------------------------------------------------------------------------
+    void ShowBusySpinner( void );
+    void HideBusySpinner( void );
+    double getFontPointsperPixel( void );
+    wxSize getDisplaySize();
+    double GetDisplaySizeMM();
+    
+    
+//--------------------------------------------------------------------------
 //      Per-Platform file/directory support
 //--------------------------------------------------------------------------
 

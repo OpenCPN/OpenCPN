@@ -61,4 +61,7 @@ private:
 
     unsigned  int texobj;
     int tex_w, tex_h;
+    int m_maxglyphw;
+    int m_maxglyphh;
+    
 };

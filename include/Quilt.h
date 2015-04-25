@@ -248,6 +248,8 @@ private:
     
     int m_lost_refchart_dbIndex;
     bool m_b_hidef;
+    
+    bool m_bquiltskew;
 };
 
 #endif

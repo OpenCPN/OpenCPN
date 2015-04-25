@@ -40,12 +40,13 @@ void TexFont::Build( wxFont &font, bool blur )
     m_font = font;
     m_blur = blur;
 
-    wxBitmap bmp(256, 256);
-    wxMemoryDC dc(bmp);
+    m_maxglyphw = 0;
+    m_maxglyphh = 0;
+    
+    wxScreenDC sdc;
 
-    dc.SetFont( font );
+    sdc.SetFont( font );
 
-    int maxglyphw = 0, maxglyphh = 0;
     for( int i = MIN_GLYPH; i < MAX_GLYPH; i++ ) {
         wxCoord gw, gh;
         wxString text;
@@ -54,24 +55,25 @@ void TexFont::Build( wxFont &font, bool blur )
         else
             text = wxString::Format(_T("%c"), i);
         wxCoord descent, exlead;
-        dc.GetTextExtent( text, &gw, &gh, &descent, &exlead, &font ); // measure the text
+        sdc.GetTextExtent( text, &gw, &gh, &descent, &exlead, &font ); // measure the text
 
         tgi[i].width = gw;
         tgi[i].height = gh;
 
         tgi[i].advance = gw;
-
-        maxglyphw = wxMax(gw, maxglyphw);
-        maxglyphh = wxMax(gh, maxglyphh);
+        
+        
+        m_maxglyphw = wxMax(tgi[i].width,  m_maxglyphw);
+        m_maxglyphh = wxMax(tgi[i].height, m_maxglyphh);
     }
 
     /* add extra pixel to give a border between rows of characters
        without this, in some cases a faint line can be see on the edge
        from the character above */
-    maxglyphh++;
+    m_maxglyphh++;
 
-    int w = COLS_GLYPHS * maxglyphw;
-    int h = ROWS_GLYPHS * maxglyphh;
+    int w = COLS_GLYPHS * m_maxglyphw;
+    int h = ROWS_GLYPHS * m_maxglyphh;
 
     wxASSERT(w < 2048 && h < 2048);
 
@@ -80,8 +82,10 @@ void TexFont::Build( wxFont &font, bool blur )
     for(tex_h = 1; tex_h < h; tex_h *= 2);
 
     wxBitmap tbmp(tex_w, tex_h);
+    wxMemoryDC dc;
     dc.SelectObject(tbmp);
-
+    dc.SetFont( font );
+    
     /* fill bitmap with black */
     dc.SetBackground( wxBrush( wxColour( 0, 0, 0 ) ) );
     dc.Clear();
@@ -89,6 +93,11 @@ void TexFont::Build( wxFont &font, bool blur )
     /* draw the text white */
     dc.SetTextForeground( wxColour( 255, 255, 255 ) );
 
+ /*    wxPen pen(wxColour( 255, 255, 255 ));
+     wxBrush brush(wxColour( 255, 255, 255 ), wxTRANSPARENT);
+     dc.SetPen(pen);
+     dc.SetBrush(brush);
+  */  
     int row = 0, col = 0;
     for( int i = MIN_GLYPH; i < MAX_GLYPH; i++ ) {
         if(col == COLS_GLYPHS) {
@@ -96,8 +105,8 @@ void TexFont::Build( wxFont &font, bool blur )
             row++;
         }
 
-        tgi[i].x = col * maxglyphw;
-        tgi[i].y = row * maxglyphh;
+        tgi[i].x = col * m_maxglyphw;
+        tgi[i].y = row * m_maxglyphh;
 
         wxString text;
         if(i == DEGREE_GLYPH)
@@ -106,9 +115,13 @@ void TexFont::Build( wxFont &font, bool blur )
             text = wxString::Format(_T("%c"), i);
 
         dc.DrawText(text, tgi[i].x, tgi[i].y );
+        
+//        dc.DrawRectangle(tgi[i].x, tgi[i].y, tgi[i].advance, tgi[i].height);
         col++;
     }
 
+    dc.SelectObject(wxNullBitmap);
+    
     wxImage image = tbmp.ConvertToImage();
 
     GLuint format, internalformat;
@@ -138,7 +151,7 @@ void TexFont::Build( wxFont &font, bool blur )
 
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST/*GL_LINEAR*/ );
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 
         glTexImage2D( GL_TEXTURE_2D, 0, internalformat, tex_w, tex_h, 0,
@@ -193,11 +206,11 @@ void TexFont::RenderGlyph( int c )
     TexGlyphInfo &tgic = tgi[c];
 
     int x = tgic.x, y = tgic.y;
-    float w = tgic.width, h = tgic.height;
-    float tx1 = (float)x / tex_w;
-    float tx2 = (float)(x + w) / tex_w;
-    float ty1 = (float)y / tex_h;
-    float ty2 = (float)(y + h) / tex_h;
+    float w = m_maxglyphw, h = m_maxglyphh;
+    float tx1 = (float)x / (float)tex_w;
+    float tx2 = (float)(x + w) / (float)tex_w;
+    float ty1 = (float)y / (float)tex_h;
+    float ty2 = (float)(y + h) / (float)tex_h;
 
     glBegin( GL_QUADS );
 

@@ -105,6 +105,7 @@ extern ColorScheme      global_color_scheme;
 extern int              g_nbrightness;
 extern bool             g_bShowMag;
 extern double           g_UserVar;
+extern bool             g_bShowStatusBar;
 
 extern wxToolBarBase    *toolBar;
 
@@ -356,6 +357,8 @@ extern double           g_display_size_mm;
 extern double           g_config_display_size_mm;
 extern bool             g_benable_rotate;
 extern bool             g_bEmailCrashReport;
+
+extern int              g_default_font_size;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
@@ -1188,6 +1191,8 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "DebugBSBImg" ), &g_BSBImgDebug, 0 );
     Read( _T ( "DebugGPSD" ), &g_bDebugGPSD, 0 );
 
+    Read( _T ( "DefaultFontSize"), &g_default_font_size, 0 );
+    
     Read( _T ( "UseGreenShipIcon" ), &g_bUseGreenShip, 0 );
     g_b_overzoom_x = true;
     Read( _T ( "AutosaveIntervalSeconds" ), &g_nautosave_interval_seconds, 300 );
@@ -1315,7 +1320,7 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "SkewCompUpdatePeriod" ), &g_SkewCompUpdatePeriod, 10 );
 
     Read( _T ( "SetSystemTime" ), &s_bSetSystemTime, 0 );
-    Read( _T ( "ShowStatusBar" ), &m_bShowStatusBar, 1 );
+    Read( _T ( "ShowStatusBar" ), &g_bShowStatusBar, 1 );
 #ifndef __WXOSX__
     Read( _T ( "ShowMenuBar" ), &m_bShowMenuBar, 0 );
 #endif
@@ -2469,10 +2474,12 @@ void MyConfig::UpdateSettings()
     Write( _T ( "UIStyle" ), g_StyleManager->GetStyleNextInvocation() );
     Write( _T ( "ChartNotRenderScaleFactor" ), g_ChartNotRenderScaleFactor );
 
-    Write( _T ( "ShowStatusBar" ), m_bShowStatusBar );
+    Write( _T ( "ShowStatusBar" ), g_bShowStatusBar );
 #ifndef __WXOSX__
     Write( _T ( "ShowMenuBar" ), m_bShowMenuBar );
 #endif
+    Write( _T ( "DefaultFontSize" ), g_default_font_size );
+    
     Write( _T ( "ShowCompassWindow" ), m_bShowCompassWin );
     Write( _T ( "SetSystemTime" ), s_bSetSystemTime );
     Write( _T ( "ShowGrid" ), g_bDisplayGrid );

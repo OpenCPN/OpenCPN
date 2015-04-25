@@ -59,6 +59,7 @@
 #include "glTexCache.h"
 #include "gshhs.h"
 #include "ais.h"
+#include "OCPNPlatform.h"
 
 #ifndef GL_ETC1_RGB8_OES
 #define GL_ETC1_RGB8_OES                                        0x8D64
@@ -100,6 +101,7 @@ extern int g_GPU_MemSize;
 extern bool g_bDebugOGL;
 extern bool g_bShowFPS;
 extern bool g_btouch;
+extern OCPNPlatform *g_Platform;
 
 GLenum       g_texture_rectangle_format;
 
@@ -201,6 +203,7 @@ bool glChartCanvas::s_b_useScissorTest;
 bool glChartCanvas::s_b_useStencil;
 bool glChartCanvas::s_b_useStencilAP;
 bool glChartCanvas::s_b_UploadFullMipmaps;
+bool glChartCanvas::s_b_useDisplayList;
 //static int s_nquickbind;
 
 long populate_tt_total, mipmap_tt_total, hwmipmap_tt_total, upload_tt_total;
@@ -670,7 +673,7 @@ static void GetglEntryPoints( void )
     unsigned int n_ext = (sizeof extensions) / (sizeof *extensions);
 
     unsigned int i;
-    for(i=0; i<(sizeof extensions) / (sizeof *extensions); i++) {
+    for(i=0; i<n_ext; i++) {
         if((s_glGenFramebuffers = (PFNGLGENFRAMEBUFFERSEXTPROC)
             ocpnGetProcAddress( "glGenFramebuffers", extensions[i])))
             break;
@@ -712,12 +715,12 @@ static void GetglEntryPoints( void )
 
     //  Retry VBO entry points with all extensions
     if(0 == s_glGenBuffers){
-        for( i=0; i<(sizeof extensions) / (sizeof *extensions); i++) {
+        for( i=0; i<n_ext; i++) {
             if((s_glGenBuffers = (PFNGLGENBUFFERSPROC)ocpnGetProcAddress( "glGenBuffers", extensions[i])) )
                 break;
         }
         
-        if( i < 3 ){
+        if( i < n_ext ){
             s_glBindBuffer = (PFNGLBINDBUFFERPROC) ocpnGetProcAddress( "glBindBuffer", extensions[i]);
             s_glBufferData = (PFNGLBUFFERDATAPROC) ocpnGetProcAddress( "glBufferData", extensions[i]);
             s_glDeleteBuffers = (PFNGLDELETEBUFFERSPROC) ocpnGetProcAddress( "glDeleteBuffers", extensions[i]);
@@ -726,7 +729,7 @@ static void GetglEntryPoints( void )
             
 
 #ifndef __OCPN__ANDROID__            
-    for(i=0; i<(sizeof extensions) / (sizeof *extensions); i++) {
+    for(i=0; i<n_ext; i++) {
         if((s_glCompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DPROC)
             ocpnGetProcAddress( "glCompressedTexImage2D", extensions[i])))
             break;
@@ -902,8 +905,8 @@ void glChartCanvas::BuildFBO( )
             
         m_cache_tex_x = wxMax(rb_x, rb_y);
         m_cache_tex_y = wxMax(rb_x, rb_y);
-        m_cache_tex_x = 2048;
-        m_cache_tex_y = 2048;
+        m_cache_tex_x = wxMax(2048, m_cache_tex_x);
+        m_cache_tex_y = wxMax(2048, m_cache_tex_y);
     } else {            
         m_cache_tex_x = GetSize().x;
         m_cache_tex_y = GetSize().y;
@@ -939,12 +942,34 @@ void glChartCanvas::BuildFBO( )
         ( s_glFramebufferRenderbuffer )( GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT,
                                              GL_RENDERBUFFER_EXT, m_renderbuffer );
     } else {
+        
+        GLenum depth_format = GL_DEPTH_COMPONENT24;
+        
+        //      Need to check for availability of 24 bit depth buffer extension on GLES
+#ifdef ocpnUSE_GLES
+        if( !QueryExtension("GL_OES_depth24") )
+            depth_format = GL_DEPTH_COMPONENT16;
+#endif        
+        
         // initialize depth renderbuffer
-        ( s_glRenderbufferStorage )( GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24,
+        ( s_glRenderbufferStorage )( GL_RENDERBUFFER_EXT, depth_format,
                                          m_cache_tex_x, m_cache_tex_y );
+        int err = glGetError();
+        if(err){
+            wxString msg;
+            msg.Printf( _T("    OpenGL-> Framebuffer Depth Buffer Storage error:  %08X"), err );
+            wxLogMessage(msg);
+        }
+                
         ( s_glFramebufferRenderbuffer )( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
                                              GL_RENDERBUFFER_EXT, m_renderbuffer );
         
+        err = glGetError();
+        if(err){
+            wxString msg;
+            msg.Printf( _T("    OpenGL-> Framebuffer Depth Buffer Attach error:  %08X"), err );
+            wxLogMessage(msg);
+        }
     }
     
     // Disable Render to FBO
@@ -982,7 +1007,8 @@ void glChartCanvas::SetupOpenGL()
     
     const GLubyte *ext_str = glGetString(GL_EXTENSIONS);
     m_extensions = wxString( (const char *)ext_str, wxConvUTF8 );
-//    wxLogMessage( m_extensions );
+    wxLogMessage( _T("OpenGL extensions available: ") );
+    wxLogMessage(m_extensions );
     
     //  Set the minimum line width
     GLint parms[2];
@@ -1035,6 +1061,11 @@ void glChartCanvas::SetupOpenGL()
     if( stencil && ( sb == 8 ) )
         s_b_useStencil = true;
 
+    //  Display lists OK?
+    s_b_useDisplayList = true;
+#ifdef ocpnUSE_GLES    
+    s_b_useDisplayList = false;
+#endif    
      
     if( QueryExtension( "GL_ARB_texture_non_power_of_two" ) )
         g_texture_rectangle_format = GL_TEXTURE_2D;
@@ -1203,6 +1234,12 @@ void glChartCanvas::SetupOpenGL()
 
     if(s_b_useScissorTest && s_b_useStencil)
         wxLogMessage( _T("OpenGL-> Using Scissor Clipping") );
+
+    
+    if( s_b_useDisplayList )
+        wxLogMessage( _T("OpenGL-> Using Display Lists") );
+    else
+        wxLogMessage( _T("OpenGL-> Not using Display Lists") );
     
     /* we upload non-aligned memory */
     glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
@@ -1258,40 +1295,47 @@ void glChartCanvas::SetupCompression()
     int dim = g_GLOptions.m_iTextureDimension;
     g_uncompressed_tile_size = dim*dim*3;
     if(g_GLOptions.m_bTextureCompression) {
+
+        g_raster_format = GL_RGB;
+    
+    // On GLES, we prefer OES_ETC1 compression, if available
+#ifdef ocpnUSE_GLES
+        if(QueryExtension("GL_OES_compressed_ETC1_RGB8_texture") && s_glCompressedTexImage2D) {
+            g_raster_format = GL_ETC1_RGB8_OES;
+    
+        wxLogMessage( _("OpenGL-> Using oes etc1 compression") );
+        }
+#endif
+    
+        if(GL_RGB == g_raster_format){
         /* because s3tc is patented, many foss drivers disable
            support by default, however the extension dxt1 allows
            us to load this texture type which is enough because we
            compress in software using libsquish for superior quality anyway */
 
-        if((QueryExtension("GL_EXT_texture_compression_s3tc") ||
-            QueryExtension("GL_EXT_texture_compression_dxt1")) &&
-           s_glCompressedTexImage2D) {
-            /* buggy opensource nvidia driver, renders incorrectly,
-               workaround is to use format with alpha... */
-            if(GetRendererString().Find( _T("Gallium") ) != wxNOT_FOUND &&
-               GetRendererString().Find( _T("NV") ) != wxNOT_FOUND )
-                g_raster_format = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-            else
-                g_raster_format = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+            if((QueryExtension("GL_EXT_texture_compression_s3tc") ||
+                QueryExtension("GL_EXT_texture_compression_dxt1")) &&
+            s_glCompressedTexImage2D) {
+                /* buggy opensource nvidia driver, renders incorrectly,
+                workaround is to use format with alpha... */
+                if(GetRendererString().Find( _T("Gallium") ) != wxNOT_FOUND &&
+                GetRendererString().Find( _T("NV") ) != wxNOT_FOUND )
+                    g_raster_format = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+                else
+                    g_raster_format = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
 
-            wxLogMessage( _("OpenGL-> Using s3tc dxt1 compression") );
-        } else if(QueryExtension("GL_3DFX_texture_compression_FXT1") &&
-                  s_glCompressedTexImage2D && s_glGetCompressedTexImage) {
-            g_raster_format = GL_COMPRESSED_RGB_FXT1_3DFX;
+                wxLogMessage( _("OpenGL-> Using s3tc dxt1 compression") );
+            } else if(QueryExtension("GL_3DFX_texture_compression_FXT1") &&
+                    s_glCompressedTexImage2D && s_glGetCompressedTexImage) {
+                g_raster_format = GL_COMPRESSED_RGB_FXT1_3DFX;
 
-            wxLogMessage( _("OpenGL-> Using 3dfx fxt1 compression") );
-#ifdef ocpnUSE_GLES
-        } else if(QueryExtension("GL_OES_compressed_ETC1_RGB8_texture") &&
-                  s_glCompressedTexImage2D) {
-           g_raster_format = GL_ETC1_RGB8_OES;
-
-            wxLogMessage( _("OpenGL-> Using oes etc1 compression") );
-#endif
-        } else {
-            wxLogMessage( _("OpenGL-> No Useable compression format found") );
-            goto no_compression;
+                wxLogMessage( _("OpenGL-> Using 3dfx fxt1 compression") );
+            } else {
+                wxLogMessage( _("OpenGL-> No Useable compression format found") );
+                goto no_compression;
+            }
         }
-
+        
 #ifdef ocpnUSE_GLES /* gles doesn't have GetTexLevelParameter */
         g_tile_size = 512*512/2; /* 4bpp */
 #else
@@ -2439,17 +2483,43 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, O
     wxRealPoint Rp, Rs;
     double scalefactor;
     int size_X, size_Y;
+    
+    double skew_norm = chart->GetChartSkew();
+    if( skew_norm > 180. ) skew_norm -= 360.;
+    
     if( b_plugin ) {
         /* TODO: plugins need floating point version */
         wxRect R;
-        pPlugInWrapper->ComputeSourceRectangle( svp, &R );
+        if(vp.b_quilt && (fabs(skew_norm) > 1.0)){
+            //  make a larger viewport to ensure getting all of the chart tiles
+            ViewPort xvp = svp;
+            float maxdiag = sqrtf( (xvp.pix_width * xvp.pix_width) + (xvp.pix_height * xvp.pix_height) );
+            xvp.pix_width = maxdiag;
+            xvp.pix_height = maxdiag;
+            pPlugInWrapper->ComputeSourceRectangle( xvp, &R );
+        }
+        else { 
+            pPlugInWrapper->ComputeSourceRectangle( svp, &R );
+        }
+        
         Rp.x = R.x, Rp.y = R.y, Rs.x = R.width, Rs.y = R.height;
 
         scalefactor = pPlugInWrapper->GetRasterScaleFactor();
         size_X = pPlugInWrapper->GetSize_X();
         size_Y = pPlugInWrapper->GetSize_Y();
     } else {
-        pBSBChart->ComputeSourceRectangle( svp, &Rp, &Rs );
+        if(vp.b_quilt && (fabs(skew_norm) > 1.0)){
+            //  make a larger viewport to ensure getting all of the chart tiles
+            ViewPort xvp = svp;
+            float maxdiag = sqrtf( (xvp.pix_width * xvp.pix_width) + (xvp.pix_height * xvp.pix_height) );
+            xvp.pix_width = maxdiag;
+            xvp.pix_height = maxdiag;
+            pBSBChart->ComputeSourceRectangle( xvp, &Rp, &Rs );
+        }
+        else {
+            pBSBChart->ComputeSourceRectangle( svp, &Rp, &Rs );
+        }
+        
         scalefactor = pBSBChart->GetRasterScaleFactor();
         size_X = pBSBChart->GetSize_X();
         size_Y = pBSBChart->GetSize_Y();
@@ -2505,6 +2575,9 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, O
     if(g_bskew_comp)
         angle -= vp.skew;
 
+    if(vp.b_quilt)
+        angle -= skew_norm * PI / 180.;
+    
     if( angle != 0 ) /* test not really needed, but maybe a little faster for north up? */
     {
         //    Shift texture drawing positions to account for the larger chart rectangle
@@ -2561,10 +2634,18 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, O
 
 
                 //    And does this tile intersect the desired render region?
-                if( region.Contains( rt ) == wxOutRegion ) {
-                    /*   user setting is in MB while we count exact bytes */
+                
+                //    Special processing for skewed charts...
+                //    We are working in "chart native" (i.e. unrotated) rectilinear coordinates for skewed charts.
+                //    But we do not have a good (cheap) way to rotate a wxRegion.
+                //    So, we therefore must include all on-screen tiles in the render loop, and count on the clipregion
+                //    set earlier to prevent drawing outside the charts own space onscreen.
+                //    This will probably be cheaper than rotating the region, even if we could do it.
+                
+                if((fabs(skew_norm) < 1.0) && ( region.Contains( rt ) == wxOutRegion ) ) {
+                        /*   user setting is in MB while we count exact bytes */
                     bool bGLMemCrunch = g_tex_mem_used > g_GLOptions.m_iTextureMemorySize * 1024 * 1024;
-                    /* delete this unneeded tile if we need to free up memory */
+                        /* delete this unneeded tile if we need to free up memory */
                     if( bGLMemCrunch )
                         pTexFact->DeleteTexture( rect );
                 } else { // this tile is needed
@@ -2665,7 +2746,7 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &Region )
                 if( !get_region.IsEmpty() ) {
                     if( !pqp->b_overlay ) {
                         ChartBaseBSB *Patch_Ch_BSB = dynamic_cast<ChartBaseBSB*>( chart );
-                        if( Patch_Ch_BSB ) {
+                        if( Patch_Ch_BSB /*&& chart->GetChartSkew()*/ ) {
                             RenderRasterChartRegionGL( chart, cc1->VPoint, get_region );
                             b_rendered = true;
                         } else {
@@ -3506,8 +3587,10 @@ void glChartCanvas::Render()
                     
                     glViewport( m_fbo_offsetx, m_fbo_offsety, (GLint) sx, (GLint) sy );
 
+                    g_Platform->ShowBusySpinner();
                     RenderCharts(gldc, chart_get_region);
-
+                    g_Platform->HideBusySpinner();
+                    
 /*                    
                     wxRect rect( 50, 50, cc1->VPoint.rv_rect.width-100, cc1->VPoint.rv_rect.height-100 );
                     glColor3ub(250, 0, 0);
@@ -4088,6 +4171,7 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
     switch(event.GetState()){
         case GestureStarted:
             m_binPinch = true;
+            m_binPan = false;   // cancel any tentative pan gesture, in case the "pan cancel" event was lost
             break;
             
         case GestureUpdated:

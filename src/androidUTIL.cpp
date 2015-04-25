@@ -102,8 +102,8 @@ extern "C"{
         
 //        qDebug() << "processNMEA" << string;
  
-        char tstr[100];
-        strncpy(tstr, string, 99);
+        char tstr[200];
+        strncpy(tstr, string, 190);
         strcat(tstr, "\r\n");
         
         if( s_pAndroidNMEAMessageConsumer ) {
@@ -136,6 +136,17 @@ extern "C"{
         
 //        evh->AddPendingEvent(ev);
         return 77;
+    }
+}
+
+extern "C"{
+    JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onMenuKey(JNIEnv *env, jobject obj)
+    {
+        qDebug() << "onMenuKey";
+
+        gFrame->ToggleToolbar();
+            
+        return 88;
     }
 }
 
@@ -359,6 +370,9 @@ wxSize getAndroidDisplayDimensions( void )
         if(token.ToLong( &b ))
             sz_ret.y = b;
     }
+
+    wxSize sz_wx = ::wxGetDisplaySize();               // default, probably reasonable, but maybe not accurate
+    qDebug() << sz_wx.x << sz_wx.y << sz_ret.x << sz_ret.y;
     
     return sz_ret;
     

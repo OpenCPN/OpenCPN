@@ -8201,6 +8201,11 @@ bool ChartCanvas::InvokeCanvasMenu(int x, int y, int seltype)
 
     delete m_canvasMenu;
     m_canvasMenu = NULL;
+
+#ifdef __WXQT__
+    g_FloatingToolbarDialog->Raise();
+    g_FloatingCompassDialog->Raise();
+#endif
     
     return true;
 }
@@ -8636,6 +8641,9 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
             }
         }
 
+        if(g_btouch)
+            return;
+        
         wxString routeInfo;
         if( g_bShowMag )
             routeInfo << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( brg ) );

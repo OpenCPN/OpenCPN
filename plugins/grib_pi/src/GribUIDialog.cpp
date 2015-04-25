@@ -49,6 +49,7 @@
 #include <wx/arrimpl.cpp>
 
 #if defined (_WIN32)
+#if _MSC_VER < 1700
 int round (double x) {
 	int i = (int) x;
 	if (x >= 0.0) {
@@ -57,6 +58,7 @@ int round (double x) {
 		return (-x+i >= 0.5) ? (i - 1) : (i);
 	}
 }
+#endif
 #endif
 
 WX_DEFINE_OBJARRAY( ArrayOfGribRecordSets );

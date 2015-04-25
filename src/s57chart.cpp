@@ -4477,7 +4477,12 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
             msg.Append( _T(" to ") );
             msg.Append( SENCfile.GetFullPath() );
             wxLogMessage( msg );
+#ifdef __OCPN__ANDROID__
+            wxLogMessage(_T("   Android: Error overridden / ignored.") );
+            ret_code = BUILD_SENC_OK;
+#else      
             ret_code = BUILD_SENC_NOK_RETRY;
+#endif            
         } else
             ret_code = BUILD_SENC_OK;
 
@@ -7132,11 +7137,11 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
             attrIndex = thisLight->attributeNames.Index( _T("COLOUR") );
             if( attrIndex != wxNOT_FOUND ) {
                 wxString color = thisLight->attributeValues.Item( attrIndex );
-                if( color == _T("red(3)") ) lightsHtml
+                if( color == _T("red (3)") ) lightsHtml
                         << _T("<table border=0><tr><td bgcolor=red>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
-                if( color == _T("green(4)") ) lightsHtml
+                if( color == _T("green (4)") ) lightsHtml
                         << _T("<table border=0><tr><td bgcolor=green>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
-                if( color == _T("white(1)") ) lightsHtml
+                if( color == _T("white (1)") ) lightsHtml
                         << _T("<table border=0><tr><td bgcolor=yellow>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
             }
 
