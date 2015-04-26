@@ -6105,6 +6105,7 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
           glPopMatrix();
 
           glDisableClientState(GL_VERTEX_ARRAY);
+          glDisable( GL_LINE_STIPPLE );
           glDisable( GL_LINE_SMOOTH );
           glDisable( GL_BLEND );
       }

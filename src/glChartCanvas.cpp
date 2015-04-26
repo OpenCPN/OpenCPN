@@ -1607,6 +1607,7 @@ void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
     ChartTableEntry *entry = ChartData->GetpChartTableEntry(dbIndex);
 
     glEnable( GL_BLEND );
+    glEnable( GL_LINE_SMOOTH );
 
     glColor3ub(color.Red(), color.Green(), color.Blue());
     glLineWidth( g_GLMinSymbolLineWidth );
@@ -1636,6 +1637,7 @@ void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
         glEnd();
     } while(++j < nAuxPlyEntries );                 // There are no aux Ply Point entries
 
+    glDisable( GL_LINE_SMOOTH );
     glDisable( GL_BLEND );
 }
 
@@ -1696,6 +1698,7 @@ void glChartCanvas::GridDraw( )
 
     // Draw Major latitude grid lines and text
     glEnable( GL_BLEND );
+    glEnable( GL_LINE_SMOOTH );
 
     glColor3ub(GridColor.Red(), GridColor.Green(), GridColor.Blue());
 
@@ -1812,6 +1815,7 @@ void glChartCanvas::GridDraw( )
             glEnd();
     }
 
+    glDisable( GL_LINE_SMOOTH );
     glDisable( GL_BLEND );
 }
 
@@ -1964,6 +1968,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
     if( !drawit )
         return;
 
+    glEnable( GL_LINE_SMOOTH );
     glEnable( GL_POLYGON_SMOOTH );
     glEnableClientState(GL_VERTEX_ARRAY);
     
@@ -2175,6 +2180,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
     }
 
     glDisableClientState(GL_VERTEX_ARRAY);
+    glDisable( GL_LINE_SMOOTH );
     glDisable( GL_POLYGON_SMOOTH );
     glDisable(GL_BLEND);
 
@@ -3407,7 +3413,6 @@ void glChartCanvas::Render()
     // set opengl settings that don't normally change
     // this should be able to go in SetupOpenGL, but it's
     // safer here incase a plugin mangles these
-    glEnable( GL_LINE_SMOOTH );
     glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
     glHint( GL_POLYGON_SMOOTH_HINT, GL_NICEST );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );

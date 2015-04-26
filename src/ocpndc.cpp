@@ -140,9 +140,11 @@ void ocpnDC::SetGLAttrs( bool highQuality )
     
     //      Enable anti-aliased polys, at best quality
     if( highQuality ) {
+        glEnable( GL_LINE_SMOOTH );
         glEnable( GL_POLYGON_SMOOTH );
         glEnable( GL_BLEND );
     } else {
+        glDisable(GL_LINE_SMOOTH);
         glDisable( GL_POLYGON_SMOOTH );
         glDisable( GL_BLEND );
     }
@@ -355,6 +357,7 @@ void ocpnDC::DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2, bool b_hi
             SetGLStipple();
 
             glEnable( GL_BLEND );
+            glEnable( GL_LINE_SMOOTH );
 
             if( pen_width > 1.0 ) {
                 GLint parms[2];
@@ -364,9 +367,7 @@ void ocpnDC::DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2, bool b_hi
                     glLineWidth( pen_width );
             } else
                 glLineWidth( pen_width );
-        } else {
-            glDisable( GL_LINE_SMOOTH );
-            
+        } else {            
             if( pen_width > 1 ) {
                 GLint parms[2];
                 glGetIntegerv( GL_ALIASED_LINE_WIDTH_RANGE, &parms[0] );
@@ -424,11 +425,12 @@ void ocpnDC::DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2, bool b_hi
             }
         }
 
-        if( !b_hiqual )
-            glEnable( GL_LINE_SMOOTH );
-
         glDisable( GL_LINE_STIPPLE );
-        glDisable( GL_BLEND );
+
+        if( b_hiqual ) {
+            glDisable( GL_LINE_SMOOTH );
+            glDisable( GL_BLEND );
+        }
     }
 #endif    
 }
@@ -566,7 +568,6 @@ void ocpnDC::DrawLines( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffse
                     glLineWidth( wxMax(g_GLMinSymbolLineWidth, m_pen.GetWidth()) );
             } else
                 glLineWidth( wxMax(g_GLMinSymbolLineWidth, 1) );
-            glDisable(GL_LINE_SMOOTH);
         }
 
         if( b_draw_thick) {
@@ -578,12 +579,8 @@ void ocpnDC::DrawLines( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffse
             glEnd();
         }
 
-        if( !b_hiqual )
-            glEnable(GL_LINE_SMOOTH);
-
         glDisable( GL_LINE_STIPPLE );
-        glDisable( GL_POLYGON_SMOOTH );
-        glDisable( GL_BLEND );
+        SetGLAttrs( false );
     }
 #endif    
 }
@@ -802,8 +799,7 @@ void ocpnDC::DrawPolygon( int n, wxPoint points[], wxCoord xoffset, wxCoord yoff
             glEnd();
         }
 
-        glDisable( GL_POLYGON_SMOOTH );
-        glDisable( GL_BLEND );
+        SetGLAttrs( false );
     }
 #endif    
 }
@@ -880,8 +876,6 @@ void ocpnDC::DrawPolygonTessellated( int n, wxPoint points[], wxCoord xoffset, w
             return;
         }
 
-        SetGLAttrs( false );
-
         static GLUtesselator *tobj = NULL;
         if( ! tobj ) tobj = gluNewTess();
 
@@ -912,9 +906,6 @@ void ocpnDC::DrawPolygonTessellated( int n, wxPoint points[], wxCoord xoffset, w
             gluTessEndContour( tobj );
             gluTessEndPolygon( tobj );
         }
-
-        glEnable( GL_LINE_SMOOTH );
-        glEnable( GL_POLYGON_SMOOTH );
 
         for( unsigned int i=0; i<gTesselatorVertices.Count(); i++ )
             delete (GLvertex*)gTesselatorVertices.Item(i);

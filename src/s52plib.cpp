@@ -2840,8 +2840,6 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     S52color *c = getColor( str + 7 ); // Colour
     int w = atoi( str + 5 ); // Width
     
-    glDisable( GL_LINE_SMOOTH );
-    
     glColor3ub( c->R, c->G, c->B );
     
     //    Set drawing width
@@ -2951,8 +2949,6 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     glPopMatrix();
 
     glDisable( GL_LINE_STIPPLE );
-    glEnable( GL_LINE_SMOOTH );
-
 #endif                  // OpenGL
     
     return 1;
@@ -3032,7 +3028,6 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     else // OpenGL mode
     {
         glColor3ub( c->R, c->G, c->B );
-        glDisable( GL_LINE_SMOOTH );
         
         //    Set drawing width
         if( w > 1 ) {
@@ -3399,10 +3394,8 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 }
 #endif
 #ifdef ocpnUSE_GL
-    if( !m_pdc ) {
-        glEnable( GL_LINE_SMOOTH );
+    if( !m_pdc )
         glDisable( GL_LINE_STIPPLE );
-    }
 #endif                
    
     return 1;
@@ -3819,6 +3812,7 @@ next_seg_dc:
 
                     //      Enable anti-aliased lines, at best quality
                     glEnable( GL_BLEND );
+                    glEnable( GL_LINE_SMOOTH );
 
                     // if(m_pen.GetWidth() > 1)
                     //   DrawThickLine(x1, y1, x2, y2, m_pen.GetWidth());
@@ -3830,6 +3824,7 @@ next_seg_dc:
                         glEnd();
                     }
                     
+                    glDisable( GL_LINE_SMOOTH );
                     glDisable( GL_BLEND );
                 } else {
                     float s = 0;
@@ -3853,6 +3848,7 @@ next_seg_dc:
                     }
 
                     glEnable( GL_BLEND );
+                    glEnable( GL_LINE_SMOOTH );
 
                     // if(m_pen.GetWidth() > 1)
                     //   DrawThickLine(x1, y1, x2, y2, m_pen.GetWidth());
@@ -3863,6 +3859,7 @@ next_seg_dc:
                         glVertex2i( ptp[iseg + inc].x, ptp[iseg + inc].y );
                         glEnd();
                     }
+                    glDisable( GL_LINE_SMOOTH );
                     glDisable( GL_BLEND );
                 }
             }
@@ -4338,6 +4335,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         glVertexPointer(2, GL_FLOAT, 2 * sizeof(float), buffer.data);
 
         glEnable( GL_BLEND );
+        glEnable( GL_LINE_SMOOTH );
         glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
 
         glColor3ubv(buffer.color[0]);
@@ -4362,6 +4360,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         }
 
         glDisableClientState(GL_VERTEX_ARRAY);
+        glDisable( GL_LINE_SMOOTH );
         glDisable( GL_BLEND );
         
         glTranslatef( -r.x, -r.y, 0 );
