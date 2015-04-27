@@ -476,12 +476,19 @@ IF(QT_ANDROID)
         set(CMAKE_EXE_LINKER_FLAGS "-s")  ## Strip binary
  #   endif()
     
-  INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include/QtCore")
-  INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include")
-  INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include/QtWidgets")
-  INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include/QtGui")
-  INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include/QtOpenGL")
-  INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include/QtTest")
+#  INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include/QtCore")
+#  INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include")
+#  INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include/QtWidgets")
+#  INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include/QtGui")
+#  INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include/QtOpenGL")
+#  INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include/QtTest")
+
+  INCLUDE_DIRECTORIES("${Qt_Base}/5.3/android_armv7/include/QtCore")
+  INCLUDE_DIRECTORIES("${Qt_Base}/5.3/android_armv7/include")
+  INCLUDE_DIRECTORIES("${Qt_Base}/5.3/android_armv7/include/QtWidgets")
+  INCLUDE_DIRECTORIES("${Qt_Base}/5.3/android_armv7/include/QtGui")
+  INCLUDE_DIRECTORIES("${Qt_Base}/5.3/android_armv7/include/QtOpenGL")
+  INCLUDE_DIRECTORIES("${Qt_Base}/5.3/android_armv7/include/QtTest")
 
   ADD_DEFINITIONS(-DQT_WIDGETS_LIB)
 
@@ -1571,11 +1578,11 @@ ENDIF(WIN32 AND NOT UNIX)
 
 MESSAGE (STATUS "")
 
-IF(NOT QT_ANDROID) 
+#IF(NOT QT_ANDROID) 
 IF(NOT SKIP_PLUGINS)
  add_subdirectory (plugins)
 ENDIF(NOT SKIP_PLUGINS)
-ENDIF(NOT QT_ANDROID)
+#ENDIF(NOT QT_ANDROID)
 
 # build a CPack driven installer package
 #include (InstallRequiredSystemLibraries)
