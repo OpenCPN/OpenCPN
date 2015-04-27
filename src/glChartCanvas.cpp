@@ -2199,7 +2199,7 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc, OCPNRegion &region )
 
     if( g_pi_manager ) {
         g_pi_manager->SendViewPortToRequestingPlugIns( vp );
-        g_pi_manager->RenderAllGLCanvasOverlayPlugIns( GetContext(), vp );
+        g_pi_manager->RenderAllGLCanvasOverlayPlugIns( NULL, vp );
     }
 
     // all functions called with cc1-> are still slow because they go through ocpndc

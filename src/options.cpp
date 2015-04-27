@@ -366,7 +366,7 @@ void MMSIEditDialog::CreateControls()
      
      wxStaticText* itemStaticText5 = new wxStaticText( itemDialog1, wxID_STATIC, _("MMSI") );
      itemStaticBoxSizer4->Add( itemStaticText5, 0,
-                               wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, 5 );
+                               wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5 );
      
      m_MMSICtl = new wxTextCtrl( itemDialog1, ID_MMSI_CTL, _T(""), wxDefaultPosition, wxSize( 180, -1 ), 0 );
      itemStaticBoxSizer4->Add( m_MMSICtl, 0,
@@ -2993,7 +2993,7 @@ void options::CreateControls()
     CreatePanel_Display( m_pageDisplay, border_size, group_item_spacing, m_small_button_size );
     CreatePanel_Units( m_pageDisplay, border_size, group_item_spacing, m_small_button_size );
     CreatePanel_Advanced( m_pageDisplay, border_size, group_item_spacing, m_small_button_size );
-    
+
     m_pageCharts = CreatePanel( _("Charts") );
     CreatePanel_ChartsLoad( m_pageCharts, border_size, group_item_spacing, m_small_button_size );
     CreatePanel_VectorCharts( m_pageCharts, border_size, group_item_spacing, m_small_button_size );
@@ -3007,7 +3007,7 @@ void options::CreateControls()
     CreatePanel_Ownship( m_pageShips, border_size, group_item_spacing, m_small_button_size );
     CreatePanel_AIS( m_pageShips, border_size, group_item_spacing, m_small_button_size );
     CreatePanel_MMSI( m_pageShips, border_size, group_item_spacing, m_small_button_size );
-    
+
     m_pageUI = CreatePanel( _("User Interface") );
     CreatePanel_UI( m_pageUI, border_size, group_item_spacing, m_small_button_size );
 
@@ -3043,7 +3043,7 @@ void options::CreateControls()
 
     //  The s57 chart panel is the one which controls the minimum width required to avoid horizontal scroll bars
     vectorPanel->SetSizeHints( ps57Ctl );
-    
+
 }
 
 void options::SetInitialPage( int page_sel)
@@ -6475,7 +6475,7 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
         wxStaticText* stTextureMemorySize =
             new wxStaticText( this, wxID_STATIC, _("Texture Memory Size (MB)") );
         m_bSizer1->Add( stTextureMemorySize, 0,
-                wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, 5 );
+                wxLEFT | wxRIGHT | wxTOP, 5 );
 
         m_sTextureMemorySize = new wxSpinCtrl( this );
         m_sTextureMemorySize->SetRange(1, 16384 );
@@ -6500,10 +6500,10 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
 
     m_stTextureCacheSize = new wxStaticText(this, wxID_STATIC, TextureCacheSize());
     m_bSizer1->Add( m_stTextureCacheSize, 0,
-                    wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, 5 );
+                    wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5 );
 
     m_cbShowFPS = new wxCheckBox( this, wxID_ANY, _("Show FPS") );
-    m_bSizer1->Add( m_cbShowFPS, 0,  wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, 5 );
+    m_bSizer1->Add( m_cbShowFPS, 0,  wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5 );
     m_cbShowFPS->SetValue(g_bShowFPS);
     
     wxStdDialogButtonSizer * m_sdbSizer4 = new wxStdDialogButtonSizer();
