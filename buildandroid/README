@@ -183,7 +183,7 @@
         $mkdir build_android
         $cd build_android
 
-        $cmake -D_wx_selected_config=androideabi-qt -DCMAKE_TOOLCHAIN_FILE=../buildandroid/build_android.cmake ..
+        $cmake -D_wx_selected_config=androideabi-qt -DCMAKE_TOOLCHAIN_FILE=../buildandroid/cross_build_android.cmake ..
 
 
         5. Build OCPN
