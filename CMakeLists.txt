@@ -1578,11 +1578,11 @@ ENDIF(WIN32 AND NOT UNIX)
 
 MESSAGE (STATUS "")
 
-#IF(NOT QT_ANDROID) 
+IF(NOT QT_ANDROID) 
 IF(NOT SKIP_PLUGINS)
  add_subdirectory (plugins)
 ENDIF(NOT SKIP_PLUGINS)
-#ENDIF(NOT QT_ANDROID)
+ENDIF(NOT QT_ANDROID)
 
 # build a CPack driven installer package
 #include (InstallRequiredSystemLibraries)

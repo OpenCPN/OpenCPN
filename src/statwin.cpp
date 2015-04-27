@@ -148,9 +148,9 @@ void StatWin::OnSize( wxSizeEvent& event )
     int x, y;
     GetPosition( &x, &y );
 
-    float width_factor = 0.6;
+    float width_factor = 0.6f;
     if(g_btouch)
-        width_factor = 0.98;
+        width_factor = 0.98f;
     
     if( width ) {
         pPiano->SetSize( 0, 0, width * width_factor, height * 1 / m_rows );
