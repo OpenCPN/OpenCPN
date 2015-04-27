@@ -30,7 +30,7 @@ wxQt_Build=build_android_53
 
 # OCPN target
 OCPN_Base=/home/dsr/Projects/opencpn_sf/opencpn
-OCPN_Build=build_android_static
+OCPN_Build=build_android_53
 }
 
 

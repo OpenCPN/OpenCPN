@@ -134,6 +134,8 @@ void GrabberWin::MouseEvent( wxMouseEvent& event )
 
 
 #ifdef __WXOSX__
+    ocpnFloatingToolbarDialog *pp = wxDynamicCast(GetParent(), ocpnFloatingToolbarDialog);
+
     if (!m_bLeftDown && event.LeftIsDown())
     {
         m_bLeftDown = true;
@@ -505,6 +507,7 @@ void ocpnFloatingToolbarDialog::Surface()
 #ifdef __WXQT__
     Raise();
 #endif
+    
 }
 
 void ocpnFloatingToolbarDialog::HideTooltip()
