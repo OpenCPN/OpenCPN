@@ -6291,8 +6291,6 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         return 0;
 
     if( glChartCanvas::s_b_useStencilAP ) {
-        glPushAttrib( GL_STENCIL_BUFFER_BIT );
-
         //    Use masked bit "1" of the stencil buffer to create a stencil for the area of interest
 
         glEnable( GL_STENCIL_TEST );
@@ -6305,8 +6303,6 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         glStencilOp( GL_KEEP, GL_KEEP, GL_REPLACE );
 
     } else {
-        glPushAttrib( GL_DEPTH_BUFFER_BIT );
-
         glEnable( GL_DEPTH_TEST ); // to use the depth test
         glDepthFunc( GL_GREATER ); // Respect global render mask in depth buffer
         glDepthMask( GL_TRUE ); // to allow writes to the depth buffer
@@ -6330,12 +6326,14 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         z_tex_geom = .25;
     }
 
+#if 0
     //  Render the geometry
         // Generate a Display list if using overall Depth Buffer clipping, for use later
         if( glChartCanvas::s_b_useDisplayList && !glChartCanvas::s_b_useStencilAP && !glChartCanvas::s_b_useStencil ) {
             clip_list = glGenLists( 1 );
             glNewList( clip_list, GL_COMPILE );
         }
+#endif
 
         PolyTriGroup *ppg = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
 
@@ -6435,20 +6433,21 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
 //        obj_xmin = 0;
 //        obj_xmax = 2000;
-
+#if 0
         if( glChartCanvas::s_b_useDisplayList && !glChartCanvas::s_b_useStencilAP &&  !glChartCanvas::s_b_useStencil ) {
             glEndList();
             glCallList( clip_list );
         }
+#endif
+
+        glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE ); // re-enable color buffer
 
         if( glChartCanvas::s_b_useStencilAP ) {
             //    Now set the stencil ops to subsequently render only where the stencil bit is "2"
             glStencilFunc( GL_EQUAL, 2, 2 );
             glStencilOp( GL_KEEP, GL_KEEP, GL_KEEP );
-            glColorMask( true, true, true, true ); // Re-enable the color buffer
         } else {
             glDepthFunc( GL_EQUAL ); // Set the test value
-            glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE ); // re-enable color buffer
             glDepthMask( GL_FALSE ); // disable depth buffer
         }
         //    Get the pattern definition
@@ -6533,6 +6532,7 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         glDisable( GL_TEXTURE_2D );
         glDisable( GL_BLEND );
 
+#if 0
         //    If using overall DepthBuffer clipping, we need to
         //    undo the sub-clip area for this feature render.
         //    Otherwise, subsequent AP renders with also honor this sub-clip region.
@@ -6575,9 +6575,13 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             glClearDepth(1);
             glClear( GL_DEPTH_BUFFER_BIT ); // back to default
         }
-        //    Restore the previous state
-        glPopAttrib();
 
+#endif
+        //    Restore the previous state
+        if( glChartCanvas::s_b_useStencilAP )
+            glStencilFunc( GL_EQUAL, 1, 1 );
+        else
+            glChartCanvas::SetClipRegion( *vp, m_last_clip_region);
 
     free( ptp );
 #endif                  //#ifdef ocpnUSE_GL

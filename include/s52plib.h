@@ -35,6 +35,7 @@ class wxGLContext;
 #include <wx/glcanvas.h>
 #endif
 
+#include "OCPNRegion.h"
 #include "ocpn_types.h"
 
 #include <wx/dcgraph.h>         // supplemental, for Mac
@@ -238,6 +239,8 @@ public:
 
     RuleHash *_symb_sym; // symbol symbolisation rules
     MyNatsurHash m_natsur_hash;     // hash table for cacheing NATSUR string values from int attributes
+
+    OCPNRegion m_last_clip_region;
     
 private:
     int S52_load_Plib( const wxString& PLib, bool b_forceLegacy );
