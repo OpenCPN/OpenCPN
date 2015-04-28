@@ -2309,6 +2309,7 @@ bool s57chart::DoRenderRegionViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint,
         ClearRenderedTextCache();                       // and reset the text renderer,
                                                         //for the case where depth(height) units change
         ResetPointBBoxes( m_last_vp, VPoint );
+        SetSafetyContour();
     }
 
     if( VPoint.view_scale_ppm != m_last_vp.view_scale_ppm ) {

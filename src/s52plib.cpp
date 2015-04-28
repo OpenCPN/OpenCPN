@@ -4712,18 +4712,19 @@ int s52plib::SetLineFeaturePriority( ObjRazRules *rzRules, int npriority )
         }
     }
 
-    else
+    else {
+        // DEPCNT is mutable
         if( m_nDisplayCategory == STANDARD ) {
             if( ( DISPLAYBASE != rzRules->LUP->DISC ) && ( STANDARD != rzRules->LUP->DISC ) ) {
-                b_catfilter = false;
+                b_catfilter = rzRules->obj->m_bcategory_mutable;
             }
         } else
             if( m_nDisplayCategory == DISPLAYBASE ) {
                 if( DISPLAYBASE != rzRules->LUP->DISC ) {
-                    b_catfilter = false;
+                    b_catfilter = rzRules->obj->m_bcategory_mutable;
                 }
             }
-
+    }
     if( !b_catfilter ) return 0;
 
     while( rules != NULL ) {
