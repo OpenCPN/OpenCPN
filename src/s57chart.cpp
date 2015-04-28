@@ -4562,27 +4562,28 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
                 wxString fe_name = wxString(obj->FeatureName, wxConvUTF8);
                 if (objnam.Len() > 0)
                     g_pi_manager->SendVectorChartObjectInfo( FullPath, fe_name, objnam, obj->m_lat, obj->m_lon, scale, nativescale );
-                
+
 //      Build/Maintain the ATON floating/rigid arrays
                 if( GEO_POINT == obj->Primitive_type ) {
 
 // set floating platform
                     if( ( !strncmp( obj->FeatureName, "LITFLT", 6 ) )
                             || ( !strncmp( obj->FeatureName, "LITVES", 6 ) )
-                            || ( !strncmp( obj->FeatureName, "BOY", 3 ) ) ) {
+                            || ( !strncasecmp( obj->FeatureName, "BOY", 3 ) ) ) {
                         pFloatingATONArray->Add( obj );
                     }
 
 // set rigid platform
-                    if( !strncmp( obj->FeatureName, "BCN", 3 ) ) {
+                    if( !strncasecmp( obj->FeatureName, "BCN", 3 ) ) {
                         pRigidATONArray->Add( obj );
                     }
+                    
 
                     //    Mark the object as an ATON
                     if( ( !strncmp( obj->FeatureName, "LIT", 3 ) )
                             || ( !strncmp( obj->FeatureName, "LIGHTS", 6 ) )
-                            || ( !strncmp( obj->FeatureName, "BCN", 3 ) )
-                            || ( !strncmp( obj->FeatureName, "BOY", 3 ) ) ) {
+                            || ( !strncasecmp( obj->FeatureName, "BCN", 3 ) )
+                            || ( !strncasecmp( obj->FeatureName, "BOY", 3 ) ) ) {
                         obj->bIsAton = true;
                     }
 
