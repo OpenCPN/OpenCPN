@@ -118,8 +118,6 @@ void StatWin::ReSize()
         new_size.y = 40;
     else
         new_size.y = 22;
-
-
     SetSize(new_size);
 
 }
@@ -153,7 +151,7 @@ void StatWin::OnSize( wxSizeEvent& event )
         width_factor = 0.98f;
 
     if( width ) {
-        pPiano->SetSize( 0, 0, width * width_factor, height * 1 );
+        pPiano->SetSize( 0, 0, width * width_factor, height );
         pPiano->FormatKeys();
     }
 }
