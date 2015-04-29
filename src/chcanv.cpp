@@ -4479,6 +4479,26 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
     mx = x;
     my = y;
     GetCanvasPixPoint( x, y, m_cursor_lat, m_cursor_lon );
+
+    //  Establish the event region
+    cursor_region = CENTER;
+    
+    if( x > xr_margin ) {
+        cursor_region = MID_RIGHT;
+    } else if( x < xl_margin ) {
+        cursor_region = MID_LEFT;
+    } else if( y > yb_margin ) {
+        cursor_region = MID_TOP;
+    } else if( y < yt_margin ) {
+        cursor_region = MID_BOT;
+    } else {
+        cursor_region = CENTER;
+    }
+    
+    
+    if( !g_btouch )
+        SetCanvasCursor( event );
+    
     
     // Protect from leftUp's coming from event handlers in child
     // windows who return focus to the canvas.
@@ -4653,6 +4673,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
     // If there is, the two single clicks are ignored.
     
     if( event.LeftDClick() && ( cursor_region == CENTER ) ) {
+        
         m_DoubleClickTimer->Start();
         singleClickEventIsValid = false;
         
@@ -6084,9 +6105,6 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
     
     if(!MouseEventProcessObjects( event ))
          MouseEventProcessCanvas( event );
-    
-    if( !g_btouch )
-        SetCanvasCursor( event );
 }
 
 
@@ -6094,29 +6112,21 @@ void ChartCanvas::SetCanvasCursor( wxMouseEvent& event )
 {
     //    Switch to the appropriate cursor on mouse movement
 
-    int x, y;
-    event.GetPosition( &x, &y );
-    
     wxCursor *ptarget_cursor = pCursorArrow;
     
     if( ( !parent_frame->nRoute_State )
         && ( !m_bMeasure_Active ) /*&& ( !m_bCM93MeasureOffset_Active )*/) {
         
-        if( x > xr_margin ) {
+        if( cursor_region == MID_RIGHT ) {
             ptarget_cursor = pCursorRight;
-            cursor_region = MID_RIGHT;
-        } else if( x < xl_margin ) {
+        } else if( cursor_region == MID_LEFT ) {
             ptarget_cursor = pCursorLeft;
-            cursor_region = MID_LEFT;
-        } else if( y > yb_margin ) {
+        } else if( cursor_region == MID_TOP ) {
             ptarget_cursor = pCursorDown;
-            cursor_region = MID_TOP;
-        } else if( y < yt_margin ) {
+        } else if( cursor_region == MID_BOT ) {
             ptarget_cursor = pCursorUp;
-            cursor_region = MID_BOT;
         } else {
             ptarget_cursor = pCursorArrow;
-            cursor_region = CENTER;
         }
         } else if( m_bMeasure_Active || parent_frame->nRoute_State ) // If Measure tool use Pencil Cursor
             ptarget_cursor = pCursorPencil;

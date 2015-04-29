@@ -862,18 +862,29 @@ void glChartCanvas::OnSize( wxSizeEvent& event )
 
 void glChartCanvas::MouseEvent( wxMouseEvent& event )
 {
+#ifndef __OCPN__ANDROID__
     if(cc1->MouseEventSetup( event )) 
         return;                 // handled, no further action required
-
+        
     bool obj_proc = cc1->MouseEventProcessObjects( event );
     
-#ifndef __OCPN__ANDROID__
     if(!obj_proc && !cc1->singleClickEventIsValid ) 
         cc1->MouseEventProcessCanvas( event );
     
     if( !g_btouch )
         cc1->SetCanvasCursor( event );
+ 
+#else
+
+    if(cc1->MouseEventSetup( event, false )) {
+        if(!event.LeftDClick()){
+            return;                 // handled, no further action required
+        }
+    }
+
+    cc1->MouseEventProcessObjects( event );
     
+
 #endif    
         
 }
