@@ -3431,36 +3431,47 @@ void MyFrame::UpdateAllFonts()
     }
 
     //  Close and destroy any persistent dialogs, so that new fonts will be utilized
-    if( g_pais_query_dialog_active ) {
-        g_pais_query_dialog_active->Destroy();
-        g_pais_query_dialog_active = NULL;
-    }
-
-    if( pRoutePropDialog ) {
-        pRoutePropDialog->Destroy();
-        pRoutePropDialog = NULL;
-    }
-
-    if( pTrackPropDialog ) {
-        pTrackPropDialog->Destroy();
-        pTrackPropDialog = NULL;
-    }
-
-    if( pMarkPropDialog ) {
-        pMarkPropDialog->Destroy();
-        pMarkPropDialog = NULL;
-    }
-
-    if( g_pObjectQueryDialog ) {
-        g_pObjectQueryDialog->Destroy();
-        g_pObjectQueryDialog = NULL;
-    }
-
-
+    DestroyPersistentDialogs();
+    
     if( pWayPointMan ) pWayPointMan->ClearRoutePointFonts();
 
     cc1->Refresh();
 }
+
+void MyFrame::DestroyPersistentDialogs()
+{
+    if( g_pais_query_dialog_active ) {
+        g_pais_query_dialog_active->Hide();
+        g_pais_query_dialog_active->Destroy();
+        g_pais_query_dialog_active = NULL;
+    }
+    
+    if( pRoutePropDialog ) {
+        pRoutePropDialog->Hide();
+        pRoutePropDialog->Destroy();
+        pRoutePropDialog = NULL;
+    }
+    
+    if( pTrackPropDialog ) {
+        pTrackPropDialog->Hide();
+        pTrackPropDialog->Destroy();
+        pTrackPropDialog = NULL;
+    }
+    
+    if( pMarkPropDialog ) {
+        pMarkPropDialog->Hide();
+        pMarkPropDialog->Destroy();
+        pMarkPropDialog = NULL;
+    }
+    
+    if( g_pObjectQueryDialog ) {
+        g_pObjectQueryDialog->Hide();
+        g_pObjectQueryDialog->Destroy();
+        g_pObjectQueryDialog = NULL;
+    }
+    
+}
+
 
 void MyFrame::SetGroupIndex( int index )
 {

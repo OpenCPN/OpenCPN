@@ -36,6 +36,7 @@
 #include "AIS_Decoder.h"
 #include "Select.h"
 #include "routemanagerdialog.h"
+#include "OCPNPlatform.h"
 
 extern AISTargetQueryDialog *g_pais_query_dialog_active;
 extern int g_ais_query_dialog_x;
@@ -48,6 +49,7 @@ extern MyConfig *pConfig;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern ChartCanvas *cc1;
 extern RouteList *pRouteList;
+extern OCPNPlatform  *g_Platform;
 
 #define xID_OK 10009
 #define xID_WPT_CREATE 10010
@@ -208,6 +210,10 @@ bool AISTargetQueryDialog::Create( wxWindow* parent, wxWindowID id, const wxStri
 // than the minimum size
     GetSizer()->SetSizeHints( this );
 
+    //Set the maximum size of the entire settings dialog
+    wxSize sz = g_Platform->getDisplaySize();
+    SetSizeHints( -1, -1, sz.x-100, sz.y-100 );
+    
     return true;
 }
 
