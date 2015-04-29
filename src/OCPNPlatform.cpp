@@ -707,6 +707,17 @@ wxString &OCPNPlatform::GetPluginDir()
             m_PluginsDir += _T("plugins");
         }
         
+#ifdef __OCPN__ANDROID__
+        // something like: data/data/org.opencpn.opencpn
+        wxFileName fdir = wxFileName::DirName(std_path.GetUserConfigDir());
+        fdir.RemoveLastDir();
+        m_PluginsDir = fdir.GetPath();
+        
+        m_PluginsDir = GetHomeDir();
+        
+#endif        
+        
+        
     }
     
     return m_PluginsDir;

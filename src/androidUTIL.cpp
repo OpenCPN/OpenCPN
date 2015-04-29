@@ -129,6 +129,8 @@ extern "C"{
         qDebug() << "onConfigChange" << new_size.x << new_size.y;
         
         gFrame->TriggerResize(new_size);
+
+        gFrame->DestroyPersistentDialogs();
         
 //        wxSizeEvent ev(new_size);
         

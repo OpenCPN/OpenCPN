@@ -422,7 +422,7 @@ class MyFrame: public wxFrame
     bool CheckGroup(int igroup);
     double GetTrueOrMag(double a);
     
-
+    void DestroyPersistentDialogs();
     void TouchAISActive(void);
     void UpdateAISTool(void);
 
