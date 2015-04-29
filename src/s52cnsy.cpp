@@ -597,7 +597,10 @@ static wxString *_UDWHAZ03(S57Obj *obj, double depth_value, ObjRazRules *rzRules
                     double drval1 = 0.0;
                     GetDoubleAttr(ptest_obj, "DRVAL1", drval1);
 
-                    if(depth_value < drval1)
+                    double drval2 = 0.0;
+                    GetDoubleAttr(ptest_obj, "DRVAL2", drval2);
+                    
+                    if(depth_value < drval2)
                         b_promote = true;
                     
                     if(drval1 >= safety_contour)
@@ -1533,7 +1536,7 @@ static void *OBSTRN04 (void *param)
 //      GString *sndfrm02str = NULL;
       wxString *udwhaz03str = NULL;
 //      GString *valsoustr   = S57_getAttVal(geo, "VALSOU");
-      bool b_promote;
+      bool b_promote = false;
       
       ObjRazRules *rzRules = (ObjRazRules *)param;
       S57Obj *obj = rzRules->obj;
@@ -1685,6 +1688,10 @@ static void *OBSTRN04 (void *param)
                               }
                         }
 
+                        if(b_promote){
+                            //  Move this UWTROC object to DisplayBase category
+                            rzRules->obj->m_DisplayCat = DISPLAYBASE;
+                        }
                   }
                   else
                   { // OBSTRN
