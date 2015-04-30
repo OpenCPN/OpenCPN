@@ -10409,6 +10409,7 @@ void ShowAISTargetQueryDialog( wxWindow *win, int mmsi )
         g_pais_query_dialog_active->Create( win, -1, _( "AIS Target Query" ),
                                             wxPoint( pos_x, pos_y ) );
 
+        g_pais_query_dialog_active->SetAutoCentre( g_btouch );
         g_pais_query_dialog_active->SetMMSI( mmsi );
         g_pais_query_dialog_active->UpdateText();
         wxSize sz = g_pais_query_dialog_active->GetSize();
@@ -10451,18 +10452,6 @@ void ShowAISTargetQueryDialog( wxWindow *win, int mmsi )
         g_pais_query_dialog_active->UpdateText();
     }
 
-
-    //  Make sure the query dialog size will fit on the screen
-    wxSize sz = g_pais_query_dialog_active->GetSize();
-    wxSize screen_size = ::wxGetDisplaySize();
-    if( sz.y > (screen_size.y * 8/10) ){
-        g_pais_query_dialog_active->SetSize( sz.x, screen_size.y * 8/10 );
-    }
-
-    if(g_btouch)
-        g_pais_query_dialog_active->Centre();
-        
-    
     g_pais_query_dialog_active->Show();
 }
 
