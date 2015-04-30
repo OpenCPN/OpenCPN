@@ -98,6 +98,7 @@
 #include "pluginmanager.h"
 #include "AIS_Target_Data.h"
 #include "OCPNPlatform.h"
+#include "AISTargetQueryDialog.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
