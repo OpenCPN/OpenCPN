@@ -365,12 +365,16 @@ RouteProp::RouteProp( wxWindow* parent, wxWindowID id, const wxString& caption, 
         
     CreateControls();
 
+    RecalculateSize();
+}
+
+void RouteProp::RecalculateSize( void )
+{
     //  Make an estimate of the dialog size, without scrollbars showing
     
     wxSize esize;
     esize.x = GetCharWidth() * 110;
     esize.y = GetCharHeight() * 40;
-//    SetSize( esize );
     
     wxSize dsize = GetParent()->GetClientSize();
     esize.y = wxMin(esize.y, dsize.y - (2 * GetCharHeight()));
@@ -384,7 +388,9 @@ RouteProp::RouteProp( wxWindow* parent, wxWindowID id, const wxString& caption, 
     
     
     Centre();
+    
 }
+
 
 void RouteProp::OnRoutePropRightClick( wxListEvent &event )
 {
