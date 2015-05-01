@@ -10413,6 +10413,7 @@ void ShowAISTargetQueryDialog( wxWindow *win, int mmsi )
                                             wxPoint( pos_x, pos_y ) );
 
         g_pais_query_dialog_active->SetAutoCentre( g_btouch );
+        g_pais_query_dialog_active->SetAutoSize( g_bresponsive );
         g_pais_query_dialog_active->SetMMSI( mmsi );
         g_pais_query_dialog_active->UpdateText();
         wxSize sz = g_pais_query_dialog_active->GetSize();
