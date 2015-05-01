@@ -480,6 +480,10 @@ void OCPNPlatform::Initialize_1( void )
             sigaction(SIGTERM, &sa_all, NULL);
             sigaction(SIGTERM, NULL, &sa_all_old);
 #endif
+
+#ifdef __OCPN__ANDROID__
+    androidUtilInit( );
+#endif            
             
 }
 
