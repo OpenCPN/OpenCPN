@@ -657,7 +657,7 @@ void RouteProp::CreateControls()
     wxStaticText* itemStaticText4 = new wxStaticText( itemDialog1, wxID_STATIC, _("Name"),
             wxDefaultPosition, wxDefaultSize, 0 );
     itemStaticBoxSizer3->Add( itemStaticText4, 0,
-            wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, 5 );
+                              wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5 );
 
     m_RouteNameCtl = new wxTextCtrl( itemDialog1, ID_TEXTCTRL, _T(""), wxDefaultPosition,
             wxSize( 710, -1 ), 0 );
@@ -693,25 +693,25 @@ void RouteProp::CreateControls()
     wxStaticText* itemStaticText11 = new wxStaticText( itemDialog1, wxID_STATIC,
             _("Total Distance"), wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer6a->Add( itemStaticText11, 0,
-            wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE,
+            wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxTOP,
             5 );
 
     m_PlanSpeedLabel = new wxStaticText( itemDialog1, wxID_STATIC, _("Plan Speed"),
             wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer6a->Add( m_PlanSpeedLabel, 0,
-            wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE,
+            wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxTOP,
             5 );
 
     wxStaticText* itemStaticText12a = new wxStaticText( itemDialog1, wxID_STATIC, _("Time Enroute"),
             wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer6a->Add( itemStaticText12a, 0,
-            wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE,
+            wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxTOP,
             5 );
 
     m_StartTimeLabel = new wxStaticText( itemDialog1, wxID_STATIC, _("Departure Time (m/d/y h:m)"),
             wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer6a->Add( m_StartTimeLabel, 0,
-            wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE,
+            wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxTOP,
             5 );
 
     m_TotalDistCtl = new wxTextCtrl( itemDialog1, ID_TEXTCTRL3, _T(""), wxDefaultPosition,

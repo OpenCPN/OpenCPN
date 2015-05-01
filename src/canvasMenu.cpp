@@ -514,7 +514,12 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
         {
             if( pimis->b_viz ) {
                 wxMenuItem *pmi = new wxMenuItem( contextMenu, pimis->id,
-                                                  pimis->pmenu_item->GetLabel(), pimis->pmenu_item->GetHelp(),
+#if wxCHECK_VERSION(3,0,0)
+                                                  pimis->pmenu_item->GetItemLabelText(),
+#else
+                                                  pimis->pmenu_item->GetLabel(),
+#endif
+                                                  pimis->pmenu_item->GetHelp(),
                                                   pimis->pmenu_item->GetKind(), pimis->pmenu_item->GetSubMenu() );
 #ifdef __WXMSW__
                 pmi->SetFont(pimis->pmenu_item->GetFont());
