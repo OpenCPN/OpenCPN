@@ -3972,7 +3972,7 @@ bool PI_PLIBSetContext( PI_S57Obj *pObj )
     S57Obj cobj;
     CreateCompatibleS57Object( pObj, &cobj, NULL );
  
-    LUPname LUP_Name;
+    LUPname LUP_Name = PAPER_CHART;
 
     //      Force a re-evaluation of CS rules
     ctx->CSrules = NULL;
