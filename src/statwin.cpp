@@ -154,6 +154,7 @@ void StatWin::OnSize( wxSizeEvent& event )
     
     if( width ) {
         pPiano->SetSize( 0, 0, width * width_factor, height );
+        pPiano->FormatKeys();
     }
 }
 
