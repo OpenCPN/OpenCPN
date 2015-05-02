@@ -4078,6 +4078,7 @@ void glChartCanvas::FastZoom(float factor)
         glClear( GL_STENCIL_BUFFER_BIT );
         glDisable( GL_STENCIL_TEST );
     }
+
     
     float vx0 = 0;
     float vy0 = 0;
@@ -4085,9 +4086,6 @@ void glChartCanvas::FastZoom(float factor)
     float vx = sx;
     
     glBindTexture( g_texture_rectangle_format, 0);
-    
-    
-    
     
     // Render the cached texture as quad to screen
     glBindTexture( g_texture_rectangle_format, m_cache_tex[m_cache_page]);
@@ -4104,7 +4102,53 @@ void glChartCanvas::FastZoom(float factor)
     
     glDisable( g_texture_rectangle_format );
     glBindTexture( g_texture_rectangle_format, 0);
-    
+
+    //  When zooming out, if we go too far, then the frame buffer is repeated on-screen due
+    //  to address wrapping in the frame buffer.
+    //  Detect this case, and render some simple solid covering quads to avoid a confusing display.
+    if( (m_fbo_sheight > m_cache_tex_y) || (m_fbo_swidth > m_cache_tex_x) ){
+        wxColour color = GetGlobalColor(_T("GREY1"));
+        glColor3ub(color.Red(), color.Green(), color.Blue());
+        
+        if( m_fbo_sheight > m_cache_tex_y ){
+            float h1 = sy * (1.0 - m_cache_tex_y/m_fbo_sheight) / 2.;
+            
+            glBegin( GL_QUADS );
+            glVertex2f( 0,  0 );
+            glVertex2f( w,  0 );
+            glVertex2f( w, h1 );
+            glVertex2f( 0, h1 );
+            glEnd();
+
+            glBegin( GL_QUADS );
+            glVertex2f( 0,  sy );
+            glVertex2f( w,  sy );
+            glVertex2f( w, sy - h1 );
+            glVertex2f( 0, sy - h1 );
+            glEnd();
+            
+        }
+ 
+         // horizontal axis
+         if( m_fbo_swidth > m_cache_tex_x ){
+             float w1 = sx * (1.0 - m_cache_tex_x/m_fbo_swidth) / 2.;
+             
+             glBegin( GL_QUADS );
+             glVertex2f( 0,  0 );
+             glVertex2f( w1,  0 );
+             glVertex2f( w1, sy );
+             glVertex2f( 0, sy );
+             glEnd();
+             
+             glBegin( GL_QUADS );
+             glVertex2f( sx,  0 );
+             glVertex2f( sx - w1,  0 );
+             glVertex2f( sx - w1, sy );
+             glVertex2f( sx, sy );
+             glEnd();
+             
+         }
+    }
     
     SwapBuffers();
 }
@@ -4178,6 +4222,19 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
     
     float zoom_gain = 1.0;
     float zoom_val;
+    float total_zoom_val;
+
+    if( event.GetScaleFactor() > 1)
+        zoom_val = ((event.GetScaleFactor() - 1.0) * zoom_gain) + 1.0;
+    else
+        zoom_val = 1.0 - ((1.0 - event.GetScaleFactor()) * zoom_gain);
+
+    if( event.GetTotalScaleFactor() > 1)
+        total_zoom_val = ((event.GetTotalScaleFactor() - 1.0) * zoom_gain) + 1.0;
+    else
+        total_zoom_val = 1.0 - ((1.0 - event.GetTotalScaleFactor()) * zoom_gain);
+ 
+    double projected_scale = cc1->GetVP().chart_scale / total_zoom_val;
     
     switch(event.GetState()){
         case GestureStarted:
@@ -4186,23 +4243,19 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
             break;
             
         case GestureUpdated:
-
             if(g_GLOptions.m_bUseCanvasPanning){
-                if( event.GetScaleFactor() > 1)
-                    zoom_val = ((event.GetScaleFactor() - 1.0) * zoom_gain) + 1.0;
-                else
-                    zoom_val = 1.0 - ((1.0 - event.GetScaleFactor()) * zoom_gain);
-            
-                FastZoom(zoom_val/*event.GetScaleFactor()*/);
+                
+                if( projected_scale < 3e8)
+                    FastZoom(zoom_val);
+                
             }
             break;
             
         case GestureFinished:{
-                if( event.GetTotalScaleFactor() > 1)
-                    zoom_val = ((event.GetTotalScaleFactor() - 1.0) * zoom_gain) + 1.0;
+                if( projected_scale < 3e8)
+                    cc1->ZoomCanvas( total_zoom_val, false );
                 else
-                    zoom_val = 1.0 - ((1.0 - event.GetTotalScaleFactor()) * zoom_gain);
-                cc1->ZoomCanvas( zoom_val/*event.GetTotalScaleFactor()*/, false );
+                    cc1->ZoomCanvas(cc1->GetVP().chart_scale / 3e8, false);
             
              m_binPinch = false;
              break;
