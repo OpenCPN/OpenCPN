@@ -1383,6 +1383,15 @@ no_compression:
     wxLogMessage(lwmsg);
     lwmsg.Printf(_T("OpenGL-> Minimum symbol line width: %4.1f"), g_GLMinSymbolLineWidth);
     wxLogMessage(lwmsg);
+    
+    m_benableFog = true;
+    m_benableVScale = true;
+#ifdef __OCPN__ANDROID__
+    m_benableFog = false;
+    m_benableVScale = false;
+#endif    
+    
+    
 }
 
 void glChartCanvas::OnPaint( wxPaintEvent &event )
@@ -2879,7 +2888,7 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
     
     glPushMatrix();
     if(VPoint.b_quilt) {
-        bool fog_it = (g_fog_overzoom && (scale_factor > 10));
+        bool fog_it = m_bfogit;
         
         RenderQuiltViewGL( VPoint, region );
         
@@ -3439,13 +3448,15 @@ void glChartCanvas::Render()
 
     //  If we plan to post process the display, don't use accelerated panning
     double scale_factor = VPoint.ref_scale/VPoint.chart_scale;
-    bool fog_it = g_fog_overzoom && (scale_factor > g_overzoom_emphasis_base) && VPoint.b_quilt;
-    fog_it |=  g_oz_vector_scale && (scale_factor > g_overzoom_emphasis_base) && VPoint.b_quilt;
+    
+    m_bfogit = m_benableFog && g_fog_overzoom && (scale_factor > g_overzoom_emphasis_base) && VPoint.b_quilt;
+    bool scale_it  =  m_benableVScale && g_oz_vector_scale && (scale_factor > g_overzoom_emphasis_base) && VPoint.b_quilt;
+    
     bool bpost_hilite = !cc1->m_pQuilt->GetHiliteRegion( VPoint ).IsEmpty();
     
     // Try to use the framebuffer object's cache of the last frame
     // to accelerate drawing this frame (if overlapping)
-    if( m_b_BuiltFBO && !fog_it && !bpost_hilite) {
+    if( m_b_BuiltFBO && !m_bfogit && !scale_it && !bpost_hilite) {
         int sx = GetSize().x;
         int sy = GetSize().y;
 
@@ -3869,8 +3880,6 @@ glColor3ub(250, 0, 250);
 
 void glChartCanvas::FastPan(int dx, int dy)
 {
-    //   wxPaintDC( this );
-    
     int sx = GetSize().x;
     int sy = GetSize().y;
     
@@ -3930,7 +3939,6 @@ void glChartCanvas::FastPan(int dx, int dy)
     ty0 = m_fbo_offsety;
     tx =  m_fbo_offsetx + sx;
     ty =  m_fbo_offsety + sy;
-    
     
     
     if((m_fbo_offsety ) < 0){
@@ -3998,7 +4006,7 @@ void glChartCanvas::FastPan(int dx, int dy)
         glEnd();
     }
     
-    
+
     // Render the cached texture as quad to screen
     glBindTexture( g_texture_rectangle_format, m_cache_tex[m_cache_page]);
     glEnable( g_texture_rectangle_format );
@@ -4185,7 +4193,7 @@ void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
             break;
             
         case GestureUpdated:
-            if(!g_GLOptions.m_bUseCanvasPanning)
+            if(!g_GLOptions.m_bUseCanvasPanning || m_bfogit)
                 cc1->PanCanvas( dx, -dy );
             else{
                 FastPan( dx, dy ); 
