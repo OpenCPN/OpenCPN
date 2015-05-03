@@ -76,6 +76,10 @@ extern GLuint g_raster_format;
 #include "cm93.h"
 #endif
 
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#endif
+
 #include "OCPNPlatform.h"
 
 wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString *lang_dir);
@@ -1906,6 +1910,11 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
     m_pSlider_Zoom = new wxSlider( m_ChartDisplayPage, ID_CM93ZOOM, 0, -5,
                                   5, wxDefaultPosition, wxSize( 300, 50),
                                   wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS );
+    
+#ifdef __OCPN__ANDROID__
+    m_pSlider_Zoom->GetHandle()->setStyleSheet( getQtStyleSheet());
+#endif    
+    
     itemBoxSizerUI->Add( m_pSlider_Zoom, inputFlags );
 
     itemBoxSizerUI->Add( 0, border_size*3 );
@@ -2158,6 +2167,11 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
                                         CM93_ZOOM_FACTOR_MAX_RANGE, wxDefaultPosition, wxSize( slider_width, 50),
                                        wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS );
     optionsColumn->Add( m_pSlider_CM93_Zoom, 0, wxALL/* | wxEXPAND*/, border_size );
+    
+#ifdef __OCPN__ANDROID__
+    m_pSlider_CM93_Zoom->GetHandle()->setStyleSheet( getQtStyleSheet());
+#endif    
+    
 //    cm93Sizer->SetSizeHints(cm93DetailBox);
 #endif
 
