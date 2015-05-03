@@ -47,6 +47,9 @@ JavaVM *java_vm;
 JNIEnv* jenv;
 bool     b_androidBusyShown;
 
+QString g_qtStyleSheet;
+
+
 
 extern MyFrame                  *gFrame;
 extern const wxEventType wxEVT_OCPN_DATASTREAM;
@@ -536,7 +539,6 @@ void androidHideBusyIcon()
 }
 
 
-
 bool LoadQtStyleSheet(wxString &sheet_file)
 {
     if(wxFileExists( sheet_file )){
@@ -545,9 +547,7 @@ bool LoadQtStyleSheet(wxString &sheet_file)
             QString file(sheet_file.c_str());
             QFile File(file);
             File.open(QFile::ReadOnly);
-            QString StyleSheet = QLatin1String(File.readAll());
-            
- //           qApp->setStyleSheet(StyleSheet);
+            g_qtStyleSheet = QLatin1String(File.readAll());
             
             return true;
         }
@@ -556,6 +556,11 @@ bool LoadQtStyleSheet(wxString &sheet_file)
     }
     else
         return false;
+}
+
+QString getQtStyleSheet( void )
+{
+    return g_qtStyleSheet;
 }
 
 //---------------------------------------------------------------

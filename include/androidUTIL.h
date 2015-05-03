@@ -32,6 +32,8 @@
 #include "wx/wx.h"
 #endif //precompiled headers
 
+#include <QString>
+
 
 #define GPS_OFF                         0
 #define GPS_ON                          1
@@ -44,6 +46,7 @@ extern bool androidGetMemoryStatus( int *mem_total, int *mem_used );
 extern double GetAndroidDisplaySize();
 extern wxSize getAndroidDisplayDimensions( void );
 extern bool LoadQtStyleSheet(wxString &sheet_file);
+extern QString getQtStyleSheet( void );
 
 extern void androidShowBusyIcon();
 extern void androidHideBusyIcon();
