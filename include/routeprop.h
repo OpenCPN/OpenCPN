@@ -337,12 +337,13 @@ class MarkInfoDef : public wxDialog
         void OnWaypointRangeRingSelect( wxCommandEvent& event );
         void OnShowWaypointRangeRingSelect( wxCommandEvent& event );
 
-
     public:
 
         MarkInfoDef( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Waypoint Properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1, -1 ), long style = wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxRESIZE_BORDER );
         ~MarkInfoDef();
 
+        void RecalculateSize( void );
+        
         void m_hyperlink17OnContextMenu( wxMouseEvent &event )
         {
             m_hyperlink17->PopupMenu( m_menuLink, event.GetPosition() );
