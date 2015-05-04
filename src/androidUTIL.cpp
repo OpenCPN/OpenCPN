@@ -108,7 +108,6 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                     g_pais_query_dialog_active->Show();
                     g_pais_query_dialog_active->Raise();
                 }
-                
             }
             
             // Route Props
@@ -118,13 +117,21 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                 pRoutePropDialog->RecalculateSize();
                 if(bshown){
                     pRoutePropDialog->Show();
- //                   pRoutePropDialog->Raise();
+                }
+            }
+            
+
+            // Mark Props
+            if(pMarkPropDialog){
+                bool bshown = pMarkPropDialog->IsShown();
+                pMarkPropDialog->Hide();
+                pMarkPropDialog->RecalculateSize();
+                if(bshown){
+                    pMarkPropDialog->Show();
                 }
                 
             }
             
-    
-            //gFrame->DestroyPersistentDialogs();
             break;
             
         default:
