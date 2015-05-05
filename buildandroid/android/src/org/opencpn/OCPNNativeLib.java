@@ -22,4 +22,6 @@ public class OCPNNativeLib {
 
   public native int onConfigChange();
 
+  public native int onMenuKey();
+
 }

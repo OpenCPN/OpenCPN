@@ -246,6 +246,8 @@ bool                    g_bLoadedDisabledPlugins;
 
 extern bool             g_btouch;
 extern bool             g_bresponsive;
+extern bool             g_bAutoHideToolbar;
+extern int              g_nAutoHideToolbar;
 
 extern double           g_config_display_size_mm;
 
@@ -364,7 +366,7 @@ void MMSIEditDialog::CreateControls()
      
      wxStaticText* itemStaticText5 = new wxStaticText( itemDialog1, wxID_STATIC, _("MMSI") );
      itemStaticBoxSizer4->Add( itemStaticText5, 0,
-                               wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, 5 );
+                               wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5 );
      
      m_MMSICtl = new wxTextCtrl( itemDialog1, ID_MMSI_CTL, _T(""), wxDefaultPosition, wxSize( 180, -1 ), 0 );
      itemStaticBoxSizer4->Add( m_MMSICtl, 0,
@@ -2830,6 +2832,16 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
     miscOptions->Add( pResponsive, 0, wxALL, border_size );
     
     
+    wxBoxSizer *pToolbarAutoHide = new wxBoxSizer( wxHORIZONTAL );
+    miscOptions->Add( pToolbarAutoHide, 0, wxALL | wxEXPAND, group_item_spacing );
+
+    pToolbarAutoHideCB = new wxCheckBox( itemPanelFont, ID_REPONSIVEBOX, _("Enable Toolbar auto-hide") );
+    pToolbarAutoHide->Add( pToolbarAutoHideCB, 0, wxALL, group_item_spacing );
+    
+    pToolbarHideSecs = new wxTextCtrl( itemPanelFont, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize( 50, -1 ), wxTE_RIGHT  );
+    pToolbarAutoHide->Add( pToolbarHideSecs, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
+    
+    pToolbarAutoHide->Add( new wxStaticText( itemPanelFont, wxID_ANY, _("seconds") ),group_item_spacing );
     
 
 }
@@ -2981,7 +2993,7 @@ void options::CreateControls()
     CreatePanel_Display( m_pageDisplay, border_size, group_item_spacing, m_small_button_size );
     CreatePanel_Units( m_pageDisplay, border_size, group_item_spacing, m_small_button_size );
     CreatePanel_Advanced( m_pageDisplay, border_size, group_item_spacing, m_small_button_size );
-    
+
     m_pageCharts = CreatePanel( _("Charts") );
     CreatePanel_ChartsLoad( m_pageCharts, border_size, group_item_spacing, m_small_button_size );
     CreatePanel_VectorCharts( m_pageCharts, border_size, group_item_spacing, m_small_button_size );
@@ -2995,7 +3007,7 @@ void options::CreateControls()
     CreatePanel_Ownship( m_pageShips, border_size, group_item_spacing, m_small_button_size );
     CreatePanel_AIS( m_pageShips, border_size, group_item_spacing, m_small_button_size );
     CreatePanel_MMSI( m_pageShips, border_size, group_item_spacing, m_small_button_size );
-    
+
     m_pageUI = CreatePanel( _("User Interface") );
     CreatePanel_UI( m_pageUI, border_size, group_item_spacing, m_small_button_size );
 
@@ -3031,7 +3043,7 @@ void options::CreateControls()
 
     //  The s57 chart panel is the one which controls the minimum width required to avoid horizontal scroll bars
     vectorPanel->SetSizeHints( ps57Ctl );
-    
+
 }
 
 void options::SetInitialPage( int page_sel)
@@ -3372,6 +3384,11 @@ void options::SetInitialSettings()
         UpdateOptionsUnits(); // sets depth values using the user's unit preference
     }
 #endif
+
+    pToolbarAutoHideCB->SetValue(g_bAutoHideToolbar);
+    
+    s.Printf( _T("%d"), g_nAutoHideToolbar );
+    pToolbarHideSecs->SetValue( s );
 
 }
 
@@ -4114,6 +4131,13 @@ void options::OnApplyClick( wxCommandEvent& event )
     g_btouch = pMobile->GetValue();
     g_bresponsive = pResponsive->GetValue();
 
+    g_bAutoHideToolbar = pToolbarAutoHideCB->GetValue();
+ 
+    long hide_val = 10;
+    pToolbarHideSecs->GetValue().ToLong( &hide_val );
+    g_nAutoHideToolbar = wxMin((int)hide_val, 100);
+    g_nAutoHideToolbar = wxMax(g_nAutoHideToolbar, 2);
+    
     g_fog_overzoom = !pOverzoomEmphasis->GetValue();
     g_oz_vector_scale = !pOZScaleVector->GetValue();
     
@@ -6451,7 +6475,7 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
         wxStaticText* stTextureMemorySize =
             new wxStaticText( this, wxID_STATIC, _("Texture Memory Size (MB)") );
         m_bSizer1->Add( stTextureMemorySize, 0,
-                wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, 5 );
+                wxLEFT | wxRIGHT | wxTOP, 5 );
 
         m_sTextureMemorySize = new wxSpinCtrl( this );
         m_sTextureMemorySize->SetRange(1, 16384 );
@@ -6476,10 +6500,10 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
 
     m_stTextureCacheSize = new wxStaticText(this, wxID_STATIC, TextureCacheSize());
     m_bSizer1->Add( m_stTextureCacheSize, 0,
-                    wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, 5 );
+                    wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5 );
 
     m_cbShowFPS = new wxCheckBox( this, wxID_ANY, _("Show FPS") );
-    m_bSizer1->Add( m_cbShowFPS, 0,  wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, 5 );
+    m_bSizer1->Add( m_cbShowFPS, 0,  wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5 );
     m_cbShowFPS->SetValue(g_bShowFPS);
     
     wxStdDialogButtonSizer * m_sdbSizer4 = new wxStdDialogButtonSizer();

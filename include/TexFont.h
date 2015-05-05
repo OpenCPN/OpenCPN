@@ -23,6 +23,9 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+#ifndef __TEXFONT_H__
+#define __TEXFONT_H__
+
 /* support ascii plus degree symbol for now pack font in a single texture 16x8 */
 #define DEGREE_GLYPH 127
 #define MIN_GLYPH 32
@@ -33,15 +36,24 @@
 #define COLS_GLYPHS 16
 #define ROWS_GLYPHS ((NUM_GLYPHS / COLS_GLYPHS)+1)
 
+#ifndef DECL_EXP
+#ifdef __WXMSW__
+#  define DECL_EXP     __declspec(dllexport)
+#else
+#  define DECL_EXP
+#endif
+#endif
+
 struct TexGlyphInfo {
     int x, y, width, height;
     float advance;
 };
 
-class TexFont {
+class DECL_EXP TexFont {
 public:
-    TexFont() {}
-
+    TexFont();
+    ~TexFont();
+    
     void Build( wxFont &font, bool blur = false );
     void Delete();
 
@@ -65,3 +77,4 @@ private:
     int m_maxglyphh;
     
 };
+#endif  //guard

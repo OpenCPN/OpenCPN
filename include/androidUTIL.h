@@ -38,6 +38,8 @@
 #define GPS_PROVIDER_AVAILABLE          2
 #define GPS_SHOWPREFERENCES             3
 
+extern bool androidUtilInit( void );
+
 extern bool androidGetMemoryStatus( int *mem_total, int *mem_used );
 extern double GetAndroidDisplaySize();
 extern wxSize getAndroidDisplayDimensions( void );

@@ -36,6 +36,7 @@
 #include "AIS_Decoder.h"
 #include "Select.h"
 #include "routemanagerdialog.h"
+#include "OCPNPlatform.h"
 
 extern AISTargetQueryDialog *g_pais_query_dialog_active;
 extern int g_ais_query_dialog_x;
@@ -48,6 +49,7 @@ extern MyConfig *pConfig;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern ChartCanvas *cc1;
 extern RouteList *pRouteList;
+extern OCPNPlatform  *g_Platform;
 
 #define xID_OK 10009
 #define xID_WPT_CREATE 10010
@@ -87,7 +89,8 @@ void AISTargetQueryDialog::Init()
     m_colorscheme = (ColorScheme) ( -1 );
     m_okButton = NULL;
     m_bsize_set = false;
-
+    m_bautoCentre = false;
+    m_bautosize = false;
 }
 void AISTargetQueryDialog::OnClose( wxCloseEvent& event )
 {
@@ -189,27 +192,63 @@ bool AISTargetQueryDialog::Create( wxWindow* parent, wxWindowID id, const wxStri
 
     if( !wxDialog::Create( parent, id, caption, pos, size, wstyle ) ) return false;
 
+    m_parent = parent;
+    
     wxFont *dFont = FontMgr::Get().GetFont( _("AISTargetQuery") );
     int font_size = wxMax(8, dFont->GetPointSize());
     wxString face = dFont->GetFaceName();
 #ifdef __WXGTK__
     face = _T("Monospace");
 #endif
-    wxFont *fp_font = wxTheFontList->FindOrCreateFont( font_size, wxFONTFAMILY_MODERN,
+    m_basefont = wxTheFontList->FindOrCreateFont( font_size, wxFONTFAMILY_MODERN,
                       wxFONTSTYLE_NORMAL, dFont->GetWeight(), false, face );
 
-    SetFont( *fp_font );
-
+    SetFont( *m_basefont );
+    m_adjustedFontSize = dFont->GetPointSize();
+    m_control_font_size = dFont->GetPointSize();
+    
     CreateControls();
 
     SetColorScheme( global_color_scheme );
 
-// This ensures that the dialog cannot be sized smaller
-// than the minimum size
-    GetSizer()->SetSizeHints( this );
 
+    //Set the maximum size of the entire settings dialog
+    wxSize sz = g_Platform->getDisplaySize();
+    SetSizeHints( 50, 50, sz.x-20, sz.y-40 );
+    
+    if(!m_bautosize){
+        Fit();          // Sets the horizontal size OK
+        SetSize( -1, m_adjustedFontSize * 30);          // Estimated vertical size
+    }
+        
     return true;
 }
+
+void AISTargetQueryDialog::RecalculateSize()
+{
+    // Reset all the required member elements to cause a resize on next display
+    
+    //Set the maximum size of the entire settings dialog
+    wxSize sz = g_Platform->getDisplaySize();
+    SetSizeHints( 50, 50, sz.x-20, sz.y-40 );
+
+    m_bsize_set = false;
+
+    wxFont *dFont = FontMgr::Get().GetFont( _("AISTargetQuery") );
+    int font_size = wxMax(8, dFont->GetPointSize());
+    wxString face = dFont->GetFaceName();
+    #ifdef __WXGTK__
+    face = _T("Monospace");
+    #endif
+    m_basefont = wxTheFontList->FindOrCreateFont( font_size, wxFONTFAMILY_MODERN,
+                                                  wxFONTSTYLE_NORMAL, dFont->GetWeight(), false, face );
+    
+    SetFont( *m_basefont );
+    m_adjustedFontSize = dFont->GetPointSize();
+    m_control_font_size = dFont->GetPointSize();
+    
+}
+
 
 void AISTargetQueryDialog::SetColorScheme( ColorScheme cs )
 {
@@ -268,51 +307,28 @@ void AISTargetQueryDialog::UpdateText()
     int scroll_x, scroll_y;
     m_pQueryTextCtl->GetViewStart(&scroll_x, &scroll_y);
     
+    AIS_Target_Data *td = g_pAIS->Get_Target_Data_From_MMSI( m_MMSI );
+    AdjustBestSize(td);
+    
     DimeControl( this );
     wxColor bg = GetBackgroundColour();
     m_pQueryTextCtl->SetBackgroundColour( bg );
     SetBackgroundColour( bg );
 
-//    if( m_MMSI == 0 ) { //  Faulty MMSI could be reported as 0
-        AIS_Target_Data *td = g_pAIS->Get_Target_Data_From_MMSI( m_MMSI );
         if( td )
         {
             if( td->b_PersistTrack )
-            {
                 m_createTrkBtn->SetLabel(_("Stop Tracking"));
-            }
             else
-            {
                 m_createTrkBtn->SetLabel(_("Record Track"));
-            }
-            wxFont *dFont = FontMgr::Get().GetFont( _("AISTargetQuery") );
-            wxString face = dFont->GetFaceName();
-            int sizes[7];
-            for( int i=-2; i<5; i++ ) {
-                sizes[i+2] = dFont->GetPointSize() + i + (i>0?i:0);
-            }
 
-            html.Printf( _T("<html><body bgcolor=#%02x%02x%02x><center>"), bg.Red(), bg.Green(), bg.Blue() );
-
-            html << td->BuildQueryResult();
-            
-            html << _T("</center></font></body></html>");
-
-            m_pQueryTextCtl->SetFonts( face, face, sizes );
-
-            wxCharBuffer buf = html.ToUTF8();
-            if( buf.data() )                            // string OK?
-                 m_pQueryTextCtl->SetPage( html );
-
-            if(!m_bsize_set){
-                SetBestSize();
-                m_bsize_set = true;
-            }
-                
             m_createWptBtn->Enable( td->b_positionOnceValid );
             m_createTrkBtn->Enable( td->b_show_track );
+            
+            RenderHTMLQuery(td);
+ 
+                
         }
-  //  }
   
 #ifdef __WXQT__ 
     SetColorScheme( m_colorscheme );
@@ -327,34 +343,137 @@ void AISTargetQueryDialog::OnMove( wxMoveEvent& event )
     wxPoint p = event.GetPosition();
     g_ais_query_dialog_x = p.x;
     g_ais_query_dialog_y = p.y;
+    
     event.Skip();
 }
 
-void AISTargetQueryDialog::SetBestSize( void )
+
+void AISTargetQueryDialog::AdjustBestSize( AIS_Target_Data *td )
 {
-    // Try to create a min size that works across font sizes.
-    wxSize sz;
-/*    
-    if( ! IsShown() ) {
-        sz = m_pQueryTextCtl->GetVirtualSize();
-        sz.x = 300;
-        m_pQueryTextCtl->SetSize( sz );
+    if(!td)
+        return;
+
+    if(!m_bautosize)
+        return;
+
+    wxSize origSize = GetSize();
+    
+    //  First pass, try to set the size using the user specified font sizes completely
+    if(!m_bsize_set){
+        RenderHTMLQuery(td);
+        m_pQueryTextCtl->Refresh();
+        m_pQueryTextCtl->Update();
+        Fit();
+        m_bsize_set = true;
     }
-*/    
-    m_pQueryTextCtl->Layout();
-    wxSize ir(m_pQueryTextCtl->GetInternalRepresentation()->GetWidth(),
-              m_pQueryTextCtl->GetInternalRepresentation()->GetHeight() );
-    sz.x = wxMax( m_pQueryTextCtl->GetSize().x, ir.x );
-    sz.y = wxMax( m_pQueryTextCtl->GetSize().y, ir.y );
-    sz.x += 100;         // fluff, to try and avoid scrollbars
-    sz.y += 20;         // fluff
+        
     
-    m_pQueryTextCtl->SetMinSize( sz );
-    Fit();
+    //  Width adjustments
     
-    sz -= wxSize( 200, 200 );
-    m_pQueryTextCtl->SetMinSize( sz );
+    //  Reduce the font size if necessary to eliminate horizontal scroll bars.
+    wxSize szv = m_pQueryTextCtl->GetVirtualSize();
+    if(szv.x > m_pQueryTextCtl->GetSize().x){
+        
+        while( (szv.x > m_pQueryTextCtl->GetSize().x) &&  (m_adjustedFontSize > 8)){       // fluff
+            m_adjustedFontSize --;
+            
+            RenderHTMLQuery(td);
+            m_pQueryTextCtl->Refresh();
+            m_pQueryTextCtl->Update();
+            Layout();
+            szv = m_pQueryTextCtl->GetVirtualSize();
+        }
+        
+        m_adjustedFontSize --;
+        
+    }
+    
+    // Now adjust the font size used for the control buttons.
+    
+    if( m_createWptBtn && m_createTrkBtn ){
+   
+        wxSize psz = g_Platform->getDisplaySize();
+        
+        wxScreenDC dc;
+        wxFont *tFont = wxTheFontList->FindOrCreateFont( m_control_font_size, wxFONTFAMILY_MODERN,
+                                                           wxFONTSTYLE_NORMAL, m_basefont->GetWeight(), false,
+                                                           m_basefont->GetFaceName() );
+        dc.SetFont(*tFont);
+        
+        wxSize tsz = dc.GetTextExtent(m_createWptBtn->GetLabel() + m_createTrkBtn->GetLabel());
+        
+        float totalButtonWidth = tsz.x; 
+        
+        if( totalButtonWidth * 1.5 > psz.x ){
+            float delta = (float)totalButtonWidth * 2. / psz.x;
+            
+            float font_size = m_control_font_size / delta;
+
+            wxFont *fp_font = wxTheFontList->FindOrCreateFont( font_size, wxFONTFAMILY_MODERN,
+                                              wxFONTSTYLE_NORMAL, m_basefont->GetWeight(), false,
+                                              m_basefont->GetFaceName() );
+            
+            m_createWptBtn->SetFont(*fp_font);
+            m_createTrkBtn->SetFont(*fp_font);
+            
+            m_control_font_size = font_size;
+        }
+    }
+    
+    // Height adjustments
+    // Try to avoid vertical scroll bar if possible.
+    
+    //  Estimate the control button area height
+    int yb = m_createWptBtn->GetSize().y * 4;
+    
+    wxSize szyv = m_pQueryTextCtl->GetVirtualSize();
+    int csz = g_Platform->getDisplaySize().y * 8 / 10;
+    if((szyv.y + yb) < csz){
+        if(szyv.y > m_pQueryTextCtl->GetSize().y)
+            SetSize(-1, szyv.y + yb);
+    }
+    else
+        SetSize(-1, csz);
+
+    wxSize nowSize = GetSize();
+    
+    if(nowSize != origSize){
+        if(m_bautoCentre)
+            Centre();
+    }
     
 }
+
+void AISTargetQueryDialog::RenderHTMLQuery(AIS_Target_Data *td)
+{
+    int font_size = m_adjustedFontSize; 
+    wxFont *fp_font = wxTheFontList->FindOrCreateFont( font_size, wxFONTFAMILY_MODERN,
+                                                       wxFONTSTYLE_NORMAL, m_basefont->GetWeight(),
+                                                       false, m_basefont->GetFaceName() );
+    
+    SetFont( *fp_font );
+    
+    int sizes[7];
+    for( int i=-2; i<5; i++ ) {
+        sizes[i+2] = fp_font->GetPointSize() + i + (i>0?i:0);
+    }
+    
+    wxString html;
+    wxColor bg = GetBackgroundColour();
+    
+    html.Printf( _T("<html><body bgcolor=#%02x%02x%02x><center>"), bg.Red(), bg.Green(), bg.Blue() );
+    
+    html << td->BuildQueryResult();
+    
+    html << _T("</center></font></body></html>");
+    
+    m_pQueryTextCtl->SetFonts( fp_font->GetFaceName(), fp_font->GetFaceName(), sizes );
+    
+    wxCharBuffer buf = html.ToUTF8();
+    if( buf.data() )                            // string OK?
+                 m_pQueryTextCtl->SetPage( html );
+    
+}
+
 
 

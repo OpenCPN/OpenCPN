@@ -365,6 +365,8 @@ public:
     wxRadioButton           *pRBSizeAuto;
     wxRadioButton           *pRBSizeManual;
     
+    wxCheckBox              *pToolbarAutoHideCB;
+    wxTextCtrl              *pToolbarHideSecs;
     
 //    For GPS Page
     wxListCtrl* m_lcSources;

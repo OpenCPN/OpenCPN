@@ -36,7 +36,12 @@
 #include "androidUTIL.h"
 #include "OCPN_DataStreamEvent.h"
 #include "chart1.h"
+#include "AISTargetQueryDialog.h"
+#include "AISTargetAlertDialog.h"
+#include "routeprop.h"
+#include "TrackPropDlg.h"
 
+class androidUtilHandler;
 
 JavaVM *java_vm;
 JNIEnv* jenv;
@@ -46,6 +51,92 @@ bool     b_androidBusyShown;
 extern MyFrame                  *gFrame;
 extern const wxEventType wxEVT_OCPN_DATASTREAM;
 wxEvtHandler                    *s_pAndroidNMEAMessageConsumer;
+
+extern AISTargetAlertDialog      *g_pais_alert_dialog_active;
+extern AISTargetQueryDialog      *g_pais_query_dialog_active;
+extern MarkInfoImpl              *pMarkPropDialog;
+extern RouteProp                 *pRoutePropDialog;
+extern TrackPropDlg              *pTrackPropDialog;
+extern MarkInfoImpl              *pMarkInfoDialog;
+
+androidUtilHandler              *g_androidUtilHandler;
+
+
+#define ANDROID_EVENT_TIMER 4389
+#define ACTION_RESIZE_PERSISTENTS       1
+
+class androidUtilHandler : public wxEvtHandler
+{
+ public:
+     androidUtilHandler();
+    ~androidUtilHandler() {}
+    
+    void onTimerEvent(wxTimerEvent &event);
+    wxTimer     m_eventTimer;
+    int         m_action;
+    
+    DECLARE_EVENT_TABLE()
+};
+
+BEGIN_EVENT_TABLE ( androidUtilHandler, wxEvtHandler )
+EVT_TIMER ( ANDROID_EVENT_TIMER, androidUtilHandler::onTimerEvent )
+END_EVENT_TABLE()
+
+androidUtilHandler::androidUtilHandler()
+{
+    m_eventTimer.SetOwner( this, ANDROID_EVENT_TIMER );
+    
+}
+
+
+void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
+{
+    qDebug() << "onTimerEvent";
+
+    switch(m_action){
+        case ACTION_RESIZE_PERSISTENTS:            //  Handle rotation/resizing of persistent dialogs
+
+            // AIS Target Query
+            if( g_pais_query_dialog_active ) {
+                bool bshown = g_pais_query_dialog_active->IsShown();
+                g_pais_query_dialog_active->Hide();
+                g_pais_query_dialog_active->RecalculateSize();
+                if(bshown){
+                    g_pais_query_dialog_active->Show();
+                    g_pais_query_dialog_active->Raise();
+                }
+                
+            }
+            
+            // Route Props
+            if(pRoutePropDialog){
+                bool bshown = pRoutePropDialog->IsShown();
+                pRoutePropDialog->Hide();
+                pRoutePropDialog->RecalculateSize();
+                if(bshown){
+                    pRoutePropDialog->Show();
+ //                   pRoutePropDialog->Raise();
+                }
+                
+            }
+            
+    
+            //gFrame->DestroyPersistentDialogs();
+            break;
+            
+        default:
+            break;
+    }
+    
+}
+
+
+bool androidUtilInit( void )
+{
+    g_androidUtilHandler = new androidUtilHandler();
+    
+    return true;
+}
 
 
 jint JNI_OnLoad(JavaVM *vm, void *reserved)
@@ -129,6 +220,14 @@ extern "C"{
         qDebug() << "onConfigChange" << new_size.x << new_size.y;
         
         gFrame->TriggerResize(new_size);
+
+        if(g_androidUtilHandler){
+            
+            g_androidUtilHandler->m_action = ACTION_RESIZE_PERSISTENTS;
+            g_androidUtilHandler->m_eventTimer.Start(200, wxTIMER_ONE_SHOT);
+        }
+        
+//        gFrame->DestroyPersistentDialogs();
         
 //        wxSizeEvent ev(new_size);
         
@@ -136,6 +235,17 @@ extern "C"{
         
 //        evh->AddPendingEvent(ev);
         return 77;
+    }
+}
+
+extern "C"{
+    JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onMenuKey(JNIEnv *env, jobject obj)
+    {
+        qDebug() << "onMenuKey";
+
+        gFrame->ToggleToolbar();
+            
+        return 88;
     }
 }
 
@@ -343,6 +453,7 @@ wxSize getAndroidDisplayDimensions( void )
         return_string = wxString(ret_string, wxConvUTF8);
     }
     
+    //167.802994;1.000000;160;1024;527;1024;552;1024;552;56
      wxStringTokenizer tk(return_string, _T(";"));
     if( tk.HasMoreTokens() ){
         wxString token = tk.GetNextToken();     // xdpi
@@ -358,6 +469,20 @@ wxSize getAndroidDisplayDimensions( void )
         long b = ::wxGetDisplaySize().y;        
         if(token.ToLong( &b ))
             sz_ret.y = b;
+        
+        token = tk.GetNextToken();              
+        token = tk.GetNextToken();
+        
+        token = tk.GetNextToken();
+        token = tk.GetNextToken();
+        
+        long abh = 0;
+        token = tk.GetNextToken();              //  ActionBar height, if shown
+        if(token.ToLong( &abh ))
+            sz_ret.y -= abh;
+            
+        
+        
     }
 
     wxSize sz_wx = ::wxGetDisplaySize();               // default, probably reasonable, but maybe not accurate

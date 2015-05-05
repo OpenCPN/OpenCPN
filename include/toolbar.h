@@ -31,7 +31,7 @@
 
 class GrabberWin: public wxPanel {
 public:
-      GrabberWin( wxWindow *parent, float scale_factor );
+    GrabberWin( wxWindow *parent,  ocpnFloatingToolbarDialog *toolbar, float scale_factor );
       void OnPaint( wxPaintEvent& event );
       void MouseEvent( wxMouseEvent& event );
       void SetColorScheme( ColorScheme cs );
@@ -41,6 +41,9 @@ public:
       bool m_bRightDown;
       ocpnStyle::Style* m_style;
       float m_scale_factor;
+      ocpnFloatingToolbarDialog *m_ptoolbar;
+      bool m_dragging;
+      
 
 DECLARE_EVENT_TABLE()
 };
@@ -324,6 +327,7 @@ public:
       void Realize();
       ocpnToolBarSimple *GetToolbar();
       void Submerge();
+      void SubmergeToGrabber();
       void Surface();
       void HideTooltip();
       void ShowTooltips();
@@ -372,6 +376,8 @@ private:
 
       bool m_marginsInvisible;
       float m_sizefactor;
+      
+      GrabberWin *m_pRecoverwin;
 
 };
 

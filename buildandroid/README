@@ -1,4 +1,12 @@
 0....Tools, etc.
+
+        __Run ndk-gdb to debug a target app.
+        https://vilimpoc.org/blog/2010/09/23/hello-gdbserver-a-debuggable-jni-example-for-android/
+
+        __emulator
+        export ANDROID_EMULATOR_FORCE_32BIT=true
+        /home/dsr/Projects/android-ndk/android-sdk-linux/tools/android
+
         __ Uninstall old version
         $/home/dsr/Projects/android-ndk/android-sdk-linux/platform-tools/adb  uninstall org.opencpn.opencpn
 
@@ -175,7 +183,7 @@
         $mkdir build_android
         $cd build_android
 
-        $cmake -D_wx_selected_config=androideabi-qt -DCMAKE_TOOLCHAIN_FILE=../buildandroid/build_android.cmake ..
+        $cmake -D_wx_selected_config=androideabi-qt -DCMAKE_TOOLCHAIN_FILE=../buildandroid/cross_build_android.cmake ..
 
 
         5. Build OCPN
@@ -537,7 +545,67 @@ $ /home/dsr/Projects/android-ndk/android-sdk-linux/tools/monitor
         #define wxUSE_SELECT_DISPATCHER 1
 
 
+9.      Building wxQT as dynamic solib
+
+        $export PKG_CONFIG_PATH=~/Qt/5.2.1/android_armv7/lib/pkgconfig
+
+        $export CPPFLAGS=-D__ANDROID__                  (this is for some special stuff in wxWidgets)
+        $export PATH=/home/dsr/Projects/android-ndk/ndk-toolchain/bin:$PATH
+        $export LDFLAGS=-s                      // strip
+
+
+        $cd build_android_so
+
+    $../configure --with-qt --build=x86_64-unknown-linux-gnu --host=arm-linux-androideabi --enable-compat28 --disable-arttango --enable-image --disable-dragimage --with-libtiff=no --disable-baseevtloop --disable-xrc --disable-cmdline --disable-miniframe --disable-mdi --enable-debug --disable-stc --disable-ribbon --disable-propgrid --disable-timepick --disable-datepick --disable-xlocale --disable-intl --with-opengl --enable-selectloop --disable-detect_sm
 
 
 
+        Hack the makefile:
+        a)
+            In the makefile:
+            We have.. dll___targetsuf2 = .$(SO_SUFFIX).0
+            We want...dll___targetsuf2 = .$(SO_SUFFIX)
+
+            Hacking the makefile works, but there should be a config environment setting....
+            try:
+            COND_USE_SOVERSION_0?
+
+         Hack the setup.h
+         b)  There is some trouble with configure script.  Need to manually edit setup.h to enable:
+            #define wxUSE_SELECT_DISPATCHER 1
+
+
+
+10.     Try a wxQT monolithic wxWidgets build
+
+        $../configure --with-qt --build=x86_64-unknown-linux-gnu --host=arm-linux-androideabi --enable-compat28 --disable-arttango --enable-image --disable-dragimage --with-libtiff=no --disable-baseevtloop --disable-xrc --disable-cmdline --disable-miniframe --disable-mdi --enable-debug --disable-stc --disable-ribbon --disable-propgrid --disable-timepick --disable-datepick --disable-xlocale --disable-intl --with-opengl --enable-selectloop --disable-detect_sm --enable-monolithic
+
+        This has some trouble too.
+
+        1.  Won't build due to trouble with wxExecuteEventLoopSourceHandler()
+            temp solution is comment away, which will break some IO, probably network stuff
+
+        2.  Need to edit the Makefile to remove duplicate additions of two object modules:
+
+        monodll_converter.o
+        monodll_qt_utils.o
+
+        Take them out of "COND_TOOLKIT_QT___ADVANCED_PLATFORM_SRC_OBJECTS"
+
+        3.  mono library fails to load due to missing implementation of:
+        int gethostbyaddr_r(const char *, int, int, struct hostent *, char *, size_t, struct hostent **, int *);
+
+        Note that the include file
+        /home/dsr/Projects/android-ndk/ndk-toolchain/sysroot/usr/include/netdb.h
+        was hacked earlier.
+
+        Now we need an implementation.
+        Stick this in src/qt/utils.cpp
+
+        #include <netdb.h>
+        int gethostbyaddr_r(const char *, int, int, struct hostent *, char *, size_t, struct hostent **, int *)
+        {
+            wxLogMessage(_T("Called stub gethostbyaddr_r()"));
+            return 0;
+        }
 

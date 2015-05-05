@@ -33,6 +33,8 @@
 
 #include <vector>
 
+#include "TexFont.h"
+
 #ifndef DECL_EXP
 #ifdef __WXMSW__
 #  define DECL_EXP     __declspec(dllexport)
@@ -123,6 +125,7 @@ protected:
      wxBrush m_brush;
      wxColour m_textforegroundcolour;
      wxFont m_font;
+     TexFont m_texfont;
 
 #if  wxUSE_GRAPHICS_CONTEXT
      wxGraphicsContext *pgc;

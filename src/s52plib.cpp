@@ -7341,14 +7341,6 @@ bool s52plib::ObjectRenderCheckCat( ObjRazRules *rzRules, ViewPort *vp )
     if( !strncmp( rzRules->LUP->OBCL, "SOUNDG", 6 ) )
         b_catfilter = m_bShowSoundg;
     
-    //  Some objects may be promoted to category "ALL", according to the S52 spec.
-    //  So we give the CS procedures a chance to run here.  After the CS is evaluated, they will display or not
-    //  depending on the results of UDWHAZ procedure, and whether they were promoted.    
-    if( !strncmp( rzRules->LUP->OBCL, "UWTROC", 6 ) ){  //  TODO Should add OBSTRN and WRECKS to this test
-        if( !rzRules->obj->bCS_Added )
-            b_catfilter = true;
-    }
-        
     bool b_visible = false;
     if( b_catfilter ) {
         b_visible = true;

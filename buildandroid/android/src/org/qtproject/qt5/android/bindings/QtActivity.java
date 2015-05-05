@@ -47,6 +47,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ActionBar;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -364,46 +365,67 @@ public class QtActivity extends Activity
 //            screen_h -= getResources().getDimensionPixelSize(typedValue.resourceId);
 //        }
 
+        int actionBarHeight = 0;
+        ActionBar actionBar = getActionBar();
+        if(actionBar.isShowing())
+            actionBarHeight = actionBar.getHeight();
+
         int width = 600;
         int height = 400;
 
         Display display = getWindowManager().getDefaultDisplay();
 
-        if (Build.VERSION.SDK_INT >= 17) {
-            Log.i("DEBUGGER_TAG", "VERSION.SDK_INT >= 17");
-            width = dm.widthPixels;
-            height = dm.heightPixels;
-         }
-         else if (Build.VERSION.SDK_INT >= 14) {
-             Log.i("DEBUGGER_TAG", "VERSION.SDK_INT >= 14");
-             Point outPoint = new Point();
-             display.getRealSize(outPoint);
-             if (outPoint != null){
-                 width = outPoint.x;
-                 height = outPoint.y;
-             }
-         }
+        if (Build.VERSION.SDK_INT >= 13) {
 
-         else if (Build.VERSION.SDK_INT >= 13) {
-             Log.i("DEBUGGER_TAG", "VERSION.SDK_INT >= 13");
-             Point outPoint = new Point();
-             display.getSize(outPoint);
-             width = outPoint.x;
-             height = outPoint.y;
-         }
-         else {
-             Log.i("DEBUGGER_TAG", "VERSION.SDK_INT < 13");
-             width = display.getWidth();
-             height = display.getHeight();
-         }
+            if(Build.VERSION.SDK_INT >= 17){
+                Log.i("DEBUGGER_TAG", "VERSION.SDK_INT >= 17");
+                width = dm.widthPixels;
+                height = dm.heightPixels;
+            }
+            else{
+
+                switch (Build.VERSION.SDK_INT){
+
+                    case 16:
+                        Log.i("DEBUGGER_TAG", "VERSION.SDK_INT == 16");
+                        width = dm.widthPixels;
+                        height = dm.heightPixels;
+                        break;
+
+                    case 15:
+                    case 14:
+                        Point outPoint = new Point();
+                        display.getRealSize(outPoint);
+                        if (outPoint != null){
+                            width = outPoint.x;
+                            height = outPoint.y;
+                        }
+                    break;
+
+                    default:
+                        width = dm.widthPixels;
+                        height = dm.heightPixels;
+                        break;
+
+                }
+            }
+        }
+        else{
+            Log.i("DEBUGGER_TAG", "VERSION.SDK_INT < 13");
+            width = display.getWidth();
+            height = display.getHeight();
+        }
 
 
 
         String ret;
 
-        ret = String.format("%f;%f;%d;%d;%d;%d;%d", dm.xdpi, dm.density, dm. densityDpi,
+        ret = String.format("%f;%f;%d;%d;%d;%d;%d;%d;%d;%d", dm.xdpi, dm.density, dm.densityDpi,
                width, height - statusBarHeight,
-               width, height);
+               width, height,
+               dm.widthPixels, dm.heightPixels, actionBarHeight);
+
+        Log.i("DEBUGGER_TAG", ret);
 
         return ret;
     }
@@ -439,13 +461,12 @@ public class QtActivity extends Activity
             @Override
             public void run() {
 
-//                 QtActivity.this.ringProgressDialog.show(QtActivity.this, "", "", true);
-
                  ringProgressDialog.dismiss();
 
              }});
 
-//        ringProgressDialog.dismiss();
+
+
         String ret = "";
         return ret;
     }
@@ -512,9 +533,9 @@ public class QtActivity extends Activity
 
                 if(m_ScanHelperStarted){
                     scanHelper.doDiscovery();
+                    scanHelper.stopDiscovery();
                 }
 
-                scanHelper.stopDiscovery();
 
              }});
 
@@ -1463,6 +1484,18 @@ public class QtActivity extends Activity
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)
     {
+ /*
+        Log.i("DEBUGGER_TAG", "onKeyDown");
+
+        if (keyCode == KeyEvent.KEYCODE_MENU) {
+            Log.i("DEBUGGER_TAG", "KEYCODE_MENU");
+
+            int i = nativeLib.onMenuKey();
+
+            return true;
+        }
+*/
+
         if (QtApplication.m_delegateObject != null && QtApplication.onKeyDown != null)
             return (Boolean) QtApplication.invokeDelegateMethod(QtApplication.onKeyDown, keyCode, event);
         else
