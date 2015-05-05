@@ -448,6 +448,7 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
                     if( m_dlg.m_cbPressure->GetValue() ) {
                         RenderGribIsobar( i, pGR, pIA, vp );
                         RenderGribNumbers( i, pGR, vp );
+                        RenderGribLowHigh( i, pGR, vp );
                     } else {
                         if(m_Settings.Settings[i].m_iIsoBarVisibility) RenderGribIsobar( i, pGR, pIA, vp );
                     }
@@ -472,6 +473,7 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
             RenderGribDirectionArrows( i, pGR, vp );
             RenderGribNumbers( i, pGR, vp );
             RenderGribParticles( i, pGR, vp );
+            RenderGribLowHigh( i, pGR, vp );
         }
     }
     if( m_Altitude ) {
@@ -781,10 +783,11 @@ wxString GRIBOverlayFactory::getLabelString(double value, int settings)
     case 5:
         p = value < 100. ? 2 : value < 10. ? 1 : 0;
         p += m_Settings.Settings[5].m_Units == 1 ? 1 : 0;
-            break;
+        break;
 
     default :
         p = 0;
+        break;
     }
     return wxString::Format( _T("%.*f"), p, value );
 }
@@ -1384,10 +1387,84 @@ void GRIBOverlayFactory::RenderGribNumbers( int settings, GribRecord **pGR, Plug
     delete pGRM;
 }
 
+/* Put an "L" in the center of a low and an "H" in the center of a high */
+void GRIBOverlayFactory::RenderGribLowHigh( int settings, GribRecord **pGR, PlugIn_ViewPort *vp )
+{
+    if( !m_Settings.Settings[settings].m_bLowHighLabels ) return;
+
+    GribRecord *pGRA = pGR[Idx_PRESSURE];
+    int imax = pGRA->getNi(); // max longitude
+    int jmax = pGRA->getNj(); // max latitude
+
+    // iterate over the grid
+    for( int ci = 1; ci < imax-1; ci++ ) { // skip edges
+        for( int cj = 1; cj < jmax-1; cj++ ) {
+            double cVal = pGRA->getValue( ci, cj );
+            if ( cVal == GRIB_NOTDEF ) continue;
+            bool isMin = true;
+            bool isMax = true;
+            // iterate over the nearest neighbors of the current grid point
+            for( int i = -1; i <= 1; i++ ) {
+                int ni = ci + i;
+                for ( int j = -1; j <= 1; j++ ) {
+                    int nj = cj + j;
+                    if ( (i == 0) && (j == 0) ) continue; // skip self
+                    // test if the current grid point is not a local minimum or maximum
+                    double nVal = pGRA->getValue( ni, nj );
+                    if (nVal <= cVal) isMin = false; // kick it out if there is a lower/higher
+                    if (nVal >= cVal) isMax = false; // value in the nearest neighborhood
+                }
+            }
+
+            if ( isMin || isMax ) { // draw a label at the current grid point
+
+                wxString label;
+                if( isMin ) label = wxString::FromUTF8( "L" );
+                if( isMax ) label = wxString::FromUTF8( "H" );
+
+                double lon = pGRA->getX( ci );
+                double lat = pGRA->getY( cj );
+                wxPoint p;
+                GetCanvasPixLL( vp, &p, lat, lon );
+
+                if( m_pdc ) {
+                    wxScreenDC sdc;
+                    int w, h;
+                    wxFont mfont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
+                    sdc.GetTextExtent( label, &w, &h, NULL, NULL, &mfont );
+                    wxBitmap bmp( w, h );
+                    wxMemoryDC mdc( bmp );
+                    mdc.SetFont( mfont );
+                    mdc.SetTextForeground( *wxBLACK );
+                    mdc.SetBackground( *wxWHITE_BRUSH );
+                    mdc.Clear();
+                    mdc.DrawText( label, 0, 0 );
+                    mdc.SelectObject( wxNullBitmap );
+                    wxImage labelImg = bmp.ConvertToImage();
+                    labelImg.SetMaskColour( 255, 255, 255 );
+                    m_pdc->DrawBitmap( labelImg, p.x, p.y, true );
+                } else {
+#ifdef ocpnUSE_GL
+                    glEnable( GL_BLEND );
+                    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+                    glColor4ub( 0, 0, 0, 0 );
+                    glEnable( GL_TEXTURE_2D );
+                    m_TexFontNumbers.RenderString( label, p.x, p.y );
+                    glDisable( GL_TEXTURE_2D );
+                    glDisable( GL_BLEND );
+#endif
+                }
+            }
+
+        }
+    }
+    return;
+}
+
 void GRIBOverlayFactory::DrawNumbers( wxPoint p, double value, int settings, wxColour back_color )
 {
 	if( m_pdc ) {
-		wxImage &label = getLabel(value, settings, back_color);
+	    wxImage &label = getLabel(value, settings, back_color);
         //set alpha chanel
         int w = label.GetWidth(), h = label.GetHeight();
         for( int y = 0; y < h; y++ )

@@ -625,6 +625,9 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	m_sNumbersSpacing = new wxSpinCtrl( m_scrolledSettingsDialog, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 90,-1 ), wxSP_ARROW_KEYS, 30, 100, 50 );
 	fgSizer15->Add( m_sNumbersSpacing, 0, wxALL, 5 );
 	
+    m_cbLowHighLabels = new wxCheckBox( m_scrolledSettingsDialog, wxID_ANY, _("Low/High Labels"), wxDefaultPosition, wxDefaultSize, 0 );
+    fgSizer15->Add( m_cbLowHighLabels, 0, wxBOTTOM|wxTOP, 5 );
+
 	m_cbParticles = new wxCheckBox( m_scrolledSettingsDialog, wxID_ANY, _("Particle Map"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer15->Add( m_cbParticles, 0, wxBOTTOM|wxTOP, 5 );
 	
@@ -634,7 +637,6 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	
 	m_sParticleDensity = new wxSlider( m_scrolledSettingsDialog, wxID_ANY, 5, 1, 10, wxDefaultPosition, wxDefaultSize, wxSL_BOTTOM|wxSL_HORIZONTAL|wxSL_LABELS );
 	fgSizer15->Add( m_sParticleDensity, 0, wxALL|wxEXPAND, 5 );
-	
 	
 	sbSizer5->Add( fgSizer15, 1, wxALL|wxEXPAND, 5 );
 	
