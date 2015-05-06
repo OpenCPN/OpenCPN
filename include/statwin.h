@@ -149,7 +149,6 @@ public:
       void OnPaint(wxPaintEvent& event);
       void MouseEvent(wxMouseEvent& event);
       int  GetFontHeight();
-      int  GetRows(){ return(m_rows);}
       void SetColorScheme(ColorScheme cs);
       void RePosition();
       void ReSize();
@@ -162,7 +161,6 @@ public:
 
 private:
       wxBrush     m_backBrush;
-      int         m_rows;
 
 
 DECLARE_EVENT_TABLE()

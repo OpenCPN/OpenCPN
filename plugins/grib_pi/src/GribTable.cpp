@@ -107,7 +107,7 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa )
         time = rsa->Item(i).m_Reference_Time;
    
         //populate 'time' row
-        m_pGribTable->SetCellValue(GetTimeRowsStrings( rsa->Item(i).m_Reference_Time, zone , 0), 1, i );
+        m_pGribTable->SetCellValue(1, i, GetTimeRowsStrings( rsa->Item(i).m_Reference_Time, zone , 0) );
         
         nrows = 2;
 
@@ -280,7 +280,7 @@ void GRIBTable::AutoSizeDataRows()
         m_pGribTable->AutoSizeRow(i, false);
         int h = m_pGribTable->GetRowHeight(i);
         h += 10;
-        m_pGribTable->SetRowHeight(i, h);
+        m_pGribTable->SetRowSize(i, h);
     }
 }
 
