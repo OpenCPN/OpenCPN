@@ -506,12 +506,10 @@ void androidShowBusyIcon()
 {
     if(b_androidBusyShown)
         return;
-    qDebug() << "Showit";
     
     //  Get a reference to the running native activity
     QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
                                                                            "activity", "()Landroid/app/Activity;");
-    
     if ( !activity.isValid() ){
         qDebug() << "Activity is not valid";
         return;
@@ -527,8 +525,6 @@ void androidHideBusyIcon()
 {
     if(!b_androidBusyShown)
         return;
-    
-    qDebug() << "Hideit";
     
     //  Get a reference to the running native activity
     QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
