@@ -199,6 +199,7 @@ extern float            g_fNavAidRadarRingsStep;
 extern int              g_pNavAidRadarRingsStepUnits;
 extern bool             g_bWayPointPreventDragging;
 extern bool             g_bEnableZoomToCursor;
+extern bool             g_bShowChartBar;
 
 extern AISTargetAlertDialog    *g_pais_alert_dialog_active;
 extern AISTargetQueryDialog    *g_pais_query_dialog_active;
@@ -8223,6 +8224,8 @@ bool ChartCanvas::InvokeCanvasMenu(int x, int y, int seltype)
 #ifdef __WXQT__
     g_FloatingToolbarDialog->Raise();
     g_FloatingCompassDialog->Raise();
+    if(stats && stats->IsShown())
+        stats->Raise();
 #endif
     
     return true;
