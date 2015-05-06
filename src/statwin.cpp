@@ -511,38 +511,38 @@ wxString PianoWin::GetStateHash()
 
     for(unsigned int i=0 ; i < m_key_array.GetCount() ; i++){
         wxString a;
-        a.Printf(_T("%d|"), m_key_array.Item(i));
+        a.Printf(_T("%dK"), m_key_array.Item(i));
         hash += a;
     }
 
     for(unsigned int i=0 ; i < m_noshow_index_array.GetCount() ; i++){
         wxString a;
-        a.Printf(_T("%d|"), m_noshow_index_array.Item(i));
+        a.Printf(_T("%dN"), m_noshow_index_array.Item(i));
         hash += a;
     }
     for(unsigned int i=0 ; i < m_active_index_array.GetCount() ; i++){
         wxString a;
-        a.Printf(_T("%d|"), m_active_index_array.Item(i));
+        a.Printf(_T("%dA"), m_active_index_array.Item(i));
         hash += a;
     }
     for(unsigned int i=0 ; i < m_sublite_index_array.GetCount() ; i++){
         wxString a;
-        a.Printf(_T("%d|"), m_sublite_index_array.Item(i));
+        a.Printf(_T("%dS"), m_sublite_index_array.Item(i));
         hash += a;
     }
     for(unsigned int i=0 ; i < m_skew_index_array.GetCount() ; i++){
         wxString a;
-        a.Printf(_T("%d|"), m_skew_index_array.Item(i));
+        a.Printf(_T("%dW"), m_skew_index_array.Item(i));
         hash += a;
     }
     for(unsigned int i=0 ; i < m_tmerc_index_array.GetCount() ; i++){
         wxString a;
-        a.Printf(_T("%d|"), m_tmerc_index_array.Item(i));
+        a.Printf(_T("%dM"), m_tmerc_index_array.Item(i));
         hash += a;
     }
     for(unsigned int i=0 ; i < m_poly_index_array.GetCount() ; i++){
         wxString a;
-        a.Printf(_T("%d|"), m_poly_index_array.Item(i));
+        a.Printf(_T("%dP"), m_poly_index_array.Item(i));
         hash += a;
     }
 
