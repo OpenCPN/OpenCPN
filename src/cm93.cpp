@@ -2520,17 +2520,6 @@ int cm93chart::CreateObjChain ( int cell_index, int subcell, double view_scale_p
 //              Establish objects base display priority         
                               obj->m_DPRI = LUP->DPRI - '0';
                               
-//  Is this a catagory-movable object?
-                              if( !strncmp(obj->FeatureName, "OBSTRN", 6) ||
-                                    !strncmp(obj->FeatureName, "WRECKS", 6) ||
-                                    !strncmp(obj->FeatureName, "DEPCNT", 6) ||
-                                    !strncmp(obj->FeatureName, "UWTROC", 6) )
-                              {
-                                  obj->m_bcategory_mutable = true;
-                              }
-                              else{
-                                obj->m_bcategory_mutable = false;
-                              }
  //              Populate the chart context
                                obj->m_chart_context = m_this_chart_context;
                                           
