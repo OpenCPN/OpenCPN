@@ -608,16 +608,23 @@ void PianoWin::MouseEvent( wxMouseEvent& event )
     }
 
     if(g_btouch){
+        if( event.LeftDown() ) {
+            if( -1 != sel_index ){
+                m_action = DEFERRED_KEY_CLICK_DOWN;
+                ShowBusy( true );
+ #ifdef __OCPN__ANDROID__
+                androidShowBusyIcon();
+ #endif                
+                m_eventTimer.Start(10, wxTIMER_ONE_SHOT);
+            }
+        }
+        
         if( event.LeftUp() ) {
             if( -1 != sel_index ){
                 m_click_sel_index = sel_index;
                 m_click_sel_dbindex = sel_dbindex;
-                m_action = DEFERRED_KEY_CLICK;
-                ShowBusy( true );
-#ifdef __OCPN__ANDROID__
-                androidShowBusyIcon();
-#endif                
-                m_eventTimer.Start(50, wxTIMER_ONE_SHOT);
+                m_action = DEFERRED_KEY_CLICK_UP;
+                m_eventTimer.Start(10, wxTIMER_ONE_SHOT);
             }
         }
         if( event.RightDown() ) {
@@ -694,7 +701,9 @@ void PianoWin::ResetRollover( void )
 void PianoWin::onTimerEvent(wxTimerEvent &event)
 {
     switch(m_action){
-        case DEFERRED_KEY_CLICK:
+        case DEFERRED_KEY_CLICK_DOWN:
+            break;
+        case DEFERRED_KEY_CLICK_UP:
             gFrame->HandlePianoClick( m_click_sel_index, m_click_sel_dbindex );
             ShowBusy( false );
             break;
