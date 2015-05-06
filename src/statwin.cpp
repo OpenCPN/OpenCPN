@@ -39,6 +39,10 @@
 #include "chartbase.h"
 #include "styles.h"
 
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#endif
+
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY(RegionArray);
 
@@ -231,6 +235,8 @@ BEGIN_EVENT_TABLE(PianoWin, wxWindow)
     EVT_PAINT(PianoWin::OnPaint)
     EVT_SIZE(PianoWin::OnSize)
     EVT_MOUSE_EVENTS(PianoWin::MouseEvent)
+    EVT_TIMER ( PIANO_EVENT_TIMER, PianoWin::onTimerEvent )
+    
 END_EVENT_TABLE()
 
 // Define a constructor
@@ -243,7 +249,8 @@ PianoWin::PianoWin( wxFrame *frame ) :
     m_hover_icon_last = -1;
     m_hover_last = -1;
     m_brounded = false;
-
+    m_bBusy = false;
+    
     m_nRegions = 0;
 
     SetBackgroundStyle( wxBG_STYLE_CUSTOM ); // on WXMSW, this prevents flashing on color scheme change
@@ -253,6 +260,9 @@ PianoWin::PianoWin( wxFrame *frame ) :
     m_pPolyIconBmp = NULL;
     m_pSkewIconBmp = NULL;
     m_pTmercIconBmp = NULL;
+    
+    m_eventTimer.SetOwner( this, PIANO_EVENT_TIMER );
+    
 }
 
 PianoWin::~PianoWin()
@@ -368,6 +378,9 @@ void PianoWin::OnPaint( wxPaintEvent& event )
                 }
             }
 
+            if(m_bBusy)
+                dc.SetBrush( m_uvBrush );
+            
             wxRect box = KeyRegion.Item( i ).GetBox();
 
             if( m_brounded ) {
@@ -442,6 +455,13 @@ void PianoWin::OnPaint( wxPaintEvent& event )
 #else
     }
 #endif
+}
+
+void PianoWin::ShowBusy( bool busy )
+{
+    m_bBusy = busy;
+    Refresh( true );
+    Update();
 }
 
 void PianoWin::SetKeyArray( ArrayOfInts array )
@@ -589,8 +609,16 @@ void PianoWin::MouseEvent( wxMouseEvent& event )
 
     if(g_btouch){
         if( event.LeftUp() ) {
-            if( -1 != sel_index )
-                gFrame->HandlePianoClick( sel_index, sel_dbindex );
+            if( -1 != sel_index ){
+                m_click_sel_index = sel_index;
+                m_click_sel_dbindex = sel_dbindex;
+                m_action = DEFERRED_KEY_CLICK;
+                ShowBusy( true );
+#ifdef __OCPN__ANDROID__
+                androidShowBusyIcon();
+#endif                
+                m_eventTimer.Start(50, wxTIMER_ONE_SHOT);
+            }
         }
         if( event.RightDown() ) {
             if( sel_index != m_hover_last ) {
@@ -663,4 +691,17 @@ void PianoWin::ResetRollover( void )
     m_hover_last = -1;
 }
 
+void PianoWin::onTimerEvent(wxTimerEvent &event)
+{
+    switch(m_action){
+        case DEFERRED_KEY_CLICK:
+            gFrame->HandlePianoClick( m_click_sel_index, m_click_sel_dbindex );
+            ShowBusy( false );
+            break;
+        default:
+            break;
+    }
+}
 
+            
+        
