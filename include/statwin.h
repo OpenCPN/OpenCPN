@@ -35,7 +35,8 @@
 //----------------------------------------------------------------------------
 
 #define PIANO_EVENT_TIMER  73566
-#define DEFERRED_KEY_CLICK 1
+#define DEFERRED_KEY_CLICK_DOWN 1
+#define DEFERRED_KEY_CLICK_UP 2
 
 // Class declarations
 WX_DECLARE_OBJARRAY(wxRegion, RegionArray);
