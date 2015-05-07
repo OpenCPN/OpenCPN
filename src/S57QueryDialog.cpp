@@ -31,6 +31,7 @@ extern ColorScheme global_color_scheme;
 extern S57QueryDialog *g_pObjectQueryDialog;
 extern int g_S57_dialog_sx;
 extern int g_S57_dialog_sy;
+extern bool g_bresponsive;
 
 IMPLEMENT_CLASS ( S57QueryDialog, wxDialog )
 // S57QueryDialog event table definition
@@ -86,7 +87,9 @@ bool S57QueryDialog::Create( wxWindow* parent, wxWindowID id, const wxString& ca
 
     SetFont( *dFont );
     CreateControls();
-
+    
+    m_createsize = size;
+/*
 // This ensures that the dialog cannot be sized smaller
 // than the minimum size
     GetSizer()->SetSizeHints( this );
@@ -96,10 +99,36 @@ bool S57QueryDialog::Create( wxWindow* parent, wxWindowID id, const wxString& ca
 
 // Centre the dialog on the parent or (if none) screen
     Centre();
-
+*/
+    RecalculateSize();
+    
     DimeControl( this );
     return true;
 
+}
+
+void S57QueryDialog::RecalculateSize( void )
+{
+    //  Make an estimate of the dialog size, without scrollbars showing
+    
+    wxSize esize = m_createsize;
+    if(g_bresponsive){
+        esize = GetParent()->GetClientSize();
+    }
+    
+    wxSize dsize = GetParent()->GetClientSize();
+    esize.y = wxMin(esize.y, dsize.y - (2 * GetCharHeight()));
+    esize.x = wxMin(esize.x, dsize.x - (2 * GetCharHeight()));
+    SetClientSize(esize);
+    
+    wxSize fsize = GetSize();
+    fsize.y = wxMin(fsize.y, dsize.y - (2 * GetCharHeight()));
+    fsize.x = wxMin(fsize.x, dsize.x - (2 * GetCharHeight()));
+    SetSize(fsize);
+    
+    
+    Centre();
+    
 }
 
 void S57QueryDialog::CreateControls()
