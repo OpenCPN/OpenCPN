@@ -53,6 +53,7 @@ extern ChartDB *ChartData;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern MyFrame *gFrame;
 extern bool g_btouch;
+extern int  g_GUIScaleFactor;
 
 //------------------------------------------------------------------------------
 //    StatWin Implementation
@@ -117,13 +118,17 @@ void StatWin::ReSize()
     wxSize cs = GetParent()->GetClientSize();
     wxSize new_size;
     new_size.x = cs.x;
+
+    new_size.y = 22;
     
-    if(g_btouch)
-        new_size.y = 40;
-    else
-        new_size.y = 22;
+    if(g_btouch){
+        double size_mult =  exp( g_GUIScaleFactor * 0.0953101798043 ); //ln(1.1)
+        new_size.y *= size_mult;
+        new_size.y = wxMin(new_size.y, 50);     // absolute boundaries
+        new_size.y = wxMax(new_size.y, 10);
+    }
     
-        
+    
     SetSize(new_size);
 
 }

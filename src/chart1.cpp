@@ -345,6 +345,8 @@ int                       g_lastClientRectw;
 int                       g_lastClientRecth;
 double                    g_display_size_mm;
 double                    g_config_display_size_mm;
+int                       g_GUIScaleFactor;
+int                       g_ChartScaleFactor;
 
 #ifdef USE_S57
 s52plib                   *ps52plib;
@@ -2883,11 +2885,14 @@ void MyFrame::SetToolbarScale()
     g_toolbar_scalefactor = 1.0;
     if(g_bresponsive ){
         //      Adjust the scale factor so that the basic tool size is xx millimetres, assumed square
-        float target_size = 9.0;                // mm
+//        float target_size = 9.0;                // mm
 
-        float basic_tool_size_mm = style_tool_size.x / cc1->GetPixPerMM();
-        g_toolbar_scalefactor =  target_size / basic_tool_size_mm;
-        g_toolbar_scalefactor = wxMax(g_toolbar_scalefactor, 1.0);
+//        float basic_tool_size_mm = style_tool_size.x / cc1->GetPixPerMM();
+//        g_toolbar_scalefactor =  target_size / basic_tool_size_mm;
+
+        //Adjust the scale factor using the global GUI scale parameter
+        g_toolbar_scalefactor =  exp( g_GUIScaleFactor * 0.182 );       //  empirical number, larger is larger
+        g_toolbar_scalefactor = wxMax(g_toolbar_scalefactor, 1.0);      //  Never smaller than 1.0
 
         //  Round to the nearest "quarter", to avoid rendering artifacts
         g_toolbar_scalefactor = wxRound( g_toolbar_scalefactor * 4.0 )/ 4.0;

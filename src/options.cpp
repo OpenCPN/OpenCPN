@@ -252,6 +252,8 @@ extern bool             g_btouch;
 extern bool             g_bresponsive;
 extern bool             g_bAutoHideToolbar;
 extern int              g_nAutoHideToolbar;
+extern int              g_GUIScaleFactor;
+extern int              g_ChartScaleFactor;
 
 extern double           g_config_display_size_mm;
 
@@ -2844,7 +2846,32 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
     
     pResponsive = new wxCheckBox( itemPanelFont, ID_REPONSIVEBOX, _("Enable Tablet Scaled Graphics interface") );
     miscOptions->Add( pResponsive, 0, wxALL, border_size );
+
+    int slider_width = wxMax(m_fontHeight * 4, 150);
+ 
+    m_pSlider_GUI_Factor = new wxSlider( itemPanelFont, wxID_ANY, 0, -5, 5,
+                                        wxDefaultPosition, wxSize( slider_width, 50),
+                                        wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS );
+#ifdef __OCPN__ANDROID__    
+    miscOptions->Add( new wxStaticText(itemPanelFont, wxID_ANY, _("User Interface scale factor")), inputFlags );
+    miscOptions->Add( m_pSlider_GUI_Factor, 0, wxALL, border_size );
     
+#ifdef __WXQT__
+    m_pSlider_GUI_Factor->GetHandle()->setStyleSheet( getQtStyleSheet());
+#endif
+#endif
+    
+    m_pSlider_Chart_Factor = new wxSlider( itemPanelFont, wxID_ANY, 0, -5, 5,
+                                         wxDefaultPosition, wxSize( slider_width, 50),
+                                         wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS );
+#ifdef __OCPN__ANDROID__
+    miscOptions->Add( new wxStaticText(itemPanelFont, wxID_ANY, _("Chart Object scale factor")), inputFlags );
+    miscOptions->Add( m_pSlider_Chart_Factor, 0, wxALL, border_size );
+    
+#ifdef __WXQT__
+    m_pSlider_Chart_Factor->GetHandle()->setStyleSheet( getQtStyleSheet());
+#endif
+#endif    
     
     wxBoxSizer *pToolbarAutoHide = new wxBoxSizer( wxHORIZONTAL );
     miscOptions->Add( pToolbarAutoHide, 0, wxALL | wxEXPAND, group_item_spacing );
@@ -3298,7 +3325,10 @@ void options::SetInitialSettings()
     m_pCheck_Rollover_CPA->SetValue( g_bAISRolloverShowCPA );
 
     m_pSlider_Zoom->SetValue( g_chart_zoom_modifier );
-    
+ 
+    m_pSlider_GUI_Factor->SetValue(g_GUIScaleFactor);
+    m_pSlider_Chart_Factor->SetValue(g_ChartScaleFactor);
+                                           
     wxString screenmm;
     if(g_config_display_size_mm > 0){
         screenmm.Printf(_T("%d"), int(g_config_display_size_mm));
@@ -4263,6 +4293,8 @@ void options::OnApplyClick( wxCommandEvent& event )
     g_bAISRolloverShowCPA = m_pCheck_Rollover_CPA->GetValue();
 
     g_chart_zoom_modifier = m_pSlider_Zoom->GetValue();
+    g_GUIScaleFactor = m_pSlider_GUI_Factor->GetValue();
+    g_ChartScaleFactor = m_pSlider_Chart_Factor->GetValue();
     
     g_NMEAAPBPrecision = m_choicePrecision->GetCurrentSelection();
     
