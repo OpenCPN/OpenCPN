@@ -99,6 +99,7 @@
 #include "AIS_Target_Data.h"
 #include "OCPNPlatform.h"
 #include "AISTargetQueryDialog.h"
+#include "S57QueryDialog.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
