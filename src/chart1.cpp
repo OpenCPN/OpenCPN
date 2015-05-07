@@ -5179,7 +5179,6 @@ void MyFrame::ToggleQuiltMode( void )
         if( cur_mode != cc1->GetQuiltMode() ){
             SetupQuiltMode();
             DoChartUpdate();
-            cc1->InvalidateGL();
             Refresh();
         }
     }
