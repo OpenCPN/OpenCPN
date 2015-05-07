@@ -40,6 +40,7 @@
 #include "AISTargetAlertDialog.h"
 #include "routeprop.h"
 #include "TrackPropDlg.h"
+#include "S57QueryDialog.h"
 
 class androidUtilHandler;
 
@@ -61,6 +62,7 @@ extern MarkInfoImpl              *pMarkPropDialog;
 extern RouteProp                 *pRoutePropDialog;
 extern TrackPropDlg              *pTrackPropDialog;
 extern MarkInfoImpl              *pMarkInfoDialog;
+extern S57QueryDialog            *g_pObjectQueryDialog;
 
 androidUtilHandler              *g_androidUtilHandler;
 
@@ -130,6 +132,16 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                     pMarkPropDialog->Show();
                 }
                 
+            }
+            
+            // ENC Object Query
+            if(g_pObjectQueryDialog){
+                bool bshown = g_pObjectQueryDialog->IsShown();
+                g_pObjectQueryDialog->Hide();
+                g_pObjectQueryDialog->RecalculateSize();
+                if(bshown){
+                    g_pObjectQueryDialog->Show();
+                }
             }
             
             break;
