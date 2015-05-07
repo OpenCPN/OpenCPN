@@ -158,6 +158,12 @@ styles_deployment.files += $$PWD/../data/styles/qtstylesheet.qss
 styles_deployment.path = /assets/styles
 INSTALLS += styles_deployment
 
+tc_deployment.files += $$PWD/../data/tcdata/HARMONIC.IDX
+tc_deployment.files += $$PWD/../data/tcdata/HARMONIC
+tc_deployment.path = /assets/tcdata
+INSTALLS += tc_deployment
+
+
 contains(ANDROID_TARGET_ARCH,armeabi-v7a) {
     ANDROID_EXTRA_LIBS = \
         /home/dsr/Projects/opencpn_android/buildandroid/../buildandroid/assetbridge/libs/armeabi/libassetbridge.so
