@@ -40,7 +40,6 @@
 #include "undo.h"
 
 #include "ocpCursor.h"
-#include "S57QueryDialog.h"
 #include "GoToPositionDialog.h"
 #include "CM93DSlide.h"
 #include "RolloverWin.h"
