@@ -792,6 +792,13 @@ glChartCanvas::glChartCanvas( wxWindow *parent ) :
     
     Connect( wxEVT_QT_PINCHGESTURE,
              (wxObjectEventFunction) (wxEventFunction) &glChartCanvas::OnEvtPinchGesture, NULL, this );
+
+    Connect( wxEVT_TIMER,
+             (wxObjectEventFunction) (wxEventFunction) &glChartCanvas::onGestureTimerEvent, NULL, this );
+    
+    m_gestureEeventTimer.SetOwner( this, GESTURE_EVENT_TIMER );
+    m_bgestureGuard = false;
+    
 #endif    
     
 }
@@ -876,6 +883,12 @@ void glChartCanvas::MouseEvent( wxMouseEvent& event )
  
 #else
 
+    if(m_bgestureGuard){
+        cc1->r_rband.x = 0;             // turn off rubberband temporarily
+        return;
+    }
+        
+            
     if(cc1->MouseEventSetup( event, false )) {
         if(!event.LeftDClick()){
             return;                 // handled, no further action required
@@ -3412,8 +3425,8 @@ void glChartCanvas::Render()
     
     wxPaintDC( this );
 
-    if(m_binPinch || m_binPan)
-        return;
+//    if(m_binPinch || m_binPan)
+//        return;
     
     ViewPort VPoint = cc1->VPoint;
     ViewPort svp = VPoint;
@@ -4217,13 +4230,18 @@ void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
             break;
             
         case GestureCanceled:
+            m_binPan = false; 
             break;
             
         default:
             break;
     }
     
+    m_bgestureGuard = true;
+    m_gestureEeventTimer.Start(500, wxTIMER_ONE_SHOT);
+    
 }
+
 
 void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
 {
@@ -4276,7 +4294,17 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
         default:
             break;
     }
+
+    m_bgestureGuard = true;
+    m_gestureEeventTimer.Start(500, wxTIMER_ONE_SHOT);
     
 }
+
+void glChartCanvas::onGestureTimerEvent(wxTimerEvent &event)
+{
+    m_bgestureGuard = false;
+}
+
+
 #endif
 
