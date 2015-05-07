@@ -8672,7 +8672,8 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
                 }
             }
             else {
-                route->DrawSegment( dc, &lastPoint, &r_rband, GetVP(), false );
+                if(r_rband.x && r_rband.y)      // RubberBand disabled?
+                    route->DrawSegment( dc, &lastPoint, &r_rband, GetVP(), false );
             }
         }
 
