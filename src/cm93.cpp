@@ -4888,29 +4888,22 @@ int cm93compchart::GetCMScaleFromVP ( const ViewPort &vpt )
 
       //        Check for overzoom at the theoretically calcuolated chart scale
       //        If overzoomed possible, switch to larger scale chart if available
-//      double zoom_factor = scale_breaks[7 - cmscale_calc] / vpt.chart_scale ;
-//      if( zoom_factor > 4.0) {
+      double zoom_factor = scale_breaks[7 - cmscale_calc] / vpt.chart_scale ;
+      if( zoom_factor > 4.0) {
 //          if( cmscale_calc < 7 )
 //              cmscale_calc ++;
-//      }
+      }
       
       return cmscale_calc;
 }
 
 void cm93compchart::SetVPParms ( const ViewPort &vpt )
 {
-    int cmscale = GetCMScaleFromVP ( vpt );         // First order calculation of cmscale
-    m_cmscale = PrepareChartScale ( vpt, cmscale );
-
-    //    Continuosly update the composite chart edition date to the latest cell decoded
-    if ( m_pcm93chart_current )
-    {
-        if ( m_pcm93chart_current->GetEditionDate().IsLaterThan ( m_EdDate ) )
-            m_EdDate = m_pcm93chart_current->GetEditionDate();
+    // need to recompute the cm93 cell when switching quilting off
+    if((m_vpt.b_quilt && !vpt.b_quilt) || !m_pcm93chart_current) {
+        ViewPort vp = vpt;
+        AdjustVP ( m_vpt, vp );
     }
-    
-    m_vpt = vpt;                              // save a copy
-    
 }
 
 int cm93compchart::PrepareChartScale ( const ViewPort &vpt, int cmscale, bool bOZ_protect )
@@ -6373,26 +6366,36 @@ VC_Hash& cm93compchart::Get_vc_hash ( void )
 
 bool cm93compchart::AdjustVP ( ViewPort &vp_last, ViewPort &vp_proposed )
 {
+    cm93chart *last_pcm93chart_current = m_pcm93chart_current;
+    int cmscale = GetCMScaleFromVP ( vp_proposed );         // First order calculation of cmscale
+
+    m_cmscale = PrepareChartScale ( vp_proposed, cmscale );
+
+    //    Continuoesly update the composite chart edition date to the latest cell decoded
+    if ( m_pcm93chart_current )
+    {
+        if ( m_pcm93chart_current->GetEditionDate().IsLaterThan ( m_EdDate ) )
+            m_EdDate = m_pcm93chart_current->GetEditionDate();
+    }
+    
 #ifdef ocpnUSE_GL
     if(g_bopengl) {
         // need a full refresh if not in quilted mode, and the cell changed
         // this is unique to the cm93 composite chart as the Current_Ch stays
         // the same, but the area it covers changes, so accelerated panning cannot work
-
-        if ( !vp_proposed.b_quilt ){
-            cm93chart *last_pcm93chart_current = m_pcm93chart_current;
-            int cmscale = GetCMScaleFromVP ( vp_proposed );         // First order calculation of cmscale
-            m_cmscale = PrepareChartScale ( vp_proposed, cmscale );
-        
-            if ( last_pcm93chart_current != m_pcm93chart_current )
-                glChartCanvas::Invalidate();
-        }
+        if ( !vp_proposed.b_quilt && last_pcm93chart_current != m_pcm93chart_current )
+            glChartCanvas::Invalidate();
     }
 #endif
+
+    if ( g_bDebugCM93 )
+        printf ( "  In AdjustVP,  adjustment subchart scale is %c\n", ( char ) ( 'A' + m_cmscale -1 ) );
 
     // Is this needed?  It appears to do pixel alignment which shouldn't be needed for opengl
 //    if ( m_pcm93chart_array[cmscale_actual] )
 //        m_pcm93chart_array[cmscale_actual]->AdjustVP ( vp_last, vp_proposed );
+
+    m_vpt = vp_proposed;                              // save a copy
 
     return false;
 }
