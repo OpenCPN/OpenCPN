@@ -3164,21 +3164,33 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     // This way the main window is already invisible and to the user
     // it appears to have finished rather than hanging for several seconds
     // while the compression threads exit
-    if(g_bopengl && g_CompressorPool){
+    if(g_bopengl && g_CompressorPool && g_CompressorPool->GetRunningJobCount()){
+        
+        wxLogMessage(_T("Starting compressor pool drain"));
         wxDateTime now = wxDateTime::Now();
         time_t stall = now.GetTicks();
         time_t end = stall + THREAD_WAIT_SECONDS;
 
+        int n_comploop = 0;
         while(stall < end ) {
             wxDateTime later = wxDateTime::Now();
             stall = later.GetTicks();
 
+            wxString msg;
+            msg.Printf(_T("Time: %d  Job Count: %d"), n_comploop, g_CompressorPool->GetRunningJobCount());
+            wxLogMessage(msg);
             if(!g_CompressorPool->GetRunningJobCount())
                 break;
             wxYield();
             wxSleep(1);
         }
+    
+        wxString fmsg;
+        fmsg.Printf(_T("Finished compressor pool drain..Time: %d  Job Count: %d"),
+                    n_comploop, g_CompressorPool->GetRunningJobCount());
+        wxLogMessage(fmsg);
     }
+     
 #endif
 
     this->Destroy();
@@ -4739,23 +4751,9 @@ int MyFrame::DoOptionsDialog()
         } else {
             g_options->Center();
         }
-    }
-    else {
-
-        wxSize canvas_size = cc1->GetSize();
-        wxPoint canvas_pos = cc1->GetPosition();
-        wxSize fitted_size = g_options->GetSize();;
-
-        fitted_size.x = wxMin(fitted_size.x, canvas_size.x);
-        fitted_size.y = wxMin(fitted_size.y, canvas_size.y);
-
-        g_options->SetSize( fitted_size );
-        int xp = (canvas_size.x - fitted_size.x)/2;
-        int yp = (canvas_size.y - fitted_size.y)/2;
-
-        wxPoint xxp = ClientToScreen(canvas_pos);
-        g_options->Move(xxp.x + xp, xxp.y + yp);
-
+        if( options_lastWindowSize != wxSize(0,0) ) {
+            g_options->SetSize( options_lastWindowSize );
+        }
     }
 
     if( g_FloatingToolbarDialog)
@@ -10177,11 +10175,13 @@ OCPNMessageDialog::OCPNMessageDialog( wxWindow *parent,
 
 void OCPNMessageDialog::OnYes(wxCommandEvent& WXUNUSED(event))
 {
+    SetReturnCode(wxID_YES);
     EndModal( wxID_YES );
 }
 
 void OCPNMessageDialog::OnNo(wxCommandEvent& WXUNUSED(event))
 {
+    SetReturnCode(wxID_NO);
     EndModal( wxID_NO );
 }
 
@@ -10191,12 +10191,14 @@ void OCPNMessageDialog::OnCancel(wxCommandEvent& WXUNUSED(event))
     // only YES and NO are specified.
     if ( (m_style & wxYES_NO) != wxYES_NO || (m_style & wxCANCEL) )
     {
+        SetReturnCode(wxID_CANCEL);
         EndModal( wxID_CANCEL );
     }
 }
 
 void OCPNMessageDialog::OnClose( wxCloseEvent& event )
 {
+    SetReturnCode(wxID_CANCEL);
     EndModal( wxID_CANCEL );
 }
 
@@ -10234,8 +10236,10 @@ TimedMessageBox::TimedMessageBox(wxWindow* parent, const wxString& message,
         m_timer.Start( timeout_sec * 1000, wxTIMER_ONE_SHOT );
 
     dlg = new OCPNMessageDialog( parent, message, caption, style, pos );
-    int ret = dlg->ShowModal();
+    dlg->ShowModal();
 
+    int ret= dlg->GetReturnCode();
+    
     //  Not sure why we need this, maybe on wx3?
     if( ((style & wxYES_NO) == wxYES_NO) && (ret == wxID_OK))
         ret = wxID_YES;
