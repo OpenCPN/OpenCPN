@@ -838,7 +838,7 @@ BEGIN_EVENT_TABLE( options, wxDialog )
     EVT_CHECKBOX( ID_ZTCCHECKBOX, options::OnZTCCheckboxClick )
     EVT_CHOICE( ID_SHIPICONTYPE, options::OnShipTypeSelect )
     EVT_CHOICE( ID_RADARRINGS, options::OnRadarringSelect )
-    EVT_CHOICE( ID_WAYPOINTRANGERINGS, options::OnWaypointRangeRingSelect )
+    EVT_CHOICE( ID_OPWAYPOINTRANGERINGS, options::OnWaypointRangeRingSelect )
     EVT_CHAR_HOOK( options::OnCharHook )
     EVT_TIMER ( ID_BT_SCANTIMER, options::onBTScanTimer )
     
@@ -865,6 +865,8 @@ options::options( MyFrame* parent, wxWindowID id, const wxString& caption, const
     SetFont( *qFont );
     
     CreateControls();
+    RecalculateSize();
+        
     Fit();
     Center();
 }
@@ -918,6 +920,38 @@ options::~options()
     delete smallFont;
 }
 
+void options::RecalculateSize()
+{
+    if(!g_bresponsive){
+        wxSize canvas_size = cc1->GetSize();
+        wxSize fitted_size = GetSize();
+    
+        fitted_size.x = wxMin(fitted_size.x, canvas_size.x);
+        fitted_size.y = wxMin(fitted_size.y, canvas_size.y);
+    
+        SetSize( fitted_size );
+    }
+    else {
+        wxSize esize;
+        esize.x = GetCharWidth() * 110;
+        esize.y = GetCharHeight() * 40;
+        
+        wxSize dsize = GetParent()->GetClientSize();
+        esize.y = wxMin(esize.y, dsize.y - (2 * GetCharHeight()));
+        esize.x = wxMin(esize.x, dsize.x - (2 * GetCharHeight()));
+        SetClientSize(esize);
+        
+        wxSize fsize = GetSize();
+        wxSize canvas_size = GetParent()->GetSize();
+        wxPoint canvas_pos = GetParent()->GetPosition();
+        int xp = (canvas_size.x - fsize.x)/2;
+        int yp = (canvas_size.y - fsize.y)/2;
+        wxPoint xxp = GetParent()->ClientToScreen(canvas_pos);
+        Move(xxp.x + xp, xxp.y + yp);
+        
+    }
+}
+    
 void options::Init()
 {
     m_pWorkDirList = NULL;
@@ -1376,7 +1410,7 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     m_stTalkerIdText->Wrap( -1 );
     fgSizer5->Add( m_stTalkerIdText, 0, wxALL, 5 );
 
-    m_TalkerIdText = new wxTextCtrl( m_pNMEAForm, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize( 50, -1 ), 0 );
+    m_TalkerIdText = new wxTextCtrl( m_pNMEAForm, ID_OPTEXTCTRL, _T(""), wxDefaultPosition, wxSize( 50, -1 ), 0 );
     m_TalkerIdText->SetMaxLength( 2 );
     fgSizer5->Add( m_TalkerIdText, 0, wxALIGN_LEFT | wxALL, group_item_spacing );
 
@@ -1688,7 +1722,7 @@ void options::CreatePanel_Ownship( size_t parent, int border_size, int group_ite
     wxStaticText* distanceText = new wxStaticText( itemPanelShip, wxID_STATIC, _("Distance Between Rings") );
     radarGrid->Add( distanceText, 1, wxEXPAND | wxALL, group_item_spacing );
 
-    pNavAidRadarRingsStep = new wxTextCtrl( itemPanelShip, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize( 100, -1 ), 0 );
+    pNavAidRadarRingsStep = new wxTextCtrl( itemPanelShip, ID_OPTEXTCTRL, _T(""), wxDefaultPosition, wxSize( 100, -1 ), 0 );
     radarGrid->Add( pNavAidRadarRingsStep, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
 
     wxStaticText* unitText = new wxStaticText( itemPanelShip, wxID_STATIC, _("Distance Unit") );
@@ -1753,7 +1787,7 @@ void options::CreatePanel_Ownship( size_t parent, int border_size, int group_ite
     wxStaticText *waypointrrTxt = new wxStaticText( itemPanelShip, wxID_ANY, _("Waypoint range rings") );
     waypointrrSelect->Add( waypointrrTxt, 1, wxEXPAND | wxALL, group_item_spacing );
 
-    pWaypointRangeRingsNumber = new wxChoice( itemPanelShip, ID_WAYPOINTRANGERINGS, wxDefaultPosition, m_pShipIconType->GetSize(), 11, rrAlt );
+    pWaypointRangeRingsNumber = new wxChoice( itemPanelShip, ID_OPWAYPOINTRANGERINGS, wxDefaultPosition, m_pShipIconType->GetSize(), 11, rrAlt );
     waypointrrSelect->Add( pWaypointRangeRingsNumber, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
 
     waypointradarGrid = new wxFlexGridSizer( 0, 2, group_item_spacing, group_item_spacing );
@@ -1763,7 +1797,7 @@ void options::CreatePanel_Ownship( size_t parent, int border_size, int group_ite
     wxStaticText* waypointdistanceText = new wxStaticText( itemPanelShip, wxID_STATIC, _("Distance Between Waypoint Rings") );
     waypointradarGrid->Add( waypointdistanceText, 1, wxEXPAND | wxALL, group_item_spacing );
 
-    pWaypointRangeRingsStep = new wxTextCtrl( itemPanelShip, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize( 100, -1 ), 0 );
+    pWaypointRangeRingsStep = new wxTextCtrl( itemPanelShip, ID_OPTEXTCTRL, _T(""), wxDefaultPosition, wxSize( 100, -1 ), 0 );
     waypointradarGrid->Add( pWaypointRangeRingsStep, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
 
     wxStaticText* waypointunitText = new wxStaticText( itemPanelShip, wxID_STATIC, _("Distance Unit") );
@@ -1892,7 +1926,7 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
     wxBoxSizer *pCOGUPFilterRow = new wxBoxSizer( wxHORIZONTAL );
     itemBoxSizerUI->Add( pCOGUPFilterRow, 0, wxALL | wxEXPAND, group_item_spacing );
 
-    pCOGUPUpdateSecs = new wxTextCtrl( m_ChartDisplayPage, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize( 50, -1 ), wxTE_RIGHT  );
+    pCOGUPUpdateSecs = new wxTextCtrl( m_ChartDisplayPage, ID_OPTEXTCTRL, _T(""), wxDefaultPosition, wxSize( 50, -1 ), wxTE_RIGHT  );
     pCOGUPFilterRow->Add( pCOGUPUpdateSecs, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
     
     pCOGUPFilterRow->Add( new wxStaticText( m_ChartDisplayPage, wxID_ANY, _("seconds") ), inputFlags );
@@ -1961,7 +1995,7 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
     pRBSizeManual = new wxRadioButton( m_ChartDisplayPage, ID_SIZEMANUALRADIOBUTTON, _("Manual:") );
     pDPIRow->Add( pRBSizeManual, inputFlags );
 
-    pScreenMM = new wxTextCtrl( m_ChartDisplayPage, ID_TEXTCTRL, _T(""), wxDefaultPosition,
+    pScreenMM = new wxTextCtrl( m_ChartDisplayPage, ID_OPTEXTCTRL, _T(""), wxDefaultPosition,
                                 wxSize( 3 * m_fontHeight, -1 ), wxTE_RIGHT  );
     pDPIRow->Add( pScreenMM, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
 
@@ -2130,7 +2164,7 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
     optionsColumn->Add( new wxStaticText( ps57Ctl, wxID_ANY, _("Shallow Depth") ), labelFlags );
     wxBoxSizer* depShalRow = new wxBoxSizer( wxHORIZONTAL );
     optionsColumn->Add( depShalRow );
-    m_ShallowCtl = new wxTextCtrl( ps57Ctl, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize( 60, -1 ), wxTE_RIGHT );
+    m_ShallowCtl = new wxTextCtrl( ps57Ctl, ID_OPTEXTCTRL, _T(""), wxDefaultPosition, wxSize( 60, -1 ), wxTE_RIGHT );
     depShalRow->Add( m_ShallowCtl, inputFlags );
     m_depthUnitsShal = new wxStaticText( ps57Ctl, wxID_ANY, _("metres") );
     depShalRow->Add( m_depthUnitsShal, inputFlags );
@@ -2138,7 +2172,7 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
     optionsColumn->Add( new wxStaticText( ps57Ctl, wxID_ANY, _("Safety Depth") ), labelFlags );
     wxBoxSizer* depSafeRow = new wxBoxSizer( wxHORIZONTAL );
     optionsColumn->Add( depSafeRow );
-    m_SafetyCtl = new wxTextCtrl( ps57Ctl, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize( 60, -1 ), wxTE_RIGHT );
+    m_SafetyCtl = new wxTextCtrl( ps57Ctl, ID_OPTEXTCTRL, _T(""), wxDefaultPosition, wxSize( 60, -1 ), wxTE_RIGHT );
     depSafeRow->Add( m_SafetyCtl, inputFlags );
     m_depthUnitsSafe = new wxStaticText( ps57Ctl, wxID_ANY, _("metres") );
     depSafeRow->Add( m_depthUnitsSafe, inputFlags );
@@ -2146,7 +2180,7 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
     optionsColumn->Add( new wxStaticText( ps57Ctl, wxID_ANY, _("Deep Depth") ), labelFlags );
     wxBoxSizer* depDeepRow = new wxBoxSizer( wxHORIZONTAL );
     optionsColumn->Add( depDeepRow );
-    m_DeepCtl = new wxTextCtrl( ps57Ctl, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize( 60, -1 ), wxTE_RIGHT );
+    m_DeepCtl = new wxTextCtrl( ps57Ctl, ID_OPTEXTCTRL, _T(""), wxDefaultPosition, wxSize( 60, -1 ), wxTE_RIGHT );
     depDeepRow->Add( m_DeepCtl, inputFlags );
     m_depthUnitsDeep = new wxStaticText( ps57Ctl, wxID_ANY, _("metres") );
     depDeepRow->Add( m_depthUnitsDeep, inputFlags );
@@ -2536,7 +2570,7 @@ void options::CreatePanel_Units( size_t parent, int border_size, int group_item_
     wxStaticText* itemStaticTextUserVar = new wxStaticText( panelUnits, wxID_ANY, _("Assumed magnetic variation") );
     magVarSizer->Add( itemStaticTextUserVar, 0, wxALL | wxALIGN_CENTRE_VERTICAL, group_item_spacing );
 
-    pMagVar = new wxTextCtrl( panelUnits, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize(50, -1), wxTE_RIGHT );
+    pMagVar = new wxTextCtrl( panelUnits, ID_OPTEXTCTRL, _T(""), wxDefaultPosition, wxSize(50, -1), wxTE_RIGHT );
     magVarSizer->Add( pMagVar, 0, wxALIGN_CENTRE_VERTICAL, group_item_spacing );
 
     magVarSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("deg (-W, +E)")),
@@ -2850,7 +2884,7 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
     pToolbarAutoHideCB = new wxCheckBox( itemPanelFont, ID_REPONSIVEBOX, _("Enable Toolbar auto-hide") );
     pToolbarAutoHide->Add( pToolbarAutoHideCB, 0, wxALL, group_item_spacing );
     
-    pToolbarHideSecs = new wxTextCtrl( itemPanelFont, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize( 50, -1 ), wxTE_RIGHT  );
+    pToolbarHideSecs = new wxTextCtrl( itemPanelFont, ID_OPTEXTCTRL, _T(""), wxDefaultPosition, wxSize( 50, -1 ), wxTE_RIGHT  );
     pToolbarAutoHide->Add( pToolbarHideSecs, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
     
     pToolbarAutoHide->Add( new wxStaticText( itemPanelFont, wxID_ANY, _("seconds") ),group_item_spacing );

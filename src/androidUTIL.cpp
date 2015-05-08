@@ -41,6 +41,7 @@
 #include "routeprop.h"
 #include "TrackPropDlg.h"
 #include "S57QueryDialog.h"
+#include "options.h"
 
 class androidUtilHandler;
 
@@ -63,6 +64,7 @@ extern RouteProp                 *pRoutePropDialog;
 extern TrackPropDlg              *pTrackPropDialog;
 extern MarkInfoImpl              *pMarkInfoDialog;
 extern S57QueryDialog            *g_pObjectQueryDialog;
+extern options                   *g_options;
 
 androidUtilHandler              *g_androidUtilHandler;
 
@@ -141,6 +143,16 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                 g_pObjectQueryDialog->RecalculateSize();
                 if(bshown){
                     g_pObjectQueryDialog->Show();
+                }
+            }
+            
+            // Options dialog
+            if(g_options){
+                bool bshown = g_options->IsShown();
+                g_options->Hide();
+                g_options->RecalculateSize();
+                if(bshown){
+                    g_options->ShowModal();
                 }
             }
             
