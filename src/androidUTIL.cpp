@@ -56,6 +56,7 @@ QString g_qtStyleSheet;
 extern MyFrame                  *gFrame;
 extern const wxEventType wxEVT_OCPN_DATASTREAM;
 wxEvtHandler                    *s_pAndroidNMEAMessageConsumer;
+wxEvtHandler                    *s_pAndroidBTNMEAMessageConsumer;
 
 extern AISTargetAlertDialog      *g_pais_alert_dialog_active;
 extern AISTargetQueryDialog      *g_pais_query_dialog_active;
@@ -240,6 +241,30 @@ extern "C"{
         }
         
         return 66;
+    }
+}
+
+extern "C"{
+    JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processBTNMEA(JNIEnv *env, jobject obj, jstring nmea_string)
+    {
+        const char *string = env->GetStringUTFChars(nmea_string, NULL);
+        wxString wstring = wxString(string, wxConvUTF8);
+        
+        qDebug() << "processNMEA" << string;
+        
+        char tstr[200];
+        strncpy(tstr, string, 190);
+        strcat(tstr, "\r\n");
+        
+        if( s_pAndroidBTNMEAMessageConsumer ) {
+            OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
+            Nevent.SetNMEAString( tstr );
+            Nevent.SetStream( NULL );
+            
+            s_pAndroidBTNMEAMessageConsumer->AddPendingEvent(Nevent);
+        }
+        
+        return 77;
     }
 }
 
@@ -728,6 +753,8 @@ bool androidStopBluetoothScan()
 
 bool androidStartBT(wxEvtHandler *consumer, wxString mac_address )
 {
+    s_pAndroidBTNMEAMessageConsumer = consumer;
+    
     if(mac_address.Find(':') ==  wxNOT_FOUND)   //  does not look like a mac address
         return false;
     
@@ -736,7 +763,16 @@ bool androidStartBT(wxEvtHandler *consumer, wxString mac_address )
     return true;
 }
     
-
+bool androidStopBT()
+{
+    s_pAndroidBTNMEAMessageConsumer = NULL;
+    
+    wxString result = callActivityMethod_is("stopBTService", 0);
+        
+    return true;
+}
+    
+    
 wxArrayString androidGetBluetoothScanResults()
 {
     wxArrayString ret_array;
