@@ -6411,6 +6411,12 @@ void MyFrame::HandlePianoClick( int selected_index, int selected_dbIndex )
 {
     if( !pCurrentStack ) return;
     if( s_ProgDialog ) return;
+    
+    // stop movement or on slow computer we may get something like :
+    // zoom out with the wheel (timer is set)
+    // quickly click and display a chart, which may zoom in
+    // but the delayed timer fires first and it zooms out again!
+    cc1->StopMovement();
 
     if( !cc1->GetQuiltMode() ) {
         if( m_bpersistent_quilt/* && g_bQuiltEnable*/ ) {
