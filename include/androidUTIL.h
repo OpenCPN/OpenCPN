@@ -62,6 +62,7 @@ extern bool androidStartBluetoothScan();
 extern bool androidStopBluetoothScan();
 extern wxArrayString androidGetBluetoothScanResults();
 extern bool androidStartBT(wxEvtHandler *consumer, wxString mac_address );
+extern bool androidStopBT();
 
 
 #endif   //guard

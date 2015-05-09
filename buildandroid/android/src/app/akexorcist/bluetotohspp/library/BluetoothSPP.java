@@ -140,6 +140,7 @@ public class BluetoothSPP {
     public void startService(boolean isAndroid) {
         if (mChatService != null) {
             if (mChatService.getState() == BluetoothState.STATE_NONE) {
+                Log.i("DEBUGGER_TAG", "SPPstartService");
                 isServiceRunning = true;
                 mChatService.start(isAndroid);
                 BluetoothSPP.this.isAndroid = isAndroid;
@@ -221,16 +222,22 @@ public class BluetoothSPP {
                     Log.i("DEBUGGER_TAG", "isConnecting");
 
                 } else if(isConnecting) {
-                    if(msg.arg1 != BluetoothState.STATE_CONNECTED) {
+
+                    if(msg.arg1 == BluetoothState.STATE_CONNECTING) {
+                        Log.i("DEBUGGER_TAG", "stillConnecting");
+                    }
+
+                    else if(msg.arg1 != BluetoothState.STATE_CONNECTED) {
                         if(mBluetoothConnectionListener != null)
                             mBluetoothConnectionListener.onDeviceConnectionFailed();
                         Log.i("DEBUGGER_TAG", "Connection failed");
-
-                    } else {
+                        isConnecting = false;
+                    }
+                    else{
                         Log.i("DEBUGGER_TAG", "Connected");
+                        isConnecting = false;
                     }
 
-                    isConnecting = false;
                 }
                 break;
             }
@@ -248,7 +255,7 @@ public class BluetoothSPP {
     }
     
     public void connect(String address) {
-        Log.i("DEBUGGER_TAG", "connectB");
+        Log.i("DEBUGGER_TAG", "connectB " + address);
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
         mChatService.connect(device);
     }
