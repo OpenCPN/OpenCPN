@@ -60,6 +60,7 @@
 #include "gshhs.h"
 #include "ais.h"
 #include "OCPNPlatform.h"
+#include "toolbar.h"
 
 #ifndef GL_ETC1_RGB8_OES
 #define GL_ETC1_RGB8_OES                                        0x8D64
@@ -102,6 +103,7 @@ extern bool g_bDebugOGL;
 extern bool g_bShowFPS;
 extern bool g_btouch;
 extern OCPNPlatform *g_Platform;
+extern ocpnFloatingToolbarDialog *g_FloatingToolbarDialog;
 
 GLenum       g_texture_rectangle_format;
 
@@ -3739,6 +3741,14 @@ void glChartCanvas::Render()
         if( pthumbwin->GetBitmap().IsOk())
             gldc.DrawBitmap( pthumbwin->GetBitmap(), thumbx, thumby, false);
     }
+    
+    if(g_FloatingToolbarDialog && g_FloatingToolbarDialog->m_pRecoverwin->IsShown() ){
+        int recoverx, recovery;
+        g_FloatingToolbarDialog->m_pRecoverwin->GetPosition( &recoverx, &recovery );
+        if( g_FloatingToolbarDialog->m_pRecoverwin->GetBitmap().IsOk())
+            gldc.DrawBitmap( g_FloatingToolbarDialog->m_pRecoverwin->GetBitmap(), recoverx, recovery, true);
+    }
+    
     
 #endif
 
