@@ -58,11 +58,12 @@ extern bool                       g_bAutoHideToolbar;
 //----------------------------------------------------------------------------
 // GrabberWindow Implementation
 //----------------------------------------------------------------------------
-BEGIN_EVENT_TABLE(GrabberWin, wxPanel) EVT_MOUSE_EVENTS ( GrabberWin::MouseEvent )
+BEGIN_EVENT_TABLE(GrabberWin, wxWindow) EVT_MOUSE_EVENTS ( GrabberWin::MouseEvent )
 EVT_PAINT ( GrabberWin::OnPaint )
 END_EVENT_TABLE()
 
-GrabberWin::GrabberWin( wxWindow *parent, ocpnFloatingToolbarDialog *toolbar, float scale_factor )
+GrabberWin::GrabberWin( wxWindow *parent, ocpnFloatingToolbarDialog *toolbar, float scale_factor ):
+    wxWindow( parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNO_BORDER )
 {
     m_style = g_StyleManager->GetCurrentStyle();
     wxBitmap bitmap = m_style->GetIcon( _T("grabber") );
@@ -74,8 +75,6 @@ GrabberWin::GrabberWin( wxWindow *parent, ocpnFloatingToolbarDialog *toolbar, fl
     }
     else
         m_bitmap = bitmap;
-
-    Create( parent, -1 );
 
     SetSize( wxSize( m_bitmap.GetWidth(), m_bitmap.GetHeight() ) );
     SetMinSize( wxSize( m_bitmap.GetWidth(), m_bitmap.GetHeight() ) );
@@ -93,7 +92,6 @@ void GrabberWin::OnPaint( wxPaintEvent& event )
     wxPaintDC dc( this );
 
     dc.DrawBitmap( m_bitmap, 0, 0, true );
-
 }
 
 void GrabberWin::SetColorScheme( ColorScheme cs )
@@ -330,6 +328,7 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
     m_pGrabberwin = new GrabberWin( this, this, size_factor );
 
     m_pRecoverwin = new GrabberWin( parent, this, size_factor );
+    m_pRecoverwin->Move(10,10);
     m_pRecoverwin->Hide();
     
     m_position = position;
@@ -826,7 +825,7 @@ void ocpnFloatingToolbarDialog::OnToolLeftClick( wxCommandEvent& event )
     // (instead of relying on event.Skip()). Send events up the window hierarchy
 
     m_pparent->GetEventHandler()->AddPendingEvent( event );
-///    gFrame->Raise();
+    gFrame->Raise();
 }
 
 ocpnToolBarSimple *ocpnFloatingToolbarDialog::GetToolbar()

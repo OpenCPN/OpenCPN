@@ -29,12 +29,13 @@
 // GrabberWindow Definition
 //----------------------------------------------------------------------------
 
-class GrabberWin: public wxPanel {
+class GrabberWin: public wxWindow {
 public:
     GrabberWin( wxWindow *parent,  ocpnFloatingToolbarDialog *toolbar, float scale_factor );
       void OnPaint( wxPaintEvent& event );
       void MouseEvent( wxMouseEvent& event );
       void SetColorScheme( ColorScheme cs );
+      wxBitmap &GetBitmap(){ return m_bitmap; }
 
       wxBitmap m_bitmap;
       bool m_bLeftDown;
@@ -353,7 +354,8 @@ public:
             return m_dock_y;
       }
       bool toolbarConfigChanged;
-
+      GrabberWin *m_pRecoverwin;
+      
 private:
       void DoFade( int value );
 
@@ -377,7 +379,6 @@ private:
       bool m_marginsInvisible;
       float m_sizefactor;
       
-      GrabberWin *m_pRecoverwin;
 
 };
 
