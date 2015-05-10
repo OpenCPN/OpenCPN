@@ -1012,7 +1012,8 @@ glTexFactory::glTexFactory(ChartBase *chart, GLuint raster_format)
     
     if(!g_CompressorPool)
         g_CompressorPool = new CompressionWorkerPool;
-    
+
+    m_ticks = 0;    
     m_timer.SetOwner(this, FACTORY_TIMER);
     m_timer.Start( 500 );
 }

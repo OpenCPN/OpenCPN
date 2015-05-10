@@ -977,6 +977,8 @@ GshhsReader::GshhsReader( )
         lsPoly_boundaries[qual] = new std::vector<GshhsPolygon*>;
         lsPoly_rivers[qual] = new std::vector<GshhsPolygon*>;
     }
+
+    quality = -1;
     LoadQuality( q );
 }
 
