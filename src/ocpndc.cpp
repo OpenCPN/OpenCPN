@@ -1033,19 +1033,12 @@ void ocpnDC::DrawText( const wxString &text, wxCoord x, wxCoord y )
     else {
        wxCoord w = 0;
         wxCoord h = 0;
+
+#ifndef __WXMAC__
         
         m_texfont.Build( m_font );      // make sure the font is ready
         m_texfont.GetTextExtent(text, &w, &h);
         
-/*        
-#ifdef __WXMAC__
-        wxBitmap tbmp(200, 200);
-        wxMemoryDC mac_dc(tbmp);
-        mac_dc.GetTextExtent(text, &w, &h, NULL, NULL, &m_font);
-#else
-        GetTextExtent( text, &w, &h );
-#endif
-*/
         if( w && h ) {
             
             glEnable( GL_BLEND );
@@ -1066,8 +1059,10 @@ void ocpnDC::DrawText( const wxString &text, wxCoord x, wxCoord y )
             glDisable( GL_TEXTURE_2D );
             glDisable( GL_BLEND );
 
-            
-#if 0            
+        }
+#else            
+            wxScreenDC sdc;
+            sdc.GetTextExtent(text, &w, &h, NULL, NULL, &m_font);
             
             /* create bitmap of appropriate size and select it */
             wxBitmap bmp( w, h );
@@ -1100,7 +1095,7 @@ void ocpnDC::DrawText( const wxString &text, wxCoord x, wxCoord y )
             }
 
             unsigned char *data = new unsigned char[w * h];
-           unsigned char *im = image.GetData();
+            unsigned char *im = image.GetData();
             if(im){
                 for( int i = 0; i < w * h; i++ )
                     data[i] = im[3 * i];
@@ -1111,7 +1106,6 @@ void ocpnDC::DrawText( const wxString &text, wxCoord x, wxCoord y )
             GLDrawBlendData( x, y, w, h, GL_ALPHA, data );
             delete[] data;
 #endif            
-        }
     }
 #endif    
 }
