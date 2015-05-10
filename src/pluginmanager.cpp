@@ -447,8 +447,10 @@ bool PlugInManager::UpDateChartDataTypes(void)
     {
         PlugInContainer *pic = plugin_array.Item(i);
 
-        if((pic->m_cap_flag & INSTALLS_PLUGIN_CHART) || (pic->m_cap_flag & INSTALLS_PLUGIN_CHART_GL))
-            bret = true;
+        if(pic->m_bInitState) {
+          if((pic->m_cap_flag & INSTALLS_PLUGIN_CHART) || (pic->m_cap_flag & INSTALLS_PLUGIN_CHART_GL))
+              bret = true;
+        }
     }
 
     if(bret)
