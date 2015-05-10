@@ -2842,10 +2842,9 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
     pSoundDeviceIndexGrid->Add( stSoundDeviceIndex, 0,
                     wxALL, 5 );
     pSoundDeviceIndex = new wxSpinCtrl( itemPanelFont, wxID_ANY );
-    pSoundDeviceIndex->SetRange(0, OCPN_Sound::DeviceCount() - 1);
-
+    pSoundDeviceIndex->SetRange(-1, OCPN_Sound::DeviceCount() - 1);
     pSoundDeviceIndexGrid->Add( pSoundDeviceIndex, 0, wxALL, border_size);
-    
+
     wxBoxSizer *pToolbarAutoHide = new wxBoxSizer( wxHORIZONTAL );
     miscOptions->Add( pToolbarAutoHide, 0, wxALL | wxEXPAND, group_item_spacing );
 

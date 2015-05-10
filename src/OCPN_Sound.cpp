@@ -160,6 +160,9 @@ bool OCPN_Sound::Create(const wxString& fileName, int deviceIndex, bool isResour
     PaError err;
     m_stream = NULL;
 
+    if(g_iSoundDeviceIndex == -1)
+        g_iSoundDeviceIndex = Pa_GetDefaultOutputDevice();
+
     if(deviceIndex == -1)
         deviceIndex = g_iSoundDeviceIndex;
 

@@ -1334,7 +1334,7 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "ShowCompassWindow" ), &m_bShowCompassWin, 1 );
     Read( _T ( "ShowGrid" ), &g_bDisplayGrid, 0 );
     Read( _T ( "PlayShipsBells" ), &g_bPlayShipsBells, 0 );
-    Read( _T ( "SoundDeviceIndex" ), &g_iSoundDeviceIndex, 0 );
+    Read( _T ( "SoundDeviceIndex" ), &g_iSoundDeviceIndex, -1 );
     Read( _T ( "FullscreenToolbar" ), &g_bFullscreenToolbar, 1 );
     Read( _T ( "TransparentToolbar" ), &g_bTransparentToolbar, 1 );
     Read( _T ( "PermanentMOBIcon" ), &g_bPermanentMOBIcon, 0 );
