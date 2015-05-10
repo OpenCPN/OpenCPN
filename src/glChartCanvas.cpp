@@ -796,7 +796,7 @@ glChartCanvas::glChartCanvas( wxWindow *parent ) :
     m_binPan = false;
     
     b_timeGL = true;
- 
+    m_last_render_time = -1;
 #ifdef __OCPN__ANDROID__    
     //  Create/connect a dynamic event handler slot for gesture events
     Connect( wxEVT_QT_PANGESTURE,
