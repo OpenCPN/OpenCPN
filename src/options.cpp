@@ -224,7 +224,6 @@ extern wxString         g_locale;
 extern bool             g_bportable;
 extern bool             g_bdisable_opengl;
 extern wxString         *pHome_Locn;
-extern wxString         g_Plugin_Dir;
 
 extern ChartGroupArray  *g_pGroupArray;
 extern ocpnStyle::StyleManager* g_StyleManager;
@@ -246,7 +245,6 @@ extern AIS_Decoder      *g_pAIS;
 extern bool             g_bserial_access_checked;
 
 options                *g_pOptions;
-bool                    g_bLoadedDisabledPlugins;
 
 extern bool             g_btouch;
 extern bool             g_bresponsive;
@@ -3092,22 +3090,6 @@ void options::CreateControls()
     itemBoxSizerPanelPlugins = new wxBoxSizer( wxVERTICAL );
     itemPanelPlugins->SetSizer( itemBoxSizerPanelPlugins );
 
-    // load the disabled plugins finally because the user might want to enable them
-    // I would prefer to change this so the plugins are only loaded if and when
-    // they select the plugin page
-    if(!g_bLoadedDisabledPlugins) {
-        g_pi_manager->LoadAllPlugIns( g_Platform->GetPluginDir(), false );
-        g_bLoadedDisabledPlugins = true;
-    }
-
-/*    Deferred
-    //      Build the PlugIn Manager Panel
-    m_pPlugInCtrl = new PluginListPanel( itemPanelPlugins, ID_PANELPIM, wxDefaultPosition,
-            wxDefaultSize, g_pi_manager->GetPlugInArray() );
-    m_pPlugInCtrl->SetScrollRate( m_scrollRate, m_scrollRate );
-
-    itemBoxSizerPanelPlugins->Add( m_pPlugInCtrl, 1, wxEXPAND|wxALL, border_size );
-*/
     //      PlugIns can add panels, too
     if( g_pi_manager ) g_pi_manager->NotifySetupOptions();
 
@@ -4860,6 +4842,12 @@ void options::DoOnPageChange( size_t page )
 
  
     else if( m_pagePlugins == i ) {                    // 7 is the index of "Plugins" page
+
+        // load the disabled plugins finally because the user might want to enable them
+        if(g_pi_manager->LoadAllPlugIns( g_Platform->GetPluginDir(), false )) {
+            delete m_pPlugInCtrl;
+            m_pPlugInCtrl = NULL;
+        }
 
         if( !m_pPlugInCtrl){
     //      Build the PlugIn Manager Panel

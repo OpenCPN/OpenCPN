@@ -110,7 +110,7 @@ void StatWin::RePosition()
     Move( screen_pos );
 #ifdef __OCPN__ANDROID__
     Raise();
-#endif    
+#endif
 }
 
 void StatWin::ReSize()
@@ -127,7 +127,6 @@ void StatWin::ReSize()
         new_size.y = wxMin(new_size.y, 50);     // absolute boundaries
         new_size.y = wxMax(new_size.y, 10);
     }
-    
     
     SetSize(new_size);
 
@@ -160,7 +159,6 @@ void StatWin::OnSize( wxSizeEvent& event )
     float width_factor = 0.6f;
     if(g_btouch)
         width_factor = 0.98f;
-    
     if( width ) {
         pPiano->SetSize( 0, 0, width * width_factor, height );
         pPiano->FormatKeys();
