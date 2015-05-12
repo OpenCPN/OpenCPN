@@ -4572,3 +4572,14 @@ void SetCanvasRotation(double rotation)
     cc1->DoRotateCanvas( rotation );
 }
 
+bool CheckEdgePan_PlugIn( int x, int y, bool dragging, int margin, int delta )
+{
+    return cc1->CheckEdgePan( x, y, dragging, margin, delta );
+}
+
+wxBitmap GetIcon_PlugIn(const wxString & name)
+{
+    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+    return style->GetIcon( name );
+}
+
