@@ -41,6 +41,7 @@
 
 extern ocpnFloatingToolbarDialog* g_FloatingToolbarDialog;
 extern bool                       g_bTransparentToolbar;
+extern bool                       g_bTransparentToolbarInOpenGLOK;
 extern ChartCanvas*               cc1;
 extern bool                       g_bopengl;
 extern ocpnToolBarSimple*         g_toolbar;
@@ -591,7 +592,7 @@ void ocpnFloatingToolbarDialog::MouseEvent( wxMouseEvent& event )
 
 void ocpnFloatingToolbarDialog::FadeTimerEvent( wxTimerEvent& event )
 {
-    if( g_bTransparentToolbar && !g_bopengl ){
+    if( g_bTransparentToolbar && (!g_bopengl || g_bTransparentToolbarInOpenGLOK) ){
         DoFade( 128 );
         m_fade_timer.Start( 5000 );           // retrigger the continuous timer
     }
@@ -600,7 +601,6 @@ void ocpnFloatingToolbarDialog::FadeTimerEvent( wxTimerEvent& event )
         SubmergeToGrabber();
         m_fade_timer.Stop();
     }
-    
 }
 
 void ocpnFloatingToolbarDialog::DoFade( int value )

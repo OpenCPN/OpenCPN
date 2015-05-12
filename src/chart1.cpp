@@ -61,6 +61,10 @@
 #include <setjmp.h>
 #endif
 
+#ifdef __WXGTK__
+#include <X11/Xatom.h>
+#endif
+
 #include "chart1.h"
 #include "chcanv.h"
 #include "chartdb.h"
@@ -288,6 +292,7 @@ bool                      g_bPlayShipsBells;
 bool                      g_bFullscreenToolbar;
 bool                      g_bShowLayers;
 bool                      g_bTransparentToolbar;
+bool                      g_bTransparentToolbarInOpenGLOK;
 int                       g_nAutoHideToolbar;
 bool                      g_bAutoHideToolbar;
 
@@ -1097,6 +1102,42 @@ void LoadS57()
 }
 #endif
 
+#ifdef __WXGTK__
+static char *get_X11_property (Display *disp, Window win,
+                            Atom xa_prop_type, gchar *prop_name) {
+    Atom xa_prop_name;
+    Atom xa_ret_type;
+    int ret_format;
+    unsigned long ret_nitems;
+    unsigned long ret_bytes_after;
+    unsigned long tmp_size;
+    unsigned char *ret_prop;
+    char *ret;
+
+    xa_prop_name = XInternAtom(disp, prop_name, False);
+
+    if (XGetWindowProperty(disp, win, xa_prop_name, 0, 1024, False,
+                           xa_prop_type, &xa_ret_type, &ret_format,
+                           &ret_nitems, &ret_bytes_after, &ret_prop) != Success) {
+        return NULL;
+    }
+
+    if (xa_ret_type != xa_prop_type) {
+        XFree(ret_prop);
+        return NULL;
+    }
+
+    /* null terminate the result to make string handling easier */
+    tmp_size = (ret_format / 8) * ret_nitems;
+    ret = (char*)malloc(tmp_size + 1);
+    memcpy(ret, ret_prop, tmp_size);
+    ret[tmp_size] = '\0';
+
+    XFree(ret_prop);
+    return ret;
+}
+#endif
+
 bool MyApp::OnInit()
 {
     wxStopWatch sw;
@@ -1472,6 +1513,34 @@ bool MyApp::OnInit()
 
 #else
     g_bdisable_opengl = true;;
+#endif
+
+    // Determine if a transparent toolbar is possible under linux with opengl
+#ifdef __WXGTK__
+    g_bTransparentToolbarInOpenGLOK = false;
+    if(!g_bdisable_opengl) {
+        Display *disp = XOpenDisplay(NULL);
+        Window *sup_window;
+        if ((sup_window = (Window *)get_X11_property(disp, DefaultRootWindow(disp),
+                                                 XA_WINDOW, "_NET_SUPPORTING_WM_CHECK")) ||
+            (sup_window = (Window *)get_X11_property(disp, DefaultRootWindow(disp),
+                                                 XA_CARDINAL, "_WIN_SUPPORTING_WM_CHECK"))) {
+            /* WM_NAME */
+            char *wm_name;
+            if ((wm_name = get_X11_property(disp, *sup_window,
+                                        XInternAtom(disp, "UTF8_STRING", False), "_NET_WM_NAME")) ||
+                (wm_name = get_X11_property(disp, *sup_window,
+                                        XA_STRING, "_NET_WM_NAME"))) {
+                // we know it works in xfce4, add other checks as we can validate them
+                if(strstr(wm_name, "Xfwm4"))
+                    g_bTransparentToolbarInOpenGLOK = true;
+
+                free(wm_name);
+            }
+            free(sup_window);
+        }
+        XCloseDisplay(disp);
+    }
 #endif
 
 // Set default color scheme

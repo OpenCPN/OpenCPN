@@ -156,6 +156,7 @@ extern bool             g_bPreserveScaleOnX;
 extern bool             g_bPlayShipsBells;
 extern bool             g_bFullscreenToolbar;
 extern bool             g_bTransparentToolbar;
+extern bool             g_bTransparentToolbarInOpenGLOK;
 
 extern int              g_OwnShipIconType;
 extern double           g_n_ownship_length_meters;
@@ -2034,11 +2035,7 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
     pTransparentToolbar = new wxCheckBox( m_ChartDisplayPage, ID_TRANSTOOLBARCHECKBOX,
                                           _("Enable Transparent Toolbar") );
     itemBoxSizerUI->Add( pTransparentToolbar, 0, wxALL, border_size );
-    if( g_bopengl ) pTransparentToolbar->Disable();
-    
-    
-
-
+    if( g_bopengl && !g_bTransparentToolbarInOpenGLOK ) pTransparentToolbar->Disable();
 }
 
 
@@ -3589,7 +3586,8 @@ void options::OnWaypointRangeRingSelect( wxCommandEvent& event )
 
 void options::OnGLClicked( wxCommandEvent& event )
 {
-    pTransparentToolbar->Enable(!pOpenGL->GetValue());
+    if(!g_bTransparentToolbarInOpenGLOK)
+        pTransparentToolbar->Enable(!pOpenGL->GetValue());
 }
 
 void options::OnOpenGLOptions( wxCommandEvent& event )
