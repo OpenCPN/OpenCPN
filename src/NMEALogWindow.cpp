@@ -68,6 +68,7 @@ void NMEALogWindow::Create(wxWindow * parent, int num_lines)
         pos_y = wxMax(pos_y, 40);
 
         window->SetSize(pos_x, pos_y, width, height);
+        window->Centre();
     }
     window->Show();
 }

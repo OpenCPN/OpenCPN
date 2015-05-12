@@ -2160,6 +2160,8 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
 
             glColor3f( r, g, b ); /* nodta color */
             glChartCanvas::SetClipRegion( temp_vp, OCPNRegion(rect), false, !b_overlay); /* no rotation, clear */
+            if( !glChartCanvas::s_b_useStencil )
+                ps52plib->m_last_clip_region = OCPNRegion(rect);
             DoRenderRectOnGL( glc, temp_vp, rect );
             glChartCanvas::DisableClipRegion();
 
@@ -2199,6 +2201,8 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
 
         glColor3f( r, g, b ); /* nodta color */
         glChartCanvas::SetClipRegion( temp_vp, Region, false, !b_overlay ); /* no rotation */
+        if( !glChartCanvas::s_b_useStencil )
+            ps52plib->m_last_clip_region = Region;
         DoRenderRectOnGL( glc, temp_vp, rect );
         glChartCanvas::DisableClipRegion();
         
@@ -4477,7 +4481,12 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
             msg.Append( _T(" to ") );
             msg.Append( SENCfile.GetFullPath() );
             wxLogMessage( msg );
+#ifdef __OCPN__ANDROID__
+            wxLogMessage(_T("   Android: Error overridden / ignored.") );
+            ret_code = BUILD_SENC_OK;
+#else      
             ret_code = BUILD_SENC_NOK_RETRY;
+#endif            
         } else
             ret_code = BUILD_SENC_OK;
 
@@ -6641,7 +6650,7 @@ wxString s57chart::GetObjectAttributeValueAsString( S57Obj *obj, int iatt, wxStr
                         if( !decode_val.IsEmpty() ) {
                             value = decode_val;
                             wxString iv;
-                            iv.Printf( _T("(%d)"), (int) ival );
+                            iv.Printf( _T(" (%d)"), (int) ival );
                             value.Append( iv );
                         } else
                             value.Printf( _T("%d"), (int) ival );
@@ -6655,22 +6664,32 @@ wxString s57chart::GetObjectAttributeValueAsString( S57Obj *obj, int iatt, wxStr
                     wxString value_increment;
                     wxStringTokenizer tk( val_str, wxT(",") );
                     int iv = 0;
-                    while( tk.HasMoreTokens() ) {
-                        wxString token = tk.GetNextToken();
-                        long ival;
-                        if( token.ToLong( &ival ) ) {
-                            wxString decode_val = GetAttributeDecode( curAttrName, ival );
-                            if( !decode_val.IsEmpty() ) value_increment = decode_val;
-                            else
-                                value_increment.Printf( _T(" %d"), (int) ival );
+                    if( tk.HasMoreTokens() ) {
+                        while( tk.HasMoreTokens() ) {
+                            wxString token = tk.GetNextToken();
+                            long ival;
+                            if( token.ToLong( &ival ) ) {
+                                wxString decode_val = GetAttributeDecode( curAttrName, ival );
 
-                            if( iv ) value_increment.Prepend( wxT(", ") );
+                                value_increment.Printf( _T(" (%d)"), (int) ival );
+
+                                if( !decode_val.IsEmpty() )
+                                    value_increment.Prepend(decode_val);
+                                
+                                if( iv ) value_increment.Prepend( wxT(", ") );
+                                value.Append( value_increment );
+                                
+                            }
+                            else{
+                                if(iv) value.Append(_T(","));
+                                value.Append( token );
+                            }
+
+                            iv++;
                         }
-                        value.Append( value_increment );
-
-                        iv++;
                     }
-                    value.Append( val_str );
+                    else
+                        value.Append( val_str );
                 }
             } else
                 value = _T("[NULL VALUE]");
@@ -7122,11 +7141,11 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
             attrIndex = thisLight->attributeNames.Index( _T("COLOUR") );
             if( attrIndex != wxNOT_FOUND ) {
                 wxString color = thisLight->attributeValues.Item( attrIndex );
-                if( color == _T("red(3)") ) lightsHtml
+                if( color == _T("red (3)") ) lightsHtml
                         << _T("<table border=0><tr><td bgcolor=red>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
-                if( color == _T("green(4)") ) lightsHtml
+                if( color == _T("green (4)") ) lightsHtml
                         << _T("<table border=0><tr><td bgcolor=green>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
-                if( color == _T("white(1)") ) lightsHtml
+                if( color == _T("white (1)") ) lightsHtml
                         << _T("<table border=0><tr><td bgcolor=yellow>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
             }
 

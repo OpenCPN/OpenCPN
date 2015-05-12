@@ -19,7 +19,10 @@ public class OCPNNativeLib {
   public native int test();
 
   public native int processNMEA(String nmea_string);
+  public native int processBTNMEA(String nmea_string);
 
   public native int onConfigChange();
+
+  public native int onMenuKey();
 
 }

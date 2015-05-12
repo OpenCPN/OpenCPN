@@ -42,7 +42,8 @@
 
 #include "glTexCache.h"
 
-//class glTexFactory;
+#define GESTURE_EVENT_TIMER 78334
+
 //      This is a hashmap with Chart full path as key, and glTexFactory as value
 WX_DECLARE_STRING_HASH_MAP( glTexFactory*, ChartPathHashTexfactType );
 
@@ -98,6 +99,7 @@ public:
 #ifdef __OCPN__ANDROID__    
     void OnEvtPanGesture( wxQT_PanGestureEvent &event);
     void OnEvtPinchGesture( wxQT_PinchGestureEvent &event);
+    void onGestureTimerEvent(wxTimerEvent &event);
 #endif
     
     wxString GetRendererString(){ return m_renderer; }
@@ -111,8 +113,6 @@ public:
     void GridDraw( );
     void FlushFBO( void );
     
-    static void FixRenderIDL(int dl);
-
     void DrawAllRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region );
     void RenderAllChartOutlines( ocpnDC &dc, ViewPort &VP );
     void RenderChartOutline( int dbIndex, ViewPort &VP );
@@ -194,6 +194,12 @@ protected:
     float       m_fbo_sheight;
     bool        m_binPinch;
     bool        m_binPan;
+    bool        m_bfogit;
+    bool        m_benableFog;
+    bool        m_benableVScale;
+    
+    wxTimer     m_gestureEeventTimer;
+    bool        m_bgestureGuard;
     
     OCPNRegion  m_canvasregion;
     

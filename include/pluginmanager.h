@@ -148,7 +148,8 @@ class PlugInContainer
             bool              m_bToolboxPanel;
             int               m_cap_flag;             // PlugIn Capabilities descriptor
             wxString          m_plugin_file;          // The full file path
-            wxString          m_plugin_filename;          // The short file path
+            wxString          m_plugin_filename;      // The short file path
+            wxDateTime        m_plugin_modification;  // used to detect upgraded plugins
             destroy_t         *m_destroy_fn;
             wxDynamicLibrary  *m_plibrary;
             wxString          m_common_name;            // A common name string for the plugin

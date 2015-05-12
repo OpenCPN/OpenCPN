@@ -27,6 +27,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <algorithm>
 using namespace std;
 
 #include "wx/wxprec.h"

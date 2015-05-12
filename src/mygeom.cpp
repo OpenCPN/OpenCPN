@@ -35,8 +35,7 @@
 #include "wx/tokenzr.h"
 #include <wx/mstream.h>
 
-#include "dychart.h"
-#include "navutil.h"
+#include "vector2D.h"
 
 #include "s52s57.h"
 
@@ -56,7 +55,8 @@
     #include <GL/gl.h>
     #include <GL/glu.h>
 #else
-    #include "glues.h"          // local version of glu for GLES
+    #include "qopengl.h"                  // this gives us the qt runtime gles2.h
+    #include "GL/gl_private.h"
 #endif
 
 #endif
@@ -910,10 +910,10 @@ int PolyTessGeo::PolyTessGeoTri(OGRPolygon *poly, bool bSENC_SM, double ref_lat,
                 double xd = geoPt[ivp].x;
                 double yd = geoPt[ivp].y;
 
-                sxmax = fmax(xd, sxmax);
-                sxmin = fmin(xd, sxmin);
-                symax = fmax(yd, symax);
-                symin = fmin(yd, symin);
+                sxmax = wxMax(xd, sxmax);
+                sxmin = wxMin(xd, sxmin);
+                symax = wxMax(yd, symax);
+                symin = wxMin(yd, symin);
             }
 
             pTP->minx = sxmin;
@@ -1348,10 +1348,10 @@ int PolyTessGeo::BuildTessTri(void)
                 double lat = ( 2.0 * atan ( exp ( valy/CM93_semimajor_axis_meters ) ) - PI/2. ) / DEGREE;
                 double lon = ( valx / ( DEGREE * CM93_semimajor_axis_meters ) );
         
-                sxmax = fmax(lon, sxmax);
-                sxmin = fmin(lon, sxmin);
-                symax = fmax(lat, symax);
-                symin = fmin(lat, symin);
+                sxmax = wxMax(lon, sxmax);
+                sxmin = wxMin(lon, sxmin);
+                symax = wxMax(lat, symax);
+                symin = wxMin(lat, symin);
             }
         
 
@@ -2565,17 +2565,17 @@ void __CALL_CONVENTION endCallback(void)
                       double lat = ( 2.0 * atan ( exp ( valy/CM93_semimajor_axis_meters ) ) - PI/2. ) / DEGREE;
                       double lon = ( valx / ( DEGREE * CM93_semimajor_axis_meters ) );
 
-                      sxmax = fmax(lon, sxmax);
-                      sxmin = fmin(lon, sxmin);
-                      symax = fmax(lat, symax);
-                      symin = fmin(lat, symin);
+                      sxmax = wxMax(lon, sxmax);
+                      sxmin = wxMin(lon, sxmin);
+                      symax = wxMax(lat, symax);
+                      symin = wxMin(lat, symin);
                 }
                 else
                 {
-                      sxmax = fmax(xd, sxmax);
-                      sxmin = fmin(xd, sxmin);
-                      symax = fmax(yd, symax);
-                      symin = fmin(yd, symin);
+                      sxmax = wxMax(xd, sxmax);
+                      sxmin = wxMin(xd, sxmin);
+                      symax = wxMax(yd, symax);
+                      symin = wxMin(yd, symin);
                 }
             }
 
@@ -2591,7 +2591,7 @@ void __CALL_CONVENTION endCallback(void)
             {
                 GLdouble *pds = s_pwork_buf;
                 pTPG->p_vertex = (double *)malloc(s_nvcall * 2 * sizeof(double));
-                double *pdd = pTPG->p_vertex;
+                GLdouble *pdd = (GLdouble*)pTPG->p_vertex;
 
                 for(int ip = 0 ; ip < s_nvcall ; ip++)
                 {
@@ -2600,10 +2600,8 @@ void __CALL_CONVENTION endCallback(void)
 
                     double easting, northing;
                     toSM(dlat, dlon, s_ref_lat, s_ref_lon, &easting, &northing);
-                    double deast = easting;
-                    double dnorth = northing;
-                    *pdd++ = deast;
-                    *pdd++ = dnorth;
+                    *pdd++ = easting;
+                    *pdd++ = northing;
                 }
             }
             else

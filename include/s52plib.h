@@ -35,6 +35,7 @@ class wxGLContext;
 #include <wx/glcanvas.h>
 #endif
 
+#include "OCPNRegion.h"
 #include "ocpn_types.h"
 
 #include <wx/dcgraph.h>         // supplemental, for Mac
@@ -50,7 +51,15 @@ WX_DEFINE_SORTED_ARRAY( LUPrec *, wxArrayOfLUPrec );
 
 WX_DECLARE_LIST( S52_TextC, TextObjList );
 
-WX_DECLARE_STRING_HASH_MAP( int, CARC_Hash );
+struct CARC_Buffer {
+    unsigned char color[3][4];
+    float line_width[3];
+    int steps;
+
+    int size;
+    float *data;
+};
+WX_DECLARE_STRING_HASH_MAP( CARC_Buffer, CARC_Hash );
 
 class ViewPort;
 class PixelCache;
@@ -173,14 +182,14 @@ public:
     void DestroyRuleNode( Rule *pR );
     void DestroyRulesChain( Rules *top );
     
-//#ifdef ocpnUSE_GL
     //    For OpenGL
     int RenderObjectToGL( const wxGLContext &glcc, ObjRazRules *rzRules,
                           ViewPort *vp, wxRect &render_rect );
     int RenderAreaToGL( const wxGLContext &glcc, ObjRazRules *rzRules,
                         ViewPort *vp, wxRect &render_rect );
-//#endif
-
+   
+    void RenderPolytessGL( ObjRazRules *rzRules, ViewPort *vp,double z_clip_geom, wxPoint *ptp );
+    
     bool EnableGLLS(bool benable);
 
     bool IsObjNoshow( const char *objcl);
@@ -230,6 +239,8 @@ public:
 
     RuleHash *_symb_sym; // symbol symbolisation rules
     MyNatsurHash m_natsur_hash;     // hash table for cacheing NATSUR string values from int attributes
+
+    OCPNRegion m_last_clip_region;
     
 private:
     int S52_load_Plib( const wxString& PLib, bool b_forceLegacy );
@@ -258,6 +269,11 @@ private:
     char *RenderCS( ObjRazRules *rzRules, Rules *rules );
     int RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
     int RenderGLLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
+    
+    void RenderCARCGL( double sectr1, double sectr2,
+                                wxString& outline_color, long outline_width,
+                                wxString& arc_color, long arc_width,
+                                long sector_radius, long radius );
     
     void UpdateOBJLArray( S57Obj *obj );
 
@@ -394,7 +410,6 @@ private:
     bool renderToDC;
     bool renderToOpenGl;
     bool renderToGCDC;
-    bool havePushedOpenGlAttrib;
 };
 
 #endif //_S52PLIB_H_

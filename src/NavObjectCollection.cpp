@@ -1288,7 +1288,14 @@ void NavObjectCollection1::SetRootGPXNode(void)
     }
 }
         
-
+bool NavObjectCollection1::IsOpenCPN()
+{
+    for (pugi::xml_attribute attr = root().first_child().first_attribute(); attr; attr = attr.next_attribute())
+    if( !strcmp(attr.name(), "creator") && !strcmp(attr.value(), "OpenCPN") )
+        return true;
+    return false;
+}
+            
 bool NavObjectCollection1::SaveFile( const wxString filename )
 {
     save_file(filename.fn_str(), "  ");

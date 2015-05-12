@@ -2016,10 +2016,13 @@ void cm93chart::GetPointPix ( ObjRazRules *rzRules, float north, float east, wxP
            m_vp_current.GetBBox().GetMaxX() - 360 >= rzRules->obj->BBObj.GetMinX() )
           valx += mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;      //6375586.0;
 
+#if 0
       r->x = ( int ) wxRound ( ( ( valx - m_easting_vp_center ) * m_view_scale_ppm ) + m_pixx_vp_center );
       r->y = ( int ) wxRound ( m_pixy_vp_center - ( ( valy - m_northing_vp_center ) * m_view_scale_ppm ) );
-
-
+#else
+      r->x = ( valx - m_easting_vp_center ) * m_view_scale_ppm + m_pixx_vp_center + 0.5;
+      r->y = m_pixy_vp_center - ( valy - m_northing_vp_center ) * m_view_scale_ppm + 0.5;
+#endif
 }
 
 void cm93chart::GetPointPix ( ObjRazRules *rzRules, wxPoint2DDouble *en, wxPoint *r, int nPoints )
@@ -3983,6 +3986,19 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
       }         // geomtype switch
 
 
+      
+      //  Is this a catagory-movable object?
+      if( !strncmp(pobj->FeatureName, "OBSTRN", 6) ||
+          !strncmp(pobj->FeatureName, "WRECKS", 6) ||
+          !strncmp(pobj->FeatureName, "DEPCNT", 6) ||
+          !strncmp(pobj->FeatureName, "UWTROC", 6) )
+      {
+          pobj->m_bcategory_mutable = true;
+      }
+      else{
+          pobj->m_bcategory_mutable = false;
+      }
+      
       //      Build/Maintain a list of found OBJL types for later use
       //      And back-reference the appropriate list index in S57Obj for Display Filtering
 
@@ -4686,6 +4702,7 @@ cm93compchart::cm93compchart()
 
       SetSpecialOutlineCellIndex ( 0, 0, 0 );
       m_pOffsetDialog = NULL;
+      m_last_cell_adjustvp = NULL;
 
       m_pcm93mgr = new cm93manager();
 
@@ -4887,11 +4904,18 @@ int cm93compchart::GetCMScaleFromVP ( const ViewPort &vpt )
 
 void cm93compchart::SetVPParms ( const ViewPort &vpt )
 {
-    // need to recompute the cm93 cell when switching quilting off
-    if(m_vpt.b_quilt && !vpt.b_quilt) {
-        ViewPort vp = vpt;
-        AdjustVP ( m_vpt, vp );
-    }
+      m_vpt = vpt;                              // save a copy
+
+      int cmscale = GetCMScaleFromVP ( vpt );         // First order calculation of cmscale
+
+      m_cmscale = PrepareChartScale ( vpt, cmscale );
+
+      //    Continuoesly update the composite chart edition date to the latest cell decoded
+      if ( m_pcm93chart_array[cmscale] )
+      {
+            if ( m_pcm93chart_array[cmscale]->GetEditionDate().IsLaterThan ( m_EdDate ) )
+                  m_EdDate = m_pcm93chart_array[cmscale]->GetEditionDate();
+      }
 }
 
 int cm93compchart::PrepareChartScale ( const ViewPort &vpt, int cmscale, bool bOZ_protect )
@@ -5963,19 +5987,14 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
           wxColour col = pen.GetColour();
 
           glEnable( GL_BLEND );
-          glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-          
+          glEnable( GL_LINE_SMOOTH );
+
           glColor3ub(col.Red(), col.Green(), col.Blue());
           glLineWidth( g_GLMinSymbolLineWidth );
-          glDisable( GL_LINE_STIPPLE );
-          dc.SetGLStipple();
           
           if(g_b_EnableVBO)
               s_glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
           glEnableClientState(GL_VERTEX_ARRAY);
-
-          glEnable( GL_LINE_SMOOTH );
-          glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
           
           // use a viewport that allows the vertexes to be reused over many frames
           glPushMatrix();
@@ -6092,9 +6111,11 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
 
 #ifdef ocpnUSE_GL        
       if(g_bopengl) {
-          glDisableClientState(GL_VERTEX_ARRAY);
           glPopMatrix();
+
+          glDisableClientState(GL_VERTEX_ARRAY);
           glDisable( GL_LINE_STIPPLE );
+          glDisable( GL_LINE_SMOOTH );
           glDisable( GL_BLEND );
       }
 #endif
@@ -6367,38 +6388,52 @@ VC_Hash& cm93compchart::Get_vc_hash ( void )
 
 bool cm93compchart::AdjustVP ( ViewPort &vp_last, ViewPort &vp_proposed )
 {
-    cm93chart *last_pcm93chart_current = m_pcm93chart_current;
-    int cmscale = GetCMScaleFromVP ( vp_proposed );         // First order calculation of cmscale
-
-    m_cmscale = PrepareChartScale ( vp_proposed, cmscale );
-
-    //    Continuoesly update the composite chart edition date to the latest cell decoded
-    if ( m_pcm93chart_current )
-    {
-        if ( m_pcm93chart_current->GetEditionDate().IsLaterThan ( m_EdDate ) )
-            m_EdDate = m_pcm93chart_current->GetEditionDate();
-    }
+    //  All the below logic is slow, and really redundant.
+    //  so, declare that cm93 charts do not require adjustment for optimum performance.
     
+    if( m_pcm93chart_current )
+        return false;
+    
+      //    This may be a partial screen render
+      //    If it is, the cmscale value on this render must match the same parameter
+      //    on the last render.
+      //    If it does not, the partial render will not quilt correctly with the previous data
+      //    Detect this case, and indicate that the entire screen must be rendered.
+
+
+      int cmscale = GetCMScaleFromVP ( vp_proposed );                   // This is the scale that should be used, based on the vp
+
+      int cmscale_actual = PrepareChartScale ( vp_proposed, cmscale, false );  // this is the scale that will be used, based on cell coverage
+
 #ifdef ocpnUSE_GL
-    if(g_bopengl) {
-        // need a full refresh if not in quilted mode, and the cell changed
-        // this is unique to the cm93 composite chart as the Current_Ch stays
-        // the same, but the area it covers changes, so accelerated panning cannot work
-        if ( !vp_proposed.b_quilt && last_pcm93chart_current != m_pcm93chart_current )
-            glChartCanvas::Invalidate();
-    }
+      if(g_bopengl) {
+          /* need a full refresh if not in quilted mode, and the cell changed */
+          if ( !vp_last.b_quilt && m_last_cell_adjustvp != m_pcm93chart_current )
+              glChartCanvas::Invalidate();
+
+          m_last_cell_adjustvp = m_pcm93chart_current;
+      }
 #endif
 
-    if ( g_bDebugCM93 )
-        printf ( "  In AdjustVP,  adjustment subchart scale is %c\n", ( char ) ( 'A' + m_cmscale -1 ) );
+      if ( g_bDebugCM93 )
+            printf ( "  In AdjustVP,  adjustment subchart scale is %c\n", ( char ) ( 'A' + cmscale_actual -1 ) );
 
-    // Is this needed?  It appears to do pixel alignment which shouldn't be needed for opengl
-//    if ( m_pcm93chart_array[cmscale_actual] )
-//        m_pcm93chart_array[cmscale_actual]->AdjustVP ( vp_last, vp_proposed );
+      //    We always need to do a VP adjustment, independent of this method's return value.
+      //    so, do an AdjustVP() based on the chart scale that WILL BE USED
+      //    And be sure to return false if that adjust method suggests so.
 
-    m_vpt = vp_proposed;                              // save a copy
+      bool single_adjust = false;
+      if ( m_pcm93chart_array[cmscale_actual] )
+            single_adjust = m_pcm93chart_array[cmscale_actual]->AdjustVP ( vp_last, vp_proposed );
 
-    return false;
+      if ( m_cmscale != cmscale_actual )
+            return false;
+
+      //    In quilt mode, always indicate that the adjusted vp requires a full repaint
+      if ( vp_last.b_quilt )
+            return false;
+
+      return single_adjust;
 }
 
 ThumbData *cm93compchart::GetThumbData ( int tnx, int tny, float lat, float lon )

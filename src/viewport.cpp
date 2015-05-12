@@ -44,7 +44,6 @@
 #include "geodesic.h"
 #include "styles.h"
 #include "routeman.h"
-#include "statwin.h"
 #include "navutil.h"
 #include "kml.h"
 #include "concanv.h"
@@ -61,7 +60,6 @@
 #include "ocpn_pixel.h"
 #include "ocpndc.h"
 #include "undo.h"
-#include "toolbar.h"
 #include "multiplexer.h"
 #include "timers.h"
 #include "tide_time.h"
@@ -134,9 +132,10 @@ ViewPort::ViewPort()
     b_quilt = false;
     pix_height = pix_width = 0;
     b_MercatorProjectionOverride = false;
+    toSM_lat0_cache = 91;
 }
 
-wxPoint ViewPort::GetPixFromLL( double lat, double lon ) const
+wxPoint ViewPort::GetPixFromLL( double lat, double lon )
 {
     double easting, northing;
     double xlon = lon;
@@ -182,8 +181,17 @@ wxPoint ViewPort::GetPixFromLL( double lat, double lon ) const
         northing = pnorthing - pcnorthing;
     }
 
-    else
+    else {
+#if 0
         toSM( lat, xlon, clat, clon, &easting, &northing );
+#else
+        if(clat != toSM_lat0_cache) {
+            toSM_lat0_cache = clat;
+            toSM_y30_cache = toSMcache_y30(clat);
+        }
+        toSMcache( lat, xlon, toSM_y30_cache, clon, &easting, &northing );
+#endif
+    }
 
     if( !wxFinite(easting) || !wxFinite(northing) ) return wxPoint( 0, 0 );
 
@@ -253,8 +261,17 @@ wxPoint2DDouble ViewPort::GetDoublePixFromLL( double lat, double lon )
         northing = pnorthing - pcnorthing;
     }
 
-    else
+    else {
+#if 0
         toSM( lat, xlon, clat, clon, &easting, &northing );
+#else
+        if(clat != toSM_lat0_cache) {
+            toSM_lat0_cache = clat;
+            toSM_y30_cache = toSMcache_y30(clat);
+        }
+        toSMcache( lat, xlon, toSM_y30_cache, clon, &easting, &northing );
+#endif
+    }
 
     if( !wxFinite(easting) || !wxFinite(northing) ) return wxPoint( 0, 0 );
 
@@ -273,12 +290,7 @@ wxPoint2DDouble ViewPort::GetDoublePixFromLL( double lat, double lon )
         dyr = npix * cos( angle ) - epix * sin( angle );
     }
 
-    wxPoint2DDouble r;
-    //    We definitely need a round() function here
-    r.m_x = ( ( pix_width / 2 ) + dxr );
-    r.m_y = ( ( pix_height / 2 ) - dyr );
-
-    return r;
+    return wxPoint2DDouble(( pix_width / 2 ) + dxr, ( pix_height / 2 ) - dyr);
 }
 
 void ViewPort::GetLLFromPix( const wxPoint &p, double *lat, double *lon )

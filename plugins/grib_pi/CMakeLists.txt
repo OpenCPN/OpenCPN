@@ -80,8 +80,12 @@ SET(SRC_GRIB
             src/GribOverlayFactory.h
             src/GribUIDialogBase.cpp
             src/GribUIDialogBase.h
+            src/GrabberWin.cpp
+            src/GrabberWin.h
             src/GribUIDialog.cpp
             src/GribUIDialog.h
+            src/CursorData.cpp
+            src/CursorData.h
             src/GribSettingsDialog.cpp
             src/GribSettingsDialog.h
             src/GribRequestDialog.cpp

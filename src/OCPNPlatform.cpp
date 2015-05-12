@@ -45,6 +45,10 @@
 #include "androidUTIL.h"
 #endif
 
+#ifdef ocpnUSE_GL
+#include "glChartCanvas.h"
+#endif
+
 // Include CrashRpt Header
 #ifdef OCPN_USE_CRASHRPT
 #include "CrashRpt.h"
@@ -58,6 +62,17 @@
 #ifndef __WXMSW__
 #include <signal.h>
 #include <setjmp.h>
+#endif
+
+#ifdef __WXMSW__
+#include <windows.h>
+#include <winioctl.h>
+#include <initguid.h>
+#include "setupapi.h"                   // presently stored in opencpn/src
+#endif
+
+#ifdef __WXOSX__
+#include "macutils.h"
 #endif
 
 DECLARE_APP(MyApp)
@@ -81,6 +96,112 @@ extern wxString           str_version_major;
 extern wxString           str_version_minor;
 extern wxString           str_version_patch;
 
+
+extern bool                      g_bShowOutlines;
+extern bool                      g_bShowDepthUnits;
+extern bool                      g_bDisplayGrid;  // Flag indicating weather the lat/lon grid should be displayed
+extern bool                      g_bShowChartBar;
+extern bool                      g_bShowActiveRouteHighway;
+extern int                       g_nNMEADebug;
+extern int                       g_nAWDefault;
+extern int                       g_nAWMax;
+extern bool                      g_bPlayShipsBells;
+extern bool                      g_bFullscreenToolbar;
+extern bool                      g_bShowLayers;
+extern bool                      g_bTransparentToolbar;
+extern bool                      g_bPermanentMOBIcon;
+extern bool                      g_bTempShowMenuBar;
+
+extern int                       g_iSDMMFormat;
+extern int                       g_iDistanceFormat;
+extern int                       g_iSpeedFormat;
+
+extern int                       g_iNavAidRadarRingsNumberVisible;
+extern float                     g_fNavAidRadarRingsStep;
+extern int                       g_pNavAidRadarRingsStepUnits;
+extern int                       g_iWaypointRangeRingsNumber;
+extern float                     g_fWaypointRangeRingsStep;
+extern int                       g_iWaypointRangeRingsStepUnits;
+extern wxColour                  g_colourWaypointRangeRingsColour;
+extern bool                      g_bWayPointPreventDragging;
+extern bool                      g_bConfirmObjectDelete;
+
+// AIS Global configuration
+extern bool                      g_bShowAIS;
+extern bool                      g_bCPAMax;
+extern double                    g_CPAMax_NM;
+extern bool                      g_bCPAWarn;
+extern double                    g_CPAWarn_NM;
+extern bool                      g_bTCPA_Max;
+extern double                    g_TCPA_Max;
+extern bool                      g_bMarkLost;
+extern double                    g_MarkLost_Mins;
+extern bool                      g_bRemoveLost;
+extern double                    g_RemoveLost_Mins;
+extern bool                      g_bShowCOG;
+extern double                    g_ShowCOG_Mins;
+extern bool                      g_bAISShowTracks;
+extern double                    g_AISShowTracks_Mins;
+extern bool                      g_bShowMoored;
+extern double                    g_ShowMoored_Kts;
+extern wxString                  g_sAIS_Alert_Sound_File;
+extern bool                      g_bAIS_CPA_Alert_Suppress_Moored;
+extern bool                      g_bAIS_ACK_Timeout;
+extern double                    g_AckTimeout_Mins;
+extern bool                      g_bShowAreaNotices;
+extern bool                      g_bDrawAISSize;
+extern bool                      g_bShowAISName;
+extern int                       g_Show_Target_Name_Scale;
+extern bool                      g_bWplIsAprsPosition;
+
+extern int                       gps_watchdog_timeout_ticks;
+extern int                       sat_watchdog_timeout_ticks;
+
+extern int                       gGPS_Watchdog;
+extern bool                      bGPSValid;
+
+extern int                       gHDx_Watchdog;
+extern int                       gHDT_Watchdog;
+extern int                       gVAR_Watchdog;
+extern bool                      g_bHDT_Rx;
+extern bool                      g_bVAR_Rx;
+
+extern int                       gSAT_Watchdog;
+extern int                       g_SatsInView;
+extern bool                      g_bSatValid;
+
+extern bool                      g_bDebugCM93;
+extern bool                      g_bDebugS57;
+
+extern bool                      g_bfilter_cogsog;
+extern int                       g_COGFilterSec;
+extern int                       g_SOGFilterSec;
+
+extern int                       g_ChartUpdatePeriod;
+extern int                       g_SkewCompUpdatePeriod;
+
+extern int                       g_lastClientRectx;
+extern int                       g_lastClientRecty;
+extern int                       g_lastClientRectw;
+extern int                       g_lastClientRecth;
+extern double                    g_display_size_mm;
+extern double                    g_config_display_size_mm;
+extern bool                     g_bTrackDaily;
+extern double                   g_PlanSpeed;
+extern bool                     g_bFullScreenQuilt;
+extern bool                     g_bQuiltEnable;
+extern bool                     g_bskew_comp;
+
+extern bool                     g_bopengl;
+extern bool                     g_btouch;
+extern bool                     g_bresponsive;
+extern bool                     g_bShowStatusBar;
+extern int                      g_cm93_zoom_factor;
+
+#ifdef ocpnUSE_GL
+extern ocpnGLOptions            g_GLOptions;
+#endif
+extern int                      g_default_font_size;
 
 wxLog       *g_logger;
 bool         g_bEmailCrashReport;
@@ -359,6 +480,10 @@ void OCPNPlatform::Initialize_1( void )
             sigaction(SIGTERM, &sa_all, NULL);
             sigaction(SIGTERM, NULL, &sa_all_old);
 #endif
+
+#ifdef __OCPN__ANDROID__
+    androidUtilInit( );
+#endif            
             
 }
 
@@ -383,6 +508,58 @@ void OCPNPlatform::OnExit_2( void ){
 #endif
     
 }
+
+
+//      Setup default global options when config file is unavailable,
+//      as on initial startup after new install
+
+void OCPNPlatform::SetDefaultOptions( void )
+{
+    //  General options, applied to all platforms
+    g_bShowOutlines = true;
+    
+    g_CPAMax_NM = 20.;
+    g_CPAWarn_NM = 2.;
+    g_TCPA_Max = 30.;
+    g_bMarkLost = true;
+    g_MarkLost_Mins = 8;
+    g_bRemoveLost = true;
+    g_RemoveLost_Mins = 10;
+    g_bShowCOG = true;
+    g_ShowCOG_Mins = 6;
+    g_bShowMoored = true;
+    g_ShowMoored_Kts = 0.2;
+    g_bTrackDaily = false;
+    g_PlanSpeed = 6.;
+    g_bFullScreenQuilt = true;
+    g_bQuiltEnable = true;
+    g_bskew_comp = false;
+    g_bShowAreaNotices = false;
+    g_bDrawAISSize = false;
+    g_bShowAISName = false;
+    
+    
+#ifdef __OCPN__ANDROID__
+    
+#ifdef ocpnUSE_GL
+    g_bopengl = true;
+    g_GLOptions.m_bTextureCompression = 1;
+    g_GLOptions.m_bTextureCompressionCaching = 1;
+#endif
+    
+    g_btouch = true;
+    g_bresponsive = true;
+    g_default_font_size = 14;
+
+    g_bShowStatusBar = false;
+    g_cm93_zoom_factor = -5;    
+#endif
+    
+    
+    
+}
+
+
 
 
 //--------------------------------------------------------------------------
@@ -533,6 +710,17 @@ wxString &OCPNPlatform::GetPluginDir()
             m_PluginsDir = GetHomeDir();
             m_PluginsDir += _T("plugins");
         }
+        
+#ifdef __OCPN__ANDROID__
+        // something like: data/data/org.opencpn.opencpn
+        wxFileName fdir = wxFileName::DirName(std_path.GetUserConfigDir());
+        fdir.RemoveLastDir();
+        m_PluginsDir = fdir.GetPath();
+        
+        m_PluginsDir = GetHomeDir();
+        
+#endif        
+        
         
     }
     
@@ -707,6 +895,218 @@ bool OCPNPlatform::hasInternalGPS(wxString profile)
 
 
 //--------------------------------------------------------------------------
+//      Platform Display Support
+//--------------------------------------------------------------------------
+
+void OCPNPlatform::ShowBusySpinner( void )
+{
+#ifdef __OCPN__ANDROID__
+    androidShowBusyIcon();
+#endif    
+}
+
+void OCPNPlatform::HideBusySpinner( void )
+{
+#ifdef __OCPN__ANDROID__
+    androidHideBusyIcon();
+#endif    
+}
+
+
+
+double OCPNPlatform::getFontPointsperPixel( void )
+{
+    //  Make a measurement...
+    wxScreenDC dc;
+    
+    wxFont *f = wxTheFontList->FindOrCreateFont( 12, wxDEFAULT, wxNORMAL, wxBOLD, FALSE,
+                                                wxString( _T ( "" ) ), wxFONTENCODING_SYSTEM );
+    dc.SetFont(*f);
+    
+    wxSize sz = dc.GetTextExtent(_T("H"));
+    double pt_per_pixel = 12.0 / (double)sz.y;
+    
+    return pt_per_pixel;
+    
+    
+}
+
+wxSize OCPNPlatform::getDisplaySize()
+{
+#ifdef __OCPN__ANDROID__
+    return getAndroidDisplayDimensions();
+#else
+    return (::wxGetDisplaySize());               // default, for most platforms
+#endif
+
+}
+
+double  OCPNPlatform::GetDisplaySizeMM()
+{
+    double ret = wxGetDisplaySizeMM().GetWidth();
+    
+#ifdef __WXMSW__    
+    int w,h;
+    
+    bool GetWindowsMonitorSize( int *w, int *h );
+       
+    if( GetWindowsMonitorSize( &w, &h) ){
+        if(w > 100)             // sanity check
+            ret = w;
+    }
+#endif
+
+#ifdef __WXOSX__
+    ret = GetMacMonitorSize();
+#endif
+    
+#ifdef __OCPN__ANDROID__
+    ret = GetAndroidDisplaySize();
+#endif    
+    
+    wxString msg;
+    msg.Printf(_T("Detected display size (horizontal): %d mm"), (int) ret);
+    wxLogMessage(msg);
+    
+    return ret;
+}
+
+
+#ifdef __WXMSW__
+
+#define NAME_SIZE 128
+
+const GUID GUID_CLASS_MONITOR = {0x4d36e96e, 0xe325, 0x11ce, 0xbf, 0xc1, 0x08, 0x00, 0x2b, 0xe1, 0x03, 0x18};
+
+// Assumes hDevRegKey is valid
+bool GetMonitorSizeFromEDID(const HKEY hDevRegKey, int *WidthMm, int *HeightMm)
+{
+    DWORD dwType, AcutalValueNameLength = NAME_SIZE;
+    TCHAR valueName[NAME_SIZE];
+    
+    BYTE EDIDdata[1024];
+    DWORD edidsize=sizeof(EDIDdata);
+    
+    for (LONG i = 0, retValue = ERROR_SUCCESS; retValue != ERROR_NO_MORE_ITEMS; ++i)
+    {
+        retValue = RegEnumValue ( hDevRegKey, i, &valueName[0],
+                                  &AcutalValueNameLength, NULL, &dwType,
+                                  EDIDdata, // buffer
+                                  &edidsize); // buffer size
+        
+        if (retValue != ERROR_SUCCESS || 0 != _tcscmp(valueName,_T("EDID")))
+            continue;
+        
+        *WidthMm  = ((EDIDdata[68] & 0xF0) << 4) + EDIDdata[66];
+        *HeightMm = ((EDIDdata[68] & 0x0F) << 8) + EDIDdata[67];
+        
+        return true; // valid EDID found
+    }
+    
+    return false; // EDID not found
+}
+
+bool GetSizeForDevID(wxString &TargetDevID, int *WidthMm, int *HeightMm)
+{
+    HDEVINFO devInfo = SetupDiGetClassDevsEx(
+        &GUID_CLASS_MONITOR, //class GUID
+        NULL, //enumerator
+        NULL, //HWND
+        DIGCF_PRESENT, // Flags //DIGCF_ALLCLASSES|
+        NULL, // device info, create a new one.
+        NULL, // machine name, local machine
+        NULL);// reserved
+    
+    if (NULL == devInfo)
+        return false;
+    
+    bool bRes = false;
+    
+    for (ULONG i=0; ERROR_NO_MORE_ITEMS != GetLastError(); ++i)
+    {
+        SP_DEVINFO_DATA devInfoData;
+        memset(&devInfoData,0,sizeof(devInfoData));
+        devInfoData.cbSize = sizeof(devInfoData);
+        
+        if (SetupDiEnumDeviceInfo(devInfo,i,&devInfoData))
+        {
+            wchar_t    Instance[80];
+            SetupDiGetDeviceInstanceId(devInfo, &devInfoData, Instance, MAX_PATH, NULL);
+            wxString instance(Instance);
+            if(instance.Upper().Find( TargetDevID.Upper() ) == wxNOT_FOUND )
+                continue;
+            
+            HKEY hDevRegKey = SetupDiOpenDevRegKey(devInfo,&devInfoData,
+                                                   DICS_FLAG_GLOBAL, 0, DIREG_DEV, KEY_READ);
+            
+            if(!hDevRegKey || (hDevRegKey == INVALID_HANDLE_VALUE))
+                continue;
+            
+            bRes = GetMonitorSizeFromEDID(hDevRegKey, WidthMm, HeightMm);
+            
+            RegCloseKey(hDevRegKey);
+        }
+    }
+    SetupDiDestroyDeviceInfoList(devInfo);
+    return bRes;
+}
+
+bool GetWindowsMonitorSize( int *width, int *height)
+{
+    int WidthMm = 0;
+    int HeightMm = 0;
+    
+    DISPLAY_DEVICE dd;
+    dd.cb = sizeof(dd);
+    DWORD dev = 0; // device index
+    int id = 1; // monitor number, as used by Display Properties > Settings
+    
+    wxString DeviceID;
+    bool bFoundDevice = false;
+    while (EnumDisplayDevices(0, dev, &dd, 0) && !bFoundDevice)
+    {
+        DISPLAY_DEVICE ddMon;
+        ZeroMemory(&ddMon, sizeof(ddMon));
+        ddMon.cb = sizeof(ddMon);
+        DWORD devMon = 0;
+        
+        while (EnumDisplayDevices(dd.DeviceName, devMon, &ddMon, 0) && !bFoundDevice)
+        {
+            if (ddMon.StateFlags & DISPLAY_DEVICE_ACTIVE &&
+                !(ddMon.StateFlags & DISPLAY_DEVICE_MIRRORING_DRIVER))
+            {
+                DeviceID = wxString(ddMon.DeviceID, wxConvUTF8);
+                DeviceID = DeviceID.Mid (8);
+                DeviceID = DeviceID.Mid (0, DeviceID.Find ( '\\' ));
+                
+                bFoundDevice = GetSizeForDevID(DeviceID, &WidthMm, &HeightMm);
+            }
+            devMon++;
+            
+            ZeroMemory(&ddMon, sizeof(ddMon));
+            ddMon.cb = sizeof(ddMon);
+        }
+        
+        ZeroMemory(&dd, sizeof(dd));
+        dd.cb = sizeof(dd);
+        dev++;
+    }
+    
+    if(width)
+        *width = WidthMm;
+    if(height)
+        *height = HeightMm;
+    
+    return bFoundDevice;
+}
+
+
+#endif
+
+
+
+
+//--------------------------------------------------------------------------
 //      Internal Bluetooth Support
 //--------------------------------------------------------------------------
 
@@ -731,6 +1131,17 @@ bool OCPNPlatform::startBluetoothScan()
     return false;
 #endif    
 }
+
+bool OCPNPlatform::stopBluetoothScan()
+{
+#ifdef __OCPN__ANDROID__
+    return androidStopBluetoothScan();
+#else
+    
+    return false;
+#endif    
+}
+
 
 wxArrayString OCPNPlatform::getBluetoothScanResults()
 {
