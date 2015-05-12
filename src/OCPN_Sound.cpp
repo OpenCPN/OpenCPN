@@ -25,6 +25,8 @@
 #include "OCPN_Sound.h"
 #include <wx/file.h>
 
+int                       g_iSoundDeviceIndex;
+
 #ifdef OCPN_USE_PORTAUDIO
 
 PaStream *stream;
@@ -92,20 +94,33 @@ OCPN_Sound::~OCPN_Sound()
     FreeMem();
 }
 
+static void Initialize()
+{
+    if(portaudio_initialized)
+        return;
+
+    PaError err = Pa_Initialize();
+    if( err != paNoError )
+        printf( "PortAudio CTOR error: %s\n", Pa_GetErrorText( err ) );
+
+    portaudio_initialized = true;
+}
+
+int OCPN_Sound::DeviceCount()
+{
+    Initialize();
+
+    return Pa_GetDeviceCount();
+}
+
 bool OCPN_Sound::IsOk() const
 {
     return m_OK;
 }
 
-bool OCPN_Sound::Create(const wxString& fileName, bool isResource)
+bool OCPN_Sound::Create(const wxString& fileName, int deviceIndex, bool isResource)
 {
-    if(!portaudio_initialized) {
-        PaError err = Pa_Initialize();
-        if( err != paNoError ) {
-            printf( "PortAudio CTOR error: %s\n", Pa_GetErrorText( err ) );
-        }
-        portaudio_initialized = true;
-    }
+    Initialize();
 
     m_OK = false;
 
@@ -144,23 +159,36 @@ bool OCPN_Sound::Create(const wxString& fileName, bool isResource)
  
     PaError err;
     m_stream = NULL;
+
+    if(g_iSoundDeviceIndex == -1)
+        g_iSoundDeviceIndex = Pa_GetDefaultOutputDevice();
+
+    if(deviceIndex == -1)
+        deviceIndex = g_iSoundDeviceIndex;
+
+    PaStreamParameters outputParameters =
+        { .device = deviceIndex,
+          .channelCount = m_osdata->m_channels,
+          .sampleFormat = paInt16,
+          .suggestedLatency = 0,
+          .hostApiSpecificStreamInfo = NULL };
     
     /* Open an audio I/O stream. */
-    err = Pa_OpenDefaultStream( &m_stream,
-                                0, /* no input channels */
-                                m_osdata->m_channels, 
-                                paInt16, 
-                                m_osdata->m_samplingRate,
-                                256, /* frames per buffer, i.e. the number
-                                of sample frames that PortAudio will
-                                request from the callback. Many apps
-                                may want to use
-                                paFramesPerBufferUnspecified, which
-                                tells PortAudio to pick the best,
-                                possibly changing, buffer size.*/
-                                OCPNSoundCallback, /* this is your callback function */
-                                sdata ); /*This is a pointer that will be passed to
-                                your callback*/
+    err = Pa_OpenStream( &m_stream,
+                         NULL, /* no input channels */
+                         &outputParameters,
+                         m_osdata->m_samplingRate,
+                         256, /* frames per buffer, i.e. the number
+                                 of sample frames that PortAudio will
+                                 request from the callback. Many apps
+                                 may want to use
+                                 paFramesPerBufferUnspecified, which
+                                 tells PortAudio to pick the best,
+                                 possibly changing, buffer size.*/
+                         paNoFlag, // flags
+                         OCPNSoundCallback, /* this is your callback function */
+                         sdata ); /*This is a pointer that will be passed to
+                                    your callback*/
     if( err != paNoError )
         printf( "PortAudio Create() error: %s\n", Pa_GetErrorText( err ) );
 
@@ -356,12 +384,17 @@ OCPN_Sound::~OCPN_Sound()
     Stop();
 }
 
+int OCPN_Sound::DeviceCount()
+{
+    return 1;
+}
+
 bool OCPN_Sound::IsOk() const
 {
     return m_OK;
 }
 
-bool OCPN_Sound::Create(const wxString& fileName, bool isResource)
+bool OCPN_Sound::Create(const wxString& fileName, int deviceIndex, bool isResource)
 {
     m_OK = wxSound::Create(fileName, isResource);
     return m_OK;

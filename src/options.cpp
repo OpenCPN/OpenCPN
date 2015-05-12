@@ -154,6 +154,7 @@ extern bool             g_bWayPointPreventDragging;
 
 extern bool             g_bPreserveScaleOnX;
 extern bool             g_bPlayShipsBells;
+extern int              g_iSoundDeviceIndex;
 extern bool             g_bFullscreenToolbar;
 extern bool             g_bTransparentToolbar;
 extern bool             g_bTransparentToolbarInOpenGLOK;
@@ -2865,9 +2866,6 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
     pShowCompassWin = new wxCheckBox( itemPanelFont, wxID_ANY, _("Show Compass/GPS Status Window") );
     pShowCompassWin->SetValue( FALSE );
     miscOptions->Add( pShowCompassWin, 0, wxALL, border_size );
-
-    pPlayShipsBells = new wxCheckBox( itemPanelFont, ID_BELLSCHECKBOX, _("Play Ships Bells"));
-    miscOptions->Add( pPlayShipsBells, 0, wxALL, border_size );
     
     //  Mobile/Touchscreen checkboxes
     pMobile = new wxCheckBox( itemPanelFont, ID_MOBILEBOX, _("Enable Touchscreen interface") );
@@ -2890,6 +2888,22 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
 #endif
 #endif
     
+
+    // Sound options
+    pPlayShipsBells = new wxCheckBox( itemPanelFont, ID_BELLSCHECKBOX, _("Play Ships Bells"));
+    miscOptions->Add( pPlayShipsBells, 0, wxALL, border_size );
+
+    wxFlexGridSizer *pSoundDeviceIndexGrid = new wxFlexGridSizer( 2 );
+    miscOptions->Add( pSoundDeviceIndexGrid, 0, wxALL | wxEXPAND, group_item_spacing );
+
+    wxStaticText* stSoundDeviceIndex =
+        new wxStaticText( itemPanelFont, wxID_STATIC, _("Sound Device Index") );
+    pSoundDeviceIndexGrid->Add( stSoundDeviceIndex, 0,
+                    wxALL, 5 );
+    pSoundDeviceIndex = new wxSpinCtrl( itemPanelFont, wxID_ANY );
+    pSoundDeviceIndex->SetRange(-1, OCPN_Sound::DeviceCount() - 1);
+    pSoundDeviceIndexGrid->Add( pSoundDeviceIndex, 0, wxALL, border_size);
+
     m_pSlider_Chart_Factor = new wxSlider( itemPanelFont, wxID_ANY, 0, -5, 5,
                                          wxDefaultPosition, wxSize( slider_width, 50),
                                          wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS );
@@ -2912,8 +2926,6 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
     pToolbarAutoHide->Add( pToolbarHideSecs, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
     
     pToolbarAutoHide->Add( new wxStaticText( itemPanelFont, wxID_ANY, _("seconds") ),group_item_spacing );
-    
-
 }
 
 void options::CreateControls()
@@ -3250,6 +3262,7 @@ void options::SetInitialSettings()
 
     pPreserveScale->SetValue( g_bPreserveScaleOnX );
     pPlayShipsBells->SetValue( g_bPlayShipsBells );
+    pSoundDeviceIndex->SetValue( g_iSoundDeviceIndex );
 //    pFullScreenToolbar->SetValue( g_bFullscreenToolbar );
     pTransparentToolbar->SetValue( g_bTransparentToolbar );
     pSDMMFormat->Select( g_iSDMMFormat );
@@ -4232,6 +4245,7 @@ void options::OnApplyClick( wxCommandEvent& event )
     g_bPreserveScaleOnX = pPreserveScale->GetValue();
 
     g_bPlayShipsBells = pPlayShipsBells->GetValue();
+    g_iSoundDeviceIndex = pSoundDeviceIndex->GetValue();
     g_bTransparentToolbar = pTransparentToolbar->GetValue();
     g_iSDMMFormat = pSDMMFormat->GetSelection();
     g_iDistanceFormat = pDistanceFormat->GetSelection();

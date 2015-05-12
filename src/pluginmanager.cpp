@@ -4572,6 +4572,22 @@ void SetCanvasRotation(double rotation)
     cc1->DoRotateCanvas( rotation );
 }
 
+// Play a sound to a given device
+bool PlugInPlaySoundEx( wxString &sound_file, int deviceIndex )
+{
+    if(g_pi_manager) {
+        g_pi_manager->m_plugin_sound.Stop();
+        g_pi_manager->m_plugin_sound.UnLoad();
+
+        g_pi_manager->m_plugin_sound.Create( sound_file, deviceIndex );
+
+        if( g_pi_manager->m_plugin_sound.IsOk() )
+            return g_pi_manager->m_plugin_sound.Play();
+    }
+
+    return false;
+}
+
 bool CheckEdgePan_PlugIn( int x, int y, bool dragging, int margin, int delta )
 {
     return cc1->CheckEdgePan( x, y, dragging, margin, delta );
