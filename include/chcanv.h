@@ -331,6 +331,8 @@ public:
 
       void OnEvtCompressProgress( OCPN_CompressProgressEvent & event );
       void JaggyCircle(ocpnDC &dc, wxPen pen, int x, int y, int radius);
+      
+      bool CheckEdgePan( int x, int y, bool bdragging, int margin, int delta );
 
       Route       *m_pMouseRoute;
       bool        m_bMeasure_Active;
@@ -441,7 +443,6 @@ private:
       void PanTimerEvent(wxTimerEvent& event);
       void MovementTimerEvent(wxTimerEvent& );
       void MovementStopTimerEvent( wxTimerEvent& );
-      bool CheckEdgePan( int x, int y, bool bdragging, int margin, int delta );
       void OnCursorTrackTimerEvent(wxTimerEvent& event);
 
       void DrawAllRoutesInBBox(ocpnDC& dc, LLBBox& BltBBox, const wxRegion& clipregion);
