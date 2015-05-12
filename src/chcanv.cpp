@@ -8677,7 +8677,6 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
             }
         }
 
-        
         wxString routeInfo;
         if( g_bShowMag )
             routeInfo << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( brg ) );
@@ -9394,8 +9393,12 @@ void ChartCanvas::Refresh( bool eraseBackground, const wxRect *rect )
             m_pCIWin->Raise();
             m_pCIWin->Refresh( false );
         }
-
-
+        
+        if(g_FloatingToolbarDialog && g_FloatingToolbarDialog->m_pRecoverwin ){
+            g_FloatingToolbarDialog->m_pRecoverwin->Raise();
+            g_FloatingToolbarDialog->m_pRecoverwin->Refresh( false );
+        }
+        
     } else
 #endif
         wxWindow::Refresh( eraseBackground, rect );
