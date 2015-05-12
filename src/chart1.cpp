@@ -4193,14 +4193,15 @@ bool MyFrame::ToggleLights( bool doToggle, bool temporary )
     OBJLElement *pOLE = NULL;
     
 #ifdef USE_S57
-    if( ps52plib ) {
-        for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
+    if( !ps52plib ) 
+        return false;
+
+    for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
             pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
             if( !strncmp( pOLE->OBJLName, "LIGHTS", 6 ) ) {
                 oldstate = pOLE->nViz != 0;
                 break;
             }
-        }
     }
 
     oldstate &= !ps52plib->IsObjNoshow("LIGHTS");
