@@ -4565,7 +4565,6 @@ void AlphaBlending( ocpnDC &dc, int x, int y, int size_x, int size_y, float radi
 #ifdef ocpnUSE_GL
         /* opengl version */
         glEnable( GL_BLEND );
-        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
         if(radius > 1.0f){
             wxColour c(color.Red(), color.Green(), color.Blue(), transparency);

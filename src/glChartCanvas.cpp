@@ -205,7 +205,6 @@ bool glChartCanvas::s_b_useScissorTest;
 bool glChartCanvas::s_b_useStencil;
 bool glChartCanvas::s_b_useStencilAP;
 bool glChartCanvas::s_b_UploadFullMipmaps;
-bool glChartCanvas::s_b_useDisplayList;
 //static int s_nquickbind;
 
 long populate_tt_total, mipmap_tt_total, hwmipmap_tt_total, upload_tt_total;
@@ -1086,12 +1085,6 @@ void glChartCanvas::SetupOpenGL()
     s_b_useStencil = false;
     if( stencil && ( sb == 8 ) )
         s_b_useStencil = true;
-
-    //  Display lists OK?
-    s_b_useDisplayList = true;
-#ifdef ocpnUSE_GLES    
-    s_b_useDisplayList = false;
-#endif    
      
     if( QueryExtension( "GL_ARB_texture_non_power_of_two" ) )
         g_texture_rectangle_format = GL_TEXTURE_2D;
@@ -1261,12 +1254,6 @@ void glChartCanvas::SetupOpenGL()
     if(s_b_useScissorTest && s_b_useStencil)
         wxLogMessage( _T("OpenGL-> Using Scissor Clipping") );
 
-    
-    if( s_b_useDisplayList )
-        wxLogMessage( _T("OpenGL-> Using Display Lists") );
-    else
-        wxLogMessage( _T("OpenGL-> Not using Display Lists") );
-    
     /* we upload non-aligned memory */
     glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
 
@@ -1507,25 +1494,6 @@ ViewPort glChartCanvas::NormalizedViewPort(const ViewPort &vp)
     return cvp;
 }
 
-void glChartCanvas::FixRenderIDL(int dl)
-{
-    //  Does current vp cross international dateline?
-    // if so, call the display list again translated
-    // to the other side of it..
-    ViewPort vp = cc1->GetVP();
-    if( vp.GetBBox().GetMinX() < -180. || vp.GetBBox().GetMaxX() > 180. ) {
-        double ts = 40058986*NORM_FACTOR; /* 360 degrees in normalized viewport */
-
-        glPushMatrix();
-        if( vp.GetBBox().GetMinX() < -180. )
-            glTranslated(-ts, 0, 0);
-        else
-            glTranslated(ts, 0, 0);
-        glCallList(dl);
-        glPopMatrix();
-    }
-}
-
 void glChartCanvas::DrawAllRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region )
 {
     ocpnDC dc(*this);
@@ -1630,10 +1598,8 @@ void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
     
     ChartTableEntry *entry = ChartData->GetpChartTableEntry(dbIndex);
 
-    glEnable( GL_LINE_SMOOTH );
-    glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
     glEnable( GL_BLEND );
-    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    glEnable( GL_LINE_SMOOTH );
 
     glColor3ub(color.Red(), color.Green(), color.Blue());
     glLineWidth( g_GLMinSymbolLineWidth );
@@ -1662,6 +1628,9 @@ void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
         }
         glEnd();
     } while(++j < nAuxPlyEntries );                 // There are no aux Ply Point entries
+
+    glDisable( GL_LINE_SMOOTH );
+    glDisable( GL_BLEND );
 }
 
 extern void CalcGridSpacing( float WindowDegrees, float& MajorSpacing, float&MinorSpacing );
@@ -1720,10 +1689,8 @@ void glChartCanvas::GridDraw( )
     CalcGridSpacing( dlon, gridlonMajor, gridlonMinor );
 
     // Draw Major latitude grid lines and text
-    glEnable( GL_LINE_SMOOTH );
-    glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
     glEnable( GL_BLEND );
-    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    glEnable( GL_LINE_SMOOTH );
 
     glColor3ub(GridColor.Red(), GridColor.Green(), GridColor.Blue());
 
@@ -1839,6 +1806,9 @@ void glChartCanvas::GridDraw( )
         if(pass == 0)
             glEnd();
     }
+
+    glDisable( GL_LINE_SMOOTH );
+    glDisable( GL_BLEND );
 }
 
 void glChartCanvas::DrawEmboss( emboss_data *emboss  )
@@ -1882,8 +1852,7 @@ void glChartCanvas::DrawEmboss( emboss_data *emboss  )
     glBindTexture( GL_TEXTURE_2D, emboss->gltexind );
     
     glEnable( GL_BLEND );
-    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND );
+    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
     
     const float factor = 200;
     glColor4f( 1, 1, 1, factor / 256 );
@@ -1991,12 +1960,8 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
     if( !drawit )
         return;
 
-    glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_TEXTURE_BIT | GL_HINT_BIT);
     glEnable( GL_LINE_SMOOTH );
     glEnable( GL_POLYGON_SMOOTH );
-    glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
-    glHint( GL_POLYGON_SMOOTH_HINT, GL_NICEST );
-
     glEnableClientState(GL_VERTEX_ARRAY);
     
     int img_height;
@@ -2132,7 +2097,6 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
                  GPSOffsetPixels, lGPSPoint, scale_factor_x, scale_factor_y);
 
         glEnable(GL_BLEND);
-        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
         glEnableClientState(GL_VERTEX_ARRAY);
 
@@ -2208,8 +2172,9 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
     }
 
     glDisableClientState(GL_VERTEX_ARRAY);
-
-    glPopAttrib();            // restore state
+    glDisable( GL_LINE_SMOOTH );
+    glDisable( GL_POLYGON_SMOOTH );
+    glDisable(GL_BLEND);
 
     cc1->ShipIndicatorsDraw(dc, lpp,  GPSOffsetPixels,
                             lGPSPoint,  lHeadPoint,
@@ -2319,13 +2284,12 @@ void glChartCanvas::DrawCloseMessage(wxString msg)
         glEnd();
         
         glEnable(GL_BLEND);
-        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
         
         glColor3ub( 0, 0, 0 );
         glEnable(GL_TEXTURE_2D);
         texfont.RenderString( msg, xp, yp);
         glDisable(GL_TEXTURE_2D);
-        
+        glDisable(GL_BLEND);        
     }
 }
 
@@ -2848,9 +2812,7 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &Region )
         OCPNRegion hiregion = cc1->m_pQuilt->GetHiliteRegion( vp );
 
         if( !hiregion.IsEmpty() ) {
-            glPushAttrib( GL_COLOR_BUFFER_BIT );
             glEnable( GL_BLEND );
-            glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
             double hitrans;
             switch( global_color_scheme ) {
@@ -2886,7 +2848,6 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &Region )
             }
 
             glDisable( GL_BLEND );
-            glPopAttrib();
         }
         cc1->m_pQuilt->SetRenderedVP( vp );
 
@@ -2939,8 +2900,6 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                         glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
                         glCopyTexSubImage2D(GL_TEXTURE_2D,  0,  0,  0, 0,  0,  width, height);
                     
-                        glPushAttrib( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_LINE_BIT| GL_CURRENT_BIT);
-                        
                         glClear(GL_DEPTH_BUFFER_BIT);
                         glDisable(GL_DEPTH_TEST);
                         
@@ -2975,9 +2934,6 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
 
                         glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, 0);
                         glDisable(GL_TEXTURE_2D);
-                        
-                        glPopAttrib( );
-                        
                     }
 #if 0                    
                     else if(scale_factor > 25)  { 
@@ -2998,10 +2954,7 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                         glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS, bias);
                         glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
                         
-                        glPushAttrib( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_LINE_BIT | GL_CURRENT_BIT);
-                        
                         glClear(GL_DEPTH_BUFFER_BIT);
-                        glDisable(GL_DEPTH_TEST);
                         int max_mipmap = 3;
                         
                         for(int i=0 ; i < ntx ; i++){
@@ -3076,8 +3029,6 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                         glDeleteTextures(ntx * nty, screen_capture);
                         glDisable(GL_TEXTURE_2D);
                         delete [] screen_capture;
-                        
-                        glPopAttrib();
                     }
 #endif
                     
@@ -3086,9 +3037,7 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
             // Fogging by alpha blending                
                     fog = ((scale_factor - 20) * 255.) / 20.;
             
-                    glPushAttrib( GL_COLOR_BUFFER_BIT );
                     glEnable( GL_BLEND );
-                    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
                     
                     fog = wxMin(fog, 150.);         // Don't fog out completely
                     
@@ -3110,7 +3059,6 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                         
                     }
                     glDisable( GL_BLEND );
-                    glPopAttrib();
                 }
 #endif                
             }
@@ -3454,6 +3402,13 @@ void glChartCanvas::Render()
         glDisable( GL_STENCIL_TEST );
     }
 
+    // set opengl settings that don't normally change
+    // this should be able to go in SetupOpenGL, but it's
+    // safer here incase a plugin mangles these
+    glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
+    glHint( GL_POLYGON_SMOOTH_HINT, GL_NICEST );
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
     //  Delete any textures known to the GPU that
     //  belong to charts which will not be used in this render
     //  This is done chart-by-chart...later we will scrub for unused textures
@@ -3532,7 +3487,6 @@ void glChartCanvas::Render()
                 glBindTexture( g_texture_rectangle_format, m_cache_tex[!m_cache_page] );
 
                 glEnable( g_texture_rectangle_format );
-                glDisable( GL_BLEND );
                 glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
                             
                 //    Render the reuseable portion of the cached texture

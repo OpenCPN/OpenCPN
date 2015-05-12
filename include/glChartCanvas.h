@@ -80,7 +80,6 @@ public:
     static bool         s_b_useStencil;
     static bool         s_b_useStencilAP;
     static bool         s_b_UploadFullMipmaps;
-    static bool         s_b_useDisplayList;
     
     glChartCanvas(wxWindow *parent);
     ~glChartCanvas();
@@ -114,8 +113,6 @@ public:
     void GridDraw( );
     void FlushFBO( void );
     
-    static void FixRenderIDL(int dl);
-
     void DrawAllRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region );
     void RenderAllChartOutlines( ocpnDC &dc, ViewPort &VP );
     void RenderChartOutline( int dbIndex, ViewPort &VP );
