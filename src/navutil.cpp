@@ -105,6 +105,7 @@ extern ColorScheme      global_color_scheme;
 extern int              g_nbrightness;
 extern bool             g_bShowMag;
 extern double           g_UserVar;
+extern bool             g_bShowStatusBar;
 
 extern wxToolBarBase    *toolBar;
 
@@ -123,6 +124,7 @@ extern RouteProp        *pRoutePropDialog;
 extern bool             s_bSetSystemTime;
 extern bool             g_bDisplayGrid;         //Flag indicating if grid is to be displayed
 extern bool             g_bPlayShipsBells;
+extern int              g_iSoundDeviceIndex;
 extern bool             g_bFullscreenToolbar;
 extern bool             g_bShowLayers;
 extern bool             g_bTransparentToolbar;
@@ -356,6 +358,13 @@ extern double           g_display_size_mm;
 extern double           g_config_display_size_mm;
 extern bool             g_benable_rotate;
 extern bool             g_bEmailCrashReport;
+
+extern int              g_default_font_size;
+
+extern bool             g_bAutoHideToolbar;
+extern int              g_nAutoHideToolbar;
+extern int              g_GUIScaleFactor;
+extern int              g_ChartScaleFactor;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
@@ -1188,6 +1197,8 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "DebugBSBImg" ), &g_BSBImgDebug, 0 );
     Read( _T ( "DebugGPSD" ), &g_bDebugGPSD, 0 );
 
+    Read( _T ( "DefaultFontSize"), &g_default_font_size, 0 );
+    
     Read( _T ( "UseGreenShipIcon" ), &g_bUseGreenShip, 0 );
     g_b_overzoom_x = true;
     Read( _T ( "AutosaveIntervalSeconds" ), &g_nautosave_interval_seconds, 300 );
@@ -1199,12 +1210,18 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "UseNMEA_GLL" ), &g_bUseGLL, 1 );
     Read( _T ( "UseBigRedX" ), &g_bbigred, 0 );
 
+    Read( _T ( "AutoHideToolbar" ), &g_bAutoHideToolbar, 0 );
+    Read( _T ( "AutoHideToolbarSecs" ), &g_nAutoHideToolbar, 0 );
+    
     int size_mm;
     Read( _T ( "DisplaySizeMM" ), &size_mm, -1 );
     g_config_display_size_mm = size_mm;
     if((size_mm > 100) && (size_mm < 2000)){
         g_display_size_mm = size_mm;
     }
+    
+    Read( _T ( "GUIScaleFactor" ), &g_GUIScaleFactor, 0 );
+    Read( _T ( "ChartObjectScaleFactor" ), &g_ChartScaleFactor, 0 );
     
     Read( _T ( "FilterNMEA_Avg" ), &g_bfilter_cogsog, 0 );
     Read( _T ( "FilterNMEA_Sec" ), &g_COGFilterSec, 1 );
@@ -1315,13 +1332,14 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "SkewCompUpdatePeriod" ), &g_SkewCompUpdatePeriod, 10 );
 
     Read( _T ( "SetSystemTime" ), &s_bSetSystemTime, 0 );
-    Read( _T ( "ShowStatusBar" ), &m_bShowStatusBar, 1 );
+    Read( _T ( "ShowStatusBar" ), &g_bShowStatusBar, 1 );
 #ifndef __WXOSX__
     Read( _T ( "ShowMenuBar" ), &m_bShowMenuBar, 0 );
 #endif
     Read( _T ( "ShowCompassWindow" ), &m_bShowCompassWin, 1 );
     Read( _T ( "ShowGrid" ), &g_bDisplayGrid, 0 );
     Read( _T ( "PlayShipsBells" ), &g_bPlayShipsBells, 0 );
+    Read( _T ( "SoundDeviceIndex" ), &g_iSoundDeviceIndex, -1 );
     Read( _T ( "FullscreenToolbar" ), &g_bFullscreenToolbar, 1 );
     Read( _T ( "TransparentToolbar" ), &g_bTransparentToolbar, 1 );
     Read( _T ( "PermanentMOBIcon" ), &g_bPermanentMOBIcon, 0 );
@@ -2469,14 +2487,17 @@ void MyConfig::UpdateSettings()
     Write( _T ( "UIStyle" ), g_StyleManager->GetStyleNextInvocation() );
     Write( _T ( "ChartNotRenderScaleFactor" ), g_ChartNotRenderScaleFactor );
 
-    Write( _T ( "ShowStatusBar" ), m_bShowStatusBar );
+    Write( _T ( "ShowStatusBar" ), g_bShowStatusBar );
 #ifndef __WXOSX__
     Write( _T ( "ShowMenuBar" ), m_bShowMenuBar );
 #endif
+    Write( _T ( "DefaultFontSize" ), g_default_font_size );
+    
     Write( _T ( "ShowCompassWindow" ), m_bShowCompassWin );
     Write( _T ( "SetSystemTime" ), s_bSetSystemTime );
     Write( _T ( "ShowGrid" ), g_bDisplayGrid );
     Write( _T ( "PlayShipsBells" ), g_bPlayShipsBells );
+    Write( _T ( "SoundDeviceIndex" ), g_iSoundDeviceIndex );
     Write( _T ( "FullscreenToolbar" ), g_bFullscreenToolbar );
     Write( _T ( "TransparentToolbar" ), g_bTransparentToolbar );
     Write( _T ( "PermanentMOBIcon" ), g_bPermanentMOBIcon );
@@ -2491,6 +2512,9 @@ void MyConfig::UpdateSettings()
     Write( _T ( "MostRecentGPSUploadConnection" ), g_uploadConnection );
     Write( _T ( "ShowChartBar" ), g_bShowChartBar );
     
+    Write( _T ( "GUIScaleFactor" ), g_GUIScaleFactor );
+    Write( _T ( "ChartObjectScaleFactor" ), g_ChartScaleFactor );
+
     Write( _T ( "FilterNMEA_Avg" ), g_bfilter_cogsog );
     Write( _T ( "FilterNMEA_Sec" ), g_COGFilterSec );
 
@@ -2584,6 +2608,9 @@ void MyConfig::UpdateSettings()
 
     Write( _T ( "MobileTouch" ), g_btouch );
     Write( _T ( "ResponsiveGraphics" ), g_bresponsive );
+
+    Write( _T ( "AutoHideToolbar" ), g_bAutoHideToolbar );
+    Write( _T ( "AutoHideToolbarSecs" ), g_nAutoHideToolbar );
     
     Write( _T ( "DisplaySizeMM" ), g_config_display_size_mm );
 
@@ -3578,7 +3605,7 @@ void X11FontPicker::CreateWidgets()
     itemGridSizer4->Add ( itemBoxSizer5, 0, wxALIGN_CENTER_HORIZONTAL|wxEXPAND, 5 );
     wxStaticText* itemStaticText6 = new wxStaticText ( this, wxID_STATIC, _ ( "&Font family:" ),
             wxDefaultPosition, wxDefaultSize, 0 );
-    itemBoxSizer5->Add ( itemStaticText6, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, 5 );
+    itemBoxSizer5->Add ( itemStaticText6, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP, 5 );
 
     wxChoice* itemChoice7 = new wxChoice ( this, wxID_FONT_FAMILY, wxDefaultPosition,
             wxDefaultSize, *pFaceNameArray, 0 );
@@ -3590,7 +3617,7 @@ void X11FontPicker::CreateWidgets()
     wxBoxSizer* itemBoxSizer8 = new wxBoxSizer ( wxVERTICAL );
     itemGridSizer4->Add ( itemBoxSizer8, 0, wxALIGN_CENTER_HORIZONTAL|wxEXPAND, 5 );
     wxStaticText* itemStaticText9 = new wxStaticText ( this, wxID_STATIC, _ ( "&Style:" ), wxDefaultPosition, wxDefaultSize, 0 );
-    itemBoxSizer8->Add ( itemStaticText9, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, 5 );
+    itemBoxSizer8->Add ( itemStaticText9, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP, 5 );
 
     wxChoice* itemChoice10 = new wxChoice ( this, wxID_FONT_STYLE, wxDefaultPosition, wxDefaultSize );
     itemChoice10->SetHelpText ( _ ( "The font style." ) );
@@ -3601,7 +3628,7 @@ void X11FontPicker::CreateWidgets()
     wxBoxSizer* itemBoxSizer11 = new wxBoxSizer ( wxVERTICAL );
     itemGridSizer4->Add ( itemBoxSizer11, 0, wxALIGN_CENTER_HORIZONTAL|wxEXPAND, 5 );
     wxStaticText* itemStaticText12 = new wxStaticText ( this, wxID_STATIC, _ ( "&Weight:" ), wxDefaultPosition, wxDefaultSize, 0 );
-    itemBoxSizer11->Add ( itemStaticText12, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, 5 );
+    itemBoxSizer11->Add ( itemStaticText12, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP, 5 );
 
     wxChoice* itemChoice13 = new wxChoice ( this, wxID_FONT_WEIGHT, wxDefaultPosition, wxDefaultSize );
     itemChoice13->SetHelpText ( _ ( "The font weight." ) );
@@ -3615,7 +3642,7 @@ void X11FontPicker::CreateWidgets()
     {
         wxStaticText* itemStaticText15 = new wxStaticText ( this, wxID_STATIC, _ ( "C&olour:" ),
                 wxDefaultPosition, wxDefaultSize, 0 );
-        itemBoxSizer14->Add ( itemStaticText15, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, 5 );
+        itemBoxSizer14->Add ( itemStaticText15, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP, 5 );
 
         wxSize colourSize = wxDefaultSize;
         if ( is_pda )
@@ -3633,7 +3660,7 @@ void X11FontPicker::CreateWidgets()
     itemGridSizer4->Add ( itemBoxSizer17, 0, wxALIGN_CENTER_HORIZONTAL|wxEXPAND, 5 );
     wxStaticText* itemStaticText18 = new wxStaticText ( this, wxID_STATIC, _ ( "&Point size:" ),
             wxDefaultPosition, wxDefaultSize, 0 );
-    itemBoxSizer17->Add ( itemStaticText18, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, 5 );
+    itemBoxSizer17->Add ( itemStaticText18, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP, 5 );
 
     wxChoice *pc = new wxChoice ( this, wxID_FONT_SIZE, wxDefaultPosition, wxDefaultSize );
     pc->SetHelpText ( _ ( "The font point size." ) );
@@ -3658,7 +3685,7 @@ void X11FontPicker::CreateWidgets()
     itemBoxSizer3->Add ( 5, 5, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
 
     wxStaticText* itemStaticText23 = new wxStaticText ( this, wxID_STATIC, _ ( "Preview:" ), wxDefaultPosition, wxDefaultSize, 0 );
-    itemBoxSizer3->Add ( itemStaticText23, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, 5 );
+    itemBoxSizer3->Add ( itemStaticText23, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP, 5 );
 
     MyFontPreviewer* itemWindow24 = new MyFontPreviewer ( this, wxSize ( 400, 80 ) );
     m_previewer = itemWindow24;
@@ -4541,7 +4568,6 @@ void AlphaBlending( ocpnDC &dc, int x, int y, int size_x, int size_y, float radi
 #ifdef ocpnUSE_GL
         /* opengl version */
         glEnable( GL_BLEND );
-        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
         if(radius > 1.0f){
             wxColour c(color.Red(), color.Green(), color.Blue(), transparency);

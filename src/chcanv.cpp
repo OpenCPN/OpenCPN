@@ -199,6 +199,7 @@ extern float            g_fNavAidRadarRingsStep;
 extern int              g_pNavAidRadarRingsStepUnits;
 extern bool             g_bWayPointPreventDragging;
 extern bool             g_bEnableZoomToCursor;
+extern bool             g_bShowChartBar;
 
 extern AISTargetAlertDialog    *g_pais_alert_dialog_active;
 extern AISTargetQueryDialog    *g_pais_query_dialog_active;
@@ -1914,7 +1915,7 @@ void ChartCanvas::StopMovement( )
     m_zoom_factor = 1;
     m_rotation_speed = 0;
     m_mustmove = 0;
-#ifndef __OCPN__ANDROID__    
+#if !defined(__WXGTK__) && !defined(__WXQT__)
     SetFocus();
     gFrame->Raise();
 #endif    
@@ -2431,7 +2432,9 @@ void ChartCanvas::SetCursorStatus( double cursor_lat, double cursor_lon )
     s1 += toSDMM(1, cursor_lat);
     s1 += _T("   ");
     s1 += toSDMM(2, cursor_lon);
-    parent_frame->SetStatusText ( s1, STAT_FIELD_CURSOR_LL );
+    
+    if(STAT_FIELD_CURSOR_LL >= 0)
+        parent_frame->SetStatusText ( s1, STAT_FIELD_CURSOR_LL );
     
     double brg, dist;
     wxString s;
@@ -2442,7 +2445,9 @@ void ChartCanvas::SetCursorStatus( double cursor_lat, double cursor_lon )
         s.Printf( wxString("%03d°  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( brg ) );
     
     s << FormatDistanceAdaptive( dist );
-    parent_frame->SetStatusText ( s, STAT_FIELD_CURSOR_BRGRNG );
+    
+    if(STAT_FIELD_CURSOR_BRGRNG >= 0)
+        parent_frame->SetStatusText ( s, STAT_FIELD_CURSOR_BRGRNG );
 }
 
 void ChartCanvas::GetCursorLatLon( double *lat, double *lon )
@@ -2742,6 +2747,9 @@ void ChartCanvas::DoRotateCanvas( double rotation )
 {
     while(rotation < 0) rotation += 2*PI;
     while(rotation > 2*PI) rotation -= 2*PI;
+
+    if(rotation == VPoint.rotation || wxIsNaN(rotation))
+        return;
 
     SetVPRotation( rotation );
     parent_frame->UpdateRotationState( VPoint.rotation);
@@ -4475,6 +4483,26 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
     mx = x;
     my = y;
     GetCanvasPixPoint( x, y, m_cursor_lat, m_cursor_lon );
+
+    //  Establish the event region
+    cursor_region = CENTER;
+    
+    if( x > xr_margin ) {
+        cursor_region = MID_RIGHT;
+    } else if( x < xl_margin ) {
+        cursor_region = MID_LEFT;
+    } else if( y > yb_margin ) {
+        cursor_region = MID_TOP;
+    } else if( y < yt_margin ) {
+        cursor_region = MID_BOT;
+    } else {
+        cursor_region = CENTER;
+    }
+    
+    
+    if( !g_btouch )
+        SetCanvasCursor( event );
+    
     
     // Protect from leftUp's coming from event handlers in child
     // windows who return focus to the canvas.
@@ -4598,7 +4626,7 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
             }
     }
     
-    if(!g_btouch ){
+    if(1/*!g_btouch*/ ){
         //    Route Creation Rubber Banding
         if( parent_frame->nRoute_State >= 2 ) {
             r_rband.x = x;
@@ -4649,6 +4677,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
     // If there is, the two single clicks are ignored.
     
     if( event.LeftDClick() && ( cursor_region == CENTER ) ) {
+        
         m_DoubleClickTimer->Start();
         singleClickEventIsValid = false;
         
@@ -5363,17 +5392,17 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                                                           wxString( _T ( "circle" ) ), wxEmptyString, GPX_EMPTY_STRING );
                                                           pMousePoint->m_bShowName = false;
                                                           
-                                                          m_pMeasureRoute->AddPoint( pMousePoint );
+                m_pMeasureRoute->AddPoint( pMousePoint );
                                                           
-                                                          m_prev_rlat = m_cursor_lat;
-                                                          m_prev_rlon = m_cursor_lon;
-                                                          m_prev_pMousePoint = pMousePoint;
-                                                          m_pMeasureRoute->m_lastMousePointIndex = m_pMeasureRoute->GetnPoints();
+                m_prev_rlat = m_cursor_lat;
+                m_prev_rlon = m_cursor_lon;
+                m_prev_pMousePoint = pMousePoint;
+                m_pMeasureRoute->m_lastMousePointIndex = m_pMeasureRoute->GetnPoints();
                                                           
-                                                          m_nMeasureState++;
+                m_nMeasureState++;
                                                           
-                                                          Refresh( true );
-                                                          ret = true;
+                Refresh( true );
+                ret = true;
             }
             else {
                 bool b_was_editing_mark = m_bMarkEditing;
@@ -6080,9 +6109,6 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
     
     if(!MouseEventProcessObjects( event ))
          MouseEventProcessCanvas( event );
-    
-    if( !g_btouch )
-        SetCanvasCursor( event );
 }
 
 
@@ -6090,29 +6116,21 @@ void ChartCanvas::SetCanvasCursor( wxMouseEvent& event )
 {
     //    Switch to the appropriate cursor on mouse movement
 
-    int x, y;
-    event.GetPosition( &x, &y );
-    
     wxCursor *ptarget_cursor = pCursorArrow;
     
     if( ( !parent_frame->nRoute_State )
         && ( !m_bMeasure_Active ) /*&& ( !m_bCM93MeasureOffset_Active )*/) {
         
-        if( x > xr_margin ) {
+        if( cursor_region == MID_RIGHT ) {
             ptarget_cursor = pCursorRight;
-            cursor_region = MID_RIGHT;
-        } else if( x < xl_margin ) {
+        } else if( cursor_region == MID_LEFT ) {
             ptarget_cursor = pCursorLeft;
-            cursor_region = MID_LEFT;
-        } else if( y > yb_margin ) {
+        } else if( cursor_region == MID_TOP ) {
             ptarget_cursor = pCursorDown;
-            cursor_region = MID_TOP;
-        } else if( y < yt_margin ) {
+        } else if( cursor_region == MID_BOT ) {
             ptarget_cursor = pCursorUp;
-            cursor_region = MID_BOT;
         } else {
             ptarget_cursor = pCursorArrow;
-            cursor_region = CENTER;
         }
         } else if( m_bMeasure_Active || parent_frame->nRoute_State ) // If Measure tool use Pencil Cursor
             ptarget_cursor = pCursorPencil;
@@ -8202,6 +8220,13 @@ bool ChartCanvas::InvokeCanvasMenu(int x, int y, int seltype)
 
     delete m_canvasMenu;
     m_canvasMenu = NULL;
+
+#ifdef __WXQT__
+    g_FloatingToolbarDialog->Raise();
+    g_FloatingCompassDialog->Raise();
+    if(stats && stats->IsShown())
+        stats->Raise();
+#endif
     
     return true;
 }
@@ -8599,12 +8624,26 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
         if(!route)
             return;
     
+        double render_lat = m_cursor_lat;
+        double render_lon = m_cursor_lon;
+        
+        if(route){
+            int np = route->GetnPoints();
+            if(np){
+                if(g_btouch && (np > 1))
+                    np --;
+                RoutePoint rp = route->GetPoint(np);
+                render_lat = rp.m_lat;
+                render_lon = rp.m_lon;
+            }
+        }
+                
         double rhumbBearing, rhumbDist, gcBearing, gcBearing2, gcDist;
-        DistanceBearingMercator( m_cursor_lat, m_cursor_lon, m_prev_rlat, m_prev_rlon, &rhumbBearing, &rhumbDist );
-        Geodesic::GreatCircleDistBear( m_prev_rlon, m_prev_rlat, m_cursor_lon, m_cursor_lat, &gcDist, &gcBearing, &gcBearing2);
+        DistanceBearingMercator( m_cursor_lat, m_cursor_lon, render_lat, render_lon, &rhumbBearing, &rhumbDist );
+        Geodesic::GreatCircleDistBear( render_lon, render_lat, m_cursor_lon, m_cursor_lat, &gcDist, &gcBearing, &gcBearing2);
         double gcDistm = gcDist / 1852.0;
 
-        if( ( m_prev_rlat == m_cursor_lat ) && ( m_prev_rlon == m_cursor_lon ) ) rhumbBearing = 90.;
+        if( ( render_lat == m_cursor_lat ) && ( render_lon == m_cursor_lon ) ) rhumbBearing = 90.;
 
         wxPoint destPoint, lastPoint;
 
@@ -8619,21 +8658,22 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
             route->m_NextLegGreatCircle = true;
         }
 
-        if( !g_btouch) {
+        if( 1/*!g_btouch*/) {
             route->DrawPointWhich( dc, route->m_lastMousePointIndex, &lastPoint );
 
             if( route->m_NextLegGreatCircle ) {
                 for( int i=1; i<=milesDiff; i++ ) {
                     double p = (double)i * (1.0/(double)milesDiff);
                     double pLat, pLon;
-                    Geodesic::GreatCircleTravel( m_prev_rlon, m_prev_rlat, gcDist*p, brg, &pLon, &pLat, &gcBearing2 );
+                    Geodesic::GreatCircleTravel( render_lon, render_lat, gcDist*p, brg, &pLon, &pLat, &gcBearing2 );
                     destPoint = VPoint.GetPixFromLL( pLat, pLon );
                     route->DrawSegment( dc, &lastPoint, &destPoint, GetVP(), false );
                     lastPoint = destPoint;
                 }
             }
             else {
-                route->DrawSegment( dc, &lastPoint, &r_rband, GetVP(), false );
+                if(r_rband.x && r_rband.y)      // RubberBand disabled?
+                    route->DrawSegment( dc, &lastPoint, &r_rband, GetVP(), false );
             }
         }
 
@@ -8672,7 +8712,10 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
         else
             s0.Append( _("Layer Route: ") );
 
-        s0 += FormatDistanceAdaptive( route->m_route_length + dist );
+        double disp_length = route->m_route_length;
+        if( !g_btouch)
+            disp_length += dist;
+        s0 += FormatDistanceAdaptive( disp_length );
         RenderExtraRouteLegInfo( dc, r_rband, s0 );
     }
 }
@@ -9350,8 +9393,12 @@ void ChartCanvas::Refresh( bool eraseBackground, const wxRect *rect )
             m_pCIWin->Raise();
             m_pCIWin->Refresh( false );
         }
-
-
+        
+        if(g_FloatingToolbarDialog && g_FloatingToolbarDialog->m_pRecoverwin ){
+            g_FloatingToolbarDialog->m_pRecoverwin->Raise();
+            g_FloatingToolbarDialog->m_pRecoverwin->Refresh( false );
+        }
+        
     } else
 #endif
         wxWindow::Refresh( eraseBackground, rect );
@@ -10372,6 +10419,8 @@ void ShowAISTargetQueryDialog( wxWindow *win, int mmsi )
         g_pais_query_dialog_active->Create( win, -1, _( "AIS Target Query" ),
                                             wxPoint( pos_x, pos_y ) );
 
+        g_pais_query_dialog_active->SetAutoCentre( g_btouch );
+        g_pais_query_dialog_active->SetAutoSize( g_bresponsive );
         g_pais_query_dialog_active->SetMMSI( mmsi );
         g_pais_query_dialog_active->UpdateText();
         wxSize sz = g_pais_query_dialog_active->GetSize();
@@ -10414,18 +10463,6 @@ void ShowAISTargetQueryDialog( wxWindow *win, int mmsi )
         g_pais_query_dialog_active->UpdateText();
     }
 
-
-    //  Make sure the query dialog size will fit on the screen
-    wxSize sz = g_pais_query_dialog_active->GetSize();
-    wxSize screen_size = ::wxGetDisplaySize();
-    if( sz.y > (screen_size.y * 8/10) ){
-        g_pais_query_dialog_active->SetSize( sz.x, screen_size.y * 8/10 );
-    }
-
-    if(g_btouch)
-        g_pais_query_dialog_active->Centre();
-        
-    
     g_pais_query_dialog_active->Show();
 }
 

@@ -40,11 +40,9 @@
 #include "undo.h"
 
 #include "ocpCursor.h"
-#include "S57QueryDialog.h"
 #include "GoToPositionDialog.h"
 #include "CM93DSlide.h"
 #include "RolloverWin.h"
-#include "AISTargetQueryDialog.h"
 #include "timers.h"
 #include "emboss_data.h"
 #include "S57Sector.h"
@@ -238,6 +236,9 @@ public:
       ChartBase* GetChartAtCursor();
       ChartBase* GetOverlayChartAtCursor();
 
+      bool isRouteEditing( void ){ return m_bRouteEditing && m_pRoutePointEditTarget; }
+      bool isMarkEditing( void ){ return m_bMarkEditing && m_pRoutePointEditTarget; }
+      
       GSHHSChart* GetWorldBackgroundChart() { return pWorldBackgroundChart; }
 
       void  SetbTCUpdate(bool f){ m_bTCupdate = f;}
@@ -330,6 +331,8 @@ public:
 
       void OnEvtCompressProgress( OCPN_CompressProgressEvent & event );
       void JaggyCircle(ocpnDC &dc, wxPen pen, int x, int y, int radius);
+      
+      bool CheckEdgePan( int x, int y, bool bdragging, int margin, int delta );
 
       Route       *m_pMouseRoute;
       bool        m_bMeasure_Active;
@@ -440,7 +443,6 @@ private:
       void PanTimerEvent(wxTimerEvent& event);
       void MovementTimerEvent(wxTimerEvent& );
       void MovementStopTimerEvent( wxTimerEvent& );
-      bool CheckEdgePan( int x, int y, bool bdragging, int margin, int delta );
       void OnCursorTrackTimerEvent(wxTimerEvent& event);
 
       void DrawAllRoutesInBBox(ocpnDC& dc, LLBBox& BltBBox, const wxRegion& clipregion);

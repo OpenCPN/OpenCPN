@@ -239,7 +239,7 @@ CanvasMenuHandler::~CanvasMenuHandler()
 void MenuPrepend1( wxMenu *menu, int id, wxString label)
 {
     wxMenuItem *item = new wxMenuItem(menu, id, label);
-#ifdef __WXMSW__
+#if defined(__WXMSW__) || defined(__OCPN__ANDROID__)
     wxFont *qFont = GetOCPNScaledFont(_T("Menu"));
     item->SetFont(*qFont);
 #endif
@@ -249,7 +249,8 @@ void MenuPrepend1( wxMenu *menu, int id, wxString label)
 void MenuAppend1( wxMenu *menu, int id, wxString label)
 {
     wxMenuItem *item = new wxMenuItem(menu, id, label);
-#ifdef __WXMSW__
+#if defined(__WXMSW__) || defined(__OCPN__ANDROID__)
+   
     wxFont *qFont = GetOCPNScaledFont(_("Menu"));
     item->SetFont(*qFont);
 #endif
@@ -258,7 +259,8 @@ void MenuAppend1( wxMenu *menu, int id, wxString label)
 
 void SetMenuItemFont1(wxMenuItem *item)
 {
-#ifdef __WXMSW__
+#if defined(__WXMSW__) || defined(__OCPN__ANDROID__)
+    
     wxFont *qFont = GetOCPNScaledFont(_("Menu"));
     item->SetFont(*qFont);
 #endif
@@ -512,7 +514,12 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
         {
             if( pimis->b_viz ) {
                 wxMenuItem *pmi = new wxMenuItem( contextMenu, pimis->id,
-                                                  pimis->pmenu_item->GetLabel(), pimis->pmenu_item->GetHelp(),
+#if wxCHECK_VERSION(3,0,0)
+                                                  pimis->pmenu_item->GetItemLabelText(),
+#else
+                                                  pimis->pmenu_item->GetLabel(),
+#endif
+                                                  pimis->pmenu_item->GetHelp(),
                                                   pimis->pmenu_item->GetKind(), pimis->pmenu_item->GetSubMenu() );
 #ifdef __WXMSW__
                 pmi->SetFont(pimis->pmenu_item->GetFont());
@@ -1434,6 +1441,8 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
         gFrame->SetGroupIndex( event.GetId() - ID_DEF_MENU_GROUPBASE );
     }
 
+    parent->InvalidateGL();
+    
     g_click_stop = 0;    // Context menu was processed, all is well
 
 }

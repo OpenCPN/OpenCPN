@@ -30,6 +30,7 @@
 
 extern wxString g_locale;
 wxString s_locale;
+int g_default_font_size;
 
 FontMgr * FontMgr::instance = NULL;
 
@@ -100,14 +101,17 @@ wxString FontMgr::GetFontConfigKey( const wxString &description )
     using namespace std;
     locale loc;
     const collate<char>& coll = use_facet<collate<char> >( loc );
-    char cFontDesc[101];
-    wcstombs( cFontDesc, description.c_str(), 100 );
-    cFontDesc[100] = 0;
-    int fdLen = strlen( cFontDesc );
+//    char cFontDesc[101];
+//    wcstombs( cFontDesc, description.c_str(), 100 );
+//    cFontDesc[100] = 0;
+
+    wxCharBuffer abuf = description.ToUTF8();
+    
+    int fdLen = strlen( abuf );
 
     configkey.Append(
             wxString::Format( _T("%08lx"),
-                    coll.hash( cFontDesc, cFontDesc + fdLen ) ) );
+                              coll.hash( abuf.data(), abuf.data() + fdLen ) ) );
     return configkey;
 }
 
@@ -449,7 +453,7 @@ void FontMgr::ScrubList( )
             break;
         }
 
-        GetFont( wxGetTranslation(candidate), 0 );
+        GetFont( wxGetTranslation(candidate), g_default_font_size );
      
         i++;
     }

@@ -146,7 +146,10 @@ void Multiplexer::LogOutputMessageColor(const wxString &msg, const wxString & st
 {
     if (NMEALogWindow::Get().Active()) {
         wxDateTime now = wxDateTime::Now();
-        wxString ss = now.FormatISOTime();
+        wxString ss;
+#ifndef __WXQT__        //  Date/Time on Qt are broken, at least for android
+        ss = now.FormatISOTime();
+#endif        
         ss.Prepend(_T("--> "));
         ss.Append( _T(" (") );
         ss.Append( stream_name );
@@ -173,7 +176,9 @@ void Multiplexer::LogInputMessage(const wxString &msg, const wxString & stream_n
     if (NMEALogWindow::Get().Active()) {
         wxDateTime now = wxDateTime::Now();
         wxString ss;
+#ifndef __WXQT__        //  Date/Time on Qt are broken, at least for android
         ss = now.FormatISOTime();
+#endif        
         ss.Append( _T(" (") );
         ss.Append( stream_name );
         ss.Append( _T(") ") );

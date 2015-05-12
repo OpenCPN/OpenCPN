@@ -243,31 +243,14 @@ void ConsoleCanvas::UpdateRouteData()
 {
     wxString str_buf;
 
-    if( g_pRouteMan->GetpActiveRoute() ) {
-
-        if( g_pRouteMan->m_bDataValid ) {
-
-//    Range
-            wxString srng;
+    if( g_pRouteMan->GetpActiveRoute() )
+    {
+        if( g_pRouteMan->m_bDataValid )
+        {
+            // Range to the next waypoint is needed always
             float rng = g_pRouteMan->GetCurrentRngToActivePoint();
-            float nrng = g_pRouteMan->GetCurrentRngToActiveNormalArrival();
 
-//                  if((fabs(rng - nrng) > .01) && (rng < 10.0))
-            double deltarng = fabs( rng - nrng );
-            if( ( deltarng > .01 ) && ( ( deltarng / rng ) > .10 ) && ( rng < 10.0 ) ) // show if there is more than 10% difference in ranges, etc...
-                    {
-                if( nrng < 10.0 ) srng.Printf( _T("%5.2f/%5.2f"), rng, nrng );
-                else
-                    srng.Printf( _T("%5.1f/%5.1f"), rng, nrng );
-            } else {
-                if( rng < 10.0 ) srng.Printf( _T("%6.2f"), rng );
-                else
-                    srng.Printf( _T("%6.1f"), rng );
-            }
-
-            if( !m_bShowRouteTotal ) pRNG->SetAValue( srng );
-
-//    Brg
+            // Brg to the next waypoint
             float dcog = g_pRouteMan->GetCurrentBrgToActivePoint();
             if( dcog >= 359.5 )
                 dcog = 0;
@@ -280,92 +263,124 @@ void ConsoleCanvas::UpdateRouteData()
             
             pBRG->SetAValue( cogstr );
 
-//    XTE
-            str_buf.Printf( _T("%6.2f"), g_pRouteMan->GetCurrentXTEToActivePoint() );
-            pXTE->SetAValue( str_buf );
-            if( g_pRouteMan->GetXTEDir() < 0 ) pXTE->SetALabel( wxString( _("XTE         L") ) );
-            else
-                pXTE->SetALabel( wxString( _("XTE         R") ) );
-
-//    VMG
+            // VMG
             // VMG is always to next waypoint, not to end of route
             // VMG is SOG x cosine (difference between COG and BRG to Waypoint)
             double VMG = 0.;
-            if( !wxIsNaN(gCog) && !wxIsNaN(gSog) ) {
+            if( !wxIsNaN(gCog) && !wxIsNaN(gSog) )
+            {
                 double BRG;
                 BRG = g_pRouteMan->GetCurrentBrgToActivePoint();
-                VMG = gSog * cos( ( BRG - gCog ) * PI / 180. );
-                str_buf.Printf( _T("%6.2f"), VMG );
-            } else
+                VMG = gSog * cos( ( BRG - gCog ) * PI / 180. ) ;
+                str_buf.Printf( _T("%6.2f"), toUsrSpeed( VMG ) );
+            }
+            else
                 str_buf = _T("---");
 
             pVMG->SetAValue( str_buf );
 
-//    TTG
-            // In all cases, ttg/eta are declared invalid if VMG <= 0.
-
-            // If showing only "this leg", use VMG for calculation of ttg
-            wxString ttg_s;
-            if( ( VMG > 0. ) && !wxIsNaN(gCog) && !wxIsNaN(gSog) )
-
+            if( !m_bShowRouteTotal )
             {
-                float ttg_sec = ( rng / VMG ) * 3600.;
-                wxTimeSpan ttg_span( 0, 0, long( ttg_sec ), 0 );
-                ttg_s = ttg_span.Format();
-            } else
-                ttg_s = _T("---");
+                float nrng = g_pRouteMan->GetCurrentRngToActiveNormalArrival();
+                wxString srng;
+                double deltarng = fabs( rng - nrng );
+                if( ( deltarng > .01 ) && ( ( deltarng / rng ) > .10 ) && ( rng < 10.0 ) ) // show if there is more than 10% difference in ranges, etc...
+                {
+                    if( nrng < 10.0 )
+                        srng.Printf( _T("%5.2f/%5.2f"), toUsrDistance( rng ), toUsrDistance( nrng ) );
+                    else
+                        srng.Printf( _T("%5.1f/%5.1f"), toUsrDistance( rng ), toUsrDistance( nrng ) );
+                }
+                else
+                {
+                    if( rng < 10.0 )
+                        srng.Printf( _T("%6.2f"), toUsrDistance( rng ) );
+                    else
+                        srng.Printf( _T("%6.1f"), toUsrDistance( rng ) );
+                }
 
-            if( !m_bShowRouteTotal ) pTTG->SetAValue( ttg_s );
+                //RNG to the next WPT
+                pRNG->SetAValue( srng );
+                // XTE
+                str_buf.Printf( _T("%6.2f"), toUsrDistance( g_pRouteMan->GetCurrentXTEToActivePoint() ) );
+                pXTE->SetAValue( str_buf );
+                if( g_pRouteMan->GetXTEDir() < 0 )
+                    pXTE->SetALabel( wxString( _("XTE         L") ) );
+                else
+                    pXTE->SetALabel( wxString( _("XTE         R") ) );
+                // TTG
+                // In all cases, ttg/eta are declared invalid if VMG <= 0.
+                // If showing only "this leg", use VMG for calculation of ttg
+                wxString ttg_s;
+                if( ( VMG > 0. ) && !wxIsNaN(gCog) && !wxIsNaN(gSog) )
+                {
+                    float ttg_sec = ( rng / VMG ) * 3600.;
+                    wxTimeSpan ttg_span( 0, 0, long( ttg_sec ), 0 );
+                    ttg_s = ttg_span.Format();
+                }
+                else
+                    ttg_s = _T("---");
 
-            //    Remainder of route
-            float trng = rng;
-
-            Route *prt = g_pRouteMan->GetpActiveRoute();
-            wxRoutePointListNode *node = ( prt->pRoutePointList )->GetFirst();
-            RoutePoint *prp;
-
-            int n_addflag = 0;
-            while( node ) {
-                prp = node->GetData();
-                if( n_addflag ) trng += prp->m_seg_len;
-
-                if( prp == prt->m_pRouteActivePoint ) n_addflag++;
-
-                node = node->GetNext();
+                pTTG->SetAValue( ttg_s );
             }
-
-//                total rng
-            wxString strng;
-            if( trng < 10.0 ) strng.Printf( _T("%6.2f"), trng );
             else
-                strng.Printf( _T("%6.1f"), trng );
+            {
+                //    Remainder of route
+                float trng = rng;
 
-            if( m_bShowRouteTotal ) pRNG->SetAValue( strng );
+                Route *prt = g_pRouteMan->GetpActiveRoute();
+                wxRoutePointListNode *node = ( prt->pRoutePointList )->GetFirst();
+                RoutePoint *prp;
 
-//                total ttg
-            // If showing total route ttg/ETA, use gSog for calculation
+                int n_addflag = 0;
+                while( node )
+                {
+                    prp = node->GetData();
+                    if( n_addflag )
+                        trng += prp->m_seg_len;
 
-            wxString tttg_s;
-            wxTimeSpan tttg_span;
-            if( VMG > 0. ) {
-                float tttg_sec = ( trng / gSog ) * 3600.;
-                tttg_span = wxTimeSpan::Seconds( (long) tttg_sec );
-                tttg_s = tttg_span.Format();
-            } else {
-                tttg_span = wxTimeSpan::Seconds( 0 );
-                tttg_s = _T("---");
-            }
+                    if( prp == prt->m_pRouteActivePoint )
+                        n_addflag++;
 
-            if( m_bShowRouteTotal ) pTTG->SetAValue( tttg_s );
+                    node = node->GetNext();
+                }
 
-//                total ETA to be shown on XTE panel
-            if( m_bShowRouteTotal ) {
+    //                total rng
+                wxString strng;
+                if( trng < 10.0 )
+                    strng.Printf( _T("%6.2f"), toUsrDistance( trng ) );
+                else
+                    strng.Printf( _T("%6.1f"), toUsrDistance( trng ) );
+
+                pRNG->SetAValue( strng );
+
+                // total TTG
+                // If showing total route TTG/ETA, use gSog for calculation
+
+                wxString tttg_s;
+                wxTimeSpan tttg_span;
+                if( VMG > 0. )
+                {
+                    float tttg_sec = ( trng / gSog ) * 3600.;
+                    tttg_span = wxTimeSpan::Seconds( (long) tttg_sec );
+                    tttg_s = tttg_span.Format();
+                }
+                else
+                {
+                    tttg_span = wxTimeSpan::Seconds( 0 );
+                    tttg_s = _T("---");
+                }
+
+                pTTG->SetAValue( tttg_s );
+
+    //                total ETA to be shown on XTE panel
                 wxDateTime dtnow, eta;
                 dtnow.SetToCurrent();
                 eta = dtnow.Add( tttg_span );
                 wxString seta;
 
-                if( VMG > 0. ) seta = eta.Format( _T("%H:%M") );
+                if( VMG > 0. )
+                    seta = eta.Format( _T("%H:%M") );
                 else
                     seta = _T("---");
 

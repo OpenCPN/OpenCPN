@@ -61,6 +61,10 @@
 #include <setjmp.h>
 #endif
 
+#ifdef __WXGTK__
+#include <X11/Xatom.h>
+#endif
+
 #include "chart1.h"
 #include "chcanv.h"
 #include "chartdb.h"
@@ -98,6 +102,8 @@
 #include "pluginmanager.h"
 #include "AIS_Target_Data.h"
 #include "OCPNPlatform.h"
+#include "AISTargetQueryDialog.h"
+#include "S57QueryDialog.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -286,6 +292,10 @@ bool                      g_bPlayShipsBells;
 bool                      g_bFullscreenToolbar;
 bool                      g_bShowLayers;
 bool                      g_bTransparentToolbar;
+bool                      g_bTransparentToolbarInOpenGLOK;
+int                       g_nAutoHideToolbar;
+bool                      g_bAutoHideToolbar;
+
 bool                      g_bPermanentMOBIcon;
 bool                      g_bTempShowMenuBar;
 
@@ -341,6 +351,8 @@ int                       g_lastClientRectw;
 int                       g_lastClientRecth;
 double                    g_display_size_mm;
 double                    g_config_display_size_mm;
+int                       g_GUIScaleFactor;
+int                       g_ChartScaleFactor;
 
 #ifdef USE_S57
 s52plib                   *ps52plib;
@@ -593,6 +605,7 @@ int                       g_MemFootMB;
 ArrayOfInts               g_quilt_noshow_index_array;
 
 wxStaticBitmap            *g_pStatBoxTool;
+bool                      g_bShowStatusBar;
 
 bool                      g_bquiting;
 int                       g_BSBImgDebug;
@@ -783,38 +796,6 @@ wxString newPrivateFileName(wxString home_locn, const char *name, const char *wi
     }
     return filePathAndName;
 }
-
-#ifdef __WXMSW__
-bool GetWindowsMonitorSize( int *w, int *h );
-#endif
-
-    
-double  GetDisplaySizeMM()
-{
-    double ret = wxGetDisplaySizeMM().GetWidth();
-    
-#ifdef __WXMSW__    
-    int w,h;
-    if( GetWindowsMonitorSize( &w, &h) ){
-        if(w > 100)             // sanity check
-            ret = w;
-    }
-#endif
-#ifdef __WXOSX__
-    ret = GetMacMonitorSize();
-#endif
-
-#ifdef __OCPN__ANDROID__
-    ret = GetAndroidDisplaySize();
-#endif    
-        
-    wxString msg;
-    msg.Printf(_T("Detected display size (horizontal): %d mm"), (int) ret);
-    wxLogMessage(msg);
-    
-    return ret;
-}
- 
 
 
 // `Main program' equivalent, creating windows and returning main app frame
@@ -1012,6 +993,7 @@ void LoadS57()
 //      Otherwise, default to PrivateDataDir
     if( g_SENCPrefix.IsEmpty() ) {
         g_SENCPrefix = g_Platform->GetPrivateDataDir();
+        appendOSDirSlash(&g_SENCPrefix);
         g_SENCPrefix.Append( _T("SENC") );
     }
 
@@ -1055,7 +1037,7 @@ void LoadS57()
     if( !ps52plib->m_bOK ) {
         delete ps52plib;
 
-        wxStandardPaths& std_path = *dynamic_cast<wxStandardPaths*>(&wxApp().GetTraits()->GetStandardPaths());
+        wxStandardPaths& std_path = g_Platform->GetStdPaths();
 
         wxString look_data_dir;
         look_data_dir.Append( std_path.GetUserDataDir() );
@@ -1123,6 +1105,42 @@ void LoadS57()
         delete ps52plib;
         ps52plib = NULL;
     }
+}
+#endif
+
+#ifdef __WXGTK__
+static char *get_X11_property (Display *disp, Window win,
+                            Atom xa_prop_type, gchar *prop_name) {
+    Atom xa_prop_name;
+    Atom xa_ret_type;
+    int ret_format;
+    unsigned long ret_nitems;
+    unsigned long ret_bytes_after;
+    unsigned long tmp_size;
+    unsigned char *ret_prop;
+    char *ret;
+
+    xa_prop_name = XInternAtom(disp, prop_name, False);
+
+    if (XGetWindowProperty(disp, win, xa_prop_name, 0, 1024, False,
+                           xa_prop_type, &xa_ret_type, &ret_format,
+                           &ret_nitems, &ret_bytes_after, &ret_prop) != Success) {
+        return NULL;
+    }
+
+    if (xa_ret_type != xa_prop_type) {
+        XFree(ret_prop);
+        return NULL;
+    }
+
+    /* null terminate the result to make string handling easier */
+    tmp_size = (ret_format / 8) * ret_nitems;
+    ret = (char*)malloc(tmp_size + 1);
+    memcpy(ret, ret_prop, tmp_size);
+    ret[tmp_size] = '\0';
+
+    XFree(ret_prop);
+    return ret;
 }
 #endif
 
@@ -1350,8 +1368,9 @@ bool MyApp::OnInit()
         exit( EXIT_FAILURE );
     }
 
-    g_display_size_mm = wxMax(100, GetDisplaySizeMM());
-
+    g_display_size_mm = wxMax(100, g_Platform->GetDisplaySizeMM());
+    double dsmm = g_display_size_mm;
+    
     //      Init the WayPoint Manager (Must be after UI Style init).
     pWayPointMan = NULL;
 
@@ -1359,6 +1378,12 @@ bool MyApp::OnInit()
     MyConfig *pCF = new MyConfig( wxString( _T("") ), wxString( _T("") ), g_Platform->GetConfigFileName() );
     pConfig = (MyConfig *) pCF;
     pConfig->LoadMyConfig();
+
+    if(fabs(dsmm - g_display_size_mm) > 1){
+        wxString msg;
+        msg.Printf(_T("Display size (horizontal) config override: %d mm"), (int) g_display_size_mm);
+        wxLogMessage(msg);
+    }
 
     if(g_btouch){
         int SelectPixelRadius = 50;
@@ -1473,9 +1498,9 @@ bool MyApp::OnInit()
 
     g_config_version_string = vs;
 
-    //  Show deferred log restart message, if it exists.
+    //  log deferred log restart message, if it exists.
     if( !g_Platform->GetLargeLogMessage().IsEmpty() )
-        OCPNMessageBox ( NULL, g_Platform->GetLargeLogMessage(), wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK, 5 );
+        wxLogMessage( g_Platform->GetLargeLogMessage() );
 
     //  Validate OpenGL functionality, if selected
 #ifdef ocpnUSE_GL
@@ -1494,6 +1519,34 @@ bool MyApp::OnInit()
 
 #else
     g_bdisable_opengl = true;;
+#endif
+
+    // Determine if a transparent toolbar is possible under linux with opengl
+#ifdef __WXGTK__
+    g_bTransparentToolbarInOpenGLOK = false;
+    if(!g_bdisable_opengl) {
+        Display *disp = XOpenDisplay(NULL);
+        Window *sup_window;
+        if ((sup_window = (Window *)get_X11_property(disp, DefaultRootWindow(disp),
+                                                 XA_WINDOW, "_NET_SUPPORTING_WM_CHECK")) ||
+            (sup_window = (Window *)get_X11_property(disp, DefaultRootWindow(disp),
+                                                 XA_CARDINAL, "_WIN_SUPPORTING_WM_CHECK"))) {
+            /* WM_NAME */
+            char *wm_name;
+            if ((wm_name = get_X11_property(disp, *sup_window,
+                                        XInternAtom(disp, "UTF8_STRING", False), "_NET_WM_NAME")) ||
+                (wm_name = get_X11_property(disp, *sup_window,
+                                        XA_STRING, "_NET_WM_NAME"))) {
+                // we know it works in xfce4, add other checks as we can validate them
+                if(strstr(wm_name, "Xfwm4"))
+                    g_bTransparentToolbarInOpenGLOK = true;
+
+                free(wm_name);
+            }
+            free(sup_window);
+        }
+        XCloseDisplay(disp);
+    }
 #endif
 
 // Set default color scheme
@@ -1548,31 +1601,8 @@ bool MyApp::OnInit()
     pWorldMapLocation->Prepend( g_Platform->GetSharedDataDir() );
     pWorldMapLocation->Append( wxFileName::GetPathSeparator() );
 
-    //  Override some config options for initial user startup with empty config file
-    if( b_novicemode ) {
-        g_bShowOutlines = true;
-
-        g_CPAMax_NM = 20.;
-        g_CPAWarn_NM = 2.;
-        g_TCPA_Max = 30.;
-        g_bMarkLost = true;
-        ;
-        g_MarkLost_Mins = 8;
-        g_bRemoveLost = true;
-        g_RemoveLost_Mins = 10;
-        g_bShowCOG = true;
-        g_ShowCOG_Mins = 6;
-        g_bShowMoored = true;
-        g_ShowMoored_Kts = 0.2;
-        g_bTrackDaily = false;
-        g_PlanSpeed = 6.;
-        g_bFullScreenQuilt = true;
-        g_bQuiltEnable = true;
-        g_bskew_comp = false;
-        g_bShowAreaNotices = false;
-        g_bDrawAISSize = false;
-        g_bShowAISName = false;
-    }
+    if( b_novicemode )
+        g_Platform->SetDefaultOptions();
 
     //  Check the global Tide/Current data source array
     //  If empty, preset one default (US) Ascii data source
@@ -1794,31 +1824,6 @@ bool MyApp::OnInit()
     //  Yield to pick up the OnSize() calls that result from Maximize()
     Yield();
 
-    wxString perspective;
-    pConfig->SetPath( _T ( "/AUI" ) );
-    pConfig->Read( _T ( "AUIPerspective" ), &perspective );
-
-    // Make sure the perspective saved in the config file is "reasonable"
-    // In particular, the perspective should have an entry for every
-    // windows added to the AUI manager so far.
-    // If any are not found, then use the default layout
-
-    bool bno_load = false;
-    wxAuiPaneInfoArray pane_array_val = g_pauimgr->GetAllPanes();
-
-    for( unsigned int i = 0; i < pane_array_val.GetCount(); i++ ) {
-        wxAuiPaneInfo pane = pane_array_val.Item( i );
-        if( perspective.Find( pane.name ) == wxNOT_FOUND ) {
-            bno_load = true;
-            break;
-        }
-    }
-
-    if( !bno_load ) g_pauimgr->LoadPerspective( perspective, false );
-
-
-    g_pauimgr->Update();
-    
     bool b_SetInitialPoint = false;
 
     //   Build the initial chart dir array
@@ -2011,13 +2016,8 @@ extern ocpnGLOptions g_GLOptions;
     if( g_bTrackCarryOver )
         g_bDeferredStartTrack = true;
 
-//    Re-enable anchor watches if set in config file
-    if( !g_AW1GUID.IsEmpty() ) {
-        pAnchorWatchPoint1 = pWayPointMan->FindRoutePointByGUID( g_AW1GUID );
-    }
-    if( !g_AW2GUID.IsEmpty() ) {
-        pAnchorWatchPoint2 = pWayPointMan->FindRoutePointByGUID( g_AW2GUID );
-    }
+    pAnchorWatchPoint1 = NULL;
+    pAnchorWatchPoint2 = NULL;
 
     Yield();
 
@@ -2074,6 +2074,12 @@ extern ocpnGLOptions g_GLOptions;
 
     stats->Show( g_bShowChartBar );
 
+#ifdef __OCPN__ANDROID__
+    //  We need a resize to pick up height adjustment after building android ActionBar
+    if(pConfig->m_bShowMenuBar)
+        gFrame->SetSize(getAndroidDisplayDimensions());
+#endif    
+    
     gFrame->Raise();
     cc1->Enable();
     cc1->SetFocus();
@@ -2083,8 +2089,8 @@ extern ocpnGLOptions g_GLOptions;
     g_FloatingCompassDialog->Raise();
 #endif
     
-    // Perform delayed initialization after 50 milliseconds
-    gFrame->InitTimer.Start( 50, wxTIMER_CONTINUOUS );
+    // Start delayed initialization chain after 100 milliseconds
+    gFrame->InitTimer.Start( 100, wxTIMER_CONTINUOUS );
 
     wxLogMessage( wxString::Format(_("OpenCPN Initialized in %ld ms."), sw.Time() ) );
 
@@ -2289,7 +2295,10 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
 //wxCAPTION | wxSYSTEM_MENU | wxRESIZE_BORDER
 {
     m_ulLastNEMATicktime = 0;
+    
     m_pStatusBar = NULL;
+    m_StatusBarFieldCount = STAT_FIELD_COUNT;
+    
     m_pMenuBar = NULL;
     g_toolbar = NULL;
     m_toolbar_scale_tools_shown = false;
@@ -2546,10 +2555,6 @@ void MyFrame::ApplyGlobalColorSchemetoStatusBar( void )
         m_pStatusBar->SetBackgroundColour(GetGlobalColor(_T("UIBDR")));    //UINFF
         m_pStatusBar->ClearBackground();
 
-        int styles[] = { wxSB_FLAT, wxSB_FLAT, wxSB_FLAT, wxSB_FLAT, wxSB_FLAT, wxSB_FLAT };
-        m_pStatusBar->SetStatusStyles( m_StatusBarFieldCount, styles );
-        int widths[] = { -6, -5, -5, -3, -4 };
-        m_pStatusBar->SetStatusWidths( m_StatusBarFieldCount, widths );
     }
 }
 
@@ -2891,6 +2896,8 @@ void MyFrame::RequestNewToolbar()
         g_FloatingToolbarDialog->RePosition();
         g_FloatingToolbarDialog->SetColorScheme( global_color_scheme );
         g_FloatingToolbarDialog->Show( b_reshow );
+
+        gFrame->Raise(); // ensure keyboard focus to the chart window (needed by gtk+)
     }
     
 #ifdef __OCPN__ANDROID__
@@ -2956,11 +2963,14 @@ void MyFrame::SetToolbarScale()
     g_toolbar_scalefactor = 1.0;
     if(g_bresponsive ){
         //      Adjust the scale factor so that the basic tool size is xx millimetres, assumed square
-        float target_size = 9.0;                // mm
+//        float target_size = 9.0;                // mm
 
-        float basic_tool_size_mm = style_tool_size.x / cc1->GetPixPerMM();
-        g_toolbar_scalefactor =  target_size / basic_tool_size_mm;
-        g_toolbar_scalefactor = wxMax(g_toolbar_scalefactor, 1.0);
+//        float basic_tool_size_mm = style_tool_size.x / cc1->GetPixPerMM();
+//        g_toolbar_scalefactor =  target_size / basic_tool_size_mm;
+
+        //Adjust the scale factor using the global GUI scale parameter
+        g_toolbar_scalefactor =  exp( g_GUIScaleFactor * 0.182 );       //  empirical number, larger is larger
+        g_toolbar_scalefactor = wxMax(g_toolbar_scalefactor, 1.0);      //  Never smaller than 1.0
 
         //  Round to the nearest "quarter", to avoid rendering artifacts
         g_toolbar_scalefactor = wxRound( g_toolbar_scalefactor * 4.0 )/ 4.0;
@@ -3013,7 +3023,6 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 
     g_bquiting = true;
 
-#ifndef __OCPN__ANDROID__    
 #ifdef ocpnUSE_GL
     // cancel compression jobs
     if(g_bopengl && g_CompressorPool){
@@ -3031,7 +3040,6 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         cc1->Update();
         wxYield();
     }
-#endif
 
     //   Save the saved Screen Brightness
     RestoreScreenBrightness();
@@ -3160,13 +3168,6 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     if( g_FloatingCompassDialog ) g_FloatingCompassDialog->Destroy();
     g_FloatingCompassDialog = NULL;
 
-    //      Delete all open charts in the cache
-    cc1->EnablePaint(false);
-    if( ChartData )
-        ChartData->PurgeCache();
-
-
-
 
 #ifndef __OCPN__ANDROID__
     SetStatusBar( NULL );
@@ -3233,35 +3234,44 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     g_FloatingToolbarDialog = NULL;
     g_bTempShowMenuBar = false;
     
-    this->Destroy();
-    
-    gFrame = NULL;
 
-#ifndef __OCPN__ANDROID__    
     #define THREAD_WAIT_SECONDS  5
 #ifdef ocpnUSE_GL
     // The last thing we do is finish the compression threads.
     // This way the main window is already invisible and to the user
     // it appears to have finished rather than hanging for several seconds
     // while the compression threads exit
-    if(g_bopengl && g_CompressorPool){
+    if(g_bopengl && g_CompressorPool && g_CompressorPool->GetRunningJobCount()){
+        
+        wxLogMessage(_T("Starting compressor pool drain"));
         wxDateTime now = wxDateTime::Now();
         time_t stall = now.GetTicks();
         time_t end = stall + THREAD_WAIT_SECONDS;
 
+        int n_comploop = 0;
         while(stall < end ) {
             wxDateTime later = wxDateTime::Now();
             stall = later.GetTicks();
 
+            wxString msg;
+            msg.Printf(_T("Time: %d  Job Count: %d"), n_comploop, g_CompressorPool->GetRunningJobCount());
+            wxLogMessage(msg);
             if(!g_CompressorPool->GetRunningJobCount())
                 break;
             wxYield();
             wxSleep(1);
         }
+    
+        wxString fmsg;
+        fmsg.Printf(_T("Finished compressor pool drain..Time: %d  Job Count: %d"),
+                    n_comploop, g_CompressorPool->GetRunningJobCount());
+        wxLogMessage(fmsg);
     }
-#endif
+     
 #endif
 
+    this->Destroy();
+    gFrame = NULL;
 
 #ifdef __OCPN__ANDROID__
     wxTheApp->OnExit();
@@ -3308,16 +3318,40 @@ void MyFrame::ProcessCanvasResize( void )
 }
 
 
+int timer_sequence;
 void MyFrame::TriggerResize(wxSize sz)
 {
     m_newsize = sz;
+    
+    timer_sequence = 0;
     m_resizeTimer.Start(10, wxTIMER_ONE_SHOT);
 }
     
 
 void MyFrame::OnResizeTimer(wxTimerEvent &event)
 {
-    SetSize(m_newsize);
+    if(timer_sequence == 0){
+    //  On QT, we need to clear the status bar item texts to prevent the status bar from
+    //  growing the parent frame due to unexpected width changes.
+        if( m_pStatusBar != NULL ){
+            int widths[] = { 2,2,2,2,2 };
+           m_pStatusBar->SetStatusWidths( m_StatusBarFieldCount, widths );
+        
+            for(int i=0 ; i <  m_pStatusBar->GetFieldsCount() ; i++){
+                m_pStatusBar->SetStatusText(_T(""), i);
+            }
+        }
+            
+        timer_sequence++;
+        m_resizeTimer.Start(10, wxTIMER_ONE_SHOT);
+        return;
+    }
+    
+ 
+ 
+    if(timer_sequence == 1)
+        SetSize(m_newsize);
+    
 }
 
 
@@ -3333,6 +3367,33 @@ void MyFrame::ODoSetSize( void )
     GetClientSize( &x, &y );
     
 //      Resize the children
+ 
+        if( m_pStatusBar != NULL ) {
+            if(m_StatusBarFieldCount){
+                
+                //  If the status bar layout is "complex", meaning more than two columns,
+                //  then use custom crafted relative widths for the fields.
+                //  Otherwise, just split the frame client width into equal spaces
+                
+                if(m_StatusBarFieldCount > 2){
+                    int widths[] = { -6, -5, -5, -3, -4 };
+                    m_pStatusBar->SetStatusWidths( m_StatusBarFieldCount, widths );
+                }
+                else{
+                    int cwidth = x * 9 / 10;
+                    int widths[] = { 100, 100 };
+                    widths[0] = cwidth / m_StatusBarFieldCount;
+                    widths[1] = cwidth / m_StatusBarFieldCount;
+                    m_pStatusBar->SetStatusWidths( m_StatusBarFieldCount, widths );
+                }
+                
+                int styles[] = { wxSB_FLAT, wxSB_FLAT, wxSB_FLAT, wxSB_FLAT, wxSB_FLAT, wxSB_FLAT };
+                m_pStatusBar->SetStatusStyles( m_StatusBarFieldCount, styles );
+                
+            }
+        }
+        
+    
 
     if( m_pStatusBar ) {
         //  Maybe resize the font so the text fits in the boxes
@@ -3360,8 +3421,13 @@ void MyFrame::ODoSetSize( void )
         font_size = wxMin( font_size, max_font_size );  // maximum to fit in the statusbar boxes
         font_size = wxMax( font_size, min_font_size );  // minimum to stop it being unreadable
 
+#ifdef __OCPN__ANDROID__
+        font_size = templateFont->GetPointSize();
+#endif
+        
+        
         wxFont *pstat_font = wxTheFontList->FindOrCreateFont( font_size,
-              wxFONTFAMILY_SWISS, templateFont->GetStyle(), templateFont->GetWeight(), false,
+              wxFONTFAMILY_DEFAULT, templateFont->GetStyle(), templateFont->GetWeight(), false,
               templateFont->GetFaceName() );
 
         m_pStatusBar->SetFont( *pstat_font );
@@ -3461,36 +3527,47 @@ void MyFrame::UpdateAllFonts()
     }
 
     //  Close and destroy any persistent dialogs, so that new fonts will be utilized
-    if( g_pais_query_dialog_active ) {
-        g_pais_query_dialog_active->Destroy();
-        g_pais_query_dialog_active = NULL;
-    }
-
-    if( pRoutePropDialog ) {
-        pRoutePropDialog->Destroy();
-        pRoutePropDialog = NULL;
-    }
-
-    if( pTrackPropDialog ) {
-        pTrackPropDialog->Destroy();
-        pTrackPropDialog = NULL;
-    }
-
-    if( pMarkPropDialog ) {
-        pMarkPropDialog->Destroy();
-        pMarkPropDialog = NULL;
-    }
-
-    if( g_pObjectQueryDialog ) {
-        g_pObjectQueryDialog->Destroy();
-        g_pObjectQueryDialog = NULL;
-    }
-
-
+    DestroyPersistentDialogs();
+    
     if( pWayPointMan ) pWayPointMan->ClearRoutePointFonts();
 
     cc1->Refresh();
 }
+
+void MyFrame::DestroyPersistentDialogs()
+{
+    if( g_pais_query_dialog_active ) {
+        g_pais_query_dialog_active->Hide();
+        g_pais_query_dialog_active->Destroy();
+        g_pais_query_dialog_active = NULL;
+    }
+    
+    if( pRoutePropDialog ) {
+        pRoutePropDialog->Hide();
+        pRoutePropDialog->Destroy();
+        pRoutePropDialog = NULL;
+    }
+    
+    if( pTrackPropDialog ) {
+        pTrackPropDialog->Hide();
+        pTrackPropDialog->Destroy();
+        pTrackPropDialog = NULL;
+    }
+    
+    if( pMarkPropDialog ) {
+        pMarkPropDialog->Hide();
+        pMarkPropDialog->Destroy();
+        pMarkPropDialog = NULL;
+    }
+    
+    if( g_pObjectQueryDialog ) {
+        g_pObjectQueryDialog->Hide();
+        g_pObjectQueryDialog->Destroy();
+        g_pObjectQueryDialog = NULL;
+    }
+    
+}
+
 
 void MyFrame::SetGroupIndex( int index )
 {
@@ -4396,13 +4473,13 @@ void MyFrame::SetToolbarItemBitmaps( int tool_id, wxBitmap *bmp, wxBitmap *bmpRo
 void MyFrame::ApplyGlobalSettings( bool bFlyingUpdate, bool bnewtoolbar )
 {
     //             ShowDebugWindow as a wxStatusBar
-    m_StatusBarFieldCount = 5;
+    m_StatusBarFieldCount = STAT_FIELD_COUNT;
 
 #ifdef __WXMSW__
     UseNativeStatusBar( false );              // better for MSW, undocumented in frame.cpp
 #endif
 
-    if( pConfig->m_bShowStatusBar ) {
+    if( g_bShowStatusBar ) {
         if( !m_pStatusBar ) {
             m_pStatusBar = CreateStatusBar( m_StatusBarFieldCount, 0 );   // No wxST_SIZEGRIP needed
             ApplyGlobalColorSchemetoStatusBar();
@@ -4466,7 +4543,9 @@ void MyFrame::ApplyGlobalSettings( bool bFlyingUpdate, bool bnewtoolbar )
 
 wxString _menuText( wxString name, wxString shortcut ) {
     wxString menutext;
-    menutext << name << _T("\t") << shortcut;
+    menutext << name;
+    if(!g_bresponsive)
+        menutext << _T("\t") << shortcut;
     return menutext;
 }
 
@@ -4650,6 +4729,20 @@ void MyFrame::SurfaceToolbar( void )
     gFrame->Raise();
 }
 
+void MyFrame::ToggleToolbar( bool b_smooth )
+{
+    if( g_FloatingToolbarDialog ) {
+        if( g_FloatingToolbarDialog->IsShown() ){
+            SubmergeToolbar();
+        }
+        else{
+            SurfaceToolbar();
+            g_FloatingToolbarDialog->Raise();
+        }
+    }
+}
+        
+
 void MyFrame::JumpToPosition( double lat, double lon, double scale )
 {
     vLat = lat;
@@ -4735,23 +4828,9 @@ int MyFrame::DoOptionsDialog()
         } else {
             g_options->Center();
         }
-    }
-    else {
-
-        wxSize canvas_size = cc1->GetSize();
-        wxPoint canvas_pos = cc1->GetPosition();
-        wxSize fitted_size = g_options->GetSize();;
-
-        fitted_size.x = wxMin(fitted_size.x, canvas_size.x);
-        fitted_size.y = wxMin(fitted_size.y, canvas_size.y);
-
-        g_options->SetSize( fitted_size );
-        int xp = (canvas_size.x - fitted_size.x)/2;
-        int yp = (canvas_size.y - fitted_size.y)/2;
-
-        wxPoint xxp = ClientToScreen(canvas_pos);
-        g_options->Move(xxp.x + xp, xxp.y + yp);
-
+        if( options_lastWindowSize != wxSize(0,0) ) {
+            g_options->SetSize( options_lastWindowSize );
+        }
     }
 
     if( g_FloatingToolbarDialog)
@@ -4818,6 +4897,9 @@ int MyFrame::DoOptionsDialog()
     delete g_options;
     g_options = NULL;
 
+    if (NMEALogWindow::Get().Active())
+        NMEALogWindow::Get().GetTTYWindow()->Raise();
+    
     return ret_val;
 }
 
@@ -4922,7 +5004,7 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
         g_display_size_mm = g_config_display_size_mm;
     }
     else{
-        g_display_size_mm = wxMax(100, GetDisplaySizeMM());
+        g_display_size_mm = wxMax(100, g_Platform->GetDisplaySizeMM());
     }
         
     cc1->SetDisplaySizeMM( g_display_size_mm );
@@ -5449,6 +5531,14 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
         pWayPointMan = new WayPointman();
         pConfig->LoadNavObjects();
         
+        //    Re-enable anchor watches if set in config file
+        if( !g_AW1GUID.IsEmpty() ) {
+            pAnchorWatchPoint1 = pWayPointMan->FindRoutePointByGUID( g_AW1GUID );
+        }
+        if( !g_AW2GUID.IsEmpty() ) {
+            pAnchorWatchPoint2 = pWayPointMan->FindRoutePointByGUID( g_AW2GUID );
+        }
+        
         // Import Layer-wise any .gpx files from /Layers directory
         wxString layerdir = g_Platform->GetPrivateDataDir();
         appendOSDirSlash( &layerdir );
@@ -5513,6 +5603,31 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
 
         RequestNewToolbar();
 
+        wxString perspective;
+        pConfig->SetPath( _T ( "/AUI" ) );
+        pConfig->Read( _T ( "AUIPerspective" ), &perspective );
+        
+        // Make sure the perspective saved in the config file is "reasonable"
+        // In particular, the perspective should have an entry for every
+        // windows added to the AUI manager so far.
+        // If any are not found, then use the default layout
+        
+        bool bno_load = false;
+        wxAuiPaneInfoArray pane_array_val = g_pauimgr->GetAllPanes();
+        
+        for( unsigned int i = 0; i < pane_array_val.GetCount(); i++ ) {
+            wxAuiPaneInfo pane = pane_array_val.Item( i );
+            if( perspective.Find( pane.name ) == wxNOT_FOUND ) {
+                bno_load = true;
+                break;
+            }
+        }
+        
+        if( !bno_load )
+            g_pauimgr->LoadPerspective( perspective, false );
+        
+        g_pauimgr->Update();
+        
         //   Notify all the AUI PlugIns so that they may syncronize with the Perspective
         g_pi_manager->NotifyAuiPlugIns();
         g_pi_manager->ShowDeferredBlacklistMessages(); //  Give the use dialog on any blacklisted PlugIns
@@ -5521,8 +5636,8 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
         InitTimer.Stop(); // Initialization complete
     }
 
-    cc1->InvalidateGL();
-    Refresh();
+//    cc1->InvalidateGL();
+    cc1->Refresh( true );
 }
 
 //    Manage the application memory footprint on a periodic schedule
@@ -5819,7 +5934,8 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
         if( d >= 0.0 ) toofar = ( dist * 1852. > d );
         if( d < 0.0 ) tooclose = ( dist * 1852 < -d );
 
-        if( tooclose || toofar ) AnchorAlertOn1 = true;
+        if( tooclose || toofar )
+            AnchorAlertOn1 = true;
         else
             AnchorAlertOn1 = false;
     } else
@@ -8358,7 +8474,9 @@ void MyFrame::PostProcessNNEA( bool pos_valid, const wxString &sfixtime )
         s1 += toSDMM( 1, gLat );
         s1 += _T("   ");
         s1 += toSDMM( 2, gLon );
-        SetStatusText( s1, STAT_FIELD_TICK );
+
+        if(STAT_FIELD_TICK >= 0 )
+            SetStatusText( s1, STAT_FIELD_TICK );
 
         wxString sogcog;
         if( wxIsNaN(gSog) ) sogcog.Printf( _T("SOG --- ") + getUsrSpeedUnit() + _T("  ") );
@@ -9103,6 +9221,7 @@ wxArrayString *EnumerateSerialPorts( void )
        free(filelist[ind]);
       }
 
+      free(filelist);
 
 //        We try to add a few more, arbitrarily, for those systems that have fixed, traditional COM ports
 
@@ -10134,11 +10253,13 @@ OCPNMessageDialog::OCPNMessageDialog( wxWindow *parent,
 
 void OCPNMessageDialog::OnYes(wxCommandEvent& WXUNUSED(event))
 {
+    SetReturnCode(wxID_YES);
     EndModal( wxID_YES );
 }
 
 void OCPNMessageDialog::OnNo(wxCommandEvent& WXUNUSED(event))
 {
+    SetReturnCode(wxID_NO);
     EndModal( wxID_NO );
 }
 
@@ -10148,12 +10269,14 @@ void OCPNMessageDialog::OnCancel(wxCommandEvent& WXUNUSED(event))
     // only YES and NO are specified.
     if ( (m_style & wxYES_NO) != wxYES_NO || (m_style & wxCANCEL) )
     {
+        SetReturnCode(wxID_CANCEL);
         EndModal( wxID_CANCEL );
     }
 }
 
 void OCPNMessageDialog::OnClose( wxCloseEvent& event )
 {
+    SetReturnCode(wxID_CANCEL);
     EndModal( wxID_CANCEL );
 }
 
@@ -10191,12 +10314,14 @@ TimedMessageBox::TimedMessageBox(wxWindow* parent, const wxString& message,
         m_timer.Start( timeout_sec * 1000, wxTIMER_ONE_SHOT );
 
     dlg = new OCPNMessageDialog( parent, message, caption, style, pos );
-    int ret = dlg->ShowModal();
+    dlg->ShowModal();
 
+    int ret= dlg->GetReturnCode();
+    
     //  Not sure why we need this, maybe on wx3?
-    if((style == wxYES_NO) && (ret == wxID_OK))
+    if( ((style & wxYES_NO) == wxYES_NO) && (ret == wxID_OK))
         ret = wxID_YES;
-
+    
     delete dlg;
     dlg = NULL;
 
@@ -10450,8 +10575,11 @@ wxFont *GetOCPNScaledFont( wxString item, int default_size )
         double scaled_font_size = dFont->GetPointSize();
 
         if( cc1) {
-            double min_scaled_font_size = 3 * cc1->GetPixPerMM();
+            
+            double points_per_mm  = g_Platform->getFontPointsperPixel() * cc1->GetPixPerMM();
+            double min_scaled_font_size = 3 * points_per_mm;    // smaller than 3 mm is unreadable
             int nscaled_font_size = wxMax( wxRound(scaled_font_size), min_scaled_font_size );
+
             if(req_size >= nscaled_font_size)
                 return dFont;
             else{
@@ -10903,136 +11031,6 @@ void SearchPnpKeyW9x(HKEY hkPnp, BOOL bUsbDevice,
 
 #endif
 
-#ifdef __WXMSW__
-
-#define NAME_SIZE 128
-
-const GUID GUID_CLASS_MONITOR = {0x4d36e96e, 0xe325, 0x11ce, 0xbf, 0xc1, 0x08, 0x00, 0x2b, 0xe1, 0x03, 0x18};
-
-// Assumes hDevRegKey is valid
-bool GetMonitorSizeFromEDID(const HKEY hDevRegKey, int *WidthMm, int *HeightMm)
-{
-    DWORD dwType, AcutalValueNameLength = NAME_SIZE;
-    TCHAR valueName[NAME_SIZE];
-    
-    BYTE EDIDdata[1024];
-    DWORD edidsize=sizeof(EDIDdata);
-    
-    for (LONG i = 0, retValue = ERROR_SUCCESS; retValue != ERROR_NO_MORE_ITEMS; ++i)
-    {
-        retValue = RegEnumValue ( hDevRegKey, i, &valueName[0],
-        &AcutalValueNameLength, NULL, &dwType,
-        EDIDdata, // buffer
-        &edidsize); // buffer size
-        
-        if (retValue != ERROR_SUCCESS || 0 != _tcscmp(valueName,_T("EDID")))
-            continue;
-        
-        *WidthMm  = ((EDIDdata[68] & 0xF0) << 4) + EDIDdata[66];
-        *HeightMm = ((EDIDdata[68] & 0x0F) << 8) + EDIDdata[67];
-        
-        return true; // valid EDID found
-    }
-        
-    return false; // EDID not found
-}
-        
-bool GetSizeForDevID(wxString &TargetDevID, int *WidthMm, int *HeightMm)
-        {
-            HDEVINFO devInfo = SetupDiGetClassDevsEx(
-                &GUID_CLASS_MONITOR, //class GUID
-                NULL, //enumerator
-                NULL, //HWND
-                DIGCF_PRESENT, // Flags //DIGCF_ALLCLASSES|
-                NULL, // device info, create a new one.
-                NULL, // machine name, local machine
-                NULL);// reserved
-            
-            if (NULL == devInfo)
-            return false;
-            
-            bool bRes = false;
-            
-            for (ULONG i=0; ERROR_NO_MORE_ITEMS != GetLastError(); ++i)
-            {
-                SP_DEVINFO_DATA devInfoData;
-                memset(&devInfoData,0,sizeof(devInfoData));
-                devInfoData.cbSize = sizeof(devInfoData);
-                
-                if (SetupDiEnumDeviceInfo(devInfo,i,&devInfoData))
-                {
-                    wchar_t    Instance[80];
-                    SetupDiGetDeviceInstanceId(devInfo, &devInfoData, Instance, MAX_PATH, NULL);
-                    wxString instance(Instance);
-                    if(instance.Upper().Find( TargetDevID.Upper() ) == wxNOT_FOUND )
-                        continue;
-                    
-                    HKEY hDevRegKey = SetupDiOpenDevRegKey(devInfo,&devInfoData,
-                    DICS_FLAG_GLOBAL, 0, DIREG_DEV, KEY_READ);
-                    
-                    if(!hDevRegKey || (hDevRegKey == INVALID_HANDLE_VALUE))
-                        continue;
-                    
-                    bRes = GetMonitorSizeFromEDID(hDevRegKey, WidthMm, HeightMm);
-                    
-                    RegCloseKey(hDevRegKey);
-                }
-            }
-            SetupDiDestroyDeviceInfoList(devInfo);
-            return bRes;
-        }
-        
-bool GetWindowsMonitorSize( int *width, int *height)
-{
-            int WidthMm = 0;
-            int HeightMm = 0;
-            
-            DISPLAY_DEVICE dd;
-            dd.cb = sizeof(dd);
-            DWORD dev = 0; // device index
-            int id = 1; // monitor number, as used by Display Properties > Settings
-            
-            wxString DeviceID;
-            bool bFoundDevice = false;
-            while (EnumDisplayDevices(0, dev, &dd, 0) && !bFoundDevice)
-            {
-                DISPLAY_DEVICE ddMon;
-                ZeroMemory(&ddMon, sizeof(ddMon));
-                ddMon.cb = sizeof(ddMon);
-                DWORD devMon = 0;
-                
-                while (EnumDisplayDevices(dd.DeviceName, devMon, &ddMon, 0) && !bFoundDevice)
-                {
-                    if (ddMon.StateFlags & DISPLAY_DEVICE_ACTIVE &&
-                        !(ddMon.StateFlags & DISPLAY_DEVICE_MIRRORING_DRIVER))
-                        {
-                            DeviceID = wxString(ddMon.DeviceID, wxConvUTF8);
-                            DeviceID = DeviceID.Mid (8);
-                            DeviceID = DeviceID.Mid (0, DeviceID.Find ( '\\' ));
-                            
-                            bFoundDevice = GetSizeForDevID(DeviceID, &WidthMm, &HeightMm);
-                        }
-                        devMon++;
-                    
-                    ZeroMemory(&ddMon, sizeof(ddMon));
-                    ddMon.cb = sizeof(ddMon);
-                }
-                
-                ZeroMemory(&dd, sizeof(dd));
-                dd.cb = sizeof(dd);
-                dev++;
-            }
-            
-            if(width)
-                *width = WidthMm;
-            if(height)
-                *height = HeightMm;
-            
-            return bFoundDevice;
-}
-        
-
-#endif
 
 bool ReloadLocale()
 {

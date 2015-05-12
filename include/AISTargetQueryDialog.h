@@ -30,6 +30,7 @@
 #include "ocpn_types.h"
 
 class wxHtmlWindow;
+class AIS_Target_Data;
 
 class AISTargetQueryDialog: public wxDialog
 {
@@ -64,13 +65,17 @@ public:
       void OnIdWptCreateClick( wxCommandEvent& event );
       void OnIdTrkCreateClick( wxCommandEvent& event );
       void OnMove( wxMoveEvent& event );
-      void SetBestSize( void );
-      
+      void AdjustBestSize(AIS_Target_Data *td);
       void CreateControls();
-
+      void RenderHTMLQuery(AIS_Target_Data *td);
+      
       void SetText(const wxString &text_string);
       void SetColorScheme(ColorScheme cs);
 
+      void RecalculateSize( void );
+      void SetAutoCentre( bool bval ){ m_bautoCentre = bval;}
+      void SetAutoSize( bool bval ){ m_bautosize = bval;}
+      
       void UpdateText(void);
       void SetMMSI(int mmsi){ m_MMSI = mmsi; }
       int  GetMMSI(void){ return m_MMSI; }
@@ -85,6 +90,12 @@ public:
       wxButton          *m_createWptBtn;
       wxButton          *m_createTrkBtn;
       bool              m_bsize_set;
+      int               m_adjustedFontSize;
+      int               m_control_font_size;
+      wxFont            *m_basefont;
+      wxWindow          *m_parent;
+      bool              m_bautoCentre;
+      bool              m_bautosize;
 };
 
 #endif

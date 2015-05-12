@@ -191,11 +191,22 @@ enum
 
 #define N_STATUS_BAR_FIELDS_MAX     20
 
+#ifdef __OCPN__ANDROID__
+#define STAT_FIELD_COUNT            2
+#define STAT_FIELD_TICK             -1
+#define STAT_FIELD_SOGCOG           0
+#define STAT_FIELD_CURSOR_LL        -1
+#define STAT_FIELD_CURSOR_BRGRNG    -1
+#define STAT_FIELD_SCALE            1
+#else
+#define STAT_FIELD_COUNT            5
 #define STAT_FIELD_TICK             0
 #define STAT_FIELD_SOGCOG           1
 #define STAT_FIELD_CURSOR_LL        2
 #define STAT_FIELD_CURSOR_BRGRNG    3
 #define STAT_FIELD_SCALE            4
+#endif
+
 
 //      Define a constant GPS signal watchdog timeout value
 #define GPS_TIMEOUT_SECONDS  6
@@ -378,6 +389,8 @@ class MyFrame: public wxFrame
     void SubmergeToolbar(void);
     void SubmergeToolbarIfOverlap(int x, int y, int margin = 0);
     void SurfaceToolbar(void);
+    void ToggleToolbar( bool b_smooth = false );
+    
     void SetToolbarScale(void);
     
     void HandlePianoClick(int selected_index, int selected_dbIndex);
@@ -409,7 +422,7 @@ class MyFrame: public wxFrame
     bool CheckGroup(int igroup);
     double GetTrueOrMag(double a);
     
-
+    void DestroyPersistentDialogs();
     void TouchAISActive(void);
     void UpdateAISTool(void);
 

@@ -35,13 +35,11 @@
 #include <wx/grid.h>
 
 #include "GribUIDialogBase.h"
-#include "GribUIDialog.h"
 #include "grib_pi.h"
 #include "ocpn_plugin.h"
 
-class GRIBUIDialog;
-class GRIBFile;
-class wxGrib;
+class GRIBUICtrlBar;
+
 //----------------------------------------------------------------------------------------------------------
 //    GRIB table dialog Specification
 //----------------------------------------------------------------------------------------------------------
@@ -49,7 +47,7 @@ class GRIBTable: public GRIBTableBase
 {
 public:
 
-    GRIBTable( GRIBUIDialog &parent);
+    GRIBTable( GRIBUICtrlBar &parent);
     
     ~GRIBTable(){}
 
@@ -79,7 +77,7 @@ private:
     void OnClick( wxGridEvent& event );
     void OnRangeClick( wxGridRangeSelectEvent& event );
 
-    GRIBUIDialog *m_pGDialog;
+    GRIBUICtrlBar *m_pGDialog;
     GribTimelineRecordSet * m_pTimeset;
     wxColour m_pDataCellsColour;
 };

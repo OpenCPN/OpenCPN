@@ -54,6 +54,8 @@ public class BTScanHelper {
 //    private Button scanButton;
     private Context m_context;
 
+    private boolean m_receiverRegistered = false;
+
     public String getDiscoveredDevices(){
         String ret_str = "";;
 
@@ -81,7 +83,12 @@ public class BTScanHelper {
 
         // Register for broadcasts when discovery has finished
         filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-        m_context.registerReceiver(mReceiver, filter);
+
+        if(!m_receiverRegistered){
+            m_context.registerReceiver(mReceiver, filter);
+            m_receiverRegistered = true;
+        }
+
 
         // Get the local Bluetooth adapter
         mBtAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -92,7 +99,11 @@ public class BTScanHelper {
         // If there are paired devices, add each one to the ArrayAdapter
         if (pairedDevices.size() > 0) {
             for (BluetoothDevice device : pairedDevices) {
-                mPairedDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+                String paired = device.getName() + ";" + device.getAddress();
+                Log.i("DEBUGGER_TAG", "paired");
+                Log.i("DEBUGGER_TAG", paired);
+
+                mPairedDevicesArrayAdapter.add(paired);
             }
         } else {
             String noDevices = "No devices found";
@@ -103,13 +114,19 @@ public class BTScanHelper {
     }
 
     public void stopDiscovery() {
+        if (D) Log.d(TAG, "stopDiscovery()");
         // Make sure we're not doing discovery anymore
         if (mBtAdapter != null) {
             mBtAdapter.cancelDiscovery();
         }
 
         // Unregister broadcast listeners
-        m_context.unregisterReceiver(mReceiver);
+        if(m_receiverRegistered){
+            m_context.unregisterReceiver(mReceiver);
+            m_receiverRegistered = false;
+        }
+        mPairedDevicesArrayAdapter.set(0, "Finished");
+
 
     }
 
@@ -120,10 +137,17 @@ public class BTScanHelper {
         // Remove all element from the list
         mPairedDevicesArrayAdapter.clear();
 
+        String scanning = "Scanning";
+        mPairedDevicesArrayAdapter.add(scanning);
+
         // If there are paired devices, add each one to the ArrayAdapter
         if (pairedDevices.size() > 0) {
             for (BluetoothDevice device : pairedDevices) {
-                mPairedDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+                String paired = device.getName() + ";" + device.getAddress();
+                Log.i("DEBUGGER_TAG", "pairedC");
+                Log.i("DEBUGGER_TAG",  paired);
+
+                mPairedDevicesArrayAdapter.add(paired);
             }
         } else {
             String strNoFound = "No devices found";
@@ -159,17 +183,24 @@ public class BTScanHelper {
                 if (device.getBondState() != BluetoothDevice.BOND_BONDED) {
                     String strNoFound = "No devices found";
 
-                        if(mPairedDevicesArrayAdapter.get(0).equals(strNoFound)) {
+                        if(mPairedDevicesArrayAdapter.get(1).equals(strNoFound)) {
                                 mPairedDevicesArrayAdapter.remove(strNoFound);
                         }
-                        mPairedDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
-                        Log.i("DEBUGGER_TAG", device.getName() + "\n" + device.getAddress());
+
+                        String found = " ";
+                        found = device.getName() + ";" + device.getAddress();
+
+
+                        mPairedDevicesArrayAdapter.add(found);
+                        Log.i("DEBUGGER_TAG", "found" + found);
                 }
 
             // When discovery is finished, change the Activity title
             }
             else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-                Log.i("DEBUGGER_TAG", "Action Finished");
+                Log.i("DEBUGGER_TAG", "BTScan Action Finished");
+                mPairedDevicesArrayAdapter.set(0, "Finished");
+
 //                setProgressBarIndeterminateVisibility(false);
 //                String strSelectDevice = getIntent().getStringExtra("select_device");
 //                if(strSelectDevice == null)
