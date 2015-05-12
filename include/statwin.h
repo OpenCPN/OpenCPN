@@ -34,6 +34,10 @@
 //   constants
 //----------------------------------------------------------------------------
 
+#define PIANO_EVENT_TIMER  73566
+#define DEFERRED_KEY_CLICK_DOWN 1
+#define DEFERRED_KEY_CLICK_UP 2
+
 // Class declarations
 WX_DECLARE_OBJARRAY(wxRegion, RegionArray);
 
@@ -86,7 +90,9 @@ public:
       void SetSkewIcon(wxBitmap *picon_bmp){ if( m_pSkewIconBmp ) delete m_pSkewIconBmp; m_pSkewIconBmp = picon_bmp; }
       void SetTMercIcon(wxBitmap *picon_bmp){ if( m_pTmercIconBmp ) delete m_pTmercIconBmp; m_pTmercIconBmp = picon_bmp; }
       void SetPolyIcon(wxBitmap *picon_bmp){ if( m_pPolyIconBmp ) delete m_pPolyIconBmp; m_pPolyIconBmp = picon_bmp; }
-
+      void ShowBusy( bool busy );
+      void onTimerEvent(wxTimerEvent &event);
+      
       wxPoint GetKeyOrigin(int key_index);
       void ResetRollover(void);
       void SetRoundedRectangles(bool val){ m_brounded = val; m_hash.Clear();}
@@ -122,7 +128,12 @@ private:
       ArrayOfInts m_skew_index_array;
       ArrayOfInts m_tmerc_index_array;
       ArrayOfInts m_poly_index_array;
-
+      bool        m_bBusy;
+      wxTimer     m_eventTimer;
+      int         m_click_sel_index;
+      int         m_click_sel_dbindex;
+      int         m_action;
+      
       RegionArray KeyRegion;
       
       wxBitmap    *m_pVizIconBmp;

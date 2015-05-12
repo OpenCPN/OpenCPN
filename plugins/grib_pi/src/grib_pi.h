@@ -53,7 +53,14 @@
 //    The PlugIn Class Definition
 //----------------------------------------------------------------------------------------------------------
 
-#define GRIB_TOOL_POSITION    -1          // Request default positioning of toolbar tool
+#define GRIB_TOOL_POSITION    -1          // Request default positioning of ToolBar tool
+#define STARTING_STATE_STYLE  9999        // style option undifined
+#define ATTACHED               0          // dialog are attached
+#define SEPARATED              1          // dialog are separated
+#define ATTACHED_HAS_CAPTION   0          // dialog attached  has a caption
+#define ATTACHED_NO_CAPTION    1          // dialog attached don't have caption
+#define SEPARATED_HORIZONTAL   2          // dialog separated shown honrizontaly
+#define SEPARATED_VERTICAL     3          // dialog separated shown vaerticaly
 
 class grib_pi : public opencpn_plugin_112
 {
@@ -83,20 +90,23 @@ public:
       bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
       void SendTimelineMessage(wxDateTime time);
       void SetDefaults(void);
-      int GetToolbarToolCount(void);
+      int GetToolBarToolCount(void);
       void ShowPreferencesDialog( wxWindow* parent );
       void OnToolbarToolCallback(int id);
+      bool QualifyCtrlBarPosition( wxPoint position, wxSize size );
+      void MoveDialog( wxDialog *dialog, wxPoint position, wxPoint dfault );
 
 // Other public methods
-      void SetGribDialogX    (int x){ m_grib_dialog_x = x;};
-      void SetGribDialogY    (int x){ m_grib_dialog_y = x;}
-      void SetGribDialogSizeX(int x){ m_grib_dialog_sx = x;}
-      void SetGribDialogSizeY(int x){ m_grib_dialog_sy = x;}
+      void SetCtrlBarXY   (wxPoint p){ m_CtrlBarxy = p;}
+      void SetCursorDataXY    (wxPoint p){ m_CursorDataxy = p;}
+      void SetCtrlBarSizeXY(wxSize p){ m_CtrlBar_Sizexy = p;}
       void SetColorScheme(PI_ColorScheme cs);
       void SetDialogFont( wxWindow *window, wxFont *font = OCPNGetFont(_("Dialog"), 10) );
 
-      void OnGribDialogClose();
+      void OnGribCtrlBarClose();
 
+      wxPoint GetCtrlBarXY() { return m_CtrlBarxy; }
+      wxPoint GetCursorDataXY() { return m_CursorDataxy; }
       int  GetTimeZone() { return m_bTimeZone; }
       int  GetStartOptions() { return m_bStartOptions; }
       bool GetCopyFirstCumRec() { return  m_bCopyFirstCumRec; }
@@ -106,6 +116,7 @@ public:
       GRIBOverlayFactory *GetGRIBOverlayFactory(){ return m_pGRIBOverlayFactory; }
 
       int   m_MenuItem;
+      bool  m_DialogStyleChanged;
 
 private:
       bool LoadConfig(void);
@@ -114,13 +125,13 @@ private:
       wxFileConfig     *m_pconfig;
       wxWindow         *m_parent_window;
 
-      GRIBUIDialog     *m_pGribDialog;
+      GRIBUICtrlBar     *m_pGribCtrlBar;
 
       int              m_display_width, m_display_height;
       int              m_leftclick_tool_id;
 
-      int              m_grib_dialog_x, m_grib_dialog_y;
-      int              m_grib_dialog_sx, m_grib_dialog_sy;
+      wxPoint          m_CtrlBarxy, m_CursorDataxy;
+      wxSize           m_CtrlBar_Sizexy;
 
       //    Controls added to Preferences panel
       wxCheckBox              *m_pGRIBUseHiDef;
@@ -141,10 +152,11 @@ private:
       wxString         m_bMailFromAddress;
       wxString         m_ZyGribLogin;
       wxString         m_ZyGribCode;
-      
+
       bool             m_bGRIBShowIcon;
 
       bool        m_bShowGrib;
+      bool        m_bInitIsOK;
 };
 
 //----------------------------------------------------------------------------------------

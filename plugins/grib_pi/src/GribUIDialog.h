@@ -24,8 +24,8 @@
  ***************************************************************************
  */
 
-#ifndef __GRIBUIDIALOG_H__
-#define __GRIBUIDIALOG_H__
+#ifndef __GRIBUICTRLBAR_H__
+#define __GRIBUICTRLBAR_H__
 
 #include "wx/wxprec.h"
 
@@ -36,28 +36,36 @@
 #include <wx/glcanvas.h>
 
 #include "GribUIDialogBase.h"
+#include "CursorData.h"
 #include "GribSettingsDialog.h"
 #include "GribRequestDialog.h"
 #include "GribReader.h"
 #include "GribRecordSet.h"
 #include "IsoLine.h"
+#include "GrabberWin.h"
 
 #ifndef PI
 #define PI        3.1415926535897931160E0      /* pi */
 #endif
 
+class GRIBUICtrlBar;
+class GRIBUICData;
 class GRIBFile;
 class GRIBRecord;
 class GribRecordTree;
 class GRIBOverlayFactory;
 class GribRecordSet;
 class GribRequestSetting;
+class GribGrabberWin;
+class GribSpacerWin;
 
 class wxFileConfig;
 class grib_pi;
 class wxGraphicsContext;
 
 WX_DECLARE_OBJARRAY( GribRecordSet, ArrayOfGribRecordSets );
+
+enum ZoneSelection { AUTO_SELECTION, START_SELECTION, DRAW_SELECTION, COMPLETE_SELECTION };
 
 class GribTimelineRecordSet : public GribRecordSet
 {
@@ -72,20 +80,18 @@ public:
 };
 
 //----------------------------------------------------------------------------------------------------------
-//    GRIB Selector/Control Dialog Specification
+//    GRIB CtrlBar Specification
 //----------------------------------------------------------------------------------------------------------
-class GRIBUIDialog: public GRIBUIDialogBase {
+class GRIBUICtrlBar: public GRIBUICtrlBarBase {
 public:
 
-    GRIBUIDialog(wxWindow *parent, grib_pi *ppi);
-    ~GRIBUIDialog();
+    GRIBUICtrlBar(wxWindow *parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ,grib_pi *ppi );
+    ~GRIBUICtrlBar();
 
     void OpenFile( bool newestFile = false );
 
     void ContextMenuItemCallback(int id);
-    void SetCursorLatLon( double lat, double lon );
     void SetFactoryOptions();
-    void PopulateTrackingControls( bool Populate_Altitude = true );
 
     wxDateTime TimelineTime();
     GribTimelineRecordSet* GetTimeLineRecordSet(wxDateTime time);
@@ -97,32 +103,32 @@ public:
     void SetViewPort( PlugIn_ViewPort *vp );
     void SetDataBackGroundColor();
     void SetTimeLineMax( bool SetValue );
-
+	void SetCursorLatLon( double lat, double lon );
+    void UpdateTrackingControl();
+	void SetDialogsStyleSizePosition( bool force_recompute = false );
+    void SetSelButtonBitmap( int type );
+    GRIBUICData *GetCDataDialog() { return m_gGRIBUICData; }
     wxWindow *pParent;
     GribOverlaySettings m_OverlaySettings;
 
-    wxTimer m_tPlayStop;
-    wxTimer m_tCursorTrackTimer;
+	GribTimelineRecordSet *m_pTimelineSet;
 
-    grib_pi             *pPlugIn;
+    wxTimer         m_tPlayStop;
+    grib_pi         *pPlugIn;
     GribRequestSetting  *pReq_Dialog;
     GRIBFile        *m_bGRIBActiveFile;
-    double m_cursor_lat, m_cursor_lon;
+	bool            m_bDataPlot[GribOverlaySettings::GEO_ALTITUDE];  //only for no altitude parameters
+	bool            m_CDataIsShown;
+    int             m_ZoneSelAllowed;
+    int             m_old_DialogStyle;
 private:
     void OnClose( wxCloseEvent& event );
-    void OnMove( wxMoveEvent& event );
     void OnSize( wxSizeEvent& event );
     void OnSettings( wxCommandEvent& event );
     void OnPlayStop( wxCommandEvent& event );
     void OnPlayStopTimer( wxTimerEvent & event);
-    void OnCursorTrackTimer( wxTimerEvent & event);
+	void OnMove( wxMoveEvent& event );
     void OnMouseEvent( wxMouseEvent& event );
-    void MenuAppend( wxMenu *menu, int id, wxString label, int setting);
-    void ResolveDisplayConflicts( wxWindow *window, int enventId );
-
-    void AddTrackingControl( wxControl *ctrl1,  wxControl *ctrl2,  wxControl *ctrl3, bool show,
-            int wictrl2, int wictrl3 = 0, bool altitude = false );
-    void UpdateTrackingControls( void );
 
     void OnZoomToCenterClick( wxCommandEvent& event );
     void OnPrev( wxCommandEvent& event );
@@ -133,8 +139,8 @@ private:
     void OnRequest(  wxCommandEvent& event );
 
     void OnTimeline( wxScrollEvent& event );
-    void OnCBAny( wxCommandEvent& event );
     void OnAltitudeChange( wxCommandEvent& event );
+	void OnShowCursorData( wxCommandEvent& event );
 
     wxDateTime MinTime();
     wxString GetNewestFileInDirectory();
@@ -148,11 +154,13 @@ private:
             m_Selection_label = m_cRecordForecast->GetString( m_Selection_index); }
 
     //    Data
+	CursorData        *m_gCursorData;
+    GribGrabberWin    *m_gGrabber;
+    GRIBUICData       *m_gGRIBUICData;
 
-    PlugIn_ViewPort  *m_vp;
+    PlugIn_ViewPort   *m_vp;
     int m_lastdatatype;
 
-    GribTimelineRecordSet *m_pTimelineSet;
     int m_TimeLineHours;
     int m_FileIntervalIndex;
     bool m_InterpolateMode;
@@ -163,6 +171,7 @@ private:
     wxString         m_Selection_label;
     wxString         m_file_name;   /* selected file */
     wxString         m_grib_dir;
+	wxSize           m_DialogsOffset;
 };
 
 //----------------------------------------------------------------------------------------------------------
@@ -210,6 +219,23 @@ private:
     ArrayOfGribRecordSets m_GribRecordSetArray;
 
     int m_nGribRecords;
+};
+
+//----------------------------------------------------------------------------------------------------------
+//    GRIB CursorData Dialog Specification
+//----------------------------------------------------------------------------------------------------------
+class GRIBUICData: public GRIBUICDataBase
+{
+public:
+
+    GRIBUICData( GRIBUICtrlBar &parent );
+    ~GRIBUICData() {}
+
+    GribGrabberWin      *m_gGrabber;
+    GRIBUICtrlBar       &m_gpparent;
+    CursorData          *m_gCursorData;
+private:
+    void OnMove( wxMoveEvent& event );
 };
 
 #endif

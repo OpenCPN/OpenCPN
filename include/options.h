@@ -35,7 +35,7 @@
 #include <wx/collpane.h>
 #include <wx/clrpicker.h>
 
-#include "pluginmanager.h"
+#include <vector>
 
 #if wxCHECK_VERSION(2, 9, 0)
 #include <wx/dialog.h>
@@ -55,6 +55,9 @@ class MyConfig;
 class ChartGroupsUI;
 class ConnectionParams;
 class SentenceListDlg;
+class PluginListPanel;
+class ChartGroupArray;
+class ChartGroup;
 
 #define ID_DIALOG 10001
 #define SYMBOL_OPTIONS_STYLE wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX
@@ -146,8 +149,7 @@ enum {
     ID_TCDATAADD,
     ID_TCDATADEL,
     ID_TEXTCHECKBOX,
-    ID_TEXTCTRL,
-    ID_TEXTCTRL1,
+    ID_OPTEXTCTRL,
     ID_TIDESELECTED,
     ID_TRACKCHECKBOX,
     ID_TRACKHILITE,
@@ -162,7 +164,7 @@ enum {
     ID_MOBILEBOX,
     ID_REPONSIVEBOX,
     ID_SIZEMANUALRADIOBUTTON,
-    ID_WAYPOINTRANGERINGS,
+    ID_OPWAYPOINTRANGERINGS,
     xID_OK,
     ID_BT_SCANTIMER
 };
@@ -226,7 +228,8 @@ public:
     wxScrolledWindow *AddPage(size_t parent, const wxString & title);
     bool DeletePage( wxScrolledWindow *page );
     void SetColorScheme( ColorScheme cs );
-
+    void RecalculateSize();
+    
     void SetInitChartDir(const wxString &dir)
     {
         m_init_chart_dir = dir;
@@ -358,6 +361,9 @@ public:
     wxCheckBox              *pMobile;
     wxCheckBox              *pResponsive;
     wxSlider                *m_pSlider_Zoom;    
+    wxSlider                *m_pSlider_GUI_Factor;
+    wxSlider                *m_pSlider_Chart_Factor;
+    
     int                      k_tides;
     wxCheckBox              *pOverzoomEmphasis;
     wxCheckBox              *pOZScaleVector;

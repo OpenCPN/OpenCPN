@@ -24,114 +24,163 @@
 #include <wx/choice.h>
 #include <wx/slider.h>
 #include <wx/sizer.h>
+#include <wx/dialog.h>
+#include <wx/stattext.h>
 #include <wx/checkbox.h>
 #include <wx/textctrl.h>
-#include <wx/statbox.h>
-#include <wx/stattext.h>
-#include <wx/dialog.h>
+#include <wx/panel.h>
 #include <wx/spinctrl.h>
+#include <wx/statbox.h>
 #include <wx/scrolwin.h>
+#include <wx/radiobut.h>
+#include <wx/notebook.h>
 #include <wx/radiobox.h>
 #include <wx/statline.h>
-#include <wx/tglbtn.h>
 #include <wx/grid.h>
 
 ///////////////////////////////////////////////////////////////////////////
 
-#define ID_TIMELINE 1000
-#define ID_CB_WIND 1001
-#define ID_CB_WAVES 1002
-#define ID_CB_CURRENT 1003
+#define CONTROL_BAR 1000
+#define ID_TIMELINE 1001
+#define CURSOR_DATA 1002
+#define ID_CB_WIND 1003
 #define ID_CB_WIND_GUSTS 1004
 #define ID_CB_PRESSURE 1005
-#define ID_CB_RAINFALL 1006
-#define ID_CB_CLOUD_COVER 1007
-#define ID_CB_AIR_TEMP 1008
-#define ID_CB_SEA_TEMP 1009
-#define ID_CB_CAPE 1010
-#define BARBFIXSPACING 1011
-#define BARBMINSPACING 1012
-#define DIRFIXSPACING 1013
-#define DIRMINSPACING 1014
-#define NUMFIXSPACING 1015
-#define NUMMINSPACING 1016
-#define MAXLAT 1017
-#define MAXLON 1018
-#define MINLAT 1019
-#define MINLON 1020
+#define ID_CB_WAVES 1006
+#define ID_CB_CURRENT 1007
+#define ID_CB_RAINFALL 1008
+#define ID_CB_CLOUD_COVER 1009
+#define ID_CB_AIR_TEMP 1010
+#define ID_CB_SEA_TEMP 1011
+#define ID_CB_CAPE 1012
+#define BARBFIXSPACING 1013
+#define BARBMINSPACING 1014
+#define DIRFIXSPACING 1015
+#define DIRMINSPACING 1016
+#define NUMFIXSPACING 1017
+#define NUMMINSPACING 1018
+#define MAXLAT 1019
+#define MAXLON 1020
+#define MINLAT 1021
+#define MINLON 1022
 
 ///////////////////////////////////////////////////////////////////////////////
-/// Class GRIBUIDialogBase
+/// Class GRIBUICtrlBarBase
 ///////////////////////////////////////////////////////////////////////////////
-class GRIBUIDialogBase : public wxDialog 
+class GRIBUICtrlBarBase : public wxDialog
 {
 	private:
 	
 	protected:
-		wxFlexGridSizer* m_fgTrackingDisplay;
+		wxFlexGridSizer* m_fgCtrlBarSizer;
 		wxBitmapButton* m_bpPrev;
 		wxChoice* m_cRecordForecast;
 		wxBitmapButton* m_bpNext;
 		wxBitmapButton* m_bpNow;
 		wxBitmapButton* m_bpZoomToCenter;
+		wxBitmapButton* m_bpShowCursorData;
 		wxBitmapButton* m_bpPlay;
 		wxBitmapButton* m_bpOpenFile;
 		wxBitmapButton* m_bpSettings;
 		wxBitmapButton* m_bpRequest;
-		wxFlexGridSizer* m_fgTrackingControls;
-		wxFlexGridSizer* m_fcAltitude;
-		wxChoice* m_cbAltitude;
-		wxTextCtrl* m_tcWindSpeed;
-		wxTextCtrl* m_tcWindDirection;
-		wxTextCtrl* m_tcWaveHeight;
-		wxTextCtrl* m_tcWaveDirection;
-		wxTextCtrl* m_tcCurrentVelocity;
-		wxTextCtrl* m_tcCurrentDirection;
-		wxTextCtrl* m_tcWindGust;
-		wxTextCtrl* m_tcPressure;
-		wxTextCtrl* m_tcPrecipitation;
-		wxTextCtrl* m_tcCloud;
-		wxTextCtrl* m_tcAirTemperature;
-		wxTextCtrl* m_tcSeaTemperature;
-		wxTextCtrl* m_tcCAPE;
-		wxStaticText* m_stAltitudeText;
-		wxTextCtrl* m_tcAltitude;
-		wxTextCtrl* m_tcTemp;
-		wxTextCtrl* m_tcRelHumid;
-		
+		wxFlexGridSizer* m_fgCDataSizer;
+		wxFlexGridSizer* m_fgCtrlGrabberSize;
+
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnClose( wxCloseEvent& event ) { event.Skip(); }
+		virtual void OnMouseEvent( wxMouseEvent& event ) { event.Skip(); }
 		virtual void OnSize( wxSizeEvent& event ) { event.Skip(); }
 		virtual void OnPrev( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnRecordForecast( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnNext( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnAltitudeChange( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnNow( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnZoomToCenterClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnShowCursorData( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnPlayStop( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnTimeline( wxScrollEvent& event ) { event.Skip(); }
 		virtual void OnOpenFile( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnSettings( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnRequest( wxCommandEvent& event ) { event.Skip(); }
-		virtual void OnAltitudeChange( wxCommandEvent& event ) { event.Skip(); }
-		virtual void OnCBAny( wxCommandEvent& event ) { event.Skip(); }
+
+
+	public:
+		wxChoice* m_cbAltitude;
+		wxSlider* m_sTimeline;
+
+		GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id = CONTROL_BAR, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxSYSTEM_MENU );
+		~GRIBUICtrlBarBase();
+
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class GRIBUICDataBase
+///////////////////////////////////////////////////////////////////////////////
+class GRIBUICDataBase : public wxDialog
+{
+	private:
+
+	protected:
+		wxFlexGridSizer* m_fgCdataSizer;
+
+	public:
+
+		GRIBUICDataBase( wxWindow* parent, wxWindowID id = CURSOR_DATA, const wxString& title = _("GRIB Display Control"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxSYSTEM_MENU|wxNO_BORDER );
+		~GRIBUICDataBase();
+
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class CursorDataBase
+///////////////////////////////////////////////////////////////////////////////
+class CursorDataBase : public wxPanel
+{
+	private:
+
+	protected:
+		wxFlexGridSizer* fgSizer30;
+		wxStaticText* m_stTrackingText;
+		wxFlexGridSizer* m_fgTrackingControls;
+		wxTextCtrl* m_tcWindSpeed;
+		wxTextCtrl* m_tcWindSpeedBf;
+		wxTextCtrl* m_tcWindDirection;
+		wxTextCtrl* m_tcWindGust;
+		wxTextCtrl* m_tcPressure;
+		wxTextCtrl* m_tcWaveHeight;
+		wxTextCtrl* m_tcWavePeriode;
+		wxTextCtrl* m_tcWaveDirection;
+		wxTextCtrl* m_tcCurrentVelocity;
+		wxTextCtrl* m_tcCurrentDirection;
+		wxTextCtrl* m_tcPrecipitation;
+		wxTextCtrl* m_tcCloud;
+		wxTextCtrl* m_tcAirTemperature;
+		wxTextCtrl* m_tcSeaTemperature;
+		wxTextCtrl* m_tcCAPE;
+		wxFlexGridSizer* m_fgTrackingAltitude;
+		wxTextCtrl* m_tcAltitude;
+		wxTextCtrl* m_tcTemp;
+		wxTextCtrl* m_tcRelHumid;
+		
+		// Virtual event handlers, overide them in your derived class
 		virtual void OnMouseEvent( wxMouseEvent& event ) { event.Skip(); }
+		virtual void OnCBAny( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnMenuCallBack( wxMouseEvent& event ) { event.Skip(); }
 		
 	
 	public:
-		wxSlider* m_sTimeline;
 		wxCheckBox* m_cbWind;
-		wxCheckBox* m_cbWave;
-		wxCheckBox* m_cbCurrent;
 		wxCheckBox* m_cbWindGust;
 		wxCheckBox* m_cbPressure;
+		wxCheckBox* m_cbWave;
+		wxCheckBox* m_cbCurrent;
 		wxCheckBox* m_cbPrecipitation;
 		wxCheckBox* m_cbCloud;
 		wxCheckBox* m_cbAirTemperature;
 		wxCheckBox* m_cbSeaTemperature;
 		wxCheckBox* m_cbCAPE;
 		
-		GRIBUIDialogBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("GRIB Display Control"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxCAPTION|wxCLOSE_BOX|wxDIALOG_NO_PARENT|wxRESIZE_BORDER|wxSYSTEM_MENU ); 
-		~GRIBUIDialogBase();
+		CursorDataBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxNO_BORDER|wxTAB_TRAVERSAL );
+		~CursorDataBase();
 	
 };
 
@@ -141,14 +190,9 @@ class GRIBUIDialogBase : public wxDialog
 class GribSettingsDialogBase : public wxDialog 
 {
 	private:
-		wxStaticBoxSizer* sbSizer4;
 	
 	protected:
-		wxFlexGridSizer* m_fgScrolledSettingsSizer;
-		wxStaticText* m_staticText26;
-		wxChoice* m_cLoopStartPoint;
-		wxSpinCtrl* m_sUpdatesPerSecond;
-		wxStaticText* m_tSlicesPerUpdate;
+		wxFlexGridSizer* m_fgSetDataSizer;
 		wxChoice* m_cDataType;
 		wxChoice* m_cDataUnits;
 		wxCheckBox* m_cbBarbedArrows;
@@ -186,18 +230,30 @@ class GribSettingsDialogBase : public wxDialog
 		wxSlider* m_sParticleDensity;
 		wxStaticText* m_staticText24;
 		wxSlider* m_sTransparency;
+		wxFlexGridSizer* m_fgSetPlaybackSizer;
+		wxStaticText* m_staticText26;
+		wxChoice* m_cLoopStartPoint;
+		wxSpinCtrl* m_sUpdatesPerSecond;
+		wxStaticText* m_tSlicesPerUpdate;
+		wxFlexGridSizer* m_fgSetGuiSizer;
+		wxRadioButton* m_rbCurDataAttaWCap;
+		wxRadioButton* m_rbCurDataAttaWoCap;
+		wxRadioButton* m_rbCurDataIsolHoriz;
+		wxRadioButton* m_rbCurDataIsolVertic;
 		
 		// Virtual event handlers, overide them in your derived class
-		virtual void OnIntepolateChange( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnPageChange( wxNotebookEvent& event ) { event.Skip(); }
 		virtual void OnDataTypeChoice( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnUnitChange( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnSpacingModeChange( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnTransparencyChange( wxScrollEvent& event ) { event.Skip(); }
+		virtual void OnIntepolateChange( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnCtrlandDataStyleChanged( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnApply( wxCommandEvent& event ) { event.Skip(); }
 		
 	
 	public:
-		wxScrolledWindow* m_scrolledSettingsDialog;
+		wxNotebook* m_nSettingsBook;
 		wxCheckBox* m_cLoopMode;
 		wxCheckBox* m_cInterpolate;
 		wxChoice* m_sSlicesPerUpdate;
@@ -265,7 +321,6 @@ class GribRequestSettingBase : public wxDialog
 		wxChoice* m_pTimeRange;
 		wxStaticText* m_staticText21;
 		wxCheckBox* m_cManualZoneSel;
-		wxToggleButton* m_toggleSelection;
 		wxFlexGridSizer* fgZoneCoordinatesSizer;
 		wxSpinCtrl* m_spMaxLat;
 		wxStaticText* m_stMaxLatNS;
@@ -310,7 +365,6 @@ class GribRequestSettingBase : public wxDialog
 		virtual void OnAnyChange( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnTimeRangeChange( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnZoneSelectionModeChange( wxCommandEvent& event ) { event.Skip(); }
-		virtual void OnTooggleSelection( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnCoordinatesChange( wxSpinEvent& event ) { event.Skip(); }
 		virtual void OnSaveMail( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnCancel( wxCommandEvent& event ) { event.Skip(); }

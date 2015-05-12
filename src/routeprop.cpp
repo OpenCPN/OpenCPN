@@ -1,7 +1,7 @@
 /**************************************************************************
 *
 * Project:  OpenCPN
-* Purpose:  RouteProerties Support
+* Purpose:  RouteProperties Support
 * Author:   David Register
 *
 ***************************************************************************
@@ -2153,45 +2153,8 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
 
     bSizer1->Add( m_sdbSizerButtons, 0, wxALL | wxEXPAND, 5 );
 
-
-    //  This is a way of calculating the "best" size of a scrollable dialog
-    //  We calculate the minimum size of the controlling element ("Properties" page of the notebook) with scrollability disabled.
-    //  Then turn on scrolling by setting scrollrate afterwards.
-    Layout();
-    wxSize sz = bSizer1->CalcMin();
-    sz.IncBy( 20 );   // Account for some decorations?
+    RecalculateSize();
     
-#if 1
-    wxSize dsize = ::wxGetDisplaySize();
-    sz.y = wxMin(sz.y, dsize.y-80);
-//    sz = wxSize(600, 400);
-    SetClientSize(sz);
-    m_defaultClientSize = sz;
-    m_panelBasicProperties->SetScrollRate(5, 5);
-
-    wxSize fsize = GetSize();
-    fsize.y = wxMin(fsize.y, dsize.y-80);
-    fsize.x = wxMin(fsize.x, dsize.x-80);
-    SetSize(fsize);
-#endif
-
-    #if 0
-     wxSize dsize = ::wxGetDisplaySize();
-//    sz.y = wxMin(sz.y, dsize.y-80);
-//    sz = wxSize(600, 400);
-//    SetClientSize(sz);
-     m_panelBasicProperties->SetScrollRate(5, 5);
-
-    wxSize fsize = GetSize();
-    fsize.y = wxMin(fsize.y, dsize.y-80);
-    fsize.x = wxMin(fsize.x, dsize.x-80);
-    SetSize(fsize);
-    m_defaultClientSize = GetClientSize();
-#endif
-
-
-    Centre( wxBOTH );
-
     // Connect Events
     m_textLatitude->Connect( wxEVT_COMMAND_TEXT_ENTER,
             wxCommandEventHandler( MarkInfoDef::OnPositionCtlUpdated ), NULL, this );
@@ -2238,6 +2201,29 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     m_sdbSizerButtonsOK->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler( MarkInfoDef::OnMarkInfoOKClick ), NULL, this );
 }
+
+void MarkInfoDef::RecalculateSize( void )
+{
+    
+    Layout();
+    wxSize esize = GetSizer()->CalcMin();
+    esize.IncBy( 20 );   // Account for some decorations?
+    
+    wxSize dsize = GetParent()->GetClientSize();
+    esize.y = wxMin(esize.y, dsize.y - (2 * GetCharHeight()));
+    esize.x = wxMin(esize.x, dsize.x - (2 * GetCharHeight()));
+    SetClientSize(esize);
+    
+    wxSize fsize = GetSize();
+    fsize.y = wxMin(fsize.y, dsize.y - (2 * GetCharHeight()));
+    fsize.x = wxMin(fsize.x, dsize.x - (2 * GetCharHeight()));
+    SetSize(fsize);
+    
+    m_defaultClientSize = GetClientSize();
+    
+    Centre( wxBOTH );
+}
+
 
 void MarkInfoDef::OnShowWaypointRangeRingSelect( wxCommandEvent& event )
 {

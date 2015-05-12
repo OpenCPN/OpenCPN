@@ -74,6 +74,7 @@ import android.os.RemoteException;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.DisplayMetrics;
+import android.widget.Toast;
 
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -117,6 +118,7 @@ import android.bluetooth.BluetoothDevice;
 import org.opencpn.BTScanHelper;
 import app.akexorcist.bluetotohspp.library.BluetoothSPP;
 import app.akexorcist.bluetotohspp.library.BluetoothState;
+import app.akexorcist.bluetotohspp.library.BluetoothSPP.OnDataReceivedListener;
 
 public class QtActivity extends Activity
 {
@@ -218,6 +220,7 @@ public class QtActivity extends Activity
     private Boolean m_ScanHelperStarted = false;
     private BluetoothSPP m_BTSPP;
     private Boolean m_BTServiceCreated = false;
+    private String m_BTStat;
 
     OCPNNativeLib nativeLib;
 
@@ -576,7 +579,6 @@ public class QtActivity extends Activity
     public String startBTService( final String address){
         Log.i("DEBUGGER_TAG", "startBTService");
         Log.i("DEBUGGER_TAG", address);
-        String ret_str = "";
 
         runOnUiThread(new Runnable() {
             @Override
@@ -586,30 +588,74 @@ public class QtActivity extends Activity
                 if(!m_BTServiceCreated){
                     Log.i("DEBUGGER_TAG", "Bluetooth createBTService");
                     m_BTSPP = new BluetoothSPP(getApplicationContext());
-//                    m_BTSPP.cancelDiscovery();
-                    m_BTSPP.setupService();
-//                    m_BTSPP.startService(BluetoothState.DEVICE_ANDROID);
 
-                    m_BTServiceCreated = true;
+                    if(!m_BTSPP.isBluetoothAvailable() || !m_BTSPP.isBluetoothEnabled()) {
+ //                           Toast.makeText(getApplicationContext()
+ //                                           , "Bluetooth is not available"
+ //                                           , Toast.LENGTH_SHORT).show();
+                    }
+
+                    else {
+                        m_BTSPP.setupService();
+                        m_BTServiceCreated = true;
+                    }
                 }
 
 
-                Log.i("DEBUGGER_TAG", "Bluetooth startService");
-                m_BTSPP.startService(BluetoothState.DEVICE_OTHER);
-  //              m_BTSPP.setDeviceTarget(BluetoothState.DEVICE_OTHER);
+                m_BTSPP.setOnDataReceivedListener(new OnDataReceivedListener() {
+                    public void onDataReceived(byte[] data, String message) {
+                        Log.i("DEBUGGER_TAG", message);
+                        // Do something when data incoming
+                        nativeLib.processBTNMEA( message );
 
-                Log.i("DEBUGGER_TAG", "Bluetooth connectA");
-                m_BTSPP.connect(address);
+                    }
+                });
 
-///
+                if(m_BTSPP.isServiceAvailable()){
+                    Log.i("DEBUGGER_TAG", "Bluetooth startService");
+                    m_BTSPP.startService(BluetoothState.DEVICE_OTHER);
+
+                    Log.i("DEBUGGER_TAG", "Bluetooth connectA");
+//                    m_BTSPP.connect(address);
+                    m_BTSPP.autoConnectAddress(address);
+
+                }
+
+                if(!m_BTSPP.isBluetoothEnabled())
+                    m_BTStat = "NOK.BTNotEnabled";
+                else if(!m_BTSPP.isServiceAvailable())
+                    m_BTStat = "NOK.ServiceNotAvailable";
+                else
+                    m_BTStat = "OK";
+
+
 
              }});
 
-        ret_str = "NOK";
-        return ret_str;
+
+        return m_BTStat;
     }
 
 
+    public String stopBTService( final int parm){
+        Log.i("DEBUGGER_TAG", "stopBTService");
+        String ret_str = "";
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+                if(m_BTServiceCreated){
+                    Log.i("DEBUGGER_TAG", "Bluetooth stopService");
+                    m_BTSPP.stopService();
+                }
+
+
+             }});
+
+        ret_str = "OK";
+        return ret_str;
+    }
 
 
     // this function is used to load and start the loader

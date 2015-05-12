@@ -507,9 +507,9 @@ public:
     virtual ~opencpn_plugin_113();
     
     virtual bool KeyboardEventHook( wxKeyEvent &event );
-    
+    virtual void OnToolbarToolDownCallback(int id);
+    virtual void OnToolbarToolUpCallback(int id);
 };
-
 
 //------------------------------------------------------------------
 //      Route and Waypoint PlugIn support
@@ -986,6 +986,9 @@ extern "C"  DECL_EXP void GetDoubleCanvasPixLL(PlugIn_ViewPort *vp, wxPoint2DDou
 
 
 extern DECL_EXP double fromDMM_Plugin( wxString sdms );
-
+extern DECL_EXP void SetCanvasRotation(double rotation);
+extern DECL_EXP bool GetSingleWaypoint( wxString &GUID, PlugIn_Waypoint *pwaypoint );
+extern DECL_EXP bool CheckEdgePan_PlugIn( int x, int y, bool dragging, int margin, int delta );
+extern DECL_EXP wxBitmap GetIcon_PlugIn(const wxString & name);
 
 #endif //_PLUGIN_H_

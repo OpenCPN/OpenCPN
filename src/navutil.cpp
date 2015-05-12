@@ -362,6 +362,8 @@ extern int              g_default_font_size;
 
 extern bool             g_bAutoHideToolbar;
 extern int              g_nAutoHideToolbar;
+extern int              g_GUIScaleFactor;
+extern int              g_ChartScaleFactor;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
@@ -1216,6 +1218,9 @@ int MyConfig::LoadMyConfig()
     if((size_mm > 100) && (size_mm < 2000)){
         g_display_size_mm = size_mm;
     }
+    
+    Read( _T ( "GUIScaleFactor" ), &g_GUIScaleFactor, 0 );
+    Read( _T ( "ChartObjectScaleFactor" ), &g_ChartScaleFactor, 0 );
     
     Read( _T ( "FilterNMEA_Avg" ), &g_bfilter_cogsog, 0 );
     Read( _T ( "FilterNMEA_Sec" ), &g_COGFilterSec, 1 );
@@ -2504,6 +2509,9 @@ void MyConfig::UpdateSettings()
     Write( _T ( "MostRecentGPSUploadConnection" ), g_uploadConnection );
     Write( _T ( "ShowChartBar" ), g_bShowChartBar );
     
+    Write( _T ( "GUIScaleFactor" ), g_GUIScaleFactor );
+    Write( _T ( "ChartObjectScaleFactor" ), g_ChartScaleFactor );
+
     Write( _T ( "FilterNMEA_Avg" ), g_bfilter_cogsog );
     Write( _T ( "FilterNMEA_Sec" ), g_COGFilterSec );
 
