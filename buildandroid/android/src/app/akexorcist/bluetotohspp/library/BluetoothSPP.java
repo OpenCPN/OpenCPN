@@ -58,7 +58,8 @@ public class BluetoothSPP {
     
     private String keyword = "";
     private boolean isAndroid = BluetoothState.DEVICE_ANDROID;
-    
+    private String autoAddress = "";
+
     private BluetoothConnectionListener bcl;
     private int c = 0;
     
@@ -327,6 +328,7 @@ public class BluetoothSPP {
         Set<BluetoothDevice> devices = mBluetoothAdapter.getBondedDevices();  
         String[] name_list = new String[devices.size()];
         for(BluetoothDevice device : devices) {  
+            Log.i("DEBUGGER_TAG", "autoconn name" +  device.getName());
             name_list[c] = device.getName();
             c++;
         }  
@@ -338,6 +340,7 @@ public class BluetoothSPP {
         Set<BluetoothDevice> devices = mBluetoothAdapter.getBondedDevices();  
         String[] address_list = new String[devices.size()];
         for(BluetoothDevice device : devices) {  
+            Log.i("DEBUGGER_TAG", "autoconn address" +  device.getAddress());
             address_list[c] = device.getAddress();
             c++;
         }  
@@ -346,7 +349,9 @@ public class BluetoothSPP {
     
     
     public void autoConnect(String keywordName) {
+        Log.i("DEBUGGER_TAG", "autoconnA");
         if(!isAutoConnectionEnabled) {
+            Log.i("DEBUGGER_TAG", "autoconnB");
             keyword = keywordName;
             isAutoConnectionEnabled = true;
             isAutoConnecting = true;
@@ -358,6 +363,7 @@ public class BluetoothSPP {
             String[] arr_address = getPairedDeviceAddress();
             for(int i = 0 ; i < arr_name.length ; i++) {
                 if(arr_name[i].contains(keywordName)) {
+                    Log.i("DEBUGGER_TAG", "autoconn filter" + arr_address[i]);
                     arr_filter_address.add(arr_address[i]);
                     arr_filter_name.add(arr_name[i]);
                 }
@@ -394,10 +400,55 @@ public class BluetoothSPP {
             c = 0;
             if(mAutoConnectionListener != null)
                 mAutoConnectionListener.onNewConnection(arr_name[c], arr_address[c]);
-            if(arr_filter_address.size() > 0) 
+            if(arr_filter_address.size() > 0){
+                Log.i("DEBUGGER_TAG", "autoconn" + arr_filter_address.get(c));
                 connect(arr_filter_address.get(c));
+            }
             else 
                 Toast.makeText(mContext, "Device name mismatch", Toast.LENGTH_SHORT).show();
         }
     }
+
+    public void autoConnectAddress(String address) {
+        Log.i("DEBUGGER_TAG", "autoconnA");
+        if(!isAutoConnectionEnabled) {
+            Log.i("DEBUGGER_TAG", "autoconnB");
+            autoAddress = address;
+            isAutoConnectionEnabled = true;
+            isAutoConnecting = true;
+            if(mAutoConnectionListener != null)
+                mAutoConnectionListener.onAutoConnectionStarted();
+
+            bcl = new BluetoothConnectionListener() {
+                public void onDeviceConnected(String name, String address) {
+                    bcl = null;
+                    isAutoConnecting = false;
+                }
+
+                public void onDeviceDisconnected() { }
+                public void onDeviceConnectionFailed() {
+                        Log.e("CHeck", "Failed");
+                    if(isServiceRunning) {
+                        if(isAutoConnectionEnabled) {
+                             connect(autoAddress);
+                             Log.e("CHeck", "Connect");
+                            if(mAutoConnectionListener != null)
+                                mAutoConnectionListener.onNewConnection(autoAddress, autoAddress);
+                        } else {
+                            bcl = null;
+                            isAutoConnecting = false;
+                        }
+                    }
+                }
+            };
+
+            setBluetoothConnectionListener(bcl);
+
+            if(mAutoConnectionListener != null)
+                mAutoConnectionListener.onNewConnection(autoAddress, autoAddress);
+             connect(address);
+
+        }
+    }
+
 }
