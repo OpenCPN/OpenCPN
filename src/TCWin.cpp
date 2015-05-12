@@ -57,9 +57,14 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
 #ifdef __WXOSX__
      wstyle |= wxSTAY_ON_TOP;
 #endif
-            
+    
+    wxSize parent_size = parent->GetClientSize();
+    wxSize tc_size;
+    tc_size.x = wxMin(550, parent_size.x);
+    tc_size.y = wxMin(480, parent_size.y);
+    
     wxDialog::Create( parent, wxID_ANY, wxString( _T ( "test" ) ), wxPoint( x, y ),
-                      wxSize( 550, 480 ), wstyle );
+                      tc_size, wstyle );
 
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     SetFont( *qFont );
@@ -443,7 +448,6 @@ void TCWin::OnPaint( wxPaintEvent& event )
                         ptcmgr->GetHightOrLowTide( tt, BACKWARD_TEN_MINUTES_STEP,
                                                    BACKWARD_ONE_MINUTES_STEP, tcv[i], wt, pIDX->IDX_rec_num, tcvalue,
                                                    tctime );
-
                         wxDateTime tcd;                                                 //write date
                         wxString s, s1;
                         tcd.Set( tctime + ( m_corr_mins * 60 ) );
@@ -457,7 +461,6 @@ void TCWin::OnPaint( wxPaintEvent& event )
 
                         m_tList->Insert( s, list_index );                       // update table list
                         list_index++;
-
                         wt = !wt;                                            //change tide flow sens
                     }
                     val = tcv[i];
@@ -584,26 +587,15 @@ void TCWin::OnPaint( wxPaintEvent& event )
             m_stz = mtz;
         }
 
-///
         dc.SetFont( *pSFont );
         dc.GetTextExtent( m_stz, &w, &h );
         dc.DrawText( m_stz, x / 2 - w / 2, y * 88 / 100 );
 
-        // There seems to be some confusion about format specifiers
-        //  Hack this.....
-        //  Find and use the longest "sprintf" result......
-        wxString sdate;
-        wxString s1 = m_graphday.Format( _T ( "%#x" ) );
-        wxString s2 = m_graphday.Format( _T ( "%x" ) );
-
-        if( s2.Len() > s1.Len() ) sdate = s2;
-        else
-            sdate = s1;
+        wxString sdate = m_graphday.Format( _T ( "%m/%d/%Y" ) );
         dc.SetFont( *pMFont );
         dc.GetTextExtent( sdate, &w, &h );
         dc.DrawText( sdate, x / 2 - w / 2, y * 92 / 100 );
 
-        ///
         Station_Data *pmsd = pIDX->pref_sta_data;
         if( pmsd ) {
             dc.GetTextExtent( wxString( pmsd->units_conv, wxConvUTF8 ), &w, &h );

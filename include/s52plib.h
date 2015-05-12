@@ -35,6 +35,7 @@ class wxGLContext;
 #include <wx/glcanvas.h>
 #endif
 
+#include "OCPNRegion.h"
 #include "ocpn_types.h"
 
 #include <wx/dcgraph.h>         // supplemental, for Mac
@@ -50,7 +51,15 @@ WX_DEFINE_SORTED_ARRAY( LUPrec *, wxArrayOfLUPrec );
 
 WX_DECLARE_LIST( S52_TextC, TextObjList );
 
-WX_DECLARE_STRING_HASH_MAP( int, CARC_Hash );
+struct CARC_Buffer {
+    unsigned char color[3][4];
+    float line_width[3];
+    int steps;
+
+    int size;
+    float *data;
+};
+WX_DECLARE_STRING_HASH_MAP( CARC_Buffer, CARC_Hash );
 
 class ViewPort;
 class PixelCache;
@@ -230,6 +239,8 @@ public:
 
     RuleHash *_symb_sym; // symbol symbolisation rules
     MyNatsurHash m_natsur_hash;     // hash table for cacheing NATSUR string values from int attributes
+
+    OCPNRegion m_last_clip_region;
     
 private:
     int S52_load_Plib( const wxString& PLib, bool b_forceLegacy );
@@ -399,7 +410,6 @@ private:
     bool renderToDC;
     bool renderToOpenGl;
     bool renderToGCDC;
-    bool havePushedOpenGlAttrib;
 };
 
 #endif //_S52PLIB_H_

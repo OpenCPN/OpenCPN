@@ -152,14 +152,15 @@ public:
       wxColour          m_wxcWaypointRangeRingsColour;
 
 #ifdef ocpnUSE_GL
-      void DrawGL( ViewPort &vp, OCPNRegion &region );
+      void DrawGL( ViewPort &vp, OCPNRegion &region, bool use_cached_screen_coords=false );
       unsigned int m_iTextTexture;
       int m_iTextTextureWidth, m_iTextTextureHeight;
 
       LLBBox m_wpBBox;
-      double m_wpBBox_chart_scale, m_wpBBox_rotation;
+      double m_wpBBox_view_scale_ppm, m_wpBBox_rotation;
 
-      static bool s_bUpdateWaypointsDisplayList;
+      bool m_pos_on_screen;
+      wxPoint2DDouble m_screen_pos; // cached for arrows and points
 #endif
 
       double m_WaypointArrivalRadius;

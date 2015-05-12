@@ -47,6 +47,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ActionBar;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -73,6 +74,7 @@ import android.os.RemoteException;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.DisplayMetrics;
+import android.widget.Toast;
 
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -116,6 +118,7 @@ import android.bluetooth.BluetoothDevice;
 import org.opencpn.BTScanHelper;
 import app.akexorcist.bluetotohspp.library.BluetoothSPP;
 import app.akexorcist.bluetotohspp.library.BluetoothState;
+import app.akexorcist.bluetotohspp.library.BluetoothSPP.OnDataReceivedListener;
 
 public class QtActivity extends Activity
 {
@@ -217,6 +220,7 @@ public class QtActivity extends Activity
     private Boolean m_ScanHelperStarted = false;
     private BluetoothSPP m_BTSPP;
     private Boolean m_BTServiceCreated = false;
+    private String m_BTStat;
 
     OCPNNativeLib nativeLib;
 
@@ -364,6 +368,11 @@ public class QtActivity extends Activity
 //            screen_h -= getResources().getDimensionPixelSize(typedValue.resourceId);
 //        }
 
+        int actionBarHeight = 0;
+        ActionBar actionBar = getActionBar();
+        if(actionBar.isShowing())
+            actionBarHeight = actionBar.getHeight();
+
         int width = 600;
         int height = 400;
 
@@ -414,10 +423,10 @@ public class QtActivity extends Activity
 
         String ret;
 
-        ret = String.format("%f;%f;%d;%d;%d;%d;%d;%d;%d", dm.xdpi, dm.density, dm.densityDpi,
+        ret = String.format("%f;%f;%d;%d;%d;%d;%d;%d;%d;%d", dm.xdpi, dm.density, dm.densityDpi,
                width, height - statusBarHeight,
                width, height,
-               dm.widthPixels, dm.heightPixels);
+               dm.widthPixels, dm.heightPixels, actionBarHeight);
 
         Log.i("DEBUGGER_TAG", ret);
 
@@ -527,9 +536,9 @@ public class QtActivity extends Activity
 
                 if(m_ScanHelperStarted){
                     scanHelper.doDiscovery();
+                    scanHelper.stopDiscovery();
                 }
 
-                scanHelper.stopDiscovery();
 
              }});
 
@@ -570,7 +579,6 @@ public class QtActivity extends Activity
     public String startBTService( final String address){
         Log.i("DEBUGGER_TAG", "startBTService");
         Log.i("DEBUGGER_TAG", address);
-        String ret_str = "";
 
         runOnUiThread(new Runnable() {
             @Override
@@ -580,30 +588,74 @@ public class QtActivity extends Activity
                 if(!m_BTServiceCreated){
                     Log.i("DEBUGGER_TAG", "Bluetooth createBTService");
                     m_BTSPP = new BluetoothSPP(getApplicationContext());
-//                    m_BTSPP.cancelDiscovery();
-                    m_BTSPP.setupService();
-//                    m_BTSPP.startService(BluetoothState.DEVICE_ANDROID);
 
-                    m_BTServiceCreated = true;
+                    if(!m_BTSPP.isBluetoothAvailable() || !m_BTSPP.isBluetoothEnabled()) {
+ //                           Toast.makeText(getApplicationContext()
+ //                                           , "Bluetooth is not available"
+ //                                           , Toast.LENGTH_SHORT).show();
+                    }
+
+                    else {
+                        m_BTSPP.setupService();
+                        m_BTServiceCreated = true;
+                    }
                 }
 
 
-                Log.i("DEBUGGER_TAG", "Bluetooth startService");
-                m_BTSPP.startService(BluetoothState.DEVICE_OTHER);
-  //              m_BTSPP.setDeviceTarget(BluetoothState.DEVICE_OTHER);
+                m_BTSPP.setOnDataReceivedListener(new OnDataReceivedListener() {
+                    public void onDataReceived(byte[] data, String message) {
+                        Log.i("DEBUGGER_TAG", message);
+                        // Do something when data incoming
+                        nativeLib.processBTNMEA( message );
 
-                Log.i("DEBUGGER_TAG", "Bluetooth connectA");
-                m_BTSPP.connect(address);
+                    }
+                });
 
-///
+                if(m_BTSPP.isServiceAvailable()){
+                    Log.i("DEBUGGER_TAG", "Bluetooth startService");
+                    m_BTSPP.startService(BluetoothState.DEVICE_OTHER);
+
+                    Log.i("DEBUGGER_TAG", "Bluetooth connectA");
+//                    m_BTSPP.connect(address);
+                    m_BTSPP.autoConnectAddress(address);
+
+                }
+
+                if(!m_BTSPP.isBluetoothEnabled())
+                    m_BTStat = "NOK.BTNotEnabled";
+                else if(!m_BTSPP.isServiceAvailable())
+                    m_BTStat = "NOK.ServiceNotAvailable";
+                else
+                    m_BTStat = "OK";
+
+
 
              }});
 
-        ret_str = "NOK";
-        return ret_str;
+
+        return m_BTStat;
     }
 
 
+    public String stopBTService( final int parm){
+        Log.i("DEBUGGER_TAG", "stopBTService");
+        String ret_str = "";
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+                if(m_BTServiceCreated){
+                    Log.i("DEBUGGER_TAG", "Bluetooth stopService");
+                    m_BTSPP.stopService();
+                }
+
+
+             }});
+
+        ret_str = "OK";
+        return ret_str;
+    }
 
 
     // this function is used to load and start the loader
@@ -1478,6 +1530,7 @@ public class QtActivity extends Activity
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)
     {
+ /*
         Log.i("DEBUGGER_TAG", "onKeyDown");
 
         if (keyCode == KeyEvent.KEYCODE_MENU) {
@@ -1487,7 +1540,7 @@ public class QtActivity extends Activity
 
             return true;
         }
-
+*/
 
         if (QtApplication.m_delegateObject != null && QtApplication.onKeyDown != null)
             return (Boolean) QtApplication.invokeDelegateMethod(QtApplication.onKeyDown, keyCode, event);

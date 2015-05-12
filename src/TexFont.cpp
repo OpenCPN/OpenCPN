@@ -31,6 +31,15 @@
 
 #include "TexFont.h"
 
+TexFont::TexFont( )
+{
+}
+
+TexFont::~TexFont( )
+{
+}
+
+
 void TexFont::Build( wxFont &font, bool blur )
 {
     /* avoid rebuilding if the parameters are the same */

@@ -1,3 +1,4 @@
+
 /******************************************************************************
  *
  * Project:  OpenCPN
@@ -61,9 +62,10 @@ wxImage Image_Rotate(wxImage &base_image, double angle, const wxPoint & centre_o
 #endif
 
 #ifdef __WXMSW__
-#define __PIX_CACHE_DIBSECTION__
-#define     ocpnUSE_DIBSECTION
-#define     ocpnUSE_ocpnBitmap
+#define __PIX_CACHE_WXIMAGE__
+//#define __PIX_CACHE_DIBSECTION__
+//#define     ocpnUSE_DIBSECTION
+//#define     ocpnUSE_ocpnBitmap
 #endif
 
 #ifdef __WXOSX__

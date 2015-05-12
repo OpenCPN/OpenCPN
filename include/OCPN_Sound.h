@@ -38,8 +38,10 @@ public:
     OCPN_Sound();
     ~OCPN_Sound();
 
+    static int DeviceCount();
+
     bool IsOk() const;
-    bool Create(const wxString& fileName, bool isResource = false);
+    bool Create(const wxString& fileName, int deviceIndex=-1, bool isResource = false);
     bool Play(unsigned flags = wxSOUND_ASYNC) const;
     bool IsPlaying() const;
     void Stop();

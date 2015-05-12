@@ -1130,8 +1130,6 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
         quilt_proj = ChartData->GetDBChartProj( ref_db_index );
         reference_family = cte_ref.GetChartFamily();
     }
-    else
-        return false;
 
     bool b_need_resort = false;
 

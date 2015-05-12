@@ -32,16 +32,21 @@
 #include "wx/wx.h"
 #endif //precompiled headers
 
+#include <QString>
+
 
 #define GPS_OFF                         0
 #define GPS_ON                          1
 #define GPS_PROVIDER_AVAILABLE          2
 #define GPS_SHOWPREFERENCES             3
 
+extern bool androidUtilInit( void );
+
 extern bool androidGetMemoryStatus( int *mem_total, int *mem_used );
 extern double GetAndroidDisplaySize();
 extern wxSize getAndroidDisplayDimensions( void );
 extern bool LoadQtStyleSheet(wxString &sheet_file);
+extern QString getQtStyleSheet( void );
 
 extern void androidShowBusyIcon();
 extern void androidHideBusyIcon();
@@ -57,6 +62,7 @@ extern bool androidStartBluetoothScan();
 extern bool androidStopBluetoothScan();
 extern wxArrayString androidGetBluetoothScanResults();
 extern bool androidStartBT(wxEvtHandler *consumer, wxString mac_address );
+extern bool androidStopBT();
 
 
 #endif   //guard

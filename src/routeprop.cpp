@@ -1,7 +1,7 @@
 /**************************************************************************
 *
 * Project:  OpenCPN
-* Purpose:  RouteProerties Support
+* Purpose:  RouteProperties Support
 * Author:   David Register
 *
 ***************************************************************************
@@ -365,12 +365,16 @@ RouteProp::RouteProp( wxWindow* parent, wxWindowID id, const wxString& caption, 
         
     CreateControls();
 
+    RecalculateSize();
+}
+
+void RouteProp::RecalculateSize( void )
+{
     //  Make an estimate of the dialog size, without scrollbars showing
     
     wxSize esize;
     esize.x = GetCharWidth() * 110;
     esize.y = GetCharHeight() * 40;
-//    SetSize( esize );
     
     wxSize dsize = GetParent()->GetClientSize();
     esize.y = wxMin(esize.y, dsize.y - (2 * GetCharHeight()));
@@ -384,7 +388,9 @@ RouteProp::RouteProp( wxWindow* parent, wxWindowID id, const wxString& caption, 
     
     
     Centre();
+    
 }
+
 
 void RouteProp::OnRoutePropRightClick( wxListEvent &event )
 {
@@ -651,7 +657,7 @@ void RouteProp::CreateControls()
     wxStaticText* itemStaticText4 = new wxStaticText( itemDialog1, wxID_STATIC, _("Name"),
             wxDefaultPosition, wxDefaultSize, 0 );
     itemStaticBoxSizer3->Add( itemStaticText4, 0,
-            wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, 5 );
+                              wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5 );
 
     m_RouteNameCtl = new wxTextCtrl( itemDialog1, ID_TEXTCTRL, _T(""), wxDefaultPosition,
             wxSize( 710, -1 ), 0 );
@@ -687,25 +693,25 @@ void RouteProp::CreateControls()
     wxStaticText* itemStaticText11 = new wxStaticText( itemDialog1, wxID_STATIC,
             _("Total Distance"), wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer6a->Add( itemStaticText11, 0,
-            wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE,
+            wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxTOP,
             5 );
 
     m_PlanSpeedLabel = new wxStaticText( itemDialog1, wxID_STATIC, _("Plan Speed"),
             wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer6a->Add( m_PlanSpeedLabel, 0,
-            wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE,
+            wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxTOP,
             5 );
 
     wxStaticText* itemStaticText12a = new wxStaticText( itemDialog1, wxID_STATIC, _("Time Enroute"),
             wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer6a->Add( itemStaticText12a, 0,
-            wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE,
+            wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxTOP,
             5 );
 
     m_StartTimeLabel = new wxStaticText( itemDialog1, wxID_STATIC, _("Departure Time (m/d/y h:m)"),
             wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer6a->Add( m_StartTimeLabel, 0,
-            wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE,
+            wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxTOP,
             5 );
 
     m_TotalDistCtl = new wxTextCtrl( itemDialog1, ID_TEXTCTRL3, _T(""), wxDefaultPosition,
@@ -2147,45 +2153,8 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
 
     bSizer1->Add( m_sdbSizerButtons, 0, wxALL | wxEXPAND, 5 );
 
-
-    //  This is a way of calculating the "best" size of a scrollable dialog
-    //  We calculate the minimum size of the controlling element ("Properties" page of the notebook) with scrollability disabled.
-    //  Then turn on scrolling by setting scrollrate afterwards.
-    Layout();
-    wxSize sz = bSizer1->CalcMin();
-    sz.IncBy( 20 );   // Account for some decorations?
+    RecalculateSize();
     
-#if 1
-    wxSize dsize = ::wxGetDisplaySize();
-    sz.y = wxMin(sz.y, dsize.y-80);
-//    sz = wxSize(600, 400);
-    SetClientSize(sz);
-    m_defaultClientSize = sz;
-    m_panelBasicProperties->SetScrollRate(5, 5);
-
-    wxSize fsize = GetSize();
-    fsize.y = wxMin(fsize.y, dsize.y-80);
-    fsize.x = wxMin(fsize.x, dsize.x-80);
-    SetSize(fsize);
-#endif
-
-    #if 0
-     wxSize dsize = ::wxGetDisplaySize();
-//    sz.y = wxMin(sz.y, dsize.y-80);
-//    sz = wxSize(600, 400);
-//    SetClientSize(sz);
-     m_panelBasicProperties->SetScrollRate(5, 5);
-
-    wxSize fsize = GetSize();
-    fsize.y = wxMin(fsize.y, dsize.y-80);
-    fsize.x = wxMin(fsize.x, dsize.x-80);
-    SetSize(fsize);
-    m_defaultClientSize = GetClientSize();
-#endif
-
-
-    Centre( wxBOTH );
-
     // Connect Events
     m_textLatitude->Connect( wxEVT_COMMAND_TEXT_ENTER,
             wxCommandEventHandler( MarkInfoDef::OnPositionCtlUpdated ), NULL, this );
@@ -2232,6 +2201,29 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     m_sdbSizerButtonsOK->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler( MarkInfoDef::OnMarkInfoOKClick ), NULL, this );
 }
+
+void MarkInfoDef::RecalculateSize( void )
+{
+    
+    Layout();
+    wxSize esize = GetSizer()->CalcMin();
+    esize.IncBy( 20 );   // Account for some decorations?
+    
+    wxSize dsize = GetParent()->GetClientSize();
+    esize.y = wxMin(esize.y, dsize.y - (2 * GetCharHeight()));
+    esize.x = wxMin(esize.x, dsize.x - (2 * GetCharHeight()));
+    SetClientSize(esize);
+    
+    wxSize fsize = GetSize();
+    fsize.y = wxMin(fsize.y, dsize.y - (2 * GetCharHeight()));
+    fsize.x = wxMin(fsize.x, dsize.x - (2 * GetCharHeight()));
+    SetSize(fsize);
+    
+    m_defaultClientSize = GetClientSize();
+    
+    Centre( wxBOTH );
+}
+
 
 void MarkInfoDef::OnShowWaypointRangeRingSelect( wxCommandEvent& event )
 {

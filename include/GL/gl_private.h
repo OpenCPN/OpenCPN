@@ -121,6 +121,7 @@ GLAPI void GLAPIENTRY glTranslated( GLdouble x, GLdouble y, GLdouble z );
 GLAPI void GLAPIENTRY glTranslatef( GLfloat x, GLfloat y, GLfloat z );
 
 GLAPI void GLAPIENTRY glReadBuffer( GLenum mode );
+GLAPI void GLAPIENTRY glColor3ubv( const GLubyte *v );
 
 /*
  * Depth Buffer

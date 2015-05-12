@@ -508,6 +508,8 @@ class cm93compchart : public s57chart
             ViewPort          m_vpt;
 
             CM93OffsetDialog  *m_pOffsetDialog;
+
+            cm93chart *m_last_cell_adjustvp;
 };
 
 

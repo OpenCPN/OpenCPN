@@ -417,50 +417,147 @@ void Route::Draw( ocpnDC& dc, ViewPort &VP )
     }
 }
 
-extern ChartCanvas *cc1; /* hopefully can eventually remove? */
+extern ChartCanvas *cc1;
+
+static void TestLongitude(double lon, double min, double max, bool &lonl, bool &lonr)
+{
+    double clon = (min + max)/2;
+    if(min - lon > 180)
+        lon += 360;
+
+    lonl = lonr = false;
+    if(lon < min) {
+        if(lon < clon - 180)
+            lonr = true;
+        else
+            lonl = true;
+    } else if(lon > max) {
+        if(lon > clon + 180)
+            lonl = true;
+        else
+            lonr = true;
+    }
+}
+
+void Route::DrawGLLines( ViewPort &VP, ocpnDC *dc )
+{
+    float pix_full_circle = WGS84_semimajor_axis_meters * mercator_k0 * 2 * PI * VP.view_scale_ppm;
+
+    bool r1valid = false;
+    wxPoint2DDouble r1;
+
+    wxRoutePointListNode *node = pRoutePointList->GetFirst();
+    RoutePoint *prp2 = node->GetData();
+    
+    if(m_nPoints == 1 && dc) { // single point.. make sure it shows up for highlighting
+        cc1->GetDoubleCanvasPointPix( prp2->m_lat, prp2->m_lon, &r1);
+        dc->DrawLine(r1.m_x, r1.m_y, r1.m_x+2, r1.m_y+2);
+        return;
+    }
+
+    // dc is passed for thicker highlighted lines (performance not very important)
+    if( !dc )
+        glBegin(GL_LINES);
+
+    unsigned short int FromSegNo = prp2->m_GPXTrkSegNo;
+    for(node = node->GetNext(); node; node = node->GetNext()) {
+        RoutePoint *prp1 = prp2;
+        prp2 = node->GetData();
+        unsigned short int ToSegNo = prp2->m_GPXTrkSegNo;
+        
+        if (FromSegNo != ToSegNo) {
+            FromSegNo = ToSegNo;
+            r1valid = false;
+        } else {
+            //    Handle offscreen points
+            LLBBox bbox = VP.GetBBox();
+
+            // don't need to perform calculations or render segment
+            // if both points are past any edge of the vp
+            // TODO: use these optimizations for dc mode
+            bool lat1l = prp1->m_lat < bbox.GetMinY(), lat2l = prp2->m_lat < bbox.GetMinY();
+            bool lat1r = prp1->m_lat > bbox.GetMaxY(), lat2r = prp2->m_lat > bbox.GetMaxY();
+            if( (lat1l && lat2l) || (lat1r && lat2r) ) {
+                r1valid = false;
+                continue;
+            }
+
+            bool lon1l, lon1r, lon2l, lon2r;
+            TestLongitude(prp1->m_lon, bbox.GetMinX(), bbox.GetMaxX(), lon1l, lon1r);
+            TestLongitude(prp2->m_lon, bbox.GetMinX(), bbox.GetMaxX(), lon2l, lon2r);
+            if( (lon1l && lon2l) || (lon1r && lon2r) ) {
+                r1valid = false;
+                continue;
+            }
+
+            if(!r1valid)
+                cc1->GetDoubleCanvasPointPix( prp1->m_lat, prp1->m_lon, &r1);
+
+            wxPoint2DDouble r2;
+            cc1->GetDoubleCanvasPointPix( prp2->m_lat, prp2->m_lon, &r2);
+
+            //    In the cases where one point is on, and one off
+            //    we must decide which way to go in longitude
+
+            double adder1 = 0, adder2 = 0;
+            if(!(lon1l || lon1r) && (lon2l || lon2r) ) { // first point is on screen, second not
+                if( r2.m_x < r1.m_x )
+                    adder2 = pix_full_circle;
+                else
+                    adder2 = -pix_full_circle;
+
+                if( fabs(r1.m_x - r2.m_x) < fabs(r1.m_x - ( r2.m_x + adder2 )) )
+                    adder2 = 0;
+            } else if(lon1l || lon1r) { // first point is off screen
+                if( r1.m_x < r2.m_x )
+                    adder1 = pix_full_circle;
+                else
+                    adder1 = -pix_full_circle;
+
+                if( fabs(r1.m_x - r2.m_x) < fabs(r2.m_x - (r1.m_x + adder1)) )
+                    adder1 = 0;
+            }
+
+            if( dc )
+                dc->DrawLine(r1.m_x + adder1, r1.m_y, r2.m_x + adder2, r2.m_y);
+            else {
+                glVertex2f(r1.m_x + adder1, r1.m_y);
+                glVertex2f(r2.m_x + adder2, r2.m_y);
+
+                // cache screen position for arrows and points
+                if(!r1valid) {
+                    prp1->m_pos_on_screen = !lat1l && !lat1r && !lon1l && !lon1r;
+                    prp1->m_screen_pos = r1;
+                }
+
+                prp2->m_pos_on_screen = !lat2l && !lat2r && !lon2l && !lon2r;
+                prp2->m_screen_pos = r2;
+            }
+
+            r1 = r2;
+            r1valid = true;
+        }
+    }
+
+    if( !dc )
+        glEnd();
+}
 
 void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
 {
 #ifdef ocpnUSE_GL
     if( m_nPoints < 1 || !m_bVisible ) return;
     
-    //  Hiliting first
-    //  Being special case to draw something for a 1 point route....
-    ocpnDC dc;
-    if(m_hiliteWidth){
+    if(m_hiliteWidth) {
         wxColour y = GetGlobalColor( _T ( "YELO1" ) );
         wxColour hilt( y.Red(), y.Green(), y.Blue(), 128 );
+
         wxPen HiPen( hilt, m_hiliteWidth, wxSOLID );
+
+        ocpnDC dc;
         dc.SetPen( HiPen );
-        
-        wxRoutePointListNode *node = pRoutePointList->GetFirst();
-        RoutePoint *prp0 = node->GetData();
-        wxPoint r0;
-        cc1->GetCanvasPointPix( prp0->m_lat, prp0->m_lon, &r0);
-
-        if( m_nPoints == 1 ) {
-            dc.StrokeLine( r0.x, r0.y, r0.x + 2, r0.y + 2 );
-//            return;
-        }
-            
-        
-        node = node->GetNext();
-        while( node ){
-            
-            RoutePoint *prp = node->GetData();
-            wxPoint r1;
-            cc1->GetCanvasPointPix( prp->m_lat, prp->m_lon, &r1);
-
-            dc.StrokeLine( r0.x, r0.y, r1.x, r1.y );
-                    
-            r0 = r1;
-            node = node->GetNext();
-            
-        }
+        DrawGLLines(VP, &dc);
     }
-    
-//    if( m_nPoints < 2  )
-//        return;
     
     /* determine color and width */
     wxColour col;
@@ -507,67 +604,34 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
             }
         }
     }
-    
-    int style = wxSOLID;
-    if( m_style != STYLE_UNDEFINED ) style = m_style;
-    dc.SetPen( *wxThePenList->FindOrCreatePen( col, width, style ) );
-    
+        
     glColor3ub(col.Red(), col.Green(), col.Blue());
-    glLineWidth( wxMax( g_GLMinSymbolLineWidth, width ) );
-    
-    dc.SetGLStipple();
+    glLineWidth(wxMax( g_GLMinSymbolLineWidth, width ));
 
-    glBegin(GL_LINE_STRIP);
-    float lastlon = 0;
-    float lastlat = 0;
-    unsigned short int FromSegNo = 1;
-    for(wxRoutePointListNode *node = pRoutePointList->GetFirst();
-        node; node = node->GetNext()) {
-        RoutePoint *prp = node->GetData();
-        unsigned short int ToSegNo = prp->m_GPXTrkSegNo;
-        
-        /* crosses IDL? if so break up into two segments */
-        int dir = 0;
-        if(prp->m_lon > 150 && lastlon < -150)
-            dir = -1;
-        else if(prp->m_lon < -150 && lastlon > 150)
-            dir = 1;
-        
-        wxPoint r;
-        if (FromSegNo != ToSegNo)
-        {
-            glEnd();
-            FromSegNo = ToSegNo;
-            glBegin(GL_LINE_STRIP);
-        }
-        if(dir)
-        {
-            double crosslat = lat_rl_crosses_meridian(lastlat, lastlon, prp->m_lat, prp->m_lon, 180.0);
-            cc1->GetCanvasPointPix( crosslat, dir*180, &r);
-            glVertex2i(r.x, r.y);
-            glEnd();
-            glBegin(GL_LINE_STRIP);
-            cc1->GetCanvasPointPix( crosslat, -dir*180, &r);
-            glVertex2i(r.x, r.y);
-        }
-        lastlat=prp->m_lat;
-        lastlon=prp->m_lon;
-        
-        cc1->GetCanvasPointPix( prp->m_lat, prp->m_lon, &r);
-        glVertex2i(r.x, r.y);
+    if( m_style != STYLE_UNDEFINED )
+        glEnable( GL_LINE_STIPPLE );
+
+    switch( m_style ) {
+    case wxDOT:        glLineStipple( 1, 0x3333 ); break;
+    case wxLONG_DASH:  glLineStipple( 1, 0xFFF8 ); break;
+    case wxSHORT_DASH: glLineStipple( 1, 0x3F3F ); break;
+    case wxDOT_DASH:   glLineStipple( 1, 0x8FF1 ); break;
     }
-    glEnd();
+
+    DrawGLLines(VP, NULL);
+
     glDisable (GL_LINE_STIPPLE);
     
     /* direction arrows.. could probably be further optimized for opengl */
     if( !m_bIsTrack ) {
         wxRoutePointListNode *node = pRoutePointList->GetFirst();
-        wxPoint rpt1, rpt2;
+        wxPoint2DDouble rpt1, rpt2;
         while(node) {
             RoutePoint *prp = node->GetData();
-            cc1->GetCanvasPointPix( prp->m_lat, prp->m_lon, &rpt2 );
-            if(node != pRoutePointList->GetFirst())
-                RenderSegmentArrowsGL( rpt1.x, rpt1.y, rpt2.x, rpt2.y, cc1->GetVP() );
+//            cc1->GetDoubleCanvasPointPix( prp->m_lat, prp->m_lon, &rpt2 );
+            rpt2 = prp->m_screen_pos;
+            if(node != pRoutePointList->GetFirst() && prp->m_pos_on_screen)
+                RenderSegmentArrowsGL( rpt1.m_x, rpt1.m_y, rpt2.m_x, rpt2.m_y, cc1->GetVP() );
             rpt1 = rpt2;
             node = node->GetNext();
         }
@@ -576,13 +640,9 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
     /*  Route points  */
     for(wxRoutePointListNode *node = pRoutePointList->GetFirst(); node; node = node->GetNext()) {
         RoutePoint *prp = node->GetData();
-        if ( !m_bVisible && prp->m_bKeepXRoute )
-            prp->DrawGL( VP, region );
-        else if (m_bVisible)
-            prp->DrawGL( VP, region );
-    
-    }
-        
+        if ( m_bVisible || prp->m_bKeepXRoute )
+            prp->DrawGL( VP, region, true );
+    }        
 #endif
 }
 
@@ -673,7 +733,7 @@ void Route::RenderSegment( ocpnDC& dc, int xa, int ya, int xb, int yb, ViewPort 
     }
 }
 
-void Route::RenderSegmentArrowsGL( int xa, int ya, int xb, int yb, ViewPort &VP)
+void Route::RenderSegmentArrowsGL( float xa, float ya, float xb, float yb, ViewPort &VP)
 {
 #ifdef ocpnUSE_GL
     //    Draw a direction arrow        
@@ -686,14 +746,14 @@ void Route::RenderSegmentArrowsGL( int xa, int ya, int xb, int yb, ViewPort &VP)
     //    and constrain the arrow to be no more than xx% of the line length
     float nom_arrow_size = 20.;
     float max_arrow_to_leg = (float).20;
-    float lpp = sqrtf( powf( (float) (xa - xb), 2) + powf( (float) (ya - yb), 2) );
+    float lpp = sqrtf( powf(xa - xb, 2) + powf(ya - yb, 2) );
     
     float icon_size = icon_scale_factor * nom_arrow_size;
     if( icon_size > ( lpp * max_arrow_to_leg ) )
         icon_scale_factor = ( lpp * max_arrow_to_leg )
             / nom_arrow_size;
 
-    float theta = atan2f( (float)yb - ya, (float)xb - xa );
+    float theta = atan2f(yb - ya,xb - xa );
     theta -= (float)PI;
 
     glPushMatrix();
@@ -916,6 +976,8 @@ wxBoundingBox Route::GetBBox( void )
     double bbox_ymax = -90.;
 
     RBBox.Reset();
+
+    // TODO: incorrect logic.  It fails if a route crosses the idl and prime meridan.
     m_bcrosses_idl = CalculateCrossesIDL();
 
     wxRoutePointListNode *node = pRoutePointList->GetFirst();
@@ -969,6 +1031,8 @@ bool Route::CalculateCrossesIDL( void )
 
     while( node ) {
         data = node->GetData();
+#if 1   // this logic is incorrect, however because the logic that computes the bounding box is also
+        // incorrect, there are cases where using this logic works better...
         if( ( lon0 < -150. ) && ( data->m_lon > 150. ) ) {
             idl_cross = true;
             break;
@@ -978,6 +1042,14 @@ bool Route::CalculateCrossesIDL( void )
             idl_cross = true;
             break;
         }
+
+#else
+        // this logic is actually correct for idl, but not needed
+        if( fabs(lon0 - data->m_lon) > 180) {
+            idl_cross = true;
+            break;
+        }
+#endif
 
         lon0 = data->m_lon;
 
