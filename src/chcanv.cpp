@@ -1915,7 +1915,7 @@ void ChartCanvas::StopMovement( )
     m_zoom_factor = 1;
     m_rotation_speed = 0;
     m_mustmove = 0;
-#ifndef __OCPN__ANDROID__    
+#if !defined(__WXGTK__) && !defined(__WXQT__)
     SetFocus();
     gFrame->Raise();
 #endif    

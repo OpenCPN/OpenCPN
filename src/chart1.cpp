@@ -1492,9 +1492,9 @@ bool MyApp::OnInit()
 
     g_config_version_string = vs;
 
-    //  Show deferred log restart message, if it exists.
+    //  log deferred log restart message, if it exists.
     if( !g_Platform->GetLargeLogMessage().IsEmpty() )
-        OCPNMessageBox ( NULL, g_Platform->GetLargeLogMessage(), wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK, 5 );
+        wxLogMessage( g_Platform->GetLargeLogMessage() );
 
     //  Validate OpenGL functionality, if selected
 #ifdef ocpnUSE_GL
@@ -2890,6 +2890,8 @@ void MyFrame::RequestNewToolbar()
         g_FloatingToolbarDialog->RePosition();
         g_FloatingToolbarDialog->SetColorScheme( global_color_scheme );
         g_FloatingToolbarDialog->Show( b_reshow );
+
+        gFrame->Raise(); // ensure keyboard focus to the chart window (needed by gtk+)
     }
     
 #ifdef __OCPN__ANDROID__
@@ -9213,6 +9215,7 @@ wxArrayString *EnumerateSerialPorts( void )
        free(filelist[ind]);
       }
 
+      free(filelist);
 
 //        We try to add a few more, arbitrarily, for those systems that have fixed, traditional COM ports
 
