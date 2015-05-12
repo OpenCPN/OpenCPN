@@ -39,6 +39,10 @@
 #include "chartbase.h"
 #include "styles.h"
 
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#endif
+
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY(RegionArray);
 
@@ -49,6 +53,7 @@ extern ChartDB *ChartData;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern MyFrame *gFrame;
 extern bool g_btouch;
+extern int  g_GUIScaleFactor;
 
 //------------------------------------------------------------------------------
 //    StatWin Implementation
@@ -105,7 +110,7 @@ void StatWin::RePosition()
     Move( screen_pos );
 #ifdef __OCPN__ANDROID__
     Raise();
-#endif    
+#endif
 }
 
 void StatWin::ReSize()
@@ -113,13 +118,16 @@ void StatWin::ReSize()
     wxSize cs = GetParent()->GetClientSize();
     wxSize new_size;
     new_size.x = cs.x;
+
+    new_size.y = 22;
     
-    if(g_btouch)
-        new_size.y = 40;
-    else
-        new_size.y = 22;
+    if(g_btouch){
+        double size_mult =  exp( g_GUIScaleFactor * 0.0953101798043 ); //ln(1.1)
+        new_size.y *= size_mult;
+        new_size.y = wxMin(new_size.y, 50);     // absolute boundaries
+        new_size.y = wxMax(new_size.y, 10);
+    }
     
-        
     SetSize(new_size);
 
 }
@@ -151,7 +159,6 @@ void StatWin::OnSize( wxSizeEvent& event )
     float width_factor = 0.6f;
     if(g_btouch)
         width_factor = 0.98f;
-    
     if( width ) {
         pPiano->SetSize( 0, 0, width * width_factor, height );
         pPiano->FormatKeys();
@@ -233,6 +240,8 @@ BEGIN_EVENT_TABLE(PianoWin, wxWindow)
     EVT_PAINT(PianoWin::OnPaint)
     EVT_SIZE(PianoWin::OnSize)
     EVT_MOUSE_EVENTS(PianoWin::MouseEvent)
+    EVT_TIMER ( PIANO_EVENT_TIMER, PianoWin::onTimerEvent )
+    
 END_EVENT_TABLE()
 
 // Define a constructor
@@ -245,7 +254,8 @@ PianoWin::PianoWin( wxFrame *frame ) :
     m_hover_icon_last = -1;
     m_hover_last = -1;
     m_brounded = false;
-
+    m_bBusy = false;
+    
     m_nRegions = 0;
 
     SetBackgroundStyle( wxBG_STYLE_CUSTOM ); // on WXMSW, this prevents flashing on color scheme change
@@ -255,6 +265,9 @@ PianoWin::PianoWin( wxFrame *frame ) :
     m_pPolyIconBmp = NULL;
     m_pSkewIconBmp = NULL;
     m_pTmercIconBmp = NULL;
+    
+    m_eventTimer.SetOwner( this, PIANO_EVENT_TIMER );
+    
 }
 
 PianoWin::~PianoWin()
@@ -370,6 +383,9 @@ void PianoWin::OnPaint( wxPaintEvent& event )
                 }
             }
 
+            if(m_bBusy)
+                dc.SetBrush( m_uvBrush );
+            
             wxRect box = KeyRegion.Item( i ).GetBox();
 
             if( m_brounded ) {
@@ -444,6 +460,13 @@ void PianoWin::OnPaint( wxPaintEvent& event )
 #else
     }
 #endif
+}
+
+void PianoWin::ShowBusy( bool busy )
+{
+    m_bBusy = busy;
+    Refresh( true );
+    Update();
 }
 
 void PianoWin::SetKeyArray( ArrayOfInts array )
@@ -590,9 +613,24 @@ void PianoWin::MouseEvent( wxMouseEvent& event )
     }
 
     if(g_btouch){
+        if( event.LeftDown() ) {
+            if( -1 != sel_index ){
+                m_action = DEFERRED_KEY_CLICK_DOWN;
+                ShowBusy( true );
+ #ifdef __OCPN__ANDROID__
+                androidShowBusyIcon();
+ #endif                
+                m_eventTimer.Start(10, wxTIMER_ONE_SHOT);
+            }
+        }
+        
         if( event.LeftUp() ) {
-            if( -1 != sel_index )
-                gFrame->HandlePianoClick( sel_index, sel_dbindex );
+            if( -1 != sel_index ){
+                m_click_sel_index = sel_index;
+                m_click_sel_dbindex = sel_dbindex;
+                m_action = DEFERRED_KEY_CLICK_UP;
+                m_eventTimer.Start(10, wxTIMER_ONE_SHOT);
+            }
         }
         if( event.RightDown() ) {
             if( sel_index != m_hover_last ) {
@@ -665,4 +703,19 @@ void PianoWin::ResetRollover( void )
     m_hover_last = -1;
 }
 
+void PianoWin::onTimerEvent(wxTimerEvent &event)
+{
+    switch(m_action){
+        case DEFERRED_KEY_CLICK_DOWN:
+            break;
+        case DEFERRED_KEY_CLICK_UP:
+            gFrame->HandlePianoClick( m_click_sel_index, m_click_sel_dbindex );
+            ShowBusy( false );
+            break;
+        default:
+            break;
+    }
+}
 
+            
+        

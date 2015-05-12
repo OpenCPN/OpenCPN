@@ -1,11 +1,11 @@
-/***************************************************************************
+/******************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  OpenCPN Android support utilities
+ * Purpose:  GRIB Plugin Friends
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2015 by David S. Register                               *
+ *   Copyright (C) 2010 by David S. Register   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,10 +21,11 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- **************************************************************************/
+ ***************************************************************************
+ */
 
-#ifndef ANDROIDUTIL_H
-#define ANDROIDUTIL_H
+#ifndef __GRIBGRABBERWIN_H__
+#define __GRIBGRABBERWIN_H__
 
 #include "wx/wxprec.h"
 
@@ -32,37 +33,28 @@
 #include "wx/wx.h"
 #endif //precompiled headers
 
-#include <QString>
+#include "GribUIDialog.h"
 
+class GriUICtrlBar;
+class GribGrabberWin;
+class GribSpacerWin;
+//----------------------------------------------------------------------------
+// GrabberWindow Definition
+//----------------------------------------------------------------------------
 
-#define GPS_OFF                         0
-#define GPS_ON                          1
-#define GPS_PROVIDER_AVAILABLE          2
-#define GPS_SHOWPREFERENCES             3
+class GribGrabberWin: public wxPanel
+{
+public:
+    GribGrabberWin( wxWindow *parent );
+    void OnPaint( wxPaintEvent& event );
+    int Size( int height );
+private:
+    void OnMouseEvent( wxMouseEvent& event );
 
-extern bool androidUtilInit( void );
+    wxBitmap m_bitmap;
+    bool m_bLeftDown;
 
-extern bool androidGetMemoryStatus( int *mem_total, int *mem_used );
-extern double GetAndroidDisplaySize();
-extern wxSize getAndroidDisplayDimensions( void );
-extern bool LoadQtStyleSheet(wxString &sheet_file);
-extern QString getQtStyleSheet( void );
+DECLARE_EVENT_TABLE()
+};
 
-extern void androidShowBusyIcon();
-extern void androidHideBusyIcon();
-
-
-extern bool androidStartNMEA(wxEvtHandler *consumer);
-extern bool androidStopNMEA();
-extern wxString androidGPSService(int parm);
-extern bool androidDeviceHasGPS();
-
-extern bool androidDeviceHasBlueTooth();
-extern bool androidStartBluetoothScan();
-extern bool androidStopBluetoothScan();
-extern wxArrayString androidGetBluetoothScanResults();
-extern bool androidStartBT(wxEvtHandler *consumer, wxString mac_address );
-extern bool androidStopBT();
-
-
-#endif   //guard
+#endif

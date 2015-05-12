@@ -1,13 +1,14 @@
 /******************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  GRIB Plugin Friends - gribtable
+ * Purpose:  GRIB Plugin Friends
  * Author:   David Register
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
+
  *   it under the terms of the GNU General Public License as published by  *
  *   the Free Software Foundation; either version 2 of the License, or     *
  *   (at your option) any later version.                                   *
@@ -23,8 +24,9 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  */
-#ifndef __GRIBTABLE_H__
-#define __GRIBTABLE_H__
+
+#ifndef __GRIBUICData_H__
+#define __GRIBUICData_H__
 
 #include "wx/wxprec.h"
 
@@ -32,54 +34,39 @@
 #include "wx/wx.h"
 #endif //precompiled headers
 
-#include <wx/grid.h>
-
 #include "GribUIDialogBase.h"
-#include "grib_pi.h"
-#include "ocpn_plugin.h"
+#include "GribSettingsDialog.h"
+#include "GrabberWin.h"
 
 class GRIBUICtrlBar;
-
+class GribGrabberWin;
+class GribSpacerWin;
 //----------------------------------------------------------------------------------------------------------
-//    GRIB table dialog Specification
+//    GRIB CtrlBar Specification
 //----------------------------------------------------------------------------------------------------------
-class GRIBTable: public GRIBTableBase 
+class CursorData: public CursorDataBase
 {
 public:
 
-    GRIBTable( GRIBUICtrlBar &parent);
-    
-    ~GRIBTable(){}
+    CursorData( wxWindow *window, GRIBUICtrlBar &parent );
+	~CursorData() {}
 
-    void InitGribTable( int zone, ArrayOfGribRecordSets *rsa);
-    void CloseDialog();
+    void OnCursorTrackTimer( wxTimerEvent & event) {UpdateTrackingControls();}
+	void PopulateTrackingControls( bool vertical );
+    void UpdateTrackingControls();
+    void ResolveDisplayConflicts( int Id );
+    void OnMouseEvent( wxMouseEvent &event );
 
+    wxTimer m_tCursorTrackTimer;
 private:
+	void AddTrackingControl( wxControl *ctrl1,  wxControl *ctrl2,  wxControl *ctrl3, wxControl *ctrl4, bool show,
+            bool vertical, int wictrl2, int wictrl3 = 0 );
+    void MenuAppend( wxMenu *menu, int id, wxString label, int setting);
+	void OnCBAny( wxCommandEvent& event );
+	void OnMenuCallBack( wxMouseEvent& event );
 
-    void AddDataRow( int num_rows, int num_cols, wxString label, wxGridCellAttr *row_attr );
-    void AutoSizeDataRows();
-
-    wxString GetWind(GribRecord **recordarray);
-    wxString GetWindBf(GribRecord **recordarray);
-    wxString GetPressure(GribRecord **recordarray);
-    wxString GetWindGust(GribRecord **recordarray);
-    wxString GetWaves(GribRecord **recordarray);
-    wxString GetRainfall(GribRecord **recordarray);
-    wxString GetCloudCover(GribRecord **recordarray);
-    wxString GetAirTemp(GribRecord **recordarray);
-    wxString GetSeaTemp(GribRecord **recordarray);
-    wxString GetCAPE(GribRecord **recordarray);
-    wxString GetCurrent(GribRecord **recordarray);
-    wxString GetTimeRowsStrings( wxDateTime date_time, int time_zone, int type );
-
-    void OnClose( wxCloseEvent& event );
-    void OnOKButton( wxCommandEvent& event );
-    void OnClick( wxGridEvent& event );
-    void OnRangeClick( wxGridRangeSelectEvent& event );
-
-    GRIBUICtrlBar *m_pGDialog;
-    GribTimelineRecordSet * m_pTimeset;
-    wxColour m_pDataCellsColour;
+	GRIBUICtrlBar &m_gparent;
+	bool          m_bLeftDown;
 };
 
-#endif //__GRIBTABLE_H__
+#endif

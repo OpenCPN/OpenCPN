@@ -1441,6 +1441,8 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
         gFrame->SetGroupIndex( event.GetId() - ID_DEF_MENU_GROUPBASE );
     }
 
+    parent->InvalidateGL();
+    
     g_click_stop = 0;    // Context menu was processed, all is well
 
 }

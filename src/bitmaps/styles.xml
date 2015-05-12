@@ -228,6 +228,14 @@
 				<icon-location x="700" y="60"/>
 				<size x="12" y="32"/>
 			</icon>
+                        <icon name="grabber_hi">
+                                <icon-location x="712" y="60"/>
+                                <size x="12" y="32"/>
+                        </icon>
+                        <icon name="grabber_ext">
+                                <icon-location x="700" y="100"/>
+                                <size x="32" y="32"/>
+                        </icon>
 			<icon name="viz">
 				<icon-location x="20" y="100"/>
 				<size x="20" y="13"/>
@@ -717,6 +725,14 @@
 				<icon-location x="700" y="60"/>
 				<size x="11" y="32"/>
 			</icon>
+                        <icon name="grabber_hi">
+                                <icon-location x="714" y="60"/>
+                                <size x="11" y="32"/>
+                        </icon>
+                        <icon name="grabber_ext">
+                                <icon-location x="700" y="100"/>
+                                <size x="32" y="32"/>
+                        </icon>
 			<icon name="viz">
 				<icon-location x="20" y="100"/>
 				<size x="20" y="13"/>
@@ -1199,6 +1215,14 @@
 				<icon-location x="700" y="60"/>
 				<size x="11" y="32"/>
 			</icon>
+                        <icon name="grabber_hi">
+                                <icon-location x="714" y="60"/>
+                                <size x="11" y="32"/>
+                        </icon>
+                        <icon name="grabber_ext">
+                                <icon-location x="700" y="100"/>
+                                <size x="11" y="32"/>
+                        </icon>
 			<icon name="viz">
 				<icon-location x="20" y="100"/>
 				<size x="20" y="13"/>

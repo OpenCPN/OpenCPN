@@ -199,6 +199,7 @@ extern float            g_fNavAidRadarRingsStep;
 extern int              g_pNavAidRadarRingsStepUnits;
 extern bool             g_bWayPointPreventDragging;
 extern bool             g_bEnableZoomToCursor;
+extern bool             g_bShowChartBar;
 
 extern AISTargetAlertDialog    *g_pais_alert_dialog_active;
 extern AISTargetQueryDialog    *g_pais_query_dialog_active;
@@ -2746,6 +2747,9 @@ void ChartCanvas::DoRotateCanvas( double rotation )
 {
     while(rotation < 0) rotation += 2*PI;
     while(rotation > 2*PI) rotation -= 2*PI;
+
+    if(rotation == VPoint.rotation || isnan(rotation))
+        return;
 
     SetVPRotation( rotation );
     parent_frame->UpdateRotationState( VPoint.rotation);
@@ -8220,6 +8224,8 @@ bool ChartCanvas::InvokeCanvasMenu(int x, int y, int seltype)
 #ifdef __WXQT__
     g_FloatingToolbarDialog->Raise();
     g_FloatingCompassDialog->Raise();
+    if(stats && stats->IsShown())
+        stats->Raise();
 #endif
     
     return true;
@@ -8666,11 +8672,11 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
                 }
             }
             else {
-                route->DrawSegment( dc, &lastPoint, &r_rband, GetVP(), false );
+                if(r_rband.x && r_rband.y)      // RubberBand disabled?
+                    route->DrawSegment( dc, &lastPoint, &r_rband, GetVP(), false );
             }
         }
 
-        
         wxString routeInfo;
         if( g_bShowMag )
             routeInfo << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( brg ) );
@@ -9387,8 +9393,12 @@ void ChartCanvas::Refresh( bool eraseBackground, const wxRect *rect )
             m_pCIWin->Raise();
             m_pCIWin->Refresh( false );
         }
-
-
+        
+        if(g_FloatingToolbarDialog && g_FloatingToolbarDialog->m_pRecoverwin ){
+            g_FloatingToolbarDialog->m_pRecoverwin->Raise();
+            g_FloatingToolbarDialog->m_pRecoverwin->Refresh( false );
+        }
+        
     } else
 #endif
         wxWindow::Refresh( eraseBackground, rect );

@@ -36,13 +36,14 @@
 
 #include "ocpn_plugin.h"
 
+
 //----------------------------------------------------------------------------------------------------------
 //    Request setting Specification
 //----------------------------------------------------------------------------------------------------------
 class GribRequestSetting : public GribRequestSettingBase
 {
 public:
-      GribRequestSetting( GRIBUIDialog &parent );
+      GribRequestSetting( GRIBUICtrlBar &parent );
 
       ~GribRequestSetting() {}
 
@@ -54,6 +55,8 @@ public:
       bool RenderGlZoneOverlay();
       bool DoRenderZoneOverlay();
       void SetRequestDialogSize();
+      void StopGraphicalZoneSelection();
+      void Save() { wxCommandEvent evt; OnSaveMail( evt); }
 
       wxString m_RequestConfigBase;
       wxString m_MailToAddresses;
@@ -68,7 +71,7 @@ private:
 
       void ApplyRequestConfig( unsigned rs, unsigned it, unsigned tr );
       wxString WriteMail();
-      int EstimateFileSize();
+      int EstimateFileSize( double *size );
 
       void InitRequestConfig();
       void OnExit(wxCommandEvent &event) { wxCloseEvent evt; OnClose ( evt ); }
@@ -81,12 +84,11 @@ private:
       void OnSaveMail( wxCommandEvent& event );
       void OnZoneSelectionModeChange( wxCommandEvent& event  );
       void OnCancel( wxCommandEvent& event ) { wxCloseEvent evt; OnClose( evt); }
-      void OnTooggleSelection( wxCommandEvent& event );
       void OnCoordinatesChange( wxSpinEvent& event );
       void OnMouseEventTimer( wxTimerEvent & event);
       void SetCoordinatesText();
 
-      GRIBUIDialog &m_parent;
+      GRIBUICtrlBar &m_parent;
 
       wxDC           *m_pdc;
       wxTimer        m_tMouseEventTimer;

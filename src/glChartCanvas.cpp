@@ -60,6 +60,7 @@
 #include "gshhs.h"
 #include "ais.h"
 #include "OCPNPlatform.h"
+#include "toolbar.h"
 
 #ifndef GL_ETC1_RGB8_OES
 #define GL_ETC1_RGB8_OES                                        0x8D64
@@ -102,6 +103,7 @@ extern bool g_bDebugOGL;
 extern bool g_bShowFPS;
 extern bool g_btouch;
 extern OCPNPlatform *g_Platform;
+extern ocpnFloatingToolbarDialog *g_FloatingToolbarDialog;
 
 GLenum       g_texture_rectangle_format;
 
@@ -792,6 +794,13 @@ glChartCanvas::glChartCanvas( wxWindow *parent ) :
     
     Connect( wxEVT_QT_PINCHGESTURE,
              (wxObjectEventFunction) (wxEventFunction) &glChartCanvas::OnEvtPinchGesture, NULL, this );
+
+    Connect( wxEVT_TIMER,
+             (wxObjectEventFunction) (wxEventFunction) &glChartCanvas::onGestureTimerEvent, NULL, this );
+    
+    m_gestureEeventTimer.SetOwner( this, GESTURE_EVENT_TIMER );
+    m_bgestureGuard = false;
+    
 #endif    
     
 }
@@ -876,6 +885,12 @@ void glChartCanvas::MouseEvent( wxMouseEvent& event )
  
 #else
 
+    if(m_bgestureGuard){
+        cc1->r_rband.x = 0;             // turn off rubberband temporarily
+        return;
+    }
+        
+            
     if(cc1->MouseEventSetup( event, false )) {
         if(!event.LeftDClick()){
             return;                 // handled, no further action required
@@ -1383,6 +1398,15 @@ no_compression:
     wxLogMessage(lwmsg);
     lwmsg.Printf(_T("OpenGL-> Minimum symbol line width: %4.1f"), g_GLMinSymbolLineWidth);
     wxLogMessage(lwmsg);
+    
+    m_benableFog = true;
+    m_benableVScale = true;
+#ifdef __OCPN__ANDROID__
+    m_benableFog = false;
+    m_benableVScale = false;
+#endif    
+    
+    
 }
 
 void glChartCanvas::OnPaint( wxPaintEvent &event )
@@ -2879,7 +2903,7 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
     
     glPushMatrix();
     if(VPoint.b_quilt) {
-        bool fog_it = (g_fog_overzoom && (scale_factor > 10));
+        bool fog_it = m_bfogit;
         
         RenderQuiltViewGL( VPoint, region );
         
@@ -3403,8 +3427,8 @@ void glChartCanvas::Render()
     
     wxPaintDC( this );
 
-    if(m_binPinch || m_binPan)
-        return;
+//    if(m_binPinch || m_binPan)
+//        return;
     
     ViewPort VPoint = cc1->VPoint;
     ViewPort svp = VPoint;
@@ -3439,13 +3463,15 @@ void glChartCanvas::Render()
 
     //  If we plan to post process the display, don't use accelerated panning
     double scale_factor = VPoint.ref_scale/VPoint.chart_scale;
-    bool fog_it = g_fog_overzoom && (scale_factor > g_overzoom_emphasis_base) && VPoint.b_quilt;
-    fog_it |=  g_oz_vector_scale && (scale_factor > g_overzoom_emphasis_base) && VPoint.b_quilt;
+    
+    m_bfogit = m_benableFog && g_fog_overzoom && (scale_factor > g_overzoom_emphasis_base) && VPoint.b_quilt;
+    bool scale_it  =  m_benableVScale && g_oz_vector_scale && (scale_factor > g_overzoom_emphasis_base) && VPoint.b_quilt;
+    
     bool bpost_hilite = !cc1->m_pQuilt->GetHiliteRegion( VPoint ).IsEmpty();
     
     // Try to use the framebuffer object's cache of the last frame
     // to accelerate drawing this frame (if overlapping)
-    if( m_b_BuiltFBO && !fog_it && !bpost_hilite) {
+    if( m_b_BuiltFBO && !m_bfogit && !scale_it && !bpost_hilite) {
         int sx = GetSize().x;
         int sy = GetSize().y;
 
@@ -3716,6 +3742,14 @@ void glChartCanvas::Render()
             gldc.DrawBitmap( pthumbwin->GetBitmap(), thumbx, thumby, false);
     }
     
+    if(g_FloatingToolbarDialog && g_FloatingToolbarDialog->m_pRecoverwin->IsShown() ){
+        int recoverx, recovery;
+        g_FloatingToolbarDialog->m_pRecoverwin->GetPosition( &recoverx, &recovery );
+        if( g_FloatingToolbarDialog->m_pRecoverwin->GetBitmap().IsOk())
+            gldc.DrawBitmap( g_FloatingToolbarDialog->m_pRecoverwin->GetBitmap(), recoverx, recovery, true);
+    }
+    
+    
 #endif
 
     //quiting?
@@ -3869,8 +3903,6 @@ glColor3ub(250, 0, 250);
 
 void glChartCanvas::FastPan(int dx, int dy)
 {
-    //   wxPaintDC( this );
-    
     int sx = GetSize().x;
     int sy = GetSize().y;
     
@@ -3930,7 +3962,6 @@ void glChartCanvas::FastPan(int dx, int dy)
     ty0 = m_fbo_offsety;
     tx =  m_fbo_offsetx + sx;
     ty =  m_fbo_offsety + sy;
-    
     
     
     if((m_fbo_offsety ) < 0){
@@ -3998,7 +4029,7 @@ void glChartCanvas::FastPan(int dx, int dy)
         glEnd();
     }
     
-    
+
     // Render the cached texture as quad to screen
     glBindTexture( g_texture_rectangle_format, m_cache_tex[m_cache_page]);
     glEnable( g_texture_rectangle_format );
@@ -4078,6 +4109,7 @@ void glChartCanvas::FastZoom(float factor)
         glClear( GL_STENCIL_BUFFER_BIT );
         glDisable( GL_STENCIL_TEST );
     }
+
     
     float vx0 = 0;
     float vy0 = 0;
@@ -4085,9 +4117,6 @@ void glChartCanvas::FastZoom(float factor)
     float vx = sx;
     
     glBindTexture( g_texture_rectangle_format, 0);
-    
-    
-    
     
     // Render the cached texture as quad to screen
     glBindTexture( g_texture_rectangle_format, m_cache_tex[m_cache_page]);
@@ -4104,7 +4133,53 @@ void glChartCanvas::FastZoom(float factor)
     
     glDisable( g_texture_rectangle_format );
     glBindTexture( g_texture_rectangle_format, 0);
-    
+
+    //  When zooming out, if we go too far, then the frame buffer is repeated on-screen due
+    //  to address wrapping in the frame buffer.
+    //  Detect this case, and render some simple solid covering quads to avoid a confusing display.
+    if( (m_fbo_sheight > m_cache_tex_y) || (m_fbo_swidth > m_cache_tex_x) ){
+        wxColour color = GetGlobalColor(_T("GREY1"));
+        glColor3ub(color.Red(), color.Green(), color.Blue());
+        
+        if( m_fbo_sheight > m_cache_tex_y ){
+            float h1 = sy * (1.0 - m_cache_tex_y/m_fbo_sheight) / 2.;
+            
+            glBegin( GL_QUADS );
+            glVertex2f( 0,  0 );
+            glVertex2f( w,  0 );
+            glVertex2f( w, h1 );
+            glVertex2f( 0, h1 );
+            glEnd();
+
+            glBegin( GL_QUADS );
+            glVertex2f( 0,  sy );
+            glVertex2f( w,  sy );
+            glVertex2f( w, sy - h1 );
+            glVertex2f( 0, sy - h1 );
+            glEnd();
+            
+        }
+ 
+         // horizontal axis
+         if( m_fbo_swidth > m_cache_tex_x ){
+             float w1 = sx * (1.0 - m_cache_tex_x/m_fbo_swidth) / 2.;
+             
+             glBegin( GL_QUADS );
+             glVertex2f( 0,  0 );
+             glVertex2f( w1,  0 );
+             glVertex2f( w1, sy );
+             glVertex2f( 0, sy );
+             glEnd();
+             
+             glBegin( GL_QUADS );
+             glVertex2f( sx,  0 );
+             glVertex2f( sx - w1,  0 );
+             glVertex2f( sx - w1, sy );
+             glVertex2f( sx, sy );
+             glEnd();
+             
+         }
+    }
     
     SwapBuffers();
 }
@@ -4141,7 +4216,7 @@ void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
             break;
             
         case GestureUpdated:
-            if(!g_GLOptions.m_bUseCanvasPanning)
+            if(!g_GLOptions.m_bUseCanvasPanning || m_bfogit)
                 cc1->PanCanvas( dx, -dy );
             else{
                 FastPan( dx, dy ); 
@@ -4165,19 +4240,37 @@ void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
             break;
             
         case GestureCanceled:
+            m_binPan = false; 
             break;
             
         default:
             break;
     }
     
+    m_bgestureGuard = true;
+    m_gestureEeventTimer.Start(500, wxTIMER_ONE_SHOT);
+    
 }
+
 
 void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
 {
     
     float zoom_gain = 1.0;
     float zoom_val;
+    float total_zoom_val;
+
+    if( event.GetScaleFactor() > 1)
+        zoom_val = ((event.GetScaleFactor() - 1.0) * zoom_gain) + 1.0;
+    else
+        zoom_val = 1.0 - ((1.0 - event.GetScaleFactor()) * zoom_gain);
+
+    if( event.GetTotalScaleFactor() > 1)
+        total_zoom_val = ((event.GetTotalScaleFactor() - 1.0) * zoom_gain) + 1.0;
+    else
+        total_zoom_val = 1.0 - ((1.0 - event.GetTotalScaleFactor()) * zoom_gain);
+ 
+    double projected_scale = cc1->GetVP().chart_scale / total_zoom_val;
     
     switch(event.GetState()){
         case GestureStarted:
@@ -4186,23 +4279,19 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
             break;
             
         case GestureUpdated:
-
             if(g_GLOptions.m_bUseCanvasPanning){
-                if( event.GetScaleFactor() > 1)
-                    zoom_val = ((event.GetScaleFactor() - 1.0) * zoom_gain) + 1.0;
-                else
-                    zoom_val = 1.0 - ((1.0 - event.GetScaleFactor()) * zoom_gain);
-            
-                FastZoom(zoom_val/*event.GetScaleFactor()*/);
+                
+                if( projected_scale < 3e8)
+                    FastZoom(zoom_val);
+                
             }
             break;
             
         case GestureFinished:{
-                if( event.GetTotalScaleFactor() > 1)
-                    zoom_val = ((event.GetTotalScaleFactor() - 1.0) * zoom_gain) + 1.0;
+                if( projected_scale < 3e8)
+                    cc1->ZoomCanvas( total_zoom_val, false );
                 else
-                    zoom_val = 1.0 - ((1.0 - event.GetTotalScaleFactor()) * zoom_gain);
-                cc1->ZoomCanvas( zoom_val/*event.GetTotalScaleFactor()*/, false );
+                    cc1->ZoomCanvas(cc1->GetVP().chart_scale / 3e8, false);
             
              m_binPinch = false;
              break;
@@ -4215,7 +4304,17 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
         default:
             break;
     }
+
+    m_bgestureGuard = true;
+    m_gestureEeventTimer.Start(500, wxTIMER_ONE_SHOT);
     
 }
+
+void glChartCanvas::onGestureTimerEvent(wxTimerEvent &event)
+{
+    m_bgestureGuard = false;
+}
+
+
 #endif
 

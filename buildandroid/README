@@ -6,6 +6,7 @@
         __emulator
         export ANDROID_EMULATOR_FORCE_32BIT=true
         /home/dsr/Projects/android-ndk/android-sdk-linux/tools/android
+        ctrl-F11 to rotate
 
         __ Uninstall old version
         $/home/dsr/Projects/android-ndk/android-sdk-linux/platform-tools/adb  uninstall org.opencpn.opencpn

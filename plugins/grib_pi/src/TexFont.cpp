@@ -160,12 +160,14 @@ void TexFont::Delete( )
 
 void TexFont::GetTextExtent(const wxString &string, int *width, int *height)
 {
-    int w=0, h=0;
+    int w0=0, w1=0, h=0;
 
     for(unsigned int i = 0; i < string.size(); i++ ) {
         wchar_t c = string[i];
         if(c == '\n') {
             h += tgi[(int)'A'].height;
+            w1 = wxMax(w0, w1);
+            w0 = 0;
             continue;
         }
 
@@ -178,7 +180,7 @@ void TexFont::GetTextExtent(const wxString &string, int *width, int *height)
             dc.SetFont( m_font );
             wxCoord gw, gh;
             dc.GetTextExtent( c, &gw, &gh ); // measure the text
-            w += gw;
+            w0 += gw;
             if(h > gh)
                 gh = h;
             continue;
@@ -186,11 +188,11 @@ void TexFont::GetTextExtent(const wxString &string, int *width, int *height)
 
         TexGlyphInfo &tgisi = tgi[c];
 
-        w += tgisi.advance;
+        w0 += tgisi.advance;
         if(tgisi.height > h)
             h = tgisi.height;
     }
-    if(width) *width = w;
+    if(width) *width = wxMax( w0, w1 );
     if(height) *height = h;
 }
 

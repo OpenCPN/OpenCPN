@@ -40,6 +40,8 @@
 #include "AISTargetAlertDialog.h"
 #include "routeprop.h"
 #include "TrackPropDlg.h"
+#include "S57QueryDialog.h"
+#include "options.h"
 
 class androidUtilHandler;
 
@@ -47,10 +49,14 @@ JavaVM *java_vm;
 JNIEnv* jenv;
 bool     b_androidBusyShown;
 
+QString g_qtStyleSheet;
+
+
 
 extern MyFrame                  *gFrame;
 extern const wxEventType wxEVT_OCPN_DATASTREAM;
 wxEvtHandler                    *s_pAndroidNMEAMessageConsumer;
+wxEvtHandler                    *s_pAndroidBTNMEAMessageConsumer;
 
 extern AISTargetAlertDialog      *g_pais_alert_dialog_active;
 extern AISTargetQueryDialog      *g_pais_query_dialog_active;
@@ -58,6 +64,8 @@ extern MarkInfoImpl              *pMarkPropDialog;
 extern RouteProp                 *pRoutePropDialog;
 extern TrackPropDlg              *pTrackPropDialog;
 extern MarkInfoImpl              *pMarkInfoDialog;
+extern S57QueryDialog            *g_pObjectQueryDialog;
+extern options                   *g_options;
 
 androidUtilHandler              *g_androidUtilHandler;
 
@@ -105,7 +113,6 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                     g_pais_query_dialog_active->Show();
                     g_pais_query_dialog_active->Raise();
                 }
-                
             }
             
             // Route Props
@@ -115,13 +122,41 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                 pRoutePropDialog->RecalculateSize();
                 if(bshown){
                     pRoutePropDialog->Show();
- //                   pRoutePropDialog->Raise();
+                }
+            }
+            
+
+            // Mark Props
+            if(pMarkPropDialog){
+                bool bshown = pMarkPropDialog->IsShown();
+                pMarkPropDialog->Hide();
+                pMarkPropDialog->RecalculateSize();
+                if(bshown){
+                    pMarkPropDialog->Show();
                 }
                 
             }
             
-    
-            //gFrame->DestroyPersistentDialogs();
+            // ENC Object Query
+            if(g_pObjectQueryDialog){
+                bool bshown = g_pObjectQueryDialog->IsShown();
+                g_pObjectQueryDialog->Hide();
+                g_pObjectQueryDialog->RecalculateSize();
+                if(bshown){
+                    g_pObjectQueryDialog->Show();
+                }
+            }
+            
+            // Options dialog
+            if(g_options){
+                bool bshown = g_options->IsShown();
+                g_options->Hide();
+                g_options->RecalculateSize();
+                if(bshown){
+                    g_options->ShowModal();
+                }
+            }
+            
             break;
             
         default:
@@ -206,6 +241,30 @@ extern "C"{
         }
         
         return 66;
+    }
+}
+
+extern "C"{
+    JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processBTNMEA(JNIEnv *env, jobject obj, jstring nmea_string)
+    {
+        const char *string = env->GetStringUTFChars(nmea_string, NULL);
+        wxString wstring = wxString(string, wxConvUTF8);
+        
+        qDebug() << "processNMEA" << string;
+        
+        char tstr[200];
+        strncpy(tstr, string, 190);
+        strcat(tstr, "\r\n");
+        
+        if( s_pAndroidBTNMEAMessageConsumer ) {
+            OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
+            Nevent.SetNMEAString( tstr );
+            Nevent.SetStream( NULL );
+            
+            s_pAndroidBTNMEAMessageConsumer->AddPendingEvent(Nevent);
+        }
+        
+        return 77;
     }
 }
 
@@ -496,12 +555,10 @@ void androidShowBusyIcon()
 {
     if(b_androidBusyShown)
         return;
-    qDebug() << "Showit";
     
     //  Get a reference to the running native activity
     QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
                                                                            "activity", "()Landroid/app/Activity;");
-    
     if ( !activity.isValid() ){
         qDebug() << "Activity is not valid";
         return;
@@ -517,8 +574,6 @@ void androidHideBusyIcon()
 {
     if(!b_androidBusyShown)
         return;
-    
-    qDebug() << "Hideit";
     
     //  Get a reference to the running native activity
     QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
@@ -536,7 +591,6 @@ void androidHideBusyIcon()
 }
 
 
-
 bool LoadQtStyleSheet(wxString &sheet_file)
 {
     if(wxFileExists( sheet_file )){
@@ -545,9 +599,7 @@ bool LoadQtStyleSheet(wxString &sheet_file)
             QString file(sheet_file.c_str());
             QFile File(file);
             File.open(QFile::ReadOnly);
-            QString StyleSheet = QLatin1String(File.readAll());
-            
- //           qApp->setStyleSheet(StyleSheet);
+            g_qtStyleSheet = QLatin1String(File.readAll());
             
             return true;
         }
@@ -556,6 +608,11 @@ bool LoadQtStyleSheet(wxString &sheet_file)
     }
     else
         return false;
+}
+
+QString getQtStyleSheet( void )
+{
+    return g_qtStyleSheet;
 }
 
 //---------------------------------------------------------------
@@ -696,6 +753,8 @@ bool androidStopBluetoothScan()
 
 bool androidStartBT(wxEvtHandler *consumer, wxString mac_address )
 {
+    s_pAndroidBTNMEAMessageConsumer = consumer;
+    
     if(mac_address.Find(':') ==  wxNOT_FOUND)   //  does not look like a mac address
         return false;
     
@@ -704,7 +763,16 @@ bool androidStartBT(wxEvtHandler *consumer, wxString mac_address )
     return true;
 }
     
-
+bool androidStopBT()
+{
+    s_pAndroidBTNMEAMessageConsumer = NULL;
+    
+    wxString result = callActivityMethod_is("stopBTService", 0);
+        
+    return true;
+}
+    
+    
 wxArrayString androidGetBluetoothScanResults()
 {
     wxArrayString ret_array;
