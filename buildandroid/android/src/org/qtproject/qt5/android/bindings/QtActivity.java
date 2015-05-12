@@ -616,7 +616,9 @@ public class QtActivity extends Activity
                     m_BTSPP.startService(BluetoothState.DEVICE_OTHER);
 
                     Log.i("DEBUGGER_TAG", "Bluetooth connectA");
-                    m_BTSPP.connect(address);
+//                    m_BTSPP.connect(address);
+                    m_BTSPP.autoConnectAddress(address);
+
                 }
 
                 if(!m_BTSPP.isBluetoothEnabled())
