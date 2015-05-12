@@ -2748,7 +2748,7 @@ void ChartCanvas::DoRotateCanvas( double rotation )
     while(rotation < 0) rotation += 2*PI;
     while(rotation > 2*PI) rotation -= 2*PI;
 
-    if(rotation == VPoint.rotation || isnan(rotation))
+    if(rotation == VPoint.rotation || wxIsNaN(rotation))
         return;
 
     SetVPRotation( rotation );
