@@ -2891,7 +2891,9 @@ void MyFrame::RequestNewToolbar()
         g_FloatingToolbarDialog->SetColorScheme( global_color_scheme );
         g_FloatingToolbarDialog->Show( b_reshow );
 
+#ifndef __WXQT__
         gFrame->Raise(); // ensure keyboard focus to the chart window (needed by gtk+)
+#endif        
     }
     
 #ifdef __OCPN__ANDROID__
