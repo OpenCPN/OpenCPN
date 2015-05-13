@@ -309,8 +309,8 @@ void ChartDB::PurgeCacheUnusedCharts( double factor)
           if( wxMUTEX_NO_ERROR == m_cache_mutex.TryLock() ){
               
             //    Check memory status to see if above limit
-                int mem_total, mem_used;
-                GetMemoryStatus(&mem_total, &mem_used);
+                int mem_used;
+                GetMemoryStatus(0, &mem_used);
                 int mem_limit = g_memCacheLimit * factor;
 
                 int nl = pChartCache->GetCount();       // max loop count, by definition
@@ -349,7 +349,7 @@ void ChartDB::PurgeCacheUnusedCharts( double factor)
 
                     }
                     
-                    GetMemoryStatus(&mem_total, &mem_used);
+                    GetMemoryStatus(0, &mem_used);
                     
                     nl--;
                 }
@@ -1085,8 +1085,8 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                 {
 
             //    Check memory status to see if enough room to open another chart
-                    int mem_total, mem_used;
-                    GetMemoryStatus(&mem_total, &mem_used);
+                    int mem_used;
+                    GetMemoryStatus(0, &mem_used);
     //                  printf(" ChartdB Mem_total: %d  mem_used: %d  lock: %d\n", mem_total, mem_used, m_b_locked);
                     
                     if((mem_used > g_memCacheLimit * 8 / 10) && !m_b_locked && (pChartCache->GetCount() > 2)) {
@@ -1117,7 +1117,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                             pChartCache->Remove(pce);
                             delete pce;
                             
-                            GetMemoryStatus(&mem_total, &mem_used);
+                            GetMemoryStatus(0, &mem_used);
     
                             if((mem_used < g_memCacheLimit * 8 / 10) || (pChartCache->GetCount() <= 2)) 
                                 break;
