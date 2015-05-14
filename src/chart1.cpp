@@ -9890,14 +9890,14 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "UARTE;  64; 64; 64;",              // Active Route, Grey on Dusk/Night
 
         "NODTA;   7;   7;   7;"
-        "CHBLK; 163; 180; 183;",
-        "SNDG1; 125; 137; 140;",
-        "SNDG2; 212; 234; 238;",
-        "UIBDR; 163; 180; 183;",
+        "CHBLK;  31;  34;  35;",
+        "SNDG1;  31;  34;  35;",
+        "SNDG2;  43;  48;  48;",
+        "UIBDR;  31;  34;  35;",
         "UINFB;  21;  29;  69;",
-        "UINFD; 212; 234; 238;",
-        "UINFO; 221; 118;  51;",
-        "PLRTE; 220;  64;  37;",
+        "UINFD;  43;  48;  58;",
+        "UINFO;  52;  28;  12;",
+        "PLRTE;  66;  19;  11;",
         "CHMGD; 52; 18; 52;",
         "UIBCK; 7; 7; 7;",
 
