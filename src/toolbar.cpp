@@ -63,8 +63,8 @@ BEGIN_EVENT_TABLE(GrabberWin, wxPanel) EVT_MOUSE_EVENTS ( GrabberWin::MouseEvent
 EVT_PAINT ( GrabberWin::OnPaint )
 END_EVENT_TABLE()
 
-GrabberWin::GrabberWin( wxWindow *parent, ocpnFloatingToolbarDialog *toolbar, float scale_factor, wxString icon_name ):
-    wxPanel( parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNO_BORDER )
+GrabberWin::GrabberWin( wxWindow *parent, ocpnFloatingToolbarDialog *toolbar, float scale_factor, wxString icon_name, wxPoint position ):
+    wxPanel( parent, wxID_ANY, position, wxDefaultSize, wxNO_BORDER )
 {
     m_icon_name = icon_name;
     m_style = g_StyleManager->GetCurrentStyle();
@@ -123,7 +123,6 @@ void GrabberWin::MouseEvent( wxMouseEvent& event )
     event.GetPosition( &x, &y );
 
     wxPoint spt = ClientToScreen( wxPoint( x, y ) );
-
 
 #ifdef __WXOSX__
     ocpnFloatingToolbarDialog *pp = wxDynamicCast(GetParent(), ocpnFloatingToolbarDialog);
@@ -214,7 +213,7 @@ void GrabberWin::MouseEvent( wxMouseEvent& event )
             }
             else if(!m_dragging){
                 if(m_ptoolbar->m_bsubmerged){
-                    m_ptoolbar->Surface();
+                    m_ptoolbar->SurfaceFromGrabber();
                 }
                 else{
                     m_ptoolbar->SubmergeToGrabber();
@@ -497,13 +496,17 @@ void ocpnFloatingToolbarDialog::SubmergeToGrabber()
 {
     Submerge();
 
-    m_pRecoverwin = new GrabberWin( m_pparent, this, m_sizefactor, _T("grabber_ext" ) );
+    m_pRecoverwin = new GrabberWin( m_pparent, this, m_sizefactor, _T("grabber_ext" ), wxPoint(10,10) );
     
    
-    m_pRecoverwin->Hide();
-    m_pRecoverwin->Move(10,10);
+//    m_pRecoverwin->Hide();
+//    m_pRecoverwin->Move(10,10);
     m_pRecoverwin->Show();
 #ifdef __WXQT__
+    wxSize s = gFrame->GetSize();
+    m_recoversize = s;
+    s.y--;
+    gFrame->TriggerResize(s);
     Raise();
 #endif    
     
@@ -529,8 +532,31 @@ void ocpnFloatingToolbarDialog::Surface()
     Raise();
 #endif
 
+}
+
+void ocpnFloatingToolbarDialog::SurfaceFromGrabber()
+{
+    m_bsubmerged = false;
+#ifndef __WXOSX__
+    Hide();
+    Move( 0, 0 );
+#endif
+    
+    RePosition();
+    Show();
+    if( m_ptoolbar ) m_ptoolbar->EnableTooltips();
+    
+    if( g_bAutoHideToolbar && (g_nAutoHideToolbar > 0) ){
+        m_fade_timer.Start( g_nAutoHideToolbar * 1000 );
+    }
+    
+#ifdef __WXQT__
+    gFrame->TriggerResize(m_recoversize);
+    Raise();
+#endif
+    
     m_destroyGrabber = m_pRecoverwin;
-    m_destroyTimer.Start( 20, wxTIMER_ONE_SHOT );           //  Destor the unneeded recovery grabber
+    m_destroyTimer.Start( 5, wxTIMER_ONE_SHOT );           //  Destor the unneeded recovery grabber
     
 }
 
@@ -592,14 +618,19 @@ void ocpnFloatingToolbarDialog::MouseEvent( wxMouseEvent& event )
 
 void ocpnFloatingToolbarDialog::FadeTimerEvent( wxTimerEvent& event )
 {
-    if( g_bTransparentToolbar && (!g_bopengl || g_bTransparentToolbarInOpenGLOK) ){
-        DoFade( 128 );
-        m_fade_timer.Start( 5000 );           // retrigger the continuous timer
+    if(m_bnavgrabber){
+        m_fade_timer.Start( 5000 );           // do nothing if nav grabber is shown
     }
-    
-    if(g_bAutoHideToolbar && (g_nAutoHideToolbar > 0) ){
-        SubmergeToGrabber();
-        m_fade_timer.Stop();
+    else{
+        if( g_bTransparentToolbar && (!g_bopengl || g_bTransparentToolbarInOpenGLOK) ){
+            DoFade( 128 );
+            m_fade_timer.Start( 5000 );           // retrigger the continuous timer
+        }
+        
+        if(g_bAutoHideToolbar && (g_nAutoHideToolbar > 0) ){
+            SubmergeToGrabber();
+            m_fade_timer.Stop();
+        }
     }
 }
 
@@ -614,6 +645,11 @@ void ocpnFloatingToolbarDialog::RefreshFadeTimer()
     SetTransparent( 255 );
     m_opacity = 255;
     m_fade_timer.Start( 500 );           // retrigger the continuous timer
+    
+    if(g_bAutoHideToolbar && (g_nAutoHideToolbar > 0) ){
+        m_fade_timer.Start( g_nAutoHideToolbar * 1000 );
+    }
+    
 }
 
 void ocpnFloatingToolbarDialog::MoveDialogInScreenCoords( wxPoint posn, wxPoint posn_old )
