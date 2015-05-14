@@ -62,6 +62,7 @@
 #endif
 
 #ifdef __WXGTK__
+#include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #endif
 
@@ -4264,40 +4265,39 @@ bool MyFrame::ToggleLights( bool doToggle, bool temporary )
 {
     bool oldstate = true;
     OBJLElement *pOLE = NULL;
-    
+    bool isLight = false;
 #ifdef USE_S57
     if( ps52plib ) {
         for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
             pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
             if( !strncmp( pOLE->OBJLName, "LIGHTS", 6 ) ) {
                 oldstate = pOLE->nViz != 0;
+		isLight = true;
                 break;
             }
         }
-    }
 
-    oldstate &= !ps52plib->IsObjNoshow("LIGHTS");
+	oldstate &= !ps52plib->IsObjNoshow("LIGHTS");
     
-    if( doToggle ){
-        if(oldstate)                            // On, going off
-            ps52plib->AddObjNoshow("LIGHTS");
-        else{                                   // Off, going on
-            if(pOLE)
-                pOLE->nViz = 1;
-            ps52plib->RemoveObjNoshow("LIGHTS");
-        }
+	if( doToggle ){
+	   if(oldstate)                            // On, going off
+	      ps52plib->AddObjNoshow("LIGHTS");
+	   else{                                   // Off, going on
+	      if(isLight)
+		 pOLE->nViz = 1;
+	      ps52plib->RemoveObjNoshow("LIGHTS");
+	   }
         
-        SetMenubarItemState( ID_MENU_ENC_LIGHTS, !oldstate );
-    }
+	   SetMenubarItemState( ID_MENU_ENC_LIGHTS, !oldstate );
+	}
 
-    if( doToggle ) {
-        if( ! temporary ) {
-            ps52plib->GenerateStateHash();
-            cc1->ReloadVP();
-        }
+	if( doToggle ) {
+	   if( ! temporary ) {
+	      ps52plib->GenerateStateHash();
+	      cc1->ReloadVP();
+	   }
+	}
     }
-    
-
 #endif
     return oldstate;
 }

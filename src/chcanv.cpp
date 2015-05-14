@@ -4538,7 +4538,6 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
         if(g_pi_manager->SendMouseEventToPlugins( event ))
             return(true);                     // PlugIn did something, and does not want the canvas to do anything else
 
-            
         // Capture LeftUp's and time them, unless it already came from the timer.
             
     if( b_handle_dclick && event.LeftUp() && !singleClickEventIsValid ) {
