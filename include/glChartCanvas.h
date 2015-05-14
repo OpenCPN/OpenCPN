@@ -30,11 +30,7 @@
 #include "OCPNRegion.h"
 #include "viewport.h"
 
-#ifdef __WXMSW__
-#define FORMAT_BITS           GL_BGR
-#else
-#define FORMAT_BITS           GL_RGB
-#endif
+ #define FORMAT_BITS           GL_RGB
 
 #ifdef __OCPN__ANDROID__
 #include "wx/qt/private/wxQtGesture.h"
