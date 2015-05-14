@@ -3696,7 +3696,7 @@ void glChartCanvas::Render()
             gldc.DrawBitmap( pthumbwin->GetBitmap(), thumbx, thumby, false);
     }
     
-    if(g_FloatingToolbarDialog && g_FloatingToolbarDialog->m_pRecoverwin->IsShown() ){
+    if(g_FloatingToolbarDialog && g_FloatingToolbarDialog->m_pRecoverwin ){
         int recoverx, recovery;
         g_FloatingToolbarDialog->m_pRecoverwin->GetPosition( &recoverx, &recovery );
         if( g_FloatingToolbarDialog->m_pRecoverwin->GetBitmap().IsOk())
