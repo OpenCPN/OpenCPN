@@ -2897,24 +2897,28 @@ void MyConfig::UpdateNavObj( void )
 
 bool MyConfig::ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxString suggestedName )
 {
-    wxFileDialog saveDialog( NULL, _( "Export GPX file" ), m_gpx_path, suggestedName,
+    wxFileDialog *psaveDialog = new wxFileDialog( NULL, _( "Export GPX file" ), m_gpx_path, suggestedName,
             wxT ( "GPX files (*.gpx)|*.gpx" ), wxFD_SAVE );
 
-#ifdef __WXOSX__
+    if(g_bresponsive)
+        psaveDialog = g_Platform->AdjustFileDialogFont(parent, psaveDialog);
+
+    #ifdef __WXOSX__
     if(parent)
         parent->HideWithEffect(wxSHOW_EFFECT_BLEND );
 #endif
 
-     int response = saveDialog.ShowModal();
+     int response = psaveDialog->ShowModal();
 
 #ifdef __WXOSX__
     if(parent)
         parent->ShowWithEffect(wxSHOW_EFFECT_BLEND );
 #endif
 
-    wxString path = saveDialog.GetPath();
+    wxString path = psaveDialog->GetPath();
     wxFileName fn( path );
     m_gpx_path = fn.GetPath();
+    delete psaveDialog;
 
     if( response == wxID_OK ) {
         fn.SetExt( _T ( "gpx" ) );
@@ -2937,14 +2941,18 @@ bool MyConfig::ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxSt
 
 bool MyConfig::ExportGPXWaypoints( wxWindow* parent, RoutePointList *pRoutePoints, const wxString suggestedName )
 {
-    wxFileDialog saveDialog( NULL, _( "Export GPX file" ), m_gpx_path, suggestedName,
+    wxFileDialog *psaveDialog = new wxFileDialog( NULL, _( "Export GPX file" ), m_gpx_path, suggestedName,
             wxT ( "GPX files (*.gpx)|*.gpx" ), wxFD_SAVE );
 
-    int response = saveDialog.ShowModal();
+    if(g_bresponsive)
+        psaveDialog = g_Platform->AdjustFileDialogFont(parent, psaveDialog);
+    
+    int response = psaveDialog->ShowModal();
 
-    wxString path = saveDialog.GetPath();
+    wxString path = psaveDialog->GetPath();
     wxFileName fn( path );
     m_gpx_path = fn.GetPath();
+    delete psaveDialog;
 
     if( response == wxID_OK ) {
         fn.SetExt( _T ( "gpx" ) );
@@ -2967,15 +2975,19 @@ bool MyConfig::ExportGPXWaypoints( wxWindow* parent, RoutePointList *pRoutePoint
 
 void MyConfig::ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
 {
-    wxFileDialog saveDialog( NULL, _( "Export GPX file" ), m_gpx_path, wxT ( "" ),
+    wxFileDialog *psaveDialog = new wxFileDialog( NULL, _( "Export GPX file" ), m_gpx_path, wxT ( "" ),
             wxT ( "GPX files (*.gpx)|*.gpx" ), wxFD_SAVE );
 
-    int response = saveDialog.ShowModal();
+    if(g_bresponsive)
+        psaveDialog = g_Platform->AdjustFileDialogFont(parent, psaveDialog);
+    
+    int response = psaveDialog->ShowModal();
 
-    wxString path = saveDialog.GetPath();
+    wxString path = psaveDialog->GetPath();
     wxFileName fn( path );
     m_gpx_path = fn.GetPath();
-
+    delete psaveDialog;
+    
     if( response == wxID_OK ) {
         fn.SetExt( _T ( "gpx" ) );
 
@@ -3067,13 +3079,17 @@ void MyConfig::UI_ImportGPX( wxWindow* parent, bool islayer, wxString dirpath, b
     Layer *l = NULL;
 
     if( !islayer || dirpath.IsSameAs( _T("") ) ) {
-        wxFileDialog openDialog( NULL, _( "Import GPX file" ), m_gpx_path, wxT ( "" ),
+        wxFileDialog *popenDialog = new wxFileDialog( NULL, _( "Import GPX file" ), m_gpx_path, wxT ( "" ),
                 wxT ( "GPX files (*.gpx)|*.gpx|All files (*.*)|*.*" ),
                 wxFD_OPEN | wxFD_MULTIPLE );
-        openDialog.Centre();
-        response = openDialog.ShowModal();
+
+        if(g_bresponsive)
+            popenDialog = g_Platform->AdjustFileDialogFont(parent, popenDialog);
+        
+        popenDialog->Centre();
+        response = popenDialog->ShowModal();
         if( response == wxID_OK ) {
-            openDialog.GetPaths( file_array );
+            popenDialog->GetPaths( file_array );
 
             //    Record the currently selected directory for later use
             if( file_array.GetCount() ) {
@@ -3081,6 +3097,7 @@ void MyConfig::UI_ImportGPX( wxWindow* parent, bool islayer, wxString dirpath, b
                 m_gpx_path = fn.GetPath();
             }
         }
+        delete popenDialog;
 
     } else {
         if( isdirectory ) {

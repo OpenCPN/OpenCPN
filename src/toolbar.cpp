@@ -551,7 +551,9 @@ void ocpnFloatingToolbarDialog::SurfaceFromGrabber()
     }
     
 #ifdef __WXQT__
-    gFrame->TriggerResize(m_recoversize);
+    wxSize s = gFrame->GetSize();               // check for rotation
+    if(m_recoversize.x == s.x)
+        gFrame->TriggerResize(m_recoversize);
     Raise();
 #endif
     

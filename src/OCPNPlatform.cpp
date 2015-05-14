@@ -972,6 +972,84 @@ double  OCPNPlatform::GetDisplaySizeMM()
 }
 
 
+wxDirDialog* OCPNPlatform::AdjustDirDialogFont(wxWindow *container, wxDirDialog* dlg)
+{
+    wxDirDialog* ret_dlg = dlg;
+    
+        dlg->Show();
+        dlg->SetSize( container->GetSize());
+        dlg->Centre();
+        
+        wxSize sds = dlg->GetSize();
+        wxSize ss = container->GetSize();
+        
+        
+        if(sds.x > ss.x){
+            dlg->Hide();
+            
+            wxString msg = dlg->GetMessage();
+            wxString default_dir = dlg->GetPath();
+            
+            delete dlg;
+            
+            ret_dlg = new wxDirDialog( NULL, msg, default_dir, wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST );
+            
+            
+            wxFont *dialogFont = GetOCPNScaledFont(_("Dialog"));
+            wxFont *smallFont = new wxFont( * dialogFont ); 
+            smallFont->SetPointSize( (smallFont->GetPointSize() / 2) + 0.5 ); // + 0.5 to round instead of truncate
+            ret_dlg->SetFont( * smallFont );
+            
+            ret_dlg->SetSize( container->GetSize());
+            ret_dlg->Centre();
+            
+        }
+        ret_dlg->Hide();
+        
+    return ret_dlg;
+}
+        
+        wxFileDialog* OCPNPlatform::AdjustFileDialogFont(wxWindow *container, wxFileDialog* dlg)
+        {
+            wxFileDialog* ret_dlg = dlg;
+            
+            dlg->Show();
+            dlg->SetSize( container->GetSize());
+            dlg->Centre();
+            
+            wxSize sds = dlg->GetSize();
+            wxSize ss = container->GetSize();
+            
+            
+            if(sds.x > ss.x){
+                dlg->Hide();
+                
+                wxString msg = dlg->GetMessage();
+                wxString default_dir = dlg->GetDirectory();
+                wxString default_file = dlg->GetFilename();
+                wxString wildcard = dlg->GetWildcard();
+                
+                delete dlg;
+                
+                ret_dlg = new wxFileDialog( NULL, msg, default_dir, default_file,  wildcard, wxFD_OPEN );
+                
+                
+                wxFont *dialogFont = GetOCPNScaledFont(_("Dialog"));
+                wxFont *smallFont = new wxFont( * dialogFont ); 
+                smallFont->SetPointSize( (smallFont->GetPointSize() / 2) + 0.5 ); // + 0.5 to round instead of truncate
+                ret_dlg->SetFont( * smallFont );
+                
+                ret_dlg->SetSize( container->GetSize());
+                ret_dlg->Centre();
+                
+            }
+            ret_dlg->Hide();
+            
+            return ret_dlg;
+        }
+        
+        
+        
 #ifdef __WXMSW__
 
 #define NAME_SIZE 128

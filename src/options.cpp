@@ -3726,36 +3726,9 @@ void options::OnButtonaddClick( wxCommandEvent& event )
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     dirSelector->SetFont(*qFont);
 
-    if(g_bresponsive){
+    if(g_bresponsive)
+        dirSelector = g_Platform->AdjustDirDialogFont(this, dirSelector);
     
-        dirSelector->Show();
-        dirSelector->SetSize( GetSize());
-        dirSelector->Centre();
-
-        wxSize sds = dirSelector->GetSize();
-        wxSize ss =GetSize();
-        
-        
-        if(sds.x > ss.x){
-            dirSelector->Hide();
-            delete dirSelector;
-            dirSelector = new wxDirDialog( this, _("Add a directory containing chart files"),
-                                         *pInit_Chart_Dir, wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST );
-            
-            
-            wxFont *dialogFont = GetOCPNScaledFont(_("Dialog"));
-            wxFont *smallFont = new wxFont( * dialogFont ); 
-            smallFont->SetPointSize( (smallFont->GetPointSize() / 2) + 0.5 ); // + 0.5 to round instead of truncate
-            dirSelector->SetFont( * smallFont );
-            
-            dirSelector->SetSize( GetSize());
-            dirSelector->Centre();
-            
-        }
-        dirSelector->Hide();
-        
-    }
-
     if( dirSelector->ShowModal() == wxID_CANCEL )
         goto done;
 
@@ -4921,6 +4894,10 @@ void options::OnButtonSelectSound( wxCommandEvent& event )
 
     wxFileDialog *openDialog = new wxFileDialog( NULL, _("Select Sound File"), sound_dir, wxT(""),
             _("WAV files (*.wav)|*.wav|All files (*.*)|*.*"), wxFD_OPEN );
+    
+    if(g_bresponsive)
+        openDialog = g_Platform->AdjustFileDialogFont(this, openDialog);
+    
     int response = openDialog->ShowModal();
     if( response == wxID_OK ) {
         if( g_bportable ) {
@@ -4932,6 +4909,8 @@ void options::OnButtonSelectSound( wxCommandEvent& event )
 
         g_anchorwatch_sound.UnLoad();
     }
+    
+    delete openDialog;
 }
 
 void options::OnButtonTestSound( wxCommandEvent& event )
@@ -5494,12 +5473,15 @@ void options::OnInsertTideDataLocation( wxCommandEvent &event )
     wxString sel_file;
     int response = wxID_CANCEL;
 
-    wxFileDialog openDialog( NULL, _( "Select Tide/Current Data" ), g_TCData_Dir, wxT ( "" ),
+    wxFileDialog *popenDialog = new wxFileDialog( NULL, _( "Select Tide/Current Data" ), g_TCData_Dir, wxT ( "" ),
                              wxT ( "Tide/Current Data files (*.IDX; *.TCD)|*.IDX;*.idx;*.TCD;*.tcd|All files (*.*)|*.*" ),
                                     wxFD_OPEN  );
-    response = openDialog.ShowModal();
+    if(g_bresponsive)
+        popenDialog = g_Platform->AdjustFileDialogFont(this, popenDialog);
+    
+    response = popenDialog->ShowModal();
     if( response == wxID_OK ) {
-        sel_file = openDialog.GetPath();
+        sel_file = popenDialog->GetPath();
 
         if( g_bportable ) {
             wxFileName f( sel_file );
@@ -5519,6 +5501,8 @@ void options::OnInsertTideDataLocation( wxCommandEvent &event )
         else
             g_TCData_Dir = data_dir;
     }
+    
+    delete popenDialog;
 }
 
 void options::OnRemoveTideDataLocation( wxCommandEvent &event )
