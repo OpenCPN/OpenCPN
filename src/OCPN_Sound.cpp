@@ -166,12 +166,12 @@ bool OCPN_Sound::Create(const wxString& fileName, int deviceIndex, bool isResour
     if(deviceIndex == -1)
         deviceIndex = g_iSoundDeviceIndex;
 
-    PaStreamParameters outputParameters =
-        { .device = deviceIndex,
-          .channelCount = m_osdata->m_channels,
-          .sampleFormat = paInt16,
-          .suggestedLatency = 0,
-          .hostApiSpecificStreamInfo = NULL };
+    PaStreamParameters outputParameters;
+    outputParameters.device = deviceIndex;
+    outputParameters.channelCount = m_osdata->m_channels;
+    outputParameters.sampleFormat = paInt16;
+    outputParameters.suggestedLatency = 0;
+    outputParameters.hostApiSpecificStreamInfo = NULL;
     
     /* Open an audio I/O stream. */
     err = Pa_OpenStream( &m_stream,
