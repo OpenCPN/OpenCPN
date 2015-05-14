@@ -1133,11 +1133,11 @@ void RouteProp::InitializeList()
         wxRoutePointListNode *pnode = m_pRoute->pRoutePointList->GetFirst();
         int in = 0;
         while( pnode ) {
-            m_wpList->InsertItem( in, _T(""), 0 );
+            m_wpList->InsertItem( in, _T(""), -1 );
             m_wpList->SetItemPtrData( in, (wxUIntPtr)pnode->GetData() );
             in++;
             if( pnode->GetData()->m_seg_etd.IsValid() ) {
-                m_wpList->InsertItem( in, _T(""), 0 );
+                m_wpList->InsertItem( in, _T(""), -1 );
                 in++;
             }
             pnode = pnode->GetNext();

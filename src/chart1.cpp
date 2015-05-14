@@ -1104,7 +1104,7 @@ void LoadS57()
 
 #ifdef __WXGTK__
 static char *get_X11_property (Display *disp, Window win,
-                            Atom xa_prop_type, gchar *prop_name) {
+                            Atom xa_prop_type, const char *prop_name) {
     Atom xa_prop_name;
     Atom xa_ret_type;
     int ret_format;
@@ -2891,7 +2891,9 @@ void MyFrame::RequestNewToolbar()
         g_FloatingToolbarDialog->SetColorScheme( global_color_scheme );
         g_FloatingToolbarDialog->Show( b_reshow );
 
+#ifndef __WXQT__
         gFrame->Raise(); // ensure keyboard focus to the chart window (needed by gtk+)
+#endif        
     }
     
 #ifdef __OCPN__ANDROID__
@@ -4719,7 +4721,7 @@ void MyFrame::SurfaceToolbar( void )
         } else
             g_FloatingToolbarDialog->Surface();
     }
-    gFrame->Raise();
+    Raise();
 }
 
 void MyFrame::ToggleToolbar( bool b_smooth )

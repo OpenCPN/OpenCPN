@@ -457,7 +457,7 @@ bool GribRequestSetting::DoRenderZoneOverlay()
         int w, h, sl;
 #ifdef __WXMAC__
         wxScreenDC sdc;
-        sdc->GetMultiLineTextExtent(label, &w, &h, &sl, font);
+        sdc.GetMultiLineTextExtent(label, &w, &h, &sl, font);
 #else
         m_pdc->GetMultiLineTextExtent(label, &w, &h, &sl, font);
 #endif

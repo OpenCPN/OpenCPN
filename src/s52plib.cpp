@@ -6291,6 +6291,7 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         return 0;
 
     if( glChartCanvas::s_b_useStencilAP ) {
+        glPushAttrib( GL_STENCIL_BUFFER_BIT );          // See comment below
         //    Use masked bit "1" of the stencil buffer to create a stencil for the area of interest
 
         glEnable( GL_STENCIL_TEST );
@@ -6578,10 +6579,17 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
 #endif
         //    Restore the previous state
-        if( glChartCanvas::s_b_useStencilAP )
-            glStencilFunc( GL_EQUAL, 1, 1 );
-        else
-            glChartCanvas::SetClipRegion( *vp, m_last_clip_region);
+        
+         if( glChartCanvas::s_b_useStencilAP ){
+             //  Theoretically, it should be sufficient to simply reset the StencilFunc()...
+             //  But I found one platform where this does not work, and we need to save and restore
+             //  the entire STENCIL state.  I suspect bad GL drivers here, but we do what must needs...
+             //glStencilFunc( GL_EQUAL, 1, 1 );
+             
+             glPopAttrib();
+         }
+         else
+             glChartCanvas::SetClipRegion( *vp, m_last_clip_region);
 
     free( ptp );
 #endif                  //#ifdef ocpnUSE_GL

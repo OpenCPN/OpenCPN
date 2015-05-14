@@ -1057,9 +1057,6 @@ void glChartCanvas::SetupOpenGL()
     if( GetRendererString().Find( _T("RADEON X600") ) != wxNOT_FOUND )
         s_b_useScissorTest = false;
 
-    if(s_b_useScissorTest && s_b_useStencil)
-        wxLogMessage( _T("OpenGL-> Using Scissor Clipping") );
-    
     //  This little hack fixes a problem seen with some Intel 945 graphics chips
     //  We need to not do anything that requires (some) complicated stencil operations.
 
@@ -3696,7 +3693,7 @@ void glChartCanvas::Render()
             gldc.DrawBitmap( pthumbwin->GetBitmap(), thumbx, thumby, false);
     }
     
-    if(g_FloatingToolbarDialog && g_FloatingToolbarDialog->m_pRecoverwin->IsShown() ){
+    if(g_FloatingToolbarDialog && g_FloatingToolbarDialog->m_pRecoverwin ){
         int recoverx, recovery;
         g_FloatingToolbarDialog->m_pRecoverwin->GetPosition( &recoverx, &recovery );
         if( g_FloatingToolbarDialog->m_pRecoverwin->GetBitmap().IsOk())
