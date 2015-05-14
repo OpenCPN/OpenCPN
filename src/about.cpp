@@ -275,6 +275,8 @@ void about::Update()
 
 void about::CreateControls()
 {
+    wxScreenDC screen;
+
     //  Set the nominal vertical size of the embedded controls
     int v_size = 300;
     if(g_bresponsive)
@@ -293,20 +295,33 @@ void about::CreateControls()
     pST1->SetFont( *headerFont );
     aboutSizer->Add( pST1, 1, wxALL | wxEXPAND, 8 );
 
+    // omit this on narrow screens
+    wxString toclipboard;
+    if(screen.GetSize().x > 600)
+        toclipboard = wxString(_T(" ")) + _(" to Clipboard");
+
     wxBoxSizer* buttonSizer = new wxBoxSizer( wxHORIZONTAL );
 
-    wxButton* copyIni = new wxButton( itemDialog1, ID_COPYINI, _("Copy Settings File to Clipboard") );
+    wxButton* copyIni = new wxButton( itemDialog1, ID_COPYINI, _("Copy Settings File") + toclipboard );
     buttonSizer->Add( copyIni, 1, wxALL | wxEXPAND, 3 );
 
-    wxButton* copyLog = new wxButton( itemDialog1, ID_COPYLOG, _("Copy Log File to Clipboard") );
+    wxButton* copyLog = new wxButton( itemDialog1, ID_COPYLOG, _("Copy Log File") + toclipboard );
     buttonSizer->Add( copyLog, 1, wxALL | wxEXPAND, 3 );
 
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 
-    wxBitmap donate_bmp = style->GetIcon( _T("donate") );
+    // for very small screens put buttons all on one line
+    // and don't use the larger height donate button
+    wxButton* donateButton;
+    if(screen.GetSize().y < 400) {
+        donateButton = new wxButton( itemDialog1, ID_DONATE, _("Donate"));
+    } else {
 
-    wxButton* donateButton = new wxBitmapButton( itemDialog1, ID_DONATE, donate_bmp,
-            wxDefaultPosition, wxDefaultSize, 0 );
+        wxBitmap donate_bmp = style->GetIcon( _T("donate") );
+
+        donateButton = new wxBitmapButton( itemDialog1, ID_DONATE, donate_bmp,
+                                           wxDefaultPosition, wxDefaultSize, 0 );
+    }
 
     buttonSizer->Add( donateButton, 1, wxALL | wxEXPAND | wxALIGN_RIGHT, 3 );
 
@@ -319,6 +334,8 @@ void about::CreateControls()
 
     aboutSizer->Add( buttonSizer, 0, wxALL, 0 );
 
+    wxSize ctrlsize( -1, screen.GetSize().y < 480 ? -1 : 300 );
+
     //    About Panel
     itemPanelAbout = new wxPanel( pNotebook, -1, wxDefaultPosition, wxDefaultSize,
             wxSUNKEN_BORDER | wxTAB_TRAVERSAL );
@@ -329,7 +346,8 @@ void about::CreateControls()
     itemPanelAbout->SetSizer( itemBoxSizer6 );
 
     pAboutTextCtl = new wxTextCtrl( itemPanelAbout, -1, _T(""), wxDefaultPosition,
-                                    wxSize( -1, v_size ), wxTE_MULTILINE | wxTE_READONLY );
+                                    ctrlsize, wxTE_MULTILINE | wxTE_READONLY );
+
     pAboutTextCtl->InheritAttributes();
     itemBoxSizer6->Add( pAboutTextCtl, 0, wxALIGN_CENTER_HORIZONTAL | wxEXPAND | wxALL, 5 );
 
@@ -382,13 +400,18 @@ void about::CreateControls()
     //    Close Button
 
     wxBoxSizer* itemBoxSizer28 = new wxBoxSizer( wxHORIZONTAL );
+
     aboutSizer->Add( itemBoxSizer28, 0, wxALIGN_RIGHT | wxALL, 5 );
 
     wxButton* itemButton29 = new wxButton( itemDialog1, xID_OK, _("Close"), wxDefaultPosition,
             wxDefaultSize, 0 );
     itemButton29->SetDefault();
     itemButton29->InheritAttributes();
-    itemBoxSizer28->Add( itemButton29, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
+
+    if(screen.GetSize().y < 400)
+        buttonSizer->Add( itemButton29, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
+    else
+        itemBoxSizer28->Add( itemButton29, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
 }
 
 
