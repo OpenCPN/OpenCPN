@@ -1104,7 +1104,7 @@ void LoadS57()
 
 #ifdef __WXGTK__
 static char *get_X11_property (Display *disp, Window win,
-                            Atom xa_prop_type, gchar *prop_name) {
+                            Atom xa_prop_type, char *prop_name) {
     Atom xa_prop_name;
     Atom xa_ret_type;
     int ret_format;
