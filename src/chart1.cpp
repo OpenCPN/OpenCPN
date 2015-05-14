@@ -4722,7 +4722,7 @@ void MyFrame::SurfaceToolbar( void )
         } else
             g_FloatingToolbarDialog->Surface();
     }
-    gFrame->Raise();
+    Raise();
 }
 
 void MyFrame::ToggleToolbar( bool b_smooth )
