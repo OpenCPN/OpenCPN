@@ -2867,6 +2867,34 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
     pShowCompassWin->SetValue( FALSE );
     miscOptions->Add( pShowCompassWin, 0, wxALL, border_size );
     
+    wxBoxSizer *pToolbarAutoHide = new wxBoxSizer( wxHORIZONTAL );
+    miscOptions->Add( pToolbarAutoHide, 0, wxALL | wxEXPAND, group_item_spacing );
+    
+    pToolbarAutoHideCB = new wxCheckBox( itemPanelFont, ID_REPONSIVEBOX, _("Enable Toolbar auto-hide") );
+    pToolbarAutoHide->Add( pToolbarAutoHideCB, 0, wxALL, group_item_spacing );
+    
+    pToolbarHideSecs = new wxTextCtrl( itemPanelFont, ID_OPTEXTCTRL, _T(""), wxDefaultPosition, wxSize( 50, -1 ), wxTE_RIGHT  );
+    pToolbarAutoHide->Add( pToolbarHideSecs, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
+    
+    pToolbarAutoHide->Add( new wxStaticText( itemPanelFont, wxID_ANY, _("seconds") ),group_item_spacing );
+    
+    // Sound options
+    pPlayShipsBells = new wxCheckBox( itemPanelFont, ID_BELLSCHECKBOX, _("Play Ships Bells"));
+    miscOptions->Add( pPlayShipsBells, 0, wxALL, border_size );
+    
+    pSoundDeviceIndex = new wxSpinCtrl( itemPanelFont, wxID_ANY );
+    pSoundDeviceIndex->SetValue( g_iSoundDeviceIndex );
+    
+    if(OCPN_Sound::DeviceCount() > 1){
+        wxFlexGridSizer *pSoundDeviceIndexGrid = new wxFlexGridSizer( 2 );
+        miscOptions->Add( pSoundDeviceIndexGrid, 0, wxALL | wxEXPAND, group_item_spacing );
+    
+        wxStaticText* stSoundDeviceIndex = new wxStaticText( itemPanelFont, wxID_STATIC, _("Sound Device Index") );
+        pSoundDeviceIndexGrid->Add( stSoundDeviceIndex, 0,  wxALL, 5 );
+        pSoundDeviceIndex->SetRange(-1, OCPN_Sound::DeviceCount() - 1);
+        pSoundDeviceIndexGrid->Add( pSoundDeviceIndex, 0, wxALL, border_size);
+    }
+    
     //  Mobile/Touchscreen checkboxes
     pMobile = new wxCheckBox( itemPanelFont, ID_MOBILEBOX, _("Enable Touchscreen interface") );
     miscOptions->Add( pMobile, 0, wxALL, border_size );
@@ -2879,9 +2907,11 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
     m_pSlider_GUI_Factor = new wxSlider( itemPanelFont, wxID_ANY, 0, -5, 5,
                                         wxDefaultPosition, wxSize( slider_width, 50),
                                         wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS );
+    m_pSlider_GUI_Factor->Hide();
 #ifdef __OCPN__ANDROID__    
     miscOptions->Add( new wxStaticText(itemPanelFont, wxID_ANY, _("User Interface scale factor")), inputFlags );
     miscOptions->Add( m_pSlider_GUI_Factor, 0, wxALL, border_size );
+    m_pSlider_GUI_Factor->Show();
     
 #ifdef __WXQT__
     m_pSlider_GUI_Factor->GetHandle()->setStyleSheet( getQtStyleSheet());
@@ -2889,43 +2919,21 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
 #endif
     
 
-    // Sound options
-    pPlayShipsBells = new wxCheckBox( itemPanelFont, ID_BELLSCHECKBOX, _("Play Ships Bells"));
-    miscOptions->Add( pPlayShipsBells, 0, wxALL, border_size );
-
-    wxFlexGridSizer *pSoundDeviceIndexGrid = new wxFlexGridSizer( 2 );
-    miscOptions->Add( pSoundDeviceIndexGrid, 0, wxALL | wxEXPAND, group_item_spacing );
-
-    wxStaticText* stSoundDeviceIndex =
-        new wxStaticText( itemPanelFont, wxID_STATIC, _("Sound Device Index") );
-    pSoundDeviceIndexGrid->Add( stSoundDeviceIndex, 0,
-                    wxALL, 5 );
-    pSoundDeviceIndex = new wxSpinCtrl( itemPanelFont, wxID_ANY );
-    pSoundDeviceIndex->SetRange(-1, OCPN_Sound::DeviceCount() - 1);
-    pSoundDeviceIndexGrid->Add( pSoundDeviceIndex, 0, wxALL, border_size);
 
     m_pSlider_Chart_Factor = new wxSlider( itemPanelFont, wxID_ANY, 0, -5, 5,
                                          wxDefaultPosition, wxSize( slider_width, 50),
                                          wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS );
+    m_pSlider_Chart_Factor->Hide();
 #ifdef __OCPN__ANDROID__
     miscOptions->Add( new wxStaticText(itemPanelFont, wxID_ANY, _("Chart Object scale factor")), inputFlags );
     miscOptions->Add( m_pSlider_Chart_Factor, 0, wxALL, border_size );
+    m_pSlider_Chart_Factor->Show();
     
 #ifdef __WXQT__
     m_pSlider_Chart_Factor->GetHandle()->setStyleSheet( getQtStyleSheet());
 #endif
 #endif    
     
-    wxBoxSizer *pToolbarAutoHide = new wxBoxSizer( wxHORIZONTAL );
-    miscOptions->Add( pToolbarAutoHide, 0, wxALL | wxEXPAND, group_item_spacing );
-
-    pToolbarAutoHideCB = new wxCheckBox( itemPanelFont, ID_REPONSIVEBOX, _("Enable Toolbar auto-hide") );
-    pToolbarAutoHide->Add( pToolbarAutoHideCB, 0, wxALL, group_item_spacing );
-    
-    pToolbarHideSecs = new wxTextCtrl( itemPanelFont, ID_OPTEXTCTRL, _T(""), wxDefaultPosition, wxSize( 50, -1 ), wxTE_RIGHT  );
-    pToolbarAutoHide->Add( pToolbarHideSecs, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
-    
-    pToolbarAutoHide->Add( new wxStaticText( itemPanelFont, wxID_ANY, _("seconds") ),group_item_spacing );
 }
 
 void options::CreateControls()
