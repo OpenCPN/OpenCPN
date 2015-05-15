@@ -66,7 +66,7 @@ public:
       PlugIn_ViewPort *m_Vp;
       double          m_Lat;
       double          m_Lon;
-    
+
 private:
 
       void ApplyRequestConfig( unsigned rs, unsigned it, unsigned tr );
@@ -78,7 +78,7 @@ private:
       void OnTopChange(wxCommandEvent &event);
       void OnMovingClick( wxCommandEvent& event );
       void OnAnyChange( wxCommandEvent& event );
-	  void OnAnyChange( wxSpinEvent& event ) { wxCommandEvent evt; OnAnyChange( evt); }
+      void OnAnySpinChange( wxSpinEvent& event ) { wxCommandEvent evt; OnAnyChange( evt); }
       void OnTimeRangeChange( wxCommandEvent& event );
       void OnSendMaiL( wxCommandEvent& event );
       void OnSaveMail( wxCommandEvent& event );
