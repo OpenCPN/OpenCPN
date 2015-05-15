@@ -4974,6 +4974,8 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
         DoCOGSet();
     }
 
+    g_pRouteMan->SetColorScheme(global_color_scheme);           // reloads pens and brushes
+    
     //    Stuff the Filter tables
     double stuffcog = 0.;
     double stuffsog = 0.;

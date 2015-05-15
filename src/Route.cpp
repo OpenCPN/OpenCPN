@@ -573,9 +573,9 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
         width = pen.GetWidth();
     } else {
         if(m_bIsTrack)
-            width = g_track_line_width;
+            width = g_pRouteMan->GetTrackPen()->GetWidth();
         else
-            width = g_route_line_width;
+            width = g_pRouteMan->GetRoutePen()->GetWidth();
         
         if( m_width != STYLE_UNDEFINED ) width = m_width;
         if( m_Colour == wxEmptyString ) {

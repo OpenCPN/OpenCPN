@@ -101,6 +101,7 @@ public:
       int   GetXTEDir(){ return XTEDir;}
 
       wxPen   * GetRoutePen(void){return m_pRoutePen;}
+      wxPen   * GetTrackPen(void){return m_pTrackPen;}
       wxPen   * GetSelectedRoutePen(void){return m_pSelectedRoutePen;}
       wxPen   * GetActiveRoutePen(void){return m_pActiveRoutePen;}
       wxPen   * GetActiveRoutePointPen(void){return m_pActiveRoutePointPen;}
@@ -135,6 +136,7 @@ private:
       int         XTEDir;
       bool        m_bArrival;
       wxPen       *m_pRoutePen;
+      wxPen       *m_pTrackPen;
       wxPen       *m_pSelectedRoutePen;
       wxPen       *m_pActiveRoutePen;
       wxPen       *m_pActiveRoutePointPen;
