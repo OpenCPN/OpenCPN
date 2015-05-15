@@ -1563,7 +1563,7 @@ ENDIF(WIN32 OR APPLE)
 
 # On Windows builds, copy the wxWidgets dlls and helpers to the executable directory
 IF(WIN32 AND NOT UNIX)
-FILE(GLOB wxdll_files "${CMAKE_CURRENT_SOURCE_DIR}/wxWidgets/*.dll")
+FILE(GLOB wxdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/wxWidgets/*.dll")
 INSTALL(FILES ${wxdll_files} DESTINATION ".")
 FILE(GLOB vcdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/vc/*.dll")
 INSTALL(FILES ${vcdll_files} DESTINATION ".")
