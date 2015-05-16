@@ -167,8 +167,11 @@ wxArrayPtrVoid *Routeman::GetRouteArrayContaining( RoutePoint *pWP )
         wxRoutePointListNode *waypoint_node = ( proute->pRoutePointList )->GetFirst();
         while( waypoint_node ) {
             RoutePoint *prp = waypoint_node->GetData();
-            if( prp == pWP )                // success
-            pArray->Add( (void *) proute );
+            if( prp == pWP ){              // success
+                pArray->Add( (void *) proute );
+                break;          // only add a route to the array once, even if there are duplicate points
+                                // in the route...See FS#1743
+            }
 
             waypoint_node = waypoint_node->GetNext();           // next waypoint
         }

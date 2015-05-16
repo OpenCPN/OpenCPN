@@ -2167,7 +2167,7 @@ void RouteManagerDialog::OnWptDeleteClick( wxCommandEvent &event )
 
                 if ( wp->m_bIsInRoute || wp->m_bIsInTrack )
                 {
-                    if ( wxYES == OCPNMessageBox(this,  _( "The waypoint you want to delete is used in a route, do you really want to delete it?" ), _( "OpenCPN Alert" ), wxYES_NO ))
+                    if ( wxID_YES == OCPNMessageBox(this,  _( "The waypoint you want to delete is used in a route, do you really want to delete it?" ), _( "OpenCPN Alert" ), wxYES_NO ))
                             pWayPointMan->DestroyWaypoint( wp );
                 }
                 else
