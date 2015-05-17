@@ -1552,15 +1552,18 @@ bool Quilt::Compose( const ViewPort &vp_in )
 
         OCPNRegion chart_region = pqc_ref->GetCandidateVPRegion( vp_local );
 
-        if( !chart_region.Empty() )
+        if( !chart_region.Empty() ){
             vpu_region.Intersect( chart_region );
 
-        if( vpu_region.IsEmpty() )
-            pqc_ref->b_include = false;   // skip this chart, no true overlap
-        else {
-            pqc_ref->b_include = true;
-            vp_region.Subtract( chart_region );          // adding this chart
+            if( vpu_region.IsEmpty() )
+                pqc_ref->b_include = false;   // skip this chart, no true overlap
+            else {
+                pqc_ref->b_include = true;
+                vp_region.Subtract( chart_region );          // adding this chart
+            }
         }
+        else
+            pqc_ref->b_include = false;   // skip this chart, empty region
     }
     
     //    Now the rest of the candidates
@@ -1599,15 +1602,18 @@ bool Quilt::Compose( const ViewPort &vp_in )
                     OCPNRegion vpu_region( vp_local.rv_rect );
 
                     OCPNRegion chart_region = pqc->GetCandidateVPRegion( vp_local );  //quilt_region;
-                    if( !chart_region.Empty() )
+                    if( !chart_region.Empty() ){
                         vpu_region.Intersect( chart_region );
 
-                    if( vpu_region.IsEmpty() )
-                        pqc->b_include = false; // skip this chart, no true overlap
-                    else {
-                        pqc->b_include = true;
-                        vp_region.Subtract( chart_region );          // adding this chart
+                        if( vpu_region.IsEmpty() )
+                            pqc->b_include = false; // skip this chart, no true overlap
+                        else {
+                            pqc->b_include = true;
+                            vp_region.Subtract( chart_region );          // adding this chart
+                        }
                     }
+                    else
+                        pqc->b_include = false;   // skip this chart, empty region
                 } else {
                     pqc->b_include = true;
                 }
