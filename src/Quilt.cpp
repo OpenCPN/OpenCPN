@@ -202,6 +202,7 @@ Quilt::Quilt()
     m_refchart_dbIndex = -1;
     m_reference_type = CHART_TYPE_UNKNOWN;
     m_reference_family = CHART_FAMILY_UNKNOWN;
+    m_quilt_proj = PROJECTION_UNKNOWN;
 
     m_lost_refchart_dbIndex = -1;
     
