@@ -163,6 +163,10 @@
 		</tools>
 
 		<icons>
+                        <icon name="4WayMove">
+                                <icon-location x="420" y="160"/>
+                                <size x="32" y="32"/>
+                        </icon>
 			<icon name="Display">
 				<icon-location x="20" y="400"/>
                         <size x="40" y="40"/>
@@ -657,6 +661,10 @@
 		</tools>
 
 		<icons>
+                        <icon name="4WayMove">
+                                <icon-location x="420" y="160"/>
+                                <size x="32" y="32"/>
+                        </icon>
 			<icon name="Display">
 				<icon-location x="20" y="370"/>
                         <size x="40" y="40"/>
@@ -1147,6 +1155,10 @@
 		</tools>
 
 		<icons>
+                        <icon name="4WayMove">
+                                <icon-location x="420" y="160"/>
+                                <size x="32" y="32"/>
+                        </icon>
 			<icon name="Display">
 				<icon-location x="20" y="370"/>
                 <size x="40" y="40"/>

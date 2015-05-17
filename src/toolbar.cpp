@@ -177,7 +177,7 @@ void GrabberWin::MouseEvent( wxMouseEvent& event )
             
             if( !m_ptoolbar->m_bnavgrabber ){
                 m_ptoolbar->m_bnavgrabber = true;
-                m_ptoolbar->SetGrabber(_T("CompassRose") );
+                m_ptoolbar->SetGrabber(_T("4WayMove") );
             }
             else{
                 m_ptoolbar->m_bnavgrabber = false;
