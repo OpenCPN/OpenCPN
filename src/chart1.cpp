@@ -9855,7 +9855,7 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "UDKRD;  80;  0;  0;",
         "UARTE;  64; 64; 64;",              // Active Route, Grey on Dusk/Night
 
-        "NODTA;  41;  46;  46;"
+        "NODTA;  41;  46;  46;",
         "CHBLK;  54;  60;  61;",
         "SNDG1;  41;  46;  46;",
         "SNDG2;  71;  78;  79;",
@@ -9889,7 +9889,7 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "UDKRD;  50;  0;  0;",
         "UARTE;  64; 64; 64;",              // Active Route, Grey on Dusk/Night
 
-        "NODTA;   7;   7;   7;"
+        "NODTA;   7;   7;   7;",
         "CHBLK;  31;  34;  35;",
         "SNDG1;  31;  34;  35;",
         "SNDG2;  43;  48;  48;",
