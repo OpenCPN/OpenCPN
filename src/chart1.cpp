@@ -3991,6 +3991,7 @@ void MyFrame::ToggleStats()
             UpdateControlBar();
             g_bShowChartBar = true;
         }
+        SendSizeEvent();
         Refresh();
         
         SetMenubarItemState( ID_MENU_UI_CHARTBAR, g_bShowChartBar );
