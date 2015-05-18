@@ -86,9 +86,6 @@ extern bool GetMemoryStatus( int *mem_total, int *mem_used );
 bool bthread_debug;
 bool g_throttle_squish;
 
-#include <wx/arrimpl.cpp> 
-WX_DEFINE_OBJARRAY(ArrayOfCatalogEntries);
-
 class CompressionPoolThread;
 class JobTicket
 {
@@ -1012,7 +1009,8 @@ glTexFactory::glTexFactory(ChartBase *chart, GLuint raster_format)
     
     if(!g_CompressorPool)
         g_CompressorPool = new CompressionWorkerPool;
-    
+
+    m_ticks = 0;    
     m_timer.SetOwner(this, FACTORY_TIMER);
     m_timer.Start( 500 );
 }
@@ -1023,13 +1021,8 @@ glTexFactory::~glTexFactory()
         m_fs->Close();
     }
 
-    while(!m_catalog.IsEmpty()){
-        CatalogEntry **t = m_catalog.Detach(0);
-        delete *t;
-    }
-    
-    m_catalog.Clear();
-    
+    WX_CLEAR_ARRAY (m_catalog); 	 
+
     DeleteAllDescriptors();
  
     free( m_td_array );         // array is empty

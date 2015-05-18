@@ -71,7 +71,7 @@ public:
     uint32_t    compressed_size;
 };
 
-WX_DECLARE_OBJARRAY(CatalogEntry*, ArrayOfCatalogEntries);
+WX_DEFINE_ARRAY(CatalogEntry*, ArrayOfCatalogEntries);
 
 
 class glTexFactory : public wxEvtHandler

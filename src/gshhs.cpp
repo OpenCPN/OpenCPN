@@ -137,6 +137,8 @@ GshhsPolyCell::~GshhsPolyCell()
 {
     for(int i=0; i<GSSH_SUBM*GSSH_SUBM; i++)
         delete high_res_map[i];
+    for(int i=0; i<6; i++)
+        delete [] polyv[i];
 }
 
 void GshhsPolyCell::ReadPoly(contour_list &poly)
@@ -977,6 +979,8 @@ GshhsReader::GshhsReader( )
         lsPoly_boundaries[qual] = new std::vector<GshhsPolygon*>;
         lsPoly_rivers[qual] = new std::vector<GshhsPolygon*>;
     }
+
+    quality = -1;
     LoadQuality( q );
 }
 

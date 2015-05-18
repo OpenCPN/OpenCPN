@@ -396,7 +396,7 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 #  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
 IF(NOT WIN32 AND NOT APPLE )
   ADD_DEFINITIONS( "-Wall -Wno-unused -fexceptions -rdynamic" )
-  ADD_DEFINITIONS( " -g -O2 -fno-strict-aliasing")
+  ADD_DEFINITIONS( " -g  -fno-strict-aliasing")
 
   ADD_DEFINITIONS( " -DPREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\"")
   # profiling with gprof

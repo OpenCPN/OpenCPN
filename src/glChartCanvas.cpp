@@ -525,7 +525,8 @@ void BuildCompressedCache()
                     wxLogMessage(msgt);
                     workers[t]->Run();
                     break;
-                } else if(!workers[t]->IsRunning()) {
+                } else if(!workers[t]->IsAlive()) {
+                    workers[t]->Wait();
                     msgt.Printf( _T("Finished chart compression on thread %d  "), t);
                     wxLogMessage(msgt);
                     ChartData->DeleteCacheChart(workers[t]->pchart);
@@ -551,8 +552,7 @@ void BuildCompressedCache()
     if(ramonly) {
         for(int t = 0; t<thread_count; t++) {
             if(workers[t]) {
-                if(workers[t]->IsRunning())
-                    workers[t]->Wait();
+                workers[t]->Wait();
                 ChartData->DeleteCacheChart(workers[t]->pchart);
                 delete workers[t];
             }
@@ -785,7 +785,7 @@ glChartCanvas::glChartCanvas( wxWindow *parent ) :
     m_binPan = false;
     
     b_timeGL = true;
- 
+    m_last_render_time = -1;
 #ifdef __OCPN__ANDROID__    
     //  Create/connect a dynamic event handler slot for gesture events
     Connect( wxEVT_QT_PANGESTURE,

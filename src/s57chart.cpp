@@ -2309,6 +2309,7 @@ bool s57chart::DoRenderRegionViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint,
         ClearRenderedTextCache();                       // and reset the text renderer,
                                                         //for the case where depth(height) units change
         ResetPointBBoxes( m_last_vp, VPoint );
+        SetSafetyContour();
     }
 
     if( VPoint.view_scale_ppm != m_last_vp.view_scale_ppm ) {
@@ -4561,27 +4562,28 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
                 wxString fe_name = wxString(obj->FeatureName, wxConvUTF8);
                 if (objnam.Len() > 0)
                     g_pi_manager->SendVectorChartObjectInfo( FullPath, fe_name, objnam, obj->m_lat, obj->m_lon, scale, nativescale );
-                
+
 //      Build/Maintain the ATON floating/rigid arrays
                 if( GEO_POINT == obj->Primitive_type ) {
 
 // set floating platform
                     if( ( !strncmp( obj->FeatureName, "LITFLT", 6 ) )
                             || ( !strncmp( obj->FeatureName, "LITVES", 6 ) )
-                            || ( !strncmp( obj->FeatureName, "BOY", 3 ) ) ) {
+                            || ( !strncasecmp( obj->FeatureName, "BOY", 3 ) ) ) {
                         pFloatingATONArray->Add( obj );
                     }
 
 // set rigid platform
-                    if( !strncmp( obj->FeatureName, "BCN", 3 ) ) {
+                    if( !strncasecmp( obj->FeatureName, "BCN", 3 ) ) {
                         pRigidATONArray->Add( obj );
                     }
+                    
 
                     //    Mark the object as an ATON
                     if( ( !strncmp( obj->FeatureName, "LIT", 3 ) )
                             || ( !strncmp( obj->FeatureName, "LIGHTS", 6 ) )
-                            || ( !strncmp( obj->FeatureName, "BCN", 3 ) )
-                            || ( !strncmp( obj->FeatureName, "BOY", 3 ) ) ) {
+                            || ( !strncasecmp( obj->FeatureName, "BCN", 3 ) )
+                            || ( !strncasecmp( obj->FeatureName, "BOY", 3 ) ) ) {
                         obj->bIsAton = true;
                     }
 
@@ -6063,12 +6065,12 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
         //  For single Point objects, the integral object bounding box contains the lat/lon of the object,
         //  possibly expanded by text or symbol rendering
         case GEO_POINT: {
-            if( !obj->bBBObj_valid ) return false;
             
             if( 1 == obj->npt ) {
                 //  Special case for LIGHTS
                 //  Sector lights have had their BBObj expanded to include the entire drawn sector
                 //  This is too big for pick area, can be confusing....
+                //  Or lights may not being displayed, in this case bBBObj_valid is false
                 //  So make a temporary box at the light's lat/lon, with select_radius size
                 if( !strncmp( obj->FeatureName, "LIGHTS", 6 ) ) {
                     double olon, olat;
@@ -6084,8 +6086,10 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
 
                     if( sbox.PointInBox( lon, lat, 0 ) ) return true;
                 }
-
-                else if( obj->BBObj.PointInBox( lon, lat, select_radius ) ) return true;
+                else {
+                    if( !obj->bBBObj_valid ) return false;
+                    if( obj->BBObj.PointInBox( lon, lat, select_radius ) ) return true;
+                }
             }
 
             //  For MultiPoint objects, make a bounding box from each point's lat/lon
@@ -7563,6 +7567,13 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
     if( !ps52plib || !ps52plib->m_bExtendLightSectors ) 
         return false;
 
+    // clear sector even if user switch lights off
+    // XXXX but will do it only after timer expired
+    // and not on L key
+    sectorlegs.clear();
+    if (!gFrame || !gFrame->ToggleLights( false ))
+        return false;
+
     ChartPlugInWrapper *target_plugin_chart = NULL;
     s57chart *Chs57 = NULL;
     
@@ -7604,9 +7615,6 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
             pi_rule_list = g_pi_manager->GetPlugInObjRuleListAtLatLon( target_plugin_chart,
                                                                        cursor_lat, cursor_lon, selectRadius, viewport );
         
-        
-        sectorlegs.clear();
-
         wxPoint2DDouble lightPosD(0,0);
         wxPoint2DDouble objPos;
         

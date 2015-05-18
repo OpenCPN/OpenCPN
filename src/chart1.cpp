@@ -4268,14 +4268,15 @@ bool MyFrame::ToggleLights( bool doToggle, bool temporary )
     OBJLElement *pOLE = NULL;
     
 #ifdef USE_S57
-    if( ps52plib ) {
-        for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
+    if( !ps52plib ) 
+        return false;
+
+    for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
             pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
             if( !strncmp( pOLE->OBJLName, "LIGHTS", 6 ) ) {
                 oldstate = pOLE->nViz != 0;
                 break;
             }
-        }
     }
 
     oldstate &= !ps52plib->IsObjNoshow("LIGHTS");
@@ -6492,6 +6493,12 @@ void MyFrame::HandlePianoClick( int selected_index, int selected_dbIndex )
 {
     if( !pCurrentStack ) return;
     if( s_ProgDialog ) return;
+    
+    // stop movement or on slow computer we may get something like :
+    // zoom out with the wheel (timer is set)
+    // quickly click and display a chart, which may zoom in
+    // but the delayed timer fires first and it zooms out again!
+    cc1->StopMovement();
 
     if( !cc1->GetQuiltMode() ) {
         if( m_bpersistent_quilt/* && g_bQuiltEnable*/ ) {
@@ -9788,6 +9795,7 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "CHBLK;   7;   7;   7;",
         "SNDG1; 125; 137; 140;",
         "SNDG2;   7;   7;   7;",
+        "SCLBR; 235; 125;  54;",
         "UIBDR; 125; 137; 140;",
         "UINFB;  58; 120; 240;",
         "UINFD;   7;   7;   7;",
@@ -9818,10 +9826,11 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "UDKRD;  80;  0;  0;",
         "UARTE;  64; 64; 64;",              // Active Route, Grey on Dusk/Night
 
-        "NODTA;  41;  46;  46;"
+        "NODTA;  41;  46;  46;",
         "CHBLK;  54;  60;  61;",
         "SNDG1;  41;  46;  46;",
         "SNDG2;  71;  78;  79;",
+        "SCLBR;  75;  38;  19;",
         "UIBDR;  54;  60;  61;",
         "UINFB;  19;  40;  80;",
         "UINFD;  71;  78;  79;",
@@ -9852,15 +9861,16 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "UDKRD;  50;  0;  0;",
         "UARTE;  64; 64; 64;",              // Active Route, Grey on Dusk/Night
 
-        "NODTA;   7;   7;   7;"
-        "CHBLK; 163; 180; 183;",
-        "SNDG1; 125; 137; 140;",
-        "SNDG2; 212; 234; 238;",
-        "UIBDR; 163; 180; 183;",
+        "NODTA;   7;   7;   7;",
+        "CHBLK;  31;  34;  35;",
+        "SNDG1;  31;  34;  35;",
+        "SNDG2;  43;  48;  48;",
+        "SCLBR;  52;  28;  12;",
+        "UIBDR;  31;  34;  35;",
         "UINFB;  21;  29;  69;",
-        "UINFD; 212; 234; 238;",
-        "UINFO; 221; 118;  51;",
-        "PLRTE; 220;  64;  37;",
+        "UINFD;  43;  48;  58;",
+        "UINFO;  52;  28;  12;",
+        "PLRTE;  66;  19;  11;",
         "CHMGD; 52; 18; 52;",
         "UIBCK; 7; 7; 7;",
 
