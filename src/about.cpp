@@ -46,6 +46,7 @@
 #include "styles.h"
 #include "version.h"
 #include "OCPNPlatform.h"
+#include "FontMgr.h"
 
 wxString str_version_start = wxT("\n      Version ");
 wxString str_version_major = wxString::Format(wxT("%i"),VERSION_MAJOR);
@@ -62,21 +63,22 @@ extern ocpnStyle::StyleManager* g_StyleManager;
 extern about            *g_pAboutDlg;
 extern bool             g_bresponsive;
 
+
 char AboutText[] =
 {
-  "\n                                         OpenCPN\n\n\
-                       (c) 2000-2015 The OpenCPN Authors\n"
+    "<br>OpenCPN<br>\
+    (c) 2000-2015 The OpenCPN Authors<br><br>"
 };
 
-char OpenCPNInfo[] = {"\n\n\
-      OpenCPN is a Free Software project, built by sailors.\n\
-       It is freely available to download and distribute\n\
-               without charge at Opencpn.org.\n\n\
-       If you use OpenCPN, please consider contributing\n\
-                or donating funds to the project.\n\n\
-      Documentation\n\
-           http://Opencpn.org\n\n"
+char OpenCPNInfo[] = {"<br><br>\
+OpenCPN is a Free Software project, built by sailors. \
+It is freely available to download and distribute \
+without charge at opencpn.org.<br><br>\
+If you use OpenCPN, please consider contributing \
+or donating funds to the project.<br><br>\
+For more information, visit http://opencpn.org<br><br>"
 };
+
 
 char AuthorText[] =
 {
@@ -199,45 +201,103 @@ bool about::Create( wxWindow* parent, wxWindowID id, const wxString& caption, co
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     SetFont( *qFont );
     
+    m_displaySize = g_Platform->getDisplaySize();
     CreateControls();
-    Update();
-
-    wxSize sz = g_Platform->getDisplaySize();
     
-    GetSizer()->Fit( this );
+    Update();
     
     //Set the maximum size of the entire settings dialog
-    SetSizeHints( -1, -1, sz.x-100, sz.y-100 );
+    SetSizeHints( -1, -1, m_displaySize.x-100, m_displaySize.y-100 );
 
     if( g_bresponsive )
-        SetSize( wxSize( sz.x-100, sz.y-100 ) );
+        SetSize( wxSize( m_displaySize.x-100, m_displaySize.y-100 ) );
+    else{
+        GetSizer()->Fit( this );
+        wxSize esize;
+        esize.x = GetCharHeight() * 40;
+        esize.y = GetCharHeight() * 30;
+        SetSize( esize );
+    }
+    
         
     Centre();
 
     return TRUE;
 }
 
+void about::SetColorScheme( void )
+{
+    DimeControl( this );
+    wxColor bg = GetBackgroundColour();
+    pAboutHTMLCtl->SetBackgroundColour( bg );
+    SetBackgroundColour( bg );                  // This looks like non-sense, but is needed for __WXGTK__
+                                                // to get colours to propagate down the control's family tree.
+    
+    #ifdef __WXQT__    
+    //  wxQT has some trouble clearing the background of HTML window...
+    wxBitmap tbm( GetSize().x, GetSize().y, -1 );
+    wxMemoryDC tdc( tbm );
+    //    wxColour cback = GetGlobalColor( _T("YELO1") );
+    tdc.SetBackground( bg );
+    tdc.Clear();
+    pAboutHTMLCtl->SetBackgroundImage(tbm);
+    #endif
+    
+}
+
 void about::Update()
 {
-    pAboutTextCtl->Clear();
-    wxString *pAboutString = new wxString( AboutText, wxConvUTF8 );
 
+    wxColor bg = GetBackgroundColour();
+    wxColor fg = wxColour(0,0,0); //FontMgr::Get().GetFontColor( _("Dialog") );
+
+    wxString aboutText;
+    aboutText.Printf( _T("<html><body bgcolor=#%02x%02x%02x><font color=#%02x%02x%02x>"),
+                   bg.Red(), bg.Blue(), bg.Green(), fg.Red(), fg.Blue(), fg.Green() );
+    
+    wxFont *dFont = FontMgr::Get().GetFont( _("Dialog") );
+    wxString face = dFont->GetFaceName();
+    
+    #ifdef __WXOSX__
+    int points = dFont->GetPointSize();
+    #else
+    int points = dFont->GetPointSize() + 1;
+    #endif
+    
+    int sizes[7];
+    for ( int i=-2; i<5; i++ ) {
+        sizes[i+2] = points + i + (i>0?i:0);
+    }
+    pAboutHTMLCtl->SetFonts(face, face, sizes);
+    
+    if(wxFONTSTYLE_ITALIC == dFont->GetStyle())
+        aboutText += _T("<i>");
+    
+    wxString *pAboutString = new wxString( AboutText, wxConvUTF8 );
     pAboutString->Append( OpenCPNVersion );
     pAboutString->Append( wxString( OpenCPNInfo, wxConvUTF8 ) );
-
-    pAboutTextCtl->WriteText( *pAboutString );
-    delete pAboutString;
-
+    
     // Show the user where the log file is going to be
     wxString log = _T("    Logfile location: ");
-    log.Append( glog_file );
-    pAboutTextCtl->WriteText( log );
-
+    log.Append( g_Platform->GetLogFileName() );
+    pAboutString->Append(log);
+    
     // Show the user where the config file is going to be
-    wxString conf = _T("\n    Config file location: ");
+    wxString conf = _T("<br><br>    Config file location: ");
     conf.Append( g_Platform->GetConfigFileName() );
-    pAboutTextCtl->WriteText( conf );
-    pAboutTextCtl->SetInsertionPoint( 0 );
+    pAboutString->Append(conf);
+    
+    aboutText << *pAboutString;
+    delete pAboutString;
+    
+    aboutText << _T("</font>");
+    if(wxFONTSTYLE_ITALIC == dFont->GetStyle())
+        aboutText << _T("</i>");
+    
+    aboutText << _T("</body></html>");
+    
+    pAboutHTMLCtl->SetPage( aboutText );
+
     
     pAuthorTextCtl->Clear();
     wxString *pAuthorsString = new wxString( AuthorText, wxConvUTF8 );
@@ -270,7 +330,7 @@ void about::Update()
     }
     pLicenseTextCtl->SetInsertionPoint( 0 );
 
-    DimeControl( this );
+    SetColorScheme();
 }
 
 void about::CreateControls()
@@ -284,16 +344,20 @@ void about::CreateControls()
 
     wxBoxSizer* aboutSizer = new wxBoxSizer( wxVERTICAL );
     itemDialog1->SetSizer( aboutSizer );
-
     wxStaticText *pST1 = new wxStaticText( this, -1, _T("Label"), wxDefaultPosition,
-            wxSize( 500, 30 ), wxALIGN_CENTRE | wxALIGN_CENTER_VERTICAL );
+            wxSize( -1, 30/*500, 30*/ ), wxALIGN_CENTRE/* | wxALIGN_CENTER_VERTICAL*/ );
     pST1->SetLabel( _("The Open Source Chart Plotter/Navigator") );
     wxFont *headerFont = wxTheFontList->FindOrCreateFont( 14, wxFONTFAMILY_SWISS,
             wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
     pST1->SetFont( *headerFont );
-    aboutSizer->Add( pST1, 1, wxALL | wxEXPAND, 8 );
+    aboutSizer->Add( pST1, 0, wxALL | wxEXPAND, 8 );
 
-    wxBoxSizer* buttonSizer = new wxBoxSizer( wxHORIZONTAL );
+    wxSizer *buttonSizer;
+    if( m_displaySize.x < m_displaySize.y)
+        buttonSizer = new wxBoxSizer( wxVERTICAL );
+    else
+        buttonSizer = new wxBoxSizer(wxHORIZONTAL );
+    
 
     wxButton* copyIni = new wxButton( itemDialog1, ID_COPYINI, _("Copy Settings File to Clipboard") );
     buttonSizer->Add( copyIni, 1, wxALL | wxEXPAND, 3 );
@@ -315,7 +379,7 @@ void about::CreateControls()
     pNotebook = new wxNotebook( itemDialog1, ID_NOTEBOOK_HELP, wxDefaultPosition,
             wxSize( -1, -1 ), wxNB_TOP );
     pNotebook->InheritAttributes();
-    aboutSizer->Add( pNotebook, 0, wxALIGN_CENTER_VERTICAL | wxEXPAND | wxALL, 5 );
+    aboutSizer->Add( pNotebook, 1, wxALIGN_CENTER_VERTICAL | wxEXPAND | wxALL, 5 );
 
     aboutSizer->Add( buttonSizer, 0, wxALL, 0 );
 
@@ -328,11 +392,13 @@ void about::CreateControls()
     wxBoxSizer* itemBoxSizer6 = new wxBoxSizer( wxVERTICAL );
     itemPanelAbout->SetSizer( itemBoxSizer6 );
 
-    pAboutTextCtl = new wxTextCtrl( itemPanelAbout, -1, _T(""), wxDefaultPosition,
-                                    wxSize( -1, v_size ), wxTE_MULTILINE | wxTE_READONLY );
-    pAboutTextCtl->InheritAttributes();
-    itemBoxSizer6->Add( pAboutTextCtl, 0, wxALIGN_CENTER_HORIZONTAL | wxEXPAND | wxALL, 5 );
-
+    
+    pAboutHTMLCtl = new wxHtmlWindow( itemPanelAbout, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                                wxHW_SCROLLBAR_AUTO | wxHW_NO_SELECTION);
+    
+    pAboutHTMLCtl->SetBorders( 5 );
+    itemBoxSizer6->Add( pAboutHTMLCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxEXPAND | wxALL, 5 );
+    
     //     Authors Panel
     itemPanelAuthors = new wxPanel( pNotebook, -1, wxDefaultPosition, wxDefaultSize,
             wxSUNKEN_BORDER | wxTAB_TRAVERSAL );
@@ -345,7 +411,7 @@ void about::CreateControls()
     pAuthorTextCtl = new wxTextCtrl( itemPanelAuthors, -1, _T(""), wxDefaultPosition,
                                      wxSize( -1, v_size ), wxTE_MULTILINE | wxTE_READONLY );
     pAuthorTextCtl->InheritAttributes();
-    itemBoxSizer7->Add( pAuthorTextCtl, 0, wxALIGN_CENTER_HORIZONTAL | wxEXPAND | wxALL, 5 );
+    itemBoxSizer7->Add( pAuthorTextCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxEXPAND | wxALL, 5 );
 
     //  License Panel
     itemPanelLicense = new wxPanel( pNotebook, -1, wxDefaultPosition, wxDefaultSize,
@@ -368,7 +434,7 @@ void about::CreateControls()
                                       wxSize( -1, v_size ), tcflags );
 
     pLicenseTextCtl->InheritAttributes();
-    itemBoxSizer8->Add( pLicenseTextCtl, 0, wxALIGN_CENTER_HORIZONTAL | wxEXPAND | wxALL, 5 );
+    itemBoxSizer8->Add( pLicenseTextCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxEXPAND | wxALL, 5 );
 
     //     Help Panel
     itemPanelTips = new wxPanel( pNotebook, -1, wxDefaultPosition, wxDefaultSize,

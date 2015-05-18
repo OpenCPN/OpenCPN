@@ -75,6 +75,7 @@ class about: public wxDialog
     void OnCopyClick( wxCommandEvent& event );
     void Update();
     void OnClose( wxCloseEvent& event );
+    void SetColorScheme( void );
     
     wxString          m_DataLocn;
     wxWindow          *m_parent;
@@ -90,6 +91,8 @@ class about: public wxDialog
     wxTextCtrl *pAuthorTextCtl;
     wxTextCtrl *pLicenseTextCtl;
     wxNotebook *pNotebook;
+    wxHtmlWindow *pAboutHTMLCtl;
+    wxSize      m_displaySize;
 
 };
 

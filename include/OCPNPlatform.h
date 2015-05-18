@@ -95,6 +95,7 @@ public:
     wxString *GetPluginDirPtr();
     wxString *GetSharedDataDirPtr();
     wxString *GetPrivateDataDirPtr();
+    wxString &GetLogFileName(){ return mlog_file; }
     
     bool InitializeLogFile( void );
     void CloseLogFile( void );
