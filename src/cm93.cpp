@@ -3469,8 +3469,21 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                   translate_colmar ( sclass, pattValTmp );
                   sattr = _T ( "COLOUR" );
             }
-
-
+            // XXX should be done from s57 list ans cm93 list for any mismatch
+            // ie cm93 QUASOU is an enum s57 is a list
+            if ( pattValTmp->valType == OGR_INT && 
+                  (sattr.IsSameAs ( _T ( "QUASOU" ) ) || sattr.IsSameAs ( _T ( "CATLIT" ) ))
+               ) 
+            {
+                  int v = *(int*)pattValTmp->value;
+                  free(pattValTmp->value);
+                  sprintf ( val, "%d", v );
+                  int nlen = strlen ( val );
+                  pAVS = ( char * ) malloc ( nlen + 1 );          ;
+                  strcpy ( pAVS, val );
+                  pattValTmp->valType = OGR_STR;
+                  pattValTmp->value   = pAVS;
+            }
 
             //    Do CM93 $SCODE attribute substitutions
             if ( sclass.IsSameAs ( _T ( "$AREAS" ) ) && ( vtype == 'S' ) && sattr.IsSameAs ( _T ( "$SCODE" ) ) )
