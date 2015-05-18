@@ -107,6 +107,8 @@ extern "C" void toTM(float lat, float lon, float lat0, float lon0, double *x, do
 extern "C" void fromTM(double x, double y, double lat0, double lon0, double *lat, double *lon);
 
 extern "C" void toSM(double lat, double lon, double lat0, double lon0, double *x, double *y);
+extern "C" double toSMcache_y30(double lat0);
+extern "C" void toSMcache(double lat, double lon, double y30, double lon0, double *x, double *y);
 extern "C" void fromSM(double x, double y, double lat0, double lon0, double *lat, double *lon);
 
 extern "C" void toSM_ECC(double lat, double lon, double lat0, double lon0, double *x, double *y);

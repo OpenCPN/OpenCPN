@@ -78,7 +78,7 @@ class ViewPort
       public:
             ViewPort();
 
-            wxPoint GetPixFromLL(double lat, double lon) const;
+            wxPoint GetPixFromLL(double lat, double lon);
             void GetLLFromPix(const wxPoint &p, double *lat, double *lon);
             wxPoint2DDouble GetDoublePixFromLL(double lat, double lon);
 
@@ -124,6 +124,8 @@ class ViewPort
                                             // which contains the entire vieport
 
             bool     bValid;                 // This VP is valid
+
+            double toSM_lat0_cache, toSM_y30_cache;
 };
 
 

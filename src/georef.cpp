@@ -372,6 +372,36 @@ void toSM(double lat, double lon, double lat0, double lon0, double *x, double *y
     *y = y3 - y30;
 }
 
+double toSMcache_y30(double lat0)
+{
+    const double z = WGS84_semimajor_axis_meters * mercator_k0;
+    const double s0 = sin(lat0 * DEGREE);
+    const double y30 = (.5 * log((1 + s0) / (1 - s0))) * z;
+    return y30;
+}
+
+void toSMcache(double lat, double lon, double y30, double lon0, double *x, double *y)
+{
+    double xlon = lon;
+
+/*  Make sure lon and lon0 are same phase */
+
+    if((lon * lon0 < 0.) && (fabs(lon - lon0) > 180.))
+    {
+        lon < 0.0 ? xlon += 360.0 : xlon -= 360.0;
+    }
+
+    const float z = WGS84_semimajor_axis_meters * mercator_k0;
+
+    *x = (xlon - lon0) * DEGREE * z;
+
+     // y =.5 ln( (1 + sin t) / (1 - sin t) )
+    const float s = sinf(lat * DEGREE);
+    const float y3 = (.5f * logf((1 + s) / (1 - s))) * z;
+
+    *y = y3 - y30;
+}
+
 void
 fromSM(double x, double y, double lat0, double lon0, double *lat, double *lon)
 {

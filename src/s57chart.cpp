@@ -2160,6 +2160,8 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
 
             glColor3f( r, g, b ); /* nodta color */
             glChartCanvas::SetClipRegion( temp_vp, OCPNRegion(rect), false, !b_overlay); /* no rotation, clear */
+            if( !glChartCanvas::s_b_useStencil )
+                ps52plib->m_last_clip_region = OCPNRegion(rect);
             DoRenderRectOnGL( glc, temp_vp, rect );
             glChartCanvas::DisableClipRegion();
 
@@ -2199,6 +2201,8 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
 
         glColor3f( r, g, b ); /* nodta color */
         glChartCanvas::SetClipRegion( temp_vp, Region, false, !b_overlay ); /* no rotation */
+        if( !glChartCanvas::s_b_useStencil )
+            ps52plib->m_last_clip_region = Region;
         DoRenderRectOnGL( glc, temp_vp, rect );
         glChartCanvas::DisableClipRegion();
         

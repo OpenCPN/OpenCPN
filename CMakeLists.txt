@@ -530,6 +530,7 @@ IF(UNIX)
     FIND_PACKAGE(BZip2 REQUIRED)
     INCLUDE_DIRECTORIES(${BZIP2_INCLUDE_DIR})
     FIND_PACKAGE(ZLIB REQUIRED)
+    FIND_PACKAGE(X11 REQUIRED)
     INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
     FIND_PACKAGE(TinyXML)
   ENDIF(NOT QT_ANDROID)  
@@ -1362,6 +1363,7 @@ TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
       ${GETTEXT_LIBRARY}
       ${BZIP2_LIBRARIES}
       ${ZLIB_LIBRARY}
+      ${X11_LIBRARIES}
       )
 
 IF(TINYXML_FOUND)
@@ -1563,7 +1565,7 @@ ENDIF(WIN32 OR APPLE)
 
 # On Windows builds, copy the wxWidgets dlls and helpers to the executable directory
 IF(WIN32 AND NOT UNIX)
-FILE(GLOB wxdll_files "${CMAKE_CURRENT_SOURCE_DIR}/wxWidgets/*.dll")
+FILE(GLOB wxdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/wxWidgets/*.dll")
 INSTALL(FILES ${wxdll_files} DESTINATION ".")
 FILE(GLOB vcdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/vc/*.dll")
 INSTALL(FILES ${vcdll_files} DESTINATION ".")

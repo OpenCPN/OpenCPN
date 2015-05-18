@@ -301,7 +301,7 @@ void RoutePoint::ReLoadIcon( void )
     m_pbmIcon = pWayPointMan->GetIconBitmap( m_IconName );
 
 #ifdef ocpnUSE_GL
-    m_wpBBox_chart_scale = -1;
+    m_wpBBox_view_scale_ppm = -1;
 
     m_iTextTexture = 0;
 #endif
@@ -444,16 +444,16 @@ void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
 }
 
 #ifdef ocpnUSE_GL
-void RoutePoint::DrawGL( ViewPort &vp, OCPNRegion &region )
+void RoutePoint::DrawGL( ViewPort &vp, OCPNRegion &region,bool use_cached_screen_coords )
 {
     if( !m_bIsVisible )
-    return;
+        return;
 
     //    Optimization, especially apparent on tracks in normal cases
     if( m_IconName == _T("empty") && !m_bShowName && !m_bPtIsSelected ) return;
 
     if(m_wpBBox.GetValid() &&
-       vp.chart_scale == m_wpBBox_chart_scale &&
+       vp.view_scale_ppm == m_wpBBox_view_scale_ppm &&
        vp.rotation == m_wpBBox_rotation) {
         /* see if this waypoint can intersect with bounding box */
         LLBBox vpBBox = vp.GetBBox();
@@ -481,7 +481,10 @@ void RoutePoint::DrawGL( ViewPort &vp, OCPNRegion &region )
     wxRect hilitebox;
     unsigned char transparency = 150;
 
-    cc1->GetCanvasPointPix( m_lat, m_lon, &r );
+    if(use_cached_screen_coords)
+        r.x = m_screen_pos.m_x, r.y = m_screen_pos.m_y;
+    else
+        cc1->GetCanvasPointPix( m_lat, m_lon, &r );
 
 //    Substitue icon?
     wxBitmap *pbm;
@@ -525,14 +528,14 @@ void RoutePoint::DrawGL( ViewPort &vp, OCPNRegion &region )
     }
     
     /* update bounding box */
-    if(!m_wpBBox.GetValid() || vp.chart_scale != m_wpBBox_chart_scale || vp.rotation != m_wpBBox_rotation) {
+    if(!m_wpBBox.GetValid() || vp.view_scale_ppm != m_wpBBox_view_scale_ppm || vp.rotation != m_wpBBox_rotation) {
         double lat1, lon1, lat2, lon2;
         cc1->GetCanvasPixPoint(r.x+hilitebox.x, r.y+hilitebox.y+hilitebox.height, lat1, lon1);
         cc1->GetCanvasPixPoint(r.x+hilitebox.x+hilitebox.width, r.y+hilitebox.y, lat2, lon2);
 
         m_wpBBox.SetMin(lon1, lat1);
         m_wpBBox.SetMax(lon2, lat2);
-        m_wpBBox_chart_scale = vp.chart_scale;
+        m_wpBBox_view_scale_ppm = vp.view_scale_ppm;
         m_wpBBox_rotation = vp.rotation;
     }
 
@@ -568,7 +571,6 @@ void RoutePoint::DrawGL( ViewPort &vp, OCPNRegion &region )
         
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
         
         glColor3f(1, 1, 1);
@@ -581,6 +583,7 @@ void RoutePoint::DrawGL( ViewPort &vp, OCPNRegion &region )
         glTexCoord2f(u, v); glVertex2f(x+w, y+h);
         glTexCoord2f(0, v); glVertex2f(x, y+h);
         glEnd();
+
         glDisable(GL_BLEND);
         glDisable(GL_TEXTURE_2D);
     }
@@ -629,7 +632,6 @@ void RoutePoint::DrawGL( ViewPort &vp, OCPNRegion &region )
             
             glEnable(GL_TEXTURE_2D);
             glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         
             glColor3ub(m_FontColor.Red(), m_FontColor.Green(), m_FontColor.Blue());
             
@@ -641,6 +643,7 @@ void RoutePoint::DrawGL( ViewPort &vp, OCPNRegion &region )
             glTexCoord2f(u, v); glVertex2f(x+w, y+h);
             glTexCoord2f(0, v); glVertex2f(x, y+h);
             glEnd();
+
             glDisable(GL_BLEND);
             glDisable(GL_TEXTURE_2D);
         }

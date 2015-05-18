@@ -85,7 +85,7 @@ public:
       void CloneAddedRoutePoint(RoutePoint *ptargetpoint, RoutePoint *psourcepoint);
       void ClearHighlights(void);
       void RenderSegment(ocpnDC& dc, int xa, int ya, int xb, int yb, ViewPort &VP, bool bdraw_arrow, int hilite_width = 0);
-      void RenderSegmentArrowsGL( int xa, int ya, int xb, int yb, ViewPort &VP);
+      void RenderSegmentArrowsGL( float xa, float ya, float xb, float yb, ViewPort &VP);
 
       bool CrossesIDL(){ return m_bcrosses_idl; }
       void SetVisible(bool visible = true, bool includeWpts = true);
@@ -137,6 +137,8 @@ public:
       int         m_hiliteWidth;
 
 private:
+      void DrawGLLines( ViewPort &VP, ocpnDC *dc = NULL );
+
       bool m_bNeedsUpdateBBox;
       wxBoundingBox     RBBox;
 

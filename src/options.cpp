@@ -154,8 +154,10 @@ extern bool             g_bWayPointPreventDragging;
 
 extern bool             g_bPreserveScaleOnX;
 extern bool             g_bPlayShipsBells;
+extern int              g_iSoundDeviceIndex;
 extern bool             g_bFullscreenToolbar;
 extern bool             g_bTransparentToolbar;
+extern bool             g_bTransparentToolbarInOpenGLOK;
 
 extern int              g_OwnShipIconType;
 extern double           g_n_ownship_length_meters;
@@ -2034,11 +2036,7 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
     pTransparentToolbar = new wxCheckBox( m_ChartDisplayPage, ID_TRANSTOOLBARCHECKBOX,
                                           _("Enable Transparent Toolbar") );
     itemBoxSizerUI->Add( pTransparentToolbar, 0, wxALL, border_size );
-    if( g_bopengl ) pTransparentToolbar->Disable();
-    
-    
-
-
+    if( g_bopengl && !g_bTransparentToolbarInOpenGLOK ) pTransparentToolbar->Disable();
 }
 
 
@@ -2868,9 +2866,34 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
     pShowCompassWin = new wxCheckBox( itemPanelFont, wxID_ANY, _("Show Compass/GPS Status Window") );
     pShowCompassWin->SetValue( FALSE );
     miscOptions->Add( pShowCompassWin, 0, wxALL, border_size );
-
+    
+    wxBoxSizer *pToolbarAutoHide = new wxBoxSizer( wxHORIZONTAL );
+    miscOptions->Add( pToolbarAutoHide, 0, wxALL | wxEXPAND, group_item_spacing );
+    
+    pToolbarAutoHideCB = new wxCheckBox( itemPanelFont, ID_REPONSIVEBOX, _("Enable Toolbar auto-hide") );
+    pToolbarAutoHide->Add( pToolbarAutoHideCB, 0, wxALL, group_item_spacing );
+    
+    pToolbarHideSecs = new wxTextCtrl( itemPanelFont, ID_OPTEXTCTRL, _T(""), wxDefaultPosition, wxSize( 50, -1 ), wxTE_RIGHT  );
+    pToolbarAutoHide->Add( pToolbarHideSecs, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
+    
+    pToolbarAutoHide->Add( new wxStaticText( itemPanelFont, wxID_ANY, _("seconds") ),group_item_spacing );
+    
+    // Sound options
     pPlayShipsBells = new wxCheckBox( itemPanelFont, ID_BELLSCHECKBOX, _("Play Ships Bells"));
     miscOptions->Add( pPlayShipsBells, 0, wxALL, border_size );
+    
+    pSoundDeviceIndex = new wxSpinCtrl( itemPanelFont, wxID_ANY );
+    pSoundDeviceIndex->SetValue( g_iSoundDeviceIndex );
+    
+    if(OCPN_Sound::DeviceCount() > 1){
+        wxFlexGridSizer *pSoundDeviceIndexGrid = new wxFlexGridSizer( 2 );
+        miscOptions->Add( pSoundDeviceIndexGrid, 0, wxALL | wxEXPAND, group_item_spacing );
+    
+        wxStaticText* stSoundDeviceIndex = new wxStaticText( itemPanelFont, wxID_STATIC, _("Sound Device Index") );
+        pSoundDeviceIndexGrid->Add( stSoundDeviceIndex, 0,  wxALL, 5 );
+        pSoundDeviceIndex->SetRange(-1, OCPN_Sound::DeviceCount() - 1);
+        pSoundDeviceIndexGrid->Add( pSoundDeviceIndex, 0, wxALL, border_size);
+    }
     
     //  Mobile/Touchscreen checkboxes
     pMobile = new wxCheckBox( itemPanelFont, ID_MOBILEBOX, _("Enable Touchscreen interface") );
@@ -2884,39 +2907,33 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
     m_pSlider_GUI_Factor = new wxSlider( itemPanelFont, wxID_ANY, 0, -5, 5,
                                         wxDefaultPosition, wxSize( slider_width, 50),
                                         wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS );
+    m_pSlider_GUI_Factor->Hide();
 #ifdef __OCPN__ANDROID__    
     miscOptions->Add( new wxStaticText(itemPanelFont, wxID_ANY, _("User Interface scale factor")), inputFlags );
     miscOptions->Add( m_pSlider_GUI_Factor, 0, wxALL, border_size );
+    m_pSlider_GUI_Factor->Show();
     
 #ifdef __WXQT__
     m_pSlider_GUI_Factor->GetHandle()->setStyleSheet( getQtStyleSheet());
 #endif
 #endif
     
+
+
     m_pSlider_Chart_Factor = new wxSlider( itemPanelFont, wxID_ANY, 0, -5, 5,
                                          wxDefaultPosition, wxSize( slider_width, 50),
                                          wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS );
+    m_pSlider_Chart_Factor->Hide();
 #ifdef __OCPN__ANDROID__
     miscOptions->Add( new wxStaticText(itemPanelFont, wxID_ANY, _("Chart Object scale factor")), inputFlags );
     miscOptions->Add( m_pSlider_Chart_Factor, 0, wxALL, border_size );
+    m_pSlider_Chart_Factor->Show();
     
 #ifdef __WXQT__
     m_pSlider_Chart_Factor->GetHandle()->setStyleSheet( getQtStyleSheet());
 #endif
 #endif    
     
-    wxBoxSizer *pToolbarAutoHide = new wxBoxSizer( wxHORIZONTAL );
-    miscOptions->Add( pToolbarAutoHide, 0, wxALL | wxEXPAND, group_item_spacing );
-
-    pToolbarAutoHideCB = new wxCheckBox( itemPanelFont, ID_REPONSIVEBOX, _("Enable Toolbar auto-hide") );
-    pToolbarAutoHide->Add( pToolbarAutoHideCB, 0, wxALL, group_item_spacing );
-    
-    pToolbarHideSecs = new wxTextCtrl( itemPanelFont, ID_OPTEXTCTRL, _T(""), wxDefaultPosition, wxSize( 50, -1 ), wxTE_RIGHT  );
-    pToolbarAutoHide->Add( pToolbarHideSecs, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
-    
-    pToolbarAutoHide->Add( new wxStaticText( itemPanelFont, wxID_ANY, _("seconds") ),group_item_spacing );
-    
-
 }
 
 void options::CreateControls()
@@ -3253,6 +3270,7 @@ void options::SetInitialSettings()
 
     pPreserveScale->SetValue( g_bPreserveScaleOnX );
     pPlayShipsBells->SetValue( g_bPlayShipsBells );
+    pSoundDeviceIndex->SetValue( g_iSoundDeviceIndex );
 //    pFullScreenToolbar->SetValue( g_bFullscreenToolbar );
     pTransparentToolbar->SetValue( g_bTransparentToolbar );
     pSDMMFormat->Select( g_iSDMMFormat );
@@ -3589,7 +3607,8 @@ void options::OnWaypointRangeRingSelect( wxCommandEvent& event )
 
 void options::OnGLClicked( wxCommandEvent& event )
 {
-    pTransparentToolbar->Enable(!pOpenGL->GetValue());
+    if(!g_bTransparentToolbarInOpenGLOK)
+        pTransparentToolbar->Enable(!pOpenGL->GetValue());
 }
 
 void options::OnOpenGLOptions( wxCommandEvent& event )
@@ -3715,36 +3734,9 @@ void options::OnButtonaddClick( wxCommandEvent& event )
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     dirSelector->SetFont(*qFont);
 
-    if(g_bresponsive){
+    if(g_bresponsive)
+        dirSelector = g_Platform->AdjustDirDialogFont(this, dirSelector);
     
-        dirSelector->Show();
-        dirSelector->SetSize( GetSize());
-        dirSelector->Centre();
-
-        wxSize sds = dirSelector->GetSize();
-        wxSize ss =GetSize();
-        
-        
-        if(sds.x > ss.x){
-            dirSelector->Hide();
-            delete dirSelector;
-            dirSelector = new wxDirDialog( this, _("Add a directory containing chart files"),
-                                         *pInit_Chart_Dir, wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST );
-            
-            
-            wxFont *dialogFont = GetOCPNScaledFont(_("Dialog"));
-            wxFont *smallFont = new wxFont( * dialogFont ); 
-            smallFont->SetPointSize( (smallFont->GetPointSize() / 2) + 0.5 ); // + 0.5 to round instead of truncate
-            dirSelector->SetFont( * smallFont );
-            
-            dirSelector->SetSize( GetSize());
-            dirSelector->Centre();
-            
-        }
-        dirSelector->Hide();
-        
-    }
-
     if( dirSelector->ShowModal() == wxID_CANCEL )
         goto done;
 
@@ -4234,6 +4226,7 @@ void options::OnApplyClick( wxCommandEvent& event )
     g_bPreserveScaleOnX = pPreserveScale->GetValue();
 
     g_bPlayShipsBells = pPlayShipsBells->GetValue();
+    g_iSoundDeviceIndex = pSoundDeviceIndex->GetValue();
     g_bTransparentToolbar = pTransparentToolbar->GetValue();
     g_iSDMMFormat = pSDMMFormat->GetSelection();
     g_iDistanceFormat = pDistanceFormat->GetSelection();
@@ -4909,6 +4902,10 @@ void options::OnButtonSelectSound( wxCommandEvent& event )
 
     wxFileDialog *openDialog = new wxFileDialog( NULL, _("Select Sound File"), sound_dir, wxT(""),
             _("WAV files (*.wav)|*.wav|All files (*.*)|*.*"), wxFD_OPEN );
+    
+    if(g_bresponsive)
+        openDialog = g_Platform->AdjustFileDialogFont(this, openDialog);
+    
     int response = openDialog->ShowModal();
     if( response == wxID_OK ) {
         if( g_bportable ) {
@@ -4920,6 +4917,8 @@ void options::OnButtonSelectSound( wxCommandEvent& event )
 
         g_anchorwatch_sound.UnLoad();
     }
+    
+    delete openDialog;
 }
 
 void options::OnButtonTestSound( wxCommandEvent& event )
@@ -5482,12 +5481,15 @@ void options::OnInsertTideDataLocation( wxCommandEvent &event )
     wxString sel_file;
     int response = wxID_CANCEL;
 
-    wxFileDialog openDialog( NULL, _( "Select Tide/Current Data" ), g_TCData_Dir, wxT ( "" ),
+    wxFileDialog *popenDialog = new wxFileDialog( NULL, _( "Select Tide/Current Data" ), g_TCData_Dir, wxT ( "" ),
                              wxT ( "Tide/Current Data files (*.IDX; *.TCD)|*.IDX;*.idx;*.TCD;*.tcd|All files (*.*)|*.*" ),
                                     wxFD_OPEN  );
-    response = openDialog.ShowModal();
+    if(g_bresponsive)
+        popenDialog = g_Platform->AdjustFileDialogFont(this, popenDialog);
+    
+    response = popenDialog->ShowModal();
     if( response == wxID_OK ) {
-        sel_file = openDialog.GetPath();
+        sel_file = popenDialog->GetPath();
 
         if( g_bportable ) {
             wxFileName f( sel_file );
@@ -5507,6 +5509,8 @@ void options::OnInsertTideDataLocation( wxCommandEvent &event )
         else
             g_TCData_Dir = data_dir;
     }
+    
+    delete popenDialog;
 }
 
 void options::OnRemoveTideDataLocation( wxCommandEvent &event )
