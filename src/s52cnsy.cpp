@@ -623,7 +623,7 @@ static wxString *_UDWHAZ03(S57Obj *obj, double depth_value, ObjRazRules *rzRules
 
     if (TRUE == danger)
     {
-              int watlev;
+              int watlev = 0; // Enum 0 invalid
               GetIntAttr(obj, "WATLEV", watlev);
 
               if((1 == watlev) || (2 == watlev))
@@ -948,9 +948,6 @@ static void *DEPCNT02 (void *param)
       }
 
     // Continuation B
-      char quaposstr[20];
-      quaposstr[0] = 0;
-      GetStringAttr(obj, "QUAPOS", quaposstr, 19);
       int quapos = 0;
       GetIntAttr(obj, "QUAPOS", quapos);        // QUAPOS is an E (Enumerated) type attribute
 
@@ -1571,20 +1568,18 @@ static void *OBSTRN04 (void *param)
 
             if (UNKNOWN == least_depth)
             {
-                  char catobsstr[20];
-                  catobsstr[0] = 0;
-                  GetStringAttr(obj, "CATOBS", catobsstr, 19);
-                  char watlevstr[20];
-                  watlevstr[0] = 0;
-                  GetStringAttr(obj, "WATLEV", watlevstr, 19);
+                  int catobs = 0;
+                  GetIntAttr(obj, "CATOBS", catobs);
+                  int watlev = 0;
+                  GetIntAttr(obj, "WATLEV", watlev);
 
-                  if ('6' == catobsstr[0])
+                  if (6 == catobs)
                         depth_value = 0.01;
-                  else if (0 == watlevstr[0]) // default
+                  else if (0 == watlev) // default
                         depth_value = -15.0;
                   else
                   {
-                        switch (watlevstr[0]){
+                        switch (watlev){
                               case 5: depth_value =   0.0 ; break;
                               case 3: depth_value =   0.01; break;
                               case 4:
@@ -1592,16 +1587,6 @@ static void *OBSTRN04 (void *param)
                               case 2:
                               default : depth_value = -15.0 ; break;
                         }
-/*
-                        switch (watlevstr[0]){
-                              case '5': depth_value =   0.0 ; break;
-                              case '3': depth_value =   0.01; break;
-                              case '4':
-                              case '1':
-                              case '2':
-                                    default : depth_value = -15.0 ; break;
-                        }
-*/
                   }
             }
             else
@@ -2625,9 +2610,8 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
     }
     else
     {
-        wxString *quaposstr = GetStringAttrWXS(obj, "QUAPOS");
-        int quapos = (NULL == quaposstr)? 0 : atoi(quaposstr->mb_str());
-
+        int quapos = 0;
+        GetIntAttr(obj, "QUAPOS", quapos);
         if (0 != quapos)
         {
             if (2 <= quapos && quapos < 10)
@@ -2636,7 +2620,6 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
                 sndfrm02.Append(wxString(temp_str, wxConvUTF8));
             }
         }
-        delete quaposstr;
     }
 
     // Continuation A
@@ -3263,15 +3246,15 @@ static wxString _LITDSN01(S57Obj *obj)
 
       char colist[20];
       wxString return_value;
-
-      // CATLIT
+#if 0
+      // XXX CATLIT
       int catlit = -9;
       GetIntAttr(obj, "CATLIT", catlit);
 
       if(-9 != catlit)
       {
       }
-
+#endif
 
     /*
       1: directional function  IP 30.1-3;  475.7;
