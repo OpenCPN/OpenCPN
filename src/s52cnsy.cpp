@@ -179,7 +179,9 @@ bool GetIntAttr(S57Obj *obj, const char *AttrName, int &val)
     
     if(idx >= 0) {
         //      using idx to get the attribute value
-         S57attVal *v = obj->attVal->Item(idx);
+        S57attVal *v = obj->attVal->Item(idx);
+
+        assert(v->valType == OGR_INT);
         val = *(int*)(v->value);
         
         return true;
@@ -272,6 +274,7 @@ bool GetDoubleAttr(S57Obj *obj, const char *AttrName, double &val)
 //      using idx to get the attribute value
 
         S57attVal *v = obj->attVal->Item(idx);
+        assert(v->valType == OGR_REAL);
         val = *(double*)(v->value);
 
         return true;
@@ -289,6 +292,7 @@ bool GetStringAttr(S57Obj *obj, const char *AttrName, char *pval, int nc)
         //      using idx to get the attribute value
         S57attVal *v = obj->attVal->Item(idx);
 
+        assert(v->valType == OGR_STR);
         char *val = (char *)(v->value);
 
         strncpy(pval, val, nc);
@@ -307,6 +311,7 @@ wxString *GetStringAttrWXS(S57Obj *obj, const char *AttrName)
         //      using idx to get the attribute value
         S57attVal *v = obj->attVal->Item(idx);
         
+        assert(v->valType == OGR_STR);
         char *val = (char *)(v->value);
         
         return new wxString(val,  wxConvUTF8);
@@ -2986,8 +2991,11 @@ static void *WRECKS02 (void *param)
     GetIntAttr(obj, "WATLEV", watlev);
     int catwrk = -9;
     GetIntAttr(obj, "CATWRK", catwrk);
-	int quasou = -9;
-    GetIntAttr(obj, "QUASOU", quasou);
+
+    int quasou = -9;
+    // QUASOU is a list ie a string for us
+    wxString *quasoustr = GetStringAttrWXS(obj, "QUASOU");
+    char     quasouchar[LISTSIZE] = {'\0'};
 
     double safety_contour = S52_getMarinerParam(S52_MAR_SAFETY_CONTOUR);
 
@@ -3069,10 +3077,20 @@ static void *WRECKS02 (void *param)
 
 
     }
-	if (7 != quasou) //Fixes FS 165
+    if (NULL != quasoustr) _parseList(quasoustr->mb_str(), quasouchar, sizeof(quasouchar));
+
+    if (quasouchar[0] == 0 || NULL == strpbrk(quasouchar, "\07"))
+    {
+	    //Fixes FS 165   XXX where it is?
+	    // 7 is 'least depth unknown, safe clearance at value shown'
 		udwhaz03str = _UDWHAZ03(obj, depth_value, rzRules, &b_promote);
+		
+    }
 	else
+	{
+        quasou = 7;
 		udwhaz03str = new wxString();
+    }
     quapnt01str = CSQUAPNT01(obj);
 
     if (GEO_POINT == obj->Primitive_type) {
@@ -3227,7 +3245,7 @@ static void *WRECKS02 (void *param)
 
     delete udwhaz03str;
     delete quapnt01str;
-
+    delete quasoustr;
     return r;
 }
 
