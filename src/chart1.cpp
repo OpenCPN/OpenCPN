@@ -4275,6 +4275,7 @@ bool MyFrame::ToggleLights( bool doToggle, bool temporary )
                 oldstate = pOLE->nViz != 0;
                 break;
             }
+	    pOLE = NULL;
         }
     }
 
@@ -4349,6 +4350,7 @@ void MyFrame::ToggleAnchor( void )
                     old_vis = pOLE->nViz;
                     break;
                 }
+		pOLE = NULL;
             }
         }
         else if(OTHER == ps52plib->GetDisplayCategory())
