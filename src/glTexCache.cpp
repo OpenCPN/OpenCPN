@@ -548,9 +548,9 @@ void * CompressionPoolThread::Entry()
                 }
             
                 bool b_flip = false;
-    #ifdef __WXMSW__ //ocpnUSE_ocpnBitmap
-                b_flip = true;
-    #endif            
+//    #ifdef __WXMSW__ //ocpnUSE_ocpnBitmap
+//                b_flip = true;
+//    #endif            
                 squish::CompressImageRGB_Flatten_Flip_Throttle( m_bit_array[i], dim, dim, tex_data, flags,
                                                             true, b_flip, m_pticket->b_throttle );
             
