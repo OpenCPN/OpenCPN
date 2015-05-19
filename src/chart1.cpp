@@ -5000,7 +5000,12 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
         ChartsRefresh( dbii, cc1->GetVP(), true );
     }
 
-        
+    if(rr & REBUILD_RASTER_CACHE){
+        cc1->Disable();
+        BuildCompressedCache();
+        cc1->Enable();
+    }
+    
     if(g_config_display_size_mm > 0){
         g_display_size_mm = g_config_display_size_mm;
     }

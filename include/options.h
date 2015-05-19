@@ -171,19 +171,20 @@ enum {
 
 //    Define an int bit field for dialog return value
 //    To indicate which types of settings have changed
-#define     GENERIC_CHANGED    1
-#define     S52_CHANGED        2
-#define     FONT_CHANGED       4
-#define     FORCE_UPDATE       8
-#define     VISIT_CHARTS      16
-#define     LOCALE_CHANGED    32
-#define     TOOLBAR_CHANGED   64
-#define     CHANGE_CHARTS    128
-#define     SCAN_UPDATE      256
-#define     GROUPS_CHANGED   512
-#define     STYLE_CHANGED   1024
-#define     TIDES_CHANGED   2048
-#define     GL_CHANGED      4096
+#define     GENERIC_CHANGED             1
+#define     S52_CHANGED                 2
+#define     FONT_CHANGED                4
+#define     FORCE_UPDATE                8
+#define     VISIT_CHARTS                16
+#define     LOCALE_CHANGED              32
+#define     TOOLBAR_CHANGED             64
+#define     CHANGE_CHARTS               128
+#define     SCAN_UPDATE                 256
+#define     GROUPS_CHANGED              512
+#define     STYLE_CHANGED               1024
+#define     TIDES_CHANGED               2048
+#define     GL_CHANGED                  4096
+#define     REBUILD_RASTER_CACHE        8192
 
 
 #ifndef wxCLOSE_BOX
@@ -219,6 +220,7 @@ public:
     void Init();
 
     void SetInitialPage( int page_sel);
+    void Finish( void);
     
     wxWindow* GetContentWindow() const;
     void OnClose( wxCloseEvent& event );

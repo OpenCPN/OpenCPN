@@ -3647,10 +3647,8 @@ void options::OnOpenGLOptions( wxCommandEvent& event )
     }
 
     if(dlg.m_brebuild_cache) {
-        Hide();
-        cc1->Disable();
-        BuildCompressedCache();
-        cc1->Enable();
+        m_returnChanges = REBUILD_RASTER_CACHE;
+        Finish();
     }
 #endif
 }
@@ -4489,27 +4487,34 @@ void options::OnXidOkClick( wxCommandEvent& event )
     OnApplyClick( event );
     if( event.GetInt() == wxID_STOP ) return;
 
+    Finish();
+}
+
+void options::Finish()
+{
     //  Required to avoid intermittent crash on wxGTK
     m_pListbook->ChangeSelection(0);
     for (size_t i = 0; i < m_pListbook->GetPageCount(); i++)
     {
         wxNotebookPage* pg = m_pListbook->GetPage( i );
-
+        
         if( pg->IsKindOf( CLASSINFO(wxNotebook))) {
-                wxNotebook *nb = ((wxNotebook *)pg);
-                nb->ChangeSelection(0);
+            wxNotebook *nb = ((wxNotebook *)pg);
+            nb->ChangeSelection(0);
         }
     }
-
+    
     delete pActiveChartsList;
     delete ps57CtlListBox;
     delete tcDataSelected;
-
+    
     lastWindowPos = GetPosition();
     lastWindowSize = GetSize();
     SetReturnCode( m_returnChanges );
     EndModal( m_returnChanges );
+    
 }
+
 
 void options::OnButtondeleteClick( wxCommandEvent& event )
 {
