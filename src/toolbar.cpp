@@ -2299,13 +2299,19 @@ void ocpnToolBarSimple::DoPluginToolUp()
 void ocpnToolBarSimple::SetToolNormalBitmapEx(wxToolBarToolBase *tool, const wxString & iconName)
 {
     if( tool ) {
-        ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
+        ocpnToolBarTool *otool = (ocpnToolBarTool *) tool;
+        if(otool){
+            ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
 
-        wxBitmap bmp = style->GetToolIcon( iconName, TOOLICON_NORMAL );
-        tool->SetNormalBitmap( bmp );
-        ocpnToolBarTool *otool = (ocpnToolBarTool *)tool;
-        if(otool)
+            wxBitmap bmp = style->GetToolIcon( iconName, TOOLICON_NORMAL );
+            if(m_sizefactor > 1.0 ){
+                wxImage scaled_image = bmp.ConvertToImage();
+                bmp = wxBitmap(scaled_image.Scale(otool->m_width, otool->m_height, wxIMAGE_QUALITY_HIGH));
+            }
+        
+            tool->SetNormalBitmap( bmp );
             otool->SetIconName( iconName );
+        }
     }
 }
 
