@@ -61,7 +61,7 @@
 #include <setjmp.h>
 #endif
 
-#ifdef __WXGTK__
+#ifdef OCPN_HAVE_X11
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #endif
@@ -1517,8 +1517,8 @@ bool MyApp::OnInit()
 #endif
 
     // Determine if a transparent toolbar is possible under linux with opengl
-#ifdef __WXGTK__
     g_bTransparentToolbarInOpenGLOK = false;
+#ifdef OCPN_HAVE_X11
     if(!g_bdisable_opengl) {
         Display *disp = XOpenDisplay(NULL);
         Window *sup_window;
@@ -4999,7 +4999,8 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
         int dbii = ChartData->FinddbIndex( chart_file_name );
         ChartsRefresh( dbii, cc1->GetVP(), true );
     }
-    
+
+        
     if(g_config_display_size_mm > 0){
         g_display_size_mm = g_config_display_size_mm;
     }
