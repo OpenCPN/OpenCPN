@@ -462,22 +462,30 @@ void BuildCompressedCache()
     long style = wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME | wxPD_CAN_SKIP;
 //    style |= wxSTAY_ON_TOP;
     
-    pprog = new wxProgressDialog(_("OpenCPN Compressed Cache Update"), _T(""), count+1, GetOCPNCanvasWindow(), style );
+    wxString msg0;
+#ifdef __WXQT__    
+    msg0 = _T("Very longgggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg top line ");
+#endif    
+    for(int i=0 ; i < thread_count ; i++){msg0 += _T("line\n\n");}
+    pprog = new wxProgressDialog(_("OpenCPN Compressed Cache Update"), msg0, count+1, GetOCPNCanvasWindow(), style );
+    
+    wxSize csz = GetOCPNCanvasWindow()->GetClientSize();
+    if(csz.x < 600 || csz.y < 600){
+        wxFont *qFont = GetOCPNScaledFont(_("Dialog"));         // to get type, weight, etc...
+        wxFont *sFont = wxTheFontList->FindOrCreateFont( 10, qFont->GetFamily(), qFont->GetStyle(), qFont->GetWeight());
+        pprog->SetFont( *sFont );
+    }
     
     
     //    Make sure the dialog is big enough to be readable
     pprog->Hide();
     wxSize sz = pprog->GetSize();
-    wxSize csz = GetOCPNCanvasWindow()->GetClientSize();
-    sz.x = csz.x * 7 / 10;
+    sz.x = csz.x * 8 / 10;
     sz.y += thread_count * 40;          // allow for multiline messages
     pprog->SetSize( sz );
     pprog_size = sz;
 
     pprog->Centre();
-    wxString msg0;
-    for(int i=0 ; i < thread_count ; i++){msg0 += _T("\n\n");}
-    pprog->Update( 0, msg0 ); // Sometimes this lock opencpn up because of recursive event loop
     pprog->Show();
     pprog->Raise();
     
@@ -503,8 +511,11 @@ void BuildCompressedCache()
 
         bool skip = false;
         wxString msg;
-        msg.Printf( _("Distance from Ownship:  %4.0f NMi      Chart: "), distance);
-        msg += pchart->GetFullPath();
+        msg.Printf( _("Distance from Ownship:  %4.0f NMi"), distance);
+        if(pprog_size.x > 600){
+            msg += _T("   Chart:");
+            msg += pchart->GetFullPath();
+        }
         
         if(!ramonly)
             pprog->Update(pprog_count, _T("0000/0000 \n") + msg, &skip );
