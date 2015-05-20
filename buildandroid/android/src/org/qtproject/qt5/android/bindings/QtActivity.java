@@ -1335,6 +1335,7 @@ public class QtActivity extends Activity
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
+        Log.i("DEBUGGER_TAG", "onCreate");
         super.onCreate(savedInstanceState);
 
         nativeLib = new OCPNNativeLib();
@@ -1674,6 +1675,13 @@ public class QtActivity extends Activity
     @Override
     protected void onPause()
     {
+        Log.i("DEBUGGER_TAG", "onPause");
+
+        int i = nativeLib.onPause();
+        String aa;
+        aa = String.format("%d", i);
+        Log.i("DEBUGGER_TAG", aa);
+
         super.onPause();
         QtApplication.invokeDelegate();
     }
@@ -1740,6 +1748,7 @@ public class QtActivity extends Activity
     @Override
     protected void onRestart()
     {
+        Log.i("DEBUGGER_TAG", "onRestart");
         super.onRestart();
         QtApplication.invokeDelegate();
     }
@@ -1760,6 +1769,13 @@ public class QtActivity extends Activity
     @Override
     protected void onResume()
     {
+        Log.i("DEBUGGER_TAG", "onResume");
+
+        int i = nativeLib.onResume();
+        String aa;
+        aa = String.format("%d", i);
+        Log.i("DEBUGGER_TAG", aa);
+
         super.onResume();
         QtApplication.invokeDelegate();
     }
@@ -1811,6 +1827,13 @@ public class QtActivity extends Activity
     @Override
     protected void onStart()
     {
+        Log.i("DEBUGGER_TAG", "onStart");
+
+        int i = nativeLib.onStart();
+        String aa;
+        aa = String.format("%d", i);
+        Log.i("DEBUGGER_TAG", aa);
+
         super.onStart();
         QtApplication.invokeDelegate();
     }
@@ -1819,6 +1842,13 @@ public class QtActivity extends Activity
     @Override
     protected void onStop()
     {
+        Log.i("DEBUGGER_TAG", "onStop");
+
+        int i = nativeLib.onStop();
+        String aa;
+        aa = String.format("%d", i);
+        Log.i("DEBUGGER_TAG", aa);
+
         super.onStop();
         QtApplication.invokeDelegate();
     }

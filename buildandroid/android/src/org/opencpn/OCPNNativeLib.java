@@ -25,4 +25,10 @@ public class OCPNNativeLib {
 
   public native int onMenuKey();
 
+  public native int onStart();
+  public native int onStop();
+  public native int onPause();
+  public native int onResume();
+
+
 }

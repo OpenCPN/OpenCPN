@@ -66,7 +66,7 @@ extern TrackPropDlg              *pTrackPropDialog;
 extern MarkInfoImpl              *pMarkInfoDialog;
 extern S57QueryDialog            *g_pObjectQueryDialog;
 extern options                   *g_options;
-
+extern bool                       g_bSleep;
 androidUtilHandler              *g_androidUtilHandler;
 
 
@@ -305,6 +305,50 @@ extern "C"{
         gFrame->ToggleToolbar();
             
         return 88;
+    }
+}
+
+extern "C"{
+    JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onStop(JNIEnv *env, jobject obj)
+    {
+        qDebug() << "onStop";
+        
+//        g_bSleep = true;
+        
+        return 98;
+    }
+}
+
+extern "C"{
+    JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onStart(JNIEnv *env, jobject obj)
+    {
+        qDebug() << "onStart";
+        
+//        g_bSleep = false;;
+        
+        return 99;
+    }
+}
+
+extern "C"{
+    JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onPause(JNIEnv *env, jobject obj)
+    {
+        qDebug() << "onPause";
+        
+        g_bSleep = true;
+        
+        return 97;
+    }
+}
+
+extern "C"{
+    JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onResume(JNIEnv *env, jobject obj)
+    {
+        qDebug() << "onResume";
+        
+        g_bSleep = false;
+        
+        return 96;
     }
 }
 

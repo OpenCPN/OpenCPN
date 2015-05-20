@@ -482,6 +482,8 @@ int                       options_lastPage = 0;
 wxPoint                   options_lastWindowPos( 0,0 );
 wxSize                    options_lastWindowSize( 0,0 );
 
+bool                      g_bSleep;
+
 bool GetMemoryStatus(int *mem_total, int *mem_used);
 
 #ifdef __WXMSW__
@@ -6030,6 +6032,9 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
         }
     }
 
+    if(g_bSleep)
+        return;
+    
 //      Update the Toolbar Status windows and lower status bar the first time watchdog times out
     if( ( gGPS_Watchdog == 0 ) || ( gSAT_Watchdog == 0 ) ) {
         wxString sogcog( _T("SOG --- ") + getUsrSpeedUnit() + _T(" COG ---\u00B0") );
