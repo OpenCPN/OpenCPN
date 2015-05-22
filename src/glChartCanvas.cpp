@@ -2518,7 +2518,7 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, O
         if(vp.b_quilt && (fabs(skew_norm) > 1.0)){
             //  make a larger viewport to ensure getting all of the chart tiles
             ViewPort xvp = svp;
-            float maxdiag = sqrtf( (xvp.pix_width * xvp.pix_width) + (xvp.pix_height * xvp.pix_height) );
+            float maxdiag = 1.5 * sqrtf( (xvp.pix_width * xvp.pix_width) + (xvp.pix_height * xvp.pix_height) );
             xvp.pix_width = maxdiag;
             xvp.pix_height = maxdiag;
             pBSBChart->ComputeSourceRectangle( xvp, &Rp, &Rs );
@@ -2687,24 +2687,66 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, O
                     zx4 += ddx-vp.rv_rect.x;
                     double zy4 = (x22 * sint) + (y22 * cost);
                     zy4 += ddy-vp.rv_rect.y;
-                    xmax = wxMax(xmax, zx3); xmin = wxMin(xmin, zx3); ymax = wxMax(ymax, zy3); ymin = wxMin(ymin, zy3);
-                    
+                    xmax = wxMax(xmax, zx4); xmin = wxMin(xmin, zx4); ymax = wxMax(ymax, zy4); ymin = wxMin(ymin, zy4);
                     
                     wxRect tt(xmin/scalefactor, ymin/scalefactor, (xmax-xmin)/scalefactor, (ymax-ymin)/scalefactor );
-                    /*
-                     *                    if( region.Contains( tt ) == wxOutRegion  ) {
-                     *                        printf("skip\n");
-                     }
-                     else{
-                         printf("needed\n");
-                     }
-                     */
+                    
                     // replace the test rectangle
                     rt = tt;
                     
+#if 0 
+                    if( region.Contains( tt ) == wxOutRegion  ) {
+                        printf("skip\n");
+                    }
+                    else{
+                         printf("needed\n");
+                         bneeded = true;
+                    }
+ 
+
+//                    bneeded = true;
+                    DisableClipRegion();
+ 
+                    if(bneeded){
+                        if(pTexFact->PrepareTexture( base_level, rect, global_color_scheme, true )){ 
+                            double sx = rect.width;
+                            double sy = rect.height;
+                        
+                            glEnable( GL_TEXTURE_2D );
+                            
+                            glBegin( GL_QUADS );
+                            
+                            glTexCoord2f( x1 / sx, y1 / sy );
+                            glVertex2f( ( zx1 ), ( zy1 ) );
+                            glTexCoord2f( ( x1 + w ) / sx, y1 / sy );
+                            glVertex2f( ( zx2 ), ( zy2 ) );
+                            glTexCoord2f( ( x1 + w ) / sx, ( y1 + h ) / sy );
+                            glVertex2f( ( zx3 ), ( zy3 ) );
+                            glTexCoord2f( x1 / sx, ( y1 + h ) / sy );
+                            glVertex2f( ( zx4 ), ( zy4 ) );
+                            
+                            glEnd();
+                        }
+                    }
+                    else{
+                        glColor3ub(250, 0, 0);
+                        glDisable( GL_TEXTURE_2D );
+                        
+                        glBegin( GL_QUADS );
+                        
+                        glVertex2f( ( zx1 ), ( zy1 ) );
+                        glVertex2f( ( zx2 ), ( zy2 ) );
+                        glVertex2f( ( zx3 ), ( zy3 ) );
+                        glVertex2f( ( zx4 ), ( zy4 ) );
+                        
+                        glEnd();
+                    }
+#endif                    
+                    
                 }
                 
-                if( region.Contains( rt ) != wxOutRegion ) {
+                //  We can improve performance by testing first if the rectangle is anywhere on-screen.
+                if( vp.rv_rect.Intersects( rt ) && (region.Contains( rt ) != wxOutRegion) ) {
                     // this tile is needed
                     if(pTexFact->PrepareTexture( base_level, rect, global_color_scheme, true )){ 
                         double sx = rect.width;
@@ -2777,25 +2819,8 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &Region )
         //  render the quilt
         ChartBase *chart = cc1->m_pQuilt->GetFirstChart();
         
-        //  Check the first, smallest scale chart
-        if(chart) {
-//            if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) )
-//            chart = NULL;
-        }
-            
         while( chart ) {
             
-            //  This test does not need to be done for raster charts, since
-            //  we can assume that texture binding is acceptably fast regardless of the render region,
-            //  and that the quilt zoom methods choose a reasonable reference chart.
-            if(chart->GetChartFamily() != CHART_FAMILY_RASTER)
-            {
-//                if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) ) {
-//                    chart = cc1->m_pQuilt->GetNextChart();
-//                    continue;
-//                }
-            }
-
             QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();
             if( pqp->b_Valid ) {
                 OCPNRegion get_region = pqp->ActiveRegion;
