@@ -660,7 +660,7 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
         VirtualFree(virtualpointer, size, MEM_DECOMMIT);
 #endif
 #ifdef __WXGTK__
-    wxString cmd = _T("ldd ") + plugin_file;
+    wxString cmd = _T("ldd ") + plugin_file + _T(" 2>&1");
     FILE *ldd = popen( cmd.mb_str(), "r" );
     if (ldd != NULL)
     {
