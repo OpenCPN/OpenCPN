@@ -2500,9 +2500,8 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, O
         if(vp.b_quilt && (fabs(skew_norm) > 1.0)){
             //  make a larger viewport to ensure getting all of the chart tiles
             ViewPort xvp = svp;
-            float maxdiag = sqrtf( (xvp.pix_width * xvp.pix_width) + (xvp.pix_height * xvp.pix_height) );
-            xvp.pix_width = maxdiag;
-            xvp.pix_height = maxdiag;
+            xvp.pix_width *= 2;
+            xvp.pix_height *= 2;
             pPlugInWrapper->ComputeSourceRectangle( xvp, &R );
         }
         else { 
@@ -2518,9 +2517,8 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, O
         if(vp.b_quilt && (fabs(skew_norm) > 1.0)){
             //  make a larger viewport to ensure getting all of the chart tiles
             ViewPort xvp = svp;
-            float maxdiag = 1.5 * sqrtf( (xvp.pix_width * xvp.pix_width) + (xvp.pix_height * xvp.pix_height) );
-            xvp.pix_width = maxdiag;
-            xvp.pix_height = maxdiag;
+            xvp.pix_width *= 2;
+            xvp.pix_height *= 2;
             pBSBChart->ComputeSourceRectangle( xvp, &Rp, &Rs );
         }
         else {
