@@ -1,4 +1,4 @@
-/******************************************************************************
+int remove_particles = (particles.size() /******************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  GRIB Object
@@ -1610,7 +1610,7 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
         total_particles = 60000;
 
     // remove particles if needed;
-    int remove_particles = (particles.size() - total_particles) / 16;
+    int remove_particles = ((int)particles.size() - total_particles) / 16;
     for(int i = 0; i<remove_particles; i++)
         particles.pop_back();
 
