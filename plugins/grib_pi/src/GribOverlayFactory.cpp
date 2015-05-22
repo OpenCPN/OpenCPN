@@ -1,4 +1,4 @@
-int remove_particles = (particles.size() /******************************************************************************
+ /******************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  GRIB Object
@@ -302,7 +302,7 @@ GRIBOverlayFactory::GRIBOverlayFactory( GRIBUICtrlBar &dlg )
 
     for(i=0; i<14; i++)
         m_WindArrowCache[i].Finalize();
-    
+
     // Generate Single and Double arrow caches
     for(int i = 0; i<2; i++) {
         int arrowSize;
