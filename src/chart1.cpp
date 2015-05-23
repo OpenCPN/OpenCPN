@@ -967,9 +967,11 @@ void MyApp::OnActivateApp( wxActivateEvent& event )
     event.Skip();
 }
 
-#ifdef USE_S57
 void LoadS57()
 {
+#ifndef USE_S57
+    return;
+#else    
     if(ps52plib) // already loaded?
         return;
 
@@ -1102,8 +1104,8 @@ void LoadS57()
         delete ps52plib;
         ps52plib = NULL;
     }
+#endif    
 }
-#endif
 
 #ifdef __WXGTK__
 static char *get_X11_property (Display *disp, Window win,

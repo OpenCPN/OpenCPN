@@ -858,6 +858,8 @@ options::options( MyFrame* parent, wxWindowID id, const wxString& caption, const
 {
     Init();
 
+    LoadS57();                  // Need to load S52 Options
+    
     pParent = parent;
 
     long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;

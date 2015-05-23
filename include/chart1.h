@@ -67,6 +67,7 @@ double AnchorDistFix( double const d, double const AnchorPointMinDist, double co
 bool TestGLCanvas(wxString &prog_dir);
 bool ReloadLocale();
 
+void LoadS57();
 
 class NMEA_Msg_Container;
 WX_DECLARE_STRING_HASH_MAP( NMEA_Msg_Container*, MsgPriorityHash );

@@ -63,9 +63,6 @@ extern int          g_GroupIndex;
 extern s52plib      *ps52plib;
 extern ChartDB      *ChartData;
 
-#ifdef USE_S57
-void LoadS57();
-#endif
 bool G_FloatPtInPolygon(MyFlPoint *rgpts, int wnumpts, float x, float y) ;
 bool GetMemoryStatus(int *mem_total, int *mem_used);
 
