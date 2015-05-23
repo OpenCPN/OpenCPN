@@ -94,6 +94,11 @@ GrabberWin::GrabberWin( wxWindow *parent, ocpnFloatingToolbarDialog *toolbar, fl
 void GrabberWin::OnPaint( wxPaintEvent& event )
 {
     wxPaintDC dc( this );
+    
+    wxColour back_color = GetGlobalColor( _T("GREY2") );
+    SetBackgroundColour( back_color );
+    ClearBackground();
+    
     dc.DrawBitmap( m_bitmap, 0, 0, true );
 }
 
@@ -2011,7 +2016,8 @@ bool ocpnToolBarSimple::GetToolEnabled( int id ) const
 void ocpnToolBarSimple::ToggleTool( int id, bool toggle )
 {
     wxToolBarToolBase *tool = FindById( id );
-    if( tool && tool->Toggle( toggle ) ) {
+        
+    if( tool && tool->CanBeToggled() && tool->Toggle( toggle ) ) {
         DoToggleTool( tool, toggle );
         if( g_toolbar ) g_toolbar->Refresh();
     }
