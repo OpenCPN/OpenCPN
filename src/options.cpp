@@ -2884,8 +2884,11 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
     
     pSoundDeviceIndex = new wxSpinCtrl( itemPanelFont, wxID_ANY );
     pSoundDeviceIndex->SetValue( g_iSoundDeviceIndex );
+    pSoundDeviceIndex->Hide();
     
     if(OCPN_Sound::DeviceCount() > 1){
+        pSoundDeviceIndex->Show();
+        
         wxFlexGridSizer *pSoundDeviceIndexGrid = new wxFlexGridSizer( 2 );
         miscOptions->Add( pSoundDeviceIndexGrid, 0, wxALL | wxEXPAND, group_item_spacing );
     
