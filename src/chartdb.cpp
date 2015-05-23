@@ -392,10 +392,12 @@ ChartBase *ChartDB::GetChart(const wxChar *theFilePath, ChartClassDescriptor &ch
       }
 #ifdef USE_S57
       else if (chartExt == wxT("000") || chartExt == wxT("S57")) {
+            LoadS57();
             pch = new s57chart;
       }
 #endif
       else if (chart_desc.m_descriptor_type == PLUGIN_DESCRIPTOR) {
+            LoadS57();
             ChartPlugInWrapper *cpiw = new ChartPlugInWrapper(chart_desc.m_class_name);
             pch = (ChartBase *)cpiw;
       }
