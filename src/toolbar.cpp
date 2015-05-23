@@ -514,7 +514,8 @@ void ocpnFloatingToolbarDialog::SubmergeToGrabber()
     gFrame->TriggerResize(s);
     Raise();
 #endif    
-    
+
+    gFrame->Refresh();          // Needed for MSW OpenGL
 }
 
 void ocpnFloatingToolbarDialog::Surface()
