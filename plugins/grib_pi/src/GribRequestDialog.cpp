@@ -172,7 +172,7 @@ void GribRequestSetting::OnClose( wxCloseEvent& event )
     RequestRefresh( m_parent.pParent );
 
     m_ZoneSelMode = m_OldZoneSelMode ? START_SELECTION : AUTO_SELECTION;                  //allow to be back to old value if changes have not been saved
-    m_parent.SetSelButtonBitmap( m_ZoneSelMode );                           //set appopriate bitmap
+    m_parent.SetRequestBitmap( m_ZoneSelMode );                                           //set appopriate bitmap
 
     this->Hide();
 }
@@ -191,12 +191,11 @@ void GribRequestSetting::SetRequestDialogSize()
     wxSize scroll = m_fgScrollSizer->Fit(m_sScrolledDialog);                                   // the area size to be scrolled
     ::wxDisplaySize( NULL, &h);                                                                // the screen size
     h -= m_rButton->GetSize().GetY() + m_fgFixedSizer->GetSize().GetY() + YMargin;             //height available for the scrolled window
-    m_sScrolledDialog->SetMinSize( wxSize( scroll.GetWidth() + XMargin,						   //set scrolled area size with margins
-            wxMin(scroll.GetHeight(), h )) );
+    m_sScrolledDialog->SetMinSize( wxSize( scroll.GetWidth() + XMargin,	h ) );				   //set scrolled area size with margins
 
-	this->Layout();
-    this->Fit();
-    this->Refresh();
+	Layout();
+    Fit();
+    Refresh();
 }
 
 void GribRequestSetting::SetVpSize(PlugIn_ViewPort *vp)
@@ -230,14 +229,14 @@ bool GribRequestSetting::MouseEventHook( wxMouseEvent &event )
     if( event.LeftDown() ) {
         m_parent.pParent->SetFocus();
         m_ZoneSelMode = DRAW_SELECTION;                         //restart a new drawing
-        m_parent.SetSelButtonBitmap( m_ZoneSelMode );
+        m_parent.SetRequestBitmap( m_ZoneSelMode );
         if( this->IsShown() ) this->Hide();                     //eventually hide diaog in case of mode change
         m_RenderZoneOverlay = 0;                                //eventually hide previous drawing
     }
 
     if( event.LeftUp () && m_RenderZoneOverlay == 2 ) {
         m_ZoneSelMode = COMPLETE_SELECTION;                     //ask to complete selection
-        m_parent.SetSelButtonBitmap( m_ZoneSelMode );
+        m_parent.SetRequestBitmap( m_ZoneSelMode );
         SetCoordinatesText();
         m_MailImage->SetValue( WriteMail() );
         m_RenderZoneOverlay = 1;
@@ -405,7 +404,7 @@ void GribRequestSetting::OnZoneSelectionModeChange( wxCommandEvent& event )
 
     //set temporarily zone selection mode if manual selection set, put it directly in "drawing" position
     m_ZoneSelMode = m_cManualZoneSel->GetValue() ? DRAW_SELECTION : AUTO_SELECTION;
-    m_parent.SetSelButtonBitmap( m_ZoneSelMode );               //set appopriate bitmap
+    m_parent.SetRequestBitmap( m_ZoneSelMode );               //set appopriate bitmap
     fgZoneCoordinatesSizer->ShowItems( m_ZoneSelMode != AUTO_SELECTION ); //show coordinate if necessary
 
     if(m_AllowSend) m_MailImage->SetValue( WriteMail() );

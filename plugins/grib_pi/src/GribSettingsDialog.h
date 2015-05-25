@@ -62,6 +62,7 @@ struct GribOverlaySettings
     int m_iOverlayTransparency;
     //gui
     int m_iCtrlandDataStyle;
+    wxString m_iCtrlBarCtrlVisible[2];
 
     enum SettingsType {WIND, WIND_GUST, PRESSURE, WAVE, CURRENT, PRECIPITATION, CLOUD, 
                        AIR_TEMPERATURE, SEA_TEMPERATURE, CAPE, GEO_ALTITUDE, REL_HUMIDITY, SETTINGS_COUNT};

@@ -26,6 +26,7 @@
  */
 
 #include "grib_pi.h"
+#include "folder.xpm"
 
 static const wxString units0_names[] = {_("Knots"), _("m/s"), _("mph"), _("km/h"), _("Beaufort"), wxEmptyString};
 static const wxString units1_names[] = {_("MilliBars"), _("mmHG"), _("inHG"), wxEmptyString};
@@ -96,7 +97,16 @@ void GribOverlaySettings::Read()
     pConf->Read ( _T ( "UpdatesPerSecond" ), &m_UpdatesPerSecond, 2);
 	pConf->Read ( _T ( "Interpolate" ), &m_bInterpolate, false );
 	//gui options
-    m_iCtrlandDataStyle = m_iCtrlandDataStyle;
+    m_iCtrlandDataStyle = m_DialogStyle;
+    wxString s1, s2;
+    pConf->Read ( _T( "CtrlBarCtrlVisibility1" ), &s1, _T( "XXXXXXXXX" ) );
+    if(s1.Len() != wxString (_T( "XXXXXXXXX" ) ).Len() )
+        s1 = _T( "XXXXXXXXX" );
+    pConf->Read ( _T( "CtrlBarCtrlVisibility2" ), &s2, _T( "XXXXXXXXX" ) );
+    if(s2.Len() != wxString (_T( "XXXXXXXXX" ) ).Len() )
+        s2 = _T( "XXXXXXXXX" );
+    m_iCtrlBarCtrlVisible[0] = s1;
+    m_iCtrlBarCtrlVisible[1] = s2;
 	//data options
     for(int i=0; i<SETTINGS_COUNT; i++) {
         wxString Name=name_from_index[i];
@@ -157,6 +167,9 @@ void GribOverlaySettings::Write()
     pConf->Write ( _T ( "UpdatesPerSecond" ), m_UpdatesPerSecond);
 	//gui options
 	pConf->Write( _T ( "GribCursorDataDisplayStyle" ), m_iCtrlandDataStyle );
+    wxString s1 = m_iCtrlBarCtrlVisible[0], s2 = m_iCtrlBarCtrlVisible[1];
+    pConf->Write( _T ( "CtrlBarCtrlVisibility1" ), s1 );
+    pConf->Write( _T ( "CtrlBarCtrlVisibility2" ), s2 );
 
     for(int i=0; i<SETTINGS_COUNT; i++) {
 
@@ -421,6 +434,16 @@ GribSettingsDialog::GribSettingsDialog(GRIBUICtrlBar &parent, GribOverlaySetting
         int mn = m_Settings.GetMinFromIndex(i);
         m_sSlicesPerUpdate->Append(wxString::Format(_T("%2d "), mn / 60) + _("h") + wxString::Format(_T(" %.2d "), mn % 60) + _("mn"));
     }
+    //Set Bitmap
+    m_biAltitude->SetBitmap( wxBitmap( altitude ) );
+    m_biNow->SetBitmap( wxBitmap( now ) );
+    m_biZoomToCenter->SetBitmap( wxBitmap( zoomto ) );
+    m_biShowCursorData->SetBitmap( wxBitmap( m_parent.m_CDataIsShown ? curdata : ncurdata ) );
+    m_biPlay->SetBitmap( wxBitmap( play ) );
+    m_biTimeSlider->SetBitmap( wxBitmap( slider ) );
+    m_biOpenFile->SetBitmap( wxBitmap( openfile ) );
+    m_biSettings->SetBitmap( wxBitmap( setting ) );
+    m_biRequest->SetBitmap( wxBitmap( request ) );
 	//read bookpage
 	wxFileConfig *pConf = GetOCPNConfigObject();
      if(pConf) {
@@ -443,6 +466,11 @@ GribSettingsDialog::GribSettingsDialog(GRIBUICtrlBar &parent, GribOverlaySetting
     m_rbCurDataAttaWoCap->SetValue( m_Settings.m_iCtrlandDataStyle == 1 );
 	m_rbCurDataIsolHoriz->SetValue( m_Settings.m_iCtrlandDataStyle == 2 );
 	m_rbCurDataIsolVertic->SetValue( m_Settings.m_iCtrlandDataStyle == 3 );
+
+    for( unsigned int i = 0; i < (m_Settings.m_iCtrlBarCtrlVisible[0].Len() * 2) ; i += 2 ) {
+        ((wxCheckBox*) FindWindow( i + AC0 ) )->SetValue( m_Settings.m_iCtrlBarCtrlVisible[0].GetChar(i / 2) == _T('X') );
+        ((wxCheckBox*) FindWindow( i + 1 + AC0 ) )->SetValue( m_Settings.m_iCtrlBarCtrlVisible[1].GetChar(i / 2) == _T('X') );
+    }
 
     for(int i=0; i<GribOverlaySettings::SETTINGS_COUNT; i++)
         m_cDataType->Append( wxGetTranslation(tname_from_index[i]) );
@@ -517,7 +545,7 @@ void GribSettingsDialog::SetSettingsDialogSize()
 			case 2:
 				scr = m_fgSetGuiSizer->Fit( sc ); break;
 		}
-		sc->SetMinSize( wxSize(wxMin( scr.x, w ), wxMin(scr.y, h)) );
+		sc->SetMinSize( wxSize(wxMin( scr.x, w ), h) );
 #ifdef __WXMSW__
 		sc->Show( i == (unsigned int) m_SetBookpageIndex );
 #endif
@@ -542,6 +570,11 @@ void GribSettingsDialog::WriteSettings()
 	m_Settings.m_iCtrlandDataStyle = m_rbCurDataAttaWCap->GetValue() ? ATTACHED_HAS_CAPTION
         : m_rbCurDataAttaWoCap->GetValue() ? ATTACHED_NO_CAPTION
         : m_rbCurDataIsolHoriz->GetValue() ? SEPARATED_HORIZONTAL : SEPARATED_VERTICAL;
+
+    for( unsigned int i = 0; i < (m_Settings.m_iCtrlBarCtrlVisible[0].Len() * 2) ; i += 2 ) {
+        m_Settings.m_iCtrlBarCtrlVisible[0].SetChar( i / 2, ((wxCheckBox*) FindWindow(i + AC0))->GetValue() ? _T('X') : _T('.') );
+        m_Settings.m_iCtrlBarCtrlVisible[1].SetChar(i / 2, ((wxCheckBox*) FindWindow( i + 1 + AC0))->GetValue() ? _T('X') : _T('.') );
+    }
 
     SetDataTypeSettings(m_lastdatatype);
 
@@ -775,7 +808,7 @@ void GribSettingsDialog::OnApply( wxCommandEvent& event )
 
     WriteSettings();
     m_parent.SetFactoryOptions();
-    m_parent.SetDialogsStyleSizePosition();
+    m_parent.SetDialogsStyleSizePosition(true);
 }
 
 void GribSettingsDialog::OnIntepolateChange( wxCommandEvent& event )

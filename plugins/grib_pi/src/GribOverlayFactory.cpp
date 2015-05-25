@@ -1914,7 +1914,7 @@ void GRIBOverlayFactory::drawLineBuffer(LineBuffer &buffer, int x, int y, double
 
     float vertexes[40];
 
-    wxASSERT(sizeof vertexes / sizeof *vertexes >= buffer.count*4);
+    wxASSERT(sizeof vertexes / sizeof *vertexes >= (unsigned)buffer.count*4);
     for(int i=0; i < 2*buffer.count; i++) {
         float *k = buffer.lines + 2*i;
         vertexes[2*i+0] = k[0]*cox + k[1]*siy + x;

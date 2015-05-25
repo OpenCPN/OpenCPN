@@ -48,6 +48,12 @@ GribGrabberWin::GribGrabberWin( wxWindow *parent )
 
 void GribGrabberWin::OnMouseEvent( wxMouseEvent& event )
 {
+    if( event.RightDown() ) {
+        wxMouseEvent evt(event);
+        ((wxEvtHandler*)GetParent())->ProcessEvent( evt );
+        return;
+    }
+
     static wxPoint s_gspt;
     int x, y;
 

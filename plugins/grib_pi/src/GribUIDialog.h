@@ -106,7 +106,8 @@ public:
 	void SetCursorLatLon( double lat, double lon );
     void UpdateTrackingControl();
 	void SetDialogsStyleSizePosition( bool force_recompute = false );
-    void SetSelButtonBitmap( int type );
+    void SetRequestBitmap( int type );
+    void OnMouseEvent( wxMouseEvent& event );
     GRIBUICData *GetCDataDialog() { return m_gGRIBUICData; }
     wxWindow *pParent;
     GribOverlaySettings m_OverlaySettings;
@@ -128,18 +129,18 @@ private:
     void OnPlayStop( wxCommandEvent& event );
     void OnPlayStopTimer( wxTimerEvent & event);
 	void OnMove( wxMoveEvent& event );
-    void OnMouseEvent( wxMouseEvent& event );
-
+    void OnMenuEvent( wxMenuEvent& event );
+    void MenuAppend( wxMenu *menu, int id, wxString label, wxItemKind kind, wxBitmap bitmap = wxNullBitmap, wxMenu *submenu = NULL );
     void OnZoomToCenterClick( wxCommandEvent& event );
     void OnPrev( wxCommandEvent& event );
     void OnRecordForecast( wxCommandEvent& event ) { StopPlayBack(); m_InterpolateMode = false; m_pNowMode = false; TimelineChanged(); }
     void OnNext( wxCommandEvent& event );
     void OnNow( wxCommandEvent& event ) { StopPlayBack(); ComputeBestForecastForNow(); }
+    void OnAltitude( wxCommandEvent& event );
     void OnOpenFile( wxCommandEvent& event );
     void OnRequest(  wxCommandEvent& event );
 
     void OnTimeline( wxScrollEvent& event );
-    void OnAltitudeChange( wxCommandEvent& event );
 	void OnShowCursorData( wxCommandEvent& event );
 
     wxDateTime MinTime();
@@ -165,6 +166,7 @@ private:
     int m_FileIntervalIndex;
     bool m_InterpolateMode;
     bool m_pNowMode;
+    bool m_HasAltitude;
 
     bool             m_SelectionIsSaved;
     int              m_Selection_index;
