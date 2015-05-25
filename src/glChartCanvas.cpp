@@ -1043,8 +1043,10 @@ void glChartCanvas::SetupOpenGL()
     
     const GLubyte *ext_str = glGetString(GL_EXTENSIONS);
     m_extensions = wxString( (const char *)ext_str, wxConvUTF8 );
+#ifdef __WXQT__    
     wxLogMessage( _T("OpenGL extensions available: ") );
     wxLogMessage(m_extensions );
+#endif    
     
     //  Set the minimum line width
     GLint parms[2];
