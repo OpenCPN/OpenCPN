@@ -349,7 +349,8 @@ public:
       void RePosition();
       void LockPosition(bool lock){ m_block = lock; }
       void SetColorScheme( ColorScheme cs );
-
+      bool CheckSurfaceRequest( wxMouseEvent &event );
+      
       void SetGeometry();
       long GetOrient() {
             return m_orient;

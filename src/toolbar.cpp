@@ -209,7 +209,7 @@ void GrabberWin::MouseEvent( wxMouseEvent& event )
         }
 
     }
-    
+
     if( event.LeftUp() ) {
         if(m_ptoolbar){
             if(m_ptoolbar->m_bnavgrabber){
@@ -227,6 +227,7 @@ void GrabberWin::MouseEvent( wxMouseEvent& event )
         }
         m_dragging = false;
     }
+    
     
 #ifndef __OCPN__ANDROID__
     gFrame->Raise();
@@ -454,7 +455,6 @@ void ocpnFloatingToolbarDialog::SetGeometry()
             m_ptoolbar->SetMaxRowsCols(max_rows, 100);
         else
             m_ptoolbar->SetMaxRowsCols( 100, max_cols);
-
         m_ptoolbar->SetSizeFactor(m_sizefactor);
     }
  }
@@ -504,8 +504,6 @@ void ocpnFloatingToolbarDialog::SubmergeToGrabber()
     m_pRecoverwin = new GrabberWin( m_pparent, this, m_sizefactor, _T("grabber_ext" ), wxPoint(10,10) );
     
    
-//    m_pRecoverwin->Hide();
-//    m_pRecoverwin->Move(10,10);
     m_pRecoverwin->Show();
 #ifdef __WXQT__
     wxSize s = gFrame->GetSize();
@@ -540,6 +538,25 @@ void ocpnFloatingToolbarDialog::Surface()
 
 }
 
+bool ocpnFloatingToolbarDialog::CheckSurfaceRequest( wxMouseEvent &event )
+{
+    if( m_bsubmerged ){
+        if( event.LeftUp() ){
+            int x,y;
+            event.GetPosition( &x, &y );
+            if( m_pRecoverwin ){
+                wxRect winRect = m_pRecoverwin->GetRect();
+                if( winRect.Contains( x, y ) ){
+                    SurfaceFromGrabber();
+                    return true;
+                }
+            }
+        }
+    }
+    
+    return false;
+}
+        
 void ocpnFloatingToolbarDialog::SurfaceFromGrabber()
 {
     m_bsubmerged = false;
