@@ -242,9 +242,6 @@ void CursorData::PopulateTrackingControls( bool vertical )
 
         m_tcSeaTemperature->SetToolTip( m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index( 1000 + NOAA_GFS) != wxNOT_FOUND ? s[1] + s[0] + s[2] : s[3] );
     }
-
-    m_gparent.m_cbAltitude->SetToolTip( wxString::Format( _("Select Geopotential Height (in %s) or Standard Altitude."),
-        m_gparent.m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::PRESSURE).c_str() ) );
 }
 
 void CursorData::UpdateTrackingControls( void )
@@ -572,6 +569,14 @@ void CursorData::MenuAppend( wxMenu *menu, int id, wxString label, int setting)
 
 void CursorData::OnMouseEvent( wxMouseEvent &event )
 {
+    if( event.RightDown() ) {
+        if( m_DialogStyle >> 1 == ATTACHED ) {
+            wxMouseEvent evt(event);
+            m_gparent.OnMouseEvent( evt );
+        }
+        return;
+    }
+
     static wxPoint s_gspt;
     int x, y;
 

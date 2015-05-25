@@ -32,17 +32,17 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id, const wxS
 	fgSizer50->SetFlexibleDirection( wxHORIZONTAL );
 	fgSizer50->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
-	m_bpPrev = new wxBitmapButton( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+	m_bpPrev = new wxBitmapButton( this, ID_BTNPREV, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_bpPrev->SetToolTip( _("Previous") );
 
 	fgSizer50->Add( m_bpPrev, 0, wxALL, 1 );
 
 	wxArrayString m_cRecordForecastChoices;
-	m_cRecordForecast = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cRecordForecastChoices, 0 );
+	m_cRecordForecast = new wxChoice( this, ID_CTRLTIME, wxDefaultPosition, wxDefaultSize, m_cRecordForecastChoices, 0 );
 	m_cRecordForecast->SetSelection( 0 );
 	fgSizer50->Add( m_cRecordForecast, 0, wxALIGN_CENTER_VERTICAL|wxALL, 1 );
 
-	m_bpNext = new wxBitmapButton( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+	m_bpNext = new wxBitmapButton( this, ID_BTNNEXT, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_bpNext->SetToolTip( _("Next") );
 
 	fgSizer50->Add( m_bpNext, 0, wxALL, 1 );
@@ -50,34 +50,28 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id, const wxS
 
 	fgSizer50->Add( 0, 0, 1, wxEXPAND|wxLEFT|wxRIGHT, 1 );
 
-	wxArrayString m_cbAltitudeChoices;
-	m_cbAltitude = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxSize( -1,-1 ), m_cbAltitudeChoices, 0 );
-	m_cbAltitude->SetSelection( 0 );
-	m_cbAltitude->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), 70, 90, 90, false, wxEmptyString ) );
+	m_bpAltitude = new wxBitmapButton( this, ID_CTRLALTITUDE, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+	m_bpAltitude->SetToolTip( _("Select geoptential altitude") );
 
-	fgSizer50->Add( m_cbAltitude, 0, wxALIGN_CENTER_VERTICAL|wxALL, 1 );
+	fgSizer50->Add( m_bpAltitude, 0, wxALL, 1 );
 
-	m_bpNow = new wxBitmapButton( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+	m_bpNow = new wxBitmapButton( this, ID_BTNNOW, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_bpNow->SetToolTip( _("Now") );
 
 	fgSizer50->Add( m_bpNow, 0, wxALL, 1 );
 
-	m_bpZoomToCenter = new wxBitmapButton( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+	m_bpZoomToCenter = new wxBitmapButton( this, ID_BTNZOOMTC, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_bpZoomToCenter->SetToolTip( _("Zoom To Center") );
 
 	fgSizer50->Add( m_bpZoomToCenter, 0, wxALL, 1 );
 
-	m_bpShowCursorData = new wxBitmapButton( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
-	m_bpShowCursorData->SetToolTip( _("Show/Hide Cursor Data") );
-
+	m_bpShowCursorData = new wxBitmapButton( this, ID_BTNSHOWCDATA, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	fgSizer50->Add( m_bpShowCursorData, 0, wxALL, 1 );
 
 
 	fgSizer50->Add( 0, 0, 1, wxEXPAND|wxLEFT|wxRIGHT, 1 );
 
-	m_bpPlay = new wxBitmapButton( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
-	m_bpPlay->SetToolTip( _("Play") );
-
+	m_bpPlay = new wxBitmapButton( this, ID_BTNPLAY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	fgSizer50->Add( m_bpPlay, 0, wxBOTTOM|wxLEFT|wxTOP, 1 );
 
 	m_sTimeline = new wxSlider( this, ID_TIMELINE, 1, 0, 10, wxDefaultPosition, wxSize( 90,-1 ), wxSL_HORIZONTAL );
@@ -86,17 +80,17 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id, const wxS
 
 	fgSizer50->Add( 0, 0, 1, wxEXPAND|wxLEFT|wxRIGHT, 1 );
 
-	m_bpOpenFile = new wxBitmapButton( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
-	m_bpOpenFile->SetToolTip( _("Open File") );
+	m_bpOpenFile = new wxBitmapButton( this, ID_BTNOPENFILE, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+	m_bpOpenFile->SetToolTip( _("Open a new file") );
 
 	fgSizer50->Add( m_bpOpenFile, 0, wxALL, 1 );
 
-	m_bpSettings = new wxBitmapButton( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+	m_bpSettings = new wxBitmapButton( this, ID_BTNSETTING, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_bpSettings->SetToolTip( _("Settings") );
 
 	fgSizer50->Add( m_bpSettings, 0, wxALL, 1 );
 
-	m_bpRequest = new wxBitmapButton( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+	m_bpRequest = new wxBitmapButton( this, ID_BTNREQUEST, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	fgSizer50->Add( m_bpRequest, 0, wxALL, 1 );
 
 
@@ -143,13 +137,21 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id, const wxS
 	this->Connect( wxEVT_MOUSEWHEEL, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ) );
 	this->Connect( wxEVT_SIZE, wxSizeEventHandler( GRIBUICtrlBarBase::OnSize ) );
 	m_bpPrev->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnPrev ), NULL, this );
+	m_bpPrev->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
 	m_cRecordForecast->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GRIBUICtrlBarBase::OnRecordForecast ), NULL, this );
+	m_cRecordForecast->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
 	m_bpNext->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnNext ), NULL, this );
-	m_cbAltitude->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GRIBUICtrlBarBase::OnAltitudeChange ), NULL, this );
+	m_bpNext->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
+	m_bpAltitude->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnAltitude ), NULL, this );
 	m_bpNow->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnNow ), NULL, this );
+	m_bpNow->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
 	m_bpZoomToCenter->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnZoomToCenterClick ), NULL, this );
+	m_bpZoomToCenter->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
 	m_bpShowCursorData->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnShowCursorData ), NULL, this );
+	m_bpShowCursorData->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
 	m_bpPlay->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnPlayStop ), NULL, this );
+	m_bpPlay->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
+	m_sTimeline->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
 	m_sTimeline->Connect( wxEVT_SCROLL_TOP, wxScrollEventHandler( GRIBUICtrlBarBase::OnTimeline ), NULL, this );
 	m_sTimeline->Connect( wxEVT_SCROLL_BOTTOM, wxScrollEventHandler( GRIBUICtrlBarBase::OnTimeline ), NULL, this );
 	m_sTimeline->Connect( wxEVT_SCROLL_LINEUP, wxScrollEventHandler( GRIBUICtrlBarBase::OnTimeline ), NULL, this );
@@ -160,8 +162,11 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id, const wxS
 	m_sTimeline->Connect( wxEVT_SCROLL_THUMBRELEASE, wxScrollEventHandler( GRIBUICtrlBarBase::OnTimeline ), NULL, this );
 	m_sTimeline->Connect( wxEVT_SCROLL_CHANGED, wxScrollEventHandler( GRIBUICtrlBarBase::OnTimeline ), NULL, this );
 	m_bpOpenFile->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnOpenFile ), NULL, this );
+	m_bpOpenFile->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
 	m_bpSettings->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnSettings ), NULL, this );
+	m_bpSettings->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
 	m_bpRequest->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnRequest ), NULL, this );
+	m_bpRequest->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
 }
 
 GRIBUICtrlBarBase::~GRIBUICtrlBarBase()
@@ -183,13 +188,21 @@ GRIBUICtrlBarBase::~GRIBUICtrlBarBase()
 	this->Disconnect( wxEVT_MOUSEWHEEL, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ) );
 	this->Disconnect( wxEVT_SIZE, wxSizeEventHandler( GRIBUICtrlBarBase::OnSize ) );
 	m_bpPrev->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnPrev ), NULL, this );
+	m_bpPrev->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
 	m_cRecordForecast->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GRIBUICtrlBarBase::OnRecordForecast ), NULL, this );
+	m_cRecordForecast->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
 	m_bpNext->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnNext ), NULL, this );
-	m_cbAltitude->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GRIBUICtrlBarBase::OnAltitudeChange ), NULL, this );
+	m_bpNext->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
+	m_bpAltitude->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnAltitude ), NULL, this );
 	m_bpNow->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnNow ), NULL, this );
+	m_bpNow->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
 	m_bpZoomToCenter->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnZoomToCenterClick ), NULL, this );
+	m_bpZoomToCenter->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
 	m_bpShowCursorData->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnShowCursorData ), NULL, this );
+	m_bpShowCursorData->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
 	m_bpPlay->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnPlayStop ), NULL, this );
+	m_bpPlay->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
+	m_sTimeline->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
 	m_sTimeline->Disconnect( wxEVT_SCROLL_TOP, wxScrollEventHandler( GRIBUICtrlBarBase::OnTimeline ), NULL, this );
 	m_sTimeline->Disconnect( wxEVT_SCROLL_BOTTOM, wxScrollEventHandler( GRIBUICtrlBarBase::OnTimeline ), NULL, this );
 	m_sTimeline->Disconnect( wxEVT_SCROLL_LINEUP, wxScrollEventHandler( GRIBUICtrlBarBase::OnTimeline ), NULL, this );
@@ -200,8 +213,11 @@ GRIBUICtrlBarBase::~GRIBUICtrlBarBase()
 	m_sTimeline->Disconnect( wxEVT_SCROLL_THUMBRELEASE, wxScrollEventHandler( GRIBUICtrlBarBase::OnTimeline ), NULL, this );
 	m_sTimeline->Disconnect( wxEVT_SCROLL_CHANGED, wxScrollEventHandler( GRIBUICtrlBarBase::OnTimeline ), NULL, this );
 	m_bpOpenFile->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnOpenFile ), NULL, this );
+	m_bpOpenFile->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
 	m_bpSettings->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnSettings ), NULL, this );
+	m_bpSettings->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
 	m_bpRequest->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnRequest ), NULL, this );
+	m_bpRequest->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
 
 }
 
@@ -551,6 +567,8 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	m_scSetDataPanel = new wxScrolledWindow( m_nSettingsBook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxVSCROLL );
 	m_scSetDataPanel->SetScrollRate( 5, 5 );
 	m_fgSetDataSizer = new wxFlexGridSizer( 0, 1, 0, 0 );
+	m_fgSetDataSizer->AddGrowableCol( 0 );
+	m_fgSetDataSizer->AddGrowableRow( 1 );
 	m_fgSetDataSizer->SetFlexibleDirection( wxBOTH );
 	m_fgSetDataSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
@@ -767,6 +785,9 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 
 	m_fgSetDataSizer->Add( sbSizer101, 1, wxEXPAND|wxTOP, 10 );
 
+
+	m_fgSetDataSizer->Add( 0, 0, 1, wxEXPAND, 5 );
+
 	wxStaticBoxSizer* sbSizer12;
 	sbSizer12 = new wxStaticBoxSizer( new wxStaticBox( m_scSetDataPanel, wxID_ANY, _("Transparency for all Overlay Maps") ), wxVERTICAL );
 
@@ -799,6 +820,7 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	m_scSetPlaybackPanel = new wxScrolledWindow( m_nSettingsBook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxVSCROLL );
 	m_scSetPlaybackPanel->SetScrollRate( 5, 5 );
 	m_fgSetPlaybackSizer = new wxFlexGridSizer( 0, 1, 0, 0 );
+	m_fgSetPlaybackSizer->AddGrowableCol( 0 );
 	m_fgSetPlaybackSizer->SetFlexibleDirection( wxBOTH );
 	m_fgSetPlaybackSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
@@ -861,8 +883,12 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	m_scSetGuiPanel = new wxScrolledWindow( m_nSettingsBook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxVSCROLL );
 	m_scSetGuiPanel->SetScrollRate( 5, 5 );
 	m_fgSetGuiSizer = new wxFlexGridSizer( 0, 1, 0, 0 );
+	m_fgSetGuiSizer->AddGrowableCol( 0 );
 	m_fgSetGuiSizer->SetFlexibleDirection( wxBOTH );
 	m_fgSetGuiSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+	wxStaticBoxSizer* sbSizer9;
+	sbSizer9 = new wxStaticBoxSizer( new wxStaticBox( m_scSetGuiPanel, wxID_ANY, _("Dialogs Style") ), wxVERTICAL );
 
 	wxFlexGridSizer* fgSizer47;
 	fgSizer47 = new wxFlexGridSizer( 0, 1, 0, 0 );
@@ -882,7 +908,187 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	fgSizer47->Add( m_rbCurDataIsolVertic, 0, wxALL, 5 );
 
 
-	m_fgSetGuiSizer->Add( fgSizer47, 1, wxEXPAND, 5 );
+	sbSizer9->Add( fgSizer47, 1, wxEXPAND, 5 );
+
+
+	m_fgSetGuiSizer->Add( sbSizer9, 1, wxEXPAND, 5 );
+
+
+	m_fgSetGuiSizer->Add( 0, 0, 1, wxALL, 5 );
+
+	wxStaticBoxSizer* sbSizer10;
+	sbSizer10 = new wxStaticBoxSizer( new wxStaticBox( m_scSetGuiPanel, wxID_ANY, _("Buttons/Ctrl Visibility") ), wxVERTICAL );
+
+	wxFlexGridSizer* fgSizer52;
+	fgSizer52 = new wxFlexGridSizer( 0, 4, 0, 0 );
+	fgSizer52->SetFlexibleDirection( wxBOTH );
+	fgSizer52->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+
+	fgSizer52->Add( 0, 0, 1, wxEXPAND, 5 );
+
+
+	fgSizer52->Add( 0, 0, 1, wxEXPAND, 5 );
+
+	wxStaticText* m_staticText44;
+	m_staticText44 = new wxStaticText( m_scSetGuiPanel, wxID_ANY, _("Attached Dialog"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText44->Wrap( -1 );
+	fgSizer52->Add( m_staticText44, 0, wxBOTTOM|wxLEFT|wxRIGHT, 5 );
+
+	wxStaticText* m_staticText45;
+	m_staticText45 = new wxStaticText( m_scSetGuiPanel, wxID_ANY, _("Isolated Dialog"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText45->Wrap( -1 );
+	fgSizer52->Add( m_staticText45, 0, wxBOTTOM|wxLEFT|wxRIGHT, 5 );
+
+	m_biAltitude = new wxStaticBitmap( m_scSetGuiPanel, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer52->Add( m_biAltitude, 0, wxALL, 2 );
+
+	wxStaticText* m_staticText46;
+	m_staticText46 = new wxStaticText( m_scSetGuiPanel, wxID_ANY, _("Altitude Choice"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText46->Wrap( -1 );
+	fgSizer52->Add( m_staticText46, 0, wxALL, 3 );
+
+	wxCheckBox* m_checkBox48;
+	m_checkBox48 = new wxCheckBox( m_scSetGuiPanel, AC0, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer52->Add( m_checkBox48, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 3 );
+
+	wxCheckBox* m_checkBox49;
+	m_checkBox49 = new wxCheckBox( m_scSetGuiPanel, AC1, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer52->Add( m_checkBox49, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 3 );
+
+	m_biNow = new wxStaticBitmap( m_scSetGuiPanel, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer52->Add( m_biNow, 0, wxALL, 3 );
+
+	wxStaticText* m_staticText47;
+	m_staticText47 = new wxStaticText( m_scSetGuiPanel, wxID_ANY, _("Now"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText47->Wrap( -1 );
+	fgSizer52->Add( m_staticText47, 0, wxALL, 3 );
+
+	wxCheckBox* m_checkBox50;
+	m_checkBox50 = new wxCheckBox( m_scSetGuiPanel, NW0, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer52->Add( m_checkBox50, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 3 );
+
+	wxCheckBox* m_checkBox51;
+	m_checkBox51 = new wxCheckBox( m_scSetGuiPanel, NW1, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer52->Add( m_checkBox51, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 3 );
+
+	m_biZoomToCenter = new wxStaticBitmap( m_scSetGuiPanel, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer52->Add( m_biZoomToCenter, 0, wxALL, 3 );
+
+	wxStaticText* m_staticText48;
+	m_staticText48 = new wxStaticText( m_scSetGuiPanel, wxID_ANY, _("Zoom to Center"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText48->Wrap( -1 );
+	fgSizer52->Add( m_staticText48, 0, wxALL, 3 );
+
+	wxCheckBox* m_checkBox52;
+	m_checkBox52 = new wxCheckBox( m_scSetGuiPanel, ZC0, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer52->Add( m_checkBox52, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 3 );
+
+	wxCheckBox* m_checkBox53;
+	m_checkBox53 = new wxCheckBox( m_scSetGuiPanel, ZC1, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer52->Add( m_checkBox53, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 3 );
+
+	m_biShowCursorData = new wxStaticBitmap( m_scSetGuiPanel, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer52->Add( m_biShowCursorData, 0, wxALL, 3 );
+
+	wxStaticText* m_staticText49;
+	m_staticText49 = new wxStaticText( m_scSetGuiPanel, wxID_ANY, _("Show Cursor Data"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText49->Wrap( -1 );
+	fgSizer52->Add( m_staticText49, 0, wxALL, 3 );
+
+	wxCheckBox* m_checkBox54;
+	m_checkBox54 = new wxCheckBox( m_scSetGuiPanel, SCD0, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer52->Add( m_checkBox54, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 3 );
+
+	wxCheckBox* m_checkBox55;
+	m_checkBox55 = new wxCheckBox( m_scSetGuiPanel, SCD1, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer52->Add( m_checkBox55, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 3 );
+
+	m_biPlay = new wxStaticBitmap( m_scSetGuiPanel, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer52->Add( m_biPlay, 0, wxALL, 3 );
+
+	wxStaticText* m_staticText50;
+	m_staticText50 = new wxStaticText( m_scSetGuiPanel, wxID_ANY, _("Playback"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText50->Wrap( -1 );
+	fgSizer52->Add( m_staticText50, 0, wxALL, 3 );
+
+	wxCheckBox* m_checkBox56;
+	m_checkBox56 = new wxCheckBox( m_scSetGuiPanel, PB0, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer52->Add( m_checkBox56, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 3 );
+
+	wxCheckBox* m_checkBox57;
+	m_checkBox57 = new wxCheckBox( m_scSetGuiPanel, PB1, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer52->Add( m_checkBox57, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 3 );
+
+	m_biTimeSlider = new wxStaticBitmap( m_scSetGuiPanel, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer52->Add( m_biTimeSlider, 0, wxALL, 3 );
+
+	wxStaticText* m_staticText51;
+	m_staticText51 = new wxStaticText( m_scSetGuiPanel, wxID_ANY, _("Time Slider"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText51->Wrap( -1 );
+	fgSizer52->Add( m_staticText51, 0, wxALL, 3 );
+
+	wxCheckBox* m_checkBox58;
+	m_checkBox58 = new wxCheckBox( m_scSetGuiPanel, TL0, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer52->Add( m_checkBox58, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 3 );
+
+	wxCheckBox* m_checkBox59;
+	m_checkBox59 = new wxCheckBox( m_scSetGuiPanel, TL1, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer52->Add( m_checkBox59, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 3 );
+
+	m_biOpenFile = new wxStaticBitmap( m_scSetGuiPanel, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer52->Add( m_biOpenFile, 0, wxALL, 3 );
+
+	wxStaticText* m_staticText52;
+	m_staticText52 = new wxStaticText( m_scSetGuiPanel, wxID_ANY, _("Open File"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText52->Wrap( -1 );
+	fgSizer52->Add( m_staticText52, 0, wxALL, 3 );
+
+	wxCheckBox* m_checkBox60;
+	m_checkBox60 = new wxCheckBox( m_scSetGuiPanel, OF0, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer52->Add( m_checkBox60, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 3 );
+
+	wxCheckBox* m_checkBox61;
+	m_checkBox61 = new wxCheckBox( m_scSetGuiPanel, OF1, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer52->Add( m_checkBox61, 0, wxALIGN_CENTER_HORIZONTAL, 5 );
+
+	m_biSettings = new wxStaticBitmap( m_scSetGuiPanel, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer52->Add( m_biSettings, 0, wxALL, 3 );
+
+	wxStaticText* m_staticText53;
+	m_staticText53 = new wxStaticText( m_scSetGuiPanel, wxID_ANY, _("Settings"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText53->Wrap( -1 );
+	fgSizer52->Add( m_staticText53, 0, wxALL, 3 );
+
+	wxCheckBox* m_checkBox62;
+	m_checkBox62 = new wxCheckBox( m_scSetGuiPanel, STS0, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer52->Add( m_checkBox62, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 3 );
+
+	wxCheckBox* m_checkBox63;
+	m_checkBox63 = new wxCheckBox( m_scSetGuiPanel, STS1, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer52->Add( m_checkBox63, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 3 );
+
+	m_biRequest = new wxStaticBitmap( m_scSetGuiPanel, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer52->Add( m_biRequest, 0, wxALL, 3 );
+
+	wxStaticText* m_staticText54;
+	m_staticText54 = new wxStaticText( m_scSetGuiPanel, wxID_ANY, _("Request"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText54->Wrap( -1 );
+	fgSizer52->Add( m_staticText54, 0, wxALL, 3 );
+
+	wxCheckBox* m_checkBox64;
+	m_checkBox64 = new wxCheckBox( m_scSetGuiPanel, RQ0, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer52->Add( m_checkBox64, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 3 );
+
+	wxCheckBox* m_checkBox65;
+	m_checkBox65 = new wxCheckBox( m_scSetGuiPanel, RQ1, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer52->Add( m_checkBox65, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 3 );
+
+
+	sbSizer10->Add( fgSizer52, 1, wxEXPAND, 5 );
+
+
+	m_fgSetGuiSizer->Add( sbSizer10, 1, wxEXPAND, 5 );
 
 
 	m_scSetGuiPanel->SetSizer( m_fgSetGuiSizer );

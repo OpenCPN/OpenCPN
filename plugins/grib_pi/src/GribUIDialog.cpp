@@ -236,13 +236,14 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id, const wxString& ti
    //set buttons bitmap
     m_bpPrev->SetBitmapLabel(wxBitmap( prev ));
     m_bpNext->SetBitmapLabel(wxBitmap( next ));
+    m_bpAltitude->SetBitmapLabel(wxBitmap( altitude ));
     m_bpNow->SetBitmapLabel(wxBitmap( now ));
     m_bpZoomToCenter->SetBitmapLabel(wxBitmap( zoomto ));
     m_bpPlay->SetBitmapLabel(wxBitmap( play ));
-	m_CDataIsShown ? m_bpShowCursorData->SetBitmapLabel(wxBitmap( curdata )) : m_bpShowCursorData->SetBitmapLabel(wxBitmap( ncurdata ));
+	m_bpShowCursorData->SetBitmapLabel(wxBitmap( m_CDataIsShown ? curdata : ncurdata ));
     m_bpOpenFile->SetBitmapLabel(wxBitmap( openfile ));
     m_bpSettings->SetBitmapLabel(wxBitmap( setting ));
-    SetSelButtonBitmap( m_ZoneSelMode );
+    SetRequestBitmap( m_ZoneSelMode );
 
     //connect Timer
     m_tPlayStop.Connect(wxEVT_TIMER, wxTimerEventHandler( GRIBUICtrlBar::OnPlayStopTimer ), NULL, this);
@@ -250,7 +251,6 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id, const wxString& ti
     Connect( wxEVT_MOVE, wxMoveEventHandler( GRIBUICtrlBar::OnMove ) );
 
     m_OverlaySettings.Read();
-    m_OverlaySettings.m_iCtrlandDataStyle = m_DialogStyle;
 
     DimeWindow( this );
 
@@ -289,17 +289,17 @@ GRIBUICtrlBar::~GRIBUICtrlBar()
     delete m_pTimelineSet;
 }
 
-void GRIBUICtrlBar::SetSelButtonBitmap( int type )
+void GRIBUICtrlBar::SetRequestBitmap( int type )
 {
     switch( type ) {
     case AUTO_SELECTION:
     case START_SELECTION:
         m_bpRequest->SetBitmapLabel(wxBitmap( request));
-        m_bpRequest->SetToolTip(_("Start Request"));
+        m_bpRequest->SetToolTip(_("Start a request"));
         break;
     case DRAW_SELECTION:
         m_bpRequest->SetBitmapLabel(wxBitmap( selzone ));
-        m_bpRequest->SetToolTip(_("Draw the desired zone"));
+        m_bpRequest->SetToolTip(_("Stop request"));
         break;
     case COMPLETE_SELECTION:
         m_bpRequest->SetBitmapLabel(wxBitmap(request_end));
@@ -310,9 +310,7 @@ void GRIBUICtrlBar::SetSelButtonBitmap( int type )
 void GRIBUICtrlBar::OpenFile(bool newestFile)
 {
     m_bpPlay->SetBitmapLabel(wxBitmap( play ));
-    m_bpPlay->SetToolTip(_("Play"));
     m_cRecordForecast->Clear();
-    m_cbAltitude->Clear();
     pPlugIn->GetGRIBOverlayFactory()->ClearParticles();
 	m_Altitude = 0;
     m_FileIntervalIndex = m_OverlaySettings.m_SlicesPerUpdate;
@@ -323,6 +321,7 @@ void GRIBUICtrlBar::OpenFile(bool newestFile)
     m_InterpolateMode = false;
     m_pNowMode = false;
     m_SelectionIsSaved = false;
+    m_HasAltitude = false;
 
     //get more recent file in default directory if necessary
     wxFileName f( m_file_name );
@@ -380,23 +379,19 @@ void GRIBUICtrlBar::OpenFile(bool newestFile)
             TimelineChanged();
 
 		//populate  altitude choice and show if necessary
-        for( int i = 0; i<5; i++) {
+        for( int i = 1; i<5; i++) {
             if( (( m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX + i) != wxNOT_FOUND
-                && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VY + i) != wxNOT_FOUND )) || i == 0 )
-                    m_cbAltitude->Append(m_OverlaySettings.GetAltitudeFromIndex( i , m_OverlaySettings.Settings[GribOverlaySettings::PRESSURE].m_Units));
+                && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VY + i) != wxNOT_FOUND )) )
+                    m_HasAltitude = true;
         }
-        m_cbAltitude->SetSelection( 0 );
-		if( m_cbAltitude->GetCount()>1 )
-			m_cbAltitude->Show();
-		else
-			m_cbAltitude->Hide();
+        m_Altitude = 0;             //set altitude at std
 
-        //enable or set buttons visibility according with file contents to ovoid crashes
+        //enable buttons according with file contents to ovoid crashes
         m_bpSettings->Enable(m_pTimelineSet != NULL);
         m_bpZoomToCenter->Enable(m_pTimelineSet != NULL);
 
-        m_sTimeline->Show(m_pTimelineSet != NULL && m_TimeLineHours);
-        m_bpPlay->Show(m_pTimelineSet != NULL && m_TimeLineHours);
+        m_sTimeline->Enable(m_pTimelineSet != NULL && m_TimeLineHours);
+        m_bpPlay->Enable(m_pTimelineSet != NULL && m_TimeLineHours);
 
         m_bpPrev->Enable(m_pTimelineSet != NULL && m_TimeLineHours);
         m_bpNext->Enable(m_pTimelineSet != NULL && m_TimeLineHours);
@@ -468,6 +463,7 @@ void GRIBUICtrlBar::UpdateTrackingControl()
         if( m_gGRIBUICData ) {
             if( !m_gGRIBUICData->m_gCursorData->m_tCursorTrackTimer.IsRunning() )
                 m_gGRIBUICData->m_gCursorData->m_tCursorTrackTimer.Start(50, wxTIMER_ONE_SHOT );
+
         }
     } else {
         if( m_gCursorData ) {
@@ -481,10 +477,7 @@ void GRIBUICtrlBar::OnShowCursorData( wxCommandEvent& event )
 {
 	m_CDataIsShown = !m_CDataIsShown;
 
-	if( m_CDataIsShown )
-		m_bpShowCursorData->SetBitmapLabel(wxBitmap( curdata ));
-	else
-		m_bpShowCursorData->SetBitmapLabel(wxBitmap( ncurdata ));
+	m_bpShowCursorData->SetBitmapLabel(wxBitmap( m_CDataIsShown ? curdata : ncurdata ));
 
     SetDialogsStyleSizePosition( true );
 }
@@ -494,21 +487,33 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition( bool force_recompute )
     /*Not all plateforms accept the dynamic window style changes.
     So these changes are applied only after exit from the plugin and re-opening it*/
 
-    if( force_recompute ) m_old_DialogStyle = STARTING_STATE_STYLE;      //force recompute
-
-    if( m_old_DialogStyle == m_DialogStyle                            //recompute only if necessary
-           || (m_old_DialogStyle >> 1 == ATTACHED && m_DialogStyle >> 1 == ATTACHED ) )
+    if( !force_recompute && (m_old_DialogStyle == m_DialogStyle                            //recompute only if necessary
+            || (m_old_DialogStyle >> 1 == ATTACHED && m_DialogStyle >> 1 == ATTACHED)) )
         return;
+
 
     bool m_HasCaption = GetWindowStyleFlag() == (wxCAPTION|wxCLOSE_BOX|wxSYSTEM_MENU|wxTAB_TRAVERSAL);
 
-    // first hide grabber & detach cursordata to set CtrlBar alone
+    /* first hide grabber, detach cursordata and set ctrl/buttons visibility to have CtrlBar in his "alone" version
+    altitude button visibility is a special case ( i == 0 ) */
+    int state = (m_DialogStyle >> 1 == ATTACHED && m_CDataIsShown) ? 0 : 1;
+    for( unsigned i = 0; i < m_OverlaySettings.m_iCtrlBarCtrlVisible[state].Len(); i++ ) {
+        bool vis = i > 0 ? true : m_HasAltitude ? true : false;
+        FindWindow( i + ID_CTRLALTITUDE )->Show( m_OverlaySettings.m_iCtrlBarCtrlVisible[state].GetChar(i) == _T('X') && vis );
+    }
+    //initiate tooltips
+    m_bpShowCursorData->SetToolTip( m_CDataIsShown ? _("Hide Data at cursor" ) : _("Show Data at cursor" ) );
+    m_bpPlay->SetToolTip(_("Start play back"));
+
     m_gGrabber->Hide();
+    //then hide and detach cursor data window
     if( m_gCursorData ) {
         m_gCursorData->Hide();
         m_fgCDataSizer->Detach(m_gCursorData);
-        Layout();
     }
+
+    SetMinSize( wxSize(0, 0));
+
     //then hide eventually Cursor data dialog
     if( m_gGRIBUICData )
             m_gGRIBUICData->Hide();
@@ -519,43 +524,67 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition( bool force_recompute )
 	    m_gGrabber->Show();
     }
 
-    if( !m_CDataIsShown ) {                                                     //stop here if the cursordata dialog is not shown
-        Fit();
-        Refresh();
-        return;
-    }
+    if( m_CDataIsShown ) {
 
-    if( m_DialogStyle >> 1 == ATTACHED ) {  //dialogs attached
-        //generate CursorData
-        if( !m_gCursorData )
-	        m_gCursorData = new CursorData( this, *this );
-        pPlugIn->SetDialogFont( m_gCursorData );
-        m_gCursorData->PopulateTrackingControls( false );
-        //attach CursorData to CtrlBar if necessary
-        if( m_fgCDataSizer->GetItem( m_gCursorData ) == NULL )
-            m_fgCDataSizer->Add(m_gCursorData,0);
-        m_gCursorData->Show();
-        Fit();
-        Update();
-        pPlugIn->MoveDialog( this, pPlugIn->GetCtrlBarXY(), wxPoint(20, 60) );
+        if( m_DialogStyle >> 1 == ATTACHED ) {  //dialogs attached
+            //generate CursorData
+            if( !m_gCursorData )
+                m_gCursorData = new CursorData( this, *this );
+            pPlugIn->SetDialogFont( m_gCursorData );
+            m_gCursorData->PopulateTrackingControls( false );
+            //attach CursorData to CtrlBar if necessary
+            if( m_fgCDataSizer->GetItem( m_gCursorData ) == NULL )
+                m_fgCDataSizer->Add(m_gCursorData,0);
+            m_gCursorData->Show();
 
-	} else if( m_DialogStyle >> 1 == SEPARATED ) { //dialogs isolated
+        } else if( m_DialogStyle >> 1 == SEPARATED ) { //dialogs isolated
         //buile cursor data dialog
-        if( !m_gGRIBUICData )
-            m_gGRIBUICData = new GRIBUICData( *this );
-        m_gGRIBUICData->m_gCursorData->PopulateTrackingControls( m_DialogStyle == SEPARATED_VERTICAL );
-        pPlugIn->SetDialogFont( m_gGRIBUICData->m_gCursorData );
-        m_gGRIBUICData->Fit();
-        m_gGRIBUICData->Update();
-        m_gGRIBUICData->Show();
+            if( !m_gGRIBUICData )
+                m_gGRIBUICData = new GRIBUICData( *this );
+            m_gGRIBUICData->m_gCursorData->PopulateTrackingControls( m_DialogStyle == SEPARATED_VERTICAL );
+            pPlugIn->SetDialogFont( m_gGRIBUICData->m_gCursorData );
+            m_gGRIBUICData->Fit();
+            m_gGRIBUICData->Update();
+            m_gGRIBUICData->Show();
 
-        Fit();
-        Update();
-        pPlugIn->MoveDialog( this, pPlugIn->GetCtrlBarXY(), wxPoint(20, 60) );
-        pPlugIn->MoveDialog( m_gGRIBUICData, pPlugIn->GetCursorDataXY(), wxPoint(20, 170) );
+            pPlugIn->MoveDialog( m_gGRIBUICData, pPlugIn->GetCursorDataXY(), wxPoint(20, 170) );
+        }
+
+    }
+    Layout();
+    Fit();
+    SetMinSize( GetBestSize() );
+    SetSize( GetBestSize() );
+    Update();
+    pPlugIn->MoveDialog( this, pPlugIn->GetCtrlBarXY(), wxPoint(20, 60) );
+    m_old_DialogStyle = m_DialogStyle;
+}
+
+void GRIBUICtrlBar::OnAltitude( wxCommandEvent& event )
+{
+    if( !m_HasAltitude ) return;
+
+    wxMenu* amenu = new wxMenu();
+    amenu->Connect( wxEVT_COMMAND_MENU_SELECTED, wxMenuEventHandler(GRIBUICtrlBar::OnMenuEvent), NULL, this );
+
+    const wxString l[] = { _T(" "), wxString::Format( _T("\u2022") ) };
+    for( int i = 0; i<5; i++) {
+        if( (( m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX + i) != wxNOT_FOUND
+                    && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VY + i) != wxNOT_FOUND )) || i == 0 ) {
+            MenuAppend( amenu, ID_CTRLALTITUDE + 1000 + i ,
+#ifdef __WXMSW__
+            (i == m_Altitude ? l[1] : l[0]) +
+#endif
+            m_OverlaySettings.GetAltitudeFromIndex( i , m_OverlaySettings.Settings[GribOverlaySettings::PRESSURE].m_Units),
+                    wxITEM_RADIO );
+        }
     }
 
-    m_old_DialogStyle = m_DialogStyle;
+     amenu->Check( ID_CTRLALTITUDE + 1000 + m_Altitude, true );
+
+     PopupMenu( amenu );
+
+     delete amenu;
 }
 
 void GRIBUICtrlBar::OnMove( wxMoveEvent& event )
@@ -565,9 +594,121 @@ void GRIBUICtrlBar::OnMove( wxMoveEvent& event )
 
     //event.Skip();
 }
+void GRIBUICtrlBar::OnMenuEvent( wxMenuEvent& event )
+{
+    int id = event.GetId();
+    wxCommandEvent evt;
+    evt.SetId( id );
+    int alt = m_Altitude;
+    switch( id ) {
+    //sub menu altitude data
+    case ID_CTRLALTITUDE + 1000:
+        m_Altitude = 0;
+        break;
+    case ID_CTRLALTITUDE + 1001:
+        m_Altitude = 1;
+        break;
+    case ID_CTRLALTITUDE + 1002:
+        m_Altitude = 2;
+        break;
+    case ID_CTRLALTITUDE + 1003:
+        m_Altitude = 3;
+        break;
+    case ID_CTRLALTITUDE + 1004:
+        m_Altitude = 4;
+        break;
+    //   end sub menu
+    case ID_BTNNOW:
+        OnNow( evt );
+        break;
+    case ID_BTNZOOMTC:
+        OnZoomToCenterClick( evt );
+        break;
+    case ID_BTNSHOWCDATA:
+        OnShowCursorData( evt );
+        break;
+    case ID_BTNPLAY:
+        OnPlayStop( evt );
+        break;
+    case ID_BTNOPENFILE:
+        OnOpenFile( evt );
+        break;
+    case ID_BTNSETTING:
+        OnSettings( evt );
+        break;
+    case ID_BTNREQUEST:
+        OnRequest( evt );
+    }
+    if( alt != m_Altitude ) {
+        SetDialogsStyleSizePosition( true );
+        SetFactoryOptions();                     // Reload the visibility options
+    }
+}
+
+void GRIBUICtrlBar::MenuAppend( wxMenu *menu, int id, wxString label, wxItemKind kind, wxBitmap bitmap , wxMenu *submenu )
+{
+    wxMenuItem *item = new wxMenuItem(menu, id, label, _T(""), kind, submenu );
+
+#ifdef __WXMSW__
+    wxFont *qFont = OCPNGetFont( _("Menu"), 10 );
+    item->SetFont(*qFont);
+#endif
+
+#if defined(__WXMSW__) || defined( __WXGTK__)
+    if( !bitmap.IsSameAs( wxNullBitmap ) )
+        item->SetBitmap( bitmap );
+#endif
+
+    menu->Append( item );
+
+}
 
 void GRIBUICtrlBar::OnMouseEvent( wxMouseEvent& event )
 {
+    if( event.RightDown() ) {
+        //populate menu
+        wxMenu* xmenu = new wxMenu();
+        xmenu->Connect( wxEVT_COMMAND_MENU_SELECTED, wxMenuEventHandler(GRIBUICtrlBar::OnMenuEvent), NULL, this );
+
+        if( m_HasAltitude ) {    //eventually populate altitude choice
+            wxMenu* smenu = new wxMenu();
+            smenu->Connect( wxEVT_COMMAND_MENU_SELECTED, wxMenuEventHandler(GRIBUICtrlBar::OnMenuEvent), NULL, this );
+
+            const wxString l[] = { _T(" "), wxString::Format( _T("\u2022") ) };
+            for( int i = 0; i<5; i++) {
+                if( (( m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX + i) != wxNOT_FOUND
+                        && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VY + i) != wxNOT_FOUND )) || i == 0 ) {
+                    MenuAppend( smenu, ID_CTRLALTITUDE + 1000 + i ,
+#ifdef __WXMSW__
+                        (i == m_Altitude ? l[1] : l[0]) +
+#endif
+                        m_OverlaySettings.GetAltitudeFromIndex( i , m_OverlaySettings.Settings[GribOverlaySettings::PRESSURE].m_Units),
+                        wxITEM_RADIO );
+                }
+            }
+            smenu->Check( ID_CTRLALTITUDE + 1000 + m_Altitude, true );
+            MenuAppend( xmenu, wxID_ANY, _("Select geoptential altitude"), wxITEM_NORMAL, wxBitmap( altitude ), smenu);
+        }
+        MenuAppend( xmenu, ID_BTNNOW, _("Now"), wxITEM_NORMAL, wxBitmap( now ) );
+        MenuAppend( xmenu, ID_BTNZOOMTC, _("Zoom To Center"), wxITEM_NORMAL, wxBitmap( zoomto ) );
+        MenuAppend( xmenu, ID_BTNSHOWCDATA, m_CDataIsShown ? _("Hide data at cursor") : _("Show data at cursor"),
+                        wxITEM_NORMAL, wxBitmap( m_CDataIsShown ? curdata : ncurdata ) );
+        MenuAppend( xmenu, ID_BTNPLAY, m_tPlayStop.IsRunning() ? _("Stop play back") : _("Start play back"),
+                        wxITEM_NORMAL, wxBitmap( m_tPlayStop.IsRunning() ? stop : play ) );
+        MenuAppend( xmenu, ID_BTNOPENFILE, _("Open a new file"), wxITEM_NORMAL, wxBitmap( openfile ) );
+        MenuAppend( xmenu, ID_BTNSETTING, _("Settings"), wxITEM_NORMAL, wxBitmap( setting ) );
+        MenuAppend( xmenu, ID_BTNREQUEST, (m_ZoneSelMode == AUTO_SELECTION || m_ZoneSelMode == START_SELECTION) ?
+                        _("Start a request") : m_ZoneSelMode == DRAW_SELECTION ? _( "Stop request" ) : _("Valid request"),
+                        wxITEM_NORMAL, wxBitmap( (m_ZoneSelMode == AUTO_SELECTION ||
+                        m_ZoneSelMode == START_SELECTION) ? request : m_ZoneSelMode == DRAW_SELECTION ? selzone : request_end ) );
+
+    PopupMenu( xmenu );
+
+    delete xmenu;
+
+    return;
+    }
+
     if( m_DialogStyle >> 1 == SEPARATED ) return;
     wxMouseEvent evt(event);
     evt.SetId( 1000 );
@@ -622,7 +763,7 @@ void GRIBUICtrlBar::OnClose( wxCloseEvent& event )
         if( m_ZoneSelMode > START_SELECTION ) {
             pReq_Dialog->StopGraphicalZoneSelection();
             m_ZoneSelMode = START_SELECTION;
-            SetSelButtonBitmap( m_ZoneSelMode );
+            //SetRequestBitmap( m_ZoneSelMode );
         }
     pPlugIn->OnGribCtrlBarClose();
 }
@@ -640,20 +781,23 @@ void GRIBUICtrlBar::OnRequest(  wxCommandEvent& event )
 {
     if( m_tPlayStop.IsRunning() ) return;                            // do nothing when play back is running !
 
-    if(pReq_Dialog){                                                 //there is one instance of the dialog
-        if( pReq_Dialog->IsShown() ) return;                         //already visible. in this case do nothing
+    /*if there is one instance of the dialog already visible, do nothing*/
+    if(pReq_Dialog){
+        if( pReq_Dialog->IsShown() ) return;
     }
 
-    if( m_ZoneSelMode == DRAW_SELECTION ) {                         //a second click without selection cancel the process
+    /*a second click without selection cancel the process*/
+    if( m_ZoneSelMode == DRAW_SELECTION ) {
         m_ZoneSelMode = START_SELECTION;
         pReq_Dialog->StopGraphicalZoneSelection();
-        SetSelButtonBitmap( m_ZoneSelMode );
+        SetRequestBitmap( m_ZoneSelMode );
         return;
     }
 
-    if( m_ZoneSelMode == AUTO_SELECTION || m_ZoneSelMode == START_SELECTION ) {                    //create new request dialog
+    /*create new request dialog*/
+    if( m_ZoneSelMode == AUTO_SELECTION || m_ZoneSelMode == START_SELECTION ) {
 
-        delete pReq_Dialog;                                         //delete to be re-created
+        delete pReq_Dialog;     //delete to be re-created
 
         pReq_Dialog = new GribRequestSetting( *this );
         pPlugIn->SetDialogFont( pReq_Dialog );
@@ -669,7 +813,7 @@ void GRIBUICtrlBar::OnRequest(  wxCommandEvent& event )
     pReq_Dialog->Show( m_ZoneSelMode == AUTO_SELECTION || m_ZoneSelMode == COMPLETE_SELECTION );
     m_ZoneSelMode = m_ZoneSelMode == START_SELECTION ? DRAW_SELECTION : m_ZoneSelMode == COMPLETE_SELECTION ? START_SELECTION : m_ZoneSelMode;
     if( m_ZoneSelMode == START_SELECTION ) pReq_Dialog->StopGraphicalZoneSelection();
-    SetSelButtonBitmap( m_ZoneSelMode );                   //set appopriate bitmap
+    SetRequestBitmap( m_ZoneSelMode );                   //set appopriate bitmap
 }
 
 void GRIBUICtrlBar::OnSettings( wxCommandEvent& event )
@@ -710,7 +854,7 @@ void GRIBUICtrlBar::OnSettings( wxCommandEvent& event )
     SetTimeLineMax(true);
     SetFactoryOptions();
 
-    SetDialogsStyleSizePosition();
+    SetDialogsStyleSizePosition(true);
 
     event.Skip();
 }
@@ -721,7 +865,7 @@ void GRIBUICtrlBar::OnPlayStop( wxCommandEvent& event )
         StopPlayBack();
     } else {
         m_bpPlay->SetBitmapLabel(wxBitmap( stop ));
-        m_bpPlay->SetToolTip( _("Stop") );
+        m_bpPlay->SetToolTip( _("Stop play back") );
         m_tPlayStop.Start( 1000/m_OverlaySettings.m_UpdatesPerSecond, wxTIMER_CONTINUOUS );
         m_InterpolateMode = m_OverlaySettings.m_bInterpolate;
     }
@@ -757,7 +901,7 @@ void GRIBUICtrlBar::StopPlayBack()
     if( m_tPlayStop.IsRunning() ) {
         m_tPlayStop.Stop();
         m_bpPlay->SetBitmapLabel(wxBitmap( play ));
-        m_bpPlay->SetToolTip( _("Play") );
+        m_bpPlay->SetToolTip( _("Start play back") );
     }
 }
 
@@ -925,31 +1069,6 @@ void GRIBUICtrlBar::OnTimeline( wxScrollEvent& event )
     if(!m_InterpolateMode) m_cRecordForecast->SetSelection(m_sTimeline->GetValue());
     m_pNowMode = false;
     TimelineChanged();
-}
-
-void GRIBUICtrlBar::OnAltitudeChange( wxCommandEvent& event )
-{
-    if( m_cbAltitude->GetCurrentSelection() == m_Altitude ) return ;
-    double alt;
-    m_cbAltitude->GetString( m_cbAltitude->GetCurrentSelection() ).ToDouble(&alt);
-    switch((int) alt) {
-    case 8:
-    case 225:
-    case 300: m_Altitude = 4;break;
-    case 14:
-    case 375:
-    case 500: m_Altitude = 3;break;
-    case 20:
-    case 525:
-    case 700: m_Altitude = 2;break;
-    case 25:
-    case 637:
-    case 850: m_Altitude = 1;break;
-    default:  m_Altitude = 0;break;
-    }
-    SetDialogsStyleSizePosition( true );
-
-    SetFactoryOptions();                     // Reload the visibility options
 }
 
 void GRIBUICtrlBar::OnOpenFile( wxCommandEvent& event )

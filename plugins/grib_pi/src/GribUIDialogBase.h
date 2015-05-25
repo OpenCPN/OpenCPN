@@ -33,6 +33,7 @@
 #include <wx/statbox.h>
 #include <wx/scrolwin.h>
 #include <wx/radiobut.h>
+#include <wx/statbmp.h>
 #include <wx/notebook.h>
 #include <wx/radiobox.h>
 #include <wx/statline.h>
@@ -41,28 +42,57 @@
 ///////////////////////////////////////////////////////////////////////////
 
 #define CONTROL_BAR 1000
-#define ID_TIMELINE 1001
-#define CURSOR_DATA 1002
-#define ID_CB_WIND 1003
-#define ID_CB_WIND_GUSTS 1004
-#define ID_CB_PRESSURE 1005
-#define ID_CB_WAVES 1006
-#define ID_CB_CURRENT 1007
-#define ID_CB_RAINFALL 1008
-#define ID_CB_CLOUD_COVER 1009
-#define ID_CB_AIR_TEMP 1010
-#define ID_CB_SEA_TEMP 1011
-#define ID_CB_CAPE 1012
-#define BARBFIXSPACING 1013
-#define BARBMINSPACING 1014
-#define DIRFIXSPACING 1015
-#define DIRMINSPACING 1016
-#define NUMFIXSPACING 1017
-#define NUMMINSPACING 1018
-#define MAXLAT 1019
-#define MAXLON 1020
-#define MINLAT 1021
-#define MINLON 1022
+#define ID_BTNPREV 1001
+#define ID_CTRLTIME 1002
+#define ID_BTNNEXT 1003
+#define ID_CTRLALTITUDE 1004
+#define ID_BTNNOW 1005
+#define ID_BTNZOOMTC 1006
+#define ID_BTNSHOWCDATA 1007
+#define ID_BTNPLAY 1008
+#define ID_TIMELINE 1009
+#define ID_BTNOPENFILE 1010
+#define ID_BTNSETTING 1011
+#define ID_BTNREQUEST 1012
+#define CURSOR_DATA 1013
+#define ID_CB_WIND 1014
+#define ID_CB_WIND_GUSTS 1015
+#define ID_CB_PRESSURE 1016
+#define ID_CB_WAVES 1017
+#define ID_CB_CURRENT 1018
+#define ID_CB_RAINFALL 1019
+#define ID_CB_CLOUD_COVER 1020
+#define ID_CB_AIR_TEMP 1021
+#define ID_CB_SEA_TEMP 1022
+#define ID_CB_CAPE 1023
+#define BARBFIXSPACING 1024
+#define BARBMINSPACING 1025
+#define DIRFIXSPACING 1026
+#define DIRMINSPACING 1027
+#define NUMFIXSPACING 1028
+#define NUMMINSPACING 1029
+#define AC0 1030
+#define AC1 1031
+#define NW0 1032
+#define NW1 1033
+#define ZC0 1034
+#define ZC1 1035
+#define SCD0 1036
+#define SCD1 1037
+#define PB0 1038
+#define PB1 1039
+#define TL0 1040
+#define TL1 1041
+#define OF0 1042
+#define OF1 1043
+#define STS0 1044
+#define STS1 1045
+#define RQ0 1046
+#define RQ1 1047
+#define MAXLAT 1048
+#define MAXLON 1049
+#define MINLAT 1050
+#define MINLON 1051
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class GRIBUICtrlBarBase
@@ -93,7 +123,7 @@ class GRIBUICtrlBarBase : public wxDialog
 		virtual void OnPrev( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnRecordForecast( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnNext( wxCommandEvent& event ) { event.Skip(); }
-		virtual void OnAltitudeChange( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnAltitude( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnNow( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnZoomToCenterClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnShowCursorData( wxCommandEvent& event ) { event.Skip(); }
@@ -105,7 +135,7 @@ class GRIBUICtrlBarBase : public wxDialog
 
 
 	public:
-		wxChoice* m_cbAltitude;
+		wxBitmapButton* m_bpAltitude;
 		wxSlider* m_sTimeline;
 
 		GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id = CONTROL_BAR, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxSYSTEM_MENU );
@@ -240,6 +270,15 @@ class GribSettingsDialogBase : public wxDialog
 		wxRadioButton* m_rbCurDataAttaWoCap;
 		wxRadioButton* m_rbCurDataIsolHoriz;
 		wxRadioButton* m_rbCurDataIsolVertic;
+		wxStaticBitmap* m_biAltitude;
+		wxStaticBitmap* m_biNow;
+		wxStaticBitmap* m_biZoomToCenter;
+		wxStaticBitmap* m_biShowCursorData;
+		wxStaticBitmap* m_biPlay;
+		wxStaticBitmap* m_biTimeSlider;
+		wxStaticBitmap* m_biOpenFile;
+		wxStaticBitmap* m_biSettings;
+		wxStaticBitmap* m_biRequest;
 
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnPageChange( wxNotebookEvent& event ) { event.Skip(); }
