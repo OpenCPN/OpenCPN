@@ -677,6 +677,8 @@ wxString &OCPNPlatform::GetPrivateDataDir()
         m_PrivateDataDir = GetHomeDir();                     // should be {Documents and Settings}\......
 #elif defined __WXOSX__
         m_PrivateDataDir = std_path.GetUserConfigDir();     // should be ~/Library/Preferences
+        appendOSDirSlash(&m_PrivateDataDir);
+        m_PrivateDataDir.Append(_T("opencpn"));
 #else
         m_PrivateDataDir = std_path.GetUserDataDir();       // should be ~/.opencpn
 #endif
@@ -740,6 +742,8 @@ wxString &OCPNPlatform::GetConfigFileName()
         
 #elif defined __WXOSX__
         m_config_file_name = std_path.GetUserConfigDir(); // should be ~/Library/Preferences
+        appendOSDirSlash(&m_config_file_name);
+        m_config_file_name.Append(_T("opencpn"));
         appendOSDirSlash(&m_config_file_name);
         m_config_file_name.Append(_T("opencpn.ini"));
 #else
