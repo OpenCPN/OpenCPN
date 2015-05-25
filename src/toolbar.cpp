@@ -128,38 +128,11 @@ void GrabberWin::MouseEvent( wxMouseEvent& event )
     event.GetPosition( &x, &y );
 
     wxPoint spt = ClientToScreen( wxPoint( x, y ) );
-
-#ifdef __WXOSX__
-    ocpnFloatingToolbarDialog *pp = wxDynamicCast(GetParent(), ocpnFloatingToolbarDialog);
-
-    if (!m_bLeftDown && event.LeftIsDown())
-    {
-        m_bLeftDown = true;
+    if( event.LeftDown() ) {
         s_gspt = spt;
-        if (!HasCapture())
-        CaptureMouse();
     }
-    else if (m_bLeftDown && !event.LeftIsDown())
-    {
-        m_bLeftDown = false;
-        if (HasCapture())
-        ReleaseMouse();
-    }
-
-    if (!m_bRightDown && event.RightIsDown()) {
-        m_bRightDown = true;
-        if (!HasCapture()) {
-            CaptureMouse();
-            pp->ToggleOrientation();
-        }
-    }
-    else if (m_bRightDown && !event.RightIsDown()) {
-        m_bRightDown = false;
-        if (HasCapture())
-        ReleaseMouse();
-    }
-#else
-
+    
+    
 #ifndef __WXQT__
 
     if( event.LeftDown() ) {
@@ -172,9 +145,6 @@ void GrabberWin::MouseEvent( wxMouseEvent& event )
 
 #endif
 
-    if( event.LeftDown() ) {
-        s_gspt = spt;
-    }
 
     if( event.RightDown() ){
         if(m_ptoolbar){
@@ -192,10 +162,10 @@ void GrabberWin::MouseEvent( wxMouseEvent& event )
         }
     }
     
-#endif          //not OSX
+
 
     if( event.Dragging() ) {
-        if(m_ptoolbar && m_ptoolbar->IsShown()){
+        if(m_ptoolbar && m_ptoolbar->IsShown() && m_ptoolbar->m_bnavgrabber){
             wxPoint par_pos_old = m_ptoolbar->GetPosition();
 
             wxPoint par_pos = par_pos_old;
@@ -233,7 +203,6 @@ void GrabberWin::MouseEvent( wxMouseEvent& event )
     gFrame->Raise();
 #endif
     
-    event.Skip( false );
 }
 
 class ocpnToolBarTool: public wxToolBarToolBase {
@@ -400,6 +369,11 @@ void ocpnFloatingToolbarDialog::SetGrabber( wxString icon_name )
     m_pGrabberwin->Show();
     
     Realize();
+    
+#ifdef __WXOSX__    
+    m_pGrabberwin->Refresh();
+#endif    
+    
 }
 
 
@@ -505,6 +479,7 @@ void ocpnFloatingToolbarDialog::SubmergeToGrabber()
     
    
     m_pRecoverwin->Show();
+    m_pRecoverwin->Raise();
 #ifdef __WXQT__
     wxSize s = gFrame->GetSize();
     m_recoversize = s;

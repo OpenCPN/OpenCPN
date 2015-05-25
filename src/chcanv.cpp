@@ -4558,18 +4558,6 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
         return(true);
     }
 
-#ifdef __WXMSW__    
-    //  This logic is how we restore the toolbar after being submerged to grabber
-    //  especially on OpenGL configuration.
-    if (event.LeftUp()) {
-        if( g_FloatingToolbarDialog ){
-            if( g_FloatingToolbarDialog->CheckSurfaceRequest( event ) ){
-                bret = true;
-            }
-        }
-    }
-#endif    
-    
     //  This logic is necessary on MSW to handle the case where
     //  a context (right-click) menu is dismissed without action
     //  by clicking on the chart surface.
@@ -6086,8 +6074,7 @@ bool ChartCanvas::MouseEventProcessCanvas( wxMouseEvent& event )
         }
     }
     
-    if( event.Dragging() ){
-        if( 1/*leftIsDown*/ ) {
+    if( event.Dragging() && event.LeftIsDown()){
             if( ( last_drag.x != x ) || ( last_drag.y != y ) ) {
                 m_bChartDragging = true;
                 PanCanvas( last_drag.x - x, last_drag.y - y );
@@ -6104,7 +6091,6 @@ bool ChartCanvas::MouseEventProcessCanvas( wxMouseEvent& event )
                 }
                 
             }
-        }
     }
         
         
