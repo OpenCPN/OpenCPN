@@ -1062,8 +1062,10 @@ ChartCanvas::~ChartCanvas()
 
     delete undo;
 #ifdef ocpnUSE_GL
-    if( !g_bdisable_opengl )
+    if( !g_bdisable_opengl ) {
         delete m_glcc;
+        delete m_pGLcontext;
+    }
 #endif
 
 }
