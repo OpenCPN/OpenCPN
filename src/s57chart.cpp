@@ -5345,7 +5345,7 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
     }
 
     if( mode == 1 ) {
-        sprintf( line, "  %s %g %g\n", pGeo->getGeometryName(), ref_lat, ref_lon );
+        sprintf( line, "  %s %f %f\n", pGeo->getGeometryName(), ref_lat, ref_lon );
         sheader += wxString( line, wxConvUTF8 );
     }
     wxCharBuffer buffer=sheader.ToUTF8();
@@ -5540,7 +5540,6 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
                 wkb_len = pGeo->WkbSize();
                 fprintf( fpOut, "  %d\n", wkb_len );
                 fwrite( pwkb_buffer, 1, wkb_len, fpOut );
-
                 break;
 
             case wkbPoint: {

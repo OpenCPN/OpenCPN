@@ -1470,7 +1470,7 @@ int PolyTessGeo::Write_PolyTriGroup( FILE *ofs)
     ostream2->Write(stemp.mb_str(), stemp.Len());
 
     int nrecl = ostream1->GetSize() + ostream2->GetSize();
-    stemp.sprintf( _T("  POLYTESSGEO  %08d %g %g\n"), nrecl, m_ref_lat, m_ref_lon);
+    stemp.sprintf( _T("  POLYTESSGEO  %08d %f %f\n"), nrecl, m_ref_lat, m_ref_lon);
 
     fwrite(stemp.mb_str(), 1, stemp.Len(), ofs);                 // Header, + record length
 
