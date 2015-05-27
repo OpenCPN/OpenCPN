@@ -1520,6 +1520,9 @@ bool MyApp::OnInit()
     g_bdisable_opengl = true;;
 #endif
 
+    if(g_bdisable_opengl)
+        g_bopengl = false;
+    
     // Determine if a transparent toolbar is possible under linux with opengl
     g_bTransparentToolbarInOpenGLOK = false;
 #ifdef OCPN_HAVE_X11
