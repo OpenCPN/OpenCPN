@@ -512,7 +512,7 @@ void GribSettingsDialog::OnPageChange( wxNotebookEvent& event )
 {
 	m_SetBookpageIndex = event.GetSelection();
 
-#ifdef __WXMSW__
+#if defined __WXMSW__ || defined ( __WXOSX__ )
 	for( size_t i = 0; i < m_nSettingsBook->GetPageCount(); i++ ) {
 		wxScrolledWindow *sc = ((wxScrolledWindow*) m_nSettingsBook->GetPage( i ));
         sc->Show( i == (unsigned int ) m_SetBookpageIndex );
@@ -546,7 +546,7 @@ void GribSettingsDialog::SetSettingsDialogSize()
 				scr = m_fgSetGuiSizer->Fit( sc ); break;
 		}
 		sc->SetMinSize( wxSize(wxMin( scr.x, w ), h) );
-#ifdef __WXMSW__
+#if defined __WXMSW__ || defined ( __WXOSX__ )
 		sc->Show( i == (unsigned int) m_SetBookpageIndex );
 #endif
 	}																					//end compute
