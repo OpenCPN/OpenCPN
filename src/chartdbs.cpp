@@ -978,7 +978,7 @@ bool ChartDatabase::Read(const wxString &filePath)
 
     m_DBFileName = filePath;
 
-    wxFileInputStream ifs(filePath);
+    wxFFileInputStream ifs(filePath);
     if(!ifs.Ok()) return false;
 
     ChartTableHeader cth;
@@ -1044,7 +1044,7 @@ bool ChartDatabase::Write(const wxString &filePath)
 
     if (!dir.DirExists() && !dir.Mkdir()) return false;
 
-    wxFileOutputStream ofs(filePath);
+    wxFFileOutputStream ofs(filePath);
     if(!ofs.Ok()) return false;
 
     ChartTableHeader cth(m_chartDirs.GetCount(), active_chartTable.GetCount());
