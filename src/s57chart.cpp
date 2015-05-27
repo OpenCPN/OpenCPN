@@ -2955,18 +2955,16 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name )
 
 //      Look for SENC file in the target directory
 
-    if( m_SENCFileName.FileExists() ) {
-        wxFile f;
-        if( f.Open( m_SENCFileName.GetFullPath() ) ) {
-            if( f.Length() == 0 ) {
-                f.Close();
-                build_ret_val = BuildSENCFile( name, m_SENCFileName.GetFullPath() );
+    {
+        wxFFileInputStream fpx( m_SENCFileName.GetFullPath() );
+
+        if( fpx.IsOk(  ) ) {
+            if( fpx.GetSize() == 0 ) {
+                bbuild_new_senc = true;
             } else                                      // file exists, non-zero
             {                                         // so check for new updates
 
-                f.Seek( 0 );
-                wxFileInputStream *pfpx_u = new wxFileInputStream( f );
-                wxBufferedInputStream *pfpx = new wxBufferedInputStream( *pfpx_u );
+                fpx.SeekI( 0 );
                 int dun = 0;
                 int last_update = 0;
                 int senc_file_version = 0;
@@ -2978,7 +2976,7 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name )
                 wxString senc_base_edtn;
 
                 while( !dun ) {
-                    if( my_fgets( pbuf, 256, *pfpx ) == 0 ) {
+                    if( my_fgets( pbuf, 256, fpx ) == 0 ) {
                         dun = 1;
                         force_make_senc = 1;
                         break;
@@ -3031,9 +3029,6 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name )
                     }
                 }
 
-                delete pfpx;
-                delete pfpx_u;
-                f.Close();
 //              Anything to do?
 // force_make_senc = 1;
                 //  SENC file version has to be correct for other tests to make sense
@@ -3064,22 +3059,17 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name )
 
                 if( force_make_senc ) bbuild_new_senc = true;
 
-                if( bbuild_new_senc ) build_ret_val = BuildSENCFile( name,
-                        m_SENCFileName.GetFullPath() );
-
             }
+        }
+        else if( !m_SENCFileName.FileExists() )                    // SENC file does not exist
+        {
+            bbuild_new_senc = true;
         }
     }
 
-    else                    // SENC file does not exist
-    {
-        build_ret_val = BuildSENCFile( name, m_SENCFileName.GetFullPath() );
-        bbuild_new_senc = true;
-    }
-
-    if( bbuild_new_senc ) m_bneed_new_thumbnail = true; // force a new thumbnail to be built in PostInit()
-
     if( bbuild_new_senc ) {
+        m_bneed_new_thumbnail = true; // force a new thumbnail to be built in PostInit()
+        build_ret_val = BuildSENCFile( name, m_SENCFileName.GetFullPath() );
         if( BUILD_SENC_NOK_PERMANENT == build_ret_val ) return INIT_FAIL_REMOVE;
         if( BUILD_SENC_NOK_RETRY == build_ret_val ) return INIT_FAIL_RETRY;
     }
@@ -3553,20 +3543,17 @@ bool s57chart::CreateHeaderDataFromENC( void )
 bool s57chart::CreateHeaderDataFromSENC( void )
 {
     bool ret_val = true;
-    //    Sanity check for existence of file
 
-    if( !m_SENCFileName.FileExists() ) {
-        wxString msg( _T("   Cannot open SENC file ") );
-        msg.Append( m_SENCFileName.GetFullPath() );
-        wxLogMessage( msg );
+    wxFFileInputStream fpx( m_SENCFileName.GetFullPath() );
+    if (!fpx.IsOk()) {
+        if( !m_SENCFileName.FileExists() ) {
+            wxString msg( _T("   Cannot open SENC file ") );
+            msg.Append( m_SENCFileName.GetFullPath() );
+            wxLogMessage( msg );
 
-        return 1;
+        }
+        return false;
     }
-
-    wxString ifs( m_SENCFileName.GetFullPath() );
-
-    wxFileInputStream fpx_u( ifs );
-    wxBufferedInputStream fpx( fpx_u );
 
     int MAX_LINE = 499999;
     char *buf = (char *) malloc( MAX_LINE + 1 );
@@ -4523,21 +4510,19 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
     int senc_file_version = 0;
     
     //    Sanity check for existence of file
-    wxFileName SENCFileName( FullPath );
-    if( !SENCFileName.FileExists() ) {
-        wxString msg( _T("   Cannot open SENC file ") );
-        msg.Append( SENCFileName.GetFullPath() );
-        wxLogMessage( msg );
-
-        return 1;
-    }
 
     int nProg = 0;
 
     wxString ifs( FullPath );
 
-    wxFileInputStream fpx_u( ifs );
-    wxBufferedInputStream fpx( fpx_u );
+    wxFFileInputStream fpx( ifs );
+    if (!fpx.IsOk()) {
+        wxString msg( _T("   Cannot open SENC file ") );
+        msg.Append( FullPath );
+        wxLogMessage( msg );
+        return 1;
+    }
+    wxFileName SENCFileName( FullPath );
 
     int MAX_LINE = 499999;
     char *buf = (char *) malloc( MAX_LINE + 1 );
@@ -6565,12 +6550,8 @@ bool s57chart::InitFromSENCMinimal( const wxString &FullPath )
     m_FullPath = FullPath;
     m_Description = m_FullPath;
 
-    wxFileName S57FileName( FullPath );
-
-    if( !S57FileName.FileExists() ) return false;
-
     wxFile f;
-    if( f.Open( S57FileName.GetFullPath() ) ) {
+    if( f.Open( FullPath ) ) {
         if( f.Length() == 0 ) {
             f.Close();
             ret_val = false;
