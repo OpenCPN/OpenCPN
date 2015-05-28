@@ -70,6 +70,11 @@
 
 #include <algorithm>          // for std::sort
 
+#ifdef __WXMSW__
+#define strncasecmp(x,y,z) _strnicmp(x,y,z)
+#endif
+
+
 extern bool GetDoubleAttr(S57Obj *obj, const char *AttrName, double &val);      // found in s52cnsy
 
 void OpenCPN_OGRErrorHandler( CPLErr eErrClass, int nError,
