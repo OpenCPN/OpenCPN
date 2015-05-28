@@ -3979,6 +3979,7 @@ void MyFrame::DoSettings()
     //  The chart display options may have changed, especially on S57 ENC,
     //  So, flush the cache and redraw
     cc1->ReloadVP();
+    
 }
 
 
@@ -4823,6 +4824,13 @@ int MyFrame::DoOptionsDialog()
 
 #if defined(__WXOSX__) || defined(__WXQT__)
     if(stats) stats->Hide();
+    
+    bool b_restoreAIS = false;
+    if( g_pAISTargetList  && g_pAISTargetList->IsShown() ){
+        b_restoreAIS = true;
+        g_pAISTargetList->Shutdown();
+        g_pAISTargetList = NULL;
+    }
 #endif
 
     g_options->SetInitialPage(options_lastPage );
@@ -4894,6 +4902,11 @@ int MyFrame::DoOptionsDialog()
 #if defined(__WXOSX__) || defined(__WXQT__)
     if( g_FloatingCompassDialog )
         g_FloatingCompassDialog->Raise();
+
+    if( b_restoreAIS ){
+        g_pAISTargetList = new AISTargetListDialog( this, g_pauimgr, g_pAIS );
+        g_pAISTargetList->UpdateAISTargetList();
+    }
 #endif
 
 

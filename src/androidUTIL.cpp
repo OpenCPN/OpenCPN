@@ -38,6 +38,7 @@
 #include "chart1.h"
 #include "AISTargetQueryDialog.h"
 #include "AISTargetAlertDialog.h"
+#include "AISTargetListDialog.h"
 #include "routeprop.h"
 #include "TrackPropDlg.h"
 #include "S57QueryDialog.h"
@@ -60,6 +61,7 @@ wxEvtHandler                    *s_pAndroidBTNMEAMessageConsumer;
 
 extern AISTargetAlertDialog      *g_pais_alert_dialog_active;
 extern AISTargetQueryDialog      *g_pais_query_dialog_active;
+extern AISTargetListDialog       *g_pAISTargetList;
 extern MarkInfoImpl              *pMarkPropDialog;
 extern RouteProp                 *pRoutePropDialog;
 extern TrackPropDlg              *pTrackPropDialog;
@@ -154,6 +156,16 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                 g_options->RecalculateSize();
                 if(bshown){
                     g_options->ShowModal();
+                }
+            }
+            
+            // AIS Target List dialog
+            if(g_pAISTargetList){
+                bool bshown = g_pAISTargetList->IsShown();
+                g_pAISTargetList->Hide();
+                g_pAISTargetList->RecalculateSize();
+                if(bshown){
+                    g_pAISTargetList->Show();
                 }
             }
             
