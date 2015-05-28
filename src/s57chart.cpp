@@ -1043,6 +1043,7 @@ s57chart::s57chart()
     m_next_safe_cnt = 1e6;
     m_LineVBO_name = -1;
     m_line_vertex_buffer = 0;
+    m_this_chart_context =  0;
 }
 
 s57chart::~s57chart()
@@ -1099,7 +1100,7 @@ s57chart::~s57chart()
     if(s_glDeleteBuffers && (m_LineVBO_name > 0))
         s_glDeleteBuffers(1, (GLuint *)&m_LineVBO_name);
 #endif
-    
+    free (m_this_chart_context);    
 }
 
 void s57chart::GetValidCanvasRegion( const ViewPort& VPoint, OCPNRegion *pValidRegion )

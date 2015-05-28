@@ -1948,7 +1948,6 @@ cm93chart::~cm93chart()
 
       free ( m_pDrawBuffer );
 
-      free ( m_this_chart_context );
 }
 
 void  cm93chart::Unload_CM93_Cell ( void )
