@@ -165,7 +165,7 @@ void GrabberWin::MouseEvent( wxMouseEvent& event )
 
 
     if( event.Dragging() ) {
-        if(m_ptoolbar && m_ptoolbar->IsShown() && m_ptoolbar->m_bnavgrabber){
+        if(m_ptoolbar && m_ptoolbar->IsShown() /*&& m_ptoolbar->m_bnavgrabber*/){
             wxPoint par_pos_old = m_ptoolbar->GetPosition();
 
             wxPoint par_pos = par_pos_old;
