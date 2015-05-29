@@ -801,7 +801,8 @@ void MMSI_Props_Panel::UpdateMMSIList( void )
                 }
             }
                 
-        m_pListCtrlMMSI->SetItemState( item_sel,
+        if( g_MMSI_Props_Array.GetCount() != 0 ) 
+            m_pListCtrlMMSI->SetItemState( item_sel,
                     wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED,
                     wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED );
 
