@@ -982,7 +982,7 @@ CacheEntry *ChartDB::FindOldestDeleteCandidate( bool blog)
                 CacheEntry *pce = (CacheEntry *)(pChartCache->Item(i));
                 if((ChartBase *)(pce->pChart) != Current_Ch)
                 {
-                    if(pce->RecentTime < LRUTime)
+                    if(pce->RecentTime < LRUTime && !pce->n_lock)
                     {
                         LRUTime = pce->RecentTime;
                         iOldest = i;
