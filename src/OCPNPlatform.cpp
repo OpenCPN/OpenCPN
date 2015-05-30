@@ -908,6 +908,8 @@ void OCPNPlatform::ShowBusySpinner( void )
 {
 #ifdef __OCPN__ANDROID__
     androidShowBusyIcon();
+#else 
+    ::wxBeginBusyCursor();
 #endif    
 }
 
@@ -915,6 +917,8 @@ void OCPNPlatform::HideBusySpinner( void )
 {
 #ifdef __OCPN__ANDROID__
     androidHideBusyIcon();
+#else
+    ::wxEndBusyCursor();
 #endif    
 }
 
