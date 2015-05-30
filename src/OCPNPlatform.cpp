@@ -604,13 +604,15 @@ wxString &OCPNPlatform::GetHomeDir()
 //  This make debugging easier, as it is not deleted whenever the APK is re-deployed.
 //  This behaviour should go away at Release.
 #ifdef __OCPN__ANDROID__
-        if( wxDirExists(_T("/mnt/sdcard")) ){
+        if( wxDirExists(_T("/mnt/sdcard")) ) {
             m_homeDir =  _T("/mnt/sdcard/.opencpn");
         }
 #endif
 
-        if( g_bportable ) 
-            m_homeDir = GetExePath();
+		if( g_bportable ) {
+			wxFileName path(GetExePath());
+			m_homeDir = path.GetPath();
+		}
         
 #ifdef  __WXOSX__
         appendOSDirSlash(&m_homeDir);
