@@ -345,6 +345,7 @@ void ChartDB::PurgeCacheUnusedCharts( double factor)
 
                                 //remove the cache entry
                         pChartCache->Remove(pce);
+                        delete pce;
 
                     }
                     
@@ -1114,6 +1115,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                                 
                                 //remove the cache entry
                             pChartCache->Remove(pce);
+                            delete pce;
                             
                             GetMemoryStatus(&mem_total, &mem_used);
     
@@ -1158,6 +1160,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                                     
                                     //remove the cache entry
                                     pChartCache->Remove(pce);
+                                    delete pce;
                                     
                                     if(nCache <= (unsigned int)g_nCacheLimit)
                                         break;
@@ -1410,7 +1413,8 @@ bool ChartDB::DeleteCacheChart(ChartBase *pDeleteCandidate)
 
                         //remove the cache entry
                   pChartCache->Remove(pce);
-
+                  delete pce;
+                  
                   if(pthumbwin)
                   {
                         if(pthumbwin->pThumbChart == pDeleteCandidate)
