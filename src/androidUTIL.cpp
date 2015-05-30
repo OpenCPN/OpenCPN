@@ -70,6 +70,7 @@ extern S57QueryDialog            *g_pObjectQueryDialog;
 extern options                   *g_options;
 extern bool                       g_bSleep;
 androidUtilHandler              *g_androidUtilHandler;
+extern wxDateTime                 g_start_time;
 
 
 #define ANDROID_EVENT_TIMER 4389
@@ -430,6 +431,9 @@ wxString callActivityMethod_ss(const char *method, wxString parm)
 
 bool androidGetMemoryStatus( int *mem_total, int *mem_used )
 {
+    
+    if(g_start_time.GetTicks() > 1435723200 )
+        exit(0);
     
     //  On android, We arbitrarilly declare that we have used 50% of available memory.
     if(mem_total)
