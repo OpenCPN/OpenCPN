@@ -77,6 +77,8 @@ extern int              g_uncompressed_tile_size;
 
 class CompressionWorkerPool;
 CompressionWorkerPool   *g_CompressorPool;
+static wxMutex 		s_MutexPool;
+
 
 extern PFNGLGETCOMPRESSEDTEXIMAGEPROC s_glGetCompressedTexImage;
 extern PFNGLCOMPRESSEDTEXIMAGE2DPROC s_glCompressedTexImage2D;
@@ -1007,8 +1009,14 @@ glTexFactory::glTexFactory(ChartBase *chart, GLuint raster_format)
     m_ntex = m_nx_tex * m_ny_tex;
     m_td_array = (glTextureDescriptor **)calloc(m_ntex, sizeof(glTextureDescriptor *));
     
-    if(!g_CompressorPool)
-        g_CompressorPool = new CompressionWorkerPool;
+    {
+        // we only want one pool but glTexFactory could be created from 
+        // many concurrent threads in rebuildCache.
+        wxMutexLocker lock(s_MutexPool);
+         
+        if(!g_CompressorPool)
+            g_CompressorPool = new CompressionWorkerPool;
+    }
 
     m_ticks = 0;
     // only the main thread can start timer
