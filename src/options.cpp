@@ -874,7 +874,6 @@ options::options( MyFrame* parent, wxWindowID id, const wxString& caption, const
     CreateControls();
     RecalculateSize();
         
-    Fit();
     Center();
 }
 
@@ -937,6 +936,8 @@ void options::RecalculateSize()
         fitted_size.y = wxMin(fitted_size.y, canvas_size.y);
     
         SetSize( fitted_size );
+        
+        Fit();
     }
     else {
         wxSize esize;
@@ -947,7 +948,7 @@ void options::RecalculateSize()
         esize.y = wxMin(esize.y, dsize.y - (2 * GetCharHeight()));
         esize.x = wxMin(esize.x, dsize.x - (2 * GetCharHeight()));
         SetClientSize(esize);
-        
+
         wxSize fsize = GetSize();
         wxSize canvas_size = GetParent()->GetSize();
         wxPoint canvas_pos = GetParent()->GetPosition();
