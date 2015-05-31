@@ -6641,7 +6641,7 @@ void OpenGLOptionsDlg::OnButtonClear( wxCommandEvent& event )
 wxString OpenGLOptionsDlg::TextureCacheSize()
 {
     wxString path =  g_Platform->GetPrivateDataDir() + wxFileName::GetPathSeparator() + _T("raster_texture_cache");
-    int total = 0;
+    long long total = 0;
     if(::wxDirExists( path )) {
         wxArrayString files;
         size_t nfiles = wxDir::GetAllFiles(path, &files);
@@ -6649,6 +6649,10 @@ wxString OpenGLOptionsDlg::TextureCacheSize()
             total += wxFile(files[i]).Length();
         }
     }
-
-    return wxString::Format(_T("%.1f MB"), total/1024.0/1024.0);
+    double mb = total/1024.0/1024.0;
+    if (mb < 10000.0) 
+        return wxString::Format(_T("%.1f MB"), mb);
+    mb = mb / 1024.0;
+    return wxString::Format(_T("%.1f GB"), mb);
+    
 }
