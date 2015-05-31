@@ -1064,7 +1064,10 @@ ChartCanvas::~ChartCanvas()
 #ifdef ocpnUSE_GL
     if( !g_bdisable_opengl ) {
         delete m_glcc;
+        
+#if wxCHECK_VERSION(2, 9, 0)
         delete m_pGLcontext;
+#endif        
     }
 #endif
 
