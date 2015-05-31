@@ -251,6 +251,8 @@ public:
         return m_pWorkDirList;
     }
 
+    void AddChartDir( wxString &dir );
+    
     void UpdateDisplayedChartDirList(ArrayOfCDI p);
 
     void UpdateOptionsUnits();

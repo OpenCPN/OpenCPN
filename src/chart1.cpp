@@ -2303,6 +2303,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     
     m_pMenuBar = NULL;
     g_toolbar = NULL;
+    g_options = NULL;
     m_toolbar_scale_tools_shown = false;
     piano_ctx_menu = NULL;
 

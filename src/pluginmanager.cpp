@@ -4601,3 +4601,18 @@ wxBitmap GetIcon_PlugIn(const wxString & name)
     return style->GetIcon( name );
 }
 
+void AddChartDirectory( wxString &path )
+{
+    if( g_options )
+    {
+        g_options->AddChartDir( path );
+    }
+}
+
+void ForceChartDBUpdate()
+{
+    if( g_options )
+    {
+        g_options->pScanCheckBox->SetValue(true);
+    }
+}
