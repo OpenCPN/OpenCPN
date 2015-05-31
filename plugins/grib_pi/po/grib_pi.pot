@@ -321,8 +321,8 @@ msgstr ""
 msgid "Request"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:80
-msgid "GRIB Data at Cursor"
+#: src/CursorData.cpp:216
+msgid "Data at cursor position"
 msgstr ""
 
 #: src/GribUIDialogBase.cpp:113
@@ -469,7 +469,7 @@ msgstr ""
 msgid "Minimum Spacing"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:534
+#: src/GribUIDialogBase.cpp:757
 msgid "Density"
 msgstr ""
 
@@ -893,4 +893,52 @@ msgid ""
 "Request can't be sent. Please verify your email systeme parameters.\n"
 "You should also have a look at your log file.\n"
 "Save or Cancel to finish..."
+msgstr ""
+
+#: src\GribUIDialogBase.cpp:71
+msgid "Show/Hide Cursor Data"
+msgstr ""
+
+#: src\GribUIDialog.cpp:298
+msgid "Start Request"
+msgstr ""
+
+#: src\GribUIDialog.cpp:302
+msgid "Draw the desired zone"
+msgstr ""
+
+#: src\GribUIDialog.cpp:306
+msgid "Valid request"
+msgstr ""
+
+#: src\GribUIDialogBase.cpp:558
+msgid "Data Display Options"
+msgstr ""
+
+#: src\GribUIDialogBase.cpp:806
+msgid "Playback Options"
+msgstr ""
+
+#: src\GribUIDialogBase.cpp:859
+msgid "Playback"
+msgstr ""
+
+#: src\GribUIDialogBase.cpp:771
+msgid "Transparency for all Overlay Maps"
+msgstr ""
+
+#: src\GribUIDialogBase.cpp:601
+msgid "Spacing(pixels)"
+msgstr ""
+
+#: src\GribUIDialogBase.cpp:683
+msgid "Fixed"
+msgstr ""
+
+#: src\GribUIDialogBase.cpp:605
+msgid "Fixed"
+msgstr ""
+
+#: src\GribUIDialogBase.cpp:611
+msgid "Minimum"
 msgstr ""
