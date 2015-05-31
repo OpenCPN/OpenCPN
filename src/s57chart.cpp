@@ -206,7 +206,17 @@ S57Obj::~S57Obj()
         }
         free( att_array );
 
-        if( pPolyTessGeo ) delete pPolyTessGeo;
+        if( pPolyTessGeo ) {
+#ifdef ocpnUSE_GL 
+            bool b_useVBO = g_b_EnableVBO  && !auxParm1;    // VBO allowed?
+
+            PolyTriGroup *ppg_vbo = pPolyTessGeo->Get_PolyTriGroup_head();
+            if (b_useVBO && ppg_vbo && auxParm0 > 0 && ppg_vbo->single_buffer && s_glDeleteBuffers) {
+                s_glDeleteBuffers(1, (GLuint *)&auxParm0);
+            }
+#endif
+            delete pPolyTessGeo;
+        }
 
         if( pPolyTrapGeo ) delete pPolyTrapGeo;
 
@@ -1038,6 +1048,7 @@ s57chart::s57chart()
     m_next_safe_cnt = 1e6;
     m_LineVBO_name = -1;
     m_line_vertex_buffer = 0;
+    m_this_chart_context =  0;
 }
 
 s57chart::~s57chart()
@@ -1094,7 +1105,7 @@ s57chart::~s57chart()
     if(s_glDeleteBuffers && (m_LineVBO_name > 0))
         s_glDeleteBuffers(1, (GLuint *)&m_LineVBO_name);
 #endif
-    
+    free (m_this_chart_context);    
 }
 
 void s57chart::GetValidCanvasRegion( const ViewPort& VPoint, OCPNRegion *pValidRegion )

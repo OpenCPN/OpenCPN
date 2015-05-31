@@ -484,6 +484,7 @@ void Route::DrawGLLines( ViewPort &VP, ocpnDC *dc )
             bool lat1r = prp1->m_lat > bbox.GetMaxY(), lat2r = prp2->m_lat > bbox.GetMaxY();
             if( (lat1l && lat2l) || (lat1r && lat2r) ) {
                 r1valid = false;
+                prp1->m_pos_on_screen = false;
                 continue;
             }
 
@@ -492,6 +493,7 @@ void Route::DrawGLLines( ViewPort &VP, ocpnDC *dc )
             TestLongitude(prp2->m_lon, bbox.GetMinX(), bbox.GetMaxX(), lon2l, lon2r);
             if( (lon1l && lon2l) || (lon1r && lon2r) ) {
                 r1valid = false;
+                prp1->m_pos_on_screen = false;
                 continue;
             }
 

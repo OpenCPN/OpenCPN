@@ -1948,7 +1948,6 @@ cm93chart::~cm93chart()
 
       free ( m_pDrawBuffer );
 
-      free ( m_this_chart_context );
 }
 
 void  cm93chart::Unload_CM93_Cell ( void )
@@ -3301,6 +3300,7 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
             wxString msg;
             msg.Printf ( _T ( "   CM93 Error...object type %d not found in CM93OBJ.DIC" ), iclass );
             wxLogMessage ( msg );
+            delete xgeom;
             return NULL;
       }
 
@@ -4017,13 +4017,7 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
       //      Build/Maintain a list of found OBJL types for later use
       //      And back-reference the appropriate list index in S57Obj for Display Filtering
 
-
-      if ( pobj )
-      {
-            pobj->iOBJL = -1; // deferred, done by OBJL filtering in the PLIB as needed
-      }
-
-
+      pobj->iOBJL = -1; // deferred, done by OBJL filtering in the PLIB as needed
 
       // Everything in Xgeom that is needed later has been given to the object
       // So, the xgeom object can be deleted
