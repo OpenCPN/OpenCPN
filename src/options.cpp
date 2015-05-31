@@ -3731,7 +3731,6 @@ void options::OnCharHook( wxKeyEvent& event ) {
 void options::OnButtonaddClick( wxCommandEvent& event )
 {
     wxString selDir;
-    wxFileName dirname;
     wxDirDialog *dirSelector = new wxDirDialog( this, _("Add a directory containing chart files"),
             *pInit_Chart_Dir, wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST );
 
@@ -3745,27 +3744,33 @@ void options::OnButtonaddClick( wxCommandEvent& event )
         goto done;
 
     selDir = dirSelector->GetPath();
-    dirname = wxFileName( selDir );
 
-    pInit_Chart_Dir->Empty();
-    if( !g_bportable )
-        pInit_Chart_Dir->Append( dirname.GetPath() );
-
-    if( g_bportable ) {
-        wxFileName f( selDir );
-        f.MakeRelativeTo( g_Platform->GetHomeDir() );
-        pActiveChartsList->Append( f.GetFullPath() );
-    } else
-        pActiveChartsList->Append( selDir );
-
-    k_charts |= CHANGE_CHARTS;
-
-    pScanCheckBox->Disable();
+    AddChartDir( selDir );
 
     done:
 
     delete dirSelector;
     event.Skip();
+}
+
+void options::AddChartDir( wxString &dir )
+{
+    wxFileName dirname = wxFileName( dir );
+    
+    pInit_Chart_Dir->Empty();
+    if( !g_bportable )
+        pInit_Chart_Dir->Append( dirname.GetPath() );
+
+    if( g_bportable ) {
+        wxFileName f( dir );
+        f.MakeRelativeTo( g_Platform->GetHomeDir() );
+        pActiveChartsList->Append( f.GetFullPath() );
+    } else
+        pActiveChartsList->Append( dir );
+
+    k_charts |= CHANGE_CHARTS;
+
+    pScanCheckBox->Disable();
 }
 
 void options::UpdateDisplayedChartDirList(ArrayOfCDI p)
