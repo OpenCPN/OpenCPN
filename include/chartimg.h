@@ -79,7 +79,7 @@ class ViewPort;
 class PixelCache;
 class ocpnBitmap;
 
-class wxFileInputStream;
+class wxFFileInputStream;
 
 //-----------------------------------------------------------------------------
 //    Helper classes
@@ -216,7 +216,7 @@ protected:
 
 
       virtual int BSBScanScanline(wxInputStream *pinStream);
-      virtual int ReadBSBHdrLine( wxFileInputStream*, char *, int );
+      virtual int ReadBSBHdrLine( wxFFileInputStream*, char *, int );
       virtual int AnalyzeRefpoints(void);
       virtual bool AnalyzeSkew(void);
       
@@ -268,8 +268,8 @@ protected:
 
       CachedLine  *pLineCache;
 
-      wxFileInputStream     *ifs_hdr;
-      wxFileInputStream     *ifss_bitmap;
+      wxFFileInputStream    *ifs_hdr;
+      wxFFileInputStream    *ifss_bitmap;
       wxBufferedInputStream *ifs_bitmap;
 
       wxString          *pBitmapFilePath;
