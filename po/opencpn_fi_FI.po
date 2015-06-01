@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-05-31 22:01-0500\n"
-"PO-Revision-Date: 2015-05-31 23:22-0400\n"
+"PO-Revision-Date: 2015-06-01 12:01-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Finnish\n"
 "Language: fi_FI\n"
@@ -208,7 +208,7 @@ msgstr "            Karttoja ei asennettu.\n"
 #: src/chart1.cpp:2097
 #, c-format
 msgid "OpenCPN Initialized in %ld ms."
-msgstr ""
+msgstr "OpenCPN käynnistetty %ld ms:ssa."
 
 #: src/chart1.cpp:2535 src/chcanv.cpp:10438
 msgid "AIS Target Query"
@@ -1373,11 +1373,11 @@ msgstr "Saapumisympyrän säde"
 
 #: src/routeprop.cpp:1974
 msgid "Show Waypoint Range Rings"
-msgstr ""
+msgstr "Näytä reittipisteen etäisyysrenkaat"
 
 #: src/routeprop.cpp:1982 src/options.cpp:1795
 msgid "Waypoint range rings"
-msgstr ""
+msgstr "Reittipisteen etäisyysrenkaat"
 
 #: src/routeprop.cpp:1985 src/options.cpp:1722
 msgid "None"
@@ -1385,7 +1385,7 @@ msgstr "Ei mitään"
 
 #: src/routeprop.cpp:1993 src/options.cpp:1805
 msgid "Distance Between Waypoint Rings"
-msgstr ""
+msgstr "Reittipisterenkaiden välimatka"
 
 #: src/routeprop.cpp:1999 src/options.cpp:1736 src/options.cpp:1811
 msgid "Distance Unit"
@@ -1393,7 +1393,7 @@ msgstr "Etäisyys yksikkö"
 
 #: src/routeprop.cpp:2006 src/options.cpp:1817
 msgid "Waypoint Range Ring Colours"
-msgstr ""
+msgstr "Reittipisterenkaan värit"
 
 #: src/routeprop.cpp:2026 src/options.cpp:1459 src/options.cpp:1486
 msgid "..."
@@ -1483,7 +1483,7 @@ msgstr "Reitin nimi"
 
 #: src/routemanagerdialog.cpp:495
 msgid "From <-> To"
-msgstr ""
+msgstr "kohdasta <-> toiseen"
 
 #: src/routemanagerdialog.cpp:510
 msgid "&Properties..."
@@ -2758,19 +2758,19 @@ msgstr "Verkko"
 
 #: src/options.cpp:1247
 msgid "Built-in GPS"
-msgstr ""
+msgstr "Sisäänrakennettu GPS"
 
 #: src/options.cpp:1255
 msgid "Built-in Bluetooth SPP"
-msgstr ""
+msgstr "Sisäänrakennettu Bluetooth SPP"
 
 #: src/options.cpp:1258
 msgid "BT Scan"
-msgstr ""
+msgstr "BT Scan"
 
 #: src/options.cpp:1266
 msgid "Bluetooth Data Sources"
-msgstr ""
+msgstr "Bluetooth tietolähteet"
 
 #: src/options.cpp:1307 src/options.cpp:1372
 msgid "Protocol"
@@ -2934,7 +2934,7 @@ msgstr "Lähetykset tästä portista ( autopilottiin tai NMEA toistimeen)"
 
 #: src/options.cpp:1417
 msgid "Talker ID (blank = default ID)"
-msgstr ""
+msgstr "Lähettimen ID (tyhjä = oletus ID)"
 
 #: src/options.cpp:1425
 msgid "APB bearing precision"
@@ -3476,7 +3476,7 @@ msgstr "Oletettu eranto"
 
 #: src/options.cpp:2580
 msgid "deg (-W, +E)"
-msgstr ""
+msgstr "astetta (-W + E)"
 
 #: src/options.cpp:2608
 msgid "AIS Targets"
@@ -3628,7 +3628,7 @@ msgstr "Näytä kompassi/GPS-tilaikkuna"
 
 #: src/options.cpp:2877
 msgid "Enable Toolbar auto-hide"
-msgstr ""
+msgstr "Salli työkalurivin automaattinen piilotus"
 
 #: src/options.cpp:2886
 msgid "Play Ships Bells"
@@ -3636,7 +3636,7 @@ msgstr "Soita laivakelloa"
 
 #: src/options.cpp:2899
 msgid "Sound Device Index"
-msgstr ""
+msgstr "Äänilaitteen indeksi"
 
 #: src/options.cpp:2906
 msgid "Enable Touchscreen interface"
@@ -3648,11 +3648,11 @@ msgstr "Salli tabletin sovitettu graafinen rajapinta"
 
 #: src/options.cpp:2919
 msgid "User Interface scale factor"
-msgstr ""
+msgstr "Käyttöliittymän mittakaavakerroin"
 
 #: src/options.cpp:2935
 msgid "Chart Object scale factor"
-msgstr ""
+msgstr "Karttakuvan mittakaavakerroin"
 
 #: src/options.cpp:3086
 msgid "Apply"
@@ -3766,7 +3766,7 @@ msgstr "Valitse vuorovesi/nykyinen tieto"
 
 #: src/options.cpp:5614
 msgid "Finished"
-msgstr ""
+msgstr "Valmis"
 
 #: src/options.cpp:6404
 msgid "Enter the NMEA sentence (2, 3 or 5 characters)"
@@ -3909,12 +3909,12 @@ msgstr "Kiintopisteet voi uudelleennimetä järjestyksen muuttamiseksi, nimet ov
 #: src/pluginmanager.cpp:325
 #, c-format
 msgid "    Incompatible PlugIn detected: %s"
-msgstr ""
+msgstr "    Havaittu yhteensopimaton lisäosa: %s"
 
 #: src/pluginmanager.cpp:326
 #, c-format
 msgid "The plugin %s is not compatible with this version of OpenCPN, please get an updated version."
-msgstr ""
+msgstr "Lisäosa %s ei ole yhteensopiva tämän OpenCPN version kanssa, ota päivitetty versio."
 
 #: src/pluginmanager.cpp:721
 #, c-format

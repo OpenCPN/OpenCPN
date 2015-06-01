@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-05-31 22:01-0500\n"
-"PO-Revision-Date: 2015-05-31 23:23-0400\n"
+"PO-Revision-Date: 2015-06-01 12:01-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Estonian\n"
 "Language: et_EE\n"
@@ -208,7 +208,7 @@ msgstr "Kaarte pole paigaldatud.\n"
 #: src/chart1.cpp:2097
 #, c-format
 msgid "OpenCPN Initialized in %ld ms."
-msgstr ""
+msgstr "OpenCPN käivitati %ld ms."
 
 #: src/chart1.cpp:2535 src/chcanv.cpp:10438
 msgid "AIS Target Query"
@@ -1374,11 +1374,11 @@ msgstr "Saabumise raadius"
 
 #: src/routeprop.cpp:1974
 msgid "Show Waypoint Range Rings"
-msgstr ""
+msgstr "Näita teepunkti ulatusringe"
 
 #: src/routeprop.cpp:1982 src/options.cpp:1795
 msgid "Waypoint range rings"
-msgstr ""
+msgstr "Teepunkti ulatusringid"
 
 #: src/routeprop.cpp:1985 src/options.cpp:1722
 msgid "None"
@@ -1386,7 +1386,7 @@ msgstr "mitte ühtegi"
 
 #: src/routeprop.cpp:1993 src/options.cpp:1805
 msgid "Distance Between Waypoint Rings"
-msgstr ""
+msgstr "Vahemaa teepunktide ringide vahel"
 
 #: src/routeprop.cpp:1999 src/options.cpp:1736 src/options.cpp:1811
 msgid "Distance Unit"
@@ -1394,7 +1394,7 @@ msgstr "Vahemaa ühik"
 
 #: src/routeprop.cpp:2006 src/options.cpp:1817
 msgid "Waypoint Range Ring Colours"
-msgstr ""
+msgstr "Teepunkti ulatusringi värvid"
 
 #: src/routeprop.cpp:2026 src/options.cpp:1459 src/options.cpp:1486
 msgid "..."
@@ -1484,7 +1484,7 @@ msgstr "Teekonna nimi"
 
 #: src/routemanagerdialog.cpp:495
 msgid "From <-> To"
-msgstr ""
+msgstr "Kust <-> kuhu"
 
 #: src/routemanagerdialog.cpp:510
 msgid "&Properties..."
@@ -2759,19 +2759,19 @@ msgstr "võrk"
 
 #: src/options.cpp:1247
 msgid "Built-in GPS"
-msgstr ""
+msgstr "Sisseehitatud GPS"
 
 #: src/options.cpp:1255
 msgid "Built-in Bluetooth SPP"
-msgstr ""
+msgstr "Sisseehitatud Bluetooth SPP"
 
 #: src/options.cpp:1258
 msgid "BT Scan"
-msgstr ""
+msgstr "BT skannimine"
 
 #: src/options.cpp:1266
 msgid "Bluetooth Data Sources"
-msgstr ""
+msgstr "Bluetooth andmeallikad"
 
 #: src/options.cpp:1307 src/options.cpp:1372
 msgid "Protocol"
@@ -2935,7 +2935,7 @@ msgstr "väljasta selles pordis (nagu autoroolile või NMEA-kordajale)"
 
 #: src/options.cpp:1417
 msgid "Talker ID (blank = default ID)"
-msgstr ""
+msgstr "Kõneleja ID (tühi = vaike-ID)"
 
 #: src/options.cpp:1425
 msgid "APB bearing precision"
@@ -3477,7 +3477,7 @@ msgstr "Oletatav magneetiline variatsioon"
 
 #: src/options.cpp:2580
 msgid "deg (-W, +E)"
-msgstr ""
+msgstr "kraadi (-W + E)"
 
 #: src/options.cpp:2608
 msgid "AIS Targets"
@@ -3629,7 +3629,7 @@ msgstr "näita kompassi/GPS'i olukorra akent"
 
 #: src/options.cpp:2877
 msgid "Enable Toolbar auto-hide"
-msgstr ""
+msgstr "Lubada tööriistariba automaatne peitmine"
 
 #: src/options.cpp:2886
 msgid "Play Ships Bells"
@@ -3637,7 +3637,7 @@ msgstr "helista laevakella"
 
 #: src/options.cpp:2899
 msgid "Sound Device Index"
-msgstr ""
+msgstr "Heliseadme indeks"
 
 #: src/options.cpp:2906
 msgid "Enable Touchscreen interface"
@@ -3649,11 +3649,11 @@ msgstr "Võimalda tahvelarvuti skaleeritud graafikaga kasutajaliides"
 
 #: src/options.cpp:2919
 msgid "User Interface scale factor"
-msgstr ""
+msgstr "Kasutajaliidese mõõtkavategur"
 
 #: src/options.cpp:2935
 msgid "Chart Object scale factor"
-msgstr ""
+msgstr "Kaardi objekti mõõtkavategur"
 
 #: src/options.cpp:3086
 msgid "Apply"
@@ -3767,7 +3767,7 @@ msgstr "Vali loodete/hoovuse andmed"
 
 #: src/options.cpp:5614
 msgid "Finished"
-msgstr ""
+msgstr "Lõpetatud"
 
 #: src/options.cpp:6404
 msgid "Enter the NMEA sentence (2, 3 or 5 characters)"
@@ -3910,12 +3910,12 @@ msgstr "Teepunkte saab ümber nimetada uue järjekorra kasjatamiseks, nimed olek
 #: src/pluginmanager.cpp:325
 #, c-format
 msgid "    Incompatible PlugIn detected: %s"
-msgstr ""
+msgstr "    Tuvastati ühildumatu plugIn: %s"
 
 #: src/pluginmanager.cpp:326
 #, c-format
 msgid "The plugin %s is not compatible with this version of OpenCPN, please get an updated version."
-msgstr ""
+msgstr "Plugin %s ei ole selle OpenCPN versiooniga vastavuses, palun hangi uuendatud versioon."
 
 #: src/pluginmanager.cpp:721
 #, c-format
