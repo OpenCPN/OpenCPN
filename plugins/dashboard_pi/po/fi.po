@@ -3,27 +3,27 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-01-06 17:25-0600\n"
-"PO-Revision-Date: 2015-04-21 14:53-0400\n"
+"PO-Revision-Date: 2015-05-31 23:03-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
-"Language-Team: Spanish\n"
-"Language: es_ES\n"
+"Language-Team: Finnish\n"
+"Language: fi_FI\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
-"X-Crowdin-Language: es-ES\n"
+"X-Crowdin-Language: fi\n"
 "X-Crowdin-File: /plugins/dashboard_pi/po/dashboard_pi.pot\n"
 
 #: src/clock.cpp:126 src/dial.cpp:504 src/gps.cpp:141 src/wind.cpp:64
 #: src/wind_history.cpp:401
 msgid "N"
-msgstr "N"
+msgstr "P"
 
 #: src/dashboard_pi.cpp:97
 msgid "Position"
-msgstr "Posición"
+msgstr "Sijainti"
 
 #: src/dashboard_pi.cpp:99
 msgid "SOG"
@@ -31,7 +31,7 @@ msgstr "SOG"
 
 #: src/dashboard_pi.cpp:101
 msgid "Speedometer"
-msgstr "Velocímetro"
+msgstr "Nopeusmittari"
 
 #: src/dashboard_pi.cpp:103
 msgid "COG"
@@ -39,15 +39,15 @@ msgstr "COG"
 
 #: src/dashboard_pi.cpp:105
 msgid "Mag COG"
-msgstr "COG Mag"
+msgstr "Magn COG"
 
 #: src/dashboard_pi.cpp:107
 msgid "GPS Compass"
-msgstr "Compás GPS"
+msgstr "GPS kompassi"
 
 #: src/dashboard_pi.cpp:109
 msgid "True Compass"
-msgstr "Compás V"
+msgstr "Kompassi"
 
 #: src/dashboard_pi.cpp:111
 msgid "STW"
@@ -55,59 +55,59 @@ msgstr "STW"
 
 #: src/dashboard_pi.cpp:113
 msgid "True HDG"
-msgstr "Rumbo Verd."
+msgstr "Tosi HDG"
 
 #: src/dashboard_pi.cpp:115
 msgid "Mag HDG"
-msgstr "Rumbo Mag."
+msgstr "Magneettinen HDG"
 
 #: src/dashboard_pi.cpp:118
 msgid "App. Wind Angle & Speed"
-msgstr "Ang./vel. Viento Apar."
+msgstr "Suht. Tuulen kulma & nopeus"
 
 #: src/dashboard_pi.cpp:120 src/dashboard_pi.cpp:122
 msgid "App. Wind Speed"
-msgstr "Vel. Viento Apar."
+msgstr "Suhteellinen tuulennopeus"
 
 #: src/dashboard_pi.cpp:124
 msgid "True Wind Angle & Speed"
-msgstr "Ang./vel. Viento Real"
+msgstr "Tosi tuulen kulma & nopeus"
 
 #: src/dashboard_pi.cpp:126 src/dashboard_pi.cpp:128
 msgid "Depth"
-msgstr "Profundidad"
+msgstr "Syvyys"
 
 #: src/dashboard_pi.cpp:130 src/dashboard_pi.cpp:132
 msgid "Barometric pressure"
-msgstr "Presión barométrica"
+msgstr "Ilmanpaine"
 
 #: src/dashboard_pi.cpp:134
 msgid "Water Temp."
-msgstr "Temp. Agua"
+msgstr "Veden lämpötila."
 
 #: src/dashboard_pi.cpp:136
 msgid "Air Temp."
-msgstr "Temp. aire"
+msgstr "Ilman lämpötila."
 
 #: src/dashboard_pi.cpp:138
 msgid "App. Wind Angle"
-msgstr "Ang. Viento Apar."
+msgstr "Suht. tuulikulma"
 
 #: src/dashboard_pi.cpp:140
 msgid "True Wind Angle"
-msgstr "Ang. Viento Real"
+msgstr "Tosi tuulikulma"
 
 #: src/dashboard_pi.cpp:142
 msgid "True Wind Direction"
-msgstr "Dir. Viento Real"
+msgstr "Tosi tuulensuunta"
 
 #: src/dashboard_pi.cpp:144
 msgid "True Wind Speed"
-msgstr "Velocidad Viento Real"
+msgstr "Tosi tuulennopeus"
 
 #: src/dashboard_pi.cpp:146
 msgid "True Wind Dir. & Speed"
-msgstr "Dir/Vel. Viento Real"
+msgstr "Tosi tuulen suunta & nopeus"
 
 #: src/dashboard_pi.cpp:148 src/dashboard_pi.cpp:150
 msgid "VMG"
@@ -115,150 +115,152 @@ msgstr "VMG"
 
 #: src/dashboard_pi.cpp:152 src/dashboard_pi.cpp:154
 msgid "Rudder Angle"
-msgstr "Angulo Timón"
+msgstr "Peräsinkulma"
 
 #: src/dashboard_pi.cpp:156
 msgid "GPS in View"
-msgstr "GPS visibles"
+msgstr "Näkyvät satelliitit"
 
 #: src/dashboard_pi.cpp:158
 msgid "GPS Status"
-msgstr "Estado GPS"
+msgstr "GPS tilanne"
 
 #: src/dashboard_pi.cpp:160
 msgid "Cursor"
-msgstr "Cursor"
+msgstr "Kohdistin"
 
 #: src/dashboard_pi.cpp:162
 msgid "Clock"
-msgstr "Reloj"
+msgstr "Kello"
 
 #: src/dashboard_pi.cpp:164
 msgid "Sunrise/Sunset"
-msgstr "Salida/Ocaso"
+msgstr "Auringon nousu/lasku"
 
 #: src/dashboard_pi.cpp:166
 msgid "Moon phase"
-msgstr "Fase lunar"
+msgstr "Kuun vaihe"
 
 #: src/dashboard_pi.cpp:168
 msgid "Wind history"
-msgstr "Histórico de viento"
+msgstr "Tuuli historia"
 
 #: src/dashboard_pi.cpp:170
 msgid "Barometric history"
-msgstr "Historial de presión"
+msgstr "Ilmanpaineen historia"
 
 #: src/dashboard_pi.cpp:172
 msgid "Trip Log"
-msgstr "Dist. viaje"
+msgstr "Matka loki"
 
 #: src/dashboard_pi.cpp:174
 msgid "Sum Log"
-msgstr "Dist. total"
+msgstr "Summa loki"
 
 #: src/dashboard_pi.cpp:176
 msgid "From Ownship"
-msgstr "Desde embarcación propia"
+msgstr "Alkaen oma-alus"
 
 #: src/dashboard_pi.cpp:343 src/dashboard_pi.cpp:456 src/dashboard_pi.cpp:1309
 #: src/dashboard_pi.cpp:1318 src/dashboard_pi.cpp:1476
 #: src/dashboard_pi.cpp:1515 src/dashboard_pi.cpp:1779
 msgid "Dashboard"
-msgstr "Tablero instrumentos"
+msgstr "Mittaritaulu"
 
 #: src/dashboard_pi.cpp:461
 msgid "Dashboard PlugIn for OpenCPN"
-msgstr "PlugIn \"Tablero de Instrumentos\" para OpenCPN"
+msgstr "Mittaripaneeli OpenCPN:lle"
 
 #: src/dashboard_pi.cpp:466
-msgid "Dashboard PlugIn for OpenCPN\nProvides navigation instrument display from NMEA source."
-msgstr "PlugIn \"Tablero de Instrumentos\" para OpenCPN\nMuestra un panel de instrumentos de navegación desde una fuente NMEA."
+msgid "Dashboard PlugIn for OpenCPN\n"
+"Provides navigation instrument display from NMEA source."
+msgstr "Mittaritaulu OpenCPN:lle\n"
+"Näyttää mittarit NMEA-tuloille."
 
 #: src/dashboard_pi.cpp:1452
 msgid "Dashboard preferences"
-msgstr "Preferencias Tablero Instrumentos"
+msgstr "Mittaripaneelin asetukset"
 
 #: src/dashboard_pi.cpp:1522
 msgid "show this dashboard"
-msgstr "muestra este tablero"
+msgstr "Näytä tämä mittaritaulu"
 
 #: src/dashboard_pi.cpp:1528
 msgid "Caption:"
-msgstr "Nombre:"
+msgstr "Kuvateksti:"
 
 #: src/dashboard_pi.cpp:1536
 msgid "Orientation:"
-msgstr "Orientación:"
+msgstr "Näytön asento:"
 
 #: src/dashboard_pi.cpp:1540 src/dashboard_pi.cpp:1972
 msgid "Vertical"
-msgstr "Vertical"
+msgstr "Pystysuora"
 
 #: src/dashboard_pi.cpp:1541 src/dashboard_pi.cpp:1974
 msgid "Horizontal"
-msgstr "Horizontal"
+msgstr "Vaakasuora"
 
 #: src/dashboard_pi.cpp:1548 src/dashboard_pi.cpp:1556
 #: src/dashboard_pi.cpp:1898
 msgid "Instruments"
-msgstr "Instrumentos"
+msgstr "Mittarit"
 
 #: src/dashboard_pi.cpp:1564
 msgid "Add"
-msgstr "Añadir"
+msgstr "Lisää"
 
 #: src/dashboard_pi.cpp:1577
 msgid "Delete"
-msgstr "Borrar"
+msgstr "&Poista"
 
 #: src/dashboard_pi.cpp:1583
 msgid "Up"
-msgstr "Arriba"
+msgstr "Ylös"
 
 #: src/dashboard_pi.cpp:1588
 msgid "Down"
-msgstr "Abajo"
+msgstr "Alas"
 
 #: src/dashboard_pi.cpp:1598
 msgid "Appearance"
-msgstr "Aspecto"
+msgstr "Ulkonäkö"
 
 #: src/dashboard_pi.cpp:1600
 msgid "Fonts"
-msgstr "Fuentes"
+msgstr "Kirjasimet"
 
 #: src/dashboard_pi.cpp:1606
 msgid "Title:"
-msgstr "Título:"
+msgstr "Otsikko:"
 
 #: src/dashboard_pi.cpp:1612
 msgid "Data:"
-msgstr "Datos:"
+msgstr "Tiedot:"
 
 #: src/dashboard_pi.cpp:1618
 msgid "Label:"
-msgstr "Etiqueta:"
+msgstr "Otsikko:"
 
 #: src/dashboard_pi.cpp:1624
 msgid "Small:"
-msgstr "Pequeño:"
+msgstr "Pieni:"
 
 #: src/dashboard_pi.cpp:1632
 msgid "Units, Ranges, Formats"
-msgstr "Unidades, Rangos y Formatos"
+msgstr "Yksiköt, alueet, formaatit"
 
 #: src/dashboard_pi.cpp:1638
 msgid "Speedometer max value:"
-msgstr "Max. valor velocímetro:"
+msgstr "Nopeusmittari max arvo:"
 
 #: src/dashboard_pi.cpp:1643
 msgid "Boat speed units:"
-msgstr "Unidades velocidad barco:"
+msgstr "Veneen nopeus yksiköt:"
 
 #: src/dashboard_pi.cpp:1646 src/dashboard_pi.cpp:1664
 msgid "Honor OpenCPN settings"
-msgstr "La seleccionada en OpenCPN"
+msgstr "OpenCPN pääasetukset"
 
 #: src/dashboard_pi.cpp:1646 src/dashboard_pi.cpp:1673
 msgid "Kts"
@@ -278,95 +280,95 @@ msgstr "m/s"
 
 #: src/dashboard_pi.cpp:1652
 msgid "Depth units:"
-msgstr "Unidades profundidad:"
+msgstr "Syvyys yksiköt:"
 
 #: src/dashboard_pi.cpp:1655 src/dashboard_pi.cpp:1664
 msgid "Meters"
-msgstr "Metros"
+msgstr "Metrit"
 
 #: src/dashboard_pi.cpp:1655
 msgid "Feet"
-msgstr "Pie"
+msgstr "Jalat"
 
 #: src/dashboard_pi.cpp:1655
 msgid "Fathoms"
-msgstr "Brazas"
+msgstr "Sylet"
 
 #: src/dashboard_pi.cpp:1655
 msgid "Centimeters"
-msgstr "Centímetros"
+msgstr "Senttimetriä"
 
 #: src/dashboard_pi.cpp:1655
 msgid "Inches"
-msgstr "Pulgadas"
+msgstr "Tuumaa"
 
 #: src/dashboard_pi.cpp:1661
 msgid "Distance units:"
-msgstr "Unidades distancia:"
+msgstr "Välimatkan yksiköt:"
 
 #: src/dashboard_pi.cpp:1664
 msgid "Nautical miles"
-msgstr "Millas náuticas"
+msgstr "&meripeninkulmaa"
 
 #: src/dashboard_pi.cpp:1664
 msgid "Statute miles"
-msgstr "Milla internacional"
+msgstr "Maamailia"
 
 #: src/dashboard_pi.cpp:1664
 msgid "Kilometers"
-msgstr "Kilómetros"
+msgstr "&kilometriä"
 
 #: src/dashboard_pi.cpp:1670
 msgid "Wind speed units:"
-msgstr "Unidades vel. viento:"
+msgstr "Tuulen nopeus yksiköt:"
 
 #: src/dashboard_pi.cpp:1881
 msgid "Add instrument"
-msgstr "Añadir instrumento"
+msgstr "Lisää mittari"
 
 #: src/dashboard_pi.cpp:1887
 msgid "Select instrument to add:"
-msgstr "Seleccionar instrumento a añadir:"
+msgstr "Valitse lisättävä mittari:"
 
 #: src/dashboard_pi.cpp:1981
 msgid "Preferences..."
-msgstr "Preferencias..."
+msgstr "Asetukset..."
 
 #: src/dial.cpp:504 src/wind.cpp:64 src/wind_history.cpp:407
 msgid "NE"
-msgstr "NE"
+msgstr "Koillinen"
 
 #: src/dial.cpp:504 src/gps.cpp:145 src/wind.cpp:64 src/wind_history.cpp:413
 msgid "E"
-msgstr "E"
+msgstr "Itä"
 
 #: src/dial.cpp:504 src/wind.cpp:64 src/wind_history.cpp:419
 msgid "SE"
-msgstr "SE"
+msgstr "Kaakko"
 
 #: src/dial.cpp:504 src/gps.cpp:149 src/wind.cpp:64 src/wind_history.cpp:425
 msgid "S"
-msgstr "S"
+msgstr "Etelä"
 
 #: src/dial.cpp:504 src/wind.cpp:64 src/wind_history.cpp:431
 msgid "SW"
-msgstr "SW"
+msgstr "Lounas"
 
 #: src/dial.cpp:504 src/gps.cpp:153 src/wind.cpp:64 src/wind_history.cpp:437
 msgid "W"
-msgstr "W"
+msgstr "Länsi"
 
 #: src/dial.cpp:504 src/wind.cpp:64 src/wind_history.cpp:443
 msgid "NW"
-msgstr "NW"
+msgstr "Luode"
 
 #: src/instrument.cpp:232
 msgid " true"
-msgstr "real"
+msgstr " tosi"
 
 #: src/instrument.cpp:234
 msgid " mag"
-msgstr "mag"
+msgstr " magneettinen"
 
 #: src/wind_history.cpp:404
 msgid "NNE"
@@ -403,5 +405,5 @@ msgstr "NNW"
 #: src/wind_history.cpp:543
 #, c-format
 msgid "Max %.1f since %02d:%02d  Overall %.1f"
-msgstr "Max %.1f de %02d:%02d  global %.1f"
+msgstr "Max %.1f alkaen %02d:%02d saakka %.1f"
 

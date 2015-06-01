@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-01-07 16:15-0600\n"
-"PO-Revision-Date: 2015-01-07 17:18-0500\n"
+"PO-Revision-Date: 2015-02-03 17:09-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Turkish\n"
 "Language: tr_TR\n"
@@ -2939,7 +2939,7 @@ msgstr "UDP"
 
 #: src/options.cpp:1193
 msgid "GPSD"
-msgstr "GÜGD"
+msgstr ""
 
 #: src/options.cpp:1200
 msgid "Address"

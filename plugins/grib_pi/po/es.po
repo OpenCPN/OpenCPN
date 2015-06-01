@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-01-06 17:25-0600\n"
-"PO-Revision-Date: 2015-01-06 18:28-0500\n"
+"PO-Revision-Date: 2015-04-21 14:53-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Spanish\n"
 "Language: es_ES\n"
@@ -13,6 +13,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: es-ES\n"
 "X-Crowdin-File: /plugins/grib_pi/po/grib_pi.pot\n"
 
 #: src/GribUIDialog.cpp:157 src/GribUIDialog.cpp:1105
@@ -798,7 +799,7 @@ msgstr "Entre su rumbo previsto"
 
 #: src/GribRequestDialog.cpp:130
 msgid "Allow Start or Stop drawing an area by dragging on the map"
-msgstr ""
+msgstr "Permitir iniciar o parar el dibujo de un área arrastrando en el mapa"
 
 #: src/GribRequestDialog.cpp:291
 msgid "Stop graphic Sel."
@@ -822,19 +823,19 @@ msgstr "Antes de enviar un email a ZyBrib debe entrar su Login y el Código.\nPo
 
 #: src/GribRequestDialog.cpp:844
 msgid "Too big file! zyGrib limit is 2Mb!"
-msgstr ""
+msgstr "¡Archivo demasiado grande! ¡limitados a 2 MB en zyGrib!"
 
 #: src/GribRequestDialog.cpp:844
 msgid "Error! Max Lat lower than Min Lat or Max Lon lower than Min Lon!"
-msgstr ""
+msgstr "¡Error! ¡Max Lat inferior a Min Lat o Max Lon menor que Min Lon!"
 
 #: src/GribRequestDialog.cpp:845
 msgid "Too large area! Each side must be less than 180°!"
-msgstr ""
+msgstr "¡Área demasiado grande! ¡cada lado debe ser inferior a 180º!"
 
 #: src/GribRequestDialog.cpp:845
 msgid "Too small area for this resolution!"
-msgstr ""
+msgstr "¡Área demasiado pequeña para esta resolución!"
 
 #: src/GribRequestDialog.cpp:860 src/GribRequestDialog.cpp:892
 msgid "Continue..."

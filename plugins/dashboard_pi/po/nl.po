@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-01-06 17:25-0600\n"
-"PO-Revision-Date: 2015-01-06 18:28-0500\n"
+"PO-Revision-Date: 2015-05-29 14:05-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Dutch\n"
 "Language: nl_NL\n"
@@ -13,6 +13,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: nl\n"
 "X-Crowdin-File: /plugins/dashboard_pi/po/dashboard_pi.pot\n"
 
 #: src/clock.cpp:126 src/dial.cpp:504 src/gps.cpp:141 src/wind.cpp:64
@@ -38,7 +39,7 @@ msgstr "Koers over grond"
 
 #: src/dashboard_pi.cpp:105
 msgid "Mag COG"
-msgstr ""
+msgstr "COG (M)"
 
 #: src/dashboard_pi.cpp:107
 msgid "GPS Compass"
@@ -171,8 +172,10 @@ msgid "Dashboard PlugIn for OpenCPN"
 msgstr "Dashboard PlugIn voor OpenCPN"
 
 #: src/dashboard_pi.cpp:466
-msgid "Dashboard PlugIn for OpenCPN\nProvides navigation instrument display from NMEA source."
-msgstr "Dashboard PlugIn voor OpenCPN\nGeeft navigatie-instrumenten weer op basis van NMEA gegevens."
+msgid "Dashboard PlugIn for OpenCPN\n"
+"Provides navigation instrument display from NMEA source."
+msgstr "Dashboard PlugIn voor OpenCPN\n"
+"Geeft navigatie-instrumenten weer op basis van NMEA gegevens."
 
 #: src/dashboard_pi.cpp:1452
 msgid "Dashboard preferences"

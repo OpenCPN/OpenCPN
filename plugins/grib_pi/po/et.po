@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-01-06 17:25-0600\n"
-"PO-Revision-Date: 2015-01-07 17:17-0500\n"
+"PO-Revision-Date: 2015-05-19 07:22-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Estonian\n"
 "Language: et_EE\n"
@@ -13,6 +13,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: et\n"
 "X-Crowdin-File: /plugins/grib_pi/po/grib_pi.pot\n"
 
 #: src/GribUIDialog.cpp:157 src/GribUIDialog.cpp:1105
@@ -116,7 +117,7 @@ msgstr "Õhu temperatuur (juures)"
 
 #: src/GribUIDialog.cpp:767
 msgid "Surface level"
-msgstr "Piinna tase"
+msgstr "Pinna tase"
 
 #: src/GribUIDialog.cpp:767
 msgid "Sea Surface Temperature"
@@ -133,7 +134,7 @@ msgstr "Stopp"
 
 #: src/GribUIDialog.cpp:1314
 msgid "Select a GRIB file"
-msgstr "Vali GRIB-i file"
+msgstr "Vali GRIB-i fail"
 
 #: src/GribUIDialog.cpp:1541
 msgid "Error:  File does not exist!"
@@ -280,8 +281,10 @@ msgid "Apply"
 msgstr "Lisa"
 
 #: src/GribSettingsDialog.cpp:435
-msgid "This file contains data for particular time intervals but you have chosen to display different intervals.\nPlease consider that the values will be interpolated."
-msgstr "Failis sisalduvad andmed on konkreetse ajaintervalliga, kuid Te olete valinud teistsuguse vahemiku.\nPalun arvestage, et väärtused interpoleeritakse."
+msgid "This file contains data for particular time intervals but you have chosen to display different intervals.\n"
+"Please consider that the values will be interpolated."
+msgstr "Failis sisalduvad andmed on konkreetse ajaintervalliga, kuid Te olete valinud teistsuguse vahemiku.\n"
+"Palun arvestage, et väärtused interpoleeritakse."
 
 #: src/GribSettingsDialog.cpp:436 src/grib_pi.cpp:593
 #: src/GribRequestDialog.cpp:529
@@ -698,7 +701,7 @@ msgstr "Maili viga: MAPI32.DLL pole paigaldatud või on kehtetu selles kompuutri
 
 #: src/GribUIDialogBase.h:127
 msgid "GRIB Display Control"
-msgstr "GRIB-i ekraani kontroll"
+msgstr "GRIB-i kuvamise kontroll"
 
 #: src/GribUIDialogBase.h:185
 msgid "Grib Settings"
@@ -734,7 +737,7 @@ msgstr "Ülekate on liiga lai ja ei ole võimalik kuvada:"
 
 #: src/GribOverlayFactory.cpp:1042
 msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
-msgstr "ülekatted on allasurutud kui pole DC-mooduses N-ülal (luba OpenGL)"
+msgstr "ülekatted on tõkestatud kui pole DC-mooduses N-ülal (luba OpenGL)"
 
 #: src/GribOverlayFactory.cpp:1059
 msgid "Please Zoom or Scale Out to view invisible overlays:"
@@ -746,27 +749,59 @@ msgstr "Grib"
 
 #: src/grib_pi.cpp:174
 msgid "GRIB PlugIn for OpenCPN"
-msgstr "GRIB lisa OpenCPN-ile"
+msgstr "GRIB'i plugin OpenCPN-ile"
 
 #: src/grib_pi.cpp:180
-msgid "GRIB PlugIn for OpenCPN\nProvides basic GRIB file overlay capabilities for several GRIB file types\nand a request function to get GRIB files by eMail.\n\nSupported GRIB data include:\n- wind direction and speed (at 10 m)\n- wind gust\n- surface pressure\n- rainfall\n- cloud cover\n- significant wave height and direction\n- air surface temperature (at 2 m)\n- sea surface temperature\n- surface current direction and speed\n- Convective Available Potential Energy (CAPE)\n- wind, altitude, temperature and relative humidity at 300, 500, 700, 850 hPa."
-msgstr "GRIB plugin OpenCPN-ile\nHoolitseb GRIB failide ülekatte võimalused mitmete GRIB-faili tüüpidele\nja päringu funktsiooni GRIB-failide saamiseks e-posti teel.\n\nToetatud GRIB-andmed sisaldavad:\n- tuule suund ja kiirus (10 m kõrgusel)\n- tuuleiil\n- pilvekate\n- oluline laine kõrgus ja suund\n- õhupinna temperatuur (2 m kõrgusel)\n- veepinna temperatuur\n- pinnahoovuse suund ja kiirus\n- soojusjuhtiv saadaval olev potentsiaalne energia (CAPE)\n- tuul, kõrgus, temperatuur ja suhteline niiskus 300, 500, 700 850 hPa juures."
+msgid "GRIB PlugIn for OpenCPN\n"
+"Provides basic GRIB file overlay capabilities for several GRIB file types\n"
+"and a request function to get GRIB files by eMail.\n\n"
+"Supported GRIB data include:\n"
+"- wind direction and speed (at 10 m)\n"
+"- wind gust\n"
+"- surface pressure\n"
+"- rainfall\n"
+"- cloud cover\n"
+"- significant wave height and direction\n"
+"- air surface temperature (at 2 m)\n"
+"- sea surface temperature\n"
+"- surface current direction and speed\n"
+"- Convective Available Potential Energy (CAPE)\n"
+"- wind, altitude, temperature and relative humidity at 300, 500, 700, 850 hPa."
+msgstr "GRIB plugin OpenCPN-ile\n"
+"Hoolitseb GRIB failide ülekatte võimalused mitmete GRIB-faili tüüpidele\n"
+"ja päringu funktsiooni GRIB-failide saamiseks e-posti teel.\n\n"
+"Toetatud GRIB-andmed sisaldavad:\n"
+"- tuule suund ja kiirus (10 m kõrgusel)\n"
+"- tuuleiil\n"
+"- pilvekate\n"
+"- oluline laine kõrgus ja suund\n"
+"- õhupinna temperatuur (2 m kõrgusel)\n"
+"- veepinna temperatuur\n"
+"- pinnahoovuse suund ja kiirus\n"
+"- soojusjuhtiv saadaval olev potentsiaalne energia (CAPE)\n"
+"- tuul, kõrgus, temperatuur ja suhteline niiskus 300, 500, 700 850 hPa juures."
 
 #: src/grib_pi.cpp:294
 msgid "Weather table"
 msgstr "Ilmatabel"
 
 #: src/grib_pi.cpp:592
-msgid "You have chosen to authorize interpolation.\nDon't forget that data displayed at current time will not be real but interpolated!"
-msgstr "Te olete valinud interpolatsiooni kinnitamise.\nÄrge unustage, et praegusel ajamomendil kuvatud andmed ei ole reaalsed, vaid interpoleeritud!"
+msgid "You have chosen to authorize interpolation.\n"
+"Don't forget that data displayed at current time will not be real but interpolated!"
+msgstr "Te olete valinud interpolatsiooni kinnitamise.\n"
+"Ärge unustage, et praegusel ajamomendil kuvatud andmed ei ole reaalsed, vaid interpoleeritud!"
 
 #: src/GribTable.cpp:167
-msgid "Air\nTemperature"
-msgstr "Õhu\ntemperatuur"
+msgid "Air\n"
+"Temperature"
+msgstr "Õhu\n"
+"temperatuur"
 
 #: src/GribTable.cpp:174
-msgid "Sea\nTemperature"
-msgstr "Mere\ntemperatuur"
+msgid "Sea\n"
+"Temperature"
+msgstr "Mere\n"
+"temperatuur"
 
 #: src/GribRequestDialog.cpp:109 src/GribRequestDialog.cpp:832
 msgid "Send"
@@ -805,8 +840,12 @@ msgid "Stop graphic Sel."
 msgstr "Peata graafiline valik"
 
 #: src/GribRequestDialog.cpp:528
-msgid "You request a forecast for more than 8 days horizon.\nThis is conflicting with Wave data which will be removed from your request.\nDon't forget that beyond the first 8 days, the resolution will be only 2.5°x2.5° and the time intervall 12 hours."
-msgstr "Te palusite ilmaennustuse rohkem kui 8 päeva ette.\nSee on vastuolus laine andmetege, mis kõrvaldatakse te päringust,\nÄrge unustage, et peale esimesi 8 päeva saab eraldus olema ainult 2.5°x2.5° ja ajaintervall 12 tundi."
+msgid "You request a forecast for more than 8 days horizon.\n"
+"This is conflicting with Wave data which will be removed from your request.\n"
+"Don't forget that beyond the first 8 days, the resolution will be only 2.5°x2.5° and the time intervall 12 hours."
+msgstr "Te palusite ilmaennustuse rohkem kui 8 päeva ette.\n"
+"See on vastuolus laine andmetege, mis kõrvaldatakse te päringust,\n"
+"Ärge unustage, et peale esimesi 8 päeva saab eraldus olema ainult 2.5°x2.5° ja ajaintervall 12 tundi."
 
 #: src/GribRequestDialog.cpp:812 src/GribRequestDialog.cpp:815
 msgid "MB"
@@ -817,8 +856,10 @@ msgid "Max"
 msgstr "max"
 
 #: src/GribRequestDialog.cpp:843
-msgid "Before sending an email to Zygrib you have to enter your Login and Code.\nPlease visit www.zygrib.org/ and follow instructions..."
-msgstr "Enne Zygrib'i e-kirja saatmist peate sisestama Teie logimisnime ja koodi.\nPalun külastage www.zygrib.org/ ja järgige juhendeid..."
+msgid "Before sending an email to Zygrib you have to enter your Login and Code.\n"
+"Please visit www.zygrib.org/ and follow instructions..."
+msgstr "Enne Zygrib'i e-kirja saatmist peate sisestama Teie logimisnime ja koodi.\n"
+"Palun külastage www.zygrib.org/ ja järgige juhendeid..."
 
 #: src/GribRequestDialog.cpp:844
 msgid "Too big file! zyGrib limit is 2Mb!"
@@ -841,14 +882,26 @@ msgid "Continue..."
 msgstr "Jätka..."
 
 #: src/GribRequestDialog.cpp:877 src/GribRequestDialog.cpp:881
-msgid "Your request is ready. An email is prepared in your email environment. \nYou have just to verify and send it...\nSave or Cancel to finish...or Continue..."
-msgstr "Teie päring on valmis. E-kiri on te e-kirja keskkonnas ettevalmistatud. \nTe peate selle ainult üle kontrollima ja saatma...\nSäilita või Tühista lõpetamiseks... või Jätka..."
+msgid "Your request is ready. An email is prepared in your email environment. \n"
+"You have just to verify and send it...\n"
+"Save or Cancel to finish...or Continue..."
+msgstr "Teie päring on valmis. E-kiri on te e-kirja keskkonnas ettevalmistatud. \n"
+"Te peate selle ainult üle kontrollima ja saatma...\n"
+"Säilita või Tühista lõpetamiseks... või Jätka..."
 
 #: src/GribRequestDialog.cpp:884
-msgid "Your request was sent \n(if your system has an MTA configured and is able to send email).\nSave or Cancel to finish...or Continue..."
-msgstr "Teie päring saadeti \n(kui te süsteemis on MTA seadistatud ning on võimeline saatma e-kirju).\nSäilita või Tühista lõpetamiseks... või Jätka..."
+msgid "Your request was sent \n"
+"(if your system has an MTA configured and is able to send email).\n"
+"Save or Cancel to finish...or Continue..."
+msgstr "Teie päring saadeti \n"
+"(kui te süsteemis on MTA seadistatud ning on võimeline saatma e-kirju).\n"
+"Säilita või Tühista lõpetamiseks... või Jätka..."
 
 #: src/GribRequestDialog.cpp:889
-msgid "Request can't be sent. Please verify your email systeme parameters.\nYou should also have a look at your log file.\nSave or Cancel to finish..."
-msgstr "Päringut pole võimalik saata. Palun kontrolli oma e-kirja süsteemi parameetrid üle.\nPeaksite vaatama ka oma logifaili.\nSäilita või Tühista lõpetamiseks..."
+msgid "Request can't be sent. Please verify your email systeme parameters.\n"
+"You should also have a look at your log file.\n"
+"Save or Cancel to finish..."
+msgstr "Päringut pole võimalik saata. Palun kontrolli oma e-kirja süsteemi parameetrid üle.\n"
+"Peaksite vaatama ka oma logifaili.\n"
+"Säilita või Tühista lõpetamiseks..."
 

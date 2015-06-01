@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-01-07 16:15-0600\n"
-"PO-Revision-Date: 2015-01-07 17:17-0500\n"
+"PO-Revision-Date: 2015-05-19 07:22-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Estonian\n"
 "Language: et_EE\n"
@@ -13,6 +13,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: et\n"
 "X-Crowdin-File: /po/opencpn.pot\n"
 
 #: include/routeprop.h:64 src/chcanv.cpp:5214 src/chcanv.cpp:8223
@@ -121,8 +122,26 @@ msgid "OpenCPN Chart Add...."
 msgstr "OpenCPN lisa kaart...."
 
 #: src/chart1.cpp:782
-msgid "\nOpenCPN is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied\nwarranty of MERCHANTABILITY or FITNESS FOR A\nPARTICULAR PURPOSE.\nSee the GNU General Public License for more details.\n\nOpenCPN must only be used in conjunction with approved\npaper charts and traditional methods of navigation.\n\nDO NOT rely upon OpenCPN for safety of life or property.\n\nPlease click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"
-msgstr "\nOpenCPN'i jagatakse lootuses, et see võib kasulik olla,\nkuid ILMA MINGI GARANTIITA; isegi mitte kaudse\nTURUSTAMISE või KONKREETSELE OTSTARBELE\nSOBIVUSE garantiita.\nVaata GNU General Public License täpsustamiseks.\n\nOpenCPN-i peab kasutama ainult koos heakskiidetud\npaberkaartidega ja navigatsiooni traditsiooniliste meetoditega .\n\nÄRA TOETU OpenCPN-ile elu või omandi ohutuse tagamiseks.\n\nPalun vajuta \"OK\" kui oled nõus, \"Katkesta\" väljumiseks.\n"
+msgid "\n"
+"OpenCPN is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied\n"
+"warranty of MERCHANTABILITY or FITNESS FOR A\n"
+"PARTICULAR PURPOSE.\n"
+"See the GNU General Public License for more details.\n\n"
+"OpenCPN must only be used in conjunction with approved\n"
+"paper charts and traditional methods of navigation.\n\n"
+"DO NOT rely upon OpenCPN for safety of life or property.\n\n"
+"Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"
+msgstr "\n"
+"OpenCPN'i jagatakse lootuses, et see võib kasulik olla,\n"
+"kuid ILMA MINGI GARANTIITA; isegi mitte kaudse\n"
+"TURUSTAMISE või KONKREETSELE OTSTARBELE\n"
+"SOBIVUSE garantiita.\n"
+"Vaata GNU General Public License täpsustamiseks.\n\n"
+"OpenCPN-i peab kasutama ainult koos heakskiidetud\n"
+"paberkaartidega ja navigatsiooni traditsiooniliste meetoditega .\n\n"
+"ÄRA TOETU OpenCPN-ile elu või omandi ohutuse tagamiseks.\n\n"
+"Palun vajuta \"OK\" kui oled nõus, \"Katkesta\" väljumiseks.\n"
 
 #: src/chart1.cpp:796
 msgid "Welcome to OpenCPN"
@@ -195,8 +214,10 @@ msgid "OpenCPN Chart Update"
 msgstr "OpenCPN kaardi uuendamine"
 
 #: src/chart1.cpp:2251
-msgid "No Charts Installed.\nPlease select chart folders in Options > Charts."
-msgstr "Kaarte pole paigaldatud.\nPalun vali kaartide kaustad Valikud > Kaardid."
+msgid "No Charts Installed.\n"
+"Please select chart folders in Options > Charts."
+msgstr "Kaarte pole paigaldatud.\n"
+"Palun vali kaartide kaustad Valikud > Kaardid."
 
 #: src/chart1.cpp:2923 src/chcanv.cpp:10473
 msgid "AIS Target Query"
@@ -342,7 +363,7 @@ msgstr "Peida ENC-tekst (T)"
 
 #: src/chart1.cpp:4845 src/chcanv.cpp:6742
 msgid "Course Up Mode"
-msgstr "kurss-üleval tööreþiim"
+msgstr "kurss-üleval töörežiim"
 
 #: src/chart1.cpp:4850
 msgid "Larger Scale Chart"
@@ -370,7 +391,7 @@ msgstr "näita kaardi kontuure"
 
 #: src/chart1.cpp:4862 src/options.cpp:2647
 msgid "Show Chart Bar"
-msgstr "Näita kaardi riba"
+msgstr "näita kaardi riba"
 
 #: src/chart1.cpp:4866
 msgid "Show ENC Lights"
@@ -469,8 +490,10 @@ msgid "Chart Print"
 msgstr "Kaardi printimine"
 
 #: src/chart1.cpp:7804 src/routeprintout.cpp:469
-msgid "There was a problem printing.\nPerhaps your current printer is not set correctly?"
-msgstr "Oli probleem printimisega.\nVõib-olla pole printer korralikult seadistatud?"
+msgid "There was a problem printing.\n"
+"Perhaps your current printer is not set correctly?"
+msgstr "Oli probleem printimisega.\n"
+"Võib-olla pole printer korralikult seadistatud?"
 
 #: src/chart1.cpp:7955 src/chart1.cpp:8028 src/routemanagerdialog.cpp:890
 msgid "(Unnamed Route)"
@@ -505,12 +528,22 @@ msgid "OpenCPN requires access to serial ports to use serial NMEA data.\n"
 msgstr "OpenCPN vajab ligipääsi jadaportidele NMEA-jadaandmete kasutamiseks.\n"
 
 #: src/chart1.cpp:9803
-msgid "No Serial Ports can be found on this system.\nYou must install a serial port (modprobe correct kernel module) or plug in a usb serial device.\n"
-msgstr "Selles süsteemis ei ole jadaporte tuvastatud.\nSa pead paigaldama jadapordi (modproovi tegelik kerneli moodul) või ühenda usb-jadaseade.\n"
+msgid "No Serial Ports can be found on this system.\n"
+"You must install a serial port (modprobe correct kernel module) or plug in a usb serial device.\n"
+msgstr "Selles süsteemis ei ole jadaporte tuvastatud.\n"
+"Sa pead paigaldama jadapordi (modproovi tegelik kerneli moodul) või ühenda usb-jadaseade.\n"
 
 #: src/chart1.cpp:9825
-msgid "You do currently not have permission to access the serial ports on this system.\n\nIt is suggested that you exit OpenCPN now,\nand add yourself to the correct group to enable serial port access.\n\nYou may do so by executing the following command from the linux command line:\n\n                sudo usermod -a -G "
-msgstr "Sul puudub praegu luba selles süsteemis jadaportidele ligipääsu saamiseks.\n\nSoovitame sul väljuda nüüd OpenCPN'st.\nja lisada ennast õigesse gruppi jadaportidele ligipääsu võimaldamiseks,\n\nSa võid seda teha käivitades järgneva käsu Linuxi käsureal:\n\n                sudo usermod -a -G "
+msgid "You do currently not have permission to access the serial ports on this system.\n\n"
+"It is suggested that you exit OpenCPN now,\n"
+"and add yourself to the correct group to enable serial port access.\n\n"
+"You may do so by executing the following command from the linux command line:\n\n"
+"                sudo usermod -a -G "
+msgstr "Sul puudub praegu luba selles süsteemis jadaportidele ligipääsu saamiseks.\n\n"
+"Soovitame sul väljuda nüüd OpenCPN'st.\n"
+"ja lisada ennast õigesse gruppi jadaportidele ligipääsu võimaldamiseks,\n\n"
+"Sa võid seda teha käivitades järgneva käsu Linuxi käsureal:\n\n"
+"                sudo usermod -a -G "
 
 #: src/chart1.cpp:10259 src/routeprop.cpp:361 src/routeprop.cpp:1831
 #: src/routemanagerdialog.cpp:428 src/options.cpp:655 src/options.cpp:847
@@ -1291,7 +1324,8 @@ msgstr "Kiirus (sõlme)"
 
 #: src/routeprop.cpp:494 src/routeprop.cpp:690 src/TrackPropDlg.cpp:747
 msgid "Departure Time (m/d/y h:m)"
-msgstr "Lahkumise aeg\n(mm/dd/yyyy hh:mm)"
+msgstr "Lahkumise aeg\n"
+"(mm/dd/yyyy hh:mm)"
 
 #: src/routeprop.cpp:495 src/routeprop.cpp:684 src/TrackPropDlg.cpp:748
 msgid "Time Enroute"
@@ -1852,8 +1886,10 @@ msgid "&Copy as text"
 msgstr "Ko&peeri tekstina"
 
 #: src/routemanagerdialog.cpp:1412
-msgid "Select the maximum error allowed (in meters)\nafter data reduction:"
-msgstr "Vali suurim lubatud viga (meetrites)\npeale andmete vähendamist:"
+msgid "Select the maximum error allowed (in meters)\n"
+"after data reduction:"
+msgstr "Vali suurim lubatud viga (meetrites)\n"
+"peale andmete vähendamist:"
 
 #: src/routemanagerdialog.cpp:1413
 msgid "Reduce Data Precision"
@@ -1861,16 +1897,20 @@ msgstr "Vähenda andmete täpsust"
 
 #: src/routemanagerdialog.cpp:1432
 #, c-format
-msgid "The amount of data used by the track\n was reduced by %d%%."
-msgstr "Teekonna poolt kasutatud andmete\nkogus on vähendatud %d%%."
+msgid "The amount of data used by the track\n"
+" was reduced by %d%%."
+msgstr "Teekonna poolt kasutatud andmete\n"
+"kogus on vähendatud %d%%."
 
 #: src/routemanagerdialog.cpp:1434 src/options.cpp:3614
 msgid "OpenCPN info"
 msgstr "OpenPCN'i teave"
 
 #: src/routemanagerdialog.cpp:1542
-msgid "The currently running Track was not merged.\nYou can merge it later when it is completed."
-msgstr "Praegu jooksvat jälge ei mestitud.\nVõid mestida teda hiljem kui ta on lõpetanud."
+msgid "The currently running Track was not merged.\n"
+"You can merge it later when it is completed."
+msgstr "Praegu jooksvat jälge ei mestitud.\n"
+"Võid mestida teda hiljem kui ta on lõpetanud."
 
 #: src/routemanagerdialog.cpp:1778
 msgid "OpenCPN Converting Track to Route...."
@@ -1897,8 +1937,14 @@ msgid "Are you sure you want to delete <ALL> waypoints?"
 msgstr "Kas oled kindel, et soovid kustutada <ALL> teepunktid?"
 
 #: src/routemanagerdialog.cpp:2258
-msgid "There are some waypoints used in routes or anchor alarms.\n Do you want to delete them as well?\n This will change the routes and disable the anchor alarms.\n Answering No keeps the waypoints used in routes or alarms."
-msgstr "Mõned teepunktid on kasutusel teekondades või ankru häiretes.\nKas soovid ka nemad kustutada?\nSee muudab teekonnad ja blokeerib ankruhäired.\nVastates Ei hoiatakse teekondade ja häirete punktid alles."
+msgid "There are some waypoints used in routes or anchor alarms.\n"
+" Do you want to delete them as well?\n"
+" This will change the routes and disable the anchor alarms.\n"
+" Answering No keeps the waypoints used in routes or alarms."
+msgstr "Mõned teepunktid on kasutusel teekondades või ankru häiretes.\n"
+"Kas soovid ka nemad kustutada?\n"
+"See muudab teekonnad ja blokeerib ankruhäired.\n"
+"Vastates Ei hoiatakse teekondade ja häirete punktid alles."
 
 #: src/routemanagerdialog.cpp:2311
 msgid "Hide from chart"
@@ -2738,7 +2784,7 @@ msgstr "Kaardi objekt: kanali takistus"
 
 #: src/ais.cpp:398
 msgid "Chart Feature: Reduced vertical clearance"
-msgstr "Kaardi objekt: vähendatud vertikaalne liikumisruum"
+msgstr "Kaardi element: vähendatud vertikaalne liikumisruum"
 
 #: src/ais.cpp:399
 msgid "Chart Feature: Bridge closed"
@@ -3167,7 +3213,7 @@ msgstr "COG eeldatav asukoht (min)"
 
 #: src/options.cpp:1527
 msgid "Heading Predictor Length (NMi)"
-msgstr "Kursivektori pikkus (miili)"
+msgstr "kursivektori pikkus (miili)"
 
 #: src/options.cpp:1533
 msgid "Ship Icon Type"
@@ -3203,7 +3249,7 @@ msgstr "Vähim suurus ekraanil (mm)"
 
 #: src/options.cpp:1571
 msgid "Show range rings"
-msgstr "Kuva ulatuse ringe"
+msgstr "kuva ulatuse ringe"
 
 #: src/options.cpp:1574
 msgid "None"
@@ -3255,7 +3301,7 @@ msgstr "teepunkti saabumisringi raadius (miili)"
 
 #: src/options.cpp:1632
 msgid "Advance route waypoint on arrival only"
-msgstr "Jätka järgmise teekonnapunktiga ainult saabumisringi läbimisel"
+msgstr "jätka järgmise teekonnapunktiga ainult saabumisringi läbimisel"
 
 #: src/options.cpp:1642
 msgid "Chart Files"
@@ -3287,7 +3333,7 @@ msgstr "sunduslik kogu andmebaasi taasloomine"
 
 #: src/options.cpp:1701 src/TrackPropDlg.cpp:327
 msgid "Advanced"
-msgstr "Edasijõudnud"
+msgstr "Lisavalikud"
 
 #: src/options.cpp:1721 src/options.cpp:2224
 msgid "Chart Display"
@@ -3303,11 +3349,11 @@ msgstr "blokeeri täisekraan-kihistamine"
 
 #: src/options.cpp:1731
 msgid "Suppress blur/fog effects on overzoom"
-msgstr "Pärsi hägust/udu effekti ülesuumimisel"
+msgstr "pärsi hägust/udu effekti ülesuumimisel"
 
 #: src/options.cpp:1734
 msgid "Suppress scaled vector charts on overzoom"
-msgstr "Pärsi skaleeritud vektorkaardid ülesuumimisel"
+msgstr "pärsi skaleeritud vektorkaardid ülesuumimisel"
 
 #: src/options.cpp:1743
 msgid "Course-Up Update Period"
@@ -3322,8 +3368,10 @@ msgid "Chart Zoom/Scale Weighting"
 msgstr "Kaardi suumi/skaala võrdsustamine"
 
 #: src/options.cpp:1767
-msgid "With a lower value, the same zoom level shows a less detailed chart.\nWith a higher value, the same zoom level shows a more detailed chart."
-msgstr "Sama suumitase, kuid madalama väärtusega, kuvab vähem detailset kaarti.\nSama suumitase suurema väärtusega kuvab rohkem detailset kaarti."
+msgid "With a lower value, the same zoom level shows a less detailed chart.\n"
+"With a higher value, the same zoom level shows a more detailed chart."
+msgstr "Sama suumitase, kuid madalama väärtusega, kuvab vähem detailset kaarti.\n"
+"Sama suumitase suurema väärtusega kuvab rohkem detailset kaarti."
 
 #: src/options.cpp:1782 src/options.cpp:2241
 msgid "Controls"
@@ -3343,11 +3391,11 @@ msgstr "Tegelik ekraani laius"
 
 #: src/options.cpp:1805 src/options.cpp:3073 src/options.cpp:3202
 msgid "Auto"
-msgstr "Auto"
+msgstr "auto"
 
 #: src/options.cpp:1808
 msgid "Manual:"
-msgstr "Käsitsi:"
+msgstr "käsitsi:"
 
 #: src/options.cpp:1814
 msgid "mm"
@@ -3395,11 +3443,11 @@ msgstr "Kuvamine"
 
 #: src/options.cpp:1893
 msgid "Depth Soundings"
-msgstr "Sügavuse mõõdistused"
+msgstr "sügavuse mõõdistused"
 
 #: src/options.cpp:1897
 msgid "Chart Information Objects"
-msgstr "Kaardi-info objektid"
+msgstr "kaardi info-objektid"
 
 #: src/options.cpp:1901
 msgid "Buoys/Lights"
@@ -3407,15 +3455,15 @@ msgstr "Poid/tuled"
 
 #: src/options.cpp:1906
 msgid "Buoy/Light Labels"
-msgstr "Poi/tule silt"
+msgstr "poi/tule silt"
 
 #: src/options.cpp:1910
 msgid "Light Descriptions"
-msgstr "Tule kirjeldus"
+msgstr "tule kirjeldus"
 
 #: src/options.cpp:1914
 msgid "Extended Light Sectors"
-msgstr "Pikendatud tulesektorid"
+msgstr "pikendatud tulesektorid"
 
 #: src/options.cpp:1918
 msgid "Chart Texts"
@@ -3423,15 +3471,15 @@ msgstr "Kaardi tekstid"
 
 #: src/options.cpp:1923
 msgid "National text on chart"
-msgstr "Rahvuslik tekst kaardil"
+msgstr "rahvuslik tekst kaardil"
 
 #: src/options.cpp:1927
 msgid "Important Text Only"
-msgstr "Ainult oluline tekst"
+msgstr "ainult oluline tekst"
 
 #: src/options.cpp:1931
 msgid "De-Cluttered Text"
-msgstr "Virvarrita tekst"
+msgstr "virvarrita tekst"
 
 #: src/options.cpp:1935
 msgid "Chart Detail"
@@ -3439,7 +3487,7 @@ msgstr "Kaardi detailid"
 
 #: src/options.cpp:1936
 msgid "Reduced Detail at Small Scale"
-msgstr "Vähendatud detailid väiksel mõõtkaval"
+msgstr "vähendatud detailid väiksel mõõtkaval"
 
 #: src/options.cpp:1947
 msgid "Graphics Style"
@@ -3543,7 +3591,7 @@ msgstr "N-üleval"
 
 #: src/options.cpp:2211
 msgid "Course Up"
-msgstr "Kurss üleval"
+msgstr "kurss üleval"
 
 #: src/options.cpp:2214
 msgid "Look Ahead Mode"
@@ -3619,7 +3667,7 @@ msgstr "Suunad"
 
 #: src/options.cpp:2348
 msgid "Show magnetic bearings and headings"
-msgstr "Näita magnetsuundi ja -kursse"
+msgstr "näita magnetsuundi ja -kursse"
 
 #: src/options.cpp:2355
 msgid "Assumed magnetic variation"
@@ -3771,7 +3819,7 @@ msgstr "näita olekuriba"
 
 #: src/options.cpp:2642
 msgid "Show Menu Bar"
-msgstr "Kuva menüüriba"
+msgstr "kuva menüüriba"
 
 #: src/options.cpp:2651
 msgid "Show Compass/GPS Status Window"
@@ -3783,7 +3831,7 @@ msgstr "helista laevakella"
 
 #: src/options.cpp:2659
 msgid "Enable Touchscreen interface"
-msgstr "Võimalda puutepinna kasutajaliides"
+msgstr "võimalda puutepinna kasutajaliides"
 
 #: src/options.cpp:2662
 msgid "Enable Tablet Scaled Graphics interface"
@@ -3846,24 +3894,34 @@ msgid "You must enter the address..."
 msgstr "Te peate sisestama aadressi..."
 
 #: src/options.cpp:3603
-msgid "\n - your ship's length must be > 0"
-msgstr "\n - te laeva pikkus peab olema > 0"
+msgid "\n"
+" - your ship's length must be > 0"
+msgstr "\n"
+" - te laeva pikkus peab olema > 0"
 
 #: src/options.cpp:3605
-msgid "\n - your ship's beam must be > 0"
-msgstr "\n - te laeva laius peab olema > 0"
+msgid "\n"
+" - your ship's beam must be > 0"
+msgstr "\n"
+" - te laeva laius peab olema > 0"
 
 #: src/options.cpp:3607
-msgid "\n - your GPS offset from midship must be within your ship's beam"
-msgstr "\n - su GPS'i nihe keskosast peab olema su laeva laiuse piires"
+msgid "\n"
+" - your GPS offset from midship must be within your ship's beam"
+msgstr "\n"
+" - su GPS'i nihe keskosast peab olema su laeva laiuse piires"
 
 #: src/options.cpp:3609
-msgid "\n - your GPS offset from bow must be within your ship's length"
-msgstr "\n - su GPS'i nihe vöörist peab olema su laeva pikkuse piires"
+msgid "\n"
+" - your GPS offset from bow must be within your ship's length"
+msgstr "\n"
+" - su GPS'i nihe vöörist peab olema su laeva pikkuse piires"
 
 #: src/options.cpp:3611
-msgid "\n - your minimum ship icon size must be between 1 and 100 mm"
-msgstr "\n - su laeva ikooni vähim suurus peab olema 1 and 100 mm vahel"
+msgid "\n"
+" - your minimum ship icon size must be between 1 and 100 mm"
+msgstr "\n"
+" - su laeva ikooni vähim suurus peab olema 1 and 100 mm vahel"
 
 #: src/options.cpp:3613
 msgid "The settings for own ship real size are not correct:"
@@ -3898,8 +3956,16 @@ msgid "Enter the NMEA sentence"
 msgstr "Sisesta NMEA-teade"
 
 #: src/options.cpp:5754
-msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n It can also have a two letter prefix identifying the source, or TALKER, of the message.\n The whole sentences then looks like GPGGA or AITXT.\n You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.).\n\n The filter accepts just these three formats."
-msgstr "NMEA-teade on harilikult 3 tähemärki pikk (nagu RMC, GGA jne).\n Sellel võib samuti olla 2-täheline eesliide allika, ehk TALKER, teate määratlemiseks.\n Kogu teade näeb siis välja nagu GPGGA või AITXT.\n Sa Võid välja filtreerida kõik kindla TALKER-eesliitega (nagu GP, AI jne) teated.\n\n Filter tunnistab ainult neid kolme formaati."
+msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n"
+" It can also have a two letter prefix identifying the source, or TALKER, of the message.\n"
+" The whole sentences then looks like GPGGA or AITXT.\n"
+" You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.).\n\n"
+" The filter accepts just these three formats."
+msgstr "NMEA-teade on harilikult 3 tähemärki pikk (nagu RMC, GGA jne).\n"
+" Sellel võib samuti olla 2-täheline eesliide allika, ehk TALKER, teate määratlemiseks.\n"
+" Kogu teade näeb siis välja nagu GPGGA või AITXT.\n"
+" Sa Võid välja filtreerida kõik kindla TALKER-eesliitega (nagu GP, AI jne) teated.\n\n"
+" Filter tunnistab ainult neid kolme formaati."
 
 #: src/options.cpp:5806
 msgid "Accept Sentences"
@@ -3982,8 +4048,12 @@ msgid "Close"
 msgstr "Sulge"
 
 #: src/s57chart.cpp:4049
-msgid "S57 Cell Update chain incomplete.\nENC features may be incomplete or inaccurate.\nCheck the logfile for details."
-msgstr "S57-kärje uuendamise ahel lõpetamata.\nENC funktsioonid võivad olla ebatäielikud või ebatäpsed.\nVaata logifailist üksikasju."
+msgid "S57 Cell Update chain incomplete.\n"
+"ENC features may be incomplete or inaccurate.\n"
+"Check the logfile for details."
+msgstr "S57-kärje uuendamise ahel lõpetamata.\n"
+"ENC funktsioonid võivad olla ebatäielikud või ebatäpsed.\n"
+"Vaata logifailist üksikasju."
 
 #: src/s57chart.cpp:4050
 msgid "OpenCPN Create SENC Warning"
@@ -4006,8 +4076,10 @@ msgid "OpenCPN Warning"
 msgstr "OpenCPN'i hoiatus"
 
 #: src/routeman.cpp:1018
-msgid "Waypoints can be renamed to reflect the new order, the names will be '001', '002' etc.\n\nDo you want to rename the waypoints?"
-msgstr "Teepunkte saab ümber nimetada uue järjekorra kasjatamiseks, nimed oleksid '001', 002' jne.\n\nKas soovid teepunktid ümber nimetadaa?"
+msgid "Waypoints can be renamed to reflect the new order, the names will be '001', '002' etc.\n\n"
+"Do you want to rename the waypoints?"
+msgstr "Teepunkte saab ümber nimetada uue järjekorra kasjatamiseks, nimed oleksid '001', 002' jne.\n\n"
+"Kas soovid teepunktid ümber nimetadaa?"
 
 #: src/pluginmanager.cpp:288
 msgid "    Incompatible PlugIn detected:"
@@ -4015,8 +4087,12 @@ msgstr "    Avastatud mitteühilduv plugin:"
 
 #: src/pluginmanager.cpp:623
 #, c-format
-msgid "PlugIn %s (%s), version %i.%i was detected.\n This version is known to be unstable and will not be loaded.\n Please update this PlugIn at the opencpn.org website."
-msgstr "Plugin %s (%s), versioon %i.%i on avastatud.\n Teadaolevalt on see versioon ebastabiilne ja teda ei käivitata.\n Palun uuendage see plugin opencpn.org veebilehelt."
+msgid "PlugIn %s (%s), version %i.%i was detected.\n"
+" This version is known to be unstable and will not be loaded.\n"
+" Please update this PlugIn at the opencpn.org website."
+msgstr "Plugin %s (%s), versioon %i.%i on avastatud.\n"
+" Teadaolevalt on see versioon ebastabiilne ja teda ei käivitata.\n"
+" Palun uuendage see plugin opencpn.org veebilehelt."
 
 #: src/pluginmanager.cpp:624 src/pluginmanager.cpp:630
 msgid "Blacklisted plugin detected..."
@@ -4024,8 +4100,12 @@ msgstr "On avastatud keelatud plugin..."
 
 #: src/pluginmanager.cpp:629
 #, c-format
-msgid "PlugIn %s (%s), version %i.%i was detected.\n This version is known to be unstable.\n Please update this PlugIn at the opencpn.org website."
-msgstr "Plugin %s (%s), versioon %i.%i on avastatud.\n Teadaolevalt on see versioon ebastabiilne.\n Palun uuendage see plugin opencpn.org veebilehelt."
+msgid "PlugIn %s (%s), version %i.%i was detected.\n"
+" This version is known to be unstable.\n"
+" Please update this PlugIn at the opencpn.org website."
+msgstr "Plugin %s (%s), versioon %i.%i on avastatud.\n"
+" Teadaolevalt on see versioon ebastabiilne.\n"
+" Palun uuendage see plugin opencpn.org veebilehelt."
 
 #: src/pluginmanager.cpp:662
 msgid "Unreadable PlugIn library detected, check the file permissions:\n"
@@ -4057,8 +4137,10 @@ msgid "Disable"
 msgstr "Keela"
 
 #: src/toolbar.cpp:691
-msgid "You can't hide the last tool from the toolbar\nas this would make it inaccessible."
-msgstr "Te ei saa peita viimast vahendit tööriistaribal,\nsest see muudaks ta kättesaamatuks."
+msgid "You can't hide the last tool from the toolbar\n"
+"as this would make it inaccessible."
+msgstr "Te ei saa peita viimast vahendit tööriistaribal,\n"
+"sest see muudaks ta kättesaamatuks."
 
 #: src/toolbar.cpp:812 src/toolbar.cpp:823
 msgid "ToolTips"
@@ -4081,8 +4163,10 @@ msgid "Yes, hide it."
 msgstr "Jah, peida ta."
 
 #: src/toolbar.cpp:2045
-msgid "The Man Over Board button could be an important safety feature.\nAre you sure you want to hide it?"
-msgstr "MEES ÜLE PARDA nupp võiks olla oluline ohutusfuntsioon.\nKas oled kindel, et soovite seda peita?"
+msgid "The Man Over Board button could be an important safety feature.\n"
+"Are you sure you want to hide it?"
+msgstr "MEES ÜLE PARDA nupp võiks olla oluline ohutusfuntsioon.\n"
+"Kas oled kindel, et soovite seda peita?"
 
 #: src/kml.cpp:442
 msgid "OpenCPN Route"
@@ -5463,8 +5547,10 @@ msgid "Record Track"
 msgstr "Salvesta teekond"
 
 #: src/AISTargetQueryDialog.cpp:165
-msgid "The recently captured track of this target has been recorded.\nDo you want to continue recording until the end of the current OpenCPN session?"
-msgstr "Selle märgi hiljuti haaratud jälg on salvestatud.\nKas soovid salvestamist jätkata kuni praeguse OpenCPN-sessiooni lõpuni?"
+msgid "The recently captured track of this target has been recorded.\n"
+"Do you want to continue recording until the end of the current OpenCPN session?"
+msgstr "Selle märgi hiljuti haaratud jälg on salvestatud.\n"
+"Kas soovid salvestamist jätkata kuni praeguse OpenCPN-sessiooni lõpuni?"
 
 #: src/AISTargetQueryDialog.cpp:268
 msgid "Stop Tracking"

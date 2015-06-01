@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-01-07 16:15-0600\n"
-"PO-Revision-Date: 2015-01-07 17:17-0500\n"
+"PO-Revision-Date: 2015-05-23 05:01-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -13,6 +13,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: fr\n"
 "X-Crowdin-File: /po/opencpn.pot\n"
 
 #: include/routeprop.h:64 src/chcanv.cpp:5214 src/chcanv.cpp:8223
@@ -121,8 +122,24 @@ msgid "OpenCPN Chart Add...."
 msgstr "OpenCPN ajoute cette carte ..."
 
 #: src/chart1.cpp:782
-msgid "\nOpenCPN is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied\nwarranty of MERCHANTABILITY or FITNESS FOR A\nPARTICULAR PURPOSE.\nSee the GNU General Public License for more details.\n\nOpenCPN must only be used in conjunction with approved\npaper charts and traditional methods of navigation.\n\nDO NOT rely upon OpenCPN for safety of life or property.\n\nPlease click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"
-msgstr "\nOpenCPN est distribué avec l'espoir qu'il fonctionne, mais SANS AUCUNE GARANTIE, sans même la garantie\nimplicite de QUALITE MARCHANDE ou d'ADEQUATION A UN USAGE PARTICULIER.\n\nVoyez la licence \"GNU Général Public Licence\" pour plus de détails.\n\nOpenCPN doit être utilisé en conjonction avec des cartes papiers officielles et la méthode traditionnelle de\nnavigation.\n\nNe comptez pas sur OpenCPN pour garantir la sécurité des personnes ou des biens.\n\nS'il vous plait, cliquez sur \"OK\" pour agréer et lancer l'éxecution, \"Annuler\" pour quitter.\n"
+msgid "\n"
+"OpenCPN is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied\n"
+"warranty of MERCHANTABILITY or FITNESS FOR A\n"
+"PARTICULAR PURPOSE.\n"
+"See the GNU General Public License for more details.\n\n"
+"OpenCPN must only be used in conjunction with approved\n"
+"paper charts and traditional methods of navigation.\n\n"
+"DO NOT rely upon OpenCPN for safety of life or property.\n\n"
+"Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"
+msgstr "\n"
+"OpenCPN est distribué avec l'espoir qu'il fonctionne, mais SANS AUCUNE GARANTIE, sans même la garantie\n"
+"implicite de QUALITE MARCHANDE ou d'ADEQUATION A UN USAGE PARTICULIER.\n\n"
+"Voyez la licence \"GNU Général Public Licence\" pour plus de détails.\n\n"
+"OpenCPN doit être utilisé en conjonction avec des cartes papiers officielles et la méthode traditionnelle de\n"
+"navigation.\n\n"
+"Ne comptez pas sur OpenCPN pour garantir la sécurité des personnes ou des biens.\n\n"
+"S'il vous plait, cliquez sur \"OK\" pour agréer et lancer l'éxecution, \"Annuler\" pour quitter.\n"
 
 #: src/chart1.cpp:796
 msgid "Welcome to OpenCPN"
@@ -195,8 +212,10 @@ msgid "OpenCPN Chart Update"
 msgstr "OpenCPN met à jour la liste des cartes"
 
 #: src/chart1.cpp:2251
-msgid "No Charts Installed.\nPlease select chart folders in Options > Charts."
-msgstr "           Pas de carte installée \nVeuillez sélectionner le ou les dossiers de cartes dans le sous onglet \"Cartes chargées\" de l'onglet \"Cartes/données\" dans les \"Options (Boite à outils)\"."
+msgid "No Charts Installed.\n"
+"Please select chart folders in Options > Charts."
+msgstr "           Pas de carte installée \n"
+"Veuillez sélectionner le ou les dossiers de cartes dans le sous onglet \"Cartes chargées\" de l'onglet \"Cartes/données\" dans les \"Options (Boite à outils)\"."
 
 #: src/chart1.cpp:2923 src/chcanv.cpp:10473
 msgid "AIS Target Query"
@@ -469,8 +488,10 @@ msgid "Chart Print"
 msgstr "Imprimer la carte"
 
 #: src/chart1.cpp:7804 src/routeprintout.cpp:469
-msgid "There was a problem printing.\nPerhaps your current printer is not set correctly?"
-msgstr "Problème d'impression.\nVotre imprimante actuelle est elle bienl configurée ?"
+msgid "There was a problem printing.\n"
+"Perhaps your current printer is not set correctly?"
+msgstr "Problème d'impression.\n"
+"Votre imprimante actuelle est elle bienl configurée ?"
 
 #: src/chart1.cpp:7955 src/chart1.cpp:8028 src/routemanagerdialog.cpp:890
 msgid "(Unnamed Route)"
@@ -505,12 +526,22 @@ msgid "OpenCPN requires access to serial ports to use serial NMEA data.\n"
 msgstr "OpenCPN requiert l'accès au port série pour utiliser les données NMEA série.\n"
 
 #: src/chart1.cpp:9803
-msgid "No Serial Ports can be found on this system.\nYou must install a serial port (modprobe correct kernel module) or plug in a usb serial device.\n"
-msgstr "Aucun port série ne peut être trouvé sur ce système.\nVous devez installer un port série (  ) ou le compléter par un port série USB.\n"
+msgid "No Serial Ports can be found on this system.\n"
+"You must install a serial port (modprobe correct kernel module) or plug in a usb serial device.\n"
+msgstr "Aucun port série ne peut être trouvé sur ce système.\n"
+"Vous devez installer un port série (  ) ou le compléter par un port série USB.\n"
 
 #: src/chart1.cpp:9825
-msgid "You do currently not have permission to access the serial ports on this system.\n\nIt is suggested that you exit OpenCPN now,\nand add yourself to the correct group to enable serial port access.\n\nYou may do so by executing the following command from the linux command line:\n\n                sudo usermod -a -G "
-msgstr "Vous n'avez pas actuellement autorisé l'accès aux ports série sur ce système.\n\nSugestion :  Quittez OpenCPN maintenant,\net ajoutez-vous au groupe correct pour permettre l'accès du port série.\n\nVous pouvez le faire en exécutant la commande suivante à partir de la ligne de commande Linux: \n\n                 sudo usermod-a-G"
+msgid "You do currently not have permission to access the serial ports on this system.\n\n"
+"It is suggested that you exit OpenCPN now,\n"
+"and add yourself to the correct group to enable serial port access.\n\n"
+"You may do so by executing the following command from the linux command line:\n\n"
+"                sudo usermod -a -G "
+msgstr "Vous n'avez pas actuellement autorisé l'accès aux ports série sur ce système.\n\n"
+"Sugestion :  Quittez OpenCPN maintenant,\n"
+"et ajoutez-vous au groupe correct pour permettre l'accès du port série.\n\n"
+"Vous pouvez le faire en exécutant la commande suivante à partir de la ligne de commande Linux: \n\n"
+"                 sudo usermod-a-G"
 
 #: src/chart1.cpp:10259 src/routeprop.cpp:361 src/routeprop.cpp:1831
 #: src/routemanagerdialog.cpp:428 src/options.cpp:655 src/options.cpp:847
@@ -1852,8 +1883,10 @@ msgid "&Copy as text"
 msgstr "Copier comme du texte"
 
 #: src/routemanagerdialog.cpp:1412
-msgid "Select the maximum error allowed (in meters)\nafter data reduction:"
-msgstr "Sélectionner l'erreur maximale permise (en mètres)\naprès réduction des données :"
+msgid "Select the maximum error allowed (in meters)\n"
+"after data reduction:"
+msgstr "Sélectionner l'erreur maximale permise (en mètres)\n"
+"après réduction des données :"
 
 #: src/routemanagerdialog.cpp:1413
 msgid "Reduce Data Precision"
@@ -1861,16 +1894,20 @@ msgstr "Réduire la précision des données"
 
 #: src/routemanagerdialog.cpp:1432
 #, c-format
-msgid "The amount of data used by the track\n was reduced by %d%%."
-msgstr "Réduction du nombre de points de trace :\n                      %d%%."
+msgid "The amount of data used by the track\n"
+" was reduced by %d%%."
+msgstr "Réduction du nombre de points de trace :\n"
+"                      %d%%."
 
 #: src/routemanagerdialog.cpp:1434 src/options.cpp:3614
 msgid "OpenCPN info"
 msgstr "Informations OpenCPN "
 
 #: src/routemanagerdialog.cpp:1542
-msgid "The currently running Track was not merged.\nYou can merge it later when it is completed."
-msgstr "La trace  active sélectionnée n'a pas été fusionnée\nVous pourrez la fusionner ultérieurement lorsqu'elle sera terminée."
+msgid "The currently running Track was not merged.\n"
+"You can merge it later when it is completed."
+msgstr "La trace  active sélectionnée n'a pas été fusionnée\n"
+"Vous pourrez la fusionner ultérieurement lorsqu'elle sera terminée."
 
 #: src/routemanagerdialog.cpp:1778
 msgid "OpenCPN Converting Track to Route...."
@@ -1897,8 +1934,14 @@ msgid "Are you sure you want to delete <ALL> waypoints?"
 msgstr "Êtes vous certain de vouloir supprimer <TOUTES> les marques ?"
 
 #: src/routemanagerdialog.cpp:2258
-msgid "There are some waypoints used in routes or anchor alarms.\n Do you want to delete them as well?\n This will change the routes and disable the anchor alarms.\n Answering No keeps the waypoints used in routes or alarms."
-msgstr "Il y a des waypoint utilisés dans des routes ou des alarmes de mouillage.\nVoulez-vous les supprimer aussi ?\nCela va changer les routes ou désactiver les alarmes de mouillage.\nRépondre non maintient les waypoint utilisés dans les routes ou les alarmes."
+msgid "There are some waypoints used in routes or anchor alarms.\n"
+" Do you want to delete them as well?\n"
+" This will change the routes and disable the anchor alarms.\n"
+" Answering No keeps the waypoints used in routes or alarms."
+msgstr "Il y a des waypoint utilisés dans des routes ou des alarmes de mouillage.\n"
+"Voulez-vous les supprimer aussi ?\n"
+"Cela va changer les routes ou désactiver les alarmes de mouillage.\n"
+"Répondre non maintient les waypoint utilisés dans les routes ou les alarmes."
 
 #: src/routemanagerdialog.cpp:2311
 msgid "Hide from chart"
@@ -3322,8 +3365,10 @@ msgid "Chart Zoom/Scale Weighting"
 msgstr "Pondération qté de détails/niveau de zoom"
 
 #: src/options.cpp:1767
-msgid "With a lower value, the same zoom level shows a less detailed chart.\nWith a higher value, the same zoom level shows a more detailed chart."
-msgstr "Avec une valeur inférieure, le même niveau de zoom affiche une carte moins détaillée. \nAvec une valeur plus élevée, le même niveau de zoom affiche une carte plus détaillée."
+msgid "With a lower value, the same zoom level shows a less detailed chart.\n"
+"With a higher value, the same zoom level shows a more detailed chart."
+msgstr "Avec une valeur inférieure, le même niveau de zoom affiche une carte moins détaillée. \n"
+"Avec une valeur plus élevée, le même niveau de zoom affiche une carte plus détaillée."
 
 #: src/options.cpp:1782 src/options.cpp:2241
 msgid "Controls"
@@ -3846,24 +3891,34 @@ msgid "You must enter the address..."
 msgstr "Vous devez entrer l'adresse ..."
 
 #: src/options.cpp:3603
-msgid "\n - your ship's length must be > 0"
-msgstr "\n - La longueur du bateau doit être > 0"
+msgid "\n"
+" - your ship's length must be > 0"
+msgstr "\n"
+" - La longueur du bateau doit être > 0"
 
 #: src/options.cpp:3605
-msgid "\n - your ship's beam must be > 0"
-msgstr "\n - La largeur du bateau doit être > 0"
+msgid "\n"
+" - your ship's beam must be > 0"
+msgstr "\n"
+" - La largeur du bateau doit être > 0"
 
 #: src/options.cpp:3607
-msgid "\n - your GPS offset from midship must be within your ship's beam"
-msgstr "\n - la position du GPS par rapport à l'axe du bateau ne doit pas être extérieure au bateau."
+msgid "\n"
+" - your GPS offset from midship must be within your ship's beam"
+msgstr "\n"
+" - la position du GPS par rapport à l'axe du bateau ne doit pas être extérieure au bateau."
 
 #: src/options.cpp:3609
-msgid "\n - your GPS offset from bow must be within your ship's length"
-msgstr "\n - La position du GPS par rapport à la proue doit être <=l à la longueur."
+msgid "\n"
+" - your GPS offset from bow must be within your ship's length"
+msgstr "\n"
+" - La position du GPS par rapport à la proue doit être <=l à la longueur."
 
 #: src/options.cpp:3611
-msgid "\n - your minimum ship icon size must be between 1 and 100 mm"
-msgstr "\n - La taille minimale de l'icône du bateau doit être entre 1 et 100 mm"
+msgid "\n"
+" - your minimum ship icon size must be between 1 and 100 mm"
+msgstr "\n"
+" - La taille minimale de l'icône du bateau doit être entre 1 et 100 mm"
 
 #: src/options.cpp:3613
 msgid "The settings for own ship real size are not correct:"
@@ -3898,8 +3953,16 @@ msgid "Enter the NMEA sentence"
 msgstr "Entrer la phrase NMEA"
 
 #: src/options.cpp:5754
-msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n It can also have a two letter prefix identifying the source, or TALKER, of the message.\n The whole sentences then looks like GPGGA or AITXT.\n You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.).\n\n The filter accepts just these three formats."
-msgstr "Une phrase NMEA comporte généralement 3 caractères (tels que RMC, GCA, etc.)\n Il peut y avoir aussi un préfixe de deux caractères identifiant la source du message. Source appelée \"Talker\".\nL'ensemble du nom de la phrases ressemble alors à GPGCA ou AITXT.\nVous pouvez filtrer toutes les phrases qui commencent par le préfixe de certains talker (tel que GP, AI, etc.)\n\nLes filtres ne peuvent avoir que ces trois formats."
+msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n"
+" It can also have a two letter prefix identifying the source, or TALKER, of the message.\n"
+" The whole sentences then looks like GPGGA or AITXT.\n"
+" You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.).\n\n"
+" The filter accepts just these three formats."
+msgstr "Une phrase NMEA comporte généralement 3 caractères (tels que RMC, GCA, etc.)\n"
+" Il peut y avoir aussi un préfixe de deux caractères identifiant la source du message. Source appelée \"Talker\".\n"
+"L'ensemble du nom de la phrases ressemble alors à GPGCA ou AITXT.\n"
+"Vous pouvez filtrer toutes les phrases qui commencent par le préfixe de certains talker (tel que GP, AI, etc.)\n\n"
+"Les filtres ne peuvent avoir que ces trois formats."
 
 #: src/options.cpp:5806
 msgid "Accept Sentences"
@@ -3982,8 +4045,12 @@ msgid "Close"
 msgstr "Fermer"
 
 #: src/s57chart.cpp:4049
-msgid "S57 Cell Update chain incomplete.\nENC features may be incomplete or inaccurate.\nCheck the logfile for details."
-msgstr "La chaîne de mise à jour des cellules S57 est incomplète.\n Les informations contenues dans cette carte ENC peuvent être inexactes ou ne pas être à jour.\nVoyez dans le fichier log pour plus de détails."
+msgid "S57 Cell Update chain incomplete.\n"
+"ENC features may be incomplete or inaccurate.\n"
+"Check the logfile for details."
+msgstr "La chaîne de mise à jour des cellules S57 est incomplète.\n"
+" Les informations contenues dans cette carte ENC peuvent être inexactes ou ne pas être à jour.\n"
+"Voyez dans le fichier log pour plus de détails."
 
 #: src/s57chart.cpp:4050
 msgid "OpenCPN Create SENC Warning"
@@ -4006,8 +4073,10 @@ msgid "OpenCPN Warning"
 msgstr "Alerte d'OpenCPN"
 
 #: src/routeman.cpp:1018
-msgid "Waypoints can be renamed to reflect the new order, the names will be '001', '002' etc.\n\nDo you want to rename the waypoints?"
-msgstr "Les Waypoint peuvent être renommés pour respecter le nouvel ordre, les noms seront  '001', '002' etc.\n\nVoulez vous renommer les waypoint ?"
+msgid "Waypoints can be renamed to reflect the new order, the names will be '001', '002' etc.\n\n"
+"Do you want to rename the waypoints?"
+msgstr "Les Waypoint peuvent être renommés pour respecter le nouvel ordre, les noms seront  '001', '002' etc.\n\n"
+"Voulez vous renommer les waypoint ?"
 
 #: src/pluginmanager.cpp:288
 msgid "    Incompatible PlugIn detected:"
@@ -4015,8 +4084,12 @@ msgstr "    Complément incompatible détecté :"
 
 #: src/pluginmanager.cpp:623
 #, c-format
-msgid "PlugIn %s (%s), version %i.%i was detected.\n This version is known to be unstable and will not be loaded.\n Please update this PlugIn at the opencpn.org website."
-msgstr "Complément %s (%s), la version %i.%i a été détectée.\n  Cette version est connue pour être instable et ne doit pas être installée.\n  Allez sur la page de téléchargement des complémenst et téléchargez la dernière version stable disponible de ce complément."
+msgid "PlugIn %s (%s), version %i.%i was detected.\n"
+" This version is known to be unstable and will not be loaded.\n"
+" Please update this PlugIn at the opencpn.org website."
+msgstr "Complément %s (%s), la version %i.%i a été détectée.\n"
+"  Cette version est connue pour être instable et ne doit pas être installée.\n"
+"  Allez sur la page de téléchargement des complémenst et téléchargez la dernière version stable disponible de ce complément."
 
 #: src/pluginmanager.cpp:624 src/pluginmanager.cpp:630
 msgid "Blacklisted plugin detected..."
@@ -4024,8 +4097,12 @@ msgstr "Complément blacklisté détecté ..."
 
 #: src/pluginmanager.cpp:629
 #, c-format
-msgid "PlugIn %s (%s), version %i.%i was detected.\n This version is known to be unstable.\n Please update this PlugIn at the opencpn.org website."
-msgstr "Complément %s (%s), version %i.%i détectée.\n  Cette version est connue pour être instable.\n  Allez sur la page de téléchargement des compléments et téléchargez la dernière version stable disponible."
+msgid "PlugIn %s (%s), version %i.%i was detected.\n"
+" This version is known to be unstable.\n"
+" Please update this PlugIn at the opencpn.org website."
+msgstr "Complément %s (%s), version %i.%i détectée.\n"
+"  Cette version est connue pour être instable.\n"
+"  Allez sur la page de téléchargement des compléments et téléchargez la dernière version stable disponible."
 
 #: src/pluginmanager.cpp:662
 msgid "Unreadable PlugIn library detected, check the file permissions:\n"
@@ -4057,8 +4134,10 @@ msgid "Disable"
 msgstr "Désactiver"
 
 #: src/toolbar.cpp:691
-msgid "You can't hide the last tool from the toolbar\nas this would make it inaccessible."
-msgstr "Vous ne pouvez pas cacher toutes les icônes de la barre d'icônes.\nCeci rendrait la barre d'icônes inaccessible."
+msgid "You can't hide the last tool from the toolbar\n"
+"as this would make it inaccessible."
+msgstr "Vous ne pouvez pas cacher toutes les icônes de la barre d'icônes.\n"
+"Ceci rendrait la barre d'icônes inaccessible."
 
 #: src/toolbar.cpp:812 src/toolbar.cpp:823
 msgid "ToolTips"
@@ -4081,8 +4160,10 @@ msgid "Yes, hide it."
 msgstr "Oui, cacher cette icône"
 
 #: src/toolbar.cpp:2045
-msgid "The Man Over Board button could be an important safety feature.\nAre you sure you want to hide it?"
-msgstr "Le bouton \"homme à la mer\" (MOB) peut être un important facteur de sécurité.\nEtes vous certain de vouloir le masquer ?"
+msgid "The Man Over Board button could be an important safety feature.\n"
+"Are you sure you want to hide it?"
+msgstr "Le bouton \"homme à la mer\" (MOB) peut être un important facteur de sécurité.\n"
+"Etes vous certain de vouloir le masquer ?"
 
 #: src/kml.cpp:442
 msgid "OpenCPN Route"
@@ -5463,8 +5544,10 @@ msgid "Record Track"
 msgstr "Enregistrer la trace"
 
 #: src/AISTargetQueryDialog.cpp:165
-msgid "The recently captured track of this target has been recorded.\nDo you want to continue recording until the end of the current OpenCPN session?"
-msgstr "La trace de cette cible AIS a été enregistrée.\nVoulez-vous continuer à l'enregistrer jusqu'à la fin de la session en cours d'OpenCPN ?"
+msgid "The recently captured track of this target has been recorded.\n"
+"Do you want to continue recording until the end of the current OpenCPN session?"
+msgstr "La trace de cette cible AIS a été enregistrée.\n"
+"Voulez-vous continuer à l'enregistrer jusqu'à la fin de la session en cours d'OpenCPN ?"
 
 #: src/AISTargetQueryDialog.cpp:268
 msgid "Stop Tracking"

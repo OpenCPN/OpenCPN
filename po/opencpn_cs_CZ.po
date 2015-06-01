@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-01-07 16:15-0600\n"
-"PO-Revision-Date: 2015-01-07 17:17-0500\n"
+"PO-Revision-Date: 2015-05-23 05:01-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Czech\n"
 "Language: cs_CZ\n"
@@ -13,6 +13,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: cs\n"
 "X-Crowdin-File: /po/opencpn.pot\n"
 
 #: include/routeprop.h:64 src/chcanv.cpp:5214 src/chcanv.cpp:8223
@@ -121,8 +122,26 @@ msgid "OpenCPN Chart Add...."
 msgstr "Přidávání map OpenCPN...."
 
 #: src/chart1.cpp:782
-msgid "\nOpenCPN is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied\nwarranty of MERCHANTABILITY or FITNESS FOR A\nPARTICULAR PURPOSE.\nSee the GNU General Public License for more details.\n\nOpenCPN must only be used in conjunction with approved\npaper charts and traditional methods of navigation.\n\nDO NOT rely upon OpenCPN for safety of life or property.\n\nPlease click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"
-msgstr "\nOpenCPN je distribuováno s vírou, že bude užitečné,\nale BEZ JAKÉKOLI ZÁRUKY; i bez předpokládané\nzáruky PRODEJNOSTI NEBO VHODNOSTI PRO\nNĚJAKÝ ÚČEL.\nPodívejte se na GNU General Public License pro další detaily.\n\nOpenCPN musí být použito pouze spolu se schválenými\npapírovými mapami a tradičními metodami navigace.\n\nNESPOLÉHEJTE na OpenCPN pro bezpečnost života a majetku.\n\nProsím klikni \"OK\" pro souhlas a pokračování, \"Zrušit\" pro konec.\n"
+msgid "\n"
+"OpenCPN is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied\n"
+"warranty of MERCHANTABILITY or FITNESS FOR A\n"
+"PARTICULAR PURPOSE.\n"
+"See the GNU General Public License for more details.\n\n"
+"OpenCPN must only be used in conjunction with approved\n"
+"paper charts and traditional methods of navigation.\n\n"
+"DO NOT rely upon OpenCPN for safety of life or property.\n\n"
+"Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"
+msgstr "\n"
+"OpenCPN je distribuováno s vírou, že bude užitečné,\n"
+"ale BEZ JAKÉKOLI ZÁRUKY; i bez předpokládané\n"
+"záruky PRODEJNOSTI NEBO VHODNOSTI PRO\n"
+"NĚJAKÝ ÚČEL.\n"
+"Podívejte se na GNU General Public License pro další detaily.\n\n"
+"OpenCPN musí být použito pouze spolu se schválenými\n"
+"papírovými mapami a tradičními metodami navigace.\n\n"
+"NESPOLÉHEJTE na OpenCPN pro bezpečnost života a majetku.\n\n"
+"Prosím klikni \"OK\" pro souhlas a pokračování, \"Zrušit\" pro konec.\n"
 
 #: src/chart1.cpp:796
 msgid "Welcome to OpenCPN"
@@ -195,8 +214,10 @@ msgid "OpenCPN Chart Update"
 msgstr "Aktualizace map OpenCPN"
 
 #: src/chart1.cpp:2251
-msgid "No Charts Installed.\nPlease select chart folders in Options > Charts."
-msgstr "Nejsou instalovány mapy.\nVyber prosím složky map v Nastavení->Mapy."
+msgid "No Charts Installed.\n"
+"Please select chart folders in Options > Charts."
+msgstr "Nejsou instalovány mapy.\n"
+"Vyber prosím složky map v Nastavení->Mapy."
 
 #: src/chart1.cpp:2923 src/chcanv.cpp:10473
 msgid "AIS Target Query"
@@ -469,8 +490,10 @@ msgid "Chart Print"
 msgstr "Tisk mapy"
 
 #: src/chart1.cpp:7804 src/routeprintout.cpp:469
-msgid "There was a problem printing.\nPerhaps your current printer is not set correctly?"
-msgstr "Problém s tiskem.\nMožná není tvá tiskárna správně nastavena?"
+msgid "There was a problem printing.\n"
+"Perhaps your current printer is not set correctly?"
+msgstr "Problém s tiskem.\n"
+"Možná není tvá tiskárna správně nastavena?"
 
 #: src/chart1.cpp:7955 src/chart1.cpp:8028 src/routemanagerdialog.cpp:890
 msgid "(Unnamed Route)"
@@ -505,12 +528,22 @@ msgid "OpenCPN requires access to serial ports to use serial NMEA data.\n"
 msgstr "OpenCPN vyžaduje přístup k sériovým portům pro použití sériových NMEA dat. \n"
 
 #: src/chart1.cpp:9803
-msgid "No Serial Ports can be found on this system.\nYou must install a serial port (modprobe correct kernel module) or plug in a usb serial device.\n"
-msgstr "Na tomto systému nelze nalézt žádné sériové. \nMusíš nainstalovat sériový port (modprobe správný modul jádra) nebo zapoj USB sériové zařízení. \n"
+msgid "No Serial Ports can be found on this system.\n"
+"You must install a serial port (modprobe correct kernel module) or plug in a usb serial device.\n"
+msgstr "Na tomto systému nelze nalézt žádné sériové. \n"
+"Musíš nainstalovat sériový port (modprobe správný modul jádra) nebo zapoj USB sériové zařízení. \n"
 
 #: src/chart1.cpp:9825
-msgid "You do currently not have permission to access the serial ports on this system.\n\nIt is suggested that you exit OpenCPN now,\nand add yourself to the correct group to enable serial port access.\n\nYou may do so by executing the following command from the linux command line:\n\n                sudo usermod -a -G "
-msgstr "V současnosti nemáš oprávnění pro přístup k sériovým portům na tomto systému.\n\nDoporučujeme nyní ukončit OpenCPN, \na přidat tvé uživatelské jméno do správné skupiny abys získal přístup k sériovým portům.\n\nUčiň tak spuštěním následujícího příkazu z příkazové řádky Linuxu: \n\n sudo usermod - a - G "
+msgid "You do currently not have permission to access the serial ports on this system.\n\n"
+"It is suggested that you exit OpenCPN now,\n"
+"and add yourself to the correct group to enable serial port access.\n\n"
+"You may do so by executing the following command from the linux command line:\n\n"
+"                sudo usermod -a -G "
+msgstr "V současnosti nemáš oprávnění pro přístup k sériovým portům na tomto systému.\n\n"
+"Doporučujeme nyní ukončit OpenCPN, \n"
+"a přidat tvé uživatelské jméno do správné skupiny abys získal přístup k sériovým portům.\n\n"
+"Učiň tak spuštěním následujícího příkazu z příkazové řádky Linuxu: \n\n"
+" sudo usermod - a - G "
 
 #: src/chart1.cpp:10259 src/routeprop.cpp:361 src/routeprop.cpp:1831
 #: src/routemanagerdialog.cpp:428 src/options.cpp:655 src/options.cpp:847
@@ -1852,8 +1885,10 @@ msgid "&Copy as text"
 msgstr "Kopírovat jako text"
 
 #: src/routemanagerdialog.cpp:1412
-msgid "Select the maximum error allowed (in meters)\nafter data reduction:"
-msgstr "Vyber maximální povolenou chybu (v metrech)\npo redukci dat:"
+msgid "Select the maximum error allowed (in meters)\n"
+"after data reduction:"
+msgstr "Vyber maximální povolenou chybu (v metrech)\n"
+"po redukci dat:"
 
 #: src/routemanagerdialog.cpp:1413
 msgid "Reduce Data Precision"
@@ -1861,16 +1896,20 @@ msgstr "Snížit přesnost dat"
 
 #: src/routemanagerdialog.cpp:1432
 #, c-format
-msgid "The amount of data used by the track\n was reduced by %d%%."
-msgstr "Množství dat použitých stopou\n bylo sníženo o %d%%."
+msgid "The amount of data used by the track\n"
+" was reduced by %d%%."
+msgstr "Množství dat použitých stopou\n"
+" bylo sníženo o %d%%."
 
 #: src/routemanagerdialog.cpp:1434 src/options.cpp:3614
 msgid "OpenCPN info"
 msgstr "OpenCPN Informace"
 
 #: src/routemanagerdialog.cpp:1542
-msgid "The currently running Track was not merged.\nYou can merge it later when it is completed."
-msgstr "Momentálně zaznamenávaná stopa nebyla spojena.\nMůžeš ji napojit později, až skončí."
+msgid "The currently running Track was not merged.\n"
+"You can merge it later when it is completed."
+msgstr "Momentálně zaznamenávaná stopa nebyla spojena.\n"
+"Můžeš ji napojit později, až skončí."
 
 #: src/routemanagerdialog.cpp:1778
 msgid "OpenCPN Converting Track to Route...."
@@ -1897,7 +1936,10 @@ msgid "Are you sure you want to delete <ALL> waypoints?"
 msgstr "Určitě chceš smazat <VŠECHNY> trasové body?"
 
 #: src/routemanagerdialog.cpp:2258
-msgid "There are some waypoints used in routes or anchor alarms.\n Do you want to delete them as well?\n This will change the routes and disable the anchor alarms.\n Answering No keeps the waypoints used in routes or alarms."
+msgid "There are some waypoints used in routes or anchor alarms.\n"
+" Do you want to delete them as well?\n"
+" This will change the routes and disable the anchor alarms.\n"
+" Answering No keeps the waypoints used in routes or alarms."
 msgstr "Některé body zíjmu jsou použity v trasách nebo pro kotevní alarmy. Chceš je také odstranit? To změní trasy a deaktivuje kotevní alarmy. Odpověď Ne zachoví body, které jsou použity v trasách nebo alarmech."
 
 #: src/routemanagerdialog.cpp:2311
@@ -3322,8 +3364,10 @@ msgid "Chart Zoom/Scale Weighting"
 msgstr "Vážení Zoom/měřítko mapy"
 
 #: src/options.cpp:1767
-msgid "With a lower value, the same zoom level shows a less detailed chart.\nWith a higher value, the same zoom level shows a more detailed chart."
-msgstr "S nižší hodnotou stejnou úroveň zvětšení ukazuje méně podrobnou mapu.\nS vyšší hodnotu, stejná úroveň zvětšení zobrazí podrobnější mapu."
+msgid "With a lower value, the same zoom level shows a less detailed chart.\n"
+"With a higher value, the same zoom level shows a more detailed chart."
+msgstr "S nižší hodnotou stejnou úroveň zvětšení ukazuje méně podrobnou mapu.\n"
+"S vyšší hodnotu, stejná úroveň zvětšení zobrazí podrobnější mapu."
 
 #: src/options.cpp:1782 src/options.cpp:2241
 msgid "Controls"
@@ -3846,24 +3890,34 @@ msgid "You must enter the address..."
 msgstr "Musíš zadat adresu..."
 
 #: src/options.cpp:3603
-msgid "\n - your ship's length must be > 0"
-msgstr "\n - délka lodě musí být > 0"
+msgid "\n"
+" - your ship's length must be > 0"
+msgstr "\n"
+" - délka lodě musí být > 0"
 
 #: src/options.cpp:3605
-msgid "\n - your ship's beam must be > 0"
-msgstr "\n - šířka lodě musí být > 0"
+msgid "\n"
+" - your ship's beam must be > 0"
+msgstr "\n"
+" - šířka lodě musí být > 0"
 
 #: src/options.cpp:3607
-msgid "\n - your GPS offset from midship must be within your ship's beam"
-msgstr "\n - tvůj GPS offset od středu lodě musí být v šířce lodě"
+msgid "\n"
+" - your GPS offset from midship must be within your ship's beam"
+msgstr "\n"
+" - tvůj GPS offset od středu lodě musí být v šířce lodě"
 
 #: src/options.cpp:3609
-msgid "\n - your GPS offset from bow must be within your ship's length"
-msgstr "\n - tvůj GPS offset od příděmusí být mensí než délka lodě"
+msgid "\n"
+" - your GPS offset from bow must be within your ship's length"
+msgstr "\n"
+" - tvůj GPS offset od příděmusí být mensí než délka lodě"
 
 #: src/options.cpp:3611
-msgid "\n - your minimum ship icon size must be between 1 and 100 mm"
-msgstr "\n - minimální velikost ikony lodě musí být mezi 1 a 100 mm"
+msgid "\n"
+" - your minimum ship icon size must be between 1 and 100 mm"
+msgstr "\n"
+" - minimální velikost ikony lodě musí být mezi 1 a 100 mm"
 
 #: src/options.cpp:3613
 msgid "The settings for own ship real size are not correct:"
@@ -3898,8 +3952,16 @@ msgid "Enter the NMEA sentence"
 msgstr "Vlož NMEA větu"
 
 #: src/options.cpp:5754
-msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n It can also have a two letter prefix identifying the source, or TALKER, of the message.\n The whole sentences then looks like GPGGA or AITXT.\n You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.).\n\n The filter accepts just these three formats."
-msgstr "NMEA věta je většinou dlouhá 3 znaky (jako RMC, GGA atd.)\nTaké může mít dvuznakový prefix identifikující zdroj, nebo TALKER, zprávy.\nCelá věta pak vypadá jako GPGGA nebo AITXT.\nMůžeš odfiltrovat všechny věty s určitým TALKER prefixem (jako GP, AI atd.).\n\nFiltr akceptuje jen tyto tři formáty."
+msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n"
+" It can also have a two letter prefix identifying the source, or TALKER, of the message.\n"
+" The whole sentences then looks like GPGGA or AITXT.\n"
+" You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.).\n\n"
+" The filter accepts just these three formats."
+msgstr "NMEA věta je většinou dlouhá 3 znaky (jako RMC, GGA atd.)\n"
+"Také může mít dvuznakový prefix identifikující zdroj, nebo TALKER, zprávy.\n"
+"Celá věta pak vypadá jako GPGGA nebo AITXT.\n"
+"Můžeš odfiltrovat všechny věty s určitým TALKER prefixem (jako GP, AI atd.).\n\n"
+"Filtr akceptuje jen tyto tři formáty."
 
 #: src/options.cpp:5806
 msgid "Accept Sentences"
@@ -3982,8 +4044,12 @@ msgid "Close"
 msgstr "Zavřít"
 
 #: src/s57chart.cpp:4049
-msgid "S57 Cell Update chain incomplete.\nENC features may be incomplete or inaccurate.\nCheck the logfile for details."
-msgstr "Řetěz aktualizací S57 buňky je neúplný. \nENC mapa může být neúplná nebo nepřesná. \nPro podrobnosti zkontroluj soubor logu."
+msgid "S57 Cell Update chain incomplete.\n"
+"ENC features may be incomplete or inaccurate.\n"
+"Check the logfile for details."
+msgstr "Řetěz aktualizací S57 buňky je neúplný. \n"
+"ENC mapa může být neúplná nebo nepřesná. \n"
+"Pro podrobnosti zkontroluj soubor logu."
 
 #: src/s57chart.cpp:4050
 msgid "OpenCPN Create SENC Warning"
@@ -4006,8 +4072,10 @@ msgid "OpenCPN Warning"
 msgstr "OpenCPN varování"
 
 #: src/routeman.cpp:1018
-msgid "Waypoints can be renamed to reflect the new order, the names will be '001', '002' etc.\n\nDo you want to rename the waypoints?"
-msgstr "Trasové body mohou být přejmenovány, aby reflektovaly nové pořadí, jména budou '001', '002' atd.\n\nChceš přejmenovat všechny trasové body?"
+msgid "Waypoints can be renamed to reflect the new order, the names will be '001', '002' etc.\n\n"
+"Do you want to rename the waypoints?"
+msgstr "Trasové body mohou být přejmenovány, aby reflektovaly nové pořadí, jména budou '001', '002' atd.\n\n"
+"Chceš přejmenovat všechny trasové body?"
 
 #: src/pluginmanager.cpp:288
 msgid "    Incompatible PlugIn detected:"
@@ -4015,8 +4083,12 @@ msgstr "    Nalezen nekompatibilní doplněk:"
 
 #: src/pluginmanager.cpp:623
 #, c-format
-msgid "PlugIn %s (%s), version %i.%i was detected.\n This version is known to be unstable and will not be loaded.\n Please update this PlugIn at the opencpn.org website."
-msgstr "Doplněk %s (%s), byla zjištěna verze %i.%i.\nO této verzi je známo, že je nestabilní a nebude načtena.\nProsím aktualizuj tento doplněk ze stránek opencpn.org."
+msgid "PlugIn %s (%s), version %i.%i was detected.\n"
+" This version is known to be unstable and will not be loaded.\n"
+" Please update this PlugIn at the opencpn.org website."
+msgstr "Doplněk %s (%s), byla zjištěna verze %i.%i.\n"
+"O této verzi je známo, že je nestabilní a nebude načtena.\n"
+"Prosím aktualizuj tento doplněk ze stránek opencpn.org."
 
 #: src/pluginmanager.cpp:624 src/pluginmanager.cpp:630
 msgid "Blacklisted plugin detected..."
@@ -4024,8 +4096,12 @@ msgstr "Zjištěn problematický doplněk..."
 
 #: src/pluginmanager.cpp:629
 #, c-format
-msgid "PlugIn %s (%s), version %i.%i was detected.\n This version is known to be unstable.\n Please update this PlugIn at the opencpn.org website."
-msgstr "Doplněk %s (%s), byla zjištěna verze %i.%i.\nO této verzi je známo, že je nestabilní a nebude načtena.\nProsím aktualizuj tento doplněk ze stránek opencpn.org."
+msgid "PlugIn %s (%s), version %i.%i was detected.\n"
+" This version is known to be unstable.\n"
+" Please update this PlugIn at the opencpn.org website."
+msgstr "Doplněk %s (%s), byla zjištěna verze %i.%i.\n"
+"O této verzi je známo, že je nestabilní a nebude načtena.\n"
+"Prosím aktualizuj tento doplněk ze stránek opencpn.org."
 
 #: src/pluginmanager.cpp:662
 msgid "Unreadable PlugIn library detected, check the file permissions:\n"
@@ -4057,8 +4133,10 @@ msgid "Disable"
 msgstr "Deaktivovat"
 
 #: src/toolbar.cpp:691
-msgid "You can't hide the last tool from the toolbar\nas this would make it inaccessible."
-msgstr "Nemůžeš schovat poslední tlačítko nástrojové lišty,\nprotože by se stala nedostupnou."
+msgid "You can't hide the last tool from the toolbar\n"
+"as this would make it inaccessible."
+msgstr "Nemůžeš schovat poslední tlačítko nástrojové lišty,\n"
+"protože by se stala nedostupnou."
 
 #: src/toolbar.cpp:812 src/toolbar.cpp:823
 msgid "ToolTips"
@@ -4081,8 +4159,10 @@ msgid "Yes, hide it."
 msgstr "Ano, schovej to."
 
 #: src/toolbar.cpp:2045
-msgid "The Man Over Board button could be an important safety feature.\nAre you sure you want to hide it?"
-msgstr "Tlačítko Man Over Board může bít důležitá bezpečnostní pomůcka.\nUrčitě ho chceš skrýt?"
+msgid "The Man Over Board button could be an important safety feature.\n"
+"Are you sure you want to hide it?"
+msgstr "Tlačítko Man Over Board může bít důležitá bezpečnostní pomůcka.\n"
+"Určitě ho chceš skrýt?"
 
 #: src/kml.cpp:442
 msgid "OpenCPN Route"
@@ -5463,8 +5543,10 @@ msgid "Record Track"
 msgstr "Uložit trasu"
 
 #: src/AISTargetQueryDialog.cpp:165
-msgid "The recently captured track of this target has been recorded.\nDo you want to continue recording until the end of the current OpenCPN session?"
-msgstr "Nedávno zaznamenaná stopa tohoto cíle byla uložena.\nChceš pokračovat v ukládání do ukončení OpenCPN?"
+msgid "The recently captured track of this target has been recorded.\n"
+"Do you want to continue recording until the end of the current OpenCPN session?"
+msgstr "Nedávno zaznamenaná stopa tohoto cíle byla uložena.\n"
+"Chceš pokračovat v ukládání do ukončení OpenCPN?"
 
 #: src/AISTargetQueryDialog.cpp:268
 msgid "Stop Tracking"

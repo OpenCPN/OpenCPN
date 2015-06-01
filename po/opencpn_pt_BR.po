@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-01-07 16:15-0600\n"
-"PO-Revision-Date: 2015-01-07 17:18-0500\n"
+"PO-Revision-Date: 2015-05-23 05:02-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Portuguese, Brazilian\n"
 "Language: pt_BR\n"
@@ -13,6 +13,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: pt-BR\n"
 "X-Crowdin-File: /po/opencpn.pot\n"
 
 #: include/routeprop.h:64 src/chcanv.cpp:5214 src/chcanv.cpp:8223
@@ -121,8 +122,26 @@ msgid "OpenCPN Chart Add...."
 msgstr "OpenCPN Adicionar Cartas..."
 
 #: src/chart1.cpp:782
-msgid "\nOpenCPN is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied\nwarranty of MERCHANTABILITY or FITNESS FOR A\nPARTICULAR PURPOSE.\nSee the GNU General Public License for more details.\n\nOpenCPN must only be used in conjunction with approved\npaper charts and traditional methods of navigation.\n\nDO NOT rely upon OpenCPN for safety of life or property.\n\nPlease click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"
-msgstr "\nOpenCPN é distribuído na esperança que será útil,\nmas SEM QUALQUER GARANTIA;nem sequer implícita\ngarantia de COMERCIABILIDADE ou APTIDÃO PARA UM\nPROPÓSITO PARTICULAR.\nVeja o GNU General Public License para mais detalhes.\n\nOpenCPN só deve ser usado com cartas de papel aprovadas\n em conjunto com métodos tradicionais de navegação.\n\nNÃO confiar em OpenCPN para segurança da vida ou propriedade.\n\nPor favor, clique em \"OK\" para concordar e prosseguir, \"Cancelar\" para sair.\n\n\n\n\n"
+msgid "\n"
+"OpenCPN is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied\n"
+"warranty of MERCHANTABILITY or FITNESS FOR A\n"
+"PARTICULAR PURPOSE.\n"
+"See the GNU General Public License for more details.\n\n"
+"OpenCPN must only be used in conjunction with approved\n"
+"paper charts and traditional methods of navigation.\n\n"
+"DO NOT rely upon OpenCPN for safety of life or property.\n\n"
+"Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"
+msgstr "\n"
+"OpenCPN é distribuído na esperança que será útil,\n"
+"mas SEM QUALQUER GARANTIA;nem sequer implícita\n"
+"garantia de COMERCIABILIDADE ou APTIDÃO PARA UM\n"
+"PROPÓSITO PARTICULAR.\n"
+"Veja o GNU General Public License para mais detalhes.\n\n"
+"OpenCPN só deve ser usado com cartas de papel aprovadas\n"
+" em conjunto com métodos tradicionais de navegação.\n\n"
+"NÃO confiar em OpenCPN para segurança da vida ou propriedade.\n\n"
+"Por favor, clique em \"OK\" para concordar e prosseguir, \"Cancelar\" para sair.\n\n\n\n\n"
 
 #: src/chart1.cpp:796
 msgid "Welcome to OpenCPN"
@@ -195,8 +214,10 @@ msgid "OpenCPN Chart Update"
 msgstr "OpenCPN Atualização das Cartas"
 
 #: src/chart1.cpp:2251
-msgid "No Charts Installed.\nPlease select chart folders in Options > Charts."
-msgstr "           Nunhuma Carta instalada.\nPor favor selecione uma pasta de cartas em Ferramentas->Cartas."
+msgid "No Charts Installed.\n"
+"Please select chart folders in Options > Charts."
+msgstr "           Nunhuma Carta instalada.\n"
+"Por favor selecione uma pasta de cartas em Ferramentas->Cartas."
 
 #: src/chart1.cpp:2923 src/chcanv.cpp:10473
 msgid "AIS Target Query"
@@ -469,12 +490,14 @@ msgid "Chart Print"
 msgstr "Imprimir Carta"
 
 #: src/chart1.cpp:7804 src/routeprintout.cpp:469
-msgid "There was a problem printing.\nPerhaps your current printer is not set correctly?"
-msgstr "Houve um problema na impressão.\nTalvez sua impressora não esteja ajustada corretamente?"
+msgid "There was a problem printing.\n"
+"Perhaps your current printer is not set correctly?"
+msgstr "Houve um problema na impressão.\n"
+"Talvez sua impressora não esteja ajustada corretamente?"
 
 #: src/chart1.cpp:7955 src/chart1.cpp:8028 src/routemanagerdialog.cpp:890
 msgid "(Unnamed Route)"
-msgstr "(Rota sem Nome)"
+msgstr "(Derrota sem Nome)"
 
 #: src/chart1.cpp:8587
 msgid " Ship "
@@ -505,12 +528,22 @@ msgid "OpenCPN requires access to serial ports to use serial NMEA data.\n"
 msgstr "OpenCPN requer acesso a portas seriais para usar dados NMEA serial. \n"
 
 #: src/chart1.cpp:9803
-msgid "No Serial Ports can be found on this system.\nYou must install a serial port (modprobe correct kernel module) or plug in a usb serial device.\n"
-msgstr "Portas seriais não foram encontradas neste sistema. \nVocê deve instalar uma porta serial (modprobe correct kernel module) ou conecte um dispositivo serial usb. \n"
+msgid "No Serial Ports can be found on this system.\n"
+"You must install a serial port (modprobe correct kernel module) or plug in a usb serial device.\n"
+msgstr "Portas seriais não foram encontradas neste sistema. \n"
+"Você deve instalar uma porta serial (modprobe correct kernel module) ou conecte um dispositivo serial usb. \n"
 
 #: src/chart1.cpp:9825
-msgid "You do currently not have permission to access the serial ports on this system.\n\nIt is suggested that you exit OpenCPN now,\nand add yourself to the correct group to enable serial port access.\n\nYou may do so by executing the following command from the linux command line:\n\n                sudo usermod -a -G "
-msgstr "Você atualmente não tem permissão para acessar as portas seriais neste sistema.\n\n sugerimos que você saia do OpenCPN agora,\ne adicione-se ao grupo correto para habilitar o acesso a porta serial.\n\nVocê pode fazer isso executando o seguinte comando a partir da linha de comando do Linux:\n\n sudo usermod -a -G "
+msgid "You do currently not have permission to access the serial ports on this system.\n\n"
+"It is suggested that you exit OpenCPN now,\n"
+"and add yourself to the correct group to enable serial port access.\n\n"
+"You may do so by executing the following command from the linux command line:\n\n"
+"                sudo usermod -a -G "
+msgstr "Você atualmente não tem permissão para acessar as portas seriais neste sistema.\n\n"
+" sugerimos que você saia do OpenCPN agora,\n"
+"e adicione-se ao grupo correto para habilitar o acesso a porta serial.\n\n"
+"Você pode fazer isso executando o seguinte comando a partir da linha de comando do Linux:\n\n"
+" sudo usermod -a -G "
 
 #: src/chart1.cpp:10259 src/routeprop.cpp:361 src/routeprop.cpp:1831
 #: src/routemanagerdialog.cpp:428 src/options.cpp:655 src/options.cpp:847
@@ -654,7 +687,7 @@ msgstr "Valor do console"
 
 #: src/concanv.cpp:190 src/chcanv.cpp:6609
 msgid "Route"
-msgstr "Rota"
+msgstr "Derrota"
 
 #: src/concanv.cpp:201
 msgid "Full Route"
@@ -682,7 +715,7 @@ msgstr "Nível de Detalhe CM93"
 
 #: src/chcanv.cpp:2941 src/chcanv.cpp:8778
 msgid "Route: "
-msgstr "Rota: "
+msgstr "Derrota: "
 
 #: src/chcanv.cpp:2943 src/chcanv.cpp:8780
 msgid "Layer Route: "
@@ -894,7 +927,7 @@ msgstr "Ativar"
 
 #: src/chcanv.cpp:6930
 msgid "Insert Waypoint"
-msgstr "Inserir Waypoint "
+msgstr "Inserir Ponto da Derrota  "
 
 #: src/chcanv.cpp:6931 src/undo.cpp:91
 msgid "Append Waypoint"
@@ -934,7 +967,7 @@ msgstr "Camada do ponto da Rota"
 
 #: src/chcanv.cpp:7004
 msgid "Remove from Route"
-msgstr "Remover Ponto da Rota"
+msgstr "Remover Ponto da Derrota"
 
 #: src/chcanv.cpp:7006 src/chcanv.cpp:7048
 msgid "Copy as KML"
@@ -947,7 +980,7 @@ msgstr "Apagar"
 
 #: src/chcanv.cpp:7039
 msgid "Layer Waypoint"
-msgstr "Camada Waypoint"
+msgstr "Camada Ponto da Derrota"
 
 #: src/chcanv.cpp:7046
 msgid "Navigate To This"
@@ -1852,8 +1885,10 @@ msgid "&Copy as text"
 msgstr "&Copiar como texto"
 
 #: src/routemanagerdialog.cpp:1412
-msgid "Select the maximum error allowed (in meters)\nafter data reduction:"
-msgstr "Selecione o erro máximo permitido (em metros) \napós redução de dados:"
+msgid "Select the maximum error allowed (in meters)\n"
+"after data reduction:"
+msgstr "Selecione o erro máximo permitido (em metros) \n"
+"após redução de dados:"
 
 #: src/routemanagerdialog.cpp:1413
 msgid "Reduce Data Precision"
@@ -1861,16 +1896,20 @@ msgstr "Reduzir a precisão de dados"
 
 #: src/routemanagerdialog.cpp:1432
 #, c-format
-msgid "The amount of data used by the track\n was reduced by %d%%."
-msgstr "A quantidade de dados usados pelo track\n foi reduzida em %d %%."
+msgid "The amount of data used by the track\n"
+" was reduced by %d%%."
+msgstr "A quantidade de dados usados pelo track\n"
+" foi reduzida em %d %%."
 
 #: src/routemanagerdialog.cpp:1434 src/options.cpp:3614
 msgid "OpenCPN info"
 msgstr "OpenCPN Informações"
 
 #: src/routemanagerdialog.cpp:1542
-msgid "The currently running Track was not merged.\nYou can merge it later when it is completed."
-msgstr "O acompanhamento atualmente em execução não foi mesclado. \nVocê pode mesclá-lo mais tarde quando estiver concluído."
+msgid "The currently running Track was not merged.\n"
+"You can merge it later when it is completed."
+msgstr "O acompanhamento atualmente em execução não foi mesclado. \n"
+"Você pode mesclá-lo mais tarde quando estiver concluído."
 
 #: src/routemanagerdialog.cpp:1778
 msgid "OpenCPN Converting Track to Route...."
@@ -1897,8 +1936,14 @@ msgid "Are you sure you want to delete <ALL> waypoints?"
 msgstr "Tem certeza que quer excluir <TODOS> os Pontos da Derrota?"
 
 #: src/routemanagerdialog.cpp:2258
-msgid "There are some waypoints used in routes or anchor alarms.\n Do you want to delete them as well?\n This will change the routes and disable the anchor alarms.\n Answering No keeps the waypoints used in routes or alarms."
-msgstr "Existem alguns pontos da derrota utilizados em rotas ou alarmes de fundeio. \n Você deseja excluí-los também?\n Isto mudará as rotas e desativará os alarmes de fundeio.\n Respondendo Não mantém os pontos da derrota utilizados em rotas ou alarmes."
+msgid "There are some waypoints used in routes or anchor alarms.\n"
+" Do you want to delete them as well?\n"
+" This will change the routes and disable the anchor alarms.\n"
+" Answering No keeps the waypoints used in routes or alarms."
+msgstr "Existem alguns pontos da derrota utilizados em rotas ou alarmes de fundeio. \n"
+" Você deseja excluí-los também?\n"
+" Isto mudará as rotas e desativará os alarmes de fundeio.\n"
+" Respondendo Não mantém os pontos da derrota utilizados em rotas ou alarmes."
 
 #: src/routemanagerdialog.cpp:2311
 msgid "Hide from chart"
@@ -2234,7 +2279,7 @@ msgstr "F/V"
 
 #: src/ais.cpp:230
 msgid "Tow"
-msgstr "De Para"
+msgstr "Reboque"
 
 #: src/ais.cpp:231
 msgid "Long Tow"
@@ -2534,7 +2579,7 @@ msgstr "Área restrita: Pesca proibida"
 
 #: src/ais.cpp:326
 msgid "Restricted Area: No anchoring."
-msgstr "Área restrita: Não ancorar."
+msgstr "Área restrita: Não fundear."
 
 #: src/ais.cpp:327
 msgid "Restricted Area: Entry approval required prior to transit"
@@ -2799,7 +2844,7 @@ msgstr "MMSI"
 
 #: src/options.cpp:362
 msgid "Tracking"
-msgstr "Rastreamento"
+msgstr "Acompanhamento"
 
 #: src/options.cpp:367
 msgid "Default tracking"
@@ -2883,7 +2928,7 @@ msgstr "AIS Geral"
 
 #: src/options.cpp:1089
 msgid "Filter NMEA Course and Speed data"
-msgstr "Filtrar dados NMEA curso e velocidade"
+msgstr "Filtrar dados NMEA de rumo e velocidade"
 
 #: src/options.cpp:1093
 msgid "Filter period (sec)"
@@ -2931,7 +2976,7 @@ msgstr "Protocolo"
 
 #: src/options.cpp:1183
 msgid "TCP"
-msgstr "Alerta PMA/TPMA"
+msgstr "TCP"
 
 #: src/options.cpp:1188
 msgid "UDP"
@@ -3207,7 +3252,7 @@ msgstr "Mostrar Anéis de Alcance"
 
 #: src/options.cpp:1574
 msgid "None"
-msgstr "Nada"
+msgstr "Nenhum"
 
 #: src/options.cpp:1582
 msgid "Distance Between Rings"
@@ -3322,8 +3367,10 @@ msgid "Chart Zoom/Scale Weighting"
 msgstr "Zoom Carta/Ponderação Escala"
 
 #: src/options.cpp:1767
-msgid "With a lower value, the same zoom level shows a less detailed chart.\nWith a higher value, the same zoom level shows a more detailed chart."
-msgstr "Com um valor mais baixo, o mesmo nível de zoom mostra uma carta menos detalhada. \nCom um valor mais alto, o mesmo nível de zoom mostra uma carta mais detalhada."
+msgid "With a lower value, the same zoom level shows a less detailed chart.\n"
+"With a higher value, the same zoom level shows a more detailed chart."
+msgstr "Com um valor mais baixo, o mesmo nível de zoom mostra uma carta menos detalhada. \n"
+"Com um valor mais alto, o mesmo nível de zoom mostra uma carta mais detalhada."
 
 #: src/options.cpp:1782 src/options.cpp:2241
 msgid "Controls"
@@ -3367,7 +3414,7 @@ msgstr "Ativar a barra de ferramentas transparente"
 
 #: src/options.cpp:1854
 msgid "Vector Chart Display"
-msgstr "Mostrar Carta de Vetor"
+msgstr "Apresentação de cartas vectoriais"
 
 #: src/options.cpp:1875
 msgid "Display Category"
@@ -3391,11 +3438,11 @@ msgstr "Standard Marítimo"
 
 #: src/options.cpp:1888 src/options.cpp:2451 src/options.cpp:2780
 msgid "Display"
-msgstr "Exposição"
+msgstr "Apresentação"
 
 #: src/options.cpp:1893
 msgid "Depth Soundings"
-msgstr "Sondagens de profundidade"
+msgstr "Sondagens"
 
 #: src/options.cpp:1897
 msgid "Chart Information Objects"
@@ -3403,11 +3450,11 @@ msgstr "Informação da Marca"
 
 #: src/options.cpp:1901
 msgid "Buoys/Lights"
-msgstr "Bóias e luzes"
+msgstr "Bóias e Faróis"
 
 #: src/options.cpp:1906
 msgid "Buoy/Light Labels"
-msgstr "Bóia/luz rótulos"
+msgstr "Legendas de bóias e Faróis"
 
 #: src/options.cpp:1910
 msgid "Light Descriptions"
@@ -3431,7 +3478,7 @@ msgstr "Somente Texto Importante"
 
 #: src/options.cpp:1931
 msgid "De-Cluttered Text"
-msgstr "Desembaralhar Texto (exp.)"
+msgstr "Texto Desembaralhado"
 
 #: src/options.cpp:1935
 msgid "Chart Detail"
@@ -3519,7 +3566,7 @@ msgstr "Todas as cartas disponíveis"
 
 #: src/options.cpp:2120
 msgid "Remove Chart"
-msgstr "Diretórios de Cartas Ativos"
+msgstr "Remover Cartas"
 
 #: src/options.cpp:2141
 msgid "All Charts"
@@ -3603,7 +3650,7 @@ msgstr "Lat/Long"
 
 #: src/options.cpp:2329
 msgid "Degrees, Decimal Minutes"
-msgstr "Graus, Decimais de Minutos"
+msgstr "Graus, Décimos de Minutos"
 
 #: src/options.cpp:2329
 msgid "Decimal Degrees"
@@ -3615,11 +3662,11 @@ msgstr "Graus, minutos, segundos"
 
 #: src/options.cpp:2342
 msgid "Bearings"
-msgstr "Direções"
+msgstr "Marcações"
 
 #: src/options.cpp:2348
 msgid "Show magnetic bearings and headings"
-msgstr "Mostrar direção e rumo magnético"
+msgstr "Mostrar marcações e proas magnéticas"
 
 #: src/options.cpp:2355
 msgid "Assumed magnetic variation"
@@ -3803,7 +3850,7 @@ msgstr "Conexões"
 
 #: src/options.cpp:2794
 msgid "Ships"
-msgstr "Navio:"
+msgstr "Navios"
 
 #: src/options.cpp:2799
 msgid "User Interface"
@@ -3846,24 +3893,34 @@ msgid "You must enter the address..."
 msgstr "Você deve digitar o endereço..."
 
 #: src/options.cpp:3603
-msgid "\n - your ship's length must be > 0"
-msgstr "\n - comprimento do seu barco deve ser > 0"
+msgid "\n"
+" - your ship's length must be > 0"
+msgstr "\n"
+" - comprimento do seu barco deve ser > 0"
 
 #: src/options.cpp:3605
-msgid "\n - your ship's beam must be > 0"
-msgstr "\n - boca do seu barco deve ser > 0"
+msgid "\n"
+" - your ship's beam must be > 0"
+msgstr "\n"
+" - boca do seu barco deve ser > 0"
 
 #: src/options.cpp:3607
-msgid "\n - your GPS offset from midship must be within your ship's beam"
-msgstr "\n - seu deslocamento GPS do meio do barco deve estar dentro da boca do seu barco"
+msgid "\n"
+" - your GPS offset from midship must be within your ship's beam"
+msgstr "\n"
+" - seu deslocamento GPS do meio do barco deve estar dentro da boca do seu barco"
 
 #: src/options.cpp:3609
-msgid "\n - your GPS offset from bow must be within your ship's length"
-msgstr "\n - seu deslocamento GPS da proa deve estar dentro do comprimento do seu barco"
+msgid "\n"
+" - your GPS offset from bow must be within your ship's length"
+msgstr "\n"
+" - seu deslocamento GPS da proa deve estar dentro do comprimento do seu barco"
 
 #: src/options.cpp:3611
-msgid "\n - your minimum ship icon size must be between 1 and 100 mm"
-msgstr "\n - seu tamanho mínimo do ícone do barco deve estar entre 1 e 100 mm"
+msgid "\n"
+" - your minimum ship icon size must be between 1 and 100 mm"
+msgstr "\n"
+" - seu tamanho mínimo do ícone do barco deve estar entre 1 e 100 mm"
 
 #: src/options.cpp:3613
 msgid "The settings for own ship real size are not correct:"
@@ -3898,8 +3955,16 @@ msgid "Enter the NMEA sentence"
 msgstr "Insira a sentença NMEA"
 
 #: src/options.cpp:5754
-msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n It can also have a two letter prefix identifying the source, or TALKER, of the message.\n The whole sentences then looks like GPGGA or AITXT.\n You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.).\n\n The filter accepts just these three formats."
-msgstr "Uma sentença NMEA geralmente é de 3 caracteres longos (como RMC, GGA etc.)\n Ela também pode ter um prefixo de duas letras, identificando a origem, ou relator da mensagem\n Toda frase então parece como GPGGA ou AITXT.\n Você pode filtrar todas as frases com determinado prefixo (como GP, AI etc.).\n\n O filtro aceita apenas esses três formatos."
+msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n"
+" It can also have a two letter prefix identifying the source, or TALKER, of the message.\n"
+" The whole sentences then looks like GPGGA or AITXT.\n"
+" You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.).\n\n"
+" The filter accepts just these three formats."
+msgstr "Uma sentença NMEA geralmente é de 3 caracteres longos (como RMC, GGA etc.)\n"
+" Ela também pode ter um prefixo de duas letras, identificando a origem, ou relator da mensagem\n"
+" Toda frase então parece como GPGGA ou AITXT.\n"
+" Você pode filtrar todas as frases com determinado prefixo (como GP, AI etc.).\n\n"
+" O filtro aceita apenas esses três formatos."
 
 #: src/options.cpp:5806
 msgid "Accept Sentences"
@@ -3982,8 +4047,12 @@ msgid "Close"
 msgstr "Fechar"
 
 #: src/s57chart.cpp:4049
-msgid "S57 Cell Update chain incomplete.\nENC features may be incomplete or inaccurate.\nCheck the logfile for details."
-msgstr "Célula S57 atualização incompleta. \nENC características podem estar incompleta ou inexata. \nCheck o arquivo de log para obter detalhes."
+msgid "S57 Cell Update chain incomplete.\n"
+"ENC features may be incomplete or inaccurate.\n"
+"Check the logfile for details."
+msgstr "Célula S57 atualização incompleta. \n"
+"ENC características podem estar incompleta ou inexata. \n"
+"Check o arquivo de log para obter detalhes."
 
 #: src/s57chart.cpp:4050
 msgid "OpenCPN Create SENC Warning"
@@ -4006,8 +4075,10 @@ msgid "OpenCPN Warning"
 msgstr "OpenCPN aviso"
 
 #: src/routeman.cpp:1018
-msgid "Waypoints can be renamed to reflect the new order, the names will be '001', '002' etc.\n\nDo you want to rename the waypoints?"
-msgstr "Os Pontos da Derrota podem ser renomeados para refletir a nova ordem, os nomes serão ´001´, ´002´ etc.\n\nQuer renomear os pontos da derrota?"
+msgid "Waypoints can be renamed to reflect the new order, the names will be '001', '002' etc.\n\n"
+"Do you want to rename the waypoints?"
+msgstr "Os Pontos da Derrota podem ser renomeados para refletir a nova ordem, os nomes serão ´001´, ´002´ etc.\n\n"
+"Quer renomear os pontos da derrota?"
 
 #: src/pluginmanager.cpp:288
 msgid "    Incompatible PlugIn detected:"
@@ -4015,8 +4086,12 @@ msgstr "    PlugIn incompatível detectado:"
 
 #: src/pluginmanager.cpp:623
 #, c-format
-msgid "PlugIn %s (%s), version %i.%i was detected.\n This version is known to be unstable and will not be loaded.\n Please update this PlugIn at the opencpn.org website."
-msgstr "PlugIn %s (%s), versão %i.%i foi detectado. \n esta versão é conhecida por ser instável e não será carregado. \n por favor atualize este PlugIn no site opencpn.org."
+msgid "PlugIn %s (%s), version %i.%i was detected.\n"
+" This version is known to be unstable and will not be loaded.\n"
+" Please update this PlugIn at the opencpn.org website."
+msgstr "PlugIn %s (%s), versão %i.%i foi detectado. \n"
+" esta versão é conhecida por ser instável e não será carregado. \n"
+" por favor atualize este PlugIn no site opencpn.org."
 
 #: src/pluginmanager.cpp:624 src/pluginmanager.cpp:630
 msgid "Blacklisted plugin detected..."
@@ -4024,8 +4099,12 @@ msgstr "Plugin da lista negra detectado..."
 
 #: src/pluginmanager.cpp:629
 #, c-format
-msgid "PlugIn %s (%s), version %i.%i was detected.\n This version is known to be unstable.\n Please update this PlugIn at the opencpn.org website."
-msgstr "PlugIn %s (%s), versão %i.%i foi detectado. \n esta versão é conhecida por ser instável. \n por favor atualize este PlugIn no site opencpn.org."
+msgid "PlugIn %s (%s), version %i.%i was detected.\n"
+" This version is known to be unstable.\n"
+" Please update this PlugIn at the opencpn.org website."
+msgstr "PlugIn %s (%s), versão %i.%i foi detectado. \n"
+" esta versão é conhecida por ser instável. \n"
+" por favor atualize este PlugIn no site opencpn.org."
 
 #: src/pluginmanager.cpp:662
 msgid "Unreadable PlugIn library detected, check the file permissions:\n"
@@ -4057,8 +4136,10 @@ msgid "Disable"
 msgstr "Desabilitar"
 
 #: src/toolbar.cpp:691
-msgid "You can't hide the last tool from the toolbar\nas this would make it inaccessible."
-msgstr "Você não pode esconder a última ferramenta da barra de Ferramentas\ncom isso ficaria inacessível."
+msgid "You can't hide the last tool from the toolbar\n"
+"as this would make it inaccessible."
+msgstr "Você não pode esconder a última ferramenta da barra de Ferramentas\n"
+"com isso ficaria inacessível."
 
 #: src/toolbar.cpp:812 src/toolbar.cpp:823
 msgid "ToolTips"
@@ -4081,20 +4162,22 @@ msgid "Yes, hide it."
 msgstr "Sim, escondê-lo."
 
 #: src/toolbar.cpp:2045
-msgid "The Man Over Board button could be an important safety feature.\nAre you sure you want to hide it?"
-msgstr "O botão de homem Over Board poderia ser um recurso de segurança importante. \nVocê tem certeza que quer escondê-lo?"
+msgid "The Man Over Board button could be an important safety feature.\n"
+"Are you sure you want to hide it?"
+msgstr "O botão de Homem ao Mar pode ser um recurso de segurança importante. \n"
+"Você tem certeza que quer escondê-lo?"
 
 #: src/kml.cpp:442
 msgid "OpenCPN Route"
-msgstr "OpenCPN Criar Derrota"
+msgstr "OpenCPN Derrota"
 
 #: src/kml.cpp:489
 msgid "OpenCPN Track"
-msgstr "OpenCPN faixa"
+msgstr "OpenCPN Acompanhamento"
 
 #: src/kml.cpp:546
 msgid "OpenCPN Waypoint"
-msgstr "OpenCPN Waypoint"
+msgstr "OpenCPN Ponto da Derrota"
 
 #: src/kml.cpp:622
 msgid "Choose Format for Copy"
@@ -4111,7 +4194,7 @@ msgstr "KML com dados de waypoint estendido (QtVlm)"
 #: src/undo.cpp:82 src/AISTargetAlertDialog.cpp:209
 #: src/AISTargetQueryDialog.cpp:239
 msgid "Create Waypoint"
-msgstr "Criar  Waypoint"
+msgstr "Criar Ponto da Derrota"
 
 #: src/undo.cpp:85
 msgid "Delete Waypoint"
@@ -4119,7 +4202,7 @@ msgstr "Excluir Ponto da Derrota"
 
 #: src/undo.cpp:88
 msgid "Move Waypoint"
-msgstr "Mover o Waypoint"
+msgstr "Mover o Ponto da Derrota"
 
 #: src/routeprintout.cpp:106 src/routeprintout.cpp:369
 #: src/GoToPositionDialog.cpp:116 src/AIS_Target_Data.cpp:470
@@ -4136,27 +4219,27 @@ msgstr "Elementos para imprimir..."
 
 #: src/routeprintout.cpp:366
 msgid "Show Waypoint name."
-msgstr "Mostre nome do Waypoint."
+msgstr "Mostrar nome do Ponto da Derrota."
 
 #: src/routeprintout.cpp:373
 msgid "Show Waypoint position."
-msgstr "Mostre posição do Waypoint."
+msgstr "Mostrar posição do Ponto da Derrota."
 
 #: src/routeprintout.cpp:380
 msgid "Show course from each Waypoint to the next one. "
-msgstr "Mostre o curso de cada Waypoint para o próximo. "
+msgstr "Mostre o rumo de cada Ponto da Derrota para o próximo. "
 
 #: src/routeprintout.cpp:387
 msgid "Show Distance from each Waypoint to the next one."
-msgstr "Mostre distância de cada Waypoint para o próximo."
+msgstr "Mostre distância de cada Ponto da Derrota para o próximo."
 
 #: src/routeprintout.cpp:394
 msgid "Show Waypoint description."
-msgstr "Mostre descrição do Waypoint."
+msgstr "Mostre descrição do Ponto da Derrota."
 
 #: src/routeprintout.cpp:459
 msgid "Route Print"
-msgstr "Imprimir a Rota"
+msgstr "Imprimir Derrota"
 
 #: src/TrackPropDlg.cpp:127
 msgid "From"
@@ -4204,7 +4287,7 @@ msgstr "LMT @ Iniciar Faixa"
 
 #: src/TrackPropDlg.cpp:252
 msgid "Timestamp"
-msgstr "Carimbo de tempo"
+msgstr "Marca Temporal"
 
 #: src/TrackPropDlg.cpp:336
 msgid "Print"
@@ -4220,7 +4303,7 @@ msgstr "Estender"
 
 #: src/TrackPropDlg.cpp:342
 msgid "To route"
-msgstr "A rota"
+msgstr "Para derrota"
 
 #: src/TrackPropDlg.cpp:344
 msgid "Export"
@@ -4237,15 +4320,15 @@ msgstr "%H %M"
 #: src/TrackPropDlg.cpp:624
 #, c-format
 msgid "Track Properties, Layer: %d"
-msgstr "Propriedades da faixa, camada: %d"
+msgstr "Propriedades do Acompanhamento, Camada: %d"
 
 #: src/TrackPropDlg.cpp:637
 msgid "Track Properties"
-msgstr "Propriedades da Faixa"
+msgstr "Propriedades do Acompanhamento"
 
 #: src/TrackPropDlg.cpp:850
 msgid "track"
-msgstr "faixa"
+msgstr "acompanhamentos"
 
 #: src/TrackPropDlg.cpp:1284
 msgid "--"
@@ -4312,11 +4395,11 @@ msgstr "Marc."
 
 #: src/AISTargetListDialog.cpp:412 src/AIS_Target_Data.cpp:605
 msgid "Range"
-msgstr "Gama"
+msgstr "Distância"
 
 #: src/AISTargetListDialog.cpp:420
 msgid "CoG"
-msgstr "CoG"
+msgstr "R fd"
 
 #: src/AISTargetListDialog.cpp:428
 msgid "SoG"
@@ -4325,31 +4408,31 @@ msgstr "V fd"
 #: src/AISTargetListDialog.cpp:435 src/AIS_Target_Data.cpp:619
 #: src/AIS_Target_Data.cpp:757
 msgid "CPA"
-msgstr "CPA"
+msgstr "PMA"
 
 #: src/AISTargetListDialog.cpp:442
 msgid "TCPA"
-msgstr "TCPA"
+msgstr "TPMA"
 
 #: src/AISTargetListDialog.cpp:454
 msgid "Target info"
-msgstr "Lista dos Alvos AIS"
+msgstr "Info do Alvo"
 
 #: src/AISTargetListDialog.cpp:467
 msgid "Create WPT"
-msgstr "Criar WPT"
+msgstr "Criar Ponto da Derrota"
 
 #: src/AISTargetListDialog.cpp:473
 msgid "Hide All Tracks"
-msgstr "Esconder todas as faixas"
+msgstr "Esconder Todos os Acompanhamentos"
 
 #: src/AISTargetListDialog.cpp:479
 msgid "Show All Tracks"
-msgstr "Mostrar todas as faixas"
+msgstr "Mostrar Todos os Acompanhamentos"
 
 #: src/AISTargetListDialog.cpp:485
 msgid "Toggle track"
-msgstr "Faixa de alternância"
+msgstr "Ligar Acompanhamento"
 
 #: src/AISTargetListDialog.cpp:491
 msgid "AutoSort"
@@ -4436,11 +4519,11 @@ msgstr "Esquerda"
 
 #: src/AIS_Target_Data.cpp:591
 msgid "Heading"
-msgstr "Cabeçalho"
+msgstr "Proa"
 
 #: src/AIS_Target_Data.cpp:602
 msgid "Turn Rate"
-msgstr "Taxa de volta"
+msgstr "Taxa Guinada"
 
 #: src/AIS_Target_Data.cpp:616
 msgid "in "
@@ -4448,7 +4531,7 @@ msgstr "em "
 
 #: src/AIS_Target_Data.cpp:626 src/AIS_Target_Data.cpp:629
 msgid "Inland Blue Flag"
-msgstr "Bandeira de interior azul"
+msgstr "Bandeira azul de águas interiores"
 
 #: src/AIS_Target_Data.cpp:627
 msgid "Clear"
@@ -4520,7 +4603,7 @@ msgstr "Áustria"
 
 #: src/AIS_Target_Data.cpp:896
 msgid "Azores"
-msgstr "Azores"
+msgstr "Açores"
 
 #: src/AIS_Target_Data.cpp:897
 msgid "Belgium"
@@ -5427,7 +5510,7 @@ msgstr "Equador"
 
 #: src/AIS_Target_Data.cpp:1174
 msgid "Falkland Islands"
-msgstr "Ilhas Malvinas"
+msgstr "Ilhas Falkland"
 
 #: src/AIS_Target_Data.cpp:1175
 msgid "Guiana"
@@ -5463,8 +5546,10 @@ msgid "Record Track"
 msgstr "Registro de rota"
 
 #: src/AISTargetQueryDialog.cpp:165
-msgid "The recently captured track of this target has been recorded.\nDo you want to continue recording until the end of the current OpenCPN session?"
-msgstr "A faixa recentemente capturada deste alvo foi gravada.\n Você quer continuar a gravação até o final da sessão atual do OpenCPN?"
+msgid "The recently captured track of this target has been recorded.\n"
+"Do you want to continue recording until the end of the current OpenCPN session?"
+msgstr "A faixa recentemente capturada deste alvo foi gravada.\n"
+" Você quer continuar a gravação até o final da sessão atual do OpenCPN?"
 
 #: src/AISTargetQueryDialog.cpp:268
 msgid "Stop Tracking"
@@ -5521,11 +5606,11 @@ msgstr "Fonte de dados :"
 
 #: src/TCWin.cpp:458
 msgid "HW"
-msgstr "HW"
+msgstr "PM"
 
 #: src/TCWin.cpp:458
 msgid "LW"
-msgstr "LW"
+msgstr "BM"
 
 #: src/TCWin.cpp:636
 msgid "Today"

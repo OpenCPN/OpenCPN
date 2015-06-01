@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-01-06 17:25-0600\n"
-"PO-Revision-Date: 2015-01-07 17:17-0500\n"
+"PO-Revision-Date: 2015-05-23 05:01-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -13,6 +13,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: fr\n"
 "X-Crowdin-File: /plugins/grib_pi/po/grib_pi.pot\n"
 
 #: src/GribUIDialog.cpp:157 src/GribUIDialog.cpp:1105
@@ -280,8 +281,10 @@ msgid "Apply"
 msgstr "Appliquer"
 
 #: src/GribSettingsDialog.cpp:435
-msgid "This file contains data for particular time intervals but you have chosen to display different intervals.\nPlease consider that the values will be interpolated."
-msgstr "Ce fichier contient des données pour une certaine durée, mais vous avez choisi d'afficher les données pour un autre durée.\nSVP, tenez compte du fait que les valeurs affichées seront interpolées."
+msgid "This file contains data for particular time intervals but you have chosen to display different intervals.\n"
+"Please consider that the values will be interpolated."
+msgstr "Ce fichier contient des données pour une certaine durée, mais vous avez choisi d'afficher les données pour un autre durée.\n"
+"SVP, tenez compte du fait que les valeurs affichées seront interpolées."
 
 #: src/GribSettingsDialog.cpp:436 src/grib_pi.cpp:593
 #: src/GribRequestDialog.cpp:529
@@ -734,7 +737,9 @@ msgstr "Superpositions trop larges et qui ne peuvent pas être affichées :"
 
 #: src/GribOverlayFactory.cpp:1042
 msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
-msgstr "Rotation cap vers le haut : Impossible de mettre en oeuvre la superposition. Dans les options d'OpenCPN, veuillez :\n- soit activer la technologie d'affichage OpenGL,\n- soit  dé-cocher la case \"Cap vers le haut\""
+msgstr "Rotation cap vers le haut : Impossible de mettre en oeuvre la superposition. Dans les options d'OpenCPN, veuillez :\n"
+"- soit activer la technologie d'affichage OpenGL,\n"
+"- soit  dé-cocher la case \"Cap vers le haut\""
 
 #: src/GribOverlayFactory.cpp:1059
 msgid "Please Zoom or Scale Out to view invisible overlays:"
@@ -749,24 +754,58 @@ msgid "GRIB PlugIn for OpenCPN"
 msgstr "Complément \"Météo\" d'affichage des fichiers GRIB pour OpenCPN"
 
 #: src/grib_pi.cpp:180
-msgid "GRIB PlugIn for OpenCPN\nProvides basic GRIB file overlay capabilities for several GRIB file types\nand a request function to get GRIB files by eMail.\n\nSupported GRIB data include:\n- wind direction and speed (at 10 m)\n- wind gust\n- surface pressure\n- rainfall\n- cloud cover\n- significant wave height and direction\n- air surface temperature (at 2 m)\n- sea surface temperature\n- surface current direction and speed\n- Convective Available Potential Energy (CAPE)\n- wind, altitude, temperature and relative humidity at 300, 500, 700, 850 hPa."
-msgstr "Complément \"Météo\" pour l'affichage des fichiers GRIB par OpenCPN\nFournit un affichage des fichiers GRIB pour plusieurs types de données.\net des mode de requête des fichiers Grib par mail.\n\nDonnées GRIB exploitables :\n- Vent : Direction et vitesse (à 10m)\n- Rafale de vent\n- Pression à la surface\n- Pluviométrie\n- Couverture nuageuse\n- Hauteur significative des vagues\n- Température de l'air à la surface de la mer\n- température de l'eau de surface de la mer\n- Courant de surface : Direction et vitesse.\n- Energie potentielle convective disponible (CAPE)\n- Vent, altitude, température et humidité relative à 300, 500, 700 et 850hpa."
+msgid "GRIB PlugIn for OpenCPN\n"
+"Provides basic GRIB file overlay capabilities for several GRIB file types\n"
+"and a request function to get GRIB files by eMail.\n\n"
+"Supported GRIB data include:\n"
+"- wind direction and speed (at 10 m)\n"
+"- wind gust\n"
+"- surface pressure\n"
+"- rainfall\n"
+"- cloud cover\n"
+"- significant wave height and direction\n"
+"- air surface temperature (at 2 m)\n"
+"- sea surface temperature\n"
+"- surface current direction and speed\n"
+"- Convective Available Potential Energy (CAPE)\n"
+"- wind, altitude, temperature and relative humidity at 300, 500, 700, 850 hPa."
+msgstr "Complément \"Météo\" pour l'affichage des fichiers GRIB par OpenCPN\n"
+"Fournit un affichage des fichiers GRIB pour plusieurs types de données.\n"
+"et des mode de requête des fichiers Grib par mail.\n\n"
+"Données GRIB exploitables :\n"
+"- Vent : Direction et vitesse (à 10m)\n"
+"- Rafale de vent\n"
+"- Pression à la surface\n"
+"- Pluviométrie\n"
+"- Couverture nuageuse\n"
+"- Hauteur significative des vagues\n"
+"- Température de l'air à la surface de la mer\n"
+"- température de l'eau de surface de la mer\n"
+"- Courant de surface : Direction et vitesse.\n"
+"- Energie potentielle convective disponible (CAPE)\n"
+"- Vent, altitude, température et humidité relative à 300, 500, 700 et 850hpa."
 
 #: src/grib_pi.cpp:294
 msgid "Weather table"
 msgstr "Météotable"
 
 #: src/grib_pi.cpp:592
-msgid "You have chosen to authorize interpolation.\nDon't forget that data displayed at current time will not be real but interpolated!"
-msgstr "Vous avez choisi d'autoriser l'interpolation.\nN'oubliez pas que les données affichées pour l'heure actuelle ne correspondent pas à la réalité mais sont interpolées."
+msgid "You have chosen to authorize interpolation.\n"
+"Don't forget that data displayed at current time will not be real but interpolated!"
+msgstr "Vous avez choisi d'autoriser l'interpolation.\n"
+"N'oubliez pas que les données affichées pour l'heure actuelle ne correspondent pas à la réalité mais sont interpolées."
 
 #: src/GribTable.cpp:167
-msgid "Air\nTemperature"
-msgstr "Température\nde l'air"
+msgid "Air\n"
+"Temperature"
+msgstr "Température\n"
+"de l'air"
 
 #: src/GribTable.cpp:174
-msgid "Sea\nTemperature"
-msgstr "Température\nde l'eau"
+msgid "Sea\n"
+"Temperature"
+msgstr "Température\n"
+"de l'eau"
 
 #: src/GribRequestDialog.cpp:109 src/GribRequestDialog.cpp:832
 msgid "Send"
@@ -805,8 +844,12 @@ msgid "Stop graphic Sel."
 msgstr "Arrêter la sélection graphique"
 
 #: src/GribRequestDialog.cpp:528
-msgid "You request a forecast for more than 8 days horizon.\nThis is conflicting with Wave data which will be removed from your request.\nDon't forget that beyond the first 8 days, the resolution will be only 2.5°x2.5° and the time intervall 12 hours."
-msgstr "Vous faites une requête de prévisions pour plus de 8 jours.\nCeci entre en conflit avec votre demande relative aux vagues. Il faut enlever cette partie de la requête.\n\nPar ailleurs, à partir du 9ème jour, la résolution sera seulement  2.5°x2.5° et avec un intervalle de temps de 12 heures."
+msgid "You request a forecast for more than 8 days horizon.\n"
+"This is conflicting with Wave data which will be removed from your request.\n"
+"Don't forget that beyond the first 8 days, the resolution will be only 2.5°x2.5° and the time intervall 12 hours."
+msgstr "Vous faites une requête de prévisions pour plus de 8 jours.\n"
+"Ceci entre en conflit avec votre demande relative aux vagues. Il faut enlever cette partie de la requête.\n\n"
+"Par ailleurs, à partir du 9ème jour, la résolution sera seulement  2.5°x2.5° et avec un intervalle de temps de 12 heures."
 
 #: src/GribRequestDialog.cpp:812 src/GribRequestDialog.cpp:815
 msgid "MB"
@@ -817,8 +860,10 @@ msgid "Max"
 msgstr "Max"
 
 #: src/GribRequestDialog.cpp:843
-msgid "Before sending an email to Zygrib you have to enter your Login and Code.\nPlease visit www.zygrib.org/ and follow instructions..."
-msgstr "Avant d'envoyer un mail à Zygrib, vous devez entrer votre login et votre code.\nS'il vous plait, visitez le site www.zygrib.org et lisez les instructions"
+msgid "Before sending an email to Zygrib you have to enter your Login and Code.\n"
+"Please visit www.zygrib.org/ and follow instructions..."
+msgstr "Avant d'envoyer un mail à Zygrib, vous devez entrer votre login et votre code.\n"
+"S'il vous plait, visitez le site www.zygrib.org et lisez les instructions"
 
 #: src/GribRequestDialog.cpp:844
 msgid "Too big file! zyGrib limit is 2Mb!"
@@ -841,14 +886,26 @@ msgid "Continue..."
 msgstr "Continuer ...."
 
 #: src/GribRequestDialog.cpp:877 src/GribRequestDialog.cpp:881
-msgid "Your request is ready. An email is prepared in your email environment. \nYou have just to verify and send it...\nSave or Cancel to finish...or Continue..."
-msgstr "Votre demande est prête. Un Mail est preparé dans votre logiciel mail.\nIl vous reste à vérifier son contenu et à cliquer sur  'Envoyer' .\nSauvegardez ou Annulez pour terminer ... ou entrer de nouveaux paramètres pour un nouvel email ...."
+msgid "Your request is ready. An email is prepared in your email environment. \n"
+"You have just to verify and send it...\n"
+"Save or Cancel to finish...or Continue..."
+msgstr "Votre demande est prête. Un Mail est preparé dans votre logiciel mail.\n"
+"Il vous reste à vérifier son contenu et à cliquer sur  'Envoyer' .\n"
+"Sauvegardez ou Annulez pour terminer ... ou entrer de nouveaux paramètres pour un nouvel email ...."
 
 #: src/GribRequestDialog.cpp:884
-msgid "Your request was sent \n(if your system has an MTA configured and is able to send email).\nSave or Cancel to finish...or Continue..."
-msgstr "Votre demande a été envoyée\n(si votre systeme a un MTA configuré et est capable d'envoyer des mails).\nSauvegardez ou annulez pour terminer ... ou entrez de nouveaux paramètres pour un nouvel email ..."
+msgid "Your request was sent \n"
+"(if your system has an MTA configured and is able to send email).\n"
+"Save or Cancel to finish...or Continue..."
+msgstr "Votre demande a été envoyée\n"
+"(si votre systeme a un MTA configuré et est capable d'envoyer des mails).\n"
+"Sauvegardez ou annulez pour terminer ... ou entrez de nouveaux paramètres pour un nouvel email ..."
 
 #: src/GribRequestDialog.cpp:889
-msgid "Request can't be sent. Please verify your email systeme parameters.\nYou should also have a look at your log file.\nSave or Cancel to finish..."
-msgstr "La demande ne peut être envoyée. S'il vous plait, vérifiez les paramètres de votre logiciel d'email.\nVous devez aussi regarder votre fichier log.\nSauvegardez ou annulez pour finir. ..."
+msgid "Request can't be sent. Please verify your email systeme parameters.\n"
+"You should also have a look at your log file.\n"
+"Save or Cancel to finish..."
+msgstr "La demande ne peut être envoyée. S'il vous plait, vérifiez les paramètres de votre logiciel d'email.\n"
+"Vous devez aussi regarder votre fichier log.\n"
+"Sauvegardez ou annulez pour finir. ..."
 

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-01-06 17:25-0600\n"
-"PO-Revision-Date: 2015-01-06 18:28-0500\n"
+"PO-Revision-Date: 2015-03-02 22:15-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
@@ -38,7 +38,7 @@ msgstr "Курс"
 
 #: src/dashboard_pi.cpp:105
 msgid "Mag COG"
-msgstr ""
+msgstr "Магнитный курс"
 
 #: src/dashboard_pi.cpp:107
 msgid "GPS Compass"
@@ -158,7 +158,7 @@ msgstr "Итоговый журнал"
 
 #: src/dashboard_pi.cpp:176
 msgid "From Ownship"
-msgstr ""
+msgstr "От своего судна"
 
 #: src/dashboard_pi.cpp:343 src/dashboard_pi.cpp:456 src/dashboard_pi.cpp:1309
 #: src/dashboard_pi.cpp:1318 src/dashboard_pi.cpp:1476

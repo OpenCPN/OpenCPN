@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-01-07 16:15-0600\n"
-"PO-Revision-Date: 2015-01-07 17:17-0500\n"
+"PO-Revision-Date: 2015-04-07 11:22-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Greek\n"
 "Language: el_GR\n"
@@ -13,6 +13,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: el\n"
 "X-Crowdin-File: /po/opencpn.pot\n"
 
 #: include/routeprop.h:64 src/chcanv.cpp:5214 src/chcanv.cpp:8223
@@ -64,7 +65,7 @@ msgstr " Κλίμακα:  1:%d"
 
 #: src/chartdbs.cpp:1200
 msgid " ID:  "
-msgstr ""
+msgstr " ID:  "
 
 #: src/chartdbs.cpp:1211
 msgid " Depth Units:  "
@@ -264,7 +265,7 @@ msgstr "Ρίξε σημάδι «Άνθρωπος στη Θάλασσα» (MOB)"
 
 #: src/chart1.cpp:3119
 msgid " (Ctrl-Space)"
-msgstr ""
+msgstr " (Ctrl-Space)"
 
 #: src/chart1.cpp:3150 src/chart1.cpp:4021 src/chart1.cpp:4885
 msgid "Show AIS Targets"
@@ -410,7 +411,7 @@ msgstr "Κατάλογος στόχων AIS..."
 
 #: src/chart1.cpp:4891
 msgid "&AIS"
-msgstr ""
+msgstr "&AIS"
 
 #: src/chart1.cpp:4895
 msgid "Measure Distance"
@@ -539,7 +540,7 @@ msgstr "Κυψέλη"
 
 #: src/cm93.cpp:6742
 msgid "M_COVR ID"
-msgstr ""
+msgstr "M_COVR ID"
 
 #: src/cm93.cpp:6745
 msgid "Cell Scale"
@@ -547,11 +548,11 @@ msgstr "Κλίμακα κυψέλης"
 
 #: src/cm93.cpp:6748
 msgid "wgsox"
-msgstr ""
+msgstr "wgsox"
 
 #: src/cm93.cpp:6751
 msgid "wgsoy"
-msgstr ""
+msgstr "wgsoy"
 
 #: src/cm93.cpp:6754
 msgid "User X Offset"
@@ -666,11 +667,11 @@ msgstr "Δείξε στιλ αυτοκινητόδρομου"
 
 #: src/concanv.cpp:286
 msgid "XTE         L"
-msgstr ""
+msgstr "XTE         L"
 
 #: src/concanv.cpp:288
 msgid "XTE         R"
-msgstr ""
+msgstr "XTE         R"
 
 #: src/concanv.cpp:373
 msgid "ETA          "
@@ -754,7 +755,7 @@ msgstr "Ίχνος"
 
 #: src/chcanv.cpp:6611
 msgid "AIS"
-msgstr ""
+msgstr "AIS"
 
 #: src/chcanv.cpp:6635
 msgid "End Route"
@@ -1079,7 +1080,7 @@ msgstr "Εικονίδιο παλίρροιας"
 
 #: src/chcanv.cpp:10291
 msgid "CurrentValue"
-msgstr "Τιμή ρεύματος"
+msgstr "Τρέχουσα τιμή"
 
 #: src/chcanv.cpp:10672
 msgid "   External application \"xcalib\" not found. Screen brightness not changed."
@@ -1180,11 +1181,11 @@ msgstr "μίλια"
 
 #: src/navutil.cpp:4188
 msgid "km"
-msgstr ""
+msgstr "km"
 
 #: src/navutil.cpp:4191
 msgid "m"
-msgstr ""
+msgstr "m"
 
 #: src/navutil.cpp:4194
 msgid "ft"
@@ -1200,7 +1201,7 @@ msgstr "ίντσες"
 
 #: src/navutil.cpp:4203
 msgid "cm"
-msgstr ""
+msgstr "cm"
 
 #: src/navutil.cpp:4271
 msgid "kts"
@@ -1212,11 +1213,11 @@ msgstr "μ.α.ώ."
 
 #: src/navutil.cpp:4277 src/options.cpp:2307
 msgid "km/h"
-msgstr ""
+msgstr "km/h"
 
 #: src/navutil.cpp:4280 src/options.cpp:2307
 msgid "m/s"
-msgstr ""
+msgstr "m/s"
 
 #: src/routeprop.cpp:134
 msgid "MoTwilight"
@@ -1307,7 +1308,7 @@ msgstr "Σχεδ. ταχύτητα"
 
 #: src/routeprop.cpp:716 src/routeprop.cpp:725 src/TrackPropDlg.cpp:230
 msgid "UTC"
-msgstr ""
+msgstr "UTC"
 
 #: src/routeprop.cpp:716 src/routeprop.cpp:728 src/TrackPropDlg.cpp:233
 msgid "Local @ PC"
@@ -1502,11 +1503,11 @@ msgstr "Απόσταση"
 
 #: src/routeprop.cpp:834
 msgid "Bearing (M)"
-msgstr "Κατεύθυνση (Μ)"
+msgstr "Στίγμα (Μ)"
 
 #: src/routeprop.cpp:836 src/TrackPropDlg.cpp:249 src/AIS_Target_Data.cpp:606
 msgid "Bearing"
-msgstr "Κατεύθυνση"
+msgstr "Στίγμα"
 
 #: src/routeprop.cpp:838 src/routeprop.cpp:1916 src/TrackPropDlg.cpp:250
 #: src/GoToPositionDialog.cpp:122
@@ -1615,7 +1616,7 @@ msgstr "Ακτίνα άφιξης"
 
 #: src/routeprop.cpp:1962 src/options.cpp:1319 src/options.cpp:1346
 msgid "..."
-msgstr ""
+msgstr "..."
 
 #: src/routeprop.cpp:1975 src/TrackPropDlg.cpp:274
 msgid "Links"
@@ -2506,7 +2507,7 @@ msgstr "Περιοχή περιβαλλοντικού κινδύνου: Επικ
 
 #: src/ais.cpp:318
 msgid "Environmental Caution Area: Storm warning (storm cell or line of storms)"
-msgstr "Περιοχή περιβαλλοντικού κινδύνου: Προειδοποίηση θυέλλης (μεμονωμένη ή αλλεπάλληλες)"
+msgstr "Περιοχή περιβαλλοντικού κινδύνου: Προειδοποίηση θυέλης (μεμονωμένη ή γραμμή θυελών)"
 
 #: src/ais.cpp:319
 msgid "Environmental Caution Area: High wind"
@@ -2903,7 +2904,7 @@ msgstr "Χρήση μεθόδου Garmin GRMN (Host) για εξαγωγή δε�
 
 #: src/options.cpp:1123
 msgid "Use magnetic bearings in output sentence ECAPB"
-msgstr "Χρήση κατεύθυνσης μ. πυξίδας στα δεδομένα εξόδου ECAPB"
+msgstr "Χρήση μ. στίγματος στα δεδομένα εξόδου ECAPB"
 
 #: src/options.cpp:1133
 msgid "Data Connections"
@@ -2951,7 +2952,7 @@ msgstr "ΘύραΔεδομένων"
 
 #: src/options.cpp:1231
 msgid "Baudrate"
-msgstr ""
+msgstr "Baudrate"
 
 #: src/options.cpp:1235
 msgid "150"
@@ -3019,7 +3020,7 @@ msgstr ""
 
 #: src/options.cpp:1245
 msgid "Seatalk"
-msgstr ""
+msgstr "Seatalk"
 
 #: src/options.cpp:1253 src/options.cpp:1413
 msgid "Priority"
@@ -3087,11 +3088,11 @@ msgstr "Έξοδος σε αυτή τη θύρα (π.χ. Αυτομ. πιλότ�
 
 #: src/options.cpp:1286
 msgid "APB bearing precision"
-msgstr "Ακρίβεια κατεύθυνσης APB"
+msgstr "Ακρίβεια στίγματος APB"
 
 #: src/options.cpp:1290
 msgid "x"
-msgstr ""
+msgstr "x"
 
 #: src/options.cpp:1290
 msgid "x.x"
@@ -3403,11 +3404,11 @@ msgstr "Αντικείμενα πληροφοριών χάρτη"
 
 #: src/options.cpp:1901
 msgid "Buoys/Lights"
-msgstr "Σημαδούρες/Φάροι"
+msgstr "Σημαντήρες/Φάροι"
 
 #: src/options.cpp:1906
 msgid "Buoy/Light Labels"
-msgstr "Ετικέτες σημαδούρας/φάρου"
+msgstr "Ετικέτες σημαντήρα/φάρου"
 
 #: src/options.cpp:1910
 msgid "Light Descriptions"
@@ -4200,7 +4201,7 @@ msgstr "Η ώρα έχει τη μορφή"
 
 #: src/TrackPropDlg.cpp:236
 msgid "LMT @ Track Start"
-msgstr ""
+msgstr "Ώρα @ έναρξη του ίχνους"
 
 #: src/TrackPropDlg.cpp:252
 msgid "Timestamp"
@@ -4464,7 +4465,7 @@ msgstr "Υψόμετρο"
 
 #: src/AIS_Target_Data.cpp:748 src/AIS_Target_Data.cpp:752
 msgid " COG Unavailable"
-msgstr " πορεία CoG μη διαθέσιμη"
+msgstr " Πορεία CoG μη διαθέσιμη"
 
 #: src/AIS_Target_Data.cpp:759
 msgid "min"

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-01-07 16:15-0600\n"
-"PO-Revision-Date: 2015-01-07 17:18-0500\n"
+"PO-Revision-Date: 2015-04-21 14:53-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Spanish\n"
 "Language: es_ES\n"
@@ -13,6 +13,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: es-ES\n"
 "X-Crowdin-File: /po/opencpn.pot\n"
 
 #: include/routeprop.h:64 src/chcanv.cpp:5214 src/chcanv.cpp:8223
@@ -248,11 +249,11 @@ msgstr "Imprimir Carta"
 
 #: src/chart1.cpp:3086 src/routemanagerdialog.cpp:425
 msgid "Route & Mark Manager"
-msgstr "Administrador de Rutas y Marcas"
+msgstr "Gestor de Rutas y Marcas"
 
 #: src/chart1.cpp:3093 src/chart1.cpp:4465 src/chart1.cpp:4842
 msgid "Enable Tracking"
-msgstr "Activar Seguimiento"
+msgstr "Activar Dejar Derrota"
 
 #: src/chart1.cpp:3100 src/chart1.cpp:4874
 msgid "Change Color Scheme"
@@ -320,7 +321,7 @@ msgstr "Se supone 1 Milla por Punto"
 
 #: src/chart1.cpp:4397
 msgid "Disable Tracking"
-msgstr "Desactivar Seguimiento"
+msgstr "Desactivar Dejar Derrota"
 
 #: src/chart1.cpp:4417 src/chart1.cpp:7892 src/chart1.cpp:8025
 #: src/routemanagerdialog.cpp:1590
@@ -3291,7 +3292,7 @@ msgstr "Avanzado"
 
 #: src/options.cpp:1721 src/options.cpp:2224
 msgid "Chart Display"
-msgstr "Mostrar Carta"
+msgstr "Visualización carta"
 
 #: src/options.cpp:1725
 msgid "Show Skewed Raster Charts as North-Up"
@@ -3307,7 +3308,7 @@ msgstr "Suprimir efectos de vaho/niebla en zoom excesivo"
 
 #: src/options.cpp:1734
 msgid "Suppress scaled vector charts on overzoom"
-msgstr "Suprimir cartas vectoriales escaladas en zoom excesivo"
+msgstr "Suprimir escalado de cartas vectoriales en zoom excesivo"
 
 #: src/options.cpp:1743
 msgid "Course-Up Update Period"
@@ -3627,7 +3628,7 @@ msgstr "Declinación magnética asumida"
 
 #: src/options.cpp:2361
 msgid "deg (+W, -E)"
-msgstr "grados (+O, -E)"
+msgstr "grados (+W, -E)"
 
 #: src/options.cpp:2389
 msgid "AIS Targets"
@@ -3923,11 +3924,11 @@ msgstr "Usar aceleración gráfica (OpenGL)"
 
 #: src/options.cpp:5868
 msgid "Texture Compression"
-msgstr "Compresión de textura"
+msgstr "Compresión de texturas"
 
 #: src/options.cpp:5872
 msgid "Texture Compression Caching"
-msgstr "Caché compresión de textura"
+msgstr "Caché compresión de texturas"
 
 #: src/options.cpp:5885
 msgid "Texture Compression with Caching"
@@ -3935,7 +3936,7 @@ msgstr "Compresión de texturas con almacenamiento en caché"
 
 #: src/options.cpp:5906
 msgid "Texture Memory Size (MB)"
-msgstr "Tamaño memoria de textura (MB)"
+msgstr "Tamaño memoria de texturas (MB)"
 
 #: src/options.cpp:5920
 msgid "Rebuild Texture Cache"

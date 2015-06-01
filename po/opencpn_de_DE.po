@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-01-07 16:15-0600\n"
-"PO-Revision-Date: 2015-01-07 17:17-0500\n"
+"PO-Revision-Date: 2015-05-19 07:21-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -13,6 +13,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: de\n"
 "X-Crowdin-File: /po/opencpn.pot\n"
 
 #: include/routeprop.h:64 src/chcanv.cpp:5214 src/chcanv.cpp:8223
@@ -121,8 +122,25 @@ msgid "OpenCPN Chart Add...."
 msgstr "OpenCPN Karte(n) hinzufügen..."
 
 #: src/chart1.cpp:782
-msgid "\nOpenCPN is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied\nwarranty of MERCHANTABILITY or FITNESS FOR A\nPARTICULAR PURPOSE.\nSee the GNU General Public License for more details.\n\nOpenCPN must only be used in conjunction with approved\npaper charts and traditional methods of navigation.\n\nDO NOT rely upon OpenCPN for safety of life or property.\n\nPlease click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"
-msgstr "\nOpenCPN wird in der Hoffnung verbreitet, dass es nützlich ist,\naber OHNE IRGENDEINE GARANTIE, insbesondere ohne die implizite\nGarantie der MARKTREIFE oder der EIGNUNG FÜR EINEN BESTIMMTEN ZWECK.\nLesen Sie die GNU General Public License v2 für weitere Details.\n\nOpenCPN darf nur in Verbindung mit amtlichen Seekarten und\nden traditionellen Methoden der Navigation verwendet werden.\n\nVerlassen Sie sich nicht auf OpenCPN im Bezug auf die Sicherheit von Leben und Ausrüstung.\n\nBitte klicken Sie zum Akzeptieren und Fortfahren auf \"OK\" oder auf \"Abbrechen\" zum Beenden.\n"
+msgid "\n"
+"OpenCPN is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied\n"
+"warranty of MERCHANTABILITY or FITNESS FOR A\n"
+"PARTICULAR PURPOSE.\n"
+"See the GNU General Public License for more details.\n\n"
+"OpenCPN must only be used in conjunction with approved\n"
+"paper charts and traditional methods of navigation.\n\n"
+"DO NOT rely upon OpenCPN for safety of life or property.\n\n"
+"Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"
+msgstr "\n"
+"OpenCPN wird in der Hoffnung verbreitet, dass es nützlich ist,\n"
+"aber OHNE IRGENDEINE GARANTIE, insbesondere ohne die implizite\n"
+"Garantie der MARKTREIFE oder der EIGNUNG FÜR EINEN BESTIMMTEN ZWECK.\n"
+"Lesen Sie die GNU General Public License v2 für weitere Details.\n\n"
+"OpenCPN darf nur in Verbindung mit amtlichen Seekarten und\n"
+"den traditionellen Methoden der Navigation verwendet werden.\n\n"
+"Verlassen Sie sich nicht auf OpenCPN im Bezug auf die Sicherheit von Leben und Ausrüstung.\n\n"
+"Bitte klicken Sie zum Akzeptieren und Fortfahren auf \"OK\" oder auf \"Abbrechen\" zum Beenden.\n"
 
 #: src/chart1.cpp:796
 msgid "Welcome to OpenCPN"
@@ -195,8 +213,10 @@ msgid "OpenCPN Chart Update"
 msgstr "OpenCPN Karten-Aktualisierung"
 
 #: src/chart1.cpp:2251
-msgid "No Charts Installed.\nPlease select chart folders in Options > Charts."
-msgstr "Es sind keine Karten installiert.\nBitte wählen Sie die Verzeichnisse in Optionen -> Seekarten aus."
+msgid "No Charts Installed.\n"
+"Please select chart folders in Options > Charts."
+msgstr "Es sind keine Karten installiert.\n"
+"Bitte wählen Sie die Verzeichnisse in Optionen -> Seekarten aus."
 
 #: src/chart1.cpp:2923 src/chcanv.cpp:10473
 msgid "AIS Target Query"
@@ -469,8 +489,10 @@ msgid "Chart Print"
 msgstr "Kartendruck"
 
 #: src/chart1.cpp:7804 src/routeprintout.cpp:469
-msgid "There was a problem printing.\nPerhaps your current printer is not set correctly?"
-msgstr "Beim Drucken ist ein Fehler aufgetreten.\nVielleicht ist der Drucker nicht richtig konfiguriert?"
+msgid "There was a problem printing.\n"
+"Perhaps your current printer is not set correctly?"
+msgstr "Beim Drucken ist ein Fehler aufgetreten.\n"
+"Vielleicht ist der Drucker nicht richtig konfiguriert?"
 
 #: src/chart1.cpp:7955 src/chart1.cpp:8028 src/routemanagerdialog.cpp:890
 msgid "(Unnamed Route)"
@@ -505,12 +527,23 @@ msgid "OpenCPN requires access to serial ports to use serial NMEA data.\n"
 msgstr "OpenCPN erfordert Zugriff auf serielle Anschlüsse mit seriellen NMEA Daten.\n"
 
 #: src/chart1.cpp:9803
-msgid "No Serial Ports can be found on this system.\nYou must install a serial port (modprobe correct kernel module) or plug in a usb serial device.\n"
-msgstr "Auf diesem System wurden keine seriellen Schnittstellen gefunden. \n Sie müssen die Treiber für eine serielle Schnittstelle installieren oder einen Serial zu USB Konverter einstecken.\n"
+msgid "No Serial Ports can be found on this system.\n"
+"You must install a serial port (modprobe correct kernel module) or plug in a usb serial device.\n"
+msgstr "Auf diesem System wurden keine seriellen Schnittstellen gefunden. \n"
+" Sie müssen die Treiber für eine serielle Schnittstelle installieren oder einen Serial zu USB Konverter einstecken.\n"
 
 #: src/chart1.cpp:9825
-msgid "You do currently not have permission to access the serial ports on this system.\n\nIt is suggested that you exit OpenCPN now,\nand add yourself to the correct group to enable serial port access.\n\nYou may do so by executing the following command from the linux command line:\n\n                sudo usermod -a -G "
-msgstr "OpenCPN braucht Zugang zu ser. Ports zur Verwendung ser. NMEA Daten.\nSie haben im Moment keine Berechtigung zum Zugang ser. Ports in diesem System.\n\nEmpfohlen wird OpenCPN jetzt zu verlassen,\num sich zur richtigen Gruppe zum Zugang ser. Ports anzumelden.\n\nDas kann mit folgendem Befehl in der Linux Kommandozeile geschehen:\n\n                sudo usermod -a -G "
+msgid "You do currently not have permission to access the serial ports on this system.\n\n"
+"It is suggested that you exit OpenCPN now,\n"
+"and add yourself to the correct group to enable serial port access.\n\n"
+"You may do so by executing the following command from the linux command line:\n\n"
+"                sudo usermod -a -G "
+msgstr "OpenCPN braucht Zugang zu ser. Ports zur Verwendung ser. NMEA Daten.\n"
+"Sie haben im Moment keine Berechtigung zum Zugang ser. Ports in diesem System.\n\n"
+"Empfohlen wird OpenCPN jetzt zu verlassen,\n"
+"um sich zur richtigen Gruppe zum Zugang ser. Ports anzumelden.\n\n"
+"Das kann mit folgendem Befehl in der Linux Kommandozeile geschehen:\n\n"
+"                sudo usermod -a -G "
 
 #: src/chart1.cpp:10259 src/routeprop.cpp:361 src/routeprop.cpp:1831
 #: src/routemanagerdialog.cpp:428 src/options.cpp:655 src/options.cpp:847
@@ -1852,8 +1885,10 @@ msgid "&Copy as text"
 msgstr "Kopiere als Text"
 
 #: src/routemanagerdialog.cpp:1412
-msgid "Select the maximum error allowed (in meters)\nafter data reduction:"
-msgstr "Wähle maximal erlaubten Fehler (in Metern)\nnach Daten-Reduzierung:"
+msgid "Select the maximum error allowed (in meters)\n"
+"after data reduction:"
+msgstr "Wähle maximal erlaubten Fehler (in Metern)\n"
+"nach Daten-Reduzierung:"
 
 #: src/routemanagerdialog.cpp:1413
 msgid "Reduce Data Precision"
@@ -1861,16 +1896,20 @@ msgstr "Verringere Daten-Genauigkeit"
 
 #: src/routemanagerdialog.cpp:1432
 #, c-format
-msgid "The amount of data used by the track\n was reduced by %d%%."
-msgstr "Datenanzahl dieses Tracks wurde\n reduziert um %d%%."
+msgid "The amount of data used by the track\n"
+" was reduced by %d%%."
+msgstr "Datenanzahl dieses Tracks wurde\n"
+" reduziert um %d%%."
 
 #: src/routemanagerdialog.cpp:1434 src/options.cpp:3614
 msgid "OpenCPN info"
 msgstr ""
 
 #: src/routemanagerdialog.cpp:1542
-msgid "The currently running Track was not merged.\nYou can merge it later when it is completed."
-msgstr "Der aktuell laufende Track wurde nicht verbunden.\nEr kann später nach Beendigung verbunden werden."
+msgid "The currently running Track was not merged.\n"
+"You can merge it later when it is completed."
+msgstr "Der aktuell laufende Track wurde nicht verbunden.\n"
+"Er kann später nach Beendigung verbunden werden."
 
 #: src/routemanagerdialog.cpp:1778
 msgid "OpenCPN Converting Track to Route...."
@@ -1897,8 +1936,14 @@ msgid "Are you sure you want to delete <ALL> waypoints?"
 msgstr "Sind Sie sicher, daß Sie <ALLE> Wegpunkte löschen wollen?"
 
 #: src/routemanagerdialog.cpp:2258
-msgid "There are some waypoints used in routes or anchor alarms.\n Do you want to delete them as well?\n This will change the routes and disable the anchor alarms.\n Answering No keeps the waypoints used in routes or alarms."
-msgstr "Es gibt einige Wegpunkte in Routen oder Ankeralarmen.\nSollen die auch gelöscht werden?\nDamit werden die Routen geändert oder Ankeralarme gelöscht.\nAntwort Nein erhält die Wegpunkte in Routen oder Alarmen."
+msgid "There are some waypoints used in routes or anchor alarms.\n"
+" Do you want to delete them as well?\n"
+" This will change the routes and disable the anchor alarms.\n"
+" Answering No keeps the waypoints used in routes or alarms."
+msgstr "Es gibt einige Wegpunkte in Routen oder Ankeralarmen.\n"
+"Sollen die auch gelöscht werden?\n"
+"Damit werden die Routen geändert oder Ankeralarme gelöscht.\n"
+"Antwort Nein erhält die Wegpunkte in Routen oder Alarmen."
 
 #: src/routemanagerdialog.cpp:2311
 msgid "Hide from chart"
@@ -2939,7 +2984,7 @@ msgstr ""
 
 #: src/options.cpp:1193
 msgid "GPSD"
-msgstr "D GPS"
+msgstr ""
 
 #: src/options.cpp:1200
 msgid "Address"
@@ -3322,7 +3367,8 @@ msgid "Chart Zoom/Scale Weighting"
 msgstr ""
 
 #: src/options.cpp:1767
-msgid "With a lower value, the same zoom level shows a less detailed chart.\nWith a higher value, the same zoom level shows a more detailed chart."
+msgid "With a lower value, the same zoom level shows a less detailed chart.\n"
+"With a higher value, the same zoom level shows a more detailed chart."
 msgstr ""
 
 #: src/options.cpp:1782 src/options.cpp:2241
@@ -3846,24 +3892,34 @@ msgid "You must enter the address..."
 msgstr "Adresse muß eingegeben werden..."
 
 #: src/options.cpp:3603
-msgid "\n - your ship's length must be > 0"
-msgstr "\n - die Bootslänge muß > 0 sein"
+msgid "\n"
+" - your ship's length must be > 0"
+msgstr "\n"
+" - die Bootslänge muß > 0 sein"
 
 #: src/options.cpp:3605
-msgid "\n - your ship's beam must be > 0"
-msgstr "\n - die Bootsbreite muß > 0 sein"
+msgid "\n"
+" - your ship's beam must be > 0"
+msgstr "\n"
+" - die Bootsbreite muß > 0 sein"
 
 #: src/options.cpp:3607
-msgid "\n - your GPS offset from midship must be within your ship's beam"
-msgstr "\n - die GPS Abweichung von Mittschiffs muß innerhalb der Bootsbreite sein"
+msgid "\n"
+" - your GPS offset from midship must be within your ship's beam"
+msgstr "\n"
+" - die GPS Abweichung von Mittschiffs muß innerhalb der Bootsbreite sein"
 
 #: src/options.cpp:3609
-msgid "\n - your GPS offset from bow must be within your ship's length"
-msgstr "\n - die GPS Abweichung vom Bug muß innerhalb der Bootslänge sein"
+msgid "\n"
+" - your GPS offset from bow must be within your ship's length"
+msgstr "\n"
+" - die GPS Abweichung vom Bug muß innerhalb der Bootslänge sein"
 
 #: src/options.cpp:3611
-msgid "\n - your minimum ship icon size must be between 1 and 100 mm"
-msgstr "\n - das minimale Bootssymbol-Größe muß zwischen 1 und 100 mm sein"
+msgid "\n"
+" - your minimum ship icon size must be between 1 and 100 mm"
+msgstr "\n"
+" - das minimale Bootssymbol-Größe muß zwischen 1 und 100 mm sein"
 
 #: src/options.cpp:3613
 msgid "The settings for own ship real size are not correct:"
@@ -3898,7 +3954,11 @@ msgid "Enter the NMEA sentence"
 msgstr "Die NMEA Sequenz eingeben"
 
 #: src/options.cpp:5754
-msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n It can also have a two letter prefix identifying the source, or TALKER, of the message.\n The whole sentences then looks like GPGGA or AITXT.\n You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.).\n\n The filter accepts just these three formats."
+msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n"
+" It can also have a two letter prefix identifying the source, or TALKER, of the message.\n"
+" The whole sentences then looks like GPGGA or AITXT.\n"
+" You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.).\n\n"
+" The filter accepts just these three formats."
 msgstr ""
 
 #: src/options.cpp:5806
@@ -3982,7 +4042,9 @@ msgid "Close"
 msgstr "Schließen"
 
 #: src/s57chart.cpp:4049
-msgid "S57 Cell Update chain incomplete.\nENC features may be incomplete or inaccurate.\nCheck the logfile for details."
+msgid "S57 Cell Update chain incomplete.\n"
+"ENC features may be incomplete or inaccurate.\n"
+"Check the logfile for details."
 msgstr ""
 
 #: src/s57chart.cpp:4050
@@ -4006,8 +4068,10 @@ msgid "OpenCPN Warning"
 msgstr ""
 
 #: src/routeman.cpp:1018
-msgid "Waypoints can be renamed to reflect the new order, the names will be '001', '002' etc.\n\nDo you want to rename the waypoints?"
-msgstr "Wegpunkte können umbenannt werden, um die umgekehrte Reihenfolge wiederzuspiegeln. Die Benennung erfolgt nach dem Schema '001', '002', usw..\n\nMöchten Sie die Wegpunkte umbenennen?"
+msgid "Waypoints can be renamed to reflect the new order, the names will be '001', '002' etc.\n\n"
+"Do you want to rename the waypoints?"
+msgstr "Wegpunkte können umbenannt werden, um die umgekehrte Reihenfolge wiederzuspiegeln. Die Benennung erfolgt nach dem Schema '001', '002', usw..\n\n"
+"Möchten Sie die Wegpunkte umbenennen?"
 
 #: src/pluginmanager.cpp:288
 msgid "    Incompatible PlugIn detected:"
@@ -4015,8 +4079,12 @@ msgstr "    Inkompatibeles PlugIn gefunden:"
 
 #: src/pluginmanager.cpp:623
 #, c-format
-msgid "PlugIn %s (%s), version %i.%i was detected.\n This version is known to be unstable and will not be loaded.\n Please update this PlugIn at the opencpn.org website."
-msgstr "PlugIn %s (%s), Version %i.%i wurde entdeckt.\n Diese Version ist bekanntermaßen instabil und wird nicht geladen.\n Bitte dies Plugin erneuern von der opencpn.org Website."
+msgid "PlugIn %s (%s), version %i.%i was detected.\n"
+" This version is known to be unstable and will not be loaded.\n"
+" Please update this PlugIn at the opencpn.org website."
+msgstr "PlugIn %s (%s), Version %i.%i wurde entdeckt.\n"
+" Diese Version ist bekanntermaßen instabil und wird nicht geladen.\n"
+" Bitte dies Plugin erneuern von der opencpn.org Website."
 
 #: src/pluginmanager.cpp:624 src/pluginmanager.cpp:630
 msgid "Blacklisted plugin detected..."
@@ -4024,8 +4092,12 @@ msgstr "Ungültiges Plugin entdeckt..."
 
 #: src/pluginmanager.cpp:629
 #, c-format
-msgid "PlugIn %s (%s), version %i.%i was detected.\n This version is known to be unstable.\n Please update this PlugIn at the opencpn.org website."
-msgstr "PlugIn %s (%s), Version %i.%i wurde entdeckt.\n Diese Version ist bekanntermaßen instabil und wird nicht geladen.\n Bitte dies Plugin erneuern von der opencpn.org Website."
+msgid "PlugIn %s (%s), version %i.%i was detected.\n"
+" This version is known to be unstable.\n"
+" Please update this PlugIn at the opencpn.org website."
+msgstr "PlugIn %s (%s), Version %i.%i wurde entdeckt.\n"
+" Diese Version ist bekanntermaßen instabil und wird nicht geladen.\n"
+" Bitte dies Plugin erneuern von der opencpn.org Website."
 
 #: src/pluginmanager.cpp:662
 msgid "Unreadable PlugIn library detected, check the file permissions:\n"
@@ -4057,8 +4129,10 @@ msgid "Disable"
 msgstr "Deaktivieren"
 
 #: src/toolbar.cpp:691
-msgid "You can't hide the last tool from the toolbar\nas this would make it inaccessible."
-msgstr "Das letzte Symbol der Symbolleiste kann nicht\nversteckt werden, da sie sonst unzugänglich ist."
+msgid "You can't hide the last tool from the toolbar\n"
+"as this would make it inaccessible."
+msgstr "Das letzte Symbol der Symbolleiste kann nicht\n"
+"versteckt werden, da sie sonst unzugänglich ist."
 
 #: src/toolbar.cpp:812 src/toolbar.cpp:823
 msgid "ToolTips"
@@ -4081,8 +4155,10 @@ msgid "Yes, hide it."
 msgstr "Ja, verstecken."
 
 #: src/toolbar.cpp:2045
-msgid "The Man Over Board button could be an important safety feature.\nAre you sure you want to hide it?"
-msgstr "Der Mann-über-Bord Button ist eine wichtige Sicherheitsfunktion.\nSoll er wirklich versteckt werden?"
+msgid "The Man Over Board button could be an important safety feature.\n"
+"Are you sure you want to hide it?"
+msgstr "Der Mann-über-Bord Button ist eine wichtige Sicherheitsfunktion.\n"
+"Soll er wirklich versteckt werden?"
 
 #: src/kml.cpp:442
 msgid "OpenCPN Route"
@@ -5463,7 +5539,8 @@ msgid "Record Track"
 msgstr ""
 
 #: src/AISTargetQueryDialog.cpp:165
-msgid "The recently captured track of this target has been recorded.\nDo you want to continue recording until the end of the current OpenCPN session?"
+msgid "The recently captured track of this target has been recorded.\n"
+"Do you want to continue recording until the end of the current OpenCPN session?"
 msgstr ""
 
 #: src/AISTargetQueryDialog.cpp:268

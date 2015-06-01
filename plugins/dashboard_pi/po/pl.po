@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-01-06 17:25-0600\n"
-"PO-Revision-Date: 2015-01-06 18:28-0500\n"
+"PO-Revision-Date: 2015-05-29 14:05-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Polish\n"
 "Language: pl_PL\n"
@@ -13,12 +13,13 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: pl\n"
 "X-Crowdin-File: /plugins/dashboard_pi/po/dashboard_pi.pot\n"
 
 #: src/clock.cpp:126 src/dial.cpp:504 src/gps.cpp:141 src/wind.cpp:64
 #: src/wind_history.cpp:401
 msgid "N"
-msgstr ""
+msgstr "N"
 
 #: src/dashboard_pi.cpp:97
 msgid "Position"
@@ -171,7 +172,8 @@ msgid "Dashboard PlugIn for OpenCPN"
 msgstr ""
 
 #: src/dashboard_pi.cpp:466
-msgid "Dashboard PlugIn for OpenCPN\nProvides navigation instrument display from NMEA source."
+msgid "Dashboard PlugIn for OpenCPN\n"
+"Provides navigation instrument display from NMEA source."
 msgstr ""
 
 #: src/dashboard_pi.cpp:1452

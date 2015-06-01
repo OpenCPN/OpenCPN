@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-01-06 17:25-0600\n"
-"PO-Revision-Date: 2015-01-06 18:28-0500\n"
+"PO-Revision-Date: 2015-05-29 14:05-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Dutch\n"
 "Language: nl_NL\n"
@@ -13,6 +13,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: nl\n"
 "X-Crowdin-File: /plugins/grib_pi/po/grib_pi.pot\n"
 
 #: src/GribUIDialog.cpp:157 src/GribUIDialog.cpp:1105
@@ -52,7 +53,7 @@ msgstr "Getallen"
 #: src/GribUIDialog.cpp:430 src/GribUIDialog.cpp:463
 #: src/GribUIDialogBase.cpp:531
 msgid "Particle Map"
-msgstr "Bewegende stromingen"
+msgstr "Windveld"
 
 #: src/GribUIDialog.cpp:438 src/GribSettingsDialog.cpp:530
 msgid "Display Isobars"
@@ -280,8 +281,10 @@ msgid "Apply"
 msgstr "Toepassen"
 
 #: src/GribSettingsDialog.cpp:435
-msgid "This file contains data for particular time intervals but you have chosen to display different intervals.\nPlease consider that the values will be interpolated."
-msgstr "Dit bestand bevat gegevens met een specifiek tijdinterval. U heeft echter gekozen om de gegevens met\neen ander tijdinterval te tonen. Besef dat de waardes zullen worden geinterpoleerd."
+msgid "This file contains data for particular time intervals but you have chosen to display different intervals.\n"
+"Please consider that the values will be interpolated."
+msgstr "Dit bestand bevat gegevens met een specifiek tijdinterval. U heeft echter gekozen om de gegevens met\n"
+"een ander tijdinterval te tonen. Besef dat de waardes zullen worden geinterpoleerd."
 
 #: src/GribSettingsDialog.cpp:436 src/grib_pi.cpp:593
 #: src/GribRequestDialog.cpp:529
@@ -354,7 +357,7 @@ msgstr "Zeetemp."
 
 #: src/GribUIDialogBase.cpp:190
 msgid "Sea or Air Temperature at Surface Level"
-msgstr "Zee of luchttemperatuur aan de oppervlakte"
+msgstr "Zee- of luchttemperatuur op zeeniveau"
 
 #: src/GribUIDialogBase.cpp:201
 msgid "Convective Available Potential Energy"
@@ -370,7 +373,7 @@ msgstr "Temperatuur"
 
 #: src/GribUIDialogBase.cpp:254
 msgid "Rel. Humid."
-msgstr "Re. vocht."
+msgstr "Rel. vocht."
 
 #: src/GribUIDialogBase.cpp:377
 msgid "playback"
@@ -474,7 +477,7 @@ msgstr "Toon op scherm"
 
 #: src/GribUIDialogBase.cpp:555
 msgid "Overlay Transparency (%)"
-msgstr "Overlay transparantie (%)"
+msgstr "Overlay-transparantie (%)"
 
 #: src/GribUIDialogBase.cpp:633
 msgid "Use High Definition Graphics"
@@ -749,24 +752,57 @@ msgid "GRIB PlugIn for OpenCPN"
 msgstr "GRIB-PlugIn voor OpenCPN"
 
 #: src/grib_pi.cpp:180
-msgid "GRIB PlugIn for OpenCPN\nProvides basic GRIB file overlay capabilities for several GRIB file types\nand a request function to get GRIB files by eMail.\n\nSupported GRIB data include:\n- wind direction and speed (at 10 m)\n- wind gust\n- surface pressure\n- rainfall\n- cloud cover\n- significant wave height and direction\n- air surface temperature (at 2 m)\n- sea surface temperature\n- surface current direction and speed\n- Convective Available Potential Energy (CAPE)\n- wind, altitude, temperature and relative humidity at 300, 500, 700, 850 hPa."
-msgstr "GRIB-PlugIn voor OpenCPN\nGeeft kaartoverlay van GRIB-gegevens voor verschillende bestandtypes.\n\nOndersteunde GRIB-bestandtypes zijn:\n- windrichting en snelheid (op 10 m)\n- windvlagen\n- luchtdruk op zeeniveau\n- neerslaghoeveelheid\n- wolkendek\n- significante golfhoogte en -richting\n- luchttemperatuur op zeeniveau (2 m)\n- oppervlaktetemperatuur zeewater\n- richting en snelheid oppervlaktestroom\n- convectief beschikbare potentiële energie\n- wind, hoogte, temperatuur en relatieve vochtigheid op 300, 500, 700 en 850 hPa."
+msgid "GRIB PlugIn for OpenCPN\n"
+"Provides basic GRIB file overlay capabilities for several GRIB file types\n"
+"and a request function to get GRIB files by eMail.\n\n"
+"Supported GRIB data include:\n"
+"- wind direction and speed (at 10 m)\n"
+"- wind gust\n"
+"- surface pressure\n"
+"- rainfall\n"
+"- cloud cover\n"
+"- significant wave height and direction\n"
+"- air surface temperature (at 2 m)\n"
+"- sea surface temperature\n"
+"- surface current direction and speed\n"
+"- Convective Available Potential Energy (CAPE)\n"
+"- wind, altitude, temperature and relative humidity at 300, 500, 700, 850 hPa."
+msgstr "GRIB-PlugIn voor OpenCPN\n"
+"Geeft kaartoverlay van GRIB-gegevens voor verschillende bestandtypes.\n\n"
+"Ondersteunde GRIB-bestandtypes zijn:\n"
+"- windrichting en snelheid (op 10 m)\n"
+"- windvlagen\n"
+"- luchtdruk op zeeniveau\n"
+"- neerslaghoeveelheid\n"
+"- wolkendek\n"
+"- significante golfhoogte en -richting\n"
+"- luchttemperatuur op zeeniveau (2 m)\n"
+"- oppervlaktetemperatuur zeewater\n"
+"- richting en snelheid oppervlaktestroom\n"
+"- convectief beschikbare potentiële energie\n"
+"- wind, hoogte, temperatuur en relatieve vochtigheid op 300, 500, 700 en 850 hPa."
 
 #: src/grib_pi.cpp:294
 msgid "Weather table"
 msgstr "Weertabel"
 
 #: src/grib_pi.cpp:592
-msgid "You have chosen to authorize interpolation.\nDon't forget that data displayed at current time will not be real but interpolated!"
-msgstr "U heeft gegevensinterpolatie toegestaan.\nVergeet niet dat de voor de huidige tijd getoonde gegevens geïnterpoleerd zijn!"
+msgid "You have chosen to authorize interpolation.\n"
+"Don't forget that data displayed at current time will not be real but interpolated!"
+msgstr "U heeft gegevensinterpolatie toegestaan.\n"
+"Vergeet niet dat de voor de huidige tijd getoonde gegevens geïnterpoleerd zijn!"
 
 #: src/GribTable.cpp:167
-msgid "Air\nTemperature"
-msgstr "Lucht-\ntemperatuur"
+msgid "Air\n"
+"Temperature"
+msgstr "Lucht-\n"
+"temperatuur"
 
 #: src/GribTable.cpp:174
-msgid "Sea\nTemperature"
-msgstr "Zeewater-\ntemperatuur"
+msgid "Sea\n"
+"Temperature"
+msgstr "Zeewater-\n"
+"temperatuur"
 
 #: src/GribRequestDialog.cpp:109 src/GribRequestDialog.cpp:832
 msgid "Send"
@@ -798,15 +834,19 @@ msgstr "Voer uw verwachte koers in"
 
 #: src/GribRequestDialog.cpp:130
 msgid "Allow Start or Stop drawing an area by dragging on the map"
-msgstr ""
+msgstr "Toestaan dat tekenen van gebied start of stopt door te slepen op de kaart. "
 
 #: src/GribRequestDialog.cpp:291
 msgid "Stop graphic Sel."
 msgstr "Stop grafische Sel."
 
 #: src/GribRequestDialog.cpp:528
-msgid "You request a forecast for more than 8 days horizon.\nThis is conflicting with Wave data which will be removed from your request.\nDon't forget that beyond the first 8 days, the resolution will be only 2.5°x2.5° and the time intervall 12 hours."
-msgstr "U vraagt om een verwachting langer dan 8 dagen vooruit.\nDit conflicteert met de golfgegevens, die daarom uit uw verzoek worden verwijderd.\nVergeet niet dat na de eerste 8 dagen de resolutie slechts 2.5\\u00B0x2.5\\u00B0 zal zijn met een interval van 12 uur."
+msgid "You request a forecast for more than 8 days horizon.\n"
+"This is conflicting with Wave data which will be removed from your request.\n"
+"Don't forget that beyond the first 8 days, the resolution will be only 2.5°x2.5° and the time intervall 12 hours."
+msgstr "U vraagt om een verwachting langer dan 8 dagen vooruit.\n"
+"Dit conflicteert met de golfgegevens, die daarom uit uw verzoek worden verwijderd.\n"
+"Vergeet niet dat na de eerste 8 dagen de resolutie slechts 2.5\\u00B0x2.5\\u00B0 zal zijn met een interval van 12 uur."
 
 #: src/GribRequestDialog.cpp:812 src/GribRequestDialog.cpp:815
 msgid "MB"
@@ -817,38 +857,52 @@ msgid "Max"
 msgstr "( Max "
 
 #: src/GribRequestDialog.cpp:843
-msgid "Before sending an email to Zygrib you have to enter your Login and Code.\nPlease visit www.zygrib.org/ and follow instructions..."
-msgstr "Voor het zenden van een e-mail naar zyGrib uw login en code invoeren.\n Ga naar www.zyGrib.org/ en volg de instructies op ..."
+msgid "Before sending an email to Zygrib you have to enter your Login and Code.\n"
+"Please visit www.zygrib.org/ and follow instructions..."
+msgstr "Voor het zenden van een e-mail naar zyGrib uw login en code invoeren.\n"
+" Ga naar www.zyGrib.org/ en volg de instructies op ..."
 
 #: src/GribRequestDialog.cpp:844
 msgid "Too big file! zyGrib limit is 2Mb!"
-msgstr ""
+msgstr "Bestand is te groot! Limiet zyGrib is 2Mb."
 
 #: src/GribRequestDialog.cpp:844
 msgid "Error! Max Lat lower than Min Lat or Max Lon lower than Min Lon!"
-msgstr ""
+msgstr "Fout! Grootste breedte is minder dan min. breedte of grootste lengte is minder dan min. lengte."
 
 #: src/GribRequestDialog.cpp:845
 msgid "Too large area! Each side must be less than 180°!"
-msgstr ""
+msgstr "Te groot gebied! Elke zijde moet kleiner zijn dan 180°."
 
 #: src/GribRequestDialog.cpp:845
 msgid "Too small area for this resolution!"
-msgstr ""
+msgstr "Te klein gebied voor deze resolutie!"
 
 #: src/GribRequestDialog.cpp:860 src/GribRequestDialog.cpp:892
 msgid "Continue..."
 msgstr "Doorgaan ..."
 
 #: src/GribRequestDialog.cpp:877 src/GribRequestDialog.cpp:881
-msgid "Your request is ready. An email is prepared in your email environment. \nYou have just to verify and send it...\nSave or Cancel to finish...or Continue..."
-msgstr "Uw aanvraag staat gereed. Een e-mail is voorbereid.\nControleer en verzend deze ...\nOpslaan of Afbreken om te beeindigen ... of Doorgaan ..."
+msgid "Your request is ready. An email is prepared in your email environment. \n"
+"You have just to verify and send it...\n"
+"Save or Cancel to finish...or Continue..."
+msgstr "Uw aanvraag staat gereed. Een e-mail is voorbereid.\n"
+"Controleer en verzend deze ...\n"
+"Opslaan of Afbreken om te beeindigen ... of Doorgaan ..."
 
 #: src/GribRequestDialog.cpp:884
-msgid "Your request was sent \n(if your system has an MTA configured and is able to send email).\nSave or Cancel to finish...or Continue..."
-msgstr "Uw verzoek is verzonden (mits uw systeem hiervoor\ngeconfigureerd is en mail kan verzenden).\nOpslaan of Afbreken om te beeindigen... of Doorgaan ..."
+msgid "Your request was sent \n"
+"(if your system has an MTA configured and is able to send email).\n"
+"Save or Cancel to finish...or Continue..."
+msgstr "Uw verzoek is verzonden (mits uw systeem hiervoor\n"
+"geconfigureerd is en mail kan verzenden).\n"
+"Opslaan of Afbreken om te beeindigen... of Doorgaan ..."
 
 #: src/GribRequestDialog.cpp:889
-msgid "Request can't be sent. Please verify your email systeme parameters.\nYou should also have a look at your log file.\nSave or Cancel to finish..."
-msgstr "Het verzoek kan niet verzonden worden. Controleer uw\ne-mail parameters en uw logbestand.\nOpslaan of Afbreken om te beeindigen ..."
+msgid "Request can't be sent. Please verify your email systeme parameters.\n"
+"You should also have a look at your log file.\n"
+"Save or Cancel to finish..."
+msgstr "Het verzoek kan niet verzonden worden. Controleer uw\n"
+"e-mail parameters en uw logbestand.\n"
+"Opslaan of Afbreken om te beeindigen ..."
 
