@@ -3399,11 +3399,22 @@ bool glChartCanvas::FactoryCrunch(double factor)
             if(!ptf)
                 continue;
             
+            // we better have to find one because glTexFactory keep cache texture open
+            // and ocpn will eventually run out of file descriptors
             if( cc1->VPoint.b_quilt )          // quilted
             {
                 if( cc1->m_pQuilt && cc1->m_pQuilt->IsComposed() &&
                     !cc1->m_pQuilt->IsChartInQuilt( chart_full_path ) ) {
                     
+                    wxDateTime lru = ptf->GetLRUTime();
+                    if(lru.IsEarlierThan(lru_oldest)){
+                        lru_oldest = lru;
+                        ptf_oldest = ptf;
+                    }
+                }
+            }
+            else {
+                if( !Current_Ch->GetFullPath().IsSameAs(chart_full_path)) {
                     wxDateTime lru = ptf->GetLRUTime();
                     if(lru.IsEarlierThan(lru_oldest)){
                         lru_oldest = lru;
