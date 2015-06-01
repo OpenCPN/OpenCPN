@@ -882,23 +882,31 @@ void CompressionWorkerPool::PurgeJobList( wxString chart_path )
                 tnode = tnode->GetNext();
             }
         }
+
+        wxJobListNode *node = running_list.GetFirst();
+        while(node){
+            JobTicket *ticket = node->GetData();
+            if(ticket->m_ChartPath.IsSameAs(chart_path)){
+                ticket->b_isaborted = false;
+                ticket->b_abort = true;
+            }
+            node = node->GetNext();
+        }
             
         if(bthread_debug)
             printf("Pool:  Purge, todo count: %lu\n", (long unsigned)todo_list.GetCount());
     }
     else {
         todo_list.Clear();
+        //  Mark all running tasks for "abort"
+        wxJobListNode *node = running_list.GetFirst();
+        while(node){
+            JobTicket *ticket = node->GetData();
+            ticket->b_isaborted = false;
+            ticket->b_abort = true;
+            node = node->GetNext();
+        }
     }        
-
-    //  Mark all running tasks for "abort"
-    wxJobListNode *node = running_list.GetFirst();
-    while(node){
-        JobTicket *ticket = node->GetData();
-        ticket->b_isaborted = false;
-        ticket->b_abort = true;
-        node = node->GetNext();
-    }
-    
 }
 
 
