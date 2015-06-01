@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-01-06 17:25-0600\n"
-"PO-Revision-Date: 2015-01-06 18:28-0500\n"
+"POT-Creation-Date: 2015-01-07 16:15-0600\n"
+"PO-Revision-Date: 2015-05-31 23:23-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
@@ -13,6 +13,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: ru\n"
 "X-Crowdin-File: /plugins/grib_pi/po/grib_pi.pot\n"
 
 #: src/GribUIDialog.cpp:157 src/GribUIDialog.cpp:1105
@@ -280,8 +281,11 @@ msgid "Apply"
 msgstr "Применить"
 
 #: src/GribSettingsDialog.cpp:435
-msgid "This file contains data for particular time intervals but you have chosen to display different intervals.\nPlease consider that the values will be interpolated."
-msgstr "Файл содержит данные для конкретных временных интервалов,\nоднако вы выбрали отображение других интервалов.\nИмейте в виду, что значения будут интерполированными."
+msgid "This file contains data for particular time intervals but you have chosen to display different intervals.\n"
+"Please consider that the values will be interpolated."
+msgstr "Файл содержит данные для конкретных временных интервалов,\n"
+"однако вы выбрали отображение других интервалов.\n"
+"Имейте в виду, что значения будут интерполированными."
 
 #: src/GribSettingsDialog.cpp:436 src/grib_pi.cpp:593
 #: src/GribRequestDialog.cpp:529
@@ -316,9 +320,9 @@ msgstr "Настройки"
 msgid "Request"
 msgstr "Запросить"
 
-#: src/GribUIDialogBase.cpp:80
-msgid "GRIB Data at Cursor"
-msgstr "Данные под курсором"
+#: src/CursorData.cpp:216
+msgid "Data at cursor position"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:113
 msgid "Significant Wave Height"
@@ -464,7 +468,7 @@ msgstr "Типовая"
 msgid "Minimum Spacing"
 msgstr "Мин. расстояние"
 
-#: src/GribUIDialogBase.cpp:534
+#: src/GribUIDialogBase.cpp:757
 msgid "Density"
 msgstr ""
 
@@ -749,24 +753,46 @@ msgid "GRIB PlugIn for OpenCPN"
 msgstr "Модуль «GRIB» для OpenCPN"
 
 #: src/grib_pi.cpp:180
-msgid "GRIB PlugIn for OpenCPN\nProvides basic GRIB file overlay capabilities for several GRIB file types\nand a request function to get GRIB files by eMail.\n\nSupported GRIB data include:\n- wind direction and speed (at 10 m)\n- wind gust\n- surface pressure\n- rainfall\n- cloud cover\n- significant wave height and direction\n- air surface temperature (at 2 m)\n- sea surface temperature\n- surface current direction and speed\n- Convective Available Potential Energy (CAPE)\n- wind, altitude, temperature and relative humidity at 300, 500, 700, 850 hPa."
-msgstr "Модуль «GRIB» для OpenCPN\nЗапрашивает прогноз погоды и отображает его поверх карты."
+msgid "GRIB PlugIn for OpenCPN\n"
+"Provides basic GRIB file overlay capabilities for several GRIB file types\n"
+"and a request function to get GRIB files by eMail.\n\n"
+"Supported GRIB data include:\n"
+"- wind direction and speed (at 10 m)\n"
+"- wind gust\n"
+"- surface pressure\n"
+"- rainfall\n"
+"- cloud cover\n"
+"- significant wave height and direction\n"
+"- air surface temperature (at 2 m)\n"
+"- sea surface temperature\n"
+"- surface current direction and speed\n"
+"- Convective Available Potential Energy (CAPE)\n"
+"- wind, altitude, temperature and relative humidity at 300, 500, 700, 850 hPa."
+msgstr "Модуль «GRIB» для OpenCPN\n"
+"Запрашивает прогноз погоды и отображает его поверх карты."
 
 #: src/grib_pi.cpp:294
 msgid "Weather table"
 msgstr "Таблица погоды"
 
 #: src/grib_pi.cpp:592
-msgid "You have chosen to authorize interpolation.\nDon't forget that data displayed at current time will not be real but interpolated!"
-msgstr "Вы активировали интерполяцию данных.\nИмейте в виду, что отображаемые данные\nбудут интерполированными, а не реальными."
+msgid "You have chosen to authorize interpolation.\n"
+"Don't forget that data displayed at current time will not be real but interpolated!"
+msgstr "Вы активировали интерполяцию данных.\n"
+"Имейте в виду, что отображаемые данные\n"
+"будут интерполированными, а не реальными."
 
 #: src/GribTable.cpp:167
-msgid "Air\nTemperature"
-msgstr "Температура\nвоздуха"
+msgid "Air\n"
+"Temperature"
+msgstr "Температура\n"
+"воздуха"
 
 #: src/GribTable.cpp:174
-msgid "Sea\nTemperature"
-msgstr "Температура\nводы"
+msgid "Sea\n"
+"Temperature"
+msgstr "Температура\n"
+"воды"
 
 #: src/GribRequestDialog.cpp:109 src/GribRequestDialog.cpp:832
 msgid "Send"
@@ -805,7 +831,9 @@ msgid "Stop graphic Sel."
 msgstr ""
 
 #: src/GribRequestDialog.cpp:528
-msgid "You request a forecast for more than 8 days horizon.\nThis is conflicting with Wave data which will be removed from your request.\nDon't forget that beyond the first 8 days, the resolution will be only 2.5°x2.5° and the time intervall 12 hours."
+msgid "You request a forecast for more than 8 days horizon.\n"
+"This is conflicting with Wave data which will be removed from your request.\n"
+"Don't forget that beyond the first 8 days, the resolution will be only 2.5°x2.5° and the time intervall 12 hours."
 msgstr ""
 
 #: src/GribRequestDialog.cpp:812 src/GribRequestDialog.cpp:815
@@ -817,8 +845,10 @@ msgid "Max"
 msgstr "макс."
 
 #: src/GribRequestDialog.cpp:843
-msgid "Before sending an email to Zygrib you have to enter your Login and Code.\nPlease visit www.zygrib.org/ and follow instructions..."
-msgstr "Для отправки сообщения в службу zyGRIB вам необходимо ввести учётные данные.\nЗайдите на сайт www.zygrib.org и следуйте инструкциям для регистрации."
+msgid "Before sending an email to Zygrib you have to enter your Login and Code.\n"
+"Please visit www.zygrib.org/ and follow instructions..."
+msgstr "Для отправки сообщения в службу zyGRIB вам необходимо ввести учётные данные.\n"
+"Зайдите на сайт www.zygrib.org и следуйте инструкциям для регистрации."
 
 #: src/GribRequestDialog.cpp:844
 msgid "Too big file! zyGrib limit is 2Mb!"
@@ -841,14 +871,70 @@ msgid "Continue..."
 msgstr "Продолжить…"
 
 #: src/GribRequestDialog.cpp:877 src/GribRequestDialog.cpp:881
-msgid "Your request is ready. An email is prepared in your email environment. \nYou have just to verify and send it...\nSave or Cancel to finish...or Continue..."
-msgstr "Ваш запрос сформирован и помещён в почтовую программу.\nНужно проверить сообщение и отправить его."
+msgid "Your request is ready. An email is prepared in your email environment. \n"
+"You have just to verify and send it...\n"
+"Save or Cancel to finish...or Continue..."
+msgstr "Ваш запрос сформирован и помещён в почтовую программу.\n"
+"Нужно проверить сообщение и отправить его."
 
 #: src/GribRequestDialog.cpp:884
-msgid "Your request was sent \n(if your system has an MTA configured and is able to send email).\nSave or Cancel to finish...or Continue..."
+msgid "Your request was sent \n"
+"(if your system has an MTA configured and is able to send email).\n"
+"Save or Cancel to finish...or Continue..."
 msgstr "Ваш запрос был отправлен (если ваша почтовая система настроена)."
 
 #: src/GribRequestDialog.cpp:889
-msgid "Request can't be sent. Please verify your email systeme parameters.\nYou should also have a look at your log file.\nSave or Cancel to finish..."
-msgstr "Не удаётся отправить запрос. Проверьте параметры вашей почтовой системы.\nЗаписи в журнале работы могут помочь выяснить причину отказа."
+msgid "Request can't be sent. Please verify your email systeme parameters.\n"
+"You should also have a look at your log file.\n"
+"Save or Cancel to finish..."
+msgstr "Не удаётся отправить запрос. Проверьте параметры вашей почтовой системы.\n"
+"Записи в журнале работы могут помочь выяснить причину отказа."
+
+#: src\GribUIDialogBase.cpp:71
+msgid "Show/Hide Cursor Data"
+msgstr ""
+
+#: src\GribUIDialog.cpp:298
+msgid "Start Request"
+msgstr ""
+
+#: src\GribUIDialog.cpp:302
+msgid "Draw the desired zone"
+msgstr ""
+
+#: src\GribUIDialog.cpp:306
+msgid "Valid request"
+msgstr ""
+
+#: src\GribUIDialogBase.cpp:558
+msgid "Data Display Options"
+msgstr ""
+
+#: src\GribUIDialogBase.cpp:806
+msgid "Playback Options"
+msgstr ""
+
+#: src\GribUIDialogBase.cpp:859
+msgid "Playback"
+msgstr ""
+
+#: src\GribUIDialogBase.cpp:771
+msgid "Transparency for all Overlay Maps"
+msgstr ""
+
+#: src\GribUIDialogBase.cpp:601
+msgid "Spacing(pixels)"
+msgstr ""
+
+#: src\GribUIDialogBase.cpp:683
+msgid "Fixed"
+msgstr ""
+
+#: src\GribUIDialogBase.cpp:605
+msgid "Fixed"
+msgstr ""
+
+#: src\GribUIDialogBase.cpp:611
+msgid "Minimum"
+msgstr ""
 

@@ -3,39 +3,39 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-05-31 22:20-0500\n"
-"PO-Revision-Date: 2015-05-31 23:22-0400\n"
+"PO-Revision-Date: 2015-05-31 23:23-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
-"Language-Team: German\n"
-"Language: de_DE\n"
+"Language-Team: Turkish\n"
+"Language: tr_TR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
-"X-Crowdin-Language: de\n"
+"X-Crowdin-Language: tr\n"
 "X-Crowdin-File: /plugins/dashboard_pi/po/dashboard_pi.pot\n"
 
 #: src/clock.cpp:126 src/dial.cpp:504 src/gps.cpp:141 src/wind.cpp:64
 #: src/wind_history.cpp:401
 msgid "N"
-msgstr "N"
+msgstr "K"
 
 #: src/dashboard_pi.cpp:97
 msgid "Position"
-msgstr "Position"
+msgstr "Mevki"
 
 #: src/dashboard_pi.cpp:99
 msgid "SOG"
-msgstr ""
+msgstr "SOG"
 
 #: src/dashboard_pi.cpp:101
 msgid "Speedometer"
-msgstr "Log"
+msgstr "Hızölçer"
 
 #: src/dashboard_pi.cpp:103
 msgid "COG"
-msgstr ""
+msgstr "COG"
 
 #: src/dashboard_pi.cpp:105
 msgid "Mag COG"
@@ -43,228 +43,228 @@ msgstr ""
 
 #: src/dashboard_pi.cpp:107
 msgid "GPS Compass"
-msgstr "GPS Kompaß"
+msgstr "GPS Pusula"
 
 #: src/dashboard_pi.cpp:109
 msgid "True Compass"
-msgstr "Wahrer Kompaß"
+msgstr "Gerçek Pusula"
 
 #: src/dashboard_pi.cpp:111
 msgid "STW"
-msgstr ""
+msgstr "STW"
 
 #: src/dashboard_pi.cpp:113
 msgid "True HDG"
-msgstr "rechtw. Kurs"
+msgstr "Gerçek HDG"
 
 #: src/dashboard_pi.cpp:115
 msgid "Mag HDG"
-msgstr "magn. Kurs"
+msgstr "Manyetik HDG"
 
 #: src/dashboard_pi.cpp:118
 msgid "App. Wind Angle & Speed"
-msgstr "scheinb. Windwinkel & -Geschw."
+msgstr "Gör.Rüzgar Açısı & Hızı"
 
 #: src/dashboard_pi.cpp:120 src/dashboard_pi.cpp:122
 msgid "App. Wind Speed"
-msgstr "scheinb. Windgeschw."
+msgstr "Gör. Rüzgar Hızı"
 
 #: src/dashboard_pi.cpp:124
 msgid "True Wind Angle & Speed"
-msgstr "wahrer Windwinkel & -Geschw."
+msgstr "Gerçek Rüzgar Açısı & Hızı"
 
 #: src/dashboard_pi.cpp:126 src/dashboard_pi.cpp:128
 msgid "Depth"
-msgstr "Tiefe"
+msgstr "Derinlik"
 
 #: src/dashboard_pi.cpp:130 src/dashboard_pi.cpp:132
 msgid "Barometric pressure"
-msgstr "Barometr. Druck"
+msgstr "Barometrik Basınç"
 
 #: src/dashboard_pi.cpp:134
 msgid "Water Temp."
-msgstr "Wassertemp."
+msgstr "Su Sıcaklığı"
 
 #: src/dashboard_pi.cpp:136
 msgid "Air Temp."
-msgstr "Lufttemp."
+msgstr "Hava Sıcaklığı"
 
 #: src/dashboard_pi.cpp:138
 msgid "App. Wind Angle"
-msgstr "scheinb. Windwinkel"
+msgstr "Gör. Rüzgar Açısı"
 
 #: src/dashboard_pi.cpp:140
 msgid "True Wind Angle"
-msgstr "wahrer Windwinkel"
+msgstr "Gerçek Rüzgar Açısı"
 
 #: src/dashboard_pi.cpp:142
 msgid "True Wind Direction"
-msgstr "wahre Windrichtung "
+msgstr "Gerçek Rüzgar Yönü"
 
 #: src/dashboard_pi.cpp:144
 msgid "True Wind Speed"
-msgstr "wahre Windgeschw."
+msgstr "Gerçek Rüzgar Hızı"
 
 #: src/dashboard_pi.cpp:146
 msgid "True Wind Dir. & Speed"
-msgstr "wahre Windricht. & -Geschw."
+msgstr "Gerçek Rüzgar Yönü&Hızı"
 
 #: src/dashboard_pi.cpp:148 src/dashboard_pi.cpp:150
 msgid "VMG"
-msgstr ""
+msgstr "VMG"
 
 #: src/dashboard_pi.cpp:152 src/dashboard_pi.cpp:154
 msgid "Rudder Angle"
-msgstr "Ruderlage"
+msgstr "Düzmen Açısı"
 
 #: src/dashboard_pi.cpp:156
 msgid "GPS in View"
-msgstr "GPS Sat. Anzahl"
+msgstr "GPS Görünümü"
 
 #: src/dashboard_pi.cpp:158
 msgid "GPS Status"
-msgstr ""
+msgstr "GPS Durumu"
 
 #: src/dashboard_pi.cpp:160
 msgid "Cursor"
-msgstr ""
+msgstr "Fare"
 
 #: src/dashboard_pi.cpp:162
 msgid "Clock"
-msgstr "Uhr"
+msgstr "Saat"
 
 #: src/dashboard_pi.cpp:164
 msgid "Sunrise/Sunset"
-msgstr "Sonnenauf-/untergang"
+msgstr "GünDoğumu/GünBAtımı"
 
 #: src/dashboard_pi.cpp:166
 msgid "Moon phase"
-msgstr "Mondphase"
+msgstr "Ay Dönümü"
 
 #: src/dashboard_pi.cpp:168
 msgid "Wind history"
-msgstr "Windhistorie"
+msgstr "Rüzgarın Geçmişi"
 
 #: src/dashboard_pi.cpp:170
 msgid "Barometric history"
-msgstr "Barometerhistorie"
+msgstr "Barometre Geçmişi"
 
 #: src/dashboard_pi.cpp:172
 msgid "Trip Log"
-msgstr ""
+msgstr "Yolculuk Kütüğü"
 
 #: src/dashboard_pi.cpp:174
 msgid "Sum Log"
-msgstr ""
+msgstr "Toplam Kütük"
 
 #: src/dashboard_pi.cpp:176
 msgid "From Ownship"
-msgstr "von eigener Position"
+msgstr "Teknemden"
 
 #: src/dashboard_pi.cpp:343 src/dashboard_pi.cpp:456 src/dashboard_pi.cpp:1322
 #: src/dashboard_pi.cpp:1331 src/dashboard_pi.cpp:1489
 #: src/dashboard_pi.cpp:1528 src/dashboard_pi.cpp:1792
 msgid "Dashboard"
-msgstr ""
+msgstr "Gösterge Paneli"
 
 #: src/dashboard_pi.cpp:461
 msgid "Dashboard PlugIn for OpenCPN"
-msgstr "Dashboard Plugin für OpenCPN"
+msgstr "OpenCPN için Gösterge Paneli Eklentisi"
 
 #: src/dashboard_pi.cpp:466
 msgid "Dashboard PlugIn for OpenCPN\n"
 "Provides navigation instrument display from NMEA source."
-msgstr "Dashboard Plugin für OpenCPN\n"
-"ermöglicht Instrumentenanzeigen aus NMEA Quellen."
+msgstr "OpenCPN için Gösterge Paneli Eklentisi\n"
+"NMEA kaynağından aldığı seyir verilerini gösterir."
 
 #: src/dashboard_pi.cpp:1465
 msgid "Dashboard preferences"
-msgstr "Dashboard Einstellungen"
+msgstr "Gösterge PAneli YApılandırması"
 
 #: src/dashboard_pi.cpp:1535
 msgid "show this dashboard"
-msgstr "zeige dies Dashboard"
+msgstr "Bu gösterge panelini göster."
 
 #: src/dashboard_pi.cpp:1541
 msgid "Caption:"
-msgstr "Fenstertitel:"
+msgstr "Başlık:"
 
 #: src/dashboard_pi.cpp:1549
 msgid "Orientation:"
-msgstr "Ausrichtung:"
+msgstr "Yönelim:"
 
 #: src/dashboard_pi.cpp:1553 src/dashboard_pi.cpp:1985
 msgid "Vertical"
-msgstr "vertikal"
+msgstr "Dikey"
 
 #: src/dashboard_pi.cpp:1554 src/dashboard_pi.cpp:1987
 msgid "Horizontal"
-msgstr "horizontal"
+msgstr "Yatay"
 
 #: src/dashboard_pi.cpp:1561 src/dashboard_pi.cpp:1569
 #: src/dashboard_pi.cpp:1911
 msgid "Instruments"
-msgstr "Instrumente"
+msgstr "Aletler"
 
 #: src/dashboard_pi.cpp:1577
 msgid "Add"
-msgstr "Zufügen"
+msgstr "Ekle"
 
 #: src/dashboard_pi.cpp:1590
 msgid "Delete"
-msgstr "Löschen"
+msgstr "Sil"
 
 #: src/dashboard_pi.cpp:1596
 msgid "Up"
-msgstr "hoch"
+msgstr "Yukarı"
 
 #: src/dashboard_pi.cpp:1601
 msgid "Down"
-msgstr "runter"
+msgstr "Aşağı"
 
 #: src/dashboard_pi.cpp:1611
 msgid "Appearance"
-msgstr "Erscheinungsbild"
+msgstr "Görünüm"
 
 #: src/dashboard_pi.cpp:1613
 msgid "Fonts"
-msgstr "Schrift"
+msgstr "Harf biçimi"
 
 #: src/dashboard_pi.cpp:1619
 msgid "Title:"
-msgstr "Titel:"
+msgstr "Ünvan:"
 
 #: src/dashboard_pi.cpp:1625
 msgid "Data:"
-msgstr "Daten:"
+msgstr "Veri:"
 
 #: src/dashboard_pi.cpp:1631
 msgid "Label:"
-msgstr ""
+msgstr "Etiket:"
 
 #: src/dashboard_pi.cpp:1637
 msgid "Small:"
-msgstr "Klein:"
+msgstr "Küçük:"
 
 #: src/dashboard_pi.cpp:1645
 msgid "Units, Ranges, Formats"
-msgstr "Einheiten, Bereiche, Formate"
+msgstr "Birimler, Aralıklar, Formatlar"
 
 #: src/dashboard_pi.cpp:1651
 msgid "Speedometer max value:"
-msgstr "Log max. Wert:"
+msgstr "Hızölçerin en yüksek değeri:"
 
 #: src/dashboard_pi.cpp:1656
 msgid "Boat speed units:"
-msgstr "Bootgeschw. Einheiten:"
+msgstr "Tekne hız birimleri"
 
 #: src/dashboard_pi.cpp:1659 src/dashboard_pi.cpp:1677
 msgid "Honor OpenCPN settings"
-msgstr "Berücksichtige OpenCPN Einstellungen"
+msgstr "OpenCPN yapılandırmasına uy."
 
 #: src/dashboard_pi.cpp:1659 src/dashboard_pi.cpp:1686
 msgid "Kts"
-msgstr "kn"
+msgstr "Kts"
 
 #: src/dashboard_pi.cpp:1659 src/dashboard_pi.cpp:1686
 msgid "mph"
@@ -272,7 +272,7 @@ msgstr "mph"
 
 #: src/dashboard_pi.cpp:1659 src/dashboard_pi.cpp:1686
 msgid "km/h"
-msgstr "km/h"
+msgstr "km/s"
 
 #: src/dashboard_pi.cpp:1659 src/dashboard_pi.cpp:1686
 msgid "m/s"
@@ -280,79 +280,79 @@ msgstr "m/s"
 
 #: src/dashboard_pi.cpp:1665
 msgid "Depth units:"
-msgstr "Tiefen-Einheiten:"
+msgstr "Derinlik birimleri"
 
 #: src/dashboard_pi.cpp:1668 src/dashboard_pi.cpp:1677
 msgid "Meters"
-msgstr "Meter"
+msgstr "Metre"
 
 #: src/dashboard_pi.cpp:1668
 msgid "Feet"
-msgstr "Fuß"
+msgstr "Feet"
 
 #: src/dashboard_pi.cpp:1668
 msgid "Fathoms"
-msgstr "Faden"
+msgstr "Kulaç"
 
 #: src/dashboard_pi.cpp:1668
 msgid "Centimeters"
-msgstr "Zentimeter"
+msgstr "Santimetre"
 
 #: src/dashboard_pi.cpp:1668
 msgid "Inches"
-msgstr "Zoll"
+msgstr "inç"
 
 #: src/dashboard_pi.cpp:1674
 msgid "Distance units:"
-msgstr "Entfernungs-Einheiten:"
+msgstr "Mesafe birimleri"
 
 #: src/dashboard_pi.cpp:1677
 msgid "Nautical miles"
-msgstr "Naut. Meilen"
+msgstr "Deniz mili"
 
 #: src/dashboard_pi.cpp:1677
 msgid "Statute miles"
-msgstr "Landmeilen"
+msgstr "Kara mili"
 
 #: src/dashboard_pi.cpp:1677
 msgid "Kilometers"
-msgstr "Kilometer"
+msgstr "Kilometre"
 
 #: src/dashboard_pi.cpp:1683
 msgid "Wind speed units:"
-msgstr "Windgeschw. Einheiten:"
+msgstr "Rüzgar hızı birimleri:"
 
 #: src/dashboard_pi.cpp:1894
 msgid "Add instrument"
-msgstr "Instrument hinzufügen"
+msgstr "Alet ekle"
 
 #: src/dashboard_pi.cpp:1900
 msgid "Select instrument to add:"
-msgstr "Instrument auswählen zum Hinzufügen:"
+msgstr "Eklenecek aleti seç:"
 
 #: src/dashboard_pi.cpp:1994
 msgid "Preferences..."
-msgstr "Einstellungen..."
+msgstr "Yapılandırma"
 
 #: src/dial.cpp:504 src/wind.cpp:64 src/wind_history.cpp:407
 msgid "NE"
-msgstr "NO"
+msgstr "KD"
 
 #: src/dial.cpp:504 src/gps.cpp:145 src/wind.cpp:64 src/wind_history.cpp:413
 msgid "E"
-msgstr "O"
+msgstr "D"
 
 #: src/dial.cpp:504 src/wind.cpp:64 src/wind_history.cpp:419
 msgid "SE"
-msgstr "SO"
+msgstr "GD"
 
 #: src/dial.cpp:504 src/gps.cpp:149 src/wind.cpp:64 src/wind_history.cpp:425
 msgid "S"
-msgstr "S"
+msgstr "G"
 
 #: src/dial.cpp:504 src/wind.cpp:64 src/wind_history.cpp:431
 msgid "SW"
-msgstr "SW"
+msgstr "GB"
 
 #: src/dial.cpp:504 src/gps.cpp:153 src/wind.cpp:64 src/wind_history.cpp:437
 msgid "W"
@@ -360,50 +360,50 @@ msgstr "W"
 
 #: src/dial.cpp:504 src/wind.cpp:64 src/wind_history.cpp:443
 msgid "NW"
-msgstr "NW"
+msgstr "KB"
 
 #: src/instrument.cpp:256
 msgid " true"
-msgstr "rechtw."
+msgstr "gerçek"
 
 #: src/instrument.cpp:258
 msgid " mag"
-msgstr "magn."
+msgstr "manyetik"
 
 #: src/wind_history.cpp:404
 msgid "NNE"
-msgstr "NNO"
+msgstr "KKD"
 
 #: src/wind_history.cpp:410
 msgid "ENE"
-msgstr "ONO"
+msgstr "DKD"
 
 #: src/wind_history.cpp:416
 msgid "ESE"
-msgstr "OSO"
+msgstr "DGD"
 
 #: src/wind_history.cpp:422
 msgid "SSE"
-msgstr "SSO"
+msgstr "GGD"
 
 #: src/wind_history.cpp:428
 msgid "SSW"
-msgstr "SSW"
+msgstr "GGB"
 
 #: src/wind_history.cpp:434
 msgid "WSW"
-msgstr "WSW"
+msgstr "BKB"
 
 #: src/wind_history.cpp:440
 msgid "WNW"
-msgstr "WNW"
+msgstr "BKB"
 
 #: src/wind_history.cpp:446
 msgid "NNW"
-msgstr "NNW"
+msgstr "KKB"
 
 #: src/wind_history.cpp:543
 #, c-format
 msgid "Max %.1f since %02d:%02d  Overall %.1f"
-msgstr "Max %.1f seit %02d:%02d  Gesamt %.1f"
+msgstr "En Çok %.1f den buyana %02d:%02d  toplam %.1f"
 

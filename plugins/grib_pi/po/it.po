@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-01-06 17:25-0600\n"
-"PO-Revision-Date: 2015-01-06 18:28-0500\n"
+"POT-Creation-Date: 2015-01-07 16:15-0600\n"
+"PO-Revision-Date: 2015-05-31 23:23-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Italian\n"
 "Language: it_IT\n"
@@ -13,6 +13,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: it\n"
 "X-Crowdin-File: /plugins/grib_pi/po/grib_pi.pot\n"
 
 #: src/GribUIDialog.cpp:157 src/GribUIDialog.cpp:1105
@@ -280,7 +281,8 @@ msgid "Apply"
 msgstr ""
 
 #: src/GribSettingsDialog.cpp:435
-msgid "This file contains data for particular time intervals but you have chosen to display different intervals.\nPlease consider that the values will be interpolated."
+msgid "This file contains data for particular time intervals but you have chosen to display different intervals.\n"
+"Please consider that the values will be interpolated."
 msgstr ""
 
 #: src/GribSettingsDialog.cpp:436 src/grib_pi.cpp:593
@@ -316,8 +318,8 @@ msgstr ""
 msgid "Request"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:80
-msgid "GRIB Data at Cursor"
+#: src/CursorData.cpp:216
+msgid "Data at cursor position"
 msgstr ""
 
 #: src/GribUIDialogBase.cpp:113
@@ -464,7 +466,7 @@ msgstr ""
 msgid "Minimum Spacing"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:534
+#: src/GribUIDialogBase.cpp:757
 msgid "Density"
 msgstr ""
 
@@ -749,23 +751,46 @@ msgid "GRIB PlugIn for OpenCPN"
 msgstr "GRIB PlugIn per OpenCPN"
 
 #: src/grib_pi.cpp:180
-msgid "GRIB PlugIn for OpenCPN\nProvides basic GRIB file overlay capabilities for several GRIB file types\nand a request function to get GRIB files by eMail.\n\nSupported GRIB data include:\n- wind direction and speed (at 10 m)\n- wind gust\n- surface pressure\n- rainfall\n- cloud cover\n- significant wave height and direction\n- air surface temperature (at 2 m)\n- sea surface temperature\n- surface current direction and speed\n- Convective Available Potential Energy (CAPE)\n- wind, altitude, temperature and relative humidity at 300, 500, 700, 850 hPa."
-msgstr "GRIB PlugIn per OpenCPN\nMostra in overlay sulla mappa i dati GRIB. Supporta diversi tipi di dati da file GRIB.\n\nDati GRIB supportati:\n- direzione vento e velocità\n- altezza significativa d'onda\n- temperatura superficiale acqua\n- direzione e velocità corrente superficiale."
+msgid "GRIB PlugIn for OpenCPN\n"
+"Provides basic GRIB file overlay capabilities for several GRIB file types\n"
+"and a request function to get GRIB files by eMail.\n\n"
+"Supported GRIB data include:\n"
+"- wind direction and speed (at 10 m)\n"
+"- wind gust\n"
+"- surface pressure\n"
+"- rainfall\n"
+"- cloud cover\n"
+"- significant wave height and direction\n"
+"- air surface temperature (at 2 m)\n"
+"- sea surface temperature\n"
+"- surface current direction and speed\n"
+"- Convective Available Potential Energy (CAPE)\n"
+"- wind, altitude, temperature and relative humidity at 300, 500, 700, 850 hPa."
+msgstr "GRIB PlugIn per OpenCPN\n"
+"Mostra in overlay sulla mappa i dati GRIB. Supporta diversi tipi di dati da file GRIB.\n\n"
+"Dati GRIB supportati:\n"
+"- direzione vento e velocità\n"
+"- altezza significativa d'onda\n"
+"- temperatura superficiale acqua\n"
+"- direzione e velocità corrente superficiale."
 
 #: src/grib_pi.cpp:294
 msgid "Weather table"
 msgstr ""
 
 #: src/grib_pi.cpp:592
-msgid "You have chosen to authorize interpolation.\nDon't forget that data displayed at current time will not be real but interpolated!"
+msgid "You have chosen to authorize interpolation.\n"
+"Don't forget that data displayed at current time will not be real but interpolated!"
 msgstr ""
 
 #: src/GribTable.cpp:167
-msgid "Air\nTemperature"
+msgid "Air\n"
+"Temperature"
 msgstr ""
 
 #: src/GribTable.cpp:174
-msgid "Sea\nTemperature"
+msgid "Sea\n"
+"Temperature"
 msgstr "Temperatura Acqua (°C)"
 
 #: src/GribRequestDialog.cpp:109 src/GribRequestDialog.cpp:832
@@ -805,7 +830,9 @@ msgid "Stop graphic Sel."
 msgstr ""
 
 #: src/GribRequestDialog.cpp:528
-msgid "You request a forecast for more than 8 days horizon.\nThis is conflicting with Wave data which will be removed from your request.\nDon't forget that beyond the first 8 days, the resolution will be only 2.5°x2.5° and the time intervall 12 hours."
+msgid "You request a forecast for more than 8 days horizon.\n"
+"This is conflicting with Wave data which will be removed from your request.\n"
+"Don't forget that beyond the first 8 days, the resolution will be only 2.5°x2.5° and the time intervall 12 hours."
 msgstr ""
 
 #: src/GribRequestDialog.cpp:812 src/GribRequestDialog.cpp:815
@@ -817,7 +844,8 @@ msgid "Max"
 msgstr ""
 
 #: src/GribRequestDialog.cpp:843
-msgid "Before sending an email to Zygrib you have to enter your Login and Code.\nPlease visit www.zygrib.org/ and follow instructions..."
+msgid "Before sending an email to Zygrib you have to enter your Login and Code.\n"
+"Please visit www.zygrib.org/ and follow instructions..."
 msgstr ""
 
 #: src/GribRequestDialog.cpp:844
@@ -841,14 +869,68 @@ msgid "Continue..."
 msgstr ""
 
 #: src/GribRequestDialog.cpp:877 src/GribRequestDialog.cpp:881
-msgid "Your request is ready. An email is prepared in your email environment. \nYou have just to verify and send it...\nSave or Cancel to finish...or Continue..."
+msgid "Your request is ready. An email is prepared in your email environment. \n"
+"You have just to verify and send it...\n"
+"Save or Cancel to finish...or Continue..."
 msgstr ""
 
 #: src/GribRequestDialog.cpp:884
-msgid "Your request was sent \n(if your system has an MTA configured and is able to send email).\nSave or Cancel to finish...or Continue..."
+msgid "Your request was sent \n"
+"(if your system has an MTA configured and is able to send email).\n"
+"Save or Cancel to finish...or Continue..."
 msgstr ""
 
 #: src/GribRequestDialog.cpp:889
-msgid "Request can't be sent. Please verify your email systeme parameters.\nYou should also have a look at your log file.\nSave or Cancel to finish..."
+msgid "Request can't be sent. Please verify your email systeme parameters.\n"
+"You should also have a look at your log file.\n"
+"Save or Cancel to finish..."
+msgstr ""
+
+#: src\GribUIDialogBase.cpp:71
+msgid "Show/Hide Cursor Data"
+msgstr ""
+
+#: src\GribUIDialog.cpp:298
+msgid "Start Request"
+msgstr ""
+
+#: src\GribUIDialog.cpp:302
+msgid "Draw the desired zone"
+msgstr ""
+
+#: src\GribUIDialog.cpp:306
+msgid "Valid request"
+msgstr ""
+
+#: src\GribUIDialogBase.cpp:558
+msgid "Data Display Options"
+msgstr ""
+
+#: src\GribUIDialogBase.cpp:806
+msgid "Playback Options"
+msgstr ""
+
+#: src\GribUIDialogBase.cpp:859
+msgid "Playback"
+msgstr ""
+
+#: src\GribUIDialogBase.cpp:771
+msgid "Transparency for all Overlay Maps"
+msgstr ""
+
+#: src\GribUIDialogBase.cpp:601
+msgid "Spacing(pixels)"
+msgstr ""
+
+#: src\GribUIDialogBase.cpp:683
+msgid "Fixed"
+msgstr ""
+
+#: src\GribUIDialogBase.cpp:605
+msgid "Fixed"
+msgstr ""
+
+#: src\GribUIDialogBase.cpp:611
+msgid "Minimum"
 msgstr ""
 

@@ -3,87 +3,87 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-01-07 16:15-0600\n"
-"PO-Revision-Date: 2015-05-31 23:23-0400\n"
+"PO-Revision-Date: 2015-05-31 23:22-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
-"Language-Team: Polish\n"
-"Language: pl_PL\n"
+"Language-Team: Catalan\n"
+"Language: ca_ES\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
-"X-Crowdin-Language: pl\n"
+"X-Crowdin-Language: ca\n"
 "X-Crowdin-File: /plugins/grib_pi/po/grib_pi.pot\n"
 
 #: src/GribUIDialog.cpp:157 src/GribUIDialog.cpp:1105
 #: src/GribUIDialogBase.cpp:54
 msgid "Play"
-msgstr "Odtwórz"
+msgstr "Reproduir"
 
 #: src/GribUIDialog.cpp:188
 msgid "Error:  No valid data in this file!"
-msgstr "Błąd: Brak poprawnych danych w tym pliku!"
+msgstr "Error: No hi ha dades vàlids en aquest fitxer!"
 
 #: src/GribUIDialog.cpp:212
 msgid "Warning:  Empty directory!"
-msgstr "Ostrzeżenie: Pusty katalog!"
+msgstr "Advertiment: Directori Buit!"
 
 #: src/GribUIDialog.cpp:426 src/GribUIDialogBase.cpp:453
 msgid "Barbed Arrows"
-msgstr "Symbole Strzałek"
+msgstr "Fletxes amb barres"
 
 #: src/GribUIDialog.cpp:427 src/GribUIDialog.cpp:433
 #: src/GribSettingsDialog.cpp:514 src/GribSettingsDialog.cpp:523
 msgid "Display Isotachs"
-msgstr "Wyświetl izotachy"
+msgstr "Mostrar isotaques"
 
 #: src/GribUIDialog.cpp:428 src/GribUIDialog.cpp:434 src/GribUIDialog.cpp:446
 #: src/GribUIDialog.cpp:451 src/GribUIDialog.cpp:456 src/GribUIDialog.cpp:461
 #: src/GribUIDialogBase.cpp:508
 msgid "OverlayMap"
-msgstr "Mapa barwna"
+msgstr "Mapa sobreposat"
 
 #: src/GribUIDialog.cpp:429 src/GribUIDialog.cpp:435 src/GribUIDialog.cpp:439
 #: src/GribUIDialog.cpp:447 src/GribUIDialog.cpp:452 src/GribUIDialog.cpp:457
 #: src/GribUIDialog.cpp:462 src/GribUIDialogBase.cpp:521
 msgid "Numbers"
-msgstr "Wartości liczbowe"
+msgstr "Nombres"
 
 #: src/GribUIDialog.cpp:430 src/GribUIDialog.cpp:463
 #: src/GribUIDialogBase.cpp:531
 msgid "Particle Map"
-msgstr "Trajektorie"
+msgstr "Mapa Animat"
 
 #: src/GribUIDialog.cpp:438 src/GribSettingsDialog.cpp:530
 msgid "Display Isobars"
-msgstr "Wyświetl izobary"
+msgstr "Mostrar isobares"
 
 #: src/GribUIDialog.cpp:443 src/GribSettingsDialog.cpp:549
 msgid "Display Isotherms"
-msgstr "Wyświetl izotermy"
+msgstr "Mostrar isotermes"
 
 #: src/GribUIDialog.cpp:450 src/GribSettingsDialog.cpp:556
 msgid "Display Iso CAPE"
-msgstr "Wyświetl izolinie CAPE"
+msgstr "Mostrar Iso CAPE"
 
 #: src/GribUIDialog.cpp:455 src/GribUIDialog.cpp:460
 #: src/GribUIDialogBase.cpp:493
 msgid "Direction Arrows"
-msgstr "Strzałki kierunku"
+msgstr "Fletxes de direcció"
 
 #: src/GribUIDialog.cpp:517 src/grib_pi.cpp:296
 msgid "Menu"
-msgstr "Menu"
+msgstr "Menú"
 
 #: src/GribUIDialog.cpp:562
 msgid "Close"
-msgstr "Zamknij"
+msgstr "Tanca"
 
 #: src/GribUIDialog.cpp:679 src/grib_pi.h:96 src/grib_pi.cpp:355
 #: src/GribRequestDialog.cpp:116 src/GribRequestDialog.cpp:183
 msgid "Dialog"
-msgstr "Dialog"
+msgstr "Diàleg"
 
 #: src/GribUIDialog.cpp:737 src/GribUIDialog.cpp:739 src/GribUIDialog.cpp:741
 #: src/GribUIDialog.cpp:823 src/GribUIDialog.cpp:824 src/GribUIDialog.cpp:836
@@ -93,60 +93,60 @@ msgstr "Dialog"
 #: src/GribUIDialog.cpp:956 src/GribUIDialog.cpp:968 src/GribUIDialog.cpp:980
 #: src/GribUIDialog.cpp:991
 msgid "N/A"
-msgstr "b. d."
+msgstr "N/A"
 
 #: src/GribUIDialog.cpp:744
 msgid "Data at"
-msgstr "Dane dla"
+msgstr "Dades a"
 
 #: src/GribUIDialog.cpp:760
 msgid "Wind Speed at"
-msgstr "Prędkość wiatru, w."
+msgstr "Velocitat del vent a"
 
 #: src/GribUIDialog.cpp:761
 msgid "Wind Direction at"
-msgstr "Kierunek wiatru"
+msgstr "Direcció del vent a"
 
 #: src/GribUIDialog.cpp:764
 msgid "Wind Gust at"
-msgstr "Wiatr w podmuchach dla"
+msgstr "Ràfegues de vent a"
 
 #: src/GribUIDialog.cpp:767
 msgid "Air Temperature at"
-msgstr "Temperatura powietrza dla"
+msgstr "Temperatura de l'aire a"
 
 #: src/GribUIDialog.cpp:767
 msgid "Surface level"
-msgstr "Poziom powierzchni"
+msgstr "Nivell de superfície"
 
 #: src/GribUIDialog.cpp:767
 msgid "Sea Surface Temperature"
-msgstr "Temp. powierzchni morza"
+msgstr "Temperatura de la superfície de la mar"
 
 #: src/GribUIDialog.cpp:777
 #, c-format
 msgid "Select Geopotential Height (in %s) or Standard Altitude."
-msgstr "Wybierz wysokość geopotencjału (w %s) lub wysokość bezwzględną."
+msgstr "Seleccioneu Altura Geopotencial (in %s) o Altitud estàndard."
 
 #: src/GribUIDialog.cpp:1069
 msgid "Stop"
-msgstr "Zatrzymaj"
+msgstr "Parar"
 
 #: src/GribUIDialog.cpp:1314
 msgid "Select a GRIB file"
-msgstr "Wybierz plik GRIB"
+msgstr "Seleccioneu un fitxer GRIB"
 
 #: src/GribUIDialog.cpp:1541
 msgid "Error:  File does not exist!"
-msgstr "Błąd: Plik nie istnieje!"
+msgstr "Error: el Fitxer no existeix!"
 
 #: src/GribUIDialog.cpp:1554
 msgid "Error:  Can't read this File!"
-msgstr "Błąd: Plik nieczytelny!"
+msgstr "Error: No es pot llegir aquest fitxer!"
 
 #: src/GribSettingsDialog.cpp:30 src/GribSettingsDialog.cpp:37
 msgid "Knots"
-msgstr "Węzłów"
+msgstr "Nusos"
 
 #: src/GribSettingsDialog.cpp:30 src/GribSettingsDialog.cpp:37
 msgid "m/s"
@@ -154,7 +154,7 @@ msgstr "m/s"
 
 #: src/GribSettingsDialog.cpp:30 src/GribSettingsDialog.cpp:37
 msgid "mph"
-msgstr "m/h"
+msgstr "mph"
 
 #: src/GribSettingsDialog.cpp:30 src/GribSettingsDialog.cpp:37
 msgid "km/h"
@@ -162,47 +162,47 @@ msgstr "km/h"
 
 #: src/GribSettingsDialog.cpp:30
 msgid "Beaufort"
-msgstr "° Beauforta"
+msgstr "Beaufort"
 
 #: src/GribSettingsDialog.cpp:31
 msgid "MilliBars"
-msgstr "milibarów"
+msgstr "Milibars"
 
 #: src/GribSettingsDialog.cpp:31
 msgid "mmHG"
-msgstr "mmHG"
+msgstr "mmHg"
 
 #: src/GribSettingsDialog.cpp:31
 msgid "inHG"
-msgstr "caliHG"
+msgstr "inHG"
 
 #: src/GribSettingsDialog.cpp:32
 msgid "Meters"
-msgstr "metrów"
+msgstr "Metres"
 
 #: src/GribSettingsDialog.cpp:32
 msgid "Feet"
-msgstr "stóp"
+msgstr "Peus"
 
 #: src/GribSettingsDialog.cpp:33
 msgid "Celsius"
-msgstr "° Celsjusza"
+msgstr "Celsius"
 
 #: src/GribSettingsDialog.cpp:33
 msgid "Fahrenheit"
-msgstr "° Fahrenheita"
+msgstr "Fahrenheit"
 
 #: src/GribSettingsDialog.cpp:34
 msgid "Millimeters"
-msgstr "milimetrów"
+msgstr "Mil·límetres"
 
 #: src/GribSettingsDialog.cpp:34
 msgid "Inches"
-msgstr "cali"
+msgstr "Polzades"
 
 #: src/GribSettingsDialog.cpp:35
 msgid "Percentage"
-msgstr "Procenty"
+msgstr "Percentatge"
 
 #: src/GribSettingsDialog.cpp:36
 msgid "j/kg"
@@ -212,48 +212,48 @@ msgstr "j/kg"
 #: src/GribUIDialogBase.cpp:515 src/GribUIDialogBase.cpp:997
 #: src/GribOverlayFactory.cpp:837 src/GribTable.cpp:120
 msgid "Wind"
-msgstr "Wiatr"
+msgstr "Vent"
 
 #: src/GribSettingsDialog.cpp:46 src/GribUIDialogBase.cpp:135
 #: src/GribUIDialogBase.cpp:1003 src/GribTable.cpp:138
 msgid "Wind Gust"
-msgstr "Wiatr w porywach"
+msgstr "Ràfegues de vent"
 
 #: src/GribSettingsDialog.cpp:46 src/GribUIDialogBase.cpp:144
 #: src/GribUIDialogBase.cpp:1000 src/GribTable.cpp:132
 msgid "Pressure"
-msgstr "Ciśnienie, mBar"
+msgstr "Pressió"
 
 #: src/GribSettingsDialog.cpp:47 src/GribUIDialogBase.cpp:109
 #: src/GribUIDialogBase.cpp:1030 src/GribTable.cpp:146
 msgid "Waves"
-msgstr "Falowanie"
+msgstr "Onades"
 
 #: src/GribSettingsDialog.cpp:47 src/GribUIDialogBase.cpp:122
 #: src/GribUIDialogBase.cpp:515 src/GribUIDialogBase.cpp:1019
 #: src/GribTable.cpp:189
 msgid "Current"
-msgstr "Prędkość prądu"
+msgstr "Corrent"
 
 #: src/GribSettingsDialog.cpp:48 src/GribUIDialogBase.cpp:155
 #: src/GribUIDialogBase.cpp:515 src/GribUIDialogBase.cpp:1006
 #: src/GribTable.cpp:153
 msgid "Rainfall"
-msgstr "Opady"
+msgstr "Precipitacións"
 
 #: src/GribSettingsDialog.cpp:48 src/GribUIDialogBase.cpp:166
 #: src/GribUIDialogBase.cpp:170 src/GribUIDialogBase.cpp:515
 #: src/GribUIDialogBase.cpp:1009 src/GribTable.cpp:160
 msgid "Cloud Cover"
-msgstr "Zachmurzenie"
+msgstr "Nuvolositat"
 
 #: src/GribSettingsDialog.cpp:49
 msgid "Air Temperature"
-msgstr "Temperatura powietrza"
+msgstr "Temperatura de l'aire"
 
 #: src/GribSettingsDialog.cpp:49
 msgid "Sea Temperature"
-msgstr "Temperatura morza"
+msgstr "Temperatura del mar"
 
 #: src/GribSettingsDialog.cpp:49 src/GribUIDialogBase.cpp:197
 #: src/GribUIDialogBase.cpp:1022 src/GribTable.cpp:181
@@ -262,11 +262,11 @@ msgstr "CAPE"
 
 #: src/GribSettingsDialog.cpp:50
 msgid "Altitude(Geopotential)"
-msgstr "Wysokość (geopotencjał)"
+msgstr "Altitud(Geopotencial)"
 
 #: src/GribSettingsDialog.cpp:50
 msgid "Relative Humidity"
-msgstr "Wilgotność względna"
+msgstr "Humitat relativa"
 
 #: src/GribSettingsDialog.cpp:402
 msgid "h"
@@ -274,50 +274,50 @@ msgstr "h"
 
 #: src/GribSettingsDialog.cpp:402
 msgid "mn"
-msgstr "min."
+msgstr "mn"
 
 #: src/GribSettingsDialog.cpp:422
 msgid "Apply"
-msgstr "Zastosuj"
+msgstr "Aplicar"
 
 #: src/GribSettingsDialog.cpp:435
 msgid "This file contains data for particular time intervals but you have chosen to display different intervals.\n"
 "Please consider that the values will be interpolated."
-msgstr "Wybrano wyświetlanie danych w innych przedziałach czasu niż te, które zawiera plik GRIB.\n"
-"Weź pod uwagę, że wyświetlane wartości będą interpolowane."
+msgstr "Aquest fitxer conté les dades d’uns intervals de temps determinats, però heu triat mostrar uns intervals diferents.\n"
+"Si us plau, tingueu en compte que els valors s'interpolaran."
 
 #: src/GribSettingsDialog.cpp:436 src/grib_pi.cpp:593
 #: src/GribRequestDialog.cpp:529
 msgid "Warning!"
-msgstr "Uwaga!"
+msgstr "Alerta!"
 
 #: src/GribUIDialogBase.cpp:29
 msgid "Previous"
-msgstr "Poprzedni"
+msgstr "Anterior"
 
 #: src/GribUIDialogBase.cpp:39
 msgid "Next"
-msgstr "Następny"
+msgstr "Següent"
 
 #: src/GribUIDialogBase.cpp:44
 msgid "Now"
-msgstr "Teraz"
+msgstr "Ara"
 
 #: src/GribUIDialogBase.cpp:49
 msgid "Zoom To Center"
-msgstr "Przeskaluj i wyśrodkuj"
+msgstr "Centrar i augmentar"
 
 #: src/GribUIDialogBase.cpp:62
 msgid "Open File"
-msgstr "Otwórz plik"
+msgstr "Obrir fitxer"
 
 #: src/GribUIDialogBase.cpp:67
 msgid "Settings"
-msgstr "Ustawienia"
+msgstr "Configuració"
 
 #: src/GribUIDialogBase.cpp:72
 msgid "Request"
-msgstr "Poproś o dane"
+msgstr "Sol·licitud"
 
 #: src/CursorData.cpp:216
 msgid "Data at cursor position"
@@ -325,47 +325,47 @@ msgstr ""
 
 #: src/GribUIDialogBase.cpp:113
 msgid "Significant Wave Height"
-msgstr "Wysokość fali znacznej, m"
+msgstr "Alçada d'onada significativa"
 
 #: src/GribUIDialogBase.cpp:118
 msgid "Waves Direction"
-msgstr "Kierunek falowania"
+msgstr "Direcció de les ones"
 
 #: src/GribUIDialogBase.cpp:126
 msgid "Surface Current Speed"
-msgstr "Prędkość prądu powierzchniowego"
+msgstr "Velocitat del corrent de superfície"
 
 #: src/GribUIDialogBase.cpp:131
 msgid "Surface Current Direction"
-msgstr "Kierunek prądu powierzchniowego"
+msgstr "Direcció del corrent de superfície"
 
 #: src/GribUIDialogBase.cpp:148
 msgid "Mean Sea Level Pressure (MSLP)"
-msgstr "Ciśnienie na poziomie morza (MSLP)"
+msgstr "Pressió mitjana la nivell del mar (MSLP)"
 
 #: src/GribUIDialogBase.cpp:159
 msgid "Cumulative Rainfall per Hour"
-msgstr "Sumaryczny opad na godzinę"
+msgstr "Precipitació acumulada per hora"
 
 #: src/GribUIDialogBase.cpp:177 src/GribUIDialogBase.cpp:515
 msgid "Air Temp"
-msgstr "Temp. powietrza"
+msgstr "Temperatura de l'aire"
 
 #: src/GribUIDialogBase.cpp:186 src/GribUIDialogBase.cpp:515
 msgid "Sea Temp"
-msgstr "Temp. morza"
+msgstr "Temperatura del mar"
 
 #: src/GribUIDialogBase.cpp:190
 msgid "Sea or Air Temperature at Surface Level"
-msgstr "Temperatura wody lub powietrza na poziomie morza"
+msgstr "Temperatura del Mar o de l'Aire en Superfície"
 
 #: src/GribUIDialogBase.cpp:201
 msgid "Convective Available Potential Energy"
-msgstr "Energia potencjalna dostępna konwekcyjnie"
+msgstr "Energia potencial de convecció disponible"
 
 #: src/GribUIDialogBase.cpp:234
 msgid "Altitude"
-msgstr "Wysokość npm"
+msgstr "Altitud"
 
 #: src/GribUIDialogBase.cpp:244
 msgid "Temperature"
@@ -373,159 +373,159 @@ msgstr "Temperatura"
 
 #: src/GribUIDialogBase.cpp:254
 msgid "Rel. Humid."
-msgstr "Wilg. względ. pow."
+msgstr "Humitat rel."
 
 #: src/GribUIDialogBase.cpp:377
 msgid "playback"
-msgstr "Animacja"
+msgstr "reproducció"
 
 #: src/GribUIDialogBase.cpp:384
 msgid "Loop Mode"
-msgstr "Tryb pętli"
+msgstr "Mode de bucle"
 
 #: src/GribUIDialogBase.cpp:387
 msgid "Loop Start"
-msgstr "Początek pętli"
+msgstr "Iniciar bucle"
 
 #: src/GribUIDialogBase.cpp:391
 msgid "Top of Grib File"
-msgstr "Pierwszy wpis w pliku GRIB"
+msgstr "Inici del fitxer Grib"
 
 #: src/GribUIDialogBase.cpp:391
 msgid "Current time forecast"
-msgstr "Czas aktualny"
+msgstr "Hora actual de la previsió"
 
 #: src/GribUIDialogBase.cpp:401
 msgid "Updates per Second"
-msgstr "Aktualizacji na sekundę"
+msgstr "Actualitzacions per segon"
 
 #: src/GribUIDialogBase.cpp:408
 msgid "Interpolate between gribs"
-msgstr "Interpoluj pomiędzy GRIBami"
+msgstr "Interpolar entre Gribs"
 
 #: src/GribUIDialogBase.cpp:411
 msgid "Time Interval"
-msgstr "Przedział czasu"
+msgstr "Interval de temps"
 
 #: src/GribUIDialogBase.cpp:427
 msgid "Data"
-msgstr "Dane"
+msgstr "Dades"
 
 #: src/GribUIDialogBase.cpp:440
 msgid "Units"
-msgstr "Jednostki"
+msgstr "Unitats"
 
 #: src/GribUIDialogBase.cpp:456
 msgid "Default Colour"
-msgstr "Domyślny kolor"
+msgstr "Color per defecte"
 
 #: src/GribUIDialogBase.cpp:456
 msgid "Controled Colours"
-msgstr "Kolory zdefiniowane"
+msgstr "Colors adaptats"
 
 #: src/GribUIDialogBase.cpp:462 src/GribUIDialogBase.cpp:487
 msgid "Always visible"
-msgstr "Zawsze widoczne"
+msgstr "Sempre visible"
 
 #: src/GribUIDialogBase.cpp:465
 msgid "IsoBars"
-msgstr "Izobary"
+msgstr "Isobares"
 
 #: src/GribUIDialogBase.cpp:473
 msgid "Spacing"
-msgstr "Odstępy"
+msgstr "Espaiat"
 
 #: src/GribUIDialogBase.cpp:496
 msgid "Single Arrow"
-msgstr "Pojedyncza strzałka"
+msgstr "Fletxa simple"
 
 #: src/GribUIDialogBase.cpp:496
 msgid "Double Arrow"
-msgstr "Podwójna strzałka"
+msgstr "Fletxes dobles"
 
 #: src/GribUIDialogBase.cpp:496
 msgid "Proportional Arrow"
-msgstr "Proporcjonalna strzałka"
+msgstr "Fletxa proporcional"
 
 #: src/GribUIDialogBase.cpp:502
 msgid "Default Size"
-msgstr "Domyślny rozmiar"
+msgstr "Mida per defecte"
 
 #: src/GribUIDialogBase.cpp:502
 msgid "Small Size"
-msgstr "Mały rozmiar"
+msgstr "Mida petita"
 
 #: src/GribUIDialogBase.cpp:511
 msgid "Colors"
-msgstr "Kolory"
+msgstr "Colors"
 
 #: src/GribUIDialogBase.cpp:515
 msgid "Generic"
-msgstr "Natywne"
+msgstr "Genèric"
 
 #: src/GribUIDialogBase.cpp:524
 msgid "Minimum Spacing"
-msgstr "Minimalny odstęp"
+msgstr "Espaiat mínim"
 
 #: src/GribUIDialogBase.cpp:757
 msgid "Density"
-msgstr "Gęstość"
+msgstr "Densitat"
 
 #: src/GribUIDialogBase.cpp:548
 msgid "Display"
-msgstr "Wyświetlanie"
+msgstr "Pantalla"
 
 #: src/GribUIDialogBase.cpp:555
 msgid "Overlay Transparency (%)"
-msgstr "Przezroczystość nakładki (%)"
+msgstr "Transparència de Capa (%)"
 
 #: src/GribUIDialogBase.cpp:633
 msgid "Use High Definition Graphics"
-msgstr "Użyj grafiki wysokiej rozdzielczości"
+msgstr "Utilitzar gràfics d'alta definició"
 
 #: src/GribUIDialogBase.cpp:636
 msgid "Use Gradual Colors"
-msgstr "Użyj łagodnych przejść barwnych"
+msgstr "Utilitzar degradat de color"
 
 #: src/GribUIDialogBase.cpp:639
 msgid "Copy First Cumulative Missing Record"
-msgstr "Skopiuj pierwszy brakujący rekord sumaryczny"
+msgstr "Copieu el primer registre acumulatiu perdut"
 
 #: src/GribUIDialogBase.cpp:642
 msgid "Copy Missing Wave Records"
-msgstr "Skopiuj brakujące rekordy Wave"
+msgstr "Copiar els registres d'onades que falten"
 
 #: src/GribUIDialogBase.cpp:645
 msgid "Load the More Recent File in Directory"
-msgstr "Załaduj najnowszy plik w katalogu"
+msgstr "Carregar el fitxer més recent en el directori"
 
 #: src/GribUIDialogBase.cpp:645
 msgid "Load the Last Opened File"
-msgstr "Załaduj ostatnio otwarty plik"
+msgstr "Carregar l'últim fitxer obert"
 
 #: src/GribUIDialogBase.cpp:647
 msgid "Load File Options"
-msgstr "Opcje ładowania plików"
+msgstr "Opcions de càrrega de fitxer"
 
 #: src/GribUIDialogBase.cpp:651
 msgid "Start at the first forecast in GRIB file"
-msgstr "Zacznij od pierwszej prognozy w pliku GRIB"
+msgstr "Obrir el primer pronòstic en fitxers GRIB"
 
 #: src/GribUIDialogBase.cpp:651
 msgid "Start at the nearest forecast to current time"
-msgstr "Zacznij od prognozy najbliższej aktualnej daty"
+msgstr "Comencen a les previsions més pròximes a l'hora actual"
 
 #: src/GribUIDialogBase.cpp:651
 msgid "Authorize Interpolation to start at current time"
-msgstr "Zatwierdź interpolację od aktualnej daty"
+msgstr "Autoritzar la interpolació per començar a l'hora actual"
 
 #: src/GribUIDialogBase.cpp:653
 msgid "Start Options"
-msgstr "Wybór początkowej prognozy"
+msgstr "Opcions d'Inici"
 
 #: src/GribUIDialogBase.cpp:657
 msgid "Local Time"
-msgstr "Czas lokalny"
+msgstr "Hora Local"
 
 #: src/GribUIDialogBase.cpp:657
 msgid "UTC"
@@ -533,43 +533,43 @@ msgstr "UTC"
 
 #: src/GribUIDialogBase.cpp:659
 msgid "Time Options"
-msgstr "Ustawienia czasu"
+msgstr "Opcions horàries"
 
 #: src/GribUIDialogBase.cpp:715
 msgid "Profile"
-msgstr "Profil"
+msgstr "Perfil"
 
 #: src/GribUIDialogBase.cpp:728
 msgid "Sender eMail Address"
-msgstr "Adres mailowy nadawcy"
+msgstr "Adreça de correu electrònic del remitent"
 
 #: src/GribUIDialogBase.cpp:757
 msgid "Mail To "
-msgstr "Wyślij do"
+msgstr "Correu a "
 
 #: src/GribUIDialogBase.cpp:767
 msgid "Forecast Model "
-msgstr "Model prognozy "
+msgstr "Model de previsió "
 
 #: src/GribUIDialogBase.cpp:784
 msgid "Moving Grib"
-msgstr "Ruchomy GRIB"
+msgstr "Moviment de GRIB"
 
 #: src/GribUIDialogBase.cpp:792
 msgid "Speed"
-msgstr "Prędkość"
+msgstr "Velocitat"
 
 #: src/GribUIDialogBase.cpp:800
 msgid "Kts"
-msgstr "w."
+msgstr "Kts"
 
 #: src/GribUIDialogBase.cpp:805
 msgid "Course"
-msgstr "Kurs"
+msgstr "Curs"
 
 #: src/GribUIDialogBase.cpp:812 src/GribUIDialogBase.cpp:863
 msgid "Deg"
-msgstr "Stopni"
+msgstr "Deg"
 
 #: src/GribUIDialogBase.cpp:827
 msgid "zyGrib Login"
@@ -577,43 +577,43 @@ msgstr "Login zyGrib"
 
 #: src/GribUIDialogBase.cpp:835
 msgid "zyGrib Code"
-msgstr "Kod zyGrib"
+msgstr "Codi zyGrib"
 
 #: src/GribUIDialogBase.cpp:854
 msgid "Resolution"
-msgstr "Rozdzielczość"
+msgstr "Resolució"
 
 #: src/GribUIDialogBase.cpp:868
 msgid "Interval"
-msgstr "Interwał"
+msgstr "Interval"
 
 #: src/GribUIDialogBase.cpp:878
 msgid "Hours"
-msgstr "Godzin"
+msgstr "Hores"
 
 #: src/GribUIDialogBase.cpp:883
 msgid "Time Range"
-msgstr "Zakres czasowy"
+msgstr "Interval de temps"
 
 #: src/GribUIDialogBase.cpp:892
 msgid "Days"
-msgstr "dni"
+msgstr "Dies"
 
 #: src/GribUIDialogBase.cpp:906
 msgid "Area Selection"
-msgstr "Wybór obszaru"
+msgstr "Selecció d'Àrea"
 
 #: src/GribUIDialogBase.cpp:918
 msgid "Manual Selection"
-msgstr "Wybór ręczny"
+msgstr "Selecció Manual"
 
 #: src/GribUIDialogBase.cpp:922 src/GribRequestDialog.cpp:289
 msgid "Start graphic Sel."
-msgstr "Zacznij zaznaczenie graficzne"
+msgstr "Iniciar la Selecció Gràfica."
 
 #: src/GribUIDialogBase.cpp:934
 msgid "Max Lat"
-msgstr "Max Szer."
+msgstr "Max Lat"
 
 #: src/GribUIDialogBase.cpp:941 src/GribRequestDialog.cpp:279
 #: src/GribRequestDialog.cpp:282
@@ -622,7 +622,7 @@ msgstr "N"
 
 #: src/GribUIDialogBase.cpp:945
 msgid "Max Long"
-msgstr "Max Dług."
+msgstr "Max Long"
 
 #: src/GribUIDialogBase.cpp:952 src/GribRequestDialog.cpp:280
 #: src/GribRequestDialog.cpp:281
@@ -631,7 +631,7 @@ msgstr "E"
 
 #: src/GribUIDialogBase.cpp:957
 msgid "Min Lat"
-msgstr "Min Szer."
+msgstr "Min Lat"
 
 #: src/GribUIDialogBase.cpp:964 src/GribRequestDialog.cpp:279
 #: src/GribRequestDialog.cpp:282
@@ -640,7 +640,7 @@ msgstr "S"
 
 #: src/GribUIDialogBase.cpp:969
 msgid "Min Long"
-msgstr "Min Dług."
+msgstr "Min Long"
 
 #: src/GribUIDialogBase.cpp:976 src/GribRequestDialog.cpp:280
 #: src/GribRequestDialog.cpp:281
@@ -649,19 +649,19 @@ msgstr "W"
 
 #: src/GribUIDialogBase.cpp:990
 msgid "Data Selection"
-msgstr "Wybór danych"
+msgstr "Selecció de Dades"
 
 #: src/GribUIDialogBase.cpp:1012
 msgid "Air Temperature(2m)"
-msgstr "Temp. powietrza (2 m)"
+msgstr "Temperatura de l'aire(2m)"
 
 #: src/GribUIDialogBase.cpp:1016
 msgid "Sea Temperature(surf.)"
-msgstr "Temperatura powierzchni morza"
+msgstr "Temperatura del mar (surf.)"
 
 #: src/GribUIDialogBase.cpp:1046
 msgid "Geopotential Height"
-msgstr "Wysokość geopotencjału"
+msgstr "Alçada geopotencial"
 
 #: src/GribUIDialogBase.cpp:1056
 msgid "850 hPa"
@@ -681,67 +681,67 @@ msgstr "300 hPa"
 
 #: src/GribUIDialogBase.cpp:1078
 msgid "Mail"
-msgstr "Treść wiadomości"
+msgstr "Correu"
 
 #: src/GribUIDialogBase.cpp:1109
 msgid "Estimated File Size"
-msgstr "Szacowana wielkość pliku"
+msgstr "Mida aproximada del fitxer"
 
 #: src/GribUIDialogBase.cpp:1117
 msgid " (Max size )"
-msgstr " (Maksymalny rozmiar)"
+msgstr " (Max. mida)"
 
 #: src/GribUIDialogBase.cpp:1241
 msgid "Data at Cursor Position:"
-msgstr "Dane na pozycji kursora:"
+msgstr "Dades en la posició del Cursor:"
 
 #: src/smapi.cpp:119
 msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
-msgstr "Błąd: MAPI32.DLL na tym komputerze nie jest zainstalowany lub jest uszkodzony!"
+msgstr "Error de correu: MAPI32.DLL no està instal·lat o no és vàlid en aquest ordinador!"
 
 #: src/GribUIDialogBase.h:127
 msgid "GRIB Display Control"
-msgstr "Ustawienia wyświetlania GRIB"
+msgstr "Control de vistes GRIB"
 
 #: src/GribUIDialogBase.h:185
 msgid "Grib Settings"
-msgstr "Ustawienia GRIB"
+msgstr "Paràmetres GRIB"
 
 #: src/GribUIDialogBase.h:212
 msgid "Grib Preferences"
-msgstr "Preferencje GRIB"
+msgstr "Preferències GRIB"
 
 #: src/GribUIDialogBase.h:298
 msgid "Write and send eMail request"
-msgstr "Napisz i wyślij zapytanie mailem"
+msgstr "Escriure i enviar petició per correu electrònic"
 
 #: src/GribUIDialogBase.h:326
 msgid "Grib Data Table"
-msgstr "Tabela danych GRIB"
+msgstr "Taula de dades GRIB"
 
 #: src/GribOverlayFactory.cpp:353
 msgid "WIND data at"
-msgstr "Wartości wiatru na wysokości"
+msgstr "Dades del vent al"
 
 #: src/GribOverlayFactory.cpp:837
 msgid "Building Isobar map"
-msgstr "Tworzę mapę izobar"
+msgstr "Construint mapa Isobàric"
 
 #: src/GribOverlayFactory.cpp:1023
 msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
-msgstr "Nakładki (overlays) nie są wspierane przez ten sprzęt graficzny (wyłącz OpenGL)"
+msgstr "Superposicions no són compatibles amb aquest maquinari de gràfics (Desactivat OpenGL)"
 
 #: src/GribOverlayFactory.cpp:1033
 msgid "Overlays too wide and can't be displayed:"
-msgstr "Nakładki są zbyt szerokie i nie mogą zostać wyświetlone:"
+msgstr "Superposicions massa àmplies i no es poden visualitzar:"
 
 #: src/GribOverlayFactory.cpp:1042
 msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
-msgstr "Wyświetlanie nakładek wstrzymane jeśli północ nie na górze w trybie DC (włącz OpenGL)"
+msgstr "rotació de capes suprimida si no és nord amunt en mode DC (permetre OpenGL)"
 
 #: src/GribOverlayFactory.cpp:1059
 msgid "Please Zoom or Scale Out to view invisible overlays:"
-msgstr "Proszę zmniejszyć powiększenie lub skalę aby wyświetlić niewidoczne nakładki:"
+msgstr "Si us plau disminuïu Zoom o l'escala per visualitzar les superposicions invisibles:"
 
 #: src/grib_pi.cpp:112
 msgid "Grib"
@@ -749,7 +749,7 @@ msgstr "GRIB"
 
 #: src/grib_pi.cpp:174
 msgid "GRIB PlugIn for OpenCPN"
-msgstr "Wtyczka GRIB dla OpenCPN"
+msgstr "Connector GRIB per a OpenCPN"
 
 #: src/grib_pi.cpp:180
 msgid "GRIB PlugIn for OpenCPN\n"
@@ -767,86 +767,87 @@ msgid "GRIB PlugIn for OpenCPN\n"
 "- surface current direction and speed\n"
 "- Convective Available Potential Energy (CAPE)\n"
 "- wind, altitude, temperature and relative humidity at 300, 500, 700, 850 hPa."
-msgstr "Wtyczka GRIB dla OpenCPN\n"
-"Zapewnia podstawową obsługę plików GRIB oraz funkcję wysłania prośby o dostarczenie pliku GRIB e-mailem.\n\n"
-"Obsługiwane dane GRIB to między innymi:\n"
-"- kierunek i prędkość wiatru (na wysokości 10 m)\n"
-"- siła wiatru w podmuchach\n"
-"- ciśnienie atmosferyczne przy powierzchni morza\n"
-"- opady deszczu\n"
-"- pokrywa chmur\n"
-"- wysokość i kierunek fali znacznej\n"
-"- temperatura powietrza przy powierzchni morza (na wysokości 2 m)\n"
-"- temperatura powierzchni morza\n"
-"- kierunek i prędkość prądu przy powierzchni\n"
-"- energia potencjalna dostępna konwekcyjnie (CAPE)\n"
-"- wiatr, temperatura i wilgotność względna dla 300, 500, 700, 850 hPa"
+msgstr "El connector GRIB per a OpenCPN\n"
+"Proporciona una visualització bàsica de fitxers GRIB per a múltiples tipus de fitxers\n"
+"Permet la consulta de fitxers GRIB per email\n\n"
+"Les dades GRIB que s'inclouen:\n"
+"- Velocitat i direcció del vent (a 10m)\n"
+"- Ràfegues de vent\n"
+"- Pressió a la superfície\n"
+"- Pluviometria\n"
+"- Nuvolositat\n"
+"- Alçada i direcció d'onada significativa\n"
+"- Temperatura de l'aire a la superfície (a 2m)\n"
+"- Temperatura del mar a la supeerfície\n"
+"-Direcció i velocitat del corrent en superfície\n"
+"-   Energia potencial convectiva disponible (CAPE)\n"
+"- Vent, altitud, temperatura i humitat relativa als 300, 500, 700, 850 hPa."
 
 #: src/grib_pi.cpp:294
 msgid "Weather table"
-msgstr "Tabela danych pogodowych"
+msgstr "Taula Clima"
 
 #: src/grib_pi.cpp:592
 msgid "You have chosen to authorize interpolation.\n"
 "Don't forget that data displayed at current time will not be real but interpolated!"
-msgstr "Zatwierdzono interpolację danych.\n"
-"Pamiętaj, że wartości wyświetlane dla bieżącej daty nie będą wartościami rzeczywistymi lecz interpolowanymi!"
+msgstr "Heu seleccionat autoritzar interpolació. \n"
+"No oblideu que les dades mostrades a l'hora actual no són reals però interpolades!"
 
 #: src/GribTable.cpp:167
 msgid "Air\n"
 "Temperature"
-msgstr "Temperatura\n"
-"powietrza"
+msgstr "Tmperatura\n"
+"De l'aire"
 
 #: src/GribTable.cpp:174
 msgid "Sea\n"
 "Temperature"
 msgstr "Temperatura\n"
-"wody"
+"Del mar"
 
 #: src/GribRequestDialog.cpp:109 src/GribRequestDialog.cpp:832
 msgid "Send"
-msgstr "Wyślij"
+msgstr "Enviar"
 
 #: src/GribRequestDialog.cpp:110
 msgid "Save"
-msgstr "Zapisz"
+msgstr "Desar"
 
 #: src/GribRequestDialog.cpp:125
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
-msgstr "Adres e-mail nadawcy (obowiązkowy w systemie Linux)"
+msgstr "Adreça utilitzada per enviar una sol·licitud per correu electrònic . (Obligatori per a LINUX)"
 
 #: src/GribRequestDialog.cpp:126
 msgid "This is your zyGrib's forum access Login"
-msgstr "Login używany w serwisie zyGrib"
+msgstr "Aquest és el vostre codi d'accés al forum de Zygrib"
 
 #: src/GribRequestDialog.cpp:127
 msgid "Get this Code in zyGrib's forum ( This is not your password! )"
-msgstr "Kod używany w serwisie zyGrib ( uwaga: to nie password! )"
+msgstr "Obtenir aquest codi en el fòrum de zyGrib (aquesta no és la contrasenya!)"
 
 #: src/GribRequestDialog.cpp:128
 msgid "Enter your forescasted Speed (in Knots)"
-msgstr "Przewidywana prędkość (w węzłach)"
+msgstr "Introduïu la vostra previsió de velocitat (en nusos)"
 
 #: src/GribRequestDialog.cpp:129
 msgid "Enter your forecasted Course"
-msgstr "Wprowadź swój prognozowany kurs"
+msgstr "Introduïu el curs previst"
 
 #: src/GribRequestDialog.cpp:130
 msgid "Allow Start or Stop drawing an area by dragging on the map"
-msgstr "Rysuj obszar poprzez przeciąganie po mapie"
+msgstr "Permet iniciar o aturar una àrea de dibuix arrossegant el mapa"
 
 #: src/GribRequestDialog.cpp:291
 msgid "Stop graphic Sel."
-msgstr "Zatrzymaj selekcję graficzną"
+msgstr "Aturar la selecció gràfica"
 
 #: src/GribRequestDialog.cpp:528
 msgid "You request a forecast for more than 8 days horizon.\n"
 "This is conflicting with Wave data which will be removed from your request.\n"
 "Don't forget that beyond the first 8 days, the resolution will be only 2.5°x2.5° and the time intervall 12 hours."
-msgstr "Zażądano prognozy na więcej niż 8 dni naprzód.\n"
-"To ustawienie pozostaje w konflikcie z danymi zafalowania, które zostaną usunięte z żądania.\n"
-"Pamiętaj, że dla prognozy wykraczającej poza 8 dni naprzód gęstość siatki zostanie zmniejszona do 2.5° x 2.5° a przedział czasowy do 12 godzin."
+msgstr "Esteu sol·licitant una previsió de més de 8 dies vista.\n"
+"Això està en conflicte amb les dades de l'Ona, i s'eliminarà de la seva sol·licitud.\n"
+"Cal no oblidar que més enllà dels primers 8 dies, la resolució serà només 2.5° x 2.5° i l'interval de temps de 12 hores."
 
 #: src/GribRequestDialog.cpp:812 src/GribRequestDialog.cpp:815
 msgid "MB"
@@ -854,57 +855,57 @@ msgstr "MB"
 
 #: src/GribRequestDialog.cpp:815
 msgid "Max"
-msgstr "Maks"
+msgstr "Max"
 
 #: src/GribRequestDialog.cpp:843
 msgid "Before sending an email to Zygrib you have to enter your Login and Code.\n"
 "Please visit www.zygrib.org/ and follow instructions..."
-msgstr "Przed wysłaniem e-maila do serwisu zyGrib wprowadź Login i Kod.\n"
-"Zapoznaj się z instrukcjami na stronie www.zygrib.org"
+msgstr "Abans d'enviar un correu electrònic a Zygrib, cal introduir el nom d'usuari i codi. \n"
+"Si us plau, visiteu www.zygrib.org/ i seguiu les instruccions..."
 
 #: src/GribRequestDialog.cpp:844
 msgid "Too big file! zyGrib limit is 2Mb!"
-msgstr "Zbyt duży plik! zyGrib ma limit do 2Mb!"
+msgstr "Fitxer massa gran! El límit de zyGrib  és de 2Mb!"
 
 #: src/GribRequestDialog.cpp:844
 msgid "Error! Max Lat lower than Min Lat or Max Lon lower than Min Lon!"
-msgstr "Błąd! Max Szer. mniejsza niż Min Szer. lub Max Dług. mniejsza niż Min. Dług.!"
+msgstr "Error! Max Lat inferior a Min Lat o Max Lon inferior Min Lon!"
 
 #: src/GribRequestDialog.cpp:845
 msgid "Too large area! Each side must be less than 180°!"
-msgstr "Zbyt duży obszar! Obszar nie może być większy niż 180°!"
+msgstr "Zona massa gran! Cada costat ha de ser menys de 180 º!"
 
 #: src/GribRequestDialog.cpp:845
 msgid "Too small area for this resolution!"
-msgstr "Zbyt mały obszar dla tej rozdzielczości!"
+msgstr "Àrea massa petita per a aquesta resolució!"
 
 #: src/GribRequestDialog.cpp:860 src/GribRequestDialog.cpp:892
 msgid "Continue..."
-msgstr "Kontynuuj..."
+msgstr "Continuar..."
 
 #: src/GribRequestDialog.cpp:877 src/GribRequestDialog.cpp:881
 msgid "Your request is ready. An email is prepared in your email environment. \n"
 "You have just to verify and send it...\n"
 "Save or Cancel to finish...or Continue..."
-msgstr "Żądanie gotowe do wysłania. Wiadomość e-mail została przygotowana.\n"
-"Zweryfikuj przed wysłaniem i wyślij...\n"
-"Zapisz lub porzuć aby zakończyć... lub kontynuuj..."
+msgstr "La sol·licitud està llesta. Es prepara un e-mail en el seu entorn de correu electrònic.\n"
+"Només cal verificar i enviar...\n"
+"Desar o cancel·lar per acabar... o continuar..."
 
 #: src/GribRequestDialog.cpp:884
 msgid "Your request was sent \n"
 "(if your system has an MTA configured and is able to send email).\n"
 "Save or Cancel to finish...or Continue..."
-msgstr "Żądanie zostało wysłane\n"
-"(o ile program poczty elektronicznej jest zainstalowany i prawidłowo skonfigurowany).\n"
-"Zapisz lub porzuć aby zakończyć... lub kontynuuj..."
+msgstr "La sol·licitud s'ha enviat a\n"
+"(Si el vostre sistema està configurat i preparat per enviar emails).\n"
+"Desar o cancel·lar per acabar... o continuar..."
 
 #: src/GribRequestDialog.cpp:889
 msgid "Request can't be sent. Please verify your email systeme parameters.\n"
 "You should also have a look at your log file.\n"
 "Save or Cancel to finish..."
-msgstr "Żądanie nie może zostać wysłane. Zweryfikuj proszę ustawienia poczty elektronicznej.\n"
-"W razie potrzeby zajrzyj też do pliku logu.\n"
-"Zapisz lub porzuć aby zakończyć..."
+msgstr "No es pot enviar la sol·licitud. Si us plau verifica els paràmetres de gestió dels emails.\n"
+"Comprova el fitxer log.\n"
+"Desar o cancel·lar per acabar..."
 
 #: src\GribUIDialogBase.cpp:71
 msgid "Show/Hide Cursor Data"
