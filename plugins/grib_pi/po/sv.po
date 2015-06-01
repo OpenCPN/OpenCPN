@@ -940,10 +940,6 @@ msgstr ""
 msgid "Fixed"
 msgstr ""
 
-#: src\GribUIDialogBase.cpp:605
-msgid "Fixed"
-msgstr ""
-
 #: src\GribUIDialogBase.cpp:611
 msgid "Minimum"
 msgstr ""

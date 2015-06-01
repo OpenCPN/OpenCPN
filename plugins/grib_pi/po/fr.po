@@ -945,10 +945,6 @@ msgstr ""
 msgid "Spacing(pixels)"
 msgstr ""
 
-#: src\GribUIDialogBase.cpp:683
-msgid "Fixed"
-msgstr ""
-
 #: src\GribUIDialogBase.cpp:605
 msgid "Fixed"
 msgstr ""
