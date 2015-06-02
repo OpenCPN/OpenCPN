@@ -2310,6 +2310,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     //      Redirect the initialization timer to this frame
     InitTimer.SetOwner( this, INIT_TIMER );
     m_iInitCount = 0;
+    m_initializing = false;
     
     //      Redirect the global heartbeat timer to this frame
     FrameTimer1.SetOwner( this, FRAME_TIMER_1 );
@@ -5631,6 +5632,9 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
         break;
 
     default:
+        if (m_initializing)
+            break;
+        m_initializing = true;
         g_pi_manager->LoadAllPlugIns( g_Platform->GetPluginDir(), true, false );
 
         RequestNewToolbar();

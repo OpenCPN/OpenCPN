@@ -106,6 +106,7 @@ RoutePoint::RoutePoint()
     m_fWaypointRangeRingsStep = g_fWaypointRangeRingsStep;
     m_iWaypointRangeRingsStepUnits = g_iWaypointRangeRingsStepUnits;
     m_wxcWaypointRangeRingsColour = g_colourWaypointRangeRingsColour;
+    m_pos_on_screen = false;
 }
 
 // Copy Constructor
@@ -481,7 +482,7 @@ void RoutePoint::DrawGL( ViewPort &vp, OCPNRegion &region,bool use_cached_screen
     wxRect hilitebox;
     unsigned char transparency = 150;
 
-    if(use_cached_screen_coords)
+    if(use_cached_screen_coords && m_pos_on_screen)
         r.x = m_screen_pos.m_x, r.y = m_screen_pos.m_y;
     else
         cc1->GetCanvasPointPix( m_lat, m_lon, &r );

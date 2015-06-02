@@ -438,6 +438,7 @@ class MyFrame: public wxFrame
 
     wxTimer             InitTimer;
     int                 m_iInitCount;
+    bool                m_initializing;
 
     wxTimer             FrameTCTimer;
     wxTimer             FrameTimer1;

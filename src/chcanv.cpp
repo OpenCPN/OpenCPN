@@ -3536,6 +3536,9 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
     GetCanvasPointPix( gLat, gLon, &lShipMidPoint );
     GetCanvasPointPix( hdg_pred_lat, hdg_pred_lon, &lHeadPoint );
 
+    //    Is head predicted point in the VPoint?
+    if( GetVP().GetBBox().PointInBox( hdg_pred_lon, hdg_pred_lat, 0 ) ) drawit++;                     // yep
+
 //    Should we draw the Head vector?
 //    Compare the points lHeadPoint and lPredPoint
 //    If they differ by more than n pixels, and the head vector is valid, then render the head vector
@@ -3554,12 +3557,14 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
     wxBoundingBox bb_screen( 0, 0, GetVP().pix_width, GetVP().pix_height );
     if( bb_screen.PointInBox( lShipMidPoint, 20 ) ) drawit++;
 
-    // And one more test to catch the case where COG line crosses the screen,
+    // And two more tests to catch the case where COG/HDG line crosses the screen,
     // but ownship and pred point are both off
-
+    
     if( GetVP().GetBBox().LineIntersect( wxPoint2DDouble( gLon, gLat ),
-                                         wxPoint2DDouble( pred_lon, pred_lat ) ) ) drawit++;
-
+        wxPoint2DDouble( pred_lon, pred_lat ) ) ) drawit++;
+    if( GetVP().GetBBox().LineIntersect( wxPoint2DDouble( gLon, gLat ),
+        wxPoint2DDouble( hdg_pred_lon, hdg_pred_lat ) ) ) drawit++;
+    
 //    Do the draw if either the ship or prediction is within the current VPoint
     if( !drawit )
         return;
