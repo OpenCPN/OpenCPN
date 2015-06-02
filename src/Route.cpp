@@ -469,6 +469,9 @@ void Route::DrawGLLines( ViewPort &VP, ocpnDC *dc )
         RoutePoint *prp1 = prp2;
         prp2 = node->GetData();
         unsigned short int ToSegNo = prp2->m_GPXTrkSegNo;
+
+        // Provisional, to properly set status of last point in route
+        prp2->m_pos_on_screen = false;
         
         if (FromSegNo != ToSegNo) {
             FromSegNo = ToSegNo;

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-01-06 17:25-0600\n"
-"PO-Revision-Date: 2015-01-06 18:28-0500\n"
+"POT-Creation-Date: 2015-05-31 22:20-0500\n"
+"PO-Revision-Date: 2015-05-31 23:23-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
@@ -13,6 +13,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: ru\n"
 "X-Crowdin-File: /plugins/dashboard_pi/po/dashboard_pi.pot\n"
 
 #: src/clock.cpp:126 src/dial.cpp:504 src/gps.cpp:141 src/wind.cpp:64
@@ -38,7 +39,7 @@ msgstr "Курс"
 
 #: src/dashboard_pi.cpp:105
 msgid "Mag COG"
-msgstr ""
+msgstr "Магнитный курс"
 
 #: src/dashboard_pi.cpp:107
 msgid "GPS Compass"
@@ -158,11 +159,11 @@ msgstr "Итоговый журнал"
 
 #: src/dashboard_pi.cpp:176
 msgid "From Ownship"
-msgstr ""
+msgstr "От своего судна"
 
-#: src/dashboard_pi.cpp:343 src/dashboard_pi.cpp:456 src/dashboard_pi.cpp:1309
-#: src/dashboard_pi.cpp:1318 src/dashboard_pi.cpp:1476
-#: src/dashboard_pi.cpp:1515 src/dashboard_pi.cpp:1779
+#: src/dashboard_pi.cpp:343 src/dashboard_pi.cpp:456 src/dashboard_pi.cpp:1322
+#: src/dashboard_pi.cpp:1331 src/dashboard_pi.cpp:1489
+#: src/dashboard_pi.cpp:1528 src/dashboard_pi.cpp:1792
 msgid "Dashboard"
 msgstr "Приборная панель"
 
@@ -171,163 +172,165 @@ msgid "Dashboard PlugIn for OpenCPN"
 msgstr "Модуль «Приборная панель» для OpenCPN"
 
 #: src/dashboard_pi.cpp:466
-msgid "Dashboard PlugIn for OpenCPN\nProvides navigation instrument display from NMEA source."
-msgstr "Модуль «Приборная панель» для OpenCPN\nОтображает показания навигационных инструментов NMEA."
+msgid "Dashboard PlugIn for OpenCPN\n"
+"Provides navigation instrument display from NMEA source."
+msgstr "Модуль «Приборная панель» для OpenCPN\n"
+"Отображает показания навигационных инструментов NMEA."
 
-#: src/dashboard_pi.cpp:1452
+#: src/dashboard_pi.cpp:1465
 msgid "Dashboard preferences"
 msgstr "Настройки приборной панели"
 
-#: src/dashboard_pi.cpp:1522
+#: src/dashboard_pi.cpp:1535
 msgid "show this dashboard"
 msgstr "Показать эту панель"
 
-#: src/dashboard_pi.cpp:1528
+#: src/dashboard_pi.cpp:1541
 msgid "Caption:"
 msgstr "Название:"
 
-#: src/dashboard_pi.cpp:1536
+#: src/dashboard_pi.cpp:1549
 msgid "Orientation:"
 msgstr "Ориентация:"
 
-#: src/dashboard_pi.cpp:1540 src/dashboard_pi.cpp:1972
+#: src/dashboard_pi.cpp:1553 src/dashboard_pi.cpp:1985
 msgid "Vertical"
 msgstr "вертикальная"
 
-#: src/dashboard_pi.cpp:1541 src/dashboard_pi.cpp:1974
+#: src/dashboard_pi.cpp:1554 src/dashboard_pi.cpp:1987
 msgid "Horizontal"
 msgstr "горизонтальная"
 
-#: src/dashboard_pi.cpp:1548 src/dashboard_pi.cpp:1556
-#: src/dashboard_pi.cpp:1898
+#: src/dashboard_pi.cpp:1561 src/dashboard_pi.cpp:1569
+#: src/dashboard_pi.cpp:1911
 msgid "Instruments"
 msgstr "Инструменты"
 
-#: src/dashboard_pi.cpp:1564
+#: src/dashboard_pi.cpp:1577
 msgid "Add"
 msgstr "Добавить"
 
-#: src/dashboard_pi.cpp:1577
+#: src/dashboard_pi.cpp:1590
 msgid "Delete"
 msgstr "Удалить"
 
-#: src/dashboard_pi.cpp:1583
+#: src/dashboard_pi.cpp:1596
 msgid "Up"
 msgstr "Вверх"
 
-#: src/dashboard_pi.cpp:1588
+#: src/dashboard_pi.cpp:1601
 msgid "Down"
 msgstr "Вниз"
 
-#: src/dashboard_pi.cpp:1598
+#: src/dashboard_pi.cpp:1611
 msgid "Appearance"
 msgstr "Внешний вид"
 
-#: src/dashboard_pi.cpp:1600
+#: src/dashboard_pi.cpp:1613
 msgid "Fonts"
 msgstr "Шрифты"
 
-#: src/dashboard_pi.cpp:1606
+#: src/dashboard_pi.cpp:1619
 msgid "Title:"
 msgstr "Заголовок:"
 
-#: src/dashboard_pi.cpp:1612
+#: src/dashboard_pi.cpp:1625
 msgid "Data:"
 msgstr "Данные:"
 
-#: src/dashboard_pi.cpp:1618
+#: src/dashboard_pi.cpp:1631
 msgid "Label:"
 msgstr "Подпись:"
 
-#: src/dashboard_pi.cpp:1624
+#: src/dashboard_pi.cpp:1637
 msgid "Small:"
 msgstr "Мелкий текст:"
 
-#: src/dashboard_pi.cpp:1632
+#: src/dashboard_pi.cpp:1645
 msgid "Units, Ranges, Formats"
 msgstr "Единицы измерения, форматы"
 
-#: src/dashboard_pi.cpp:1638
+#: src/dashboard_pi.cpp:1651
 msgid "Speedometer max value:"
 msgstr "Предел спидометра:"
 
-#: src/dashboard_pi.cpp:1643
+#: src/dashboard_pi.cpp:1656
 msgid "Boat speed units:"
 msgstr "Единицы скорости судна:"
 
-#: src/dashboard_pi.cpp:1646 src/dashboard_pi.cpp:1664
+#: src/dashboard_pi.cpp:1659 src/dashboard_pi.cpp:1677
 msgid "Honor OpenCPN settings"
 msgstr "из OpenCPN"
 
-#: src/dashboard_pi.cpp:1646 src/dashboard_pi.cpp:1673
+#: src/dashboard_pi.cpp:1659 src/dashboard_pi.cpp:1686
 msgid "Kts"
 msgstr "уз."
 
-#: src/dashboard_pi.cpp:1646 src/dashboard_pi.cpp:1673
+#: src/dashboard_pi.cpp:1659 src/dashboard_pi.cpp:1686
 msgid "mph"
 msgstr "миль/ч"
 
-#: src/dashboard_pi.cpp:1646 src/dashboard_pi.cpp:1673
+#: src/dashboard_pi.cpp:1659 src/dashboard_pi.cpp:1686
 msgid "km/h"
 msgstr "км/ч"
 
-#: src/dashboard_pi.cpp:1646 src/dashboard_pi.cpp:1673
+#: src/dashboard_pi.cpp:1659 src/dashboard_pi.cpp:1686
 msgid "m/s"
 msgstr "м/с"
 
-#: src/dashboard_pi.cpp:1652
+#: src/dashboard_pi.cpp:1665
 msgid "Depth units:"
 msgstr "Единицы глубины:"
 
-#: src/dashboard_pi.cpp:1655 src/dashboard_pi.cpp:1664
+#: src/dashboard_pi.cpp:1668 src/dashboard_pi.cpp:1677
 msgid "Meters"
 msgstr "м"
 
-#: src/dashboard_pi.cpp:1655
+#: src/dashboard_pi.cpp:1668
 msgid "Feet"
 msgstr "фут"
 
-#: src/dashboard_pi.cpp:1655
+#: src/dashboard_pi.cpp:1668
 msgid "Fathoms"
 msgstr "саж."
 
-#: src/dashboard_pi.cpp:1655
+#: src/dashboard_pi.cpp:1668
 msgid "Centimeters"
 msgstr "см"
 
-#: src/dashboard_pi.cpp:1655
+#: src/dashboard_pi.cpp:1668
 msgid "Inches"
 msgstr "дюйм"
 
-#: src/dashboard_pi.cpp:1661
+#: src/dashboard_pi.cpp:1674
 msgid "Distance units:"
 msgstr "Единицы расстояния:"
 
-#: src/dashboard_pi.cpp:1664
+#: src/dashboard_pi.cpp:1677
 msgid "Nautical miles"
 msgstr "м. м."
 
-#: src/dashboard_pi.cpp:1664
+#: src/dashboard_pi.cpp:1677
 msgid "Statute miles"
 msgstr "с. м."
 
-#: src/dashboard_pi.cpp:1664
+#: src/dashboard_pi.cpp:1677
 msgid "Kilometers"
 msgstr "км"
 
-#: src/dashboard_pi.cpp:1670
+#: src/dashboard_pi.cpp:1683
 msgid "Wind speed units:"
 msgstr "Единицы скорости ветра:"
 
-#: src/dashboard_pi.cpp:1881
+#: src/dashboard_pi.cpp:1894
 msgid "Add instrument"
 msgstr "Добавить инструмент"
 
-#: src/dashboard_pi.cpp:1887
+#: src/dashboard_pi.cpp:1900
 msgid "Select instrument to add:"
 msgstr "Выберите инструмент для добавления:"
 
-#: src/dashboard_pi.cpp:1981
+#: src/dashboard_pi.cpp:1994
 msgid "Preferences..."
 msgstr "Предпочтения…"
 
@@ -359,11 +362,11 @@ msgstr "З"
 msgid "NW"
 msgstr "СЗ"
 
-#: src/instrument.cpp:232
+#: src/instrument.cpp:256
 msgid " true"
 msgstr " ист."
 
-#: src/instrument.cpp:234
+#: src/instrument.cpp:258
 msgid " mag"
 msgstr " магн."
 
