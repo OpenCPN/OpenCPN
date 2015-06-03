@@ -909,7 +909,7 @@ void RouteManagerDialog::UpdateRouteListCtrl()
     // then add routes to the listctrl
     RouteList::iterator it;
     int index = 0;
-    for( it = ( *pRouteList ).begin(); it != ( *pRouteList ).end(); ++it, ++index ) {
+    for( it = ( *pRouteList ).begin(); it != ( *pRouteList ).end(); ++it/*, ++index*/ ) {
         if( ( *it )->m_bIsTrack || !( *it )->IsListed() ) continue;
 
         wxListItem li;
@@ -925,6 +925,7 @@ void RouteManagerDialog::UpdateRouteListCtrl()
         }
 
         long idx = m_pRouteListCtrl->InsertItem( li );
+        index++;
 
         wxString name = ( *it )->m_RouteNameString;
         if( name.IsEmpty() ) name = _("(Unnamed Route)");
@@ -1604,7 +1605,7 @@ void RouteManagerDialog::UpdateTrkListCtrl()
     // then add routes to the listctrl
     RouteList::iterator it;
     int index = 0;
-    for( it = ( *pRouteList ).begin(); it != ( *pRouteList ).end(); ++it, ++index ) {
+    for( it = ( *pRouteList ).begin(); it != ( *pRouteList ).end(); ++it/*, ++index*/ ) {
         Route *trk = (Route *) ( *it );
         if( !trk->m_bIsTrack || !trk->IsListed() ) continue;
 
@@ -1620,6 +1621,7 @@ void RouteManagerDialog::UpdateTrkListCtrl()
             li.SetFont( font );
         }
         long idx = m_pTrkListCtrl->InsertItem( li );
+        index++;
 
         wxString name = trk->m_RouteNameString;
         if( name.IsEmpty() ) {
