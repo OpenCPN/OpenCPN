@@ -3149,6 +3149,10 @@ void s57chart::BuildDepthContourArray( void )
     }
 
     ObjRazRules *top;
+    // some ENC have a lot of DEPCNT objects but they seem to store them
+    // in VALDCO order, try to take advantage of that.
+    double prev_valdco = 0.0;
+    
     for( int i = 0; i < PRIO_NUM; ++i ) {
         for( int j = 0; j < LUPNAME_NUM; j++ ) {
 
@@ -3157,14 +3161,17 @@ void s57chart::BuildDepthContourArray( void )
                 if( !strncmp( top->obj->FeatureName, "DEPCNT", 6 ) ) {
                     double valdco = 0.0;
                     if( GetDoubleAttr( top->obj, "VALDCO", valdco ) ) {
-                        m_nvaldco++;
-                        if( m_nvaldco > m_nvaldco_alloc ) {
-                            void *tr = realloc( (void *) m_pvaldco_array,
-                                    m_nvaldco_alloc * 2 * sizeof(double) );
-                            m_pvaldco_array = (double *) tr;
-                            m_nvaldco_alloc *= 2;
+                        if (valdco != prev_valdco) {
+                            prev_valdco = valdco;
+                            m_nvaldco++;
+                            if( m_nvaldco > m_nvaldco_alloc ) {
+                                void *tr = realloc( (void *) m_pvaldco_array,
+                                        m_nvaldco_alloc * 2 * sizeof(double) );
+                                m_pvaldco_array = (double *) tr;
+                                m_nvaldco_alloc *= 2;
+                            }
+                            m_pvaldco_array[m_nvaldco - 1] = valdco;
                         }
-                        m_pvaldco_array[m_nvaldco - 1] = valdco;
                     }
                 }
                 ObjRazRules *nxx = top->next;
@@ -3172,7 +3179,6 @@ void s57chart::BuildDepthContourArray( void )
             }
         }
     }
-
     std::sort( m_pvaldco_array, m_pvaldco_array + m_nvaldco );
 }
 
