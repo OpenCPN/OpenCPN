@@ -165,7 +165,8 @@ private:
         void OnAddLink( wxCommandEvent& event );
         void OnEditLinkToggle( wxCommandEvent& event );
         void OnShowTimeTZ( wxCommandEvent& event );
-
+        void CreateControls( void );
+        
 public:
         TrackPropDlg( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Track Properties"),
                               const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 680,440 ),
@@ -181,6 +182,8 @@ public:
         bool UpdateProperties();
         void InitializeList();
         Route *GetTrack(void){return m_pRoute;}
+        
+        void RecalculateSize( void );
         
         Route      *m_pRoute;
         
