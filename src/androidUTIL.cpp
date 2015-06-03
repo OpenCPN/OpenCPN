@@ -129,6 +129,17 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
             }
             
 
+            // Track Props
+            if(pTrackPropDialog){
+                bool bshown = pTrackPropDialog->IsShown();
+                pTrackPropDialog->Hide();
+                pTrackPropDialog->RecalculateSize();
+                if(bshown){
+                    pTrackPropDialog->Show();
+                }
+            }
+            
+            
             // Mark Props
             if(pMarkPropDialog){
                 bool bshown = pMarkPropDialog->IsShown();
