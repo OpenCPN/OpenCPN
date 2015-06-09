@@ -661,6 +661,8 @@ public class QtActivity extends Activity
     // this function is used to load and start the loader
     private void loadApplication(Bundle loaderParams)
     {
+        Log.i("DEBUGGER_TAG", "LoadApplication");
+
         try {
             final int errorCode = loaderParams.getInt(ERROR_CODE_KEY);
             if (errorCode != 0) {
@@ -686,6 +688,16 @@ public class QtActivity extends Activity
             ArrayList<String> libs = new ArrayList<String>();
             if ( m_activityInfo.metaData.containsKey("android.app.bundled_libs_resource_id") )
                 libs.addAll(Arrays.asList(getResources().getStringArray(m_activityInfo.metaData.getInt("android.app.bundled_libs_resource_id"))));
+
+                //  We want the default OCPN plugins bundled into the APK and installed
+                //  into the proper app-lib.  So they are listed in ANDROID_EXTRA_LIBS.
+                //  But we do not want to pre-load them.  So take them out of the DexClassLoader list.
+
+                libs.remove("dashboard_pi");
+                libs.remove("grib_pi");
+
+
+
 
             String libName = null;
             if ( m_activityInfo.metaData.containsKey("android.app.lib_name") ) {
@@ -721,6 +733,7 @@ public class QtActivity extends Activity
             Method startAppMethod=qtLoader.getClass().getMethod("startApplication");
             if (!(Boolean)startAppMethod.invoke(qtLoader))
                 throw new Exception("");
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -1380,8 +1393,8 @@ public class QtActivity extends Activity
 
         if (null == getLastNonConfigurationInstance()) {
             // if splash screen is defined, then show it
-            if (m_activityInfo.metaData.containsKey("android.app.splash_screen") )
-                setContentView(m_activityInfo.metaData.getInt("android.app.splash_screen"));
+//            if (m_activityInfo.metaData.containsKey("android.app.splash_screen") )
+//                setContentView(m_activityInfo.metaData.getInt("android.app.splash_screen"));
 
   Log.i("DEBUGGER_TAG", "asset bridge start unpack");
   Assetbridge.unpack(this);
@@ -1771,10 +1784,10 @@ public class QtActivity extends Activity
     {
         Log.i("DEBUGGER_TAG", "onResume");
 
-        int i = nativeLib.onResume();
-        String aa;
-        aa = String.format("%d", i);
-        Log.i("DEBUGGER_TAG", aa);
+//        int i = nativeLib.onResume();
+//        String aa;
+//        aa = String.format("%d", i);
+//        Log.i("DEBUGGER_TAG", aa);
 
         super.onResume();
         QtApplication.invokeDelegate();
@@ -1829,10 +1842,10 @@ public class QtActivity extends Activity
     {
         Log.i("DEBUGGER_TAG", "onStart");
 
-        int i = nativeLib.onStart();
-        String aa;
-        aa = String.format("%d", i);
-        Log.i("DEBUGGER_TAG", aa);
+//        int i = nativeLib.onStart();
+//        String aa;
+//        aa = String.format("%d", i);
+//        Log.i("DEBUGGER_TAG", aa);
 
         super.onStart();
         QtApplication.invokeDelegate();
