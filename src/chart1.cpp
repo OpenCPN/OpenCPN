@@ -2516,7 +2516,17 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
 
     if( ChartData ) ChartData->ApplyColorSchemeToCachedCharts( cs );
 
-    if( stats ) stats->SetColorScheme( cs );
+    if( stats ) {
+        // reset rollover, updating it is unreliable; too many
+        // wx versions, native toolkits and so on.
+        SetChartThumbnail( -1 );
+        if ( cc1 ) {
+            cc1->HideChartInfoWindow();
+            cc1->SetQuiltChartHiLiteIndex( -1 );
+        }
+        stats->pPiano->ResetRollover();
+        stats->SetColorScheme( cs );
+    }
 
     if( console ) console->SetColorScheme( cs );
 
@@ -7007,8 +7017,13 @@ void MyFrame::UpdateControlBar( void )
     stats->FormatStat();
     
     wxString new_hash = stats->pPiano->GenerateAndStoreNewHash();
-    if(new_hash != old_hash)
+    if(new_hash != old_hash) {
+        SetChartThumbnail( -1 );
+        cc1->HideChartInfoWindow();
+        stats->pPiano->ResetRollover();
+        cc1->SetQuiltChartHiLiteIndex( -1 );
         stats->Refresh( false );
+    }
 
 }
 
