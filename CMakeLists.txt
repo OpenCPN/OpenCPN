@@ -244,7 +244,7 @@ ENDIF(BUNDLE_TCDATA MATCHES "ON")
 
 
 #  To build for android, use this cmake invocation..
-#$cmake -D_wx_selected_config=androideabi-qt -DCMAKE_TOOLCHAIN_FILE=../buildandroid/build_android.cmake ..
+#$cmake -DUSE_GARMINHOST=OFF -D_wx_selected_config=androideabi-qt -DCMAKE_TOOLCHAIN_FILE=../buildandroid/build_android.cmake ..
 
 IF(DEFINED _wx_selected_config)
 
@@ -396,7 +396,7 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 #  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
 IF(NOT WIN32 AND NOT APPLE )
   ADD_DEFINITIONS( "-Wall -Wno-unused -fexceptions -rdynamic" )
-  ADD_DEFINITIONS( " -g -O2 -fno-strict-aliasing")
+  ADD_DEFINITIONS( " -g -O0 -fno-strict-aliasing")
 
   ADD_DEFINITIONS( " -DPREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\"")
   # profiling with gprof
@@ -463,6 +463,7 @@ ENDIF (GTK2_FOUND)
 ENDIF(GTK2)
 
 IF(QT_ANDROID)
+  SET(CMAKE_BUILD_TYPE Debug)
   ADD_DEFINITIONS(-D__WXQT__)
   ADD_DEFINITIONS(-DOCPN_USE_WRAPPER)
   ADD_DEFINITIONS(-D__OCPN__ANDROID__)
@@ -492,20 +493,48 @@ IF(QT_ANDROID)
 
   ADD_DEFINITIONS(-DQT_WIDGETS_LIB)
 
-#  SET_PROPERTY(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
-#  SET(BUILD_SHARED_LIBS "ON")
+  #  For shared library build
+  
+  
+  SET(OCPN_Core_LIBRARIES
 
+        /home/dsr/Projects/opencpn_android/build_5.3_static/libopencpn.so
+        ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu-3.1-arm-linux-androideabi.a
+        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_core-3.1-arm-linux-androideabi.a
+        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_html-3.1-arm-linux-androideabi.a
+        ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_xml-3.1-arm-linux-androideabi.a
+        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_qa-3.1-arm-linux-androideabi.a
+        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_adv-3.1-arm-linux-androideabi.a
+        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_aui-3.1-arm-linux-androideabi.a
+        ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_net-3.1-arm-linux-androideabi.a
+        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_gl-3.1-arm-linux-androideabi.a
+        ${Qt_Base}/5.3/android_armv7/lib/libQt5Core.so
+        ${Qt_Base}/5.3/android_armv7/lib/libQt5OpenGL.so
+        ${Qt_Base}/5.3/android_armv7/lib/libQt5Widgets.so
+        ${Qt_Base}/5.3/android_armv7/lib/libQt5Gui.so
+        ${Qt_Base}/5.3/android_armv7/lib/libQt5AndroidExtras.so
+        ${NDK_Base}/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi-v7a/libgnustl_shared.so
+ 
+        
+        )
+    
+  SET(ASHARE OFF)
+
+  IF(ASHARE)
+    SET_PROPERTY(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
+    INCLUDE_DIRECTORIES( "${wxQt_Base}/${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-3.1")
+  ELSE(ASHARE)
+    #  For static build
+    INCLUDE_DIRECTORIES( "${wxQt_Base}/${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-static-3.1")
+  ENDIF(ASHARE)
+  
   INCLUDE_DIRECTORIES("${wxQt_Base}/include")
-#  For static build
-  INCLUDE_DIRECTORIES( "${wxQt_Base}/${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-static-3.1")
 
-#  For dynamic build  
-#  INCLUDE_DIRECTORIES( "${wxQt_Base}/${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-3.1")
 ENDIF()
 
 
 
-IF(UNIX)
+IF(UNIX AND NOT QT_ANDROID)
 INCLUDE("FindPortaudio.cmake")
 IF (PORTAUDIO_FOUND)
     MESSAGE (STATUS "Portaudio Found")
@@ -519,7 +548,7 @@ ENDIF (PORTAUDIO_FOUND)
 
 #SET(EXTRA_LIBS ${EXTRA_LIBS} "/usr/lib/i386-linux-gnu/libportaudio.so.2.0.0")
 #ADD_DEFINITIONS(-DOCPN_USE_PORTAUDIO)
-ENDIF(UNIX)
+ENDIF(UNIX AND NOT QT_ANDROID)
 
 ENDIF (NOT WIN32 AND NOT APPLE)
 
@@ -1332,7 +1361,16 @@ ADD_EXECUTABLE(${PACKAGE_NAME} ${HDRS} ${SRCS})
 ENDIF(UNIX AND NOT APPLE)
 
 IF(QT_ANDROID)
-ADD_LIBRARY(gorp ${HDRS} ${SRCS})
+ADD_LIBRARY(gorp ${HDRS} ${SRCS}
+        ${SRC_NMEA0183}
+        ${SRC_S57ENC}
+#        ${SRC_GARMINHOST}
+        ${SRC_TEXCMP}
+        ${SRC_SYMBOLS}
+        )
+        
+TARGET_LINK_LIBRARIES( gorp ${wxWidgets_LIBRARIES} )
+      
 ENDIF()
 
 
@@ -1585,11 +1623,9 @@ ENDIF(WIN32 AND NOT UNIX)
 
 MESSAGE (STATUS "")
 
-IF(NOT QT_ANDROID) 
 IF(NOT SKIP_PLUGINS)
  add_subdirectory (plugins)
 ENDIF(NOT SKIP_PLUGINS)
-ENDIF(NOT QT_ANDROID)
 
 # build a CPack driven installer package
 #include (InstallRequiredSystemLibraries)
