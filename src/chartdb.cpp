@@ -1059,7 +1059,10 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
               }
               else
               {
+                    if(pthumbwin && pthumbwin->pThumbChart == Ch)
+                       pthumbwin->pThumbChart = NULL;
                     delete Ch;                                  // chart is not useable
+                    
                     if( wxMUTEX_NO_ERROR == m_cache_mutex.Lock() ){
                         pChartCache->Remove(pce);                   // so remove it
                         m_cache_mutex.Unlock();
@@ -1421,12 +1424,6 @@ bool ChartDB::DeleteCacheChart(ChartBase *pDeleteCandidate)
                   pChartCache->Remove(pce);
                   delete pce;
                   
-                  if(pthumbwin)
-                  {
-                        if(pthumbwin->pThumbChart == pDeleteCandidate)
-                              pthumbwin->pThumbChart = NULL;
-                  }
-
                   retval = true;
             }
       }
