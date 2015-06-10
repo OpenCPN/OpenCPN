@@ -6135,7 +6135,9 @@ void ChartCanvas::SetCanvasCursor( wxMouseEvent& event )
 {
     //    Switch to the appropriate cursor on mouse movement
 
-    wxCursor *ptarget_cursor = pCursorArrow;
+    wxCursor *ptarget_cursor;
+    if( !pPlugIn_Cursor ) ptarget_cursor = pCursorArrow;
+    else ptarget_cursor = pPlugIn_Cursor;
     
     if( ( !parent_frame->nRoute_State )
         && ( !m_bMeasure_Active ) /*&& ( !m_bCM93MeasureOffset_Active )*/) {

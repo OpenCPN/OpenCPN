@@ -4601,6 +4601,11 @@ wxBitmap GetIcon_PlugIn(const wxString & name)
     return style->GetIcon( name );
 }
 
+void SetCursor_PlugIn( wxCursor *pCursor )
+{
+    cc1->pPlugIn_Cursor = pCursor;
+}
+
 void AddChartDirectory( wxString &path )
 {
     if( g_options )
