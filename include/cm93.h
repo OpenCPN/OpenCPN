@@ -80,7 +80,7 @@ class M_COVR_Desc
 };
 
 WX_DECLARE_OBJARRAY(M_COVR_Desc, Array_Of_M_COVR_Desc);
-WX_DECLARE_OBJARRAY(M_COVR_Desc *, Array_Of_M_COVR_Desc_Ptr);
+WX_DEFINE_ARRAY_PTR(M_COVR_Desc *, Array_Of_M_COVR_Desc_Ptr);
 
 WX_DECLARE_LIST(M_COVR_Desc, List_Of_M_COVR_Desc);
 
