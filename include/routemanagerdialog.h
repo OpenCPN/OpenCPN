@@ -51,7 +51,11 @@ class RouteManagerDialog : public wxDialog {
       public:
             RouteManagerDialog(wxWindow *parent);
             ~RouteManagerDialog();
+            void OnClose(wxCloseEvent& event);
+            void OnOK(wxCommandEvent& event);
+            
             void SetColorScheme();
+            void RecalculateSize();
             void UpdateRouteListCtrl();     // Rebuild route list
             void UpdateTrkListCtrl();
             void UpdateWptListCtrl(RoutePoint *rp_select = NULL, bool b_retain_sort = false);

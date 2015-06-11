@@ -43,6 +43,7 @@
 #include "TrackPropDlg.h"
 #include "S57QueryDialog.h"
 #include "options.h"
+#include "routemanagerdialog.h"
 
 class androidUtilHandler;
 
@@ -69,9 +70,9 @@ extern MarkInfoImpl              *pMarkInfoDialog;
 extern S57QueryDialog            *g_pObjectQueryDialog;
 extern options                   *g_options;
 extern bool                       g_bSleep;
-androidUtilHandler              *g_androidUtilHandler;
+androidUtilHandler               *g_androidUtilHandler;
 extern wxDateTime                 g_start_time;
-
+extern RouteManagerDialog        *pRouteManagerDialog;
 
 #define ANDROID_EVENT_TIMER 4389
 #define ACTION_RESIZE_PERSISTENTS       1
@@ -181,7 +182,23 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                 }
             }
             
+            // Route Manager dialog
+            if(pRouteManagerDialog){
+                bool bshown = pRouteManagerDialog->IsShown();
+                if(bshown){
+                    pRouteManagerDialog->Hide();
+                    pRouteManagerDialog->RecalculateSize();
+                    pRouteManagerDialog->Show();
+                }
+                else{
+                    pRouteManagerDialog->Destroy();
+                    pRouteManagerDialog = NULL;
+                }
+                    
+            }
+            
             break;
+ 
             
         default:
             break;

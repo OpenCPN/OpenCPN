@@ -32,7 +32,6 @@
 #endif
 
 
-
 #include "wx/print.h"
 #include "wx/printdlg.h"
 #include "wx/artprov.h"
@@ -3895,12 +3894,17 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         case ID_MENU_ROUTE_MANAGER:
         case ID_ROUTEMANAGER: {
             if( NULL == pRouteManagerDialog )         // There is one global instance of the Dialog
-            pRouteManagerDialog = new RouteManagerDialog( cc1 );
+                pRouteManagerDialog = new RouteManagerDialog( cc1 );
 
             pRouteManagerDialog->UpdateRouteListCtrl();
             pRouteManagerDialog->UpdateTrkListCtrl();
             pRouteManagerDialog->UpdateWptListCtrl();
             pRouteManagerDialog->UpdateLayListCtrl();
+            
+            if(g_bresponsive){
+                if(stats && stats->IsShown() )
+                    stats->Hide();
+            }
             pRouteManagerDialog->Show();
 
             //    Required if RMDialog is not STAY_ON_TOP
@@ -3981,6 +3985,18 @@ void MyFrame::DoSettings()
     //  The chart display options may have changed, especially on S57 ENC,
     //  So, flush the cache and redraw
     cc1->ReloadVP();
+    
+}
+
+void MyFrame::ShowChartBarIfEnabled()
+{
+    if(stats){
+        stats->Show(g_bShowChartBar);
+        if(g_bShowChartBar){
+            stats->Move(0,0);
+            stats->RePosition();
+         }
+    }
     
 }
 
@@ -4883,17 +4899,12 @@ int MyFrame::DoOptionsDialog()
 
     delete pWorkDirArray;
 
-    if(stats){
-        stats->Show(g_bShowChartBar);
-        if(g_bShowChartBar){
-            stats->Move(0,0);
-            stats->RePosition();
-            gFrame->Raise();
-            DoChartUpdate();
-            UpdateControlBar();
-            Refresh();
-        }
-    }
+    ShowChartBarIfEnabled();
+
+    gFrame->Raise();
+    DoChartUpdate();
+    UpdateControlBar();
+    Refresh();
     
     SetToolbarScale();
     RequestNewToolbar();

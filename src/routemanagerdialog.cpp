@@ -136,6 +136,7 @@ extern double           gCog, gSog;
 extern bool             g_bShowLayers;
 extern wxString         g_default_wp_icon;
 extern AIS_Decoder      *g_pAIS;
+extern bool             g_bresponsive;
 
 // sort callback. Sort by route name.
 int sort_route_name_dir;
@@ -391,10 +392,12 @@ int wxCALLBACK SortLayersOnSize(long item1, long item2, long list)
 
 }
 
-// event table. Empty, because I find it much easier to see what is connected to what
+// event table. Mostly empty, because I find it much easier to see what is connected to what
 // using Connect() where possible, so that it is visible in the code.
 BEGIN_EVENT_TABLE(RouteManagerDialog, wxDialog)
 EVT_NOTEBOOK_PAGE_CHANGED(wxID_ANY, RouteManagerDialog::OnTabSwitch) // This should work under Windows :-(
+//EVT_CLOSE(RouteManagerDialog::OnClose)
+EVT_COMMAND(wxID_OK, wxEVT_COMMAND_BUTTON_CLICKED, RouteManagerDialog::OnOK)
 END_EVENT_TABLE()
 
 void RouteManagerDialog::OnTabSwitch( wxNotebookEvent &event )
@@ -795,26 +798,8 @@ void RouteManagerDialog::Create()
     
     itemBoxSizer5->Add( szButtons, 0, wxALL | wxALIGN_RIGHT, DIALOG_MARGIN );
     
-    //  All of this dialog layout is expandable, so we need to set a specific size target
-    //  for the onscreen display.
-    //  The size will later be adjusted so that it fits iwithing the parent's client area, with some padding
-    
-    wxSize sz;
-    sz.x = 44 * char_width;
-    sz.y = 20 * char_width;
-    
-    wxSize dsize = GetParent()->GetClientSize();
-    sz.y = wxMin(sz.y, dsize.y - (2 * char_height));
-    sz.x = wxMin(sz.x, dsize.x - (2 * char_height));
-    SetClientSize(sz);
-    
-    wxSize fsize = GetSize();
-    fsize.y = wxMin(fsize.y, dsize.y - (2 * char_height));
-    fsize.x = wxMin(fsize.x, dsize.x - (2 * char_height));
-    SetSize(fsize);
-    
-    CentreOnParent();
-    
+    RecalculateSize();
+
     // create a image list for the list with just the eye icon
     wxImageList *imglist = new wxImageList( 20, 20, true, 1 );
     imglist->Add( wxBitmap( eye ) );
@@ -889,6 +874,50 @@ RouteManagerDialog::~RouteManagerDialog()
 //      if (m_bNeedConfigFlush)
 //            pConfig->UpdateSettings();
 }
+
+void RouteManagerDialog::RecalculateSize()
+{
+    
+    //  All of this dialog layout is expandable, so we need to set a specific size target
+    //  for the onscreen display.
+    //  The size will then be adjusted so that it fits within the parent's client area, with some padding
+    
+    //  Get a text height metric for reference
+    int char_width, char_height;
+    GetTextExtent(_T("W"), &char_width, &char_height);
+    
+    wxSize sz;
+    sz.x = 60 * char_width;
+    sz.y = 30 * char_height;
+    
+    wxSize dsize = GetParent()->GetClientSize();
+    sz.y = wxMin(sz.y, dsize.y - (1 * char_height));
+    sz.x = wxMin(sz.x, dsize.x - (1 * char_height));
+    SetClientSize(sz);
+    
+    wxSize fsize = GetSize();
+    fsize.y = wxMin(fsize.y, dsize.y - (1 * char_height));
+    fsize.x = wxMin(fsize.x, dsize.x - (1 * char_height));
+    SetSize(fsize);
+    
+    CentreOnParent();
+    
+}
+
+void RouteManagerDialog::OnClose(wxCloseEvent& event)
+{
+}
+
+void RouteManagerDialog::OnOK(wxCommandEvent& event)
+{
+    Hide();
+    
+    if(g_bresponsive)
+        gFrame->ShowChartBarIfEnabled();
+    
+}
+
+
 
 void RouteManagerDialog::SetColorScheme()
 {
