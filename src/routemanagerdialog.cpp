@@ -396,7 +396,7 @@ int wxCALLBACK SortLayersOnSize(long item1, long item2, long list)
 // using Connect() where possible, so that it is visible in the code.
 BEGIN_EVENT_TABLE(RouteManagerDialog, wxDialog)
 EVT_NOTEBOOK_PAGE_CHANGED(wxID_ANY, RouteManagerDialog::OnTabSwitch) // This should work under Windows :-(
-//EVT_CLOSE(RouteManagerDialog::OnClose)
+EVT_CLOSE(RouteManagerDialog::OnClose)
 EVT_COMMAND(wxID_OK, wxEVT_COMMAND_BUTTON_CLICKED, RouteManagerDialog::OnOK)
 END_EVENT_TABLE()
 
@@ -418,6 +418,25 @@ void RouteManagerDialog::OnTabSwitch( wxNotebookEvent &event )
 }
 
 // implementation
+
+bool RouteManagerDialog::instanceFlag = false;
+RouteManagerDialog* RouteManagerDialog::single = NULL;
+
+RouteManagerDialog* RouteManagerDialog::getInstance(wxWindow *parent)
+{
+    if(! instanceFlag)
+    {
+        single = new RouteManagerDialog(parent);
+        instanceFlag = true;
+        return single;
+    }
+    else
+    {
+        return single;
+    }
+}
+
+
 RouteManagerDialog::RouteManagerDialog( wxWindow *parent )
 {
     long style = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;
@@ -492,7 +511,6 @@ void RouteManagerDialog::Create()
     // Columns: visibility ctrl, name
     // note that under MSW for SetColumnWidth() to work we need to create the
     // items with images initially even if we specify dummy image id
-    
     m_pRouteListCtrl->InsertColumn( rmVISIBLE, _("Show"), wxLIST_FORMAT_LEFT, 4 * char_width );
     m_pRouteListCtrl->InsertColumn( rmROUTENAME, _("Route Name"), wxLIST_FORMAT_LEFT, 15 * char_width );
     m_pRouteListCtrl->InsertColumn( rmROUTEDESC, _("From <-> To"), wxLIST_FORMAT_LEFT, 10 * char_width );
@@ -866,13 +884,9 @@ RouteManagerDialog::~RouteManagerDialog()
     btnExportViz = NULL;
 
     delete m_pNotebook;
+    instanceFlag = false;
+    
 
-    //    Does not need to be done here at all, since this dialog is autommatically deleted as a child of the frame.
-    //    By that time, the config has already been updated for shutdown.
-
-    // Do this just once!!
-//      if (m_bNeedConfigFlush)
-//            pConfig->UpdateSettings();
 }
 
 void RouteManagerDialog::RecalculateSize()
@@ -906,6 +920,8 @@ void RouteManagerDialog::RecalculateSize()
 
 void RouteManagerDialog::OnClose(wxCloseEvent& event)
 {
+    Hide();
+    //    pRouteManagerDialog = NULL;
 }
 
 void RouteManagerDialog::OnOK(wxCommandEvent& event)
@@ -1163,8 +1179,7 @@ void RouteManagerDialog::OnRtePropertiesClick( wxCommandEvent &event )
     if( !route ) return;
 
     if( !route->m_bIsTrack ) { //TODO: It's a route, we still need the new implementation here
-        if( NULL == pRoutePropDialog )          // There is one global instance of the RouteProp Dialog
-            pRoutePropDialog = new RouteProp( GetParent() );
+        pRoutePropDialog = RouteProp::getInstance( GetParent() );
 
         pRoutePropDialog->SetRouteAndUpdate( route );
         pRoutePropDialog->UpdateProperties();
@@ -1758,8 +1773,7 @@ void RouteManagerDialog::OnTrkPropertiesClick( wxCommandEvent &event )
 
     if( !route ) return;
 
-    if( NULL == pTrackPropDialog )          // There is one global instance of the RouteProp Dialog
-        pTrackPropDialog = new TrackPropDlg( GetParent() );
+    pTrackPropDialog = TrackPropDlg::getInstance( GetParent() );
     pTrackPropDialog->SetTrackAndUpdate( route );
 
     if( !pTrackPropDialog->IsShown() )
@@ -2099,9 +2113,8 @@ void RouteManagerDialog::OnWptNewClick( wxCommandEvent &event )
     pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
     cc1->Refresh( false );      // Needed for MSW, why not GTK??
 
-    if( NULL == pMarkPropDialog )          // There is one global instance of the MarkProp Dialog
-        pMarkPropDialog = new MarkInfoImpl( GetParent() );
-
+    pMarkPropDialog = MarkInfoImpl::getInstance( GetParent() );
+    
     pMarkPropDialog->SetRoutePoint( pWP );
     pMarkPropDialog->UpdateProperties();
 
@@ -2127,8 +2140,7 @@ void RouteManagerDialog::OnWptPropertiesClick( wxCommandEvent &event )
 void RouteManagerDialog::WptShowPropertiesDialog( RoutePoint* wp, wxWindow* parent )
 {
     // There is one global instance of the MarkProp Dialog
-    if( NULL == pMarkPropDialog )
-        pMarkPropDialog = new MarkInfoImpl( parent );
+    pMarkPropDialog = MarkInfoImpl::getInstance( parent );
 
     pMarkPropDialog->SetRoutePoint( wp );
     pMarkPropDialog->UpdateProperties();

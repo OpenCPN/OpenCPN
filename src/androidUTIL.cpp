@@ -120,28 +120,49 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
             }
             
             // Route Props
-            if(pRoutePropDialog){
+            if(RouteProp::getInstanceFlag()){
                 bool bshown = pRoutePropDialog->IsShown();
-                pRoutePropDialog->Hide();
-                pRoutePropDialog->RecalculateSize();
                 if(bshown){
+                    pRoutePropDialog->Hide();
+                    pRoutePropDialog->RecalculateSize();
                     pRoutePropDialog->Show();
                 }
+                else{
+                    pRoutePropDialog->Destroy();
+                    pRoutePropDialog = NULL;
+                }
             }
-            
+          
 
             // Track Props
-            if(pTrackPropDialog){
+            if(TrackPropDlg::getInstanceFlag()){
                 bool bshown = pTrackPropDialog->IsShown();
-                pTrackPropDialog->Hide();
-                pTrackPropDialog->RecalculateSize();
                 if(bshown){
+                    pTrackPropDialog->Hide();
+                    pTrackPropDialog->RecalculateSize();
                     pTrackPropDialog->Show();
+                }
+                else{
+                    pTrackPropDialog->Destroy();
+                    pTrackPropDialog = NULL;
                 }
             }
             
             
             // Mark Props
+            if(MarkInfoImpl::getInstanceFlag()){
+                bool bshown = pMarkPropDialog->IsShown();
+                if(bshown){
+                    pMarkPropDialog->Hide();
+                    pMarkPropDialog->RecalculateSize();
+                    pMarkPropDialog->Show();
+                }
+                else{
+                    pMarkPropDialog->Destroy();
+                    pMarkPropDialog = NULL;
+                }
+            }
+            
             if(pMarkPropDialog){
                 bool bshown = pMarkPropDialog->IsShown();
                 pMarkPropDialog->Hide();
@@ -183,7 +204,7 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
             }
             
             // Route Manager dialog
-            if(pRouteManagerDialog){
+            if(RouteManagerDialog::getInstanceFlag()){
                 bool bshown = pRouteManagerDialog->IsShown();
                 if(bshown){
                     pRouteManagerDialog->Hide();

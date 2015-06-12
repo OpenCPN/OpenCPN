@@ -3503,10 +3503,6 @@ void MyFrame::ODoSetSize( void )
     options_lastWindowSize = wxSize(0,0);
     options_lastWindowPos = wxPoint(0,0);
 
-    if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ){
-        pRouteManagerDialog->Centre();
-    }
-
 }
 
 void MyFrame::PositionConsole( void )
@@ -3893,8 +3889,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         
         case ID_MENU_ROUTE_MANAGER:
         case ID_ROUTEMANAGER: {
-            if( NULL == pRouteManagerDialog )         // There is one global instance of the Dialog
-                pRouteManagerDialog = new RouteManagerDialog( cc1 );
+            pRouteManagerDialog = RouteManagerDialog::getInstance( cc1 ); // There is one global instance of the Dialog
 
             pRouteManagerDialog->UpdateRouteListCtrl();
             pRouteManagerDialog->UpdateTrkListCtrl();

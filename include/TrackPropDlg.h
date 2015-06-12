@@ -80,6 +80,12 @@ class   HyperlinkList;
 class TrackPropDlg : public wxDialog 
 {
 private:
+        static bool instanceFlag;
+        static TrackPropDlg *single;
+        TrackPropDlg( wxWindow* parent, wxWindowID id, const wxString& title,
+                      const wxPoint& pos, const wxSize& size,
+                      long style ); 
+        
         Route      *m_pHead; // for route splitting
         Route      *m_pTail;
         RoutePoint *m_pExtendPoint;
@@ -168,9 +174,10 @@ private:
         void CreateControls( void );
         
 public:
-        TrackPropDlg( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Track Properties"),
-                              const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 680,440 ),
-                              long style = wxCAPTION|wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxRESIZE_BORDER ); 
+        static TrackPropDlg *getInstance( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Track Properties"),
+                                      const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 680,440 ),
+                                      long style = wxCAPTION|wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxRESIZE_BORDER ); 
+        static bool getInstanceFlag(){ return instanceFlag; } 
         ~TrackPropDlg();
 
         void m_hyperlink1OnContextMenu( wxMouseEvent &event )
