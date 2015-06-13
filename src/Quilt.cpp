@@ -103,6 +103,16 @@ OCPNRegion &QuiltCandidate::GetCandidateVPRegion( ViewPort &vp )
         return candidate_region;
     }
     
+    // Special case:
+    // A skewed chart at high magnification will produce an OCPNregion that is very complex and expensive to process.
+    // And there is really no useful visual information to be gotten from the chart, anyway.
+    //  So, we simply "eclipse" these quilt candidates under these conditions as a p[erformance optimization.
+    
+    if( (vp.chart_scale < cte.GetScale() / 10) && (cte.GetChartSkew() > 1.0) ){
+        candidate_region.Clear();
+        return candidate_region;
+    }
+    
     
     //    If the chart has an aux ply table, use it for finer region precision
     int nAuxPlyEntries = cte.GetnAuxPlyEntries();
