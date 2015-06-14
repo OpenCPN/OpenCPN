@@ -141,6 +141,7 @@ public:
       
       void ApplyColorSchemeToCachedCharts(ColorScheme cs);
       void PurgeCache();
+      void PurgeCachePlugins();
       bool DeleteCacheChart(ChartBase *pChart);
 
       void LockCache(bool bl){m_b_locked = bl;}

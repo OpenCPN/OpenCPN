@@ -284,6 +284,44 @@ void ChartDB::PurgeCache()
       }
 }
 
+
+void ChartDB::PurgeCachePlugins()
+{
+    //    Empty the cache
+    wxLogMessage(_T("Chart cache PlugIn purge"));
+    
+    if( wxMUTEX_NO_ERROR == m_cache_mutex.TryLock() ){
+        unsigned int nCache = pChartCache->GetCount();
+        unsigned int i = 0;
+        while(i < nCache){
+            CacheEntry *pce = (CacheEntry *)(pChartCache->Item(i));
+            ChartBase *Ch = (ChartBase *)pce->pChart;
+            
+            // Remove if a PlugIn chart type
+            if(CHART_TYPE_PLUGIN == Ch->GetChartType()){
+            
+                //    The glCanvas may be cacheing some information for this chart
+                if(g_bopengl && cc1)
+                    cc1->PurgeGLCanvasChartCache(Ch, true);
+            
+                delete Ch;
+            
+                pChartCache->Remove(pce);
+                delete pce;
+                
+                nCache = pChartCache->GetCount();       // restart the while loop
+                i = 0;
+                
+            }
+            else
+                i++;
+        }
+       
+        m_cache_mutex.Unlock();
+    }
+}
+
+
 void ChartDB::ClearCacheInUseFlags(void)
 {
     if( wxMUTEX_NO_ERROR == m_cache_mutex.TryLock() ){
