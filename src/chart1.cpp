@@ -3190,10 +3190,15 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     g_pauimgr->UnInit();
     delete g_pauimgr;
     g_pauimgr = NULL;
+    
     //    Unload the PlugIns
     //      Note that we are waiting until after the canvas is destroyed,
     //      since some PlugIns may have created children of canvas.
     //      Such a PlugIn must stay intact for the canvas dtor to call DestoryChildren()
+    
+    if(ChartData)
+        ChartData->PurgeCachePlugins();
+    
     if( g_pi_manager ) {
         g_pi_manager->UnLoadAllPlugIns();
         delete g_pi_manager;
