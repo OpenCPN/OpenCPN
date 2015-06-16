@@ -36,6 +36,8 @@
          <activity android:name="org.opencpn.FileChooser"> <meta-data android:name="android.app.lib_name" android:value="opencpn"/>
         </activity>
 
+        <activity android:name="ar.com.daidalos.afiledialog.FileChooserActivity" />
+
     </application>
     <uses-sdk android:minSdkVersion="11" android:targetSdkVersion="19"/>
     <supports-screens android:largeScreens="true" android:normalScreens="true" android:anyDensity="true" android:smallScreens="true"/>

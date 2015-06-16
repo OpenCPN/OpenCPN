@@ -120,6 +120,9 @@ import app.akexorcist.bluetotohspp.library.BluetoothSPP;
 import app.akexorcist.bluetotohspp.library.BluetoothState;
 import app.akexorcist.bluetotohspp.library.BluetoothSPP.OnDataReceivedListener;
 
+
+import ar.com.daidalos.afiledialog.*;
+
 public class QtActivity extends Activity
 {
     private final static int MINISTRO_INSTALL_REQUEST_CODE = 0xf3ee; // request code used to know when Ministro instalation is finished
@@ -127,6 +130,9 @@ public class QtActivity extends Activity
     private static final int MINISTRO_API_LEVEL = 4; // Ministro api level (check IMinistro.aidl file)
     private static final int NECESSITAS_API_LEVEL = 2; // Necessitas api level used by platform plugin
     private static final int QT_VERSION = 0x050100; // This app requires at least Qt version 5.1.0
+
+    private final static int OCPN_FILECHOOSER_REQUEST_CODE = 0x5555;
+    private final static int OCPN_AFILECHOOSER_REQUEST_CODE = 0x5556;
 
     private static final String ERROR_CODE_KEY = "error.code";
     private static final String ERROR_MESSAGE_KEY = "error.message";
@@ -221,6 +227,8 @@ public class QtActivity extends Activity
     private BluetoothSPP m_BTSPP;
     private Boolean m_BTServiceCreated = false;
     private String m_BTStat;
+    private Boolean m_FileChooserDone = false;
+    private String m_filechooserString;
 
     OCPNNativeLib nativeLib;
 
@@ -656,6 +664,64 @@ public class QtActivity extends Activity
         ret_str = "OK";
         return ret_str;
     }
+
+    public String FileChooserDialog(final String initialDir, final String Title, final String Suggestion, final String wildcard)
+    {
+        Log.i("DEBUGGER_TAG", "FileChooserDialog");
+        Log.i("DEBUGGER_TAG", initialDir);
+
+        m_FileChooserDone = false;
+
+//        Intent intent = new Intent(this, org.opencpn.FileChooser.class);
+//        intent.putExtra("FILE_CHOOSER_TITLE",Title);
+//        intent.putExtra("FILE_CHOOSER_DIR_ONLY","false");
+//        startActivityForResult(intent, OCPN_FILECHOOSER_REQUEST_CODE);
+
+        Intent intent = new Intent(this, FileChooserActivity.class);
+        intent.putExtra(FileChooserActivity.INPUT_START_FOLDER, initialDir);
+        intent.putExtra(FileChooserActivity.INPUT_FOLDER_MODE, false);
+        intent.putExtra(FileChooserActivity.INPUT_SHOW_FULL_PATH_IN_TITLE, true);
+
+
+        //  Creating a file?
+        if(!Suggestion.isEmpty()){
+            Log.i("DEBUGGER_TAG", "FileChooserDialog Creating");
+            intent.putExtra(FileChooserActivity.INPUT_CAN_CREATE_FILES, true);
+        }
+
+        this.startActivityForResult(intent, OCPN_AFILECHOOSER_REQUEST_CODE);
+
+        return "OK";
+   }
+
+   public String DirChooserDialog(final String initialDir, final String Title)
+   {
+       Log.i("DEBUGGER_TAG", "DirChooserDialog");
+       Log.i("DEBUGGER_TAG", initialDir);
+
+       m_FileChooserDone = false;
+//       Intent intent = new Intent(this, org.opencpn.FileChooser.class);
+//       intent.putExtra("FILE_CHOOSER_TITLE",Title);
+//       intent.putExtra("FILE_CHOOSER_DIR_ONLY","true");
+//       startActivityForResult(intent, OCPN_FILECHOOSER_REQUEST_CODE);
+
+       Intent intent = new Intent(this, FileChooserActivity.class);
+       intent.putExtra(FileChooserActivity.INPUT_START_FOLDER, initialDir);
+       intent.putExtra(FileChooserActivity.INPUT_FOLDER_MODE, true);
+       this.startActivityForResult(intent, OCPN_AFILECHOOSER_REQUEST_CODE);
+
+       return "OK";
+  }
+
+   public String isFileChooserFinished()
+   {
+       if(m_FileChooserDone){
+            return m_filechooserString;
+       }
+       else{
+           return "no";
+       }
+   }
 
 
     // this function is used to load and start the loader
@@ -1227,7 +1293,7 @@ public class QtActivity extends Activity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        Log.i("DEBUGGER_TAG", "onqtActivityResultA");
+        Log.i("DEBUGGER_TAG", "onActivityResultA");
         if (requestCode == OCPN_SETTINGS_REQUEST_CODE) {
 //            Log.i("DEBUGGER_TAG", "onqtActivityResultC");
             // Make sure the request was successful
@@ -1240,6 +1306,65 @@ public class QtActivity extends Activity
             else if (resultCode == RESULT_CANCELED){
 //                Log.i("DEBUGGER_TAG", "onqtActivityResultE");
             }
+
+            super.onActivityResult(requestCode, resultCode, data);
+
+            return;
+        }
+
+        if (requestCode == OCPN_FILECHOOSER_REQUEST_CODE) {
+            Log.i("DEBUGGER_TAG", "onqtActivityResultCf");
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK)
+            {
+                 Log.i("DEBUGGER_TAG", "onqtActivityResultDf");
+                 m_filechooserString = "file:" + data.getStringExtra("itemSelected");
+                 Log.i("DEBUGGER_TAG", m_filechooserString);
+            }
+            else if (resultCode == RESULT_CANCELED){
+                Log.i("DEBUGGER_TAG", "onqtActivityResultEf");
+                m_filechooserString = "cancel:";
+            }
+
+            m_FileChooserDone = true;
+
+            super.onActivityResult(requestCode, resultCode, data);
+
+            return;
+        }
+
+        if (requestCode == OCPN_AFILECHOOSER_REQUEST_CODE) {
+            Log.i("DEBUGGER_TAG", "onqtActivityResultCa");
+            // Make sure the request was successful
+            if (resultCode == Activity.RESULT_OK) {
+                Log.i("DEBUGGER_TAG", "onqtActivityResultDa");
+                boolean fileCreated = false;
+                String filePath = "";
+
+                Bundle bundle = data.getExtras();
+                if(bundle != null)
+                {
+                    if(bundle.containsKey(FileChooserActivity.OUTPUT_NEW_FILE_NAME)) {
+                            fileCreated = true;
+                            File folder = (File) bundle.get(FileChooserActivity.OUTPUT_FILE_OBJECT);
+                            String name = bundle.getString(FileChooserActivity.OUTPUT_NEW_FILE_NAME);
+                            filePath = folder.getAbsolutePath() + "/" + name;
+                    } else {
+                            fileCreated = false;
+                            File file = (File) bundle.get(FileChooserActivity.OUTPUT_FILE_OBJECT);
+                            filePath = file.getAbsolutePath();
+                    }
+
+                    m_filechooserString = "file:" + filePath;
+
+                }
+            }
+            else if (resultCode == Activity.RESULT_CANCELED){
+                Log.i("DEBUGGER_TAG", "onqtActivityResultEa");
+                m_filechooserString = "cancel:";
+            }
+
+            m_FileChooserDone = true;
 
             super.onActivityResult(requestCode, resultCode, data);
 
