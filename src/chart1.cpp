@@ -3185,9 +3185,11 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 #endif    
     stats = NULL;
 
-    if( pRouteManagerDialog ) {
-        pRouteManagerDialog->Destroy();
-        pRouteManagerDialog = NULL;
+    if(RouteManagerDialog::getInstanceFlag()){
+        if( pRouteManagerDialog ) {
+            pRouteManagerDialog->Destroy();
+            pRouteManagerDialog = NULL;
+        }
     }
 
     cc1->Destroy();
@@ -4208,10 +4210,11 @@ Track *MyFrame::TrackOff( bool do_add_point )
 
     g_bTrackActive = false;
 
-    if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
-    {
-        pRouteManagerDialog->UpdateTrkListCtrl();
-        pRouteManagerDialog->UpdateRouteListCtrl();
+    if(RouteManagerDialog::getInstanceFlag()){
+        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ){
+            pRouteManagerDialog->UpdateTrkListCtrl();
+            pRouteManagerDialog->UpdateRouteListCtrl();
+        }
     }
 
     SetToolbarItemState( ID_TRACK, g_bTrackActive );
