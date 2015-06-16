@@ -39,10 +39,11 @@
 #include <wx/intl.h>
 #include <wx/listctrl.h>
 #include <wx/aui/aui.h>
-#include <version.h> //Gunther
+#include <version.h> 
 #include <wx/dialog.h>
 #include <wx/progdlg.h>
 #include <wx/clrpicker.h>
+#include "wx/tokenzr.h"
 
 #include <wx/dialog.h>
 
@@ -1872,7 +1873,7 @@ bool MyApp::OnInit()
     if( !ChartDirArray.GetCount() ) ::wxRemoveFile( ChartListFileName );
 
 //      Try to load the current chart list Data file
-    ChartData = new ChartDB( gFrame );
+    ChartData = new ChartDB( );
     if (!ChartData->LoadBinary(ChartListFileName, ChartDirArray)) {
         bDBUpdateInProgress = true;
 
@@ -1887,7 +1888,7 @@ bool MyApp::OnInit()
              dlg_ret = mdlg.ShowModal();
              */
             delete ChartData;
-            ChartData = new ChartDB( gFrame );
+            ChartData = new ChartDB( );
 
             wxString line( _("Rebuilding chart database from configuration file entries...") );
             /* The following 3 strings are embeded in wxProgressDialog but must be included by xgettext
@@ -2459,6 +2460,11 @@ void MyFrame::OnActivate( wxActivateEvent& event )
 #endif
 
     event.Skip();
+}
+
+ColorScheme GetColorScheme()
+{
+    return global_color_scheme;
 }
 
 ColorScheme MyFrame::GetColorScheme()
@@ -3776,12 +3782,22 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             break;
         }
 
-        case wxID_PREFERENCES:
         case ID_SETTINGS: {
             DoSettings();
             break;
         }
 
+        case wxID_PREFERENCES:
+        {
+#ifdef __OCPN__ANDROID__
+           //DoAndroidPreferences();
+            DoSettings();
+#else
+            DoSettings();
+#endif            
+            break;
+        }
+        
         case ID_MENU_UI_FULLSCREEN: {
             ToggleFullScreen();
             break;

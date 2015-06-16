@@ -22,6 +22,8 @@
  ***************************************************************************
  */
 
+#include "wx/tokenzr.h"
+
 #include "AIS_Decoder.h"
 #include "AIS_Target_Data.h"
 #include "AISTargetAlertDialog.h"

@@ -33,6 +33,7 @@
 
 #include <wx/stopwatch.h>
 #include <wx/regex.h>
+#include "wx/tokenzr.h"
 
 #include "chartdb.h"
 #include "chartimg.h"
@@ -50,6 +51,8 @@
 #include "s57chart.h"
 #include "cm93.h"
 #endif
+
+extern ColorScheme GetColorScheme();
 
 class s52plib;
 
@@ -215,9 +218,8 @@ void ChartStack::AddChart( int db_add )
 // ChartDB implementation
 // ============================================================================
 
-ChartDB::ChartDB(MyFrame *parent)
+ChartDB::ChartDB()
 {
-      pParent = parent;
       pChartCache = new wxArrayPtrVoid;
 
       SetValid(false);                           // until loaded or created
@@ -1345,7 +1347,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                         wxLogMessage(msg);
 
                         ir = Ch->Init(ChartFullPath, init_flag);    // using the passed flag
-                        Ch->SetColorScheme(pParent->GetColorScheme());
+                        Ch->SetColorScheme(/*pParent->*/GetColorScheme());
                   }
                   else
                   {

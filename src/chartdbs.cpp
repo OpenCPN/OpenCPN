@@ -33,6 +33,7 @@
 #include <wx/encconv.h>
 #include <wx/regex.h>
 #include <wx/progdlg.h>
+#include "wx/tokenzr.h"
 
 #include "chartdbs.h"
 #include "chartbase.h"
