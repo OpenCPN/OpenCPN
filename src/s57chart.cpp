@@ -2956,15 +2956,16 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name )
 //      Look for SENC file in the target directory
 
     {
-        wxFFileInputStream fpx( m_SENCFileName.GetFullPath() );
+        wxFFileInputStream fpx_u( m_SENCFileName.GetFullPath() );
 
-        if( fpx.IsOk(  ) ) {
-            if( fpx.GetSize() == 0 ) {
+        if( fpx_u.IsOk(  ) ) {
+            if( fpx_u.GetSize() == 0 ) {
                 bbuild_new_senc = true;
             } else                                      // file exists, non-zero
             {                                         // so check for new updates
 
-                fpx.SeekI( 0 );
+                fpx_u.SeekI( 0 );
+                wxBufferedInputStream fpx( fpx_u );
                 int dun = 0;
                 int last_update = 0;
                 int senc_file_version = 0;
@@ -4515,13 +4516,14 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
 
     wxString ifs( FullPath );
 
-    wxFFileInputStream fpx( ifs );
-    if (!fpx.IsOk()) {
+    wxFFileInputStream fpx_u( ifs );
+    if (!fpx_u.IsOk()) {
         wxString msg( _T("   Cannot open SENC file ") );
         msg.Append( FullPath );
         wxLogMessage( msg );
         return 1;
     }
+    wxBufferedInputStream fpx( fpx_u );
     wxFileName SENCFileName( FullPath );
 
     int MAX_LINE = 499999;
