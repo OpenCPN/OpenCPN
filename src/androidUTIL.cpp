@@ -44,6 +44,7 @@
 #include "S57QueryDialog.h"
 #include "options.h"
 #include "routemanagerdialog.h"
+#include "chartdb.h"
 
 class androidUtilHandler;
 
@@ -74,8 +75,174 @@ androidUtilHandler               *g_androidUtilHandler;
 extern wxDateTime                 g_start_time;
 extern RouteManagerDialog        *pRouteManagerDialog;
 
+// Static globals
+extern ChartDB                   *ChartData;
+
+
+//   Preferences globals
+extern bool             g_bShowOutlines;
+extern bool             g_bShowChartBar;
+extern bool             g_bShowDepthUnits;
+extern bool             g_bskew_comp;
+extern bool             g_bopengl;
+extern bool             g_bsmoothpanzoom;
+extern bool             g_bShowMag;
+extern double           g_UserVar;
+extern int              g_chart_zoom_modifier;
+extern int              g_NMEAAPBPrecision;
+extern wxString         g_TalkerIdText;
+
+extern wxString         *pInit_Chart_Dir;
+extern wxArrayOfConnPrm *g_pConnectionParams;
+extern bool             g_bfilter_cogsog;
+extern int              g_COGFilterSec;
+extern int              g_SOGFilterSec;
+
+
+extern bool             g_bDisplayGrid;
+
+//    AIS Global configuration
+extern bool             g_bCPAMax;
+extern double           g_CPAMax_NM;
+extern bool             g_bCPAWarn;
+extern double           g_CPAWarn_NM;
+extern bool             g_bTCPA_Max;
+extern double           g_TCPA_Max;
+extern bool             g_bMarkLost;
+extern double           g_MarkLost_Mins;
+extern bool             g_bRemoveLost;
+extern double           g_RemoveLost_Mins;
+extern bool             g_bShowCOG;
+extern double           g_ShowCOG_Mins;
+extern bool             g_bAISShowTracks;
+extern double           g_AISShowTracks_Mins;
+extern bool             g_bShowMoored;
+extern double           g_ShowMoored_Kts;
+extern bool             g_bAIS_CPA_Alert;
+extern bool             g_bAIS_CPA_Alert_Audio;
+extern wxString         g_sAIS_Alert_Sound_File;
+extern bool             g_bAIS_CPA_Alert_Suppress_Moored;
+extern bool             g_bShowAreaNotices;
+extern bool             g_bDrawAISSize;
+extern bool             g_bShowAISName;
+extern int              g_Show_Target_Name_Scale;
+extern bool             g_bWplIsAprsPosition;
+
+extern int              g_iNavAidRadarRingsNumberVisible;
+extern float            g_fNavAidRadarRingsStep;
+extern int              g_pNavAidRadarRingsStepUnits;
+extern int              g_iWaypointRangeRingsNumber;
+extern float            g_fWaypointRangeRingsStep;
+extern int              g_iWaypointRangeRingsStepUnits;
+extern wxColour         g_colourWaypointRangeRingsColour;
+extern bool             g_bWayPointPreventDragging;
+
+extern bool             g_bPreserveScaleOnX;
+extern bool             g_bPlayShipsBells;
+extern int              g_iSoundDeviceIndex;
+extern bool             g_bFullscreenToolbar;
+extern bool             g_bTransparentToolbar;
+extern bool             g_bTransparentToolbarInOpenGLOK;
+
+extern int              g_OwnShipIconType;
+extern double           g_n_ownship_length_meters;
+extern double           g_n_ownship_beam_meters;
+extern double           g_n_gps_antenna_offset_y;
+extern double           g_n_gps_antenna_offset_x;
+extern int              g_n_ownship_min_mm;
+extern double           g_n_arrival_circle_radius;
+
+extern bool             g_bEnableZoomToCursor;
+extern bool             g_bTrackDaily;
+extern bool             g_bHighliteTracks;
+extern double           g_TrackIntervalSeconds;
+extern double           g_TrackDeltaDistance;
+extern double           g_TrackDeltaDistance;
+extern int              g_nTrackPrecision;
+
+extern int              g_iSDMMFormat;
+extern int              g_iDistanceFormat;
+extern int              g_iSpeedFormat;
+
+extern bool             g_bAdvanceRouteWaypointOnArrivalOnly;
+
+extern int              g_cm93_zoom_factor;
+
+extern int              g_COGAvgSec;
+
+extern bool             g_bCourseUp;
+extern bool             g_bLookAhead;
+
+extern double           g_ownship_predictor_minutes;
+extern double           g_ownship_HDTpredictor_miles;
+
+extern bool             g_bAISRolloverShowClass;
+extern bool             g_bAISRolloverShowCOG;
+extern bool             g_bAISRolloverShowCPA;
+
+extern bool             g_bAIS_ACK_Timeout;
+extern double           g_AckTimeout_Mins;
+
+extern bool             g_bQuiltEnable;
+extern bool             g_bFullScreenQuilt;
+extern bool             g_bConfirmObjectDelete;
+extern wxString         g_GPS_Ident;
+extern bool             g_bGarminHostUpload;
+
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
+extern wxLocale         *plocale_def_lang;
+#endif
+
+//extern OCPN_Sound        g_anchorwatch_sound;
+extern bool             g_bMagneticAPB;
+
+extern bool             g_fog_overzoom;
+extern double           g_overzoom_emphasis_base;
+extern bool             g_oz_vector_scale;
+extern bool             g_bShowStatusBar;
+
+
+
+#ifdef USE_S57
+//extern s52plib          *ps52plib;
+#endif
+
+extern wxString         g_locale;
+extern bool             g_bportable;
+extern bool             g_bdisable_opengl;
+extern wxString         *pHome_Locn;
+
+extern ChartGroupArray  *g_pGroupArray;
+
+
+extern bool             g_bexpert;
+//    Some constants
+#define ID_CHOICE_NMEA  wxID_HIGHEST + 1
+
+extern wxArrayString *EnumerateSerialPorts(void);           // in chart1.cpp
+
+extern wxArrayString    TideCurrentDataSet;
+extern wxString         g_TCData_Dir;
+
+extern AIS_Decoder      *g_pAIS;
+extern bool             g_bserial_access_checked;
+
+extern options                *g_pOptions;
+
+extern bool             g_btouch;
+extern bool             g_bresponsive;
+extern bool             g_bAutoHideToolbar;
+extern int              g_nAutoHideToolbar;
+extern int              g_GUIScaleFactor;
+extern int              g_ChartScaleFactor;
+
+extern double           g_config_display_size_mm;
+
 #define ANDROID_EVENT_TIMER 4389
+
+#define ACTION_NONE                     -1
 #define ACTION_RESIZE_PERSISTENTS       1
+#define ACTION_FILECHOOSER_END          3
 
 class androidUtilHandler : public wxEvtHandler
 {
@@ -84,8 +251,13 @@ class androidUtilHandler : public wxEvtHandler
     ~androidUtilHandler() {}
     
     void onTimerEvent(wxTimerEvent &event);
+    
+    wxString GetStringResult(){ return m_stringResult; }
+    
     wxTimer     m_eventTimer;
     int         m_action;
+    bool        m_done;
+    wxString    m_stringResult;
     
     DECLARE_EVENT_TABLE()
 };
@@ -180,7 +352,7 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                 g_pObjectQueryDialog->RecalculateSize();
                 if(bshown){
                     g_pObjectQueryDialog->Show();
-                }
+                } 
             }
             
             // Options dialog
@@ -221,6 +393,50 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
             break;
  
             
+        case ACTION_FILECHOOSER_END:            //  Handle polling of android Intent
+            {
+                qDebug() << "chooser poll";
+                //  Get a reference to the running FileChooser
+                QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                "activity", "()Landroid/app/Activity;");
+                
+                if ( !activity.isValid() ){
+                    qDebug() << "onTimerEvent : Activity is not valid";
+                    return;
+                }
+ 
+                //  Call the method which tracks the completion of the Intent.
+                QAndroidJniObject data = activity.callObjectMethod("isFileChooserFinished", "()Ljava/lang/String;");
+                
+                jstring s = data.object<jstring>();
+                
+                //  Need a Java environment to decode the resulting string
+                if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+                    qDebug() << "GetEnv failed.";
+                }
+                else {
+                    
+                    // The string coming back will be one of:
+                    //  "no"   ......Intent not done yet.
+                    //  "cancel:"   .. user cancelled intent.
+                    //  "file:{file_name}"  .. user selected this file, fully qualified.
+                    if( (jenv)->GetStringLength( s )){
+                        const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+                        qDebug() << ret_string;
+                        if( !strncmp(ret_string, "cancel:", 7) ){
+                            m_done = true;
+                            m_stringResult = _T("");
+                        }
+                        else if( !strncmp(ret_string, "file:", 5) ){
+                            m_done = true;
+                            m_stringResult = wxString(ret_string, wxConvUTF8);
+                        }                            
+                    }
+                }
+                
+                
+                break;
+            }
         default:
             break;
     }
@@ -466,12 +682,102 @@ wxString callActivityMethod_ss(const char *method, wxString parm)
     
     
     //  Call the desired method
+    qDebug() << "Calling method_ss";
+    qDebug() << method;
+    
     QAndroidJniObject data = activity.callObjectMethod(method, "(Ljava/lang/String;)Ljava/lang/String;", p);
+
+    qDebug() << "Back from method_ss";
     
     jstring s = data.object<jstring>();
     
-    const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
-    return_string = wxString(ret_string, wxConvUTF8);
+    if( (jenv)->GetStringLength( s )){
+        const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+        return_string = wxString(ret_string, wxConvUTF8);
+    }
+    
+    return return_string;
+    
+}
+
+wxString callActivityMethod_s2s(const char *method, wxString parm1, wxString parm2)
+{
+    wxString return_string;
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                           "activity", "()Landroid/app/Activity;");
+    
+    if ( !activity.isValid() ){
+        qDebug() << "Activity is not valid";
+        return return_string;
+    }
+    
+    //  Need a Java environment to decode the resulting string
+    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+        qDebug() << "GetEnv failed.";
+        return _T("jenv Error");
+    }
+    
+    jstring p1 = (jenv)->NewStringUTF(parm1.c_str());
+    jstring p2 = (jenv)->NewStringUTF(parm2.c_str());
+    
+    
+    //  Call the desired method
+    qDebug() << "Calling method_s2s";
+    qDebug() << method;
+    
+    QAndroidJniObject data = activity.callObjectMethod(method, "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", p1, p2);
+    
+    qDebug() << "Back from method_s2s";
+    
+    jstring s = data.object<jstring>();
+    
+    if( (jenv)->GetStringLength( s )){
+        const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+        return_string = wxString(ret_string, wxConvUTF8);
+    }
+    
+    return return_string;
+    
+}
+
+wxString callActivityMethod_s4s(const char *method, wxString parm1, wxString parm2, wxString parm3, wxString parm4)
+{
+    wxString return_string;
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                           "activity", "()Landroid/app/Activity;");
+    
+    if ( !activity.isValid() ){
+        qDebug() << "Activity is not valid";
+        return return_string;
+    }
+    
+    //  Need a Java environment to decode the resulting string
+    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+        qDebug() << "GetEnv failed.";
+        return _T("jenv Error");
+    }
+    
+    jstring p1 = (jenv)->NewStringUTF(parm1.c_str());
+    jstring p2 = (jenv)->NewStringUTF(parm2.c_str());
+    jstring p3 = (jenv)->NewStringUTF(parm3.c_str());
+    jstring p4 = (jenv)->NewStringUTF(parm4.c_str());
+    
+    
+    //  Call the desired method
+    qDebug() << "Calling method_s4s";
+    qDebug() << method;
+    
+    QAndroidJniObject data = activity.callObjectMethod(method, "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+                                                       p1, p2, p3, p4);
+    
+    qDebug() << "Back from method_s4s";
+    
+    jstring s = data.object<jstring>();
+    
+    if( (jenv)->GetStringLength( s )){
+        const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+        return_string = wxString(ret_string, wxConvUTF8);
+    }
     
     return return_string;
     
@@ -901,6 +1207,53 @@ wxArrayString androidGetBluetoothScanResults()
     return ret_array;
 }
 
+int androidFileChooser( wxString *result, const wxString &initDir, const wxString &title,
+                        const wxString &suggestion, const wxString &wildcard, bool dirOnly)
+{
+    wxString tresult;
+    
+    //  Start a timer to poll for results 
+    if(g_androidUtilHandler){
+        g_androidUtilHandler->m_eventTimer.Stop();
+        g_androidUtilHandler->m_done = false;
+
+        wxString activityResult;
+        if(dirOnly)
+            activityResult = callActivityMethod_s2s("DirChooserDialog", initDir, title);
+        else
+            activityResult = callActivityMethod_s4s("FileChooserDialog", initDir, title, suggestion, wildcard);
+        
+        if(activityResult == _T("OK") ){
+            g_androidUtilHandler->m_action = ACTION_FILECHOOSER_END;
+            g_androidUtilHandler->m_eventTimer.Start(1000, wxTIMER_CONTINUOUS);
+        
+        //  Spin, waiting for result
+            while(!g_androidUtilHandler->m_done){
+                wxMilliSleep(50);
+                wxSafeYield(NULL, true);
+            }
+        
+            qDebug() << "out of spin loop";
+            g_androidUtilHandler->m_action = ACTION_NONE;
+            g_androidUtilHandler->m_eventTimer.Stop();
+        
+        
+            tresult = g_androidUtilHandler->GetStringResult();
+            if( tresult.StartsWith(_T("cancel:")) )
+                return wxID_CANCEL;
+            else if( tresult.StartsWith(_T("file:")) ){
+                if(result){
+                    *result = tresult.AfterFirst(':');
+                    return wxID_OK;
+                }
+                else
+                    return wxID_CANCEL;
+            }
+        }
+    }
+
+    return wxID_CANCEL;
+}
 
     
 #if 0
@@ -961,8 +1314,37 @@ void invokeApp( void )
 }
 #endif
 
-#if 0
-wxString MyFrame::BuildAndroidSettingsString( void )
+#if 1
+
+#if 1
+bool InvokeJNIPreferences( wxString &initial_settings)
+{
+    bool ret = true;
+    wxCharBuffer abuf = initial_settings.ToUTF8();
+    if( !abuf.data() )
+        return false;
+    
+    //  Create the method parameter(s)
+        QAndroidJniObject param1 = QAndroidJniObject::fromString(abuf.data());
+        
+        //  Get a reference to the running native activity
+        QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+        "activity", "()Landroid/app/Activity;");
+        
+        if ( !activity.isValid() ){
+            qDebug() << "Activity is not valid";
+            return false;
+        }
+        
+        //  Call the desired method
+        activity.callObjectMethod("doAndroidSettings", "(Ljava/lang/String;)Ljava/lang/String;", param1.object<jstring>());
+        
+        
+        return ret;
+}
+#endif
+
+wxString BuildAndroidSettingsString( void )
 {
     wxString result;
 
@@ -996,19 +1378,23 @@ wxString MyFrame::BuildAndroidSettingsString( void )
 
 }
 
-bool MyFrame::DoAndroidPreferences( void )
+bool DoAndroidPreferences( void )
 {
+    qDebug() << "Start AndroidPreferences";
+    
     wxString settings = BuildAndroidSettingsString();
 
     if( InvokeJNIPreferences(settings)){
     //  Start a timer to poll for results of Android native references dialog
-        m_PrefTimer.Start(500);
+//        m_PrefTimer.Start(500);
     }
 
     return true;
 }
 
 
+
+#if 0
 void MyFrame::OnPreferencesResultTimer( wxTimerEvent &event)
 {
     //  Polling the native activity to see when the Preferences activity is done
@@ -1158,36 +1544,10 @@ void MyFrame::OnPreferencesResultTimer( wxTimerEvent &event)
 
 
 }
+#endif
 
 #endif
 
-#if 0
-bool MyFrame::InvokeJNIPreferences( wxString &initial_settings)
-{
-    bool ret = true;
-    wxCharBuffer abuf = initial_settings.ToUTF8();
-    if( !abuf.data() )
-        return false;
-
-    //  Create the method parameter(s)
-    QAndroidJniObject param1 = QAndroidJniObject::fromString(abuf.data());
-
-    //  Get a reference to the running native activity
-    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
-                                              "activity", "()Landroid/app/Activity;");
-
-    if ( !activity.isValid() ){
-        qDebug() << "Activity is not valid";
-        return false;
-    }
-
-    //  Call the desired method
-    activity.callObjectMethod("doAndroidSettings", "(Ljava/lang/String;)Ljava/lang/String;", param1.object<jstring>());
-
-
-    return ret;
-}
-#endif
 
 
 #if 0

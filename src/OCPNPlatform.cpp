@@ -794,6 +794,96 @@ wxString *OCPNPlatform::GetPrivateDataDirPtr()
     return &m_PrivateDataDir;
 }
 
+int OCPNPlatform::DoFileSelectorDialog( wxWindow *parent, wxString *file_spec, wxString Title, wxString initDir,
+                          wxString suggestedName, wxString wildcard)
+{
+    wxString file;
+    int result = wxID_CANCEL;
+
+#ifdef __OCPN__ANDROID__
+    result = androidFileChooser(&file, initDir, Title, suggestedName, wildcard);
+    if(file_spec)
+        *file_spec = file;
+#else
+    long flag = wxFD_DEFAULT_STYLE;
+    if(suggestedName.Length()){                 // new file
+        flag = wxFD_SAVE;
+    }
+        
+    wxString mask = wildcard;
+    if( wxNOT_FOUND != mask.Find(_T("gpx")) )
+        mask.Prepend( _T("GPX files (*.gpx)|") );
+    
+    wxFileDialog *psaveDialog = new wxFileDialog( parent, Title, initDir, suggestedName, mask, flag );
+
+    if(g_bresponsive)
+        psaveDialog = g_Platform->AdjustFileDialogFont(parent, psaveDialog);
+    
+#ifdef __WXOSX__
+    if(parent)
+        parent->HideWithEffect(wxSHOW_EFFECT_BLEND );
+#endif
+            
+     result = psaveDialog->ShowModal();
+            
+#ifdef __WXOSX__
+    if(parent)
+        parent->ShowWithEffect(wxSHOW_EFFECT_BLEND );
+#endif
+
+
+    file = psaveDialog->GetPath();
+    delete psaveDialog;
+        
+#endif
+    
+    return result;
+}
+
+int OCPNPlatform::DoDirSelectorDialog( wxWindow *parent, wxString *file_spec, wxString Title, wxString initDir)
+{
+    wxString dir;
+    int result = wxID_CANCEL;
+    
+#ifdef __OCPN__ANDROID__
+    result = androidFileChooser(&dir, initDir, Title, _T(""), _T(""), true);    // Directories only
+    if(file_spec)
+        *file_spec = dir;
+#else
+    wxDirDialog *dirSelector = new wxDirDialog( parent, Title, initDir, wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST );
+
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
+    dirSelector->SetFont(*qFont);
+
+    if(g_bresponsive)
+        dirSelector = AdjustDirDialogFont(parent, dirSelector);
+    
+#ifdef __WXOSX__
+    if(parent)
+        parent->HideWithEffect(wxSHOW_EFFECT_BLEND );
+#endif
+            
+    result = dirSelector->ShowModal();
+            
+#ifdef __WXOSX__
+    if(parent)
+        parent->ShowWithEffect(wxSHOW_EFFECT_BLEND );
+#endif
+
+    if( result == wxID_CANCEL ){
+    }
+    else{
+        if(file_spec){
+            *file_spec = dirSelector->GetPath();
+        }
+    }
+    
+    delete dirSelector;
+#endif
+    
+    return result;
+}
+
 
 bool OCPNPlatform::InitializeLogFile( void )
 {

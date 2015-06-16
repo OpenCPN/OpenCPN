@@ -64,5 +64,10 @@ extern wxArrayString androidGetBluetoothScanResults();
 extern bool androidStartBT(wxEvtHandler *consumer, wxString mac_address );
 extern bool androidStopBT();
 
+extern bool DoAndroidPreferences( void );
+extern int androidFileChooser( wxString *result, const wxString &initDir, const wxString &title,
+                        const wxString &suggestion, const wxString &wildcard, bool dirOnly = false);
+
+
 
 #endif   //guard
