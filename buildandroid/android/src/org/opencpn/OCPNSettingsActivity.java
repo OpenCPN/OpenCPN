@@ -309,6 +309,21 @@ public class OCPNSettingsActivity extends PreferenceActivity
     }
 
 
+        // info at
+        //http://stackoverflow.com/questions/19973034/isvalidfragment-android-api-19
+    //    @Override
+    //    protected boolean isValidFragment(String fragmentName) {
+    //      return StockPreferenceFragment.class.getName().equals(fragmentName);
+    //    }
+
+    //    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+
+        @Override
+        protected boolean isValidFragment (String fragmentName) {
+
+             return true; //"com.fullpackage.MyPreferenceFragment".equals(fragmentName);
+
+        }
 
 
 

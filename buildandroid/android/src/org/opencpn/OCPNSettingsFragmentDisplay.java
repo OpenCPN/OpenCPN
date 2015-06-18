@@ -148,5 +148,6 @@ public class OCPNSettingsFragmentDisplay extends PreferenceFragment {
 
     }
 
+
 }
 

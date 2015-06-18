@@ -30,5 +30,6 @@ public class OCPNNativeLib {
   public native int onPause();
   public native int onResume();
 
+  public native int invokeMenuItem( int item);
 
 }
