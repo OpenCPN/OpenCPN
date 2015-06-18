@@ -93,7 +93,6 @@ extern MyFrame          *gFrame;
 
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY ( Array_Of_M_COVR_Desc );
-WX_DEFINE_OBJARRAY ( Array_Of_M_COVR_Desc_Ptr );
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST ( List_Of_M_COVR_Desc );
