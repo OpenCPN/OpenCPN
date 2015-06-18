@@ -121,7 +121,6 @@ extern sigjmp_buf           env;                    // the context saved by sigs
 // ----------------------------------------------------------------------------
 extern bool G_FloatPtInPolygon ( MyFlPoint *rgpts, int wnumpts, float x, float y ) ;
 extern void catch_signals(int signo);
-extern bool GetMemoryStatus(int *mem_total, int *mem_used);
 
 extern ChartBase        *Current_Vector_Ch;
 extern ChartBase        *Current_Ch;
