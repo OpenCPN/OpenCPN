@@ -306,6 +306,7 @@ public:
       wxCursor    *pCursorPencil;
       wxCursor    *pCursorArrow;
       wxCursor    *pCursorCross;
+      wxCursor    *pPlugIn_Cursor;
       TCWin       *pCwin;
       wxBitmap    *pscratch_bm;
       double      m_cursor_lon, m_cursor_lat;
