@@ -3794,20 +3794,20 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             break;
         }
 
+        case wxID_PREFERENCES:
         case ID_SETTINGS: {
             DoSettings();
             break;
         }
 
-        case wxID_PREFERENCES:
+ 
+        case ID_MENU_SETTINGS_BASIC:
         {
-#ifdef __OCPN__ANDROID__
-           //DoAndroidPreferences();
+ #ifdef __OCPN__ANDROID__
+            DoAndroidPreferences();
+ #else
             DoSettings();
-#else
-            DoSettings();
-#endif            
-            break;
+ #endif            
         }
         
         case ID_MENU_UI_FULLSCREEN: {

@@ -630,6 +630,63 @@ extern "C"{
     }
 }
 
+extern "C"{
+    JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_invokeMenuItem(JNIEnv *env, jobject obj, int item)
+    {
+        qDebug() << "invokeMenuItem" << item;
+        
+        wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+        
+        switch(item){
+            case OCPN_ACTION_FOLLOW:
+                evt.SetId( ID_MENU_NAV_FOLLOW );
+                gFrame->GetEventHandler()->AddPendingEvent(evt);
+                break;
+                
+            case OCPN_ACTION_ROUTE:
+                evt.SetId( ID_MENU_ROUTE_NEW );
+                gFrame->GetEventHandler()->AddPendingEvent(evt);
+                break;
+                
+            case OCPN_ACTION_RMD:
+                evt.SetId( ID_MENU_ROUTE_MANAGER );
+                gFrame->GetEventHandler()->AddPendingEvent(evt);
+                break;
+                
+            case OCPN_ACTION_SETTINGS_BASIC:
+                evt.SetId( ID_MENU_SETTINGS_BASIC );
+                gFrame->GetEventHandler()->AddPendingEvent(evt);
+                break;
+                
+            case OCPN_ACTION_TRACK_TOGGLE:
+                evt.SetId( ID_MENU_NAV_TRACK );
+                gFrame->GetEventHandler()->AddPendingEvent(evt);
+                break;
+                
+            case OCPN_ACTION_MOB:
+                evt.SetId( ID_MENU_MARK_MOB );
+                gFrame->GetEventHandler()->AddPendingEvent(evt);
+                break;
+                
+            case OCPN_ACTION_TIDES_TOGGLE:
+                evt.SetId( ID_MENU_SHOW_TIDES );
+                gFrame->GetEventHandler()->AddPendingEvent(evt);
+                break;
+                
+            case OCPN_ACTION_CURRENTS_TOGGLE:
+                evt.SetId( ID_MENU_SHOW_CURRENTS );
+                gFrame->GetEventHandler()->AddPendingEvent(evt);
+                break;
+                
+            default:
+                break;
+        }
+        
+        return 73;
+    }
+}
+
+
 
 
 wxString callActivityMethod_is(const char *method, int parm)
