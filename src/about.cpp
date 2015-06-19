@@ -57,8 +57,6 @@ wxString OpenCPNVersion = str_version_start + str_version_major + wxT(".") + str
 
 extern OCPNPlatform     *g_Platform;
 extern MyFrame          *gFrame;
-extern wxString         glog_file;
-extern wxString         gConfig_File;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern about            *g_pAboutDlg;
 extern bool             g_bresponsive;
@@ -477,7 +475,8 @@ void about::OnDonateClick( wxCommandEvent& event )
 void about::OnCopyClick( wxCommandEvent& event )
 {
     wxString filename = g_Platform->GetConfigFileName();
-    if( event.GetId() == ID_COPYLOG ) filename = glog_file;
+    if( event.GetId() == ID_COPYLOG )
+        filename = g_Platform->GetLogFileName();
 
     wxFFile file( filename );
 

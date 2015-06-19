@@ -163,8 +163,6 @@ void RedirectIOToConsole();
 OCPNPlatform              *g_Platform;
 
 bool                      g_bFirstRun;
-wxString                  glog_file;
-//wxString                  gConfig_File;
 
 int                       g_unit_test_1;
 bool                      g_start_fullscreen;
@@ -1360,7 +1358,7 @@ bool MyApp::OnInit()
         wxString msg = _("Failed to initialize the user interface. ");
         msg << _("OpenCPN cannot start. ");
         msg << _("The necessary configuration files were not found. ");
-        msg << _("See the log file at ") << glog_file << _(" for details.");
+        msg << _("See the log file at ") << g_Platform->GetLogFileName() << _(" for details.");
         wxMessageDialog w( NULL, msg, _("Failed to initialize the user interface. "),
                 wxCANCEL | wxICON_ERROR );
         w.ShowModal();
