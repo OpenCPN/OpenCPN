@@ -509,6 +509,9 @@ void BuildCompressedCache()
         if(!pchart) /* probably a corrupt chart */
             continue;
 
+        // bad things if more than one texfactory for a chart
+        cc1->PurgeGLCanvasChartCache( pchart, true );
+
         bool skip = false;
         wxString msg;
         msg.Printf( _("Distance from Ownship:  %4.0f NMi"), distance);
