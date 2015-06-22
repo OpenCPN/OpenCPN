@@ -966,6 +966,49 @@ ChartTableEntry *ChartDatabase::GetpChartTableEntry(int index) const
             return (ChartTableEntry *)&m_ChartTableEntryDummy;
 }
 
+bool ChartDatabase::CompareChartDirArray( ArrayOfCDI& test_array )
+{
+    //  Compare the parameter "test_array" with this.m_dir_array
+    //    Return true if functionally identical (order does not signify).
+    
+    if(test_array.GetCount() != m_dir_array.GetCount())
+        return false;
+    
+    bool bfound_inner;
+    unsigned int nfound_outer = 0;
+    
+    for(unsigned int i = 0 ; i < test_array.GetCount() ; i++){
+        ChartDirInfo p = test_array.Item(i);
+        bfound_inner = false;
+        for(unsigned int j = 0 ; j < m_dir_array.GetCount() ; j++){
+            ChartDirInfo q = m_dir_array.Item(j);
+            
+            if(p.fullpath.IsSameAs(q.fullpath)){
+                bfound_inner = true;
+                break;
+            }
+        }
+        if(bfound_inner)
+            nfound_outer++;
+    }
+    
+    return (nfound_outer == test_array.GetCount());
+    
+}
+
+wxString ChartDatabase::GetMagicNumberCached(wxString dir)
+{
+    for(unsigned int j = 0 ; j < m_dir_array.GetCount() ; j++){
+        ChartDirInfo q = m_dir_array.Item(j);
+        if(dir.IsSameAs(q.fullpath))
+            return q.magic_number;
+    }
+    
+    return _T("");
+            
+}
+
+
 
 bool ChartDatabase::Read(const wxString &filePath)
 {
