@@ -308,6 +308,8 @@ public:
     ArrayOfCDI& GetChartDirArray(){ return m_dir_array; }
     wxArrayString &GetChartDirArrayString(){ return m_chartDirs; }
     void SetChartDirArray( ArrayOfCDI array ){ m_dir_array = array; }
+    bool CompareChartDirArray( ArrayOfCDI& test_array );
+    wxString GetMagicNumberCached(wxString dir);
     
     void UpdateChartClassDescriptorArray(void);
 
