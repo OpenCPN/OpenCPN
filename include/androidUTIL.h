@@ -79,6 +79,7 @@ extern bool DoAndroidPreferences( void );
 extern int androidFileChooser( wxString *result, const wxString &initDir, const wxString &title,
                         const wxString &suggestion, const wxString &wildcard, bool dirOnly = false);
 
+extern void androidSetChartTypeMaskSel( int mask, wxString &indicator);
 
 
 #endif   //guard

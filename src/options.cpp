@@ -4496,7 +4496,7 @@ void options::OnApplyClick( wxCommandEvent& event )
     }
 
     if( event.GetId() == ID_APPLY ) {
-        gFrame->ProcessOptionsDialog( m_returnChanges, this );
+        gFrame->ProcessOptionsDialog( m_returnChanges, m_pWorkDirList );
         cc1->ReloadVP();
     }
     

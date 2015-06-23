@@ -106,6 +106,7 @@ extern int              g_nbrightness;
 extern bool             g_bShowMag;
 extern double           g_UserVar;
 extern bool             g_bShowStatusBar;
+extern bool             g_bUIexpert;
 
 extern wxToolBarBase    *toolBar;
 
@@ -1174,6 +1175,8 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "ConfigVersionString" ), &g_config_version_string, _T("") );
     Read( _T ( "NavMessageShown" ), &n_NavMessageShown, 0 );
 
+    Read( _T ( "UIexpert" ), &g_bUIexpert, 1 );
+    
     wxString uiStyle;
     Read( _T ( "UIStyle" ), &uiStyle, wxT("") );
     g_StyleManager->SetStyle( uiStyle );
@@ -2484,6 +2487,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "ConfigVersionString" ), g_config_version_string );
     Write( _T ( "NavMessageShown" ), n_NavMessageShown );
 
+    Write( _T ( "UIexpert" ), g_bUIexpert );
+    
     Write( _T ( "UIStyle" ), g_StyleManager->GetStyleNextInvocation() );
     Write( _T ( "ChartNotRenderScaleFactor" ), g_ChartNotRenderScaleFactor );
 

@@ -97,6 +97,9 @@ extern wxString           str_version_minor;
 extern wxString           str_version_patch;
 
 
+extern bool                      g_bshowToolbar;
+extern bool                      g_bBasicMenus;
+
 extern bool                      g_bShowOutlines;
 extern bool                      g_bShowDepthUnits;
 extern bool                      g_bDisplayGrid;  // Flag indicating weather the lat/lon grid should be displayed
@@ -489,7 +492,9 @@ void OCPNPlatform::Initialize_1( void )
 }
 
 //  Called from MyApp() immediately before creation of MyFrame()
-void OCPNPlatform::Initialize_2( void ){
+//  Config is known to be loaded and stable
+void OCPNPlatform::Initialize_2( void )
+{
 }
 
 //  Called from MyApp() just before end of MyApp::OnInit()
@@ -563,7 +568,16 @@ void OCPNPlatform::SetDefaultOptions( void )
 }
 
 
+void OCPNPlatform::applyExpertMode(bool mode)
+{
+#ifdef __OCPN__ANDROID__
+    g_bshowToolbar = mode;               // no toolbar unless in exprt mode
+    g_bBasicMenus = !mode;              //  simplified context menus in basic mode
+#endif
 
+}
+        
+    
 
 //--------------------------------------------------------------------------
 //      Per-Platform file/directory support
@@ -1342,3 +1356,15 @@ wxArrayString OCPNPlatform::getBluetoothScanResults()
     
 }
 
+
+//--------------------------------------------------------------------------
+//      Per-Platform Utility support
+//--------------------------------------------------------------------------
+
+void OCPNPlatform::setChartTypeMaskSel(int mask, wxString &indicator)
+{
+#ifdef __OCPN__ANDROID__
+    return androidSetChartTypeMaskSel(mask, indicator);
+#endif
+    
+}

@@ -166,7 +166,7 @@ extern int              g_nAWDefault;
 extern int              g_nAWMax;
 extern int              g_iDistanceFormat;
 
-extern ocpnFloatingToolbarDialog *g_FloatingToolbarDialog;
+//extern ocpnFloatingToolbarDialog *g_FloatingToolbarDialog;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern GoToPositionDialog *pGoToPositionDialog;
 extern wxString GetLayerName(int id);
@@ -5571,24 +5571,6 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 m_bRouteEditing = false;
             }
             
-            #if 0        
-            else if( m_bMarkEditing && !b_startedit_mark) {         // end of Waypoint drag
-            if( m_pRoutePointEditTarget ) {
-                pConfig->UpdateWayPoint( m_pRoutePointEditTarget );
-                undo->AfterUndoableAction( m_pRoutePointEditTarget );
-                //                m_pRoutePointEditTarget->m_bIsBeingEdited = false;
-                //                wxRect wp_rect;
-                //                m_pRoutePointEditTarget->CalculateDCRect( m_dc_route, &wp_rect );
-                //                m_pRoutePointEditTarget->m_bPtIsSelected = false;
-                //                RefreshRect( wp_rect, true );
-                
-        }
-        //            m_pRoutePointEditTarget = NULL;
-        //            m_bMarkEditing = false;
-        if( !g_FloatingToolbarDialog->IsShown() )
-            gFrame->SurfaceToolbar();
-        }
-        #endif
         }       // g_btouch
         
         
@@ -5641,7 +5623,8 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
             InvalidateGL();
             m_bRouteEditing = false;
             m_pRoutePointEditTarget = NULL;
-            if( !g_FloatingToolbarDialog->IsShown() )
+            
+            if( !gFrame->IsToolbarShown())
                 gFrame->SurfaceToolbar();
             ret = true;
         }
@@ -5659,7 +5642,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
             }
             m_pRoutePointEditTarget = NULL;
             m_bMarkEditing = false;
-            if( !g_FloatingToolbarDialog->IsShown() )
+            if( !gFrame->IsToolbarShown())
                 gFrame->SurfaceToolbar();
             ret = true;
         }
@@ -8244,7 +8227,7 @@ bool ChartCanvas::InvokeCanvasMenu(int x, int y, int seltype)
     m_canvasMenu = NULL;
 
 #ifdef __WXQT__
-    g_FloatingToolbarDialog->Raise();
+    gFrame->SurfaceToolbar();           //g_FloatingToolbarDialog->Raise();
     g_FloatingCompassDialog->Raise();
     if(stats && stats->IsShown())
         stats->Raise();
@@ -9416,10 +9399,7 @@ void ChartCanvas::Refresh( bool eraseBackground, const wxRect *rect )
             m_pCIWin->Refresh( false );
         }
         
-        if(g_FloatingToolbarDialog && g_FloatingToolbarDialog->m_pRecoverwin ){
-            g_FloatingToolbarDialog->m_pRecoverwin->Raise();
-            g_FloatingToolbarDialog->m_pRecoverwin->Refresh( false );
-        }
+        gFrame->RaiseToolbarRecoveryWindow();
         
     } else
 #endif
