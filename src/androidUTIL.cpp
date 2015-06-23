@@ -48,6 +48,7 @@
 #include "s52plib.h"
 #include "s52utils.h"
 #include "s52s57.h"
+#include "navutil.h"
 
 class androidUtilHandler;
 
@@ -80,6 +81,7 @@ extern RouteManagerDialog        *pRouteManagerDialog;
 
 // Static globals
 extern ChartDB                   *ChartData;
+extern MyConfig                  *pConfig;
 
 
 //   Preferences globals
@@ -594,7 +596,20 @@ extern "C"{
     {
         qDebug() << "onStop";
         
-//        g_bSleep = true;
+        //  App may be summarily killed after this point due to OOM condition.
+        //  So we need to persist some dynamic data.
+        qDebug() << "startPersist";
+        
+        //  Persist the config file, especially to capture the viewport location,scale etc.
+        if(pConfig)
+            pConfig->UpdateSettings();
+        
+        //  There may be unsaved objects at this point, and a navobj.xml.changes restore file
+        //  We commit the navobj deltas, and flush the restore file 
+        if(pConfig)
+            pConfig->UpdateNavObj();
+
+        qDebug() << "endPersist";
         
         return 98;
     }
@@ -604,8 +619,6 @@ extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onStart(JNIEnv *env, jobject obj)
     {
         qDebug() << "onStart";
-        
-//        g_bSleep = false;;
         
         return 99;
     }
@@ -617,6 +630,8 @@ extern "C"{
         qDebug() << "onPause";
         
         g_bSleep = true;
+        
+        
         
         return 97;
     }
