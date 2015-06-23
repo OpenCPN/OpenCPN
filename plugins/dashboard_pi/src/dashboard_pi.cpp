@@ -79,7 +79,7 @@ enum {
     ID_DBP_D_RSA, ID_DBP_I_SAT, ID_DBP_D_GPS, ID_DBP_I_PTR, ID_DBP_I_CLK, ID_DBP_I_SUN,
     ID_DBP_D_MON, ID_DBP_I_ATMP, ID_DBP_I_AWA, ID_DBP_I_TWA, ID_DBP_I_TWD, ID_DBP_I_TWS,
     ID_DBP_D_TWD, ID_DBP_I_HDM, ID_DBP_D_HDT, ID_DBP_D_WDH, ID_DBP_I_VLW1, ID_DBP_I_VLW2, ID_DBP_D_MDA, ID_DBP_I_MDA,ID_DBP_D_BPH, ID_DBP_I_FOS,
-    ID_DBP_M_COG,
+	ID_DBP_M_COG, ID_DBP_I_PITCH, ID_DBP_I_HEEL,
     ID_DBP_LAST_ENTRY //this has a reference in one of the routines; defining a "LAST_ENTRY" and setting the reference to it, is one codeline less to change (and find) when adding new instruments :-)
 };
 
@@ -174,6 +174,10 @@ wxString getInstrumentCaption( unsigned int id )
             return _("Sum Log");
         case ID_DBP_I_FOS:
             return _("From Ownship");
+		case ID_DBP_I_PITCH:
+			return _("Pitch");
+		case ID_DBP_I_HEEL:
+			return _("Heel");
     }
     return _T("");
 }
@@ -208,6 +212,8 @@ void getListItemForInstrument( wxListItem &item, unsigned int id )
         case ID_DBP_I_VLW1:
         case ID_DBP_I_VLW2:
         case ID_DBP_I_FOS:
+		case ID_DBP_I_PITCH:
+		case ID_DBP_I_HEEL:
             item.SetImage( 0 );
             break;
         case ID_DBP_D_SOG:
@@ -991,8 +997,55 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                 }
             }
         }
+		else if (m_NMEA0183.LastSentenceIDReceived == _T("XDR")) {  //Transducer measurement
+			if (m_NMEA0183.Parse())
+			{   //SendSentenceToAllInstruments( OCPN_DBP_STC_ATMP, m_NMEA0183.Xdr.TransducerCnt,_T("\u00B0") );
+				wxString xdrunit;
+				double xdrdata;
+				for (int i = 0; i<m_NMEA0183.Xdr.TransducerCnt; i++){
 
-        else if( m_NMEA0183.LastSentenceIDReceived == _T("ZDA") ) {
+					xdrdata = m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData;
+					// NKE style of XDR Airtemp
+					if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("AirTemp")){  
+						SendSentenceToAllInstruments(OCPN_DBP_STC_ATMP, m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData, m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement);
+					} //Nasa style air temp
+					if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("ENV_OUTAIR_T") || m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("ENV_OUTSIDE_T") ){
+						SendSentenceToAllInstruments(OCPN_DBP_STC_ATMP, m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData, m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement);
+					}
+					// NKE style of XDR Pitch (=Nose up/down)
+					if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("PTCH")) {
+						if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0){
+							xdrunit = _T("\u00B0 Nose up");
+						}
+						else if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData < 0) {
+							xdrunit = _T("\u00B0 Nose down");
+							xdrdata *= -1;
+						}
+						else {
+							xdrunit = _T("\u00B0");
+						}
+						SendSentenceToAllInstruments(OCPN_DBP_STC_PITCH, xdrdata, xdrunit);
+					}
+					// NKE style of XDR Heel
+					if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("ROLL")) {
+						if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0)
+							xdrunit = _T("\u00B0R");
+						else if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData < 0) {
+							xdrunit = _T("\u00B0L");
+							xdrdata *= -1;
+						}
+						else
+							xdrunit = _T("\u00B0");
+						SendSentenceToAllInstruments(OCPN_DBP_STC_HEEL, xdrdata, xdrunit);
+					} //Nasa style water temp
+					if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("ENV_WATER_T")){
+						SendSentenceToAllInstruments(OCPN_DBP_STC_TMP, m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData,m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement);
+					}
+				}
+
+			}
+		}
+		else if (m_NMEA0183.LastSentenceIDReceived == _T("ZDA")) {
             if( m_NMEA0183.Parse() ) {
                 if( mPriDateTime >= 2 ) {
                     mPriDateTime = 2;
@@ -2333,7 +2386,14 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
                 instrument = new DashboardInstrument_FromOwnship( this, wxID_ANY,
                         getInstrumentCaption( id ) );
                 break;
-        }
+			case ID_DBP_I_PITCH:
+				instrument = new DashboardInstrument_Single(this, wxID_ANY,
+					getInstrumentCaption(id), OCPN_DBP_STC_PITCH, _T("%2.1f"));
+				break;
+			case ID_DBP_I_HEEL:
+				instrument = new DashboardInstrument_Single(this, wxID_ANY,
+					getInstrumentCaption(id), OCPN_DBP_STC_HEEL, _T("%2.1f"));
+		}
         if( instrument ) {
             instrument->instrumentTypeId = id;
             m_ArrayOfInstrument.Add(
