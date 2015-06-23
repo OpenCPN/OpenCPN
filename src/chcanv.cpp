@@ -4655,7 +4655,8 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
             r_rband.y = y;
             m_bDrawingRoute = true;
             
-            CheckEdgePan( x, y, event.Dragging(), 5, 2 );
+            if(!g_btouch )
+                CheckEdgePan( x, y, event.Dragging(), 5, 2 );
             Refresh( false );
         }
         
@@ -4666,7 +4667,8 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
             r_rband.y = y;
             m_bDrawingRoute = true;
             
-            CheckEdgePan( x, y, event.Dragging(), 5, 2 );
+            if(!g_btouch )
+                CheckEdgePan( x, y, event.Dragging(), 5, 2 );
             Refresh( false );
         }
     }
