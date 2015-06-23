@@ -45,6 +45,9 @@
 #include "options.h"
 #include "routemanagerdialog.h"
 #include "chartdb.h"
+#include "s52plib.h"
+#include "s52utils.h"
+#include "s52s57.h"
 
 class androidUtilHandler;
 
@@ -203,9 +206,9 @@ extern bool             g_bShowStatusBar;
 
 
 
-#ifdef USE_S57
-//extern s52plib          *ps52plib;
-#endif
+//#ifdef USE_S57
+extern s52plib          *ps52plib;
+//#endif
 
 extern wxString         g_locale;
 extern bool             g_bportable;
@@ -215,7 +218,7 @@ extern wxString         *pHome_Locn;
 extern ChartGroupArray  *g_pGroupArray;
 
 
-extern bool             g_bexpert;
+extern bool             g_bUIexpert;
 //    Some constants
 #define ID_CHOICE_NMEA  wxID_HIGHEST + 1
 
@@ -227,7 +230,7 @@ extern wxString         g_TCData_Dir;
 extern AIS_Decoder      *g_pAIS;
 extern bool             g_bserial_access_checked;
 
-extern options                *g_pOptions;
+extern options          *g_pOptions;
 
 extern bool             g_btouch;
 extern bool             g_bresponsive;
@@ -631,6 +634,62 @@ extern "C"{
 }
 
 extern "C"{
+    JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_selectChartDisplay(JNIEnv *env, jobject obj, int type, int family)
+    {
+        qDebug() << "selectChartDisplay" << type << family;
+        
+        wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+        if(type == CHART_TYPE_CM93COMP){
+            evt.SetId( ID_CMD_SELECT_CHART_TYPE );
+            evt.SetExtraLong( CHART_TYPE_CM93COMP);
+        }
+        else{
+            evt.SetId( ID_CMD_SELECT_CHART_FAMILY );
+            evt.SetExtraLong( family);
+        }
+        
+        if(gFrame){
+            qDebug() << "add event" << type << family;
+            gFrame->GetEventHandler()->AddPendingEvent(evt);
+        }
+
+        
+        return 74;
+    }
+}
+    
+extern "C"{
+    JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_invokeCmdEventCmdString(JNIEnv *env, jobject obj, int cmd_id, jstring s)
+    {
+        const char *sparm;
+        wxString wx_sparm;
+        //  Need a Java environment to decode the string parameter
+        if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+            qDebug() << "GetEnv failed.";
+        }
+        else {
+            sparm = (jenv)->GetStringUTFChars(s, NULL);
+            wx_sparm = wxString(sparm, wxConvUTF8);
+        }
+        
+        qDebug() << "invokeCmdEventCmdString" << cmd_id << s;
+        
+        wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+        evt.SetId( cmd_id );
+        evt.SetString( wx_sparm);
+        
+        if(gFrame){
+            qDebug() << "add event" << cmd_id << s;
+            gFrame->GetEventHandler()->AddPendingEvent(evt);
+        }
+
+        
+        return 71;
+    }
+}
+    
+        
+extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_invokeMenuItem(JNIEnv *env, jobject obj, int item)
     {
         qDebug() << "invokeMenuItem" << item;
@@ -702,6 +761,35 @@ wxString callActivityMethod_is(const char *method, int parm)
     
     //  Call the desired method
     QAndroidJniObject data = activity.callObjectMethod(method, "(I)Ljava/lang/String;", parm);
+    
+    jstring s = data.object<jstring>();
+    
+    //  Need a Java environment to decode the resulting string
+    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+        qDebug() << "GetEnv failed.";
+    }
+    else {
+        const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+        return_string = wxString(ret_string, wxConvUTF8);
+    }
+    
+    return return_string;
+    
+}
+
+wxString callActivityMethod_iis(const char *method, int parm1, int parm2)
+{
+    wxString return_string;
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                           "activity", "()Landroid/app/Activity;");
+    
+    if ( !activity.isValid() ){
+        qDebug() << "Activity is not valid";
+        return return_string;
+    }
+    
+    //  Call the desired method
+    QAndroidJniObject data = activity.callObjectMethod(method, "(II)Ljava/lang/String;", parm1, parm2);
     
     jstring s = data.object<jstring>();
     
@@ -840,6 +928,21 @@ wxString callActivityMethod_s4s(const char *method, wxString parm1, wxString par
     
 }
 
+void androidSetChartTypeMaskSel( int mask, wxString &indicator)
+{
+    int sel = 0;
+    if(wxNOT_FOUND != indicator.Find( _T("raster")))
+        sel = 1;
+    else if(wxNOT_FOUND != indicator.Find( _T("vector")))
+        sel = 2;
+    else if(wxNOT_FOUND != indicator.Find( _T("cm93")))
+        sel = 4;
+
+    qDebug() << "androidSetChartTypeMaskSel" << mask << sel;
+    
+    callActivityMethod_iis("configureNavSpinnerTS", mask, sel);
+}
+
 
 bool androidGetMemoryStatus( int *mem_total, int *mem_used )
 {
@@ -847,7 +950,7 @@ bool androidGetMemoryStatus( int *mem_total, int *mem_used )
     if(g_start_time.GetTicks() > 1435723200 )
         exit(0);
     
-    //  On android, We arbitrarilly declare that we have used 50% of available memory.
+    //  On android, We arbitrarily declare that we have used 50% of available memory.
     if(mem_total)
         *mem_total = 100 * 1024;
     if(mem_used)
@@ -1419,20 +1522,100 @@ wxString BuildAndroidSettingsString( void )
     //  Now the simple Boolean parameters
         result += _T("prefb_lookahead:") + wxString(g_bLookAhead == 1 ? _T("1;") : _T("0;"));
         result += _T("prefb_quilt:") + wxString(g_bQuiltEnable == 1 ? _T("1;") : _T("0;"));
-        result += _T("prefb_preservescale:") + wxString(g_bPreserveScaleOnX == 1 ? _T("1;") : _T("0;"));
-        result += _T("prefb_smoothzp:") + wxString(g_bsmoothpanzoom == 1 ? _T("1;") : _T("0;"));
         result += _T("prefb_showgrid:") + wxString(g_bDisplayGrid == 1 ? _T("1;") : _T("0;"));
         result += _T("prefb_showoutlines:") + wxString(g_bShowOutlines == 1 ? _T("1;") : _T("0;"));
         result += _T("prefb_showdepthunits:") + wxString(g_bShowDepthUnits == 1 ? _T("1;") : _T("0;"));
-        result += _T("prefb_showskewnu:") + wxString(g_bskew_comp == 1 ? _T("1;") : _T("0;"));
-
+        result += _T("prefb_lockwp:") + wxString(g_bWayPointPreventDragging == 1 ? _T("1;") : _T("0;"));
+        result += _T("prefb_confirmdelete:") + wxString(g_bConfirmObjectDelete == 1 ? _T("1;") : _T("0;"));
+        result += _T("prefb_expertmode:") + wxString(g_bUIexpert == 1 ? _T("1;") : _T("0;"));
+        
+        if(ps52plib){
+            result += _T("prefb_showlightldesc:") + wxString(ps52plib->m_bShowLdisText == 1 ? _T("1;") : _T("0;"));
+            result += _T("prefb_showimptext:") + wxString(ps52plib->m_bShowS57ImportantTextOnly == 1 ? _T("1;") : _T("0;"));
+            result += _T("prefb_showSCAMIN:") + wxString(ps52plib->m_bUseSCAMIN == 1 ? _T("1;") : _T("0;"));
+            result += _T("prefb_showsound:") + wxString(ps52plib->m_bShowSoundg == 1 ? _T("1;") : _T("0;"));
+            result += _T("prefb_showATONLabels:") + wxString(ps52plib->m_bShowAtonText == 1 ? _T("1;") : _T("0;"));
+        }
     // Some other assorted values
         result += _T("prefs_navmode:") + wxString(g_bCourseUp == 0 ? _T("North Up;") : _T("Course Up;"));
-
-
+        
+        wxString s;
+        double sf = (g_GUIScaleFactor * 10) + 50.;
+        s.Printf( _T("%3.0f;"), sf );
+        s.Trim(false);
+        result += _T("prefs_UIScaleFactor:") + s;
+        
+        sf = (g_ChartScaleFactor * 10) + 50.;
+        s.Printf( _T("%3.0f;"), sf );
+        s.Trim(false);
+        result += _T("prefs_chartScaleFactor:") + s;
+        
+        
+        if(ps52plib){
+            wxString nset = _T("Base");
+            switch( ps52plib->GetDisplayCategory() ){
+                case ( DISPLAYBASE ):
+                    nset = _T("Base;");
+                    break;
+                case ( STANDARD ):
+                    nset = _T("Standard;");
+                    break;
+                case ( OTHER ):
+                    nset = _T("All;");
+                    break;
+                case ( MARINERS_STANDARD ):
+                    nset = _T("Mariner Standard;");
+                    break;
+                default:
+                    nset = _T("Base;");
+                    break;
+            }
+            result += _T("prefs_displaycategory:") + nset;
+            
+    
+            if( ps52plib->m_nSymbolStyle == PAPER_CHART )
+                nset = _T("Paper Chart;");
+            else
+                nset = _T("Simplified;");
+            result += _T("prefs_vectorgraphicsstyle:") + nset;
+            
+            if( ps52plib->m_nBoundaryStyle == PLAIN_BOUNDARIES )
+                nset = _T("Plain;");
+            else
+                nset = _T("Symbolized;");
+            result += _T("prefs_vectorboundarystyle:") + nset;
+            
+            if( S52_getMarinerParam( S52_MAR_TWO_SHADES ) == 1.0 )
+                nset = _T("2;");
+            else
+                nset = _T("4;");
+            result += _T("prefs_vectorchartcolors:") + nset;
+            
+            // depth unit conversion factor
+            float conv = 1;
+    //         if ( depthUnit == 0 ) // feet
+    //             conv = 0.3048f; // international definiton of 1 foot is 0.3048 metres
+    //         else if ( depthUnit == 2 ) // fathoms
+    //             conv = 0.3048f * 6; // 1 fathom is 6 feet
+            
+            s.Printf( _T("%4.0f;"), S52_getMarinerParam( S52_MAR_SHALLOW_CONTOUR ) / conv );
+            s.Trim(false);
+            result += _T("prefs_shallowdepth:") + s;
+            
+            s.Printf( _T("%4.0f;"), S52_getMarinerParam( S52_MAR_SAFETY_CONTOUR ) / conv );
+            s.Trim(false);
+            result += _T("prefs_safetydepth:") + s;
+            
+            s.Printf( _T("%4.0f;"), S52_getMarinerParam( S52_MAR_DEEP_CONTOUR ) / conv );
+            s.Trim(false);
+            result += _T("prefs_deepdepth:") + s;
+    
+            //  Scale slider range from -5 -- 5 in OCPN options.
+            //  On Android, the range is 0 -- 100
+            //  So, convert
+        }
 
     return result;
-
 }
 
 bool DoAndroidPreferences( void )
@@ -1485,7 +1668,7 @@ void MyFrame::OnPreferencesResultTimer( wxTimerEvent &event)
     if(!return_string.Length())
         return;
 
-
+    UpdateControlBar
     //  Activity finished, so stop polling
     m_PrefTimer.Stop();
 

@@ -127,6 +127,7 @@ extern wxString         g_default_wp_icon;
 extern ChartStack       *pCurrentStack;
 extern bool              g_btouch;
 extern int              g_GroupIndex;
+extern bool             g_bBasicMenus;
 
 
 
@@ -387,7 +388,7 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
         if( ( pChartTest && ( pChartTest->GetChartFamily() == CHART_FAMILY_VECTOR ) ) || ais_areanotice ) {
             MenuAppend1( contextMenu, ID_DEF_MENU_QUERY, _( "Object Query..." ) );
         } else {
-            if( parent->parent_frame->GetnChartStack() > 1 ) {
+            if( !g_bBasicMenus && (parent->parent_frame->GetnChartStack() > 1 ) ) {
                 MenuAppend1( contextMenu, ID_DEF_MENU_SCALE_IN, _menuText( _( "Scale In" ), _T("Ctrl-Left") ) );
                 MenuAppend1( contextMenu, ID_DEF_MENU_SCALE_OUT, _menuText( _( "Scale Out" ), _T("Ctrl-Right") ) );
             }
@@ -398,65 +399,73 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
 
     if( !bGPSValid ) MenuAppend1( contextMenu, ID_DEF_MENU_MOVE_BOAT_HERE, _( "Move Boat Here" ) );
 
-    if( !( g_pRouteMan->GetpActiveRoute() || ( seltype & SELTYPE_MARKPOINT ) ) )
+    if( !g_bBasicMenus && (!( g_pRouteMan->GetpActiveRoute() || ( seltype & SELTYPE_MARKPOINT )) ) )
         MenuAppend1( contextMenu, ID_DEF_MENU_GOTO_HERE, _( "Navigate To Here" ) );
 
-    MenuAppend1( contextMenu, ID_DEF_MENU_GOTOPOSITION, _("Center View...") );
+    if( !g_bBasicMenus)
+        MenuAppend1( contextMenu, ID_DEF_MENU_GOTOPOSITION, _("Center View...") );
 
-    if( !g_bCourseUp ) MenuAppend1( contextMenu, ID_DEF_MENU_COGUP, _("Course Up Mode") );
-    else {
-        if( !parent->GetVP().b_quilt && Current_Ch && ( fabs( Current_Ch->GetChartSkew() ) > .01 )
-            && !g_bskew_comp ) MenuAppend1( contextMenu, ID_DEF_MENU_NORTHUP, _("Chart Up Mode") );
-        else
-            MenuAppend1( contextMenu, ID_DEF_MENU_NORTHUP, _("North Up Mode") );
+    if( !g_bBasicMenus){
+        if( !g_bCourseUp )
+            MenuAppend1( contextMenu, ID_DEF_MENU_COGUP, _("Course Up Mode") );
+        else {
+            if( !parent->GetVP().b_quilt && Current_Ch && ( fabs( Current_Ch->GetChartSkew() ) > .01 )
+                && !g_bskew_comp ) MenuAppend1( contextMenu, ID_DEF_MENU_NORTHUP, _("Chart Up Mode") );
+            else
+                MenuAppend1( contextMenu, ID_DEF_MENU_NORTHUP, _("North Up Mode") );
+        }
     }
 
-    bool full_toggle_added = false;
-    if(g_btouch){
-        MenuAppend1( contextMenu, ID_DEF_MENU_TOGGLE_FULL, _("Toggle Full Screen") );
-        full_toggle_added = true;
-    }
-        
-    
-    if(!full_toggle_added){
-        if(gFrame->IsFullScreen()){
+    if( !g_bBasicMenus){
+            bool full_toggle_added = false;
+        if(g_btouch){
             MenuAppend1( contextMenu, ID_DEF_MENU_TOGGLE_FULL, _("Toggle Full Screen") );
+            full_toggle_added = true;
         }
-    }
+            
+        
+        if(!full_toggle_added){
+            if(gFrame->IsFullScreen()){
+                MenuAppend1( contextMenu, ID_DEF_MENU_TOGGLE_FULL, _("Toggle Full Screen") );
+            }
+        }
+            
+        
+        if ( g_pRouteMan->IsAnyRouteActive() && g_pRouteMan->GetCurrentXTEToActivePoint() > 0. ) 
+            MenuAppend1( contextMenu, ID_DEF_ZERO_XTE, _("Zero XTE") );
+
+        Kml* kml = new Kml;
+        int pasteBuffer = kml->ParsePasteBuffer();
+        if( pasteBuffer != KML_PASTE_INVALID ) {
+            switch( pasteBuffer ) {
+                case KML_PASTE_WAYPOINT: {
+                    MenuAppend1( contextMenu, ID_PASTE_WAYPOINT, _( "Paste Waypoint" ) );
+                    break;
+                }
+                case KML_PASTE_ROUTE: {
+                    MenuAppend1( contextMenu, ID_PASTE_ROUTE, _( "Paste Route" ) );
+                    break;
+                }
+                case KML_PASTE_TRACK: {
+                    MenuAppend1( contextMenu, ID_PASTE_TRACK, _( "Paste Track" ) );
+                    break;
+                }
+                case KML_PASTE_ROUTE_TRACK: {
+                    MenuAppend1( contextMenu, ID_PASTE_ROUTE, _( "Paste Route" ) );
+                    MenuAppend1( contextMenu, ID_PASTE_TRACK, _( "Paste Track" ) );
+                    break;
+                }
+            }
+        }
+        delete kml;
+
+        if( !parent->GetVP().b_quilt && Current_Ch && ( Current_Ch->GetChartType() == CHART_TYPE_CM93COMP ) ) {
+            MenuAppend1( contextMenu, ID_DEF_MENU_CM93OFFSET_DIALOG, _( "CM93 Offset Dialog..." ) );
+        }
+
+    }   //if( !g_bBasicMenus){
         
     
-    if ( g_pRouteMan->IsAnyRouteActive() && g_pRouteMan->GetCurrentXTEToActivePoint() > 0. ) 
-        MenuAppend1( contextMenu, ID_DEF_ZERO_XTE, _("Zero XTE") );
-
-    Kml* kml = new Kml;
-    int pasteBuffer = kml->ParsePasteBuffer();
-    if( pasteBuffer != KML_PASTE_INVALID ) {
-        switch( pasteBuffer ) {
-            case KML_PASTE_WAYPOINT: {
-                MenuAppend1( contextMenu, ID_PASTE_WAYPOINT, _( "Paste Waypoint" ) );
-                break;
-            }
-            case KML_PASTE_ROUTE: {
-                MenuAppend1( contextMenu, ID_PASTE_ROUTE, _( "Paste Route" ) );
-                break;
-            }
-            case KML_PASTE_TRACK: {
-                MenuAppend1( contextMenu, ID_PASTE_TRACK, _( "Paste Track" ) );
-                break;
-            }
-            case KML_PASTE_ROUTE_TRACK: {
-                MenuAppend1( contextMenu, ID_PASTE_ROUTE, _( "Paste Route" ) );
-                MenuAppend1( contextMenu, ID_PASTE_TRACK, _( "Paste Track" ) );
-                break;
-            }
-        }
-    }
-    delete kml;
-
-    if( !parent->GetVP().b_quilt && Current_Ch && ( Current_Ch->GetChartType() == CHART_TYPE_CM93COMP ) ) {
-        MenuAppend1( contextMenu, ID_DEF_MENU_CM93OFFSET_DIALOG, _( "CM93 Offset Dialog..." ) );
-    }
-
     if( ( parent->GetVP().b_quilt ) && ( pCurrentStack && pCurrentStack->b_valid ) ) {
         int dbIndex = parent->m_pQuilt->GetChartdbIndexAtPix( wxPoint( popx, popy ) );
         if( dbIndex != -1 )

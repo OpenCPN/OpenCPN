@@ -68,6 +68,8 @@ public:
     
 
     void SetDefaultOptions( void );
+
+    void applyExpertMode(bool mode);
     
 //--------------------------------------------------------------------------
 //      Platform Display Support
@@ -106,6 +108,13 @@ public:
     wxString    &GetLargeLogMessage( void ){ return large_log_message; }
     FILE        *GetLogFilePtr(){ return flog; }
 
+    
+    
+//--------------------------------------------------------------------------
+//      Per-Platform Utility support
+//--------------------------------------------------------------------------
+    void setChartTypeMaskSel(int mask, wxString &indicator);
+    
 private:
     wxString    m_homeDir;
     wxString    m_exePath;

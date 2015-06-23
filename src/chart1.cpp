@@ -122,6 +122,7 @@
 #include "s52plib.h"
 #include "s57chart.h"
 #include "cpl_csv.h"
+#include "s52utils.h"
 #endif
 
 #ifdef __WXMSW__
@@ -215,6 +216,8 @@ bool                      bDBUpdateInProgress;
 ThumbWin                  *pthumbwin;
 TCMgr                     *ptcmgr;
 
+bool                      g_bshowToolbar = true;
+bool                      g_bBasicMenus = false;;
 
 bool                      bDrawCurrentValues;
 bool                      b_novicemode = false;
@@ -673,6 +676,8 @@ bool             g_bresponsive;
 
 bool             b_inCompressAllCharts;
 bool             g_bexpert;
+bool             g_bUIexpert;
+
 int              g_chart_zoom_modifier;
 
 int              g_NMEAAPBPrecision;
@@ -1144,7 +1149,6 @@ static char *get_X11_property (Display *disp, Window win,
 bool MyApp::OnInit()
 {
     wxStopWatch sw;
-//    qDebug() << "OnInit";
     
     if( !wxApp::OnInit() ) return false;
 
@@ -1375,7 +1379,9 @@ bool MyApp::OnInit()
     MyConfig *pCF = new MyConfig( wxString( _T("") ), wxString( _T("") ), g_Platform->GetConfigFileName() );
     pConfig = (MyConfig *) pCF;
     pConfig->LoadMyConfig();
-
+    g_Platform->applyExpertMode(g_bUIexpert);
+    
+    
     if(fabs(dsmm - g_display_size_mm) > 1){
         wxString msg;
         msg.Printf(_T("Display size (horizontal) config override: %d mm"), (int) g_display_size_mm);
@@ -1650,6 +1656,8 @@ bool MyApp::OnInit()
     gpIDX = NULL;
     gpIDXn = 0;
 
+    g_Platform->Initialize_2();
+    
 //  Set up the frame initial visual parameters
 //      Default size, resized later
     wxSize new_frame_size( -1, -1 );
@@ -1729,8 +1737,6 @@ bool MyApp::OnInit()
         myframe_window_title += _T("]");
     }
 
-//    qDebug() << "OpenCPN Initialized before new frame:" <<  sw.Time();
-    
     gFrame = new MyFrame( NULL, myframe_window_title, position, new_frame_size, app_style ); //Gunther
 
 //  Initialize the Plugin Manager
@@ -1748,7 +1754,6 @@ bool MyApp::OnInit()
 //                        to the parent client area automatically, (as a favor?)
 //                        Here, we'll do explicit sizing on SIZE events
 
-//    qDebug() << "OpenCPN Initialized before canvas:" <<  sw.Time();
     
     cc1 = new ChartCanvas( gFrame );                         // the chart display canvas
     gFrame->SetCanvasWindow( cc1 );
@@ -1789,10 +1794,7 @@ bool MyApp::OnInit()
 
 // Show the frame
 
-//    gFrame->ClearBackground();
- //   qDebug() << "OpenCPN Initialized before show:" <<  sw.Time();
     gFrame->Show( TRUE );
- //   qDebug() << "OpenCPN Initialized after show:" <<  sw.Time();
     
 #ifdef __OCPN__ANDROID__
     androidShowBusyIcon();
@@ -2886,14 +2888,14 @@ bool MyFrame::AddDefaultPositionPlugInTools( ocpnToolBarSimple *tb )
     return bret;
 }
 
-void MyFrame::RequestNewToolbar()
+void MyFrame::RequestNewToolbar(bool bforcenew)
 {
     bool b_reshow = true;
     if( g_FloatingToolbarDialog ) {
         b_reshow = g_FloatingToolbarDialog->IsShown();
 
         float ff = fabs(g_FloatingToolbarDialog->GetScaleFactor() - g_toolbar_scalefactor);
-        if(ff > 0.01f){
+        if((ff > 0.01f) || bforcenew){
             DestroyMyToolbar();
             delete g_FloatingToolbarDialog;
             g_FloatingToolbarDialog = NULL;
@@ -2912,7 +2914,7 @@ void MyFrame::RequestNewToolbar()
         g_toolbar = CreateAToolbar();
         g_FloatingToolbarDialog->RePosition();
         g_FloatingToolbarDialog->SetColorScheme( global_color_scheme );
-        g_FloatingToolbarDialog->Show( b_reshow );
+        g_FloatingToolbarDialog->Show( b_reshow && g_bshowToolbar );
 
 #ifndef __WXQT__
         gFrame->Raise(); // ensure keyboard focus to the chart window (needed by gtk+)
@@ -2996,6 +2998,17 @@ void MyFrame::SetToolbarScale()
     }
 }
 
+void MyFrame::RaiseToolbarRecoveryWindow()
+{
+    if(g_bshowToolbar){
+        if(g_FloatingToolbarDialog && g_FloatingToolbarDialog->m_pRecoverwin ){
+            g_FloatingToolbarDialog->m_pRecoverwin->Raise();
+            g_FloatingToolbarDialog->m_pRecoverwin->Refresh( false );
+        }
+    }
+}
+
+    
 // Intercept menu commands
 void MyFrame::OnExit( wxCommandEvent& event )
 {
@@ -3802,6 +3815,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         case ID_MENU_SETTINGS_BASIC:
         {
  #ifdef __OCPN__ANDROID__
+            LoadS57();
             DoAndroidPreferences();
  #else
             DoSettings();
@@ -3966,7 +3980,26 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             ActivateMOB();
             break;
         }
-
+        
+        
+        //  Various command events coming from (usually) other threads,
+        //  used to control OCPN modes in a thread-safe way.
+        
+        case ID_CMD_SELECT_CHART_TYPE:{
+            selectChartDisplay( event.GetExtraLong(), -1);
+            break;
+        }
+        
+        case ID_CMD_SELECT_CHART_FAMILY:{
+            selectChartDisplay( -1, event.GetExtraLong());
+            break;
+        }
+        
+        case ID_CMD_APPLY_SETTINGS:{
+            applySettingsString(event.GetString());
+            break;
+        }
+        
         default: {
             //        Look for PlugIn tools
             //        If found, make the callback.
@@ -4771,15 +4804,24 @@ void MyFrame::SubmergeToolbar( void )
 
 void MyFrame::SurfaceToolbar( void )
 {
-    if( g_FloatingToolbarDialog && g_FloatingToolbarDialog->IsToolbarShown() ) {
-        if( IsFullScreen() ) {
-            if( g_bFullscreenToolbar ) {
+    
+    if(g_bshowToolbar){
+        if( g_FloatingToolbarDialog && g_FloatingToolbarDialog->IsToolbarShown() ) {
+            if( IsFullScreen() ) {
+                if( g_bFullscreenToolbar ) {
+                    g_FloatingToolbarDialog->Surface();
+                }
+            } else{
                 g_FloatingToolbarDialog->Surface();
             }
-        } else
-            g_FloatingToolbarDialog->Surface();
+        }
+        Raise();
     }
-    Raise();
+}
+
+bool MyFrame::IsToolbarShown()
+{
+    return g_FloatingToolbarDialog->IsShown();
 }
 
 void MyFrame::ToggleToolbar( bool b_smooth )
@@ -4920,7 +4962,7 @@ int MyFrame::DoOptionsDialog()
     bool ret_val = false;
     rr = g_options->GetReturnCode();
     if( rr ) {
-        ProcessOptionsDialog( rr, g_options );
+        ProcessOptionsDialog( rr,  g_options->GetWorkDirListPtr() );
         ret_val = true;
     }
 
@@ -4966,8 +5008,10 @@ int MyFrame::DoOptionsDialog()
     return ret_val;
 }
 
-int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
+int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
 {
+    bool b_need_refresh = false;                // Do we need a full reload?
+    
     //    Capture the name of the currently open chart
     wxString chart_file_name;
     if( cc1->GetQuiltMode() ) {
@@ -4977,17 +5021,15 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
         if( Current_Ch )
             chart_file_name = Current_Ch->GetFullPath();
 
-    ArrayOfCDI *pWorkDirArray = dialog->GetWorkDirListPtr();
-
+        
     if( ( rr & VISIT_CHARTS )
             && ( ( rr & CHANGE_CHARTS ) || ( rr & FORCE_UPDATE ) || ( rr & SCAN_UPDATE ) ) ) {
-
-       UpdateChartDatabaseInplace( *pWorkDirArray, ( ( rr & FORCE_UPDATE ) == FORCE_UPDATE ),
+        if(pNewDirArray){
+            UpdateChartDatabaseInplace( *pNewDirArray, ( ( rr & FORCE_UPDATE ) == FORCE_UPDATE ),
                 true, ChartListFileName );
 
-        //    Re-open the last open chart
-        int dbii = ChartData->FinddbIndex( chart_file_name );
-        ChartsRefresh( dbii, cc1->GetVP() );
+            b_need_refresh = true;
+        }
     }
 
     if( ( rr & LOCALE_CHANGED ) || ( rr & STYLE_CHANGED ) ) {
@@ -5061,10 +5103,13 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
      if(rr & GL_CHANGED){
         //    Refresh the chart display, after flushing cache.
         //      This will allow all charts to recognise new OpenGL configuration, if any
-        int dbii = ChartData->FinddbIndex( chart_file_name );
-        ChartsRefresh( dbii, cc1->GetVP(), true );
+        b_need_refresh = true;
     }
 
+    if(rr & S52_CHANGED){
+        b_need_refresh = true;
+    }
+    
     if(rr & REBUILD_RASTER_CACHE){
         cc1->Disable();
         BuildCompressedCache();
@@ -5080,6 +5125,10 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
         
     cc1->SetDisplaySizeMM( g_display_size_mm );
 
+    //    Do a full Refrload, trying to open the last open chart
+    if(b_need_refresh)
+        ChartsRefresh( ChartData->FinddbIndex( chart_file_name ), cc1->GetVP() );
+    
     return 0;
 }
 
@@ -6985,6 +7034,9 @@ void MyFrame::UpdateControlBar( void )
 
     if( !pCurrentStack ) return;
 
+    int sel_type = -1;
+    int sel_family = -1;
+    
     ArrayOfInts piano_chart_index_array;
     ArrayOfInts empty_piano_chart_index_array;
 
@@ -7002,6 +7054,10 @@ void MyFrame::UpdateControlBar( void )
 
         stats->pPiano->SetNoshowIndexArray( g_quilt_noshow_index_array );
 
+        if(ChartData){
+            sel_type = ChartData->GetDBChartType(cc1->GetQuiltReferenceChartIndex());
+            sel_family = ChartData->GetDBChartFamily(cc1->GetQuiltReferenceChartIndex());
+        }        
     } else {
         piano_chart_index_array = ChartData->GetCSArray( pCurrentStack );
         stats->pPiano->SetKeyArray( piano_chart_index_array );
@@ -7010,6 +7066,11 @@ void MyFrame::UpdateControlBar( void )
         piano_active_chart_index_array.Add( pCurrentStack->GetCurrentEntrydbIndex() );
         stats->pPiano->SetActiveKeyArray( piano_active_chart_index_array );
 
+        if(Current_Ch){
+            sel_type = Current_Ch->GetChartType();
+            sel_family = Current_Ch->GetChartFamily();
+        }
+            
     }
 
     //    Set up the TMerc and Skew arrays
@@ -7023,19 +7084,19 @@ void MyFrame::UpdateControlBar( void )
         double skew_norm = ctei.GetChartSkew();
         if( skew_norm > 180. ) skew_norm -= 360.;
 
-        if( ctei.GetChartProjectionType() == PROJECTION_TRANSVERSE_MERCATOR ) piano_tmerc_chart_index_array.Add(
-                piano_chart_index_array.Item( ino ) );
+        if( ctei.GetChartProjectionType() == PROJECTION_TRANSVERSE_MERCATOR )
+            piano_tmerc_chart_index_array.Add( piano_chart_index_array.Item( ino ) );
 
         //    Polyconic skewed charts should show as skewed
         else
             if( ctei.GetChartProjectionType() == PROJECTION_POLYCONIC ) {
-                if( fabs( skew_norm ) > 1. ) piano_skew_chart_index_array.Add(
-                        piano_chart_index_array.Item( ino ) );
+                if( fabs( skew_norm ) > 1. )
+                    piano_skew_chart_index_array.Add(piano_chart_index_array.Item( ino ) );
                 else
                     piano_poly_chart_index_array.Add( piano_chart_index_array.Item( ino ) );
             } else
-                if( fabs( skew_norm ) > 1. ) piano_skew_chart_index_array.Add(
-                        piano_chart_index_array.Item( ino ) );
+                if( fabs( skew_norm ) > 1. )
+                    piano_skew_chart_index_array.Add(piano_chart_index_array.Item( ino ) );
 
     }
     stats->pPiano->SetSkewIndexArray( piano_skew_chart_index_array );
@@ -7052,8 +7113,94 @@ void MyFrame::UpdateControlBar( void )
         cc1->SetQuiltChartHiLiteIndex( -1 );
         stats->Refresh( false );
     }
-
+    
+    // Create a bitmask int that describes what Family/Type of charts are shown in the bar,
+    // and notify the platform.
+    int mask = 0;
+    for( unsigned int ino = 0; ino < piano_chart_index_array.GetCount(); ino++ ) {
+        const ChartTableEntry &ctei = ChartData->GetChartTableEntry( piano_chart_index_array.Item( ino ) );
+        ChartFamilyEnum e = (ChartFamilyEnum)ctei.GetChartFamily();
+        ChartTypeEnum t = (ChartTypeEnum)ctei.GetChartType();
+        if(e == CHART_FAMILY_RASTER)
+            mask |= 1;
+        if(e == CHART_FAMILY_VECTOR){
+            if(t == CHART_TYPE_CM93COMP)
+                mask |= 4;
+            else
+                mask |= 2;
+        }
+    }
+    
+    wxString s_indicated;
+    if(sel_type == CHART_TYPE_CM93COMP)
+        s_indicated = _T("cm93");
+    else{
+        if(sel_family == CHART_FAMILY_RASTER)
+            s_indicated = _T("raster");
+        else if(sel_family == CHART_FAMILY_VECTOR)
+            s_indicated = _T("vector");
+    }
+    
+    g_Platform->setChartTypeMaskSel(mask, s_indicated);
+        
 }
+
+void MyFrame::selectChartDisplay( int type, int family)
+{
+    if( !cc1->GetQuiltMode() ) {
+        if(pCurrentStack){
+            int stack_index = -1;
+            for(int i = 0; i < pCurrentStack->nEntry ; i++){
+                int check_dbIndex = pCurrentStack->GetDBIndex( i );
+                const ChartTableEntry &cte = ChartData->GetChartTableEntry( check_dbIndex );
+                if(type == cte.GetChartType()){
+                    stack_index = i;
+                    break;
+                }
+                else if(family == cte.GetChartFamily()){
+                    stack_index = i;
+                    break;
+                }
+            }
+            
+            if(stack_index >= 0){
+                SelectChartFromStack( stack_index );
+            }
+        }
+    } else {
+        int sel_dbIndex = -1;
+        ArrayOfInts piano_chart_index_array = cc1->GetQuiltExtendedStackdbIndexArray();
+        for(unsigned int i = 0; i < piano_chart_index_array.Count() ; i++){
+            int check_dbIndex = piano_chart_index_array.Item( i );
+            const ChartTableEntry &cte = ChartData->GetChartTableEntry( check_dbIndex );
+            if(type == cte.GetChartType()){
+                if( cc1->IsChartQuiltableRef( check_dbIndex ) ) {
+                    sel_dbIndex = check_dbIndex;
+                    break;
+                }
+            }
+            else if(family == cte.GetChartFamily()){
+                if( cc1->IsChartQuiltableRef( check_dbIndex ) ) {
+                    sel_dbIndex = check_dbIndex;
+                    break;
+                }
+            }
+        }
+        
+        if(sel_dbIndex >= 0){
+            SelectQuiltRefdbChart( sel_dbIndex );
+        }
+        
+                
+    }
+    
+    UpdateGlobalMenuItems(); // update the state of the menu items (checkmarks etc)
+    cc1->SetQuiltChartHiLiteIndex( -1 );
+    
+    cc1->ReloadVP();
+}
+
+
 
 //----------------------------------------------------------------------------------
 //      DoChartUpdate
@@ -8942,6 +9089,228 @@ void MyFrame::UpdateAISMOBRoute( AIS_Target_Data *ptarget )
     }
 
 }
+
+void MyFrame::applySettingsString( wxString settings)
+{
+    
+    //  Parse the passed settings string
+//    wxLogMessage( settings );
+    
+    int rr = GENERIC_CHANGED;
+    
+    // extract chart directories
+    ArrayOfCDI NewDirArray;
+    
+    if(ChartData){
+        wxStringTokenizer tkd(settings, _T(";"));
+        while ( tkd.HasMoreTokens() ){
+            wxString token = tkd.GetNextToken();
+    
+            if(token.StartsWith( _T("ChartDir"))){
+                wxString dir = token.AfterFirst(':');
+                if(dir.Length()){
+                    ChartDirInfo cdi;
+                    cdi.fullpath = dir.Trim();
+                    cdi.magic_number = ChartData->GetMagicNumberCached(dir.Trim());
+                    NewDirArray.Add(cdi);
+ //                   wxLogMessage(dir.Trim());
+                }
+            }
+        }
+        
+        // Scan for changes
+        if(!ChartData->CompareChartDirArray( NewDirArray )){
+            rr |= VISIT_CHARTS;
+            rr |= CHANGE_CHARTS;
+            wxLogMessage(_T("Chart Dir List change detected"));
+        }
+    }
+                
+    wxStringTokenizer tk(settings, _T(";"));
+    while ( tk.HasMoreTokens() )
+    {
+        wxString token = tk.GetNextToken();
+//        wxLogMessage(token);
+        
+        wxString val = token.AfterFirst(':');
+//        wxLogMessage(val);
+        
+        //  Binary switches
+        
+        if(token.StartsWith( _T("prefb_lookahead"))){
+            g_bLookAhead = val.IsSameAs(_T("1"));
+        }
+        else if(token.StartsWith( _T("prefb_quilt"))){
+            g_bQuiltEnable = val.IsSameAs(_T("1"));
+        }
+        else if(token.StartsWith( _T("prefb_lockwp"))){
+            g_bWayPointPreventDragging = val.IsSameAs(_T("1"));
+        }
+        else if(token.StartsWith( _T("prefb_confirmdelete"))){
+            g_bConfirmObjectDelete = val.IsSameAs(_T("1"));
+        }
+        else if(token.StartsWith( _T("prefb_showgrid"))){
+            g_bDisplayGrid = val.IsSameAs(_T("1"));
+        }
+        else if(token.StartsWith( _T("prefb_showoutlines"))){
+            g_bShowOutlines = val.IsSameAs(_T("1"));
+        }
+        else if(token.StartsWith( _T("prefb_expertmode"))){
+            g_bUIexpert = val.IsSameAs(_T("1"));
+        }
+        else if(token.StartsWith( _T("prefb_showsound"))){
+            ps52plib->m_bShowSoundg = val.IsSameAs(_T("1"));
+            rr |= S52_CHANGED;
+        }
+        else if(token.StartsWith( _T("prefb_showSCAMIN"))){
+            ps52plib->m_bUseSCAMIN = val.IsSameAs(_T("1"));
+            rr |= S52_CHANGED;
+        }
+        else if(token.StartsWith( _T("prefb_showimptext"))){
+            ps52plib->m_bShowS57ImportantTextOnly = val.IsSameAs(_T("1"));
+            rr |= S52_CHANGED;
+        }
+        else if(token.StartsWith( _T("prefb_showlightldesc"))){
+            ps52plib->m_bShowLdisText = val.IsSameAs(_T("1"));
+            rr |= S52_CHANGED;
+        }
+        else if(token.StartsWith( _T("prefb_showATONLabels"))){
+            rr |= S52_CHANGED;
+            ps52plib->m_bShowAtonText = val.IsSameAs(_T("1"));
+        }
+        else if(token.StartsWith( _T("prefs_navmode"))){
+            rr |= S52_CHANGED;
+            g_bCourseUp = val.IsSameAs(_T("Course Up"));
+        }
+        
+        //  Strings, etc.
+        
+        else if(token.StartsWith( _T("prefs_UIScaleFactor"))){
+            double a;
+            if(val.ToDouble(&a))
+                g_GUIScaleFactor = wxRound( (a / 10.) - 5.);
+        }
+        
+        else if(token.StartsWith( _T("prefs_chartScaleFactor"))){
+            double a;
+            if(val.ToDouble(&a))
+                g_ChartScaleFactor = wxRound( (a / 10.) - 5.);
+        }
+        
+        else if(token.StartsWith( _T("prefs_displaycategory"))){
+            rr |= S52_CHANGED;
+            _DisCat nset = DISPLAYBASE;
+            if(wxNOT_FOUND != val.Lower().Find(_T("base")))
+                nset = DISPLAYBASE;
+            else if(wxNOT_FOUND != val.Lower().Find(_T("standard")))
+                nset = STANDARD;
+            else if(wxNOT_FOUND != val.Lower().Find(_T("all")))
+                nset = OTHER;
+            
+            ps52plib-> SetDisplayCategory( nset );
+        }
+        
+        else if(token.StartsWith( _T("prefs_shallowdepth"))){
+            rr |= S52_CHANGED;
+            float conv = 1;
+            //             if ( depthUnit == 0 ) // feet
+            //                 conv = 0.3048f; // international definiton of 1 foot is 0.3048 metres
+            //             else if ( depthUnit == 2 ) // fathoms
+            //                 conv = 0.3048f * 6; // 1 fathom is 6 feet
+            
+            double dval;
+            if(val.ToDouble(&dval))
+                S52_setMarinerParam( S52_MAR_SHALLOW_CONTOUR, dval * conv );
+        }
+        
+        else if(token.StartsWith( _T("prefs_safetydepth"))){
+            rr |= S52_CHANGED;
+            float conv = 1;
+            double dval;
+            if(val.ToDouble(&dval))
+                S52_setMarinerParam( S52_MAR_SAFETY_DEPTH, dval * conv );
+        }
+        
+        else if(token.StartsWith( _T("prefs_deepdepth"))){
+            rr |= S52_CHANGED;
+            float conv = 1;
+            double dval;
+            if(val.ToDouble(&dval))
+                S52_setMarinerParam( S52_MAR_DEEP_CONTOUR, dval * conv );
+        }
+        
+        else if(token.StartsWith( _T("prefs_vectorgraphicsstyle"))){
+            rr |= S52_CHANGED;
+            if(wxNOT_FOUND != val.Lower().Find(_T("paper")))
+                ps52plib->m_nSymbolStyle = PAPER_CHART;
+            else if(wxNOT_FOUND != val.Lower().Find(_T("simplified")))
+                ps52plib->m_nSymbolStyle = SIMPLIFIED;
+        }
+        
+        else if(token.StartsWith( _T("prefs_vectorboundarystyle"))){
+            rr |= S52_CHANGED;
+            if(wxNOT_FOUND != val.Lower().Find(_T("plain")))
+                ps52plib->m_nBoundaryStyle = PLAIN_BOUNDARIES;
+            else if(wxNOT_FOUND != val.Lower().Find(_T("symbolized")))
+                ps52plib->m_nBoundaryStyle = SYMBOLIZED_BOUNDARIES;
+        }
+        
+        else if(token.StartsWith( _T("prefs_vectorchartcolors"))){
+            rr |= S52_CHANGED;
+            if(wxNOT_FOUND != val.Lower().Find(_T("2")))
+                S52_setMarinerParam( S52_MAR_TWO_SHADES, 1. );
+            else if(wxNOT_FOUND != val.Lower().Find(_T("4")))
+                S52_setMarinerParam( S52_MAR_TWO_SHADES, 0. );
+        }
+        
+    }
+    
+    // And apply the changes
+    pConfig->UpdateSettings();
+    
+    if(rr & S52_CHANGED){
+        ps52plib->FlushSymbolCaches();
+        ps52plib->ClearCNSYLUPArray();      // some CNSY depends on renderer (e.g. CARC)
+        ps52plib->GenerateStateHash();
+    }
+    
+     
+    ProcessOptionsDialog( rr,  &NewDirArray );
+    
+    g_Platform->applyExpertMode(g_bUIexpert);
+    
+    ShowChartBarIfEnabled();
+    
+    gFrame->Raise();
+    DoChartUpdate();
+    UpdateControlBar();
+    Refresh();
+    
+    SetToolbarScale();
+    RequestNewToolbar(true);    // Force rebuild, to pick up bGUIexpert settings.
+    SurfaceToolbar();
+    ShowChartBarIfEnabled();
+
+#if defined(__WXOSX__) || defined(__WXQT__)
+    if( g_FloatingCompassDialog )
+        g_FloatingCompassDialog->Raise();
+ 
+    if( g_FloatingToolbarDialog )
+        g_FloatingToolbarDialog->Raise();
+    
+//    if( b_restoreAIS ){
+//        g_pAISTargetList = new AISTargetListDialog( this, g_pauimgr, g_pAIS );
+//        g_pAISTargetList->UpdateAISTargetList();
+//    }
+#endif
+    
+    Refresh( false );
+    
+    if (NMEALogWindow::Get().Active())
+        NMEALogWindow::Get().GetTTYWindow()->Raise();
+    
+}   
+
 
 
 #ifdef wxHAS_POWER_EVENTS
