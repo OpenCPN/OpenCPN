@@ -48,6 +48,8 @@ import android.app.ProgressDialog;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ActionBar;
+import android.app.ActionBar.Tab;
+import android.app.FragmentTransaction;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -76,6 +78,8 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.util.DisplayMetrics;
 import android.widget.Toast;
+import android.widget.ListView;
+import android.widget.ArrayAdapter;
 
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -123,10 +127,12 @@ import app.akexorcist.bluetotohspp.library.BluetoothSPP;
 import app.akexorcist.bluetotohspp.library.BluetoothState;
 import app.akexorcist.bluetotohspp.library.BluetoothSPP.OnDataReceivedListener;
 
+import org.opencpn.SpinnerNavItem;
+import org.opencpn.TitleNavigationAdapter;
 
 import ar.com.daidalos.afiledialog.*;
 
-public class QtActivity extends Activity
+public class QtActivity extends Activity implements ActionBar.OnNavigationListener
 {
     private final static int MINISTRO_INSTALL_REQUEST_CODE = 0xf3ee; // request code used to know when Ministro instalation is finished
     private final static int OCPN_SETTINGS_REQUEST_CODE = 0xf3ef; // request code used to know when OCPNsettings dialog activity is done
@@ -146,6 +152,14 @@ public class QtActivity extends Activity
     private final static int OCPN_ACTION_MOB = 0x1006;
     private final static int OCPN_ACTION_TIDES_TOGGLE = 0x1007;
     private final static int OCPN_ACTION_CURRENTS_TOGGLE = 0x1008;
+
+    //  Definitions found in OCPN "chart1.h"
+    private final static int ID_CMD_APPLY_SETTINGS = 300;
+
+
+    private final static int CHART_TYPE_CM93COMP = 7;       // must line up with OCPN types
+    private final static int CHART_FAMILY_RASTER = 1;
+    private final static int CHART_FAMILY_VECTOR = 2;
 
     private static final String ERROR_CODE_KEY = "error.code";
     private static final String ERROR_MESSAGE_KEY = "error.message";
@@ -244,6 +258,18 @@ public class QtActivity extends Activity
     private String m_filechooserString;
 
     OCPNNativeLib nativeLib;
+
+    // action bar
+    private ActionBar actionBar;
+
+        // Title navigation Spinner data
+    private ArrayList<SpinnerNavItem> navSpinner;
+    private SpinnerNavItem spinnerItemRaster;
+    private SpinnerNavItem spinnerItemVector;
+    private SpinnerNavItem spinnerItemcm93;
+
+        // Navigation adapter
+    private TitleNavigationAdapter adapter;
 
     public QtActivity()
     {
@@ -734,6 +760,147 @@ public class QtActivity extends Activity
        else{
            return "no";
        }
+   }
+
+   // ActionBar Spinner navigation to select chart display type
+
+   //  Thread safe version, callable from another thread
+   public String configureNavSpinnerTS(final int flag, final int sel){
+       Thread thread = new Thread() {
+            @Override
+            public void run() {
+
+       // Block this thread for 20 msec.
+                try {
+                    Thread.sleep(20);
+                } catch (InterruptedException e) {
+                }
+
+       // After sleep finished blocking, create a Runnable to run on the UI Thread.
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        configureNavSpinner(flag, sel);
+                    }
+                });
+            }
+       };
+
+       // Don't forget to start the thread.
+       thread.start();
+
+       return "OK";
+   }
+
+
+
+   public String configureNavSpinner(int flag, int sel){
+       Log.i("DEBUGGER_TAG", "configureNavSpinner");
+       String aa; aa = String.format("%d %d", flag, sel ); Log.i("DEBUGGER_TAG", aa);
+
+       navSpinner.clear();
+       int nbits = 0;
+       int n93 = -1;
+       int nraster = -1;
+       int nvector = -1;
+
+       if((flag & 1) == 1){
+           nraster = nbits;
+           navSpinner.add(spinnerItemRaster);
+           nbits++;
+       }
+       if((flag & 2) == 2){
+           nvector = nbits;
+           navSpinner.add(spinnerItemVector);
+           nbits++;
+       }
+       if((flag & 4) == 4){
+           n93 = nbits;
+           navSpinner.add(spinnerItemcm93);
+           nbits++;
+       }
+
+
+
+       // Select the proper item as directed
+       int to_sel = 0;
+       if(sel == 1)
+            to_sel = nraster;
+       else if(sel == 2)
+            to_sel = nvector;
+       else if(sel == 4)
+            to_sel = n93;
+
+       // Any bits set?
+       if(nbits > 1){
+           actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+           actionBar.setSelectedNavigationItem(to_sel);
+       }
+       else
+           actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+
+       return "OK";
+   }
+
+
+
+
+//   @Override
+//   public void onTabSelected(ActionBar.Tab tab,
+//       FragmentTransaction fragmentTransaction) {
+
+//   Log.i("DEBUGGER_TAG", "onTabSelected");
+//   Log.i("DEBUGGER_TAG", tab.getText().toString());
+
+     // When the given tab is selected, show the tab contents in the
+     // container view.
+//     Fragment fragment = new DummySectionFragment();
+//     Bundle args = new Bundle();
+//     args.putInt(DummySectionFragment.ARG_SECTION_NUMBER,
+//         tab.getPosition() + 1);
+//     fragment.setArguments(args);
+//     getFragmentManager().beginTransaction()
+//         .replace(R.id.container, fragment).commit();
+//   }
+
+//   @Override
+//   public void onTabUnselected(ActionBar.Tab tab,
+//       FragmentTransaction fragmentTransaction) {
+//   }
+
+//   @Override
+//   public void onTabReselected(ActionBar.Tab tab,
+//       FragmentTransaction fragmentTransaction) {
+//   }
+
+
+   //  ActionBar drop-down spinner navigation
+   @Override
+   public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+   // Action to be taken after selecting a spinner item from action bar
+
+   Log.i("DEBUGGER_TAG", "onNavigationItemSelected");
+   String aa;
+   aa = String.format("%d", itemPosition);
+   Log.i("DEBUGGER_TAG", aa);
+
+        SpinnerNavItem item = navSpinner.get(itemPosition);
+        if(item.getTitle().equalsIgnoreCase("cm93")){
+            nativeLib.selectChartDisplay(CHART_TYPE_CM93COMP, -1);
+            return true;
+        }
+        else if(item.getTitle().equalsIgnoreCase("raster")){
+            nativeLib.selectChartDisplay(-1, CHART_FAMILY_RASTER);
+            Log.i("DEBUGGER_TAG", "onNavigationItemSelectedA");
+            return true;
+        }
+        else if(item.getTitle().equalsIgnoreCase("vector")){
+            nativeLib.selectChartDisplay(-1, CHART_FAMILY_VECTOR);
+            return true;
+        }
+
+
+       return false;
    }
 
 
@@ -1308,16 +1475,17 @@ public class QtActivity extends Activity
     {
         Log.i("DEBUGGER_TAG", "onActivityResultA");
         if (requestCode == OCPN_SETTINGS_REQUEST_CODE) {
-//            Log.i("DEBUGGER_TAG", "onqtActivityResultC");
+            Log.i("DEBUGGER_TAG", "onqtActivityResultC");
             // Make sure the request was successful
             if (resultCode == RESULT_OK)
             {
-//                Log.i("DEBUGGER_TAG", "onqtActivityResultD");
+                Log.i("DEBUGGER_TAG", "onqtActivityResultD");
                 m_settingsReturn = data.getStringExtra("SettingsString");
-//                Log.i("DEBUGGER_TAG", m_settingsReturn);
+                nativeLib.invokeCmdEventCmdString( ID_CMD_APPLY_SETTINGS, m_settingsReturn);
+                Log.i("DEBUGGER_TAG", m_settingsReturn);
             }
             else if (resultCode == RESULT_CANCELED){
-//                Log.i("DEBUGGER_TAG", "onqtActivityResultE");
+                Log.i("DEBUGGER_TAG", "onqtActivityResultE");
             }
 
             super.onActivityResult(requestCode, resultCode, data);
@@ -1483,11 +1651,48 @@ public class QtActivity extends Activity
     }
     //---------------------------------------------------------------------------
 
+    private ListView mDrawerList;
+    private ArrayAdapter<String> mAdapter;
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         Log.i("DEBUGGER_TAG", "onCreate");
         super.onCreate(savedInstanceState);
+
+
+        // Navigation Drawer
+        //  Doesn't actually work on android qt...
+
+//        setContentView(R.layout.activity_main);
+
+//        mDrawerList = (ListView)findViewById(R.id.left_drawer);
+//        String[] osArray = { "Android", "iOS", "Windows", "OS X", "Linux" };
+//        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, osArray);
+//        mDrawerList.setAdapter(mAdapter);
+
+        // Set up ActionBar spinner navigation
+        actionBar = getActionBar();
+
+        // Hide the action bar title
+//        actionBar.setDisplayShowTitleEnabled(false);
+
+//----------------------------------------------------------------------------
+        // Setup Spinner title navigation data
+        navSpinner = new ArrayList<SpinnerNavItem>();
+
+        spinnerItemRaster = new SpinnerNavItem("Raster", R.drawable.ic_action_map);
+        spinnerItemVector = new SpinnerNavItem("Vector", R.drawable.ic_action_map);
+        spinnerItemcm93 = new SpinnerNavItem("cm93", R.drawable.ic_action_map);
+
+        // title drop down adapter
+        adapter = new TitleNavigationAdapter(getApplicationContext(), navSpinner);
+        // assigning the spinner navigation
+        actionBar.setListNavigationCallbacks(adapter, this);
+
+        configureNavSpinner(7, 0);
+
+//----------------------------------------------------------------------------
 
         nativeLib = new OCPNNativeLib();
 
@@ -1549,11 +1754,26 @@ public class QtActivity extends Activity
 
             startApp(true);
 
+            // setup action bar for tabs
+ //           ActionBar actionBar = getActionBar();
+ //           actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+ //           actionBar.setDisplayShowTitleEnabled(true);
+
+ //           Tab tab = actionBar.newTab()
+ //                              .setText("RasterCharts")
+ //                              .setTabListener(this);
+ //           actionBar.addTab(tab);
+
+ //           tab = actionBar.newTab()
+ //                          .setText("Vector Charts")
+ //                          .setTabListener(this);
+ //           actionBar.addTab(tab);
 
 
         }
     }
     //---------------------------------------------------------------------------
+
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo)

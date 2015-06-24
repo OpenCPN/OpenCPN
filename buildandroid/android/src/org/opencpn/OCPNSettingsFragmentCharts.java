@@ -25,8 +25,6 @@
 */
 package org.opencpn;
 
-//import com.arieslabs.assetbridge.Assetbridge;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -41,8 +39,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.kde.necessitas.ministro.IMinistro;
-import org.kde.necessitas.ministro.IMinistroCallback;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -75,6 +71,7 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -94,10 +91,12 @@ import org.opencpn.opencpn.R;
 import android.app.Fragment;
 import android.view.ActionMode;
 import android.view.ActionMode.Callback;
-//@ANDROID-11
 
 
 public class OCPNSettingsFragmentCharts extends PreferenceFragment {
+
+    private boolean mbs52 = true;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,6 +107,20 @@ public class OCPNSettingsFragmentCharts extends PreferenceFragment {
         addPreferencesFromResource(R.xml.preferences_charts);
 
         m_frag = OCPNSettingsFragmentCharts.this;
+
+        // Rerieve initial arguments
+        Bundle b = getArguments();
+        if(b != null)
+            mbs52 = b.getString("S52").equalsIgnoreCase("TRUE");
+
+        Log.i("DEBUGGER_TAG", (mbs52)?"TruelyTrue":"FalselyFalse");
+
+        Preference s52Options = findPreference("pref_s52Options");
+        if(s52Options != null){
+            s52Options.setEnabled(mbs52);
+            Log.i("DEBUGGER_TAG", (mbs52)?"TruelyTruely":"FalselyFalsely");
+        }
+
     }
 
     public void updateChartDirListView(){
@@ -116,6 +129,13 @@ public class OCPNSettingsFragmentCharts extends PreferenceFragment {
         Preference cfdp = findPreference("pref_ChartFiles");
 
         ((ChartFilesDialogPreference) cfdp).updateListView();
+    }
+
+    public String getSelected(){
+        Preference cfdp = findPreference("pref_ChartFiles");
+
+        return ((ChartFilesDialogPreference) cfdp).getSelected();
+
     }
 
     public static OCPNSettingsFragmentCharts getFragment(){ return m_frag; }
