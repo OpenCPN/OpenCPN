@@ -1,5 +1,8 @@
 0....Tools, etc.
 
+        __Filter logcat, especially on BluPhone
+        adb shell logcat DEBUGGER_TAG:I Qt:D *:S
+
         __Run ndk-gdb to debug a target app.
         https://vilimpoc.org/blog/2010/09/23/hello-gdbserver-a-debuggable-jni-example-for-android/
 
@@ -312,6 +315,14 @@
         ./adb devices
         exit
 
+
+
+        // testing
+        $ "/home/dsr/Qt/5.3/android_armv7/bin/qmake" /home/dsr/Projects/opencpn_sf/opencpn/buildandroid/opencpn.pro -r -spec android-g++
+
+        $make
+
+        $make install INSTALL_ROOT=./apk_build
 
 
 
