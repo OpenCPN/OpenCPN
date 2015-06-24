@@ -1018,7 +1018,9 @@ void OCPNPlatform::ShowBusySpinner( void )
 #ifdef __OCPN__ANDROID__
     androidShowBusyIcon();
 #else 
-    ::wxBeginBusyCursor();
+    if(! ::wxIsBusy() ){
+        ::wxBeginBusyCursor();
+    }
 #endif    
 }
 

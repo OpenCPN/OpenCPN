@@ -1387,6 +1387,8 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     if(g_GLOptions.m_bTextureCompression && g_GLOptions.m_bTextureCompressionCaching) {
         if( ptd->nCache_Color != color_scheme ){
             if( IsCompressedArrayComplete( 0, ptd) ){
+                g_Platform->ShowBusySpinner();
+                
                 for(int level = 0; level < g_mipmap_max_level + 1; level++ )
                     UpdateCacheLevel( rect, level, color_scheme );
                 
@@ -1449,6 +1451,8 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     }
     
 
+
+    g_Platform->ShowBusySpinner();
     
     int dim = g_GLOptions.m_iTextureDimension;
     int size = g_tile_size;
@@ -1608,6 +1612,8 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     {
         ptd->FreeAll();
     }
+    
+//    g_Platform->HideBusySpinner();
     
     return true;
     }   //try

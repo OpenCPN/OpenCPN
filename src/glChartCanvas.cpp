@@ -3672,8 +3672,6 @@ void glChartCanvas::Render()
                     if(!m_cache_vp.IsValid())
                         b_reset = true;
                         
-//          b_reset = true;
-          
                     if( b_reset ){
                         m_fbo_offsetx = (m_cache_tex_x - GetSize().x)/2;
                         m_fbo_offsety = (m_cache_tex_y - GetSize().y)/2;
@@ -3681,8 +3679,11 @@ void glChartCanvas::Render()
                         m_fbo_sheight = sy;
                         
                         m_canvasregion = OCPNRegion( m_fbo_offsetx, m_fbo_offsety, sx, sy );
-                        RenderCanvasBackingChart(gldc, m_canvasregion);
                         
+                        if(m_cache_vp.view_scale_ppm != VPoint.view_scale_ppm )
+                            g_Platform->ShowBusySpinner();
+                        
+                        RenderCanvasBackingChart(gldc, m_canvasregion);
                     }
                     
                     
@@ -3691,9 +3692,9 @@ void glChartCanvas::Render()
                     
                     glViewport( m_fbo_offsetx, m_fbo_offsety, (GLint) sx, (GLint) sy );
 
-                    g_Platform->ShowBusySpinner();
+                    //g_Platform->ShowBusySpinner();
                     RenderCharts(gldc, chart_get_region);
-                    g_Platform->HideBusySpinner();
+                    //g_Platform->HideBusySpinner();
                     
 /*                    
                     wxRect rect( 50, 50, cc1->VPoint.rv_rect.width-100, cc1->VPoint.rv_rect.height-100 );
@@ -3844,6 +3845,8 @@ void glChartCanvas::Render()
     FactoryCrunch(0.6);
     
     cc1->PaintCleanup();
+    g_Platform->HideBusySpinner();
+    
     n_render++;
 }
 
