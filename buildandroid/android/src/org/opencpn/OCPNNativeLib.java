@@ -31,5 +31,7 @@ public class OCPNNativeLib {
   public native int onResume();
 
   public native int invokeMenuItem( int item);
+  public native int selectChartDisplay( int type, int family);
+  public native int invokeCmdEventCmdString( int cmd_id, String s);
 
 }
