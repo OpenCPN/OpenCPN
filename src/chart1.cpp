@@ -3815,7 +3815,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         case ID_MENU_SETTINGS_BASIC:
         {
  #ifdef __OCPN__ANDROID__
-            LoadS57();
+            ///LoadS57();
             DoAndroidPreferences();
  #else
             DoSettings();
@@ -9095,6 +9095,8 @@ void MyFrame::applySettingsString( wxString settings)
     
     //  Parse the passed settings string
 //    wxLogMessage( settings );
+    bool bproc_InternalGPS = false;
+    bool benable_InternalGPS = false;
     
     int rr = GENERIC_CHANGED;
     
@@ -9178,8 +9180,14 @@ void MyFrame::applySettingsString( wxString settings)
             rr |= S52_CHANGED;
             ps52plib->m_bShowAtonText = val.IsSameAs(_T("1"));
         }
+        else if(token.StartsWith( _T("prefb_internalGPS"))){
+            bproc_InternalGPS = true;
+            benable_InternalGPS = val.IsSameAs(_T("1"));
+        }
+        
+        
+        
         else if(token.StartsWith( _T("prefs_navmode"))){
-            rr |= S52_CHANGED;
             g_bCourseUp = val.IsSameAs(_T("Course Up"));
         }
         
@@ -9265,13 +9273,84 @@ void MyFrame::applySettingsString( wxString settings)
         
     }
     
+    // Process Connections
+    if(g_pConnectionParams && bproc_InternalGPS){
+
+        //  Does the connection already exist?
+        ConnectionParams *pExistingParams = NULL;
+        ConnectionParams *cp = NULL;
+        
+        for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+        {
+            ConnectionParams *xcp = g_pConnectionParams->Item(i);
+            if(INTERNAL_GPS == xcp->Type){
+                pExistingParams = xcp;
+                cp = xcp;
+                break;
+            }
+        }
+        
+        bool b_action = true;
+        if(pExistingParams){
+            if(pExistingParams->bEnabled == benable_InternalGPS)
+                b_action = false;                    // nothing to do...
+            else
+                cp->bEnabled = benable_InternalGPS;
+        }
+        else if(benable_InternalGPS){           //  Need a new Params
+            // make a generic config string for InternalGPS.
+            wxString sGPS = _T("2;3;;0;0;;0;1;0;0;;0;;1;0;0;0;0");          // 17 parms
+            ConnectionParams *new_params = new ConnectionParams(sGPS);
+            
+            new_params->bEnabled = benable_InternalGPS;
+            g_pConnectionParams->Add(new_params);
+            cp = new_params;
+        }
+        
+        
+        
+            
+        if(b_action){                               // something to do?
+ 
+            // Terminate and remove any existing stream with the same port name
+            DataStream *pds_existing = g_pMUX->FindStream( cp->GetDSPort() );
+            if(pds_existing) 
+                g_pMUX->StopAndRemoveStream( pds_existing );
+            
+               
+            if( cp->bEnabled ) {
+                dsPortType port_type = cp->IOSelect;
+                DataStream *dstr = new DataStream( g_pMUX,
+                                                       cp->Type,       
+                                                       cp->GetDSPort(),
+                                                       wxString::Format(wxT("%i"), cp->Baudrate),
+                                                       port_type,
+                                                       cp->Priority,
+                                                       cp->Garmin);
+                dstr->SetInputFilter(cp->InputSentenceList);
+                dstr->SetInputFilterType(cp->InputSentenceListType);
+                dstr->SetOutputFilter(cp->OutputSentenceList);
+                dstr->SetOutputFilterType(cp->OutputSentenceListType);
+                dstr->SetChecksumCheck(cp->ChecksumCheck);
+                    
+                g_pMUX->AddStream(dstr);
+                    
+                cp->b_IsSetup = true;
+            }
+        }
+    }
+                
+        
+    
     // And apply the changes
     pConfig->UpdateSettings();
     
     if(rr & S52_CHANGED){
-        ps52plib->FlushSymbolCaches();
-        ps52plib->ClearCNSYLUPArray();      // some CNSY depends on renderer (e.g. CARC)
-        ps52plib->GenerateStateHash();
+        if(ps52plib){
+            ps52plib->FlushSymbolCaches();
+            ps52plib->ClearCNSYLUPArray();      // some CNSY depends on renderer (e.g. CARC)
+            ps52plib->GenerateStateHash();
+        }
     }
     
      

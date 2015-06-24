@@ -1489,9 +1489,6 @@ void invokeApp( void )
 }
 #endif
 
-#if 1
-
-#if 1
 bool InvokeJNIPreferences( wxString &initial_settings)
 {
     bool ret = true;
@@ -1517,7 +1514,6 @@ bool InvokeJNIPreferences( wxString &initial_settings)
         
         return ret;
 }
-#endif
 
 wxString BuildAndroidSettingsString( void )
 {
@@ -1629,7 +1625,19 @@ wxString BuildAndroidSettingsString( void )
             //  On Android, the range is 0 -- 100
             //  So, convert
         }
-
+        
+        // Connections
+        
+        // Internal GPS.
+        for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+        {
+            ConnectionParams *cp = g_pConnectionParams->Item(i);
+            if(INTERNAL_GPS == cp->Type){
+                result += _T("prefb_internalGPS:") + cp->bEnabled ? _T("1;") : _T("0;");
+                break;                  // there can only be one entry for type INTERNAL_GPS
+            }                    
+        }
+                    
     return result;
 }
 
@@ -1639,169 +1647,14 @@ bool DoAndroidPreferences( void )
     
     wxString settings = BuildAndroidSettingsString();
 
-    if( InvokeJNIPreferences(settings)){
-    //  Start a timer to poll for results of Android native references dialog
-//        m_PrefTimer.Start(500);
-    }
+    InvokeJNIPreferences(settings);
 
     return true;
 }
 
 
 
-#if 0
-void MyFrame::OnPreferencesResultTimer( wxTimerEvent &event)
-{
-    //  Polling the native activity to see when the Preferences activity is done
 
-    //  Get a reference to the running native activity
-    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
-                                              "activity", "()Landroid/app/Activity;");
-
-    if ( !activity.isValid() ){
-        qDebug() << "OnPreferencesResultTimer : Activity is not valid";
-        return;
-    }
-
-    //  Call the desired method
-    QAndroidJniObject data = activity.callObjectMethod("checkAndroidSettings", "()Ljava/lang/String;");
-
-    wxString return_string;
-    jstring s = data.object<jstring>();
-
-    //  Need a Java environment to decode the resulting string
-    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
-            qDebug() << "GetEnv failed.";
-    }
-    else {
-          const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
-          return_string = wxString(ret_string, wxConvUTF8);
-    }
-
-
-    //  If the string has no contents, the settings activity has not completed
-    if(!return_string.Length())
-        return;
-
-    UpdateControlBar
-    //  Activity finished, so stop polling
-    m_PrefTimer.Stop();
-
-
-    bool bPrevQuilt = g_bQuiltEnable;
-
-    //    Capture the name and index of the currently open chart
-    wxString chart_file_name;
-    if( cc1->GetQuiltMode() ) {
-        int dbi = cc1->GetQuiltRefChartdbIndex();
-        chart_file_name = ChartData->GetDBChartFileName( dbi );
-    } else
-        if( Current_Ch )
-            chart_file_name = Current_Ch->GetFullPath();
-
-
-    //  Parse the resulting settings string
-    wxLogMessage( return_string );
-
-    wxStringTokenizer tk(return_string, _T(";"));
-    while ( tk.HasMoreTokens() )
-    {
-        wxString token = tk.GetNextToken();
-        wxLogMessage(token);
-
-        wxString val = token.AfterFirst(':');
-        wxLogMessage(val);
-
-        if(token.StartsWith( _T("prefb_lookahead"))){
-            g_bLookAhead = val.IsSameAs(_T("1"));
-        }
-        else if(token.StartsWith( _T("prefb_quilt"))){
-            g_bQuiltEnable = val.IsSameAs(_T("1"));
-        }
-        else if(token.StartsWith( _T("prefb_preservescale"))){
-            g_bPreserveScaleOnX = val.IsSameAs(_T("1"));
-        }
-        else if(token.StartsWith( _T("prefb_smoothzp"))){
-            g_bsmoothpanzoom = val.IsSameAs(_T("1"));
-        }
-        else if(token.StartsWith( _T("prefb_showgrid"))){
-            g_bDisplayGrid = val.IsSameAs(_T("1"));
-        }
-        else if(token.StartsWith( _T("prefb_showoutlines"))){
-            g_bShowOutlines = val.IsSameAs(_T("1"));
-        }
-        else if(token.StartsWith( _T("prefb_showdepthunits"))){
-            g_bShowDepthUnits = val.IsSameAs(_T("1"));
-        }
-        else if(token.StartsWith( _T("prefb_showskewnu"))){
-            g_bskew_comp = val.IsSameAs(_T("1"));
-        }
-       else if(token.StartsWith( _T("prefs_navmode"))){
-            g_bCourseUp = val.IsSameAs(_T("Course Up"));
-        }
-
-    }
-
-     // And apply the changes
-    pConfig->UpdateSettings();
-
-//    if( bPrevQuilt != g_bQuiltEnable )
-    {
-        cc1->SetQuiltMode( g_bQuiltEnable );
-        SetupQuiltMode();
-    }
-
-    if( g_bCourseUp ) {
-        //    Stuff the COGAvg table in case COGUp is selected
-        double stuff = 0.;
-        if( !wxIsNaN(gCog) ) stuff = gCog;
-        if( g_COGAvgSec > 0 ) {
-            for( int i = 0; i < g_COGAvgSec; i++ )
-                COGTable[i] = stuff;
-        }
-
-        g_COGAvg = stuff;
-
-        DoCOGSet();
-    }
-
-    //    Stuff the Filter tables
-    double stuffcog = 0.;
-    double stuffsog = 0.;
-    if( !wxIsNaN(gCog) ) stuffcog = gCog;
-    if( !wxIsNaN(gSog) ) stuffsog = gSog;
-
-    for( int i = 0; i < MAX_COGSOG_FILTER_SECONDS; i++ ) {
-        COGFilterTable[i] = stuffcog;
-        SOGFilterTable[i] = stuffsog;
-    }
-    m_COGFilterLast = stuffcog;
-
-    SetChartUpdatePeriod( cc1->GetVP() );              // Pick up changes to skew compensator
-
-    //    Capture the index of the currently open chart, after any database update
-    int dbii = ChartData->FinddbIndex( chart_file_name );
-
-    //    Reload all charts
-    ChartsRefresh( dbii, cc1->GetVP(), true );
-
-    if(stats){
-        stats->Show(g_bShowChartBar);
-        if(g_bShowChartBar){
-            stats->Move(0,0);
-            stats->RePosition();
- //           gFrame->Raise();
-            DoChartUpdate();
-            UpdateControlBar();
-            Refresh();
-        }
-    }
-
-
-}
-#endif
-
-#endif
 
 
 
