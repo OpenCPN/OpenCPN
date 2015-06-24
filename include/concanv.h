@@ -52,7 +52,8 @@ public:
 
       void OnPaint(wxPaintEvent& event);
       void SetColorScheme(ColorScheme cs);
-
+      void MouseEvent( wxMouseEvent& event );
+      
       wxBrush *m_pbackBrush;
       wxBrush *m_proadBrush;
       wxPen   *m_proadPen;
@@ -78,12 +79,13 @@ public:
       void SetLegendElement(const wxString &element);
       void SetValueElement(const wxString &element);
       void SetColorScheme(ColorScheme cs);
-
+      void MouseEvent( wxMouseEvent& event );
+      
 private:
       void CalculateMinSize(void);
 
-      wxBrush     *m_pbackBrush;
-      wxColour    m_text_color;
+      wxBrush     m_backBrush;
+      wxColour    m_default_text_color;
 
       wxString    m_label;
       wxString    m_value;
@@ -92,6 +94,8 @@ private:
 
       wxString    m_LegendTextElement;
       wxString    m_ValueTextElement;
+      wxColour    m_legend_color;
+      wxColour    m_val_color;
 
 DECLARE_EVENT_TABLE()
 
@@ -116,7 +120,7 @@ public:
       void OnContextMenu( wxContextMenuEvent& event );
       void OnContextMenuSelection( wxCommandEvent& event );
       void RefreshConsoleData(void);
-
+      
       wxWindow          *m_pParent;
       wxStaticText       *pThisLegText;
       wxBoxSizer        *m_pitemBoxSizerLeg;
