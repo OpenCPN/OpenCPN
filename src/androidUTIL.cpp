@@ -598,18 +598,18 @@ extern "C"{
         
         //  App may be summarily killed after this point due to OOM condition.
         //  So we need to persist some dynamic data.
-        qDebug() << "startPersist";
+        if(pConfig){
+            qDebug() << "startPersist";
         
         //  Persist the config file, especially to capture the viewport location,scale etc.
-        if(pConfig)
             pConfig->UpdateSettings();
         
         //  There may be unsaved objects at this point, and a navobj.xml.changes restore file
         //  We commit the navobj deltas, and flush the restore file 
-        if(pConfig)
             pConfig->UpdateNavObj();
 
-        qDebug() << "endPersist";
+            qDebug() << "endPersist";
+        }
         
         return 98;
     }

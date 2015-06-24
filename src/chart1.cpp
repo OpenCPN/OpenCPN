@@ -3175,6 +3175,9 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     pConfig->DeleteGroup( _T ( "/Routes" ) );
     pConfig->DeleteGroup( _T ( "/Marks" ) );
     pConfig->Flush();
+    
+    delete pConfig;             // All done
+    pConfig = NULL;
 
     delete g_printData;
     delete g_pageSetupData;
@@ -3313,6 +3316,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     gFrame = NULL;
 
 #ifdef __OCPN__ANDROID__
+    qDebug() << "Calling OnExit()";
     wxTheApp->OnExit();
 #endif
 
@@ -9377,11 +9381,16 @@ void MyFrame::applySettingsString( wxString settings)
     if( g_FloatingToolbarDialog )
         g_FloatingToolbarDialog->Raise();
     
+    
+    
 //    if( b_restoreAIS ){
 //        g_pAISTargetList = new AISTargetListDialog( this, g_pauimgr, g_pAIS );
 //        g_pAISTargetList->UpdateAISTargetList();
 //    }
 #endif
+    
+    if(console)
+        console->Raise();
     
     Refresh( false );
     
