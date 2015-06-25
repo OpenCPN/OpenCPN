@@ -280,6 +280,9 @@ private:
 
       void BuildLineVBO( void );
       
+      void ChangeThumbColor(ColorScheme cs);
+      void LoadThumb();
+      
  // Private Data
       char        *hdr_buf;
       char        *mybuf_ptr;

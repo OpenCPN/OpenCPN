@@ -1417,37 +1417,43 @@ void s57chart::SetColorScheme( ColorScheme cs, bool bApplyImmediate )
     ClearRenderedTextCache();
 
     //      Setup the proper thumbnail bitmap pointer
+    ChangeThumbColor(cs);
 
-    if( NULL != m_pDIBThumbDay ) {
-        switch( cs ){
-            default:
-            case GLOBAL_COLOR_SCHEME_DAY:
-                pThumbData->pDIBThumb = m_pDIBThumbDay;
-                m_pDIBThumbOrphan = m_pDIBThumbDim;
-                break;
-            case GLOBAL_COLOR_SCHEME_DUSK:
-            case GLOBAL_COLOR_SCHEME_NIGHT: {
-                if( NULL == m_pDIBThumbDim ) {
-                    wxImage img = m_pDIBThumbDay->ConvertToImage();
+}
+
+void s57chart::ChangeThumbColor(ColorScheme cs)
+{
+    if( 0 == m_pDIBThumbDay ) 
+        return;
+
+    switch( cs ){
+        default:
+        case GLOBAL_COLOR_SCHEME_DAY:
+            pThumbData->pDIBThumb = m_pDIBThumbDay;
+            m_pDIBThumbOrphan = m_pDIBThumbDim;
+            break;
+        case GLOBAL_COLOR_SCHEME_DUSK:
+        case GLOBAL_COLOR_SCHEME_NIGHT: {
+            if( NULL == m_pDIBThumbDim ) {
+                wxImage img = m_pDIBThumbDay->ConvertToImage();
 
 #if wxCHECK_VERSION(2, 8, 0)
-                    wxImage gimg = img.ConvertToGreyscale( 0.1, 0.1, 0.1 ); // factors are completely subjective
+                wxImage gimg = img.ConvertToGreyscale( 0.1, 0.1, 0.1 ); // factors are completely subjective
 #else
-                            wxImage gimg = img;
+                wxImage gimg = img;
 #endif
 
 //#ifdef ocpnUSE_ocpnBitmap
 //                      ocpnBitmap *pBMP =  new ocpnBitmap(gimg, m_pDIBThumbDay->GetDepth());
 //#else
-                    wxBitmap *pBMP = new wxBitmap( gimg );
+                wxBitmap *pBMP = new wxBitmap( gimg );
 //#endif
-                    m_pDIBThumbDim = pBMP;
-                    m_pDIBThumbOrphan = m_pDIBThumbDay;
-                }
-
-                pThumbData->pDIBThumb = m_pDIBThumbDim;
-                break;
+                m_pDIBThumbDim = pBMP;
+                m_pDIBThumbOrphan = m_pDIBThumbDay;
             }
+
+            pThumbData->pDIBThumb = m_pDIBThumbDim;
+            break;
         }
     }
 }
@@ -1673,10 +1679,41 @@ bool s57chart::AdjustVP( ViewPort &vp_last, ViewPort &vp_proposed )
  }
  */
 
+void  s57chart::LoadThumb()
+{
+    wxFileName fn( m_FullPath );
+    wxString SENCdir = g_SENCPrefix;
+
+    if( SENCdir.Last() != fn.GetPathSeparator() ) SENCdir.Append( fn.GetPathSeparator() );
+
+    wxFileName tsfn( SENCdir );
+    tsfn.SetFullName( fn.GetFullName() );
+
+    wxFileName ThumbFileNameLook( tsfn );
+    ThumbFileNameLook.SetExt( _T("BMP") );
+
+    wxBitmap *pBMP;
+    if( ThumbFileNameLook.FileExists() ) {
+        pBMP = new wxBitmap;
+
+        pBMP->LoadFile( ThumbFileNameLook.GetFullPath(), wxBITMAP_TYPE_BMP );
+        m_pDIBThumbDay = pBMP;
+        m_pDIBThumbOrphan = 0;
+        m_pDIBThumbDim = 0;
+                
+    }
+}
+
+
 ThumbData *s57chart::GetThumbData( int tnx, int tny, float lat, float lon )
 {
     //  Plot the passed lat/lon at the thumbnail bitmap scale
     //  Using simple linear algorithm.
+    if( pThumbData->pDIBThumb == 0) {
+        LoadThumb();
+        ChangeThumbColor(m_global_color_scheme);
+    }
+
     if( pThumbData->pDIBThumb ) {
         float lat_top = m_FullExtent.NLAT;
         float lat_bot = m_FullExtent.SLAT;
@@ -3370,24 +3407,7 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
     if( flags == THUMB_ONLY ) {
 
         // Look for Thumbnail
-        // Set the proper directory for the SENC/BMP files
-        wxString SENCdir = g_SENCPrefix;
-
-        if( SENCdir.Last() != fn.GetPathSeparator() ) SENCdir.Append( fn.GetPathSeparator() );
-
-        wxFileName tsfn( SENCdir );
-        tsfn.SetFullName( fn.GetFullName() );
-
-        wxFileName ThumbFileNameLook( tsfn );
-        ThumbFileNameLook.SetExt( _T("BMP") );
-
-        wxBitmap *pBMP;
-        if( ThumbFileNameLook.FileExists() ) {
-            pBMP = new wxBitmap;
-
-            pBMP->LoadFile( ThumbFileNameLook.GetFullPath(), wxBITMAP_TYPE_BMP );
-            m_pDIBThumbDay = pBMP;
-        }
+        // LoadThumb();
 
         s_bInS57--;
         return INIT_OK;
@@ -3675,21 +3695,23 @@ InitReturn s57chart::PostInit( ChartInitFlag flags, ColorScheme cs )
     wxFileName ThumbFileName( SENCdir, s57File.GetName().Mid( 13 ), _T("BMP") );
 
     if( !ThumbFileName.FileExists() || m_bneed_new_thumbnail )
+    {
         BuildThumbnail( ThumbFileName.GetFullPath() );
 
-//  Update the member thumbdata structure
-    if( ThumbFileName.FileExists() ) {
-        wxBitmap *pBMP_NEW;
+        //  Update the member thumbdata structure
+        if( ThumbFileName.FileExists() ) {
+            wxBitmap *pBMP_NEW;
 #ifdef ocpnUSE_ocpnBitmap
-        pBMP_NEW = new ocpnBitmap;
+            pBMP_NEW = new ocpnBitmap;
 #else
-        pBMP_NEW = new wxBitmap;
+            pBMP_NEW = new wxBitmap;
 #endif
-        if( pBMP_NEW->LoadFile( ThumbFileName.GetFullPath(), wxBITMAP_TYPE_BMP ) ) {
-            delete pThumbData;
-            pThumbData = new ThumbData;
-            m_pDIBThumbDay = pBMP_NEW;
+            if( pBMP_NEW->LoadFile( ThumbFileName.GetFullPath(), wxBITMAP_TYPE_BMP ) ) {
+                delete pThumbData;
+                pThumbData = new ThumbData;
+                m_pDIBThumbDay = pBMP_NEW;
 //                    pThumbData->pDIBThumb = pBMP_NEW;
+            }
         }
     }
 #endif
