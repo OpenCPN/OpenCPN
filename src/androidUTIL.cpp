@@ -55,6 +55,8 @@ class androidUtilHandler;
 JavaVM *java_vm;
 JNIEnv* jenv;
 bool     b_androidBusyShown;
+double   g_androidDPmm;
+double   g_androidDensity;
 
 QString g_qtStyleSheet;
 
@@ -1057,11 +1059,21 @@ double GetAndroidDisplaySize()
     }
     
     double ldpi = 160. * density;
+    qDebug() << "ldpi" << ldpi;
+    
     double maxDim = wxMax(::wxGetDisplaySize().x, ::wxGetDisplaySize().y);
     ret = (maxDim / ldpi) * 25.4;
  
     msg.Printf(_T("Android Auto Display Size (mm, est.): %g"), ret);
     wxLogMessage(msg);
+    
+    //  Save some items as global statics for convenience
+    g_androidDPmm = ldpi / 25.4;
+    qDebug() << "g_androidDPmm" << g_androidDPmm;
+    g_androidDensity = density;
+    
+//    g_androidSmallTextPixels = 14 * density;            // Small text is always 14 sp,
+//                                                        // except as modified by user globally
     
     
 //     wxString istr = return_string.BeforeFirst('.');
@@ -1074,6 +1086,35 @@ double GetAndroidDisplaySize()
     return ret;
 }
 
+double getAndroidDPmm()
+{
+    // Returns an estimate based on the pixel density reported
+    if( g_androidDPmm < 0.01){
+        GetAndroidDisplaySize();
+    }
+    
+    qDebug() << "g_androidDPmm" << g_androidDPmm;
+    
+    if(g_androidDPmm > 0.01)
+        return g_androidDPmm;
+    else
+        return 160. / 25.4;
+}
+
+double getAndroidDisplayDensity()
+{
+    if( g_androidDensity < 0.01){
+        GetAndroidDisplaySize();
+    }
+    
+    qDebug() << "g_androidDensity" << g_androidDensity;
+    
+    if(g_androidDensity > 0.01)
+        return g_androidDensity;
+    else
+        return 1.0;
+}
+    
 
 wxSize getAndroidDisplayDimensions( void )
 {

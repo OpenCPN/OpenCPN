@@ -79,7 +79,9 @@ public:
     double getFontPointsperPixel( void );
     wxSize getDisplaySize();
     double GetDisplaySizeMM();
-
+    double GetDisplayDPmm();
+    double GetToolbarScaleFactor( int GUIScaleFactor );
+    
     wxFileDialog *AdjustFileDialogFont(wxWindow *container, wxFileDialog *dlg);
     wxDirDialog  *AdjustDirDialogFont(wxWindow *container,  wxDirDialog *dlg);
     

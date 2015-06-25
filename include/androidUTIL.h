@@ -54,8 +54,12 @@
 extern bool androidUtilInit( void );
 
 extern bool androidGetMemoryStatus( int *mem_total, int *mem_used );
+
 extern double GetAndroidDisplaySize();
+extern double getAndroidDPmm();
 extern wxSize getAndroidDisplayDimensions( void );
+extern double getAndroidDisplayDensity();
+
 extern bool LoadQtStyleSheet(wxString &sheet_file);
 extern QString getQtStyleSheet( void );
 

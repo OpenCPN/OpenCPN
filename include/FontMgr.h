@@ -64,7 +64,7 @@ class FontMgr
         FontMgr & operator=(const FontMgr &) { return *this; }
         
     private:
-        wxString GetSimpleNativeFont(int size);
+        wxString GetSimpleNativeFont(int size, wxString face);
     
         static FontMgr * instance;
     

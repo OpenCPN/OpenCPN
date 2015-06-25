@@ -40,6 +40,7 @@
 
 #include "chart1.h"
 #include "cutil.h"
+#include "styles.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -96,6 +97,7 @@ extern wxString           str_version_major;
 extern wxString           str_version_minor;
 extern wxString           str_version_patch;
 
+extern ocpnStyle::StyleManager* g_StyleManager;
 
 extern bool                      g_bshowToolbar;
 extern bool                      g_bBasicMenus;
@@ -555,12 +557,12 @@ void OCPNPlatform::SetDefaultOptions( void )
     
     g_btouch = true;
     g_bresponsive = true;
-    g_default_font_size = 14;
+    g_default_font_size = 18;            //  This is pretty close to TextAppearance.Medium
 
     g_bShowStatusBar = false;
     g_cm93_zoom_factor = -5;
     
-    g_GUIScaleFactor = 5;               // max
+    g_GUIScaleFactor = 0;               // max
 #endif
     
     
@@ -1037,6 +1039,15 @@ void OCPNPlatform::HideBusySpinner( void )
 
 double OCPNPlatform::getFontPointsperPixel( void )
 {
+    double pt_per_pixel = 1.0;
+    
+#ifdef __OCPN__ANDROID__
+    // On Android, this calculation depends on the density bucket in use.
+    //  Also uses some magic numbers...
+    //  For reference, see http://pixplicity.com/dp-px-converter/
+    pt_per_pixel = 14.0 / (31.11 * getAndroidDisplayDensity()) ;
+    
+#else    
     //  Make a measurement...
     wxScreenDC dc;
     
@@ -1045,7 +1056,8 @@ double OCPNPlatform::getFontPointsperPixel( void )
     dc.SetFont(*f);
     
     wxSize sz = dc.GetTextExtent(_T("H"));
-    double pt_per_pixel = 12.0 / (double)sz.y;
+    pt_per_pixel = 12.0 / (double)sz.y;
+#endif
     
     return pt_per_pixel;
     
@@ -1090,6 +1102,16 @@ double  OCPNPlatform::GetDisplaySizeMM()
     wxLogMessage(msg);
     
     return ret;
+}
+
+double OCPNPlatform::GetDisplayDPmm()
+{
+#ifdef __OCPN__ANDROID__
+    return getAndroidDPmm();
+#else
+    double r = ::wxGetDisplaySize().x;            // dots
+    return r / GetDisplaySizeMM();
+#endif    
 }
 
 
@@ -1169,6 +1191,41 @@ wxDirDialog* OCPNPlatform::AdjustDirDialogFont(wxWindow *container, wxDirDialog*
             return ret_dlg;
         }
         
+double OCPNPlatform::GetToolbarScaleFactor( int GUIScaleFactor )
+{
+    double rv = 1.0;
+#ifdef __OCPN__ANDROID__
+
+    // We try to arrange matters so that at GUIScaleFactor=0, the tool icons are approximately 9 mm in size
+    // and that the value may range from 0.5 -> 2.0
+    
+    if(g_bresponsive ){
+        //  Get the basic size of a tool icon
+        ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+        wxSize style_tool_size = style->GetToolSize();
+        
+        double target_size = 9.0;                // mm
+        
+        double basic_tool_size_mm = style_tool_size.x / GetDisplayDPmm();
+        double premult = target_size / basic_tool_size_mm;
+        
+        //Adjust the scale factor using the global GUI scale parameter
+        double postmult =  exp( GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
+        rv = wxMin(rv, 1.5);      //  Clamp at 1.5
+        
+        qDebug() << "parms" << style_tool_size.x << GetDisplayDPmm() << basic_tool_size_mm << premult << postmult;
+        
+        rv = premult * postmult;
+    }
+        
+        
+    
+#else
+#endif
+
+    return rv;
+}
+
         
         
 #ifdef __WXMSW__

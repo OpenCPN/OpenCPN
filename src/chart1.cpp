@@ -2977,25 +2977,11 @@ void MyFrame::EnableToolbar( bool newstate )
 
 void MyFrame::SetToolbarScale()
 {
-    //  Get the basic size of a tool icon
-    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-    wxSize style_tool_size = style->GetToolSize();
+    g_toolbar_scalefactor = g_Platform->GetToolbarScaleFactor( g_GUIScaleFactor );
+    
+    //  Round to the nearest "quarter", to avoid rendering artifacts
+    g_toolbar_scalefactor = wxRound( g_toolbar_scalefactor * 4.0 )/ 4.0;
 
-    g_toolbar_scalefactor = 1.0;
-    if(g_bresponsive ){
-        //      Adjust the scale factor so that the basic tool size is xx millimetres, assumed square
-//        float target_size = 9.0;                // mm
-
-//        float basic_tool_size_mm = style_tool_size.x / cc1->GetPixPerMM();
-//        g_toolbar_scalefactor =  target_size / basic_tool_size_mm;
-
-        //Adjust the scale factor using the global GUI scale parameter
-        g_toolbar_scalefactor =  exp( g_GUIScaleFactor * 0.182 );       //  empirical number, larger is larger
-        g_toolbar_scalefactor = wxMax(g_toolbar_scalefactor, 1.0);      //  Never smaller than 1.0
-
-        //  Round to the nearest "quarter", to avoid rendering artifacts
-        g_toolbar_scalefactor = wxRound( g_toolbar_scalefactor * 4.0 )/ 4.0;
-    }
 }
 
 void MyFrame::RaiseToolbarRecoveryWindow()
@@ -4819,7 +4805,9 @@ void MyFrame::SurfaceToolbar( void )
                 g_FloatingToolbarDialog->Surface();
             }
         }
-        Raise();
+#ifndef __WXQT__        
+       Raise();
+#endif
     }
 }
 
@@ -11151,9 +11139,9 @@ wxFont *GetOCPNScaledFont( wxString item, int default_size )
         //      Adjust font size to be no smaller than xx mm actual size
         double scaled_font_size = dFont->GetPointSize();
 
-        if( cc1) {
+        {
             
-            double points_per_mm  = g_Platform->getFontPointsperPixel() * cc1->GetPixPerMM();
+            double points_per_mm  = g_Platform->getFontPointsperPixel() * g_Platform->GetDisplayDPmm();
             double min_scaled_font_size = 3 * points_per_mm;    // smaller than 3 mm is unreadable
             int nscaled_font_size = wxMax( wxRound(scaled_font_size), min_scaled_font_size );
 
