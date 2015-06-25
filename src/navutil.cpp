@@ -3153,7 +3153,7 @@ void MyConfig::UI_ImportGPX( wxWindow* parent, bool islayer, wxString dirpath, b
         delete popenDialog;
 #else
         wxString path;
-        int response = g_Platform->DoFileSelectorDialog( NULL, &path,
+        response = g_Platform->DoFileSelectorDialog( NULL, &path,
                                                          _( "Import GPX file" ),
                                                          m_gpx_path,
                                                          _T(""),

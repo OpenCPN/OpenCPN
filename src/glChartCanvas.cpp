@@ -1660,11 +1660,12 @@ void glChartCanvas::GridDraw( )
     
     wxColour GridColor = GetGlobalColor( _T ( "SNDG1" ) );        
 
-    static TexFont s_texfont;
-    wxFont *font = wxTheFontList->FindOrCreateFont
-        ( 8, wxFONTFAMILY_SWISS, wxNORMAL,
-          wxFONTWEIGHT_NORMAL, FALSE, wxString( _T ( "Arial" ) ) );
-    s_texfont.Build(*font);
+    if(!m_gridfont.IsBuilt()){
+        wxFont *font = wxTheFontList->FindOrCreateFont
+            ( 8, wxFONTFAMILY_SWISS, wxNORMAL,
+            wxFONTWEIGHT_NORMAL, FALSE, wxString( _T ( "Arial" ) ) );
+        m_gridfont.Build(*font);
+    }
 
     w = cc1->m_canvas_width;
     h = cc1->m_canvas_height;
@@ -1729,13 +1730,13 @@ void glChartCanvas::GridDraw( )
                 y = (float)(r.y*s.x - s.y*r.x) / (s.x - r.x);
                 if(y < 0 || y > h) {
                     int iy;
-                    s_texfont.GetTextExtent(sbuf, strlen(sbuf), 0, &iy);
+                    m_gridfont.GetTextExtent(sbuf, strlen(sbuf), 0, &iy);
                     y = h - iy;
                     x = (float)(r.x*s.y - s.x*r.y + (s.x - r.x)*y) / (s.y - r.y);
                 }
 
                 glEnable(GL_TEXTURE_2D);
-                s_texfont.RenderString(sbuf, x, y);
+                m_gridfont.RenderString(sbuf, x, y);
                 glDisable(GL_TEXTURE_2D);
             }
             
@@ -1778,13 +1779,13 @@ void glChartCanvas::GridDraw( )
                 x = (float)(r.x*s.y - s.x*r.y) / (s.y - r.y);
                 if(x < 0 || x > w) {
                     int ix;
-                    s_texfont.GetTextExtent(sbuf, strlen(sbuf), &ix, 0);
+                    m_gridfont.GetTextExtent(sbuf, strlen(sbuf), &ix, 0);
                     x = w - ix;
                     y = (float)(r.y*s.x - s.y*r.x + (s.y - r.y)*x) / (s.x - r.x);
                 }
 
                 glEnable(GL_TEXTURE_2D);
-                s_texfont.RenderString(sbuf, x, y);
+                m_gridfont.RenderString(sbuf, x, y);
                 glDisable(GL_TEXTURE_2D);
             }
 
