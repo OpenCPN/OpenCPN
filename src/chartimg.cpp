@@ -900,6 +900,7 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
 
       int done_header_parse = 0;
 
+      wxCSConv iso_conv(wxT("ISO-8859-1"));                 // we will need a converter
       while(done_header_parse == 0)
       {
             if(ReadBSBHdrLine(ifs_hdr, buffer, BUF_LEN_MAX) == 0)
@@ -920,7 +921,6 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
             }
 
 
-            wxCSConv iso_conv(wxT("ISO-8859-1"));                 // we will need a converter
 
             wxString str_buf(buffer,  wxConvUTF8);
             if(!str_buf.Len())                                    // failed conversion
