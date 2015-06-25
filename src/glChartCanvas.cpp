@@ -3372,27 +3372,32 @@ bool glChartCanvas::FactoryCrunch(double factor)
     for( it0 = m_chart_texfactory_hash.begin(); it0 != m_chart_texfactory_hash.end(); ++it0 ) {
         wxString chart_full_path = it0->first;
         glTexFactory *ptf = it0->second;
+        bool mem_freed = false;
         if(!ptf)
             continue;
-        
-        GetMemoryStatus(0, &mem_used);
-        bGLMemCrunch = mem_used > (double)(g_memCacheLimit) * factor;
-        if(!bGLMemCrunch)
-            break;
         
         if( cc1->VPoint.b_quilt )          // quilted
         {
             if( cc1->m_pQuilt && cc1->m_pQuilt->IsComposed() &&
-                !cc1->m_pQuilt->IsChartInQuilt( chart_full_path ) ) {
+                !cc1->m_pQuilt->IsChartInQuilt( chart_full_path ) ) 
+            {
                 ptf->FreeSome( g_memCacheLimit * factor );
-                }
+                mem_freed = true;
+            }
         }
         else      // not quilted
         {
             if( !Current_Ch->GetFullPath().IsSameAs(chart_full_path))
             {
                 ptf->DeleteSomeTextures( g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * factor );
+                mem_freed = true;
             }
+        }
+        if (mem_freed) {
+            GetMemoryStatus(0, &mem_used);
+            bGLMemCrunch = mem_used > (double)(g_memCacheLimit) * factor;
+            if(!bGLMemCrunch)
+                break;
         }
     }
 
@@ -3410,11 +3415,22 @@ bool glChartCanvas::FactoryCrunch(double factor)
             if(!ptf)
                 continue;
             
+            // we better have to find one because glTexFactory keep cache texture open
+            // and ocpn will eventually run out of file descriptors
             if( cc1->VPoint.b_quilt )          // quilted
             {
                 if( cc1->m_pQuilt && cc1->m_pQuilt->IsComposed() &&
                     !cc1->m_pQuilt->IsChartInQuilt( chart_full_path ) ) {
                     
+                    wxDateTime lru = ptf->GetLRUTime();
+                    if(lru.IsEarlierThan(lru_oldest)){
+                        lru_oldest = lru;
+                        ptf_oldest = ptf;
+                    }
+                }
+            }
+            else {
+                if( !Current_Ch->GetFullPath().IsSameAs(chart_full_path)) {
                     wxDateTime lru = ptf->GetLRUTime();
                     if(lru.IsEarlierThan(lru_oldest)){
                         lru_oldest = lru;

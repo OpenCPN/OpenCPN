@@ -335,6 +335,22 @@ END_EVENT_TABLE()
  * RouteProp constructors
  */
 
+bool RouteProp::instanceFlag = false;
+RouteProp* RouteProp::single = NULL;
+RouteProp* RouteProp::getInstance( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style )
+{
+    if(! instanceFlag)
+    {
+        single = new RouteProp( parent, id, title, pos, size, style);
+        instanceFlag = true;
+        return single;
+    }
+    else
+    {
+        return single;
+    }
+}
+
 RouteProp::RouteProp()
 {
 }
@@ -626,6 +642,7 @@ RouteProp::~RouteProp()
 
     // delete global print route selection dialog
     delete pRoutePrintSelection;
+    instanceFlag = false;
 }
 
 
@@ -1777,7 +1794,7 @@ void RouteProp::OnRoutepropOkClick( wxCommandEvent& event )
     m_pEnroutePoint = NULL;
     m_bStartNow = false;
 
-    if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
+    if( RouteManagerDialog::getInstanceFlag() && pRouteManagerDialog->IsShown() ) {
         if( !m_pRoute->m_bIsTrack )
             pRouteManagerDialog->UpdateRouteListCtrl();
         else
@@ -2289,6 +2306,25 @@ MarkInfoDef::~MarkInfoDef()
     delete m_menuLink;
 }
 
+bool MarkInfoImpl::instanceFlag = false;
+MarkInfoImpl* MarkInfoImpl::single = NULL;
+
+MarkInfoImpl *MarkInfoImpl::getInstance( wxWindow* parent, wxWindowID id,
+                                  const wxString& title, const wxPoint& pos, const wxSize& size,
+                                  long style)
+{
+    if(! instanceFlag)
+    {
+        single = new MarkInfoImpl( parent, id, title, pos, size,style);
+        instanceFlag = true;
+        return single;
+    }
+    else
+    {
+        return single;
+    }
+}
+
 MarkInfoImpl::MarkInfoImpl( wxWindow* parent, wxWindowID id, const wxString& title,
         const wxPoint& pos, const wxSize& size, long style ) :
         MarkInfoDef( parent, id, title, pos, size, style )
@@ -2304,6 +2340,7 @@ MarkInfoImpl::~MarkInfoImpl()
 {
     m_bcomboBoxIcon->Clear();
     m_pLinkProp->Destroy();
+    instanceFlag = false;
 }
 
 void MarkInfoImpl::InitialFocus( void )

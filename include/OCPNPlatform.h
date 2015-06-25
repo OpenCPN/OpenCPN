@@ -96,6 +96,10 @@ public:
     wxString *GetSharedDataDirPtr();
     wxString *GetPrivateDataDirPtr();
     wxString &GetLogFileName(){ return mlog_file; }
+
+    int DoFileSelectorDialog( wxWindow *parent, wxString *file_spec, wxString Title, wxString initDir,
+                                wxString suggestedName, wxString wildcard);
+    int DoDirSelectorDialog( wxWindow *parent, wxString *file_spec, wxString Title, wxString initDir);
     
     bool InitializeLogFile( void );
     void CloseLogFile( void );

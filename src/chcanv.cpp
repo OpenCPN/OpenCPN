@@ -121,7 +121,6 @@ extern sigjmp_buf           env;                    // the context saved by sigs
 // ----------------------------------------------------------------------------
 extern bool G_FloatPtInPolygon ( MyFlPoint *rgpts, int wnumpts, float x, float y ) ;
 extern void catch_signals(int signo);
-extern bool GetMemoryStatus(int *mem_total, int *mem_used);
 
 extern ChartBase        *Current_Vector_Ch;
 extern ChartBase        *Current_Ch;
@@ -712,6 +711,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 
 #endif      // MSW, X11
     pCursorArrow = new wxCursor( wxCURSOR_ARROW );
+    pPlugIn_Cursor = NULL;
 
     SetCursor( *pCursorArrow );
 
@@ -6136,25 +6136,31 @@ void ChartCanvas::SetCanvasCursor( wxMouseEvent& event )
     //    Switch to the appropriate cursor on mouse movement
 
     wxCursor *ptarget_cursor = pCursorArrow;
+    if( !pPlugIn_Cursor ) {
+        ptarget_cursor = pCursorArrow;
+        if( ( !parent_frame->nRoute_State )
+            && ( !m_bMeasure_Active ) /*&& ( !m_bCM93MeasureOffset_Active )*/) {
+            
+            if( cursor_region == MID_RIGHT ) {
+                ptarget_cursor = pCursorRight;
+            } else if( cursor_region == MID_LEFT ) {
+                ptarget_cursor = pCursorLeft;
+            } else if( cursor_region == MID_TOP ) {
+                ptarget_cursor = pCursorDown;
+            } else if( cursor_region == MID_BOT ) {
+                ptarget_cursor = pCursorUp;
+            } else {
+                ptarget_cursor = pCursorArrow;
+            }
+            } else if( m_bMeasure_Active || parent_frame->nRoute_State ) // If Measure tool use Pencil Cursor
+                ptarget_cursor = pCursorPencil;
+    }
+    else {
+        ptarget_cursor = pPlugIn_Cursor;
+    }
     
-    if( ( !parent_frame->nRoute_State )
-        && ( !m_bMeasure_Active ) /*&& ( !m_bCM93MeasureOffset_Active )*/) {
-        
-        if( cursor_region == MID_RIGHT ) {
-            ptarget_cursor = pCursorRight;
-        } else if( cursor_region == MID_LEFT ) {
-            ptarget_cursor = pCursorLeft;
-        } else if( cursor_region == MID_TOP ) {
-            ptarget_cursor = pCursorDown;
-        } else if( cursor_region == MID_BOT ) {
-            ptarget_cursor = pCursorUp;
-        } else {
-            ptarget_cursor = pCursorArrow;
-        }
-        } else if( m_bMeasure_Active || parent_frame->nRoute_State ) // If Measure tool use Pencil Cursor
-            ptarget_cursor = pCursorPencil;
 
-    SetCursor( *ptarget_cursor );
+        SetCursor( *ptarget_cursor );
 
 }
 
@@ -7904,8 +7910,7 @@ void ChartCanvas::RemovePointFromRoute( RoutePoint* point, Route* route ) {
 }
 
 void ChartCanvas::ShowMarkPropertiesDialog( RoutePoint* markPoint ) {
-    if( NULL == pMarkPropDialog )    // There is one global instance of the MarkProp Dialog
-        pMarkPropDialog = new MarkInfoImpl( this );
+    pMarkPropDialog = MarkInfoImpl::getInstance( this );     // There is one global instance of the MarkProp Dialog
 
     if( 1/*g_bresponsive*/ ) {
 
@@ -7951,8 +7956,7 @@ void ChartCanvas::ShowMarkPropertiesDialog( RoutePoint* markPoint ) {
 
 void ChartCanvas::ShowRoutePropertiesDialog(wxString title, Route* selected)
 {
-    if( NULL == pRoutePropDialog )  // There is one global instance of the RouteProp Dialog
-        pRoutePropDialog = new RouteProp( this );
+    pRoutePropDialog = RouteProp::getInstance( this ); // There is one global instance of the RouteProp Dialog
 
     if( g_bresponsive ) {
 
@@ -8001,8 +8005,7 @@ void ChartCanvas::ShowRoutePropertiesDialog(wxString title, Route* selected)
 
 void ChartCanvas::ShowTrackPropertiesDialog( Route* selected )
 {
-    if( NULL == pTrackPropDialog )  // There is one global instance of the RouteProp Dialog
-        pTrackPropDialog = new TrackPropDlg( this );
+    pTrackPropDialog = TrackPropDlg::getInstance( this );    // There is one global instance of the RouteProp Dialog
 
     pTrackPropDialog->SetTrackAndUpdate( selected );
     pTrackPropDialog->UpdateProperties();

@@ -1,6 +1,10 @@
 <?xml version="1.0"?>
 <manifest package="org.opencpn.opencpn" xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="1.0" android:versionCode="1" android:installLocation="auto">
-    <application android:hardwareAccelerated="true" android:name="org.qtproject.qt5.android.bindings.QtApplication" android:label="@string/app_name" android:icon="@drawable/opencpn_mobile">
+    <application android:hardwareAccelerated="true"
+         android:name="org.qtproject.qt5.android.bindings.QtApplication"
+         android:label="@string/app_name"
+         android:icon="@drawable/opencpn_mobile">
+
         <activity android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|locale|fontScale|keyboard|keyboardHidden|navigation" android:name="org.qtproject.qt5.android.bindings.QtActivity" android:label="@string/app_name" android:screenOrientation="unspecified">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -34,6 +38,10 @@
          <activity android:name="org.opencpn.OCPNSettingsActivity"> <meta-data android:name="android.app.lib_name" android:value="opencpn"/>
         </activity>
          <activity android:name="org.opencpn.FileChooser"> <meta-data android:name="android.app.lib_name" android:value="opencpn"/>
+        </activity>
+
+        <activity android:name="ar.com.daidalos.afiledialog.FileChooserActivity">
+            <meta-data android:name="android.app.lib_name" android:value="opencpn"/>
         </activity>
 
     </application>

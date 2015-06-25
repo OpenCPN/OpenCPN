@@ -40,7 +40,7 @@
 #include "ocpn_types.h"
 #include "viewport.h"
 #include "nmea0183.h"
-
+#include "chartdbs.h"
 
 #ifdef USE_S57
 #include "cpl_error.h"
@@ -185,6 +185,9 @@ enum
     ID_MENU_AIS_CPADIALOG,
     ID_MENU_AIS_CPASOUND,
     ID_MENU_AIS_TARGETLIST,
+    
+    ID_MENU_SETTINGS_BASIC,
+    
     ID_MENU_OQUIT
 };
 
@@ -238,13 +241,6 @@ public:
     wxString    stream_name;
 };
 
-//    A small class used in an array to describe chart directories
-class ChartDirInfo
-{
-      public:
-      wxString    fullpath;
-      wxString    magic_number;
-};
 
 class OCPN_ThreadMessageEvent: public wxEvent
 {
@@ -266,7 +262,6 @@ private:
 
 
 
-WX_DECLARE_OBJARRAY(ChartDirInfo, ArrayOfCDI);
 WX_DECLARE_OBJARRAY(wxRect, ArrayOfRect);
 
 
@@ -392,6 +387,7 @@ class MyFrame: public wxFrame
     void SurfaceToolbar(void);
     void ToggleToolbar( bool b_smooth = false );
     
+    void ShowChartBarIfEnabled(void);
     void SetToolbarScale(void);
     
     void HandlePianoClick(int selected_index, int selected_dbIndex);

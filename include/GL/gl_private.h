@@ -80,6 +80,7 @@ GLAPI void GLAPIENTRY glDrawPixels( GLsizei width, GLsizei height,
                                     GLenum format, GLenum type,
                                     const GLvoid *pixels );
 GLAPI void GLAPIENTRY glTexCoord2f( GLfloat s, GLfloat t );
+GLAPI void GLAPIENTRY glTexCoord2i( GLint s, GLint t );
 GLAPI void GLAPIENTRY glColor3ub( GLubyte red, GLubyte green, GLubyte blue );
 GLAPI void GLAPIENTRY glTexEnvi( GLenum target, GLenum pname, GLint param );
 GLAPI void GLAPIENTRY glTexEnvf( GLenum target, GLenum pname, GLfloat param );
@@ -419,6 +420,9 @@ GLAPI void GLAPIENTRY gluTessNormal (GLUtesselator* tess, GLdouble valueX, GLdou
 GLAPI void GLAPIENTRY gluTessProperty (GLUtesselator* tess, GLenum which, GLdouble data);
 GLAPI const GLubyte * GLAPIENTRY gluErrorString (GLenum error);
 
+GLAPI void GLAPIENTRY glColorPointer( GLint size, GLenum type,
+                                      GLsizei stride, const GLvoid *ptr );
+
 #define GLU_TESS_BEGIN                     100100
 #define GLU_TESS_VERTEX                    100101
 #define GLU_TESS_END                       100102
@@ -463,6 +467,7 @@ GLAPI const GLubyte * GLAPIENTRY gluErrorString (GLenum error);
 #define GLU_TESS_WINDING_POSITIVE          100132
 #define GLU_TESS_WINDING_NEGATIVE          100133
 #define GLU_TESS_WINDING_ABS_GEQ_TWO       100134
+#define GL_COLOR_ARRAY                          0x8076
 
 #ifdef __cplusplus
 }

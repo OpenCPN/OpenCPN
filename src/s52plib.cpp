@@ -2211,30 +2211,36 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPor
 
         mdc.SelectObject( wxNullBitmap );
 
-        //          Get smallest containing bitmap
-        wxBitmap *sbm = new wxBitmap(
-                pbm->GetSubBitmap( wxRect( bm_orgx, bm_orgy, bm_width, bm_height ) ) );
-        delete pbm;
-
+        //  Grab a copy of the existing screen DC rectangle
         wxBitmap targetBm( bm_width, bm_height, 24 );
         wxMemoryDC targetDc( targetBm );
         if(!targetDc.IsOk())
             return false;
-
         targetDc.Blit( 0, 0, bm_width, bm_height, m_pdc, screenOriginX, screenOriginY );
+        
 
-#if wxUSE_GRAPHICS_CONTEXT && (( defined(__WXGTK__) || defined(__WXMAC__) ) && !wxCHECK_VERSION(2,9,4))
+#if wxUSE_GRAPHICS_CONTEXT /*&& (( defined(__WXGTK__) || defined(__WXMAC__) ) && !wxCHECK_VERSION(2,9,4))*/
+        //  Re-render onto the screen-grab copy, since wxDC::DrawBitmap() for alpha channel bitmaps is broken somehow in wxGCDC
         wxGCDC targetGcdc( targetDc );
         r0 -= wxPoint( bm_orgx, bm_orgy );
         HPGL->SetTargetGCDC( &targetGcdc );
         HPGL->Render( str, col, r0, pivot, (double) rot_angle );
 #else
+        //  We can use the bitmap already rendered
+        //  Get smallest containing bitmap
+        wxBitmap *sbm = new wxBitmap( pbm->GetSubBitmap( wxRect( bm_orgx, bm_orgy, bm_width, bm_height ) ) );
+    
+        //  render the symbol graphics onto the screen-grab copy, with transparency...
         targetDc.DrawBitmap( *sbm, 0, 0 );
+        delete sbm;
 #endif
+        
+        //  Render the final bitmap onto the screen DC
         m_pdc->Blit( screenOriginX, screenOriginY, bm_width, bm_height, &targetDc, 0, 0 );
 
+        // Clean up
+        delete pbm;
         targetDc.SelectObject( wxNullBitmap );
-        delete sbm;
 
         //  Update the object Bounding box
         //  so that subsequent drawing operations will redraw the item fully

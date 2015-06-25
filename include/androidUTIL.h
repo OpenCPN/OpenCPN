@@ -34,6 +34,17 @@
 
 #include <QString>
 
+// Enumerators for OCPN menu actions requested by Android UI
+#define OCPN_ACTION_FOLLOW              0x1000
+#define OCPN_ACTION_ROUTE               0x1001
+#define OCPN_ACTION_RMD                 0x1002
+#define OCPN_ACTION_SETTINGS_BASIC      0x1003
+#define OCPN_ACTION_SETTINGS_EXPERT     0x1004
+#define OCPN_ACTION_TRACK_TOGGLE        0x1005
+#define OCPN_ACTION_MOB                 0x1006
+#define OCPN_ACTION_TIDES_TOGGLE        0x1007
+#define OCPN_ACTION_CURRENTS_TOGGLE     0x1008
+
 
 #define GPS_OFF                         0
 #define GPS_ON                          1
@@ -63,6 +74,11 @@ extern bool androidStopBluetoothScan();
 extern wxArrayString androidGetBluetoothScanResults();
 extern bool androidStartBT(wxEvtHandler *consumer, wxString mac_address );
 extern bool androidStopBT();
+
+extern bool DoAndroidPreferences( void );
+extern int androidFileChooser( wxString *result, const wxString &initDir, const wxString &title,
+                        const wxString &suggestion, const wxString &wildcard, bool dirOnly = false);
+
 
 
 #endif   //guard

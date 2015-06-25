@@ -782,8 +782,8 @@ bool CompressionWorkerPool::ScheduleJob(glTexFactory* client, const wxRect &rect
     if(!b_immediate){
         todo_list.Append(pt);
         if(bthread_debug){
-            int mem_total, mem_used;
-            GetMemoryStatus(&mem_total, &mem_used);
+            int mem_used;
+            GetMemoryStatus(0, &mem_used);
             
             if(bthread_debug)
                 printf( "Adding job: %08X  Job Count: %lu  mem_used %d\n", pt->ident, (unsigned long)todo_list.GetCount(), mem_used);
@@ -1116,13 +1116,13 @@ void glTexFactory::FreeSome( long target )
         
         if( ptd ) {
             ptd->FreeAll();
+        
+            int mem_used;
+            GetMemoryStatus(0, &mem_used);
+        
+            if(mem_used <= target)
+                break;
         }
-        
-        int mem_total, mem_used;
-        GetMemoryStatus(&mem_total, &mem_used);
-        
-        if(mem_used <= target)
-            break;
     }
 }
 
@@ -1308,8 +1308,8 @@ void glTexFactory::OnTimer(wxTimerEvent &event)
     if(g_GLOptions.m_bTextureCompression && g_GLOptions.m_bTextureCompressionCaching) {
         if((m_ticks % 120) == 0){
             
-            int mem_total, mem_used;
-            GetMemoryStatus(&mem_total, &mem_used);
+            int mem_used;
+            GetMemoryStatus(0, &mem_used);
             unsigned int nCache = 0;
             unsigned int lcache_limit = (unsigned int)g_nCacheLimit * 8 / 10;
             if(ChartData)
@@ -1601,8 +1601,8 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     //   Of course, this means that if the texture is deleted elsewhere, then the bits will need to be
     //   regenerated.  The price to pay for memory limits....
     
-    int mem_total, mem_used;
-    GetMemoryStatus(&mem_total, &mem_used);
+    int mem_used;
+    GetMemoryStatus(0, &mem_used);
 //    qDebug() << mem_used;
     
     unsigned int nCache = 0;

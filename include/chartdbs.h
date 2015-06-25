@@ -26,18 +26,23 @@
 #ifndef __CHARTDBS_H__
 #define __CHARTDBS_H__
 
-#include "wx/dynarray.h"
-#include "wx/file.h"
-#include "wx/stream.h"
-#include "wx/wfstream.h"
-#include "wx/tokenzr.h"
-#include "wx/dir.h"
-#include "wx/filename.h"
-
-#include "chartbase.h"
-#include "chart1.h"
+//#include "chart1.h"
+#include "ocpn_types.h"
+#include "bbox.h"
 
 class wxProgressDialog;
+class ChartBase;
+
+//    A small class used in an array to describe chart directories
+class ChartDirInfo
+{
+public:
+    wxString    fullpath;
+    wxString    magic_number;
+};
+
+WX_DECLARE_OBJARRAY(ChartDirInfo, ArrayOfCDI);
+
 ///////////////////////////////////////////////////////////////////////
 
 static const int DB_VERSION_PREVIOUS = 17;

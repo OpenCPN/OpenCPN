@@ -28,6 +28,14 @@
 
 #include <wx/geometry.h>
 
+#ifdef __OCPN__ANDROID__
+#include <qopengl.h>
+#include "GL/gl_private.h"
+#else
+#include "GL/gl.h"
+#endif
+
+
 #include "TexFont.h"
 
 //----------------------------------------------------------------------------------------------------------

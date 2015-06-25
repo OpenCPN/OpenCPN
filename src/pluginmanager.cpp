@@ -2036,7 +2036,7 @@ int AddChartToDBInPlace( wxString &full_path, bool b_RefreshCanvas )
             ArrayOfCDI XnewChartDirArray;
             pConfig->LoadChartDirArray( XnewChartDirArray );
             delete ChartData;
-            ChartData = new ChartDB( gFrame );
+            ChartData = new ChartDB();
             ChartData->LoadBinary(ChartListFileName, XnewChartDirArray);
 
             if(g_boptionsactive){
@@ -2069,7 +2069,7 @@ int RemoveChartFromDBInPlace( wxString &full_path )
         ArrayOfCDI XnewChartDirArray;
         pConfig->LoadChartDirArray( XnewChartDirArray );
         delete ChartData;
-        ChartData = new ChartDB( gFrame );
+        ChartData = new ChartDB();
         ChartData->LoadBinary(ChartListFileName, XnewChartDirArray);
     
         if(g_boptionsactive){
@@ -4599,6 +4599,11 @@ wxBitmap GetIcon_PlugIn(const wxString & name)
 {
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
     return style->GetIcon( name );
+}
+
+void SetCursor_PlugIn( wxCursor *pCursor )
+{
+    cc1->pPlugIn_Cursor = pCursor;
 }
 
 void AddChartDirectory( wxString &path )

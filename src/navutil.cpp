@@ -2897,13 +2897,26 @@ void MyConfig::UpdateNavObj( void )
 
 bool MyConfig::ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxString suggestedName )
 {
+    wxString path;
+    
+    int response = g_Platform->DoFileSelectorDialog( NULL, &path,
+                                                     _( "Export GPX file" ),
+                                                     m_gpx_path,
+                                                     suggestedName,
+                                                     wxT ( "*.gpx" )
+    );
+    
+    wxFileName fn( path );
+    m_gpx_path = fn.GetPath();
+    
+#if 0    
     wxFileDialog *psaveDialog = new wxFileDialog( NULL, _( "Export GPX file" ), m_gpx_path, suggestedName,
             wxT ( "GPX files (*.gpx)|*.gpx" ), wxFD_SAVE );
 
     if(g_bresponsive)
         psaveDialog = g_Platform->AdjustFileDialogFont(parent, psaveDialog);
 
-    #ifdef __WXOSX__
+#ifdef __WXOSX__
     if(parent)
         parent->HideWithEffect(wxSHOW_EFFECT_BLEND );
 #endif
@@ -2919,7 +2932,8 @@ bool MyConfig::ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxSt
     wxFileName fn( path );
     m_gpx_path = fn.GetPath();
     delete psaveDialog;
-
+#endif
+    
     if( response == wxID_OK ) {
         fn.SetExt( _T ( "gpx" ) );
 
@@ -2941,6 +2955,20 @@ bool MyConfig::ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxSt
 
 bool MyConfig::ExportGPXWaypoints( wxWindow* parent, RoutePointList *pRoutePoints, const wxString suggestedName )
 {
+    wxString path;
+    
+    int response = g_Platform->DoFileSelectorDialog( NULL, &path,
+                                                     _( "Export GPX file" ),
+                                                     m_gpx_path,
+                                                     suggestedName,
+                                                     wxT ( "*.gpx" )
+                                                     );
+
+    wxFileName fn( path );
+    m_gpx_path = fn.GetPath();
+    
+
+#if 0        
     wxFileDialog *psaveDialog = new wxFileDialog( NULL, _( "Export GPX file" ), m_gpx_path, suggestedName,
             wxT ( "GPX files (*.gpx)|*.gpx" ), wxFD_SAVE );
 
@@ -2953,7 +2981,8 @@ bool MyConfig::ExportGPXWaypoints( wxWindow* parent, RoutePointList *pRoutePoint
     wxFileName fn( path );
     m_gpx_path = fn.GetPath();
     delete psaveDialog;
-
+#endif
+    
     if( response == wxID_OK ) {
         fn.SetExt( _T ( "gpx" ) );
 
@@ -2975,6 +3004,20 @@ bool MyConfig::ExportGPXWaypoints( wxWindow* parent, RoutePointList *pRoutePoint
 
 void MyConfig::ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
 {
+    wxString path;
+    
+    int response = g_Platform->DoFileSelectorDialog( NULL, &path,
+                                                     _( "Export GPX file" ),
+                                                     m_gpx_path,
+                                                     _T("userobjects.gpx"),
+                                                     wxT ( "*.gpx" )
+    );
+    
+    wxFileName fn( path );
+    m_gpx_path = fn.GetPath();
+    
+    
+#if 0    
     wxFileDialog *psaveDialog = new wxFileDialog( NULL, _( "Export GPX file" ), m_gpx_path, wxT ( "" ),
             wxT ( "GPX files (*.gpx)|*.gpx" ), wxFD_SAVE );
 
@@ -2987,6 +3030,7 @@ void MyConfig::ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
     wxFileName fn( path );
     m_gpx_path = fn.GetPath();
     delete psaveDialog;
+#endif
     
     if( response == wxID_OK ) {
         fn.SetExt( _T ( "gpx" ) );
@@ -3079,6 +3123,10 @@ void MyConfig::UI_ImportGPX( wxWindow* parent, bool islayer, wxString dirpath, b
     Layer *l = NULL;
 
     if( !islayer || dirpath.IsSameAs( _T("") ) ) {
+        
+        //  Platform DoFileSelectorDialog method does not properly handle multiple selections  
+        //  So use native method if not Android, which means Android gets single selection only.
+#ifndef __OCPN__ANDROID__        
         wxFileDialog *popenDialog = new wxFileDialog( NULL, _( "Import GPX file" ), m_gpx_path, wxT ( "" ),
                 wxT ( "GPX files (*.gpx)|*.gpx|All files (*.*)|*.*" ),
                 wxFD_OPEN | wxFD_MULTIPLE );
@@ -3098,7 +3146,21 @@ void MyConfig::UI_ImportGPX( wxWindow* parent, bool islayer, wxString dirpath, b
             }
         }
         delete popenDialog;
-
+#else
+        wxString path;
+        int response = g_Platform->DoFileSelectorDialog( NULL, &path,
+                                                         _( "Import GPX file" ),
+                                                         m_gpx_path,
+                                                         _T(""),
+                                                         wxT ( "*.gpx" )
+                                                         );
+                                                         
+        file_array.Add(path);
+        wxFileName fn( path );
+        m_gpx_path = fn.GetPath();
+                                                         
+#endif
+        
     } else {
         if( isdirectory ) {
             if( wxDir::GetAllFiles( dirpath, &file_array, wxT("*.gpx") ) )

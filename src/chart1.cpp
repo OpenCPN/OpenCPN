@@ -32,7 +32,6 @@
 #endif
 
 
-
 #include "wx/print.h"
 #include "wx/printdlg.h"
 #include "wx/artprov.h"
@@ -40,10 +39,11 @@
 #include <wx/intl.h>
 #include <wx/listctrl.h>
 #include <wx/aui/aui.h>
-#include <version.h> //Gunther
+#include <version.h> 
 #include <wx/dialog.h>
 #include <wx/progdlg.h>
 #include <wx/clrpicker.h>
+#include "wx/tokenzr.h"
 
 #include <wx/dialog.h>
 
@@ -163,8 +163,6 @@ void RedirectIOToConsole();
 OCPNPlatform              *g_Platform;
 
 bool                      g_bFirstRun;
-wxString                  glog_file;
-//wxString                  gConfig_File;
 
 int                       g_unit_test_1;
 bool                      g_start_fullscreen;
@@ -1360,7 +1358,7 @@ bool MyApp::OnInit()
         wxString msg = _("Failed to initialize the user interface. ");
         msg << _("OpenCPN cannot start. ");
         msg << _("The necessary configuration files were not found. ");
-        msg << _("See the log file at ") << glog_file << _(" for details.");
+        msg << _("See the log file at ") << g_Platform->GetLogFileName() << _(" for details.");
         wxMessageDialog w( NULL, msg, _("Failed to initialize the user interface. "),
                 wxCANCEL | wxICON_ERROR );
         w.ShowModal();
@@ -1873,7 +1871,7 @@ bool MyApp::OnInit()
     if( !ChartDirArray.GetCount() ) ::wxRemoveFile( ChartListFileName );
 
 //      Try to load the current chart list Data file
-    ChartData = new ChartDB( gFrame );
+    ChartData = new ChartDB( );
     if (!ChartData->LoadBinary(ChartListFileName, ChartDirArray)) {
         bDBUpdateInProgress = true;
 
@@ -1888,7 +1886,7 @@ bool MyApp::OnInit()
              dlg_ret = mdlg.ShowModal();
              */
             delete ChartData;
-            ChartData = new ChartDB( gFrame );
+            ChartData = new ChartDB( );
 
             wxString line( _("Rebuilding chart database from configuration file entries...") );
             /* The following 3 strings are embeded in wxProgressDialog but must be included by xgettext
@@ -2462,6 +2460,11 @@ void MyFrame::OnActivate( wxActivateEvent& event )
     event.Skip();
 }
 
+ColorScheme GetColorScheme()
+{
+    return global_color_scheme;
+}
+
 ColorScheme MyFrame::GetColorScheme()
 {
     return global_color_scheme;
@@ -2516,7 +2519,17 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
 
     if( ChartData ) ChartData->ApplyColorSchemeToCachedCharts( cs );
 
-    if( stats ) stats->SetColorScheme( cs );
+    if( stats ) {
+        // reset rollover, updating it is unreliable; too many
+        // wx versions, native toolkits and so on.
+        SetChartThumbnail( -1 );
+        if ( cc1 ) {
+            cc1->HideChartInfoWindow();
+            cc1->SetQuiltChartHiLiteIndex( -1 );
+        }
+        stats->pPiano->ResetRollover();
+        stats->SetColorScheme( cs );
+    }
 
     if( console ) console->SetColorScheme( cs );
 
@@ -3180,9 +3193,11 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 #endif    
     stats = NULL;
 
-    if( pRouteManagerDialog ) {
-        pRouteManagerDialog->Destroy();
-        pRouteManagerDialog = NULL;
+    if(RouteManagerDialog::getInstanceFlag()){
+        if( pRouteManagerDialog ) {
+            pRouteManagerDialog->Destroy();
+            pRouteManagerDialog = NULL;
+        }
     }
 
     cc1->Destroy();
@@ -3191,10 +3206,15 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     g_pauimgr->UnInit();
     delete g_pauimgr;
     g_pauimgr = NULL;
+    
     //    Unload the PlugIns
     //      Note that we are waiting until after the canvas is destroyed,
     //      since some PlugIns may have created children of canvas.
     //      Such a PlugIn must stay intact for the canvas dtor to call DestoryChildren()
+    
+    if(ChartData)
+        ChartData->PurgeCachePlugins();
+    
     if( g_pi_manager ) {
         g_pi_manager->UnLoadAllPlugIns();
         delete g_pi_manager;
@@ -3504,10 +3524,6 @@ void MyFrame::ODoSetSize( void )
     options_lastWindowSize = wxSize(0,0);
     options_lastWindowPos = wxPoint(0,0);
 
-    if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ){
-        pRouteManagerDialog->Centre();
-    }
-
 }
 
 void MyFrame::PositionConsole( void )
@@ -3782,6 +3798,16 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             break;
         }
 
+ 
+        case ID_MENU_SETTINGS_BASIC:
+        {
+ #ifdef __OCPN__ANDROID__
+            DoAndroidPreferences();
+ #else
+            DoSettings();
+ #endif            
+        }
+        
         case ID_MENU_UI_FULLSCREEN: {
             ToggleFullScreen();
             break;
@@ -3894,13 +3920,17 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         
         case ID_MENU_ROUTE_MANAGER:
         case ID_ROUTEMANAGER: {
-            if( NULL == pRouteManagerDialog )         // There is one global instance of the Dialog
-            pRouteManagerDialog = new RouteManagerDialog( cc1 );
+            pRouteManagerDialog = RouteManagerDialog::getInstance( cc1 ); // There is one global instance of the Dialog
 
             pRouteManagerDialog->UpdateRouteListCtrl();
             pRouteManagerDialog->UpdateTrkListCtrl();
             pRouteManagerDialog->UpdateWptListCtrl();
             pRouteManagerDialog->UpdateLayListCtrl();
+            
+            if(g_bresponsive){
+                if(stats && stats->IsShown() )
+                    stats->Hide();
+            }
             pRouteManagerDialog->Show();
 
             //    Required if RMDialog is not STAY_ON_TOP
@@ -3981,6 +4011,18 @@ void MyFrame::DoSettings()
     //  The chart display options may have changed, especially on S57 ENC,
     //  So, flush the cache and redraw
     cc1->ReloadVP();
+    
+}
+
+void MyFrame::ShowChartBarIfEnabled()
+{
+    if(stats){
+        stats->Show(g_bShowChartBar);
+        if(g_bShowChartBar){
+            stats->Move(0,0);
+            stats->RePosition();
+         }
+    }
     
 }
 
@@ -4176,10 +4218,11 @@ Track *MyFrame::TrackOff( bool do_add_point )
 
     g_bTrackActive = false;
 
-    if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
-    {
-        pRouteManagerDialog->UpdateTrkListCtrl();
-        pRouteManagerDialog->UpdateRouteListCtrl();
+    if(RouteManagerDialog::getInstanceFlag()){
+        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ){
+            pRouteManagerDialog->UpdateTrkListCtrl();
+            pRouteManagerDialog->UpdateRouteListCtrl();
+        }
     }
 
     SetToolbarItemState( ID_TRACK, g_bTrackActive );
@@ -4883,17 +4926,12 @@ int MyFrame::DoOptionsDialog()
 
     delete pWorkDirArray;
 
-    if(stats){
-        stats->Show(g_bShowChartBar);
-        if(g_bShowChartBar){
-            stats->Move(0,0);
-            stats->RePosition();
-            gFrame->Raise();
-            DoChartUpdate();
-            UpdateControlBar();
-            Refresh();
-        }
-    }
+    ShowChartBarIfEnabled();
+
+    gFrame->Raise();
+    DoChartUpdate();
+    UpdateControlBar();
+    Refresh();
     
     SetToolbarScale();
     RequestNewToolbar();
@@ -7007,8 +7045,13 @@ void MyFrame::UpdateControlBar( void )
     stats->FormatStat();
     
     wxString new_hash = stats->pPiano->GenerateAndStoreNewHash();
-    if(new_hash != old_hash)
+    if(new_hash != old_hash) {
+        SetChartThumbnail( -1 );
+        cc1->HideChartInfoWindow();
+        stats->pPiano->ResetRollover();
+        cc1->SetQuiltChartHiLiteIndex( -1 );
         stats->Refresh( false );
+    }
 
 }
 
@@ -9826,6 +9869,16 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "DILG2; 255;255;255;",              // Control Background
         "DILG3;   0;  0;  0;",              // Text
         "UITX1;   0;  0;  0;",              // Menu Text, derived from UINFF
+
+        "CHGRF; 163; 180; 183;",
+        "UINFM; 197;  69; 195;",
+        "UINFG; 104; 228;  86;",
+        "UINFF; 125; 137; 140;",
+        "UINFR; 241;  84; 105;",
+        "SHIPS;   7;   7;   7;",
+        "CHYLW; 244; 218;  72;",
+        "CHWHT; 212; 234; 238;",
+
         "UDKRD; 124; 16;  0;",
         "UARTE; 200;  0;  0;",              // Active Route, Grey on Dusk/Night
 
@@ -9856,6 +9909,16 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "GREY1; 100;100;100;", "GREY2; 128;128;128;", "RED1;  150;100;100;", "UBLCK;   0;  0;  0;",
         "UWHIT; 255;255;255;", "URED;  120; 54; 11;", "UGREN;  35;110; 20;", "YELO1; 120;115; 24;",
         "YELO2;  64; 40;  0;", "TEAL1;   0; 64; 64;", "GREEN5; 85;128; 0;",
+
+        "CHGRF;  41; 46; 46;",
+        "UINFM;  58; 20; 57;",
+        "UINFG;  35; 76; 29;",
+        "UINFF;  41; 46; 46;",
+        "UINFR;  80; 28; 35;",
+        "SHIPS;  71; 78; 79;",
+        "CHYLW;  81; 73; 24;",
+        "CHWHT;  71; 78; 79;",
+
         "DILG0; 110;110;110;",              // Dialog Background
         "DILG1; 110;110;110;",              // Dialog Background
         "DILG2;   0;  0;  0;",              // Control Background
@@ -9898,6 +9961,15 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "UITX1;  31; 34; 35;",              // Menu Text, derived from UINFF
         "UDKRD;  50;  0;  0;",
         "UARTE;  64; 64; 64;",              // Active Route, Grey on Dusk/Night
+
+        "CHGRF;  16; 18; 18;",
+        "UINFM;  52; 18; 52;",
+        "UINFG;  22; 24;  7;",
+        "UINFF;  31; 34; 35;",
+        "UINFR;  59; 17; 10;",
+        "SHIPS;  37; 41; 41;",
+        "CHYLW;  31; 33; 10;",
+        "CHWHT;  37; 41; 41;",
 
         "NODTA;   7;   7;   7;",
         "CHBLK;  31;  34;  35;",

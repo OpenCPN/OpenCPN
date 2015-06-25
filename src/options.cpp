@@ -40,6 +40,8 @@
 #include <wx/choice.h>
 #include <wx/dirdlg.h>
 #include <wx/clrpicker.h>
+#include "wx/tokenzr.h"
+
 #if wxCHECK_VERSION(2,9,4) /* does this work in 2.8 too.. do we need a test? */
 #include <wx/renderer.h>
 #endif
@@ -3732,6 +3734,14 @@ void options::OnCharHook( wxKeyEvent& event ) {
 void options::OnButtonaddClick( wxCommandEvent& event )
 {
     wxString selDir;
+    
+    int dresult = g_Platform->DoDirSelectorDialog( this, &selDir, _("Add a directory containing chart files"),
+                                                   *pInit_Chart_Dir);
+    
+    if(wxID_CANCEL == dresult)
+        goto done;
+        
+#if 0    
     wxDirDialog *dirSelector = new wxDirDialog( this, _("Add a directory containing chart files"),
             *pInit_Chart_Dir, wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST );
 
@@ -3745,12 +3755,14 @@ void options::OnButtonaddClick( wxCommandEvent& event )
         goto done;
 
     selDir = dirSelector->GetPath();
+#endif
 
+    
     AddChartDir( selDir );
 
-    done:
+done:
 
-    delete dirSelector;
+//    delete dirSelector;
     event.Skip();
 }
 

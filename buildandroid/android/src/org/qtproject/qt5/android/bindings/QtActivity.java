@@ -65,6 +65,7 @@ import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
@@ -87,6 +88,8 @@ import android.view.Window;
 import android.view.WindowManager.LayoutParams;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.Display;
+import android.view.MenuInflater;
+
 import dalvik.system.DexClassLoader;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -120,6 +123,9 @@ import app.akexorcist.bluetotohspp.library.BluetoothSPP;
 import app.akexorcist.bluetotohspp.library.BluetoothState;
 import app.akexorcist.bluetotohspp.library.BluetoothSPP.OnDataReceivedListener;
 
+
+import ar.com.daidalos.afiledialog.*;
+
 public class QtActivity extends Activity
 {
     private final static int MINISTRO_INSTALL_REQUEST_CODE = 0xf3ee; // request code used to know when Ministro instalation is finished
@@ -127,6 +133,19 @@ public class QtActivity extends Activity
     private static final int MINISTRO_API_LEVEL = 4; // Ministro api level (check IMinistro.aidl file)
     private static final int NECESSITAS_API_LEVEL = 2; // Necessitas api level used by platform plugin
     private static final int QT_VERSION = 0x050100; // This app requires at least Qt version 5.1.0
+
+    private final static int OCPN_FILECHOOSER_REQUEST_CODE = 0x5555;
+    private final static int OCPN_AFILECHOOSER_REQUEST_CODE = 0x5556;
+
+    private final static int OCPN_ACTION_FOLLOW = 0x1000;
+    private final static int OCPN_ACTION_ROUTE = 0x1001;
+    private final static int OCPN_ACTION_RMD = 0x1002;
+    private final static int OCPN_ACTION_SETTINGS_BASIC = 0x1003;
+    private final static int OCPN_ACTION_SETTINGS_EXPERT = 0x1004;
+    private final static int OCPN_ACTION_TRACK_TOGGLE = 0x1005;
+    private final static int OCPN_ACTION_MOB = 0x1006;
+    private final static int OCPN_ACTION_TIDES_TOGGLE = 0x1007;
+    private final static int OCPN_ACTION_CURRENTS_TOGGLE = 0x1008;
 
     private static final String ERROR_CODE_KEY = "error.code";
     private static final String ERROR_MESSAGE_KEY = "error.message";
@@ -221,6 +240,8 @@ public class QtActivity extends Activity
     private BluetoothSPP m_BTSPP;
     private Boolean m_BTServiceCreated = false;
     private String m_BTStat;
+    private Boolean m_FileChooserDone = false;
+    private String m_filechooserString;
 
     OCPNNativeLib nativeLib;
 
@@ -434,7 +455,7 @@ public class QtActivity extends Activity
     }
 
     public String showBusyCircle(){
-        Log.i("DEBUGGER_TAG", "show");
+//        Log.i("DEBUGGER_TAG", "show");
 
         runOnUiThread(new Runnable() {
             @Override
@@ -458,7 +479,7 @@ public class QtActivity extends Activity
     }
 
     public String hideBusyCircle(){
-        Log.i("DEBUGGER_TAG", "hide");
+//        Log.i("DEBUGGER_TAG", "hide");
 
         runOnUiThread(new Runnable() {
             @Override
@@ -657,10 +678,70 @@ public class QtActivity extends Activity
         return ret_str;
     }
 
+    public String FileChooserDialog(final String initialDir, final String Title, final String Suggestion, final String wildcard)
+    {
+        Log.i("DEBUGGER_TAG", "FileChooserDialog");
+        Log.i("DEBUGGER_TAG", initialDir);
+
+        m_FileChooserDone = false;
+
+//        Intent intent = new Intent(this, org.opencpn.FileChooser.class);
+//        intent.putExtra("FILE_CHOOSER_TITLE",Title);
+//        intent.putExtra("FILE_CHOOSER_DIR_ONLY","false");
+//        startActivityForResult(intent, OCPN_FILECHOOSER_REQUEST_CODE);
+
+        Intent intent = new Intent(this, FileChooserActivity.class);
+        intent.putExtra(FileChooserActivity.INPUT_START_FOLDER, initialDir);
+        intent.putExtra(FileChooserActivity.INPUT_FOLDER_MODE, false);
+        intent.putExtra(FileChooserActivity.INPUT_SHOW_FULL_PATH_IN_TITLE, true);
+
+
+        //  Creating a file?
+        if(!Suggestion.isEmpty()){
+            Log.i("DEBUGGER_TAG", "FileChooserDialog Creating");
+            intent.putExtra(FileChooserActivity.INPUT_CAN_CREATE_FILES, true);
+        }
+
+        this.startActivityForResult(intent, OCPN_AFILECHOOSER_REQUEST_CODE);
+
+        return "OK";
+   }
+
+   public String DirChooserDialog(final String initialDir, final String Title)
+   {
+       Log.i("DEBUGGER_TAG", "DirChooserDialog");
+       Log.i("DEBUGGER_TAG", initialDir);
+
+       m_FileChooserDone = false;
+//       Intent intent = new Intent(this, org.opencpn.FileChooser.class);
+//       intent.putExtra("FILE_CHOOSER_TITLE",Title);
+//       intent.putExtra("FILE_CHOOSER_DIR_ONLY","true");
+//       startActivityForResult(intent, OCPN_FILECHOOSER_REQUEST_CODE);
+
+       Intent intent = new Intent(this, FileChooserActivity.class);
+       intent.putExtra(FileChooserActivity.INPUT_START_FOLDER, initialDir);
+       intent.putExtra(FileChooserActivity.INPUT_FOLDER_MODE, true);
+       this.startActivityForResult(intent, OCPN_AFILECHOOSER_REQUEST_CODE);
+
+       return "OK";
+  }
+
+   public String isFileChooserFinished()
+   {
+       if(m_FileChooserDone){
+            return m_filechooserString;
+       }
+       else{
+           return "no";
+       }
+   }
+
 
     // this function is used to load and start the loader
     private void loadApplication(Bundle loaderParams)
     {
+        Log.i("DEBUGGER_TAG", "LoadApplication");
+
         try {
             final int errorCode = loaderParams.getInt(ERROR_CODE_KEY);
             if (errorCode != 0) {
@@ -686,6 +767,16 @@ public class QtActivity extends Activity
             ArrayList<String> libs = new ArrayList<String>();
             if ( m_activityInfo.metaData.containsKey("android.app.bundled_libs_resource_id") )
                 libs.addAll(Arrays.asList(getResources().getStringArray(m_activityInfo.metaData.getInt("android.app.bundled_libs_resource_id"))));
+
+                //  We want the default OCPN plugins bundled into the APK and installed
+                //  into the proper app-lib.  So they are listed in ANDROID_EXTRA_LIBS.
+                //  But we do not want to pre-load them.  So take them out of the DexClassLoader list.
+
+                libs.remove("dashboard_pi");
+                libs.remove("grib_pi");
+
+
+
 
             String libName = null;
             if ( m_activityInfo.metaData.containsKey("android.app.lib_name") ) {
@@ -721,6 +812,7 @@ public class QtActivity extends Activity
             Method startAppMethod=qtLoader.getClass().getMethod("startApplication");
             if (!(Boolean)startAppMethod.invoke(qtLoader))
                 throw new Exception("");
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -1214,7 +1306,7 @@ public class QtActivity extends Activity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        Log.i("DEBUGGER_TAG", "onqtActivityResultA");
+        Log.i("DEBUGGER_TAG", "onActivityResultA");
         if (requestCode == OCPN_SETTINGS_REQUEST_CODE) {
 //            Log.i("DEBUGGER_TAG", "onqtActivityResultC");
             // Make sure the request was successful
@@ -1227,6 +1319,65 @@ public class QtActivity extends Activity
             else if (resultCode == RESULT_CANCELED){
 //                Log.i("DEBUGGER_TAG", "onqtActivityResultE");
             }
+
+            super.onActivityResult(requestCode, resultCode, data);
+
+            return;
+        }
+
+        if (requestCode == OCPN_FILECHOOSER_REQUEST_CODE) {
+            Log.i("DEBUGGER_TAG", "onqtActivityResultCf");
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK)
+            {
+                 Log.i("DEBUGGER_TAG", "onqtActivityResultDf");
+                 m_filechooserString = "file:" + data.getStringExtra("itemSelected");
+                 Log.i("DEBUGGER_TAG", m_filechooserString);
+            }
+            else if (resultCode == RESULT_CANCELED){
+                Log.i("DEBUGGER_TAG", "onqtActivityResultEf");
+                m_filechooserString = "cancel:";
+            }
+
+            m_FileChooserDone = true;
+
+            super.onActivityResult(requestCode, resultCode, data);
+
+            return;
+        }
+
+        if (requestCode == OCPN_AFILECHOOSER_REQUEST_CODE) {
+            Log.i("DEBUGGER_TAG", "onqtActivityResultCa");
+            // Make sure the request was successful
+            if (resultCode == Activity.RESULT_OK) {
+                Log.i("DEBUGGER_TAG", "onqtActivityResultDa");
+                boolean fileCreated = false;
+                String filePath = "";
+
+                Bundle bundle = data.getExtras();
+                if(bundle != null)
+                {
+                    if(bundle.containsKey(FileChooserActivity.OUTPUT_NEW_FILE_NAME)) {
+                            fileCreated = true;
+                            File folder = (File) bundle.get(FileChooserActivity.OUTPUT_FILE_OBJECT);
+                            String name = bundle.getString(FileChooserActivity.OUTPUT_NEW_FILE_NAME);
+                            filePath = folder.getAbsolutePath() + "/" + name;
+                    } else {
+                            fileCreated = false;
+                            File file = (File) bundle.get(FileChooserActivity.OUTPUT_FILE_OBJECT);
+                            filePath = file.getAbsolutePath();
+                    }
+
+                    m_filechooserString = "file:" + filePath;
+
+                }
+            }
+            else if (resultCode == Activity.RESULT_CANCELED){
+                Log.i("DEBUGGER_TAG", "onqtActivityResultEa");
+                m_filechooserString = "cancel:";
+            }
+
+            m_FileChooserDone = true;
 
             super.onActivityResult(requestCode, resultCode, data);
 
@@ -1380,8 +1531,8 @@ public class QtActivity extends Activity
 
         if (null == getLastNonConfigurationInstance()) {
             // if splash screen is defined, then show it
-            if (m_activityInfo.metaData.containsKey("android.app.splash_screen") )
-                setContentView(m_activityInfo.metaData.getInt("android.app.splash_screen"));
+//            if (m_activityInfo.metaData.containsKey("android.app.splash_screen") )
+//                setContentView(m_activityInfo.metaData.getInt("android.app.splash_screen"));
 
   Log.i("DEBUGGER_TAG", "asset bridge start unpack");
   Assetbridge.unpack(this);
@@ -1397,6 +1548,9 @@ public class QtActivity extends Activity
 
 
             startApp(true);
+
+
+
         }
     }
     //---------------------------------------------------------------------------
@@ -1446,11 +1600,26 @@ public class QtActivity extends Activity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        QtApplication.InvokeResult res = QtApplication.invokeDelegate(menu);
-        if (res.invoked)
-            return (Boolean)res.methodReturns;
-        else
-            return super.onCreateOptionsMenu(menu);
+        Log.i("DEBUGGER_TAG", "onCreateOptionsMenu");
+
+
+//        QtApplication.InvokeResult res = QtApplication.invokeDelegate(menu);
+//        if (res.invoked)
+//            return (Boolean)res.methodReturns;
+//        else
+//            return super.onCreateOptionsMenu(menu);
+
+//try {
+//    Class.forName("android.app.ActionBar").getMethod("show").invoke(getActionBar());
+//} catch (Exception e) {
+//    e.printStackTrace();
+//}
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.activity_main_actions, menu);
+        return super.onCreateOptionsMenu(menu);
+
+
     }
     public boolean super_onCreateOptionsMenu(Menu menu)
     {
@@ -1636,11 +1805,52 @@ public class QtActivity extends Activity
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        QtApplication.InvokeResult res = QtApplication.invokeDelegate(item);
-        if (res.invoked)
-            return (Boolean)res.methodReturns;
-        else
-            return super.onOptionsItemSelected(item);
+//        QtApplication.InvokeResult res = QtApplication.invokeDelegate(item);
+//        if (res.invoked)
+//            return (Boolean)res.methodReturns;
+//        else
+//            return super.onOptionsItemSelected(item);
+
+        // Take appropriate action for each action item click
+        switch (item.getItemId()) {
+            case R.id.ocpn_action_follow:
+                Log.i("DEBUGGER_TAG", "Invoke OCPN_ACTION_FOLLOW");
+                nativeLib.invokeMenuItem(OCPN_ACTION_FOLLOW);
+                return true;
+
+                case R.id.ocpn_action_settings_basic:
+                    nativeLib.invokeMenuItem(OCPN_ACTION_SETTINGS_BASIC);
+                    return true;
+
+                case R.id.ocpn_action_routemanager:
+                    nativeLib.invokeMenuItem(OCPN_ACTION_RMD);
+                    return true;
+
+                case R.id.ocpn_action_tracktoggle:
+                    nativeLib.invokeMenuItem(OCPN_ACTION_TRACK_TOGGLE);
+                    return true;
+
+                case R.id.ocpn_action_createroute:
+                    nativeLib.invokeMenuItem(OCPN_ACTION_ROUTE);
+                    return true;
+
+                case R.id.ocpn_action_mob:
+                    nativeLib.invokeMenuItem(OCPN_ACTION_MOB);
+                    return true;
+
+                case R.id.ocpn_action_tides:
+                    nativeLib.invokeMenuItem(OCPN_ACTION_TIDES_TOGGLE);
+                    return true;
+
+                case R.id.ocpn_action_currents:
+                    nativeLib.invokeMenuItem(OCPN_ACTION_CURRENTS_TOGGLE);
+                    return true;
+
+
+            default:
+                return super.onOptionsItemSelected(item);
+            }
+
     }
     public boolean super_onOptionsItemSelected(MenuItem item)
     {
@@ -1718,11 +1928,33 @@ public class QtActivity extends Activity
     @Override
     public boolean onPrepareOptionsMenu(Menu menu)
     {
-        QtApplication.InvokeResult res = QtApplication.invokeDelegate(menu);
-        if (res.invoked)
-            return (Boolean)res.methodReturns;
-        else
-            return super.onPrepareOptionsMenu(menu);
+        Log.i("DEBUGGER_TAG", "onPrepareOptionsMenu");
+
+
+// Use native instead og Qt
+//        QtApplication.InvokeResult res = QtApplication.invokeDelegate(menu);
+//        if (res.invoked)
+//            return (Boolean)res.methodReturns;
+//        else
+//            return super.onPrepareOptionsMenu(menu);
+        ActionBar actionBar = getActionBar();
+        if(actionBar != null){
+            // set the icon
+            //actionBar.setIcon(R.drawable.opencpn_mobile);
+            actionBar.setLogo(R.drawable.opencpn_mobile);
+            actionBar.setDisplayUseLogoEnabled(true);
+
+            //  Use transparent ActionBar background?
+            //getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);//or add in style.xml
+            //ColorDrawable newColor = new ColorDrawable(getResources().getColor(R.color.action_bar_color));//your color from res
+            //newColor.setAlpha(0);//from 0(0%) to 256(100%)
+            //getActionBar().setBackgroundDrawable(newColor);
+
+            actionBar.show();
+        }
+
+
+        return super.onPrepareOptionsMenu(menu);
     }
     public boolean super_onPrepareOptionsMenu(Menu menu)
     {
@@ -1771,10 +2003,10 @@ public class QtActivity extends Activity
     {
         Log.i("DEBUGGER_TAG", "onResume");
 
-        int i = nativeLib.onResume();
-        String aa;
-        aa = String.format("%d", i);
-        Log.i("DEBUGGER_TAG", aa);
+//        int i = nativeLib.onResume();
+//        String aa;
+//        aa = String.format("%d", i);
+//        Log.i("DEBUGGER_TAG", aa);
 
         super.onResume();
         QtApplication.invokeDelegate();
@@ -1829,10 +2061,10 @@ public class QtActivity extends Activity
     {
         Log.i("DEBUGGER_TAG", "onStart");
 
-        int i = nativeLib.onStart();
-        String aa;
-        aa = String.format("%d", i);
-        Log.i("DEBUGGER_TAG", aa);
+//        int i = nativeLib.onStart();
+//        String aa;
+//        aa = String.format("%d", i);
+//        Log.i("DEBUGGER_TAG", aa);
 
         super.onStart();
         QtApplication.invokeDelegate();

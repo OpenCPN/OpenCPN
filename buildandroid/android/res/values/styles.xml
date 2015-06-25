@@ -24,4 +24,9 @@
     <item name="android:topDark">@color/transparent</item>
 </style>
 
+<style name="TransparentActionBarTheme"
+           parent="@android:style/Theme.Holo">
+        <item name="android:windowActionBarOverlay">true</item>
+</style>
+
 </resources>

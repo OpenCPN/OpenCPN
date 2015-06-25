@@ -31,12 +31,6 @@
 #define __CHARTDB_H__
 
 
-#include "wx/file.h"
-#include "wx/stream.h"
-#include "wx/wfstream.h"
-#include "wx/tokenzr.h"
-#include "wx/dir.h"
-#include "wx/filename.h"
 #include <wx/xml/xml.h>
 
 #include "chartbase.h"
@@ -107,7 +101,7 @@ class ChartDB: public ChartDatabase
 {
 public:
 
-      ChartDB(MyFrame *parent);
+      ChartDB();
       virtual ~ChartDB();
 
 
@@ -141,6 +135,7 @@ public:
       
       void ApplyColorSchemeToCachedCharts(ColorScheme cs);
       void PurgeCache();
+      void PurgeCachePlugins();
       bool DeleteCacheChart(ChartBase *pChart);
 
       void LockCache(bool bl){m_b_locked = bl;}
@@ -173,7 +168,6 @@ private:
       
       wxArrayPtrVoid    *pChartCache;
 
-      MyFrame           *pParent;
       bool              m_b_locked;
       bool              m_b_busy;
 

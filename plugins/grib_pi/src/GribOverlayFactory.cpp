@@ -1877,8 +1877,10 @@ void GRIBOverlayFactory::drawWindArrowWithBarbs( int settings, int x, int y, dou
         m_pdc->SetPen( pen );
         m_pdc->SetBrush( *wxTRANSPARENT_BRUSH);
 
+#if wxUSE_GRAPHICS_CONTEXT
         if( m_hiDefGraphics && m_gdc )
             m_gdc->SetPen( pen );
+#endif
     }
 #ifdef ocpnUSE_GL
     else
