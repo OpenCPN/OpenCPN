@@ -79,6 +79,7 @@
 #include "OCPNRegion.h"
 #include "gshhs.h"
 #include "canvasMenu.h"
+#include "androidUTIL.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -8255,6 +8256,10 @@ void ChartCanvas::FinishRoute( void )
     m_prev_pMousePoint = NULL;
 
     parent_frame->SetToolbarItemState( ID_ROUTE, false );
+#ifdef __OCPN__ANDROID__
+    androidSetRouteAnnunciator(false);
+#endif        
+    
     SetCursor( *pCursorArrow );
     m_bDrawingRoute = false;
 

@@ -41,6 +41,7 @@
 #include "chart1.h"
 #include "cutil.h"
 #include "styles.h"
+#include "navutil.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -101,6 +102,7 @@ extern ocpnStyle::StyleManager* g_StyleManager;
 
 extern bool                      g_bshowToolbar;
 extern bool                      g_bBasicMenus;
+extern bool                      g_bUIexpert;
 
 extern bool                      g_bShowOutlines;
 extern bool                      g_bShowDepthUnits;
@@ -558,11 +560,12 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_btouch = true;
     g_bresponsive = true;
     g_default_font_size = 18;            //  This is pretty close to TextAppearance.Medium
-
-    g_bShowStatusBar = false;
+    g_bUIexpert = false;
+    
+    g_bShowStatusBar = true;
     g_cm93_zoom_factor = -5;
     
-    g_GUIScaleFactor = 0;               // max
+    g_GUIScaleFactor = 0;               // nominal
 #endif
     
     
@@ -619,13 +622,9 @@ wxString &OCPNPlatform::GetHomeDir()
         m_homeDir = std_path.GetUserConfigDir();
 #endif
 
-//  On android, make the private data dir on the sdcard, if it exists.
-//  This make debugging easier, as it is not deleted whenever the APK is re-deployed.
-//  This behaviour should go away at Release.
 #ifdef __OCPN__ANDROID__
-        if( wxDirExists(_T("/mnt/sdcard")) ) {
-            m_homeDir =  _T("/mnt/sdcard/.opencpn");
-        }
+//            m_homeDir =  _T("/mnt/sdcard/.opencpn");
+        m_homeDir =  androidGetHomeDir();
 #endif
 
 		if( g_bportable ) {
@@ -673,11 +672,7 @@ wxString &OCPNPlatform::GetSharedDataDir()
         appendOSDirSlash( &m_SData_Dir );
         
 #ifdef __OCPN__ANDROID__
-        wxFileName fdir = wxFileName::DirName(std_path.GetUserConfigDir());
-        
-        fdir.RemoveLastDir();
-        m_SData_Dir = fdir.GetPath();
-        m_SData_Dir += _T("/cache/");
+        m_SData_Dir = androidGetSharedDir();
 #endif
         
         if( g_bportable )
@@ -708,7 +703,7 @@ wxString &OCPNPlatform::GetPrivateDataDir()
             m_PrivateDataDir = GetHomeDir();
         
 #ifdef __OCPN__ANDROID__
-        m_PrivateDataDir = GetHomeDir();
+        m_PrivateDataDir = androidGetPrivateDir();
 #endif
     }
     
@@ -788,7 +783,8 @@ wxString &OCPNPlatform::GetConfigFileName()
         }
         
 #ifdef __OCPN__ANDROID__
-        m_config_file_name = GetHomeDir();
+        m_config_file_name = androidGetPrivateDir();
+        appendOSDirSlash(&m_config_file_name);
         m_config_file_name += _T("opencpn.conf");
 #endif
         
@@ -904,7 +900,8 @@ int OCPNPlatform::DoDirSelectorDialog( wxWindow *parent, wxString *file_spec, wx
 bool OCPNPlatform::InitializeLogFile( void )
 {
     //      Establish Log File location
-    mlog_file = GetHomeDir();
+    mlog_file = GetPrivateDataDir();
+    appendOSDirSlash( &mlog_file );
     
 #ifdef  __WXOSX__
     
@@ -917,6 +914,7 @@ bool OCPNPlatform::InitializeLogFile( void )
     mlog_file.Append(_T("Logs/"));// so, on OS X, opencpn.log ends up in ~/Library/Logs
                                    // which makes it accessible to Applications/Utilities/Console....
 #endif
+
     
     // create the opencpn "home" directory if we need to
     wxFileName wxHomeFiledir( GetHomeDir() );
@@ -937,7 +935,11 @@ bool OCPNPlatform::InitializeLogFile( void )
     
     mlog_file.Append( _T("opencpn.log") );
     wxString logit = mlog_file;
-        
+
+#ifdef __OCPN__ANDROID__
+    wxCharBuffer abuf = mlog_file.ToUTF8();  qDebug() << "logfile " << abuf.data();
+#endif        
+    
         //  Constrain the size of the log file
     if( ::wxFileExists( mlog_file ) ) {
             if( wxFileName::GetSize( mlog_file ) > 1000000 ) {
@@ -985,6 +987,14 @@ void OCPNPlatform::CloseLogFile( void)
 
 
 
+MyConfig *OCPNPlatform::GetConfigObject()
+{
+    MyConfig *result = NULL;
+
+    result = new MyConfig( wxString( _T("") ), wxString( _T("") ), GetConfigFileName() );
+
+    return result;
+}
 
 
 
@@ -1213,7 +1223,7 @@ double OCPNPlatform::GetToolbarScaleFactor( int GUIScaleFactor )
         double postmult =  exp( GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
         rv = wxMin(rv, 1.5);      //  Clamp at 1.5
         
-        qDebug() << "parms" << style_tool_size.x << GetDisplayDPmm() << basic_tool_size_mm << premult << postmult;
+        qDebug() << "parms" << GUIScaleFactor << style_tool_size.x << GetDisplayDPmm() << basic_tool_size_mm << premult << postmult;
         
         rv = premult * postmult;
     }

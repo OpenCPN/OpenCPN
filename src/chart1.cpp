@@ -164,6 +164,7 @@ void RedirectIOToConsole();
 OCPNPlatform              *g_Platform;
 
 bool                      g_bFirstRun;
+wxString                  glog_file;
 
 int                       g_unit_test_1;
 bool                      g_start_fullscreen;
@@ -220,7 +221,6 @@ bool                      g_bshowToolbar = true;
 bool                      g_bBasicMenus = false;;
 
 bool                      bDrawCurrentValues;
-bool                      b_novicemode = false;
 
 wxString                  ChartListFileName;
 wxString                  AISTargetNameFileName;
@@ -655,6 +655,7 @@ bool                      g_bMagneticAPB;
 int                       g_GPU_MemSize;
 
 bool                      g_bserial_access_checked;
+wxString                  g_uiStyle;
 
 
 char bells_sound_file_name[2][12] = { "1bells.wav", "2bells.wav" };
@@ -1084,21 +1085,14 @@ void LoadS57()
         wxLogMessage( _T("Using s57data in ") + g_csv_locn );
         m_pRegistrarMan = new s57RegistrarMgr( g_csv_locn, g_Platform->GetLogFilePtr() );
 
-        if(b_novicemode) {
-            ps52plib->m_bShowSoundg = true;
-            ps52plib->SetDisplayCategory((enum _DisCat) STANDARD );
-            ps52plib->m_nSymbolStyle = (LUPname) PAPER_CHART;
-            ps52plib->m_nBoundaryStyle = (LUPname) PLAIN_BOUNDARIES;
-            ps52plib->m_bUseSCAMIN = true;
-            ps52plib->m_bShowAtonText = true;
 
             //    Preset some object class visibilites for "Mariner's Standard" disply category
-            for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
-                OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
-                if( !strncmp( pOLE->OBJLName, "DEPARE", 6 ) ) pOLE->nViz = 1;
-                if( !strncmp( pOLE->OBJLName, "LNDARE", 6 ) ) pOLE->nViz = 1;
-                if( !strncmp( pOLE->OBJLName, "COALNE", 6 ) ) pOLE->nViz = 1;
-            }
+            //  They may be overridden in LoadS57Config
+        for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
+            OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
+            if( !strncmp( pOLE->OBJLName, "DEPARE", 6 ) ) pOLE->nViz = 1;
+            if( !strncmp( pOLE->OBJLName, "LNDARE", 6 ) ) pOLE->nViz = 1;
+            if( !strncmp( pOLE->OBJLName, "COALNE", 6 ) ) pOLE->nViz = 1;
         }
 
         pConfig->LoadS57Config();
@@ -1337,7 +1331,7 @@ bool MyApp::OnInit()
 #endif
 
 
-    b_novicemode = false;
+     bool b_initial_load = false;
     
     wxFileName config_test_file_name( g_Platform->GetConfigFileName() );
     if( config_test_file_name.FileExists() ) wxLogMessage(
@@ -1346,41 +1340,45 @@ bool MyApp::OnInit()
         {
             wxLogMessage( _T("Creating new Config_File: ") + g_Platform->GetConfigFileName() );
 
-            //    Flag to preset some options for initial config file creation
-            b_novicemode = true;
-
+            b_initial_load = true;
+            
             if( true != config_test_file_name.DirExists( config_test_file_name.GetPath() ) )
                 if( !config_test_file_name.Mkdir(config_test_file_name.GetPath() ) )
                     wxLogMessage( _T("Cannot create config file directory for ") + g_Platform->GetConfigFileName() );
         }
     }
 
+    //      Open/Create the Config Object
+    pConfig = g_Platform->GetConfigObject();
+    pConfig->LoadMyConfig();
+    
+    //  Override for some safe and nice default values if the config file was created from scratch
+    if(b_initial_load)
+        g_Platform->SetDefaultOptions();
+    
+    g_Platform->applyExpertMode(g_bUIexpert);
+
     // Now initialize UI Style.
     g_StyleManager = new ocpnStyle::StyleManager();
-
+    g_StyleManager->SetStyle( g_uiStyle );
     if( !g_StyleManager->IsOK() ) {
         wxString msg = _("Failed to initialize the user interface. ");
         msg << _("OpenCPN cannot start. ");
         msg << _("The necessary configuration files were not found. ");
-        msg << _("See the log file at ") << g_Platform->GetLogFileName() << _(" for details.");
+        msg << _("See the log file at ") << g_Platform->GetLogFileName() << _(" for details.") << _T("\n\n");
+        msg << g_Platform->GetSharedDataDir();
+        
         wxMessageDialog w( NULL, msg, _("Failed to initialize the user interface. "),
-                wxCANCEL | wxICON_ERROR );
+                           wxCANCEL | wxICON_ERROR );
         w.ShowModal();
         exit( EXIT_FAILURE );
     }
-
+    
+    //      Init the WayPoint Manager
+    pWayPointMan = NULL;
+    
     g_display_size_mm = wxMax(100, g_Platform->GetDisplaySizeMM());
     double dsmm = g_display_size_mm;
-    
-    //      Init the WayPoint Manager (Must be after UI Style init).
-    pWayPointMan = NULL;
-
-    //      Open/Create the Config Object (Must be after UI Style init).
-    MyConfig *pCF = new MyConfig( wxString( _T("") ), wxString( _T("") ), g_Platform->GetConfigFileName() );
-    pConfig = (MyConfig *) pCF;
-    pConfig->LoadMyConfig();
-    g_Platform->applyExpertMode(g_bUIexpert);
-    
     
     if(fabs(dsmm - g_display_size_mm) > 1){
         wxString msg;
@@ -1606,9 +1604,6 @@ bool MyApp::OnInit()
     pWorldMapLocation = new wxString( _T("gshhs") );
     pWorldMapLocation->Prepend( g_Platform->GetSharedDataDir() );
     pWorldMapLocation->Append( wxFileName::GetPathSeparator() );
-
-    if( b_novicemode )
-        g_Platform->SetDefaultOptions();
 
     //  Check the global Tide/Current data source array
     //  If empty, preset one default (US) Ascii data source
@@ -3679,12 +3674,16 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
                 nRoute_State = 1;
                 cc1->SetCursor( *cc1->pCursorPencil );
                 SetToolbarItemState( ID_ROUTE, true );
+                
             }
             else {
                 cc1->FinishRoute();
                 SetToolbarItemState( ID_ROUTE, false );
             }
 
+#ifdef __OCPN__ANDROID__
+            androidSetRouteAnnunciator(nRoute_State == 1);
+#endif        
             break;
         }
 
@@ -5012,7 +5011,6 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
     } else
         if( Current_Ch )
             chart_file_name = Current_Ch->GetFullPath();
-
         
     if( ( rr & VISIT_CHARTS )
             && ( ( rr & CHANGE_CHARTS ) || ( rr & FORCE_UPDATE ) || ( rr & SCAN_UPDATE ) ) ) {
@@ -5118,8 +5116,12 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
     cc1->SetDisplaySizeMM( g_display_size_mm );
 
     //    Do a full Refrload, trying to open the last open chart
-    if(b_need_refresh)
-        ChartsRefresh( ChartData->FinddbIndex( chart_file_name ), cc1->GetVP() );
+    if(b_need_refresh){
+        int index_hint = ChartData->FinddbIndex( chart_file_name );
+        if(-1 == index_hint)
+            index_hint = 0;             // arbitrarily select "chart 0", whatever it is
+        ChartsRefresh( index_hint, cc1->GetVP() );
+    }
     
     return 0;
 }
@@ -5540,7 +5542,12 @@ void MyFrame::SetupQuiltMode( void )
 
 void MyFrame::ClearRouteTool()
 {
-    if( g_toolbar ) g_toolbar->ToggleTool( ID_ROUTE, false );
+    if( g_toolbar )
+        g_toolbar->ToggleTool( ID_ROUTE, false );
+    
+#ifdef __OCPN__ANDROID__
+        androidSetRouteAnnunciator(false);
+#endif        
 }
 
 void MyFrame::DoStackDown( void )
@@ -9300,9 +9307,7 @@ void MyFrame::applySettingsString( wxString settings)
         }
         
         
-        
-            
-        if(b_action){                               // something to do?
+        if(b_action && cp){                               // something to do?
  
             // Terminate and remove any existing stream with the same port name
             DataStream *pds_existing = g_pMUX->FindStream( cp->GetDSPort() );

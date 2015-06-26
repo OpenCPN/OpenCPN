@@ -84,6 +84,12 @@ extern int androidFileChooser( wxString *result, const wxString &initDir, const 
                         const wxString &suggestion, const wxString &wildcard, bool dirOnly = false);
 
 extern void androidSetChartTypeMaskSel( int mask, wxString &indicator);
+extern void androidSetRouteAnnunciator(bool viz);
 
+
+extern wxString androidGetHomeDir();
+extern wxString androidGetPrivateDir();                 // Used for logfile, config file, and the like
+extern wxString androidGetSharedDir();                 // Used for assets like uidata, s57data, etc
+extern wxString androidGetCacheDir();                 // Used for raster_texture_cache, mmsitoname.csv, etc
 
 #endif   //guard

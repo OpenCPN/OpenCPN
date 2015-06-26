@@ -37,6 +37,8 @@
 
 #include <stdio.h>
 
+class MyConfig;
+
 class OCPNPlatform
 {
 public:    
@@ -100,7 +102,8 @@ public:
     wxString *GetSharedDataDirPtr();
     wxString *GetPrivateDataDirPtr();
     wxString &GetLogFileName(){ return mlog_file; }
-
+    MyConfig *GetConfigObject();
+    
     int DoFileSelectorDialog( wxWindow *parent, wxString *file_spec, wxString Title, wxString initDir,
                                 wxString suggestedName, wxString wildcard);
     int DoDirSelectorDialog( wxWindow *parent, wxString *file_spec, wxString Title, wxString initDir);

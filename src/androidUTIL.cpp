@@ -52,14 +52,6 @@
 
 class androidUtilHandler;
 
-JavaVM *java_vm;
-JNIEnv* jenv;
-bool     b_androidBusyShown;
-double   g_androidDPmm;
-double   g_androidDensity;
-
-QString g_qtStyleSheet;
-
 
 
 extern MyFrame                  *gFrame;
@@ -244,6 +236,32 @@ extern int              g_GUIScaleFactor;
 extern int              g_ChartScaleFactor;
 
 extern double           g_config_display_size_mm;
+
+wxString callActivityMethod_vs(const char *method);
+
+
+//      Globals, accessible only to this module
+
+JavaVM *java_vm;
+JNIEnv* jenv;
+bool     b_androidBusyShown;
+double   g_androidDPmm;
+double   g_androidDensity;
+
+QString g_qtStyleSheet;
+
+
+bool            g_bExternalApp;
+
+wxString        g_androidFilesDir;
+wxString        g_androidCacheDir;
+wxString        g_androidExtFilesDir;
+wxString        g_androidExtCacheDir;
+
+int             g_mask;
+int             g_sel;
+
+
 
 #define ANDROID_EVENT_TIMER 4389
 
@@ -454,6 +472,28 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
 bool androidUtilInit( void )
 {
     g_androidUtilHandler = new androidUtilHandler();
+
+    //  Initialize some globals
+    wxString dirs = callActivityMethod_vs("getSystemDirs");
+    wxStringTokenizer tk(dirs, _T(";"));
+    if( tk.HasMoreTokens() ){
+        wxString token = tk.GetNextToken();
+        if(wxNOT_FOUND != token.Find(_T("EXTAPP")))
+            g_bExternalApp = true;
+        
+        token = tk.GetNextToken();              
+        g_androidFilesDir = token;
+        token = tk.GetNextToken();              
+        g_androidCacheDir = token;
+        token = tk.GetNextToken();              
+        g_androidExtFilesDir = token;
+        token = tk.GetNextToken();              
+        g_androidExtCacheDir = token;
+        
+    }
+    
+    g_mask = -1;
+    g_sel = -1;
     
     return true;
 }
@@ -765,6 +805,36 @@ extern "C"{
 
 
 
+wxString callActivityMethod_vs(const char *method)
+{
+    wxString return_string;
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                           "activity", "()Landroid/app/Activity;");
+    
+    if ( !activity.isValid() ){
+        qDebug() << "Activity is not valid";
+        return return_string;
+    }
+    
+    //  Call the desired method
+    QAndroidJniObject data = activity.callObjectMethod(method, "()Ljava/lang/String;");
+    
+    jstring s = data.object<jstring>();
+    
+    //  Need a Java environment to decode the resulting string
+    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+        qDebug() << "GetEnv failed.";
+    }
+    else {
+        const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+        return_string = wxString(ret_string, wxConvUTF8);
+    }
+    
+    return return_string;
+    
+}
+
+
 wxString callActivityMethod_is(const char *method, int parm)
 {
     wxString return_string;
@@ -945,6 +1015,48 @@ wxString callActivityMethod_s4s(const char *method, wxString parm1, wxString par
     
 }
 
+wxString androidGetHomeDir()
+{
+    return g_androidFilesDir + _T("/");
+}
+
+wxString androidGetPrivateDir()                 // Used for logfile, config file, and the like
+{
+    if(g_bExternalApp){
+        if(g_androidExtFilesDir.Length())
+            return g_androidExtFilesDir;
+    }
+
+    return g_androidFilesDir;
+}
+
+wxString androidGetSharedDir()                 // Used for assets like uidata, s57data, etc
+{
+    if(g_bExternalApp){
+        if(g_androidExtFilesDir.Length())
+            return g_androidExtFilesDir + _T("/");
+    }
+    
+    return g_androidFilesDir + _T("/");
+}
+
+wxString androidGetCacheDir()                 // Used for raster_texture_cache, mmsitoname.csv, etc
+{
+    if(g_bExternalApp){
+        if(g_androidExtCacheDir.Length())
+            return g_androidExtCacheDir;
+    }
+    
+    return g_androidCacheDir;
+}
+
+
+extern void androidSetRouteAnnunciator(bool viz)
+{
+    callActivityMethod_is("setRouteAnnunciator", viz?1:0);
+}
+
+
 void androidSetChartTypeMaskSel( int mask, wxString &indicator)
 {
     int sel = 0;
@@ -955,10 +1067,14 @@ void androidSetChartTypeMaskSel( int mask, wxString &indicator)
     else if(wxNOT_FOUND != indicator.Find( _T("cm93")))
         sel = 4;
 
-    qDebug() << "androidSetChartTypeMaskSel" << mask << sel;
-    
-    callActivityMethod_iis("configureNavSpinnerTS", mask, sel);
-}
+     
+    if((g_mask != mask) || (g_sel != sel)){
+        qDebug() << "androidSetChartTypeMaskSel" << mask << sel;
+        callActivityMethod_iis("configureNavSpinnerTS", mask, sel);
+        g_mask = mask;
+        g_sel = sel;
+    }
+}       
 
 
 bool androidGetMemoryStatus( int *mem_total, int *mem_used )
@@ -1059,7 +1175,7 @@ double GetAndroidDisplaySize()
     }
     
     double ldpi = 160. * density;
-    qDebug() << "ldpi" << ldpi;
+//    qDebug() << "ldpi" << ldpi;
     
     double maxDim = wxMax(::wxGetDisplaySize().x, ::wxGetDisplaySize().y);
     ret = (maxDim / ldpi) * 25.4;
@@ -1069,7 +1185,7 @@ double GetAndroidDisplaySize()
     
     //  Save some items as global statics for convenience
     g_androidDPmm = ldpi / 25.4;
-    qDebug() << "g_androidDPmm" << g_androidDPmm;
+//    qDebug() << "g_androidDPmm" << g_androidDPmm;
     g_androidDensity = density;
     
 //    g_androidSmallTextPixels = 14 * density;            // Small text is always 14 sp,
@@ -1093,7 +1209,7 @@ double getAndroidDPmm()
         GetAndroidDisplaySize();
     }
     
-    qDebug() << "g_androidDPmm" << g_androidDPmm;
+//    qDebug() << "g_androidDPmm" << g_androidDPmm;
     
     if(g_androidDPmm > 0.01)
         return g_androidDPmm;
@@ -1107,7 +1223,7 @@ double getAndroidDisplayDensity()
         GetAndroidDisplaySize();
     }
     
-    qDebug() << "g_androidDensity" << g_androidDensity;
+//    qDebug() << "g_androidDensity" << g_androidDensity;
     
     if(g_androidDensity > 0.01)
         return g_androidDensity;
@@ -1449,14 +1565,16 @@ int androidFileChooser( wxString *result, const wxString &initDir, const wxStrin
                 wxSafeYield(NULL, true);
             }
         
-            qDebug() << "out of spin loop";
+//            qDebug() << "out of spin loop";
             g_androidUtilHandler->m_action = ACTION_NONE;
             g_androidUtilHandler->m_eventTimer.Stop();
         
         
             tresult = g_androidUtilHandler->GetStringResult();
-            if( tresult.StartsWith(_T("cancel:")) )
+            
+            if( tresult.StartsWith(_T("cancel:")) ){
                 return wxID_CANCEL;
+            }
             else if( tresult.StartsWith(_T("file:")) ){
                 if(result){
                     *result = tresult.AfterFirst(':');

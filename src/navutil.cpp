@@ -366,6 +366,7 @@ extern bool             g_bAutoHideToolbar;
 extern int              g_nAutoHideToolbar;
 extern int              g_GUIScaleFactor;
 extern int              g_ChartScaleFactor;
+extern wxString         g_uiStyle;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
@@ -1177,9 +1178,7 @@ int MyConfig::LoadMyConfig()
 
     Read( _T ( "UIexpert" ), &g_bUIexpert, 1 );
     
-    wxString uiStyle;
-    Read( _T ( "UIStyle" ), &uiStyle, wxT("") );
-    g_StyleManager->SetStyle( uiStyle );
+    Read( _T ( "UIStyle" ), &g_uiStyle, wxT("Traditional") );
 
     Read( _T ( "NCacheLimit" ), &g_nCacheLimit, CACHE_N_LIMIT_DEFAULT );
 
@@ -1996,16 +1995,16 @@ void MyConfig::LoadS57Config()
     Read( _T ( "nBoundaryStyle" ), &read_int, PLAIN_BOUNDARIES );
     ps52plib->m_nBoundaryStyle = (LUPname) read_int;
 
-    Read( _T ( "bShowSoundg" ), &read_int, 0 );
+    Read( _T ( "bShowSoundg" ), &read_int, 1 );
     ps52plib->m_bShowSoundg = !( read_int == 0 );
 
     Read( _T ( "bShowMeta" ), &read_int, 0 );
     ps52plib->m_bShowMeta = !( read_int == 0 );
 
-    Read( _T ( "bUseSCAMIN" ), &read_int, 0 );
+    Read( _T ( "bUseSCAMIN" ), &read_int, 1 );
     ps52plib->m_bUseSCAMIN = !( read_int == 0 );
 
-    Read( _T ( "bShowAtonText" ), &read_int, 0 );
+    Read( _T ( "bShowAtonText" ), &read_int, 1 );
     ps52plib->m_bShowAtonText = !( read_int == 0 );
 
     Read( _T ( "bDeClutterText" ), &read_int, 0 );
