@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item android:id="@+id/ocpn_route_create_active"
+          android:icon="@drawable/route_active"
+          android:title="Route Create is Active"
+          android:visible="false"
+          android:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/ocpn_action_mob"
+          android:icon="@drawable/mob_btn"
+          android:title="@string/ocpn_action_mob"
+          android:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/ocpn_action_follow"
+          android:icon="@drawable/follow"
+          android:title="@string/ocpn_action_follow"
+          android:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/ocpn_action_routemanager"
+          android:icon="@drawable/route_manager"
+          android:title="@string/ocpn_action_routemanager"
+          android:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/ocpn_action_tracktoggle"
+          android:icon="@drawable/trackon"
+          android:title="@string/ocpn_action_tracktoggle"
+          android:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/ocpn_action_createroute"
+          android:icon="@drawable/route"
+          android:title="@string/ocpn_action_createroute"
+          android:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/ocpn_action_tides"
+          android:icon="@drawable/tide"
+          android:title="@string/ocpn_action_tides"
+          android:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/ocpn_action_currents"
+          android:icon="@drawable/current"
+          android:title="@string/ocpn_action_currents"
+          android:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/ocpn_action_settings_basic"
+          android:icon="@drawable/settings"
+          android:title="@string/ocpn_action_settings_basic"
+          android:showAsAction="ifRoom"/>
+
+
+ </menu>

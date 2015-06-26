@@ -56,6 +56,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
+import android.content.pm.ApplicationInfo;
+
 import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
 import android.content.pm.PackageManager;
@@ -80,6 +82,7 @@ import android.util.DisplayMetrics;
 import android.widget.Toast;
 import android.widget.ListView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -271,6 +274,10 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         // Navigation adapter
     private TitleNavigationAdapter adapter;
 
+        // Menu item used to indicate "RouteCreate" is active
+    MenuItem itemRouteAnnunciator;
+    private boolean m_showRouteAnnunciator = false;
+
     public QtActivity()
     {
         if (Build.VERSION.SDK_INT <= 10) {
@@ -420,6 +427,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         if(actionBar.isShowing())
             actionBarHeight = actionBar.getHeight();
 
+//            float getTextSize() //pixels
         int width = 600;
         int height = 400;
 
@@ -467,13 +475,14 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         }
 
 
+        float tsize = new Button(this).getTextSize();       // in pixels
 
         String ret;
 
-        ret = String.format("%f;%f;%d;%d;%d;%d;%d;%d;%d;%d", dm.xdpi, dm.density, dm.densityDpi,
+        ret = String.format("%f;%f;%d;%d;%d;%d;%d;%d;%d;%d;%f", dm.xdpi, dm.density, dm.densityDpi,
                width, height - statusBarHeight,
                width, height,
-               dm.widthPixels, dm.heightPixels, actionBarHeight);
+               dm.widthPixels, dm.heightPixels, actionBarHeight, tsize);
 
         Log.i("DEBUGGER_TAG", ret);
 
@@ -520,6 +529,38 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         String ret = "";
         return ret;
     }
+
+
+    public String setRouteAnnunciator( final int viz){
+     Log.i("DEBUGGER_TAG", "setRouteAnnunciator");
+
+     m_showRouteAnnunciator = (viz != 0);
+
+//    if( null != itemRouteAnnunciator)
+    {
+        Log.i("DEBUGGER_TAG", "setRouteAnnunciatorA");
+        if(viz == 0)
+            Log.i("DEBUGGER_TAG", "setRouteAnnunciatorB");
+        else
+            Log.i("DEBUGGER_TAG", "setRouteAnnunciatorC");
+
+        runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+//                    itemRouteAnnunciator.setVisible(viz != 0);
+                    QtActivity.this.invalidateOptionsMenu();
+
+                 }});
+
+//        itemRouteAnnunciator.setVisible(viz != 0);
+//        this.invalidateOptionsMenu();
+        return "OK";
+     }
+//     else
+//        return "NO";
+    }
+
 
     public String queryGPSServer( final int parm ){
 
@@ -842,6 +883,31 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
        return "OK";
    }
 
+   public String getSystemDirs(){
+       String result = "";
+
+       ApplicationInfo ai = getApplicationInfo();
+       if((ai.flags & ApplicationInfo.FLAG_EXTERNAL_STORAGE) ==  ApplicationInfo.FLAG_EXTERNAL_STORAGE){
+           Log.i("DEBUGGER_TAG", "External");
+           result = "EXTAPP;";
+       }
+       else{
+           Log.i("DEBUGGER_TAG", "Internal");
+           result = "INTAPP;";
+       }
+
+
+
+       result = result.concat(getFilesDir().getPath() + ";");
+       result = result.concat(getCacheDir().getPath() + ";");
+       result = result.concat(getExternalFilesDir(null).getPath() + ";");
+       result = result.concat(getExternalCacheDir().getPath() + ";");
+
+       Log.i("DEBUGGER_TAG", result);
+
+       return result;
+   }
+
 
 
 
@@ -1149,6 +1215,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
     private boolean cleanCacheIfNecessary(String pluginsPrefix, long packageVersion)
     {
+        Log.i("DEBUGGER_TAG", "cleanCacheIfNecessary" + pluginsPrefix);
         File versionFile = new File(pluginsPrefix + "cache.version");
 
         long cacheVersion = 0;
@@ -1164,8 +1231,11 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
         if (cacheVersion != packageVersion) {
             deleteRecursively(new File(pluginsPrefix));
+            Log.i("DEBUGGER_TAG", "cleanCacheIfNecessary return true");
             return true;
         } else {
+            Log.i("DEBUGGER_TAG", "cleanCacheIfNecessary return false");
+
             return false;
         }
     }
@@ -1739,9 +1809,26 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 //            if (m_activityInfo.metaData.containsKey("android.app.splash_screen") )
 //                setContentView(m_activityInfo.metaData.getInt("android.app.splash_screen"));
 
-  Log.i("DEBUGGER_TAG", "asset bridge start unpack");
-  Assetbridge.unpack(this);
-  Log.i("DEBUGGER_TAG", "asset bridge finish unpack");
+    String tmpdir = "";
+    ApplicationInfo ai = getApplicationInfo();
+    if((ai.flags & ApplicationInfo.FLAG_EXTERNAL_STORAGE) ==  ApplicationInfo.FLAG_EXTERNAL_STORAGE)
+        tmpdir = getExternalFilesDir(null).getPath();
+    else
+        tmpdir = getFilesDir().getPath();
+
+    File destinationFile = new File(tmpdir + "/uidata/styles.xml");
+    if (destinationFile.exists()){
+        Log.i("DEBUGGER_TAG", tmpdir + "/uidata/styles.xml exists");
+    }
+    else{
+      Log.i("DEBUGGER_TAG", tmpdir + "/uidata/styles.xml DOES NOT exist");
+
+      Log.i("DEBUGGER_TAG", "asset bridge start unpack");
+      Assetbridge.unpack(this);
+      Log.i("DEBUGGER_TAG", "asset bridge finish unpack");
+    }
+
+
 
 
    /* Turn off multicast filter */
@@ -1822,21 +1909,25 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     {
         Log.i("DEBUGGER_TAG", "onCreateOptionsMenu");
 
-
+//      We don't use Qt menu system, since it does not support ActionBar.
+//      We handle ActionBar here, in standard Android manner
+//
 //        QtApplication.InvokeResult res = QtApplication.invokeDelegate(menu);
 //        if (res.invoked)
 //            return (Boolean)res.methodReturns;
 //        else
 //            return super.onCreateOptionsMenu(menu);
 
-//try {
-//    Class.forName("android.app.ActionBar").getMethod("show").invoke(getActionBar());
-//} catch (Exception e) {
-//    e.printStackTrace();
-//}
 
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.activity_main_actions, menu);
+
+        itemRouteAnnunciator = menu.findItem(R.id.ocpn_route_create_active);
+        if( null != itemRouteAnnunciator) {
+            itemRouteAnnunciator.setVisible(m_showRouteAnnunciator);
+            this.invalidateOptionsMenu();
+         }
+
         return super.onCreateOptionsMenu(menu);
 
 

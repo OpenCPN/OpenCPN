@@ -101,8 +101,6 @@ public class OCPNSettingsFragmentCharts extends PreferenceFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.i("DEBUGGER_TAG", "SettingsFragment charts!");
-
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preferences_charts);
 
@@ -113,12 +111,9 @@ public class OCPNSettingsFragmentCharts extends PreferenceFragment {
         if(b != null)
             mbs52 = b.getString("S52").equalsIgnoreCase("TRUE");
 
-        Log.i("DEBUGGER_TAG", (mbs52)?"TruelyTrue":"FalselyFalse");
-
         Preference s52Options = findPreference("pref_s52Options");
         if(s52Options != null){
             s52Options.setEnabled(mbs52);
-            Log.i("DEBUGGER_TAG", (mbs52)?"TruelyTruely":"FalselyFalsely");
         }
 
     }
