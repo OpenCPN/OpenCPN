@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  Status Window
+ * Purpose:  Chart Bar Window
  * Author:   David Register
  *
  ***************************************************************************
@@ -43,13 +43,13 @@ WX_DECLARE_OBJARRAY(wxRegion, RegionArray);
 
 class MyFrame;
 //----------------------------------------------------------------------------
-// TStatWin
+// TChartBarWin
 //----------------------------------------------------------------------------
-class TStatWin: public wxWindow
+class TChartBarWin: public wxWindow
 {
 public:
-      TStatWin(wxFrame *frame);
-      ~TStatWin();
+      TChartBarWin(wxFrame *frame);
+      ~TChartBarWin();
 
       void OnSize(wxSizeEvent& event);
       void OnPaint(wxPaintEvent& event);
@@ -149,13 +149,13 @@ DECLARE_EVENT_TABLE()
 };
 
 //----------------------------------------------------------------------------
-// StatWin
+// ChartBarWin
 //----------------------------------------------------------------------------
-class StatWin: public wxDialog
+class ChartBarWin: public wxDialog
 {
 public:
-      StatWin(wxWindow *win);
-      ~StatWin();
+      ChartBarWin(wxWindow *win);
+      ~ChartBarWin();
       void OnSize(wxSizeEvent& event);
       void OnPaint(wxPaintEvent& event);
       void MouseEvent(wxMouseEvent& event);
@@ -167,8 +167,8 @@ public:
       void FormatStat(void);
 
       PianoWin    *pPiano;
-      TStatWin    *pTStat1;
-      TStatWin    *pTStat2;
+      TChartBarWin    *pTStat1;
+      TChartBarWin    *pTStat2;
 
 private:
       wxBrush     m_backBrush;

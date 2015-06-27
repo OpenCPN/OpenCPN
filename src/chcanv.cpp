@@ -44,7 +44,7 @@
 #include "geodesic.h"
 #include "styles.h"
 #include "routeman.h"
-#include "statwin.h"
+#include "chartbarwin.h"
 #include "navutil.h"
 #include "kml.h"
 #include "concanv.h"
@@ -194,7 +194,7 @@ extern bool             g_bShowAreaNotices;
 extern int              g_Show_Target_Name_Scale;
 
 extern MyFrame          *gFrame;
-extern StatWin          *stats;
+extern ChartBarWin      *g_ChartBarWin;
 extern ocpnFloatingCompassWindow *g_FloatingCompassDialog;
 
 extern int              g_iNavAidRadarRingsNumberVisible;
@@ -1678,7 +1678,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             break;
 
         case 2:                      // Ctrl B
-            parent_frame->ToggleStats();
+            parent_frame->ToggleChartBar();
             break;
 
         case 13:             // Ctrl M // Drop Marker at cursor
@@ -4310,9 +4310,9 @@ void ChartCanvas::ShowChartInfoWindow( int x, int y, int dbIndex )
             if( ( p.x + m_pCIWin->GetWinSize().x ) > m_canvas_width )
                 p.x = m_canvas_width - m_pCIWin->GetWinSize().x;
 
-            int statsW, statsH;
-            stats->GetSize( &statsW, &statsH );
-            p.y = m_canvas_height - statsH - 4 - m_pCIWin->GetWinSize().y;
+            int ChartBarWinW, ChartBarWinH;
+            g_ChartBarWin->GetSize( &ChartBarWinW, &ChartBarWinH );
+            p.y = m_canvas_height - ChartBarWinH - 4 - m_pCIWin->GetWinSize().y;
 
             m_pCIWin->dbIndex = dbIndex;
             m_pCIWin->SetPosition( p );
@@ -8236,8 +8236,8 @@ bool ChartCanvas::InvokeCanvasMenu(int x, int y, int seltype)
     gFrame->SurfaceToolbar();
     //g_FloatingToolbarDialog->Raise();
     g_FloatingCompassDialog->Raise();
-    if(stats && stats->IsShown())
-        stats->Raise();
+    if(g_ChartBarWin && g_ChartBarWin->IsShown())
+        g_ChartBarWin->Raise();
 #endif
     
     return true;

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  Status Window
+ * Purpose:  Chart Bar Window
  * Author:   David Register
  *
  ***************************************************************************
@@ -33,7 +33,7 @@
 #endif //precompiled headers
 #include "dychart.h"
 
-#include "statwin.h"
+#include "chartbarwin.h"
 #include "chartdb.h"
 #include "chart1.h"
 #include "chartbase.h"
@@ -56,15 +56,15 @@ extern bool g_btouch;
 extern int  g_GUIScaleFactor;
 
 //------------------------------------------------------------------------------
-//    StatWin Implementation
+//    ChartBarWin Implementation
 //------------------------------------------------------------------------------
-BEGIN_EVENT_TABLE(StatWin, wxDialog)
-    EVT_PAINT(StatWin::OnPaint)
-    EVT_SIZE(StatWin::OnSize)
-    EVT_MOUSE_EVENTS(StatWin::MouseEvent)
+BEGIN_EVENT_TABLE(ChartBarWin, wxDialog)
+    EVT_PAINT(ChartBarWin::OnPaint)
+    EVT_SIZE(ChartBarWin::OnSize)
+    EVT_MOUSE_EVENTS(ChartBarWin::MouseEvent)
 END_EVENT_TABLE()
 
-StatWin::StatWin( wxWindow *win )
+ChartBarWin::ChartBarWin( wxWindow *win )
 {
 
     long wstyle = wxSIMPLE_BORDER | wxFRAME_NO_TASKBAR;
@@ -92,12 +92,12 @@ StatWin::StatWin( wxWindow *win )
 
 }
 
-StatWin::~StatWin()
+ChartBarWin::~ChartBarWin()
 {
     pPiano->Close();
 }
 
-void StatWin::RePosition()
+void ChartBarWin::RePosition()
 {
     wxSize cs = GetParent()->GetClientSize();
     wxFrame *frame = dynamic_cast<wxFrame*>(GetParent());
@@ -113,7 +113,7 @@ void StatWin::RePosition()
 #endif
 }
 
-void StatWin::ReSize()
+void ChartBarWin::ReSize()
 {
     wxSize cs = GetParent()->GetClientSize();
     wxSize new_size;
@@ -132,7 +132,7 @@ void StatWin::ReSize()
 
 }
 
-void StatWin::OnPaint( wxPaintEvent& event )
+void ChartBarWin::OnPaint( wxPaintEvent& event )
 {
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 
@@ -147,7 +147,7 @@ void StatWin::OnPaint( wxPaintEvent& event )
 #endif
 }
 
-void StatWin::OnSize( wxSizeEvent& event )
+void ChartBarWin::OnSize( wxSizeEvent& event )
 {
     if (!IsShown())
         return;
@@ -165,18 +165,18 @@ void StatWin::OnSize( wxSizeEvent& event )
     }
 }
 
-void StatWin::FormatStat( void )
+void ChartBarWin::FormatStat( void )
 {
     pPiano->FormatKeys();
 }
 
-void StatWin::MouseEvent( wxMouseEvent& event )
+void ChartBarWin::MouseEvent( wxMouseEvent& event )
 {
     int x, y;
     event.GetPosition( &x, &y );
 }
 
-int StatWin::GetFontHeight()
+int ChartBarWin::GetFontHeight()
 {
     wxClientDC dc( this );
 
@@ -186,7 +186,7 @@ int StatWin::GetFontHeight()
     return ( h );
 }
 
-void StatWin::SetColorScheme( ColorScheme cs )
+void ChartBarWin::SetColorScheme( ColorScheme cs )
 {
 
     m_backBrush = wxBrush( GetGlobalColor( _T("UIBDR") ), wxSOLID );
@@ -199,12 +199,12 @@ void StatWin::SetColorScheme( ColorScheme cs )
 //------------------------------------------------------------------------------
 //          TextStat Window Implementation
 //------------------------------------------------------------------------------
-BEGIN_EVENT_TABLE(TStatWin, wxWindow)
-    EVT_PAINT(TStatWin::OnPaint)
-    EVT_SIZE(TStatWin::OnSize)
+BEGIN_EVENT_TABLE(TChartBarWin, wxWindow)
+    EVT_PAINT(TChartBarWin::OnPaint)
+    EVT_SIZE(TChartBarWin::OnSize)
 END_EVENT_TABLE()
 
-TStatWin::TStatWin( wxFrame *frame ) :
+TChartBarWin::TChartBarWin( wxFrame *frame ) :
         wxWindow( frame, wxID_ANY, wxPoint( 20, 20 ), wxSize( 5, 5 ), wxSIMPLE_BORDER )
 {
     SetBackgroundColour( GetGlobalColor( _T("UIBDR") ) );
@@ -212,22 +212,22 @@ TStatWin::TStatWin( wxFrame *frame ) :
     bTextSet = false;
 }
 
-TStatWin::~TStatWin( void )
+TChartBarWin::~TChartBarWin( void )
 {
     delete pText;
 }
 
-void TStatWin::OnSize( wxSizeEvent& event )
+void TChartBarWin::OnSize( wxSizeEvent& event )
 {
 }
 
-void TStatWin::OnPaint( wxPaintEvent& event )
+void TChartBarWin::OnPaint( wxPaintEvent& event )
 {
     wxPaintDC dc( this );
     dc.DrawText( *pText, 0, 0 );
 }
 
-void TStatWin::TextDraw( const wxString& text )
+void TChartBarWin::TextDraw( const wxString& text )
 {
     *pText = text;
     bTextSet = true;

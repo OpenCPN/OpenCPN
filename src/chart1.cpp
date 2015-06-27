@@ -72,7 +72,7 @@
 #include "navutil.h"
 #include "styles.h"
 #include "routeman.h"
-#include "statwin.h"
+#include "chartbarwin.h"
 #include "concanv.h"
 #include "options.h"
 #include "about.h"
@@ -173,7 +173,7 @@ MyFrame                   *gFrame;
 
 ChartCanvas               *cc1;
 ConsoleCanvas             *console;
-StatWin                   *stats;
+ChartBarWin               *g_ChartBarWin;
 wxWindowList              AppActivateList;
 
 MyConfig                  *pConfig;
@@ -901,8 +901,8 @@ void MyApp::OnActivateApp( wxActivateEvent& event )
             g_FloatingCompassDialog->Hide();
         }
 
-        if(stats && stats->IsShown()) {
-            stats->Hide();
+        if(g_ChartBarWin && g_ChartBarWin->IsShown()) {
+            g_ChartBarWin->Hide();
         }
 #endif
     }
@@ -932,9 +932,9 @@ void MyApp::OnActivateApp( wxActivateEvent& event )
             g_FloatingCompassDialog->Show();
         }
 
-        if(stats){
-            stats->Hide();
-            stats->Show();
+        if(g_ChartBarWin){
+            g_ChartBarWin->Hide();
+            g_ChartBarWin->Show();
         }
 
         if(console) {
@@ -1797,21 +1797,21 @@ bool MyApp::OnInit()
     if( g_bresponsive  && ( cc1->GetPixPerMM() > 4.0))
         gFrame->Maximize( true );
 
-    stats = new StatWin( cc1 );
-    stats->SetColorScheme( global_color_scheme );
-    stats->Show();
+    g_ChartBarWin = new ChartBarWin( cc1 );
+    g_ChartBarWin->SetColorScheme( global_color_scheme );
+    g_ChartBarWin->Show();
     
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 
     if( cc1->GetQuiltMode() ) {
-        stats->pPiano->SetVizIcon( new wxBitmap( style->GetIcon( _T("viz") ) ) );
-        stats->pPiano->SetInVizIcon( new wxBitmap( style->GetIcon( _T("redX") ) ) );
+        g_ChartBarWin->pPiano->SetVizIcon( new wxBitmap( style->GetIcon( _T("viz") ) ) );
+        g_ChartBarWin->pPiano->SetInVizIcon( new wxBitmap( style->GetIcon( _T("redX") ) ) );
 
-        stats->pPiano->SetRoundedRectangles( true );
+        g_ChartBarWin->pPiano->SetRoundedRectangles( true );
     }
-    stats->pPiano->SetTMercIcon( new wxBitmap( style->GetIcon( _T("tmercprj") ) ) );
-    stats->pPiano->SetPolyIcon( new wxBitmap( style->GetIcon( _T("polyprj") ) ) );
-    stats->pPiano->SetSkewIcon( new wxBitmap( style->GetIcon( _T("skewprj") ) ) );
+    g_ChartBarWin->pPiano->SetTMercIcon( new wxBitmap( style->GetIcon( _T("tmercprj") ) ) );
+    g_ChartBarWin->pPiano->SetPolyIcon( new wxBitmap( style->GetIcon( _T("polyprj") ) ) );
+    g_ChartBarWin->pPiano->SetSkewIcon( new wxBitmap( style->GetIcon( _T("skewprj") ) ) );
 
     //  Yield to pick up the OnSize() calls that result from Maximize()
     Yield();
@@ -2058,7 +2058,7 @@ extern ocpnGLOptions g_GLOptions;
     if ( g_start_fullscreen )
         gFrame->ToggleFullScreen();
 
-    stats->Show( g_bShowChartBar );
+    g_ChartBarWin->Show( g_bShowChartBar );
 
 #ifdef __OCPN__ANDROID__
     //  We need a resize to pick up height adjustment after building android ActionBar
@@ -2438,8 +2438,8 @@ void MyFrame::OnActivate( wxActivateEvent& event )
     {
         SurfaceToolbar();
         
-        if(stats)
-            stats->Show(g_bShowChartBar);
+        if(g_ChartBarWin)
+            g_ChartBarWin->Show(g_bShowChartBar);
     }
 #endif
 
@@ -2505,7 +2505,7 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
 
     if( ChartData ) ChartData->ApplyColorSchemeToCachedCharts( cs );
 
-    if( stats ) {
+    if( g_ChartBarWin ) {
         // reset rollover, updating it is unreliable; too many
         // wx versions, native toolkits and so on.
         SetChartThumbnail( -1 );
@@ -2513,8 +2513,8 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
             cc1->HideChartInfoWindow();
             cc1->SetQuiltChartHiLiteIndex( -1 );
         }
-        stats->pPiano->ResetRollover();
-        stats->SetColorScheme( cs );
+        g_ChartBarWin->pPiano->ResetRollover();
+        g_ChartBarWin->SetColorScheme( cs );
     }
 
     if( console ) console->SetColorScheme( cs );
@@ -3177,7 +3177,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 #ifndef __OCPN__ANDROID__
     SetStatusBar( NULL );
 #endif    
-    stats = NULL;
+    g_ChartBarWin = NULL;
 
     if(RouteManagerDialog::getInstanceFlag()){
         if( pRouteManagerDialog ) {
@@ -3296,7 +3296,7 @@ void MyFrame::OnMove( wxMoveEvent& event )
 {
     if( g_FloatingToolbarDialog ) g_FloatingToolbarDialog->RePosition();
 
-    if( stats && stats->IsVisible()) stats->RePosition();
+    if( g_ChartBarWin && g_ChartBarWin->IsVisible()) g_ChartBarWin->RePosition();
 
     UpdateGPSCompassStatusBox( );
 
@@ -3312,9 +3312,9 @@ void MyFrame::OnMove( wxMoveEvent& event )
 
 void MyFrame::ProcessCanvasResize( void )
 {
-    if( stats ) {
-        stats->ReSize();
-        stats->RePosition();
+    if( g_ChartBarWin ) {
+        g_ChartBarWin->ReSize();
+        g_ChartBarWin->RePosition();
     }
 
     if( g_FloatingToolbarDialog ) {
@@ -3500,10 +3500,10 @@ void MyFrame::ODoSetSize( void )
 
     if( console ) PositionConsole();
 
-    if( stats ) {
-        stats->ReSize();
-        stats->FormatStat();
-        stats->RePosition();
+    if( g_ChartBarWin ) {
+        g_ChartBarWin->ReSize();
+        g_ChartBarWin->FormatStat();
+        g_ChartBarWin->RePosition();
     }
 
 //  Update the stored window size
@@ -3725,7 +3725,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         }
 
         case ID_MENU_UI_CHARTBAR: {
-            ToggleStats();
+            ToggleChartBar();
             break;
         }
             
@@ -3937,8 +3937,8 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             pRouteManagerDialog->UpdateLayListCtrl();
             
             if(g_bresponsive){
-                if(stats && stats->IsShown() )
-                    stats->Hide();
+                if(g_ChartBarWin && g_ChartBarWin->IsShown() )
+                    g_ChartBarWin->Hide();
             }
             pRouteManagerDialog->Show();
 
@@ -4044,28 +4044,28 @@ void MyFrame::DoSettings()
 
 void MyFrame::ShowChartBarIfEnabled()
 {
-    if(stats){
-        stats->Show(g_bShowChartBar);
+    if(g_ChartBarWin){
+        g_ChartBarWin->Show(g_bShowChartBar);
         if(g_bShowChartBar){
-            stats->Move(0,0);
-            stats->RePosition();
+            g_ChartBarWin->Move(0,0);
+            g_ChartBarWin->RePosition();
          }
     }
     
 }
 
 
-void MyFrame::ToggleStats()
+void MyFrame::ToggleChartBar()
 {
-    if( stats ) {
-        if( stats->IsShown() ){
-            stats->Hide();
+    if( g_ChartBarWin ) {
+        if( g_ChartBarWin->IsShown() ){
+            g_ChartBarWin->Hide();
             g_bShowChartBar = false;
         }
         else {
-            stats->Move(0,0);
-            stats->RePosition();
-            stats->Show();
+            g_ChartBarWin->Move(0,0);
+            g_ChartBarWin->RePosition();
+            g_ChartBarWin->Show();
             gFrame->Raise();
             DoChartUpdate();
             UpdateControlBar();
@@ -4919,7 +4919,7 @@ int MyFrame::DoOptionsDialog()
     }
 
 #if defined(__WXOSX__) || defined(__WXQT__)
-    if(stats) stats->Hide();
+    if(g_ChartBarWin) g_ChartBarWin->Hide();
     
     bool b_restoreAIS = false;
     if( g_pAISTargetList  && g_pAISTargetList->IsShown() ){
@@ -5294,12 +5294,12 @@ void MyFrame::ChartsRefresh( int dbi_hint, ViewPort &vp, bool b_purge )
         }
 
         //          Refresh the Piano Bar
-        if( stats ) {
+        if( g_ChartBarWin ) {
             ArrayOfInts piano_active_chart_index_array;
             piano_active_chart_index_array.Add( pCurrentStack->GetCurrentEntrydbIndex() );
-            stats->pPiano->SetActiveKeyArray( piano_active_chart_index_array );
+            g_ChartBarWin->pPiano->SetActiveKeyArray( piano_active_chart_index_array );
 
-            stats->Refresh( true );
+            g_ChartBarWin->Refresh( true );
         }
 
     } else {
@@ -5415,16 +5415,16 @@ void MyFrame::SetupQuiltMode( void )
     {
         ChartData->LockCache();
 
-        stats->pPiano->SetNoshowIndexArray( g_quilt_noshow_index_array );
+        g_ChartBarWin->pPiano->SetNoshowIndexArray( g_quilt_noshow_index_array );
 
         ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 
-        stats->pPiano->SetVizIcon( new wxBitmap( style->GetIcon( _T("viz") ) ) );
-        stats->pPiano->SetInVizIcon( new wxBitmap( style->GetIcon( _T("redX") ) ) );
-        stats->pPiano->SetTMercIcon( new wxBitmap( style->GetIcon( _T("tmercprj") ) ) );
-        stats->pPiano->SetSkewIcon( new wxBitmap( style->GetIcon( _T("skewprj") ) ) );
+        g_ChartBarWin->pPiano->SetVizIcon( new wxBitmap( style->GetIcon( _T("viz") ) ) );
+        g_ChartBarWin->pPiano->SetInVizIcon( new wxBitmap( style->GetIcon( _T("redX") ) ) );
+        g_ChartBarWin->pPiano->SetTMercIcon( new wxBitmap( style->GetIcon( _T("tmercprj") ) ) );
+        g_ChartBarWin->pPiano->SetSkewIcon( new wxBitmap( style->GetIcon( _T("skewprj") ) ) );
 
-        stats->pPiano->SetRoundedRectangles( true );
+        g_ChartBarWin->pPiano->SetRoundedRectangles( true );
 
         //    Select the proper Ref chart
         int target_new_dbindex = -1;
@@ -5471,18 +5471,18 @@ void MyFrame::SetupQuiltMode( void )
     } else                                                  // going to SC Mode
     {
         ArrayOfInts empty_array;
-        stats->pPiano->SetActiveKeyArray( empty_array );
-        stats->pPiano->SetNoshowIndexArray( empty_array );
-        stats->pPiano->SetSubliteIndexArray( empty_array );
-        stats->pPiano->SetVizIcon( NULL );
-        stats->pPiano->SetInVizIcon( NULL );
+        g_ChartBarWin->pPiano->SetActiveKeyArray( empty_array );
+        g_ChartBarWin->pPiano->SetNoshowIndexArray( empty_array );
+        g_ChartBarWin->pPiano->SetSubliteIndexArray( empty_array );
+        g_ChartBarWin->pPiano->SetVizIcon( NULL );
+        g_ChartBarWin->pPiano->SetInVizIcon( NULL );
 
         ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 
-        stats->pPiano->SetTMercIcon( new wxBitmap( style->GetIcon( _T("tmercprj") ) ) );
-        stats->pPiano->SetSkewIcon( new wxBitmap( style->GetIcon( _T("skewprj") ) ) );
+        g_ChartBarWin->pPiano->SetTMercIcon( new wxBitmap( style->GetIcon( _T("tmercprj") ) ) );
+        g_ChartBarWin->pPiano->SetSkewIcon( new wxBitmap( style->GetIcon( _T("skewprj") ) ) );
 
-        stats->pPiano->SetRoundedRectangles( false );
+        g_ChartBarWin->pPiano->SetRoundedRectangles( false );
 
     }
 
@@ -5545,7 +5545,7 @@ void MyFrame::SetupQuiltMode( void )
                 int dbi = ChartData->FinddbIndex( Current_Ch->GetFullPath() );
                 ArrayOfInts one_array;
                 one_array.Add( dbi );
-                stats->pPiano->SetActiveKeyArray( one_array );
+                g_ChartBarWin->pPiano->SetActiveKeyArray( one_array );
             }
 
         }
@@ -5960,8 +5960,8 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
             g_FloatingCompassDialog->Hide();
         }
 
-        if(stats && stats->IsShown()) {
-            stats->Hide();
+        if(g_ChartBarWin && g_ChartBarWin->IsShown()) {
+            g_ChartBarWin->Hide();
         }
 #endif
     }
@@ -6735,9 +6735,9 @@ void MyFrame::HandlePianoRollover( int selected_index, int selected_dbIndex )
         return;
 
     int sx, sy;
-    stats->GetPosition( &sx, &sy );
-    wxPoint key_location = stats->pPiano->GetKeyOrigin( selected_index );
-    wxPoint rolloverPos = stats->GetParent()->ScreenToClient( wxPoint( sx, sy ) );
+    g_ChartBarWin->GetPosition( &sx, &sy );
+    wxPoint key_location = g_ChartBarWin->pPiano->GetKeyOrigin( selected_index );
+    wxPoint rolloverPos = g_ChartBarWin->GetParent()->ScreenToClient( wxPoint( sx, sy ) );
     rolloverPos.y -= 3;
     rolloverPos.x += key_location.x;
 
@@ -6883,12 +6883,12 @@ void MyFrame::SelectChartFromStack( int index, bool bDir, ChartTypeEnum New_Type
     }
 
     //          Refresh the Piano Bar
-    if( stats ) {
+    if( g_ChartBarWin ) {
         ArrayOfInts piano_active_chart_index_array;
         piano_active_chart_index_array.Add( pCurrentStack->GetCurrentEntrydbIndex() );
-        stats->pPiano->SetActiveKeyArray( piano_active_chart_index_array );
+        g_ChartBarWin->pPiano->SetActiveKeyArray( piano_active_chart_index_array );
 
-        stats->Refresh( true );
+        g_ChartBarWin->Refresh( true );
     }
 }
 
@@ -6936,12 +6936,12 @@ void MyFrame::SelectdbChart( int dbindex )
     }
 
     //          Refresh the Piano Bar
-    if( stats ) {
+    if( g_ChartBarWin ) {
         ArrayOfInts piano_active_chart_index_array;
         piano_active_chart_index_array.Add( pCurrentStack->GetCurrentEntrydbIndex() );
-        stats->pPiano->SetActiveKeyArray( piano_active_chart_index_array );
+        g_ChartBarWin->pPiano->SetActiveKeyArray( piano_active_chart_index_array );
 
-        stats->Refresh( true );
+        g_ChartBarWin->Refresh( true );
     }
 }
 
@@ -7046,7 +7046,7 @@ void MyFrame::UpdateControlBar( void )
 {
     if( !cc1 ) return;
 
-    if( !stats ) return;
+    if( !g_ChartBarWin ) return;
 
     if( !pCurrentStack ) return;
 
@@ -7056,19 +7056,19 @@ void MyFrame::UpdateControlBar( void )
     ArrayOfInts piano_chart_index_array;
     ArrayOfInts empty_piano_chart_index_array;
 
-    wxString old_hash = stats->pPiano->GetStoredHash();
+    wxString old_hash = g_ChartBarWin->pPiano->GetStoredHash();
      
     if( cc1->GetQuiltMode() ) {
         piano_chart_index_array = cc1->GetQuiltExtendedStackdbIndexArray();
-        stats->pPiano->SetKeyArray( piano_chart_index_array );
+        g_ChartBarWin->pPiano->SetKeyArray( piano_chart_index_array );
 
         ArrayOfInts piano_active_chart_index_array = cc1->GetQuiltCandidatedbIndexArray();
-        stats->pPiano->SetActiveKeyArray( piano_active_chart_index_array );
+        g_ChartBarWin->pPiano->SetActiveKeyArray( piano_active_chart_index_array );
 
         ArrayOfInts piano_eclipsed_chart_index_array = cc1->GetQuiltEclipsedStackdbIndexArray();
-        stats->pPiano->SetSubliteIndexArray( piano_eclipsed_chart_index_array );
+        g_ChartBarWin->pPiano->SetSubliteIndexArray( piano_eclipsed_chart_index_array );
 
-        stats->pPiano->SetNoshowIndexArray( g_quilt_noshow_index_array );
+        g_ChartBarWin->pPiano->SetNoshowIndexArray( g_quilt_noshow_index_array );
 
         if(ChartData){
             sel_type = ChartData->GetDBChartType(cc1->GetQuiltReferenceChartIndex());
@@ -7076,11 +7076,11 @@ void MyFrame::UpdateControlBar( void )
         }        
     } else {
         piano_chart_index_array = ChartData->GetCSArray( pCurrentStack );
-        stats->pPiano->SetKeyArray( piano_chart_index_array );
+        g_ChartBarWin->pPiano->SetKeyArray( piano_chart_index_array );
 
         ArrayOfInts piano_active_chart_index_array;
         piano_active_chart_index_array.Add( pCurrentStack->GetCurrentEntrydbIndex() );
-        stats->pPiano->SetActiveKeyArray( piano_active_chart_index_array );
+        g_ChartBarWin->pPiano->SetActiveKeyArray( piano_active_chart_index_array );
 
         if(Current_Ch){
             sel_type = Current_Ch->GetChartType();
@@ -7115,19 +7115,19 @@ void MyFrame::UpdateControlBar( void )
                     piano_skew_chart_index_array.Add(piano_chart_index_array.Item( ino ) );
 
     }
-    stats->pPiano->SetSkewIndexArray( piano_skew_chart_index_array );
-    stats->pPiano->SetTmercIndexArray( piano_tmerc_chart_index_array );
-    stats->pPiano->SetPolyIndexArray( piano_poly_chart_index_array );
+    g_ChartBarWin->pPiano->SetSkewIndexArray( piano_skew_chart_index_array );
+    g_ChartBarWin->pPiano->SetTmercIndexArray( piano_tmerc_chart_index_array );
+    g_ChartBarWin->pPiano->SetPolyIndexArray( piano_poly_chart_index_array );
 
-    stats->FormatStat();
+    g_ChartBarWin->FormatStat();
     
-    wxString new_hash = stats->pPiano->GenerateAndStoreNewHash();
+    wxString new_hash = g_ChartBarWin->pPiano->GenerateAndStoreNewHash();
     if(new_hash != old_hash) {
         SetChartThumbnail( -1 );
         cc1->HideChartInfoWindow();
-        stats->pPiano->ResetRollover();
+        g_ChartBarWin->pPiano->ResetRollover();
         cc1->SetQuiltChartHiLiteIndex( -1 );
-        stats->Refresh( false );
+        g_ChartBarWin->Refresh( false );
     }
     
     // Create a bitmask int that describes what Family/Type of charts are shown in the bar,
@@ -7689,9 +7689,9 @@ void MyFrame::PianoPopupMenu( int x, int y, int selected_index, int selected_dbI
         }
 
     int sx, sy;
-    stats->GetPosition( &sx, &sy );
-    wxPoint pos = stats->GetParent()->ScreenToClient( wxPoint( sx, sy ) );
-    wxPoint key_location = stats->pPiano->GetKeyOrigin( selected_index );
+    g_ChartBarWin->GetPosition( &sx, &sy );
+    wxPoint pos = g_ChartBarWin->GetParent()->ScreenToClient( wxPoint( sx, sy ) );
+    wxPoint key_location = g_ChartBarWin->pPiano->GetKeyOrigin( selected_index );
     pos.x += key_location.x;
     pos.y -= 30;
 
@@ -7702,7 +7702,7 @@ void MyFrame::PianoPopupMenu( int x, int y, int selected_index, int selected_dbI
     piano_ctx_menu = NULL;
     
     cc1->HideChartInfoWindow();
-    stats->pPiano->ResetRollover();
+    g_ChartBarWin->pPiano->ResetRollover();
 
     cc1->SetQuiltChartHiLiteIndex( -1 );
 
@@ -10948,7 +10948,7 @@ int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& c
     long parent_style;
     bool b_toolviz = false;
     bool b_compassviz = false;
-    bool b_statsviz = false;
+    bool b_g_ChartBarWinviz = false;
 
     if(g_FloatingToolbarDialog && g_FloatingToolbarDialog->IsShown()){
         g_FloatingToolbarDialog->Hide();
@@ -10960,9 +10960,9 @@ int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& c
         b_compassviz = true;
     }
 
-    if( stats && stats->IsShown()) {
-        stats->Hide();
-        b_statsviz = true;
+    if( g_ChartBarWin && g_ChartBarWin->IsShown()) {
+        g_ChartBarWin->Hide();
+        b_g_ChartBarWinviz = true;
     }
 
     if(parent) {
@@ -10987,8 +10987,8 @@ int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& c
     if( g_FloatingCompassDialog && b_compassviz)
         g_FloatingCompassDialog->Show();
 
-    if( stats && b_statsviz)
-        stats->Show();
+    if( g_ChartBarWin && b_g_ChartBarWinviz)
+        g_ChartBarWin->Show();
 
     if(parent){
         parent->Raise();
