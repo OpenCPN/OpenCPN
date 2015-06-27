@@ -260,7 +260,7 @@ wxString        g_androidExtCacheDir;
 
 int             g_mask;
 int             g_sel;
-
+int             g_ActionBarHeight;
 
 
 #define ANDROID_EVENT_TIMER 4389
@@ -1171,11 +1171,26 @@ double GetAndroidDisplaySize()
         
         long b = ::wxGetDisplaySize().y;        
         token.ToDouble( &density );
-            
+
+        token = tk.GetNextToken();              // ldpi
+        
+        token = tk.GetNextToken();              // width
+        token = tk.GetNextToken();              // height - statusBarHeight
+        token = tk.GetNextToken();              // width
+        token = tk.GetNextToken();              // height
+        token = tk.GetNextToken();              // dm.widthPixels
+        token = tk.GetNextToken();              // dm.heightPixels
+ 
+        token = tk.GetNextToken();              // actionBarHeight
+        long abh;
+        token.ToLong( &abh );
+        g_ActionBarHeight = wxMax(abh, 50);
+
+        qDebug() << "g_ActionBarHeight" << abh << g_ActionBarHeight;
+        
     }
     
     double ldpi = 160. * density;
-//    qDebug() << "ldpi" << ldpi;
     
     double maxDim = wxMax(::wxGetDisplaySize().x, ::wxGetDisplaySize().y);
     ret = (maxDim / ldpi) * 25.4;
@@ -1185,11 +1200,11 @@ double GetAndroidDisplaySize()
     
     //  Save some items as global statics for convenience
     g_androidDPmm = ldpi / 25.4;
-//    qDebug() << "g_androidDPmm" << g_androidDPmm;
     g_androidDensity = density;
-    
-//    g_androidSmallTextPixels = 14 * density;            // Small text is always 14 sp,
-//                                                        // except as modified by user globally
+
+    qDebug() << "g_androidDPmm" << g_androidDPmm;
+    qDebug() << "Auto Display Size (mm)" << ret;
+    qDebug() << "ldpi" << ldpi;
     
     
 //     wxString istr = return_string.BeforeFirst('.');
@@ -1202,6 +1217,11 @@ double GetAndroidDisplaySize()
     return ret;
 }
 
+int getAndroidActionBarHeight()
+{
+    return g_ActionBarHeight;
+}
+
 double getAndroidDPmm()
 {
     // Returns an estimate based on the pixel density reported
@@ -1209,8 +1229,18 @@ double getAndroidDPmm()
         GetAndroidDisplaySize();
     }
     
-//    qDebug() << "g_androidDPmm" << g_androidDPmm;
-    
+    // User override?
+    if(g_config_display_size_mm > 0){
+        double maxDim = wxMax(::wxGetDisplaySize().x, ::wxGetDisplaySize().y);
+        double size_mm = g_config_display_size_mm;
+        size_mm = wxMax(size_mm, 50);
+        size_mm = wxMin(size_mm, 400);
+        double ret = maxDim / size_mm;
+        qDebug() << "getAndroidDPmm override" << maxDim << size_mm << g_config_display_size_mm;
+        return ret;
+    }
+        
+        
     if(g_androidDPmm > 0.01)
         return g_androidDPmm;
     else

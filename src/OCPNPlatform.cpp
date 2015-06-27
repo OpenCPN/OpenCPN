@@ -704,6 +704,7 @@ wxString &OCPNPlatform::GetPrivateDataDir()
         
 #ifdef __OCPN__ANDROID__
         m_PrivateDataDir = androidGetPrivateDir();
+        m_PrivateDataDir =  _T("/mnt/sdcard/opencpn");
 #endif
     }
     
@@ -1214,16 +1215,27 @@ double OCPNPlatform::GetToolbarScaleFactor( int GUIScaleFactor )
         ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
         wxSize style_tool_size = style->GetToolSize();
         
-        double target_size = 9.0;                // mm
+        // unless overridden by user, we declare the "best" tool size to be the same as the
+        // ActionBar height
+        double premult = 1.0;
+        if(g_config_display_size_mm > 0){
+            double target_size = 9.0;                // mm
         
-        double basic_tool_size_mm = style_tool_size.x / GetDisplayDPmm();
-        double premult = target_size / basic_tool_size_mm;
+            double basic_tool_size_mm = style_tool_size.x / GetDisplayDPmm();
+            premult = target_size / basic_tool_size_mm;
+            qDebug() << "parmsA" << style_tool_size.x << GetDisplayDPmm() << basic_tool_size_mm;
+            
+        }
+        else{
+            qDebug() << "parmsB" << style_tool_size.x << getAndroidActionBarHeight();
+            premult = wxMax(getAndroidActionBarHeight(), 50) / style_tool_size.x;
+        }            
         
         //Adjust the scale factor using the global GUI scale parameter
         double postmult =  exp( GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
         rv = wxMin(rv, 1.5);      //  Clamp at 1.5
         
-        qDebug() << "parms" << GUIScaleFactor << style_tool_size.x << GetDisplayDPmm() << basic_tool_size_mm << premult << postmult;
+        qDebug() << "parmsF" << GUIScaleFactor << premult << postmult;
         
         rv = premult * postmult;
     }

@@ -59,6 +59,7 @@ extern double GetAndroidDisplaySize();
 extern double getAndroidDPmm();
 extern wxSize getAndroidDisplayDimensions( void );
 extern double getAndroidDisplayDensity();
+extern int getAndroidActionBarHeight();
 
 extern bool LoadQtStyleSheet(wxString &sheet_file);
 extern QString getQtStyleSheet( void );
