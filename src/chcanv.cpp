@@ -79,7 +79,10 @@
 #include "OCPNRegion.h"
 #include "gshhs.h"
 #include "canvasMenu.h"
+
+#ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
+#endif
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
