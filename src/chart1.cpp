@@ -1577,15 +1577,15 @@ bool MyApp::OnInit()
 #endif
 
 //      Establish location and name of chart database
-    ChartListFileName = newPrivateFileName(g_Platform->GetHomeDir(), "chartlist.dat", "CHRTLIST.DAT");
+    ChartListFileName = newPrivateFileName(g_Platform->GetPrivateDataDir(), "chartlist.dat", "CHRTLIST.DAT");
 
 //      Establish location and name of AIS MMSI -> Target Name mapping
-    AISTargetNameFileName = newPrivateFileName(g_Platform->GetHomeDir(), "mmsitoname.csv", "MMSINAME.CSV");
+    AISTargetNameFileName = newPrivateFileName(g_Platform->GetPrivateDataDir(), "mmsitoname.csv", "MMSINAME.CSV");
 
 #ifdef __OCPN__ANDROID__
     ChartListFileName.Clear();
     ChartListFileName.Append(_T("chartlist.dat"));
-    ChartListFileName.Prepend( g_Platform->GetHomeDir() );
+    ChartListFileName.Prepend( g_Platform->GetPrivateDataDir() );
 #endif
 
 //      Establish guessed location of chart tree
