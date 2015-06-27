@@ -3102,6 +3102,8 @@ void options::CreateControls()
 
     m_pageConnections = CreatePanel( _("Connections") );
     CreatePanel_NMEA( m_pageConnections, border_size, group_item_spacing, m_small_button_size );
+    SetDefaultConnectionParams();
+    
     m_pageShips = CreatePanel( _("Ships") );
     CreatePanel_Ownship( m_pageShips, border_size, group_item_spacing, m_small_button_size );
     CreatePanel_AIS( m_pageShips, border_size, group_item_spacing, m_small_button_size );
