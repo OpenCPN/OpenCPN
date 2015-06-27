@@ -6296,9 +6296,9 @@ bool s57chart::IsPointInObjArea( float lat, float lon, float select_radius, S57O
             easting = easting_scaled;
         }
 
+        wxBoundingBox tp_box;
         while( pTP ) {
 //  Coarse test
-            wxBoundingBox tp_box;
             tp_box.SetMin(pTP->minx, pTP->miny);
             tp_box.SetMax(pTP->maxx, pTP->maxy);
 
