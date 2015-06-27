@@ -2354,6 +2354,7 @@ bool s57chart::RenderViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint )
         m_bLinePrioritySet = false;                     // need to reset line priorities
         UpdateLUPs( this );                               // and update the LUPs
         ClearRenderedTextCache();                       // and reset the text renderer
+        SetSafetyContour();
     }
 
     SetLinePriorities();
