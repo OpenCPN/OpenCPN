@@ -2314,7 +2314,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     {
         Log.i("DEBUGGER_TAG", "onResume");
 
-//        int i = nativeLib.onResume();
+        int i = nativeLib.onResume();
 //        String aa;
 //        aa = String.format("%d", i);
 //        Log.i("DEBUGGER_TAG", aa);

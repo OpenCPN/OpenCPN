@@ -6146,8 +6146,10 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
         }
     }
 
-    if(g_bSleep)
+    if(g_bSleep){
+        FrameTimer1.Start( TIMER_GFRAME_1, wxTIMER_CONTINUOUS );
         return;
+    }
     
 //      Update the Toolbar Status windows and lower status bar the first time watchdog times out
     if( ( gGPS_Watchdog == 0 ) || ( gSAT_Watchdog == 0 ) ) {
