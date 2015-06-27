@@ -196,43 +196,7 @@ void ChartBarWin::SetColorScheme( ColorScheme cs )
 
     Refresh();
 }
-//------------------------------------------------------------------------------
-//          TextStat Window Implementation
-//------------------------------------------------------------------------------
-BEGIN_EVENT_TABLE(TChartBarWin, wxWindow)
-    EVT_PAINT(TChartBarWin::OnPaint)
-    EVT_SIZE(TChartBarWin::OnSize)
-END_EVENT_TABLE()
 
-TChartBarWin::TChartBarWin( wxFrame *frame ) :
-        wxWindow( frame, wxID_ANY, wxPoint( 20, 20 ), wxSize( 5, 5 ), wxSIMPLE_BORDER )
-{
-    SetBackgroundColour( GetGlobalColor( _T("UIBDR") ) );
-    pText = new wxString();
-    bTextSet = false;
-}
-
-TChartBarWin::~TChartBarWin( void )
-{
-    delete pText;
-}
-
-void TChartBarWin::OnSize( wxSizeEvent& event )
-{
-}
-
-void TChartBarWin::OnPaint( wxPaintEvent& event )
-{
-    wxPaintDC dc( this );
-    dc.DrawText( *pText, 0, 0 );
-}
-
-void TChartBarWin::TextDraw( const wxString& text )
-{
-    *pText = text;
-    bTextSet = true;
-    Refresh( true );
-}
 //------------------------------------------------------------------------------
 //          Piano Window Implementation
 //------------------------------------------------------------------------------
@@ -710,6 +674,3 @@ void PianoWin::onTimerEvent(wxTimerEvent &event)
             break;
     }
 }
-
-            
-        

@@ -42,24 +42,6 @@
 WX_DECLARE_OBJARRAY(wxRegion, RegionArray);
 
 class MyFrame;
-//----------------------------------------------------------------------------
-// TChartBarWin
-//----------------------------------------------------------------------------
-class TChartBarWin: public wxWindow
-{
-public:
-      TChartBarWin(wxFrame *frame);
-      ~TChartBarWin();
-
-      void OnSize(wxSizeEvent& event);
-      void OnPaint(wxPaintEvent& event);
-      void TextDraw(const wxString& text);
-
-      wxString *pText;
-      bool  bTextSet;
-
-DECLARE_EVENT_TABLE()
-};
 
 
 //----------------------------------------------------------------------------
@@ -167,8 +149,6 @@ public:
       void FormatStat(void);
 
       PianoWin    *pPiano;
-      TChartBarWin    *pTStat1;
-      TChartBarWin    *pTStat2;
 
 private:
       wxBrush     m_backBrush;
