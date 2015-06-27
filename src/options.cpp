@@ -6179,6 +6179,10 @@ void options::OnNetProtocolSelected( wxCommandEvent& event )
     {
         if (m_tNetPort->GetValue() == wxEmptyString)
             m_tNetPort->SetValue(_T("10110"));
+        
+        if (m_tNetAddress->GetValue() == wxEmptyString)
+            m_tNetAddress->SetValue(_T("0.0.0.0"));
+        
     }
     else if (m_rbNetProtoTCP->GetValue())
     {
