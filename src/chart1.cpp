@@ -1957,14 +1957,6 @@ bool MyApp::OnInit()
 
     pCurrentStack = new ChartStack;
 
-    //  A useability enhancement....
-    //  if the chart database is truly empty on startup, switch to SCMode
-    //  so that the GSHHS chart will at least be shown
-    if( ChartData && ( 0 == ChartData->GetChartTableEntries() ) ) {
-        cc1->SetQuiltMode( false );
-        gFrame->SetupQuiltMode();
-    }
-
 //      All set to go.....
 
     // Process command line option to rebuild cache
@@ -4999,6 +4991,7 @@ int MyFrame::DoOptionsDialog()
     return ret_val;
 }
 
+
 int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
 {
     bool b_need_refresh = false;                // Do we need a full reload?
@@ -5115,11 +5108,11 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
         
     cc1->SetDisplaySizeMM( g_display_size_mm );
 
-    //    Do a full Refrload, trying to open the last open chart
+    //    Do a full Refresh, trying to open the last open chart
     if(b_need_refresh){
         int index_hint = ChartData->FinddbIndex( chart_file_name );
-        if(-1 == index_hint)
-            index_hint = 0;             // arbitrarily select "chart 0", whatever it is
+        if( -1 == index_hint )
+            b_autofind = true;
         ChartsRefresh( index_hint, cc1->GetVP() );
     }
     
@@ -7202,7 +7195,6 @@ void MyFrame::selectChartDisplay( int type, int family)
 }
 
 
-
 //----------------------------------------------------------------------------------
 //      DoChartUpdate
 //      Create a chartstack based on current lat/lon.
@@ -7298,10 +7290,21 @@ bool MyFrame::DoChartUpdate( void )
 
     if( cc1->GetQuiltMode() ) {
         int current_db_index = -1;
-        if( pCurrentStack ) current_db_index = pCurrentStack->GetCurrentEntrydbIndex(); // capture the currently selected Ref chart dbIndex
+        if( pCurrentStack )
+            current_db_index = pCurrentStack->GetCurrentEntrydbIndex(); // capture the currently selected Ref chart dbIndex
         else
             pCurrentStack = new ChartStack;
 
+        //  This logic added to enable opening a chart when there is no
+        //  previous chart indication, either from inital startup, or from adding new chart directory    
+        if( b_autofind && (-1 == cc1->GetQuiltReferenceChartIndex()) && pCurrentStack ){
+            if(pCurrentStack->nEntry){
+                int new_dbIndex = pCurrentStack->GetDBIndex(pCurrentStack->nEntry-1);    // smallest scale
+                SelectQuiltRefdbChart(new_dbIndex, true);
+                b_autofind = false;
+            }
+        }
+        
         ChartData->BuildChartStack( pCurrentStack, tLat, tLon );
         pCurrentStack->SetCurrentEntryFromdbIndex( current_db_index );
 
@@ -7312,12 +7315,12 @@ bool MyFrame::DoChartUpdate( void )
             if( initial_db_index < 0 ) {
                 if( pCurrentStack->nEntry ) {
                     if( ( g_restore_stackindex < pCurrentStack->nEntry )
-                            && ( g_restore_stackindex >= 0 ) ) initial_db_index =
-                            pCurrentStack->GetDBIndex( g_restore_stackindex );
+                            && ( g_restore_stackindex >= 0 ) )
+                        initial_db_index = pCurrentStack->GetDBIndex( g_restore_stackindex );
                     else
                         initial_db_index = pCurrentStack->GetDBIndex( pCurrentStack->nEntry - 1 );
                 } else
-                    initial_db_index = 0;
+                    b_autofind = true; //initial_db_index = 0;
             }
 
             if( pCurrentStack->nEntry ) {
