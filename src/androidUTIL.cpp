@@ -794,6 +794,11 @@ extern "C"{
                 gFrame->GetEventHandler()->AddPendingEvent(evt);
                 break;
                 
+            case OCPN_ACTION_ENCTEXT_TOGGLE:
+                evt.SetId( ID_MENU_ENC_TEXT );
+                gFrame->GetEventHandler()->AddPendingEvent(evt);
+                break;
+                
             default:
                 break;
         }

@@ -44,6 +44,7 @@
 #define OCPN_ACTION_MOB                 0x1006
 #define OCPN_ACTION_TIDES_TOGGLE        0x1007
 #define OCPN_ACTION_CURRENTS_TOGGLE     0x1008
+#define OCPN_ACTION_ENCTEXT_TOGGLE      0x1009
 
 
 #define GPS_OFF                         0
