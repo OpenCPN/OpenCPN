@@ -6779,6 +6779,7 @@ wxString s57chart::GetObjectAttributeValueAsString( S57Obj *obj, int iatt, wxStr
             else if( curAttrName == _T("SIGPER") ) val_suffix = _T("s");
             else if( curAttrName == _T("VALACM") ) val_suffix = _T(" Minutes/year");
             else if( curAttrName == _T("VALMAG") ) val_suffix = _T("&deg;");
+            else if( curAttrName == _T("CURVEL") ) val_suffix = _T(" kt");
             
             if( dval - floor( dval ) < 0.01 ) value.Printf( _T("%2.0f"), dval );
             else
@@ -6908,6 +6909,7 @@ wxString s57chart::GetAttributeValueAsString( S57attVal *pAttrVal, wxString Attr
                 else if( AttrName == _T("SIGPER") ) val_suffix = _T("s");
                 else if( AttrName == _T("VALACM") ) val_suffix = _T(" Minutes/year");
                 else if( AttrName == _T("VALMAG") ) val_suffix = _T("&deg;");
+                else if( AttrName == _T("CURVEL") ) val_suffix = _T(" kt");
                
                if( dval - floor( dval ) < 0.01 ) value.Printf( _T("%2.0f"), dval );
                else
