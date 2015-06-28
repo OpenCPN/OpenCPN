@@ -1214,6 +1214,7 @@ double OCPNPlatform::GetToolbarScaleFactor( int GUIScaleFactor )
         //  Get the basic size of a tool icon
         ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
         wxSize style_tool_size = style->GetToolSize();
+        double tool_size = style_tool_size.x;
         
         // unless overridden by user, we declare the "best" tool size to be the same as the
         // ActionBar height
@@ -1221,14 +1222,14 @@ double OCPNPlatform::GetToolbarScaleFactor( int GUIScaleFactor )
         if(g_config_display_size_mm > 0){
             double target_size = 9.0;                // mm
         
-            double basic_tool_size_mm = style_tool_size.x / GetDisplayDPmm();
+            double basic_tool_size_mm = tool_size / GetDisplayDPmm();
             premult = target_size / basic_tool_size_mm;
             qDebug() << "parmsA" << style_tool_size.x << GetDisplayDPmm() << basic_tool_size_mm;
             
         }
         else{
             qDebug() << "parmsB" << style_tool_size.x << getAndroidActionBarHeight();
-            premult = wxMax(getAndroidActionBarHeight(), 50) / style_tool_size.x;
+            premult = wxMax(getAndroidActionBarHeight(), 50) / tool_size;
         }            
         
         //Adjust the scale factor using the global GUI scale parameter

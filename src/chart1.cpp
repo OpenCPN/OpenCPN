@@ -3365,8 +3365,25 @@ void MyFrame::OnResizeTimer(wxTimerEvent &event)
     
  
  
-    if(timer_sequence == 1)
+    if(timer_sequence == 1){
         SetSize(m_newsize);
+        timer_sequence++;
+        m_resizeTimer.Start(10, wxTIMER_ONE_SHOT);
+        return;
+    }
+        
+    if(timer_sequence == 2){
+        if( g_FloatingToolbarDialog ) {
+            g_Platform->GetDisplaySizeMM();             // causes a reload of all display metrics
+            SetToolbarScale();
+            g_FloatingToolbarDialog->RePosition();
+            g_FloatingToolbarDialog->SetGeometry();
+            g_FloatingToolbarDialog->Realize();
+            g_FloatingToolbarDialog->Refresh( false );
+        }
+        return;
+    }
+        
     
 }
 
