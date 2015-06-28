@@ -174,6 +174,7 @@ MyFrame                   *gFrame;
 ChartCanvas               *cc1;
 ConsoleCanvas             *console;
 ChartBarWin               *g_ChartBarWin;
+Piano                     *g_Piano;
 wxWindowList              AppActivateList;
 
 MyConfig                  *pConfig;
@@ -1760,6 +1761,21 @@ bool MyApp::OnInit()
 
     pthumbwin = new ThumbWin( cc1 );
 
+    g_Piano = new Piano();
+    g_Piano->SetColorScheme( global_color_scheme );
+    
+    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+
+    if( cc1->GetQuiltMode() ) {
+        g_Piano->SetVizIcon( new wxBitmap( style->GetIcon( _T("viz") ) ) );
+        g_Piano->SetInVizIcon( new wxBitmap( style->GetIcon( _T("redX") ) ) );
+
+        g_Piano->SetRoundedRectangles( true );
+    }
+    g_Piano->SetTMercIcon( new wxBitmap( style->GetIcon( _T("tmercprj") ) ) );
+    g_Piano->SetPolyIcon( new wxBitmap( style->GetIcon( _T("polyprj") ) ) );
+    g_Piano->SetSkewIcon( new wxBitmap( style->GetIcon( _T("skewprj") ) ) );
+
     gFrame->ApplyGlobalSettings( false, false );               // done once on init with resize
 
     g_toolbar_x = wxMax(g_toolbar_x, 0);
@@ -1798,20 +1814,7 @@ bool MyApp::OnInit()
         gFrame->Maximize( true );
 
     g_ChartBarWin = new ChartBarWin( cc1 );
-    g_ChartBarWin->SetColorScheme( global_color_scheme );
     g_ChartBarWin->Show();
-    
-    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-
-    if( cc1->GetQuiltMode() ) {
-        g_ChartBarWin->pPiano->SetVizIcon( new wxBitmap( style->GetIcon( _T("viz") ) ) );
-        g_ChartBarWin->pPiano->SetInVizIcon( new wxBitmap( style->GetIcon( _T("redX") ) ) );
-
-        g_ChartBarWin->pPiano->SetRoundedRectangles( true );
-    }
-    g_ChartBarWin->pPiano->SetTMercIcon( new wxBitmap( style->GetIcon( _T("tmercprj") ) ) );
-    g_ChartBarWin->pPiano->SetPolyIcon( new wxBitmap( style->GetIcon( _T("polyprj") ) ) );
-    g_ChartBarWin->pPiano->SetSkewIcon( new wxBitmap( style->GetIcon( _T("skewprj") ) ) );
 
     //  Yield to pick up the OnSize() calls that result from Maximize()
     Yield();
@@ -2505,17 +2508,14 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
 
     if( ChartData ) ChartData->ApplyColorSchemeToCachedCharts( cs );
 
-    if( g_ChartBarWin ) {
-        // reset rollover, updating it is unreliable; too many
-        // wx versions, native toolkits and so on.
-        SetChartThumbnail( -1 );
-        if ( cc1 ) {
-            cc1->HideChartInfoWindow();
-            cc1->SetQuiltChartHiLiteIndex( -1 );
-        }
-        g_ChartBarWin->pPiano->ResetRollover();
-        g_ChartBarWin->SetColorScheme( cs );
+    SetChartThumbnail( -1 );
+    if ( cc1 ) {
+        cc1->HideChartInfoWindow();
+        cc1->SetQuiltChartHiLiteIndex( -1 );
     }
+    
+    g_Piano->ResetRollover();
+    g_Piano->SetColorScheme( cs );
 
     if( console ) console->SetColorScheme( cs );
 
@@ -3500,10 +3500,12 @@ void MyFrame::ODoSetSize( void )
 
     if( console ) PositionConsole();
 
-    if( g_ChartBarWin ) {
-        g_ChartBarWin->ReSize();
-        g_ChartBarWin->FormatStat();
-        g_ChartBarWin->RePosition();
+    if( cc1 ) {
+        g_Piano->FormatKeys();
+        if( g_ChartBarWin ) {
+            g_ChartBarWin->ReSize();
+            g_ChartBarWin->RePosition();
+        }
     }
 
 //  Update the stored window size
@@ -4057,26 +4059,26 @@ void MyFrame::ShowChartBarIfEnabled()
 
 void MyFrame::ToggleChartBar()
 {
+    g_bShowChartBar = !g_bShowChartBar;
+
     if( g_ChartBarWin ) {
-        if( g_ChartBarWin->IsShown() ){
-            g_ChartBarWin->Hide();
-            g_bShowChartBar = false;
-        }
-        else {
+        g_ChartBarWin->Show(g_bShowChartBar);
+
+        if(g_bShowChartBar) {
             g_ChartBarWin->Move(0,0);
             g_ChartBarWin->RePosition();
-            g_ChartBarWin->Show();
             gFrame->Raise();
-            DoChartUpdate();
-            UpdateControlBar();
-            g_bShowChartBar = true;
         }
         SendSizeEvent();
-        Refresh();
-        
-        SetMenubarItemState( ID_MENU_UI_CHARTBAR, g_bShowChartBar );
-        
+        Refresh();        
     }
+
+    if(g_bShowChartBar) {
+        DoChartUpdate();
+        UpdateControlBar();
+    }
+
+    SetMenubarItemState( ID_MENU_UI_CHARTBAR, g_bShowChartBar );
 }
 
 void MyFrame::ToggleColorScheme()
@@ -5294,13 +5296,12 @@ void MyFrame::ChartsRefresh( int dbi_hint, ViewPort &vp, bool b_purge )
         }
 
         //          Refresh the Piano Bar
-        if( g_ChartBarWin ) {
-            ArrayOfInts piano_active_chart_index_array;
-            piano_active_chart_index_array.Add( pCurrentStack->GetCurrentEntrydbIndex() );
-            g_ChartBarWin->pPiano->SetActiveKeyArray( piano_active_chart_index_array );
+        ArrayOfInts piano_active_chart_index_array;
+        piano_active_chart_index_array.Add( pCurrentStack->GetCurrentEntrydbIndex() );
+        g_Piano->SetActiveKeyArray( piano_active_chart_index_array );
 
+        if( g_ChartBarWin )
             g_ChartBarWin->Refresh( true );
-        }
 
     } else {
         //    Select reference chart from the stack, as though clicked by user
@@ -5415,16 +5416,16 @@ void MyFrame::SetupQuiltMode( void )
     {
         ChartData->LockCache();
 
-        g_ChartBarWin->pPiano->SetNoshowIndexArray( g_quilt_noshow_index_array );
+        g_Piano->SetNoshowIndexArray( g_quilt_noshow_index_array );
 
         ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 
-        g_ChartBarWin->pPiano->SetVizIcon( new wxBitmap( style->GetIcon( _T("viz") ) ) );
-        g_ChartBarWin->pPiano->SetInVizIcon( new wxBitmap( style->GetIcon( _T("redX") ) ) );
-        g_ChartBarWin->pPiano->SetTMercIcon( new wxBitmap( style->GetIcon( _T("tmercprj") ) ) );
-        g_ChartBarWin->pPiano->SetSkewIcon( new wxBitmap( style->GetIcon( _T("skewprj") ) ) );
+        g_Piano->SetVizIcon( new wxBitmap( style->GetIcon( _T("viz") ) ) );
+        g_Piano->SetInVizIcon( new wxBitmap( style->GetIcon( _T("redX") ) ) );
+        g_Piano->SetTMercIcon( new wxBitmap( style->GetIcon( _T("tmercprj") ) ) );
+        g_Piano->SetSkewIcon( new wxBitmap( style->GetIcon( _T("skewprj") ) ) );
 
-        g_ChartBarWin->pPiano->SetRoundedRectangles( true );
+        g_Piano->SetRoundedRectangles( true );
 
         //    Select the proper Ref chart
         int target_new_dbindex = -1;
@@ -5471,18 +5472,18 @@ void MyFrame::SetupQuiltMode( void )
     } else                                                  // going to SC Mode
     {
         ArrayOfInts empty_array;
-        g_ChartBarWin->pPiano->SetActiveKeyArray( empty_array );
-        g_ChartBarWin->pPiano->SetNoshowIndexArray( empty_array );
-        g_ChartBarWin->pPiano->SetSubliteIndexArray( empty_array );
-        g_ChartBarWin->pPiano->SetVizIcon( NULL );
-        g_ChartBarWin->pPiano->SetInVizIcon( NULL );
+        g_Piano->SetActiveKeyArray( empty_array );
+        g_Piano->SetNoshowIndexArray( empty_array );
+        g_Piano->SetSubliteIndexArray( empty_array );
+        g_Piano->SetVizIcon( NULL );
+        g_Piano->SetInVizIcon( NULL );
 
         ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 
-        g_ChartBarWin->pPiano->SetTMercIcon( new wxBitmap( style->GetIcon( _T("tmercprj") ) ) );
-        g_ChartBarWin->pPiano->SetSkewIcon( new wxBitmap( style->GetIcon( _T("skewprj") ) ) );
+        g_Piano->SetTMercIcon( new wxBitmap( style->GetIcon( _T("tmercprj") ) ) );
+        g_Piano->SetSkewIcon( new wxBitmap( style->GetIcon( _T("skewprj") ) ) );
 
-        g_ChartBarWin->pPiano->SetRoundedRectangles( false );
+        g_Piano->SetRoundedRectangles( false );
 
     }
 
@@ -5545,7 +5546,7 @@ void MyFrame::SetupQuiltMode( void )
                 int dbi = ChartData->FinddbIndex( Current_Ch->GetFullPath() );
                 ArrayOfInts one_array;
                 one_array.Add( dbi );
-                g_ChartBarWin->pPiano->SetActiveKeyArray( one_array );
+                g_Piano->SetActiveKeyArray( one_array );
             }
 
         }
@@ -6734,12 +6735,18 @@ void MyFrame::HandlePianoRollover( int selected_index, int selected_dbIndex )
     if(ChartData && ChartData->IsBusy())
         return;
 
+    wxPoint key_location = g_Piano->GetKeyOrigin( selected_index );
+    wxPoint rolloverPos;
     int sx, sy;
-    g_ChartBarWin->GetPosition( &sx, &sy );
-    wxPoint key_location = g_ChartBarWin->pPiano->GetKeyOrigin( selected_index );
-    wxPoint rolloverPos = g_ChartBarWin->GetParent()->ScreenToClient( wxPoint( sx, sy ) );
-    rolloverPos.y -= 3;
-    rolloverPos.x += key_location.x;
+    if(g_ChartBarWin) {
+        g_ChartBarWin->GetPosition( &sx, &sy );
+        rolloverPos = g_ChartBarWin->GetParent()->ScreenToClient( wxPoint( sx, sy ) );
+        rolloverPos.y -= 3;
+        rolloverPos.x += key_location.x;
+    } else {
+        rolloverPos = GetPosition();
+        sy = 0;
+    }
 
     if( !cc1->GetQuiltMode() ) {
         SetChartThumbnail( selected_index );
@@ -6883,13 +6890,12 @@ void MyFrame::SelectChartFromStack( int index, bool bDir, ChartTypeEnum New_Type
     }
 
     //          Refresh the Piano Bar
-    if( g_ChartBarWin ) {
-        ArrayOfInts piano_active_chart_index_array;
-        piano_active_chart_index_array.Add( pCurrentStack->GetCurrentEntrydbIndex() );
-        g_ChartBarWin->pPiano->SetActiveKeyArray( piano_active_chart_index_array );
+    ArrayOfInts piano_active_chart_index_array;
+    piano_active_chart_index_array.Add( pCurrentStack->GetCurrentEntrydbIndex() );
+    g_Piano->SetActiveKeyArray( piano_active_chart_index_array );
 
+    if( g_ChartBarWin )
         g_ChartBarWin->Refresh( true );
-    }
 }
 
 void MyFrame::SelectdbChart( int dbindex )
@@ -6936,13 +6942,11 @@ void MyFrame::SelectdbChart( int dbindex )
     }
 
     //          Refresh the Piano Bar
-    if( g_ChartBarWin ) {
-        ArrayOfInts piano_active_chart_index_array;
-        piano_active_chart_index_array.Add( pCurrentStack->GetCurrentEntrydbIndex() );
-        g_ChartBarWin->pPiano->SetActiveKeyArray( piano_active_chart_index_array );
-
+    ArrayOfInts piano_active_chart_index_array;
+    piano_active_chart_index_array.Add( pCurrentStack->GetCurrentEntrydbIndex() );
+    g_Piano->SetActiveKeyArray( piano_active_chart_index_array );
+    if( g_ChartBarWin )
         g_ChartBarWin->Refresh( true );
-    }
 }
 
 void MyFrame::SetChartUpdatePeriod( ViewPort &vp )
@@ -7056,19 +7060,19 @@ void MyFrame::UpdateControlBar( void )
     ArrayOfInts piano_chart_index_array;
     ArrayOfInts empty_piano_chart_index_array;
 
-    wxString old_hash = g_ChartBarWin->pPiano->GetStoredHash();
+    wxString old_hash = g_Piano->GetStoredHash();
      
     if( cc1->GetQuiltMode() ) {
         piano_chart_index_array = cc1->GetQuiltExtendedStackdbIndexArray();
-        g_ChartBarWin->pPiano->SetKeyArray( piano_chart_index_array );
+        g_Piano->SetKeyArray( piano_chart_index_array );
 
         ArrayOfInts piano_active_chart_index_array = cc1->GetQuiltCandidatedbIndexArray();
-        g_ChartBarWin->pPiano->SetActiveKeyArray( piano_active_chart_index_array );
+        g_Piano->SetActiveKeyArray( piano_active_chart_index_array );
 
         ArrayOfInts piano_eclipsed_chart_index_array = cc1->GetQuiltEclipsedStackdbIndexArray();
-        g_ChartBarWin->pPiano->SetSubliteIndexArray( piano_eclipsed_chart_index_array );
+        g_Piano->SetSubliteIndexArray( piano_eclipsed_chart_index_array );
 
-        g_ChartBarWin->pPiano->SetNoshowIndexArray( g_quilt_noshow_index_array );
+        g_Piano->SetNoshowIndexArray( g_quilt_noshow_index_array );
 
         if(ChartData){
             sel_type = ChartData->GetDBChartType(cc1->GetQuiltReferenceChartIndex());
@@ -7076,11 +7080,11 @@ void MyFrame::UpdateControlBar( void )
         }        
     } else {
         piano_chart_index_array = ChartData->GetCSArray( pCurrentStack );
-        g_ChartBarWin->pPiano->SetKeyArray( piano_chart_index_array );
+        g_Piano->SetKeyArray( piano_chart_index_array );
 
         ArrayOfInts piano_active_chart_index_array;
         piano_active_chart_index_array.Add( pCurrentStack->GetCurrentEntrydbIndex() );
-        g_ChartBarWin->pPiano->SetActiveKeyArray( piano_active_chart_index_array );
+        g_Piano->SetActiveKeyArray( piano_active_chart_index_array );
 
         if(Current_Ch){
             sel_type = Current_Ch->GetChartType();
@@ -7115,17 +7119,16 @@ void MyFrame::UpdateControlBar( void )
                     piano_skew_chart_index_array.Add(piano_chart_index_array.Item( ino ) );
 
     }
-    g_ChartBarWin->pPiano->SetSkewIndexArray( piano_skew_chart_index_array );
-    g_ChartBarWin->pPiano->SetTmercIndexArray( piano_tmerc_chart_index_array );
-    g_ChartBarWin->pPiano->SetPolyIndexArray( piano_poly_chart_index_array );
-
-    g_ChartBarWin->FormatStat();
+    g_Piano->SetSkewIndexArray( piano_skew_chart_index_array );
+    g_Piano->SetTmercIndexArray( piano_tmerc_chart_index_array );
+    g_Piano->SetPolyIndexArray( piano_poly_chart_index_array );
+    g_Piano->FormatKeys();
     
-    wxString new_hash = g_ChartBarWin->pPiano->GenerateAndStoreNewHash();
+    wxString new_hash = g_Piano->GenerateAndStoreNewHash();
     if(new_hash != old_hash) {
         SetChartThumbnail( -1 );
         cc1->HideChartInfoWindow();
-        g_ChartBarWin->pPiano->ResetRollover();
+        g_Piano->ResetRollover();
         cc1->SetQuiltChartHiLiteIndex( -1 );
         g_ChartBarWin->Refresh( false );
     }
@@ -7691,7 +7694,7 @@ void MyFrame::PianoPopupMenu( int x, int y, int selected_index, int selected_dbI
     int sx, sy;
     g_ChartBarWin->GetPosition( &sx, &sy );
     wxPoint pos = g_ChartBarWin->GetParent()->ScreenToClient( wxPoint( sx, sy ) );
-    wxPoint key_location = g_ChartBarWin->pPiano->GetKeyOrigin( selected_index );
+    wxPoint key_location = g_Piano->GetKeyOrigin( selected_index );
     pos.x += key_location.x;
     pos.y -= 30;
 
@@ -7702,7 +7705,7 @@ void MyFrame::PianoPopupMenu( int x, int y, int selected_index, int selected_dbI
     piano_ctx_menu = NULL;
     
     cc1->HideChartInfoWindow();
-    g_ChartBarWin->pPiano->ResetRollover();
+    g_Piano->ResetRollover();
 
     cc1->SetQuiltChartHiLiteIndex( -1 );
 

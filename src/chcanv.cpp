@@ -194,6 +194,7 @@ extern bool             g_bShowAreaNotices;
 extern int              g_Show_Target_Name_Scale;
 
 extern MyFrame          *gFrame;
+extern Piano            *g_Piano;
 extern ChartBarWin      *g_ChartBarWin;
 extern ocpnFloatingCompassWindow *g_FloatingCompassDialog;
 
@@ -4310,9 +4311,7 @@ void ChartCanvas::ShowChartInfoWindow( int x, int y, int dbIndex )
             if( ( p.x + m_pCIWin->GetWinSize().x ) > m_canvas_width )
                 p.x = m_canvas_width - m_pCIWin->GetWinSize().x;
 
-            int ChartBarWinW, ChartBarWinH;
-            g_ChartBarWin->GetSize( &ChartBarWinW, &ChartBarWinH );
-            p.y = m_canvas_height - ChartBarWinH - 4 - m_pCIWin->GetWinSize().y;
+            p.y = m_canvas_height - g_Piano->GetHeight() - 4 - m_pCIWin->GetWinSize().y;
 
             m_pCIWin->dbIndex = dbIndex;
             m_pCIWin->SetPosition( p );

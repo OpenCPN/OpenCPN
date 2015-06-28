@@ -33,6 +33,7 @@
 #endif //precompiled headers
 #include "dychart.h"
 
+#include "chcanv.h"
 #include "chartbarwin.h"
 #include "chartdb.h"
 #include "chart1.h"
@@ -54,6 +55,10 @@ extern ocpnStyle::StyleManager* g_StyleManager;
 extern MyFrame *gFrame;
 extern bool g_btouch;
 extern int  g_GUIScaleFactor;
+
+extern ChartCanvas               *cc1;
+extern ChartBarWin               *g_ChartBarWin;
+extern Piano                     *g_Piano;
 
 //------------------------------------------------------------------------------
 //    ChartBarWin Implementation
@@ -79,22 +84,18 @@ ChartBarWin::ChartBarWin( wxWindow *win )
 
     wxDialog::Create( win, wxID_ANY, _T(""), wxPoint( 0, 0 ), wxSize( 200, 20 ), wstyle );
 
-    m_backBrush = wxBrush( GetGlobalColor( _T("UIBDR") ), wxSOLID );
-
     SetBackgroundColour( GetGlobalColor( _T("UIBDR") ) );
 
-//    SetBackgroundStyle( wxBG_STYLE_CUSTOM ); // on WXMSW, this prevents flashing on color scheme change
+    SetBackgroundStyle( wxBG_STYLE_CUSTOM ); // on WXMSW, this prevents flashing on color scheme change
 
     //   Create the Children
 
-    pPiano = new PianoWin( (wxFrame *) this );
     Raise();
 
 }
 
 ChartBarWin::~ChartBarWin()
 {
-    pPiano->Close();
 }
 
 void ChartBarWin::RePosition()
@@ -116,34 +117,16 @@ void ChartBarWin::RePosition()
 void ChartBarWin::ReSize()
 {
     wxSize cs = GetParent()->GetClientSize();
-    wxSize new_size;
-    new_size.x = cs.x;
-
-    new_size.y = 22;
-    
-    if(g_btouch){
-        double size_mult =  exp( g_GUIScaleFactor * 0.0953101798043 ); //ln(1.1)
-        new_size.y *= size_mult;
-        new_size.y = wxMin(new_size.y, 50);     // absolute boundaries
-        new_size.y = wxMax(new_size.y, 10);
-    }
-    
-    SetSize(new_size);
-
+    SetSize(wxSize(cs.x, g_Piano->GetHeight()));
 }
 
 void ChartBarWin::OnPaint( wxPaintEvent& event )
 {
-    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-
     wxPaintDC dc( this );
-    if( style->chartStatusWindowTransparent ) return;
-
-    dc.SetBackground( m_backBrush );
-    dc.Clear();
+    g_Piano->Paint(dc, GetClientSize());
 
 #ifdef __WXQT__ // temporary workaround
-    pPiano->Refresh();
+    g_Piano->Refresh();
 #endif
 }
 
@@ -151,29 +134,13 @@ void ChartBarWin::OnSize( wxSizeEvent& event )
 {
     if (!IsShown())
         return;
-    int width, height;
-    GetClientSize( &width, &height );
-    int x, y;
-    GetPosition( &x, &y );
 
-    float width_factor = 0.6f;
-    if(g_btouch)
-        width_factor = 0.98f;
-    if( width ) {
-        pPiano->SetSize( 0, 0, width * width_factor, height );
-        pPiano->FormatKeys();
-    }
-}
-
-void ChartBarWin::FormatStat( void )
-{
-    pPiano->FormatKeys();
+    g_Piano->FormatKeys();
 }
 
 void ChartBarWin::MouseEvent( wxMouseEvent& event )
 {
-    int x, y;
-    event.GetPosition( &x, &y );
+    g_Piano->MouseEvent( event );
 }
 
 int ChartBarWin::GetFontHeight()
@@ -186,31 +153,15 @@ int ChartBarWin::GetFontHeight()
     return ( h );
 }
 
-void ChartBarWin::SetColorScheme( ColorScheme cs )
-{
-
-    m_backBrush = wxBrush( GetGlobalColor( _T("UIBDR") ), wxSOLID );
-
-    //  Also apply color scheme to all known children
-    pPiano->SetColorScheme( cs );
-
-    Refresh();
-}
-
 //------------------------------------------------------------------------------
 //          Piano Window Implementation
 //------------------------------------------------------------------------------
-BEGIN_EVENT_TABLE(PianoWin, wxWindow)
-    EVT_PAINT(PianoWin::OnPaint)
-    EVT_SIZE(PianoWin::OnSize)
-    EVT_MOUSE_EVENTS(PianoWin::MouseEvent)
-    EVT_TIMER ( PIANO_EVENT_TIMER, PianoWin::onTimerEvent )
-    
+BEGIN_EVENT_TABLE(Piano, wxEvtHandler)
+    EVT_TIMER ( PIANO_EVENT_TIMER, Piano::onTimerEvent )
 END_EVENT_TABLE()
 
 // Define a constructor
-PianoWin::PianoWin( wxFrame *frame ) :
-        wxWindow( frame, wxID_ANY, wxPoint( 20, 20 ), wxSize( 5, 5 ), wxNO_BORDER )
+Piano::Piano()
 {
     m_index_last = -1;
     m_iactive = -1;
@@ -222,7 +173,7 @@ PianoWin::PianoWin( wxFrame *frame ) :
     
     m_nRegions = 0;
 
-    SetBackgroundStyle( wxBG_STYLE_CUSTOM ); // on WXMSW, this prevents flashing on color scheme change
+//>    SetBackgroundStyle( wxBG_STYLE_CUSTOM ); // on WXMSW, this prevents flashing on color scheme change
 
     m_pVizIconBmp = NULL;
     m_pInVizIconBmp = NULL;
@@ -234,7 +185,7 @@ PianoWin::PianoWin( wxFrame *frame ) :
     
 }
 
-PianoWin::~PianoWin()
+Piano::~Piano()
 {
     if( m_pInVizIconBmp ) delete m_pInVizIconBmp;
     if( m_pPolyIconBmp ) delete m_pPolyIconBmp;
@@ -243,39 +194,11 @@ PianoWin::~PianoWin()
     if( m_pVizIconBmp ) delete m_pVizIconBmp;
 }
 
-void PianoWin::OnSize( wxSizeEvent& event )
-{
-    m_hash.Clear();
-}
-
-void PianoWin::SetColorScheme( ColorScheme cs )
-{
-
-    //    Recreate the local brushes
-
-    m_backBrush = wxBrush( GetGlobalColor( _T("UIBDR") ), wxSOLID );
-
-    m_tBrush = wxBrush( GetGlobalColor( _T("BLUE2") ), wxSOLID );    // Raster Chart unselected
-    m_slBrush = wxBrush( GetGlobalColor( _T("BLUE1") ), wxSOLID );    // and selected
-
-    m_vBrush = wxBrush( GetGlobalColor( _T("GREEN2") ), wxSOLID );    // Vector Chart unselected
-    m_svBrush = wxBrush( GetGlobalColor( _T("GREEN1") ), wxSOLID );    // and selected
-
-    m_cBrush = wxBrush( GetGlobalColor( _T("YELO2") ), wxSOLID );     // CM93 Chart unselected
-    m_scBrush = wxBrush( GetGlobalColor( _T("YELO1") ), wxSOLID );    // and selected
-
-    m_uvBrush = wxBrush( GetGlobalColor( _T("UINFD") ), wxSOLID );    // and unavailable
-
-}
-
-void PianoWin::OnPaint( wxPaintEvent& event )
+void Piano::Paint( wxDC& dc, const wxSize size )
 {
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-    int width, height;
-    GetClientSize( &width, &height );
-    wxPaintDC dc( this );
 
-    wxBitmap shape = wxBitmap( width, height );
+    wxBitmap shape = wxBitmap( size.x, size.y );
     wxMemoryDC shapeDc( shape );
     shapeDc.SetBackground( *wxBLACK_BRUSH);
     shapeDc.SetBrush( *wxWHITE_BRUSH);
@@ -410,66 +333,95 @@ void PianoWin::OnPaint( wxPaintEvent& event )
             }
         }
 #ifndef __WXMAC__
-        if( style->chartStatusWindowTransparent )
-            ((wxDialog*) GetParent())->SetShape( wxRegion( shape, *wxBLACK, 0 ) );
+        if( g_ChartBarWin && style->chartStatusWindowTransparent )
+            g_ChartBarWin->SetShape( wxRegion( shape, *wxBLACK, 0 ) );
     }
     else {
         // SetShape() with a completely empty shape doesn't work, and leaving the shape
         // but hiding the window causes artifacts when dragging in GL mode on MSW.
         // The best solution found so far is to show just a single pixel, this is less
         // disturbing than flashing piano keys when dragging. (wxWidgets 2.8)
-        if( style->chartStatusWindowTransparent )
-            ((wxDialog*) GetParent())->SetShape( wxRegion( wxRect(0,0,1,1) ) );
+        if( g_ChartBarWin && style->chartStatusWindowTransparent )
+            g_ChartBarWin->SetShape( wxRegion( wxRect(0,0,1,1) ) );
     }
 #else
     }
 #endif
 }
 
-void PianoWin::ShowBusy( bool busy )
+/*
+void PianoWin::OnSize( wxSizeEvent& event )
 {
-    m_bBusy = busy;
-    Refresh( true );
-    Update();
+    m_hash.Clear();
+    }*/
+
+void Piano::SetColorScheme( ColorScheme cs )
+{
+
+    //    Recreate the local brushes
+
+    m_backBrush = wxBrush( GetGlobalColor( _T("UIBDR") ), wxSOLID );
+
+    m_tBrush = wxBrush( GetGlobalColor( _T("BLUE2") ), wxSOLID );    // Raster Chart unselected
+    m_slBrush = wxBrush( GetGlobalColor( _T("BLUE1") ), wxSOLID );    // and selected
+
+    m_vBrush = wxBrush( GetGlobalColor( _T("GREEN2") ), wxSOLID );    // Vector Chart unselected
+    m_svBrush = wxBrush( GetGlobalColor( _T("GREEN1") ), wxSOLID );    // and selected
+
+    m_cBrush = wxBrush( GetGlobalColor( _T("YELO2") ), wxSOLID );     // CM93 Chart unselected
+    m_scBrush = wxBrush( GetGlobalColor( _T("YELO1") ), wxSOLID );    // and selected
+
+    m_uvBrush = wxBrush( GetGlobalColor( _T("UINFD") ), wxSOLID );    // and unavailable
+
+    if(g_ChartBarWin)
+        g_ChartBarWin->Refresh();
+
 }
 
-void PianoWin::SetKeyArray( ArrayOfInts array )
+void Piano::ShowBusy( bool busy )
+{
+    m_bBusy = busy;
+//    Refresh( true );
+//    Update();
+}
+
+void Piano::SetKeyArray( ArrayOfInts array )
 {
     m_key_array = array;
     FormatKeys();
 }
 
-void PianoWin::SetNoshowIndexArray( ArrayOfInts array )
+void Piano::SetNoshowIndexArray( ArrayOfInts array )
 {
     m_noshow_index_array = array;
 }
 
-void PianoWin::SetActiveKeyArray( ArrayOfInts array )
+void Piano::SetActiveKeyArray( ArrayOfInts array )
 {
     m_active_index_array = array;
 }
 
-void PianoWin::SetSubliteIndexArray( ArrayOfInts array )
+void Piano::SetSubliteIndexArray( ArrayOfInts array )
 {
     m_sublite_index_array = array;
 }
 
-void PianoWin::SetSkewIndexArray( ArrayOfInts array )
+void Piano::SetSkewIndexArray( ArrayOfInts array )
 {
     m_skew_index_array = array;
 }
 
-void PianoWin::SetTmercIndexArray( ArrayOfInts array )
+void Piano::SetTmercIndexArray( ArrayOfInts array )
 {
     m_tmerc_index_array = array;
 }
 
-void PianoWin::SetPolyIndexArray( ArrayOfInts array )
+void Piano::SetPolyIndexArray( ArrayOfInts array )
 {
     m_poly_index_array = array;
 }
 
-wxString PianoWin::GetStateHash()
+wxString Piano::GetStateHash()
 {
     wxString hash;
 
@@ -513,23 +465,23 @@ wxString PianoWin::GetStateHash()
     return hash;
 }
 
-wxString &PianoWin::GenerateAndStoreNewHash()
+wxString &Piano::GenerateAndStoreNewHash()
 {
     m_hash = GetStateHash();
     return m_hash;
 }
 
-wxString &PianoWin::GetStoredHash()
+wxString &Piano::GetStoredHash()
 {
     return m_hash;
 }
 
 
-void PianoWin::FormatKeys( void )
+void Piano::FormatKeys( void )
 {
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-    int width, height;
-    GetClientSize( &width, &height );
+    int width = cc1->GetClientSize().x, height = GetHeight();
+    width *= g_btouch ? 0.98f : 0.6f;
 
     int nKeys = m_key_array.GetCount();
     if( nKeys ) {
@@ -548,7 +500,7 @@ void PianoWin::FormatKeys( void )
     m_nRegions = nKeys;
 
 }
-wxPoint PianoWin::GetKeyOrigin( int key_index )
+wxPoint Piano::GetKeyOrigin( int key_index )
 {
     if( ( key_index >= 0 ) && ( key_index <= (int) m_key_array.GetCount() - 1 ) ) {
         wxRect box = KeyRegion.Item( key_index ).GetBox();
@@ -557,11 +509,12 @@ wxPoint PianoWin::GetKeyOrigin( int key_index )
         return wxPoint( -1, -1 );
 }
 
-void PianoWin::MouseEvent( wxMouseEvent& event )
+void Piano::MouseEvent( wxMouseEvent& event )
 {
 
     int x, y;
     event.GetPosition( &x, &y );
+    y = 6;
 
 //    Check the regions
 
@@ -654,14 +607,26 @@ void PianoWin::MouseEvent( wxMouseEvent& event )
 
 }
 
-void PianoWin::ResetRollover( void )
+void Piano::ResetRollover( void )
 {
     m_index_last = -1;
     m_hover_icon_last = -1;
     m_hover_last = -1;
 }
 
-void PianoWin::onTimerEvent(wxTimerEvent &event)
+int Piano::GetHeight()
+{
+    int height = 22;
+    if(g_btouch){
+        double size_mult =  exp( g_GUIScaleFactor * 0.0953101798043 ); //ln(1.1)
+        height *= size_mult;
+        height = wxMin(height, 50);     // absolute boundaries
+        height = wxMax(height, 10);
+    }
+    return height;
+}
+
+void Piano::onTimerEvent(wxTimerEvent &event)
 {
     switch(m_action){
         case DEFERRED_KEY_CLICK_DOWN:

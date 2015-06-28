@@ -43,18 +43,16 @@ WX_DECLARE_OBJARRAY(wxRegion, RegionArray);
 
 class MyFrame;
 
-
 //----------------------------------------------------------------------------
-// PianoWin
+// Piano
 //----------------------------------------------------------------------------
-class PianoWin: public wxWindow
+class Piano : public wxEvtHandler
 {
 public:
-      PianoWin(wxFrame *frame);
-      ~PianoWin();
+      Piano();
+      ~Piano();
 
-      void OnSize(wxSizeEvent& event);
-      void OnPaint(wxPaintEvent& event);
+      void Paint(wxDC &dc, const wxSize size);
       void FormatKeys(void);
       void MouseEvent(wxMouseEvent& event);
       void SetColorScheme(ColorScheme cs);
@@ -78,12 +76,12 @@ public:
       wxPoint GetKeyOrigin(int key_index);
       void ResetRollover(void);
       void SetRoundedRectangles(bool val){ m_brounded = val; m_hash.Clear();}
+
+      int GetHeight();
       
       wxString &GenerateAndStoreNewHash();
       wxString &GetStoredHash();
       
-
-      int         Size_X, Size_Y, Pos_X, Pos_Y;
 private:
       wxString GetStateHash();
       wxString    m_hash;
@@ -142,18 +140,9 @@ public:
       void OnPaint(wxPaintEvent& event);
       void MouseEvent(wxMouseEvent& event);
       int  GetFontHeight();
-      void SetColorScheme(ColorScheme cs);
       void RePosition();
       void ReSize();
       
-      void FormatStat(void);
-
-      PianoWin    *pPiano;
-
-private:
-      wxBrush     m_backBrush;
-
-
 DECLARE_EVENT_TABLE()
 };
 

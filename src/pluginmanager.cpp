@@ -79,7 +79,8 @@ extern MyFrame         *gFrame;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern options         *g_pOptions;
 extern Multiplexer     *g_pMUX;
-extern ChartBarWin     *g_ChartBarWin;
+extern bool             g_bShowChartBar;
+extern Piano           *g_Piano;
 extern Routeman        *g_pRouteMan;
 extern WayPointman     *pWayPointMan;
 extern Select          *pSelect;
@@ -2180,12 +2181,8 @@ bool DecodeSingleVDOMessage( const wxString& str, PlugIn_Position_Fix_Ex *pos, w
 
 int GetChartbarHeight( void )
 {
-    if( g_ChartBarWin && g_ChartBarWin->IsShown() ){
-        wxSize s = g_ChartBarWin->GetSize();
-        return s.GetHeight();
-    }
-    else
-        return 0;
+    if(g_bShowChartBar)
+        return g_Piano->GetHeight();
 }
 
 
