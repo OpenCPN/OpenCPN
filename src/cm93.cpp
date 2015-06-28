@@ -5185,16 +5185,18 @@ double cm93compchart::GetNormalScaleMin ( double canvas_scale_factor, bool b_all
 
       if ( m_pcm93chart_current )
       {
-            if ( m_pcm93chart_current->m_last_vp.IsValid() )
+            int cmscale = 0;
+            if ( m_pcm93chart_current->m_last_vp.IsValid() ) {
                   FillScaleArray ( m_pcm93chart_current->m_last_vp.clat,m_pcm93chart_current-> m_last_vp.clon );
 
-            //    Find out what the smallest available scale is
-            int cmscale = 7;
-            while ( cmscale > 0 )
-            {
-                  if ( m_bScale_Array[cmscale] )
-                        break;
-                  cmscale--;
+                  //    Find out what the smallest available scale is
+                  cmscale = 7;
+                  while ( cmscale > 0 )
+                  {
+                        if ( m_bScale_Array[cmscale] )
+                              break;
+                        cmscale--;
+                  }
             }
 
 
