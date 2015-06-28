@@ -180,6 +180,8 @@ protected:
     int          m_cache_tex_y;
     OCPNRegion   m_gl_rendered_region;
 
+    int		m_prevMemUsed;
+
     GLuint      ownship_tex;
     int         ownship_color;
     wxSize      ownship_size, ownship_tex_size;

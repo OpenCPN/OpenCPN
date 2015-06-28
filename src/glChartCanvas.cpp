@@ -797,6 +797,9 @@ glChartCanvas::glChartCanvas( wxWindow *parent ) :
     
     b_timeGL = true;
     m_last_render_time = -1;
+
+    m_prevMemUsed = 0;    
+
 #ifdef __OCPN__ANDROID__    
     //  Create/connect a dynamic event handler slot for gesture events
     Connect( wxEVT_QT_PANGESTURE,
@@ -3367,7 +3370,7 @@ bool glChartCanvas::FactoryCrunch(double factor)
     double hysteresis = 0.90;
     mem_start = mem_used;
     
-    bool bGLMemCrunch = mem_used > (double)(g_memCacheLimit) * factor;
+    bool bGLMemCrunch = mem_used > (double)(g_memCacheLimit) * factor && mem_used > (double)(m_prevMemUsed) *factor;
     if( ! bGLMemCrunch && (m_chart_texfactory_hash.size() <= MAX_CACHE_FACTORY))
         return false;
     
@@ -3400,13 +3403,16 @@ bool glChartCanvas::FactoryCrunch(double factor)
             if (mem_freed) {
                 GetMemoryStatus(0, &mem_used);
                 bGLMemCrunch = mem_used > (double)(g_memCacheLimit) * factor * hysteresis;
+                m_prevMemUsed = mem_used;
                 if(!bGLMemCrunch)
                     break;
             }
         }
     }
 
-    bGLMemCrunch = (mem_used > (double)(g_memCacheLimit) * factor *hysteresis) || (m_chart_texfactory_hash.size() > MAX_CACHE_FACTORY);
+    bGLMemCrunch = (mem_used > (double)(g_memCacheLimit) * factor *hysteresis && 
+                    mem_used > (double)(m_prevMemUsed) * factor *hysteresis
+                    )  || (m_chart_texfactory_hash.size() > MAX_CACHE_FACTORY);
     //  Need more, so delete the oldest factory
     if(bGLMemCrunch){
         
