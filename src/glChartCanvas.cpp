@@ -3357,6 +3357,7 @@ bool glChartCanvas::TextureCrunch(double factor)
     return true;
 }
 
+#define MAX_CACHE_FACTORY 50
 bool glChartCanvas::FactoryCrunch(double factor)
 {
     int mem_used, mem_start;
@@ -3364,44 +3365,45 @@ bool glChartCanvas::FactoryCrunch(double factor)
     mem_start = mem_used;
     
     bool bGLMemCrunch = mem_used > (double)(g_memCacheLimit) * factor;
-    if( ! bGLMemCrunch )
+    if( ! bGLMemCrunch && (m_chart_texfactory_hash.size() <= MAX_CACHE_FACTORY))
         return false;
     
-
     ChartPathHashTexfactType::iterator it0;
-    for( it0 = m_chart_texfactory_hash.begin(); it0 != m_chart_texfactory_hash.end(); ++it0 ) {
-        wxString chart_full_path = it0->first;
-        glTexFactory *ptf = it0->second;
-        bool mem_freed = false;
-        if(!ptf)
-            continue;
+    if( bGLMemCrunch) {
+        for( it0 = m_chart_texfactory_hash.begin(); it0 != m_chart_texfactory_hash.end(); ++it0 ) {
+            wxString chart_full_path = it0->first;
+            glTexFactory *ptf = it0->second;
+            bool mem_freed = false;
+            if(!ptf)
+                continue;
         
-        if( cc1->VPoint.b_quilt )          // quilted
-        {
-            if( cc1->m_pQuilt && cc1->m_pQuilt->IsComposed() &&
-                !cc1->m_pQuilt->IsChartInQuilt( chart_full_path ) ) 
+            if( cc1->VPoint.b_quilt )          // quilted
             {
-                ptf->FreeSome( g_memCacheLimit * factor );
-                mem_freed = true;
+                if( cc1->m_pQuilt && cc1->m_pQuilt->IsComposed() &&
+                    !cc1->m_pQuilt->IsChartInQuilt( chart_full_path ) ) 
+                {
+                    ptf->FreeSome( g_memCacheLimit * factor );
+                    mem_freed = true;
+                }
             }
-        }
-        else      // not quilted
-        {
-            if( !Current_Ch->GetFullPath().IsSameAs(chart_full_path))
+            else      // not quilted
             {
-                ptf->DeleteSomeTextures( g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * factor );
-                mem_freed = true;
+                if( !Current_Ch->GetFullPath().IsSameAs(chart_full_path))
+                {
+                    ptf->DeleteSomeTextures( g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * factor );
+                    mem_freed = true;
+                }
             }
-        }
-        if (mem_freed) {
-            GetMemoryStatus(0, &mem_used);
-            bGLMemCrunch = mem_used > (double)(g_memCacheLimit) * factor;
-            if(!bGLMemCrunch)
-                break;
+            if (mem_freed) {
+                GetMemoryStatus(0, &mem_used);
+                bGLMemCrunch = mem_used > (double)(g_memCacheLimit) * factor;
+                if(!bGLMemCrunch)
+                    break;
+            }
         }
     }
 
-    bGLMemCrunch = mem_used > (double)(g_memCacheLimit) * factor;
+    bGLMemCrunch = (mem_used > (double)(g_memCacheLimit) * factor ) || (m_chart_texfactory_hash.size() > MAX_CACHE_FACTORY);
     //  Need more, so delete the oldest factory
     if(bGLMemCrunch){
         
