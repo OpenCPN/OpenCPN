@@ -427,8 +427,6 @@ void ocpnFloatingToolbarDialog::SetGeometry()
                 max_rows = wxMax( max_rows, 2);             // at least two rows
             else
                 max_cols = wxMax( max_cols, 2);             // at least two columns
-                
-            qDebug() << "SetGeom" << m_orient << m_sizefactor << style_tool_size.y << cc1->GetSize().y << max_rows << max_cols;
         }
 
         if( m_orient == wxTB_VERTICAL )
