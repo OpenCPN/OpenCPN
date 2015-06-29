@@ -623,7 +623,6 @@ wxString &OCPNPlatform::GetHomeDir()
 #endif
 
 #ifdef __OCPN__ANDROID__
-//            m_homeDir =  _T("/mnt/sdcard/.opencpn");
         m_homeDir =  androidGetHomeDir();
 #endif
 
@@ -704,7 +703,6 @@ wxString &OCPNPlatform::GetPrivateDataDir()
         
 #ifdef __OCPN__ANDROID__
         m_PrivateDataDir = androidGetPrivateDir();
-        m_PrivateDataDir =  _T("/mnt/sdcard/opencpn");
 #endif
     }
     

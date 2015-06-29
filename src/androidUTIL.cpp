@@ -1025,14 +1025,14 @@ wxString androidGetHomeDir()
     return g_androidFilesDir + _T("/");
 }
 
-wxString androidGetPrivateDir()                 // Used for logfile, config file, and the like
+wxString androidGetPrivateDir()                 // Used for logfile, config file, navobj, and the like
 {
     if(g_bExternalApp){
         if(g_androidExtFilesDir.Length())
             return g_androidExtFilesDir;
     }
 
-    return g_androidFilesDir;
+    return _T("/mnt/sdcard/opencpn"); //g_androidFilesDir;
 }
 
 wxString androidGetSharedDir()                 // Used for assets like uidata, s57data, etc
@@ -1059,6 +1059,13 @@ wxString androidGetCacheDir()                 // Used for raster_texture_cache, 
 extern void androidSetRouteAnnunciator(bool viz)
 {
     callActivityMethod_is("setRouteAnnunciator", viz?1:0);
+}
+
+extern void androidSetFollowTool(bool bactive)
+{
+    qDebug() << "setFollowIconState" << bactive;
+    
+    callActivityMethod_is("setFollowIconState", bactive?1:0);
 }
 
 

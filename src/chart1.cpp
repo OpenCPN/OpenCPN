@@ -1582,12 +1582,6 @@ bool MyApp::OnInit()
 //      Establish location and name of AIS MMSI -> Target Name mapping
     AISTargetNameFileName = newPrivateFileName(g_Platform->GetPrivateDataDir(), "mmsitoname.csv", "MMSINAME.CSV");
 
-#ifdef __OCPN__ANDROID__
-    ChartListFileName.Clear();
-    ChartListFileName.Append(_T("chartlist.dat"));
-    ChartListFileName.Prepend( g_Platform->GetPrivateDataDir() );
-#endif
-
 //      Establish guessed location of chart tree
     if( pInit_Chart_Dir->IsEmpty() ) {
         wxStandardPaths& std_path = g_Platform->GetStdPaths();
@@ -1596,7 +1590,7 @@ bool MyApp::OnInit()
 #ifndef __OCPN__ANDROID__
         pInit_Chart_Dir->Append( std_path.GetDocumentsDir() );
 #else
-        pInit_Chart_Dir->Append( _T("/mnt/sdcard") );
+        pInit_Chart_Dir->Append( g_Platform->GetPrivateDataDir() );
 #endif
     }
 
@@ -1865,7 +1859,9 @@ bool MyApp::OnInit()
 //    So it is best to simply delete it if present.
 //    TODO  There is a possibility of recreating the dir list from the database itself......
 
-    if( !ChartDirArray.GetCount() ) ::wxRemoveFile( ChartListFileName );
+    if( !ChartDirArray.GetCount() )
+        if(::wxFileExists( ChartListFileName ))
+            ::wxRemoveFile( ChartListFileName );
 
 //      Try to load the current chart list Data file
     ChartData = new ChartDB( );
@@ -4488,6 +4484,7 @@ void MyFrame::TogglebFollow( void )
     if( !cc1->m_bFollow ) SetbFollow();
     else
         ClearbFollow();
+    
 }
 
 void MyFrame::SetbFollow( void )
@@ -4496,6 +4493,10 @@ void MyFrame::SetbFollow( void )
     SetToolbarItemState( ID_FOLLOW, true );
     SetMenubarItemState( ID_MENU_NAV_FOLLOW, true );
 
+    #ifdef __OCPN__ANDROID__
+    androidSetFollowTool(true);
+    #endif        
+    
     DoChartUpdate();
     cc1->ReloadVP();
 }
@@ -4506,6 +4507,10 @@ void MyFrame::ClearbFollow( void )
     vLat = gLat;
     vLon = gLon;
 
+    #ifdef __OCPN__ANDROID__
+    androidSetFollowTool(false);
+    #endif        
+    
     cc1->m_bFollow = false;
     SetToolbarItemState( ID_FOLLOW, false );
     SetMenubarItemState( ID_MENU_NAV_FOLLOW, false );

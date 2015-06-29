@@ -4297,6 +4297,11 @@ void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
             panx -= dx;
             pany -= dy;
             cc1->ClearbFollow();
+            
+            #ifdef __OCPN__ANDROID__
+            androidSetFollowTool(false);
+            #endif        
+            
             break;
             
         case GestureFinished:
@@ -4305,6 +4310,10 @@ void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
                 cc1->PanCanvas( -panx, pany );
             }
 
+            #ifdef __OCPN__ANDROID__
+            androidSetFollowTool(false);
+            #endif        
+            
             panx = pany = 0;
             m_binPan = false;
             
