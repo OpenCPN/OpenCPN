@@ -646,14 +646,24 @@ void ocpnDC::DrawRectangle( wxCoord x, wxCoord y, wxCoord w, wxCoord h )
 }
 
 /* draw the arc along corners */
-static void drawrrhelper( wxCoord x, wxCoord y, wxCoord r, float st, float et )
+static void drawrrhelper( wxCoord x0, wxCoord y0, wxCoord r, int quadrant, int steps )
 {
 #ifdef ocpnUSE_GL
-    const int slices = 10;
-    float dt = ( et - st ) / slices;
-    for( float t = st; t <= et + dt; t += dt )
-        glVertex2f( x + r * cos( t ), y + r * sin( t ) );
-#endif        
+    float step = 1.0/steps, rs = 2.0*r*step, rss = rs*step, x, y, dx, dy, ddx, ddy;
+    switch(quadrant) {
+    case 0: x =  r, y =  0, dx =   0, dy = -rs, ddx = -rss, ddy =  rss; break;
+    case 1: x =  0, y = -r, dx = -rs, dy =   0, ddx =  rss, ddy =  rss; break;
+    case 2: x = -r, y =  0, dx =   0, dy =  rs, ddx =  rss, ddy = -rss; break;
+    case 3: x =  0, y =  r, dx =  rs, dy =   0, ddx = -rss, ddy = -rss; break;
+    }
+
+    for(int i=0; i<steps; i++) {
+        glVertex2i( x0 + floor(x), y0 + floor(y) );
+         x += dx+ddx/2,  y += dy+ddy/2;
+        dx += ddx,      dy += ddy;
+    }
+    glVertex2i( x0 + floor(x), y0 + floor(y) );
+#endif
 }
 
 void ocpnDC::DrawRoundedRectangle( wxCoord x, wxCoord y, wxCoord w, wxCoord h, wxCoord r )
@@ -662,58 +672,28 @@ void ocpnDC::DrawRoundedRectangle( wxCoord x, wxCoord y, wxCoord w, wxCoord h, w
         dc->DrawRoundedRectangle( x, y, w, h, r );
 #ifdef ocpnUSE_GL
     else {
-        wxCoord x0 = x, x1 = x + r, x2 = x + w - r, x3 = x + w;
-        wxCoord y0 = y, y1 = y + r, y2 = y + h - r, y3 = y + h;
+        r++;
+        int steps = ceil(sqrt(r));
+
+        wxCoord x1 = x + r, x2 = x + w - r;
+        wxCoord y1 = y + r, y2 = y + h - r;
         if( ConfigureBrush() ) {
-            
-            glBegin( GL_QUADS );
-            glVertex2i( x0, y1 );
-            glVertex2i( x1, y1 );
-            glVertex2i( x1, y2 );
-            glVertex2i( x0, y2 );
-
-            glVertex2i( x1, y0 );
-            glVertex2i( x2, y0 );
-            glVertex2i( x2, y3 );
-            glVertex2i( x1, y3 );
-
-            glVertex2i( x2, y1 );
-            glVertex2i( x3, y1 );
-            glVertex2i( x3, y2 );
-            glVertex2i( x2, y2 );
-            glEnd();
-
             glBegin( GL_TRIANGLE_FAN );
-            glVertex2i( x1, y2 );
-            drawrrhelper( x1, y2, r, (float)M_PI / 2., (float)M_PI );
+            drawrrhelper( x2, y1, r, 0, steps );
+            drawrrhelper( x1, y1, r, 1, steps );
+            drawrrhelper( x1, y2, r, 2, steps );
+            drawrrhelper( x2, y2, r, 3, steps );
             glEnd();
-
-            glBegin( GL_TRIANGLE_FAN );
-            glVertex2i( x2, y2 );
-            drawrrhelper( x2, y2, r, 0, (float)M_PI / 2. );
-            glEnd();
-
-            glBegin( GL_TRIANGLE_FAN );
-            glVertex2i( x2, y1 );
-            drawrrhelper( x2, y1, r, (float)-M_PI / 2., 0 );
-            glEnd();
-
-            glBegin( GL_TRIANGLE_FAN );
-            glVertex2i( x1, y1 );
-            drawrrhelper( x1, y1, r, (float)-M_PI, (float)-M_PI / 2. );
-            glEnd();
-            
         }
 
         if( ConfigurePen() ) {
             glBegin( GL_LINE_LOOP );
-            drawrrhelper( x1, y2, r, (float)-M_PI, (float)-M_PI / 2. );
-            drawrrhelper( x2, y2, r, (float)-M_PI / 2., 0 );
-            drawrrhelper( x2, y1, r, 0, (float)M_PI / 2. );
-            drawrrhelper( x1, y1, r, (float)M_PI / 2., (float)M_PI );
+            drawrrhelper( x2, y1, r, 0, steps );
+            drawrrhelper( x1, y1, r, 1, steps );
+            drawrrhelper( x1, y2, r, 2, steps );
+            drawrrhelper( x2, y2, r, 3, steps );
             glEnd();
         }
-        
     }
 #endif    
 }
@@ -1127,12 +1107,10 @@ bool ocpnDC::ConfigurePen()
     if( !m_pen.IsOk() ) return false;
     if( m_pen == *wxTRANSPARENT_PEN ) return false;
 
-#ifdef ocpnUSE_GL
     wxColour c = m_pen.GetColour();
     int width = m_pen.GetWidth();
     glColor4ub( c.Red(), c.Green(), c.Blue(), c.Alpha() );
     glLineWidth( wxMax(g_GLMinSymbolLineWidth, width) );
-#endif    
     return true;
 }
 
