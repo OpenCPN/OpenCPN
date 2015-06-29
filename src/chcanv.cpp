@@ -2118,6 +2118,7 @@ void ChartCanvas::SetColorScheme( ColorScheme cs )
     }
 #endif
     SetbTCUpdate( true );                        // force re-render of tide/current locators
+    m_brepaint_piano = true;
 
     ReloadVP();
 
@@ -8758,6 +8759,7 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
             disp_length += dist;
         s0 += FormatDistanceAdaptive( disp_length );
         RenderExtraRouteLegInfo( dc, r_rband, s0 );
+        m_brepaint_piano = true;
     }
 }
 
@@ -8830,7 +8832,6 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
     // subtract the chart bar if it isn't transparent, and determine if we need to paint it
     wxRegion rgn_blit = ru;
-    bool b_repaint_piano = false;
     if(g_bShowChartBar && !g_ChartBarWin) {
         wxRect chart_bar_rect(0, GetClientSize().y - g_Piano->GetHeight(),
                               GetClientSize().x, g_Piano->GetHeight());
@@ -8838,14 +8839,13 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
         if(style->chartStatusWindowTransparent) {
             if(ru.Contains(chart_bar_rect) != wxOutRegion)
-                b_repaint_piano = true;
+                m_brepaint_piano = true;
         } else {
             if(ru.Contains(chart_bar_rect) != wxOutRegion) {
                 static wxString last_piano_hash;
-                if(last_piano_hash != g_Piano->GetStoredHash() || m_brepaint_piano) {
-                    b_repaint_piano = true;
+                if(last_piano_hash != g_Piano->GetStoredHash()) {
+                    m_brepaint_piano = true;
                     last_piano_hash = g_Piano->GetStoredHash();
-                    m_brepaint_piano = false;
                 }
 
                 ru.Subtract(chart_bar_rect);
@@ -9194,8 +9194,10 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         DrawAllCurrentsInBBox( scratch_dc, GetVP().GetBBox() );
     }
 
-    if( b_repaint_piano )
+    if( m_brepaint_piano ) {
         g_Piano->Paint(GetClientSize().y - g_Piano->GetHeight(), mscratch_dc);
+        m_brepaint_piano = false;
+    }
 
     //quiting?
     if( g_bquiting ) {
@@ -9591,11 +9593,13 @@ void ChartCanvas::DrawOverlayObjects( ocpnDC &dc, const wxRegion& ru )
         dc.DrawBitmap( *(m_pRouteRolloverWin->GetBitmap()),
                        m_pRouteRolloverWin->GetPosition().x,
                        m_pRouteRolloverWin->GetPosition().y, false );
+        m_brepaint_piano = true;
     }
     if( m_pAISRolloverWin && m_pAISRolloverWin->IsActive() ) {
         dc.DrawBitmap( *(m_pAISRolloverWin->GetBitmap()),
                 m_pAISRolloverWin->GetPosition().x,
                 m_pAISRolloverWin->GetPosition().y, false );
+        m_brepaint_piano = true;
     }
 }
 
