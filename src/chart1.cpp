@@ -4079,6 +4079,7 @@ void MyFrame::ToggleChartBar()
     } else if(g_bShowChartBar)
         cc1->m_brepaint_piano = true;
 
+    cc1->ReloadVP(); // needed to set VP.pix_height
     Refresh();        
 
     if(g_bShowChartBar) {

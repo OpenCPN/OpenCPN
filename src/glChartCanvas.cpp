@@ -867,7 +867,7 @@ void glChartCanvas::OnActivate( wxActivateEvent& event )
 void glChartCanvas::OnSize( wxSizeEvent& event )
 {
     if( !g_bopengl ) {
-        SetSize( cc1->GetVP().pix_width, cc1->GetVP().pix_height );
+        SetSize( GetSize().x, GetSize().y );
         event.Skip();
         return;
     }
@@ -878,9 +878,8 @@ void glChartCanvas::OnSize( wxSizeEvent& event )
 #endif
     
     /* expand opengl widget to fill viewport */
-    ViewPort &VP = cc1->GetVP();
-    if( GetSize().x != VP.pix_width || GetSize().y != VP.pix_height ) {
-        SetSize( VP.pix_width, VP.pix_height );
+    if( GetSize() != cc1->GetSize() ) {
+        SetSize( cc1->GetSize() );
         if( m_bsetup )
             BuildFBO();
     }
@@ -2292,10 +2291,11 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc, OCPNRegion &region )
         if(g_texture_rectangle_format != GL_TEXTURE_2D) {
             // unfortunately gives slightly inconsistent results on different opengl drivers
             // we could make texture rectangle work or even pot work if desired...
-            g_Piano->Paint(GetClientSize().y - g_Piano->GetHeight(), dc);
+            g_Piano->Paint(cc1->m_canvas_height - g_Piano->GetHeight(), dc);
         } else {
-            int w = GetClientSize().x, h = g_Piano->GetHeight(), y2 = GetClientSize().y, y1 = y2 - h;
+            int w = cc1->m_canvas_width, h = g_Piano->GetHeight(), y2 = cc1->m_canvas_height, y1 = y2 - h;
             ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+        printf("t6: %f\n", sw.Time());
 
             if(m_last_piano_hash != g_Piano->GetStoredHash() || !m_piano_tex) {
                 m_last_piano_hash = g_Piano->GetStoredHash();
@@ -2321,7 +2321,6 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc, OCPNRegion &region )
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); 
 
-        printf("t6: %f\n", sw.Time());
                 if(style->chartStatusWindowTransparent) {
                     unsigned char *data = new unsigned char[4*w*h], *e = image.GetData();
                     unsigned char tc[3] = {t.Red(), t.Green(), t.Blue()};
@@ -3607,11 +3606,12 @@ void glChartCanvas::Render()
 //        return;
     
     ViewPort VPoint = cc1->VPoint;
+
     ViewPort svp = VPoint;
     svp.pix_width = svp.rv_rect.width;
     svp.pix_height = svp.rv_rect.height;
 
-    OCPNRegion chart_get_region( 0, 0, cc1->VPoint.rv_rect.width, cc1->VPoint.rv_rect.height );
+    OCPNRegion chart_get_region( 0, 0, VPoint.rv_rect.width, VPoint.rv_rect.height );
 
     ocpnDC gldc( *this );
 
