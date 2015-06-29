@@ -2183,6 +2183,7 @@ int GetChartbarHeight( void )
 {
     if(g_bShowChartBar)
         return g_Piano->GetHeight();
+    return 0;
 }
 
 

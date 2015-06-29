@@ -52,9 +52,10 @@ public:
       Piano();
       ~Piano();
 
-      void Paint(wxDC &dc, const wxSize size);
+      void Paint(int y, wxDC &dc, wxDC *shapeDC=NULL);
+      void Paint(int y, ocpnDC &dc, wxDC *shapeDC=NULL);
       void FormatKeys(void);
-      void MouseEvent(wxMouseEvent& event);
+      bool MouseEvent(wxMouseEvent& event);
       void SetColorScheme(ColorScheme cs);
       void SetKeyArray(ArrayOfInts piano_chart_index_array);
       void SetActiveKey(int iactive) { m_iactive = iactive; }
@@ -124,6 +125,7 @@ private:
 
       int         m_iactive;
       bool        m_brounded;
+      bool        m_bleaving;
 
 DECLARE_EVENT_TABLE()
 };

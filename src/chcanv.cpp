@@ -4261,6 +4261,7 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
     // Resize the scratch BM
     delete pscratch_bm;
     pscratch_bm = new wxBitmap( VPoint.pix_width, VPoint.pix_height, -1 );
+    m_brepaint_piano = true;
 
     // Resize the Route Calculation BM
     m_dc_route.SelectObject( wxNullBitmap );
@@ -4286,7 +4287,7 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
     ReloadVP();
 }
 
-void ChartCanvas::ShowChartInfoWindow( int x, int y, int dbIndex )
+void ChartCanvas::ShowChartInfoWindow( int x, int dbIndex )
 {
     if( dbIndex >= 0 ) {
         if( NULL == m_pCIWin ) {
@@ -4480,6 +4481,16 @@ void ChartCanvas::MouseTimedEvent( wxTimerEvent& event )
 bool leftIsDown;
 
 
+bool ChartCanvas::MouseEventChartBar( wxMouseEvent& event )
+{
+    if(!g_bShowChartBar || g_ChartBarWin || !g_Piano->MouseEvent(event))
+        return false;
+
+    cursor_region = CENTER;
+    if( !g_btouch )
+        SetCanvasCursor( event );
+    return true;
+}
 
 bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
 {
@@ -4512,11 +4523,14 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
     //  Establish the event region
     cursor_region = CENTER;
     
+    int chartbar_height = GetChartbarHeight();
+
     if( x > xr_margin ) {
         cursor_region = MID_RIGHT;
     } else if( x < xl_margin ) {
         cursor_region = MID_LEFT;
-    } else if( y > yb_margin ) {
+    } else if( y > yb_margin - chartbar_height &&
+               y < m_canvas_height - chartbar_height) {
         cursor_region = MID_TOP;
     } else if( y < yt_margin ) {
         cursor_region = MID_BOT;
@@ -6111,8 +6125,11 @@ bool ChartCanvas::MouseEventProcessCanvas( wxMouseEvent& event )
 
 void ChartCanvas::MouseEvent( wxMouseEvent& event )
 {
+    if(cc1->MouseEventChartBar( event ))
+        return;
+
     if(MouseEventSetup( event ))
-        return;                 // handled, no further action required
+        return;              // handled, no further action required
     
     if(!MouseEventProcessObjects( event ))
          MouseEventProcessCanvas( event );
@@ -8802,6 +8819,32 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         }
     }
 
+    // subtract the chart bar if it isn't transparent, and determine if we need to paint it
+    wxRegion rgn_blit = ru;
+    bool b_repaint_piano = false;
+    if(g_bShowChartBar && !g_ChartBarWin) {
+        wxRect chart_bar_rect(0, GetClientSize().y - g_Piano->GetHeight(),
+                              GetClientSize().x, g_Piano->GetHeight());
+
+        ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+        if(style->chartStatusWindowTransparent) {
+            if(ru.Contains(chart_bar_rect) != wxOutRegion)
+                b_repaint_piano = true;
+        } else {
+            if(ru.Contains(chart_bar_rect) != wxOutRegion) {
+                static wxString last_piano_hash;
+                if(last_piano_hash != g_Piano->GetStoredHash() || m_brepaint_piano) {
+                    b_repaint_piano = true;
+                    last_piano_hash = g_Piano->GetStoredHash();
+                    m_brepaint_piano = false;
+                }
+
+                rgn_chart.Subtract( chart_bar_rect );
+                ru.Subtract(chart_bar_rect);
+            }
+        }        
+    }
+
     //  Is this viewpoint the same as the previously painted one?
     bool b_newview = true;
 
@@ -9112,7 +9155,6 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
     m_cache_vp = VPoint;
 
 //    Set up a scratch DC for overlay objects
-    wxRegion rgn_blit;
     wxMemoryDC mscratch_dc;
     mscratch_dc.SelectObject( *pscratch_bm );
 
@@ -9121,7 +9163,6 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
     mscratch_dc.SetClippingRegion( rgn_chart );
 
     //    Blit the externally invalidated areas of the chart onto the scratch dc
-    rgn_blit = ru;
     wxRegionIterator upd( rgn_blit ); // get the update rect list
     while( upd ) {
         wxRect rect = upd.GetRect();
@@ -9145,6 +9186,8 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         DrawAllCurrentsInBBox( scratch_dc, GetVP().GetBBox() );
     }
 
+    if( b_repaint_piano )
+        g_Piano->Paint(GetClientSize().y - g_Piano->GetHeight(), mscratch_dc);
 
     //quiting?
     if( g_bquiting ) {

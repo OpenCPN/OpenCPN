@@ -61,6 +61,7 @@
 #include "ais.h"
 #include "OCPNPlatform.h"
 #include "toolbar.h"
+#include "chartbarwin.h"
 
 #ifndef GL_ETC1_RGB8_OES
 #define GL_ETC1_RGB8_OES                                        0x8D64
@@ -104,6 +105,10 @@ extern bool g_bShowFPS;
 extern bool g_btouch;
 extern OCPNPlatform *g_Platform;
 extern ocpnFloatingToolbarDialog *g_FloatingToolbarDialog;
+extern ocpnStyle::StyleManager* g_StyleManager;
+extern bool             g_bShowChartBar;
+extern ChartBarWin     *g_ChartBarWin;
+extern Piano           *g_Piano;
 
 GLenum       g_texture_rectangle_format;
 
@@ -791,6 +796,8 @@ glChartCanvas::glChartCanvas( wxWindow *parent ) :
 
     ownship_tex = 0;
     ownship_color = -1;
+
+    m_piano_tex = 0;
     
     m_binPinch = false;
     m_binPan = false;
@@ -877,10 +884,16 @@ void glChartCanvas::OnSize( wxSizeEvent& event )
         if( m_bsetup )
             BuildFBO();
     }
+
+    glDeleteTextures(1, &m_piano_tex);
+    m_piano_tex = 0;
 }
 
 void glChartCanvas::MouseEvent( wxMouseEvent& event )
 {
+    if(cc1->MouseEventChartBar( event ))
+        return;
+
 #ifndef __OCPN__ANDROID__
     if(cc1->MouseEventSetup( event )) 
         return;                 // handled, no further action required
@@ -2204,6 +2217,22 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
                             lPredPoint,  b_render_hdt, lShipMidPoint);
 }
 
+class OCPNStopWatch
+{
+    public:
+        OCPNStopWatch() { Reset(); }
+        void Reset() { clock_gettime(CLOCK_REALTIME, &tp); }
+
+    double Time() {
+                timespec tp_end;
+            clock_gettime(CLOCK_REALTIME, &tp_end);
+            return (tp_end.tv_sec - tp.tv_sec) * 1.e3 + (tp_end.tv_nsec - tp.tv_nsec) / 1.e6;
+        }
+
+private:
+        timespec tp;
+};
+
 void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc, OCPNRegion &region )
 {
     ViewPort &vp = cc1->GetVP();
@@ -2240,8 +2269,6 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc, OCPNRegion &region )
     s57_DrawExtendedLightSectors( dc, cc1->VPoint, cc1->extendedSectorLegs );
 #endif
 
-    DisableClipRegion();
-
     /* This should be converted to opengl, it is currently caching screen
        outside render, so the viewport can change without updating, (incorrect)
        doing alpha blending in software with it and draw pixels (very slow) */
@@ -2256,6 +2283,93 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc, OCPNRegion &region )
                        cc1->m_pAISRolloverWin->GetPosition().x,
                        cc1->m_pAISRolloverWin->GetPosition().y, false );
     }
+
+    // render the chart bar
+    // TODO: optimization avoid rendering to this rectangle if it its style isn't transparent
+    if(g_bShowChartBar && !g_ChartBarWin) {
+        OCPNStopWatch sw;
+
+        if(g_texture_rectangle_format != GL_TEXTURE_2D) {
+            // unfortunately gives slightly inconsistent results on different opengl drivers
+            // we could make texture rectangle work or even pot work if desired...
+            g_Piano->Paint(GetClientSize().y - g_Piano->GetHeight(), dc);
+        } else {
+            int w = GetClientSize().x, h = g_Piano->GetHeight(), y2 = GetClientSize().y, y1 = y2 - h;
+            ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+
+            if(m_last_piano_hash != g_Piano->GetStoredHash() || !m_piano_tex) {
+                m_last_piano_hash = g_Piano->GetStoredHash();
+
+                wxBitmap piano = wxBitmap( w, h );
+                wxMemoryDC piano_dc(piano);
+
+                wxColour t = *wxRED; // some color we don't need for transparency
+                if(style->chartStatusWindowTransparent) {
+                    piano_dc.SetPen( *wxTRANSPARENT_PEN );
+                    piano_dc.SetBrush( wxBrush( t, wxSOLID ) );
+                    piano_dc.DrawRectangle( 0, 0, w, h );
+                }
+
+                g_Piano->Paint(0, piano_dc);
+                piano_dc.SelectObject(wxNullBitmap);
+
+                wxImage image = piano.ConvertToImage(); // unfortunately slow
+                if(!m_piano_tex)
+                    glGenTextures( 1, &m_piano_tex );
+                glBindTexture(GL_TEXTURE_2D, m_piano_tex);
+
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); 
+
+        printf("t6: %f\n", sw.Time());
+                if(style->chartStatusWindowTransparent) {
+                    unsigned char *data = new unsigned char[4*w*h], *e = image.GetData();
+                    unsigned char tc[3] = {t.Red(), t.Green(), t.Blue()};
+                    for(int i=0; i<w*h; i++) {
+                        unsigned char *c = e + 3*i;
+                        memcpy(data + 4*i, c, 3);
+                        if(memcmp(c, tc, 3))
+                            data[4*i+3] = 255;
+                        else
+                            data[4*i+3] = 0;
+                    }
+
+                    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
+                    delete [] data;
+                } else
+                    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, image.GetData() );
+
+            } else
+                glBindTexture(GL_TEXTURE_2D, m_piano_tex);
+
+        printf("t8: %f\n", sw.Time());
+            if(style->chartStatusWindowTransparent) {
+                glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+                glColor4ub(255, 255, 255, 200);
+                glEnable(GL_BLEND);
+            } else
+                glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
+
+            glEnable(GL_TEXTURE_2D);
+            glBegin(GL_QUADS);
+
+            for(int i=0; i<40; i++) {
+                float t1 = i/10.0, t2 = (i+1)/10.0;
+                float x1 = t1*w, x2 = t2*w;
+                glTexCoord2f(t1, 0), glVertex2f(x1, y1);
+                glTexCoord2f(t2, 0), glVertex2f(x2, y1);
+                glTexCoord2f(t2, 1), glVertex2f(x2, y2);
+                glTexCoord2f(t1, 1), glVertex2f(x1, y2);
+            }
+            glEnd();
+            glDisable(GL_TEXTURE_2D);
+
+            if(style->chartStatusWindowTransparent)
+                glDisable(GL_BLEND);
+        }
+        printf("paint: %f\n", sw.Time());
+    }
+
 }
 
 void glChartCanvas::DrawQuiting()

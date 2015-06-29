@@ -1813,8 +1813,13 @@ bool MyApp::OnInit()
     if( g_bresponsive  && ( cc1->GetPixPerMM() > 4.0))
         gFrame->Maximize( true );
 
+    // enable this to use a window for the chart bar instead of rendering it
+    // to the chart canvas.  If it can be determined that rendering works well
+    // in all cases for all platforms we can remove the ChartBarWin class completely
+#if 0
     g_ChartBarWin = new ChartBarWin( cc1 );
     g_ChartBarWin->Show();
+#endif
 
     //  Yield to pick up the OnSize() calls that result from Maximize()
     Yield();
@@ -2061,7 +2066,8 @@ extern ocpnGLOptions g_GLOptions;
     if ( g_start_fullscreen )
         gFrame->ToggleFullScreen();
 
-    g_ChartBarWin->Show( g_bShowChartBar );
+    if(g_ChartBarWin)
+        g_ChartBarWin->Show( g_bShowChartBar );
 
 #ifdef __OCPN__ANDROID__
     //  We need a resize to pick up height adjustment after building android ActionBar
@@ -4070,8 +4076,10 @@ void MyFrame::ToggleChartBar()
             gFrame->Raise();
         }
         SendSizeEvent();
-        Refresh();        
-    }
+    } else if(g_bShowChartBar)
+        cc1->m_brepaint_piano = true;
+
+    Refresh();        
 
     if(g_bShowChartBar) {
         DoChartUpdate();
@@ -6736,26 +6744,15 @@ void MyFrame::HandlePianoRollover( int selected_index, int selected_dbIndex )
         return;
 
     wxPoint key_location = g_Piano->GetKeyOrigin( selected_index );
-    wxPoint rolloverPos;
-    int sx, sy;
-    if(g_ChartBarWin) {
-        g_ChartBarWin->GetPosition( &sx, &sy );
-        rolloverPos = g_ChartBarWin->GetParent()->ScreenToClient( wxPoint( sx, sy ) );
-        rolloverPos.y -= 3;
-        rolloverPos.x += key_location.x;
-    } else {
-        rolloverPos = GetPosition();
-        sy = 0;
-    }
 
     if( !cc1->GetQuiltMode() ) {
         SetChartThumbnail( selected_index );
-        cc1->ShowChartInfoWindow( key_location.x, sy + key_location.y, selected_dbIndex );
+        cc1->ShowChartInfoWindow( key_location.x, selected_dbIndex );
     } else {
         ArrayOfInts piano_chart_index_array = cc1->GetQuiltExtendedStackdbIndexArray();
 
         if( ( pCurrentStack->nEntry > 1 ) || ( piano_chart_index_array.GetCount() > 1 ) ) {
-            cc1->ShowChartInfoWindow( rolloverPos.x, rolloverPos.y, selected_dbIndex );
+            cc1->ShowChartInfoWindow( key_location.x, selected_dbIndex );
             cc1->SetQuiltChartHiLiteIndex( selected_dbIndex );
 
             cc1->ReloadVP( false );         // no VP adjustment allowed
@@ -6763,24 +6760,13 @@ void MyFrame::HandlePianoRollover( int selected_index, int selected_dbIndex )
             const ChartTableEntry &cte = ChartData->GetChartTableEntry(
                     pCurrentStack->GetDBIndex( 0 ) );
             if( CHART_TYPE_CM93COMP != cte.GetChartType() ) {
-                cc1->ShowChartInfoWindow( rolloverPos.x, rolloverPos.y, selected_dbIndex );
+                cc1->ShowChartInfoWindow( key_location.x, selected_dbIndex );
                 cc1->ReloadVP( false );
             } else if( ( -1 == selected_index ) && ( -1 == selected_dbIndex ) ) {
-                cc1->ShowChartInfoWindow( rolloverPos.x, rolloverPos.y, selected_dbIndex );
+                cc1->ShowChartInfoWindow( key_location.x, selected_dbIndex );
             }
         }
         SetChartThumbnail( -1 );        // hide all thumbs in quilt mode
-    }
-}
-
-void MyFrame::HandlePianoRolloverIcon( int selected_index, int selected_dbIndex )
-{
-    if( !cc1 ) return;
-
-    if( !cc1->GetQuiltMode() ) {
-        SetChartThumbnail( selected_index );
-    } else {
-        cc1->SetQuiltChartHiLiteIndex( selected_dbIndex );
     }
 }
 
@@ -7050,8 +7036,6 @@ void MyFrame::UpdateControlBar( void )
 {
     if( !cc1 ) return;
 
-    if( !g_ChartBarWin ) return;
-
     if( !pCurrentStack ) return;
 
     int sel_type = -1;
@@ -7130,7 +7114,8 @@ void MyFrame::UpdateControlBar( void )
         cc1->HideChartInfoWindow();
         g_Piano->ResetRollover();
         cc1->SetQuiltChartHiLiteIndex( -1 );
-        g_ChartBarWin->Refresh( false );
+        if( g_ChartBarWin )
+            g_ChartBarWin->Refresh( false );
     }
     
     // Create a bitmask int that describes what Family/Type of charts are shown in the bar,
@@ -7691,11 +7676,16 @@ void MyFrame::PianoPopupMenu( int x, int y, int selected_index, int selected_dbI
                     wxCommandEventHandler(MyFrame::OnPianoMenuDisableChart) );
         }
 
-    int sx, sy;
-    g_ChartBarWin->GetPosition( &sx, &sy );
-    wxPoint pos = g_ChartBarWin->GetParent()->ScreenToClient( wxPoint( sx, sy ) );
-    wxPoint key_location = g_Piano->GetKeyOrigin( selected_index );
-    pos.x += key_location.x;
+    wxPoint pos;
+    if(g_ChartBarWin) {
+        int sx, sy;
+        g_ChartBarWin->GetPosition( &sx, &sy );
+        pos = g_ChartBarWin->GetParent()->ScreenToClient( wxPoint( sx, sy ) );
+        wxPoint key_location = g_Piano->GetKeyOrigin( selected_index );
+        pos.x += key_location.x;
+    } else
+        pos = wxPoint(x, y);
+
     pos.y -= 30;
 
 //        Invoke the drop-down menu

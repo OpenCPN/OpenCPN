@@ -39,6 +39,7 @@
 #include "chart1.h"
 #include "chartbase.h"
 #include "styles.h"
+#include "ocpndc.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -123,7 +124,28 @@ void ChartBarWin::ReSize()
 void ChartBarWin::OnPaint( wxPaintEvent& event )
 {
     wxPaintDC dc( this );
-    g_Piano->Paint(dc, GetClientSize());
+
+    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+
+    wxBitmap shape = wxBitmap( cc1->GetClientSize().x, g_Piano->GetHeight() );
+    wxMemoryDC shapeDC( shape );
+
+    g_Piano->Paint(0, dc, &shapeDC);
+
+#ifndef __WXMAC__
+    if( style->chartStatusWindowTransparent ) {
+        wxRegion region( shape, *wxBLACK, 0 );
+        if(region.Empty())
+        // SetShape() with a completely empty shape doesn't work, and leaving the shape
+        // but hiding the window causes artifacts when dragging in GL mode on MSW.
+        // The best solution found so far is to show just a single pixel, this is less
+        // disturbing than flashing piano keys when dragging. (wxWidgets 2.8)
+           g_ChartBarWin->SetShape( wxRegion( wxRect(0,0,1,1) ) );
+        else
+            g_ChartBarWin->SetShape( region );
+    }
+#endif
+
 
 #ifdef __WXQT__ // temporary workaround
     g_Piano->Refresh();
@@ -194,159 +216,154 @@ Piano::~Piano()
     if( m_pVizIconBmp ) delete m_pVizIconBmp;
 }
 
-void Piano::Paint( wxDC& dc, const wxSize size )
+void Piano::Paint( int y, wxDC& dc, wxDC *shapeDC )
 {
+    ocpnDC odc(dc);
+    Paint(y, odc, shapeDC);
+}
+
+void Piano::Paint( int y, ocpnDC& dc, wxDC *shapeDC )
+{
+    if(shapeDC) {
+        shapeDC->SetBackground( *wxBLACK_BRUSH);
+        shapeDC->SetBrush( *wxWHITE_BRUSH);
+        shapeDC->SetPen( *wxWHITE_PEN);
+        shapeDC->Clear();
+    }
+
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-
-    wxBitmap shape = wxBitmap( size.x, size.y );
-    wxMemoryDC shapeDc( shape );
-    shapeDc.SetBackground( *wxBLACK_BRUSH);
-    shapeDc.SetBrush( *wxWHITE_BRUSH);
-    shapeDc.SetPen( *wxWHITE_PEN);
-    shapeDc.Clear();
-
-    dc.SetBackground( m_backBrush );
-    dc.Clear();
+    if(!style->chartStatusWindowTransparent) {
+        dc.SetPen( *wxTRANSPARENT_PEN );
+        dc.SetBrush( m_backBrush );
+        dc.DrawRectangle( 0, y, cc1->GetClientSize().x, GetHeight() );
+    }
 
 //    Create the Piano Keys
 
     int nKeys = m_key_array.GetCount();
 
+    wxPen ppPen( GetGlobalColor( _T("CHBLK") ), 1, wxSOLID );
+    dc.SetPen( ppPen );
 
-    if( nKeys ) {
-        wxPen ppPen( GetGlobalColor( _T("CHBLK") ), 1, wxSOLID );
-        dc.SetPen( ppPen );
+    dc.SetBrush( m_tBrush );
 
-        dc.SetBrush( m_tBrush );
+    for( int i = 0; i < nKeys; i++ ) {
+        int key_db_index = m_key_array.Item( i );
 
-        for( int i = 0; i < nKeys; i++ ) {
-            int key_db_index = m_key_array.Item( i );
+        if( -1 == key_db_index ) continue;
 
-            if( -1 == key_db_index ) continue;
+        if( ChartData->GetDBChartFamily( m_key_array.Item( i ) ) == CHART_FAMILY_VECTOR ) {
+            dc.SetBrush( m_vBrush );
 
-            if( ChartData->GetDBChartFamily( m_key_array.Item( i ) ) == CHART_FAMILY_VECTOR ) {
-                dc.SetBrush( m_vBrush );
-
-                for( unsigned int ino = 0; ino < m_active_index_array.GetCount(); ino++ ) {
-                    if( m_active_index_array.Item( ino ) == key_db_index ) // chart is in the active list
+            for( unsigned int ino = 0; ino < m_active_index_array.GetCount(); ino++ ) {
+                if( m_active_index_array.Item( ino ) == key_db_index ) // chart is in the active list
                     dc.SetBrush( m_svBrush );
-                }
-            }
-            else {
-                dc.SetBrush( m_tBrush );
-
-                for( unsigned int ino = 0; ino < m_active_index_array.GetCount(); ino++ ) {
-                    if( m_active_index_array.Item( ino ) == key_db_index ) // chart is in the active list
-                        dc.SetBrush( m_slBrush );
-                }
-            }
-
-            if( ChartData->GetDBChartType( m_key_array.Item( i ) ) == CHART_TYPE_CM93 ) {
-                    dc.SetBrush( m_cBrush );
-
-                    for( unsigned int ino = 0; ino < m_active_index_array.GetCount(); ino++ ) {
-                        if( m_active_index_array.Item( ino ) == key_db_index ) // chart is in the active list
-                        dc.SetBrush( m_scBrush );
-                    }
-            }
-
-            if( ChartData->GetDBChartType( m_key_array.Item( i ) ) == CHART_TYPE_CM93COMP ) {
-                    dc.SetBrush( m_cBrush );
-
-                    for( unsigned int ino = 0; ino < m_active_index_array.GetCount(); ino++ ) {
-                        if( m_active_index_array.Item( ino ) == key_db_index ) // chart is in the active list
-                        dc.SetBrush( m_scBrush );
-                    }
-            }
-
-
-            // Check to see if this box appears in the sub_light array
-            // If so, add a crosshatch pattern to the brush
-            for( unsigned int ino = 0; ino < m_sublite_index_array.GetCount(); ino++ ) {
-                if( m_sublite_index_array.Item( ino ) == key_db_index ) // chart is in the sublite list
-                        {
-                    wxBrush ebrush( dc.GetBrush().GetColour(), wxCROSSDIAG_HATCH );
-//                              dc.SetBrush(ebrush);
-                }
-            }
-
-            if(m_bBusy)
-                dc.SetBrush( m_uvBrush );
-            
-            wxRect box = KeyRegion.Item( i ).GetBox();
-
-            if( m_brounded ) {
-                dc.DrawRoundedRectangle( box.x, box.y, box.width, box.height, 4 );
-                shapeDc.DrawRoundedRectangle( box.x, box.y, box.width, box.height, 4 );
-            } else {
-                dc.DrawRectangle( box );
-                shapeDc.DrawRectangle( box );
-            }
-
-            for( unsigned int ino = 0; ino < m_sublite_index_array.GetCount(); ino++ ) {
-                if( m_sublite_index_array.Item( ino ) == key_db_index ) { // chart is in the sublite list
-                    dc.SetBrush( dc.GetBackground() );
-                    int w = 3;
-                    dc.DrawRoundedRectangle( box.x + w, box.y + w, box.width - ( 2 * w ),
-                            box.height - ( 2 * w ), 3 );
-                }
-            }
-
-            //    Look in the current noshow array for this index
-            for( unsigned int ino = 0; ino < m_noshow_index_array.GetCount(); ino++ ) {
-                if( m_noshow_index_array.Item( ino ) == key_db_index ) { // chart is in the noshow list
-                    if( m_pInVizIconBmp && m_pInVizIconBmp->IsOk() ) dc.DrawBitmap(
-                            ConvertTo24Bit( dc.GetBrush().GetColour(), *m_pInVizIconBmp ), box.x + 4,
-                            box.y + 3, false );
-                    break;
-                }
-            }
-
-            //    Look in the current skew array for this index
-            for( unsigned int ino = 0; ino < m_skew_index_array.GetCount(); ino++ ) {
-                if( m_skew_index_array.Item( ino ) == key_db_index ) {       // chart is in the list
-                    if( m_pSkewIconBmp && m_pSkewIconBmp->IsOk() ) dc.DrawBitmap(
-                            ConvertTo24Bit( dc.GetBrush().GetColour(), *m_pSkewIconBmp ),
-                            box.x + box.width - m_pSkewIconBmp->GetWidth() - 4, box.y + 2, false );
-                    break;
-                }
-            }
-
-            //    Look in the current tmerc array for this index
-            for( unsigned int ino = 0; ino < m_tmerc_index_array.GetCount(); ino++ ) {
-                if( m_tmerc_index_array.Item( ino ) == key_db_index ) {      // chart is in the list
-                    if( m_pTmercIconBmp && m_pTmercIconBmp->IsOk() ) dc.DrawBitmap(
-                            ConvertTo24Bit( dc.GetBrush().GetColour(), *m_pTmercIconBmp ),
-                            box.x + box.width - m_pTmercIconBmp->GetWidth() - 4, box.y + 2, false );
-                    break;
-                }
-            }
-
-            //    Look in the current poly array for this index
-            for( unsigned int ino = 0; ino < m_poly_index_array.GetCount(); ino++ ) {
-                if( m_poly_index_array.Item( ino ) == key_db_index ) {       // chart is in the list
-                    if( m_pPolyIconBmp && m_pPolyIconBmp->IsOk() ) dc.DrawBitmap(
-                            ConvertTo24Bit( dc.GetBrush().GetColour(), *m_pPolyIconBmp ),
-                            box.x + box.width - m_pPolyIconBmp->GetWidth() - 4, box.y + 2, false );
-                    break;
-                }
             }
         }
-#ifndef __WXMAC__
-        if( g_ChartBarWin && style->chartStatusWindowTransparent )
-            g_ChartBarWin->SetShape( wxRegion( shape, *wxBLACK, 0 ) );
+        else {
+            dc.SetBrush( m_tBrush );
+
+            for( unsigned int ino = 0; ino < m_active_index_array.GetCount(); ino++ ) {
+                if( m_active_index_array.Item( ino ) == key_db_index ) // chart is in the active list
+                    dc.SetBrush( m_slBrush );
+            }
+        }
+
+        if( ChartData->GetDBChartType( m_key_array.Item( i ) ) == CHART_TYPE_CM93 ) {
+            dc.SetBrush( m_cBrush );
+
+            for( unsigned int ino = 0; ino < m_active_index_array.GetCount(); ino++ ) {
+                if( m_active_index_array.Item( ino ) == key_db_index ) // chart is in the active list
+                    dc.SetBrush( m_scBrush );
+            }
+        }
+
+        if( ChartData->GetDBChartType( m_key_array.Item( i ) ) == CHART_TYPE_CM93COMP ) {
+            dc.SetBrush( m_cBrush );
+
+            for( unsigned int ino = 0; ino < m_active_index_array.GetCount(); ino++ ) {
+                if( m_active_index_array.Item( ino ) == key_db_index ) // chart is in the active list
+                    dc.SetBrush( m_scBrush );
+            }
+        }
+
+
+        // Check to see if this box appears in the sub_light array
+        // If so, add a crosshatch pattern to the brush
+        for( unsigned int ino = 0; ino < m_sublite_index_array.GetCount(); ino++ ) {
+            if( m_sublite_index_array.Item( ino ) == key_db_index ) // chart is in the sublite list
+            {
+                wxBrush ebrush( dc.GetBrush().GetColour(), wxCROSSDIAG_HATCH );
+//                              dc.SetBrush(ebrush);
+            }
+        }
+
+        if(m_bBusy)
+            dc.SetBrush( m_uvBrush );
+            
+        wxRect box = KeyRegion.Item( i ).GetBox();
+        box.y += y;
+
+        if( m_brounded ) {
+            dc.DrawRoundedRectangle( box.x, box.y, box.width, box.height, 4 );
+            if(shapeDC)
+                shapeDC->DrawRoundedRectangle( box.x, box.y, box.width, box.height, 4 );
+        } else {
+            dc.DrawRectangle( box.x, box.y, box.width, box.height );
+
+            if(shapeDC)
+                shapeDC->DrawRectangle( box );
+        }
+
+        for( unsigned int ino = 0; ino < m_sublite_index_array.GetCount(); ino++ ) {
+            if( m_sublite_index_array.Item( ino ) == key_db_index ) { // chart is in the sublite list
+                dc.SetBrush( m_backBrush );
+                int w = 3;
+                dc.DrawRoundedRectangle( box.x + w, box.y + w, box.width - ( 2 * w ),
+                                         box.height - ( 2 * w ), 3 );
+            }
+        }
+
+        //    Look in the current noshow array for this index
+        for( unsigned int ino = 0; ino < m_noshow_index_array.GetCount(); ino++ ) {
+            if( m_noshow_index_array.Item( ino ) == key_db_index ) { // chart is in the noshow list
+                if( m_pInVizIconBmp && m_pInVizIconBmp->IsOk() ) dc.DrawBitmap(
+                    ConvertTo24Bit( dc.GetBrush().GetColour(), *m_pInVizIconBmp ), box.x + 4,
+                    box.y + 3, false );
+                break;
+            }
+        }
+
+        //    Look in the current skew array for this index
+        for( unsigned int ino = 0; ino < m_skew_index_array.GetCount(); ino++ ) {
+            if( m_skew_index_array.Item( ino ) == key_db_index ) {       // chart is in the list
+                if( m_pSkewIconBmp && m_pSkewIconBmp->IsOk() ) dc.DrawBitmap(
+                    ConvertTo24Bit( dc.GetBrush().GetColour(), *m_pSkewIconBmp ),
+                    box.x + box.width - m_pSkewIconBmp->GetWidth() - 4, box.y + 2, false );
+                break;
+            }
+        }
+
+        //    Look in the current tmerc array for this index
+        for( unsigned int ino = 0; ino < m_tmerc_index_array.GetCount(); ino++ ) {
+            if( m_tmerc_index_array.Item( ino ) == key_db_index ) {      // chart is in the list
+                if( m_pTmercIconBmp && m_pTmercIconBmp->IsOk() ) dc.DrawBitmap(
+                    ConvertTo24Bit( dc.GetBrush().GetColour(), *m_pTmercIconBmp ),
+                    box.x + box.width - m_pTmercIconBmp->GetWidth() - 4, box.y + 2, false );
+                break;
+            }
+        }
+
+        //    Look in the current poly array for this index
+        for( unsigned int ino = 0; ino < m_poly_index_array.GetCount(); ino++ ) {
+            if( m_poly_index_array.Item( ino ) == key_db_index ) {       // chart is in the list
+                if( m_pPolyIconBmp && m_pPolyIconBmp->IsOk() ) dc.DrawBitmap(
+                    ConvertTo24Bit( dc.GetBrush().GetColour(), *m_pPolyIconBmp ),
+                    box.x + box.width - m_pPolyIconBmp->GetWidth() - 4, box.y + 2, false );
+                break;
+            }
+        }
     }
-    else {
-        // SetShape() with a completely empty shape doesn't work, and leaving the shape
-        // but hiding the window causes artifacts when dragging in GL mode on MSW.
-        // The best solution found so far is to show just a single pixel, this is less
-        // disturbing than flashing piano keys when dragging. (wxWidgets 2.8)
-        if( g_ChartBarWin && style->chartStatusWindowTransparent )
-            g_ChartBarWin->SetShape( wxRegion( wxRect(0,0,1,1) ) );
-    }
-#else
-    }
-#endif
 }
 
 /*
@@ -509,12 +526,22 @@ wxPoint Piano::GetKeyOrigin( int key_index )
         return wxPoint( -1, -1 );
 }
 
-void Piano::MouseEvent( wxMouseEvent& event )
+bool Piano::MouseEvent( wxMouseEvent& event )
 {
 
     int x, y;
     event.GetPosition( &x, &y );
-    y = 6;
+
+    if(g_ChartBarWin)
+        m_bleaving = event.Leaving();
+    else {
+        if(event.Leaving() || y < cc1->GetCanvasHeight() - GetHeight()) {
+            if(m_bleaving)
+                return false;
+            m_bleaving = true;
+        } else
+            m_bleaving = false;
+    }
 
 //    Check the regions
 
@@ -522,7 +549,7 @@ void Piano::MouseEvent( wxMouseEvent& event )
     int sel_dbindex = -1;
 
     for( int i = 0; i < m_nRegions; i++ ) {
-        if( KeyRegion.Item( i ).Contains( x, y ) == wxInRegion ) {
+        if( KeyRegion.Item( i ).Contains( x, 6 ) == wxInRegion ) {
             sel_index = i;
             sel_dbindex = m_key_array.Item( i );
             break;
@@ -539,60 +566,48 @@ void Piano::MouseEvent( wxMouseEvent& event )
  #endif                
                 m_eventTimer.Start(10, wxTIMER_ONE_SHOT);
             }
-        }
-        
-        if( event.LeftUp() ) {
+        } if( event.LeftUp() ) {
             if( -1 != sel_index ){
                 m_click_sel_index = sel_index;
                 m_click_sel_dbindex = sel_dbindex;
                 m_action = DEFERRED_KEY_CLICK_UP;
                 m_eventTimer.Start(10, wxTIMER_ONE_SHOT);
             }
+        } else if( event.RightDown() ) {
+            if( sel_index != m_hover_last ) {
+                gFrame->HandlePianoRollover( sel_index, sel_dbindex );
+                m_hover_last = sel_index;
+            }
+        } else if( event.ButtonUp() ) {
+            gFrame->HandlePianoRollover( -1, -1 );
+            ResetRollover();
         }
-        if( event.RightDown() ) {
+    }
+    else{
+        if( m_bleaving ) {
+            gFrame->HandlePianoRollover( -1, -1 );
+            ResetRollover();
+        } else if( event.LeftDown() ) {
+            if( -1 != sel_index ) {
+                gFrame->HandlePianoClick( sel_index, sel_dbindex );
+                gFrame->Raise();
+            } else
+                return false;
+        } else if( event.RightDown() ) {
+            if( -1 != sel_index ) {
+                gFrame->HandlePianoRClick( x, y, sel_index, sel_dbindex );
+                gFrame->Raise();
+            } else
+                return false;
+        } else if(!event.ButtonUp()){
             if( sel_index != m_hover_last ) {
                 gFrame->HandlePianoRollover( sel_index, sel_dbindex );
                 m_hover_last = sel_index;
             }
         }
-
-        if( event.ButtonUp() ) {
-            gFrame->HandlePianoRollover( -1, -1 );
-            gFrame->HandlePianoRolloverIcon( -1, -1 );
-            ResetRollover();
-        }
-
-
     }
-    else{
-        if( event.LeftDown() ) {
 
-            if( -1 != sel_index ) {
-                gFrame->HandlePianoClick( sel_index, sel_dbindex );
-                gFrame->Raise();
-            }
-        }
-
-        else if( event.RightDown() ) {
-                if( -1 != sel_index ) {
-                    gFrame->HandlePianoRClick( x, y, sel_index, sel_dbindex );
-                    gFrame->Raise();
-                }
-            }
-
-        else if(!event.ButtonUp()){
-            if( sel_index != m_hover_last ) {
-                    gFrame->HandlePianoRollover( sel_index, sel_dbindex );
-                    m_hover_last = sel_index;
-            }
-        }
-
-        if( event.Leaving() ) {
-            gFrame->HandlePianoRollover( -1, -1 );
-            gFrame->HandlePianoRolloverIcon( -1, -1 );
-            ResetRollover();
-        }
-    }
+    return true;
 
     /*
      Todo:
