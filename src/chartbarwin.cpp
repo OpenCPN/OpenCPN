@@ -269,7 +269,8 @@ void Piano::Paint( int y, ocpnDC& dc, wxDC *shapeDC )
             }
         }
 
-        if( ChartData->GetDBChartType( m_key_array.Item( i ) ) == CHART_TYPE_CM93 ) {
+        if( ChartData->GetDBChartType( m_key_array.Item( i ) ) == CHART_TYPE_CM93 ||
+            ChartData->GetDBChartType( m_key_array.Item( i ) ) == CHART_TYPE_CM93COMP ) {
             dc.SetBrush( m_cBrush );
 
             for( unsigned int ino = 0; ino < m_active_index_array.GetCount(); ino++ ) {
@@ -277,16 +278,6 @@ void Piano::Paint( int y, ocpnDC& dc, wxDC *shapeDC )
                     dc.SetBrush( m_scBrush );
             }
         }
-
-        if( ChartData->GetDBChartType( m_key_array.Item( i ) ) == CHART_TYPE_CM93COMP ) {
-            dc.SetBrush( m_cBrush );
-
-            for( unsigned int ino = 0; ino < m_active_index_array.GetCount(); ino++ ) {
-                if( m_active_index_array.Item( ino ) == key_db_index ) // chart is in the active list
-                    dc.SetBrush( m_scBrush );
-            }
-        }
-
 
         // Check to see if this box appears in the sub_light array
         // If so, add a crosshatch pattern to the brush
