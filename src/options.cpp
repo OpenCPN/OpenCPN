@@ -258,6 +258,7 @@ extern int              g_GUIScaleFactor;
 extern int              g_ChartScaleFactor;
 
 extern double           g_config_display_size_mm;
+extern bool             g_config_display_size_manual;
 
 extern "C" bool CheckSerialAccess( void );
 
@@ -3102,7 +3103,7 @@ void options::CreateControls()
 
     m_pageConnections = CreatePanel( _("Connections") );
     CreatePanel_NMEA( m_pageConnections, border_size, group_item_spacing, m_small_button_size );
-    SetDefaultConnectionParams();
+//    SetDefaultConnectionParams();
     
     m_pageShips = CreatePanel( _("Ships") );
     CreatePanel_Ownship( m_pageShips, border_size, group_item_spacing, m_small_button_size );
@@ -3375,14 +3376,15 @@ void options::SetInitialSettings()
     m_pSlider_Chart_Factor->SetValue(g_ChartScaleFactor);
                                            
     wxString screenmm;
-    if(g_config_display_size_mm > 0){
-        screenmm.Printf(_T("%d"), int(g_config_display_size_mm));
-        pRBSizeManual->SetValue( true );
-    }
-    else{
+    
+    if( !g_config_display_size_manual ){
         pRBSizeAuto->SetValue( true );
         screenmm.Printf(_T("%d"), int(g_Platform->GetDisplaySizeMM()));
         pScreenMM->Disable();
+    }
+    else{
+        screenmm.Printf(_T("%d"), int(g_config_display_size_mm));
+        pRBSizeManual->SetValue( true );
     }
     
     pScreenMM->SetValue(screenmm);
@@ -3516,11 +3518,13 @@ void options::UpdateOptionsUnits()
 
 void options::OnSizeAutoButton( wxCommandEvent& event )
 {
-    pScreenMM->SetValue(_("Auto"));
+//    pScreenMM->SetValue(_("Auto"));
     wxString screenmm;
     screenmm.Printf(_T("%d"), int(g_Platform->GetDisplaySizeMM()));
     pScreenMM->SetValue(screenmm);
     pScreenMM->Disable();
+    g_config_display_size_manual = false;
+    
 }
 
 void options::OnSizeManualButton( wxCommandEvent& event )
@@ -3535,6 +3539,7 @@ void options::OnSizeManualButton( wxCommandEvent& event )
     
     pScreenMM->SetValue(screenmm);
     pScreenMM->Enable();
+    g_config_display_size_manual = true;
     
 }
 
@@ -4075,12 +4080,16 @@ void options::OnApplyClick( wxCommandEvent& event )
     wxString screenmm = pScreenMM->GetValue();
     long mm = -1;
     screenmm.ToLong(&mm);
+    
     if(mm >0){
         g_config_display_size_mm = mm;
     }
     else{
         g_config_display_size_mm = -1;
     }
+    
+    g_config_display_size_manual = pRBSizeManual->GetValue();
+    
         
 // Connections page.
     g_bfilter_cogsog = m_cbFilterSogCog->GetValue();
@@ -5848,6 +5857,7 @@ void options::SetNMEAFormToSerial()
     m_pNMEAForm->Layout();
     Fit();
     Layout();
+    RecalculateSize();
     SetDSFormRWStates();
 }
 
@@ -5862,6 +5872,7 @@ void options::SetNMEAFormToNet()
     m_pNMEAForm->Layout();
     Fit();
     Layout();
+    RecalculateSize();
     SetDSFormRWStates();
 }
 
@@ -5876,6 +5887,7 @@ void options::SetNMEAFormToGPS()
     m_pNMEAForm->Layout();
     Fit();
     Layout();
+    RecalculateSize();
     SetDSFormRWStates();
 }
 
@@ -5890,6 +5902,7 @@ void options::SetNMEAFormToBT()
     m_pNMEAForm->Layout();
     Fit();
     Layout();
+    RecalculateSize();
     SetDSFormRWStates();
 }
 
@@ -5904,6 +5917,7 @@ void options::ClearNMEAForm()
     m_pNMEAForm->Layout();
     Fit();
     Layout();
+    RecalculateSize();
     
 }
 
@@ -6064,6 +6078,8 @@ void options::OnAddDatasourceClick( wxCommandEvent& event )
         m_lcSources->SetItemState( itemIndex, 0, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED );
     }
     m_buttonRemove->Enable( false );
+    
+    RecalculateSize();
 }
 
 void options::FillSourceList()

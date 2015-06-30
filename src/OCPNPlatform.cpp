@@ -193,6 +193,8 @@ extern int                       g_lastClientRectw;
 extern int                       g_lastClientRecth;
 extern double                    g_display_size_mm;
 extern double                    g_config_display_size_mm;
+extern bool                      g_config_display_size_manual;
+
 extern bool                     g_bTrackDaily;
 extern double                   g_PlanSpeed;
 extern bool                     g_bFullScreenQuilt;
@@ -1215,9 +1217,9 @@ double OCPNPlatform::GetToolbarScaleFactor( int GUIScaleFactor )
         double tool_size = style_tool_size.x;
         
         // unless overridden by user, we declare the "best" tool size to be the same as the
-        // ActionBar height
+        // ActionBar height, reduced by 8 pixels
         double premult = 1.0;
-        if(g_config_display_size_mm > 0){
+        if( g_config_display_size_manual && (g_config_display_size_mm > 0) ){
             double target_size = 9.0;                // mm
         
             double basic_tool_size_mm = tool_size / GetDisplayDPmm();
@@ -1227,7 +1229,7 @@ double OCPNPlatform::GetToolbarScaleFactor( int GUIScaleFactor )
         }
         else{
             qDebug() << "parmsB" << style_tool_size.x << getAndroidActionBarHeight();
-            premult = wxMax(getAndroidActionBarHeight(), 50) / tool_size;
+            premult = wxMax(getAndroidActionBarHeight() - 8, 50) / tool_size;
         }            
         
         //Adjust the scale factor using the global GUI scale parameter

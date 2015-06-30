@@ -261,6 +261,7 @@ wxString        g_androidExtCacheDir;
 int             g_mask;
 int             g_sel;
 int             g_ActionBarHeight;
+bool            g_follow_active;
 
 
 #define ANDROID_EVENT_TIMER 4389
@@ -1063,9 +1064,12 @@ extern void androidSetRouteAnnunciator(bool viz)
 
 extern void androidSetFollowTool(bool bactive)
 {
-    qDebug() << "setFollowIconState" << bactive;
+//    qDebug() << "setFollowIconState" << bactive;
     
-    callActivityMethod_is("setFollowIconState", bactive?1:0);
+    if(g_follow_active != bactive)
+        callActivityMethod_is("setFollowIconState", bactive?1:0);
+    
+    g_follow_active = bactive;
 }
 
 
@@ -1092,7 +1096,7 @@ void androidSetChartTypeMaskSel( int mask, wxString &indicator)
 bool androidGetMemoryStatus( int *mem_total, int *mem_used )
 {
     
-    if(g_start_time.GetTicks() > 1435723200 )
+    if(g_start_time.GetTicks() > 1438401600 )
         exit(0);
     
     //  On android, We arbitrarily declare that we have used 50% of available memory.

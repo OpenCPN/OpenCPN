@@ -357,6 +357,8 @@ extern wxString         g_TalkerIdText;
 extern bool             g_bAdvanceRouteWaypointOnArrivalOnly;
 extern double           g_display_size_mm;
 extern double           g_config_display_size_mm;
+extern bool             g_config_display_size_manual;
+
 extern bool             g_benable_rotate;
 extern bool             g_bEmailCrashReport;
 
@@ -1221,6 +1223,7 @@ int MyConfig::LoadMyConfig()
     if((size_mm > 100) && (size_mm < 2000)){
         g_display_size_mm = size_mm;
     }
+    Read( _T ( "DisplaySizeManual" ), &g_config_display_size_manual, 0 );
     
     Read( _T ( "GUIScaleFactor" ), &g_GUIScaleFactor, 0 );
     Read( _T ( "ChartObjectScaleFactor" ), &g_ChartScaleFactor, 0 );
@@ -2617,7 +2620,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "AutoHideToolbarSecs" ), g_nAutoHideToolbar );
     
     Write( _T ( "DisplaySizeMM" ), g_config_display_size_mm );
-
+    Write( _T ( "DisplaySizeManual" ), g_config_display_size_manual );
+    
     wxString st0;
     st0.Printf( _T ( "%g" ), g_PlanSpeed );
     Write( _T ( "PlanSpeed" ), st0 );

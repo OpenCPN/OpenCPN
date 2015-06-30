@@ -353,6 +353,8 @@ int                       g_lastClientRectw;
 int                       g_lastClientRecth;
 double                    g_display_size_mm;
 double                    g_config_display_size_mm;
+bool                      g_config_display_size_manual;
+
 int                       g_GUIScaleFactor;
 int                       g_ChartScaleFactor;
 

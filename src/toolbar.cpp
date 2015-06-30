@@ -497,24 +497,31 @@ void ocpnFloatingToolbarDialog::SubmergeToGrabber()
 
 void ocpnFloatingToolbarDialog::Surface()
 {
-    m_bsubmerged = false;
-#ifndef __WXOSX__
-    Hide();
-    Move( 0, 0 );
-#endif
+    
+    if(m_pRecoverwin){
+        m_pRecoverwin->Show();
+        m_pRecoverwin->Raise();
+    }
+    else {
+        m_bsubmerged = false;
+        #ifndef __WXOSX__
+        Hide();
+        Move( 0, 0 );
+        #endif
 
-    RePosition();
-    Show();
-    if( m_ptoolbar ) m_ptoolbar->EnableTooltips();
+        RePosition();
+        Show();
+        if( m_ptoolbar )
+            m_ptoolbar->EnableTooltips();
 
+        #ifdef __WXQT__
+        Raise();
+        #endif
+    }
+    
     if( g_bAutoHideToolbar && (g_nAutoHideToolbar > 0) ){
         m_fade_timer.Start( g_nAutoHideToolbar * 1000 );
     }
-    
-#ifdef __WXQT__
-    Raise();
-#endif
-
 }
 
 bool ocpnFloatingToolbarDialog::CheckSurfaceRequest( wxMouseEvent &event )
