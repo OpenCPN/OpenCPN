@@ -138,6 +138,7 @@ protected:
     void DrawFloatingOverlayObjects( ocpnDC &dc, OCPNRegion &region );
     void DrawGroundedOverlayObjectsRect(ocpnDC &dc, wxRect &rect);
 
+    void DrawChartBar( ocpnDC &dc );
     void DrawQuiting();
     void DrawCloseMessage(wxString msg);
     

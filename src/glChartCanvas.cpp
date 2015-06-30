@@ -2216,22 +2216,6 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
                             lPredPoint,  b_render_hdt, lShipMidPoint);
 }
 
-class OCPNStopWatch
-{
-    public:
-        OCPNStopWatch() { Reset(); }
-        void Reset() { clock_gettime(CLOCK_REALTIME, &tp); }
-
-    double Time() {
-                timespec tp_end;
-            clock_gettime(CLOCK_REALTIME, &tp_end);
-            return (tp_end.tv_sec - tp.tv_sec) * 1.e3 + (tp_end.tv_nsec - tp.tv_nsec) / 1.e6;
-        }
-
-private:
-        timespec tp;
-};
-
 void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc, OCPNRegion &region )
 {
     ViewPort &vp = cc1->GetVP();
@@ -2284,91 +2268,89 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc, OCPNRegion &region )
     }
 
     // render the chart bar
-    // TODO: optimization avoid rendering to this rectangle if it its style isn't transparent
-    if(g_bShowChartBar && !g_ChartBarWin) {
-        OCPNStopWatch sw;
+    if(g_bShowChartBar && !g_ChartBarWin)
+        DrawChartBar(dc);
+}
 
-        if(g_texture_rectangle_format != GL_TEXTURE_2D) {
-            // unfortunately gives slightly inconsistent results on different opengl drivers
-            // we could make texture rectangle work or even pot work if desired...
-            g_Piano->Paint(cc1->m_canvas_height - g_Piano->GetHeight(), dc);
-        } else {
-            int w = cc1->m_canvas_width, h = g_Piano->GetHeight(), y2 = cc1->m_canvas_height, y1 = y2 - h;
-            ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-        printf("t6: %f\n", sw.Time());
+void glChartCanvas::DrawChartBar( ocpnDC &dc )
+{
+    if(g_texture_rectangle_format != GL_TEXTURE_2D) {
+        // unfortunately gives slightly inconsistent results on different opengl drivers
+        // so we should use a texture (which is also faster)
+        g_Piano->Paint(cc1->m_canvas_height - g_Piano->GetHeight(), dc);
+    } else {
+        int w = cc1->m_canvas_width, h = g_Piano->GetHeight(), y2 = cc1->m_canvas_height, y1 = y2 - h;
+        ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 
-            if(m_last_piano_hash != g_Piano->GetStoredHash() || !m_piano_tex) {
-                m_last_piano_hash = g_Piano->GetStoredHash();
+        if(m_last_piano_hash != g_Piano->GetStoredHash() || !m_piano_tex || cc1->m_brepaint_piano) {
+            m_last_piano_hash = g_Piano->GetStoredHash();
+            cc1->m_brepaint_piano = false;
 
-                wxBitmap piano = wxBitmap( w, h );
-                wxMemoryDC piano_dc(piano);
+            wxBitmap piano = wxBitmap( w, h );
+            wxMemoryDC piano_dc(piano);
 
-                wxColour t = *wxRED; // some color we don't need for transparency
-                if(style->chartStatusWindowTransparent) {
-                    piano_dc.SetPen( *wxTRANSPARENT_PEN );
-                    piano_dc.SetBrush( wxBrush( t, wxSOLID ) );
-                    piano_dc.DrawRectangle( 0, 0, w, h );
+            wxColour t = *wxRED; // some color we don't need for transparency
+            if(style->chartStatusWindowTransparent) {
+                piano_dc.SetPen( *wxTRANSPARENT_PEN );
+                piano_dc.SetBrush( wxBrush( t, wxSOLID ) );
+                piano_dc.DrawRectangle( 0, 0, w, h );
+            }
+
+            g_Piano->Paint(0, piano_dc);
+            piano_dc.SelectObject(wxNullBitmap);
+
+            wxImage image = piano.ConvertToImage(); // unfortunately slow
+            if(!m_piano_tex)
+                glGenTextures( 1, &m_piano_tex );
+            glBindTexture(GL_TEXTURE_2D, m_piano_tex);
+
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); 
+
+            if(style->chartStatusWindowTransparent) {
+                unsigned char *data = new unsigned char[4*w*h], *e = image.GetData();
+                unsigned char tc[3] = {t.Red(), t.Green(), t.Blue()};
+                for(int i=0; i<w*h; i++) {
+                    unsigned char *c = e + 3*i;
+                    memcpy(data + 4*i, c, 3);
+                    if(memcmp(c, tc, 3))
+                        data[4*i+3] = 255;
+                    else
+                        data[4*i+3] = 0;
                 }
 
-                g_Piano->Paint(0, piano_dc);
-                piano_dc.SelectObject(wxNullBitmap);
-
-                wxImage image = piano.ConvertToImage(); // unfortunately slow
-                if(!m_piano_tex)
-                    glGenTextures( 1, &m_piano_tex );
-                glBindTexture(GL_TEXTURE_2D, m_piano_tex);
-
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); 
-
-                if(style->chartStatusWindowTransparent) {
-                    unsigned char *data = new unsigned char[4*w*h], *e = image.GetData();
-                    unsigned char tc[3] = {t.Red(), t.Green(), t.Blue()};
-                    for(int i=0; i<w*h; i++) {
-                        unsigned char *c = e + 3*i;
-                        memcpy(data + 4*i, c, 3);
-                        if(memcmp(c, tc, 3))
-                            data[4*i+3] = 255;
-                        else
-                            data[4*i+3] = 0;
-                    }
-
-                    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
-                    delete [] data;
-                } else
-                    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, image.GetData() );
-
+                glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
+                delete [] data;
             } else
-                glBindTexture(GL_TEXTURE_2D, m_piano_tex);
+                glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, image.GetData() );
 
-        printf("t8: %f\n", sw.Time());
-            if(style->chartStatusWindowTransparent) {
-                glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
-                glColor4ub(255, 255, 255, 200);
-                glEnable(GL_BLEND);
-            } else
-                glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
+        } else
+            glBindTexture(GL_TEXTURE_2D, m_piano_tex);
 
-            glEnable(GL_TEXTURE_2D);
-            glBegin(GL_QUADS);
+        if(style->chartStatusWindowTransparent) {
+            glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+            glColor4ub(255, 255, 255, 200);
+            glEnable(GL_BLEND);
+        } else
+            glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
 
-            for(int i=0; i<40; i++) {
-                float t1 = i/10.0, t2 = (i+1)/10.0;
-                float x1 = t1*w, x2 = t2*w;
-                glTexCoord2f(t1, 0), glVertex2f(x1, y1);
-                glTexCoord2f(t2, 0), glVertex2f(x2, y1);
-                glTexCoord2f(t2, 1), glVertex2f(x2, y2);
-                glTexCoord2f(t1, 1), glVertex2f(x1, y2);
-            }
-            glEnd();
-            glDisable(GL_TEXTURE_2D);
+        glEnable(GL_TEXTURE_2D);
+        glBegin(GL_QUADS);
 
-            if(style->chartStatusWindowTransparent)
-                glDisable(GL_BLEND);
+        for(int i=0; i<40; i++) {
+            float t1 = i/10.0, t2 = (i+1)/10.0;
+            float x1 = t1*w, x2 = t2*w;
+            glTexCoord2f(t1, 0), glVertex2f(x1, y1);
+            glTexCoord2f(t2, 0), glVertex2f(x2, y1);
+            glTexCoord2f(t2, 1), glVertex2f(x2, y2);
+            glTexCoord2f(t1, 1), glVertex2f(x1, y2);
         }
-        printf("paint: %f\n", sw.Time());
-    }
+        glEnd();
+        glDisable(GL_TEXTURE_2D);
 
+        if(style->chartStatusWindowTransparent)
+            glDisable(GL_BLEND);
+    }
 }
 
 void glChartCanvas::DrawQuiting()
