@@ -155,6 +155,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     private final static int OCPN_ACTION_MOB = 0x1006;
     private final static int OCPN_ACTION_TIDES_TOGGLE = 0x1007;
     private final static int OCPN_ACTION_CURRENTS_TOGGLE = 0x1008;
+    private final static int OCPN_ACTION_ENCTEXT_TOGGLE = 0x1009;
 
     //  Definitions found in OCPN "chart1.h"
     private final static int ID_CMD_APPLY_SETTINGS = 300;
@@ -277,6 +278,12 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         // Menu item used to indicate "RouteCreate" is active
     MenuItem itemRouteAnnunciator;
     private boolean m_showRouteAnnunciator = false;
+
+    MenuItem itemFollowInActive;
+    MenuItem itemFollowActive;
+    private boolean m_isFollowActive = false;
+
+
 
     public QtActivity()
     {
@@ -560,6 +567,24 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 //     else
 //        return "NO";
     }
+
+    public String setFollowIconState( final int isActive){
+        m_isFollowActive = (isActive != 0);
+
+
+           runOnUiThread(new Runnable() {
+                   @Override
+                   public void run() {
+
+
+                       QtActivity.this.invalidateOptionsMenu();
+
+                    }});
+
+           return "OK";
+       }
+
+
 
 
     public String queryGPSServer( final int parm ){
@@ -1928,6 +1953,20 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
             this.invalidateOptionsMenu();
          }
 
+        // Auto follow icon
+         itemFollowActive = menu.findItem(R.id.ocpn_action_follow_active);
+         if( null != itemFollowActive) {
+             itemFollowActive.setVisible(m_isFollowActive);
+             this.invalidateOptionsMenu();
+          }
+         itemFollowInActive = menu.findItem(R.id.ocpn_action_follow);
+         if( null != itemFollowInActive) {
+              itemFollowInActive.setVisible(!m_isFollowActive);
+              this.invalidateOptionsMenu();
+           }
+
+
+
         return super.onCreateOptionsMenu(menu);
 
 
@@ -2125,9 +2164,14 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         // Take appropriate action for each action item click
         switch (item.getItemId()) {
             case R.id.ocpn_action_follow:
-                Log.i("DEBUGGER_TAG", "Invoke OCPN_ACTION_FOLLOW");
+                Log.i("DEBUGGER_TAG", "Invoke OCPN_ACTION_FOLLOW while in-active");
                 nativeLib.invokeMenuItem(OCPN_ACTION_FOLLOW);
                 return true;
+
+                case R.id.ocpn_action_follow_active:
+                    Log.i("DEBUGGER_TAG", "Invoke OCPN_ACTION_FOLLOW while active");
+                    nativeLib.invokeMenuItem(OCPN_ACTION_FOLLOW);
+                    return true;
 
                 case R.id.ocpn_action_settings_basic:
                     nativeLib.invokeMenuItem(OCPN_ACTION_SETTINGS_BASIC);
@@ -2155,6 +2199,10 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
                 case R.id.ocpn_action_currents:
                     nativeLib.invokeMenuItem(OCPN_ACTION_CURRENTS_TOGGLE);
+                    return true;
+
+                case R.id.ocpn_action_encText:
+                    nativeLib.invokeMenuItem(OCPN_ACTION_ENCTEXT_TOGGLE);
                     return true;
 
 

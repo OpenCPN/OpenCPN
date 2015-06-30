@@ -10,5 +10,6 @@
     <string name="ocpn_action_tides">Show/Hide Tides</string>
     <string name="ocpn_action_currents">Show/Hide Currents</string>
     <string name="ocpn_action_settings_basic">OpenCPN Settings</string>
+    <string name="ocpn_action_encText">Toggle ENC text</string>
 
 </resources>

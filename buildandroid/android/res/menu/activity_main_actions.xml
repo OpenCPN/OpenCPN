@@ -17,6 +17,11 @@
           android:title="@string/ocpn_action_follow"
           android:showAsAction="ifRoom"/>
 
+    <item android:id="@+id/ocpn_action_follow_active"
+          android:icon="@drawable/follow_active"
+          android:title="@string/ocpn_action_follow"
+          android:showAsAction="ifRoom"/>
+
     <item android:id="@+id/ocpn_action_routemanager"
           android:icon="@drawable/route_manager"
           android:title="@string/ocpn_action_routemanager"
@@ -30,6 +35,11 @@
     <item android:id="@+id/ocpn_action_createroute"
           android:icon="@drawable/route"
           android:title="@string/ocpn_action_createroute"
+          android:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/ocpn_action_encText"
+          android:icon="@drawable/text"
+          android:title="@string/ocpn_action_encText"
           android:showAsAction="ifRoom"/>
 
     <item android:id="@+id/ocpn_action_tides"

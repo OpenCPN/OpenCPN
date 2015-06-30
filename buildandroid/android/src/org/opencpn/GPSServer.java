@@ -9,14 +9,21 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.location.GpsStatus;
+import android.location.GpsSatellite;
+
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.HandlerThread;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.Log;
 import android.app.Activity;
-
+import android.os.Handler;
 import java.util.List;
+import java.lang.Math;
+import java.lang.Iterable;
+import java.util.Iterator;
 
 import org.opencpn.OCPNGpsNmeaListener;
 import org.opencpn.OCPNNativeLib;
@@ -51,9 +58,19 @@ public class GPSServer extends Service implements LocationListener {
     // flag for GPS status
     boolean canGetLocation = false;
 
-    Location location; // location
+    Location mLastLocation; // location
     double latitude; // latitude
     double longitude; // longitude
+    float course;
+    float speed;
+
+    private GpsStatus mStatus;
+    private MyListener mMyListener;
+    long mLastLocationMillis;
+    boolean isGPSFix = false;
+    public int m_watchDog = 0;
+
+    int m_tick;
 
     // The minimum distance to change Updates in meters
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 1; // 1 meter
@@ -63,6 +80,53 @@ public class GPSServer extends Service implements LocationListener {
 
     // Declaring a Location Manager
     protected LocationManager locationManager;
+
+    private class MyListener implements GpsStatus.Listener {
+        @Override
+        public void onGpsStatusChanged(int event) {
+//            Log.i("DEBUGGER_TAG", "StatusListener Event");
+
+            if(null != locationManager){
+                mStatus = locationManager.getGpsStatus(mStatus);
+            }
+
+
+            switch (event) {
+                case GpsStatus.GPS_EVENT_STARTED:
+                    Log.i("DEBUGGER_TAG", "GPS_EVENT_STARTED Event");
+                    break;
+
+                case GpsStatus.GPS_EVENT_STOPPED:
+                    Log.i("DEBUGGER_TAG", "GPS_EVENT_STOPPED Event");
+                    isGPSFix = false;
+                    break;
+
+                case GpsStatus.GPS_EVENT_FIRST_FIX:
+                    Log.i("DEBUGGER_TAG", "GPS_EVENT_FIRST_FIX Event");
+                    isGPSFix = true;
+                    break;
+
+                case GpsStatus.GPS_EVENT_SATELLITE_STATUS:
+//                    Log.i("DEBUGGER_TAG", "GPS_EVENT_SATELLITE_STATUS Event");
+
+                        int nSatsUsed = 0;
+                         // int maxSatellites = gpsStatus.getMaxSatellites();    // appears fixed at 255
+                         Iterable<GpsSatellite>satellites = mStatus.getSatellites();
+                         Iterator<GpsSatellite>satI = satellites.iterator();
+                         while (satI.hasNext()) {
+                             GpsSatellite satellite = satI.next();
+//                             Log.i("DEBUGGER_TAG", "onGpsStatusChanged(): " + satellite.getPrn() + "," + satellite.usedInFix() + "," + satellite.getSnr() + "," + satellite.getAzimuth() + "," + satellite.getElevation());
+                             if(satellite.usedInFix())
+                             nSatsUsed++;
+                         }
+
+                    if(nSatsUsed < 3)
+                        isGPSFix = false;
+
+                    break;
+            }
+        }
+    }
 
     public GPSServer(Context context, OCPNNativeLib nativelib, Activity activity) {
         this.mContext = context;
@@ -124,32 +188,53 @@ public class GPSServer extends Service implements LocationListener {
                             Log.i("DEBUGGER_TAG", "Requesting Updates");
                             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,1000,1, GPSServer.this);
 
-                            mNMEAListener = new OCPNGpsNmeaListener(mNativeLib);
+                            mNMEAListener = new OCPNGpsNmeaListener(mNativeLib, GPSServer.this);
                             locationManager.addNmeaListener (mNMEAListener);
 
+                            mMyListener = new MyListener();
+                            locationManager.addGpsStatusListener(mMyListener);
 
                         }
                     });
 
 
+                    HandlerThread hThread = new HandlerThread("HandlerThread");
+                    hThread.start();
+                    final Handler handler = new Handler(hThread.getLooper());
 
 
+                    Runnable ticker = new Runnable() {
+                        @Override
+                        public void run() {
+//                            Log.i("DEBUGGER_TAG", "Tick");
 
+                            m_tick++;
+                            m_watchDog++;
 
+                            if(isGPSEnabled && (m_watchDog > 10)){
+                                if(null != locationManager){
+                                    mLastLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                                    if (mLastLocation != null) {
+                                        latitude = mLastLocation.getLatitude();
+                                        longitude = mLastLocation.getLongitude();
+                                        course = mLastLocation.getBearing();
+                                        speed = mLastLocation.getSpeed();
+                                    }
 
+                                    if(null != mNativeLib){
+                                        String s = createRMC();
+                                        mNativeLib.processNMEA( s );
+                                    }
+                                }
+                            }
 
+                            handler.postDelayed(this, 1000);
+                            }
+                        };
 
+                    // Schedule the first execution
+                    handler.postDelayed(ticker, 1000);
 
-
-
-
-
-
-//                    Log.i("DEBUGGER_TAG", "Requesting Updates");
-//                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,1000,1, this);
-
-//                    mNMEAListener = new OCPNGpsNmeaListener(mNativeLib);
-//                    locationManager.addNmeaListener (mNMEAListener);
 
                     isThreadStarted = true;
                 }
@@ -226,28 +311,28 @@ public class GPSServer extends Service implements LocationListener {
                             MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
                     Log.d("Network", "Network");
                     if (locationManager != null) {
-                        location = locationManager
+                        mLastLocation = locationManager
                                 .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                        if (location != null) {
-                            latitude = location.getLatitude();
-                            longitude = location.getLongitude();
+                        if (mLastLocation != null) {
+                            latitude = mLastLocation.getLatitude();
+                            longitude = mLastLocation.getLongitude();
                         }
                     }
                 }
                 // if GPS Enabled get lat/long using GPS Services
                 if (isGPSEnabled) {
-                    if (location == null) {
+                    if (mLastLocation == null) {
                         locationManager.requestLocationUpdates(
                                 LocationManager.GPS_PROVIDER,
                                 MIN_TIME_BW_UPDATES,
                                 MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
                         Log.d("GPS Enabled", "GPS Enabled");
                         if (locationManager != null) {
-                            location = locationManager
+                            mLastLocation = locationManager
                                     .getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                            if (location != null) {
-                                latitude = location.getLatitude();
-                                longitude = location.getLongitude();
+                            if (mLastLocation != null) {
+                                latitude = mLastLocation.getLatitude();
+                                longitude = mLastLocation.getLongitude();
                             }
                         }
                     }
@@ -258,7 +343,7 @@ public class GPSServer extends Service implements LocationListener {
             e.printStackTrace();
         }
 
-        return location;
+        return mLastLocation;
     }
 
     /**
@@ -275,8 +360,8 @@ public class GPSServer extends Service implements LocationListener {
      * Function to get latitude
      * */
     public double getLatitude(){
-        if(location != null){
-            latitude = location.getLatitude();
+        if(mLastLocation != null){
+            latitude = mLastLocation.getLatitude();
         }
 
         // return latitude
@@ -287,8 +372,8 @@ public class GPSServer extends Service implements LocationListener {
      * Function to get longitude
      * */
     public double getLongitude(){
-        if(location != null){
-            longitude = location.getLongitude();
+        if(mLastLocation != null){
+            longitude = mLastLocation.getLongitude();
         }
 
         // return longitude
@@ -338,18 +423,22 @@ public class GPSServer extends Service implements LocationListener {
     @Override
     public void onLocationChanged(Location location) {
         Log.i("DEBUGGER_TAG", "onLocationChanged");
+        if (location == null) return;
 
+        mLastLocationMillis = SystemClock.elapsedRealtime();
+
+        mLastLocation = location;
     }
 
     @Override
     public void onProviderDisabled(String provider) {
-        Log.i("DEBUGGER_TAG", "onProviderDisabled");
+        Log.i("DEBUGGER_TAG", "onProviderDisabled " + provider);
 
     }
 
     @Override
     public void onProviderEnabled(String provider) {
-        Log.i("DEBUGGER_TAG", "onProviderDisabled");
+        Log.i("DEBUGGER_TAG", "onProviderEnabled " + provider);
 
     }
 
@@ -365,7 +454,77 @@ public class GPSServer extends Service implements LocationListener {
         return null;
     }
 
+    private String createRMC(){
+        // Create an NMEA sentence
+        String s = "$LCRMC,,";
+        if(isGPSFix)
+            s = s.concat("A,");
+        else
+            s = s.concat("V,");
+
+
+        String slat = "";
+        double ltt = latitude;
+        if(latitude < 0)
+            ltt = -latitude;
+
+        double d0 = Math.floor(ltt);
+        double d1 = ltt-d0;
+        double d2 = Math.floor(d1 * 60);
+        double d3 = (d1*60.) - d2;
+
+        slat = slat.format("%.0f.%.0f,", (d0 * 100.) + d2, d3 * 10000);
+
+        if(latitude > 0)
+            slat = slat.concat("N,");
+        else
+            slat = slat.concat("S,");
+
+
+        s = s.concat(slat);
+
+        String slon = "";
+        double lot = longitude;
+        if(longitude < 0)
+            lot = -longitude;
+
+        d0 = Math.floor(lot);
+        d1 = lot-d0;
+        d2 = Math.floor(d1 * 60);
+        d3 = (d1*60.) - d2;
+
+        if(d0 < 100.)
+            slon = "0";
+        slon = slon.concat(slon.format("%.0f.%.0f,", (d0 * 100.) + d2, d3 * 10000));
+
+        if(longitude > 0)
+            slon = slon.concat("E,");
+        else
+            slon = slon.concat("W,");
+
+        s = s.concat(slon);
+
+        String sspeed = "";
+        sspeed = sspeed.format("%.2f,", speed /.5144);
+        s = s.concat(sspeed);
+
+        String strack = "";
+        strack = strack.format("%.0f,", course);
+        s = s.concat(strack);
+
+        s = s.concat(",,,");      // unused fields
+
+        s = s.concat("*55");    // checksum
+
+//        s = s.concat("\r\n");
+
+        Log.i("DEBUGGER_TAG", s);
+
+        return s;
+    }
 }
+
+
 
 //GPSTracker gps = new GPSTracker(this);
 //if(gps.canGetLocation()){ // gps enabled} // return boolean true/false
