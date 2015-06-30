@@ -339,7 +339,7 @@ void FontMgr::LoadFontNative( wxString *pConfigString, wxString *pNativeDesc )
         const wxChar *t = face.c_str();
         if( *t > 255 ) {
             delete nf;
-            wxString substitute_native = GetSimpleNativeFont( 12 );
+            wxString substitute_native = GetSimpleNativeFont( 12, _T("") );
             nf = nf0->New( substitute_native );
         }
 #endif
