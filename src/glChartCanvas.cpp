@@ -1608,7 +1608,7 @@ void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
     
     ChartTableEntry *entry = ChartData->GetpChartTableEntry(dbIndex);
 
-    glEnable( GL_BLEND );
+//    glEnable( GL_BLEND );
     glEnable( GL_LINE_SMOOTH );
 
     glColor3ub(color.Red(), color.Green(), color.Blue());
@@ -1640,7 +1640,7 @@ void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
     } while(++j < nAuxPlyEntries );                 // There are no aux Ply Point entries
 
     glDisable( GL_LINE_SMOOTH );
-    glDisable( GL_BLEND );
+//    glDisable( GL_BLEND );
 }
 
 extern void CalcGridSpacing( float WindowDegrees, float& MajorSpacing, float&MinorSpacing );
