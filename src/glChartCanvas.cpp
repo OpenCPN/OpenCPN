@@ -2282,14 +2282,13 @@ void glChartCanvas::DrawChartBar( ocpnDC &dc )
         int w = cc1->m_canvas_width, h = g_Piano->GetHeight(), y2 = cc1->m_canvas_height, y1 = y2 - h;
         ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 
-        if(m_last_piano_hash != g_Piano->GetStoredHash() || !m_piano_tex || cc1->m_brepaint_piano) {
-            m_last_piano_hash = g_Piano->GetStoredHash();
+        if(!m_piano_tex || cc1->m_brepaint_piano) {
             cc1->m_brepaint_piano = false;
 
             wxBitmap piano = wxBitmap( w, h );
             wxMemoryDC piano_dc(piano);
 
-            wxColour t = *wxRED; // some color we don't need for transparency
+            wxColour t(1, 1, 1); // some color we don't need for transparency
             if(style->chartStatusWindowTransparent) {
                 piano_dc.SetPen( *wxTRANSPARENT_PEN );
                 piano_dc.SetBrush( wxBrush( t, wxSOLID ) );
@@ -2337,14 +2336,11 @@ void glChartCanvas::DrawChartBar( ocpnDC &dc )
         glEnable(GL_TEXTURE_2D);
         glBegin(GL_QUADS);
 
-        for(int i=0; i<40; i++) {
-            float t1 = i/10.0, t2 = (i+1)/10.0;
-            float x1 = t1*w, x2 = t2*w;
-            glTexCoord2f(t1, 0), glVertex2f(x1, y1);
-            glTexCoord2f(t2, 0), glVertex2f(x2, y1);
-            glTexCoord2f(t2, 1), glVertex2f(x2, y2);
-            glTexCoord2f(t1, 1), glVertex2f(x1, y2);
-        }
+        glTexCoord2f(0, 0), glVertex2f(0, y1);
+        glTexCoord2f(1, 0), glVertex2f(w, y1);
+        glTexCoord2f(1, 1), glVertex2f(w, y2);
+        glTexCoord2f(0, 1), glVertex2f(0, y2);
+        
         glEnd();
         glDisable(GL_TEXTURE_2D);
 

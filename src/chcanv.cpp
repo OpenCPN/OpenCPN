@@ -8837,19 +8837,11 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
                               GetClientSize().x, g_Piano->GetHeight());
 
         ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-        if(style->chartStatusWindowTransparent) {
-            if(ru.Contains(chart_bar_rect) != wxOutRegion)
+        if(ru.Contains(chart_bar_rect) != wxOutRegion) {
+            if(style->chartStatusWindowTransparent)
                 m_brepaint_piano = true;
-        } else {
-            if(ru.Contains(chart_bar_rect) != wxOutRegion) {
-                static wxString last_piano_hash;
-                if(last_piano_hash != g_Piano->GetStoredHash()) {
-                    m_brepaint_piano = true;
-                    last_piano_hash = g_Piano->GetStoredHash();
-                }
-
+            else
                 ru.Subtract(chart_bar_rect);
-            }
         }        
     }
 

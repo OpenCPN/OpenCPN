@@ -245,49 +245,39 @@ void Piano::Paint( int y, ocpnDC& dc, wxDC *shapeDC )
     wxPen ppPen( GetGlobalColor( _T("CHBLK") ), 1, wxSOLID );
     dc.SetPen( ppPen );
 
-    dc.SetBrush( m_tBrush );
-
     for( int i = 0; i < nKeys; i++ ) {
         int key_db_index = m_key_array.Item( i );
 
         if( -1 == key_db_index ) continue;
 
-        if( ChartData->GetDBChartFamily( m_key_array.Item( i ) ) == CHART_FAMILY_VECTOR ) {
-            dc.SetBrush( m_vBrush );
+        bool selected = InArray(m_active_index_array, key_db_index);
 
-            for( unsigned int ino = 0; ino < m_active_index_array.GetCount(); ino++ ) {
-                if( m_active_index_array.Item( ino ) == key_db_index ) // chart is in the active list
-                    dc.SetBrush( m_svBrush );
-            }
-        }
-        else {
-            dc.SetBrush( m_tBrush );
-
-            for( unsigned int ino = 0; ino < m_active_index_array.GetCount(); ino++ ) {
-                if( m_active_index_array.Item( ino ) == key_db_index ) // chart is in the active list
-                    dc.SetBrush( m_slBrush );
-            }
-        }
-
-        if( ChartData->GetDBChartType( m_key_array.Item( i ) ) == CHART_TYPE_CM93 ||
-            ChartData->GetDBChartType( m_key_array.Item( i ) ) == CHART_TYPE_CM93COMP ) {
-            dc.SetBrush( m_cBrush );
-
-            for( unsigned int ino = 0; ino < m_active_index_array.GetCount(); ino++ ) {
-                if( m_active_index_array.Item( ino ) == key_db_index ) // chart is in the active list
-                    dc.SetBrush( m_scBrush );
-            }
+        if( ChartData->GetDBChartType( key_db_index ) == CHART_TYPE_CM93 ||
+            ChartData->GetDBChartType( key_db_index ) == CHART_TYPE_CM93COMP ) {
+            if(selected)
+                dc.SetBrush( m_scBrush );
+            else
+                dc.SetBrush( m_cBrush );
+        } else if( ChartData->GetDBChartFamily( key_db_index ) == CHART_FAMILY_VECTOR ) {
+            if(selected)
+                dc.SetBrush( m_svBrush );
+            else
+                dc.SetBrush( m_vBrush );
+        } else { // Raster Chart
+            if(selected)
+                dc.SetBrush( m_slBrush );
+            else
+                dc.SetBrush( m_tBrush );
         }
 
+#if 0
         // Check to see if this box appears in the sub_light array
         // If so, add a crosshatch pattern to the brush
-        for( unsigned int ino = 0; ino < m_sublite_index_array.GetCount(); ino++ ) {
-            if( m_sublite_index_array.Item( ino ) == key_db_index ) // chart is in the sublite list
-            {
-                wxBrush ebrush( dc.GetBrush().GetColour(), wxCROSSDIAG_HATCH );
-//                              dc.SetBrush(ebrush);
-            }
+        if(InArray(m_eclipsed_index_array, key_db_index)) {
+            wxBrush ebrush( dc.GetBrush().GetColour(), wxCROSSDIAG_HATCH );
+            dc.SetBrush(ebrush);
         }
+#endif
 
         if(m_bBusy)
             dc.SetBrush( m_uvBrush );
@@ -301,67 +291,42 @@ void Piano::Paint( int y, ocpnDC& dc, wxDC *shapeDC )
                 shapeDC->DrawRoundedRectangle( box.x, box.y, box.width, box.height, 4 );
         } else {
             dc.DrawRectangle( box.x, box.y, box.width, box.height );
-
             if(shapeDC)
                 shapeDC->DrawRectangle( box );
         }
 
-        for( unsigned int ino = 0; ino < m_sublite_index_array.GetCount(); ino++ ) {
-            if( m_sublite_index_array.Item( ino ) == key_db_index ) { // chart is in the sublite list
-                dc.SetBrush( m_backBrush );
-                int w = 3;
-                dc.DrawRoundedRectangle( box.x + w, box.y + w, box.width - ( 2 * w ),
-                                         box.height - ( 2 * w ), 3 );
-            }
+        if(InArray(m_eclipsed_index_array, key_db_index)) {
+            dc.SetBrush( m_backBrush );
+            int w = 3;
+            dc.DrawRoundedRectangle( box.x + w, box.y + w, box.width - ( 2 * w ),
+                                     box.height - ( 2 * w ), 3 );
         }
 
         //    Look in the current noshow array for this index
-        for( unsigned int ino = 0; ino < m_noshow_index_array.GetCount(); ino++ ) {
-            if( m_noshow_index_array.Item( ino ) == key_db_index ) { // chart is in the noshow list
-                if( m_pInVizIconBmp && m_pInVizIconBmp->IsOk() ) dc.DrawBitmap(
-                    ConvertTo24Bit( dc.GetBrush().GetColour(), *m_pInVizIconBmp ), box.x + 4,
-                    box.y + 3, false );
-                break;
-            }
-        }
+        if(InArray(m_noshow_index_array, key_db_index) &&
+           m_pInVizIconBmp && m_pInVizIconBmp->IsOk() )
+            dc.DrawBitmap(ConvertTo24Bit( dc.GetBrush().GetColour(), *m_pInVizIconBmp ),
+                          box.x + 4, box.y + 3, false );
 
         //    Look in the current skew array for this index
-        for( unsigned int ino = 0; ino < m_skew_index_array.GetCount(); ino++ ) {
-            if( m_skew_index_array.Item( ino ) == key_db_index ) {       // chart is in the list
-                if( m_pSkewIconBmp && m_pSkewIconBmp->IsOk() ) dc.DrawBitmap(
-                    ConvertTo24Bit( dc.GetBrush().GetColour(), *m_pSkewIconBmp ),
-                    box.x + box.width - m_pSkewIconBmp->GetWidth() - 4, box.y + 2, false );
-                break;
-            }
-        }
+        if(InArray(m_skew_index_array, key_db_index) &&
+           m_pSkewIconBmp && m_pSkewIconBmp->IsOk())
+                dc.DrawBitmap(ConvertTo24Bit( dc.GetBrush().GetColour(), *m_pSkewIconBmp ),
+                              box.x + box.width - m_pSkewIconBmp->GetWidth() - 4, box.y + 2, false );
 
         //    Look in the current tmerc array for this index
-        for( unsigned int ino = 0; ino < m_tmerc_index_array.GetCount(); ino++ ) {
-            if( m_tmerc_index_array.Item( ino ) == key_db_index ) {      // chart is in the list
-                if( m_pTmercIconBmp && m_pTmercIconBmp->IsOk() ) dc.DrawBitmap(
-                    ConvertTo24Bit( dc.GetBrush().GetColour(), *m_pTmercIconBmp ),
-                    box.x + box.width - m_pTmercIconBmp->GetWidth() - 4, box.y + 2, false );
-                break;
-            }
-        }
+        if(InArray(m_skew_index_array, key_db_index) &&
+           m_pTmercIconBmp && m_pTmercIconBmp->IsOk() )
+            dc.DrawBitmap(ConvertTo24Bit( dc.GetBrush().GetColour(), *m_pTmercIconBmp ),
+                          box.x + box.width - m_pTmercIconBmp->GetWidth() - 4, box.y + 2, false );
 
         //    Look in the current poly array for this index
-        for( unsigned int ino = 0; ino < m_poly_index_array.GetCount(); ino++ ) {
-            if( m_poly_index_array.Item( ino ) == key_db_index ) {       // chart is in the list
-                if( m_pPolyIconBmp && m_pPolyIconBmp->IsOk() ) dc.DrawBitmap(
-                    ConvertTo24Bit( dc.GetBrush().GetColour(), *m_pPolyIconBmp ),
-                    box.x + box.width - m_pPolyIconBmp->GetWidth() - 4, box.y + 2, false );
-                break;
-            }
-        }
+        if(InArray(m_poly_index_array, key_db_index) &&
+           m_pPolyIconBmp && m_pPolyIconBmp->IsOk() )
+            dc.DrawBitmap(ConvertTo24Bit( dc.GetBrush().GetColour(), *m_pPolyIconBmp ),
+                          box.x + box.width - m_pPolyIconBmp->GetWidth() - 4, box.y + 2, false );
     }
 }
-
-/*
-void PianoWin::OnSize( wxSizeEvent& event )
-{
-    m_hash.Clear();
-    }*/
 
 void Piano::SetColorScheme( ColorScheme cs )
 {
@@ -409,9 +374,9 @@ void Piano::SetActiveKeyArray( ArrayOfInts array )
     m_active_index_array = array;
 }
 
-void Piano::SetSubliteIndexArray( ArrayOfInts array )
+void Piano::SetEclipsedIndexArray( ArrayOfInts array )
 {
-    m_sublite_index_array = array;
+    m_eclipsed_index_array = array;
 }
 
 void Piano::SetSkewIndexArray( ArrayOfInts array )
@@ -427,6 +392,14 @@ void Piano::SetTmercIndexArray( ArrayOfInts array )
 void Piano::SetPolyIndexArray( ArrayOfInts array )
 {
     m_poly_index_array = array;
+}
+
+bool Piano::InArray(ArrayOfInts &array, int key)
+{
+    for( unsigned int ino = 0; ino < array.GetCount(); ino++ )
+        if( array.Item( ino ) == key )
+            return true;
+    return false;
 }
 
 wxString Piano::GetStateHash()
@@ -448,9 +421,9 @@ wxString Piano::GetStateHash()
         a.Printf(_T("%dA"), m_active_index_array.Item(i));
         hash += a;
     }
-    for(unsigned int i=0 ; i < m_sublite_index_array.GetCount() ; i++){
+    for(unsigned int i=0 ; i < m_eclipsed_index_array.GetCount() ; i++){
         wxString a;
-        a.Printf(_T("%dS"), m_sublite_index_array.Item(i));
+        a.Printf(_T("%dE"), m_eclipsed_index_array.Item(i));
         hash += a;
     }
     for(unsigned int i=0 ; i < m_skew_index_array.GetCount() ; i++){

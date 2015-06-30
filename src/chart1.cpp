@@ -5483,7 +5483,7 @@ void MyFrame::SetupQuiltMode( void )
         ArrayOfInts empty_array;
         g_Piano->SetActiveKeyArray( empty_array );
         g_Piano->SetNoshowIndexArray( empty_array );
-        g_Piano->SetSubliteIndexArray( empty_array );
+        g_Piano->SetEclipsedIndexArray( empty_array );
         g_Piano->SetVizIcon( NULL );
         g_Piano->SetInVizIcon( NULL );
 
@@ -7055,7 +7055,7 @@ void MyFrame::UpdateControlBar( void )
         g_Piano->SetActiveKeyArray( piano_active_chart_index_array );
 
         ArrayOfInts piano_eclipsed_chart_index_array = cc1->GetQuiltEclipsedStackdbIndexArray();
-        g_Piano->SetSubliteIndexArray( piano_eclipsed_chart_index_array );
+        g_Piano->SetEclipsedIndexArray( piano_eclipsed_chart_index_array );
 
         g_Piano->SetNoshowIndexArray( g_quilt_noshow_index_array );
 
@@ -7117,6 +7117,7 @@ void MyFrame::UpdateControlBar( void )
         cc1->SetQuiltChartHiLiteIndex( -1 );
         if( g_ChartBarWin )
             g_ChartBarWin->Refresh( false );
+        cc1->m_brepaint_piano = true;
     }
     
     // Create a bitmask int that describes what Family/Type of charts are shown in the bar,

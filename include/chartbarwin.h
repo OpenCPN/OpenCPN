@@ -61,7 +61,7 @@ public:
       void SetActiveKey(int iactive) { m_iactive = iactive; }
       void SetActiveKeyArray(ArrayOfInts array);
       void SetNoshowIndexArray(ArrayOfInts array);
-      void SetSubliteIndexArray(ArrayOfInts array);
+      void SetEclipsedIndexArray(ArrayOfInts array);
       void SetSkewIndexArray(ArrayOfInts array);
       void SetTmercIndexArray(ArrayOfInts array);
       void SetPolyIndexArray(ArrayOfInts array);
@@ -84,6 +84,8 @@ public:
       wxString &GetStoredHash();
       
 private:
+      bool InArray(ArrayOfInts &array, int key);
+
       wxString GetStateHash();
       wxString    m_hash;
       
@@ -105,7 +107,7 @@ private:
       ArrayOfInts m_key_array;
       ArrayOfInts m_noshow_index_array;
       ArrayOfInts m_active_index_array;
-      ArrayOfInts m_sublite_index_array;
+      ArrayOfInts m_eclipsed_index_array;
       ArrayOfInts m_skew_index_array;
       ArrayOfInts m_tmerc_index_array;
       ArrayOfInts m_poly_index_array;

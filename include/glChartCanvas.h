@@ -187,7 +187,6 @@ protected:
     wxSize      ownship_size, ownship_tex_size;
 
     GLuint      m_piano_tex;
-    wxString    m_last_piano_hash;
     
     float       m_fbo_offsetx;
     float       m_fbo_offsety;
