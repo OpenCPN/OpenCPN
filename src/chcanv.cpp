@@ -80,6 +80,10 @@
 #include "gshhs.h"
 #include "canvasMenu.h"
 
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#endif
+
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
 #endif
@@ -3032,7 +3036,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
         if( last_vp.view_scale_ppm != scale_ppm ) m_pQuilt->InvalidateAllQuiltPatchs();
 
         //  Create the quilt
-        if( ChartData && ChartData->IsValid() ) {
+        if( ChartData /*&& ChartData->IsValid()*/ ) {
             if( !pCurrentStack ) return false;
 
             int current_db_index = -1;
@@ -8229,7 +8233,8 @@ bool ChartCanvas::InvokeCanvasMenu(int x, int y, int seltype)
     m_canvasMenu = NULL;
 
 #ifdef __WXQT__
-    gFrame->SurfaceToolbar();           //g_FloatingToolbarDialog->Raise();
+    gFrame->SurfaceToolbar();
+    //g_FloatingToolbarDialog->Raise();
     g_FloatingCompassDialog->Raise();
     if(stats && stats->IsShown())
         stats->Raise();
@@ -8255,6 +8260,10 @@ void ChartCanvas::FinishRoute( void )
     m_prev_pMousePoint = NULL;
 
     parent_frame->SetToolbarItemState( ID_ROUTE, false );
+#ifdef __OCPN__ANDROID__
+    androidSetRouteAnnunciator(false);
+#endif        
+    
     SetCursor( *pCursorArrow );
     m_bDrawingRoute = false;
 

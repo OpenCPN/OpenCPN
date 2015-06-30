@@ -540,6 +540,7 @@ class MyFrame: public wxFrame
     
     time_t              m_fixtime;
     wxMenu              *piano_ctx_menu;
+    bool                b_autofind;
     
     DECLARE_EVENT_TABLE()
 };

@@ -37,6 +37,8 @@
 
 #include <stdio.h>
 
+class MyConfig;
+
 class OCPNPlatform
 {
 public:    
@@ -79,7 +81,9 @@ public:
     double getFontPointsperPixel( void );
     wxSize getDisplaySize();
     double GetDisplaySizeMM();
-
+    double GetDisplayDPmm();
+    double GetToolbarScaleFactor( int GUIScaleFactor );
+    
     wxFileDialog *AdjustFileDialogFont(wxWindow *container, wxFileDialog *dlg);
     wxDirDialog  *AdjustDirDialogFont(wxWindow *container,  wxDirDialog *dlg);
     
@@ -98,7 +102,8 @@ public:
     wxString *GetSharedDataDirPtr();
     wxString *GetPrivateDataDirPtr();
     wxString &GetLogFileName(){ return mlog_file; }
-
+    MyConfig *GetConfigObject();
+    
     int DoFileSelectorDialog( wxWindow *parent, wxString *file_spec, wxString Title, wxString initDir,
                                 wxString suggestedName, wxString wildcard);
     int DoDirSelectorDialog( wxWindow *parent, wxString *file_spec, wxString Title, wxString initDir);

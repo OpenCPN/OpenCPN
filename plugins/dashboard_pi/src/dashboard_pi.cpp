@@ -768,9 +768,18 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                     {
                         if( mPriAWA >= 1 ) {
                             mPriAWA = 1;
-
+							wxString m_awaunit;
+							double m_awaangle;
+							if (m_NMEA0183.Mwv.WindAngle >180) {
+								m_awaunit = _T("\u00B0L");
+								m_awaangle = 180.0 - (m_NMEA0183.Mwv.WindAngle - 180.0);
+							}
+							else {
+								m_awaunit = _T("\u00B0R");
+								m_awaangle = m_NMEA0183.Mwv.WindAngle;
+							}
                             SendSentenceToAllInstruments( OCPN_DBP_STC_AWA,
-                                    m_NMEA0183.Mwv.WindAngle, _T("\u00B0") );
+								m_awaangle, m_awaunit);
                             SendSentenceToAllInstruments( OCPN_DBP_STC_AWS,
                                     toUsrSpeed_Plugin( m_NMEA0183.Mwv.WindSpeed * m_wSpeedFactor, g_iDashWindSpeedUnit ),
                                     getUsrSpeedUnit_Plugin( g_iDashWindSpeedUnit ) );
@@ -779,8 +788,18 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                     {
                         if( mPriTWA >= 1 ) {
                             mPriTWA = 1;
+							wxString m_twaunit;
+							double m_twaangle;
+							if (m_NMEA0183.Mwv.WindAngle >180) {
+								m_twaunit = _T("\u00B0L");
+								m_twaangle = 180.0 - (m_NMEA0183.Mwv.WindAngle - 180.0);
+							}
+							else {
+								m_twaunit = _T("\u00B0R");
+								m_twaangle = m_NMEA0183.Mwv.WindAngle;
+							}
                             SendSentenceToAllInstruments( OCPN_DBP_STC_TWA,
-                                    m_NMEA0183.Mwv.WindAngle, _T("\u00B0") );
+								m_twaangle, m_twaunit);
                             SendSentenceToAllInstruments( OCPN_DBP_STC_TWS,
                                     toUsrSpeed_Plugin( m_NMEA0183.Mwv.WindSpeed * m_wSpeedFactor, g_iDashWindSpeedUnit ),
                                     getUsrSpeedUnit_Plugin( g_iDashWindSpeedUnit ) );

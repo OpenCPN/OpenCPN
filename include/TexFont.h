@@ -61,7 +61,7 @@ public:
     void GetTextExtent( const wxString &string, int *width, int *height);
     void RenderString( const char *string, int x=0, int y=0 );
     void RenderString( const wxString &string, int x=0, int y=0 );
-
+    bool IsBuilt(){ return m_built; }
 
 private:
     void RenderGlyph( int c );
@@ -75,6 +75,7 @@ private:
     int tex_w, tex_h;
     int m_maxglyphw;
     int m_maxglyphh;
+    bool m_built;
     
 };
 #endif  //guard

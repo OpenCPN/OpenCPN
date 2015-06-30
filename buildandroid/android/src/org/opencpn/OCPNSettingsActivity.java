@@ -109,8 +109,6 @@ public class OCPNSettingsActivity extends PreferenceActivity
                     int mark = tk.indexOf(":");
                     if(mark > 0){
                         String key = tk.substring(0, mark);
-                        Log.i("DEBUGGER_TAG", key);
-                        Log.i("DEBUGGER_TAG", (mbS52)?"True":"False");
                         String value = tk.substring(mark+1);
                         if(value.equals("1"))
                             editor.putBoolean(key, true);
@@ -146,15 +144,12 @@ public class OCPNSettingsActivity extends PreferenceActivity
          {
              header.fragmentArguments = new Bundle();
          }
-         Log.i("DEBUGGER_TAG", (mbS52)?"Truely":"Falsely");
 
          if(mbS52){
              header.fragmentArguments.putString("S52", "TRUE");
-             Log.i("DEBUGGER_TAG", "SETTruely");
          }
          else{
              header.fragmentArguments.putString("S52", "FALSE");
-             Log.i("DEBUGGER_TAG", "SETFalsely");
          }
 
 

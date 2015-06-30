@@ -164,8 +164,6 @@ void RedirectIOToConsole();
 OCPNPlatform              *g_Platform;
 
 bool                      g_bFirstRun;
-wxString                  glog_file;
-//wxString                  gConfig_File;
 
 int                       g_unit_test_1;
 bool                      g_start_fullscreen;
@@ -222,7 +220,6 @@ bool                      g_bshowToolbar = true;
 bool                      g_bBasicMenus = false;;
 
 bool                      bDrawCurrentValues;
-bool                      b_novicemode = false;
 
 wxString                  ChartListFileName;
 wxString                  AISTargetNameFileName;
@@ -355,6 +352,8 @@ int                       g_lastClientRectw;
 int                       g_lastClientRecth;
 double                    g_display_size_mm;
 double                    g_config_display_size_mm;
+bool                      g_config_display_size_manual;
+
 int                       g_GUIScaleFactor;
 int                       g_ChartScaleFactor;
 
@@ -657,6 +656,7 @@ bool                      g_bMagneticAPB;
 int                       g_GPU_MemSize;
 
 bool                      g_bserial_access_checked;
+wxString                  g_uiStyle;
 
 
 char bells_sound_file_name[2][12] = { "1bells.wav", "2bells.wav" };
@@ -1086,21 +1086,14 @@ void LoadS57()
         wxLogMessage( _T("Using s57data in ") + g_csv_locn );
         m_pRegistrarMan = new s57RegistrarMgr( g_csv_locn, g_Platform->GetLogFilePtr() );
 
-        if(b_novicemode) {
-            ps52plib->m_bShowSoundg = true;
-            ps52plib->SetDisplayCategory((enum _DisCat) STANDARD );
-            ps52plib->m_nSymbolStyle = (LUPname) PAPER_CHART;
-            ps52plib->m_nBoundaryStyle = (LUPname) PLAIN_BOUNDARIES;
-            ps52plib->m_bUseSCAMIN = true;
-            ps52plib->m_bShowAtonText = true;
 
             //    Preset some object class visibilites for "Mariner's Standard" disply category
-            for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
-                OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
-                if( !strncmp( pOLE->OBJLName, "DEPARE", 6 ) ) pOLE->nViz = 1;
-                if( !strncmp( pOLE->OBJLName, "LNDARE", 6 ) ) pOLE->nViz = 1;
-                if( !strncmp( pOLE->OBJLName, "COALNE", 6 ) ) pOLE->nViz = 1;
-            }
+            //  They may be overridden in LoadS57Config
+        for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
+            OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
+            if( !strncmp( pOLE->OBJLName, "DEPARE", 6 ) ) pOLE->nViz = 1;
+            if( !strncmp( pOLE->OBJLName, "LNDARE", 6 ) ) pOLE->nViz = 1;
+            if( !strncmp( pOLE->OBJLName, "COALNE", 6 ) ) pOLE->nViz = 1;
         }
 
         pConfig->LoadS57Config();
@@ -1339,7 +1332,7 @@ bool MyApp::OnInit()
 #endif
 
 
-    b_novicemode = false;
+     bool b_initial_load = false;
     
     wxFileName config_test_file_name( g_Platform->GetConfigFileName() );
     if( config_test_file_name.FileExists() ) wxLogMessage(
@@ -1348,41 +1341,45 @@ bool MyApp::OnInit()
         {
             wxLogMessage( _T("Creating new Config_File: ") + g_Platform->GetConfigFileName() );
 
-            //    Flag to preset some options for initial config file creation
-            b_novicemode = true;
-
+            b_initial_load = true;
+            
             if( true != config_test_file_name.DirExists( config_test_file_name.GetPath() ) )
                 if( !config_test_file_name.Mkdir(config_test_file_name.GetPath() ) )
                     wxLogMessage( _T("Cannot create config file directory for ") + g_Platform->GetConfigFileName() );
         }
     }
 
+    //      Open/Create the Config Object
+    pConfig = g_Platform->GetConfigObject();
+    pConfig->LoadMyConfig();
+    
+    //  Override for some safe and nice default values if the config file was created from scratch
+    if(b_initial_load)
+        g_Platform->SetDefaultOptions();
+    
+    g_Platform->applyExpertMode(g_bUIexpert);
+
     // Now initialize UI Style.
     g_StyleManager = new ocpnStyle::StyleManager();
-
+    g_StyleManager->SetStyle( g_uiStyle );
     if( !g_StyleManager->IsOK() ) {
         wxString msg = _("Failed to initialize the user interface. ");
         msg << _("OpenCPN cannot start. ");
         msg << _("The necessary configuration files were not found. ");
-        msg << _("See the log file at ") << glog_file << _(" for details.");
+        msg << _("See the log file at ") << g_Platform->GetLogFileName() << _(" for details.") << _T("\n\n");
+        msg << g_Platform->GetSharedDataDir();
+        
         wxMessageDialog w( NULL, msg, _("Failed to initialize the user interface. "),
-                wxCANCEL | wxICON_ERROR );
+                           wxCANCEL | wxICON_ERROR );
         w.ShowModal();
         exit( EXIT_FAILURE );
     }
-
+    
+    //      Init the WayPoint Manager
+    pWayPointMan = NULL;
+    
     g_display_size_mm = wxMax(100, g_Platform->GetDisplaySizeMM());
     double dsmm = g_display_size_mm;
-    
-    //      Init the WayPoint Manager (Must be after UI Style init).
-    pWayPointMan = NULL;
-
-    //      Open/Create the Config Object (Must be after UI Style init).
-    MyConfig *pCF = new MyConfig( wxString( _T("") ), wxString( _T("") ), g_Platform->GetConfigFileName() );
-    pConfig = (MyConfig *) pCF;
-    pConfig->LoadMyConfig();
-    g_Platform->applyExpertMode(g_bUIexpert);
-    
     
     if(fabs(dsmm - g_display_size_mm) > 1){
         wxString msg;
@@ -1581,16 +1578,10 @@ bool MyApp::OnInit()
 #endif
 
 //      Establish location and name of chart database
-    ChartListFileName = newPrivateFileName(g_Platform->GetHomeDir(), "chartlist.dat", "CHRTLIST.DAT");
+    ChartListFileName = newPrivateFileName(g_Platform->GetPrivateDataDir(), "chartlist.dat", "CHRTLIST.DAT");
 
 //      Establish location and name of AIS MMSI -> Target Name mapping
-    AISTargetNameFileName = newPrivateFileName(g_Platform->GetHomeDir(), "mmsitoname.csv", "MMSINAME.CSV");
-
-#ifdef __OCPN__ANDROID__
-    ChartListFileName.Clear();
-    ChartListFileName.Append(_T("chartlist.dat"));
-    ChartListFileName.Prepend( g_Platform->GetHomeDir() );
-#endif
+    AISTargetNameFileName = newPrivateFileName(g_Platform->GetPrivateDataDir(), "mmsitoname.csv", "MMSINAME.CSV");
 
 //      Establish guessed location of chart tree
     if( pInit_Chart_Dir->IsEmpty() ) {
@@ -1600,7 +1591,7 @@ bool MyApp::OnInit()
 #ifndef __OCPN__ANDROID__
         pInit_Chart_Dir->Append( std_path.GetDocumentsDir() );
 #else
-        pInit_Chart_Dir->Append( _T("/mnt/sdcard") );
+        pInit_Chart_Dir->Append( g_Platform->GetPrivateDataDir() );
 #endif
     }
 
@@ -1608,9 +1599,6 @@ bool MyApp::OnInit()
     pWorldMapLocation = new wxString( _T("gshhs") );
     pWorldMapLocation->Prepend( g_Platform->GetSharedDataDir() );
     pWorldMapLocation->Append( wxFileName::GetPathSeparator() );
-
-    if( b_novicemode )
-        g_Platform->SetDefaultOptions();
 
     //  Check the global Tide/Current data source array
     //  If empty, preset one default (US) Ascii data source
@@ -1872,7 +1860,9 @@ bool MyApp::OnInit()
 //    So it is best to simply delete it if present.
 //    TODO  There is a possibility of recreating the dir list from the database itself......
 
-    if( !ChartDirArray.GetCount() ) ::wxRemoveFile( ChartListFileName );
+    if( !ChartDirArray.GetCount() )
+        if(::wxFileExists( ChartListFileName ))
+            ::wxRemoveFile( ChartListFileName );
 
 //      Try to load the current chart list Data file
     ChartData = new ChartDB( );
@@ -1963,14 +1953,6 @@ bool MyApp::OnInit()
     if( !gFrame->CheckGroup( g_GroupIndex ) ) g_GroupIndex = 0;
 
     pCurrentStack = new ChartStack;
-
-    //  A useability enhancement....
-    //  if the chart database is truly empty on startup, switch to SCMode
-    //  so that the GSHHS chart will at least be shown
-    if( ChartData && ( 0 == ChartData->GetChartTableEntries() ) ) {
-        cc1->SetQuiltMode( false );
-        gFrame->SetupQuiltMode();
-    }
 
 //      All set to go.....
 
@@ -2979,25 +2961,11 @@ void MyFrame::EnableToolbar( bool newstate )
 
 void MyFrame::SetToolbarScale()
 {
-    //  Get the basic size of a tool icon
-    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-    wxSize style_tool_size = style->GetToolSize();
+    g_toolbar_scalefactor = g_Platform->GetToolbarScaleFactor( g_GUIScaleFactor );
+    
+    //  Round to the nearest "quarter", to avoid rendering artifacts
+    g_toolbar_scalefactor = wxRound( g_toolbar_scalefactor * 4.0 )/ 4.0;
 
-    g_toolbar_scalefactor = 1.0;
-    if(g_bresponsive ){
-        //      Adjust the scale factor so that the basic tool size is xx millimetres, assumed square
-//        float target_size = 9.0;                // mm
-
-//        float basic_tool_size_mm = style_tool_size.x / cc1->GetPixPerMM();
-//        g_toolbar_scalefactor =  target_size / basic_tool_size_mm;
-
-        //Adjust the scale factor using the global GUI scale parameter
-        g_toolbar_scalefactor =  exp( g_GUIScaleFactor * 0.182 );       //  empirical number, larger is larger
-        g_toolbar_scalefactor = wxMax(g_toolbar_scalefactor, 1.0);      //  Never smaller than 1.0
-
-        //  Round to the nearest "quarter", to avoid rendering artifacts
-        g_toolbar_scalefactor = wxRound( g_toolbar_scalefactor * 4.0 )/ 4.0;
-    }
 }
 
 void MyFrame::RaiseToolbarRecoveryWindow()
@@ -3177,6 +3145,9 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     pConfig->DeleteGroup( _T ( "/Routes" ) );
     pConfig->DeleteGroup( _T ( "/Marks" ) );
     pConfig->Flush();
+    
+    delete pConfig;             // All done
+    pConfig = NULL;
 
     delete g_printData;
     delete g_pageSetupData;
@@ -3315,6 +3286,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     gFrame = NULL;
 
 #ifdef __OCPN__ANDROID__
+    qDebug() << "Calling OnExit()";
     wxTheApp->OnExit();
 #endif
 
@@ -3390,8 +3362,25 @@ void MyFrame::OnResizeTimer(wxTimerEvent &event)
     
  
  
-    if(timer_sequence == 1)
+    if(timer_sequence == 1){
         SetSize(m_newsize);
+        timer_sequence++;
+        m_resizeTimer.Start(10, wxTIMER_ONE_SHOT);
+        return;
+    }
+        
+    if(timer_sequence == 2){
+        if( g_FloatingToolbarDialog ) {
+            g_Platform->GetDisplaySizeMM();             // causes a reload of all display metrics
+            SetToolbarScale();
+            g_FloatingToolbarDialog->RePosition();
+            g_FloatingToolbarDialog->SetGeometry();
+            g_FloatingToolbarDialog->Realize();
+            g_FloatingToolbarDialog->Refresh( false );
+        }
+        return;
+    }
+        
     
 }
 
@@ -3691,12 +3680,16 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
                 nRoute_State = 1;
                 cc1->SetCursor( *cc1->pCursorPencil );
                 SetToolbarItemState( ID_ROUTE, true );
+                
             }
             else {
                 cc1->FinishRoute();
                 SetToolbarItemState( ID_ROUTE, false );
             }
 
+#ifdef __OCPN__ANDROID__
+            androidSetRouteAnnunciator(nRoute_State == 1);
+#endif        
             break;
         }
 
@@ -4492,6 +4485,7 @@ void MyFrame::TogglebFollow( void )
     if( !cc1->m_bFollow ) SetbFollow();
     else
         ClearbFollow();
+    
 }
 
 void MyFrame::SetbFollow( void )
@@ -4500,6 +4494,10 @@ void MyFrame::SetbFollow( void )
     SetToolbarItemState( ID_FOLLOW, true );
     SetMenubarItemState( ID_MENU_NAV_FOLLOW, true );
 
+    #ifdef __OCPN__ANDROID__
+    androidSetFollowTool(true);
+    #endif        
+    
     DoChartUpdate();
     cc1->ReloadVP();
 }
@@ -4510,6 +4508,10 @@ void MyFrame::ClearbFollow( void )
     vLat = gLat;
     vLon = gLon;
 
+    #ifdef __OCPN__ANDROID__
+    androidSetFollowTool(false);
+    #endif        
+    
     cc1->m_bFollow = false;
     SetToolbarItemState( ID_FOLLOW, false );
     SetMenubarItemState( ID_MENU_NAV_FOLLOW, false );
@@ -4817,7 +4819,9 @@ void MyFrame::SurfaceToolbar( void )
                 g_FloatingToolbarDialog->Surface();
             }
         }
-        Raise();
+#ifndef __WXQT__        
+       Raise();
+#endif
     }
 }
 
@@ -5022,7 +5026,6 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
     } else
         if( Current_Ch )
             chart_file_name = Current_Ch->GetFullPath();
-
         
     if( ( rr & VISIT_CHARTS )
             && ( ( rr & CHANGE_CHARTS ) || ( rr & FORCE_UPDATE ) || ( rr & SCAN_UPDATE ) ) ) {
@@ -5127,9 +5130,13 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
         
     cc1->SetDisplaySizeMM( g_display_size_mm );
 
-    //    Do a full Refrload, trying to open the last open chart
-    if(b_need_refresh)
-        ChartsRefresh( ChartData->FinddbIndex( chart_file_name ), cc1->GetVP() );
+    //    Do a full Refresh, trying to open the last open chart
+    if(b_need_refresh){
+        int index_hint = ChartData->FinddbIndex( chart_file_name );
+        if( -1 == index_hint )
+            b_autofind = true;
+        ChartsRefresh( index_hint, cc1->GetVP() );
+    }
     
     return 0;
 }
@@ -5550,7 +5557,12 @@ void MyFrame::SetupQuiltMode( void )
 
 void MyFrame::ClearRouteTool()
 {
-    if( g_toolbar ) g_toolbar->ToggleTool( ID_ROUTE, false );
+    if( g_toolbar )
+        g_toolbar->ToggleTool( ID_ROUTE, false );
+    
+#ifdef __OCPN__ANDROID__
+        androidSetRouteAnnunciator(false);
+#endif        
 }
 
 void MyFrame::DoStackDown( void )
@@ -6149,8 +6161,10 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
         }
     }
 
-    if(g_bSleep)
+    if(g_bSleep){
+        FrameTimer1.Start( TIMER_GFRAME_1, wxTIMER_CONTINUOUS );
         return;
+    }
     
 //      Update the Toolbar Status windows and lower status bar the first time watchdog times out
     if( ( gGPS_Watchdog == 0 ) || ( gSAT_Watchdog == 0 ) ) {
@@ -7299,10 +7313,21 @@ bool MyFrame::DoChartUpdate( void )
 
     if( cc1->GetQuiltMode() ) {
         int current_db_index = -1;
-        if( pCurrentStack ) current_db_index = pCurrentStack->GetCurrentEntrydbIndex(); // capture the currently selected Ref chart dbIndex
+        if( pCurrentStack )
+            current_db_index = pCurrentStack->GetCurrentEntrydbIndex(); // capture the currently selected Ref chart dbIndex
         else
             pCurrentStack = new ChartStack;
 
+        //  This logic added to enable opening a chart when there is no
+        //  previous chart indication, either from inital startup, or from adding new chart directory    
+        if( b_autofind && (-1 == cc1->GetQuiltReferenceChartIndex()) && pCurrentStack ){
+            if(pCurrentStack->nEntry){
+                int new_dbIndex = pCurrentStack->GetDBIndex(pCurrentStack->nEntry-1);    // smallest scale
+                SelectQuiltRefdbChart(new_dbIndex, true);
+                b_autofind = false;
+            }
+        }
+        
         ChartData->BuildChartStack( pCurrentStack, tLat, tLon );
         pCurrentStack->SetCurrentEntryFromdbIndex( current_db_index );
 
@@ -7313,12 +7338,12 @@ bool MyFrame::DoChartUpdate( void )
             if( initial_db_index < 0 ) {
                 if( pCurrentStack->nEntry ) {
                     if( ( g_restore_stackindex < pCurrentStack->nEntry )
-                            && ( g_restore_stackindex >= 0 ) ) initial_db_index =
-                            pCurrentStack->GetDBIndex( g_restore_stackindex );
+                            && ( g_restore_stackindex >= 0 ) )
+                        initial_db_index = pCurrentStack->GetDBIndex( g_restore_stackindex );
                     else
                         initial_db_index = pCurrentStack->GetDBIndex( pCurrentStack->nEntry - 1 );
                 } else
-                    initial_db_index = 0;
+                    b_autofind = true; //initial_db_index = 0;
             }
 
             if( pCurrentStack->nEntry ) {
@@ -9310,9 +9335,7 @@ void MyFrame::applySettingsString( wxString settings)
         }
         
         
-        
-            
-        if(b_action){                               // something to do?
+        if(b_action && cp){                               // something to do?
  
             // Terminate and remove any existing stream with the same port name
             DataStream *pds_existing = g_pMUX->FindStream( cp->GetDSPort() );
@@ -9384,6 +9407,9 @@ void MyFrame::applySettingsString( wxString settings)
 //        g_pAISTargetList->UpdateAISTargetList();
 //    }
 #endif
+    
+    if(console)
+        console->Raise();
     
     Refresh( false );
     
@@ -11144,9 +11170,9 @@ wxFont *GetOCPNScaledFont( wxString item, int default_size )
         //      Adjust font size to be no smaller than xx mm actual size
         double scaled_font_size = dFont->GetPointSize();
 
-        if( cc1) {
+        {
             
-            double points_per_mm  = g_Platform->getFontPointsperPixel() * cc1->GetPixPerMM();
+            double points_per_mm  = g_Platform->getFontPointsperPixel() * g_Platform->GetDisplayDPmm();
             double min_scaled_font_size = 3 * points_per_mm;    // smaller than 3 mm is unreadable
             int nscaled_font_size = wxMax( wxRound(scaled_font_size), min_scaled_font_size );
 

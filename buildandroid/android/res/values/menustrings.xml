@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+    <string name="ocpn_action_follow">Auto-Follow Boat</string>
+    <string name="ocpn_action_mob">Mark Man Overboard</string>
+    <string name="ocpn_action_routemanager">Show Route Manager</string>
+    <string name="ocpn_action_tracktoggle">Toggle tracking</string>
+    <string name="ocpn_action_createroute">Create a new route</string>
+    <string name="ocpn_action_tides">Show/Hide Tides</string>
+    <string name="ocpn_action_currents">Show/Hide Currents</string>
+    <string name="ocpn_action_settings_basic">OpenCPN Settings</string>
+    <string name="ocpn_action_encText">Toggle ENC text</string>
+
+</resources>
