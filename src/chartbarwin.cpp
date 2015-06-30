@@ -46,7 +46,7 @@
 #endif
 
 #include <wx/arrimpl.cpp>
-WX_DEFINE_OBJARRAY(RegionArray);
+WX_DEFINE_OBJARRAY(RectArray);
 
 //------------------------------------------------------------------------------
 //    External Static Storage
@@ -292,7 +292,7 @@ void Piano::Paint( int y, ocpnDC& dc, wxDC *shapeDC )
         if(m_bBusy)
             dc.SetBrush( m_uvBrush );
             
-        wxRect box = KeyRegion.Item( i ).GetBox();
+        wxRect box = KeyRect.Item( i );
         box.y += y;
 
         if( m_brounded ) {
@@ -438,7 +438,6 @@ wxString Piano::GetStateHash()
         a.Printf(_T("%dK"), m_key_array.Item(i));
         hash += a;
     }
-
     for(unsigned int i=0 ; i < m_noshow_index_array.GetCount() ; i++){
         wxString a;
         a.Printf(_T("%dN"), m_noshow_index_array.Item(i));
@@ -484,7 +483,6 @@ wxString &Piano::GetStoredHash()
     return m_hash;
 }
 
-
 void Piano::FormatKeys( void )
 {
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
@@ -498,20 +496,20 @@ void Piano::FormatKeys( void )
 
 //    Build the Key Regions
 
-        KeyRegion.Empty();
-        KeyRegion.Alloc( nKeys );
+        KeyRect.Empty();
+        KeyRect.Alloc( nKeys );
         for( int i = 0; i < nKeys; i++ ) {
-            wxRegion r( ( i * kw ) + 3, 2, kw - 6, height - 4 );
-            KeyRegion.Add( r );
+            wxRect r( ( i * kw ) + 3, 2, kw - 6, height - 4 );
+            KeyRect.Add( r );
         }
     }
     m_nRegions = nKeys;
-
 }
+
 wxPoint Piano::GetKeyOrigin( int key_index )
 {
     if( ( key_index >= 0 ) && ( key_index <= (int) m_key_array.GetCount() - 1 ) ) {
-        wxRect box = KeyRegion.Item( key_index ).GetBox();
+        wxRect box = KeyRect.Item( key_index );
         return wxPoint( box.x, box.y );
     } else
         return wxPoint( -1, -1 );
@@ -540,7 +538,7 @@ bool Piano::MouseEvent( wxMouseEvent& event )
     int sel_dbindex = -1;
 
     for( int i = 0; i < m_nRegions; i++ ) {
-        if( KeyRegion.Item( i ).Contains( x, 6 ) == wxInRegion ) {
+        if( KeyRect.Item( i ).Contains( x, 6 ) ) {
             sel_index = i;
             sel_dbindex = m_key_array.Item( i );
             break;

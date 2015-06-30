@@ -39,7 +39,7 @@
 #define DEFERRED_KEY_CLICK_UP 2
 
 // Class declarations
-WX_DECLARE_OBJARRAY(wxRegion, RegionArray);
+WX_DECLARE_OBJARRAY(wxRect, RectArray);
 
 class MyFrame;
 
@@ -115,7 +115,7 @@ private:
       int         m_click_sel_dbindex;
       int         m_action;
       
-      RegionArray KeyRegion;
+      RectArray KeyRect;
       
       wxBitmap    *m_pVizIconBmp;
       wxBitmap    *m_pInVizIconBmp;
