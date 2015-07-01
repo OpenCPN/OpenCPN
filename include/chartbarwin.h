@@ -54,6 +54,7 @@ public:
 
       void Paint(int y, wxDC &dc, wxDC *shapeDC=NULL);
       void Paint(int y, ocpnDC &dc, wxDC *shapeDC=NULL);
+      void DrawGL(int y);
       void FormatKeys(void);
       bool MouseEvent(wxMouseEvent& event);
       void SetColorScheme(ColorScheme cs);
@@ -84,6 +85,7 @@ public:
       wxString &GetStoredHash();
       
 private:
+      void BuildGLTexture();
       bool InArray(ArrayOfInts &array, int key);
 
       wxString GetStateHash();
@@ -128,6 +130,8 @@ private:
       int         m_iactive;
       bool        m_brounded;
       bool        m_bleaving;
+
+      GLuint      m_tex, m_texw, m_texh, m_tex_piano_height;
 
 DECLARE_EVENT_TABLE()
 };

@@ -2274,79 +2274,12 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc, OCPNRegion &region )
 
 void glChartCanvas::DrawChartBar( ocpnDC &dc )
 {
-    if(g_texture_rectangle_format != GL_TEXTURE_2D) {
-        // unfortunately gives slightly inconsistent results on different opengl drivers
-        // so we should use a texture (which is also faster)
-        g_Piano->Paint(cc1->m_canvas_height - g_Piano->GetHeight(), dc);
-    } else {
-        int w = cc1->m_canvas_width, h = g_Piano->GetHeight(), y2 = cc1->m_canvas_height, y1 = y2 - h;
-        ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-
-        if(!m_piano_tex || cc1->m_brepaint_piano) {
-            cc1->m_brepaint_piano = false;
-
-            wxBitmap piano = wxBitmap( w, h );
-            wxMemoryDC piano_dc(piano);
-
-            wxColour t(1, 1, 1); // some color we don't need for transparency
-            if(style->chartStatusWindowTransparent) {
-                piano_dc.SetPen( *wxTRANSPARENT_PEN );
-                piano_dc.SetBrush( wxBrush( t, wxSOLID ) );
-                piano_dc.DrawRectangle( 0, 0, w, h );
-            }
-
-            g_Piano->Paint(0, piano_dc);
-            piano_dc.SelectObject(wxNullBitmap);
-
-            wxImage image = piano.ConvertToImage(); // unfortunately slow
-            if(!m_piano_tex)
-                glGenTextures( 1, &m_piano_tex );
-            glBindTexture(GL_TEXTURE_2D, m_piano_tex);
-
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); 
-
-            if(style->chartStatusWindowTransparent) {
-                unsigned char *data = new unsigned char[4*w*h], *e = image.GetData();
-                unsigned char tc[3] = {t.Red(), t.Green(), t.Blue()};
-                for(int i=0; i<w*h; i++) {
-                    unsigned char *c = e + 3*i;
-                    memcpy(data + 4*i, c, 3);
-                    if(memcmp(c, tc, 3))
-                        data[4*i+3] = 255;
-                    else
-                        data[4*i+3] = 0;
-                }
-
-                glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
-                delete [] data;
-            } else
-                glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, image.GetData() );
-
-        } else
-            glBindTexture(GL_TEXTURE_2D, m_piano_tex);
-
-        if(style->chartStatusWindowTransparent) {
-            glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
-            glColor4ub(255, 255, 255, 200);
-            glEnable(GL_BLEND);
-        } else
-            glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
-
-        glEnable(GL_TEXTURE_2D);
-        glBegin(GL_QUADS);
-
-        glTexCoord2f(0, 0), glVertex2f(0, y1);
-        glTexCoord2f(1, 0), glVertex2f(w, y1);
-        glTexCoord2f(1, 1), glVertex2f(w, y2);
-        glTexCoord2f(0, 1), glVertex2f(0, y2);
-        
-        glEnd();
-        glDisable(GL_TEXTURE_2D);
-
-        if(style->chartStatusWindowTransparent)
-            glDisable(GL_BLEND);
-    }
+#if 0
+    // this works but is inconsistent across drivers and really slow if there are icons
+    g_Piano->Paint(cc1->m_canvas_height - g_Piano->GetHeight(), dc);
+#else
+    g_Piano->DrawGL(cc1->m_canvas_height - g_Piano->GetHeight());
+#endif
 }
 
 void glChartCanvas::DrawQuiting()
