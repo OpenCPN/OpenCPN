@@ -115,6 +115,7 @@ void appendOSDirSep ( wxString* pString )
 M_COVR_Desc::M_COVR_Desc()
 {
       pvertices = NULL;
+      gl_screen_vertices = NULL;
 
       user_xoff = 0.;
       user_yoff = 0.;
@@ -126,6 +127,7 @@ M_COVR_Desc::M_COVR_Desc()
 M_COVR_Desc::~M_COVR_Desc()
 {
       delete[] pvertices;
+      delete[] gl_screen_vertices;
 }
 
 int M_COVR_Desc::GetWKBSize()
@@ -1928,10 +1930,6 @@ cm93chart::cm93chart()
       //    Make initial allocation of shared outline drawing buffer
       m_pDrawBuffer = ( wxPoint * ) malloc ( 4 * sizeof ( wxPoint ) );
       m_nDrawBufferSize = 1;
-
-#ifdef ocpnUSE_GL        
-      m_outline_display_list = 0;
-#endif
 
       //  Set up the chart context
       m_this_chart_context = (chart_context *)calloc( sizeof(chart_context), 1);
@@ -6164,41 +6162,109 @@ bool cm93compchart::RenderCellOutlinesOnDC( ocpnDC &dc, ViewPort& vp, wxPoint *p
 
 void cm93compchart::RenderCellOutlinesOnGL( ViewPort& vp, M_COVR_Desc *mcd )
 {
-#ifdef ocpnUSE_GL        
-    float_2Dpt *p = mcd->pvertices;
-    int np = mcd->m_nvertices;
-    double lastlon = 0;
-    glBegin(GL_LINE_STRIP);
-    for ( int ip = 0 ; ip < np ; ip++ , p++ ) {
-        double lat = p->y;
-        double lon = p->x;
-        if(lon >= 180)
-            lon -= 360;
+#ifdef ocpnUSE_GL
+    // TODO: use vp.GetDoublePixFromLL instead of vp.GetPixFromLL below
+    // for much better precision, however, this should be changed after
+    // all of the other rendering also is changed
+    // otherwise the outlines are more accurate but move relative to the rendered chart
 
-        /* crosses IDL? if so break up into two segments so display lists work */
-        if(fabs(lon - lastlon) > 180) {
-            wxPoint r = vp.GetPixFromLL(lat, lastlon > 0 ? fabs(lon) : -fabs(lon) );
-    //    Outlines stored in MCDs are not adjusted for offsets
-            r.x -= mcd->user_xoff * vp.view_scale_ppm;
-            r.y -= mcd->user_yoff * vp.view_scale_ppm;
-                                                  
-            glVertex2i(r.x, r.y);
-            glEnd();
-            glBegin(GL_LINE_STRIP);
+    // if needed, cache normalized vertices
+    if(!mcd->gl_screen_vertices) {
+        // first compute how many verticies we need to store
+        double lastlon = 0;
+        int count = 0;
+        float_2Dpt *p = mcd->pvertices;
+        for ( int ip = 0 ; ip < mcd->m_nvertices ; ip++, p++ ) {
+            double lon = p->x;
+            if(lon > 180)
+                lon -= 360;
+
+            // crosses IDL? if so break up into two segments
+            if(fabs(lon - lastlon) > 180) {
+                if(count > 1)
+                    count++;
+                count++;
+            }
+
+            if(count > 1)
+                count++;
+
+            count++;
+            lastlon = lon;
         }
-        lastlon = lon;
+
+        mcd->m_ngl_vertices = count;
+        mcd->gl_screen_vertices = new float_2Dpt[mcd->m_ngl_vertices];
+
+        wxPoint l;
+        p = mcd->pvertices;
+        float_2Dpt *q = mcd->gl_screen_vertices;
+        lastlon = 0;
+        int pos = 0;
+        for ( int ip = 0 ; ip < mcd->m_nvertices ; ip++ , p++ ) {
+            double lat = p->y;
+            double lon = p->x;
+            if(lon > 180)
+                lon -= 360;
+
+            // crosses IDL? if so break up into two segments
+            if(fabs(lon - lastlon) > 180) {
+                if(pos > 1) {
+                    q->y = l.x;
+                    q->x = l.y;
+                    q++;
+                    pos++;
+                }
+
+                wxPoint r = vp.GetPixFromLL(lat, lastlon > 0 ? fabs(lon) : -fabs(lon) );
+                //    Outlines stored in MCDs are not adjusted for offsets
+                r.x -= mcd->user_xoff * vp.view_scale_ppm;
+                r.y -= mcd->user_yoff * vp.view_scale_ppm;
+
+                q->y = r.x;
+                q->x = r.y;
+                q++;
+                pos++;
+
+                r = vp.GetPixFromLL(lat, lon > 0 ? fabs(lastlon) : -fabs(lastlon) );
+                r.x -= mcd->user_xoff * vp.view_scale_ppm;
+                l.x = r.x;
+            }
+
+            if(pos > 1) {
+                q->y = l.x;
+                q->x = l.y;
+                q++;
+                pos++;
+            }
+
+            lastlon = lon;
                                               
-        wxPoint q = vp.GetPixFromLL( lat, lon );
+            wxPoint s = vp.GetPixFromLL( lat, lon );
 
-        //    Outlines stored in MCDs are not adjusted for offsets
-        q.x -= mcd->user_xoff * vp.view_scale_ppm;
-        q.y -= mcd->user_yoff * vp.view_scale_ppm;
+            //    Outlines stored in MCDs are not adjusted for offsets
+            s.x -= mcd->user_xoff * vp.view_scale_ppm;
+            s.y -= mcd->user_yoff * vp.view_scale_ppm;
+            l = s;
 
-        int dir = 0;
+            q->y = s.x;
+            q->x = s.y;
 
-        glVertex2i(q.x, q.y);
+            q++;
+            pos++;
+        }
     }
+
+#if 1 // Push array (faster)
+    glVertexPointer(2, GL_FLOAT, 2*sizeof(float), mcd->gl_screen_vertices);
+    glDrawArrays(GL_LINES, 0, mcd->m_ngl_vertices);
+#else // immediate mode (may be useful for debugging buggy gfx cards)
+    glBegin(GL_LINES);
+    for(int i=0; i<mcd->m_ngl_vertices; i++)
+        glVertex2f(mcd->gl_screen_vertices[i].y, mcd->gl_screen_vertices[i].x);
     glEnd();
+#endif
+
 #endif
 }
 

@@ -8341,23 +8341,30 @@ void ChartCanvas::RenderAllChartOutlines( ocpnDC &dc, ViewPort& vp )
 
 #ifdef USE_S57
     //        On CM93 Composite Charts, draw the outlines of the next smaller scale cell
-    if( Current_Ch && ( Current_Ch->GetChartType() == CHART_TYPE_CM93COMP ) ) {
-        cm93compchart *pch = (cm93compchart *) Current_Ch;
-        if( pch ) {
-            double chart_native_ppm = m_canvas_scale_factor / Current_Ch->GetNativeScale();
-            double zoom_factor = GetVP().view_scale_ppm / chart_native_ppm;
+    cm93compchart *pcm93 = NULL;
+    if( VPoint.b_quilt ) {
+        for(ChartBase *pch = GetFirstQuiltChart(); pch; pch = GetNextQuiltChart())
+            if( pch->GetChartType() == CHART_TYPE_CM93COMP ) {
+                pcm93 = (cm93compchart *)pch;
+                break;
+            }
+    } else
+        if ( Current_Ch && ( Current_Ch->GetChartType() == CHART_TYPE_CM93COMP ) )
+            pcm93 = (cm93compchart *) Current_Ch;
 
-            if( zoom_factor > 8.0 ) {
-                wxPen mPen( GetGlobalColor( _T("UINFM") ), 2, wxSHORT_DASH );
-                dc.SetPen( mPen );
-                pch->RenderNextSmallerCellOutlines( dc, GetVP() );
-            } else {
-                wxPen mPen( GetGlobalColor( _T("UINFM") ), 1, wxSOLID );
-                dc.SetPen( mPen );
-            } 
+    if( pcm93 ) {
+        double chart_native_ppm = m_canvas_scale_factor / pcm93->GetNativeScale();
+        double zoom_factor = GetVP().view_scale_ppm / chart_native_ppm;
 
-            pch->RenderNextSmallerCellOutlines( dc, vp );
-        }
+        if( zoom_factor > 8.0 ) {
+            wxPen mPen( GetGlobalColor( _T("UINFM") ), 2, wxSHORT_DASH );
+            dc.SetPen( mPen );
+        } else {
+            wxPen mPen( GetGlobalColor( _T("UINFM") ), 1, wxSOLID );
+            dc.SetPen( mPen );
+        } 
+        
+        pcm93->RenderNextSmallerCellOutlines( dc, vp );
     }
 #endif
 }
