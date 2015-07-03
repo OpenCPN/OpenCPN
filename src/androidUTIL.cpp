@@ -72,6 +72,7 @@ extern bool                       g_bSleep;
 androidUtilHandler               *g_androidUtilHandler;
 extern wxDateTime                 g_start_time;
 extern RouteManagerDialog        *pRouteManagerDialog;
+extern ChartCanvas               *cc1;
 
 // Static globals
 extern ChartDB                   *ChartData;
@@ -662,6 +663,10 @@ extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onStart(JNIEnv *env, jobject obj)
     {
         qDebug() << "onStart";
+        
+        // Set initial ActionBar item states
+        androidSetFollowTool(cc1->m_bFollow);
+        androidSetRouteAnnunciator( false );
         
         return 99;
     }
