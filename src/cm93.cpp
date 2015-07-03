@@ -4994,8 +4994,10 @@ int cm93compchart::PrepareChartScale ( const ViewPort &vpt, int cmscale, bool bO
                         printf ( " b_nochart return\n" );
 
                   m_pcm93chart_current = NULL;
-                  for ( int i = 0 ; i < 8 ; i++ )
+                  for ( int i = 0 ; i < 8 ; i++ ) {
+                        delete m_pcm93chart_array[i];
                         m_pcm93chart_array[i] = NULL;
+                  }
 
                   return cmscale;
             }
