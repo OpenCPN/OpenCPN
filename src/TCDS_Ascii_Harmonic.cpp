@@ -237,6 +237,8 @@ TC_Error_Code TCDS_Ascii_Harmonic::build_IDX_entry(IDX_entry *pIDX )
     pIDX->IDX_Useable = 1;                          // but assume data is OK
 
     pIDX->IDX_tzname = NULL;
+    stz[0] = 0;
+
     if (7 != sscanf( index_line_buffer, "%c%s%lf%lf%d:%d%*c%[^\r\n]",
                      &pIDX->IDX_type,&pIDX->IDX_zone[0],&pIDX->IDX_lon,&pIDX->IDX_lat,&TZHr,&TZMin,
                      &pIDX->IDX_station_name[0])) return(TC_INDEX_ENTRY_BAD);
@@ -283,11 +285,12 @@ TC_Error_Code TCDS_Ascii_Harmonic::build_IDX_entry(IDX_entry *pIDX )
                                  &pIDX->IDX_lt_time_off, &pIDX->IDX_lt_mpy, &pIDX->IDX_lt_off,
                                  &pIDX->IDX_sta_num, stz, &pIDX->IDX_ref_file_num, pIDX->IDX_reference_name))
                     return(TC_INDEX_ENTRY_BAD);
+
+                if (NULL!=(pIDX->IDX_tzname = (char *)malloc(strlen(stz)+1)))
+                    strcpy(pIDX->IDX_tzname, stz);
             }
 
 
-            if (NULL!=(pIDX->IDX_tzname = (char *)malloc(strlen(stz)+1)))
-                strcpy(pIDX->IDX_tzname, stz);
         }           // else
 
 
