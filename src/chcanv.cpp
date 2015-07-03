@@ -3175,14 +3175,18 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
         double delta_check = (VPoint.pix_height / VPoint.view_scale_ppm) / (1852. * 60);
         delta_check /= 2.;
         
+        double check_point = wxMin(89., VPoint.clat);
+            
+        while((delta_check + check_point) > 90.)
+            delta_check /= 2.;
+            
         double rhumbDist;
-        DistanceBearingMercator( VPoint.clat, VPoint.clon,
-                                     VPoint.clat + delta_check,
-                                     VPoint.clon,
+        DistanceBearingMercator( check_point, VPoint.clon,
+                                 check_point + delta_check, VPoint.clon,
                                      0, &rhumbDist );
                            
-        GetDoubleCanvasPointPix( VPoint.clat, VPoint.clon, &r1 );
-        GetDoubleCanvasPointPix( VPoint.clat + delta_check, VPoint.clon, &r );
+        GetDoubleCanvasPointPix( check_point, VPoint.clon, &r1 );
+        GetDoubleCanvasPointPix( check_point + delta_check, VPoint.clon, &r );
         double delta_p = sqrt( ((r1.m_y - r.m_y) * (r1.m_y - r.m_y)) + ((r1.m_x - r.m_x) * (r1.m_x - r.m_x)) );
         
         m_true_scale_ppm = delta_p / (rhumbDist * 1852);
