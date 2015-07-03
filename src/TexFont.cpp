@@ -33,6 +33,8 @@
 
 TexFont::TexFont( )
 {
+    texobj = 0;
+    m_blur = false;
     m_built = false;
 }
 
