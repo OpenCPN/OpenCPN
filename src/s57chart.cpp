@@ -1809,11 +1809,11 @@ void s57chart::AssembleLineGeometry( void )
                             while( top != NULL ) {
                                 S57Obj *obj = top->obj;
                                 
-                                line_segment_element *list_top = new line_segment_element;
-                                list_top->n_points = 0;
-                                list_top->next = 0;
+                                line_segment_element list_top;
+                                list_top.n_points = 0;
+                                list_top.next = 0;
                                 
-                                line_segment_element *le_current = list_top;
+                                line_segment_element *le_current = &list_top;
                                 
                                 for( int iseg = 0; iseg < obj->m_n_lsindex; iseg++ ) {
                                     int seg_index = iseg * 3;
@@ -1982,8 +1982,7 @@ void s57chart::AssembleLineGeometry( void )
                                 }  // for
                                 
                                 //  All done, so assign the list to the object
-                                obj->m_ls_list = list_top->next;    // skipping the empty first placeholder element
-                                delete list_top;
+                                obj->m_ls_list = list_top.next;    // skipping the empty first placeholder element
                                 
                                 
                                 top = top->next;
