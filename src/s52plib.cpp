@@ -2915,7 +2915,7 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
 
   
-    ls_list = rzRules->obj->m_ls_list;
+    // from above ls_list is the first drawable segment
     while( ls_list){
         
         if( (ls_list->priority == priority_current) && (ls_list->n_points > 1) )   
