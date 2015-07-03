@@ -4580,10 +4580,10 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
             S57Obj *obj = new S57Obj( buf, &fpx, 0, 0, senc_file_version );
             if( obj ) {
                 wxString objnam  = obj->GetAttrValueAsString("OBJNAM");
-                wxString fe_name = wxString(obj->FeatureName, wxConvUTF8);
-                if (objnam.Len() > 0)
+                if (objnam.Len() > 0) {
+                    wxString fe_name = wxString(obj->FeatureName, wxConvUTF8);
                     g_pi_manager->SendVectorChartObjectInfo( FullPath, fe_name, objnam, obj->m_lat, obj->m_lon, scale, nativescale );
-
+                }
 //      Build/Maintain the ATON floating/rigid arrays
                 if( GEO_POINT == obj->Primitive_type ) {
 
