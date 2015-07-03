@@ -1608,7 +1608,7 @@ void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
     
     ChartTableEntry *entry = ChartData->GetpChartTableEntry(dbIndex);
 
-    glEnable( GL_BLEND );
+//    glEnable( GL_BLEND );
     glEnable( GL_LINE_SMOOTH );
 
     glColor3ub(color.Red(), color.Green(), color.Blue());
@@ -1640,7 +1640,7 @@ void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
     } while(++j < nAuxPlyEntries );                 // There are no aux Ply Point entries
 
     glDisable( GL_LINE_SMOOTH );
-    glDisable( GL_BLEND );
+//    glDisable( GL_BLEND );
 }
 
 extern void CalcGridSpacing( float WindowDegrees, float& MajorSpacing, float&MinorSpacing );
@@ -1660,11 +1660,12 @@ void glChartCanvas::GridDraw( )
     
     wxColour GridColor = GetGlobalColor( _T ( "SNDG1" ) );        
 
-    static TexFont s_texfont;
-    wxFont *font = wxTheFontList->FindOrCreateFont
-        ( 8, wxFONTFAMILY_SWISS, wxNORMAL,
-          wxFONTWEIGHT_NORMAL, FALSE, wxString( _T ( "Arial" ) ) );
-    s_texfont.Build(*font);
+    if(!m_gridfont.IsBuilt()){
+        wxFont *font = wxTheFontList->FindOrCreateFont
+            ( 8, wxFONTFAMILY_SWISS, wxNORMAL,
+            wxFONTWEIGHT_NORMAL, FALSE, wxString( _T ( "Arial" ) ) );
+        m_gridfont.Build(*font);
+    }
 
     w = cc1->m_canvas_width;
     h = cc1->m_canvas_height;
@@ -1729,13 +1730,13 @@ void glChartCanvas::GridDraw( )
                 y = (float)(r.y*s.x - s.y*r.x) / (s.x - r.x);
                 if(y < 0 || y > h) {
                     int iy;
-                    s_texfont.GetTextExtent(sbuf, strlen(sbuf), 0, &iy);
+                    m_gridfont.GetTextExtent(sbuf, strlen(sbuf), 0, &iy);
                     y = h - iy;
                     x = (float)(r.x*s.y - s.x*r.y + (s.x - r.x)*y) / (s.y - r.y);
                 }
 
                 glEnable(GL_TEXTURE_2D);
-                s_texfont.RenderString(sbuf, x, y);
+                m_gridfont.RenderString(sbuf, x, y);
                 glDisable(GL_TEXTURE_2D);
             }
             
@@ -1778,13 +1779,13 @@ void glChartCanvas::GridDraw( )
                 x = (float)(r.x*s.y - s.x*r.y) / (s.y - r.y);
                 if(x < 0 || x > w) {
                     int ix;
-                    s_texfont.GetTextExtent(sbuf, strlen(sbuf), &ix, 0);
+                    m_gridfont.GetTextExtent(sbuf, strlen(sbuf), &ix, 0);
                     x = w - ix;
                     y = (float)(r.y*s.x - s.y*r.x + (s.y - r.y)*x) / (s.x - r.x);
                 }
 
                 glEnable(GL_TEXTURE_2D);
-                s_texfont.RenderString(sbuf, x, y);
+                m_gridfont.RenderString(sbuf, x, y);
                 glDisable(GL_TEXTURE_2D);
             }
 
@@ -3672,8 +3673,6 @@ void glChartCanvas::Render()
                     if(!m_cache_vp.IsValid())
                         b_reset = true;
                         
-//          b_reset = true;
-          
                     if( b_reset ){
                         m_fbo_offsetx = (m_cache_tex_x - GetSize().x)/2;
                         m_fbo_offsety = (m_cache_tex_y - GetSize().y)/2;
@@ -3681,8 +3680,11 @@ void glChartCanvas::Render()
                         m_fbo_sheight = sy;
                         
                         m_canvasregion = OCPNRegion( m_fbo_offsetx, m_fbo_offsety, sx, sy );
-                        RenderCanvasBackingChart(gldc, m_canvasregion);
                         
+                        if(m_cache_vp.view_scale_ppm != VPoint.view_scale_ppm )
+                            g_Platform->ShowBusySpinner();
+                        
+                        RenderCanvasBackingChart(gldc, m_canvasregion);
                     }
                     
                     
@@ -3691,9 +3693,9 @@ void glChartCanvas::Render()
                     
                     glViewport( m_fbo_offsetx, m_fbo_offsety, (GLint) sx, (GLint) sy );
 
-                    g_Platform->ShowBusySpinner();
+                    //g_Platform->ShowBusySpinner();
                     RenderCharts(gldc, chart_get_region);
-                    g_Platform->HideBusySpinner();
+                    //g_Platform->HideBusySpinner();
                     
 /*                    
                     wxRect rect( 50, 50, cc1->VPoint.rv_rect.width-100, cc1->VPoint.rv_rect.height-100 );
@@ -3844,6 +3846,8 @@ void glChartCanvas::Render()
     FactoryCrunch(0.6);
     
     cc1->PaintCleanup();
+    g_Platform->HideBusySpinner();
+    
     n_render++;
 }
 
@@ -4293,6 +4297,11 @@ void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
             panx -= dx;
             pany -= dy;
             cc1->ClearbFollow();
+            
+            #ifdef __OCPN__ANDROID__
+            androidSetFollowTool(false);
+            #endif        
+            
             break;
             
         case GestureFinished:
@@ -4301,6 +4310,10 @@ void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
                 cc1->PanCanvas( -panx, pany );
             }
 
+            #ifdef __OCPN__ANDROID__
+            androidSetFollowTool(false);
+            #endif        
+            
             panx = pany = 0;
             m_binPan = false;
             

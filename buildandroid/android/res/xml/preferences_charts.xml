@@ -3,12 +3,15 @@
     <org.opencpn.ChartFilesDialogPreference
         android:key="pref_ChartFiles"
         android:title="Chart Files"
+        android:summary="Configure Installed Charts"
         android:negativeButtonText ="No"
         android:positiveButtonText ="OK" />
 
-     <CheckBoxPreference
-        android:key="pref_sync"
-        android:title="Other dialogs go here"
-        android:summary="with their summaries" />
+    <PreferenceScreen
+        android:key="pref_s52Options"
+        android:fragment="org.opencpn.OCPNSettingsActivity$ChartsVectorSettings"
+        android:title="Vector Chart Settings"
+        android:summary="Set Vector Chart Display Options">
+    </PreferenceScreen>
 
-</PreferenceScreen>
+ </PreferenceScreen>

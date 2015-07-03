@@ -41,9 +41,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.kde.necessitas.ministro.IMinistro;
-import org.kde.necessitas.ministro.IMinistroCallback;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -99,6 +96,8 @@ import org.opencpn.opencpn.R;
 import android.app.Fragment;
 import android.view.ActionMode;
 import android.view.ActionMode.Callback;
+import android.widget.Button;
+import android.widget.TextView;
 //@ANDROID-11
 
 public class OCPNSettingsFragmentDisplay extends PreferenceFragment {
@@ -115,12 +114,10 @@ public class OCPNSettingsFragmentDisplay extends PreferenceFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.i("DEBUGGER_TAG", "SettingsFragment display!");
-
         m_frag = OCPNSettingsFragmentDisplay.this;
 
         // Load the preferences from an XML resource
-        addPreferencesFromResource(R.xml.preferences_display);
+        addPreferencesFromResource(R.xml.preferences_display_basic);
 
         // Get a reference to the NavMode preference
          mNavmodeListPreference = (ListPreference)getPreferenceScreen().findPreference("prefs_navmode");
@@ -136,15 +133,33 @@ public class OCPNSettingsFragmentDisplay extends PreferenceFragment {
              if (key.equals(OCPNSettingsFragmentDisplay.KEY_NAVMODE_LIST_PREFERENCE)) {
                  mNavmodeListPreference.setSummary(mNavmodeListPreference.getEntry().toString());
              }
-
-           }
+            }
          };
 
          getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(m_listener);
 
 
          // Setup some initial values
-         mNavmodeListPreference.setSummary( mNavmodeListPreference.getEntry().toString());
+         mNavmodeListPreference.setSummary(mNavmodeListPreference.getEntry().toString());
+
+   }
+
+
+    @Override
+    public void onStop(){
+        super.onStop();
+
+        DialogSliderPreference a = (DialogSliderPreference)getPreferenceScreen().findPreference("prefs_UIScaleFactor");
+        if(a != null){
+            a.persistValue();
+            Log.i("DEBUGGER_TAG", "persisted prefs_UIScaleFactor ");
+        }
+
+        a = (DialogSliderPreference)getPreferenceScreen().findPreference("prefs_chartScaleFactor");
+        if(a != null){
+            a.persistValue();
+            Log.i("DEBUGGER_TAG", "persisted prefs_chartScaleFactor ");
+        }
 
     }
 

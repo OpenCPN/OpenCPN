@@ -80,6 +80,10 @@
 #include "gshhs.h"
 #include "canvasMenu.h"
 
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#endif
+
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
 #endif
@@ -166,7 +170,7 @@ extern int              g_nAWDefault;
 extern int              g_nAWMax;
 extern int              g_iDistanceFormat;
 
-extern ocpnFloatingToolbarDialog *g_FloatingToolbarDialog;
+//extern ocpnFloatingToolbarDialog *g_FloatingToolbarDialog;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern GoToPositionDialog *pGoToPositionDialog;
 extern wxString GetLayerName(int id);
@@ -3032,7 +3036,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
         if( last_vp.view_scale_ppm != scale_ppm ) m_pQuilt->InvalidateAllQuiltPatchs();
 
         //  Create the quilt
-        if( ChartData && ChartData->IsValid() ) {
+        if( ChartData /*&& ChartData->IsValid()*/ ) {
             if( !pCurrentStack ) return false;
 
             int current_db_index = -1;
@@ -4655,7 +4659,8 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
             r_rband.y = y;
             m_bDrawingRoute = true;
             
-            CheckEdgePan( x, y, event.Dragging(), 5, 2 );
+            if(!g_btouch )
+                CheckEdgePan( x, y, event.Dragging(), 5, 2 );
             Refresh( false );
         }
         
@@ -4666,7 +4671,8 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
             r_rband.y = y;
             m_bDrawingRoute = true;
             
-            CheckEdgePan( x, y, event.Dragging(), 5, 2 );
+            if(!g_btouch )
+                CheckEdgePan( x, y, event.Dragging(), 5, 2 );
             Refresh( false );
         }
     }
@@ -5571,24 +5577,6 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 m_bRouteEditing = false;
             }
             
-            #if 0        
-            else if( m_bMarkEditing && !b_startedit_mark) {         // end of Waypoint drag
-            if( m_pRoutePointEditTarget ) {
-                pConfig->UpdateWayPoint( m_pRoutePointEditTarget );
-                undo->AfterUndoableAction( m_pRoutePointEditTarget );
-                //                m_pRoutePointEditTarget->m_bIsBeingEdited = false;
-                //                wxRect wp_rect;
-                //                m_pRoutePointEditTarget->CalculateDCRect( m_dc_route, &wp_rect );
-                //                m_pRoutePointEditTarget->m_bPtIsSelected = false;
-                //                RefreshRect( wp_rect, true );
-                
-        }
-        //            m_pRoutePointEditTarget = NULL;
-        //            m_bMarkEditing = false;
-        if( !g_FloatingToolbarDialog->IsShown() )
-            gFrame->SurfaceToolbar();
-        }
-        #endif
         }       // g_btouch
         
         
@@ -5641,7 +5629,8 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
             InvalidateGL();
             m_bRouteEditing = false;
             m_pRoutePointEditTarget = NULL;
-            if( !g_FloatingToolbarDialog->IsShown() )
+            
+            if( !gFrame->IsToolbarShown())
                 gFrame->SurfaceToolbar();
             ret = true;
         }
@@ -5659,7 +5648,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
             }
             m_pRoutePointEditTarget = NULL;
             m_bMarkEditing = false;
-            if( !g_FloatingToolbarDialog->IsShown() )
+            if( !gFrame->IsToolbarShown())
                 gFrame->SurfaceToolbar();
             ret = true;
         }
@@ -8244,7 +8233,8 @@ bool ChartCanvas::InvokeCanvasMenu(int x, int y, int seltype)
     m_canvasMenu = NULL;
 
 #ifdef __WXQT__
-    g_FloatingToolbarDialog->Raise();
+    gFrame->SurfaceToolbar();
+    //g_FloatingToolbarDialog->Raise();
     g_FloatingCompassDialog->Raise();
     if(stats && stats->IsShown())
         stats->Raise();
@@ -8270,6 +8260,10 @@ void ChartCanvas::FinishRoute( void )
     m_prev_pMousePoint = NULL;
 
     parent_frame->SetToolbarItemState( ID_ROUTE, false );
+#ifdef __OCPN__ANDROID__
+    androidSetRouteAnnunciator(false);
+#endif        
+    
     SetCursor( *pCursorArrow );
     m_bDrawingRoute = false;
 
@@ -9416,10 +9410,7 @@ void ChartCanvas::Refresh( bool eraseBackground, const wxRect *rect )
             m_pCIWin->Refresh( false );
         }
         
-        if(g_FloatingToolbarDialog && g_FloatingToolbarDialog->m_pRecoverwin ){
-            g_FloatingToolbarDialog->m_pRecoverwin->Raise();
-            g_FloatingToolbarDialog->m_pRecoverwin->Refresh( false );
-        }
+        gFrame->RaiseToolbarRecoveryWindow();
         
     } else
 #endif

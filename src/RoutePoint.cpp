@@ -271,8 +271,14 @@ void RoutePoint::CalculateNameExtents( void )
     if( m_pMarkFont ) {
         wxScreenDC dc;
 
+#ifdef __WXQT__                 // avoiding "painter not active" warning
+        int w, h;
+        dc.GetTextExtent(m_MarkName, &w, &h, NULL, NULL, m_pMarkFont);
+        m_NameExtents = wxSize(w,h);
+#else        
         dc.SetFont( *m_pMarkFont );
         m_NameExtents = dc.GetTextExtent( m_MarkName );
+#endif        
     } else
         m_NameExtents = wxSize( 0, 0 );
 

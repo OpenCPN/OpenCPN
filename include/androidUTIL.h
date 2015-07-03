@@ -44,6 +44,7 @@
 #define OCPN_ACTION_MOB                 0x1006
 #define OCPN_ACTION_TIDES_TOGGLE        0x1007
 #define OCPN_ACTION_CURRENTS_TOGGLE     0x1008
+#define OCPN_ACTION_ENCTEXT_TOGGLE      0x1009
 
 
 #define GPS_OFF                         0
@@ -54,8 +55,13 @@
 extern bool androidUtilInit( void );
 
 extern bool androidGetMemoryStatus( int *mem_total, int *mem_used );
+
 extern double GetAndroidDisplaySize();
+extern double getAndroidDPmm();
 extern wxSize getAndroidDisplayDimensions( void );
+extern double getAndroidDisplayDensity();
+extern int getAndroidActionBarHeight();
+
 extern bool LoadQtStyleSheet(wxString &sheet_file);
 extern QString getQtStyleSheet( void );
 
@@ -79,6 +85,13 @@ extern bool DoAndroidPreferences( void );
 extern int androidFileChooser( wxString *result, const wxString &initDir, const wxString &title,
                         const wxString &suggestion, const wxString &wildcard, bool dirOnly = false);
 
+extern void androidSetChartTypeMaskSel( int mask, wxString &indicator);
+extern void androidSetRouteAnnunciator(bool viz);
+extern void androidSetFollowTool(bool bactive);
 
+extern wxString androidGetHomeDir();
+extern wxString androidGetPrivateDir();                 // Used for logfile, config file, and the like
+extern wxString androidGetSharedDir();                 // Used for assets like uidata, s57data, etc
+extern wxString androidGetCacheDir();                 // Used for raster_texture_cache, mmsitoname.csv, etc
 
 #endif   //guard
