@@ -9175,6 +9175,9 @@ void MyFrame::applySettingsString( wxString settings)
         else if(token.StartsWith( _T("prefb_lockwp"))){
             g_bWayPointPreventDragging = val.IsSameAs(_T("1"));
         }
+        else if(token.StartsWith( _T("prefb_showdepthunits"))){
+            g_bShowDepthUnits = val.IsSameAs(_T("1"));
+        }
         else if(token.StartsWith( _T("prefb_confirmdelete"))){
             g_bConfirmObjectDelete = val.IsSameAs(_T("1"));
         }
