@@ -3223,9 +3223,12 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                 text.Printf( _("Scale %4.0f (%1.0fx)"), true_scale_display, m_displayed_scale_factor );
             else if( m_displayed_scale_factor > 1.0 )
                 text.Printf( _("Scale %4.0f (%1.1fx)"), true_scale_display, m_displayed_scale_factor );
-            else  {
+            else if( m_displayed_scale_factor > 0.1 ){
                 double sfr = wxRound(m_displayed_scale_factor * 10.) / 10.;
                 text.Printf( _("Scale %4.0f (%1.2fx)"), true_scale_display, sfr );
+            }
+            else  {
+                text.Printf( _("Scale %4.0f (---)"), true_scale_display );      // Generally, no chart, so no chart scale factor
             }
 
 #ifdef ocpnUSE_GL
