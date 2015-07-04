@@ -1766,10 +1766,10 @@ bool MyApp::OnInit()
     
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 
-    if( cc1->GetQuiltMode() ) {
-        g_Piano->SetVizIcon( new wxBitmap( style->GetIcon( _T("viz") ) ) );
-        g_Piano->SetInVizIcon( new wxBitmap( style->GetIcon( _T("redX") ) ) );
+    g_Piano->SetVizIcon( new wxBitmap( style->GetIcon( _T("viz") ) ) );
+    g_Piano->SetInVizIcon( new wxBitmap( style->GetIcon( _T("redX") ) ) );
 
+    if( cc1->GetQuiltMode() ) {
         g_Piano->SetRoundedRectangles( true );
     }
     g_Piano->SetTMercIcon( new wxBitmap( style->GetIcon( _T("tmercprj") ) ) );
@@ -5484,11 +5484,10 @@ void MyFrame::SetupQuiltMode( void )
         g_Piano->SetActiveKeyArray( empty_array );
         g_Piano->SetNoshowIndexArray( empty_array );
         g_Piano->SetEclipsedIndexArray( empty_array );
-        g_Piano->SetVizIcon( NULL );
-        g_Piano->SetInVizIcon( NULL );
 
         ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-
+        g_Piano->SetVizIcon( new wxBitmap( style->GetIcon( _T("viz") ) ) );
+        g_Piano->SetInVizIcon( new wxBitmap( style->GetIcon( _T("redX") ) ) );
         g_Piano->SetTMercIcon( new wxBitmap( style->GetIcon( _T("tmercprj") ) ) );
         g_Piano->SetSkewIcon( new wxBitmap( style->GetIcon( _T("skewprj") ) ) );
 
