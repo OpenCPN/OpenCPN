@@ -49,15 +49,22 @@
         android:summary="Depth units displayed as emboss on chart surface"
         android:defaultValue="false" />
 
-    <org.opencpn.DialogSliderPreference
-        android:key="prefs_UIScaleFactor"
-        android:title="User Interface Scale Factor"
-        android:dialogMessage="MyDialogMessage" />
+    <org.opencpn.opencpn.SeekBarPreference
+            android:key="prefs_UIScaleFactor"
+            android:title="User Interface Scale Factor"
+            android:summary="Affects toolbars, dialogs, and GUI fonts."
+            android:defaultValue="50"
+            android:max="100"
+    />
 
-    <org.opencpn.DialogSliderPreference
-        android:key="prefs_chartScaleFactor"
-        android:title="Chart Display Scale Factor"
-        android:dialogMessage="MyDialogMessage" />
+    <org.opencpn.opencpn.SeekBarPreference
+            android:key="prefs_chartScaleFactor"
+            android:title="Chart Display Scale Factor"
+            android:summary="Affects chart objects like marks, buoys, text, etc."
+            android:defaultValue="50"
+            android:max="100"
+    />
+
 
     <CheckBoxPreference
         android:key="prefb_expertmode"
