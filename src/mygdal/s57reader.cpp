@@ -338,8 +338,28 @@ int S57Reader::Ingest(CallBackFunction pcallback)
 
         if( EQUAL(pszname,"VRID") )
         {
+#if 0
             int         nRCNM = poRecord->GetIntSubfield( "VRID",0, "RCNM",0);
             int         nRCID = poRecord->GetIntSubfield( "VRID",0, "RCID",0);
+#else
+            int nRCNM = 0, nRCID = 0;
+            DDFField *poField = poRecord->FindField( "VRID", 0 );
+            if( poField ) {
+                int         nBytesRemaining;
+                DDFSubfieldDefn     *poSFDefn;
+                poSFDefn = poField->GetFieldDefn()->FindSubfieldDefn( "RCNM" );
+                if( poSFDefn ) {
+                    const char *pachData = poField->GetSubfieldData(poSFDefn, &nBytesRemaining, 0);
+                    nRCNM = poSFDefn->ExtractIntData( pachData, nBytesRemaining, NULL );
+                }
+
+                poSFDefn = poField->GetFieldDefn()->FindSubfieldDefn( "RCID" );
+                if( poSFDefn ) {
+                    const char *pachData = poField->GetSubfieldData(poSFDefn, &nBytesRemaining, 0);
+                    nRCID = poSFDefn->ExtractIntData( pachData, nBytesRemaining, NULL );
+                }
+            }
+#endif
 
             switch( nRCNM )
             {
