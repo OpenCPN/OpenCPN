@@ -8815,7 +8815,15 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
     wxMemoryDC temp_dc;
 #endif
 
-    wxRegion rgn_chart( 0, 0, GetVP().pix_width, GetVP().pix_height );
+    long height = GetVP().pix_height;
+
+#ifdef __WXMAC__
+    //On OS X we have to explicitly extend the region for the piano area
+    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+    if(!style->chartStatusWindowTransparent && g_bShowChartBar)
+        height += g_Piano->GetHeight();
+#endif // __WXMAC__
+    wxRegion rgn_chart( 0, 0, GetVP().pix_width, height );
 
 //    In case Thumbnail is shown, set up dc clipper and blt iterator regions
     if( pthumbwin ) {
