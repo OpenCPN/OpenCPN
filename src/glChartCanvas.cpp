@@ -142,6 +142,8 @@ extern RouteList        *pRouteList;
 extern bool             b_inCompressAllCharts;
 extern bool             g_bexpert;
 extern bool             g_bcompression_wait;
+extern bool             g_bresponsive;
+extern int              g_ChartScaleFactor;
 
 float            g_GLMinSymbolLineWidth;
 float            g_GLMinCartographicLineWidth;
@@ -149,6 +151,7 @@ float            g_GLMinCartographicLineWidth;
 extern bool             g_fog_overzoom;
 extern double           g_overzoom_emphasis_base;
 extern bool             g_oz_vector_scale;
+
 
 ocpnGLOptions g_GLOptions;
 
@@ -1990,6 +1993,13 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 
     if( cc1->GetVP().chart_scale > 300000 )             // According to S52, this should be 50,000
     {
+        if(g_bresponsive){
+            float scale =  exp( g_ChartScaleFactor * (0.693 / 5.0) );       //  exp(2)
+            scale = wxMax(scale, .5);
+            scale = wxMin(scale, 4.);
+            glScalef(scale, scale, 1);
+        }
+        
         const int v = 12;
         // start with cross
         float vertexes[4*v+8] = {-12, 0, 12, 0, 0, -12, 0, 12};
@@ -2131,6 +2141,14 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 
         glScalef(scale_factor_x, scale_factor_y, 1);
 
+        if(g_bresponsive){
+            float scale =  exp( g_ChartScaleFactor * (0.693 / 5.0) );       //  exp(2)
+            scale = wxMax(scale, .5);
+            scale = wxMin(scale, 4.);
+            glScalef(scale, scale, 1);
+        }
+        
+        
         if( g_OwnShipIconType < 2 ) { // Bitmap
 
             glEnable(GL_TEXTURE_2D);

@@ -52,7 +52,6 @@ extern float g_fWaypointRangeRingsStep;
 extern int g_iWaypointRangeRingsStepUnits;
 extern wxColour g_colourWaypointRangeRingsColour;
 
-extern bool g_bresponsive;
 extern int  g_ChartScaleFactor;
 
 #include <wx/listimpl.cpp>

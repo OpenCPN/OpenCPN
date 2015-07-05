@@ -148,6 +148,7 @@ void ocpnDC::SetGLAttrs( bool highQuality )
         glDisable( GL_POLYGON_SMOOTH );
         glDisable( GL_BLEND );
     }
+    
 #endif
 }
 
@@ -777,7 +778,7 @@ void ocpnDC::DrawEllipse( wxCoord x, wxCoord y, wxCoord width, wxCoord height )
 #endif    
 }
 
-void ocpnDC::DrawPolygon( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffset )
+void ocpnDC::DrawPolygon( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffset, float scale )
 {
     if( dc )
         dc->DrawPolygon( n, points, xoffset, yoffset );
@@ -788,14 +789,14 @@ void ocpnDC::DrawPolygon( int n, wxPoint points[], wxCoord xoffset, wxCoord yoff
         if( ConfigureBrush() ) {
             glBegin( GL_POLYGON );
             for( int i = 0; i < n; i++ )
-                glVertex2i( points[i].x + xoffset, points[i].y + yoffset );
+                glVertex2f( (points[i].x * scale) + xoffset, (points[i].y * scale) + yoffset );
             glEnd();
         }
 
         if( ConfigurePen() ) {
             glBegin( GL_LINE_LOOP );
             for( int i = 0; i < n; i++ )
-                glVertex2i( points[i].x + xoffset, points[i].y + yoffset );
+                glVertex2f( (points[i].x * scale) + xoffset, (points[i].y * scale) + yoffset );
             glEnd();
         }
 
@@ -914,7 +915,7 @@ void ocpnDC::DrawPolygonTessellated( int n, wxPoint points[], wxCoord xoffset, w
 #endif    
 }
 
-void ocpnDC::StrokePolygon( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffset )
+void ocpnDC::StrokePolygon( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffset, float scale )
 {
 #if wxUSE_GRAPHICS_CONTEXT
     if( pgc ) {
@@ -932,7 +933,7 @@ void ocpnDC::StrokePolygon( int n, wxPoint points[], wxCoord xoffset, wxCoord yo
             dc->CalcBoundingBox( points[i].x + xoffset, points[i].y + yoffset );
     } else
 #endif
-        DrawPolygon( n, points, xoffset, yoffset );
+        DrawPolygon( n, points, xoffset, yoffset, scale );
 }
 
 void ocpnDC::DrawBitmap( const wxBitmap &bitmap, wxCoord x, wxCoord y, bool usemask )
