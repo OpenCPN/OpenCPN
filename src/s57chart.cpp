@@ -4238,7 +4238,6 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
     S57Reader *poReader;
     int feid = 0;
 
-    int nProg = 0;
     wxString nice_name;
     int bbad_update = false;
 
@@ -4318,8 +4317,6 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
     Title.append( SENCfile.GetFullPath() );
 
     cc1->StopMovement();
-    s_ProgDialog = new wxProgressDialog( Title, Message, m_nGeoRecords, GetOCPNCanvasWindow(),
-                                         wxPD_AUTO_HIDE | wxPD_SMOOTH | wxSTAY_ON_TOP | wxPD_APP_MODAL);
 
     //      Analyze Updates
     //      The OGR library will apply updates automatically, if enabled.
@@ -4352,8 +4349,6 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
     OGRwkbGeometryType geoType;
     wxString sobj;
 
-    bcont = s_ProgDialog->Update( 1, _T("") );
-
     //  Here comes the actual ISO8211 file reading
     OGRS57DataSource *poS57DS = new OGRS57DataSource;
     poS57DS->SetS57Registrar( g_poRegistrar );
@@ -4373,9 +4368,6 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
     if( open_return == BAD_UPDATE )         ///172
     bbad_update = true;
 
-    bcont = s_ProgDialog->Update( 2, _T("") );
-    if( !bcont ) goto abort_point;
-
     //      Get a pointer to the reader
     poReader = poS57DS->GetModule( 0 );
 
@@ -4393,6 +4385,11 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
         pEdgeVectorRecordFeature = poReader->ReadVector( feid, RCNM_VE );
     }
 
+    wxStopWatch progsw;
+    int nProg = poReader->GetFeatureCount();
+    s_ProgDialog = new wxProgressDialog( Title, Message, nProg, GetOCPNCanvasWindow(),
+                                         wxPD_AUTO_HIDE | wxPD_SMOOTH | wxSTAY_ON_TOP | wxPD_APP_MODAL);
+
     //      Update the options, removing the RETURN_PRIMITIVES flags
     //      This flag needed to be set on ingest() to create the proper field defns,
     //      but cleared to fetch normal features
@@ -4401,7 +4398,7 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
     poReader->SetOptions( papszReaderOptions );
     CSLDestroy( papszReaderOptions );
 
-    while( bcont ) {
+    {
         //  Prepare for possible CE_Fatal error in GDAL
         //  Corresponding longjmp() is in the local error handler
         int setjmp_ret = 0;
@@ -4411,11 +4408,13 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
                                           //  Seems odd, but that's setjmp/longjmp behaviour
                                           //      Discovered/debugged on US5MD11M.017.  VI 548 geometry deleted
 
-                {
+        {
 //                TODO need to debug thissssssssss
             wxLogMessage( _T("   s57chart(): GDAL/OGR Fatal Error caught on Obj #%d"), iObj );
         }
+    }
 
+    while( bcont ) {
         objectDef = poReader->ReadNextFeature();
 
         if( objectDef != NULL ) {
@@ -4423,16 +4422,17 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
             iObj++;
 
 //  Update the progress dialog
-            if( iObj > m_nGeoRecords - 1 )
-                nProg = m_nGeoRecords - 1;
-            else
-                nProg = iObj;
-            if( s_ProgDialog && nProg % 10 == 0 )
-            {
-                sobj = wxString( objectDef->GetDefnRef()->GetName(), wxConvUTF8 );
-                sobj.Append( wxString::Format( _T("  %d/%d       "), iObj, m_nGeoRecords ) );
 
-                bcont = s_ProgDialog->Update( nProg, sobj ); //We update just every 10th object to improve performance as updating the dialog is very expensive...
+            //We update only every 200 milliseconds to improve performance as updating the dialog is very expensive...
+            // WXGTK is measurably slower even with 100ms here
+            if( s_ProgDialog && progsw.Time() > 200 )
+            {
+                progsw.Start();
+
+                sobj = wxString( objectDef->GetDefnRef()->GetName(), wxConvUTF8 );
+                sobj.Append( wxString::Format( _T("  %d/%d       "), iObj, nProg ) );
+
+                bcont = s_ProgDialog->Update( iObj, sobj );
             }
             geoType = wkbUnknown;
 //      This test should not be necessary for real (i.e not C_AGGR) features
@@ -4447,7 +4447,7 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
 
 //      n.b  This next line causes skip of C_AGGR features w/o geometry
             if( geoType != wkbUnknown )                             // Write only if has wkbGeometry
-                    {
+            {
                 CreateSENCRecord( objectDef, fps57, 1, poReader );
             }
 
