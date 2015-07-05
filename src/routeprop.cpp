@@ -658,7 +658,7 @@ void RouteProp::CreateControls()
 
     itemDialog1 = new wxScrolledWindow( this, wxID_ANY,
                                       wxDefaultPosition, wxDefaultSize, wxHSCROLL | wxVSCROLL);
-    itemDialog1->SetScrollRate(5, 5);
+    itemDialog1->SetScrollRate(2, 2);
 
     itemBoxSizer1->Add( itemDialog1, 1, wxEXPAND | wxALL, 0 );
 
@@ -2056,7 +2056,7 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
 
     m_scrolledWindowLinks = new wxScrolledWindow( m_panelBasicProperties, wxID_ANY,
             wxDefaultPosition, wxDefaultSize, wxHSCROLL | wxVSCROLL );
-    m_scrolledWindowLinks->SetScrollRate( 5, 5 );
+    m_scrolledWindowLinks->SetScrollRate( 2, 2 );
     bSizerLinks = new wxBoxSizer( wxVERTICAL );
 
     m_hyperlink17 = new wxHyperlinkCtrl( m_scrolledWindowLinks, wxID_ANY, _("wxFB Website"),
