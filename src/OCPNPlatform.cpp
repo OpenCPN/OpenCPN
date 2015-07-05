@@ -42,6 +42,7 @@
 #include "cutil.h"
 #include "styles.h"
 #include "navutil.h"
+#include "ConnectionParams.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -210,6 +211,7 @@ extern bool                     g_bresponsive;
 extern bool                     g_bShowStatusBar;
 extern int                      g_cm93_zoom_factor;
 extern int                      g_GUIScaleFactor;
+extern wxArrayOfConnPrm         *g_pConnectionParams;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions            g_GLOptions;
@@ -571,6 +573,13 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_cm93_zoom_factor = -5;
     
     g_GUIScaleFactor = 0;               // nominal
+    
+    wxString sGPS = _T("2;3;;0;0;;0;1;0;0;;0;;1;0;0;0;0");          // 17 parms
+    ConnectionParams *new_params = new ConnectionParams(sGPS);
+    
+    new_params->bEnabled = true;
+    g_pConnectionParams->Add(new_params);
+    
 #endif
     
     
