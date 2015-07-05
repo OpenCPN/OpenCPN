@@ -4,6 +4,6 @@
         android:key="prefb_internalGPS"
         android:title="Use Internal GPS"
         android:summary="Activate GPS to enable this choice."
-        android:defaultValue="true" />
+        android:defaultValue="false" />
 
 </PreferenceScreen>
