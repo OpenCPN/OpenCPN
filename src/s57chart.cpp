@@ -4492,12 +4492,16 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
     }
 
     if( bcont ) {
+#if 0
         remove( SENCfile.GetFullPath().mb_str() );
         unlink( SENCfile.GetFullPath().mb_str() );       //  Delete any existing SENC file....
 
         bool cpok = wxCopyFile( tmp_file, SENCfile.GetFullPath() );         // Delete temp file too?
         wxRemoveFile( tmp_file );
-
+#else
+        // it's faster to rename instead of a copy and delete
+        bool cpok = wxRenameFile( tmp_file, SENCfile.GetFullPath() );
+#endif
         if( !cpok ) {
             wxString msg( _T("   Cannot copy temporary SENC file ") );
             msg.Append( tmp_file );
