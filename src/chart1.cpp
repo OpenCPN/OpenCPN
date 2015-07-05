@@ -1727,6 +1727,10 @@ bool MyApp::OnInit()
         myframe_window_title += _T("]");
     }
 
+    wxString fmsg;
+    fmsg.Printf(_T("Creating MyFrame...size(%d, %d)  position(%d, %d)"), new_frame_size.x, new_frame_size.y, position.x, position.y);
+    wxLogMessage(fmsg);
+    
     gFrame = new MyFrame( NULL, myframe_window_title, position, new_frame_size, app_style ); //Gunther
 
 //  Initialize the Plugin Manager
@@ -2071,8 +2075,10 @@ extern ocpnGLOptions g_GLOptions;
     cc1->SetFocus();
 
 #ifdef __WXQT__
-    g_FloatingToolbarDialog->Raise();
-    g_FloatingCompassDialog->Raise();
+    if(g_FloatingToolbarDialog)
+        g_FloatingToolbarDialog->Raise();
+    if(g_FloatingCompassDialog)
+        g_FloatingCompassDialog->Raise();
 #endif
     
     // Start delayed initialization chain after 100 milliseconds
@@ -2923,7 +2929,8 @@ void MyFrame::UpdateToolbar( ColorScheme cs )
         }
     }
 
-    if( g_FloatingCompassDialog ) g_FloatingCompassDialog->SetColorScheme( cs );
+    if( g_FloatingCompassDialog )
+        g_FloatingCompassDialog->SetColorScheme( cs );
 
     if( g_toolbar ) {
         //  Re-establish toggle states
@@ -3170,7 +3177,8 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         g_pAISTargetList->Destroy();
     }
 
-    if( g_FloatingCompassDialog ) g_FloatingCompassDialog->Destroy();
+    if( g_FloatingCompassDialog )
+        g_FloatingCompassDialog->Destroy();
     g_FloatingCompassDialog = NULL;
 
 
@@ -3460,10 +3468,16 @@ void MyFrame::ODoSetSize( void )
               wxFONTFAMILY_DEFAULT, templateFont->GetStyle(), templateFont->GetWeight(), false,
               templateFont->GetFaceName() );
 
+        int min_height = stat_box.height;
+        
         m_pStatusBar->SetFont( *pstat_font );
 #ifdef __WXQT__
         m_pStatusBar->SetMinHeight( pstat_font->GetPointSize() + 10 );
+        min_height = pstat_font->GetPointSize() + 10;
 #endif
+        wxString msg;
+        msg.Printf(_T("StatusBar min height: %d    StatusBar font points: %d"), min_height, pstat_font->GetPointSize());
+        wxLogMessage(msg);
         
     }
 
@@ -9389,6 +9403,7 @@ void MyFrame::applySettingsString( wxString settings)
     ShowChartBarIfEnabled();
     
     gFrame->Raise();
+    cc1->InvalidateGL();
     DoChartUpdate();
     UpdateControlBar();
     Refresh();
