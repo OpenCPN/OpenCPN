@@ -2983,6 +2983,12 @@ void MyFrame::RaiseToolbarRecoveryWindow()
             g_FloatingToolbarDialog->m_pRecoverwin->Refresh( false );
         }
     }
+    else{
+        if(g_FloatingToolbarDialog && g_FloatingToolbarDialog->m_pRecoverwin ){
+            g_FloatingToolbarDialog->m_pRecoverwin->Hide();
+        }
+    }
+            
 }
 
     
@@ -9168,7 +9174,9 @@ void MyFrame::applySettingsString( wxString settings)
             wxLogMessage(_T("Chart Dir List change detected"));
         }
     }
-                
+            
+    bool previous_expert = g_bUIexpert;
+            
     wxStringTokenizer tk(settings, _T(";"));
     while ( tk.HasMoreTokens() )
     {
@@ -9398,6 +9406,12 @@ void MyFrame::applySettingsString( wxString settings)
      
     ProcessOptionsDialog( rr,  &NewDirArray );
     
+    if(previous_expert && !g_bUIexpert){
+        if(g_FloatingToolbarDialog)
+            g_FloatingToolbarDialog->SurfaceFromGrabber();
+    }
+            
+        
     g_Platform->applyExpertMode(g_bUIexpert);
     
     ShowChartBarIfEnabled();

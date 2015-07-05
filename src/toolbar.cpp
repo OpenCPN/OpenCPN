@@ -935,6 +935,13 @@ void ocpnFloatingToolbarDialog::DestroyToolBar()
         delete m_ptoolbar;                  //->Destroy();
         m_ptoolbar = NULL;
     }
+    
+    if(m_pRecoverwin){
+        m_pRecoverwin->Hide();
+        delete m_pRecoverwin;
+        m_pRecoverwin = NULL;
+    }
+    
 }
 
 //----------------------------------------------------------------------------
