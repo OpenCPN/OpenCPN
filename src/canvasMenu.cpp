@@ -308,20 +308,22 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
 //            contextMenu->Prepend( ID_DEF_MENU_ACTIVATE_MEASURE, _menuText( _( "Measure" ), _T("F4") ) );
     }
 
-    if( parent->undo->AnythingToUndo() ) {
-        wxString undoItem;
-        undoItem << _("Undo") << _T(" ") << parent->undo->GetNextUndoableAction()->Description();
-        MenuPrepend1( contextMenu, ID_UNDO, _menuText( undoItem, _T("Ctrl-Z") ) );
-    }
+    if( !g_bBasicMenus || (seltype != SELTYPE_ROUTECREATE )) {
+        if( parent->undo->AnythingToUndo() ) {
+            wxString undoItem;
+            undoItem << _("Undo") << _T(" ") << parent->undo->GetNextUndoableAction()->Description();
+            MenuPrepend1( contextMenu, ID_UNDO, _menuText( undoItem, _T("Ctrl-Z") ) );
+        }
 
-    if( parent->undo->AnythingToRedo() ) {
-        wxString redoItem;
-        redoItem << _("Redo") << _T(" ") << parent->undo->GetNextRedoableAction()->Description();
+        if( parent->undo->AnythingToRedo() ) {
+            wxString redoItem;
+            redoItem << _("Redo") << _T(" ") << parent->undo->GetNextRedoableAction()->Description();
 #ifdef __WXOSX__
-        MenuPrepend1( contextMenu, ID_REDO, _menuText( redoItem, _T("Shift-Ctrl-Z") ) );
+            MenuPrepend1( contextMenu, ID_REDO, _menuText( redoItem, _T("Shift-Ctrl-Z") ) );
 #else
-        MenuPrepend1( contextMenu, ID_REDO, _menuText( redoItem, _T("Ctrl-Y") ) );
+            MenuPrepend1( contextMenu, ID_REDO, _menuText( redoItem, _T("Ctrl-Y") ) );
 #endif
+        }
     }
 
     bool ais_areanotice = false;
@@ -395,9 +397,12 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
         }
     }
 
-    MenuAppend1( contextMenu, ID_DEF_MENU_DROP_WP, _menuText( _( "Drop Mark" ), _T("Ctrl-M") ) );
+    if( !g_bBasicMenus || (seltype != SELTYPE_ROUTECREATE )) {
+        MenuAppend1( contextMenu, ID_DEF_MENU_DROP_WP, _menuText( _( "Drop Mark" ), _T("Ctrl-M") ) );
 
-    if( !bGPSValid ) MenuAppend1( contextMenu, ID_DEF_MENU_MOVE_BOAT_HERE, _( "Move Boat Here" ) );
+        if( !bGPSValid )
+            MenuAppend1( contextMenu, ID_DEF_MENU_MOVE_BOAT_HERE, _( "Move Boat Here" ) );
+    }
 
     if( !g_bBasicMenus && (!( g_pRouteMan->GetpActiveRoute() || ( seltype & SELTYPE_MARKPOINT )) ) )
         MenuAppend1( contextMenu, ID_DEF_MENU_GOTO_HERE, _( "Navigate To Here" ) );
@@ -542,26 +547,28 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
     //  This is the default context menu
     menuFocus = contextMenu;
 
-    if( g_pAIS ) {
-        MenuAppend1( contextMenu, ID_DEF_MENU_AISTARGETLIST, _("AIS Target List...") );
+    if( !g_bBasicMenus || (seltype != SELTYPE_ROUTECREATE )) {
+        if( g_pAIS ) {
+            MenuAppend1( contextMenu, ID_DEF_MENU_AISTARGETLIST, _("AIS Target List...") );
 
-        if( seltype & SELTYPE_AISTARGET ) {
-            MenuAppend1( menuAIS, ID_DEF_MENU_AIS_QUERY, _( "Target Query..." ) );
-            AIS_Target_Data *myptarget = g_pAIS->Get_Target_Data_From_MMSI( m_FoundAIS_MMSI );
-            if( myptarget && myptarget->bCPA_Valid && (myptarget->n_alert_state != AIS_ALERT_SET) ) {
-                if( myptarget->b_show_AIS_CPA )
-                    MenuAppend1( menuAIS, ID_DEF_MENU_AIS_CPA, _( "Hide Target CPA" ) );
-                else
-                    MenuAppend1( menuAIS, ID_DEF_MENU_AIS_CPA, _( "Show Target CPA" ) );
+            if( seltype & SELTYPE_AISTARGET ) {
+                MenuAppend1( menuAIS, ID_DEF_MENU_AIS_QUERY, _( "Target Query..." ) );
+                AIS_Target_Data *myptarget = g_pAIS->Get_Target_Data_From_MMSI( m_FoundAIS_MMSI );
+                if( myptarget && myptarget->bCPA_Valid && (myptarget->n_alert_state != AIS_ALERT_SET) ) {
+                    if( myptarget->b_show_AIS_CPA )
+                        MenuAppend1( menuAIS, ID_DEF_MENU_AIS_CPA, _( "Hide Target CPA" ) );
+                    else
+                        MenuAppend1( menuAIS, ID_DEF_MENU_AIS_CPA, _( "Show Target CPA" ) );
+                }
+                MenuAppend1( menuAIS, ID_DEF_MENU_AISTARGETLIST, _("Target List...") );
+                if ( 1 /*g_bAISShowTracks*/ ) {
+                    if( myptarget && myptarget->b_show_track )
+                        MenuAppend1( menuAIS, ID_DEF_MENU_AISSHOWTRACK, _("Hide Target Track") );
+                    else
+                        MenuAppend1( menuAIS, ID_DEF_MENU_AISSHOWTRACK, _("Show Target Track") );
+                }
+                menuFocus = menuAIS;
             }
-            MenuAppend1( menuAIS, ID_DEF_MENU_AISTARGETLIST, _("Target List...") );
-            if ( 1 /*g_bAISShowTracks*/ ) {
-                if( myptarget && myptarget->b_show_track )
-                    MenuAppend1( menuAIS, ID_DEF_MENU_AISSHOWTRACK, _("Hide Target Track") );
-                else
-                    MenuAppend1( menuAIS, ID_DEF_MENU_AISSHOWTRACK, _("Show Target Track") );
-            }
-            menuFocus = menuAIS;
         }
     }
 

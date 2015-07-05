@@ -757,6 +757,11 @@ extern "C"{
     {
         qDebug() << "invokeMenuItem" << item;
         
+        // If in Route Create, disable all other menu items
+        if( gFrame->nRoute_State > 1 ) {
+            return 72;
+        }
+            
         wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
         
         switch(item){
@@ -1843,11 +1848,14 @@ wxString BuildAndroidSettingsString( void )
         {
             ConnectionParams *cp = g_pConnectionParams->Item(i);
             if(INTERNAL_GPS == cp->Type){
-                result += _T("prefb_internalGPS:") + cp->bEnabled ? _T("1;") : _T("0;");
+                result += _T("prefb_internalGPS:");
+                result += cp->bEnabled ? _T("1;") : _T("0;");
                 break;                  // there can only be one entry for type INTERNAL_GPS
             }                    
         }
-                    
+    
+    wxLogMessage(result);
+    
     return result;
 }
 
