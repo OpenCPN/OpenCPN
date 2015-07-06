@@ -162,6 +162,7 @@ public:
       void PaintCleanup();
       void Scroll(int dx, int dy);
 
+      bool MouseEventChartBar( wxMouseEvent& event );
       bool MouseEventSetup( wxMouseEvent& event, bool b_handle_dclick = true );
       bool MouseEventProcessObjects( wxMouseEvent& event );
       bool MouseEventProcessCanvas( wxMouseEvent& event );
@@ -294,7 +295,7 @@ public:
       
       wxColour GetFogColor(){ return m_fog_color; }      
       
-      void ShowChartInfoWindow(int x, int y, int dbIndex);
+      void ShowChartInfoWindow(int x, int dbIndex);
       void HideChartInfoWindow(void);
     
       void StartMeasureRoute();
@@ -309,6 +310,7 @@ public:
       wxCursor    *pPlugIn_Cursor;
       TCWin       *pCwin;
       wxBitmap    *pscratch_bm;
+      bool        m_brepaint_piano;
       double      m_cursor_lon, m_cursor_lat;
       Undo        *undo;
       wxPoint     r_rband;

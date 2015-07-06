@@ -138,6 +138,7 @@ protected:
     void DrawFloatingOverlayObjects( ocpnDC &dc, OCPNRegion &region );
     void DrawGroundedOverlayObjectsRect(ocpnDC &dc, wxRect &rect);
 
+    void DrawChartBar( ocpnDC &dc );
     void DrawQuiting();
     void DrawCloseMessage(wxString msg);
     
@@ -184,6 +185,8 @@ protected:
     GLuint      ownship_tex;
     int         ownship_color;
     wxSize      ownship_size, ownship_tex_size;
+
+    GLuint      m_piano_tex;
     
     float       m_fbo_offsetx;
     float       m_fbo_offsety;

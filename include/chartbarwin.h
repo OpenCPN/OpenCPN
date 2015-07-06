@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  Status Window
+ * Purpose:  Chart Bar Window
  * Author:   David Register
  *
  ***************************************************************************
@@ -39,48 +39,30 @@
 #define DEFERRED_KEY_CLICK_UP 2
 
 // Class declarations
-WX_DECLARE_OBJARRAY(wxRegion, RegionArray);
+WX_DECLARE_OBJARRAY(wxRect, RectArray);
 
 class MyFrame;
+
 //----------------------------------------------------------------------------
-// TStatWin
+// Piano
 //----------------------------------------------------------------------------
-class TStatWin: public wxWindow
+class Piano : public wxEvtHandler
 {
 public:
-      TStatWin(wxFrame *frame);
-      ~TStatWin();
+      Piano();
+      ~Piano();
 
-      void OnSize(wxSizeEvent& event);
-      void OnPaint(wxPaintEvent& event);
-      void TextDraw(const wxString& text);
-
-      wxString *pText;
-      bool  bTextSet;
-
-DECLARE_EVENT_TABLE()
-};
-
-
-//----------------------------------------------------------------------------
-// PianoWin
-//----------------------------------------------------------------------------
-class PianoWin: public wxWindow
-{
-public:
-      PianoWin(wxFrame *frame);
-      ~PianoWin();
-
-      void OnSize(wxSizeEvent& event);
-      void OnPaint(wxPaintEvent& event);
+      void Paint(int y, wxDC &dc, wxDC *shapeDC=NULL);
+      void Paint(int y, ocpnDC &dc, wxDC *shapeDC=NULL);
+      void DrawGL(int y);
       void FormatKeys(void);
-      void MouseEvent(wxMouseEvent& event);
+      bool MouseEvent(wxMouseEvent& event);
       void SetColorScheme(ColorScheme cs);
       void SetKeyArray(ArrayOfInts piano_chart_index_array);
       void SetActiveKey(int iactive) { m_iactive = iactive; }
       void SetActiveKeyArray(ArrayOfInts array);
       void SetNoshowIndexArray(ArrayOfInts array);
-      void SetSubliteIndexArray(ArrayOfInts array);
+      void SetEclipsedIndexArray(ArrayOfInts array);
       void SetSkewIndexArray(ArrayOfInts array);
       void SetTmercIndexArray(ArrayOfInts array);
       void SetPolyIndexArray(ArrayOfInts array);
@@ -96,13 +78,16 @@ public:
       wxPoint GetKeyOrigin(int key_index);
       void ResetRollover(void);
       void SetRoundedRectangles(bool val){ m_brounded = val; m_hash.Clear();}
+
+      int GetHeight();
       
       wxString &GenerateAndStoreNewHash();
       wxString &GetStoredHash();
       
-
-      int         Size_X, Size_Y, Pos_X, Pos_Y;
 private:
+      void BuildGLTexture();
+      bool InArray(ArrayOfInts &array, int key);
+
       wxString GetStateHash();
       wxString    m_hash;
       
@@ -124,7 +109,7 @@ private:
       ArrayOfInts m_key_array;
       ArrayOfInts m_noshow_index_array;
       ArrayOfInts m_active_index_array;
-      ArrayOfInts m_sublite_index_array;
+      ArrayOfInts m_eclipsed_index_array;
       ArrayOfInts m_skew_index_array;
       ArrayOfInts m_tmerc_index_array;
       ArrayOfInts m_poly_index_array;
@@ -134,7 +119,7 @@ private:
       int         m_click_sel_dbindex;
       int         m_action;
       
-      RegionArray KeyRegion;
+      RectArray KeyRect;
       
       wxBitmap    *m_pVizIconBmp;
       wxBitmap    *m_pInVizIconBmp;
@@ -144,36 +129,28 @@ private:
 
       int         m_iactive;
       bool        m_brounded;
+      bool        m_bleaving;
+
+      GLuint      m_tex, m_texw, m_texh, m_tex_piano_height;
 
 DECLARE_EVENT_TABLE()
 };
 
 //----------------------------------------------------------------------------
-// StatWin
+// ChartBarWin
 //----------------------------------------------------------------------------
-class StatWin: public wxDialog
+class ChartBarWin: public wxDialog
 {
 public:
-      StatWin(wxWindow *win);
-      ~StatWin();
+      ChartBarWin(wxWindow *win);
+      ~ChartBarWin();
       void OnSize(wxSizeEvent& event);
       void OnPaint(wxPaintEvent& event);
       void MouseEvent(wxMouseEvent& event);
       int  GetFontHeight();
-      void SetColorScheme(ColorScheme cs);
       void RePosition();
       void ReSize();
       
-      void FormatStat(void);
-
-      PianoWin    *pPiano;
-      TStatWin    *pTStat1;
-      TStatWin    *pTStat2;
-
-private:
-      wxBrush     m_backBrush;
-
-
 DECLARE_EVENT_TABLE()
 };
 

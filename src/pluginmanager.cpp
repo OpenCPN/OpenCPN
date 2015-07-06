@@ -44,7 +44,7 @@
 #include "styles.h"
 #include "options.h"
 #include "multiplexer.h"
-#include "statwin.h"
+#include "chartbarwin.h"
 #include "routeman.h"
 #include "FontMgr.h"
 #include "AIS_Decoder.h"
@@ -79,7 +79,8 @@ extern MyFrame         *gFrame;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern options         *g_pOptions;
 extern Multiplexer     *g_pMUX;
-extern StatWin         *stats;
+extern bool             g_bShowChartBar;
+extern Piano           *g_Piano;
 extern Routeman        *g_pRouteMan;
 extern WayPointman     *pWayPointMan;
 extern Select          *pSelect;
@@ -2180,12 +2181,9 @@ bool DecodeSingleVDOMessage( const wxString& str, PlugIn_Position_Fix_Ex *pos, w
 
 int GetChartbarHeight( void )
 {
-    if( stats && stats->IsShown() ){
-        wxSize s = stats->GetSize();
-        return s.GetHeight();
-    }
-    else
-        return 0;
+    if(g_bShowChartBar)
+        return g_Piano->GetHeight();
+    return 0;
 }
 
 
