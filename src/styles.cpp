@@ -37,6 +37,10 @@
 #include "styles.h"
 #include "chart1.h"
 
+#ifdef ocpnUSE_SVG
+#include "rsvg.h"
+#endif // ocpnUSE_SVG
+
 extern OCPNPlatform     *g_Platform;
 
 using namespace ocpnStyle;
@@ -46,6 +50,59 @@ void bmdump(wxBitmap bm, wxString name)
     wxImage img = bm.ConvertToImage();
     img.SaveFile( name << _T(".png"), wxBITMAP_TYPE_PNG );
 }
+
+#ifdef ocpnUSE_SVG
+static void rsvg_cairo_size_callback( int *width, int *height, void *data )
+{
+    RsvgDimensionData *dimensions = (RsvgDimensionData *)data;
+    *width = dimensions->width;
+    *height = dimensions->height;
+}
+
+static void log_svg_error( GError* err )
+{
+    if (err) {
+        wxLogMessage( wxString( err->message ) );
+        g_error_free( err );
+    }
+}
+
+static wxBitmap LoadSVG( const wxString filename, unsigned int width, unsigned int height )
+{
+    unsigned char *data = NULL;
+    wxBitmap ret;
+    GError *error = NULL;
+    RsvgHandle *rsvg = rsvg_handle_new_from_file( filename.c_str(), &error );
+    if( error )
+    {
+        ret = wxBitmap( width, height );
+        log_svg_error( error );
+    }
+    else
+    {
+        cairo_surface_t *surface = NULL;
+        cairo_t *cr = NULL;
+        cairo_matrix_t cm;
+        RsvgDimensionData dimensions;
+        rsvg_handle_get_dimensions( rsvg, &dimensions );
+        
+        surface = cairo_image_surface_create( CAIRO_FORMAT_ARGB32, width, height );
+        cr = cairo_create( surface );
+        cairo_matrix_init_scale( &cm, (double)width / dimensions.width, (double)height / dimensions.height );
+        
+        cairo_transform( cr, &cm );
+        
+        rsvg_handle_render_cairo( rsvg, cr );
+        wxString fn = wxFileName::CreateTempFileName( _T("ocpn_svg_") );
+        cairo_surface_write_to_png( surface, fn.c_str() );
+        ret.LoadFile( fn );
+        wxRemoveFile( fn );
+    }
+    g_object_unref( rsvg );
+    rsvg_cleanup();
+    return ret;
+}
+#endif // ocpnUSE_SVG
 
 // This function can be used to create custom bitmap blending for all platforms
 // where 32 bit bitmap ops are broken. Can hopefully be removed for wxWidgets 3.0...
@@ -193,10 +250,24 @@ wxBitmap Style::GetIcon(const wxString & name)
 
     Icon* icon = (Icon*) icons.Item( index );
 
-    if( icon->loaded ) return icon->icon;
-    if( icon->size.x == 0 ) icon->size = toolSize[currentOrientation];
-    wxRect location( icon->iconLoc, icon->size );
-    wxBitmap bm = graphics->GetSubBitmap( location );
+    if( icon->loaded )
+        return icon->icon;
+    if( icon->size.x == 0 )
+        icon->size = toolSize[currentOrientation];
+    wxBitmap bm;
+    #ifdef ocpnUSE_SVG
+    wxString fullFilePath = myConfigFileDir + this->sysname + wxFileName::GetPathSeparator() + name + ".svg";
+    if( wxFileExists( fullFilePath ) )
+        bm = LoadSVG( fullFilePath, icon->size.x, icon->size.y );
+    else
+    {
+        wxLogMessage( _T("Can't find SVG icon: ") + fullFilePath );
+    #endif // ocpnUSE_SVG
+        wxRect location( icon->iconLoc, icon->size );
+        bm = graphics->GetSubBitmap( location );
+    #ifdef ocpnUSE_SVG
+    }
+    #endif // ocpnUSE_SVG
     icon->icon = SetBitmapBrightness( bm );
     icon->loaded = true;
     return icon->icon;
@@ -204,7 +275,6 @@ wxBitmap Style::GetIcon(const wxString & name)
 
 wxBitmap Style::GetToolIcon(const wxString & toolname, int iconType, bool rollover )
 {
-
     if( toolIndex.find( toolname ) == toolIndex.end() ) {
 //  This will produce a flood of log messages for some PlugIns, notably WMM_PI, and GRADAR_PI
 //        wxString msg( _T("The requested tool was not found in the style: ") );
@@ -223,7 +293,8 @@ wxBitmap Style::GetToolIcon(const wxString & toolname, int iconType, bool rollov
             if( tool->rolloverLoaded && rollover ) return tool->rollover;
 
             wxSize size = tool->customSize;
-            if( size.x == 0 ) size = toolSize[currentOrientation];
+            if( size.x == 0 )
+                size = toolSize[currentOrientation];
             wxRect location( tool->iconLoc, size );
 
             //  If rollover icon does not exist, use the defult icon
@@ -237,7 +308,23 @@ wxBitmap Style::GetToolIcon(const wxString & toolname, int iconType, bool rollov
                 location.y -= verticalIconOffset.y;
             }
 
-            wxBitmap bm = graphics->GetSubBitmap( location );
+            wxBitmap bm;
+            #ifdef ocpnUSE_SVG
+            wxString fullFilePath;
+            if( rollover )
+                fullFilePath = myConfigFileDir + this->sysname + wxFileName::GetPathSeparator() + toolname + "_rollover.svg";
+            else
+                fullFilePath = myConfigFileDir + this->sysname + wxFileName::GetPathSeparator() + toolname + ".svg";
+            if( wxFileExists( fullFilePath ) )
+                bm = LoadSVG( fullFilePath, GetToolSize().x, GetToolSize().y );
+            else
+            {
+                wxLogMessage( _T("Can't find SVG: ") + fullFilePath );
+            #endif // ocpnUSE_SVG
+                bm = graphics->GetSubBitmap( location );
+            #ifdef ocpnUSE_SVG
+            }
+            #endif // ocpnUSE_SVG
             if( hasBackground ) {
                 bm = MergeBitmaps( GetNormalBG(), bm, wxSize( 0, 0 ) );
             } else {
@@ -286,8 +373,24 @@ wxBitmap Style::GetToolIcon(const wxString & toolname, int iconType, bool rollov
                 location.x -= verticalIconOffset.x;
                 location.y -= verticalIconOffset.y;
             }
-            wxBitmap bm = MergeBitmaps( GetToggledBG(), graphics->GetSubBitmap( location ),
-                    offset );
+            wxBitmap bm;
+            #ifdef ocpnUSE_SVG
+            wxString fullFilePath;
+            if( rollover )
+                fullFilePath = myConfigFileDir + this->sysname + wxFileName::GetPathSeparator() + toolname + "_rollover_toggled.svg";
+            else
+                fullFilePath = myConfigFileDir + this->sysname + wxFileName::GetPathSeparator() + toolname + "_toggled.svg";
+            if( wxFileExists( fullFilePath ) )
+                bm = LoadSVG( fullFilePath, GetToolSize().x, GetToolSize().y );
+            else
+            {
+                wxLogMessage( _T("Can't find SVG: ") + fullFilePath );
+            #endif // ocpnUSE_SVG
+                bm = graphics->GetSubBitmap( location );
+            #ifdef ocpnUSE_SVG
+            }
+            #endif // ocpnUSE_SVG
+            bm = MergeBitmaps( GetToggledBG(), bm, offset );
             if( rollover ) {
                 tool->rolloverToggled = SetBitmapBrightness( bm );
                 tool->rolloverToggledLoaded = true;
@@ -303,7 +406,19 @@ wxBitmap Style::GetToolIcon(const wxString & toolname, int iconType, bool rollov
             wxSize size = tool->customSize;
             if( size.x == 0 ) size = toolSize[currentOrientation];
             wxRect location( tool->disabledLoc, size );
-            wxBitmap bm = graphics->GetSubBitmap( location );
+            wxBitmap bm;
+            #ifdef ocpnUSE_SVG
+            wxString fullFilePath = myConfigFileDir + this->sysname + wxFileName::GetPathSeparator() + toolname + "_disabled.svg";
+            if( wxFileExists( fullFilePath ) )
+                bm = LoadSVG( fullFilePath, GetToolSize().x, GetToolSize().y );
+            else
+            {
+                wxLogMessage( _T("Can't find SVG: ") + fullFilePath );
+            #endif // ocpnUSE_SVG
+                bm = graphics->GetSubBitmap( location );
+            #ifdef ocpnUSE_SVG
+            }
+            #endif // ocpnUSE_SVG
             if( currentOrientation ) {
                 location.x -= verticalIconOffset.x;
                 location.y -= verticalIconOffset.y;
@@ -647,6 +762,7 @@ void StyleManager::Init(const wxString & fromPath)
                 styles.Add( style );
 
                 style->name = wxString( styleElem->Attribute( "name" ), wxConvUTF8 );
+                style->sysname = wxString( styleElem->Attribute( "sysname" ), wxConvUTF8 );
                 style->myConfigFileDir = fromPath;
 
                 TiXmlElement* subNode = styleElem->FirstChild()->ToElement();
