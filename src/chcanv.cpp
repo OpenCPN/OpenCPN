@@ -4578,12 +4578,17 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
             m_DoubleClickTimer->Stop();
             return(true);
         }
+        if (!m_bChartDragging) {
+            // Save the event for later running if there is no DClick.
+            // if dragging: 
+            // 1) it couldn't be a DClick 
+            // 2) on linux under load it leads to the chart moving back
 
-        // Save the event for later running if there is no DClick.
-        m_DoubleClickTimer->Start( 350, wxTIMER_ONE_SHOT );
-        singleClickEvent = event;
-        singleClickEventIsValid = true;
-        return(true);
+            m_DoubleClickTimer->Start( 350, wxTIMER_ONE_SHOT );
+            singleClickEvent = event;
+            singleClickEventIsValid = true;
+            return true;
+        }
     }
 
     //  This logic is necessary on MSW to handle the case where
@@ -6048,6 +6053,25 @@ bool ChartCanvas::MouseEventProcessCanvas( wxMouseEvent& event )
         
     }
     
+    if( (event.Dragging() && event.LeftIsDown()) || ( m_bChartDragging && event.LeftUp())){
+            if( ( last_drag.x != x ) || ( last_drag.y != y ) ) {
+                m_bChartDragging = true;
+                PanCanvas( last_drag.x - x, last_drag.y - y );
+                
+                last_drag.x = x;
+                last_drag.y = y;
+                
+                if( g_btouch ) {
+                    if(( m_bMeasure_Active && m_nMeasureState ) || ( parent_frame->nRoute_State )){
+                        //deactivate next LeftUp to ovoid creating an unexpected point
+                        m_DoubleClickTimer->Start();
+                        singleClickEventIsValid = false;
+                    }
+                }
+                
+            }
+    }
+        
     if( event.LeftUp() ) {
         if( 1/*leftIsDown*/ ) {  // left click for chart center
             leftIsDown = false;
@@ -6087,25 +6111,6 @@ bool ChartCanvas::MouseEventProcessCanvas( wxMouseEvent& event )
         }
     }
     
-    if( event.Dragging() && event.LeftIsDown()){
-            if( ( last_drag.x != x ) || ( last_drag.y != y ) ) {
-                m_bChartDragging = true;
-                PanCanvas( last_drag.x - x, last_drag.y - y );
-                
-                last_drag.x = x;
-                last_drag.y = y;
-                
-                if( g_btouch ) {
-                    if(( m_bMeasure_Active && m_nMeasureState ) || ( parent_frame->nRoute_State )){
-                        //deactivate next LeftUp to ovoid creating an unexpected point
-                        m_DoubleClickTimer->Start();
-                        singleClickEventIsValid = false;
-                    }
-                }
-                
-            }
-    }
-        
         
 
     return true;
