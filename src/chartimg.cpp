@@ -899,6 +899,7 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
       Size_X = Size_Y = 0;
 
       int done_header_parse = 0;
+      wxCSConv iso_conv(wxT("ISO-8859-1"));                 // we will need a converter
 
       while(done_header_parse == 0)
       {
@@ -918,9 +919,6 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
 
                   continue;
             }
-
-
-            wxCSConv iso_conv(wxT("ISO-8859-1"));                 // we will need a converter
 
             wxString str_buf(buffer,  wxConvUTF8);
             if(!str_buf.Len())                                    // failed conversion
