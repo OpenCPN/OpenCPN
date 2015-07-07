@@ -149,7 +149,7 @@ void ChartBarWin::OnPaint( wxPaintEvent& event )
 
 
 #ifdef __WXQT__ // temporary workaround
-    g_Piano->Refresh();
+    ///g_Piano->Refresh();              //g_Piano is not a wxWindow...
 #endif
 }
 
@@ -656,7 +656,7 @@ void Piano::BuildGLTexture()
     wxPen ppPen( GetGlobalColor( _T("CHBLK") ), 1, wxSOLID );
     dc.SetPen( ppPen );
     for(unsigned int b = 0; b < (sizeof brushes) / (sizeof *brushes); b++) {
-        int x = 0, y = h * b;
+        unsigned int x = 0, y = h * b;
 
         dc.SetBrush(brushes[b]);
 
@@ -716,7 +716,7 @@ void Piano::BuildGLTexture()
 
 void Piano::DrawGL(int off)
 {
-    int w = cc1->GetClientSize().x, h = GetHeight();
+    unsigned int w = cc1->GetClientSize().x, h = GetHeight();
  
     if(m_tex_piano_height != h)
         BuildGLTexture();
@@ -823,9 +823,9 @@ void Piano::DrawGL(int off)
             index = 0;
         else {
             if(InArray(m_skew_index_array, key_db_index))
-                index = 1;
-            else if(InArray(m_tmerc_index_array, key_db_index))
                 index = 2;
+            else if(InArray(m_tmerc_index_array, key_db_index))
+                index = 1;
             else if(InArray(m_poly_index_array, key_db_index))
                 index = 3;
             else
