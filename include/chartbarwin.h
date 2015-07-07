@@ -84,6 +84,8 @@ public:
       wxString &GenerateAndStoreNewHash();
       wxString &GetStoredHash();
       
+      int GetnKeys(){ return m_nRegions; }
+      
 private:
       void BuildGLTexture();
       bool InArray(ArrayOfInts &array, int key);

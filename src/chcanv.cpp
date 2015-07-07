@@ -3005,8 +3005,10 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
     if(!g_ChartBarWin) {
         ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
         VPoint.pix_height = m_canvas_height;
-        if(!style->chartStatusWindowTransparent && g_bShowChartBar)
-            VPoint.pix_height -= g_Piano->GetHeight();
+        if(!style->chartStatusWindowTransparent && g_bShowChartBar){
+            if( g_Piano->GetnKeys() )
+                VPoint.pix_height -= g_Piano->GetHeight();
+        }
     }
 
     //  A preliminary value, may be tweaked below
