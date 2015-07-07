@@ -732,7 +732,7 @@ bool cm93_dictionary::LoadDictionary(const wxString & dictionary_dir)
 
       if ( wxFileName::FileExists ( sfa ) )
       {
-            wxFileInputStream filea ( sfa );
+            wxFFileInputStream filea ( sfa );
 
             if ( filea.IsOk() )
             {
@@ -869,7 +869,7 @@ bool cm93_dictionary::LoadDictionary(const wxString & dictionary_dir)
 
             if ( wxFileName::FileExists ( sfa ) )
             {
-                  wxFileInputStream filea ( sfa );
+                  wxFFileInputStream filea ( sfa );
 
                   if ( filea.IsOk() )
                   {

@@ -1796,18 +1796,30 @@ InitReturn ChartBaseBSB::PostInit(void)
       ifs_bitmap->SeekI((Size_Y+1) * -4, wxFromEnd);                 // go to Beginning of offset table
       pline_table[Size_Y] = ifs_bitmap->TellI();                     // fill in useful last table entry
 
+      unsigned char *tmp = (unsigned char*)malloc(Size_Y * sizeof(int));
+      ifs_bitmap->Read(tmp, Size_Y * sizeof(int));
+      if ( ifs_bitmap->LastRead() != Size_Y * sizeof(int)) {
+             wxString msg(_("   Chart File corrupt in PostInit() on chart "));
+             msg.Append(m_FullPath);
+             wxLogMessage(msg);
+             free(tmp);
+              
+             return INIT_FAIL_REMOVE;
+      }
+
       int offset;
+      unsigned char *b = tmp;
       for(int ifplt=0 ; ifplt<Size_Y ; ifplt++)
       {
           offset = 0;
-          offset += (unsigned char)ifs_bitmap->GetC() * 256 * 256 * 256;
-          offset += (unsigned char)ifs_bitmap->GetC() * 256 * 256 ;
-          offset += (unsigned char)ifs_bitmap->GetC() * 256 ;
-          offset += (unsigned char)ifs_bitmap->GetC();
+          offset += *b++ * 256 * 256 * 256;
+          offset += *b++ * 256 * 256 ;
+          offset += *b++ * 256 ;
+          offset += *b++;
 
           pline_table[ifplt] = offset;
       }
-
+      free(tmp);
       //    Try to validate the line index
 
       bool bline_index_ok = true;
