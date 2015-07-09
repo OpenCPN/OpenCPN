@@ -562,7 +562,7 @@ bool PlugInManager::DeactivatePlugIn(PlugInContainer *pic)
 void PlugInManager::SetPluginOrder( wxString serialized_names )
 {
     m_plugin_order.Empty();
-    wxStringTokenizer tokenizer( serialized_names, ";" );
+    wxStringTokenizer tokenizer( serialized_names, _T(";") );
     while( tokenizer.HasMoreTokens() )
     {
         m_plugin_order.Add( tokenizer.GetNextToken() );

@@ -49,6 +49,7 @@
 #include "FontMgr.h"
 #include "TexFont.h"
 #include "ocpndc.h"
+#include "wx28compat.h"
 
 #include <wx/image.h>
 #include <wx/tokenzr.h>

@@ -44,6 +44,7 @@
 #endif
 
 #include "gshhs.h"
+#include "wx28compat.h"
 
 #ifdef __OCPN__ANDROID__
 #include "qopengl.h"                  // this gives us the qt runtime gles2.h

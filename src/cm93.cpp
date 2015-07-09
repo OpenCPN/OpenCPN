@@ -49,6 +49,7 @@
 #include "ocpndc.h"
 #include "pluginmanager.h"  // for PlugInManager
 #include "OCPNPlatform.h"
+#include "wx28compat.h"
 
 #include <stdio.h>
 

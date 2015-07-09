@@ -70,6 +70,7 @@ using namespace std;
 
 #include "routeprintout.h"
 #include "printtable.h"
+#include "wx28compat.h"
 
 #define PRINT_WP_NAME 0
 #define PRINT_WP_POSITION 1

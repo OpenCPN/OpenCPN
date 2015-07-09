@@ -360,7 +360,7 @@ Track *GPXLoadTrack1( pugi::xml_node &trk_node, bool b_fullviz,
                                 for (pugi::xml_attribute attr = ext_child.first_attribute(); attr; attr = attr.next_attribute())
                                 {
                                     if( !strcmp( attr.name(), "style" ) )
-                                        pTentTrack->m_style = (wxPenStyle)attr.as_int();
+                                        pTentTrack->m_style = attr.as_int();
                                     else if( !strcmp( attr.name(), "width" ) )
                                         pTentTrack->m_width = attr.as_int();
                                 }
@@ -523,7 +523,7 @@ Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
                         for (pugi::xml_attribute attr = ext_child.first_attribute(); attr; attr = attr.next_attribute())
                         {
                             if( !strcmp( attr.name(), "style" ) )
-                                pTentRoute->m_style = (wxPenStyle)attr.as_int();
+                                pTentRoute->m_style = attr.as_int();
                             else
                             if( !strcmp( attr.name(), "width" ) )
                                 pTentRoute->m_width = attr.as_int();

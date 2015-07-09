@@ -73,6 +73,7 @@
 #include "NMEALogWindow.h"
 #include "AIS_Decoder.h"
 #include "OCPNPlatform.h"
+#include "wx28compat.h"
 
 #ifdef USE_S57
 #include "s52plib.h"

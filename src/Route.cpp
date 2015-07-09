@@ -32,6 +32,7 @@
 #include "multiplexer.h"
 #include "Select.h"
 #include "georef.h"
+#include "wx28compat.h"
 
 extern WayPointman *pWayPointMan;
 extern bool g_bIsNewLayer;
@@ -326,9 +327,9 @@ void Route::Draw( ocpnDC& dc, ViewPort &VP )
     }
     else if ( m_bVisible )
     {
-        wxPenStyle style = wxPENSTYLE_SOLID;
+        int style = wxPENSTYLE_SOLID;
         wxColour col;
-        if( m_style != STYLE_UNDEFINED ) style = (wxPenStyle)m_style;
+        if( m_style != STYLE_UNDEFINED ) style = m_style;
         if( m_Colour == wxEmptyString ) {
             col = g_pRouteMan->GetRoutePen()->GetColour();
         } else {

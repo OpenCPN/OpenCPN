@@ -61,6 +61,7 @@
 #include <vector>
 
 #include "ocpndc.h"
+#include "wx28compat.h"
 
 extern float g_GLMinSymbolLineWidth;
 wxArrayPtrVoid gTesselatorVertices;

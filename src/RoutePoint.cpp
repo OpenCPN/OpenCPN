@@ -34,6 +34,7 @@
 #include "FontMgr.h"
 #include "cutil.h"
 #include "georef.h"
+#include "wx28compat.h"
 
 extern WayPointman *pWayPointMan;
 extern bool g_bIsNewLayer;

@@ -65,6 +65,7 @@ extern GLuint g_raster_format;
 #include "FontMgr.h"
 #include "OCPN_Sound.h"
 #include "NMEALogWindow.h"
+#include "wx28compat.h"
 
 #include "ais.h"
 #include "AIS_Decoder.h"

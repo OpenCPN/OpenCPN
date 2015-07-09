@@ -41,6 +41,7 @@
 #include "styles.h"
 #include "ocpndc.h"
 #include "cutil.h"
+#include "wx28compat.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"

@@ -50,6 +50,7 @@
 #include "AIS_Target_Data.h"
 #include "AISTargetAlertDialog.h"
 #include "AISTargetQueryDialog.h"
+#include "wx28compat.h"
 
 extern  int             s_dns_test_flag;
 extern  Select          *pSelectAIS;

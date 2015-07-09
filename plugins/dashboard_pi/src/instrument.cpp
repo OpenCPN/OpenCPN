@@ -33,6 +33,7 @@
 #endif //precompiled headers
 
 #include "instrument.h"
+#include "wx28compat.h"
 
 //----------------------------------------------------------------
 //

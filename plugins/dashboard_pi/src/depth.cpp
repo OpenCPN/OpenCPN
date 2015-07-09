@@ -26,6 +26,7 @@
  */
 
 #include "depth.h"
+#include "wx28compat.h"
 extern int g_iDashDepthUnit;
 
 

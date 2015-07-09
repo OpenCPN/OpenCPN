@@ -32,6 +32,8 @@
 #include "compasswin.h"
 #include "chcanv.h"
 #include "styles.h"
+#include "wx28compat.h"
+
 BEGIN_EVENT_TABLE(ocpnFloatingCompassWindow, wxWindow) EVT_PAINT ( ocpnFloatingCompassWindow::OnPaint )
     EVT_LEFT_DOWN ( ocpnFloatingCompassWindow::MouseEvent )
 END_EVENT_TABLE()

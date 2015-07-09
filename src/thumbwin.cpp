@@ -43,7 +43,7 @@
 #include "chart1.h"
 #include "chartdb.h"
 #include "chcanv.h"
-
+#include "wx28compat.h"
 
 //------------------------------------------------------------------------------
 //    External Static Storage

@@ -36,6 +36,7 @@
 
 #include "styles.h"
 #include "chart1.h"
+#include "wx28compat.h"
 
 extern OCPNPlatform     *g_Platform;
 

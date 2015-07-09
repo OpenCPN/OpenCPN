@@ -79,6 +79,7 @@
 #include "OCPNRegion.h"
 #include "gshhs.h"
 #include "canvasMenu.h"
+#include "wx28compat.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
