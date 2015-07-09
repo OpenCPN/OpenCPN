@@ -411,7 +411,7 @@ PolyTessGeo::PolyTessGeo(unsigned char *polybuf, int nrecl, int index, int senc_
     //  Read Raw Geometry
 
     float *ppolygeo = (float *)malloc(twkb_len + 1);    // allow for crlf
-    memmove(ppolygeo,  m_buf_ptr, twkb_len + 1);
+    memcpy(ppolygeo,  m_buf_ptr, twkb_len + 1);
     m_buf_ptr += twkb_len + 1;
     ppg->pgroup_geom = ppolygeo;
 
@@ -465,7 +465,7 @@ PolyTessGeo::PolyTessGeo(unsigned char *polybuf, int nrecl, int index, int senc_
                 total_byte_size += byte_size;
                 
                 tp->p_vertex = (double *)malloc(byte_size);
-                memmove(tp->p_vertex, m_buf_ptr, byte_size);
+                memcpy(tp->p_vertex, m_buf_ptr, byte_size);
                 m_buf_ptr += byte_size;
             }
                 
