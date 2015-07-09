@@ -997,26 +997,26 @@ void Routeman::SetColorScheme( ColorScheme cs )
         
 
     m_pActiveRoutePointPen = wxThePenList->FindOrCreatePen( wxColour( 0, 0, 255 ),
-                                                            scaled_line_width, wxSOLID );
+                                                            scaled_line_width, wxPENSTYLE_SOLID );
     m_pRoutePointPen = wxThePenList->FindOrCreatePen( wxColour( 0, 0, 255 ), scaled_line_width,
-            wxSOLID );
+            wxPENSTYLE_SOLID );
 
 //    Or in something like S-52 compliance
 
     m_pRoutePen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T("UINFB") ), scaled_line_width,
-            wxSOLID );
+            wxPENSTYLE_SOLID );
     m_pSelectedRoutePen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T("UINFO") ),
-                                                         scaled_line_width, wxSOLID );
+                                                         scaled_line_width, wxPENSTYLE_SOLID );
     m_pActiveRoutePen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T("UARTE") ),
-                                                       scaled_line_width, wxSOLID );
+                                                       scaled_line_width, wxPENSTYLE_SOLID );
     m_pTrackPen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T("CHMGD") ), scaled_line_width,
-                                                 wxSOLID );
+                                                 wxPENSTYLE_SOLID );
     
-    m_pRouteBrush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T("UINFB") ), wxSOLID );
+    m_pRouteBrush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T("UINFB") ), wxBRUSHSTYLE_SOLID );
     m_pSelectedRouteBrush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T("UINFO") ),
-            wxSOLID );
+            wxBRUSHSTYLE_SOLID );
     m_pActiveRouteBrush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T("PLRTE") ),
-            wxSOLID );
+            wxBRUSHSTYLE_SOLID );
 
 }
 

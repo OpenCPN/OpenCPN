@@ -3006,11 +3006,11 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         
         if( !strncmp( str, "DOTT", 4 ) ) {
             dashw[0] = 1;
-            wide_pen.SetStyle(wxUSER_DASH);
+            wide_pen.SetStyle(wxPENSTYLE_USER_DASH);
             wide_pen.SetDashes( 2, dashw );
         }        
         else if( !strncmp( str, "DASH", 4 ) ){
-            wide_pen.SetStyle(wxUSER_DASH);
+            wide_pen.SetStyle(wxPENSTYLE_USER_DASH);
             if( m_pdc){ //DC mode
                 dashw[0] = 1;
                 dashw[1] = 2;
@@ -3020,19 +3020,19 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         }
     }
  
-    wxPen thispen(color, w, wxSOLID);
+    wxPen thispen(color, w, wxPENSTYLE_SOLID);
     wxDash dash1[2];
     
     if( m_pdc) //DC mode
     {
         if( !strncmp( str, "DOTT", 4 ) ) {
-            thispen.SetStyle(wxUSER_DASH);
+            thispen.SetStyle(wxPENSTYLE_USER_DASH);
             dash1[0] = 1;
             dash1[1] = 2; 
             thispen.SetDashes( 2, dash1 );
         }        
         else if( !strncmp( str, "DASH", 4 ) ){
-            thispen.SetStyle(wxSHORT_DASH);
+            thispen.SetStyle(wxPENSTYLE_SHORT_DASH);
         }
          
         if(b_wide_line)
@@ -3683,7 +3683,7 @@ void s52plib::draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp, 
     int x0, y0, x1, y1;
 
     if( pdc ) {
-        wxPen *pthispen = wxThePenList->FindOrCreatePen( color, width, wxSOLID );
+        wxPen *pthispen = wxThePenList->FindOrCreatePen( color, width, wxPENSTYLE_SOLID );
         m_pdc->SetPen( *pthispen );
 
         int start_seg = 0;
@@ -4165,7 +4165,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 {
             mdc.ResetBoundingBox();
 
-            wxPen *pblockpen = wxThePenList->FindOrCreatePen( *wxBLACK, 10, wxSOLID );
+            wxPen *pblockpen = wxThePenList->FindOrCreatePen( *wxBLACK, 10, wxPENSTYLE_SOLID );
             mdc.SetPen( *pblockpen );
 
             float start_angle, end_angle;
@@ -4211,9 +4211,9 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             //    Draw the outer border
             wxColour color = getwxColour( outline_color );
 
-            wxPen *pthispen = wxThePenList->FindOrCreatePen( color, outline_width, wxSOLID );
+            wxPen *pthispen = wxThePenList->FindOrCreatePen( color, outline_width, wxPENSTYLE_SOLID );
             mdc.SetPen( *pthispen );
-            wxBrush *pthisbrush = wxTheBrushList->FindOrCreateBrush( color, wxTRANSPARENT );
+            wxBrush *pthisbrush = wxTheBrushList->FindOrCreateBrush( color, wxBRUSHSTYLE_TRANSPARENT );
             mdc.SetBrush( *pthisbrush );
 
             mdc.DrawEllipticArc( width / 2 - rad, height / 2 - rad, rad * 2, rad * 2, sb, se );
@@ -4223,7 +4223,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
                 if( !colorb.IsOk() ) colorb = getwxColour( _T("CHMGD") );
 
-                pthispen = wxThePenList->FindOrCreatePen( colorb, arc_width, wxSOLID );
+                pthispen = wxThePenList->FindOrCreatePen( colorb, arc_width, wxPENSTYLE_SOLID );
                 mdc.SetPen( *pthispen );
 
                 mdc.DrawEllipticArc( width / 2 - rad, height / 2 - rad, rad * 2, rad * 2, sb, se );
@@ -4405,7 +4405,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
             /*
              wxPen *pthispen = new wxPen(*wxBLACK_PEN);
-             pthispen->SetStyle(wxUSER_DASH);
+             pthispen->SetStyle(wxPENSTYLE_USER_DASH);
              pthispen->SetDashes( 2, dash1 );
              //      Undocumented "feature":  Pen must be fully specified <<<BEFORE>>> setting into DC
              pdc->SetPen ( *pthispen );
@@ -7530,7 +7530,7 @@ void DrawAALine( wxDC *pDC, int x0, int y0, int x1, int y1, wxColour clrLine, in
     wxMemoryDC &gdc( mdc );
 #endif
 
-    wxPen pen( clrLine, 1, wxUSER_DASH );
+    wxPen pen( clrLine, 1, wxPENSTYLE_USER_DASH );
     wxDash dashes[2];
     dashes[0] = dash;
     dashes[1] = space;
@@ -7612,8 +7612,8 @@ void RenderFromHPGL::SetPen()
     }
     
     if( renderToDC ) {
-        pen = wxThePenList->FindOrCreatePen( penColor, penWidth, wxSOLID );
-        brush = wxTheBrushList->FindOrCreateBrush( penColor, wxSOLID );
+        pen = wxThePenList->FindOrCreatePen( penColor, penWidth, wxPENSTYLE_SOLID );
+        brush = wxTheBrushList->FindOrCreateBrush( penColor, wxBRUSHSTYLE_SOLID );
         targetDC->SetPen( *pen );
         targetDC->SetBrush( *brush );
     }
@@ -7626,8 +7626,8 @@ void RenderFromHPGL::SetPen()
 #endif    
 #if wxUSE_GRAPHICS_CONTEXT
     if( renderToGCDC ) {
-        pen = wxThePenList->FindOrCreatePen( penColor, penWidth, wxSOLID );
-        brush = wxTheBrushList->FindOrCreateBrush( penColor, wxSOLID );
+        pen = wxThePenList->FindOrCreatePen( penColor, penWidth, wxPENSTYLE_SOLID );
+        brush = wxTheBrushList->FindOrCreateBrush( penColor, wxBRUSHSTYLE_SOLID );
         targetGCDC->SetPen( *pen );
         targetGCDC->SetBrush( *brush );
     }

@@ -326,9 +326,9 @@ void Route::Draw( ocpnDC& dc, ViewPort &VP )
     }
     else if ( m_bVisible )
     {
-        int style = wxSOLID;
+        wxPenStyle style = wxPENSTYLE_SOLID;
         wxColour col;
-        if( m_style != STYLE_UNDEFINED ) style = m_style;
+        if( m_style != STYLE_UNDEFINED ) style = (wxPenStyle)m_style;
         if( m_Colour == wxEmptyString ) {
             col = g_pRouteMan->GetRoutePen()->GetColour();
         } else {
@@ -340,7 +340,7 @@ void Route::Draw( ocpnDC& dc, ViewPort &VP )
             }
         }
         dc.SetPen( *wxThePenList->FindOrCreatePen( col, width, style ) );
-        dc.SetBrush( *wxTheBrushList->FindOrCreateBrush( col, wxSOLID ) );
+        dc.SetBrush( *wxTheBrushList->FindOrCreateBrush( col, wxBRUSHSTYLE_SOLID ) );
     }
 
     if( m_bVisible && m_bRtIsActive )
@@ -562,7 +562,7 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
         wxColour y = GetGlobalColor( _T ( "YELO1" ) );
         wxColour hilt( y.Red(), y.Green(), y.Blue(), 128 );
 
-        wxPen HiPen( hilt, m_hiliteWidth, wxSOLID );
+        wxPen HiPen( hilt, m_hiliteWidth, wxPENSTYLE_SOLID );
 
         ocpnDC dc;
         dc.SetPen( HiPen );
@@ -684,7 +684,7 @@ void Route::RenderSegment( ocpnDC& dc, int xa, int ya, int xb, int yb, ViewPort 
             wxColour y = GetGlobalColor( _T ( "YELO1" ) );
             wxColour hilt( y.Red(), y.Green(), y.Blue(), 128 );
 
-            wxPen HiPen( hilt, hilite_width, wxSOLID );
+            wxPen HiPen( hilt, hilite_width, wxPENSTYLE_SOLID );
 
             dc.SetPen( HiPen );
             dc.StrokeLine( x0, y0, x1, y1 );

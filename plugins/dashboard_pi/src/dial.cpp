@@ -140,7 +140,7 @@ void DashboardInstrument_Dial::DrawFrame( wxGCDC* dc )
     dc->SetBrush( *wxTRANSPARENT_BRUSH);
 
     int penwidth = 1 + size.x / 100;
-    wxPen pen( cl, penwidth, wxSOLID );
+    wxPen pen( cl, penwidth, wxPENSTYLE_SOLID );
 
     if( m_MarkerOption == DIAL_MARKER_REDGREENBAR ) {
         pen.SetWidth( penwidth * 2 );
@@ -183,7 +183,7 @@ void DashboardInstrument_Dial::DrawMarkers(wxGCDC* dc)
     wxColour cl;
     GetGlobalColor( _T("DASHF"), &cl );
     int penwidth = GetClientSize().x / 100;
-    wxPen pen( cl, penwidth, wxSOLID );
+    wxPen pen( cl, penwidth, wxPENSTYLE_SOLID );
     dc->SetPen( pen );
 
     int diff_angle = m_AngleStart + m_AngleRange - ANGLE_OFFSET;
@@ -219,7 +219,7 @@ void DashboardInstrument_Dial::DrawMarkers(wxGCDC* dc)
     // We must reset pen color so following drawings are fine
     if( m_MarkerOption == DIAL_MARKER_REDGREEN ) {
         GetGlobalColor( _T("DASHF"), &cl );
-        pen.SetStyle( wxSOLID );
+        pen.SetStyle( wxPENSTYLE_SOLID );
         pen.SetColour( cl );
         dc->SetPen( pen );
     }
@@ -378,7 +378,7 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value,
                   TextPoint.y = (size.y * .75) - height;
                   GetGlobalColor(_T("DASHL"), &cl);
                   int penwidth = size.x / 100;
-                  wxPen* pen = wxThePenList->FindOrCreatePen( cl, penwidth, wxSOLID );
+                  wxPen* pen = wxThePenList->FindOrCreatePen( cl, penwidth, wxPENSTYLE_SOLID );
                   dc->SetPen( *pen );
                   GetGlobalColor(_T("DASHB"), &cl);
                   dc->SetBrush(cl);
@@ -448,13 +448,13 @@ void DashboardInstrument_Dial::DrawForeground(wxGCDC* dc)
       wxColour cl;
       GetGlobalColor(_T("DASH2"), &cl);
       wxPen pen1;
-      pen1.SetStyle(wxSOLID);
+      pen1.SetStyle(wxPENSTYLE_SOLID);
       pen1.SetColour(cl);
       pen1.SetWidth(2);
       dc->SetPen(pen1);
       GetGlobalColor(_T("DASH1"), &cl);
       wxBrush brush1;
-      brush1.SetStyle(wxSOLID);
+      brush1.SetStyle(wxBRUSHSTYLE_SOLID);
       brush1.SetColour(cl);
       dc->SetBrush(brush1);
       dc->DrawCircle(m_cx, m_cy, m_radius / 8);
@@ -463,7 +463,7 @@ void DashboardInstrument_Dial::DrawForeground(wxGCDC* dc)
 
       GetGlobalColor(_T("DASHN"), &cl);
       wxBrush brush;
-      brush.SetStyle(wxSOLID);
+      brush.SetStyle(wxBRUSHSTYLE_SOLID);
       brush.SetColour(cl);
       dc->SetBrush(brush);
 
@@ -508,7 +508,7 @@ void DrawCompassRose(wxGCDC* dc, int cx, int cy, int radius, int startangle, boo
       wxColour cl;
       wxPen* pen;
       GetGlobalColor(_T("DASH2"), &cl);
-      pen = wxThePenList->FindOrCreatePen( cl, 1, wxSOLID );
+      pen = wxThePenList->FindOrCreatePen( cl, 1, wxPENSTYLE_SOLID );
       wxBrush* b2 = wxTheBrushList->FindOrCreateBrush( cl );
 
       GetGlobalColor(_T("DASH1"), &cl);
@@ -568,7 +568,7 @@ void DrawBoat( wxGCDC* dc, int cx, int cy, int radius )
     // Now draw the boat
     wxColour cl;
     GetGlobalColor(_T("DASH2"), &cl);
-    wxPen* pen = wxThePenList->FindOrCreatePen( cl, 1, wxSOLID );
+    wxPen* pen = wxThePenList->FindOrCreatePen( cl, 1, wxPENSTYLE_SOLID );
     dc->SetPen( *pen );
     GetGlobalColor(_T("DASH1"), &cl);
     dc->SetBrush(cl);

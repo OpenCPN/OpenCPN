@@ -5557,7 +5557,7 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
                                     wxDash dash1[2];
                                     dash1[0] = 4; // Long dash
                                     dash1[1] = 4; // Short gap
-                                    pen.SetStyle(wxUSER_DASH);
+                                    pen.SetStyle(wxPENSTYLE_USER_DASH);
                                     pen.SetDashes( 2, dash1 );
 
                                     dc.SetPen ( pen );
@@ -5875,7 +5875,7 @@ bool cm93compchart::DoRenderRegionViewOnDC ( wxMemoryDC& dc, const ViewPort& VPo
                               */
                               if ( btest )
                               {
-                                    dc.SetPen ( wxPen ( wxTheColourDatabase->Find ( _T ( "YELLOW" ) ), 4, wxLONG_DASH ) );
+                                    dc.SetPen ( wxPen ( wxTheColourDatabase->Find ( _T ( "YELLOW" ) ), 4, wxPENSTYLE_LONG_DASH ) );
 
                                     for ( int iseg=0 ; iseg < pmcd->m_nvertices-1 ; iseg++ )
                                     {

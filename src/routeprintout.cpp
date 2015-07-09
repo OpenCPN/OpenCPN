@@ -232,7 +232,7 @@ void MyRoutePrintout::DrawPage( wxDC* dc )
 
     wxFont routePrintFont_bold( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
     dc->SetFont( routePrintFont_bold );
-    wxBrush brush( wxColour(255,255,255),  wxTRANSPARENT );
+    wxBrush brush( wxColour(255,255,255),  wxBRUSHSTYLE_TRANSPARENT );
     dc->SetBrush( brush );
 
     int header_textOffsetX = 2;

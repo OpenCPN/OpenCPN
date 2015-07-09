@@ -99,7 +99,7 @@ long style = wxSIMPLE_BORDER | wxCLIP_CHILDREN;
 
     //     pSBoxRgn = new wxRegion(pThisLegBox->GetRect() );
 
-    pThisLegFont = wxTheFontList->FindOrCreateFont( 10, wxDEFAULT, wxNORMAL, wxBOLD );
+    pThisLegFont = wxTheFontList->FindOrCreateFont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
 
     pThisLegText->SetFont( *pThisLegFont );
 
@@ -147,7 +147,7 @@ ConsoleCanvas::~ConsoleCanvas()
 void ConsoleCanvas::SetColorScheme( ColorScheme cs )
 {
     pbackBrush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T("DILG1"/*UIBDR*/) ),
-            wxSOLID );
+            wxBRUSHSTYLE_SOLID );
     SetBackgroundColour( GetGlobalColor( _T("DILG1"/*"UIBDR"*/) ) );
 
     //  Also apply color scheme to all known children
@@ -451,9 +451,9 @@ AnnunText::AnnunText( wxWindow *parent, wxWindowID id, const wxString& LegendEle
     m_label = _T("Label");
     m_value = _T("-----");
 
-    m_plabelFont = wxTheFontList->FindOrCreateFont( 14, wxFONTFAMILY_SWISS, wxNORMAL, wxBOLD, FALSE,
+    m_plabelFont = wxTheFontList->FindOrCreateFont( 14, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, FALSE,
             wxString( _T("Arial Bold") ) );
-    m_pvalueFont = wxTheFontList->FindOrCreateFont( 24, wxFONTFAMILY_DEFAULT, wxNORMAL, wxBOLD,
+    m_pvalueFont = wxTheFontList->FindOrCreateFont( 24, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD,
             FALSE, wxString( _T("helvetica") ), wxFONTENCODING_ISO8859_1 );
 
     m_LegendTextElement = LegendElement;
@@ -511,7 +511,7 @@ void AnnunText::CalculateMinSize( void )
 void AnnunText::SetColorScheme( ColorScheme cs )
 {
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-    m_backBrush = *wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T("UBLCK") ), wxSOLID );
+    m_backBrush = *wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T("UBLCK") ), wxBRUSHSTYLE_SOLID );
 
     m_default_text_color = style->consoleFontColor;
     RefreshFonts();
@@ -641,9 +641,9 @@ void CDI::MouseEvent( wxMouseEvent& event )
 
 void CDI::SetColorScheme( ColorScheme cs )
 {
-    m_pbackBrush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T("DILG2") ), wxSOLID );
-    m_proadBrush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T("DILG1") ), wxSOLID );
-    m_proadPen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T("CHBLK") ), 1, wxSOLID );
+    m_pbackBrush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T("DILG2") ), wxBRUSHSTYLE_SOLID );
+    m_proadBrush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T("DILG1") ), wxBRUSHSTYLE_SOLID );
+    m_proadPen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T("CHBLK") ), 1, wxPENSTYLE_SOLID );
 }
 
 void CDI::OnPaint( wxPaintEvent& event )

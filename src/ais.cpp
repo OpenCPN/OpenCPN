@@ -469,8 +469,8 @@ void AISDrawAreaNotices( ocpnDC& dc )
     wxColour yellow;
     wxColour green;
     wxPen pen;
-    wxBrush *yellow_brush = wxTheBrushList->FindOrCreateBrush( wxColour(0,0,0), wxTRANSPARENT );
-    wxBrush *green_brush  = wxTheBrushList->FindOrCreateBrush( wxColour(0,0,0), wxTRANSPARENT );;
+    wxBrush *yellow_brush = wxTheBrushList->FindOrCreateBrush( wxColour(0,0,0), wxBRUSHSTYLE_TRANSPARENT );
+    wxBrush *green_brush  = wxTheBrushList->FindOrCreateBrush( wxColour(0,0,0), wxBRUSHSTYLE_TRANSPARENT );;
     wxBrush *brush;
 
     AIS_Target_Hash *current_targets = g_pAIS->GetAreaNoticeSourcesList();
@@ -494,8 +494,8 @@ void AISDrawAreaNotices( ocpnDC& dc )
                 pen.SetColour( yellow );
                 pen.SetWidth( 2 );
 
-                yellow_brush = wxTheBrushList->FindOrCreateBrush( yellow, wxCROSSDIAG_HATCH );
-                green_brush = wxTheBrushList->FindOrCreateBrush( green, wxTRANSPARENT );
+                yellow_brush = wxTheBrushList->FindOrCreateBrush( yellow, wxBRUSHSTYLE_CROSSDIAG_HATCH );
+                green_brush = wxTheBrushList->FindOrCreateBrush( green, wxBRUSHSTYLE_TRANSPARENT );
                 brush = yellow_brush;
 
                 b_pens_set = true;
@@ -623,7 +623,7 @@ static void AtoN_Diamond( ocpnDC &dc, int x, int y, int radius, AIS_Target_Data*
           | ( td->NavStatus == ATON_VIRTUAL_OFFPOSITION );
 
     if( b_virt ) 
-        aton_DrawPen.SetStyle(wxSHORT_DASH );
+        aton_DrawPen.SetStyle(wxPENSTYLE_SHORT_DASH );
     
     aton_WhiteBorderPen = wxPen(GetGlobalColor( _T ( "UWHIT" ) ), aton_DrawPen.GetWidth()+2 );
    
@@ -795,7 +795,7 @@ static void SART_Render( ocpnDC &dc, wxPen pen, int x, int y, int radius )
     dc.SetPen( pen );
 
     wxBrush brush_save = dc.GetBrush();
-    wxBrush *ppBrush = wxTheBrushList->FindOrCreateBrush( wxColour( 0, 0, 0 ), wxTRANSPARENT );
+    wxBrush *ppBrush = wxTheBrushList->FindOrCreateBrush( wxColour( 0, 0, 0 ), wxBRUSHSTYLE_TRANSPARENT );
     dc.SetBrush( *ppBrush );
 
     dc.DrawCircle( x, y, radius );
@@ -1029,7 +1029,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                              &tCPAPoint.y, 0, cc1->GetVP().pix_width, 0, cc1->GetVP().pix_height );
 
             if( res != Invisible ) {
-                wxPen ppPen2( GetGlobalColor( _T ( "URED" ) ), 2, wxUSER_DASH );
+                wxPen ppPen2( GetGlobalColor( _T ( "URED" ) ), 2, wxPENSTYLE_USER_DASH );
                 ppPen2.SetDashes( 2, dash_long );
                 dc.SetPen( ppPen2 );
 
@@ -1066,7 +1066,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                 dc.SetPen( wxPen( yellow, 4 ) );
                 dc.StrokeLine( tCPAPoint.x, tCPAPoint.y, oCPAPoint.x, oCPAPoint.y );
 
-                wxPen ppPen2( GetGlobalColor( _T ( "URED" ) ), 2, wxUSER_DASH );
+                wxPen ppPen2( GetGlobalColor( _T ( "URED" ) ), 2, wxPENSTYLE_USER_DASH );
                 ppPen2.SetDashes( 2, dash_long );
                 dc.SetPen( ppPen2 );
                 dc.StrokeLine( tCPAPoint.x, tCPAPoint.y, oCPAPoint.x, oCPAPoint.y );
@@ -1091,7 +1091,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                                                                0, cc1->GetVP().pix_width, 0, cc1->GetVP().pix_height );
 
             if ( ownres != Invisible ) {
-                wxPen ppPen2 ( GetGlobalColor ( _T ( "URED" )), 2, wxUSER_DASH );
+                wxPen ppPen2 ( GetGlobalColor ( _T ( "URED" )), 2, wxPENSTYLE_USER_DASH );
                 ppPen2.SetDashes( 2, dash_long );
                 dc.SetPen(ppPen2);
 
@@ -1228,7 +1228,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
             wxPen target_outline_pen( GetGlobalColor( _T ( "UBLCK" ) ), 2 );
             dc.SetPen( target_outline_pen );
-            dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UBLCK" ) ), wxTRANSPARENT ) );
+            dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UBLCK" ) ), wxBRUSHSTYLE_TRANSPARENT ) );
             dc.StrokePolygon( 9, SarRot, TargetPoint.x, TargetPoint.y );
 
             // second half
@@ -1249,7 +1249,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             }
 
             dc.SetPen( target_outline_pen );
-            dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UBLCK" ) ), wxTRANSPARENT ) );
+            dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UBLCK" ) ), wxBRUSHSTYLE_TRANSPARENT ) );
             dc.StrokePolygon( 9, SarRot, TargetPoint.x, TargetPoint.y );
 
         } else {         // ship class A or B or a Buddy or DSC
@@ -1276,14 +1276,14 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                 dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y, scale_factor );
 
                 dc.SetPen( target_pen );
-                dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UBLCK" ) ), wxTRANSPARENT ) );
+                dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UBLCK" ) ), wxBRUSHSTYLE_TRANSPARENT ) );
             }
 
             dc.StrokePolygon( 4, ais_quad_icon, TargetPoint.x, TargetPoint.y, scale_factor );
 
             if (g_bDrawAISSize && bcan_draw_size)
             {
-                dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UBLCK" ) ), wxTRANSPARENT ) );
+                dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UBLCK" ) ), wxBRUSHSTYLE_TRANSPARENT ) );
                 dc.StrokePolygon( 6, ais_real_size, TargetPoint.x, TargetPoint.y, scale_factor );
             }
 

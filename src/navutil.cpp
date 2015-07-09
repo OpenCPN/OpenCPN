@@ -715,7 +715,7 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP )
                     basic_colour = GetGlobalColor( _T ( "CHMGD" ) );
             }
 
-    int style = wxSOLID;
+    int style = wxPENSTYLE_SOLID;
     int width = g_pRouteMan->GetTrackPen()->GetWidth();
     wxColour col;
     if( m_style != STYLE_UNDEFINED )
@@ -733,7 +733,7 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP )
         }
     }
     dc.SetPen( *wxThePenList->FindOrCreatePen( col, width, style ) );
-    dc.SetBrush( *wxTheBrushList->FindOrCreateBrush( col, wxSOLID ) );
+    dc.SetBrush( *wxTheBrushList->FindOrCreateBrush( col, wxBRUSHSTYLE_SOLID ) );
 
     std::list< std::list<wxPoint> > pointlists;
     std::list<wxPoint> pointlist;
@@ -803,7 +803,7 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP )
             wxColour y = GetGlobalColor( _T ( "YELO1" ) );
             wxColour hilt( y.Red(), y.Green(), y.Blue(), 128 );
 
-            wxPen HiPen( hilt, hilite_width, wxSOLID );
+            wxPen HiPen( hilt, hilite_width, wxPENSTYLE_SOLID );
             dc.SetPen( HiPen );
 
             dc.StrokeLines( i, points );

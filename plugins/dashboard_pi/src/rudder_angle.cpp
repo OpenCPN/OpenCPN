@@ -102,7 +102,7 @@ void DashboardInstrument_RudderAngle::DrawFrame(wxGCDC* dc)
       dc->SetBrush(*wxTRANSPARENT_BRUSH);
 
       wxPen pen;
-      pen.SetStyle(wxSOLID);
+      pen.SetStyle(wxPENSTYLE_SOLID);
       pen.SetWidth(2);
       GetGlobalColor(_T("DASHF"), &cl);
       pen.SetColour(cl);

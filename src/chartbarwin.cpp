@@ -244,7 +244,7 @@ void Piano::Paint( int y, ocpnDC& dc, wxDC *shapeDC )
 
     int nKeys = m_key_array.GetCount();
 
-    wxPen ppPen( GetGlobalColor( _T("CHBLK") ), 1, wxSOLID );
+    wxPen ppPen( GetGlobalColor( _T("CHBLK") ), 1, wxPENSTYLE_SOLID );
     dc.SetPen( ppPen );
 
     for( int i = 0; i < nKeys; i++ ) {
@@ -653,7 +653,7 @@ void Piano::BuildGLTexture()
     dc.DrawRectangle(0, 0, m_texw, m_texh);
 
     // draw the needed rectangles with minimal width
-    wxPen ppPen( GetGlobalColor( _T("CHBLK") ), 1, wxSOLID );
+    wxPen ppPen( GetGlobalColor( _T("CHBLK") ), 1, wxPENSTYLE_SOLID );
     dc.SetPen( ppPen );
     for(unsigned int b = 0; b < (sizeof brushes) / (sizeof *brushes); b++) {
         unsigned int x = 0, y = h * b;
@@ -716,12 +716,12 @@ void Piano::BuildGLTexture()
 
 void Piano::DrawGL(int off)
 {
-    unsigned int w = cc1->GetClientSize().x, h = GetHeight();
+    unsigned int w = cc1->GetClientSize().x, h = GetHeight(), endx;
  
     if(m_tex_piano_height != h)
         BuildGLTexture();
 
-    int y1 = off, y2 = y1 + h, endx;
+    int y1 = off, y2 = y1 + h;
 
     int nKeys = m_key_array.GetCount();
 
@@ -875,18 +875,19 @@ void Piano::SetColorScheme( ColorScheme cs )
 
     //    Recreate the local brushes
 
-    m_backBrush = wxBrush( GetGlobalColor( _T("UIBDR") ), wxSOLID );
+    m_backBrush = wxBrush( GetGlobalColor( _T("UIBDR") ), wxBRUSHSTYLE_SOLID );
 
-    m_tBrush = wxBrush( GetGlobalColor( _T("BLUE2") ), wxSOLID );    // Raster Chart unselected
-    m_slBrush = wxBrush( GetGlobalColor( _T("BLUE1") ), wxSOLID );    // and selected
+    m_tBrush = wxBrush( GetGlobalColor( _T("BLUE2") ), wxBRUSHSTYLE_SOLID );    // Raster Chart unselected
+    m_slBrush = wxBrush( GetGlobalColor( _T("BLUE1") ), wxBRUSHSTYLE_SOLID );    // and selected
 
-    m_vBrush = wxBrush( GetGlobalColor( _T("GREEN2") ), wxSOLID );    // Vector Chart unselected
-    m_svBrush = wxBrush( GetGlobalColor( _T("GREEN1") ), wxSOLID );    // and selected
+    m_vBrush = wxBrush( GetGlobalColor( _T("GREEN2") ), wxBRUSHSTYLE_SOLID );    // Vector Chart unselected
+    m_svBrush = wxBrush( GetGlobalColor( _T("GREEN1") ), wxBRUSHSTYLE_SOLID );    // and selected
 
-    m_cBrush = wxBrush( GetGlobalColor( _T("YELO2") ), wxSOLID );     // CM93 Chart unselected
-    m_scBrush = wxBrush( GetGlobalColor( _T("YELO1") ), wxSOLID );    // and selected
+    m_cBrush = wxBrush( GetGlobalColor( _T("YELO2") ), wxBRUSHSTYLE_SOLID );     // CM93 Chart unselected
+    m_scBrush = wxBrush( GetGlobalColor( _T("YELO1") ), wxBRUSHSTYLE_SOLID );    // and selected
 
-    m_uvBrush = wxBrush( GetGlobalColor( _T("UINFD") ), wxSOLID );    // and unavailable
+
+    m_uvBrush = wxBrush( GetGlobalColor( _T("UINFD") ), wxBRUSHSTYLE_SOLID );    // and unavailable
 
     m_tex_piano_height = 0; // force texture to update
 

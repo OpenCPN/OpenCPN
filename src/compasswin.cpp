@@ -190,11 +190,11 @@ wxBitmap ocpnFloatingCompassWindow::CreateBmp( bool newColorScheme )
 
             wxMemoryDC mdc;
             mdc.SelectObject( StatBmp );
-            mdc.SetBackground( wxBrush( GetGlobalColor( _T("GREY2") ), wxSOLID ) );
+            mdc.SetBackground( wxBrush( GetGlobalColor( _T("GREY2") ), wxBRUSHSTYLE_SOLID ) );
             mdc.Clear();
 
             mdc.SetPen( wxPen( GetGlobalColor( _T("UITX1") ), 1 ) );
-            mdc.SetBrush( wxBrush( GetGlobalColor( _T("UITX1") ), wxTRANSPARENT ) );
+            mdc.SetBrush( wxBrush( GetGlobalColor( _T("UITX1") ), wxBRUSHSTYLE_TRANSPARENT ) );
 
             mdc.DrawRoundedRectangle( 0, 0, StatBmp.GetWidth(), StatBmp.GetHeight(),
                     style->GetCompassCornerRadius() );

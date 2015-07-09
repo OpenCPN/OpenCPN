@@ -1257,10 +1257,10 @@ void GshhsReader::drawBoundaries( ocpnDC &pnt, ViewPort &vp )
     pnt.SetBrush( *wxTRANSPARENT_BRUSH );
 
     if( pnt.GetDC() ) {
-        wxPen* pen = wxThePenList->FindOrCreatePen( *wxBLACK, 1, wxDOT );
+        wxPen* pen = wxThePenList->FindOrCreatePen( *wxBLACK, 1, wxPENSTYLE_DOT );
         pnt.SetPen( *pen );
     } else {
-        wxPen* pen = wxThePenList->FindOrCreatePen( wxColor( 0, 0, 0, 80 ), 2, wxLONG_DASH );
+        wxPen* pen = wxThePenList->FindOrCreatePen( wxColor( 0, 0, 0, 80 ), 2, wxPENSTYLE_LONG_DASH );
         pnt.SetPen( *pen );
     }
     GsshDrawLines( pnt, getList_boundaries(), vp, false );

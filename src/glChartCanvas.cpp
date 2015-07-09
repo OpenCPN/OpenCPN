@@ -1680,7 +1680,7 @@ void glChartCanvas::GridDraw( )
 
     if(!m_gridfont.IsBuilt()){
         wxFont *font = wxTheFontList->FindOrCreateFont
-            ( 8, wxFONTFAMILY_SWISS, wxNORMAL,
+            ( 8, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL,
             wxFONTWEIGHT_NORMAL, FALSE, wxString( _T ( "Arial" ) ) );
         m_gridfont.Build(*font);
     }
