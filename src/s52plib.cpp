@@ -1619,13 +1619,10 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
             ptext->rendered_char_height = h_scaled - descent;
                 
         }
-        // We render National text the old, hard way, since the text will probably have full UTF-8 codepage elements
-        // and we don't necessarily have the glyphs in our font, or if we do we would need a hashmap to cache and extract them
-        
-        // We also do this if the string has been detected to contain "special" characters
-        
+        // We render string with "special" characters the old, hard way, since we don't necessarily have the glyphs in our font, 
+        // or if we do we would need a hashmap to cache and extract them
         // And we also do this if the text is to be scaled up artificially.
-        if( (ptext->bnat) || (ptext->bspecial_char) || b_force_no_texture) {       
+        if( (ptext->bspecial_char) || b_force_no_texture) {       
             if( !ptext->m_pRGBA ) // is RGBA bitmap ready?
             {
                 wxScreenDC sdc;
