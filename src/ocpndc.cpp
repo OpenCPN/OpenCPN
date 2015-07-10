@@ -674,7 +674,7 @@ void ocpnDC::DrawRoundedRectangle( wxCoord x, wxCoord y, wxCoord w, wxCoord h, w
 #ifdef ocpnUSE_GL
     else {
         r++;
-        int steps = ceil(sqrt(r));
+        int steps = ceil(sqrt((float)r));
 
         wxCoord x1 = x + r, x2 = x + w - r;
         wxCoord y1 = y + r, y2 = y + h - r;
