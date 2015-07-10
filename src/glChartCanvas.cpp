@@ -2008,11 +2008,11 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 
     if( cc1->GetVP().chart_scale > 300000 )             // According to S52, this should be 50,000
     {
+        float scale =  1.0f;
         if(g_bresponsive){
-            float scale =  exp( g_ChartScaleFactor * (0.693 / 5.0) );       //  exp(2)
+            scale =  exp( g_ChartScaleFactor * (0.693 / 5.0) );       //  exp(2)
             scale = wxMax(scale, .5);
             scale = wxMin(scale, 4.);
-            glScalef(scale, scale, 1);
         }
         
         const int v = 12;
@@ -2023,10 +2023,10 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
         for( int i=0; i<2*v; i+=2) {
             float a = i * (float)PI / v;
             float s = sinf( a ), c = cosf( a );
-            vertexes[i+8] =  10 * s;
-            vertexes[i+9] =  10 * c;
-            vertexes[i+2*v+8] = 6 * s;
-            vertexes[i+2*v+9] = 6 * c;
+            vertexes[i+8] =  10 * s * scale;
+            vertexes[i+9] =  10 * c * scale;
+            vertexes[i+2*v+8] = 6 * s * scale;
+            vertexes[i+2*v+9] = 6 * c * scale;
         }
 
         // apply translation
