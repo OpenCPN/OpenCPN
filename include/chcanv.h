@@ -204,6 +204,8 @@ public:
       void UpdateAIS();
       void UpdateAlerts();                          // pjotrc 2010.02.22
 
+      wxBitmap &GetTideBitmap(){ return m_cTideBitmap; }
+      
       void SetQuiltMode(bool b_quilt);
       bool GetQuiltMode(void);
       ArrayOfInts GetQuiltIndexArray(void);
@@ -562,7 +564,9 @@ private:
       wxBitmap    m_bmCurrentDay;
       wxBitmap    m_bmCurrentDusk;
       wxBitmap    m_bmCurrentNight;
-
+      wxBitmap    m_cTideBitmap;
+      wxBitmap    m_cCurrentBitmap;
+      
       RolloverWin *m_pRouteRolloverWin;
       RolloverWin *m_pAISRolloverWin;
       

@@ -2065,6 +2065,9 @@ void ChartCanvas::SetColorScheme( ColorScheme cs )
         m_pos_image_user = m_pos_image_user_day;
         m_pos_image_user_grey = m_pos_image_user_grey_day;
         m_pos_image_user_yellow = m_pos_image_user_yellow_day;
+        m_cTideBitmap = m_bmTideDay;
+        m_cCurrentBitmap = m_bmCurrentDay;
+        
         break;
     case GLOBAL_COLOR_SCHEME_DUSK:
         m_pos_image_red = &m_os_image_red_dusk;
@@ -2073,6 +2076,8 @@ void ChartCanvas::SetColorScheme( ColorScheme cs )
         m_pos_image_user = m_pos_image_user_dusk;
         m_pos_image_user_grey = m_pos_image_user_grey_dusk;
         m_pos_image_user_yellow = m_pos_image_user_yellow_dusk;
+        m_cTideBitmap = m_bmTideDusk;
+        m_cCurrentBitmap = m_bmCurrentDusk;
         break;
     case GLOBAL_COLOR_SCHEME_NIGHT:
         m_pos_image_red = &m_os_image_red_night;
@@ -2081,6 +2086,8 @@ void ChartCanvas::SetColorScheme( ColorScheme cs )
         m_pos_image_user = m_pos_image_user_night;
         m_pos_image_user_grey = m_pos_image_user_grey_night;
         m_pos_image_user_yellow = m_pos_image_user_yellow_night;
+        m_cTideBitmap = m_bmTideNight;
+        m_cCurrentBitmap = m_bmCurrentNight;
         break;
     default:
         m_pos_image_red = &m_os_image_red_day;
@@ -2089,6 +2096,8 @@ void ChartCanvas::SetColorScheme( ColorScheme cs )
         m_pos_image_user = m_pos_image_user_day;
         m_pos_image_user_grey = m_pos_image_user_grey_day;
         m_pos_image_user_yellow = m_pos_image_user_yellow_day;
+        m_cTideBitmap = m_bmTideDay;
+        m_cCurrentBitmap = m_bmCurrentDay;
         break;
     }
 
@@ -2113,6 +2122,7 @@ void ChartCanvas::SetColorScheme( ColorScheme cs )
 
 #ifdef ocpnUSE_GL
     if( g_bopengl && m_glcc ){
+        m_glcc->SetColorScheme( cs );
         m_glcc->ClearAllRasterTextures();
         m_glcc->FlushFBO(); 
     }

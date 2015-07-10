@@ -62,6 +62,7 @@
 #include "OCPNPlatform.h"
 #include "toolbar.h"
 #include "chartbarwin.h"
+#include "tcmgr.h"
 
 #ifndef GL_ETC1_RGB8_OES
 #define GL_ETC1_RGB8_OES                                        0x8D64
@@ -156,6 +157,7 @@ float            g_GLMinCartographicLineWidth;
 extern bool             g_fog_overzoom;
 extern double           g_overzoom_emphasis_base;
 extern bool             g_oz_vector_scale;
+extern TCMgr            *ptcmgr;
 
 
 ocpnGLOptions g_GLOptions;
@@ -810,6 +812,10 @@ glChartCanvas::glChartCanvas( wxWindow *parent ) :
     
     b_timeGL = true;
     m_last_render_time = -1;
+    
+    m_tideTex = 0;
+    m_currentTex = 0;
+    
 #ifdef __OCPN__ANDROID__    
     //  Create/connect a dynamic event handler slot for gesture events
     Connect( wxEVT_QT_PANGESTURE,
@@ -3357,12 +3363,149 @@ void glChartCanvas::DrawGroundedOverlayObjectsRect(ocpnDC &dc, wxRect &rect)
     DrawAllRoutesAndWaypoints( temp_vp, region );
 
     if( cc1->m_bShowTide )
-        cc1->DrawAllTidesInBBox( dc, temp_vp.GetBBox() );
+        DrawGLTidesInBBox( dc, temp_vp.GetBBox() );
     
     if( cc1->m_bShowCurrent )
-        cc1->DrawAllCurrentsInBBox( dc, temp_vp.GetBBox() );
+        DrawGLCurrentsInBBox( dc, temp_vp.GetBBox() );
 
     DisableClipRegion();
+}
+
+
+void glChartCanvas::DrawGLTidesInBBox(ocpnDC& dc, LLBBox& BBox)
+{
+    // At small scale, we render the Tide icon as a texture for best performance
+    if( cc1->GetVP().chart_scale > 500000 ) {
+        
+        // Prepare the texture if necessary
+        
+        if(!m_tideTex){
+            wxBitmap bmp = cc1->GetTideBitmap();
+            if(!bmp.Ok())
+                return;
+            
+            wxImage image = bmp.ConvertToImage();
+            int w = image.GetWidth(), h = image.GetHeight();
+            
+            int tex_w, tex_h;
+            if(g_texture_rectangle_format == GL_TEXTURE_2D)
+                tex_w = w, tex_h = h;
+            else
+                tex_w = NextPow2(w), tex_h = NextPow2(h);
+            
+            m_tideTexWidth = tex_w;
+            m_tideTexHeight = tex_h;
+            
+            unsigned char *d = image.GetData();
+            unsigned char *a = image.GetAlpha();
+                
+            unsigned char mr, mg, mb;
+            image.GetOrFindMaskColour( &mr, &mg, &mb );
+                
+            unsigned char *e = new unsigned char[4 * w * h];
+            if(e && d){
+                for( int y = 0; y < h; y++ )
+                    for( int x = 0; x < w; x++ ) {
+                        unsigned char r, g, b;
+                        int off = ( y * image.GetWidth() + x );
+                        r = d[off * 3 + 0];
+                        g = d[off * 3 + 1];
+                        b = d[off * 3 + 2];
+                            
+                        e[off * 4 + 0] = r;
+                        e[off * 4 + 1] = g;
+                        e[off * 4 + 2] = b;
+                            
+                        e[off * 4 + 3] =
+                        a ? a[off] : ( ( r == mr ) && ( g == mg ) && ( b == mb ) ? 0 : 255 );
+                    }
+            }
+
+            
+            glGenTextures( 1, &m_tideTex );
+            
+            glBindTexture(GL_TEXTURE_2D, m_tideTex);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); 
+            
+            if(g_texture_rectangle_format == GL_TEXTURE_2D)
+                glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, e );
+            else {
+                glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, tex_w, tex_h, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
+                glTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, e );
+            }
+            
+            delete [] e;
+        }
+        
+        // Texture is ready
+        
+        glBindTexture( g_texture_rectangle_format, m_tideTex);
+        glEnable( g_texture_rectangle_format );
+        glEnable(GL_BLEND);
+        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
+        
+        for( int i = 1; i < ptcmgr->Get_max_IDX() + 1; i++ ) {
+            const IDX_entry *pIDX = ptcmgr->GetIDX_entry( i );
+            
+            char type = pIDX->IDX_type;             // Entry "TCtcIUu" identifier
+            if( ( type == 't' ) || ( type == 'T' ) )  // only Tides
+            {
+                double lon = pIDX->IDX_lon;
+                double lat = pIDX->IDX_lat;
+                bool b_inbox = false;
+                double nlon;
+                
+                if( BBox.PointInBox( lon, lat, 0 ) ) {
+                    nlon = lon;
+                    b_inbox = true;
+                } else if( BBox.PointInBox( lon + 360., lat, 0 ) ) {
+                    nlon = lon + 360.;
+                    b_inbox = true;
+                } else if( BBox.PointInBox( lon - 360., lat, 0 ) ) {
+                    nlon = lon - 360.;
+                    b_inbox = true;
+                }
+  
+                if( b_inbox ) {
+                    wxPoint r;
+                    cc1->GetCanvasPointPix( lat, nlon, &r );
+      
+                    float xp = r.x;
+                    float yp = r.y;
+        
+                    glBegin( GL_QUADS );
+                    glTexCoord2f( 0,  0 );  glVertex2f( xp - m_tideTexWidth/2,  yp - m_tideTexHeight/2 );
+                    glTexCoord2f( 0,  1 );  glVertex2f( xp - m_tideTexWidth/2,  yp + m_tideTexHeight/2);
+                    glTexCoord2f( 1,  1 );  glVertex2f( xp + m_tideTexWidth/2,  yp + m_tideTexHeight/2 );
+                    glTexCoord2f( 1,  0 );  glVertex2f( xp + m_tideTexWidth/2,  yp - m_tideTexHeight/2 );
+                    glEnd();
+                }
+            } // type 'T"
+        }       //loop
+            
+            
+        glDisable( g_texture_rectangle_format );
+        glDisable(GL_BLEND);
+        glBindTexture( g_texture_rectangle_format, 0);
+    }
+    else
+        cc1->DrawAllTidesInBBox( dc, BBox );
+    
+}
+
+void glChartCanvas::DrawGLCurrentsInBBox(ocpnDC& dc, LLBBox& BBox)
+{
+        cc1->DrawAllCurrentsInBBox( dc, BBox );
+}
+
+
+void glChartCanvas::SetColorScheme(ColorScheme cs)
+{
+    glDeleteTextures(1, &m_tideTex);
+    glDeleteTextures(1, &m_currentTex);
+    m_tideTex = 0;
+    m_currentTex = 0;
 }
 
 bool glChartCanvas::TextureCrunch(double factor)

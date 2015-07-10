@@ -72,7 +72,8 @@ public:
     static void SetClipRegion(const ViewPort &vp, const OCPNRegion &region,
                               bool apply_rotation=true, bool b_clear=false);
     static void DisableClipRegion();
-
+    void SetColorScheme(ColorScheme cs);
+    
     static bool         s_b_useScissorTest;
     static bool         s_b_useStencil;
     static bool         s_b_useStencilAP;
@@ -141,6 +142,9 @@ protected:
     void DrawChartBar( ocpnDC &dc );
     void DrawQuiting();
     void DrawCloseMessage(wxString msg);
+
+    void DrawGLTidesInBBox(ocpnDC& dc, LLBBox& BBox);
+    void DrawGLCurrentsInBBox(ocpnDC& dc, LLBBox& BBox);
     
     wxGLContext       *m_pcontext;
 
@@ -204,6 +208,13 @@ protected:
     OCPNRegion  m_canvasregion;
     TexFont     m_gridfont;
 
+    GLuint       m_tideTex;
+    GLuint       m_currentTex;
+    int          m_tideTexWidth;
+    int          m_tideTexHeight;
+    int          m_currentTexWidth;
+    int          m_currentTexHeight;
+    
     DECLARE_EVENT_TABLE()
 };
 
