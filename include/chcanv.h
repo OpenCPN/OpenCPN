@@ -214,6 +214,8 @@ public:
       
       int GetNextContextMenuId();
 
+      TCWin *getTCWin(){ return pCwin; }
+      
       bool StartTimedMovement( bool stoptimer=true );
       void DoTimedMovement( );
       void DoMovement( long dt );
