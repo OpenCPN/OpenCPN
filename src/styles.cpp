@@ -69,7 +69,7 @@ static void log_svg_error( GError* err )
 
 static wxBitmap LoadSVG( const wxString filename, unsigned int width, unsigned int height )
 {
-    unsigned char *data = NULL;
+    //unsigned char *data = NULL;
     wxBitmap ret;
     GError *error = NULL;
     RsvgHandle *rsvg = rsvg_handle_new_from_file( filename.c_str(), &error );
@@ -95,11 +95,12 @@ static wxBitmap LoadSVG( const wxString filename, unsigned int width, unsigned i
         rsvg_handle_render_cairo( rsvg, cr );
         wxString fn = wxFileName::CreateTempFileName( _T("ocpn_svg_") );
         cairo_surface_write_to_png( surface, fn.c_str() );
-        ret.LoadFile( fn );
+        cairo_destroy(cr);
+        cairo_surface_destroy( surface );
+        ret.LoadFile( fn, wxBITMAP_TYPE_PNG );
         wxRemoveFile( fn );
     }
     g_object_unref( rsvg );
-    rsvg_cleanup();
     return ret;
 }
 #endif // ocpnUSE_SVG
