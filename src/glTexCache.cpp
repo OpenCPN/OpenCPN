@@ -1028,13 +1028,14 @@ glTexFactory::glTexFactory(ChartBase *chart, GLuint raster_format)
 
 glTexFactory::~glTexFactory()
 {
-    if(m_fs && m_fs->IsOpened()){
-        m_fs->Close();
-    }
     delete m_fs;
 
     WX_CLEAR_ARRAY (m_catalog); 	 
 
+    if (wxThread::IsMain()) {
+        PurgeBackgroundCompressionPool();
+    }
+    DeleteAllTextures();
     DeleteAllDescriptors();
  
     free( m_td_array );         // array is empty
