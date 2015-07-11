@@ -1809,11 +1809,11 @@ void s57chart::AssembleLineGeometry( void )
                             while( top != NULL ) {
                                 S57Obj *obj = top->obj;
                                 
-                                line_segment_element *list_top = new line_segment_element;
-                                list_top->n_points = 0;
-                                list_top->next = 0;
+                                line_segment_element list_top;
+                                list_top.n_points = 0;
+                                list_top.next = 0;
                                 
-                                line_segment_element *le_current = list_top;
+                                line_segment_element *le_current = &list_top;
                                 
                                 for( int iseg = 0; iseg < obj->m_n_lsindex; iseg++ ) {
                                     int seg_index = iseg * 3;
@@ -1982,8 +1982,7 @@ void s57chart::AssembleLineGeometry( void )
                                 }  // for
                                 
                                 //  All done, so assign the list to the object
-                                obj->m_ls_list = list_top->next;    // skipping the empty first placeholder element
-                                delete list_top;
+                                obj->m_ls_list = list_top.next;    // skipping the empty first placeholder element
                                 
                                 
                                 top = top->next;
@@ -2955,18 +2954,17 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name )
 
 //      Look for SENC file in the target directory
 
-    if( m_SENCFileName.FileExists() ) {
-        wxFile f;
-        if( f.Open( m_SENCFileName.GetFullPath() ) ) {
-            if( f.Length() == 0 ) {
-                f.Close();
-                build_ret_val = BuildSENCFile( name, m_SENCFileName.GetFullPath() );
+    {
+        wxFFileInputStream fpx_u( m_SENCFileName.GetFullPath() );
+
+        if( fpx_u.IsOk(  ) ) {
+            if( fpx_u.GetSize() == 0 ) {
+                bbuild_new_senc = true;
             } else                                      // file exists, non-zero
             {                                         // so check for new updates
 
-                f.Seek( 0 );
-                wxFileInputStream *pfpx_u = new wxFileInputStream( f );
-                wxBufferedInputStream *pfpx = new wxBufferedInputStream( *pfpx_u );
+                fpx_u.SeekI( 0 );
+                wxBufferedInputStream fpx( fpx_u );
                 int dun = 0;
                 int last_update = 0;
                 int senc_file_version = 0;
@@ -2978,7 +2976,7 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name )
                 wxString senc_base_edtn;
 
                 while( !dun ) {
-                    if( my_fgets( pbuf, 256, *pfpx ) == 0 ) {
+                    if( my_fgets( pbuf, 256, fpx ) == 0 ) {
                         dun = 1;
                         force_make_senc = 1;
                         break;
@@ -3031,9 +3029,6 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name )
                     }
                 }
 
-                delete pfpx;
-                delete pfpx_u;
-                f.Close();
 //              Anything to do?
 // force_make_senc = 1;
                 //  SENC file version has to be correct for other tests to make sense
@@ -3064,22 +3059,17 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name )
 
                 if( force_make_senc ) bbuild_new_senc = true;
 
-                if( bbuild_new_senc ) build_ret_val = BuildSENCFile( name,
-                        m_SENCFileName.GetFullPath() );
-
             }
+        }
+        else if( !m_SENCFileName.FileExists() )                    // SENC file does not exist
+        {
+            bbuild_new_senc = true;
         }
     }
 
-    else                    // SENC file does not exist
-    {
-        build_ret_val = BuildSENCFile( name, m_SENCFileName.GetFullPath() );
-        bbuild_new_senc = true;
-    }
-
-    if( bbuild_new_senc ) m_bneed_new_thumbnail = true; // force a new thumbnail to be built in PostInit()
-
     if( bbuild_new_senc ) {
+        m_bneed_new_thumbnail = true; // force a new thumbnail to be built in PostInit()
+        build_ret_val = BuildSENCFile( name, m_SENCFileName.GetFullPath() );
         if( BUILD_SENC_NOK_PERMANENT == build_ret_val ) return INIT_FAIL_REMOVE;
         if( BUILD_SENC_NOK_RETRY == build_ret_val ) return INIT_FAIL_RETRY;
     }
@@ -3559,20 +3549,17 @@ bool s57chart::CreateHeaderDataFromENC( void )
 bool s57chart::CreateHeaderDataFromSENC( void )
 {
     bool ret_val = true;
-    //    Sanity check for existence of file
 
-    if( !m_SENCFileName.FileExists() ) {
-        wxString msg( _T("   Cannot open SENC file ") );
-        msg.Append( m_SENCFileName.GetFullPath() );
-        wxLogMessage( msg );
+    wxFFileInputStream fpx( m_SENCFileName.GetFullPath() );
+    if (!fpx.IsOk()) {
+        if( !m_SENCFileName.FileExists() ) {
+            wxString msg( _T("   Cannot open SENC file ") );
+            msg.Append( m_SENCFileName.GetFullPath() );
+            wxLogMessage( msg );
 
-        return 1;
+        }
+        return false;
     }
-
-    wxString ifs( m_SENCFileName.GetFullPath() );
-
-    wxFileInputStream fpx_u( ifs );
-    wxBufferedInputStream fpx( fpx_u );
 
     int MAX_LINE = 499999;
     char *buf = (char *) malloc( MAX_LINE + 1 );
@@ -4238,7 +4225,6 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
     S57Reader *poReader;
     int feid = 0;
 
-    int nProg = 0;
     wxString nice_name;
     int bbad_update = false;
 
@@ -4318,8 +4304,6 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
     Title.append( SENCfile.GetFullPath() );
 
     cc1->StopMovement();
-    s_ProgDialog = new wxProgressDialog( Title, Message, m_nGeoRecords, GetOCPNCanvasWindow(),
-                                         wxPD_AUTO_HIDE | wxPD_SMOOTH | wxSTAY_ON_TOP | wxPD_APP_MODAL);
 
     //      Analyze Updates
     //      The OGR library will apply updates automatically, if enabled.
@@ -4352,8 +4336,6 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
     OGRwkbGeometryType geoType;
     wxString sobj;
 
-    bcont = s_ProgDialog->Update( 1, _T("") );
-
     //  Here comes the actual ISO8211 file reading
     OGRS57DataSource *poS57DS = new OGRS57DataSource;
     poS57DS->SetS57Registrar( g_poRegistrar );
@@ -4373,9 +4355,6 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
     if( open_return == BAD_UPDATE )         ///172
     bbad_update = true;
 
-    bcont = s_ProgDialog->Update( 2, _T("") );
-    if( !bcont ) goto abort_point;
-
     //      Get a pointer to the reader
     poReader = poS57DS->GetModule( 0 );
 
@@ -4393,6 +4372,11 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
         pEdgeVectorRecordFeature = poReader->ReadVector( feid, RCNM_VE );
     }
 
+    wxStopWatch progsw;
+    int nProg = poReader->GetFeatureCount();
+    s_ProgDialog = new wxProgressDialog( Title, Message, nProg, GetOCPNCanvasWindow(),
+                                         wxPD_AUTO_HIDE | wxPD_SMOOTH | wxSTAY_ON_TOP | wxPD_APP_MODAL);
+
     //      Update the options, removing the RETURN_PRIMITIVES flags
     //      This flag needed to be set on ingest() to create the proper field defns,
     //      but cleared to fetch normal features
@@ -4401,7 +4385,7 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
     poReader->SetOptions( papszReaderOptions );
     CSLDestroy( papszReaderOptions );
 
-    while( bcont ) {
+    {
         //  Prepare for possible CE_Fatal error in GDAL
         //  Corresponding longjmp() is in the local error handler
         int setjmp_ret = 0;
@@ -4411,11 +4395,13 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
                                           //  Seems odd, but that's setjmp/longjmp behaviour
                                           //      Discovered/debugged on US5MD11M.017.  VI 548 geometry deleted
 
-                {
+        {
 //                TODO need to debug thissssssssss
             wxLogMessage( _T("   s57chart(): GDAL/OGR Fatal Error caught on Obj #%d"), iObj );
         }
+    }
 
+    while( bcont ) {
         objectDef = poReader->ReadNextFeature();
 
         if( objectDef != NULL ) {
@@ -4423,16 +4409,17 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
             iObj++;
 
 //  Update the progress dialog
-            if( iObj > m_nGeoRecords - 1 )
-                nProg = m_nGeoRecords - 1;
-            else
-                nProg = iObj;
-            if( s_ProgDialog && nProg % 10 == 0 )
-            {
-                sobj = wxString( objectDef->GetDefnRef()->GetName(), wxConvUTF8 );
-                sobj.Append( wxString::Format( _T("  %d/%d       "), iObj, m_nGeoRecords ) );
 
-                bcont = s_ProgDialog->Update( nProg, sobj ); //We update just every 10th object to improve performance as updating the dialog is very expensive...
+            //We update only every 200 milliseconds to improve performance as updating the dialog is very expensive...
+            // WXGTK is measurably slower even with 100ms here
+            if( s_ProgDialog && progsw.Time() > 200 )
+            {
+                progsw.Start();
+
+                sobj = wxString( objectDef->GetDefnRef()->GetName(), wxConvUTF8 );
+                sobj.Append( wxString::Format( _T("  %d/%d       "), iObj, nProg ) );
+
+                bcont = s_ProgDialog->Update( iObj, sobj );
             }
             geoType = wkbUnknown;
 //      This test should not be necessary for real (i.e not C_AGGR) features
@@ -4447,7 +4434,7 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
 
 //      n.b  This next line causes skip of C_AGGR features w/o geometry
             if( geoType != wkbUnknown )                             // Write only if has wkbGeometry
-                    {
+            {
                 CreateSENCRecord( objectDef, fps57, 1, poReader );
             }
 
@@ -4492,12 +4479,16 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
     }
 
     if( bcont ) {
+#if 0
         remove( SENCfile.GetFullPath().mb_str() );
         unlink( SENCfile.GetFullPath().mb_str() );       //  Delete any existing SENC file....
 
         bool cpok = wxCopyFile( tmp_file, SENCfile.GetFullPath() );         // Delete temp file too?
         wxRemoveFile( tmp_file );
-
+#else
+        // it's faster to rename instead of a copy and delete
+        bool cpok = wxRenameFile( tmp_file, SENCfile.GetFullPath() );
+#endif
         if( !cpok ) {
             wxString msg( _T("   Cannot copy temporary SENC file ") );
             msg.Append( tmp_file );
@@ -4529,21 +4520,20 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
     int senc_file_version = 0;
     
     //    Sanity check for existence of file
-    wxFileName SENCFileName( FullPath );
-    if( !SENCFileName.FileExists() ) {
-        wxString msg( _T("   Cannot open SENC file ") );
-        msg.Append( SENCFileName.GetFullPath() );
-        wxLogMessage( msg );
-
-        return 1;
-    }
 
     int nProg = 0;
 
     wxString ifs( FullPath );
 
-    wxFileInputStream fpx_u( ifs );
+    wxFFileInputStream fpx_u( ifs );
+    if (!fpx_u.IsOk()) {
+        wxString msg( _T("   Cannot open SENC file ") );
+        msg.Append( FullPath );
+        wxLogMessage( msg );
+        return 1;
+    }
     wxBufferedInputStream fpx( fpx_u );
+    wxFileName SENCFileName( FullPath );
 
     int MAX_LINE = 499999;
     char *buf = (char *) malloc( MAX_LINE + 1 );
@@ -4581,10 +4571,10 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
             S57Obj *obj = new S57Obj( buf, &fpx, 0, 0, senc_file_version );
             if( obj ) {
                 wxString objnam  = obj->GetAttrValueAsString("OBJNAM");
-                wxString fe_name = wxString(obj->FeatureName, wxConvUTF8);
-                if (objnam.Len() > 0)
+                if (objnam.Len() > 0) {
+                    wxString fe_name = wxString(obj->FeatureName, wxConvUTF8);
                     g_pi_manager->SendVectorChartObjectInfo( FullPath, fe_name, objnam, obj->m_lat, obj->m_lon, scale, nativescale );
-
+                }
 //      Build/Maintain the ATON floating/rigid arrays
                 if( GEO_POINT == obj->Primitive_type ) {
 
@@ -6296,9 +6286,9 @@ bool s57chart::IsPointInObjArea( float lat, float lon, float select_radius, S57O
             easting = easting_scaled;
         }
 
+        wxBoundingBox tp_box;
         while( pTP ) {
 //  Coarse test
-            wxBoundingBox tp_box;
             tp_box.SetMin(pTP->minx, pTP->miny);
             tp_box.SetMax(pTP->maxx, pTP->maxy);
 
@@ -6571,12 +6561,8 @@ bool s57chart::InitFromSENCMinimal( const wxString &FullPath )
     m_FullPath = FullPath;
     m_Description = m_FullPath;
 
-    wxFileName S57FileName( FullPath );
-
-    if( !S57FileName.FileExists() ) return false;
-
     wxFile f;
-    if( f.Open( S57FileName.GetFullPath() ) ) {
+    if( f.Open( FullPath ) ) {
         if( f.Length() == 0 ) {
             f.Close();
             ret_val = false;
@@ -6779,6 +6765,7 @@ wxString s57chart::GetObjectAttributeValueAsString( S57Obj *obj, int iatt, wxStr
             else if( curAttrName == _T("SIGPER") ) val_suffix = _T("s");
             else if( curAttrName == _T("VALACM") ) val_suffix = _T(" Minutes/year");
             else if( curAttrName == _T("VALMAG") ) val_suffix = _T("&deg;");
+            else if( curAttrName == _T("CURVEL") ) val_suffix = _T(" kt");
             
             if( dval - floor( dval ) < 0.01 ) value.Printf( _T("%2.0f"), dval );
             else
@@ -6908,6 +6895,7 @@ wxString s57chart::GetAttributeValueAsString( S57attVal *pAttrVal, wxString Attr
                 else if( AttrName == _T("SIGPER") ) val_suffix = _T("s");
                 else if( AttrName == _T("VALACM") ) val_suffix = _T(" Minutes/year");
                 else if( AttrName == _T("VALMAG") ) val_suffix = _T("&deg;");
+                else if( AttrName == _T("CURVEL") ) val_suffix = _T(" kt");
                
                if( dval - floor( dval ) < 0.01 ) value.Printf( _T("%2.0f"), dval );
                else

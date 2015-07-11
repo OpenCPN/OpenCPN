@@ -732,7 +732,7 @@ bool cm93_dictionary::LoadDictionary(const wxString & dictionary_dir)
 
       if ( wxFileName::FileExists ( sfa ) )
       {
-            wxFileInputStream filea ( sfa );
+            wxFFileInputStream filea ( sfa );
 
             if ( filea.IsOk() )
             {
@@ -869,7 +869,7 @@ bool cm93_dictionary::LoadDictionary(const wxString & dictionary_dir)
 
             if ( wxFileName::FileExists ( sfa ) )
             {
-                  wxFileInputStream filea ( sfa );
+                  wxFFileInputStream filea ( sfa );
 
                   if ( filea.IsOk() )
                   {
@@ -4994,8 +4994,10 @@ int cm93compchart::PrepareChartScale ( const ViewPort &vpt, int cmscale, bool bO
                         printf ( " b_nochart return\n" );
 
                   m_pcm93chart_current = NULL;
-                  for ( int i = 0 ; i < 8 ; i++ )
+                  for ( int i = 0 ; i < 8 ; i++ ) {
+                        delete m_pcm93chart_array[i];
                         m_pcm93chart_array[i] = NULL;
+                  }
 
                   return cmscale;
             }
@@ -5185,16 +5187,18 @@ double cm93compchart::GetNormalScaleMin ( double canvas_scale_factor, bool b_all
 
       if ( m_pcm93chart_current )
       {
-            if ( m_pcm93chart_current->m_last_vp.IsValid() )
+            int cmscale = 0;
+            if ( m_pcm93chart_current->m_last_vp.IsValid() ) {
                   FillScaleArray ( m_pcm93chart_current->m_last_vp.clat,m_pcm93chart_current-> m_last_vp.clon );
 
-            //    Find out what the smallest available scale is
-            int cmscale = 7;
-            while ( cmscale > 0 )
-            {
-                  if ( m_bScale_Array[cmscale] )
-                        break;
-                  cmscale--;
+                  //    Find out what the smallest available scale is
+                  cmscale = 7;
+                  while ( cmscale > 0 )
+                  {
+                        if ( m_bScale_Array[cmscale] )
+                              break;
+                        cmscale--;
+                  }
             }
 
 

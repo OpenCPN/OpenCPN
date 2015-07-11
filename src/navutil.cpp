@@ -106,6 +106,7 @@ extern int              g_nbrightness;
 extern bool             g_bShowMag;
 extern double           g_UserVar;
 extern bool             g_bShowStatusBar;
+extern bool             g_bUIexpert;
 
 extern wxToolBarBase    *toolBar;
 
@@ -356,6 +357,8 @@ extern wxString         g_TalkerIdText;
 extern bool             g_bAdvanceRouteWaypointOnArrivalOnly;
 extern double           g_display_size_mm;
 extern double           g_config_display_size_mm;
+extern bool             g_config_display_size_manual;
+
 extern bool             g_benable_rotate;
 extern bool             g_bEmailCrashReport;
 
@@ -365,6 +368,7 @@ extern bool             g_bAutoHideToolbar;
 extern int              g_nAutoHideToolbar;
 extern int              g_GUIScaleFactor;
 extern int              g_ChartScaleFactor;
+extern wxString         g_uiStyle;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
@@ -1174,9 +1178,9 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "ConfigVersionString" ), &g_config_version_string, _T("") );
     Read( _T ( "NavMessageShown" ), &n_NavMessageShown, 0 );
 
-    wxString uiStyle;
-    Read( _T ( "UIStyle" ), &uiStyle, wxT("") );
-    g_StyleManager->SetStyle( uiStyle );
+    Read( _T ( "UIexpert" ), &g_bUIexpert, 1 );
+    
+    Read( _T ( "UIStyle" ), &g_uiStyle, wxT("Traditional") );
 
     Read( _T ( "NCacheLimit" ), &g_nCacheLimit, CACHE_N_LIMIT_DEFAULT );
 
@@ -1219,6 +1223,7 @@ int MyConfig::LoadMyConfig()
     if((size_mm > 100) && (size_mm < 2000)){
         g_display_size_mm = size_mm;
     }
+    Read( _T ( "DisplaySizeManual" ), &g_config_display_size_manual, 0 );
     
     Read( _T ( "GUIScaleFactor" ), &g_GUIScaleFactor, 0 );
     Read( _T ( "ChartObjectScaleFactor" ), &g_ChartScaleFactor, 0 );
@@ -1993,16 +1998,16 @@ void MyConfig::LoadS57Config()
     Read( _T ( "nBoundaryStyle" ), &read_int, PLAIN_BOUNDARIES );
     ps52plib->m_nBoundaryStyle = (LUPname) read_int;
 
-    Read( _T ( "bShowSoundg" ), &read_int, 0 );
+    Read( _T ( "bShowSoundg" ), &read_int, 1 );
     ps52plib->m_bShowSoundg = !( read_int == 0 );
 
     Read( _T ( "bShowMeta" ), &read_int, 0 );
     ps52plib->m_bShowMeta = !( read_int == 0 );
 
-    Read( _T ( "bUseSCAMIN" ), &read_int, 0 );
+    Read( _T ( "bUseSCAMIN" ), &read_int, 1 );
     ps52plib->m_bUseSCAMIN = !( read_int == 0 );
 
-    Read( _T ( "bShowAtonText" ), &read_int, 0 );
+    Read( _T ( "bShowAtonText" ), &read_int, 1 );
     ps52plib->m_bShowAtonText = !( read_int == 0 );
 
     Read( _T ( "bDeClutterText" ), &read_int, 0 );
@@ -2484,6 +2489,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "ConfigVersionString" ), g_config_version_string );
     Write( _T ( "NavMessageShown" ), n_NavMessageShown );
 
+    Write( _T ( "UIexpert" ), g_bUIexpert );
+    
     Write( _T ( "UIStyle" ), g_StyleManager->GetStyleNextInvocation() );
     Write( _T ( "ChartNotRenderScaleFactor" ), g_ChartNotRenderScaleFactor );
 
@@ -2613,7 +2620,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "AutoHideToolbarSecs" ), g_nAutoHideToolbar );
     
     Write( _T ( "DisplaySizeMM" ), g_config_display_size_mm );
-
+    Write( _T ( "DisplaySizeManual" ), g_config_display_size_manual );
+    
     wxString st0;
     st0.Printf( _T ( "%g" ), g_PlanSpeed );
     Write( _T ( "PlanSpeed" ), st0 );
@@ -3148,7 +3156,7 @@ void MyConfig::UI_ImportGPX( wxWindow* parent, bool islayer, wxString dirpath, b
         delete popenDialog;
 #else
         wxString path;
-        int response = g_Platform->DoFileSelectorDialog( NULL, &path,
+        response = g_Platform->DoFileSelectorDialog( NULL, &path,
                                                          _( "Import GPX file" ),
                                                          m_gpx_path,
                                                          _T(""),

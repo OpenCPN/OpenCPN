@@ -1264,8 +1264,7 @@ bool AIS_Decoder::Parse_VDXBitstring( AIS_Bitstring *bstr, AIS_Target_Data *ptd 
     bool b_posn_report = false;
 
     wxDateTime now = wxDateTime::Now();
-    now.MakeGMT( true );                    // no DST
-    if( now.IsDST() ) now.Subtract( wxTimeSpan( 1, 0, 0, 0 ) );
+    now.MakeGMT( );                    
     int message_ID = bstr->GetInt( 1, 6 );        // Parse on message ID
     ptd->MID = message_ID;
     ptd->MMSI = bstr->GetInt( 9, 30 );           // MMSI is always in the same spot in the bitstream

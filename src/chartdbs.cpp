@@ -966,6 +966,49 @@ ChartTableEntry *ChartDatabase::GetpChartTableEntry(int index) const
             return (ChartTableEntry *)&m_ChartTableEntryDummy;
 }
 
+bool ChartDatabase::CompareChartDirArray( ArrayOfCDI& test_array )
+{
+    //  Compare the parameter "test_array" with this.m_dir_array
+    //    Return true if functionally identical (order does not signify).
+    
+    if(test_array.GetCount() != m_dir_array.GetCount())
+        return false;
+    
+    bool bfound_inner;
+    unsigned int nfound_outer = 0;
+    
+    for(unsigned int i = 0 ; i < test_array.GetCount() ; i++){
+        ChartDirInfo p = test_array.Item(i);
+        bfound_inner = false;
+        for(unsigned int j = 0 ; j < m_dir_array.GetCount() ; j++){
+            ChartDirInfo q = m_dir_array.Item(j);
+            
+            if(p.fullpath.IsSameAs(q.fullpath)){
+                bfound_inner = true;
+                break;
+            }
+        }
+        if(bfound_inner)
+            nfound_outer++;
+    }
+    
+    return (nfound_outer == test_array.GetCount());
+    
+}
+
+wxString ChartDatabase::GetMagicNumberCached(wxString dir)
+{
+    for(unsigned int j = 0 ; j < m_dir_array.GetCount() ; j++){
+        ChartDirInfo q = m_dir_array.Item(j);
+        if(dir.IsSameAs(q.fullpath))
+            return q.magic_number;
+    }
+    
+    return _T("");
+            
+}
+
+
 
 bool ChartDatabase::Read(const wxString &filePath)
 {
@@ -1556,7 +1599,7 @@ bool ChartDatabase::DetectDirChange(const wxString & dir_path, const wxString & 
       //Traverse the list of files, getting their interesting stuff to add to accumulator
       for(int ifile=0 ; ifile < n_files ; ifile++)
       {
-            if(pprog && ((((ifile * 100) / n_files) % 20) == 0))
+            if(pprog && (ifile % (n_files / 60 + 1)) == 0)
                   pprog->Update(wxMin((ifile * 100) /n_files, 100), dir_path);
 
             wxFileName file(FileList.Item(ifile));
@@ -1784,6 +1827,8 @@ wxString ChartDatabase::Get_CM93_FileName(wxString dir_name)
 //  if target chart is already in table, mark it valid and skip chart processing
 // ----------------------------------------------------------------------------
 
+WX_DECLARE_STRING_HASH_MAP( int, ChartCollisionsHashMap );
+
 int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
                                          ChartClassDescriptor &chart_desc,
                                          wxProgressDialog *pprog)
@@ -1861,26 +1906,31 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
       //    and bthis_dir_in_dB is false.
       bool bthis_dir_in_dB = IsChartDirUsed(dir_name);
 
-      int isearch = 0;              // create a smarter search index
-                                          // indexing the DB starting from the last found item
-
       if(pprog)
             pprog->SetTitle(_("OpenCPN Chart Add...."));
+
+      // build a hash table based on filename (without directory prefix) of
+      // the chart to fast to detect identical charts
+      ChartCollisionsHashMap collision_map; 
+      int nEntry = active_chartTable.GetCount();
+      for(int i=0 ; i<nEntry ; i++) {
+          wxString table_file_name(active_chartTable[i].GetpFullPath(), wxConvUTF8);
+          wxFileName table_file(table_file_name);
+          collision_map[table_file.GetFullName()] = i;
+      }
 
       for(int ifile=0 ; ifile < nFile ; ifile++)
       {
             wxFileName file(FileList.Item(ifile));
             wxString full_name = file.GetFullPath();
             wxString file_name = file.GetFullName();
-
             //    Validate the file name again, considering MSW's semi-random treatment of case....
             // TODO...something fishy here - may need to normalize saved name?
             if(!file_name.Matches(lowerFileSpec) && !file_name.Matches(filespec) && !b_found_cm93)
                 continue;
 
-            if(pprog)
-                  pprog->Update(wxMin((ifile * 100) /nFile, 100), full_name);
-
+            if(pprog && (ifile % (nFile / 60 + 1)) == 0)
+                  pprog->Update(wxMin((ifile * 100) / nFile, 100), full_name);
 
             ChartTableEntry *pnewChart = NULL;
             bool bAddFinal = true;
@@ -1894,93 +1944,76 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
                   msg.Append(full_name);
                   wxLogMessage(msg);
             }
-            else         // traverse the existing database looking for duplicates, and choosing the right one
+            else         // check the collisions map looking for duplicates, and choosing the right one
             {
-                int nEntry = active_chartTable.GetCount();
-                  for(int i=0 ; i<nEntry ; i++)
-                  {
-                      wxString table_file_name(active_chartTable[isearch].GetpFullPath(), wxConvUTF8);
+                if(collision_map.find(file_name) != collision_map.end()) {
+                    int isearch = collision_map[file_name];
+                    wxString table_file_name(active_chartTable[isearch].GetpFullPath(), wxConvUTF8);
 
-                        //    If the chart full file paths are exactly the same, select the newer one
-                        if(bthis_dir_in_dB && full_name.IsSameAs(table_file_name))
+                    //    If the chart full file paths are exactly the same, select the newer one
+                    if(bthis_dir_in_dB && full_name.IsSameAs(table_file_name))
+                    {
+                        b_add_msg++;
+
+                        //    Check the file modification time
+                        time_t t_oldFile = active_chartTable[isearch].GetFileTime();
+                        time_t t_newFile = file.GetModificationTime().GetTicks();
+                        
+                        if( t_newFile <= t_oldFile )
                         {
-                              b_add_msg++;
+                            bAddFinal = false;
+                            active_chartTable[isearch].SetValid(true);
+                        }
+                        else
+                        {
+                            bAddFinal = true;
+                            active_chartTable[isearch].SetValid(false);
+                            wxString msg = _T("   Replacing older chart file of same path: ");
+                            msg.Append(full_name);
+                            wxLogMessage(msg);
+                        }
+                    } else {
+                    
+                        //  Look at the chart file name (without directory prefix) for a further check for duplicates
+                        //  This catches the case in which the "same" chart is in different locations,
+                        //  and one may be newer than the other.
+                        b_add_msg++;
+                        
+                        if(pnewChart->IsEarlierThan(active_chartTable[isearch]))
+                        {
+                            wxFileName table_file(table_file_name);
+                            //    Make sure the compare file actually exists
+                            if(table_file.IsFileReadable())
+                            {
+                                active_chartTable[isearch].SetValid(true);
+                                bAddFinal = false;
+                                wxString msg = _T("   Retaining newer chart file of same name: ");
+                                msg.Append(full_name);
+                                wxLogMessage(msg);
 
-                              //    Check the file modification time
-                              time_t t_oldFile = active_chartTable[isearch].GetFileTime();
-                              time_t t_newFile = file.GetModificationTime().GetTicks();
-
-                              if( t_newFile <= t_oldFile )
-                              {
-                                    bAddFinal = false;
-                                    active_chartTable[isearch].SetValid(true);
-                              }
-                              else
-                              {
-                                    bAddFinal = true;
-                                    active_chartTable[isearch].SetValid(false);
-                                    wxString msg = _T("   Replacing older chart file of same path: ");
-                                    msg.Append(full_name);
-                                    wxLogMessage(msg);
-                              }
-
-                              break;
+                            }
+                        }
+                        else if(pnewChart->IsEqualTo(active_chartTable[isearch]))
+                        {
+                            //    The file names (without dir prefix) are identical,
+                            //    and the mod times are identical
+                            //    Prsume that this is intentional, in order to facilitate
+                            //    having the same chart in multiple groups.
+                            //    So, add this chart.
+                            bAddFinal = true;
                         }
 
-
-                  //  Look at the chart file name (without directory prefix) for a further check for duplicates
-                  //  This catches the case in which the "same" chart is in different locations,
-                  //  and one may be newer than the other.
-                        wxFileName table_file(table_file_name);
-
-                        if( table_file.GetFullName() == file_name )
+                        else
                         {
-                              b_add_msg++;
-
-                              if(pnewChart->IsEarlierThan(active_chartTable[isearch]))
-                              {
-                                    //    Make sure the compare file actually exists
-                                    if(table_file.IsFileReadable())
-                                    {
-                                        active_chartTable[isearch].SetValid(true);
-                                          bAddFinal = false;
-                                          wxString msg = _T("   Retaining newer chart file of same name: ");
-                                          msg.Append(full_name);
-                                          wxLogMessage(msg);
-
-                                    }
-                              }
-                              else if(pnewChart->IsEqualTo(active_chartTable[isearch]))
-                              {
-                                    //    The file names (without dir prefix) are identical,
-                                    //    and the mod times are identical
-                                    //    Prsume that this is intentional, in order to facilitate
-                                    //    having the same chart in multiple groups.
-                                    //    So, add this chart.
-                                    bAddFinal = true;
-                              }
-
-                              else
-                              {
-                                  active_chartTable[isearch].SetValid(false);
-                                    bAddFinal = true;
-                                    wxString msg = _T("   Replacing older chart file of same name: ");
-                                    msg.Append(full_name);
-                                    wxLogMessage(msg);
-                              }
-
-                              break;
+                            active_chartTable[isearch].SetValid(false);
+                            bAddFinal = true;
+                            wxString msg = _T("   Replacing older chart file of same name: ");
+                            msg.Append(full_name);
+                            wxLogMessage(msg);
                         }
-
-                        //TODO    Look at the chart ID as a further check against duplicates
-
-
-                        isearch++;
-                        if(nEntry == isearch)
-                              isearch = 0;
-                  }     // for
+                    }
+                }
             }
-
 
             if(bAddFinal)
             {
@@ -1990,6 +2023,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
                         msg.Append(full_name);
                         wxLogMessage(msg);
                   }
+                  collision_map[file_name] = active_chartTable.GetCount();
                   active_chartTable.Add(pnewChart);
                   nDirEntry++;
             }
@@ -2337,7 +2371,6 @@ ChartTableEntry *ChartDatabase::CreateChartTableEntry(const wxString &filePath, 
       wxLogMessage(msg);
 
       ChartBase *pch = GetChart(filePath, chart_desc);
-
       if (pch == NULL) {
             wxString msg = wxT("   ...creation failed for ");
             msg.Append(filePath);

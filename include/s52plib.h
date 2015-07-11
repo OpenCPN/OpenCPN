@@ -31,9 +31,6 @@
 #include "s52s57.h"                 //types
 
 class wxGLContext;
-#ifdef ocpnUSE_GL
-#include <wx/glcanvas.h>
-#endif
 
 #include "OCPNRegion.h"
 #include "ocpn_types.h"

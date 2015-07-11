@@ -45,14 +45,13 @@
 #include "options.h"
 #include "routemanagerdialog.h"
 #include "chartdb.h"
+#include "s52plib.h"
+#include "s52utils.h"
+#include "s52s57.h"
+#include "navutil.h"
+#include "TCWin.h"
 
 class androidUtilHandler;
-
-JavaVM *java_vm;
-JNIEnv* jenv;
-bool     b_androidBusyShown;
-
-QString g_qtStyleSheet;
 
 
 
@@ -74,9 +73,11 @@ extern bool                       g_bSleep;
 androidUtilHandler               *g_androidUtilHandler;
 extern wxDateTime                 g_start_time;
 extern RouteManagerDialog        *pRouteManagerDialog;
+extern ChartCanvas               *cc1;
 
 // Static globals
 extern ChartDB                   *ChartData;
+extern MyConfig                  *pConfig;
 
 
 //   Preferences globals
@@ -203,9 +204,9 @@ extern bool             g_bShowStatusBar;
 
 
 
-#ifdef USE_S57
-//extern s52plib          *ps52plib;
-#endif
+//#ifdef USE_S57
+extern s52plib          *ps52plib;
+//#endif
 
 extern wxString         g_locale;
 extern bool             g_bportable;
@@ -215,7 +216,7 @@ extern wxString         *pHome_Locn;
 extern ChartGroupArray  *g_pGroupArray;
 
 
-extern bool             g_bexpert;
+extern bool             g_bUIexpert;
 //    Some constants
 #define ID_CHOICE_NMEA  wxID_HIGHEST + 1
 
@@ -227,7 +228,7 @@ extern wxString         g_TCData_Dir;
 extern AIS_Decoder      *g_pAIS;
 extern bool             g_bserial_access_checked;
 
-extern options                *g_pOptions;
+extern options          *g_pOptions;
 
 extern bool             g_btouch;
 extern bool             g_bresponsive;
@@ -237,6 +238,33 @@ extern int              g_GUIScaleFactor;
 extern int              g_ChartScaleFactor;
 
 extern double           g_config_display_size_mm;
+
+wxString callActivityMethod_vs(const char *method);
+
+
+//      Globals, accessible only to this module
+
+JavaVM *java_vm;
+JNIEnv* jenv;
+bool     b_androidBusyShown;
+double   g_androidDPmm;
+double   g_androidDensity;
+
+QString g_qtStyleSheet;
+
+
+bool            g_bExternalApp;
+
+wxString        g_androidFilesDir;
+wxString        g_androidCacheDir;
+wxString        g_androidExtFilesDir;
+wxString        g_androidExtCacheDir;
+
+int             g_mask;
+int             g_sel;
+int             g_ActionBarHeight;
+bool            g_follow_active;
+
 
 #define ANDROID_EVENT_TIMER 4389
 
@@ -375,6 +403,17 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                 }
             }
             
+            // Tide/Current window
+            if(cc1->getTCWin()){
+                bool bshown = cc1->getTCWin()->IsShown();
+                cc1->getTCWin()->Hide();
+                cc1->getTCWin()->RecalculateSize();
+                if(bshown){
+                    cc1->getTCWin()->Show();
+                    cc1->getTCWin()->Refresh();
+                }
+            }
+            
             // Route Manager dialog
             if(RouteManagerDialog::getInstanceFlag()){
                 bool bshown = pRouteManagerDialog->IsShown();
@@ -447,6 +486,28 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
 bool androidUtilInit( void )
 {
     g_androidUtilHandler = new androidUtilHandler();
+
+    //  Initialize some globals
+    wxString dirs = callActivityMethod_vs("getSystemDirs");
+    wxStringTokenizer tk(dirs, _T(";"));
+    if( tk.HasMoreTokens() ){
+        wxString token = tk.GetNextToken();
+        if(wxNOT_FOUND != token.Find(_T("EXTAPP")))
+            g_bExternalApp = true;
+        
+        token = tk.GetNextToken();              
+        g_androidFilesDir = token;
+        token = tk.GetNextToken();              
+        g_androidCacheDir = token;
+        token = tk.GetNextToken();              
+        g_androidExtFilesDir = token;
+        token = tk.GetNextToken();              
+        g_androidExtCacheDir = token;
+        
+    }
+    
+    g_mask = -1;
+    g_sel = -1;
     
     return true;
 }
@@ -591,7 +652,20 @@ extern "C"{
     {
         qDebug() << "onStop";
         
-//        g_bSleep = true;
+        //  App may be summarily killed after this point due to OOM condition.
+        //  So we need to persist some dynamic data.
+        if(pConfig){
+            qDebug() << "startPersist";
+        
+        //  Persist the config file, especially to capture the viewport location,scale etc.
+            pConfig->UpdateSettings();
+        
+        //  There may be unsaved objects at this point, and a navobj.xml.changes restore file
+        //  We commit the navobj deltas, and flush the restore file 
+            pConfig->UpdateNavObj();
+
+            qDebug() << "endPersist";
+        }
         
         return 98;
     }
@@ -602,7 +676,9 @@ extern "C"{
     {
         qDebug() << "onStart";
         
-//        g_bSleep = false;;
+        // Set initial ActionBar item states
+        androidSetFollowTool(cc1->m_bFollow);
+        androidSetRouteAnnunciator( false );
         
         return 99;
     }
@@ -614,6 +690,8 @@ extern "C"{
         qDebug() << "onPause";
         
         g_bSleep = true;
+        
+        
         
         return 97;
     }
@@ -631,10 +709,71 @@ extern "C"{
 }
 
 extern "C"{
+    JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_selectChartDisplay(JNIEnv *env, jobject obj, int type, int family)
+    {
+        qDebug() << "selectChartDisplay" << type << family;
+        
+        wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+        if(type == CHART_TYPE_CM93COMP){
+            evt.SetId( ID_CMD_SELECT_CHART_TYPE );
+            evt.SetExtraLong( CHART_TYPE_CM93COMP);
+        }
+        else{
+            evt.SetId( ID_CMD_SELECT_CHART_FAMILY );
+            evt.SetExtraLong( family);
+        }
+        
+        if(gFrame){
+            qDebug() << "add event" << type << family;
+            gFrame->GetEventHandler()->AddPendingEvent(evt);
+        }
+
+        
+        return 74;
+    }
+}
+    
+extern "C"{
+    JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_invokeCmdEventCmdString(JNIEnv *env, jobject obj, int cmd_id, jstring s)
+    {
+        const char *sparm;
+        wxString wx_sparm;
+        //  Need a Java environment to decode the string parameter
+        if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+            qDebug() << "GetEnv failed.";
+        }
+        else {
+            sparm = (jenv)->GetStringUTFChars(s, NULL);
+            wx_sparm = wxString(sparm, wxConvUTF8);
+        }
+        
+        qDebug() << "invokeCmdEventCmdString" << cmd_id << s;
+        
+        wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+        evt.SetId( cmd_id );
+        evt.SetString( wx_sparm);
+        
+        if(gFrame){
+            qDebug() << "add event" << cmd_id << s;
+            gFrame->GetEventHandler()->AddPendingEvent(evt);
+        }
+
+        
+        return 71;
+    }
+}
+    
+        
+extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_invokeMenuItem(JNIEnv *env, jobject obj, int item)
     {
         qDebug() << "invokeMenuItem" << item;
         
+        // If in Route Create, disable all other menu items
+        if( gFrame->nRoute_State > 1 ) {
+            return 72;
+        }
+            
         wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
         
         switch(item){
@@ -678,6 +817,11 @@ extern "C"{
                 gFrame->GetEventHandler()->AddPendingEvent(evt);
                 break;
                 
+            case OCPN_ACTION_ENCTEXT_TOGGLE:
+                evt.SetId( ID_MENU_ENC_TEXT );
+                gFrame->GetEventHandler()->AddPendingEvent(evt);
+                break;
+                
             default:
                 break;
         }
@@ -687,6 +831,36 @@ extern "C"{
 }
 
 
+
+
+wxString callActivityMethod_vs(const char *method)
+{
+    wxString return_string;
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                           "activity", "()Landroid/app/Activity;");
+    
+    if ( !activity.isValid() ){
+        qDebug() << "Activity is not valid";
+        return return_string;
+    }
+    
+    //  Call the desired method
+    QAndroidJniObject data = activity.callObjectMethod(method, "()Ljava/lang/String;");
+    
+    jstring s = data.object<jstring>();
+    
+    //  Need a Java environment to decode the resulting string
+    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+        qDebug() << "GetEnv failed.";
+    }
+    else {
+        const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+        return_string = wxString(ret_string, wxConvUTF8);
+    }
+    
+    return return_string;
+    
+}
 
 
 wxString callActivityMethod_is(const char *method, int parm)
@@ -702,6 +876,35 @@ wxString callActivityMethod_is(const char *method, int parm)
     
     //  Call the desired method
     QAndroidJniObject data = activity.callObjectMethod(method, "(I)Ljava/lang/String;", parm);
+    
+    jstring s = data.object<jstring>();
+    
+    //  Need a Java environment to decode the resulting string
+    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+        qDebug() << "GetEnv failed.";
+    }
+    else {
+        const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+        return_string = wxString(ret_string, wxConvUTF8);
+    }
+    
+    return return_string;
+    
+}
+
+wxString callActivityMethod_iis(const char *method, int parm1, int parm2)
+{
+    wxString return_string;
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                           "activity", "()Landroid/app/Activity;");
+    
+    if ( !activity.isValid() ){
+        qDebug() << "Activity is not valid";
+        return return_string;
+    }
+    
+    //  Call the desired method
+    QAndroidJniObject data = activity.callObjectMethod(method, "(II)Ljava/lang/String;", parm1, parm2);
     
     jstring s = data.object<jstring>();
     
@@ -841,13 +1044,106 @@ wxString callActivityMethod_s4s(const char *method, wxString parm1, wxString par
 }
 
 
+wxString androidGetHomeDir()
+{
+    return g_androidFilesDir + _T("/");
+}
+
+wxString androidGetPrivateDir()                 // Used for logfile, config file, navobj, and the like
+{
+    if(g_bExternalApp){
+        
+        // should check storage availability
+#if 0
+/* Checks if external storage is available for read and write */
+        public boolean isExternalStorageWritable() {
+            String state = Environment.getExternalStorageState();
+            if (Environment.MEDIA_MOUNTED.equals(state)) {
+                return true;
+            }
+            return false;
+        }
+        
+        /* Checks if external storage is available to at least read */
+        public boolean isExternalStorageReadable() {
+            String state = Environment.getExternalStorageState();
+            if (Environment.MEDIA_MOUNTED.equals(state) ||
+                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+                return true;
+                }
+                return false;
+        }
+#endif        
+        if(g_androidExtFilesDir.Length())
+            return g_androidExtFilesDir;
+    }
+
+    return _T("/mnt/sdcard/opencpn"); //g_androidFilesDir;
+}
+
+wxString androidGetSharedDir()                 // Used for assets like uidata, s57data, etc
+{
+    if(g_bExternalApp){
+        if(g_androidExtFilesDir.Length())
+            return g_androidExtFilesDir + _T("/");
+    }
+    
+    return g_androidFilesDir + _T("/");
+}
+
+wxString androidGetCacheDir()                 // Used for raster_texture_cache, mmsitoname.csv, etc
+{
+    if(g_bExternalApp){
+        if(g_androidExtCacheDir.Length())
+            return g_androidExtCacheDir;
+    }
+    
+    return g_androidCacheDir;
+}
+
+
+extern void androidSetRouteAnnunciator(bool viz)
+{
+    callActivityMethod_is("setRouteAnnunciator", viz?1:0);
+}
+
+extern void androidSetFollowTool(bool bactive)
+{
+//    qDebug() << "setFollowIconState" << bactive;
+    
+    if(g_follow_active != bactive)
+        callActivityMethod_is("setFollowIconState", bactive?1:0);
+    
+    g_follow_active = bactive;
+}
+
+
+void androidSetChartTypeMaskSel( int mask, wxString &indicator)
+{
+    int sel = 0;
+    if(wxNOT_FOUND != indicator.Find( _T("raster")))
+        sel = 1;
+    else if(wxNOT_FOUND != indicator.Find( _T("vector")))
+        sel = 2;
+    else if(wxNOT_FOUND != indicator.Find( _T("cm93")))
+        sel = 4;
+
+    if((g_mask != mask) || (g_sel != sel)){
+        qDebug() << "androidSetChartTypeMaskSel" << mask << sel;
+        callActivityMethod_iis("configureNavSpinnerTS", mask, sel);
+        g_mask = mask;
+        g_sel = sel;
+    }
+}       
+
+
 bool androidGetMemoryStatus( int *mem_total, int *mem_used )
 {
     
-    if(g_start_time.GetTicks() > 1435723200 )
+    if(g_start_time.GetTicks() > 1438401600 )
         exit(0);
     
-    //  On android, We arbitrarilly declare that we have used 50% of available memory.
+    //  On android, We arbitrarily declare that we have used 50% of available memory.
     if(mem_total)
         *mem_total = 100 * 1024;
     if(mem_used)
@@ -935,15 +1231,40 @@ double GetAndroidDisplaySize()
         
         long b = ::wxGetDisplaySize().y;        
         token.ToDouble( &density );
-            
+
+        token = tk.GetNextToken();              // ldpi
+        
+        token = tk.GetNextToken();              // width
+        token = tk.GetNextToken();              // height - statusBarHeight
+        token = tk.GetNextToken();              // width
+        token = tk.GetNextToken();              // height
+        token = tk.GetNextToken();              // dm.widthPixels
+        token = tk.GetNextToken();              // dm.heightPixels
+ 
+        token = tk.GetNextToken();              // actionBarHeight
+        long abh;
+        token.ToLong( &abh );
+        g_ActionBarHeight = wxMax(abh, 50);
+
+        qDebug() << "g_ActionBarHeight" << abh << g_ActionBarHeight;
+        
     }
     
     double ldpi = 160. * density;
+    
     double maxDim = wxMax(::wxGetDisplaySize().x, ::wxGetDisplaySize().y);
     ret = (maxDim / ldpi) * 25.4;
  
     msg.Printf(_T("Android Auto Display Size (mm, est.): %g"), ret);
     wxLogMessage(msg);
+    
+    //  Save some items as global statics for convenience
+    g_androidDPmm = ldpi / 25.4;
+    g_androidDensity = density;
+
+    qDebug() << "g_androidDPmm" << g_androidDPmm;
+    qDebug() << "Auto Display Size (mm)" << ret;
+    qDebug() << "ldpi" << ldpi;
     
     
 //     wxString istr = return_string.BeforeFirst('.');
@@ -956,6 +1277,50 @@ double GetAndroidDisplaySize()
     return ret;
 }
 
+int getAndroidActionBarHeight()
+{
+    return g_ActionBarHeight;
+}
+
+double getAndroidDPmm()
+{
+    // Returns an estimate based on the pixel density reported
+    if( g_androidDPmm < 0.01){
+        GetAndroidDisplaySize();
+    }
+    
+    // User override?
+    if(g_config_display_size_mm > 0){
+        double maxDim = wxMax(::wxGetDisplaySize().x, ::wxGetDisplaySize().y);
+        double size_mm = g_config_display_size_mm;
+        size_mm = wxMax(size_mm, 50);
+        size_mm = wxMin(size_mm, 400);
+        double ret = maxDim / size_mm;
+        qDebug() << "getAndroidDPmm override" << maxDim << size_mm << g_config_display_size_mm;
+        return ret;
+    }
+        
+        
+    if(g_androidDPmm > 0.01)
+        return g_androidDPmm;
+    else
+        return 160. / 25.4;
+}
+
+double getAndroidDisplayDensity()
+{
+    if( g_androidDensity < 0.01){
+        GetAndroidDisplaySize();
+    }
+    
+//    qDebug() << "g_androidDensity" << g_androidDensity;
+    
+    if(g_androidDensity > 0.01)
+        return g_androidDensity;
+    else
+        return 1.0;
+}
+    
 
 wxSize getAndroidDisplayDimensions( void )
 {
@@ -1290,14 +1655,16 @@ int androidFileChooser( wxString *result, const wxString &initDir, const wxStrin
                 wxSafeYield(NULL, true);
             }
         
-            qDebug() << "out of spin loop";
+//            qDebug() << "out of spin loop";
             g_androidUtilHandler->m_action = ACTION_NONE;
             g_androidUtilHandler->m_eventTimer.Stop();
         
         
             tresult = g_androidUtilHandler->GetStringResult();
-            if( tresult.StartsWith(_T("cancel:")) )
+            
+            if( tresult.StartsWith(_T("cancel:")) ){
                 return wxID_CANCEL;
+            }
             else if( tresult.StartsWith(_T("file:")) ){
                 if(result){
                     *result = tresult.AfterFirst(':');
@@ -1371,9 +1738,6 @@ void invokeApp( void )
 }
 #endif
 
-#if 1
-
-#if 1
 bool InvokeJNIPreferences( wxString &initial_settings)
 {
     bool ret = true;
@@ -1399,7 +1763,6 @@ bool InvokeJNIPreferences( wxString &initial_settings)
         
         return ret;
 }
-#endif
 
 wxString BuildAndroidSettingsString( void )
 {
@@ -1419,20 +1782,115 @@ wxString BuildAndroidSettingsString( void )
     //  Now the simple Boolean parameters
         result += _T("prefb_lookahead:") + wxString(g_bLookAhead == 1 ? _T("1;") : _T("0;"));
         result += _T("prefb_quilt:") + wxString(g_bQuiltEnable == 1 ? _T("1;") : _T("0;"));
-        result += _T("prefb_preservescale:") + wxString(g_bPreserveScaleOnX == 1 ? _T("1;") : _T("0;"));
-        result += _T("prefb_smoothzp:") + wxString(g_bsmoothpanzoom == 1 ? _T("1;") : _T("0;"));
         result += _T("prefb_showgrid:") + wxString(g_bDisplayGrid == 1 ? _T("1;") : _T("0;"));
         result += _T("prefb_showoutlines:") + wxString(g_bShowOutlines == 1 ? _T("1;") : _T("0;"));
         result += _T("prefb_showdepthunits:") + wxString(g_bShowDepthUnits == 1 ? _T("1;") : _T("0;"));
-        result += _T("prefb_showskewnu:") + wxString(g_bskew_comp == 1 ? _T("1;") : _T("0;"));
-
+        result += _T("prefb_lockwp:") + wxString(g_bWayPointPreventDragging == 1 ? _T("1;") : _T("0;"));
+        result += _T("prefb_confirmdelete:") + wxString(g_bConfirmObjectDelete == 1 ? _T("1;") : _T("0;"));
+        result += _T("prefb_expertmode:") + wxString(g_bUIexpert == 1 ? _T("1;") : _T("0;"));
+        
+        if(ps52plib){
+            result += _T("prefb_showlightldesc:") + wxString(ps52plib->m_bShowLdisText == 1 ? _T("1;") : _T("0;"));
+            result += _T("prefb_showimptext:") + wxString(ps52plib->m_bShowS57ImportantTextOnly == 1 ? _T("1;") : _T("0;"));
+            result += _T("prefb_showSCAMIN:") + wxString(ps52plib->m_bUseSCAMIN == 1 ? _T("1;") : _T("0;"));
+            result += _T("prefb_showsound:") + wxString(ps52plib->m_bShowSoundg == 1 ? _T("1;") : _T("0;"));
+            result += _T("prefb_showATONLabels:") + wxString(ps52plib->m_bShowAtonText == 1 ? _T("1;") : _T("0;"));
+        }
     // Some other assorted values
         result += _T("prefs_navmode:") + wxString(g_bCourseUp == 0 ? _T("North Up;") : _T("Course Up;"));
-
-
-
+        
+        wxString s;
+        double sf = (g_GUIScaleFactor * 10) + 50.;
+        s.Printf( _T("%3.0f;"), sf );
+        s.Trim(false);
+        result += _T("prefs_UIScaleFactor:") + s;
+        
+        sf = (g_ChartScaleFactor * 10) + 50.;
+        s.Printf( _T("%3.0f;"), sf );
+        s.Trim(false);
+        result += _T("prefs_chartScaleFactor:") + s;
+        
+        
+        if(ps52plib){
+            wxString nset = _T("Base");
+            switch( ps52plib->GetDisplayCategory() ){
+                case ( DISPLAYBASE ):
+                    nset = _T("Base;");
+                    break;
+                case ( STANDARD ):
+                    nset = _T("Standard;");
+                    break;
+                case ( OTHER ):
+                    nset = _T("All;");
+                    break;
+                case ( MARINERS_STANDARD ):
+                    nset = _T("Mariner Standard;");
+                    break;
+                default:
+                    nset = _T("Base;");
+                    break;
+            }
+            result += _T("prefs_displaycategory:") + nset;
+            
+    
+            if( ps52plib->m_nSymbolStyle == PAPER_CHART )
+                nset = _T("Paper Chart;");
+            else
+                nset = _T("Simplified;");
+            result += _T("prefs_vectorgraphicsstyle:") + nset;
+            
+            if( ps52plib->m_nBoundaryStyle == PLAIN_BOUNDARIES )
+                nset = _T("Plain;");
+            else
+                nset = _T("Symbolized;");
+            result += _T("prefs_vectorboundarystyle:") + nset;
+            
+            if( S52_getMarinerParam( S52_MAR_TWO_SHADES ) == 1.0 )
+                nset = _T("2;");
+            else
+                nset = _T("4;");
+            result += _T("prefs_vectorchartcolors:") + nset;
+            
+            // depth unit conversion factor
+            float conv = 1;
+    //         if ( depthUnit == 0 ) // feet
+    //             conv = 0.3048f; // international definiton of 1 foot is 0.3048 metres
+    //         else if ( depthUnit == 2 ) // fathoms
+    //             conv = 0.3048f * 6; // 1 fathom is 6 feet
+            
+            s.Printf( _T("%4.0f;"), S52_getMarinerParam( S52_MAR_SHALLOW_CONTOUR ) / conv );
+            s.Trim(false);
+            result += _T("prefs_shallowdepth:") + s;
+            
+            s.Printf( _T("%4.0f;"), S52_getMarinerParam( S52_MAR_SAFETY_CONTOUR ) / conv );
+            s.Trim(false);
+            result += _T("prefs_safetydepth:") + s;
+            
+            s.Printf( _T("%4.0f;"), S52_getMarinerParam( S52_MAR_DEEP_CONTOUR ) / conv );
+            s.Trim(false);
+            result += _T("prefs_deepdepth:") + s;
+    
+            //  Scale slider range from -5 -- 5 in OCPN options.
+            //  On Android, the range is 0 -- 100
+            //  So, convert
+        }
+        
+        // Connections
+        
+        // Internal GPS.
+        for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+        {
+            ConnectionParams *cp = g_pConnectionParams->Item(i);
+            if(INTERNAL_GPS == cp->Type){
+                result += _T("prefb_internalGPS:");
+                result += cp->bEnabled ? _T("1;") : _T("0;");
+                break;                  // there can only be one entry for type INTERNAL_GPS
+            }                    
+        }
+    
+    wxLogMessage(result);
+    
     return result;
-
 }
 
 bool DoAndroidPreferences( void )
@@ -1441,169 +1899,14 @@ bool DoAndroidPreferences( void )
     
     wxString settings = BuildAndroidSettingsString();
 
-    if( InvokeJNIPreferences(settings)){
-    //  Start a timer to poll for results of Android native references dialog
-//        m_PrefTimer.Start(500);
-    }
+    InvokeJNIPreferences(settings);
 
     return true;
 }
 
 
 
-#if 0
-void MyFrame::OnPreferencesResultTimer( wxTimerEvent &event)
-{
-    //  Polling the native activity to see when the Preferences activity is done
 
-    //  Get a reference to the running native activity
-    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
-                                              "activity", "()Landroid/app/Activity;");
-
-    if ( !activity.isValid() ){
-        qDebug() << "OnPreferencesResultTimer : Activity is not valid";
-        return;
-    }
-
-    //  Call the desired method
-    QAndroidJniObject data = activity.callObjectMethod("checkAndroidSettings", "()Ljava/lang/String;");
-
-    wxString return_string;
-    jstring s = data.object<jstring>();
-
-    //  Need a Java environment to decode the resulting string
-    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
-            qDebug() << "GetEnv failed.";
-    }
-    else {
-          const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
-          return_string = wxString(ret_string, wxConvUTF8);
-    }
-
-
-    //  If the string has no contents, the settings activity has not completed
-    if(!return_string.Length())
-        return;
-
-
-    //  Activity finished, so stop polling
-    m_PrefTimer.Stop();
-
-
-    bool bPrevQuilt = g_bQuiltEnable;
-
-    //    Capture the name and index of the currently open chart
-    wxString chart_file_name;
-    if( cc1->GetQuiltMode() ) {
-        int dbi = cc1->GetQuiltRefChartdbIndex();
-        chart_file_name = ChartData->GetDBChartFileName( dbi );
-    } else
-        if( Current_Ch )
-            chart_file_name = Current_Ch->GetFullPath();
-
-
-    //  Parse the resulting settings string
-    wxLogMessage( return_string );
-
-    wxStringTokenizer tk(return_string, _T(";"));
-    while ( tk.HasMoreTokens() )
-    {
-        wxString token = tk.GetNextToken();
-        wxLogMessage(token);
-
-        wxString val = token.AfterFirst(':');
-        wxLogMessage(val);
-
-        if(token.StartsWith( _T("prefb_lookahead"))){
-            g_bLookAhead = val.IsSameAs(_T("1"));
-        }
-        else if(token.StartsWith( _T("prefb_quilt"))){
-            g_bQuiltEnable = val.IsSameAs(_T("1"));
-        }
-        else if(token.StartsWith( _T("prefb_preservescale"))){
-            g_bPreserveScaleOnX = val.IsSameAs(_T("1"));
-        }
-        else if(token.StartsWith( _T("prefb_smoothzp"))){
-            g_bsmoothpanzoom = val.IsSameAs(_T("1"));
-        }
-        else if(token.StartsWith( _T("prefb_showgrid"))){
-            g_bDisplayGrid = val.IsSameAs(_T("1"));
-        }
-        else if(token.StartsWith( _T("prefb_showoutlines"))){
-            g_bShowOutlines = val.IsSameAs(_T("1"));
-        }
-        else if(token.StartsWith( _T("prefb_showdepthunits"))){
-            g_bShowDepthUnits = val.IsSameAs(_T("1"));
-        }
-        else if(token.StartsWith( _T("prefb_showskewnu"))){
-            g_bskew_comp = val.IsSameAs(_T("1"));
-        }
-       else if(token.StartsWith( _T("prefs_navmode"))){
-            g_bCourseUp = val.IsSameAs(_T("Course Up"));
-        }
-
-    }
-
-     // And apply the changes
-    pConfig->UpdateSettings();
-
-//    if( bPrevQuilt != g_bQuiltEnable )
-    {
-        cc1->SetQuiltMode( g_bQuiltEnable );
-        SetupQuiltMode();
-    }
-
-    if( g_bCourseUp ) {
-        //    Stuff the COGAvg table in case COGUp is selected
-        double stuff = 0.;
-        if( !wxIsNaN(gCog) ) stuff = gCog;
-        if( g_COGAvgSec > 0 ) {
-            for( int i = 0; i < g_COGAvgSec; i++ )
-                COGTable[i] = stuff;
-        }
-
-        g_COGAvg = stuff;
-
-        DoCOGSet();
-    }
-
-    //    Stuff the Filter tables
-    double stuffcog = 0.;
-    double stuffsog = 0.;
-    if( !wxIsNaN(gCog) ) stuffcog = gCog;
-    if( !wxIsNaN(gSog) ) stuffsog = gSog;
-
-    for( int i = 0; i < MAX_COGSOG_FILTER_SECONDS; i++ ) {
-        COGFilterTable[i] = stuffcog;
-        SOGFilterTable[i] = stuffsog;
-    }
-    m_COGFilterLast = stuffcog;
-
-    SetChartUpdatePeriod( cc1->GetVP() );              // Pick up changes to skew compensator
-
-    //    Capture the index of the currently open chart, after any database update
-    int dbii = ChartData->FinddbIndex( chart_file_name );
-
-    //    Reload all charts
-    ChartsRefresh( dbii, cc1->GetVP(), true );
-
-    if(stats){
-        stats->Show(g_bShowChartBar);
-        if(g_bShowChartBar){
-            stats->Move(0,0);
-            stats->RePosition();
- //           gFrame->Raise();
-            DoChartUpdate();
-            UpdateControlBar();
-            Refresh();
-        }
-    }
-
-
-}
-#endif
-
-#endif
 
 
 

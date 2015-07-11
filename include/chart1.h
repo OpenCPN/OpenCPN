@@ -188,8 +188,16 @@ enum
     
     ID_MENU_SETTINGS_BASIC,
     
-    ID_MENU_OQUIT
+    ID_MENU_OQUIT,
+    
+    ID_CMD_SELECT_CHART_TYPE,
+    ID_CMD_SELECT_CHART_FAMILY,
+    
 };
+
+//      Command identifiers for wxCommandEvents coming from the outside world.
+//      Removed from enum to facilitate constant definition
+#define ID_CMD_APPLY_SETTINGS 300
 
 
 
@@ -330,6 +338,9 @@ class MyFrame: public wxFrame
     void ClearRouteTool();
     void DoStackUp(void);
     void DoStackDown(void);
+    void selectChartDisplay( int type, int family);
+    void applySettingsString( wxString settings);
+    
     void DoStackDelta( int direction );
     void DoSettings( void );
     
@@ -351,14 +362,14 @@ class MyFrame: public wxFrame
     void UpdateGlobalMenuItems();
     void SetChartThumbnail(int index);
     int  DoOptionsDialog();
-    int  ProcessOptionsDialog(int resultFlags , options* dialog );
+    int  ProcessOptionsDialog(int resultFlags, ArrayOfCDI *pNewDirArray );
     void DoPrint(void);
     void LaunchLocalHelp(void);
     void StopSockets(void);
     void ResumeSockets(void);
     void TogglebFollow(void);
     void ToggleFullScreen();
-    void ToggleStats();
+    void ToggleChartBar();
     void SetbFollow(void);
     void ClearbFollow(void);
     void ToggleChartOutlines(void);
@@ -386,14 +397,14 @@ class MyFrame: public wxFrame
     void SubmergeToolbarIfOverlap(int x, int y, int margin = 0);
     void SurfaceToolbar(void);
     void ToggleToolbar( bool b_smooth = false );
-    
+    void RaiseToolbarRecoveryWindow();
+    bool IsToolbarShown();
     void ShowChartBarIfEnabled(void);
     void SetToolbarScale(void);
     
     void HandlePianoClick(int selected_index, int selected_dbIndex);
     void HandlePianoRClick(int x, int y,int selected_index, int selected_dbIndex);
     void HandlePianoRollover(int selected_index, int selected_dbIndex);
-    void HandlePianoRolloverIcon(int selected_index, int selected_dbIndex);
 
     void PianoPopupMenu ( int x, int y, int selected_index, int selected_dbIndex );
     void OnPianoMenuDisableChart(wxCommandEvent& event);
@@ -448,7 +459,7 @@ class MyFrame: public wxFrame
     //      PlugIn support
     int GetNextToolbarToolId(){return m_next_available_plugin_tool_id;}
     void RequestNewToolbarArgEvent( wxCommandEvent & WXUNUSED( event ) ){ return RequestNewToolbar(); }
-    void RequestNewToolbar();
+    void RequestNewToolbar( bool bforcenew = false);
 
     void ActivateMOB(void);
     void UpdateGPSCompassStatusBox(bool b_force_new = false);
@@ -528,6 +539,7 @@ class MyFrame: public wxFrame
     
     time_t              m_fixtime;
     wxMenu              *piano_ctx_menu;
+    bool                b_autofind;
     
     DECLARE_EVENT_TABLE()
 };

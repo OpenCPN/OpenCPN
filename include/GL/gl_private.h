@@ -422,6 +422,9 @@ GLAPI const GLubyte * GLAPIENTRY gluErrorString (GLenum error);
 
 GLAPI void GLAPIENTRY glColorPointer( GLint size, GLenum type,
                                       GLsizei stride, const GLvoid *ptr );
+GLAPI void GLAPIENTRY glTexCoordPointer( GLint size, GLenum type,
+                                         GLsizei stride, const GLvoid *ptr );
+
 
 #define GLU_TESS_BEGIN                     100100
 #define GLU_TESS_VERTEX                    100101
@@ -468,6 +471,7 @@ GLAPI void GLAPIENTRY glColorPointer( GLint size, GLenum type,
 #define GLU_TESS_WINDING_NEGATIVE          100133
 #define GLU_TESS_WINDING_ABS_GEQ_TWO       100134
 #define GL_COLOR_ARRAY                          0x8076
+#define GL_TEXTURE_COORD_ARRAY                  0x8078
 
 #ifdef __cplusplus
 }

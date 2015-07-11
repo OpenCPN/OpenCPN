@@ -17,20 +17,27 @@ import android.provider.Settings;
 import android.util.Log;
 
 import org.opencpn.OCPNNativeLib;
+import org.opencpn.GPSServer;
 
 public class OCPNGpsNmeaListener implements GpsStatus.NmeaListener{
 
     OCPNNativeLib mNativeLib;
+    GPSServer mserver;
 
-    public OCPNGpsNmeaListener(OCPNNativeLib nativelib) {
+    public OCPNGpsNmeaListener(OCPNNativeLib nativelib, GPSServer server) {
         this.mNativeLib = nativelib;
+        this.mserver = server;
     }
 
 
     @Override
     public void onNmeaReceived(long timestamp, String nmea) {
 //        Log.i("DEBUGGER_TAG", "onNmeaReceived");
-        Log.i("DEBUGGER_TAG", nmea);
+//        Log.i("DEBUGGER_TAG", nmea);
+
+        // Reset the dog.
+        if(null != mserver)
+            mserver.m_watchDog = 0;
 
         mNativeLib.processNMEA( nmea );
     }
