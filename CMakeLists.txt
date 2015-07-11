@@ -419,7 +419,7 @@ IF(WIN32)
     ADD_DEFINITIONS(-DOCPN_USE_CRASHRPT)
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/buildwin/crashrpt)
     SET(EXTRA_LIBS ${EXTRA_LIBS} ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/CrashRpt1402.lib)
-    SET(CMAKE_EXE_LINKER_FLAGS /DEBUG)
+    SET(CMAKE_EXE_LINKER_FLAGS "/SAFESEH:NO /DEBUG")
 ELSE(WIN32)
     IF(NOT APPLE AND NOT QT_ANDROID)
         IF(CMAKE_BUILD_TYPE MATCHES "Rel*")
@@ -880,14 +880,32 @@ ELSE(TINYXML_FOUND)
     ADD_DEFINITIONS(-DTIXML_USE_STL)
 ENDIF(TINYXML_FOUND)
 
+IF(WIN32)
+    SET(RSVG_FOUND TRUE)
+    SET(GTK_INCLUDES ${CMAKE_SOURCE_DIR}/include/gtk)
+    INCLUDE_DIRECTORIES(${GTK_INCLUDES})
+    INCLUDE_DIRECTORIES(${GTK_INCLUDES}/librsvg-2.0/librsvg)
+    INCLUDE_DIRECTORIES(${GTK_INCLUDES}/glib-2.0)
+    INCLUDE_DIRECTORIES(${GTK_INCLUDES}/glib-2.0/glib)    
+    INCLUDE_DIRECTORIES(${GTK_INCLUDES}/cairo)
+    INCLUDE_DIRECTORIES(${GTK_INCLUDES}/gdk-pixbuf-2.0)
+    message (STATUS "Building with SVG support using local libraries and includes from ${GTK_INCLUDES}")
+    ADD_DEFINITIONS(-DocpnUSE_SVG)
+    SET(RSVG_LIBS 
+    ${CMAKE_SOURCE_DIR}/buildwin/gtk/glib-2.0.lib
+    ${CMAKE_SOURCE_DIR}/buildwin/gtk/gobject-2.0.lib
+    ${CMAKE_SOURCE_DIR}/buildwin/gtk/librsvg-2.dll.a
+    ${CMAKE_SOURCE_DIR}/buildwin/gtk/cairo.lib)
+ELSE(WIN32)
 IF(RSVG_FOUND)
     message (STATUS "Building with RSVG includes from ${RSVG_INCLUDE_DIR}")
     INCLUDE_DIRECTORIES(${RSVG_INCLUDE_DIR})
     ADD_DEFINITIONS(-DocpnUSE_SVG)
 ELSE(RSVG_FOUND)
     message (STATUS "RSVG library not found, SVG support will not be available")
-    #TODO: Here we could provide our own set of platform-specific dependencies
+    #TODO: What about OS X?
 ENDIF(RSVG_FOUND)
+ENDIF(WIN32)
 
 OPTION (USE_S57 "Enable S57 ENC support" ON)
 IF (USE_S57)
@@ -1400,6 +1418,7 @@ TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
 	gdiplus.lib
 	glu32.lib
         Psapi.lib
+	${RSVG_LIBS}
 )
 ENDIF(WIN32)
 
@@ -1624,6 +1643,10 @@ ENDIF(WIN32 OR APPLE)
 IF(WIN32 AND NOT UNIX)
 FILE(GLOB wxdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/wxWidgets/*.dll")
 INSTALL(FILES ${wxdll_files} DESTINATION ".")
+IF(RSVG_FOUND)
+FILE(GLOB rsvgdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/gtk/*.dll")
+INSTALL(FILES ${rsvgdll_files} DESTINATION ".")
+ENDIF(RSVG_FOUND)
 FILE(GLOB vcdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/vc/*.dll")
 INSTALL(FILES ${vcdll_files} DESTINATION ".")
 
