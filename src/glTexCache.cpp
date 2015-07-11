@@ -1043,7 +1043,7 @@ glTexFactory::~glTexFactory()
 
 glTextureDescriptor *glTexFactory::GetpTD( wxRect & rect )
 {
-    int array_index = ((rect.y / m_tex_dim) * m_stride) + (rect.x / m_tex_dim);
+    int array_index = ArrayIndex(rect.x, rect.y);
     return m_td_array[array_index];
 }
 
@@ -1051,7 +1051,7 @@ glTextureDescriptor *glTexFactory::GetpTD( wxRect & rect )
 void glTexFactory::DeleteTexture(const wxRect &rect)
 {
     //    Is this texture tile defined?
-    int array_index = ((rect.y / m_tex_dim) * m_stride) + (rect.x / m_tex_dim);
+    int array_index = ArrayIndex(rect.x, rect.y);
     glTextureDescriptor *ptd = m_td_array[array_index];
 
     
@@ -1170,7 +1170,7 @@ void glTexFactory::DeleteSingleTexture( glTextureDescriptor *ptd )
 
 bool glTexFactory::IsCompressedArrayComplete( int base_level, const wxRect &rect)
 {
-    int array_index = ((rect.y / m_tex_dim) * m_stride) + (rect.x / m_tex_dim);
+    int array_index = ArrayIndex(rect.x, rect.y);
     glTextureDescriptor *ptd = m_td_array[array_index];
 
     return IsCompressedArrayComplete( base_level, ptd);
@@ -1235,7 +1235,7 @@ bool glTexFactory::IsLevelInCache( int level, const wxRect &rect, ColorScheme co
 
 void glTexFactory::DoImmediateFullCompress(const wxRect &rect)
 {
-    int array_index = ((rect.y / m_tex_dim) * m_stride) + (rect.x / m_tex_dim);
+    int array_index = ArrayIndex(rect.x, rect.y);
     glTextureDescriptor *ptd = m_td_array[array_index];
     
     // if not found in the hash map, then get the bits as a texture descriptor
@@ -1360,7 +1360,7 @@ void glTexFactory::OnTimer(wxTimerEvent &event)
 
 bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorScheme color_scheme, bool b_throttle_thread)
 {
-    int array_index = ((rect.y / m_tex_dim) * m_stride) + (rect.x / m_tex_dim);
+    int array_index = ArrayIndex(rect.x, rect.y);
     glTextureDescriptor *ptd = m_td_array[array_index];
 
     m_colorscheme = color_scheme;
@@ -1660,7 +1660,7 @@ void glTexFactory::UpdateCacheLevel( const wxRect &rect, int level, ColorScheme 
 //    printf("Update cache level %d\n", level);
     
     //    Is this texture tile already defined?
-    int array_index = ((rect.y / m_tex_dim) * m_stride) + (rect.x / m_tex_dim);
+    int array_index = ArrayIndex(rect.x, rect.y);
     glTextureDescriptor *ptd = m_td_array[array_index];
     
     if(ptd){

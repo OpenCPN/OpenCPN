@@ -113,6 +113,7 @@ private:
                                           ColorScheme color_scheme);
     
     void DeleteSingleTexture( glTextureDescriptor *ptd );
+    int  ArrayIndex(int x, int y) const { return ((y / m_tex_dim) * m_stride) + (x / m_tex_dim); } 
     
     int         n_catalog_entries;
     ArrayOfCatalogEntries       m_catalog;
