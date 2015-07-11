@@ -3513,7 +3513,6 @@ void MyFrame::ODoSetSize( void )
 //        msg.Printf(_T("StatusBar min height: %d    StatusBar font points: %d"), min_height, pstat_font->GetPointSize());
 //        wxLogMessage(msg);
 
-
     }
 
     int cccw = x;
