@@ -1202,32 +1202,34 @@ bool glTexFactory::IsCompressedArrayComplete( int base_level, glTextureDescripto
 }
 
 
+CatalogEntry *glTexFactory::GetCacheEntry(int level, int x, int y, ColorScheme color_scheme)
+{
+
+    LoadCatalog();
+    
+    //  Search the catalog for this particular texture
+    for(int i=0 ; i < n_catalog_entries ; i++){
+        CatalogEntry *p = m_catalog.Item(i);
+        if( p && p->mip_level == level &&
+                p->x == x && p->y == y &&
+                p->tcolorscheme == color_scheme ) 
+        {
+            return p;
+        }
+    }
+    return 0;
+}
+
 bool glTexFactory::IsLevelInCache( int level, const wxRect &rect, ColorScheme color_scheme )
 {
     bool b_ret = false;
     
     if(g_GLOptions.m_bTextureCompression &&
         g_GLOptions.m_bTextureCompressionCaching) {
-    //  Look in the cache
          
-        LoadCatalog();
-    
     //  Search for the requested texture
-        bool b_found = false;
-        CatalogEntry *p;
-        //  Search the catalog for this particular texture
-        for(int i=0 ; i < n_catalog_entries ; i++){
-            p = m_catalog.Item(i);
-            if( (p->mip_level == level )  &&
-                (p->x == rect.x) &&
-                (p->y == rect.y) &&
-                (p->tcolorscheme == color_scheme )) {
-                b_found = true;
-            break;
-                }
-        }
-        
-        b_ret = b_found;
+        if (GetCacheEntry(level, rect.x, rect.y, color_scheme) != 0)
+            b_ret = true;
     }
     
     return b_ret;
@@ -1633,26 +1635,12 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
 
 void glTexFactory::UpdateCacheLevel( const wxRect &rect, int level, ColorScheme color_scheme )
 {
-    //  look in the cache
-        LoadCatalog();
-    
     //  Search for the requested texture
-        bool b_found = false;
-        CatalogEntry *p;
         //  Search the catalog for this particular texture
-        for(int i=0 ; i < n_catalog_entries ; i++){
-            p = m_catalog.Item(i);
-            if( (p->mip_level == level )  &&
-                (p->x == rect.x) &&
-                (p->y == rect.y) &&
-                (p->tcolorscheme == color_scheme )) {
-                b_found = true;
-            break;
-                }
-        }
+        CatalogEntry *v = GetCacheEntry(level, rect.x, rect.y, color_scheme) ;
         
         //      This texture is already done
-        if(b_found)
+        if(v != 0)
             return;
     
     
@@ -1728,26 +1716,13 @@ int glTexFactory::GetTextureLevel( glTextureDescriptor *ptd, const wxRect &rect,
     if(g_GLOptions.m_bTextureCompression &&
         g_GLOptions.m_bTextureCompressionCaching) {
         
-        LoadCatalog();
-    
     //  Search for the requested texture
-        bool b_found = false;
-        CatalogEntry *p;
         //  Search the catalog for this particular texture
-        for(int i=0 ; i < n_catalog_entries ; i++){
-            p = m_catalog.Item(i);
-            if( (p->mip_level == level )  &&
-                (p->x == ptd->x) &&
-                (p->y == ptd->y) &&
-                (p->tcolorscheme == color_scheme )) {
-                b_found = true;
-            break;
-                }
-        }
+        CatalogEntry *p = GetCacheEntry(level, rect.x, rect.y, color_scheme);
         
         //      Requested texture level is found in the cache
         //      so go load it
-        if( b_found ) {
+        if( p != 0 ) {
             
             int dim = g_GLOptions.m_iTextureDimension;
             int size = g_tile_size;
@@ -1968,19 +1943,10 @@ bool glTexFactory::WriteCatalogAndHeader()
 bool glTexFactory::UpdateCache(unsigned char *data, int data_size, glTextureDescriptor *ptd, int level,
                                ColorScheme color_scheme)
 {
-    LoadCatalog();
-    
     bool b_found = false;
     //  Search the catalog for this particular texture
-    for(int i=0 ; i < n_catalog_entries ; i++){
-        CatalogEntry *p = m_catalog.Item(i);
-        if( (p->mip_level == level )  &&
-            (p->x == ptd->x) &&
-            (p->y == ptd->y) &&
-            (p->tcolorscheme == color_scheme )) {
-            b_found = true;
-            break;
-        }
+    if (GetCacheEntry(level, ptd->x, ptd->y, color_scheme) != 0) {
+        b_found = true;
     }
     
     if( ! b_found ) {                           // not found, so add it
@@ -2039,19 +2005,10 @@ bool glTexFactory::UpdateCache(unsigned char *data, int data_size, glTextureDesc
 bool glTexFactory::UpdateCachePrecomp(unsigned char *data, int data_size, glTextureDescriptor *ptd, int level,
                                ColorScheme color_scheme)
 {
-    LoadCatalog();
-    
     bool b_found = false;
     //  Search the catalog for this particular texture
-    for(int i=0 ; i < n_catalog_entries ; i++){
-        CatalogEntry *p = m_catalog.Item(i);
-        if( (p->mip_level == level )  &&
-            (p->x == ptd->x) &&
-            (p->y == ptd->y) &&
-            (p->tcolorscheme == color_scheme )) {
-            b_found = true;
-        break;
-            }
+    if (GetCacheEntry(level, ptd->x, ptd->y, color_scheme) != 0)  {
+        b_found = true;
     }
     
     if( ! b_found ) {                           // not found, so add it
