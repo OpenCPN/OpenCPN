@@ -53,6 +53,7 @@ private:
       wxBitmap _img_gpsRed;
       int m_xoffset;
       int m_yoffset;
+      float m_scale;
 
       DECLARE_EVENT_TABLE()
 };
