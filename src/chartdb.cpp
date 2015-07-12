@@ -260,6 +260,36 @@ bool ChartDB::LoadBinary(const wxString & filename, ArrayOfCDI& dir_array_check)
       // Check chartDirs against dir_array_check
 }
 
+void ChartDB::DeleteCacheEntry(CacheEntry *pce, bool bDelTexture, const wxString &msg)
+{
+     ChartBase *ch = (ChartBase *)pce->pChart;
+
+     if (msg != wxEmptyString) {
+         wxLogMessage(_T("%s%s"), msg.c_str(), ch->GetFullPath().c_str());
+     }
+
+     // If this chart should happen to be in the thumbnail window....
+     if(pthumbwin)
+     {
+         if (pthumbwin->pThumbChart == ch)
+            pthumbwin->pThumbChart = NULL;
+     }
+
+     // The glCanvas may be cacheing some information for this chart
+     if (g_bopengl && cc1)
+         cc1->PurgeGLCanvasChartCache(ch, bDelTexture);
+     pChartCache->Remove(pce);
+     delete ch;
+     delete pce;
+}
+
+void ChartDB::DeleteCacheEntry(int i, bool bDelTexture, const wxString &msg)
+{
+     CacheEntry *pce = (CacheEntry *)(pChartCache->Item(i));
+     if (pce)
+         DeleteCacheEntry(pce, bDelTexture, msg);
+}
+
 void ChartDB::PurgeCache()
 {
 //    Empty the cache
@@ -269,16 +299,7 @@ void ChartDB::PurgeCache()
         unsigned int nCache = pChartCache->GetCount();
         for(unsigned int i=0 ; i<nCache ; i++)
         {
-                CacheEntry *pce = (CacheEntry *)(pChartCache->Item(i));
-                ChartBase *Ch = (ChartBase *)pce->pChart;
-
-                //    The glCanvas may be cacheing some information for this chart
-                if(g_bopengl && cc1)
-                    cc1->PurgeGLCanvasChartCache(Ch, true);
-
-                delete Ch;
-                
-                delete pce;
+               DeleteCacheEntry(0, true);
         }
         pChartCache->Clear();
         
@@ -298,19 +319,10 @@ void ChartDB::PurgeCachePlugins()
         while(i < nCache){
             CacheEntry *pce = (CacheEntry *)(pChartCache->Item(i));
             ChartBase *Ch = (ChartBase *)pce->pChart;
-            
-            // Remove if a PlugIn chart type
+
             if(CHART_TYPE_PLUGIN == Ch->GetChartType()){
+                DeleteCacheEntry(pce, true);
             
-                //    The glCanvas may be cacheing some information for this chart
-                if(g_bopengl && cc1)
-                    cc1->PurgeGLCanvasChartCache(Ch, true);
-            
-                delete Ch;
-            
-                pChartCache->Remove(pce);
-                delete pce;
-                
                 nCache = pChartCache->GetCount();       // restart the while loop
                 i = 0;
                 
@@ -355,6 +367,7 @@ void ChartDB::PurgeCacheUnusedCharts( double factor)
 
                 int nl = pChartCache->GetCount();       // max loop count, by definition
                     
+                wxString msg(_T("Purging unused chart from cache: "));
                 while( (mem_used > mem_limit) && (nl>0) )
                 {
                     if( pChartCache->GetCount() < 2 ){
@@ -364,29 +377,12 @@ void ChartDB::PurgeCacheUnusedCharts( double factor)
                     
                     CacheEntry *pce = FindOldestDeleteCandidate( false );
                     if(pce){
-                        ChartBase *Ch =  (ChartBase *)(pce->pChart);
-                        wxString msg(_T("Purging unused chart from cache: "));
-                        msg += Ch->GetFullPath();
-                        wxLogMessage(msg);
-                                        
-                        //  If this chart should happen to be in the thumbnail window....
-                        if(pthumbwin)
-                        {
-                            if(pthumbwin->pThumbChart == Ch)
-                                pthumbwin->pThumbChart = NULL;
-                        }
-                    
-                                //    The glCanvas may be cacheing some information (i.e. texture tiles) for this chart
-                        if(g_bopengl && cc1)
-                              cc1->PurgeGLCanvasChartCache(Ch);
+                        // don't purge background spooler
+                        DeleteCacheEntry(pce, false /*true*/, msg);
 
-                                //    And delete the chart
-                        delete Ch;
-
-                                //remove the cache entry
-                        pChartCache->Remove(pce);
-                        delete pce;
-
+                    }
+                    else {
+                        break;
                     }
                     
                     GetMemoryStatus(0, &mem_used);
@@ -1122,9 +1118,9 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
 
       if(!bInCache)                    // not in cache
       {
-          if( wxMUTEX_NO_ERROR == m_cache_mutex.Lock() ){
+          m_b_busy = true;
+          if( !m_b_locked && wxMUTEX_NO_ERROR == m_cache_mutex.Lock() ){
               
-            m_b_busy = true;
             
                 //    Use memory limited cache policy, if defined....
                 if(g_memCacheLimit)
@@ -1135,42 +1131,21 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                     GetMemoryStatus(0, &mem_used);
     //                  printf(" ChartdB Mem_total: %d  mem_used: %d  lock: %d\n", mem_total, mem_used, m_b_locked);
                     
-                    if((mem_used > g_memCacheLimit * 8 / 10) && !m_b_locked && (pChartCache->GetCount() > 2)) {
-                        while (1){
+                    if((mem_used > g_memCacheLimit * 8 / 10) && (pChartCache->GetCount() > 2)) {
+                        wxString msg(_T("Removing oldest chart from cache: "));
+                        while (1)
+                        {
                           CacheEntry *pce = FindOldestDeleteCandidate(true);
-                          if(pce){
-                            ChartBase *pDeleteCandidate =  (ChartBase *)(pce->pChart);
-                            wxString msg(_T("Removing oldest chart from cache: "));
-                            msg += pDeleteCandidate->GetFullPath();
-                            wxLogMessage(msg);
-                            
-                            //  If this chart should happen to be in the thumbnail window....
-                            if(pthumbwin)
-                            {
-                                if(pthumbwin->pThumbChart == pDeleteCandidate)
-                                    pthumbwin->pThumbChart = NULL;
-                            }
-                            
-                            
-                            //    The glCanvas may be cacheing some information for this chart
-                            if(g_bopengl && cc1)
-                                cc1->PurgeGLCanvasChartCache(pDeleteCandidate);
-                            
-                            //    Delete the chart
-                            delete pDeleteCandidate;
-                                
-                                //remove the cache entry
-                            pChartCache->Remove(pce);
-                            delete pce;
-                            
-                            GetMemoryStatus(0, &mem_used);
-    
-                            if((mem_used < g_memCacheLimit * 8 / 10) || (pChartCache->GetCount() <= 2)) 
-                                break;
-                                
-                          }
-                          else
+                          if (pce == 0)
                               break;                      // no possible delete candidate
+                          
+                          // purge texture cache, really need memory here
+                          DeleteCacheEntry(pce, true, msg);
+
+                          GetMemoryStatus(0, &mem_used);
+                          if((mem_used < g_memCacheLimit * 8 / 10) || (pChartCache->GetCount() <= 2)) 
+                              break;
+                                
                         }  // while
                     }
                 }
@@ -1179,42 +1154,18 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                 {
     //      Limit cache to n charts, tossing out the oldest when space is needed
                     unsigned int nCache = pChartCache->GetCount();
-                    
-                    if((nCache > (unsigned int)g_nCacheLimit) && !m_b_locked){
-                        while (1){
+                    if (nCache > (unsigned int)g_nCacheLimit && nCache > 2)
+                    {
+                        wxString msg(_T("Removing oldest chart from cache: "));
+                        while (nCache > (unsigned int)g_nCacheLimit)
+                        {
                             CacheEntry *pce = FindOldestDeleteCandidate( true );
-                            if(pce){
-                                ChartBase *pDeleteCandidate =  (ChartBase *)(pce->pChart);
-                                wxString msg(_T("Removing oldest chart from cache: "));
-                                msg += pDeleteCandidate->GetFullPath();
-                                wxLogMessage(msg);
-                                
-                                //  If this chart should happen to be in the thumbnail window....
-                                if(pthumbwin)
-                                {
-                                    if(pthumbwin->pThumbChart == pDeleteCandidate)
-                                        pthumbwin->pThumbChart = NULL;
-                                }
-                                
-                                
-                                //    The glCanvas may be cacheing some information for this chart
-                                if(g_bopengl && cc1)
-                                    cc1->PurgeGLCanvasChartCache(pDeleteCandidate);
-                                
-                                //    Delete the chart
-                                    delete pDeleteCandidate;
-                                    
-                                    //remove the cache entry
-                                    pChartCache->Remove(pce);
-                                    delete pce;
-                                    
-                                    if(nCache <= (unsigned int)g_nCacheLimit)
-                                        break;
-                                    
-                            }
-                            else
-                                break;                      // no possible delete candidate
-                        }  // while
+                            if (pce == 0)
+                                break;
+                            
+                            DeleteCacheEntry(pce, true, msg);
+                            nCache--;
+                        }
                     }
                     
                 }
@@ -1446,24 +1397,7 @@ bool ChartDB::DeleteCacheChart(ChartBase *pDeleteCandidate)
 
             if(pce)
             {
-                        //  If this chart should happen to be in the thumbnail window....
-                  if(pthumbwin)
-                  {
-                        if(pthumbwin->pThumbChart == pDeleteCandidate)
-                              pthumbwin->pThumbChart = NULL;
-                  }
-
-                  //    The glCanvas may be cacheing some information for this chart
-                  if(g_bopengl && cc1)
-                      cc1->PurgeGLCanvasChartCache(pDeleteCandidate);
-                  
-                  //    Delete the chart
-                  delete pDeleteCandidate;
-
-                        //remove the cache entry
-                  pChartCache->Remove(pce);
-                  delete pce;
-                  
+                  DeleteCacheEntry( pce);
                   retval = true;
             }
       }
