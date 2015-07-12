@@ -68,6 +68,9 @@ extern int getAndroidActionBarHeight();
 extern void androidConfirmSizeCorrection();
 extern void androidForceFullRepaint();
 
+extern bool LoadQtStyleSheet(wxString &sheet_file);
+extern QString getQtStyleSheet( void );
+
 extern void androidShowBusyIcon();
 extern void androidHideBusyIcon();
 extern void androidEnableBackButton(bool benable);
