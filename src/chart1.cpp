@@ -3401,8 +3401,18 @@ void MyFrame::OnResizeTimer(wxTimerEvent &event)
             g_FloatingToolbarDialog->Realize();
             g_FloatingToolbarDialog->Refresh( false );
         }
+        timer_sequence++;
+        m_resizeTimer.Start(10, wxTIMER_ONE_SHOT);
+        
         return;
     }
+
+    if(timer_sequence == 3){
+        g_Platform->onStagedResizeFinal();
+        
+        return;
+    }
+        
         
     
 }
@@ -3418,6 +3428,11 @@ void MyFrame::ODoSetSize( void )
 {
     int x, y;
     GetClientSize( &x, &y );
+#ifdef __OCPN__ANDROID__
+    int xx, yy;
+    GetSize( &xx, &yy );
+    qDebug() << xx << yy;
+#endif
     
 //      Resize the children
  
@@ -3489,7 +3504,7 @@ void MyFrame::ODoSetSize( void )
 #ifdef __OCPN__ANDROID__
         min_height = ( pstat_font->GetPointSize() * getAndroidDisplayDensity() ) + 10;
         m_pStatusBar->SetMinHeight( min_height );
-//        qDebug() <<"StatusBar min height:" << min_height << "StatusBar font points:" << pstat_font->GetPointSize();
+        qDebug() <<"StatusBar min height:" << min_height << "StatusBar font points:" << pstat_font->GetPointSize();
 #endif
 //        wxString msg;
 //        msg.Printf(_T("StatusBar min height: %d    StatusBar font points: %d"), min_height, pstat_font->GetPointSize());

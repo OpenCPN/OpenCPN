@@ -264,7 +264,7 @@ int             g_mask;
 int             g_sel;
 int             g_ActionBarHeight;
 bool            g_follow_active;
-
+wxSize          config_size;
 
 #define ANDROID_EVENT_TIMER 4389
 
@@ -617,6 +617,7 @@ extern "C"{
         wxSize new_size = getAndroidDisplayDimensions();
         qDebug() << "onConfigChange" << new_size.x << new_size.y;
         
+        config_size = new_size;
         gFrame->TriggerResize(new_size);
 
         if(g_androidUtilHandler){
@@ -625,13 +626,6 @@ extern "C"{
             g_androidUtilHandler->m_eventTimer.Start(200, wxTIMER_ONE_SHOT);
         }
         
-//        gFrame->DestroyPersistentDialogs();
-        
-//        wxSizeEvent ev(new_size);
-        
-//        wxEvtHandler *evh = dynamic_cast<wxEvtHandler*>(cc1);
-        
-//        evh->AddPendingEvent(ev);
         return 77;
     }
 }
@@ -1381,12 +1375,28 @@ wxSize getAndroidDisplayDimensions( void )
         
     }
 
-    wxSize sz_wx = ::wxGetDisplaySize();               // default, probably reasonable, but maybe not accurate
-    qDebug() << sz_wx.x << sz_wx.y << sz_ret.x << sz_ret.y;
+    qDebug() << sz_ret.x << sz_ret.y;
     
     return sz_ret;
     
 }
+
+void androidConfirmSizeCorrection()
+{
+    //  There is some confusion about the ActionBar size during configuration changes.
+    //  We need to confirm the calculated display size, and fix it if necessary.
+    //  This happens during staged resize events processed by gFrame->TriggerResize()
+    
+    wxSize targetSize = getAndroidDisplayDimensions();
+    qDebug() << "Confirming" << targetSize.y << config_size.y;
+    if(config_size != targetSize){
+        qDebug() << "Correcting";
+        gFrame->SetSize(targetSize);
+        config_size = targetSize;
+    }
+}
+        
+
 
 void androidShowBusyIcon()
 {

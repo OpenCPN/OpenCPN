@@ -1139,6 +1139,15 @@ double OCPNPlatform::GetDisplayDPmm()
 #endif    
 }
 
+void OCPNPlatform::onStagedResizeFinal()
+{
+#ifdef __OCPN__ANDROID__
+    androidConfirmSizeCorrection();
+#endif
+    
+}
+
+
 
 wxDirDialog* OCPNPlatform::AdjustDirDialogFont(wxWindow *container, wxDirDialog* dlg)
 {
