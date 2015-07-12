@@ -60,14 +60,13 @@ wxBitmap MergeBitmaps( wxBitmap back, wxBitmap front, wxSize offset )
     wxImage im_front = front.ConvertToImage();
     if(!im_front.HasAlpha())
         return front;
-    
 #if !wxCHECK_VERSION(2,9,4)
 
     // Manual alpha blending for broken wxWidgets alpha bitmap support, pervasive in wx2.8.
     merged.UseAlpha();
     back.UseAlpha();
     front.UseAlpha();
-
+    
 //    wxImage im_front = front.ConvertToImage();
     wxImage im_back = back.ConvertToImage();
     wxImage im_result = back.ConvertToImage();// Only way to make result have alpha channel in wxW 2.8.
@@ -126,6 +125,7 @@ wxBitmap MergeBitmaps( wxBitmap back, wxBitmap front, wxSize offset )
 
 #else
     wxMemoryDC mdc( merged );
+    mdc.Clear();
     mdc.DrawBitmap( back, 0, 0, true );
     mdc.DrawBitmap( front, offset.x, offset.y, true );
     mdc.SelectObject( wxNullBitmap );
