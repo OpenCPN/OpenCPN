@@ -880,7 +880,7 @@ ELSE(TINYXML_FOUND)
     ADD_DEFINITIONS(-DTIXML_USE_STL)
 ENDIF(TINYXML_FOUND)
 
-IF(WIN32)
+IF(WIN32 OR APPLE)
     SET(RSVG_FOUND TRUE)
     SET(GTK_INCLUDES ${CMAKE_SOURCE_DIR}/include/gtk)
     INCLUDE_DIRECTORIES(${GTK_INCLUDES})
@@ -891,20 +891,27 @@ IF(WIN32)
     INCLUDE_DIRECTORIES(${GTK_INCLUDES}/gdk-pixbuf-2.0)
     message (STATUS "Building with SVG support using local libraries and includes from ${GTK_INCLUDES}")
     ADD_DEFINITIONS(-DocpnUSE_SVG)
+  IF(WIN32)
     SET(RSVG_LIBS 
     ${CMAKE_SOURCE_DIR}/buildwin/gtk/glib-2.0.lib
     ${CMAKE_SOURCE_DIR}/buildwin/gtk/gobject-2.0.lib
     ${CMAKE_SOURCE_DIR}/buildwin/gtk/librsvg-2.dll.a
     ${CMAKE_SOURCE_DIR}/buildwin/gtk/cairo.lib)
-ELSE(WIN32)
-IF(RSVG_FOUND)
+  ELSE(WIN32)
+    SET(RSVG_LIBRARY
+        ${CMAKE_SOURCE_DIR}/buildosx/gtk/librsvg-2.2.dylib
+        ${CMAKE_SOURCE_DIR}/buildosx/gtk/libgobject-2.0.0.dylib
+        ${CMAKE_SOURCE_DIR}/buildosx/gtk/libcairo.2.dylib
+        ${CMAKE_SOURCE_DIR}/buildosx/gtk/libglib-2.0.0.dylib)
+  ENDIF(WIN32)
+ELSE(WIN32 OR APPLE)
+  IF(RSVG_FOUND)
     message (STATUS "Building with RSVG includes from ${RSVG_INCLUDE_DIR}")
     INCLUDE_DIRECTORIES(${RSVG_INCLUDE_DIR})
     ADD_DEFINITIONS(-DocpnUSE_SVG)
-ELSE(RSVG_FOUND)
+  ELSE(RSVG_FOUND)
     message (STATUS "RSVG library not found, SVG support will not be available")
-    #TODO: What about OS X?
-ENDIF(RSVG_FOUND)
+  ENDIF(RSVG_FOUND)
 ENDIF(WIN32)
 
 OPTION (USE_S57 "Enable S57 ENC support" ON)
