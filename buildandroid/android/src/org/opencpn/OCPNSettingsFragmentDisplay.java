@@ -149,17 +149,6 @@ public class OCPNSettingsFragmentDisplay extends PreferenceFragment {
     public void onStop(){
         super.onStop();
 
-        DialogSliderPreference a = (DialogSliderPreference)getPreferenceScreen().findPreference("prefs_UIScaleFactor");
-        if(a != null){
-            a.persistValue();
-            Log.i("DEBUGGER_TAG", "persisted prefs_UIScaleFactor ");
-        }
-
-        a = (DialogSliderPreference)getPreferenceScreen().findPreference("prefs_chartScaleFactor");
-        if(a != null){
-            a.persistValue();
-            Log.i("DEBUGGER_TAG", "persisted prefs_chartScaleFactor ");
-        }
 
     }
 

@@ -52,6 +52,7 @@ extern float g_fWaypointRangeRingsStep;
 extern int g_iWaypointRangeRingsStepUnits;
 extern wxColour g_colourWaypointRangeRingsColour;
 
+extern int  g_ChartScaleFactor;
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST ( RoutePointList );
@@ -580,16 +581,39 @@ void RoutePoint::DrawGL( ViewPort &vp, OCPNRegion &region,bool use_cached_screen
         glEnable(GL_BLEND);
         glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
         
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        
         glColor3f(1, 1, 1);
         
         int x = r1.x, y = r1.y, w = r1.width, h = r1.height;
+        
+        float scale = 1.0;
+        if(g_bresponsive){
+            scale =  exp( g_ChartScaleFactor * (0.693 / 5.0) );       //  exp(2)
+            scale = wxMax(scale, .5);
+            scale = wxMin(scale, 4.);
+        }
+            
+        float ws = r1.width * scale;
+        float hs = r1.height * scale;
+        float xs = r.x - ws/2.;
+        float ys = r.y - hs/2.;
         float u = (float)w/glw, v = (float)h/glh;
+        
         glBegin(GL_QUADS);
-        glTexCoord2f(0, 0); glVertex2f(x, y);
-        glTexCoord2f(u, 0); glVertex2f(x+w, y);
-        glTexCoord2f(u, v); glVertex2f(x+w, y+h);
-        glTexCoord2f(0, v); glVertex2f(x, y+h);
+        glTexCoord2f(0, 0); glVertex2f(xs, ys);
+        glTexCoord2f(u, 0); glVertex2f(xs+ws, ys);
+        glTexCoord2f(u, v); glVertex2f(xs+ws, ys+hs);
+        glTexCoord2f(0, v); glVertex2f(xs, ys+hs);
         glEnd();
+        
+//         glBegin(GL_QUADS);
+//         glTexCoord2f(0, 0); glVertex2f(x, y);
+//         glTexCoord2f(u, 0); glVertex2f(x+w, y);
+//         glTexCoord2f(u, v); glVertex2f(x+w, y+h);
+//         glTexCoord2f(0, v); glVertex2f(x, y+h);
+//         glEnd();
 
         glDisable(GL_BLEND);
         glDisable(GL_TEXTURE_2D);

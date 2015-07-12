@@ -162,6 +162,7 @@ public:
       void PaintCleanup();
       void Scroll(int dx, int dy);
 
+      bool MouseEventChartBar( wxMouseEvent& event );
       bool MouseEventSetup( wxMouseEvent& event, bool b_handle_dclick = true );
       bool MouseEventProcessObjects( wxMouseEvent& event );
       bool MouseEventProcessCanvas( wxMouseEvent& event );
@@ -203,6 +204,8 @@ public:
       void UpdateAIS();
       void UpdateAlerts();                          // pjotrc 2010.02.22
 
+      wxBitmap &GetTideBitmap(){ return m_cTideBitmap; }
+      
       void SetQuiltMode(bool b_quilt);
       bool GetQuiltMode(void);
       ArrayOfInts GetQuiltIndexArray(void);
@@ -213,6 +216,8 @@ public:
       
       int GetNextContextMenuId();
 
+      TCWin *getTCWin(){ return pCwin; }
+      
       bool StartTimedMovement( bool stoptimer=true );
       void DoTimedMovement( );
       void DoMovement( long dt );
@@ -294,7 +299,7 @@ public:
       
       wxColour GetFogColor(){ return m_fog_color; }      
       
-      void ShowChartInfoWindow(int x, int y, int dbIndex);
+      void ShowChartInfoWindow(int x, int dbIndex);
       void HideChartInfoWindow(void);
     
       void StartMeasureRoute();
@@ -309,6 +314,7 @@ public:
       wxCursor    *pPlugIn_Cursor;
       TCWin       *pCwin;
       wxBitmap    *pscratch_bm;
+      bool        m_brepaint_piano;
       double      m_cursor_lon, m_cursor_lat;
       Undo        *undo;
       wxPoint     r_rband;
@@ -558,7 +564,9 @@ private:
       wxBitmap    m_bmCurrentDay;
       wxBitmap    m_bmCurrentDusk;
       wxBitmap    m_bmCurrentNight;
-
+      wxBitmap    m_cTideBitmap;
+      wxBitmap    m_cCurrentBitmap;
+      
       RolloverWin *m_pRouteRolloverWin;
       RolloverWin *m_pAISRolloverWin;
       

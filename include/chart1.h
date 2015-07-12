@@ -369,7 +369,7 @@ class MyFrame: public wxFrame
     void ResumeSockets(void);
     void TogglebFollow(void);
     void ToggleFullScreen();
-    void ToggleStats();
+    void ToggleChartBar();
     void SetbFollow(void);
     void ClearbFollow(void);
     void ToggleChartOutlines(void);
@@ -405,7 +405,6 @@ class MyFrame: public wxFrame
     void HandlePianoClick(int selected_index, int selected_dbIndex);
     void HandlePianoRClick(int x, int y,int selected_index, int selected_dbIndex);
     void HandlePianoRollover(int selected_index, int selected_dbIndex);
-    void HandlePianoRolloverIcon(int selected_index, int selected_dbIndex);
 
     void PianoPopupMenu ( int x, int y, int selected_index, int selected_dbIndex );
     void OnPianoMenuDisableChart(wxCommandEvent& event);

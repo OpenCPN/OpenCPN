@@ -57,7 +57,7 @@ extern  double          gLat, gLon, gSog, gCog;
 extern ChartCanvas      *cc1;
 extern MyFrame          *gFrame;
 extern MyConfig         *pConfig;
-extern bool                      g_bskew_comp;
+extern bool              g_bskew_comp;
 
 int                      g_ais_cog_predictor_width;
 extern AIS_Decoder              *g_pAIS;
@@ -116,6 +116,9 @@ extern double           g_AckTimeout_Mins;
 
 extern bool             bGPSValid;
 extern ArrayOfMMSIProperties   g_MMSI_Props_Array;
+
+extern int              g_ChartScaleFactor;
+extern bool             g_bresponsive;
 
 extern PlugInManager    *g_pi_manager;
 extern ocpnStyle::StyleManager* g_StyleManager;
@@ -816,7 +819,14 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
     //    Target is lost due to position report time-out, but still in Target List
     if( td->b_lost ) return;
-
+    
+    float scale_factor = 1.0;
+    if(g_bresponsive){
+        scale_factor =  exp( g_ChartScaleFactor * (0.693 / 5.0) );       //  exp(2)
+        scale_factor = wxMax(scale_factor, .5);
+        scale_factor = wxMin(scale_factor, 4.);
+    }
+    
     //      Skip anchored/moored (interpreted as low speed) targets if requested
     //      unless the target is NUC or AtoN, in which case it is always displayed.
     if( ( !g_bShowMoored ) && ( td->SOG <= g_ShowMoored_Kts )
@@ -1258,23 +1268,23 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                 ais_tri_icon[0] = ais_quad_icon[0];
                 ais_tri_icon[1] = ais_quad_icon[1];
                 ais_tri_icon[2] = ais_quad_icon[3];
-                dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
+                dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y, scale_factor );
 
                 ais_tri_icon[0] = ais_quad_icon[1];
                 ais_tri_icon[1] = ais_quad_icon[2];
                 ais_tri_icon[2] = ais_quad_icon[3];
-                dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
+                dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y, scale_factor );
 
                 dc.SetPen( target_pen );
                 dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UBLCK" ) ), wxTRANSPARENT ) );
             }
 
-            dc.StrokePolygon( 4, ais_quad_icon, TargetPoint.x, TargetPoint.y );
+            dc.StrokePolygon( 4, ais_quad_icon, TargetPoint.x, TargetPoint.y, scale_factor );
 
             if (g_bDrawAISSize && bcan_draw_size)
             {
                 dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UBLCK" ) ), wxTRANSPARENT ) );
-                dc.StrokePolygon( 6, ais_real_size, TargetPoint.x, TargetPoint.y );
+                dc.StrokePolygon( 6, ais_real_size, TargetPoint.x, TargetPoint.y, scale_factor );
             }
 
             dc.SetBrush( wxBrush( GetGlobalColor( _T ( "SHIPS" ) ) ) );

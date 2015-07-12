@@ -4483,6 +4483,8 @@ void options::OnApplyClick( wxCommandEvent& event )
     if( bnew_settings ) m_returnChanges |= TOOLBAR_CHANGED;
 
     //      And keep config in sync
+    if( m_pPlugInCtrl )
+        m_pPlugInCtrl->UpdatePluginsOrder();
     g_pi_manager->UpdateConfig();
 
     //      PlugIns may have added panels

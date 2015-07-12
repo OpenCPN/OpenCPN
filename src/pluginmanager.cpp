@@ -29,6 +29,7 @@
 #include <wx/filename.h>
 #include <wx/aui/aui.h>
 #include <wx/statline.h>
+#include <wx/tokenzr.h>
 #ifndef __WXMSW__
 #include <cxxabi.h>
 #endif // __WXMSW__
@@ -44,7 +45,7 @@
 #include "styles.h"
 #include "options.h"
 #include "multiplexer.h"
-#include "statwin.h"
+#include "chartbarwin.h"
 #include "routeman.h"
 #include "FontMgr.h"
 #include "AIS_Decoder.h"
@@ -79,7 +80,8 @@ extern MyFrame         *gFrame;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern options         *g_pOptions;
 extern Multiplexer     *g_pMUX;
-extern StatWin         *stats;
+extern bool             g_bShowChartBar;
+extern Piano           *g_Piano;
 extern Routeman        *g_pRouteMan;
 extern WayPointman     *pWayPointMan;
 extern Select          *pSelect;
@@ -235,6 +237,9 @@ PlugInManager::~PlugInManager()
 
 bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled, bool b_enable_blackdialog)
 {
+    pConfig->SetPath( _T("/PlugIns/") );
+    SetPluginOrder( pConfig->Read( _T("PluginOrder"), wxEmptyString ) );
+    
     m_benable_blackdialog = b_enable_blackdialog;
     
     m_plugin_location = plugin_dir;
@@ -368,6 +373,24 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled
             }
         }
     }
+    
+    std::map<int, PlugInContainer*> ap;
+    for( unsigned int i = 0; i < plugin_array.GetCount(); i++ )
+    {
+        int index = m_plugin_order.Index( plugin_array.Item(i)->m_common_name );
+        if( index != wxNOT_FOUND )
+        {
+            ap[index] = plugin_array.Item(i);
+        }
+        else
+            ap[10000 + i] = plugin_array.Item(i);
+    }
+    plugin_array.Empty();
+    for (std::map<int, PlugInContainer*>::reverse_iterator iter = ap.rbegin(); iter != ap.rend(); ++iter)
+    {
+        plugin_array.Insert( iter->second, 0 );
+    }
+    ap.clear();
     
     UpDateChartDataTypes();
 
@@ -536,16 +559,32 @@ bool PlugInManager::DeactivatePlugIn(PlugInContainer *pic)
     return bret;
 }
 
+void PlugInManager::SetPluginOrder( wxString serialized_names )
+{
+    m_plugin_order.Empty();
+    wxStringTokenizer tokenizer( serialized_names, _T(";") );
+    while( tokenizer.HasMoreTokens() )
+    {
+        m_plugin_order.Add( tokenizer.GetNextToken() );
+    }
+}
 
-
-
+wxString PlugInManager::GetPluginOrder()
+{
+    wxString plugins = wxEmptyString;
+    for( unsigned int i = 0; i < plugin_array.GetCount(); i++ )
+    {
+        plugins.Append( plugin_array.Item(i)->m_common_name );
+        if( i < plugin_array.GetCount() - 1 )
+            plugins.Append(';');
+    }
+    return plugins;
+}
 
 bool PlugInManager::UpdateConfig()
 {
-    pConfig->SetPath(_T("/"));
-//      if(pConfig->HasGroup( _T ( "PlugIns" )))
-//               pConfig->DeleteGroup( _T ( "PlugIns" ) );
-
+    pConfig->SetPath( _T("/PlugIns/") );
+    pConfig->Write( _T("PluginOrder"), GetPluginOrder() );
 
     for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
     {
@@ -921,7 +960,7 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
 
 bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &vp)
 {
-    for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
+    for(unsigned int i = 0; i < plugin_array.GetCount(); i++)
     {
         PlugInContainer *pic = plugin_array.Item(i);
         if(pic->m_bEnabled && pic->m_bInitState)
@@ -1044,7 +1083,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
 
 bool PlugInManager::RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, const ViewPort &vp)
 {
-    for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
+    for(unsigned int i = 0; i < plugin_array.GetCount(); i++)
     {
         PlugInContainer *pic = plugin_array.Item(i);
         if(pic->m_bEnabled && pic->m_bInitState)
@@ -2180,12 +2219,9 @@ bool DecodeSingleVDOMessage( const wxString& str, PlugIn_Position_Fix_Ex *pos, w
 
 int GetChartbarHeight( void )
 {
-    if( stats && stats->IsShown() ){
-        wxSize s = stats->GetSize();
-        return s.GetHeight();
-    }
-    else
-        return 0;
+    if(g_bShowChartBar)
+        return g_Piano->GetHeight();
+    return 0;
 }
 
 
@@ -3110,19 +3146,19 @@ PluginListPanel::PluginListPanel( wxWindow *parent, wxWindowID id, const wxPoint
     m_pPluginArray = pPluginArray;
     m_PluginSelected = NULL;
 
-    wxBoxSizer* itemBoxSizer01 = new wxBoxSizer( wxVERTICAL );
-    SetSizer( itemBoxSizer01 );
+    m_pitemBoxSizer01 = new wxBoxSizer( wxVERTICAL );
+    SetSizer( m_pitemBoxSizer01 );
 
     int max_dy = 0;
 
-    for( unsigned int i=0 ; i < pPluginArray->GetCount() ; i++ )
+    for( unsigned int i = 0; i < pPluginArray->GetCount() ; i++ )
     {
-        PluginPanel *pPluginPanel = new PluginPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, pPluginArray->Item(i) );
-        itemBoxSizer01->Add( pPluginPanel, 0, wxEXPAND|wxALL, 0 );
+        PluginPanel *pPluginPanel = new PluginPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, pPluginArray->Item( pPluginArray->GetCount() - i -1 ) );
+        m_pitemBoxSizer01->Add( pPluginPanel, 0, wxEXPAND|wxALL, 0 );
         m_PluginItems.Add( pPluginPanel );
 
         wxStaticLine* itemStaticLine = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
-        itemBoxSizer01->Add( itemStaticLine, 0, wxEXPAND|wxALL, 0 );
+        m_pitemBoxSizer01->Add( itemStaticLine, 0, wxEXPAND|wxALL, 0 );
 
         //    When a child Panel is selected, its size grows to include "Preferences" and Enable" buttons.
         //    As a consequence, the vertical size of the ListPanel grows as well.
@@ -3130,24 +3166,33 @@ PluginListPanel::PluginListPanel( wxWindow *parent, wxWindowID id, const wxPoint
         //    minimum size calculations account for selected Panel size growth.
 
         pPluginPanel->SetSelected( false );       // start unselected
-        itemBoxSizer01->Layout();
+        m_pitemBoxSizer01->Layout();
         wxSize nsel_size = pPluginPanel->GetSize();
 
         pPluginPanel->SetSelected( true );        // switch to selected, a bit bigger
-        itemBoxSizer01->Layout();
+        m_pitemBoxSizer01->Layout();
         wxSize sel_size = pPluginPanel->GetSize();
 
         pPluginPanel->SetSelected( false );       // reset to unselected
-        itemBoxSizer01->Layout();
+        m_pitemBoxSizer01->Layout();
 
         int dy = sel_size.y - nsel_size.y;
         dy += 10;                                 // fluff
         max_dy = wxMax(dy, max_dy);
     }
 
-    itemBoxSizer01->AddSpacer(max_dy);
+    m_pitemBoxSizer01->AddSpacer(max_dy);
     
     Show();
+}
+
+void PluginListPanel::UpdatePluginsOrder()
+{
+    m_pPluginArray->Clear();
+    for( unsigned int i = 0 ; i < m_PluginItems.GetCount() ; i++ )
+    {
+        m_pPluginArray->Insert(m_PluginItems.Item(i)->GetPluginPtr(), 0);
+    }
 }
 
 PluginListPanel::~PluginListPanel()
@@ -3173,6 +3218,44 @@ void PluginListPanel::SelectPlugin( PluginPanel *pi )
         m_PluginSelected->SetSelected(false);
 
     m_PluginSelected = pi;
+    m_parent->Layout();
+    Refresh(false);
+}
+
+void PluginListPanel::MoveUp( PluginPanel *pi )
+{
+    int pos = m_PluginItems.Index( pi );
+    if( pos == 0 ) //The first one can't be moved further up
+        return;
+    m_PluginItems.RemoveAt(pos);
+    m_pitemBoxSizer01->Remove( pos * 2 + 1 );
+    m_pitemBoxSizer01->Remove( pos * 2 );
+    m_PluginItems.Insert( pi, pos - 1 );
+    wxStaticLine* itemStaticLine = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+    m_pitemBoxSizer01->Insert( (pos - 1) * 2, itemStaticLine, 0, wxEXPAND|wxALL, 0 );
+    m_pitemBoxSizer01->Insert( (pos - 1) * 2, pi, 0, wxEXPAND|wxALL, 0 );
+
+    m_PluginSelected = pi;
+
+    m_parent->Layout();
+    Refresh(true);
+}
+
+void PluginListPanel::MoveDown( PluginPanel *pi )
+{
+    int pos = m_PluginItems.Index( pi );
+    if( pos == (int)m_PluginItems.Count() - 1 ) //The last one can't be moved further down
+        return;
+    m_PluginItems.RemoveAt(pos);
+    m_pitemBoxSizer01->Remove( pos * 2 + 1 );
+    m_pitemBoxSizer01->Remove( pos * 2 );
+    m_PluginItems.Insert( pi, pos + 1 );
+    wxStaticLine* itemStaticLine = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+    m_pitemBoxSizer01->Insert( (pos + 1) * 2 - 1, itemStaticLine, 0, wxEXPAND|wxALL, 0 );
+    m_pitemBoxSizer01->Insert( (pos + 1) * 2, pi, 0, wxEXPAND|wxALL, 0 );
+
+    m_PluginSelected = pi;
+
     m_parent->Layout();
     Refresh(false);
 }
@@ -3222,6 +3305,16 @@ PluginPanel::PluginPanel(PluginListPanel *parent, wxWindowID id, const wxPoint &
     m_pButtonPreferences->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(PluginPanel::OnPluginPreferences), NULL, this);
     m_pButtonEnable->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(PluginPanel::OnPluginEnable), NULL, this);
 
+    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+    m_pButtonsUpDown = new wxBoxSizer(wxVERTICAL);
+    m_pButtonUp = new wxBitmapButton( this, wxID_ANY, style->GetIcon( _T("up") ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+    m_pButtonsUpDown->Add( m_pButtonUp, 0, wxALIGN_RIGHT|wxALL, 2);
+    m_pButtonDown = new wxBitmapButton( this, wxID_ANY, style->GetIcon( _T("down") ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+    m_pButtonsUpDown->Add( m_pButtonDown, 0, wxALIGN_RIGHT|wxALL, 2);
+    m_pButtonUp->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(PluginPanel::OnPluginUp), NULL, this);
+    m_pButtonDown->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(PluginPanel::OnPluginDown), NULL, this);
+    itemBoxSizer01->Add(m_pButtonsUpDown, 0, wxALL, 0);
+    
     SetSelected( m_bSelected );
 }
 
@@ -3243,6 +3336,7 @@ void PluginPanel::SetSelected( bool selected )
         SetBackgroundColour(GetGlobalColor(_T("DILG1")));
         m_pDescription->SetLabel( m_pPlugin->m_long_description );
         m_pButtons->Show(true);
+        m_pButtonsUpDown->Show(true);
         Layout();
         //FitInside();
     }
@@ -3251,6 +3345,7 @@ void PluginPanel::SetSelected( bool selected )
         SetBackgroundColour(GetGlobalColor(_T("DILG0")));
         m_pDescription->SetLabel( m_pPlugin->m_short_description );
         m_pButtons->Show(false);
+        m_pButtonsUpDown->Show(false);
         Layout();
         //FitInside();
     }
@@ -3298,6 +3393,16 @@ void PluginPanel::SetEnabled( bool enabled )
             m_pButtonEnable->SetLabel(_("Enable"));
     }
     m_pButtonPreferences->Enable( enabled && (m_pPlugin->m_cap_flag & WANTS_PREFERENCES) );
+}
+
+void PluginPanel::OnPluginUp( wxCommandEvent& event )
+{
+    m_PluginListPanel->MoveUp( this );
+}
+
+void PluginPanel::OnPluginDown( wxCommandEvent& event )
+{
+    m_PluginListPanel->MoveDown( this );
 }
 
 

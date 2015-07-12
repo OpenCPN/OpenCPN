@@ -571,6 +571,10 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     public String setFollowIconState( final int isActive){
         m_isFollowActive = (isActive != 0);
 
+        if(isActive == 0)
+            Log.i("DEBUGGER_TAG", "setFollowIconStateA");
+        else
+            Log.i("DEBUGGER_TAG", "setFollowIconStateB");
 
            runOnUiThread(new Runnable() {
                    @Override
@@ -1950,19 +1954,21 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         itemRouteAnnunciator = menu.findItem(R.id.ocpn_route_create_active);
         if( null != itemRouteAnnunciator) {
             itemRouteAnnunciator.setVisible(m_showRouteAnnunciator);
-            this.invalidateOptionsMenu();
+//            this.invalidateOptionsMenu();
          }
 
         // Auto follow icon
          itemFollowActive = menu.findItem(R.id.ocpn_action_follow_active);
          if( null != itemFollowActive) {
              itemFollowActive.setVisible(m_isFollowActive);
-             this.invalidateOptionsMenu();
+//             this.invalidateOptionsMenu();
+Log.i("DEBUGGER_TAG", "onCreateOptionsMenuA");
           }
          itemFollowInActive = menu.findItem(R.id.ocpn_action_follow);
          if( null != itemFollowInActive) {
               itemFollowInActive.setVisible(!m_isFollowActive);
-              this.invalidateOptionsMenu();
+//              this.invalidateOptionsMenu();
+Log.i("DEBUGGER_TAG", "onCreateOptionsMenuB");
            }
 
 

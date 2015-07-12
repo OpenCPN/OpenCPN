@@ -1956,6 +1956,7 @@ bool glTexFactory::WriteCatalogAndHeader()
         hdr.chartdate = m_chart_date_binary;
         
         m_fs->Write( &hdr, sizeof(hdr));
+        m_fs->Flush();
         
         return true;
     }
