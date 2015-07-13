@@ -156,7 +156,8 @@ public:
 
       int _insertRules(S57Obj *obj, LUPrec *LUP, s57chart *pOwner);
 
-      virtual ListOfObjRazRules *GetObjRuleListAtLatLon(float lat, float lon, float select_radius, ViewPort *VPoint);
+      virtual ListOfObjRazRules *GetObjRuleListAtLatLon(float lat, float lon, float select_radius, 
+                                                        ViewPort *VPoint, int selection_mask = MASK_ALL);
       bool DoesLatLonSelectObject(float lat, float lon, float select_radius, S57Obj *obj);
       bool IsPointInObjArea(float lat, float lon, float select_radius, S57Obj *obj);
       wxString GetObjectAttributeValueAsString( S57Obj *obj, int iatt, wxString curAttrName );
@@ -234,7 +235,7 @@ public:
       struct _chart_context     *m_this_chart_context;
       
 private:
-
+      int GetLineFeaturePointArray(S57Obj *obj, void **ret_array);
       void SetSafetyContour(void);
     
       bool DoRenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, RenderTypeEnum option, bool force_new_view);

@@ -106,6 +106,14 @@ typedef enum _DisCat{
 }DisCat;
 
 
+#define MASK_POINT      1
+#define MASK_LINE       2
+#define MASK_AREA       4
+#define MASK_MPS        8
+#define MASK_ALL        MASK_POINT + MASK_LINE + MASK_AREA + MASK_MPS
+
+
+    
 typedef enum _Rules_t{
    RUL_NONE,                        // no rule type (init)
    RUL_TXT_TX,                      // TX

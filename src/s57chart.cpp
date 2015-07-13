@@ -1584,6 +1584,48 @@ void s57chart::SetLinePriorities( void )
 }
 
 
+int s57chart::GetLineFeaturePointArray(S57Obj *obj, void **ret_array)
+{
+    //  Walk the line segment list once to get the required array size
+    
+    int nPoints = 0;
+    line_segment_element *ls_list = obj->m_ls_list;
+    while( ls_list){
+        nPoints += ls_list->n_points;
+        ls_list = ls_list->next;
+    }
+    
+    if(!nPoints){
+        *ret_array = 0;
+        return 0;
+    }
+    
+    //  Allocate the buffer
+    float *ret_temp = (float *)malloc(nPoints * 2 * sizeof(float));
+    
+    // populate the buffer
+    unsigned char *source_buffer = (unsigned char *)GetLineVertexBuffer();
+    float *br = ret_temp;
+    ls_list = obj->m_ls_list;
+    while( ls_list){
+        float *pt = (float *)(source_buffer + ls_list->vbo_offset);
+        float a = *pt++;
+        float b = *pt++;
+        
+        memcpy(br, source_buffer + ls_list->vbo_offset, ls_list->n_points * 2 * sizeof(float));
+        br += ls_list->n_points * 2;
+        ls_list = ls_list->next;
+    }
+    
+    *ret_array = ret_temp;
+    
+    return nPoints;
+        
+    
+}
+
+
+
 void s57chart::AssembleLineGeometry( void )
 {
             // Walk the hash tables to get the required buffer size
@@ -6013,7 +6055,7 @@ void s57chart::CreateSENCConnNodeTable( FILE * fpOut, S57Reader *poReader )
 }
 
 ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon( float lat, float lon, float select_radius,
-        ViewPort *VPoint )
+        ViewPort *VPoint, int selection_mask )
 {
 
     ListOfObjRazRules *ret_ptr = new ListOfObjRazRules;
@@ -6023,60 +6065,67 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon( float lat, float lon, float
     ObjRazRules *top;
 
     for( int i = 0; i < PRIO_NUM; ++i ) {
-        // Points by type, array indices [0..1]
+        
+        if(selection_mask & MASK_POINT){
+            // Points by type, array indices [0..1]
 
-        int point_type = ( ps52plib->m_nSymbolStyle == SIMPLIFIED ) ? 0 : 1;
-        top = razRules[i][point_type];
+            int point_type = ( ps52plib->m_nSymbolStyle == SIMPLIFIED ) ? 0 : 1;
+            top = razRules[i][point_type];
 
-        while( top != NULL ) {
-            if( top->obj->npt == 1 )       // Do not select Multipoint objects (SOUNDG) yet.
-                    {
-                if( ps52plib->ObjectRenderCheck( top, VPoint ) ) {
-                    if( DoesLatLonSelectObject( lat, lon, select_radius, top->obj ) )
-                        ret_ptr->Append( top );
-                }
-            }
-
-            //    Check the child branch, if any.
-            //    This is where Multipoint soundings are captured individually
-            if( top->child ) {
-                ObjRazRules *child_item = top->child;
-                while( child_item != NULL ) {
-                    if( ps52plib->ObjectRenderCheck( child_item, VPoint ) ) {
-                        if( DoesLatLonSelectObject( lat, lon, select_radius, child_item->obj ) )
-                            ret_ptr->Append( child_item );
+            while( top != NULL ) {
+                if( top->obj->npt == 1 )       // Do not select Multipoint objects (SOUNDG) yet.
+                        {
+                    if( ps52plib->ObjectRenderCheck( top, VPoint ) ) {
+                        if( DoesLatLonSelectObject( lat, lon, select_radius, top->obj ) )
+                            ret_ptr->Append( top );
                     }
-
-                    child_item = child_item->next;
                 }
-            }
 
-            top = top->next;
+                //    Check the child branch, if any.
+                //    This is where Multipoint soundings are captured individually
+                if( top->child ) {
+                    ObjRazRules *child_item = top->child;
+                    while( child_item != NULL ) {
+                        if( ps52plib->ObjectRenderCheck( child_item, VPoint ) ) {
+                            if( DoesLatLonSelectObject( lat, lon, select_radius, child_item->obj ) )
+                                ret_ptr->Append( child_item );
+                        }
+
+                        child_item = child_item->next;
+                    }
+                }
+
+                top = top->next;
+            }
+        }
+        
+        if(selection_mask & MASK_AREA){
+                // Areas by boundary type, array indices [3..4]
+
+            int area_boundary_type = ( ps52plib->m_nBoundaryStyle == PLAIN_BOUNDARIES ) ? 3 : 4;
+            top = razRules[i][area_boundary_type];           // Area nnn Boundaries
+            while( top != NULL ) {
+                if( ps52plib->ObjectRenderCheck( top, VPoint ) ) {
+                    if( DoesLatLonSelectObject( lat, lon, select_radius, top->obj ) ) ret_ptr->Append(
+                            top );
+                }
+
+                top = top->next;
+            }         // while
         }
 
-        // Areas by boundary type, array indices [3..4]
+        if(selection_mask & MASK_LINE){
+                // Finally, lines
+            top = razRules[i][2];           // Lines
 
-        int area_boundary_type = ( ps52plib->m_nBoundaryStyle == PLAIN_BOUNDARIES ) ? 3 : 4;
-        top = razRules[i][area_boundary_type];           // Area nnn Boundaries
-        while( top != NULL ) {
-            if( ps52plib->ObjectRenderCheck( top, VPoint ) ) {
-                if( DoesLatLonSelectObject( lat, lon, select_radius, top->obj ) ) ret_ptr->Append(
-                        top );
+            while( top != NULL ) {
+                if( ps52plib->ObjectRenderCheck( top, VPoint ) ) {
+                    if( DoesLatLonSelectObject( lat, lon, select_radius, top->obj ) ) ret_ptr->Append(
+                            top );
+                }
+
+                top = top->next;
             }
-
-            top = top->next;
-        }         // while
-
-        // Finally, lines
-        top = razRules[i][2];           // Lines
-
-        while( top != NULL ) {
-            if( ps52plib->ObjectRenderCheck( top, VPoint ) ) {
-                if( DoesLatLonSelectObject( lat, lon, select_radius, top->obj ) ) ret_ptr->Append(
-                        top );
-            }
-
-            top = top->next;
         }
     }
 
@@ -6156,6 +6205,10 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
                 double easting, northing;
                 toSM( lat, lon, ref_lat, ref_lon, &easting, &northing );
 
+                float *ptest;
+                int ntp = GetLineFeaturePointArray(obj, (void **) &ptest);
+                
+                
                 pt *ppt = obj->geoPt;
                 int npt = obj->npt;
 
@@ -6166,9 +6219,20 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
 
                 double north0 = ( ppt->y * yr ) + yo;
                 double east0 = ( ppt->x * xr ) + xo;
+                float a0 = *ptest++;
+                float b0 = *ptest++;
+                
                 ppt++;
 
                 for( int ip = 1; ip < npt; ip++ ) {
+                    
+                    float a = *ptest++;
+                    float b = *ptest++;
+                    float c = ppt->y;
+                    float d = ppt->x;
+                    printf("%g %g %g %g\n", a,b,c,d);
+                    
+                    
                     double north = ( ppt->y * yr ) + yo;
                     double east = ( ppt->x * xr ) + xo;
 
@@ -7623,7 +7687,7 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
         ListOfObjRazRules* rule_list = NULL;
         ListOfPI_S57Obj* pi_rule_list = NULL;
         if( Chs57 )
-            rule_list = Chs57->GetObjRuleListAtLatLon( cursor_lat, cursor_lon, selectRadius, &viewport );
+            rule_list = Chs57->GetObjRuleListAtLatLon( cursor_lat, cursor_lon, selectRadius, &viewport, MASK_POINT );
         else if( target_plugin_chart )
             pi_rule_list = g_pi_manager->GetPlugInObjRuleListAtLatLon( target_plugin_chart,
                                                                        cursor_lat, cursor_lon, selectRadius, viewport );
