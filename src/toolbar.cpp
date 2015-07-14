@@ -419,27 +419,20 @@ void ocpnFloatingToolbarDialog::SetGeometry(wxWindow *pwinAvoid)
         wxSize tool_size = m_ptoolbar->GetToolBitmapSize();
         int grabber_width =  m_style->GetIcon( _T("grabber") ).GetWidth();
         
-        int avoid_width = (tool_size.x + m_style->GetToolSeparation()) * 2;  // default
-        if(pwinAvoid && pwinAvoid->IsShown())
-            avoid_width = pwinAvoid->GetSize().x + 16;  // this is compass window, if shown
-            
-        
-        
         int max_rows = 10;
         int max_cols = 100;
         if(cc1){
-           
+
+            int avoid_start = cc1->GetClientSize().x - (tool_size.x + m_style->GetToolSeparation()) * 2;  // default
+            if(pwinAvoid && pwinAvoid->IsShown()){
+                avoid_start = cc1->GetClientSize().x - pwinAvoid->GetSize().x;  // this is compass window, if shown
+            }
             
-            int a = cc1->GetClientSize().x;
-            int b = m_style->GetToolSeparation();
             
             max_rows = (cc1->GetClientSize().y / ( tool_size.y + m_style->GetToolSeparation())) - 1;
             
-            max_cols = (cc1->GetClientSize().x - grabber_width - avoid_width) / ( tool_size.x + m_style->GetToolSeparation());
-//            qDebug() << cc1->GetSize().x << tool_size.x + m_style->GetToolSeparation();
-//            qDebug() << "first" << max_rows << max_cols << m_orient;
-//            qDebug() << cc1->GetSize().x << tool_size.x + m_style->GetToolSeparation();
-            
+            max_cols = (avoid_start - grabber_width) / ( tool_size.x + m_style->GetToolSeparation());
+            max_cols -= 1;
             
             if(m_orient == wxTB_VERTICAL)
                 max_rows = wxMax( max_rows, 2);             // at least two rows
@@ -453,7 +446,6 @@ void ocpnFloatingToolbarDialog::SetGeometry(wxWindow *pwinAvoid)
             m_ptoolbar->SetMaxRowsCols( 100, max_cols);
         m_ptoolbar->SetSizeFactor(m_sizefactor);
         
-//        qDebug() << max_rows << max_cols << m_orient;
     }
  }
 
@@ -497,8 +489,14 @@ void ocpnFloatingToolbarDialog::Submerge()
 
 void ocpnFloatingToolbarDialog::SubmergeToGrabber()
 {
-    Submerge();
+//Submerge();
 
+    m_bsubmerged = true;
+    Hide();
+    if( m_ptoolbar ) m_ptoolbar->KillTooltip();
+
+    m_bnavgrabber = true;
+    
     m_pRecoverwin = new GrabberWin( m_pparent, this, m_sizefactor, _T("grabber_ext" ), wxPoint(10,10) );
     
    
@@ -566,6 +564,8 @@ bool ocpnFloatingToolbarDialog::CheckSurfaceRequest( wxMouseEvent &event )
 void ocpnFloatingToolbarDialog::SurfaceFromGrabber()
 {
     m_bsubmerged = false;
+    m_bnavgrabber = false;
+    
 #ifndef __WXOSX__
     Hide();
     Move( 0, 0 );
