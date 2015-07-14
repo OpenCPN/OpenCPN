@@ -9264,8 +9264,12 @@ void MyFrame::applySettingsString( wxString settings)
         
         
         else if(token.StartsWith( _T("prefs_navmode"))){
-            g_bCourseUp = val.IsSameAs(_T("Course Up"));
+            bool bPrevMode = g_bCourseUp;
+            bool new_val = val.IsSameAs(_T("Course Up"));
+            if(bPrevMode != new_val)
+                ToggleCourseUp();
         }
+        
         
         //  Strings, etc.
         
