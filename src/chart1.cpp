@@ -644,6 +644,7 @@ int                       g_toolbar_y;
 long                      g_toolbar_orient;
 wxRect                    g_last_tb_rect;
 float                     g_toolbar_scalefactor;
+float                     g_compass_scalefactor;
 
 MyDialogPtrArray          g_MacShowDialogArray;
 bool                      g_benable_rotate;
@@ -1706,7 +1707,7 @@ bool MyApp::OnInit()
     wxSize asz = getAndroidDisplayDimensions();
     ch = asz.y;
     cw = asz.x;
-    qDebug() << cw << ch;
+//    qDebug() << cw << ch;
 
     if((cw > 200) && (ch > 200) )
         new_frame_size.Set( cw, ch );
@@ -1789,7 +1790,8 @@ bool MyApp::OnInit()
     g_toolbar_y = wxMin(g_toolbar_y, ch);
 
     gFrame->SetToolbarScale();
-
+    gFrame->SetGPSCompassScale();
+    
     //  The position and size of the static frame children (i.e. the canvas, and the status bar) are now set
     //  So now we can establish the AUI panes for them.
     //  It is important to have set the chartcanvas and status bar sizes before this point,
@@ -2036,8 +2038,8 @@ extern ocpnGLOptions g_GLOptions;
     //  We need to defer their creation until here.
     if( pConfig->m_bShowCompassWin ) {
         g_FloatingCompassDialog = new ocpnFloatingCompassWindow( cc1 );
-        if( g_FloatingCompassDialog )
-            g_FloatingCompassDialog->UpdateStatus( true );
+        g_FloatingCompassDialog->SetScaleFactor(g_compass_scalefactor);
+        g_FloatingCompassDialog->UpdateStatus( true );
     }
 
     gFrame->Refresh( false );
@@ -2609,8 +2611,11 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     ocpnToolBarSimple *tb = NULL;
     wxToolBarToolBase* newtool;
 
-    if( g_FloatingToolbarDialog )
+    if( g_FloatingToolbarDialog ){
         tb = g_FloatingToolbarDialog->GetToolbar();
+        if(tb)
+            g_FloatingToolbarDialog->SetGeometry(g_FloatingCompassDialog);
+    }
     if( !tb )
         return 0;
 
@@ -2981,6 +2986,15 @@ void MyFrame::SetToolbarScale()
 
 }
 
+void MyFrame::SetGPSCompassScale()
+{
+    g_compass_scalefactor = g_Platform->GetCompassScaleFactor( g_GUIScaleFactor );
+    
+    //  Round to the nearest "quarter", to avoid rendering artifacts
+//    g_compass_scalefactor = wxRound( g_toolbar_scalefactor * 4.0 )/ 4.0;
+    
+}
+
 void MyFrame::RaiseToolbarRecoveryWindow()
 {
     if(g_bshowToolbar){
@@ -3342,7 +3356,7 @@ void MyFrame::ProcessCanvasResize( void )
 
     if( g_FloatingToolbarDialog ) {
         g_FloatingToolbarDialog->RePosition();
-        g_FloatingToolbarDialog->SetGeometry();
+        g_FloatingToolbarDialog->SetGeometry(g_FloatingCompassDialog);
         g_FloatingToolbarDialog->Realize();
         g_FloatingToolbarDialog->RePosition();
 
@@ -3397,7 +3411,7 @@ void MyFrame::OnResizeTimer(wxTimerEvent &event)
             g_Platform->GetDisplaySizeMM();             // causes a reload of all display metrics
             SetToolbarScale();
             g_FloatingToolbarDialog->RePosition();
-            g_FloatingToolbarDialog->SetGeometry();
+            g_FloatingToolbarDialog->SetGeometry(g_FloatingCompassDialog);
             g_FloatingToolbarDialog->Realize();
             g_FloatingToolbarDialog->Refresh( false );
         }
@@ -3428,11 +3442,6 @@ void MyFrame::ODoSetSize( void )
 {
     int x, y;
     GetClientSize( &x, &y );
-#ifdef __OCPN__ANDROID__
-    int xx, yy;
-    GetSize( &xx, &yy );
-    qDebug() << xx << yy;
-#endif
     
 //      Resize the children
  
@@ -3447,11 +3456,16 @@ void MyFrame::ODoSetSize( void )
                     int widths[] = { -6, -5, -5, -3, -4 };
                     m_pStatusBar->SetStatusWidths( m_StatusBarFieldCount, widths );
                 }
-                else{
-                    int cwidth = x * 9 / 10;
+                else if(m_StatusBarFieldCount == 2){
+                    int cwidth = x * 90 / 100;
                     int widths[] = { 100, 100 };
-                    widths[0] = cwidth / m_StatusBarFieldCount;
-                    widths[1] = cwidth / m_StatusBarFieldCount;
+                    widths[0] = cwidth * 6.0 / 10.0;
+                    widths[1] = cwidth * 4.0/  10.0;
+                    m_pStatusBar->SetStatusWidths( m_StatusBarFieldCount, widths );
+                }
+                else{
+                    int widths[] = { 100, 100 };
+                    widths[0] = x * 90 / 100 ;
                     m_pStatusBar->SetStatusWidths( m_StatusBarFieldCount, widths );
                 }
                 
@@ -3504,7 +3518,7 @@ void MyFrame::ODoSetSize( void )
 #ifdef __OCPN__ANDROID__
         min_height = ( pstat_font->GetPointSize() * getAndroidDisplayDensity() ) + 10;
         m_pStatusBar->SetMinHeight( min_height );
-        qDebug() <<"StatusBar min height:" << min_height << "StatusBar font points:" << pstat_font->GetPointSize();
+//        qDebug() <<"StatusBar min height:" << min_height << "StatusBar font points:" << pstat_font->GetPointSize();
 #endif
 //        wxString msg;
 //        msg.Printf(_T("StatusBar min height: %d    StatusBar font points: %d"), min_height, pstat_font->GetPointSize());
@@ -3531,7 +3545,7 @@ void MyFrame::ODoSetSize( void )
     if( g_FloatingToolbarDialog ) {
         wxSize oldSize = g_FloatingToolbarDialog->GetSize();
         g_FloatingToolbarDialog->RePosition();
-        g_FloatingToolbarDialog->SetGeometry();
+        g_FloatingToolbarDialog->SetGeometry(g_FloatingCompassDialog);
         g_FloatingToolbarDialog->Realize();
 
         if( oldSize != g_FloatingToolbarDialog->GetSize() )
@@ -5032,6 +5046,12 @@ int MyFrame::DoOptionsDialog()
     UpdateControlBar();
     Refresh();
     
+    //  We set the compass size first, since that establishes the available space for the toolbar.
+    if(g_FloatingCompassDialog){
+        SetGPSCompassScale();
+        g_FloatingCompassDialog->SetScaleFactor(g_compass_scalefactor);
+    }
+        
     SetToolbarScale();
     RequestNewToolbar();
 
@@ -6551,6 +6571,11 @@ void MyFrame::UpdateGPSCompassStatusBox( bool b_force_new )
 {
     if( !g_FloatingCompassDialog ) return;
 
+    //  Process changes in scale
+    if(fabs(g_FloatingCompassDialog->GetScaleFactor() - g_compass_scalefactor) > 0.01){
+        g_FloatingCompassDialog->SetScaleFactor(g_compass_scalefactor);
+    }
+    
     //    Look for change in overlap or positions
     bool b_update = false;
     wxRect tentative_rect;
@@ -9421,10 +9446,23 @@ void MyFrame::applySettingsString( wxString settings)
     UpdateControlBar();
     Refresh();
     
+    //  We set the compass size first, since that establishes the available space for the toolbar.
+    if(g_FloatingCompassDialog){
+        SetGPSCompassScale();
+        g_FloatingCompassDialog->SetScaleFactor(g_compass_scalefactor);
+        UpdateGPSCompassStatusBox( );
+    }
+    
+    
+    
+    
     SetToolbarScale();
     RequestNewToolbar(true);    // Force rebuild, to pick up bGUIexpert settings.
     SurfaceToolbar();
+    
     ShowChartBarIfEnabled();
+    
+    
 
 #if defined(__WXOSX__) || defined(__WXQT__)
     if( g_FloatingCompassDialog )

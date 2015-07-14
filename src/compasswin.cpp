@@ -119,6 +119,24 @@ void ocpnFloatingCompassWindow::UpdateStatus( bool bnew )
     Refresh( false );
 }
 
+void ocpnFloatingCompassWindow::SetScaleFactor( float factor)
+{
+//    qDebug() << m_scale << factor;
+    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+    
+    if(factor > 0.1)
+        m_scale = factor;
+    else
+        m_scale = 1.0;
+    
+    SetSize(
+        m_scale * ( ( _img_compass.GetWidth() + _img_gpsRed.GetWidth() ) + style->GetCompassLeftMargin() * 2
+        + style->GetToolSeparation()),
+            m_scale * (_img_compass.GetHeight() + style->GetCompassTopMargin() + style->GetCompassBottomMargin()) );
+    
+}
+
+
 wxBitmap ocpnFloatingCompassWindow::CreateBmp( bool newColorScheme )
 {
     wxString gpsIconName;

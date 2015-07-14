@@ -83,6 +83,7 @@ public:
     double GetDisplaySizeMM();
     double GetDisplayDPmm();
     double GetToolbarScaleFactor( int GUIScaleFactor );
+    double GetCompassScaleFactor( int GUIScaleFactor );
     void onStagedResizeFinal();
     
     wxFileDialog *AdjustFileDialogFont(wxWindow *container, wxFileDialog *dlg);

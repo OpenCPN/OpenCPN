@@ -405,7 +405,7 @@ void ocpnFloatingToolbarDialog::SetColorScheme( ColorScheme cs )
 
 }
 
-void ocpnFloatingToolbarDialog::SetGeometry()
+void ocpnFloatingToolbarDialog::SetGeometry(wxWindow *pwinAvoid)
 {
 
     if( m_ptoolbar ) {
@@ -417,12 +417,30 @@ void ocpnFloatingToolbarDialog::SetGeometry()
         m_ptoolbar->SetToolBitmapSize( style_tool_size );
 
         wxSize tool_size = m_ptoolbar->GetToolBitmapSize();
-
+        int grabber_width =  m_style->GetIcon( _T("grabber") ).GetWidth();
+        
+        int avoid_width = (tool_size.x + m_style->GetToolSeparation()) * 2;  // default
+        if(pwinAvoid && pwinAvoid->IsShown())
+            avoid_width = pwinAvoid->GetSize().x + 16;  // this is compass window, if shown
+            
+        
+        
         int max_rows = 10;
         int max_cols = 100;
         if(cc1){
-            max_rows = (cc1->GetSize().y / ( tool_size.y + m_style->GetToolSeparation())) - 1;
-            max_cols = (cc1->GetSize().x / ( tool_size.x + m_style->GetToolSeparation())) - 3;
+           
+            
+            int a = cc1->GetClientSize().x;
+            int b = m_style->GetToolSeparation();
+            
+            max_rows = (cc1->GetClientSize().y / ( tool_size.y + m_style->GetToolSeparation())) - 1;
+            
+            max_cols = (cc1->GetClientSize().x - grabber_width - avoid_width) / ( tool_size.x + m_style->GetToolSeparation());
+//            qDebug() << cc1->GetSize().x << tool_size.x + m_style->GetToolSeparation();
+//            qDebug() << "first" << max_rows << max_cols << m_orient;
+//            qDebug() << cc1->GetSize().x << tool_size.x + m_style->GetToolSeparation();
+            
+            
             if(m_orient == wxTB_VERTICAL)
                 max_rows = wxMax( max_rows, 2);             // at least two rows
             else
@@ -434,6 +452,8 @@ void ocpnFloatingToolbarDialog::SetGeometry()
         else
             m_ptoolbar->SetMaxRowsCols( 100, max_cols);
         m_ptoolbar->SetSizeFactor(m_sizefactor);
+        
+//        qDebug() << max_rows << max_cols << m_orient;
     }
  }
 
@@ -638,7 +658,7 @@ void ocpnFloatingToolbarDialog::FadeTimerEvent( wxTimerEvent& event )
             m_fade_timer.Start( 5000 );           // retrigger the continuous timer
         }
         
-        if(g_bAutoHideToolbar && (g_nAutoHideToolbar > 0) ){
+        if(g_bAutoHideToolbar && (g_nAutoHideToolbar > 0) && !m_bsubmerged){
             SubmergeToGrabber();
             m_fade_timer.Stop();
         }

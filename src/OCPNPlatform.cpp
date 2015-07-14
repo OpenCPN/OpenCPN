@@ -1239,29 +1239,29 @@ double OCPNPlatform::GetToolbarScaleFactor( int GUIScaleFactor )
         wxSize style_tool_size = style->GetToolSize();
         double tool_size = style_tool_size.x;
         
-        // unless overridden by user, we declare the "best" tool size to be the same as the
-        // ActionBar height, reduced by 8 pixels
+        // unless overridden by user, we declare the "best" tool size
+        // to be roughly the same as the ActionBar height.
+        //  This may be approximated in a device orientation-independent way as:
+        //   40pixels * DENSITY
         double premult = 1.0;
         if( g_config_display_size_manual && (g_config_display_size_mm > 0) ){
             double target_size = 9.0;                // mm
         
             double basic_tool_size_mm = tool_size / GetDisplayDPmm();
             premult = target_size / basic_tool_size_mm;
-            qDebug() << "parmsA" << style_tool_size.x << GetDisplayDPmm() << basic_tool_size_mm;
             
         }
         else{
-            qDebug() << "parmsB" << style_tool_size.x << getAndroidActionBarHeight();
-            premult = wxMax(getAndroidActionBarHeight() - 8, 50) / tool_size;
+            premult = wxMax(40 * getAndroidDisplayDensity(), 50) / tool_size;
         }            
         
         //Adjust the scale factor using the global GUI scale parameter
         double postmult =  exp( GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
-        rv = wxMin(rv, 1.5);      //  Clamp at 1.5
         
-        qDebug() << "parmsF" << GUIScaleFactor << premult << postmult;
+//        qDebug() << "parmsF" << GUIScaleFactor << premult << postmult;
         
         rv = premult * postmult;
+        rv = wxMin(rv, 3.0);      //  Clamp at 3.0
     }
         
         
@@ -1272,7 +1272,44 @@ double OCPNPlatform::GetToolbarScaleFactor( int GUIScaleFactor )
     return rv;
 }
 
+double OCPNPlatform::GetCompassScaleFactor( int GUIScaleFactor )
+{
+    double rv = 1.0;
+#ifdef __OCPN__ANDROID__
+    
+    // We try to arrange matters so that at GUIScaleFactor=0, the compass icon is approximately 9 mm in size
+    // and that the value may range from 0.5 -> 2.0
+    
+    if(g_bresponsive ){
+        //  Get the basic size of a tool icon
+        ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+        wxSize style_tool_size = style->GetToolSize();
+        double compass_size = style_tool_size.x;
         
+        // We declare the "nominal best" icon size
+        // to be roughly the same as the ActionBar height.
+        //  This may be approximated in a device orientation-independent way as:
+        //   32pixels * DENSITY
+        double premult = wxMax(32 * getAndroidDisplayDensity(), 50) / compass_size;
+        
+        //Adjust the scale factor using the global GUI scale parameter
+        double postmult =  exp( GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
+        rv = wxMin(rv, 1.5);      //  Clamp at 1.5
+        
+        rv = premult * postmult;
+        qDebug() << "parmsF" << GUIScaleFactor << premult << postmult << rv;
+        rv = wxMin(rv, 3.0);      //  Clamp at 3.0
+    }
+    
+    
+    
+#else
+#endif
+    
+    return rv;
+}
+
+
         
 #ifdef __WXMSW__
 
