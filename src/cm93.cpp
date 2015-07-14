@@ -65,6 +65,7 @@
 #define new DEBUG_NEW
 #endif
 
+extern ChartCanvas               *cc1;
 extern OCPNPlatform     *g_Platform;
 extern wxString         g_SENCPrefix;
 extern s52plib          *ps52plib;
@@ -6828,8 +6829,10 @@ void CM93OffsetDialog::UpdateOffsets ( void )
             m_pcompchart->CloseandReopenCurrentSubchart();
             ::wxEndBusyCursor();
 
-            if ( m_pparent )
+            if ( m_pparent ) {
                   m_pparent->Refresh ( true );
+                  cc1->InvalidateGL();
+            }
       }
 }
 
