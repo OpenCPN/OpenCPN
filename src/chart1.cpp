@@ -3177,7 +3177,10 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 //      or that call GUI methods
 
 #ifdef USE_S57
-    if( g_pCM93OffsetDialog ) g_pCM93OffsetDialog->Destroy();
+    if( g_pCM93OffsetDialog ) {
+        g_pCM93OffsetDialog->Destroy();
+        g_pCM93OffsetDialog = NULL;
+    }
 #endif
 
     if(g_FloatingToolbarDialog)

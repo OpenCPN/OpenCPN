@@ -66,6 +66,7 @@
 #endif
 
 extern ChartCanvas               *cc1;
+extern CM93OffsetDialog          *g_pCM93OffsetDialog;
 extern OCPNPlatform     *g_Platform;
 extern wxString         g_SENCPrefix;
 extern s52plib          *ps52plib;
@@ -4710,7 +4711,6 @@ cm93compchart::cm93compchart()
       m_pDummyBM = NULL;
 
       SetSpecialOutlineCellIndex ( 0, 0, 0 );
-      m_pOffsetDialog = NULL;
       m_last_cell_adjustvp = NULL;
 
       m_pcm93mgr = new cm93manager();
@@ -4721,8 +4721,8 @@ cm93compchart::cm93compchart()
 
 cm93compchart::~cm93compchart()
 {
-    if( m_pOffsetDialog ){
-        m_pOffsetDialog->Hide();
+    if( g_pCM93OffsetDialog ){
+        g_pCM93OffsetDialog->Hide();
     }
        
       for ( int i = 0 ; i < 8 ; i++ )
@@ -5339,8 +5339,8 @@ bool cm93compchart::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort&
 {
       SetVPParms ( VPoint );
 
-      if ( m_pOffsetDialog && m_pOffsetDialog->IsShown() )
-            m_pOffsetDialog->UpdateMCOVRList ( VPoint );
+      if ( g_pCM93OffsetDialog && g_pCM93OffsetDialog->IsShown() )
+            g_pCM93OffsetDialog->UpdateMCOVRList ( VPoint );
 
       return DoRenderRegionViewOnGL ( glc, VPoint, Region );
 
@@ -5594,8 +5594,8 @@ bool cm93compchart::RenderRegionViewOnDC ( wxMemoryDC& dc, const ViewPort& VPoin
 {
       SetVPParms ( VPoint );
 
-      if ( m_pOffsetDialog && m_pOffsetDialog->IsShown() )
-            m_pOffsetDialog->UpdateMCOVRList ( VPoint );
+      if ( g_pCM93OffsetDialog && g_pCM93OffsetDialog->IsShown() )
+            g_pCM93OffsetDialog->UpdateMCOVRList ( VPoint );
 
       return DoRenderRegionViewOnDC ( dc, VPoint, Region );
 }
@@ -6803,8 +6803,6 @@ void CM93OffsetDialog::OnOK ( wxCommandEvent& event )
 void CM93OffsetDialog::SetCM93Chart( cm93compchart *pchart )
 { 
     m_pcompchart = pchart;
-    if ( m_pcompchart )
-        m_pcompchart->SetOffsetDialog ( this );
 }
 
 void CM93OffsetDialog::OnOffSetSet ( wxCommandEvent& event )
