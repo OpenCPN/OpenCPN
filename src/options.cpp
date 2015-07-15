@@ -6018,12 +6018,14 @@ void options::SetConnectionParams(ConnectionParams *cp)
     }
     else if ( cp->Type == INTERNAL_GPS )
     {
-        m_rbTypeInternalGPS->SetValue( true );
+        if(m_rbTypeInternalGPS)
+            m_rbTypeInternalGPS->SetValue( true );
         SetNMEAFormToGPS();
     }
     else if ( cp->Type == INTERNAL_BT )
     {
-        m_rbTypeInternalBT->SetValue( true );
+        if(m_rbTypeInternalBT)
+            m_rbTypeInternalBT->SetValue( true );
         SetNMEAFormToBT();
     }
     
