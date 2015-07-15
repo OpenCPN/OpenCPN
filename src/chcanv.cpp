@@ -3268,6 +3268,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
 #endif            
             
             // Check to see if the text will fit in the StatusBar field...
+            bool b_noshow = false;
             if(parent_frame->GetStatusBar()){
                 int w = 0;
                 int h;
@@ -3275,14 +3276,24 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                 if( dc.IsOk() )
                     dc.GetTextExtent(text, &w, &h);
 
+                // If text is too long for the allocated field, try to reduce the text string a bit.
                 wxRect rect;
                 parent_frame->GetStatusBar()->GetFieldRect(STAT_FIELD_SCALE, rect);
                 if(w && w > rect.width){
                     text.Printf( _("Scale (%1.1fx)"),  m_displayed_scale_factor );
                 }
+                
+                //  Test again...if too big still, then give it up.
+                if( dc.IsOk() )
+                    dc.GetTextExtent(text, &w, &h);
+                if(w && w > rect.width){
+                    b_noshow = true;
+                }
+                    
             }
             
-            parent_frame->SetStatusText( text, STAT_FIELD_SCALE );
+            if(!b_noshow)
+                parent_frame->SetStatusText( text, STAT_FIELD_SCALE );
         }
     }
 

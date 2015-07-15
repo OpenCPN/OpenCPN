@@ -3459,8 +3459,8 @@ void MyFrame::ODoSetSize( void )
                 else if(m_StatusBarFieldCount == 2){
                     int cwidth = x * 90 / 100;
                     int widths[] = { 100, 100 };
-                    widths[0] = cwidth * 6.5 / 10.0;
-                    widths[1] = cwidth * 3.5 /  10.0;
+                    widths[0] = cwidth * 6.4 / 10.0;
+                    widths[1] = cwidth * 3.6 /  10.0;
                     m_pStatusBar->SetStatusWidths( m_StatusBarFieldCount, widths );
                 }
                 else{
