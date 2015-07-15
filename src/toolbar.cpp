@@ -495,8 +495,6 @@ void ocpnFloatingToolbarDialog::SubmergeToGrabber()
     Hide();
     if( m_ptoolbar ) m_ptoolbar->KillTooltip();
 
-    m_bnavgrabber = true;
-    
     m_pRecoverwin = new GrabberWin( m_pparent, this, m_sizefactor, _T("grabber_ext" ), wxPoint(10,10) );
     
    
@@ -564,7 +562,6 @@ bool ocpnFloatingToolbarDialog::CheckSurfaceRequest( wxMouseEvent &event )
 void ocpnFloatingToolbarDialog::SurfaceFromGrabber()
 {
     m_bsubmerged = false;
-    m_bnavgrabber = false;
     
 #ifndef __WXOSX__
     Hide();
@@ -660,7 +657,7 @@ void ocpnFloatingToolbarDialog::FadeTimerEvent( wxTimerEvent& event )
         
         if(g_bAutoHideToolbar && (g_nAutoHideToolbar > 0) && !m_bsubmerged){
             SubmergeToGrabber();
-            m_fade_timer.Stop();
+//            m_fade_timer.Stop();
         }
     }
 }
