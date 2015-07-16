@@ -28,6 +28,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 import ar.com.daidalos.afiledialog.R;
+import android.widget.TextView;
 
 /**
  * A file chooser implemented in an Activity. 
@@ -223,5 +224,12 @@ public class FileChooserActivity extends Activity implements FileChooser {
 	
 	public void setCurrentFolderName(String name) {
 		this.setTitle(name);
+
+                TextView selected = (TextView)this.findViewById(R.id.mytextView1);
+                if(null != selected){
+                    selected.setText( name );
+                }
+
+
 	}
 }
