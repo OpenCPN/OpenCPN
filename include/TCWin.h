@@ -57,10 +57,9 @@ public:
       void PREvent(wxCommandEvent& event);
       void OnCloseWindow(wxCloseEvent& event);
 
-      void Resize(void);
-
       void RePosition(void);
-
+      
+      void RecalculateSize();
 
 private:
     wxTextCtrl  *m_ptextctrl;
@@ -69,7 +68,14 @@ private:
     int           curs_x;
     int           curs_y;
     int          m_plot_type;
-
+    wxSize        m_tc_size;
+    wxPoint       m_position;
+    int           m_x;
+    int           m_y;
+    bool          m_created;
+    int           m_tsx;
+    int           m_tsy;
+    
       IDX_entry   *pIDX;
       wxButton    *OK_button;
       wxButton    *NX_button;
@@ -83,9 +89,9 @@ private:
 
 
       float       tcv[26];
-	  wxListBox  *m_tList ;
+      wxListBox  *m_tList ;
       bool        btc_valid;
-      ChartCanvas *pParent;
+      ChartCanvas    *pParent;
       int         m_corr_mins;
       wxString    m_stz;
       int         m_t_graphday_00_at_station;

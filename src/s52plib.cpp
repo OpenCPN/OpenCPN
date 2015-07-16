@@ -6605,7 +6605,7 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
              glPopAttrib();
          }
          else
-             glChartCanvas::SetClipRegion( *vp, m_last_clip_region);
+             glChartCanvas::SetClipRegion( *vp, m_last_clip_region, false, false);   // already rotated, don't rotate again
 
     free( ptp );
 #endif                  //#ifdef ocpnUSE_GL

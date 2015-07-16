@@ -49,6 +49,7 @@
 #include "s52utils.h"
 #include "s52s57.h"
 #include "navutil.h"
+#include "TCWin.h"
 
 class androidUtilHandler;
 
@@ -399,6 +400,17 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                 g_pAISTargetList->RecalculateSize();
                 if(bshown){
                     g_pAISTargetList->Show();
+                }
+            }
+            
+            // Tide/Current window
+            if(cc1->getTCWin()){
+                bool bshown = cc1->getTCWin()->IsShown();
+                cc1->getTCWin()->Hide();
+                cc1->getTCWin()->RecalculateSize();
+                if(bshown){
+                    cc1->getTCWin()->Show();
+                    cc1->getTCWin()->Refresh();
                 }
             }
             
