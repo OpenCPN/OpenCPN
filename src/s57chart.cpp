@@ -606,8 +606,12 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
 
                         my_fgets( buf, MAX_LINE, *pfpx );
                         int sb_len = atoi( buf + 2 );
+                        unsigned char *buft;
+                        if (sb_len > MAX_LINE) 
+                            buft = (unsigned char *) malloc( sb_len );
+                        else
+                            buft = (unsigned char *) buf;
 
-                        unsigned char *buft = (unsigned char *) malloc( sb_len );
                         pfpx->Read( buft, sb_len );
 
                         npt = *( (int *) ( buft + 5 ) );
@@ -647,7 +651,8 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
                         ymax = *pf++;
                         ymin = *pf;
 #endif
-                        free( buft );
+                        if (sb_len > MAX_LINE) 
+                            free( buft );
 
                         // set s57obj bbox as lat/lon
                         BBObj.SetMin( xmin, ymin );
@@ -710,11 +715,17 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
                         sscanf( buf, " %s %d %f %f", tbuf, &nrecl, &area_ref_lat, &area_ref_lon );
 
                         if( nrecl ) {
-                            unsigned char *polybuf = (unsigned char *) malloc( nrecl + 1 );
+                            unsigned char *polybuf;
+                            if (nrecl > MAX_LINE)
+                                polybuf = (unsigned char *) malloc( nrecl + 1 );
+                            else
+                                polybuf = (unsigned char *)buf;
+
                             pfpx->Read( polybuf, nrecl );
                             polybuf[nrecl] = 0;                     // endit
                             PolyTessGeo *ppg = new PolyTessGeo( polybuf, nrecl, FEIndex, senc_file_version );
-                            free( polybuf );
+                            if (nrecl > MAX_LINE)
+                                free( polybuf );
 
                             pPolyTessGeo = ppg;
 
