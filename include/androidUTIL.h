@@ -63,9 +63,6 @@ extern double getAndroidDisplayDensity();
 extern int getAndroidActionBarHeight();
 extern void androidConfirmSizeCorrection();
 
-extern bool LoadQtStyleSheet(wxString &sheet_file);
-extern QString getQtStyleSheet( void );
-
 extern void androidShowBusyIcon();
 extern void androidHideBusyIcon();
 

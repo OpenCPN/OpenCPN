@@ -72,6 +72,10 @@ wxImage Image_Rotate(wxImage &base_image, double angle, const wxPoint & centre_o
 #define __PIX_CACHE_WXIMAGE__
 #endif
 
+#ifdef __WXQT__
+#define __PIX_CACHE_WXIMAGE__
+#endif
+
 //    Some configuration sanity checks
 
 //          Use ocpnBitmap (Optimized wxBitmap)

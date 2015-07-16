@@ -1266,13 +1266,12 @@ bool MyApp::OnInit()
     imsg += g_Platform->GetSharedDataDir();
     wxLogMessage( imsg );
 
-#ifdef __OCPN__ANDROID__
+#ifdef __WXQT__
     //  Now we can load a Qt StyleSheet, if present
     wxString style_file = g_Platform->GetSharedDataDir();
     style_file += _T("styles");
     appendOSDirSlash( &style_file );
     style_file += _T("qtstylesheet.qss");
-    
     if(LoadQtStyleSheet(style_file)){
         wxString smsg = _T("Loaded Qt Stylesheet: ") + style_file;
         wxLogMessage( smsg );
@@ -1530,6 +1529,7 @@ bool MyApp::OnInit()
     
     // Determine if a transparent toolbar is possible under linux with opengl
     g_bTransparentToolbarInOpenGLOK = false;
+#ifndef __WXQT__    
 #ifdef OCPN_HAVE_X11
     if(!g_bdisable_opengl) {
         Display *disp = XOpenDisplay(NULL);
@@ -1554,6 +1554,7 @@ bool MyApp::OnInit()
         }
         XCloseDisplay(disp);
     }
+#endif
 #endif
 
 // Set default color scheme
@@ -2894,7 +2895,6 @@ void MyFrame::RequestNewToolbar(bool bforcenew)
     bool b_reshow = true;
     if( g_FloatingToolbarDialog ) {
         b_reshow = g_FloatingToolbarDialog->IsShown();
-
         float ff = fabs(g_FloatingToolbarDialog->GetScaleFactor() - g_toolbar_scalefactor);
         if((ff > 0.01f) || bforcenew){
             DestroyMyToolbar();
@@ -5185,12 +5185,14 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
     if(rr & S52_CHANGED){
         b_need_refresh = true;
     }
-    
+
+#ifdef ocpnUSE_GL    
     if(rr & REBUILD_RASTER_CACHE){
         cc1->Disable();
         BuildCompressedCache();
         cc1->Enable();
     }
+#endif    
     
     if(g_config_display_size_mm > 0){
         g_display_size_mm = g_config_display_size_mm;

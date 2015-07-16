@@ -39,6 +39,16 @@
 
 class MyConfig;
 
+//--------------------------------------------------------------------------
+//      Per-Platform Utility support
+//--------------------------------------------------------------------------
+
+#ifdef __WXQT__
+extern bool LoadQtStyleSheet(wxString &sheet_file);
+extern QString getQtStyleSheet( void );
+#endif
+
+
 class OCPNPlatform
 {
 public:    
@@ -121,7 +131,7 @@ public:
 //      Per-Platform Utility support
 //--------------------------------------------------------------------------
     void setChartTypeMaskSel(int mask, wxString &indicator);
-    
+
 private:
     wxString    m_homeDir;
     wxString    m_exePath;

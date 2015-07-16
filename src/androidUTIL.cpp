@@ -250,9 +250,6 @@ bool     b_androidBusyShown;
 double   g_androidDPmm;
 double   g_androidDensity;
 
-QString g_qtStyleSheet;
-
-
 bool            g_bExternalApp;
 
 wxString        g_androidFilesDir;
@@ -695,6 +692,9 @@ extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onResume(JNIEnv *env, jobject obj)
     {
         qDebug() << "onResume";
+        
+        if(cc1)
+            cc1->RenderLastGLCanvas();
         
         g_bSleep = false;
         
@@ -1437,30 +1437,6 @@ void androidHideBusyIcon()
     b_androidBusyShown = false;
 }
 
-
-bool LoadQtStyleSheet(wxString &sheet_file)
-{
-    if(wxFileExists( sheet_file )){
-        //        QApplication qApp = getqApp();
-        if(qApp){
-            QString file(sheet_file.c_str());
-            QFile File(file);
-            File.open(QFile::ReadOnly);
-            g_qtStyleSheet = QLatin1String(File.readAll());
-            
-            return true;
-        }
-        else
-            return false;
-    }
-    else
-        return false;
-}
-
-QString getQtStyleSheet( void )
-{
-    return g_qtStyleSheet;
-}
 
 //---------------------------------------------------------------
 //      GPS Device Support

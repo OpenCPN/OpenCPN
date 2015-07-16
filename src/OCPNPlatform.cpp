@@ -212,6 +212,9 @@ extern bool                     g_bShowStatusBar;
 extern int                      g_cm93_zoom_factor;
 extern int                      g_GUIScaleFactor;
 extern wxArrayOfConnPrm         *g_pConnectionParams;
+extern bool                     g_fog_overzoom;
+extern double                   g_overzoom_emphasis_base;
+extern bool                     g_oz_vector_scale;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions            g_GLOptions;
@@ -571,6 +574,8 @@ void OCPNPlatform::SetDefaultOptions( void )
     
     g_bShowStatusBar = true;
     g_cm93_zoom_factor = -5;
+    g_oz_vector_scale = false;
+    g_fog_overzoom = false;
     
     g_GUIScaleFactor = 0;               // nominal
     
@@ -1289,8 +1294,8 @@ double OCPNPlatform::GetCompassScaleFactor( int GUIScaleFactor )
         // We declare the "nominal best" icon size
         // to be roughly the same as the ActionBar height.
         //  This may be approximated in a device orientation-independent way as:
-        //   32pixels * DENSITY
-        double premult = wxMax(32 * getAndroidDisplayDensity(), 50) / compass_size;
+        //   28pixels * DENSITY
+        double premult = wxMax(28 * getAndroidDisplayDensity(), 50) / compass_size;
         
         //Adjust the scale factor using the global GUI scale parameter
         double postmult =  exp( GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
@@ -1510,3 +1515,34 @@ void OCPNPlatform::setChartTypeMaskSel(int mask, wxString &indicator)
 #endif
     
 }
+
+#ifdef __WXQT__
+QString g_qtStyleSheet;
+
+bool LoadQtStyleSheet(wxString &sheet_file)
+{
+    if(wxFileExists( sheet_file )){
+        //        QApplication qApp = getqApp();
+        if(qApp){
+            QString file(sheet_file.c_str());
+            QFile File(file);
+            File.open(QFile::ReadOnly);
+            g_qtStyleSheet = QLatin1String(File.readAll());
+            
+ //           qApp->setStyleSheet(g_qtStyleSheet);
+            return true;
+        }
+        else
+            return false;
+    }
+    else
+        return false;
+}
+
+QString getQtStyleSheet( void )
+{
+    return g_qtStyleSheet;
+}
+
+#endif
+
