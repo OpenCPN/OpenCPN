@@ -108,7 +108,10 @@ RoutePoint::RoutePoint()
     m_fWaypointRangeRingsStep = g_fWaypointRangeRingsStep;
     m_iWaypointRangeRingsStepUnits = g_iWaypointRangeRingsStepUnits;
     m_wxcWaypointRangeRingsColour = g_colourWaypointRangeRingsColour;
+#ifdef ocpnUSE_GL
     m_pos_on_screen = false;
+#endif
+    
 }
 
 // Copy Constructor

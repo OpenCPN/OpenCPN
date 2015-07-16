@@ -3259,9 +3259,9 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                             DrawGLThickLine( x0, y0, x1, y1, wide_pen, true );
                         }
                     }
+#endif                    
                 }
             }
-#endif      
         }
 #ifdef ocpnUSE_GL
         if(!b_wide_line)
@@ -3269,176 +3269,10 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 #endif              
         free( ptp );
     }
-#if 0
-    else
-        if( rzRules->obj->pPolyTessGeo ) {
-            if( !rzRules->obj->pPolyTessGeo->IsOk() ) // perform deferred tesselation
-                rzRules->obj->pPolyTessGeo->BuildDeferredTess();
-
-            PolyTriGroup *pptg = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
-
-            float *ppolygeo = pptg->pgroup_geom;
-#ifdef ocpnUSE_GL
-            glBegin( GL_LINES );
-#endif
-            int ctr_offset = 0;
-            for( int ic = 0; ic < pptg->nContours; ic++ ) {
-
-                npt = pptg->pn_vertex[ic];
-                wxPoint *ptp = (wxPoint *) malloc( ( npt + 1 ) * sizeof(wxPoint) );
-                wxPoint *pr = ptp;
-
-                float *pf = &ppolygeo[ctr_offset];
-                for( int ip = 0; ip < npt; ip++ ) {
-                    float plon = *pf++;
-                    float plat = *pf++;
-
-                    GetPointPixSingle( rzRules, plat, plon, pr, vp );
-                    pr++;
-                }
-                float plon = ppolygeo[ctr_offset]; // close the polyline
-                float plat = ppolygeo[ctr_offset + 1];
-                GetPointPixSingle( rzRules, plat, plon, pr, vp );
-
-                for( int ipc = 0; ipc < npt; ipc++ ) {
-                    x0 = ptp[ipc].x;
-                    y0 = ptp[ipc].y;
-                    x1 = ptp[ipc + 1].x;
-                    y1 = ptp[ipc + 1].y;
-
-                    // Do not draw null segments
-                    if( ( x0 == x1 ) && ( y0 == y1 ) ) continue;
-
-                    ClipResult res = cohen_sutherland_line_clip_i( &x0, &y0, &x1, &y1, xmin_, xmax_,
-                            ymin_, ymax_ );
-
-                    if( res != Invisible ) {
-                        if( m_pdc )
-                            m_pdc->DrawLine( x0, y0, x1, y1 );
-#ifdef ocpnUSE_GL
-                        else {
-                            glVertex2i( x0, y0 );
-                            glVertex2i( x1, y1 );
-                        }
-#endif                        
-                    }
-                }
-
-//                    pdc->DrawLines(npt + 1, ptp);
-                free( ptp );
-                ctr_offset += npt * 2;
-            }
-#ifdef ocpnUSE_GL
-            glEnd();
-#endif                    
-        }
-
-        else
-            if( rzRules->obj->pPolyTrapGeo ) {
-                if( !rzRules->obj->pPolyTrapGeo->IsOk() ) rzRules->obj->pPolyTrapGeo->BuildTess();
-
-                PolyTrapGroup *pptg = rzRules->obj->pPolyTrapGeo->Get_PolyTrapGroup_head();
-
-                wxPoint2DDouble *ppolygeo = pptg->ptrapgroup_geom;
-#ifdef ocpnUSE_GL
-            glBegin( GL_LINES );
-#endif
-                int ctr_offset = 0;
-                for( int ic = 0; ic < pptg->nContours; ic++ ) {
-
-                    npt = pptg->pn_vertex[ic];
-                    wxPoint *ptp = (wxPoint *) malloc( ( npt + 1 ) * sizeof(wxPoint) );
-                    wxPoint *pr = ptp;
-                    /*
-                     double *pf = &ppolygeo[ctr_offset];
-                     for ( int ip=0 ; ip < npt ; ip++ )
-                     {
-                     double plon = *pf++;
-                     double plat = *pf++;
-
-                     rzRules->chart->GetPointPix ( rzRules, plat, plon, pr );
-                     pr++;
-                     }
-                     double plon = ppolygeo[ ctr_offset];             // close the polyline
-                     double plat = ppolygeo[ ctr_offset + 1];
-                     rzRules->chart->GetPointPix ( rzRules, plat, plon, pr );
-                     */
-                    for( int ip = 0; ip < npt; ip++, pr++ )
-                        GetPointPixSingle( rzRules, ppolygeo[ctr_offset + ip].m_y,
-                                ppolygeo[ctr_offset + ip].m_x, pr, vp );
-
-                    //  Close polyline
-                        GetPointPixSingle( rzRules, ppolygeo[ctr_offset].m_y,
-                            ppolygeo[ctr_offset].m_x, pr, vp );
-
-                    for( int ipc = 0; ipc < npt; ipc++ ) {
-                        x0 = ptp[ipc].x;
-                        y0 = ptp[ipc].y;
-                        x1 = ptp[ipc + 1].x;
-                        y1 = ptp[ipc + 1].y;
-
-                        // Do not draw null segments
-                        if( ( x0 == x1 ) && ( y0 == y1 ) ) continue;
-
-                        ClipResult res = cohen_sutherland_line_clip_i( &x0, &y0, &x1, &y1, xmin_,
-                                xmax_, ymin_, ymax_ );
-
-                        if( res != Invisible ) {
-                            if( m_pdc )
-                                m_pdc->DrawLine( x0, y0, x1, y1 );
-#ifdef ocpnUSE_GL
-                            else {
-                                glVertex2i( x0, y0 );
-                                glVertex2i( x1, y1 );
-                            }
-#endif                        
-                        }
-                    }
-
-                    free( ptp );
-                    ctr_offset += ( npt + 1 ) * 2;
-                }
-#ifdef ocpnUSE_GL
-                glEnd();
-#endif                    
-            }
-
-            else
-                if( rzRules->obj->geoPt ) {
-                    pt *ppt = rzRules->obj->geoPt;
-                    npt = rzRules->obj->npt;
-                    ptp = (wxPoint *) malloc( npt * sizeof(wxPoint) );
-                    wxPoint *pr = ptp;
-                    wxPoint p;
-                    for( int ip = 0; ip < npt; ip++ ) {
-                        float plat = ppt->y;
-                        float plon = ppt->x;
-
-                        GetPointPixSingle( rzRules, plat, plon, &p, vp );
-
-                        *pr = p;
-
-                        pr++;
-                        ppt++;
-                    }
-
-                    if( m_pdc ) m_pdc->DrawLines( npt, ptp );
-#ifdef ocpnUSE_GL
-                    else {
-                        glBegin( GL_LINE_STRIP ); // or GL_LINE_LOOP?????
-                        for( int ip = 0; ip < npt; ip++ )
-                            glVertex2i( ptp[ip].x, ptp[ip].y );
-                        glEnd();
-                    }
-#endif
-                    free( ptp );
-                }
-#endif
 #ifdef ocpnUSE_GL
     if( !m_pdc )
         glDisable( GL_LINE_STIPPLE );
 #endif                
-   
     return 1;
 }
 

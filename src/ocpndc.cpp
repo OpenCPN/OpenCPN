@@ -1112,8 +1112,10 @@ bool ocpnDC::ConfigurePen()
 
     wxColour c = m_pen.GetColour();
     int width = m_pen.GetWidth();
+#ifdef ocpnUSE_GL
     glColor4ub( c.Red(), c.Green(), c.Blue(), c.Alpha() );
     glLineWidth( wxMax(g_GLMinSymbolLineWidth, width) );
+#endif    
     return true;
 }
 
