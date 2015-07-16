@@ -639,4 +639,5 @@ $ /home/dsr/Projects/android-ndk/android-sdk-linux/tools/monitor
         Configure and build OCPN
         $cmake -DUSE_GARMINHOST=OFF -D_wx_selected_config=qt -DUSE_GL=OFF
 
-
+        To be sure of getting the correct Qt libraries, do this:
+        $export LD_LIBRARY_PATH="/home/dsr/Projects/qt5_x86/build_debug/qtbase/lib:$LD_LIBRARY_PATH"
