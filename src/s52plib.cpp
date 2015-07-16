@@ -4118,6 +4118,13 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 #ifdef ocpnUSE_GL
     CARC_Buffer buffer;
 
+    float scale_factor = 1.0;
+    if(g_bresponsive){
+        scale_factor *=  exp( g_ChartScaleFactor * (0.693 / 5.0) );       //  exp(2)
+        scale_factor = wxMax(scale_factor, .5);
+        scale_factor = wxMin(scale_factor, 4.);
+    }
+    
     if( !m_pdc ) // opengl
     {
         //    Is there not already an generated vbo the CARC_hashmap for this object?
@@ -4134,7 +4141,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             buffer.color[0][1] = colorb.Green();
             buffer.color[0][2] = colorb.Blue();
             buffer.color[0][3] = 150;
-            buffer.line_width[0] = wxMax(g_GLMinSymbolLineWidth, outline_width);
+            buffer.line_width[0] = wxMax(g_GLMinSymbolLineWidth, outline_width * scale_factor);
 
             int steps = ceil((sectr2 - sectr1) / 12) + 1; // max of 12 degree step
             float step = (sectr2 - sectr1) / (steps - 1);
@@ -4156,7 +4163,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             buffer.color[1][1] = colorb.Green();
             buffer.color[1][2] = colorb.Blue();
             buffer.color[1][3] = 150;
-            buffer.line_width[1] = wxMax(g_GLMinSymbolLineWidth, (float)arc_width + 0.8);
+            buffer.line_width[1] = wxMax(g_GLMinSymbolLineWidth, (float)arc_width + 0.8) * scale_factor;
         
             //    Draw the sector legs
             if( sector_radius > 0 ) {
@@ -4167,7 +4174,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 buffer.color[2][1] = c.Green();
                 buffer.color[2][2] = c.Blue();
                 buffer.color[2][3] = c.Alpha();
-                buffer.line_width[2] = wxMax(g_GLMinSymbolLineWidth, (float)0.7);
+                buffer.line_width[2] = wxMax(g_GLMinSymbolLineWidth, (float)0.7) * scale_factor;
         
                 float a = ( sectr1 - 90 ) * PI / 180.;
                 buffer.data[s++] = 0;
@@ -4205,17 +4212,22 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     if( !m_pdc ) // opengl
     {
 #ifdef ocpnUSE_GL
+        glPushMatrix();
         glTranslatef( r.x, r.y, 0 );
-
+         
+        glScalef(scale_factor, scale_factor, 1);
         glVertexPointer(2, GL_FLOAT, 2 * sizeof(float), buffer.data);
 
+#ifndef __OCPN__ANDROID__
         glEnable( GL_BLEND );
         glEnable( GL_LINE_SMOOTH );
+#endif        
         glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
 
         glColor3ubv(buffer.color[0]);
         glLineWidth(buffer.line_width[0]);
         glDrawArrays(GL_LINE_STRIP, 0, buffer.steps);
+
 
         glColor3ubv(buffer.color[1]);
         glLineWidth(buffer.line_width[1]);
@@ -4238,7 +4250,8 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         glDisable( GL_LINE_SMOOTH );
         glDisable( GL_BLEND );
         
-        glTranslatef( -r.x, -r.y, 0 );
+//        glTranslatef( -r.x, -r.y, 0 );
+        glPopMatrix();
 #endif        
     } else {
         //      Get the bitmap into a memory dc
