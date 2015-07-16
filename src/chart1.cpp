@@ -7058,6 +7058,8 @@ void MyFrame::UpdateControlBar( void )
 
     if( !pCurrentStack ) return;
 
+    if ( !g_bShowChartBar ) return;
+
     int sel_type = -1;
     int sel_family = -1;
     
