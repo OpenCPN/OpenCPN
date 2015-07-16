@@ -952,7 +952,7 @@ void options::RecalculateSize()
         esize.y = wxMin(esize.y, dsize.y - (2 * GetCharHeight()));
         esize.x = wxMin(esize.x, dsize.x - (2 * GetCharHeight()));
         SetClientSize(esize);
-
+        
         wxSize fsize = GetSize();
         wxSize canvas_size = GetParent()->GetSize();
         wxPoint canvas_pos = GetParent()->GetPosition();
@@ -3001,7 +3001,15 @@ void options::CreateControls()
     m_pListbook = new wxNotebook( itemDialog1, ID_NOTEBOOK, wxDefaultPosition, wxSize(-1, -1), flags);
     m_pListbook->Connect( wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler( options::OnNBPageChange ), NULL, this );
 #endif    
- 
+
+#ifdef __OCPN__ANDROID__    
+    //  In wxQT, we can dynamically style the little scroll buttons on a small display, to make them bigger
+    wxString qstyle;
+    qstyle.Printf(_T("QTabBar::scroller { width: %dpx; }"), m_fontHeight * 3 / 4);
+    wxCharBuffer buf = qstyle.ToUTF8();
+    m_pListbook->GetHandle()->setStyleSheet( buf.data() );
+#endif    
+    
 #ifdef __WXMSW__
     //  Windows clips the width of listbook selectors to about twice icon size
     //  This makes the text render with ellipses if too large
