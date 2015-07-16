@@ -490,7 +490,6 @@ void ocpnFloatingToolbarDialog::Submerge()
 void ocpnFloatingToolbarDialog::SubmergeToGrabber()
 {
 //Submerge();
-
     m_bsubmerged = true;
     Hide();
     if( m_ptoolbar ) m_ptoolbar->KillTooltip();
@@ -952,13 +951,6 @@ void ocpnFloatingToolbarDialog::DestroyToolBar()
         delete m_ptoolbar;                  //->Destroy();
         m_ptoolbar = NULL;
     }
-    
-    if(m_pRecoverwin){
-        m_pRecoverwin->Hide();
-        delete m_pRecoverwin;
-        m_pRecoverwin = NULL;
-    }
-    
 }
 
 //----------------------------------------------------------------------------
