@@ -63,6 +63,7 @@
 #include "toolbar.h"
 #include "chartbarwin.h"
 #include "tcmgr.h"
+#include "compass.h"
 
 #ifndef GL_ETC1_RGB8_OES
 #define GL_ETC1_RGB8_OES                                        0x8D64
@@ -110,6 +111,7 @@ extern ocpnStyle::StyleManager* g_StyleManager;
 extern bool             g_bShowChartBar;
 extern ChartBarWin     *g_ChartBarWin;
 extern Piano           *g_Piano;
+extern ocpnCompass         *g_Compass;
 
 GLenum       g_texture_rectangle_format;
 
@@ -902,6 +904,9 @@ void glChartCanvas::OnSize( wxSizeEvent& event )
 
 void glChartCanvas::MouseEvent( wxMouseEvent& event )
 {
+    if(g_Compass && g_Compass->MouseEvent( event ))
+        return;
+
     if(cc1->MouseEventChartBar( event ))
         return;
 
@@ -2297,6 +2302,8 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc, OCPNRegion &region )
     // render the chart bar
     if(g_bShowChartBar && !g_ChartBarWin)
         DrawChartBar(dc);
+
+    g_Compass->Paint(dc);
 }
 
 void glChartCanvas::DrawChartBar( ocpnDC &dc )

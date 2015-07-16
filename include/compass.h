@@ -23,38 +23,38 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-class ocpnFloatingCompassWindow : public wxDialog
+class ocpnDC;
+
+class ocpnCompass
 {
 public:
-      ocpnFloatingCompassWindow( wxWindow *parent );
-      ~ocpnFloatingCompassWindow();
-      void OnPaint( wxPaintEvent& event );
-      wxBitmap CreateBmp( bool bnew = false );
+      ocpnCompass();
+      ~ocpnCompass();
+
+      bool IsShown() const { return m_shown; }
+      void Show(bool show) { m_shown = show; }
+      void Paint( ocpnDC& dc );
+
       void UpdateStatus( bool newColorScheme = false );
 
-      void OnClose( wxCloseEvent& event );
-      void OnToolLeftClick( wxCommandEvent& event );
-      void MouseEvent( wxMouseEvent& event );
+      bool MouseEvent( wxMouseEvent& event );
       void SetColorScheme( ColorScheme cs );
-      int GetXOffset(void) const { return m_xoffset; }
-      int GetYOffset(void) const { return m_yoffset; }
+      void Move(const wxPoint &pt) { m_rect.SetPosition(pt); }
+      wxRect GetRect(void) const { return m_rect; }
 
 private:
+      void CreateBmp( bool bnew = false );
+
       wxBitmap m_StatBmp;
       wxBitmap m_MaskBmp;
       wxStaticBitmap *m_pStatBoxToolStaticBmp;
 
-      wxWindow *m_pparent;
-      wxBoxSizer *m_topSizer;
       wxString m_lastgpsIconName;
       double m_rose_angle;
 
       wxBitmap _img_compass;
       wxBitmap _img_gpsRed;
-      int m_xoffset;
-      int m_yoffset;
 
-      DECLARE_EVENT_TABLE()
+      wxRect m_rect;
+      bool m_shown;
 };
-
-
