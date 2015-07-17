@@ -864,6 +864,20 @@ bool CompressionWorkerPool::DoJob(JobTicket* pticket)
     return ret;
 }
 
+bool CompressionWorkerPool::AsJob( wxString const &chart_path ) const
+{
+    if(chart_path.Len()){    
+        wxJobListNode *tnode = running_list.GetFirst();
+        while(tnode){
+            JobTicket *ticket = tnode->GetData();
+            if(ticket->m_ChartPath.IsSameAs(chart_path)){
+                return true;
+            }
+            tnode = tnode->GetNext();
+        }
+    }
+    return false;
+}
 
 void CompressionWorkerPool::PurgeJobList( wxString chart_path )
 {
@@ -882,23 +896,31 @@ void CompressionWorkerPool::PurgeJobList( wxString chart_path )
                 tnode = tnode->GetNext();
             }
         }
+
+        wxJobListNode *node = running_list.GetFirst();
+        while(node){
+            JobTicket *ticket = node->GetData();
+            if(ticket->m_ChartPath.IsSameAs(chart_path)){
+                ticket->b_isaborted = false;
+                ticket->b_abort = true;
+            }
+            node = node->GetNext();
+        }
             
         if(bthread_debug)
             printf("Pool:  Purge, todo count: %lu\n", (long unsigned)todo_list.GetCount());
     }
     else {
         todo_list.Clear();
+        //  Mark all running tasks for "abort"
+        wxJobListNode *node = running_list.GetFirst();
+        while(node){
+            JobTicket *ticket = node->GetData();
+            ticket->b_isaborted = false;
+            ticket->b_abort = true;
+            node = node->GetNext();
+        }
     }        
-
-    //  Mark all running tasks for "abort"
-    wxJobListNode *node = running_list.GetFirst();
-    while(node){
-        JobTicket *ticket = node->GetData();
-        ticket->b_isaborted = false;
-        ticket->b_abort = true;
-        node = node->GetNext();
-    }
-    
 }
 
 
@@ -1128,6 +1150,14 @@ void glTexFactory::DeleteAllDescriptors( void )
         m_td_array[i] = 0;
     }
     
+}
+
+bool glTexFactory::BackgroundCompressionAsJob() const
+{
+    if(g_CompressorPool) {
+        return g_CompressorPool->AsJob( m_ChartPath );
+    }
+    return false;
 }
 
 void glTexFactory::PurgeBackgroundCompressionPool()

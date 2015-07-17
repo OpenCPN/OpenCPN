@@ -65,6 +65,7 @@ extern GLuint g_raster_format;
 #include "FontMgr.h"
 #include "OCPN_Sound.h"
 #include "NMEALogWindow.h"
+#include "wx28compat.h"
 
 #include "ais.h"
 #include "AIS_Decoder.h"
@@ -1586,13 +1587,13 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
 
         // Unchecked
         renderer_dc.SelectObject(unchecked_bmp);
-        renderer_dc.SetBackground(*wxTheBrushList->FindOrCreateBrush(GetBackgroundColour(), wxSOLID));
+        renderer_dc.SetBackground(*wxTheBrushList->FindOrCreateBrush(GetBackgroundColour(), wxBRUSHSTYLE_SOLID));
         renderer_dc.Clear();
         wxRendererNative::Get().DrawCheckBox(this, renderer_dc, wxRect(0, 0, 16, 16), 0);
 
         // Checked
         renderer_dc.SelectObject(checked_bmp);
-        renderer_dc.SetBackground(*wxTheBrushList->FindOrCreateBrush(GetBackgroundColour(), wxSOLID));
+        renderer_dc.SetBackground(*wxTheBrushList->FindOrCreateBrush(GetBackgroundColour(), wxBRUSHSTYLE_SOLID));
         renderer_dc.Clear();
         wxRendererNative::Get().DrawCheckBox(this, renderer_dc, wxRect(0, 0, 16, 16), wxCONTROL_CHECKED);
     }
