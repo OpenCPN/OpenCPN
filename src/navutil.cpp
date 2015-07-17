@@ -1182,7 +1182,7 @@ int MyConfig::LoadMyConfig()
     
     Read( _T ( "UIStyle" ), &g_uiStyle, wxT("Traditional") );
 
-    Read( _T ( "NCacheLimit" ), &g_nCacheLimit, CACHE_N_LIMIT_DEFAULT );
+    Read( _T ( "NCacheLimit" ), &g_nCacheLimit, 0 );
 
     int mem_limit;
     Read( _T ( "MEMCacheLimit" ), &mem_limit, 0 );
