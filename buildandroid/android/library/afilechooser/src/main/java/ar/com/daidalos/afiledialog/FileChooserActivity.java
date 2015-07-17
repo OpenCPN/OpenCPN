@@ -129,6 +129,8 @@ public class FileChooserActivity extends Activity implements FileChooser {
 	 */
 	public static final String OUTPUT_NEW_FILE_NAME = "output_new_file_name";
 	
+        public static final String INPUT_TITLE_STRING = "Title Message";
+
 	// ---- Activity methods ----- //
 	
     /** Called when the activity is first created. */
@@ -155,6 +157,7 @@ public class FileChooserActivity extends Activity implements FileChooser {
         Bundle extras = this.getIntent().getExtras();
         if(extras != null) {
     		if(extras.containsKey(INPUT_START_FOLDER)) folderPath = extras.getString(INPUT_START_FOLDER);
+            if(extras.containsKey(INPUT_TITLE_STRING)) this.setTitle(extras.getString(INPUT_TITLE_STRING));
             if(extras.containsKey(INPUT_REGEX_FILTER)) core.setFilter(extras.getString(INPUT_REGEX_FILTER));
             if(extras.containsKey(INPUT_SHOW_ONLY_SELECTABLE)) core.setShowOnlySelectable(extras.getBoolean(INPUT_SHOW_ONLY_SELECTABLE));
             if(extras.containsKey(INPUT_FOLDER_MODE)) core.setFolderMode(extras.getBoolean(INPUT_FOLDER_MODE));
@@ -223,9 +226,9 @@ public class FileChooserActivity extends Activity implements FileChooser {
 	}
 	
 	public void setCurrentFolderName(String name) {
-		this.setTitle(name);
+                //this.setTitle(name);
 
-                TextView selected = (TextView)this.findViewById(R.id.mytextView1);
+                TextView selected = (TextView)this.findViewById(R.id.afdLabelFile);
                 if(null != selected){
                     selected.setText( name );
                 }

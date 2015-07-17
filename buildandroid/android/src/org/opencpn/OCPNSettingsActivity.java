@@ -184,6 +184,8 @@ public class OCPNSettingsActivity extends PreferenceActivity
         intent.putExtra(FileChooserActivity.INPUT_FOLDER_MODE, true);
         intent.putExtra(FileChooserActivity.INPUT_SHOW_FULL_PATH_IN_TITLE, true);
         intent.putExtra(FileChooserActivity.INPUT_SHOW_ONLY_SELECTABLE, true);
+        intent.putExtra(FileChooserActivity.INPUT_TITLE_STRING, "Add Chart Drectory");
+
         startActivityForResult(intent, 0);
    }
 
