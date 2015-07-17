@@ -64,7 +64,7 @@ FontMgr::FontMgr()
     s_locale = g_locale;
     
     //    Get a nice generic font as default
-    pDefFont = wxTheFontList->FindOrCreateFont( 12, wxDEFAULT, wxNORMAL, wxBOLD, FALSE,
+    pDefFont = wxTheFontList->FindOrCreateFont( 12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, FALSE,
             wxString( _T ( "" ) ), wxFONTENCODING_SYSTEM );
 
 }

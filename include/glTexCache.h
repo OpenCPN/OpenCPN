@@ -92,6 +92,7 @@ public:
     void DeleteAllTextures( void );
     void DeleteSomeTextures( long target );
     void DeleteAllDescriptors( void );
+    bool BackgroundCompressionAsJob() const;
     void PurgeBackgroundCompressionPool();
     void OnTimer(wxTimerEvent &event);
     void SetLRUTime(wxDateTime time) { m_LRUtime = time; }
@@ -181,6 +182,7 @@ public:
                       bool b_throttle_thread, bool b_immediate, bool b_postZip);
     void OnEvtThread( OCPN_CompressionThreadEvent & event );
     int GetRunningJobCount(){ return m_njobs_running; }
+    bool AsJob( wxString const &chart_path ) const;
     void PurgeJobList( wxString chart_path = wxEmptyString );
     
     unsigned int m_raster_format;

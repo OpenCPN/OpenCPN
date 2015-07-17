@@ -36,7 +36,7 @@ union {
 	unsigned char reserved6;
 	unsigned char reserved7;
 	unsigned char datasz[4];
-	unsigned char databuf[1]; /* actually an variable length array... */
+	unsigned char databuf[4]; /* actually an variable length array... */
 	} gusb_pkt;
 	unsigned char dbuf[1024];
 } garmin_usb_packet;

@@ -43,7 +43,7 @@
 #include "chart1.h"
 #include "chartdb.h"
 #include "chcanv.h"
-
+#include "wx28compat.h"
 
 //------------------------------------------------------------------------------
 //    External Static Storage
@@ -103,9 +103,9 @@ void ThumbWin::OnPaint( wxPaintEvent& event )
             if( pThumbChart->GetThumbData()->pDIBThumb ) dc.DrawBitmap(
                     *( pThumbChart->GetThumbData()->pDIBThumb ), 0, 0, false );
 
-            wxPen ppPen( GetGlobalColor( _T("CHBLK") ), 1, wxSOLID );
+            wxPen ppPen( GetGlobalColor( _T("CHBLK") ), 1, wxPENSTYLE_SOLID );
             dc.SetPen( ppPen );
-            wxBrush yBrush( GetGlobalColor( _T("CHYLW") ), wxSOLID );
+            wxBrush yBrush( GetGlobalColor( _T("CHYLW") ), wxBRUSHSTYLE_SOLID );
             dc.SetBrush( yBrush );
             dc.DrawCircle( pThumbChart->GetThumbData()->ShipX, pThumbChart->GetThumbData()->ShipY, 6 );
         }

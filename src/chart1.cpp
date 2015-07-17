@@ -1203,7 +1203,7 @@ bool MyApp::OnInit()
 
 
 // Set up default FONT encoding, which should have been done by wxWidgets some time before this......
-    wxFont temp_font( 10, wxDEFAULT, wxNORMAL, wxNORMAL, FALSE, wxString( _T("") ),
+    wxFont temp_font( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, FALSE, wxString( _T("") ),
             wxFONTENCODING_SYSTEM );
     temp_font.SetDefaultEncoding( wxFONTENCODING_SYSTEM );
 
@@ -3177,7 +3177,10 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 //      or that call GUI methods
 
 #ifdef USE_S57
-    if( g_pCM93OffsetDialog ) g_pCM93OffsetDialog->Destroy();
+    if( g_pCM93OffsetDialog ) {
+        g_pCM93OffsetDialog->Destroy();
+        g_pCM93OffsetDialog = NULL;
+    }
 #endif
 
     if(g_FloatingToolbarDialog)
@@ -7788,48 +7791,33 @@ bool GetMemoryStatus( int *mem_total, int *mem_used )
             
 #ifdef __LINUX__
 
-//      Use filesystem /proc/pid/status to determine memory status
-
-    unsigned long processID = wxGetProcessId();
+//      Use filesystem /proc/self/statm to determine memory status
+//	Provides information about memory usage, measured in pages.  The columns are:
+//	size       total program size (same as VmSize in /proc/[pid]/status)
+//	resident   resident set size (same as VmRSS in /proc/[pid]/status)
+//	share      shared pages (from shared mappings)
+//	text       text (code)
+//	lib        library (unused in Linux 2.6)
+//	data       data + stack
+//	dt         dirty pages (unused in Linux 2.6)
+                                                                                                                                                                                                             
     wxTextFile file;
     wxString file_name;
 
     if(mem_used)
     {
         *mem_used = 0;
-        file_name.Printf(_T("/proc/%d/status"), (int)processID);
+        file_name = _T("/proc/self/statm");
         if(file.Open(file_name))
         {
-            bool b_found = false;
-            wxString str;
-            for ( str = file.GetFirstLine(); !file.Eof(); str = file.GetNextLine() )
-            {
-                wxStringTokenizer tk(str, _T(" :"));
-                while ( tk.HasMoreTokens() )
-                {
-                    wxString token = tk.GetNextToken();
-                    if(token == _T("VmRSS"))
-                    {
-                        wxStringTokenizer tkm(str, _T(" "));
-                        wxString mem = tkm.GetNextToken();
-                        long mem_extract = 0;
-                        while(mem.Len())
-                        {
-                            mem.ToLong(&mem_extract);
-                            if(mem_extract)
-                            break;
-                            mem = tkm.GetNextToken();
-                        }
-
-                        *mem_used = mem_extract;
-                        b_found = true;
-                        break;
-                    }
-                    else
-                    break;
-                }
-                if(b_found)
-                break;
+            wxString str = file.GetFirstLine();
+            wxStringTokenizer tkm(str, _T(" "));
+            wxString mem = tkm.GetNextToken();
+            mem = tkm.GetNextToken();
+            long mem_extract = 0;
+            if (mem.Len()) {
+                mem.ToLong(&mem_extract);
+                *mem_used = mem_extract *4; // XXX assume 4K page
             }
         }
     }

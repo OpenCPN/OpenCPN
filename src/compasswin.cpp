@@ -32,6 +32,8 @@
 #include "compasswin.h"
 #include "chcanv.h"
 #include "styles.h"
+#include "wx28compat.h"
+
 BEGIN_EVENT_TABLE(ocpnFloatingCompassWindow, wxWindow) EVT_PAINT ( ocpnFloatingCompassWindow::OnPaint )
     EVT_LEFT_DOWN ( ocpnFloatingCompassWindow::MouseEvent )
 END_EVENT_TABLE()
@@ -190,11 +192,11 @@ wxBitmap ocpnFloatingCompassWindow::CreateBmp( bool newColorScheme )
 
             wxMemoryDC mdc;
             mdc.SelectObject( StatBmp );
-            mdc.SetBackground( wxBrush( GetGlobalColor( _T("GREY2") ), wxSOLID ) );
+            mdc.SetBackground( wxBrush( GetGlobalColor( _T("GREY2") ), wxBRUSHSTYLE_SOLID ) );
             mdc.Clear();
 
             mdc.SetPen( wxPen( GetGlobalColor( _T("UITX1") ), 1 ) );
-            mdc.SetBrush( wxBrush( GetGlobalColor( _T("UITX1") ), wxTRANSPARENT ) );
+            mdc.SetBrush( wxBrush( GetGlobalColor( _T("UITX1") ), wxBRUSHSTYLE_TRANSPARENT ) );
 
             mdc.DrawRoundedRectangle( 0, 0, StatBmp.GetWidth(), StatBmp.GetHeight(),
                     style->GetCompassCornerRadius() );

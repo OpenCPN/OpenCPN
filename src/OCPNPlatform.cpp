@@ -1076,7 +1076,7 @@ double OCPNPlatform::getFontPointsperPixel( void )
     //  Make a measurement...
     wxScreenDC dc;
     
-    wxFont *f = wxTheFontList->FindOrCreateFont( 12, wxDEFAULT, wxNORMAL, wxBOLD, FALSE,
+    wxFont *f = wxTheFontList->FindOrCreateFont( 12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, FALSE,
                                                 wxString( _T ( "" ) ), wxFONTENCODING_SYSTEM );
     dc.SetFont(*f);
     
