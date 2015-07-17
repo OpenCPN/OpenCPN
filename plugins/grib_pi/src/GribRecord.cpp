@@ -1059,9 +1059,9 @@ void  GribRecord::setRecordCurrentDate (time_t t)
 time_t GribRecord::makeDate(
             zuint year,zuint month,zuint day,zuint hour,zuint min,zuint sec) {
     struct tm date;
-    date.tm_sec  = sec;         /* seconds */
-    date.tm_min  = min;         /* minutes */
-    date.tm_hour = hour;        /* hours */
+    date.tm_sec  = 0  ;         /* seconds */
+    date.tm_min  = 0;           /* minutes */
+    date.tm_hour = 0;           /* hours */
     date.tm_mday = day;         /* day of the month */
     date.tm_mon  = month-1;     /* month */
     date.tm_year = year-1900;   /* year */
@@ -1070,8 +1070,16 @@ time_t GribRecord::makeDate(
     date.tm_isdst  = 0;         /* daylight saving time */
 
 	time_t   temps = -1;
-      wxDateTime dt(date);
-      temps = dt.GetTicks();
+    wxDateTime dt(date);
+	temps = dt.GetTicks();
+	temps += ((hour * 3600) + (min * 60 ) + sec);								//find datetime exactly as in the file
+	wxDateTime dtt(temps);
+	wxTimeSpan of = wxDateTime::Now() - (wxDateTime::Now().ToGMT() );			//transform to local time
+	if(dtt.IsDST())																//correct dst offset applied 3 times  why ???
+		of -= wxTimeSpan( 2, 0 );
+	dtt += of;
+	temps = dtt.GetTicks();
+
 /*
 	char sdate[64];
 	sprintf(sdate, "%04d-%02d-%02d 00:00:00", year,month,day);
