@@ -1460,11 +1460,9 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
     //  Paint updates may have been externally disabled (temporarily, to avoid Yield() recursion performance loss)
     if(!m_b_paint_enable)
         return;
-        
     //      Recursion test, sometimes seen on GTK systems when wxBusyCursor is activated
     if( m_in_glpaint ) return;
     m_in_glpaint++;
-
     Render();
 
     m_in_glpaint--;
@@ -1530,65 +1528,146 @@ ViewPort glChartCanvas::NormalizedViewPort(const ViewPort &vp)
     return cvp;
 }
 
-void glChartCanvas::DrawAllRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region )
+void glChartCanvas::DrawStaticRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region )
 {
     ocpnDC dc(*this);
-
+    
     for(wxRouteListNode *node = pRouteList->GetFirst();
         node; node = node->GetNext() ) {
         Route *pRouteDraw = node->GetData();
+    if( !pRouteDraw )
+        continue;
+    
+    /* defer rendering active routes until later */
+    if( pRouteDraw->IsActive() || pRouteDraw->IsSelected() )
+        continue;
+    
+    if( pRouteDraw->IsTrack() ) {
+        /* defer rendering active tracks until later */
+        if( dynamic_cast<Track *>(pRouteDraw)->IsRunning() )
+            continue;
+    }
+    
+    /* defer rendering routes being edited until later */
+    if( pRouteDraw->m_bIsBeingEdited )
+        continue;
+    
+    
+    /* this routine is called very often, so rather than using the
+     *           wxBoundingBox::Intersect routine, do the comparisons directly
+     *           to reduce the number of floating point comparisons */
+    
+    const wxBoundingBox &vp_box = vp.GetBBox(), &test_box = pRouteDraw->GetBBox();
+    
+    if(test_box.GetMaxY() < vp_box.GetMinY())
+        continue;
+    
+    if(test_box.GetMinY() > vp_box.GetMaxY())
+        continue;
+    
+    double vp_minx = vp_box.GetMinX(), vp_maxx = vp_box.GetMaxX();
+    double test_minx = test_box.GetMinX(), test_maxx = test_box.GetMaxX();
+    
+    /* TODO: use DrawGL instead of Draw */
+    
+    // Route is not wholly outside viewport
+    if(test_maxx >= vp_minx && test_minx <= vp_maxx) {
+        pRouteDraw->DrawGL( vp, region );
+    } else if( vp_maxx > 180. ) {
+        if(test_minx + 360 <= vp_maxx && test_maxx + 360 >= vp_minx)
+            pRouteDraw->DrawGL( vp, region );
+    } else if( pRouteDraw->CrossesIDL() || vp_minx < -180. ) {
+        if(test_maxx - 360 >= vp_minx && test_minx - 360 <= vp_maxx)
+            pRouteDraw->DrawGL( vp, region );
+    }
+        }
+        
+        /* Waypoints not drawn as part of routes, and not being edited */
+        if( vp.GetBBox().GetValid() && pWayPointMan) {
+            for(wxRoutePointListNode *pnode = pWayPointMan->GetWaypointList()->GetFirst(); pnode; pnode = pnode->GetNext() ) {
+                RoutePoint *pWP = pnode->GetData();
+                if( pWP && (!pWP->m_bIsBeingEdited) &&(!pWP->m_bIsInRoute && !pWP->m_bIsInTrack ) )
+                    pWP->DrawGL( vp, region );
+            }
+        }
+        
+}
+
+void glChartCanvas::DrawDynamicRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region )
+{
+    ocpnDC dc(*this);
+    
+    for(wxRouteListNode *node = pRouteList->GetFirst(); node; node = node->GetNext() ) {
+        Route *pRouteDraw = node->GetData();
+        
+        int drawit = 0;
         if( !pRouteDraw )
             continue;
-
-        /* defer rendering active routes until later */
+        
+        /* Active routes */
         if( pRouteDraw->IsActive() || pRouteDraw->IsSelected() )
-            continue;
-
+            drawit++;
+        
         if( pRouteDraw->IsTrack() ) {
-            /* defer rendering active tracks until later */
+            /* Active tracks */
             if( dynamic_cast<Track *>(pRouteDraw)->IsRunning() )
-                continue;
+                drawit++;
         }
-
-        /* this routine is called very often, so rather than using the
-           wxBoundingBox::Intersect routine, do the comparisons directly
-           to reduce the number of floating point comparisons */
-
-        const wxBoundingBox &vp_box = vp.GetBBox(), &test_box = pRouteDraw->GetBBox();
-
-        if(test_box.GetMaxY() < vp_box.GetMinY())
-            continue;
-
-        if(test_box.GetMinY() > vp_box.GetMaxY())
-            continue;
-
-        double vp_minx = vp_box.GetMinX(), vp_maxx = vp_box.GetMaxX();
-        double test_minx = test_box.GetMinX(), test_maxx = test_box.GetMaxX();
-
-        /* TODO: use DrawGL instead of Draw */
-
-        // Route is not wholly outside viewport
-        if(test_maxx >= vp_minx && test_minx <= vp_maxx) {
-            pRouteDraw->DrawGL( vp, region );
-        } else if( vp_maxx > 180. ) {
-            if(test_minx + 360 <= vp_maxx && test_maxx + 360 >= vp_minx)
+        
+        /* Routes being edited */
+        if( pRouteDraw->m_bIsBeingEdited )
+            drawit++;
+        
+        /* Routes Selected */
+        if( pRouteDraw->IsSelected() )
+            drawit++;
+        
+        if(drawit){
+            /* this routine is called very often, so rather than using the
+             *           wxBoundingBox::Intersect routine, do the comparisons directly
+             *           to reduce the number of floating point comparisons */
+            
+            const wxBoundingBox &vp_box = vp.GetBBox(), &test_box = pRouteDraw->GetBBox();
+            
+            if(test_box.GetMaxY() < vp_box.GetMinY())
+                continue;
+            
+            if(test_box.GetMinY() > vp_box.GetMaxY())
+                continue;
+            
+            double vp_minx = vp_box.GetMinX(), vp_maxx = vp_box.GetMaxX();
+            double test_minx = test_box.GetMinX(), test_maxx = test_box.GetMaxX();
+            
+            
+            // Route is not wholly outside viewport
+            if(test_maxx >= vp_minx && test_minx <= vp_maxx) {
                 pRouteDraw->DrawGL( vp, region );
-        } else if( pRouteDraw->CrossesIDL() || vp_minx < -180. ) {
-            if(test_maxx - 360 >= vp_minx && test_minx - 360 <= vp_maxx)
-                pRouteDraw->DrawGL( vp, region );
+            } else if( vp_maxx > 180. ) {
+                if(test_minx + 360 <= vp_maxx && test_maxx + 360 >= vp_minx)
+                    pRouteDraw->DrawGL( vp, region );
+            } else if( pRouteDraw->CrossesIDL() || vp_minx < -180. ) {
+                if(test_maxx - 360 >= vp_minx && test_minx - 360 <= vp_maxx)
+                    pRouteDraw->DrawGL( vp, region );
+            }
         }
     }
-
-    /* Waypoints not drawn as part of routes */
+    
+    
+    /* Waypoints not drawn as part of routes, which are being edited right now */
     if( vp.GetBBox().GetValid() && pWayPointMan) {
+        
+        qDebug() << "dyno";
         for(wxRoutePointListNode *pnode = pWayPointMan->GetWaypointList()->GetFirst(); pnode; pnode = pnode->GetNext() ) {
             RoutePoint *pWP = pnode->GetData();
-            if( pWP && (!pWP->m_bIsInRoute && !pWP->m_bIsInTrack ) )
+            if( pWP && (pWP->m_bIsBeingEdited) && (!pWP->m_bIsInRoute && !pWP->m_bIsInTrack ) ){
+                qDebug() << "dyn draw";
                 pWP->DrawGL( vp, region );
+            }
         }
     }
     
 }
+
 
 void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
 {
@@ -3367,7 +3446,7 @@ void glChartCanvas::DrawGroundedOverlayObjectsRect(ocpnDC &dc, wxRect &rect)
     ViewPort temp_vp = BuildClippedVP(cc1->GetVP(), rect);
     cc1->RenderAllChartOutlines( dc, temp_vp );
 
-    DrawAllRoutesAndWaypoints( temp_vp, region );
+    DrawStaticRoutesAndWaypoints( temp_vp, region );
 
     if( cc1->m_bShowTide )
         DrawGLTidesInBBox( dc, temp_vp.GetBBox() );
@@ -3694,7 +3773,6 @@ void glChartCanvas::Render()
             g_glstopwatch.Start();
         }
     }
-    
     wxPaintDC( this );
 
     //  If we are in the middle of a fast pan, we don't want the FBO coordinates to be reset
@@ -3974,6 +4052,8 @@ void glChartCanvas::Render()
     } else          // useFBO
         RenderCharts(gldc, chart_get_region);
 
+    DrawDynamicRoutesAndWaypoints( VPoint, chart_get_region );
+        
     // Now draw all the objects which normally move around and are not
     // cached from the previous frame
     DrawFloatingOverlayObjects( gldc, chart_get_region );

@@ -5207,7 +5207,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                                                     }
                                                     
                                                     if(g_bopengl) {
-                                                        InvalidateGL();
+                                                        //InvalidateGL();
                                                         Refresh( false );
                                                     } else {
                                                         // Get the update rectangle for the edited route
@@ -5271,15 +5271,19 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                         
                         // Get the update rectangle for the un-edited mark
                         wxRect pre_rect;
-                        m_pRoutePointEditTarget->CalculateDCRect( m_dc_route, &pre_rect );
-                        if( ( lppmax > pre_rect.width / 2 ) || ( lppmax > pre_rect.height / 2 ) ) pre_rect.Inflate(
-                            (int) ( lppmax - ( pre_rect.width / 2 ) ),
-                                                                                                                   (int) ( lppmax - ( pre_rect.height / 2 ) ) );
+                        if(!g_bopengl) {
+                            m_pRoutePointEditTarget->CalculateDCRect( m_dc_route, &pre_rect );
+                            if( ( lppmax > pre_rect.width / 2 ) || ( lppmax > pre_rect.height / 2 ) )
+                                pre_rect.Inflate( (int) ( lppmax - ( pre_rect.width / 2 ) ), (int) ( lppmax - ( pre_rect.height / 2 ) ) );
+                        }
+                        
                         m_pRoutePointEditTarget->m_lat = m_cursor_lat;    // update the RoutePoint entry
                         m_pRoutePointEditTarget->m_lon = m_cursor_lon;
                         m_pFoundPoint->m_slat = m_cursor_lat;             // update the SelectList entry
                         m_pFoundPoint->m_slon = m_cursor_lon;
                         
+                        
+                            
                         //    Update the MarkProperties Dialog, if currently shown
                         if( ( NULL != pMarkPropDialog ) && ( pMarkPropDialog->IsShown() ) ) {
                             if( m_pRoutePointEditTarget == pMarkPropDialog->GetRoutePoint() )
@@ -5288,8 +5292,8 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                         
                         //    Invalidate the union region
                         if(g_bopengl) {
-                            InvalidateGL();
-                            Refresh( false );
+                            //InvalidateGL();
+                            Refresh( true );
                         } else {
                             // Get the update rectangle for the edited mark
                             wxRect post_rect;
