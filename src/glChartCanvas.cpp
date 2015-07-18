@@ -1552,7 +1552,6 @@ void glChartCanvas::DrawStaticRoutesAndWaypoints( ViewPort &vp, OCPNRegion &regi
     if( pRouteDraw->m_bIsBeingEdited )
         continue;
     
-    
     /* this routine is called very often, so rather than using the
      *           wxBoundingBox::Intersect routine, do the comparisons directly
      *           to reduce the number of floating point comparisons */
@@ -1586,8 +1585,9 @@ void glChartCanvas::DrawStaticRoutesAndWaypoints( ViewPort &vp, OCPNRegion &regi
         if( vp.GetBBox().GetValid() && pWayPointMan) {
             for(wxRoutePointListNode *pnode = pWayPointMan->GetWaypointList()->GetFirst(); pnode; pnode = pnode->GetNext() ) {
                 RoutePoint *pWP = pnode->GetData();
-                if( pWP && (!pWP->m_bIsBeingEdited) &&(!pWP->m_bIsInRoute && !pWP->m_bIsInTrack ) )
+                if( pWP && (!pWP->m_bIsBeingEdited) &&(!pWP->m_bIsInRoute && !pWP->m_bIsInTrack ) ){
                     pWP->DrawGL( vp, region );
+                }
             }
         }
         
@@ -1596,7 +1596,6 @@ void glChartCanvas::DrawStaticRoutesAndWaypoints( ViewPort &vp, OCPNRegion &regi
 void glChartCanvas::DrawDynamicRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region )
 {
     ocpnDC dc(*this);
-    
     for(wxRouteListNode *node = pRouteList->GetFirst(); node; node = node->GetNext() ) {
         Route *pRouteDraw = node->GetData();
         
@@ -2336,9 +2335,9 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc, OCPNRegion &region )
     extern Track                     *g_pActiveTrack;
     Route *active_route = g_pRouteMan->GetpActiveRoute();
 
-    if( active_route ) active_route->DrawGL( vp, region );
-    if( g_pActiveTrack ) g_pActiveTrack->Draw( dc, vp );
-    if( cc1->m_pSelectedRoute ) cc1->m_pSelectedRoute->DrawGL( vp, region );
+//    if( active_route ) active_route->DrawGL( vp, region );
+//    if( g_pActiveTrack ) g_pActiveTrack->Draw( dc, vp );
+//    if( cc1->m_pSelectedRoute ) cc1->m_pSelectedRoute->DrawGL( vp, region );
 
     GridDraw( );
 
@@ -5029,6 +5028,14 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
 
 void glChartCanvas::onGestureTimerEvent(wxTimerEvent &event)
 {
+    //  On some devices, the pan GestureFinished event fails to show up
+    //  Watch for this case, and fix it.....
+    if(m_binPan){
+        //qDebug() << "STUCK IN PAN, CLEARING";
+        m_binPan = false;
+        Invalidate();
+        Update();
+    }
     m_bgestureGuard = false;
 }
 
