@@ -5532,6 +5532,7 @@ void options::OnInsertTideDataLocation( wxCommandEvent &event )
     wxString sel_file;
     int response = wxID_CANCEL;
 
+#ifndef __OCPN__ANDROID__    
     wxFileDialog *popenDialog = new wxFileDialog( NULL, _( "Select Tide/Current Data" ), g_TCData_Dir, wxT ( "" ),
                              wxT ( "Tide/Current Data files (*.IDX; *.TCD)|*.IDX;*.idx;*.TCD;*.tcd|All files (*.*)|*.*" ),
                                     wxFD_OPEN  );
@@ -5539,8 +5540,17 @@ void options::OnInsertTideDataLocation( wxCommandEvent &event )
         popenDialog = g_Platform->AdjustFileDialogFont(this, popenDialog);
     
     response = popenDialog->ShowModal();
+    sel_file = popenDialog->GetPath();
+    delete popenDialog;
+    
+#else
+    wxString path;
+    response = g_Platform->DoFileSelectorDialog( NULL, &path, _( "Select Tide/Current Data" ),
+                                                 g_TCData_Dir, _T(""), wxT ( "*.*" ) );
+    sel_file = path;
+#endif
+    
     if( response == wxID_OK ) {
-        sel_file = popenDialog->GetPath();
 
         if( g_bportable ) {
             wxFileName f( sel_file );
@@ -5561,7 +5571,7 @@ void options::OnInsertTideDataLocation( wxCommandEvent &event )
             g_TCData_Dir = data_dir;
     }
     
-    delete popenDialog;
+
 }
 
 void options::OnRemoveTideDataLocation( wxCommandEvent &event )

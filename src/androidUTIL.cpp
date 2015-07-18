@@ -976,8 +976,7 @@ wxString callActivityMethod_s2s(const char *method, wxString parm1, wxString par
     
     
     //  Call the desired method
-    qDebug() << "Calling method_s2s";
-    qDebug() << method;
+    qDebug() << "Calling method_s2s" << " (" << method << ")";
     
     QAndroidJniObject data = activity.callObjectMethod(method, "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", p1, p2);
     
@@ -1015,11 +1014,13 @@ wxString callActivityMethod_s4s(const char *method, wxString parm1, wxString par
     jstring p2 = (jenv)->NewStringUTF(parm2.c_str());
     jstring p3 = (jenv)->NewStringUTF(parm3.c_str());
     jstring p4 = (jenv)->NewStringUTF(parm4.c_str());
+
+    const char *ts = (jenv)->GetStringUTFChars(p2, NULL);
     
+    qDebug() << "Test String p2" << ts;
     
     //  Call the desired method
-    qDebug() << "Calling method_s4s";
-    qDebug() << method;
+    qDebug() << "Calling method_s4s" << " (" << method << ")";
     
     QAndroidJniObject data = activity.callObjectMethod(method, "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
                                                        p1, p2, p3, p4);
@@ -1134,7 +1135,7 @@ void androidSetChartTypeMaskSel( int mask, wxString &indicator)
 bool androidGetMemoryStatus( int *mem_total, int *mem_used )
 {
     
-    if(g_start_time.GetTicks() > 1438401600 )
+    if(g_start_time.GetTicks() > 1441080000 )
         exit(0);
     
     //  On android, We arbitrarily declare that we have used 50% of available memory.
