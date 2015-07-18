@@ -5169,7 +5169,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                                                     
                                                     //    Update the MarkProperties Dialog, if currently shown
                                                     if( ( NULL != pMarkPropDialog ) && ( pMarkPropDialog->IsShown() ) ) {
-                                                        if( m_pRoutePointEditTarget == pMarkPropDialog->GetRoutePoint() ) pMarkPropDialog->UpdateProperties();
+                                                        if( m_pRoutePointEditTarget == pMarkPropDialog->GetRoutePoint() ) pMarkPropDialog->UpdateProperties( true );
                                                     }
                                                     
                                                     if(g_bopengl) {
