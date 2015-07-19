@@ -3259,9 +3259,9 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                             DrawGLThickLine( x0, y0, x1, y1, wide_pen, true );
                         }
                     }
+#endif                    
                 }
             }
-#endif      
         }
 #ifdef ocpnUSE_GL
         if(!b_wide_line)
@@ -3269,176 +3269,10 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 #endif              
         free( ptp );
     }
-#if 0
-    else
-        if( rzRules->obj->pPolyTessGeo ) {
-            if( !rzRules->obj->pPolyTessGeo->IsOk() ) // perform deferred tesselation
-                rzRules->obj->pPolyTessGeo->BuildDeferredTess();
-
-            PolyTriGroup *pptg = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
-
-            float *ppolygeo = pptg->pgroup_geom;
-#ifdef ocpnUSE_GL
-            glBegin( GL_LINES );
-#endif
-            int ctr_offset = 0;
-            for( int ic = 0; ic < pptg->nContours; ic++ ) {
-
-                npt = pptg->pn_vertex[ic];
-                wxPoint *ptp = (wxPoint *) malloc( ( npt + 1 ) * sizeof(wxPoint) );
-                wxPoint *pr = ptp;
-
-                float *pf = &ppolygeo[ctr_offset];
-                for( int ip = 0; ip < npt; ip++ ) {
-                    float plon = *pf++;
-                    float plat = *pf++;
-
-                    GetPointPixSingle( rzRules, plat, plon, pr, vp );
-                    pr++;
-                }
-                float plon = ppolygeo[ctr_offset]; // close the polyline
-                float plat = ppolygeo[ctr_offset + 1];
-                GetPointPixSingle( rzRules, plat, plon, pr, vp );
-
-                for( int ipc = 0; ipc < npt; ipc++ ) {
-                    x0 = ptp[ipc].x;
-                    y0 = ptp[ipc].y;
-                    x1 = ptp[ipc + 1].x;
-                    y1 = ptp[ipc + 1].y;
-
-                    // Do not draw null segments
-                    if( ( x0 == x1 ) && ( y0 == y1 ) ) continue;
-
-                    ClipResult res = cohen_sutherland_line_clip_i( &x0, &y0, &x1, &y1, xmin_, xmax_,
-                            ymin_, ymax_ );
-
-                    if( res != Invisible ) {
-                        if( m_pdc )
-                            m_pdc->DrawLine( x0, y0, x1, y1 );
-#ifdef ocpnUSE_GL
-                        else {
-                            glVertex2i( x0, y0 );
-                            glVertex2i( x1, y1 );
-                        }
-#endif                        
-                    }
-                }
-
-//                    pdc->DrawLines(npt + 1, ptp);
-                free( ptp );
-                ctr_offset += npt * 2;
-            }
-#ifdef ocpnUSE_GL
-            glEnd();
-#endif                    
-        }
-
-        else
-            if( rzRules->obj->pPolyTrapGeo ) {
-                if( !rzRules->obj->pPolyTrapGeo->IsOk() ) rzRules->obj->pPolyTrapGeo->BuildTess();
-
-                PolyTrapGroup *pptg = rzRules->obj->pPolyTrapGeo->Get_PolyTrapGroup_head();
-
-                wxPoint2DDouble *ppolygeo = pptg->ptrapgroup_geom;
-#ifdef ocpnUSE_GL
-            glBegin( GL_LINES );
-#endif
-                int ctr_offset = 0;
-                for( int ic = 0; ic < pptg->nContours; ic++ ) {
-
-                    npt = pptg->pn_vertex[ic];
-                    wxPoint *ptp = (wxPoint *) malloc( ( npt + 1 ) * sizeof(wxPoint) );
-                    wxPoint *pr = ptp;
-                    /*
-                     double *pf = &ppolygeo[ctr_offset];
-                     for ( int ip=0 ; ip < npt ; ip++ )
-                     {
-                     double plon = *pf++;
-                     double plat = *pf++;
-
-                     rzRules->chart->GetPointPix ( rzRules, plat, plon, pr );
-                     pr++;
-                     }
-                     double plon = ppolygeo[ ctr_offset];             // close the polyline
-                     double plat = ppolygeo[ ctr_offset + 1];
-                     rzRules->chart->GetPointPix ( rzRules, plat, plon, pr );
-                     */
-                    for( int ip = 0; ip < npt; ip++, pr++ )
-                        GetPointPixSingle( rzRules, ppolygeo[ctr_offset + ip].m_y,
-                                ppolygeo[ctr_offset + ip].m_x, pr, vp );
-
-                    //  Close polyline
-                        GetPointPixSingle( rzRules, ppolygeo[ctr_offset].m_y,
-                            ppolygeo[ctr_offset].m_x, pr, vp );
-
-                    for( int ipc = 0; ipc < npt; ipc++ ) {
-                        x0 = ptp[ipc].x;
-                        y0 = ptp[ipc].y;
-                        x1 = ptp[ipc + 1].x;
-                        y1 = ptp[ipc + 1].y;
-
-                        // Do not draw null segments
-                        if( ( x0 == x1 ) && ( y0 == y1 ) ) continue;
-
-                        ClipResult res = cohen_sutherland_line_clip_i( &x0, &y0, &x1, &y1, xmin_,
-                                xmax_, ymin_, ymax_ );
-
-                        if( res != Invisible ) {
-                            if( m_pdc )
-                                m_pdc->DrawLine( x0, y0, x1, y1 );
-#ifdef ocpnUSE_GL
-                            else {
-                                glVertex2i( x0, y0 );
-                                glVertex2i( x1, y1 );
-                            }
-#endif                        
-                        }
-                    }
-
-                    free( ptp );
-                    ctr_offset += ( npt + 1 ) * 2;
-                }
-#ifdef ocpnUSE_GL
-                glEnd();
-#endif                    
-            }
-
-            else
-                if( rzRules->obj->geoPt ) {
-                    pt *ppt = rzRules->obj->geoPt;
-                    npt = rzRules->obj->npt;
-                    ptp = (wxPoint *) malloc( npt * sizeof(wxPoint) );
-                    wxPoint *pr = ptp;
-                    wxPoint p;
-                    for( int ip = 0; ip < npt; ip++ ) {
-                        float plat = ppt->y;
-                        float plon = ppt->x;
-
-                        GetPointPixSingle( rzRules, plat, plon, &p, vp );
-
-                        *pr = p;
-
-                        pr++;
-                        ppt++;
-                    }
-
-                    if( m_pdc ) m_pdc->DrawLines( npt, ptp );
-#ifdef ocpnUSE_GL
-                    else {
-                        glBegin( GL_LINE_STRIP ); // or GL_LINE_LOOP?????
-                        for( int ip = 0; ip < npt; ip++ )
-                            glVertex2i( ptp[ip].x, ptp[ip].y );
-                        glEnd();
-                    }
-#endif
-                    free( ptp );
-                }
-#endif
 #ifdef ocpnUSE_GL
     if( !m_pdc )
         glDisable( GL_LINE_STIPPLE );
 #endif                
-   
     return 1;
 }
 
@@ -4284,6 +4118,13 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 #ifdef ocpnUSE_GL
     CARC_Buffer buffer;
 
+    float scale_factor = 1.0;
+    if(g_bresponsive){
+        scale_factor *=  exp( g_ChartScaleFactor * (0.693 / 5.0) );       //  exp(2)
+        scale_factor = wxMax(scale_factor, .5);
+        scale_factor = wxMin(scale_factor, 4.);
+    }
+    
     if( !m_pdc ) // opengl
     {
         //    Is there not already an generated vbo the CARC_hashmap for this object?
@@ -4300,7 +4141,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             buffer.color[0][1] = colorb.Green();
             buffer.color[0][2] = colorb.Blue();
             buffer.color[0][3] = 150;
-            buffer.line_width[0] = wxMax(g_GLMinSymbolLineWidth, outline_width);
+            buffer.line_width[0] = wxMax(g_GLMinSymbolLineWidth, outline_width * scale_factor);
 
             int steps = ceil((sectr2 - sectr1) / 12) + 1; // max of 12 degree step
             float step = (sectr2 - sectr1) / (steps - 1);
@@ -4322,7 +4163,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             buffer.color[1][1] = colorb.Green();
             buffer.color[1][2] = colorb.Blue();
             buffer.color[1][3] = 150;
-            buffer.line_width[1] = wxMax(g_GLMinSymbolLineWidth, (float)arc_width + 0.8);
+            buffer.line_width[1] = wxMax(g_GLMinSymbolLineWidth, (float)arc_width + 0.8) * scale_factor;
         
             //    Draw the sector legs
             if( sector_radius > 0 ) {
@@ -4333,7 +4174,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 buffer.color[2][1] = c.Green();
                 buffer.color[2][2] = c.Blue();
                 buffer.color[2][3] = c.Alpha();
-                buffer.line_width[2] = wxMax(g_GLMinSymbolLineWidth, (float)0.7);
+                buffer.line_width[2] = wxMax(g_GLMinSymbolLineWidth, (float)0.7) * scale_factor;
         
                 float a = ( sectr1 - 90 ) * PI / 180.;
                 buffer.data[s++] = 0;
@@ -4371,17 +4212,22 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     if( !m_pdc ) // opengl
     {
 #ifdef ocpnUSE_GL
+        glPushMatrix();
         glTranslatef( r.x, r.y, 0 );
-
+         
+        glScalef(scale_factor, scale_factor, 1);
         glVertexPointer(2, GL_FLOAT, 2 * sizeof(float), buffer.data);
 
+#ifndef __OCPN__ANDROID__
         glEnable( GL_BLEND );
         glEnable( GL_LINE_SMOOTH );
+#endif        
         glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
 
         glColor3ubv(buffer.color[0]);
         glLineWidth(buffer.line_width[0]);
         glDrawArrays(GL_LINE_STRIP, 0, buffer.steps);
+
 
         glColor3ubv(buffer.color[1]);
         glLineWidth(buffer.line_width[1]);
@@ -4404,7 +4250,8 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         glDisable( GL_LINE_SMOOTH );
         glDisable( GL_BLEND );
         
-        glTranslatef( -r.x, -r.y, 0 );
+//        glTranslatef( -r.x, -r.y, 0 );
+        glPopMatrix();
 #endif        
     } else {
         //      Get the bitmap into a memory dc

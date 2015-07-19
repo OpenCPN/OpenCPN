@@ -790,6 +790,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         intent.putExtra(FileChooserActivity.INPUT_START_FOLDER, initialDir);
         intent.putExtra(FileChooserActivity.INPUT_FOLDER_MODE, false);
         intent.putExtra(FileChooserActivity.INPUT_SHOW_FULL_PATH_IN_TITLE, true);
+        intent.putExtra(FileChooserActivity.INPUT_TITLE_STRING, Title);
 
 
         //  Creating a file?

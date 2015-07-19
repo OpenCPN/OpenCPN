@@ -39,6 +39,16 @@
 
 class MyConfig;
 
+//--------------------------------------------------------------------------
+//      Per-Platform Utility support
+//--------------------------------------------------------------------------
+
+#ifdef __WXQT__
+extern bool LoadQtStyleSheet(wxString &sheet_file);
+extern QString getQtStyleSheet( void );
+#endif
+
+
 class OCPNPlatform
 {
 public:    
@@ -83,6 +93,8 @@ public:
     double GetDisplaySizeMM();
     double GetDisplayDPmm();
     double GetToolbarScaleFactor( int GUIScaleFactor );
+    double GetCompassScaleFactor( int GUIScaleFactor );
+    void onStagedResizeFinal();
     
     wxFileDialog *AdjustFileDialogFont(wxWindow *container, wxFileDialog *dlg);
     wxDirDialog  *AdjustDirDialogFont(wxWindow *container,  wxDirDialog *dlg);
@@ -119,7 +131,7 @@ public:
 //      Per-Platform Utility support
 //--------------------------------------------------------------------------
     void setChartTypeMaskSel(int mask, wxString &indicator);
-    
+
 private:
     wxString    m_homeDir;
     wxString    m_exePath;

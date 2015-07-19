@@ -250,9 +250,6 @@ bool     b_androidBusyShown;
 double   g_androidDPmm;
 double   g_androidDensity;
 
-QString g_qtStyleSheet;
-
-
 bool            g_bExternalApp;
 
 wxString        g_androidFilesDir;
@@ -264,7 +261,7 @@ int             g_mask;
 int             g_sel;
 int             g_ActionBarHeight;
 bool            g_follow_active;
-
+wxSize          config_size;
 
 #define ANDROID_EVENT_TIMER 4389
 
@@ -617,6 +614,7 @@ extern "C"{
         wxSize new_size = getAndroidDisplayDimensions();
         qDebug() << "onConfigChange" << new_size.x << new_size.y;
         
+        config_size = new_size;
         gFrame->TriggerResize(new_size);
 
         if(g_androidUtilHandler){
@@ -625,13 +623,6 @@ extern "C"{
             g_androidUtilHandler->m_eventTimer.Start(200, wxTIMER_ONE_SHOT);
         }
         
-//        gFrame->DestroyPersistentDialogs();
-        
-//        wxSizeEvent ev(new_size);
-        
-//        wxEvtHandler *evh = dynamic_cast<wxEvtHandler*>(cc1);
-        
-//        evh->AddPendingEvent(ev);
         return 77;
     }
 }
@@ -701,6 +692,9 @@ extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onResume(JNIEnv *env, jobject obj)
     {
         qDebug() << "onResume";
+        
+        if(cc1)
+            cc1->RenderLastGLCanvas();
         
         g_bSleep = false;
         
@@ -982,8 +976,7 @@ wxString callActivityMethod_s2s(const char *method, wxString parm1, wxString par
     
     
     //  Call the desired method
-    qDebug() << "Calling method_s2s";
-    qDebug() << method;
+    qDebug() << "Calling method_s2s" << " (" << method << ")";
     
     QAndroidJniObject data = activity.callObjectMethod(method, "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", p1, p2);
     
@@ -1021,11 +1014,13 @@ wxString callActivityMethod_s4s(const char *method, wxString parm1, wxString par
     jstring p2 = (jenv)->NewStringUTF(parm2.c_str());
     jstring p3 = (jenv)->NewStringUTF(parm3.c_str());
     jstring p4 = (jenv)->NewStringUTF(parm4.c_str());
+
+    const char *ts = (jenv)->GetStringUTFChars(p2, NULL);
     
+    qDebug() << "Test String p2" << ts;
     
     //  Call the desired method
-    qDebug() << "Calling method_s4s";
-    qDebug() << method;
+    qDebug() << "Calling method_s4s" << " (" << method << ")";
     
     QAndroidJniObject data = activity.callObjectMethod(method, "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
                                                        p1, p2, p3, p4);
@@ -1140,7 +1135,7 @@ void androidSetChartTypeMaskSel( int mask, wxString &indicator)
 bool androidGetMemoryStatus( int *mem_total, int *mem_used )
 {
     
-    if(g_start_time.GetTicks() > 1438401600 )
+    if(g_start_time.GetTicks() > 1441080000 )
         exit(0);
     
     //  On android, We arbitrarily declare that we have used 50% of available memory.
@@ -1381,12 +1376,28 @@ wxSize getAndroidDisplayDimensions( void )
         
     }
 
-    wxSize sz_wx = ::wxGetDisplaySize();               // default, probably reasonable, but maybe not accurate
-    qDebug() << sz_wx.x << sz_wx.y << sz_ret.x << sz_ret.y;
+    qDebug() << sz_ret.x << sz_ret.y;
     
     return sz_ret;
     
 }
+
+void androidConfirmSizeCorrection()
+{
+    //  There is some confusion about the ActionBar size during configuration changes.
+    //  We need to confirm the calculated display size, and fix it if necessary.
+    //  This happens during staged resize events processed by gFrame->TriggerResize()
+    
+    wxSize targetSize = getAndroidDisplayDimensions();
+    qDebug() << "Confirming" << targetSize.y << config_size.y;
+    if(config_size != targetSize){
+        qDebug() << "Correcting";
+        gFrame->SetSize(targetSize);
+        config_size = targetSize;
+    }
+}
+        
+
 
 void androidShowBusyIcon()
 {
@@ -1427,30 +1438,6 @@ void androidHideBusyIcon()
     b_androidBusyShown = false;
 }
 
-
-bool LoadQtStyleSheet(wxString &sheet_file)
-{
-    if(wxFileExists( sheet_file )){
-        //        QApplication qApp = getqApp();
-        if(qApp){
-            QString file(sheet_file.c_str());
-            QFile File(file);
-            File.open(QFile::ReadOnly);
-            g_qtStyleSheet = QLatin1String(File.readAll());
-            
-            return true;
-        }
-        else
-            return false;
-    }
-    else
-        return false;
-}
-
-QString getQtStyleSheet( void )
-{
-    return g_qtStyleSheet;
-}
 
 //---------------------------------------------------------------
 //      GPS Device Support

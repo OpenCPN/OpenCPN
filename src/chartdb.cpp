@@ -1059,7 +1059,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
       ChartFamilyEnum chart_family = (ChartFamilyEnum)cte.GetChartFamily();
       
       ChartBase *Ch = NULL;
-      CacheEntry *pce;
+      CacheEntry *pce = NULL;
 
       wxDateTime now = wxDateTime::Now();                   // get time for LRU use
 
@@ -1089,8 +1089,10 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
           {
               if(Ch->IsReadyToRender())
               {
-                    pce->RecentTime = now.GetTicks();           // chart is OK
-                    pce->b_in_use = true;
+                    if(pce){
+                        pce->RecentTime = now.GetTicks();           // chart is OK
+                        pce->b_in_use = true;
+                    }
                     return Ch;
               }
               else
@@ -1110,8 +1112,10 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
           }
           else                                                  // assume if in cache, the chart can do thumbnails
           {
-               pce->RecentTime = now.GetTicks();
-               pce->b_in_use = true;
+               if(pce){
+                   pce->RecentTime = now.GetTicks();
+                   pce->b_in_use = true;
+               }
                return Ch;
           }
       }
