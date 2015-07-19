@@ -38,7 +38,9 @@ public:
       void SetColorScheme( ColorScheme cs );
       int GetXOffset(void) const { return m_xoffset; }
       int GetYOffset(void) const { return m_yoffset; }
-
+      float GetScaleFactor(){ return m_scale; }
+      void SetScaleFactor( float factor);
+      
 private:
       wxBitmap m_StatBmp;
       wxBitmap m_MaskBmp;
@@ -53,6 +55,7 @@ private:
       wxBitmap _img_gpsRed;
       int m_xoffset;
       int m_yoffset;
+      float m_scale;
 
       DECLARE_EVENT_TABLE()
 };

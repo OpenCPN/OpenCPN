@@ -3267,7 +3267,33 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
             }
 #endif            
             
-            parent_frame->SetStatusText( text, STAT_FIELD_SCALE );
+            // Check to see if the text will fit in the StatusBar field...
+            bool b_noshow = false;
+            if(parent_frame->GetStatusBar()){
+                int w = 0;
+                int h;
+                wxClientDC dc(parent_frame->GetStatusBar());
+                if( dc.IsOk() )
+                    dc.GetTextExtent(text, &w, &h);
+
+                // If text is too long for the allocated field, try to reduce the text string a bit.
+                wxRect rect;
+                parent_frame->GetStatusBar()->GetFieldRect(STAT_FIELD_SCALE, rect);
+                if(w && w > rect.width){
+                    text.Printf( _("Scale (%1.1fx)"),  m_displayed_scale_factor );
+                }
+                
+                //  Test again...if too big still, then give it up.
+                if( dc.IsOk() )
+                    dc.GetTextExtent(text, &w, &h);
+                if(w && w > rect.width){
+                    b_noshow = true;
+                }
+                    
+            }
+            
+            if(!b_noshow)
+                parent_frame->SetStatusText( text, STAT_FIELD_SCALE );
         }
     }
 
@@ -4317,6 +4343,14 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
     ReloadVP();
 }
 
+void ChartCanvas::RenderLastGLCanvas()
+{
+#ifdef ocpnUSE_GL
+    if( /*g_bopengl &&*/ m_glcc )
+        m_glcc->RenderLast();
+#endif    
+}
+    
 void ChartCanvas::ShowChartInfoWindow( int x, int dbIndex )
 {
     if( dbIndex >= 0 ) {
@@ -5173,7 +5207,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                                                     }
                                                     
                                                     if(g_bopengl) {
-                                                        InvalidateGL();
+                                                        //InvalidateGL();
                                                         Refresh( false );
                                                     } else {
                                                         // Get the update rectangle for the edited route
@@ -5237,15 +5271,19 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                         
                         // Get the update rectangle for the un-edited mark
                         wxRect pre_rect;
-                        m_pRoutePointEditTarget->CalculateDCRect( m_dc_route, &pre_rect );
-                        if( ( lppmax > pre_rect.width / 2 ) || ( lppmax > pre_rect.height / 2 ) ) pre_rect.Inflate(
-                            (int) ( lppmax - ( pre_rect.width / 2 ) ),
-                                                                                                                   (int) ( lppmax - ( pre_rect.height / 2 ) ) );
+                        if(!g_bopengl) {
+                            m_pRoutePointEditTarget->CalculateDCRect( m_dc_route, &pre_rect );
+                            if( ( lppmax > pre_rect.width / 2 ) || ( lppmax > pre_rect.height / 2 ) )
+                                pre_rect.Inflate( (int) ( lppmax - ( pre_rect.width / 2 ) ), (int) ( lppmax - ( pre_rect.height / 2 ) ) );
+                        }
+                        
                         m_pRoutePointEditTarget->m_lat = m_cursor_lat;    // update the RoutePoint entry
                         m_pRoutePointEditTarget->m_lon = m_cursor_lon;
                         m_pFoundPoint->m_slat = m_cursor_lat;             // update the SelectList entry
                         m_pFoundPoint->m_slon = m_cursor_lon;
                         
+                        
+                            
                         //    Update the MarkProperties Dialog, if currently shown
                         if( ( NULL != pMarkPropDialog ) && ( pMarkPropDialog->IsShown() ) ) {
                             if( m_pRoutePointEditTarget == pMarkPropDialog->GetRoutePoint() )
@@ -5254,21 +5292,20 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                         
                         //    Invalidate the union region
                         if(g_bopengl) {
-                            InvalidateGL();
+                            if(!g_btouch)
+                                InvalidateGL();
                             Refresh( false );
                         } else {
                             // Get the update rectangle for the edited mark
                             wxRect post_rect;
                             m_pRoutePointEditTarget->CalculateDCRect( m_dc_route, &post_rect );
                             if( ( lppmax > post_rect.width / 2 ) || ( lppmax > post_rect.height / 2 ) )
-                                post_rect.Inflate(
-                                    (int) ( lppmax - ( post_rect.width / 2 ) ),
+                                post_rect.Inflate((int) ( lppmax - ( post_rect.width / 2 ) ),
                                                   (int) ( lppmax - ( post_rect.height / 2 ) ) );
                                 
-                                //                        post_rect.Inflate(200);
                             //    Invalidate the union region
-                                pre_rect.Union( post_rect );
-                                RefreshRect( pre_rect, false );
+                            pre_rect.Union( post_rect );
+                            RefreshRect( pre_rect, false );
                         }
                     }
                     ret = true;
@@ -5518,27 +5555,47 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                         if( m_lastRoutePointEditTarget) {
                             m_lastRoutePointEditTarget->m_bIsBeingEdited = false;
                             m_lastRoutePointEditTarget->m_bPtIsSelected = false;
-                            wxRect wp_rect;
-                            m_lastRoutePointEditTarget->CalculateDCRect( m_dc_route, &wp_rect );
-                            RefreshRect( wp_rect, true );
                         }
                     }
                     
                     if( m_pRoutePointEditTarget) {
                         m_pRoutePointEditTarget->m_bIsBeingEdited = true;
                         m_pRoutePointEditTarget->m_bPtIsSelected = true;
-                        wxRect wp_rect;
-                        m_pRoutePointEditTarget->CalculateDCRect( m_dc_route, &wp_rect );
-                        RefreshRect( wp_rect, true );
                     }
-                    
                 }
-                else {
+                else {                  // Deselect everything
                     if( m_lastRoutePointEditTarget) {
                         m_lastRoutePointEditTarget->m_bIsBeingEdited = false;
                         m_lastRoutePointEditTarget->m_bPtIsSelected = false;
+
+                        //  Clear any routes being edited, probably orphans
+                        wxArrayPtrVoid *lastEditRouteArray = g_pRouteMan->GetRouteArrayContaining( m_lastRoutePointEditTarget );
+                        if( lastEditRouteArray ) {
+                            for( unsigned int ir = 0; ir < lastEditRouteArray->GetCount(); ir++ ) {
+                                Route *pr = (Route *) lastEditRouteArray->Item( ir );
+                                if( g_pRouteMan->IsRouteValid(pr) ) {
+                                    pr->m_bIsBeingEdited = false;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //  Do the refresh
+                
+                if(g_bopengl) {
+                    InvalidateGL();
+                    Refresh( false );
+                } else {
+                    if( m_lastRoutePointEditTarget) {
                         wxRect wp_rect;
                         m_lastRoutePointEditTarget->CalculateDCRect( m_dc_route, &wp_rect );
+                        RefreshRect( wp_rect, true );
+                    }
+                        
+                        if( m_pRoutePointEditTarget) {
+                        wxRect wp_rect;
+                        m_pRoutePointEditTarget->CalculateDCRect( m_dc_route, &wp_rect );
                         RefreshRect( wp_rect, true );
                     }
                 }

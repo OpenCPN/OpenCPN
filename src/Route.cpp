@@ -447,6 +447,7 @@ static void TestLongitude(double lon, double min, double max, bool &lonl, bool &
 
 void Route::DrawGLLines( ViewPort &VP, ocpnDC *dc )
 {
+#ifdef ocpnUSE_GL    
     float pix_full_circle = WGS84_semimajor_axis_meters * mercator_k0 * 2 * PI * VP.view_scale_ppm;
 
     bool r1valid = false;
@@ -552,6 +553,7 @@ void Route::DrawGLLines( ViewPort &VP, ocpnDC *dc )
 
     if( !dc )
         glEnd();
+#endif    
 }
 
 void Route::DrawGL( ViewPort &VP, OCPNRegion &region )

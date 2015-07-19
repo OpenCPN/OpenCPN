@@ -405,7 +405,7 @@ void ocpnFloatingToolbarDialog::SetColorScheme( ColorScheme cs )
 
 }
 
-void ocpnFloatingToolbarDialog::SetGeometry()
+void ocpnFloatingToolbarDialog::SetGeometry(wxWindow *pwinAvoid)
 {
 
     if( m_ptoolbar ) {
@@ -417,12 +417,23 @@ void ocpnFloatingToolbarDialog::SetGeometry()
         m_ptoolbar->SetToolBitmapSize( style_tool_size );
 
         wxSize tool_size = m_ptoolbar->GetToolBitmapSize();
-
+        int grabber_width =  m_style->GetIcon( _T("grabber") ).GetWidth();
+        
         int max_rows = 10;
         int max_cols = 100;
         if(cc1){
-            max_rows = (cc1->GetSize().y / ( tool_size.y + m_style->GetToolSeparation())) - 1;
-            max_cols = (cc1->GetSize().x / ( tool_size.x + m_style->GetToolSeparation())) - 3;
+
+            int avoid_start = cc1->GetClientSize().x - (tool_size.x + m_style->GetToolSeparation()) * 2;  // default
+            if(pwinAvoid && pwinAvoid->IsShown()){
+                avoid_start = cc1->GetClientSize().x - pwinAvoid->GetSize().x;  // this is compass window, if shown
+            }
+            
+            
+            max_rows = (cc1->GetClientSize().y / ( tool_size.y + m_style->GetToolSeparation())) - 1;
+            
+            max_cols = (avoid_start - grabber_width) / ( tool_size.x + m_style->GetToolSeparation());
+            max_cols -= 1;
+            
             if(m_orient == wxTB_VERTICAL)
                 max_rows = wxMax( max_rows, 2);             // at least two rows
             else
@@ -434,6 +445,7 @@ void ocpnFloatingToolbarDialog::SetGeometry()
         else
             m_ptoolbar->SetMaxRowsCols( 100, max_cols);
         m_ptoolbar->SetSizeFactor(m_sizefactor);
+        
     }
  }
 
@@ -477,7 +489,10 @@ void ocpnFloatingToolbarDialog::Submerge()
 
 void ocpnFloatingToolbarDialog::SubmergeToGrabber()
 {
-    Submerge();
+//Submerge();
+    m_bsubmerged = true;
+    Hide();
+    if( m_ptoolbar ) m_ptoolbar->KillTooltip();
 
     m_pRecoverwin = new GrabberWin( m_pparent, this, m_sizefactor, _T("grabber_ext" ), wxPoint(10,10) );
     
@@ -546,6 +561,7 @@ bool ocpnFloatingToolbarDialog::CheckSurfaceRequest( wxMouseEvent &event )
 void ocpnFloatingToolbarDialog::SurfaceFromGrabber()
 {
     m_bsubmerged = false;
+    
 #ifndef __WXOSX__
     Hide();
     Move( 0, 0 );
@@ -638,9 +654,9 @@ void ocpnFloatingToolbarDialog::FadeTimerEvent( wxTimerEvent& event )
             m_fade_timer.Start( 5000 );           // retrigger the continuous timer
         }
         
-        if(g_bAutoHideToolbar && (g_nAutoHideToolbar > 0) ){
+        if(g_bAutoHideToolbar && (g_nAutoHideToolbar > 0) && !m_bsubmerged){
             SubmergeToGrabber();
-            m_fade_timer.Stop();
+//            m_fade_timer.Stop();
         }
     }
 }
@@ -935,13 +951,6 @@ void ocpnFloatingToolbarDialog::DestroyToolBar()
         delete m_ptoolbar;                  //->Destroy();
         m_ptoolbar = NULL;
     }
-    
-    if(m_pRecoverwin){
-        m_pRecoverwin->Hide();
-        delete m_pRecoverwin;
-        m_pRecoverwin = NULL;
-    }
-    
 }
 
 //----------------------------------------------------------------------------

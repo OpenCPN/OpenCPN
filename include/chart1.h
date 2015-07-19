@@ -401,6 +401,7 @@ class MyFrame: public wxFrame
     bool IsToolbarShown();
     void ShowChartBarIfEnabled(void);
     void SetToolbarScale(void);
+    void SetGPSCompassScale(void);
     
     void HandlePianoClick(int selected_index, int selected_dbIndex);
     void HandlePianoRClick(int x, int y,int selected_index, int selected_dbIndex);

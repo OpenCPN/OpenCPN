@@ -67,10 +67,11 @@ ocpnFloatingCompassWindow::ocpnFloatingCompassWindow( wxWindow *parent )
 
     m_pStatBoxToolStaticBmp = NULL;
 
+    m_scale = 1.0;
     SetSize(
-            _img_compass.GetWidth() + _img_gpsRed.GetWidth() + style->GetCompassLeftMargin() * 2
-                    + style->GetToolSeparation(),
-            _img_compass.GetHeight() + style->GetCompassTopMargin() + style->GetCompassBottomMargin() );
+        m_scale * ( ( _img_compass.GetWidth() + _img_gpsRed.GetWidth() ) + style->GetCompassLeftMargin() * 2
+        + style->GetToolSeparation()),
+                   m_scale * (_img_compass.GetHeight() + style->GetCompassTopMargin() + style->GetCompassBottomMargin()) );
     
     m_xoffset = style->GetCompassXOffset();
     m_yoffset = style->GetCompassYOffset();
@@ -118,6 +119,24 @@ void ocpnFloatingCompassWindow::UpdateStatus( bool bnew )
     Refresh( false );
 }
 
+void ocpnFloatingCompassWindow::SetScaleFactor( float factor)
+{
+//    qDebug() << m_scale << factor;
+    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+    
+    if(factor > 0.1)
+        m_scale = factor;
+    else
+        m_scale = 1.0;
+    
+    SetSize(
+        m_scale * ( ( _img_compass.GetWidth() + _img_gpsRed.GetWidth() ) + style->GetCompassLeftMargin() * 2
+        + style->GetToolSeparation()),
+            m_scale * (_img_compass.GetHeight() + style->GetCompassTopMargin() + style->GetCompassBottomMargin()) );
+    
+}
+
+
 wxBitmap ocpnFloatingCompassWindow::CreateBmp( bool newColorScheme )
 {
     wxString gpsIconName;
@@ -140,6 +159,16 @@ wxBitmap ocpnFloatingCompassWindow::CreateBmp( bool newColorScheme )
             gpsBg = style->GetNormalBG();
             style->DrawToolbarLineEnd( gpsBg );
             gpsBg = style->SetBitmapBrightness( gpsBg );
+            
+            if(fabs(m_scale-1.0) > 0.1){
+                wxImage bg_img = compassBg.ConvertToImage();
+                bg_img.Rescale(compassBg.GetWidth() * m_scale, compassBg.GetHeight() *m_scale, wxIMAGE_QUALITY_NORMAL);
+                compassBg = wxBitmap( bg_img );
+                
+                bg_img = gpsBg.ConvertToImage();
+                bg_img.Rescale(gpsBg.GetWidth() * m_scale, gpsBg.GetHeight() *m_scale, wxIMAGE_QUALITY_NORMAL);
+                gpsBg = wxBitmap( bg_img );
+            }
         }
 
         leftmargin = style->GetCompassLeftMargin();
@@ -178,15 +207,16 @@ wxBitmap ocpnFloatingCompassWindow::CreateBmp( bool newColorScheme )
     } else
         rose_angle = 0.;
 
-    if( fabs( m_rose_angle - rose_angle ) > .1 ) b_need_refresh = true;
+    if( fabs( m_rose_angle - rose_angle ) > .1 )
+        b_need_refresh = true;
 
     if( b_need_refresh ) {
         wxBitmap StatBmp;
 
         StatBmp.Create(
-                ( _img_compass.GetWidth() + _img_gpsRed.GetWidth() ) + style->GetCompassLeftMargin() * 2
-                        + style->GetToolSeparation(),
-                _img_compass.GetHeight() + style->GetCompassTopMargin() + style->GetCompassBottomMargin() );
+                m_scale * ( ( _img_compass.GetWidth() + _img_gpsRed.GetWidth() ) + style->GetCompassLeftMargin() * 2
+                        + style->GetToolSeparation()),
+                m_scale * (_img_compass.GetHeight() + style->GetCompassTopMargin() + style->GetCompassBottomMargin()) );
 
         if( StatBmp.IsOk() ) {
 
@@ -199,26 +229,42 @@ wxBitmap ocpnFloatingCompassWindow::CreateBmp( bool newColorScheme )
             mdc.SetBrush( wxBrush( GetGlobalColor( _T("UITX1") ), wxBRUSHSTYLE_TRANSPARENT ) );
 
             mdc.DrawRoundedRectangle( 0, 0, StatBmp.GetWidth(), StatBmp.GetHeight(),
-                    style->GetCompassCornerRadius() );
+                    m_scale * style->GetCompassCornerRadius() );
 
             wxPoint offset( style->GetCompassLeftMargin(), style->GetCompassTopMargin() );
 
+            wxBitmap iconBm;
+            
+            
             //    Build Compass Rose, rotated...
             wxBitmap BMPRose;
             wxPoint after_rotate;
 
-            if( g_bCourseUp ) BMPRose = style->GetIcon( _T("CompassRose") );
+            if( g_bCourseUp )
+                BMPRose = style->GetIcon( _T("CompassRose") );
             else
                 BMPRose = style->GetIcon( _T("CompassRoseBlue") );
-            if( ( fabs( cc1->GetVPRotation() ) > .01 ) || ( fabs( cc1->GetVPSkew() ) > .01 ) ) {
-                wxPoint rot_ctr( BMPRose.GetWidth() / 2, BMPRose.GetHeight() / 2 );
+            
+            if( ( fabs( cc1->GetVPRotation() ) > .01 ) || ( fabs( cc1->GetVPSkew() ) > .01 )  || (fabs(m_scale-1.0) > 0.1) ) {
+                int width = BMPRose.GetWidth() * m_scale;
+                int height = BMPRose.GetHeight() * m_scale;
+                
                 wxImage rose_img = BMPRose.ConvertToImage();
+                
+                if(fabs(m_scale-1.0) > 0.1)
+                    rose_img.Rescale(width, height, wxIMAGE_QUALITY_NORMAL);
+                
 
-                wxImage rot_image = rose_img.Rotate( rose_angle, rot_ctr, true, &after_rotate );
-                BMPRose = wxBitmap( rot_image ).GetSubBitmap( wxRect( -after_rotate.x, -after_rotate.y, BMPRose.GetWidth(), BMPRose.GetHeight()) );
+                if(fabs(rose_angle) > 0.01){
+                    wxPoint rot_ctr( width / 2, height / 2 );
+                    wxImage rot_image = rose_img.Rotate( rose_angle, rot_ctr, true, &after_rotate );
+                    BMPRose = wxBitmap( rot_image ).GetSubBitmap( wxRect( -after_rotate.x, -after_rotate.y, width, height) );
+                }
+                else
+                    BMPRose = wxBitmap( rose_img );
+                
             }
 
-            wxBitmap iconBm;
 
             if( style->HasBackground() ) {
                 iconBm = MergeBitmaps( compassBg, BMPRose, wxSize( 0, 0 ) );
@@ -231,10 +277,21 @@ wxBitmap ocpnFloatingCompassWindow::CreateBmp( bool newColorScheme )
 
             m_rose_angle = rose_angle;
 
+            //  GPS Icon
+            wxBitmap gicon = style->GetIcon( gpsIconName );
+            if(fabs(m_scale-1.0) > 0.1){
+                int width = gicon.GetWidth() * m_scale;
+                int height = gicon.GetHeight() * m_scale;
+                
+                wxImage gps_img = gicon.ConvertToImage();
+                gps_img.Rescale(width, height, wxIMAGE_QUALITY_NORMAL);
+                gicon = wxBitmap( gps_img );
+            }
+
             if( style->HasBackground() ) {
-                iconBm = MergeBitmaps( gpsBg, style->GetIcon( gpsIconName ), wxSize( 0, 0 ) );
+                iconBm = MergeBitmaps( gpsBg, gicon, wxSize( 0, 0 ) );
             } else {
-                iconBm = style->GetIcon( gpsIconName );
+                iconBm = gicon;
             }
             mdc.DrawBitmap( iconBm, offset );
             mdc.SelectObject( wxNullBitmap );
