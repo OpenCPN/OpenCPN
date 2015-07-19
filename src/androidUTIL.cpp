@@ -1642,7 +1642,7 @@ int androidFileChooser( wxString *result, const wxString &initDir, const wxStrin
                 wxSafeYield(NULL, true);
             }
         
-//            qDebug() << "out of spin loop";
+            qDebug() << "out of spin loop";
             g_androidUtilHandler->m_action = ACTION_NONE;
             g_androidUtilHandler->m_eventTimer.Stop();
         
@@ -1650,15 +1650,19 @@ int androidFileChooser( wxString *result, const wxString &initDir, const wxStrin
             tresult = g_androidUtilHandler->GetStringResult();
             
             if( tresult.StartsWith(_T("cancel:")) ){
+                qDebug() << "Cancel1";
                 return wxID_CANCEL;
             }
             else if( tresult.StartsWith(_T("file:")) ){
                 if(result){
                     *result = tresult.AfterFirst(':');
+                    qDebug() << "OK";
                     return wxID_OK;
                 }
-                else
+                else{
+                    qDebug() << "Cancel2";
                     return wxID_CANCEL;
+                }
             }
         }
     }
@@ -1785,7 +1789,8 @@ wxString BuildAndroidSettingsString( void )
         }
     // Some other assorted values
         result += _T("prefs_navmode:") + wxString(g_bCourseUp == 0 ? _T("North Up;") : _T("Course Up;"));
-        
+        result += _T("prefs_chartInitDir:") + *pInit_Chart_Dir + _T(";");
+
         wxString s;
         double sf = (g_GUIScaleFactor * 10) + 50.;
         s.Printf( _T("%3.0f;"), sf );

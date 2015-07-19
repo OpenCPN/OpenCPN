@@ -9289,6 +9289,10 @@ void MyFrame::applySettingsString( wxString settings)
             if(val.ToDouble(&a))
                 g_ChartScaleFactor = wxRound( (a / 10.) - 5.);
         }
+
+        else if(token.StartsWith( _T("prefs_chartInitDir"))){
+            *pInit_Chart_Dir = val;
+        }
         
         else if(token.StartsWith( _T("prefs_displaycategory"))){
             rr |= S52_CHANGED;
