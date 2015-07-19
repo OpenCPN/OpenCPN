@@ -566,10 +566,14 @@ void ocpnFloatingToolbarDialog::SurfaceFromGrabber()
     Hide();
     Move( 0, 0 );
 #endif
+
+    if( m_ptoolbar )
+        m_ptoolbar->InvalidateBitmaps();
     
     RePosition();
     Show();
-    if( m_ptoolbar ) m_ptoolbar->EnableTooltips();
+    if( m_ptoolbar )
+        m_ptoolbar->EnableTooltips();
     
     if( g_bAutoHideToolbar && (g_nAutoHideToolbar > 0) ){
         m_fade_timer.Start( g_nAutoHideToolbar * 1000 );
@@ -1773,7 +1777,6 @@ void ocpnToolBarSimple::DrawTool( wxToolBarToolBase *tool )
 void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
 {
     ocpnToolBarTool *tool = (ocpnToolBarTool *) toolBase;
-
     PrepareDC( dc );
 
     wxPoint drawAt( tool->m_x, tool->m_y );

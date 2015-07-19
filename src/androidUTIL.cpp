@@ -1241,7 +1241,7 @@ double GetAndroidDisplaySize()
         token.ToLong( &abh );
         g_ActionBarHeight = wxMax(abh, 50);
 
-        qDebug() << "g_ActionBarHeight" << abh << g_ActionBarHeight;
+//        qDebug() << "g_ActionBarHeight" << abh << g_ActionBarHeight;
         
     }
     
@@ -1257,9 +1257,9 @@ double GetAndroidDisplaySize()
     g_androidDPmm = ldpi / 25.4;
     g_androidDensity = density;
 
-    qDebug() << "g_androidDPmm" << g_androidDPmm;
-    qDebug() << "Auto Display Size (mm)" << ret;
-    qDebug() << "ldpi" << ldpi;
+//    qDebug() << "g_androidDPmm" << g_androidDPmm;
+//    qDebug() << "Auto Display Size (mm)" << ret;
+//    qDebug() << "ldpi" << ldpi;
     
     
 //     wxString istr = return_string.BeforeFirst('.');
@@ -1389,9 +1389,9 @@ void androidConfirmSizeCorrection()
     //  This happens during staged resize events processed by gFrame->TriggerResize()
     
     wxSize targetSize = getAndroidDisplayDimensions();
-    qDebug() << "Confirming" << targetSize.y << config_size.y;
+//    qDebug() << "Confirming" << targetSize.y << config_size.y;
     if(config_size != targetSize){
-        qDebug() << "Correcting";
+//        qDebug() << "Correcting";
         gFrame->SetSize(targetSize);
         config_size = targetSize;
     }
