@@ -29,9 +29,16 @@
 #include "ChInfoWin.h"
 #include "chart1.h"
 
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#endif
+
+extern bool g_btouch;
+
 BEGIN_EVENT_TABLE(ChInfoWin, wxWindow)
     EVT_PAINT ( ChInfoWin::OnPaint )
     EVT_ERASE_BACKGROUND(ChInfoWin::OnEraseBackground)
+    EVT_MOUSE_EVENTS ( ChInfoWin::MouseEvent )
 END_EVENT_TABLE()
 
 // Define a constructor
@@ -55,6 +62,20 @@ void ChInfoWin::OnEraseBackground( wxEraseEvent& event )
 {
 }
 
+void ChInfoWin::MouseEvent( wxMouseEvent& event )
+{
+    if(g_btouch){
+        if( event.LeftDown() ) {
+            Hide();
+            
+            #ifdef __OCPN__ANDROID__        
+            androidForceFullRepaint();
+            #endif
+        }
+    }
+}
+
+    
 void ChInfoWin::OnPaint( wxPaintEvent& event )
 {
     int width, height;

@@ -4397,7 +4397,16 @@ void ChartCanvas::ShowChartInfoWindow( int x, int dbIndex )
 
 void ChartCanvas::HideChartInfoWindow( void )
 {
-    if( m_pCIWin && m_pCIWin->IsShown() ) m_pCIWin->Hide();
+    if( m_pCIWin /*&& m_pCIWin->IsShown()*/ ){
+        m_pCIWin->Hide();
+        m_pCIWin->Destroy();
+        m_pCIWin = NULL;
+
+#ifdef __OCPN__ANDROID__        
+        androidForceFullRepaint();
+#endif        
+            
+    }
 }
 
 void ChartCanvas::PanTimerEvent( wxTimerEvent& event )

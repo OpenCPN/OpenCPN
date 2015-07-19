@@ -62,6 +62,7 @@ extern wxSize getAndroidDisplayDimensions( void );
 extern double getAndroidDisplayDensity();
 extern int getAndroidActionBarHeight();
 extern void androidConfirmSizeCorrection();
+extern void androidForceFullRepaint();
 
 extern void androidShowBusyIcon();
 extern void androidHideBusyIcon();

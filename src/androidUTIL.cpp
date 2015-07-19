@@ -1397,7 +1397,14 @@ void androidConfirmSizeCorrection()
     }
 }
         
-
+void androidForceFullRepaint()
+{
+        wxSize targetSize = getAndroidDisplayDimensions();
+        wxSize tempSize = targetSize;
+        tempSize.y--;
+        gFrame->SetSize(tempSize);
+        gFrame->SetSize(targetSize);
+}       
 
 void androidShowBusyIcon()
 {
