@@ -193,6 +193,7 @@ PFNGLDELETEBUFFERSPROC              s_glDeleteBuffers;
 
 GLuint g_raster_format = GL_RGB;
 long g_tex_mem_used;
+int  g_tex_count;
 
 bool            b_timeGL;
 wxStopWatch     g_glstopwatch;
@@ -268,6 +269,7 @@ bool CompressChart(wxThread *pThread, ChartBase *pchart, wxString CompressedCach
         for( int y = 0; y < ny_tex; y++ ) {
             rect.height = tex_dim;
             rect.x = 0;
+            bool b_compressed = false;
             for( int x = 0; x < nx_tex; x++ ) {
                 rect.width = tex_dim;
       
@@ -280,6 +282,7 @@ bool CompressChart(wxThread *pThread, ChartBase *pchart, wxString CompressedCach
                 }
                 
                 if(b_needCompress){
+                    b_compressed = true;
                     tex_fact->DoImmediateFullCompress(rect);
                     for(int level = 0; level < g_mipmap_max_level + 1; level++ ) {
                         tex_fact->UpdateCacheLevel( rect, level, global_color_scheme );
@@ -304,9 +307,9 @@ bool CompressChart(wxThread *pThread, ChartBase *pchart, wxString CompressedCach
 
             
             
-            if(pMessageTarget){
+            if(pMessageTarget && (b_compressed || y == 0)){
                 wxString m1;
-                m1.Printf(_T("%04d/%04d \n"), nd, nt);
+                m1.Printf(_T("%04d/%04d \n"), b_compressed?nd:0, nt);
                 m1 += msg;
                 
                 std::string stlstring = std::string(m1.mb_str());
