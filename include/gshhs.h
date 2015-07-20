@@ -94,14 +94,15 @@ typedef std::vector<contour> contour_list;
 
 //==========================================================================
 
+
 class GshhsPolyCell {
 public:
 
     GshhsPolyCell( FILE *fpoly, int x0, int y0, PolygonFileHeader *header );
     ~GshhsPolyCell();
 
-    void drawMapPlain( ocpnDC &pnt, double dx, ViewPort &vp, wxColor seaColor,
-                       wxColor landColor, int cellcount, bool idl );
+    void drawMapPlain( ocpnDC &pnt, double dx, ViewPort &vp, wxColor const &seaColor,
+                       wxColor const &landColor, int cellcount, bool idl );
 
     void drawSeaBorderLines( ocpnDC &pnt, double dx, ViewPort &vp );
     std::vector<wxLineF> * getCoasts() { return &coasts; }
@@ -126,9 +127,9 @@ private:
     int polyc[6];
 
     void DrawPolygonFilled( ocpnDC &pnt, contour_list * poly, double dx, ViewPort &vp,
-            wxColor color );
+            wxColor const &color );
 #ifdef ocpnUSE_GL        
-    void DrawPolygonFilledGL( contour_list * p, float_2Dpt **pv, int *pvc, ViewPort &vp,  wxColor color, bool idl );
+    void DrawPolygonFilledGL( contour_list * p, float_2Dpt **pv, int *pvc, ViewPort &vp,  wxColor const &color, bool idl );
 #endif
     void DrawPolygonContour( ocpnDC &pnt, contour_list * poly, double dx, ViewPort &vp );
 
@@ -141,8 +142,8 @@ public:
     GshhsPolyReader( int quality );
     ~GshhsPolyReader();
 
-    void drawGshhsPolyMapPlain( ocpnDC &pnt, ViewPort &vp, wxColor seaColor,
-            wxColor landColor );
+    void drawGshhsPolyMapPlain( ocpnDC &pnt, ViewPort &vp, wxColor const &seaColor,
+            wxColor const &landColor );
 
     void drawGshhsPolyMapSeaBorders( ocpnDC &pnt, ViewPort &vp );
 
@@ -224,7 +225,7 @@ public:
     GshhsReader();
     ~GshhsReader();
 
-    void drawContinents( ocpnDC &pnt, ViewPort &vp, wxColor seaColor, wxColor landColor );
+    void drawContinents( ocpnDC &pnt, ViewPort &vp, wxColor const &seaColor, wxColor const &landColor );
 
     void drawSeaBorders( ocpnDC &pnt, ViewPort &vp );
     void drawBoundaries( ocpnDC &pnt, ViewPort &vp );
