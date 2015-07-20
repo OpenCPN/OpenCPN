@@ -57,6 +57,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
+import android.content.DialogInterface.OnCancelListener;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
@@ -781,44 +782,167 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
         m_FileChooserDone = false;
 
-//        Intent intent = new Intent(this, org.opencpn.FileChooser.class);
-//        intent.putExtra("FILE_CHOOSER_TITLE",Title);
-//        intent.putExtra("FILE_CHOOSER_DIR_ONLY","false");
-//        startActivityForResult(intent, OCPN_FILECHOOSER_REQUEST_CODE);
-
-        Intent intent = new Intent(this, FileChooserActivity.class);
-        intent.putExtra(FileChooserActivity.INPUT_START_FOLDER, initialDir);
-        intent.putExtra(FileChooserActivity.INPUT_FOLDER_MODE, false);
-        intent.putExtra(FileChooserActivity.INPUT_SHOW_FULL_PATH_IN_TITLE, true);
-        intent.putExtra(FileChooserActivity.INPUT_TITLE_STRING, Title);
+        boolean buseDialog = true;
+        if(!buseDialog){
+            Intent intent = new Intent(this, FileChooserActivity.class);
+            intent.putExtra(FileChooserActivity.INPUT_START_FOLDER, initialDir);
+            intent.putExtra(FileChooserActivity.INPUT_FOLDER_MODE, false);
+            intent.putExtra(FileChooserActivity.INPUT_SHOW_FULL_PATH_IN_TITLE, true);
+            intent.putExtra(FileChooserActivity.INPUT_TITLE_STRING, Title);
 
 
         //  Creating a file?
-        if(!Suggestion.isEmpty()){
-            Log.i("DEBUGGER_TAG", "FileChooserDialog Creating");
-            intent.putExtra(FileChooserActivity.INPUT_CAN_CREATE_FILES, true);
+            if(!Suggestion.isEmpty()){
+                Log.i("DEBUGGER_TAG", "FileChooserDialog Creating");
+                intent.putExtra(FileChooserActivity.INPUT_CAN_CREATE_FILES, true);
+            }
+
+            this.startActivityForResult(intent, OCPN_AFILECHOOSER_REQUEST_CODE);
         }
 
-        this.startActivityForResult(intent, OCPN_AFILECHOOSER_REQUEST_CODE);
+        Log.i("DEBUGGER_TAG", "FileChooserDialog create and show " + initialDir);
+
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+
+        // Block this thread for 20 msec.
+                try {
+                    Thread.sleep(20);
+                } catch (InterruptedException e) {
+                }
+
+// After sleep finishes blocking, create a Runnable to run on the UI Thread.
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        FileChooserDialog dialog = new FileChooserDialog(m_activity, initialDir);
+
+                        dialog.setShowFullPath( true );
+                        dialog.setTitle( Title );
+
+                        dialog.addListener(new FileChooserDialog.OnFileSelectedListener() {
+                            public void onFileSelected(Dialog source, File file) {
+                                source.hide();
+                                //Toast toast = Toast.makeText(source.getContext(), "File selected: " + file.getName(), Toast.LENGTH_LONG);
+                                //toast.show();
+
+                                m_filechooserString = "file:" + file.getPath();
+                                m_FileChooserDone = true;
+
+                            }
+                            public void onFileSelected(Dialog source, File folder, String name) {
+                                source.hide();
+                                //Toast toast = Toast.makeText(source.getContext(), "File created: " + folder.getName() + "/" + name, Toast.LENGTH_LONG);
+                                //toast.show();
+
+                                m_filechooserString = "file:" + folder.getPath() + "/" + name;
+                                m_FileChooserDone = true;
+
+                            }
+                        });
+
+                        dialog.setOnCancelListener(new OnCancelListener() {
+                            public void onCancel(DialogInterface dialog) {
+                                Log.i("DEBUGGER_TAG", "FileChooserDialog Cancel");
+                                m_filechooserString = "cancel:";
+                                m_FileChooserDone = true;
+                            }
+                        });
+
+
+                        dialog.setCanCreateFiles(true);
+                        dialog.show();
+
+                        Log.i("DEBUGGER_TAG", "FileChooserDialog Back from show");
+
+                    }
+                });
+            }
+        };
+
+        // Don't forget to start the thread.
+        thread.start();
+
+        Log.i("DEBUGGER_TAG", "FileChooserDialog Returning");
 
         return "OK";
    }
 
    public String DirChooserDialog(final String initialDir, final String Title)
    {
-       Log.i("DEBUGGER_TAG", "DirChooserDialog");
-       Log.i("DEBUGGER_TAG", initialDir);
-
        m_FileChooserDone = false;
-//       Intent intent = new Intent(this, org.opencpn.FileChooser.class);
-//       intent.putExtra("FILE_CHOOSER_TITLE",Title);
-//       intent.putExtra("FILE_CHOOSER_DIR_ONLY","true");
-//       startActivityForResult(intent, OCPN_FILECHOOSER_REQUEST_CODE);
 
-       Intent intent = new Intent(this, FileChooserActivity.class);
-       intent.putExtra(FileChooserActivity.INPUT_START_FOLDER, initialDir);
-       intent.putExtra(FileChooserActivity.INPUT_FOLDER_MODE, true);
-       this.startActivityForResult(intent, OCPN_AFILECHOOSER_REQUEST_CODE);
+       boolean buseDialog = true;
+       if(!buseDialog){
+            Intent intent = new Intent(this, FileChooserActivity.class);
+            intent.putExtra(FileChooserActivity.INPUT_START_FOLDER, initialDir);
+            intent.putExtra(FileChooserActivity.INPUT_FOLDER_MODE, true);
+            this.startActivityForResult(intent, OCPN_AFILECHOOSER_REQUEST_CODE);
+        }
+
+        Log.i("DEBUGGER_TAG", "DirChooserDialog create and show " + initialDir);
+
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+
+        // Block this thread for 20 msec.
+                try {
+                    Thread.sleep(20);
+                } catch (InterruptedException e) {
+                }
+
+// After sleep finishes blocking, create a Runnable to run on the UI Thread.
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        FileChooserDialog dialog = new FileChooserDialog(m_activity, initialDir);
+
+                        dialog.setShowFullPath( true );
+                        dialog.setFolderMode( true );
+
+                        dialog.setTitle( Title );
+
+                        dialog.addListener(new FileChooserDialog.OnFileSelectedListener() {
+                            public void onFileSelected(Dialog source, File file) {
+                                source.hide();
+                                //Toast toast = Toast.makeText(source.getContext(), "File selected: " + file.getName(), Toast.LENGTH_LONG);
+                                //toast.show();
+
+                                m_filechooserString = "file:" + file.getPath();
+                                m_FileChooserDone = true;
+
+                            }
+                            public void onFileSelected(Dialog source, File folder, String name) {
+                                source.hide();
+                                m_FileChooserDone = true;
+                            }
+
+                        });
+
+                        dialog.setOnCancelListener(new OnCancelListener() {
+                            public void onCancel(DialogInterface dialog) {
+                                Log.i("DEBUGGER_TAG", "DirChooserDialog Cancel");
+                                m_filechooserString = "cancel:";
+                                m_FileChooserDone = true;
+                            }
+                        });
+
+
+                        dialog.show();
+
+                        Log.i("DEBUGGER_TAG", "DirChooserDialog Back from show");
+
+                    }
+                });
+            }
+        };
+
+        // Don't forget to start the thread.
+        thread.start();
+
+        Log.i("DEBUGGER_TAG", "DirChooserDialog Returning");
 
        return "OK";
   }

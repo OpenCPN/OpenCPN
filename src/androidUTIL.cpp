@@ -429,7 +429,7 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
             break;
  
             
-        case ACTION_FILECHOOSER_END:            //  Handle polling of android Intent
+        case ACTION_FILECHOOSER_END:            //  Handle polling of android Dialog
             {
                 qDebug() << "chooser poll";
                 //  Get a reference to the running FileChooser
@@ -456,12 +456,15 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                     //  "no"   ......Intent not done yet.
                     //  "cancel:"   .. user cancelled intent.
                     //  "file:{file_name}"  .. user selected this file, fully qualified.
-                    if( (jenv)->GetStringLength( s )){
+                    if(!s){
+                        qDebug() << "isFileChooserFinished returned null";
+                    }
+                    else if( (jenv)->GetStringLength( s )){
                         const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
-                        qDebug() << ret_string;
+                        qDebug() << "isFileChooserFinished returned " << ret_string;
                         if( !strncmp(ret_string, "cancel:", 7) ){
                             m_done = true;
-                            m_stringResult = _T("");
+                            m_stringResult = _T("cancel:");
                         }
                         else if( !strncmp(ret_string, "file:", 5) ){
                             m_done = true;
@@ -1029,10 +1032,10 @@ wxString callActivityMethod_s4s(const char *method, wxString parm1, wxString par
     
     jstring s = data.object<jstring>();
     
-    if( (jenv)->GetStringLength( s )){
-        const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
-        return_string = wxString(ret_string, wxConvUTF8);
-    }
+     if( (jenv)->GetStringLength( s )){
+         const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+         return_string = wxString(ret_string, wxConvUTF8);
+     }
     
     return return_string;
     
@@ -1640,6 +1643,7 @@ int androidFileChooser( wxString *result, const wxString &initDir, const wxStrin
             activityResult = callActivityMethod_s4s("FileChooserDialog", initDir, title, suggestion, wildcard);
         
         if(activityResult == _T("OK") ){
+            qDebug() << "ResultOK, starting spin loop";
             g_androidUtilHandler->m_action = ACTION_FILECHOOSER_END;
             g_androidUtilHandler->m_eventTimer.Start(1000, wxTIMER_CONTINUOUS);
         
@@ -1672,6 +1676,10 @@ int androidFileChooser( wxString *result, const wxString &initDir, const wxStrin
                 }
             }
         }
+        else{
+            qDebug() << "Result NOT OK";
+        }
+        
     }
 
     return wxID_CANCEL;
