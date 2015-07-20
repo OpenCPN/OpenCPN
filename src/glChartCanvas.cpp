@@ -298,7 +298,7 @@ bool CompressChart(wxThread *pThread, ChartBase *pchart, wxString CompressedCach
                 nd++;
                 rect.x += rect.width;
                 
-                if( pThread )
+                if( pThread && thread == 0)
                     pThread->Sleep(1);
             }
 
