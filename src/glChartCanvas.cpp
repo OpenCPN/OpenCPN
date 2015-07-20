@@ -193,7 +193,6 @@ PFNGLDELETEBUFFERSPROC              s_glDeleteBuffers;
 
 GLuint g_raster_format = GL_RGB;
 long g_tex_mem_used;
-int  g_tex_count;
 
 bool            b_timeGL;
 wxStopWatch     g_glstopwatch;
