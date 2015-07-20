@@ -184,7 +184,6 @@ public:
     void PurgeJobList( wxString chart_path = wxEmptyString );
     
     unsigned int m_raster_format;
-    JobList             running_list;
     
 private:
     
@@ -192,6 +191,7 @@ private:
     bool DoThreadJob(JobTicket* pticket);
     bool StartTopJob();
     
+    JobList             running_list;
     JobList             todo_list;
     int                 m_njobs_running;
     int                 m_max_jobs;
