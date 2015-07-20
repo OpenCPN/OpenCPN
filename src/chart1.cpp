@@ -4332,9 +4332,6 @@ void MyFrame::ToggleChartBar()
 {
     g_bShowChartBar = !g_bShowChartBar;
 
-    if(g_bShowChartBar)
-        cc1->m_brepaint_piano = true;
-
     cc1->ReloadVP(); // needed to set VP.pix_height
     Refresh();
 
@@ -6962,7 +6959,6 @@ void MyFrame::UpdateGPSCompassStatusBox( bool b_force_new )
 
             if(rect != g_Compass->GetRect()) {
                 Refresh(true);
-                cc1->m_brepaint_piano = true;
                 b_update = true;
             }
             g_last_tb_rect = tb_rect;
@@ -7564,7 +7560,6 @@ void MyFrame::UpdateControlBar( void )
         cc1->HideChartInfoWindow();
         g_Piano->ResetRollover();
         cc1->SetQuiltChartHiLiteIndex( -1 );
-        cc1->m_brepaint_piano = true;
     }
 
     // Create a bitmask int that describes what Family/Type of charts are shown in the bar,

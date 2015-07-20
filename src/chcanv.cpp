@@ -1882,7 +1882,6 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
                 g_Compass->Show(!g_Compass->IsShown());
                 if (g_Compass->IsShown())
                     g_Compass->UpdateStatus();
-                m_brepaint_piano = true;
                 Refresh( false );
             }
             break;
@@ -2210,7 +2209,6 @@ void ChartCanvas::SetColorScheme( ColorScheme cs )
     }
 #endif
     SetbTCUpdate( true );                        // force re-render of tide/current locators
-    m_brepaint_piano = true;
 
     ReloadVP();
 
@@ -4550,8 +4548,6 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
 
     delete m_working_bm;
     m_working_bm = NULL;
-
-    m_brepaint_piano = true;
 
 #ifdef ocpnUSE_GL
     if( /*g_bopengl &&*/ m_glcc ) {
@@ -9056,7 +9052,6 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
             disp_length += dist;
         s0 += FormatDistanceAdaptive( disp_length );
         RouteLegInfo( dc, r_rband, 1, s0 );
-        m_brepaint_piano = true;
     }
 }
 
@@ -9158,9 +9153,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
         ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
         if(ru.Contains(chart_bar_rect) != wxOutRegion) {
-            if(style->chartStatusWindowTransparent)
-                m_brepaint_piano = true;
-            else
+            if(!style->chartStatusWindowTransparent)
                 ru.Subtract(chart_bar_rect);
         }        
     }
@@ -9901,18 +9894,15 @@ void ChartCanvas::DrawOverlayObjects( ocpnDC &dc, const wxRegion& ru )
     s57_DrawExtendedLightSectors( dc, VPoint, extendedSectorLegs );
 #endif
 
-    if( m_pRouteRolloverWin && m_pRouteRolloverWin->IsActive() ) {
+    if( m_pRouteRolloverWin && m_pRouteRolloverWin->IsActive() )
         dc.DrawBitmap( *(m_pRouteRolloverWin->GetBitmap()),
                        m_pRouteRolloverWin->GetPosition().x,
                        m_pRouteRolloverWin->GetPosition().y, false );
-        m_brepaint_piano = true;
-    }
-    if( m_pAISRolloverWin && m_pAISRolloverWin->IsActive() ) {
+
+    if( m_pAISRolloverWin && m_pAISRolloverWin->IsActive() )
         dc.DrawBitmap( *(m_pAISRolloverWin->GetBitmap()),
                 m_pAISRolloverWin->GetPosition().x,
                 m_pAISRolloverWin->GetPosition().y, false );
-        m_brepaint_piano = true;
-    }
 }
 
 emboss_data *ChartCanvas::EmbossDepthScale()
