@@ -607,6 +607,9 @@ void * CompressionPoolThread::Entry()
             }
         }
     }
+    else {
+        m_pticket->b_isaborted = true;
+    }
 
 SendEvtAndReturn:
     
@@ -615,10 +618,9 @@ SendEvtAndReturn:
         Nevent.SetTicket(m_pticket);
         
         m_pMessageTarget->AddPendingEvent(Nevent);
+        // from here m_pticket is undefined (if deleted in event handler)
     }
 
-    m_pticket->b_isaborted = true;
-    
     return 0;
 
     }           // try
@@ -628,12 +630,11 @@ SendEvtAndReturn:
     {
         if( m_pMessageTarget ) {
             OCPN_CompressionThreadEvent Nevent(wxEVT_OCPN_COMPRESSIONTHREAD, 0);
-            Nevent.SetTicket(m_pticket);
-            
+            m_pticket->b_isaborted = true;
+            Nevent.SetTicket(m_pticket);            
             m_pMessageTarget->AddPendingEvent(Nevent);
         }
         
-        m_pticket->b_isaborted = true;
         
         return 0;
     }
@@ -678,8 +679,6 @@ void CompressionWorkerPool::OnEvtThread( OCPN_CompressionThreadEvent & event )
     JobTicket *ticket = event.GetTicket();
     
     if(ticket->b_abort){
-        running_list.DeleteObject(ticket);
-        m_njobs_running--;
 
         for(int i=0 ; i < g_mipmap_max_level+1 ; i++){
             free(ticket->comp_bits_array[i]);
@@ -695,10 +694,13 @@ void CompressionWorkerPool::OnEvtThread( OCPN_CompressionThreadEvent & event )
             free( ticket->compcomp_bits_array );
         }
         
+        m_njobs_running--;
         if(bthread_debug)
             printf( "    Abort job: %08X  Jobs running: %d             Job count: %lu   \n",
                     ticket->ident, m_njobs_running, (unsigned long)todo_list.GetCount());
 
+        running_list.DeleteObject(ticket);
+        delete ticket;
         StartTopJob();
         return;
     }
@@ -723,20 +725,20 @@ void CompressionWorkerPool::OnEvtThread( OCPN_CompressionThreadEvent & event )
         }
     }
     
-    running_list.DeleteObject(ticket);
     m_njobs_running--;
     
     if(bthread_debug)
         printf( "    Finished job: %08X  Jobs running: %d             Job count: %lu   \n",
                 ticket->ident, m_njobs_running, (unsigned long)todo_list.GetCount());
 
+    running_list.DeleteObject(ticket);
+
 //    int mem_used;
 //    GetMemoryStatus(0, &mem_used);
     
 ///    qDebug() << "Finished" << m_njobs_running <<  (unsigned long)todo_list.GetCount() << mem_used << g_tex_mem_used;
     
-    StartTopJob();
-    
+    delete ticket;
 }
 
 bool CompressionWorkerPool::ScheduleJob(glTexFactory* client, const wxRect &rect, int level,
@@ -890,6 +892,7 @@ void CompressionWorkerPool::PurgeJobList( wxString chart_path )
                 if(bthread_debug)
                     printf("Pool:  Purge pending job for purged chart\n");
                 todo_list.DeleteNode(tnode);
+                delete ticket;
                 tnode = todo_list.GetFirst();  // restart the list
             }
             else{
@@ -911,9 +914,15 @@ void CompressionWorkerPool::PurgeJobList( wxString chart_path )
             printf("Pool:  Purge, todo count: %lu\n", (long unsigned)todo_list.GetCount());
     }
     else {
+        wxJobListNode *node = todo_list.GetFirst();
+        while(node){
+            JobTicket *ticket = node->GetData();
+            delete ticket;
+            node = node->GetNext();
+        }
         todo_list.Clear();
         //  Mark all running tasks for "abort"
-        wxJobListNode *node = running_list.GetFirst();
+        node = running_list.GetFirst();
         while(node){
             JobTicket *ticket = node->GetData();
             ticket->b_isaborted = false;
