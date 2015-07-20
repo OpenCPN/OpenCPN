@@ -644,6 +644,7 @@ int                       g_toolbar_y;
 long                      g_toolbar_orient;
 wxRect                    g_last_tb_rect;
 float                     g_toolbar_scalefactor;
+float                     g_compass_scalefactor;
 
 MyDialogPtrArray          g_MacShowDialogArray;
 bool                      g_benable_rotate;
@@ -1203,7 +1204,7 @@ bool MyApp::OnInit()
 
 
 // Set up default FONT encoding, which should have been done by wxWidgets some time before this......
-    wxFont temp_font( 10, wxDEFAULT, wxNORMAL, wxNORMAL, FALSE, wxString( _T("") ),
+    wxFont temp_font( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, FALSE, wxString( _T("") ),
             wxFONTENCODING_SYSTEM );
     temp_font.SetDefaultEncoding( wxFONTENCODING_SYSTEM );
 
@@ -1265,13 +1266,12 @@ bool MyApp::OnInit()
     imsg += g_Platform->GetSharedDataDir();
     wxLogMessage( imsg );
 
-#ifdef __OCPN__ANDROID__
+#ifdef __WXQT__
     //  Now we can load a Qt StyleSheet, if present
     wxString style_file = g_Platform->GetSharedDataDir();
     style_file += _T("styles");
     appendOSDirSlash( &style_file );
     style_file += _T("qtstylesheet.qss");
-    
     if(LoadQtStyleSheet(style_file)){
         wxString smsg = _T("Loaded Qt Stylesheet: ") + style_file;
         wxLogMessage( smsg );
@@ -1529,6 +1529,7 @@ bool MyApp::OnInit()
     
     // Determine if a transparent toolbar is possible under linux with opengl
     g_bTransparentToolbarInOpenGLOK = false;
+#ifndef __WXQT__    
 #ifdef OCPN_HAVE_X11
     if(!g_bdisable_opengl) {
         Display *disp = XOpenDisplay(NULL);
@@ -1553,6 +1554,7 @@ bool MyApp::OnInit()
         }
         XCloseDisplay(disp);
     }
+#endif
 #endif
 
 // Set default color scheme
@@ -1707,7 +1709,7 @@ bool MyApp::OnInit()
     wxSize asz = getAndroidDisplayDimensions();
     ch = asz.y;
     cw = asz.x;
-    qDebug() << cw << ch;
+//    qDebug() << cw << ch;
 
     if((cw > 200) && (ch > 200) )
         new_frame_size.Set( cw, ch );
@@ -1790,7 +1792,8 @@ bool MyApp::OnInit()
     g_toolbar_y = wxMin(g_toolbar_y, ch);
 
     gFrame->SetToolbarScale();
-
+    gFrame->SetGPSCompassScale();
+    
     //  The position and size of the static frame children (i.e. the canvas, and the status bar) are now set
     //  So now we can establish the AUI panes for them.
     //  It is important to have set the chartcanvas and status bar sizes before this point,
@@ -2037,8 +2040,8 @@ extern ocpnGLOptions g_GLOptions;
     //  We need to defer their creation until here.
     if( pConfig->m_bShowCompassWin ) {
         g_FloatingCompassDialog = new ocpnFloatingCompassWindow( cc1 );
-        if( g_FloatingCompassDialog )
-            g_FloatingCompassDialog->UpdateStatus( true );
+        g_FloatingCompassDialog->SetScaleFactor(g_compass_scalefactor);
+        g_FloatingCompassDialog->UpdateStatus( true );
     }
 
     gFrame->Refresh( false );
@@ -2610,8 +2613,11 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     ocpnToolBarSimple *tb = NULL;
     wxToolBarToolBase* newtool;
 
-    if( g_FloatingToolbarDialog )
+    if( g_FloatingToolbarDialog ){
         tb = g_FloatingToolbarDialog->GetToolbar();
+        if(tb)
+            g_FloatingToolbarDialog->SetGeometry(g_FloatingCompassDialog);
+    }
     if( !tb )
         return 0;
 
@@ -2890,7 +2896,6 @@ void MyFrame::RequestNewToolbar(bool bforcenew)
     bool b_reshow = true;
     if( g_FloatingToolbarDialog ) {
         b_reshow = g_FloatingToolbarDialog->IsShown();
-
         float ff = fabs(g_FloatingToolbarDialog->GetScaleFactor() - g_toolbar_scalefactor);
         if((ff > 0.01f) || bforcenew){
             DestroyMyToolbar();
@@ -2980,6 +2985,15 @@ void MyFrame::SetToolbarScale()
     //  Round to the nearest "quarter", to avoid rendering artifacts
     g_toolbar_scalefactor = wxRound( g_toolbar_scalefactor * 4.0 )/ 4.0;
 
+}
+
+void MyFrame::SetGPSCompassScale()
+{
+    g_compass_scalefactor = g_Platform->GetCompassScaleFactor( g_GUIScaleFactor );
+    
+    //  Round to the nearest "quarter", to avoid rendering artifacts
+//    g_compass_scalefactor = wxRound( g_toolbar_scalefactor * 4.0 )/ 4.0;
+    
 }
 
 void MyFrame::RaiseToolbarRecoveryWindow()
@@ -3178,7 +3192,10 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 //      or that call GUI methods
 
 #ifdef USE_S57
-    if( g_pCM93OffsetDialog ) g_pCM93OffsetDialog->Destroy();
+    if( g_pCM93OffsetDialog ) {
+        g_pCM93OffsetDialog->Destroy();
+        g_pCM93OffsetDialog = NULL;
+    }
 #endif
 
     if(g_FloatingToolbarDialog)
@@ -3340,7 +3357,7 @@ void MyFrame::ProcessCanvasResize( void )
 
     if( g_FloatingToolbarDialog ) {
         g_FloatingToolbarDialog->RePosition();
-        g_FloatingToolbarDialog->SetGeometry();
+        g_FloatingToolbarDialog->SetGeometry(g_FloatingCompassDialog);
         g_FloatingToolbarDialog->Realize();
         g_FloatingToolbarDialog->RePosition();
 
@@ -3395,12 +3412,22 @@ void MyFrame::OnResizeTimer(wxTimerEvent &event)
             g_Platform->GetDisplaySizeMM();             // causes a reload of all display metrics
             SetToolbarScale();
             g_FloatingToolbarDialog->RePosition();
-            g_FloatingToolbarDialog->SetGeometry();
+            g_FloatingToolbarDialog->SetGeometry(g_FloatingCompassDialog);
             g_FloatingToolbarDialog->Realize();
             g_FloatingToolbarDialog->Refresh( false );
         }
+        timer_sequence++;
+        m_resizeTimer.Start(10, wxTIMER_ONE_SHOT);
+        
         return;
     }
+
+    if(timer_sequence == 3){
+        g_Platform->onStagedResizeFinal();
+        
+        return;
+    }
+        
         
     
 }
@@ -3430,11 +3457,16 @@ void MyFrame::ODoSetSize( void )
                     int widths[] = { -6, -5, -5, -3, -4 };
                     m_pStatusBar->SetStatusWidths( m_StatusBarFieldCount, widths );
                 }
-                else{
-                    int cwidth = x * 9 / 10;
+                else if(m_StatusBarFieldCount == 2){
+                    int cwidth = x * 90 / 100;
                     int widths[] = { 100, 100 };
-                    widths[0] = cwidth / m_StatusBarFieldCount;
-                    widths[1] = cwidth / m_StatusBarFieldCount;
+                    widths[0] = cwidth * 6.4 / 10.0;
+                    widths[1] = cwidth * 3.6 /  10.0;
+                    m_pStatusBar->SetStatusWidths( m_StatusBarFieldCount, widths );
+                }
+                else{
+                    int widths[] = { 100, 100 };
+                    widths[0] = x * 90 / 100 ;
                     m_pStatusBar->SetStatusWidths( m_StatusBarFieldCount, widths );
                 }
                 
@@ -3484,13 +3516,15 @@ void MyFrame::ODoSetSize( void )
         int min_height = stat_box.height;
         
         m_pStatusBar->SetFont( *pstat_font );
-#ifdef __WXQT__
-        m_pStatusBar->SetMinHeight( pstat_font->GetPointSize() + 10 );
-        min_height = pstat_font->GetPointSize() + 10;
+#ifdef __OCPN__ANDROID__
+        min_height = ( pstat_font->GetPointSize() * getAndroidDisplayDensity() ) + 10;
+        m_pStatusBar->SetMinHeight( min_height );
+//        qDebug() <<"StatusBar min height:" << min_height << "StatusBar font points:" << pstat_font->GetPointSize();
 #endif
-        wxString msg;
-        msg.Printf(_T("StatusBar min height: %d    StatusBar font points: %d"), min_height, pstat_font->GetPointSize());
-        wxLogMessage(msg);
+//        wxString msg;
+//        msg.Printf(_T("StatusBar min height: %d    StatusBar font points: %d"), min_height, pstat_font->GetPointSize());
+//        wxLogMessage(msg);
+
         
     }
 
@@ -3512,7 +3546,7 @@ void MyFrame::ODoSetSize( void )
     if( g_FloatingToolbarDialog ) {
         wxSize oldSize = g_FloatingToolbarDialog->GetSize();
         g_FloatingToolbarDialog->RePosition();
-        g_FloatingToolbarDialog->SetGeometry();
+        g_FloatingToolbarDialog->SetGeometry(g_FloatingCompassDialog);
         g_FloatingToolbarDialog->Realize();
 
         if( oldSize != g_FloatingToolbarDialog->GetSize() )
@@ -5013,6 +5047,12 @@ int MyFrame::DoOptionsDialog()
     UpdateControlBar();
     Refresh();
     
+    //  We set the compass size first, since that establishes the available space for the toolbar.
+    if(g_FloatingCompassDialog){
+        SetGPSCompassScale();
+        g_FloatingCompassDialog->SetScaleFactor(g_compass_scalefactor);
+    }
+        
     SetToolbarScale();
     RequestNewToolbar();
 
@@ -5146,12 +5186,14 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
     if(rr & S52_CHANGED){
         b_need_refresh = true;
     }
-    
+
+#ifdef ocpnUSE_GL    
     if(rr & REBUILD_RASTER_CACHE){
         cc1->Disable();
         BuildCompressedCache();
         cc1->Enable();
     }
+#endif    
     
     if(g_config_display_size_mm > 0){
         g_display_size_mm = g_config_display_size_mm;
@@ -6532,6 +6574,11 @@ void MyFrame::UpdateGPSCompassStatusBox( bool b_force_new )
 {
     if( !g_FloatingCompassDialog ) return;
 
+    //  Process changes in scale
+    if(fabs(g_FloatingCompassDialog->GetScaleFactor() - g_compass_scalefactor) > 0.01){
+        g_FloatingCompassDialog->SetScaleFactor(g_compass_scalefactor);
+    }
+    
     //    Look for change in overlap or positions
     bool b_update = false;
     wxRect tentative_rect;
@@ -7789,48 +7836,33 @@ bool GetMemoryStatus( int *mem_total, int *mem_used )
             
 #ifdef __LINUX__
 
-//      Use filesystem /proc/pid/status to determine memory status
-
-    unsigned long processID = wxGetProcessId();
+//      Use filesystem /proc/self/statm to determine memory status
+//	Provides information about memory usage, measured in pages.  The columns are:
+//	size       total program size (same as VmSize in /proc/[pid]/status)
+//	resident   resident set size (same as VmRSS in /proc/[pid]/status)
+//	share      shared pages (from shared mappings)
+//	text       text (code)
+//	lib        library (unused in Linux 2.6)
+//	data       data + stack
+//	dt         dirty pages (unused in Linux 2.6)
+                                                                                                                                                                                                             
     wxTextFile file;
     wxString file_name;
 
     if(mem_used)
     {
         *mem_used = 0;
-        file_name.Printf(_T("/proc/%d/status"), (int)processID);
+        file_name = _T("/proc/self/statm");
         if(file.Open(file_name))
         {
-            bool b_found = false;
-            wxString str;
-            for ( str = file.GetFirstLine(); !file.Eof(); str = file.GetNextLine() )
-            {
-                wxStringTokenizer tk(str, _T(" :"));
-                while ( tk.HasMoreTokens() )
-                {
-                    wxString token = tk.GetNextToken();
-                    if(token == _T("VmRSS"))
-                    {
-                        wxStringTokenizer tkm(str, _T(" "));
-                        wxString mem = tkm.GetNextToken();
-                        long mem_extract = 0;
-                        while(mem.Len())
-                        {
-                            mem.ToLong(&mem_extract);
-                            if(mem_extract)
-                            break;
-                            mem = tkm.GetNextToken();
-                        }
-
-                        *mem_used = mem_extract;
-                        b_found = true;
-                        break;
-                    }
-                    else
-                    break;
-                }
-                if(b_found)
-                break;
+            wxString str = file.GetFirstLine();
+            wxStringTokenizer tkm(str, _T(" "));
+            wxString mem = tkm.GetNextToken();
+            mem = tkm.GetNextToken();
+            long mem_extract = 0;
+            if (mem.Len()) {
+                mem.ToLong(&mem_extract);
+                *mem_used = mem_extract *4; // XXX assume 4K page
             }
         }
     }
@@ -9235,8 +9267,12 @@ void MyFrame::applySettingsString( wxString settings)
         
         
         else if(token.StartsWith( _T("prefs_navmode"))){
-            g_bCourseUp = val.IsSameAs(_T("Course Up"));
+            bool bPrevMode = g_bCourseUp;
+            bool new_val = val.IsSameAs(_T("Course Up"));
+            if(bPrevMode != new_val)
+                ToggleCourseUp();
         }
+        
         
         //  Strings, etc.
         
@@ -9417,10 +9453,23 @@ void MyFrame::applySettingsString( wxString settings)
     UpdateControlBar();
     Refresh();
     
+    //  We set the compass size first, since that establishes the available space for the toolbar.
+    if(g_FloatingCompassDialog){
+        SetGPSCompassScale();
+        g_FloatingCompassDialog->SetScaleFactor(g_compass_scalefactor);
+        UpdateGPSCompassStatusBox( );
+    }
+    
+    
+    
+    
     SetToolbarScale();
     RequestNewToolbar(true);    // Force rebuild, to pick up bGUIexpert settings.
     SurfaceToolbar();
+    
     ShowChartBarIfEnabled();
+    
+    
 
 #if defined(__WXOSX__) || defined(__WXQT__)
     if( g_FloatingCompassDialog )

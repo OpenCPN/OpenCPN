@@ -36,6 +36,7 @@
 
 #include "styles.h"
 #include "chart1.h"
+#include "wx28compat.h"
 
 extern OCPNPlatform     *g_Platform;
 
@@ -59,14 +60,13 @@ wxBitmap MergeBitmaps( wxBitmap back, wxBitmap front, wxSize offset )
     wxImage im_front = front.ConvertToImage();
     if(!im_front.HasAlpha())
         return front;
-    
 #if !wxCHECK_VERSION(2,9,4)
 
     // Manual alpha blending for broken wxWidgets alpha bitmap support, pervasive in wx2.8.
     merged.UseAlpha();
     back.UseAlpha();
     front.UseAlpha();
-
+    
 //    wxImage im_front = front.ConvertToImage();
     wxImage im_back = back.ConvertToImage();
     wxImage im_result = back.ConvertToImage();// Only way to make result have alpha channel in wxW 2.8.
@@ -125,6 +125,7 @@ wxBitmap MergeBitmaps( wxBitmap back, wxBitmap front, wxSize offset )
 
 #else
     wxMemoryDC mdc( merged );
+    mdc.Clear();
     mdc.DrawBitmap( back, 0, 0, true );
     mdc.DrawBitmap( front, offset.x, offset.y, true );
     mdc.SelectObject( wxNullBitmap );
@@ -243,7 +244,7 @@ wxBitmap Style::GetToolIcon(const wxString & toolname, int iconType, bool rollov
             } else {
                 wxBitmap bg( GetToolSize().x, GetToolSize().y );
                 wxMemoryDC mdc( bg );
-                mdc.SetBackground( wxBrush( GetGlobalColor( _T("GREY2") ), wxSOLID ) );
+                mdc.SetBackground( wxBrush( GetGlobalColor( _T("GREY2") ), wxBRUSHSTYLE_SOLID ) );
                 mdc.Clear();
                 mdc.SelectObject( wxNullBitmap );
                 bm = MergeBitmaps( bg, bm, wxSize( 0, 0 ) );
@@ -341,7 +342,7 @@ wxBitmap Style::BuildPluginIcon( const wxBitmap* bm, int iconType )
                 wxMemoryDC mdc( bg );
                 wxSize offset = GetToolSize() - wxSize( bm->GetWidth(), bm->GetHeight() );
                 offset /= 2;
-                mdc.SetBackground( wxBrush( GetGlobalColor( _T("GREY2") ), wxSOLID ) );
+                mdc.SetBackground( wxBrush( GetGlobalColor( _T("GREY2") ), wxBRUSHSTYLE_SOLID ) );
                 mdc.Clear();
                 mdc.SelectObject( wxNullBitmap );
                 iconbm = MergeBitmaps( bg, *bm, offset );

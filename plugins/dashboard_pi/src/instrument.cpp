@@ -33,6 +33,7 @@
 #endif //precompiled headers
 
 #include "instrument.h"
+#include "wx28compat.h"
 
 //----------------------------------------------------------------
 //
@@ -137,7 +138,7 @@ void DashboardInstrument::OnPaint( wxPaintEvent& WXUNUSED(event) )
 #endif
         {
             wxPen pen;
-            pen.SetStyle( wxSOLID );
+            pen.SetStyle( wxPENSTYLE_SOLID );
             GetGlobalColor( _T("DASHL"), &cl );
             pen.SetColour( cl );
             dc.SetPen( pen );

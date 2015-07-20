@@ -341,6 +341,8 @@ public:
       
       bool CheckEdgePan( int x, int y, bool bdragging, int margin, int delta );
 
+      void RenderLastGLCanvas();
+      
       Route       *m_pMouseRoute;
       bool        m_bMeasure_Active;
       wxString    m_active_upload_port;

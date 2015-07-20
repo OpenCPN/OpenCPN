@@ -125,7 +125,11 @@ protected:
      wxBrush m_brush;
      wxColour m_textforegroundcolour;
      wxFont m_font;
+
+#ifdef ocpnUSE_GL     
      TexFont m_texfont;
+#endif
+     
 
 #if  wxUSE_GRAPHICS_CONTEXT
      wxGraphicsContext *pgc;

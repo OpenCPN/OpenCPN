@@ -26,6 +26,7 @@
  */
 
 #include "wind_history.h"
+#include "wx28compat.h"
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
@@ -381,7 +382,7 @@ void DashboardInstrument_WindDirHistory::DrawBackground(wxGCDC* dc)
   dc->SetPen(pen);
   dc->DrawLine(m_LeftLegend+3, m_TopLineHeight, m_WindowRect.width-3-m_RightLegend, m_TopLineHeight); // the upper line
   dc->DrawLine(m_LeftLegend+3, (int)(m_TopLineHeight+m_DrawAreaRect.height), m_WindowRect.width-3-m_RightLegend, (int)(m_TopLineHeight+m_DrawAreaRect.height));
-  pen.SetStyle(wxDOT);
+  pen.SetStyle(wxPENSTYLE_DOT);
   dc->SetPen(pen);
   dc->DrawLine(m_LeftLegend+3, (int)(m_TopLineHeight+m_DrawAreaRect.height*0.25), m_WindowRect.width-3-m_RightLegend, (int)(m_TopLineHeight+m_DrawAreaRect.height*0.25));
   dc->DrawLine(m_LeftLegend+3, (int)(m_TopLineHeight+m_DrawAreaRect.height*0.75), m_WindowRect.width-3-m_RightLegend, (int)(m_TopLineHeight+m_DrawAreaRect.height*0.75));
@@ -478,7 +479,7 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc)
   }
   dc->GetTextExtent(WindAngle, &degw, &degh, 0, 0, g_pFontData);
   dc->DrawText(WindAngle, m_WindowRect.width-degw-m_RightLegend-3, m_TopLineHeight-degh);
-  pen.SetStyle(wxSOLID);
+  pen.SetStyle(wxPENSTYLE_SOLID);
   pen.SetColour(wxColour(204,41,41 ,96)); //red, transparent
   pen.SetWidth(1);
   dc->SetPen( pen );
@@ -504,7 +505,7 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc)
   //---------------------------------------------------------------------------------
   //exponential smoothing of direction
   //---------------------------------------------------------------------------------
-  pen.SetStyle(wxSOLID);
+  pen.SetStyle(wxPENSTYLE_SOLID);
   pen.SetColour(wxColour(204,41,41 ,255));
   pen.SetWidth(2);
   dc->SetPen( pen );
@@ -541,7 +542,7 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc)
     hour=m_ArrayRecTime[i].GetHour();
   }
   dc->DrawText(wxString::Format(_("Max %.1f since %02d:%02d  Overall %.1f"),m_MaxWindSpd, hour,min,m_TotalMaxWindSpd), m_LeftLegend+3+2+degw, m_TopLineHeight-degh+5);
-  pen.SetStyle(wxSOLID);
+  pen.SetStyle(wxPENSTYLE_SOLID);
   pen.SetColour(wxColour(61,61,204,96)); //blue, transparent
   pen.SetWidth(1);
   dc->SetPen( pen );
@@ -565,7 +566,7 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc)
   //---------------------------------------------------------------------------------
   //exponential smoothing of speed
   //---------------------------------------------------------------------------------
-  pen.SetStyle(wxSOLID);
+  pen.SetStyle(wxPENSTYLE_SOLID);
   pen.SetColour(wxColour(61,61,204,255)); //blue, opaque
   pen.SetWidth(2);
   dc->SetPen( pen );
@@ -585,7 +586,7 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc)
   //---------------------------------------------------------------------------------
   GetGlobalColor(_T("UBLCK"), &col);
   pen.SetColour(col);
-  pen.SetStyle(wxDOT);
+  pen.SetStyle(wxPENSTYLE_DOT);
   dc->SetPen(pen);
   dc->SetTextForeground(col);
   dc->SetFont(*g_pFontSmall);

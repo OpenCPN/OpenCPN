@@ -70,6 +70,7 @@ using namespace std;
 
 #include "routeprintout.h"
 #include "printtable.h"
+#include "wx28compat.h"
 
 #define PRINT_WP_NAME 0
 #define PRINT_WP_POSITION 1
@@ -232,7 +233,7 @@ void MyRoutePrintout::DrawPage( wxDC* dc )
 
     wxFont routePrintFont_bold( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
     dc->SetFont( routePrintFont_bold );
-    wxBrush brush( wxColour(255,255,255),  wxTRANSPARENT );
+    wxBrush brush( wxColour(255,255,255),  wxBRUSHSTYLE_TRANSPARENT );
     dc->SetBrush( brush );
 
     int header_textOffsetX = 2;
