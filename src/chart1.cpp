@@ -4096,8 +4096,7 @@ void MyFrame::ToggleChartBar()
             gFrame->Raise();
         }
         SendSizeEvent();
-    } else if(g_bShowChartBar)
-        cc1->m_brepaint_piano = true;
+    } else
 
     cc1->ReloadVP(); // needed to set VP.pix_height
     Refresh();        
@@ -7136,7 +7135,6 @@ void MyFrame::UpdateControlBar( void )
         cc1->SetQuiltChartHiLiteIndex( -1 );
         if( g_ChartBarWin )
             g_ChartBarWin->Refresh( false );
-        cc1->m_brepaint_piano = true;
     }
     
     // Create a bitmask int that describes what Family/Type of charts are shown in the bar,

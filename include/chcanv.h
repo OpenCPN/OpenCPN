@@ -314,7 +314,6 @@ public:
       wxCursor    *pPlugIn_Cursor;
       TCWin       *pCwin;
       wxBitmap    *pscratch_bm;
-      bool        m_brepaint_piano;
       double      m_cursor_lon, m_cursor_lat;
       Undo        *undo;
       wxPoint     r_rband;
