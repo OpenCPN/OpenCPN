@@ -5574,8 +5574,10 @@ void options::OnInsertTideDataLocation( wxCommandEvent &event )
 
 }
 
+
 void options::OnRemoveTideDataLocation( wxCommandEvent &event )
 {
+#ifndef __WXQT__                // Multi selection is not implemented in wxQT
     wxArrayInt sels;
     int nSel = tcDataSelected->GetSelections(sels);
     wxArrayString a;
@@ -5584,9 +5586,16 @@ void options::OnRemoveTideDataLocation( wxCommandEvent &event )
     }
 
     for (unsigned int i=0 ; i < a.Count() ; i++) {
+        
         int b = tcDataSelected->FindString(a.Item(i));
+        wxCharBuffer buf = a.Item(i).ToUTF8();
         tcDataSelected->Delete( b );
     }
+#else
+    int iSel = tcDataSelected->GetSelection();
+    tcDataSelected->Delete( iSel );
+#endif
+    
 }
 
 void options::OnValChange( wxCommandEvent& event )
