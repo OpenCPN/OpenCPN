@@ -90,6 +90,7 @@ extern PFNGLDELETEBUFFERSPROC              s_glDeleteBuffers;
 void DrawAALine( wxDC *pDC, int x0, int y0, int x1, int y1, wxColour clrLine, int dash, int space );
 extern bool GetDoubleAttr( S57Obj *obj, const char *AttrName, double &val );
 
+#ifdef ocpnUSE_GL
 typedef struct {
     TexFont cache;
     wxFont  *key;
@@ -97,6 +98,8 @@ typedef struct {
 
 #define TXF_CACHE 8
 static TexFontCache s_txf[TXF_CACHE];
+#endif
+
 
 //    Implement all lists
 #include <wx/listimpl.cpp>
