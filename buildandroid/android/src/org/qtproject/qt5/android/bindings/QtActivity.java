@@ -254,6 +254,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     private GPSServer m_GPSServer;
     public ProgressDialog ringProgressDialog;
     public boolean m_hasGPS;
+    private boolean m_backButtonEnable = true;
 
     private BTScanHelper scanHelper;
     private Boolean m_ScanHelperStarted = false;
@@ -590,6 +591,11 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
        }
 
 
+       public String setBackButtonState( final int isActive){
+           Log.i("DEBUGGER_TAG", "setBackButtonState");
+           m_backButtonEnable = (isActive != 0);
+           return "OK";
+          }
 
 
     public String queryGPSServer( final int parm ){
@@ -2181,9 +2187,16 @@ Log.i("DEBUGGER_TAG", "onCreateOptionsMenuB");
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)
     {
- /*
-        Log.i("DEBUGGER_TAG", "onKeyDown");
 
+//        Log.i("DEBUGGER_TAG", "onKeyDown");
+
+        if(keyCode==KeyEvent.KEYCODE_BACK){
+            //Toast.makeText(getApplicationContext(), "back press",Toast.LENGTH_LONG).show();
+            if(!m_backButtonEnable)
+                return false;
+        }
+
+/*
         if (keyCode == KeyEvent.KEYCODE_MENU) {
             Log.i("DEBUGGER_TAG", "KEYCODE_MENU");
 

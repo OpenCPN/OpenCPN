@@ -66,6 +66,7 @@ extern void androidForceFullRepaint();
 
 extern void androidShowBusyIcon();
 extern void androidHideBusyIcon();
+extern void androidEnableBackButton(bool benable);
 
 
 extern bool androidStartNMEA(wxEvtHandler *consumer);

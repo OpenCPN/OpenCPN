@@ -1135,6 +1135,12 @@ void androidSetChartTypeMaskSel( int mask, wxString &indicator)
 }       
 
 
+void androidEnableBackButton(bool benable)
+{
+    callActivityMethod_is("setBackButtonState", benable?1:0);
+}
+
+
 bool androidGetMemoryStatus( int *mem_total, int *mem_used )
 {
     
