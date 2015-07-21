@@ -1143,7 +1143,10 @@ void WayPointman::ProcessUserIcons( ocpnStyle::Style* style )
     if( UserIconPath.Last() != sep ) UserIconPath.Append( sep );
     UserIconPath.Append( _T("UserIcons") );
     
+    wxLogMessage(_T("Looking for UserIcons at ") + UserIconPath );
+    
     if( wxDir::Exists( UserIconPath ) ) {
+        wxLogMessage(_T("Loading UserIcons from ") + UserIconPath );
         wxArrayString FileList;
         
         wxDir dir( UserIconPath );
