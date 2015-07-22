@@ -4380,7 +4380,7 @@ void ChartCanvas::ShowChartInfoWindow( int x, int dbIndex )
             wxPoint p;
             p.x = x;
             if( ( p.x + m_pCIWin->GetWinSize().x ) > m_canvas_width )
-                p.x = m_canvas_width - m_pCIWin->GetWinSize().x;
+                p.x = (m_canvas_width - m_pCIWin->GetWinSize().x)/2;    // centered
 
             p.y = m_canvas_height - g_Piano->GetHeight() - 4 - m_pCIWin->GetWinSize().y;
 
