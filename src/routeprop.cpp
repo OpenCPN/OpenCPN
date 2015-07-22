@@ -1651,7 +1651,7 @@ bool RouteProp::SaveChanges( void )
         if( m_chColor->GetSelection() == 0 ) m_pRoute->m_Colour = wxEmptyString;
         else
             m_pRoute->m_Colour = ::GpxxColorNames[m_chColor->GetSelection() - 1];
-        m_pRoute->m_style = ::StyleValues[m_chStyle->GetSelection()];
+        m_pRoute->m_style = (wxPenStyle)::StyleValues[m_chStyle->GetSelection()];
         m_pRoute->m_width = ::WidthValues[m_chWidth->GetSelection()];
         m_pRoute->m_PlannedDeparture = g_StartTime;
         m_pRoute->m_PlannedSpeed = m_planspeed;

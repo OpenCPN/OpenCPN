@@ -148,23 +148,33 @@ void GshhsPolyCell::ReadPoly(contour_list &poly)
     contour tmp_contour;
     int32_t num_vertices, num_contours;
     poly.clear();
-    fread(&num_contours, sizeof num_contours, 1, fpoly);
+    if(fread(&num_contours, sizeof num_contours, 1, fpoly) != 1)
+        goto fail;
+
     for (int c= 0; c < num_contours; c++)
     {
         int32_t value;
-        fread(&value, sizeof value, 1, fpoly); /* discarding hole value */
-        fread(&value, sizeof value, 1, fpoly);
+        if(fread(&value, sizeof value, 1, fpoly) != 1 ||  /* discarding hole value */
+           fread(&value, sizeof value, 1, fpoly) != 1)
+            goto fail;
+
         num_vertices=value;
 
         tmp_contour.clear();
         for (int v= 0; v < num_vertices; v++)
         {
-            fread(&X, sizeof X, 1, fpoly);
-            fread(&Y, sizeof Y, 1, fpoly);
+            if(fread(&X, sizeof X, 1, fpoly) != 1 ||
+               fread(&Y, sizeof Y, 1, fpoly) != 1)
+                goto fail;
+
             tmp_contour.push_back(wxRealPoint(X*GSHHS_SCL,Y*GSHHS_SCL));
         }
         poly.push_back(tmp_contour);
     }
+    return;
+
+fail:
+    wxLogMessage( _T("gshhs ReadPoly failed") );
 }
 
 void GshhsPolyCell::ReadPolygonFile()
@@ -175,7 +185,8 @@ void GshhsPolyCell::ReadPolygonFile()
     tab_data = ( x0cell / header->pasx ) * ( 180 / header->pasy )
         + ( y0cell + 90 ) / header->pasy;
     fseek( fpoly, sizeof(PolygonFileHeader) + tab_data * sizeof(int), SEEK_SET );
-    fread( &pos_data, sizeof(int), 1, fpoly );
+    if(fread( &pos_data, sizeof(int), 1, fpoly ) != 1)
+        goto fail;
 
     fseek( fpoly, pos_data, SEEK_SET );
 
@@ -184,6 +195,10 @@ void GshhsPolyCell::ReadPolygonFile()
     ReadPoly( poly3 );
     ReadPoly( poly4 );
     ReadPoly( poly5 );
+    return;
+
+fail:
+    wxLogMessage( _T("gshhs ReadPolygon failed") );
 }
 
 wxPoint GetPixFromLL(ViewPort &vp, double lat, double lon)
@@ -718,7 +733,8 @@ bool GshhsPolyReader::crossing1( wxLineF trajectWorld )
 void GshhsPolyReader::readPolygonFileHeader( FILE *polyfile, PolygonFileHeader *header )
 {
     fseek( polyfile, 0, SEEK_SET );
-    fread( header, sizeof(PolygonFileHeader), 1, polyfile );
+    if(fread( header, sizeof(PolygonFileHeader), 1, polyfile ) != 1)
+        wxLogMessage( _T("gshhs ReadPolygonFileHeader failed") );
 }
 
 //-------------------------------------------------------------------------

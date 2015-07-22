@@ -73,7 +73,6 @@
 #include "NMEALogWindow.h"
 #include "AIS_Decoder.h"
 #include "OCPNPlatform.h"
-#include "wx28compat.h"
 
 #ifdef USE_S57
 #include "s52plib.h"
@@ -716,12 +715,12 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP )
                     basic_colour = GetGlobalColor( _T ( "CHMGD" ) );
             }
 
-    int style = wxPENSTYLE_SOLID;
+    wxPenStyle style = wxPENSTYLE_SOLID;
     int width = g_pRouteMan->GetTrackPen()->GetWidth();
     wxColour col;
-    if( m_style != STYLE_UNDEFINED )
+    if( m_style != wxPENSTYLE_INVALID )
         style = m_style;
-    if( m_width != STYLE_UNDEFINED )
+    if( m_width != WIDTH_UNDEFINED )
         width = m_width;
     if( m_Colour == wxEmptyString ) {
         col = basic_colour;

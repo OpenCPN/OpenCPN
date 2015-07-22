@@ -1132,7 +1132,7 @@ bool TrackPropDlg::SaveChanges( void )
             m_pRoute->m_Colour = wxEmptyString;
         else
             m_pRoute->m_Colour = ::GpxxColorNames[m_cColor->GetSelection() - 1];
-        m_pRoute->m_style = ::StyleValues[m_cStyle->GetSelection()];
+        m_pRoute->m_style = (wxPenStyle)::StyleValues[m_cStyle->GetSelection()];
         m_pRoute->m_width = ::WidthValues[m_cWidth->GetSelection()];
 
         pConfig->UpdateRoute( m_pRoute );

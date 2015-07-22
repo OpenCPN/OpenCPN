@@ -9150,7 +9150,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
             //    Associate with temp_dc
             wxRegion *clip_region = backgroundRegion.GetNew_wxRegion();
-            temp_dc.SetClippingRegion( *clip_region );
+            temp_dc.SetDeviceClippingRegion( *clip_region );
             delete clip_region;
 
             ocpnDC bgdc( temp_dc );
@@ -9245,7 +9245,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
     mscratch_dc.ResetBoundingBox();
     mscratch_dc.DestroyClippingRegion();
-    mscratch_dc.SetClippingRegion( rgn_chart );
+    mscratch_dc.SetDeviceClippingRegion( rgn_chart );
 
     //    Blit the externally invalidated areas of the chart onto the scratch dc
     wxRegionIterator upd( rgn_blit ); // get the update rect list
