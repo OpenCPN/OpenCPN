@@ -45,6 +45,7 @@ extern Multiplexer *g_pMUX;
 extern double g_n_arrival_circle_radius;
 extern float g_GLMinSymbolLineWidth;
 extern double g_PlanSpeed;
+extern double gLat, gLon;
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST ( RouteList );
@@ -550,6 +551,23 @@ void Route::DrawGLLines( ViewPort &VP, ocpnDC *dc )
         }
     }
 
+    //  Draw tentative segment form last point to Ownship, if running.
+    if( r1valid && IsTrack() ) {
+        /* Active tracks */
+        if( dynamic_cast<Track *>(this)->IsRunning() ){
+            wxPoint2DDouble rs;
+            cc1->GetDoubleCanvasPointPix( gLat, gLon, &rs);
+            if( dc )
+                dc->DrawLine(r1.m_x, r1.m_y, rs.m_x, rs.m_y);
+            else {
+                glVertex2f(r1.m_x, r1.m_y);
+                glVertex2f(rs.m_x, rs.m_y);
+            }
+        }
+    }
+                
+                
+        
     if( !dc )
         glEnd();
 #endif    
