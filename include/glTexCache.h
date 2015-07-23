@@ -31,6 +31,7 @@
 #include <stdint.h>
 
 #include "ocpn_types.h"
+#include "bbox.h"
 #include "glTextureDescriptor.h"
 
 #define COMPRESSED_CACHE_MAGIC 0xf010  // change this when the format changes
@@ -43,6 +44,9 @@
 
 void HalfScaleChartBits( int width, int height, unsigned char *source, unsigned char *target );
 bool CompressUsingGPU( glTextureDescriptor *ptd, GLuint raster_format, int level, bool b_post_comp);
+
+class ChartBaseBSB;
+class ChartPlugInWrapper;
 
 struct CompressedCacheHeader
 {
@@ -73,6 +77,19 @@ public:
 
 WX_DEFINE_ARRAY(CatalogEntry*, ArrayOfCatalogEntries);
 
+class glTexTile
+{
+public:
+    glTexTile() { m_coords = m_texcoords = NULL; }
+    virtual ~glTexTile() { delete [] m_coords; delete [] m_texcoords; }
+
+    wxRect rect;
+    LLBBox box;
+//    LLRegion region;
+
+    int m_ncoords;
+    float *m_coords, *m_texcoords;
+};
 
 class glTexFactory : public wxEvtHandler
 {
@@ -101,8 +118,11 @@ public:
     
     glTextureDescriptor *GetpTD( wxRect & rect );
     GLuint GetRasterFormat() { return m_raster_format; }
-    
-    
+
+    void PrepareTiles(const ViewPort &vp, bool use_norm_vp, ChartBaseBSB *pChartBSB);
+    glTexTile** GetTiles(int &num) { num = m_ntex; return m_tiles; }
+    void GetCenter(double &lat, double &lon) { lat = m_clat, lon = m_clon; }
+
 private:
     bool LoadCatalog(void);
     bool LoadHeader(void);
@@ -141,6 +161,11 @@ private:
     wxDateTime  m_LRUtime;
     
     glTextureDescriptor  **m_td_array;
+
+    double m_clat, m_clon;
+    glTexTile **m_tiles;
+    int m_prepared_projection_type;
+    bool m_north; // used for polar projection
     
     DECLARE_EVENT_TABLE()
     

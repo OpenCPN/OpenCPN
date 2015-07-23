@@ -4355,8 +4355,7 @@ int s52plib::RenderObjectToDC( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
 }
 
 
-int s52plib::RenderObjectToGL( const wxGLContext &glcc, ObjRazRules *rzRules, ViewPort *vp,
-        wxRect &render_rect )
+int s52plib::RenderObjectToGL( const wxGLContext &glcc, ObjRazRules *rzRules, ViewPort *vp )
 {
     m_glcc = (wxGLContext *) &glcc;
     return DoRenderObject( NULL, rzRules, vp );
@@ -5935,8 +5934,7 @@ void s52plib::RenderToBufferFilledPolygon( ObjRazRules *rzRules, S57Obj *obj, S5
 
 int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
-#ifdef ocpnUSE_GL
-    
+#ifdef ocpnUSE_GL    
     S52color *c;
     char *str = (char*) rules->INSTstr;
 
@@ -5956,35 +5954,37 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         
         bool b_temp_vbo = false;
         
-        glPushMatrix();
-
         // Set up the OpenGL transform matrix for this object
         // We transform from SENC SM vertex data to screen.
-        
-        //  First, the VP transform
-        glTranslatef( vp->pix_width / 2, vp->pix_height/2, 0 );
-        glScalef( vp->view_scale_ppm, -vp->view_scale_ppm, 0 );
-        glTranslatef( -rzRules->sm_transform_parms->easting_vp_center, -rzRules->sm_transform_parms->northing_vp_center, 0 );
-        
-        //  Next, the per-object transform
 
-        //      For some chart types (e.g. cm93), the viewport bounding box is constructed
-        //      so as to be positive semi-definite. That is, the right hand side may have a longitude > 360.
-        //      In this case, we may need to translate object coordinates by 360 degrees to conform.
-        if( BBView.GetMaxX() > 360. ) {
+        //  First, the VP transform
+        if(vp->m_projection_type == PROJECTION_MERCATOR) {
+            glPushMatrix();
+
+            glTranslatef( vp->pix_width / 2, vp->pix_height/2, 0 );
+            glScalef( vp->view_scale_ppm, -vp->view_scale_ppm, 0 );
+            glTranslatef( -rzRules->sm_transform_parms->easting_vp_center, -rzRules->sm_transform_parms->northing_vp_center, 0 );
+            //  Next, the per-object transform
+
+            //      For some chart types (e.g. cm93), the viewport bounding box is constructed
+            //      so as to be positive semi-definite. That is, the right hand side may have a longitude > 360.
+            //      In this case, we may need to translate object coordinates by 360 degrees to conform.
+            if( BBView.GetMaxX() > 360. ) {
             
-            wxBoundingBox bbRight ( 0., vp->GetBBox().GetMinY(),
-                                    vp->GetBBox().GetMaxX() - 360., vp->GetBBox().GetMaxY() );
+                wxBoundingBox bbRight ( 0., vp->GetBBox().GetMinY(),
+                                        vp->GetBBox().GetMaxX() - 360., vp->GetBBox().GetMaxY() );
 //            if ( !bbRight.IntersectOut ( rzRules->obj->BBObj ) )
 //                glTranslatef( mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI, 0, 0);
-            if(  (rzRules->obj->BBObj.GetMinX() >= 0) &&
-                 (rzRules->obj->BBObj.GetMinX() < BBView.GetMaxX() - 360.) ){
-                glTranslatef( mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI, 0, 0);
+                if(  (rzRules->obj->BBObj.GetMinX() >= 0) &&
+                     (rzRules->obj->BBObj.GetMinX() < BBView.GetMaxX() - 360.) ){
+                    glTranslatef( mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI, 0, 0);
+                }
             }
-        }
         
-        glTranslatef( rzRules->obj->x_origin, rzRules->obj->y_origin, 0);
-        glScalef( rzRules->obj->x_rate, rzRules->obj->y_rate, 0 );
+            glTranslatef( rzRules->obj->x_origin, rzRules->obj->y_origin, 0);
+            glScalef( rzRules->obj->x_rate, rzRules->obj->y_rate, 0 );
+
+        }
         
         // perform deferred tesselation
         if( !rzRules->obj->pPolyTessGeo->IsOk() ) 
@@ -6047,7 +6047,8 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                     
         }
             
-        bool b_useVBO = g_b_EnableVBO  && !rzRules->obj->auxParm1;    // VBO allowed?
+        bool b_useVBO = g_b_EnableVBO  && !rzRules->obj->auxParm1 &&    // VBO allowed?
+            vp->m_projection_type == PROJECTION_MERCATOR;
 
         if( b_useVBO ){        
         //  Has a VBO been built for this object?
@@ -6113,11 +6114,11 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
             if( b_greenwich || !BBView.IntersectOut( tp_box ) ) {
 
-                if(b_useVBO){
+                if(b_useVBO) {
                     glVertexPointer(2, array_gl_type, 2 * array_data_size, (GLvoid *)(vbo_offset));
                     glDrawArrays(p_tp->type, 0, p_tp->nVert);
                 }
-                else{
+                else {
                     glVertexPointer(2, array_gl_type, 2 * array_data_size, p_tp->p_vertex);
                     glDrawArrays(p_tp->type, 0, p_tp->nVert);
                 }
@@ -6133,7 +6134,8 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         
         glDisableClientState(GL_VERTEX_ARRAY);            // deactivate vertex array
         
-        glPopMatrix();
+        if(vp->m_projection_type == PROJECTION_MERCATOR)
+            glPopMatrix();
         
         if( b_useVBO && b_temp_vbo){
             (s_glBufferData)(GL_ARRAY_BUFFER, 0, NULL, GL_STATIC_DRAW);
@@ -6307,7 +6309,8 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                             int ymax = wxMax(ptp[it].y, wxMax(ptp[it+1].y, ptp[it+2].y));
 
                             wxRect rect( xmin, ymin, xmax - xmin, ymax - ymin );
-                            if( rect.Intersects( m_render_rect ) ) {
+                            //if( rect.Intersects( m_render_rect ) )
+                            {
                                 glVertex3f( ptp[it].x, ptp[it].y, z_clip_geom );
                                 glVertex3f( ptp[it + 1].x, ptp[it + 1].y, z_clip_geom );
                                 glVertex3f( ptp[it + 2].x, ptp[it + 2].y, z_clip_geom );
@@ -6477,8 +6480,14 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
              
              glPopAttrib();
          }
-         else
-             glChartCanvas::SetClipRegion( *vp, m_last_clip_region, false, false);   // already rotated, don't rotate again
+         else {
+             // restore clipping region
+             glPopMatrix();
+             glChartCanvas::SetClipRect( *vp, m_last_clip_rect);
+             glPushMatrix();
+             glChartCanvas::RotateToViewPort(*vp);
+         }
+
 
     free( ptp );
 #endif                  //#ifdef ocpnUSE_GL
@@ -6583,7 +6592,8 @@ void s52plib::RenderPolytessGL(ObjRazRules *rzRules, ViewPort *vp, double z_clip
                         int ymax = wxMax(ptp[it].y, wxMax(ptp[it+1].y, ptp[it+2].y));
                         
                         wxRect rect( xmin, ymin, xmax - xmin, ymax - ymin );
-                        if( rect.Intersects( m_render_rect ) ) {
+//                        if( rect.Intersects( m_render_rect ) )
+                        {
                             glVertex3f( ptp[it].x, ptp[it].y, z_clip_geom );
                             glVertex3f( ptp[it + 1].x, ptp[it + 1].y, z_clip_geom );
                             glVertex3f( ptp[it + 2].x, ptp[it + 2].y, z_clip_geom );
@@ -6602,8 +6612,7 @@ void s52plib::RenderPolytessGL(ObjRazRules *rzRules, ViewPort *vp, double z_clip
 
 #ifdef ocpnUSE_GL
 
-int s52plib::RenderAreaToGL( const wxGLContext &glcc, ObjRazRules *rzRules, ViewPort *vp,
-        wxRect &render_rect )
+int s52plib::RenderAreaToGL( const wxGLContext &glcc, ObjRazRules *rzRules, ViewPort *vp )
 {
     if( !ObjectRenderCheckPos( rzRules, vp ) )
         return 0;
@@ -6637,8 +6646,6 @@ int s52plib::RenderAreaToGL( const wxGLContext &glcc, ObjRazRules *rzRules, View
         else
             return 0;
     }
-
-    m_render_rect = render_rect; // We only render into this (screen coordinate) rectangle
 
     Rules *rules = rzRules->LUP->ruleList;
 

@@ -2802,25 +2802,41 @@ bool UpdatePlugInTrack ( PlugIn_Track *ptrack )
     return b_found;
 }
 
-void PlugInMultMatrixViewport ( PlugIn_ViewPort *vp )
+bool PlugInHasNormalizedViewPort( PlugIn_ViewPort *vp )
+{
+    ViewPort ocpn_vp;
+    ocpn_vp.m_projection_type = vp->m_projection_type;
+
+    return glChartCanvas::HasNormalizedViewPort(ocpn_vp);
+}
+
+void PlugInMultMatrixViewport ( PlugIn_ViewPort *vp, float lat, float lon )
 {
 #ifdef ocpnUSE_GL
-    wxPoint point;
-    GetCanvasPixLL(vp, &point, 0, 0);
-    glTranslatef(point.x, point.y, 0);
-    glScalef(vp->view_scale_ppm, vp->view_scale_ppm, 1);
-    glRotatef(vp->rotation, 0, 0, 1);
+    ViewPort ocpn_vp;
+    ocpn_vp.clat = vp->clat;
+    ocpn_vp.clon = vp->clon;
+    ocpn_vp.m_projection_type = vp->m_projection_type;
+    ocpn_vp.view_scale_ppm = vp->view_scale_ppm;
+    ocpn_vp.skew = vp->skew;
+    ocpn_vp.rotation = vp->rotation;
+    ocpn_vp.pix_width = vp->pix_width;
+    ocpn_vp.pix_height = vp->pix_height;
+
+    glChartCanvas::MultMatrixViewPort(ocpn_vp, lat, lon);
 #endif
 }
 
-void PlugInNormalizeViewport ( PlugIn_ViewPort *vp )
+void PlugInNormalizeViewport ( PlugIn_ViewPort *vp, float lat, float lon )
 {
-#ifdef ocpnUSE_GL
-    vp->clat = vp->clon = 0;
-    vp->view_scale_ppm = 1;
-    vp->pix_width = vp->pix_height = 0;
-    vp->rotation = vp->skew = 0;
-#endif
+    ViewPort ocpn_vp;
+    glChartCanvas::NormalizedViewPort(ocpn_vp, lat, lon);
+
+    vp->clat = ocpn_vp.clat;
+    vp->clon = ocpn_vp.clon;
+    vp->view_scale_ppm = ocpn_vp.view_scale_ppm;
+    vp->rotation = ocpn_vp.rotation;
+    vp->rotation = ocpn_vp.skew;
 }
 
 
@@ -3513,7 +3529,7 @@ PlugInChartBaseGL::~PlugInChartBaseGL()
 {}
 
 int PlugInChartBaseGL::RenderRegionViewOnGL( const wxGLContext &glc, const PlugIn_ViewPort& VPoint,
-                                  const wxRegion &Region, bool b_use_stencil )
+                                             const wxRegion &Region, bool b_use_stencil )
 {
     return 0;
 }
@@ -3807,21 +3823,21 @@ double ChartPlugInWrapper::GetNormalScaleMax(double canvas_scale_factor, int can
         return 2.0e7;
 }
 
-bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const OCPNRegion &Region)
+bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
+                                              const OCPNRegion &RectRegion, const LLRegion &Region)
 {
 #ifdef ocpnUSE_GL
     if(m_ppicb)
     {
         gs_plib_flags = 0;               // reset the CAPs flag
         PlugIn_ViewPort pivp = CreatePlugInViewport( VPoint);
-        OCPNRegion rg = Region;
-        if(rg.IsOk())
+        PlugInChartBaseGL *ppicb_gl = dynamic_cast<PlugInChartBaseGL*>(m_ppicb);
+        if(!Region.Empty() && ppicb_gl)
         {
-            wxRegion r = rg.ConvertTowxRegion();
-            PlugInChartBaseGL *ppicb_gl = dynamic_cast<PlugInChartBaseGL*>(m_ppicb);
-            if(ppicb_gl){
-                ppicb_gl->RenderRegionViewOnGL( glc, pivp, r, glChartCanvas::s_b_useStencil);
-            }
+            // TODO: test with s63 plugin
+            wxRegion *r = RectRegion.GetNew_wxRegion();
+            ppicb_gl->RenderRegionViewOnGL( glc, pivp, *r, glChartCanvas::s_b_useStencil);
+            delete r;
             return true;
         }
     }
@@ -3839,11 +3855,11 @@ bool ChartPlugInWrapper::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VP
     {
         gs_plib_flags = 0;               // reset the CAPs flag
         PlugIn_ViewPort pivp = CreatePlugInViewport( VPoint);
-        OCPNRegion rg = Region;
-        if(rg.IsOk())
+        if(Region.IsOk())
         {
-            wxRegion r = rg.ConvertTowxRegion();
-            dc.SelectObject(m_ppicb->RenderRegionView( pivp, r));
+            wxRegion *r = Region.GetNew_wxRegion();
+            dc.SelectObject(m_ppicb->RenderRegionView( pivp, *r));
+            delete r;
             return true;
         }
         else
@@ -3906,7 +3922,7 @@ void ChartPlugInWrapper::ComputeSourceRectangle(const ViewPort &VPoint, wxRect *
     }
 }
 
-double ChartPlugInWrapper::GetRasterScaleFactor()
+double ChartPlugInWrapper::GetRasterScaleFactor(const ViewPort &vp)
 {
     if(m_ppicb)
         return m_ppicb->GetRasterScaleFactor();
@@ -4616,7 +4632,7 @@ int PI_PLIBRenderAreaToGL( const wxGLContext &glcc, PI_S57Obj *pObj, PlugIn_View
         ViewPort cvp = CreateCompatibleViewport( *vp );
     
     //  Do the render
-        ps52plib->RenderAreaToGL( glcc, &rzRules, &cvp, render_rect );
+        ps52plib->RenderAreaToGL( glcc, &rzRules, &cvp );
     
     
     //  Update the PLIB context after the render operation
@@ -4655,7 +4671,7 @@ int PI_PLIBRenderObjectToGL( const wxGLContext &glcc, PI_S57Obj *pObj,
         ViewPort cvp = CreateCompatibleViewport( *vp );
     
     //  Do the render
-        ps52plib->RenderObjectToGL( glcc, &rzRules, &cvp, render_rect );
+        ps52plib->RenderObjectToGL( glcc, &rzRules, &cvp );
     
     //  Update the PLIB context after the render operation
         UpdatePIObjectPlibContext( pObj, &cobj, &rzRules );

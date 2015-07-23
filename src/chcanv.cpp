@@ -1153,7 +1153,7 @@ ChartBase* ChartCanvas::GetChartAtCursor() {
         target_chart = Current_Ch;
     else
         if( VPoint.b_quilt )
-            target_chart = cc1->m_pQuilt->GetChartAtPix( wxPoint( mouse_x, mouse_y ) );
+            target_chart = cc1->m_pQuilt->GetChartAtPix( VPoint, wxPoint( mouse_x, mouse_y ) );
         else
             target_chart = NULL;
     return target_chart;
@@ -1162,7 +1162,7 @@ ChartBase* ChartCanvas::GetChartAtCursor() {
 ChartBase* ChartCanvas::GetOverlayChartAtCursor() {
     ChartBase* target_chart;
     if( VPoint.b_quilt )
-        target_chart = cc1->m_pQuilt->GetOverlayChartAtPix( wxPoint( mouse_x, mouse_y ) );
+        target_chart = cc1->m_pQuilt->GetOverlayChartAtPix( VPoint, wxPoint( mouse_x, mouse_y ) );
     else
         target_chart = NULL;
     return target_chart;
@@ -1627,7 +1627,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
                 event.GetPosition( &x, &y );
                 bool cm93IsAvailable = ( Current_Ch && ( Current_Ch->GetChartType() == CHART_TYPE_CM93COMP ) );
                 if( VPoint.b_quilt ) {
-                    ChartBase *pChartTest = m_pQuilt->GetChartAtPix( wxPoint( x, y ) );
+                    ChartBase *pChartTest = m_pQuilt->GetChartAtPix( VPoint, wxPoint( x, y ) );
                     if( pChartTest ) {
                         if( pChartTest->GetChartType() == CHART_TYPE_CM93 ) cm93IsAvailable = true;
                         if( pChartTest->GetChartType() == CHART_TYPE_CM93COMP ) cm93IsAvailable = true;
@@ -2497,12 +2497,13 @@ void ChartCanvas::GetDoubleCanvasPointPixVP( ViewPort &vp, double rlat, double r
     
     // If for some reason the chart rejects the request by returning an error,
     // then fall back to Viewport Projection estimate from canvas parameters
-    if( Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_RASTER )
+    if(!g_bopengl && Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_RASTER )
         && ( ( ( fabs( vp.rotation ) < .0001 ) &&
-        ( ( !g_bskew_comp || ( fabs( vp.skew ) < .0001 ) ) ) )
-        || ( ( Current_Ch->GetChartProjectionType() != PROJECTION_MERCATOR )
-        && ( Current_Ch->GetChartProjectionType() != PROJECTION_TRANSVERSE_MERCATOR )
-        && ( Current_Ch->GetChartProjectionType() != PROJECTION_POLYCONIC ) ) ) )
+               ( ( !g_bskew_comp || ( fabs( vp.skew ) < .0001 ) ) ) )
+             || ( ( Current_Ch->GetChartProjectionType() != PROJECTION_MERCATOR )
+                  && ( Current_Ch->GetChartProjectionType() != PROJECTION_TRANSVERSE_MERCATOR )
+                  && ( Current_Ch->GetChartProjectionType() != PROJECTION_POLYCONIC ) ) )
+        && ( Current_Ch->GetChartProjectionType() == vp.m_projection_type ) )
     {
         ChartBaseBSB *Cur_BSB_Ch = dynamic_cast<ChartBaseBSB *>( Current_Ch );
         //                        bool bInside = G_FloatPtInPolygon ( ( MyFlPoint * ) Cur_BSB_Ch->GetCOVRTableHead ( 0 ),
@@ -2559,12 +2560,13 @@ void ChartCanvas::GetCanvasPixPoint( double x, double y, double &lat, double &lo
     // then fall back to Viewport Projection  estimate from canvas parameters
     bool bUseVP = true;
 
-    if( Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_RASTER )
+    if(!g_bopengl && Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_RASTER )
         && ( ( ( fabs( GetVP().rotation ) < .0001 ) &&
                ( ( !g_bskew_comp || ( fabs( GetVP().skew ) < .0001 ) ) ) )
              || ( ( Current_Ch->GetChartProjectionType() != PROJECTION_MERCATOR )
                   && ( Current_Ch->GetChartProjectionType() != PROJECTION_TRANSVERSE_MERCATOR )
-                  && ( Current_Ch->GetChartProjectionType() != PROJECTION_POLYCONIC ) ) ) )
+                  && ( Current_Ch->GetChartProjectionType() != PROJECTION_POLYCONIC ) ) )
+        && ( Current_Ch->GetChartProjectionType() == GetVP().m_projection_type ) )
     {
         ChartBaseBSB *Cur_BSB_Ch = dynamic_cast<ChartBaseBSB *>( Current_Ch );
 
@@ -2588,12 +2590,11 @@ void ChartCanvas::GetCanvasPixPoint( double x, double y, double &lat, double &lo
                 bUseVP = false;
             }
         }
-
     }
 
     //    if needed, use the VPoint scaling estimator
     if( bUseVP ) {
-        GetVP().GetLLFromPix( wxPoint( x, y ), &lat, &lon );
+        GetVP().GetLLFromPix( wxPoint2DDouble( x, y ), &lat, &lon );
     }
 }
 
@@ -3031,7 +3032,8 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
 
     if( !VPoint.b_quilt && Current_Ch ) {
 
-        VPoint.SetProjectionType( Current_Ch->GetChartProjectionType() );
+        if(!g_bopengl)
+            VPoint.SetProjectionType( Current_Ch->GetChartProjectionType() );
         VPoint.SetBoxes();
 
         //  Allow the chart to adjust the new ViewPort for performance optimization
@@ -3146,7 +3148,9 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
 
             VPoint.b_MercatorProjectionOverride = ( m_pQuilt->GetnCharts() == 0 || !renderable );
 
-            if( ! VPoint.b_MercatorProjectionOverride ) VPoint.SetProjectionType( proj );
+            if( ! VPoint.b_MercatorProjectionOverride )
+                if(!g_bopengl)
+                    VPoint.SetProjectionType( proj );
 
             VPoint.SetBoxes();
 
@@ -5800,8 +5804,6 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
             ocpnDC dc( cdc );
             #endif
             
-            OCPNRegion vp_region( wxRect( 0, 0, VPoint.pix_width, VPoint.pix_height ) );
-            
             SelectItem *pFindAIS;
             SelectItem *pFindRP;
             SelectItem *pFindRouteSeg;
@@ -7471,8 +7473,6 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             ocpnDC dc( cdc );
 #endif
 
-            OCPNRegion vp_region( wxRect( 0, 0, VPoint.pix_width, VPoint.pix_height ) );
-            
             SelectItem *pFindAIS;
             SelectItem *pFindRP;
             SelectItem *pFindRouteSeg;
@@ -8444,23 +8444,30 @@ void ChartCanvas::RenderAllChartOutlines( ocpnDC &dc, ViewPort& vp )
 
 #ifdef USE_S57
     //        On CM93 Composite Charts, draw the outlines of the next smaller scale cell
-    if( Current_Ch && ( Current_Ch->GetChartType() == CHART_TYPE_CM93COMP ) ) {
-        cm93compchart *pch = (cm93compchart *) Current_Ch;
-        if( pch ) {
-            double chart_native_ppm = m_canvas_scale_factor / Current_Ch->GetNativeScale();
-            double zoom_factor = GetVP().view_scale_ppm / chart_native_ppm;
+    cm93compchart *pcm93 = NULL;
+    if( VPoint.b_quilt ) {
+        for(ChartBase *pch = GetFirstQuiltChart(); pch; pch = GetNextQuiltChart())
+            if( pch->GetChartType() == CHART_TYPE_CM93COMP ) {
+                pcm93 = (cm93compchart *)pch;
+                break;
+            }
+    } else
+        if ( Current_Ch && ( Current_Ch->GetChartType() == CHART_TYPE_CM93COMP ) )
+            pcm93 = (cm93compchart *) Current_Ch;
 
-            if( zoom_factor > 8.0 ) {
-                wxPen mPen( GetGlobalColor( _T("UINFM") ), 2, wxPENSTYLE_SHORT_DASH );
-                dc.SetPen( mPen );
-                pch->RenderNextSmallerCellOutlines( dc, GetVP() );
-            } else {
-                wxPen mPen( GetGlobalColor( _T("UINFM") ), 1, wxPENSTYLE_SOLID );
-                dc.SetPen( mPen );
-            } 
+    if( pcm93 ) {
+        double chart_native_ppm = m_canvas_scale_factor / pcm93->GetNativeScale();
+        double zoom_factor = GetVP().view_scale_ppm / chart_native_ppm;
 
-            pch->RenderNextSmallerCellOutlines( dc, vp );
-        }
+        if( zoom_factor > 8.0 ) {
+            wxPen mPen( GetGlobalColor( _T("UINFM") ), 2, wxPENSTYLE_SHORT_DASH );
+            dc.SetPen( mPen );
+        } else {
+            wxPen mPen( GetGlobalColor( _T("UINFM") ), 1, wxPENSTYLE_SOLID );
+            dc.SetPen( mPen );
+        } 
+        
+        pcm93->RenderNextSmallerCellOutlines( dc, vp );
     }
 #endif
 }

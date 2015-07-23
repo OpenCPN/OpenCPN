@@ -737,6 +737,7 @@ SET(HDRS
 		include/dsPortType.h
                 include/multiplexer.h
                 include/OCPNRegion.h
+                include/LLRegion.h
                 include/TrackPropDlg.h
                 include/LinkPropDlg.h
                 include/viewport.h
@@ -826,6 +827,7 @@ SET(SRCS
                 src/multiplexer.cpp
                 src/pugixml.cpp
                 src/OCPNRegion.cpp
+                src/LLRegion.cpp
                 src/TrackPropDlg.cpp
                 src/LinkPropDlg.cpp
                 src/ssl/sha1.c

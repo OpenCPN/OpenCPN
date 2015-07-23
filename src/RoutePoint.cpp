@@ -456,7 +456,7 @@ void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
 }
 
 #ifdef ocpnUSE_GL
-void RoutePoint::DrawGL( ViewPort &vp, OCPNRegion &region,bool use_cached_screen_coords )
+void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
 {
     if( !m_bIsVisible )
         return;
@@ -551,8 +551,9 @@ void RoutePoint::DrawGL( ViewPort &vp, OCPNRegion &region,bool use_cached_screen
         m_wpBBox_rotation = vp.rotation;
     }
 
-    if(region.Contains(r3) == wxOutRegion)
-        return;
+//    if(region.Contains(r3) == wxOutRegion)
+//        return;
+    
 
     ocpnDC dc;
 

@@ -69,50 +69,49 @@ static int CompareScales( QuiltCandidate *qc1, QuiltCandidate *qc2 )
         return cte1.GetScale() - cte2.GetScale();
 }
 
-OCPNRegion &QuiltCandidate::GetCandidateVPRegion( ViewPort &vp )
+LLRegion &QuiltCandidate::GetCandidateRegion()
 {
-    if( candidate_region.IsOk() )
+    if( !candidate_region.Empty() )
         return candidate_region;
-    
+
     const ChartTableEntry &cte = ChartData->GetChartTableEntry( dbIndex );
-        
-    OCPNRegion screen_region( vp.rv_rect );
-    
+    LLRegion world_region(-90, -180, 90, 180);
+
+#if 1
+    // for cm93 charts use their valid canvas region (should this apply to all vector charts?)
+    if(ChartData->GetDBChartType( dbIndex ) == CHART_TYPE_CM93COMP) {
+#if 0
+        // this seems really nice but won't work when larger scale cm93 is eclipsed by raster
+        ChartBase *chart = ChartData->OpenChartFromDB( dbIndex, FULL_INIT);
+        return candidate_region = chart->GetValidRegion();
+#else
+        double cm93_ll_bounds[16] = {-80, -180, -80, 180, 80, 180, 80, 120,
+                                     40, 120, 40, 40, 80, 40, 80, -180};
+        candidate_region = LLRegion(8, cm93_ll_bounds);
+        return candidate_region;
+#endif
+    }
+#else
     // Special case for charts which extend around the world, or near to it
     //  Mostly this means cm93....
     //  Take the whole screen, clipped at +/- 80 degrees lat
     //  Add a little bit to longitude extents,
     //  to ensure that the chart covers the entire vp as it is presumed to.
     if(fabs(cte.GetLonMax() - cte.GetLonMin()) > 180.) {
-        float lonpix = 2./(1852. * 60. * vp.view_scale_ppm);    // two pixels
-        
-        int n_ply_entries = 4;
-        float ply[8];
-        ply[0] = 80.;
-        ply[1] = vp.GetBBox().GetMinX() - lonpix;
-        ply[2] = 80.;
-        ply[3] = vp.GetBBox().GetMaxX() + lonpix;
-        ply[4] = -80.;
-        ply[5] = vp.GetBBox().GetMaxX() + lonpix;
-        ply[6] = -80.;
-        ply[7] = vp.GetBBox().GetMinX() - lonpix;
-        
-        
-        candidate_region = vp.GetVPRegionIntersect( screen_region, 4, &ply[0],
-                                                       cte.GetScale() );
+        candidate_region = world_region;
         return candidate_region;
     }
-    
+#endif    
     // Special case:
     // A skewed chart at high magnification will produce an OCPNregion that is very complex and expensive to process.
     // And there is really no useful visual information to be gotten from the chart, anyway.
     //  So, we simply "eclipse" these quilt candidates under these conditions as a p[erformance optimization.
-    
+#if 0    
     if( (vp.chart_scale < cte.GetScale() / 10) && (cte.GetChartSkew() > 1.0) ){
         candidate_region.Clear();
         return candidate_region;
     }
-    
+#endif    
     
     //    If the chart has an aux ply table, use it for finer region precision
     int nAuxPlyEntries = cte.GetnAuxPlyEntries();
@@ -121,46 +120,39 @@ OCPNRegion &QuiltCandidate::GetCandidateVPRegion( ViewPort &vp )
         for( int ip = 0; ip < nAuxPlyEntries; ip++ ) {
             float *pfp = cte.GetpAuxPlyTableEntry( ip );
             int nAuxPly = cte.GetAuxCntTableEntry( ip );
-            
-            OCPNRegion intersect = vp.GetVPRegionIntersect( screen_region, nAuxPly, pfp, cte.GetScale() );
-            if(!intersect.IsEmpty())
-                candidate_region.Union( intersect );
+
+            candidate_region = LLRegion( nAuxPly, pfp );
         }
-    }
-    
-    else {
+    } else {
         int n_ply_entries = cte.GetnPlyEntries();
         float *pfp = cte.GetpPlyTable();
         
         if( n_ply_entries >= 3 ) // could happen with old database and some charts, e.g. SHOM 2381.kap
-        {
-            candidate_region = vp.GetVPRegionIntersect( screen_region, n_ply_entries, pfp,
-                                                                 cte.GetScale() );
-        } else
-            candidate_region = screen_region;
+            candidate_region = LLRegion( n_ply_entries, pfp );
+        else
+            candidate_region = world_region;
     }
     
     //  Remove the NoCovr regions
-    if( candidate_region.IsOk() ){              // don't bother if the region is already empty
+    if( !candidate_region.Empty() ){              // don't bother if the region is already empty
         int nNoCovrPlyEntries = cte.GetnNoCovrPlyEntries();
         if( nNoCovrPlyEntries ) {
             for( int ip = 0; ip < nNoCovrPlyEntries; ip++ ) {
                 float *pfp = cte.GetpNoCovrPlyTableEntry( ip );
                 int nNoCovrPly = cte.GetNoCovrCntTableEntry( ip );
                 
-                OCPNRegion t_region = vp.GetVPRegionIntersect( screen_region, nNoCovrPly, pfp,
-                                                            cte.GetScale() );
+                LLRegion t_region = LLRegion( nNoCovrPly, pfp );
                 
                 //  We do a test removal of the NoCovr region.
                 //  If the result iz empty, it must be that the NoCovr region is
                 //  the full extent M_COVR(CATCOV=2) feature found in NOAA ENCs.
                 //  We ignore it.
                 
-                if(!t_region.IsEmpty()) {
-                    OCPNRegion test_region = candidate_region;
+                if(!t_region.Empty()) {
+                    LLRegion test_region = candidate_region;
                     test_region.Subtract( t_region );
                     
-                    if( !test_region.IsEmpty())
+                    if( !test_region.Empty())
                         candidate_region = test_region;
                 }
             }
@@ -172,15 +164,8 @@ OCPNRegion &QuiltCandidate::GetCandidateVPRegion( ViewPort &vp )
     //    and Plypoints georef is problematic......
     //    So, force full screen coverage in the quilt
     if( (cte.GetScale() > 90000000) && (cte.GetChartFamily() == CHART_FAMILY_RASTER) )
-        candidate_region = screen_region;
-    
-    //    Clip the region to the current viewport
-        candidate_region.Intersect( vp.rv_rect );
+        candidate_region = world_region;
 
-        //      It is OK to return an empty region....
-//        if( !candidate_region.IsOk() ) 
-//            candidate_region = OCPNRegion( 0, 0, 100, 100 );
-        
         return candidate_region;
 }
 
@@ -231,6 +216,8 @@ Quilt::Quilt()
 
     //  Quilting of skewed raster charts is allowed for OpenGL only
     m_bquiltskew = g_bopengl;
+    //  Quilting of different projections is allowed for OpenGL only
+    m_bquiltanyproj = g_bopengl;
 }
 
 Quilt::~Quilt()
@@ -248,38 +235,18 @@ Quilt::~Quilt()
 
 bool Quilt::IsVPBlittable( ViewPort &VPoint, int dx, int dy, bool b_allow_vector )
 {
-    bool ret_val = true;
-    if( m_vp_rendered.IsValid() ) {
-        wxPoint2DDouble p1 = VPoint.GetDoublePixFromLL( m_vp_rendered.clat, m_vp_rendered.clon );
-        wxPoint2DDouble p2 = VPoint.GetDoublePixFromLL( VPoint.clat, VPoint.clon );
-        double deltax = p2.m_x - p1.m_x;
-        double deltay = p2.m_y - p1.m_y;
+    if( !m_vp_rendered.IsValid() )
+        return false;
 
-        ChartBase *pch = GetFirstChart();
-        while( pch ) {
-            if( pch->GetChartFamily() == CHART_FAMILY_RASTER ) {
-                if( ( fabs( deltax - dx ) > 1e-2 ) || ( fabs( deltay - dy ) > 1e-2 ) ) {
-                    ret_val = false;
-                    break;
-                }
+    wxPoint2DDouble p1 = VPoint.GetDoublePixFromLL( m_vp_rendered.clat, m_vp_rendered.clon );
+    wxPoint2DDouble p2 = VPoint.GetDoublePixFromLL( VPoint.clat, VPoint.clon );
+    double deltax = p2.m_x - p1.m_x;
+    double deltay = p2.m_y - p1.m_y;
 
-            } else {
-                if( !b_allow_vector ) {
-                    ret_val = false;
-                    break;
-                } else if( ( fabs( deltax - dx ) > 1e-2 ) || ( fabs( deltay - dy ) > 1e-2 ) ) {
-                    ret_val = false;
-                    break;
-                }
+    if( ( fabs( deltax - dx ) > 1e-2 ) || ( fabs( deltay - dy ) > 1e-2 ) )
+        return false;
 
-            }
-
-            pch = GetNextChart();
-        }
-    } else
-        ret_val = false;
-
-    return ret_val;
+    return true;
 }
 
 bool Quilt::IsChartS57Overlay( int db_index )
@@ -462,15 +429,16 @@ ChartBase *Quilt::GetLargestScaleChart()
     return pret;
 }
 
-OCPNRegion Quilt::GetChartQuiltRegion( const ChartTableEntry &cte, ViewPort &vp )
+LLRegion Quilt::GetChartQuiltRegion( const ChartTableEntry &cte, ViewPort &vp )
 {
-    OCPNRegion chart_region;
-    OCPNRegion screen_region( vp.rv_rect );
+    LLRegion chart_region;
+    LLRegion screen_region( vp.GetBBox() );
 
     // Special case for charts which extend around the world, or near to it
     //  Mostly this means cm93....
     //  Take the whole screen, clipped at +/- 80 degrees lat
     if(fabs(cte.GetLonMax() - cte.GetLonMin()) > 180.) {
+/*
         int n_ply_entries = 4;
         float ply[8];
         ply[0] = 80.;
@@ -486,6 +454,8 @@ OCPNRegion Quilt::GetChartQuiltRegion( const ChartTableEntry &cte, ViewPort &vp 
         OCPNRegion t_region = vp.GetVPRegionIntersect( screen_region, 4, &ply[0],
                                                      cte.GetScale() );
         return t_region;
+*/
+        return LLRegion(vp.GetBBox().GetMinX(), -80, vp.GetBBox().GetMaxX(), 80);
     }
 
 
@@ -496,8 +466,10 @@ OCPNRegion Quilt::GetChartQuiltRegion( const ChartTableEntry &cte, ViewPort &vp 
             float *pfp = cte.GetpAuxPlyTableEntry( ip );
             int nAuxPly = cte.GetAuxCntTableEntry( ip );
 
-            OCPNRegion t_region = vp.GetVPRegionIntersect( screen_region, nAuxPly, pfp,
-                                cte.GetScale() );
+            LLRegion t_region(nAuxPly, pfp);
+            t_region.Intersect(screen_region);
+//            OCPNRegion t_region = vp.GetVPRegionIntersect( screen_region, nAuxPly, pfp,
+//                                cte.GetScale() );
             if( !t_region.Empty() )
                 chart_region.Union( t_region );
         }
@@ -509,8 +481,10 @@ OCPNRegion Quilt::GetChartQuiltRegion( const ChartTableEntry &cte, ViewPort &vp 
 
         if( n_ply_entries >= 3 ) // could happen with old database and some charts, e.g. SHOM 2381.kap
         {
-            const OCPNRegion t_region = vp.GetVPRegionIntersect( screen_region, n_ply_entries, pfp,
-                                cte.GetScale() );
+            LLRegion t_region(n_ply_entries, pfp);
+            t_region.Intersect(screen_region);
+//            const OCPNRegion t_region = vp.GetVPRegionIntersect( screen_region, n_ply_entries, pfp,
+//                                cte.GetScale() );
             if( !t_region.Empty() )
                 chart_region.Union( t_region );
 
@@ -525,19 +499,21 @@ OCPNRegion Quilt::GetChartQuiltRegion( const ChartTableEntry &cte, ViewPort &vp 
             float *pfp = cte.GetpNoCovrPlyTableEntry( ip );
             int nNoCovrPly = cte.GetNoCovrCntTableEntry( ip );
 
-            OCPNRegion t_region = vp.GetVPRegionIntersect( screen_region, nNoCovrPly, pfp,
-                                                         cte.GetScale() );
+            LLRegion t_region(nNoCovrPly, pfp);
+            t_region.Intersect(screen_region);
+//            OCPNRegion t_region = vp.GetVPRegionIntersect( screen_region, nNoCovrPly, pfp,
+//                                                         cte.GetScale() );
 
             //  We do a test removal of the NoCovr region.
             //  If the result iz empty, it must be that the NoCovr region is
             //  the full extent M_COVR(CATCOV=2) feature found in NOAA ENCs.
             //  We ignore it.
 
-            if(!t_region.IsEmpty()) {
-                OCPNRegion test_region = chart_region;
+            if(!t_region.Empty()) {
+                LLRegion test_region = chart_region;
                 test_region.Subtract( t_region );
 
-                if( !test_region.IsEmpty())
+                if( !test_region.Empty())
                     chart_region = test_region;
             }
         }
@@ -552,101 +528,9 @@ OCPNRegion Quilt::GetChartQuiltRegion( const ChartTableEntry &cte, ViewPort &vp 
         chart_region = screen_region;
 
     //    Clip the region to the current viewport
-    chart_region.Intersect( vp.rv_rect );
+    //chart_region.Intersect( vp.rv_rect );  already done
 
-    if( chart_region.IsOk() ) return chart_region;
-    else
-        return OCPNRegion( 0, 0, 100, 100 );
-}
-
-wxRect Quilt::GetChartQuiltBoundingRect( const ChartTableEntry &cte, ViewPort &vp )
-{
-    OCPNRegion screen_region( vp.rv_rect );
-    
-    // Special case for charts which extend around the world, or near to it
-    //  Mostly this means cm93....
-    //  Take the whole screen, clipped at +/- 80 degrees lat
-    if(fabs(cte.GetLonMax() - cte.GetLonMin()) > 180.) {
-        int n_ply_entries = 4;
-        float ply[8];
-        ply[0] = 80.;
-        ply[1] = vp.GetBBox().GetMinX();
-        ply[2] = 80.;
-        ply[3] = vp.GetBBox().GetMaxX();
-        ply[4] = -80.;
-        ply[5] = vp.GetBBox().GetMaxX();
-        ply[6] = -80.;
-        ply[7] = vp.GetBBox().GetMinX();
-        
- 
-        wxRect t_rect = vp.GetVPRectIntersect(4, &ply[0]);
-        return t_rect;
-    }
-    
-    wxRect ret_rect;
-    
-    //    If the chart has an aux ply table, use it for finer region precision
-    int nAuxPlyEntries = cte.GetnAuxPlyEntries();
-    if( nAuxPlyEntries >= 1 ) {
-        for( int ip = 0; ip < nAuxPlyEntries; ip++ ) {
-            float *pfp = cte.GetpAuxPlyTableEntry( ip );
-            int nAuxPly = cte.GetAuxCntTableEntry( ip );
-            
-            wxRect t_rect = vp.GetVPRectIntersect( nAuxPly, pfp );
-            if( !t_rect.IsEmpty() )
-                ret_rect.Union( t_rect );
-        }
-    }
-    
-    else {
-        int n_ply_entries = cte.GetnPlyEntries();
-        float *pfp = cte.GetpPlyTable();
-        
-        if( n_ply_entries >= 3 ) // could happen with old database and some charts, e.g. SHOM 2381.kap
-        {
-            wxRect t_rect = vp.GetVPRectIntersect( n_ply_entries, pfp );
-            if( !t_rect.IsEmpty() )
-                ret_rect.Union( t_rect );
-            
-        } else
-            ret_rect = vp.rv_rect;
-    }
-    
-    //  Remove the NoCovr regions
-    int nNoCovrPlyEntries = cte.GetnNoCovrPlyEntries();
-    if( nNoCovrPlyEntries ) {
-        for( int ip = 0; ip < nNoCovrPlyEntries; ip++ ) {
-            float *pfp = cte.GetpNoCovrPlyTableEntry( ip );
-            int nNoCovrPly = cte.GetNoCovrCntTableEntry( ip );
-            
-            OCPNRegion t_region = vp.GetVPRegionIntersect( screen_region, nNoCovrPly, pfp,
-                                                           cte.GetScale() );
-            
-            //  We do a test removal of the NoCovr region.
-            //  If the result iz empty, it must be that the NoCovr region is
-            //  the full extent M_COVR(CATCOV=2) feature found in NOAA ENCs.
-            //  We ignore it.
-            
-            if(!t_region.IsEmpty()) {
-                OCPNRegion test_region(ret_rect);
-                test_region.Subtract( t_region );
-                
-                if( !test_region.IsEmpty())
-                    ret_rect = test_region.GetBox();
-            }
-        }
-    }
-    
-    
-    //    Another superbad hack....
-    //    Super small scale raster charts like bluemarble.kap usually cross the prime meridian
-    //    and Plypoints georef is problematic......
-    //    So, force full screen coverage in the quilt
-    if( (cte.GetScale() > 90000000) && (cte.GetChartFamily() == CHART_FAMILY_RASTER) )
-        ret_rect = vp.rv_rect;
-    
-    
-    return ret_rect;
+    return chart_region;
 }
 
 
@@ -685,18 +569,21 @@ bool Quilt::IsQuiltVector( void )
     return ret;
 }
 
-int Quilt::GetChartdbIndexAtPix( wxPoint p )
+int Quilt::GetChartdbIndexAtPix( ViewPort &VPoint, wxPoint p )
 {
     if( m_bbusy )
         return -1;
 
     m_bbusy = true;
 
+    double lat, lon;
+    VPoint.GetLLFromPix( p, &lat, &lon );
+
     int ret = -1;
 
     wxPatchListNode *cnode = m_PatchList.GetFirst();
     while( cnode ) {
-        if( cnode->GetData()->ActiveRegion.Contains( p ) == wxInRegion ) {
+        if( cnode->GetData()->ActiveRegion.Contains( lat, lon ) ) {
             ret = cnode->GetData()->dbIndex;
             break;
         } else
@@ -707,12 +594,15 @@ int Quilt::GetChartdbIndexAtPix( wxPoint p )
     return ret;
 }
 
-ChartBase *Quilt::GetChartAtPix( wxPoint p )
+ChartBase *Quilt::GetChartAtPix( ViewPort &VPoint, wxPoint p )
 {
     if( m_bbusy )
         return NULL;
 
     m_bbusy = true;
+
+    double lat, lon;
+    VPoint.GetLLFromPix( p, &lat, &lon );
 
     //    The patchlist is organized from small to large scale.
     //    We generally will want the largest scale chart at this point, so
@@ -721,7 +611,7 @@ ChartBase *Quilt::GetChartAtPix( wxPoint p )
     wxPatchListNode *cnode = m_PatchList.GetFirst();
     while( cnode ) {
         QuiltPatch *pqp = cnode->GetData();
-        if( !pqp->b_overlay && (pqp->ActiveRegion.Contains( p ) == wxInRegion) )
+        if( !pqp->b_overlay && (pqp->ActiveRegion.Contains( lat, lon ) ) )
             if( ChartData->IsChartInCache( pqp->dbIndex ) ){
                 pret = ChartData->OpenChartFromDB( pqp->dbIndex, FULL_INIT );
             }
@@ -732,12 +622,15 @@ ChartBase *Quilt::GetChartAtPix( wxPoint p )
     return pret;
 }
 
-ChartBase *Quilt::GetOverlayChartAtPix( wxPoint p )
+ChartBase *Quilt::GetOverlayChartAtPix( ViewPort &VPoint, wxPoint p )
 {
     if( m_bbusy )
         return NULL;
 
     m_bbusy = true;
+
+    double lat, lon;
+    VPoint.GetLLFromPix( p, &lat, &lon );
 
     //    The patchlist is organized from small to large scale.
     //    We generally will want the largest scale chart at this point, so
@@ -746,7 +639,7 @@ ChartBase *Quilt::GetOverlayChartAtPix( wxPoint p )
     wxPatchListNode *cnode = m_PatchList.GetFirst();
     while( cnode ) {
         QuiltPatch *pqp = cnode->GetData();
-        if( pqp->b_overlay && ( pqp->ActiveRegion.Contains( p ) == wxInRegion) )
+        if( pqp->b_overlay && ( pqp->ActiveRegion.Contains( lat, lon ) ) )
                 pret = ChartData->OpenChartFromDB( pqp->dbIndex, FULL_INIT );
         cnode = cnode->GetNext();
     }
@@ -793,6 +686,8 @@ bool Quilt::IsQuiltDelta( ViewPort &vp )
     if( !m_vp_quilt.IsValid() || !m_bcomposed ) return true;
 
     if( m_vp_quilt.view_scale_ppm != vp.view_scale_ppm ) return true;
+
+    if( m_vp_quilt.m_projection_type != vp.m_projection_type ) return true;
 
     //    Has the quilt shifted by more than one pixel in any direction?
     wxPoint cp_last, cp_this;
@@ -843,7 +738,7 @@ int Quilt::GetNewRefChart( void )
             
             if( ( m.GetScale() >= m_reference_scale )
                     && ( m_reference_family == m.GetChartFamily() )
-                    && ( m_quilt_proj == m.GetChartProjectionType() )
+                    && ( m_bquiltanyproj || m_quilt_proj == m.GetChartProjectionType() )
                     && ( m_bquiltskew || (fabs(skew_norm) < 1.0) ) ){
                 new_ref_dbIndex = m_extended_stack_array.Item( is );
                 break;
@@ -1082,9 +977,9 @@ bool Quilt::IsChartSmallestScale( int dbIndex )
     return ( dbIndex == target_dbindex );
 }
 
-OCPNRegion Quilt::GetHiliteRegion( ViewPort &vp )
+LLRegion Quilt::GetHiliteRegion()
 {
-    OCPNRegion r;
+    LLRegion r;
     if( m_nHiLiteIndex >= 0 ) {
         // Walk the PatchList, looking for the target hilite index
         for( unsigned int i = 0; i < m_PatchList.GetCount(); i++ ) {
@@ -1098,11 +993,11 @@ OCPNRegion Quilt::GetHiliteRegion( ViewPort &vp )
         }
 
         // If not in the patchlist, look in the full chartbar
-        if( r.IsEmpty() ) {
+        if( r.Empty() ) {
             for( unsigned int ir = 0; ir < m_pcandidate_array->GetCount(); ir++ ) {
                 QuiltCandidate *pqc = m_pcandidate_array->Item( ir );
                 if( m_nHiLiteIndex == pqc->dbIndex ) {
-                    OCPNRegion chart_region = pqc->GetCandidateVPRegion( vp );
+                    LLRegion chart_region = pqc->GetCandidateRegion();
                     if( !chart_region.Empty() ) {
                         // Do not highlite fully eclipsed charts
                         bool b_eclipsed = false;
@@ -1132,13 +1027,14 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
     int reference_scale = 1.;
     int reference_type = -1;
     int reference_family;
-    int quilt_proj = PROJECTION_UNKNOWN;
+    int quilt_proj = m_bquiltanyproj ? vp_in.m_projection_type : PROJECTION_UNKNOWN;
 
     if( ref_db_index >= 0 ) {
         const ChartTableEntry &cte_ref = ChartData->GetChartTableEntry( ref_db_index );
         reference_scale = cte_ref.GetScale();
         reference_type = cte_ref.GetChartType();
-        quilt_proj = ChartData->GetDBChartProj( ref_db_index );
+        if(!m_bquiltanyproj)
+            quilt_proj = ChartData->GetDBChartProj( ref_db_index );
         reference_family = cte_ref.GetChartFamily();
     }
 
@@ -1171,7 +1067,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
             // and we avoid adding CM93 Composite until later
             if( ( reference_type == cte.GetChartType() )
             && ( m_bquiltskew ? 1: fabs( skew_norm ) < 1.0 )
-            && ( cte.GetChartProjectionType() == quilt_proj )
+            && ( m_bquiltanyproj || cte.GetChartProjectionType() == quilt_proj )
             && ( cte.GetChartType() != CHART_TYPE_CM93COMP ) ) {
                 QuiltCandidate *qcnew = new QuiltCandidate;
                 qcnew->dbIndex = i;
@@ -1211,7 +1107,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
 
             if( ( g_GroupIndex > 0 ) && ( !ChartData->IsChartInGroup( i, g_GroupIndex ) ) ) continue;
             
-            if( quilt_proj != cte.GetChartProjectionType() ) continue;
+            if( !m_bquiltanyproj && quilt_proj != cte.GetChartProjectionType() ) continue;
 
             double skew_norm = cte.GetChartSkew();
             if( skew_norm > 180. ) skew_norm -= 360.;
@@ -1243,14 +1139,14 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
                 //    Add the chart only if the chart's fractional area exceeds n%
                 if( CHART_TYPE_S57 == reference_type ) {
                     //Get the fractional area of this chart
-                    double chart_fractional_area = 0.;
+                    //                    double chart_fractional_area = 0.;
                     double quilt_area = vp_local.pix_width * vp_local.pix_height;
                     
-                    wxRect cell_rect = GetChartQuiltBoundingRect( cte, vp_local );
+                    LLRegion cell_region = GetChartQuiltRegion( cte, vp_local );
 
-                    if( !cell_rect.IsEmpty() ) {
-                        chart_fractional_area = ( cell_rect.GetWidth() * cell_rect.GetHeight() )
-                                                / quilt_area;
+                    if( !cell_region.Empty() ) {
+//                        chart_fractional_area = ( cell_rect.GetWidth() * cell_rect.GetHeight() )
+                        //                                                / quilt_area;
                     } else
                         b_add = false;  // this chart has no actual overlap on screen
                     // probably because it has a concave outline
@@ -1262,7 +1158,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
  //                   }
                     
                     //  Allow S57 charts that are near normal zoom, no matter what their fractional area coverage
-                    if(( zoom_factor > 0.1) && ( chart_fractional_area > .001 ) )
+                    if(( zoom_factor > 0.1)/* && ( chart_fractional_area > .001 )*/ )
                         b_add = true;
                 }
 
@@ -1466,16 +1362,18 @@ bool Quilt::Compose( const ViewPort &vp_in )
         const ChartTableEntry &cte_ref = ChartData->GetChartTableEntry( m_refchart_dbIndex );
         m_reference_scale = cte_ref.GetScale();
         m_reference_type = cte_ref.GetChartType();
-        m_quilt_proj = ChartData->GetDBChartProj( m_refchart_dbIndex );
+        if(!m_bquiltanyproj)
+            m_quilt_proj = ChartData->GetDBChartProj( m_refchart_dbIndex );
         m_reference_family = cte_ref.GetChartFamily();
     }
 
     //    Set up the viewport projection type
-    vp_local.SetProjectionType( m_quilt_proj );
+    if(!m_bquiltanyproj)
+        vp_local.SetProjectionType( m_quilt_proj );
 
     //    As ChartdB data is always in rectilinear space, region calculations need to be done with no VP rotation
-    double saved_vp_rotation = vp_local.rotation;                      // save a copy
-    vp_local.SetRotationAngle( 0. );
+//    double saved_vp_rotation = vp_local.rotation;                      // save a copy
+//    vp_local.SetRotationAngle( 0. );
     
     bool bfull = vp_in.b_FullScreenQuilt;
     BuildExtendedChartStackAndCandidateArray(bfull, m_refchart_dbIndex, vp_local);
@@ -1537,12 +1435,12 @@ bool Quilt::Compose( const ViewPort &vp_in )
             }
         }
     }
-            
 
     //    Using Region logic, and starting from the largest scale chart
     //    figuratively "draw" charts until the ViewPort window is completely quilted over
     //    Add only those charts whose scale is smaller than the "reference scale"
-    OCPNRegion vp_region( vp_local.rv_rect );
+    const LLRegion cvp_region = vp_local.GetLLRegion(wxRect(0, 0, vp_local.pix_width, vp_local.pix_height));
+    LLRegion vp_region = cvp_region;
     unsigned int ir;
 
     //    "Draw" the reference chart first, since it is special in that it controls the fine vpscale setting
@@ -1559,14 +1457,14 @@ bool Quilt::Compose( const ViewPort &vp_in )
     if( pqc_ref ) {
         const ChartTableEntry &cte_ref = ChartData->GetChartTableEntry( m_refchart_dbIndex );
 
-        OCPNRegion vpu_region( vp_local.rv_rect );
+        LLRegion vpu_region( cvp_region );
 
-        OCPNRegion chart_region = pqc_ref->GetCandidateVPRegion( vp_local );
+        LLRegion chart_region = pqc_ref->GetCandidateRegion();
 
         if( !chart_region.Empty() ){
             vpu_region.Intersect( chart_region );
 
-            if( vpu_region.IsEmpty() )
+            if( vpu_region.Empty() )
                 pqc_ref->b_include = false;   // skip this chart, no true overlap
             else {
                 pqc_ref->b_include = true;
@@ -1576,9 +1474,9 @@ bool Quilt::Compose( const ViewPort &vp_in )
         else
             pqc_ref->b_include = false;   // skip this chart, empty region
     }
-    
+
     //    Now the rest of the candidates
-    if( !vp_region.IsEmpty() ) {
+    if( !vp_region.Empty() ) {
         for( ir = 0; ir < m_pcandidate_array->GetCount(); ir++ ) {
             QuiltCandidate *pqc = m_pcandidate_array->Item( ir );
 
@@ -1610,20 +1508,19 @@ bool Quilt::Compose( const ViewPort &vp_in )
 
                 if( !b_in_noshow ) {
                     //    Check intersection
-                    OCPNRegion vpu_region( vp_local.rv_rect );
+                    LLRegion vpu_region( cvp_region );
 
-                    OCPNRegion chart_region = pqc->GetCandidateVPRegion( vp_local );  //quilt_region;
-                    if( !chart_region.Empty() ){
+                    LLRegion chart_region = pqc->GetCandidateRegion( );  //quilt_region;
+                    if( !chart_region.Empty() ) {
                         vpu_region.Intersect( chart_region );
 
-                        if( vpu_region.IsEmpty() )
+                        if( vpu_region.Empty() )
                             pqc->b_include = false; // skip this chart, no true overlap
                         else {
                             pqc->b_include = true;
                             vp_region.Subtract( chart_region );          // adding this chart
                         }
-                    }
-                    else
+                    } else
                         pqc->b_include = false;   // skip this chart, empty region
                 } else {
                     pqc->b_include = true;
@@ -1633,11 +1530,10 @@ bool Quilt::Compose( const ViewPort &vp_in )
                 pqc->b_include = false;                       // skip this chart, scale is too large
             }
 
-            if( vp_region.IsEmpty() )                   // normal stop condition, quilt is full
+            if( vp_region.Empty() )                   // normal stop condition, quilt is full
                 break;
         }
     }
-
     
     //  For S57 quilts, walk the list again to identify overlay cells found previously,
     //  and make sure they are always included and not eclipsed
@@ -1662,13 +1558,13 @@ bool Quilt::Compose( const ViewPort &vp_in )
                 
                 if( !b_in_noshow ) {
                     //    Check intersection
-                    OCPNRegion vpu_region( vp_local.rv_rect );
+                    LLRegion vpu_region( cvp_region );
                     
-                    OCPNRegion chart_region = pqc->GetCandidateVPRegion( vp_local ); 
+                    LLRegion chart_region = pqc->GetCandidateRegion( ); 
                     if( !chart_region.Empty() )
                         vpu_region.Intersect( chart_region );
                     
-                    if( vpu_region.IsEmpty() )
+                    if( vpu_region.Empty() )
                         pqc->b_include = false; // skip this chart, no true overlap
                     else {
                         bool b_overlay = s57chart::IsCellOverlayType(cte.GetpFullPath() );
@@ -1679,8 +1575,6 @@ bool Quilt::Compose( const ViewPort &vp_in )
             }
         }
     }
-    
-  
     
     
     //    Walk the candidate list again, marking "eclipsed" charts
@@ -1702,12 +1596,13 @@ bool Quilt::Compose( const ViewPort &vp_in )
     }
 
     //    Potentially add cm93 to the candidate array if the region is not yet fully covered
-    if( ( m_quilt_proj == PROJECTION_MERCATOR ) && !vp_region.IsEmpty() ) {
+    if( ( (m_bquiltanyproj || m_quilt_proj == PROJECTION_MERCATOR) ) && !vp_region.Empty() ) {
+        bool b_must_add_cm93 = true;
+#if 0
         //    Check the remaining unpainted region.
         //    It may contain very small "slivers" of empty space, due to mixing of very small scale charts
         //    with the quilt.  If this is the case, do not waste time loading cm93....
 
-        bool b_must_add_cm93 = false;
         OCPNRegionIterator updd( vp_region );
         while( updd .HaveRects()) {
             wxRect rect = updd.GetRect();
@@ -1717,6 +1612,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
             }
             updd.NextRect();
         }
+#endif
 
         if( b_must_add_cm93 ) {
             for( int ics = 0; ics < pCurrentStack->nEntry; ics++ ) {
@@ -1755,12 +1651,12 @@ bool Quilt::Compose( const ViewPort &vp_in )
             if( cte.GetChartType() == CHART_TYPE_CM93COMP ) continue;
 
             //    Check intersection
-            OCPNRegion vpck_region( vp_local.rv_rect );
+            LLRegion vpck_region( vp_local.GetBBox() );
 
-            OCPNRegion chart_region = pqc->GetCandidateVPRegion( vp_local );
+            LLRegion chart_region = pqc->GetCandidateRegion();
             if( !chart_region.Empty() ) vpck_region.Intersect( chart_region );
 
-            if( !vpck_region.IsEmpty() ) {
+            if( !vpck_region.Empty() ) {
                 if( add_scale ) {
                     if( add_scale == cte.GetScale() ) pqc->b_include = true;
                     ;
@@ -1771,7 +1667,6 @@ bool Quilt::Compose( const ViewPort &vp_in )
             }
         }
     }
-
 
     //    Finally, build a list of "patches" for the quilt.
     //    Smallest scale first, as this will be the natural drawing order
@@ -1794,7 +1689,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
                 QuiltPatch *pqp = new QuiltPatch;
                 pqp->dbIndex = pqc->dbIndex;
                 pqp->ProjType = m.GetChartProjectionType();
-                pqp->quilt_region = pqc->GetCandidateVPRegion( vp_local );
+                pqp->quilt_region = pqc->GetCandidateRegion();
                 pqp->b_Valid = true;
 
                 m_PatchList.Append( pqp );
@@ -1804,19 +1699,23 @@ bool Quilt::Compose( const ViewPort &vp_in )
     //    From here on out, the PatchList is usable...
 
 #ifdef QUILT_TYPE_1
-    //    Establish the quilt projection type
-    m_quilt_proj = PROJECTION_MERCATOR;// default
-    ChartBase *ppc = GetLargestScaleChart();
-    if(ppc)
-        m_quilt_proj = ppc->GetChartProjectionType();
+    if(!m_bquiltanyproj) {
+        //    Establish the quilt projection type
+        m_quilt_proj = PROJECTION_MERCATOR;// default
+        ChartBase *ppc = GetLargestScaleChart();
+        if(ppc)
+            m_quilt_proj = ppc->GetChartProjectionType();
+    }
 #endif
 
-    //    Walk the PatchList, marking any entries whose projection does not match the determined quilt projection
-    for( unsigned int i = 0; i < m_PatchList.GetCount(); i++ ) {
-        wxPatchListNode *pcinode = m_PatchList.Item( i );
-        QuiltPatch *piqp = pcinode->GetData();
-        if( ( piqp->ProjType != m_quilt_proj ) && ( piqp->ProjType != PROJECTION_UNKNOWN ) ) piqp->b_Valid =
-                false;
+    if(!m_bquiltanyproj) {
+        //    Walk the PatchList, marking any entries whose projection does not match the determined quilt projection
+        for( unsigned int i = 0; i < m_PatchList.GetCount(); i++ ) {
+            wxPatchListNode *pcinode = m_PatchList.Item( i );
+            QuiltPatch *piqp = pcinode->GetData();
+            if( ( piqp->ProjType != m_quilt_proj ) && ( piqp->ProjType != PROJECTION_UNKNOWN ) )
+                piqp->b_Valid = false;
+        }
     }
 
     //    Walk the PatchList, marking any entries which appear in the noshow array
@@ -1833,10 +1732,34 @@ bool Quilt::Compose( const ViewPort &vp_in )
     }
 
     //    Generate the final render regions for the patches, one by one, smallest to largest scale
-    OCPNRegion unrendered_region( vp_local.rv_rect );
+//    LLRegion unrendered_region( vp_local.GetLLRegion(wxRect(0, 0, vp_local.pix_width, vp_local.pix_height)) );
 
     m_covered_region.Clear();
+#if 1 // this does the same as before with a lot less operations if there are many charts
+    for( int i = m_PatchList.GetCount()-1; i >=0; i-- ) {
+        wxPatchListNode *pcinode = m_PatchList.Item( i );
+        QuiltPatch *piqp = pcinode->GetData();
+        if( !piqp->b_Valid )                         // skip invalid entries
+            continue;
 
+        //    Start with the chart's full region coverage.
+        piqp->ActiveRegion = piqp->quilt_region;
+        // this operation becomes expensive with lots of charts
+        if(!b_has_overlays && m_PatchList.GetCount() < 25)
+            piqp->ActiveRegion.Subtract(m_covered_region);
+
+        piqp->ActiveRegion.Intersect(cvp_region);
+
+        //    Could happen that a larger scale chart covers completely a smaller scale chart
+        if( piqp->ActiveRegion.Empty() )
+            piqp->b_eclipsed = true;
+
+        //    Update the next pass full region to remove the region just allocated
+        //    Maintain the present full quilt coverage region
+        m_covered_region.Union( piqp->quilt_region );
+    }
+#else
+    // this is the old algorithm does the same thing in n^2/2 operations instead of 2*n-1
     for( unsigned int i = 0; i < m_PatchList.GetCount(); i++ ) {
         wxPatchListNode *pcinode = m_PatchList.Item( i );
         QuiltPatch *piqp = pcinode->GetData();
@@ -1846,12 +1769,11 @@ bool Quilt::Compose( const ViewPort &vp_in )
 
         const ChartTableEntry &ctei = ChartData->GetChartTableEntry( piqp->dbIndex );
 
-        OCPNRegion vpr_region = unrendered_region;
-
         //    Start with the chart's full region coverage.
-        vpr_region = piqp->quilt_region;
+        LLRegion vpr_region = piqp->quilt_region;
 
-
+        // This clause should be moved into the rendering routine for quilts so that
+        // the actual region logic need only be applied to the render region
 #if 1       // This clause went away with full-screen quilting
         // ...and came back with OpenGL....
 
@@ -1880,7 +1802,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
 
                 if( !vpr_region.Empty() ) {
                     const ChartTableEntry &cte = ChartData->GetChartTableEntry( pqp->dbIndex );
-                    OCPNRegion larger_scale_chart_region = pqp->quilt_region; //GetChartQuiltRegion( cte, vp_local );
+                    LLRegion larger_scale_chart_region = pqp->quilt_region; //GetChartQuiltRegion( cte, vp_local );
 
                     vpr_region.Subtract( larger_scale_chart_region );
                 }
@@ -1896,23 +1818,23 @@ bool Quilt::Compose( const ViewPort &vp_in )
         pqpi->ActiveRegion = vpr_region;
 
         //    Move the active region so that upper left is 0,0 in final render region
-        pqpi->ActiveRegion.Offset( -vp_local.rv_rect.x, -vp_local.rv_rect.y );
+//        pqpi->ActiveRegion.Offset( -vp_local.rv_rect.x, -vp_local.rv_rect.y );
 
         //    Could happen that a larger scale chart covers completely a smaller scale chart
-        if( pqpi->ActiveRegion.IsEmpty() )
+        if( pqpi->ActiveRegion.Empty() )
             pqpi->b_eclipsed = true;
 
         //    Update the next pass full region to remove the region just allocated
-        if( !vpr_region.Empty() )
-            unrendered_region.Subtract( vpr_region );
+//        if( !vpr_region.Empty() )
+//            unrendered_region.Subtract( vpr_region );
 
         //    Maintain the present full quilt coverage region
-        if( !pqpi->ActiveRegion.IsEmpty() )
+//        if( !pqpi->ActiveRegion.Empty() )
             m_covered_region.Union( pqpi->ActiveRegion );
     }
-
+#endif
     //    Restore temporary VP Rotation
-    vp_local.SetRotationAngle( saved_vp_rotation );
+    //  vp_local.SetRotationAngle( saved_vp_rotation );
 
     //    Walk the list again, removing any entries marked as eclipsed....
     unsigned int il = 0;
@@ -1938,10 +1860,9 @@ bool Quilt::Compose( const ViewPort &vp_in )
         else
             il++;
     }
-
     //    Mark the quilt to indicate need for background clear if the region is not fully covered
-    m_bneed_clear = !unrendered_region.IsEmpty();
-    m_back_region = unrendered_region;
+//    m_bneed_clear = !unrendered_region.Empty();
+//    m_back_region = unrendered_region;
 
     //    Finally, iterate thru the quilt and preload all of the required charts.
     //    For dynamic S57 SENC creation, this is where SENC creation happens first.....
@@ -2116,7 +2037,6 @@ bool Quilt::Compose( const ViewPort &vp_in )
     m_xa_hash = xa_hash;
     
     m_bbusy = false;
-    
     return true;
 }
 
@@ -2128,38 +2048,20 @@ void Quilt::ComputeRenderRegion( ViewPort &vp, OCPNRegion &chart_region )
 
     OCPNRegion rendered_region;
 
-    if( GetnCharts() && !m_bbusy ) {
-
-        OCPNRegion screen_region = chart_region;
-
+    if( GetnCharts() && !m_bbusy && !chart_region.Empty() ) {
         //  Walk the quilt, considering each chart from smallest scale to largest
 
         ChartBase *chart = GetFirstChart();
 
         while( chart ) {
-            bool okToRender = true; //cc1->IsChartLargeEnoughToRender( chart, vp );
-
-            if( chart->GetChartProjectionType() != PROJECTION_MERCATOR && vp.b_MercatorProjectionOverride )
-                okToRender = false;
-
-            if( ! okToRender ) {
-                chart = GetNextChart();
-                continue;
-            }
-            QuiltPatch *pqp = GetCurrentPatch();
-            if( pqp->b_Valid  ) {
-                OCPNRegion get_region = pqp->ActiveRegion;
-
-                if( !chart_region.IsEmpty() ) {
-
-                    get_region.Intersect( chart_region );
-
-                    if( !get_region.IsEmpty() ) {
-                        rendered_region.Union(get_region);
-                    }
+            if( !(chart->GetChartProjectionType() != PROJECTION_MERCATOR && vp.b_MercatorProjectionOverride ) ) {
+                QuiltPatch *pqp = GetCurrentPatch();
+                if( pqp->b_Valid  ) {
+                    OCPNRegion get_screen_region = vp.GetVPRegionIntersect(chart_region, pqp->ActiveRegion, chart->GetNativeScale());
+                    if( !get_screen_region.Empty() )
+                        rendered_region.Union(get_screen_region);
                 }
-           }
-
+            }
             chart = GetNextChart();
         }
     }
@@ -2198,7 +2100,7 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion 
         ChartBase *chart = GetFirstChart();
         int chartsDrawn = 0;
 
-        if( !chart_region.IsEmpty() ) {
+        if( !chart_region.Empty() ) {
             while( chart ) {
                 bool okToRender = true;//cc1->IsChartLargeEnoughToRender( chart, vp );
 
@@ -2212,21 +2114,21 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion 
                 QuiltPatch *pqp = GetCurrentPatch();
                 if( pqp->b_Valid  ) {
                     bool b_chart_rendered = false;
-                    OCPNRegion get_region = pqp->ActiveRegion;
+                    LLRegion get_region = pqp->ActiveRegion;
 
-                    get_region.Intersect( chart_region );
-
-                    if( !get_region.IsEmpty() ) {
+                    OCPNRegion get_screen_region = vp.GetVPRegionIntersect(chart_region, get_region,
+                                                                           chart->GetNativeScale());
+                    if( !get_screen_region.Empty() ) {
 
                         if( !pqp->b_overlay ) {
-                            b_chart_rendered = chart->RenderRegionViewOnDC( tmp_dc, vp, get_region );
+                            b_chart_rendered = chart->RenderRegionViewOnDC( tmp_dc, vp, get_screen_region );
                             if( chart->GetChartType() != CHART_TYPE_CM93COMP )
                                 b_chart_rendered = true;
-                            screen_region.Subtract( get_region );
+                            screen_region.Subtract( get_screen_region );
                         }
                     }
 
-                    OCPNRegionIterator upd( get_region );
+                    OCPNRegionIterator upd( get_screen_region );
                     while( upd.HaveRects() ) {
                         wxRect rect = upd.GetRect();
                         dc.Blit( rect.x, rect.y, rect.width, rect.height, &tmp_dc, rect.x, rect.y,
@@ -2237,7 +2139,7 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion 
                     tmp_dc.SelectObject( wxNullBitmap );
 
                     if(b_chart_rendered)
-                        rendered_region.Union(get_region);
+                        rendered_region.Union(get_screen_region);
                 }
 
                 chartsDrawn++;
@@ -2249,20 +2151,20 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion 
 
         
         //    Render any Overlay patches for s57 charts(cells)
-        if( m_bquilt_has_overlays && !chart_region.IsEmpty() ) {
+        if( m_bquilt_has_overlays && !chart_region.Empty() ) {
             chart = GetFirstChart();
             while( chart ) {
                 QuiltPatch *pqp = GetCurrentPatch();
                 if( pqp->b_Valid ) {
                     if( pqp->b_overlay ) {
-                        OCPNRegion get_region = pqp->ActiveRegion;
-                        get_region.Intersect( chart_region );
-
-                        if( !get_region.IsEmpty() ) {
+                        LLRegion get_region = pqp->ActiveRegion;
+                        OCPNRegion get_screen_region = vp.GetVPRegionIntersect(chart_region, get_region,
+                                                                               chart->GetNativeScale());
+                        if( !get_region.Empty() ) {
                             s57chart *Chs57 = dynamic_cast<s57chart*>( chart );
-                            Chs57->RenderOverlayRegionViewOnDC( tmp_dc, vp, get_region );
+                            Chs57->RenderOverlayRegionViewOnDC( tmp_dc, vp, get_screen_region );
 
-                            OCPNRegionIterator upd( get_region );
+                            OCPNRegionIterator upd( get_screen_region );
                             while( upd.HaveRects() ) {
                                 wxRect rect = upd.GetRect();
                                 dc.Blit( rect.x, rect.y, rect.width, rect.height, &tmp_dc, rect.x,
@@ -2294,8 +2196,7 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion 
 
         //    Highlighting....
         if( m_nHiLiteIndex >= 0 ) {
-            OCPNRegion hiregion = GetHiliteRegion( vp );
-
+            OCPNRegion hiregion = vp.GetVPRegionIntersect(chart_region, GetHiliteRegion(), 1);
             wxRect box = hiregion.GetBox();
 
             if( !box.IsEmpty() ) {
@@ -2358,6 +2259,7 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion 
 
                     rdc.SetBackground( wxBrush( wxColour( hlcolor, 0, 0 ) ) );
                     rdc.Clear();
+
 
                     OCPNRegionIterator upd ( hiregion );
                     while ( upd.HaveRects() )

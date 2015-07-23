@@ -389,7 +389,7 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
         }
 
     } else {
-        ChartBase *pChartTest = parent->m_pQuilt->GetChartAtPix( wxPoint( x, y ) );
+        ChartBase *pChartTest = parent->m_pQuilt->GetChartAtPix( parent->GetVP(), wxPoint( x, y ) );
         if( ( pChartTest && ( pChartTest->GetChartFamily() == CHART_FAMILY_VECTOR ) ) || ais_areanotice ) {
             MenuAppend1( contextMenu, ID_DEF_MENU_QUERY, _( "Object Query..." ) );
         } else {
@@ -475,7 +475,7 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
         
     
     if( ( parent->GetVP().b_quilt ) && ( pCurrentStack && pCurrentStack->b_valid ) ) {
-        int dbIndex = parent->m_pQuilt->GetChartdbIndexAtPix( wxPoint( popx, popy ) );
+        int dbIndex = parent->m_pQuilt->GetChartdbIndexAtPix( parent->GetVP(), wxPoint( popx, popy ) );
         if( dbIndex != -1 )
             MenuAppend1( contextMenu, ID_DEF_MENU_QUILTREMOVE, _( "Hide This Chart" ) );
     }
@@ -1079,7 +1079,7 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
 
     case ID_DEF_MENU_QUILTREMOVE: {
         if( parent->GetVP().b_quilt ) {
-            int dbIndex = parent->m_pQuilt->GetChartdbIndexAtPix( wxPoint( popx, popy ) );
+            int dbIndex = parent->m_pQuilt->GetChartdbIndexAtPix( parent->GetVP(), wxPoint( popx, popy ) );
             parent->parent_frame->RemoveChartFromQuilt( dbIndex );
 
             parent->ReloadVP();

@@ -64,8 +64,7 @@ public:
     
     virtual ~OCPNRegion();
     
-    wxRegion &ConvertTowxRegion();
-    wxRegion *GetNew_wxRegion();
+    wxRegion *GetNew_wxRegion() const;
     
     
 #ifdef USE_NEW_REGION    

@@ -1932,10 +1932,6 @@ cm93chart::cm93chart()
       m_pDrawBuffer = ( wxPoint * ) malloc ( 4 * sizeof ( wxPoint ) );
       m_nDrawBufferSize = 1;
 
-#ifdef ocpnUSE_GL        
-      m_outline_display_list = 0;
-#endif
-
       //  Set up the chart context
       m_this_chart_context = (chart_context *)calloc( sizeof(chart_context), 1);
       m_this_chart_context->chart = this;
@@ -2037,28 +2033,50 @@ void cm93chart::GetPointPix ( ObjRazRules *rzRules, wxPoint2DDouble *en, wxPoint
       double yr =  obj->y_rate;
       double yo =  obj->y_origin;
 
-      //    Crossing Greenwich right
-      if ( m_vp_current.GetBBox().GetMaxX() > 360. )
-      {
-            wxBoundingBox bbRight ( 0., m_vp_current.GetBBox().GetMinY(), m_vp_current.GetBBox().GetMaxX() - 360., m_vp_current.GetBBox().GetMaxY() );
-            if ( !bbRight.IntersectOut ( rzRules->obj->BBObj ) )
-            {
+      bool mercator = m_vp_current.m_projection_type == PROJECTION_MERCATOR;
+
+      if(mercator) {
+          //    Crossing Greenwich right
+          if ( m_vp_current.GetBBox().GetMaxX() > 360. )
+          {
+              wxBoundingBox bbRight ( 0., m_vp_current.GetBBox().GetMinY(), m_vp_current.GetBBox().GetMaxX() - 360., m_vp_current.GetBBox().GetMaxY() );
+              if ( !bbRight.IntersectOut ( rzRules->obj->BBObj ) )
+              {
                   xo += mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
-            }
-      }
+              }
+          }
 
 
-      for ( int i=0 ; i < nPoints ; i++ )
-      {
-            double valx = ( en[i].m_x * xr ) + xo;
-            double valy = ( en[i].m_y * yr ) + yo;
-            r[i].x = ( int ) wxRound ( ( ( valx - m_easting_vp_center ) * m_view_scale_ppm ) + m_pixx_vp_center );
-            r[i].y = ( int ) wxRound ( m_pixy_vp_center - ( ( valy - m_northing_vp_center ) * m_view_scale_ppm ) );
+          for ( int i=0 ; i < nPoints ; i++ )
+          {
+              double valx = ( en[i].m_x * xr ) + xo;
+              double valy = ( en[i].m_y * yr ) + yo;
+
+              r[i].x = ( ( valx - m_easting_vp_center ) * m_view_scale_ppm ) + m_pixx_vp_center + 0.5;
+              r[i].y = m_pixy_vp_center - ( ( valy - m_northing_vp_center ) * m_view_scale_ppm ) + 0.5;
+          }
+      } else {
+          for ( int i=0 ; i < nPoints ; i++ ) {
+              double valx = ( en[i].m_x * xr ) + xo;
+              double valy = ( en[i].m_y * yr ) + yo;
+
+              double lat, lon;
+              fromSM(valx - m_easting_vp_center, valy - m_northing_vp_center, m_vp_current.clat, m_vp_current.clon, &lat, &lon);
+
+              r[i] = m_vp_current.GetPixFromLL(lat, lon);
+          }
       }
 }
 
 void cm93chart::GetPixPoint ( int pixx, int pixy, double *plat, double *plon, ViewPort *vpt )
 {
+#if 1
+    vpt->GetLLFromPix(wxPoint(pixx, pixy), plat, plon);
+
+    if ( *plon < 0. )
+        *plon += 360.;
+
+#else
       //    Use Mercator estimator
       int dx = pixx - ( vpt->pix_width / 2 );
       int dy = ( vpt->pix_height / 2 ) - pixy;
@@ -2077,7 +2095,7 @@ void cm93chart::GetPixPoint ( int pixx, int pixy, double *plat, double *plon, Vi
 
       *plat = slat;
       *plon = slon;
-
+#endif
 }
 
 bool cm93chart::AdjustVP ( ViewPort &vp_last, ViewPort &vp_proposed )
@@ -4403,6 +4421,20 @@ bool cm93chart::IsPointInLoadedM_COVR ( double xc, double yc )
 
 }
 
+LLRegion cm93chart::GetValidRegion()
+{
+    if(m_region.Empty())
+        for ( unsigned int im=0 ; im < m_pcovr_array_loaded.GetCount() ; im++ )
+        {
+            M_COVR_Desc *pmcd = m_pcovr_array_loaded.Item ( im );
+            
+            LLRegion rgn_covr(pmcd->m_nvertices, ( float * ) pmcd->pvertices);
+            m_region.Union( rgn_covr );
+        }
+
+    return m_region;
+}
+
 
 
 int cm93chart::loadcell_in_sequence ( int cellindex, char subcell )
@@ -5336,35 +5368,32 @@ OCPNRegion cm93compchart::GetValidScreenCanvasRegion ( const ViewPort& VPoint, c
 
 }
 
-bool cm93compchart::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const OCPNRegion &Region)
+LLRegion cm93compchart::GetValidRegion()
+{
+    if ( m_pcm93chart_current )
+        return m_pcm93chart_current->GetValidRegion();
+
+    return LLRegion(); // empty region
+}
+
+bool cm93compchart::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
+                                         const OCPNRegion &RectRegion, const LLRegion &Region)
 {
       SetVPParms ( VPoint );
 
       if ( g_pCM93OffsetDialog && g_pCM93OffsetDialog->IsShown() )
             g_pCM93OffsetDialog->UpdateMCOVRList ( VPoint );
 
-      return DoRenderRegionViewOnGL ( glc, VPoint, Region );
+      return DoRenderRegionViewOnGL ( glc, VPoint, RectRegion, Region );
 
 }
 
-bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPort& VPoint, const OCPNRegion &Region )
+bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPort& VPoint,
+                                            const OCPNRegion &RectRegion, const LLRegion &Region)
 {
 //      g_bDebugCM93 = true;
 
 //      CALLGRIND_START_INSTRUMENTATION
-
-      if ( g_bDebugCM93 ) {
-            printf ( "\nOn DoRenderRegionViewOnGL Ref scale is %d, %c %g\n", m_cmscale, ( char ) ( 'A' + m_cmscale -1 ), VPoint.view_scale_ppm );
-            OCPNRegionIterator upd ( Region );
-            while ( upd.HaveRects() )
-            {
-                  wxRect rect = upd.GetRect();
-                  rect.Offset ( -VPoint.rv_rect.x, -VPoint.rv_rect.y );
-                  printf ( "   Region Rect:  %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height );
-                  upd.NextRect();
-            }
-      }
-
 
       ViewPort vp_positive = VPoint;
 
@@ -5378,41 +5407,13 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
             //    Check the current chart scale to see if it covers the requested region totally
             if ( VPoint.b_quilt )
             {
-                  OCPNRegion vpr_empty = Region;
+                  LLRegion vpr_empty = Region;
+                  LLRegion chart_region = GetValidRegion();
 
-                  OCPNRegion chart_region =  GetValidScreenCanvasRegion ( vp_positive, Region );
-
-                  if ( g_bDebugCM93 )
-                  {
-                        printf ( "On DoRenderRegionViewOnGL : Intersecting Ref region rectangles\n" );
-                        OCPNRegionIterator upd ( chart_region );
-                        while ( upd.HaveRects() )
-                        {
-                              wxRect rect = upd.GetRect();
-                              rect.Offset ( -VPoint.rv_rect.x, -VPoint.rv_rect.y );
-                              printf ( "   Region Rect:  %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height );
-                              upd.NextRect();
-                        }
-                  }
-
-                  if ( !chart_region.IsEmpty() )
+                  if ( !chart_region.Empty() )
                         vpr_empty.Subtract ( chart_region );
 
-                  if ( g_bDebugCM93 )
-                  {
-                        printf ( "On DoRenderRegionViewOnGL : Region rectangles to fill with smaller scale\n" );
-                        OCPNRegionIterator upd ( vpr_empty );
-                        while ( upd.HaveRects() )
-                        {
-                              wxRect rect = upd.GetRect();
-                              rect.Offset ( -VPoint.rv_rect.x, -VPoint.rv_rect.y );
-                              printf ( "   Region Rect:  %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height );
-                              upd.NextRect();
-                        }
-                  }
-
-
-                 if ( !vpr_empty.Empty() && m_cmscale )        // This chart scale does not fully cover the region
+                  if ( !vpr_empty.Empty() && m_cmscale )        // This chart scale does not fully cover the region
                   {
                         //    Save the current cm93 chart pointer for restoration later
                         cm93chart *m_pcm93chart_save = m_pcm93chart_current;
@@ -5429,34 +5430,16 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
 
                               if ( m_pcm93chart_current )
                               {
-                                    if ( g_bDebugCM93 )
-                                          printf ( "  In DRRVOD,  add quilt patch at %d, %c\n", m_cmscale, ( char ) ( 'A' + m_cmscale -1 ) );
-
-
-                                    OCPNRegion sscale_region = GetValidScreenCanvasRegion ( vp_positive, Region );
+                                    LLRegion sscale_region = GetValidRegion();
 
                                     //    Only need to render that part of the vp that is not yet full
                                     sscale_region.Intersect ( vpr_empty );
 
-                                    if ( g_bDebugCM93 )
-                                    {
-                                          printf ( "On DoRenderRegionViewOnGL : sscale_region rectangles\n" );
-                                          OCPNRegionIterator upd ( sscale_region );
-                                          while ( upd.HaveRects() )
-                                          {
-                                                wxRect rect = upd.GetRect();
-                                                rect.Offset ( -VPoint.rv_rect.x, -VPoint.rv_rect.y );
-                                                printf ( "   Region Rect:  %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height );
-                                                upd.NextRect();;
-                                          }
-                                    }
-
-                                    if(!sscale_region.IsEmpty())
-                                        render_return |= m_pcm93chart_current->RenderRegionViewOnGL ( glc, vp_positive, sscale_region );
-
+                                    if(!sscale_region.Empty())
+                                        render_return |= m_pcm93chart_current->RenderRegionViewOnGL
+                                            ( glc, vp_positive, RectRegion, sscale_region );
                                     //    Update the remaining empty region
-                                    if ( !sscale_region.IsEmpty() )
-                                          vpr_empty.Subtract ( sscale_region );
+                                    vpr_empty.Subtract ( sscale_region );
                               }
 
                         }     // while
@@ -5465,38 +5448,27 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
                         m_pcm93chart_current = m_pcm93chart_save;
                         m_cmscale = cmscale_save;
 
-                        if ( g_bDebugCM93 )
-                        {
-                              printf ( "On DoRenderRegionViewOnGL : Final (chart_region) rectangles\n" );
-                              OCPNRegionIterator upd ( chart_region );
-                              while ( upd.HaveRects() )
-                              {
-                                    wxRect rect = upd.GetRect();
-                                    rect.Offset ( -VPoint.rv_rect.x, -VPoint.rv_rect.y );
-                                    printf ( "   Region Rect:  %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height );
-                                    upd.NextRect();
-                              }
-                        }
-
                         //    Finally, render the target scale chart
-                        if ( !chart_region.IsEmpty() )
-                            render_return |= m_pcm93chart_current->RenderRegionViewOnGL ( glc, vp_positive, chart_region );
-
+                        if ( !chart_region.Empty() )
+                            render_return |= m_pcm93chart_current->RenderRegionViewOnGL
+                                ( glc, vp_positive, RectRegion, chart_region );
                   }
                   else
-                        render_return = m_pcm93chart_current->RenderRegionViewOnGL ( glc, vp_positive, chart_region );
+                      render_return = m_pcm93chart_current->RenderRegionViewOnGL
+                          ( glc, vp_positive, RectRegion, Region );
 
                   m_Name = m_pcm93chart_current->GetName();
 
             }
             else  // Single chart mode
             {
-                  render_return = m_pcm93chart_current->RenderRegionViewOnGL ( glc, vp_positive, Region );
-                  m_Name = m_pcm93chart_current->GetLastFileName();
+                render_return = m_pcm93chart_current->RenderRegionViewOnGL ( glc, vp_positive, RectRegion, Region );
+                m_Name = m_pcm93chart_current->GetLastFileName();
             }
       }
 
-
+      if(VPoint.m_projection_type != PROJECTION_MERCATOR)
+          return render_return; // TODO: fix below for non-mercator
 
       //    Render the cm93 cell's M_COVR outlines if called for
       if ( m_cell_index_special_outline )
@@ -5999,21 +5971,29 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
       if(g_bopengl) /* opengl */ {
           wxPen pen = dc.GetPen();
           wxColour col = pen.GetColour();
-
-          glEnable( GL_BLEND );
+          
           glEnable( GL_LINE_SMOOTH );
-
+          glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
+          glEnable( GL_BLEND );
+          glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+          
           glColor3ub(col.Red(), col.Green(), col.Blue());
           glLineWidth( g_GLMinSymbolLineWidth );
+          glDisable( GL_LINE_STIPPLE );
+          dc.SetGLStipple();
           
           if(g_b_EnableVBO)
               s_glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
           glEnableClientState(GL_VERTEX_ARRAY);
-          
+
           // use a viewport that allows the vertexes to be reused over many frames
           glPushMatrix();
-          glChartCanvas::MultMatrixViewPort(vp);
-          nvp = glChartCanvas::NormalizedViewPort(vp);
+
+          if(glChartCanvas::HasNormalizedViewPort(vp)) {
+              glChartCanvas::MultMatrixViewPort(vp);
+              nvp = glChartCanvas::NormalizedViewPort(vp);
+          } else
+              nvp = vp;
       }
 #endif
 
@@ -6088,9 +6068,10 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
                                       
                               // if signs don't agree we need to render a second pass
                               // translating around the world
-                              if( vp.GetBBox().GetMaxX()*vp.clon < 0 ||
-                                  vp.GetBBox().GetMaxX() > 180) {
-                                  #define NORM_FACTOR 16.0                                              
+                              if( (vp.m_projection_type == PROJECTION_MERCATOR ) &&
+                                  ( vp.GetBBox().GetMinX() < -180 ||
+                                    vp.GetBBox().GetMaxX() > 180) ) {
+                                  #define NORM_FACTOR 4096.0                                              
                                   double ts = 40058986*NORM_FACTOR; /* 360 degrees in normalized viewport */
                                   glPushMatrix();
                                   glTranslated(vp.clon < 0 ? -ts : ts, 0, 0);
@@ -6170,41 +6151,111 @@ bool cm93compchart::RenderCellOutlinesOnDC( ocpnDC &dc, ViewPort& vp, wxPoint *p
 
 void cm93compchart::RenderCellOutlinesOnGL( ViewPort& vp, M_COVR_Desc *mcd )
 {
-#ifdef ocpnUSE_GL        
-    float_2Dpt *p = mcd->pvertices;
-    int np = mcd->m_nvertices;
-    double lastlon = 0;
-    glBegin(GL_LINE_STRIP);
-    for ( int ip = 0 ; ip < np ; ip++ , p++ ) {
-        double lat = p->y;
-        double lon = p->x;
-        if(lon >= 180)
-            lon -= 360;
-
-        /* crosses IDL? if so break up into two segments so display lists work */
-        if(fabs(lon - lastlon) > 180) {
-            wxPoint r = vp.GetPixFromLL(lat, lastlon > 0 ? fabs(lon) : -fabs(lon) );
-    //    Outlines stored in MCDs are not adjusted for offsets
-            r.x -= mcd->user_xoff * vp.view_scale_ppm;
-            r.y -= mcd->user_yoff * vp.view_scale_ppm;
-                                                  
-            glVertex2i(r.x, r.y);
-            glEnd();
-            glBegin(GL_LINE_STRIP);
-        }
-        lastlon = lon;
-                                              
-        wxPoint q = vp.GetPixFromLL( lat, lon );
-
-        //    Outlines stored in MCDs are not adjusted for offsets
-        q.x -= mcd->user_xoff * vp.view_scale_ppm;
-        q.y -= mcd->user_yoff * vp.view_scale_ppm;
-
-        int dir = 0;
-
-        glVertex2i(q.x, q.y);
+#ifdef ocpnUSE_GL
+    // cannot reuse coordinates
+    if(vp.m_projection_type != mcd->gl_screen_projection_type ||
+       !glChartCanvas::HasNormalizedViewPort(vp)) {
+        delete [] mcd->gl_screen_vertices;
+        mcd->gl_screen_vertices = NULL;
     }
+
+    // if needed, cache normalized vertices
+    if(!mcd->gl_screen_vertices) {
+        // first compute a buffer size
+        double lastlon = 0;
+        int count = 0;
+        float_2Dpt *p = mcd->pvertices;
+        for ( int ip = 0 ; ip < mcd->m_nvertices ; ip++, p++ ) {
+            double lon = p->x;
+            if(lon > 180)
+                lon -= 360;
+
+            // crosses IDL? if so break up into two segments
+            if(fabs(lon - lastlon) > 180)
+                count++;
+
+            count++;
+            lastlon = lon;
+        }
+
+        mcd->gl_screen_vertices = new float_2Dpt[2*count];
+
+        wxPoint2DDouble l;
+        p = mcd->pvertices;
+        float_2Dpt *q = mcd->gl_screen_vertices;
+        lastlon = 0;
+
+        bool lastvalid = false;
+        for ( int ip = 0 ; ip < mcd->m_nvertices ; ip++, p++ ) {
+            double lat = p->y;
+            double lon = p->x;
+            if(lon > 180)
+                lon -= 360;
+
+            // crosses IDL? if so break up into two segments
+            if(fabs(lon - lastlon) > 180) {
+                if(lastvalid) {
+                    wxPoint2DDouble r = vp.GetDoublePixFromLL(lat, lastlon > 0 ? fabs(lon) : -fabs(lon) );
+                    if(!wxIsNaN(r.m_x)) {
+                        q->y = l.m_x;
+                        q->x = l.m_y;
+                        q++;
+
+                    //    Outlines stored in MCDs are not adjusted for offsets
+                        r.m_x -= mcd->user_xoff * vp.view_scale_ppm;
+                        r.m_y -= mcd->user_yoff * vp.view_scale_ppm;
+                        
+                        q->y = r.m_x;
+                        q->x = r.m_y;
+                        q++;
+                    }
+                }
+
+                wxPoint2DDouble r = vp.GetDoublePixFromLL(lat, lon > 0 ? fabs(lastlon) : -fabs(lastlon) );
+                if((lastvalid = !wxIsNaN(r.m_x))) {
+                    r.m_x -= mcd->user_xoff * vp.view_scale_ppm;
+                    r.m_y -= mcd->user_yoff * vp.view_scale_ppm;
+                    l.m_x = r.m_x;
+                }
+            }
+
+            lastlon = lon;
+                                              
+            wxPoint2DDouble s = vp.GetDoublePixFromLL( lat, lon );
+            if(!wxIsNaN(s.m_x)) {
+                //    Outlines stored in MCDs are not adjusted for offsets
+                s.m_x -= mcd->user_xoff * vp.view_scale_ppm;
+                s.m_y -= mcd->user_yoff * vp.view_scale_ppm;
+
+                if(lastvalid) {
+                    q->y = l.m_x;
+                    q->x = l.m_y;
+                    q++;
+                
+                    q->y = s.m_x;
+                    q->x = s.m_y;
+                    q++;
+                }
+                 
+                l = s;
+                lastvalid = true;
+            } else
+                lastvalid = false;
+        }
+
+        mcd->m_ngl_vertices = q - mcd->gl_screen_vertices;
+        mcd->gl_screen_projection_type = vp.m_projection_type;
+    }
+
+#if 1 // Push array (faster)
+    glVertexPointer(2, GL_FLOAT, 2*sizeof(float), mcd->gl_screen_vertices);
+    glDrawArrays(GL_LINES, 0, mcd->m_ngl_vertices);
+#else // immediate mode (may be useful for debugging buggy gfx cards)
+    glBegin(GL_LINES);
+    for(int i=0; i<mcd->m_ngl_vertices; i++)
+        glVertex2f(mcd->gl_screen_vertices[i].y, mcd->gl_screen_vertices[i].x);
     glEnd();
+#endif
 #endif
 }
 
@@ -6334,6 +6385,16 @@ VC_Hash& cm93compchart::Get_vc_hash ( void )
 
 bool cm93compchart::AdjustVP ( ViewPort &vp_last, ViewPort &vp_proposed )
 {
+#ifdef ocpnUSE_GL
+      if(g_bopengl) {
+          /* need a full refresh if not in quilted mode, and the cell changed */
+          if ( !vp_last.b_quilt && m_last_cell_adjustvp != m_pcm93chart_current )
+              glChartCanvas::Invalidate();
+
+          m_last_cell_adjustvp = m_pcm93chart_current;
+      }
+#endif
+
     //  All the below logic is slow, and really redundant.
     //  so, declare that cm93 charts do not require adjustment for optimum performance.
     
@@ -6350,16 +6411,6 @@ bool cm93compchart::AdjustVP ( ViewPort &vp_last, ViewPort &vp_proposed )
       int cmscale = GetCMScaleFromVP ( vp_proposed );                   // This is the scale that should be used, based on the vp
 
       int cmscale_actual = PrepareChartScale ( vp_proposed, cmscale, false );  // this is the scale that will be used, based on cell coverage
-
-#ifdef ocpnUSE_GL
-      if(g_bopengl) {
-          /* need a full refresh if not in quilted mode, and the cell changed */
-          if ( !vp_last.b_quilt && m_last_cell_adjustvp != m_pcm93chart_current )
-              glChartCanvas::Invalidate();
-
-          m_last_cell_adjustvp = m_pcm93chart_current;
-      }
-#endif
 
       if ( g_bDebugCM93 )
             printf ( "  In AdjustVP,  adjustment subchart scale is %c\n", ( char ) ( 'A' + cmscale_actual -1 ) );
