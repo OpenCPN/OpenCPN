@@ -808,6 +808,7 @@ glChartCanvas::glChartCanvas( wxWindow *parent ) :
     
     m_binPinch = false;
     m_binPan = false;
+    m_bpinchGuard = false;
     
     b_timeGL = true;
     m_last_render_time = -1;
@@ -4886,6 +4887,8 @@ void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
     
     if(m_binPinch)
         return;
+    if(m_bpinchGuard)
+        return;
     
     int x = event.GetOffset().x;
     int y = event.GetOffset().y;
@@ -4906,33 +4909,34 @@ void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
             break;
             
         case GestureUpdated:
-            if(!g_GLOptions.m_bUseCanvasPanning || m_bfogit)
-                cc1->PanCanvas( dx, -dy );
-            else{
-                FastPan( dx, dy ); 
-            }
+            if(m_binPan){
+                if(!g_GLOptions.m_bUseCanvasPanning || m_bfogit)
+                    cc1->PanCanvas( dx, -dy );
+                else{
+                    FastPan( dx, dy ); 
+                }
                 
                 
-            panx -= dx;
-            pany -= dy;
-            cc1->ClearbFollow();
+                panx -= dx;
+                pany -= dy;
+                cc1->ClearbFollow();
             
             #ifdef __OCPN__ANDROID__
-            androidSetFollowTool(false);
+                androidSetFollowTool(false);
             #endif        
-            
+            }
             break;
             
         case GestureFinished:
-            if (g_GLOptions.m_bUseCanvasPanning){            
-                //               cc1->PanCanvas( -x,-y ); //works, but jumps
-                cc1->PanCanvas( -panx, pany );
-            }
+            if(m_binPan){
+                if (g_GLOptions.m_bUseCanvasPanning)
+                    cc1->PanCanvas( -panx, pany );
 
             #ifdef __OCPN__ANDROID__
-            androidSetFollowTool(false);
+                androidSetFollowTool(false);
             #endif        
             
+            }
             panx = pany = 0;
             m_binPan = false;
             
@@ -5005,6 +5009,7 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
     }
 
     m_bgestureGuard = true;
+    m_bpinchGuard = true;
     m_gestureEeventTimer.Start(500, wxTIMER_ONE_SHOT);
     
 }
@@ -5020,6 +5025,7 @@ void glChartCanvas::onGestureTimerEvent(wxTimerEvent &event)
         Update();
     }
     m_bgestureGuard = false;
+    m_bpinchGuard = false;
 }
 
 

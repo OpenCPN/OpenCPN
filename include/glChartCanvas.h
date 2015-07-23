@@ -209,6 +209,7 @@ protected:
     
     wxTimer     m_gestureEeventTimer;
     bool        m_bgestureGuard;
+    bool        m_bpinchGuard;
     
     OCPNRegion  m_canvasregion;
     TexFont     m_gridfont;
