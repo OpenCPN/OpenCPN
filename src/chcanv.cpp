@@ -2071,8 +2071,6 @@ void ChartCanvas::DoMovement( long dt )
                 StopMovement( );
             }
         }
-        
-                
     }
 
     if( m_rotation_speed ) { /* in degrees per second */
@@ -9139,7 +9137,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 //                  if(m_bFollow)
 //                        b_save = false;
 
-            if( m_bm_cache_vp.IsValid() && m_cache_vp.IsValid() /*&& !m_bFollow*/) {
+            if(m_bm_cache_vp.IsValid() && m_cache_vp.IsValid() /*&& !m_bFollow*/) {
                 if( b_newview ) {
                     wxPoint c_old = VPoint.GetPixFromLL( VPoint.clat, VPoint.clon );
                     wxPoint c_new = m_bm_cache_vp.GetPixFromLL( VPoint.clat, VPoint.clon );
@@ -9453,7 +9451,6 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         mscratch_dc.Blit( 0, 0, GetVP().pix_width, GetVP().pix_height, &q_dc, 0, 0, wxCOPY );
 
         q_dc.SelectObject( wxNullBitmap );
-
     }
 
 //    And finally, blit the scratch dc onto the physical dc

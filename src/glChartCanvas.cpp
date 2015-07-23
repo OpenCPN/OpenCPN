@@ -3941,13 +3941,13 @@ void glChartCanvas::Render()
         }
 
     m_last_render_time = wxDateTime::Now().GetTicks();
-
     if(b_timeGL && g_bShowFPS){
         if(n_render % 10){
             glFinish();   
             g_glstopwatch.Start();
         }
     }
+
     wxPaintDC( this );
 
     //  If we are in the middle of a fast pan, we don't want the FBO coordinates to be reset
