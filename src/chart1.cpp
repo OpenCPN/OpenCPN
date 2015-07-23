@@ -4585,6 +4585,18 @@ void MyFrame::ClearbFollow( void )
     cc1->ReloadVP();
 }
 
+void MyFrame::ToggleGrid( void )
+{
+    g_bDisplayGrid = !g_bDisplayGrid;
+
+    cc1->Refresh( false );
+
+#ifdef ocpnUSE_GL         // opengl renders chart outlines as part of the chart this needs a full refresh
+    if( g_bopengl )
+        cc1->GetglCanvas()->Invalidate();
+#endif
+}
+
 void MyFrame::ToggleChartOutlines( void )
 {
     if( !g_bShowOutlines ) g_bShowOutlines = true;
