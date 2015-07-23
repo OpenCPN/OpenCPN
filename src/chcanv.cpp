@@ -9737,7 +9737,14 @@ emboss_data *ChartCanvas::EmbossDepthScale()
     }
 
     ped->x = ( GetVP().pix_width - ped->width );
-    ped->y = 40;
+    
+    if(g_FloatingCompassDialog && pConfig->m_bShowCompassWin){
+        wxPoint p = ScreenToClient(g_FloatingCompassDialog->GetPosition());
+        ped->y = p.y + g_FloatingCompassDialog->GetSize().y + 4;
+    }
+    else{
+        ped->y = 40;
+    }
     return ped;
 }
 
@@ -9746,7 +9753,7 @@ void ChartCanvas::CreateDepthUnitEmbossMaps( ColorScheme cs )
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
     wxFont font;
     if( style->embossFont == wxEmptyString )
-        font = wxFont( 60, wxFONTFAMILY_ROMAN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
+        font = wxFont( 60, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
     else
         font = wxFont( style->embossHeight, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, style->embossFont );
 
