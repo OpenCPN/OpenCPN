@@ -118,6 +118,8 @@ void appendOSDirSep ( wxString* pString )
 M_COVR_Desc::M_COVR_Desc()
 {
       pvertices = NULL;
+      gl_screen_vertices = NULL;
+      gl_screen_projection_type = PROJECTION_UNKNOWN;
 
       user_xoff = 0.;
       user_yoff = 0.;
@@ -129,6 +131,7 @@ M_COVR_Desc::M_COVR_Desc()
 M_COVR_Desc::~M_COVR_Desc()
 {
       delete[] pvertices;
+      delete[] gl_screen_vertices;
 }
 
 int M_COVR_Desc::GetWKBSize()
@@ -250,7 +253,13 @@ OCPNRegion M_COVR_Desc::GetRegion ( const ViewPort &vp, wxPoint *pwp )
 
 
             double easting, northing, epix, npix;
+#if 0
+            ViewPort avp = vp;
+            wxPoint2DDouble q = avp.GetDoublePixFromLL( p->y, plon);
+            easting = q.m_x, northing = q.m_y;
+#else
             toSM ( p->y, plon + 360., vp.clat, vp.clon + 360, &easting, &northing );
+#endif
 
 //            easting -= transform_WGS84_offset_x;
             easting -=  user_xoff;
@@ -2005,23 +2014,8 @@ double cm93chart::GetNormalScaleMax ( double canvas_scale_factor )
 
 void cm93chart::GetPointPix ( ObjRazRules *rzRules, float north, float east, wxPoint *r )
 {
-      S57Obj *obj = rzRules->obj;
-
-      double valx = ( east * obj->x_rate )  + obj->x_origin;
-      double valy = ( north * obj->y_rate ) + obj->y_origin;
-
-      //    Crossing Greenwich right
-      if ( m_vp_current.GetBBox().GetMaxX() > 360. &&
-           m_vp_current.GetBBox().GetMaxX() - 360 >= rzRules->obj->BBObj.GetMinX() )
-          valx += mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;      //6375586.0;
-
-#if 0
-      r->x = ( int ) wxRound ( ( ( valx - m_easting_vp_center ) * m_view_scale_ppm ) + m_pixx_vp_center );
-      r->y = ( int ) wxRound ( m_pixy_vp_center - ( ( valy - m_northing_vp_center ) * m_view_scale_ppm ) );
-#else
-      r->x = ( valx - m_easting_vp_center ) * m_view_scale_ppm + m_pixx_vp_center + 0.5;
-      r->y = m_pixy_vp_center - ( valy - m_northing_vp_center ) * m_view_scale_ppm + 0.5;
-#endif
+    wxPoint2DDouble en(east, north);
+    GetPointPix(rzRules, &en, r, 1);
 }
 
 void cm93chart::GetPointPix ( ObjRazRules *rzRules, wxPoint2DDouble *en, wxPoint *r, int nPoints )
@@ -2106,15 +2100,20 @@ bool cm93chart::AdjustVP ( ViewPort &vp_last, ViewPort &vp_proposed )
             //      If this viewpoint is same scale as last...
             if ( vp_last.view_scale_ppm == vp_proposed.view_scale_ppm )
             {
+                  //  then require this viewport to be exact integral pixel difference from last
+                  //  adjusting clat/clat and SM accordingly
+#if 1
+                wxPoint2DDouble p = vp_proposed.GetDoublePixFromLL(ref_lat, ref_lon) -
+                    vp_last.GetDoublePixFromLL(ref_lat, ref_lon);
 
+                double xlat, xlon;
+                vp_last.GetLLFromPix(wxPoint(round(p.m_x), round(p.m_y)), &xlat, &xlon);
+#else
                   double prev_easting_c, prev_northing_c;
                   toSM ( vp_last.clat, vp_last.clon, ref_lat, ref_lon, &prev_easting_c, &prev_northing_c );
 
                   double easting_c, northing_c;
                   toSM ( vp_proposed.clat, vp_proposed.clon,  ref_lat, ref_lon, &easting_c, &northing_c );
-
-                  //  then require this viewport to be exact integral pixel difference from last
-                  //  adjusting clat/clat and SM accordingly
 
                   double delta_pix_x = ( easting_c - prev_easting_c ) * vp_proposed.view_scale_ppm;
                   int dpix_x = ( int ) round ( delta_pix_x );
@@ -2129,7 +2128,7 @@ bool cm93chart::AdjustVP ( ViewPort &vp_last, ViewPort &vp_proposed )
 
                   double xlat, xlon;
                   fromSM ( c_east_d, c_north_d, ref_lat, ref_lon, &xlat, &xlon );
-
+#endif
                   vp_proposed.clon = xlon;
                   vp_proposed.clat = xlat;
 
@@ -6068,7 +6067,8 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
                                       
                               // if signs don't agree we need to render a second pass
                               // translating around the world
-                              if( (vp.m_projection_type == PROJECTION_MERCATOR ) &&
+                              if( (vp.m_projection_type == PROJECTION_MERCATOR ||
+                                   vp.m_projection_type == PROJECTION_EQUIRECTANGULAR) &&
                                   ( vp.GetBBox().GetMinX() < -180 ||
                                     vp.GetBBox().GetMaxX() > 180) ) {
                                   #define NORM_FACTOR 4096.0                                              

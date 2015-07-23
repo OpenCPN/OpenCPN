@@ -498,6 +498,9 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
     else
         cc1->GetCanvasPointPix( m_lat, m_lon, &r );
 
+    if(r.x == INVALID_COORD)
+        return;
+
 //    Substitue icon?
     wxBitmap *pbm;
     if( ( m_bIsActive ) && ( m_IconName != _T("mob") ) )

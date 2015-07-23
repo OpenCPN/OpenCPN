@@ -44,6 +44,7 @@
 #endif
 
 #include "gshhs.h"
+#include "chartbase.h" // for projections
 #include "wx28compat.h"
 
 #ifdef __OCPN__ANDROID__
@@ -136,10 +137,20 @@ GshhsPolyCell::GshhsPolyCell( FILE *fpoly_, int x0_, int y0_, PolygonFileHeader 
 
 GshhsPolyCell::~GshhsPolyCell()
 {
+    ClearPolyV();
+
     for(int i=0; i<GSSH_SUBM*GSSH_SUBM; i++)
         delete high_res_map[i];
     for(int i=0; i<6; i++)
         delete [] polyv[i];
+}
+
+void GshhsPolyCell::ClearPolyV()
+{
+    for(int i=0; i<6; i++) {
+        delete [] polyv[i];
+        polyv[i] = NULL;
+    }
 }
 
 void GshhsPolyCell::ReadPoly(contour_list &poly)
@@ -186,13 +197,6 @@ void GshhsPolyCell::ReadPolygonFile()
     ReadPoly( poly5 );
 }
 
-wxPoint GetPixFromLL(ViewPort &vp, double lat, double lon)
-{
-    wxPoint p = vp.GetPixFromLL(lat, lon);
-    p.x -= vp.rv_rect.x, p.y -= vp.rv_rect.y;
-    return p;
-}
-
 wxPoint2DDouble GetDoublePixFromLL(ViewPort &vp, double lat, double lon)
 {
     wxPoint2DDouble p = vp.GetDoublePixFromLL(lat, lon);
@@ -225,9 +229,13 @@ void GshhsPolyCell::DrawPolygonFilled( ocpnDC &pnt, contour_list * p, double dx,
 
         for( v = 0; v < p->at( c ).size(); v++ ) {
             wxRealPoint &ccp = cp.at( v );
-            wxPoint q = GetPixFromLL(vp,  ccp.y, ccp.x + dx );
+            wxPoint2DDouble q = GetDoublePixFromLL(vp, ccp.y, ccp.x + dx );
+            if(isnan(q.m_x)) {
+                pointCount = 0;
+                break;
+            }
 
-            x = q.x, y = q.y;
+            x = q.m_x, y = q.m_y;
 
             if( v == 0 || x != x_old || y != y_old ) {
                 poly_pt[pointCount].x = x;
@@ -365,16 +373,27 @@ void GshhsPolyCell::DrawPolygonFilledGL( contour_list * p, float_2Dpt **pv, int 
                     GLvertex* vertex = new GLvertex();
                     g_vertexes.push_back(vertex);
 
+                    wxPoint2DDouble q;
+                    if(glChartCanvas::HasNormalizedViewPort(vp))
+                        q = GetDoublePixFromLL(vp, ccp.y, ccp.x );
+                    else // tesselation directly from lat/lon
+                        q.m_x = ccp.y, q.m_y = ccp.x;
 
-                    wxPoint2DDouble q = GetDoublePixFromLL(vp,  ccp.y, ccp.x );
-                    if(idl && ccp.x == 180) {
-                        double ts = 40058986*16.0; /* 360 degrees in normalized viewport */
-                        q.m_x -= ts;
+                    if(vp.m_projection_type != PROJECTION_POLAR) {
+                        // need to correctly pick +180 or -180 longitude for projections
+                        // that have a discontiguous date line
+                            
+                        if(idl && ccp.x == 180) {
+                            if(vp.m_projection_type == PROJECTION_MERCATOR ||
+                               vp.m_projection_type == PROJECTION_EQUIRECTANGULAR)
+                                q.m_x -= 40058986*4096.0; // 360 degrees in normalized viewport
+                            else
+                                q.m_x -= 360; // lat/lon coordinates
+                        }
                     }
 
                     vertex->info.x = q.m_x;
                     vertex->info.y = q.m_y;
-
 
                     gluTessVertex( tobj, (GLdouble*)vertex, (GLdouble*)vertex);
                 }
@@ -400,15 +419,23 @@ void GshhsPolyCell::DrawPolygonFilledGL( contour_list * p, float_2Dpt **pv, int 
 
     glColor3ub(color.Red(), color.Green(), color.Blue());
 
-#if 1
-    glVertexPointer(2, GL_FLOAT, 2*sizeof(float), *pv);
-    glDrawArrays(GL_TRIANGLES, 0, *pvc);
-#else
-    glBegin(GL_TRIANGLES);
-    for(int i=0; i<*pvc; i++)
-        glVertex2f((*pv)[i].y, (*pv)[i].x);
-    glEnd();
-#endif
+    if(glChartCanvas::HasNormalizedViewPort(vp)) {
+        glVertexPointer(2, GL_FLOAT, 2*sizeof(float), *pv);
+        glDrawArrays(GL_TRIANGLES, 0, *pvc);
+    } else {
+        float_2Dpt *pvt = new float_2Dpt[*pvc];
+        for(int i=0; i<*pvc; i++) {
+            float_2Dpt *pc = *pv + i;
+            wxPoint2DDouble q = vp.GetDoublePixFromLL(pc->y, pc->x);
+            pvt[i].x = q.m_y;
+            pvt[i].y = q.m_x;
+        }
+
+        glVertexPointer(2, GL_FLOAT, 2*sizeof(float), pvt);
+        glDrawArrays(GL_TRIANGLES, 0, *pvc);
+
+        delete [] pvt;
+    }
 }
 #endif          //#ifdef ocpnUSE_GL
 
@@ -416,12 +443,13 @@ void GshhsPolyCell::DrawPolygonFilledGL( contour_list * p, float_2Dpt **pv, int 
 #define DRAW_POLY_FILLED_GL(NUM,COL) DrawPolygonFilledGL(&poly##NUM,&polyv[NUM],&polyc[NUM],vp,COL, idl);
 
 void GshhsPolyCell::drawMapPlain( ocpnDC &pnt, double dx, ViewPort &vp, wxColor seaColor,
-                                  wxColor landColor, int cellcount, bool idl )
+                                  wxColor landColor, bool idl )
 {
 #ifdef ocpnUSE_GL        
     if(!pnt.GetDC()) { // opengl
-        if(dx) {
-#define NORM_FACTOR 16.0                                              
+#define NORM_FACTOR 4096.0
+        if(dx && (vp.m_projection_type == PROJECTION_MERCATOR ||
+                  vp.m_projection_type == PROJECTION_EQUIRECTANGULAR)) {
             double ts = 40058986*NORM_FACTOR; /* 360 degrees in normalized viewport */
             glPushMatrix();
             glTranslated(dx > 0 ? ts : -ts, 0, 0);
@@ -471,9 +499,9 @@ void GshhsPolyCell::DrawPolygonContour( ocpnDC &pnt, contour_list * p, double dx
             // Elimination des traits verticaux et horizontaux
             if( ( ( ( x1 == x2 ) && ( ( x1 == long_min ) || ( x1 == long_max ) ) )
                     || ( ( y1 == y2 ) && ( ( y1 == lat_min ) || ( y1 == lat_max ) ) ) ) == 0 ) {
-                wxPoint AB = GetPixFromLL(vp,  x1 + dx, y1);
-                wxPoint CD = GetPixFromLL(vp,  x2 + dx, y1);
-                pnt.DrawLine(AB.x, AB.y, CD.x, CD.y);
+                wxPoint2DDouble AB = GetDoublePixFromLL(vp,  x1 + dx, y1);
+                wxPoint2DDouble CD = GetDoublePixFromLL(vp,  x2 + dx, y1);
+                pnt.DrawLine(AB.m_x, AB.m_y, CD.m_x, CD.m_y);
             }
         }
 
@@ -484,9 +512,9 @@ void GshhsPolyCell::DrawPolygonContour( ocpnDC &pnt, contour_list * p, double dx
 
         if( ( ( ( x1 == x2 ) && ( ( x1 == long_min ) || ( x1 == long_max ) ) )
                 || ( ( y1 == y2 ) && ( ( y1 == lat_min ) || ( y1 == lat_max ) ) ) ) == 0 ) {
-                wxPoint AB = GetPixFromLL(vp,  x1 + dx, y1);
-                wxPoint CD = GetPixFromLL(vp,  x2 + dx, y1);
-                pnt.DrawLine(AB.x, AB.y, CD.x, CD.y);
+                wxPoint2DDouble AB = GetDoublePixFromLL(vp,  x1 + dx, y1);
+                wxPoint2DDouble CD = GetDoublePixFromLL(vp,  x2 + dx, y1);
+                pnt.DrawLine(AB.m_x, AB.m_y, CD.m_x, CD.m_y);
         }
     }
 }
@@ -739,28 +767,29 @@ void GshhsPolyReader::drawGshhsPolyMapPlain( ocpnDC &pnt, ViewPort &vp, wxColor 
     int dx, cx, cxx, cy;
     GshhsPolyCell *cel;
 
-    int cellcount = (cxmax - cxmin) * (cymax - cymin);
-//    printf("cellcount: %d\n", cellcount);
-
     ViewPort nvp = vp;
 #ifdef ocpnUSE_GL
     if(!pnt.GetDC()) { // opengl
-
-        // Is this needed to ensure a vbo isn't bound?
-        extern bool         g_b_EnableVBO;
-        extern PFNGLBINDBUFFERPROC                 s_glBindBuffer;
-        if(g_b_EnableVBO)
-            s_glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
-
+        // clear cached data when the projection changes
+        if(vp.m_projection_type != last_rendered_vp.m_projection_type ||
+           (last_rendered_vp.m_projection_type == PROJECTION_POLAR &&
+            last_rendered_vp.clat*vp.clat <= 0)) {
+            last_rendered_vp = vp;
+            for(int cx = 0; cx<360; cx++)
+                for(int cy = 0; cy<180; cy++)
+                    if(allCells[cx][cy])
+                        allCells[cx][cy]->ClearPolyV();
+        }
         glEnableClientState(GL_VERTEX_ARRAY);
         
         // use a viewport that allows the vertexes to be reused over many frames
-        glPushMatrix();
-        glChartCanvas::MultMatrixViewPort(vp);
-        nvp = glChartCanvas::NormalizedViewPort(vp);
+        if(glChartCanvas::HasNormalizedViewPort(vp)) {
+            glPushMatrix();
+            glChartCanvas::MultMatrixViewPort(vp);
+            nvp = glChartCanvas::NormalizedViewPort(vp);
+        }
     }
 #endif
-
     for( cx = cxmin; cx < cxmax; cx++ ) {
         cxx = cx;
         while( cxx < 0 )
@@ -779,7 +808,11 @@ void GshhsPolyReader::drawGshhsPolyMapPlain( ocpnDC &pnt, ViewPort &vp, wxColor 
                 }
                 bool idl = false;
 
-                if(pnt.GetDC())// dc
+                // only mercator needs the special idl fixes
+                if(vp.m_projection_type != PROJECTION_MERCATOR &&
+                   vp.m_projection_type != PROJECTION_EQUIRECTANGULAR)
+                    dx = 0;
+                else if(pnt.GetDC())// dc
                     dx = cx - cxx;
                 else { // opengl
                     int cxn = cxx;
@@ -795,14 +828,15 @@ void GshhsPolyReader::drawGshhsPolyMapPlain( ocpnDC &pnt, ViewPort &vp, wxColor 
                         dx = 0;
                 }
 
-                cel->drawMapPlain( pnt, dx, nvp, seaColor, landColor, cellcount, idl );
+                cel->drawMapPlain( pnt, dx, nvp, seaColor, landColor, idl );
             }
         }
     }
 
 #ifdef ocpnUSE_GL
     if(!pnt.GetDC()) { // opengl
-        glPopMatrix();
+        if(glChartCanvas::HasNormalizedViewPort(vp))
+            glPopMatrix();
         glDisableClientState(GL_VERTEX_ARRAY);
     }
 #endif
@@ -1155,10 +1189,10 @@ int GshhsReader::GSHHS_scaledPoints( GshhsPolygon *pol, wxPoint *pts, double dec
 
     // Remove small polygons.
 
-    wxPoint p1 = GetPixFromLL(vp,  pol->west + decx, pol->north );
-    wxPoint p2 = GetPixFromLL(vp,  pol->east + decx, pol->south );
+    wxPoint2DDouble p1 = GetDoublePixFromLL(vp,  pol->west + decx, pol->north );
+    wxPoint2DDouble p2 = GetDoublePixFromLL(vp,  pol->east + decx, pol->south );
 
-    if( p1.x == p2.x && p1.y == p2.y )
+    if( p1.m_x == p2.m_x && p1.m_y == p2.m_y )
         return 0;
 
     double x, y;
@@ -1170,8 +1204,8 @@ int GshhsReader::GSHHS_scaledPoints( GshhsPolygon *pol, wxPoint *pts, double dec
         x = ( *itp )->lon + decx;
         y = ( *itp )->lat;
                                     {
-        wxPoint p = GetPixFromLL(vp,  y, x );
-        xx = p.x, yy = p.y;
+        wxPoint2DDouble p = GetDoublePixFromLL(vp,  y, x );
+        xx = p.m_x, yy = p.m_y;
         if( j == 0 || ( oxx != xx || oyy != yy ) )  // Remove close points
             oxx = xx;
             oyy = yy;

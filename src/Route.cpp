@@ -577,7 +577,7 @@ void Route::DrawGL( ViewPort &VP )
         RoutePoint *prp0 = node->GetData();
         wxPoint r0;
 
-        cc1->GetCanvasPointPix( prp0->m_lat, prp0->m_lon, &r0);
+        bool r0valid = cc1->GetCanvasPointPix( prp0->m_lat, prp0->m_lon, &r0);
         
         int lines = 0;
         node = node->GetNext();
@@ -585,18 +585,21 @@ void Route::DrawGL( ViewPort &VP )
             
             RoutePoint *prp = node->GetData();
             wxPoint r1;
-            cc1->GetCanvasPointPix( prp->m_lat, prp->m_lon, &r1);
+            bool r1valid = cc1->GetCanvasPointPix( prp->m_lat, prp->m_lon, &r1);
 
-            dc.StrokeLine( r0.x, r0.y, r1.x, r1.y );
-            lines++;
+            if(r0valid && r1valid) {
+                dc.StrokeLine( r0.x, r0.y, r1.x, r1.y );
+                lines++;
+            }
              
+            r0valid = r1valid;
             r0 = r1;
             node = node->GetNext();
             
         }
 
-        if(lines == 0) {
-            cc1->GetCanvasPointPix( prp0->m_lat, prp0->m_lon, &r0);
+        if(lines == 0 &&
+           cc1->GetCanvasPointPix( prp0->m_lat, prp0->m_lon, &r0)) {
             dc.StrokeLine( r0.x, r0.y, r0.x + 2, r0.y + 2 );
             return;
         }
@@ -681,18 +684,22 @@ void Route::DrawGL( ViewPort &VP )
         if(dir)
         {
             double crosslat = lat_rl_crosses_meridian(lastlat, lastlon, prp->m_lat, prp->m_lon, 180.0);
-            cc1->GetCanvasPointPix( crosslat, dir*180, &r);
-            glVertex2i(r.x, r.y);
+            if(cc1->GetCanvasPointPix( crosslat, dir*180, &r))
+                glVertex2i(r.x, r.y);
             glEnd();
             glBegin(GL_LINE_STRIP);
-            cc1->GetCanvasPointPix( crosslat, -dir*180, &r);
-            glVertex2i(r.x, r.y);
+            if(cc1->GetCanvasPointPix( crosslat, -dir*180, &r))
+                glVertex2i(r.x, r.y);
         }
         lastlat=prp->m_lat;
         lastlon=prp->m_lon;
         
-        cc1->GetCanvasPointPix( prp->m_lat, prp->m_lon, &r);
-        glVertex2i(r.x, r.y);
+        if(cc1->GetCanvasPointPix( prp->m_lat, prp->m_lon, &r))
+            glVertex2i(r.x, r.y);
+        else {
+            glEnd();
+            glBegin(GL_LINE_STRIP);
+        }
     }
     glEnd();
     glDisable (GL_LINE_STIPPLE);

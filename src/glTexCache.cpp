@@ -1643,6 +1643,14 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
 
 void glTexFactory::PrepareTiles(const ViewPort &vp, bool use_norm_vp, ChartBaseBSB *pChartBSB)
 {
+    // detect changing north/south polar
+    if(vp.m_projection_type == PROJECTION_POLAR) {
+        bool north = vp.clat > 0;
+        if(m_north != north)
+            m_prepared_projection_type = 0;
+        m_north = north;
+    }
+
     if(vp.m_projection_type == m_prepared_projection_type)
         return;
 
@@ -1665,11 +1673,20 @@ void glTexFactory::PrepareTiles(const ViewPort &vp, bool use_norm_vp, ChartBaseB
 
     double xsplits, ysplits;
     switch(vp.m_projection_type) {
+    case PROJECTION_POLAR:
+    case PROJECTION_STEREOGRAPHIC:
+    case PROJECTION_ORTHOGRAPHIC:
+    case PROJECTION_GNOMONIC:
     case PROJECTION_POLYCONIC:
         xsplits = native_scale / 1000000000.0 * tex_dim; // todo: fix this
 //        xsplits /= (1 << base_level); // split less zoomed out
         
         // split more near poles
+        if(vp.m_projection_type == PROJECTION_ORTHOGRAPHIC) {
+            Extent e;
+            pChartBSB->GetChartExtent(&e);
+            xsplits = xsplits * wxMax(fabsf(e.NLAT), fabsf(e.SLAT)) / 90;
+        }
         
         xsplits = round(xsplits);
         ysplits = 2*xsplits;
@@ -1677,6 +1694,10 @@ void glTexFactory::PrepareTiles(const ViewPort &vp, bool use_norm_vp, ChartBaseB
         xsplits = wxMin(wxMax(xsplits, 1), 8);
         ysplits = wxMin(wxMax(ysplits, 1), 8);
         break;
+    case PROJECTION_EQUIRECTANGULAR:
+        // needed for skewed charts?
+//        xsplits = ysplits = 4;
+//        break;
     default:
         xsplits = ysplits = 1; // TODO: is this good enough in all cases to reproject
         // non-mercator charts or even SM_ECC mercator charts in all cases?
@@ -1982,7 +2003,7 @@ bool glTexFactory::LoadHeader(void)
                 
                 if( sizeof( hdr) == m_fs->Read(&hdr, sizeof( hdr ))) {
                     if( hdr.magic != COMPRESSED_CACHE_MAGIC ||
-                        hdr.chartdate != m_chart_date_binary ||
+                        /*  hdr.chartdate != m_chart_date_binary ||*/
                         hdr.format != m_raster_format) {
                         
                         //  Bad header signature    

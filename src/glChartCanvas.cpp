@@ -29,6 +29,23 @@
 
 #include <stdint.h>
 
+#ifdef __UNIX__ // high resolution stopwatch for profiling
+class OCPNStopWatch
+{
+public:
+    OCPNStopWatch() { Reset(); }
+    void Reset() { clock_gettime(CLOCK_REALTIME, &tp); }
+
+    double GetTime() {
+        timespec tp_end;
+        clock_gettime(CLOCK_REALTIME, &tp_end);
+        return (tp_end.tv_sec - tp.tv_sec) * 1.e3 + (tp_end.tv_nsec - tp.tv_nsec) / 1.e6;
+    }
+
+private:
+    timespec tp;
+};
+#endif
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -1502,7 +1519,9 @@ bool glChartCanvas::PurgeChartTextures( ChartBase *pc, bool b_purge_factory )
 //   These routines allow reusable coordinates
 bool glChartCanvas::HasNormalizedViewPort(const ViewPort &vp)
 {
-    return vp.m_projection_type == PROJECTION_MERCATOR;
+    return vp.m_projection_type == PROJECTION_MERCATOR ||
+        vp.m_projection_type == PROJECTION_POLAR ||
+        vp.m_projection_type == PROJECTION_EQUIRECTANGULAR;
 }
 
 /* adjust the opengl transformation matrix so that
@@ -1519,9 +1538,18 @@ void glChartCanvas::MultMatrixViewPort(ViewPort &vp, float lat, float lon)
 
     switch(vp.m_projection_type) {
     case PROJECTION_MERCATOR:
+    case PROJECTION_EQUIRECTANGULAR:
         cc1->GetDoubleCanvasPointPixVP(vp, lat, lon, &point);
         glTranslated(point.m_x, point.m_y, 0);
         glScaled(vp.view_scale_ppm/NORM_FACTOR, vp.view_scale_ppm/NORM_FACTOR, 1);
+        break;
+
+    case PROJECTION_POLAR:
+        cc1->GetDoubleCanvasPointPixVP(vp, vp.clat > 0 ? 90 : -90, vp.clon, &point);
+        glTranslated(point.m_x, point.m_y, 0);
+        glRotatef(vp.clon - lon, 0, 0, vp.clat);
+        glScalef(vp.view_scale_ppm/NORM_FACTOR, vp.view_scale_ppm/NORM_FACTOR, 1);
+        glTranslatef(-vp.pix_width/2, -vp.pix_height/2, 0);
         break;
 
     default:
@@ -1538,7 +1566,12 @@ ViewPort glChartCanvas::NormalizedViewPort(const ViewPort &vp, float lat, float 
 
     switch(vp.m_projection_type) {
     case PROJECTION_MERCATOR:
+    case PROJECTION_EQUIRECTANGULAR:
         cvp.clat = lat;
+        break;
+
+    case PROJECTION_POLAR:
+        cvp.clat = vp.clat > 0 ? 90 : -90; // either north or south polar
         break;
 
     default:
@@ -1553,7 +1586,8 @@ ViewPort glChartCanvas::NormalizedViewPort(const ViewPort &vp, float lat, float 
 
 bool glChartCanvas::CanClipViewport(const ViewPort &vp)
 {
-    return vp.m_projection_type == PROJECTION_MERCATOR;
+    return vp.m_projection_type == PROJECTION_MERCATOR ||
+        vp.m_projection_type == PROJECTION_EQUIRECTANGULAR;
 }
 
 ViewPort glChartCanvas::ClippedViewport(const ViewPort &vp, const LLRegion &region)
@@ -1706,6 +1740,17 @@ static void GetLatLonCurveDist(const ViewPort &vp, float &lat_dist, float &lon_d
         lat_dist = 4,   lon_dist = 1;        break;
     case PROJECTION_POLYCONIC:
         lat_dist = 2,   lon_dist = 1;        break;
+    case PROJECTION_ORTHOGRAPHIC:
+        lat_dist = 2,   lon_dist = 2;        break;
+    case PROJECTION_POLAR:
+        lat_dist = 180, lon_dist = 1;        break;
+    case PROJECTION_STEREOGRAPHIC:
+    case PROJECTION_GNOMONIC:
+        lat_dist = 2, lon_dist = 1;          break;
+    case PROJECTION_EQUIRECTANGULAR:
+        // this is suboptimal because we don't care unless there is
+        // a change in both lat AND lon (skewed chart)
+        lat_dist = 2,   lon_dist = 360;      break;
     default:
         lat_dist = 180, lon_dist = 360;
     }
@@ -1756,14 +1801,15 @@ void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
         color = GetGlobalColor( _T ( "GREEN2" ) );
     else
         color = GetGlobalColor( _T ( "UINFR" ) );
-    
-    ChartTableEntry *entry = ChartData->GetpChartTableEntry(dbIndex);
 
 //    glEnable( GL_BLEND );
     glEnable( GL_LINE_SMOOTH );
 
     glColor3ub(color.Red(), color.Green(), color.Blue());
     glLineWidth( g_GLMinSymbolLineWidth );
+
+    float lat_dist, lon_dist;
+    GetLatLonCurveDist(vp, lat_dist, lon_dist);
 
     //        Are there any aux ply entries?
     int nAuxPlyEntries = ChartData->GetnAuxPlyEntries( dbIndex ), nPly;
@@ -1774,7 +1820,10 @@ void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
         else
             nPly = ChartData->GetDBPlyPoint( dbIndex, 0, &plylat, &plylon );
 
-        glBegin(GL_LINE_STRIP);
+        bool begin = false, sml_valid = false;
+        double sml[2];
+        float lastplylat = 0.0;
+        float lastplylon = 0.0;
         for( int i = 0; i < nPly+1; i++ ) {
             if(nAuxPlyEntries)
                 ChartData->GetDBAuxPlyPoint( dbIndex, i%nPly, j, &plylat, &plylon );
@@ -1783,11 +1832,58 @@ void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
 
             plylon += lon_bias;
 
-            wxPoint r;
-            cc1->GetCanvasPointPix( plylat, plylon, &r );
-            glVertex2f( r.x + .5, r.y + .5 );
+            if(lastplylon - plylon > 180)
+                lastplylon -= 360;
+            else if(lastplylon - plylon < -180)
+                lastplylon += 360;
+
+            int splits;
+            if(i==0)
+                splits = 1;
+            else {
+                int lat_splits = floor(fabs(plylat-lastplylat) / lat_dist);
+                int lon_splits = floor(fabs(plylon-lastplylon) / lon_dist);
+                splits = wxMax(lat_splits, lon_splits) + 1;
+            }
+                
+            double smj[2];
+            if(splits != 1) {
+                // must perform border interpolation in mercator space as this is what the charts use
+                toSM(plylat, plylon, 0, 0, smj+0, smj+1);
+                if(!sml_valid)
+                    toSM(lastplylat, lastplylon, 0, 0, sml+0, sml+1);
+            }
+
+            for(double c=0; c<splits; c++) {
+                double lat, lon;
+                if(c == splits - 1)
+                    lat = plylat, lon = plylon;
+                else {
+                    double d = (double)(c+1) / splits;
+                    fromSM(d*smj[0] + (1-d)*sml[0], d*smj[1] + (1-d)*sml[1], 0, 0, &lat, &lon);
+                }
+
+                wxPoint2DDouble s;
+                cc1->GetDoubleCanvasPointPix( lat, lon, &s );
+                if(!wxIsNaN(s.m_x)) {
+                    if(!begin) {
+                        begin = true;
+                        glBegin(GL_LINE_STRIP);
+                    }
+                    glVertex2f( s.m_x, s.m_y );
+                } else if(begin) {
+                    glEnd();
+                    begin = false;
+                }
+            }
+            if((sml_valid = splits != 1))
+                memcpy(sml, smj, sizeof smj);
+            lastplylat = plylat, lastplylon = plylon;
         }
-        glEnd();
+
+        if(begin)
+            glEnd();
+
     } while(++j < nAuxPlyEntries );                 // There are no aux Ply Point entries
 
     glDisable( GL_LINE_SMOOTH );
@@ -1800,8 +1896,11 @@ void glChartCanvas::GridDraw( )
 {
     if( !g_bDisplayGrid ) return;
 
-    bool b_rotated = fabs( cc1->GetVP().rotation ) > 1e-5 ||
-        ( fabs( cc1->GetVP().skew ) < 1e-9 && !g_bskew_comp );
+    ViewPort &vp = cc1->GetVP();
+
+    // TODO: make minor grid work all the time
+    bool minorgrid = fabs( vp.rotation ) < 0.0001 && ( !g_bskew_comp || fabs( vp.skew ) < 0.0001) &&
+        vp.m_projection_type == PROJECTION_MERCATOR;
 
     double nlat, elon, slat, wlon;
     float lat, lon;
@@ -1818,37 +1917,41 @@ void glChartCanvas::GridDraw( )
         m_gridfont.Build(*font);
     }
 
-    w = cc1->m_canvas_width;
-    h = cc1->m_canvas_height;
+    w = vp.pix_width;
+    h = vp.pix_height;
 
-    LLBBox llbbox = cc1->GetVP().GetBBox();
+    LLBBox llbbox = vp.GetBBox();
     nlat = llbbox.GetMaxY();
     slat = llbbox.GetMinY();
     elon = llbbox.GetMaxX();
     wlon = llbbox.GetMinX();
 
-    /* base spacing off unexpanded viewport, so when rotating about a location
-       the grid does not change. */
-    double rotation = cc1->GetVP().rotation;
-    cc1->GetVP().rotation = 0;
-
-    double latp[2], lonp[2];
-    cc1->GetCanvasPixPoint( 0, 0, latp[0], lonp[0] );
-    cc1->GetCanvasPixPoint( w, h, latp[1], lonp[1] );
-    cc1->GetVP().rotation = rotation;
-
-    dlat = latp[0] - latp[1]; // calculate how many degrees of latitude are shown in the window
-    dlon = lonp[1] - lonp[0]; // calculate how many degrees of longitude are shown in the window
-    if( dlon < 0.0 ) // concider datum border at 180 degrees longitude
-    {
-        dlon = dlon + 360.0;
-    }
-
     // calculate distance between latitude grid lines
-    CalcGridSpacing( dlat, gridlatMajor, gridlatMinor );
+    CalcGridSpacing( vp.view_scale_ppm, gridlatMajor, gridlatMinor );
+    CalcGridSpacing( vp.view_scale_ppm, gridlonMajor, gridlonMinor );
 
-    // calculate distance between grid lines
-    CalcGridSpacing( dlon, gridlonMajor, gridlonMinor );
+
+    // if it is known the grid has straight lines it's a bit faster
+    bool straight_latitudes =
+        vp.m_projection_type == PROJECTION_MERCATOR ||
+        vp.m_projection_type == PROJECTION_EQUIRECTANGULAR;
+    bool straight_longitudes =
+        vp.m_projection_type == PROJECTION_MERCATOR ||
+        vp.m_projection_type == PROJECTION_POLAR ||
+        vp.m_projection_type == PROJECTION_EQUIRECTANGULAR;
+
+    double latmargin;
+    if(straight_latitudes)
+        latmargin = 0;
+    else
+        latmargin = gridlatMajor / 2; // don't draw on poles
+
+    slat = wxMax(slat, -90 + latmargin);
+    nlat = wxMin(nlat,  90 - latmargin);
+
+    float startlat = ceil( slat / gridlatMajor ) * gridlatMajor;
+    float startlon = ceil( wlon / gridlonMajor ) * gridlonMajor;
+    float curved_step = wxMin(sqrt(5e-3 / vp.view_scale_ppm), 3);
 
     // Draw Major latitude grid lines and text
     glEnable( GL_BLEND );
@@ -1858,118 +1961,202 @@ void glChartCanvas::GridDraw( )
 
     glLineWidth( g_GLMinSymbolLineWidth );
     
-    // Render in two passes, lines then text is much more efficient for opengl
-    for( int pass=0; pass<2; pass++ ) {
-        if(pass == 0) 
-            glBegin(GL_LINES);
+    // First draw the grid then tphe text
+    glBegin(GL_LINES);
 
-        // calculate position of first major latitude grid line
-        lat = ceil( slat / gridlatMajor ) * gridlatMajor;
+    // calculate position of first major latitude grid line
+    float lon_step = elon - wlon;
+    if(!straight_latitudes)
+        lon_step /= ceil(lon_step / curved_step);
 
-        while( lat < nlat ) {
+    for(lat = startlat; lat < nlat; lat += gridlatMajor) {
+        wxPoint2DDouble r, s;
+        s.m_x = NAN;
+
+        for(lon = wlon; lon < elon+lon_step/2; lon += lon_step) {
+            cc1->GetDoubleCanvasPointPix( lat, lon, &r );
+            if(!wxIsNaN(s.m_x) && !wxIsNaN(r.m_x)) {
+                glVertex2d(s.m_x, s.m_y);
+                glVertex2d(r.m_x, r.m_y);
+            }
+            s = r;
+        }
+    }
+
+    if(minorgrid) {
+        // draw minor latitude grid lines
+        for(lat = ceil( slat / gridlatMinor ) * gridlatMinor; lat < nlat; lat += gridlatMinor) {
+        
+            wxPoint r;
+            cc1->GetCanvasPointPix( lat, ( elon + wlon ) / 2, &r );
+            glVertex2i(0, r.y);
+            glVertex2i(10, r.y);
+            glVertex2i(w - 10, r.y);
+            glVertex2i(w, r.y);
+            lat = lat + gridlatMinor;
+        }
+    }
+
+    // draw major longitude grid lines
+    float lat_step = nlat - slat;
+    if(!straight_longitudes)
+        lat_step /= ceil(lat_step / curved_step);
+
+    for(lon = startlon; lon < elon; lon += gridlonMajor) {
+        wxPoint2DDouble r, s;
+        s.m_x = NAN;
+        for(lat = slat; lat < nlat+lat_step/2; lat+=lat_step) {
+            cc1->GetDoubleCanvasPointPix( lat, lon, &r );
+
+            if(!wxIsNaN(s.m_x) && !wxIsNaN(r.m_x)) {
+                glVertex2d(s.m_x, s.m_y);
+                glVertex2d(r.m_x, r.m_y);
+                
+            }
+            s = r;
+        }
+    }
+
+    if(minorgrid) {
+        // draw minor longitude grid lines
+        for(lon = ceil( wlon / gridlonMinor ) * gridlonMinor; lon < elon; lon += gridlonMinor) {
+            wxPoint r;
+            cc1->GetCanvasPointPix( ( nlat + slat ) / 2, lon, &r );
+            glVertex2i(r.x, 0);
+            glVertex2i(r.x, 10);
+            glVertex2i(r.x, h-10);
+            glVertex2i(r.x, h);
+        }
+    }
+
+    glEnd();
+
+    glDisable( GL_LINE_SMOOTH );
+
+    // draw text labels
+    glEnable(GL_TEXTURE_2D);
+    for(lat = startlat; lat < nlat; lat += gridlatMajor) {
+        if( fabs( lat - wxRound( lat ) ) < 1e-5 )
+            lat = wxRound( lat );
+
+        char sbuf[12];
+        CalcGridText( lat, gridlatMajor, true, sbuf ); // get text for grid line
+        int iy;
+        m_gridfont.GetTextExtent(sbuf, strlen(sbuf), 0, &iy);
+
+        if(straight_latitudes) {
             wxPoint r, s;
             cc1->GetCanvasPointPix( lat, elon, &r );
             cc1->GetCanvasPointPix( lat, wlon, &s );
-            if(pass == 0) {
-                glVertex2i(r.x, r.y);
-                glVertex2i(s.x, s.y);
-            } else {
-                char sbuf[12];
-                CalcGridText( lat, gridlatMajor, true, sbuf ); // get text for grid line
-
-                float x = 0, y = -1;
-                y = (float)(r.y*s.x - s.y*r.x) / (s.x - r.x);
-                if(y < 0 || y > h) {
-                    int iy;
-                    m_gridfont.GetTextExtent(sbuf, strlen(sbuf), 0, &iy);
-                    y = h - iy;
-                    x = (float)(r.x*s.y - s.x*r.y + (s.x - r.x)*y) / (s.y - r.y);
-                }
-
-                glEnable(GL_TEXTURE_2D);
-                m_gridfont.RenderString(sbuf, x, y);
-                glDisable(GL_TEXTURE_2D);
-            }
-            
-            lat = lat + gridlatMajor;
-            if( fabs( lat - wxRound( lat ) ) < 1e-5 ) lat = wxRound( lat );
-        }
-
-        if(pass == 0 && !b_rotated) {
-            // calculate position of first minor latitude grid line
-            lat = ceil( slat / gridlatMinor ) * gridlatMinor;
         
-            // Draw minor latitude grid lines
-            while( lat < nlat ) {
-                wxPoint r;
-                cc1->GetCanvasPointPix( lat, ( elon + wlon ) / 2, &r );
-                glVertex2i(0, r.y);
-                glVertex2i(10, r.y);
-                glVertex2i(w - 10, r.y);
-                glVertex2i(w, r.y);
-                lat = lat + gridlatMinor;
-            }
-        }
-
-        // calculate position of first major latitude grid line
-        lon = ceil( wlon / gridlonMajor ) * gridlonMajor;
-        
-        // draw major longitude grid lines
-        for( int i = 0, itermax = (int) ( dlon / gridlonMajor ); i <= itermax; i++ ) {
-            wxPoint r, s;
-            cc1->GetCanvasPointPix( nlat, lon, &r );
-            cc1->GetCanvasPointPix( slat, lon, &s );
-            if(pass == 0) {
-                glVertex2i(r.x, r.y);
-                glVertex2i(s.x, s.y);
-            } else {
-                char sbuf[12];
-                CalcGridText( lon, gridlonMajor, false, sbuf );
-
-                float x = -1, y = 0;
-                x = (float)(r.x*s.y - s.x*r.y) / (s.y - r.y);
-                if(x < 0 || x > w) {
-                    int ix;
-                    m_gridfont.GetTextExtent(sbuf, strlen(sbuf), &ix, 0);
-                    x = w - ix;
-                    y = (float)(r.y*s.x - s.y*r.x + (s.y - r.y)*x) / (s.x - r.x);
-                }
-
-                glEnable(GL_TEXTURE_2D);
-                m_gridfont.RenderString(sbuf, x, y);
-                glDisable(GL_TEXTURE_2D);
+            float x = 0, y = -1;
+            y = (float)(r.y*s.x - s.y*r.x) / (s.x - r.x);
+            if(y < 0 || y > h) {
+                y = h - iy;
+                x = (float)(r.x*s.y - s.x*r.y + (s.x - r.x)*y) / (s.y - r.y);
             }
 
-            lon = lon + gridlonMajor;
-            if( lon > 180.0 )
-                lon = lon - 360.0;
+            m_gridfont.RenderString(sbuf, x, y);
+        } else {
+            // iteratively attempt to find where the latitude line crosses x=0
+            wxPoint2DDouble r;
+            double y1, y2, lat1, lon1, lat2, lon2;
 
-            if( fabs( lon - wxRound( lon ) ) < 1e-5 ) lon = wxRound( lon );
+            y1 = 0, y2 = vp.pix_height;
+            double error = vp.pix_width, lasterror;
+            int maxiters = 10;
+            do {
+                cc1->GetCanvasPixPoint(0, y1, lat1, lon1);
+                cc1->GetCanvasPixPoint(0, y2, lat2, lon2);
+
+                double y = y1 + (lat1 - lat) * (y2 - y1) / (lat1 - lat2);
+
+                cc1->GetDoubleCanvasPointPix( lat, lon1 + (y1 - y) * (lon2 - lon1) / (y1 - y2), &r);
+
+                if(fabs(y - y1) < fabs(y - y2))
+                    y1 = y;
+                else
+                    y2 = y;
+
+                lasterror = error;
+                error = fabs(r.m_x);
+                if(--maxiters == 0)
+                    break;
+            } while(error > 1 && error < lasterror);
+
+            if(error < 1 && r.m_y >= 0 && r.m_y <= vp.pix_height - iy )
+                r.m_x = 0;
+            else
+                // just draw at center longitude
+                cc1->GetDoubleCanvasPointPix( lat, vp.clon, &r);
+
+            m_gridfont.RenderString(sbuf, r.m_x, r.m_y);
         }
-
-        if(pass == 0 && !b_rotated) {
-            // calculate position of first minor longitude grid line
-            lon = ceil( wlon / gridlonMinor ) * gridlonMinor;
-            // draw minor longitude grid lines
-            for( int i = 0, itermax = (int) ( dlon / gridlonMinor ); i <= itermax; i++ ) {
-                wxPoint r;
-                cc1->GetCanvasPointPix( ( nlat + slat ) / 2, lon, &r );
-                glVertex2i(r.x, 0);
-                glVertex2i(r.x, 10);
-                glVertex2i(r.x, h-10);
-                glVertex2i(r.x, h);
-                lon = lon + gridlonMinor;
-                if( lon > 180.0 ) {
-                    lon = lon - 360.0;
-                }
-            }
-        }
-
-        if(pass == 0)
-            glEnd();
     }
 
-    glDisable( GL_LINE_SMOOTH );
+
+    for(lon = startlon; lon < elon; lon += gridlonMajor) {
+        if( fabs( lon - wxRound( lon ) ) < 1e-5 )
+            lon = wxRound( lon );
+
+        wxPoint r, s;
+        cc1->GetCanvasPointPix( nlat, lon, &r );
+        cc1->GetCanvasPointPix( slat, lon, &s );
+
+        char sbuf[12];
+        float xlon = lon;
+        if( xlon > 180.0 )
+            xlon -= 360.0;
+        
+        CalcGridText( xlon, gridlonMajor, false, sbuf );
+        int ix;
+        m_gridfont.GetTextExtent(sbuf, strlen(sbuf), &ix, 0);
+
+        if(straight_longitudes) {
+            float x = -1, y = 0;
+            x = (float)(r.x*s.y - s.x*r.y) / (s.y - r.y);
+            if(x < 0 || x > w) {
+                x = w - ix;
+                y = (float)(r.y*s.x - s.y*r.x + (s.y - r.y)*x) / (s.x - r.x);
+            }
+            
+            m_gridfont.RenderString(sbuf, x, y);
+        } else {
+            // iteratively attempt to find where the latitude line crosses x=0
+            wxPoint2DDouble r;
+            double x1, x2, lat1, lon1, lat2, lon2;
+
+            x1 = 0, x2 = vp.pix_width;
+            double error = vp.pix_height, lasterror;
+            do {
+                cc1->GetCanvasPixPoint(x1, 0, lat1, lon1);
+                cc1->GetCanvasPixPoint(x2, 0, lat2, lon2);
+
+                double x = x1 + (lon1 - lon) * (x2 - x1) / (lon1 - lon2);
+
+                cc1->GetDoubleCanvasPointPix( lat1 + (x1 - x) * (lat2 - lat1) / (x1 - x2), lon, &r);
+
+                if(fabs(x - x1) < fabs(x - x2))
+                    x1 = x;
+                else
+                    x2 = x;
+
+                lasterror = error;
+                error = fabs(r.m_y);
+            } while(error > 1 && error < lasterror);
+
+            if(error < 1 && r.m_x >= 0 && r.m_x <= vp.pix_width - ix)
+                r.m_y = 0;
+            else
+                // failure, instead just draw the text at center latitude
+                cc1->GetDoubleCanvasPointPix( wxMin(wxMax(vp.clat, slat), nlat), lon, &r);
+
+            m_gridfont.RenderString(sbuf, r.m_x, r.m_y);
+        }
+    }
+
+    glDisable(GL_TEXTURE_2D);
+
     glDisable( GL_BLEND );
 }
 
@@ -3363,13 +3550,57 @@ void glChartCanvas::RenderWorldChart(ocpnDC &dc, ViewPort &vp, wxRect &rect, boo
     glColor3ub(water.Red(), water.Green(), water.Blue());
 
     // clear background
-    int x1 = rect.x, y1 = rect.y, x2 = x1 + rect.width, y2 = y1 + rect.height;
-    glBegin( GL_QUADS );
-    glVertex2i( x1, y1 );
-    glVertex2i( x2, y1 );
-    glVertex2i( x2, y2 );
-    glVertex2i( x1, y2 );
-    glEnd();
+    if(!world_view) {
+        if(vp.m_projection_type == PROJECTION_ORTHOGRAPHIC) {
+            // for this projection, if zoomed out far enough that the earth does
+            // not fill the viewport we need to first clear the screen black and
+            // draw a blue circle representing the earth
+
+            ViewPort tvp = vp;
+            tvp.clat = 0, tvp.clon = 0;
+            tvp.rotation = 0;
+            wxPoint2DDouble p = tvp.GetDoublePixFromLL( 89.99, 0);
+            float w = tvp.pix_width/2, h = tvp.pix_height/2;
+            double world_r = h - p.m_y;
+            if(world_r*world_r < w*w + h*h) {
+                glClear( GL_COLOR_BUFFER_BIT );
+
+                glBegin(GL_TRIANGLE_FAN);
+                float w = vp.pix_width/2, h = vp.pix_height/2;
+                for(float theta = 0; theta < 2*M_PI+.01; theta+=M_PI/100)
+                    glVertex2f(w + world_r*sinf(theta), h + world_r*cosf(theta));
+                glEnd();
+
+                world_view = true;
+            }
+        } else if(vp.m_projection_type == PROJECTION_EQUIRECTANGULAR) {
+            // for this projection we will draw black outside of the earth (beyond the pole)
+            glClear( GL_COLOR_BUFFER_BIT );
+
+            wxPoint2DDouble p[4] = {
+                vp.GetDoublePixFromLL( 90, vp.clon - 170 ),
+                vp.GetDoublePixFromLL( 90, vp.clon + 170 ),
+                vp.GetDoublePixFromLL(-90, vp.clon + 170 ),
+                vp.GetDoublePixFromLL(-90, vp.clon - 170 )};
+
+            glBegin(GL_QUADS);
+            for(int i = 0; i<4; i++)
+                glVertex2f(p[i].m_x, p[i].m_y);
+            glEnd();
+
+            world_view = true;
+        }
+
+        if(!world_view) {
+            int x1 = rect.x, y1 = rect.y, x2 = x1 + rect.width, y2 = y1 + rect.height;
+            glBegin( GL_QUADS );
+            glVertex2i( x1, y1 );
+            glVertex2i( x2, y1 );
+            glVertex2i( x2, y2 );
+            glVertex2i( x1, y2 );
+            glEnd();
+        }
+    }
 
     cc1->pWorldBackgroundChart->RenderViewOnDC( dc, vp );
 }
@@ -3798,7 +4029,8 @@ void glChartCanvas::Render()
             bool accelerated_pan = false;
             if(g_GLOptions.m_bUseAcceleratedPanning && m_cache_vp.IsValid()
 //               && (VPoint.b_quilt || (Current_Ch && Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR))
-               && (VPoint.m_projection_type == PROJECTION_MERCATOR)
+               && (VPoint.m_projection_type == PROJECTION_MERCATOR ||
+                   VPoint.m_projection_type == PROJECTION_EQUIRECTANGULAR) 
                && m_cache_vp.pix_height == VPoint.pix_height
                /* && (!g_bskew_comp || fabs( VPoint.skew ) == 0.0 )*/) {
                 wxPoint2DDouble c_old = VPoint.GetDoublePixFromLL( VPoint.clat, VPoint.clon );
@@ -3952,6 +4184,23 @@ void glChartCanvas::Render()
         useFBO = true;
     }
 
+    if(VPoint.tilt) {
+        glMatrixMode (GL_PROJECTION);
+        glLoadIdentity();
+
+        gluPerspective(2*180/PI*atan2(h, w), (GLfloat) w/(GLfloat) h, 1, w);
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+
+        glScalef(1, -1, 1);
+        glTranslatef(-w/2, -h/2, -w/2);
+        glRotated(VPoint.tilt*180/PI, 1, 0, 0);
+
+        glGetIntegerv(GL_VIEWPORT, viewport);
+        glGetDoublev(GL_PROJECTION_MATRIX, projmatrix);
+        glGetDoublev(GL_MODELVIEW_MATRIX, mvmatrix);
+    }
+
     if(useFBO) {
         // Render the cached texture as quad to screen
         glBindTexture( g_texture_rectangle_format, m_cache_tex[m_cache_page]);
@@ -3999,6 +4248,14 @@ void glChartCanvas::Render()
     DrawFloatingOverlayObjects( gldc );
 
     // from this point on don't use perspective
+    if(VPoint.tilt) {
+        glMatrixMode (GL_PROJECTION);
+        glLoadIdentity();
+
+        glOrtho( 0, (GLint) w, (GLint) h, 0, -1, 1 );
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+    }
 
     DrawEmboss(cc1->EmbossDepthScale() );
     DrawEmboss(cc1->EmbossOverzoomIndicator( gldc ) );
