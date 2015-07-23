@@ -648,6 +648,7 @@ float                     g_compass_scalefactor;
 
 MyDialogPtrArray          g_MacShowDialogArray;
 bool                      g_benable_rotate;
+bool                      g_benable_tilt;
 
 bool                      g_bShowMag;
 double                    g_UserVar;
@@ -6259,9 +6260,8 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 
     if( cc1 ) {
 #if !defined(__WXGTK__) && !defined(__WXQT__)
-        double cursor_lat, cursor_lon;
-        cc1->GetCursorLatLon( &cursor_lat, &cursor_lon );
-        cc1->SetCursorStatus(cursor_lat, cursor_lon);
+        cc1->GetCursorLatLon();
+        cc1->SetCursorStatus(cc1->m_cursor_lat, cc1->m_cursor_lon);
 #endif
     }
 //      Update the chart database and displayed chart

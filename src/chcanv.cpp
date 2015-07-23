@@ -289,6 +289,7 @@ extern ocpnGLOptions g_GLOptions;
 extern bool              g_bShowFPS;
 extern double            g_gl_ms_per_frame;
 extern bool              g_benable_rotate;
+extern bool              g_benable_tilt;
 
 wxProgressDialog *pprog;
 bool b_skipout;
@@ -553,6 +554,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 
     m_zoom_factor = 1;
     m_rotation_speed = 0;
+    m_tilt_speed = 0;
     m_mustmove = 0;
 
     m_pos_image_user_yellow_day = NULL;
@@ -1383,6 +1385,22 @@ void ChartCanvas::OnKeyChar( wxKeyEvent &event )
         }
     }
 
+    if(g_benable_tilt) {
+        switch( key_char ) {
+            case ',':
+                TiltCanvas( 1 );
+                break;
+
+            case '.':
+                TiltCanvas( -1 );
+                break;
+
+            case '/':
+                DoTiltCanvas( 0 );
+                break;
+        }
+    }
+
     event.Skip();
 }    
 
@@ -1907,6 +1925,11 @@ void ChartCanvas::OnKeyUp( wxKeyEvent &event )
                 DoMovement(m_mustmove);
                 m_rotation_speed = 0;
                 break;
+
+            case ',': case '.':
+                DoMovement(m_mustmove);
+                m_tilt_speed = 0;
+                break;
             }
         } else {
             switch( key_char ) {
@@ -1929,6 +1952,7 @@ void ChartCanvas::StopMovement( )
     m_panspeed = 0;
     m_zoom_factor = 1;
     m_rotation_speed = 0;
+    m_tilt_speed = 0;
     m_mustmove = 0;
 #if !defined(__WXGTK__) && !defined(__WXQT__)
     SetFocus();
@@ -1951,7 +1975,7 @@ bool ChartCanvas::StartTimedMovement( bool stoptimer )
         pMovementTimer->Start( 1, wxTIMER_ONE_SHOT ); 
     }
     
-    if(m_panx || m_pany || m_zoom_factor!=1 || m_rotation_speed) {
+    if(m_panx || m_pany || m_zoom_factor!=1 || m_rotation_speed || m_tilt_speed) {
         // already moving, gets called again because of key-repeat event
         return false;
     }
@@ -1968,7 +1992,7 @@ bool ChartCanvas::StartTimedMovement( bool stoptimer )
 
 void ChartCanvas::DoTimedMovement()
 {
-    if(!m_panx && !m_pany && m_zoom_factor==1 && !m_rotation_speed)
+    if(!m_panx && !m_pany && m_zoom_factor==1 && !m_rotation_speed && !m_tilt_speed)
         return; /* not moving */
 
     wxDateTime now = wxDateTime::UNow();
@@ -2056,6 +2080,13 @@ void ChartCanvas::DoMovement( long dt )
         if( m_modkeys == wxMOD_ALT)
             speed /= 10;
         DoRotateCanvas( VPoint.rotation + speed * PI / 180 * dt / 1000.0);
+    }
+
+    if( m_tilt_speed ) { /* in degrees per second */
+        double speed = m_tilt_speed;
+        if( m_modkeys == wxMOD_ALT)
+            speed /= 10;
+        DoTiltCanvas( VPoint.tilt + speed * PI / 180 * dt / 1000.0);
     }
 }
 
@@ -2431,18 +2462,18 @@ void ChartCanvas::OnCursorTrackTimerEvent( wxTimerEvent& event )
     {
         //    Check the absolute range of the cursor position
         //    There could be a window wherein the chart geoereferencing is not valid....
-        double cursor_lat, cursor_lon;
-        cc1->GetCanvasPixPoint ( mouse_x, mouse_y, cursor_lat, cursor_lon );
+//        double cursor_lat, cursor_lon;
+//        cc1->GetCanvasPixPoint ( mouse_x, mouse_y, cursor_lat, cursor_lon );
 
-        if((fabs(cursor_lat) < 90.) && (fabs(cursor_lon) < 360.))
+        if((fabs(m_cursor_lat) < 90.) && (fabs(m_cursor_lon) < 360.))
         {
-            while(cursor_lon < -180.)
-                cursor_lon += 360.;
+            while(m_cursor_lon < -180.)
+                m_cursor_lon += 360.;
 
-            while(cursor_lon > 180.)
-                cursor_lon -= 360.;
+            while(m_cursor_lon > 180.)
+                m_cursor_lon -= 360.;
 
-            SetCursorStatus(cursor_lat, cursor_lon);
+            SetCursorStatus(m_cursor_lat, m_cursor_lon);
         }
     }
 #endif
@@ -2476,12 +2507,26 @@ void ChartCanvas::SetCursorStatus( double cursor_lat, double cursor_lon )
         parent_frame->SetStatusText ( s, STAT_FIELD_CURSOR_BRGRNG );
 }
 
-void ChartCanvas::GetCursorLatLon( double *lat, double *lon )
+void ChartCanvas::GetCursorLatLon()
 {
-    double clat, clon;
-    GetCanvasPixPoint( mouse_x, mouse_y, clat, clon );
-    *lat = clat;
-    *lon = clon;
+    double mx = mouse_x, my = mouse_y;
+#ifdef ocpnUSE_GL
+    if( VPoint.tilt )
+    {
+        double p[2][3];
+        my = m_glcc->viewport[3] - my - 1;
+        gluUnProject(mx, my, 0, m_glcc->mvmatrix, m_glcc->projmatrix, m_glcc->viewport,
+                     &p[0][0], &p[0][1], &p[0][2]);
+        gluUnProject(mx, my, 1, m_glcc->mvmatrix, m_glcc->projmatrix, m_glcc->viewport,
+                     &p[1][0], &p[1][1], &p[1][2]);
+
+        // calculate coordinates at z=0
+        double t = p[0][2] / (p[1][2] - p[0][2]);
+        mx = p[0][0] - t*(p[1][0] - p[0][0]);
+        my = p[0][1] - t*(p[1][1] - p[0][1]);
+    }
+#endif
+    GetCanvasPixPoint( mx, my, m_cursor_lat, m_cursor_lon );
 }
 
 void ChartCanvas::GetDoubleCanvasPointPix( double rlat, double rlon, wxPoint2DDouble *r )
@@ -2789,6 +2834,33 @@ void ChartCanvas::DoRotateCanvas( double rotation )
     parent_frame->UpdateRotationState( VPoint.rotation);
 }
 
+void ChartCanvas::TiltCanvas( double dir )
+{
+    if(g_bsmoothpanzoom) {
+        if(StartTimedMovement()) {
+            m_mustmove += 150; /* for quick presses register as 200 ms duration */
+            m_tilt_speed = dir*40;
+        }
+    } else {
+        double speed = dir*5;
+        if( m_modkeys == wxMOD_ALT)
+            speed /= 20;
+        DoTiltCanvas(VPoint.tilt + PI/180 * speed);
+    }
+}
+
+void ChartCanvas::DoTiltCanvas( double tilt )
+{
+    while(tilt < 0) tilt = 0;
+    while(tilt > .95) tilt = .95; // radians
+
+    if(tilt == VPoint.tilt || wxIsNaN(tilt))
+        return;
+
+    VPoint.tilt = tilt;
+    Refresh( false ); // only refresh as changing the tilt doesn't invalidate the fbo
+}
+
 void ChartCanvas::ClearbFollow( void )
 {
     m_bFollow = false;      // update the follow flag
@@ -3091,7 +3163,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
 
     // recompute cursor position
 
-    GetCursorLatLon(&m_cursor_lat, &m_cursor_lon);
+    GetCursorLatLon();
 
     if(g_pi_manager) g_pi_manager->SendCursorLatLonToAllPlugIns( m_cursor_lat, m_cursor_lon );
 
@@ -4632,7 +4704,6 @@ bool ChartCanvas::MouseEventChartBar( wxMouseEvent& event )
 bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
 {
     int x, y;
-    int mx, my;
 
     bool bret = false;
     
@@ -4653,9 +4724,8 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
     mouse_x = x;
     mouse_y = y;
     mouse_leftisdown = event.LeftDown();
-    mx = x;
-    my = y;
-    GetCanvasPixPoint( x, y, m_cursor_lat, m_cursor_lon );
+
+    GetCursorLatLon();
 
     //  Establish the event region
     cursor_region = CENTER;
@@ -8871,8 +8941,13 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
                 }
             }
             else {
-                if(r_rband.x && r_rband.y)      // RubberBand disabled?
+                if(r_rband.x && r_rband.y)      // RubberBand disabled? 
+                {
+                    wxPoint p;
+                    GetCanvasPointPix(m_cursor_lat, m_cursor_lon, &p);
+                    r_rband = p;
                     route->DrawSegment( dc, &lastPoint, &r_rband, GetVP(), false );
+                }
             }
         }
 
@@ -9582,7 +9657,7 @@ bool ChartCanvas::SetCursor( const wxCursor &c )
 void ChartCanvas::Refresh( bool eraseBackground, const wxRect *rect )
 {
     //  Keep the mouse position members up to date
-    GetCanvasPixPoint( mouse_x, mouse_y, m_cursor_lat, m_cursor_lon );
+//    GetCanvasPixPoint( mouse_x, mouse_y, m_cursor_lat, m_cursor_lon );
 
     //      Retrigger the route leg popup timer
     //      This handles the case when the chart is moving in auto-follow mode, but no user mouse input is made.

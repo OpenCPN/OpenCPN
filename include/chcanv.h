@@ -257,7 +257,7 @@ public:
 
       void SetOwnShipState(ownship_state_t state){ m_ownship_state = state;}
       void SetCursorStatus( double cursor_lat, double cursor_lon );
-      void GetCursorLatLon(double *lat, double *lon);
+      void GetCursorLatLon();
 
       bool PanCanvas(double dx, double dy);
       void StopAutoPan(void);
@@ -267,6 +267,8 @@ public:
 
       void RotateCanvas( double dir );
       void DoRotateCanvas( double rotation );
+      void TiltCanvas( double dir );
+      void DoTiltCanvas( double tilt );
 
       void ShowAISTargetList(void);
 
@@ -639,7 +641,7 @@ private:
       int         m_panx, m_pany, m_modkeys;
       double      m_panspeed;
       bool        m_bmouse_key_mod;
-      double      m_zoom_factor, m_rotation_speed;
+      double      m_zoom_factor, m_rotation_speed, m_tilt_speed;
       int         m_mustmove;
 
 

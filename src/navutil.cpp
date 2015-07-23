@@ -361,6 +361,7 @@ extern double           g_config_display_size_mm;
 extern bool             g_config_display_size_manual;
 
 extern bool             g_benable_rotate;
+extern bool             g_benable_tilt;
 extern bool             g_bEmailCrashReport;
 
 extern int              g_default_font_size;
@@ -1414,6 +1415,7 @@ int MyConfig::LoadMyConfig()
     Read( _T( "AdvanceRouteWaypointOnArrivalOnly" ), &g_bAdvanceRouteWaypointOnArrivalOnly, 0);
 
     Read( _T ( "EnableRotateKeys" ),  &g_benable_rotate );
+    Read( _T ( "EnableTiltKeys" ),  &g_benable_tilt );
     Read( _T ( "EmailCrashReport" ),  &g_bEmailCrashReport );
     
     g_benableAISNameCache = true;
