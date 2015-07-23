@@ -1535,15 +1535,15 @@ bool MyApp::OnInit()
         Display *disp = XOpenDisplay(NULL);
         Window *sup_window;
         if ((sup_window = (Window *)get_X11_property(disp, DefaultRootWindow(disp),
-                                                 XA_WINDOW, "_NET_SUPPORTING_WM_CHECK")) ||
+                                                     XA_WINDOW, (char*)"_NET_SUPPORTING_WM_CHECK")) ||
             (sup_window = (Window *)get_X11_property(disp, DefaultRootWindow(disp),
-                                                 XA_CARDINAL, "_WIN_SUPPORTING_WM_CHECK"))) {
+                                                 XA_CARDINAL, (char*)"_WIN_SUPPORTING_WM_CHECK"))) {
             /* WM_NAME */
             char *wm_name;
             if ((wm_name = get_X11_property(disp, *sup_window,
-                                        XInternAtom(disp, "UTF8_STRING", False), "_NET_WM_NAME")) ||
+                                            XInternAtom(disp, "UTF8_STRING", False), (char*)"_NET_WM_NAME")) ||
                 (wm_name = get_X11_property(disp, *sup_window,
-                                        XA_STRING, "_NET_WM_NAME"))) {
+                                            XA_STRING, (char*)"_NET_WM_NAME"))) {
                 // we know it works in xfce4, add other checks as we can validate them
                 if(strstr(wm_name, "Xfwm4"))
                     g_bTransparentToolbarInOpenGLOK = true;

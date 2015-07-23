@@ -1130,8 +1130,8 @@ void ChartCanvas::OnEvtCompressProgress( OCPN_CompressProgressEvent & event )
 void ChartCanvas::InvalidateGL()
 {
 #ifdef ocpnUSE_GL
-        if(g_bopengl)
-            glChartCanvas::Invalidate();
+    if(g_bopengl)
+        glChartCanvas::Invalidate();
 #endif
 }
 
