@@ -118,6 +118,7 @@ extern bool             g_bConfirmObjectDelete;
 extern WayPointman      *pWayPointMan;
 extern MyConfig         *pConfig;
 extern Select           *pSelect;
+extern bool             g_bopengl;
 
 #ifdef USE_S57
 extern s52plib          *ps52plib;
@@ -198,6 +199,14 @@ enum
     ID_DEF_MENU_QUILTREMOVE,
     ID_DEF_MENU_COGUP,
     ID_DEF_MENU_NORTHUP,
+    ID_DEF_MENU_PROJECTION_MERCATOR,
+    ID_DEF_MENU_PROJECTION_TRANSVERSE_MERCATOR,
+    ID_DEF_MENU_PROJECTION_POLYCONIC,
+    ID_DEF_MENU_PROJECTION_ORTHOGRAPHIC,
+    ID_DEF_MENU_PROJECTION_POLAR,
+    ID_DEF_MENU_PROJECTION_STEREOGRAPHIC,
+    ID_DEF_MENU_PROJECTION_GNOMONIC,
+    ID_DEF_MENU_PROJECTION_EQUIRECTANGULAR,
     ID_DEF_MENU_TOGGLE_FULL,
     ID_DEF_MENU_TIDEINFO,
     ID_DEF_MENU_CURRENTINFO,
@@ -250,15 +259,31 @@ void MenuPrepend1( wxMenu *menu, int id, wxString label)
     menu->Prepend(item);
 }
 
-void MenuAppend1( wxMenu *menu, int id, wxString label)
+void MenuAppend1( wxMenu *menu, int id, wxString label, bool checked=false)
 {
-    wxMenuItem *item = new wxMenuItem(menu, id, label);
+    wxMenuItem *item = new wxMenuItem(menu, id, label, wxEmptyString, checked ? wxITEM_CHECK : wxITEM_NORMAL);
+
 #if defined(__WXMSW__) || defined(__OCPN__ANDROID__)
    
     wxFont *qFont = GetOCPNScaledFont(_("Menu"));
     item->SetFont(*qFont);
 #endif
+
     menu->Append(item);
+    if(checked)
+        item->Check();
+}
+
+wxMenu *MenuAppend2( wxMenu *menu, wxString label)
+{
+    wxMenu *item = new wxMenu();
+#if defined(__WXMSW__) || defined(__OCPN__ANDROID__)
+   
+    wxFont *qFont = GetOCPNScaledFont(_("Menu"));
+//    item->SetFont(*qFont);
+#endif
+    menu->Append(wxID_ANY, label, item);
+    return item;
 }
 
 void SetMenuItemFont1(wxMenuItem *item)
@@ -424,8 +449,29 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
         }
     }
 
+    if(g_bopengl) {
+        wxMenu *projectionMenu = MenuAppend2( contextMenu, _("Projection") );
+        int projection = gFrame->GetCanvasWindow()->GetVP().m_projection_type;
+        MenuAppend1( projectionMenu, ID_DEF_MENU_PROJECTION_MERCATOR,
+                     _("Mercator"), projection == PROJECTION_MERCATOR );
+        MenuAppend1( projectionMenu, ID_DEF_MENU_PROJECTION_ORTHOGRAPHIC,
+                     _("Orthographic"), projection == PROJECTION_ORTHOGRAPHIC );
+        MenuAppend1( projectionMenu, ID_DEF_MENU_PROJECTION_POLAR,
+                     _("Polar"), projection == PROJECTION_POLAR );
+        MenuAppend1( projectionMenu, ID_DEF_MENU_PROJECTION_STEREOGRAPHIC,
+                     _("Stereographic"), projection == PROJECTION_STEREOGRAPHIC );
+        MenuAppend1( projectionMenu, ID_DEF_MENU_PROJECTION_GNOMONIC,
+                     _("Gnomonic"), projection == PROJECTION_GNOMONIC );
+        MenuAppend1( projectionMenu, ID_DEF_MENU_PROJECTION_EQUIRECTANGULAR,
+                     _("Equirectangular"), projection == PROJECTION_EQUIRECTANGULAR );
+        MenuAppend1( projectionMenu, ID_DEF_MENU_PROJECTION_TRANSVERSE_MERCATOR,
+                     _("Transverse Mercator"), projection == PROJECTION_TRANSVERSE_MERCATOR );
+//        MenuAppend1( projectionMenu, ID_DEF_MENU_PROJECTION_POLYCONIC,
+//                     _("Polyconic"), projection == PROJECTION_POLYCONIC );
+    }
+
     if( !g_bBasicMenus){
-            bool full_toggle_added = false;
+        bool full_toggle_added = false;
         if(g_btouch){
             MenuAppend1( contextMenu, ID_DEF_MENU_TOGGLE_FULL, _("Toggle Full Screen") );
             full_toggle_added = true;
@@ -930,7 +976,39 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
     case ID_DEF_MENU_NORTHUP:
         gFrame->ToggleCourseUp();
         break;
+
+    case ID_DEF_MENU_PROJECTION_MERCATOR:
+        gFrame->GetCanvasWindow()->SetVPProjection(PROJECTION_MERCATOR);
+        break;
+
+    case ID_DEF_MENU_PROJECTION_ORTHOGRAPHIC:
+        gFrame->GetCanvasWindow()->SetVPProjection(PROJECTION_ORTHOGRAPHIC);
+        break;
+
+    case ID_DEF_MENU_PROJECTION_POLAR:
+        gFrame->GetCanvasWindow()->SetVPProjection(PROJECTION_POLAR);
+        break;
+
+    case ID_DEF_MENU_PROJECTION_STEREOGRAPHIC:
+        gFrame->GetCanvasWindow()->SetVPProjection(PROJECTION_STEREOGRAPHIC);
+        break;
+
+    case ID_DEF_MENU_PROJECTION_GNOMONIC:
+        gFrame->GetCanvasWindow()->SetVPProjection(PROJECTION_GNOMONIC);
+        break;
         
+    case ID_DEF_MENU_PROJECTION_EQUIRECTANGULAR:
+        gFrame->GetCanvasWindow()->SetVPProjection(PROJECTION_EQUIRECTANGULAR);
+        break;
+
+    case ID_DEF_MENU_PROJECTION_TRANSVERSE_MERCATOR:
+        gFrame->GetCanvasWindow()->SetVPProjection(PROJECTION_TRANSVERSE_MERCATOR);
+        break;
+
+    case ID_DEF_MENU_PROJECTION_POLYCONIC:
+        gFrame->GetCanvasWindow()->SetVPProjection(PROJECTION_POLYCONIC);
+        break;
+
     case ID_DEF_MENU_TOGGLE_FULL:
         gFrame->ToggleFullScreen();
         break;
