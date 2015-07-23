@@ -94,20 +94,15 @@ class connector_segment;
 
 // Declare the Array of S57Obj
 WX_DECLARE_OBJARRAY(S57Obj, ArrayOfS57Obj);
+WX_DECLARE_OBJARRAY(S57Obj *, ArrayOfS57ObjPtr);
+
 // And also a list
 WX_DECLARE_LIST(S57Obj, ListOfS57Obj);
 
 
 WX_DECLARE_LIST(ObjRazRules, ListOfObjRazRules);
 
-WX_DECLARE_OBJARRAY(VE_Element, ArrayOfVE_Elements);
-WX_DECLARE_OBJARRAY(VC_Element, ArrayOfVC_Elements);
 
-WX_DECLARE_HASH_MAP( int, int, wxIntegerHash, wxIntegerEqual, VectorHelperHash );
-
-WX_DECLARE_HASH_MAP( unsigned int, VE_Element *, wxIntegerHash, wxIntegerEqual, VE_Hash );
-WX_DECLARE_HASH_MAP( unsigned int, VC_Element *, wxIntegerHash, wxIntegerEqual, VC_Hash );
-WX_DECLARE_STRING_HASH_MAP( connector_segment *, connected_segment_hash );
 
 //----------------------------------------------------------------------------
 // s57 Chart object class
@@ -170,7 +165,8 @@ public:
       void SetSENCFileName(wxFileName fn){ m_SENCFileName = fn;}
 
       int BuildRAZFromSENCFile(const wxString& SENCPath);
-
+      static void GetChartNameFromTXT(const wxString& FullPath, wxString &Name);
+      
       int my_fgets( char *buf, int buf_len_max, wxInputStream& ifs );
 
       //    Initialize from an existing SENC file
@@ -224,6 +220,8 @@ public:
       virtual void BuildDepthContourArray(void);
       int ValidateAndCountUpdates( const wxFileName file000, const wxString CopyDir,
                                    wxString &LastUpdateDate, bool b_copyfiles);
+      static int GetUpdateFileArray(const wxFileName file000, wxArrayString *UpFiles,
+                                    wxDateTime date000, wxString edtn000 );
       wxString GetISDT(void);
 
       char GetUsageChar(void){ return m_usage_char; }
@@ -249,14 +247,9 @@ private:
       InitReturn PostInit( ChartInitFlag flags, ColorScheme cs );
       InitReturn FindOrCreateSenc( const wxString& name );
       int BuildSENCFile(const wxString& FullPath000, const wxString& SENCFileName);
-
-      void  CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S57Reader *poReader );
-      void  CreateSENCVectorEdgeTable(FILE * fpOut, S57Reader *poReader);
-      void  CreateSENCConnNodeTable(FILE * fpOut, S57Reader *poReader);
-
+      
       void SetLinePriorities(void);
 
-      void GetChartNameFromTXT(const wxString& FullPath, wxString &Name);
       bool BuildThumbnail(const wxString &bmpname);
       bool CreateHeaderDataFromENC(void);
       bool CreateHeaderDataFromSENC(void);
@@ -272,7 +265,6 @@ private:
 
       void FreeObjectsAndRules();
       const char *getName(OGRFeature *feature);
-      int GetUpdateFileArray(const wxFileName file000, wxArrayString *UpFiles);
 
       bool DoRenderRectOnGL(const wxGLContext &glc, const ViewPort& VPoint, wxRect &rect);
       bool DoRenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const OCPNRegion &Region, bool b_overlay);
@@ -342,22 +334,5 @@ protected:
       
 };
 
-typedef enum
-{
-    TYPE_CE = 0,
-    TYPE_CC,
-    TYPE_EC,
-    TYPE_EE
-} SegmentType;
-
-class connector_segment
-{
-public:
-    void *start;
-    void *end;
-    SegmentType type;
-    int vbo_offset;
-    int max_priority;
-};
 
 #endif
