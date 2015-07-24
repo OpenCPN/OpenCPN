@@ -223,6 +223,8 @@ extern int                      g_default_font_size;
 
 wxLog       *g_logger;
 bool         g_bEmailCrashReport;
+extern int                       g_ais_alert_dialog_x, g_ais_alert_dialog_y;
+extern int                       g_ais_alert_dialog_sx, g_ais_alert_dialog_sy;
 
 
 
@@ -1150,6 +1152,21 @@ void OCPNPlatform::onStagedResizeFinal()
     androidConfirmSizeCorrection();
 #endif
     
+}
+
+void OCPNPlatform::PositionAISAlert(wxWindow *alert_window)
+{
+#ifndef __OCPN__ANDROID__    
+    if(alert_window){
+        alert_window->SetSize(g_ais_alert_dialog_x, g_ais_alert_dialog_y, g_ais_alert_dialog_sx, g_ais_alert_dialog_sy );
+    }
+#else
+    if(alert_window){
+        alert_window->SetSize(g_ais_alert_dialog_x, g_ais_alert_dialog_y, g_ais_alert_dialog_sx, g_ais_alert_dialog_sy );
+        alert_window->Centre();
+    }
+    
+#endif
 }
 
 
