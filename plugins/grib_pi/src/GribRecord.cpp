@@ -385,8 +385,8 @@ GribRecord * GribRecord::InterpolatedRecord(const GribRecord &rec1, const GribRe
     double *data = new double[size];
 
     zuchar *BMSbits = NULL;
-    if (rec1.BMSbits != NULL && rec2.BMSbits != NULL)
-        BMSbits = new zuchar[(Ni*Nj-1)/8+1];
+    if (rec1.BMSbits != NULL && rec2.BMSbits != NULL) 
+        BMSbits = new zuchar[(Ni*Nj-1)/8+1]();
 
     for (int i=0; i<Ni; i++)
         for (int j=0; j<Nj; j++) {
@@ -851,7 +851,7 @@ bool GribRecord::readGribSection4_BDS(ZUFILE* file) {
 
     zuint  startbit  = 0;
     int  datasize = sectionSize4-11;
-    zuchar *buf = new zuchar[datasize+4];  // +4 pour simplifier les décalages ds readPackedBits
+    zuchar *buf = new zuchar[datasize+4]();  // +4 pour simplifier les décalages ds readPackedBits
     if (!buf) {
         erreur("Record %d: out of memory",id);
         ok = false;
