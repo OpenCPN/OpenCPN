@@ -52,9 +52,11 @@ public:
 
     ~GribOverlay( void )
     {
-        if(m_iTexture)
 #ifdef ocpnUSE_GL
+        if(m_iTexture) 
+        {
           glDeleteTextures( 1, &m_iTexture );
+        }
 #endif
         delete m_pDCBitmap, delete[] m_pRGBA;
     }
