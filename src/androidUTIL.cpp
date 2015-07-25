@@ -261,6 +261,8 @@ int             g_mask;
 int             g_sel;
 int             g_ActionBarHeight;
 bool            g_follow_active;
+bool            g_track_active;
+
 wxSize          config_size;
 
 #define ANDROID_EVENT_TIMER 4389
@@ -1113,6 +1115,14 @@ extern void androidSetFollowTool(bool bactive)
         callActivityMethod_is("setFollowIconState", bactive?1:0);
     
     g_follow_active = bactive;
+}
+
+extern void androidSetTrackTool(bool bactive)
+{
+    if(g_track_active != bactive)
+        callActivityMethod_is("setTrackIconState", bactive?1:0);
+    
+    g_track_active = bactive;
 }
 
 

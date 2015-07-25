@@ -4255,6 +4255,11 @@ void MyFrame::TrackOn( void )
         g_toolbar->SetToolShortHelp( ID_TRACK, _("Disable Tracking") );
     
     SetMenubarItemState( ID_MENU_NAV_TRACK, g_bTrackActive );
+    
+    #ifdef __OCPN__ANDROID__
+    androidSetTrackTool(true);
+    #endif        
+    
 
     if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
     {
@@ -4324,6 +4329,10 @@ Track *MyFrame::TrackOff( bool do_add_point )
         g_toolbar->SetToolShortHelp( ID_TRACK, _("Enable Tracking") );
     SetMenubarItemState( ID_MENU_NAV_TRACK, g_bTrackActive );
 
+    #ifdef __OCPN__ANDROID__
+    androidSetTrackTool(false);
+    #endif        
+    
     return return_val;
 }
 
@@ -9440,7 +9449,7 @@ void MyFrame::applySettingsString( wxString settings)
         }
     }
     
-     
+
     ProcessOptionsDialog( rr,  &NewDirArray );
     
     if(previous_expert && !g_bUIexpert){
@@ -9452,13 +9461,13 @@ void MyFrame::applySettingsString( wxString settings)
     g_Platform->applyExpertMode(g_bUIexpert);
     
     ShowChartBarIfEnabled();
-    
+
     gFrame->Raise();
     cc1->InvalidateGL();
     DoChartUpdate();
     UpdateControlBar();
     Refresh();
-    
+
     //  We set the compass size first, since that establishes the available space for the toolbar.
     if(g_FloatingCompassDialog){
         SetGPSCompassScale();
@@ -9474,7 +9483,6 @@ void MyFrame::applySettingsString( wxString settings)
     SurfaceToolbar();
     
     ShowChartBarIfEnabled();
-    
     
 
 #if defined(__WXOSX__) || defined(__WXQT__)
@@ -9497,7 +9505,7 @@ void MyFrame::applySettingsString( wxString settings)
     
     if (NMEALogWindow::Get().Active())
         NMEALogWindow::Get().GetTTYWindow()->Raise();
-    
+
 }   
 
 
