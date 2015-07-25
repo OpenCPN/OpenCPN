@@ -141,3 +141,13 @@ QTreeWidget QScrollBar:horizontal {
      subcontrol-position: left;
      subcontrol-origin: margin;
  }
+
+QCheckBox {
+     spacing: 25px;
+ }
+
+QCheckBox::indicator {
+     width: 30px;
+     height: 30px;
+ }
+

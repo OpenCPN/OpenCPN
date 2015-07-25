@@ -1901,6 +1901,10 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
 
     m_panelBasicProperties = new wxScrolledWindow( m_notebookProperties, wxID_ANY,
                                                    wxDefaultPosition, wxDefaultSize, wxHSCROLL | wxVSCROLL | wxTAB_TRAVERSAL);
+    #ifdef __OCPN__ANDROID__
+    m_panelBasicProperties->GetHandle()->setStyleSheet( getQtStyleSheet());
+    #endif
+    
     m_panelBasicProperties->SetScrollRate(0, 2);
 
     m_notebookProperties->AddPage( m_panelBasicProperties, _("Basic"), true );

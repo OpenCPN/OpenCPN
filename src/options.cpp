@@ -2990,6 +2990,10 @@ void options::CreateControls()
     wxBoxSizer* itemBoxSizer2 = new wxBoxSizer( wxVERTICAL );
     itemDialog1->SetSizer( itemBoxSizer2 );
 
+    #ifdef __OCPN__ANDROID__
+    itemDialog1->GetHandle()->setStyleSheet( getQtStyleSheet());
+    #endif
+    
     int flags = 0;
     
 #ifdef __OCPN__OPTIONS_USE_LISTBOOK__    
