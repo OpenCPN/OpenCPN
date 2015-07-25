@@ -452,9 +452,11 @@ void Route::DrawGLLines( ViewPort &VP, ocpnDC *dc )
 
     bool r1valid = false;
     wxPoint2DDouble r1;
-
+    wxPoint2DDouble lastpoint;
+    
     wxRoutePointListNode *node = pRoutePointList->GetFirst();
     RoutePoint *prp2 = node->GetData();
+    cc1->GetDoubleCanvasPointPix( prp2->m_lat, prp2->m_lon, &lastpoint);
     
     if(m_nPoints == 1 && dc) { // single point.. make sure it shows up for highlighting
         cc1->GetDoubleCanvasPointPix( prp2->m_lat, prp2->m_lon, &r1);
@@ -548,19 +550,20 @@ void Route::DrawGLLines( ViewPort &VP, ocpnDC *dc )
 
             r1 = r2;
             r1valid = true;
+            lastpoint = r1;
         }
     }
 
-    //  Draw tentative segment form last point to Ownship, if running.
-    if( r1valid && IsTrack() ) {
+    //  Draw tentative segment from last point to Ownship, if running.
+    if( lastpoint.m_y && IsTrack() ) {
         /* Active tracks */
         if( dynamic_cast<Track *>(this)->IsRunning() ){
             wxPoint2DDouble rs;
             cc1->GetDoubleCanvasPointPix( gLat, gLon, &rs);
             if( dc )
-                dc->DrawLine(r1.m_x, r1.m_y, rs.m_x, rs.m_y);
+                dc->DrawLine(lastpoint.m_x, lastpoint.m_y, rs.m_x, rs.m_y);
             else {
-                glVertex2f(r1.m_x, r1.m_y);
+                glVertex2f(lastpoint.m_x, lastpoint.m_y);
                 glVertex2f(rs.m_x, rs.m_y);
             }
         }
