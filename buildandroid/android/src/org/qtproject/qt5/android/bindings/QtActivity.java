@@ -157,6 +157,9 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     private final static int OCPN_ACTION_TIDES_TOGGLE = 0x1007;
     private final static int OCPN_ACTION_CURRENTS_TOGGLE = 0x1008;
     private final static int OCPN_ACTION_ENCTEXT_TOGGLE = 0x1009;
+    private final static int OCPN_ACTION_TRACK_ON = 0x100a;
+    private final static int OCPN_ACTION_TRACK_OFF = 0x100b;
+
 
     //  Definitions found in OCPN "chart1.h"
     private final static int ID_CMD_APPLY_SETTINGS = 300;
@@ -285,6 +288,10 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     MenuItem itemFollowInActive;
     MenuItem itemFollowActive;
     private boolean m_isFollowActive = false;
+
+    MenuItem itemTrackInActive;
+    MenuItem itemTrackActive;
+    private boolean m_isTrackActive = false;
 
 
     public QtActivity()
@@ -590,6 +597,27 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
            return "OK";
        }
 
+       public String setTrackIconState( final int isActive){
+           m_isTrackActive = (isActive != 0);
+
+           if(isActive == 0)
+               Log.i("DEBUGGER_TAG", "setTrackIconStateA");
+           else
+               Log.i("DEBUGGER_TAG", "setTrackIconStateB");
+
+              runOnUiThread(new Runnable() {
+                      @Override
+                      public void run() {
+
+
+                          QtActivity.this.invalidateOptionsMenu();
+
+                       }});
+
+              return "OK";
+          }
+
+
 
        public String setBackButtonState( final int isActive){
            Log.i("DEBUGGER_TAG", "setBackButtonState");
@@ -703,6 +731,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     public String startBTService( final String address){
         Log.i("DEBUGGER_TAG", "startBTService");
         Log.i("DEBUGGER_TAG", address);
+        m_BTStat = "Unknown";
 
         runOnUiThread(new Runnable() {
             @Override
@@ -757,6 +786,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
              }});
 
 
+        Log.i("DEBUGGER_TAG", "startBTService return: " + m_BTStat);
         return m_BTStat;
     }
 
@@ -1964,10 +1994,12 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         ENVIRONMENT_VARIABLES += "\tQT_ANDROID_THEME=" + QT_ANDROID_DEFAULT_THEME
                               + "/\tQT_ANDROID_THEME_DISPLAY_DPI=" + getResources().getDisplayMetrics().densityDpi + "\t";
 
+    Log.i("DEBUGGER_TAG", "splash Screen??");
+
         if (null == getLastNonConfigurationInstance()) {
             // if splash screen is defined, then show it
-//            if (m_activityInfo.metaData.containsKey("android.app.splash_screen") )
-//                setContentView(m_activityInfo.metaData.getInt("android.app.splash_screen"));
+            if (m_activityInfo.metaData.containsKey("android.app.splash_screen") )
+                setContentView(m_activityInfo.metaData.getInt("android.app.splash_screen"));
 
     String tmpdir = "";
     ApplicationInfo ai = getApplicationInfo();
@@ -1978,10 +2010,10 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
     File destinationFile = new File(tmpdir + "/uidata/styles.xml");
     if (destinationFile.exists()){
-        Log.i("DEBUGGER_TAG", tmpdir + "/uidata/styles.xml exists");
+//        Log.i("DEBUGGER_TAG", tmpdir + "/uidata/styles.xml exists");
     }
     else{
-      Log.i("DEBUGGER_TAG", tmpdir + "/uidata/styles.xml DOES NOT exist");
+//      Log.i("DEBUGGER_TAG", tmpdir + "/uidata/styles.xml DOES NOT exist");
 
       Log.i("DEBUGGER_TAG", "asset bridge start unpack");
       Assetbridge.unpack(this);
@@ -2092,15 +2124,22 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
          itemFollowActive = menu.findItem(R.id.ocpn_action_follow_active);
          if( null != itemFollowActive) {
              itemFollowActive.setVisible(m_isFollowActive);
-//             this.invalidateOptionsMenu();
-Log.i("DEBUGGER_TAG", "onCreateOptionsMenuA");
+
           }
          itemFollowInActive = menu.findItem(R.id.ocpn_action_follow);
          if( null != itemFollowInActive) {
               itemFollowInActive.setVisible(!m_isFollowActive);
-//              this.invalidateOptionsMenu();
-Log.i("DEBUGGER_TAG", "onCreateOptionsMenuB");
            }
+
+         // Track icon
+         itemTrackActive = menu.findItem(R.id.ocpn_action_track_toggle_ison);
+         if( null != itemTrackActive) {
+             itemTrackActive.setVisible(m_isTrackActive);
+         }
+         itemTrackInActive = menu.findItem(R.id.ocpn_action_track_toggle_isoff);
+         if( null != itemTrackInActive) {
+             itemTrackInActive.setVisible(!m_isTrackActive);
+         }
 
 
 
@@ -2325,7 +2364,11 @@ Log.i("DEBUGGER_TAG", "onCreateOptionsMenuB");
                     nativeLib.invokeMenuItem(OCPN_ACTION_RMD);
                     return true;
 
-                case R.id.ocpn_action_tracktoggle:
+                case R.id.ocpn_action_track_toggle_ison:
+                    nativeLib.invokeMenuItem(OCPN_ACTION_TRACK_TOGGLE);
+                    return true;
+
+                case R.id.ocpn_action_track_toggle_isoff:
                     nativeLib.invokeMenuItem(OCPN_ACTION_TRACK_TOGGLE);
                     return true;
 
