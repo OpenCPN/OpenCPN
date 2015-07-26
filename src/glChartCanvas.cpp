@@ -149,7 +149,7 @@ extern bool             b_inCompressAllCharts;
 extern bool             g_bexpert;
 extern bool             g_bcompression_wait;
 extern bool             g_bresponsive;
-extern int              g_ChartScaleFactor;
+extern float            g_ChartScaleFactorExp;
 
 float            g_GLMinSymbolLineWidth;
 float            g_GLMinCartographicLineWidth;
@@ -1422,7 +1422,6 @@ no_compression:
     m_benableVScale = false;
 #endif    
     
-    
 }
 
 void glChartCanvas::OnPaint( wxPaintEvent &event )
@@ -1457,7 +1456,6 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
     if( m_in_glpaint ) return;
     m_in_glpaint++;
     Render();
-
     m_in_glpaint--;
 
 }
@@ -2088,9 +2086,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
     {
         float scale =  1.0f;
         if(g_bresponsive){
-            scale =  exp( g_ChartScaleFactor * (0.693 / 5.0) );       //  exp(2)
-            scale = wxMax(scale, .5);
-            scale = wxMin(scale, 4.);
+            scale =  g_ChartScaleFactorExp;
         }
         
         const int v = 12;
@@ -2235,9 +2231,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
         glScalef(scale_factor_x, scale_factor_y, 1);
 
         if(g_bresponsive){
-            float scale =  exp( g_ChartScaleFactor * (0.693 / 5.0) );       //  exp(2)
-            scale = wxMax(scale, .5);
-            scale = wxMin(scale, 4.);
+            float scale =  g_ChartScaleFactorExp;
             glScalef(scale, scale, 1);
         }
         
@@ -2984,6 +2978,7 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &Region )
                             if( chart->GetChartFamily() == CHART_FAMILY_VECTOR ) {
                                 OCPNRegion rr = get_region;
                                 rr.Offset( vp.rv_rect.x, vp.rv_rect.y );
+                                g_Platform->ShowBusySpinner();
                                 b_rendered = chart->RenderRegionViewOnGL( *m_pcontext, cc1->VPoint, rr );
                             }
                         }
@@ -5019,7 +5014,6 @@ void glChartCanvas::onGestureTimerEvent(wxTimerEvent &event)
     //  On some devices, the pan GestureFinished event fails to show up
     //  Watch for this case, and fix it.....
     if(m_binPan){
-        //qDebug() << "STUCK IN PAN, CLEARING";
         m_binPan = false;
         Invalidate();
         Update();

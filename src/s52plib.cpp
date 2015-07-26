@@ -80,7 +80,7 @@ extern bool  g_b_EnableVBO;
 extern double  g_overzoom_emphasis_base;
 extern bool    g_oz_vector_scale;
 extern bool g_bresponsive;
-extern int  g_ChartScaleFactor;
+extern float g_ChartScaleFactorExp;
 
 extern PFNGLGENBUFFERSPROC                 s_glGenBuffers;
 extern PFNGLBINDBUFFERPROC                 s_glBindBuffer;
@@ -2361,9 +2361,7 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
     double scale_factor = 1.0;
  
     if(g_bresponsive){
-        scale_factor *=  exp( g_ChartScaleFactor * (0.693 / 5.0) );       //  exp(2)
-        scale_factor = wxMax(scale_factor, .5);
-        scale_factor = wxMin(scale_factor, 4.);
+        scale_factor *=  g_ChartScaleFactorExp;
     }
     
     if(g_oz_vector_scale && vp->b_quilt){
@@ -4125,9 +4123,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
     float scale_factor = 1.0;
     if(g_bresponsive){
-        scale_factor *=  exp( g_ChartScaleFactor * (0.693 / 5.0) );       //  exp(2)
-        scale_factor = wxMax(scale_factor, .5);
-        scale_factor = wxMin(scale_factor, 4.);
+        scale_factor *= g_ChartScaleFactorExp;
     }
     
     if( !m_pdc ) // opengl
@@ -7479,10 +7475,7 @@ void RenderFromHPGL::SetPen()
 
     if(g_bresponsive){
         double scale_factor = 1.0;
-        scale_factor *=  exp( g_ChartScaleFactor * (0.693 / 5.0) );       //  exp(2)
-        scale_factor = wxMax(scale_factor, .5);
-        scale_factor = wxMin(scale_factor, 4.);
-        
+        scale_factor *=  g_ChartScaleFactorExp;
         scaleFactor /= scale_factor;
     }
     

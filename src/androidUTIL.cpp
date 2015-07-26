@@ -698,9 +698,6 @@ extern "C"{
     {
         qDebug() << "onResume";
         
-        if(cc1)
-            cc1->RenderLastGLCanvas();
-        
         g_bSleep = false;
         
         return 96;
@@ -847,18 +844,20 @@ wxString callActivityMethod_vs(const char *method)
     QAndroidJniObject data = activity.callObjectMethod(method, "()Ljava/lang/String;");
     
     jstring s = data.object<jstring>();
+    qDebug() << s;
     
-    //  Need a Java environment to decode the resulting string
-    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
-        qDebug() << "GetEnv failed.";
-    }
-    else {
-        const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
-        return_string = wxString(ret_string, wxConvUTF8);
+    if(s){
+        //  Need a Java environment to decode the resulting string
+        if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+            qDebug() << "GetEnv failed.";
+        }
+        else {
+            const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+            return_string = wxString(ret_string, wxConvUTF8);
+        }
     }
     
     return return_string;
-    
 }
 
 
@@ -1043,6 +1042,13 @@ wxString callActivityMethod_s4s(const char *method, wxString parm1, wxString par
     
 }
 
+
+wxString androidGetDeviceInfo()
+{
+    wxString info = callActivityMethod_vs("getDeviceInfo");
+    
+    return info;
+}
 
 wxString androidGetHomeDir()
 {

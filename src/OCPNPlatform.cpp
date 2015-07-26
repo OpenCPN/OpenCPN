@@ -215,6 +215,7 @@ extern wxArrayOfConnPrm         *g_pConnectionParams;
 extern bool                     g_fog_overzoom;
 extern double                   g_overzoom_emphasis_base;
 extern bool                     g_oz_vector_scale;
+extern int                      g_nTrackPrecision;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions            g_GLOptions;
@@ -509,8 +510,12 @@ void OCPNPlatform::Initialize_1( void )
 
 //  Called from MyApp() immediately before creation of MyFrame()
 //  Config is known to be loaded and stable
+//  Log is available
 void OCPNPlatform::Initialize_2( void )
 {
+#ifdef __OCPN__ANDROID__
+    wxLogMessage(androidGetDeviceInfo());
+#endif    
 }
 
 //  Called from MyApp() just before end of MyApp::OnInit()
@@ -559,6 +564,7 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_bShowAreaNotices = false;
     g_bDrawAISSize = false;
     g_bShowAISName = false;
+    g_nTrackPrecision = 2;
     
     
 #ifdef __OCPN__ANDROID__
@@ -1331,6 +1337,23 @@ double OCPNPlatform::GetCompassScaleFactor( int GUIScaleFactor )
     return rv;
 }
 
+float OCPNPlatform::getChartScaleFactorExp( float scale_linear )
+{
+    double factor = 1.0;
+#ifndef __OCPN__ANDROID__
+    factor =  exp( scale_linear * (0.693 / 5.0) );       //  exp(2)
+
+#else
+    // the idea here is to amplify the scale factor for higher density displays, in a measured way....
+    factor =  exp( scale_linear * (0.693 / 5.0) * getAndroidDisplayDensity());
+#endif
+    
+    factor = wxMax(factor, .5);
+    factor = wxMin(factor, 4.);
+    
+
+    return factor;
+}
 
         
 #ifdef __WXMSW__

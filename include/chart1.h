@@ -198,6 +198,7 @@ enum
 //      Command identifiers for wxCommandEvents coming from the outside world.
 //      Removed from enum to facilitate constant definition
 #define ID_CMD_APPLY_SETTINGS 300
+#define ID_CMD_NULL_REFRESH 301
 
 
 

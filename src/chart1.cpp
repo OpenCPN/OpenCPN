@@ -357,6 +357,7 @@ bool                      g_config_display_size_manual;
 
 int                       g_GUIScaleFactor;
 int                       g_ChartScaleFactor;
+float                     g_ChartScaleFactorExp;
 
 #ifdef USE_S57
 s52plib                   *ps52plib;
@@ -4055,6 +4056,11 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         
         case ID_CMD_APPLY_SETTINGS:{
             applySettingsString(event.GetString());
+            break;
+        }
+        
+        case ID_CMD_NULL_REFRESH:{
+            Refresh(true);
             break;
         }
         
@@ -9175,8 +9181,10 @@ void MyFrame::UpdateAISMOBRoute( AIS_Target_Data *ptarget )
 
 }
 
+
 void MyFrame::applySettingsString( wxString settings)
 {
+    g_Platform->ShowBusySpinner();
     
     //  Parse the passed settings string
 //    wxLogMessage( settings );
@@ -9295,8 +9303,10 @@ void MyFrame::applySettingsString( wxString settings)
         
         else if(token.StartsWith( _T("prefs_chartScaleFactor"))){
             double a;
-            if(val.ToDouble(&a))
+            if(val.ToDouble(&a)){
                 g_ChartScaleFactor = wxRound( (a / 10.) - 5.);
+                g_ChartScaleFactorExp = g_Platform->getChartScaleFactorExp( g_ChartScaleFactor );
+            }
         }
 
         else if(token.StartsWith( _T("prefs_chartInitDir"))){
@@ -9449,7 +9459,6 @@ void MyFrame::applySettingsString( wxString settings)
         }
     }
     
-
     ProcessOptionsDialog( rr,  &NewDirArray );
     
     if(previous_expert && !g_bUIexpert){
@@ -9463,6 +9472,7 @@ void MyFrame::applySettingsString( wxString settings)
     ShowChartBarIfEnabled();
 
     gFrame->Raise();
+    
     cc1->InvalidateGL();
     DoChartUpdate();
     UpdateControlBar();
@@ -9506,6 +9516,8 @@ void MyFrame::applySettingsString( wxString settings)
     if (NMEALogWindow::Get().Active())
         NMEALogWindow::Get().GetTTYWindow()->Raise();
 
+    g_Platform->HideBusySpinner();
+    
 }   
 
 

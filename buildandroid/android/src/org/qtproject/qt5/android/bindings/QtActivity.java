@@ -163,7 +163,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
     //  Definitions found in OCPN "chart1.h"
     private final static int ID_CMD_APPLY_SETTINGS = 300;
-
+    private final static int ID_CMD_NULL_REFRESH = 301;
 
     private final static int CHART_TYPE_CM93COMP = 7;       // must line up with OCPN types
     private final static int CHART_FAMILY_RASTER = 1;
@@ -502,8 +502,23 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
         Log.i("DEBUGGER_TAG", ret);
 
+
+
         return ret;
     }
+
+    public String getDeviceInfo(){
+        String s="Device Info:";
+                s += "\n OS Version: " + System.getProperty("os.version") + "(" + android.os.Build.VERSION.INCREMENTAL + ")";
+                s += "\n OS API Level: "+android.os.Build.VERSION.RELEASE + "("+android.os.Build.VERSION.SDK_INT+")";
+                s += "\n Device: " + android.os.Build.DEVICE;
+                s += "\n Model (and Product): " + android.os.Build.MODEL + " ("+ android.os.Build.PRODUCT + ")";
+
+        Log.i("DEBUGGER_TAG", s);
+
+        return s;
+    }
+
 
     public String showBusyCircle(){
 //        Log.i("DEBUGGER_TAG", "show");
@@ -1733,19 +1748,27 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        Log.i("DEBUGGER_TAG", "onActivityResultA");
+//        Log.i("DEBUGGER_TAG", "onActivityResultA");
         if (requestCode == OCPN_SETTINGS_REQUEST_CODE) {
-            Log.i("DEBUGGER_TAG", "onqtActivityResultC");
+//            Log.i("DEBUGGER_TAG", "onqtActivityResultC");
             // Make sure the request was successful
             if (resultCode == RESULT_OK)
             {
-                Log.i("DEBUGGER_TAG", "onqtActivityResultD");
+//                Log.i("DEBUGGER_TAG", "onqtActivityResultD");
                 m_settingsReturn = data.getStringExtra("SettingsString");
-                nativeLib.invokeCmdEventCmdString( ID_CMD_APPLY_SETTINGS, m_settingsReturn);
-                Log.i("DEBUGGER_TAG", m_settingsReturn);
+                nativeLib.invokeCmdEventCmdString( ID_CMD_NULL_REFRESH, m_settingsReturn);
+
+                // defer hte application of settings until the screen refreshes
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                     public void run() {
+                          nativeLib.invokeCmdEventCmdString( ID_CMD_APPLY_SETTINGS, m_settingsReturn);
+                     }
+                }, 100);
+//                Log.i("DEBUGGER_TAG", m_settingsReturn);
             }
             else if (resultCode == RESULT_CANCELED){
-                Log.i("DEBUGGER_TAG", "onqtActivityResultE");
+//                Log.i("DEBUGGER_TAG", "onqtActivityResultE");
             }
 
             super.onActivityResult(requestCode, resultCode, data);

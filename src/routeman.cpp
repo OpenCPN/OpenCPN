@@ -95,7 +95,7 @@ extern wxString         g_uploadConnection;
 extern bool             g_bAdvanceRouteWaypointOnArrivalOnly;
 extern Route            *pAISMOBRoute;
 extern bool             g_btouch;
-extern int              g_ChartScaleFactor;
+extern float            g_ChartScaleFactorExp;
 
 //    List definitions for Waypoint Manager Icons
 WX_DECLARE_LIST(wxBitmap, markicon_bitmap_list_type);
@@ -991,7 +991,7 @@ void Routeman::SetColorScheme( ColorScheme cs )
     
     int scaled_line_width = g_route_line_width;
     if(g_btouch){
-        double size_mult =  exp( g_ChartScaleFactor * 0.25 ); 
+        double size_mult =  g_ChartScaleFactorExp; 
         scaled_line_width *= size_mult;
         scaled_line_width = wxMax( scaled_line_width, 1);
     }

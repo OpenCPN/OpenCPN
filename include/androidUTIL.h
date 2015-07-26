@@ -56,6 +56,8 @@
 
 extern bool androidUtilInit( void );
 
+extern wxString androidGetDeviceInfo();
+
 extern bool androidGetMemoryStatus( int *mem_total, int *mem_used );
 
 extern double GetAndroidDisplaySize();

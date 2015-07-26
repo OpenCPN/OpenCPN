@@ -71,7 +71,7 @@ public class OCPNSettingsActivity extends PreferenceActivity
             String settings = extras.getString("SETTINGS_STRING");
 
             Log.i("DEBUGGER_TAG", "OCPNSettingsActivity");
-            Log.i("DEBUGGER_TAG", settings);
+//            Log.i("DEBUGGER_TAG", settings);
 
             m_settings = settings;
             m_newSettings = "";
@@ -82,13 +82,13 @@ public class OCPNSettingsActivity extends PreferenceActivity
 
             while(tkz.hasMoreTokens()){
                 String tk = tkz.nextToken();
-                Log.i("DEBUGGER_TAG", tk);
+//                Log.i("DEBUGGER_TAG", tk);
 
                 if( tk.startsWith("ChartDir") ){
                     int mark = tk.indexOf(":");
                     if(mark > 0){
                         String dir = tk.substring(mark+1);
-                        Log.i("DEBUGGER_TAG", dir);
+//                        Log.i("DEBUGGER_TAG", dir);
                         m_chartDirList.add(dir);
                     }
                 }
@@ -122,8 +122,8 @@ public class OCPNSettingsActivity extends PreferenceActivity
                     int mark = tk.indexOf(":");
                     if(mark > 0){
                         String key = tk.substring(0, mark);
-                        Log.i("DEBUGGER_TAG", key);
-                        Log.i("DEBUGGER_TAG", (mbS52)?"True":"False");
+//                        Log.i("DEBUGGER_TAG", key);
+//                        Log.i("DEBUGGER_TAG", (mbS52)?"True":"False");
                         String value = tk.substring(mark+1);
                         editor.putString(key, value);
                     }
@@ -232,7 +232,7 @@ public class OCPNSettingsActivity extends PreferenceActivity
 
                String message = fileCreated? "File created" : "File opened";
                message += ": " + filePath + " parentDir:" + parentDir;;
-               Log.i("DEBUGGER_TAG", message);
+//               Log.i("DEBUGGER_TAG", message);
                m_chartDirList.add(filePath);
 
                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -297,10 +297,10 @@ public class OCPNSettingsActivity extends PreferenceActivity
         for(int i=0 ; i < m_chartDirList.size() ; ++i){
             m_newSettings = m_newSettings.concat("ChartDir:");
             String dir = m_chartDirList.get(i);
-            Log.i("DEBUGGER_TAG", dir);
+//            Log.i("DEBUGGER_TAG", dir);
             m_newSettings = m_newSettings.concat(dir);
             m_newSettings = m_newSettings.concat(";");
-            Log.i("DEBUGGER_TAG", m_newSettings);
+//            Log.i("DEBUGGER_TAG", m_newSettings);
 
         }
 
@@ -343,7 +343,7 @@ public class OCPNSettingsActivity extends PreferenceActivity
         m_newSettings = m_newSettings.concat(appendStringSetting("prefs_chartScaleFactor", preferences.getString("prefs_chartScaleFactor", "?")));
         m_newSettings = m_newSettings.concat(appendStringSetting("prefs_chartInitDir", preferences.getString("prefs_chartInitDir", "?")));
 
-        Log.i("DEBUGGER_TAG", m_newSettings);
+//        Log.i("DEBUGGER_TAG", m_newSettings);
 
     }
 
@@ -409,7 +409,7 @@ public class OCPNSettingsActivity extends PreferenceActivity
             super.onCreate(savedInstanceState);
 
             // Can retrieve arguments from preference XML.
-            Log.i("args", "Arguments: " + getArguments());
+//            Log.i("args", "Arguments: " + getArguments());
 
             // Load the preferences from an XML resource
             addPreferencesFromResource(R.xml.charts_vector_settings);
