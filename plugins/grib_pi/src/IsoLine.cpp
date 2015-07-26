@@ -588,6 +588,7 @@ void IsoLine::drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC *dc,
     //---------------------------------------------------------
     // Ecrit les labels
     //---------------------------------------------------------
+    wxRect prev;
     for (it=trace.begin(); it!=trace.end(); it++,nb++)
     {
         if (nb % density == 0)
@@ -608,10 +609,17 @@ void IsoLine::drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC *dc,
                 int xd = (ab.x + cd.x-(w+label_offset * 2))/2;
                 int yd = (ab.y + cd.y - h)/2;
 
-                /* don't use alpha for isobars, for some reason draw bitmap ignores
-                   the 4th argument (true or false has same result) */
-                wxImage img(w, h, imageLabel.GetData(), true);
-                dc->DrawBitmap(img, xd, yd, false);
+                int x = xd - label_offset;
+                wxRect r(x ,yd ,w ,h);
+                r.Inflate(w);
+                if (!prev.Intersects(r))  {
+                      prev = r;
+
+                      /* don't use alpha for isobars, for some reason draw bitmap ignores
+                         the 4th argument (true or false has same result) */
+                      wxImage img(w, h, imageLabel.GetData(), true);
+                      dc->DrawBitmap(img, xd, yd, false);
+                }
             }
         }
     }
