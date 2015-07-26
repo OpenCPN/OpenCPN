@@ -752,14 +752,14 @@ void IsoLine::extractIsoLine(const GribRecord *rec)
 
     for (j=1; j<H; j++)     // !!!! 1 to end
     {
-        for (i=1; i<W; i++)
+        a = rec->getValue( 0, j-1 );
+        c = rec->getValue( 0, j   );
+        for (i=1; i<W; i++, a = b, c = d)
         {
 //            x = rec->getX(i);
 //            y = rec->getY(j);
 
-            a = rec->getValue( i-1, j-1 );
             b = rec->getValue( i,   j-1 );
-            c = rec->getValue( i-1, j   );
             d = rec->getValue( i,   j   );
 
             if( a == GRIB_NOTDEF || b == GRIB_NOTDEF || c == GRIB_NOTDEF || d == GRIB_NOTDEF ) continue;
