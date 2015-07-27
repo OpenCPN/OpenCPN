@@ -2978,7 +2978,6 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &Region )
                             if( chart->GetChartFamily() == CHART_FAMILY_VECTOR ) {
                                 OCPNRegion rr = get_region;
                                 rr.Offset( vp.rv_rect.x, vp.rv_rect.y );
-                                g_Platform->ShowBusySpinner();
                                 b_rendered = chart->RenderRegionViewOnGL( *m_pcontext, cc1->VPoint, rr );
                             }
                         }
