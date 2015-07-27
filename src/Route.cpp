@@ -637,7 +637,8 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
     glColor3ub(col.Red(), col.Green(), col.Blue());
     glLineWidth(wxMax( g_GLMinSymbolLineWidth, width ));
 
-    if( m_style != wxPENSTYLE_INVALID )
+#ifndef ocpnUSE_GLES // linestipple is emulated poorly
+    if( m_style != STYLE_UNDEFINED )
         glEnable( GL_LINE_STIPPLE );
 
     switch( m_style ) {
@@ -647,6 +648,7 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
     case wxDOT_DASH:   glLineStipple( 1, 0x8FF1 ); break;
     default: break;
     }
+#endif
 
     DrawGLLines(VP, NULL);
 
