@@ -405,44 +405,58 @@ CursorDataBase::CursorDataBase( wxWindow* parent, wxWindowID id, const wxPoint& 
 	m_fgTrackingControls->Add( m_tcCAPE, 0, 0, 1 );
 
 
-	fgSizer43->Add( m_fgTrackingControls, 1, wxEXPAND, 1 );
+	m_fgTrackingControls->Add( 0, 0, 1, wxEXPAND, 5 );
 
-	m_fgTrackingAltitude = new wxFlexGridSizer( 1, 6, 0, 0 );
-	m_fgTrackingAltitude->SetFlexibleDirection( wxBOTH );
-	m_fgTrackingAltitude->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
-	wxStaticText* m_staticText35;
-	m_staticText35 = new wxStaticText( this, wxID_ANY, _("Altitude"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText35->Wrap( -1 );
-	m_fgTrackingAltitude->Add( m_staticText35, 0, wxALL, 5 );
+	m_fgTrackingControls->Add( 0, 0, 1, wxEXPAND, 5 );
+
+	m_cbAltitude = new wxCheckBox( this, wxID_ANY, _("Geop. Altitude"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_cbAltitude->SetValue(true);
+	m_cbAltitude->Enable( false );
+
+	m_fgTrackingControls->Add( m_cbAltitude, 0, wxALL|wxEXPAND, 5 );
 
 	m_tcAltitude = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( -1,-1 ), wxTE_READONLY );
 	m_tcAltitude->SetMinSize( wxSize( 70,-1 ) );
 
-	m_fgTrackingAltitude->Add( m_tcAltitude, 0, wxALL, 5 );
+	m_fgTrackingControls->Add( m_tcAltitude, 0, 0, 5 );
 
-	wxStaticText* m_staticText36;
-	m_staticText36 = new wxStaticText( this, wxID_ANY, _("Temperature"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText36->Wrap( -1 );
-	m_fgTrackingAltitude->Add( m_staticText36, 0, wxALL, 5 );
+
+	m_fgTrackingControls->Add( 0, 0, 1, wxEXPAND, 5 );
+
+
+	m_fgTrackingControls->Add( 0, 0, 1, wxEXPAND, 5 );
+
+	m_cbTemp = new wxCheckBox( this, wxID_ANY, _("Geop. Temp"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_cbTemp->SetValue(true);
+	m_cbTemp->Enable( false );
+
+	m_fgTrackingControls->Add( m_cbTemp, 0, wxALL|wxEXPAND, 5 );
 
 	m_tcTemp = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY );
 	m_tcTemp->SetMinSize( wxSize( 70,-1 ) );
 
-	m_fgTrackingAltitude->Add( m_tcTemp, 0, wxALL, 5 );
+	m_fgTrackingControls->Add( m_tcTemp, 0, 0, 5 );
 
-	wxStaticText* m_staticText37;
-	m_staticText37 = new wxStaticText( this, wxID_ANY, _("Rel. Humid."), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText37->Wrap( -1 );
-	m_fgTrackingAltitude->Add( m_staticText37, 0, wxALL, 5 );
+
+	m_fgTrackingControls->Add( 0, 0, 1, wxEXPAND, 5 );
+
+
+	m_fgTrackingControls->Add( 0, 0, 1, wxEXPAND, 5 );
+
+	m_cbRelHumid = new wxCheckBox( this, wxID_ANY, _("Geop. R. Hum."), wxDefaultPosition, wxDefaultSize, 0 );
+	m_cbRelHumid->SetValue(true);
+	m_cbRelHumid->Enable( false );
+
+	m_fgTrackingControls->Add( m_cbRelHumid, 0, wxALL|wxEXPAND, 5 );
 
 	m_tcRelHumid = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY );
 	m_tcRelHumid->SetMinSize( wxSize( 70,-1 ) );
 
-	m_fgTrackingAltitude->Add( m_tcRelHumid, 0, wxALL, 5 );
+	m_fgTrackingControls->Add( m_tcRelHumid, 0, 0, 5 );
 
 
-	fgSizer43->Add( m_fgTrackingAltitude, 1, wxEXPAND|wxLEFT, 5 );
+	fgSizer43->Add( m_fgTrackingControls, 1, wxEXPAND, 1 );
 
 
 	fgSizer30->Add( fgSizer43, 1, wxEXPAND, 5 );

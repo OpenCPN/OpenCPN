@@ -196,23 +196,16 @@ void CursorData::PopulateTrackingControls( bool vertical )
 		&& m_Altitude == 0, vertical, wn);
     //
     //init and show extra parameters for altitude tracking if necessary
-    m_fgTrackingAltitude->SetCols( vertical ? 2 : 6 );
-    if( m_Altitude ) {
-        if( (m_gparent.m_pTimelineSet && m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_AIR_TEMP + m_Altitude) != wxNOT_FOUND)
-            || (m_gparent.m_pTimelineSet && m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_HUMID_RE + m_Altitude) != wxNOT_FOUND)
-            || (m_gparent.m_pTimelineSet && m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_GEOP_HGT + m_Altitude) ) ) {
-                    m_tcAltitude->SetMinSize( wxSize( wn, -1 ));
-                    m_tcAltitude->SetValue( _("N/A") );
-                    m_tcTemp->SetMinSize( wxSize( wn, -1 ));
-                    m_tcTemp->SetValue( _("N/A") );
-                    m_tcRelHumid->SetMinSize( wxSize( wn, -1 ));
-                    m_tcRelHumid->SetValue( _("N/A") );
-					m_fgTrackingAltitude->ShowItems( true );
-
-		}
-    } else
-        m_fgTrackingAltitude->ShowItems( false );
-
+	AddTrackingControl(m_cbAltitude, m_tcAltitude, 0, 0,
+        m_gparent.m_pTimelineSet && m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_GEOP_HGT + m_Altitude) != wxNOT_FOUND
+		&& m_Altitude != 0, vertical, wn);
+	AddTrackingControl(m_cbTemp, m_tcTemp, 0, 0,
+        m_gparent.m_pTimelineSet && m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_AIR_TEMP + m_Altitude) != wxNOT_FOUND
+		&& m_Altitude != 0, vertical, wn);
+	AddTrackingControl(m_cbRelHumid, m_tcRelHumid, 0, 0,
+        m_gparent.m_pTimelineSet && m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_HUMID_RE + m_Altitude) != wxNOT_FOUND
+		&& m_Altitude != 0, vertical, wn);
+	//
     m_stTrackingText->SetLabel( _("Data at cursor position") );
     //add tooltips
     wxString t; double lev;

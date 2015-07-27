@@ -34,8 +34,8 @@
   #include <wx/glcanvas.h>
 #endif //precompiled headers
 
-#define     PLUGIN_VERSION_MAJOR    2
-#define     PLUGIN_VERSION_MINOR    3
+#define     PLUGIN_VERSION_MAJOR    3
+#define     PLUGIN_VERSION_MINOR    0
 
 #define     MY_API_VERSION_MAJOR    1
 #define     MY_API_VERSION_MINOR    12
