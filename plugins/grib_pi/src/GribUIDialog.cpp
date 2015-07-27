@@ -189,7 +189,7 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id, const wxString& ti
 {
     pParent = parent;
     pPlugIn = ppi;
-
+    m_vp = 0;
     pReq_Dialog = NULL;
     m_bGRIBActiveFile = NULL;
     m_pTimelineSet = NULL;
@@ -217,6 +217,7 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id, const wxString& ti
         pConf->Read( _T ( "AirTemperaturePlot" ), &m_bDataPlot[GribOverlaySettings::AIR_TEMPERATURE], false );
         pConf->Read( _T ( "SeaTemperaturePlot" ), &m_bDataPlot[GribOverlaySettings::SEA_TEMPERATURE], false );
         pConf->Read( _T ( "CAPEPlot" ), &m_bDataPlot[GribOverlaySettings::CAPE], false );
+        pConf->Read( _T ( "RelHumidityPlot" ), &m_bDataPlot[GribOverlaySettings::REL_HUMIDITY], false );
 
 		pConf->Read( _T ( "CursorDataShown" ), &m_CDataIsShown, true );
 
@@ -276,6 +277,7 @@ GRIBUICtrlBar::~GRIBUICtrlBar()
         pConf->Write( _T ( "AirTemperaturePlot" ), m_bDataPlot[GribOverlaySettings::AIR_TEMPERATURE]);
         pConf->Write( _T ( "SeaTemperaturePlot" ), m_bDataPlot[GribOverlaySettings::SEA_TEMPERATURE]);
         pConf->Write( _T ( "CAPEPlot" ), m_bDataPlot[GribOverlaySettings::CAPE]);
+        pConf->Write( _T ( "RelHumidityPlot" ), m_bDataPlot[GribOverlaySettings::REL_HUMIDITY]);
 
 		pConf->Write( _T ( "CursorDataShown" ), m_CDataIsShown );
 
