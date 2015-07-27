@@ -766,7 +766,7 @@ extern "C"{
         qDebug() << "invokeMenuItem" << item;
         
         // If in Route Create, disable all other menu items
-        if( gFrame->nRoute_State > 1 ) {
+        if( (gFrame->nRoute_State > 1 ) && (OCPN_ACTION_ROUTE != item) ) {
             return 72;
         }
             

@@ -283,6 +283,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
         // Menu item used to indicate "RouteCreate" is active
     MenuItem itemRouteAnnunciator;
+    MenuItem itemRouteMenuItem;
     private boolean m_showRouteAnnunciator = false;
 
     MenuItem itemFollowInActive;
@@ -2140,8 +2141,13 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         itemRouteAnnunciator = menu.findItem(R.id.ocpn_route_create_active);
         if( null != itemRouteAnnunciator) {
             itemRouteAnnunciator.setVisible(m_showRouteAnnunciator);
-//            this.invalidateOptionsMenu();
+        }
+
+         itemRouteMenuItem = menu.findItem(R.id.ocpn_action_createroute);
+         if( null != itemRouteMenuItem) {
+             itemRouteMenuItem.setVisible(!m_showRouteAnnunciator);
          }
+
 
         // Auto follow icon
          itemFollowActive = menu.findItem(R.id.ocpn_action_follow_active);
@@ -2395,7 +2401,11 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                     nativeLib.invokeMenuItem(OCPN_ACTION_TRACK_TOGGLE);
                     return true;
 
-                case R.id.ocpn_action_createroute:
+                case R.id.ocpn_action_createroute:              // entering Route Create Mode
+                    nativeLib.invokeMenuItem(OCPN_ACTION_ROUTE);
+                    return true;
+
+                case R.id.ocpn_route_create_active:             // exiting Route Create mode
                     nativeLib.invokeMenuItem(OCPN_ACTION_ROUTE);
                     return true;
 
