@@ -438,6 +438,7 @@ double                    g_COGAvg;
 bool                      g_bLookAhead;
 bool                      g_bskew_comp;
 bool                      g_bopengl;
+bool                      g_bSoftwareGL;
 bool                      g_bShowFPS;
 bool                      g_bsmoothpanzoom;
 bool                      g_fog_overzoom;
@@ -1526,6 +1527,11 @@ bool MyApp::OnInit()
 
     if(g_bdisable_opengl)
         g_bopengl = false;
+
+#if defined(__UNIX__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
+    if(g_bSoftwareGL)
+        setenv("LIBGL_ALWAYS_SOFTWARE", "1", 1);
+#endif
     
     // Determine if a transparent toolbar is possible under linux with opengl
     g_bTransparentToolbarInOpenGLOK = false;

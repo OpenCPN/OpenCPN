@@ -137,6 +137,7 @@ extern bool             g_bAutoAnchorMark;
 extern bool             g_bskew_comp;
 extern bool             g_bopengl;
 extern bool             g_bdisable_opengl;
+extern bool             g_bSoftwareGL;
 extern bool             g_bShowFPS;
 extern bool             g_bsmoothpanzoom;
 extern bool             g_fog_overzoom;
@@ -1266,6 +1267,7 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "OpenGL" ), &g_bopengl, 0 );
     if ( g_bdisable_opengl )
         g_bopengl = false;
+    Read( _T ( "SoftwareGL" ), &g_bSoftwareGL, 0 );
     
     Read( _T ( "ShowFPS" ), &g_bShowFPS, 0 );
     
@@ -2536,6 +2538,7 @@ void MyConfig::UpdateSettings()
 
     Write( _T ( "SkewToNorthUp" ), g_bskew_comp );
     Write( _T ( "OpenGL" ), g_bopengl );
+    Write( _T ( "SoftwareGL" ), g_bSoftwareGL );
     Write( _T ( "ShowFPS" ), g_bShowFPS );
     
     Write( _T ( "ZoomDetailFactor" ), g_chart_zoom_modifier );
