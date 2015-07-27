@@ -595,8 +595,8 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
     /* determine color and width */
     wxColour col;
 
-    int width = g_route_line_width;
-    if( m_width != WIDTH_UNDEFINED )
+    int width = g_pRouteMan->GetRoutePen()->GetWidth(); //g_route_line_width;
+    if( m_width != STYLE_UNDEFINED )
         width = m_width;
     if(m_bIsTrack)
         width = g_pRouteMan->GetTrackPen()->GetWidth();

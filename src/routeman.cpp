@@ -991,11 +991,10 @@ void Routeman::SetColorScheme( ColorScheme cs )
     
     int scaled_line_width = g_route_line_width;
     if(g_btouch){
-        double size_mult =  g_ChartScaleFactorExp; 
-        scaled_line_width *= size_mult;
-        scaled_line_width = wxMax( scaled_line_width, 1);
+        double size_mult =  g_ChartScaleFactorExp * 1.5;
+        double sline_width = wxRound(size_mult * scaled_line_width);
+        scaled_line_width = wxMax( sline_width, 1);
     }
-        
 
     m_pActiveRoutePointPen = wxThePenList->FindOrCreatePen( wxColour( 0, 0, 255 ),
                                                             scaled_line_width, wxPENSTYLE_SOLID );
