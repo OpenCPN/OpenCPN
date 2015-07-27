@@ -6105,6 +6105,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 }
                 m_pFoundRoutePoint = NULL;
                 
+                Refresh( true );
                 
             }                
             
