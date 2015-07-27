@@ -170,6 +170,7 @@ public:
     wxSize  m_ParentSize;
 
 private:
+    void InitColorsTable( );
 
     void SettingsIdToGribId(int i, int &idx, int &idy, bool &polar);
     bool DoRenderGribOverlay( PlugIn_ViewPort *vp );
