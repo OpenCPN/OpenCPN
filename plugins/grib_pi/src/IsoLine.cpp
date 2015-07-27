@@ -588,6 +588,7 @@ void IsoLine::drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC *dc,
     //---------------------------------------------------------
     // Ecrit les labels
     //---------------------------------------------------------
+    wxRect prev;
     for (it=trace.begin(); it!=trace.end(); it++,nb++)
     {
         if (nb % density == 0)
@@ -608,10 +609,17 @@ void IsoLine::drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC *dc,
                 int xd = (ab.x + cd.x-(w+label_offset * 2))/2;
                 int yd = (ab.y + cd.y - h)/2;
 
-                /* don't use alpha for isobars, for some reason draw bitmap ignores
-                   the 4th argument (true or false has same result) */
-                wxImage img(w, h, imageLabel.GetData(), true);
-                dc->DrawBitmap(img, xd, yd, false);
+                int x = xd - label_offset;
+                wxRect r(x ,yd ,w ,h);
+                r.Inflate(w);
+                if (!prev.Intersects(r))  {
+                      prev = r;
+
+                      /* don't use alpha for isobars, for some reason draw bitmap ignores
+                         the 4th argument (true or false has same result) */
+                      wxImage img(w, h, imageLabel.GetData(), true);
+                      dc->DrawBitmap(img, xd, yd, false);
+                }
             }
         }
     }
@@ -633,6 +641,7 @@ void IsoLine::drawIsoLineLabelsGL(GRIBOverlayFactory *pof,
     //---------------------------------------------------------
     // Ecrit les labels
     //---------------------------------------------------------
+    wxRect prev;
     for (it=trace.begin(); it!=trace.end(); it++,nb++)
     {
         if (nb % density == 0)
@@ -655,28 +664,34 @@ void IsoLine::drawIsoLineLabelsGL(GRIBOverlayFactory *pof,
                 int x = xd - label_offsetx, y = yd - label_offsety;
                 w += 2*label_offsetx, h += 2*label_offsety;
 
-                glColor4ub(color.Red(), color.Green(), color.Blue(), color.Alpha());
+                wxRect r(x,y, w,h);
+                r.Inflate(w);
+                if (!prev.Intersects(r)) 
+                {
+                      prev = r;
+                      glColor4ub(color.Red(), color.Green(), color.Blue(), color.Alpha());
 
-                /* draw bounding rectangle */
-                glBegin(GL_QUADS);
-                glVertex2i(x,   y);
-                glVertex2i(x+w, y);
-                glVertex2i(x+w, y+h);
-                glVertex2i(x,   y+h);
-                glEnd();
+                      /* draw bounding rectangle */
+                      glBegin(GL_QUADS);
+                      glVertex2i(x,   y);
+                      glVertex2i(x+w, y);
+                      glVertex2i(x+w, y+h);
+                      glVertex2i(x,   y+h);
+                      glEnd();
 
-                glColor3ub(0, 0, 0);
+                      glColor3ub(0, 0, 0);
 
-                glBegin(GL_LINE_LOOP);
-                glVertex2i(x,   y);
-                glVertex2i(x+w, y);
-                glVertex2i(x+w, y+h);
-                glVertex2i(x,   y+h);
-                glEnd();
+                      glBegin(GL_LINE_LOOP);
+                      glVertex2i(x,   y);
+                      glVertex2i(x+w, y);
+                      glVertex2i(x+w, y+h);
+                      glVertex2i(x,   y+h);
+                      glEnd();
 
-                glEnable(GL_TEXTURE_2D);
-                texfont.RenderString(label, xd, yd);
-                glDisable(GL_TEXTURE_2D);
+                      glEnable(GL_TEXTURE_2D);
+                      texfont.RenderString(label, xd, yd);
+                      glDisable(GL_TEXTURE_2D);
+                }
             }
         }
     }
