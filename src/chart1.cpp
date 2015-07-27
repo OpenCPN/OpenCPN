@@ -7237,6 +7237,8 @@ void MyFrame::UpdateControlBar( void )
 
 void MyFrame::selectChartDisplay( int type, int family)
 {
+    double target_scale = cc1->GetVP().view_scale_ppm;
+    
     if( !cc1->GetQuiltMode() ) {
         if(pCurrentStack){
             int stack_index = -1;
@@ -7280,6 +7282,13 @@ void MyFrame::selectChartDisplay( int type, int family)
         if(sel_dbIndex >= 0){
             SelectQuiltRefdbChart( sel_dbIndex );
         }
+        
+        //  Now adjust the scale to the target...
+        cc1->SetVPScale(target_scale);
+        
+        //  Re-qualify the quilt reference chart selection
+        cc1->AdjustQuiltRefChart(  );
+        
         
                 
     }
