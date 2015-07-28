@@ -104,7 +104,6 @@ TrackPropDlg::TrackPropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
     SetFont( *qFont );
     
     SetWindowStyleFlag( wstyle ); 
- //   this->SetSizeHints( wxSize( 670,440 ), wxDefaultSize );
 
     CreateControls();
 
@@ -180,6 +179,9 @@ void TrackPropDlg::RecalculateSize( void )
     wxSize esize;
     esize.x = GetCharWidth() * 110;
     esize.y = GetCharHeight() * 40;
+#ifdef __OCPN__ANDROID__
+    esize.y = GetCharHeight() * 20;             // reduced content
+#endif    
     
     wxSize dsize = GetParent()->GetClientSize();
     esize.y = wxMin(esize.y, dsize.y - (2 * GetCharHeight()));
@@ -201,7 +203,6 @@ void TrackPropDlg::CreateControls( void )
     wxBoxSizer* bSizerMain;
     bSizerMain = new wxBoxSizer( wxVERTICAL );
     SetSizer( bSizerMain );
-//    bSizerMain->SetSizeHints( this );   // set size hints to honour minimum size
     
     m_notebook1 = new wxNotebook( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
     
@@ -464,6 +465,7 @@ void TrackPropDlg::CreateControls( void )
       
       wxBoxSizer* itemBoxSizerAux = new wxBoxSizer( wxHORIZONTAL );
       itemBoxSizerBottom->Add( itemBoxSizerAux, 1, wxALIGN_LEFT | wxALL, 5 );
+
       
       m_sdbBtmBtnsSizerPrint = new wxButton( this, wxID_ANY, _("Print"),
                                                                 wxDefaultPosition, wxDefaultSize, 0 );
@@ -479,6 +481,11 @@ void TrackPropDlg::CreateControls( void )
                                      wxDefaultPosition, wxDefaultSize, 0 );
       itemBoxSizerAux->Add( m_sdbBtmBtnsSizerExtend, 0, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxALL, 5 );
       
+#ifdef __OCPN__ANDROID__
+      m_sdbBtmBtnsSizerPrint->Hide();
+      m_sdbBtmBtnsSizerSplit->Hide();
+      m_sdbBtmBtnsSizerExtend->Hide();
+#endif
       
       m_sdbBtmBtnsSizerToRoute = new wxButton( this, wxID_ANY, _("To route"),
                                               wxDefaultPosition, wxDefaultSize, 0 );
