@@ -4343,14 +4343,6 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
     ReloadVP();
 }
 
-void ChartCanvas::RenderLastGLCanvas()
-{
-#ifdef ocpnUSE_GL
-    if( /*g_bopengl &&*/ m_glcc )
-        m_glcc->RenderLast();
-#endif    
-}
-    
 void ChartCanvas::ShowChartInfoWindow( int x, int dbIndex )
 {
     if( dbIndex >= 0 ) {

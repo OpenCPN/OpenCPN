@@ -93,7 +93,6 @@ public:
     void FastPan(int dx, int dy);
     void FastZoom(float factor);
     void RenderCanvasBackingChart( ocpnDC dc, OCPNRegion chart_get_region);
-    void RenderLast();
     
 #ifdef __OCPN__ANDROID__    
     void OnEvtPanGesture( wxQT_PanGestureEvent &event);
