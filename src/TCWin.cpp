@@ -445,27 +445,26 @@ void TCWin::OnPaint( wxPaintEvent& event )
         dc.SetFont( *pSFont );
         for( i = 0; i < 25; i++ ) {
             int xd = m_graph_rect.x + ( ( i ) * m_graph_rect.width / 25 );
-            if( (hour_delta != 1) && (i % hour_delta == 0) ){
-                dc.SetPen( *pblack_2 );
-                dc.DrawLine( xd, m_graph_rect.y, xd, m_graph_rect.y + m_graph_rect.height + 5 );
+            if( hour_delta != 1 ){
+                if( i % hour_delta == 0 ) {
+                    dc.SetPen( *pblack_2 );
+                    dc.DrawLine( xd, m_graph_rect.y, xd, m_graph_rect.y + m_graph_rect.height + 5 );
+                    char sbuf[5];
+                    sprintf( sbuf, "%02d", i );
+                    int x_shim = -20;
+                    dc.DrawText( wxString( sbuf, wxConvUTF8 ), xd + x_shim + ( m_graph_rect.width / 25 ) / 2, m_graph_rect.y + m_graph_rect.height + 8 );
+                }
+                else{
+                    dc.SetPen( *pblack_1 );
+                    dc.DrawLine( xd, m_graph_rect.y, xd, m_graph_rect.y + m_graph_rect.height + 5 );
+                }
             }
             else{
                 dc.SetPen( *pblack_1 );
                 dc.DrawLine( xd, m_graph_rect.y, xd, m_graph_rect.y + m_graph_rect.height + 5 );
-            }
-            
-            
-            if( (hour_delta != 1) && (i % hour_delta == 0) ){
-                char sbuf[5];
-                sprintf( sbuf, "%02d", i );
-#ifdef __WXMSW__
                 wxString sst;
                 sst.Printf( _T("%02d"), i );
                 dc.DrawRotatedText( sst, xd + ( m_graph_rect.width / 25 ) / 2, m_graph_rect.y + m_graph_rect.height + 8, 270. );
-#else
-                int x_shim = -20;
-                dc.DrawText ( wxString ( sbuf, wxConvUTF8 ), xd + x_shim + ( m_graph_rect.width/25 ) /2, m_graph_rect.y + m_graph_rect.height + 8 );
-#endif
             }
         }
 
@@ -706,6 +705,8 @@ void TCWin::OnPaint( wxPaintEvent& event )
 
 void TCWin::OnSize( wxSizeEvent& event )
 {
+    if( !m_created ) return;
+
     int x, y;
     GetClientSize( &x, &y );
     

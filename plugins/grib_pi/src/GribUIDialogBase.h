@@ -186,9 +186,11 @@ class CursorDataBase : public wxPanel
 		wxTextCtrl* m_tcAirTemperature;
 		wxTextCtrl* m_tcSeaTemperature;
 		wxTextCtrl* m_tcCAPE;
-		wxFlexGridSizer* m_fgTrackingAltitude;
+		wxCheckBox* m_cbAltitude;
 		wxTextCtrl* m_tcAltitude;
+		wxCheckBox* m_cbTemp;
 		wxTextCtrl* m_tcTemp;
+		wxCheckBox* m_cbRelHumid;
 		wxTextCtrl* m_tcRelHumid;
 
 		// Virtual event handlers, overide them in your derived class
