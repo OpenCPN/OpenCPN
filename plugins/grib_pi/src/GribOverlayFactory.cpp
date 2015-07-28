@@ -1645,7 +1645,7 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
 
     // add new particles as needed
     int run = 0;
-    int new_particles = (total_particles - particles.size()) / 64;
+    int new_particles = (total_particles - (int)particles.size()) / 64;
 
     for(int npi=0; npi<new_particles; npi++) {
         float p[2];
