@@ -43,6 +43,7 @@ import java.lang.Math;
 import org.kde.necessitas.ministro.IMinistro;
 import org.kde.necessitas.ministro.IMinistroCallback;
 
+import android.os.Environment;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.app.AlertDialog;
@@ -1175,11 +1176,51 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
        return false;
    }
 
+   private void relocateOCPNPlugins( )
+   {
+       Log.i("DEBUGGER_TAG", "relocateOCPNPlugins");
+
+       String path = Environment.getExternalStorageDirectory().toString()+"/opencpn/plugins";
+       Log.d("DEBUGGER_TAG", "Plugin source Path: " + path);
+       File f = new File(path);
+       File file[] = f.listFiles();
+
+       if(null != file){
+         for (int i=0; i < file.length; i++){
+             Log.d("DEBUGGER_TAG", "Plugin FileName:" + file[i].getName());
+            String source = file[i].getAbsolutePath();
+            String dest = "/data/data/org.opencpn.opencpn/" + file[i].getName();
+
+
+            try {
+                InputStream inputStream = new FileInputStream(source);
+                OutputStream outputStream = new FileOutputStream(dest);
+                copyFile(inputStream, outputStream);
+                inputStream.close();
+                outputStream.close();
+                Log.i("DEBUGGER_TAG", "copyFile OK: " + dest);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                Log.i("DEBUGGER_TAG", "copyFile Exception");
+            }
+
+
+         }
+       }
+
+
+
+   }
+
 
     // this function is used to load and start the loader
     private void loadApplication(Bundle loaderParams)
     {
         Log.i("DEBUGGER_TAG", "LoadApplication");
+
+        relocateOCPNPlugins();
+
 
         try {
             final int errorCode = loaderParams.getInt(ERROR_CODE_KEY);
@@ -1211,8 +1252,8 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                 //  into the proper app-lib.  So they are listed in ANDROID_EXTRA_LIBS.
                 //  But we do not want to pre-load them.  So take them out of the DexClassLoader list.
 
-                libs.remove("dashboard_pi");
-                libs.remove("grib_pi");
+//                libs.remove("dashboard_pi");
+//                libs.remove("grib_pi");
 
 
 
