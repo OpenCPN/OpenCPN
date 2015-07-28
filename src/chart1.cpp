@@ -9470,22 +9470,19 @@ void MyFrame::applySettingsString( wxString settings)
     
     ProcessOptionsDialog( rr,  &NewDirArray );
     
-    if(previous_expert && !g_bUIexpert){
-        if(g_FloatingToolbarDialog)
-            g_FloatingToolbarDialog->SurfaceFromGrabber();
-    }
-            
-        
+    if(g_FloatingToolbarDialog)
+        g_FloatingToolbarDialog->DestroyToolBar();
+    
+    
+    //  We do this is one case only to remove an orphan recovery window
+#ifdef __OCPN__ANDROID__        
+     if(previous_expert && !g_bUIexpert){
+         androidForceFullRepaint();       
+     }
+#endif
+
     g_Platform->applyExpertMode(g_bUIexpert);
     
-    ShowChartBarIfEnabled();
-
-    gFrame->Raise();
-    
-    cc1->InvalidateGL();
-    DoChartUpdate();
-    UpdateControlBar();
-    Refresh();
 
     //  We set the compass size first, since that establishes the available space for the toolbar.
     if(g_FloatingCompassDialog){
@@ -9494,12 +9491,17 @@ void MyFrame::applySettingsString( wxString settings)
         UpdateGPSCompassStatusBox( );
     }
     
-    
-    
-    
     SetToolbarScale();
     RequestNewToolbar(true);    // Force rebuild, to pick up bGUIexpert settings.
     SurfaceToolbar();
+
+    gFrame->Raise();
+    
+    cc1->InvalidateGL();
+    DoChartUpdate();
+    UpdateControlBar();
+    Refresh();
+    
     
     ShowChartBarIfEnabled();
     

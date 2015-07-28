@@ -495,7 +495,6 @@ void ocpnFloatingToolbarDialog::SubmergeToGrabber()
     if( m_ptoolbar ) m_ptoolbar->KillTooltip();
 
     m_pRecoverwin = new GrabberWin( m_pparent, this, m_sizefactor, _T("grabber_ext" ), wxPoint(10,10) );
-    
    
     m_pRecoverwin->Show();
     m_pRecoverwin->Raise();
@@ -955,6 +954,10 @@ void ocpnFloatingToolbarDialog::DestroyToolBar()
         delete m_ptoolbar;                  //->Destroy();
         m_ptoolbar = NULL;
     }
+ 
+    m_destroyGrabber = m_pRecoverwin;
+    m_destroyTimer.Start( 5, wxTIMER_ONE_SHOT );           //  Destor the unneeded recovery grabber
+    
 }
 
 //----------------------------------------------------------------------------
