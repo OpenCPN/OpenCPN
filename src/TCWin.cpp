@@ -454,6 +454,10 @@ void TCWin::OnPaint( wxPaintEvent& event )
                     int x_shim = -20;
                     dc.DrawText( wxString( sbuf, wxConvUTF8 ), xd + x_shim + ( m_graph_rect.width / 25 ) / 2, m_graph_rect.y + m_graph_rect.height + 8 );
                 }
+                else{
+                    dc.SetPen( *pblack_1 );
+                    dc.DrawLine( xd, m_graph_rect.y, xd, m_graph_rect.y + m_graph_rect.height + 5 );
+                }
             }
             else{
                 dc.SetPen( *pblack_1 );
