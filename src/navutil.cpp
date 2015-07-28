@@ -2486,6 +2486,11 @@ void MyConfig::LoadConfigGroups( ChartGroupArray *pGroupArray )
 
 void MyConfig::UpdateSettings()
 {
+    //  Temporarily suppress logging of trivial non-fatal wxLogSysError() messages provoked by Android security...
+#ifdef __OCPN__ANDROID__    
+    wxLogNull logNo;
+#endif    
+    
 //    Global options and settings
     SetPath( _T ( "/Settings" ) );
 
