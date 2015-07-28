@@ -42,6 +42,7 @@
 #include "OCPN_Sound.h"
 #include "s52s57.h"
 #include "s57chart.h"               // for Object list
+#include "chartimg.h"
 
 //For widgets...
 #include "wx/hyperlink.h"

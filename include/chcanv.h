@@ -181,10 +181,11 @@ public:
       void CancelMouseRoute();
       void SetDisplaySizeMM( double size );
       
-      bool SetViewPoint(double lat, double lon, double scale_ppm, double skew, double rotation,
-                        bool b_adjust = true, bool b_refresh = true);
       bool SetVPScale(double sc, bool b_refresh = true);
+      bool SetVPProjection(int projection);
       bool SetViewPoint ( double lat, double lon);
+      bool SetViewPoint(double lat, double lon, double scale_ppm, double skew, double rotation,
+                        int projection = 0, bool b_adjust = true, bool b_refresh = true);
       void ReloadVP ( bool b_adjust = true );
       void LoadVP ( ViewPort &vp, bool b_adjust = true );
 
@@ -195,8 +196,8 @@ public:
 
       void GetDoubleCanvasPointPix(double rlat, double rlon, wxPoint2DDouble *r);
       void GetDoubleCanvasPointPixVP( ViewPort &vp, double rlat, double rlon, wxPoint2DDouble *r );
-      void GetCanvasPointPix( double rlat, double rlon, wxPoint *r );
-      void GetCanvasPointPixVP( ViewPort &vp, double rlat, double rlon, wxPoint *r );
+      bool GetCanvasPointPix( double rlat, double rlon, wxPoint *r );
+      bool GetCanvasPointPixVP( ViewPort &vp, double rlat, double rlon, wxPoint *r );
       
       void GetCanvasPixPoint(double x, double y, double &lat, double &lon);
       void WarpPointerDeferred(int x, int y);
@@ -256,7 +257,7 @@ public:
 
       void SetOwnShipState(ownship_state_t state){ m_ownship_state = state;}
       void SetCursorStatus( double cursor_lat, double cursor_lon );
-      void GetCursorLatLon(double *lat, double *lon);
+      void GetCursorLatLon();
 
       bool PanCanvas(double dx, double dy);
       void StopAutoPan(void);
@@ -266,6 +267,8 @@ public:
 
       void RotateCanvas( double dir );
       void DoRotateCanvas( double rotation );
+      void TiltCanvas( double dir );
+      void DoTiltCanvas( double tilt );
 
       void ShowAISTargetList(void);
 
@@ -638,7 +641,7 @@ private:
       int         m_panx, m_pany, m_modkeys;
       double      m_panspeed;
       bool        m_bmouse_key_mod;
-      double      m_zoom_factor, m_rotation_speed;
+      double      m_zoom_factor, m_rotation_speed, m_tilt_speed;
       int         m_mustmove;
 
 

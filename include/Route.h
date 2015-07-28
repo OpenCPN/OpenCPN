@@ -60,7 +60,8 @@ public:
       void DrawPointWhich(ocpnDC& dc, int iPoint, wxPoint *rpn);
       void DrawSegment(ocpnDC& dc, wxPoint *rp1, wxPoint *rp2, ViewPort &VP, bool bdraw_arrow);
       virtual void Draw(ocpnDC& dc, ViewPort &pVP);
-      virtual void DrawGL( ViewPort &VP, OCPNRegion &region );
+      void DrawGLLines( ViewPort &VP, ocpnDC *dc );
+      virtual void DrawGL( ViewPort &VP );
       RoutePoint *GetLastPoint();
       void DeletePoint(RoutePoint *rp, bool bRenamePoints = false);
       void RemovePoint(RoutePoint *rp, bool bRenamePoints = false);
@@ -85,7 +86,7 @@ public:
       void CloneAddedRoutePoint(RoutePoint *ptargetpoint, RoutePoint *psourcepoint);
       void ClearHighlights(void);
       void RenderSegment(ocpnDC& dc, int xa, int ya, int xb, int yb, ViewPort &VP, bool bdraw_arrow, int hilite_width = 0);
-      void RenderSegmentArrowsGL( float xa, float ya, float xb, float yb, ViewPort &VP);
+      void RenderSegmentArrowsGL( int xa, int ya, int xb, int yb, ViewPort &VP);
 
       bool CrossesIDL(){ return m_bcrosses_idl; }
       void SetVisible(bool visible = true, bool includeWpts = true);
@@ -137,8 +138,6 @@ public:
       int         m_hiliteWidth;
 
 private:
-      void DrawGLLines( ViewPort &VP, ocpnDC *dc = NULL );
-
       bool m_bNeedsUpdateBBox;
       wxBoundingBox     RBBox;
 

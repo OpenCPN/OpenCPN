@@ -648,6 +648,7 @@ float                     g_compass_scalefactor;
 
 MyDialogPtrArray          g_MacShowDialogArray;
 bool                      g_benable_rotate;
+bool                      g_benable_tilt;
 
 bool                      g_bShowMag;
 double                    g_UserVar;
@@ -1535,15 +1536,15 @@ bool MyApp::OnInit()
         Display *disp = XOpenDisplay(NULL);
         Window *sup_window;
         if ((sup_window = (Window *)get_X11_property(disp, DefaultRootWindow(disp),
-                                                 XA_WINDOW, "_NET_SUPPORTING_WM_CHECK")) ||
+                                                     XA_WINDOW, (char*)"_NET_SUPPORTING_WM_CHECK")) ||
             (sup_window = (Window *)get_X11_property(disp, DefaultRootWindow(disp),
-                                                 XA_CARDINAL, "_WIN_SUPPORTING_WM_CHECK"))) {
+                                                 XA_CARDINAL, (char*)"_WIN_SUPPORTING_WM_CHECK"))) {
             /* WM_NAME */
             char *wm_name;
             if ((wm_name = get_X11_property(disp, *sup_window,
-                                        XInternAtom(disp, "UTF8_STRING", False), "_NET_WM_NAME")) ||
+                                            XInternAtom(disp, "UTF8_STRING", False), (char*)"_NET_WM_NAME")) ||
                 (wm_name = get_X11_property(disp, *sup_window,
-                                        XA_STRING, "_NET_WM_NAME"))) {
+                                            XA_STRING, (char*)"_NET_WM_NAME"))) {
                 // we know it works in xfce4, add other checks as we can validate them
                 if(strstr(wm_name, "Xfwm4"))
                     g_bTransparentToolbarInOpenGLOK = true;
@@ -4585,6 +4586,18 @@ void MyFrame::ClearbFollow( void )
     cc1->ReloadVP();
 }
 
+void MyFrame::ToggleGrid( void )
+{
+    g_bDisplayGrid = !g_bDisplayGrid;
+
+    cc1->Refresh( false );
+
+#ifdef ocpnUSE_GL         // opengl renders chart outlines as part of the chart this needs a full refresh
+    if( g_bopengl )
+        cc1->GetglCanvas()->Invalidate();
+#endif
+}
+
 void MyFrame::ToggleChartOutlines( void )
 {
     if( !g_bShowOutlines ) g_bShowOutlines = true;
@@ -6247,9 +6260,8 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 
     if( cc1 ) {
 #if !defined(__WXGTK__) && !defined(__WXQT__)
-        double cursor_lat, cursor_lon;
-        cc1->GetCursorLatLon( &cursor_lat, &cursor_lon );
-        cc1->SetCursorStatus(cursor_lat, cursor_lon);
+        cc1->GetCursorLatLon();
+        cc1->SetCursorStatus(cc1->m_cursor_lat, cc1->m_cursor_lon);
 #endif
     }
 //      Update the chart database and displayed chart

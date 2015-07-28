@@ -975,8 +975,9 @@ int DECL_EXP PI_PLIBRenderObjectToGL( const wxGLContext &glcc, PI_S57Obj *pObj,
    ... // use current_viewport with GetCanvasLLPix again
 */
 
-extern DECL_EXP void PlugInMultMatrixViewport ( PlugIn_ViewPort *vp );
-extern DECL_EXP void PlugInNormalizeViewport ( PlugIn_ViewPort *vp );
+extern DECL_EXP bool PlugInHasNormalizedViewPort ( PlugIn_ViewPort *vp );
+extern DECL_EXP void PlugInMultMatrixViewport ( PlugIn_ViewPort *vp, float lat=0, float lon=0 );
+extern DECL_EXP void PlugInNormalizeViewport ( PlugIn_ViewPort *vp, float lat=0, float lon=0 );
 
 class wxPoint2DDouble;
 extern "C"  DECL_EXP void GetDoubleCanvasPixLL(PlugIn_ViewPort *vp, wxPoint2DDouble *pp, double lat, double lon);
@@ -994,6 +995,7 @@ extern DECL_EXP void SetCursor_PlugIn( wxCursor *pPlugin_Cursor = NULL );
 
 /* API 1.13 */
 extern DECL_EXP void SetCanvasRotation(double rotation);
+extern DECL_EXP void SetCanvasTilt(double tilt);
 extern DECL_EXP bool GetSingleWaypoint( wxString &GUID, PlugIn_Waypoint *pwaypoint );
 extern DECL_EXP bool PlugInPlaySoundEx( wxString &sound_file, int deviceIndex=-1 );
 extern DECL_EXP void AddChartDirectory( wxString &path );
