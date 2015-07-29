@@ -1311,6 +1311,7 @@ char *_getParamVal( ObjRazRules *rzRules, char *str, char *buf, int bsz )
     if(!buf)
         return NULL;
 
+    buf[0] = 0;
     // parse constant parameter with concatenation operator "'"
     if( str != NULL ) {
         if( *ret_ptr == APOS ) {
@@ -1423,11 +1424,11 @@ char *_getParamVal( ObjRazRules *rzRules, char *str, char *buf, int bsz )
 
 char *_parseTEXT( ObjRazRules *rzRules, S52_TextC *text, char *str0 )
 {
-    char buf[MAXL] = { '\0' }; // output string
+    char buf[MAXL]; // output string
 
     char *str = str0;
-
     if( text ) {
+        memset(buf, 0, 4);
         str = _getParamVal( rzRules, str, &text->hjust, MAXL ); // HJUST
         str = _getParamVal( rzRules, str, &text->vjust, MAXL ); // VJUST
         str = _getParamVal( rzRules, str, &text->space, MAXL ); // SPACE
@@ -1455,10 +1456,11 @@ S52_TextC *S52_PL_parseTX( ObjRazRules *rzRules, Rules *rules, char *cmd )
 {
     S52_TextC *text = NULL;
     char *str = NULL;
-    char val[MAXL] = { '\0' }; // value of arg
+    char val[MAXL]; // value of arg
     char strnobjnm[7] = { "NOBJNM" };
-    char valn[MAXL] = { '\0' }; // value of arg
+    char valn[MAXL]; // value of arg
 
+    valn[0] = 0;
     str = (char*) rules->INSTstr;
 
     if( ps52plib->m_bShowNationalTexts && NULL != strstr( str, "OBJNAM" ) ) // in case user wants the national text shown and the rule contains OBJNAM, try to get the value
@@ -1502,22 +1504,22 @@ S52_TextC *S52_PL_parseTX( ObjRazRules *rzRules, Rules *rules, char *cmd )
         }
     }
     
-    
     return text;
 }
 
 S52_TextC *S52_PL_parseTE( ObjRazRules *rzRules, Rules *rules, char *cmd )
 // same as S52_PL_parseTX put parse 'C' format first
 {
-    char arg[MAXL] = { '\0' }; // ATTRIB list
-    char fmt[MAXL] = { '\0' }; // FORMAT
-    char buf[MAXL] = { '\0' }; // output string
+    char arg[MAXL]; // ATTRIB list
+    char fmt[MAXL]; // FORMAT
+    char buf[MAXL]; // output string
     char *b = buf;
     char *parg = arg;
     char *pf = fmt;
     S52_TextC *text = NULL;
 
     char *str = (char*) rules->INSTstr;
+    *b = 0;
 
     if( str && *str ) {
         str = _getParamVal( rzRules, str, fmt, MAXL ); // get FORMAT
@@ -1530,7 +1532,7 @@ S52_TextC *S52_PL_parseTE( ObjRazRules *rzRules, Rules *rules, char *cmd )
 
             // begin a convertion specification
             if( *pf == '%' ) {
-                char val[MAXL] = { '\0' }; // value of arg
+                char val[MAXL]; // value of arg
                 char tmp[MAXL] = { '\0' }; // temporary format string
                 char *t = tmp;
                 int cc = 0; // 1 == Conversion Character found
