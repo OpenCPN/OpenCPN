@@ -330,7 +330,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     public static Activity activity()
     {
 //        synchronized (m_mainActivityMutex)
-        Log.i("DEBUGGER_TAG", "activity()");
+        //Log.i("DEBUGGER_TAG", "activity()");
 
         {
             return m_activity;
@@ -340,8 +340,8 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     private String m_settingsReturn;
 
     public String doAndroidSettings(String settings){
-        Log.i("DEBUGGER_TAG", "doAndroidSettings");
-        Log.i("DEBUGGER_TAG", settings);
+        //Log.i("DEBUGGER_TAG", "doAndroidSettings");
+        //Log.i("DEBUGGER_TAG", settings);
 
         m_settingsReturn = new String();
 
@@ -349,7 +349,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         intent.putExtra("SETTINGS_STRING",settings);
         startActivityForResult(intent, OCPN_SETTINGS_REQUEST_CODE);
 
-        Log.i("DEBUGGER_TAG", "after start activity");
+        //Log.i("DEBUGGER_TAG", "after start activity");
 
         int pss = 55;
         String ret;
@@ -369,7 +369,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
 
     public String callFromCpp(int pid){
-        Log.i("DEBUGGER_TAG", "callFromCpp");
+        //Log.i("DEBUGGER_TAG", "callFromCpp");
 
 //        Intent intent = new Intent(QtActivity.this, org.opencpn.OCPNSettingsActivity.class);
 //        startActivity(intent);
@@ -413,7 +413,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     public native int test();
 
     public String getDisplayMetrics(){
-        Log.i("DEBUGGER_TAG", "getDisplayDPI");
+        //Log.i("DEBUGGER_TAG", "getDisplayDPI");
 /*
         int i = nativeLib.test();
         String aa;
@@ -454,7 +454,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         if (Build.VERSION.SDK_INT >= 13) {
 
             if(Build.VERSION.SDK_INT >= 17){
-                Log.i("DEBUGGER_TAG", "VERSION.SDK_INT >= 17");
+                //Log.i("DEBUGGER_TAG", "VERSION.SDK_INT >= 17");
                 width = dm.widthPixels;
                 height = dm.heightPixels;
             }
@@ -463,7 +463,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                 switch (Build.VERSION.SDK_INT){
 
                     case 16:
-                        Log.i("DEBUGGER_TAG", "VERSION.SDK_INT == 16");
+                        //Log.i("DEBUGGER_TAG", "VERSION.SDK_INT == 16");
                         width = dm.widthPixels;
                         height = dm.heightPixels;
                         break;
@@ -487,7 +487,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
             }
         }
         else{
-            Log.i("DEBUGGER_TAG", "VERSION.SDK_INT < 13");
+            //Log.i("DEBUGGER_TAG", "VERSION.SDK_INT < 13");
             width = display.getWidth();
             height = display.getHeight();
         }
@@ -502,7 +502,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                width, height,
                dm.widthPixels, dm.heightPixels, actionBarHeight, tsize);
 
-        Log.i("DEBUGGER_TAG", ret);
+        //Log.i("DEBUGGER_TAG", ret);
 
 
 
@@ -516,7 +516,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                 s += "\n Device: " + android.os.Build.DEVICE;
                 s += "\n Model (and Product): " + android.os.Build.MODEL + " ("+ android.os.Build.PRODUCT + ")";
 
-        Log.i("DEBUGGER_TAG", s);
+        //Log.i("DEBUGGER_TAG", s);
 
         return s;
     }
@@ -565,17 +565,17 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
 
     public String setRouteAnnunciator( final int viz){
-     Log.i("DEBUGGER_TAG", "setRouteAnnunciator");
+     //Log.i("DEBUGGER_TAG", "setRouteAnnunciator");
 
      m_showRouteAnnunciator = (viz != 0);
 
 //    if( null != itemRouteAnnunciator)
     {
-        Log.i("DEBUGGER_TAG", "setRouteAnnunciatorA");
-        if(viz == 0)
-            Log.i("DEBUGGER_TAG", "setRouteAnnunciatorB");
-        else
-            Log.i("DEBUGGER_TAG", "setRouteAnnunciatorC");
+        //Log.i("DEBUGGER_TAG", "setRouteAnnunciatorA");
+        //if(viz == 0)
+            //Log.i("DEBUGGER_TAG", "setRouteAnnunciatorB");
+        //else
+            //Log.i("DEBUGGER_TAG", "setRouteAnnunciatorC");
 
         runOnUiThread(new Runnable() {
                 @Override
@@ -597,10 +597,10 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     public String setFollowIconState( final int isActive){
         m_isFollowActive = (isActive != 0);
 
-        if(isActive == 0)
-            Log.i("DEBUGGER_TAG", "setFollowIconStateA");
-        else
-            Log.i("DEBUGGER_TAG", "setFollowIconStateB");
+        //if(isActive == 0)
+            //Log.i("DEBUGGER_TAG", "setFollowIconStateA");
+        //else
+            //Log.i("DEBUGGER_TAG", "setFollowIconStateB");
 
            runOnUiThread(new Runnable() {
                    @Override
@@ -617,10 +617,10 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
        public String setTrackIconState( final int isActive){
            m_isTrackActive = (isActive != 0);
 
-           if(isActive == 0)
-               Log.i("DEBUGGER_TAG", "setTrackIconStateA");
-           else
-               Log.i("DEBUGGER_TAG", "setTrackIconStateB");
+           //if(isActive == 0)
+               //Log.i("DEBUGGER_TAG", "setTrackIconStateA");
+           //else
+               //Log.i("DEBUGGER_TAG", "setTrackIconStateB");
 
               runOnUiThread(new Runnable() {
                       @Override
@@ -637,7 +637,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
 
        public String setBackButtonState( final int isActive){
-           Log.i("DEBUGGER_TAG", "setBackButtonState");
+           //Log.i("DEBUGGER_TAG", "setBackButtonState");
            m_backButtonEnable = (isActive != 0);
            return "OK";
           }
@@ -655,7 +655,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
 
         if(!m_GPSServiceStarted){
-            Log.i("DEBUGGER_TAG", "Start GPS Server");
+            //Log.i("DEBUGGER_TAG", "Start GPS Server");
             m_GPSServer = new GPSServer(getApplicationContext(), nativeLib, this);
             m_GPSServiceStarted = true;
         }
@@ -830,8 +830,8 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
     public String FileChooserDialog(final String initialDir, final String Title, final String Suggestion, final String wildcard)
     {
-        Log.i("DEBUGGER_TAG", "FileChooserDialog");
-        Log.i("DEBUGGER_TAG", initialDir);
+        //Log.i("DEBUGGER_TAG", "FileChooserDialog");
+        //Log.i("DEBUGGER_TAG", initialDir);
 
         m_FileChooserDone = false;
 
@@ -846,14 +846,14 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
         //  Creating a file?
             if(!Suggestion.isEmpty()){
-                Log.i("DEBUGGER_TAG", "FileChooserDialog Creating");
+                //Log.i("DEBUGGER_TAG", "FileChooserDialog Creating");
                 intent.putExtra(FileChooserActivity.INPUT_CAN_CREATE_FILES, true);
             }
 
             this.startActivityForResult(intent, OCPN_AFILECHOOSER_REQUEST_CODE);
         }
 
-        Log.i("DEBUGGER_TAG", "FileChooserDialog create and show " + initialDir);
+        //Log.i("DEBUGGER_TAG", "FileChooserDialog create and show " + initialDir);
 
         Thread thread = new Thread() {
             @Override
@@ -897,7 +897,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
                         dialog.setOnCancelListener(new OnCancelListener() {
                             public void onCancel(DialogInterface dialog) {
-                                Log.i("DEBUGGER_TAG", "FileChooserDialog Cancel");
+                                //Log.i("DEBUGGER_TAG", "FileChooserDialog Cancel");
                                 m_filechooserString = "cancel:";
                                 m_FileChooserDone = true;
                             }
@@ -907,7 +907,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                         dialog.setCanCreateFiles(true);
                         dialog.show();
 
-                        Log.i("DEBUGGER_TAG", "FileChooserDialog Back from show");
+                        //Log.i("DEBUGGER_TAG", "FileChooserDialog Back from show");
 
                     }
                 });
@@ -917,7 +917,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         // Don't forget to start the thread.
         thread.start();
 
-        Log.i("DEBUGGER_TAG", "FileChooserDialog Returning");
+        //Log.i("DEBUGGER_TAG", "FileChooserDialog Returning");
 
         return "OK";
    }
@@ -934,7 +934,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
             this.startActivityForResult(intent, OCPN_AFILECHOOSER_REQUEST_CODE);
         }
 
-        Log.i("DEBUGGER_TAG", "DirChooserDialog create and show " + initialDir);
+        //Log.i("DEBUGGER_TAG", "DirChooserDialog create and show " + initialDir);
 
         Thread thread = new Thread() {
             @Override
@@ -976,7 +976,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
                         dialog.setOnCancelListener(new OnCancelListener() {
                             public void onCancel(DialogInterface dialog) {
-                                Log.i("DEBUGGER_TAG", "DirChooserDialog Cancel");
+                                //Log.i("DEBUGGER_TAG", "DirChooserDialog Cancel");
                                 m_filechooserString = "cancel:";
                                 m_FileChooserDone = true;
                             }
@@ -985,7 +985,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
                         dialog.show();
 
-                        Log.i("DEBUGGER_TAG", "DirChooserDialog Back from show");
+                        //Log.i("DEBUGGER_TAG", "DirChooserDialog Back from show");
 
                     }
                 });
@@ -995,7 +995,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         // Don't forget to start the thread.
         thread.start();
 
-        Log.i("DEBUGGER_TAG", "DirChooserDialog Returning");
+        //Log.i("DEBUGGER_TAG", "DirChooserDialog Returning");
 
        return "OK";
   }
@@ -1043,8 +1043,8 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
 
    public String configureNavSpinner(int flag, int sel){
-       Log.i("DEBUGGER_TAG", "configureNavSpinner");
-       String aa; aa = String.format("%d %d", flag, sel ); Log.i("DEBUGGER_TAG", aa);
+       //Log.i("DEBUGGER_TAG", "configureNavSpinner");
+       //String aa; aa = String.format("%d %d", flag, sel ); Log.i("DEBUGGER_TAG", aa);
 
        navSpinner.clear();
        int nbits = 0;
@@ -1095,11 +1095,11 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
        ApplicationInfo ai = getApplicationInfo();
        if((ai.flags & ApplicationInfo.FLAG_EXTERNAL_STORAGE) ==  ApplicationInfo.FLAG_EXTERNAL_STORAGE){
-           Log.i("DEBUGGER_TAG", "External");
+           //Log.i("DEBUGGER_TAG", "External");
            result = "EXTAPP;";
        }
        else{
-           Log.i("DEBUGGER_TAG", "Internal");
+           //Log.i("DEBUGGER_TAG", "Internal");
            result = "INTAPP;";
        }
 
@@ -1110,7 +1110,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
        result = result.concat(getExternalFilesDir(null).getPath() + ";");
        result = result.concat(getExternalCacheDir().getPath() + ";");
 
-       Log.i("DEBUGGER_TAG", result);
+       //Log.i("DEBUGGER_TAG", result);
 
        return result;
    }
@@ -1152,10 +1152,10 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
    public boolean onNavigationItemSelected(int itemPosition, long itemId) {
    // Action to be taken after selecting a spinner item from action bar
 
-   Log.i("DEBUGGER_TAG", "onNavigationItemSelected");
+   //Log.i("DEBUGGER_TAG", "onNavigationItemSelected");
    String aa;
    aa = String.format("%d", itemPosition);
-   Log.i("DEBUGGER_TAG", aa);
+   //Log.i("DEBUGGER_TAG", aa);
 
         SpinnerNavItem item = navSpinner.get(itemPosition);
         if(item.getTitle().equalsIgnoreCase("cm93")){
@@ -1164,7 +1164,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         }
         else if(item.getTitle().equalsIgnoreCase("raster")){
             nativeLib.selectChartDisplay(-1, CHART_FAMILY_RASTER);
-            Log.i("DEBUGGER_TAG", "onNavigationItemSelectedA");
+            //Log.i("DEBUGGER_TAG", "onNavigationItemSelectedA");
             return true;
         }
         else if(item.getTitle().equalsIgnoreCase("vector")){
@@ -1178,7 +1178,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
    private void relocateOCPNPlugins( )
    {
-       Log.i("DEBUGGER_TAG", "relocateOCPNPlugins");
+//       Log.i("DEBUGGER_TAG", "relocateOCPNPlugins");
 
        String path = Environment.getExternalStorageDirectory().toString()+"/opencpn/plugins";
        Log.d("DEBUGGER_TAG", "Plugin source Path: " + path);
@@ -1198,11 +1198,11 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                 copyFile(inputStream, outputStream);
                 inputStream.close();
                 outputStream.close();
-                Log.i("DEBUGGER_TAG", "copyFile OK: " + dest);
+                //Log.i("DEBUGGER_TAG", "copyFile OK: " + dest);
             }
             catch (Exception e) {
                 e.printStackTrace();
-                Log.i("DEBUGGER_TAG", "copyFile Exception");
+                //Log.i("DEBUGGER_TAG", "copyFile Exception");
             }
 
 
@@ -1217,7 +1217,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     // this function is used to load and start the loader
     private void loadApplication(Bundle loaderParams)
     {
-        Log.i("DEBUGGER_TAG", "LoadApplication");
+        //Log.i("DEBUGGER_TAG", "LoadApplication");
 
         relocateOCPNPlugins();
 
@@ -1462,7 +1462,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
     private boolean cleanCacheIfNecessary(String pluginsPrefix, long packageVersion)
     {
-        Log.i("DEBUGGER_TAG", "cleanCacheIfNecessary" + pluginsPrefix);
+        //Log.i("DEBUGGER_TAG", "cleanCacheIfNecessary" + pluginsPrefix);
         File versionFile = new File(pluginsPrefix + "cache.version");
 
         long cacheVersion = 0;
@@ -1478,10 +1478,10 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
         if (cacheVersion != packageVersion) {
             deleteRecursively(new File(pluginsPrefix));
-            Log.i("DEBUGGER_TAG", "cleanCacheIfNecessary return true");
+            //Log.i("DEBUGGER_TAG", "cleanCacheIfNecessary return true");
             return true;
         } else {
-            Log.i("DEBUGGER_TAG", "cleanCacheIfNecessary return false");
+            //Log.i("DEBUGGER_TAG", "cleanCacheIfNecessary return false");
 
             return false;
         }
@@ -1819,16 +1819,16 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         }
 
         if (requestCode == OCPN_FILECHOOSER_REQUEST_CODE) {
-            Log.i("DEBUGGER_TAG", "onqtActivityResultCf");
+            //Log.i("DEBUGGER_TAG", "onqtActivityResultCf");
             // Make sure the request was successful
             if (resultCode == RESULT_OK)
             {
-                 Log.i("DEBUGGER_TAG", "onqtActivityResultDf");
+                 //Log.i("DEBUGGER_TAG", "onqtActivityResultDf");
                  m_filechooserString = "file:" + data.getStringExtra("itemSelected");
-                 Log.i("DEBUGGER_TAG", m_filechooserString);
+                 //Log.i("DEBUGGER_TAG", m_filechooserString);
             }
             else if (resultCode == RESULT_CANCELED){
-                Log.i("DEBUGGER_TAG", "onqtActivityResultEf");
+                //Log.i("DEBUGGER_TAG", "onqtActivityResultEf");
                 m_filechooserString = "cancel:";
             }
 
@@ -1840,10 +1840,10 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         }
 
         if (requestCode == OCPN_AFILECHOOSER_REQUEST_CODE) {
-            Log.i("DEBUGGER_TAG", "onqtActivityResultCa");
+            //Log.i("DEBUGGER_TAG", "onqtActivityResultCa");
             // Make sure the request was successful
             if (resultCode == Activity.RESULT_OK) {
-                Log.i("DEBUGGER_TAG", "onqtActivityResultDa");
+                //Log.i("DEBUGGER_TAG", "onqtActivityResultDa");
                 boolean fileCreated = false;
                 String filePath = "";
 
@@ -1866,7 +1866,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                 }
             }
             else if (resultCode == Activity.RESULT_CANCELED){
-                Log.i("DEBUGGER_TAG", "onqtActivityResultEa");
+                //Log.i("DEBUGGER_TAG", "onqtActivityResultEa");
                 m_filechooserString = "cancel:";
             }
 
@@ -1881,7 +1881,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
             QtApplication.invokeDelegateMethod(QtApplication.onActivityResult, requestCode, resultCode, data);
             return;
         }
-        Log.i("DEBUGGER_TAG", "onqtActivityResultB");
+        //Log.i("DEBUGGER_TAG", "onqtActivityResultB");
         if (requestCode == MINISTRO_INSTALL_REQUEST_CODE)
             startApp(false);
 
@@ -1921,12 +1921,12 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     public void onConfigurationChanged(Configuration newConfig)
     {
-        Log.i("DEBUGGER_TAG", "onConfigurationChanged");
+        //Log.i("DEBUGGER_TAG", "onConfigurationChanged");
 
         int i = nativeLib.onConfigChange();
         String aa;
         aa = String.format("%d", i);
-        Log.i("DEBUGGER_TAG", aa);
+        //Log.i("DEBUGGER_TAG", aa);
 
         if (!QtApplication.invokeDelegate(newConfig).invoked)
             super.onConfigurationChanged(newConfig);
@@ -1982,7 +1982,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
-        Log.i("DEBUGGER_TAG", "onCreate");
+        //Log.i("DEBUGGER_TAG", "onCreate");
         super.onCreate(savedInstanceState);
 
 
@@ -2059,7 +2059,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         ENVIRONMENT_VARIABLES += "\tQT_ANDROID_THEME=" + QT_ANDROID_DEFAULT_THEME
                               + "/\tQT_ANDROID_THEME_DISPLAY_DPI=" + getResources().getDisplayMetrics().densityDpi + "\t";
 
-    Log.i("DEBUGGER_TAG", "splash Screen??");
+    //Log.i("DEBUGGER_TAG", "splash Screen??");
 
         if (null == getLastNonConfigurationInstance()) {
             // if splash screen is defined, then show it
@@ -2080,9 +2080,9 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     else{
 //      Log.i("DEBUGGER_TAG", tmpdir + "/uidata/styles.xml DOES NOT exist");
 
-      Log.i("DEBUGGER_TAG", "asset bridge start unpack");
+      //Log.i("DEBUGGER_TAG", "asset bridge start unpack");
       Assetbridge.unpack(this);
-      Log.i("DEBUGGER_TAG", "asset bridge finish unpack");
+      //Log.i("DEBUGGER_TAG", "asset bridge finish unpack");
     }
 
 
@@ -2164,7 +2164,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        Log.i("DEBUGGER_TAG", "onCreateOptionsMenu");
+        //Log.i("DEBUGGER_TAG", "onCreateOptionsMenu");
 
 //      We don't use Qt menu system, since it does not support ActionBar.
 //      We handle ActionBar here, in standard Android manner
@@ -2307,7 +2307,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
 /*
         if (keyCode == KeyEvent.KEYCODE_MENU) {
-            Log.i("DEBUGGER_TAG", "KEYCODE_MENU");
+            //Log.i("DEBUGGER_TAG", "KEYCODE_MENU");
 
             int i = nativeLib.onMenuKey();
 
@@ -2417,12 +2417,12 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         // Take appropriate action for each action item click
         switch (item.getItemId()) {
             case R.id.ocpn_action_follow:
-                Log.i("DEBUGGER_TAG", "Invoke OCPN_ACTION_FOLLOW while in-active");
+                //Log.i("DEBUGGER_TAG", "Invoke OCPN_ACTION_FOLLOW while in-active");
                 nativeLib.invokeMenuItem(OCPN_ACTION_FOLLOW);
                 return true;
 
                 case R.id.ocpn_action_follow_active:
-                    Log.i("DEBUGGER_TAG", "Invoke OCPN_ACTION_FOLLOW while active");
+                    //Log.i("DEBUGGER_TAG", "Invoke OCPN_ACTION_FOLLOW while active");
                     nativeLib.invokeMenuItem(OCPN_ACTION_FOLLOW);
                     return true;
 
@@ -2505,12 +2505,12 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     protected void onPause()
     {
-        Log.i("DEBUGGER_TAG", "onPause");
+        //Log.i("DEBUGGER_TAG", "onPause");
 
         int i = nativeLib.onPause();
         String aa;
         aa = String.format("%d", i);
-        Log.i("DEBUGGER_TAG", aa);
+        //Log.i("DEBUGGER_TAG", aa);
 
         super.onPause();
         QtApplication.invokeDelegate();
@@ -2548,7 +2548,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     public boolean onPrepareOptionsMenu(Menu menu)
     {
-        Log.i("DEBUGGER_TAG", "onPrepareOptionsMenu");
+        //Log.i("DEBUGGER_TAG", "onPrepareOptionsMenu");
 
 
 // Use native instead og Qt
@@ -2600,7 +2600,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     protected void onRestart()
     {
-        Log.i("DEBUGGER_TAG", "onRestart");
+        //Log.i("DEBUGGER_TAG", "onRestart");
         super.onRestart();
         QtApplication.invokeDelegate();
     }
@@ -2621,7 +2621,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     protected void onResume()
     {
-        Log.i("DEBUGGER_TAG", "onResume");
+        //Log.i("DEBUGGER_TAG", "onResume");
 
         int i = nativeLib.onResume();
 //        String aa;
@@ -2679,7 +2679,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     protected void onStart()
     {
-        Log.i("DEBUGGER_TAG", "onStart");
+        //Log.i("DEBUGGER_TAG", "onStart");
 
 //        int i = nativeLib.onStart();
 //        String aa;
@@ -2694,12 +2694,12 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     protected void onStop()
     {
-        Log.i("DEBUGGER_TAG", "onStop");
+        //Log.i("DEBUGGER_TAG", "onStop");
 
         int i = nativeLib.onStop();
         String aa;
         aa = String.format("%d", i);
-        Log.i("DEBUGGER_TAG", aa);
+        //Log.i("DEBUGGER_TAG", aa);
 
         super.onStop();
         QtApplication.invokeDelegate();
