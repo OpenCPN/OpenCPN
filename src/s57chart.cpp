@@ -1850,7 +1850,7 @@ void s57chart::AssembleLineGeometry( void )
                                     VC_Element *epnode = 0;
                                     epnode = m_vc_hash[enode];
                                     
-                                    double e0, n0, e1, n1;
+                                    double e0=0, n0=0, e1, n1;
                                     
                                     if( ipnode ) {
                                         double *ppt = ipnode->pPoint;

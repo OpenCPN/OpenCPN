@@ -32,7 +32,6 @@
 #include "multiplexer.h"
 #include "Select.h"
 #include "georef.h"
-#include "wx28compat.h"
 
 extern WayPointman *pWayPointMan;
 extern bool g_bIsNewLayer;
@@ -65,8 +64,8 @@ Route::Route( void )
     m_bVisible = true;
     m_bListed = true;
     m_bDeleteOnArrival = false;
-    m_width = STYLE_UNDEFINED;
-    m_style = STYLE_UNDEFINED;
+    m_width = WIDTH_UNDEFINED;
+    m_style = wxPENSTYLE_INVALID;
     m_hiliteWidth = 0;
 
     pRoutePointList = new RoutePointList;
@@ -317,7 +316,7 @@ void Route::Draw( ocpnDC& dc, ViewPort &VP )
     if( m_nPoints == 0 ) return;
 
     int width = g_route_line_width;
-    if( m_width != STYLE_UNDEFINED ) width = m_width;
+    if( m_width != WIDTH_UNDEFINED ) width = m_width;
     
     if( m_bVisible && m_bRtIsSelected ) {
         wxPen spen = *g_pRouteMan->GetSelectedRoutePen();
@@ -327,9 +326,9 @@ void Route::Draw( ocpnDC& dc, ViewPort &VP )
     }
     else if ( m_bVisible )
     {
-        int style = wxPENSTYLE_SOLID;
+        wxPenStyle style = wxPENSTYLE_SOLID;
         wxColour col;
-        if( m_style != STYLE_UNDEFINED ) style = m_style;
+        if( m_style != wxPENSTYLE_INVALID ) style = m_style;
         if( m_Colour == wxEmptyString ) {
             col = g_pRouteMan->GetRoutePen()->GetColour();
         } else {
@@ -576,7 +575,7 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
     wxColour col;
 
     int width = g_route_line_width;
-    if( m_width != STYLE_UNDEFINED )
+    if( m_width != WIDTH_UNDEFINED )
         width = m_width;
     if(m_bIsTrack)
         width = g_pRouteMan->GetTrackPen()->GetWidth();
@@ -617,7 +616,7 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
     glColor3ub(col.Red(), col.Green(), col.Blue());
     glLineWidth(wxMax( g_GLMinSymbolLineWidth, width ));
 
-    if( m_style != STYLE_UNDEFINED )
+    if( m_style != wxPENSTYLE_INVALID )
         glEnable( GL_LINE_STIPPLE );
 
     switch( m_style ) {
@@ -625,6 +624,7 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
     case wxLONG_DASH:  glLineStipple( 1, 0xFFF8 ); break;
     case wxSHORT_DASH: glLineStipple( 1, 0x3F3F ); break;
     case wxDOT_DASH:   glLineStipple( 1, 0x8FF1 ); break;
+    default: break;
     }
 
     DrawGLLines(VP, NULL);
