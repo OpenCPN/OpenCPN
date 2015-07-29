@@ -596,7 +596,7 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
     wxColour col;
 
     int width = g_pRouteMan->GetRoutePen()->GetWidth(); //g_route_line_width;
-    if( m_width != STYLE_UNDEFINED )
+    if( m_width != wxPENSTYLE_INVALID )
         width = m_width;
     if(m_bIsTrack)
         width = g_pRouteMan->GetTrackPen()->GetWidth();
@@ -638,7 +638,7 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
     glLineWidth(wxMax( g_GLMinSymbolLineWidth, width ));
 
 #ifndef ocpnUSE_GLES // linestipple is emulated poorly
-    if( m_style != STYLE_UNDEFINED )
+    if( m_style != wxPENSTYLE_INVALID )
         glEnable( GL_LINE_STIPPLE );
 
     switch( m_style ) {
