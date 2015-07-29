@@ -1116,6 +1116,12 @@ MyConfig::MyConfig( const wxString &appName, const wxString &vendorName,
 
 void MyConfig::CreateRotatingNavObjBackup()
 {
+
+    // Avoid nonsense log errors...
+#ifdef __OCPN__ANDROID__    
+    wxLogNull logNo;
+#endif    
+    
     //Rotate navobj backups, but just in case there are some changes in the current version
     //to prevent the user trying to "fix" the problem by continuously starting the
     //application to overwrite all of his good backups...
