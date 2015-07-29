@@ -4363,11 +4363,17 @@ void ChartCanvas::ShowChartInfoWindow( int x, int dbIndex )
             wxString s;
             ChartBase *pc = NULL;
 
+            // TOCTOU race but worst case will reload chart.
+            // need to lock it or the background spooler may evict charts in 
+            // OpenChartFromDBAndLock
             if( ( ChartData->IsChartInCache( dbIndex ) ) && ChartData->IsValid() )
-                pc = ChartData->OpenChartFromDB( dbIndex, FULL_INIT );   // this must come from cache
+                pc = ChartData->OpenChartFromDBAndLock( dbIndex, FULL_INIT );   // this must come from cache
 
             int char_width, char_height;
             s = ChartData->GetFullChartInfo( pc, dbIndex, &char_width, &char_height );
+            if (pc)
+                ChartData->UnLockCacheChart(dbIndex);
+
             m_pCIWin->SetString( s );
             m_pCIWin->FitToChars( char_width, char_height );
 
