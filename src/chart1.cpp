@@ -11303,6 +11303,29 @@ wxFont *GetOCPNScaledFont( wxString item, int default_size )
     return dFont;
 }
 
+wxFont GetOCPNGUIScaledFont( wxString item )
+{
+    wxFont *dFont = FontMgr::Get().GetFont( item, 0 );
+    int req_size = dFont->GetPointSize();
+    wxFont qFont = *dFont;
+    
+    if( g_bresponsive ){
+       double postmult =  exp( g_GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
+       double scaled_font_size = dFont->GetPointSize() * postmult;
+            
+       double points_per_mm  = g_Platform->getFontPointsperPixel() * g_Platform->GetDisplayDPmm();
+       double min_scaled_font_size = 3 * points_per_mm;    // smaller than 3 mm is unreadable
+       int nscaled_font_size = wxMax( wxRound(scaled_font_size), min_scaled_font_size );
+
+//        wxFont *qFont = wxTheFontList->FindOrCreateFont( nscaled_font_size,
+//                                                                  dFont->GetFamily(),
+//                                                                  dFont->GetStyle(),
+//                                                                  dFont->GetWeight());
+       qFont.SetPointSize(nscaled_font_size);
+    }
+    
+    return qFont;
+}
 
 OCPN_ThreadMessageEvent::OCPN_ThreadMessageEvent(wxEventType commandType, int id)
 :wxEvent(id, commandType)

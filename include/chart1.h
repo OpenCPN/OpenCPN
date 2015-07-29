@@ -49,9 +49,11 @@
 extern "C" void MyCPLErrorHandler( CPLErr eErrClass, int nError,
                              const char * pszErrorMsg );
 
-wxFont *GetOCPNScaledFont( wxString item, int default_size = 0 );
 
 #endif
+
+wxFont *GetOCPNScaledFont( wxString item, int default_size = 0 );
+wxFont GetOCPNGUIScaledFont( wxString item );
 
 wxArrayString *EnumerateSerialPorts(void);
 wxColour GetGlobalColor(wxString colorName);
