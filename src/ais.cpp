@@ -118,8 +118,8 @@ extern double           g_AckTimeout_Mins;
 extern bool             bGPSValid;
 extern ArrayOfMMSIProperties   g_MMSI_Props_Array;
 
-extern int              g_ChartScaleFactor;
 extern bool             g_bresponsive;
+extern float            g_ChartScaleFactorExp;
 
 extern PlugInManager    *g_pi_manager;
 extern ocpnStyle::StyleManager* g_StyleManager;
@@ -823,9 +823,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
     
     float scale_factor = 1.0;
     if(g_bresponsive){
-        scale_factor =  exp( g_ChartScaleFactor * (0.693 / 5.0) );       //  exp(2)
-        scale_factor = wxMax(scale_factor, .5);
-        scale_factor = wxMin(scale_factor, 4.);
+        scale_factor =  g_ChartScaleFactorExp;
     }
     
     //      Skip anchored/moored (interpreted as low speed) targets if requested

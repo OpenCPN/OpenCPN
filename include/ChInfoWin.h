@@ -35,6 +35,7 @@ public:
 
     void SetString(const wxString &s){ m_string = s; }
     const wxString& GetString(void) { return m_string; }
+    void MouseEvent( wxMouseEvent& event );
     
     void SetPosition( wxPoint pt )
     {

@@ -73,7 +73,6 @@
 #include "AIS_Target_Data.h"
 #include "AISTargetAlertDialog.h"
 #include "SendToGpsDlg.h"
-#include "compasswin.h"
 #include "OCPNRegion.h"
 #include "gshhs.h"
 

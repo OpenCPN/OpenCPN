@@ -173,7 +173,7 @@ wxString FontMgr::GetSimpleNativeFont( int size, wxString face )
     wxString nativefont;
 
     // this should work for all platforms
-    nativefont = wxFont(size, wxFONTFAMILY_DEFAULT, (int) wxFONTSTYLE_NORMAL, (int) wxFONTWEIGHT_NORMAL, false, face)
+    nativefont = wxFont(size, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, face)
     .GetNativeFontInfoDesc();
     
 #if 0

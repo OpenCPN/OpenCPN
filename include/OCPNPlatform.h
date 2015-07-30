@@ -98,6 +98,9 @@ public:
     
     wxFileDialog *AdjustFileDialogFont(wxWindow *container, wxFileDialog *dlg);
     wxDirDialog  *AdjustDirDialogFont(wxWindow *container,  wxDirDialog *dlg);
+
+    void PositionAISAlert( wxWindow *alert_window);
+    float getChartScaleFactorExp( float scale_linear );
     
 //--------------------------------------------------------------------------
 //      Per-Platform file/directory support

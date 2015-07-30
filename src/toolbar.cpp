@@ -405,7 +405,7 @@ void ocpnFloatingToolbarDialog::SetColorScheme( ColorScheme cs )
 
 }
 
-void ocpnFloatingToolbarDialog::SetGeometry(wxWindow *pwinAvoid)
+void ocpnFloatingToolbarDialog::SetGeometry(bool bAvoid, wxRect rectAvoid)
 {
 
     if( m_ptoolbar ) {
@@ -424,8 +424,8 @@ void ocpnFloatingToolbarDialog::SetGeometry(wxWindow *pwinAvoid)
         if(cc1){
 
             int avoid_start = cc1->GetClientSize().x - (tool_size.x + m_style->GetToolSeparation()) * 2;  // default
-            if(pwinAvoid && pwinAvoid->IsShown()){
-                avoid_start = cc1->GetClientSize().x - pwinAvoid->GetSize().x;  // this is compass window, if shown
+            if(bAvoid && !rectAvoid.IsEmpty()){
+                avoid_start = cc1->GetClientSize().x - rectAvoid.width - 10;  // this is compass window, if shown
             }
             
             
@@ -495,7 +495,6 @@ void ocpnFloatingToolbarDialog::SubmergeToGrabber()
     if( m_ptoolbar ) m_ptoolbar->KillTooltip();
 
     m_pRecoverwin = new GrabberWin( m_pparent, this, m_sizefactor, _T("grabber_ext" ), wxPoint(10,10) );
-    
    
     m_pRecoverwin->Show();
     m_pRecoverwin->Raise();
@@ -566,10 +565,14 @@ void ocpnFloatingToolbarDialog::SurfaceFromGrabber()
     Hide();
     Move( 0, 0 );
 #endif
+
+    if( m_ptoolbar )
+        m_ptoolbar->InvalidateBitmaps();
     
     RePosition();
     Show();
-    if( m_ptoolbar ) m_ptoolbar->EnableTooltips();
+    if( m_ptoolbar )
+        m_ptoolbar->EnableTooltips();
     
     if( g_bAutoHideToolbar && (g_nAutoHideToolbar > 0) ){
         m_fade_timer.Start( g_nAutoHideToolbar * 1000 );
@@ -938,7 +941,7 @@ ocpnToolBarSimple *ocpnFloatingToolbarDialog::GetToolbar()
         m_ptoolbar->SetToggledBackgroundColour( GetGlobalColor( _T("GREY1") ) );
         m_ptoolbar->SetColorScheme( m_cs );
 
-        SetGeometry();
+        SetGeometry(false, wxRect());
     }
 
     return m_ptoolbar;
@@ -951,6 +954,10 @@ void ocpnFloatingToolbarDialog::DestroyToolBar()
         delete m_ptoolbar;                  //->Destroy();
         m_ptoolbar = NULL;
     }
+ 
+    m_destroyGrabber = m_pRecoverwin;
+    m_destroyTimer.Start( 5, wxTIMER_ONE_SHOT );           //  Destor the unneeded recovery grabber
+    
 }
 
 //----------------------------------------------------------------------------
@@ -1773,7 +1780,6 @@ void ocpnToolBarSimple::DrawTool( wxToolBarToolBase *tool )
 void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
 {
     ocpnToolBarTool *tool = (ocpnToolBarTool *) toolBase;
-
     PrepareDC( dc );
 
     wxPoint drawAt( tool->m_x, tool->m_y );
@@ -1814,7 +1820,8 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
                 if( bmp.GetDepth() == 1 ) {
                     if( tool->rollover ) {
                         bmp = m_style->BuildPluginIcon( tool->pluginRolloverIcon, TOOLICON_TOGGLED );
-                        if( ! bmp.IsOk() ) bmp = m_style->BuildPluginIcon( tool->pluginNormalIcon, TOOLICON_TOGGLED );
+                        if( ! bmp.IsOk() )
+                            bmp = m_style->BuildPluginIcon( tool->pluginNormalIcon, TOOLICON_TOGGLED );
                     }
                     else
                         bmp = m_style->BuildPluginIcon( tool->pluginNormalIcon, TOOLICON_TOGGLED );
@@ -1824,11 +1831,16 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
                 if( bmp.GetDepth() == 1 ) {
                     if( tool->rollover ) {
                         bmp = m_style->BuildPluginIcon( tool->pluginRolloverIcon, TOOLICON_NORMAL );
-                        if( ! bmp.IsOk() ) bmp = m_style->BuildPluginIcon( tool->pluginNormalIcon, TOOLICON_NORMAL );
+                        if( ! bmp.IsOk() )
+                            bmp = m_style->BuildPluginIcon( tool->pluginNormalIcon, TOOLICON_NORMAL );
                     }
                     else
                         bmp = m_style->BuildPluginIcon( tool->pluginNormalIcon, TOOLICON_NORMAL );
                 }
+            }
+            if(m_sizefactor > 1.0 ){
+                wxImage scaled_image = bmp.ConvertToImage();
+                bmp = wxBitmap(scaled_image.Scale(tool->m_width, tool->m_height, wxIMAGE_QUALITY_HIGH));
             }
             tool->SetNormalBitmap( bmp );
             tool->bitmapOK = true;

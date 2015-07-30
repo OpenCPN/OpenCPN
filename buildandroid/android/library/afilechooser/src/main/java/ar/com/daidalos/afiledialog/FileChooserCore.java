@@ -103,7 +103,7 @@ class FileChooserCore {
 	/**
 	 * A boolean indicating if the folder's full path must be show in the title.
 	 */
-	private boolean showFullPathInTitle;
+        private boolean showFullPathInTitle = true;
 	
 	// ---- Static attributes ----- //
 	
@@ -251,7 +251,7 @@ class FileChooserCore {
 		this.labels = null;
 		this.showConfirmationOnCreate = false;
 		this.showConfirmationOnSelect = false;
-		this.showFullPathInTitle = false;
+                this.showFullPathInTitle = true;
 
                 LinearLayout root = this.chooser.getRootLayout();
                 m_progressBar = (ProgressBar) root.findViewById(R.id.progressBar);

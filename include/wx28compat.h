@@ -35,6 +35,9 @@
 
 #if !wxCHECK_VERSION(3,0,0)
 
+typedef int wxPenStyle;
+
+#define wxPENSTYLE_INVALID -1
 #define wxPENSTYLE_USER_DASH wxUSER_DASH
 #define wxPENSTYLE_SOLID wxSOLID
 #define wxPENSTYLE_SHORT_DASH wxSHORT_DASH

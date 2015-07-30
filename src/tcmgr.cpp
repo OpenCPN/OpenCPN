@@ -4451,10 +4451,9 @@ static NV_INT32 read_partial_tide_record (NV_INT32 num, TIDE_RECORD *rec)
     /* DWF 2007-12-02:  This is the one place where a short read would not
        necessarily mean catastrophe.  We don't know how long the partial
        record actually is yet, and it's possible that the full record will
-       be shorter than maximum_possible_size.  So the return of fread is
-       deliberately unchecked. */
-    (void) fread (buf, maximum_possible_size, 1, fp);
-    unpack_partial_tide_record (buf, maximum_possible_size, rec, &pos);
+       be shorter than maximum_possible_size. */
+    size_t size = fread (buf, 1, maximum_possible_size, fp);
+    unpack_partial_tide_record (buf, size, rec, &pos);
     free (buf);
     return (num);
 }
