@@ -82,7 +82,7 @@
 #include "chartimg.h"               // for ChartBaseBSB
 #include "routeprop.h"
 #include "toolbar.h"
-#include "compasswin.h"
+#include "compass.h"
 #include "datastream.h"
 #include "OCPN_DataStreamEvent.h"
 #include "multiplexer.h"
@@ -637,15 +637,16 @@ RoutePrintSelection       *pRoutePrintSelection;
 
 wxMenu                    *g_FloatingToolbarConfigMenu;
 wxString                  g_toolbarConfig = _T("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-ocpnFloatingToolbarDialog *g_FloatingToolbarDialog;
-ocpnFloatingCompassWindow *g_FloatingCompassDialog;
 
+ocpnFloatingToolbarDialog *g_FloatingToolbarDialog;
 int                       g_toolbar_x;
 int                       g_toolbar_y;
 long                      g_toolbar_orient;
 wxRect                    g_last_tb_rect;
 float                     g_toolbar_scalefactor;
 float                     g_compass_scalefactor;
+
+ocpnCompass              *g_Compass;
 
 MyDialogPtrArray          g_MacShowDialogArray;
 bool                      g_benable_rotate;
@@ -894,20 +895,6 @@ void MyApp::OnActivateApp( wxActivateEvent& event )
                 }
             }
         }
-
-#if 0
-        if(console && console->IsShown()) {
-            console->Hide();
-        }
-
-        if(g_FloatingCompassDialog && g_FloatingCompassDialog->IsShown()) {
-            g_FloatingCompassDialog->Hide();
-        }
-
-        if(g_ChartBarWin && g_ChartBarWin->IsShown()) {
-            g_ChartBarWin->Hide();
-        }
-#endif
     }
     else
     {
@@ -929,24 +916,6 @@ void MyApp::OnActivateApp( wxActivateEvent& event )
             node = node->GetNext();
         }
 
-#if 0
-        if(g_FloatingCompassDialog){
-            g_FloatingCompassDialog->Hide();
-            g_FloatingCompassDialog->Show();
-        }
-
-        if(g_ChartBarWin){
-            g_ChartBarWin->Hide();
-            g_ChartBarWin->Show();
-        }
-
-        if(console) {
-            if( g_pRouteMan->IsAnyRouteActive() ){
-                console->Hide();
-                console->Show();
-            }
-        }
-#endif
         if( pOptions )
             pOptions->Raise();
         else
@@ -2037,13 +2006,9 @@ extern ocpnGLOptions g_GLOptions;
 
     cc1->ReloadVP();                  // once more, and good to go
 
-    //  Some window managers get confused about z-order of Compass Window, and other windows not children of gFrame.
-    //  We need to defer their creation until here.
-    if( pConfig->m_bShowCompassWin ) {
-        g_FloatingCompassDialog = new ocpnFloatingCompassWindow( cc1 );
-        g_FloatingCompassDialog->SetScaleFactor(g_compass_scalefactor);
-        g_FloatingCompassDialog->UpdateStatus( true );
-    }
+    g_Compass = new ocpnCompass;
+    g_Compass->SetScaleFactor(g_compass_scalefactor);
+    g_Compass->Show(pConfig->m_bShowCompassWin);
 
     gFrame->Refresh( false );
     gFrame->Raise();
@@ -2091,8 +2056,6 @@ extern ocpnGLOptions g_GLOptions;
 #ifdef __WXQT__
     if(g_FloatingToolbarDialog)
         g_FloatingToolbarDialog->Raise();
-    if(g_FloatingCompassDialog)
-        g_FloatingCompassDialog->Raise();
 #endif
     
     // Start delayed initialization chain after 100 milliseconds
@@ -2617,7 +2580,7 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     if( g_FloatingToolbarDialog ){
         tb = g_FloatingToolbarDialog->GetToolbar();
         if(tb)
-            g_FloatingToolbarDialog->SetGeometry(g_FloatingCompassDialog);
+            g_FloatingToolbarDialog->SetGeometry(g_Compass->IsShown(), g_Compass->GetRect());
     }
     if( !tb )
         return 0;
@@ -2942,8 +2905,8 @@ void MyFrame::UpdateToolbar( ColorScheme cs )
         }
     }
 
-    if( g_FloatingCompassDialog )
-        g_FloatingCompassDialog->SetColorScheme( cs );
+    if(g_Compass)
+        g_Compass->SetColorScheme( cs );
 
     if( g_toolbar ) {
         //  Re-establish toggle states
@@ -3208,9 +3171,8 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         g_pAISTargetList->Destroy();
     }
 
-    if( g_FloatingCompassDialog )
-        g_FloatingCompassDialog->Destroy();
-    g_FloatingCompassDialog = NULL;
+    delete g_Compass;
+    g_Compass = NULL;
 
 
 #ifndef __OCPN__ANDROID__
@@ -3337,7 +3299,7 @@ void MyFrame::OnMove( wxMoveEvent& event )
 
     if( g_ChartBarWin && g_ChartBarWin->IsVisible()) g_ChartBarWin->RePosition();
 
-    UpdateGPSCompassStatusBox( );
+//    UpdateGPSCompassStatusBox( );
 
     if( console && console->IsShown() ) PositionConsole();
 
@@ -3358,7 +3320,7 @@ void MyFrame::ProcessCanvasResize( void )
 
     if( g_FloatingToolbarDialog ) {
         g_FloatingToolbarDialog->RePosition();
-        g_FloatingToolbarDialog->SetGeometry(g_FloatingCompassDialog);
+        g_FloatingToolbarDialog->SetGeometry(g_Compass->IsShown(), g_Compass->GetRect());
         g_FloatingToolbarDialog->Realize();
         g_FloatingToolbarDialog->RePosition();
 
@@ -3413,7 +3375,7 @@ void MyFrame::OnResizeTimer(wxTimerEvent &event)
             g_Platform->GetDisplaySizeMM();             // causes a reload of all display metrics
             SetToolbarScale();
             g_FloatingToolbarDialog->RePosition();
-            g_FloatingToolbarDialog->SetGeometry(g_FloatingCompassDialog);
+            g_FloatingToolbarDialog->SetGeometry(g_Compass->IsShown(), g_Compass->GetRect());
             g_FloatingToolbarDialog->Realize();
             g_FloatingToolbarDialog->Refresh( false );
         }
@@ -3547,7 +3509,7 @@ void MyFrame::ODoSetSize( void )
     if( g_FloatingToolbarDialog ) {
         wxSize oldSize = g_FloatingToolbarDialog->GetSize();
         g_FloatingToolbarDialog->RePosition();
-        g_FloatingToolbarDialog->SetGeometry(g_FloatingCompassDialog);
+        g_FloatingToolbarDialog->SetGeometry(g_Compass->IsShown(), g_Compass->GetRect());
         g_FloatingToolbarDialog->Realize();
 
         if( oldSize != g_FloatingToolbarDialog->GetSize() )
@@ -4695,17 +4657,8 @@ void MyFrame::ApplyGlobalSettings( bool bFlyingUpdate, bool bnewtoolbar )
 
     SendSizeEvent();               
     
-    if( bFlyingUpdate ) {
-        if( pConfig->m_bShowCompassWin ) {
-            if(!g_FloatingCompassDialog) {
-                g_FloatingCompassDialog = new ocpnFloatingCompassWindow( cc1 );
-                if( g_FloatingCompassDialog ) g_FloatingCompassDialog->UpdateStatus( true );
-            }
-        } else if(g_FloatingCompassDialog) {
-            g_FloatingCompassDialog->Destroy();
-            g_FloatingCompassDialog = NULL;
-        }
-    }
+    if( bFlyingUpdate )
+        g_Compass->Show(pConfig->m_bShowCompassWin);
 
     if( bnewtoolbar ) UpdateToolbar( global_color_scheme );
 
@@ -5061,13 +5014,12 @@ int MyFrame::DoOptionsDialog()
     DoChartUpdate();
     UpdateControlBar();
     Refresh();
-    
+ 
     //  We set the compass size first, since that establishes the available space for the toolbar.
-    if(g_FloatingCompassDialog){
-        SetGPSCompassScale();
-        g_FloatingCompassDialog->SetScaleFactor(g_compass_scalefactor);
-    }
-        
+    SetGPSCompassScale();
+    g_Compass->SetScaleFactor(g_compass_scalefactor);
+    UpdateGPSCompassStatusBox();
+    
     SetToolbarScale();
     RequestNewToolbar();
 
@@ -5078,9 +5030,6 @@ int MyFrame::DoOptionsDialog()
     }
 
 #if defined(__WXOSX__) || defined(__WXQT__)
-    if( g_FloatingCompassDialog )
-        g_FloatingCompassDialog->Raise();
-
     if( b_restoreAIS ){
         g_pAISTargetList = new AISTargetListDialog( this, g_pauimgr, g_pAIS );
         g_pAISTargetList->UpdateAISTargetList();
@@ -6038,19 +5987,6 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
                 }
             }
         }
-#if 0
-        if(console && console->IsShown()) {
-            console->Hide();
-        }
-
-        if(g_FloatingCompassDialog && g_FloatingCompassDialog->IsShown()) {
-            g_FloatingCompassDialog->Hide();
-        }
-
-        if(g_ChartBarWin && g_ChartBarWin->IsShown()) {
-            g_ChartBarWin->Hide();
-        }
-#endif
     }
 #endif
 
@@ -6587,63 +6523,46 @@ void MyFrame::UpdateRotationState( double rotation )
 
 void MyFrame::UpdateGPSCompassStatusBox( bool b_force_new )
 {
-    if( !g_FloatingCompassDialog ) return;
-
-    //  Process changes in scale
-    if(fabs(g_FloatingCompassDialog->GetScaleFactor() - g_compass_scalefactor) > 0.01){
-        g_FloatingCompassDialog->SetScaleFactor(g_compass_scalefactor);
-    }
-    
-    //    Look for change in overlap or positions
+   //    Look for change in overlap or positions
     bool b_update = false;
-    wxRect tentative_rect;
-    wxPoint tentative_pt_in_screen;
-    int x_offset;
-    int y_offset;
-    int size_x, size_y;
     int cc1_edge_comp = 2;
 
     if( g_FloatingToolbarDialog ) {
-        x_offset = g_FloatingCompassDialog->GetXOffset();
-        y_offset = g_FloatingCompassDialog->GetYOffset();
-        g_FloatingCompassDialog->GetSize(&size_x, &size_y);
-        wxSize parent_size = g_FloatingCompassDialog->GetParent()->GetSize();
+        wxRect rect = g_Compass->GetRect();
+        wxSize parent_size = cc1->GetSize();
 
         // check to see if it would overlap if it was in its home position (upper right)
-         tentative_pt_in_screen = g_FloatingCompassDialog->GetParent()->ClientToScreen(
-                wxPoint( parent_size.x - size_x - x_offset - cc1_edge_comp, y_offset ) );
-
-        tentative_rect = wxRect( tentative_pt_in_screen.x, tentative_pt_in_screen.y, size_x, size_y );
+        wxPoint tentative_pt(parent_size.x - rect.width - cc1_edge_comp, 0);
+        wxRect tentative_rect( tentative_pt, rect.GetSize() );
 
         //  If the toolbar location has changed, or the proposed compassDialog location has changed
-        if( (g_FloatingToolbarDialog->GetScreenRect() != g_last_tb_rect) ||
-            (tentative_rect != g_FloatingCompassDialog->GetScreenRect()) ) {
+        if( g_FloatingToolbarDialog->GetScreenRect() != g_last_tb_rect || b_force_new) {
 
             wxRect tb_rect = g_FloatingToolbarDialog->GetScreenRect();
+            wxPoint tentative_pt_in_screen(cc1->ClientToScreen(tentative_pt));
+            wxRect tentative_rect_in_screen(tentative_pt_in_screen.x, tentative_pt_in_screen.y,
+                                            rect.width, rect.height);
 
             //    if they would not intersect, go ahead and move it to the upper right
             //      Else it has to be on lower right
-            if( !tb_rect.Intersects( tentative_rect ) ) {
-                g_FloatingCompassDialog->Move( tentative_pt_in_screen );
-            }
-            else {
-                wxPoint posn_in_canvas =
-                    wxPoint( cc1->GetSize().x - size_x - x_offset - cc1_edge_comp,
-                             cc1->GetSize().y - ( size_y + y_offset + cc1_edge_comp ) );
-                g_FloatingCompassDialog->Move( cc1->ClientToScreen( posn_in_canvas ) );
-            }
+            if( !tb_rect.Intersects( tentative_rect_in_screen ) )
+                g_Compass->Move( tentative_pt );
+            else
+                g_Compass->Move( wxPoint( cc1->GetSize().x - rect.width - cc1_edge_comp,
+                                          cc1->GetSize().y - ( rect.height + cc1_edge_comp ) ) );
 
-            b_update = true;
-
+            if(rect != g_Compass->GetRect()) {
+                Refresh(true);
+                cc1->m_brepaint_piano = true;
+                b_update = true;
+            }
             g_last_tb_rect = tb_rect;
 
         }
     }
 
-    if( g_FloatingCompassDialog && g_FloatingCompassDialog->IsShown()) {
-        g_FloatingCompassDialog->UpdateStatus( b_force_new | b_update );
-        g_FloatingCompassDialog->Update();
-    }
+    if( g_Compass && g_Compass->IsShown())
+        g_Compass->UpdateStatus( b_force_new | b_update );
 }
 
 int MyFrame::GetnChartStack( void )
@@ -9485,11 +9404,9 @@ void MyFrame::applySettingsString( wxString settings)
     
 
     //  We set the compass size first, since that establishes the available space for the toolbar.
-    if(g_FloatingCompassDialog){
-        SetGPSCompassScale();
-        g_FloatingCompassDialog->SetScaleFactor(g_compass_scalefactor);
-        UpdateGPSCompassStatusBox( );
-    }
+    SetGPSCompassScale();
+    g_Compass->SetScaleFactor(g_compass_scalefactor);
+    UpdateGPSCompassStatusBox( true );
     
     SetToolbarScale();
     RequestNewToolbar(true);    // Force rebuild, to pick up bGUIexpert settings.
@@ -9507,9 +9424,6 @@ void MyFrame::applySettingsString( wxString settings)
     
 
 #if defined(__WXOSX__) || defined(__WXQT__)
-    if( g_FloatingCompassDialog )
-        g_FloatingCompassDialog->Raise();
- 
     if( g_FloatingToolbarDialog )
         g_FloatingToolbarDialog->Raise();
     
@@ -11060,17 +10974,11 @@ int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& c
 #ifdef __WXOSX__
     long parent_style;
     bool b_toolviz = false;
-    bool b_compassviz = false;
     bool b_g_ChartBarWinviz = false;
 
     if(g_FloatingToolbarDialog && g_FloatingToolbarDialog->IsShown()){
         g_FloatingToolbarDialog->Hide();
         b_toolviz = true;
-    }
-
-    if( g_FloatingCompassDialog && g_FloatingCompassDialog->IsShown()){
-        g_FloatingCompassDialog->Hide();
-        b_compassviz = true;
     }
 
     if( g_ChartBarWin && g_ChartBarWin->IsShown()) {
@@ -11096,9 +11004,6 @@ int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& c
 #ifdef __WXOSX__
     if(gFrame && b_toolviz)
         gFrame->SurfaceToolbar();
-
-    if( g_FloatingCompassDialog && b_compassviz)
-        g_FloatingCompassDialog->Show();
 
     if( g_ChartBarWin && b_g_ChartBarWinviz)
         g_ChartBarWin->Show();

@@ -2920,7 +2920,7 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
                                         wxDefaultPosition, wxSize( slider_width, 50),
                                         wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS );
     m_pSlider_GUI_Factor->Hide();
-#ifdef __OCPN__ANDROID__    
+//#ifdef __OCPN__ANDROID__    
     miscOptions->Add( new wxStaticText(itemPanelFont, wxID_ANY, _("User Interface scale factor")), inputFlags );
     miscOptions->Add( m_pSlider_GUI_Factor, 0, wxALL, border_size );
     m_pSlider_GUI_Factor->Show();
@@ -2928,7 +2928,7 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
 #ifdef __WXQT__
     m_pSlider_GUI_Factor->GetHandle()->setStyleSheet( getQtStyleSheet());
 #endif
-#endif
+//#endif
     
 
 

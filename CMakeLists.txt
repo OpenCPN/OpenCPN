@@ -728,7 +728,7 @@ SET(HDRS
 		include/wx/jsonreader.h
 		include/styles.h
 		include/toolbar.h
-		include/compasswin.h
+		include/compass.h
 		include/geodesic.h
 		include/datastream.h
 		include/OCPN_DataStreamEvent.h
@@ -817,7 +817,7 @@ SET(SRCS
 		src/wxJSON/jsonval.cpp
 		src/styles.cpp
 		src/toolbar.cpp
-		src/compasswin.cpp
+		src/compass.cpp
 		src/geodesic.cpp
 		src/datastream.cpp
 		src/OCPN_DataStreamEvent.cpp

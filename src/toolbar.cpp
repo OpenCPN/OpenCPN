@@ -405,7 +405,7 @@ void ocpnFloatingToolbarDialog::SetColorScheme( ColorScheme cs )
 
 }
 
-void ocpnFloatingToolbarDialog::SetGeometry(wxWindow *pwinAvoid)
+void ocpnFloatingToolbarDialog::SetGeometry(bool bAvoid, wxRect rectAvoid)
 {
 
     if( m_ptoolbar ) {
@@ -424,8 +424,8 @@ void ocpnFloatingToolbarDialog::SetGeometry(wxWindow *pwinAvoid)
         if(cc1){
 
             int avoid_start = cc1->GetClientSize().x - (tool_size.x + m_style->GetToolSeparation()) * 2;  // default
-            if(pwinAvoid && pwinAvoid->IsShown()){
-                avoid_start = cc1->GetClientSize().x - pwinAvoid->GetSize().x;  // this is compass window, if shown
+            if(bAvoid && !rectAvoid.IsEmpty()){
+                avoid_start = cc1->GetClientSize().x - rectAvoid.width - 10;  // this is compass window, if shown
             }
             
             
@@ -941,7 +941,7 @@ ocpnToolBarSimple *ocpnFloatingToolbarDialog::GetToolbar()
         m_ptoolbar->SetToggledBackgroundColour( GetGlobalColor( _T("GREY1") ) );
         m_ptoolbar->SetColorScheme( m_cs );
 
-        SetGeometry();
+        SetGeometry(false, wxRect());
     }
 
     return m_ptoolbar;

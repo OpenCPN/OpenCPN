@@ -1332,6 +1332,10 @@ double OCPNPlatform::GetCompassScaleFactor( int GUIScaleFactor )
     
     
 #else
+    double postmult =  exp( GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
+    rv *= postmult;
+    rv = wxMin(rv, 3.0);      //  Clamp at 3.0
+    
 #endif
     
     return rv;
