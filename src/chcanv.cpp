@@ -75,7 +75,7 @@
 #include "AIS_Target_Data.h"
 #include "AISTargetAlertDialog.h"
 #include "SendToGpsDlg.h"
-#include "compasswin.h"
+#include "compass.h"
 #include "OCPNRegion.h"
 #include "gshhs.h"
 #include "canvasMenu.h"
@@ -197,7 +197,7 @@ extern int              g_Show_Target_Name_Scale;
 extern MyFrame          *gFrame;
 extern Piano            *g_Piano;
 extern ChartBarWin      *g_ChartBarWin;
-extern ocpnFloatingCompassWindow *g_FloatingCompassDialog;
+extern ocpnCompass      *g_Compass;
 
 extern int              g_iNavAidRadarRingsNumberVisible;
 extern float            g_fNavAidRadarRingsStep;
@@ -1808,15 +1808,9 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             break;
 
         case 9:                      // Ctrl I
-            if( g_FloatingCompassDialog ) {
-                if( g_FloatingCompassDialog->IsShown() ) {
-                    g_FloatingCompassDialog->Hide();
-                } else {
-                    g_FloatingCompassDialog->Show();
-                }
-                gFrame->Raise();
-                Refresh();
-            }
+            g_Compass->Show(!g_Compass->IsShown());
+            m_brepaint_piano = true;
+            Refresh( false );
             break;
 
         default:
@@ -4596,7 +4590,10 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
     
     int chartbar_height = GetChartbarHeight();
 
-    if( x > xr_margin ) {
+    if( g_Compass && g_Compass->IsShown() &&
+        g_Compass->GetRect().Contains(event.GetPosition())) {
+        cursor_region = CENTER;
+    } else if( x > xr_margin ) {
         cursor_region = MID_RIGHT;
     } else if( x < xl_margin ) {
         cursor_region = MID_LEFT;
@@ -6220,7 +6217,10 @@ bool ChartCanvas::MouseEventProcessCanvas( wxMouseEvent& event )
 
 void ChartCanvas::MouseEvent( wxMouseEvent& event )
 {
-    if(cc1->MouseEventChartBar( event ))
+    if(g_Compass && g_Compass->MouseEvent( event ))
+        return;
+
+    if(MouseEventChartBar( event ))
         return;
 
     if(MouseEventSetup( event ))
@@ -8346,7 +8346,6 @@ bool ChartCanvas::InvokeCanvasMenu(int x, int y, int seltype)
 #ifdef __WXQT__
     gFrame->SurfaceToolbar();
     //g_FloatingToolbarDialog->Raise();
-    g_FloatingCompassDialog->Raise();
     if(g_ChartBarWin && g_ChartBarWin->IsShown())
         g_ChartBarWin->Raise();
 #endif
@@ -9284,6 +9283,9 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         m_brepaint_piano = false;
     }
 
+    if(g_Compass)
+        g_Compass->Paint(scratch_dc);
+
     //quiting?
     if( g_bquiting ) {
 #ifdef ocpnUSE_DIBSECTION
@@ -9730,12 +9732,13 @@ emboss_data *ChartCanvas::EmbossDepthScale()
     }
 
     ped->x = ( GetVP().pix_width - ped->width );
-    
-    if(g_FloatingCompassDialog && pConfig->m_bShowCompassWin){
-        wxPoint p = ScreenToClient(g_FloatingCompassDialog->GetPosition());
-        ped->y = p.y + g_FloatingCompassDialog->GetSize().y + 4;
-    }
-    else{
+
+    if(g_Compass && pConfig->m_bShowCompassWin){
+        wxRect r = g_Compass->GetRect();
+        wxPoint p = ScreenToClient(wxPoint(r.x, r.y));
+        ped->y = p.y + r.height + 4;
+     }
+     else{
         ped->y = 40;
     }
     return ped;

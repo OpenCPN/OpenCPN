@@ -351,7 +351,7 @@ public:
       void SetColorScheme( ColorScheme cs );
       bool CheckSurfaceRequest( wxMouseEvent &event );
       
-      void SetGeometry(wxWindow *pwinAvoid = 0);
+      void SetGeometry(bool bAvoid, wxRect rectAvoid);
       long GetOrient() {
             return m_orient;
       }
