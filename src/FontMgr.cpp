@@ -64,7 +64,7 @@ FontMgr::FontMgr()
     s_locale = g_locale;
     
     //    Get a nice generic font as default
-    pDefFont = wxTheFontList->FindOrCreateFont( 12, wxDEFAULT, wxNORMAL, wxBOLD, FALSE,
+    pDefFont = wxTheFontList->FindOrCreateFont( 12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, FALSE,
             wxString( _T ( "" ) ), wxFONTENCODING_SYSTEM );
 
 }
@@ -173,7 +173,7 @@ wxString FontMgr::GetSimpleNativeFont( int size, wxString face )
     wxString nativefont;
 
     // this should work for all platforms
-    nativefont = wxFont(size, wxFONTFAMILY_DEFAULT, (int) wxFONTSTYLE_NORMAL, (int) wxFONTWEIGHT_NORMAL, false, face)
+    nativefont = wxFont(size, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, face)
     .GetNativeFontInfoDesc();
     
 #if 0

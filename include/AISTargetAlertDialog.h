@@ -81,10 +81,12 @@ class AISTargetAlertDialog: public OCPN_AlertDialog
 
            int Get_Dialog_MMSI(void){ return m_target_mmsi; }
            void UpdateText();
-
+           void RecalculateSize( void );
+           
       private:
           void CreateControls();
           bool GetAlertText(void);
+          void SetColorScheme( void );
             void OnClose(wxCloseEvent& event);
             void OnIdAckClick( wxCommandEvent& event );
             void OnMove( wxMoveEvent& event );
@@ -102,6 +104,8 @@ class AISTargetAlertDialog: public OCPN_AlertDialog
             bool              m_bjumpto;
             bool              m_back;
             bool              m_bcreateWP;
+            int               m_max_nline;
+            int               m_adj_height;
             
 
 };

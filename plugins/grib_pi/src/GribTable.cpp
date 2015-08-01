@@ -489,10 +489,10 @@ wxString GRIBTable::GetCurrent(GribRecord **recordarray)
 wxString GRIBTable::GetTimeRowsStrings( wxDateTime date_time, int time_zone, int type )
 {
     wxDateTime t( date_time );
-    t.MakeFromTimezone( wxDateTime::UTC );
-    if( t.IsDST() ) t.Subtract( wxTimeSpan( 1, 0, 0, 0 ) );
     switch( time_zone ) {
-        case 0: 
+        case 0:
+			if( (wxDateTime::Now() == (wxDateTime::Now().ToGMT())) && t.IsDST() )  //bug in wxWingets 3.0 for UTC meridien ?
+				t.Add( wxTimeSpan( 1, 0, 0, 0 ) );
             switch( type ){
             case 0:
                 return t.Format( _T(" %H:%M  "), wxDateTime::Local ) + _T("LOC");

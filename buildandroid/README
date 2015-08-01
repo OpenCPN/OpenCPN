@@ -1,5 +1,7 @@
 0....Tools, etc.
 
+        export CPPFLAGS=-D__ANDROID__  && export PATH=/home/dsr/Projects/android-ndk/ndk-toolchain/bin:$PATH && export CC=arm-linux-androideabi-gcc && export CXX=arm-linux-androideabi-g++
+
         __Filter logcat, especially on BluPhone
         adb shell logcat DEBUGGER_TAG:I Qt:D *:S
 
@@ -430,7 +432,7 @@ $ /home/dsr/Projects/android-ndk/android-sdk-linux/tools/monitor
         $export CC=arm-linux-androideabi-gcc
         $export CXX=arm-linux-androideabi-g++
 
-        B. ___Gonna need to hack the configure.in script to force it to build for opengl
+        B. (***)___Gonna need to hack the configure.in script to force it to build for opengl
         The configure.in script does not understand how to build for OpenGL in a cross-build environment.
         It always looks to host architecture to find the GL libraries.
         Seem simplest for now to hack the configure.in, and rebuild the configure script.
@@ -621,3 +623,23 @@ $ /home/dsr/Projects/android-ndk/android-sdk-linux/tools/monitor
             return 0;
         }
 
+
+11.   Build for generic X86 with Qt as a test
+
+        Build Qt from scratch with this config on x86 linux native:
+        configure -developer-build -opensource -nomake examples -nomake tests -qt-xcb
+
+
+        Point to the proper pkgconfig directory for this build of Qt
+        $export PKG_CONFIG_PATH=/home/dsr/Projects/qt5_x86/build_debug/qtbase/lib/pkgconfig
+        $export CPPFLAGS=-D__ANDROID__
+
+        Configure and build wxQt
+        $../configure --with-qt --enable-debug --enable-compat28 --without-opengl --enable-debug --disable-graphics_ctx
+
+
+        Configure and build OCPN
+        $cmake -DUSE_GARMINHOST=OFF -D_wx_selected_config=qt -DUSE_GL=OFF
+
+        To be sure of getting the correct Qt libraries, do this:
+        $export LD_LIBRARY_PATH="/home/dsr/Projects/qt5_x86/build_debug/qtbase/lib:$LD_LIBRARY_PATH"

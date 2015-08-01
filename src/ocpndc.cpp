@@ -61,6 +61,7 @@
 #include <vector>
 
 #include "ocpndc.h"
+#include "wx28compat.h"
 
 extern float g_GLMinSymbolLineWidth;
 wxArrayPtrVoid gTesselatorVertices;
@@ -656,6 +657,7 @@ static void drawrrhelper( wxCoord x0, wxCoord y0, wxCoord r, int quadrant, int s
     case 1: x =  0, y = -r, dx = -rs, dy =   0, ddx =  rss, ddy =  rss; break;
     case 2: x = -r, y =  0, dx =   0, dy =  rs, ddx =  rss, ddy = -rss; break;
     case 3: x =  0, y =  r, dx =  rs, dy =   0, ddx = -rss, ddy = -rss; break;
+    default: return; // avoid unitialized compiler warnings
     }
 
     for(int i=0; i<steps; i++) {
@@ -829,7 +831,7 @@ void APIENTRY ocpnDCerrorCallback( GLenum errorCode )
 {
    const GLubyte *estring;
    estring = gluErrorString(errorCode);
-   wxLogMessage( _T("OpenGL Tessellation Error: %s"), estring );
+   wxLogMessage( _T("OpenGL Tessellation Error: %s"), (char *)estring );
 }
 
 void APIENTRY ocpnDCbeginCallback( GLenum type )
@@ -1110,14 +1112,16 @@ bool ocpnDC::ConfigurePen()
 
     wxColour c = m_pen.GetColour();
     int width = m_pen.GetWidth();
+#ifdef ocpnUSE_GL
     glColor4ub( c.Red(), c.Green(), c.Blue(), c.Alpha() );
     glLineWidth( wxMax(g_GLMinSymbolLineWidth, width) );
+#endif    
     return true;
 }
 
 bool ocpnDC::ConfigureBrush()
 {
-    if( m_brush == wxNullBrush || m_brush.GetStyle() == wxTRANSPARENT )
+    if( m_brush == wxNullBrush || m_brush.GetStyle() == wxBRUSHSTYLE_TRANSPARENT )
         return false;
 #ifdef ocpnUSE_GL
     wxColour c = m_brush.GetColour();

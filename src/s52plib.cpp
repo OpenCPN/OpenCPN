@@ -49,6 +49,7 @@
 #include "FontMgr.h"
 #include "TexFont.h"
 #include "ocpndc.h"
+#include "wx28compat.h"
 
 #include <wx/image.h>
 #include <wx/tokenzr.h>
@@ -79,7 +80,7 @@ extern bool  g_b_EnableVBO;
 extern double  g_overzoom_emphasis_base;
 extern bool    g_oz_vector_scale;
 extern bool g_bresponsive;
-extern int  g_ChartScaleFactor;
+extern float g_ChartScaleFactorExp;
 
 extern PFNGLGENBUFFERSPROC                 s_glGenBuffers;
 extern PFNGLBINDBUFFERPROC                 s_glBindBuffer;
@@ -89,7 +90,16 @@ extern PFNGLDELETEBUFFERSPROC              s_glDeleteBuffers;
 void DrawAALine( wxDC *pDC, int x0, int y0, int x1, int y1, wxColour clrLine, int dash, int space );
 extern bool GetDoubleAttr( S57Obj *obj, const char *AttrName, double &val );
 
-static TexFont s_txf;
+#ifdef ocpnUSE_GL
+typedef struct {
+    TexFont cache;
+    wxFont  *key;
+} TexFontCache;
+
+#define TXF_CACHE 8
+static TexFontCache s_txf[TXF_CACHE];
+#endif
+
 
 //    Implement all lists
 #include <wx/listimpl.cpp>
@@ -1304,6 +1314,7 @@ char *_getParamVal( ObjRazRules *rzRules, char *str, char *buf, int bsz )
     if(!buf)
         return NULL;
 
+    buf[0] = 0;
     // parse constant parameter with concatenation operator "'"
     if( str != NULL ) {
         if( *ret_ptr == APOS ) {
@@ -1416,11 +1427,11 @@ char *_getParamVal( ObjRazRules *rzRules, char *str, char *buf, int bsz )
 
 char *_parseTEXT( ObjRazRules *rzRules, S52_TextC *text, char *str0 )
 {
-    char buf[MAXL] = { '\0' }; // output string
+    char buf[MAXL]; // output string
 
     char *str = str0;
-
     if( text ) {
+        memset(buf, 0, 4);
         str = _getParamVal( rzRules, str, &text->hjust, MAXL ); // HJUST
         str = _getParamVal( rzRules, str, &text->vjust, MAXL ); // VJUST
         str = _getParamVal( rzRules, str, &text->space, MAXL ); // SPACE
@@ -1448,10 +1459,11 @@ S52_TextC *S52_PL_parseTX( ObjRazRules *rzRules, Rules *rules, char *cmd )
 {
     S52_TextC *text = NULL;
     char *str = NULL;
-    char val[MAXL] = { '\0' }; // value of arg
+    char val[MAXL]; // value of arg
     char strnobjnm[7] = { "NOBJNM" };
-    char valn[MAXL] = { '\0' }; // value of arg
+    char valn[MAXL]; // value of arg
 
+    valn[0] = 0;
     str = (char*) rules->INSTstr;
 
     if( ps52plib->m_bShowNationalTexts && NULL != strstr( str, "OBJNAM" ) ) // in case user wants the national text shown and the rule contains OBJNAM, try to get the value
@@ -1495,22 +1507,22 @@ S52_TextC *S52_PL_parseTX( ObjRazRules *rzRules, Rules *rules, char *cmd )
         }
     }
     
-    
     return text;
 }
 
 S52_TextC *S52_PL_parseTE( ObjRazRules *rzRules, Rules *rules, char *cmd )
 // same as S52_PL_parseTX put parse 'C' format first
 {
-    char arg[MAXL] = { '\0' }; // ATTRIB list
-    char fmt[MAXL] = { '\0' }; // FORMAT
-    char buf[MAXL] = { '\0' }; // output string
+    char arg[MAXL]; // ATTRIB list
+    char fmt[MAXL]; // FORMAT
+    char buf[MAXL]; // output string
     char *b = buf;
     char *parg = arg;
     char *pf = fmt;
     S52_TextC *text = NULL;
 
     char *str = (char*) rules->INSTstr;
+    *b = 0;
 
     if( str && *str ) {
         str = _getParamVal( rzRules, str, fmt, MAXL ); // get FORMAT
@@ -1523,7 +1535,7 @@ S52_TextC *S52_PL_parseTE( ObjRazRules *rzRules, Rules *rules, char *cmd )
 
             // begin a convertion specification
             if( *pf == '%' ) {
-                char val[MAXL] = { '\0' }; // value of arg
+                char val[MAXL]; // value of arg
                 char tmp[MAXL] = { '\0' }; // temporary format string
                 char *t = tmp;
                 int cc = 0; // 1 == Conversion Character found
@@ -1619,13 +1631,10 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
             ptext->rendered_char_height = h_scaled - descent;
                 
         }
-        // We render National text the old, hard way, since the text will probably have full UTF-8 codepage elements
-        // and we don't necessarily have the glyphs in our font, or if we do we would need a hashmap to cache and extract them
-        
-        // We also do this if the string has been detected to contain "special" characters
-        
+        // We render string with "special" characters the old, hard way, since we don't necessarily have the glyphs in our font, 
+        // or if we do we would need a hashmap to cache and extract them
         // And we also do this if the text is to be scaled up artificially.
-        if( (ptext->bnat) || (ptext->bspecial_char) || b_force_no_texture) {       
+        if( (ptext->bspecial_char) || b_force_no_texture) {       
             if( !ptext->m_pRGBA ) // is RGBA bitmap ready?
             {
                 wxScreenDC sdc;
@@ -1762,10 +1771,29 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
 
         else {                                          // render using cached texture glyphs
             // rebuild font if needed
-            s_txf.Build(*ptext->pFont);
+            TexFont *f_cache = 0;
+            unsigned int i;
+            for (i = 0; i < TXF_CACHE; i++)
+            {
+                if (s_txf[i].key == ptext->pFont) {
+                    f_cache = &s_txf[i].cache;
+                    break;
+                }
+                if (s_txf[i].key == 0) {
+                    break;
+                }
+            }
+            if (i == TXF_CACHE) {
+                i = rand() & (TXF_CACHE -1);
+            }
+            if (f_cache == 0) {
+                s_txf[i].key = ptext->pFont;
+                f_cache = &s_txf[i].cache;                
+                f_cache->Build(*ptext->pFont);
+            }
 
             int w, h;
-            s_txf.GetTextExtent(ptext->frmtd, &w, &h);
+            f_cache->GetTextExtent(ptext->frmtd, &w, &h);
                 
             ptext->rendered_char_height = h;
             //  Adjust the y position to account for the convention that S52 text is drawn
@@ -1804,7 +1832,7 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
                 /* undo previous rotation to make text level */
                 glRotatef(vp->rotation*180/PI, 0, 0, -1);
 
-                s_txf.RenderString(ptext->frmtd);
+                f_cache->RenderString(ptext->frmtd);
                 glPopMatrix();
     
                 glDisable( GL_TEXTURE_2D );
@@ -2333,9 +2361,7 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
     double scale_factor = 1.0;
  
     if(g_bresponsive){
-        scale_factor *=  exp( g_ChartScaleFactor * (0.693 / 5.0) );       //  exp(2)
-        scale_factor = wxMax(scale_factor, .5);
-        scale_factor = wxMin(scale_factor, 4.);
+        scale_factor *=  g_ChartScaleFactorExp;
     }
     
     if(g_oz_vector_scale && vp->b_quilt){
@@ -3006,11 +3032,11 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         
         if( !strncmp( str, "DOTT", 4 ) ) {
             dashw[0] = 1;
-            wide_pen.SetStyle(wxUSER_DASH);
+            wide_pen.SetStyle(wxPENSTYLE_USER_DASH);
             wide_pen.SetDashes( 2, dashw );
         }        
         else if( !strncmp( str, "DASH", 4 ) ){
-            wide_pen.SetStyle(wxUSER_DASH);
+            wide_pen.SetStyle(wxPENSTYLE_USER_DASH);
             if( m_pdc){ //DC mode
                 dashw[0] = 1;
                 dashw[1] = 2;
@@ -3020,19 +3046,19 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         }
     }
  
-    wxPen thispen(color, w, wxSOLID);
+    wxPen thispen(color, w, wxPENSTYLE_SOLID);
     wxDash dash1[2];
     
     if( m_pdc) //DC mode
     {
         if( !strncmp( str, "DOTT", 4 ) ) {
-            thispen.SetStyle(wxUSER_DASH);
+            thispen.SetStyle(wxPENSTYLE_USER_DASH);
             dash1[0] = 1;
             dash1[1] = 2; 
             thispen.SetDashes( 2, dash1 );
         }        
         else if( !strncmp( str, "DASH", 4 ) ){
-            thispen.SetStyle(wxSHORT_DASH);
+            thispen.SetStyle(wxPENSTYLE_SHORT_DASH);
         }
          
         if(b_wide_line)
@@ -3236,9 +3262,9 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                             DrawGLThickLine( x0, y0, x1, y1, wide_pen, true );
                         }
                     }
+#endif                    
                 }
             }
-#endif      
         }
 #ifdef ocpnUSE_GL
         if(!b_wide_line)
@@ -3246,176 +3272,10 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 #endif              
         free( ptp );
     }
-#if 0
-    else
-        if( rzRules->obj->pPolyTessGeo ) {
-            if( !rzRules->obj->pPolyTessGeo->IsOk() ) // perform deferred tesselation
-                rzRules->obj->pPolyTessGeo->BuildDeferredTess();
-
-            PolyTriGroup *pptg = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
-
-            float *ppolygeo = pptg->pgroup_geom;
-#ifdef ocpnUSE_GL
-            glBegin( GL_LINES );
-#endif
-            int ctr_offset = 0;
-            for( int ic = 0; ic < pptg->nContours; ic++ ) {
-
-                npt = pptg->pn_vertex[ic];
-                wxPoint *ptp = (wxPoint *) malloc( ( npt + 1 ) * sizeof(wxPoint) );
-                wxPoint *pr = ptp;
-
-                float *pf = &ppolygeo[ctr_offset];
-                for( int ip = 0; ip < npt; ip++ ) {
-                    float plon = *pf++;
-                    float plat = *pf++;
-
-                    GetPointPixSingle( rzRules, plat, plon, pr, vp );
-                    pr++;
-                }
-                float plon = ppolygeo[ctr_offset]; // close the polyline
-                float plat = ppolygeo[ctr_offset + 1];
-                GetPointPixSingle( rzRules, plat, plon, pr, vp );
-
-                for( int ipc = 0; ipc < npt; ipc++ ) {
-                    x0 = ptp[ipc].x;
-                    y0 = ptp[ipc].y;
-                    x1 = ptp[ipc + 1].x;
-                    y1 = ptp[ipc + 1].y;
-
-                    // Do not draw null segments
-                    if( ( x0 == x1 ) && ( y0 == y1 ) ) continue;
-
-                    ClipResult res = cohen_sutherland_line_clip_i( &x0, &y0, &x1, &y1, xmin_, xmax_,
-                            ymin_, ymax_ );
-
-                    if( res != Invisible ) {
-                        if( m_pdc )
-                            m_pdc->DrawLine( x0, y0, x1, y1 );
-#ifdef ocpnUSE_GL
-                        else {
-                            glVertex2i( x0, y0 );
-                            glVertex2i( x1, y1 );
-                        }
-#endif                        
-                    }
-                }
-
-//                    pdc->DrawLines(npt + 1, ptp);
-                free( ptp );
-                ctr_offset += npt * 2;
-            }
-#ifdef ocpnUSE_GL
-            glEnd();
-#endif                    
-        }
-
-        else
-            if( rzRules->obj->pPolyTrapGeo ) {
-                if( !rzRules->obj->pPolyTrapGeo->IsOk() ) rzRules->obj->pPolyTrapGeo->BuildTess();
-
-                PolyTrapGroup *pptg = rzRules->obj->pPolyTrapGeo->Get_PolyTrapGroup_head();
-
-                wxPoint2DDouble *ppolygeo = pptg->ptrapgroup_geom;
-#ifdef ocpnUSE_GL
-            glBegin( GL_LINES );
-#endif
-                int ctr_offset = 0;
-                for( int ic = 0; ic < pptg->nContours; ic++ ) {
-
-                    npt = pptg->pn_vertex[ic];
-                    wxPoint *ptp = (wxPoint *) malloc( ( npt + 1 ) * sizeof(wxPoint) );
-                    wxPoint *pr = ptp;
-                    /*
-                     double *pf = &ppolygeo[ctr_offset];
-                     for ( int ip=0 ; ip < npt ; ip++ )
-                     {
-                     double plon = *pf++;
-                     double plat = *pf++;
-
-                     rzRules->chart->GetPointPix ( rzRules, plat, plon, pr );
-                     pr++;
-                     }
-                     double plon = ppolygeo[ ctr_offset];             // close the polyline
-                     double plat = ppolygeo[ ctr_offset + 1];
-                     rzRules->chart->GetPointPix ( rzRules, plat, plon, pr );
-                     */
-                    for( int ip = 0; ip < npt; ip++, pr++ )
-                        GetPointPixSingle( rzRules, ppolygeo[ctr_offset + ip].m_y,
-                                ppolygeo[ctr_offset + ip].m_x, pr, vp );
-
-                    //  Close polyline
-                        GetPointPixSingle( rzRules, ppolygeo[ctr_offset].m_y,
-                            ppolygeo[ctr_offset].m_x, pr, vp );
-
-                    for( int ipc = 0; ipc < npt; ipc++ ) {
-                        x0 = ptp[ipc].x;
-                        y0 = ptp[ipc].y;
-                        x1 = ptp[ipc + 1].x;
-                        y1 = ptp[ipc + 1].y;
-
-                        // Do not draw null segments
-                        if( ( x0 == x1 ) && ( y0 == y1 ) ) continue;
-
-                        ClipResult res = cohen_sutherland_line_clip_i( &x0, &y0, &x1, &y1, xmin_,
-                                xmax_, ymin_, ymax_ );
-
-                        if( res != Invisible ) {
-                            if( m_pdc )
-                                m_pdc->DrawLine( x0, y0, x1, y1 );
-#ifdef ocpnUSE_GL
-                            else {
-                                glVertex2i( x0, y0 );
-                                glVertex2i( x1, y1 );
-                            }
-#endif                        
-                        }
-                    }
-
-                    free( ptp );
-                    ctr_offset += ( npt + 1 ) * 2;
-                }
-#ifdef ocpnUSE_GL
-                glEnd();
-#endif                    
-            }
-
-            else
-                if( rzRules->obj->geoPt ) {
-                    pt *ppt = rzRules->obj->geoPt;
-                    npt = rzRules->obj->npt;
-                    ptp = (wxPoint *) malloc( npt * sizeof(wxPoint) );
-                    wxPoint *pr = ptp;
-                    wxPoint p;
-                    for( int ip = 0; ip < npt; ip++ ) {
-                        float plat = ppt->y;
-                        float plon = ppt->x;
-
-                        GetPointPixSingle( rzRules, plat, plon, &p, vp );
-
-                        *pr = p;
-
-                        pr++;
-                        ppt++;
-                    }
-
-                    if( m_pdc ) m_pdc->DrawLines( npt, ptp );
-#ifdef ocpnUSE_GL
-                    else {
-                        glBegin( GL_LINE_STRIP ); // or GL_LINE_LOOP?????
-                        for( int ip = 0; ip < npt; ip++ )
-                            glVertex2i( ptp[ip].x, ptp[ip].y );
-                        glEnd();
-                    }
-#endif
-                    free( ptp );
-                }
-#endif
 #ifdef ocpnUSE_GL
     if( !m_pdc )
         glDisable( GL_LINE_STIPPLE );
 #endif                
-   
     return 1;
 }
 
@@ -3683,7 +3543,7 @@ void s52plib::draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp, 
     int x0, y0, x1, y1;
 
     if( pdc ) {
-        wxPen *pthispen = wxThePenList->FindOrCreatePen( color, width, wxSOLID );
+        wxPen *pthispen = wxThePenList->FindOrCreatePen( color, width, wxPENSTYLE_SOLID );
         m_pdc->SetPen( *pthispen );
 
         int start_seg = 0;
@@ -4165,7 +4025,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 {
             mdc.ResetBoundingBox();
 
-            wxPen *pblockpen = wxThePenList->FindOrCreatePen( *wxBLACK, 10, wxSOLID );
+            wxPen *pblockpen = wxThePenList->FindOrCreatePen( *wxBLACK, 10, wxPENSTYLE_SOLID );
             mdc.SetPen( *pblockpen );
 
             float start_angle, end_angle;
@@ -4211,9 +4071,9 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             //    Draw the outer border
             wxColour color = getwxColour( outline_color );
 
-            wxPen *pthispen = wxThePenList->FindOrCreatePen( color, outline_width, wxSOLID );
+            wxPen *pthispen = wxThePenList->FindOrCreatePen( color, outline_width, wxPENSTYLE_SOLID );
             mdc.SetPen( *pthispen );
-            wxBrush *pthisbrush = wxTheBrushList->FindOrCreateBrush( color, wxTRANSPARENT );
+            wxBrush *pthisbrush = wxTheBrushList->FindOrCreateBrush( color, wxBRUSHSTYLE_TRANSPARENT );
             mdc.SetBrush( *pthisbrush );
 
             mdc.DrawEllipticArc( width / 2 - rad, height / 2 - rad, rad * 2, rad * 2, sb, se );
@@ -4223,7 +4083,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
                 if( !colorb.IsOk() ) colorb = getwxColour( _T("CHMGD") );
 
-                pthispen = wxThePenList->FindOrCreatePen( colorb, arc_width, wxSOLID );
+                pthispen = wxThePenList->FindOrCreatePen( colorb, arc_width, wxPENSTYLE_SOLID );
                 mdc.SetPen( *pthispen );
 
                 mdc.DrawEllipticArc( width / 2 - rad, height / 2 - rad, rad * 2, rad * 2, sb, se );
@@ -4261,6 +4121,11 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 #ifdef ocpnUSE_GL
     CARC_Buffer buffer;
 
+    float scale_factor = 1.0;
+    if(g_bresponsive){
+        scale_factor *= g_ChartScaleFactorExp;
+    }
+    
     if( !m_pdc ) // opengl
     {
         //    Is there not already an generated vbo the CARC_hashmap for this object?
@@ -4277,7 +4142,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             buffer.color[0][1] = colorb.Green();
             buffer.color[0][2] = colorb.Blue();
             buffer.color[0][3] = 150;
-            buffer.line_width[0] = wxMax(g_GLMinSymbolLineWidth, outline_width);
+            buffer.line_width[0] = wxMax(g_GLMinSymbolLineWidth, outline_width * scale_factor);
 
             int steps = ceil((sectr2 - sectr1) / 12) + 1; // max of 12 degree step
             float step = (sectr2 - sectr1) / (steps - 1);
@@ -4299,7 +4164,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             buffer.color[1][1] = colorb.Green();
             buffer.color[1][2] = colorb.Blue();
             buffer.color[1][3] = 150;
-            buffer.line_width[1] = wxMax(g_GLMinSymbolLineWidth, (float)arc_width + 0.8);
+            buffer.line_width[1] = wxMax(g_GLMinSymbolLineWidth, (float)arc_width + 0.8) * scale_factor;
         
             //    Draw the sector legs
             if( sector_radius > 0 ) {
@@ -4310,7 +4175,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 buffer.color[2][1] = c.Green();
                 buffer.color[2][2] = c.Blue();
                 buffer.color[2][3] = c.Alpha();
-                buffer.line_width[2] = wxMax(g_GLMinSymbolLineWidth, (float)0.7);
+                buffer.line_width[2] = wxMax(g_GLMinSymbolLineWidth, (float)0.7) * scale_factor;
         
                 float a = ( sectr1 - 90 ) * PI / 180.;
                 buffer.data[s++] = 0;
@@ -4348,17 +4213,22 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     if( !m_pdc ) // opengl
     {
 #ifdef ocpnUSE_GL
+        glPushMatrix();
         glTranslatef( r.x, r.y, 0 );
-
+         
+        glScalef(scale_factor, scale_factor, 1);
         glVertexPointer(2, GL_FLOAT, 2 * sizeof(float), buffer.data);
 
+#ifndef __OCPN__ANDROID__
         glEnable( GL_BLEND );
         glEnable( GL_LINE_SMOOTH );
+#endif        
         glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
 
         glColor3ubv(buffer.color[0]);
         glLineWidth(buffer.line_width[0]);
         glDrawArrays(GL_LINE_STRIP, 0, buffer.steps);
+
 
         glColor3ubv(buffer.color[1]);
         glLineWidth(buffer.line_width[1]);
@@ -4381,7 +4251,8 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         glDisable( GL_LINE_SMOOTH );
         glDisable( GL_BLEND );
         
-        glTranslatef( -r.x, -r.y, 0 );
+//        glTranslatef( -r.x, -r.y, 0 );
+        glPopMatrix();
 #endif        
     } else {
         //      Get the bitmap into a memory dc
@@ -4405,7 +4276,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
             /*
              wxPen *pthispen = new wxPen(*wxBLACK_PEN);
-             pthispen->SetStyle(wxUSER_DASH);
+             pthispen->SetStyle(wxPENSTYLE_USER_DASH);
              pthispen->SetDashes( 2, dash1 );
              //      Undocumented "feature":  Pen must be fully specified <<<BEFORE>>> setting into DC
              pdc->SetPen ( *pthispen );
@@ -7530,7 +7401,7 @@ void DrawAALine( wxDC *pDC, int x0, int y0, int x1, int y1, wxColour clrLine, in
     wxMemoryDC &gdc( mdc );
 #endif
 
-    wxPen pen( clrLine, 1, wxUSER_DASH );
+    wxPen pen( clrLine, 1, wxPENSTYLE_USER_DASH );
     wxDash dashes[2];
     dashes[0] = dash;
     dashes[1] = space;
@@ -7604,16 +7475,13 @@ void RenderFromHPGL::SetPen()
 
     if(g_bresponsive){
         double scale_factor = 1.0;
-        scale_factor *=  exp( g_ChartScaleFactor * (0.693 / 5.0) );       //  exp(2)
-        scale_factor = wxMax(scale_factor, .5);
-        scale_factor = wxMin(scale_factor, 4.);
-        
+        scale_factor *=  g_ChartScaleFactorExp;
         scaleFactor /= scale_factor;
     }
     
     if( renderToDC ) {
-        pen = wxThePenList->FindOrCreatePen( penColor, penWidth, wxSOLID );
-        brush = wxTheBrushList->FindOrCreateBrush( penColor, wxSOLID );
+        pen = wxThePenList->FindOrCreatePen( penColor, penWidth, wxPENSTYLE_SOLID );
+        brush = wxTheBrushList->FindOrCreateBrush( penColor, wxBRUSHSTYLE_SOLID );
         targetDC->SetPen( *pen );
         targetDC->SetBrush( *brush );
     }
@@ -7626,8 +7494,8 @@ void RenderFromHPGL::SetPen()
 #endif    
 #if wxUSE_GRAPHICS_CONTEXT
     if( renderToGCDC ) {
-        pen = wxThePenList->FindOrCreatePen( penColor, penWidth, wxSOLID );
-        brush = wxTheBrushList->FindOrCreateBrush( penColor, wxSOLID );
+        pen = wxThePenList->FindOrCreatePen( penColor, penWidth, wxPENSTYLE_SOLID );
+        brush = wxTheBrushList->FindOrCreateBrush( penColor, wxBRUSHSTYLE_SOLID );
         targetGCDC->SetPen( *pen );
         targetGCDC->SetBrush( *brush );
     }

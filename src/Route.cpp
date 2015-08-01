@@ -45,6 +45,7 @@ extern Multiplexer *g_pMUX;
 extern double g_n_arrival_circle_radius;
 extern float g_GLMinSymbolLineWidth;
 extern double g_PlanSpeed;
+extern double gLat, gLon;
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST ( RouteList );
@@ -64,8 +65,8 @@ Route::Route( void )
     m_bVisible = true;
     m_bListed = true;
     m_bDeleteOnArrival = false;
-    m_width = STYLE_UNDEFINED;
-    m_style = STYLE_UNDEFINED;
+    m_width = WIDTH_UNDEFINED;
+    m_style = wxPENSTYLE_INVALID;
     m_hiliteWidth = 0;
 
     pRoutePointList = new RoutePointList;
@@ -316,7 +317,7 @@ void Route::Draw( ocpnDC& dc, ViewPort &VP )
     if( m_nPoints == 0 ) return;
 
     int width = g_route_line_width;
-    if( m_width != STYLE_UNDEFINED ) width = m_width;
+    if( m_width != WIDTH_UNDEFINED ) width = m_width;
     
     if( m_bVisible && m_bRtIsSelected ) {
         wxPen spen = *g_pRouteMan->GetSelectedRoutePen();
@@ -326,9 +327,9 @@ void Route::Draw( ocpnDC& dc, ViewPort &VP )
     }
     else if ( m_bVisible )
     {
-        int style = wxSOLID;
+        wxPenStyle style = wxPENSTYLE_SOLID;
         wxColour col;
-        if( m_style != STYLE_UNDEFINED ) style = m_style;
+        if( m_style != wxPENSTYLE_INVALID ) style = m_style;
         if( m_Colour == wxEmptyString ) {
             col = g_pRouteMan->GetRoutePen()->GetColour();
         } else {
@@ -340,7 +341,7 @@ void Route::Draw( ocpnDC& dc, ViewPort &VP )
             }
         }
         dc.SetPen( *wxThePenList->FindOrCreatePen( col, width, style ) );
-        dc.SetBrush( *wxTheBrushList->FindOrCreateBrush( col, wxSOLID ) );
+        dc.SetBrush( *wxTheBrushList->FindOrCreateBrush( col, wxBRUSHSTYLE_SOLID ) );
     }
 
     if( m_bVisible && m_bRtIsActive )
@@ -446,13 +447,16 @@ static void TestLongitude(double lon, double min, double max, bool &lonl, bool &
 
 void Route::DrawGLLines( ViewPort &VP, ocpnDC *dc )
 {
+#ifdef ocpnUSE_GL    
     float pix_full_circle = WGS84_semimajor_axis_meters * mercator_k0 * 2 * PI * VP.view_scale_ppm;
 
     bool r1valid = false;
     wxPoint2DDouble r1;
-
+    wxPoint2DDouble lastpoint;
+    
     wxRoutePointListNode *node = pRoutePointList->GetFirst();
     RoutePoint *prp2 = node->GetData();
+    cc1->GetDoubleCanvasPointPix( prp2->m_lat, prp2->m_lon, &lastpoint);
     
     if(m_nPoints == 1 && dc) { // single point.. make sure it shows up for highlighting
         cc1->GetDoubleCanvasPointPix( prp2->m_lat, prp2->m_lon, &r1);
@@ -546,11 +550,30 @@ void Route::DrawGLLines( ViewPort &VP, ocpnDC *dc )
 
             r1 = r2;
             r1valid = true;
+            lastpoint = r1;
         }
     }
 
+    //  Draw tentative segment from last point to Ownship, if running.
+    if( lastpoint.m_y && IsTrack() ) {
+        /* Active tracks */
+        if( dynamic_cast<Track *>(this)->IsRunning() ){
+            wxPoint2DDouble rs;
+            cc1->GetDoubleCanvasPointPix( gLat, gLon, &rs);
+            if( dc )
+                dc->DrawLine(lastpoint.m_x, lastpoint.m_y, rs.m_x, rs.m_y);
+            else {
+                glVertex2f(lastpoint.m_x, lastpoint.m_y);
+                glVertex2f(rs.m_x, rs.m_y);
+            }
+        }
+    }
+                
+                
+        
     if( !dc )
         glEnd();
+#endif    
 }
 
 void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
@@ -562,7 +585,7 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
         wxColour y = GetGlobalColor( _T ( "YELO1" ) );
         wxColour hilt( y.Red(), y.Green(), y.Blue(), 128 );
 
-        wxPen HiPen( hilt, m_hiliteWidth, wxSOLID );
+        wxPen HiPen( hilt, m_hiliteWidth, wxPENSTYLE_SOLID );
 
         ocpnDC dc;
         dc.SetPen( HiPen );
@@ -572,8 +595,8 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
     /* determine color and width */
     wxColour col;
 
-    int width = g_route_line_width;
-    if( m_width != STYLE_UNDEFINED )
+    int width = g_pRouteMan->GetRoutePen()->GetWidth(); //g_route_line_width;
+    if( m_width != wxPENSTYLE_INVALID )
         width = m_width;
     if(m_bIsTrack)
         width = g_pRouteMan->GetTrackPen()->GetWidth();
@@ -614,7 +637,8 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
     glColor3ub(col.Red(), col.Green(), col.Blue());
     glLineWidth(wxMax( g_GLMinSymbolLineWidth, width ));
 
-    if( m_style != STYLE_UNDEFINED )
+#ifndef ocpnUSE_GLES // linestipple is emulated poorly
+    if( m_style != wxPENSTYLE_INVALID )
         glEnable( GL_LINE_STIPPLE );
 
     switch( m_style ) {
@@ -622,7 +646,9 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
     case wxLONG_DASH:  glLineStipple( 1, 0xFFF8 ); break;
     case wxSHORT_DASH: glLineStipple( 1, 0x3F3F ); break;
     case wxDOT_DASH:   glLineStipple( 1, 0x8FF1 ); break;
+    default: break;
     }
+#endif
 
     DrawGLLines(VP, NULL);
 
@@ -684,7 +710,7 @@ void Route::RenderSegment( ocpnDC& dc, int xa, int ya, int xb, int yb, ViewPort 
             wxColour y = GetGlobalColor( _T ( "YELO1" ) );
             wxColour hilt( y.Red(), y.Green(), y.Blue(), 128 );
 
-            wxPen HiPen( hilt, hilite_width, wxSOLID );
+            wxPen HiPen( hilt, hilite_width, wxPENSTYLE_SOLID );
 
             dc.SetPen( HiPen );
             dc.StrokeLine( x0, y0, x1, y1 );

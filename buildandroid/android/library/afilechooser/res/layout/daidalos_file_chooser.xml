@@ -7,6 +7,34 @@
     android:orientation="vertical"
     android:scrollbars="vertical" >
 
+
+ <TextView
+        android:id="@+id/afdLabelInfo"
+        android:layout_width="match_parent"
+        android:gravity="center_horizontal"
+        android:text=""
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_height="wrap_content"
+        android:background="@color/daidalos_backgroud"
+        android:textColor="@android:color/primary_text_dark" />
+
+    <TextView
+        android:id="@+id/afdLabelFileHdr"
+        android:layout_width="match_parent"
+        android:gravity="left"
+        android:text="Current Directory:"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/primary_text_dark" />
+
+    <TextView
+        android:id="@+id/afdLabelFile"
+        android:layout_width="match_parent"
+        android:gravity="right"
+        android:text="afdLabelFile"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_height="wrap_content"
+        android:textColor="#ff6eff6b" />
+
     <ScrollView
         android:id="@+id/scrollView1"
         android:layout_width="match_parent"

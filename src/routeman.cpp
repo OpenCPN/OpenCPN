@@ -53,6 +53,7 @@
 #include "MarkIcon.h"
 #include "cutil.h"
 #include "AIS_Decoder.h"
+#include "wx28compat.h"
 
 #include <wx/dir.h>
 #include <wx/filename.h>
@@ -94,7 +95,7 @@ extern wxString         g_uploadConnection;
 extern bool             g_bAdvanceRouteWaypointOnArrivalOnly;
 extern Route            *pAISMOBRoute;
 extern bool             g_btouch;
-extern int              g_ChartScaleFactor;
+extern float            g_ChartScaleFactorExp;
 
 //    List definitions for Waypoint Manager Icons
 WX_DECLARE_LIST(wxBitmap, markicon_bitmap_list_type);
@@ -990,33 +991,32 @@ void Routeman::SetColorScheme( ColorScheme cs )
     
     int scaled_line_width = g_route_line_width;
     if(g_btouch){
-        double size_mult =  exp( g_ChartScaleFactor * 0.25 ); 
-        scaled_line_width *= size_mult;
-        scaled_line_width = wxMax( scaled_line_width, 1);
+        double size_mult =  g_ChartScaleFactorExp * 1.5;
+        double sline_width = wxRound(size_mult * scaled_line_width);
+        scaled_line_width = wxMax( sline_width, 1);
     }
-        
 
     m_pActiveRoutePointPen = wxThePenList->FindOrCreatePen( wxColour( 0, 0, 255 ),
-                                                            scaled_line_width, wxSOLID );
+                                                            scaled_line_width, wxPENSTYLE_SOLID );
     m_pRoutePointPen = wxThePenList->FindOrCreatePen( wxColour( 0, 0, 255 ), scaled_line_width,
-            wxSOLID );
+            wxPENSTYLE_SOLID );
 
 //    Or in something like S-52 compliance
 
     m_pRoutePen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T("UINFB") ), scaled_line_width,
-            wxSOLID );
+            wxPENSTYLE_SOLID );
     m_pSelectedRoutePen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T("UINFO") ),
-                                                         scaled_line_width, wxSOLID );
+                                                         scaled_line_width, wxPENSTYLE_SOLID );
     m_pActiveRoutePen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T("UARTE") ),
-                                                       scaled_line_width, wxSOLID );
+                                                       scaled_line_width, wxPENSTYLE_SOLID );
     m_pTrackPen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T("CHMGD") ), scaled_line_width,
-                                                 wxSOLID );
+                                                 wxPENSTYLE_SOLID );
     
-    m_pRouteBrush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T("UINFB") ), wxSOLID );
+    m_pRouteBrush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T("UINFB") ), wxBRUSHSTYLE_SOLID );
     m_pSelectedRouteBrush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T("UINFO") ),
-            wxSOLID );
+            wxBRUSHSTYLE_SOLID );
     m_pActiveRouteBrush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T("PLRTE") ),
-            wxSOLID );
+            wxBRUSHSTYLE_SOLID );
 
 }
 
@@ -1142,7 +1142,10 @@ void WayPointman::ProcessUserIcons( ocpnStyle::Style* style )
     if( UserIconPath.Last() != sep ) UserIconPath.Append( sep );
     UserIconPath.Append( _T("UserIcons") );
     
+    wxLogMessage(_T("Looking for UserIcons at ") + UserIconPath );
+    
     if( wxDir::Exists( UserIconPath ) ) {
+        wxLogMessage(_T("Loading UserIcons from ") + UserIconPath );
         wxArrayString FileList;
         
         wxDir dir( UserIconPath );

@@ -75,10 +75,11 @@
 #include "AIS_Target_Data.h"
 #include "AISTargetAlertDialog.h"
 #include "SendToGpsDlg.h"
-#include "compasswin.h"
+#include "compass.h"
 #include "OCPNRegion.h"
 #include "gshhs.h"
 #include "canvasMenu.h"
+#include "wx28compat.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -196,7 +197,7 @@ extern int              g_Show_Target_Name_Scale;
 extern MyFrame          *gFrame;
 extern Piano            *g_Piano;
 extern ChartBarWin      *g_ChartBarWin;
-extern ocpnFloatingCompassWindow *g_FloatingCompassDialog;
+extern ocpnCompass      *g_Compass;
 
 extern int              g_iNavAidRadarRingsNumberVisible;
 extern float            g_fNavAidRadarRingsStep;
@@ -1807,15 +1808,9 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             break;
 
         case 9:                      // Ctrl I
-            if( g_FloatingCompassDialog ) {
-                if( g_FloatingCompassDialog->IsShown() ) {
-                    g_FloatingCompassDialog->Hide();
-                } else {
-                    g_FloatingCompassDialog->Show();
-                }
-                gFrame->Raise();
-                Refresh();
-            }
+            g_Compass->Show(!g_Compass->IsShown());
+            m_brepaint_piano = true;
+            Refresh( false );
             break;
 
         default:
@@ -2161,7 +2156,7 @@ wxBitmap ChartCanvas::CreateDimBitmap( wxBitmap &Bitmap, double factor )
 
 void ChartCanvas::ShowBrightnessLevelTimedPopup( int brightness, int min, int max )
 {
-    wxFont *pfont = wxTheFontList->FindOrCreateFont( 40, wxDEFAULT, wxNORMAL, wxBOLD );
+    wxFont *pfont = wxTheFontList->FindOrCreateFont( 40, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
 
     if( !m_pBrightPopup ) {
         //    Calculate size
@@ -3266,7 +3261,33 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
             }
 #endif            
             
-            parent_frame->SetStatusText( text, STAT_FIELD_SCALE );
+            // Check to see if the text will fit in the StatusBar field...
+            bool b_noshow = false;
+            if(parent_frame->GetStatusBar()){
+                int w = 0;
+                int h;
+                wxClientDC dc(parent_frame->GetStatusBar());
+                if( dc.IsOk() )
+                    dc.GetTextExtent(text, &w, &h);
+
+                // If text is too long for the allocated field, try to reduce the text string a bit.
+                wxRect rect;
+                parent_frame->GetStatusBar()->GetFieldRect(STAT_FIELD_SCALE, rect);
+                if(w && w > rect.width){
+                    text.Printf( _("Scale (%1.1fx)"),  m_displayed_scale_factor );
+                }
+                
+                //  Test again...if too big still, then give it up.
+                if( dc.IsOk() )
+                    dc.GetTextExtent(text, &w, &h);
+                if(w && w > rect.width){
+                    b_noshow = true;
+                }
+                    
+            }
+            
+            if(!b_noshow)
+                parent_frame->SetStatusText( text, STAT_FIELD_SCALE );
         }
     }
 
@@ -3321,7 +3342,7 @@ void ChartCanvas::ShipDrawLargeScale( ocpnDC& dc, wxPoint lShipMidPoint )
     dc.SetPen( wxPen( PredColor(), 2 ) );
 
     if( SHIP_NORMAL == m_ownship_state )
-        dc.SetBrush( wxBrush( ShipColor(), wxTRANSPARENT ) );
+        dc.SetBrush( wxBrush( ShipColor(), wxBRUSHSTYLE_TRANSPARENT ) );
     else
         dc.SetBrush( wxBrush( GetGlobalColor( _T ( "YELO1" ) ) ) );
  
@@ -3365,7 +3386,7 @@ void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, float lpp,
             dash_long[0] = (int) ( 3.0 * m_pix_per_mm );  //8// Long dash  <---------+
             dash_long[1] = (int) ( 1.5 * m_pix_per_mm );  //2// Short gap            |
 
-            wxPen ppPen2( PredColor(), g_cog_predictor_width, wxUSER_DASH );
+            wxPen ppPen2( PredColor(), g_cog_predictor_width, wxPENSTYLE_USER_DASH );
             ppPen2.SetDashes( 2, dash_long );
             dc.SetPen( ppPen2 );
             dc.StrokeLine( lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
@@ -3376,13 +3397,13 @@ void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, float lpp,
             dash_long3[1] = g_cog_predictor_width * dash_long[1];
 
             if( g_cog_predictor_width > 1 ) {
-                wxPen ppPen3( GetGlobalColor( _T ( "UBLCK" ) ), 1, wxUSER_DASH );
+                wxPen ppPen3( GetGlobalColor( _T ( "UBLCK" ) ), 1, wxPENSTYLE_USER_DASH );
                 ppPen3.SetDashes( 2, dash_long3 );
                 dc.SetPen( ppPen3 );
                 dc.StrokeLine( lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
                                lPredPoint.x + GPSOffsetPixels.x, lPredPoint.y + GPSOffsetPixels.y );
             }
-            wxPen ppPen1( GetGlobalColor( _T ( "UBLCK" ) ), 1, wxSOLID );
+            wxPen ppPen1( GetGlobalColor( _T ( "UBLCK" ) ), 1, wxPENSTYLE_SOLID );
             dc.SetPen( ppPen1 );
             dc.SetBrush( wxBrush( PredColor() ) ); //*wxWHITE_BRUSH);
 
@@ -3396,14 +3417,14 @@ void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, float lpp,
         dash_short[0] = (int) ( 1.5 * m_pix_per_mm );  // Short dash  <---------+
         dash_short[1] = (int) ( 1.8 * m_pix_per_mm );  // Short gap            |
 
-        wxPen ppPen2( PredColor(), 2, wxUSER_DASH );
+        wxPen ppPen2( PredColor(), 2, wxPENSTYLE_USER_DASH );
         ppPen2.SetDashes( 2, dash_short );
 
         dc.SetPen( ppPen2 );
         dc.StrokeLine( lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
                        lHeadPoint.x + GPSOffsetPixels.x, lHeadPoint.y + GPSOffsetPixels.y );
 
-        wxPen ppPen1( PredColor(), 2, wxSOLID );
+        wxPen ppPen1( PredColor(), 2, wxPENSTYLE_SOLID );
         dc.SetPen( ppPen1 );
         dc.SetBrush( wxBrush( GetGlobalColor( _T ( "GREY2" ) ) ) );
 
@@ -3429,7 +3450,7 @@ void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, float lpp,
 
         wxPen ppPen1( GetGlobalColor( _T ( "URED" ) ), 2 );
         dc.SetPen( ppPen1 );
-        dc.SetBrush( wxBrush( GetGlobalColor( _T ( "URED" ) ), wxTRANSPARENT ) );
+        dc.SetBrush( wxBrush( GetGlobalColor( _T ( "URED" ) ), wxBRUSHSTYLE_TRANSPARENT ) );
 
         for( int i = 1; i <= g_iNavAidRadarRingsNumberVisible; i++ )
             dc.StrokeCircle( lGPSPoint.x, lGPSPoint.y, i * pix_radius );
@@ -3694,7 +3715,7 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
                     ownship_icon[i].y = (int) ( py ) + lShipMidPoint.y;
                 }
 
-                wxPen ppPen1( GetGlobalColor( _T ( "UBLCK" ) ), 1, wxSOLID );
+                wxPen ppPen1( GetGlobalColor( _T ( "UBLCK" ) ), 1, wxPENSTYLE_SOLID );
                 dc.SetPen( ppPen1 );
                 dc.SetBrush( wxBrush( ShipColor() ) );
 
@@ -3869,8 +3890,8 @@ void ChartCanvas::GridDraw( ocpnDC& dc )
     float dlat, dlon;
     float gridlatMajor, gridlatMinor, gridlonMajor, gridlonMinor;
     wxCoord w, h;
-    wxPen GridPen( GetGlobalColor( _T ( "SNDG1" ) ), 1, wxSOLID );
-    wxFont *font = wxTheFontList->FindOrCreateFont( 8, wxFONTFAMILY_SWISS, wxNORMAL,
+    wxPen GridPen( GetGlobalColor( _T ( "SNDG1" ) ), 1, wxPENSTYLE_SOLID );
+    wxFont *font = wxTheFontList->FindOrCreateFont( 8, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL,
                    wxFONTWEIGHT_NORMAL, FALSE, wxString( _T ( "Arial" ) ) );
     dc.SetPen( GridPen );
     dc.SetFont( *font );
@@ -3972,14 +3993,14 @@ void ChartCanvas::ScaleBarDraw( ocpnDC& dc )
     {
         dist = 10.0;
         count = 5;
-        pen1 = wxPen( GetGlobalColor( _T ( "SNDG2" ) ), 3, wxSOLID );
-        pen2 = wxPen( GetGlobalColor( _T ( "SNDG1" ) ), 3, wxSOLID );
+        pen1 = wxPen( GetGlobalColor( _T ( "SNDG2" ) ), 3, wxPENSTYLE_SOLID );
+        pen2 = wxPen( GetGlobalColor( _T ( "SNDG1" ) ), 3, wxPENSTYLE_SOLID );
     } else                                // Draw 1 mile scale as SCALEB10
     {
         dist = 1.0;
         count = 10;
-        pen1 = wxPen( GetGlobalColor( _T ( "SCLBR" ) ), 3, wxSOLID );
-        pen2 = wxPen( GetGlobalColor( _T ( "CHDRD" ) ), 3, wxSOLID );
+        pen1 = wxPen( GetGlobalColor( _T ( "SCLBR" ) ), 3, wxPENSTYLE_SOLID );
+        pen2 = wxPen( GetGlobalColor( _T ( "CHDRD" ) ), 3, wxPENSTYLE_SOLID );
     }
 
     GetCanvasPixPoint( x_origin, y_origin, blat, blon );
@@ -4328,18 +4349,24 @@ void ChartCanvas::ShowChartInfoWindow( int x, int dbIndex )
             wxString s;
             ChartBase *pc = NULL;
 
+            // TOCTOU race but worst case will reload chart.
+            // need to lock it or the background spooler may evict charts in 
+            // OpenChartFromDBAndLock
             if( ( ChartData->IsChartInCache( dbIndex ) ) && ChartData->IsValid() )
-                pc = ChartData->OpenChartFromDB( dbIndex, FULL_INIT );   // this must come from cache
+                pc = ChartData->OpenChartFromDBAndLock( dbIndex, FULL_INIT );   // this must come from cache
 
             int char_width, char_height;
             s = ChartData->GetFullChartInfo( pc, dbIndex, &char_width, &char_height );
+            if (pc)
+                ChartData->UnLockCacheChart(dbIndex);
+
             m_pCIWin->SetString( s );
             m_pCIWin->FitToChars( char_width, char_height );
 
             wxPoint p;
             p.x = x;
             if( ( p.x + m_pCIWin->GetWinSize().x ) > m_canvas_width )
-                p.x = m_canvas_width - m_pCIWin->GetWinSize().x;
+                p.x = (m_canvas_width - m_pCIWin->GetWinSize().x)/2;    // centered
 
             p.y = m_canvas_height - g_Piano->GetHeight() - 4 - m_pCIWin->GetWinSize().y;
 
@@ -4356,7 +4383,16 @@ void ChartCanvas::ShowChartInfoWindow( int x, int dbIndex )
 
 void ChartCanvas::HideChartInfoWindow( void )
 {
-    if( m_pCIWin && m_pCIWin->IsShown() ) m_pCIWin->Hide();
+    if( m_pCIWin /*&& m_pCIWin->IsShown()*/ ){
+        m_pCIWin->Hide();
+        m_pCIWin->Destroy();
+        m_pCIWin = NULL;
+
+#ifdef __OCPN__ANDROID__        
+        androidForceFullRepaint();
+#endif        
+            
+    }
 }
 
 void ChartCanvas::PanTimerEvent( wxTimerEvent& event )
@@ -4554,7 +4590,10 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
     
     int chartbar_height = GetChartbarHeight();
 
-    if( x > xr_margin ) {
+    if( g_Compass && g_Compass->IsShown() &&
+        g_Compass->GetRect().Contains(event.GetPosition())) {
+        cursor_region = CENTER;
+    } else if( x > xr_margin ) {
         cursor_region = MID_RIGHT;
     } else if( x < xl_margin ) {
         cursor_region = MID_LEFT;
@@ -5168,11 +5207,11 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                                                     
                                                     //    Update the MarkProperties Dialog, if currently shown
                                                     if( ( NULL != pMarkPropDialog ) && ( pMarkPropDialog->IsShown() ) ) {
-                                                        if( m_pRoutePointEditTarget == pMarkPropDialog->GetRoutePoint() ) pMarkPropDialog->UpdateProperties();
+                                                        if( m_pRoutePointEditTarget == pMarkPropDialog->GetRoutePoint() ) pMarkPropDialog->UpdateProperties( true );
                                                     }
                                                     
                                                     if(g_bopengl) {
-                                                        InvalidateGL();
+                                                        //InvalidateGL();
                                                         Refresh( false );
                                                     } else {
                                                         // Get the update rectangle for the edited route
@@ -5236,15 +5275,19 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                         
                         // Get the update rectangle for the un-edited mark
                         wxRect pre_rect;
-                        m_pRoutePointEditTarget->CalculateDCRect( m_dc_route, &pre_rect );
-                        if( ( lppmax > pre_rect.width / 2 ) || ( lppmax > pre_rect.height / 2 ) ) pre_rect.Inflate(
-                            (int) ( lppmax - ( pre_rect.width / 2 ) ),
-                                                                                                                   (int) ( lppmax - ( pre_rect.height / 2 ) ) );
+                        if(!g_bopengl) {
+                            m_pRoutePointEditTarget->CalculateDCRect( m_dc_route, &pre_rect );
+                            if( ( lppmax > pre_rect.width / 2 ) || ( lppmax > pre_rect.height / 2 ) )
+                                pre_rect.Inflate( (int) ( lppmax - ( pre_rect.width / 2 ) ), (int) ( lppmax - ( pre_rect.height / 2 ) ) );
+                        }
+                        
                         m_pRoutePointEditTarget->m_lat = m_cursor_lat;    // update the RoutePoint entry
                         m_pRoutePointEditTarget->m_lon = m_cursor_lon;
                         m_pFoundPoint->m_slat = m_cursor_lat;             // update the SelectList entry
                         m_pFoundPoint->m_slon = m_cursor_lon;
                         
+                        
+                            
                         //    Update the MarkProperties Dialog, if currently shown
                         if( ( NULL != pMarkPropDialog ) && ( pMarkPropDialog->IsShown() ) ) {
                             if( m_pRoutePointEditTarget == pMarkPropDialog->GetRoutePoint() )
@@ -5253,21 +5296,20 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                         
                         //    Invalidate the union region
                         if(g_bopengl) {
-                            InvalidateGL();
+                            if(!g_btouch)
+                                InvalidateGL();
                             Refresh( false );
                         } else {
                             // Get the update rectangle for the edited mark
                             wxRect post_rect;
                             m_pRoutePointEditTarget->CalculateDCRect( m_dc_route, &post_rect );
                             if( ( lppmax > post_rect.width / 2 ) || ( lppmax > post_rect.height / 2 ) )
-                                post_rect.Inflate(
-                                    (int) ( lppmax - ( post_rect.width / 2 ) ),
+                                post_rect.Inflate((int) ( lppmax - ( post_rect.width / 2 ) ),
                                                   (int) ( lppmax - ( post_rect.height / 2 ) ) );
                                 
-                                //                        post_rect.Inflate(200);
                             //    Invalidate the union region
-                                pre_rect.Union( post_rect );
-                                RefreshRect( pre_rect, false );
+                            pre_rect.Union( post_rect );
+                            RefreshRect( pre_rect, false );
                         }
                     }
                     ret = true;
@@ -5517,27 +5559,47 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                         if( m_lastRoutePointEditTarget) {
                             m_lastRoutePointEditTarget->m_bIsBeingEdited = false;
                             m_lastRoutePointEditTarget->m_bPtIsSelected = false;
-                            wxRect wp_rect;
-                            m_lastRoutePointEditTarget->CalculateDCRect( m_dc_route, &wp_rect );
-                            RefreshRect( wp_rect, true );
                         }
                     }
                     
                     if( m_pRoutePointEditTarget) {
                         m_pRoutePointEditTarget->m_bIsBeingEdited = true;
                         m_pRoutePointEditTarget->m_bPtIsSelected = true;
-                        wxRect wp_rect;
-                        m_pRoutePointEditTarget->CalculateDCRect( m_dc_route, &wp_rect );
-                        RefreshRect( wp_rect, true );
                     }
-                    
                 }
-                else {
+                else {                  // Deselect everything
                     if( m_lastRoutePointEditTarget) {
                         m_lastRoutePointEditTarget->m_bIsBeingEdited = false;
                         m_lastRoutePointEditTarget->m_bPtIsSelected = false;
+
+                        //  Clear any routes being edited, probably orphans
+                        wxArrayPtrVoid *lastEditRouteArray = g_pRouteMan->GetRouteArrayContaining( m_lastRoutePointEditTarget );
+                        if( lastEditRouteArray ) {
+                            for( unsigned int ir = 0; ir < lastEditRouteArray->GetCount(); ir++ ) {
+                                Route *pr = (Route *) lastEditRouteArray->Item( ir );
+                                if( g_pRouteMan->IsRouteValid(pr) ) {
+                                    pr->m_bIsBeingEdited = false;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //  Do the refresh
+                
+                if(g_bopengl) {
+                    InvalidateGL();
+                    Refresh( false );
+                } else {
+                    if( m_lastRoutePointEditTarget) {
                         wxRect wp_rect;
                         m_lastRoutePointEditTarget->CalculateDCRect( m_dc_route, &wp_rect );
+                        RefreshRect( wp_rect, true );
+                    }
+                        
+                        if( m_pRoutePointEditTarget) {
+                        wxRect wp_rect;
+                        m_pRoutePointEditTarget->CalculateDCRect( m_dc_route, &wp_rect );
                         RefreshRect( wp_rect, true );
                     }
                 }
@@ -6032,6 +6094,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 }
                 m_pFoundRoutePoint = NULL;
                 
+                Refresh( true );
                 
             }                
             
@@ -6154,7 +6217,10 @@ bool ChartCanvas::MouseEventProcessCanvas( wxMouseEvent& event )
 
 void ChartCanvas::MouseEvent( wxMouseEvent& event )
 {
-    if(cc1->MouseEventChartBar( event ))
+    if(g_Compass && g_Compass->MouseEvent( event ))
+        return;
+
+    if(MouseEventChartBar( event ))
         return;
 
     if(MouseEventSetup( event ))
@@ -8280,7 +8346,6 @@ bool ChartCanvas::InvokeCanvasMenu(int x, int y, int seltype)
 #ifdef __WXQT__
     gFrame->SurfaceToolbar();
     //g_FloatingToolbarDialog->Raise();
-    g_FloatingCompassDialog->Raise();
     if(g_ChartBarWin && g_ChartBarWin->IsShown())
         g_ChartBarWin->Raise();
 #endif
@@ -8393,11 +8458,11 @@ void ChartCanvas::RenderAllChartOutlines( ocpnDC &dc, ViewPort& vp )
             double zoom_factor = GetVP().view_scale_ppm / chart_native_ppm;
 
             if( zoom_factor > 8.0 ) {
-                wxPen mPen( GetGlobalColor( _T("UINFM") ), 2, wxSHORT_DASH );
+                wxPen mPen( GetGlobalColor( _T("UINFM") ), 2, wxPENSTYLE_SHORT_DASH );
                 dc.SetPen( mPen );
                 pch->RenderNextSmallerCellOutlines( dc, GetVP() );
             } else {
-                wxPen mPen( GetGlobalColor( _T("UINFM") ), 1, wxSOLID );
+                wxPen mPen( GetGlobalColor( _T("UINFM") ), 1, wxPENSTYLE_SOLID );
                 dc.SetPen( mPen );
             } 
 
@@ -8479,13 +8544,13 @@ void ChartCanvas::RenderChartOutline( ocpnDC &dc, int dbIndex, ViewPort& vp )
     int nPly = ChartData->GetDBPlyPoint( dbIndex, 0, &plylat, &plylon );
 
     if( ChartData->GetDBChartType( dbIndex ) == CHART_TYPE_CM93 )
-        dc.SetPen( wxPen( GetGlobalColor( _T ( "YELO1" ) ), 1, wxSOLID ) );
+        dc.SetPen( wxPen( GetGlobalColor( _T ( "YELO1" ) ), 1, wxPENSTYLE_SOLID ) );
 
     else if( ChartData->GetDBChartFamily( dbIndex ) == CHART_FAMILY_VECTOR )
-        dc.SetPen( wxPen( GetGlobalColor( _T ( "UINFG" ) ), 1, wxSOLID ) );
+        dc.SetPen( wxPen( GetGlobalColor( _T ( "UINFG" ) ), 1, wxPENSTYLE_SOLID ) );
 
     else
-        dc.SetPen( wxPen( GetGlobalColor( _T ( "UINFR" ) ), 1, wxSOLID ) );
+        dc.SetPen( wxPen( GetGlobalColor( _T ( "UINFR" ) ), 1, wxPENSTYLE_SOLID ) );
 
     //        Are there any aux ply entries?
     int nAuxPlyEntries = ChartData->GetnAuxPlyEntries( dbIndex );
@@ -9092,7 +9157,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
             //    Associate with temp_dc
             wxRegion *clip_region = backgroundRegion.GetNew_wxRegion();
-            temp_dc.SetClippingRegion( *clip_region );
+            temp_dc.SetDeviceClippingRegion( *clip_region );
             delete clip_region;
 
             ocpnDC bgdc( temp_dc );
@@ -9187,7 +9252,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
     mscratch_dc.ResetBoundingBox();
     mscratch_dc.DestroyClippingRegion();
-    mscratch_dc.SetClippingRegion( rgn_chart );
+    mscratch_dc.SetDeviceClippingRegion( rgn_chart );
 
     //    Blit the externally invalidated areas of the chart onto the scratch dc
     wxRegionIterator upd( rgn_blit ); // get the update rect list
@@ -9218,6 +9283,9 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         m_brepaint_piano = false;
     }
 
+    if(g_Compass)
+        g_Compass->Paint(scratch_dc);
+
     //quiting?
     if( g_bquiting ) {
 #ifdef ocpnUSE_DIBSECTION
@@ -9232,7 +9300,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         q_dc.Blit( 0, 0, GetVP().pix_width, GetVP().pix_height, &mscratch_dc, 0, 0 );
 
         //  Draw a rectangle over the screen with a stipple brush
-        wxBrush qbr( *wxBLACK, wxFDIAGONAL_HATCH );
+        wxBrush qbr( *wxBLACK, wxBRUSHSTYLE_FDIAGONAL_HATCH );
         q_dc.SetBrush( qbr );
         q_dc.DrawRectangle( 0, 0, GetVP().pix_width, GetVP().pix_height );
 
@@ -9664,7 +9732,15 @@ emboss_data *ChartCanvas::EmbossDepthScale()
     }
 
     ped->x = ( GetVP().pix_width - ped->width );
-    ped->y = 40;
+
+    if(g_Compass && pConfig->m_bShowCompassWin){
+        wxRect r = g_Compass->GetRect();
+        wxPoint p = ScreenToClient(wxPoint(r.x, r.y));
+        ped->y = p.y + r.height + 4;
+     }
+     else{
+        ped->y = 40;
+    }
     return ped;
 }
 
@@ -9672,8 +9748,12 @@ void ChartCanvas::CreateDepthUnitEmbossMaps( ColorScheme cs )
 {
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
     wxFont font;
-    if( style->embossFont == wxEmptyString )
-        font = wxFont( 60, wxFONTFAMILY_ROMAN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
+    if( style->embossFont == wxEmptyString ){
+        wxFont *dFont = FontMgr::Get().GetFont( _("Dialog"), 0 );
+        font = *dFont;
+        font.SetPointSize(60);
+        font.SetWeight(wxFONTWEIGHT_BOLD);
+    }
     else
         font = wxFont( style->embossHeight, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, style->embossFont );
 
@@ -9969,7 +10049,7 @@ void ChartCanvas::DrawAnchorWatchPoints( ocpnDC& dc )
         wxPen ppPeng( GetGlobalColor( _T ( "UGREN" ) ), 2 );
         wxPen ppPenr( GetGlobalColor( _T ( "URED" ) ), 2 );
 
-        wxBrush *ppBrush = wxTheBrushList->FindOrCreateBrush( wxColour( 0, 0, 0 ), wxTRANSPARENT );
+        wxBrush *ppBrush = wxTheBrushList->FindOrCreateBrush( wxColour( 0, 0, 0 ), wxBRUSHSTYLE_TRANSPARENT );
         dc.SetBrush( *ppBrush );
 
         if( lpp1 > 0 ) {
@@ -10047,17 +10127,17 @@ void ChartCanvas::RebuildTideSelectList( LLBBox& BBox )
 void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
 {
     wxPen *pblack_pen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFD" ) ), 1,
-                        wxSOLID );
+                        wxPENSTYLE_SOLID );
     wxPen *pyelo_pen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "YELO1" ) ), 1,
-                       wxSOLID );
+                       wxPENSTYLE_SOLID );
     wxPen *pblue_pen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "BLUE2" ) ), 1,
-                       wxSOLID );
+                       wxPENSTYLE_SOLID );
 
     wxBrush *pgreen_brush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "GREEN1" ) ),
-                            wxSOLID );
+                            wxBRUSHSTYLE_SOLID );
 //        wxBrush *pblack_brush = wxTheBrushList->FindOrCreateBrush ( GetGlobalColor ( _T ( "UINFD" ) ), wxSOLID );
-    wxBrush *brc_1 = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "BLUE2" ) ), wxSOLID );
-    wxBrush *brc_2 = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "YELO1" ) ), wxSOLID );
+    wxBrush *brc_1 = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "BLUE2" ) ), wxBRUSHSTYLE_SOLID );
+    wxBrush *brc_2 = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "YELO1" ) ), wxBRUSHSTYLE_SOLID );
 
     wxFont *dFont = FontMgr::Get().GetFont( _("ExtendedTideIcon") );
     dc.SetTextForeground( FontMgr::Get().GetFontColor( _("ExtendedTideIcon") ) );
@@ -10305,15 +10385,15 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
     bDrawCurrentValues =  true_scale_display < g_Show_Target_Name_Scale;
 
     wxPen *pblack_pen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFD" ) ), 1,
-                        wxSOLID );
+                        wxPENSTYLE_SOLID );
     wxPen *porange_pen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFO" ) ), 1,
-                         wxSOLID );
+                         wxPENSTYLE_SOLID );
     wxBrush *porange_brush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "UINFO" ) ),
-                             wxSOLID );
+                             wxBRUSHSTYLE_SOLID );
     wxBrush *pgray_brush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "UIBDR" ) ),
-                           wxSOLID );
+                           wxBRUSHSTYLE_SOLID );
     wxBrush *pblack_brush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "UINFD" ) ),
-                            wxSOLID );
+                            wxBRUSHSTYLE_SOLID );
 
     double skew_angle = GetVPRotation();
 

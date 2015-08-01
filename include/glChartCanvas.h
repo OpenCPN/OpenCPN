@@ -111,7 +111,9 @@ public:
     void GridDraw( );
     void FlushFBO( void );
     
-    void DrawAllRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region );
+    void DrawDynamicRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region );
+    void DrawStaticRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region );
+    
     void RenderAllChartOutlines( ocpnDC &dc, ViewPort &VP );
     void RenderChartOutline( int dbIndex, ViewPort &VP );
 
@@ -186,6 +188,8 @@ protected:
     int          m_cache_tex_y;
     OCPNRegion   m_gl_rendered_region;
 
+    int		m_prevMemUsed;
+
     GLuint      ownship_tex;
     int         ownship_color;
     wxSize      ownship_size, ownship_tex_size;
@@ -204,6 +208,7 @@ protected:
     
     wxTimer     m_gestureEeventTimer;
     bool        m_bgestureGuard;
+    bool        m_bpinchGuard;
     
     OCPNRegion  m_canvasregion;
     TexFont     m_gridfont;

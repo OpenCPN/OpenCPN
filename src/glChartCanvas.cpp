@@ -63,6 +63,7 @@
 #include "toolbar.h"
 #include "chartbarwin.h"
 #include "tcmgr.h"
+#include "compass.h"
 
 #ifndef GL_ETC1_RGB8_OES
 #define GL_ETC1_RGB8_OES                                        0x8D64
@@ -110,6 +111,7 @@ extern ocpnStyle::StyleManager* g_StyleManager;
 extern bool             g_bShowChartBar;
 extern ChartBarWin     *g_ChartBarWin;
 extern Piano           *g_Piano;
+extern ocpnCompass         *g_Compass;
 
 GLenum       g_texture_rectangle_format;
 
@@ -149,7 +151,7 @@ extern bool             b_inCompressAllCharts;
 extern bool             g_bexpert;
 extern bool             g_bcompression_wait;
 extern bool             g_bresponsive;
-extern int              g_ChartScaleFactor;
+extern float            g_ChartScaleFactorExp;
 
 float            g_GLMinSymbolLineWidth;
 float            g_GLMinCartographicLineWidth;
@@ -324,7 +326,6 @@ bool CompressChart(wxThread *pThread, ChartBase *pchart, wxString CompressedCach
             rect.y += rect.height;
         }
 skipout:        
-        tex_fact->DeleteAllTextures();
         delete tex_fact;
     }
     return ret;
@@ -809,9 +810,12 @@ glChartCanvas::glChartCanvas( wxWindow *parent ) :
     
     m_binPinch = false;
     m_binPan = false;
+    m_bpinchGuard = false;
     
     b_timeGL = true;
     m_last_render_time = -1;
+
+    m_prevMemUsed = 0;    
     
     m_tideTex = 0;
     m_currentTex = 0;
@@ -854,15 +858,8 @@ void glChartCanvas::ClearAllRasterTextures( void )
     //     Delete all the TexFactory instances
     ChartPathHashTexfactType::iterator itt;
     for( itt = m_chart_texfactory_hash.begin(); itt != m_chart_texfactory_hash.end(); ++itt ) {
-//        ChartBase *pc = (ChartBase *) itt->first;
-        wxString key = itt->first;
+        glTexFactory *ptf = itt->second;
         
-        glTexFactory *ptf = m_chart_texfactory_hash[key];
-        
-        if( ptf){
-            ptf->PurgeBackgroundCompressionPool();
-            ptf->DeleteAllTextures();
-        }
         delete ptf;
     }
     m_chart_texfactory_hash.clear();
@@ -902,6 +899,9 @@ void glChartCanvas::OnSize( wxSizeEvent& event )
 
 void glChartCanvas::MouseEvent( wxMouseEvent& event )
 {
+    if(g_Compass && g_Compass->MouseEvent( event ))
+        return;
+
     if(cc1->MouseEventChartBar( event ))
         return;
 
@@ -1427,7 +1427,6 @@ no_compression:
     m_benableVScale = false;
 #endif    
     
-    
 }
 
 void glChartCanvas::OnPaint( wxPaintEvent &event )
@@ -1458,13 +1457,10 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
     //  Paint updates may have been externally disabled (temporarily, to avoid Yield() recursion performance loss)
     if(!m_b_paint_enable)
         return;
-        
     //      Recursion test, sometimes seen on GTK systems when wxBusyCursor is activated
     if( m_in_glpaint ) return;
     m_in_glpaint++;
-
     Render();
-
     m_in_glpaint--;
 
 }
@@ -1476,15 +1472,11 @@ bool glChartCanvas::PurgeChartTextures( ChartBase *pc, bool b_purge_factory )
     
     //    Found ?
     if( ittf != m_chart_texfactory_hash.end() ) {
-        glTexFactory *pTexFact = m_chart_texfactory_hash[pc->GetFullPath()];
+        glTexFactory *pTexFact = ittf->second;
         
         if(pTexFact){
 
             if( b_purge_factory){
-                pTexFact->PurgeBackgroundCompressionPool();
-                pTexFact->DeleteAllTextures();
-                pTexFact->DeleteAllDescriptors();
-            
                 m_chart_texfactory_hash.erase(ittf);                // This chart  becoming invalid
             
                 delete pTexFact;
@@ -1528,65 +1520,143 @@ ViewPort glChartCanvas::NormalizedViewPort(const ViewPort &vp)
     return cvp;
 }
 
-void glChartCanvas::DrawAllRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region )
+void glChartCanvas::DrawStaticRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region )
 {
     ocpnDC dc(*this);
-
+    
     for(wxRouteListNode *node = pRouteList->GetFirst();
         node; node = node->GetNext() ) {
         Route *pRouteDraw = node->GetData();
+    if( !pRouteDraw )
+        continue;
+    
+    /* defer rendering active routes until later */
+    if( pRouteDraw->IsActive() || pRouteDraw->IsSelected() )
+        continue;
+    
+    if( pRouteDraw->IsTrack() ) {
+        /* defer rendering active tracks until later */
+        if( dynamic_cast<Track *>(pRouteDraw)->IsRunning() )
+            continue;
+    }
+    
+    /* defer rendering routes being edited until later */
+    if( pRouteDraw->m_bIsBeingEdited )
+        continue;
+    
+    /* this routine is called very often, so rather than using the
+     *           wxBoundingBox::Intersect routine, do the comparisons directly
+     *           to reduce the number of floating point comparisons */
+    
+    const wxBoundingBox &vp_box = vp.GetBBox(), &test_box = pRouteDraw->GetBBox();
+    
+    if(test_box.GetMaxY() < vp_box.GetMinY())
+        continue;
+    
+    if(test_box.GetMinY() > vp_box.GetMaxY())
+        continue;
+    
+    double vp_minx = vp_box.GetMinX(), vp_maxx = vp_box.GetMaxX();
+    double test_minx = test_box.GetMinX(), test_maxx = test_box.GetMaxX();
+    
+    /* TODO: use DrawGL instead of Draw */
+    
+    // Route is not wholly outside viewport
+    if(test_maxx >= vp_minx && test_minx <= vp_maxx) {
+        pRouteDraw->DrawGL( vp, region );
+    } else if( vp_maxx > 180. ) {
+        if(test_minx + 360 <= vp_maxx && test_maxx + 360 >= vp_minx)
+            pRouteDraw->DrawGL( vp, region );
+    } else if( pRouteDraw->CrossesIDL() || vp_minx < -180. ) {
+        if(test_maxx - 360 >= vp_minx && test_minx - 360 <= vp_maxx)
+            pRouteDraw->DrawGL( vp, region );
+    }
+        }
+        
+        /* Waypoints not drawn as part of routes, and not being edited */
+        if( vp.GetBBox().GetValid() && pWayPointMan) {
+            for(wxRoutePointListNode *pnode = pWayPointMan->GetWaypointList()->GetFirst(); pnode; pnode = pnode->GetNext() ) {
+                RoutePoint *pWP = pnode->GetData();
+                if( pWP && (!pWP->m_bIsBeingEdited) &&(!pWP->m_bIsInRoute && !pWP->m_bIsInTrack ) ){
+                    pWP->DrawGL( vp, region );
+                }
+            }
+        }
+        
+}
+
+void glChartCanvas::DrawDynamicRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region )
+{
+    ocpnDC dc(*this);
+    for(wxRouteListNode *node = pRouteList->GetFirst(); node; node = node->GetNext() ) {
+        Route *pRouteDraw = node->GetData();
+        
+        int drawit = 0;
         if( !pRouteDraw )
             continue;
-
-        /* defer rendering active routes until later */
+        
+        /* Active routes */
         if( pRouteDraw->IsActive() || pRouteDraw->IsSelected() )
-            continue;
-
+            drawit++;
+        
         if( pRouteDraw->IsTrack() ) {
-            /* defer rendering active tracks until later */
+            /* Active tracks */
             if( dynamic_cast<Track *>(pRouteDraw)->IsRunning() )
-                continue;
+                drawit++;
         }
-
-        /* this routine is called very often, so rather than using the
-           wxBoundingBox::Intersect routine, do the comparisons directly
-           to reduce the number of floating point comparisons */
-
-        const wxBoundingBox &vp_box = vp.GetBBox(), &test_box = pRouteDraw->GetBBox();
-
-        if(test_box.GetMaxY() < vp_box.GetMinY())
-            continue;
-
-        if(test_box.GetMinY() > vp_box.GetMaxY())
-            continue;
-
-        double vp_minx = vp_box.GetMinX(), vp_maxx = vp_box.GetMaxX();
-        double test_minx = test_box.GetMinX(), test_maxx = test_box.GetMaxX();
-
-        /* TODO: use DrawGL instead of Draw */
-
-        // Route is not wholly outside viewport
-        if(test_maxx >= vp_minx && test_minx <= vp_maxx) {
-            pRouteDraw->DrawGL( vp, region );
-        } else if( vp_maxx > 180. ) {
-            if(test_minx + 360 <= vp_maxx && test_maxx + 360 >= vp_minx)
+        
+        /* Routes being edited */
+        if( pRouteDraw->m_bIsBeingEdited )
+            drawit++;
+        
+        /* Routes Selected */
+        if( pRouteDraw->IsSelected() )
+            drawit++;
+        
+        if(drawit){
+            /* this routine is called very often, so rather than using the
+             *           wxBoundingBox::Intersect routine, do the comparisons directly
+             *           to reduce the number of floating point comparisons */
+            
+            const wxBoundingBox &vp_box = vp.GetBBox(), &test_box = pRouteDraw->GetBBox();
+            
+            if(test_box.GetMaxY() < vp_box.GetMinY())
+                continue;
+            
+            if(test_box.GetMinY() > vp_box.GetMaxY())
+                continue;
+            
+            double vp_minx = vp_box.GetMinX(), vp_maxx = vp_box.GetMaxX();
+            double test_minx = test_box.GetMinX(), test_maxx = test_box.GetMaxX();
+            
+            
+            // Route is not wholly outside viewport
+            if(test_maxx >= vp_minx && test_minx <= vp_maxx) {
                 pRouteDraw->DrawGL( vp, region );
-        } else if( pRouteDraw->CrossesIDL() || vp_minx < -180. ) {
-            if(test_maxx - 360 >= vp_minx && test_minx - 360 <= vp_maxx)
-                pRouteDraw->DrawGL( vp, region );
+            } else if( vp_maxx > 180. ) {
+                if(test_minx + 360 <= vp_maxx && test_maxx + 360 >= vp_minx)
+                    pRouteDraw->DrawGL( vp, region );
+            } else if( pRouteDraw->CrossesIDL() || vp_minx < -180. ) {
+                if(test_maxx - 360 >= vp_minx && test_minx - 360 <= vp_maxx)
+                    pRouteDraw->DrawGL( vp, region );
+            }
         }
     }
-
-    /* Waypoints not drawn as part of routes */
+    
+    
+    /* Waypoints not drawn as part of routes, which are being edited right now */
     if( vp.GetBBox().GetValid() && pWayPointMan) {
+        
         for(wxRoutePointListNode *pnode = pWayPointMan->GetWaypointList()->GetFirst(); pnode; pnode = pnode->GetNext() ) {
             RoutePoint *pWP = pnode->GetData();
-            if( pWP && (!pWP->m_bIsInRoute && !pWP->m_bIsInTrack ) )
+            if( pWP && (pWP->m_bIsBeingEdited) && (!pWP->m_bIsInRoute && !pWP->m_bIsInTrack ) ){
                 pWP->DrawGL( vp, region );
+            }
         }
     }
     
 }
+
 
 void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
 {
@@ -1596,14 +1666,19 @@ void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
     }
         
     /* quick bounds check */
-    wxBoundingBox box, vpbox = vp.GetBBox();
+    wxBoundingBox box;
     ChartData->GetDBBoundingBox( dbIndex, &box );
+    if(!box.GetValid())
+        return;
 
+    
     // Don't draw an outline in the case where the chart covers the entire world */
     double lon_diff = box.GetMaxX() - box.GetMinX();
     if(lon_diff == 360)
         return;
 
+    wxBoundingBox vpbox = vp.GetBBox();
+    
     float lon_bias;
     if( vpbox.IntersectOut( box ) ) {
         wxPoint2DDouble p = wxPoint2DDouble(360, 0);
@@ -1686,7 +1761,7 @@ void glChartCanvas::GridDraw( )
 
     if(!m_gridfont.IsBuilt()){
         wxFont *font = wxTheFontList->FindOrCreateFont
-            ( 8, wxFONTFAMILY_SWISS, wxNORMAL,
+            ( 8, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL,
             wxFONTWEIGHT_NORMAL, FALSE, wxString( _T ( "Arial" ) ) );
         m_gridfont.Build(*font);
     }
@@ -2016,9 +2091,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
     {
         float scale =  1.0f;
         if(g_bresponsive){
-            scale =  exp( g_ChartScaleFactor * (0.693 / 5.0) );       //  exp(2)
-            scale = wxMax(scale, .5);
-            scale = wxMin(scale, 4.);
+            scale =  g_ChartScaleFactorExp;
         }
         
         const int v = 12;
@@ -2163,9 +2236,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
         glScalef(scale_factor_x, scale_factor_y, 1);
 
         if(g_bresponsive){
-            float scale =  exp( g_ChartScaleFactor * (0.693 / 5.0) );       //  exp(2)
-            scale = wxMax(scale, .5);
-            scale = wxMin(scale, 4.);
+            float scale =  g_ChartScaleFactorExp;
             glScalef(scale, scale, 1);
         }
         
@@ -2252,9 +2323,9 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc, OCPNRegion &region )
     extern Track                     *g_pActiveTrack;
     Route *active_route = g_pRouteMan->GetpActiveRoute();
 
-    if( active_route ) active_route->DrawGL( vp, region );
-    if( g_pActiveTrack ) g_pActiveTrack->Draw( dc, vp );
-    if( cc1->m_pSelectedRoute ) cc1->m_pSelectedRoute->DrawGL( vp, region );
+//    if( active_route ) active_route->DrawGL( vp, region );
+//    if( g_pActiveTrack ) g_pActiveTrack->Draw( dc, vp );
+//    if( cc1->m_pSelectedRoute ) cc1->m_pSelectedRoute->DrawGL( vp, region );
 
     GridDraw( );
 
@@ -2297,6 +2368,8 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc, OCPNRegion &region )
     // render the chart bar
     if(g_bShowChartBar && !g_ChartBarWin)
         DrawChartBar(dc);
+
+    g_Compass->Paint(dc);
 }
 
 void glChartCanvas::DrawChartBar( ocpnDC &dc )
@@ -3360,7 +3433,7 @@ void glChartCanvas::DrawGroundedOverlayObjectsRect(ocpnDC &dc, wxRect &rect)
     ViewPort temp_vp = BuildClippedVP(cc1->GetVP(), rect);
     cc1->RenderAllChartOutlines( dc, temp_vp );
 
-    DrawAllRoutesAndWaypoints( temp_vp, region );
+    DrawStaticRoutesAndWaypoints( temp_vp, region );
 
     if( cc1->m_bShowTide )
         DrawGLTidesInBBox( dc, temp_vp.GetBBox() );
@@ -3511,6 +3584,8 @@ void glChartCanvas::SetColorScheme(ColorScheme cs)
 bool glChartCanvas::TextureCrunch(double factor)
 {
     
+    double hysteresis = 0.90;
+
     bool bGLMemCrunch = g_tex_mem_used > (double)(g_GLOptions.m_iTextureMemorySize * 1024 * 1024) * factor;
     if( ! bGLMemCrunch )
         return false;
@@ -3523,7 +3598,7 @@ bool glChartCanvas::TextureCrunch(double factor)
         if(!ptf)
             continue;
         
-        bGLMemCrunch = g_tex_mem_used > (double)(g_GLOptions.m_iTextureMemorySize * 1024 * 1024) * factor;
+        bGLMemCrunch = g_tex_mem_used > (double)(g_GLOptions.m_iTextureMemorySize * 1024 * 1024) * factor *hysteresis;
         if(!bGLMemCrunch)
             break;
         
@@ -3531,14 +3606,14 @@ bool glChartCanvas::TextureCrunch(double factor)
         {
                 if( cc1->m_pQuilt && cc1->m_pQuilt->IsComposed() &&
                     !cc1->m_pQuilt->IsChartInQuilt( chart_full_path ) ) {
-                    ptf->DeleteSomeTextures( g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * factor);
+                    ptf->DeleteSomeTextures( g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * factor *hysteresis);
                     }
         }
         else      // not quilted
         {
                 if( !Current_Ch->GetFullPath().IsSameAs(chart_full_path))
                 {
-                    ptf->DeleteSomeTextures( g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * factor );
+                    ptf->DeleteSomeTextures( g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * factor  *hysteresis);
                 }
         }
     }
@@ -3546,51 +3621,62 @@ bool glChartCanvas::TextureCrunch(double factor)
     return true;
 }
 
+#define MAX_CACHE_FACTORY 50
 bool glChartCanvas::FactoryCrunch(double factor)
 {
+    if (m_chart_texfactory_hash.size() == 0) {
+        /* nothing to free */
+        return false;
+    }
+
     int mem_used, mem_start;
     GetMemoryStatus(0, &mem_used);
+    double hysteresis = 0.90;
     mem_start = mem_used;
     
-    bool bGLMemCrunch = mem_used > (double)(g_memCacheLimit) * factor;
-    if( ! bGLMemCrunch )
+    bool bGLMemCrunch = mem_used > (double)(g_memCacheLimit) * factor && mem_used > (double)(m_prevMemUsed) *factor;
+    if( ! bGLMemCrunch && (m_chart_texfactory_hash.size() <= MAX_CACHE_FACTORY))
         return false;
     
-
     ChartPathHashTexfactType::iterator it0;
-    for( it0 = m_chart_texfactory_hash.begin(); it0 != m_chart_texfactory_hash.end(); ++it0 ) {
-        wxString chart_full_path = it0->first;
-        glTexFactory *ptf = it0->second;
-        bool mem_freed = false;
-        if(!ptf)
-            continue;
+    if( bGLMemCrunch) {
+        for( it0 = m_chart_texfactory_hash.begin(); it0 != m_chart_texfactory_hash.end(); ++it0 ) {
+            wxString chart_full_path = it0->first;
+            glTexFactory *ptf = it0->second;
+            bool mem_freed = false;
+            if(!ptf)
+                continue;
         
-        if( cc1->VPoint.b_quilt )          // quilted
-        {
-            if( cc1->m_pQuilt && cc1->m_pQuilt->IsComposed() &&
-                !cc1->m_pQuilt->IsChartInQuilt( chart_full_path ) ) 
+            if( cc1->VPoint.b_quilt )          // quilted
             {
-                ptf->FreeSome( g_memCacheLimit * factor );
-                mem_freed = true;
+                if( cc1->m_pQuilt && cc1->m_pQuilt->IsComposed() &&
+                    !cc1->m_pQuilt->IsChartInQuilt( chart_full_path ) ) 
+                {
+                    ptf->FreeSome( g_memCacheLimit * factor * hysteresis);
+                    mem_freed = true;
+                }
             }
-        }
-        else      // not quilted
-        {
-            if( !Current_Ch->GetFullPath().IsSameAs(chart_full_path))
+            else      // not quilted
             {
-                ptf->DeleteSomeTextures( g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * factor );
-                mem_freed = true;
+                if( !Current_Ch->GetFullPath().IsSameAs(chart_full_path))
+                {
+                    ptf->DeleteSomeTextures( g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * factor * hysteresis);
+                    mem_freed = true;
+                }
             }
-        }
-        if (mem_freed) {
-            GetMemoryStatus(0, &mem_used);
-            bGLMemCrunch = mem_used > (double)(g_memCacheLimit) * factor;
-            if(!bGLMemCrunch)
-                break;
+            if (mem_freed) {
+                GetMemoryStatus(0, &mem_used);
+                bGLMemCrunch = mem_used > (double)(g_memCacheLimit) * factor * hysteresis;
+                m_prevMemUsed = mem_used;
+                if(!bGLMemCrunch)
+                    break;
+            }
         }
     }
 
-    bGLMemCrunch = mem_used > (double)(g_memCacheLimit) * factor;
+    bGLMemCrunch = (mem_used > (double)(g_memCacheLimit) * factor *hysteresis && 
+                    mem_used > (double)(m_prevMemUsed) * factor *hysteresis
+                    )  || (m_chart_texfactory_hash.size() > MAX_CACHE_FACTORY);
     //  Need more, so delete the oldest factory
     if(bGLMemCrunch){
         
@@ -3612,7 +3698,7 @@ bool glChartCanvas::FactoryCrunch(double factor)
                     !cc1->m_pQuilt->IsChartInQuilt( chart_full_path ) ) {
                     
                     wxDateTime lru = ptf->GetLRUTime();
-                    if(lru.IsEarlierThan(lru_oldest)){
+                    if(lru.IsEarlierThan(lru_oldest) && !ptf->BackgroundCompressionAsJob()){
                         lru_oldest = lru;
                         ptf_oldest = ptf;
                     }
@@ -3621,7 +3707,7 @@ bool glChartCanvas::FactoryCrunch(double factor)
             else {
                 if( !Current_Ch->GetFullPath().IsSameAs(chart_full_path)) {
                     wxDateTime lru = ptf->GetLRUTime();
-                    if(lru.IsEarlierThan(lru_oldest)){
+                    if(lru.IsEarlierThan(lru_oldest) && !ptf->BackgroundCompressionAsJob()){
                         lru_oldest = lru;
                         ptf_oldest = ptf;
                     }
@@ -3631,10 +3717,6 @@ bool glChartCanvas::FactoryCrunch(double factor)
                     
         //      Found one?
         if(ptf_oldest){
-            ptf_oldest->PurgeBackgroundCompressionPool();
-            ptf_oldest->DeleteAllTextures();
-            ptf_oldest->DeleteAllDescriptors();
-                
             m_chart_texfactory_hash.erase(ptf_oldest->GetChartPath());                // This chart  becoming invalid
                 
             delete ptf_oldest;
@@ -3642,7 +3724,6 @@ bool glChartCanvas::FactoryCrunch(double factor)
 //            int mem_now;
 //            GetMemoryStatus(0, &mem_now);
 //            printf("-------------FactoryDelete\n");
-                
        }                
     }
     
@@ -3674,11 +3755,11 @@ void glChartCanvas::Render()
             g_glstopwatch.Start();
         }
     }
-    
     wxPaintDC( this );
 
-//    if(m_binPinch || m_binPan)
-//        return;
+    //  If we are in the middle of a fast pan, we don't want the FBO coordinates to be reset
+    if(m_binPinch || m_binPan)
+        return;
     
     ViewPort VPoint = cc1->VPoint;
 
@@ -3953,6 +4034,8 @@ void glChartCanvas::Render()
     } else          // useFBO
         RenderCharts(gldc, chart_get_region);
 
+    DrawDynamicRoutesAndWaypoints( VPoint, chart_get_region );
+        
     // Now draw all the objects which normally move around and are not
     // cached from the previous frame
     DrawFloatingOverlayObjects( gldc, chart_get_region );
@@ -4039,6 +4122,9 @@ void glChartCanvas::Render()
     
     n_render++;
 }
+
+
+
 
 
 void glChartCanvas::RenderCanvasBackingChart( ocpnDC dc, OCPNRegion valid_region)
@@ -4214,7 +4300,7 @@ void glChartCanvas::FastPan(int dx, int dy)
     tx = 1, ty = 1;
     
     tx0 = ty0 = 0.;
-    
+
     m_fbo_offsety += dy;
     m_fbo_offsetx += dx;
     
@@ -4456,6 +4542,8 @@ void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
     
     if(m_binPinch)
         return;
+    if(m_bpinchGuard)
+        return;
     
     int x = event.GetOffset().x;
     int y = event.GetOffset().y;
@@ -4476,33 +4564,34 @@ void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
             break;
             
         case GestureUpdated:
-            if(!g_GLOptions.m_bUseCanvasPanning || m_bfogit)
-                cc1->PanCanvas( dx, -dy );
-            else{
-                FastPan( dx, dy ); 
-            }
+            if(m_binPan){
+                if(!g_GLOptions.m_bUseCanvasPanning || m_bfogit)
+                    cc1->PanCanvas( dx, -dy );
+                else{
+                    FastPan( dx, dy ); 
+                }
                 
                 
-            panx -= dx;
-            pany -= dy;
-            cc1->ClearbFollow();
+                panx -= dx;
+                pany -= dy;
+                cc1->ClearbFollow();
             
             #ifdef __OCPN__ANDROID__
-            androidSetFollowTool(false);
+                androidSetFollowTool(false);
             #endif        
-            
+            }
             break;
             
         case GestureFinished:
-            if (g_GLOptions.m_bUseCanvasPanning){            
-                //               cc1->PanCanvas( -x,-y ); //works, but jumps
-                cc1->PanCanvas( -panx, pany );
-            }
+            if(m_binPan){
+                if (g_GLOptions.m_bUseCanvasPanning)
+                    cc1->PanCanvas( -panx, pany );
 
             #ifdef __OCPN__ANDROID__
-            androidSetFollowTool(false);
+                androidSetFollowTool(false);
             #endif        
             
+            }
             panx = pany = 0;
             m_binPan = false;
             
@@ -4575,13 +4664,22 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
     }
 
     m_bgestureGuard = true;
+    m_bpinchGuard = true;
     m_gestureEeventTimer.Start(500, wxTIMER_ONE_SHOT);
     
 }
 
 void glChartCanvas::onGestureTimerEvent(wxTimerEvent &event)
 {
+    //  On some devices, the pan GestureFinished event fails to show up
+    //  Watch for this case, and fix it.....
+    if(m_binPan){
+        m_binPan = false;
+        Invalidate();
+        Update();
+    }
     m_bgestureGuard = false;
+    m_bpinchGuard = false;
 }
 
 

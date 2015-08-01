@@ -71,7 +71,7 @@ public class OCPNSettingsActivity extends PreferenceActivity
             String settings = extras.getString("SETTINGS_STRING");
 
             Log.i("DEBUGGER_TAG", "OCPNSettingsActivity");
-            Log.i("DEBUGGER_TAG", settings);
+//            Log.i("DEBUGGER_TAG", settings);
 
             m_settings = settings;
             m_newSettings = "";
@@ -82,13 +82,13 @@ public class OCPNSettingsActivity extends PreferenceActivity
 
             while(tkz.hasMoreTokens()){
                 String tk = tkz.nextToken();
-                Log.i("DEBUGGER_TAG", tk);
+//                Log.i("DEBUGGER_TAG", tk);
 
                 if( tk.startsWith("ChartDir") ){
                     int mark = tk.indexOf(":");
                     if(mark > 0){
                         String dir = tk.substring(mark+1);
-                        Log.i("DEBUGGER_TAG", dir);
+//                        Log.i("DEBUGGER_TAG", dir);
                         m_chartDirList.add(dir);
                     }
                 }
@@ -122,8 +122,8 @@ public class OCPNSettingsActivity extends PreferenceActivity
                     int mark = tk.indexOf(":");
                     if(mark > 0){
                         String key = tk.substring(0, mark);
-                        Log.i("DEBUGGER_TAG", key);
-                        Log.i("DEBUGGER_TAG", (mbS52)?"True":"False");
+//                        Log.i("DEBUGGER_TAG", key);
+//                        Log.i("DEBUGGER_TAG", (mbS52)?"True":"False");
                         String value = tk.substring(mark+1);
                         editor.putString(key, value);
                     }
@@ -179,11 +179,15 @@ public class OCPNSettingsActivity extends PreferenceActivity
     {
 //        Toast.makeText(this, "OCPNsettingsactivity Add Dir ", Toast.LENGTH_SHORT).show();
 
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
         Intent intent = new Intent(OCPNSettingsActivity.this, FileChooserActivity.class);
-        intent.putExtra(FileChooserActivity.INPUT_START_FOLDER, "/mnt/sdcard");
+        intent.putExtra(FileChooserActivity.INPUT_START_FOLDER, preferences.getString("prefs_chartInitDir", "/mnt/sdcard"));
         intent.putExtra(FileChooserActivity.INPUT_FOLDER_MODE, true);
         intent.putExtra(FileChooserActivity.INPUT_SHOW_FULL_PATH_IN_TITLE, true);
         intent.putExtra(FileChooserActivity.INPUT_SHOW_ONLY_SELECTABLE, true);
+        intent.putExtra(FileChooserActivity.INPUT_TITLE_STRING, "Add Chart Directory");
+
         startActivityForResult(intent, 0);
    }
 
@@ -207,7 +211,7 @@ public class OCPNSettingsActivity extends PreferenceActivity
            if (resultCode == RESULT_OK) {
                boolean fileCreated = false;
                String filePath = "";
-
+               String parentDir = "";
                Bundle bundle = data.getExtras();
                if(bundle != null)
                {
@@ -220,13 +224,22 @@ public class OCPNSettingsActivity extends PreferenceActivity
                        fileCreated = false;
                        File file = (File) bundle.get(FileChooserActivity.OUTPUT_FILE_OBJECT);
                        filePath = file.getAbsolutePath();
+                       parentDir = file.getParent();
+                       if(null == parentDir)
+                            parentDir = "/mnt";
                    }
                }
 
                String message = fileCreated? "File created" : "File opened";
-               message += ": " + filePath;
-               Log.i("DEBUGGER_TAG", message);
+               message += ": " + filePath + " parentDir:" + parentDir;;
+//               Log.i("DEBUGGER_TAG", message);
                m_chartDirList.add(filePath);
+
+               SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+               Editor editor = preferences.edit();
+               editor.putString("prefs_chartInitDir", parentDir);
+               editor.commit();
+
 
                 OCPNSettingsFragmentCharts cfrag = OCPNSettingsFragmentCharts.getFragment();
                 cfrag.updateChartDirListView();
@@ -247,13 +260,13 @@ public class OCPNSettingsActivity extends PreferenceActivity
    {
        super.onPause();
 
-       Log.i("DEBUGGER_TAG", "onPause");
+       Log.i("DEBUGGER_TAG", "SettingsActivity onPause");
 
        createSettingsString();
 
        Bundle b = new Bundle();
        b.putString("SettingsString", m_newSettings);
-//       Intent i = getIntent(); //gets the intent that called this intent
+
        Intent i = new Intent();
        i.putExtras(b);
        setResult(RESULT_OK, i);
@@ -262,7 +275,7 @@ public class OCPNSettingsActivity extends PreferenceActivity
 
    @Override
    public void finish() {
-       Log.i("DEBUGGER_TAG", "finish");
+       Log.i("DEBUGGER_TAG", "SettingsActivity finish");
 
        createSettingsString();
 
@@ -284,10 +297,10 @@ public class OCPNSettingsActivity extends PreferenceActivity
         for(int i=0 ; i < m_chartDirList.size() ; ++i){
             m_newSettings = m_newSettings.concat("ChartDir:");
             String dir = m_chartDirList.get(i);
-            Log.i("DEBUGGER_TAG", dir);
+//            Log.i("DEBUGGER_TAG", dir);
             m_newSettings = m_newSettings.concat(dir);
             m_newSettings = m_newSettings.concat(";");
-            Log.i("DEBUGGER_TAG", m_newSettings);
+//            Log.i("DEBUGGER_TAG", m_newSettings);
 
         }
 
@@ -328,8 +341,9 @@ public class OCPNSettingsActivity extends PreferenceActivity
         m_newSettings = m_newSettings.concat(appendStringSetting("prefs_navmode", preferences.getString("prefs_navmode", "?")));
         m_newSettings = m_newSettings.concat(appendStringSetting("prefs_UIScaleFactor", preferences.getString("prefs_UIScaleFactor", "?")));
         m_newSettings = m_newSettings.concat(appendStringSetting("prefs_chartScaleFactor", preferences.getString("prefs_chartScaleFactor", "?")));
+        m_newSettings = m_newSettings.concat(appendStringSetting("prefs_chartInitDir", preferences.getString("prefs_chartInitDir", "?")));
 
-        Log.i("DEBUGGER_TAG", m_newSettings);
+//        Log.i("DEBUGGER_TAG", m_newSettings);
 
     }
 
@@ -395,7 +409,7 @@ public class OCPNSettingsActivity extends PreferenceActivity
             super.onCreate(savedInstanceState);
 
             // Can retrieve arguments from preference XML.
-            Log.i("args", "Arguments: " + getArguments());
+//            Log.i("args", "Arguments: " + getArguments());
 
             // Load the preferences from an XML resource
             addPreferencesFromResource(R.xml.charts_vector_settings);

@@ -75,6 +75,9 @@
 
 #include <vector>
 
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#endif
 
 // ----------------------------------------------------------------------------
 // Useful Prototypes
@@ -240,21 +243,33 @@ CanvasMenuHandler::~CanvasMenuHandler()
 void MenuPrepend1( wxMenu *menu, int id, wxString label)
 {
     wxMenuItem *item = new wxMenuItem(menu, id, label);
-#if defined(__WXMSW__) || defined(__OCPN__ANDROID__)
+#if defined(__WXMSW__)
     wxFont *qFont = GetOCPNScaledFont(_T("Menu"));
     item->SetFont(*qFont);
 #endif
+    
+#ifdef __WXQT__
+    wxFont sFont = GetOCPNGUIScaledFont(_T("Menu"));
+    item->SetFont(sFont);
+#endif
+    
     menu->Prepend(item);
 }
 
 void MenuAppend1( wxMenu *menu, int id, wxString label)
 {
     wxMenuItem *item = new wxMenuItem(menu, id, label);
-#if defined(__WXMSW__) || defined(__OCPN__ANDROID__)
+#if defined(__WXMSW__)
    
     wxFont *qFont = GetOCPNScaledFont(_("Menu"));
     item->SetFont(*qFont);
 #endif
+    
+#ifdef __WXQT__
+    wxFont sFont = GetOCPNGUIScaledFont(_T("Menu"));
+    item->SetFont(sFont);
+#endif
+    
     menu->Append(item);
 }
 
@@ -390,10 +405,12 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
         if( ( pChartTest && ( pChartTest->GetChartFamily() == CHART_FAMILY_VECTOR ) ) || ais_areanotice ) {
             MenuAppend1( contextMenu, ID_DEF_MENU_QUERY, _( "Object Query..." ) );
         } else {
+#ifndef __OCPN__ANDROID__            
             if( !g_bBasicMenus && (parent->parent_frame->GetnChartStack() > 1 ) ) {
                 MenuAppend1( contextMenu, ID_DEF_MENU_SCALE_IN, _menuText( _( "Scale In" ), _T("Ctrl-Left") ) );
                 MenuAppend1( contextMenu, ID_DEF_MENU_SCALE_OUT, _menuText( _( "Scale Out" ), _T("Ctrl-Right") ) );
             }
+#endif            
         }
     }
 
@@ -423,6 +440,7 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
 
     if( !g_bBasicMenus){
             bool full_toggle_added = false;
+#ifndef __OCPN__ANDROID__
         if(g_btouch){
             MenuAppend1( contextMenu, ID_DEF_MENU_TOGGLE_FULL, _("Toggle Full Screen") );
             full_toggle_added = true;
@@ -430,11 +448,10 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
             
         
         if(!full_toggle_added){
-            if(gFrame->IsFullScreen()){
+            if(gFrame->IsFullScreen())
                 MenuAppend1( contextMenu, ID_DEF_MENU_TOGGLE_FULL, _("Toggle Full Screen") );
-            }
         }
-            
+#endif            
         
         if ( g_pRouteMan->IsAnyRouteActive() && g_pRouteMan->GetCurrentXTEToActivePoint() > 0. ) 
             MenuAppend1( contextMenu, ID_DEF_ZERO_XTE, _("Zero XTE") );
@@ -470,12 +487,15 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
 
     }   //if( !g_bBasicMenus){
         
-    
+ 
+#ifndef __OCPN__ANDROID__        
     if( ( parent->GetVP().b_quilt ) && ( pCurrentStack && pCurrentStack->b_valid ) ) {
         int dbIndex = parent->m_pQuilt->GetChartdbIndexAtPix( wxPoint( popx, popy ) );
         if( dbIndex != -1 )
             MenuAppend1( contextMenu, ID_DEF_MENU_QUILTREMOVE, _( "Hide This Chart" ) );
     }
+#endif
+
 
 #ifdef __WXMSW__
     //  If we dismiss the context menu without action, we need to discard some mouse events....
@@ -613,6 +633,8 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
             MenuAppend1( menuRoute, ID_RT_MENU_COPY, _( "Copy as KML..." ) );
             MenuAppend1( menuRoute, ID_RT_MENU_DELETE, _( "Delete..." ) );
             MenuAppend1( menuRoute, ID_RT_MENU_REVERSE, _( "Reverse..." ) );
+
+#ifndef __OCPN__ANDROID__
             wxString port = parent->FindValidUploadPort();
             parent->m_active_upload_port = port;
             wxString item = _( "Send to GPS" );
@@ -627,7 +649,7 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
                 wxString item = _( "Send to new GPS" );
                 MenuAppend1( menuRoute, ID_RT_MENU_SENDTONEWGPS, item );
             }
-                
+#endif                
                 
         }
         //      Set this menu as the "focused context menu"
@@ -1222,7 +1244,8 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
         parent->m_pMouseRoute = m_pSelectedRoute;
         parent->parent_frame->nRoute_State = m_pSelectedRoute->GetnPoints() + 1;
         parent->m_pMouseRoute->m_lastMousePointIndex = m_pSelectedRoute->GetnPoints();
-
+        parent->m_pMouseRoute->SetHiLite(50);
+        
         pLast = m_pSelectedRoute->GetLastPoint();
 
         parent->m_prev_rlat = pLast->m_lat;
@@ -1232,7 +1255,10 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
         parent->m_bAppendingRoute = true;
 
         parent->SetCursor( *parent->pCursorPencil );
-
+        #ifdef __OCPN__ANDROID__
+        androidSetRouteAnnunciator( true );
+        #endif        
+        
         break;
 
     case ID_RT_MENU_COPY:

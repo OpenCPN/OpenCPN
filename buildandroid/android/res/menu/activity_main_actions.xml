@@ -22,14 +22,19 @@
           android:title="@string/ocpn_action_follow"
           android:showAsAction="ifRoom"/>
 
+    <item android:id="@+id/ocpn_action_track_toggle_ison"
+          android:icon="@drawable/trackon"
+          android:title="@string/ocpn_action_tracktoggle_off"
+          android:showAsAction="ifRoom"/>
+
     <item android:id="@+id/ocpn_action_routemanager"
           android:icon="@drawable/route_manager"
           android:title="@string/ocpn_action_routemanager"
           android:showAsAction="ifRoom"/>
 
-    <item android:id="@+id/ocpn_action_tracktoggle"
-          android:icon="@drawable/trackon"
-          android:title="@string/ocpn_action_tracktoggle"
+    <item android:id="@+id/ocpn_action_track_toggle_isoff"
+          android:icon="@drawable/trackoff"
+          android:title="@string/ocpn_action_tracktoggle_on"
           android:showAsAction="ifRoom"/>
 
     <item android:id="@+id/ocpn_action_createroute"

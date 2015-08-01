@@ -44,6 +44,7 @@
 #endif
 
 #include "gshhs.h"
+#include "wx28compat.h"
 
 #ifdef __OCPN__ANDROID__
 #include "qopengl.h"                  // this gives us the qt runtime gles2.h
@@ -147,23 +148,33 @@ void GshhsPolyCell::ReadPoly(contour_list &poly)
     contour tmp_contour;
     int32_t num_vertices, num_contours;
     poly.clear();
-    fread(&num_contours, sizeof num_contours, 1, fpoly);
+    if(fread(&num_contours, sizeof num_contours, 1, fpoly) != 1)
+        goto fail;
+
     for (int c= 0; c < num_contours; c++)
     {
         int32_t value;
-        fread(&value, sizeof value, 1, fpoly); /* discarding hole value */
-        fread(&value, sizeof value, 1, fpoly);
+        if(fread(&value, sizeof value, 1, fpoly) != 1 ||  /* discarding hole value */
+           fread(&value, sizeof value, 1, fpoly) != 1)
+            goto fail;
+
         num_vertices=value;
 
         tmp_contour.clear();
         for (int v= 0; v < num_vertices; v++)
         {
-            fread(&X, sizeof X, 1, fpoly);
-            fread(&Y, sizeof Y, 1, fpoly);
+            if(fread(&X, sizeof X, 1, fpoly) != 1 ||
+               fread(&Y, sizeof Y, 1, fpoly) != 1)
+                goto fail;
+
             tmp_contour.push_back(wxRealPoint(X*GSHHS_SCL,Y*GSHHS_SCL));
         }
         poly.push_back(tmp_contour);
     }
+    return;
+
+fail:
+    wxLogMessage( _T("gshhs ReadPoly failed") );
 }
 
 void GshhsPolyCell::ReadPolygonFile()
@@ -174,7 +185,8 @@ void GshhsPolyCell::ReadPolygonFile()
     tab_data = ( x0cell / header->pasx ) * ( 180 / header->pasy )
         + ( y0cell + 90 ) / header->pasy;
     fseek( fpoly, sizeof(PolygonFileHeader) + tab_data * sizeof(int), SEEK_SET );
-    fread( &pos_data, sizeof(int), 1, fpoly );
+    if(fread( &pos_data, sizeof(int), 1, fpoly ) != 1)
+        goto fail;
 
     fseek( fpoly, pos_data, SEEK_SET );
 
@@ -183,6 +195,10 @@ void GshhsPolyCell::ReadPolygonFile()
     ReadPoly( poly3 );
     ReadPoly( poly4 );
     ReadPoly( poly5 );
+    return;
+
+fail:
+    wxLogMessage( _T("gshhs ReadPolygon failed") );
 }
 
 wxPoint GetPixFromLL(ViewPort &vp, double lat, double lon)
@@ -199,7 +215,7 @@ wxPoint2DDouble GetDoublePixFromLL(ViewPort &vp, double lat, double lon)
     return p;
 }
 
-void GshhsPolyCell::DrawPolygonFilled( ocpnDC &pnt, contour_list * p, double dx, ViewPort &vp,  wxColor color )
+void GshhsPolyCell::DrawPolygonFilled( ocpnDC &pnt, contour_list * p, double dx, ViewPort &vp,  wxColor const &color )
 {
     if( !p->size() ) /* size of 0 is very common, and setting the brush is
                         actually quite slow, so exit early */
@@ -331,7 +347,7 @@ void __CALL_CONVENTION gshhsendCallback()
 {
 }
 
-void GshhsPolyCell::DrawPolygonFilledGL( contour_list * p, float_2Dpt **pv, int *pvc, ViewPort &vp,  wxColor color, bool idl )
+void GshhsPolyCell::DrawPolygonFilledGL( contour_list * p, float_2Dpt **pv, int *pvc, ViewPort &vp,  wxColor const &color, bool idl )
 {
     if( !p->size() ) // size of 0 is very common, exit early
         return;
@@ -414,8 +430,8 @@ void GshhsPolyCell::DrawPolygonFilledGL( contour_list * p, float_2Dpt **pv, int 
 #define DRAW_POLY_FILLED(POLY,COL) if(POLY) DrawPolygonFilled(pnt,POLY,dx,vp,COL);
 #define DRAW_POLY_FILLED_GL(NUM,COL) DrawPolygonFilledGL(&poly##NUM,&polyv[NUM],&polyc[NUM],vp,COL, idl);
 
-void GshhsPolyCell::drawMapPlain( ocpnDC &pnt, double dx, ViewPort &vp, wxColor seaColor,
-                                  wxColor landColor, int cellcount, bool idl )
+void GshhsPolyCell::drawMapPlain( ocpnDC &pnt, double dx, ViewPort &vp, wxColor const &seaColor,
+                                  wxColor const &landColor, int cellcount, bool idl )
 {
 #ifdef ocpnUSE_GL        
     if(!pnt.GetDC()) { // opengl
@@ -717,12 +733,13 @@ bool GshhsPolyReader::crossing1( wxLineF trajectWorld )
 void GshhsPolyReader::readPolygonFileHeader( FILE *polyfile, PolygonFileHeader *header )
 {
     fseek( polyfile, 0, SEEK_SET );
-    fread( header, sizeof(PolygonFileHeader), 1, polyfile );
+    if(fread( header, sizeof(PolygonFileHeader), 1, polyfile ) != 1)
+        wxLogMessage( _T("gshhs ReadPolygonFileHeader failed") );
 }
 
 //-------------------------------------------------------------------------
-void GshhsPolyReader::drawGshhsPolyMapPlain( ocpnDC &pnt, ViewPort &vp, wxColor seaColor,
-                                             wxColor landColor )
+void GshhsPolyReader::drawGshhsPolyMapPlain( ocpnDC &pnt, ViewPort &vp, wxColor const &seaColor,
+                                             wxColor const &landColor )
 {
     if( !fpoly ) return;
 
@@ -1237,8 +1254,8 @@ void GshhsReader::GsshDrawLines( ocpnDC &pnt, std::vector<GshhsPolygon*> &lst, V
 }
 
 //-----------------------------------------------------------------------
-void GshhsReader::drawContinents( ocpnDC &pnt, ViewPort &vp, wxColor seaColor,
-        wxColor landColor )
+void GshhsReader::drawContinents( ocpnDC &pnt, ViewPort &vp, wxColor const &seaColor,
+        wxColor const &landColor )
 {
     LoadQuality( selectBestQuality( vp ) );
     gshhsPoly_reader->drawGshhsPolyMapPlain( pnt, vp, seaColor, landColor );
@@ -1257,10 +1274,10 @@ void GshhsReader::drawBoundaries( ocpnDC &pnt, ViewPort &vp )
     pnt.SetBrush( *wxTRANSPARENT_BRUSH );
 
     if( pnt.GetDC() ) {
-        wxPen* pen = wxThePenList->FindOrCreatePen( *wxBLACK, 1, wxDOT );
+        wxPen* pen = wxThePenList->FindOrCreatePen( *wxBLACK, 1, wxPENSTYLE_DOT );
         pnt.SetPen( *pen );
     } else {
-        wxPen* pen = wxThePenList->FindOrCreatePen( wxColor( 0, 0, 0, 80 ), 2, wxLONG_DASH );
+        wxPen* pen = wxThePenList->FindOrCreatePen( wxColor( 0, 0, 0, 80 ), 2, wxPENSTYLE_LONG_DASH );
         pnt.SetPen( *pen );
     }
     GsshDrawLines( pnt, getList_boundaries(), vp, false );

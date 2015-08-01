@@ -49,9 +49,11 @@
 extern "C" void MyCPLErrorHandler( CPLErr eErrClass, int nError,
                              const char * pszErrorMsg );
 
-wxFont *GetOCPNScaledFont( wxString item, int default_size = 0 );
 
 #endif
+
+wxFont *GetOCPNScaledFont( wxString item, int default_size = 0 );
+wxFont GetOCPNGUIScaledFont( wxString item );
 
 wxArrayString *EnumerateSerialPorts(void);
 wxColour GetGlobalColor(wxString colorName);
@@ -198,6 +200,7 @@ enum
 //      Command identifiers for wxCommandEvents coming from the outside world.
 //      Removed from enum to facilitate constant definition
 #define ID_CMD_APPLY_SETTINGS 300
+#define ID_CMD_NULL_REFRESH 301
 
 
 
@@ -401,6 +404,7 @@ class MyFrame: public wxFrame
     bool IsToolbarShown();
     void ShowChartBarIfEnabled(void);
     void SetToolbarScale(void);
+    void SetGPSCompassScale(void);
     
     void HandlePianoClick(int selected_index, int selected_dbIndex);
     void HandlePianoRClick(int x, int y,int selected_index, int selected_dbIndex);

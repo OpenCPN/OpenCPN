@@ -9,6 +9,7 @@
 #include "dychart.h"
 #include "cutil.h"
 #include "FontMgr.h"
+#include "wx28compat.h"
 
 extern ColorScheme global_color_scheme;
 extern IDX_entry *gpIDX;
@@ -174,27 +175,27 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     wxFont *dlg_font = FontMgr::Get().GetFont( _("Dialog") );
     int dlg_font_size = dlg_font->GetPointSize();
 
-    pSFont = wxTheFontList->FindOrCreateFont( dlg_font_size-2, wxFONTFAMILY_SWISS, wxNORMAL,
+    pSFont = wxTheFontList->FindOrCreateFont( dlg_font_size-2, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL,
                                                     wxFONTWEIGHT_NORMAL, FALSE, wxString( _T ( "Arial" ) ) );
-    pSMFont = wxTheFontList->FindOrCreateFont( dlg_font_size-1, wxFONTFAMILY_SWISS, wxNORMAL,
+    pSMFont = wxTheFontList->FindOrCreateFont( dlg_font_size-1, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL,
                                                        wxFONTWEIGHT_NORMAL, FALSE, wxString( _T ( "Arial" ) ) );
-    pMFont = wxTheFontList->FindOrCreateFont( dlg_font_size, wxFONTFAMILY_SWISS, wxNORMAL, wxBOLD,
+    pMFont = wxTheFontList->FindOrCreateFont( dlg_font_size, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD,
                                                       FALSE, wxString( _T ( "Arial" ) ) );
-    pLFont = wxTheFontList->FindOrCreateFont( dlg_font_size+1, wxFONTFAMILY_SWISS, wxNORMAL, wxBOLD,
+    pLFont = wxTheFontList->FindOrCreateFont( dlg_font_size+1, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD,
                                                       FALSE, wxString( _T ( "Arial" ) ) );
 
     pblack_1 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFD" ) ), 1,
-                                                                          wxSOLID );
+                                                                          wxPENSTYLE_SOLID );
     pblack_2 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFD" ) ), 2,
-                                                                          wxSOLID );
+                                                                          wxPENSTYLE_SOLID );
     pblack_3 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UWHIT" ) ), 1,
-                                                                          wxSOLID );
+                                                                          wxPENSTYLE_SOLID );
     pred_2 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFR" ) ), 4,
-                                                                        wxSOLID );
+                                                                        wxPENSTYLE_SOLID );
     pltgray = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "UIBCK" ) ),
-                                                                               wxSOLID );
+                                                                               wxBRUSHSTYLE_SOLID );
     pltgray2 = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "DILG1" ) ),
-                                                                                wxSOLID );
+                                                                                wxBRUSHSTYLE_SOLID );
 
     DimeControl( this );
 
@@ -444,27 +445,26 @@ void TCWin::OnPaint( wxPaintEvent& event )
         dc.SetFont( *pSFont );
         for( i = 0; i < 25; i++ ) {
             int xd = m_graph_rect.x + ( ( i ) * m_graph_rect.width / 25 );
-            if( (hour_delta != 1) && (i % hour_delta == 0) ){
-                dc.SetPen( *pblack_2 );
-                dc.DrawLine( xd, m_graph_rect.y, xd, m_graph_rect.y + m_graph_rect.height + 5 );
+            if( hour_delta != 1 ){
+                if( i % hour_delta == 0 ) {
+                    dc.SetPen( *pblack_2 );
+                    dc.DrawLine( xd, m_graph_rect.y, xd, m_graph_rect.y + m_graph_rect.height + 5 );
+                    char sbuf[5];
+                    sprintf( sbuf, "%02d", i );
+                    int x_shim = -20;
+                    dc.DrawText( wxString( sbuf, wxConvUTF8 ), xd + x_shim + ( m_graph_rect.width / 25 ) / 2, m_graph_rect.y + m_graph_rect.height + 8 );
+                }
+                else{
+                    dc.SetPen( *pblack_1 );
+                    dc.DrawLine( xd, m_graph_rect.y, xd, m_graph_rect.y + m_graph_rect.height + 5 );
+                }
             }
             else{
                 dc.SetPen( *pblack_1 );
                 dc.DrawLine( xd, m_graph_rect.y, xd, m_graph_rect.y + m_graph_rect.height + 5 );
-            }
-            
-            
-            if( (hour_delta != 1) && (i % hour_delta == 0) ){
-                char sbuf[5];
-                sprintf( sbuf, "%02d", i );
-#ifdef __WXMSW__
                 wxString sst;
                 sst.Printf( _T("%02d"), i );
                 dc.DrawRotatedText( sst, xd + ( m_graph_rect.width / 25 ) / 2, m_graph_rect.y + m_graph_rect.height + 8, 270. );
-#else
-                int x_shim = -20;
-                dc.DrawText ( wxString ( sbuf, wxConvUTF8 ), xd + x_shim + ( m_graph_rect.width/25 ) /2, m_graph_rect.y + m_graph_rect.height + 8 );
-#endif
             }
         }
 
@@ -705,6 +705,8 @@ void TCWin::OnPaint( wxPaintEvent& event )
 
 void TCWin::OnSize( wxSizeEvent& event )
 {
+    if( !m_created ) return;
+
     int x, y;
     GetClientSize( &x, &y );
     
