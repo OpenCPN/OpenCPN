@@ -9778,11 +9778,15 @@ void ChartCanvas::SetOverzoomFont()
     int w, h;
 
     wxFont font;
-    if( style->embossFont == wxEmptyString )
-        font = wxFont( 40, wxFONTFAMILY_ROMAN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
+    if( style->embossFont == wxEmptyString ){
+        wxFont *dFont = FontMgr::Get().GetFont( _("Dialog"), 0 );
+        font = *dFont;
+        font.SetPointSize(40);
+        font.SetWeight(wxFONTWEIGHT_BOLD);
+    }
     else
         font = wxFont( style->embossHeight, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, style->embossFont );
-
+    
     wxClientDC dc( this );
     dc.SetFont( font );
     dc.GetTextExtent( OVERZOOM_TEXT, &w, &h );
