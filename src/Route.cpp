@@ -45,6 +45,7 @@ extern Multiplexer *g_pMUX;
 extern double g_n_arrival_circle_radius;
 extern float g_GLMinSymbolLineWidth;
 extern double g_PlanSpeed;
+extern double gLat, gLon;
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST ( RouteList );
@@ -451,9 +452,11 @@ void Route::DrawGLLines( ViewPort &VP, ocpnDC *dc )
 
     bool r1valid = false;
     wxPoint2DDouble r1;
-
+    wxPoint2DDouble lastpoint;
+    
     wxRoutePointListNode *node = pRoutePointList->GetFirst();
     RoutePoint *prp2 = node->GetData();
+    cc1->GetDoubleCanvasPointPix( prp2->m_lat, prp2->m_lon, &lastpoint);
     
     if(m_nPoints == 1 && dc) { // single point.. make sure it shows up for highlighting
         cc1->GetDoubleCanvasPointPix( prp2->m_lat, prp2->m_lon, &r1);
@@ -547,9 +550,27 @@ void Route::DrawGLLines( ViewPort &VP, ocpnDC *dc )
 
             r1 = r2;
             r1valid = true;
+            lastpoint = r1;
         }
     }
 
+    //  Draw tentative segment from last point to Ownship, if running.
+    if( lastpoint.m_y && IsTrack() ) {
+        /* Active tracks */
+        if( dynamic_cast<Track *>(this)->IsRunning() ){
+            wxPoint2DDouble rs;
+            cc1->GetDoubleCanvasPointPix( gLat, gLon, &rs);
+            if( dc )
+                dc->DrawLine(lastpoint.m_x, lastpoint.m_y, rs.m_x, rs.m_y);
+            else {
+                glVertex2f(lastpoint.m_x, lastpoint.m_y);
+                glVertex2f(rs.m_x, rs.m_y);
+            }
+        }
+    }
+                
+                
+        
     if( !dc )
         glEnd();
 #endif    
@@ -574,8 +595,8 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
     /* determine color and width */
     wxColour col;
 
-    int width = g_route_line_width;
-    if( m_width != WIDTH_UNDEFINED )
+    int width = g_pRouteMan->GetRoutePen()->GetWidth(); //g_route_line_width;
+    if( m_width != wxPENSTYLE_INVALID )
         width = m_width;
     if(m_bIsTrack)
         width = g_pRouteMan->GetTrackPen()->GetWidth();
@@ -616,6 +637,7 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
     glColor3ub(col.Red(), col.Green(), col.Blue());
     glLineWidth(wxMax( g_GLMinSymbolLineWidth, width ));
 
+#ifndef ocpnUSE_GLES // linestipple is emulated poorly
     if( m_style != wxPENSTYLE_INVALID )
         glEnable( GL_LINE_STIPPLE );
 
@@ -626,6 +648,7 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
     case wxDOT_DASH:   glLineStipple( 1, 0x8FF1 ); break;
     default: break;
     }
+#endif
 
     DrawGLLines(VP, NULL);
 

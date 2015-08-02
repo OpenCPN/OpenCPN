@@ -215,7 +215,7 @@ wxPoint2DDouble GetDoublePixFromLL(ViewPort &vp, double lat, double lon)
     return p;
 }
 
-void GshhsPolyCell::DrawPolygonFilled( ocpnDC &pnt, contour_list * p, double dx, ViewPort &vp,  wxColor color )
+void GshhsPolyCell::DrawPolygonFilled( ocpnDC &pnt, contour_list * p, double dx, ViewPort &vp,  wxColor const &color )
 {
     if( !p->size() ) /* size of 0 is very common, and setting the brush is
                         actually quite slow, so exit early */
@@ -347,7 +347,7 @@ void __CALL_CONVENTION gshhsendCallback()
 {
 }
 
-void GshhsPolyCell::DrawPolygonFilledGL( contour_list * p, float_2Dpt **pv, int *pvc, ViewPort &vp,  wxColor color, bool idl )
+void GshhsPolyCell::DrawPolygonFilledGL( contour_list * p, float_2Dpt **pv, int *pvc, ViewPort &vp,  wxColor const &color, bool idl )
 {
     if( !p->size() ) // size of 0 is very common, exit early
         return;
@@ -430,8 +430,8 @@ void GshhsPolyCell::DrawPolygonFilledGL( contour_list * p, float_2Dpt **pv, int 
 #define DRAW_POLY_FILLED(POLY,COL) if(POLY) DrawPolygonFilled(pnt,POLY,dx,vp,COL);
 #define DRAW_POLY_FILLED_GL(NUM,COL) DrawPolygonFilledGL(&poly##NUM,&polyv[NUM],&polyc[NUM],vp,COL, idl);
 
-void GshhsPolyCell::drawMapPlain( ocpnDC &pnt, double dx, ViewPort &vp, wxColor seaColor,
-                                  wxColor landColor, int cellcount, bool idl )
+void GshhsPolyCell::drawMapPlain( ocpnDC &pnt, double dx, ViewPort &vp, wxColor const &seaColor,
+                                  wxColor const &landColor, int cellcount, bool idl )
 {
 #ifdef ocpnUSE_GL        
     if(!pnt.GetDC()) { // opengl
@@ -738,8 +738,8 @@ void GshhsPolyReader::readPolygonFileHeader( FILE *polyfile, PolygonFileHeader *
 }
 
 //-------------------------------------------------------------------------
-void GshhsPolyReader::drawGshhsPolyMapPlain( ocpnDC &pnt, ViewPort &vp, wxColor seaColor,
-                                             wxColor landColor )
+void GshhsPolyReader::drawGshhsPolyMapPlain( ocpnDC &pnt, ViewPort &vp, wxColor const &seaColor,
+                                             wxColor const &landColor )
 {
     if( !fpoly ) return;
 
@@ -1254,8 +1254,8 @@ void GshhsReader::GsshDrawLines( ocpnDC &pnt, std::vector<GshhsPolygon*> &lst, V
 }
 
 //-----------------------------------------------------------------------
-void GshhsReader::drawContinents( ocpnDC &pnt, ViewPort &vp, wxColor seaColor,
-        wxColor landColor )
+void GshhsReader::drawContinents( ocpnDC &pnt, ViewPort &vp, wxColor const &seaColor,
+        wxColor const &landColor )
 {
     LoadQuality( selectBestQuality( vp ) );
     gshhsPoly_reader->drawGshhsPolyMapPlain( pnt, vp, seaColor, landColor );

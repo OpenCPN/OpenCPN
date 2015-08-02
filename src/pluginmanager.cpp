@@ -3164,6 +3164,7 @@ PluginListPanel::PluginListPanel( wxWindow *parent, wxWindowID id, const wxPoint
         //    As a consequence, the vertical size of the ListPanel grows as well.
         //    Calculate and add a spacer to bottom of ListPanel so that initial ListPanel
         //    minimum size calculations account for selected Panel size growth.
+        //    Sadly, this does not work right on wxQt.  So, just punt for now...
 
         pPluginPanel->SetSelected( false );       // start unselected
         m_pitemBoxSizer01->Layout();
@@ -3173,9 +3174,11 @@ PluginListPanel::PluginListPanel( wxWindow *parent, wxWindowID id, const wxPoint
         m_pitemBoxSizer01->Layout();
         wxSize sel_size = pPluginPanel->GetSize();
 
+#ifndef __WXQT__        
         pPluginPanel->SetSelected( false );       // reset to unselected
         m_pitemBoxSizer01->Layout();
-
+#endif
+        
         int dy = sel_size.y - nsel_size.y;
         dy += 10;                                 // fluff
         max_dy = wxMax(dy, max_dy);
@@ -3300,7 +3303,7 @@ PluginPanel::PluginPanel(PluginListPanel *parent, wxWindowID id, const wxPoint &
     itemBoxSizer02->Add( m_pButtons, 1, wxEXPAND|wxALL, 0 );
     m_pButtonPreferences = new wxButton( this, wxID_ANY, _("Preferences"), wxDefaultPosition, wxDefaultSize, 0 );
     m_pButtons->Add( m_pButtonPreferences, 0, wxALIGN_LEFT|wxALL, 2);
-    m_pButtonEnable = new wxButton( this, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, 0 );
+    m_pButtonEnable = new wxButton( this, wxID_ANY, _("Disable"), wxDefaultPosition, wxDefaultSize, 0 );
     m_pButtons->Add(m_pButtonEnable, 0, wxALIGN_RIGHT|wxALL, 2);
     m_pButtonPreferences->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(PluginPanel::OnPluginPreferences), NULL, this);
     m_pButtonEnable->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(PluginPanel::OnPluginEnable), NULL, this);

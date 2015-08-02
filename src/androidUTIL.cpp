@@ -261,6 +261,8 @@ int             g_mask;
 int             g_sel;
 int             g_ActionBarHeight;
 bool            g_follow_active;
+bool            g_track_active;
+
 wxSize          config_size;
 
 #define ANDROID_EVENT_TIMER 4389
@@ -429,7 +431,7 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
             break;
  
             
-        case ACTION_FILECHOOSER_END:            //  Handle polling of android Intent
+        case ACTION_FILECHOOSER_END:            //  Handle polling of android Dialog
             {
                 qDebug() << "chooser poll";
                 //  Get a reference to the running FileChooser
@@ -456,12 +458,15 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                     //  "no"   ......Intent not done yet.
                     //  "cancel:"   .. user cancelled intent.
                     //  "file:{file_name}"  .. user selected this file, fully qualified.
-                    if( (jenv)->GetStringLength( s )){
+                    if(!s){
+                        qDebug() << "isFileChooserFinished returned null";
+                    }
+                    else if( (jenv)->GetStringLength( s )){
                         const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
-                        qDebug() << ret_string;
+                        qDebug() << "isFileChooserFinished returned " << ret_string;
                         if( !strncmp(ret_string, "cancel:", 7) ){
                             m_done = true;
-                            m_stringResult = _T("");
+                            m_stringResult = _T("cancel:");
                         }
                         else if( !strncmp(ret_string, "file:", 5) ){
                             m_done = true;
@@ -693,9 +698,6 @@ extern "C"{
     {
         qDebug() << "onResume";
         
-        if(cc1)
-            cc1->RenderLastGLCanvas();
-        
         g_bSleep = false;
         
         return 96;
@@ -764,7 +766,7 @@ extern "C"{
         qDebug() << "invokeMenuItem" << item;
         
         // If in Route Create, disable all other menu items
-        if( gFrame->nRoute_State > 1 ) {
+        if( (gFrame->nRoute_State > 1 ) && (OCPN_ACTION_ROUTE != item) ) {
             return 72;
         }
             
@@ -842,18 +844,20 @@ wxString callActivityMethod_vs(const char *method)
     QAndroidJniObject data = activity.callObjectMethod(method, "()Ljava/lang/String;");
     
     jstring s = data.object<jstring>();
+    qDebug() << s;
     
-    //  Need a Java environment to decode the resulting string
-    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
-        qDebug() << "GetEnv failed.";
-    }
-    else {
-        const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
-        return_string = wxString(ret_string, wxConvUTF8);
+    if(s){
+        //  Need a Java environment to decode the resulting string
+        if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+            qDebug() << "GetEnv failed.";
+        }
+        else {
+            const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+            return_string = wxString(ret_string, wxConvUTF8);
+        }
     }
     
     return return_string;
-    
 }
 
 
@@ -1029,15 +1033,22 @@ wxString callActivityMethod_s4s(const char *method, wxString parm1, wxString par
     
     jstring s = data.object<jstring>();
     
-    if( (jenv)->GetStringLength( s )){
-        const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
-        return_string = wxString(ret_string, wxConvUTF8);
-    }
+     if( (jenv)->GetStringLength( s )){
+         const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+         return_string = wxString(ret_string, wxConvUTF8);
+     }
     
     return return_string;
     
 }
 
+
+wxString androidGetDeviceInfo()
+{
+    wxString info = callActivityMethod_vs("getDeviceInfo");
+    
+    return info;
+}
 
 wxString androidGetHomeDir()
 {
@@ -1112,6 +1123,14 @@ extern void androidSetFollowTool(bool bactive)
     g_follow_active = bactive;
 }
 
+extern void androidSetTrackTool(bool bactive)
+{
+    if(g_track_active != bactive)
+        callActivityMethod_is("setTrackIconState", bactive?1:0);
+    
+    g_track_active = bactive;
+}
+
 
 void androidSetChartTypeMaskSel( int mask, wxString &indicator)
 {
@@ -1130,6 +1149,12 @@ void androidSetChartTypeMaskSel( int mask, wxString &indicator)
         g_sel = sel;
     }
 }       
+
+
+void androidEnableBackButton(bool benable)
+{
+    callActivityMethod_is("setBackButtonState", benable?1:0);
+}
 
 
 bool androidGetMemoryStatus( int *mem_total, int *mem_used )
@@ -1241,7 +1266,7 @@ double GetAndroidDisplaySize()
         token.ToLong( &abh );
         g_ActionBarHeight = wxMax(abh, 50);
 
-        qDebug() << "g_ActionBarHeight" << abh << g_ActionBarHeight;
+//        qDebug() << "g_ActionBarHeight" << abh << g_ActionBarHeight;
         
     }
     
@@ -1257,9 +1282,9 @@ double GetAndroidDisplaySize()
     g_androidDPmm = ldpi / 25.4;
     g_androidDensity = density;
 
-    qDebug() << "g_androidDPmm" << g_androidDPmm;
-    qDebug() << "Auto Display Size (mm)" << ret;
-    qDebug() << "ldpi" << ldpi;
+//    qDebug() << "g_androidDPmm" << g_androidDPmm;
+//    qDebug() << "Auto Display Size (mm)" << ret;
+//    qDebug() << "ldpi" << ldpi;
     
     
 //     wxString istr = return_string.BeforeFirst('.');
@@ -1389,15 +1414,22 @@ void androidConfirmSizeCorrection()
     //  This happens during staged resize events processed by gFrame->TriggerResize()
     
     wxSize targetSize = getAndroidDisplayDimensions();
-    qDebug() << "Confirming" << targetSize.y << config_size.y;
+//    qDebug() << "Confirming" << targetSize.y << config_size.y;
     if(config_size != targetSize){
-        qDebug() << "Correcting";
+//        qDebug() << "Correcting";
         gFrame->SetSize(targetSize);
         config_size = targetSize;
     }
 }
         
-
+void androidForceFullRepaint()
+{
+        wxSize targetSize = getAndroidDisplayDimensions();
+        wxSize tempSize = targetSize;
+        tempSize.y--;
+        gFrame->SetSize(tempSize);
+        gFrame->SetSize(targetSize);
+}       
 
 void androidShowBusyIcon()
 {
@@ -1633,6 +1665,7 @@ int androidFileChooser( wxString *result, const wxString &initDir, const wxStrin
             activityResult = callActivityMethod_s4s("FileChooserDialog", initDir, title, suggestion, wildcard);
         
         if(activityResult == _T("OK") ){
+            qDebug() << "ResultOK, starting spin loop";
             g_androidUtilHandler->m_action = ACTION_FILECHOOSER_END;
             g_androidUtilHandler->m_eventTimer.Start(1000, wxTIMER_CONTINUOUS);
         
@@ -1642,7 +1675,7 @@ int androidFileChooser( wxString *result, const wxString &initDir, const wxStrin
                 wxSafeYield(NULL, true);
             }
         
-//            qDebug() << "out of spin loop";
+            qDebug() << "out of spin loop";
             g_androidUtilHandler->m_action = ACTION_NONE;
             g_androidUtilHandler->m_eventTimer.Stop();
         
@@ -1650,17 +1683,25 @@ int androidFileChooser( wxString *result, const wxString &initDir, const wxStrin
             tresult = g_androidUtilHandler->GetStringResult();
             
             if( tresult.StartsWith(_T("cancel:")) ){
+                qDebug() << "Cancel1";
                 return wxID_CANCEL;
             }
             else if( tresult.StartsWith(_T("file:")) ){
                 if(result){
                     *result = tresult.AfterFirst(':');
+                    qDebug() << "OK";
                     return wxID_OK;
                 }
-                else
+                else{
+                    qDebug() << "Cancel2";
                     return wxID_CANCEL;
+                }
             }
         }
+        else{
+            qDebug() << "Result NOT OK";
+        }
+        
     }
 
     return wxID_CANCEL;
@@ -1785,7 +1826,8 @@ wxString BuildAndroidSettingsString( void )
         }
     // Some other assorted values
         result += _T("prefs_navmode:") + wxString(g_bCourseUp == 0 ? _T("North Up;") : _T("Course Up;"));
-        
+        result += _T("prefs_chartInitDir:") + *pInit_Chart_Dir + _T(";");
+
         wxString s;
         double sf = (g_GUIScaleFactor * 10) + 50.;
         s.Printf( _T("%3.0f;"), sf );

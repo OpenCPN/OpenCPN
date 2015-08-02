@@ -28,10 +28,19 @@
 
 #include "ChInfoWin.h"
 #include "chart1.h"
+#include "OCPNPlatform.h"
+
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#endif
+
+extern bool g_btouch;
+extern OCPNPlatform  *g_Platform;
 
 BEGIN_EVENT_TABLE(ChInfoWin, wxWindow)
     EVT_PAINT ( ChInfoWin::OnPaint )
     EVT_ERASE_BACKGROUND(ChInfoWin::OnEraseBackground)
+    EVT_MOUSE_EVENTS ( ChInfoWin::MouseEvent )
 END_EVENT_TABLE()
 
 // Define a constructor
@@ -55,6 +64,20 @@ void ChInfoWin::OnEraseBackground( wxEraseEvent& event )
 {
 }
 
+void ChInfoWin::MouseEvent( wxMouseEvent& event )
+{
+    if(g_btouch){
+        if( event.LeftDown() ) {
+            Hide();
+            
+            #ifdef __OCPN__ANDROID__        
+            androidForceFullRepaint();
+            #endif
+        }
+    }
+}
+
+    
 void ChInfoWin::OnPaint( wxPaintEvent& event )
 {
     int width, height;
@@ -87,8 +110,14 @@ void ChInfoWin::FitToChars( int char_width, int char_height )
 #ifdef __WXOSX__
     adjust = 2;
 #endif
+    
+#ifdef __OCPN__ANDROID__
+    adjust = 4;
+#endif
+    
     size.x = GetCharWidth() * char_width;
     size.y = GetCharHeight() * ( char_height + adjust );
+    size.x = wxMin(size.x, g_Platform->getDisplaySize().x-10);
     SetWinSize( size );
 }
 
