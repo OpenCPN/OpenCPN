@@ -827,7 +827,28 @@ extern "C"{
 }
 
 
-
+extern "C"{
+    JNIEXPORT jstring JNICALL Java_org_opencpn_OCPNNativeLib_getVPCorners(JNIEnv *env, jobject obj)
+    {
+        qDebug() << "getVPCorners";
+        
+        LLBBox vbox;
+        if(cc1){
+            vbox = cc1->GetVP().GetBBox();
+        }
+            
+        wxString s;
+        s.Printf(_T("%g;%g;%g;%g;"), vbox.GetMaxY(), vbox.GetMaxX(), vbox.GetMinY(), vbox.GetMinX());  
+                    
+//        jstring ret = (env)->NewStringUTF("40.1; -85; 39; -86;");
+        jstring ret = (env)->NewStringUTF(s.c_str());
+        
+        return ret;
+    }
+        
+}       
+        
+        
 
 wxString callActivityMethod_vs(const char *method)
 {
