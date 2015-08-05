@@ -103,7 +103,6 @@ public:
     bool        b_throttle;
     CompressionPoolThread *pthread;
     unsigned char *level0_bits;
-    int         m_raster_format;
     unsigned char **comp_bits_array;
     wxString    m_ChartPath;
     bool        b_abort;
@@ -305,11 +304,9 @@ bool DoCompress(JobTicket *pticket, glTextureDescriptor *ptd, int level)
             size = 8;
     }
 
-    GLuint raster_format = pticket->pFact->GetRasterFormat();
-    
     unsigned char *tex_data = (unsigned char*)malloc(size);
         
-    if(raster_format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT) {
+    if(g_raster_format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT) {
         // color range fit is worse quality but twice as fast
         int flags = squish::kDxt1 | squish::kColourRangeFit;
             
@@ -324,13 +321,11 @@ bool DoCompress(JobTicket *pticket, glTextureDescriptor *ptd, int level)
                                                             true, pticket->b_throttle );
  
     }
-    else if(raster_format == GL_ETC1_RGB8_OES) 
+    else if(g_raster_format == GL_ETC1_RGB8_OES) 
         CompressDataETC(ptd->map_array[level], dim, size, tex_data);
         
-    else if(raster_format == GL_COMPRESSED_RGB_FXT1_3DFX) {
-        CompressUsingGPU( ptd, raster_format, level, false);    // no post compression
-            
-    }
+    else if(g_raster_format == GL_COMPRESSED_RGB_FXT1_3DFX)
+        CompressUsingGPU( ptd, level, false);    // no post compression
 
     //  Store the pointer to compressed data in the ptd
     ptd->CompressedArrayAccess( CA_WRITE, tex_data, level);
@@ -494,10 +489,8 @@ void * CompressionPoolThread::Entry()
         dim = g_GLOptions.m_iTextureDimension;
         int ssize = g_tile_size;
         for( int i = 0 ; i < g_mipmap_max_level+1 ; i++ ){
-            GLuint raster_format = m_pticket->m_raster_format;
-        
             unsigned char *tex_data = (unsigned char*)malloc(ssize);
-            if(raster_format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT) {
+            if(g_raster_format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT) {
             // color range fit is worse quality but twice as fast
                 int flags = squish::kDxt1 | squish::kColourRangeFit;
             
@@ -512,7 +505,7 @@ void * CompressionPoolThread::Entry()
                                                             true, m_pticket->b_throttle );
             
             }
-            else if(raster_format == GL_ETC1_RGB8_OES) 
+            else if(g_raster_format == GL_ETC1_RGB8_OES) 
                 CompressDataETC(m_bit_array[i], dim, ssize, tex_data);
             
             m_comp_bits[i] = tex_data;
@@ -734,7 +727,6 @@ bool CompressionWorkerPool::ScheduleJob(glTexFactory* client, const wxRect &rect
     else
         pt->ident = -1;
     pt->b_throttle = b_throttle_thread;
-    pt->m_raster_format = client->GetRasterFormat();
     pt->m_ChartPath = chart_path;
     pt->b_abort = false;
     pt->bpost_zip_compress = b_postZip;
@@ -949,10 +941,9 @@ BEGIN_EVENT_TABLE(glTexFactory, wxEvtHandler)
     EVT_TIMER(FACTORY_TIMER, glTexFactory::OnTimer)
 END_EVENT_TABLE()
 
-glTexFactory::glTexFactory(ChartBase *chart, GLuint raster_format)
+glTexFactory::glTexFactory(ChartBase *chart)
 {
 //    m_pchart = chart;
-    m_raster_format = raster_format;
     n_catalog_entries = 0;
     m_catalog_offset = sizeof(CompressedCacheHeader);
     wxDateTime ed = chart->GetEditionDate();
@@ -1534,7 +1525,7 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
                     //  So, need to start a compression job 
                         
                         if( GL_COMPRESSED_RGB_FXT1_3DFX == g_raster_format ){
-                            CompressUsingGPU( ptd, g_raster_format, level, true);
+                            CompressUsingGPU( ptd, level, true);
                         }
                         else                            
                             b_need_compress = true;
@@ -1597,8 +1588,8 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     
     if(b_need_compress){
          if( (GL_COMPRESSED_RGBA_S3TC_DXT1_EXT == g_raster_format) ||
-            (GL_COMPRESSED_RGB_S3TC_DXT1_EXT == g_raster_format) ||
-            (GL_ETC1_RGB8_OES == g_raster_format) ){
+             (GL_COMPRESSED_RGB_S3TC_DXT1_EXT == g_raster_format) ||
+             (GL_ETC1_RGB8_OES == g_raster_format) ){
                 if(g_CompressorPool)
                     g_CompressorPool->ScheduleJob( this, rect, 0, b_throttle_thread, false, true);   // with postZip
         }
@@ -1781,7 +1772,7 @@ bool glTexFactory::LoadHeader(void)
                 if( sizeof( hdr) == m_fs->Read(&hdr, sizeof( hdr ))) {
                     if( hdr.magic != COMPRESSED_CACHE_MAGIC ||
                         hdr.chartdate != m_chart_date_binary ||
-                        hdr.format != m_raster_format) {
+                        hdr.format != g_raster_format) {
                         
                         //  Bad header signature    
                         m_fs->Close();
@@ -1952,7 +1943,7 @@ bool glTexFactory::WriteCatalogAndHeader()
         //   Write header at file end
         CompressedCacheHeader hdr;
         hdr.magic = COMPRESSED_CACHE_MAGIC;
-        hdr.format = m_raster_format;
+        hdr.format = g_raster_format;
         hdr.m_nentries = n_catalog_entries;
         hdr.catalog_offset = m_catalog_offset;
         hdr.chartdate = m_chart_date_binary;
@@ -2083,7 +2074,7 @@ bool glTexFactory::UpdateCachePrecomp(unsigned char *data, int data_size, glText
 }
 
 
-bool CompressUsingGPU( glTextureDescriptor *ptd, GLuint raster_format, int level, bool b_post_comp)
+bool CompressUsingGPU( glTextureDescriptor *ptd, int level, bool b_post_comp)
 {
     if(!ptd)
         return false;
