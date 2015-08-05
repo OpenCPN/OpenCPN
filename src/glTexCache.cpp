@@ -89,6 +89,8 @@ extern bool GetMemoryStatus( int *mem_total, int *mem_used );
 bool bthread_debug;
 bool g_throttle_squish;
 
+enum TextureDataType {COMPRESSED_BUFFER_OK, MAP_BUFFER_OK};
+
 class CompressionPoolThread;
 class JobTicket
 {
@@ -1176,7 +1178,7 @@ void glTexFactory::DeleteSingleTexture( glTextureDescriptor *ptd )
         if(level == ptd->level_min) {
             g_tex_mem_used -= size;
             ptd->level_min++;
-            ptd->miplevel_upload[level] = 0;
+            ptd->miplevel_upload[level] = false;
         }
         size /= 4;
         
@@ -1446,8 +1448,6 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
         }
     }
     
-
-    
     //    If the GPU does not know about this texture, create it
     if( ptd->tex_name == 0 ) {
         glGenTextures( 1, &ptd->tex_name );
@@ -1489,8 +1489,6 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
             
         return true;
     }
-    
-
 
     g_Platform->ShowBusySpinner();
     
@@ -1532,7 +1530,7 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
                         s_glCompressedTexImage2D( GL_TEXTURE_2D, level, g_raster_format,
                                           dim, dim, 0, size,
                                           ptd->CompressedArrayAccess( CA_READ, NULL, level));
-                        ptd->miplevel_upload[level]++;
+                        ptd->miplevel_upload[level] = true;
                         g_tex_mem_used += size;
                         
                         // We can safely discard this level's compressed data, since the GPU has it
@@ -1549,7 +1547,7 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
                         ptd->nGPU_compressed = GPU_TEXTURE_UNCOMPRESSED;
                         glTexImage2D( GL_TEXTURE_2D, level, GL_RGB,
                                   dim, dim, 0, FORMAT_BITS, GL_UNSIGNED_BYTE, ptd->map_array[level] );
-                        ptd->miplevel_upload[level]++;
+                        ptd->miplevel_upload[level] = true;
                         
                         g_tex_mem_used += uncompressed_size;
                     
@@ -1573,7 +1571,7 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
                     glTexImage2D( GL_TEXTURE_2D, level, GL_RGB,
                                 dim, dim, 0, FORMAT_BITS, GL_UNSIGNED_BYTE, ptd->map_array[level] );
                     g_tex_mem_used += uncompressed_size;
-                    ptd->miplevel_upload[level]++;
+                    ptd->miplevel_upload[level] = true;
                 }
                 
             }
@@ -1699,28 +1697,24 @@ void glTexFactory::UpdateCacheLevel( const wxRect &rect, int level, ColorScheme 
             if(size < 8)
                 size = 8;
         }
-
-        
     
-       if( g_GLOptions.m_bTextureCompressionCaching){
-           unsigned char *pd = ptd->CompCompArrayAccess(CA_READ, NULL, level);
-           if(pd){
-               UpdateCachePrecomp(pd, ptd->compcomp_size[level], ptd, level, color_scheme);
-           }
-           else {
-               unsigned char *source = ptd->CompressedArrayAccess( CA_READ, NULL, level);
-               if(source)
+        if( g_GLOptions.m_bTextureCompressionCaching){
+            unsigned char *pd = ptd->CompCompArrayAccess(CA_READ, NULL, level);
+            if(pd){
+                UpdateCachePrecomp(pd, ptd->compcomp_size[level], ptd, level, color_scheme);
+            }
+            else {
+                unsigned char *source = ptd->CompressedArrayAccess( CA_READ, NULL, level);
+                if(source)
                     UpdateCache(source, size, ptd, level, color_scheme);
-           }
-       }
+            }
+        }
     }
-
-    
 }
 
-int glTexFactory::GetTextureLevel( glTextureDescriptor *ptd, const wxRect &rect, int level, ColorScheme color_scheme )
+int glTexFactory::GetTextureLevel( glTextureDescriptor *ptd, const wxRect &rect,
+                                   int level, ColorScheme color_scheme )
 {
-    
     //  Already available in the texture descriptor?
     if(g_GLOptions.m_bTextureCompression && !g_GLOptions.m_bTextureCompressionCaching) {
         if( ptd->nGPU_compressed == GPU_TEXTURE_COMPRESSED){
@@ -2208,6 +2202,3 @@ bool CompressUsingGPU( glTextureDescriptor *ptd, GLuint raster_format, int level
     
     return ret;
 }
-        
-
-
