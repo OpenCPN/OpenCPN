@@ -661,7 +661,7 @@ CompressionWorkerPool::CompressionWorkerPool()
     int nCPU =  wxMax(1, wxThread::GetCPUCount());
     m_max_jobs =  nCPU;
 
-    bthread_debug = false;;
+    bthread_debug = false;
 
     if(bthread_debug)
         printf(" nCPU: %d    m_max_jobs :%d\n", nCPU, m_max_jobs);
@@ -741,6 +741,7 @@ void CompressionWorkerPool::OnEvtThread( OCPN_CompressionThreadEvent & event )
 ///    qDebug() << "Finished" << m_njobs_running <<  (unsigned long)todo_list.GetCount() << mem_used << g_tex_mem_used;
     
     delete ticket;
+    StartTopJob();
 }
 
 bool CompressionWorkerPool::ScheduleJob(glTexFactory* client, const wxRect &rect, int level,
@@ -752,7 +753,7 @@ bool CompressionWorkerPool::ScheduleJob(glTexFactory* client, const wxRect &rect
         
 ///        qDebug() << "Could not add, count now" << (unsigned long)todo_list.GetCount() << mem_used << g_tex_mem_used;
         
-        return false;;
+        return false;
     }
     
     wxString chart_path = client->GetChartPath();
@@ -1438,7 +1439,7 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
                 }
             }
         }
-    
+
         //  If we are not compressing/caching, We can do some housekeeping here, to recover some memory
         //   Free bitmap memory that has already been uploaded to the GPU
         if(!g_GLOptions.m_bTextureCompression) {
