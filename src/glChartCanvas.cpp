@@ -252,7 +252,7 @@ bool CompressChart(wxThread *pThread, ChartBase *pchart, wxString CompressedCach
     
     if(pBSBChart) {
         
-        glTexFactory *tex_fact = new glTexFactory(pchart, g_raster_format);
+        glTexFactory *tex_fact = new glTexFactory(pchart);
         
         int size_X = pBSBChart->GetSize_X();
         int size_Y = pBSBChart->GetSize_Y();
@@ -2684,7 +2684,7 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, O
     
     //    Not Found ?
     if( ittf == m_chart_texfactory_hash.end() ) {
-        glTexFactory *p = new glTexFactory(chart, g_raster_format);
+        glTexFactory *p = new glTexFactory(chart);
         m_chart_texfactory_hash[key] = p;
     }
     
