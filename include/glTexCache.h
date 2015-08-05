@@ -35,10 +35,6 @@
 
 #define COMPRESSED_CACHE_MAGIC 0xf010  // change this when the format changes
 
-#define COMPRESSED_BUFFER_OK            0
-#define COMPRESSED_BUFFER_PENDING       1
-#define MAP_BUFFER_OK                   4
-
 #define FACTORY_TIMER                   10000
 
 void HalfScaleChartBits( int width, int height, unsigned char *source, unsigned char *target );
