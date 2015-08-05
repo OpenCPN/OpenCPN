@@ -360,7 +360,7 @@ Track *GPXLoadTrack1( pugi::xml_node &trk_node, bool b_fullviz,
                                 for (pugi::xml_attribute attr = ext_child.first_attribute(); attr; attr = attr.next_attribute())
                                 {
                                     if( !strcmp( attr.name(), "style" ) )
-                                        pTentTrack->m_style = attr.as_int();
+                                        pTentTrack->m_style = (wxPenStyle)attr.as_int();
                                     else if( !strcmp( attr.name(), "width" ) )
                                         pTentTrack->m_width = attr.as_int();
                                 }
@@ -523,7 +523,7 @@ Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
                         for (pugi::xml_attribute attr = ext_child.first_attribute(); attr; attr = attr.next_attribute())
                         {
                             if( !strcmp( attr.name(), "style" ) )
-                                pTentRoute->m_style = attr.as_int();
+                                pTentRoute->m_style = (wxPenStyle)attr.as_int();
                             else
                             if( !strcmp( attr.name(), "width" ) )
                                 pTentRoute->m_width = attr.as_int();
@@ -796,12 +796,12 @@ bool GPXCreateTrk( pugi::xml_node node, Route *pRoute, unsigned int flags )
         }
     }
     
-    if( pRoute->m_width != STYLE_UNDEFINED || pRoute->m_style != STYLE_UNDEFINED ) {
+    if( pRoute->m_width != WIDTH_UNDEFINED || pRoute->m_style != wxPENSTYLE_INVALID ) {
         child = child_ext.append_child("opencpn:style");
         
-        if( pRoute->m_width != STYLE_UNDEFINED )
+        if( pRoute->m_width != WIDTH_UNDEFINED )
             child.append_attribute("width") = pRoute->m_width;
-        if( pRoute->m_style != STYLE_UNDEFINED )
+        if( pRoute->m_style != wxPENSTYLE_INVALID )
             child.append_attribute("style") = pRoute->m_style;
     }
     
@@ -935,12 +935,12 @@ bool GPXCreateRoute( pugi::xml_node node, Route *pRoute )
         child.append_child(pugi::node_pcdata).set_value(pRoute->m_TimeDisplayFormat.mb_str());
     }                        
     
-    if( pRoute->m_width != STYLE_UNDEFINED || pRoute->m_style != STYLE_UNDEFINED ) {
+    if( pRoute->m_width != WIDTH_UNDEFINED || pRoute->m_style != wxPENSTYLE_INVALID ) {
         child = child_ext.append_child("opencpn:style");
         
-        if( pRoute->m_width != STYLE_UNDEFINED )
+        if( pRoute->m_width != WIDTH_UNDEFINED )
             child.append_attribute("width") = pRoute->m_width;
-        if( pRoute->m_style != STYLE_UNDEFINED )
+        if( pRoute->m_style != wxPENSTYLE_INVALID )
             child.append_attribute("style") = pRoute->m_style;
     }
     

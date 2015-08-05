@@ -173,6 +173,9 @@ tc_deployment.files += $$PWD/../data/tcdata/HARMONIC
 tc_deployment.path = /assets/tcdata
 INSTALLS += tc_deployment
 
+license_deployment.files += $$PWD/../data/license.txt
+license_deployment.path = /assets
+INSTALLS += license_deployment
 
 #contains(ANDROID_TARGET_ARCH,armeabi-v7a)
  {

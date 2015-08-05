@@ -1,5 +1,7 @@
 0....Tools, etc.
 
+        export CPPFLAGS=-D__ANDROID__  && export PATH=/home/dsr/Projects/android-ndk/ndk-toolchain/bin:$PATH && export CC=arm-linux-androideabi-gcc && export CXX=arm-linux-androideabi-g++
+
         __Filter logcat, especially on BluPhone
         adb shell logcat DEBUGGER_TAG:I Qt:D *:S
 

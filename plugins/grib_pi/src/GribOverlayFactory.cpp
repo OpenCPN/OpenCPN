@@ -226,6 +226,7 @@ GRIBOverlayFactory::GRIBOverlayFactory( GRIBUICtrlBar &dlg )
     m_pGribTimelineRecordSet = NULL;
     m_last_vp_scale = 0.;
 
+    InitColorsTable();
     for(int i=0; i<GribOverlaySettings::SETTINGS_COUNT; i++)
         m_pOverlay[i] = NULL;
 
@@ -632,16 +633,19 @@ wxImage GRIBOverlayFactory::CreateGribImage( int settings, GribRecord *pGR,
 struct ColorMap {
     double val;
     wxString text;
+    unsigned char r;
+    unsigned char g;
+    unsigned char b;
 };
 
-ColorMap CurrentMap[] =
+static ColorMap CurrentMap[] =
 {{0,  _T("#d90000")},  {1, _T("#d92a00")},  {2, _T("#d96e00")},  {3, _T("#d9b200")},
  {4,  _T("#d4d404")},  {5, _T("#a6d906")},  {7, _T("#06d9a0")},  {9, _T("#00d9b0")},
  {12, _T("#00d9c0")}, {15, _T("#00aed0")}, {18, _T("#0083e0")}, {21, _T("#0057e0")},
  {24, _T("#0000f0")}, {27, _T("#0400f0")}, {30, _T("#1c00f0")}, {36, _T("#4800f0")},
  {42, _T("#6900f0")}, {48, _T("#a000f0")}, {56, _T("#f000f0")}};
 
-ColorMap GenericMap[] =
+static ColorMap GenericMap[] =
 {{0, _T("#00d900")},  {1, _T("#2ad900")},  {2, _T("#6ed900")},  {3, _T("#b2d900")},
  {4, _T("#d4d400")},  {5, _T("#d9a600")},  {7, _T("#d90000")},  {9, _T("#d90040")},
  {12, _T("#d90060")}, {15, _T("#ae0080")}, {18, _T("#8300a0")}, {21, _T("#5700c0")},
@@ -649,7 +653,7 @@ ColorMap GenericMap[] =
  {42, _T("#c004c0")}, {48, _T("#c008a0")}, {56, _T("#c0a008")}};
 
 //    HTML colors taken from zygrib representation
-ColorMap WindMap[] =
+static ColorMap WindMap[] =
 {{0, _T("#288CFF")},{3, _T("#00AFFF")},{6, _T("#00DCE1")},{9, _T("#00F7B0")},{12, _T("#00EA9C")},
 {15, _T("#82F059")},{18, _T("#F0F503")},{21, _T("#FFED00")},{24, _T("#FFDB00")},{27, _T("#FFC700")},
 {30, _T("#FFB400")},{33, _T("#FF9800")},{36, _T("#FF7E00")},{39, _T("#F77800")},{42, _T("#EC7814")},
@@ -657,7 +661,7 @@ ColorMap WindMap[] =
 {60, _T("#BE2C50")},{63, _T("#B41A5A")},{66, _T("#AA1464")},{70, _T("#962878")},{75, _T("#8C328C")}};
 
 //    HTML colors taken from zygrib representation
-ColorMap AirTempMap[] =
+static ColorMap AirTempMap[] =
 {{0, _T("#283282")}, {5, _T("#273c8c")}, {10, _T("#264696")}, {14, _T("#2350a0")},
  {18, _T("#1f5aaa")}, {22, _T("#1a64b4")}, {26, _T("#136ec8")}, {29, _T("#0c78e1")},
  {32, _T("#0382e6")}, {35, _T("#0091e6")}, {38, _T("#009ee1")}, {41 , _T("#00a6dc")},
@@ -667,7 +671,7 @@ ColorMap AirTempMap[] =
  {82 , _T("#ff8100")}, { 86, _T("#f1780c")}, {90 , _T("#e26a23")}, {95 , _T("#d5453c")},
  {100 , _T("#b53c59")}};
 
-ColorMap SeaTempMap[] =
+static ColorMap SeaTempMap[] =
 {{0, _T("#0000d9")},  {1, _T("#002ad9")},  {2, _T("#006ed9")},  {3, _T("#00b2d9")},
  {4, _T("#00d4d4")},  {5, _T("#00d9a6")},  {7, _T("#00d900")},  {9, _T("#95d900")},
  {12, _T("#d9d900")}, {15, _T("#d9ae00")}, {18, _T("#d98300")}, {21, _T("#d95700")},
@@ -675,24 +679,48 @@ ColorMap SeaTempMap[] =
  {42, _T("#690000")}, {48, _T("#550000")}, {56, _T("#410000")}};
 
     //    HTML colors taken from ZyGrib representation
-ColorMap PrecipitationMap[] =
+static ColorMap PrecipitationMap[] =
 {{0,   _T("#ffffff")}, {.01, _T("#c8f0ff")}, {.02, _T("#b4e6ff")}, {.05, _T("#8cd3ff")},
  {.07, _T("#78caff")}, {.1 , _T("#6ec1ff")}, {.2 , _T("#64b8ff")}, {.5 , _T("#50a6ff")},
  {.7 , _T("#469eff")}, {1.0, _T("#3c96ff")}, {2.0, _T("#328eff")}, {5.0, _T("#1e7eff")},
  {7.0, _T("#1476f0")}, {10 , _T("#0a6edc")}, {20 , _T("#0064c8")}, {50, _T("#0052aa")}};
 
     //    HTML colors taken from ZyGrib representation
-ColorMap CloudMap[] =
+static ColorMap CloudMap[] =
 {{0,  _T("#ffffff")}, {1,  _T("#f0f0e6")}, {10, _T("#e6e6dc")}, {20, _T("#dcdcd2")},
  {30, _T("#c8c8b4")}, {40, _T("#aaaa8c")}, {50, _T("#969678")}, {60, _T("#787864")},
  {70, _T("#646450")}, {80, _T("#5a5a46")}, {90, _T("#505036")}};
 
-ColorMap *ColorMaps[] = {CurrentMap, GenericMap, WindMap, AirTempMap, SeaTempMap, PrecipitationMap, CloudMap};
+#if 0
+static ColorMap *ColorMaps[] = {CurrentMap, GenericMap, WindMap, AirTempMap, SeaTempMap, PrecipitationMap, CloudMap};
+#endif
 
 enum {
     GENERIC_GRAPHIC_INDEX, WIND_GRAPHIC_INDEX, AIRTEMP__GRAPHIC_INDEX, SEATEMP_GRAPHIC_INDEX,
     PRECIPITATION_GRAPHIC_INDEX, CLOUD_GRAPHIC_INDEX, CURRENT_GRAPHIC_INDEX
 };
+
+static void InitColor(ColorMap *map, size_t maplen)
+{
+    wxColour c;
+    for (size_t i = 0; i < maplen; i++) {
+        c.Set(map[i].text);
+        map[i].r = c.Red();
+        map[i].g = c.Green();
+        map[i].b = c.Blue();
+    }
+}
+
+void GRIBOverlayFactory::InitColorsTable( )
+{
+    InitColor(CurrentMap, (sizeof CurrentMap) / (sizeof *CurrentMap));
+    InitColor(GenericMap, (sizeof GenericMap) / (sizeof *GenericMap));
+    InitColor(WindMap, (sizeof WindMap) / (sizeof *WindMap));
+    InitColor(AirTempMap, (sizeof AirTempMap) / (sizeof *AirTempMap));
+    InitColor(SeaTempMap, (sizeof SeaTempMap) / (sizeof *SeaTempMap));
+    InitColor(PrecipitationMap, (sizeof PrecipitationMap) / (sizeof *PrecipitationMap));
+    InitColor(CloudMap, (sizeof CloudMap) / (sizeof *CloudMap));
+}
 
 wxColour GRIBOverlayFactory::GetGraphicColor(int settings, double val_in)
 {
@@ -746,15 +774,16 @@ wxColour GRIBOverlayFactory::GetGraphicColor(int settings, double val_in)
         double nmapvala = map[i-1].val/cmax;
         double nmapvalb = map[i].val/cmax;
         if(nmapvalb > val_in || i==maplen-1) {
-            wxColour b, c;
-            c.Set(map[i].text);
+            wxColour c;
             if(m_bGradualColors) {
-                b.Set(map[i-1].text);
                 double d = (val_in-nmapvala)/(nmapvalb-nmapvala);
-                c.Set((1-d)*b.Red()   + d*c.Red(),
-                      (1-d)*b.Green() + d*c.Green(),
-                      (1-d)*b.Blue()  + d*c.Blue());
+                c.Set((1-d)* map[i -1].r  + d* map[i].r,
+                      (1-d)* map[i -1].g + d* map[i].g,
+                      (1-d)* map[i -1].b  + d* map[i].b);
             }
+            else
+                c.Set(map[i].r, map[i].g, map[i].b);
+            
             return c;
         }
     }
@@ -1616,7 +1645,7 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
 
     // add new particles as needed
     int run = 0;
-    int new_particles = (total_particles - particles.size()) / 64;
+    int new_particles = (total_particles - (int)particles.size()) / 64;
 
     for(int npi=0; npi<new_particles; npi++) {
         float p[2];

@@ -94,10 +94,11 @@ static int CompareFileStringTime( const wxString& first, const wxString& second 
 static wxString TToString( const wxDateTime date_time, const int time_zone )
 {
     wxDateTime t( date_time );
-    t.MakeFromTimezone( wxDateTime::UTC );
-    if( t.IsDST() ) t.Subtract( wxTimeSpan( 1, 0, 0, 0 ) );
     switch( time_zone ) {
-        case 0: return t.Format( _T(" %a %d-%b-%Y  %H:%M "), wxDateTime::Local ) + _T("LOC");//:%S
+        case 0:
+			if( (wxDateTime::Now() == (wxDateTime::Now().ToGMT())) && t.IsDST() )  //bug in wxWingets 3.0 for UTC meridien ?
+				t.Add( wxTimeSpan( 1, 0, 0, 0 ) );
+			return t.Format( _T(" %a %d-%b-%Y  %H:%M "), wxDateTime::Local ) + _T("LOC");
         case 1:
         default: return t.Format( _T(" %a %d-%b-%Y %H:%M  "), wxDateTime::UTC ) + _T("UTC");
     }
@@ -988,9 +989,8 @@ int GRIBUICtrlBar::GetNearestValue(wxDateTime time, int model)
 
 wxDateTime GRIBUICtrlBar::GetNow()
 {
-    //wxDateTime::Now() is in local time and must be transslated to UTC to be compared to grib times
-    wxDateTime now = wxDateTime::Now().ToUTC(wxDateTime::Now().IsDST()==0).SetSecond(0);
-    if(now.IsDST()) now.Add(wxTimeSpan( 1,0,0,0));          //bug in wxWidgets ?
+    wxDateTime now = wxDateTime::Now();
+	now.GetSecond(0);
 
     ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
 

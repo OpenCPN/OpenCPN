@@ -73,7 +73,6 @@
 #include "NMEALogWindow.h"
 #include "AIS_Decoder.h"
 #include "OCPNPlatform.h"
-#include "wx28compat.h"
 
 #ifdef USE_S57
 #include "s52plib.h"
@@ -369,6 +368,8 @@ extern bool             g_bAutoHideToolbar;
 extern int              g_nAutoHideToolbar;
 extern int              g_GUIScaleFactor;
 extern int              g_ChartScaleFactor;
+extern float            g_ChartScaleFactorExp;
+
 extern wxString         g_uiStyle;
 
 #ifdef ocpnUSE_GL
@@ -716,12 +717,12 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP )
                     basic_colour = GetGlobalColor( _T ( "CHMGD" ) );
             }
 
-    int style = wxPENSTYLE_SOLID;
+    wxPenStyle style = wxPENSTYLE_SOLID;
     int width = g_pRouteMan->GetTrackPen()->GetWidth();
     wxColour col;
-    if( m_style != STYLE_UNDEFINED )
+    if( m_style != wxPENSTYLE_INVALID )
         style = m_style;
-    if( m_width != STYLE_UNDEFINED )
+    if( m_width != WIDTH_UNDEFINED )
         width = m_width;
     if( m_Colour == wxEmptyString ) {
         col = basic_colour;
@@ -1115,6 +1116,12 @@ MyConfig::MyConfig( const wxString &appName, const wxString &vendorName,
 
 void MyConfig::CreateRotatingNavObjBackup()
 {
+
+    // Avoid nonsense log errors...
+#ifdef __OCPN__ANDROID__    
+    wxLogNull logNo;
+#endif    
+    
     //Rotate navobj backups, but just in case there are some changes in the current version
     //to prevent the user trying to "fix" the problem by continuously starting the
     //application to overwrite all of his good backups...
@@ -1183,7 +1190,7 @@ int MyConfig::LoadMyConfig()
     
     Read( _T ( "UIStyle" ), &g_uiStyle, wxT("Traditional") );
 
-    Read( _T ( "NCacheLimit" ), &g_nCacheLimit, CACHE_N_LIMIT_DEFAULT );
+    Read( _T ( "NCacheLimit" ), &g_nCacheLimit, 0 );
 
     int mem_limit;
     Read( _T ( "MEMCacheLimit" ), &mem_limit, 0 );
@@ -1228,6 +1235,7 @@ int MyConfig::LoadMyConfig()
     
     Read( _T ( "GUIScaleFactor" ), &g_GUIScaleFactor, 0 );
     Read( _T ( "ChartObjectScaleFactor" ), &g_ChartScaleFactor, 0 );
+    g_ChartScaleFactorExp = g_Platform->getChartScaleFactorExp( g_ChartScaleFactor );
     
     Read( _T ( "FilterNMEA_Avg" ), &g_bfilter_cogsog, 0 );
     Read( _T ( "FilterNMEA_Sec" ), &g_COGFilterSec, 1 );
@@ -2484,6 +2492,11 @@ void MyConfig::LoadConfigGroups( ChartGroupArray *pGroupArray )
 
 void MyConfig::UpdateSettings()
 {
+    //  Temporarily suppress logging of trivial non-fatal wxLogSysError() messages provoked by Android security...
+#ifdef __OCPN__ANDROID__    
+    wxLogNull logNo;
+#endif    
+    
 //    Global options and settings
     SetPath( _T ( "/Settings" ) );
 

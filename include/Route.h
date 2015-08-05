@@ -26,11 +26,12 @@
 
 #include <wx/object.h>
 #include <wx/list.h>
+#include "wx28compat.h"
 
 #include "viewport.h"
 #include "RoutePoint.h"
 
-#define STYLE_UNDEFINED -1
+#define WIDTH_UNDEFINED -1
 
 #define ROUTE_DEFAULT_SPEED 5.0
 #define RTE_TIME_DISP_UTC _T("UTC")
@@ -120,7 +121,7 @@ public:
       bool        m_bIsInLayer;
       int         m_LayerID;
       int         m_width;
-      int         m_style;
+      wxPenStyle  m_style;
       int         m_lastMousePointIndex;
       bool        m_NextLegGreatCircle;
       double      m_PlannedSpeed;

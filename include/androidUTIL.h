@@ -45,6 +45,8 @@
 #define OCPN_ACTION_TIDES_TOGGLE        0x1007
 #define OCPN_ACTION_CURRENTS_TOGGLE     0x1008
 #define OCPN_ACTION_ENCTEXT_TOGGLE      0x1009
+#define OCPN_ACTION_TRACK_ON            0x100a
+#define OCPN_ACTION_TRACK_OFF           0x100b
 
 
 #define GPS_OFF                         0
@@ -54,6 +56,8 @@
 
 extern bool androidUtilInit( void );
 
+extern wxString androidGetDeviceInfo();
+
 extern bool androidGetMemoryStatus( int *mem_total, int *mem_used );
 
 extern double GetAndroidDisplaySize();
@@ -62,9 +66,11 @@ extern wxSize getAndroidDisplayDimensions( void );
 extern double getAndroidDisplayDensity();
 extern int getAndroidActionBarHeight();
 extern void androidConfirmSizeCorrection();
+extern void androidForceFullRepaint();
 
 extern void androidShowBusyIcon();
 extern void androidHideBusyIcon();
+extern void androidEnableBackButton(bool benable);
 
 
 extern bool androidStartNMEA(wxEvtHandler *consumer);
@@ -86,6 +92,7 @@ extern int androidFileChooser( wxString *result, const wxString &initDir, const 
 extern void androidSetChartTypeMaskSel( int mask, wxString &indicator);
 extern void androidSetRouteAnnunciator(bool viz);
 extern void androidSetFollowTool(bool bactive);
+extern void androidSetTrackTool(bool bactive);
 
 extern wxString androidGetHomeDir();
 extern wxString androidGetPrivateDir();                 // Used for logfile, config file, and the like
