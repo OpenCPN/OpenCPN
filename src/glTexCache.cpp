@@ -472,7 +472,7 @@ void * CompressionPoolThread::Entry()
     try
 #endif    
     {
-
+    SetPriority( WXTHREAD_MIN_PRIORITY );
         
     for(int i=0 ; i < 10 ; i++)
         m_bit_array[i] = 0;
@@ -837,7 +837,6 @@ bool CompressionWorkerPool::DoThreadJob(JobTicket* pticket)
     CompressionPoolThread *t = new CompressionPoolThread( pticket, this);
     pticket->pthread = t;
     
-    t->SetPriority( WXTHREAD_MIN_PRIORITY );
     t->Run();
     
     return true;
