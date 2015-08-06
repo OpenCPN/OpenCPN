@@ -640,6 +640,8 @@ void CompressionWorkerPool::OnEvtThread( OCPN_CompressionThreadEvent & event )
     glTextureDescriptor *ptd = ticket->pFact->GetpTD( ticket->rect );
 
     if(ptd){
+        ptd->FreeMap();
+
         for(int i=0 ; i < g_mipmap_max_level+1 ; i++)
             ptd->CompressedArrayAccess( CA_WRITE, ticket->comp_bits_array[i], i);
         
@@ -1261,11 +1263,12 @@ void glTexFactory::OnTimer(wxTimerEvent &event)
                         UpdateCacheLevel( wxRect(ptd->x, ptd->y, g_GLOptions.m_iTextureDimension, g_GLOptions.m_iTextureDimension),
                                           level, m_colorscheme );
                     
-                    //      We can free all the ptd memory completely
-                        //      and the texture will be reloaded from disk cache    
-                        ptd->FreeAll();
-                        ptd->nCache_Color = m_colorscheme;               // mark this TD as cached.
-                        break;
+                    // no longer need to store the compressed compressed data
+                    ptd->FreeCompComp();
+
+                    // Now Delete the texture so it will be reloaded with compressed data
+                    DeleteSingleTexture(ptd);
+                    break;
                 }
             }
         }
@@ -1339,7 +1342,7 @@ void glTexFactory::OnTimer(wxTimerEvent &event)
     }
 
     size_t m1 = 1024 * 1024;
-//    printf("%6d %6ld Map: %6d  Comp:%6d  CompComp: %10d  %s\n", mem_used/1024, g_tex_mem_used/m1, map_size/m1, comp_size/m1, compcomp_size, m_ChartPath.mb_str().data());
+    printf("%6d %6ld Map: %6d  Comp:%6d  CompComp: %10d  %s\n", mem_used/1024, g_tex_mem_used/m1, map_size/m1, comp_size/m1, compcomp_size, m_ChartPath.mb_str().data());
   
 ///    qDebug() << "inv" << map_size/m1 << comp_size/m1 << compcomp_size/m1 << g_tex_mem_used/m1 << mem_used/1024;
     }
@@ -1376,10 +1379,12 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
                 
                     for(int level = 0; level < g_mipmap_max_level + 1; level++ )
                         UpdateCacheLevel( rect, level, color_scheme );
-                
-                    //      We can free all the ptd memory completely
-                    //      and the texture will be reloaded from disk cache    
-                    ptd->FreeAll();
+
+                    // no longer need to store the compressed compressed data
+                    ptd->FreeCompComp();
+
+                    // Now Delete the texture so it will be reloaded with compressed data
+                    DeleteSingleTexture(ptd);
                 
                     ptd->nCache_Color = color_scheme;               // mark this TD as cached.
                 }
@@ -1433,9 +1438,8 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     //  Texture requested has already been physically uploaded to the GPU
     //  so we are done
     if(base_level >= ptd->level_min){
-        if(ptd->miplevel_upload[0] && ptd->map_array[0]){
+//        if(ptd->miplevel_upload[0] && ptd->map_array[0])
             ptd->FreeAll();
-        }
             
         return true;
     }
