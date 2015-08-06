@@ -1056,7 +1056,7 @@ void OCPNPlatform::ShowBusySpinner( void )
 #ifdef __OCPN__ANDROID__
     androidShowBusyIcon();
 #else 
-    if(! ::wxIsBusy() ){
+    if( !::wxIsBusy() ){
         ::wxBeginBusyCursor();
     }
 #endif    
@@ -1067,7 +1067,10 @@ void OCPNPlatform::HideBusySpinner( void )
 #ifdef __OCPN__ANDROID__
     androidHideBusyIcon();
 #else
-    if( ::wxIsBusy() ){
+    #if wxCHECK_VERSION(2, 9, 0 )
+    if( ::wxIsBusy() )
+    #endif
+    {
         ::wxEndBusyCursor();
     }
 #endif    

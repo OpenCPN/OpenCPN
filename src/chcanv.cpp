@@ -36,6 +36,7 @@
 #include <wx/aui/aui.h>
 
 #include "dychart.h"
+#include "OCPNPlatform.h"
 
 #include <wx/listimpl.cpp>
 
@@ -8117,7 +8118,7 @@ void ChartCanvas::ShowTrackPropertiesDialog( Route* selected )
 
 void pupHandler_PasteWaypoint() {
     Kml* kml = new Kml();
-    ::wxBeginBusyCursor();
+    OCPNPlatform::ShowBusySpinner();
 
     int pasteBuffer = kml->ParsePasteBuffer();
     RoutePoint* pasted = kml->GetParsedRoutePoint();
@@ -8154,12 +8155,12 @@ void pupHandler_PasteWaypoint() {
     cc1->InvalidateGL();
     cc1->Refresh( false );
     delete kml;
-    ::wxEndBusyCursor();
+    OCPNPlatform::HideBusySpinner();
 }
 
 void pupHandler_PasteRoute() {
     Kml* kml = new Kml();
-    ::wxBeginBusyCursor();
+    OCPNPlatform::ShowBusySpinner();
 
     int pasteBuffer = kml->ParsePasteBuffer();
     Route* pasted = kml->GetParsedRoute();
@@ -8274,12 +8275,12 @@ void pupHandler_PasteRoute() {
     }
 
     delete kml;
-    ::wxEndBusyCursor();
+    OCPNPlatform::HideBusySpinner();
 }
 
 void pupHandler_PasteTrack() {
     Kml* kml = new Kml();
-    ::wxBeginBusyCursor();
+    OCPNPlatform::ShowBusySpinner();
 
     int pasteBuffer = kml->ParsePasteBuffer();
     Track* pasted = kml->GetParsedTrack();
@@ -8326,7 +8327,7 @@ void pupHandler_PasteTrack() {
     cc1->InvalidateGL();
     cc1->Refresh( false );
     delete kml;
-    ::wxEndBusyCursor();
+    OCPNPlatform::HideBusySpinner();
 }
 
 bool ChartCanvas::InvokeCanvasMenu(int x, int y, int seltype)
