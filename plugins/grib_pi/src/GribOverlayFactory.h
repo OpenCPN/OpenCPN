@@ -90,7 +90,9 @@ struct Particle {
 struct ParticleMap {
 public:
     ParticleMap(int settings)
-    : m_Setting(settings), array_size(0), color_array(NULL), vertex_array(NULL) { }
+    : m_Setting(settings), history_size(0), array_size(0),
+      color_array(NULL), vertex_array(NULL) { 
+    }
 
     ~ParticleMap() {
         delete [] color_array;
