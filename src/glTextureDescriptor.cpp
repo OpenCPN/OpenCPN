@@ -61,9 +61,6 @@ void glTextureDescriptor::FreeAll()
         comp_array[i] = NULL;
         compcomp_array[i] = NULL;
         compcomp_size[i] = 0;
-        
-        map_array[i] = 0;
-        comp_array[i] = 0;
     }
 }
 
