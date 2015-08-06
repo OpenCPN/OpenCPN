@@ -102,23 +102,23 @@ public:
     bool        b_throttle;
     CompressionPoolThread *pthread;
     unsigned char *level0_bits;
-    unsigned char **comp_bits_array;
+    unsigned char *comp_bits_array[10];
     wxString    m_ChartPath;
     bool        b_abort;
     bool        b_isaborted;
     bool        bpost_zip_compress;
-    unsigned char **compcomp_bits_array;
+    unsigned char *compcomp_bits_array[10];
     int         compcomp_size_array[10];
     
 };
 
 JobTicket::JobTicket()
 {
-    for(int i=0 ; i < 10 ; i++)
-        compcomp_size_array[i]=0;
-    
-    comp_bits_array = NULL;
-    compcomp_bits_array = NULL;
+    for(int i=0 ; i < 10 ; i++) {
+        compcomp_size_array[i] = 0;
+        comp_bits_array[i] = NULL;
+        compcomp_bits_array[i] = NULL;
+    }
 }
 
 
@@ -462,9 +462,6 @@ void * CompressionPoolThread::Entry()
     //  Grab a copy of the level0 chart bits
     ChartBase *pchart;
     int index;
-
-    m_pticket->comp_bits_array = (unsigned char **)calloc(g_mipmap_max_level+1, sizeof(unsigned char *));
-    m_pticket->compcomp_bits_array = (unsigned char **)calloc(g_mipmap_max_level+1, sizeof(unsigned char *));
     
     if(ChartData){
         index =  ChartData->FinddbIndex( m_pticket->m_ChartPath );
@@ -655,18 +652,9 @@ void CompressionWorkerPool::OnEvtThread( OCPN_CompressionThreadEvent & event )
     
     if(ticket->b_abort){
 
-        for(int i=0 ; i < g_mipmap_max_level+1 ; i++){
+        for(int i=0 ; i < g_mipmap_max_level+1 ; i++) {
             free(ticket->comp_bits_array[i]);
-        }
-        free( ticket->comp_bits_array );
-        
-        if(ticket->bpost_zip_compress){
-            for(int i=0 ; i < g_mipmap_max_level+1 ; i++){
-                void *p = ticket->compcomp_bits_array[i];
-                free( ticket->compcomp_bits_array[i] );
-            }
-            
-            free( ticket->compcomp_bits_array );
+            free( ticket->compcomp_bits_array[i] );
         }
         
         m_njobs_running--;
@@ -684,19 +672,14 @@ void CompressionWorkerPool::OnEvtThread( OCPN_CompressionThreadEvent & event )
     glTextureDescriptor *ptd = ticket->pFact->GetpTD( ticket->rect );
 
     if(ptd){
-        for(int i=0 ; i < g_mipmap_max_level+1 ; i++){
+        for(int i=0 ; i < g_mipmap_max_level+1 ; i++)
             ptd->CompressedArrayAccess( CA_WRITE, ticket->comp_bits_array[i], i);
-        }
-        
-        free( ticket->comp_bits_array );
         
         if(ticket->bpost_zip_compress){
             for(int i=0 ; i < g_mipmap_max_level+1 ; i++){
                 ptd->CompCompArrayAccess( CA_WRITE, ticket->compcomp_bits_array[i], i);
                 ptd->compcomp_size[i] = ticket->compcomp_size_array[i];
             }
-            
-            free( ticket->compcomp_bits_array );
         }
     }
     
