@@ -1463,22 +1463,6 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     int size = g_tile_size;
     int uncompressed_size = g_uncompressed_tile_size;
     
-    
-    /* optimization: when supported generate uncompressed mipmaps
-       with hardware acceleration */
-    //  I have never seen a case where GPU mipmap generation is faster than CPU generation.
-    //  Also, HW generation uses a lot more texture memory in average cases, because we always need to upload 
-    //  the level 0 bitmap.
-    
-    bool hw_mipmap = false;
-    if(/*!g_GLOptions.m_bTextureCompression &&*/ s_glGenerateMipmap) {
-//        base_level = 0;
-//        hw_mipmap = true;
-    }
-
-#ifdef ocpnUSE_GLES /* glGenerateMipmaps is incredibly slow with mali drivers */
-    hw_mipmap = false;
-#endif
     bool b_use_mipmaps = true;
     bool b_need_compress = false;
 
@@ -1577,33 +1561,6 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
                     ptd->miplevel_upload[level] = true;
                 }
             }
-        }
-   
-        if( hw_mipmap &&  (ptd->nGPU_compressed == GPU_TEXTURE_UNCOMPRESSED) ) {
-   
-            //  Base level has been loaded to GPU
-            //  Use OGL driver to generate the rest of the mipmaps, and then break the loop
-            /* compute memory used for mipmaps */
-            dim /= 2;
-            uncompressed_size /= 4;
-       
-            for(int slevel = base_level + 1; slevel < g_mipmap_max_level+1; slevel++ ) {
-                g_tex_mem_used += uncompressed_size;
-                dim /= 2;
-                uncompressed_size /= 4;
-            }
-
- #ifndef ocpnUSE_GLES
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, base_level );
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, g_mipmap_max_level );
- #endif
-       /* some ATI drivers require this, so to be safe... */
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-       
-            s_glGenerateMipmap( GL_TEXTURE_2D );
-       
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-            break;  // done in one operation, so break out of the FOR loop
         }
 
         dim /= 2;
