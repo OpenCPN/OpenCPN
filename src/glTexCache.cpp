@@ -40,6 +40,7 @@
 
 #include "glTexCache.h"
 
+#include "chcanv.h"
 #include "glChartCanvas.h"
 #include "chartbase.h"
 #include "chartimg.h"
@@ -1268,6 +1269,13 @@ void glTexFactory::OnTimer(wxTimerEvent &event)
 
                     // Now Delete the texture so it will be reloaded with compressed data
                     DeleteSingleTexture(ptd);
+
+                    // We need to force a refresh to replace the uncompressed texture
+                    // This frees video memory and is also really required if we had
+                    // gone up a mipmap level
+                    glChartCanvas::Invalidate(); // ensure we refresh
+                    extern ChartCanvas *cc1;
+                    cc1->Refresh();
                     break;
                 }
             }
@@ -1466,7 +1474,7 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
 #ifdef ocpnUSE_GLES /* glGenerateMipmaps is incredibly slow with mali drivers */
     hw_mipmap = false;
 #endif
-    
+    bool b_use_mipmaps = true;
     bool b_need_compress = false;
 
     for(int level = 0; level < g_mipmap_max_level+1; level++ ) {
@@ -1496,12 +1504,7 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
  //                       if(bthread_debug)
 //                            printf("Upload Un-Compressed Texture %d  level: %d g_tex_mem_used: %ld\n", ptd->tex_name, level, g_tex_mem_used/(1024*1024));
                         ptd->nGPU_compressed = GPU_TEXTURE_UNCOMPRESSED;
-                        glTexImage2D( GL_TEXTURE_2D, level, GL_RGB,
-                                  dim, dim, 0, FORMAT_BITS, GL_UNSIGNED_BYTE, ptd->map_array[level] );
-                        ptd->miplevel_upload[level] = true;
                         
-                        g_tex_mem_used += uncompressed_size;
-                    
                     //  This level has not been compressed yet, and is not in the cache
                     //  So, need to start a compression job 
                         
@@ -1510,6 +1513,51 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
                         }
                         else                            
                             b_need_compress = true;
+
+#if 1
+                        // in this version, we upload just to the level 0 and don't use mipmaps
+                        // it avoids a little memory consumption and mipmap reduction
+                        // which is ok because the uncompressed data is only temporary anyway
+                        b_use_mipmaps = false;
+
+#if 0
+                        // on systems with little memory we could go up a mipmap level
+                        // here so that the uncompressed size without mipmaps (level+1)
+                        // is nearly the compressed size with all the compressed mipmaps
+                        // this way we won't require 5x more video memory than normal while we
+                        // are generating the compressed textures, when the cache is complete the
+                        // image becomes clearer
+                        base_level++;
+                        level++;
+                        if(ptd->miplevel_upload[level])
+                            break;
+                        GetTextureLevel( ptd, rect, level, color_scheme );
+                        dim /= 2;
+                        uncompressed_size /= 4;
+#endif
+
+                        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB,
+                                  dim, dim, 0, FORMAT_BITS, GL_UNSIGNED_BYTE, ptd->map_array[level] );
+                        ptd->miplevel_upload[level] = true;
+
+                        g_tex_mem_used += uncompressed_size;
+                    
+                        // recompute texture memory if we replaced an existing level
+                        for(level++; level < g_mipmap_max_level+1; level++ ) {
+                            uncompressed_size /= 4;
+                            if(ptd->miplevel_upload[level]) {
+                                ptd->miplevel_upload[level] = false;
+                                g_tex_mem_used -= uncompressed_size;
+                            }
+                        }
+
+                        break;
+#else
+                        glTexImage2D( GL_TEXTURE_2D, level, GL_RGB,
+                                  dim, dim, 0, FORMAT_BITS, GL_UNSIGNED_BYTE, ptd->map_array[level] );
+                        ptd->miplevel_upload[level] = true;
+#endif
                     }
                 }
             }
@@ -1539,8 +1587,7 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
                 dim /= 2;
                 uncompressed_size /= 4;
             }
-            
-       
+
  #ifndef ocpnUSE_GLES
             glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, base_level );
             glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, g_mipmap_max_level );
@@ -1560,10 +1607,11 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
         uncompressed_size /= 4;
     }
 
- 
 #ifndef ocpnUSE_GLES
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, base_level );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, g_mipmap_max_level );
+    if(b_use_mipmaps) {
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, base_level );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, g_mipmap_max_level );
+    }
 #endif
     ptd->level_min = base_level;
     
