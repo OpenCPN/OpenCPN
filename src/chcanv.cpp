@@ -3007,16 +3007,6 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
 #endif
     }
 
-    // adjust pix_height to remove the chart bar from the viewport
-    if(!g_ChartBarWin) {
-        ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-        VPoint.pix_height = m_canvas_height;
-        if(!style->chartStatusWindowTransparent && g_bShowChartBar){
-            if( g_Piano->GetnKeys() )
-                VPoint.pix_height -= g_Piano->GetHeight();
-        }
-    }
-
     //  A preliminary value, may be tweaked below
     VPoint.chart_scale = m_canvas_scale_factor / ( scale_ppm );
 
