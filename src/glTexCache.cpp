@@ -354,7 +354,7 @@ bool DoCompress(JobTicket *pticket, glTextureDescriptor *ptd, int level)
         CompressDataETC(ptd->map_array[level], dim, size, tex_data);
         
     else if(g_raster_format == GL_COMPRESSED_RGB_FXT1_3DFX)
-        CompressUsingGPU( ptd, level, false);    // no post compression
+        CompressUsingGPU( ptd, level, false, false);    // no post compression
 
     //  Store the pointer to compressed data in the ptd
     ptd->CompressedArrayAccess( CA_WRITE, tex_data, level);
@@ -1492,30 +1492,45 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
                         
  //                       if(bthread_debug)
 //                            printf("Upload Un-Compressed Texture %d  level: %d g_tex_mem_used: %ld\n", ptd->tex_name, level, g_tex_mem_used/(1024*1024));
-                        ptd->nGPU_compressed = GPU_TEXTURE_UNCOMPRESSED;
                         
                     //  This level has not been compressed yet, and is not in the cache
                     //  So, need to start a compression job 
                         
                         if( GL_COMPRESSED_RGB_FXT1_3DFX == g_raster_format ){
-                            CompressUsingGPU( ptd, level, true);
+#if 1
+                            // this version avoids re-uploading the data
+                            ptd->nGPU_compressed = GPU_TEXTURE_COMPRESSED;
+                            CompressUsingGPU( ptd, level, g_GLOptions.m_bTextureCompressionCaching, true);
+                            g_tex_mem_used += size;
+#else
+                            ptd->nGPU_compressed = GPU_TEXTURE_UNCOMPRESSED;
+                            CompressUsingGPU( ptd, level, g_GLOptions.m_bTextureCompressionCaching, false);
+                            glTexImage2D( GL_TEXTURE_2D, level, GL_RGB,
+                                          dim, dim, 0, FORMAT_BITS, GL_UNSIGNED_BYTE, ptd->map_array[level] );
+                            g_tex_mem_used += uncompressed_size;
+#endif
+                            ptd->miplevel_upload[level] = true;
                         }
-                        else                            
+                        else {
+                            ptd->nGPU_compressed = GPU_TEXTURE_UNCOMPRESSED;
                             b_need_compress = true;
 
 #if 1
-                        // in this version, we upload just to the level 0 and don't use mipmaps
-                        // it avoids a little memory consumption and mipmap reduction
-                        // which is ok because the uncompressed data is only temporary anyway
+                        // in this version, we upload only the current level and don't use mipmaps
+                        // temporarily while the compressed texture is being generated
+                        // This is significant for memory consumption on opengles where a full mipmap
+                        // stack is required in underzoom as we can avoid pushing  the uncompressed size
+                        // into texture memory which is significant
+                        // should be ok because the uncompressed data is only temporary anyway
                         b_use_mipmaps = false;
 
 #if 0
-                        // on systems with little memory we could go up a mipmap level
+                        // on systems with very little memory we could go up a mipmap level
                         // here so that the uncompressed size without mipmaps (level+1)
                         // is nearly the compressed size with all the compressed mipmaps
-                        // this way we won't require 5x more video memory than normal while we
-                        // are generating the compressed textures, when the cache is complete the
-                        // image becomes clearer
+                        // this way we won't require more memory than normal while we
+                        // are generating the compressed textures.
+                        // when the cache is complete the image becomes clearer
                         base_level++;
                         level++;
                         if(ptd->miplevel_upload[level])
@@ -1532,7 +1547,7 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
 
                         g_tex_mem_used += uncompressed_size;
                     
-                        // recompute texture memory if we replaced an existing level
+                        // recompute texture memory if we replaced an existing uncompressed level
                         for(level++; level < g_mipmap_max_level+1; level++ ) {
                             uncompressed_size /= 4;
                             if(ptd->miplevel_upload[level]) {
@@ -1542,11 +1557,12 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
                         }
 
                         break;
-#else
+#else // this version uses mipmaps
                         glTexImage2D( GL_TEXTURE_2D, level, GL_RGB,
                                   dim, dim, 0, FORMAT_BITS, GL_UNSIGNED_BYTE, ptd->map_array[level] );
                         ptd->miplevel_upload[level] = true;
 #endif
+                        }
                     }
                 }
             }
@@ -2026,7 +2042,7 @@ bool glTexFactory::UpdateCachePrecomp(unsigned char *data, int data_size, glText
 }
 
 
-bool CompressUsingGPU( glTextureDescriptor *ptd, int level, bool b_post_comp)
+bool CompressUsingGPU( glTextureDescriptor *ptd, int level, bool b_post_comp, bool inplace)
 {
     if(!ptd)
         return false;
@@ -2046,12 +2062,14 @@ bool CompressUsingGPU( glTextureDescriptor *ptd, int level, bool b_post_comp)
     
     bool ret = false;
     GLuint comp_tex;
-    glGenTextures(1, &comp_tex);
-    glBindTexture(GL_TEXTURE_2D, comp_tex);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    if(!inplace) {
+        glGenTextures(1, &comp_tex);
+        glBindTexture(GL_TEXTURE_2D, comp_tex);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    }
     
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGB_FXT1_3DFX,
+    glTexImage2D(GL_TEXTURE_2D, level, GL_COMPRESSED_RGB_FXT1_3DFX,
                  dim, dim, 0, GL_RGB, GL_UNSIGNED_BYTE, ptd->map_array[level]);
     
     GLint compressed;
@@ -2062,7 +2080,7 @@ bool CompressUsingGPU( glTextureDescriptor *ptd, int level, bool b_post_comp)
         
         // If our compressed size is reasonable, save it.
         GLint compressedSize;
-        glGetTexLevelParameteriv(GL_TEXTURE_2D, 0,
+        glGetTexLevelParameteriv(GL_TEXTURE_2D, level,
                                  GL_TEXTURE_COMPRESSED_IMAGE_SIZE,
                                  &compressedSize);
         
@@ -2093,6 +2111,9 @@ bool CompressUsingGPU( glTextureDescriptor *ptd, int level, bool b_post_comp)
         
         ret = true;
     }
+
+    if(!inplace)
+        glDeleteTextures(1, &comp_tex);
     
     // Restore the old texture pointer
     glBindTexture( GL_TEXTURE_2D, ptd->tex_name );
