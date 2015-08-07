@@ -1518,7 +1518,7 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
     // Did the viewport change?  update cached screen coordinates
     // we could use normalized coordinates in opengl and avoid this
     PlugIn_ViewPort &lvp = m_ParticleMap->last_viewport;
-    if(vp->view_scale_ppm != lvp.view_scale_ppm
+    if(lvp.bValid == false || vp->view_scale_ppm != lvp.view_scale_ppm
         || vp->skew != lvp.skew || vp->rotation != lvp.rotation) {
         for(it = particles.begin(); it != particles.end(); it++)
             for(int i=0; i<it->m_HistorySize; i++) {
