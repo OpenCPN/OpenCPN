@@ -50,6 +50,7 @@
 #include "s52s57.h"
 #include "navutil.h"
 #include "TCWin.h"
+#include "ocpn_plugin.h"
 
 class androidUtilHandler;
 
@@ -57,6 +58,8 @@ class androidUtilHandler;
 
 extern MyFrame                  *gFrame;
 extern const wxEventType wxEVT_OCPN_DATASTREAM;
+extern const wxEventType wxEVT_DOWNLOAD_EVENT;
+
 wxEvtHandler                    *s_pAndroidNMEAMessageConsumer;
 wxEvtHandler                    *s_pAndroidBTNMEAMessageConsumer;
 
@@ -256,6 +259,7 @@ wxString        g_androidFilesDir;
 wxString        g_androidCacheDir;
 wxString        g_androidExtFilesDir;
 wxString        g_androidExtCacheDir;
+wxString        g_androidExtStorageDir;
 
 int             g_mask;
 int             g_sel;
@@ -264,6 +268,10 @@ bool            g_follow_active;
 bool            g_track_active;
 
 wxSize          config_size;
+
+bool            s_bdownloading;
+wxString        s_requested_url;
+wxEvtHandler    *s_download_evHandler;
 
 #define ANDROID_EVENT_TIMER 4389
 
@@ -505,6 +513,8 @@ bool androidUtilInit( void )
         g_androidExtFilesDir = token;
         token = tk.GetNextToken();              
         g_androidExtCacheDir = token;
+        token = tk.GetNextToken();              
+        g_androidExtStorageDir = token;
         
     }
     
@@ -847,7 +857,72 @@ extern "C"{
     }
         
 }       
+
+
+extern "C"{
+    JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_setDownloadStatus(JNIEnv *env, jobject obj, int status, jstring url)
+    {
+        qDebug() << "setDownloadStatus";
+ 
+        const char *sparm;
+        wxString wx_sparm;
         
+        //  Need a Java environment to decode the string parameter
+        if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+            qDebug() << "GetEnv failed.";
+        }
+        else {
+            sparm = (jenv)->GetStringUTFChars(url, NULL);
+            wx_sparm = wxString(sparm, wxConvUTF8);
+        }
+        
+        if(s_bdownloading && wx_sparm.IsSameAs(s_requested_url) ){
+            
+            qDebug() << "Maybe mine...";
+            //  We simply pass the event on to the core download manager methods,
+            //  with parameters crafted to the event
+            OCPN_downloadEvent ev(wxEVT_DOWNLOAD_EVENT, 0);
+            
+            OCPN_DLCondition dl_condition = OCPN_DL_EVENT_TYPE_UNKNOWN;
+            OCPN_DLStatus dl_status = OCPN_DL_UNKNOWN;
+            
+            //  Translate Android status values to OCPN 
+            switch (status){
+                case 16:                                // STATUS_FAILED
+                    dl_condition = OCPN_DL_EVENT_TYPE_END;
+                    dl_status = OCPN_DL_FAILED;
+                    break;
+                    
+                case 8:                                 // STATUS_SUCCESSFUL
+                    dl_condition = OCPN_DL_EVENT_TYPE_END;
+                    dl_status = OCPN_DL_NO_ERROR;
+                    break;
+                    
+                case 4:                                 //  STATUS_PAUSED
+                case 2:                                 //  STATUS_RUNNING 
+                case 1:                                 //  STATUS_PENDING
+                   dl_condition = OCPN_DL_EVENT_TYPE_PROGRESS;
+                   dl_status = OCPN_DL_NO_ERROR;
+            }
+                   
+            ev.setDLEventCondition( dl_condition );
+            ev.setDLEventStatus( dl_status );
+            
+            if(s_download_evHandler){
+                qDebug() << "Sending event...";
+                s_download_evHandler->AddPendingEvent(ev);
+            }
+            
+            
+        }
+       
+        
+        return 77;
+    }
+    
+}       
+
+
         
 
 wxString callActivityMethod_vs(const char *method)
@@ -880,6 +955,7 @@ wxString callActivityMethod_vs(const char *method)
     
     return return_string;
 }
+
 
 
 wxString callActivityMethod_is(const char *method, int parm)
@@ -1128,6 +1204,20 @@ wxString androidGetCacheDir()                 // Used for raster_texture_cache, 
     return g_androidCacheDir;
 }
 
+// Android notes:
+/* Note: don't be confused by the word "external" here.
+ * This directory can better be thought as media/shared storage.
+ * It is a filesystem that can hold a relatively large amount of data
+ * and that is shared across all applications (does not enforce permissions).
+ * Traditionally this is an SD card, but it may also be implemented as built-in storage
+ * in a device that is distinct from the protected internal storage
+ * and can be mounted as a filesystem on a computer.
+ */
+
+wxString androidGetExtStorageDir()                 // Used for Chart storage, typically
+{
+    return g_androidExtStorageDir;
+}
 
 extern void androidSetRouteAnnunciator(bool viz)
 {
@@ -1955,7 +2045,60 @@ bool DoAndroidPreferences( void )
 }
 
 
+int startAndroidFileDownload( const wxString &url, const wxString& destination, wxEvtHandler *evh, long *dl_id )
+{
+    if(evh){
+        s_bdownloading = true;
+        s_requested_url = url;
+        s_download_evHandler = evh;
+    
+        wxString result = callActivityMethod_s2s( "downloadFile", url, destination );
 
+        wxLogMessage(_T("downloads2s result: ") + result);
+        long dl_ID;
+        wxStringTokenizer tk(result, _T(";"));
+        if( tk.HasMoreTokens() ){
+            wxString token = tk.GetNextToken();
+            if(token.IsSameAs(_T("OK"))){
+                token = tk.GetNextToken();
+                token.ToLong(&dl_ID);
+                *dl_id = dl_ID;
+                qDebug() << dl_ID;
+                return 0;
+            }
+        }
+    }
+    
+    return -1;
+}
+
+int queryAndroidFileDownload( long dl_ID, wxString *result )
+{
+    qDebug() << dl_ID;
+    
+    wxString stat = callActivityMethod_is( "getDownloadStatus", (int)dl_ID );
+    *result = stat;
+    
+    wxLogMessage( _T("queryAndroidFileDownload: ") + stat); 
+    
+    return 0;
+    
+}
+
+void finishAndroidFileDownload( void )
+{
+    s_bdownloading = false;
+    s_requested_url.Clear();
+    s_download_evHandler = NULL;
+    
+    return;
+}
+
+
+void cancelAndroidFileDownload( long dl_ID )
+{
+    wxString stat = callActivityMethod_is( "cancelDownload", (int)dl_ID );
+}
 
 
 

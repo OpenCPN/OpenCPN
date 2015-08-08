@@ -44,9 +44,6 @@
 #include <wx/xml/xml.h>
 
 class wxGLContext;
-#ifdef ocpnUSE_GL
-#include <wx/glcanvas.h>
-#endif
 
 //    This is the most modern API Version number
 //    It is expected that the API will remain downward compatible, meaning that
@@ -998,5 +995,134 @@ extern DECL_EXP bool GetSingleWaypoint( wxString &GUID, PlugIn_Waypoint *pwaypoi
 extern DECL_EXP bool PlugInPlaySoundEx( wxString &sound_file, int deviceIndex=-1 );
 extern DECL_EXP void AddChartDirectory( wxString &path );
 extern DECL_EXP void ForceChartDBUpdate();
+
+extern  DECL_EXP wxString GetWritableDocumentsDir( void );
+
+
+/*  Platform optimized File/Dir selector dialogs */
+extern  DECL_EXP int PlatformDirSelectorDialog( wxWindow *parent, wxString *file_spec, wxString Title, wxString initDir);
+
+extern  DECL_EXP int PlatformFileSelectorDialog( wxWindow *parent, wxString *file_spec, wxString Title, wxString initDir,
+                                wxString suggestedName, wxString wildcard);
+
+
+/*  OpenCPN HTTP File Download PlugIn Interface   */
+
+/*   Various method Return Codes, etc          */
+typedef enum _OCPN_DLStatus{
+    OCPN_DL_UNKNOWN         =-1,
+    OCPN_DL_NO_ERROR        = 0,
+    OCPN_DL_FAILED          = 1,
+    OCPN_DL_ABORTED         = 2,
+    OCPN_DL_USER_TIMEOUT    = 4,
+    OCPN_DL_STARTED         = 8
+}OCPN_DLStatus;
+
+
+typedef enum _OCPN_DLCondition{
+    OCPN_DL_EVENT_TYPE_UNKNOWN      = -1,
+    OCPN_DL_EVENT_TYPE_START        = 80,
+    OCPN_DL_EVENT_TYPE_PROGRESS     = 81,
+    OCPN_DL_EVENT_TYPE_END          = 82
+}OCPN_DLCondition;
+
+//      Style definitions for Synchronous file download modal dialogs, if desired.
+//      Abstracted from wxCURL package
+enum OCPN_DLDialogStyle
+{
+    OCPN_DLDS_ELAPSED_TIME = 0x0001,       //!< The dialog shows the elapsed time.
+    OCPN_DLDS_ESTIMATED_TIME = 0x0002,     //!< The dialog shows the estimated total time.
+    OCPN_DLDS_REMAINING_TIME = 0x0004,     //!< The dialog shows the remaining time.
+    OCPN_DLDS_SPEED = 0x0008,              //!< The dialog shows the transfer speed.
+    OCPN_DLDS_SIZE = 0x0010,               //!< The dialog shows the size of the resource to download/upload.
+    OCPN_DLDS_URL = 0x0020,                //!< The dialog shows the URL involved in the transfer.
+    
+    // styles related to the use of wxCurlConnectionSettingsDialog:
+    
+    OCPN_DLDS_CONN_SETTINGS_AUTH = 0x0040,  //!< The dialog allows the user to change the authentication settings.
+    OCPN_DLDS_CONN_SETTINGS_PORT = 0x0080,  //!< The dialog allows the user to change the port for the transfer.
+    OCPN_DLDS_CONN_SETTINGS_PROXY = 0x0100, //!< The dialog allows the user to change the proxy settings.
+    
+    OCPN_DLDS_CONN_SETTINGS_ALL = OCPN_DLDS_CONN_SETTINGS_AUTH|OCPN_DLDS_CONN_SETTINGS_PORT|OCPN_DLDS_CONN_SETTINGS_PROXY,
+    
+    OCPN_DLDS_SHOW_ALL =OCPN_DLDS_ELAPSED_TIME|OCPN_DLDS_ESTIMATED_TIME|OCPN_DLDS_REMAINING_TIME|
+    OCPN_DLDS_SPEED|OCPN_DLDS_SIZE|OCPN_DLDS_URL|OCPN_DLDS_CONN_SETTINGS_ALL,
+    
+    OCPN_DLDS_CAN_ABORT = 0x0200,          //!< The transfer can be aborted by the user.
+    OCPN_DLDS_CAN_START = 0x0400,          //!< The transfer won't start automatically. The user needs to start it.
+    OCPN_DLDS_CAN_PAUSE = 0x0800,          //!< The transfer can be paused.
+    
+    OCPN_DLDS_AUTO_CLOSE = 0x1000,         //!< The dialog auto closes when transfer is complete.
+    
+    // by default all available features are enabled:
+    OCPN_DLDS_DEFAULT_STYLE = OCPN_DLDS_CAN_START|OCPN_DLDS_CAN_PAUSE|OCPN_DLDS_CAN_ABORT|OCPN_DLDS_SHOW_ALL|OCPN_DLDS_AUTO_CLOSE
+};
+
+
+/*   Synchronous (Blocking) download of a single file  */
+
+extern DECL_EXP _OCPN_DLStatus OCPN_downloadFile( const wxString& url, const wxString &outputFile, 
+                                       const wxString &title, const wxString &message, 
+                                       const wxBitmap& bitmap,
+                                       wxWindow *parent, long style, int timeout_secs);
+
+/*   Asynchronous (Background) download of a single file  */
+
+extern DECL_EXP _OCPN_DLStatus OCPN_downloadFileBackground( const wxString& url, const wxString &outputFile,
+                                                  wxEvtHandler *handler, long *handle);
+
+extern DECL_EXP void OCPN_cancelDownloadFileBackground( long handle );
+
+
+/*  Supporting  Event for Background downloading          */
+/*  OCPN_downloadEvent Definition  */
+
+/*  PlugIn should be ready/able to handle this event after initiating a background file transfer  
+ * 
+ * The event as received should be parsed primarily by the getDLEventCondition() method.
+ * This will allow identification of download start, progress, and end states.
+ * 
+ * Other accessor methods contain status, byte counts, etc.
+ * 
+ * A PlugIn may safely destroy its EvtHandler after receipt of an OCPN_downloadEvent with 
+ *     getDLEventCondition == OCPN_DL_EVENT_TYPE_END
+ */
+
+class DECL_EXP OCPN_downloadEvent: public wxEvent
+{
+public:
+    OCPN_downloadEvent( wxEventType commandType = wxEVT_NULL, int id = 0 );
+    ~OCPN_downloadEvent( );
+    
+    // accessors
+    _OCPN_DLStatus getDLEventStatus(){ return m_stat; }
+    OCPN_DLCondition getDLEventCondition(){ return m_condition; }
+    
+    void setDLEventStatus( _OCPN_DLStatus stat ){ m_stat = stat; }
+    void setDLEventCondition( OCPN_DLCondition cond ){ m_condition = cond; }
+    
+    void setTotal( long bytes ){m_totalBytes = bytes; }
+    void setTransferred( long bytes ){m_sofarBytes = bytes; }
+    long getTotal(){ return m_totalBytes; }
+    long getTransferred(){ return m_sofarBytes; }
+    
+    void setComplete(bool b_complete){ m_b_complete = b_complete; }
+    bool getComplete(){ return m_b_complete; }
+    
+    
+    // required for sending with wxPostEvent()
+    wxEvent *Clone() const;
+    
+private:
+    OCPN_DLStatus m_stat;
+    OCPN_DLCondition m_condition;
+    
+    long m_totalBytes;
+    long m_sofarBytes;
+    bool m_b_complete;
+};
+
+DECLARE_EVENT_TYPE(wxEVT_DOWNLOAD_EVENT, -1)
+
 
 #endif //_PLUGIN_H_

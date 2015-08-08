@@ -40,9 +40,11 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.lang.Math;
+import java.util.concurrent.Semaphore;
 import org.kde.necessitas.ministro.IMinistro;
 import org.kde.necessitas.ministro.IMinistroCallback;
 
+import android.os.SystemClock;
 import android.os.Environment;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -59,6 +61,13 @@ import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.DialogInterface.OnCancelListener;
+
+import android.app.DownloadManager;
+import android.app.DownloadManager.Query;
+import android.app.DownloadManager.Request;
+import android.content.BroadcastReceiver;
+import android.database.Cursor;
+import android.content.IntentFilter;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
@@ -141,6 +150,8 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 {
     private final static int MINISTRO_INSTALL_REQUEST_CODE = 0xf3ee; // request code used to know when Ministro instalation is finished
     private final static int OCPN_SETTINGS_REQUEST_CODE = 0xf3ef; // request code used to know when OCPNsettings dialog activity is done
+    private final static int OCPN_GOOGLEMAPS_REQUEST_CODE = 0xf3ed; // request code used to know when GoogleMaps activity is done
+
     private static final int MINISTRO_API_LEVEL = 4; // Ministro api level (check IMinistro.aidl file)
     private static final int NECESSITAS_API_LEVEL = 2; // Necessitas api level used by platform plugin
     private static final int QT_VERSION = 0x050100; // This app requires at least Qt version 5.1.0
@@ -249,6 +260,9 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                                                         // this repository is used to push Qt snapshots.
     private String[] m_qtLibs = null; // required qt libs
 
+    private DownloadManager m_dm;
+    private long m_enqueue;
+
     private static ActivityManager activityManager;
 
     private Float lastX;
@@ -267,6 +281,8 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     private String m_BTStat;
     private Boolean m_FileChooserDone = false;
     private String m_filechooserString;
+
+    private String m_downloadRet = "";
 
     OCPNNativeLib nativeLib;
 
@@ -338,6 +354,29 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     }
 
     private String m_settingsReturn;
+
+    public String invokeGoogleMaps(){
+        Log.i("DEBUGGER_TAG", "invokeGoogleMaps");
+
+
+        Intent intent = new Intent(QtActivity.this, org.opencpn.OCPNMapsActivity.class);
+
+        String s = nativeLib.getVPCorners();
+
+        intent.putExtra("VP_CORNERS", s);
+
+        int height = this.getWindow().getDecorView().getHeight();
+        int width = this.getWindow().getDecorView().getWidth();
+        intent.putExtra("WIDTH", width);
+        intent.putExtra("HEIGHT", height);
+
+        startActivityForResult(intent, OCPN_GOOGLEMAPS_REQUEST_CODE);
+
+        int pss = 55;
+        String ret;
+        ret = String.format("%d", pss);
+        return ret;
+    }
 
     public String doAndroidSettings(String settings){
         //Log.i("DEBUGGER_TAG", "doAndroidSettings");
@@ -828,6 +867,128 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         return ret_str;
     }
 
+    private Semaphore mutex = new Semaphore(0);
+
+    public String downloadFile( final String url, final String destination )
+    {
+        m_downloadRet = "";
+
+        BroadcastReceiver receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                Log.i("DEBUGGER_TAG", "onReceive: " + action);
+
+                if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
+                    long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
+
+                    Query query = new Query();
+                    query.setFilterById(m_enqueue);
+                    Cursor c = m_dm.query(query);
+
+
+                    if (c.moveToFirst()) {
+                        String uriString = c.getString(c.getColumnIndex(DownloadManager.COLUMN_URI));
+
+                        int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_STATUS);
+                        if (DownloadManager.STATUS_SUCCESSFUL == c.getInt(columnIndex)) {
+                            Log.i("DEBUGGER_TAG", "Download successful");
+                        }
+
+                        nativeLib.setDownloadStatus( c.getInt(columnIndex), uriString);
+
+
+                    }
+                }
+            }
+        };
+
+        registerReceiver(receiver, new IntentFilter(
+                DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+
+
+        mutex = new Semaphore(0);
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                m_dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+
+                Request request = new Request( Uri.parse(url) );
+                request.setDestinationUri( Uri.parse(destination) );
+
+                Log.i("DEBUGGER_TAG", "enqueue");
+                m_downloadRet = "PENDING";
+                try{
+                     m_enqueue = m_dm.enqueue(request);
+                     String result = "OK;" + String.valueOf(m_enqueue);
+                     Log.i("DEBUGGER_TAG", result);
+                     m_downloadRet = result;
+                 }
+                 catch(Exception e){
+                     m_downloadRet = "NOK";
+                     Log.i("DEBUGGER_TAG", "exception");
+                 }
+
+
+                 mutex.release();
+
+
+             }});
+
+        // One way to wait for the runnable to be done...
+        try {
+            mutex.acquire();            // Cannot get mutex until runnable above exits.
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
+        Log.i("DEBUGGER_TAG", "m_downloadRet " + m_downloadRet);
+        return m_downloadRet;
+    }
+
+    public String getDownloadStatus( final int ID )
+    {
+        Log.i("DEBUGGER_TAG", "getDownloadStatus "  + String.valueOf(ID));
+
+        String ret = "NOSTAT";
+        if(m_dm != null){
+            Log.i("DEBUGGER_TAG", "mdm");
+            Query query = new Query();
+            query.setFilterById(ID);
+            Cursor c = m_dm.query(query);
+
+            if (c.moveToFirst()) {
+                Log.i("DEBUGGER_TAG", "cmtf");
+                int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_STATUS);
+                int stat = c.getInt(columnIndex);
+                String sstat = String.valueOf(stat);
+
+                String sofarBytes = c.getString(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR ));
+                String totalBytes = c.getString(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+
+                ret =  sstat + ";" + sofarBytes + ";" + totalBytes;
+
+            }
+
+        }
+
+        Log.i("DEBUGGER_TAG", ret);
+        return ret;
+    }
+
+
+    public String cancelDownload( final int ID )
+    {
+        Log.i("DEBUGGER_TAG", "cancelDownload "  + String.valueOf(ID));
+        if(m_dm != null){
+            m_dm.remove( ID );
+        }
+
+        return "OK";
+    }
+
     public String FileChooserDialog(final String initialDir, final String Title, final String Suggestion, final String wildcard)
     {
         //Log.i("DEBUGGER_TAG", "FileChooserDialog");
@@ -954,6 +1115,8 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
                         dialog.setShowFullPath( true );
                         dialog.setFolderMode( true );
+                        dialog.setCanCreateFiles( true );
+
 
                         dialog.setTitle( Title );
 
@@ -1109,6 +1272,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
        result = result.concat(getCacheDir().getPath() + ";");
        result = result.concat(getExternalFilesDir(null).getPath() + ";");
        result = result.concat(getExternalCacheDir().getPath() + ";");
+       result = result.concat(Environment.getExternalStorageDirectory().getPath() + ";");
 
        //Log.i("DEBUGGER_TAG", result);
 
@@ -1178,7 +1342,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
    private void relocateOCPNPlugins( )
    {
-//       Log.i("DEBUGGER_TAG", "relocateOCPNPlugins");
+       Log.i("DEBUGGER_TAG", "relocateOCPNPlugins");
 
        String path = Environment.getExternalStorageDirectory().toString()+"/opencpn/plugins";
        Log.d("DEBUGGER_TAG", "Plugin source Path: " + path);
@@ -1198,11 +1362,11 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                 copyFile(inputStream, outputStream);
                 inputStream.close();
                 outputStream.close();
-                //Log.i("DEBUGGER_TAG", "copyFile OK: " + dest);
+                Log.i("DEBUGGER_TAG", "copyFile OK: " + dest);
             }
             catch (Exception e) {
                 e.printStackTrace();
-                //Log.i("DEBUGGER_TAG", "copyFile Exception");
+                Log.i("DEBUGGER_TAG", "copyFile Exception");
             }
 
 
@@ -2465,6 +2629,10 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                 case R.id.ocpn_action_encText:
                     nativeLib.invokeMenuItem(OCPN_ACTION_ENCTEXT_TOGGLE);
                     return true;
+
+                case R.id.ocpn_action_googlemaps:
+                        invokeGoogleMaps();
+                        return true;
 
 
             default:

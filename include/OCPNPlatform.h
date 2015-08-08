@@ -111,6 +111,7 @@ public:
     wxString &GetExePath();
     wxString &GetSharedDataDir();
     wxString &GetPrivateDataDir();
+    wxString GetWritableDocumentsDir();
     wxString &GetPluginDir();
     wxString &GetConfigFileName();
     wxString *GetPluginDirPtr();

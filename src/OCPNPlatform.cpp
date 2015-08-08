@@ -680,6 +680,21 @@ wxString &OCPNPlatform::GetExePath()
     return m_exePath;
 }
 
+
+wxString OCPNPlatform::GetWritableDocumentsDir()
+{
+    wxString dir;
+    
+#ifdef __OCPN__ANDROID__
+    dir = androidGetExtStorageDir();                 // Used for Chart storage, typically
+#else
+    wxStandardPaths& std_path = GetStdPaths();
+    dir = std_path.GetDocumentsDir();
+#endif    
+    return dir;
+}
+
+
 wxString &OCPNPlatform::GetSharedDataDir()
 {
     if(m_SData_Dir.IsEmpty()){
@@ -1328,7 +1343,7 @@ double OCPNPlatform::GetCompassScaleFactor( int GUIScaleFactor )
         rv = wxMin(rv, 1.5);      //  Clamp at 1.5
         
         rv = premult * postmult;
-        qDebug() << "parmsF" << GUIScaleFactor << premult << postmult << rv;
+//        qDebug() << "parmsF" << GUIScaleFactor << premult << postmult << rv;
         rv = wxMin(rv, 3.0);      //  Clamp at 3.0
     }
     
