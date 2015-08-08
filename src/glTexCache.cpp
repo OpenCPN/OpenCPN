@@ -1008,6 +1008,7 @@ glTexFactory::glTexFactory(ChartBase *chart, GLuint raster_format)
     m_hdrOK = false;
     m_catalogOK = false;
 
+    m_catalogCorrupted = false;
 
     m_fs = 0;
 
