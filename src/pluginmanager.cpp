@@ -4837,7 +4837,7 @@ PI_DLEvtHandler::~PI_DLEvtHandler()
 
 void PI_DLEvtHandler::onDLEvent( OCPN_downloadEvent &event)
 {
-    qDebug() << "Got Event " << (int)event.getDLEventStatus() << (int)event.getDLEventCondition();
+//    qDebug() << "Got Event " << (int)event.getDLEventStatus() << (int)event.getDLEventCondition();
     g_download_status = event.getDLEventStatus();
     g_download_condition = event.getDLEventCondition();
 
@@ -4851,10 +4851,12 @@ void PI_DLEvtHandler::onDLEvent( OCPN_downloadEvent &event)
         ev.setDLEventStatus( event.getDLEventStatus());
         ev.setDLEventCondition( OCPN_DL_EVENT_TYPE_END );
     
-        qDebug() << "Sending END event...";
+//        qDebug() << "Sending END event...";
         m_download_evHandler->AddPendingEvent(ev);
         m_eventTimer.Stop();
+#ifdef __OCPN__ANDROID__        
         finishAndroidFileDownload();
+#endif        
     }
     
     event.Skip();
