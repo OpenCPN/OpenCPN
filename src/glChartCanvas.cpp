@@ -2378,7 +2378,8 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc, OCPNRegion &region )
     if(g_bShowChartBar && !g_ChartBarWin)
         DrawChartBar(dc);
 
-    g_Compass->Paint(dc);
+    if (g_Compass)
+        g_Compass->Paint(dc);
 }
 
 void glChartCanvas::DrawChartBar( ocpnDC &dc )
