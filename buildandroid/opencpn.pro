@@ -8,6 +8,7 @@ QT       += core gui opengl widgets
 
 #QT += androidextras
 LIBS += -lEGL
+LIBS += -lz
 
 TARGET = opencpn
 
@@ -177,6 +178,13 @@ license_deployment.files += $$PWD/../data/license.txt
 license_deployment.path = /assets
 INSTALLS += license_deployment
 
+dldr_plugin_deployment.files += $$PWD/../plugins/chartdldr_pi/data/chart_sources.xml
+dldr_plugin_deployment.files += $$PWD/../plugins/chartdldr_pi/data/folder215.png
+dldr_plugin_deployment.files += $$PWD/../plugins/chartdldr_pi/data/open182.png
+dldr_plugin_deployment.path = /assets/plugins/chartdldr_pi/data
+INSTALLS += dldr_plugin_deployment
+
+
 #contains(ANDROID_TARGET_ARCH,armeabi-v7a)
  {
     ANDROID_EXTRA_LIBS = \
@@ -186,6 +194,8 @@ ANDROID_EXTRA_LIBS += /home/dsr/Qt/5.3/android_armv7/lib/libQt5Test.so
 
 #ANDROID_EXTRA_LIBS += /home/dsr/Projects/opencpn_sf/opencpn/build_android_53/plugins/dashboard_pi/libdashboard_pi.so
 #ANDROID_EXTRA_LIBS += /home/dsr/Projects/opencpn_sf/opencpn/build_android_53/plugins/grib_pi/libgrib_pi.so
+#ANDROID_EXTRA_LIBS += /home/dsr/Projects/opencpn_sf/opencpn/build_android_53/plugins/chartdldr_pi/libchartdldr_pi.so
+#ANDROID_EXTRA_LIBS += /home/dsr/Projects/android-ndk/android-ndk-r10/platforms/android-19/arch-arm/usr/lib/libz.so
 
 CONFIG(SHARED){
 

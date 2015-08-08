@@ -3689,9 +3689,10 @@ next_seg_dc:
                     }
 
                     //      Enable anti-aliased lines, at best quality
+#ifndef __OCPN__ANDROID__
                     glEnable( GL_BLEND );
                     glEnable( GL_LINE_SMOOTH );
-
+#endif
                     // if(m_pen.GetWidth() > 1)
                     //   DrawThickLine(x1, y1, x2, y2, m_pen.GetWidth());
                     //  else
@@ -3724,10 +3725,10 @@ next_seg_dc:
                         ys += sym_len * sth * sym_factor;
                         s += sym_len * sym_factor;
                     }
-
+#ifndef __OCPN__ANDROID__
                     glEnable( GL_BLEND );
                     glEnable( GL_LINE_SMOOTH );
-
+#endif
                     // if(m_pen.GetWidth() > 1)
                     //   DrawThickLine(x1, y1, x2, y2, m_pen.GetWidth());
                     //  else
@@ -7489,7 +7490,9 @@ void RenderFromHPGL::SetPen()
     if( renderToOpenGl ) {
         glColor4ub( penColor.Red(), penColor.Green(), penColor.Blue(), penColor.Alpha() );
         glLineWidth( wxMax(g_GLMinSymbolLineWidth, (float) penWidth * 0.7) );
+#ifndef __OCPN__ANDROID__
         glEnable( GL_BLEND );
+#endif        
     }
 #endif    
 #if wxUSE_GRAPHICS_CONTEXT

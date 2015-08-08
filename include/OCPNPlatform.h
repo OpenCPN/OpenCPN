@@ -86,8 +86,8 @@ public:
 //--------------------------------------------------------------------------
 //      Platform Display Support
 //--------------------------------------------------------------------------
-    void ShowBusySpinner( void );
-    void HideBusySpinner( void );
+    static void ShowBusySpinner( void );
+    static void HideBusySpinner( void );
     double getFontPointsperPixel( void );
     wxSize getDisplaySize();
     double GetDisplaySizeMM();
@@ -111,6 +111,7 @@ public:
     wxString &GetExePath();
     wxString &GetSharedDataDir();
     wxString &GetPrivateDataDir();
+    wxString GetWritableDocumentsDir();
     wxString &GetPluginDir();
     wxString &GetConfigFileName();
     wxString *GetPluginDirPtr();

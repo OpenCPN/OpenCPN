@@ -356,6 +356,9 @@ public:
             return m_orient;
       }
       void RefreshFadeTimer();
+      void SetAutoHideTimer(int time);
+      void SetAutoHide( bool hide ){ m_bAutoHideToolbar = hide; }
+      
       int GetDockX() {
             return m_dock_x;
       }
@@ -392,6 +395,9 @@ private:
       wxTimer m_destroyTimer;
       GrabberWin *m_destroyGrabber;
       wxSize m_recoversize;
+      
+      bool m_bAutoHideToolbar;
+      int m_nAutoHideToolbar;
 
 };
 
