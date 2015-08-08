@@ -513,7 +513,26 @@ IF(QT_ANDROID)
 
 ENDIF(QT_ANDROID)
 
-
+IF(NOT QT_ANDROID)
+    INCLUDE("Curl.cmake")
+    SET(EXTRA_LIBS ${EXTRA_LIBS} ${CURL_LIBRARIES})
+    SET(SRC_WXCURL
+        src/wxcurl/base.cpp
+        src/wxcurl/dav.cpp
+        src/wxcurl/davtool.cpp
+        src/wxcurl/dialog.cpp
+        src/wxcurl/ftp.cpp
+        src/wxcurl/ftpparse.cpp
+        src/wxcurl/ftptool.cpp
+        src/wxcurl/http.cpp
+        src/wxcurl/panel.cpp
+        src/wxcurl/telnet.cpp
+        src/wxcurl/thread.cpp
+        src/wxcurl/utils.cpp
+    )
+    ADD_LIBRARY(WXCURL ${SRC_WXCURL})
+    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/wxcurl)
+ENDIF(NOT QT_ANDROID)
 
 IF(UNIX AND NOT QT_ANDROID)
 INCLUDE("FindPortaudio.cmake")
@@ -1374,6 +1393,7 @@ ENDIF(BUNDLE_DOCS MATCHES "ON")
 
 TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
       NMEA0183
+      WXCURL
       ${EXTRA_LIBS}
       ${wxWidgets_LIBRARIES}
       )
