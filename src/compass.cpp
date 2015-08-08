@@ -85,7 +85,7 @@ void ocpnCompass::Paint( ocpnDC& dc )
             
         }
 #else        
-        dc.DrawBitmap( m_StatBmp, m_rect.x, m_rect.y, false );
+        dc.DrawBitmap( m_StatBmp, m_rect.x, m_rect.y, true/*false*/ );
 #endif        
     }
 }
