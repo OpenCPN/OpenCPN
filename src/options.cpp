@@ -5344,6 +5344,10 @@ void options::OnCancelClick( wxCommandEvent& event )
 
     lastWindowPos = GetPosition();
     lastWindowSize = GetSize();
+    
+    if ( g_pi_manager )
+        g_pi_manager->CloseAllPlugInPanels( (int) wxCANCEL );
+    
     EndModal(0);
 }
 
