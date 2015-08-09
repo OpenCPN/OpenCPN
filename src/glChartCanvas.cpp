@@ -105,6 +105,7 @@ extern bool g_bopengl;
 extern int g_GPU_MemSize;
 extern bool g_bDebugOGL;
 extern bool g_bShowFPS;
+extern bool g_bSoftwareGL;
 extern bool g_btouch;
 extern OCPNPlatform *g_Platform;
 extern ocpnFloatingToolbarDialog *g_FloatingToolbarDialog;
@@ -1053,6 +1054,8 @@ void glChartCanvas::SetupOpenGL()
     m_renderer = wxString( render_string, wxConvUTF8 );
 
     wxString msg;
+    if(g_bSoftwareGL)
+        msg.Printf( _T("OpenGL-> Software OpenGL") );
     msg.Printf( _T("OpenGL-> Renderer String: ") );
     msg += m_renderer;
     wxLogMessage( msg );

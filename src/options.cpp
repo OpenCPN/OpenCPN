@@ -93,6 +93,7 @@ extern MyFrame          *gFrame;
 extern ChartCanvas      *cc1;
 extern wxString         g_PrivateDataDir;
 
+extern bool             g_bSoftwareGL;
 extern bool             g_bShowFPS;
 
 extern bool             g_bShowOutlines;
@@ -3655,6 +3656,7 @@ void options::OnOpenGLOptions( wxCommandEvent& event )
         g_GLOptions.m_bTextureCompression = dlg.m_cbTextureCompression->GetValue();
         
         g_bShowFPS = dlg.m_cbShowFPS->GetValue();
+        g_bSoftwareGL = dlg.m_cbSoftwareGL->GetValue();
         
         if(g_bexpert){
             g_GLOptions.m_bTextureCompressionCaching = dlg.m_cbTextureCompressionCaching->GetValue();
@@ -6592,10 +6594,6 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
             m_cbUseAcceleratedPanning->Disable();
         }
 
-        m_bSizer1->AddSpacer(1);
-    }
-
-    if(g_bexpert){
         m_cbTextureCompression = new wxCheckBox(this, wxID_ANY, _("Texture Compression") );
         m_cbTextureCompression->SetValue(g_GLOptions.m_bTextureCompression);
         m_bSizer1->Add(m_cbTextureCompression, 0, wxALL | wxEXPAND, 5);
@@ -6631,7 +6629,6 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
         }
     }
         
- 
     if(g_bexpert){
         wxStaticText* stTextureMemorySize =
             new wxStaticText( this, wxID_STATIC, _("Texture Memory Size (MB)") );
@@ -6643,9 +6640,9 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
         m_sTextureMemorySize->SetValue(g_GLOptions.m_iTextureMemorySize);
         m_bSizer1->Add(m_sTextureMemorySize, 0, wxALL | wxEXPAND, 5);
 
-    }
+    } else
+        m_bSizer1->AddSpacer(0);
 
-    m_bSizer1->AddSpacer(0);
     m_bSizer1->AddSpacer(0);
     
     m_bRebuildTextureCache = new wxButton(this, ID_BUTTON_REBUILD, _("Rebuild Texture Cache") );
@@ -6666,6 +6663,17 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
     m_cbShowFPS = new wxCheckBox( this, wxID_ANY, _("Show FPS") );
     m_bSizer1->Add( m_cbShowFPS, 0,  wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5 );
     m_cbShowFPS->SetValue(g_bShowFPS);
+
+#if defined(__UNIX__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
+    if(cc1->GetglCanvas()->GetVersionString().Upper().Find( _T("MESA") ) != wxNOT_FOUND) {
+        m_cbSoftwareGL = new wxCheckBox( this, wxID_ANY, _("Software OpenGL (restart OpenCPN)") );
+        m_bSizer1->Add( m_cbSoftwareGL, 0,  wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5 );
+        m_cbSoftwareGL->SetValue(g_bSoftwareGL);
+    } else
+#endif
+        m_bSizer1->AddSpacer(0);
+
+    m_bSizer1->AddSpacer(0);
     
     wxStdDialogButtonSizer * m_sdbSizer4 = new wxStdDialogButtonSizer();
     wxButton *bOK = new wxButton( this, wxID_OK );
