@@ -263,6 +263,7 @@ double GribOverlaySettings::CalibrationOffset(int settings)
 double GribOverlaySettings::CalibrationFactor(int settings, double input, bool reverse)
 {
     switch(unittype[settings]) {
+    case 7:
     case 0: switch(Settings[settings].m_Units) {
         case KNOTS:  return 3.6 / 1.852;
         case M_S:    return 1;
