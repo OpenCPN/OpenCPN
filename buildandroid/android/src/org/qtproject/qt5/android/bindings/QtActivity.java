@@ -1344,7 +1344,9 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
    {
        Log.i("DEBUGGER_TAG", "relocateOCPNPlugins");
 
-       String path = Environment.getExternalStorageDirectory().toString()+"/opencpn/plugins";
+       // TODO this should be a recursive directory search
+       String path = "/data/data/org.opencpn.opencpn/files/plugins/chartdldr_pi/data";
+
        Log.d("DEBUGGER_TAG", "Plugin source Path: " + path);
        File f = new File(path);
        File file[] = f.listFiles();

@@ -4825,6 +4825,13 @@ PI_DLEvtHandler::PI_DLEvtHandler()
 {
     g_download_status = OCPN_DL_UNKNOWN;
     g_download_condition = OCPN_DL_EVENT_TYPE_UNKNOWN;
+    
+    m_download_evHandler = NULL;
+    m_id = -1;
+    m_sofarBytes = 0;
+    m_totalBytes = 0;
+    
+    
 }
 
 PI_DLEvtHandler::~PI_DLEvtHandler()
@@ -4851,7 +4858,6 @@ void PI_DLEvtHandler::onDLEvent( OCPN_downloadEvent &event)
         ev.setDLEventStatus( event.getDLEventStatus());
         ev.setDLEventCondition( OCPN_DL_EVENT_TYPE_END );
     
-//        qDebug() << "Sending END event...";
         m_download_evHandler->AddPendingEvent(ev);
         m_eventTimer.Stop();
 #ifdef __OCPN__ANDROID__        
@@ -4924,7 +4930,7 @@ void PI_DLEvtHandler::onTimerEvent(wxTimerEvent &event)
     //2;0;148686
     
     if(m_download_evHandler){
-        qDebug() << "Sending event...";
+        qDebug() << "Sending event on timer...";
         m_download_evHandler->AddPendingEvent(ev);
     }
     
