@@ -854,7 +854,12 @@ int OCPNPlatform::DoFileSelectorDialog( wxWindow *parent, wxString *file_spec, w
     int result = wxID_CANCEL;
 
 #ifdef __OCPN__ANDROID__
-    result = androidFileChooser(&file, initDir, Title, suggestedName, wildcard);
+    //  Verify that initDir is traversable, fix it if not...
+    wxString idir = initDir;
+    if(initDir.StartsWith(_T("/data/data")))                 // not good, provokes a crash usually...
+        idir = GetWritableDocumentsDir();
+    
+    result = androidFileChooser(&file, idir, Title, suggestedName, wildcard);
     if(file_spec)
         *file_spec = file;
 #else
@@ -899,7 +904,12 @@ int OCPNPlatform::DoDirSelectorDialog( wxWindow *parent, wxString *file_spec, wx
     int result = wxID_CANCEL;
     
 #ifdef __OCPN__ANDROID__
-    result = androidFileChooser(&dir, initDir, Title, _T(""), _T(""), true);    // Directories only
+    //  Verify that initDir is traversable, fix it if not...
+    wxString idir = initDir;
+    if(initDir.StartsWith(_T("/data/data")))                 // not good, provokes a crash usually...
+        idir = GetWritableDocumentsDir();
+    
+    result = androidFileChooser(&dir, idir, Title, _T(""), _T(""), true);    // Directories only
     if(file_spec)
         *file_spec = dir;
 #else
