@@ -889,8 +889,8 @@ int OCPNPlatform::DoFileSelectorDialog( wxWindow *parent, wxString *file_spec, w
         parent->ShowWithEffect(wxSHOW_EFFECT_BLEND );
 #endif
 
-
-    file = psaveDialog->GetPath();
+	if(file_spec)
+		*file_spec = psaveDialog->GetPath();
     delete psaveDialog;
         
 #endif
