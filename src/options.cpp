@@ -949,10 +949,10 @@ void options::RecalculateSize()
         esize.x = GetCharWidth() * 110;
         esize.y = GetCharHeight() * 40;
         
-        wxSize dsize = GetParent()->GetClientSize();
-        esize.y = wxMin(esize.y, dsize.y - (2 * GetCharHeight()));
-        esize.x = wxMin(esize.x, dsize.x - (2 * GetCharHeight()));
-        SetClientSize(esize);
+        wxSize dsize = GetParent()->GetSize();//GetClientSize();
+        esize.y = wxMin(esize.y, dsize.y - 0/*(2 * GetCharHeight())*/);
+        esize.x = wxMin(esize.x, dsize.x - 0/*(2 * GetCharHeight())*/);
+        SetSize(esize);
         
         wxSize fsize = GetSize();
         wxSize canvas_size = GetParent()->GetSize();
