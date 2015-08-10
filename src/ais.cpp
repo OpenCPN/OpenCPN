@@ -1389,7 +1389,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         }
 
         if (g_bShowAISName) {
-            double true_scale_display = floor( cc1->GetVP().chart_scale / 100. ) * 100.;
+            int true_scale_display = (int) (floor( cc1->GetVP().chart_scale / 100. ) * 100);
             if( true_scale_display < g_Show_Target_Name_Scale ) { // from which scale to display name
 
                 wxString tgt_name = td->GetFullName();
