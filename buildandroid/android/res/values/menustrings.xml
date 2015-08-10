@@ -12,5 +12,6 @@
     <string name="ocpn_action_currents">Show/Hide Currents</string>
     <string name="ocpn_action_settings_basic">OpenCPN Settings</string>
     <string name="ocpn_action_encText">Toggle ENC text</string>
+    <string name="ocpn_action_googlemaps">Switch to Google Maps</string>
 
 </resources>

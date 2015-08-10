@@ -404,9 +404,8 @@ void AISTargetAlertDialog::OnIdJumptoClick( wxCommandEvent& event )
 void AISTargetAlertDialog::OnMove( wxMoveEvent& event )
 {
     //    Record the dialog position
-    wxPoint p = event.GetPosition();
-    g_ais_alert_dialog_x = p.x;
-    g_ais_alert_dialog_y = p.y;
+    g_ais_alert_dialog_x = GetPosition().x;
+    g_ais_alert_dialog_y = GetPosition().y;
 
     event.Skip();
 }

@@ -64,6 +64,7 @@
 #include "chartbarwin.h"
 #include "tcmgr.h"
 #include "compass.h"
+#include "FontMgr.h"
 
 #ifndef GL_ETC1_RGB8_OES
 #define GL_ETC1_RGB8_OES                                        0x8D64
@@ -104,6 +105,7 @@ extern bool g_bopengl;
 extern int g_GPU_MemSize;
 extern bool g_bDebugOGL;
 extern bool g_bShowFPS;
+extern bool g_bSoftwareGL;
 extern bool g_btouch;
 extern OCPNPlatform *g_Platform;
 extern ocpnFloatingToolbarDialog *g_FloatingToolbarDialog;
@@ -1052,6 +1054,8 @@ void glChartCanvas::SetupOpenGL()
     m_renderer = wxString( render_string, wxConvUTF8 );
 
     wxString msg;
+    if(g_bSoftwareGL)
+        msg.Printf( _T("OpenGL-> Software OpenGL") );
     msg.Printf( _T("OpenGL-> Renderer String: ") );
     msg += m_renderer;
     wxLogMessage( msg );
@@ -1743,7 +1747,7 @@ void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
 }
 
 extern void CalcGridSpacing( float WindowDegrees, float& MajorSpacing, float&MinorSpacing );
-extern void CalcGridText( float latlon, float spacing, bool bPostfix, char *text );
+extern wxString CalcGridText( float latlon, float spacing, bool bPostfix );
 void glChartCanvas::GridDraw( )
 {
     if( !g_bDisplayGrid ) return;
@@ -1760,10 +1764,12 @@ void glChartCanvas::GridDraw( )
     wxColour GridColor = GetGlobalColor( _T ( "SNDG1" ) );        
 
     if(!m_gridfont.IsBuilt()){
-        wxFont *font = wxTheFontList->FindOrCreateFont
-            ( 8, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL,
-            wxFONTWEIGHT_NORMAL, FALSE, wxString( _T ( "Arial" ) ) );
-        m_gridfont.Build(*font);
+        wxFont *dFont = FontMgr::Get().GetFont( _("ChartTexts"), 0 );
+        wxFont font = *dFont;
+        font.SetPointSize(8);
+        font.SetWeight(wxFONTWEIGHT_NORMAL);
+        
+        m_gridfont.Build(font);
     }
 
     w = cc1->m_canvas_width;
@@ -1799,9 +1805,11 @@ void glChartCanvas::GridDraw( )
     CalcGridSpacing( dlon, gridlonMajor, gridlonMinor );
 
     // Draw Major latitude grid lines and text
+#ifndef __OCPN__ANDROID__
     glEnable( GL_BLEND );
     glEnable( GL_LINE_SMOOTH );
-
+#endif
+    
     glColor3ub(GridColor.Red(), GridColor.Green(), GridColor.Blue());
 
     glLineWidth( g_GLMinSymbolLineWidth );
@@ -1822,21 +1830,23 @@ void glChartCanvas::GridDraw( )
                 glVertex2i(r.x, r.y);
                 glVertex2i(s.x, s.y);
             } else {
-                char sbuf[12];
-                CalcGridText( lat, gridlatMajor, true, sbuf ); // get text for grid line
-
+                wxString st = CalcGridText( lat, gridlatMajor, true ); // get text for grid line
+                
                 float x = 0, y = -1;
                 y = (float)(r.y*s.x - s.y*r.x) / (s.x - r.x);
                 if(y < 0 || y > h) {
                     int iy;
-                    m_gridfont.GetTextExtent(sbuf, strlen(sbuf), 0, &iy);
+                    m_gridfont.GetTextExtent(st, 0, &iy);
                     y = h - iy;
                     x = (float)(r.x*s.y - s.x*r.y + (s.x - r.x)*y) / (s.y - r.y);
                 }
 
                 glEnable(GL_TEXTURE_2D);
-                m_gridfont.RenderString(sbuf, x, y);
+                glEnable( GL_BLEND );
+                m_gridfont.RenderString(st, x, y);
                 glDisable(GL_TEXTURE_2D);
+                glDisable( GL_BLEND );
+                
             }
             
             lat = lat + gridlatMajor;
@@ -1871,21 +1881,23 @@ void glChartCanvas::GridDraw( )
                 glVertex2i(r.x, r.y);
                 glVertex2i(s.x, s.y);
             } else {
-                char sbuf[12];
-                CalcGridText( lon, gridlonMajor, false, sbuf );
+                wxString st = CalcGridText( lon, gridlonMajor, false );
 
                 float x = -1, y = 0;
                 x = (float)(r.x*s.y - s.x*r.y) / (s.y - r.y);
                 if(x < 0 || x > w) {
                     int ix;
-                    m_gridfont.GetTextExtent(sbuf, strlen(sbuf), &ix, 0);
+                    m_gridfont.GetTextExtent(st, &ix, 0);
                     x = w - ix;
                     y = (float)(r.y*s.x - s.y*r.x + (s.y - r.y)*x) / (s.x - r.x);
                 }
 
                 glEnable(GL_TEXTURE_2D);
-                m_gridfont.RenderString(sbuf, x, y);
+                glEnable( GL_BLEND );
+                m_gridfont.RenderString(st, x, y);
                 glDisable(GL_TEXTURE_2D);
+                glDisable( GL_BLEND );
+                
             }
 
             lon = lon + gridlonMajor;
@@ -2369,7 +2381,8 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc, OCPNRegion &region )
     if(g_bShowChartBar && !g_ChartBarWin)
         DrawChartBar(dc);
 
-    g_Compass->Paint(dc);
+    if (g_Compass)
+        g_Compass->Paint(dc);
 }
 
 void glChartCanvas::DrawChartBar( ocpnDC &dc )

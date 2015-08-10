@@ -90,7 +90,12 @@ struct Particle {
 struct ParticleMap {
 public:
     ParticleMap(int settings)
-    : m_Setting(settings), array_size(0), color_array(NULL), vertex_array(NULL) { }
+    : m_Setting(settings), history_size(0), array_size(0),
+      color_array(NULL), vertex_array(NULL) 
+    {
+       // XXX should be done in default PlugIn_ViewPort CTOR
+        last_viewport.bValid = false;
+    }
 
     ~ParticleMap() {
         delete [] color_array;

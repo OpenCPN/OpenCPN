@@ -62,6 +62,10 @@
 #include "mygeom.h"
 #include "OCPNPlatform.h"
 
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#endif
+
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
 #endif
@@ -208,7 +212,6 @@ PlugInToolbarToolContainer::~PlugInToolbarToolContainer()
     delete bitmap_day;
     delete bitmap_Rollover;
 }
-
 
 //-----------------------------------------------------------------------------------------------------
 //
@@ -3984,6 +3987,12 @@ wxString *GetpPlugInLocation()
     return g_Platform->GetPluginDirPtr();
 }
 
+wxString GetWritableDocumentsDir( void )
+{
+    return g_Platform->GetWritableDocumentsDir();
+}
+
+
 wxString GetPlugInPath(opencpn_plugin *pplugin)
 {
     wxString ret_val;
@@ -4729,3 +4738,330 @@ void ForceChartDBUpdate()
         g_options->pScanCheckBox->SetValue(true);
     }
 }
+
+
+int PlatformDirSelectorDialog( wxWindow *parent, wxString *file_spec, wxString Title, wxString initDir)
+{
+    return g_Platform->DoDirSelectorDialog( parent, file_spec, Title, initDir);
+}
+
+int PlatformFileSelectorDialog( wxWindow *parent, wxString *file_spec, wxString Title, wxString initDir,
+                                                wxString suggestedName, wxString wildcard)
+{
+    return g_Platform->DoFileSelectorDialog( parent, file_spec, Title, initDir,
+                                            suggestedName, wildcard);
+}
+
+
+
+
+//      http File Download Support
+
+//      OCPN_downloadEvent Implementation
+
+//DEFINE_EVENT_TYPE(wxEVT_DOWNLOAD_EVENT)
+
+OCPN_downloadEvent::OCPN_downloadEvent(wxEventType commandType, int id)
+:wxEvent(id, commandType)
+{
+    m_stat = OCPN_DL_UNKNOWN;
+    m_condition = OCPN_DL_EVENT_TYPE_UNKNOWN;
+    m_b_complete = false;
+}
+
+OCPN_downloadEvent::~OCPN_downloadEvent()
+{
+}
+
+wxEvent* OCPN_downloadEvent::Clone() const
+{
+    OCPN_downloadEvent *newevent=new OCPN_downloadEvent(*this);
+    newevent->m_stat=this->m_stat;
+    newevent->m_condition=this->m_condition;
+
+    newevent->m_totalBytes=this->m_totalBytes;
+    newevent->m_sofarBytes=this->m_sofarBytes;
+    newevent->m_b_complete=this->m_b_complete;
+    
+    return newevent;
+}
+
+const wxEventType wxEVT_DOWNLOAD_EVENT = wxNewEventType();
+
+
+
+
+
+_OCPN_DLStatus g_download_status;
+_OCPN_DLCondition g_download_condition;
+
+#define DL_EVENT_TIMER 4388
+
+class PI_DLEvtHandler : public wxEvtHandler
+{
+public:
+    PI_DLEvtHandler();
+    ~PI_DLEvtHandler();
+    
+    void onDLEvent( OCPN_downloadEvent &event);
+    void setBackgroundMode( long ID, wxEvtHandler *handler );
+    void clearBackgroundMode();
+    void onTimerEvent(wxTimerEvent &event);
+    
+    long m_id;
+    wxTimer m_eventTimer;
+    wxEvtHandler *m_download_evHandler;
+    
+    long m_sofarBytes;
+    long m_totalBytes;
+    
+    
+};
+
+
+
+
+PI_DLEvtHandler::PI_DLEvtHandler()
+{
+    g_download_status = OCPN_DL_UNKNOWN;
+    g_download_condition = OCPN_DL_EVENT_TYPE_UNKNOWN;
+    
+    m_download_evHandler = NULL;
+    m_id = -1;
+    m_sofarBytes = 0;
+    m_totalBytes = 0;
+    
+    
+}
+
+PI_DLEvtHandler::~PI_DLEvtHandler()
+{
+    m_eventTimer.Stop();
+    Disconnect(wxEVT_TIMER, (wxObjectEventFunction)(wxEventFunction)&PI_DLEvtHandler::onTimerEvent);
+    
+}
+
+
+void PI_DLEvtHandler::onDLEvent( OCPN_downloadEvent &event)
+{
+//    qDebug() << "Got Event " << (int)event.getDLEventStatus() << (int)event.getDLEventCondition();
+    g_download_status = event.getDLEventStatus();
+    g_download_condition = event.getDLEventCondition();
+
+    // This is an END event, happening at the end of BACKGROUND file download
+    if(m_download_evHandler && ( OCPN_DL_EVENT_TYPE_END == event.getDLEventCondition()) ){
+        OCPN_downloadEvent ev(wxEVT_DOWNLOAD_EVENT, 0);
+        ev.setComplete(true);
+        ev.setTransferred(m_sofarBytes);
+        ev.setTotal(m_totalBytes);
+    
+        ev.setDLEventStatus( event.getDLEventStatus());
+        ev.setDLEventCondition( OCPN_DL_EVENT_TYPE_END );
+    
+        m_download_evHandler->AddPendingEvent(ev);
+        m_eventTimer.Stop();
+#ifdef __OCPN__ANDROID__        
+        finishAndroidFileDownload();
+#endif        
+    }
+    
+    event.Skip();
+}
+
+void PI_DLEvtHandler::setBackgroundMode( long ID, wxEvtHandler *handler)
+{
+    m_id = ID;
+    m_download_evHandler = handler;
+    
+    m_eventTimer.SetOwner( this, DL_EVENT_TIMER );
+    
+    Connect(wxEVT_TIMER, (wxObjectEventFunction)(wxEventFunction)&PI_DLEvtHandler::onTimerEvent);
+    m_eventTimer.Start(1000, wxTIMER_CONTINUOUS);
+    
+}
+
+void PI_DLEvtHandler::clearBackgroundMode()
+{
+    m_download_evHandler = NULL;
+    m_eventTimer.Stop();
+}
+    
+    
+    
+void PI_DLEvtHandler::onTimerEvent(wxTimerEvent &event)
+{
+#ifdef __OCPN__ANDROID__    
+    //   Query the download status, and post to the original requestor
+
+    wxString sstat;
+    int stat = queryAndroidFileDownload( m_id, &sstat );
+    
+    long sofarBytes = 0;
+    long totalBytes = -1;
+    long state = -1;
+    
+    wxStringTokenizer tk(sstat, _T(";"));
+    if( tk.HasMoreTokens() ){
+        wxString token = tk.GetNextToken();
+        token.ToLong(&state);
+        token = tk.GetNextToken();
+        token.ToLong(&sofarBytes);
+        token = tk.GetNextToken();
+        token.ToLong(&totalBytes);
+    }
+
+    qDebug() << state << sofarBytes << totalBytes;
+    
+    m_sofarBytes = sofarBytes;
+    m_totalBytes = totalBytes;
+    
+    bool b_complete = false;
+    if( (state == 16) || (state == 8) )
+        b_complete = true;
+
+    OCPN_downloadEvent ev(wxEVT_DOWNLOAD_EVENT, 0);
+    ev.setComplete(b_complete);
+    ev.setTransferred(sofarBytes);
+    ev.setTotal(totalBytes);
+
+    ev.setDLEventStatus( OCPN_DL_UNKNOWN);
+    ev.setDLEventCondition( OCPN_DL_EVENT_TYPE_PROGRESS );
+    
+    //2;0;148686
+    
+    if(m_download_evHandler){
+        qDebug() << "Sending event on timer...";
+        m_download_evHandler->AddPendingEvent(ev);
+    }
+    
+    
+#endif    
+}
+
+
+
+PI_DLEvtHandler *g_piEventHandler;
+
+
+
+
+//  Blocking download of single file
+_OCPN_DLStatus OCPN_downloadFile( const wxString& url, const wxString &outputFile, 
+                       const wxString &title, const wxString &message, 
+                       const wxBitmap& bitmap,
+                       wxWindow *parent, long style, int timeout_secs)
+{
+    
+#ifdef __OCPN__ANDROID__
+
+    wxString msg = _T("Downloading file synchronously: ");
+    msg += url;  msg += _T(" to: ");  msg += outputFile;
+    wxLogMessage(msg);
+    
+    //  Create a temporary event handler to receive status events
+    g_piEventHandler = new PI_DLEvtHandler;
+
+    //  Create a connection for the expected events
+    g_piEventHandler->Connect(wxEVT_DOWNLOAD_EVENT, (wxObjectEventFunction)(wxEventFunction)&PI_DLEvtHandler::onDLEvent);
+     
+    long dl_ID = -1;
+    
+    int res = startAndroidFileDownload( url, outputFile, g_piEventHandler, &dl_ID );
+    //  Started OK?
+    if(res){
+        finishAndroidFileDownload();
+        g_piEventHandler->Disconnect(wxEVT_DOWNLOAD_EVENT, (wxObjectEventFunction)(wxEventFunction)&PI_DLEvtHandler::onDLEvent);
+        delete g_piEventHandler;
+        return OCPN_DL_FAILED;
+    }
+        
+    
+    wxDateTime dl_start_time = wxDateTime::Now();
+    
+    //  Spin, waiting for timeout or event from downstream, and checking status
+    while(1){
+        wxTimeSpan dt = wxDateTime::Now() - dl_start_time;
+        qDebug() << "Spin.." << dt.GetSeconds().GetLo();
+        
+        if(dt.GetSeconds() > timeout_secs){
+            qDebug() << "USER_TIMOUT";
+            finishAndroidFileDownload();
+            g_piEventHandler->Disconnect(wxEVT_DOWNLOAD_EVENT, (wxObjectEventFunction)(wxEventFunction)&PI_DLEvtHandler::onDLEvent);
+            delete g_piEventHandler;
+            return (OCPN_DL_USER_TIMEOUT);
+        }
+        
+        if(g_download_condition != OCPN_DL_EVENT_TYPE_UNKNOWN){
+            if(OCPN_DL_EVENT_TYPE_END == g_download_condition){
+                _OCPN_DLStatus ss = g_download_status;
+                qDebug() << "DL_END" << (int)ss;
+                finishAndroidFileDownload();
+                g_piEventHandler->Disconnect(wxEVT_DOWNLOAD_EVENT, (wxObjectEventFunction)(wxEventFunction)&PI_DLEvtHandler::onDLEvent);
+                delete g_piEventHandler;
+                return ss;              // The actual return code
+            }
+        }
+        
+        wxString sstat;
+        int stat = queryAndroidFileDownload( dl_ID, &sstat );
+        
+        wxSleep(1);
+        wxSafeYield();
+    }
+#endif
+    
+    return OCPN_DL_FAILED;
+}            
+
+
+//  Non-Blocking download of single file
+_OCPN_DLStatus OCPN_downloadFileBackground( const wxString& url, const wxString &outputFile,
+                                                            wxEvtHandler *handler, long *handle)
+{
+#ifdef __OCPN__ANDROID__
+    wxString msg = _T("Downloading file asynchronously: ");
+    msg += url;  msg += _T(" to: ");  msg += outputFile;
+    wxLogMessage(msg);
+    
+    //  Create a temporary event handler to receive status events
+    g_piEventHandler = new PI_DLEvtHandler;
+    
+    //  Create a connection for the expected events
+    g_piEventHandler->Connect(wxEVT_DOWNLOAD_EVENT, (wxObjectEventFunction)(wxEventFunction)&PI_DLEvtHandler::onDLEvent);
+    
+    
+    long dl_ID = -1;
+    
+    int res = startAndroidFileDownload( url, outputFile, g_piEventHandler, &dl_ID );
+    //  Started OK?
+    if(res){
+        finishAndroidFileDownload();
+        g_piEventHandler->Disconnect(wxEVT_DOWNLOAD_EVENT, (wxObjectEventFunction)(wxEventFunction)&PI_DLEvtHandler::onDLEvent);
+        delete g_piEventHandler;
+        return OCPN_DL_FAILED;
+    }
+    
+    //  configure the local event handler for background transfer
+    g_piEventHandler->setBackgroundMode(dl_ID, handler);
+    
+    if(handle)
+        *handle = dl_ID;
+    
+    return OCPN_DL_STARTED;
+#endif
+    
+    return OCPN_DL_FAILED;
+    
+}
+
+void OCPN_cancelDownloadFileBackground( long handle )
+{
+#ifdef __OCPN__ANDROID__
+    cancelAndroidFileDownload( handle );
+    finishAndroidFileDownload();
+    if(g_piEventHandler)
+        g_piEventHandler->clearBackgroundMode();
+    
+#endif
+}
+

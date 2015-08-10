@@ -8,6 +8,7 @@ QT       += core gui opengl widgets
 
 #QT += androidextras
 LIBS += -lEGL
+LIBS += -lz
 
 TARGET = opencpn
 
@@ -177,6 +178,15 @@ license_deployment.files += $$PWD/../data/license.txt
 license_deployment.path = /assets
 INSTALLS += license_deployment
 
+dldr_plugin_deployment.files += $$PWD/../plugins/chartdldr_pi/data/chart_sources.xml
+dldr_plugin_deployment.files += $$PWD/../plugins/chartdldr_pi/data/folder215.png
+dldr_plugin_deployment.files += $$PWD/../plugins/chartdldr_pi/data/open182.png
+dldr_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/chartdldr_pi/libchartdldr_pi.so
+dldr_plugin_deployment.path = /assets/plugins/chartdldr_pi/data
+#dldr_plugin_deployment.path = /assets/plugins
+INSTALLS += dldr_plugin_deployment
+
+
 #contains(ANDROID_TARGET_ARCH,armeabi-v7a)
  {
     ANDROID_EXTRA_LIBS = \
@@ -186,6 +196,7 @@ ANDROID_EXTRA_LIBS += /home/dsr/Qt/5.3/android_armv7/lib/libQt5Test.so
 
 #ANDROID_EXTRA_LIBS += /home/dsr/Projects/opencpn_sf/opencpn/build_android_53/plugins/dashboard_pi/libdashboard_pi.so
 #ANDROID_EXTRA_LIBS += /home/dsr/Projects/opencpn_sf/opencpn/build_android_53/plugins/grib_pi/libgrib_pi.so
+
 
 CONFIG(SHARED){
 
@@ -199,12 +210,6 @@ ANDROID_EXTRA_LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_aui-3.1.so
 ANDROID_EXTRA_LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_baseu_net-3.1.so
 ANDROID_EXTRA_LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_gl-3.1.so
 
-#ANDROID_EXTRA_LIBS += $${OCPN_Base}/$${OCPN_Build}/libNMEA0183.so
-#ANDROID_EXTRA_LIBS += $${OCPN_Base}/$${OCPN_Build}/libgorp.so
-#ANDROID_EXTRA_LIBS += $${OCPN_Base}/$${OCPN_Build}/libGARMINHOST.so
-#ANDROID_EXTRA_LIBS += $${OCPN_Base}/$${OCPN_Build}/libS57ENC.so
-#ANDROID_EXTRA_LIBS += $${OCPN_Base}/$${OCPN_Build}/libSYMBOLS.so
-#ANDROID_EXTRA_LIBS += $${OCPN_Base}/$${OCPN_Build}/libTEXCMP.so
 
 }
 

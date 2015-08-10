@@ -98,5 +98,11 @@ extern wxString androidGetHomeDir();
 extern wxString androidGetPrivateDir();                 // Used for logfile, config file, and the like
 extern wxString androidGetSharedDir();                 // Used for assets like uidata, s57data, etc
 extern wxString androidGetCacheDir();                 // Used for raster_texture_cache, mmsitoname.csv, etc
+extern wxString androidGetExtStorageDir();            // Used for Chart storage, typically
+
+extern int startAndroidFileDownload( const wxString &url, const wxString& destination, wxEvtHandler *evh, long *dl_ID );
+extern int queryAndroidFileDownload( long dl_ID, wxString *result );
+extern void finishAndroidFileDownload();
+extern void cancelAndroidFileDownload( long dl_ID );
 
 #endif   //guard

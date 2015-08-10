@@ -35,6 +35,7 @@
 #include <wx/textfile.h>
 
 #include "dychart.h"
+#include "OCPNPlatform.h"
 
 #include "s52s57.h"
 #include "s52plib.h"
@@ -2904,7 +2905,7 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
 
     if( fn.GetExt() == _T("000") ) {
         if( m_bbase_file_attr_known ) {
-            ::wxBeginBusyCursor();
+            OCPNPlatform::ShowBusySpinner();
 
             int sret = FindOrCreateSenc( name );
             if( sret != BUILD_SENC_OK ) {
@@ -2914,18 +2915,18 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
             } else
                 ret_value = PostInit( flags, m_global_color_scheme );
 
-            ::wxEndBusyCursor();
+            OCPNPlatform::HideBusySpinner();
         }
 
     }
 
     else if( fn.GetExt() == _T("S57") ) {
-        ::wxBeginBusyCursor();
+        OCPNPlatform::ShowBusySpinner();
 
         m_SENCFileName = name;
         ret_value = PostInit( flags, m_global_color_scheme );
 
-        ::wxEndBusyCursor();
+        OCPNPlatform::HideBusySpinner();
 
     }
 
@@ -4844,12 +4845,12 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
             nGeo1000 = nGeoFeature / 500;
 
 #ifdef __WXMSW__
-            wxBeginBusyCursor();
+            //            OCPNPlatform::ShowBusySpinner();
             /*
              SENC_prog = new wxProgressDialog(  _("OpenCPN S57 SENC File Load"), FullPath, nGeo1000, NULL,
              wxPD_AUTO_HIDE | wxPD_CAN_ABORT | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME | wxPD_SMOOTH);
              */
-            wxEndBusyCursor();
+            //            OCPNPlatform::HideBusySpinner();
 
 #endif
         }

@@ -101,6 +101,7 @@ public:
 #endif
     
     wxString GetRendererString(){ return m_renderer; }
+    wxString GetVersionString(){ return m_version; }
     void EnablePaint(bool b_enable){ m_b_paint_enable = b_enable; }
 
     static void Invalidate();

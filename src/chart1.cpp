@@ -439,6 +439,7 @@ double                    g_COGAvg;
 bool                      g_bLookAhead;
 bool                      g_bskew_comp;
 bool                      g_bopengl;
+bool                      g_bSoftwareGL;
 bool                      g_bShowFPS;
 bool                      g_bsmoothpanzoom;
 bool                      g_fog_overzoom;
@@ -1496,6 +1497,11 @@ bool MyApp::OnInit()
 
     if(g_bdisable_opengl)
         g_bopengl = false;
+
+#if defined(__UNIX__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
+    if(g_bSoftwareGL)
+        setenv("LIBGL_ALWAYS_SOFTWARE", "1", 1);
+#endif
     
     // Determine if a transparent toolbar is possible under linux with opengl
     g_bTransparentToolbarInOpenGLOK = false;
@@ -5168,6 +5174,11 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
         
     cc1->SetDisplaySizeMM( g_display_size_mm );
 
+    if(g_FloatingToolbarDialog){
+        g_FloatingToolbarDialog->SetAutoHide(g_bAutoHideToolbar);
+        g_FloatingToolbarDialog->SetAutoHideTimer(g_nAutoHideToolbar);
+    }
+    
     //    Do a full Refresh, trying to open the last open chart
     if(b_need_refresh){
         int index_hint = ChartData->FinddbIndex( chart_file_name );
@@ -5289,7 +5300,7 @@ void MyFrame::ChartsRefresh( int dbi_hint, ViewPort &vp, bool b_purge )
 {
     if( !ChartData ) return;
 
-    ::wxBeginBusyCursor();
+    OCPNPlatform::ShowBusySpinner();
 
     bool b_run = FrameTimer1.IsRunning();
 
@@ -5360,7 +5371,7 @@ void MyFrame::ChartsRefresh( int dbi_hint, ViewPort &vp, bool b_purge )
 
     if( b_run ) FrameTimer1.Start( TIMER_GFRAME_1, wxTIMER_CONTINUOUS );
 
-    ::wxEndBusyCursor();
+    OCPNPlatform::HideBusySpinner();
 
 }
 
@@ -5379,7 +5390,7 @@ bool MyFrame::UpdateChartDatabaseInplace( ArrayOfCDI &DirArray, bool b_force, bo
     delete pCurrentStack;
     pCurrentStack = NULL;
 
-    ::wxBeginBusyCursor();
+    OCPNPlatform::ShowBusySpinner();
 
     wxProgressDialog *pprog = NULL;
     if( b_prog ) {
@@ -5400,7 +5411,7 @@ bool MyFrame::UpdateChartDatabaseInplace( ArrayOfCDI &DirArray, bool b_force, bo
 
     delete pprog;
 
-    ::wxEndBusyCursor();
+    OCPNPlatform::HideBusySpinner();
 
     pConfig->UpdateChartDirs( DirArray );
 
@@ -5768,7 +5779,8 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
         console->SetColorScheme( global_color_scheme );
         break;
 
-    default:
+    case 2:
+    {
         if (m_initializing)
             break;
         m_initializing = true;
@@ -5805,11 +5817,22 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
         g_pi_manager->NotifyAuiPlugIns();
         g_pi_manager->ShowDeferredBlacklistMessages(); //  Give the use dialog on any blacklisted PlugIns
         g_pi_manager->CallLateInit();
-
-        InitTimer.Stop(); // Initialization complete
+        break;
     }
-
-//    cc1->InvalidateGL();
+       
+    default:
+    {
+        // Last call....
+        
+        if(g_FloatingToolbarDialog){
+            g_FloatingToolbarDialog->SetAutoHide(g_bAutoHideToolbar);
+            g_FloatingToolbarDialog->SetAutoHideTimer(g_nAutoHideToolbar);
+        }
+            
+        InitTimer.Stop(); // Initialization complete
+        break;
+    }        
+    }   // switch       
     cc1->Refresh( true );
 }
 
