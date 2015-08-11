@@ -194,8 +194,12 @@ Piano::Piano()
     m_hover_last = -1;
     m_brounded = false;
     m_bBusy = false;
-    
     m_nRegions = 0;
+
+    // initially set to true, on startup
+    // the piano doesn't process the first event
+    // if outside its area
+    m_bleaving = true;
 
 //>    SetBackgroundStyle( wxBG_STYLE_CUSTOM ); // on WXMSW, this prevents flashing on color scheme change
 
