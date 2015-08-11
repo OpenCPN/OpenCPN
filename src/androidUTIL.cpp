@@ -525,6 +525,22 @@ bool androidUtilInit( void )
 }
 
 
+wxSize getAndroidConfigSize()
+{
+    return config_size;
+}
+
+void resizeAndroidPersistents()
+{
+    qDebug() << "resizeAndroidPersistents";
+    
+     if(g_androidUtilHandler){
+     
+         g_androidUtilHandler->m_action = ACTION_RESIZE_PERSISTENTS;
+         g_androidUtilHandler->m_eventTimer.Start(100, wxTIMER_ONE_SHOT);
+     }
+}
+
 jint JNI_OnLoad(JavaVM *vm, void *reserved)
 {
     qDebug() << "JNI_OnLoad";
@@ -630,13 +646,18 @@ extern "C"{
         qDebug() << "onConfigChange" << new_size.x << new_size.y;
         
         config_size = new_size;
-        gFrame->TriggerResize(new_size);
+        
+        wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+        evt.SetId( ID_CMD_TRIGGER_RESIZE );
+        gFrame->GetEventHandler()->AddPendingEvent(evt);
+                
+//        gFrame->TriggerResize(new_size);
 
-        if(g_androidUtilHandler){
-            
-            g_androidUtilHandler->m_action = ACTION_RESIZE_PERSISTENTS;
-            g_androidUtilHandler->m_eventTimer.Start(200, wxTIMER_ONE_SHOT);
-        }
+//         if(g_androidUtilHandler){
+//             
+//             g_androidUtilHandler->m_action = ACTION_RESIZE_PERSISTENTS;
+//             g_androidUtilHandler->m_eventTimer.Start(200, wxTIMER_ONE_SHOT);
+//         }
         
         return 77;
     }

@@ -106,5 +106,8 @@ extern void finishAndroidFileDownload();
 extern void cancelAndroidFileDownload( long dl_ID );
 
 extern wxString getFontQtStylesheet(wxFont *font);
+extern wxSize getAndroidConfigSize();
+void resizeAndroidPersistents();
+
 
 #endif   //guard

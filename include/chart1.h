@@ -201,7 +201,7 @@ enum
 //      Removed from enum to facilitate constant definition
 #define ID_CMD_APPLY_SETTINGS 300
 #define ID_CMD_NULL_REFRESH 301
-
+#define ID_CMD_TRIGGER_RESIZE 302
 
 
 #define N_STATUS_BAR_FIELDS_MAX     20

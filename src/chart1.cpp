@@ -3346,10 +3346,15 @@ void MyFrame::ProcessCanvasResize( void )
 int timer_sequence;
 void MyFrame::TriggerResize(wxSize sz)
 {
+#ifdef __OCPN__ANDROID__
     m_newsize = sz;
-    
+
     timer_sequence = 0;
     m_resizeTimer.Start(10, wxTIMER_ONE_SHOT);
+    
+    resizeAndroidPersistents();
+    
+#endif    
 }
     
 
@@ -4029,6 +4034,13 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         
         case ID_CMD_APPLY_SETTINGS:{
             applySettingsString(event.GetString());
+            break;
+        }
+
+        case ID_CMD_TRIGGER_RESIZE:{
+            #ifdef __OCPN__ANDROID__
+            TriggerResize( getAndroidConfigSize() );
+            #endif
             break;
         }
         
