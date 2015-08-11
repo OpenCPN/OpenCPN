@@ -105,4 +105,6 @@ extern int queryAndroidFileDownload( long dl_ID, wxString *result );
 extern void finishAndroidFileDownload();
 extern void cancelAndroidFileDownload( long dl_ID );
 
+extern wxString getFontQtStylesheet(wxFont *font);
+
 #endif   //guard

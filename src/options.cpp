@@ -879,7 +879,7 @@ options::options( MyFrame* parent, wxWindowID id, const wxString& caption, const
     
     CreateControls();
     RecalculateSize();
-        
+
     Center();
 }
 
@@ -1100,6 +1100,10 @@ wxScrolledWindow *options::AddPage( size_t parent, const wxString & title)
         
     }
 
+#ifdef __OCPN__ANDROID__    
+    window->GetHandle()->setStyleSheet(getQtStyleSheet());
+#endif    
+    
     return window;
 }
 
@@ -2993,9 +2997,15 @@ void options::CreateControls()
     itemDialog1->SetSizer( itemBoxSizer2 );
 
     #ifdef __OCPN__ANDROID__
-    itemDialog1->GetHandle()->setStyleSheet( getQtStyleSheet());
-    #endif
+    //  Set Dialog Font by custom crafted Qt Stylesheet.
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
+    wxString qs = getFontQtStylesheet(qFont);
     
+    wxCharBuffer sbuf = qs.ToUTF8();
+    itemDialog1->GetHandle()->setStyleSheet( QString(sbuf.data()) );
+    
+    #endif
+ 
     int flags = 0;
     
 #ifdef __OCPN__OPTIONS_USE_LISTBOOK__    
@@ -3010,9 +3020,9 @@ void options::CreateControls()
 
 #ifdef __OCPN__ANDROID__    
     //  In wxQT, we can dynamically style the little scroll buttons on a small display, to make them bigger
-    wxString qstyle;
-    qstyle.Printf(_T("QTabBar::scroller { width: %dpx; }"), m_fontHeight * 3 / 4);
-    wxCharBuffer buf = qstyle.ToUTF8();
+    wxString qtstyle;
+    qtstyle.Printf(_T("QTabBar::scroller { width: %dpx; }"), m_fontHeight * 3 / 4);
+    wxCharBuffer buf = qtstyle.ToUTF8();
     m_pListbook->GetHandle()->setStyleSheet( buf.data() );
 #endif    
     

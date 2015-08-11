@@ -2101,6 +2101,46 @@ void cancelAndroidFileDownload( long dl_ID )
 }
 
 
+wxString getFontQtStylesheet(wxFont *font)
+{
+    // wxString classes = _T("QLabel, QPushButton, QTreeWidget, QTreeWidgetItem, QCheckBox");
+    wxString classes = _T("");
+    
+    wxString qstyle = classes + _T("  font-family: ") + font->GetFaceName() + _T(";font-style: ");
+    switch(font->GetStyle()){
+        case wxFONTSTYLE_ITALIC:
+            qstyle += _T("italic;");
+            break;
+        case wxFONTSTYLE_NORMAL:
+        default:
+            qstyle += _T("normal;");
+            break;
+    }
+    qstyle += _T("font-weight: ");
+    switch(font->GetWeight()){
+        case wxFONTWEIGHT_BOLD:
+            qstyle += _T("bold;");
+            break;
+        case wxFONTWEIGHT_LIGHT:
+            qstyle += _T("light;");
+            break;
+        case wxFONTWEIGHT_NORMAL:
+        default:
+            qstyle += _T("normal;");
+            break;
+    }
+    
+    qstyle += _T("font-size: ");
+    wxString fontSize;
+    fontSize.Printf(_T("%dpt "), font->GetPointSize());
+    qstyle += fontSize;
+    
+    return qstyle;
+    
+}
+
+    
+
 
 
 #if 0
