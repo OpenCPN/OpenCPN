@@ -1,5 +1,9 @@
 0....Tools, etc.
 
+    cmake -DUSE_GARMINHOST=OFF -D_wx_selected_config=androideabi-qt -DCMAKE_TOOLCHAIN_FILE=../buildandroid/build_android.cmake -DwxQt_Build=build_android_53 -DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets -DQt_Base=/home/dsr/Qt/5.3 ..
+
+    cmake -DUSE_GARMINHOST=OFF -D_wx_selected_config=androideabi-qt -DCMAKE_TOOLCHAIN_FILE=../buildandroid/build_android.cmake -DwxQt_Build=build_android_55 -DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets -DQt_Base=/home/dsr/Qt5.5.0/5.5 ..
+
         export CPPFLAGS=-D__ANDROID__  && export PATH=/home/dsr/Projects/android-ndk/ndk-toolchain/bin:$PATH && export CC=arm-linux-androideabi-gcc && export CXX=arm-linux-androideabi-g++
 
         __Filter logcat, especially on BluPhone
@@ -765,6 +769,59 @@ You should not run 'make install'.
 
 
 
+14.  Upgrade to Qt5.5
 
+    a. Build wxQT
+
+        ___Make a build directory
+        $cd ~/Projects/wxqt/wxWidgets
+        $mkdir build_android
+        $cd build_android
+
+        ___Tell wxWidgets configure process where to find Qt libraries/includes
+        $export PKG_CONFIG_PATH=~/Qt5.5.0/5.5/android_armv7/lib/pkgconfig
+
+        ___Set a few environment variables.
+        $export CPPFLAGS=-D__ANDROID__                  (this is for some special stuff in wxWidgets)
+
+        $export PATH={tools.path.of.your.choice}/bin:$PATH
+        e.g.
+        $export PATH=/home/dsr/Projects/android-ndk/ndk-toolchain/bin:$PATH
+
+        $export CC=arm-linux-androideabi-gcc
+        $export CXX=arm-linux-androideabi-g++
+
+
+        $ ../configure --with-qt --build=x86_64-unknown-linux-gnu --host=arm-linux-androideabi --enable-compat28 --disable-shared --disable-arttango --enable-image --disable-dragimage --with-libtiff=no --disable-baseevtloop --disable-xrc --disable-cmdline --disable-miniframe --disable-mdi --enable-debug --disable-stc --disable-ribbon --disable-propgrid --disable-timepick --disable-datepick --disable-xlocale --disable-intl --with-opengl --enable-selectloop
+
+
+    b.  Build OCPN
+
+        $mkdir build_android_55
+        $cd build_android_55
+
+        edit {buildandroid/cross_build_android.cmake} to fix pointers
+            SET(wxQt_Build build_android_55)
+            SET(Qt_Base /home/dsr/Qt5.5.0)
+
+        edit cmakelists.txt
+            Changing 5.3 to 5.5 (TODO This should be a variable defined in cross_build_android)
+
+        $cmake -D_wx_selected_config=androideabi-qt -DCMAKE_TOOLCHAIN_FILE=../buildandroid/cross_build_android.cmake ..
+
+        $make
+
+        There were a couple of GL related definitions that needed to be fixed up.  Apparently, they were
+        defined in earlier <qopengl.h>, but fell off in Qt5.5.
+        We will put these in "GL/gl_private.h"
+
+
+            typedef double          GLdouble;       /* double precision float */
+
+            #define GL_DOUBLE                           0x140A
+
+
+
+    c.  Build APK
 
 

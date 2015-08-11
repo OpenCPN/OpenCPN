@@ -2087,7 +2087,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     public void onConfigurationChanged(Configuration newConfig)
     {
-        //Log.i("DEBUGGER_TAG", "onConfigurationChanged");
+        Log.i("DEBUGGER_TAG", "onConfigurationChanged");
 
         int i = nativeLib.onConfigChange();
         String aa;
@@ -2241,14 +2241,14 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
     File destinationFile = new File(tmpdir + "/uidata/styles.xml");
     if (destinationFile.exists()){
-//        Log.i("DEBUGGER_TAG", tmpdir + "/uidata/styles.xml exists");
+        Log.i("DEBUGGER_TAG", tmpdir + "/uidata/styles.xml exists");
     }
     else{
-//      Log.i("DEBUGGER_TAG", tmpdir + "/uidata/styles.xml DOES NOT exist");
+      Log.i("DEBUGGER_TAG", tmpdir + "/uidata/styles.xml DOES NOT exist");
 
-      //Log.i("DEBUGGER_TAG", "asset bridge start unpack");
+      Log.i("DEBUGGER_TAG", "asset bridge start unpack");
       Assetbridge.unpack(this);
-      //Log.i("DEBUGGER_TAG", "asset bridge finish unpack");
+      Log.i("DEBUGGER_TAG", "asset bridge finish unpack");
     }
 
 
@@ -2849,7 +2849,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     protected void onStart()
     {
-        //Log.i("DEBUGGER_TAG", "onStart");
+        Log.i("DEBUGGER_TAG", "onStart");
 
 //        int i = nativeLib.onStart();
 //        String aa;

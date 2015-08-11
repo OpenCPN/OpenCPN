@@ -244,7 +244,10 @@ ENDIF(BUNDLE_TCDATA MATCHES "ON")
 
 
 #  To build for android, use this cmake invocation..
-#$cmake -DUSE_GARMINHOST=OFF -D_wx_selected_config=androideabi-qt -DCMAKE_TOOLCHAIN_FILE=../buildandroid/build_android.cmake ..
+#$cmake -DUSE_GARMINHOST=OFF -D_wx_selected_config=androideabi-qt
+#-DCMAKE_TOOLCHAIN_FILE=../buildandroid/build_android.cmake
+#-DwxQt_Build=build_android_53 -DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
+#-DQt_Base /home/dsr/Qt/5.3) ..
 
 IF(DEFINED _wx_selected_config)
 
@@ -252,6 +255,8 @@ MESSAGE (STATUS "selected config ${_wx_selected_config}")
 
 IF(_wx_selected_config MATCHES "androideabi-qt")
   MESSAGE (STATUS "Building for wxQt-Android")
+  MESSAGE (STATUS "Qt_Base: " ${Qt_Base})
+  MESSAGE (STATUS "wxQt_Base/Build: " ${wxQt_Base} "/" ${wxQt_Build})
   SET(QT_ANDROID "ON")
   SET(QT_LINUX "OFF")
   SET(QT "ON")
@@ -483,19 +488,12 @@ IF(QT_ANDROID)
         set(CMAKE_EXE_LINKER_FLAGS "-s")  ## Strip binary
  #   endif()
     
-#  INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include/QtCore")
-#  INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include")
-#  INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include/QtWidgets")
-#  INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include/QtGui")
-#  INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include/QtOpenGL")
-#  INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include/QtTest")
-
-  INCLUDE_DIRECTORIES("${Qt_Base}/5.3/android_armv7/include/QtCore")
-  INCLUDE_DIRECTORIES("${Qt_Base}/5.3/android_armv7/include")
-  INCLUDE_DIRECTORIES("${Qt_Base}/5.3/android_armv7/include/QtWidgets")
-  INCLUDE_DIRECTORIES("${Qt_Base}/5.3/android_armv7/include/QtGui")
-  INCLUDE_DIRECTORIES("${Qt_Base}/5.3/android_armv7/include/QtOpenGL")
-  INCLUDE_DIRECTORIES("${Qt_Base}/5.3/android_armv7/include/QtTest")
+  INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtCore")
+  INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include")
+  INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtWidgets")
+  INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtGui")
+  INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtOpenGL")
+  INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtTest")
 
   ADD_DEFINITIONS(-DQT_WIDGETS_LIB)
 
@@ -504,7 +502,9 @@ IF(QT_ANDROID)
   
   SET(OCPN_Core_LIBRARIES
 
-        /home/dsr/Projects/opencpn_android/build_5.3_static/libopencpn.so
+        #/home/dsr/Projects/opencpn_sf/opencpn/build-opencpn-Android_for_armeabi_v7a_GCC_4_8_Qt_5_5_0-Debug/libopencpn.so
+        /home/dsr/Projects/opencpn_sf/opencpn/build-opencpn-Android_for_armeabi_v7a_GCC_4_8_Qt_5_3_2-Debug/libopencpn.so
+#        /home/dsr/Projects/opencpn_android/build_5.5_static/libopencpn.so
         ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu-3.1-arm-linux-androideabi.a
         ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_core-3.1-arm-linux-androideabi.a
         ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_html-3.1-arm-linux-androideabi.a
@@ -514,11 +514,11 @@ IF(QT_ANDROID)
         ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_aui-3.1-arm-linux-androideabi.a
         ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_net-3.1-arm-linux-androideabi.a
         ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_gl-3.1-arm-linux-androideabi.a
-        ${Qt_Base}/5.3/android_armv7/lib/libQt5Core.so
-        ${Qt_Base}/5.3/android_armv7/lib/libQt5OpenGL.so
-        ${Qt_Base}/5.3/android_armv7/lib/libQt5Widgets.so
-        ${Qt_Base}/5.3/android_armv7/lib/libQt5Gui.so
-        ${Qt_Base}/5.3/android_armv7/lib/libQt5AndroidExtras.so
+        ${Qt_Base}/android_armv7/lib/libQt5Core.so
+        ${Qt_Base}/android_armv7/lib/libQt5OpenGL.so
+        ${Qt_Base}/android_armv7/lib/libQt5Widgets.so
+        ${Qt_Base}/android_armv7/lib/libQt5Gui.so
+        ${Qt_Base}/android_armv7/lib/libQt5AndroidExtras.so
         ${NDK_Base}/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi-v7a/libgnustl_shared.so
  
         

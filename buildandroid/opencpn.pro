@@ -4,9 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui opengl widgets
-
-#QT += androidextras
+QT       += core gui opengl widgets androidextras
 LIBS += -lEGL
 LIBS += -lz
 
@@ -14,25 +12,15 @@ TARGET = opencpn
 
 TEMPLATE = app
 
-CONFIG(SHARED){
-# Qt target
 
-wxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
-wxQt_Build=build_android_so
+# Qt target
+#wxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
+#wxQt_Build=build_android_55
 
 # OCPN target
-OCPN_Base=/home/dsr/Projects/opencpn_sf/opencpn
-OCPN_Build=build_android_so
-}
-else{
-# Qt target
-wxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
-wxQt_Build=build_android_53
+#OCPN_Base=/home/dsr/Projects/opencpn_sf/opencpn
+#OCPN_Build=build_android_55
 
-# OCPN target
-OCPN_Base=/home/dsr/Projects/opencpn_sf/opencpn
-OCPN_Build=build_android_53
-}
 
 
 INCLUDEPATH += $${wxQt_Base}/include/
@@ -40,60 +28,13 @@ INCLUDEPATH += $${wxQt_Base}/include/
 INCLUDEPATH += $${OCPN_Base}/include/
 INCLUDEPATH += $${OCPN_Base}/src/nmea0183
 
-#LIBS += $${OCPN_Base}/$${OCPN_Build}/libopencpn.a
-#LIBS += $${OCPN_Base}/$${OCPN_Build}/libgorp.a
-#LIBS += $${OCPN_Base}/$${OCPN_Build}/libGARMINHOST.a
-#LIBS += $${OCPN_Base}/$${OCPN_Build}/libNMEA0183.a
-#LIBS += $${OCPN_Base}/$${OCPN_Build}/libS57ENC.a
-#LIBS += $${OCPN_Base}/$${OCPN_Build}/libSYMBOLS.a
-#LIBS += $${OCPN_Base}/$${OCPN_Build}/libTEXCMP.a
-#LIBS += $${OCPN_Base}/$${OCPN_Build}/lib/libGLUES.a
-
 
 LIBS += -L$${wxQt_Base}/$${wxQt_Build}/lib
 LIBS += -L$${OCPN_Base}/$${OCPN_Build}
 
-CONFIG(SHARED){
-
-TARGETDEPS += $${OCPN_Base}/$${OCPN_Build}/libgorp.a
-
-LIBS += $${OCPN_Base}/$${OCPN_Build}/libgorp.a
-#LIBS += $${OCPN_Base}/$${OCPN_Build}/libGARMINHOST.so
-#LIBS += $${OCPN_Base}/$${OCPN_Build}/libNMEA0183.so
-#LIBS += $${OCPN_Base}/$${OCPN_Build}/libS57ENC.so
-#LIBS += $${OCPN_Base}/$${OCPN_Build}/libSYMBOLS.so
-#LIBS += $${OCPN_Base}/$${OCPN_Build}/libTEXCMP.so
-#LIBS += $${OCPN_Base}/$${OCPN_Build}/lib/libGLUES.so
-
-INCLUDEPATH += $${wxQt_Base}/$${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-3.1
-
-LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_html-3.1.so
-LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_baseu_xml-3.1.so
-LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_qa-3.1.so
-LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_adv-3.1.so
-LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_core-3.1.so
-LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_baseu-3.1.so
-LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_aui-3.1.so
-LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwxexpat-3.1-arm-linux-androideabi.a
-LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwxregexu-3.1-arm-linux-androideabi.a
-LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwxjpeg-3.1-arm-linux-androideabi.a
-LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwxpng-3.1-arm-linux-androideabi.a
-LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_baseu_net-3.1.so
-LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_gl-3.1-arm-linux-androideabi.so
-LIBS += /home/dsr/Projects/opencpn_sf/opencpn/build_android_so/lib/libGL.a
-LIBS += /home/dsr/Projects/opencpn_sf/opencpn/build_android_so/lib/libGLU.a
-
-
-}
-else{
 
 LIBS += $${OCPN_Base}/$${OCPN_Build}/libgorp.a
 LIBS += $${OCPN_Base}/$${OCPN_Build}/libGARMINHOST.a
-#LIBS += $${OCPN_Base}/$${OCPN_Build}/libNMEA0183.a
-#LIBS += $${OCPN_Base}/$${OCPN_Build}/libS57ENC.a
-#LIBS += $${OCPN_Base}/$${OCPN_Build}/libSYMBOLS.a
-#LIBS += $${OCPN_Base}/$${OCPN_Build}/libTEXCMP.a
-LIBS += $${OCPN_Base}/$${OCPN_Build}/lib/libGLUES.a
 
 INCLUDEPATH += $${wxQt_Base}/$${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-static-3.1
 
@@ -112,16 +53,28 @@ LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_gl-3.1-arm-linux-androideabi.
 LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_baseu_net-3.1-arm-linux-androideabi.a
 LIBS += $${OCPN_Base}/$${OCPN_Build}/lib/libGL.a
 
+#LIBS += $${OCPN_Base}/$${OCPN_Build}/lib/libGLU.a
+#LIBS += $${OCPN_Base}/$${OCPN_Build}/lib/libGLUES.a
+
+contains(wxQt_Build,55){
+LIBS += $${OCPN_Base}/$${OCPN_Build}/lib/libGLU.a
+}
+
+contains(wxQt_Build,53)
+{
+LIBS += $${OCPN_Base}/$${OCPN_Build}/lib/libGLUES.a
+}
+
+
 TARGETDEPS += $${OCPN_Base}/$${OCPN_Build}/libgorp.a
-#TARGETDEPS += $${OCPN_Base}/$${OCPN_Build}/libS57ENC.a
 
 TARGETDEPS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_baseu-3.1-arm-linux-androideabi.a
 TARGETDEPS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_core-3.1-arm-linux-androideabi.a
 TARGETDEPS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_gl-3.1-arm-linux-androideabi.a
 
-}
 
-LIBS += /home/dsr/Qt/5.3/android_armv7/lib/libQt5AndroidExtras.so
+
+#LIBS += /home/dsr/Qt/5.3/android_armv7/lib/libQt5AndroidExtras.so
 
 
 DEFINES += __WXQT__
@@ -182,8 +135,9 @@ dldr_plugin_deployment.files += $$PWD/../plugins/chartdldr_pi/data/chart_sources
 dldr_plugin_deployment.files += $$PWD/../plugins/chartdldr_pi/data/folder215.png
 dldr_plugin_deployment.files += $$PWD/../plugins/chartdldr_pi/data/open182.png
 dldr_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/chartdldr_pi/libchartdldr_pi.so
+#dldr_plugin_deployment.files += /home/dsr/Projects/opencpn_sf/opencpn/build_android_55/plugins/chartdldr_pi/libchartdldr_pi.so
+#dldr_plugin_deployment.files += /home/dsr/Projects/opencpn_sf/opencpn/build_android_53/plugins/chartdldr_pi/libchartdldr_pi.so
 dldr_plugin_deployment.path = /assets/plugins/chartdldr_pi/data
-#dldr_plugin_deployment.path = /assets/plugins
 INSTALLS += dldr_plugin_deployment
 
 
@@ -192,26 +146,12 @@ INSTALLS += dldr_plugin_deployment
     ANDROID_EXTRA_LIBS = \
         /home/dsr/Projects/opencpn_android/buildandroid/../buildandroid/assetbridge/libs/armeabi/libassetbridge.so
 
-ANDROID_EXTRA_LIBS += /home/dsr/Qt/5.3/android_armv7/lib/libQt5Test.so
+#ANDROID_EXTRA_LIBS += /home/dsr/Qt/5.3/android_armv7/lib/libQt5Test.so
 
 #ANDROID_EXTRA_LIBS += /home/dsr/Projects/opencpn_sf/opencpn/build_android_53/plugins/dashboard_pi/libdashboard_pi.so
 #ANDROID_EXTRA_LIBS += /home/dsr/Projects/opencpn_sf/opencpn/build_android_53/plugins/grib_pi/libgrib_pi.so
 
 
-CONFIG(SHARED){
-
-ANDROID_EXTRA_LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_baseu-3.1.so
-ANDROID_EXTRA_LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_core-3.1.so
-ANDROID_EXTRA_LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_html-3.1.so
-ANDROID_EXTRA_LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_baseu_xml-3.1.so
-ANDROID_EXTRA_LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_qa-3.1.so
-ANDROID_EXTRA_LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_adv-3.1.so
-ANDROID_EXTRA_LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_aui-3.1.so
-ANDROID_EXTRA_LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_baseu_net-3.1.so
-ANDROID_EXTRA_LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_gl-3.1.so
-
-
-}
 
 }
 
