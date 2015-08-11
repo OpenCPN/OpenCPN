@@ -216,6 +216,7 @@ extern bool                     g_fog_overzoom;
 extern double                   g_overzoom_emphasis_base;
 extern bool                     g_oz_vector_scale;
 extern int                      g_nTrackPrecision;
+extern wxString                 g_toolbarConfig;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions            g_GLOptions;
@@ -586,6 +587,10 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_fog_overzoom = false;
     
     g_GUIScaleFactor = 0;               // nominal
+    
+    //  Suppress most tools, especially those that appear in the Basic menus.
+    //  Of course, they may be re-enabled by experts...
+    g_toolbarConfig = _T("......X.....XX....XXXXXXXXXXX");
     
     wxString sGPS = _T("2;3;;0;0;;0;1;0;0;;0;;1;0;0;0;0");          // 17 parms
     ConnectionParams *new_params = new ConnectionParams(sGPS);
