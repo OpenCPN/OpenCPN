@@ -181,7 +181,7 @@ bool about::Create( wxWindow* parent, wxWindowID id, const wxString& caption, co
 {
     m_parent = parent;
 #ifdef __WXOSX__
-  style |= wxSTAY_ON_TOP;
+    style |= wxSTAY_ON_TOP;
 #endif
 
     SetExtraStyle( GetExtraStyle() | wxWS_EX_BLOCK_EVENTS );
@@ -194,17 +194,15 @@ bool about::Create( wxWindow* parent, wxWindowID id, const wxString& caption, co
 
     Update();
 
-    //Set the maximum size of the entire settings dialog
-    SetSizeHints( -1, -1, m_displaySize.x-100, m_displaySize.y-100 );
+    // Set the maximum size of the entire settings dialog
+    wxSize displaySize = wxSize( m_displaySize.x - 100, m_displaySize.y - 100 );
+    SetSizeHints( wxSize( -1, -1 ), displaySize );
 
-    if( g_bresponsive )
-        SetSize( wxSize( m_displaySize.x-100, m_displaySize.y-100 ) );
-    else{
+    if ( g_bresponsive )
+        SetSize( displaySize );
+    else {
         GetSizer()->Fit( this );
-        wxSize esize;
-        esize.x = GetCharHeight() * 40;
-        esize.y = GetCharHeight() * 30;
-        SetSize( esize );
+        SetSize( wxSize( GetCharHeight() * 40, GetCharHeight() * 30 ) );
     }
 
     Centre();
@@ -217,18 +215,21 @@ void about::SetColorScheme( void )
     DimeControl( this );
     wxColor bg = GetBackgroundColour();
     pAboutHTMLCtl->SetBackgroundColour( bg );
-    SetBackgroundColour( bg );                  // This looks like non-sense, but is needed for __WXGTK__
-                                                // to get colours to propagate down the control's family tree.
 
-    #ifdef __WXQT__
-    //  wxQT has some trouble clearing the background of HTML window...
+
+    // This looks like non-sense, but is needed for __WXGTK__
+    // to get colours to propagate down the control's family tree.
+    SetBackgroundColour( bg );
+
+#ifdef __WXQT__
+    // wxQT has some trouble clearing the background of HTML window...
     wxBitmap tbm( GetSize().x, GetSize().y, -1 );
     wxMemoryDC tdc( tbm );
-    //    wxColour cback = GetGlobalColor( _T("YELO1") );
+    // wxColour cback = GetGlobalColor( _T("YELO1") );
     tdc.SetBackground( bg );
     tdc.Clear();
     pAboutHTMLCtl->SetBackgroundImage(tbm);
-    #endif
+ #endif
 
 }
 
@@ -246,11 +247,11 @@ void about::Update()
 
     wxFont *dFont = FontMgr::Get().GetFont( _("Dialog") );
 
-    #ifdef __WXOSX__
+#ifdef __WXOSX__
     int points = dFont->GetPointSize();
-    #else
+#else
     int points = dFont->GetPointSize() + 1;
-    #endif
+#endif
 
     // Do weird font size calculation
     int sizes[7];
@@ -278,12 +279,11 @@ void about::Update()
     aboutText.Append( _T("</font></body></html>") );
 
     pAboutHTMLCtl->SetPage( aboutText );
-
     pAuthorTextCtl->WriteText( AuthorText );
     pAuthorTextCtl->SetInsertionPoint( 0 );
 
     wxTextFile license_file( m_DataLocn + _T("license.txt") );
-    if( license_file.Open() ) {
+    if ( license_file.Open() ) {
         for ( wxString str = license_file.GetFirstLine(); !license_file.Eof() ; str = license_file.GetNextLine() )
             pLicenseTextCtl->AppendText( str + '\n' );
         license_file.Close();
@@ -300,16 +300,16 @@ void about::CreateControls()
     //  Set the nominal vertical size of the embedded controls
     int v_size = g_bresponsive ? -1 : 300;
 
-    wxBoxSizer* aboutSizer = new wxBoxSizer( wxVERTICAL );
-    SetSizer( aboutSizer );
+    wxBoxSizer* mainSizer = new wxBoxSizer( wxVERTICAL );
+    SetSizer( mainSizer );
     wxStaticText *pST1 = new wxStaticText( this, -1,
         _("The Open Source Chart Plotter/Navigator"), wxDefaultPosition,
-        wxSize( -1, 30/*500, 30*/ ), wxALIGN_CENTRE/* | wxALIGN_CENTER_VERTICAL*/ );
+        wxSize( -1, 30 /* 500, 30 */ ), wxALIGN_CENTRE /* | wxALIGN_CENTER_VERTICAL */ );
 
     wxFont *headerFont = wxTheFontList->FindOrCreateFont( 14, wxFONTFAMILY_SWISS,
             wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
     pST1->SetFont( *headerFont );
-    aboutSizer->Add( pST1, 0, wxALL | wxEXPAND, 8 );
+    mainSizer->Add( pST1, 0, wxALL | wxEXPAND, 8 );
 
     wxSizer *buttonSizer = new wxBoxSizer( m_displaySize.x < m_displaySize.y ?
                                            wxVERTICAL : wxHORIZONTAL );
@@ -325,37 +325,34 @@ void about::CreateControls()
     pNotebook = new wxNotebook( this, ID_NOTEBOOK_HELP, wxDefaultPosition,
             wxSize( -1, -1 ), wxNB_TOP );
     pNotebook->InheritAttributes();
-    aboutSizer->Add( pNotebook, 1, wxALIGN_CENTER_VERTICAL | wxEXPAND | wxALL, 5 );
-    aboutSizer->Add( buttonSizer, 0, wxALL, 0 );
+    mainSizer->Add( pNotebook, 1, wxALIGN_CENTER_VERTICAL | wxEXPAND | wxALL, 5 );
+    mainSizer->Add( buttonSizer, 0, wxALL, 0 );
 
     //  About Panel
     itemPanelAbout = new wxPanel( pNotebook, -1, wxDefaultPosition, wxDefaultSize,
             wxSUNKEN_BORDER | wxTAB_TRAVERSAL );
     itemPanelAbout->InheritAttributes();
-    pNotebook->AddPage( itemPanelAbout, _("About") );
-
-    wxBoxSizer* itemBoxSizer6 = new wxBoxSizer( wxVERTICAL );
-    itemPanelAbout->SetSizer( itemBoxSizer6 );
+    pNotebook->AddPage( itemPanelAbout, _("About"), TRUE /* Default page */ );
 
     pAboutHTMLCtl = new wxHtmlWindow( itemPanelAbout, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                                 wxHW_SCROLLBAR_AUTO | wxHW_NO_SELECTION);
-
     pAboutHTMLCtl->SetBorders( 5 );
-    itemBoxSizer6->Add( pAboutHTMLCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxEXPAND | wxALL, 5 );
+    wxBoxSizer* aboutSizer = new wxBoxSizer( wxVERTICAL );
+    aboutSizer->Add( pAboutHTMLCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxEXPAND | wxALL, 5 );
+    itemPanelAbout->SetSizer( aboutSizer );
 
-    //     Authors Panel
+    //  Authors Panel
     itemPanelAuthors = new wxPanel( pNotebook, -1, wxDefaultPosition, wxDefaultSize,
             wxSUNKEN_BORDER | wxTAB_TRAVERSAL );
     itemPanelAuthors->InheritAttributes();
     pNotebook->AddPage( itemPanelAuthors, _("Authors") );
 
-    wxBoxSizer* itemBoxSizer7 = new wxBoxSizer( wxVERTICAL );
-    itemPanelAuthors->SetSizer( itemBoxSizer7 );
-
     pAuthorTextCtl = new wxTextCtrl( itemPanelAuthors, -1, _T(""), wxDefaultPosition,
                                      wxSize( -1, v_size ), wxTE_MULTILINE | wxTE_READONLY );
     pAuthorTextCtl->InheritAttributes();
-    itemBoxSizer7->Add( pAuthorTextCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxEXPAND | wxALL, 5 );
+    wxBoxSizer* authorSizer = new wxBoxSizer( wxVERTICAL );
+    authorSizer->Add( pAuthorTextCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxEXPAND | wxALL, 5 );
+    itemPanelAuthors->SetSizer( authorSizer );
 
     //  License Panel
     itemPanelLicense = new wxPanel( pNotebook, -1, wxDefaultPosition, wxDefaultSize,
@@ -363,42 +360,35 @@ void about::CreateControls()
     itemPanelLicense->InheritAttributes();
     pNotebook->AddPage( itemPanelLicense, _("License") );
 
-    wxBoxSizer* itemBoxSizer8 = new wxBoxSizer( wxVERTICAL );
-    itemPanelLicense->SetSizer( itemBoxSizer8 );
-
     int tcflags = wxTE_MULTILINE | wxTE_READONLY;
-
-    //    wxX11 TextCtrl is broken in many ways.
-    //    Here, the wxTE_DONTWRAP flag creates a horizontal scroll bar
-    //    which fails in wxX11 2.8.2....
+    //  wxX11 TextCtrl is broken in many ways.
+    //  Here, the wxTE_DONTWRAP flag creates a horizontal scroll bar
+    //  which fails in wxX11 2.8.2....
 #ifndef __WXX11__
     tcflags |= wxTE_DONTWRAP;
 #endif
     pLicenseTextCtl = new wxTextCtrl( itemPanelLicense, -1, _T(""), wxDefaultPosition,
                                       wxSize( -1, v_size ), tcflags );
-
     pLicenseTextCtl->InheritAttributes();
-    itemBoxSizer8->Add( pLicenseTextCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxEXPAND | wxALL, 5 );
+    wxBoxSizer* licenseSizer = new wxBoxSizer( wxVERTICAL );
+    licenseSizer->Add( pLicenseTextCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxEXPAND | wxALL, 5 );
+    itemPanelLicense->SetSizer( licenseSizer );
 
-    //     Help Panel
+    //  Help Panel
     itemPanelTips = new wxPanel( pNotebook, -1, wxDefaultPosition, wxDefaultSize,
             wxSUNKEN_BORDER | wxTAB_TRAVERSAL );
     itemPanelTips->InheritAttributes();
     pNotebook->AddPage( itemPanelTips, _("Help") );
 
-    wxBoxSizer* itemBoxSizer9 = new wxBoxSizer( wxVERTICAL );
-    itemPanelTips->SetSizer( itemBoxSizer9 );
+    wxBoxSizer* helpSizer = new wxBoxSizer( wxVERTICAL );
+    itemPanelTips->SetSizer( helpSizer );
 
-    //    Close Button
-
-    wxBoxSizer* itemBoxSizer28 = new wxBoxSizer( wxHORIZONTAL );
-    aboutSizer->Add( itemBoxSizer28, 0, wxALIGN_RIGHT | wxALL, 5 );
-
-    wxButton* itemButton29 = new wxButton( this, xID_OK, _("Close"), wxDefaultPosition,
+    //  Close Button
+    wxButton* closeButton = new wxButton( this, xID_OK, _("Close"), wxDefaultPosition,
             wxDefaultSize, 0 );
-    itemButton29->SetDefault();
-    itemButton29->InheritAttributes();
-    itemBoxSizer28->Add( itemButton29, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
+    closeButton->SetDefault();
+    closeButton->InheritAttributes();
+    mainSizer->Add( closeButton, 0, wxALIGN_RIGHT | wxALL, 5 );
 }
 
 
@@ -426,7 +416,7 @@ void about::OnCopyClick( wxCommandEvent& event )
 
     wxFFile file( filename );
 
-    if( ! file.IsOpened() ) {
+    if( !file.IsOpened() ) {
         wxLogMessage( _T("Failed to open file for Copy to Clipboard.") );
         return;
     }

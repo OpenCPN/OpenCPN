@@ -59,7 +59,7 @@ class about: public wxDialog
            const wxString& caption = SYMBOL_ABOUT_TITLE,
            const wxPoint& pos = wxDefaultPosition,
            const wxSize& size = wxSize(500, 500),
-           long style = wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX);
+           long style = wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX );
    bool Create( wxWindow* parent,
                 wxWindowID id = ID_DIALOG,
                  const wxString& caption = SYMBOL_ABOUT_TITLE,
@@ -77,9 +77,9 @@ class about: public wxDialog
     void OnClose( wxCloseEvent& event );
     void SetColorScheme( void );
 
-    wxString          m_DataLocn;
-    wxWindow          *m_parent;
-    bool              m_btips_loaded;
+    wxString m_DataLocn;
+    wxWindow *m_parent;
+    bool m_btips_loaded;
 
     wxPanel* itemPanelAbout;
     wxPanel* itemPanelAuthors;
@@ -90,7 +90,7 @@ class about: public wxDialog
     wxTextCtrl *pLicenseTextCtl;
     wxNotebook *pNotebook;
     wxHtmlWindow *pAboutHTMLCtl;
-    wxSize      m_displaySize;
+    wxSize m_displaySize;
 
 };
 
