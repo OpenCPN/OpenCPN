@@ -80,7 +80,7 @@ extern bool  g_b_EnableVBO;
 extern double  g_overzoom_emphasis_base;
 extern bool    g_oz_vector_scale;
 extern bool g_bresponsive;
-extern int  g_ChartScaleFactor;
+extern float g_ChartScaleFactorExp;
 
 extern PFNGLGENBUFFERSPROC                 s_glGenBuffers;
 extern PFNGLBINDBUFFERPROC                 s_glBindBuffer;
@@ -90,6 +90,7 @@ extern PFNGLDELETEBUFFERSPROC              s_glDeleteBuffers;
 void DrawAALine( wxDC *pDC, int x0, int y0, int x1, int y1, wxColour clrLine, int dash, int space );
 extern bool GetDoubleAttr( S57Obj *obj, const char *AttrName, double &val );
 
+#ifdef ocpnUSE_GL
 typedef struct {
     TexFont cache;
     wxFont  *key;
@@ -97,6 +98,8 @@ typedef struct {
 
 #define TXF_CACHE 8
 static TexFontCache s_txf[TXF_CACHE];
+#endif
+
 
 //    Implement all lists
 #include <wx/listimpl.cpp>
@@ -1311,6 +1314,7 @@ char *_getParamVal( ObjRazRules *rzRules, char *str, char *buf, int bsz )
     if(!buf)
         return NULL;
 
+    buf[0] = 0;
     // parse constant parameter with concatenation operator "'"
     if( str != NULL ) {
         if( *ret_ptr == APOS ) {
@@ -1423,11 +1427,11 @@ char *_getParamVal( ObjRazRules *rzRules, char *str, char *buf, int bsz )
 
 char *_parseTEXT( ObjRazRules *rzRules, S52_TextC *text, char *str0 )
 {
-    char buf[MAXL] = { '\0' }; // output string
+    char buf[MAXL]; // output string
 
     char *str = str0;
-
     if( text ) {
+        memset(buf, 0, 4);
         str = _getParamVal( rzRules, str, &text->hjust, MAXL ); // HJUST
         str = _getParamVal( rzRules, str, &text->vjust, MAXL ); // VJUST
         str = _getParamVal( rzRules, str, &text->space, MAXL ); // SPACE
@@ -1455,10 +1459,11 @@ S52_TextC *S52_PL_parseTX( ObjRazRules *rzRules, Rules *rules, char *cmd )
 {
     S52_TextC *text = NULL;
     char *str = NULL;
-    char val[MAXL] = { '\0' }; // value of arg
+    char val[MAXL]; // value of arg
     char strnobjnm[7] = { "NOBJNM" };
-    char valn[MAXL] = { '\0' }; // value of arg
+    char valn[MAXL]; // value of arg
 
+    valn[0] = 0;
     str = (char*) rules->INSTstr;
 
     if( ps52plib->m_bShowNationalTexts && NULL != strstr( str, "OBJNAM" ) ) // in case user wants the national text shown and the rule contains OBJNAM, try to get the value
@@ -1502,22 +1507,22 @@ S52_TextC *S52_PL_parseTX( ObjRazRules *rzRules, Rules *rules, char *cmd )
         }
     }
     
-    
     return text;
 }
 
 S52_TextC *S52_PL_parseTE( ObjRazRules *rzRules, Rules *rules, char *cmd )
 // same as S52_PL_parseTX put parse 'C' format first
 {
-    char arg[MAXL] = { '\0' }; // ATTRIB list
-    char fmt[MAXL] = { '\0' }; // FORMAT
-    char buf[MAXL] = { '\0' }; // output string
+    char arg[MAXL]; // ATTRIB list
+    char fmt[MAXL]; // FORMAT
+    char buf[MAXL]; // output string
     char *b = buf;
     char *parg = arg;
     char *pf = fmt;
     S52_TextC *text = NULL;
 
     char *str = (char*) rules->INSTstr;
+    *b = 0;
 
     if( str && *str ) {
         str = _getParamVal( rzRules, str, fmt, MAXL ); // get FORMAT
@@ -1530,7 +1535,7 @@ S52_TextC *S52_PL_parseTE( ObjRazRules *rzRules, Rules *rules, char *cmd )
 
             // begin a convertion specification
             if( *pf == '%' ) {
-                char val[MAXL] = { '\0' }; // value of arg
+                char val[MAXL]; // value of arg
                 char tmp[MAXL] = { '\0' }; // temporary format string
                 char *t = tmp;
                 int cc = 0; // 1 == Conversion Character found
@@ -2356,9 +2361,7 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
     double scale_factor = 1.0;
  
     if(g_bresponsive){
-        scale_factor *=  exp( g_ChartScaleFactor * (0.693 / 5.0) );       //  exp(2)
-        scale_factor = wxMax(scale_factor, .5);
-        scale_factor = wxMin(scale_factor, 4.);
+        scale_factor *=  g_ChartScaleFactorExp;
     }
     
     if(g_oz_vector_scale && vp->b_quilt){
@@ -3686,9 +3689,10 @@ next_seg_dc:
                     }
 
                     //      Enable anti-aliased lines, at best quality
+#ifndef __OCPN__ANDROID__
                     glEnable( GL_BLEND );
                     glEnable( GL_LINE_SMOOTH );
-
+#endif
                     // if(m_pen.GetWidth() > 1)
                     //   DrawThickLine(x1, y1, x2, y2, m_pen.GetWidth());
                     //  else
@@ -3721,10 +3725,10 @@ next_seg_dc:
                         ys += sym_len * sth * sym_factor;
                         s += sym_len * sym_factor;
                     }
-
+#ifndef __OCPN__ANDROID__
                     glEnable( GL_BLEND );
                     glEnable( GL_LINE_SMOOTH );
-
+#endif
                     // if(m_pen.GetWidth() > 1)
                     //   DrawThickLine(x1, y1, x2, y2, m_pen.GetWidth());
                     //  else
@@ -4120,9 +4124,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
     float scale_factor = 1.0;
     if(g_bresponsive){
-        scale_factor *=  exp( g_ChartScaleFactor * (0.693 / 5.0) );       //  exp(2)
-        scale_factor = wxMax(scale_factor, .5);
-        scale_factor = wxMin(scale_factor, 4.);
+        scale_factor *= g_ChartScaleFactorExp;
     }
     
     if( !m_pdc ) // opengl
@@ -7474,10 +7476,7 @@ void RenderFromHPGL::SetPen()
 
     if(g_bresponsive){
         double scale_factor = 1.0;
-        scale_factor *=  exp( g_ChartScaleFactor * (0.693 / 5.0) );       //  exp(2)
-        scale_factor = wxMax(scale_factor, .5);
-        scale_factor = wxMin(scale_factor, 4.);
-        
+        scale_factor *=  g_ChartScaleFactorExp;
         scaleFactor /= scale_factor;
     }
     
@@ -7491,7 +7490,9 @@ void RenderFromHPGL::SetPen()
     if( renderToOpenGl ) {
         glColor4ub( penColor.Red(), penColor.Green(), penColor.Blue(), penColor.Alpha() );
         glLineWidth( wxMax(g_GLMinSymbolLineWidth, (float) penWidth * 0.7) );
+#ifndef __OCPN__ANDROID__
         glEnable( GL_BLEND );
+#endif        
     }
 #endif    
 #if wxUSE_GRAPHICS_CONTEXT

@@ -1,5 +1,7 @@
 0....Tools, etc.
 
+        export CPPFLAGS=-D__ANDROID__  && export PATH=/home/dsr/Projects/android-ndk/ndk-toolchain/bin:$PATH && export CC=arm-linux-androideabi-gcc && export CXX=arm-linux-androideabi-g++
+
         __Filter logcat, especially on BluPhone
         adb shell logcat DEBUGGER_TAG:I Qt:D *:S
 
@@ -641,3 +643,128 @@ $ /home/dsr/Projects/android-ndk/android-sdk-linux/tools/monitor
 
         To be sure of getting the correct Qt libraries, do this:
         $export LD_LIBRARY_PATH="/home/dsr/Projects/qt5_x86/build_debug/qtbase/lib:$LD_LIBRARY_PATH"
+
+12.     Build Qt 5.3 from scratch, for debugging.
+
+
+        In the Qt5 tree, need to clean any old config stuff away.
+
+        $git submodule foreach --recursive "git clean -dfx" && git clean -dfx
+
+
+        We will do out of core build.
+
+        mkdir buid_debug
+        cd build_debug
+
+        ../configure  -debug -developer-build -xplatform android-g++ -nomake tests -nomake examples -android-ndk /home/dsr/Projects/android-ndk/android-ndk-r10 -android-sdk /home/dsr/Projects/android-ndk/android-sdk-linux -skip qttools -skip qttranslations -skip qtwebkit -skip qtserialport
+
+        Results of configure:
+           Configure summary
+
+Building on:   linux-g++ (i386, CPU features:)
+Building for:  android-g++ (arm, CPU features:)
+Platform notes:
+
+            - Also available for Linux: linux-kcc linux-icc linux-cxx
+
+Build options:
+  Configuration .......... accessibility audio-backend c++11 clock-gettime clock-monotonic compile_examples concurrent cross_compile debug egl eglfs evdev eventfd freetype full-config getaddrinfo inotify ipv6ifname large-config medium-config minimal-config mremap no-harfbuzz no-pkg-config opengl opengles2 pcre png precompile_header private_tests qpa qpa reduce_exports rpath shared small-config system-zlib warnings_are_errors
+  Build parts ............ libs
+  Mode ................... debug
+  Using C++11 ............ yes
+  Using PCH .............. yes
+  Target compiler supports:
+    iWMMXt/Neon .......... no/auto
+
+Qt modules and options:
+  Qt D-Bus ............... no
+  Qt Concurrent .......... yes
+  Qt GUI ................. yes
+  Qt Widgets ............. yes
+  Large File ............. no
+  QML debugging .......... yes
+  Use system proxies ..... no
+
+Support enabled for:
+  Accessibility .......... yes
+  ALSA ................... no
+  CUPS ................... no
+  Evdev .................. yes
+  FontConfig ............. no
+  FreeType ............... yes (bundled copy)
+  Glib ................... no
+  GTK theme .............. no
+  HarfBuzz ............... no
+  Iconv .................. no
+  ICU .................... no
+  Image formats:
+    GIF .................. yes (plugin, using bundled copy)
+    JPEG ................. yes (plugin, using bundled copy)
+    PNG .................. yes (in QtGui, using bundled copy)
+  journald ............... no
+  mtdev .................. no
+  Networking:
+    getaddrinfo .......... yes
+    getifaddrs ........... no
+    IPv6 ifname .......... yes
+    OpenSSL .............. no
+  NIS .................... no
+  OpenGL / OpenVG:
+    EGL .................. yes
+    OpenGL ............... yes (OpenGL ES 2.x)
+    OpenVG ............... no
+  PCRE ................... yes (bundled copy)
+  pkg-config ............. no
+  PulseAudio ............. no
+  QPA backends:
+    DirectFB ............. no
+    EGLFS ................ yes
+    KMS .................. no
+    LinuxFB .............. no
+    XCB .................. no
+  Session management ..... yes
+  SQL drivers:
+    DB2 .................. no
+    InterBase ............ no
+    MySQL ................ no
+    OCI .................. no
+    ODBC ................. no
+    PostgreSQL ........... no
+    SQLite 2 ............. no
+    SQLite ............... yes (plugin, using bundled copy)
+    TDS .................. no
+  udev ................... no
+  xkbcommon .............. no
+  zlib ................... yes (system library)
+
+NOTE: Qt is using double for qreal on this system. This is binary incompatible against Qt 5.1.
+Configure with '-qreal float' to create a build that is binary compatible with 5.1.
+Info: creating super cache file /home/dsr/Projects/qt53_android/build_debug/.qmake.super
+
+Qt is now configured for building. Just run 'make'.
+Once everything is built, Qt is installed.
+You should not run 'make install'.
+
+
+        So, just do it:
+
+        $make
+
+
+13.  Debug startup problem on Samsung S3 Mini.
+
+    Turns out that the Qt libraries use aggressive compiler optimization options in Release mode, namely (-O3).
+    This breaks one library file on this device, who knows why.
+
+    The fix:
+    The Qt file {qtbase/src/corelib/kernel/qcoreapplication.cpp}
+
+    needs to be compiled with -O0 option to work.  This needs to be done manually, by extracting the compile command from a running make instance, changing the -O3 option to -O0, recompile, and rebuilding the library file....
+    {build_release/qtbase/lib/libQt5Core.so}
+
+
+
+
+
+

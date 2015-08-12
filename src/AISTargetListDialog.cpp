@@ -34,6 +34,7 @@
 #include "styles.h"
 #include "Select.h"
 #include "routemanagerdialog.h"
+#include "OCPNPlatform.h"
 
 static AIS_Decoder *s_p_sort_decoder;
 
@@ -441,6 +442,9 @@ void AISTargetListDialog::CreateControls()
 {
     wxBoxSizer* topSizer = new wxBoxSizer( wxHORIZONTAL );
     SetSizer( topSizer );
+#ifdef __OCPN__ANDROID__
+    this->GetHandle()->setStyleSheet( getQtStyleSheet());
+#endif    
     
     
     //  Parse the global column width string as read from config file
@@ -584,83 +588,92 @@ void AISTargetListDialog::CreateControls()
     
     wxBoxSizer* boxSizer02 = new wxBoxSizer( wxVERTICAL );
     boxSizer02->AddSpacer( 22 );
+    topSizer->Add( boxSizer02, 0, wxEXPAND | wxALL, 2 );
     
-    m_pButtonInfo = new wxButton( this, wxID_ANY, _("Target info"), wxDefaultPosition,
+    wxScrolledWindow *winr = new wxScrolledWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                                                   wxNO_BORDER | wxTAB_TRAVERSAL | wxVSCROLL);
+    winr->SetScrollRate(0,5);
+    
+    boxSizer02->Add( winr, 1, wxALL | wxEXPAND, 3 );
+    
+    wxBoxSizer *bsRouteButtonsInner = new wxBoxSizer( wxVERTICAL );
+    winr->SetSizer(bsRouteButtonsInner);
+    
+    m_pButtonInfo = new wxButton( winr, wxID_ANY, _("Target info"), wxDefaultPosition,
                                   wxDefaultSize, wxBU_AUTODRAW );
     m_pButtonInfo->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
                             wxCommandEventHandler( AISTargetListDialog::OnTargetQuery ), NULL, this );
-    boxSizer02->Add( m_pButtonInfo, 0, wxEXPAND | wxALL, 0 );
-    boxSizer02->AddSpacer( 5 );
+    bsRouteButtonsInner->Add( m_pButtonInfo, 0, wxEXPAND | wxALL, 0 );
+    bsRouteButtonsInner->AddSpacer( 5 );
     
-    m_pButtonJumpTo = new wxButton( this, wxID_ANY, _("Center View"), wxDefaultPosition,
+    m_pButtonJumpTo = new wxButton( winr, wxID_ANY, _("Center View"), wxDefaultPosition,
                                     wxDefaultSize, wxBU_AUTODRAW );
     m_pButtonJumpTo->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
                               wxCommandEventHandler( AISTargetListDialog::OnTargetScrollTo ), NULL, this );
-    boxSizer02->Add( m_pButtonJumpTo, 0, wxEXPAND | wxALL, 0 );
+    bsRouteButtonsInner->Add( m_pButtonJumpTo, 0, wxEXPAND | wxALL, 0 );
     
-    m_pButtonCreateWpt = new wxButton( this, wxID_ANY, _("Create WPT"), wxDefaultPosition,
+    m_pButtonCreateWpt = new wxButton( winr, wxID_ANY, _("Create WPT"), wxDefaultPosition,
                                        wxDefaultSize, wxBU_AUTODRAW );
     m_pButtonCreateWpt->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
                                  wxCommandEventHandler( AISTargetListDialog::OnTargetCreateWpt ), NULL, this );
-    boxSizer02->Add( m_pButtonCreateWpt, 0, wxEXPAND | wxALL, 0 );
+    bsRouteButtonsInner->Add( m_pButtonCreateWpt, 0, wxEXPAND | wxALL, 0 );
     
-    m_pButtonHideAllTracks = new wxButton( this, wxID_ANY, _("Hide All Tracks"), wxDefaultPosition,
+    m_pButtonHideAllTracks = new wxButton( winr, wxID_ANY, _("Hide All Tracks"), wxDefaultPosition,
                                            wxDefaultSize, wxBU_AUTODRAW );
     m_pButtonHideAllTracks->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
                                      wxCommandEventHandler( AISTargetListDialog::OnHideAllTracks ), NULL, this );
-    boxSizer02->Add( m_pButtonHideAllTracks, 0, wxEXPAND | wxALL, 0 );
+    bsRouteButtonsInner->Add( m_pButtonHideAllTracks, 0, wxEXPAND | wxALL, 0 );
     
-    m_pButtonShowAllTracks = new wxButton( this, wxID_ANY, _("Show All Tracks"), wxDefaultPosition,
+    m_pButtonShowAllTracks = new wxButton( winr, wxID_ANY, _("Show All Tracks"), wxDefaultPosition,
                                            wxDefaultSize, wxBU_AUTODRAW );
     m_pButtonShowAllTracks->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
                                      wxCommandEventHandler( AISTargetListDialog::OnShowAllTracks ), NULL, this );
-    boxSizer02->Add( m_pButtonShowAllTracks, 0, wxEXPAND | wxALL, 0 );
+    bsRouteButtonsInner->Add( m_pButtonShowAllTracks, 0, wxEXPAND | wxALL, 0 );
     
-    m_pButtonToggleTrack = new wxButton( this, wxID_ANY, _("Toggle track"), wxDefaultPosition,
+    m_pButtonToggleTrack = new wxButton( winr, wxID_ANY, _("Toggle track"), wxDefaultPosition,
                                          wxDefaultSize, wxBU_AUTODRAW );
     m_pButtonToggleTrack->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
                                    wxCommandEventHandler( AISTargetListDialog::OnToggleTrack ), NULL, this );
-    boxSizer02->Add( m_pButtonToggleTrack, 0, wxEXPAND | wxALL, 0 );
+    bsRouteButtonsInner->Add( m_pButtonToggleTrack, 0, wxEXPAND | wxALL, 0 );
     
-    m_pCBAutosort = new wxCheckBox( this, wxID_ANY, _("AutoSort"), wxDefaultPosition,
+    m_pCBAutosort = new wxCheckBox( winr, wxID_ANY, _("AutoSort"), wxDefaultPosition,
                                     wxDefaultSize, wxBU_AUTODRAW );
     m_pCBAutosort->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED,
                             wxCommandEventHandler( AISTargetListDialog::OnAutosortCB ), NULL, this );
-    boxSizer02->Add( m_pCBAutosort, 0, wxEXPAND | wxALL, 0 );
+    bsRouteButtonsInner->Add( m_pCBAutosort, 0, wxEXPAND | wxALL, 0 );
     g_bAisTargetList_autosort = true;
     m_pCBAutosort->SetValue(g_bAisTargetList_autosort);
     
-    boxSizer02->AddSpacer( 10 );
+    bsRouteButtonsInner->AddSpacer( 10 );
     
-    m_pStaticTextRange = new wxStaticText( this, wxID_ANY, _("Limit range: NM"), wxDefaultPosition,
+    m_pStaticTextRange = new wxStaticText( winr, wxID_ANY, _("Limit range: NM"), wxDefaultPosition,
                                            wxDefaultSize, 0 );
-    boxSizer02->Add( m_pStaticTextRange, 0, wxALL, 0 );
-    boxSizer02->AddSpacer( 2 );
-    m_pSpinCtrlRange = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition,
+    bsRouteButtonsInner->Add( m_pStaticTextRange, 0, wxALL, 0 );
+    bsRouteButtonsInner->AddSpacer( 2 );
+    m_pSpinCtrlRange = new wxSpinCtrl( winr, wxID_ANY, wxEmptyString, wxDefaultPosition,
                                        wxSize( 50, -1 ), wxSP_ARROW_KEYS, 1, 20000, g_AisTargetList_range );
     m_pSpinCtrlRange->Connect( wxEVT_COMMAND_SPINCTRL_UPDATED,
                                wxCommandEventHandler( AISTargetListDialog::OnLimitRange ), NULL, this );
     m_pSpinCtrlRange->Connect( wxEVT_COMMAND_TEXT_UPDATED,
                                wxCommandEventHandler( AISTargetListDialog::OnLimitRange ), NULL, this );
-    boxSizer02->Add( m_pSpinCtrlRange, 0, wxEXPAND | wxALL, 0 );
-    topSizer->Add( boxSizer02, 0, wxEXPAND | wxALL, 2 );
+    bsRouteButtonsInner->Add( m_pSpinCtrlRange, 0, wxEXPAND | wxALL, 0 );
     
-    boxSizer02->AddSpacer( 10 );
-    m_pStaticTextCount = new wxStaticText( this, wxID_ANY, _("Target Count"), wxDefaultPosition,
+    bsRouteButtonsInner->AddSpacer( 10 );
+    m_pStaticTextCount = new wxStaticText( winr, wxID_ANY, _("Target Count"), wxDefaultPosition,
                                            wxDefaultSize, 0 );
-    boxSizer02->Add( m_pStaticTextCount, 0, wxALL, 0 );
+    bsRouteButtonsInner->Add( m_pStaticTextCount, 0, wxALL, 0 );
     
-    boxSizer02->AddSpacer( 2 );
-    m_pTextTargetCount = new wxTextCtrl( this, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize,
+    bsRouteButtonsInner->AddSpacer( 2 );
+    m_pTextTargetCount = new wxTextCtrl( winr, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize,
                                          wxTE_READONLY );
-    boxSizer02->Add( m_pTextTargetCount, 0, wxALL, 0 );
+    bsRouteButtonsInner->Add( m_pTextTargetCount, 0, wxALL, 0 );
     
-    boxSizer02->AddSpacer( 10 );
-    m_pButtonOK = new wxButton( this, wxID_ANY, _("Close"), wxDefaultPosition,
+    bsRouteButtonsInner->AddSpacer( 10 );
+    m_pButtonOK = new wxButton( winr, wxID_ANY, _("Close"), wxDefaultPosition,
                                 wxDefaultSize, wxBU_AUTODRAW );
     m_pButtonOK->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
                           wxCommandEventHandler( AISTargetListDialog::OnCloseButton ), NULL, this );
-    boxSizer02->Add( m_pButtonOK, 0, wxEXPAND | wxALL, 0 );
+    bsRouteButtonsInner->Add( m_pButtonOK, 0, wxEXPAND | wxALL, 0 );
     
     topSizer->Layout();
     
@@ -987,7 +1000,7 @@ void AISTargetListDialog::UpdateAISTargetList( void )
             m_pListCtrlAISTargets->DeleteAllItems();
 
         wxString count;
-        count.Printf( _T("%d"), m_pMMSI_array->GetCount() );
+        count.Printf( _T("%lu"), (unsigned long)m_pMMSI_array->GetCount() );
         m_pTextTargetCount->ChangeValue( count );
 
 #ifdef __WXMSW__

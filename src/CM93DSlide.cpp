@@ -29,6 +29,7 @@
 #include "CM93DSlide.h"
 #include "chart1.h"
 #include "chcanv.h"
+#include "OCPNPlatform.h"
 
 extern bool g_bShowCM93DetailSlider;
 extern CM93DSlide *pCM93DetailSlider;
@@ -125,11 +126,11 @@ void CM93DSlide::OnChangeValue( wxScrollEvent& event )
 {
     g_cm93_zoom_factor = m_pCM93DetailSlider->GetValue();
 
-    ::wxBeginBusyCursor();
+    OCPNPlatform::ShowBusySpinner();
 
     cc1->ReloadVP();
     cc1->Refresh( false );
 
-    ::wxEndBusyCursor();
+    OCPNPlatform::HideBusySpinner();
 }
 

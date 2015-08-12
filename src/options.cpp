@@ -258,6 +258,7 @@ extern bool             g_bAutoHideToolbar;
 extern int              g_nAutoHideToolbar;
 extern int              g_GUIScaleFactor;
 extern int              g_ChartScaleFactor;
+extern float            g_ChartScaleFactorExp;
 
 extern double           g_config_display_size_mm;
 extern bool             g_config_display_size_manual;
@@ -949,10 +950,10 @@ void options::RecalculateSize()
         esize.x = GetCharWidth() * 110;
         esize.y = GetCharHeight() * 40;
         
-        wxSize dsize = GetParent()->GetClientSize();
-        esize.y = wxMin(esize.y, dsize.y - (2 * GetCharHeight()));
-        esize.x = wxMin(esize.x, dsize.x - (2 * GetCharHeight()));
-        SetClientSize(esize);
+        wxSize dsize = GetParent()->GetSize();//GetClientSize();
+        esize.y = wxMin(esize.y, dsize.y - 0/*(2 * GetCharHeight())*/);
+        esize.x = wxMin(esize.x, dsize.x - 0/*(2 * GetCharHeight())*/);
+        SetSize(esize);
         
         wxSize fsize = GetSize();
         wxSize canvas_size = GetParent()->GetSize();
@@ -2920,7 +2921,7 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
                                         wxDefaultPosition, wxSize( slider_width, 50),
                                         wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS );
     m_pSlider_GUI_Factor->Hide();
-#ifdef __OCPN__ANDROID__    
+//#ifdef __OCPN__ANDROID__    
     miscOptions->Add( new wxStaticText(itemPanelFont, wxID_ANY, _("User Interface scale factor")), inputFlags );
     miscOptions->Add( m_pSlider_GUI_Factor, 0, wxALL, border_size );
     m_pSlider_GUI_Factor->Show();
@@ -2928,7 +2929,7 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
 #ifdef __WXQT__
     m_pSlider_GUI_Factor->GetHandle()->setStyleSheet( getQtStyleSheet());
 #endif
-#endif
+//#endif
     
 
 
@@ -2936,7 +2937,7 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
                                          wxDefaultPosition, wxSize( slider_width, 50),
                                          wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS );
     m_pSlider_Chart_Factor->Hide();
-#ifdef __OCPN__ANDROID__
+//#ifdef __OCPN__ANDROID__
     miscOptions->Add( new wxStaticText(itemPanelFont, wxID_ANY, _("Chart Object scale factor")), inputFlags );
     miscOptions->Add( m_pSlider_Chart_Factor, 0, wxALL, border_size );
     m_pSlider_Chart_Factor->Show();
@@ -2944,7 +2945,7 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
 #ifdef __WXQT__
     m_pSlider_Chart_Factor->GetHandle()->setStyleSheet( getQtStyleSheet());
 #endif
-#endif    
+//#endif    
     
 }
 
@@ -2991,6 +2992,10 @@ void options::CreateControls()
     wxBoxSizer* itemBoxSizer2 = new wxBoxSizer( wxVERTICAL );
     itemDialog1->SetSizer( itemBoxSizer2 );
 
+    #ifdef __OCPN__ANDROID__
+    itemDialog1->GetHandle()->setStyleSheet( getQtStyleSheet());
+    #endif
+    
     int flags = 0;
     
 #ifdef __OCPN__OPTIONS_USE_LISTBOOK__    
@@ -4349,6 +4354,7 @@ void options::OnApplyClick( wxCommandEvent& event )
     g_chart_zoom_modifier = m_pSlider_Zoom->GetValue();
     g_GUIScaleFactor = m_pSlider_GUI_Factor->GetValue();
     g_ChartScaleFactor = m_pSlider_Chart_Factor->GetValue();
+    g_ChartScaleFactorExp = g_Platform->getChartScaleFactorExp( g_ChartScaleFactor );
     
     g_NMEAAPBPrecision = m_choicePrecision->GetCurrentSelection();
     
@@ -5577,8 +5583,10 @@ void options::OnInsertTideDataLocation( wxCommandEvent &event )
 
 }
 
+
 void options::OnRemoveTideDataLocation( wxCommandEvent &event )
 {
+#ifndef __WXQT__                // Multi selection is not implemented in wxQT
     wxArrayInt sels;
     int nSel = tcDataSelected->GetSelections(sels);
     wxArrayString a;
@@ -5587,9 +5595,16 @@ void options::OnRemoveTideDataLocation( wxCommandEvent &event )
     }
 
     for (unsigned int i=0 ; i < a.Count() ; i++) {
+        
         int b = tcDataSelected->FindString(a.Item(i));
+        wxCharBuffer buf = a.Item(i).ToUTF8();
         tcDataSelected->Delete( b );
     }
+#else
+    int iSel = tcDataSelected->GetSelection();
+    tcDataSelected->Delete( iSel );
+#endif
+    
 }
 
 void options::OnValChange( wxCommandEvent& event )

@@ -30,6 +30,7 @@ import android.content.Context;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 /**
  * A file chooser implemented in a Dialog. 
@@ -38,6 +39,8 @@ public class FileChooserDialog extends Dialog implements FileChooser {
 
 	// ----- Attributes ----- //
 	
+        private String initFolder = "";
+
 	/**
 	 * The core of this file chooser.
 	 */
@@ -83,6 +86,8 @@ public class FileChooserDialog extends Dialog implements FileChooser {
         this.core = new FileChooserCore(this);
         this.core.loadFolder(folderPath);
         
+        initFolder = folderPath;
+
         // Initialize attributes.
         this.listeners = new LinkedList<OnFileSelectedListener>();
 		
@@ -238,6 +243,11 @@ public class FileChooserDialog extends Dialog implements FileChooser {
 	 */
 	public void setShowFullPath(boolean show) {
 		this.core.setShowFullPathInTitle(show);
+
+//                File currentFolder = new File(initFolder);
+//                String currentFolderName = show? currentFolder.getPath() : currentFolder.getName();
+//                this.setCurrentFolderName(currentFolderName);
+
 	}
 	
     // ----- FileChooser methods ----- //
@@ -248,6 +258,12 @@ public class FileChooserDialog extends Dialog implements FileChooser {
 	}  
 
 	public void setCurrentFolderName(String name) {
-		this.setTitle(name);
+                //this.setTitle(name);
+
+                TextView selected = (TextView)this.findViewById(R.id.afdLabelFile);
+                if(null != selected){
+                    selected.setText( name );
+                }
+
 	}
 }

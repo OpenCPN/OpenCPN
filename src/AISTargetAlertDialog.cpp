@@ -31,6 +31,7 @@
 #include "ocpn_types.h"
 #include "Select.h"
 #include "routemanagerdialog.h"
+#include "OCPNPlatform.h"
 
 extern ColorScheme global_color_scheme;
 extern bool g_bopengl;
@@ -47,6 +48,7 @@ extern Select *pSelect;
 extern MyConfig *pConfig;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern ChartCanvas *cc1;
+extern OCPNPlatform  *g_Platform;
 
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -131,6 +133,9 @@ AISTargetAlertDialog::~AISTargetAlertDialog()
 void AISTargetAlertDialog::Init()
 {
     m_target_mmsi = 0;
+    m_max_nline = 20;
+    m_adj_height = 0;
+    
 }
 
 
@@ -176,7 +181,11 @@ void AISTargetAlertDialog::CreateControls()
     SetSizer( topSizer );
 
     m_pAlertTextCtl = new wxHtmlWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-            wxHW_SCROLLBAR_AUTO );
+                                        wxHW_SCROLLBAR_AUTO | wxHW_NO_SELECTION);
+    #ifdef __OCPN__ANDROID__
+    m_pAlertTextCtl->GetHandle()->setStyleSheet( getQtStyleSheet());
+    #endif
+    
     m_pAlertTextCtl->SetBorders( 5 );
 
     topSizer->Add( m_pAlertTextCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxALL | wxEXPAND, 5 );
@@ -212,6 +221,9 @@ void AISTargetAlertDialog::CreateControls()
     
 
     UpdateText();
+    
+    RecalculateSize();
+    
 }
 
 bool AISTargetAlertDialog::GetAlertText()
@@ -231,12 +243,8 @@ bool AISTargetAlertDialog::GetAlertText()
 
 void AISTargetAlertDialog::UpdateText()
 {
-    DimeControl( this );
-    wxColor bg = GetBackgroundColour();
-    m_pAlertTextCtl->SetBackgroundColour( bg );
-    SetBackgroundColour( bg );
-    
     if( GetAlertText() ) {
+        
         wxFont *dFont = FontMgr::Get().GetFont( _("AISTargetQuery"), 12 );
         wxString face = dFont->GetFaceName();
         int sizes[7];
@@ -245,6 +253,8 @@ void AISTargetAlertDialog::UpdateText()
         }
 
         wxString html;
+        wxColor bg = GetBackgroundColour();
+        
         html.Printf( _T("<html><body bgcolor=#%02x%02x%02x><center>"), bg.Red(), bg.Green(), bg.Blue() );
         
         html << m_alert_text;
@@ -253,26 +263,69 @@ void AISTargetAlertDialog::UpdateText()
         m_pAlertTextCtl->SetFonts( face, face, sizes );
         m_pAlertTextCtl->SetPage( html );
 
-        // Try to create a min size that works across font sizes.
-        wxSize sz;
-        if( !IsShown() ) {
-            sz = m_pAlertTextCtl->GetVirtualSize();
-            sz.x = 300;
-            m_pAlertTextCtl->SetSize( sz );
-        }
-        m_pAlertTextCtl->Layout();
-        wxSize ir( m_pAlertTextCtl->GetInternalRepresentation()->GetWidth(),
-                m_pAlertTextCtl->GetInternalRepresentation()->GetHeight() );
-        sz.x = wxMax( m_pAlertTextCtl->GetSize().x, ir.x );
-        sz.y = wxMax( m_pAlertTextCtl->GetSize().y, ir.y );
-        m_pAlertTextCtl->SetMinSize( sz );
-        Fit();
-        sz -= wxSize( 200, 200 );
-        m_pAlertTextCtl->SetMinSize( sz );
+        RecalculateSize();
+    }
+    
+    SetColorScheme();
+    if( !g_bopengl && CanSetTransparent() )
+        SetTransparent( 192 );
+}
+
+void AISTargetAlertDialog::RecalculateSize( void )
+{
+    //  Count the lines in the currently displayed text string
+    unsigned int i=0;
+    int nline = 0;
+    while(i < m_alert_text.Length() ){
+        if(m_alert_text[i] == '\n')
+            nline++;
+        i++;
     }
 
-//    DimeControl( this );
-    if( !g_bopengl && CanSetTransparent() ) SetTransparent( 192 );
+    if(nline > m_max_nline)
+        m_max_nline = nline;
+    
+    wxSize esize;
+    esize.x = GetCharWidth() * 45;
+    esize.y = GetCharHeight() * (m_max_nline + 4);
+//    SetSize(esize);
+
+    int height = m_pAlertTextCtl->GetInternalRepresentation()->GetHeight();
+    int adj_height = height + (GetCharHeight() * 4);
+    m_adj_height = wxMax(m_adj_height, adj_height);
+    
+    esize.y = wxMin(esize.y, m_adj_height);
+    SetClientSize(esize);
+    
+    wxSize dsize = GetParent()->GetClientSize();
+    
+    wxSize fsize = GetSize();
+    fsize.y = wxMin(fsize.y, dsize.y - (1 * GetCharHeight()));
+    fsize.x = wxMin(fsize.x, dsize.x - (1 * GetCharHeight()));
+    SetSize(fsize);
+    
+    g_Platform->PositionAISAlert( this );
+    
+}
+
+void AISTargetAlertDialog::SetColorScheme( void )
+{
+    DimeControl( this );
+    wxColor bg = GetBackgroundColour();
+    m_pAlertTextCtl->SetBackgroundColour( bg );
+    SetBackgroundColour( bg );                  // This looks like non-sense, but is needed for __WXGTK__
+    // to get colours to propagate down the control's family tree.
+    
+#ifdef __WXQT__    
+    //  wxQT has some trouble clearing the background of HTML window...
+    wxBitmap tbm( GetSize().x, GetSize().y, -1 );
+    wxMemoryDC tdc( tbm );
+    //    wxColour cback = GetGlobalColor( _T("YELO1") );
+    tdc.SetBackground( bg );
+    tdc.Clear();
+    m_pAlertTextCtl->SetBackgroundImage(tbm);
+#endif
+    
 }
 
 void AISTargetAlertDialog::OnClose( wxCloseEvent& event )
@@ -351,9 +404,8 @@ void AISTargetAlertDialog::OnIdJumptoClick( wxCommandEvent& event )
 void AISTargetAlertDialog::OnMove( wxMoveEvent& event )
 {
     //    Record the dialog position
-    wxPoint p = event.GetPosition();
-    g_ais_alert_dialog_x = p.x;
-    g_ais_alert_dialog_y = p.y;
+    g_ais_alert_dialog_x = GetPosition().x;
+    g_ais_alert_dialog_y = GetPosition().y;
 
     event.Skip();
 }

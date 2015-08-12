@@ -215,6 +215,7 @@ extern wxArrayOfConnPrm         *g_pConnectionParams;
 extern bool                     g_fog_overzoom;
 extern double                   g_overzoom_emphasis_base;
 extern bool                     g_oz_vector_scale;
+extern int                      g_nTrackPrecision;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions            g_GLOptions;
@@ -223,6 +224,8 @@ extern int                      g_default_font_size;
 
 wxLog       *g_logger;
 bool         g_bEmailCrashReport;
+extern int                       g_ais_alert_dialog_x, g_ais_alert_dialog_y;
+extern int                       g_ais_alert_dialog_sx, g_ais_alert_dialog_sy;
 
 
 
@@ -507,8 +510,12 @@ void OCPNPlatform::Initialize_1( void )
 
 //  Called from MyApp() immediately before creation of MyFrame()
 //  Config is known to be loaded and stable
+//  Log is available
 void OCPNPlatform::Initialize_2( void )
 {
+#ifdef __OCPN__ANDROID__
+    wxLogMessage(androidGetDeviceInfo());
+#endif    
 }
 
 //  Called from MyApp() just before end of MyApp::OnInit()
@@ -557,6 +564,7 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_bShowAreaNotices = false;
     g_bDrawAISSize = false;
     g_bShowAISName = false;
+    g_nTrackPrecision = 2;
     
     
 #ifdef __OCPN__ANDROID__
@@ -671,6 +679,21 @@ wxString &OCPNPlatform::GetExePath()
     
     return m_exePath;
 }
+
+
+wxString OCPNPlatform::GetWritableDocumentsDir()
+{
+    wxString dir;
+    
+#ifdef __OCPN__ANDROID__
+    dir = androidGetExtStorageDir();                 // Used for Chart storage, typically
+#else
+    wxStandardPaths& std_path = GetStdPaths();
+    dir = std_path.GetDocumentsDir();
+#endif    
+    return dir;
+}
+
 
 wxString &OCPNPlatform::GetSharedDataDir()
 {
@@ -831,7 +854,12 @@ int OCPNPlatform::DoFileSelectorDialog( wxWindow *parent, wxString *file_spec, w
     int result = wxID_CANCEL;
 
 #ifdef __OCPN__ANDROID__
-    result = androidFileChooser(&file, initDir, Title, suggestedName, wildcard);
+    //  Verify that initDir is traversable, fix it if not...
+    wxString idir = initDir;
+    if(initDir.StartsWith(_T("/data/data")))                 // not good, provokes a crash usually...
+        idir = GetWritableDocumentsDir();
+    
+    result = androidFileChooser(&file, idir, Title, suggestedName, wildcard);
     if(file_spec)
         *file_spec = file;
 #else
@@ -861,8 +889,8 @@ int OCPNPlatform::DoFileSelectorDialog( wxWindow *parent, wxString *file_spec, w
         parent->ShowWithEffect(wxSHOW_EFFECT_BLEND );
 #endif
 
-
-    file = psaveDialog->GetPath();
+	if(file_spec)
+		*file_spec = psaveDialog->GetPath();
     delete psaveDialog;
         
 #endif
@@ -876,7 +904,12 @@ int OCPNPlatform::DoDirSelectorDialog( wxWindow *parent, wxString *file_spec, wx
     int result = wxID_CANCEL;
     
 #ifdef __OCPN__ANDROID__
-    result = androidFileChooser(&dir, initDir, Title, _T(""), _T(""), true);    // Directories only
+    //  Verify that initDir is traversable, fix it if not...
+    wxString idir = initDir;
+    if(initDir.StartsWith(_T("/data/data")))                 // not good, provokes a crash usually...
+        idir = GetWritableDocumentsDir();
+    
+    result = androidFileChooser(&dir, idir, Title, _T(""), _T(""), true);    // Directories only
     if(file_spec)
         *file_spec = dir;
 #else
@@ -1048,7 +1081,7 @@ void OCPNPlatform::ShowBusySpinner( void )
 #ifdef __OCPN__ANDROID__
     androidShowBusyIcon();
 #else 
-    if(! ::wxIsBusy() ){
+    if( !::wxIsBusy() ){
         ::wxBeginBusyCursor();
     }
 #endif    
@@ -1059,7 +1092,10 @@ void OCPNPlatform::HideBusySpinner( void )
 #ifdef __OCPN__ANDROID__
     androidHideBusyIcon();
 #else
-    if( ::wxIsBusy() ){
+    #if wxCHECK_VERSION(2, 9, 0 )
+    if( ::wxIsBusy() )
+    #endif
+    {
         ::wxEndBusyCursor();
     }
 #endif    
@@ -1150,6 +1186,21 @@ void OCPNPlatform::onStagedResizeFinal()
     androidConfirmSizeCorrection();
 #endif
     
+}
+
+void OCPNPlatform::PositionAISAlert(wxWindow *alert_window)
+{
+#ifndef __OCPN__ANDROID__    
+    if(alert_window){
+        alert_window->SetSize(g_ais_alert_dialog_x, g_ais_alert_dialog_y, g_ais_alert_dialog_sx, g_ais_alert_dialog_sy );
+    }
+#else
+    if(alert_window){
+        alert_window->SetSize(g_ais_alert_dialog_x, g_ais_alert_dialog_y, g_ais_alert_dialog_sx, g_ais_alert_dialog_sy );
+        alert_window->Centre();
+    }
+    
+#endif
 }
 
 
@@ -1302,18 +1353,41 @@ double OCPNPlatform::GetCompassScaleFactor( int GUIScaleFactor )
         rv = wxMin(rv, 1.5);      //  Clamp at 1.5
         
         rv = premult * postmult;
-        qDebug() << "parmsF" << GUIScaleFactor << premult << postmult << rv;
+//        qDebug() << "parmsF" << GUIScaleFactor << premult << postmult << rv;
         rv = wxMin(rv, 3.0);      //  Clamp at 3.0
     }
     
     
     
 #else
+    if(g_bresponsive ){
+        double postmult =  exp( GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
+        rv *= postmult;
+        rv = wxMin(rv, 3.0);      //  Clamp at 3.0
+    }
+    
 #endif
     
     return rv;
 }
 
+float OCPNPlatform::getChartScaleFactorExp( float scale_linear )
+{
+    double factor = 1.0;
+#ifndef __OCPN__ANDROID__
+    factor =  exp( scale_linear * (0.693 / 5.0) );       //  exp(2)
+
+#else
+    // the idea here is to amplify the scale factor for higher density displays, in a measured way....
+    factor =  exp( scale_linear * (0.693 / 5.0) * getAndroidDisplayDensity());
+#endif
+    
+    factor = wxMax(factor, .5);
+    factor = wxMin(factor, 4.);
+    
+
+    return factor;
+}
 
         
 #ifdef __WXMSW__

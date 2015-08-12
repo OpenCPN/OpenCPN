@@ -53,7 +53,7 @@ extern float g_fWaypointRangeRingsStep;
 extern int g_iWaypointRangeRingsStepUnits;
 extern wxColour g_colourWaypointRangeRingsColour;
 
-extern int  g_ChartScaleFactor;
+extern float g_ChartScaleFactorExp;
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST ( RoutePointList );
@@ -594,9 +594,7 @@ void RoutePoint::DrawGL( ViewPort &vp, OCPNRegion &region,bool use_cached_screen
         
         float scale = 1.0;
         if(g_bresponsive){
-            scale =  exp( g_ChartScaleFactor * (0.693 / 5.0) );       //  exp(2)
-            scale = wxMax(scale, .5);
-            scale = wxMin(scale, 4.);
+            scale =  g_ChartScaleFactorExp;
         }
             
         float ws = r1.width * scale;

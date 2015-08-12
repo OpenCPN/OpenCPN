@@ -23,31 +23,53 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-class ocpnFloatingCompassWindow : public wxDialog
+#ifdef ocpnUSE_GL
+#ifdef __WXMSW__
+#include "GL/gl.h"            // local copy for Windows
+#include <GL/glu.h>
+#else
+
+#ifndef __OCPN__ANDROID__
+#include <GL/gl.h>
+#include <GL/glu.h>
+#else
+#include "qopengl.h"                  // this gives us the qt runtime gles2.h
+#include "GL/gl_private.h"
+#endif
+
+#endif
+#endif
+
+class ocpnDC;
+
+class ocpnCompass
 {
 public:
-      ocpnFloatingCompassWindow( wxWindow *parent );
-      ~ocpnFloatingCompassWindow();
-      void OnPaint( wxPaintEvent& event );
-      wxBitmap CreateBmp( bool bnew = false );
+      ocpnCompass();
+      ~ocpnCompass();
+
+      bool IsShown() const { return m_shown; }
+      void Show(bool show) { m_shown = show; }
+      void Paint( ocpnDC& dc );
+
       void UpdateStatus( bool newColorScheme = false );
 
-      void OnClose( wxCloseEvent& event );
-      void OnToolLeftClick( wxCommandEvent& event );
-      void MouseEvent( wxMouseEvent& event );
+      bool MouseEvent( wxMouseEvent& event );
       void SetColorScheme( ColorScheme cs );
       int GetXOffset(void) const { return m_xoffset; }
       int GetYOffset(void) const { return m_yoffset; }
       float GetScaleFactor(){ return m_scale; }
       void SetScaleFactor( float factor);
       
+      void Move(const wxPoint &pt) { m_rect.SetPosition(pt); }
+      wxRect GetRect(void) const { return m_rect; }
 private:
+      void CreateBmp( bool bnew = false );
+
       wxBitmap m_StatBmp;
       wxBitmap m_MaskBmp;
       wxStaticBitmap *m_pStatBoxToolStaticBmp;
 
-      wxWindow *m_pparent;
-      wxBoxSizer *m_topSizer;
       wxString m_lastgpsIconName;
       double m_rose_angle;
 
@@ -57,7 +79,10 @@ private:
       int m_yoffset;
       float m_scale;
 
-      DECLARE_EVENT_TABLE()
+      wxRect m_rect;
+      bool m_shown;
+#ifdef ocpnUSE_GL
+      GLuint texobj;
+#endif
+      
 };
-
-

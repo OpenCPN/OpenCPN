@@ -831,7 +831,7 @@ void APIENTRY ocpnDCerrorCallback( GLenum errorCode )
 {
    const GLubyte *estring;
    estring = gluErrorString(errorCode);
-   wxLogMessage( _T("OpenGL Tessellation Error: %s"), estring );
+   wxLogMessage( _T("OpenGL Tessellation Error: %s"), (char *)estring );
 }
 
 void APIENTRY ocpnDCbeginCallback( GLenum type )
@@ -951,8 +951,9 @@ void ocpnDC::DrawBitmap( const wxBitmap &bitmap, wxCoord x, wxCoord y, bool usem
             unsigned char *a = image.GetAlpha();
 
             unsigned char mr, mg, mb;
-            if( !image.GetOrFindMaskColour( &mr, &mg, &mb ) && !a ) printf(
-                    "trying to use mask to draw a bitmap without alpha or mask\n" );
+            if( !image.GetOrFindMaskColour( &mr, &mg, &mb ) && !a ){
+                //printf("trying to use mask to draw a bitmap without alpha or mask\n" );
+            }
 
             unsigned char *e = new unsigned char[4 * w * h];
             if(e && d){

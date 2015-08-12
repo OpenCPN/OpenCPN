@@ -717,7 +717,7 @@ void Piano::BuildGLTexture()
 
 void Piano::DrawGL(int off)
 {
-    unsigned int w = cc1->GetClientSize().x, h = GetHeight(), endx;
+    unsigned int w = cc1->GetClientSize().x, h = GetHeight(), endx = 0;
  
     if(m_tex_piano_height != h)
         BuildGLTexture();
@@ -1077,13 +1077,19 @@ bool Piano::MouseEvent( wxMouseEvent& event )
             if( -1 != sel_index ){
                 m_click_sel_index = sel_index;
                 m_click_sel_dbindex = sel_dbindex;
-                m_action = DEFERRED_KEY_CLICK_UP;
-                m_eventTimer.Start(10, wxTIMER_ONE_SHOT);
+                if(!m_eventTimer.IsRunning()){
+                    m_action = DEFERRED_KEY_CLICK_UP;
+                    m_eventTimer.Start(10, wxTIMER_ONE_SHOT);
+                }
             }
         } else if( event.RightDown() ) {
             if( sel_index != m_hover_last ) {
                 gFrame->HandlePianoRollover( sel_index, sel_dbindex );
                 m_hover_last = sel_index;
+                
+//                m_action = INFOWIN_TIMEOUT;
+//                m_eventTimer.Start(3000, wxTIMER_ONE_SHOT);
+                
             }
         } else if( event.ButtonUp() ) {
             gFrame->HandlePianoRollover( -1, -1 );
@@ -1154,8 +1160,18 @@ void Piano::onTimerEvent(wxTimerEvent &event)
         case DEFERRED_KEY_CLICK_DOWN:
             break;
         case DEFERRED_KEY_CLICK_UP:
-            gFrame->HandlePianoClick( m_click_sel_index, m_click_sel_dbindex );
-            ShowBusy( false );
+            if(m_hover_last >= 0){              // turn it off, and return
+                gFrame->HandlePianoRollover( -1, -1 );
+                ResetRollover();
+            }
+            else{
+                gFrame->HandlePianoClick( m_click_sel_index, m_click_sel_dbindex );
+//            ShowBusy( false );
+            }
+            break;
+        case INFOWIN_TIMEOUT:
+            gFrame->HandlePianoRollover( -1, -1 );
+            ResetRollover();
             break;
         default:
             break;

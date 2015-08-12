@@ -52,9 +52,11 @@ public:
 
     ~GribOverlay( void )
     {
-        if(m_iTexture)
 #ifdef ocpnUSE_GL
+        if(m_iTexture) 
+        {
           glDeleteTextures( 1, &m_iTexture );
+        }
 #endif
         delete m_pDCBitmap, delete[] m_pRGBA;
     }
@@ -88,7 +90,12 @@ struct Particle {
 struct ParticleMap {
 public:
     ParticleMap(int settings)
-    : m_Setting(settings), array_size(0), color_array(NULL), vertex_array(NULL) { }
+    : m_Setting(settings), history_size(0), array_size(0),
+      color_array(NULL), vertex_array(NULL) 
+    {
+       // XXX should be done in default PlugIn_ViewPort CTOR
+        last_viewport.bValid = false;
+    }
 
     ~ParticleMap() {
         delete [] color_array;
@@ -168,6 +175,7 @@ public:
     wxSize  m_ParentSize;
 
 private:
+    void InitColorsTable( );
 
     void SettingsIdToGribId(int i, int &idx, int &idy, bool &polar);
     bool DoRenderGribOverlay( PlugIn_ViewPort *vp );

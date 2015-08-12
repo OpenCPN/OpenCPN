@@ -36,6 +36,7 @@
 #include <wx/aui/aui.h>
 
 #include "dychart.h"
+#include "OCPNPlatform.h"
 
 #include <wx/listimpl.cpp>
 
@@ -75,7 +76,7 @@
 #include "AIS_Target_Data.h"
 #include "AISTargetAlertDialog.h"
 #include "SendToGpsDlg.h"
-#include "compasswin.h"
+#include "compass.h"
 #include "OCPNRegion.h"
 #include "gshhs.h"
 #include "canvasMenu.h"
@@ -197,7 +198,7 @@ extern int              g_Show_Target_Name_Scale;
 extern MyFrame          *gFrame;
 extern Piano            *g_Piano;
 extern ChartBarWin      *g_ChartBarWin;
-extern ocpnFloatingCompassWindow *g_FloatingCompassDialog;
+extern ocpnCompass      *g_Compass;
 
 extern int              g_iNavAidRadarRingsNumberVisible;
 extern float            g_fNavAidRadarRingsStep;
@@ -1808,15 +1809,9 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             break;
 
         case 9:                      // Ctrl I
-            if( g_FloatingCompassDialog ) {
-                if( g_FloatingCompassDialog->IsShown() ) {
-                    g_FloatingCompassDialog->Hide();
-                } else {
-                    g_FloatingCompassDialog->Show();
-                }
-                gFrame->Raise();
-                Refresh();
-            }
+            g_Compass->Show(!g_Compass->IsShown());
+            m_brepaint_piano = true;
+            Refresh( false );
             break;
 
         default:
@@ -3012,16 +3007,6 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
 #endif
     }
 
-    // adjust pix_height to remove the chart bar from the viewport
-    if(!g_ChartBarWin) {
-        ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-        VPoint.pix_height = m_canvas_height;
-        if(!style->chartStatusWindowTransparent && g_bShowChartBar){
-            if( g_Piano->GetnKeys() )
-                VPoint.pix_height -= g_Piano->GetHeight();
-        }
-    }
-
     //  A preliminary value, may be tweaked below
     VPoint.chart_scale = m_canvas_scale_factor / ( scale_ppm );
 
@@ -3835,17 +3820,16 @@ void CalcGridSpacing( float WindowDegrees, float& MajorSpacing, float&MinorSpaci
  ** @param [r] latlon [float] latitude or longitude of grid line
  ** @param [r] spacing [float] distance between two major grid lines
  ** @param [r] bPostfix [bool] true for latitudes, false for longitudes
- ** @param [w] text [char*] textbuffer for result, minimum of 12 chars in length
  **
- ** @return [void]
+ ** @return 
  */
-void CalcGridText( float latlon, float spacing, bool bPostfix, char *text )
+
+wxString CalcGridText( float latlon, float spacing, bool bPostfix )
 {
     int deg = (int) fabs( latlon ); // degrees
     float min = fabs( ( fabs( latlon ) - deg ) * 60.0 ); // Minutes
     char postfix;
-    const unsigned int BufLen = 12;
-
+    
     // calculate postfix letter (NSEW)
     if( latlon > 0.0 ) {
         if( bPostfix ) {
@@ -3864,16 +3848,17 @@ void CalcGridText( float latlon, float spacing, bool bPostfix, char *text )
     }
     // calculate text, display minutes only if spacing is smaller than one degree
 
+    wxString ret;
     if( spacing >= 1.0 ) {
-        snprintf( text, BufLen, "%3d° %c", deg, postfix );
+        ret.Printf( _T("%3d° %c"), deg, postfix );
     } else if( spacing >= ( 1.0 / 60.0 ) ) {
-        snprintf( text, BufLen, "%3d°%02.0f %c", deg, min, postfix );
+        ret.Printf( _T("%3d°%02.0f %c"), deg, min, postfix );
     } else {
-        snprintf( text, BufLen, "%3d°%02.2f %c", deg, min, postfix );
+        ret.Printf( _T("%3d°%02.2f %c"), deg, min, postfix );
     }
-    text[BufLen - 1] = '\0';
-    return;
+    return ret;
 }
+
 
 /* @ChartCanvas::GridDraw *****************************************
  **
@@ -3924,10 +3909,10 @@ void ChartCanvas::GridDraw( ocpnDC& dc )
     while( lat < nlat ) {
         wxPoint r;
         char sbuf[12];
-        CalcGridText( lat, gridlatMajor, true, sbuf ); // get text for grid line
+        wxString st = CalcGridText( lat, gridlatMajor, true ); // get text for grid line
         GetCanvasPointPix( lat, ( elon + wlon ) / 2, &r );
         dc.DrawLine( 0, r.y, w, r.y, false );                             // draw grid line
-        dc.DrawText( wxString( sbuf, wxConvUTF8 ), 0, r.y ); // draw text
+        dc.DrawText( st, 0, r.y ); // draw text
         lat = lat + gridlatMajor;
 
         if( fabs( lat - wxRound( lat ) ) < 1e-5 ) lat = wxRound( lat );
@@ -3955,10 +3940,10 @@ void ChartCanvas::GridDraw( ocpnDC& dc )
     for( int i = 0, itermax = (int) ( dlon / gridlonMajor ); i <= itermax; i++ ) {
         wxPoint r;
         char sbuf[12];
-        CalcGridText( lon, gridlonMajor, false, sbuf );
+        wxString st = CalcGridText( lon, gridlonMajor, false );
         GetCanvasPointPix( ( nlat + slat ) / 2, lon, &r );
         dc.DrawLine( r.x, 0, r.x, h, false );
-        dc.DrawText( wxString( sbuf, wxConvUTF8 ), r.x, 0 );
+        dc.DrawText( st, r.x, 0 );
         lon = lon + gridlonMajor;
         if( lon > 180.0 ) {
             lon = lon - 360.0;
@@ -4343,14 +4328,6 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
     ReloadVP();
 }
 
-void ChartCanvas::RenderLastGLCanvas()
-{
-#ifdef ocpnUSE_GL
-    if( /*g_bopengl &&*/ m_glcc )
-        m_glcc->RenderLast();
-#endif    
-}
-    
 void ChartCanvas::ShowChartInfoWindow( int x, int dbIndex )
 {
     if( dbIndex >= 0 ) {
@@ -4363,18 +4340,24 @@ void ChartCanvas::ShowChartInfoWindow( int x, int dbIndex )
             wxString s;
             ChartBase *pc = NULL;
 
+            // TOCTOU race but worst case will reload chart.
+            // need to lock it or the background spooler may evict charts in 
+            // OpenChartFromDBAndLock
             if( ( ChartData->IsChartInCache( dbIndex ) ) && ChartData->IsValid() )
-                pc = ChartData->OpenChartFromDB( dbIndex, FULL_INIT );   // this must come from cache
+                pc = ChartData->OpenChartFromDBAndLock( dbIndex, FULL_INIT );   // this must come from cache
 
             int char_width, char_height;
             s = ChartData->GetFullChartInfo( pc, dbIndex, &char_width, &char_height );
+            if (pc)
+                ChartData->UnLockCacheChart(dbIndex);
+
             m_pCIWin->SetString( s );
             m_pCIWin->FitToChars( char_width, char_height );
 
             wxPoint p;
             p.x = x;
             if( ( p.x + m_pCIWin->GetWinSize().x ) > m_canvas_width )
-                p.x = m_canvas_width - m_pCIWin->GetWinSize().x;
+                p.x = (m_canvas_width - m_pCIWin->GetWinSize().x)/2;    // centered
 
             p.y = m_canvas_height - g_Piano->GetHeight() - 4 - m_pCIWin->GetWinSize().y;
 
@@ -4391,7 +4374,16 @@ void ChartCanvas::ShowChartInfoWindow( int x, int dbIndex )
 
 void ChartCanvas::HideChartInfoWindow( void )
 {
-    if( m_pCIWin && m_pCIWin->IsShown() ) m_pCIWin->Hide();
+    if( m_pCIWin /*&& m_pCIWin->IsShown()*/ ){
+        m_pCIWin->Hide();
+        m_pCIWin->Destroy();
+        m_pCIWin = NULL;
+
+#ifdef __OCPN__ANDROID__        
+        androidForceFullRepaint();
+#endif        
+            
+    }
 }
 
 void ChartCanvas::PanTimerEvent( wxTimerEvent& event )
@@ -4589,7 +4581,10 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
     
     int chartbar_height = GetChartbarHeight();
 
-    if( x > xr_margin ) {
+    if( g_Compass && g_Compass->IsShown() &&
+        g_Compass->GetRect().Contains(event.GetPosition())) {
+        cursor_region = CENTER;
+    } else if( x > xr_margin ) {
         cursor_region = MID_RIGHT;
     } else if( x < xl_margin ) {
         cursor_region = MID_LEFT;
@@ -5203,7 +5198,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                                                     
                                                     //    Update the MarkProperties Dialog, if currently shown
                                                     if( ( NULL != pMarkPropDialog ) && ( pMarkPropDialog->IsShown() ) ) {
-                                                        if( m_pRoutePointEditTarget == pMarkPropDialog->GetRoutePoint() ) pMarkPropDialog->UpdateProperties();
+                                                        if( m_pRoutePointEditTarget == pMarkPropDialog->GetRoutePoint() ) pMarkPropDialog->UpdateProperties( true );
                                                     }
                                                     
                                                     if(g_bopengl) {
@@ -6090,6 +6085,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 }
                 m_pFoundRoutePoint = NULL;
                 
+                Refresh( true );
                 
             }                
             
@@ -6212,7 +6208,10 @@ bool ChartCanvas::MouseEventProcessCanvas( wxMouseEvent& event )
 
 void ChartCanvas::MouseEvent( wxMouseEvent& event )
 {
-    if(cc1->MouseEventChartBar( event ))
+    if(g_Compass && g_Compass->MouseEvent( event ))
+        return;
+
+    if(MouseEventChartBar( event ))
         return;
 
     if(MouseEventSetup( event ))
@@ -8109,7 +8108,7 @@ void ChartCanvas::ShowTrackPropertiesDialog( Route* selected )
 
 void pupHandler_PasteWaypoint() {
     Kml* kml = new Kml();
-    ::wxBeginBusyCursor();
+    OCPNPlatform::ShowBusySpinner();
 
     int pasteBuffer = kml->ParsePasteBuffer();
     RoutePoint* pasted = kml->GetParsedRoutePoint();
@@ -8146,12 +8145,12 @@ void pupHandler_PasteWaypoint() {
     cc1->InvalidateGL();
     cc1->Refresh( false );
     delete kml;
-    ::wxEndBusyCursor();
+    OCPNPlatform::HideBusySpinner();
 }
 
 void pupHandler_PasteRoute() {
     Kml* kml = new Kml();
-    ::wxBeginBusyCursor();
+    OCPNPlatform::ShowBusySpinner();
 
     int pasteBuffer = kml->ParsePasteBuffer();
     Route* pasted = kml->GetParsedRoute();
@@ -8266,12 +8265,12 @@ void pupHandler_PasteRoute() {
     }
 
     delete kml;
-    ::wxEndBusyCursor();
+    OCPNPlatform::HideBusySpinner();
 }
 
 void pupHandler_PasteTrack() {
     Kml* kml = new Kml();
-    ::wxBeginBusyCursor();
+    OCPNPlatform::ShowBusySpinner();
 
     int pasteBuffer = kml->ParsePasteBuffer();
     Track* pasted = kml->GetParsedTrack();
@@ -8318,7 +8317,7 @@ void pupHandler_PasteTrack() {
     cc1->InvalidateGL();
     cc1->Refresh( false );
     delete kml;
-    ::wxEndBusyCursor();
+    OCPNPlatform::HideBusySpinner();
 }
 
 bool ChartCanvas::InvokeCanvasMenu(int x, int y, int seltype)
@@ -8338,7 +8337,6 @@ bool ChartCanvas::InvokeCanvasMenu(int x, int y, int seltype)
 #ifdef __WXQT__
     gFrame->SurfaceToolbar();
     //g_FloatingToolbarDialog->Raise();
-    g_FloatingCompassDialog->Raise();
     if(g_ChartBarWin && g_ChartBarWin->IsShown())
         g_ChartBarWin->Raise();
 #endif
@@ -9150,7 +9148,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
             //    Associate with temp_dc
             wxRegion *clip_region = backgroundRegion.GetNew_wxRegion();
-            temp_dc.SetClippingRegion( *clip_region );
+            temp_dc.SetDeviceClippingRegion( *clip_region );
             delete clip_region;
 
             ocpnDC bgdc( temp_dc );
@@ -9245,7 +9243,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
     mscratch_dc.ResetBoundingBox();
     mscratch_dc.DestroyClippingRegion();
-    mscratch_dc.SetClippingRegion( rgn_chart );
+    mscratch_dc.SetDeviceClippingRegion( rgn_chart );
 
     //    Blit the externally invalidated areas of the chart onto the scratch dc
     wxRegionIterator upd( rgn_blit ); // get the update rect list
@@ -9275,6 +9273,9 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         g_Piano->Paint(GetClientSize().y - g_Piano->GetHeight(), mscratch_dc);
         m_brepaint_piano = false;
     }
+
+    if(g_Compass)
+        g_Compass->Paint(scratch_dc);
 
     //quiting?
     if( g_bquiting ) {
@@ -9722,7 +9723,14 @@ emboss_data *ChartCanvas::EmbossDepthScale()
     }
 
     ped->x = ( GetVP().pix_width - ped->width );
-    ped->y = 40;
+
+    if(g_Compass && pConfig->m_bShowCompassWin){
+        wxRect r = g_Compass->GetRect();
+        ped->y = r.y + r.height;
+     }
+     else{
+        ped->y = 40;
+    }
     return ped;
 }
 
@@ -9730,13 +9738,17 @@ void ChartCanvas::CreateDepthUnitEmbossMaps( ColorScheme cs )
 {
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
     wxFont font;
-    if( style->embossFont == wxEmptyString )
-        font = wxFont( 60, wxFONTFAMILY_ROMAN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
+    if( style->embossFont == wxEmptyString ){
+        wxFont *dFont = FontMgr::Get().GetFont( _("Dialog"), 0 );
+        font = *dFont;
+        font.SetPointSize(60);
+        font.SetWeight(wxFONTWEIGHT_BOLD);
+    }
     else
         font = wxFont( style->embossHeight, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, style->embossFont );
 
     int emboss_width = 500;
-    int emboss_height = 100;
+    int emboss_height = 200;
 
 // Free any existing emboss maps
     delete m_pEM_Feet;
@@ -9757,11 +9769,15 @@ void ChartCanvas::SetOverzoomFont()
     int w, h;
 
     wxFont font;
-    if( style->embossFont == wxEmptyString )
-        font = wxFont( 40, wxFONTFAMILY_ROMAN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
+    if( style->embossFont == wxEmptyString ){
+        wxFont *dFont = FontMgr::Get().GetFont( _("Dialog"), 0 );
+        font = *dFont;
+        font.SetPointSize(40);
+        font.SetWeight(wxFONTWEIGHT_BOLD);
+    }
     else
         font = wxFont( style->embossHeight, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, style->embossFont );
-
+    
     wxClientDC dc( this );
     dc.SetFont( font );
     dc.GetTextExtent( OVERZOOM_TEXT, &w, &h );
@@ -9808,7 +9824,8 @@ emboss_data *ChartCanvas::CreateEmbossMapData( wxFont &font, int width, int heig
 
     int str_w, str_h;
     temp_dc.GetTextExtent( str, &str_w, &str_h );
-    temp_dc.DrawText( str, width - str_w - 10, 10 );
+//    temp_dc.DrawText( str, width - str_w - 10, 10 );
+    temp_dc.DrawText( str, 1, 1 );
     
     //  Deselect the bitmap
     temp_dc.SelectObject( wxNullBitmap );
@@ -9816,6 +9833,11 @@ emboss_data *ChartCanvas::CreateEmbossMapData( wxFont &font, int width, int heig
     //  Convert bitmap the wxImage for manipulation
     wxImage img = bmp.ConvertToImage();
 
+    int image_width = str_w * 105 / 100;
+    int image_height = str_h * 105 / 100;
+    wxRect r(0,0, wxMin(image_width, img.GetWidth()), wxMin(image_height, img.GetHeight()));
+    wxImage imgs = img.GetSubImage(r);
+    
     double val_factor;
     switch( cs ) {
     case GLOBAL_COLOR_SCHEME_DAY:
@@ -9832,16 +9854,16 @@ emboss_data *ChartCanvas::CreateEmbossMapData( wxFont &font, int width, int heig
 
     int val;
     int index;
-    pmap = (int *) calloc( width * height * sizeof(int), 1 );
+    pmap = (int *) calloc( imgs.GetWidth() * imgs.GetHeight() * sizeof(int), 1 );
     //  Create emboss map by differentiating the emboss image
     //  and storing integer results in pmap
     //  n.b. since the image is B/W, it is sufficient to check
     //  one channel (i.e. red) only
-    for( int y = 1; y < height - 1; y++ ) {
-        for( int x = 1; x < width - 1; x++ ) {
+    for( int y = 1; y < imgs.GetHeight() - 1; y++ ) {
+        for( int x = 1; x < imgs.GetWidth() - 1; x++ ) {
             val = img.GetRed( x + 1, y + 1 ) - img.GetRed( x - 1, y - 1 );  // range +/- 256
             val = (int) ( val * val_factor );
-            index = ( y * width ) + x;
+            index = ( y * imgs.GetWidth() ) + x;
             pmap[index] = val;
 
         }
@@ -9849,8 +9871,8 @@ emboss_data *ChartCanvas::CreateEmbossMapData( wxFont &font, int width, int heig
 
     emboss_data *pret = new emboss_data;
     pret->pmap = pmap;
-    pret->width = width;
-    pret->height = height;
+    pret->width = imgs.GetWidth();
+    pret->height = imgs.GetHeight();
 
     return pret;
 }
