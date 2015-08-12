@@ -53,8 +53,8 @@ class about: public wxDialog
       DECLARE_EVENT_TABLE()
 
   public:
-    about( );
-    about( wxWindow* parent, wxString License_Data_Locn,
+    explicit about( );
+    explicit about( wxWindow* parent, wxString License_Data_Locn,
            wxWindowID id = ID_DIALOG,
            const wxString& caption = SYMBOL_ABOUT_TITLE,
            const wxPoint& pos = wxDefaultPosition,
