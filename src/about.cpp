@@ -170,40 +170,39 @@ BEGIN_EVENT_TABLE( about, wxDialog )
     EVT_CLOSE( about::OnClose )
 END_EVENT_TABLE()
 
-about::about( )
-{
-}
+about::about( void ) :
+    m_DataLocn( wxEmptyString ),
+    m_parent( NULL ),
+    m_btips_loaded ( FALSE ) { }
 
 about::about( wxWindow* parent,wxString Data_Locn, wxWindowID id, const wxString& caption,
-                  const wxPoint& pos, const wxSize& size, long style)
+                  const wxPoint& pos, const wxSize& size, long style) :
+    m_DataLocn( Data_Locn ),
+    m_parent( parent ),
+    m_btips_loaded ( FALSE )
 {
-  m_DataLocn = Data_Locn;
-#ifdef __WXOSX__
-  style |= wxSTAY_ON_TOP;
-#endif
   Create(parent, id, caption, pos, size, style);
-  m_parent = parent;
 }
 
 
 bool about::Create( wxWindow* parent, wxWindowID id, const wxString& caption, const wxPoint& pos,
         const wxSize& size, long style )
 {
+    m_parent = parent;
+#ifdef __WXOSX__
+  style |= wxSTAY_ON_TOP;
+#endif
+
     SetExtraStyle( GetExtraStyle() | wxWS_EX_BLOCK_EVENTS );
     wxDialog::Create( parent, id, caption, pos, size, style );
-
-    m_parent = parent;
-
-    m_btips_loaded = false;
-
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     SetFont( *qFont );
-    
+
     m_displaySize = g_Platform->getDisplaySize();
     CreateControls();
-    
+
     Update();
-    
+
     //Set the maximum size of the entire settings dialog
     SetSizeHints( -1, -1, m_displaySize.x-100, m_displaySize.y-100 );
 
@@ -216,8 +215,7 @@ bool about::Create( wxWindow* parent, wxWindowID id, const wxString& caption, co
         esize.y = GetCharHeight() * 30;
         SetSize( esize );
     }
-    
-        
+
     Centre();
 
     return TRUE;
@@ -230,8 +228,8 @@ void about::SetColorScheme( void )
     pAboutHTMLCtl->SetBackgroundColour( bg );
     SetBackgroundColour( bg );                  // This looks like non-sense, but is needed for __WXGTK__
                                                 // to get colours to propagate down the control's family tree.
-    
-    #ifdef __WXQT__    
+
+    #ifdef __WXQT__
     //  wxQT has some trouble clearing the background of HTML window...
     wxBitmap tbm( GetSize().x, GetSize().y, -1 );
     wxMemoryDC tdc( tbm );
@@ -240,7 +238,7 @@ void about::SetColorScheme( void )
     tdc.Clear();
     pAboutHTMLCtl->SetBackgroundImage(tbm);
     #endif
-    
+
 }
 
 void about::Update()
@@ -252,56 +250,56 @@ void about::Update()
     wxString aboutText;
     aboutText.Printf( _T("<html><body bgcolor=#%02x%02x%02x><font color=#%02x%02x%02x>"),
                    bg.Red(), bg.Blue(), bg.Green(), fg.Red(), fg.Blue(), fg.Green() );
-    
+
     wxFont *dFont = FontMgr::Get().GetFont( _("Dialog") );
     wxString face = dFont->GetFaceName();
-    
+
     #ifdef __WXOSX__
     int points = dFont->GetPointSize();
     #else
     int points = dFont->GetPointSize() + 1;
     #endif
-    
+
     int sizes[7];
     for ( int i=-2; i<5; i++ ) {
         sizes[i+2] = points + i + (i>0?i:0);
     }
     pAboutHTMLCtl->SetFonts(face, face, sizes);
-    
+
     if(wxFONTSTYLE_ITALIC == dFont->GetStyle())
         aboutText += _T("<i>");
-    
+
     wxString *pAboutString = new wxString( AboutText, wxConvUTF8 );
     pAboutString->Append( OpenCPNVersion );
     pAboutString->Append( wxString( OpenCPNInfo, wxConvUTF8 ) );
-    
+
     // Show the user where the log file is going to be
     wxString log = _T("    Logfile location: ");
     log.Append( g_Platform->GetLogFileName() );
     pAboutString->Append(log);
-    
+
     // Show the user where the config file is going to be
     wxString conf = _T("<br><br>    Config file location: ");
     conf.Append( g_Platform->GetConfigFileName() );
     pAboutString->Append(conf);
-    
+
     aboutText << *pAboutString;
     delete pAboutString;
-    
+
     aboutText << _T("</font>");
     if(wxFONTSTYLE_ITALIC == dFont->GetStyle())
         aboutText << _T("</i>");
-    
+
     aboutText << _T("</body></html>");
-    
+
     pAboutHTMLCtl->SetPage( aboutText );
 
-    
+
     pAuthorTextCtl->Clear();
     wxString *pAuthorsString = new wxString( AuthorText, wxConvUTF8 );
     pAuthorTextCtl->WriteText( *pAuthorsString );
     pAuthorTextCtl->SetInsertionPoint( 0 );
-    
+
     delete pAuthorsString;
 
     pLicenseTextCtl->Clear();
@@ -337,7 +335,7 @@ void about::CreateControls()
     int v_size = 300;
     if(g_bresponsive)
         v_size = -1;
-    
+
     about* itemDialog1 = this;
 
     wxBoxSizer* aboutSizer = new wxBoxSizer( wxVERTICAL );
@@ -355,7 +353,7 @@ void about::CreateControls()
         buttonSizer = new wxBoxSizer( wxVERTICAL );
     else
         buttonSizer = new wxBoxSizer(wxHORIZONTAL );
-    
+
 
     wxButton* copyIni = new wxButton( itemDialog1, ID_COPYINI, _("Copy Settings File to Clipboard") );
     buttonSizer->Add( copyIni, 1, wxALL | wxEXPAND, 3 );
@@ -390,13 +388,13 @@ void about::CreateControls()
     wxBoxSizer* itemBoxSizer6 = new wxBoxSizer( wxVERTICAL );
     itemPanelAbout->SetSizer( itemBoxSizer6 );
 
-    
+
     pAboutHTMLCtl = new wxHtmlWindow( itemPanelAbout, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                                 wxHW_SCROLLBAR_AUTO | wxHW_NO_SELECTION);
-    
+
     pAboutHTMLCtl->SetBorders( 5 );
     itemBoxSizer6->Add( pAboutHTMLCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxEXPAND | wxALL, 5 );
-    
+
     //     Authors Panel
     itemPanelAuthors = new wxPanel( pNotebook, -1, wxDefaultPosition, wxDefaultSize,
             wxSUNKEN_BORDER | wxTAB_TRAVERSAL );
