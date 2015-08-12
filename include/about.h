@@ -76,10 +76,9 @@ class about: public wxDialog
     void Update();
     void OnClose( wxCloseEvent& event );
     void SetColorScheme( void );
-    
+
     wxString          m_DataLocn;
     wxWindow          *m_parent;
-    wxHtmlWindow      *m_ptips_window;
     bool              m_btips_loaded;
 
     wxPanel* itemPanelAbout;
