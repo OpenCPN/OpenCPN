@@ -3651,7 +3651,8 @@ void options::OnOpenGLOptions( wxCommandEvent& event )
         g_GLOptions.m_bTextureCompression = dlg.m_cbTextureCompression->GetValue();
         
         g_bShowFPS = dlg.m_cbShowFPS->GetValue();
-        g_bSoftwareGL = dlg.m_cbSoftwareGL->GetValue();
+        if(dlg.m_cbSoftwareGL)
+            g_bSoftwareGL = dlg.m_cbSoftwareGL->GetValue();
         
         if(g_bexpert){
             g_GLOptions.m_bTextureCompressionCaching = dlg.m_cbTextureCompressionCaching->GetValue();
@@ -6649,6 +6650,7 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
     m_bSizer1->Add( m_cbShowFPS, 0,  wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5 );
     m_cbShowFPS->SetValue(g_bShowFPS);
 
+    m_cbSoftwareGL = NULL;
 #if defined(__UNIX__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
     if(cc1->GetglCanvas()->GetVersionString().Upper().Find( _T("MESA") ) != wxNOT_FOUND) {
         m_cbSoftwareGL = new wxCheckBox( this, wxID_ANY, _("Software OpenGL (restart OpenCPN)") );
