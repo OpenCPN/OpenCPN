@@ -60,20 +60,20 @@ class about: public wxDialog
            const wxPoint& pos = wxDefaultPosition,
            const wxSize& size = wxSize(500, 500),
            long style = wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX);
-
    bool Create( wxWindow* parent,
                 wxWindowID id = ID_DIALOG,
                  const wxString& caption = SYMBOL_ABOUT_TITLE,
                  const wxPoint& pos = wxDefaultPosition,
                  const wxSize& size = wxSize(500, 500),
                  long style = wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX );
+    void Update();
 
+  private:
     void CreateControls();
     void OnXidOkClick( wxCommandEvent& event );
     void OnPageChange(wxNotebookEvent& event);
     void OnDonateClick( wxCommandEvent& event );
     void OnCopyClick( wxCommandEvent& event );
-    void Update();
     void OnClose( wxCloseEvent& event );
     void SetColorScheme( void );
 
@@ -86,7 +86,6 @@ class about: public wxDialog
     wxPanel* itemPanelLicense;
     wxPanel* itemPanelTips;
 
-    wxTextCtrl *pAboutTextCtl;
     wxTextCtrl *pAuthorTextCtl;
     wxTextCtrl *pLicenseTextCtl;
     wxNotebook *pNotebook;
