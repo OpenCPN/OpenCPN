@@ -48,12 +48,9 @@
 #include "OCPNPlatform.h"
 #include "FontMgr.h"
 
-wxString str_version_start = wxT("\n      Version ");
-wxString str_version_major = wxString::Format(wxT("%i"),VERSION_MAJOR);
-wxString str_version_minor = wxString::Format(wxT("%i"),VERSION_MINOR);
-wxString str_version_patch = wxString::Format(wxT("%i"),VERSION_PATCH);
-wxString str_version_date(VERSION_DATE, wxConvUTF8);
-wxString OpenCPNVersion = str_version_start + str_version_major + wxT(".") + str_version_minor + wxT(".") + str_version_patch + wxT(" Build ") + str_version_date;
+wxString OpenCPNVersion =
+    wxString::Format( wxT("\n      Version %i.%i.%i Build %s"),
+        VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_DATE );
 
 extern OCPNPlatform     *g_Platform;
 extern MyFrame          *gFrame;
