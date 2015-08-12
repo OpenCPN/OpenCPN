@@ -412,6 +412,7 @@ Track::Track( void )
     m_fixedTP = NULL;
     m_track_run = 0;
     m_CurrentTrackSeg = 0;
+    m_prev_dist = 999.0;
 }
 
 Track::~Track()
