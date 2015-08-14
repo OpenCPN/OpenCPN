@@ -310,7 +310,7 @@ androidUtilHandler::androidUtilHandler()
 
 void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
 {
-    qDebug() << "onTimerEvent";
+//    qDebug() << "onTimerEvent";
 
     switch(m_action){
         case ACTION_RESIZE_PERSISTENTS:            //  Handle rotation/resizing of persistent dialogs
@@ -532,7 +532,7 @@ wxSize getAndroidConfigSize()
 
 void resizeAndroidPersistents()
 {
-    qDebug() << "resizeAndroidPersistents";
+//    qDebug() << "resizeAndroidPersistents";
     
      if(g_androidUtilHandler){
      
@@ -617,7 +617,7 @@ extern "C"{
         const char *string = env->GetStringUTFChars(nmea_string, NULL);
         wxString wstring = wxString(string, wxConvUTF8);
         
-        qDebug() << "processNMEA" << string;
+//        qDebug() << "processNMEA" << string;
         
         char tstr[200];
         strncpy(tstr, string, 190);
@@ -639,26 +639,20 @@ extern "C"{
 extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onConfigChange(JNIEnv *env, jobject obj)
     {
-        qDebug() << "onConfigChange";
+//        qDebug() << "onConfigChange";
         GetAndroidDisplaySize();
         
         wxSize new_size = getAndroidDisplayDimensions();
-        qDebug() << "onConfigChange" << new_size.x << new_size.y;
+//        qDebug() << "onConfigChange" << new_size.x << new_size.y;
         
         config_size = new_size;
         
         wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
         evt.SetId( ID_CMD_TRIGGER_RESIZE );
-        gFrame->GetEventHandler()->AddPendingEvent(evt);
+        if(gFrame && gFrame->GetEventHandler()){
+            gFrame->GetEventHandler()->AddPendingEvent(evt);
+        }
                 
-//        gFrame->TriggerResize(new_size);
-
-//         if(g_androidUtilHandler){
-//             
-//             g_androidUtilHandler->m_action = ACTION_RESIZE_PERSISTENTS;
-//             g_androidUtilHandler->m_eventTimer.Start(200, wxTIMER_ONE_SHOT);
-//         }
-        
         return 77;
     }
 }
@@ -738,7 +732,7 @@ extern "C"{
 extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_selectChartDisplay(JNIEnv *env, jobject obj, int type, int family)
     {
-        qDebug() << "selectChartDisplay" << type << family;
+//        qDebug() << "selectChartDisplay" << type << family;
         
         wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
         if(type == CHART_TYPE_CM93COMP){
@@ -751,7 +745,7 @@ extern "C"{
         }
         
         if(gFrame){
-            qDebug() << "add event" << type << family;
+//            qDebug() << "add event" << type << family;
             gFrame->GetEventHandler()->AddPendingEvent(evt);
         }
 
@@ -794,7 +788,7 @@ extern "C"{
 extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_invokeMenuItem(JNIEnv *env, jobject obj, int item)
     {
-        qDebug() << "invokeMenuItem" << item;
+//        qDebug() << "invokeMenuItem" << item;
         
         // If in Route Create, disable all other menu items
         if( (gFrame->nRoute_State > 1 ) && (OCPN_ACTION_ROUTE != item) ) {
@@ -883,7 +877,7 @@ extern "C"{
 extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_setDownloadStatus(JNIEnv *env, jobject obj, int status, jstring url)
     {
-        qDebug() << "setDownloadStatus";
+//        qDebug() << "setDownloadStatus";
  
         const char *sparm;
         wxString wx_sparm;
@@ -899,7 +893,7 @@ extern "C"{
         
         if(s_bdownloading && wx_sparm.IsSameAs(s_requested_url) ){
             
-            qDebug() << "Maybe mine...";
+//            qDebug() << "Maybe mine...";
             //  We simply pass the event on to the core download manager methods,
             //  with parameters crafted to the event
             OCPN_downloadEvent ev(wxEVT_DOWNLOAD_EVENT, 0);
@@ -930,7 +924,7 @@ extern "C"{
             ev.setDLEventStatus( dl_status );
             
             if(s_download_evHandler){
-                qDebug() << "Sending event...";
+//                qDebug() << "Sending event...";
                 s_download_evHandler->AddPendingEvent(ev);
             }
             
@@ -1275,7 +1269,7 @@ void androidSetChartTypeMaskSel( int mask, wxString &indicator)
         sel = 4;
 
     if((g_mask != mask) || (g_sel != sel)){
-        qDebug() << "androidSetChartTypeMaskSel" << mask << sel;
+//        qDebug() << "androidSetChartTypeMaskSel" << mask << sel;
         callActivityMethod_iis("configureNavSpinnerTS", mask, sel);
         g_mask = mask;
         g_sel = sel;
@@ -1448,7 +1442,7 @@ double getAndroidDPmm()
         size_mm = wxMax(size_mm, 50);
         size_mm = wxMin(size_mm, 400);
         double ret = maxDim / size_mm;
-        qDebug() << "getAndroidDPmm override" << maxDim << size_mm << g_config_display_size_mm;
+//        qDebug() << "getAndroidDPmm override" << maxDim << size_mm << g_config_display_size_mm;
         return ret;
     }
         
@@ -1533,7 +1527,7 @@ wxSize getAndroidDisplayDimensions( void )
         
     }
 
-    qDebug() << sz_ret.x << sz_ret.y;
+//    qDebug() << sz_ret.x << sz_ret.y;
     
     return sz_ret;
     
@@ -2075,7 +2069,7 @@ int startAndroidFileDownload( const wxString &url, const wxString& destination, 
     
         wxString result = callActivityMethod_s2s( "downloadFile", url, destination );
 
-        wxLogMessage(_T("downloads2s result: ") + result);
+  //      wxLogMessage(_T("downloads2s result: ") + result);
         long dl_ID;
         wxStringTokenizer tk(result, _T(";"));
         if( tk.HasMoreTokens() ){
@@ -2084,7 +2078,7 @@ int startAndroidFileDownload( const wxString &url, const wxString& destination, 
                 token = tk.GetNextToken();
                 token.ToLong(&dl_ID);
                 *dl_id = dl_ID;
-                qDebug() << dl_ID;
+  //              qDebug() << dl_ID;
                 return 0;
             }
         }
@@ -2100,7 +2094,7 @@ int queryAndroidFileDownload( long dl_ID, wxString *result )
     wxString stat = callActivityMethod_is( "getDownloadStatus", (int)dl_ID );
     *result = stat;
     
-    wxLogMessage( _T("queryAndroidFileDownload: ") + stat); 
+//    wxLogMessage( _T("queryAndroidFileDownload: ") + stat); 
     
     return 0;
     
@@ -2125,9 +2119,9 @@ void cancelAndroidFileDownload( long dl_ID )
 wxString getFontQtStylesheet(wxFont *font)
 {
     // wxString classes = _T("QLabel, QPushButton, QTreeWidget, QTreeWidgetItem, QCheckBox");
-    wxString classes = _T("");
+    wxString classes = _T("QWidget ");
     
-    wxString qstyle = classes + _T("  font-family: ") + font->GetFaceName() + _T(";font-style: ");
+    wxString qstyle = classes + _T("{  font-family: ") + font->GetFaceName() + _T(";font-style: ");
     switch(font->GetStyle()){
         case wxFONTSTYLE_ITALIC:
             qstyle += _T("italic;");
@@ -2153,7 +2147,7 @@ wxString getFontQtStylesheet(wxFont *font)
     
     qstyle += _T("font-size: ");
     wxString fontSize;
-    fontSize.Printf(_T("%dpt "), font->GetPointSize());
+    fontSize.Printf(_T("%dpt }"), font->GetPointSize());
     qstyle += fontSize;
     
     return qstyle;
