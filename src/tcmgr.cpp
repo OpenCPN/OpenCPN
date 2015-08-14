@@ -817,7 +817,9 @@ bool TCMgr::GetTideOrCurrent(time_t t, int idx, float &tcvalue, float& dir)
     return(true); // Got it!
 }
 
-bool TCMgr::GetTideOrCurrent15(time_t t, int idx, float &tcvalue, float& dir, bool &bnew_val)
+extern wxDateTime gTimeSource;
+
+bool TCMgr::GetTideOrCurrent15(time_t t_d, int idx, float &tcvalue, float& dir, bool &bnew_val)
 {
     int ret;
     IDX_entry *pIDX = &m_Combined_IDX_array.Item( idx );             // point to the index entry
@@ -829,7 +831,9 @@ bool TCMgr::GetTideOrCurrent15(time_t t, int idx, float &tcvalue, float& dir, bo
     }
 
     //    Figure out this computer timezone minute offset
-    wxDateTime this_now = wxDateTime::Now();
+    wxDateTime this_now = gTimeSource; // wxDateTime::Now();
+    if (this_now.IsValid() == false)
+        this_now = wxDateTime::Now();
     wxDateTime this_gmt = this_now.ToGMT();
     wxTimeSpan diff = this_gmt.Subtract(this_now);
     int diff_mins = diff.GetMinutes();
@@ -839,7 +843,8 @@ bool TCMgr::GetTideOrCurrent15(time_t t, int idx, float &tcvalue, float& dir, bo
         station_offset += 60;
     int corr_mins = station_offset - diff_mins;
 
-    wxDateTime today_00 = wxDateTime::Today();
+    wxDateTime today_00 = this_now;
+    today_00.ResetTime();
     int t_today_00 = today_00.GetTicks();
     int t_today_00_at_station = t_today_00 - (corr_mins * 60);
 

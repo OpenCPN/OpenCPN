@@ -47,6 +47,7 @@ BEGIN_EVENT_TABLE ( TCWin, wxWindow ) EVT_PAINT ( TCWin::OnPaint )
 END_EVENT_TABLE()
 
 // Define a constructor
+extern wxDateTime gTimeSource;
 TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
 {
 
@@ -100,7 +101,12 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     GetClientSize( &sx, &sy );
     
 //    Figure out this computer timezone minute offset
-    wxDateTime this_now = wxDateTime::Now();
+    wxDateTime this_now = gTimeSource;
+    bool cur_time = !gTimeSource.IsValid();
+
+    if (cur_time) {
+        this_now = wxDateTime::Now();
+    }
     wxDateTime this_gmt = this_now.ToGMT();
 
 #if wxCHECK_VERSION(2, 6, 2)
@@ -124,8 +130,9 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     if( this_now.IsDST() ) m_corr_mins += 60;
 
 //    Establish the inital drawing day as today
-    m_graphday = wxDateTime::Now();
-    wxDateTime graphday_00 = wxDateTime::Today();
+    m_graphday = this_now;
+    wxDateTime graphday_00 = this_now;
+    graphday_00.ResetTime();
     time_t t_graphday_00 = graphday_00.GetTicks();
 
     //    Correct a Bug in wxWidgets time support
@@ -489,7 +496,12 @@ void TCWin::OnPaint( wxPaintEvent& event )
         }
 
         //    Make a line for "right now"
-        time_t t_now = wxDateTime::Now().GetTicks();       // now, in ticks
+        wxDateTime this_now = gTimeSource;
+        bool cur_time = !gTimeSource.IsValid();
+        if (cur_time)
+            this_now = wxDateTime::Now();
+
+        time_t t_now = this_now.GetTicks();       // now, in ticks
 
         float t_ratio = m_graph_rect.width * ( t_now - m_t_graphday_00_at_station ) / ( 25 * 3600 );
 
@@ -721,9 +733,8 @@ void TCWin::OnPaint( wxPaintEvent& event )
         }
 
 //    Today or tomorrow
-        if( (m_button_height * 15) < x ){        // large enough horizontally?
+        if( (m_button_height * 15) < x && cur_time){        // large enough horizontally?
             wxString sday;
-            wxDateTime this_now = wxDateTime::Now();
 
             int day = m_graphday.GetDayOfYear();
             if( m_graphday.GetYear() == this_now.GetYear() ) {
