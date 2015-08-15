@@ -65,6 +65,7 @@
 #include "tcmgr.h"
 #include "compass.h"
 #include "FontMgr.h"
+#include "texcmp/mipmap.h"
 
 #ifndef GL_ETC1_RGB8_OES
 #define GL_ETC1_RGB8_OES                                        0x8D64
@@ -1308,6 +1309,7 @@ void glChartCanvas::SetupOpenGL()
     
 #endif
 
+    MipMap_ResolveRoutines();
     SetupCompression();
 
     //  Some platforms under some conditions, require a full set of MipMaps, from 0
@@ -3223,7 +3225,7 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
                                     pd = (unsigned char *) malloc( dim * dim * 3 );
                                     HalfScaleChartBits( 2*dim, 2*dim, ps, pd );
 
-                                    glTexImage2D( GL_TEXTURE_2D, level, GL_RGB, dim, dim, 0, GL_RGB, GL_UNSIGNED_BYTE, pd );
+                                    MipMap_24( GL_TEXTURE_2D, level, GL_RGB, dim, dim, 0, GL_RGB, GL_UNSIGNED_BYTE, pd );
                                     
                                     free(ps);
                                     ps = pd;

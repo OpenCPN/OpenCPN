@@ -1069,7 +1069,8 @@ IF (OPENGL_FOUND)
     src/texcmp/squish/rangefit.cpp
     src/texcmp/squish/singlecolourfit.cpp
     src/texcmp/squish/squish.cpp
-    src/texcmp/etcpak.cpp)
+    src/texcmp/etcpak.cpp
+    src/texcmp/mipmap.cpp)
 
   INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/texcmp/lz4)
   INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/texcmp/squish)
@@ -1083,7 +1084,8 @@ IF (OPENGL_FOUND)
       IF (( ARCH MATCHES "i386" OR ARCH MATCHES "amd64" OR ARCH MATCHES "x86_64") AND NOT QT_ANDROID)
         # using sse which makes the compression run about 50% faster
         message (STATUS "Compiling texture compression library with sse support")
-        set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "-O3 -msse2 -DSQUISH_USE_SSE=2")
+#        set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "-O3 -msse2 -DSQUISH_USE_SSE=2")
+        set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "-O3 -msse2 -mssse3 -DSQUISH_USE_SSE=2")
       ELSE ()
         # use standard optimizations for other architectures
         set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "-O3")
