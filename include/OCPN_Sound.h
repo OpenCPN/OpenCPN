@@ -49,6 +49,7 @@ public:
 
 private:
     bool m_OK;
+    wxString m_soundfile;
 
 #ifdef OCPN_USE_PORTAUDIO
     bool LoadWAV(const wxUint8 *data, size_t length, bool copyData);

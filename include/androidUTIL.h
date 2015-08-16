@@ -109,5 +109,7 @@ extern wxString getFontQtStylesheet(wxFont *font);
 extern wxSize getAndroidConfigSize();
 void resizeAndroidPersistents();
 
+bool androidPlaySound( wxString soundfile );
+
 
 #endif   //guard

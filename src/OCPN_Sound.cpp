@@ -24,6 +24,9 @@
 
 #include "OCPN_Sound.h"
 #include <wx/file.h>
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#endif
 
 int                       g_iSoundDeviceIndex;
 
@@ -373,10 +376,12 @@ void OCPN_Sound::FreeMem(void)
 }
 
 #else  //OCPN_USE_PORTAUDIO
+
+#ifndef __OCPN__ANDROID__
 OCPN_Sound::OCPN_Sound()
 {
 //    wxSound::wxSound();
-    m_OK = false;
+x    m_OK = false;
 }
 
 OCPN_Sound::~OCPN_Sound()
@@ -425,6 +430,55 @@ void OCPN_Sound::Stop()
 {
     wxSound::Stop();
 }
+#else           // __OCPN__ANDROID__
+OCPN_Sound::OCPN_Sound()
+{
+    m_OK = false;
+}
+
+OCPN_Sound::~OCPN_Sound()
+{
+    Stop();
+}
+
+int OCPN_Sound::DeviceCount()
+{
+    return 1;
+}
+
+bool OCPN_Sound::IsOk() const
+{
+    return m_OK;
+}
+
+bool OCPN_Sound::Create(const wxString& fileName, int deviceIndex, bool isResource)
+{
+    m_soundfile = fileName;
+    m_OK = true;
+    return true;
+}
+
+void OCPN_Sound::UnLoad(void)
+{
+    Stop();
+    m_OK = false;
+    
+}
+
+bool OCPN_Sound::Play(unsigned flags) const
+{
+    return androidPlaySound( m_soundfile );
+}
+
+bool OCPN_Sound::IsPlaying() const
+{
+    return false;
+}
+
+void OCPN_Sound::Stop()
+{
+}
+#endif                  // __OCPN__ANDROID__
 
 #endif  //OCPN_USE_PORTAUDIO
 
