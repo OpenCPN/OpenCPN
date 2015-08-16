@@ -99,6 +99,8 @@ extern wxString           str_version_major;
 extern wxString           str_version_minor;
 extern wxString           str_version_patch;
 
+extern MyConfig                  *pConfig;
+
 extern ocpnStyle::StyleManager* g_StyleManager;
 
 extern bool                      g_bshowToolbar;
@@ -540,6 +542,7 @@ void OCPNPlatform::OnExit_2( void ){
 
 //      Setup default global options when config file is unavailable,
 //      as on initial startup after new install
+//      The global config object (pConfig) is available, so direct updates are also allowed
 
 void OCPNPlatform::SetDefaultOptions( void )
 {
@@ -576,6 +579,9 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_GLOptions.m_bTextureCompressionCaching = 1;
 #endif
     
+    //[PlugIns/libchartdldr_pi.so]
+    //bEnabled=1
+    
     g_btouch = true;
     g_bresponsive = true;
     g_default_font_size = 18;            //  This is pretty close to TextAppearance.Medium
@@ -597,6 +603,15 @@ void OCPNPlatform::SetDefaultOptions( void )
     
     new_params->bEnabled = true;
     g_pConnectionParams->Add(new_params);
+    
+    //  Enable some default PlugIns
+    
+    if(pConfig){
+        pConfig->SetPath( _T ( "/PlugIns/libchartdldr_pi.so" ) );
+        pConfig->Write( _T ( "bEnabled" ), true );
+    }
+        
+        
     
 #endif
     
@@ -1067,7 +1082,7 @@ bool OCPNPlatform::hasInternalGPS(wxString profile)
     
 #ifdef __OCPN__ANDROID__
     bool t = androidDeviceHasGPS();
-    qDebug() << "androidDeviceHasGPS" << t;
+//    qDebug() << "androidDeviceHasGPS" << t;
     return t;
 #else
 
@@ -1537,7 +1552,7 @@ bool OCPNPlatform::hasInternalBT(wxString profile)
 {
 #ifdef __OCPN__ANDROID__
     bool t = androidDeviceHasBlueTooth();
-    qDebug() << "androidDeviceHasBluetooth" << t;
+//    qDebug() << "androidDeviceHasBluetooth" << t;
     return t;
 #else
     
