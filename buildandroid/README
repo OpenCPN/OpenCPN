@@ -4,6 +4,9 @@
 
     cmake -DUSE_GARMINHOST=OFF -D_wx_selected_config=androideabi-qt -DCMAKE_TOOLCHAIN_FILE=../buildandroid/build_android.cmake -DwxQt_Build=build_android_55 -DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets -DQt_Base=/home/dsr/Qt5.5.0/5.5 ..
 
+    // To find out what libraries are needed by an elf.
+    $readelf -d libchartdldr_pi.so | grep NEEDED
+
         export CPPFLAGS=-D__ANDROID__  && export PATH=/home/dsr/Projects/android-ndk/ndk-toolchain/bin:$PATH && export CC=arm-linux-androideabi-gcc && export CXX=arm-linux-androideabi-g++
 
         __Filter logcat, especially on BluPhone
@@ -771,6 +774,34 @@ You should not run 'make install'.
 
 14.  Upgrade to Qt5.5
 
+
+    0.  There is a bug in Qt5.5 that prevents Android life cycle events from performing correctly
+        So, we need to apply the following patch and rebuild Qt5.5
+
+        ------------------ src/gui/kernel/qwindowsysteminterface.cpp ------------------
+index 9a9eab2..6a05d44 100644
+@@ -599,6 +599,15 @@ void QWindowSystemInterface::flushWindowSystemEvents(QEventLoop::ProcessEventsFl
+         QWindowSystemInterfacePrivate::windowSystemEventQueue.clear();
+         return;
+     }
++
++    if (!QGuiApplicationPrivate::qt_qpa_core_dispatcher()) {
++        qWarning().nospace()
++            << "QWindowSystemInterface::flushWindowSystemEvents() invoked without "
++               "QGuiApplicationPrivate::qt_qpa_core_dispatcher, discarding " << count << " events.";
++        QWindowSystemInterfacePrivate::windowSystemEventQueue.clear();
++        return;
++    }
++
+     if (QThread::currentThread() != QGuiApplication::instance()->thread()) {
+         QMutexLocker locker(&QWindowSystemInterfacePrivate::flushEventMutex);
+         QWindowSystemInterfacePrivate::FlushEventsEvent *e = new QWindowSystemInterfacePrivate::FlushEventsEvent(flags);
+
+    Since there is no ABI change, after building, it is sufficient to simply copy the built {lib} directory into the as-downloaded qt installation.  Save original as backup, please..
+
+    At runtime, this will provoke an ADB message:
+    W/libopencpn.so(21974): /home/dsr/Projects/qt5/qtbase/src/gui/kernel/qwindowsysteminterface.cpp:604 (static void QWindowSystemInterface::flushWindowSystemEvents(QEventLoop::ProcessEventsFlags)): QWindowSystemInterface::flushWindowSystemEvents() invoked without QGuiApplicationPrivate::qt_qpa_core_dispatcher, discarding 1 events.
+
     a. Build wxQT
 
         ___Make a build directory
@@ -794,6 +825,10 @@ You should not run 'make install'.
 
         $ ../configure --with-qt --build=x86_64-unknown-linux-gnu --host=arm-linux-androideabi --enable-compat28 --disable-shared --disable-arttango --enable-image --disable-dragimage --with-libtiff=no --disable-baseevtloop --disable-xrc --disable-cmdline --disable-miniframe --disable-mdi --enable-debug --disable-stc --disable-ribbon --disable-propgrid --disable-timepick --disable-datepick --disable-xlocale --disable-intl --with-opengl --enable-selectloop
 
+        B.  If Networking does not work, there is some trouble with configure script.  Need to manually edit setup.h to enable:
+            #define wxUSE_SELECT_DISPATCHER 1
+        and then rebuild wxQt.
+
 
     b.  Build OCPN
 
@@ -805,9 +840,10 @@ You should not run 'make install'.
             SET(Qt_Base /home/dsr/Qt5.5.0)
 
         edit cmakelists.txt
-            Changing 5.3 to 5.5 (TODO This should be a variable defined in cross_build_android)
+            Changing 5.3 to 5.5 (TODO This should be a variable defined in cross_build_android...Done)
 
-        $cmake -D_wx_selected_config=androideabi-qt -DCMAKE_TOOLCHAIN_FILE=../buildandroid/cross_build_android.cmake ..
+
+        cmake -DUSE_GARMINHOST=OFF -D_wx_selected_config=androideabi-qt -DCMAKE_TOOLCHAIN_FILE=../buildandroid/build_android.cmake -DwxQt_Build=build_android_55 -DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets -DQt_Base=/home/dsr/Qt5.5.0/5.5 ..
 
         $make
 

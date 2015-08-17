@@ -13,6 +13,7 @@ TARGET = opencpn
 TEMPLATE = app
 
 
+#  THese definitions now made in Projects selector
 # Qt target
 #wxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
 #wxQt_Build=build_android_55
@@ -34,7 +35,6 @@ LIBS += -L$${OCPN_Base}/$${OCPN_Build}
 
 
 LIBS += $${OCPN_Base}/$${OCPN_Build}/libgorp.a
-LIBS += $${OCPN_Base}/$${OCPN_Build}/libGARMINHOST.a
 
 INCLUDEPATH += $${wxQt_Base}/$${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-static-3.1
 
@@ -56,13 +56,15 @@ LIBS += $${OCPN_Base}/$${OCPN_Build}/lib/libGL.a
 #LIBS += $${OCPN_Base}/$${OCPN_Build}/lib/libGLU.a
 #LIBS += $${OCPN_Base}/$${OCPN_Build}/lib/libGLUES.a
 
-contains(wxQt_Build,55){
+#  I dunno why this does not work right....
+contains(wxQt_Build,55)
+{
 LIBS += $${OCPN_Base}/$${OCPN_Build}/lib/libGLU.a
 }
 
 contains(wxQt_Build,53)
 {
-LIBS += $${OCPN_Base}/$${OCPN_Build}/lib/libGLUES.a
+#LIBS += $${OCPN_Base}/$${OCPN_Build}/lib/libGLUES.a
 }
 
 
@@ -72,9 +74,6 @@ TARGETDEPS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_baseu-3.1-arm-linux-android
 TARGETDEPS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_core-3.1-arm-linux-androideabi.a
 TARGETDEPS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_gl-3.1-arm-linux-androideabi.a
 
-
-
-#LIBS += /home/dsr/Qt/5.3/android_armv7/lib/libQt5AndroidExtras.so
 
 
 DEFINES += __WXQT__
@@ -131,6 +130,13 @@ license_deployment.files += $$PWD/../data/license.txt
 license_deployment.path = /assets
 INSTALLS += license_deployment
 
+sound_deployment.files += $$PWD/../data/sounds/1bells.wav
+sound_deployment.files += $$PWD/../data/sounds/2bells.wav
+sound_deployment.path = /assets/sounds
+INSTALLS += sound_deployment
+
+# The built-in PlugIns
+
 dldr_plugin_deployment.files += $$PWD/../plugins/chartdldr_pi/data/chart_sources.xml
 dldr_plugin_deployment.files += $$PWD/../plugins/chartdldr_pi/data/folder215.png
 dldr_plugin_deployment.files += $$PWD/../plugins/chartdldr_pi/data/open182.png
@@ -141,19 +147,16 @@ dldr_plugin_deployment.path = /assets/plugins/chartdldr_pi/data
 INSTALLS += dldr_plugin_deployment
 
 
-#contains(ANDROID_TARGET_ARCH,armeabi-v7a)
- {
-    ANDROID_EXTRA_LIBS = \
+ANDROID_EXTRA_LIBS = \
         /home/dsr/Projects/opencpn_android/buildandroid/../buildandroid/assetbridge/libs/armeabi/libassetbridge.so
 
-#ANDROID_EXTRA_LIBS += /home/dsr/Qt/5.3/android_armv7/lib/libQt5Test.so
 
 #ANDROID_EXTRA_LIBS += /home/dsr/Projects/opencpn_sf/opencpn/build_android_53/plugins/dashboard_pi/libdashboard_pi.so
 #ANDROID_EXTRA_LIBS += /home/dsr/Projects/opencpn_sf/opencpn/build_android_53/plugins/grib_pi/libgrib_pi.so
 
 
 
-}
+
 
 
 
