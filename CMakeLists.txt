@@ -495,16 +495,17 @@ IF(QT_ANDROID)
   INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtOpenGL")
   INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtTest")
 
+  INCLUDE_DIRECTORIES( "${wxQt_Base}/${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-static-3.1")
+  INCLUDE_DIRECTORIES("${wxQt_Base}/include")
+
   ADD_DEFINITIONS(-DQT_WIDGETS_LIB)
 
-  #  For shared library build
-  
-  
+  # These libraries are need to create PlugIns on Android.
   SET(OCPN_Core_LIBRARIES
 
-        #/home/dsr/Projects/opencpn_sf/opencpn/build-opencpn-Android_for_armeabi_v7a_GCC_4_8_Qt_5_5_0-Debug/libopencpn.so
-        /home/dsr/Projects/opencpn_sf/opencpn/build-opencpn-Android_for_armeabi_v7a_GCC_4_8_Qt_5_3_2-Debug/libopencpn.so
-#        /home/dsr/Projects/opencpn_android/build_5.5_static/libopencpn.so
+        # This is pretty ugly, but there seems no way to avoid specifying a full path in a cross build....
+        /home/dsr/Projects/opencpn_sf/opencpn/build-opencpn-Android_for_armeabi_v7a_GCC_4_8_Qt_5_5_0-Debug/libopencpn.so
+
         ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu-3.1-arm-linux-androideabi.a
         ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_core-3.1-arm-linux-androideabi.a
         ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_html-3.1-arm-linux-androideabi.a
@@ -519,24 +520,12 @@ IF(QT_ANDROID)
         ${Qt_Base}/android_armv7/lib/libQt5Widgets.so
         ${Qt_Base}/android_armv7/lib/libQt5Gui.so
         ${Qt_Base}/android_armv7/lib/libQt5AndroidExtras.so
-        ${NDK_Base}/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi-v7a/libgnustl_shared.so
- 
         
+        #${NDK_Base}/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi-v7a/libgnustl_shared.so
         )
     
-  SET(ASHARE OFF)
 
-  IF(ASHARE)
-    SET_PROPERTY(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
-    INCLUDE_DIRECTORIES( "${wxQt_Base}/${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-3.1")
-  ELSE(ASHARE)
-    #  For static build
-    INCLUDE_DIRECTORIES( "${wxQt_Base}/${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-static-3.1")
-  ENDIF(ASHARE)
-  
-  INCLUDE_DIRECTORIES("${wxQt_Base}/include")
-
-ENDIF()
+ENDIF(QT_ANDROID)
 
 
 
