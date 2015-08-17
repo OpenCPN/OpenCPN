@@ -337,10 +337,12 @@ class FileChooserCore {
 			if(file.isDirectory()) {
 				// Open the folder.
                                 String[] Files = file.list();
-                                if(Files.length > 10)
+                                if(Files != null){
+                                    if(Files.length > 10)
                                         FileChooserCore.this.loadFolderA(file);
-                                else
+                                    else
                                         FileChooserCore.this.loadFolder(file);
+                                }
 
 			} else {
 				// Notify the listeners.
