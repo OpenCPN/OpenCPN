@@ -5673,11 +5673,12 @@ void options::OnValChange( wxCommandEvent& event )
 
 void options::OnScanBTClick( wxCommandEvent& event )
 {
-    if(m_BTscanning){
+    if(m_BTscanning)
         StopBTScan();
-        m_buttonScanBT->SetLabel(_("BT Scan"));
-    }
     else {
+        m_btNoChangeCounter = 0;
+        m_btlastResultCount =  0;   
+        
         m_BTScanTimer.Start(1000, wxTIMER_CONTINUOUS);
         g_Platform->startBluetoothScan();
         m_BTscanning = 1;
@@ -5691,8 +5692,6 @@ void options::onBTScanTimer(wxTimerEvent &event)
 {
     if(m_BTscanning){
         m_BTscanning++;
-        
-//        int isel = m_choiceBTDataSources->GetSelection();
         
         m_BTscan_results = g_Platform->getBluetoothScanResults();
         
@@ -5708,17 +5707,24 @@ void options::onBTScanTimer(wxTimerEvent &event)
             i += 2;
         }
         
-//        if( isel != wxNOT_FOUND){
-//            m_choiceBTDataSources->SetSelection( isel );
-//        }
-            
         if( m_BTscan_results.GetCount() > 1){
             m_choiceBTDataSources->SetSelection( 1 );
         }
-            
+
+        
+        //  Watch for changes.  When no changes occur after n seconds, stop the scan
+        if(m_btNoChangeCounter > 5)
+            StopBTScan();
+        
+        if((int)m_BTscan_results.GetCount() == m_btlastResultCount)
+            m_btNoChangeCounter++;
+        else
+            m_btNoChangeCounter = 0;
+        
+        m_btlastResultCount =  m_BTscan_results.GetCount();   
                 
-            
-        if(m_BTscanning >= 30){
+        // Absolute fallback    
+        if(m_BTscanning >= 15){
             StopBTScan();
         }
     }
@@ -5734,12 +5740,12 @@ void options::StopBTScan()
 
     g_Platform->stopBluetoothScan();
     
-//    if(m_choiceBTDataSources)
-//        m_choiceBTDataSources->SetString(0, _("Finished"));
     m_BTscanning = 0;
     
-    if(m_buttonScanBT)
+    if(m_buttonScanBT){
+        m_buttonScanBT->SetLabel(_("BT Scan"));
         m_buttonScanBT->Enable();
+    }
     
 }
 
