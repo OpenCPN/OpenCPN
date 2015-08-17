@@ -5507,6 +5507,15 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 ret = true;
             }
             else {
+                
+                bool bSelectAllowed = true;
+                if( NULL == pMarkPropDialog ) {
+                    if( g_bWayPointPreventDragging ) bSelectAllowed = false;
+                } else if( !pMarkPropDialog->IsShown() && g_bWayPointPreventDragging )
+                    bSelectAllowed = false;
+                
+                if(bSelectAllowed){
+                    
                 bool b_was_editing_mark = m_bMarkEditing;
                 bool b_was_editing_route = m_bRouteEditing;
                 FindRoutePointsAtCursor( SelectRadius, true );    // Possibly selecting a point in a route for later dragging
@@ -5595,6 +5604,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                     }
                 }
             }
+            }       //  bSelectAllowed
             
             //      Check to see if there is a route or AIS target under the cursor
             //      If so, start the rollover timer which creates the popup
