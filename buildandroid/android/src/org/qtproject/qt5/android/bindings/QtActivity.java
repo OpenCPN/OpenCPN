@@ -61,6 +61,8 @@ import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.DialogInterface.OnCancelListener;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 
 import android.app.DownloadManager;
 import android.app.DownloadManager.Query;
@@ -311,6 +313,10 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     MenuItem itemTrackActive;
     private boolean m_isTrackActive = false;
 
+    private static AudioManager audioManager;
+    private MediaPlayer mediaPlayer; // The media player to play the sounds, even in background
+
+    BroadcastReceiver downloadBCReceiver = null;
 
     public QtActivity()
     {
@@ -650,6 +656,8 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
                     }});
 
+           /// testing...playSound("/data/data/org.opencpn.opencpn/files/sounds/2bells.wav");
+
            return "OK";
        }
 
@@ -826,6 +834,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
                     Log.i("DEBUGGER_TAG", "Bluetooth connectA");
 //                    m_BTSPP.connect(address);
+                    m_BTSPP.resetAutoConnect();
                     m_BTSPP.autoConnectAddress(address);
 
                 }
@@ -868,12 +877,15 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     }
 
     private Semaphore mutex = new Semaphore(0);
+    private Query m_query = new Query();
 
     public String downloadFile( final String url, final String destination )
     {
         m_downloadRet = "";
 
-        BroadcastReceiver receiver = new BroadcastReceiver() {
+
+        if( downloadBCReceiver == null){
+          downloadBCReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 String action = intent.getAction();
@@ -882,9 +894,9 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                 if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
                     long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
 
-                    Query query = new Query();
-                    query.setFilterById(m_enqueue);
-                    Cursor c = m_dm.query(query);
+                    m_query = new Query();
+                    m_query.setFilterById(m_enqueue);
+                    Cursor c = m_dm.query(m_query);
 
 
                     if (c.moveToFirst()) {
@@ -899,11 +911,13 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
 
                     }
+                    c.close();
                 }
             }
-        };
+          };
+        }
 
-        registerReceiver(receiver, new IntentFilter(
+        registerReceiver(downloadBCReceiver, new IntentFilter(
                 DownloadManager.ACTION_DOWNLOAD_COMPLETE));
 
 
@@ -954,13 +968,13 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
         String ret = "NOSTAT";
         if(m_dm != null){
-            Log.i("DEBUGGER_TAG", "mdm");
-            Query query = new Query();
-            query.setFilterById(ID);
-            Cursor c = m_dm.query(query);
+            //Log.i("DEBUGGER_TAG", "mdm");
+
+            m_query.setFilterById(ID);
+            Cursor c = m_dm.query(m_query);
 
             if (c.moveToFirst()) {
-                Log.i("DEBUGGER_TAG", "cmtf");
+                //Log.i("DEBUGGER_TAG", "cmtf");
                 int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_STATUS);
                 int stat = c.getInt(columnIndex);
                 String sstat = String.valueOf(stat);
@@ -971,6 +985,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                 ret =  sstat + ";" + sofarBytes + ";" + totalBytes;
 
             }
+            c.close();
 
         }
 
@@ -984,6 +999,51 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         Log.i("DEBUGGER_TAG", "cancelDownload "  + String.valueOf(ID));
         if(m_dm != null){
             m_dm.remove( ID );
+        }
+
+        return "OK";
+    }
+
+
+    /**
+     * it will play the given file, when it finishes, or fails, it will play the next from the list
+     *
+     * @param fileName: the file name to start playing from it
+     */
+    public String playSound(final String fileName) {
+        Log.i("DEBUGGER_TAG", "playSound " + fileName);
+        if (mediaPlayer == null) {
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+
+        }
+
+
+        if (mediaPlayer != null) {
+            //if (!mediaPlayer.isPlaying())
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        mediaPlayer.reset();
+                        mediaPlayer.setDataSource(fileName);
+                        mediaPlayer.prepare();
+                        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                            @Override
+                            public void onCompletion(MediaPlayer mp) {
+                                //playNextSoundTrack();
+                            }
+                        });
+                        //Log.i("DEBUGGER_TAG", "playSoundStart");
+                        mediaPlayer.start();
+                    } catch (Exception e) {
+                        // TODO: Remove this error checking before publishing
+                    }
+
+
+                 }});
+
         }
 
         return "OK";
@@ -1626,13 +1686,16 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         outputStream.close();
     }
 
-    private boolean cleanCacheIfNecessary(String pluginsPrefix, long packageVersion)
+    private boolean cleanCacheIfNecessary(String prefix, long packageVersion, String cacheName)
     {
-        //Log.i("DEBUGGER_TAG", "cleanCacheIfNecessary" + pluginsPrefix);
-        File versionFile = new File(pluginsPrefix + "cache.version");
+        Log.i("DEBUGGER_TAG", "cleanCacheIfNecessary " + prefix);
+        File versionFile = new File(prefix + cacheName);
+
+        Log.i("DEBUGGER_TAG", "version file: " + prefix + cacheName);
 
         long cacheVersion = 0;
         if (versionFile.exists() && versionFile.canRead()) {
+            Log.i("DEBUGGER_TAG", "version file exists ");
             try {
                 DataInputStream inputStream = new DataInputStream(new FileInputStream(versionFile));
                 cacheVersion = inputStream.readLong();
@@ -1643,11 +1706,11 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         }
 
         if (cacheVersion != packageVersion) {
-            deleteRecursively(new File(pluginsPrefix));
-            //Log.i("DEBUGGER_TAG", "cleanCacheIfNecessary return true");
+            //deleteRecursively(new File(prefix));
+            Log.i("DEBUGGER_TAG", "cleanCacheIfNecessary return true");
             return true;
         } else {
-            //Log.i("DEBUGGER_TAG", "cleanCacheIfNecessary return false");
+            Log.i("DEBUGGER_TAG", "cleanCacheIfNecessary return false");
 
             return false;
         }
@@ -1668,7 +1731,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
             e.printStackTrace();
         }
 
-        if (!cleanCacheIfNecessary(pluginsPrefix, packageVersion))
+        if (!cleanCacheIfNecessary(pluginsPrefix, packageVersion, "cache.version"))
             return;
 
         {
@@ -2087,12 +2150,9 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     public void onConfigurationChanged(Configuration newConfig)
     {
-        Log.i("DEBUGGER_TAG", "onConfigurationChanged");
+        //Log.i("DEBUGGER_TAG", "onConfigurationChanged");
 
         int i = nativeLib.onConfigChange();
-        String aa;
-        aa = String.format("%d", i);
-        //Log.i("DEBUGGER_TAG", aa);
 
         if (!QtApplication.invokeDelegate(newConfig).invoked)
             super.onConfigurationChanged(newConfig);
@@ -2239,13 +2299,48 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     else
         tmpdir = getFilesDir().getPath();
 
-    File destinationFile = new File(tmpdir + "/uidata/styles.xml");
-    if (destinationFile.exists()){
-        Log.i("DEBUGGER_TAG", tmpdir + "/uidata/styles.xml exists");
-    }
-    else{
-      Log.i("DEBUGGER_TAG", tmpdir + "/uidata/styles.xml DOES NOT exist");
 
+        long packageVersion = -1;
+        try {
+            PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            packageVersion = packageInfo.lastUpdateTime;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        boolean b_needcopy = false;
+        if (cleanCacheIfNecessary(tmpdir + "/", packageVersion, "OCPNcache.version"))
+            b_needcopy = true;
+
+
+        try{
+            File versionFile = new File(tmpdir + "/OCPNcache.version");
+
+            File parentDirectory = versionFile.getParentFile();
+            if (!parentDirectory.exists())
+                parentDirectory.mkdirs();
+
+            versionFile.createNewFile();
+
+            DataOutputStream outputStream = new DataOutputStream(new FileOutputStream(versionFile));
+            outputStream.writeLong(packageVersion);
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        if(b_needcopy){
+            Log.i("DEBUGGER_TAG", "b_needcopy true");
+        }
+        else{
+            Log.i("DEBUGGER_TAG", "b_needcopy false");
+        }
+
+
+
+
+    if (b_needcopy){
       Log.i("DEBUGGER_TAG", "asset bridge start unpack");
       Assetbridge.unpack(this);
       Log.i("DEBUGGER_TAG", "asset bridge finish unpack");
@@ -2464,6 +2559,10 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     {
 
 //        Log.i("DEBUGGER_TAG", "onKeyDown");
+
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        audioManager.playSoundEffect(AudioManager.FX_KEY_CLICK);
+
 
         if(keyCode==KeyEvent.KEYCODE_BACK){
             //Toast.makeText(getApplicationContext(), "back press",Toast.LENGTH_LONG).show();

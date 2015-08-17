@@ -144,8 +144,7 @@ public class BTScanHelper {
         if (pairedDevices.size() > 0) {
             for (BluetoothDevice device : pairedDevices) {
                 String paired = device.getName() + ";" + device.getAddress();
-                Log.i("DEBUGGER_TAG", "pairedC");
-                Log.i("DEBUGGER_TAG",  paired);
+                Log.i("DEBUGGER_TAG", "pairedC " + paired);
 
                 mPairedDevicesArrayAdapter.add(paired);
             }
@@ -187,12 +186,24 @@ public class BTScanHelper {
                                 mPairedDevicesArrayAdapter.remove(strNoFound);
                         }
 
-                        String found = " ";
+                        String found = "";
                         found = device.getName() + ";" + device.getAddress();
 
+                        //  Look for duplicates
+                        boolean bAdd = true;
+                        for(int i = 0 ; i < mPairedDevicesArrayAdapter.size() ; i++){
+                            String teststr = mPairedDevicesArrayAdapter.get(i);
+                            if(teststr.equalsIgnoreCase(found)){
+                                bAdd = false;
+                                break;
+                            }
+                        }
 
-                        mPairedDevicesArrayAdapter.add(found);
-                        Log.i("DEBUGGER_TAG", "found" + found);
+
+                        if(bAdd){
+                            mPairedDevicesArrayAdapter.add(found);
+                            Log.i("DEBUGGER_TAG", "found" + found);
+                        }
                 }
 
             // When discovery is finished, change the Activity title
