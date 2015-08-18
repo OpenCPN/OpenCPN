@@ -45,7 +45,7 @@
 #include "chartimg.h"
 #include "chartdb.h"
 #include "OCPNPlatform.h"
-#include "texcmp/mipmap.h"
+#include "mipmap/mipmap.h"
 
 #ifndef GL_ETC1_RGB8_OES
 #define GL_ETC1_RGB8_OES                                        0x8D64

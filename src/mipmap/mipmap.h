@@ -5,7 +5,7 @@
  * Author:   Sean D'Epagnier
  *
  ***************************************************************************
- *   Copyright (C) 2015 by David S. Register                               *
+ *   Copyright (C) 2015 by Sean D'Epagnier                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -24,8 +24,23 @@
  ***************************************************************************
  */
 
+#ifdef  __cplusplus
+extern "C" {
+#endif
 
 extern void (*MipMap_24)( int width, int height, unsigned char *source, unsigned char *target );
 extern void (*MipMap_32)( int width, int height, unsigned char *source, unsigned char *target );
 
 void MipMap_ResolveRoutines();
+
+void MipMap_24_generic( int width, int height, unsigned char *source, unsigned char *target );
+void MipMap_32_generic( int width, int height, unsigned char *source, unsigned char *target );
+
+void MipMap_32_sse( int width, int height, unsigned char *source, unsigned char *target );
+void MipMap_32_sse2( int width, int height, unsigned char *source, unsigned char *target );
+void MipMap_24_ssse3( int width, int height, unsigned char *source, unsigned char *target );
+void MipMap_32_avx2( int width, int height, unsigned char *source, unsigned char *target );
+
+#ifdef  __cplusplus
+}
+#endif
