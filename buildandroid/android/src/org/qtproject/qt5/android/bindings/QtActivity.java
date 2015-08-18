@@ -2731,9 +2731,9 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                     nativeLib.invokeMenuItem(OCPN_ACTION_ENCTEXT_TOGGLE);
                     return true;
 
-                case R.id.ocpn_action_googlemaps:
-                        invokeGoogleMaps();
-                        return true;
+//                case R.id.ocpn_action_googlemaps:
+//                        invokeGoogleMaps();
+//                        return true;
 
 
             default:
