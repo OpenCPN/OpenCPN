@@ -221,8 +221,8 @@ void CompressImageRGB( u8 const* rgb, int width, int height, void* blocks, int f
 /*  For OpenCPN
  *
  */
-void CompressImageRGB_Flatten_Flip_Throttle( u8 const* rgb, int width, int height, void* blocks, int flags,
-                                             bool b_flatten, bool b_flip, bool b_throttle );
+void CompressImageRGBpow2_Flatten_Throttle( u8 const* rgb, int width, int height, void* blocks, int flags,
+                                            bool b_flatten, bool b_throttle );
 
 // -----------------------------------------------------------------------------
 

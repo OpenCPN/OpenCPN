@@ -22,6 +22,9 @@
 	SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 	
    -------------------------------------------------------------------------- */
+
+#include <stdio.h>
+#include <stdint.h>
    
 #include <squish.h>
 #include "colourset.h"
@@ -31,6 +34,8 @@
 #include "colourblock.h"
 #include "alpha.h"
 #include "singlecolourfit.h"
+#include "singlecolourfitfast.h"
+#include "twocolourfitfast.h"
 #include <wx/thread.h>
 
 extern bool g_throttle_squish;
@@ -48,13 +53,48 @@ static int FixFlags( int flags )
 	// set defaults
 	if( method != kDxt3 && method != kDxt5 )
 		method = kDxt1;
-	if( fit != kColourRangeFit )
+	if( fit != kColourRangeFit && fit != kColourIterativeClusterFit)
 		fit = kColourClusterFit;
 	if( metric != kColourMetricUniform )
 		metric = kColourMetricPerceptual;
 		
 	// done
 	return method | fit | metric | extra;
+}
+
+void Compress_dxt1( u8 const* rgba, void* block, int flags )
+{
+	// get the block locations
+	void* colourBlock = block;
+
+	// create the minimal point set
+	ColourSet colours( rgba, flags );
+	
+	// check the compression type and compress colour
+
+	if( colours.GetCount() == 1)
+	{
+		// always do a single colour fit
+		SingleColourFitFast fit( &colours, flags );
+		fit.Compress3( colourBlock );
+	}
+	else if( colours.GetCount() == 2)
+	{
+                TwoColourFitFast fit( &colours, flags );
+		fit.Compress3( colourBlock );
+	}
+	else if( ( flags & kColourRangeFit ) != 0 || colours.GetCount() <= 4 )
+	{
+		// do a range fit
+		RangeFit fit( &colours, flags );
+		fit.Compress3( colourBlock );
+	}
+	else
+	{
+		// default to a cluster fit (could be iterative or not)
+		ClusterFit fit( &colours, flags );
+		fit.Compress3( colourBlock );
+	}
 }
 
 void Compress( u8 const* rgba, void* block, int flags )
@@ -245,8 +285,8 @@ void CompressImageRGB( u8 const* rgb, int width, int height, void* blocks, int f
         }
 }
 
-void CompressImageRGB_Flatten_Flip_Throttle( u8 const* rgb, int width, int height, void* blocks, int flags,
-                                            bool b_flatten, bool b_flip, bool b_throttle )
+void CompressImageRGBpow2_Flatten_Throttle( u8 const* rgb, int width, int height, void* blocks, int flags,
+                                            bool b_flatten, bool b_throttle )
 {
     // fix any bad flags
     flags = FixFlags( flags );
@@ -254,17 +294,16 @@ void CompressImageRGB_Flatten_Flip_Throttle( u8 const* rgb, int width, int heigh
     // initialise the block output
     u8* targetBlock = reinterpret_cast< u8* >( blocks );
     int bytesPerBlock = ( ( flags & kDxt1 ) != 0 ) ? 8 : 16;
-    
+
     u8 r_flat_mask = 0xff;
     u8 g_flat_mask = 0xff;
     u8 b_flat_mask = 0xff;
  
     if(b_flatten){
-        r_flat_mask = 0xfc;
-        g_flat_mask = 0xf8;
-        b_flat_mask = 0xfc;
+        r_flat_mask = 0xf8;
+        g_flat_mask = 0xfc;
+        b_flat_mask = 0xf8;
     }
-    
     
     // loop over blocks
     for( int y = 0; y < height; y += 4 )
@@ -274,7 +313,7 @@ void CompressImageRGB_Flatten_Flip_Throttle( u8 const* rgb, int width, int heigh
             // build the 4x4 block of pixels
             u8 sourceRgba[16*4];
             u8* targetPixel = sourceRgba;
-            int mask = 0;
+
             for( int py = 0; py < 4; ++py )
             {
                 for( int px = 0; px < 4; ++px )
@@ -283,41 +322,19 @@ void CompressImageRGB_Flatten_Flip_Throttle( u8 const* rgb, int width, int heigh
                     int sx = x + px;
                     int sy = y + py;
                     
-                    // enable if we're in the image
-                    if( sx < width && sy < height )
-                    {
-                        // copy the rgba value
-                        u8 const* sourcePixel = rgb + 3*( width*sy + sx );
+                    // copy the rgba value
+                    u8 const* sourcePixel = rgb + 3*( width*sy + sx );
 
-                        if(b_flip) {
-                            *targetPixel++ = sourcePixel[2] & r_flat_mask;
-                            *targetPixel++ = sourcePixel[1] & g_flat_mask;
-                            *targetPixel++ = sourcePixel[0] & b_flat_mask;
-                            sourcePixel += 3;
-                        }
-                        else {
-                            *targetPixel++ = sourcePixel[0] & r_flat_mask;
-                            *targetPixel++ = sourcePixel[1] & g_flat_mask;
-                            *targetPixel++ = sourcePixel[2] & b_flat_mask;
-                            sourcePixel += 3;
-                        }
-                        
-                        
-                        *targetPixel++ = 255;
-                        
-                        // enable this pixel
-                        mask |= ( 1 << ( 4*py + px ) );
-                    }
-                    else
-                    {
-                        // skip this pixel as its outside the image
-                        targetPixel += 4;
-                    }
+                    *targetPixel++ = sourcePixel[0] & r_flat_mask;
+                    *targetPixel++ = sourcePixel[1] & g_flat_mask;
+                    *targetPixel++ = sourcePixel[2] & b_flat_mask;
+                    *targetPixel++ = 255;
                 }
             }
-            
+
             // compress it into the output
-            CompressMasked( sourceRgba, mask, targetBlock, flags );
+            Compress_dxt1( sourceRgba, targetBlock, flags );
+//            Compress( sourceRgba, targetBlock, flags );
             
             // advance
             targetBlock += bytesPerBlock;

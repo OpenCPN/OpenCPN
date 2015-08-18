@@ -317,12 +317,8 @@ bool DoCompress(JobTicket *pticket, glTextureDescriptor *ptd, int level)
                 flags = squish::kDxt1 | squish::kColourClusterFit;
             }
 
-            bool b_flip = false;
-//#ifdef __WXMSW__ //ocpnUSE_ocpnBitmap
-//            b_flip = true;
-//#endif            
-            squish::CompressImageRGB_Flatten_Flip_Throttle( ptd->map_array[level], dim, dim, tex_data, flags,
-                                                            true, b_flip, pticket->b_throttle );
+            squish::CompressImageRGBpow2_Flatten_Throttle( ptd->map_array[level], dim, dim, tex_data, flags,
+                                                            true, pticket->b_throttle );
  
         }
         else if(raster_format == GL_ETC1_RGB8_OES) 
@@ -522,12 +518,8 @@ void * CompressionPoolThread::Entry()
                     flags = squish::kDxt1 | squish::kColourClusterFit;
                 }
             
-                bool b_flip = false;
-//    #ifdef __WXMSW__ //ocpnUSE_ocpnBitmap
-//                b_flip = true;
-//    #endif            
-                squish::CompressImageRGB_Flatten_Flip_Throttle( m_bit_array[i], dim, dim, tex_data, flags,
-                                                            true, b_flip, m_pticket->b_throttle );
+                squish::CompressImageRGBpow2_Flatten_Throttle( m_bit_array[i], dim, dim, tex_data, flags,
+                                                            true, m_pticket->b_throttle );
             
             }
             else if(raster_format == GL_ETC1_RGB8_OES) 

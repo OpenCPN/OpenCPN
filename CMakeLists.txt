@@ -1068,6 +1068,8 @@ IF (OPENGL_FOUND)
     src/texcmp/squish/maths.cpp
     src/texcmp/squish/rangefit.cpp
     src/texcmp/squish/singlecolourfit.cpp
+    src/texcmp/squish/singlecolourfitfast.cpp
+    src/texcmp/squish/twocolourfitfast.cpp
     src/texcmp/squish/squish.cpp
     src/texcmp/etcpak.cpp
     src/texcmp/mipmap.cpp)
@@ -1085,7 +1087,10 @@ IF (OPENGL_FOUND)
         # using sse which makes the compression run about 50% faster
         message (STATUS "Compiling texture compression library with sse support")
 #        set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "-O3 -msse2 -DSQUISH_USE_SSE=2")
-        set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "-O3 -msse2 -mssse3 -DSQUISH_USE_SSE=2")
+#        set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "-O3 -msse2 -mssse3 -DSQUISH_USE_SSE=2")
+        set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "-O3 -msse2 -DSQUISH_USE_SSE=2")
+
+        set_source_files_properties(src/texcmp/mipmap.cpp PROPERTIES COMPILE_FLAGS "")
       ELSE ()
         # use standard optimizations for other architectures
         set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "-O3")
