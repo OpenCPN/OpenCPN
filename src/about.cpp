@@ -30,7 +30,7 @@
 #include "wx/wxprec.h"
 
 #ifndef WX_PRECOMP
-      #include <wx/wx.h>
+    #include <wx/wx.h>
 #endif
 
 #include <wx/textfile.h>
@@ -48,11 +48,11 @@
 #include "OCPNPlatform.h"
 #include "FontMgr.h"
 
-extern OCPNPlatform     *g_Platform;
-extern MyFrame          *gFrame;
+extern OCPNPlatform *g_Platform;
+extern MyFrame *gFrame;
 extern ocpnStyle::StyleManager* g_StyleManager;
-extern about            *g_pAboutDlg;
-extern bool             g_bresponsive;
+extern about *g_pAboutDlg;
+extern bool g_bresponsive;
 
 wxString OpenCPNVersion =
     wxString::Format( wxT("\n      Version %i.%i.%i Build %s"),
@@ -194,7 +194,7 @@ bool about::Create( wxWindow* parent, wxWindowID id, const wxString& caption, co
 
     Update();
 
-    // Set the maximum size of the entire settings dialog
+    // Set the maximum size of the entire about dialog
     wxSize displaySize = wxSize( m_displaySize.x - 100, m_displaySize.y - 100 );
     SetSizeHints( wxSize( -1, -1 ), displaySize );
 
@@ -225,7 +225,6 @@ void about::SetColorScheme( void )
     // wxQT has some trouble clearing the background of HTML window...
     wxBitmap tbm( GetSize().x, GetSize().y, -1 );
     wxMemoryDC tdc( tbm );
-    // wxColour cback = GetGlobalColor( _T("YELO1") );
     tdc.SetBackground( bg );
     tdc.Clear();
     pAboutHTMLCtl->SetBackgroundImage(tbm);
@@ -237,7 +236,7 @@ void about::Update()
 {
 
     wxColor bg = GetBackgroundColour();
-    wxColor fg = wxColour( 0, 0, 0 ); //FontMgr::Get().GetFontColor( _("Dialog") );
+    wxColor fg = wxColour( 0, 0, 0 );
 
     // The HTML Header
     wxString aboutText =
@@ -247,13 +246,11 @@ void about::Update()
 
     wxFont *dFont = FontMgr::Get().GetFont( _("Dialog") );
 
-#ifdef __WXOSX__
-    int points = dFont->GetPointSize();
-#else
-    int points = dFont->GetPointSize() + 1;
-#endif
-
     // Do weird font size calculation
+    int points = dFont->GetPointSize();
+#ifndef __WXOSX__
+    ++points;
+#endif
     int sizes[7];
     for ( int i = -2; i < 5; i++ ) {
         sizes[i+2] = points + i + ( i > 0 ? i : 0 );
@@ -279,6 +276,7 @@ void about::Update()
     aboutText.Append( _T("</font></body></html>") );
 
     pAboutHTMLCtl->SetPage( aboutText );
+    pAuthorTextCtl->Clear();
     pAuthorTextCtl->WriteText( AuthorText );
     pAuthorTextCtl->SetInsertionPoint( 0 );
 
@@ -410,9 +408,8 @@ void about::OnDonateClick( wxCommandEvent& event )
 
 void about::OnCopyClick( wxCommandEvent& event )
 {
-    wxString filename = g_Platform->GetConfigFileName();
-    if( event.GetId() == ID_COPYLOG )
-        filename = g_Platform->GetLogFileName();
+    wxString filename = event.GetId() == ID_COPYLOG ?
+        g_Platform->GetLogFileName() : g_Platform->GetConfigFileName();
 
     wxFFile file( filename );
 
@@ -442,13 +439,9 @@ void about::OnCopyClick( wxCommandEvent& event )
     }
 
     ::wxBeginBusyCursor();
-
     if( wxTheClipboard->Open() ) {
-        wxTextDataObject* data = new wxTextDataObject;
-        data->SetText( fileContent );
-        if( ! wxTheClipboard->SetData( data ) ) {
+        if( !wxTheClipboard->SetData( new wxTextDataObject( fileContent ) ) )
             wxLogMessage( _T("wxTheClipboard->Open() failed.") );
-        }
         wxTheClipboard->Close();
     } else {
         wxLogMessage( _T("wxTheClipboard->Open() failed.") );
@@ -458,10 +451,7 @@ void about::OnCopyClick( wxCommandEvent& event )
 
 void about::OnPageChange( wxNotebookEvent& event )
 {
-    int i = event.GetSelection();
-
-    if( 3 == i ) { // 3 is the index of "Help" page
-        gFrame->LaunchLocalHelp();
-        pNotebook->ChangeSelection(0);
-    }
+    if( event.GetSelection() != 3 ) return; // 3 is the index of "Help" page
+    gFrame->LaunchLocalHelp();
+    pNotebook->ChangeSelection(0);
 }
