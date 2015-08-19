@@ -500,6 +500,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_bDrawingRoute = false;
     m_bRouteEditing = false;
     m_bMarkEditing = false;
+	m_bRoutePoinDragging = false;
     m_bIsInRadius = false;
     m_bMayToggleMenuBar = true;
 
@@ -5223,6 +5224,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                                                         pre_rect.Union( post_rect );
                                                         RefreshRect( pre_rect, false );
                                                     }
+													m_bRoutePoinDragging = true;
                                                 }
                                                 ret = true;
         }     // if Route Editing
@@ -5302,8 +5304,10 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                             pre_rect.Union( post_rect );
                             RefreshRect( pre_rect, false );
                         }
+						m_bRoutePoinDragging = true;
                     }
                     ret = true;
+
         }
         
         if(ret)
@@ -5647,7 +5651,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                         if( g_pRouteMan->IsRouteValid(pr) ) {
                             pr->FinalizeForRendering();
                             pr->UpdateSegmentDistances();
-                            pConfig->UpdateRoute( pr );
+                            if( m_bRoutePoinDragging ) pConfig->UpdateRoute( pr );
                         }
                     }
                 }
@@ -5671,17 +5675,20 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
             }
             }
             
-            if( m_pRoutePointEditTarget ) {
-                pConfig->UpdateWayPoint( m_pRoutePointEditTarget );
+			else if(  m_bMarkEditing ) {				// End of way point drag
+				if( m_pRoutePointEditTarget )
+					if( m_bRoutePoinDragging ) pConfig->UpdateWayPoint( m_pRoutePointEditTarget );
+			}
+
+			if( m_pRoutePointEditTarget )
                 undo->AfterUndoableAction( m_pRoutePointEditTarget );
-            }
             
             if(!m_pRoutePointEditTarget){
                 delete m_pEditRouteArray;
                 m_pEditRouteArray = NULL;
                 m_bRouteEditing = false;
             }
-            
+            m_bRoutePoinDragging = false;
         }       // g_btouch
         
         
@@ -5699,7 +5706,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                             pr->UpdateSegmentDistances();
                             pr->m_bIsBeingEdited = false;
                             
-                            pConfig->UpdateRoute( pr );
+                            if( m_bRoutePoinDragging ) pConfig->UpdateRoute( pr );
                             
                             pr->SetHiLite( 0 );
                         }
@@ -5742,7 +5749,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
         
         else if( m_bMarkEditing) {         // end of Waypoint drag
             if( m_pRoutePointEditTarget ) {
-                pConfig->UpdateWayPoint( m_pRoutePointEditTarget );
+                if( m_bRoutePoinDragging ) pConfig->UpdateWayPoint( m_pRoutePointEditTarget );
                 undo->AfterUndoableAction( m_pRoutePointEditTarget );
                 m_pRoutePointEditTarget->m_bIsBeingEdited = false;
                 wxRect wp_rect;
@@ -5757,7 +5764,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 gFrame->SurfaceToolbar();
             ret = true;
         }
-        
+
         else if( leftIsDown ) {  // left click for chart center
             leftIsDown = false;
             ret = false;
@@ -5770,6 +5777,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
             }
             
         }
+		 m_bRoutePoinDragging = false;
         }       // !btouch
         
         if(ret)

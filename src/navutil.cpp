@@ -2916,8 +2916,8 @@ void MyConfig::UpdateNavObj( void )
     if( ::wxFileExists( m_sNavObjSetChangesFile ) )
         wxRemoveFile( m_sNavObjSetChangesFile );
 
-    delete m_pNavObjectChangesSet;
-    m_pNavObjectChangesSet = new NavObjectChanges(m_sNavObjSetChangesFile);
+    //delete m_pNavObjectChangesSet;
+    //m_pNavObjectChangesSet = new NavObjectChanges(m_sNavObjSetChangesFile);
 
 }
 

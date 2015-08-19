@@ -417,7 +417,8 @@ Track *GPXLoadTrack1( pugi::xml_node &trk_node, bool b_fullviz,
 Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
                       bool b_layer,
                       bool b_layerviz,
-                      int layer_id )
+                      int layer_id,
+					  bool b_change )
 {
     wxString RouteName;
     wxString DescString;
@@ -438,19 +439,24 @@ Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
             if( ChildName == _T ( "rtept" ) ) {
                 RoutePoint *tpWp = ::GPXLoadWaypoint1(  tschild, _T("square"), _T(""), b_fullviz, b_layer, b_layerviz, layer_id);
                 RoutePoint *erp = ::WaypointExists( tpWp->m_GUID );
-                if( erp != NULL )
-                    pWp = erp;
-                else
-                    pWp = tpWp;
+                if( !b_change ) {
+					if(  erp != NULL )
+						pWp = erp;
+					else
+						pWp = tpWp;
+				} else				//when applying change after crash wps must keep the "change" values for the next step
+					pWp = tpWp;
                 
                 pTentRoute->AddPoint( pWp, false, true, true );          // defer BBox calculation
                 pWp->m_bIsInRoute = true;                      // Hack
                 pWp->m_bIsInTrack = false;
                 
-                if( erp == NULL )
-                    pWayPointMan->AddRoutePoint( pWp );
-                else
-                    delete tpWp;
+                if( !b_change ) {  //when applying change after crash, do not add any point at this step
+					if( erp == NULL )
+						pWayPointMan->AddRoutePoint( pWp );
+					else
+						delete tpWp;
+				}
                     
             }
             else
@@ -1122,29 +1128,73 @@ void InsertTrack( Route *pTentTrack )
 }                       
                        
 void UpdateRouteA( Route *pTentRoute )
-                       {
-                           Route * rt = ::RouteExists( pTentRoute->m_GUID );
-                           if( rt ) {
-                               wxRoutePointListNode *node = pTentRoute->pRoutePointList->GetFirst();
-                               while( node ) {
-                                   RoutePoint *prp = node->GetData();
-                                   RoutePoint *ex_rp = rt->GetPoint( prp->m_GUID );
-                                   if( ex_rp ) {
-                                       ex_rp->m_lat = prp->m_lat;
-                                       ex_rp->m_lon = prp->m_lon;
-                                       ex_rp->SetIconName( prp->GetIconName() );
-                                       ex_rp->m_MarkDescription = prp->m_MarkDescription;
-                                       ex_rp->SetName( prp->GetName() );
-                                   } else {
-                                       pSelect->AddSelectableRoutePoint( prp->m_lat, prp->m_lon, prp );
-                                   }
-                                   node = node->GetNext();
-                               }
-                           } else {
-                               ::InsertRouteA( pTentRoute );
-                           }
+ {
+    if( !pTentRoute )
+        return;
+	if( pTentRoute->GetnPoints() < 2 )
+        return;
+
+	//first delete the route to be modified if exists
+    Route *pExisting = ::RouteExists( pTentRoute->m_GUID );
+	if( pExisting ) {
+		pConfig->m_bSkipChangeSetUpdate = true;
+        g_pRouteMan->DeleteRoute( pExisting );
+        pConfig->m_bSkipChangeSetUpdate = false;
+	}
+
+    //create a new route
+	Route *pChangeRoute = new Route();
+    pRouteList->Append( pChangeRoute );
+
+	//update new route keeping the same gui
+	pChangeRoute->m_GUID = pTentRoute->m_GUID;
+	pChangeRoute->m_RouteNameString = pTentRoute->m_RouteNameString;
+    pChangeRoute->m_RouteStartString = pTentRoute->m_RouteStartString;
+    pChangeRoute->m_RouteEndString = pTentRoute->m_RouteEndString;
+	pChangeRoute->SetVisible( pTentRoute->IsVisible() );
+
+    //Add points and segments to new route
+    int ip = 0;
+    float prev_rlat = 0., prev_rlon = 0.;
+    RoutePoint *prev_pConfPoint = NULL;
+
+    wxRoutePointListNode *node = pTentRoute->pRoutePointList->GetFirst();
+    while( node ) {
+		RoutePoint *prp = node->GetData();
+
+		//if some wpts have been not deleted, that meens they should be used in other routes
+		//or are isolated way points so need to be updated
+		RoutePoint *ex_rp = ::WaypointExists( prp->m_GUID );
+		if( ex_rp ) {
+			pSelect->DeleteSelectableRoutePoint(ex_rp);
+			ex_rp->m_lat = prp->m_lat;
+			ex_rp->m_lon = prp->m_lon;
+			ex_rp->SetIconName( prp->GetIconName() );
+			ex_rp->m_MarkDescription = prp->m_MarkDescription;
+			ex_rp->SetName( prp->GetName() );
+			pChangeRoute->AddPoint( ex_rp );
+			pSelect->AddSelectableRoutePoint(prp->m_lat, prp->m_lon, ex_rp);
+
+		} else {
+			pChangeRoute->AddPoint( prp );
+			pSelect->AddSelectableRoutePoint(prp->m_lat, prp->m_lon, prp);
+		}
+
+        if( ip )
+			pSelect->AddSelectableRouteSegment( prev_rlat, prev_rlon, prp->m_lat,
+					prp->m_lon, prev_pConfPoint, prp, pChangeRoute );
+        prev_rlat = prp->m_lat;
+        prev_rlon = prp->m_lon;
+        prev_pConfPoint = prp;
+
+        ip++;
+
+        node = node->GetNext();
+	}
+	//    Do the (deferred) calculation of BBox
+    pChangeRoute->FinalizeForRendering();
 }
-                       
+
                        
 bool NavObjectCollection1::CreateNavObjGPXPoints( void )
 {
@@ -1330,7 +1380,7 @@ bool NavObjectCollection1::LoadAllGPXObjects( bool b_full_viz )
             }
             else
                 if( !strcmp(object.name(), "rte") ) {
-                    Route *pRoute = GPXLoadRoute1( object, b_full_viz, false, false, 0 );
+                    Route *pRoute = GPXLoadRoute1( object, b_full_viz, false, false, 0, false );
                     InsertRouteA( pRoute );
                 }
                 
@@ -1370,7 +1420,7 @@ int NavObjectCollection1::LoadAllGPXObjectsAsLayer(int layer_id, bool b_layerviz
             }
             else
                 if( !strcmp(object.name(), "rte") ) {
-                    Route *pRoute = GPXLoadRoute1( object, true, true, b_layerviz, layer_id );
+                    Route *pRoute = GPXLoadRoute1( object, true, true, b_layerviz, layer_id, false );
                     n_obj++;
                     InsertRouteA( pRoute );
                 }
@@ -1505,7 +1555,7 @@ bool NavObjectChanges::ApplyChanges(void)
             
             if(pWp && pWayPointMan) {
                 pWp->m_bIsolatedMark = true;
-                RoutePoint *pExisting = WaypointExists( pWp->GetName(), pWp->m_lat, pWp->m_lon );
+                RoutePoint *pExisting = WaypointExists( pWp->m_GUID );
                 
                 pugi::xml_node xchild = object.child("extensions");
                 pugi::xml_node child = xchild.child("opencpn:action");
@@ -1566,14 +1616,14 @@ bool NavObjectChanges::ApplyChanges(void)
             
             else
                 if( !strcmp(object.name(), "rte") ) {
-                    Route *pRoute = GPXLoadRoute1( object, true, false, false, 0 );
+                    Route *pRoute = GPXLoadRoute1( object, true, false, false, 0, true );
                     
                     if(pRoute && g_pRouteMan) {
                         pugi::xml_node xchild = object.child("extensions");
                         pugi::xml_node child = xchild.child("opencpn:action");
 
                         if(!strcmp(child.first_child().value(), "add") ){
-                            ::InsertRouteA( pRoute );
+                            ::UpdateRouteA( pRoute );
                         }                    
                     
                         else if(!strcmp(child.first_child().value(), "update") ){
