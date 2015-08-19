@@ -328,7 +328,7 @@ class MarkInfoDef : public wxDialog
         wxTextCtrl*             m_textWaypointRangeRingsStep;
         wxChoice*               m_choiceWaypointRangeRingsUnits;
         wxFlexGridSizer*        waypointrrSelect;
-        wxColourPickerCtrl*     m_colourWaypointRangeRingsColour;
+        wxChoice*               m_chColor;
         
     // Virtual event handlers, overide them in your derived class
         virtual void OnPositionCtlUpdated( wxCommandEvent& event ) { event.Skip(); }

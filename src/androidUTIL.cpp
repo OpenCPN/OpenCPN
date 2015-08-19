@@ -310,7 +310,7 @@ androidUtilHandler::androidUtilHandler()
 
 void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
 {
-    qDebug() << "onTimerEvent";
+//    qDebug() << "onTimerEvent";
 
     switch(m_action){
         case ACTION_RESIZE_PERSISTENTS:            //  Handle rotation/resizing of persistent dialogs
@@ -525,6 +525,22 @@ bool androidUtilInit( void )
 }
 
 
+wxSize getAndroidConfigSize()
+{
+    return config_size;
+}
+
+void resizeAndroidPersistents()
+{
+//    qDebug() << "resizeAndroidPersistents";
+    
+     if(g_androidUtilHandler){
+     
+         g_androidUtilHandler->m_action = ACTION_RESIZE_PERSISTENTS;
+         g_androidUtilHandler->m_eventTimer.Start(100, wxTIMER_ONE_SHOT);
+     }
+}
+
 jint JNI_OnLoad(JavaVM *vm, void *reserved)
 {
     qDebug() << "JNI_OnLoad";
@@ -601,7 +617,7 @@ extern "C"{
         const char *string = env->GetStringUTFChars(nmea_string, NULL);
         wxString wstring = wxString(string, wxConvUTF8);
         
-        qDebug() << "processNMEA" << string;
+//        qDebug() << "processNMEA" << string;
         
         char tstr[200];
         strncpy(tstr, string, 190);
@@ -623,21 +639,20 @@ extern "C"{
 extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onConfigChange(JNIEnv *env, jobject obj)
     {
-        qDebug() << "onConfigChange";
+//        qDebug() << "onConfigChange";
         GetAndroidDisplaySize();
         
         wxSize new_size = getAndroidDisplayDimensions();
-        qDebug() << "onConfigChange" << new_size.x << new_size.y;
+//        qDebug() << "onConfigChange" << new_size.x << new_size.y;
         
         config_size = new_size;
-        gFrame->TriggerResize(new_size);
-
-        if(g_androidUtilHandler){
-            
-            g_androidUtilHandler->m_action = ACTION_RESIZE_PERSISTENTS;
-            g_androidUtilHandler->m_eventTimer.Start(200, wxTIMER_ONE_SHOT);
-        }
         
+        wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+        evt.SetId( ID_CMD_TRIGGER_RESIZE );
+        if(gFrame && gFrame->GetEventHandler()){
+            gFrame->GetEventHandler()->AddPendingEvent(evt);
+        }
+                
         return 77;
     }
 }
@@ -717,7 +732,7 @@ extern "C"{
 extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_selectChartDisplay(JNIEnv *env, jobject obj, int type, int family)
     {
-        qDebug() << "selectChartDisplay" << type << family;
+//        qDebug() << "selectChartDisplay" << type << family;
         
         wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
         if(type == CHART_TYPE_CM93COMP){
@@ -730,7 +745,7 @@ extern "C"{
         }
         
         if(gFrame){
-            qDebug() << "add event" << type << family;
+//            qDebug() << "add event" << type << family;
             gFrame->GetEventHandler()->AddPendingEvent(evt);
         }
 
@@ -773,7 +788,7 @@ extern "C"{
 extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_invokeMenuItem(JNIEnv *env, jobject obj, int item)
     {
-        qDebug() << "invokeMenuItem" << item;
+//        qDebug() << "invokeMenuItem" << item;
         
         // If in Route Create, disable all other menu items
         if( (gFrame->nRoute_State > 1 ) && (OCPN_ACTION_ROUTE != item) ) {
@@ -862,7 +877,7 @@ extern "C"{
 extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_setDownloadStatus(JNIEnv *env, jobject obj, int status, jstring url)
     {
-        qDebug() << "setDownloadStatus";
+//        qDebug() << "setDownloadStatus";
  
         const char *sparm;
         wxString wx_sparm;
@@ -878,7 +893,7 @@ extern "C"{
         
         if(s_bdownloading && wx_sparm.IsSameAs(s_requested_url) ){
             
-            qDebug() << "Maybe mine...";
+//            qDebug() << "Maybe mine...";
             //  We simply pass the event on to the core download manager methods,
             //  with parameters crafted to the event
             OCPN_downloadEvent ev(wxEVT_DOWNLOAD_EVENT, 0);
@@ -909,7 +924,7 @@ extern "C"{
             ev.setDLEventStatus( dl_status );
             
             if(s_download_evHandler){
-                qDebug() << "Sending event...";
+//                qDebug() << "Sending event...";
                 s_download_evHandler->AddPendingEvent(ev);
             }
             
@@ -923,13 +938,33 @@ extern "C"{
 }       
 
 
-        
+bool CheckPendingJNIException()
+{
+    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+        qDebug() << "GetEnv failed.";
+        return true;
+    }
+
+    if( (jenv)->ExceptionCheck() == JNI_TRUE ) {
+        qDebug() << "Found JNI Exception Pending.";
+        return true;
+    }
+    
+    return false;
+    
+}
+
 
 wxString callActivityMethod_vs(const char *method)
 {
+    if(CheckPendingJNIException())
+        return _T("NOK");
+    
     wxString return_string;
     QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
                                                                            "activity", "()Landroid/app/Activity;");
+    if(CheckPendingJNIException())
+        return _T("NOK");
     
     if ( !activity.isValid() ){
         qDebug() << "Activity is not valid";
@@ -938,9 +973,11 @@ wxString callActivityMethod_vs(const char *method)
     
     //  Call the desired method
     QAndroidJniObject data = activity.callObjectMethod(method, "()Ljava/lang/String;");
+    if(CheckPendingJNIException())
+        return _T("NOK");
     
     jstring s = data.object<jstring>();
-    qDebug() << s;
+    //qDebug() << s;
     
     if(s){
         //  Need a Java environment to decode the resulting string
@@ -960,6 +997,9 @@ wxString callActivityMethod_vs(const char *method)
 
 wxString callActivityMethod_is(const char *method, int parm)
 {
+    if(CheckPendingJNIException())
+        return _T("NOK");
+    
     wxString return_string;
     QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
                                                                            "activity", "()Landroid/app/Activity;");
@@ -971,6 +1011,8 @@ wxString callActivityMethod_is(const char *method, int parm)
     
     //  Call the desired method
     QAndroidJniObject data = activity.callObjectMethod(method, "(I)Ljava/lang/String;", parm);
+    if(CheckPendingJNIException())
+        return _T("NOK");
     
     jstring s = data.object<jstring>();
     
@@ -989,9 +1031,14 @@ wxString callActivityMethod_is(const char *method, int parm)
 
 wxString callActivityMethod_iis(const char *method, int parm1, int parm2)
 {
+    if(CheckPendingJNIException())
+        return _T("NOK");
+    
     wxString return_string;
     QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
                                                                            "activity", "()Landroid/app/Activity;");
+    if(CheckPendingJNIException())
+        return _T("NOK");
     
     if ( !activity.isValid() ){
         qDebug() << "Activity is not valid";
@@ -1000,6 +1047,8 @@ wxString callActivityMethod_iis(const char *method, int parm1, int parm2)
     
     //  Call the desired method
     QAndroidJniObject data = activity.callObjectMethod(method, "(II)Ljava/lang/String;", parm1, parm2);
+    if(CheckPendingJNIException())
+        return _T("NOK");
     
     jstring s = data.object<jstring>();
     
@@ -1018,9 +1067,14 @@ wxString callActivityMethod_iis(const char *method, int parm1, int parm2)
 
 wxString callActivityMethod_ss(const char *method, wxString parm)
 {
+    if(CheckPendingJNIException())
+        return _T("NOK");
+    
     wxString return_string;
     QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
                                                                            "activity", "()Landroid/app/Activity;");
+    if(CheckPendingJNIException())
+        return _T("NOK");
     
     if ( !activity.isValid() ){
         qDebug() << "Activity is not valid";
@@ -1037,12 +1091,14 @@ wxString callActivityMethod_ss(const char *method, wxString parm)
     
     
     //  Call the desired method
-    qDebug() << "Calling method_ss";
-    qDebug() << method;
+    //qDebug() << "Calling method_ss";
+    //qDebug() << method;
     
     QAndroidJniObject data = activity.callObjectMethod(method, "(Ljava/lang/String;)Ljava/lang/String;", p);
-
-    qDebug() << "Back from method_ss";
+    if(CheckPendingJNIException())
+        return _T("NOK");
+    
+    //qDebug() << "Back from method_ss";
     
     jstring s = data.object<jstring>();
     
@@ -1057,9 +1113,14 @@ wxString callActivityMethod_ss(const char *method, wxString parm)
 
 wxString callActivityMethod_s2s(const char *method, wxString parm1, wxString parm2)
 {
+    if(CheckPendingJNIException())
+        return _T("NOK");
+    
     wxString return_string;
     QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
                                                                            "activity", "()Landroid/app/Activity;");
+    if(CheckPendingJNIException())
+        return _T("NOK");
     
     if ( !activity.isValid() ){
         qDebug() << "Activity is not valid";
@@ -1077,11 +1138,13 @@ wxString callActivityMethod_s2s(const char *method, wxString parm1, wxString par
     
     
     //  Call the desired method
-    qDebug() << "Calling method_s2s" << " (" << method << ")";
+    //qDebug() << "Calling method_s2s" << " (" << method << ")";
     
     QAndroidJniObject data = activity.callObjectMethod(method, "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", p1, p2);
+    if(CheckPendingJNIException())
+        return _T("NOK");
     
-    qDebug() << "Back from method_s2s";
+    //qDebug() << "Back from method_s2s";
     
     jstring s = data.object<jstring>();
     
@@ -1096,9 +1159,14 @@ wxString callActivityMethod_s2s(const char *method, wxString parm1, wxString par
 
 wxString callActivityMethod_s4s(const char *method, wxString parm1, wxString parm2, wxString parm3, wxString parm4)
 {
+    if(CheckPendingJNIException())
+        return _T("NOK");
+    
     wxString return_string;
     QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
                                                                            "activity", "()Landroid/app/Activity;");
+    if(CheckPendingJNIException())
+        return _T("NOK");
     
     if ( !activity.isValid() ){
         qDebug() << "Activity is not valid";
@@ -1118,15 +1186,17 @@ wxString callActivityMethod_s4s(const char *method, wxString parm1, wxString par
 
     const char *ts = (jenv)->GetStringUTFChars(p2, NULL);
     
-    qDebug() << "Test String p2" << ts;
+    //qDebug() << "Test String p2" << ts;
     
     //  Call the desired method
-    qDebug() << "Calling method_s4s" << " (" << method << ")";
+    //qDebug() << "Calling method_s4s" << " (" << method << ")";
     
     QAndroidJniObject data = activity.callObjectMethod(method, "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
                                                        p1, p2, p3, p4);
+    if(CheckPendingJNIException())
+        return _T("NOK");
     
-    qDebug() << "Back from method_s4s";
+    //qDebug() << "Back from method_s4s";
     
     jstring s = data.object<jstring>();
     
@@ -1254,7 +1324,7 @@ void androidSetChartTypeMaskSel( int mask, wxString &indicator)
         sel = 4;
 
     if((g_mask != mask) || (g_sel != sel)){
-        qDebug() << "androidSetChartTypeMaskSel" << mask << sel;
+//        qDebug() << "androidSetChartTypeMaskSel" << mask << sel;
         callActivityMethod_iis("configureNavSpinnerTS", mask, sel);
         g_mask = mask;
         g_sel = sel;
@@ -1271,7 +1341,7 @@ void androidEnableBackButton(bool benable)
 bool androidGetMemoryStatus( int *mem_total, int *mem_used )
 {
     
-    if(g_start_time.GetTicks() > 1441080000 )
+    if(g_start_time.GetTicks() > 1443672000 )
         exit(0);
     
     //  On android, We arbitrarily declare that we have used 50% of available memory.
@@ -1427,7 +1497,7 @@ double getAndroidDPmm()
         size_mm = wxMax(size_mm, 50);
         size_mm = wxMin(size_mm, 400);
         double ret = maxDim / size_mm;
-        qDebug() << "getAndroidDPmm override" << maxDim << size_mm << g_config_display_size_mm;
+//        qDebug() << "getAndroidDPmm override" << maxDim << size_mm << g_config_display_size_mm;
         return ret;
     }
         
@@ -1512,7 +1582,7 @@ wxSize getAndroidDisplayDimensions( void )
         
     }
 
-    qDebug() << sz_ret.x << sz_ret.y;
+//    qDebug() << sz_ret.x << sz_ret.y;
     
     return sz_ret;
     
@@ -1732,6 +1802,8 @@ bool androidStartBT(wxEvtHandler *consumer, wxString mac_address )
     
 bool androidStopBT()
 {
+    qDebug() << "androidStopBT";
+    
     s_pAndroidBTNMEAMessageConsumer = NULL;
     
     wxString result = callActivityMethod_is("stopBTService", 0);
@@ -2047,14 +2119,18 @@ bool DoAndroidPreferences( void )
 
 int startAndroidFileDownload( const wxString &url, const wxString& destination, wxEvtHandler *evh, long *dl_id )
 {
-    if(evh){
+//    if(evh)
+    {
         s_bdownloading = true;
         s_requested_url = url;
         s_download_evHandler = evh;
     
         wxString result = callActivityMethod_s2s( "downloadFile", url, destination );
 
-        wxLogMessage(_T("downloads2s result: ") + result);
+        if( result.IsSameAs(_T("NOK")) )
+            return 1;                       // general error
+            
+  //      wxLogMessage(_T("downloads2s result: ") + result);
         long dl_ID;
         wxStringTokenizer tk(result, _T(";"));
         if( tk.HasMoreTokens() ){
@@ -2063,7 +2139,7 @@ int startAndroidFileDownload( const wxString &url, const wxString& destination, 
                 token = tk.GetNextToken();
                 token.ToLong(&dl_ID);
                 *dl_id = dl_ID;
-                qDebug() << dl_ID;
+  //              qDebug() << dl_ID;
                 return 0;
             }
         }
@@ -2074,14 +2150,18 @@ int startAndroidFileDownload( const wxString &url, const wxString& destination, 
 
 int queryAndroidFileDownload( long dl_ID, wxString *result )
 {
-    qDebug() << dl_ID;
+//    qDebug() << dl_ID;
     
     wxString stat = callActivityMethod_is( "getDownloadStatus", (int)dl_ID );
-    *result = stat;
+    if(result)
+        *result = stat;
     
-    wxLogMessage( _T("queryAndroidFileDownload: ") + stat); 
+//    wxLogMessage( _T("queryAndroidFileDownload: ") + stat); 
     
-    return 0;
+    if( stat.IsSameAs(_T("NOK")) )
+        return 1;                       // general error
+    else
+        return 0;
     
 }
 
@@ -2101,6 +2181,55 @@ void cancelAndroidFileDownload( long dl_ID )
 }
 
 
+wxString getFontQtStylesheet(wxFont *font)
+{
+    // wxString classes = _T("QLabel, QPushButton, QTreeWidget, QTreeWidgetItem, QCheckBox");
+    wxString classes = _T("QWidget ");
+    
+    wxString qstyle = classes + _T("{  font-family: ") + font->GetFaceName() + _T(";font-style: ");
+    switch(font->GetStyle()){
+        case wxFONTSTYLE_ITALIC:
+            qstyle += _T("italic;");
+            break;
+        case wxFONTSTYLE_NORMAL:
+        default:
+            qstyle += _T("normal;");
+            break;
+    }
+    qstyle += _T("font-weight: ");
+    switch(font->GetWeight()){
+        case wxFONTWEIGHT_BOLD:
+            qstyle += _T("bold;");
+            break;
+        case wxFONTWEIGHT_LIGHT:
+            qstyle += _T("light;");
+            break;
+        case wxFONTWEIGHT_NORMAL:
+        default:
+            qstyle += _T("normal;");
+            break;
+    }
+    
+    qstyle += _T("font-size: ");
+    wxString fontSize;
+    fontSize.Printf(_T("%dpt }"), font->GetPointSize());
+    qstyle += fontSize;
+    
+    return qstyle;
+    
+}
+
+    
+
+bool androidPlaySound( wxString soundfile )
+{
+    qDebug() << "androidPlay";
+    
+    wxString result = callActivityMethod_ss("playSound", soundfile);
+    
+    return true;
+}
+    
 
 
 #if 0

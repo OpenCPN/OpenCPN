@@ -794,7 +794,7 @@ void GribSettingsDialog::OnCtrlandDataStyleChanged( wxCommandEvent& event )
         messages.Printf( _("You want to add a title/drag bar to the dialog\n") );
     if( !messages.IsEmpty() ) {
         m_parent.pPlugIn->m_DialogStyleChanged = true;
-        messages.Append( _("This change needs a complete reload.\nIt will be aplied after closing and re-opning the plugin") );
+        messages.Append( _("This change needs a complete reload.\nIt will be applied after closing and re-opening the plugin") );
         wxMessageDialog mes(this, messages );
         mes.ShowModal();
     }

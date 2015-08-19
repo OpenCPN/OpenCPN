@@ -244,7 +244,10 @@ ENDIF(BUNDLE_TCDATA MATCHES "ON")
 
 
 #  To build for android, use this cmake invocation..
-#$cmake -DUSE_GARMINHOST=OFF -D_wx_selected_config=androideabi-qt -DCMAKE_TOOLCHAIN_FILE=../buildandroid/build_android.cmake ..
+#$cmake -DUSE_GARMINHOST=OFF -D_wx_selected_config=androideabi-qt
+#-DCMAKE_TOOLCHAIN_FILE=../buildandroid/build_android.cmake
+#-DwxQt_Build=build_android_53 -DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
+#-DQt_Base /home/dsr/Qt/5.3) ..
 
 IF(DEFINED _wx_selected_config)
 
@@ -252,6 +255,8 @@ MESSAGE (STATUS "selected config ${_wx_selected_config}")
 
 IF(_wx_selected_config MATCHES "androideabi-qt")
   MESSAGE (STATUS "Building for wxQt-Android")
+  MESSAGE (STATUS "Qt_Base: " ${Qt_Base})
+  MESSAGE (STATUS "wxQt_Base/Build: " ${wxQt_Base} "/" ${wxQt_Build})
   SET(QT_ANDROID "ON")
   SET(QT_LINUX "OFF")
   SET(QT "ON")
@@ -483,60 +488,19 @@ IF(QT_ANDROID)
         set(CMAKE_EXE_LINKER_FLAGS "-s")  ## Strip binary
  #   endif()
     
-#  INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include/QtCore")
-#  INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include")
-#  INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include/QtWidgets")
-#  INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include/QtGui")
-#  INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include/QtOpenGL")
-#  INCLUDE_DIRECTORIES("${Qt_Base}/5.2.1/android_armv7/include/QtTest")
+  INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtCore")
+  INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include")
+  INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtWidgets")
+  INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtGui")
+  INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtOpenGL")
+  INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtTest")
 
-  INCLUDE_DIRECTORIES("${Qt_Base}/5.3/android_armv7/include/QtCore")
-  INCLUDE_DIRECTORIES("${Qt_Base}/5.3/android_armv7/include")
-  INCLUDE_DIRECTORIES("${Qt_Base}/5.3/android_armv7/include/QtWidgets")
-  INCLUDE_DIRECTORIES("${Qt_Base}/5.3/android_armv7/include/QtGui")
-  INCLUDE_DIRECTORIES("${Qt_Base}/5.3/android_armv7/include/QtOpenGL")
-  INCLUDE_DIRECTORIES("${Qt_Base}/5.3/android_armv7/include/QtTest")
+  INCLUDE_DIRECTORIES( "${wxQt_Base}/${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-static-3.1")
+  INCLUDE_DIRECTORIES("${wxQt_Base}/include")
 
   ADD_DEFINITIONS(-DQT_WIDGETS_LIB)
 
-  #  For shared library build
-  
-  
-  SET(OCPN_Core_LIBRARIES
-
-        /home/dsr/Projects/opencpn_android/build_5.3_static/libopencpn.so
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_core-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_html-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_xml-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_qa-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_adv-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_aui-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_net-3.1-arm-linux-androideabi.a
-        ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_gl-3.1-arm-linux-androideabi.a
-        ${Qt_Base}/5.3/android_armv7/lib/libQt5Core.so
-        ${Qt_Base}/5.3/android_armv7/lib/libQt5OpenGL.so
-        ${Qt_Base}/5.3/android_armv7/lib/libQt5Widgets.so
-        ${Qt_Base}/5.3/android_armv7/lib/libQt5Gui.so
-        ${Qt_Base}/5.3/android_armv7/lib/libQt5AndroidExtras.so
-        ${NDK_Base}/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi-v7a/libgnustl_shared.so
- 
-        
-        )
-    
-  SET(ASHARE OFF)
-
-  IF(ASHARE)
-    SET_PROPERTY(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
-    INCLUDE_DIRECTORIES( "${wxQt_Base}/${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-3.1")
-  ELSE(ASHARE)
-    #  For static build
-    INCLUDE_DIRECTORIES( "${wxQt_Base}/${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-static-3.1")
-  ENDIF(ASHARE)
-  
-  INCLUDE_DIRECTORIES("${wxQt_Base}/include")
-
-ENDIF()
+ENDIF(QT_ANDROID)
 
 
 

@@ -7,11 +7,6 @@
           android:visible="false"
           android:showAsAction="ifRoom"/>
 
-    <item android:id="@+id/ocpn_action_mob"
-          android:icon="@drawable/mob_btn"
-          android:title="@string/ocpn_action_mob"
-          android:showAsAction="ifRoom"/>
-
     <item android:id="@+id/ocpn_action_follow"
           android:icon="@drawable/follow"
           android:title="@string/ocpn_action_follow"
@@ -57,9 +52,9 @@
           android:title="@string/ocpn_action_currents"
           android:showAsAction="ifRoom"/>
 
-    <item android:id="@+id/ocpn_action_googlemaps"
-          android:icon="@drawable/current"
-          android:title="@string/ocpn_action_googlemaps"
+    <item android:id="@+id/ocpn_action_mob"
+          android:icon="@drawable/mob_btn"
+          android:title="@string/ocpn_action_mob"
           android:showAsAction="ifRoom"/>
 
     <item android:id="@+id/ocpn_action_settings_basic"

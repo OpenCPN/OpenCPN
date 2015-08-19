@@ -217,7 +217,6 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id, const wxString& ti
         pConf->Read( _T ( "AirTemperaturePlot" ), &m_bDataPlot[GribOverlaySettings::AIR_TEMPERATURE], false );
         pConf->Read( _T ( "SeaTemperaturePlot" ), &m_bDataPlot[GribOverlaySettings::SEA_TEMPERATURE], false );
         pConf->Read( _T ( "CAPEPlot" ), &m_bDataPlot[GribOverlaySettings::CAPE], false );
-        pConf->Read( _T ( "RelHumidityPlot" ), &m_bDataPlot[GribOverlaySettings::REL_HUMIDITY], false );
 
 		pConf->Read( _T ( "CursorDataShown" ), &m_CDataIsShown, true );
 
@@ -277,7 +276,6 @@ GRIBUICtrlBar::~GRIBUICtrlBar()
         pConf->Write( _T ( "AirTemperaturePlot" ), m_bDataPlot[GribOverlaySettings::AIR_TEMPERATURE]);
         pConf->Write( _T ( "SeaTemperaturePlot" ), m_bDataPlot[GribOverlaySettings::SEA_TEMPERATURE]);
         pConf->Write( _T ( "CAPEPlot" ), m_bDataPlot[GribOverlaySettings::CAPE]);
-        pConf->Write( _T ( "RelHumidityPlot" ), m_bDataPlot[GribOverlaySettings::REL_HUMIDITY]);
 
 		pConf->Write( _T ( "CursorDataShown" ), m_CDataIsShown );
 
@@ -690,7 +688,7 @@ void GRIBUICtrlBar::OnMouseEvent( wxMouseEvent& event )
                 }
             }
             smenu->Check( ID_CTRLALTITUDE + 1000 + m_Altitude, true );
-            MenuAppend( xmenu, wxID_ANY, _("Select geoptential altitude"), wxITEM_NORMAL, wxBitmap( altitude ), smenu);
+            MenuAppend( xmenu, wxID_ANY, _("Select geopotential altitude"), wxITEM_NORMAL, wxBitmap( altitude ), smenu);
         }
         MenuAppend( xmenu, ID_BTNNOW, _("Now"), wxITEM_NORMAL, wxBitmap( now ) );
         MenuAppend( xmenu, ID_BTNZOOMTC, _("Zoom To Center"), wxITEM_NORMAL, wxBitmap( zoomto ) );

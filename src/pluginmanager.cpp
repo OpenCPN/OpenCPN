@@ -4739,6 +4739,11 @@ void ForceChartDBUpdate()
     }
 }
 
+wxDialog *GetActiveOptionsDialog()
+{
+    return g_options;
+}
+
 
 int PlatformDirSelectorDialog( wxWindow *parent, wxString *file_spec, wxString Title, wxString initDir)
 {
@@ -4892,46 +4897,75 @@ void PI_DLEvtHandler::onTimerEvent(wxTimerEvent &event)
 {
 #ifdef __OCPN__ANDROID__    
     //   Query the download status, and post to the original requestor
+    //   This method only happens on Background file downloads
 
     wxString sstat;
     int stat = queryAndroidFileDownload( m_id, &sstat );
-    
+
+    OCPN_downloadEvent ev(wxEVT_DOWNLOAD_EVENT, 0);
     long sofarBytes = 0;
     long totalBytes = -1;
     long state = -1;
     
-    wxStringTokenizer tk(sstat, _T(";"));
-    if( tk.HasMoreTokens() ){
-        wxString token = tk.GetNextToken();
-        token.ToLong(&state);
-        token = tk.GetNextToken();
-        token.ToLong(&sofarBytes);
-        token = tk.GetNextToken();
-        token.ToLong(&totalBytes);
+    if(stat){                           // some error
+        qDebug() << "Error on queryAndroidFileDownload, ending download";
+        ev.setComplete(true);
+        ev.setTransferred(sofarBytes);
+        ev.setTotal(totalBytes);
+    
+        ev.setDLEventStatus( OCPN_DL_FAILED);
+        ev.setDLEventCondition( OCPN_DL_EVENT_TYPE_END );
     }
+    else{
+        wxStringTokenizer tk(sstat, _T(";"));
+        if( tk.HasMoreTokens() ){
+            wxString token = tk.GetNextToken();
+            token.ToLong(&state);
+            token = tk.GetNextToken();
+            token.ToLong(&sofarBytes);
+            token = tk.GetNextToken();
+            token.ToLong(&totalBytes);
+        }
 
-    qDebug() << state << sofarBytes << totalBytes;
-    
-    m_sofarBytes = sofarBytes;
-    m_totalBytes = totalBytes;
-    
-    bool b_complete = false;
-    if( (state == 16) || (state == 8) )
-        b_complete = true;
+        qDebug() << state << sofarBytes << totalBytes;
+        
+        m_sofarBytes = sofarBytes;
+        m_totalBytes = totalBytes;
 
-    OCPN_downloadEvent ev(wxEVT_DOWNLOAD_EVENT, 0);
-    ev.setComplete(b_complete);
-    ev.setTransferred(sofarBytes);
-    ev.setTotal(totalBytes);
+        ev.setTransferred(sofarBytes);
+        ev.setTotal(totalBytes);
+        
+        if(state == 16){              // error
+            qDebug() << "Event OCPN_DL_FAILED/OCPN_DL_EVENT_TYPE_END";
+            ev.setComplete(true);
+            ev.setDLEventStatus( OCPN_DL_FAILED);
+            ev.setDLEventCondition( OCPN_DL_EVENT_TYPE_END );
+        }
+        else if(state == 8){          // Completed OK
+           qDebug() << "Event OCPN_DL_NO_ERROR/OCPN_DL_EVENT_TYPE_END";
+           ev.setComplete(true);
+           ev.setDLEventStatus( OCPN_DL_NO_ERROR);
+           ev.setDLEventCondition( OCPN_DL_EVENT_TYPE_END );
+        }
+        else{
+            ev.setComplete(false);
+            ev.setDLEventStatus( OCPN_DL_UNKNOWN);
+            ev.setDLEventCondition( OCPN_DL_EVENT_TYPE_PROGRESS );
+        }
 
-    ev.setDLEventStatus( OCPN_DL_UNKNOWN);
-    ev.setDLEventCondition( OCPN_DL_EVENT_TYPE_PROGRESS );
-    
-    //2;0;148686
+        
+        //2;0;148686
+    }
     
     if(m_download_evHandler){
-        qDebug() << "Sending event on timer...";
+//        qDebug() << "Sending event on timer...";
         m_download_evHandler->AddPendingEvent(ev);
+    }
+
+    //  Background download is all done.
+    if(OCPN_DL_EVENT_TYPE_END == ev.getDLEventCondition()){
+        m_eventTimer.Stop();
+        finishAndroidFileDownload();
     }
     
     
@@ -4958,10 +4992,11 @@ _OCPN_DLStatus OCPN_downloadFile( const wxString& url, const wxString &outputFil
     msg += url;  msg += _T(" to: ");  msg += outputFile;
     wxLogMessage(msg);
     
-    //  Create a temporary event handler to receive status events
-    g_piEventHandler = new PI_DLEvtHandler;
+    //  Create a single event handler to receive status events
+    if(!g_piEventHandler)
+        g_piEventHandler = new PI_DLEvtHandler;
 
-    //  Create a connection for the expected events
+    //  Create a connection for the expected events from Android Activity
     g_piEventHandler->Connect(wxEVT_DOWNLOAD_EVENT, (wxObjectEventFunction)(wxEventFunction)&PI_DLEvtHandler::onDLEvent);
      
     long dl_ID = -1;
@@ -4971,7 +5006,7 @@ _OCPN_DLStatus OCPN_downloadFile( const wxString& url, const wxString &outputFil
     if(res){
         finishAndroidFileDownload();
         g_piEventHandler->Disconnect(wxEVT_DOWNLOAD_EVENT, (wxObjectEventFunction)(wxEventFunction)&PI_DLEvtHandler::onDLEvent);
-        delete g_piEventHandler;
+        //delete g_piEventHandler;
         return OCPN_DL_FAILED;
     }
         
@@ -4987,23 +5022,32 @@ _OCPN_DLStatus OCPN_downloadFile( const wxString& url, const wxString &outputFil
             qDebug() << "USER_TIMOUT";
             finishAndroidFileDownload();
             g_piEventHandler->Disconnect(wxEVT_DOWNLOAD_EVENT, (wxObjectEventFunction)(wxEventFunction)&PI_DLEvtHandler::onDLEvent);
-            delete g_piEventHandler;
+            //delete g_piEventHandler;
             return (OCPN_DL_USER_TIMEOUT);
         }
         
         if(g_download_condition != OCPN_DL_EVENT_TYPE_UNKNOWN){
             if(OCPN_DL_EVENT_TYPE_END == g_download_condition){
                 _OCPN_DLStatus ss = g_download_status;
-                qDebug() << "DL_END" << (int)ss;
                 finishAndroidFileDownload();
                 g_piEventHandler->Disconnect(wxEVT_DOWNLOAD_EVENT, (wxObjectEventFunction)(wxEventFunction)&PI_DLEvtHandler::onDLEvent);
-                delete g_piEventHandler;
+                //delete g_piEventHandler;
+                qDebug() << "RETURN DL_END" << (int)ss;
                 return ss;              // The actual return code
             }
         }
         
         wxString sstat;
         int stat = queryAndroidFileDownload( dl_ID, &sstat );
+        if(stat){                       // some error
+            qDebug() << "Error on queryAndroidFileDownload";
+            finishAndroidFileDownload();
+            g_piEventHandler->Disconnect(wxEVT_DOWNLOAD_EVENT, (wxObjectEventFunction)(wxEventFunction)&PI_DLEvtHandler::onDLEvent);
+            //delete g_piEventHandler;
+                
+            return OCPN_DL_FAILED;      // so abort        
+        }
+        
         
         wxSleep(1);
         wxSafeYield();
@@ -5023,26 +5067,30 @@ _OCPN_DLStatus OCPN_downloadFileBackground( const wxString& url, const wxString 
     msg += url;  msg += _T(" to: ");  msg += outputFile;
     wxLogMessage(msg);
     
-    //  Create a temporary event handler to receive status events
-    g_piEventHandler = new PI_DLEvtHandler;
+    //  Create a single event handler to receive status events
+    
+    if(!g_piEventHandler)
+        g_piEventHandler = new PI_DLEvtHandler;
+    
     
     //  Create a connection for the expected events
-    g_piEventHandler->Connect(wxEVT_DOWNLOAD_EVENT, (wxObjectEventFunction)(wxEventFunction)&PI_DLEvtHandler::onDLEvent);
+    //g_piEventHandler->Connect(wxEVT_DOWNLOAD_EVENT, (wxObjectEventFunction)(wxEventFunction)&PI_DLEvtHandler::onDLEvent);
     
     
     long dl_ID = -1;
     
-    int res = startAndroidFileDownload( url, outputFile, g_piEventHandler, &dl_ID );
+    int res = startAndroidFileDownload( url, outputFile, NULL/*g_piEventHandler*/, &dl_ID );
     //  Started OK?
     if(res){
         finishAndroidFileDownload();
-        g_piEventHandler->Disconnect(wxEVT_DOWNLOAD_EVENT, (wxObjectEventFunction)(wxEventFunction)&PI_DLEvtHandler::onDLEvent);
-        delete g_piEventHandler;
+        //g_piEventHandler->Disconnect(wxEVT_DOWNLOAD_EVENT, (wxObjectEventFunction)(wxEventFunction)&PI_DLEvtHandler::onDLEvent);
+        //delete g_piEventHandler;
         return OCPN_DL_FAILED;
     }
-    
+ 
     //  configure the local event handler for background transfer
     g_piEventHandler->setBackgroundMode(dl_ID, handler);
+ 
     
     if(handle)
         *handle = dl_ID;

@@ -51,7 +51,8 @@ CursorData::CursorData( wxWindow *window, GRIBUICtrlBar &parent )
         if( win->IsKindOf(CLASSINFO(wxCheckBox)) ) {
 			int winId = ((wxCheckBox*) win )->GetId() - ID_CB_WIND;
 			((wxCheckBox*) win )->SetId( winId );
-            ((wxCheckBox*) win )->SetValue( m_gparent.m_bDataPlot[winId] );
+			if (m_gparent.InDataPlot(winId))
+                ((wxCheckBox*) win )->SetValue( m_gparent.m_bDataPlot[winId] );
 		}
 		node = node->GetNext();
 	}
@@ -67,7 +68,8 @@ void CursorData::OnCBAny( wxCommandEvent& event )
 {
 	int id = event.GetId();
 	wxWindow *win = this->FindWindow( id );
-	m_gparent.m_bDataPlot[id] = ((wxCheckBox*) win )->IsChecked();
+	if (m_gparent.InDataPlot(id))
+	    m_gparent.m_bDataPlot[id] = ((wxCheckBox*) win )->IsChecked();
     ResolveDisplayConflicts( id );
 }
 
@@ -522,7 +524,7 @@ void CursorData::OnMenuCallBack( wxMouseEvent& event )
     }
 
     //if the current parameter type is selected then resolve display conflicts
-	if( m_gparent.m_bDataPlot[id] )
+	if( m_gparent.InDataPlot(id) && m_gparent.m_bDataPlot[id] )
 		ResolveDisplayConflicts( id );
 
     //save new config

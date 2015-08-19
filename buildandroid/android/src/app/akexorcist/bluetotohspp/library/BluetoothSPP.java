@@ -205,6 +205,23 @@ public class BluetoothSPP {
             Log.i("DEBUGGER_TAG", "MESSAGE_STATE_CHANGE");
                 if(mBluetoothStateListener != null)
                     mBluetoothStateListener.onServiceStateChanged(msg.arg1);
+
+                if(msg.arg1 == BluetoothState.STATE_NONE)
+                    Log.i("DEBUGGER_TAG", "State:STATE_NONE");
+                else if(msg.arg1 == BluetoothState.STATE_LISTEN)
+                    Log.i("DEBUGGER_TAG", "State:STATE_LISTEN");
+                else if(msg.arg1 == BluetoothState.STATE_CONNECTING)
+                    Log.i("DEBUGGER_TAG", "State:STATE_CONNECTING");
+                else if(msg.arg1 == BluetoothState.STATE_CONNECTED)
+                    Log.i("DEBUGGER_TAG", "State:STATE_CONNECTED");
+
+                if(isConnected && msg.arg1 != BluetoothState.STATE_NONE) {
+                    Log.i("DEBUGGER_TAG", "State:NONE, maybe stop requested?");
+                    isAutoConnectionEnabled = false;
+                }
+
+
+
                 if(isConnected && msg.arg1 != BluetoothState.STATE_CONNECTED) {
                     if(mBluetoothConnectionListener != null)
                         mBluetoothConnectionListener.onDeviceDisconnected();
@@ -245,7 +262,7 @@ public class BluetoothSPP {
         }
     };
     
-    public void stopAutoConnect() {
+    public void resetAutoConnect() {
         isAutoConnectionEnabled = false;
     }
     

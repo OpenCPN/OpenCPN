@@ -254,7 +254,10 @@ wxString ConnectionParams::GetDSPort()
         return wxString::Format( _T("%s:%s:%d"), proto.c_str(), NetworkAddress.c_str(), NetworkPort );
     }
     else if( Type == INTERNAL_BT ){
-        return Port;
+        //  GPSD:HOLUX GR-231:0
+        //wxString proto = _T("GPSD");
+        //return wxString::Format( _T("%s:%s:%d"), proto.c_str(), NetworkAddress.c_str(), NetworkPort );
+        return Port;   //mac
     }
     else
         return _T("");

@@ -879,7 +879,7 @@ options::options( MyFrame* parent, wxWindowID id, const wxString& caption, const
     
     CreateControls();
     RecalculateSize();
-        
+
     Center();
 }
 
@@ -1100,6 +1100,10 @@ wxScrolledWindow *options::AddPage( size_t parent, const wxString & title)
         
     }
 
+#ifdef __OCPN__ANDROID__    
+//    window->GetHandle()->setStyleSheet(getQtStyleSheet());
+#endif    
+    
     return window;
 }
 
@@ -1277,9 +1281,12 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
         wxArrayString mt;
         mt.Add(_T("unscanned"));
         m_choiceBTDataSources = new wxChoice( m_pNMEAForm, wxID_ANY, wxDefaultPosition, wxDefaultSize, mt);
+
+#if 0        
+        m_BTscan_results.Clear();
+        m_BTscan_results.Add(_T("None"));
         
         m_BTscan_results = g_Platform->getBluetoothScanResults();
-        
         m_choiceBTDataSources->Clear();
         m_choiceBTDataSources->Append(m_BTscan_results.Item(0));  // scan status
         
@@ -1295,7 +1302,8 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
         if( m_BTscan_results.GetCount() > 1){
             m_choiceBTDataSources->SetSelection( 1 );
         }
-        
+
+#endif        
         m_choiceBTDataSources->Hide();
         bSizer15a->Add( m_choiceBTDataSources, 1, wxEXPAND|wxTOP, 5 );
         
@@ -1412,6 +1420,9 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     m_cbGarminHost = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Use Garmin (GRMN) mode for input"), wxDefaultPosition, wxDefaultSize, 0 );
     m_cbGarminHost->SetValue(false);
     fgSizer5->Add( m_cbGarminHost, 0, wxALL, 5 );
+#ifndef USE_GARMINHOST
+    m_cbGarminHost->Hide();
+#endif    
 
     m_cbInput = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Receive Input on this Port"), wxDefaultPosition, wxDefaultSize, 0 );
     fgSizer5->Add( m_cbInput, 0, wxALL, 5 );
@@ -2993,9 +3004,19 @@ void options::CreateControls()
     itemDialog1->SetSizer( itemBoxSizer2 );
 
     #ifdef __OCPN__ANDROID__
-    itemDialog1->GetHandle()->setStyleSheet( getQtStyleSheet());
-    #endif
+    //  Set Dialog Font by custom crafted Qt Stylesheet.
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
+
+    wxString wqs = getFontQtStylesheet(qFont);
+    wxCharBuffer sbuf = wqs.ToUTF8();
+    QString qsb = QString(sbuf.data());
     
+    QString qsbq = getQtStyleSheet();           // basic scrollbars, etc
+
+    itemDialog1->GetHandle()->setStyleSheet( qsb + qsbq );      // Concatenated style sheets
+    
+    #endif
+ 
     int flags = 0;
     
 #ifdef __OCPN__OPTIONS_USE_LISTBOOK__    
@@ -3010,10 +3031,18 @@ void options::CreateControls()
 
 #ifdef __OCPN__ANDROID__    
     //  In wxQT, we can dynamically style the little scroll buttons on a small display, to make them bigger
-    wxString qstyle;
-    qstyle.Printf(_T("QTabBar::scroller { width: %dpx; }"), m_fontHeight * 3 / 4);
-    wxCharBuffer buf = qstyle.ToUTF8();
+    wxString qtstyle;
+    qtstyle.Printf(_T("QTabBar::scroller { width: %dpx; }"), m_fontHeight * 3 / 4);
+    wxCharBuffer buf = qtstyle.ToUTF8();
     m_pListbook->GetHandle()->setStyleSheet( buf.data() );
+    
+//     QTabBar QToolButton::right-arrow { /* the arrow mark in the tool buttons */
+//     image: url(rightarrow.png);
+//     }
+//     
+//     QTabBar QToolButton::left-arrow {
+//         image: url(leftarrow.png);
+//     }
 #endif    
     
 #ifdef __WXMSW__
@@ -3656,7 +3685,8 @@ void options::OnOpenGLOptions( wxCommandEvent& event )
         g_GLOptions.m_bTextureCompression = dlg.m_cbTextureCompression->GetValue();
         
         g_bShowFPS = dlg.m_cbShowFPS->GetValue();
-        g_bSoftwareGL = dlg.m_cbSoftwareGL->GetValue();
+        if(dlg.m_cbSoftwareGL)
+            g_bSoftwareGL = dlg.m_cbSoftwareGL->GetValue();
         
         if(g_bexpert){
             g_GLOptions.m_bTextureCompressionCaching = dlg.m_cbTextureCompressionCaching->GetValue();
@@ -4184,7 +4214,12 @@ void options::OnApplyClick( wxCommandEvent& event )
             pds_existing = g_pMUX->FindStream( cp->GetLastDSPort() );
             if(pds_existing) 
                 g_pMUX->StopAndRemoveStream( pds_existing );
-                
+ 
+            //  This for Bluetooth, which has strange parameters
+            pds_existing = g_pMUX->FindStream( cp->GetPortStr() );
+            if(pds_existing) 
+                g_pMUX->StopAndRemoveStream( pds_existing );
+            
            if( cp->bEnabled ) {
            dsPortType port_type = cp->IOSelect;
                 DataStream *dstr = new DataStream( g_pMUX,
@@ -4958,37 +4993,63 @@ void options::OnButtonSelectSound( wxCommandEvent& event )
 {
     wxString sound_dir = g_Platform->GetSharedDataDir();
     sound_dir.Append( _T("sounds") );
-
+/*
     wxFileDialog *openDialog = new wxFileDialog( NULL, _("Select Sound File"), sound_dir, wxT(""),
             _("WAV files (*.wav)|*.wav|All files (*.*)|*.*"), wxFD_OPEN );
     
     if(g_bresponsive)
         openDialog = g_Platform->AdjustFileDialogFont(this, openDialog);
     
-    int response = openDialog->ShowModal();
+    int response = openDialog->ShowModal();*/
+    
+    wxString sel_file;
+    int response = wxID_CANCEL;
+    
+#ifndef __OCPN__ANDROID__    
+    wxFileDialog *popenDialog = new wxFileDialog( NULL, _( "Select Sound File" ), sound_dir, wxT ( "" ),
+                                                  _T("WAV files (*.wav)|*.wav|All files (*.*)|*.*"), wxFD_OPEN );
+    if(g_bresponsive)
+        popenDialog = g_Platform->AdjustFileDialogFont(this, popenDialog);
+                                                  
+    response = popenDialog->ShowModal();
+    sel_file = popenDialog->GetPath();
+    delete popenDialog;
+                                                  
+#else
+    wxString path;
+    response = g_Platform->DoFileSelectorDialog( NULL, &path, _( "Select Sound File" ),
+                                                 sound_dir, _T(""), wxT ( "*.*" ) );
+    sel_file = path;
+#endif
+                                                  
+    
     if( response == wxID_OK ) {
         if( g_bportable ) {
-            wxFileName f( openDialog->GetPath() );
+            wxFileName f( sel_file );
             f.MakeRelativeTo( g_Platform->GetHomeDir() );
             g_sAIS_Alert_Sound_File = f.GetFullPath();
         } else
-            g_sAIS_Alert_Sound_File = openDialog->GetPath();
+            g_sAIS_Alert_Sound_File = sel_file;
 
         g_anchorwatch_sound.UnLoad();
     }
     
-    delete openDialog;
 }
 
 void options::OnButtonTestSound( wxCommandEvent& event )
 {
-
     OCPN_Sound AIS_Sound;
     AIS_Sound.Create( g_sAIS_Alert_Sound_File );
 
     if( AIS_Sound.IsOk() ) {
-        
-#ifndef __WXMSW__
+
+#if defined(__OCPN__ANDROID__)
+    qDebug() << "Options play";
+    AIS_Sound.Play();
+#else
+#if defined(__WXMSW__)
+    AIS_Sound.Play(wxSOUND_SYNC);
+#else
         AIS_Sound.Play();
         int t = 0;
         while( AIS_Sound.IsPlaying() && (t < 10) ) {
@@ -4997,9 +5058,7 @@ void options::OnButtonTestSound( wxCommandEvent& event )
         }
         if( AIS_Sound.IsPlaying() )
             AIS_Sound.Stop();
- 
-#else
-        AIS_Sound.Play(wxSOUND_SYNC);
+#endif 
 #endif
     }
 
@@ -5614,13 +5673,18 @@ void options::OnValChange( wxCommandEvent& event )
 
 void options::OnScanBTClick( wxCommandEvent& event )
 {
-    if(m_BTscanning){
-    }
+    if(m_BTscanning)
+        StopBTScan();
     else {
+        m_btNoChangeCounter = 0;
+        m_btlastResultCount =  0;   
+        
         m_BTScanTimer.Start(1000, wxTIMER_CONTINUOUS);
         g_Platform->startBluetoothScan();
         m_BTscanning = 1;
-        if(m_buttonScanBT) m_buttonScanBT->Disable();
+        if(m_buttonScanBT){
+            m_buttonScanBT->SetLabel(_("Stop Scan"));
+        }
     }
 }
 
@@ -5628,8 +5692,6 @@ void options::onBTScanTimer(wxTimerEvent &event)
 {
     if(m_BTscanning){
         m_BTscanning++;
-        
-//        int isel = m_choiceBTDataSources->GetSelection();
         
         m_BTscan_results = g_Platform->getBluetoothScanResults();
         
@@ -5645,17 +5707,24 @@ void options::onBTScanTimer(wxTimerEvent &event)
             i += 2;
         }
         
-//        if( isel != wxNOT_FOUND){
-//            m_choiceBTDataSources->SetSelection( isel );
-//        }
-            
         if( m_BTscan_results.GetCount() > 1){
             m_choiceBTDataSources->SetSelection( 1 );
         }
-            
+
+        
+        //  Watch for changes.  When no changes occur after n seconds, stop the scan
+        if(m_btNoChangeCounter > 5)
+            StopBTScan();
+        
+        if((int)m_BTscan_results.GetCount() == m_btlastResultCount)
+            m_btNoChangeCounter++;
+        else
+            m_btNoChangeCounter = 0;
+        
+        m_btlastResultCount =  m_BTscan_results.GetCount();   
                 
-            
-        if(m_BTscanning >= 30){
+        // Absolute fallback    
+        if(m_BTscanning >= 15){
             StopBTScan();
         }
     }
@@ -5671,11 +5740,12 @@ void options::StopBTScan()
 
     g_Platform->stopBluetoothScan();
     
-    if(m_choiceBTDataSources)
-        m_choiceBTDataSources->SetString(0, _("Finished"));
     m_BTscanning = 0;
     
-    if(m_buttonScanBT) m_buttonScanBT->Enable();
+    if(m_buttonScanBT){
+        m_buttonScanBT->SetLabel(_("BT Scan"));
+        m_buttonScanBT->Enable();
+    }
     
 }
 
@@ -6062,6 +6132,15 @@ void options::SetConnectionParams(ConnectionParams *cp)
         if(m_rbTypeInternalBT)
             m_rbTypeInternalBT->SetValue( true );
         SetNMEAFormToBT();
+        
+        // Preset the source selector
+        wxString bts = cp->NetworkAddress + _T(";") + cp->GetPortStr();
+        m_choiceBTDataSources->Clear();
+        m_choiceBTDataSources->Append(bts);
+        m_choiceBTDataSources->SetSelection( 0 );
+        
+        
+        
     }
     
     else
@@ -6664,6 +6743,7 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
     m_bSizer1->Add( m_cbShowFPS, 0,  wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5 );
     m_cbShowFPS->SetValue(g_bShowFPS);
 
+    m_cbSoftwareGL = NULL;
 #if defined(__UNIX__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
     if(cc1->GetglCanvas()->GetVersionString().Upper().Find( _T("MESA") ) != wxNOT_FOUND) {
         m_cbSoftwareGL = new wxCheckBox( this, wxID_ANY, _("Software OpenGL (restart OpenCPN)") );

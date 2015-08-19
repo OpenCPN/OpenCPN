@@ -509,6 +509,7 @@ GribRecord *GribRecord::Interpolated2DRecord(GribRecord *&rety,
 
     rety = new GribRecord;
     *rety = *ret;
+    rety->dataType = rec1y.dataType;
     rety->data = datay;
     rety->BMSbits = NULL;
     rety->hasBMS = false;

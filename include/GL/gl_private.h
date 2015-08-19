@@ -56,6 +56,15 @@ extern "C" {
 
 typedef double          GLclampd;       /* double precision float in [0,1] */
 
+// These two definitions need to be present for Qt 5.5, but removed for Qt 5.3
+
+#ifdef __OCPN__ANDROID__
+#if QT_VERSION >= 0x050500
+typedef double          GLdouble;       /* double precision float */
+#define GL_DOUBLE                               0x140A
+#endif
+#endif
+
 GLAPI void GLAPIENTRY glPushAttrib( GLbitfield mask );
 GLAPI void GLAPIENTRY glPopAttrib( void );
 GLAPI void GLAPIENTRY glEnd( void );

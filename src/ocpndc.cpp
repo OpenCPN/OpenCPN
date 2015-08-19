@@ -952,7 +952,7 @@ void ocpnDC::DrawBitmap( const wxBitmap &bitmap, wxCoord x, wxCoord y, bool usem
 
             unsigned char mr, mg, mb;
             if( !image.GetOrFindMaskColour( &mr, &mg, &mb ) && !a ){
-                //printf("trying to use mask to draw a bitmap without alpha or mask\n" );
+                printf("trying to use mask to draw a bitmap without alpha or mask\n" );
             }
 
             unsigned char *e = new unsigned char[4 * w * h];

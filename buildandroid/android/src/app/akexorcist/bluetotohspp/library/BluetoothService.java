@@ -48,7 +48,7 @@ public class BluetoothService {
     private static final UUID UUID_OTHER_DEVICE =
             UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     // Member fields
-    private final BluetoothAdapter mAdapter;
+    private BluetoothAdapter mAdapter;
     private final Handler mHandler;
     private AcceptThread mSecureAcceptThread;
     private ConnectThread mConnectThread;
@@ -84,12 +84,16 @@ public class BluetoothService {
     // Start the chat service. Specifically start AcceptThread to begin a
     // session in listening (server) mode. Called by the Activity onResume() 
     public synchronized void start(boolean isAndroid) {
+
+        //  Re-initalize the adapter, for good measure
+        mAdapter = BluetoothAdapter.getDefaultAdapter();
+
         // Cancel any thread attempting to make a connection
         if (mConnectThread != null) {mConnectThread.cancel(); mConnectThread = null;}
         // Cancel any thread currently running a connection
         if (mConnectedThread != null) {mConnectedThread.cancel(); mConnectedThread = null;}
         
-        Log.i("DEBUGGER_TAG", "Service:start(), NULL");
+        Log.i("DEBUGGER_TAG", "Service:start()");
 
         setState(BluetoothState.STATE_LISTEN);
         
@@ -319,7 +323,14 @@ public class BluetoothService {
                 try {
                     mmSocket.close();
                 } catch (IOException e2) { }
+
                 connectionFailed();
+
+                try {
+                  Thread.sleep(1000);
+                } catch (Exception se) { }
+
+
                 return;
             }
 

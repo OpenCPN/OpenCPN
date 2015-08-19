@@ -2323,6 +2323,11 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     gVar = NAN;
     gSog = NAN;
     gCog = NAN;
+
+    for (int i = 0; i < MAX_COG_AVERAGE_SECONDS; i++ ) {
+        COGTable[i] = 0.;
+    }
+
     m_fixtime = 0;
 
     m_bpersistent_quilt = false;
@@ -3341,10 +3346,15 @@ void MyFrame::ProcessCanvasResize( void )
 int timer_sequence;
 void MyFrame::TriggerResize(wxSize sz)
 {
+#ifdef __OCPN__ANDROID__
     m_newsize = sz;
-    
+
     timer_sequence = 0;
     m_resizeTimer.Start(10, wxTIMER_ONE_SHOT);
+    
+    resizeAndroidPersistents();
+    
+#endif    
 }
     
 
@@ -4024,6 +4034,13 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         
         case ID_CMD_APPLY_SETTINGS:{
             applySettingsString(event.GetString());
+            break;
+        }
+
+        case ID_CMD_TRIGGER_RESIZE:{
+            #ifdef __OCPN__ANDROID__
+            TriggerResize( getAndroidConfigSize() );
+            #endif
             break;
         }
         
@@ -9135,10 +9152,11 @@ void MyFrame::UpdateAISMOBRoute( AIS_Target_Data *ptarget )
 
 void MyFrame::applySettingsString( wxString settings)
 {
-    g_Platform->ShowBusySpinner();
+    //  Save some present values
+    int last_UIScaleFactor = g_GUIScaleFactor;
+    bool previous_expert = g_bUIexpert;
     
     //  Parse the passed settings string
-//    wxLogMessage( settings );
     bool bproc_InternalGPS = false;
     bool benable_InternalGPS = false;
     
@@ -9159,7 +9177,6 @@ void MyFrame::applySettingsString( wxString settings)
                     cdi.fullpath = dir.Trim();
                     cdi.magic_number = ChartData->GetMagicNumberCached(dir.Trim());
                     NewDirArray.Add(cdi);
- //                   wxLogMessage(dir.Trim());
                 }
             }
         }
@@ -9171,17 +9188,12 @@ void MyFrame::applySettingsString( wxString settings)
             wxLogMessage(_T("Chart Dir List change detected"));
         }
     }
-            
-    bool previous_expert = g_bUIexpert;
-            
+
     wxStringTokenizer tk(settings, _T(";"));
     while ( tk.HasMoreTokens() )
     {
         wxString token = tk.GetNextToken();
-//        wxLogMessage(token);
-        
         wxString val = token.AfterFirst(':');
-//        wxLogMessage(val);
         
         //  Binary switches
         
@@ -9210,24 +9222,35 @@ void MyFrame::applySettingsString( wxString settings)
             g_bUIexpert = val.IsSameAs(_T("1"));
         }
         else if(token.StartsWith( _T("prefb_showsound"))){
+            bool old_val = ps52plib->m_bShowSoundg;
             ps52plib->m_bShowSoundg = val.IsSameAs(_T("1"));
-            rr |= S52_CHANGED;
+            if(old_val != ps52plib->m_bShowSoundg)
+                rr |= S52_CHANGED;
         }
         else if(token.StartsWith( _T("prefb_showSCAMIN"))){
+            bool old_val = ps52plib->m_bUseSCAMIN;
             ps52plib->m_bUseSCAMIN = val.IsSameAs(_T("1"));
-            rr |= S52_CHANGED;
+            if(old_val != ps52plib->m_bUseSCAMIN)
+                rr |= S52_CHANGED;
         }
         else if(token.StartsWith( _T("prefb_showimptext"))){
+            bool old_val = ps52plib->m_bShowS57ImportantTextOnly;
             ps52plib->m_bShowS57ImportantTextOnly = val.IsSameAs(_T("1"));
-            rr |= S52_CHANGED;
+            if(old_val != ps52plib->m_bShowS57ImportantTextOnly)
+                rr |= S52_CHANGED;
         }
         else if(token.StartsWith( _T("prefb_showlightldesc"))){
+            bool old_val = ps52plib->m_bShowLdisText;
             ps52plib->m_bShowLdisText = val.IsSameAs(_T("1"));
-            rr |= S52_CHANGED;
+            if(old_val != ps52plib->m_bShowLdisText)
+                rr |= S52_CHANGED;
         }
         else if(token.StartsWith( _T("prefb_showATONLabels"))){
-            rr |= S52_CHANGED;
+            bool old_val = ps52plib->m_bShowAtonText;
             ps52plib->m_bShowAtonText = val.IsSameAs(_T("1"));
+            if(old_val != ps52plib->m_bShowAtonText)
+                rr |= S52_CHANGED;
+            
         }
         else if(token.StartsWith( _T("prefb_internalGPS"))){
             bproc_InternalGPS = true;
@@ -9265,7 +9288,8 @@ void MyFrame::applySettingsString( wxString settings)
         }
         
         else if(token.StartsWith( _T("prefs_displaycategory"))){
-            rr |= S52_CHANGED;
+            _DisCat old_nset = ps52plib->GetDisplayCategory();
+            
             _DisCat nset = DISPLAYBASE;
             if(wxNOT_FOUND != val.Lower().Find(_T("base")))
                 nset = DISPLAYBASE;
@@ -9273,12 +9297,16 @@ void MyFrame::applySettingsString( wxString settings)
                 nset = STANDARD;
             else if(wxNOT_FOUND != val.Lower().Find(_T("all")))
                 nset = OTHER;
-            
-            ps52plib-> SetDisplayCategory( nset );
+
+            if(nset != old_nset){
+                rr |= S52_CHANGED;
+                ps52plib-> SetDisplayCategory( nset );
+            }
         }
         
         else if(token.StartsWith( _T("prefs_shallowdepth"))){
-            rr |= S52_CHANGED;
+            double old_dval = S52_getMarinerParam( S52_MAR_SHALLOW_CONTOUR );
+            
             float conv = 1;
             //             if ( depthUnit == 0 ) // feet
             //                 conv = 0.3048f; // international definiton of 1 foot is 0.3048 metres
@@ -9286,48 +9314,78 @@ void MyFrame::applySettingsString( wxString settings)
             //                 conv = 0.3048f * 6; // 1 fathom is 6 feet
             
             double dval;
-            if(val.ToDouble(&dval))
-                S52_setMarinerParam( S52_MAR_SHALLOW_CONTOUR, dval * conv );
+            if(val.ToDouble(&dval)){
+                if(fabs(dval - old_dval) > .1){
+                    S52_setMarinerParam( S52_MAR_SHALLOW_CONTOUR, dval * conv );
+                    rr |= S52_CHANGED;
+                }
+            }
         }
         
         else if(token.StartsWith( _T("prefs_safetydepth"))){
-            rr |= S52_CHANGED;
+            double old_dval = S52_getMarinerParam( S52_MAR_SAFETY_DEPTH );
             float conv = 1;
             double dval;
-            if(val.ToDouble(&dval))
-                S52_setMarinerParam( S52_MAR_SAFETY_DEPTH, dval * conv );
+            if(val.ToDouble(&dval)){
+                if(fabs(dval - old_dval) > .1){
+                    S52_setMarinerParam( S52_MAR_SAFETY_DEPTH, dval * conv );
+                    rr |= S52_CHANGED;
+                }
+            }
         }
         
         else if(token.StartsWith( _T("prefs_deepdepth"))){
-            rr |= S52_CHANGED;
+            double old_dval = S52_getMarinerParam( S52_MAR_DEEP_CONTOUR );
             float conv = 1;
             double dval;
-            if(val.ToDouble(&dval))
-                S52_setMarinerParam( S52_MAR_DEEP_CONTOUR, dval * conv );
+            if(val.ToDouble(&dval)){
+                if(fabs(dval - old_dval) > .1){
+                    S52_setMarinerParam( S52_MAR_DEEP_CONTOUR, dval * conv );
+                    rr |= S52_CHANGED;
+                }
+            }
+            
         }
         
         else if(token.StartsWith( _T("prefs_vectorgraphicsstyle"))){
-            rr |= S52_CHANGED;
+            LUPname old_LUP = ps52plib->m_nSymbolStyle;
+            
             if(wxNOT_FOUND != val.Lower().Find(_T("paper")))
                 ps52plib->m_nSymbolStyle = PAPER_CHART;
             else if(wxNOT_FOUND != val.Lower().Find(_T("simplified")))
                 ps52plib->m_nSymbolStyle = SIMPLIFIED;
+            
+            if(old_LUP != ps52plib->m_nSymbolStyle)
+                rr |= S52_CHANGED;
+            
         }
         
         else if(token.StartsWith( _T("prefs_vectorboundarystyle"))){
-            rr |= S52_CHANGED;
+            LUPname old_LUP = ps52plib->m_nBoundaryStyle;
+            
             if(wxNOT_FOUND != val.Lower().Find(_T("plain")))
                 ps52plib->m_nBoundaryStyle = PLAIN_BOUNDARIES;
             else if(wxNOT_FOUND != val.Lower().Find(_T("symbolized")))
                 ps52plib->m_nBoundaryStyle = SYMBOLIZED_BOUNDARIES;
+            
+            if(old_LUP != ps52plib->m_nBoundaryStyle)
+                rr |= S52_CHANGED;
+            
         }
         
         else if(token.StartsWith( _T("prefs_vectorchartcolors"))){
-            rr |= S52_CHANGED;
+            double old_dval = S52_getMarinerParam( S52_MAR_TWO_SHADES );
+            
             if(wxNOT_FOUND != val.Lower().Find(_T("2")))
                 S52_setMarinerParam( S52_MAR_TWO_SHADES, 1. );
             else if(wxNOT_FOUND != val.Lower().Find(_T("4")))
                 S52_setMarinerParam( S52_MAR_TWO_SHADES, 0. );
+            
+            double new_dval = S52_getMarinerParam( S52_MAR_TWO_SHADES );
+            if(fabs(new_dval - old_dval) > .1){
+                 rr |= S52_CHANGED;
+            }
+            
         }
         
     }
@@ -9412,7 +9470,18 @@ void MyFrame::applySettingsString( wxString settings)
     
     ProcessOptionsDialog( rr,  &NewDirArray );
     
-    if(g_FloatingToolbarDialog)
+    // Try to detect if the toolbar is changing, to avoid a rebuild if not necessary.
+    
+    bool b_newToolbar = false;
+    
+    if(g_GUIScaleFactor != last_UIScaleFactor)
+        b_newToolbar = true;
+    
+    if(previous_expert != g_bUIexpert)
+        b_newToolbar = true;
+    
+    
+    if(b_newToolbar && g_FloatingToolbarDialog)
         g_FloatingToolbarDialog->DestroyToolBar();
     
     
@@ -9423,18 +9492,25 @@ void MyFrame::applySettingsString( wxString settings)
      }
 #endif
 
-    g_Platform->applyExpertMode(g_bUIexpert);
+    if(previous_expert != g_bUIexpert)
+        g_Platform->applyExpertMode(g_bUIexpert);
     
-
     //  We set the compass size first, since that establishes the available space for the toolbar.
     SetGPSCompassScale();
     g_Compass->SetScaleFactor(g_compass_scalefactor);
     UpdateGPSCompassStatusBox( true );
     
-    SetToolbarScale();
-    RequestNewToolbar(true);    // Force rebuild, to pick up bGUIexpert settings.
+    if(b_newToolbar){
+        g_Platform->ShowBusySpinner();
+        
+        SetToolbarScale();
+        RequestNewToolbar(true);    // Force rebuild, to pick up bGUIexpert and scale settings.
+        
+        g_Platform->HideBusySpinner();
+    }
+    
     SurfaceToolbar();
-
+    
     gFrame->Raise();
     
     cc1->InvalidateGL();
@@ -9449,11 +9525,6 @@ void MyFrame::applySettingsString( wxString settings)
 #if defined(__WXOSX__) || defined(__WXQT__)
     if( g_FloatingToolbarDialog )
         g_FloatingToolbarDialog->Raise();
-    
-//    if( b_restoreAIS ){
-//        g_pAISTargetList = new AISTargetListDialog( this, g_pauimgr, g_pAIS );
-//        g_pAISTargetList->UpdateAISTargetList();
-//    }
 #endif
     
     if(console)
@@ -9463,8 +9534,6 @@ void MyFrame::applySettingsString( wxString settings)
     
     if (NMEALogWindow::Get().Active())
         NMEALogWindow::Get().GetTTYWindow()->Raise();
-
-    g_Platform->HideBusySpinner();
     
 }   
 

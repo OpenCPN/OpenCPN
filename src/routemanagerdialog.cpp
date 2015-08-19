@@ -45,6 +45,7 @@
 #include "SendToGpsDlg.h"
 #include "TrackPropDlg.h"
 #include "AIS_Decoder.h"
+#include "OCPNPlatform.h"
 
 #define DIALOG_MARGIN 3
 
@@ -496,6 +497,10 @@ void RouteManagerDialog::Create()
     m_pRouteListCtrl = new wxListCtrl( m_pPanelRte, -1, wxDefaultPosition, wxDefaultSize,
                                        wxLC_REPORT  | wxLC_SORT_ASCENDING | wxLC_HRULES
                                        | wxBORDER_SUNKEN/*|wxLC_VRULES*/);
+    #ifdef __OCPN__ANDROID__    
+    m_pRouteListCtrl->GetHandle()->setStyleSheet(getQtStyleSheet());
+    #endif    
+    
     m_pRouteListCtrl->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED,
                                wxListEventHandler(RouteManagerDialog::OnRteSelected), NULL, this );
     m_pRouteListCtrl->Connect( wxEVT_COMMAND_LIST_ITEM_DESELECTED,
@@ -583,6 +588,11 @@ void RouteManagerDialog::Create()
     
     m_pTrkListCtrl = new wxListCtrl( m_pPanelTrk, -1, wxDefaultPosition, wxDefaultSize,
                                      wxLC_REPORT | wxLC_SORT_ASCENDING | wxLC_HRULES | wxBORDER_SUNKEN/*|wxLC_VRULES*/);
+    
+    #ifdef __OCPN__ANDROID__    
+    m_pTrkListCtrl->GetHandle()->setStyleSheet(getQtStyleSheet());
+    #endif    
+    
     m_pTrkListCtrl->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED,
                              wxListEventHandler(RouteManagerDialog::OnTrkSelected), NULL, this );
     m_pTrkListCtrl->Connect( wxEVT_COMMAND_LIST_ITEM_DESELECTED,
@@ -657,6 +667,10 @@ void RouteManagerDialog::Create()
     
     m_pWptListCtrl = new wxListCtrl( m_pPanelWpt, -1, wxDefaultPosition, wxDefaultSize,
                                      wxLC_REPORT | wxLC_SORT_ASCENDING | wxLC_HRULES | wxBORDER_SUNKEN/*|wxLC_VRULES*/);
+    #ifdef __OCPN__ANDROID__    
+    m_pWptListCtrl->GetHandle()->setStyleSheet(getQtStyleSheet());
+    #endif    
+    
     m_pWptListCtrl->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED,
                              wxListEventHandler(RouteManagerDialog::OnWptSelected), NULL, this );
     m_pWptListCtrl->Connect( wxEVT_COMMAND_LIST_ITEM_DESELECTED,
@@ -758,6 +772,10 @@ void RouteManagerDialog::Create()
     m_pLayListCtrl = new wxListCtrl( m_pPanelLay, -1, wxDefaultPosition, wxDefaultSize,
                                      wxLC_REPORT | wxLC_SINGLE_SEL | wxLC_SORT_ASCENDING | wxLC_HRULES
                                      | wxBORDER_SUNKEN/*|wxLC_VRULES*/);
+    #ifdef __OCPN__ANDROID__    
+    m_pLayListCtrl->GetHandle()->setStyleSheet(getQtStyleSheet());
+    #endif    
+    
     m_pLayListCtrl->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED,
                              wxListEventHandler(RouteManagerDialog::OnLaySelected), NULL, this );
     m_pLayListCtrl->Connect( wxEVT_COMMAND_LIST_ITEM_DESELECTED,

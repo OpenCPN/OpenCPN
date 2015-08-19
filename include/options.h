@@ -686,6 +686,8 @@ private:
     wxTimer     m_BTScanTimer;
     int         m_BTscanning;
     wxArrayString m_BTscan_results;
+    int         m_btNoChangeCounter;
+    int         m_btlastResultCount;   
     
 };
 
