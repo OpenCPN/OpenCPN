@@ -380,8 +380,8 @@ void OCPN_Sound::FreeMem(void)
 #ifndef __OCPN__ANDROID__
 OCPN_Sound::OCPN_Sound()
 {
-//    wxSound::wxSound();
-x    m_OK = false;
+    wxSound::wxSound();
+    m_OK = false;
 }
 
 OCPN_Sound::~OCPN_Sound()
