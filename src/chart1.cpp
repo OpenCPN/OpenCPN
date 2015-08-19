@@ -1120,6 +1120,18 @@ bool MyApp::OnInit()
     
     if( !wxApp::OnInit() ) return false;
 
+#if defined(__WXGTK__) && defined(ARMHF) && defined(ocpnUSE_GLES)
+    // There is a race condition between cairo which is used for text rendering
+    // by gtk and EGL which without the below code causes a bus error and the
+    // program aborts before startup
+    // this hack forces cairo to load right now by rendering some text
+
+    wxBitmap bmp( 10, 10, -1 );
+    wxMemoryDC dc;
+    dc.SelectObject( bmp );
+    dc.DrawText( _T("X"), 0, 0 );
+#endif
+
     //  On Windows
     //  We allow only one instance unless the portable option is used
 #ifdef __WXMSW__
