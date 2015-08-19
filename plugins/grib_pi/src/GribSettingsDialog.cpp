@@ -606,7 +606,7 @@ void GribSettingsDialog::SetDataTypeSettings(int settings)
     odc.m_bNumFixSpac = m_cNumFixSpac->GetValue();
     odc.m_iNumbersSpacing = m_sNumbersSpacing->GetValue();
     odc.m_bParticles = m_cbParticles->GetValue();
-    odc.m_dParticleDensity = 4.0*exp(m_sParticleDensity->GetValue() / 2.0 - 3);
+    odc.m_dParticleDensity = 4.0*exp(m_sParticleDensity->GetValue() - 7);
 }
 
 void GribSettingsDialog::ReadDataTypeSettings(int settings)
@@ -636,7 +636,7 @@ void GribSettingsDialog::ReadDataTypeSettings(int settings)
     m_cNumMinSpac->SetValue(!odc.m_bNumFixSpac);
     m_sNumbersSpacing->SetValue(odc.m_iNumbersSpacing);
     m_cbParticles->SetValue(odc.m_bParticles);
-    m_sParticleDensity->SetValue(2.0*(log(odc.m_dParticleDensity/4.0) + 3));
+    m_sParticleDensity->SetValue(log(odc.m_dParticleDensity/4.0) + 7);
 
     ShowFittingSettings(settings);
 }
