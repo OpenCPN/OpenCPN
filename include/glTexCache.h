@@ -35,14 +35,10 @@
 
 #define COMPRESSED_CACHE_MAGIC 0xf010  // change this when the format changes
 
-#define COMPRESSED_BUFFER_OK            0
-#define COMPRESSED_BUFFER_PENDING       1
-#define MAP_BUFFER_OK                   4
-
 #define FACTORY_TIMER                   10000
 
 void HalfScaleChartBits( int width, int height, unsigned char *source, unsigned char *target );
-bool CompressUsingGPU( glTextureDescriptor *ptd, GLuint raster_format, int level, bool b_post_comp);
+bool CompressUsingGPU( glTextureDescriptor *ptd, int level, bool b_post_comp, bool inplace);
 
 struct CompressedCacheHeader
 {
@@ -77,7 +73,7 @@ WX_DEFINE_ARRAY(CatalogEntry*, ArrayOfCatalogEntries);
 class glTexFactory : public wxEvtHandler
 {
 public:
-    glTexFactory(ChartBase *chart, GLuint raster_format);
+    glTexFactory(ChartBase *chart);
     ~glTexFactory();
 
     bool PrepareTexture( int base_level, const wxRect &rect, ColorScheme color_scheme, bool b_throttle_thread = true );
@@ -100,8 +96,6 @@ public:
     void FreeSome( long target );
     
     glTextureDescriptor *GetpTD( wxRect & rect );
-    GLuint GetRasterFormat() { return m_raster_format; }
-    
     
 private:
     bool LoadCatalog(void);
@@ -120,7 +114,6 @@ private:
     int         n_catalog_entries;
     ArrayOfCatalogEntries       m_catalog;
     wxString    m_ChartPath;
-    GLuint      m_raster_format;
     wxString    m_CompressedCacheFilePath;
     
     int         m_catalog_offset;
@@ -184,8 +177,6 @@ public:
     int GetRunningJobCount(){ return m_njobs_running; }
     bool AsJob( wxString const &chart_path ) const;
     void PurgeJobList( wxString chart_path = wxEmptyString );
-    
-    unsigned int m_raster_format;
     
 private:
     

@@ -3258,7 +3258,6 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     g_FloatingToolbarDialog = NULL;
     g_bTempShowMenuBar = false;
     
-
     #define THREAD_WAIT_SECONDS  5
 #ifdef ocpnUSE_GL
     // The last thing we do is finish the compression threads.
@@ -3266,7 +3265,8 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     // it appears to have finished rather than hanging for several seconds
     // while the compression threads exit
     if(g_bopengl && g_CompressorPool && g_CompressorPool->GetRunningJobCount()){
-        
+        Hide();
+
         wxLogMessage(_T("Starting compressor pool drain"));
         wxDateTime now = wxDateTime::Now();
         time_t stall = now.GetTicks();
