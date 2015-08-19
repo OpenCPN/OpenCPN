@@ -429,7 +429,7 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
     GribRecord **pGR = m_pGribTimelineRecordSet->m_GribRecordPtrArray;
     wxArrayPtrVoid **pIA = m_pGribTimelineRecordSet->m_IsobarArray;
 
-    for(int overlay = 1; overlay >= 0; overlay--)
+    for(int overlay = 1; overlay >= 0; overlay--) {
         for(int i=0; i<GribOverlaySettings::SETTINGS_COUNT; i++) {
             if(i == GribOverlaySettings::WIND ) {
                 if(overlay) {   /* render overlays first */
@@ -457,17 +457,18 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
                 }
                 continue;
             }
-        if( !m_dlg.m_bDataPlot[i] )
-            continue;
+            if( m_dlg.InDataPlot(i) && !m_dlg.m_bDataPlot[i] )
+                continue;
 
-        if(overlay) /* render overlays first */
-            RenderGribOverlayMap( i, pGR, vp );
-        else {
-            RenderGribBarbedArrows( i, pGR, vp );
-            RenderGribIsobar( i, pGR, pIA, vp );
-            RenderGribDirectionArrows( i, pGR, vp );
-            RenderGribNumbers( i, pGR, vp );
-            RenderGribParticles( i, pGR, vp );
+            if(overlay) /* render overlays first */
+                RenderGribOverlayMap( i, pGR, vp );
+            else {
+                RenderGribBarbedArrows( i, pGR, vp );
+                RenderGribIsobar( i, pGR, pIA, vp );
+                RenderGribDirectionArrows( i, pGR, vp );
+                RenderGribNumbers( i, pGR, vp );
+                RenderGribParticles( i, pGR, vp );
+            }
         }
     }
     if( m_Altitude ) {
