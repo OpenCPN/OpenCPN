@@ -1,5 +1,9 @@
 0....Tools, etc.
 
+
+    $adb shell /system/bin/screencap -p /sdcard/screenshot.png
+    $adb pull /sdcard/screenshot.png screenshot.png
+
     cmake -DUSE_GARMINHOST=OFF -D_wx_selected_config=androideabi-qt -DCMAKE_TOOLCHAIN_FILE=../buildandroid/build_android.cmake -DwxQt_Build=build_android_53 -DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets -DQt_Base=/home/dsr/Qt/5.3 ..
 
     cmake -DUSE_GARMINHOST=OFF -D_wx_selected_config=androideabi-qt -DCMAKE_TOOLCHAIN_FILE=../buildandroid/build_android.cmake -DwxQt_Build=build_android_55 -DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets -DQt_Base=/home/dsr/Qt5.5.0/5.5 ..
