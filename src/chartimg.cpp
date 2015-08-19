@@ -68,7 +68,6 @@ struct sigaction sa_all_previous;
 
 sigjmp_buf           env_chart;                 // the context saved by sigsetjmp();
 
-
 void catch_signals_chart(int signo)
 {
       switch(signo)
@@ -84,6 +83,13 @@ void catch_signals_chart(int signo)
 
 #endif
 
+//  Missing from MSW include files
+#ifdef _MSC_VER
+typedef __int32 int32_t;
+typedef unsigned __int32 uint32_t;
+typedef __int64 int64_t;
+typedef unsigned __int64 uint64_t;
+#endif
 
 // ----------------------------------------------------------------------------
 // Random Prototypes
@@ -4224,7 +4230,7 @@ int   ChartBaseBSB::BSBGetScanline( unsigned char *pLineBuf, int y, int xs, int 
 
 {
       unsigned char *prgb = pLineBuf;
-      int nLineMarker, nValueShift, iPixel = 0;
+      int nValueShift, iPixel = 0;
       unsigned char byValueMask, byCountMask;
       unsigned char byNext;
       CachedLine *pt = NULL, cached_line;
@@ -4324,7 +4330,6 @@ int   ChartBaseBSB::BSBGetScanline( unsigned char *pLineBuf, int y, int xs, int 
           pt->pTileOffset[0].pixel = 0;
           unsigned int tileindex = 1, nextTile = TILE_SIZE;
 #endif
-          int nPixValue;
           unsigned int nRunCount;
           while( ((byNext = *lp++) != 0 ) && (iPixel < (unsigned int)Size_X))
 #ifdef USE_OLD_CACHE
