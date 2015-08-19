@@ -43,12 +43,12 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 #TODO: Should we use  -fno-stack-protector
 #  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
 IF(NOT WIN32 AND NOT APPLE)
-    ADD_DEFINITIONS( "-Wall -O0 -fexceptions -fvisibility=hidden" )
+    ADD_DEFINITIONS( "-Wall -fexceptions -fvisibility=hidden" )
     SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-Bsymbolic")
 ENDIF(NOT WIN32 AND NOT APPLE)
 
 IF( APPLE )
-   ADD_DEFINITIONS( "-O0 -fexceptions -fvisibility=hidden" )
+   ADD_DEFINITIONS( "-fexceptions -fvisibility=hidden" )
    ADD_DEFINITIONS("-Wno-unused -Wno-overloaded-virtual")
    SET(CMAKE_SHARED_LINKER_FLAGS "-Wl -undefined dynamic_lookup")
 ENDIF( APPLE )
