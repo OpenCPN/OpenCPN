@@ -103,15 +103,18 @@ public:
 
 
 
-
+struct TileOffsetCache
+{
+    int offset; // offset from start of line pointer
+    int pixel; // offset from current pixel
+};
 
 class CachedLine
 {
 public:
-      int               xstart;
-      int               xlength;
-      unsigned char     *pPix;
-      unsigned char     *pRGB;
+      unsigned char    *pPix;
+      TileOffsetCache  *pTileOffset; // entries for random access
+
       bool              bValid;
 };
 
