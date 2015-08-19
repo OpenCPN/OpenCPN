@@ -191,8 +191,7 @@ bool about::Create( wxWindow* parent, wxWindowID id, const wxString& caption, co
 
     m_displaySize = g_Platform->getDisplaySize();
     CreateControls();
-
-    Update();
+    Populate();
 
     // Set the maximum size of the entire about dialog
     wxSize displaySize = wxSize( m_displaySize.x - 100, m_displaySize.y - 100 );
@@ -232,7 +231,7 @@ void about::SetColorScheme( void )
 
 }
 
-void about::Update()
+void about::Populate( void )
 {
 
     wxColor bg = GetBackgroundColour();
@@ -293,7 +292,7 @@ void about::Update()
     SetColorScheme();
 }
 
-void about::CreateControls()
+void about::CreateControls( void )
 {
     //  Set the nominal vertical size of the embedded controls
     int v_size = g_bresponsive ? -1 : 300;

@@ -66,10 +66,10 @@ class about: public wxDialog
                  const wxPoint& pos = wxDefaultPosition,
                  const wxSize& size = wxSize(500, 500),
                  long style = wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX );
-    void Update();
 
   private:
-    void CreateControls();
+    void CreateControls( void );
+    void Populate( void );
     void OnXidOkClick( wxCommandEvent& event );
     void OnPageChange(wxNotebookEvent& event);
     void OnDonateClick( wxCommandEvent& event );

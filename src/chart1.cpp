@@ -3934,7 +3934,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             if( !g_pAboutDlg )
                 g_pAboutDlg = new about( this, g_Platform->GetSharedDataDir() );
             else
-                g_pAboutDlg->Update();
+                g_pAboutDlg->SetFocus();
             g_pAboutDlg->Show();
 
             break;
