@@ -2958,6 +2958,24 @@ void ChartCanvas::UpdateCanvasOnGroupChange( void )
     }
 }
 
+bool ChartCanvas::SetViewPointByCorners( double latSW, double lonSW, double latNE, double lonNE )
+{
+    // Center Point
+    double latc = (latSW + latNE)/2.0;
+    double lonc = (lonSW + lonNE)/2.0;
+    
+    // Get scale in ppm (latitude)
+    double ne_easting, ne_northing;
+    toSM( latNE, lonNE, latc, lonc, &ne_easting, &ne_northing );
+    
+    double sw_easting, sw_northing;
+    toSM( latSW, lonSW, latc, lonc, &sw_easting, &sw_northing );
+    
+    double scale_ppm = VPoint.pix_height / fabs(ne_northing - sw_northing);
+        
+    return SetViewPoint( latc, lonc, scale_ppm, VPoint.skew, VPoint.rotation );
+}
+
 bool ChartCanvas::SetVPScale( double scale, bool refresh )
 {
     return SetViewPoint( VPoint.clat, VPoint.clon, scale, VPoint.skew, VPoint.rotation, true, refresh );
