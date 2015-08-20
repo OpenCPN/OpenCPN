@@ -3083,9 +3083,28 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
             if( g_bFullScreenQuilt ) {
                 current_ref_stack_index = m_pQuilt->GetRefChartdbIndex();
             }
+            
+            //We might need a new Reference Chart
+            bool b_needNewRef = false;
 
             //    If the new stack does not contain the current ref chart....
-            if( ( -1 == current_ref_stack_index ) && ( m_pQuilt->GetRefChartdbIndex() >= 0 ) ) {
+            if( ( -1 == current_ref_stack_index ) && ( m_pQuilt->GetRefChartdbIndex() >= 0 ) )
+                b_needNewRef = true;
+            
+            // Would the current Ref Chart be excessively underzoomed?
+            bool renderable = true;
+            ChartBase* referenceChart = ChartData->OpenChartFromDB( m_pQuilt->GetRefChartdbIndex(), FULL_INIT );
+            if( referenceChart ) {
+                double chartMaxScale = referenceChart->GetNormalScaleMax( cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth() );
+                renderable = chartMaxScale*1.5 > VPoint.chart_scale;
+            }
+            if( !renderable )
+                b_needNewRef = true;
+            
+                          
+
+            //    Need new refchart?
+            if( b_needNewRef ) {
                 const ChartTableEntry &cte_ref = ChartData->GetChartTableEntry(
                                                      m_pQuilt->GetRefChartdbIndex() );
                 int target_scale = cte_ref.GetScale();
@@ -3102,7 +3121,18 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                     int candidate_scale = cte_candidate.GetScale();
                     int candidate_type = cte_candidate.GetChartType();
 
-                    if( ( candidate_scale >= target_scale ) && ( candidate_type == target_type ) ) break;
+                    if( ( candidate_scale >= target_scale ) && ( candidate_type == target_type ) ){
+                        bool renderable = true;
+                        ChartBase* tentative_referenceChart = ChartData->OpenChartFromDB( pCurrentStack->GetDBIndex( candidate_stack_index ),
+                                                                                FULL_INIT );
+                        if( tentative_referenceChart ) {
+                            double chartMaxScale = tentative_referenceChart->GetNormalScaleMax( cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth() );
+                            renderable = chartMaxScale*1.5 > VPoint.chart_scale;
+                        }
+                        
+                        if(renderable)
+                            break;
+                    }
 
                     candidate_stack_index++;
                 }
@@ -3140,13 +3170,6 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
 
             // Always keep the default Mercator projection if the reference chart is
             // not in the PatchList or the scale is too small for it to render.
-
-            bool renderable = true;
-            ChartBase* referenceChart = ChartData->OpenChartFromDB( ref_db_index, FULL_INIT );
-            if( referenceChart ) {
-                double chartMaxScale = referenceChart->GetNormalScaleMax( cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth() );
-                renderable = chartMaxScale*1.5 > VPoint.chart_scale;
-            }
 
             VPoint.b_MercatorProjectionOverride = ( m_pQuilt->GetnCharts() == 0 || !renderable );
 
