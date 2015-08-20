@@ -4055,6 +4055,11 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             break;
         }
 
+        case ID_CMD_SETVP:{
+            setStringVP(event.GetString());
+            break;
+        }
+        
         default: {
             //        Look for PlugIn tools
             //        If found, make the callback.
@@ -4082,6 +4087,32 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
     }         // switch
 
 }
+
+void MyFrame::setStringVP(wxString VPS)
+{
+    if(!cc1)
+        return;
+    
+    wxStringTokenizer tkz(VPS, _T(";"));
+    
+    wxString token = tkz.GetNextToken();
+    double lat = gLat;
+    token.ToDouble(&lat);
+    
+    token = tkz.GetNextToken();
+    double lon = gLon;
+    token.ToDouble(&lon);
+    
+    token = tkz.GetNextToken();
+    double scale_ppm = cc1->GetVP().view_scale_ppm;
+    token.ToDouble(&scale_ppm);
+    
+    cc1->SetViewPoint( lat, lon, scale_ppm, 0, cc1->GetVPRotation() );
+    
+}
+
+
+
 
 void MyFrame::DoSettings()
 {

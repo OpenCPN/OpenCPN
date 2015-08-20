@@ -179,6 +179,7 @@ extern bool             g_bLookAhead;
 
 extern double           g_ownship_predictor_minutes;
 extern double           g_ownship_HDTpredictor_miles;
+extern double           gLat, gLon, gCog, gSog, gHdt;
 
 extern bool             g_bAISRolloverShowClass;
 extern bool             g_bAISRolloverShowCOG;
@@ -855,7 +856,7 @@ extern "C"{
 extern "C"{
     JNIEXPORT jstring JNICALL Java_org_opencpn_OCPNNativeLib_getVPCorners(JNIEnv *env, jobject obj)
     {
-        qDebug() << "getVPCorners";
+//        qDebug() << "getVPCorners";
         
         LLBBox vbox;
         if(cc1){
@@ -865,12 +866,31 @@ extern "C"{
         wxString s;
         s.Printf(_T("%g;%g;%g;%g;"), vbox.GetMaxY(), vbox.GetMaxX(), vbox.GetMinY(), vbox.GetMinX());  
                     
-//        jstring ret = (env)->NewStringUTF("40.1; -85; 39; -86;");
         jstring ret = (env)->NewStringUTF(s.c_str());
         
         return ret;
     }
         
+}       
+
+extern "C"{
+    JNIEXPORT jstring JNICALL Java_org_opencpn_OCPNNativeLib_getVPS(JNIEnv *env, jobject obj)
+    {
+//        qDebug() << "getVPS";
+
+        wxString s;
+        
+        if(cc1){
+            ViewPort vp = cc1->GetVP();
+            s.Printf(_T("%g;%g;%g;%g;%g;"), vp.clat, vp.clon, vp.view_scale_ppm, gLat, gLon);  
+            
+        }
+        
+        jstring ret = (env)->NewStringUTF(s.c_str());
+        
+        return ret;
+    }
+    
 }       
 
 
