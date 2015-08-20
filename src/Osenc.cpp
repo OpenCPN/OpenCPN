@@ -94,8 +94,6 @@ int Osenc::ingestHeader(const wxString &senc_file_name)
     
     int dun = 0;
     
-    wxString date_000, date_upd;
-    
     while( !dun ) {
         
         if( my_fgets( buf, MAX_LINE, fpx ) == 0 ) {
@@ -112,7 +110,7 @@ int Osenc::ingestHeader(const wxString &senc_file_name)
         }
         
         else if( !strncmp( buf, "DATEUPD", 7 ) ) {
-            date_upd.Append( wxString( &buf[8], wxConvUTF8 ).BeforeFirst( '\n' ) );
+            m_LastUpdateDate = wxString( &buf[8], wxConvUTF8 ).BeforeFirst( '\n' );
         }
         
         else if( !strncmp( buf, "UPDT", 4 ) ) {
@@ -124,7 +122,7 @@ int Osenc::ingestHeader(const wxString &senc_file_name)
         }
         
         else if( !strncmp( buf, "DATE000", 7 ) ) {
-            date_000.Append( wxString( &buf[8], wxConvUTF8 ).BeforeFirst( '\n' ) );
+            m_sdate000 = wxString( &buf[8], wxConvUTF8 ).BeforeFirst( '\n' );
         }
         
         else if( !strncmp( buf, "FILESIZE000", 11 ) ) {
@@ -160,6 +158,9 @@ int Osenc::ingest(const wxString &senc_file_name,
     int ret_val = SENC_NO_ERROR;                    // default is OK
     int senc_file_version = 0;
     
+    wxFileName fn(senc_file_name);
+    m_ID = fn.GetName();                          // This will be the NOAA File name, usually
+    
     //    Sanity check for existence of file
     
     int nProg = 0;
@@ -176,8 +177,6 @@ int Osenc::ingest(const wxString &senc_file_name,
     char *buf = (char *) malloc( MAX_LINE + 1 );
     
     int dun = 0;
-    
-    wxString date_000, date_upd;
     
     while( !dun ) {
         
@@ -317,11 +316,11 @@ int Osenc::ingest(const wxString &senc_file_name,
         }
         
         else if( !strncmp( buf, "DATEUPD", 7 ) ) {
-            date_upd.Append( wxString( &buf[8], wxConvUTF8 ).BeforeFirst( '\n' ) );
+            m_LastUpdateDate = wxString( &buf[8], wxConvUTF8 ).BeforeFirst( '\n' ) ;
         }
         
         else if( !strncmp( buf, "DATE000", 7 ) ) {
-            date_000.Append( wxString( &buf[8], wxConvUTF8 ).BeforeFirst( '\n' ) );
+            m_sdate000 =  wxString( &buf[8], wxConvUTF8 ).BeforeFirst( '\n' );
         }
         
         else if( !strncmp( buf, "SCALE", 5 ) ) {

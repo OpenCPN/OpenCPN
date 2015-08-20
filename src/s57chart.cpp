@@ -4434,81 +4434,38 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
         
     }   // Objects iterator
 
-        else if( !strncmp( buf, "DATEUPD", 7 ) ) {
-            date_upd.Append( wxString( &buf[8], wxConvUTF8 ).BeforeFirst( '\n' ) );
-        }
-
-        else if( !strncmp( buf, "DATE000", 7 ) ) {
-            date_000.Append( wxString( &buf[8], wxConvUTF8 ).BeforeFirst( '\n' ) );
-        }
-
-        else if( !strncmp( buf, "SCALE", 5 ) ) {
-            int ins;
-            sscanf( buf, "SCALE=%d", &ins );
-            m_Chart_Scale = ins;
-        }
-
-        else if( !strncmp( buf, "NAME", 4 ) ) {
-            m_Name = wxString( &buf[5], wxConvUTF8 ).BeforeFirst( '\n' );
-        }
-
-        else if( !strncmp( buf, "NOGR", 4 ) ) {
-            sscanf( buf, "NOGR=%d", &nGeoFeature );
-
-            nGeo1000 = nGeoFeature / 500;
-
-#ifdef __WXMSW__
-            //            OCPNPlatform::ShowBusySpinner();
-            /*
-             SENC_prog = new wxProgressDialog(  _("OpenCPN S57 SENC File Load"), FullPath, nGeo1000, NULL,
-             wxPD_AUTO_HIDE | wxPD_CAN_ABORT | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME | wxPD_SMOOTH);
-             */
-            //            OCPNPlatform::HideBusySpinner();
-
-#endif
-        }
-    }                       //while(!dun)
-
-//      fclose(fpx);
-
-    free( buf );
-
-    free( hdr_buf );
-
-    delete SENC_prog;
 
     //   Decide on pub date to show
-    int d000 = 0;
-//     wxString sd000 =date_000.Mid( 0, 4 );
-//     wxCharBuffer dbuffer=sd000.ToUTF8();
-//     if(dbuffer.data())
-//         d000 = atoi(dbuffer.data() );
+    
+    wxDateTime d000;
+    d000.ParseFormat( sencfile.getBaseDate(), _T("%Y%m%d") );
+    if( !d000.IsValid() ) d000.ParseFormat( _T("20000101"), _T("%Y%m%d") );
+    
+    wxDateTime updt;
+    updt.ParseFormat( sencfile.getUpdateDate(), _T("%Y%m%d") );
+    if( !updt.IsValid() ) updt.ParseFormat( _T("20000101"), _T("%Y%m%d") );
+    
+    if(updt.IsLaterThan(d000))
+        m_PubYear.Printf(_T("%4d"), updt.GetYear());
+    else
+        m_PubYear.Printf(_T("%4d"), d000.GetYear());
+    
+    
 
-    int dupd = 0;
-//     wxString sdupd =date_upd.Mid( 0, 4 );
-//     wxCharBuffer ubuffer = sdupd.ToUTF8();
-//     if(ubuffer.data())
-//         dupd = atoi(ubuffer.data() );
+//    Set some base class values
+     wxDateTime upd = updt;
+     if( !upd.IsValid() ) upd.ParseFormat( _T("20000101"), _T("%Y%m%d") );
 
-//     if( dupd > d000 )
-//         m_PubYear = sdupd;
-//     else
-//         m_PubYear = sd000;
-
-
-    //    Set some base class values
-//     wxDateTime upd;
-//     upd.ParseFormat( date_upd, _T("%Y%m%d") );
-//     if( !upd.IsValid() ) upd.ParseFormat( _T("20000101"), _T("%Y%m%d") );
-
-//     upd.ResetTime();
-//     m_EdDate = upd;
+     upd.ResetTime();
+     m_EdDate = upd;
 
     m_SE = m_edtn000;
     m_datum_str = _T("WGS84");
 
     m_SoundingsDatum = _T("MEAN LOWER LOW WATER");
-//    m_ID = SENCFileName.GetName();
+    m_ID = sencfile.getID();
+    m_Name = sencfile.getName();
+    
 
     // Validate hash maps....
 

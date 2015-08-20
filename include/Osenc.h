@@ -77,13 +77,16 @@ public:
     void setRefLocn( double lat, double lon){ m_ref_lat = lat; m_ref_lon = lon; }
     
     wxString getUpdateDate(){ return m_LastUpdateDate; }
+    wxString getBaseDate(){ return m_sdate000; }
+    
     wxString getEdition(){ return m_edtn000; }
     int getLastUpdate(){ return m_last_applied_update; }
     wxString getFileModTime(){ return m_FileModeTime; }
     int getSencVersion(){ return m_senc_file_version; }
     wxULongLong getFileSize000(){ return m_FileSize000; }
     wxString getsFileSize000(){ return m_sFileSize000; }
-    
+    wxString getName(){ return m_Name; }
+    wxString getID(){ return m_ID; }
 private:
     void init();
     
@@ -102,11 +105,15 @@ private:
     wxString            errorMessage;
     
     wxString            m_Name;
+    wxString m_ID;
+    
     int                 m_Chart_Scale;
     int                 m_senc_file_version;
     
     S57Reader           *poReader;
     wxDateTime          m_date000;
+    wxString            m_sdate000;
+    
     wxString            m_edtn000;
     int                 m_nGeoRecords;
     int                 m_last_applied_update;
