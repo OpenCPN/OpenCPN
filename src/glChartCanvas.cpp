@@ -3848,7 +3848,6 @@ void glChartCanvas::Render()
             // enable rendering to texture in framebuffer object
             ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, m_fb0 );
 
-            wxPoint c_old, c_new;
             int dx, dy;
             bool accelerated_pan = false;
             if(g_GLOptions.m_bUseAcceleratedPanning && m_cache_vp.IsValid()
@@ -3876,70 +3875,72 @@ void glChartCanvas::Render()
             // do we allow accelerated panning?  can we perform it here?
             
             if(accelerated_pan && !g_GLOptions.m_bUseCanvasPanning) {
-                m_cache_page = !m_cache_page; /* page flip */
+                if((dx != 0) || (dy != 0)){   // Anything to do?
+                    m_cache_page = !m_cache_page; /* page flip */
 
-                /* perform accelerated pan rendering to the new framebuffer */
-                ( s_glFramebufferTexture2D )
-                    ( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
-                      g_texture_rectangle_format, m_cache_tex[m_cache_page], 0 );
+                    /* perform accelerated pan rendering to the new framebuffer */
+                    ( s_glFramebufferTexture2D )
+                        ( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
+                        g_texture_rectangle_format, m_cache_tex[m_cache_page], 0 );
 
-                /* using the old framebuffer */
-                glBindTexture( g_texture_rectangle_format, m_cache_tex[!m_cache_page] );
+                    /* using the old framebuffer */
+                    glBindTexture( g_texture_rectangle_format, m_cache_tex[!m_cache_page] );
 
-                glEnable( g_texture_rectangle_format );
-                glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
+                    glEnable( g_texture_rectangle_format );
+                    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
+                                
+                    //    Render the reuseable portion of the cached texture
+                                
+                    // Render the cached texture as quad to FBO(m_blit_tex) with offsets
+                    int x1, x2, y1, y2;
+
+                    wxASSERT(sx == m_cache_tex_x);
+                    wxASSERT(sy == m_cache_tex_y);
+                    int ow = sx - abs( dx );
+                    int oh = sy - abs( dy );
+                    if( dx > 0 )
+                        x1 = dx,  x2 = 0;
+                    else
+                        x1 = 0,   x2 = -dx;
                             
-                //    Render the reuseable portion of the cached texture
+                    if( dy > 0 )
+                        y1 = dy,  y2 = 0;
+                    else
+                        y1 = 0,   y2 = -dy;
+
+                    // normalize to texture coordinates range from 0 to 1
+                    float tx1 = x1, tx2 = x1 + ow, ty1 = sy - y1, ty2 = y2;
+                    if( GL_TEXTURE_RECTANGLE_ARB != g_texture_rectangle_format )
+                        tx1 /= sx, tx2 /= sx, ty1 /= sy, ty2 /= sy;
+
+                    glBegin( GL_QUADS );
+                    glTexCoord2f( tx1, ty1 );  glVertex2f( x2, y2 );
+                    glTexCoord2f( tx2, ty1 );  glVertex2f( x2 + ow, y2 );
+                    glTexCoord2f( tx2, ty2 );  glVertex2f( x2 + ow, y2 + oh );
+                    glTexCoord2f( tx1, ty2 );  glVertex2f( x2, y2 + oh );
+                    glEnd();
+
+                    //   Done with cached texture "blit"
+                    glDisable( g_texture_rectangle_format );
+
+                    //calculate the new regions to render
+                    // add an extra pixel avoid coorindate rounding issues
+                    OCPNRegion update_region;
+
+                    if( dy > 0 && dy < VPoint.pix_height)
+                        update_region.Union
+                            (wxRect( 0, VPoint.pix_height - dy, VPoint.pix_width, dy ) );
+                    else if(dy < 0)
+                        update_region.Union( wxRect( 0, 0, VPoint.pix_width, -dy ) );
                             
-                // Render the cached texture as quad to FBO(m_blit_tex) with offsets
-                int x1, x2, y1, y2;
+                    if( dx > 0 && dx < VPoint.pix_width )
+                        update_region.Union
+                            (wxRect( VPoint.pix_width - dx, 0, dx, VPoint.pix_height ) );
+                    else if (dx < 0)
+                        update_region.Union( wxRect( 0, 0, -dx, VPoint.pix_height ) );
 
-                wxASSERT(sx == m_cache_tex_x);
-                wxASSERT(sy == m_cache_tex_y);
-                int ow = sx - abs( dx );
-                int oh = sy - abs( dy );
-                if( dx > 0 )
-                    x1 = dx,  x2 = 0;
-                else
-                    x1 = 0,   x2 = -dx;
-                        
-                if( dy > 0 )
-                    y1 = dy,  y2 = 0;
-                else
-                    y1 = 0,   y2 = -dy;
-
-                // normalize to texture coordinates range from 0 to 1
-                float tx1 = x1, tx2 = x1 + ow, ty1 = sy - y1, ty2 = y2;
-                if( GL_TEXTURE_RECTANGLE_ARB != g_texture_rectangle_format )
-                    tx1 /= sx, tx2 /= sx, ty1 /= sy, ty2 /= sy;
-
-                glBegin( GL_QUADS );
-                glTexCoord2f( tx1, ty1 );  glVertex2f( x2, y2 );
-                glTexCoord2f( tx2, ty1 );  glVertex2f( x2 + ow, y2 );
-                glTexCoord2f( tx2, ty2 );  glVertex2f( x2 + ow, y2 + oh );
-                glTexCoord2f( tx1, ty2 );  glVertex2f( x2, y2 + oh );
-                glEnd();
-
-                //   Done with cached texture "blit"
-                glDisable( g_texture_rectangle_format );
-
-                //calculate the new regions to render
-                // add an extra pixel avoid coorindate rounding issues
-                OCPNRegion update_region;
-
-                if( dy > 0 && dy < VPoint.pix_height)
-                    update_region.Union
-                        (wxRect( 0, VPoint.pix_height - dy, VPoint.pix_width, dy ) );
-                else if(dy < 0)
-                    update_region.Union( wxRect( 0, 0, VPoint.pix_width, -dy ) );
-                        
-                if( dx > 0 && dx < VPoint.pix_width )
-                    update_region.Union
-                        (wxRect( VPoint.pix_width - dx, 0, dx, VPoint.pix_height ) );
-                else if (dx < 0)
-                    update_region.Union( wxRect( 0, 0, -dx, VPoint.pix_height ) );
-
-                RenderCharts(gldc, update_region);
+                    RenderCharts(gldc, update_region);
+                }
             } else { // must redraw the entire screen
                 ( s_glFramebufferTexture2D )( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
                                               g_texture_rectangle_format,
