@@ -94,10 +94,11 @@ void ocpnCompass::Paint( ocpnDC& dc )
 
 bool ocpnCompass::MouseEvent( wxMouseEvent& event )
 {
-    if(!m_shown || !m_rect.Contains(event.GetPosition()) || !event.LeftDown())
+    if(!m_shown || !m_rect.Contains(event.GetPosition()))
         return false;
 
-    gFrame->ToggleCourseUp();
+    if (event.LeftDown())
+        gFrame->ToggleCourseUp();
     return true;
 }
 
