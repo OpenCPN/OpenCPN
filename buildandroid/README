@@ -15,6 +15,7 @@
 
         __Filter logcat, especially on BluPhone
         adb shell logcat DEBUGGER_TAG:I Qt:D *:S
+        adb shell logcat DEBUGGER_TAG:I Qt:D libopencpn.so:D *:S
 
         __Run ndk-gdb to debug a target app.
         https://vilimpoc.org/blog/2010/09/23/hello-gdbserver-a-debuggable-jni-example-for-android/

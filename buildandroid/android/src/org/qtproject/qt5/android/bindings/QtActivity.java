@@ -41,6 +41,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.lang.Math;
 import java.util.concurrent.Semaphore;
+import java.util.StringTokenizer;
+
 import org.kde.necessitas.ministro.IMinistro;
 import org.kde.necessitas.ministro.IMinistroCallback;
 
@@ -178,6 +180,8 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     //  Definitions found in OCPN "chart1.h"
     private final static int ID_CMD_APPLY_SETTINGS = 300;
     private final static int ID_CMD_NULL_REFRESH = 301;
+    private final static int ID_CMD_TRIGGER_RESIZE  = 302;
+    private final static int ID_CMD_SETVP = 303;
 
     private final static int CHART_TYPE_CM93COMP = 7;       // must line up with OCPN types
     private final static int CHART_FAMILY_RASTER = 1;
@@ -318,6 +322,10 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
     BroadcastReceiver downloadBCReceiver = null;
 
+    private double m_gminitialLat;
+    private double m_gminitialLon;
+    private double m_gminitialZoom;
+
     public QtActivity()
     {
         if (Build.VERSION.SDK_INT <= 10) {
@@ -369,7 +377,26 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
         String s = nativeLib.getVPCorners();
 
+        String v = nativeLib.getVPS();
+        Log.i("DEBUGGER_TAG", "initialPositionString" + v);
+
+        StringTokenizer tkz = new StringTokenizer(v, ";");
+
+        String initialLat = "";
+        String initialLon = "";
+        String initialZoom = "";
+
+        if(tkz.hasMoreTokens()){
+            initialLat = tkz.nextToken();
+            initialLon = tkz.nextToken();
+            initialZoom = tkz.nextToken();
+        }
+
+        m_gminitialZoom = Double.parseDouble(initialZoom);
+
+
         intent.putExtra("VP_CORNERS", s);
+        intent.putExtra("VPS", v);
 
         int height = this.getWindow().getDecorView().getHeight();
         int width = this.getWindow().getDecorView().getWidth();
@@ -2106,6 +2133,63 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
             return;
         }
 
+        if (requestCode == OCPN_GOOGLEMAPS_REQUEST_CODE) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK)
+            {
+                String finalPosition = data.getStringExtra("finalPosition");
+                Log.i("DEBUGGER_TAG", "finalPositionFromMaps " + finalPosition);
+
+                StringTokenizer tkz = new StringTokenizer(finalPosition, ";");
+
+                String finalLat = finalPosition.valueOf(m_gminitialLat);
+                String finalLon = finalPosition.valueOf(m_gminitialLon);
+                String finalZoom = finalPosition.valueOf(m_gminitialZoom);
+                String zoomFactor = "1.0";
+
+                if(tkz.hasMoreTokens()){
+                    finalLat = tkz.nextToken();
+                    finalLon = tkz.nextToken();
+                    finalZoom = tkz.nextToken();
+                    zoomFactor = tkz.nextToken();
+                }
+
+                double zoomF = Double.parseDouble(zoomFactor);
+                finalZoom = String.valueOf(m_gminitialZoom * zoomF);
+
+
+                String vpSet = "";
+
+                vpSet = vpSet.concat(finalLat);
+                vpSet = vpSet.concat(";");
+                vpSet = vpSet.concat(finalLon);
+                vpSet = vpSet.concat(";");
+                vpSet = vpSet.concat(finalZoom);
+                vpSet = vpSet.concat(";");
+
+
+                Log.i("DEBUGGER_TAG", "finalPositionString " + vpSet);
+
+                nativeLib.invokeCmdEventCmdString( ID_CMD_SETVP, vpSet);
+
+                // defer hte application of settings until the screen refreshes
+//                Handler handler = new Handler();
+//                handler.postDelayed(new Runnable() {
+//                     public void run() {
+//                          nativeLib.invokeCmdEventCmdString( ID_CMD_APPLY_SETTINGS, m_settingsReturn);
+//                     }
+//                }, 100);
+//                Log.i("DEBUGGER_TAG", m_settingsReturn);
+            }
+            else if (resultCode == RESULT_CANCELED){
+//                Log.i("DEBUGGER_TAG", "onqtActivityResultE");
+            }
+
+            super.onActivityResult(requestCode, resultCode, data);
+
+            return;
+        }
+
         if (QtApplication.m_delegateObject != null && QtApplication.onActivityResult != null) {
             QtApplication.invokeDelegateMethod(QtApplication.onActivityResult, requestCode, resultCode, data);
             return;
@@ -2731,9 +2815,9 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                     nativeLib.invokeMenuItem(OCPN_ACTION_ENCTEXT_TOGGLE);
                     return true;
 
-//                case R.id.ocpn_action_googlemaps:
-//                        invokeGoogleMaps();
-//                        return true;
+                case R.id.ocpn_action_googlemaps:
+                        invokeGoogleMaps();
+                        return true;
 
 
             default:
