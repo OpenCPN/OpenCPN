@@ -1111,7 +1111,10 @@ void glChartCanvas::SetupOpenGL()
     if( GetRendererString().Find( _T("UniChrome") ) != wxNOT_FOUND )
         bad_stencil_code = true;
 
-    
+    //      And for the lousy Mali drivers, too
+    if( GetRendererString().Find( _T("Mali") ) != wxNOT_FOUND )
+        bad_stencil_code = true;
+
     //      Stencil buffer test
     glEnable( GL_STENCIL_TEST );
     GLboolean stencil = glIsEnabled( GL_STENCIL_TEST );

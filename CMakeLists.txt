@@ -871,6 +871,8 @@ IF (USE_S57)
 		src/mygeom.cpp
 		include/cm93.h
 		src/tri.c
+		src/Osenc.cpp
+		include/Osenc.h
 		src/myiso8211/ddffielddefn.cpp
 		src/myiso8211/ddfmodule.cpp
 		src/myiso8211/ddfrecord.cpp

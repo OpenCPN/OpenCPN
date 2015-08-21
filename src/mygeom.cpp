@@ -1970,7 +1970,7 @@ int PolyTessGeo::PolyTessGeoGL(OGRPolygon *poly, bool bSENC_SM, double ref_lat, 
     nptfinal = 1;
     
     m_nwkb = (nptfinal + 1) * 2 * sizeof(float);
-    m_ppg_head->pgroup_geom = (float *)malloc(m_nwkb);
+    m_ppg_head->pgroup_geom = (float *)calloc(sizeof(float), (nptfinal + 1) * 2);
     float *vro = m_ppg_head->pgroup_geom;
     ppt = geoPt;
     float tx,ty;

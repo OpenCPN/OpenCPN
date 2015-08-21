@@ -31,6 +31,8 @@
 
 #include "bbox.h"
 
+#include <vector>
+
 #define CURRENT_SENC_FORMAT_VERSION  124
 
 //    Fwd Defns
@@ -106,6 +108,14 @@ typedef enum _DisCat{
 }DisCat;
 
 
+#define MASK_POINT      1
+#define MASK_LINE       2
+#define MASK_AREA       4
+#define MASK_MPS        8
+#define MASK_ALL        MASK_POINT + MASK_LINE + MASK_AREA + MASK_MPS
+
+
+    
 typedef enum _Rules_t{
    RUL_NONE,                        // no rule type (init)
    RUL_TXT_TX,                      // TX
@@ -394,6 +404,7 @@ public:
       int auxParm3;
 };
 
+typedef std::vector<S57Obj *> S57ObjVector;
 
 typedef struct _sm_parms{
     double easting_vp_center;
@@ -472,6 +483,13 @@ public:
       double      *pPoint;
 };
 
+WX_DECLARE_OBJARRAY(VE_Element, ArrayOfVE_Elements);
+WX_DECLARE_OBJARRAY(VC_Element, ArrayOfVC_Elements);
+
+typedef std::vector<VE_Element *> VE_ElementVector;
+typedef std::vector<VC_Element *> VC_ElementVector;
+
+
 class line_segment_element
 {
 public:
@@ -488,6 +506,29 @@ public:
     line_segment_element *next;
 };
 
+typedef enum
+{
+    TYPE_CE = 0,
+    TYPE_CC,
+    TYPE_EC,
+    TYPE_EE
+} SegmentType;
+
+class connector_segment
+{
+public:
+    void *start;
+    void *end;
+    SegmentType type;
+    int vbo_offset;
+    int max_priority;
+};
+
+WX_DECLARE_HASH_MAP( int, int, wxIntegerHash, wxIntegerEqual, VectorHelperHash );
+
+WX_DECLARE_HASH_MAP( unsigned int, VE_Element *, wxIntegerHash, wxIntegerEqual, VE_Hash );
+WX_DECLARE_HASH_MAP( unsigned int, VC_Element *, wxIntegerHash, wxIntegerEqual, VC_Hash );
+WX_DECLARE_STRING_HASH_MAP( connector_segment *, connected_segment_hash );
 
 
 
