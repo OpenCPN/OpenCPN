@@ -5830,8 +5830,8 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
         last_drag.y = my;
         
         if(g_btouch ){
-            if( m_pRoutePointEditTarget )
-                return false;
+//            if( m_pRoutePointEditTarget )
+//                return false;
         }
         
         ret = true;
