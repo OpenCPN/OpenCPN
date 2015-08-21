@@ -1238,49 +1238,40 @@ wxString ChartDatabase::GetFullChartInfo(ChartBase *pc, int dbIndex, int *char_w
             r += line;
             lc++;
 
-            line.Empty();
             if(pc)
             {
+                  line.Empty();
                   line = _(" ID:  ");
                   line += pc->GetID();
-            }
-            line += _T("\n");
-            max_width = wxMax(max_width, line.Len());
-            r += line;
-            lc++;
+                  line += _T("\n");
+                  max_width = wxMax(max_width, line.Len());
+                  r += line;
+                  lc++;
 
-            line.Empty();
-            if(pc)
-            {
+                  line.Empty();
                   line = _(" Depth Units:  ");
                   line += pc->GetDepthUnits();
-            }
-            line += _T("\n");
-            max_width = wxMax(max_width, line.Len());
-            r += line;
-            lc++;
+                  line += _T("\n");
+                  max_width = wxMax(max_width, line.Len());
+                  r += line;
+                  lc++;
 
-            line.Empty();
-            if(pc)
-            {
+                  line.Empty();
                   line = _(" Soundings:  ");
                   line += pc->GetSoundingsDatum();
-            }
-            line += _T("\n");
-            max_width = wxMax(max_width, line.Len());
-            r += line;
-            lc++;
+                  line += _T("\n");
+                  max_width = wxMax(max_width, line.Len());
+                  r += line;
+                  lc++;
 
-            line.Empty();
-            if(pc)
-            {
+                  line.Empty();
                   line = _(" Datum:  ");
                   line += pc->GetDatumString();
+                  line += _T("\n");
+                  max_width = wxMax(max_width, line.Len());
+                  r += line;
+                  lc++;
             }
-            line += _T("\n");
-            max_width = wxMax(max_width, line.Len());
-            r += line;
-            lc++;
 
             line = _(" Projection:  ");
             if(PROJECTION_UNKNOWN == cte.GetChartProjectionType())
@@ -1301,24 +1292,21 @@ wxString ChartDatabase::GetFullChartInfo(ChartBase *pc, int dbIndex, int *char_w
             {
                   line = _(" Source Edition:  ");
                   line += pc->GetSE();
-            }
-            line += _T("\n");
-            max_width = wxMax(max_width, line.Len());
-            r += line;
-            lc++;
+                  line += _T("\n");
+                  max_width = wxMax(max_width, line.Len());
+                  r += line;
+                  lc++;
 
-            line.Empty();
-            if(pc)
-            {
+                  line.Empty();
                   line = _(" Updated:  ");
                   wxDateTime ed = pc->GetEditionDate();
                   line += ed.FormatISODate();
+                  line += _T("\n");
+                  max_width = wxMax(max_width, line.Len());
+                  r += line;
+                  lc++;
             }
-            line += _T("\n");
-            max_width = wxMax(max_width, line.Len());
-            r += line;
-            lc++;
-
+            
             line.Empty();
             if(pc && pc->GetExtraInfo().Len())
             {
