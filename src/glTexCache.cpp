@@ -738,6 +738,8 @@ void CompressionWorkerPool::OnEvtThread( OCPN_CompressionThreadEvent & event )
     
 ///    qDebug() << "Finished" << m_njobs_running <<  (unsigned long)todo_list.GetCount() << mem_used << g_tex_mem_used;
     
+    StartTopJob();
+
     delete ticket;
 }
 
