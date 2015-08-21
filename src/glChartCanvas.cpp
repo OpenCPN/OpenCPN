@@ -1608,8 +1608,10 @@ void glChartCanvas::DrawDynamicRoutesAndWaypoints( ViewPort &vp, OCPNRegion &reg
         
         if( pRouteDraw->IsTrack() ) {
             /* Active tracks */
-            if( dynamic_cast<Track *>(pRouteDraw)->IsRunning() )
-                drawit++;
+            if( dynamic_cast<Track *>(pRouteDraw)->IsRunning() ){
+                pRouteDraw->DrawGL( vp, region );
+                continue;
+            }
         }
         
         /* Routes being edited */
