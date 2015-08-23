@@ -95,9 +95,7 @@ extern OCPNPlatform              *g_Platform;
 extern int                       quitflag;
 extern MyFrame                   *gFrame;
 extern bool                      g_bportable;
-extern wxString           str_version_major;
-extern wxString           str_version_minor;
-extern wxString           str_version_patch;
+extern wxString                  OpenCPNVersion;
 
 extern MyConfig                  *pConfig;
 
@@ -321,8 +319,7 @@ void OCPNPlatform::Initialize_1( void )
     info.cb = sizeof(CR_INSTALL_INFO);
     info.pszAppName = _T("OpenCPN");
     
-    wxString version_crash = str_version_major + _T(".") + str_version_minor + _T(".") + str_version_patch;
-    info.pszAppVersion = version_crash.c_str();
+    info.pszAppVersion = OpenCPNVersion.c_str();
     
     int type = MiniDumpWithDataSegs;  // Include the data sections from all loaded modules.
     // This results in the inclusion of global variables
