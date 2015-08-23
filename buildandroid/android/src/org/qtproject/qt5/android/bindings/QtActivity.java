@@ -1429,48 +1429,81 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
    private void relocateOCPNPlugins( )
    {
+       // We need to relocate the PlugIns that have been included as "assets"
+
+       // Reason:  PlugIns can only load from the apps dataDir, which is like:
+       //          "/data/data/org.opencpn.opencpn"
+       //          This is due to some policy in the system loader....
+       //
+       //           There is no need to relocate any data files needed by the PlugIns
+       //           since they will have been added as assets and moved to the file system
+       //           by assetbridge elsewhere.
+       //
+       //          Since this method runs on every restart, it may be used to condition manually installed
+       //          PlugIns as well.  Just somehow install the PlugIn .so file into ".../files/plugins" dir,
+       //          and it will be moved to the proper load location on restart.
+
        Log.i("DEBUGGER_TAG", "relocateOCPNPlugins");
 
-       // TODO this should be a recursive directory search
-       String path = "/data/data/org.opencpn.opencpn/files/plugins/chartdldr_pi/data";
+       // On Moto G
+       // This produces "/data/data/org.opencpn.opencpn/files"
+       //  Which is where the app files would be with default load
+       String iDir = getFilesDir().getPath();
+       Log.i("DEBUGGER_TAG", "iDir: " + iDir);
 
-       Log.d("DEBUGGER_TAG", "Plugin source Path: " + path);
-       File f = new File(path);
-       File file[] = f.listFiles();
-
-       if(null != file){
-         for (int i=0; i < file.length; i++){
-             Log.d("DEBUGGER_TAG", "Plugin FileName:" + file[i].getName());
-            String source = file[i].getAbsolutePath();
-            String dest = "/data/data/org.opencpn.opencpn/" + file[i].getName();
+       // This produces "/storage/emulated/0/Android/data/org.opencpn.opencpn/files"
+       //  Which is where the app files would be if the app were "moved to SDCARD"
+       String xDir = getExternalFilesDir(null).getPath();
+       Log.i("DEBUGGER_TAG", "xDir: " + xDir);
 
 
-            try {
-                InputStream inputStream = new FileInputStream(source);
-                OutputStream outputStream = new FileOutputStream(dest);
-                copyFile(inputStream, outputStream);
-                inputStream.close();
-                outputStream.close();
-                Log.i("DEBUGGER_TAG", "copyFile OK: " + dest);
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-                Log.i("DEBUGGER_TAG", "copyFile Exception");
-            }
+       //   If the app is installed on external media, then that is where the assets have been stored...
+       String ssd = iDir + "/plugins";
+       ApplicationInfo ai = getApplicationInfo();
+       if((ai.flags & ApplicationInfo.FLAG_EXTERNAL_STORAGE) ==  ApplicationInfo.FLAG_EXTERNAL_STORAGE)
+            ssd = xDir + "/plugins/";
 
 
-         }
-       }
+       File sourceDir = new File( ssd );
+
+       // The PlugIn .so files are always relocated to here, which looks like:
+       // "/data/data/org.opencpn.opencpn"
+       String finalDestination = getApplicationInfo().dataDir;
+
+       File[] dirs = sourceDir.listFiles();
+       if (dirs != null) {
+           for (int j=0; j < dirs.length; j++){
+               File sfile = dirs[j];
+               Log.i("DEBUGGER_TAG", "sfile: " + sfile.getName());
+
+               if (sfile.isFile()){
+
+                              String source = sfile.getAbsolutePath();
+                              String dest = finalDestination + "/" + sfile.getName();
 
 
-
+                              try {
+                                  InputStream inputStream = new FileInputStream(source);
+                                  OutputStream outputStream = new FileOutputStream(dest);
+                                  copyFile(inputStream, outputStream);
+                                  inputStream.close();
+                                  outputStream.close();
+                                 Log.i("DEBUGGER_TAG", "copyFile OK: " + source + " to " + dest);
+                              }
+                              catch (Exception e) {
+                                  e.printStackTrace();
+                                  Log.i("DEBUGGER_TAG", "copyFile Exception");
+                              }
+              }
+          }
+      }
    }
 
 
     // this function is used to load and start the loader
     private void loadApplication(Bundle loaderParams)
     {
-        //Log.i("DEBUGGER_TAG", "LoadApplication");
+        Log.i("DEBUGGER_TAG", "LoadApplication");
 
         relocateOCPNPlugins();
 

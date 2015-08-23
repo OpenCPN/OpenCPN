@@ -1271,7 +1271,7 @@ wxString androidGetPrivateDir()                 // Used for logfile, config file
             return g_androidExtFilesDir;
     }
 
-    return _T("/mnt/sdcard/opencpn"); //g_androidFilesDir;
+    return g_androidFilesDir; //_T("/mnt/sdcard/opencpn")
 }
 
 wxString androidGetSharedDir()                 // Used for assets like uidata, s57data, etc

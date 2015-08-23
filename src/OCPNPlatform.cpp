@@ -796,10 +796,6 @@ wxString &OCPNPlatform::GetPluginDir()
         fdir.RemoveLastDir();
         m_PluginsDir = fdir.GetPath();
         
-//        m_PluginsDir = GetHomeDir();
-        
-//        m_PluginsDir = _T("/data/data/org.opencpn.opencpn/lib")
-        
 #endif        
         
         
