@@ -5096,6 +5096,8 @@ int MyFrame::DoOptionsDialog()
     }
 #endif
 
+    if(console && console->IsShown())
+        console->Raise();
 
     Refresh( false );
 
