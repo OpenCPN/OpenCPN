@@ -411,3 +411,44 @@ public:
     ToolbarMOBDialog( wxWindow* parent );
     int GetSelection();
 };
+
+
+#define SYMBOL_ToolbarChoices_STYLE wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX
+
+class ToolbarChoicesDialog: public wxDialog
+{
+    DECLARE_DYNAMIC_CLASS( ToolbarChoicesDialog )
+    DECLARE_EVENT_TABLE()
+    
+public:
+    /// Constructors
+    ToolbarChoicesDialog( );
+    ToolbarChoicesDialog( wxWindow* parent, wxWindowID id = -1,
+                        const wxString& caption = _T(""),
+                          const wxPoint& pos = wxDefaultPosition,
+                          const wxSize& size = wxDefaultSize,
+                          long style = SYMBOL_ToolbarChoices_STYLE );
+    
+    ~ToolbarChoicesDialog();
+    
+    /// Creation
+    bool Create( wxWindow* parent, wxWindowID id = -1,
+                 const wxString& caption = _T(""),
+                 const wxPoint& pos = wxDefaultPosition,
+                 const wxSize& size = wxDefaultSize, long style = SYMBOL_ToolbarChoices_STYLE );
+    
+    void SetColorScheme(ColorScheme cs);
+    
+    void CreateControls();
+    
+    void OnCancelClick( wxCommandEvent& event );
+    void OnOkClick( wxCommandEvent& event );
+    
+    
+    wxButton*     m_CancelButton;
+    wxButton*     m_OKButton;
+
+    std::vector<wxCheckBox*> cboxes;
+    
+};
+

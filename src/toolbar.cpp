@@ -39,6 +39,10 @@
 #include "pluginmanager.h"
 #include "FontMgr.h"
 
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#endif
+
 extern ocpnFloatingToolbarDialog* g_FloatingToolbarDialog;
 extern bool                       g_bTransparentToolbar;
 extern bool                       g_bTransparentToolbarInOpenGLOK;
@@ -2283,22 +2287,20 @@ bool ocpnToolBarSimple::OnLeftClick( int id, bool toggleDown )
 // Call when right button down.
 void ocpnToolBarSimple::OnRightClick( int id, long WXUNUSED(x), long WXUNUSED(y) )
 {
-    wxCommandEvent event( wxEVT_COMMAND_TOOL_RCLICKED, id );
-    event.SetEventObject( this );
-    event.SetInt( id );
-
     HideTooltip();
-    ((ocpnFloatingToolbarDialog*)GetParent())->toolbarConfigChanged = false;
-    wxMenu* contextMenu = new wxMenu();
-    wxMenuItem* submenu = contextMenu->AppendSubMenu( g_FloatingToolbarConfigMenu, _("Visible buttons") );
-
-    PopupMenu( contextMenu );
-
-    contextMenu->Remove( submenu );
-    delete contextMenu;
-
-    if( ((ocpnFloatingToolbarDialog*)GetParent())->toolbarConfigChanged )
+    
+    ToolbarChoicesDialog *dlg = new ToolbarChoicesDialog(NULL, -1, _T("OpenCPN"), wxDefaultPosition, wxSize(100,100));
+    dlg->Centre();
+    int rc = dlg->ShowModal();
+    delete dlg;
+    
+    if(rc == wxID_OK){
+        wxCommandEvent event( wxEVT_COMMAND_TOOL_RCLICKED, id );
+        event.SetEventObject( this );
+        event.SetInt( id );
+        
         gFrame->GetEventHandler()->AddPendingEvent( event );
+    }
 }
 
 // Called when the mouse cursor enters a tool bitmap (no button pressed).
@@ -2405,3 +2407,156 @@ int ToolbarMOBDialog::GetSelection() {
     }
     return 0;
 }
+
+
+
+
+IMPLEMENT_DYNAMIC_CLASS( ToolbarChoicesDialog, wxDialog )
+/*!
+ * ToolbarChoicesDialog event table definition
+ */
+BEGIN_EVENT_TABLE( ToolbarChoicesDialog, wxDialog )
+END_EVENT_TABLE()
+ 
+ /*!
+  * ToolbarChoicesDialog constructors
+  */
+ 
+ ToolbarChoicesDialog::ToolbarChoicesDialog()
+ {
+ }
+ 
+ ToolbarChoicesDialog::ToolbarChoicesDialog( wxWindow* parent, wxWindowID id, const wxString& caption,
+                                         const wxPoint& pos, const wxSize& size, long style )
+ {
+     
+     long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;
+     wxDialog::Create( parent, id, caption, pos, size, wstyle );
+     
+     CreateControls();
+     GetSizer()->SetSizeHints( this );
+     Centre();
+     
+ }
+ 
+ ToolbarChoicesDialog::~ToolbarChoicesDialog()
+ {
+ }
+ 
+ /*!
+  * ToolbarChoicesDialog creator
+  */
+ 
+ bool ToolbarChoicesDialog::Create( wxWindow* parent, wxWindowID id, const wxString& caption,
+                                  const wxPoint& pos, const wxSize& size, long style )
+ {
+     SetExtraStyle( GetExtraStyle() | wxWS_EX_BLOCK_EVENTS );
+     wxDialog::Create( parent, id, caption, pos, size, style );
+     
+     CreateControls();
+     GetSizer()->SetSizeHints( this );
+     Centre();
+     
+     return TRUE;
+ }
+ 
+ /*!
+  * Control creation for ToolbarChoicesDialog
+  */
+ 
+ void ToolbarChoicesDialog::CreateControls()
+ {
+     ToolbarChoicesDialog* itemDialog1 = this;
+
+     #ifdef __OCPN__ANDROID__
+     //  Set Dialog Font by custom crafted Qt Stylesheet.
+     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
+     
+     wxString wqs = getFontQtStylesheet(qFont);
+     wxCharBuffer sbuf = wqs.ToUTF8();
+     QString qsb = QString(sbuf.data());
+     
+     QString qsbq = getQtStyleSheet();           // basic scrollbars, etc
+     
+     itemDialog1->GetHandle()->setStyleSheet( qsb + qsbq );      // Concatenated style sheets
+     
+     #endif
+     
+     wxBoxSizer* itemBoxSizer2 = new wxBoxSizer( wxVERTICAL );
+     itemDialog1->SetSizer( itemBoxSizer2 );
+     
+     wxStaticBoxSizer* sbSizerParams;
+     sbSizerParams = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Choose Toolbar Icons") ), wxVERTICAL );
+     itemBoxSizer2->Add( sbSizerParams, 0, wxALL|wxEXPAND, 5 );
+     
+     wxFlexGridSizer* itemBoxSizerAux = new wxFlexGridSizer( 0, 2, 0, 0 );
+     itemBoxSizerAux->SetFlexibleDirection( wxBOTH );
+     itemBoxSizerAux->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+     
+     sbSizerParams->Add( itemBoxSizerAux, 1, wxALIGN_LEFT | wxALL, 5 );
+     
+     int nitems = g_FloatingToolbarConfigMenu->GetMenuItemCount();
+     
+     cboxes.clear();
+     for (int i=0 ; i < nitems ; i++){
+         wxMenuItem *item = g_FloatingToolbarConfigMenu->FindItemByPosition( i );
+         
+         wxString label = item->GetItemLabel();
+         
+         wxCheckBox *cb = new wxCheckBox(this, -1, label);
+         itemBoxSizerAux->Add(cb, 1, wxALL, 4);
+         cb->SetValue(item->IsChecked());
+         
+         cboxes.push_back(cb);
+     }
+     
+
+     wxBoxSizer* itemBoxSizer16 = new wxBoxSizer( wxHORIZONTAL );
+     itemBoxSizer2->Add( itemBoxSizer16, 0, wxALIGN_RIGHT | wxALL, 5 );
+
+     m_CancelButton = new wxButton( itemDialog1, ID_GOTOPOS_CANCEL, _("Cancel"), wxDefaultPosition,
+     wxDefaultSize, 0 );
+     itemBoxSizer16->Add( m_CancelButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
+     
+     m_OKButton = new wxButton( itemDialog1, ID_GOTOPOS_OK, _("OK"), wxDefaultPosition,
+     wxDefaultSize, 0 );
+     itemBoxSizer16->Add( m_OKButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
+     m_OKButton->SetDefault();
+     
+     m_CancelButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ToolbarChoicesDialog::OnCancelClick ), NULL, this );
+     m_OKButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ToolbarChoicesDialog::OnOkClick ), NULL, this );
+     
+     SetColorScheme( (ColorScheme) 0 );
+ }
+ 
+ void ToolbarChoicesDialog::SetColorScheme( ColorScheme cs )
+ {
+     DimeControl( this );
+ }
+ 
+ 
+ void ToolbarChoicesDialog::OnCancelClick( wxCommandEvent& event )
+ {
+     EndModal(wxID_CANCEL);
+ }
+ 
+ void ToolbarChoicesDialog::OnOkClick( wxCommandEvent& event )
+ {
+     for(unsigned int i=0 ; i < cboxes.size() ; i++){
+         
+         wxCheckBox *cb = cboxes[i];
+         if( cb->IsChecked() )
+            g_toolbarConfig.SetChar( i, _T('X') );
+         else
+             g_toolbarConfig.SetChar( i, _T('.') );
+         
+         wxMenuItem *item = g_FloatingToolbarConfigMenu->FindItemByPosition( i );
+         item->Check( cb->IsChecked() );
+     }
+         
+         
+     EndModal(wxID_OK);
+ }
+ 
+ 
+ 
