@@ -287,6 +287,10 @@ void about::Populate( void )
     } else {
         wxLogMessage( _T("Could not open License file: ") + m_DataLocn );
     }
+    
+    wxString suppLicense = g_Platform->GetSupplementalLicenseString();
+    pLicenseTextCtl->AppendText( suppLicense );
+    
     pLicenseTextCtl->SetInsertionPoint( 0 );
 
     SetColorScheme();

@@ -43,6 +43,8 @@ import java.lang.Math;
 import java.util.concurrent.Semaphore;
 import java.util.StringTokenizer;
 
+import com.google.android.gms.common.GoogleApiAvailability;
+
 import org.kde.necessitas.ministro.IMinistro;
 import org.kde.necessitas.ministro.IMinistroCallback;
 
@@ -1030,6 +1032,19 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
         return "OK";
     }
+
+
+    public String getGMAPILicense( )
+    {
+        String ret = "";
+
+        GoogleApiAvailability av = GoogleApiAvailability.getInstance();
+        if(av != null)
+            ret = av.getOpenSourceSoftwareLicenseInfo (this);
+
+        return ret;
+    }
+
 
 
     /**

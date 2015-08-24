@@ -627,7 +627,15 @@ void OCPNPlatform::applyExpertMode(bool mode)
 }
         
     
-
+wxString OCPNPlatform::GetSupplementalLicenseString()
+{
+    wxString lic;
+#ifdef __OCPN__ANDROID__
+    lic = androidGetSupplementalLicense();
+#endif    
+    return lic;
+}
+    
 //--------------------------------------------------------------------------
 //      Per-Platform file/directory support
 //--------------------------------------------------------------------------

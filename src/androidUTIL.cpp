@@ -2251,6 +2251,15 @@ bool androidPlaySound( wxString soundfile )
 }
     
 
+wxString androidGetSupplementalLicense( void )
+{
+    qDebug() << "androidGetSupplementalLicense";
+    
+    wxString result = callActivityMethod_vs("getGMAPILicense");
+    
+    return result;
+}
+
 
 #if 0
     // This is a way to invoke Android Settings dialog
