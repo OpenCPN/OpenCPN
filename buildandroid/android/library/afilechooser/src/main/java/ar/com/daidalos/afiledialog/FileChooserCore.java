@@ -41,7 +41,7 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
 import android.os.AsyncTask;
 import android.app.ProgressDialog;
-
+import android.util.Log;
 
 /**
  * This class implements the common features of a file chooser.
@@ -343,6 +343,14 @@ class FileChooserCore {
                                     else
                                         FileChooserCore.this.loadFolder(file);
                                 }
+                                else{
+                                    //  Probably a prohibited read.  Switch to a known good directory.
+                                    FileChooserCore.this.currentFolder = Environment.getExternalStorageDirectory();
+                                    // Reload the list of files.
+                                    FileChooserCore.this.loadFolder(FileChooserCore.this.currentFolder);
+
+                                }
+
 
 			} else {
 				// Notify the listeners.
