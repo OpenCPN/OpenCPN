@@ -800,7 +800,7 @@ void GribReader::openFile(const wxString fname)
     debug("Open file: %s", (const char *)fname.mb_str());
     fileName = fname;
     ok = false;
-    clean_all_vectors();
+    // clean_all_vectors();
     //--------------------------------------------------------
     // Open the file
     //--------------------------------------------------------

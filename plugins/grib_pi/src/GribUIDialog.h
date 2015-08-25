@@ -98,7 +98,7 @@ public:
     GribTimelineRecordSet* GetTimeLineRecordSet(wxDateTime time);
     void StopPlayBack();
     void TimelineChanged();
-    void CreateActiveFileFromName( wxString filename );
+    void CreateActiveFileFromNames( const wxArrayString &filenames );
     void PopulateComboDataList();
     void ComputeBestForecastForNow();
     void SetViewPort( PlugIn_ViewPort *vp );
@@ -189,16 +189,16 @@ private:
 class GRIBFile {
 public:
 
-    GRIBFile( const wxString file_name, bool CumRec, bool WaveRec );
+    GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec );
     ~GRIBFile();
 
     bool IsOK( void )
     {
         return m_bOK;
     }
-    wxString GetFileName( void )
+    wxArrayString &GetFileNames( void )
     {
-        return m_FileName;
+        return m_FileNames;
     }
     wxString GetLastMessage( void )
     {
@@ -220,7 +220,7 @@ private:
 
     bool m_bOK;
     wxString m_last_message;
-    wxString m_FileName;
+    wxArrayString m_FileNames;
     GribReader *m_pGribReader;
     time_t m_pRefDateTime;
 

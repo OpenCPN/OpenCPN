@@ -382,7 +382,7 @@ void GRIBUICtrlBar::OpenFile(bool newestFile)
     wxFileName f( m_file_names[0] );
     if( newestFile || f.GetFullName().IsEmpty() ) m_file_names.Add( GetNewestFileInDirectory());
 
-    m_bGRIBActiveFile = new GRIBFile( m_file_names[0],
+    m_bGRIBActiveFile = new GRIBFile( m_file_names,
                                       pPlugIn->GetCopyFirstCumRec(),
                                       pPlugIn->GetCopyMissWaveRec() );
 
@@ -1223,11 +1223,11 @@ void GRIBUICtrlBar::OnOpenFile( wxCommandEvent& event )
     }
 }
 
-void GRIBUICtrlBar::CreateActiveFileFromName( wxString filename )
+void GRIBUICtrlBar::CreateActiveFileFromNames( const wxArrayString &filenames )
 {
-    if( !filename.IsEmpty() ) {
+    if( filenames.GetCount() != 0 ) {
         m_bGRIBActiveFile = NULL;
-        m_bGRIBActiveFile = new GRIBFile( filename , pPlugIn->GetCopyFirstCumRec(),
+        m_bGRIBActiveFile = new GRIBFile( filenames , pPlugIn->GetCopyFirstCumRec(),
                                           pPlugIn->GetCopyMissWaveRec() );
     }
 }
@@ -1435,32 +1435,42 @@ void GRIBUICtrlBar::SetFactoryOptions()
 //          GRIBFile Object Implementation
 //----------------------------------------------------------------------------------------------------------
 
-GRIBFile::GRIBFile( const wxString file_name, bool CumRec, bool WaveRec )
+GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec )
 {
-    m_bOK = true;           // Assume ok until proven otherwise
+    m_bOK = false;           // Assume ok until proven otherwise
     m_pGribReader = NULL;
     m_last_message = wxEmptyString;
 
-    if( !::wxFileExists( file_name ) ) {
-        m_last_message = _( " does not exist!" );
-        m_bOK = false;
+    for (unsigned int i = 0; i < file_names.GetCount(); i++) {
+        wxString file_name = file_names[i];
+        if( ::wxFileExists( file_name ) ) 
+            m_bOK = true;
+    }
+    
+    if ( m_bOK == false) {
+        m_last_message = _( " files don't exist!" );
         return;
     }
-
     //    Use the zyGrib support classes, as (slightly) modified locally....
 
     m_pGribReader = new GribReader();
 
     //    Read and ingest the entire GRIB file.......
-    m_pGribReader->openFile( file_name );
+    m_bOK = false;
+    for (unsigned int i = 0; i < file_names.GetCount(); i++) {
+        wxString file_name = file_names[i];
+        m_pGribReader->openFile( file_name );
 
-    if( !m_pGribReader->isOk() ) {
+        if( m_pGribReader->isOk() ) {
+            m_bOK = true;
+         }
+    }
+    if ( m_bOK == false) {
         m_last_message = _( " can't be read!" );
-        m_bOK = false;
         return;
     }
 
-    m_FileName = file_name;
+    m_FileNames = file_names;
 
     if( CumRec ) m_pGribReader->copyFirstCumulativeRecord();            //add missing records if option selected
     if( WaveRec ) m_pGribReader->copyMissingWaveRecords ();             //  ""                   ""
