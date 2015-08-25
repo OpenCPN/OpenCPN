@@ -227,12 +227,20 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id, const wxString& ti
 		pConf->Read( _T ( "CursorDataShown" ), &m_CDataIsShown, true );
 
         pConf->Read ( _T ( "lastdatatype" ), &m_lastdatatype, 0);
-        // XXX
-        wxString file_name;
-        pConf->Read ( _T ( "Filename" ), &file_name );
-        m_file_names.Clear();
-        m_file_names.Add(file_name);
 
+        pConf->SetPath ( _T ( "/Settings/GRIB/FileNames" ) );
+        m_file_names.Clear();
+        if( pConf->GetNumberOfEntries() ) {
+            wxString str, val;
+            long dummy;
+            bool bCont = pConf->GetFirstEntry( str, dummy );
+            while( bCont ) {
+                pConf->Read( str, &val );              // Get a file name
+                m_file_names.Add(val);
+                bCont = pConf->GetNextEntry( str, dummy );
+            }
+        }
+                                                                                                
         wxStandardPathsBase& spath = wxStandardPaths::Get();
 
         pConf->SetPath ( _T ( "/Directories" ) );
@@ -279,12 +287,12 @@ GRIBUICtrlBar::~GRIBUICtrlBar()
 
         pConf->Write( _T ( "lastdatatype" ), m_lastdatatype);
 
-        // XXX
-        wxString file_name;
-        if (m_file_names.GetCount())
-            file_name = m_file_names[0];
-
-        pConf->Write ( _T ( "Filename" ), file_name );
+        pConf->SetPath ( _T ( "/Settings/GRIB/FileNames" ) );
+        for( unsigned int i = 0 ; i < m_file_names.GetCount() ; i++ ) {
+            wxString key;
+            key.Printf(_T("Filename%d"), i);
+            pConf->Write ( key, m_file_names[i] );
+        }
 
         pConf->SetPath ( _T ( "/Directories" ) );
         pConf->Write ( _T ( "GRIBDirectory" ), m_grib_dir );
@@ -379,15 +387,18 @@ void GRIBUICtrlBar::OpenFile(bool newestFile)
     m_HasAltitude = false;
 
     //get more recent file in default directory if necessary
-    wxFileName f( m_file_names[0] );
-    if( newestFile || f.GetFullName().IsEmpty() ) m_file_names.Add( GetNewestFileInDirectory());
+    wxFileName f;
+    if ( m_file_names.GetCount() != 0 )
+        f = m_file_names[0];
+    if( newestFile || f.GetFullName().IsEmpty() ) 
+        m_file_names.Add( GetNewestFileInDirectory());
 
     m_bGRIBActiveFile = new GRIBFile( m_file_names,
                                       pPlugIn->GetCopyFirstCumRec(),
                                       pPlugIn->GetCopyMissWaveRec() );
 
     ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
-
+    // XXX
     wxFileName fn( m_file_names[0] );
     wxString title( _("File") );
 	title.Append( _T(": ") ).Append( fn.GetFullName() );
