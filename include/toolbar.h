@@ -431,14 +431,8 @@ public:
     
     ~ToolbarChoicesDialog();
     
-    /// Creation
-    bool Create( wxWindow* parent, wxWindowID id = -1,
-                 const wxString& caption = _T(""),
-                 const wxPoint& pos = wxDefaultPosition,
-                 const wxSize& size = wxDefaultSize, long style = SYMBOL_ToolbarChoices_STYLE );
-    
     void SetColorScheme(ColorScheme cs);
-    
+    void RecalculateSize( void );
     void CreateControls();
     
     void OnCancelClick( wxCommandEvent& event );

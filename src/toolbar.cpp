@@ -38,6 +38,7 @@
 #include "chart1.h"
 #include "pluginmanager.h"
 #include "FontMgr.h"
+#include "OCPNPlatform.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -57,6 +58,7 @@ extern wxString                   g_toolbarConfig;
 extern bool                       g_bPermanentMOBIcon;
 extern bool                       g_btouch;
 extern bool                       g_bsmoothpanzoom;
+extern OCPNPlatform               *g_Platform;
 
 //----------------------------------------------------------------------------
 // GrabberWindow Implementation
@@ -2290,7 +2292,6 @@ void ocpnToolBarSimple::OnRightClick( int id, long WXUNUSED(x), long WXUNUSED(y)
     HideTooltip();
     
     ToolbarChoicesDialog *dlg = new ToolbarChoicesDialog(NULL, -1, _T("OpenCPN"), wxDefaultPosition, wxSize(100,100));
-    dlg->Centre();
     int rc = dlg->ShowModal();
     delete dlg;
     
@@ -2434,8 +2435,9 @@ END_EVENT_TABLE()
      wxDialog::Create( parent, id, caption, pos, size, wstyle );
      
      CreateControls();
-     GetSizer()->SetSizeHints( this );
-     Centre();
+     GetSizer()->Fit( this );
+     
+     RecalculateSize();
      
  }
  
@@ -2444,90 +2446,95 @@ END_EVENT_TABLE()
  }
  
  /*!
-  * ToolbarChoicesDialog creator
-  */
- 
- bool ToolbarChoicesDialog::Create( wxWindow* parent, wxWindowID id, const wxString& caption,
-                                  const wxPoint& pos, const wxSize& size, long style )
- {
-     SetExtraStyle( GetExtraStyle() | wxWS_EX_BLOCK_EVENTS );
-     wxDialog::Create( parent, id, caption, pos, size, style );
-     
-     CreateControls();
-     GetSizer()->SetSizeHints( this );
-     Centre();
-     
-     return TRUE;
- }
- 
- /*!
   * Control creation for ToolbarChoicesDialog
   */
- 
+
  void ToolbarChoicesDialog::CreateControls()
- {
-     ToolbarChoicesDialog* itemDialog1 = this;
-
-     #ifdef __OCPN__ANDROID__
-     //  Set Dialog Font by custom crafted Qt Stylesheet.
-     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
-     
-     wxString wqs = getFontQtStylesheet(qFont);
-     wxCharBuffer sbuf = wqs.ToUTF8();
-     QString qsb = QString(sbuf.data());
-     
-     QString qsbq = getQtStyleSheet();           // basic scrollbars, etc
-     
-     itemDialog1->GetHandle()->setStyleSheet( qsb + qsbq );      // Concatenated style sheets
-     
-     #endif
-     
-     wxBoxSizer* itemBoxSizer2 = new wxBoxSizer( wxVERTICAL );
-     itemDialog1->SetSizer( itemBoxSizer2 );
-     
-     wxStaticBoxSizer* sbSizerParams;
-     sbSizerParams = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Choose Toolbar Icons") ), wxVERTICAL );
-     itemBoxSizer2->Add( sbSizerParams, 0, wxALL|wxEXPAND, 5 );
-     
-     wxFlexGridSizer* itemBoxSizerAux = new wxFlexGridSizer( 0, 2, 0, 0 );
-     itemBoxSizerAux->SetFlexibleDirection( wxBOTH );
-     itemBoxSizerAux->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-     
-     sbSizerParams->Add( itemBoxSizerAux, 1, wxALIGN_LEFT | wxALL, 5 );
-     
-     int nitems = g_FloatingToolbarConfigMenu->GetMenuItemCount();
-     
-     cboxes.clear();
-     for (int i=0 ; i < nitems ; i++){
-         wxMenuItem *item = g_FloatingToolbarConfigMenu->FindItemByPosition( i );
-         
-         wxString label = item->GetItemLabel();
-         
-         wxCheckBox *cb = new wxCheckBox(this, -1, label);
-         itemBoxSizerAux->Add(cb, 1, wxALL, 4);
-         cb->SetValue(item->IsChecked());
-         
-         cboxes.push_back(cb);
-     }
+{
      
 
-     wxBoxSizer* itemBoxSizer16 = new wxBoxSizer( wxHORIZONTAL );
-     itemBoxSizer2->Add( itemBoxSizer16, 0, wxALIGN_RIGHT | wxALL, 5 );
+    wxBoxSizer* itemBoxSizer1 = new wxBoxSizer( wxVERTICAL );
+    SetSizer( itemBoxSizer1 );
 
-     m_CancelButton = new wxButton( itemDialog1, ID_GOTOPOS_CANCEL, _("Cancel"), wxDefaultPosition,
-     wxDefaultSize, 0 );
-     itemBoxSizer16->Add( m_CancelButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
-     
-     m_OKButton = new wxButton( itemDialog1, ID_GOTOPOS_OK, _("OK"), wxDefaultPosition,
-     wxDefaultSize, 0 );
-     itemBoxSizer16->Add( m_OKButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
-     m_OKButton->SetDefault();
-     
-     m_CancelButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ToolbarChoicesDialog::OnCancelClick ), NULL, this );
-     m_OKButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ToolbarChoicesDialog::OnOkClick ), NULL, this );
-     
-     SetColorScheme( (ColorScheme) 0 );
- }
+    wxScrolledWindow *itemDialog1 = new wxScrolledWindow( this, wxID_ANY,
+                                      wxDefaultPosition, wxSize(-1, -1), wxHSCROLL | wxVSCROLL);
+    itemDialog1->SetScrollRate(2, 2);
+
+#ifdef __OCPN__ANDROID__
+
+    //  Set Dialog Font by custom crafted Qt Stylesheet.
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
+    
+    wxString wqs = getFontQtStylesheet(qFont);
+    wxCharBuffer sbuf = wqs.ToUTF8();
+    QString qsb = QString(sbuf.data());
+    
+    QString qsbq = getQtStyleSheet();           // basic scrollbars, etc
+    
+    this->GetHandle()->setStyleSheet( qsb + qsbq );      // Concatenated style sheets
+    
+#endif
+    itemBoxSizer1->Add( itemDialog1, 2, wxEXPAND | wxALL, 0 );
+
+    wxBoxSizer* itemBoxSizer2 = new wxBoxSizer( wxVERTICAL );
+    itemDialog1->SetSizer( itemBoxSizer2 );
+
+    wxStaticBox* itemStaticBoxSizer3Static = new wxStaticBox( itemDialog1, wxID_ANY,
+                                                              _("Choose Toolbar Icons")  );
+    wxStaticBoxSizer* itemStaticBoxSizer3 = new wxStaticBoxSizer( itemStaticBoxSizer3Static, wxVERTICAL );
+    itemBoxSizer2->Add( itemStaticBoxSizer3, 0, wxEXPAND | wxALL, 5 );
+
+    
+    int nitems = g_FloatingToolbarConfigMenu->GetMenuItemCount();
+
+    int max_width = -1;
+    
+    cboxes.clear();
+    for (int i=0 ; i < nitems ; i++){
+        wxMenuItem *item = g_FloatingToolbarConfigMenu->FindItemByPosition( i );
+        
+        wxString label = item->GetItemLabel();
+        int l = label.Len();
+        max_width = wxMax(max_width, l);
+        
+        wxCheckBox *cb = new wxCheckBox(itemDialog1, -1, label);
+        itemStaticBoxSizer3->Add(cb, 0, wxALL | wxEXPAND, 2);
+        cb->SetValue(item->IsChecked());
+        
+        cboxes.push_back(cb);
+    }
+    
+    itemBoxSizer1->SetMinSize( (max_width + 20) * GetCharWidth()  , (nitems + 4) * GetCharHeight() * 2);
+    
+    wxBoxSizer* itemBoxSizerBottom = new wxBoxSizer( wxHORIZONTAL );
+    itemBoxSizer1->Add( itemBoxSizerBottom, 0, wxALIGN_LEFT | wxALL | wxEXPAND, 5 );
+    
+    wxBoxSizer* itemBoxSizerAux = new wxBoxSizer( wxHORIZONTAL );
+    itemBoxSizerBottom->Add( itemBoxSizerAux, 1, wxALIGN_LEFT | wxALL, 3 );
+
+    wxBoxSizer* itemBoxSizer16 = new wxBoxSizer( wxHORIZONTAL );
+    itemBoxSizerBottom->Add( itemBoxSizer16, 0, wxALIGN_RIGHT | wxALL, 3 );
+
+    m_CancelButton = new wxButton( this, -1, _("Cancel"), wxDefaultPosition,
+            wxDefaultSize, 0 );
+    itemBoxSizer16->Add( m_CancelButton, 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxALL, 1 );
+
+    m_OKButton = new wxButton( this, -1, _("OK"), wxDefaultPosition,
+            wxDefaultSize, 0 );
+    itemBoxSizer16->Add( m_OKButton, 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxALL, 1);
+    m_OKButton->SetDefault();
+
+    m_CancelButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ToolbarChoicesDialog::OnCancelClick ), NULL, this );
+    m_OKButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ToolbarChoicesDialog::OnOkClick ), NULL, this );
+    
+    SetColorScheme( (ColorScheme) 0 );
+    
+}
+
+ 
+ 
+ 
+ 
  
  void ToolbarChoicesDialog::SetColorScheme( ColorScheme cs )
  {
@@ -2558,5 +2565,25 @@ END_EVENT_TABLE()
      EndModal(wxID_OK);
  }
  
+ void ToolbarChoicesDialog::RecalculateSize( void )
+ {
+     wxSize esize = GetSize();
+     
+     if(GetParent()){
+        wxSize dsize = GetParent()->GetClientSize();
+        esize.y = wxMin(esize.y, dsize.y - (12 * GetCharHeight()));
+        esize.x = wxMin(esize.x, dsize.x - (2 * GetCharHeight()));
+        SetSize(esize);
+        Centre();
+        
+     }
+     else{
+        wxSize fsize =  g_Platform->getDisplaySize();
+        fsize.y = wxMin(esize.y, fsize.y - (12 * GetCharHeight()));
+        fsize.x = wxMin(esize.x, fsize.x - (2 * GetCharHeight()));
+        SetSize(fsize);
+        CentreOnScreen();
+     }
+ }
  
  
