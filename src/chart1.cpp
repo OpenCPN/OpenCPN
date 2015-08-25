@@ -3505,7 +3505,7 @@ void MyFrame::ODoSetSize( void )
 #ifdef __OCPN__ANDROID__
         min_height = ( pstat_font->GetPointSize() * getAndroidDisplayDensity() ) + 10;
         m_pStatusBar->SetMinHeight( min_height );
-        qDebug() <<"StatusBar min height:" << min_height << "StatusBar font points:" << pstat_font->GetPointSize();
+//        qDebug() <<"StatusBar min height:" << min_height << "StatusBar font points:" << pstat_font->GetPointSize();
 #endif
 //        wxString msg;
 //        msg.Printf(_T("StatusBar min height: %d    StatusBar font points: %d"), min_height, pstat_font->GetPointSize());
@@ -7278,14 +7278,14 @@ void MyFrame::selectChartDisplay( int type, int family)
         }
 
         if(sel_dbIndex >= 0){
-            SelectQuiltRefdbChart( sel_dbIndex );
+            SelectQuiltRefdbChart( sel_dbIndex, false );  // no autoscale
+            //  Re-qualify the quilt reference chart selection
+            cc1->AdjustQuiltRefChart(  );
         }
 
-        //  Now adjust the scale to the target...
+        //  Now reset the scale to the target...
         cc1->SetVPScale(target_scale);
 
-        //  Re-qualify the quilt reference chart selection
-        cc1->AdjustQuiltRefChart(  );
 
 
 
