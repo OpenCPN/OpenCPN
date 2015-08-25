@@ -163,6 +163,11 @@ void  GribRecord::translateDataType()
     //translate significant wave height and dir
     if (this->knownData) {
         switch (getDataType()) {
+            case GRB_UOGRD:
+            case GRB_VOGRD:
+                levelType  = LV_GND_SURF;
+                levelValue = 0;
+                break;
             case GRB_HTSGW:
             case GRB_WVDIR:
             case GRB_WVPER:
@@ -171,6 +176,7 @@ void  GribRecord::translateDataType()
                 break;
         }
     }
+    // this->print();
 }
 
 //-------------------------------------------------------------------------------
@@ -882,6 +888,7 @@ bool GribRecord::readGribSection4_BDS(ZUFILE* file) {
                     x = readPackedBits(buf, startbit, nbBitsInPack);
                     data[ind] = (refValue + x*scaleFactorEpow2)/decimalFactorD;
                     startbit += nbBitsInPack;
+                    //printf(" %d %d %f ", i,j, data[ind]);
                 }
                 else {
                     data[ind] = GRIB_NOTDEF;
@@ -902,6 +909,7 @@ bool GribRecord::readGribSection4_BDS(ZUFILE* file) {
                     x = readPackedBits(buf, startbit, nbBitsInPack);
                     startbit += nbBitsInPack;
                     data[ind] = (refValue + x*scaleFactorEpow2)/decimalFactorD;
+                    //printf(" %d %d %f ", i,j, data[ind]);
                 }
                 else {
                     data[ind] = GRIB_NOTDEF;
@@ -1119,7 +1127,7 @@ zuint GribRecord::periodSeconds(zuchar unit,zuchar P1,zuchar P2,zuchar range) {
             res = 0;
             ok = false;
     }
-    debug("id=%d: PDS (time range) b21=%d P1=%d P2=%d",id,range,P1,P2);
+    debug("id=%d: PDS unit %d (time range) b21=%d %d P1=%d P2=%d\n",id,unit, range,res,P1,P2);
     dur = 0;
     switch (range) {
         case 0:

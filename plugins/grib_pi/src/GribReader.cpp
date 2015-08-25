@@ -276,13 +276,13 @@ void GribReader::readAllGribRecords()
 
                         else
                         {
-/*
-                              fprintf(stderr,
+#if 0
+                              printf(
                                       "GribReader: unknown record type: dataType=%d levelType=%d levelValue=%d idCenter==%d && idModel==%d && idGrid==%d\n",
                                       rec->getDataType(), rec->getLevelType(), rec->getLevelValue(),
                               rec->getIdCenter(), rec->getIdModel(), rec->getIdGrid()
                               );
-                              */
+#endif
                               delete rec;
                         }
                   }
