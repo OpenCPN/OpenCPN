@@ -66,6 +66,13 @@ ocpnCompass::ocpnCompass()
 
 ocpnCompass::~ocpnCompass()
 {
+#ifdef ocpnUSE_GL
+    if(texobj){
+        glDeleteTextures(1, &texobj);
+        texobj = 0;
+    }
+#endif
+    
     delete m_pStatBoxToolStaticBmp;
 }
 
