@@ -874,8 +874,7 @@ options::options( MyFrame* parent, wxWindowID id, const wxString& caption, const
 
     wxDialog::Create( parent, id, caption, pos, size, wstyle );
 
-    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
-    SetFont( *qFont );
+    SetFont( *dialogFont );
     
     CreateControls();
     RecalculateSize();
@@ -1022,6 +1021,8 @@ void options::Init()
     
     m_BTScanTimer.SetOwner(this, ID_BT_SCANTIMER);
     m_BTscanning = 0;
+
+    dialogFont = GetOCPNScaledFont(_("Dialog"));
     
     // This variable is used by plugin callback function AddOptionsPage
     g_pOptions = this;
@@ -2503,7 +2504,6 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
     wxStaticText* zoomText = new wxStaticText( m_ChartDisplayPage, wxID_ANY,
         _("With a lower value, the same zoom level shows a less detailed chart.\nWith a higher value, the same zoom level shows a more detailed chart.") );
     
-    wxFont *dialogFont = GetOCPNScaledFont(_("Dialog"));
     smallFont = new wxFont( * dialogFont ); // we can't use Smaller() because wx2.8 doesn't support it
     smallFont->SetPointSize( (smallFont->GetPointSize() / 1.2) + 0.5 ); // + 0.5 to round instead of truncate
     zoomText->SetFont( * smallFont );
@@ -2907,8 +2907,7 @@ void ChartGroupsUI::CompletePanel( void )
     defaultAllCtl = new wxGenericDirCtrl( allActiveGroup, -1, _T(""), wxDefaultPosition, wxDefaultSize, wxVSCROLL );
 
     //    Set the Font for the All Active Chart Group tree to be italic, dimmed
-    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
-    iFont = new wxFont(*qFont);
+    iFont = new wxFont(*dialogFont);
     iFont->SetStyle(wxFONTSTYLE_ITALIC);
     iFont->SetWeight(wxFONTWEIGHT_LIGHT);
 
@@ -3530,7 +3529,7 @@ void options::CreateControls()
 
     #ifdef __OCPN__ANDROID__
     //  Set Dialog Font by custom crafted Qt Stylesheet.
-    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
+    wxFont *qFont = dialogFont;
 
     wxString wqs = getFontQtStylesheet(qFont);
     wxCharBuffer sbuf = wqs.ToUTF8();
@@ -3580,11 +3579,11 @@ void options::CreateControls()
     wxScreenDC sdc;
     int text_width = tbmp.GetWidth();
     if(sdc.IsOk())
-        sdc.GetTextExtent(_T("Connections"), &text_width, NULL, NULL, NULL, GetOCPNScaledFont(_("Dialog")));
+        sdc.GetTextExtent(_T("Connections"), &text_width, NULL, NULL, NULL, dialogFont));
 
     if(text_width > tbmp.GetWidth() * 2 ){
         wxListView* lv = m_pListbook->GetListView();
-        wxFont *qFont = GetOCPNScaledFont(_("Dialog"));         // to get type, weight, etc...
+        wxFont *qFont = dialogFont;         // to get type, weight, etc...
         
         wxFont *sFont = wxTheFontList->FindOrCreateFont( 10, qFont->GetFamily(), qFont->GetStyle(), qFont->GetWeight());
         lv->SetFont( *sFont );
@@ -4324,23 +4323,7 @@ void options::OnButtonaddClick( wxCommandEvent& event )
     if(wxID_CANCEL == dresult)
         goto done;
         
-#if 0    
-    wxDirDialog *dirSelector = new wxDirDialog( this, _("Add a directory containing chart files"),
-            *pInit_Chart_Dir, wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST );
-
-    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
-    dirSelector->SetFont(*qFont);
-
-    if(g_bresponsive)
-        dirSelector = g_Platform->AdjustDirDialogFont(this, dirSelector);
-    
-    if( dirSelector->ShowModal() == wxID_CANCEL )
-        goto done;
-
-    selDir = dirSelector->GetPath();
-#endif
-
-    
+   
     AddChartDir( selDir );
 
 done:
@@ -5235,7 +5218,7 @@ void options::OnChooseFont( wxCommandEvent& event )
     wxFontDialog dg( pParent, init_font_data );
 #endif
 
-    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
+    wxFont *qFont = dialogFont;
     dg.SetFont(*qFont);
     
 #ifdef __WXQT__    
@@ -5244,7 +5227,6 @@ void options::OnChooseFont( wxCommandEvent& event )
     wxSize proposed_size = GetSize();
     float n_lines = 30;
     
-    wxFont *dialogFont = GetOCPNScaledFont(_("Dialog"));
     float font_size = dialogFont->GetPointSize();
     
     if( (proposed_size.y / font_size) < n_lines){
@@ -5760,6 +5742,7 @@ ChartGroupsUI::ChartGroupsUI( wxWindow* parent )
     modified = false;
     m_UIcomplete = false;
     m_treespopulated = false;
+    dialogFont = GetOCPNScaledFont(_("Dialog"));
 }
 
 ChartGroupsUI::~ChartGroupsUI()
@@ -5785,7 +5768,7 @@ void ChartGroupsUI::PopulateTrees()
         if( !dirname.IsEmpty() ) dir_array.Add( dirname );
     }
 
-    PopulateTreeCtrl( allAvailableCtl->GetTreeCtrl(), dir_array, wxColour( 0, 0, 0 ) );
+    PopulateTreeCtrl( allAvailableCtl->GetTreeCtrl(), dir_array, wxColour( 0, 0, 0 ) , dialogFont);
     m_pActiveChartsTree = allAvailableCtl->GetTreeCtrl();
 
     //    Fill in the Page 0 tree control
@@ -7193,8 +7176,8 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
     wxDialog::Create( parent, wxID_ANY, _T("OpenGL Options"), wxDefaultPosition, wxDefaultSize,
                       style );
     
-    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
-    SetFont( *qFont );
+    wxFont *dialogFont = GetOCPNScaledFont(_("Dialog"));
+    SetFont( *dialogFont );
 
     m_brebuild_cache = false;
     

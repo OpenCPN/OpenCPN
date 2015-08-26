@@ -681,6 +681,8 @@ private:
     
     wxNotebookPage*             m_groupsPage;
     wxFont*     smallFont;
+    wxFont*     dialogFont;
+    
     wxSize      m_small_button_size;
     int         m_fontHeight;
     int         m_scrollRate;
@@ -754,6 +756,7 @@ private:
     ArrayOfCDI m_db_dirs;
     int m_GroupSelectedPage;
     wxFont *iFont;
+    wxFont *dialogFont;
 
     ArrayOfDirCtrls m_DirCtrlArray;
 
