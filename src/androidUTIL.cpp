@@ -1267,11 +1267,12 @@ wxString androidGetPrivateDir()                 // Used for logfile, config file
                 return false;
         }
 #endif        
-        if(g_androidExtFilesDir.Length())
-            return g_androidExtFilesDir;
+        return g_androidExtFilesDir;
     }
 
-    return g_androidFilesDir; //_T("/mnt/sdcard/opencpn")
+    // We choose to use the ExtFiles directory always , so that the contents of logfiles, navobjs, etc.
+    // may always be accessible by simple Android File Explorers...
+    return g_androidExtFilesDir;    
 }
 
 wxString androidGetSharedDir()                 // Used for assets like uidata, s57data, etc
@@ -2234,6 +2235,12 @@ wxString getFontQtStylesheet(wxFont *font)
     wxString fontSize;
     fontSize.Printf(_T("%dpt }"), font->GetPointSize());
     qstyle += fontSize;
+
+    //  Oddity here....
+    //  If this line is active, this particular style is applied to ListCtrl() in PlugIns,
+    //  But not TreeCtrl.....
+    //  ????
+    //qstyle += _T("QTreeWidget::item{ border-color:red; border-style:outset; border-width:2px; color:black; }");
     
     return qstyle;
     
