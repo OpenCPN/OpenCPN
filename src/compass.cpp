@@ -58,7 +58,9 @@ ocpnCompass::ocpnCompass()
             _img_compass.GetWidth() + _img_gpsRed.GetWidth() + style->GetCompassLeftMargin() * 2
                     + style->GetToolSeparation(),
                     _img_compass.GetHeight() + style->GetCompassTopMargin() + style->GetCompassBottomMargin() );
+#ifdef ocpnUSE_GL
     texobj = 0;
+#endif
     
 }
 
