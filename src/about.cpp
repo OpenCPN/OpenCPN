@@ -37,7 +37,7 @@
 #include <wx/ffile.h>
 #include <wx/clipbrd.h>
 #include <wx/html/htmlwin.h>
-
+#include <wx/tokenzr.h>
 #include <version.h>
 
 #include "about.h"
@@ -214,7 +214,8 @@ void about::SetColorScheme( void )
     DimeControl( this );
     wxColor bg = GetBackgroundColour();
     pAboutHTMLCtl->SetBackgroundColour( bg );
-
+    pLicenseHTMLCtl->SetBackgroundColour( bg );
+    
 
     // This looks like non-sense, but is needed for __WXGTK__
     // to get colours to propagate down the control's family tree.
@@ -227,7 +228,8 @@ void about::SetColorScheme( void )
     tdc.SetBackground( bg );
     tdc.Clear();
     pAboutHTMLCtl->SetBackgroundImage(tbm);
- #endif
+    pLicenseHTMLCtl->SetBackgroundImage(tbm);
+#endif
 
 }
 
@@ -279,6 +281,40 @@ void about::Populate( void )
     pAuthorTextCtl->WriteText( AuthorText );
     pAuthorTextCtl->SetInsertionPoint( 0 );
 
+    ///
+    // The HTML Header
+    wxString licenseText =
+    wxString::Format(
+        _T( "<html><body bgcolor=#%02x%02x%02x><font color=#%02x%02x%02x>" ),
+            bg.Red(), bg.Blue(), bg.Green(), fg.Red(), fg.Blue(), fg.Green() );
+        
+    pLicenseHTMLCtl->SetFonts( face, face, sizes );
+ 
+    wxTextFile license_filea( m_DataLocn + _T("license.txt") );
+    if ( license_filea.Open() ) {
+        for ( wxString str = license_filea.GetFirstLine(); !license_filea.Eof() ; str = license_filea.GetNextLine() )
+            licenseText.Append( str + _T("<br>") );
+        license_filea.Close();
+    } else {
+        wxLogMessage( _T("Could not open License file: ") + m_DataLocn );
+    }
+    
+    wxString suppLicense = g_Platform->GetSupplementalLicenseString();
+    
+    wxStringTokenizer st(suppLicense, _T("\n"), wxTOKEN_DEFAULT);
+    while( st.HasMoreTokens() )
+    {
+        wxString s1 = st.GetNextToken();
+        licenseText.Append( s1 + _T("<br>") );
+    }
+        
+        // The HTML Footer
+    licenseText.Append( _T("</font></body></html>") );
+        
+    pLicenseHTMLCtl->SetPage( licenseText );
+        
+        
+#if 0    
     wxTextFile license_file( m_DataLocn + _T("license.txt") );
     if ( license_file.Open() ) {
         for ( wxString str = license_file.GetFirstLine(); !license_file.Eof() ; str = license_file.GetNextLine() )
@@ -292,6 +328,7 @@ void about::Populate( void )
     pLicenseTextCtl->AppendText( suppLicense );
     
     pLicenseTextCtl->SetInsertionPoint( 0 );
+#endif
 
     SetColorScheme();
 }
@@ -360,7 +397,16 @@ void about::CreateControls( void )
             wxSUNKEN_BORDER | wxTAB_TRAVERSAL );
     itemPanelLicense->InheritAttributes();
     pNotebook->AddPage( itemPanelLicense, _("License") );
+    
+    pLicenseHTMLCtl = new wxHtmlWindow( itemPanelLicense, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                                      wxHW_SCROLLBAR_AUTO | wxHW_NO_SELECTION);
+    pLicenseHTMLCtl->SetBorders( 5 );
+    wxBoxSizer* licenseSizer = new wxBoxSizer( wxVERTICAL );
+    licenseSizer->Add( pLicenseHTMLCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxEXPAND | wxALL, 5 );
+    itemPanelLicense->SetSizer( licenseSizer );
+    
 
+#if 0    
     int tcflags = wxTE_MULTILINE | wxTE_READONLY;
     //  wxX11 TextCtrl is broken in many ways.
     //  Here, the wxTE_DONTWRAP flag creates a horizontal scroll bar
@@ -374,6 +420,7 @@ void about::CreateControls( void )
     wxBoxSizer* licenseSizer = new wxBoxSizer( wxVERTICAL );
     licenseSizer->Add( pLicenseTextCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxEXPAND | wxALL, 5 );
     itemPanelLicense->SetSizer( licenseSizer );
+#endif
 
     //  Help Panel
     itemPanelTips = new wxPanel( pNotebook, -1, wxDefaultPosition, wxDefaultSize,
