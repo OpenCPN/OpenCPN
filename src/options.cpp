@@ -442,12 +442,12 @@ void MMSIEditDialog::OnMMSIEditCancelClick( wxCommandEvent& event )
 void MMSIEditDialog::OnMMSIEditOKClick( wxCommandEvent& event )
 {
     // Update the MMSIProperties by the passed pointer
-    if ( m_props ){
+    if ( m_props ) {
         long nmmsi;
         m_MMSICtl->GetValue().ToLong( &nmmsi );
         m_props->MMSI = nmmsi;
 
-        if( m_rbTypeTrackDefault->GetValue() )
+        if ( m_rbTypeTrackDefault->GetValue() )
             m_props->TrackType = TRACKTYPE_DEFAULT;
         else if ( m_rbTypeTrackAlways->GetValue() )
             m_props->TrackType = TRACKTYPE_ALWAYS;
@@ -726,14 +726,14 @@ void MMSI_Props_Panel::UpdateMMSIList( void )
     long item_sel = wxNOT_FOUND;
     if ( selItemID != wxNOT_FOUND && selMMSI != wxNOT_FOUND ) {
         for ( unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++ ) {
-            if( g_MMSI_Props_Array.Item( i )->MMSI == selMMSI ) {
+            if ( g_MMSI_Props_Array.Item( i )->MMSI == selMMSI ) {
                 item_sel = i;
                 break;
             }
         }
     }
 
-    if( g_MMSI_Props_Array.GetCount() > 0 )
+    if ( g_MMSI_Props_Array.GetCount() > 0 )
         m_pListCtrlMMSI->SetItemState(
             item_sel, wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED,
             wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED
@@ -868,24 +868,25 @@ void options::RecalculateSize()
         SetSize( fitted_size );
 
         Fit();
-    } else {
-        wxSize esize;
-        esize.x = GetCharWidth() * 110;
-        esize.y = GetCharHeight() * 40;
-
-        wxSize dsize = GetParent()->GetSize(); // GetClientSize();
-        esize.y = wxMin( esize.y, dsize.y - 0 /*(2 * GetCharHeight())*/ );
-        esize.x = wxMin( esize.x, dsize.x - 0 /*(2 * GetCharHeight())*/ );
-        SetSize(esize);
-
-        wxSize fsize = GetSize();
-        wxSize canvas_size = GetParent()->GetSize();
-        wxPoint canvas_pos = GetParent()->GetPosition();
-        int xp = (canvas_size.x - fsize.x)/2;
-        int yp = (canvas_size.y - fsize.y)/2;
-        wxPoint xxp = GetParent()->ClientToScreen( canvas_pos );
-        Move( xxp.x + xp, xxp.y + yp );
+        return;
     }
+
+    wxSize esize;
+    esize.x = GetCharWidth() * 110;
+    esize.y = GetCharHeight() * 40;
+
+    wxSize dsize = GetParent()->GetSize(); // GetClientSize();
+    esize.y = wxMin( esize.y, dsize.y - 0 /*(2 * GetCharHeight())*/ );
+    esize.x = wxMin( esize.x, dsize.x - 0 /*(2 * GetCharHeight())*/ );
+    SetSize(esize);
+
+    wxSize fsize = GetSize();
+    wxSize canvas_size = GetParent()->GetSize();
+    wxPoint canvas_pos = GetParent()->GetPosition();
+    int xp = (canvas_size.x - fsize.x)/2;
+    int yp = (canvas_size.y - fsize.y)/2;
+    wxPoint xxp = GetParent()->ClientToScreen( canvas_pos );
+    Move( xxp.x + xp, xxp.y + yp );
 }
 
 void options::Init()
@@ -1030,7 +1031,7 @@ bool options::DeletePage( wxScrolledWindow *page  )
     for ( size_t i = 0; i < m_pListbook->GetPageCount(); i++ ) {
         wxNotebookPage* pg = m_pListbook->GetPage( i );
 
-        if( pg->IsKindOf( CLASSINFO( wxNotebook ) ) ) {
+        if ( pg->IsKindOf( CLASSINFO( wxNotebook ) ) ) {
             wxNotebook *nb = dynamic_cast<wxNotebook *>( pg );
             for ( size_t j = 0; j < nb->GetPageCount(); j++ ) {
                 wxNotebookPage* spg = nb->GetPage( j );
@@ -3253,12 +3254,10 @@ void options::CreateControls()
     int width, height;
     ::wxDisplaySize( &width, &height );
 
-    if(!g_bresponsive){
-        if( height <= 800 ) {
-            border_size = 2;
-            check_spacing = 2;
-            group_item_spacing = 1;
-        }
+    if ( !g_bresponsive && height <= 800 ) {
+        border_size = 2;
+        check_spacing = 2;
+        group_item_spacing = 1;
     }
 
     labelFlags = wxSizerFlags(0).Align(wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL).Border(wxALL, group_item_spacing);
