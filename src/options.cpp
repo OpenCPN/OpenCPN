@@ -313,9 +313,9 @@ END_EVENT_TABLE()
 MMSIEditDialog::MMSIEditDialog() {}
 
 MMSIEditDialog::MMSIEditDialog( MMSIProperties *props, wxWindow* parent, wxWindowID id, const wxString& caption,
-                                const wxPoint& pos, const wxSize& size, long style )
+                                const wxPoint& pos, const wxSize& size, long style ) :
+    m_props( props )
 {
-    m_props = props;
     long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;
     wxDialog::Create( parent, id, caption, pos, size, wstyle );
 

@@ -208,16 +208,14 @@ class options: public wxScrollingDialog
 public:
     options();
     options( MyFrame* parent, wxWindowID id = SYMBOL_OPTIONS_IDNAME, const wxString& caption =
-            SYMBOL_OPTIONS_TITLE, const wxPoint& pos = SYMBOL_OPTIONS_POSITION, const wxSize& size =
-            SYMBOL_OPTIONS_SIZE, long style = SYMBOL_OPTIONS_STYLE );
+             SYMBOL_OPTIONS_TITLE, const wxPoint& pos = SYMBOL_OPTIONS_POSITION, const wxSize& size =
+             SYMBOL_OPTIONS_SIZE, long style = SYMBOL_OPTIONS_STYLE );
 
     ~options();
 
     bool Create( MyFrame* parent, wxWindowID id = SYMBOL_OPTIONS_IDNAME, const wxString& caption =
-            SYMBOL_OPTIONS_TITLE, const wxPoint& pos = SYMBOL_OPTIONS_POSITION, const wxSize& size =
-            SYMBOL_OPTIONS_SIZE, long style = SYMBOL_OPTIONS_STYLE );
-
-    void Init();
+                 SYMBOL_OPTIONS_TITLE, const wxPoint& pos = SYMBOL_OPTIONS_POSITION, const wxSize& size =
+                 SYMBOL_OPTIONS_SIZE, long style = SYMBOL_OPTIONS_STYLE );
 
     void SetInitialPage( int page_sel);
     void Finish( void);
@@ -623,6 +621,7 @@ public:
     wxArrayString           *m_pSerialArray;
 
 private:
+    void Init();
     void CreatePanel_MMSI( size_t parent, int border_size, int group_item_spacing,
             wxSize small_button_size );
     void CreatePanel_AIS( size_t parent, int border_size, int group_item_spacing,
