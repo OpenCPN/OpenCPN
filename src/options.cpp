@@ -2991,13 +2991,13 @@ void options::CreatePanel_AIS( size_t parent, int border_size, int group_item_sp
     pDisplayGrid->Add( m_pCheck_Show_Area_Notices, 1, wxALL, group_item_spacing );
 
     wxStaticText *pStatic_Dummy5 = new wxStaticText( panelAIS, -1, _T("") );
-    pDisplayGrid->Add( pStatic_Dummy5, 1, wxALL | wxALL, group_item_spacing );
+    pDisplayGrid->Add( pStatic_Dummy5, 1, wxALL, group_item_spacing );
 
     m_pCheck_Draw_Target_Size = new wxCheckBox( panelAIS, -1, _("Show AIS targets real size") );
     pDisplayGrid->Add( m_pCheck_Draw_Target_Size, 1, wxALL, group_item_spacing );
 
     wxStaticText *pStatic_Dummy6 = new wxStaticText( panelAIS, -1, _T("") );
-    pDisplayGrid->Add( pStatic_Dummy6, 1, wxALL | wxALL, group_item_spacing );
+    pDisplayGrid->Add( pStatic_Dummy6, 1, wxALL, group_item_spacing );
 
     m_pCheck_Show_Target_Name = new wxCheckBox( panelAIS, -1, _("Show names with AIS targets at scale greater than 1:") );
     pDisplayGrid->Add( m_pCheck_Show_Target_Name, 1, wxALL, group_item_spacing );
@@ -3009,10 +3009,10 @@ void options::CreatePanel_AIS( size_t parent, int border_size, int group_item_sp
     pDisplayGrid->Add( m_pCheck_Wpl_Aprs, 1, wxALL, group_item_spacing );
 
     wxStaticText *pStatic_Dummy7 = new wxStaticText( panelAIS, -1, _T("") );
-    pDisplayGrid->Add( pStatic_Dummy7, 1, wxALL | wxALL, group_item_spacing );
+    pDisplayGrid->Add( pStatic_Dummy7, 1, wxALL, group_item_spacing );
 
     wxStaticText *pStatic_Dummy5a = new wxStaticText( panelAIS, -1, _T("") );
-    pDisplayGrid->Add( pStatic_Dummy5a, 1, wxALL | wxALL, group_item_spacing );
+    pDisplayGrid->Add( pStatic_Dummy5a, 1, wxALL, group_item_spacing );
 
     // Rollover
     wxStaticBox* rolloverBox = new wxStaticBox( panelAIS, wxID_ANY, _("Rollover") );
@@ -3061,7 +3061,7 @@ void options::CreatePanel_AIS( size_t parent, int border_size, int group_item_sp
     pAlertGrid->Add( m_pCheck_Alert_Moored, 1, wxALL, group_item_spacing );
 
     wxStaticText *pStatic_Dummy2 = new wxStaticText( panelAIS, -1, _T("") );
-    pAlertGrid->Add( pStatic_Dummy2, 1, wxALL | wxALL, group_item_spacing );
+    pAlertGrid->Add( pStatic_Dummy2, 1, wxALL, group_item_spacing );
 
     m_pCheck_Ack_Timout = new wxCheckBox( panelAIS, -1,
             _("Enable Target Alert Acknowledge timeout (min)") );
