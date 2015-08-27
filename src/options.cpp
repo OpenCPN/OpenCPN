@@ -219,8 +219,6 @@ extern double           g_overzoom_emphasis_base;
 extern bool             g_oz_vector_scale;
 extern bool             g_bShowStatusBar;
 
-
-
 #ifdef USE_S57
 extern s52plib          *ps52plib;
 #endif
@@ -311,15 +309,12 @@ EVT_BUTTON( ID_MMSIEDIT_CANCEL, MMSIEditDialog::OnMMSIEditCancelClick )
 EVT_BUTTON( ID_MMSIEDIT_OK, MMSIEditDialog::OnMMSIEditOKClick )
 END_EVENT_TABLE()
 
-MMSIEditDialog::MMSIEditDialog()
-{
-}
+MMSIEditDialog::MMSIEditDialog() {}
 
 MMSIEditDialog::MMSIEditDialog( MMSIProperties *props, wxWindow* parent, wxWindowID id, const wxString& caption,
                                 const wxPoint& pos, const wxSize& size, long style )
 {
     m_props = props;
-
     long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;
     wxDialog::Create( parent, id, caption, pos, size, wstyle );
 
@@ -350,81 +345,72 @@ bool MMSIEditDialog::Create( MMSIProperties *props, wxWindow* parent, wxWindowID
 
 void MMSIEditDialog::CreateControls()
 {
-    MMSIEditDialog* itemDialog1 = this;
-    wxBoxSizer* itemBoxSizer2 = new wxBoxSizer( wxVERTICAL );
-    itemDialog1->SetSizer( itemBoxSizer2 );
+    wxBoxSizer* mainSizer = new wxBoxSizer( wxVERTICAL );
+    SetSizer( mainSizer );
 
-    wxStaticBox* itemStaticBoxSizer4Static = new wxStaticBox( itemDialog1, wxID_ANY,
-                                                              _("MMSI Extended Properties") );
+    wxStaticBox* mmsiBox = new wxStaticBox( this, wxID_ANY,
+                                            _( "MMSI Extended Properties" ) );
 
-    wxStaticBoxSizer* itemStaticBoxSizer4 = new wxStaticBoxSizer( itemStaticBoxSizer4Static,
-                                                                  wxVERTICAL );
-    itemBoxSizer2->Add( itemStaticBoxSizer4, 0, wxEXPAND | wxALL, 5 );
+    wxStaticBoxSizer* mmsiSizer = new wxStaticBoxSizer( mmsiBox, wxVERTICAL );
+    mainSizer->Add( mmsiSizer, 0, wxEXPAND | wxALL, 5 );
 
-    wxStaticText* itemStaticText5 = new wxStaticText( itemDialog1, wxID_STATIC, _("MMSI") );
-    itemStaticBoxSizer4->Add( itemStaticText5, 0,
-                              wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5 );
+    mmsiSizer->Add( new wxStaticText( this, wxID_STATIC, _( "MMSI" ) ), 0,
+                    wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5 );
 
-    m_MMSICtl = new wxTextCtrl( itemDialog1, ID_MMSI_CTL, _T(""), wxDefaultPosition, wxSize( 180, -1 ), 0 );
-    itemStaticBoxSizer4->Add( m_MMSICtl, 0,
-                              wxALIGN_LEFT | wxLEFT | wxRIGHT | wxBOTTOM | wxEXPAND, 5 );
+    m_MMSICtl = new wxTextCtrl( this, ID_MMSI_CTL, wxEmptyString,
+                                wxDefaultPosition, wxSize( 180, -1 ), 0 );
+    mmsiSizer->Add( m_MMSICtl, 0,
+                    wxALIGN_LEFT | wxLEFT | wxRIGHT | wxBOTTOM | wxEXPAND, 5 );
 
+    wxStaticBoxSizer *trackSizer = new wxStaticBoxSizer(
+        new wxStaticBox( this, wxID_ANY, _( "Tracking" ) ), wxVERTICAL
+    );
 
-    wxStaticBoxSizer *sbSizerPropsTrack = new wxStaticBoxSizer( new wxStaticBox( itemDialog1, wxID_ANY, _("Tracking") ), wxVERTICAL );
+    wxGridSizer* gridSizer = new wxGridSizer( 0, 3, 0, 0 );
 
-    wxGridSizer* bSizer15;
-    bSizer15 = new wxGridSizer( 0, 3, 0, 0 );
+    m_rbTypeTrackDefault = new wxRadioButton(
+        this, wxID_ANY, _("Default tracking"), wxDefaultPosition,
+        wxDefaultSize, wxRB_GROUP
+    );
+    m_rbTypeTrackDefault->SetValue( TRUE );
+    gridSizer->Add( m_rbTypeTrackDefault, 0, wxALL, 5 );
 
-    m_rbTypeTrackDefault = new wxRadioButton( itemDialog1, wxID_ANY, _("Default tracking"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
-    m_rbTypeTrackDefault->SetValue( true );
-    bSizer15->Add( m_rbTypeTrackDefault, 0, wxALL, 5 );
+    m_rbTypeTrackAlways = new wxRadioButton( this, wxID_ANY, _( "Always track" ) );
+    gridSizer->Add( m_rbTypeTrackAlways, 0, wxALL, 5 );
 
-    m_rbTypeTrackAlways = new wxRadioButton( itemDialog1, wxID_ANY, _("Always track"), wxDefaultPosition, wxDefaultSize, 0 );
-    bSizer15->Add( m_rbTypeTrackAlways, 0, wxALL, 5 );
+    m_rbTypeTrackNever = new wxRadioButton( this, wxID_ANY, _(" Never track" ) );
+    gridSizer->Add( m_rbTypeTrackNever, 0, wxALL, 5 );
 
-    m_rbTypeTrackNever = new wxRadioButton( itemDialog1, wxID_ANY, _("Never track"), wxDefaultPosition, wxDefaultSize, 0 );
-    bSizer15->Add( m_rbTypeTrackNever, 0, wxALL, 5 );
+    m_cbTrackPersist = new wxCheckBox( this, wxID_ANY, _( "Persistent" ) );
+    gridSizer->Add( m_cbTrackPersist, 0, wxALL, 5 );
 
-    m_cbTrackPersist = new wxCheckBox( itemDialog1, wxID_ANY, _("Persistent") );
-    bSizer15->Add( m_cbTrackPersist, 0, wxALL, 5 );
+    trackSizer->Add( gridSizer, 0, wxEXPAND, 0 );
+    mmsiSizer->Add(trackSizer, 0, wxEXPAND, 0);
 
-    sbSizerPropsTrack->Add( bSizer15, 0, wxEXPAND, 0 );
-    itemStaticBoxSizer4->Add(sbSizerPropsTrack, 0, wxEXPAND, 0);
+    m_IgnoreButton = new wxCheckBox( this, wxID_ANY, _( "Ignore this MMSI" ) );
+    mmsiSizer->Add( m_IgnoreButton, 0, wxEXPAND, 5 );
 
+    m_MOBButton = new wxCheckBox( this, wxID_ANY, _( "Handle this MMSI as SART/PLB(AIS) MOB." ) );
+    mmsiSizer->Add( m_MOBButton, 0, wxEXPAND, 5 );
 
-    m_IgnoreButton = new wxCheckBox( itemDialog1, wxID_ANY, _("Ignore this MMSI") );
-    itemStaticBoxSizer4->Add( m_IgnoreButton, 0, wxEXPAND, 5 );
+    m_VDMButton = new wxCheckBox( this, wxID_ANY, _( "Convert AIVDM to AIVDO for this MMSI" ) );
+    mmsiSizer->Add( m_VDMButton, 0, wxEXPAND, 5 );
 
-    m_MOBButton = new wxCheckBox( itemDialog1, wxID_ANY, _("Handle this MMSI as SART/PLB(AIS) MOB.") );
-    itemStaticBoxSizer4->Add( m_MOBButton, 0, wxEXPAND, 5 );
+    wxBoxSizer* btnSizer = new wxBoxSizer( wxHORIZONTAL );
+    mainSizer->Add( btnSizer, 0, wxALIGN_RIGHT | wxALL, 5 );
 
-    m_VDMButton = new wxCheckBox( itemDialog1, wxID_ANY, _("Convert AIVDM to AIVDO for this MMSI") );
-    itemStaticBoxSizer4->Add( m_VDMButton, 0, wxEXPAND, 5 );
+    m_CancelButton = new wxButton( this, ID_MMSIEDIT_CANCEL, _( "Cancel" ) );
+    btnSizer->Add( m_CancelButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
 
-
-    wxBoxSizer* itemBoxSizer16 = new wxBoxSizer( wxHORIZONTAL );
-    itemBoxSizer2->Add( itemBoxSizer16, 0, wxALIGN_RIGHT | wxALL, 5 );
-
-    m_CancelButton = new wxButton( itemDialog1, ID_MMSIEDIT_CANCEL, _("Cancel"), wxDefaultPosition,
-    wxDefaultSize, 0 );
-    itemBoxSizer16->Add( m_CancelButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
-
-    m_OKButton = new wxButton( itemDialog1, ID_MMSIEDIT_OK, _("OK"), wxDefaultPosition,
-    wxDefaultSize, 0 );
-    itemBoxSizer16->Add( m_OKButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
+    m_OKButton = new wxButton( this, ID_MMSIEDIT_OK, _( "OK" ) );
+    btnSizer->Add( m_OKButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
     m_OKButton->SetDefault();
 
     //  Set initial values...
-    wxString sMMSI;
-    if ( m_props->MMSI > 0 )
-       sMMSI.Printf( _T( "%d" ), m_props->MMSI );
-    else
-        sMMSI = _T( "" );
-    m_MMSICtl->AppendText(sMMSI);
+    if (m_props->MMSI > 0)
+        m_MMSICtl->AppendText( wxString::Format( "%d", m_props->MMSI ) );
 
     switch ( m_props->TrackType ){
-        case TRACKTYPE_DEFAULT:
-            break;
         case TRACKTYPE_ALWAYS:
             m_rbTypeTrackAlways->SetValue(true);
             break;
@@ -440,7 +426,7 @@ void MMSIEditDialog::CreateControls()
     m_MOBButton->SetValue( m_props->m_bMOB );
     m_VDMButton->SetValue( m_props->m_bVDM );
 
-    SetColorScheme( (ColorScheme) 0 );
+    SetColorScheme( GLOBAL_COLOR_SCHEME_RGB );
 }
 
 void MMSIEditDialog::SetColorScheme( ColorScheme cs )
