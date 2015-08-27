@@ -988,14 +988,15 @@ wxScrolledWindow *options::AddPage( size_t parent, const wxString & title)
         return NULL;
     }
     wxNotebookPage* page = m_pListbook->GetPage( parent );
+    wxNotebook *nb;
+    wxScrolledWindow *sw;
 
-    wxScrolledWindow *window;
     int style = wxVSCROLL | wxTAB_TRAVERSAL;
-    if ( page->IsKindOf( CLASSINFO( wxNotebook ) ) ) {
-        window = new wxScrolledWindow( page, wxID_ANY, wxDefaultPosition, wxDefaultSize, style );
-        window->SetScrollRate( m_scrollRate, m_scrollRate );
-        dynamic_cast<wxNotebook *>( page )->AddPage( window, title );
-    } else if ( page->IsKindOf( CLASSINFO( wxScrolledWindow ) ) ) {
+    if ( ( nb = dynamic_cast<wxNotebook *>( page ) ) ) {
+        sw = new wxScrolledWindow( page, wxID_ANY, wxDefaultPosition, wxDefaultSize, style );
+        sw->SetScrollRate( m_scrollRate, m_scrollRate );
+        nb->AddPage( sw, title );
+    } else if ( ( sw = dynamic_cast<wxScrolledWindow *>( page ) ) ) {
         wxString toptitle = m_pListbook->GetPageText( parent );
         wxNotebook *nb = new wxNotebook( m_pListbook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNB_TOP );
         /* Only remove the tab from listbook, we still have original content in {page} */
@@ -1007,49 +1008,47 @@ wxScrolledWindow *options::AddPage( size_t parent, const wxString & title)
         /* wxNotebookPage is hidden under wxGTK after RemovePage/Reparent
          * we must explicitely Show() it */
         page->Show();
-        window = new wxScrolledWindow( nb, wxID_ANY, wxDefaultPosition, wxDefaultSize, style );
-        window->SetScrollRate( m_scrollRate, m_scrollRate );
-        nb->AddPage( window, title );
+        sw = new wxScrolledWindow( nb, wxID_ANY, wxDefaultPosition, wxDefaultSize, style );
+        sw->SetScrollRate( m_scrollRate, m_scrollRate );
+        nb->AddPage( sw, title );
         nb->ChangeSelection( 0 );
     } else { // This is the default content, we can replace it now
-        window = new wxScrolledWindow( m_pListbook, wxID_ANY, wxDefaultPosition, wxDefaultSize, style, title );
-        window->SetScrollRate( m_scrollRate, m_scrollRate );
+        sw = new wxScrolledWindow( m_pListbook, wxID_ANY, wxDefaultPosition, wxDefaultSize, style, title );
+        sw->SetScrollRate( m_scrollRate, m_scrollRate );
         wxString toptitle = m_pListbook->GetPageText( parent );
-        m_pListbook->InsertPage( parent, window, toptitle, FALSE, parent );
+        m_pListbook->InsertPage( parent, sw, toptitle, FALSE, parent );
         m_pListbook->DeletePage( parent + 1 );
     }
 
 #ifdef __OCPN__ANDROID__
-//    window->GetHandle()->setStyleSheet(getQtStyleSheet());
+//    sw->GetHandle()->setStyleSheet(getQtStyleSheet());
 #endif
 
-    return window;
+    return sw;
 }
 
 bool options::DeletePage( wxScrolledWindow *page  )
 {
     for ( size_t i = 0; i < m_pListbook->GetPageCount(); i++ ) {
         wxNotebookPage* pg = m_pListbook->GetPage( i );
+        wxNotebook *nb = dynamic_cast<wxNotebook *>( pg );
 
-        if ( pg->IsKindOf( CLASSINFO( wxNotebook ) ) ) {
-            wxNotebook *nb = dynamic_cast<wxNotebook *>( pg );
+        if ( nb ) {
             for ( size_t j = 0; j < nb->GetPageCount(); j++ ) {
                 wxNotebookPage* spg = nb->GetPage( j );
-                if ( spg == page ) {
-                    nb->DeletePage( j );
-                    if ( nb->GetPageCount() == 1 ) {
-                        /* There's only one page, remove inner notebook */
-                        spg = nb->GetPage( 0 );
-                        spg->Reparent( m_pListbook );
-                        nb->RemovePage( 0 );
-                        wxString toptitle = m_pListbook->GetPageText( i );
-                        m_pListbook->DeletePage( i );
-                        m_pListbook->InsertPage( i, spg, toptitle, FALSE, i );
-                    }
-                    return TRUE;
-                }
+                if ( spg != page ) return FALSE;
+                nb->DeletePage( j );
+                if ( nb->GetPageCount() != 1 ) return FALSE;
+                /* There's only one page, remove inner notebook */
+                spg = nb->GetPage( 0 );
+                spg->Reparent( m_pListbook );
+                nb->RemovePage( 0 );
+                wxString toptitle = m_pListbook->GetPageText( i );
+                m_pListbook->DeletePage( i );
+                m_pListbook->InsertPage( i, spg, toptitle, FALSE, i );
+               return TRUE;
             }
-        } else if ( pg->IsKindOf( CLASSINFO( wxScrolledWindow ) ) && pg == page ) {
+        } else if ( pg == page ) {
             /* There's only one page, replace it with empty panel */
             m_pListbook->DeletePage( i );
             wxPanel *panel = new wxPanel( m_pListbook );
@@ -2605,7 +2604,8 @@ void options::CreatePanel_ChartGroups( size_t parent, int border_size, int group
     groupsPanel = new ChartGroupsUI( m_groupsPage );
 
     groupsPanel->CreatePanel( parent, border_size, group_item_spacing, small_button_size );
-    ((wxNotebook *)m_groupsPage)->AddPage( groupsPanel, _("Chart Groups") );
+    wxNotebook *nb = dynamic_cast<wxNotebook *>( m_groupsPage );
+    if ( nb ) nb->AddPage( groupsPanel, _("Chart Groups") );
 
     m_groupsPage->Connect( wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxListbookEventHandler( options::OnChartsPageChange ), NULL, this );
 
@@ -3454,11 +3454,8 @@ void options::SetInitialPage( int page_sel)
     for (size_t i = 0; i < m_pListbook->GetPageCount(); i++)
     {
         wxNotebookPage* pg = m_pListbook->GetPage( i );
-
-        if( pg->IsKindOf( CLASSINFO(wxNotebook))) {
-            wxNotebook *nb = ((wxNotebook *)pg);
-            nb->ChangeSelection(0);
-        }
+        wxNotebook *nb = dynamic_cast<wxNotebook *>( pg );
+        if ( nb ) nb->ChangeSelection(0);
     }
 }
 
@@ -4839,11 +4836,8 @@ void options::Finish()
     for (size_t i = 0; i < m_pListbook->GetPageCount(); i++)
     {
         wxNotebookPage* pg = m_pListbook->GetPage( i );
-
-        if( pg->IsKindOf( CLASSINFO(wxNotebook))) {
-            wxNotebook *nb = ((wxNotebook *)pg);
-            nb->ChangeSelection(0);
-        }
+        wxNotebook *nb = dynamic_cast<wxNotebook *>( pg );
+        if( nb ) nb->ChangeSelection(0);
     }
 
     delete pActiveChartsList;
@@ -5652,25 +5646,32 @@ void ChartGroupsUI::OnGroupPageChange( wxNotebookEvent& event )
 }
 
 void ChartGroupsUI::OnAvailableSelection( wxTreeEvent& event ) {
-    if( allAvailableCtl && (event.GetEventObject() == allAvailableCtl->GetTreeCtrl()) ){
+    wxObject *evtObj = event.GetEventObject();
+    if ( allAvailableCtl && ( evtObj == allAvailableCtl->GetTreeCtrl() ) ){
         wxTreeItemId item = allAvailableCtl->GetTreeCtrl()->GetSelection();
-        if( item && item.IsOk() && m_GroupSelectedPage>0 ) {
+        if ( item && item.IsOk() && m_GroupSelectedPage > 0 ) {
             m_pAddButton->Enable();
         } else {
             m_pAddButton->Disable();
         }
     } else {
-        lastSelectedCtl = (wxTreeCtrl*) event.GetEventObject();
+        lastSelectedCtl = dynamic_cast<wxTreeCtrl *>( evtObj );
+        if ( !lastSelectedCtl ) goto out;
         wxTreeItemId item = lastSelectedCtl->GetSelection();
-        if( item && item.IsOk() && m_GroupSelectedPage>0 ) {
-            // We need a trick for wxGTK here, since it gives us a Selection event with
-            // the just deleted empty element after OnRemoveChartItem()
-            wxString itemPath = ((wxGenericDirCtrl*) lastSelectedCtl->GetParent())->GetPath();
-            if( itemPath.Length() ) m_pRemoveButton->Enable();
+        if ( item && item.IsOk() && m_GroupSelectedPage > 0 ) {
+            // We need a trick for wxGTK here, since it gives us a Selection
+            // event with the just deleted element after OnRemoveChartItem()
+            wxGenericDirCtrl *dirCtrl =
+                dynamic_cast<wxGenericDirCtrl *>( lastSelectedCtl->GetParent() );
+            if ( !dirCtrl ) goto out;
+            wxString itemPath = dirCtrl->GetPath();
+            if ( !itemPath.IsEmpty() ) m_pRemoveButton->Enable();
         } else {
             m_pRemoveButton->Disable();
         }
     }
+
+ out:
     event.Skip();
 }
 
