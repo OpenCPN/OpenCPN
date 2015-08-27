@@ -84,7 +84,8 @@ extern GLuint g_raster_format;
 
 #include "OCPNPlatform.h"
 
-wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString *lang_dir);
+wxString GetOCPNKnownLanguage(const wxString lang_canonical, wxString &lang_dir);
+wxString GetOCPNKnownLanguage(const wxString lang_canonical);
 
 extern OCPNPlatform     *g_Platform;
 
@@ -4756,7 +4757,7 @@ void options::OnApplyClick( wxCommandEvent& event )
             const wxLanguageInfo * pli = wxLocale::GetLanguageInfo( lang_list[it] );
             if(pli){
                 wxString lang_canonical = pli->CanonicalName;
-                wxString test_string = GetOCPNKnownLanguage( lang_canonical, NULL );
+                wxString test_string = GetOCPNKnownLanguage( lang_canonical );
                 if( lang_sel == test_string ) {
                     new_canon = lang_canonical;
                     break;
@@ -5073,7 +5074,7 @@ void options::DoOnPageChange( size_t page )
             int current_language = plocale_def_lang->GetLanguage();
             wxString current_sel = wxLocale::GetLanguageName( current_language );
 
-            current_sel = GetOCPNKnownLanguage( g_locale, NULL );
+            current_sel = GetOCPNKnownLanguage( g_locale );
 
             int nLang = sizeof( lang_list ) / sizeof(int);
 
@@ -5096,7 +5097,7 @@ void options::DoOnPageChange( size_t page )
 
                     //  Make opencpn substitutions
                     wxString lang_suffix;
-                    loc_lang_name = GetOCPNKnownLanguage( lang_canonical, &lang_suffix );
+                    loc_lang_name = GetOCPNKnownLanguage( lang_canonical, lang_suffix );
 
                     //  Look explicitely to see if .mo is available
                     wxString test_dir = lang_dir + lang_suffix;
@@ -5135,7 +5136,7 @@ void options::DoOnPageChange( size_t page )
             for(unsigned int i=0; i < lang_array.GetCount(); i++)
             {
                 //  Make opencpn substitutions
-                wxString loc_lang_name = GetOCPNKnownLanguage(lang_array[i], NULL);
+                wxString loc_lang_name = GetOCPNKnownLanguage( lang_array[i] );
                 m_itemLangListBox->Append( loc_lang_name );
             }
 #endif
@@ -5302,7 +5303,7 @@ void options::OnButtonTestSound( wxCommandEvent& event )
 
 }
 
-wxString GetOCPNKnownLanguage( wxString lang_canonical, wxString *lang_dir )
+wxString GetOCPNKnownLanguage( wxString lang_canonical, wxString &lang_dir )
 {
     wxString return_string;
     wxString dir_suffix;
@@ -5381,9 +5382,15 @@ wxString GetOCPNKnownLanguage( wxString lang_canonical, wxString *lang_dir )
         return_string = info->Description;
     }
 
-    if( NULL != lang_dir ) *lang_dir = dir_suffix;
+    lang_dir = dir_suffix;
 #endif
     return return_string;
+}
+
+wxString GetOCPNKnownLanguage( const wxString lang_canonical )
+{
+    wxString lang_dir;
+    return GetOCPNKnownLanguage( lang_canonical, lang_dir );
 }
 
 ChartGroupArray* ChartGroupsUI::CloneChartGroupArray( ChartGroupArray* s )
