@@ -291,9 +291,9 @@ int wxCALLBACK SortConnectionOnPriority(long item1, long item2, long list)
     lc->GetItem(it2);
 
 #ifdef __WXOSX__
-    return it1.GetText().CmpNoCase(it2.GetText());
+    return it1.GetText().CmpNoCase( it2.GetText() );
 #else
-    return it2.GetText().CmpNoCase(it1.GetText());
+    return it2.GetText().CmpNoCase( it1.GetText() );
 #endif
 }
 
@@ -310,7 +310,7 @@ EVT_BUTTON( ID_MMSIEDIT_CANCEL, MMSIEditDialog::OnMMSIEditCancelClick )
 EVT_BUTTON( ID_MMSIEDIT_OK, MMSIEditDialog::OnMMSIEditOKClick )
 END_EVENT_TABLE()
 
-MMSIEditDialog::MMSIEditDialog() {}
+MMSIEditDialog::MMSIEditDialog( void ) {}
 
 MMSIEditDialog::MMSIEditDialog( MMSIProperties *props, wxWindow* parent, wxWindowID id, const wxString& caption,
                                 const wxPoint& pos, const wxSize& size, long style ) :
@@ -324,7 +324,7 @@ MMSIEditDialog::MMSIEditDialog( MMSIProperties *props, wxWindow* parent, wxWindo
     Centre();
 }
 
-MMSIEditDialog::~MMSIEditDialog()
+MMSIEditDialog::~MMSIEditDialog( void )
 {
     delete m_MMSICtl;
 }
@@ -344,7 +344,7 @@ bool MMSIEditDialog::Create( MMSIProperties *props, wxWindow* parent, wxWindowID
     return TRUE;
 }
 
-void MMSIEditDialog::CreateControls()
+void MMSIEditDialog::CreateControls( void )
 {
     wxBoxSizer* mainSizer = new wxBoxSizer( wxVERTICAL );
     SetSizer( mainSizer );
@@ -464,13 +464,7 @@ void MMSIEditDialog::OnMMSIEditOKClick( wxCommandEvent& event )
     EndModal(wxID_OK);
 }
 
-void MMSIEditDialog::OnCtlUpdated( wxCommandEvent& event )
-{
-}
-
- ///////////////////////////////////////////////////////////////////////////////
- /// Class MMSIListCtrl
- ///////////////////////////////////////////////////////////////////////////////
+void MMSIEditDialog::OnCtlUpdated( wxCommandEvent& event ) {}
 
 BEGIN_EVENT_TABLE( MMSIListCtrl, wxListCtrl )
  EVT_LIST_ITEM_SELECTED( ID_MMSI_PROPS_LIST,    MMSIListCtrl::OnListItemClick )
@@ -487,7 +481,7 @@ MMSIListCtrl::MMSIListCtrl( wxWindow* parent, wxWindowID id, const wxPoint& pos,
     m_parent = parent;
 }
 
-MMSIListCtrl::~MMSIListCtrl() {}
+MMSIListCtrl::~MMSIListCtrl( void ) {}
 
 wxString MMSIListCtrl::OnGetItemText( long item, long column ) const
 {
@@ -554,15 +548,11 @@ void MMSIListCtrl::OnListItemActivated( wxListEvent &event )
 void MMSIListCtrl::OnListItemRightClick( wxListEvent &event )
 {
     m_context_item = GetNextItem( -1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
-
     if ( m_context_item ==wxNOT_FOUND ) return;
-
     wxMenu* menu = new wxMenu( _("MMSI Properties") );
-
     wxMenuItem *item_edit = new wxMenuItem( menu, ID_DEF_MENU_MMSI_EDIT,
                                             _( "Edit..." ) );
     menu->Append( item_edit );
-
     wxMenuItem *item_delete = new wxMenuItem( menu, ID_DEF_MENU_MMSI_DELETE,
                                               _( "Delete" ) );
     menu->Append( item_delete );
@@ -604,10 +594,6 @@ void MMSIListCtrl::PopupMenuHandler( wxCommandEvent& event )
             break;
     }
 }
-
-///////////////////////////////////////////////////////////////////////////////
-/// Class MMSI_Props_Panel
-///////////////////////////////////////////////////////////////////////////////
 
 MMSI_Props_Panel::MMSI_Props_Panel( wxWindow *parent ):
     wxPanel( parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE )
@@ -694,7 +680,7 @@ MMSI_Props_Panel::MMSI_Props_Panel( wxWindow *parent ):
     SetColorScheme( GLOBAL_COLOR_SCHEME_RGB );
 }
 
-MMSI_Props_Panel::~MMSI_Props_Panel() {}
+MMSI_Props_Panel::~MMSI_Props_Panel( void ) {}
 
 void MMSI_Props_Panel::OnNewButton( wxCommandEvent &event )
 {
@@ -781,7 +767,7 @@ BEGIN_EVENT_TABLE( options, wxDialog )
     EVT_TIMER ( ID_BT_SCANTIMER, options::onBTScanTimer )
 END_EVENT_TABLE()
 
-options::options()
+options::options( void )
 {
     Init();
 }
@@ -809,7 +795,7 @@ options::options( MyFrame* parent, wxWindowID id, const wxString& caption,
     Center();
 }
 
-options::~options()
+options::~options( void )
 {
     // Disconnect Connection page Events
     if ( m_pNMEAForm ) {
@@ -857,7 +843,7 @@ options::~options()
     delete smallFont;
 }
 
-void options::RecalculateSize()
+void options::RecalculateSize( void )
 {
     if ( !g_bresponsive ) {
         wxSize canvas_size = cc1->GetSize();
@@ -890,7 +876,7 @@ void options::RecalculateSize()
     Move( xxp.x + xp, xxp.y + yp );
 }
 
-void options::Init()
+void options::Init( void )
 {
     m_pWorkDirList = NULL;
 
@@ -965,7 +951,7 @@ bool options::Create( MyFrame* parent, wxWindowID id, const wxString& caption, c
     return TRUE;
 }
 
-wxWindow* options::GetContentWindow() const
+wxWindow* options::GetContentWindow( void ) const
 {
     return NULL;
 }
@@ -1513,7 +1499,6 @@ void options::CreatePanel_NMEA_Compact( size_t parent, int border_size, int grou
     connectionsaved = TRUE;
 }
 
-
 void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_spacing, wxSize small_button_size )
 {
     m_pNMEAForm = AddPage( parent, _( "NMEA" ) );
@@ -1913,7 +1898,6 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     m_tFilterSec->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
     m_cbAPBMagnetic->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnValChange ), NULL, this );
     m_lcSources->Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler(options::OnConnectionToggleEnable), NULL, this );
-
 
     wxString columns[] = { _( "Enable" ), _( "Type" ), _( "DataPort" ), _("Priority"), _( "Parameters" ), _( "Connection" ), _( "Filters" ) };
     for ( int i = 0; i < 7; ++i ) {
@@ -3231,7 +3215,7 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
 //#endif
 }
 
-void options::CreateControls()
+void options::CreateControls( void )
 {
     int border_size = 4;
     // use for items within one group, with Add(...wxALL)
@@ -3447,7 +3431,7 @@ void options::CreateControls()
     vectorPanel->SetSizeHints( ps57Ctl );
 }
 
-void options::SetInitialPage( int page_sel)
+void options::SetInitialPage( int page_sel )
 {
     m_pListbook->SetSelection( page_sel );
 
@@ -3469,7 +3453,7 @@ void options::SetColorScheme( ColorScheme cs )
 #endif
 }
 
-void options::SetInitialSettings()
+void options::SetInitialSettings( void )
 {
     wxString s;
     wxString dirname;
@@ -3790,7 +3774,7 @@ void options::SetInitialSettings()
     pToolbarHideSecs->SetValue( s );
 }
 
-void options::UpdateOptionsUnits()
+void options::UpdateOptionsUnits( void )
 {
     int depthUnit = pDepthUnitSelect->GetSelection();
 
@@ -4024,7 +4008,7 @@ void options::OnButtonSelectClick( wxCommandEvent& event )
     event.Skip();
 }
 
-bool options::ShowToolTips()
+bool options::ShowToolTips( void )
 {
     return TRUE;
 }
@@ -4094,7 +4078,7 @@ void options::AddChartDir( wxString &dir )
     pScanCheckBox->Disable();
 }
 
-void options::UpdateDisplayedChartDirList(ArrayOfCDI p)
+void options::UpdateDisplayedChartDirList( ArrayOfCDI p )
 {
     wxString dirname;
     if( pActiveChartsList ) {
@@ -4108,7 +4092,7 @@ void options::UpdateDisplayedChartDirList(ArrayOfCDI p)
     }
 }
 
-void options::UpdateWorkArrayFromTextCtl()
+void options::UpdateWorkArrayFromTextCtl( void )
 {
     wxString dirname;
 
@@ -4150,7 +4134,7 @@ void options::UpdateWorkArrayFromTextCtl()
     }
 }
 
-ConnectionParams *options::CreateConnectionParamsFromSelectedItem()
+ConnectionParams *options::CreateConnectionParamsFromSelectedItem( void )
 {
     if( !m_bNMEAParams_shown )
         return NULL;
@@ -4780,7 +4764,7 @@ void options::OnXidOkClick( wxCommandEvent& event )
     Finish();
 }
 
-void options::Finish()
+void options::Finish( void )
 {
     //  Required to avoid intermittent crash on wxGTK
     m_pListbook->ChangeSelection(0);
@@ -4804,11 +4788,9 @@ void options::Finish()
 
 void options::OnButtondeleteClick( wxCommandEvent& event )
 {
-
     wxString dirname;
 
 #ifndef __WXQT__                // Multi selection is not implemented in wxQT
-
     wxArrayInt pListBoxSelections;
     pActiveChartsList->GetSelections( pListBoxSelections );
     int nSelections = pListBoxSelections.GetCount();
@@ -5241,7 +5223,6 @@ void options::OnButtonTestSound( wxCommandEvent& event )
 #endif
 #endif
     }
-
 }
 
 wxString GetOCPNKnownLanguage( wxString lang_canonical, wxString &lang_dir )
@@ -5415,19 +5396,19 @@ ChartGroupsUI::ChartGroupsUI( wxWindow* parent )
     m_treespopulated = FALSE;
 }
 
-ChartGroupsUI::~ChartGroupsUI()
+ChartGroupsUI::~ChartGroupsUI( void )
 {
     m_DirCtrlArray.Clear();
     delete iFont;
 }
 
-void ChartGroupsUI::SetInitialSettings()
+void ChartGroupsUI::SetInitialSettings( void )
 {
     m_settingscomplete = FALSE;
     m_treespopulated = FALSE;
 }
 
-void ChartGroupsUI::PopulateTrees()
+void ChartGroupsUI::PopulateTrees( void )
 {
     //    Fill in the "Active chart" tree control
     //    from the options dialog "Active Chart Directories" list
@@ -5453,7 +5434,7 @@ void ChartGroupsUI::PopulateTrees()
                       iFont );
 }
 
-void ChartGroupsUI::CompleteInitialSettings()
+void ChartGroupsUI::CompleteInitialSettings( void )
 {
     PopulateTrees();
 
@@ -5867,7 +5848,7 @@ void options::OnScanBTClick( wxCommandEvent& event )
     }
 }
 
-void options::onBTScanTimer(wxTimerEvent &event)
+void options::onBTScanTimer( wxTimerEvent &event )
 {
     if(m_BTscanning){
         m_BTscanning++;
@@ -5911,7 +5892,7 @@ void options::onBTScanTimer(wxTimerEvent &event)
     return;
 }
 
-void options::StopBTScan()
+void options::StopBTScan( void )
 {
     m_BTScanTimer.Stop();
 
@@ -5972,7 +5953,7 @@ void options::OnUploadFormatChange( wxCommandEvent& event )
     event.Skip();
 }
 
-void options::ShowNMEACommon(bool visible)
+void options::ShowNMEACommon( bool visible )
 {
     if ( visible )
     {
@@ -6043,7 +6024,7 @@ void options::ShowNMEACommon(bool visible)
     m_bNMEAParams_shown = visible;
 }
 
-void options::ShowNMEANet(bool visible)
+void options::ShowNMEANet( bool visible )
 {
     if ( visible )
     {
@@ -6069,7 +6050,7 @@ void options::ShowNMEANet(bool visible)
     }
 }
 
-void options::ShowNMEASerial(bool visible)
+void options::ShowNMEASerial( bool visible )
 {
     if ( visible )
     {
@@ -6114,7 +6095,7 @@ void options::ShowNMEABT( bool visible )
     }
 }
 
-void options::SetNMEAFormToSerial()
+void options::SetNMEAFormToSerial( void )
 {
     ShowNMEACommon( TRUE );
     ShowNMEANet( FALSE );
@@ -6130,7 +6111,7 @@ void options::SetNMEAFormToSerial()
     SetDSFormRWStates();
 }
 
-void options::SetNMEAFormToNet()
+void options::SetNMEAFormToNet( void )
 {
     ShowNMEACommon( TRUE );
     ShowNMEANet( TRUE );
@@ -6145,7 +6126,7 @@ void options::SetNMEAFormToNet()
     SetDSFormRWStates();
 }
 
-void options::SetNMEAFormToGPS()
+void options::SetNMEAFormToGPS( void )
 {
     ShowNMEACommon( TRUE );
     ShowNMEANet( FALSE );
@@ -6160,7 +6141,7 @@ void options::SetNMEAFormToGPS()
     SetDSFormRWStates();
 }
 
-void options::SetNMEAFormToBT()
+void options::SetNMEAFormToBT( void )
 {
     ShowNMEACommon( TRUE );
     ShowNMEANet( FALSE );
@@ -6175,7 +6156,7 @@ void options::SetNMEAFormToBT()
     SetDSFormRWStates();
 }
 
-void options::ClearNMEAForm()
+void options::ClearNMEAForm( void )
 {
     ShowNMEACommon( FALSE );
     ShowNMEANet( FALSE );
@@ -6190,7 +6171,7 @@ void options::ClearNMEAForm()
 
 }
 
-wxString StringArrayToString(wxArrayString arr)
+wxString StringArrayToString( wxArrayString arr )
 {
     wxString ret = wxEmptyString;
     for (size_t i = 0; i < arr.Count(); i++)
@@ -6202,7 +6183,7 @@ wxString StringArrayToString(wxArrayString arr)
     return ret;
 }
 
-void options::SetDSFormRWStates()
+void options::SetDSFormRWStates( void )
 {
     if (m_rbTypeSerial->GetValue())
     {
@@ -6236,7 +6217,7 @@ void options::SetDSFormRWStates()
     }
 }
 
-void options::SetConnectionParams(ConnectionParams *cp)
+void options::SetConnectionParams( ConnectionParams *cp )
 {
     m_comboPort->Select(m_comboPort->FindString(cp->Port));
     m_comboPort->SetValue(cp->Port);
@@ -6305,7 +6286,7 @@ void options::SetConnectionParams(ConnectionParams *cp)
     m_connection_enabled = cp->bEnabled;
 }
 
-void options::SetDefaultConnectionParams()
+void options::SetDefaultConnectionParams( void )
 {
     m_comboPort->Select(0);
     m_comboPort->SetValue(_T(""));
@@ -6356,7 +6337,7 @@ void options::OnAddDatasourceClick( wxCommandEvent& event )
     RecalculateSize();
 }
 
-void options::FillSourceList()
+void options::FillSourceList( void )
 {
     m_buttonRemove->Enable(FALSE);
     m_lcSources->DeleteAllItems();
@@ -6614,7 +6595,7 @@ SentenceListDlg::SentenceListDlg( FilterDirection dir, wxWindow* parent, wxWindo
 
 }
 
-SentenceListDlg::~SentenceListDlg()
+SentenceListDlg::~SentenceListDlg( void )
 {
     // Disconnect Events
     m_btnAdd->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnAddClick ), NULL, this );
@@ -6643,12 +6624,12 @@ void SentenceListDlg::SetSentenceList(wxArrayString sentences)
     FillSentences();
 }
 
-wxString SentenceListDlg::GetSentencesAsText()
+wxString SentenceListDlg::GetSentencesAsText( void )
 {
     return StringArrayToString(m_sentences);
 }
 
-void SentenceListDlg::BuildSentenceArray()
+void SentenceListDlg::BuildSentenceArray( void )
 {
     m_sentences.Clear();
     wxString s;
@@ -6658,7 +6639,7 @@ void SentenceListDlg::BuildSentenceArray()
     }
 }
 
-void SentenceListDlg::FillSentences()
+void SentenceListDlg::FillSentences( void )
 {
     if(m_sentences.Count() == 0)
         return;
@@ -6957,7 +6938,7 @@ void OpenGLOptionsDlg::OnButtonClear( wxCommandEvent& event )
 #endif
 }
 
-wxString OpenGLOptionsDlg::TextureCacheSize()
+wxString OpenGLOptionsDlg::TextureCacheSize( void )
 {
     wxString path =  g_Platform->GetPrivateDataDir() + wxFileName::GetPathSeparator() + _T("raster_texture_cache");
     long long total = 0;

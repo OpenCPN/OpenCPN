@@ -204,14 +204,14 @@ class options: public wxScrollingDialog
 #endif
 {
   public:
-    explicit options();
+    explicit options( void );
     explicit options( MyFrame* parent, wxWindowID id = SYMBOL_OPTIONS_IDNAME,
                       const wxString& caption = SYMBOL_OPTIONS_TITLE,
                       const wxPoint& pos = SYMBOL_OPTIONS_POSITION,
                       const wxSize& size = SYMBOL_OPTIONS_SIZE,
                       long style = SYMBOL_OPTIONS_STYLE );
 
-    ~options();
+    ~options( void );
 
     bool Create( MyFrame* parent, wxWindowID id = SYMBOL_OPTIONS_IDNAME,
                  const wxString& caption = SYMBOL_OPTIONS_TITLE,
@@ -222,26 +222,26 @@ class options: public wxScrollingDialog
     void SetInitialPage( int page_sel);
     void Finish( void);
 
-    wxWindow *GetContentWindow() const;
+    wxWindow *GetContentWindow( void ) const;
     void OnClose( wxCloseEvent& event );
 
-    void CreateControls();
+    void CreateControls( void );
     size_t CreatePanel( const wxString & title );
     wxScrolledWindow *AddPage( size_t parent, const wxString & title );
     bool DeletePage( wxScrolledWindow *page );
     void SetColorScheme( ColorScheme cs );
-    void RecalculateSize();
+    void RecalculateSize( void );
 
     void SetInitChartDir( const wxString &dir ) { m_init_chart_dir = dir; }
-    void SetInitialSettings();
+    void SetInitialSettings( void );
     void SetCurrentDirList( ArrayOfCDI p ) { m_CurrentDirList = p; }
     void SetWorkDirListPtr( ArrayOfCDI *p ) { m_pWorkDirList = p; }
-    ArrayOfCDI *GetWorkDirListPtr() { return m_pWorkDirList; }
+    ArrayOfCDI *GetWorkDirListPtr( void ) { return m_pWorkDirList; }
 
     void AddChartDir( wxString &dir );
 
     void UpdateDisplayedChartDirList(ArrayOfCDI p);
-    void UpdateOptionsUnits();
+    void UpdateOptionsUnits( void );
 
     void SetConfigPtr( MyConfig *p ) { m_pConfig = p; }
     void OnDebugcheckbox1Click( wxCommandEvent& event );
@@ -288,10 +288,10 @@ class options: public wxScrollingDialog
     void onBTScanTimer( wxTimerEvent &event );
     void StopBTScan( void );
 
-    void UpdateWorkArrayFromTextCtl();
+    void UpdateWorkArrayFromTextCtl( void );
 
     // Should we show tooltips?
-    static bool ShowToolTips();
+    static bool ShowToolTips( void );
 
 #ifdef __OCPN__OPTIONS_USE_LISTBOOK__
     wxListbook* m_pListbook;
@@ -479,7 +479,7 @@ class options: public wxScrollingDialog
     int k_plugins;
 
   private:
-    void Init();
+    void Init( void );
     void CreatePanel_MMSI( size_t parent, int border_size,
                            int group_item_spacing, wxSize small_button_size );
     void CreatePanel_AIS( size_t parent, int border_size,
@@ -529,19 +529,19 @@ class options: public wxScrollingDialog
     void ShowNMEAGPS( bool visible );
     void ShowNMEABT( bool visible );
 
-    void SetNMEAFormToSerial();
-    void SetNMEAFormToNet();
-    void SetNMEAFormToGPS();
-    void SetNMEAFormToBT();
+    void SetNMEAFormToSerial( void );
+    void SetNMEAFormToNet( void );
+    void SetNMEAFormToGPS( void );
+    void SetNMEAFormToBT( void );
 
-    void ClearNMEAForm();
+    void ClearNMEAForm( void );
     bool m_bNMEAParams_shown;
 
     void SetConnectionParams(ConnectionParams *cp);
     void SetDefaultConnectionParams(void);
-    void SetDSFormRWStates();
-    void FillSourceList();
-    ConnectionParams *CreateConnectionParamsFromSelectedItem();
+    void SetDSFormRWStates( void );
+    void FillSourceList( void );
+    ConnectionParams *CreateConnectionParamsFromSelectedItem( void );
 
     wxNotebookPage *m_groupsPage;
     wxFont *smallFont;
@@ -559,7 +559,7 @@ class options: public wxScrollingDialog
 class ChartGroupsUI: public wxScrolledWindow {
   public:
     explicit ChartGroupsUI( wxWindow *parent );
-    ~ChartGroupsUI();
+    ~ChartGroupsUI( void );
 
     void CreatePanel( size_t parent, int border_size, int group_item_spacing,
                       wxSize small_button_size );
@@ -568,9 +568,9 @@ class ChartGroupsUI: public wxScrolledWindow {
     void SetGroupArray( ChartGroupArray *pGroupArray ) {
         m_pGroupArray = pGroupArray;
     }
-    void SetInitialSettings();
-    void CompleteInitialSettings();
-    void PopulateTrees();
+    void SetInitialSettings( void );
+    void CompleteInitialSettings( void );
+    void PopulateTrees( void );
     void PopulateTreeCtrl( wxTreeCtrl *ptc, const wxArrayString &dir_array,
                            const wxColour &col, wxFont *pFont = NULL );
     void BuildNotebookPages( ChartGroupArray *pGroupArray );
@@ -856,10 +856,10 @@ class SentenceListDlg : public wxDialog
                               const wxPoint& pos = wxDefaultPosition,
                               const wxSize& size = wxSize( 280,420 ),
                               long style = wxDEFAULT_DIALOG_STYLE );
-    ~SentenceListDlg();
+    ~SentenceListDlg( void );
     void SetSentenceList(wxArrayString sentences);
-    wxString GetSentencesAsText();
-    void BuildSentenceArray();
+    wxString GetSentencesAsText( void );
+    void BuildSentenceArray( void );
     void SetType(int io, ListType type);
 
   protected:
@@ -882,7 +882,7 @@ class SentenceListDlg : public wxDialog
     wxStaticBox *m_pclbBox;
 
   private:
-    void FillSentences();
+    void FillSentences( void );
 
     wxArrayString m_sentences;
     ListType m_type;
@@ -895,7 +895,7 @@ class OpenGLOptionsDlg : public wxDialog
     explicit OpenGLOptionsDlg( wxWindow *parent, bool glTicked );
     void OnButtonRebuild( wxCommandEvent& event );
     void OnButtonClear( wxCommandEvent& event );
-    wxString TextureCacheSize();
+    wxString TextureCacheSize( void );
 
     wxGridSizer *m_bSizer1;
     wxBoxSizer *m_bSizer2;
@@ -925,7 +925,7 @@ class MMSIListCtrl: public wxListCtrl
   public:
      explicit MMSIListCtrl( wxWindow *parent, wxWindowID id, const wxPoint& pos,
                             const wxSize& size, long style );
-    ~MMSIListCtrl();
+    ~MMSIListCtrl( void );
 
     wxString OnGetItemText( long item, long column ) const;
     void OnListItemClick( wxListEvent &event);
@@ -955,7 +955,7 @@ class MMSIEditDialog: public wxDialog
                              const wxPoint& pos = wxDefaultPosition,
                              const wxSize& size = wxDefaultSize,
                              long style = 0 );
-    ~MMSIEditDialog();
+    ~MMSIEditDialog( void );
 
     bool Create( MMSIProperties *props, wxWindow *parent,
                  wxWindowID id = wxID_ANY,
@@ -963,7 +963,7 @@ class MMSIEditDialog: public wxDialog
                  const wxPoint& pos = wxDefaultPosition,
                  const wxSize& size = wxDefaultSize, long style = 0 );
     void SetColorScheme(ColorScheme cs);
-    void CreateControls();
+    void CreateControls( void );
     void OnMMSIEditCancelClick( wxCommandEvent& event );
     void OnMMSIEditOKClick( wxCommandEvent& event );
     void OnCtlUpdated( wxCommandEvent& event );
