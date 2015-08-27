@@ -4934,15 +4934,13 @@ void options::OnClose( wxCloseEvent& event )
 void options::OnChooseFont( wxCommandEvent& event )
 {
     wxString sel_text_element = m_itemFontElementListBox->GetStringSelection();
-
-    wxFont *psfont;
     wxFontData font_data;
 
     wxFont *pif = FontMgr::Get().GetFont( sel_text_element );
     wxColour init_color = FontMgr::Get().GetFontColor( sel_text_element );
 
     wxFontData init_font_data;
-    if( pif ) init_font_data.SetInitialFont( *pif );
+    if ( pif ) init_font_data.SetInitialFont( *pif );
     init_font_data.SetColour( init_color );
 
 #ifdef __WXGTK__
@@ -4963,27 +4961,26 @@ void options::OnChooseFont( wxCommandEvent& event )
     wxFont *dialogFont = GetOCPNScaledFont(_("Dialog"));
     float font_size = dialogFont->GetPointSize();
 
-    if( (proposed_size.y / font_size) < n_lines){
+    if ( ( proposed_size.y / font_size ) < n_lines ) {
         float new_font_size = proposed_size.y / n_lines;
-        wxFont *smallFont = new wxFont( * dialogFont );
+        wxFont *smallFont = new wxFont( *dialogFont );
         smallFont->SetPointSize( new_font_size );
         dg.SetFont( *smallFont );
     }
 #endif
 
-    if(g_bresponsive){
+    if ( g_bresponsive ) {
         dg.SetSize(GetSize());
         dg.Centre();
     }
 
     int retval = dg.ShowModal();
-    if( wxID_CANCEL != retval ) {
+    if ( wxID_CANCEL != retval ) {
         font_data = dg.GetFontData();
         wxFont font = font_data.GetChosenFont();
-        psfont = new wxFont( font );
+        wxFont *psfont = new wxFont( font );
         wxColor color = font_data.GetColour();
         FontMgr::Get().SetFont( sel_text_element, psfont, color );
-
         pParent->UpdateAllFonts();
     }
 
@@ -5714,19 +5711,18 @@ void ChartGroupsUI::OnDeleteGroup( wxCommandEvent &event )
 WX_DEFINE_OBJARRAY( ChartGroupElementArray );
 WX_DEFINE_OBJARRAY( ChartGroupArray );
 
-int ChartGroupsUI::FindGroupBranch( ChartGroup *pGroup, wxTreeCtrl *ptree, wxTreeItemId item,
-        wxString *pbranch_adder )
+int ChartGroupsUI::FindGroupBranch( ChartGroup *pGroup, wxTreeCtrl *ptree,
+                                    wxTreeItemId item, wxString *pbranch_adder )
 {
     wxString branch_name;
     wxString branch_adder;
 
     wxTreeItemId current_node = item;
-    while( current_node.IsOk() ) {
-
+    while ( current_node.IsOk() ) {
         wxTreeItemId parent_node = ptree->GetItemParent( current_node );
-        if( !parent_node ) break;
+        if ( !parent_node ) break;
 
-        if( parent_node == ptree->GetRootItem() ) {
+        if ( parent_node == ptree->GetRootItem() ) {
             branch_name = ptree->GetItemText( current_node );
             break;
         }
@@ -5737,20 +5733,19 @@ int ChartGroupsUI::FindGroupBranch( ChartGroup *pGroup, wxTreeCtrl *ptree, wxTre
         current_node = ptree->GetItemParent( current_node );
     }
 
-    //    Find the index and element pointer of the target branch in the Group
-    ChartGroupElement *target_element = NULL;
+    // Find the index and element pointer of the target branch in the Group
     unsigned int target_item_index = -1;
 
-    for( unsigned int i = 0; i < pGroup->m_element_array.GetCount(); i++ ) {
+    for ( unsigned int i = 0; i < pGroup->m_element_array.GetCount(); i++ ) {
         wxString target = pGroup->m_element_array.Item( i )->m_element_name;
-        if( branch_name == target ) {
-            target_element = pGroup->m_element_array.Item( i );
+        if ( branch_name == target ) {
+            ChartGroupElement *target_element = pGroup->m_element_array.Item( i );
             target_item_index = i;
             break;
         }
     }
 
-    if( pbranch_adder ) *pbranch_adder = branch_adder;
+    if ( pbranch_adder ) *pbranch_adder = branch_adder;
 
     return target_item_index;
 }
