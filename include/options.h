@@ -206,8 +206,8 @@ class options: public wxScrollingDialog
     DECLARE_EVENT_TABLE()
 
 public:
-    options();
-    options( MyFrame* parent, wxWindowID id = SYMBOL_OPTIONS_IDNAME, const wxString& caption =
+    explicit options();
+    explicit options( MyFrame* parent, wxWindowID id = SYMBOL_OPTIONS_IDNAME, const wxString& caption =
              SYMBOL_OPTIONS_TITLE, const wxPoint& pos = SYMBOL_OPTIONS_POSITION, const wxSize& size =
              SYMBOL_OPTIONS_SIZE, long style = SYMBOL_OPTIONS_STYLE );
 
@@ -697,7 +697,7 @@ class ChartGroupsUI: public wxScrolledWindow {
     DECLARE_EVENT_TABLE()
 
 public:
-    ChartGroupsUI( wxWindow* parent );
+    explicit ChartGroupsUI( wxWindow* parent );
     ~ChartGroupsUI();
 
     void CreatePanel( size_t parent, int border_size, int group_item_spacing, wxSize small_button_size );
@@ -999,13 +999,13 @@ static int lang_list[] = {
 ///////////////////////////////////////////////////////////////////////////////
 class SentenceListDlg : public wxDialog
 {
-    private:
+  private:
         wxArrayString m_sentences;
         void FillSentences();
         ListType m_type;
         FilterDirection m_dir;
 
-    protected:
+  protected:
         wxCheckListBox* m_clbSentences;
         wxButton* m_btnAdd;
         wxButton* m_btnDel;
@@ -1028,15 +1028,14 @@ class SentenceListDlg : public wxDialog
         void OnCheckAllClick( wxCommandEvent& event );
         void OnClearAllClick( wxCommandEvent& event );
 
-    public:
-
-    SentenceListDlg( FilterDirection dir,
-                     wxWindow* parent,
-                     wxWindowID id = wxID_ANY,
-                     const wxString& title = _("Sentence Filter"),
-                     const wxPoint& pos = wxDefaultPosition,
-                     const wxSize& size = wxSize( 280,420 ),
-                     long style = wxDEFAULT_DIALOG_STYLE );
+  public:
+    explicit SentenceListDlg( FilterDirection dir,
+                              wxWindow* parent,
+                              wxWindowID id = wxID_ANY,
+                              const wxString& title = _("Sentence Filter"),
+                              const wxPoint& pos = wxDefaultPosition,
+                              const wxSize& size = wxSize( 280,420 ),
+                              long style = wxDEFAULT_DIALOG_STYLE );
     ~SentenceListDlg();
     void SetSentenceList(wxArrayString sentences);
     wxString GetSentencesAsText();
@@ -1070,7 +1069,7 @@ public:
     wxSpinCtrl *m_sTextureDimension;
     wxSpinCtrl *m_sTextureMemorySize;
 
-    OpenGLOptionsDlg( wxWindow* parent, bool glTicked );
+    explicit OpenGLOptionsDlg( wxWindow* parent, bool glTicked );
 
     void OnButtonRebuild( wxCommandEvent& event );
     void OnButtonClear( wxCommandEvent& event );
@@ -1102,8 +1101,8 @@ class MMSI_Props_Panel;
 class MMSIListCtrl: public wxListCtrl
 {
 public:
-    MMSIListCtrl( wxWindow* parent, wxWindowID id, const wxPoint& pos,
-                  const wxSize& size, long style );
+     explicit MMSIListCtrl( wxWindow* parent, wxWindowID id, const wxPoint& pos,
+                           const wxSize& size, long style );
     ~MMSIListCtrl();
 
     wxString OnGetItemText( long item, long column ) const;
@@ -1142,12 +1141,13 @@ class MMSIEditDialog: public wxDialog
     DECLARE_EVENT_TABLE()
 
 public:
-    MMSIEditDialog( );
-    MMSIEditDialog( MMSIProperties *props, wxWindow* parent, wxWindowID id = -1,
-                    const wxString& caption = _T(""),
-                    const wxPoint& pos = wxDefaultPosition,
-                    const wxSize& size = wxDefaultSize,
-                    long style = 0 );
+    explicit MMSIEditDialog( );
+    explicit MMSIEditDialog( MMSIProperties *props, wxWindow* parent,
+                             wxWindowID id = -1,
+                             const wxString& caption = _T(""),
+                             const wxPoint& pos = wxDefaultPosition,
+                             const wxSize& size = wxDefaultSize,
+                             long style = 0 );
 
     ~MMSIEditDialog();
 
@@ -1189,7 +1189,7 @@ class MMSI_Props_Panel: public wxPanel
 {
 
 public:
-    MMSI_Props_Panel( wxWindow *parent );
+    explicit MMSI_Props_Panel( wxWindow *parent );
     ~MMSI_Props_Panel( );
 
 //    void OnClose(wxCloseEvent &event);
