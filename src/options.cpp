@@ -6692,37 +6692,45 @@ void SentenceListDlg::OnCLBToggle( wxCommandEvent& event )
 
 void SentenceListDlg::OnAddClick( wxCommandEvent& event )
 {
-    wxString stc = wxGetTextFromUser(_("Enter the NMEA sentence (2, 3 or 5 characters)"), _("Enter the NMEA sentence"));
-    if (stc.Length() == 2 ||stc.Length() == 3 || stc.Length() == 5)
-    {
-        m_sentences.Add(stc);
-        m_clbSentences->Append(stc);
-        int item = m_clbSentences->FindString(stc);
-        m_clbSentences->Check(item);
+    wxString stc =
+        wxGetTextFromUser( _( "Enter the NMEA sentence (2, 3 or 5 characters) " ),
+                           _( "Enter the NMEA sentence" ) );
+    if ( stc.Length() == 2 || stc.Length() == 3 || stc.Length() == 5 ) {
+        m_sentences.Add( stc );
+        m_clbSentences->Append( stc );
+        m_clbSentences->Check( m_clbSentences->FindString(stc) );
+        return;
     }
-    else
-        OCPNMessageBox( NULL, _("An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n It can also have a two letter prefix identifying the source, or TALKER, of the message.\n The whole sentences then looks like GPGGA or AITXT.\n You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.).\n\n The filter accepts just these three formats."),
-                    _("OpenCPN Info"));
+
+    OCPNMessageBox(
+        this,
+        _("An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n "
+          "It can also have a two letter prefix identifying the source, or TALKER, of the message.\n "
+          "The whole sentences then looks like GPGGA or AITXT.\n "
+          "You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.).\n\n "
+          "The filter accepts just these three formats."),
+          _("OpenCPN Info")
+    );
 }
 
 void SentenceListDlg::OnDeleteClick( wxCommandEvent& event )
 {
     BuildSentenceArray();
 
-    // One can only delete items that do not appear in the standard sentence list
+    // Only delete items that do not appear in the standard sentence list
     int isel = m_clbSentences->GetSelection();
-    wxString s = m_clbSentences->GetString(isel);
+    wxString s = m_clbSentences->GetString( isel );
     bool bdelete = TRUE;
-    for (size_t i = 0; i < standard_sentences.Count(); i++) {
-        if(standard_sentences[i] == s){
+    for ( size_t i = 0; i < standard_sentences.Count(); i++ ) {
+        if ( standard_sentences[i] == s ) {
             bdelete = FALSE;
             break;
         }
     }
 
-    if(bdelete) {
+    if ( bdelete ) {
         m_sentences.Remove( s );
-        m_clbSentences->Delete(isel);
+        m_clbSentences->Delete( isel );
     }
 
     FillSentences();
@@ -6730,16 +6738,16 @@ void SentenceListDlg::OnDeleteClick( wxCommandEvent& event )
 
 void SentenceListDlg::OnClearAllClick( wxCommandEvent& event )
 {
-    for (size_t i = 0; i < m_clbSentences->GetCount(); i++)
-        m_clbSentences->Check(i, FALSE);
+    for ( size_t i = 0; i < m_clbSentences->GetCount(); i++ )
+        m_clbSentences->Check( i, FALSE );
 
     BuildSentenceArray();
 }
 
 void SentenceListDlg::OnCheckAllClick( wxCommandEvent& event )
 {
-    for (size_t i = 0; i < m_clbSentences->GetCount(); i++)
-        m_clbSentences->Check(i, TRUE);
+    for ( size_t i = 0; i < m_clbSentences->GetCount(); i++ )
+        m_clbSentences->Check( i, TRUE );
 
     BuildSentenceArray();
 }
