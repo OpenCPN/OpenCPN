@@ -1470,24 +1470,25 @@ void options::CreatePanel_NMEA_Compact( size_t parent, int border_size, int grou
     }
 
     //  Build the image list
-    wxBitmap unchecked_bmp(16, 16), checked_bmp(16, 16);
-    {
-        wxMemoryDC renderer_dc;
-
-        // Unchecked
-        renderer_dc.SelectObject( unchecked_bmp );
-        renderer_dc.SetBackground( *wxTheBrushList->FindOrCreateBrush( GetBackgroundColour(), wxBRUSHSTYLE_SOLID ) );
-        renderer_dc.Clear();
-        wxRendererNative::Get().DrawCheckBox( this, renderer_dc, wxRect( 0, 0, 16, 16 ), 0 );
-
-        // Checked
-        renderer_dc.SelectObject( checked_bmp );
-        renderer_dc.SetBackground( *wxTheBrushList->FindOrCreateBrush( GetBackgroundColour(), wxBRUSHSTYLE_SOLID ) );
-        renderer_dc.Clear();
-        wxRendererNative::Get().DrawCheckBox( this, renderer_dc, wxRect( 0, 0, 16, 16 ), wxCONTROL_CHECKED );
-    }
-
     wxImageList *imglist = new wxImageList( 16, 16, TRUE, 1 );
+    wxBitmap unchecked_bmp( 16, 16 ), checked_bmp( 16, 16 );
+    wxMemoryDC renderer_dc;
+
+    // Unchecked
+    renderer_dc.SelectObject( unchecked_bmp );
+    renderer_dc.SetBackground( *wxTheBrushList->FindOrCreateBrush( GetBackgroundColour(), wxBRUSHSTYLE_SOLID ) );
+    renderer_dc.Clear();
+    wxRendererNative::Get().DrawCheckBox( this, renderer_dc, wxRect( 0, 0, 16, 16 ), 0 );
+
+    // Checked
+    renderer_dc.SelectObject( checked_bmp );
+    renderer_dc.SetBackground( *wxTheBrushList->FindOrCreateBrush( GetBackgroundColour(), wxBRUSHSTYLE_SOLID ) );
+    renderer_dc.Clear();
+    wxRendererNative::Get().DrawCheckBox( this, renderer_dc, wxRect( 0, 0, 16, 16 ), wxCONTROL_CHECKED );
+
+    // Deselect the renderer Object
+    renderer_dc.SelectObject( wxNullBitmap );
+
     imglist->Add( unchecked_bmp );
     imglist->Add( checked_bmp );
     m_lcSources->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
@@ -1922,24 +1923,25 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     }
 
     //  Build the image list
-    wxBitmap unchecked_bmp( 16, 16 ), checked_bmp( 16, 16 );
-    {
-        wxMemoryDC renderer_dc;
-
-        // Unchecked
-        renderer_dc.SelectObject( unchecked_bmp );
-        renderer_dc.SetBackground( *wxTheBrushList->FindOrCreateBrush( GetBackgroundColour(), wxBRUSHSTYLE_SOLID ) );
-        renderer_dc.Clear();
-        wxRendererNative::Get().DrawCheckBox( this, renderer_dc, wxRect( 0, 0, 16, 16 ), 0 );
-
-        // Checked
-        renderer_dc.SelectObject( checked_bmp );
-        renderer_dc.SetBackground( *wxTheBrushList->FindOrCreateBrush( GetBackgroundColour(), wxBRUSHSTYLE_SOLID ) );
-        renderer_dc.Clear();
-        wxRendererNative::Get().DrawCheckBox( this, renderer_dc, wxRect( 0, 0, 16, 16 ), wxCONTROL_CHECKED );
-    }
-
     wxImageList *imglist = new wxImageList( 16, 16, TRUE, 1 );
+    wxBitmap unchecked_bmp( 16, 16 ), checked_bmp( 16, 16 );
+    wxMemoryDC renderer_dc;
+
+    // Unchecked
+    renderer_dc.SelectObject( unchecked_bmp );
+    renderer_dc.SetBackground( *wxTheBrushList->FindOrCreateBrush( GetBackgroundColour(), wxBRUSHSTYLE_SOLID ) );
+    renderer_dc.Clear();
+    wxRendererNative::Get().DrawCheckBox( this, renderer_dc, wxRect( 0, 0, 16, 16 ), 0 );
+
+    // Checked
+    renderer_dc.SelectObject( checked_bmp );
+    renderer_dc.SetBackground( *wxTheBrushList->FindOrCreateBrush( GetBackgroundColour(), wxBRUSHSTYLE_SOLID ) );
+    renderer_dc.Clear();
+    wxRendererNative::Get().DrawCheckBox( this, renderer_dc, wxRect( 0, 0, 16, 16 ), wxCONTROL_CHECKED );
+
+    // Deselect the renderer Object
+    renderer_dc.SelectObject( wxNullBitmap );
+
     imglist->Add( unchecked_bmp );
     imglist->Add( checked_bmp );
     m_lcSources->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
