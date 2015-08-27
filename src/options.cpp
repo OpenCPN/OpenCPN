@@ -537,8 +537,10 @@ void MMSIListCtrl::OnListItemActivated( wxListEvent &event )
     MMSIProperties *props = g_MMSI_Props_Array.Item( event.GetIndex() );
     MMSIProperties *props_new = new MMSIProperties( *props );
 
-    MMSIEditDialog *pd = new MMSIEditDialog( props_new, m_parent, -1, _("Edit MMSI Properties"),
-                                             wxDefaultPosition, wxSize( 200, 200 ) );
+    MMSIEditDialog *pd = new MMSIEditDialog(
+        props_new, m_parent, -1, _("Edit MMSI Properties"),
+        wxDefaultPosition, wxSize( 200, 200 )
+    );
 
     if ( pd->ShowModal() == wxID_OK ){
         g_MMSI_Props_Array.RemoveAt( event.GetIndex() );
@@ -552,15 +554,16 @@ void MMSIListCtrl::OnListItemRightClick( wxListEvent &event )
 {
     m_context_item = GetNextItem( -1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
 
-    if ( -1 == m_context_item )
-        return;
+    if ( m_context_item ==wxNOT_FOUND ) return;
 
     wxMenu* menu = new wxMenu( _("MMSI Properties") );
 
-    wxMenuItem *item_edit = new wxMenuItem( menu, ID_DEF_MENU_MMSI_EDIT, _( "Edit..." ) );
+    wxMenuItem *item_edit = new wxMenuItem( menu, ID_DEF_MENU_MMSI_EDIT,
+                                            _( "Edit..." ) );
     menu->Append( item_edit );
 
-    wxMenuItem *item_delete = new wxMenuItem( menu, ID_DEF_MENU_MMSI_DELETE, _( "Delete" ) );
+    wxMenuItem *item_delete = new wxMenuItem( menu, ID_DEF_MENU_MMSI_DELETE,
+                                              _( "Delete" ) );
     menu->Append( item_delete );
 
 #ifdef __WXMSW__
@@ -579,28 +582,26 @@ void MMSIListCtrl::OnListItemRightClick( wxListEvent &event )
 void MMSIListCtrl::PopupMenuHandler( wxCommandEvent& event )
 {
     MMSIProperties *props = g_MMSI_Props_Array.Item( m_context_item );
+    if ( !props ) return;
     MMSIProperties *props_new = new MMSIProperties( *props);
     MMSIEditDialog *pd;
 
     switch ( event.GetId() ) {
         case ID_DEF_MENU_MMSI_EDIT:
-            if ( props ) {
-                pd = new MMSIEditDialog( props_new, m_parent, -1, _( "Edit MMSI Properties" ), wxDefaultPosition, wxSize( 200, 200 ) );
-
-                if ( pd->ShowModal() == wxID_OK ) {
-                    g_MMSI_Props_Array.RemoveAt( m_context_item );
-                    g_MMSI_Props_Array.Insert( props_new, m_context_item );
-                }
+            pd = new MMSIEditDialog(
+                props_new, m_parent, -1, _( "Edit MMSI Properties" ),
+                wxDefaultPosition, wxSize( 200, 200 )
+            );
+            if ( pd->ShowModal() == wxID_OK ) {
+                g_MMSI_Props_Array.RemoveAt( m_context_item );
+                g_MMSI_Props_Array.Insert( props_new, m_context_item );
+            }
             pd->Destroy();
-           }
-           break;
-
+            break;
        case ID_DEF_MENU_MMSI_DELETE:
-           if ( props ) {
-               g_MMSI_Props_Array.RemoveAt( m_context_item );
-           }
-           break;
-   }
+            g_MMSI_Props_Array.RemoveAt( m_context_item );
+            break;
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
