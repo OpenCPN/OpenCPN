@@ -958,11 +958,7 @@ bool options::Create( MyFrame* parent, wxWindowID id, const wxString& caption, c
 
     CreateControls();
     Fit();
-    if ( lastWindowPos == wxPoint( 0, 0 ) ) {
-        Centre();
-    } else {
-        Move( lastWindowPos );
-    }
+    lastWindowPos == wxPoint( 0, 0 ) ? Centre() : Move( lastWindowPos );
     lastWindowPos = GetPosition();
     return TRUE;
 }
@@ -996,8 +992,8 @@ wxScrolledWindow *options::AddPage( size_t parent, const wxString & title)
     int style = wxVSCROLL | wxTAB_TRAVERSAL;
     if ( page->IsKindOf( CLASSINFO( wxNotebook ) ) ) {
         window = new wxScrolledWindow( page, wxID_ANY, wxDefaultPosition, wxDefaultSize, style );
-        window->SetScrollRate(m_scrollRate, m_scrollRate);
-        ( ( wxNotebook * ) page )->AddPage( window, title );
+        window->SetScrollRate( m_scrollRate, m_scrollRate );
+        dynamic_cast<wxNotebook *>( page )->AddPage( window, title );
     } else if ( page->IsKindOf( CLASSINFO( wxScrolledWindow ) ) ) {
         wxString toptitle = m_pListbook->GetPageText( parent );
         wxNotebook *nb = new wxNotebook( m_pListbook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNB_TOP );
@@ -1035,7 +1031,7 @@ bool options::DeletePage( wxScrolledWindow *page  )
         wxNotebookPage* pg = m_pListbook->GetPage( i );
 
         if( pg->IsKindOf( CLASSINFO( wxNotebook ) ) ) {
-            wxNotebook *nb = ((wxNotebook *)pg);
+            wxNotebook *nb = dynamic_cast<wxNotebook *>( pg );
             for ( size_t j = 0; j < nb->GetPageCount(); j++ ) {
                 wxNotebookPage* spg = nb->GetPage( j );
                 if ( spg == page ) {
@@ -1055,7 +1051,7 @@ bool options::DeletePage( wxScrolledWindow *page  )
         } else if ( pg->IsKindOf( CLASSINFO( wxScrolledWindow ) ) && pg == page ) {
             /* There's only one page, replace it with empty panel */
             m_pListbook->DeletePage( i );
-            wxPanel *panel = new wxPanel( m_pListbook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T( "" ) );
+            wxPanel *panel = new wxPanel( m_pListbook );
             wxString toptitle = m_pListbook->GetPageText( i );
             m_pListbook->InsertPage( i, panel, toptitle, FALSE, i );
             return TRUE;
