@@ -6156,41 +6156,28 @@ void options::ShowNMEASerial(bool visible)
     }
 }
 
-void options::ShowNMEAGPS(bool visible)
-{
-    if ( visible )
-    {
-    }
-    else
-    {
-    }
-}
+void options::ShowNMEAGPS( bool visible ) {}
 
-void options::ShowNMEABT(bool visible)
+void options::ShowNMEABT( bool visible )
 {
-    if ( visible )
-    {
-        if(m_buttonScanBT) m_buttonScanBT->Show();
-        if(m_stBTPairs) m_stBTPairs->Show();
-        if(m_choiceBTDataSources){
-            if(m_choiceBTDataSources->GetCount() > 1)
-                m_choiceBTDataSources->SetSelection(1);
+    if ( visible ) {
+        if ( m_buttonScanBT ) m_buttonScanBT->Show();
+        if ( m_stBTPairs ) m_stBTPairs->Show();
+        if ( m_choiceBTDataSources ) {
+            if ( m_choiceBTDataSources->GetCount() > 1 )
+                m_choiceBTDataSources->SetSelection( 1 );
             m_choiceBTDataSources->Show();
         }
-
-    }
-    else
-    {
-        if(m_buttonScanBT) m_buttonScanBT->Hide();
-        if(m_stBTPairs) m_stBTPairs->Hide();
-        if(m_choiceBTDataSources) m_choiceBTDataSources->Hide();
+    } else {
+        if ( m_buttonScanBT ) m_buttonScanBT->Hide();
+        if ( m_stBTPairs ) m_stBTPairs->Hide();
+        if ( m_choiceBTDataSources ) m_choiceBTDataSources->Hide();
     }
 }
 
 void options::SetNMEAFormToSerial()
 {
     ShowNMEACommon( TRUE );
-
     ShowNMEANet( FALSE );
     ShowNMEAGPS( FALSE );
     ShowNMEABT( FALSE );
