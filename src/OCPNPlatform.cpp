@@ -593,7 +593,8 @@ void OCPNPlatform::SetDefaultOptions( void )
     
     //  Suppress most tools, especially those that appear in the Basic menus.
     //  Of course, they may be re-enabled by experts...
-    g_toolbarConfig = _T("......X.....XX....XXXXXXXXXXX");
+    g_toolbarConfig = _T("......X...........XXXXXXXXXXX");
+    g_bPermanentMOBIcon = false;
     
     wxString sGPS = _T("2;3;;0;0;;0;1;0;0;;0;;1;0;0;0;0");          // 17 parms
     ConnectionParams *new_params = new ConnectionParams(sGPS);

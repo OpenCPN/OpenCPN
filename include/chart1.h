@@ -116,10 +116,10 @@ enum
     ID_TRACK,
     ID_COLSCHEME,
     ID_ABOUT,
+    ID_MOB,
     ID_TBEXIT,
     ID_TBSTAT,
     ID_TBSTATBOX,
-    ID_MOB,
 
     ID_PLUGIN_BASE // This MUST be the last item in the enum
 };
