@@ -1968,23 +1968,20 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
 
 void options::OnConnectionToggleEnable( wxMouseEvent &event )
 {
-    wxPoint pos = event.GetPosition();
-    int flags = 0;
-    long ptrSubItem = -1;
-    long clicked_index = m_lcSources->HitTest( pos, flags, &ptrSubItem );
+    int flags;
+    long clicked_index = m_lcSources->HitTest( event.GetPosition(), flags );
 
-    // Clicking Enable Checkbox (full column)?
+    // Clicking Enable Checkbox (full column)
     if ( clicked_index > -1 && event.GetX() < m_lcSources->GetColumnWidth( 0 ) ) {
         // Process the clicked item
         ConnectionParams *conn = g_pConnectionParams->Item( m_lcSources->GetItemData( clicked_index ) );
         if ( conn ) {
             conn->bEnabled = !conn->bEnabled;
             m_connection_enabled = conn->bEnabled;
-            conn->b_IsSetup = FALSE;            // Mark as changed
-
+            // Mark as changed
+            conn->b_IsSetup = FALSE;
             m_lcSources->SetItemImage( clicked_index, conn->bEnabled ? 1 : 0 );
         }
-
         cc1->Refresh();
     } else if ( clicked_index == -1 ) {
         ClearNMEAForm();
