@@ -6744,33 +6744,24 @@ void SentenceListDlg::OnCheckAllClick( wxCommandEvent& event )
     BuildSentenceArray();
 }
 
-void SentenceListDlg::SetType(int io, ListType type)
+void SentenceListDlg::SetType( int io, ListType type )
 {
     m_type = type;
 
-    switch (io)
-    {
-        case 0:                 // input
-        default:
-            if(type == WHITELIST)
-                m_pclbBox->SetLabel(_("Accept Sentences"));
-            else
-                m_pclbBox->SetLabel(_("Ignore Sentences"));
-            break;
-        case 1:                 // output
-            if(type == WHITELIST)
-                m_pclbBox->SetLabel(_("Transmit Sentences"));
-            else
-                m_pclbBox->SetLabel(_("Drop Sentences"));
-            break;
-    }
+    if ( io == 1 )
+        m_pclbBox->SetLabel( type == WHITELIST ? _( "Transmit Sentences" ) :
+                                                 _( "Drop Sentences" ) );
+    else
+        m_pclbBox->SetLabel( type == WHITELIST ? _( "Accept Sentences" ) :
+                                                 _( "Ignore Sentences" ) );
+
     Refresh();
 }
 
 void SentenceListDlg::OnCancelClick( wxCommandEvent& event ) { event.Skip(); }
 void SentenceListDlg::OnOkClick( wxCommandEvent& event ) { event.Skip(); }
 
-//OpenGLOptionsDlg
+// OpenGLOptionsDlg
 enum { ID_BUTTON_REBUILD, ID_BUTTON_CLEAR };
 
 BEGIN_EVENT_TABLE( OpenGLOptionsDlg, wxDialog )
@@ -6785,10 +6776,10 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
     style |= wxSTAY_ON_TOP;
 #endif
 
-    wxDialog::Create( parent, wxID_ANY, _T("OpenGL Options"), wxDefaultPosition, wxDefaultSize,
-                      style );
+    wxDialog::Create( parent, wxID_ANY, _T( "OpenGL Options" ),
+                      wxDefaultPosition, wxDefaultSize, style );
 
-    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
+    wxFont *qFont = GetOCPNScaledFont( _( "Dialog" ) );
     SetFont( *qFont );
 
     m_brebuild_cache = FALSE;
@@ -6797,90 +6788,85 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
     m_bSizer1 = new wxFlexGridSizer( 3 );
     this->SetSizeHints( wxDefaultSize, wxDefaultSize );
 
-    if(g_bexpert) {
-        m_cbUseAcceleratedPanning = new wxCheckBox(this, wxID_ANY, _("Use Accelerated Panning") );
-        m_bSizer1->Add(m_cbUseAcceleratedPanning, 0, wxALL | wxEXPAND, 5);
-        if( cc1->GetglCanvas()->CanAcceleratePanning() ) {
+    if ( g_bexpert ) {
+        m_cbUseAcceleratedPanning = new wxCheckBox( this, wxID_ANY, _( "Use Accelerated Panning" ) );
+        m_bSizer1->Add( m_cbUseAcceleratedPanning, 0, wxALL | wxEXPAND, 5 );
+        if ( cc1->GetglCanvas()->CanAcceleratePanning() ) {
             m_cbUseAcceleratedPanning->Enable();
-            m_cbUseAcceleratedPanning->SetValue(g_GLOptions.m_bUseAcceleratedPanning);
+            m_cbUseAcceleratedPanning->SetValue( g_GLOptions.m_bUseAcceleratedPanning );
         } else {
-            m_cbUseAcceleratedPanning->SetValue(FALSE);
+            m_cbUseAcceleratedPanning->SetValue( FALSE );
             m_cbUseAcceleratedPanning->Disable();
         }
 
         m_cbTextureCompression = new wxCheckBox(this, wxID_ANY, _("Texture Compression") );
-        m_cbTextureCompression->SetValue(g_GLOptions.m_bTextureCompression);
-        m_bSizer1->Add(m_cbTextureCompression, 0, wxALL | wxEXPAND, 5);
+        m_cbTextureCompression->SetValue( g_GLOptions.m_bTextureCompression );
+        m_bSizer1->Add( m_cbTextureCompression, 0, wxALL | wxEXPAND, 5 );
 
-        m_cbTextureCompressionCaching = new wxCheckBox(this, wxID_ANY, _("Texture Compression Caching") );
-        m_cbTextureCompressionCaching->SetValue(g_GLOptions.m_bTextureCompressionCaching);
+        m_cbTextureCompressionCaching = new wxCheckBox( this, wxID_ANY, _("Texture Compression Caching") );
+        m_cbTextureCompressionCaching->SetValue( g_GLOptions.m_bTextureCompressionCaching );
 
         /* disable caching if unsupported */
         extern PFNGLCOMPRESSEDTEXIMAGE2DPROC s_glCompressedTexImage2D;
-        if(!s_glCompressedTexImage2D) {
+        if ( !s_glCompressedTexImage2D ) {
             g_GLOptions.m_bTextureCompression = FALSE;
             m_cbTextureCompressionCaching->Disable();
         }
 
-        m_bSizer1->Add(m_cbTextureCompressionCaching, 0, wxALL | wxEXPAND, 5);
-    }
-    else {
-        m_cbTextureCompression = new wxCheckBox(this, wxID_ANY, _("Texture Compression with Caching") );
-        m_cbTextureCompression->SetValue(g_GLOptions.m_bTextureCompression);
-        m_bSizer1->Add(m_cbTextureCompression, 0, wxALL | wxEXPAND, 5);
+        m_bSizer1->Add( m_cbTextureCompressionCaching, 0, wxALL | wxEXPAND, 5 );
+    } else {
+        m_cbTextureCompression = new wxCheckBox( this, wxID_ANY, _( "Texture Compression with Caching" ) );
+        m_cbTextureCompression->SetValue( g_GLOptions.m_bTextureCompression );
+        m_bSizer1->Add( m_cbTextureCompression, 0, wxALL | wxEXPAND, 5 );
     }
 
-        /* disable caching if unsupported */
+    /* disable caching if unsupported */
     extern PFNGLCOMPRESSEDTEXIMAGE2DPROC s_glCompressedTexImage2D;
     extern bool  b_glEntryPointsSet;
 
-    if(b_glEntryPointsSet){
-        if(!s_glCompressedTexImage2D) {
-            g_GLOptions.m_bTextureCompressionCaching = FALSE;
-            m_cbTextureCompression->Disable();
-            m_cbTextureCompression->SetValue(FALSE);
-        }
+    if ( b_glEntryPointsSet && !s_glCompressedTexImage2D ) {
+        g_GLOptions.m_bTextureCompressionCaching = FALSE;
+        m_cbTextureCompression->Disable();
+        m_cbTextureCompression->SetValue(FALSE);
     }
 
-    if(g_bexpert){
+    if ( g_bexpert ) {
         wxStaticText* stTextureMemorySize =
             new wxStaticText( this, wxID_STATIC, _("Texture Memory Size (MB)") );
-        m_bSizer1->Add( stTextureMemorySize, 0,
-                wxLEFT | wxRIGHT | wxTOP, 5 );
+        m_bSizer1->Add( stTextureMemorySize, 0, wxLEFT | wxRIGHT | wxTOP, 5 );
 
         m_sTextureMemorySize = new wxSpinCtrl( this );
-        m_sTextureMemorySize->SetRange(1, 16384 );
-        m_sTextureMemorySize->SetValue(g_GLOptions.m_iTextureMemorySize);
-        m_bSizer1->Add(m_sTextureMemorySize, 0, wxALL | wxEXPAND, 5);
-
+        m_sTextureMemorySize->SetRange( 1, 16384 );
+        m_sTextureMemorySize->SetValue( g_GLOptions.m_iTextureMemorySize );
+        m_bSizer1->Add( m_sTextureMemorySize, 0, wxALL | wxEXPAND, 5) ;
     } else
         m_bSizer1->AddSpacer(0);
 
     m_bSizer1->AddSpacer(0);
 
-    m_bRebuildTextureCache = new wxButton(this, ID_BUTTON_REBUILD, _("Rebuild Texture Cache") );
-    m_bSizer1->Add(m_bRebuildTextureCache, 0, wxALL | wxEXPAND, 5);
-    m_bRebuildTextureCache->Enable(g_GLOptions.m_bTextureCompressionCaching);
+    m_bRebuildTextureCache = new wxButton( this, ID_BUTTON_REBUILD, _( "Rebuild Texture Cache" ) );
+    m_bSizer1->Add( m_bRebuildTextureCache, 0, wxALL | wxEXPAND, 5 );
+    m_bRebuildTextureCache->Enable( g_GLOptions.m_bTextureCompressionCaching );
 
-    if(!g_bopengl || g_raster_format == GL_RGB)
+    if ( !g_bopengl || g_raster_format == GL_RGB )
         m_bRebuildTextureCache->Disable();
 
-    m_bClearTextureCache = new wxButton(this, ID_BUTTON_CLEAR, _("Clear Texture Cache") );
-    m_bSizer1->Add(m_bClearTextureCache, 0, wxALL | wxEXPAND, 5);
-    m_bClearTextureCache->Enable(g_GLOptions.m_bTextureCompressionCaching);
+    m_bClearTextureCache = new wxButton(this, ID_BUTTON_CLEAR, _( "Clear Texture Cache" ) );
+    m_bSizer1->Add( m_bClearTextureCache, 0, wxALL | wxEXPAND, 5 );
+    m_bClearTextureCache->Enable( g_GLOptions.m_bTextureCompressionCaching );
 
     m_stTextureCacheSize = new wxStaticText(this, wxID_STATIC, TextureCacheSize());
     m_bSizer1->Add( m_stTextureCacheSize, 0,
                     wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5 );
 
-    m_cbShowFPS = new wxCheckBox( this, wxID_ANY, _("Show FPS") );
+    m_cbShowFPS = new wxCheckBox( this, wxID_ANY, _( "Show FPS" ) );
     m_bSizer1->Add( m_cbShowFPS, 0,  wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5 );
-    m_cbShowFPS->SetValue(g_bShowFPS);
+    m_cbShowFPS->SetValue( g_bShowFPS );
 
     m_cbSoftwareGL = NULL;
 #if defined(__UNIX__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
-    if(cc1->GetglCanvas()->GetVersionString().Upper().Find( _T("MESA") ) != wxNOT_FOUND) {
-        m_cbSoftwareGL = new wxCheckBox( this, wxID_ANY, _("Software OpenGL (restart OpenCPN)") );
+    if ( cc1->GetglCanvas()->GetVersionString().Upper().Find( _T( "MESA" ) ) != wxNOT_FOUND ) {
+        m_cbSoftwareGL = new wxCheckBox( this, wxID_ANY, _( "Software OpenGL (restart OpenCPN)" ) );
         m_bSizer1->Add( m_cbSoftwareGL, 0,  wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5 );
         m_cbSoftwareGL->SetValue(g_bSoftwareGL);
     } else
@@ -6890,19 +6876,15 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
     m_bSizer1->AddSpacer(0);
 
     wxStdDialogButtonSizer * m_sdbSizer4 = new wxStdDialogButtonSizer();
-    wxButton *bOK = new wxButton( this, wxID_OK );
-    m_sdbSizer4->AddButton( bOK );
-    wxButton *bCancel = new wxButton( this, wxID_CANCEL );
-    m_sdbSizer4->AddButton( bCancel );
+    m_sdbSizer4->AddButton( new wxButton( this, wxID_OK ) );
+    m_sdbSizer4->AddButton( new wxButton( this, wxID_CANCEL ) );
     m_sdbSizer4->Realize();
 
-    m_bSizer1->Add( m_sdbSizer4, 0, wxALL|wxEXPAND, 5 );
+    m_bSizer1->Add( m_sdbSizer4, 0, wxALL | wxEXPAND, 5 );
 
-    this->SetSizer( m_bSizer1 );
-    this->Layout();
-
-    this->Centre( wxBOTH );
-
+    SetSizer( m_bSizer1 );
+    Layout();
+    Centre( wxBOTH );
     Fit();
 #endif
 }
@@ -6910,7 +6892,7 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
 void OpenGLOptionsDlg::OnButtonRebuild( wxCommandEvent& event )
 {
 #ifdef ocpnUSE_GL
-    if(g_GLOptions.m_bTextureCompressionCaching) {
+    if ( g_GLOptions.m_bTextureCompressionCaching ) {
         m_brebuild_cache = TRUE;
         EndModal(wxID_CANCEL);
     }
@@ -6921,38 +6903,37 @@ void OpenGLOptionsDlg::OnButtonClear( wxCommandEvent& event )
 {
 #ifdef ocpnUSE_GL
     ::wxBeginBusyCursor();
-    if(g_bopengl)
+    if ( g_bopengl )
         cc1->GetglCanvas()->ClearAllRasterTextures();
 
-    wxString path =  g_Platform->GetPrivateDataDir() + wxFileName::GetPathSeparator() + _T("raster_texture_cache");
-    if(::wxDirExists( path )){
+    wxString path =  g_Platform->GetPrivateDataDir() +
+        wxFileName::GetPathSeparator() + _T( "raster_texture_cache" );
+    if ( ::wxDirExists( path ) ) {
         wxArrayString files;
-        size_t nfiles = wxDir::GetAllFiles(path, &files);
-        for(unsigned int i=0 ; i < files.GetCount() ; i++){
+        size_t nfiles = wxDir::GetAllFiles( path, &files );
+        for ( unsigned int i = 0 ; i < files.GetCount() ; i++ )
             ::wxRemoveFile(files[i]);
-        }
     }
 
-    m_stTextureCacheSize->SetLabel(TextureCacheSize());
+    m_stTextureCacheSize->SetLabel( TextureCacheSize() );
     ::wxEndBusyCursor();
 #endif
 }
 
 wxString OpenGLOptionsDlg::TextureCacheSize( void )
 {
-    wxString path =  g_Platform->GetPrivateDataDir() + wxFileName::GetPathSeparator() + _T("raster_texture_cache");
+    wxString path =  g_Platform->GetPrivateDataDir() +
+        wxFileName::GetPathSeparator() + _T( "raster_texture_cache" );
     long long total = 0;
-    if(::wxDirExists( path )) {
+    if ( ::wxDirExists( path ) ) {
         wxArrayString files;
-        size_t nfiles = wxDir::GetAllFiles(path, &files);
-        for(unsigned int i=0 ; i < files.GetCount() ; i++){
-            total += wxFile(files[i]).Length();
-        }
+        size_t nfiles = wxDir::GetAllFiles( path, &files );
+        for ( unsigned int i = 0 ; i < files.GetCount() ; i++ )
+            total += wxFile( files[i] ).Length();
     }
-    double mb = total/1024.0/1024.0;
-    if (mb < 10000.0)
+    double mb = total / ( 1024.0 * 2 );
+    if ( mb < 10000.0 )
         return wxString::Format(_T("%.1f MB"), mb);
     mb = mb / 1024.0;
     return wxString::Format(_T("%.1f GB"), mb);
-
 }
