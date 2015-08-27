@@ -261,8 +261,8 @@ bool CompressChart(wxThread *pThread, ChartBase *pchart, wxString CompressedCach
         
         int tex_dim = g_GLOptions.m_iTextureDimension;
         
-        int nx_tex = ( size_X / tex_dim ) + 1;
-        int ny_tex = ( size_Y / tex_dim ) + 1;
+        int nx_tex = ceil( (float)size_X / tex_dim );
+        int ny_tex = ceil( (float)size_Y / tex_dim );
         
         int nd = 0;
         int nt = ny_tex * nx_tex;
@@ -2719,8 +2719,8 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, O
     wxRect R(floor(Rp.x), floor(Rp.y), ceil(Rs.x), ceil(Rs.y));
     
     //  Calculate the number of textures needed
-    int nx_tex = ( size_X / tex_dim ) + 1;
-    int ny_tex = ( size_Y / tex_dim ) + 1;
+    int nx_tex = ceil( (float)size_X / tex_dim );
+    int ny_tex = ceil( (float)size_Y / tex_dim );
     
     wxRect rect( 0, 0, 1, 1 );
     
