@@ -480,8 +480,8 @@ BEGIN_EVENT_TABLE( MMSIListCtrl, wxListCtrl )
 END_EVENT_TABLE()
 
 MMSIListCtrl::MMSIListCtrl( wxWindow* parent, wxWindowID id, const wxPoint& pos,
-        const wxSize& size, long style ) :
-        wxListCtrl( parent, id, pos, size, style )
+                            const wxSize& size, long style ) :
+    wxListCtrl( parent, id, pos, size, style )
 {
     m_parent = parent;
 }
@@ -490,43 +490,42 @@ MMSIListCtrl::~MMSIListCtrl() {}
 
 wxString MMSIListCtrl::OnGetItemText( long item, long column ) const
 {
-    wxString ret = _T( "" );
+    wxString ret;
     MMSIProperties *props = g_MMSI_Props_Array.Item( item );
 
-    if ( props ) {
-        switch( column ){
-            case mlMMSI:
-                if ( props->MMSI > 0 )
-                    ret.Printf( _T( "%d" ), props->MMSI );
-                break;
-            case mlTrackMode:
-                if ( TRACKTYPE_DEFAULT == props->TrackType )
-                    ret = _( "Default" );
-                else if ( TRACKTYPE_ALWAYS == props->TrackType )
-                    ret = _( "Always" );
-                else if ( TRACKTYPE_NEVER == props->TrackType )
-                    ret = _( "Never" );
-                else
-                    ret = _T( "???" );
-                if ( props->m_bPersistentTrack )
-                    ret.Append( _T( ", " ) ).Append( _( "Persistent" ) );
-                break;
-            case mlIgnore:
-                if ( props->m_bignore )
-                    ret = _T( "X" );
-                break;
-            case mlMOB:
-                if ( props->m_bMOB )
-                    ret = _T( "X" );
-                break;
-            case mlVDM:
-                if ( props->m_bVDM )
-                    ret = _T( "X" );
-                break;
-            default:
-                ret = _T( "??" );
-                break;
-        }
+    if ( !props ) return ret;
+    switch ( column ) {
+        case mlMMSI:
+            if ( props->MMSI > 0 )
+                ret = wxString::Format( _T( "%d" ), props->MMSI );
+            break;
+        case mlTrackMode:
+            if ( TRACKTYPE_DEFAULT == props->TrackType )
+                ret = _( "Default" );
+            else if ( TRACKTYPE_ALWAYS == props->TrackType )
+                ret = _( "Always" );
+            else if ( TRACKTYPE_NEVER == props->TrackType )
+                ret = _( "Never" );
+            else
+                ret = _T( "???" );
+            if ( props->m_bPersistentTrack )
+                ret.Append( _T( ", " ) + _( "Persistent" ) );
+            break;
+        case mlIgnore:
+            if ( props->m_bignore )
+                ret = _T( "X" );
+            break;
+        case mlMOB:
+            if ( props->m_bMOB )
+                ret = _T( "X" );
+            break;
+        case mlVDM:
+            if ( props->m_bVDM )
+                ret = _T( "X" );
+            break;
+        default:
+            ret = _T( "??" );
+            break;
     }
     return ret;
 }
