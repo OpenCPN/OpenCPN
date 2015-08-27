@@ -3234,8 +3234,8 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
 void options::CreateControls()
 {
     int border_size = 4;
-    int check_spacing = 2;
-    int group_item_spacing = 2;           // use for items within one group, with Add(...wxALL)
+    // use for items within one group, with Add(...wxALL)
+    int group_item_spacing = 2;
 
     int font_size_y, font_descent, font_lead;
     GetTextExtent( _T("0"), NULL, &font_size_y, &font_descent, &font_lead );
@@ -3243,18 +3243,17 @@ void options::CreateControls()
 
     m_small_button_size = wxSize( -1, (int) ( 1.4 * ( font_size_y + font_descent + font_lead ) ) );
 
-    //      Some members (pointers to controls) need to initialized
+    // Some members (pointers to controls) need to initialized
     pEnableZoomToCursor = NULL;
     pSmoothPanZoom = NULL;
 
-    //      Check the display size.
-    //      If "small", adjust some factors to squish out some more white space
+    // Check the display size.
+    // If "small", adjust some factors to squish out some more white space
     int width, height;
     ::wxDisplaySize( &width, &height );
 
     if ( !g_bresponsive && height <= 800 ) {
         border_size = 2;
-        check_spacing = 2;
         group_item_spacing = 1;
     }
 
