@@ -203,9 +203,6 @@ class options: public wxDialog
 class options: public wxScrollingDialog
 #endif
 {
-    DECLARE_DYNAMIC_CLASS( options )
-    DECLARE_EVENT_TABLE()
-
   public:
     explicit options();
     explicit options( MyFrame* parent, wxWindowID id = SYMBOL_OPTIONS_IDNAME,
@@ -554,11 +551,12 @@ class options: public wxScrollingDialog
 
     int m_fontHeight, m_scrollRate, m_BTscanning, m_btNoChangeCounter;
     int m_btlastResultCount;
+
+    DECLARE_DYNAMIC_CLASS( options )
+    DECLARE_EVENT_TABLE()
 };
 
 class ChartGroupsUI: public wxScrolledWindow {
-    DECLARE_EVENT_TABLE()
-
   public:
     explicit ChartGroupsUI( wxWindow *parent );
     ~ChartGroupsUI();
@@ -610,6 +608,8 @@ class ChartGroupsUI: public wxScrolledWindow {
     ChartGroupArray *m_pGroupArray;
 
     int m_border_size, m_group_item_spacing, m_GroupSelectedPage;
+
+    DECLARE_EVENT_TABLE()
 };
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
@@ -846,9 +846,6 @@ static int lang_list[] = {
 };
 #endif
 
-///////////////////////////////////////////////////////////////////////////////
-/// Class SentenceListDlg
-///////////////////////////////////////////////////////////////////////////////
 class SentenceListDlg : public wxDialog
 {
   public:
@@ -892,13 +889,8 @@ class SentenceListDlg : public wxDialog
     FilterDirection m_dir;
 };
 
-///////////////////////////////////////////////////////////////////////////////
-/// Class OpenGLOptionsDlg
-///////////////////////////////////////////////////////////////////////////////
 class OpenGLOptionsDlg : public wxDialog
 {
-    DECLARE_EVENT_TABLE()
-
   public:
     explicit OpenGLOptionsDlg( wxWindow *parent, bool glTicked );
     void OnButtonRebuild( wxCommandEvent& event );
@@ -914,6 +906,8 @@ class OpenGLOptionsDlg : public wxDialog
     wxSpinCtrl *m_sTextureDimension, *m_sTextureMemorySize;
 
     bool m_brebuild_cache;
+
+    DECLARE_EVENT_TABLE()
 };
 
 #define ID_MMSI_PROPS_LIST 10073
@@ -926,9 +920,6 @@ enum {
     mlVDM
 }; // MMSIListCtrl Columns;
 
-///////////////////////////////////////////////////////////////////////////////
-/// Class MMSIListCtrl
-///////////////////////////////////////////////////////////////////////////////
 class MMSIListCtrl: public wxListCtrl
 {
   public:
@@ -937,7 +928,6 @@ class MMSIListCtrl: public wxListCtrl
     ~MMSIListCtrl();
 
     wxString OnGetItemText( long item, long column ) const;
-//    int OnGetItemColumnImage( long item, long column ) const;
     void OnListItemClick( wxListEvent &event);
     void OnListItemActivated( wxListEvent &event);
     void OnListItemRightClick( wxListEvent &event);
@@ -955,14 +945,8 @@ class MMSIListCtrl: public wxListCtrl
 #define ID_DEF_MENU_MMSI_EDIT   8194
 #define ID_DEF_MENU_MMSI_DELETE 8195
 
-///////////////////////////////////////////////////////////////////////////////
-/// Class MMSIEditDialog
-///////////////////////////////////////////////////////////////////////////////
 class MMSIEditDialog: public wxDialog
 {
-    DECLARE_DYNAMIC_CLASS( MMSIEditDialog )
-    DECLARE_EVENT_TABLE()
-
   public:
     explicit MMSIEditDialog( );
     explicit MMSIEditDialog( MMSIProperties *props, wxWindow *parent,
@@ -990,18 +974,17 @@ class MMSIEditDialog: public wxDialog
     wxRadioButton *m_rbTypeTrackNever;
     wxCheckBox *m_cbTrackPersist, *m_IgnoreButton, *m_MOBButton, *m_VDMButton;
     wxButton *m_CancelButton, *m_OKButton;
+
+    DECLARE_DYNAMIC_CLASS( MMSIEditDialog )
+    DECLARE_EVENT_TABLE()
 };
 
-///////////////////////////////////////////////////////////////////////////////
-/// Class MMSI_Props_Panel
-///////////////////////////////////////////////////////////////////////////////
 class MMSI_Props_Panel: public wxPanel
 {
   public:
     explicit MMSI_Props_Panel( wxWindow *parent );
     ~MMSI_Props_Panel( );
 
-//    void OnClose(wxCloseEvent &event);
     void OnNewButton( wxCommandEvent &event );
     void SetColorScheme( ColorScheme cs );
     void UpdateMMSIList( void );
