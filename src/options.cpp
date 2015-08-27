@@ -5230,37 +5230,31 @@ void options::OnButtonSelectSound( wxCommandEvent& event )
 {
     wxString sound_dir = g_Platform->GetSharedDataDir();
     sound_dir.Append( _T("sounds") );
-/*
-    wxFileDialog *openDialog = new wxFileDialog( NULL, _("Select Sound File"), sound_dir, wxT(""),
-            _("WAV files (*.wav)|*.wav|All files (*.*)|*.*"), wxFD_OPEN );
-
-    if(g_bresponsive)
-        openDialog = g_Platform->AdjustFileDialogFont(this, openDialog);
-
-    int response = openDialog->ShowModal();*/
-
     wxString sel_file;
-    int response = wxID_CANCEL;
+    int response;
 
 #ifndef __OCPN__ANDROID__
-    wxFileDialog *popenDialog = new wxFileDialog( NULL, _( "Select Sound File" ), sound_dir, wxT ( "" ),
-                                                  _T("WAV files (*.wav)|*.wav|All files (*.*)|*.*"), wxFD_OPEN );
-    if(g_bresponsive)
-        popenDialog = g_Platform->AdjustFileDialogFont(this, popenDialog);
+    wxFileDialog *popenDialog =
+        new wxFileDialog( NULL, _( "Select Sound File" ), sound_dir,
+                          wxEmptyString,
+                          _T("WAV files (*.wav)|*.wav|All files (*.*)|*.*"),
+                          wxFD_OPEN );
+    if ( g_bresponsive )
+        popenDialog = g_Platform->AdjustFileDialogFont( this, popenDialog );
 
     response = popenDialog->ShowModal();
     sel_file = popenDialog->GetPath();
     delete popenDialog;
 
 #else
-    wxString path;
-    response = g_Platform->DoFileSelectorDialog( NULL, &path, _( "Select Sound File" ),
-                                                 sound_dir, _T(""), wxT ( "*.*" ) );
-    sel_file = path;
+    response =
+        g_Platform->DoFileSelectorDialog( NULL, &sel_file,
+                                          _( "Select Sound File" ), sound_dir,
+                                          wxEmptyString, wxT( "*.*" ) );
 #endif
 
-    if( response == wxID_OK ) {
-        if( g_bportable ) {
+    if ( response == wxID_OK ) {
+        if ( g_bportable ) {
             wxFileName f( sel_file );
             f.MakeRelativeTo( g_Platform->GetHomeDir() );
             g_sAIS_Alert_Sound_File = f.GetFullPath();
