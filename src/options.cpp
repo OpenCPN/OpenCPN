@@ -1461,40 +1461,13 @@ void options::CreatePanel_NMEA_Compact( size_t parent, int border_size, int grou
     m_cbAPBMagnetic->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnValChange ), NULL, this );
     m_lcSources->Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler(options::OnConnectionToggleEnable), NULL, this );
 
-    wxListItem col0;
-    col0.SetId( 0 );
-    col0.SetText( _( "On" ) );
-    m_lcSources->InsertColumn( 0, col0 );
-
-    wxListItem col1;
-    col1.SetId( 1 );
-    col1.SetText( _( "Type" ) );
-    m_lcSources->InsertColumn( 1, col1 );
-
-    wxListItem col2;
-    col2.SetId( 2 );
-    col2.SetText( _( "Port" ) );
-    m_lcSources->InsertColumn( 2, col2 );
-
-    wxListItem col3;
-    col3.SetId( 3 );
-    col3.SetText( _("Prio") );
-    m_lcSources->InsertColumn( 3, col3 );
-
-    wxListItem col4;
-    col4.SetId( 4 );
-    col4.SetText( _( "Parm" ) );
-    m_lcSources->InsertColumn( 4, col4 );
-
-    wxListItem col5;
-    col5.SetId( 5 );
-    col5.SetText( _( "I/O" ) );
-    m_lcSources->InsertColumn( 5, col5 );
-
-    wxListItem col6;
-    col6.SetId( 6 );
-    col6.SetText( _( "Filters" ) );
-    m_lcSources->InsertColumn( 6, col6 );
+    wxString columns[] = { _( "On" ), _( "Type" ), _( "Port" ), _("Prio"), _( "Parm" ), _( "I/O" ), _( "Filters" ) };
+    for ( int i = 0; i < 7; ++i ) {
+        wxListItem col;
+        col.SetId( i );
+        col.SetText( columns[ i ] );
+        m_lcSources->InsertColumn( i, col );
+    }
 
     //  Build the image list
     wxBitmap unchecked_bmp(16, 16), checked_bmp(16, 16);
@@ -1939,40 +1912,14 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     m_cbAPBMagnetic->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnValChange ), NULL, this );
     m_lcSources->Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler(options::OnConnectionToggleEnable), NULL, this );
 
-    wxListItem col0;
-    col0.SetId( 0 );
-    col0.SetText( _( "Enable" ) );
-    m_lcSources->InsertColumn( 0, col0 );
 
-    wxListItem col1;
-    col1.SetId( 1 );
-    col1.SetText( _( "Type" ) );
-    m_lcSources->InsertColumn( 1, col1 );
-
-    wxListItem col2;
-    col2.SetId( 2 );
-    col2.SetText( _( "DataPort" ) );
-    m_lcSources->InsertColumn( 2, col2 );
-
-    wxListItem col3;
-    col3.SetId( 3 );
-    col3.SetText( _( "Priority" ) );
-    m_lcSources->InsertColumn( 3, col3 );
-
-    wxListItem col4;
-    col4.SetId( 4 );
-    col4.SetText( _( "Parameters" ) );
-    m_lcSources->InsertColumn( 4, col4 );
-
-    wxListItem col5;
-    col5.SetId( 5 );
-    col5.SetText( _( "Connection" ) );
-    m_lcSources->InsertColumn( 5, col5 );
-
-    wxListItem col6;
-    col6.SetId( 6 );
-    col6.SetText( _( "Filters" ) );
-    m_lcSources->InsertColumn( 6, col6 );
+    wxString columns[] = { _( "Enable" ), _( "Type" ), _( "DataPort" ), _("Priority"), _( "Parameters" ), _( "Connection" ), _( "Filters" ) };
+    for ( int i = 0; i < 7; ++i ) {
+        wxListItem col;
+        col.SetId( i );
+        col.SetText( columns[ i ] );
+        m_lcSources->InsertColumn( i, col );
+    }
 
     //  Build the image list
     wxBitmap unchecked_bmp( 16, 16 ), checked_bmp( 16, 16 );
