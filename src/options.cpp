@@ -1980,7 +1980,7 @@ void options::OnConnectionToggleEnable( wxMouseEvent &event )
 {
     int flags;
     long index = m_lcSources->HitTest( event.GetPosition(), flags );
-    if ( index > -1 && event.GetX() < m_lcSources->GetColumnWidth( 0 ) )
+    if ( index == wxNOT_FOUND || event.GetX() < m_lcSources->GetColumnWidth( 0 ) )
         EnableItem( index );
 
     // Allow wx to process...
