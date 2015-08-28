@@ -602,11 +602,18 @@ void OCPNPlatform::SetDefaultOptions( void )
     new_params->bEnabled = true;
     g_pConnectionParams->Add(new_params);
     
-    //  Enable some default PlugIns
+    //  Enable some default PlugIns, and their default options
     
     if(pConfig){
         pConfig->SetPath( _T ( "/PlugIns/libchartdldr_pi.so" ) );
         pConfig->Write( _T ( "bEnabled" ), true );
+        
+        pConfig->SetPath( _T ( "/PlugIns/libwmm_pi.so" ) );
+        pConfig->Write( _T ( "bEnabled" ), true );
+        
+        pConfig->SetPath ( _T ( "/Settings/WMM" ) );
+        pConfig->Write ( _T ( "ShowIcon" ), false );
+        
     }
         
         
