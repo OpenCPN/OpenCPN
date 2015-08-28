@@ -5955,29 +5955,33 @@ void options::OnUploadFormatChange( wxCommandEvent& event )
 
 void options::ShowNMEACommon( bool visible )
 {
-    if ( visible )
-    {
-        m_rbTypeSerial->Show();
-        m_rbTypeNet->Show();
-        if(m_rbTypeInternalGPS) m_rbTypeInternalGPS->Show();
-        if(m_rbTypeInternalBT) m_rbTypeInternalBT->Show();
-
-        m_rbIAccept->Show();
-        m_rbIIgnore->Show();
-        m_rbOAccept->Show();
-        m_rbOIgnore->Show();
-        m_tcInputStc->Show();
-        m_btnInputStcList->Show();
-        m_tcOutputStc->Show();
-        m_btnOutputStcList->Show();
-        m_cbInput->Show();
-        m_cbOutput->Show();
-        m_stPrecision->Show();
-        m_choicePrecision->Show();
-        if (m_cbOutput->IsChecked()) {
-            m_stPrecision->Enable(TRUE);
-            m_choicePrecision->Enable(TRUE);
-            m_stTalkerIdText->Enable(TRUE);
+    m_rbTypeSerial->Show( visible );
+    m_rbTypeNet->Show( visible );
+    if ( m_rbTypeInternalGPS ) m_rbTypeInternalGPS->Show( visible );
+    if ( m_rbTypeInternalBT ) m_rbTypeInternalBT->Show( visible );
+    m_rbIAccept->Show( visible );
+    m_rbIIgnore->Show( visible );
+    m_rbOAccept->Show( visible );
+    m_rbOIgnore->Show( visible );
+    m_tcInputStc->Show( visible );
+    m_btnInputStcList->Show( visible );
+    m_tcOutputStc->Show( visible );
+    m_btnOutputStcList->Show( visible );
+    m_cbInput->Show( visible );
+    m_cbOutput->Show( visible );
+    m_stPrecision->Show( visible );
+    m_choicePrecision->Show( visible );
+    m_choicePriority->Show( visible );
+    m_stPriority->Show( visible );
+    m_stPrecision->Show( visible );
+    m_stTalkerIdText->Show( visible );
+    m_TalkerIdText->Show( visible );
+    m_cbCheckCRC->Show( visible );
+    if ( visible ) {
+        if ( m_cbOutput->IsChecked() ) {
+            m_stPrecision->Enable( TRUE );
+            m_choicePrecision->Enable( TRUE );
+            m_stTalkerIdText->Enable( TRUE );
             m_TalkerIdText->Enable( TRUE );
         } else {
             m_stPrecision->Enable( FALSE );
@@ -5985,95 +5989,32 @@ void options::ShowNMEACommon( bool visible )
             m_stTalkerIdText->Enable( FALSE );
             m_TalkerIdText->Enable( FALSE );
         }
-        m_choicePriority->Show();
-        m_stPriority->Show();
-        m_stPrecision->Show();
-        m_stTalkerIdText->Show();
-        m_TalkerIdText->Show();
-        m_cbCheckCRC->Show();
     }
-    else
-    {
-        m_rbTypeSerial->Hide();
-        m_rbTypeNet->Hide();
-        if(m_rbTypeInternalGPS) m_rbTypeInternalGPS->Hide();
-        if(m_rbTypeInternalBT) m_rbTypeInternalBT->Hide();
-
-        m_rbIAccept->Hide();
-        m_rbIIgnore->Hide();
-        m_rbOAccept->Hide();
-        m_rbOIgnore->Hide();
-        m_tcInputStc->Hide();
-        m_btnInputStcList->Hide();
-        m_tcOutputStc->Hide();
-        m_btnOutputStcList->Hide();
-        m_cbInput->Hide();
-        m_cbOutput->Hide();
-        m_choicePriority->Hide();
-        m_stPrecision->Hide();
-        m_stTalkerIdText->Hide();
-        m_TalkerIdText->Hide();
-        m_choicePrecision->Hide();
-        m_stPriority->Hide();
-        m_cbCheckCRC->Hide();
-        sbSizerOutFilter->SetDimension(0,0,0,0);
-        sbSizerInFilter->SetDimension(0,0,0,0);
-        sbSizerConnectionProps->SetDimension(0,0,0,0);
-    }
-
     m_bNMEAParams_shown = visible;
 }
 
 void options::ShowNMEANet( bool visible )
 {
-    if ( visible )
-    {
-        m_stNetAddr->Show();
-        m_tNetAddress->Show();
-        m_stNetPort->Show();
-        m_tNetPort->Show();
-        m_stNetProto->Show();
-        m_rbNetProtoGPSD->Show();
-        m_rbNetProtoTCP->Show();
-        m_rbNetProtoUDP->Show();
-    }
-    else
-    {
-        m_stNetAddr->Hide();
-        m_tNetAddress->Hide();
-        m_stNetPort->Hide();
-        m_tNetPort->Hide();
-        m_stNetProto->Hide();
-        m_rbNetProtoGPSD->Hide();
-        m_rbNetProtoTCP->Hide();
-        m_rbNetProtoUDP->Hide();
-    }
+    m_stNetAddr->Show( visible );
+    m_tNetAddress->Show( visible );
+    m_stNetPort->Show( visible );
+    m_tNetPort->Show( visible );
+    m_stNetProto->Show( visible );
+    m_rbNetProtoGPSD->Show( visible );
+    m_rbNetProtoTCP->Show( visible );
+    m_rbNetProtoUDP->Show( visible );
 }
 
 void options::ShowNMEASerial( bool visible )
 {
-    if ( visible )
-    {
-        m_stSerBaudrate->Show();
-        m_choiceBaudRate->Show();
-        m_stSerPort->Show();
-        m_comboPort->Show();
-        m_stSerProtocol->Show();
-        m_choiceSerialProtocol->Show();
-        m_cbGarminHost->Show();
-        ///gSizerNetProps->SetDimension(0,0,0,0);
-    }
-    else
-    {
-        m_stSerBaudrate->Hide();
-        m_choiceBaudRate->Hide();
-        m_stSerPort->Hide();
-        m_comboPort->Hide();
-        m_stSerProtocol->Hide();
-        m_choiceSerialProtocol->Hide();
-        m_cbGarminHost->Hide();
-        ///gSizerSerProps->SetDimension(0,0,0,0);
-    }
+    m_stSerBaudrate->Show( visible );
+    m_choiceBaudRate->Show( visible );
+    m_stSerPort->Show( visible );
+    m_comboPort->Show( visible );
+    m_stSerProtocol->Show( visible );
+    m_choiceSerialProtocol->Show( visible );
+    m_cbGarminHost->Show( visible );
+    ///gSizerNetProps->SetDimension(0,0,0,0);
 }
 
 void options::ShowNMEAGPS( bool visible ) {}
