@@ -2549,6 +2549,7 @@ END_EVENT_TABLE()
  
  void ToolbarChoicesDialog::OnOkClick( wxCommandEvent& event )
  {
+     unsigned int ncheck = 0;
      for(unsigned int i=0 ; i < cboxes.size() ; i++){
          
          wxCheckBox *cb = cboxes[i];
@@ -2559,8 +2560,20 @@ END_EVENT_TABLE()
          
          wxMenuItem *item = g_FloatingToolbarConfigMenu->FindItemByPosition( i );
          item->Check( cb->IsChecked() );
+         if(cb->IsChecked())
+             ncheck++;
      }
+     
+     //  We always must have one Tool enabled.  Make it the Options tool....
+     if( 0 == ncheck){
+         g_toolbarConfig.SetChar( ID_SETTINGS -ID_ZOOMIN , _T('X') );
          
+         int idOffset = ID_PLUGIN_BASE - ID_ZOOMIN + 100;  
+         wxMenuItem *item = g_FloatingToolbarConfigMenu->FindItem(ID_SETTINGS + idOffset);
+         if(item)
+            item->Check( true );
+     }
+     
          
      EndModal(wxID_OK);
  }
