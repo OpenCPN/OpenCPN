@@ -6670,17 +6670,13 @@ void SentenceListDlg::OnCLBSelect( wxCommandEvent& event )
 {
     // Only active the "Delete" button if the selection is not in the standard list
     int isel = m_clbSentences->GetSelection();
+
     bool bdelete = TRUE;
-    if(isel >= 0) {
-        wxString s = m_clbSentences->GetString(isel);
-        for (size_t i = 0; i < standard_sentences.Count(); i++) {
-            if(standard_sentences[i] == s){
-                bdelete = FALSE;
-                break;
-            }
-        }
-    }
-    else
+    if ( isel >= 0 ) {
+        wxString s = m_clbSentences->GetString( isel );
+        if ( standard_sentences.Index( s ) != wxNOT_FOUND )
+            bdelete = FALSE;
+    } else
         bdelete = FALSE;
     m_btnDel->Enable( bdelete );
 }
