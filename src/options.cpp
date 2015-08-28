@@ -6219,39 +6219,38 @@ void options::SetDSFormRWStates( void )
 
 void options::SetConnectionParams( ConnectionParams *cp )
 {
-    m_comboPort->Select(m_comboPort->FindString(cp->Port));
-    m_comboPort->SetValue(cp->Port);
-    m_cbCheckCRC->SetValue(cp->ChecksumCheck);
-    m_cbGarminHost->SetValue(cp->Garmin);
-    m_cbInput->SetValue(!(cp->IOSelect == DS_TYPE_OUTPUT));
-    m_cbOutput->SetValue(!(cp->IOSelect == DS_TYPE_INPUT));
-    if(cp->InputSentenceListType == WHITELIST)
-        m_rbIAccept->SetValue(TRUE);
+    m_comboPort->Select( m_comboPort->FindString( cp->Port ) );
+    m_comboPort->SetValue( cp->Port );
+    m_cbCheckCRC->SetValue( cp->ChecksumCheck );
+    m_cbGarminHost->SetValue( cp->Garmin );
+    m_cbInput->SetValue( cp->IOSelect != DS_TYPE_OUTPUT );
+    m_cbOutput->SetValue( cp->IOSelect != DS_TYPE_INPUT );
+    if ( cp->InputSentenceListType == WHITELIST )
+        m_rbIAccept->SetValue( TRUE );
     else
-        m_rbIIgnore->SetValue(TRUE);
-    if(cp->OutputSentenceListType == WHITELIST)
-        m_rbOAccept->SetValue(TRUE);
+        m_rbIIgnore->SetValue( TRUE );
+    if ( cp->OutputSentenceListType == WHITELIST )
+        m_rbOAccept->SetValue( TRUE );
     else
-        m_rbOIgnore->SetValue(TRUE);
-    m_tcInputStc->SetValue(StringArrayToString(cp->InputSentenceList));
-    m_tcOutputStc->SetValue(StringArrayToString(cp->OutputSentenceList));
-    m_choiceBaudRate->Select(m_choiceBaudRate->FindString(wxString::Format(_T("%d"),cp->Baudrate)));
-    m_choiceSerialProtocol->Select(cp->Protocol); //TODO
-    m_choicePriority->Select(m_choicePriority->FindString(wxString::Format(_T("%d"),cp->Priority)));
+        m_rbOIgnore->SetValue( TRUE );
+    m_tcInputStc->SetValue( StringArrayToString( cp->InputSentenceList ) );
+    m_tcOutputStc->SetValue( StringArrayToString( cp->OutputSentenceList ) );
+    m_choiceBaudRate->Select( m_choiceBaudRate->FindString( wxString::Format( _T( "%d" ), cp->Baudrate ) ) );
+    m_choiceSerialProtocol->Select( cp->Protocol ); //TODO
+    m_choicePriority->Select( m_choicePriority->FindString( wxString::Format( _T( "%d" ), cp->Priority ) ) );
+    m_tNetAddress->SetValue( cp->NetworkAddress );
 
-    m_tNetAddress->SetValue(cp->NetworkAddress);
-
-    if( cp->NetworkPort == 0)
-        m_tNetPort->SetValue(_T(""));
+    if ( cp->NetworkPort == 0  )
+        m_tNetPort->SetValue( wxEmptyString );
     else
-        m_tNetPort->SetValue(wxString::Format(wxT("%i"), cp->NetworkPort));
+        m_tNetPort->SetValue( wxString::Format( wxT( "%i" ), cp->NetworkPort ) );
 
-    if(cp->NetProtocol == TCP)
-        m_rbNetProtoTCP->SetValue(TRUE);
-    else if (cp->NetProtocol == UDP)
-        m_rbNetProtoUDP->SetValue(TRUE);
+    if ( cp->NetProtocol == TCP )
+        m_rbNetProtoTCP->SetValue( TRUE );
+    else if ( cp->NetProtocol == UDP )
+        m_rbNetProtoUDP->SetValue( TRUE );
     else
-        m_rbNetProtoGPSD->SetValue(TRUE);
+        m_rbNetProtoGPSD->SetValue( TRUE );
 
     if ( cp->Type == SERIAL )
     {
@@ -6288,34 +6287,30 @@ void options::SetConnectionParams( ConnectionParams *cp )
 
 void options::SetDefaultConnectionParams( void )
 {
-    m_comboPort->Select(0);
-    m_comboPort->SetValue(_T(""));
-    m_cbCheckCRC->SetValue(TRUE);
-    m_cbGarminHost->SetValue(FALSE);
-    m_cbInput->SetValue(TRUE);
-    m_cbOutput->SetValue(FALSE);
-    m_rbIAccept->SetValue(TRUE);
-    m_rbOAccept->SetValue(TRUE);
-    m_tcInputStc->SetValue(_T(""));
-    m_tcOutputStc->SetValue(_T(""));
-    m_choiceBaudRate->Select(m_choiceBaudRate->FindString(_T("4800")));
-//    m_choiceSerialProtocol->Select(cp->Protocol); //TODO
-    m_choicePriority->Select(m_choicePriority->FindString(_T("1")));
+    m_comboPort->Select( 0 );
+    m_comboPort->SetValue( wxEmptyString );
+    m_cbCheckCRC->SetValue( TRUE );
+    m_cbGarminHost->SetValue( FALSE );
+    m_cbInput->SetValue( TRUE );
+    m_cbOutput->SetValue( FALSE );
+    m_rbIAccept->SetValue( TRUE );
+    m_rbOAccept->SetValue( TRUE );
+    m_tcInputStc->SetValue( wxEmptyString );
+    m_tcOutputStc->SetValue( wxEmptyString );
+    m_choiceBaudRate->Select( m_choiceBaudRate->FindString( _T( "4800" ) ) );
+//    m_choiceSerialProtocol->Select( cp->Protocol ); // TODO
+    m_choicePriority->Select( m_choicePriority->FindString( _T( "1" ) ) );
 
     bool bserial = TRUE;
 #ifdef __WXGTK__
-    if(!g_bserial_access_checked)
+    if ( !g_bserial_access_checked )
         bserial = FALSE;
 #endif
 
     m_rbTypeSerial->SetValue( bserial );
     m_rbTypeNet->SetValue( !bserial );
 
-    if(bserial)
-        SetNMEAFormToSerial();
-    else
-        SetNMEAFormToNet();
-
+    bserial ? SetNMEAFormToSerial() : SetNMEAFormToNet();
     m_connection_enabled = TRUE;
 }
 
@@ -6330,7 +6325,7 @@ void options::OnAddDatasourceClick( wxCommandEvent& event )
         itemIndex = m_lcSources->GetNextItem( itemIndex, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
         if ( itemIndex == -1 )
             break;
-        m_lcSources->SetItemState( itemIndex, 0, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED );
+        m_lcSources->SetItemState( itemIndex, 0, wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED );
     }
     m_buttonRemove->Enable( FALSE );
 
@@ -6339,29 +6334,27 @@ void options::OnAddDatasourceClick( wxCommandEvent& event )
 
 void options::FillSourceList( void )
 {
-    m_buttonRemove->Enable(FALSE);
+    m_buttonRemove->Enable( FALSE );
     m_lcSources->DeleteAllItems();
-    for (size_t i = 0; i < g_pConnectionParams->Count(); i++)
-    {
+    for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ ) {
         wxListItem li;
         li.SetId( i );
-        li.SetImage( g_pConnectionParams->Item(i)->bEnabled ? 1 : 0  );
+        li.SetImage( g_pConnectionParams->Item(i)->bEnabled );
         li.SetData( i );
-        li.SetText( _T("") );
+        li.SetText( wxEmptyString );
 
         long itemIndex = m_lcSources->InsertItem( li );
 
-        m_lcSources->SetItem(itemIndex, 1, g_pConnectionParams->Item(i)->GetSourceTypeStr());
-        m_lcSources->SetItem(itemIndex, 2, g_pConnectionParams->Item(i)->GetAddressStr());
-        wxString prio_str;
-        prio_str.Printf(_T("%d"), g_pConnectionParams->Item(i)->Priority );
-        m_lcSources->SetItem(itemIndex, 3, prio_str);
-        wxString parms = g_pConnectionParams->Item(i)->GetParametersStr();
-        if(parms.IsEmpty())
-            parms = g_pConnectionParams->Item(i)->GetPortStr();
-        m_lcSources->SetItem(itemIndex, 4, parms);
-        m_lcSources->SetItem(itemIndex, 5, g_pConnectionParams->Item(i)->GetIOTypeValueStr());
-        m_lcSources->SetItem(itemIndex, 6, g_pConnectionParams->Item(i)->GetFiltersStr());
+        m_lcSources->SetItem( itemIndex, 1, g_pConnectionParams->Item( i )->GetSourceTypeStr() );
+        m_lcSources->SetItem( itemIndex, 2, g_pConnectionParams->Item( i )->GetAddressStr() );
+        wxString prio_str = wxString::Format( _T( "%d" ), g_pConnectionParams->Item( i )->Priority );
+        m_lcSources->SetItem( itemIndex, 3, prio_str );
+        wxString parms = g_pConnectionParams->Item( i )->GetParametersStr();
+        if ( parms.IsEmpty() )
+            parms = g_pConnectionParams->Item( i )->GetPortStr();
+        m_lcSources->SetItem( itemIndex, 4, parms );
+        m_lcSources->SetItem( itemIndex, 5, g_pConnectionParams->Item( i )->GetIOTypeValueStr() );
+        m_lcSources->SetItem( itemIndex, 6, g_pConnectionParams->Item( i )->GetFiltersStr() );
     }
 
 #ifndef __OCPN__ANDROID__
@@ -6405,7 +6398,7 @@ void options::OnRemoveDatasourceClick( wxCommandEvent& event )
 
         int params_index = m_lcSources->GetItemData(itemIndex);
         if( params_index != -1 ){
-            ConnectionParams *cp = g_pConnectionParams->Item(params_index);
+            ConnectionParams *cp = g_pConnectionParams->Item( params_index );
             g_pConnectionParams->RemoveAt( params_index );
 
             DataStream *pds_existing = g_pMUX->FindStream( cp->GetDSPort() );
@@ -6414,8 +6407,8 @@ void options::OnRemoveDatasourceClick( wxCommandEvent& event )
         }
 
         //  Mark connection deleted
-        m_rbTypeSerial->SetValue(TRUE);
-        m_comboPort->SetValue( _T("Deleted") );
+        m_rbTypeSerial->SetValue( TRUE );
+        m_comboPort->SetValue( _T( "Deleted" ) );
     }
     FillSourceList();
     ShowNMEACommon( FALSE );
