@@ -530,7 +530,8 @@ bool PlugInManager::DeactivatePlugIn(PlugInContainer *pic)
         msg += pic->m_plugin_file;
         wxLogMessage(msg);
 
-        pic->m_pplugin->DeInit();
+        if(pic->m_bInitState)
+            pic->m_pplugin->DeInit();
 
         //    Deactivate (Remove) any ToolbarTools added by this PlugIn
         for(unsigned int i=0; i < m_PlugInToolbarTools.GetCount(); i++)
@@ -3277,8 +3278,16 @@ PluginPanel::PluginPanel(PluginListPanel *parent, wxWindowID id, const wxPoint &
     SetSizer(itemBoxSizer01);
     Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(PluginPanel::OnPluginSelected), NULL, this);
 
-    wxStaticBitmap *itemStaticBitmap = new wxStaticBitmap( this, wxID_ANY,
-                                                           wxBitmap(m_pPlugin->m_bitmap->ConvertToImage().Copy()));
+    wxStaticBitmap *itemStaticBitmap;
+    wxImage plugin_icon = m_pPlugin->m_bitmap->ConvertToImage();
+    if(plugin_icon.IsOk()){
+        itemStaticBitmap = new wxStaticBitmap( this, wxID_ANY, wxBitmap(plugin_icon.Copy()));
+    }
+    else{
+        ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
+        itemStaticBitmap = new wxStaticBitmap( this, wxID_ANY,  wxBitmap(style->GetIcon( _T("default_pi"))));
+    }
+        
     itemBoxSizer01->Add(itemStaticBitmap, 0, wxEXPAND|wxALL, 5);
     itemStaticBitmap->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler( PluginPanel::OnPluginSelected ), NULL, this);
     wxBoxSizer* itemBoxSizer02 = new wxBoxSizer(wxVERTICAL);
