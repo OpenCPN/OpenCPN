@@ -6613,9 +6613,14 @@ void SentenceListDlg::OnCLBToggle( wxCommandEvent& event )
 
 void SentenceListDlg::OnAddClick( wxCommandEvent& event )
 {
-    wxString stc =
-        wxGetTextFromUser( _( "Enter the NMEA sentence (2, 3 or 5 characters) " ),
-                           _( "Enter the NMEA sentence" ) );
+    wxTextEntryDialog textdlg( this, _( "Enter the NMEA sentence (2, 3 or 5 characters) " ),
+                               _( "Enter the NMEA sentence" ) );
+    textdlg.SetMaxLength( 5 );
+    textdlg.SetTextValidator( wxFILTER_ALPHANUMERIC );
+    if ( textdlg.ShowModal() == wxID_CANCEL )
+        return;
+    wxString stc = textdlg.GetValue();
+
     if ( stc.Length() == 2 || stc.Length() == 3 || stc.Length() == 5 ) {
         m_sentences.Add( stc );
         m_clbSentences->Append( stc );
