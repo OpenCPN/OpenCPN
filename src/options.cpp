@@ -6498,17 +6498,11 @@ void options::OnCbInput( wxCommandEvent& event )
 void options::OnCbOutput( wxCommandEvent& event )
 {
     OnConnValChange(event);
-    if (m_cbOutput->IsChecked()) {
-        m_stPrecision->Enable(TRUE);
-        m_choicePrecision->Enable(TRUE);
-        m_stTalkerIdText->Enable(TRUE);
-        m_TalkerIdText->Enable( TRUE );
-    } else {
-        m_stPrecision->Enable(FALSE);
-        m_choicePrecision->Enable(FALSE);
-        m_stTalkerIdText->Enable( FALSE );
-        m_TalkerIdText->Enable( FALSE );
-    }
+    const bool checked = m_cbOutput->IsChecked();
+    m_stPrecision->Enable( checked );
+    m_choicePrecision->Enable( checked );
+    m_stTalkerIdText->Enable( checked );
+    m_TalkerIdText->Enable( checked );
 }
 
 SentenceListDlg::SentenceListDlg( FilterDirection dir, wxWindow* parent,
