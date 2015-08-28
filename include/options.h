@@ -382,6 +382,8 @@ class options: public wxScrollingDialog
     void OnConnValChange( wxCommandEvent& event );
     void OnValChange( wxCommandEvent& event );
     void OnUploadFormatChange( wxCommandEvent& event );
+    void EnableItem( const long index );
+    void OnConnectionToggleEnable( wxListEvent &event );
     void OnConnectionToggleEnable( wxMouseEvent &event );
 
     bool connectionsaved;

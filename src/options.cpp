@@ -1405,15 +1405,16 @@ void options::CreatePanel_NMEA_Compact( size_t parent, int border_size, int grou
 
     // Connect Events
     m_lcSources->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED, wxListEventHandler( options::OnSelectDatasource ), NULL, this );
+    m_lcSources->Connect( wxEVT_LIST_ITEM_ACTIVATED, wxListEventHandler( options::OnConnectionToggleEnable ), NULL, this );
     m_buttonAdd->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnAddDatasourceClick ), NULL, this );
     m_buttonRemove->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnRemoveDatasourceClick ), NULL, this );
 
     m_rbTypeSerial->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnTypeSerialSelected ), NULL, this );
     m_rbTypeNet->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnTypeNetSelected ), NULL, this );
 
-    if(m_rbTypeInternalGPS)
+    if ( m_rbTypeInternalGPS )
         m_rbTypeInternalGPS->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnTypeGPSSelected ), NULL, this );
-    if(m_rbTypeInternalBT)
+    if ( m_rbTypeInternalBT )
         m_rbTypeInternalBT->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnTypeBTSelected ), NULL, this );
 
     m_rbNetProtoTCP->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnNetProtocolSelected ), NULL, this );
@@ -1856,15 +1857,16 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
 
     // Connect Events
     m_lcSources->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED, wxListEventHandler( options::OnSelectDatasource ), NULL, this );
+    m_lcSources->Connect( wxEVT_LIST_ITEM_ACTIVATED, wxListEventHandler( options::OnConnectionToggleEnable ), NULL, this );
     m_buttonAdd->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnAddDatasourceClick ), NULL, this );
     m_buttonRemove->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnRemoveDatasourceClick ), NULL, this );
 
     m_rbTypeSerial->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnTypeSerialSelected ), NULL, this );
     m_rbTypeNet->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnTypeNetSelected ), NULL, this );
 
-    if(m_rbTypeInternalGPS)
+    if ( m_rbTypeInternalGPS )
         m_rbTypeInternalGPS->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnTypeGPSSelected ), NULL, this );
-    if(m_rbTypeInternalBT)
+    if ( m_rbTypeInternalBT )
         m_rbTypeInternalBT->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnTypeBTSelected ), NULL, this );
 
     m_rbNetProtoTCP->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnNetProtocolSelected ), NULL, this );
@@ -1950,27 +1952,36 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     connectionsaved = TRUE;
 }
 
+void options::EnableItem( const long index )
+{
+    if ( index == wxNOT_FOUND ) {
+        ClearNMEAForm();
+        m_buttonRemove->Disable();
+    } else {
+        ConnectionParams *conn = g_pConnectionParams->Item(
+            m_lcSources->GetItemData( index )
+        );
+        if ( !conn ) return;
+        conn->bEnabled = !conn->bEnabled;
+        m_connection_enabled = conn->bEnabled;
+        // Mark as changed
+        conn->b_IsSetup = FALSE;
+        m_lcSources->SetItemImage( index, conn->bEnabled );
+    }
+}
+
+void options::OnConnectionToggleEnable( wxListEvent &event )
+{
+    EnableItem( event.GetIndex() );
+    cc1->Refresh();
+}
+
 void options::OnConnectionToggleEnable( wxMouseEvent &event )
 {
     int flags;
-    long clicked_index = m_lcSources->HitTest( event.GetPosition(), flags );
-
-    // Clicking Enable Checkbox (full column)
-    if ( clicked_index > -1 && event.GetX() < m_lcSources->GetColumnWidth( 0 ) ) {
-        // Process the clicked item
-        ConnectionParams *conn = g_pConnectionParams->Item( m_lcSources->GetItemData( clicked_index ) );
-        if ( conn ) {
-            conn->bEnabled = !conn->bEnabled;
-            m_connection_enabled = conn->bEnabled;
-            // Mark as changed
-            conn->b_IsSetup = FALSE;
-            m_lcSources->SetItemImage( clicked_index, conn->bEnabled ? 1 : 0 );
-        }
-        cc1->Refresh();
-    } else if ( clicked_index == -1 ) {
-        ClearNMEAForm();
-        m_buttonRemove->Enable( FALSE );
-    }
+    long index = m_lcSources->HitTest( event.GetPosition(), flags );
+    if ( index > -1 && event.GetX() < m_lcSources->GetColumnWidth( 0 ) )
+        EnableItem( index );
 
     // Allow wx to process...
     event.Skip();
