@@ -5978,17 +5978,11 @@ void options::ShowNMEACommon( bool visible )
     m_TalkerIdText->Show( visible );
     m_cbCheckCRC->Show( visible );
     if ( visible ) {
-        if ( m_cbOutput->IsChecked() ) {
-            m_stPrecision->Enable( TRUE );
-            m_choicePrecision->Enable( TRUE );
-            m_stTalkerIdText->Enable( TRUE );
-            m_TalkerIdText->Enable( TRUE );
-        } else {
-            m_stPrecision->Enable( FALSE );
-            m_choicePrecision->Enable( FALSE );
-            m_stTalkerIdText->Enable( FALSE );
-            m_TalkerIdText->Enable( FALSE );
-        }
+        const bool output = m_cbOutput->IsChecked();
+        m_stPrecision->Enable( output );
+        m_choicePrecision->Enable( output );
+        m_stTalkerIdText->Enable( output );
+        m_TalkerIdText->Enable( output );
     }
     m_bNMEAParams_shown = visible;
 }
