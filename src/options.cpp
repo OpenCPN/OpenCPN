@@ -6426,78 +6426,76 @@ void options::OnRemoveDatasourceClick( wxCommandEvent& event )
 void options::OnSelectDatasource( wxListEvent& event )
 {
     connectionsaved = FALSE;
-    int params_index = event.GetData();
-    SetConnectionParams(g_pConnectionParams->Item(params_index));
+    SetConnectionParams( g_pConnectionParams->Item( event.GetData() ) );
     m_buttonRemove->Enable();
     event.Skip();
 }
 
 void options::OnBtnIStcs( wxCommandEvent& event )
 {
-    m_stcdialog_in->SetSentenceList(wxStringTokenize(m_tcInputStc->GetValue(), _T(",")));
-    m_stcdialog_in->SetType(0, (m_rbIAccept->GetValue() == TRUE) ? WHITELIST:BLACKLIST);
+    m_stcdialog_in->SetSentenceList(
+        wxStringTokenize( m_tcInputStc->GetValue(), _T( "," ) )
+    );
+    m_stcdialog_in->SetType( 0, m_rbIAccept->GetValue() ? WHITELIST :
+                                                          BLACKLIST);
 
-    if (m_stcdialog_in->ShowModal() == wxID_OK)
-        m_tcInputStc->SetValue(m_stcdialog_in->GetSentencesAsText());
+    if ( m_stcdialog_in->ShowModal() == wxID_OK )
+        m_tcInputStc->SetValue( m_stcdialog_in->GetSentencesAsText() );
 }
 
 void options::OnBtnOStcs( wxCommandEvent& event )
 {
-    m_stcdialog_out->SetSentenceList(wxStringTokenize(m_tcOutputStc->GetValue(), _T(",")));
-    m_stcdialog_out->SetType(1, (m_rbOAccept->GetValue() == TRUE) ? WHITELIST:BLACKLIST);
+    m_stcdialog_out->SetSentenceList(
+        wxStringTokenize( m_tcOutputStc->GetValue(), _T( "," ) )
+    );
+    m_stcdialog_out->SetType( 1, m_rbOAccept->GetValue() ? WHITELIST :
+                                                           BLACKLIST );
 
-    if (m_stcdialog_out->ShowModal() == wxID_OK)
-        m_tcOutputStc->SetValue(m_stcdialog_out->GetSentencesAsText());
+    if ( m_stcdialog_out->ShowModal() == wxID_OK )
+        m_tcOutputStc->SetValue( m_stcdialog_out->GetSentencesAsText() );
 }
 
 void options::OnNetProtocolSelected( wxCommandEvent& event )
 {
-    if (m_rbNetProtoGPSD->GetValue())
-    {
-        if (m_tNetPort->GetValue() == wxEmptyString)
-            m_tNetPort->SetValue(_T("2947"));
-    }
-    else if (m_rbNetProtoUDP->GetValue())
-    {
-        if (m_tNetPort->GetValue() == wxEmptyString)
-            m_tNetPort->SetValue(_T("10110"));
-
-        if (m_tNetAddress->GetValue() == wxEmptyString)
-            m_tNetAddress->SetValue(_T("0.0.0.0"));
-
-    }
-    else if (m_rbNetProtoTCP->GetValue())
-    {
-        if (m_tNetPort->GetValue() == wxEmptyString)
-            m_tNetPort->SetValue(_T("10110"));
+    if ( m_rbNetProtoGPSD->GetValue() ) {
+        if ( m_tNetPort->GetValue().IsEmpty() )
+            m_tNetPort->SetValue( _T( "2947" ));
+    } else if ( m_rbNetProtoUDP->GetValue() ) {
+        if ( m_tNetPort->GetValue().IsEmpty() )
+            m_tNetPort->SetValue( _T( "10110" ) );
+        if ( m_tNetAddress->GetValue().IsEmpty() )
+            m_tNetAddress->SetValue( _T( "0.0.0.0" ) );
+    } else if ( m_rbNetProtoTCP->GetValue() ) {
+        if (m_tNetPort->GetValue().IsEmpty())
+            m_tNetPort->SetValue( _T( "10110" ) );
     }
 
     SetDSFormRWStates();
-    OnConnValChange(event);
+    OnConnValChange( event );
 }
 
 void options::OnRbAcceptInput( wxCommandEvent& event )
 {
-    OnConnValChange(event);
+    OnConnValChange( event );
 }
 void options::OnRbIgnoreInput( wxCommandEvent& event )
 {
-    OnConnValChange(event);
+    OnConnValChange( event );
 }
 
 void options::OnRbOutput( wxCommandEvent& event )
 {
-    OnConnValChange(event);
+    OnConnValChange( event );
 }
 
 void options::OnCbInput( wxCommandEvent& event )
 {
-    OnConnValChange(event);
+    OnConnValChange( event );
 }
 
 void options::OnCbOutput( wxCommandEvent& event )
 {
-    OnConnValChange(event);
+    OnConnValChange( event );
     const bool checked = m_cbOutput->IsChecked();
     m_stPrecision->Enable( checked );
     m_choicePrecision->Enable( checked );
