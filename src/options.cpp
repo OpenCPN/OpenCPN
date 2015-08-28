@@ -6511,62 +6511,56 @@ void options::OnCbOutput( wxCommandEvent& event )
     }
 }
 
-//SentenceListDlg
-SentenceListDlg::SentenceListDlg( FilterDirection dir, wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
+SentenceListDlg::SentenceListDlg( FilterDirection dir, wxWindow* parent,
+                                  wxWindowID id, const wxString& title,
+                                  const wxPoint& pos, const wxSize& size,
+                                  long style )
+    : wxDialog( parent, id, title, pos, size, style ), m_dir( dir )
 {
-    m_dir = dir;
-    this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+    SetSizeHints( wxDefaultSize, wxDefaultSize );
 
-    wxBoxSizer* bSizer16;
-    bSizer16 = new wxBoxSizer( wxVERTICAL );
-
-    wxBoxSizer* bSizer17;
-    bSizer17 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer* bSizer16 = new wxBoxSizer( wxVERTICAL );
+    wxBoxSizer* bSizer17 = new wxBoxSizer( wxHORIZONTAL );
 
     NMEA0183 nmea;
     standard_sentences = nmea.GetRecognizedArray();
-    if(m_dir == FILTER_OUTPUT) {
-        standard_sentences.Add(_T("ECRMB"));
-        standard_sentences.Add(_T("ECRMC"));
-        standard_sentences.Add(_T("ECAPB"));
+    if ( m_dir == FILTER_OUTPUT ) {
+        standard_sentences.Add( _T("ECRMB") );
+        standard_sentences.Add( _T("ECRMC") );
+        standard_sentences.Add( _T("ECAPB") );
     }
+    standard_sentences.Add( _T("AIVDM") );
+    standard_sentences.Add( _T("AIVDO") );
+    standard_sentences.Add( _T("FRPOS") );
+    standard_sentences.Add( _T("CD") );
 
-    standard_sentences.Add(_T("AIVDM"));
-    standard_sentences.Add(_T("AIVDO"));
-    standard_sentences.Add(_T("FRPOS"));
-    standard_sentences.Add(_T("CD"));
+    m_pclbBox = new wxStaticBox( this, wxID_ANY, wxEmptyString ) ;
+    wxStaticBoxSizer* sbSizerclb = new wxStaticBoxSizer( m_pclbBox,
+                                                         wxVERTICAL );
+    bSizer17->Add( sbSizerclb, 1, wxALL | wxEXPAND, 5 );
 
-    m_pclbBox = new wxStaticBox( this,  wxID_ANY, _T("")) ;
-
-    wxStaticBoxSizer* sbSizerclb;
-    sbSizerclb = new wxStaticBoxSizer( m_pclbBox , wxVERTICAL );
-    bSizer17->Add( sbSizerclb, 1, wxALL|wxEXPAND, 5 );
-
-    m_clbSentences = new wxCheckListBox( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, standard_sentences );
-
+    m_clbSentences = new wxCheckListBox( this, wxID_ANY, wxDefaultPosition,
+                                         wxDefaultSize, standard_sentences );
     sbSizerclb->Add( m_clbSentences, 1, wxALL|wxEXPAND, 5 );
 
-    wxBoxSizer* bSizer18;
-    bSizer18 = new wxBoxSizer( wxVERTICAL );
+    wxBoxSizer* bSizer18 = new wxBoxSizer( wxVERTICAL );
 
-    m_btnCheckAll = new wxButton( this, wxID_ANY, _("Select All"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_btnCheckAll = new wxButton( this, wxID_ANY, _("Select All") );
     bSizer18->Add( m_btnCheckAll, 0, wxALL, 5 );
 
-    m_btnClearAll = new wxButton( this, wxID_ANY, _("Clear All"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_btnClearAll = new wxButton( this, wxID_ANY, _("Clear All") );
     bSizer18->Add( m_btnClearAll, 0, wxALL, 5 );
 
-    bSizer18->AddSpacer(1);
+    bSizer18->AddSpacer( 1 );
 
-    m_btnAdd = new wxButton( this, wxID_ANY, _("Add"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_btnAdd = new wxButton( this, wxID_ANY, _("Add"));
     bSizer18->Add( m_btnAdd, 0, wxALL, 5 );
 
-    m_btnDel = new wxButton( this, wxID_ANY, _("Delete"), wxDefaultPosition, wxDefaultSize, 0 );
-    m_btnDel->Enable( FALSE );
+    m_btnDel = new wxButton( this, wxID_ANY, _("Delete"));
+    m_btnDel->Disable();
 
     bSizer18->Add( m_btnDel, 0, wxALL, 5 );
-
-    bSizer17->Add( bSizer18, 0, wxALL|wxEXPAND, 5 );
-
+    bSizer17->Add( bSizer18, 0, wxALL | wxEXPAND, 5 );
     bSizer16->Add( bSizer17, 1, wxEXPAND, 5 );
 
     m_sdbSizer4 = new wxStdDialogButtonSizer();
@@ -6576,12 +6570,11 @@ SentenceListDlg::SentenceListDlg( FilterDirection dir, wxWindow* parent, wxWindo
     m_sdbSizer4->AddButton( m_sdbSizer4Cancel );
     m_sdbSizer4->Realize();
 
-    bSizer16->Add( m_sdbSizer4, 0, wxALL|wxEXPAND, 5 );
+    bSizer16->Add( m_sdbSizer4, 0, wxALL | wxEXPAND, 5 );
 
-    this->SetSizer( bSizer16 );
-    this->Layout();
-
-    this->Centre( wxBOTH );
+    SetSizer( bSizer16 );
+    Layout();
+    Centre();
 
     // Connect Events
     m_btnAdd->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnAddClick ), NULL, this );
@@ -6596,7 +6589,7 @@ SentenceListDlg::SentenceListDlg( FilterDirection dir, wxWindow* parent, wxWindo
 
 SentenceListDlg::~SentenceListDlg( void )
 {
-    // Disconnect Events
+    // Disconnect Events... Why?
     m_btnAdd->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnAddClick ), NULL, this );
     m_btnDel->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnDeleteClick ), NULL, this );
     m_sdbSizer4Cancel->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnCancelClick ), NULL, this );
