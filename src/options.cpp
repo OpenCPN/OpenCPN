@@ -5983,6 +5983,10 @@ void options::ShowNMEACommon( bool visible )
         m_choicePrecision->Enable( output );
         m_stTalkerIdText->Enable( output );
         m_TalkerIdText->Enable( output );
+    } else {
+        sbSizerOutFilter->SetDimension( 0, 0, 0, 0 );
+        sbSizerInFilter->SetDimension( 0, 0, 0, 0 );
+        sbSizerConnectionProps->SetDimension( 0, 0, 0, 0 );
     }
     m_bNMEAParams_shown = visible;
 }
