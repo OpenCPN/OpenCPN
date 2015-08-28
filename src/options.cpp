@@ -6592,7 +6592,6 @@ SentenceListDlg::SentenceListDlg( FilterDirection dir, wxWindow* parent, wxWindo
     m_clbSentences->Connect( wxEVT_COMMAND_LISTBOX_SELECTED, wxCommandEventHandler( SentenceListDlg::OnCLBSelect ), NULL, this );
     m_btnCheckAll->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnCheckAllClick ), NULL, this );
     m_btnClearAll->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnClearAllClick ), NULL, this );
-
 }
 
 SentenceListDlg::~SentenceListDlg( void )
@@ -6612,13 +6611,13 @@ void SentenceListDlg::SetSentenceList(wxArrayString sentences)
 {
     m_sentences = sentences;
 
-    if( (m_sentences.Count() == 0) && (m_type == WHITELIST) ){
-        for (size_t i = 0; i < m_clbSentences->GetCount(); i++)
-            m_clbSentences->Check(i, TRUE);
+    if ( m_sentences.Count() == 0 && m_type == WHITELIST ) {
+        for ( size_t i = 0; i < m_clbSentences->GetCount(); i++ )
+            m_clbSentences->Check( i, TRUE );
     }
-    if( (m_sentences.Count() == 0) && (m_type == BLACKLIST) ){
-        for (size_t i = 0; i < m_clbSentences->GetCount(); i++)
-            m_clbSentences->Check(i, FALSE);
+    if ( m_sentences.Count() == 0 && m_type == BLACKLIST ) {
+        for ( size_t i = 0; i < m_clbSentences->GetCount(); i++ )
+            m_clbSentences->Check( i, FALSE );
     }
 
     FillSentences();
@@ -6626,35 +6625,33 @@ void SentenceListDlg::SetSentenceList(wxArrayString sentences)
 
 wxString SentenceListDlg::GetSentencesAsText( void )
 {
-    return StringArrayToString(m_sentences);
+    return StringArrayToString( m_sentences );
 }
 
 void SentenceListDlg::BuildSentenceArray( void )
 {
     m_sentences.Clear();
     wxString s;
-    for (size_t i = 0; i < m_clbSentences->GetCount(); i++) {
-        if( m_clbSentences->IsChecked(i))
-            m_sentences.Add( m_clbSentences->GetString(i) );
+    for ( size_t i = 0; i < m_clbSentences->GetCount(); i++ ) {
+        if ( m_clbSentences->IsChecked( i ) )
+            m_sentences.Add( m_clbSentences->GetString( i ) );
     }
 }
 
 void SentenceListDlg::FillSentences( void )
 {
-    if(m_sentences.Count() == 0)
-        return;
+    if ( m_sentences.Count() == 0 ) return;
 
-    for (size_t i = 0; i < m_clbSentences->GetCount(); i++)
-        m_clbSentences->Check(i, FALSE);
+    for ( size_t i = 0; i < m_clbSentences->GetCount(); i++ )
+        m_clbSentences->Check( i, FALSE );
 
-    for (size_t i = 0; i < m_sentences.Count(); i++) {
-        int item = m_clbSentences->FindString(m_sentences[i]);
-        if( wxNOT_FOUND != item )
-            m_clbSentences->Check(item);
+    for ( size_t i = 0; i < m_sentences.Count(); i++ ) {
+        int item = m_clbSentences->FindString( m_sentences[i] );
+        if ( item != wxNOT_FOUND )
+            m_clbSentences->Check( item );
         else {
-            m_clbSentences->Append(m_sentences[i]);
-            int item = m_clbSentences->FindString(m_sentences[i]);
-            m_clbSentences->Check(item);
+            m_clbSentences->Append( m_sentences[i] );
+            m_clbSentences->Check( m_clbSentences->FindString( m_sentences[i] ) );
         }
     }
 
