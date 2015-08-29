@@ -6444,10 +6444,8 @@ SentenceListDlg::SentenceListDlg( FilterDirection dir, wxWindow* parent,
                                   long style )
     : wxDialog( parent, id, title, pos, size, style ), m_dir( dir )
 {
-    SetSizeHints( wxDefaultSize, wxDefaultSize );
 
-    wxBoxSizer* bSizer16 = new wxBoxSizer( wxVERTICAL );
-    wxBoxSizer* bSizer17 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer* mainSizer = new wxBoxSizer( wxVERTICAL );
 
     NMEA0183 nmea;
     standard_sentences = nmea.GetRecognizedArray();
@@ -6461,57 +6459,46 @@ SentenceListDlg::SentenceListDlg( FilterDirection dir, wxWindow* parent,
     standard_sentences.Add( _T("FRPOS") );
     standard_sentences.Add( _T("CD") );
 
+    wxBoxSizer* secondSizer = new wxBoxSizer( wxHORIZONTAL );
     m_pclbBox = new wxStaticBox( this, wxID_ANY, wxEmptyString ) ;
-    wxStaticBoxSizer* sbSizerclb = new wxStaticBoxSizer( m_pclbBox,
-                                                         wxVERTICAL );
-    bSizer17->Add( sbSizerclb, 1, wxALL | wxEXPAND, 5 );
-
+    wxStaticBoxSizer* stcSizer = new wxStaticBoxSizer( m_pclbBox, wxVERTICAL );
     m_clbSentences = new wxCheckListBox( this, wxID_ANY, wxDefaultPosition,
                                          wxDefaultSize, standard_sentences );
-    sbSizerclb->Add( m_clbSentences, 1, wxALL|wxEXPAND, 5 );
-
-    wxBoxSizer* bSizer18 = new wxBoxSizer( wxVERTICAL );
-
-    m_btnCheckAll = new wxButton( this, wxID_ANY, _("Select All") );
-    bSizer18->Add( m_btnCheckAll, 0, wxALL, 5 );
-
-    m_btnClearAll = new wxButton( this, wxID_ANY, _("Clear All") );
-    bSizer18->Add( m_btnClearAll, 0, wxALL, 5 );
-
-    bSizer18->AddSpacer( 1 );
-
-    m_btnAdd = new wxButton( this, wxID_ANY, _("Add"));
-    bSizer18->Add( m_btnAdd, 0, wxALL, 5 );
-
+    wxBoxSizer* btnEntrySizer = new wxBoxSizer( wxVERTICAL );
+    wxButton *btnCheckAll = new wxButton( this, wxID_ANY, _("Select All") );
+    wxButton *btnClearAll = new wxButton( this, wxID_ANY, _("Clear All") );
+    wxButton *btnAdd = new wxButton( this, wxID_ANY, _("Add"));
     m_btnDel = new wxButton( this, wxID_ANY, _("Delete"));
+    wxStdDialogButtonSizer *btnSizer = new wxStdDialogButtonSizer();
+    wxButton *btnOK = new wxButton( this, wxID_OK );
+    wxButton *btnCancel = new wxButton( this, wxID_CANCEL );
+
+    secondSizer->Add( stcSizer, 1, wxALL | wxEXPAND, 5 );
+    stcSizer->Add( m_clbSentences, 1, wxALL | wxEXPAND, 5 );
+    btnEntrySizer->Add( btnCheckAll, 0, wxALL, 5 );
+    btnEntrySizer->Add( btnClearAll, 0, wxALL, 5 );
+    btnEntrySizer->AddSpacer( 1 );
+    btnEntrySizer->Add( btnAdd, 0, wxALL, 5 );
     m_btnDel->Disable();
+    btnEntrySizer->Add( m_btnDel, 0, wxALL, 5 );
+    secondSizer->Add( btnEntrySizer, 0, wxALL | wxEXPAND, 5 );
+    mainSizer->Add( secondSizer, 1, wxEXPAND, 5 );
+    btnSizer->AddButton( btnOK );
+    btnSizer->AddButton( btnCancel );
+    btnSizer->Realize();
+    mainSizer->Add( btnSizer, 0, wxALL | wxEXPAND, 5 );
 
-    bSizer18->Add( m_btnDel, 0, wxALL, 5 );
-    bSizer17->Add( bSizer18, 0, wxALL | wxEXPAND, 5 );
-    bSizer16->Add( bSizer17, 1, wxEXPAND, 5 );
-
-    m_sdbSizer4 = new wxStdDialogButtonSizer();
-    m_sdbSizer4OK = new wxButton( this, wxID_OK );
-    m_sdbSizer4->AddButton( m_sdbSizer4OK );
-    m_sdbSizer4Cancel = new wxButton( this, wxID_CANCEL );
-    m_sdbSizer4->AddButton( m_sdbSizer4Cancel );
-    m_sdbSizer4->Realize();
-
-    bSizer16->Add( m_sdbSizer4, 0, wxALL | wxEXPAND, 5 );
-
-    SetSizer( bSizer16 );
-    Layout();
+    SetSizer( mainSizer );
+    mainSizer->SetSizeHints( this );
     Centre();
 
     // Connect Events
-    m_btnAdd->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnAddClick ), NULL, this );
+    btnAdd->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnAddClick ), NULL, this );
     m_btnDel->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnDeleteClick ), NULL, this );
-    m_sdbSizer4Cancel->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnCancelClick ), NULL, this );
-    m_sdbSizer4OK->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnOkClick ), NULL, this );
     m_clbSentences->Connect( wxEVT_COMMAND_CHECKLISTBOX_TOGGLED, wxCommandEventHandler( SentenceListDlg::OnCLBToggle ), NULL, this );
     m_clbSentences->Connect( wxEVT_COMMAND_LISTBOX_SELECTED, wxCommandEventHandler( SentenceListDlg::OnCLBSelect ), NULL, this );
-    m_btnCheckAll->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnCheckAllClick ), NULL, this );
-    m_btnClearAll->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnClearAllClick ), NULL, this );
+    btnCheckAll->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnCheckAllClick ), NULL, this );
+    btnClearAll->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnClearAllClick ), NULL, this );
 }
 
 void SentenceListDlg::SetSentenceList(wxArrayString sentences)
@@ -6668,9 +6655,6 @@ void SentenceListDlg::SetType( int io, ListType type )
     Refresh();
 }
 
-void SentenceListDlg::OnCancelClick( wxCommandEvent& event ) { event.Skip(); }
-void SentenceListDlg::OnOkClick( wxCommandEvent& event ) { event.Skip(); }
-
 // OpenGLOptionsDlg
 enum { ID_BUTTON_REBUILD, ID_BUTTON_CLEAR };
 
@@ -6785,12 +6769,12 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
 
     m_bSizer1->AddSpacer(0);
 
-    wxStdDialogButtonSizer * m_sdbSizer4 = new wxStdDialogButtonSizer();
-    m_sdbSizer4->AddButton( new wxButton( this, wxID_OK ) );
-    m_sdbSizer4->AddButton( new wxButton( this, wxID_CANCEL ) );
-    m_sdbSizer4->Realize();
+    wxStdDialogButtonSizer * btnSizer = new wxStdDialogButtonSizer();
+    btnSizer->AddButton( new wxButton( this, wxID_OK ) );
+    btnSizer->AddButton( new wxButton( this, wxID_CANCEL ) );
+    btnSizer->Realize();
 
-    m_bSizer1->Add( m_sdbSizer4, 0, wxALL | wxEXPAND, 5 );
+    m_bSizer1->Add( btnSizer, 0, wxALL | wxEXPAND, 5 );
 
     SetSizer( m_bSizer1 );
     Layout();

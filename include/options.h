@@ -863,8 +863,6 @@ class SentenceListDlg : public wxDialog
     void OnStcSelect( wxCommandEvent& event );
     void OnAddClick( wxCommandEvent& event );
     void OnDeleteClick( wxCommandEvent& event );
-    void OnCancelClick( wxCommandEvent& event );
-    void OnOkClick( wxCommandEvent& event );
     void OnCLBSelect( wxCommandEvent& event );
     void OnCLBToggle( wxCommandEvent& event );
     void OnCheckAllClick( wxCommandEvent& event );
@@ -872,11 +870,10 @@ class SentenceListDlg : public wxDialog
     void FillSentences( void );
 
     wxCheckListBox* m_clbSentences;
-    wxButton *m_btnAdd, *m_btnDel, *m_btnCheckAll, *m_btnClearAll;
-    wxButton *m_sdbSizer4OK, *m_sdbSizer4Cancel;
     wxStdDialogButtonSizer* m_sdbSizer4;
     wxArrayString standard_sentences, m_sentences;
     wxStaticBox *m_pclbBox;
+    wxButton *m_btnDel;
 
     ListType m_type;
     FilterDirection m_dir;
