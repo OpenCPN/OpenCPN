@@ -858,14 +858,12 @@ class SentenceListDlg : public wxDialog
                               const wxPoint& pos = wxDefaultPosition,
                               const wxSize& size = wxSize( 280,420 ),
                               long style = wxDEFAULT_DIALOG_STYLE );
-    ~SentenceListDlg( void );
     void SetSentenceList(wxArrayString sentences);
     wxString GetSentencesAsText( void );
     void BuildSentenceArray( void );
     void SetType(int io, ListType type);
 
-  protected:
-    // Virtual event handlers, overide them in your derived class
+  private:
     void OnStcSelect( wxCommandEvent& event );
     void OnAddClick( wxCommandEvent& event );
     void OnDeleteClick( wxCommandEvent& event );
@@ -875,18 +873,15 @@ class SentenceListDlg : public wxDialog
     void OnCLBToggle( wxCommandEvent& event );
     void OnCheckAllClick( wxCommandEvent& event );
     void OnClearAllClick( wxCommandEvent& event );
+    void FillSentences( void );
 
     wxCheckListBox* m_clbSentences;
     wxButton *m_btnAdd, *m_btnDel, *m_btnCheckAll, *m_btnClearAll;
     wxButton *m_sdbSizer4OK, *m_sdbSizer4Cancel;
     wxStdDialogButtonSizer* m_sdbSizer4;
-    wxArrayString standard_sentences;
+    wxArrayString standard_sentences, m_sentences;
     wxStaticBox *m_pclbBox;
 
-  private:
-    void FillSentences( void );
-
-    wxArrayString m_sentences;
     ListType m_type;
     FilterDirection m_dir;
 };
