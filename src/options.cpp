@@ -6554,19 +6554,10 @@ void SentenceListDlg::OnStcSelect( wxCommandEvent& event )
     m_btnDel->Enable();
 }
 
-void SentenceListDlg::OnCLBSelect( wxCommandEvent& event )
+void SentenceListDlg::OnCLBSelect( wxCommandEvent& e )
 {
-    // Only active the "Delete" button if the selection is not in the standard list
-    int isel = m_clbSentences->GetSelection();
-
-    bool bdelete = TRUE;
-    if ( isel >= 0 ) {
-        wxString s = m_clbSentences->GetString( isel );
-        if ( standard_sentences.Index( s ) != wxNOT_FOUND )
-            bdelete = FALSE;
-    } else
-        bdelete = FALSE;
-    m_btnDel->Enable( bdelete );
+    // Only activate the "Delete" button if the selection is not in the standard list
+    m_btnDel->Enable( standard_sentences.Index( e.GetString( ) ) == wxNOT_FOUND );
 }
 
 void SentenceListDlg::OnCLBToggle( wxCommandEvent& event )
