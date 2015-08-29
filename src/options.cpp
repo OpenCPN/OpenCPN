@@ -6368,11 +6368,9 @@ void options::OnSelectDatasource( wxListEvent& event )
 
 void options::OnBtnIStcs( wxCommandEvent& event )
 {
-    SentenceListDlg dlg( FILTER_INPUT, this );
-    dlg.SetSentenceList(
-        wxStringTokenize( m_tcInputStc->GetValue(), _T( "," ) )
-    );
-    dlg.SetType( 0, m_rbIAccept->GetValue() ? WHITELIST : BLACKLIST);
+    const ListType type = m_rbIAccept->GetValue() ? WHITELIST : BLACKLIST;
+    const wxArrayString list = wxStringTokenize( m_tcInputStc->GetValue(), _T( "," ) );
+    SentenceListDlg dlg( this, FILTER_INPUT, type, list );
 
     if ( dlg.ShowModal() == wxID_OK )
         m_tcInputStc->SetValue( dlg.GetSentencesAsText() );
@@ -6380,11 +6378,9 @@ void options::OnBtnIStcs( wxCommandEvent& event )
 
 void options::OnBtnOStcs( wxCommandEvent& event )
 {
-    SentenceListDlg dlg( FILTER_OUTPUT, this );
-    dlg.SetSentenceList(
-        wxStringTokenize( m_tcOutputStc->GetValue(), _T( "," ) )
-    );
-    dlg.SetType( 1, m_rbOAccept->GetValue() ? WHITELIST : BLACKLIST );
+    const ListType type = m_rbOAccept->GetValue() ? WHITELIST : BLACKLIST;
+    const wxArrayString list = wxStringTokenize( m_tcOutputStc->GetValue(), _T( "," ) );
+    SentenceListDlg dlg( this, FILTER_OUTPUT, type, list );
 
     if ( dlg.ShowModal() == wxID_OK )
         m_tcOutputStc->SetValue( dlg.GetSentencesAsText() );
@@ -6438,12 +6434,15 @@ void options::OnCbOutput( wxCommandEvent& event )
     m_TalkerIdText->Enable( checked );
 }
 
-SentenceListDlg::SentenceListDlg( FilterDirection dir, wxWindow* parent,
-                                  wxWindowID id, const wxString& title,
-                                  const wxPoint& pos, const wxSize& size,
-                                  long style )
-    : wxDialog( parent, id, title, pos, size, style ), m_dir( dir )
+SentenceListDlg::SentenceListDlg( wxWindow* parent, FilterDirection dir,
+                                  ListType type, const wxArrayString &list )
+    : wxDialog( parent, wxID_ANY, _("Sentence Filter"), wxDefaultPosition,
+                wxSize( 280 , 420 ) ),
+    m_type ( type ),
+    m_dir( dir ),
+    m_sentences( list )
 {
+    m_sentences = list;
 
     wxBoxSizer* mainSizer = new wxBoxSizer( wxVERTICAL );
 
@@ -6459,16 +6458,17 @@ SentenceListDlg::SentenceListDlg( FilterDirection dir, wxWindow* parent,
     standard_sentences.Add( _T("FRPOS") );
     standard_sentences.Add( _T("CD") );
 
-    wxBoxSizer* secondSizer = new wxBoxSizer( wxHORIZONTAL );
-    m_pclbBox = new wxStaticBox( this, wxID_ANY, wxEmptyString ) ;
-    wxStaticBoxSizer* stcSizer = new wxStaticBoxSizer( m_pclbBox, wxVERTICAL );
+    wxBoxSizer *secondSizer = new wxBoxSizer( wxHORIZONTAL );
+    wxStaticBox *pclbBox = new wxStaticBox( this, wxID_ANY, GetType() );
+    wxStaticBoxSizer *stcSizer = new wxStaticBoxSizer( pclbBox, wxVERTICAL );
     m_clbSentences = new wxCheckListBox( this, wxID_ANY, wxDefaultPosition,
                                          wxDefaultSize, standard_sentences );
-    wxBoxSizer* btnEntrySizer = new wxBoxSizer( wxVERTICAL );
+    wxBoxSizer *btnEntrySizer = new wxBoxSizer( wxVERTICAL );
     wxButton *btnCheckAll = new wxButton( this, wxID_ANY, _("Select All") );
     wxButton *btnClearAll = new wxButton( this, wxID_ANY, _("Clear All") );
     wxButton *btnAdd = new wxButton( this, wxID_ANY, _("Add"));
     m_btnDel = new wxButton( this, wxID_ANY, _("Delete"));
+    m_btnDel->Disable();
     wxStdDialogButtonSizer *btnSizer = new wxStdDialogButtonSizer();
     wxButton *btnOK = new wxButton( this, wxID_OK );
     wxButton *btnCancel = new wxButton( this, wxID_CANCEL );
@@ -6479,7 +6479,6 @@ SentenceListDlg::SentenceListDlg( FilterDirection dir, wxWindow* parent,
     btnEntrySizer->Add( btnClearAll, 0, wxALL, 5 );
     btnEntrySizer->AddSpacer( 1 );
     btnEntrySizer->Add( btnAdd, 0, wxALL, 5 );
-    m_btnDel->Disable();
     btnEntrySizer->Add( m_btnDel, 0, wxALL, 5 );
     secondSizer->Add( btnEntrySizer, 0, wxALL | wxEXPAND, 5 );
     mainSizer->Add( secondSizer, 1, wxEXPAND, 5 );
@@ -6499,20 +6498,19 @@ SentenceListDlg::SentenceListDlg( FilterDirection dir, wxWindow* parent,
     m_clbSentences->Connect( wxEVT_COMMAND_LISTBOX_SELECTED, wxCommandEventHandler( SentenceListDlg::OnCLBSelect ), NULL, this );
     btnCheckAll->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnCheckAllClick ), NULL, this );
     btnClearAll->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnClearAllClick ), NULL, this );
+
+    SetSentenceList();
+    FillSentences();
 }
 
-void SentenceListDlg::SetSentenceList(wxArrayString sentences)
+void SentenceListDlg::SetSentenceList( void )
 {
-    m_sentences = sentences;
-
-    if ( m_sentences.Count() == 0 ) return;
+    if ( m_sentences.Count() == 0 )
         for ( size_t i = 0; i < m_clbSentences->GetCount(); ++i )
             if ( m_type == WHITELIST )
                 m_clbSentences->Check( i, TRUE );
             else if ( m_type == BLACKLIST )
                 m_clbSentences->Check( i, FALSE );
-
-    FillSentences();
 }
 
 wxString SentenceListDlg::GetSentencesAsText( void )
@@ -6545,8 +6543,6 @@ void SentenceListDlg::FillSentences( void )
             m_clbSentences->Check( m_clbSentences->FindString( m_sentences[i] ) );
         }
     }
-
-    m_btnDel->Disable();
 }
 
 void SentenceListDlg::OnStcSelect( wxCommandEvent& event )
@@ -6632,18 +6628,14 @@ void SentenceListDlg::OnCheckAllClick( wxCommandEvent& event )
     BuildSentenceArray();
 }
 
-void SentenceListDlg::SetType( int io, ListType type )
+const wxString SentenceListDlg::GetType( void )
 {
-    m_type = type;
-
-    if ( io == 1 )
-        m_pclbBox->SetLabel( type == WHITELIST ? _( "Transmit Sentences" ) :
-                                                 _( "Drop Sentences" ) );
+    if ( m_dir == FILTER_OUTPUT )
+        return m_type == WHITELIST ? _( "Transmit Sentences" ) :
+                                     _( "Drop Sentences" );
     else
-        m_pclbBox->SetLabel( type == WHITELIST ? _( "Accept Sentences" ) :
-                                                 _( "Ignore Sentences" ) );
-
-    Refresh();
+        return m_type == WHITELIST ? _( "Accept Sentences" ) :
+                                     _( "Ignore Sentences" );
 }
 
 // OpenGLOptionsDlg

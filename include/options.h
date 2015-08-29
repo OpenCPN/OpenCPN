@@ -847,17 +847,9 @@ static int lang_list[] = {
 class SentenceListDlg : public wxDialog
 {
   public:
-    explicit SentenceListDlg( FilterDirection dir,
-                              wxWindow *parent,
-                              wxWindowID id = wxID_ANY,
-                              const wxString& title = _("Sentence Filter"),
-                              const wxPoint& pos = wxDefaultPosition,
-                              const wxSize& size = wxSize( 280,420 ),
-                              long style = wxDEFAULT_DIALOG_STYLE );
-    void SetSentenceList(wxArrayString sentences);
+    explicit SentenceListDlg( wxWindow *parent, FilterDirection dir,
+                              ListType type, const wxArrayString &list );
     wxString GetSentencesAsText( void );
-    void BuildSentenceArray( void );
-    void SetType(int io, ListType type);
 
   private:
     void OnStcSelect( wxCommandEvent& event );
@@ -867,16 +859,19 @@ class SentenceListDlg : public wxDialog
     void OnCLBToggle( wxCommandEvent& event );
     void OnCheckAllClick( wxCommandEvent& event );
     void OnClearAllClick( wxCommandEvent& event );
+
+    void BuildSentenceArray( void );
+    const wxString GetType( void );
+    void SetSentenceList( void );
     void FillSentences( void );
 
     wxCheckListBox* m_clbSentences;
     wxStdDialogButtonSizer* m_sdbSizer4;
-    wxArrayString standard_sentences, m_sentences;
-    wxStaticBox *m_pclbBox;
     wxButton *m_btnDel;
 
     ListType m_type;
     FilterDirection m_dir;
+    wxArrayString standard_sentences, m_sentences;
 };
 
 class OpenGLOptionsDlg : public wxDialog
