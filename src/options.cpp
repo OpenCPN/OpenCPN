@@ -6526,14 +6526,12 @@ void SentenceListDlg::SetSentenceList(wxArrayString sentences)
 {
     m_sentences = sentences;
 
-    if ( m_sentences.Count() == 0 && m_type == WHITELIST ) {
-        for ( size_t i = 0; i < m_clbSentences->GetCount(); i++ )
-            m_clbSentences->Check( i, TRUE );
-    }
-    if ( m_sentences.Count() == 0 && m_type == BLACKLIST ) {
-        for ( size_t i = 0; i < m_clbSentences->GetCount(); i++ )
-            m_clbSentences->Check( i, FALSE );
-    }
+    if ( m_sentences.Count() == 0 ) return;
+        for ( size_t i = 0; i < m_clbSentences->GetCount(); ++i )
+            if ( m_type == WHITELIST )
+                m_clbSentences->Check( i, TRUE );
+            else if ( m_type == BLACKLIST )
+                m_clbSentences->Check( i, FALSE );
 
     FillSentences();
 }
