@@ -6544,7 +6544,6 @@ wxString SentenceListDlg::GetSentencesAsText( void )
 void SentenceListDlg::BuildSentenceArray( void )
 {
     m_sentences.Clear();
-    wxString s;
     for ( size_t i = 0; i < m_clbSentences->GetCount(); i++ ) {
         if ( m_clbSentences->IsChecked( i ) )
             m_sentences.Add( m_clbSentences->GetString( i ) );
@@ -6560,15 +6559,15 @@ void SentenceListDlg::FillSentences( void )
 
     for ( size_t i = 0; i < m_sentences.Count(); i++ ) {
         int item = m_clbSentences->FindString( m_sentences[i] );
-        if ( item != wxNOT_FOUND )
+        if ( item != wxNOT_FOUND ) {
             m_clbSentences->Check( item );
-        else {
+        } else {
             m_clbSentences->Append( m_sentences[i] );
             m_clbSentences->Check( m_clbSentences->FindString( m_sentences[i] ) );
         }
     }
 
-    m_btnDel->Enable(FALSE);
+    m_btnDel->Disable();
 }
 
 void SentenceListDlg::OnStcSelect( wxCommandEvent& event )
