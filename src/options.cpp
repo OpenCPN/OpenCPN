@@ -1482,10 +1482,6 @@ void options::CreatePanel_NMEA_Compact( size_t parent, int border_size, int grou
     m_lcSources->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
 
     m_lcSources->Refresh();
-
-    m_stcdialog_in = new SentenceListDlg( FILTER_INPUT, this );
-    m_stcdialog_out = new SentenceListDlg( FILTER_OUTPUT, this );
-
     FillSourceList();
 
     if ( m_pSerialArray ) {
@@ -1934,10 +1930,6 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     m_lcSources->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
 
     m_lcSources->Refresh();
-
-    m_stcdialog_in = new SentenceListDlg( FILTER_INPUT, this );
-    m_stcdialog_out = new SentenceListDlg( FILTER_OUTPUT, this );
-
     FillSourceList();
 
     if ( m_pSerialArray ) {
@@ -6376,26 +6368,26 @@ void options::OnSelectDatasource( wxListEvent& event )
 
 void options::OnBtnIStcs( wxCommandEvent& event )
 {
-    m_stcdialog_in->SetSentenceList(
+    SentenceListDlg dlg( FILTER_INPUT, this );
+    dlg.SetSentenceList(
         wxStringTokenize( m_tcInputStc->GetValue(), _T( "," ) )
     );
-    m_stcdialog_in->SetType( 0, m_rbIAccept->GetValue() ? WHITELIST :
-                                                          BLACKLIST);
+    dlg.SetType( 0, m_rbIAccept->GetValue() ? WHITELIST : BLACKLIST);
 
-    if ( m_stcdialog_in->ShowModal() == wxID_OK )
-        m_tcInputStc->SetValue( m_stcdialog_in->GetSentencesAsText() );
+    if ( dlg.ShowModal() == wxID_OK )
+        m_tcInputStc->SetValue( dlg.GetSentencesAsText() );
 }
 
 void options::OnBtnOStcs( wxCommandEvent& event )
 {
-    m_stcdialog_out->SetSentenceList(
+    SentenceListDlg dlg( FILTER_OUTPUT, this );
+    dlg.SetSentenceList(
         wxStringTokenize( m_tcOutputStc->GetValue(), _T( "," ) )
     );
-    m_stcdialog_out->SetType( 1, m_rbOAccept->GetValue() ? WHITELIST :
-                                                           BLACKLIST );
+    dlg.SetType( 1, m_rbOAccept->GetValue() ? WHITELIST : BLACKLIST );
 
-    if ( m_stcdialog_out->ShowModal() == wxID_OK )
-        m_tcOutputStc->SetValue( m_stcdialog_out->GetSentencesAsText() );
+    if ( dlg.ShowModal() == wxID_OK )
+        m_tcOutputStc->SetValue( dlg.GetSentencesAsText() );
 }
 
 void options::OnNetProtocolSelected( wxCommandEvent& event )

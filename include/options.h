@@ -53,7 +53,6 @@ class wxGenericDirCtrl;
 class MyConfig;
 class ChartGroupsUI;
 class ConnectionParams;
-class SentenceListDlg;
 class PluginListPanel;
 class ChartGroupArray;
 class ChartGroup;
@@ -356,9 +355,6 @@ class options: public wxScrollingDialog
     wxComboBox *m_comboPort;
     wxStdDialogButtonSizer* m_sdbSizerDlgButtons;
 
-    SentenceListDlg *m_stcdialog_in, *m_stcdialog_out;
-
-    // Virtual event handlers, overide them in your derived class
     void OnSelectDatasource( wxListEvent& event );
     void OnAddDatasourceClick( wxCommandEvent& event );
     void OnRemoveDatasourceClick( wxCommandEvent& event );
