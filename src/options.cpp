@@ -6494,7 +6494,6 @@ SentenceListDlg::SentenceListDlg( wxWindow* parent, FilterDirection dir,
     // Connect Events
     btnAdd->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnAddClick ), NULL, this );
     m_btnDel->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnDeleteClick ), NULL, this );
-    m_clbSentences->Connect( wxEVT_COMMAND_CHECKLISTBOX_TOGGLED, wxCommandEventHandler( SentenceListDlg::OnCLBToggle ), NULL, this );
     m_clbSentences->Connect( wxEVT_COMMAND_LISTBOX_SELECTED, wxCommandEventHandler( SentenceListDlg::OnCLBSelect ), NULL, this );
     btnCheckAll->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnCheckAllClick ), NULL, this );
     btnClearAll->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnClearAllClick ), NULL, this );
@@ -6515,6 +6514,7 @@ void SentenceListDlg::SetSentenceList( void )
 
 wxString SentenceListDlg::GetSentencesAsText( void )
 {
+    BuildSentenceArray();
     return StringArrayToString( m_sentences );
 }
 
@@ -6545,20 +6545,10 @@ void SentenceListDlg::FillSentences( void )
     }
 }
 
-void SentenceListDlg::OnStcSelect( wxCommandEvent& event )
-{
-    m_btnDel->Enable();
-}
-
 void SentenceListDlg::OnCLBSelect( wxCommandEvent& e )
 {
     // Only activate the "Delete" button if the selection is not in the standard list
     m_btnDel->Enable( standard_sentences.Index( e.GetString( ) ) == wxNOT_FOUND );
-}
-
-void SentenceListDlg::OnCLBToggle( wxCommandEvent& event )
-{
-    BuildSentenceArray();
 }
 
 void SentenceListDlg::OnAddClick( wxCommandEvent& event )
@@ -6591,8 +6581,6 @@ void SentenceListDlg::OnAddClick( wxCommandEvent& event )
 
 void SentenceListDlg::OnDeleteClick( wxCommandEvent& event )
 {
-    BuildSentenceArray();
-
     // Only delete items that do not appear in the standard sentence list
     int isel = m_clbSentences->GetSelection();
     wxString s = m_clbSentences->GetString( isel );
@@ -6616,16 +6604,12 @@ void SentenceListDlg::OnClearAllClick( wxCommandEvent& event )
 {
     for ( size_t i = 0; i < m_clbSentences->GetCount(); i++ )
         m_clbSentences->Check( i, FALSE );
-
-    BuildSentenceArray();
 }
 
 void SentenceListDlg::OnCheckAllClick( wxCommandEvent& event )
 {
     for ( size_t i = 0; i < m_clbSentences->GetCount(); i++ )
         m_clbSentences->Check( i, TRUE );
-
-    BuildSentenceArray();
 }
 
 const wxString SentenceListDlg::GetType( void )

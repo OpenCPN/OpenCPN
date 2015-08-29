@@ -852,11 +852,9 @@ class SentenceListDlg : public wxDialog
     wxString GetSentencesAsText( void );
 
   private:
-    void OnStcSelect( wxCommandEvent& event );
     void OnAddClick( wxCommandEvent& event );
     void OnDeleteClick( wxCommandEvent& event );
     void OnCLBSelect( wxCommandEvent& event );
-    void OnCLBToggle( wxCommandEvent& event );
     void OnCheckAllClick( wxCommandEvent& event );
     void OnClearAllClick( wxCommandEvent& event );
 
