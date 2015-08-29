@@ -481,6 +481,11 @@ void Route::DrawGLLines( ViewPort &VP, ocpnDC *dc )
             FromSegNo = ToSegNo;
             r1valid = false;
         } else {
+            
+            wxPoint2DDouble r2;
+            cc1->GetDoubleCanvasPointPix( prp2->m_lat, prp2->m_lon, &r2);
+            lastpoint = r2;             // For active track segment to ownship
+            
             //    Handle offscreen points
             LLBBox bbox = VP.GetBBox();
 
@@ -506,9 +511,6 @@ void Route::DrawGLLines( ViewPort &VP, ocpnDC *dc )
 
             if(!r1valid)
                 cc1->GetDoubleCanvasPointPix( prp1->m_lat, prp1->m_lon, &r1);
-
-            wxPoint2DDouble r2;
-            cc1->GetDoubleCanvasPointPix( prp2->m_lat, prp2->m_lon, &r2);
 
             //    In the cases where one point is on, and one off
             //    we must decide which way to go in longitude
@@ -550,12 +552,11 @@ void Route::DrawGLLines( ViewPort &VP, ocpnDC *dc )
 
             r1 = r2;
             r1valid = true;
-            lastpoint = r1;
         }
     }
 
     //  Draw tentative segment from last point to Ownship, if running.
-    if( lastpoint.m_y && IsTrack() ) {
+    if( IsTrack() ) {
         /* Active tracks */
         if( dynamic_cast<Track *>(this)->IsRunning() ){
             wxPoint2DDouble rs;
@@ -565,7 +566,7 @@ void Route::DrawGLLines( ViewPort &VP, ocpnDC *dc )
             else {
                 glVertex2f(lastpoint.m_x, lastpoint.m_y);
                 glVertex2f(rs.m_x, rs.m_y);
-            }
+             }
         }
     }
                 

@@ -88,7 +88,6 @@ MOBILITY =
 ANDROID_EXTRA_LIBS = $$PWD/../buildandroid/assetbridge/libs/armeabi/libassetbridge.so
 
 # To execute the assetbridge runtime code, we make a custom modification to the android Activity method.
-# so we include the sources for this patched version here
 
 ANDROID_PACKAGE_SOURCE_DIR = $${OCPN_Base}/buildandroid/android
 OTHER_FILES += $${OCPN_Base}/buildandroid/android/AndroidManifest.xml
@@ -137,14 +136,19 @@ INSTALLS += sound_deployment
 
 # The built-in PlugIns
 
+#data
 dldr_plugin_deployment.files += $$PWD/../plugins/chartdldr_pi/data/chart_sources.xml
 dldr_plugin_deployment.files += $$PWD/../plugins/chartdldr_pi/data/folder215.png
 dldr_plugin_deployment.files += $$PWD/../plugins/chartdldr_pi/data/open182.png
-dldr_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/chartdldr_pi/libchartdldr_pi.so
-#dldr_plugin_deployment.files += /home/dsr/Projects/opencpn_sf/opencpn/build_android_55/plugins/chartdldr_pi/libchartdldr_pi.so
-#dldr_plugin_deployment.files += /home/dsr/Projects/opencpn_sf/opencpn/build_android_53/plugins/chartdldr_pi/libchartdldr_pi.so
 dldr_plugin_deployment.path = /assets/plugins/chartdldr_pi/data
 INSTALLS += dldr_plugin_deployment
+
+#library
+so_dldr_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/chartdldr_pi/libchartdldr_pi.so
+so_dldr_plugin_deployment.path = /assets/plugins
+INSTALLS += so_dldr_plugin_deployment
+
+
 
 
 ANDROID_EXTRA_LIBS = \

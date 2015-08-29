@@ -185,6 +185,8 @@ public:
                         bool b_adjust = true, bool b_refresh = true);
       bool SetVPScale(double sc, bool b_refresh = true);
       bool SetViewPoint ( double lat, double lon);
+      bool SetViewPointByCorners( double latSW, double lonSW, double latNE, double lonNE );
+      
       void ReloadVP ( bool b_adjust = true );
       void LoadVP ( ViewPort &vp, bool b_adjust = true );
 

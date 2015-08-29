@@ -58,97 +58,97 @@ wxString OpenCPNVersion =
     wxString::Format( wxT("\n      Version %i.%i.%i Build %s"),
         VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_DATE );
 
-const wxString AboutText = wxT(
-    "<br>OpenCPN<br>"
-    "(c) 2000-2015 The OpenCPN Authors<br><br>");
+const wxString AboutText =
+    wxT("<br>OpenCPN<br>")
+    wxT("(c) 2000-2015 The OpenCPN Authors<br><br>");
 
-const wxString OpenCPNInfo = wxT(
-    "<br><br>"
-    "OpenCPN is a Free Software project, built by sailors. "
-    "It is freely available to download and distribute "
-    "without charge at opencpn.org.<br><br>"
-    "If you use OpenCPN, please consider contributing "
-    "or donating funds to the project.<br><br>"
-    "For more information, visit http://opencpn.org<br><br>");
+const wxString OpenCPNInfo =
+    wxT("<br><br>")
+    wxT("OpenCPN is a Free Software project, built by sailors. ")
+    wxT("It is freely available to download and distribute ")
+    wxT("without charge at opencpn.org.<br><br>")
+    wxT("If you use OpenCPN, please consider contributing ")
+    wxT("or donating funds to the project.<br><br>")
+    wxT("For more information, visit http://opencpn.org<br><br>");
 
 
-const wxString AuthorText = wxT(
-    "   David S Register\n"
-    "      OpenCPN Lead Developer\n\n"
-    "    Pavel Kalian\n"
-    "      S52 Rasterization Improvements\n\n"
-    "    Sean D'Epagnier\n"
-    "      OpenGL Architecture\n\n"
-    "    J.P. Joubert\n"
-    "      GRIB PlugIn enhancements\n\n"
-    "    Thomas Höckne\n"
-    "      Documentation and Wiki support\n\n"
-    "    Caesar Schinas\n"
-    "      User Interface and OS X improvements\n\n"
-    "    Jesper Weissglas\n"
-    "      Vector Chart Rendering\n\n"
-    "    Jean-Eudes Onfray\n"
-    "      Dashboard and Dialog enhancements\n\n"
-    "    Kathleen Boswell\n"
-    "      Icon design\n\n"
-    "    Flavius Bindea\n"
-    "      CM93 Offset and AIS enhancements\n\n"
-    "    Gunther Pilz\n"
-    "      Windows Installer enhancements\n\n"
-    "    Alan Bleasby\n"
-    "      Garmin jeeps module\n\n"
-    "    Piotr Carlson\n"
-    "      General usability enhancements\n\n"
-    "    Anders Lund\n"
-    "      RouteManagerDialog\n\n"
-    "    Gordon Mau\n"
-    "      OpenCPN Documentation\n\n"
-    "    Tim Francis\n"
-    "      OpenCPN Documentation\n\n"
-    "    Mark A Sikes\n"
-    "      OpenCPN CoDeveloper\n\n"
-    "    Thomas Haller\n"
-    "      GPX Import/Export Implementation\n\n"
-    "    Will Kamp\n"
-    "      Toolbar Icon design\n\n"
-    "    Richard Smith\n"
-    "      OpenCPN CoDeveloper, MacOSX\n\n"
-    "    David Herring\n"
-    "      OpenCPN CoDeveloper, MacOSX\n\n"
-    "    Philip Lange\n"
-    "      OpenCPN Documentation\n\n"
-    "    Ron Kuris\n"
-    "      wxWidgets Support\n\n"
-    "    Julian Smart, Robert Roebling et al\n"
-    "      wxWidgets Authors\n\n"
-    "    Sylvain Duclos\n"
-    "      S52 Presentation Library code\n\n"
-    "    Manish P. Pagey\n"
-    "      Serial Port Library\n\n"
-    "    David Flater\n"
-    "      XTIDE tide and current code\n\n"
-    "    Frank Warmerdam\n"
-    "      GDAL Class Library\n\n"
-    "    Mike Higgins\n"
-    "      BSB Chart Format Detail\n\n"
-    "    Samuel R. Blackburn\n"
-    "      NMEA0183 Class Library\n\n"
-    "    Atul Narkhede\n"
-    "      Polygon Graphics utilities\n\n"
-    "    Jan C. Depner\n"
-    "      WVS Chart Library\n\n"
-    "    Stuart Cunningham, et al\n"
-    "      BSB Chart Georeferencing Algorithms\n\n"
-    "    John F. Waers\n"
-    "      UTM Conversion Algorithms\n\n"
-    "    Carsten Tschach\n"
-    "      UTM Conversion Algorithms\n\n"
-    "    Ed Williams\n"
-    "      Great Circle Formulary\n\n"
-    "    Philippe Bekaert\n"
-    "      CIE->RGB Color Conversion Matrix\n\n"
-    "    Robert Lipe\n"
-    "      Garmin USB GPS Interface\n");
+const wxString AuthorText =
+    wxT("   David S Register\n")
+    wxT("      OpenCPN Lead Developer\n\n")
+    wxT("    Pavel Kalian\n")
+    wxT("      S52 Rasterization Improvements\n\n")
+    wxT("    Sean D'Epagnier\n")
+    wxT("      OpenGL Architecture\n\n")
+    wxT("    J.P. Joubert\n")
+    wxT("      GRIB PlugIn enhancements\n\n")
+    wxT("    Thomas Höckne\n")
+    wxT("      Documentation and Wiki support\n\n")
+    wxT("    Caesar Schinas\n")
+    wxT("      User Interface and OS X improvements\n\n")
+    wxT("    Jesper Weissglas\n")
+    wxT("      Vector Chart Rendering\n\n")
+    wxT("    Jean-Eudes Onfray\n")
+    wxT("      Dashboard and Dialog enhancements\n\n")
+    wxT("    Kathleen Boswell\n")
+    wxT("      Icon design\n\n")
+    wxT("    Flavius Bindea\n")
+    wxT("      CM93 Offset and AIS enhancements\n\n")
+    wxT("    Gunther Pilz\n")
+    wxT("      Windows Installer enhancements\n\n")
+    wxT("    Alan Bleasby\n")
+    wxT("      Garmin jeeps module\n\n")
+    wxT("    Piotr Carlson\n")
+    wxT("      General usability enhancements\n\n")
+    wxT("    Anders Lund\n")
+    wxT("      RouteManagerDialog\n\n")
+    wxT("    Gordon Mau\n")
+    wxT("      OpenCPN Documentation\n\n")
+    wxT("    Tim Francis\n")
+    wxT("      OpenCPN Documentation\n\n")
+    wxT("    Mark A Sikes\n")
+    wxT("      OpenCPN CoDeveloper\n\n")
+    wxT("    Thomas Haller\n")
+    wxT("      GPX Import/Export Implementation\n\n")
+    wxT("    Will Kamp\n")
+    wxT("      Toolbar Icon design\n\n")
+    wxT("    Richard Smith\n")
+    wxT("      OpenCPN CoDeveloper, MacOSX\n\n")
+    wxT("    David Herring\n")
+    wxT("      OpenCPN CoDeveloper, MacOSX\n\n")
+    wxT("    Philip Lange\n")
+    wxT("      OpenCPN Documentation\n\n")
+    wxT("    Ron Kuris\n")
+    wxT("      wxWidgets Support\n\n")
+    wxT("    Julian Smart, Robert Roebling et al\n")
+    wxT("      wxWidgets Authors\n\n")
+    wxT("    Sylvain Duclos\n")
+    wxT("      S52 Presentation Library code\n\n")
+    wxT("    Manish P. Pagey\n")
+    wxT("      Serial Port Library\n\n")
+    wxT("    David Flater\n")
+    wxT("      XTIDE tide and current code\n\n")
+    wxT("    Frank Warmerdam\n")
+    wxT("      GDAL Class Library\n\n")
+    wxT("    Mike Higgins\n")
+    wxT("      BSB Chart Format Detail\n\n")
+    wxT("    Samuel R. Blackburn\n")
+    wxT("      NMEA0183 Class Library\n\n")
+    wxT("    Atul Narkhede\n")
+    wxT("      Polygon Graphics utilities\n\n")
+    wxT("    Jan C. Depner\n")
+    wxT("      WVS Chart Library\n\n")
+    wxT("    Stuart Cunningham, et al\n")
+    wxT("      BSB Chart Georeferencing Algorithms\n\n")
+    wxT("    John F. Waers\n")
+    wxT("      UTM Conversion Algorithms\n\n")
+    wxT("    Carsten Tschach\n")
+    wxT("      UTM Conversion Algorithms\n\n")
+    wxT("    Ed Williams\n")
+    wxT("      Great Circle Formulary\n\n")
+    wxT("    Philippe Bekaert\n")
+    wxT("      CIE->RGB Color Conversion Matrix\n\n")
+    wxT("    Robert Lipe\n")
+    wxT("      Garmin USB GPS Interface\n");
 
 IMPLEMENT_DYNAMIC_CLASS( about, wxDialog )
 

@@ -4550,7 +4550,7 @@ nocachestart:
 //          if((BPP == 24) && (1 == sub_samp))
           {
               int count = nRunCount;
-              if(count < 16) {
+              if( count < 16 ) {
                   // for short runs, use simple loop
                   while(count--) {
                       *(uint32_t*)prgb = rgbval;
@@ -4565,6 +4565,25 @@ nocachestart:
                   // I optimized for x86_64 using gcc with -O3
                   // it is probably possible to gain even faster performance by ensuring alignment
                   // to 16 or 32byte boundary (depending on processor) then using inline assembly
+
+#ifdef ARMHF          
+//  ARM needs 8 byte alignment for *(uint64_T *x) = *(uint64_T *y)
+//  because the compiler will (probably) use the ldrd/strd instuction pair.
+//  So, advance the prgb pointer until it is 8-byte aligned,
+//  and then carry on if enough bytes are left to process as 64 bit elements
+                  
+                  if((long)prgb & 7){
+                    while(count--) {
+                        *(uint32_t*)prgb = rgbval;
+                        prgb += 3;
+                        if( !((long)prgb & 7) ){
+                            if(count >= 8)
+                                break;
+                        }
+                    }
+                  }
+#endif                  
+                  
 
                   // fill first 24 bytes
                   uint64_t *b = (uint64_t*)prgb;

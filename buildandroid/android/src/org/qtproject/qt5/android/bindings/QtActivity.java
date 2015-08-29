@@ -41,6 +41,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.lang.Math;
 import java.util.concurrent.Semaphore;
+import java.util.StringTokenizer;
+
 import org.kde.necessitas.ministro.IMinistro;
 import org.kde.necessitas.ministro.IMinistroCallback;
 
@@ -178,6 +180,8 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     //  Definitions found in OCPN "chart1.h"
     private final static int ID_CMD_APPLY_SETTINGS = 300;
     private final static int ID_CMD_NULL_REFRESH = 301;
+    private final static int ID_CMD_TRIGGER_RESIZE  = 302;
+    private final static int ID_CMD_SETVP = 303;
 
     private final static int CHART_TYPE_CM93COMP = 7;       // must line up with OCPN types
     private final static int CHART_FAMILY_RASTER = 1;
@@ -318,6 +322,10 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
     BroadcastReceiver downloadBCReceiver = null;
 
+    private double m_gminitialLat;
+    private double m_gminitialLon;
+    private double m_gminitialZoom;
+
     public QtActivity()
     {
         if (Build.VERSION.SDK_INT <= 10) {
@@ -369,7 +377,26 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
         String s = nativeLib.getVPCorners();
 
+        String v = nativeLib.getVPS();
+        Log.i("DEBUGGER_TAG", "initialPositionString" + v);
+
+        StringTokenizer tkz = new StringTokenizer(v, ";");
+
+        String initialLat = "";
+        String initialLon = "";
+        String initialZoom = "";
+
+        if(tkz.hasMoreTokens()){
+            initialLat = tkz.nextToken();
+            initialLon = tkz.nextToken();
+            initialZoom = tkz.nextToken();
+        }
+
+        m_gminitialZoom = Double.parseDouble(initialZoom);
+
+
         intent.putExtra("VP_CORNERS", s);
+        intent.putExtra("VPS", v);
 
         int height = this.getWindow().getDecorView().getHeight();
         int width = this.getWindow().getDecorView().getWidth();
@@ -1402,48 +1429,81 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
    private void relocateOCPNPlugins( )
    {
+       // We need to relocate the PlugIns that have been included as "assets"
+
+       // Reason:  PlugIns can only load from the apps dataDir, which is like:
+       //          "/data/data/org.opencpn.opencpn"
+       //          This is due to some policy in the system loader....
+       //
+       //           There is no need to relocate any data files needed by the PlugIns
+       //           since they will have been added as assets and moved to the file system
+       //           by assetbridge elsewhere.
+       //
+       //          Since this method runs on every restart, it may be used to condition manually installed
+       //          PlugIns as well.  Just somehow install the PlugIn .so file into ".../files/plugins" dir,
+       //          and it will be moved to the proper load location on restart.
+
        Log.i("DEBUGGER_TAG", "relocateOCPNPlugins");
 
-       // TODO this should be a recursive directory search
-       String path = "/data/data/org.opencpn.opencpn/files/plugins/chartdldr_pi/data";
+       // On Moto G
+       // This produces "/data/data/org.opencpn.opencpn/files"
+       //  Which is where the app files would be with default load
+       String iDir = getFilesDir().getPath();
+       Log.i("DEBUGGER_TAG", "iDir: " + iDir);
 
-       Log.d("DEBUGGER_TAG", "Plugin source Path: " + path);
-       File f = new File(path);
-       File file[] = f.listFiles();
-
-       if(null != file){
-         for (int i=0; i < file.length; i++){
-             Log.d("DEBUGGER_TAG", "Plugin FileName:" + file[i].getName());
-            String source = file[i].getAbsolutePath();
-            String dest = "/data/data/org.opencpn.opencpn/" + file[i].getName();
+       // This produces "/storage/emulated/0/Android/data/org.opencpn.opencpn/files"
+       //  Which is where the app files would be if the app were "moved to SDCARD"
+       String xDir = getExternalFilesDir(null).getPath();
+       Log.i("DEBUGGER_TAG", "xDir: " + xDir);
 
 
-            try {
-                InputStream inputStream = new FileInputStream(source);
-                OutputStream outputStream = new FileOutputStream(dest);
-                copyFile(inputStream, outputStream);
-                inputStream.close();
-                outputStream.close();
-                Log.i("DEBUGGER_TAG", "copyFile OK: " + dest);
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-                Log.i("DEBUGGER_TAG", "copyFile Exception");
-            }
+       //   If the app is installed on external media, then that is where the assets have been stored...
+       String ssd = iDir + "/plugins";
+       ApplicationInfo ai = getApplicationInfo();
+       if((ai.flags & ApplicationInfo.FLAG_EXTERNAL_STORAGE) ==  ApplicationInfo.FLAG_EXTERNAL_STORAGE)
+            ssd = xDir + "/plugins/";
 
 
-         }
-       }
+       File sourceDir = new File( ssd );
+
+       // The PlugIn .so files are always relocated to here, which looks like:
+       // "/data/data/org.opencpn.opencpn"
+       String finalDestination = getApplicationInfo().dataDir;
+
+       File[] dirs = sourceDir.listFiles();
+       if (dirs != null) {
+           for (int j=0; j < dirs.length; j++){
+               File sfile = dirs[j];
+               Log.i("DEBUGGER_TAG", "sfile: " + sfile.getName());
+
+               if (sfile.isFile()){
+
+                              String source = sfile.getAbsolutePath();
+                              String dest = finalDestination + "/" + sfile.getName();
 
 
-
+                              try {
+                                  InputStream inputStream = new FileInputStream(source);
+                                  OutputStream outputStream = new FileOutputStream(dest);
+                                  copyFile(inputStream, outputStream);
+                                  inputStream.close();
+                                  outputStream.close();
+                                 Log.i("DEBUGGER_TAG", "copyFile OK: " + source + " to " + dest);
+                              }
+                              catch (Exception e) {
+                                  e.printStackTrace();
+                                  Log.i("DEBUGGER_TAG", "copyFile Exception");
+                              }
+              }
+          }
+      }
    }
 
 
     // this function is used to load and start the loader
     private void loadApplication(Bundle loaderParams)
     {
-        //Log.i("DEBUGGER_TAG", "LoadApplication");
+        Log.i("DEBUGGER_TAG", "LoadApplication");
 
         relocateOCPNPlugins();
 
@@ -2106,6 +2166,63 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
             return;
         }
 
+        if (requestCode == OCPN_GOOGLEMAPS_REQUEST_CODE) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK)
+            {
+                String finalPosition = data.getStringExtra("finalPosition");
+                Log.i("DEBUGGER_TAG", "finalPositionFromMaps " + finalPosition);
+
+                StringTokenizer tkz = new StringTokenizer(finalPosition, ";");
+
+                String finalLat = finalPosition.valueOf(m_gminitialLat);
+                String finalLon = finalPosition.valueOf(m_gminitialLon);
+                String finalZoom = finalPosition.valueOf(m_gminitialZoom);
+                String zoomFactor = "1.0";
+
+                if(tkz.hasMoreTokens()){
+                    finalLat = tkz.nextToken();
+                    finalLon = tkz.nextToken();
+                    finalZoom = tkz.nextToken();
+                    zoomFactor = tkz.nextToken();
+                }
+
+                double zoomF = Double.parseDouble(zoomFactor);
+                finalZoom = String.valueOf(m_gminitialZoom * zoomF);
+
+
+                String vpSet = "";
+
+                vpSet = vpSet.concat(finalLat);
+                vpSet = vpSet.concat(";");
+                vpSet = vpSet.concat(finalLon);
+                vpSet = vpSet.concat(";");
+                vpSet = vpSet.concat(finalZoom);
+                vpSet = vpSet.concat(";");
+
+
+                Log.i("DEBUGGER_TAG", "finalPositionString " + vpSet);
+
+                nativeLib.invokeCmdEventCmdString( ID_CMD_SETVP, vpSet);
+
+                // defer hte application of settings until the screen refreshes
+//                Handler handler = new Handler();
+//                handler.postDelayed(new Runnable() {
+//                     public void run() {
+//                          nativeLib.invokeCmdEventCmdString( ID_CMD_APPLY_SETTINGS, m_settingsReturn);
+//                     }
+//                }, 100);
+//                Log.i("DEBUGGER_TAG", m_settingsReturn);
+            }
+            else if (resultCode == RESULT_CANCELED){
+//                Log.i("DEBUGGER_TAG", "onqtActivityResultE");
+            }
+
+            super.onActivityResult(requestCode, resultCode, data);
+
+            return;
+        }
+
         if (QtApplication.m_delegateObject != null && QtApplication.onActivityResult != null) {
             QtApplication.invokeDelegateMethod(QtApplication.onActivityResult, requestCode, resultCode, data);
             return;
@@ -2731,9 +2848,9 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                     nativeLib.invokeMenuItem(OCPN_ACTION_ENCTEXT_TOGGLE);
                     return true;
 
-//                case R.id.ocpn_action_googlemaps:
-//                        invokeGoogleMaps();
-//                        return true;
+                case R.id.ocpn_action_googlemaps:
+                        invokeGoogleMaps();
+                        return true;
 
 
             default:

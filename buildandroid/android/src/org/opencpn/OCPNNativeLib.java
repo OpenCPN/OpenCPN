@@ -34,6 +34,7 @@ public class OCPNNativeLib {
   public native int selectChartDisplay( int type, int family);
   public native int invokeCmdEventCmdString( int cmd_id, String s);
   public native String getVPCorners();
+  public native String getVPS();
 
   public native int setDownloadStatus( int status, String url);
 }

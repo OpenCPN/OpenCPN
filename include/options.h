@@ -631,6 +631,8 @@ private:
             wxSize small_button_size );
     void CreatePanel_NMEA( size_t parent, int border_size, int group_item_spacing,
             wxSize small_button_size );
+    void CreatePanel_NMEA_Compact( size_t parent, int border_size, int group_item_spacing,
+            wxSize small_button_size );
     void CreatePanel_ChartsLoad( size_t parent, int border_size, int group_item_spacing,
             wxSize small_button_size );
     void CreatePanel_VectorCharts( size_t parent, int border_size, int group_item_spacing,
