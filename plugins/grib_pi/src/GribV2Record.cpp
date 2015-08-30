@@ -739,9 +739,9 @@ static bool unpackDS(GRIBMessage *grib_msg,int grid_num)
   return true;
 }
 
-static int GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
+static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
 {
-    int ret = -1;
+    zuchar ret = 255;
     // printf("search %d %d %d\n", productDiscipline, dataCat,  dataNum);
     switch (productDiscipline) {
     case 0:
@@ -822,7 +822,7 @@ static int GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
         break;
     }
 #if 0    
-    if (ret == -1) {
+    if (ret == 255) {
         printf("unknown %d %d %d\n", productDiscipline,  dataCat,dataNum);
     }
 #endif    
@@ -1052,10 +1052,11 @@ GribV2Record::GribV2Record(ZUFILE* file, int id_)
 
     grib_msg->grids = new GRIB2Grid [grib_msg->num_grids];
     n = 0;
+    bool skip = false;
     while (strncmp(&((char *)grib_msg->buffer)[grib_msg->offset/8],"7777",4) != 0) {
         getBits(grib_msg->buffer, &len, grib_msg->offset, 32);
         getBits(grib_msg->buffer, &sec_num, grib_msg->offset +4*8, 8);
-        switch (sec_num) {
+        if (skip == false) switch (sec_num) {
 	case 2:
              ok = unpackLUS(grib_msg);
              break;
@@ -1111,9 +1112,14 @@ GribV2Record::GribV2Record(ZUFILE* file, int id_)
 	     if (ok) {
 	         //printf("template %d 0 meteo\n", grib_msg->md.pds_templ_num);
 	         productTemplate = grib_msg->md.pds_templ_num;
-             dataCat = grib_msg->md.param_cat;
-             dataNum = grib_msg->md.param_num;
-             dataType= GRBV2_TO_DATA(productDiscipline,dataCat,dataNum);
+	         dataCat = grib_msg->md.param_cat;
+                 dataNum = grib_msg->md.param_num;
+                 dataType= GRBV2_TO_DATA(productDiscipline,dataCat,dataNum);
+                 if (dataType == 255) {
+                     //printf("unused data type, skip\n");
+                     skip = true;
+                     break;
+                 }
                                             
 	         levelType = grib_msg->md.lvl1_type;
 	         levelValue = grib_msg->md.lvl1;
