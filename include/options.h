@@ -849,7 +849,7 @@ class SentenceListDlg : public wxDialog
   public:
     explicit SentenceListDlg( wxWindow *parent, FilterDirection dir,
                               ListType type, const wxArrayString &list );
-    wxString GetSentencesAsText( void );
+    wxString GetSentences( void );
 
   private:
     void OnAddClick( wxCommandEvent& event );
@@ -858,10 +858,8 @@ class SentenceListDlg : public wxDialog
     void OnCheckAllClick( wxCommandEvent& event );
     void OnClearAllClick( wxCommandEvent& event );
 
-    void BuildSentenceArray( void );
-    const wxString GetType( void );
-    void SetSentenceList( void );
-    void FillSentences( void );
+    void Populate( const wxArrayString &list );
+    const wxString GetBoxLabel( void );
 
     wxCheckListBox* m_clbSentences;
     wxStdDialogButtonSizer* m_sdbSizer4;
@@ -869,7 +867,7 @@ class SentenceListDlg : public wxDialog
 
     ListType m_type;
     FilterDirection m_dir;
-    wxArrayString standard_sentences, m_sentences;
+    wxArrayString m_sentences;
 };
 
 class OpenGLOptionsDlg : public wxDialog

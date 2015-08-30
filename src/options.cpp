@@ -6373,7 +6373,7 @@ void options::OnBtnIStcs( wxCommandEvent& event )
     SentenceListDlg dlg( this, FILTER_INPUT, type, list );
 
     if ( dlg.ShowModal() == wxID_OK )
-        m_tcInputStc->SetValue( dlg.GetSentencesAsText() );
+        m_tcInputStc->SetValue( dlg.GetSentences() );
 }
 
 void options::OnBtnOStcs( wxCommandEvent& event )
@@ -6383,7 +6383,7 @@ void options::OnBtnOStcs( wxCommandEvent& event )
     SentenceListDlg dlg( this, FILTER_OUTPUT, type, list );
 
     if ( dlg.ShowModal() == wxID_OK )
-        m_tcOutputStc->SetValue( dlg.GetSentencesAsText() );
+        m_tcOutputStc->SetValue( dlg.GetSentences() );
 }
 
 void options::OnNetProtocolSelected( wxCommandEvent& event )
@@ -6440,29 +6440,14 @@ SentenceListDlg::SentenceListDlg( wxWindow* parent, FilterDirection dir,
                 wxSize( 280 , 420 ) ),
     m_type ( type ),
     m_dir( dir ),
-    m_sentences( list )
+    m_sentences ( NMEA0183().GetRecognizedArray() )
 {
-    m_sentences = list;
-
     wxBoxSizer* mainSizer = new wxBoxSizer( wxVERTICAL );
-
-    NMEA0183 nmea;
-    standard_sentences = nmea.GetRecognizedArray();
-    if ( m_dir == FILTER_OUTPUT ) {
-        standard_sentences.Add( _T("ECRMB") );
-        standard_sentences.Add( _T("ECRMC") );
-        standard_sentences.Add( _T("ECAPB") );
-    }
-    standard_sentences.Add( _T("AIVDM") );
-    standard_sentences.Add( _T("AIVDO") );
-    standard_sentences.Add( _T("FRPOS") );
-    standard_sentences.Add( _T("CD") );
-
     wxBoxSizer *secondSizer = new wxBoxSizer( wxHORIZONTAL );
-    wxStaticBox *pclbBox = new wxStaticBox( this, wxID_ANY, GetType() );
+    wxStaticBox *pclbBox = new wxStaticBox( this, wxID_ANY, GetBoxLabel() );
     wxStaticBoxSizer *stcSizer = new wxStaticBoxSizer( pclbBox, wxVERTICAL );
     m_clbSentences = new wxCheckListBox( this, wxID_ANY, wxDefaultPosition,
-                                         wxDefaultSize, standard_sentences );
+                                         wxDefaultSize, m_sentences );
     wxBoxSizer *btnEntrySizer = new wxBoxSizer( wxVERTICAL );
     wxButton *btnCheckAll = new wxButton( this, wxID_ANY, _("Select All") );
     wxButton *btnClearAll = new wxButton( this, wxID_ANY, _("Clear All") );
@@ -6498,57 +6483,60 @@ SentenceListDlg::SentenceListDlg( wxWindow* parent, FilterDirection dir,
     btnCheckAll->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnCheckAllClick ), NULL, this );
     btnClearAll->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnClearAllClick ), NULL, this );
 
-    SetSentenceList();
-    FillSentences();
+    Populate( list );
 }
 
-void SentenceListDlg::SetSentenceList( void )
+const wxString SentenceListDlg::GetBoxLabel( void )
 {
-    if ( m_sentences.Count() == 0 )
-        for ( size_t i = 0; i < m_clbSentences->GetCount(); ++i )
-            if ( m_type == WHITELIST )
-                m_clbSentences->Check( i, TRUE );
-            else if ( m_type == BLACKLIST )
-                m_clbSentences->Check( i, FALSE );
+    if ( m_dir == FILTER_OUTPUT )
+        return m_type == WHITELIST ? _( "Transmit Sentences" ) :
+                                     _( "Drop Sentences" );
+    else
+        return m_type == WHITELIST ? _( "Accept Sentences" ) :
+                                     _( "Ignore Sentences" );
 }
 
-wxString SentenceListDlg::GetSentencesAsText( void )
+void SentenceListDlg::Populate( const wxArrayString &list )
 {
-    BuildSentenceArray();
-    return StringArrayToString( m_sentences );
-}
-
-void SentenceListDlg::BuildSentenceArray( void )
-{
-    m_sentences.Clear();
-    for ( size_t i = 0; i < m_clbSentences->GetCount(); i++ ) {
-        if ( m_clbSentences->IsChecked( i ) )
-            m_sentences.Add( m_clbSentences->GetString( i ) );
+    if ( m_dir == FILTER_OUTPUT ) {
+        m_sentences.Add( _T("ECRMB") );
+        m_sentences.Add( _T("ECRMC") );
+        m_sentences.Add( _T("ECAPB") );
     }
-}
+    m_sentences.Add( _T("AIVDM") );
+    m_sentences.Add( _T("AIVDO") );
+    m_sentences.Add( _T("FRPOS") );
+    m_sentences.Add( _T("CD") );
+    m_clbSentences->Clear();
+    m_clbSentences->InsertItems( m_sentences, 0 );
+    m_clbSentences->InsertItems( list, m_sentences.GetCount() );
 
-void SentenceListDlg::FillSentences( void )
-{
-    if ( m_sentences.Count() == 0 ) return;
-
-    for ( size_t i = 0; i < m_clbSentences->GetCount(); i++ )
-        m_clbSentences->Check( i, FALSE );
-
-    for ( size_t i = 0; i < m_sentences.Count(); i++ ) {
-        int item = m_clbSentences->FindString( m_sentences[i] );
-        if ( item != wxNOT_FOUND ) {
-            m_clbSentences->Check( item );
-        } else {
-            m_clbSentences->Append( m_sentences[i] );
-            m_clbSentences->Check( m_clbSentences->FindString( m_sentences[i] ) );
+    if ( list.Count() == 0 ) {
+        for ( size_t i = 0; i < m_clbSentences->GetCount(); ++i )
+            m_clbSentences->Check( i, m_type == WHITELIST );
+    } else {
+        for ( size_t i = 0; i < list.Count(); ++i ) {
+            int item = m_clbSentences->FindString( list[i] );
+            if ( item != wxNOT_FOUND )
+                m_clbSentences->Check( item );
         }
     }
+}
+
+wxString SentenceListDlg::GetSentences( void )
+{
+    wxArrayString retString;
+    for ( size_t i = 0; i < m_clbSentences->GetCount(); i++ ) {
+        if ( m_clbSentences->IsChecked( i ) )
+            retString.Add( m_clbSentences->GetString( i ) );
+    }
+    return StringArrayToString( retString );
 }
 
 void SentenceListDlg::OnCLBSelect( wxCommandEvent& e )
 {
     // Only activate the "Delete" button if the selection is not in the standard list
-    m_btnDel->Enable( standard_sentences.Index( e.GetString( ) ) == wxNOT_FOUND );
+    m_btnDel->Enable( m_sentences.Index( e.GetString( ) ) == wxNOT_FOUND );
 }
 
 void SentenceListDlg::OnAddClick( wxCommandEvent& event )
@@ -6562,7 +6550,6 @@ void SentenceListDlg::OnAddClick( wxCommandEvent& event )
     wxString stc = textdlg.GetValue();
 
     if ( stc.Length() == 2 || stc.Length() == 3 || stc.Length() == 5 ) {
-        m_sentences.Add( stc );
         m_clbSentences->Append( stc );
         m_clbSentences->Check( m_clbSentences->FindString(stc) );
         return;
@@ -6581,23 +6568,7 @@ void SentenceListDlg::OnAddClick( wxCommandEvent& event )
 
 void SentenceListDlg::OnDeleteClick( wxCommandEvent& event )
 {
-    // Only delete items that do not appear in the standard sentence list
-    int isel = m_clbSentences->GetSelection();
-    wxString s = m_clbSentences->GetString( isel );
-    bool bdelete = TRUE;
-    for ( size_t i = 0; i < standard_sentences.Count(); i++ ) {
-        if ( standard_sentences[i] == s ) {
-            bdelete = FALSE;
-            break;
-        }
-    }
-
-    if ( bdelete ) {
-        m_sentences.Remove( s );
-        m_clbSentences->Delete( isel );
-    }
-
-    FillSentences();
+    m_clbSentences->Delete( event.GetSelection() );
 }
 
 void SentenceListDlg::OnClearAllClick( wxCommandEvent& event )
@@ -6610,16 +6581,6 @@ void SentenceListDlg::OnCheckAllClick( wxCommandEvent& event )
 {
     for ( size_t i = 0; i < m_clbSentences->GetCount(); i++ )
         m_clbSentences->Check( i, TRUE );
-}
-
-const wxString SentenceListDlg::GetType( void )
-{
-    if ( m_dir == FILTER_OUTPUT )
-        return m_type == WHITELIST ? _( "Transmit Sentences" ) :
-                                     _( "Drop Sentences" );
-    else
-        return m_type == WHITELIST ? _( "Accept Sentences" ) :
-                                     _( "Ignore Sentences" );
 }
 
 // OpenGLOptionsDlg
