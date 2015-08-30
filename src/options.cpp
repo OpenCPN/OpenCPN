@@ -6486,7 +6486,7 @@ SentenceListDlg::SentenceListDlg( wxWindow* parent, FilterDirection dir,
     Populate( list );
 }
 
-const wxString SentenceListDlg::GetBoxLabel( void )
+const wxString SentenceListDlg::GetBoxLabel( void ) const
 {
     if ( m_dir == FILTER_OUTPUT )
         return m_type == WHITELIST ? _( "Transmit Sentences" ) :

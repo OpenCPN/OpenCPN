@@ -859,7 +859,7 @@ class SentenceListDlg : public wxDialog
     void OnClearAllClick( wxCommandEvent& event );
 
     void Populate( const wxArrayString &list );
-    const wxString GetBoxLabel( void );
+    const wxString GetBoxLabel( void ) const;
 
     wxCheckListBox* m_clbSentences;
     wxStdDialogButtonSizer* m_sdbSizer4;
