@@ -288,6 +288,16 @@ GRIBUICtrlBar::~GRIBUICtrlBar()
         pConf->Write( _T ( "lastdatatype" ), m_lastdatatype);
 
         pConf->SetPath ( _T ( "/Settings/GRIB/FileNames" ) );
+        int iFileMax = pConf->GetNumberOfEntries();
+        if ( iFileMax ) {
+           wxString key;
+           long dummy;
+           for( int i = 0; i < iFileMax; i++ ) {
+               pConf->GetFirstEntry( key, dummy );
+               pConf->DeleteEntry( key, false );
+           }
+        }
+
         for( unsigned int i = 0 ; i < m_file_names.GetCount() ; i++ ) {
             wxString key;
             key.Printf(_T("Filename%d"), i);
@@ -424,7 +434,8 @@ void GRIBUICtrlBar::OpenFile(bool newestFile)
                     for( m_FileIntervalIndex = 0;; m_FileIntervalIndex++){
                         if(m_OverlaySettings.GetMinFromIndex(m_FileIntervalIndex) > halfintermin) break;
                     }
-                    m_FileIntervalIndex--;
+                    if (m_FileIntervalIndex > 0)
+                        m_FileIntervalIndex--;
                     if(m_OverlaySettings.m_SlicesPerUpdate > m_FileIntervalIndex) m_OverlaySettings.m_SlicesPerUpdate = m_FileIntervalIndex;
                 }
             }
