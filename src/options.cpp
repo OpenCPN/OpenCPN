@@ -5683,44 +5683,39 @@ void ChartGroupsUI::OnNodeExpanded( wxTreeEvent& event )
 {
     wxTreeItemId node = event.GetItem();
 
-    if( m_GroupSelectedPage > 0 ) {
-        wxGenericDirCtrl *pDirCtrl = ( m_DirCtrlArray.Item( m_GroupSelectedPage ) );
-        ChartGroup *pGroup = m_pGroupArray->Item( m_GroupSelectedPage - 1 );
-        if( pDirCtrl ) {
-            wxTreeCtrl *ptree = pDirCtrl->GetTreeCtrl();
+    if ( m_GroupSelectedPage <= 0 ) return;
+    wxGenericDirCtrl *pDirCtrl = ( m_DirCtrlArray.Item( m_GroupSelectedPage ) );
+    ChartGroup *pGroup = m_pGroupArray->Item( m_GroupSelectedPage - 1 );
+    if ( !pDirCtrl ) return;
 
-            wxString branch_adder;
-            int target_item_index = FindGroupBranch( pGroup, ptree, node, &branch_adder );
-            if( target_item_index >= 0 ) {
-                ChartGroupElement *target_element = pGroup->m_element_array.Item(
-                        target_item_index );
-                wxString branch_name = target_element->m_element_name;
+    wxTreeCtrl *ptree = pDirCtrl->GetTreeCtrl();
+    wxString branch_adder;
+    int target_item_index = FindGroupBranch( pGroup, ptree, node, &branch_adder );
+    if ( target_item_index < 0 ) return;
+    ChartGroupElement *target_element = pGroup->m_element_array.Item( target_item_index );
+    wxString branch_name = target_element->m_element_name;
 
-                //    Walk the children of the expanded node, marking any items which appear in
-                //    the "missing" list
-                if( ( target_element->m_missing_name_array.GetCount() ) ) {
-                    wxString full_root = branch_name;
-                    full_root += branch_adder;
-                    full_root += wxString( wxFILE_SEP_PATH );
+    // Walk the children of the expanded node, marking any items which appear in
+    // the "missing" list
+    if ( !target_element->m_missing_name_array.GetCount() ) return;
+    wxString full_root = branch_name;
+    full_root += branch_adder;
+    full_root += wxString( wxFILE_SEP_PATH );
 
-                    wxTreeItemIdValue cookie;
-                    wxTreeItemId child = ptree->GetFirstChild( node, cookie );
-                    while( child.IsOk() ) {
-                        wxString target_string = full_root;
-                        target_string += ptree->GetItemText( child );
+    wxTreeItemIdValue cookie;
+    wxTreeItemId child = ptree->GetFirstChild( node, cookie );
+    while ( child.IsOk() ) {
+        wxString target_string = full_root;
+        target_string += ptree->GetItemText( child );
 
-                        for( unsigned int k = 0;
-                                k < target_element->m_missing_name_array.GetCount(); k++ ) {
-                            if( target_element->m_missing_name_array.Item( k ) == target_string ) {
-                                ptree->SetItemTextColour( child, wxColour( 128, 128, 128 ) );
-                                break;
-                            }
-                        }
-                        child = ptree->GetNextChild( node, cookie );
-                    }
-                }
+        for( unsigned int k = 0;
+                k < target_element->m_missing_name_array.GetCount(); k++ ) {
+            if( target_element->m_missing_name_array.Item( k ) == target_string ) {
+                ptree->SetItemTextColour( child, wxColour( 128, 128, 128 ) );
+                break;
             }
         }
+        child = ptree->GetNextChild( node, cookie );
     }
 }
 
