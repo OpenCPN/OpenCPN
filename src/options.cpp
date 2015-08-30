@@ -6509,12 +6509,12 @@ void SentenceListDlg::Populate( const wxArrayString &list )
     m_sentences.Add( _T("CD") );
     m_clbSentences->Clear();
     m_clbSentences->InsertItems( m_sentences, 0 );
-    m_clbSentences->InsertItems( list, m_sentences.GetCount() );
 
     if ( list.Count() == 0 ) {
         for ( size_t i = 0; i < m_clbSentences->GetCount(); ++i )
             m_clbSentences->Check( i, m_type == WHITELIST );
     } else {
+        m_clbSentences->InsertItems( list, m_sentences.GetCount() );
         for ( size_t i = 0; i < list.Count(); ++i ) {
             int item = m_clbSentences->FindString( list[i] );
             if ( item != wxNOT_FOUND )
