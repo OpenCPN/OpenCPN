@@ -194,6 +194,7 @@ enum
     
     ID_CMD_SELECT_CHART_TYPE,
     ID_CMD_SELECT_CHART_FAMILY,
+    ID_CMD_INVALIDATE,
     
 };
 

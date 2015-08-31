@@ -4059,6 +4059,13 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             setStringVP(event.GetString());
             break;
         }
+
+        case ID_CMD_INVALIDATE:{
+            if(cc1)
+                cc1->InvalidateGL();
+            Refresh(true);
+            break;
+        }
         
         default: {
             //        Look for PlugIn tools
