@@ -582,7 +582,7 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_btouch = true;
     g_bresponsive = true;
     g_default_font_size = 18;            //  This is pretty close to TextAppearance.Medium
-    g_bUIexpert = false;
+    g_bUIexpert = true;         
     
     g_bShowStatusBar = true;
     g_cm93_zoom_factor = -5;
