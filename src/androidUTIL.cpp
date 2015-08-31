@@ -725,6 +725,12 @@ extern "C"{
         qDebug() << "onResume";
         
         g_bSleep = false;
+
+        wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+        evt.SetId( ID_CMD_INVALIDATE );
+        
+        if(gFrame)
+            gFrame->GetEventHandler()->AddPendingEvent(evt);
         
         return 96;
     }
