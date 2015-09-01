@@ -6586,20 +6586,19 @@ BEGIN_EVENT_TABLE( OpenGLOptionsDlg, wxDialog )
     EVT_BUTTON( ID_BUTTON_CLEAR, OpenGLOptionsDlg::OnButtonClear )
 END_EVENT_TABLE()
 
-OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked )
-{
-    long style = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;
+OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked ) :
+    wxDialog( parent, wxID_ANY, _T( "OpenGL Options" ),
+              wxDefaultPosition, wxDefaultSize,
+              wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER
 #ifdef __WXOSX__
-    style |= wxSTAY_ON_TOP;
+              | wxSTAY_ON_TOP
 #endif
-
-    wxDialog::Create( parent, wxID_ANY, _T( "OpenGL Options" ),
-                      wxDefaultPosition, wxDefaultSize, style );
-
+              ),
+    m_brebuild_cache( FALSE )
+{
     wxFont *qFont = GetOCPNScaledFont( _( "Dialog" ) );
     SetFont( *qFont );
 
-    m_brebuild_cache = FALSE;
 
 #ifdef ocpnUSE_GL
     m_bSizer1 = new wxFlexGridSizer( 3 );
