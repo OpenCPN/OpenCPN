@@ -254,6 +254,18 @@ GribV1Record::~GribV1Record()
 {
 }
 
+//----------------------------------------------
+zuint GribV1Record::readPackedBits(zuchar *buf, zuint first, zuint nbBits)
+{
+    zuint oct = first / 8;
+    zuint bit = first % 8;
+
+    zuint val = (buf[oct]<<24) + (buf[oct+1]<<16) + (buf[oct+2]<<8) + (buf[oct+3]);
+    val = val << bit;
+    val = val >> (32-nbBits);
+    return val;
+}
+
 //==============================================================
 // Lecture des données
 //==============================================================
@@ -473,6 +485,7 @@ bool GribV1Record::readGribSection3_BMS(ZUFILE* file) {
     }
     return ok;
 }
+
 //----------------------------------------------
 // SECTION 4: BINARY DATA SECTION (BDS)
 //----------------------------------------------
@@ -692,18 +705,6 @@ zuint GribV1Record::makeInt3(zuchar a, zuchar b, zuchar c) {
 zuint GribV1Record::makeInt2(zuchar b, zuchar c) {
     return ((zuint)b<<8)+(zuint)c;
 }
-//----------------------------------------------
-zuint GribV1Record::readPackedBits(zuchar *buf, zuint first, zuint nbBits)
-{
-    zuint oct = first / 8;
-    zuint bit = first % 8;
-
-    zuint val = (buf[oct]<<24) + (buf[oct+1]<<16) + (buf[oct+2]<<8) + (buf[oct+3]);
-    val = val << bit;
-    val = val >> (32-nbBits);
-    return val;
-}
-
 //----------------------------------------------
 zuint GribV1Record::periodSeconds(zuchar unit,zuchar P1,zuchar P2,zuchar range) {
     zuint res, dur;
