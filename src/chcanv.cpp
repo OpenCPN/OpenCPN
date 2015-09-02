@@ -1135,6 +1135,8 @@ void ChartCanvas::InvalidateGL()
         if(g_bopengl)
             glChartCanvas::Invalidate();
 #endif
+    if(g_Compass)
+        g_Compass->UpdateStatus( true );
 }
 
 int ChartCanvas::GetCanvasChartNativeScale()
