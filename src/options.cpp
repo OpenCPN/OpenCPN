@@ -6748,7 +6748,7 @@ void OpenGLOptionsDlg::OnButtonClear( wxCommandEvent& event )
             ::wxRemoveFile( files[i] );
     }
 
-    m_cacheSize->SetLabel( GetTextureCacheSize() );
+    m_cacheSize->SetLabel( _( "Size: " ) + GetTextureCacheSize() );
     ::wxEndBusyCursor();
 }
 
