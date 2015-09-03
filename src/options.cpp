@@ -6680,6 +6680,7 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked ) :
         flexSizer->Add( m_cbUseAcceleratedPanning, 0, wxALL | wxEXPAND, 5 );
     }
 
+    flexSizer->AddGrowableCol( 1 );
     mainSizer->Add( flexSizer, 0, wxALL | wxEXPAND, 5 );
 
     wxStdDialogButtonSizer * btnSizer = new wxStdDialogButtonSizer();
@@ -6687,6 +6688,7 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked ) :
     btnSizer->AddButton( new wxButton( this, wxID_CANCEL ) );
     btnSizer->Realize();
 
+    mainSizer->AddStretchSpacer( );
     mainSizer->Add( btnSizer, 0, wxALL | wxEXPAND, 5 );
 
     SetSizer( mainSizer );
