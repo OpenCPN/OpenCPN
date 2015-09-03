@@ -872,7 +872,7 @@ class SentenceListDlg : public wxDialog
 class OpenGLOptionsDlg : public wxDialog
 {
   public:
-    explicit OpenGLOptionsDlg( wxWindow *parent, bool glTicked );
+    explicit OpenGLOptionsDlg( wxWindow *parent );
 
     wxCheckBox *m_cbUseAcceleratedPanning, *m_cbTextureCompression;
     wxCheckBox *m_cbTextureCompressionCaching, *m_cbShowFPS, *m_cbSoftwareGL;

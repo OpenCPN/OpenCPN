@@ -3923,7 +3923,7 @@ void options::OnGLClicked( wxCommandEvent& event )
 
 void options::OnOpenGLOptions( wxCommandEvent& event )
 {
-    OpenGLOptionsDlg dlg(this, pOpenGL->GetValue());
+    OpenGLOptionsDlg dlg( this );
 
     if(dlg.ShowModal() == wxID_OK) {
         if(g_bexpert)
@@ -6586,7 +6586,7 @@ BEGIN_EVENT_TABLE( OpenGLOptionsDlg, wxDialog )
     EVT_BUTTON( ID_BUTTON_CLEAR, OpenGLOptionsDlg::OnButtonClear )
 END_EVENT_TABLE()
 
-OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked ) :
+OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent ) :
     wxDialog( parent, wxID_ANY, _T( "OpenGL Options" ),
               wxDefaultPosition, wxDefaultSize,
               wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER
