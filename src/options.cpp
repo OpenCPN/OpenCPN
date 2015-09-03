@@ -3925,36 +3925,29 @@ void options::OnOpenGLOptions( wxCommandEvent& event )
 {
     OpenGLOptionsDlg dlg( this );
 
-    if(dlg.ShowModal() == wxID_OK) {
-        if(g_bexpert)
-            g_GLOptions.m_bUseAcceleratedPanning = dlg.m_cbUseAcceleratedPanning->GetValue();
-        else
-            g_GLOptions.m_bUseAcceleratedPanning = cc1->GetglCanvas()->CanAcceleratePanning();
-
-        g_GLOptions.m_bTextureCompression = dlg.m_cbTextureCompression->GetValue();
-
-        g_bShowFPS = dlg.m_cbShowFPS->GetValue();
-        if(dlg.m_cbSoftwareGL)
-            g_bSoftwareGL = dlg.m_cbSoftwareGL->GetValue();
-        if(g_bexpert){
-            g_GLOptions.m_bTextureCompressionCaching = dlg.m_cbTextureCompressionCaching->GetValue();
-            g_GLOptions.m_iTextureMemorySize = dlg.m_sTextureMemorySize->GetValue();
+    if ( dlg.ShowModal() == wxID_OK ) {
+        g_GLOptions.m_bUseAcceleratedPanning = g_bexpert ?
+            dlg.GetAcceleratedPanning() :
+            cc1->GetglCanvas()->CanAcceleratePanning();
+        g_GLOptions.m_bTextureCompression = dlg.GetTextureCompression();
+        g_bShowFPS = dlg.GetShowFPS();
+        g_bSoftwareGL = dlg.GetSoftwareGL();
+        if ( g_bexpert ) {
+            g_GLOptions.m_bTextureCompressionCaching = dlg.GetTextureCompressionCaching();
+            g_GLOptions.m_iTextureMemorySize = dlg.GetTextureMemorySize();
+        } else {
+            g_GLOptions.m_bTextureCompressionCaching = dlg.GetTextureCompression();
         }
-        else{
-            g_GLOptions.m_bTextureCompressionCaching = g_GLOptions.m_bTextureCompression;
-        }
-        if(g_bopengl &&
-           g_GLOptions.m_bTextureCompression != dlg.m_cbTextureCompression->GetValue()) {
-            g_GLOptions.m_bTextureCompression = dlg.m_cbTextureCompression->GetValue();
-            cc1->GetglCanvas()->SetupCompression();
-
+        if ( g_bopengl && g_GLOptions.m_bTextureCompression != dlg.GetTextureCompression() ) {
+            g_GLOptions.m_bTextureCompression = dlg.GetTextureCompression();
             ::wxBeginBusyCursor();
+            cc1->GetglCanvas()->SetupCompression();
             cc1->GetglCanvas()->ClearAllRasterTextures();
             ::wxEndBusyCursor();
         }
     }
 
-    if(dlg.m_brebuild_cache) {
+    if ( dlg.GetRebuildCache() ) {
         m_returnChanges = REBUILD_RASTER_CACHE;
         Finish();
     }
@@ -6657,6 +6650,41 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent ) :
     Centre();
 }
 
+const bool OpenGLOptionsDlg::GetAcceleratedPanning( void ) const
+{
+    return m_cbUseAcceleratedPanning->GetValue();
+}
+
+const bool OpenGLOptionsDlg::GetTextureCompression( void ) const
+{
+    return m_cbTextureCompression->GetValue();
+}
+
+const bool OpenGLOptionsDlg::GetShowFPS( void ) const
+{
+    return m_cbShowFPS->GetValue();
+}
+
+const bool OpenGLOptionsDlg::GetSoftwareGL( void ) const
+{
+    return m_cbSoftwareGL->GetValue();
+}
+
+const bool OpenGLOptionsDlg::GetTextureCompressionCaching( void ) const
+{
+    return m_cbTextureCompressionCaching->GetValue();
+}
+
+const bool OpenGLOptionsDlg::GetRebuildCache( void ) const
+{
+    return m_brebuild_cache;
+}
+
+const int OpenGLOptionsDlg::GetTextureMemorySize( void ) const
+{
+    return m_sTextureMemorySize->GetValue();
+}
+
 void OpenGLOptionsDlg::Populate( void )
 {
     extern PFNGLCOMPRESSEDTEXIMAGE2DPROC s_glCompressedTexImage2D;
@@ -6667,12 +6695,12 @@ void OpenGLOptionsDlg::Populate( void )
     if ( b_glEntryPointsSet && !s_glCompressedTexImage2D ) {
         g_GLOptions.m_bTextureCompressionCaching = FALSE;
         m_cbTextureCompression->Disable();
-        m_cbTextureCompression->SetValue(FALSE);
+        m_cbTextureCompression->SetValue( FALSE );
     }
 
-    m_cbTextureCompressionCaching->Show(g_bexpert);
-    m_memorySize->Show(g_bexpert);
-    m_sTextureMemorySize->Show(g_bexpert);
+    m_cbTextureCompressionCaching->Show( g_bexpert );
+    m_memorySize->Show( g_bexpert );
+    m_sTextureMemorySize->Show( g_bexpert );
     if ( g_bexpert ) {
         m_cbTextureCompressionCaching->SetValue( g_GLOptions.m_bTextureCompressionCaching );
         m_sTextureMemorySize->SetValue( g_GLOptions.m_iTextureMemorySize );
@@ -6681,7 +6709,7 @@ void OpenGLOptionsDlg::Populate( void )
 
 #if defined(__UNIX__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
     if ( cc1->GetglCanvas()->GetVersionString().Upper().Find( _T( "MESA" ) ) != wxNOT_FOUND ) {
-        m_cbSoftwareGL->SetValue(g_bSoftwareGL);
+        m_cbSoftwareGL->SetValue( g_bSoftwareGL );
     }
 #else
     m_cbSoftwareGL->Hide();
@@ -6702,15 +6730,14 @@ void OpenGLOptionsDlg::OnButtonRebuild( wxCommandEvent& event )
 {
     if ( g_GLOptions.m_bTextureCompressionCaching ) {
         m_brebuild_cache = TRUE;
-        EndModal(wxID_CANCEL);
+        EndModal( wxID_CANCEL );
     }
 }
 
 void OpenGLOptionsDlg::OnButtonClear( wxCommandEvent& event )
 {
     ::wxBeginBusyCursor();
-    if ( g_bopengl )
-        cc1->GetglCanvas()->ClearAllRasterTextures();
+    if ( g_bopengl ) cc1->GetglCanvas()->ClearAllRasterTextures();
 
     wxString path =  g_Platform->GetPrivateDataDir() +
         wxFileName::GetPathSeparator() + _T( "raster_texture_cache" );
@@ -6718,14 +6745,14 @@ void OpenGLOptionsDlg::OnButtonClear( wxCommandEvent& event )
         wxArrayString files;
         size_t nfiles = wxDir::GetAllFiles( path, &files );
         for ( unsigned int i = 0 ; i < files.GetCount() ; i++ )
-            ::wxRemoveFile(files[i]);
+            ::wxRemoveFile( files[i] );
     }
 
     m_cacheSize->SetLabel( GetTextureCacheSize() );
     ::wxEndBusyCursor();
 }
 
-wxString OpenGLOptionsDlg::GetTextureCacheSize( void )
+const wxString OpenGLOptionsDlg::GetTextureCacheSize( void )
 {
     wxString path =  g_Platform->GetPrivateDataDir() +
         wxFileName::GetPathSeparator() + _T( "raster_texture_cache" );
@@ -6738,7 +6765,7 @@ wxString OpenGLOptionsDlg::GetTextureCacheSize( void )
     }
     double mb = total / ( 1024.0 * 2 );
     if ( mb < 10000.0 )
-        return wxString::Format(_T("%.1f MB"), mb);
+        return wxString::Format( _T( "%.1f MB" ), mb );
     mb = mb / 1024.0;
-    return wxString::Format(_T("%.1f GB"), mb);
+    return wxString::Format( _T( "%.1f GB" ), mb );
 }
