@@ -877,12 +877,9 @@ class OpenGLOptionsDlg : public wxDialog
     void OnButtonClear( wxCommandEvent& event );
     wxString TextureCacheSize( void );
 
-    wxGridSizer *m_bSizer1;
-    wxBoxSizer *m_bSizer2;
     wxCheckBox *m_cbUseAcceleratedPanning, *m_cbTextureCompression;
     wxCheckBox *m_cbTextureCompressionCaching, *m_cbShowFPS, *m_cbSoftwareGL;
-    wxButton *m_bRebuildTextureCache, *m_bClearTextureCache;
-    wxStaticText *m_stTextureCacheSize;
+    wxStaticText *m_cacheSize;
     wxSpinCtrl *m_sTextureDimension, *m_sTextureMemorySize;
 
     bool m_brebuild_cache;
