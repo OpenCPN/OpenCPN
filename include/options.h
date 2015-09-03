@@ -873,16 +873,19 @@ class OpenGLOptionsDlg : public wxDialog
 {
   public:
     explicit OpenGLOptionsDlg( wxWindow *parent, bool glTicked );
+
+    wxCheckBox *m_cbUseAcceleratedPanning, *m_cbTextureCompression;
+    wxCheckBox *m_cbTextureCompressionCaching, *m_cbShowFPS, *m_cbSoftwareGL;
+    wxSpinCtrl *m_sTextureDimension, *m_sTextureMemorySize;
+
+    bool m_brebuild_cache;
+
+  private:
     void OnButtonRebuild( wxCommandEvent& event );
     void OnButtonClear( wxCommandEvent& event );
     wxString TextureCacheSize( void );
 
-    wxCheckBox *m_cbUseAcceleratedPanning, *m_cbTextureCompression;
-    wxCheckBox *m_cbTextureCompressionCaching, *m_cbShowFPS, *m_cbSoftwareGL;
     wxStaticText *m_cacheSize;
-    wxSpinCtrl *m_sTextureDimension, *m_sTextureMemorySize;
-
-    bool m_brebuild_cache;
 
     DECLARE_EVENT_TABLE()
 };
