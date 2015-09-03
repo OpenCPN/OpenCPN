@@ -6607,7 +6607,7 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent ) :
     m_memorySize = new wxStaticText( this, wxID_ANY, _("Texture Memory Size (MB)") );
     m_sTextureMemorySize = new wxSpinCtrl( this );
     m_sTextureMemorySize->SetRange( 1, 16384 );
-    m_cacheSize = new wxStaticText(this, wxID_ANY, _("Size: ") + TextureCacheSize());
+    m_cacheSize = new wxStaticText(this, wxID_ANY, _("Size: ") + GetTextureCacheSize());
     wxButton *btnRebuild = new wxButton( this, ID_BUTTON_REBUILD, _( "Rebuild Texture Cache" ) );
     wxButton *btnClear = new wxButton(this, ID_BUTTON_CLEAR, _( "Clear Texture Cache" ) );
     btnRebuild->Enable( g_GLOptions.m_bTextureCompressionCaching );
@@ -6721,11 +6721,11 @@ void OpenGLOptionsDlg::OnButtonClear( wxCommandEvent& event )
             ::wxRemoveFile(files[i]);
     }
 
-    m_cacheSize->SetLabel( TextureCacheSize() );
+    m_cacheSize->SetLabel( GetTextureCacheSize() );
     ::wxEndBusyCursor();
 }
 
-wxString OpenGLOptionsDlg::TextureCacheSize( void )
+wxString OpenGLOptionsDlg::GetTextureCacheSize( void )
 {
     wxString path =  g_Platform->GetPrivateDataDir() +
         wxFileName::GetPathSeparator() + _T( "raster_texture_cache" );

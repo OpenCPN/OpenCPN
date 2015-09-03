@@ -884,7 +884,7 @@ class OpenGLOptionsDlg : public wxDialog
     void Populate( void );
     void OnButtonRebuild( wxCommandEvent& event );
     void OnButtonClear( wxCommandEvent& event );
-    wxString TextureCacheSize( void );
+    wxString GetTextureCacheSize( void );
 
     wxStaticText *m_cacheSize, *m_memorySize;
 
