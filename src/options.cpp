@@ -751,7 +751,9 @@ BEGIN_EVENT_TABLE( options, wxDialog )
 #ifdef __WXGTK__
     EVT_BUTTON( ID_BUTTONFONTCOLOR, options::OnChooseFontColor )
 #endif
+#ifdef ocpnUSE_GL
     EVT_BUTTON( ID_OPENGLOPTIONS, options::OnOpenGLOptions )
+#endif
     EVT_CHOICE( ID_RADARDISTUNIT, options::OnDisplayCategoryRadioButton )
     EVT_CHOICE( ID_DEPTHUNITSCHOICE, options::OnUnitsChoice )
     EVT_BUTTON( ID_CLEARLIST, options::OnButtonClearClick )
@@ -3921,7 +3923,6 @@ void options::OnGLClicked( wxCommandEvent& event )
 
 void options::OnOpenGLOptions( wxCommandEvent& event )
 {
-#ifdef ocpnUSE_GL
     OpenGLOptionsDlg dlg(this, pOpenGL->GetValue());
 
     if(dlg.ShowModal() == wxID_OK) {
@@ -3957,7 +3958,6 @@ void options::OnOpenGLOptions( wxCommandEvent& event )
         m_returnChanges = REBUILD_RASTER_CACHE;
         Finish();
     }
-#endif
 }
 
 void options::OnChartDirListSelect( wxCommandEvent& event )
@@ -6599,8 +6599,6 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked ) :
     wxFont *qFont = GetOCPNScaledFont( _( "Dialog" ) );
     SetFont( *qFont );
 
-
-#ifdef ocpnUSE_GL
     m_bSizer1 = new wxFlexGridSizer( 3 );
     this->SetSizeHints( wxDefaultSize, wxDefaultSize );
 
@@ -6702,7 +6700,6 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked ) :
     Layout();
     Centre( wxBOTH );
     Fit();
-#endif
 }
 
 void OpenGLOptionsDlg::OnButtonRebuild( wxCommandEvent& event )

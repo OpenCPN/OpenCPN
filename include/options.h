@@ -862,7 +862,6 @@ class SentenceListDlg : public wxDialog
     const wxString GetBoxLabel( void ) const;
 
     wxCheckListBox* m_clbSentences;
-    wxStdDialogButtonSizer* m_sdbSizer4;
     wxButton *m_btnDel;
 
     ListType m_type;
