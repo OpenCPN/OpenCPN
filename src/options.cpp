@@ -6763,7 +6763,7 @@ const wxString OpenGLOptionsDlg::GetTextureCacheSize( void )
         for ( unsigned int i = 0 ; i < files.GetCount() ; i++ )
             total += wxFile( files[i] ).Length();
     }
-    double mb = total / ( 1024.0 * 2 );
+    double mb = total / ( 1024.0 * 1024.0 );
     if ( mb < 10000.0 )
         return wxString::Format( _T( "%.1f MB" ), mb );
     mb = mb / 1024.0;
