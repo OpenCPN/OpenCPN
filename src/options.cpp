@@ -6596,90 +6596,49 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked ) :
               ),
     m_brebuild_cache( FALSE )
 {
-    extern PFNGLCOMPRESSEDTEXIMAGE2DPROC s_glCompressedTexImage2D;
-    extern bool  b_glEntryPointsSet;
     wxBoxSizer* mainSizer = new wxBoxSizer( wxVERTICAL );
     wxFlexGridSizer *flexSizer = new wxFlexGridSizer( 2 );
-
-    flexSizer->Add( new wxStaticText(this, wxID_ANY, _( "Texture Settings" )), 0,
-                    wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5 );
 
     m_cbTextureCompression = new wxCheckBox( this, wxID_ANY,
                                              g_bexpert ?
                                              _("Texture Compression") :
                                              _( "Texture Compression with Caching" ) );
-    m_cbTextureCompression->SetValue( g_GLOptions.m_bTextureCompression );
-    /* disable caching if unsupported */
-    if ( b_glEntryPointsSet && !s_glCompressedTexImage2D ) {
-        g_GLOptions.m_bTextureCompressionCaching = FALSE;
-        m_cbTextureCompression->Disable();
-        m_cbTextureCompression->SetValue(FALSE);
-    }
-
-    flexSizer->Add( m_cbTextureCompression, 0, wxALL | wxEXPAND, 5 );
-
-    if ( g_bexpert ) {
-        m_cbTextureCompressionCaching = new wxCheckBox( this, wxID_ANY, _("Texture Compression Caching") );
-        m_cbTextureCompressionCaching->SetValue( g_GLOptions.m_bTextureCompressionCaching );
-
-        flexSizer->AddSpacer( 0 );
-        flexSizer->Add( m_cbTextureCompressionCaching, 0, wxALL | wxEXPAND, 5 );
-
-        flexSizer->Add( new wxStaticText( this, wxID_ANY, _("Texture Memory Size (MB)") ),
-                        0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5 );
-
-        m_sTextureMemorySize = new wxSpinCtrl( this );
-        m_sTextureMemorySize->SetRange( 1, 16384 );
-        m_sTextureMemorySize->SetValue( g_GLOptions.m_iTextureMemorySize );
-        flexSizer->Add( m_sTextureMemorySize, 0, wxALL | wxEXPAND, 5) ;
-    }
-
-    flexSizer->Add( new wxStaticText(this, wxID_ANY, _( "Texture Cache" )), 0,
-                    wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5 );
+    m_cbTextureCompressionCaching = new wxCheckBox( this, wxID_ANY, _("Texture Compression Caching") );
+    m_memorySize = new wxStaticText( this, wxID_ANY, _("Texture Memory Size (MB)") );
+    m_sTextureMemorySize = new wxSpinCtrl( this );
+    m_sTextureMemorySize->SetRange( 1, 16384 );
     m_cacheSize = new wxStaticText(this, wxID_ANY, _("Size: ") + TextureCacheSize());
-    flexSizer->Add( m_cacheSize, 0, wxALIGN_CENTER | wxALIGN_CENTER_VERTICAL, 5 );
-    flexSizer->AddSpacer( 0 );
-
     wxButton *btnRebuild = new wxButton( this, ID_BUTTON_REBUILD, _( "Rebuild Texture Cache" ) );
+    wxButton *btnClear = new wxButton(this, ID_BUTTON_CLEAR, _( "Clear Texture Cache" ) );
     btnRebuild->Enable( g_GLOptions.m_bTextureCompressionCaching );
     if ( !g_bopengl || g_raster_format == GL_RGB )
         btnRebuild->Disable();
+    btnClear->Enable( g_GLOptions.m_bTextureCompressionCaching );
+    m_cbShowFPS = new wxCheckBox( this, wxID_ANY, _( "Show FPS" ) );
+    m_cbSoftwareGL = new wxCheckBox( this, wxID_ANY, _( "Software OpenGL (restart OpenCPN)" ) );
+    m_cbUseAcceleratedPanning = new wxCheckBox( this, wxID_ANY, _( "Use Accelerated Panning" ) );
+
+    flexSizer->Add( new wxStaticText(this, wxID_ANY, _( "Texture Settings" )), 0,
+                    wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5 );
+    flexSizer->Add( m_cbTextureCompression, 0, wxALL | wxEXPAND, 5 );
+    flexSizer->AddSpacer( 0 );
+    flexSizer->Add( m_cbTextureCompressionCaching, 0, wxALL | wxEXPAND, 5 );
+    flexSizer->Add( m_memorySize, 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5 );
+    flexSizer->Add( m_sTextureMemorySize, 0, wxALL | wxEXPAND, 5) ;
+    flexSizer->Add( new wxStaticText(this, wxID_ANY, _( "Texture Cache" )), 0,
+                    wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5 );
+    flexSizer->Add( m_cacheSize, 0, wxALIGN_CENTER | wxALIGN_CENTER_VERTICAL, 5 );
+    flexSizer->AddSpacer( 0 );
     flexSizer->Add( btnRebuild, 0, wxALL | wxEXPAND, 5 );
     flexSizer->AddSpacer( 0 );
-
-    wxButton *btnClear = new wxButton(this, ID_BUTTON_CLEAR, _( "Clear Texture Cache" ) );
-    btnClear->Enable( g_GLOptions.m_bTextureCompressionCaching );
     flexSizer->Add( btnClear, 0, wxALL | wxEXPAND, 5 );
-
     flexSizer->Add( new wxStaticText(this, wxID_ANY, _( "Miscellaneous" )), 0,
                     wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5 );
-
-    m_cbShowFPS = new wxCheckBox( this, wxID_ANY, _( "Show FPS" ) );
-    m_cbShowFPS->SetValue( g_bShowFPS );
     flexSizer->Add( m_cbShowFPS, 0,  wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5 );
-
-    m_cbSoftwareGL = NULL;
-#if defined(__UNIX__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
-    if ( cc1->GetglCanvas()->GetVersionString().Upper().Find( _T( "MESA" ) ) != wxNOT_FOUND ) {
-        flexSizer->AddSpacer( 0 );
-        m_cbSoftwareGL = new wxCheckBox( this, wxID_ANY, _( "Software OpenGL (restart OpenCPN)" ) );
-        flexSizer->Add( m_cbSoftwareGL, 0,  wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5 );
-        m_cbSoftwareGL->SetValue(g_bSoftwareGL);
-    }
-#endif
-    if ( g_bexpert ) {
-        flexSizer->AddSpacer( 0 );
-        m_cbUseAcceleratedPanning = new wxCheckBox( this, wxID_ANY, _( "Use Accelerated Panning" ) );
-        if ( cc1->GetglCanvas()->CanAcceleratePanning() ) {
-            m_cbUseAcceleratedPanning->Enable();
-            m_cbUseAcceleratedPanning->SetValue( g_GLOptions.m_bUseAcceleratedPanning );
-        } else {
-            m_cbUseAcceleratedPanning->SetValue( FALSE );
-            m_cbUseAcceleratedPanning->Disable();
-        }
-        flexSizer->Add( m_cbUseAcceleratedPanning, 0, wxALL | wxEXPAND, 5 );
-    }
-
+    flexSizer->AddSpacer( 0 );
+    flexSizer->Add( m_cbSoftwareGL, 0,  wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5 );
+    flexSizer->AddSpacer( 0 );
+    flexSizer->Add( m_cbUseAcceleratedPanning, 0, wxALL | wxEXPAND, 5 );
     flexSizer->AddGrowableCol( 1 );
     mainSizer->Add( flexSizer, 0, wxALL | wxEXPAND, 5 );
 
@@ -6688,12 +6647,55 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent, bool glTicked ) :
     btnSizer->AddButton( new wxButton( this, wxID_CANCEL ) );
     btnSizer->Realize();
 
-    mainSizer->AddStretchSpacer( );
+    mainSizer->AddStretchSpacer();
     mainSizer->Add( btnSizer, 0, wxALL | wxEXPAND, 5 );
+
+    Populate();
 
     SetSizer( mainSizer );
     mainSizer->SetSizeHints( this );
     Centre();
+}
+
+void OpenGLOptionsDlg::Populate( void )
+{
+    extern PFNGLCOMPRESSEDTEXIMAGE2DPROC s_glCompressedTexImage2D;
+    extern bool  b_glEntryPointsSet;
+
+    m_cbTextureCompression->SetValue( g_GLOptions.m_bTextureCompression );
+    /* disable caching if unsupported */
+    if ( b_glEntryPointsSet && !s_glCompressedTexImage2D ) {
+        g_GLOptions.m_bTextureCompressionCaching = FALSE;
+        m_cbTextureCompression->Disable();
+        m_cbTextureCompression->SetValue(FALSE);
+    }
+
+    m_cbTextureCompressionCaching->Show(g_bexpert);
+    m_memorySize->Show(g_bexpert);
+    m_sTextureMemorySize->Show(g_bexpert);
+    if ( g_bexpert ) {
+        m_cbTextureCompressionCaching->SetValue( g_GLOptions.m_bTextureCompressionCaching );
+        m_sTextureMemorySize->SetValue( g_GLOptions.m_iTextureMemorySize );
+    }
+    m_cbShowFPS->SetValue( g_bShowFPS );
+
+#if defined(__UNIX__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
+    if ( cc1->GetglCanvas()->GetVersionString().Upper().Find( _T( "MESA" ) ) != wxNOT_FOUND ) {
+        m_cbSoftwareGL->SetValue(g_bSoftwareGL);
+    }
+#else
+    m_cbSoftwareGL->Hide();
+#endif
+
+    if ( g_bexpert ) {
+        if ( cc1->GetglCanvas()->CanAcceleratePanning() ) {
+            m_cbUseAcceleratedPanning->Enable();
+            m_cbUseAcceleratedPanning->SetValue( g_GLOptions.m_bUseAcceleratedPanning );
+        } else {
+            m_cbUseAcceleratedPanning->SetValue( FALSE );
+            m_cbUseAcceleratedPanning->Disable();
+        }
+    }
 }
 
 void OpenGLOptionsDlg::OnButtonRebuild( wxCommandEvent& event )

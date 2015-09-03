@@ -881,11 +881,12 @@ class OpenGLOptionsDlg : public wxDialog
     bool m_brebuild_cache;
 
   private:
+    void Populate( void );
     void OnButtonRebuild( wxCommandEvent& event );
     void OnButtonClear( wxCommandEvent& event );
     wxString TextureCacheSize( void );
 
-    wxStaticText *m_cacheSize;
+    wxStaticText *m_cacheSize, *m_memorySize;
 
     DECLARE_EVENT_TABLE()
 };
