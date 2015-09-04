@@ -6524,7 +6524,7 @@ wxString SentenceListDlg::GetSentences( void )
 void SentenceListDlg::OnCLBSelect( wxCommandEvent& e )
 {
     // Only activate the "Delete" button if the selection is not in the standard list
-    m_btnDel->Enable( m_sentences.Index( e.GetString( ) ) == wxNOT_FOUND );
+    m_btnDel->Enable( m_sentences.Index( e.GetString() ) == wxNOT_FOUND );
 }
 
 void SentenceListDlg::OnAddClick( wxCommandEvent& event )
@@ -6627,9 +6627,9 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent ) :
     flexSizer->Add( btnClear, 0, wxALL | wxEXPAND, 5 );
     flexSizer->Add( new wxStaticText(this, wxID_ANY, _( "Miscellaneous" )), 0,
                     wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5 );
-    flexSizer->Add( m_cbShowFPS, 0,  wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5 );
+    flexSizer->Add( m_cbShowFPS, 0, wxALL | wxEXPAND, 5 );
     flexSizer->AddSpacer( 0 );
-    flexSizer->Add( m_cbSoftwareGL, 0,  wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 5 );
+    flexSizer->Add( m_cbSoftwareGL, 0, wxALL | wxEXPAND, 5 );
     flexSizer->AddSpacer( 0 );
     flexSizer->Add( m_cbUseAcceleratedPanning, 0, wxALL | wxEXPAND, 5 );
     flexSizer->AddGrowableCol( 1 );
@@ -6688,7 +6688,7 @@ const int OpenGLOptionsDlg::GetTextureMemorySize( void ) const
 void OpenGLOptionsDlg::Populate( void )
 {
     extern PFNGLCOMPRESSEDTEXIMAGE2DPROC s_glCompressedTexImage2D;
-    extern bool  b_glEntryPointsSet;
+    extern bool b_glEntryPointsSet;
 
     m_cbTextureCompression->SetValue( g_GLOptions.m_bTextureCompression );
     /* disable caching if unsupported */
