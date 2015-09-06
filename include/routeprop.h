@@ -150,7 +150,8 @@ public:
     static bool getInstanceFlag(){ return instanceFlag; } 
     
     void CreateControls();
-
+    void CreateControlsCompact();
+    
     void SetColorScheme(ColorScheme cs);
     void SetDialogTitle(const wxString & title);
     void OnRoutepropCancelClick( wxCommandEvent& event );
@@ -242,6 +243,7 @@ private:
     wxRadioButton  *m_prb_tzUTC;
     wxRadioButton  *m_prb_tzLocal;
     wxRadioButton  *m_prb_tzLMT;
+    bool m_bcompact;
     
 };
 
