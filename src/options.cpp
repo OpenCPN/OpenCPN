@@ -1026,6 +1026,13 @@ void options::Init()
     
     // This variable is used by plugin callback function AddOptionsPage
     g_pOptions = this;
+    
+    m_bcompact = false;
+    
+#ifdef __OCPN__ANDROID__
+    m_bcompact = true;
+#endif
+    
 }
 
 bool options::Create( MyFrame* parent, wxWindowID id, const wxString& caption, const wxPoint& pos,
@@ -2941,94 +2948,178 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
 {
     pDisplayPanel = AddPage( parent, _("General") );
 
-    wxFlexGridSizer *generalSizer = new wxFlexGridSizer( 2 );
-    generalSizer->SetHGap(border_size);
-//    generalSizer->AddGrowableCol( 0, 1 );
-//    generalSizer->AddGrowableCol( 1, 1 );
-//    pDisplayPanel->SetSizer( generalSizer );
+    if(!m_bcompact){
+        wxFlexGridSizer *generalSizer = new wxFlexGridSizer( 2 );
+        generalSizer->SetHGap(border_size);
+    //    generalSizer->AddGrowableCol( 0, 1 );
+    //    generalSizer->AddGrowableCol( 1, 1 );
+    //    pDisplayPanel->SetSizer( generalSizer );
 
-    // wxFlexGridSizer grows wrongly in wx2.8, so we need to centre it in another sizer instead of letting it grow.
-    wxBoxSizer* wrapperSizer = new wxBoxSizer( wxVERTICAL );
-    pDisplayPanel->SetSizer( wrapperSizer );
-    wrapperSizer->Add( generalSizer, 1, wxALL | wxALIGN_CENTER, border_size );
-
-
-    // spacer
-    generalSizer->Add( 0, border_size*4 );
-    generalSizer->Add( 0, border_size*4 );
+        // wxFlexGridSizer grows wrongly in wx2.8, so we need to centre it in another sizer instead of letting it grow.
+        wxBoxSizer* wrapperSizer = new wxBoxSizer( wxVERTICAL );
+        pDisplayPanel->SetSizer( wrapperSizer );
+        wrapperSizer->Add( generalSizer, 1, wxALL | wxALIGN_CENTER, border_size );
 
 
-    // Nav Mode
-    generalSizer->Add( new wxStaticText( pDisplayPanel, wxID_ANY, _("Navigation Mode") ), groupLabelFlags );
-    wxBoxSizer* boxNavMode = new wxBoxSizer( wxVERTICAL );
-    generalSizer->Add( boxNavMode, groupInputFlags );
-
-    wxBoxSizer* rowOrientation = new wxBoxSizer( wxHORIZONTAL );
-    boxNavMode->Add( rowOrientation );
-
-    pCBNorthUp = new wxRadioButton( pDisplayPanel, wxID_ANY, _("North Up") );
-    rowOrientation->Add( pCBNorthUp, inputFlags );
-    pCBCourseUp = new wxRadioButton( pDisplayPanel, ID_COURSEUPCHECKBOX, _("Course Up") );
-    rowOrientation->Add( pCBCourseUp, wxSizerFlags(0).Align(wxALIGN_CENTRE_VERTICAL).Border(wxLEFT, group_item_spacing*2) );
-
-    pCBLookAhead = new wxCheckBox( pDisplayPanel, ID_CHECK_LOOKAHEAD, _("Look Ahead Mode") );
-    boxNavMode->Add( pCBLookAhead, inputFlags );
-    
-    
-    // spacer
-    generalSizer->Add( 0, border_size*4 );
-    generalSizer->Add( 0, border_size*4 );
-
-    
-    // Control Options
-    generalSizer->Add( new wxStaticText( pDisplayPanel, wxID_ANY, _("Chart Display") ), groupLabelFlags );
-    wxBoxSizer* boxCharts = new wxBoxSizer( wxVERTICAL );
-    generalSizer->Add( boxCharts, groupInputFlags );
-
-    pCDOQuilting = new wxCheckBox( pDisplayPanel, ID_QUILTCHECKBOX1, _("Enable Chart Quilting") );
-    boxCharts->Add( pCDOQuilting, inputFlags );
-
-    pPreserveScale = new wxCheckBox( pDisplayPanel, ID_PRESERVECHECKBOX, _("Preserve Scale when Switching Charts") );
-    boxCharts->Add( pPreserveScale, inputFlags );
+        // spacer
+        generalSizer->Add( 0, border_size*4 );
+        generalSizer->Add( 0, border_size*4 );
 
 
-    // spacer
-    generalSizer->Add( 0, border_size*4 );
-    generalSizer->Add( 0, border_size*4 );
+        // Nav Mode
+        generalSizer->Add( new wxStaticText( pDisplayPanel, wxID_ANY, _("Navigation Mode") ), groupLabelFlags );
+        wxBoxSizer* boxNavMode = new wxBoxSizer( wxVERTICAL );
+        generalSizer->Add( boxNavMode, groupInputFlags );
 
-    
-    // Control Options
-    generalSizer->Add( new wxStaticText( pDisplayPanel, wxID_ANY, _("Controls") ), groupLabelFlags );
-    wxBoxSizer* boxCtrls = new wxBoxSizer( wxVERTICAL );
-    generalSizer->Add( boxCtrls, groupInputFlags );
-    
-    pSmoothPanZoom = new wxCheckBox( pDisplayPanel, ID_SMOOTHPANZOOMBOX, _("Smooth Panning / Zooming") );
-    boxCtrls->Add( pSmoothPanZoom, inputFlags );
-    
-    pEnableZoomToCursor = new wxCheckBox( pDisplayPanel, ID_ZTCCHECKBOX, _("Zoom to Cursor") );
-    pEnableZoomToCursor->SetValue( FALSE );
-    boxCtrls->Add( pEnableZoomToCursor, inputFlags );
-    
+        wxBoxSizer* rowOrientation = new wxBoxSizer( wxHORIZONTAL );
+        boxNavMode->Add( rowOrientation );
 
-    // spacer
-    generalSizer->Add( 0, border_size*4 );
-    generalSizer->Add( 0, border_size*4 );
+        pCBNorthUp = new wxRadioButton( pDisplayPanel, wxID_ANY, _("North Up") );
+        rowOrientation->Add( pCBNorthUp, inputFlags );
+        pCBCourseUp = new wxRadioButton( pDisplayPanel, ID_COURSEUPCHECKBOX, _("Course Up") );
+        rowOrientation->Add( pCBCourseUp, wxSizerFlags(0).Align(wxALIGN_CENTRE_VERTICAL).Border(wxLEFT, group_item_spacing*2) );
 
-    
-    // Display Options
-    generalSizer->Add( new wxStaticText( pDisplayPanel, wxID_ANY, _("Display Features") ), groupLabelFlags );
-    wxBoxSizer* boxDisp = new wxBoxSizer( wxVERTICAL );
-    generalSizer->Add( boxDisp, groupInputFlags );
+        pCBLookAhead = new wxCheckBox( pDisplayPanel, ID_CHECK_LOOKAHEAD, _("Look Ahead Mode") );
+        boxNavMode->Add( pCBLookAhead, inputFlags );
+        
+        
+        // spacer
+        generalSizer->Add( 0, border_size*4 );
+        generalSizer->Add( 0, border_size*4 );
 
-    pSDisplayGrid = new wxCheckBox( pDisplayPanel, ID_CHECK_DISPLAYGRID, _("Show Grid") );
-    boxDisp->Add( pSDisplayGrid, inputFlags );
+        
+        // Control Options
+        generalSizer->Add( new wxStaticText( pDisplayPanel, wxID_ANY, _("Chart Display") ), groupLabelFlags );
+        wxBoxSizer* boxCharts = new wxBoxSizer( wxVERTICAL );
+        generalSizer->Add( boxCharts, groupInputFlags );
 
-    pCDOOutlines = new wxCheckBox( pDisplayPanel, ID_OUTLINECHECKBOX1, _("Show Chart Outlines") );
-    boxDisp->Add( pCDOOutlines, inputFlags );
+        pCDOQuilting = new wxCheckBox( pDisplayPanel, ID_QUILTCHECKBOX1, _("Enable Chart Quilting") );
+        boxCharts->Add( pCDOQuilting, inputFlags );
 
-    pSDepthUnits = new wxCheckBox( pDisplayPanel, ID_SHOWDEPTHUNITSBOX1, _("Show Depth Units") );
-    boxDisp->Add( pSDepthUnits, inputFlags );
-    
+        pPreserveScale = new wxCheckBox( pDisplayPanel, ID_PRESERVECHECKBOX, _("Preserve Scale when Switching Charts") );
+        boxCharts->Add( pPreserveScale, inputFlags );
+
+
+        // spacer
+        generalSizer->Add( 0, border_size*4 );
+        generalSizer->Add( 0, border_size*4 );
+
+        
+        // Control Options
+        generalSizer->Add( new wxStaticText( pDisplayPanel, wxID_ANY, _("Controls") ), groupLabelFlags );
+        wxBoxSizer* boxCtrls = new wxBoxSizer( wxVERTICAL );
+        generalSizer->Add( boxCtrls, groupInputFlags );
+        
+        pSmoothPanZoom = new wxCheckBox( pDisplayPanel, ID_SMOOTHPANZOOMBOX, _("Smooth Panning / Zooming") );
+        boxCtrls->Add( pSmoothPanZoom, inputFlags );
+        
+        pEnableZoomToCursor = new wxCheckBox( pDisplayPanel, ID_ZTCCHECKBOX, _("Zoom to Cursor") );
+        pEnableZoomToCursor->SetValue( FALSE );
+        boxCtrls->Add( pEnableZoomToCursor, inputFlags );
+        
+
+        // spacer
+        generalSizer->Add( 0, border_size*4 );
+        generalSizer->Add( 0, border_size*4 );
+
+        
+        // Display Options
+        generalSizer->Add( new wxStaticText( pDisplayPanel, wxID_ANY, _("Display Features") ), groupLabelFlags );
+        wxBoxSizer* boxDisp = new wxBoxSizer( wxVERTICAL );
+        generalSizer->Add( boxDisp, groupInputFlags );
+
+        pSDisplayGrid = new wxCheckBox( pDisplayPanel, ID_CHECK_DISPLAYGRID, _("Show Grid") );
+        boxDisp->Add( pSDisplayGrid, inputFlags );
+
+        pCDOOutlines = new wxCheckBox( pDisplayPanel, ID_OUTLINECHECKBOX1, _("Show Chart Outlines") );
+        boxDisp->Add( pCDOOutlines, inputFlags );
+
+        pSDepthUnits = new wxCheckBox( pDisplayPanel, ID_SHOWDEPTHUNITSBOX1, _("Show Depth Units") );
+        boxDisp->Add( pSDepthUnits, inputFlags );
+    }
+    else{
+        wxBoxSizer* wrapperSizer = new wxBoxSizer( wxVERTICAL );
+        pDisplayPanel->SetSizer( wrapperSizer );
+        
+        wxBoxSizer* generalSizer = wrapperSizer;
+        
+        // spacer
+        generalSizer->Add( 0, border_size*4 );
+        generalSizer->Add( 0, border_size*4 );
+        
+        
+        // Nav Mode
+        //generalSizer->Add( new wxStaticText( pDisplayPanel, wxID_ANY, _("Navigation Mode") ), groupLabelFlags );
+        wxBoxSizer* boxNavMode = new wxBoxSizer( wxVERTICAL );
+        generalSizer->Add( boxNavMode, groupInputFlags );
+        
+        wxBoxSizer* rowOrientation = new wxBoxSizer( wxHORIZONTAL );
+        boxNavMode->Add( rowOrientation );
+        
+        pCBNorthUp = new wxRadioButton( pDisplayPanel, wxID_ANY, _("North Up") );
+        rowOrientation->Add( pCBNorthUp, inputFlags );
+        pCBCourseUp = new wxRadioButton( pDisplayPanel, ID_COURSEUPCHECKBOX, _("Course Up") );
+        rowOrientation->Add( pCBCourseUp, wxSizerFlags(0).Align(wxALIGN_CENTRE_VERTICAL).Border(wxLEFT, group_item_spacing*2) );
+        
+        pCBLookAhead = new wxCheckBox( pDisplayPanel, ID_CHECK_LOOKAHEAD, _("Look Ahead Mode") );
+        boxNavMode->Add( pCBLookAhead, inputFlags );
+        
+        
+        // spacer
+        generalSizer->Add( 0, border_size*4 );
+        generalSizer->Add( 0, border_size*4 );
+        
+        
+        // Control Options
+        //generalSizer->Add( new wxStaticText( pDisplayPanel, wxID_ANY, _("Chart Display") ), groupLabelFlags );
+        wxBoxSizer* boxCharts = new wxBoxSizer( wxVERTICAL );
+        generalSizer->Add( boxCharts, groupInputFlags );
+        
+        pCDOQuilting = new wxCheckBox( pDisplayPanel, ID_QUILTCHECKBOX1, _("Enable Chart Quilting") );
+        boxCharts->Add( pCDOQuilting, inputFlags );
+        
+        pPreserveScale = new wxCheckBox( pDisplayPanel, ID_PRESERVECHECKBOX, _("Preserve Scale on Chart Switch") );
+        boxCharts->Add( pPreserveScale, inputFlags );
+        
+        
+        // spacer
+        generalSizer->Add( 0, border_size*4 );
+        generalSizer->Add( 0, border_size*4 );
+        
+        
+        // Control Options
+        //generalSizer->Add( new wxStaticText( pDisplayPanel, wxID_ANY, _("Controls") ), groupLabelFlags );
+        wxBoxSizer* boxCtrls = new wxBoxSizer( wxVERTICAL );
+        generalSizer->Add( boxCtrls, groupInputFlags );
+        
+        pSmoothPanZoom = new wxCheckBox( pDisplayPanel, ID_SMOOTHPANZOOMBOX, _("Smooth Panning / Zooming") );
+        boxCtrls->Add( pSmoothPanZoom, inputFlags );
+        
+        pEnableZoomToCursor = new wxCheckBox( pDisplayPanel, ID_ZTCCHECKBOX, _("Zoom to Cursor") );
+        pEnableZoomToCursor->SetValue( FALSE );
+        boxCtrls->Add( pEnableZoomToCursor, inputFlags );
+        
+        
+        // spacer
+        generalSizer->Add( 0, border_size*4 );
+        generalSizer->Add( 0, border_size*4 );
+        
+        
+        // Display Options
+        //generalSizer->Add( new wxStaticText( pDisplayPanel, wxID_ANY, _("Display Features") ), groupLabelFlags );
+        wxBoxSizer* boxDisp = new wxBoxSizer( wxVERTICAL );
+        generalSizer->Add( boxDisp, groupInputFlags );
+        
+        pSDisplayGrid = new wxCheckBox( pDisplayPanel, ID_CHECK_DISPLAYGRID, _("Show Grid") );
+        boxDisp->Add( pSDisplayGrid, inputFlags );
+        
+        pCDOOutlines = new wxCheckBox( pDisplayPanel, ID_OUTLINECHECKBOX1, _("Show Chart Outlines") );
+        boxDisp->Add( pCDOOutlines, inputFlags );
+        
+        pSDepthUnits = new wxCheckBox( pDisplayPanel, ID_SHOWDEPTHUNITSBOX1, _("Show Depth Units") );
+        boxDisp->Add( pSDepthUnits, inputFlags );
+        
+    }
 }
 
 void options::CreatePanel_Units( size_t parent, int border_size, int group_item_spacing,

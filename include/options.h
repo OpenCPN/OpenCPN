@@ -693,6 +693,7 @@ private:
     int         m_btNoChangeCounter;
     int         m_btlastResultCount;   
     
+    bool        m_bcompact;
 };
 
 class ChartGroupsUI: public wxScrolledWindow {
