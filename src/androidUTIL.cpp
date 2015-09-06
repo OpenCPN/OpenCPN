@@ -659,6 +659,22 @@ extern "C"{
 }
 
 extern "C"{
+    JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onMouseWheel(JNIEnv *env, jobject obj, int dir)
+    {
+        qDebug() << "onMouseWheel" << dir;
+        
+        wxMouseEvent evt(wxEVT_MOUSEWHEEL);
+        evt.m_wheelRotation = dir;
+        if(cc1 && cc1->GetEventHandler()){
+            qDebug() << "send event";
+            cc1->GetEventHandler()->AddPendingEvent(evt);
+        }
+        
+        return 77;
+    }
+}
+
+extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onMenuKey(JNIEnv *env, jobject obj)
     {
         qDebug() << "onMenuKey";

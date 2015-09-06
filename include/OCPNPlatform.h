@@ -101,6 +101,7 @@ public:
 
     void PositionAISAlert( wxWindow *alert_window);
     float getChartScaleFactorExp( float scale_linear );
+    int GetStatusBarFieldCount();
     
 //--------------------------------------------------------------------------
 //      Per-Platform file/directory support

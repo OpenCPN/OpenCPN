@@ -43,6 +43,7 @@
 #include "styles.h"
 #include "navutil.h"
 #include "ConnectionParams.h"
+#include "FontMgr.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -1130,6 +1131,50 @@ void OCPNPlatform::HideBusySpinner( void )
 #endif    
 }
 
+
+int OCPNPlatform::GetStatusBarFieldCount()
+{
+#ifdef __OCPN__ANDROID__
+    int count = 1;
+    
+    //  Make a horizontal measurement...
+    wxScreenDC dc;
+    wxFont* templateFont = FontMgr::Get().GetFont( _("StatusBar"), 0 );
+    dc.SetFont(*templateFont);
+    
+    wxSize sz = dc.GetTextExtent(_T("WWWWWW"));
+    double font_size_pix = (double)sz.x / 6.0;
+    qDebug() << "font_size_pix" << font_size_pix;
+    
+ /*    
+    // get the user's preferred font, or if none set then the system default with the size overridden
+    wxFont* templateFont = FontMgr::Get().GetFont( _("StatusBar"), 0 );
+    double font_size_points = templateFont->GetPointSize();
+    qDebug() << "font_size_points" << font_size_points;
+
+    double density = getAndroidDisplayDensity();
+    qDebug() << "density" << density;
+    
+    double font_size_pix = templateFont->GetPointSize() / getFontPointsperPixel();
+    qDebug() << "font_size_pix" << font_size_pix;
+  */  
+    wxSize dispSize = getDisplaySize();
+    
+    double nChars = dispSize.x / font_size_pix;
+    qDebug() << "nChars" << nChars;
+    
+    if(nChars < 40)
+        count = 1;
+    else
+        count = 2;
+    
+    return count;
+    
+#else
+    return STAT_FIELD_COUNT;            // default
+#endif
+
+}
 
 
 double OCPNPlatform::getFontPointsperPixel( void )
