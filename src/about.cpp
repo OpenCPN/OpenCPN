@@ -342,15 +342,17 @@ void about::CreateControls( void )
     SetSizer( mainSizer );
     wxStaticText *pST1 = new wxStaticText( this, -1,
         _("The Open Source Chart Plotter/Navigator"), wxDefaultPosition,
-        wxSize( -1, 30 /* 500, 30 */ ), wxALIGN_CENTRE /* | wxALIGN_CENTER_VERTICAL */ );
+        wxSize( -1, 50 /* 500, 30 */ ), wxALIGN_CENTRE /* | wxALIGN_CENTER_VERTICAL */ );
 
     wxFont *headerFont = wxTheFontList->FindOrCreateFont( 14, wxFONTFAMILY_SWISS,
             wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
     pST1->SetFont( *headerFont );
     mainSizer->Add( pST1, 0, wxALL | wxEXPAND, 8 );
 
-    wxSizer *buttonSizer = new wxBoxSizer( m_displaySize.x < m_displaySize.y ?
-                                           wxVERTICAL : wxHORIZONTAL );
+#ifndef __OCPN__ANDROID__    
+    wxSizer *buttonSizer = new wxBoxSizer( m_displaySize.x < m_displaySize.y ? wxVERTICAL : wxHORIZONTAL );
+    mainSizer->Add( buttonSizer, 0, wxALL, 0 );
+    
     wxButton* donateButton = new wxBitmapButton( this, ID_DONATE,
             g_StyleManager->GetCurrentStyle()->GetIcon( _T("donate") ),
             wxDefaultPosition, wxDefaultSize, 0 );
@@ -358,13 +360,13 @@ void about::CreateControls( void )
     buttonSizer->Add( new wxButton( this, ID_COPYLOG, _("Copy Log File to Clipboard") ), 1, wxALL | wxEXPAND, 3 );
     buttonSizer->Add( new wxButton( this, ID_COPYINI, _("Copy Settings File to Clipboard") ), 1, wxALL | wxEXPAND, 3 );
     buttonSizer->Add( donateButton, 1, wxALL | wxEXPAND | wxALIGN_RIGHT, 3 );
-
+#endif
+    
     //  Main Notebook
     pNotebook = new wxNotebook( this, ID_NOTEBOOK_HELP, wxDefaultPosition,
             wxSize( -1, -1 ), wxNB_TOP );
     pNotebook->InheritAttributes();
     mainSizer->Add( pNotebook, 1, wxALIGN_CENTER_VERTICAL | wxEXPAND | wxALL, 5 );
-    mainSizer->Add( buttonSizer, 0, wxALL, 0 );
 
     //  About Panel
     itemPanelAbout = new wxPanel( pNotebook, -1, wxDefaultPosition, wxDefaultSize,
