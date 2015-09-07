@@ -51,6 +51,7 @@
 #include "navutil.h"
 #include "TCWin.h"
 #include "ocpn_plugin.h"
+#include "about.h"
 
 class androidUtilHandler;
 
@@ -77,6 +78,7 @@ androidUtilHandler               *g_androidUtilHandler;
 extern wxDateTime                 g_start_time;
 extern RouteManagerDialog        *pRouteManagerDialog;
 extern ChartCanvas               *cc1;
+extern about                     *g_pAboutDlg;
 
 // Static globals
 extern ChartDB                   *ChartData;
@@ -436,6 +438,17 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                 }
                     
             }
+            
+            // About dialog
+            if(g_pAboutDlg){
+                bool bshown = g_pAboutDlg->IsShown();
+                g_pAboutDlg->Hide();
+                g_pAboutDlg->RecalculateSize();
+                if(bshown){
+                    g_pAboutDlg->Show();
+                }
+            }
+            
             
             break;
  

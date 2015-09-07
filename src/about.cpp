@@ -193,18 +193,7 @@ bool about::Create( wxWindow* parent, wxWindowID id, const wxString& caption, co
     CreateControls();
     Populate();
 
-    // Set the maximum size of the entire about dialog
-    wxSize displaySize = wxSize( m_displaySize.x - 100, m_displaySize.y - 100 );
-    SetSizeHints( wxSize( -1, -1 ), displaySize );
-
-    if ( g_bresponsive )
-        SetSize( displaySize );
-    else {
-        GetSizer()->Fit( this );
-        SetSize( wxSize( GetCharHeight() * 40, GetCharHeight() * 30 ) );
-    }
-
-    Centre();
+    RecalculateSize();
 
     return TRUE;
 }
@@ -265,11 +254,16 @@ void about::Populate( void )
     aboutText.Append( AboutText + OpenCPNVersion + OpenCPNInfo );
 
     // Show where the log file is going to be placed
-    aboutText.Append( _T("Logfile location: ") + g_Platform->GetLogFileName() );
+    wxString log_string = _T("Logfile location: ") + g_Platform->GetLogFileName();
+    log_string.Replace("/", "/ ");      // allow line breaks, in a cheap way...
+    
+    aboutText.Append( log_string );
 
     // Show where the config file is going to be placed
-    aboutText.Append( _T("<br><br>Config file location: ") + g_Platform->GetConfigFileName() );
-
+    wxString config_string = _T("<br><br>Config file location: ") + g_Platform->GetConfigFileName();
+    config_string.Replace("/", "/ ");
+    aboutText.Append( config_string );
+    
     if(wxFONTSTYLE_ITALIC == dFont->GetStyle())
         aboutText.Append( _T("</i>") );
 
@@ -332,6 +326,29 @@ void about::Populate( void )
 
     SetColorScheme();
 }
+
+void about::RecalculateSize( void )
+{
+    //  Make an estimate of the dialog size, without scrollbars showing
+    
+    wxSize esize;
+    esize.x = GetCharWidth() * 110;
+    esize.y = GetCharHeight() * 44;
+    
+    wxSize dsize = GetParent()->GetClientSize();
+    esize.y = wxMin(esize.y, dsize.y - (2 * GetCharHeight()));
+    esize.x = wxMin(esize.x, dsize.x - (1 * GetCharHeight()));
+    SetClientSize(esize);
+    
+    wxSize fsize = GetSize();
+    fsize.y = wxMin(fsize.y, dsize.y - (2 * GetCharHeight()));
+    fsize.x = wxMin(fsize.x, dsize.x - (1 * GetCharHeight()));
+    
+    SetSize(fsize);
+    
+    Centre();
+}
+
 
 void about::CreateControls( void )
 {

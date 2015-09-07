@@ -67,6 +67,8 @@ class about: public wxDialog
                  const wxSize& size = wxSize(500, 500),
                  long style = wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX );
 
+   void RecalculateSize( void );
+   
   private:
     void CreateControls( void );
     void Populate( void );
