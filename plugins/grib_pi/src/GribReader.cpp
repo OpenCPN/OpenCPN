@@ -105,14 +105,33 @@ void GribReader::readAllGribRecords()
     int id = 0;
     time_t firstdate = -1;
     bool b_EOF;
+    bool is_v2 = false;
 
     do {
         id ++;
-        rec = new GribV1Record(file, id);
-        if (rec->isOk() == false)
-        {
-            delete rec;
+        // use the previously seen record type first
+        // a miss with compressed file is really slow as
+        // seek may mean re reading and decompressing the
+        // file from the start
+
+        if (is_v2 == false) {
+            rec = new GribV1Record(file, id);
+            if (rec->isOk() == false) {
+                delete rec;
+                rec = new GribV2Record(file, id);
+                if (rec->isOk() == true)
+                    is_v2 = true;
+            }
+        }
+        else {
+            is_v2 = false;
             rec = new GribV2Record(file, id);
+            if (rec->isOk() == false) {
+                delete rec;
+                rec = new GribV1Record(file, id);
+            }
+            else 
+                is_v2 = true;
         }
         if (rec->isOk() == false)
         {

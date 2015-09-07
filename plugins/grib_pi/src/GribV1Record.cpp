@@ -238,6 +238,7 @@ GribV1Record::GribV1Record(ZUFILE* file, int id_)
 		setDataType(dataType);
 	}
     else {
+        // XXX very slow with bzip2 file
         zu_seek(file, start, SEEK_SET);
     }
 }
