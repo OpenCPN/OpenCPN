@@ -136,7 +136,6 @@ public:
   GRIB2Grid *grids;
 };
 
-static void getBits(unsigned char *buf,int *loc,size_t off,size_t bits);
 
 #ifdef JASPER
 int dec_jpeg2000(char *injpc,int bufsize,int *outfld)
@@ -241,6 +240,61 @@ int dec_jpeg2000(char *injpc,int bufsize,int *outfld)
 
 }
 #endif
+
+static void getBits(unsigned char *buf,int *loc,size_t off,size_t bits)
+{
+  unsigned char bmask;
+  int lmask,temp;
+  size_t buf_size=sizeof(unsigned char)*8,loc_size=sizeof(int)*8,wskip;
+  int rshift;
+  size_t n;
+
+  /* no work to do */
+  if (bits == 0)
+    return;
+
+  if (bits > loc_size) {
+    fprintf(stderr,"Error: unpacking %d bits into a %d-bit field\n",bits,loc_size);
+    exit(1);
+  }
+  else {
+  /* create masks to use when right-shifting (necessary because different
+   compilers do different things when right-shifting a signed bit-field) */
+    bmask=1;
+    for (n=1; n < buf_size; n++) {
+	bmask<<=1;
+	bmask++;
+    }
+    lmask=1;
+    for (n=1; n < loc_size; n++) {
+	lmask<<=1;
+	lmask++;
+    }
+    /* get number of words to skip before unpacking begins */
+    wskip=off/buf_size;
+    /* right shift the bits in the packed buffer "word" to eliminate unneeded
+       bits */
+    rshift=buf_size-(off % buf_size)-bits;
+    /* check for a packed field spanning multiple "words" */
+    if (rshift < 0) {
+	*loc=0;
+	while (rshift < 0) {
+	  temp=buf[wskip++];
+	  *loc+=(temp<<-rshift);
+	  rshift+=buf_size;
+	}
+	if (rshift != 0)
+	  *loc+=(buf[wskip]>>rshift)&~(bmask<<(buf_size-rshift));
+	else
+	  *loc+=buf[wskip];
+    }
+    else
+	*loc=(buf[wskip]>>rshift);
+/* remove any unneeded leading bits */
+    if (bits != loc_size) *loc&=~(lmask<<bits);
+  }
+}
+
 
 //-------------------------------------------------------------------------------
 // Lecture depuis un fichier
@@ -983,6 +1037,7 @@ GribV2Record::GribV2Record(ZUFILE* file, int id_)
     eof     = false;
     knownData = true;
     IsDuplicated = false;
+    long start = seekStart;
     
     grib_msg = new GRIBMessage();
 
@@ -1034,9 +1089,11 @@ GribV2Record::GribV2Record(ZUFILE* file, int id_)
             return;
         }
     }
-    else
+    else {
+        // seek back if V1
+        zu_seek(file, start, SEEK_SET);
         return;
-   
+    }   
     refyear  = grib_msg->yr;
     refmonth = grib_msg->mo;
     refday   = grib_msg->dy;
@@ -1202,60 +1259,6 @@ GribV2Record::~GribV2Record()
 //----------------------------------------------
 // SECTION 0: THE INDICATOR SECTION (IS)
 //----------------------------------------------
-static void getBits(unsigned char *buf,int *loc,size_t off,size_t bits)
-{
-  unsigned char bmask;
-  int lmask,temp;
-  size_t buf_size=sizeof(unsigned char)*8,loc_size=sizeof(int)*8,wskip;
-  int rshift;
-  size_t n;
-
-  /* no work to do */
-  if (bits == 0)
-    return;
-
-  if (bits > loc_size) {
-    fprintf(stderr,"Error: unpacking %d bits into a %d-bit field\n",bits,loc_size);
-    exit(1);
-  }
-  else {
-  /* create masks to use when right-shifting (necessary because different
-   compilers do different things when right-shifting a signed bit-field) */
-    bmask=1;
-    for (n=1; n < buf_size; n++) {
-	bmask<<=1;
-	bmask++;
-    }
-    lmask=1;
-    for (n=1; n < loc_size; n++) {
-	lmask<<=1;
-	lmask++;
-    }
-    /* get number of words to skip before unpacking begins */
-    wskip=off/buf_size;
-    /* right shift the bits in the packed buffer "word" to eliminate unneeded
-       bits */
-    rshift=buf_size-(off % buf_size)-bits;
-    /* check for a packed field spanning multiple "words" */
-    if (rshift < 0) {
-	*loc=0;
-	while (rshift < 0) {
-	  temp=buf[wskip++];
-	  *loc+=(temp<<-rshift);
-	  rshift+=buf_size;
-	}
-	if (rshift != 0)
-	  *loc+=(buf[wskip]>>rshift)&~(bmask<<(buf_size-rshift));
-	else
-	  *loc+=buf[wskip];
-    }
-    else
-	*loc=(buf[wskip]>>rshift);
-/* remove any unneeded leading bits */
-    if (bits != loc_size) *loc&=~(lmask<<bits);
-  }
-}
-
 static bool unpackIS(ZUFILE* fp, GRIBMessage *grib_msg)
 {
   unsigned char temp[16];
@@ -1353,392 +1356,10 @@ bool GribV2Record::readGribSection0_IS(ZUFILE* file, bool b_skip_initial_GRIB) {
 
     return true;
 }
-//----------------------------------------------
-// SECTION 1: THE PRODUCT DEFINITION SECTION (PDS)
-//----------------------------------------------
-bool GribV2Record::readGribSection1_PDS(ZUFILE* file) {
-    fileOffset1 = zu_tell(file);
-    if (zu_read(file, data1, 28) != 28) {
-        ok=false;
-        eof = true;
-        return false;
-    }
-    sectionSize1 = makeInt3(data1[0],data1[1],data1[2]);
-    tableVersion = data1[3];
-    idCenter = data1[4];
-    idModel  = data1[5];
-    idGrid   = data1[6];
-    hasGDS = (data1[7]&128)!=0;
-    hasBMS = (data1[7]&64)!=0;
-
-    dataType = data1[8];	 // octet 9 = parameters and units
-	levelType = data1[9];
-	levelValue = makeInt2(data1[10],data1[11]);
-
-    refyear   = (data1[24]-1)*100+data1[12];
-    refmonth  = data1[13];
-    refday    = data1[14];
-    refhour   = data1[15];
-    refminute = data1[16];
-
-    refDate = makeDate(refyear,refmonth,refday,refhour,refminute,0);
-	sprintf(strRefDate, "%04d-%02d-%02d %02d:%02d", refyear,refmonth,refday,refhour,refminute);
-
-    periodP1  = data1[18];
-    periodP2  = data1[19];
-    timeRange = data1[20];
-    periodsec = periodSeconds(data1[17],data1[18],data1[19],timeRange);
-    curDate = makeDate(refyear,refmonth,refday,refhour,refminute,periodsec);
-
-//if (dataType == GRB_PRECIP_TOT) printf("P1=%d p2=%d\n", periodP1,periodP2);
-
-    int decim;
-    decim = (int)(((((zuint)data1[26]&0x7F)<<8)+(zuint)data1[27])&0x7FFF);
-    if (data1[26]&0x80)
-        decim *= -1;
-    decimalFactorD = pow(10.0, decim);
-
-    // Controls
-    if (! hasGDS) {
-        erreur("Record %d: GDS not found",id);
-        ok = false;
-    }
-    if (decimalFactorD == 0) {
-        erreur("Record %d: decimalFactorD null",id);
-        ok = false;
-    }
-    return ok;
-}
-//----------------------------------------------
-// SECTION 2: THE GRID DESCRIPTION SECTION (GDS)
-//----------------------------------------------
-bool GribV2Record::readGribSection2_GDS(ZUFILE* file) {
-    if (! hasGDS)
-        return 0;
-    fileOffset2 = zu_tell(file);
-    sectionSize2 = readInt3(file);  // byte 1-2-3
-    NV = readChar(file);			// byte 4
-    PV = readChar(file); 			// byte 5
-    gridType = readChar(file); 		// byte 6
-
-    if (gridType != 0
-    		// && gridType != 4
-		) {
-        erreur("Record %d: unknown grid type GDS(6) : %d",id,gridType);
-        ok = false;
-    }
-
-    Ni  = readInt2(file);				// byte 7-8
-    Nj  = readInt2(file);				// byte 9-10
-    La1 = readSignedInt3(file)/1000.0;	// byte 11-12-13
-    Lo1 = readSignedInt3(file)/1000.0;	// byte 14-15-16
-    resolFlags = readChar(file);		// byte 17
-    La2 = readSignedInt3(file)/1000.0;	// byte 18-19-20
-    Lo2 = readSignedInt3(file)/1000.0;	// byte 21-22-23
-
-    if (Lo1>=0 && Lo1<=180 && Lo2<0) {
-        Lo2 += 360.0;    // cross the 180 deg meridien,beetwen alaska and russia
-    }
-
-    Di  = readSignedInt2(file)/1000.0;	// byte 24-25
-    Dj  = readSignedInt2(file)/1000.0;	// byte 26-27
-
-    while ( Lo1> Lo2   &&  Di >0) {   // horizontal size > 360 °
-        Lo1 -= 360.0;
-    }
-    hasDiDj = (resolFlags&0x80) !=0;
-    isEarthSpheric = (resolFlags&0x40) ==0;
-    isUeastVnorth =  (resolFlags&0x08) ==0;
-
-    scanFlags = readChar(file);			// byte 28
-    isScanIpositive = (scanFlags&0x80) ==0;
-    isScanJpositive = (scanFlags&0x40) !=0;
-    isAdjacentI     = (scanFlags&0x20) ==0;
-
-   	if (Lo2 > Lo1) {
-	    lonMin = Lo1;
-	    lonMax = Lo2;
-	}
-  	else {
-	    lonMin = Lo2;
-	    lonMax = Lo1;
-	}
-   	if (La2 > La1) {
-	    latMin = La1;
-	    latMax = La2;
-	}
-  	else {
-	    latMin = La2;
-	    latMax = La1;
-	}
-	if (Ni<=1 || Nj<=1) {
-		erreur("Record %d: Ni=%d Nj=%d",id,Ni,Nj);
-		ok = false;
-	}
-	else {
-		Di = (Lo2-Lo1) / (Ni-1);
-		Dj = (La2-La1) / (Nj-1);
-	}
-
-if (false) {
-printf("====\n");
-printf("Lo1=%f Lo2=%f    La1=%f La2=%f\n", Lo1,Lo2,La1,La2);
-printf("Ni=%d Nj=%d\n", Ni,Nj);
-printf("hasDiDj=%d Di,Dj=(%f %f)\n", hasDiDj, Di,Dj);
-printf("hasBMS=%d\n", hasBMS);
-printf("isScanIpositive=%d isScanJpositive=%d isAdjacentI=%d\n",
-                        isScanIpositive,isScanJpositive,isAdjacentI );
-}
-    return ok;
-}
-
-//----------------------------------------------
-// SECTION 3: BIT MAP SECTION (BMS)
-//----------------------------------------------
-bool GribV2Record::readGribSection3_BMS(ZUFILE* file) {
-    fileOffset3 = zu_tell(file);
-    if (! hasBMS) {
-        sectionSize3 = 0;
-        return ok;
-    }
-    sectionSize3 = readInt3(file);
-    (void) readChar(file);
-    int bitMapFollows = readInt2(file);
-
-    if (bitMapFollows != 0) {
-        return ok;
-    }
-    BMSsize = sectionSize3-6;
-    BMSbits = new zuchar[BMSsize];
-    if (!BMSbits) {
-        erreur("Record %d: out of memory",id);
-        ok = false;
-    }
-    for (zuint i=0; i< BMSsize; i++) {
-        BMSbits[i] = readChar(file);
-    }
-    return ok;
-}
-//----------------------------------------------
-// SECTION 4: BINARY DATA SECTION (BDS)
-//----------------------------------------------
-bool GribV2Record::readGribSection4_BDS(ZUFILE* file) {
-    fileOffset4  = zu_tell(file);
-    sectionSize4 = readInt3(file);  // byte 1-2-3
-
-    zuchar flags  = readChar(file);			// byte 4
-    scaleFactorE = readSignedInt2(file);	// byte 5-6
-    refValue     = readFloat4(file);		// byte 7-8-9-10
-    nbBitsInPack = readChar(file);			// byte 11
-    scaleFactorEpow2 = pow(2.,scaleFactorE);
-    unusedBitsEndBDS = flags & 0x0F;
-    isGridData      = (flags&0x80) ==0;
-    isSimplePacking = (flags&0x80) ==0;
-    isFloatValues   = (flags&0x80) ==0;
-
-//printf("BDS type=%3d - bits=%02d - level %3d - %d\n", dataType, nbBitsInPack, levelType,levelValue);
-
-    if (! isGridData) {
-        erreur("Record %d: need grid data",id);
-        ok = false;
-    }
-    if (! isSimplePacking) {
-        erreur("Record %d: need simple packing",id);
-        ok = false;
-    }
-    if (! isFloatValues) {
-        erreur("Record %d: need double values",id);
-        ok = false;
-    }
-
-    if (!ok) {
-        return ok;
-    }
-
-    // Allocate memory for the data
-    data = new double[Ni*Nj];
-    if (!data) {
-        erreur("Record %d: out of memory",id);
-        ok = false;
-    }
-
-    zuint  startbit  = 0;
-    int  datasize = sectionSize4-11;
-    zuchar *buf = new zuchar[datasize+4]();  // +4 pour simplifier les décalages ds readPackedBits
-    if (!buf) {
-        erreur("Record %d: out of memory",id);
-        ok = false;
-    }
-    if (zu_read(file, buf, datasize) != datasize) {
-        erreur("Record %d: data read error",id);
-        ok = false;
-        eof = true;
-    }
-    if (!ok) {
-        return ok;
-    }
-
-    // Read data in the order given by isAdjacentI
-    zuint i, j, x;
-    int ind;
-    if (isAdjacentI) {
-        for (j=0; j<Nj; j++) {
-            for (i=0; i<Ni; i++) {
-                if (!hasDiDj && !isScanJpositive) {
-                    ind = (Nj-1 -j)*Ni+i;
-                }
-                else {
-                    ind = j*Ni+i;
-                }
-                if (hasValue(i,j)) {
-                    x = readPackedBits(buf, startbit, nbBitsInPack);
-                    data[ind] = (refValue + x*scaleFactorEpow2)/decimalFactorD;
-                    startbit += nbBitsInPack;
-                    //printf(" %d %d %f ", i,j, data[ind]);
-                }
-                else {
-                    data[ind] = GRIB_NOTDEF;
-                }
-            }
-        }
-    }
-    else {
-        for (i=0; i<Ni; i++) {
-            for (j=0; j<Nj; j++) {
-                if (!hasDiDj && !isScanJpositive) {
-                    ind = (Nj-1 -j)*Ni+i;
-                }
-                else {
-                    ind = j*Ni+i;
-                }
-                if (hasValue(i,j)) {
-                    x = readPackedBits(buf, startbit, nbBitsInPack);
-                    startbit += nbBitsInPack;
-                    data[ind] = (refValue + x*scaleFactorEpow2)/decimalFactorD;
-                    //printf(" %d %d %f ", i,j, data[ind]);
-                }
-                else {
-                    data[ind] = GRIB_NOTDEF;
-                }
-            }
-        }
-    }
-
-    if (buf) {
-        delete [] buf;
-        buf = NULL;
-    }
-    return ok;
-}
-
-
-//----------------------------------------------
-// SECTION 5: END SECTION (ES)
-//----------------------------------------------
-bool GribV2Record::readGribSection5_ES(ZUFILE* file) {
-    char str[4];
-    if (zu_read(file, str, 4) != 4) {
-        ok = false;
-        eof = true;
-        return false;
-    }
-    if (strncmp(str, "7777", 4) != 0)  {
-        erreur("Final 7777 not read: %c%c%c%c",str[0],str[1],str[2],str[3]);
-        ok = false;
-        return false;
-    }
-    return ok;
-}
-
 
 //==============================================================
 // Fonctions utiles
 //==============================================================
-double GribV2Record::readFloat4(ZUFILE* file) {
-    unsigned char t[4];
-    if (zu_read(file, t, 4) != 4) {
-        ok = false;
-        eof = true;
-        return 0;
-    }
-
-    double val;
-    int A = (zuint)t[0]&0x7F;
-    int B = ((zuint)t[1]<<16)+((zuint)t[2]<<8)+(zuint)t[3];
-
-    val = pow(2.,-24)*B*pow(16.,A-64);
-    if (t[0]&0x80)
-        return -val;
-    else
-        return val;
-}
-//----------------------------------------------
-zuchar GribV2Record::readChar(ZUFILE* file) {
-    zuchar t;
-    if (zu_read(file, &t, 1) != 1) {
-        ok = false;
-        eof = true;
-        return 0;
-    }
-    return t;
-}
-//----------------------------------------------
-int GribV2Record::readSignedInt3(ZUFILE* file) {
-    unsigned char t[3];
-    if (zu_read(file, t, 3) != 3) {
-        ok = false;
-        eof = true;
-        return 0;
-    }
-    int val = (((zuint)t[0]&0x7F)<<16)+((zuint)t[1]<<8)+(zuint)t[2];
-    if (t[0]&0x80)
-        return -val;
-    else
-        return val;
-}
-//----------------------------------------------
-int GribV2Record::readSignedInt2(ZUFILE* file) {
-    unsigned char t[2];
-    if (zu_read(file, t, 2) != 2) {
-        ok = false;
-        eof = true;
-        return 0;
-    }
-    int val = (((zuint)t[0]&0x7F)<<8)+(zuint)t[1];
-    if (t[0]&0x80)
-        return -val;
-    else
-        return val;
-}
-//----------------------------------------------
-zuint GribV2Record::readInt3(ZUFILE* file) {
-    unsigned char t[3];
-    if (zu_read(file, t, 3) != 3) {
-        ok = false;
-        eof = true;
-        return 0;
-    }
-    return ((zuint)t[0]<<16)+((zuint)t[1]<<8)+(zuint)t[2];
-}
-//----------------------------------------------
-zuint GribV2Record::readInt2(ZUFILE* file) {
-    unsigned char t[2];
-    if (zu_read(file, t, 2) != 2) {
-        ok = false;
-        eof = true;
-        return 0;
-    }
-    return ((zuint)t[0]<<8)+(zuint)t[1];
-}
-//----------------------------------------------
-zuint GribV2Record::makeInt3(zuchar a, zuchar b, zuchar c) {
-    return ((zuint)a<<16)+((zuint)b<<8)+(zuint)c;
-}
-//----------------------------------------------
-zuint GribV2Record::makeInt2(zuchar b, zuchar c) {
-    return ((zuint)b<<8)+(zuint)c;
-}
-//----------------------------------------------
 zuint GribV2Record::readPackedBits(zuchar *buf, zuint first, zuint nbBits)
 {
     zuint oct = first / 8;
