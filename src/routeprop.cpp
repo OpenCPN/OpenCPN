@@ -440,17 +440,39 @@ void RouteProp::OnRoutePropRightClick( wxListEvent &event )
         // No track specific items so far.
     } else {
         if( ! m_pRoute->m_bIsInLayer ) {
+            
+            #ifdef __WXQT__    
+            wxFont *pf = OCPNGetFont(_T("Menu"), 0);
+            
+            // add stuff
+            wxMenuItem *editItem = new wxMenuItem(&menu, ID_RCLK_MENU_EDIT_WP, _("Waypoint Properties..."));
+            editItem->SetFont(*pf);
+            menu.Append(editItem);
+            
+            wxMenuItem *delItem = new wxMenuItem(&menu, ID_RCLK_MENU_DELETE, _("Remove Selected"));
+            delItem->SetFont(*pf);
+            menu.Append(delItem);
+            
+           
+            #else    
+            
             wxMenuItem* editItem = menu.Append( ID_RCLK_MENU_EDIT_WP, _("&Waypoint Properties...") );
-            editItem->Enable( m_wpList->GetSelectedItemCount() == 1 );
 
             wxMenuItem* delItem = menu.Append( ID_RCLK_MENU_DELETE, _("&Remove Selected") );
+            
+            #endif
+            
+            editItem->Enable( m_wpList->GetSelectedItemCount() == 1 );
             delItem->Enable( m_wpList->GetSelectedItemCount() > 0 && m_wpList->GetItemCount() > 2 );
+            
         }
     }
 
+    #ifndef __WXQT__    
     wxMenuItem* copyItem = menu.Append( ID_RCLK_MENU_COPY_TEXT, _("&Copy all as text") );
+    #endif
 
-    PopupMenu( &menu );
+    PopupMenu( &menu,  ::wxGetMousePosition() );
 }
 
 void RouteProp::OnRoutepropSplitClick( wxCommandEvent& event )
