@@ -3606,7 +3606,7 @@ void options::CreateControls( void )
     wxScreenDC sdc;
     int text_width = tbmp.GetWidth();
     if(sdc.IsOk())
-        sdc.GetTextExtent(_T("Connections"), &text_width, NULL, NULL, NULL, dialogFont));
+        sdc.GetTextExtent(_ ("Connections"), &text_width, NULL, NULL, NULL, dialogFont);
 
     if(text_width > tbmp.GetWidth() * 2 ){
         wxListView* lv = m_pListbook->GetListView();
