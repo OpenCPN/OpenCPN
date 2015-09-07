@@ -9345,6 +9345,8 @@ void MyFrame::applySettingsString( wxString settings)
             _DisCat nset = DISPLAYBASE;
             if(wxNOT_FOUND != val.Lower().Find(_T("base")))
                 nset = DISPLAYBASE;
+            else if(wxNOT_FOUND != val.Lower().Find(_T("mariner")))
+                nset = MARINERS_STANDARD;
             else if(wxNOT_FOUND != val.Lower().Find(_T("standard")))
                 nset = STANDARD;
             else if(wxNOT_FOUND != val.Lower().Find(_T("all")))
