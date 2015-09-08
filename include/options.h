@@ -239,7 +239,7 @@ class options: private Uncopyable, public wxScrollingDialog
     void SetWorkDirListPtr( ArrayOfCDI *p ) { m_pWorkDirList = p; }
     ArrayOfCDI *GetWorkDirListPtr( void ) { return m_pWorkDirList; }
 
-    void AddChartDir( wxString &dir );
+    void AddChartDir( const wxString &dir );
 
     void UpdateDisplayedChartDirList(ArrayOfCDI p);
     void UpdateOptionsUnits( void );

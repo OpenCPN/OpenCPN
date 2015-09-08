@@ -4284,20 +4284,19 @@ done:
     event.Skip();
 }
 
-void options::AddChartDir( wxString &dir )
+void options::AddChartDir( const wxString &dir )
 {
     wxFileName dirname = wxFileName( dir );
-
     pInit_Chart_Dir->Empty();
-    if( !g_bportable )
-        pInit_Chart_Dir->Append( dirname.GetPath() );
 
-    if( g_bportable ) {
+    if ( g_bportable ) {
         wxFileName f( dir );
         f.MakeRelativeTo( g_Platform->GetHomeDir() );
         pActiveChartsList->Append( f.GetFullPath() );
-    } else
+    } else {
+        pInit_Chart_Dir->Append( dirname.GetPath() );
         pActiveChartsList->Append( dir );
+    }
 
     k_charts |= CHANGE_CHARTS;
 
