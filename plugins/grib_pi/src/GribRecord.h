@@ -94,6 +94,7 @@ Elément de base d'un fichier GRIB
 #define LV_MSL       102
 #define LV_ABOV_GND  105
 #define LV_SIGMA     107
+#define LV_ATMOS_ENT  10
 #define LV_ATMOS_ALL 200
 //---------------------------------------------------------
 enum DataCenterModel {
