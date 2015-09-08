@@ -3674,10 +3674,10 @@ void options::CreateControls( void )
     //      PlugIns can add panels, too
     if( g_pi_manager ) g_pi_manager->NotifySetupOptions();
 
-    SetColorScheme( (ColorScheme) 0 );
+    SetColorScheme( static_cast<ColorScheme>( 0 ) );
 
     //Set the maximum size of the entire settings dialog
-    SetSizeHints( -1, -1, width-100, height-100 );
+    SetSizeHints( -1, -1, width - 100, height - 100 );
 
     //  The s57 chart panel is the one which controls the minimum width required to avoid horizontal scroll bars
     vectorPanel->SetSizeHints( ps57Ctl );
@@ -3687,11 +3687,11 @@ void options::SetInitialPage( int page_sel )
 {
     m_pListbook->SetSelection( page_sel );
 
-    for (size_t i = 0; i < m_pListbook->GetPageCount(); i++)
+    for ( size_t i = 0; i < m_pListbook->GetPageCount(); i++ )
     {
         wxNotebookPage* pg = m_pListbook->GetPage( i );
         wxNotebook *nb = dynamic_cast<wxNotebook *>( pg );
-        if ( nb ) nb->ChangeSelection(0);
+        if ( nb ) nb->ChangeSelection( 0 );
     }
 }
 
@@ -3700,8 +3700,8 @@ void options::SetColorScheme( ColorScheme cs )
     DimeControl( this );
 
 #ifdef __OCPN__OPTIONS_USE_LISTBOOK__
-    wxListView* lv = m_pListbook->GetListView();
-    lv->SetBackgroundColour(this->GetBackgroundColour());
+    wxListView *lv = m_pListbook->GetListView();
+    lv->SetBackgroundColour( GetBackgroundColour() );
 #endif
 }
 
