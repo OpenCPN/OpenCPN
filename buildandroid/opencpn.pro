@@ -136,6 +136,7 @@ INSTALLS += sound_deployment
 
 # The built-in PlugIns
 
+# Chart Downloader-------------------------------------------------------------------
 #data
 dldr_plugin_deployment.files += $$PWD/../plugins/chartdldr_pi/data/chart_sources.xml
 dldr_plugin_deployment.files += $$PWD/../plugins/chartdldr_pi/data/folder215.png
@@ -147,7 +148,19 @@ INSTALLS += dldr_plugin_deployment
 so_dldr_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/chartdldr_pi/libchartdldr_pi.so
 so_dldr_plugin_deployment.path = /assets/plugins
 INSTALLS += so_dldr_plugin_deployment
+#------------------------------------------------------------------------------------
 
+# World Magnetic Model---------------------------------------------------------------
+#library
+so_wmm_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/wmm_pi/libwmm_pi.so
+so_wmm_plugin_deployment.path = /assets/plugins
+INSTALLS += so_wmm_plugin_deployment
+
+#data
+wmm_plugin_deployment.files += $$PWD/../plugins/wmm_pi/data/WMM.COF
+wmm_plugin_deployment.path = /assets/plugins/wmm_pi/data
+INSTALLS += wmm_plugin_deployment
+#------------------------------------------------------------------------------------
 
 
 

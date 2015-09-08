@@ -43,6 +43,7 @@
 #include "styles.h"
 #include "navutil.h"
 #include "ConnectionParams.h"
+#include "FontMgr.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -582,7 +583,7 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_btouch = true;
     g_bresponsive = true;
     g_default_font_size = 18;            //  This is pretty close to TextAppearance.Medium
-    g_bUIexpert = false;
+    g_bUIexpert = true;         
     
     g_bShowStatusBar = true;
     g_cm93_zoom_factor = -5;
@@ -593,7 +594,8 @@ void OCPNPlatform::SetDefaultOptions( void )
     
     //  Suppress most tools, especially those that appear in the Basic menus.
     //  Of course, they may be re-enabled by experts...
-    g_toolbarConfig = _T("......X.....XX....XXXXXXXXXXX");
+    g_toolbarConfig = _T("......X...........XXXXXXXXXXX");
+    g_bPermanentMOBIcon = false;
     
     wxString sGPS = _T("2;3;;0;0;;0;1;0;0;;0;;1;0;0;0;0");          // 17 parms
     ConnectionParams *new_params = new ConnectionParams(sGPS);
@@ -601,11 +603,18 @@ void OCPNPlatform::SetDefaultOptions( void )
     new_params->bEnabled = true;
     g_pConnectionParams->Add(new_params);
     
-    //  Enable some default PlugIns
+    //  Enable some default PlugIns, and their default options
     
     if(pConfig){
         pConfig->SetPath( _T ( "/PlugIns/libchartdldr_pi.so" ) );
         pConfig->Write( _T ( "bEnabled" ), true );
+        
+        pConfig->SetPath( _T ( "/PlugIns/libwmm_pi.so" ) );
+        pConfig->Write( _T ( "bEnabled" ), true );
+        
+        pConfig->SetPath ( _T ( "/Settings/WMM" ) );
+        pConfig->Write ( _T ( "ShowIcon" ), false );
+        
     }
         
         
@@ -627,7 +636,15 @@ void OCPNPlatform::applyExpertMode(bool mode)
 }
         
     
-
+wxString OCPNPlatform::GetSupplementalLicenseString()
+{
+    wxString lic;
+#ifdef __OCPN__ANDROID__
+    lic = androidGetSupplementalLicense();
+#endif    
+    return lic;
+}
+    
 //--------------------------------------------------------------------------
 //      Per-Platform file/directory support
 //--------------------------------------------------------------------------
@@ -1114,6 +1131,36 @@ void OCPNPlatform::HideBusySpinner( void )
 #endif    
 }
 
+
+int OCPNPlatform::GetStatusBarFieldCount()
+{
+#ifdef __OCPN__ANDROID__
+    int count = 1;
+    
+    //  Make a horizontal measurement...
+    wxScreenDC dc;
+    wxFont* templateFont = FontMgr::Get().GetFont( _("StatusBar"), 0 );
+    dc.SetFont(*templateFont);
+    
+    wxSize sz = dc.GetTextExtent(_T("WWWWWW"));
+    double font_size_pix = (double)sz.x / 6.0;
+    
+    wxSize dispSize = getDisplaySize();
+    
+    double nChars = dispSize.x / font_size_pix;
+    
+    if(nChars < 40)
+        count = 1;
+    else
+        count = 2;
+    
+    return count;
+    
+#else
+    return STAT_FIELD_COUNT;            // default
+#endif
+
+}
 
 
 double OCPNPlatform::getFontPointsperPixel( void )

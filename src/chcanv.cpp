@@ -1135,6 +1135,8 @@ void ChartCanvas::InvalidateGL()
         if(g_bopengl)
             glChartCanvas::Invalidate();
 #endif
+    if(g_Compass)
+        g_Compass->UpdateStatus( true );
 }
 
 int ChartCanvas::GetCanvasChartNativeScale()
@@ -3258,7 +3260,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
         else
             VPoint.chart_scale = 1.0;
 
-        if( parent_frame->m_pStatusBar ) {
+        if( parent_frame->GetStatusBar() && (parent_frame->GetStatusBar()->GetFieldsCount() > STAT_FIELD_SCALE) ) {
             double round_factor = 100.;
             if(VPoint.chart_scale < 1000.)
                 round_factor = 10.;
@@ -3296,27 +3298,30 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
             
             // Check to see if the text will fit in the StatusBar field...
             bool b_noshow = false;
-            if(parent_frame->GetStatusBar()){
+            {
                 int w = 0;
                 int h;
                 wxClientDC dc(parent_frame->GetStatusBar());
-                if( dc.IsOk() )
+                if( dc.IsOk() ){
+                    wxFont* templateFont = FontMgr::Get().GetFont( _("StatusBar"), 0 );
+                    dc.SetFont(*templateFont);
                     dc.GetTextExtent(text, &w, &h);
+                    
 
                 // If text is too long for the allocated field, try to reduce the text string a bit.
-                wxRect rect;
-                parent_frame->GetStatusBar()->GetFieldRect(STAT_FIELD_SCALE, rect);
-                if(w && w > rect.width){
-                    text.Printf( _("Scale (%1.1fx)"),  m_displayed_scale_factor );
-                }
+                    wxRect rect;
+                    parent_frame->GetStatusBar()->GetFieldRect(STAT_FIELD_SCALE, rect);
+                    if(w && w > rect.width){
+                        text.Printf( _("Scale (%1.1fx)"),  m_displayed_scale_factor );
+                    }
                 
                 //  Test again...if too big still, then give it up.
-                if( dc.IsOk() )
                     dc.GetTextExtent(text, &w, &h);
-                if(w && w > rect.width){
-                    b_noshow = true;
+                
+                    if(w && w > rect.width){
+                        b_noshow = true;
+                    }
                 }
-                    
             }
             
             if(!b_noshow)

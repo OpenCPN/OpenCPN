@@ -446,7 +446,8 @@ class cm93compchart : public s57chart
             void GetPointPix(ObjRazRules *rzRules, wxPoint2DDouble *en, wxPoint *r, int nPoints);
 
 
-            ListOfObjRazRules *GetObjRuleListAtLatLon(float lat, float lon, float select_radius, ViewPort *VPoint);
+            ListOfObjRazRules *GetObjRuleListAtLatLon(float lat, float lon, float select_radius,
+                                                      ViewPort *VPoint, int selection_mask = MASK_ALL);
             S57ObjectDesc *CreateObjDescription(const ObjRazRules *obj);
 
             VE_Hash&  Get_ve_hash(void);

@@ -62,6 +62,11 @@
           android:title="@string/ocpn_action_googlemaps"
           android:showAsAction="ifRoom"/>
 
+    <item android:id="@+id/ocpn_action_toggle_fullscreen"
+          android:icon="@drawable/current"
+          android:title="@string/ocpn_action_toggle_fullscreen"
+          android:showAsAction="ifRoom"/>
+
     <item android:id="@+id/ocpn_action_settings_basic"
           android:icon="@drawable/settings"
           android:title="@string/ocpn_action_settings_basic"

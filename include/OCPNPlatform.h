@@ -101,6 +101,7 @@ public:
 
     void PositionAISAlert( wxWindow *alert_window);
     float getChartScaleFactorExp( float scale_linear );
+    int GetStatusBarFieldCount();
     
 //--------------------------------------------------------------------------
 //      Per-Platform file/directory support
@@ -119,6 +120,7 @@ public:
     wxString *GetPrivateDataDirPtr();
     wxString &GetLogFileName(){ return mlog_file; }
     MyConfig *GetConfigObject();
+    wxString GetSupplementalLicenseString();
     
     int DoFileSelectorDialog( wxWindow *parent, wxString *file_spec, wxString Title, wxString initDir,
                                 wxString suggestedName, wxString wildcard);
