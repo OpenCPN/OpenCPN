@@ -4202,15 +4202,11 @@ void options::OnOpenGLOptions( wxCommandEvent& event )
 
 void options::OnChartDirListSelect( wxCommandEvent& event )
 {
-    if(event.IsSelection()){
+    if ( event.IsSelection() ) {
         m_removeBtn->Enable();
-    }
-    else{
+    } else {
         wxArrayInt sel;
-        if(pActiveChartsList->GetSelections( sel ) )
-            m_removeBtn->Enable();
-        else
-            m_removeBtn->Disable();
+        m_removeBtn->Enable( pActiveChartsList->GetSelections( sel ) );
     }
 }
 
