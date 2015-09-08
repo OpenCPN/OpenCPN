@@ -4268,19 +4268,17 @@ void options::OnCharHook( wxKeyEvent& event ) {
     event.Skip();
 }
 
-void options::OnButtonaddClick( wxCommandEvent& event )
+void options::OnButtonaddClick( wxCommandEvent &event )
 {
     wxString selDir;
+    int dresult =g_Platform->DoDirSelectorDialog(
+        this, &selDir, _("Add a directory containing chart files"),
+        *pInit_Chart_Dir
+    );
 
-    int dresult = g_Platform->DoDirSelectorDialog( this, &selDir, _("Add a directory containing chart files"),
-                                                   *pInit_Chart_Dir);
+    if ( dresult != wxID_CANCEL )
+        AddChartDir( selDir );
 
-    if(wxID_CANCEL == dresult)
-        goto done;
-    AddChartDir( selDir );
-
-done:
-//    delete dirSelector;
     event.Skip();
 }
 
