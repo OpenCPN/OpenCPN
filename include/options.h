@@ -937,7 +937,6 @@ class MMSIListCtrl: public wxListCtrl
 class MMSIEditDialog: public wxDialog
 {
   public:
-    explicit MMSIEditDialog( );
     explicit MMSIEditDialog( MMSIProperties *props, wxWindow *parent,
                              wxWindowID id = wxID_ANY,
                              const wxString& caption = wxEmptyString,
@@ -946,11 +945,6 @@ class MMSIEditDialog: public wxDialog
                              long style = 0 );
     ~MMSIEditDialog( void );
 
-    bool Create( MMSIProperties *props, wxWindow *parent,
-                 wxWindowID id = wxID_ANY,
-                 const wxString& caption = wxEmptyString,
-                 const wxPoint& pos = wxDefaultPosition,
-                 const wxSize& size = wxDefaultSize, long style = 0 );
     void SetColorScheme(ColorScheme cs);
     void CreateControls( void );
     void OnMMSIEditCancelClick( wxCommandEvent& event );
@@ -964,7 +958,6 @@ class MMSIEditDialog: public wxDialog
     wxCheckBox *m_cbTrackPersist, *m_IgnoreButton, *m_MOBButton, *m_VDMButton;
     wxButton *m_CancelButton, *m_OKButton;
 
-    DECLARE_DYNAMIC_CLASS( MMSIEditDialog )
     DECLARE_EVENT_TABLE()
 };
 

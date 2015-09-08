@@ -274,21 +274,20 @@ int wxCALLBACK SortConnectionOnPriority(long item1, long item2, wxIntPtr list)
 #else
 int wxCALLBACK SortConnectionOnPriority(long item1, long item2, long list)
 #endif
-
 {
-    wxListCtrl *lc = (wxListCtrl*)list;
+    wxListCtrl *lc = reinterpret_cast<wxListCtrl*>( list );
 
     wxListItem it1, it2;
-    it1.SetId(lc->FindItem(-1, item1));
-    it1.SetColumn(3);
-    it1.SetMask(it1.GetMask() | wxLIST_MASK_TEXT);
+    it1.SetId( lc->FindItem( -1, item1 ) );
+    it1.SetColumn( 3 );
+    it1.SetMask( it1.GetMask() | wxLIST_MASK_TEXT );
 
-    it2.SetId(lc->FindItem(-1, item2));
-    it2.SetColumn(3);
-    it2.SetMask(it2.GetMask() | wxLIST_MASK_TEXT);
+    it2.SetId( lc->FindItem( -1, item2 ) );
+    it2.SetColumn( 3 );
+    it2.SetMask( it2.GetMask() | wxLIST_MASK_TEXT );
 
-    lc->GetItem(it1);
-    lc->GetItem(it2);
+    lc->GetItem( it1 );
+    lc->GetItem( it2 );
 
 #ifdef __WXOSX__
     return it1.GetText().CmpNoCase( it2.GetText() );
@@ -303,22 +302,16 @@ extern ArrayOfMMSIProperties   g_MMSI_Props_Array;
 /// Class MMSIEditDialog
 ///////////////////////////////////////////////////////////////////////////////
 
-IMPLEMENT_DYNAMIC_CLASS( MMSIEditDialog, wxDialog )
-
 BEGIN_EVENT_TABLE( MMSIEditDialog, wxDialog )
 EVT_BUTTON( ID_MMSIEDIT_CANCEL, MMSIEditDialog::OnMMSIEditCancelClick )
 EVT_BUTTON( ID_MMSIEDIT_OK, MMSIEditDialog::OnMMSIEditOKClick )
 END_EVENT_TABLE()
 
-MMSIEditDialog::MMSIEditDialog( void ) {}
-
 MMSIEditDialog::MMSIEditDialog( MMSIProperties *props, wxWindow* parent, wxWindowID id, const wxString& caption,
                                 const wxPoint& pos, const wxSize& size, long style ) :
+    wxDialog( parent, id, caption, pos, size, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER ),
     m_props( props )
 {
-    long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;
-    wxDialog::Create( parent, id, caption, pos, size, wstyle );
-
     CreateControls();
     GetSizer()->SetSizeHints( this );
     Centre();
@@ -327,21 +320,6 @@ MMSIEditDialog::MMSIEditDialog( MMSIProperties *props, wxWindow* parent, wxWindo
 MMSIEditDialog::~MMSIEditDialog( void )
 {
     delete m_MMSICtl;
-}
-
-bool MMSIEditDialog::Create( MMSIProperties *props, wxWindow* parent, wxWindowID id, const wxString& caption,
-                             const wxPoint& pos, const wxSize& size, long style )
-{
-    m_props = props;
-
-    SetExtraStyle( GetExtraStyle() | wxWS_EX_BLOCK_EVENTS );
-    wxDialog::Create( parent, id, caption, pos, size, style );
-
-    CreateControls();
-    GetSizer()->SetSizeHints( this );
-    Centre();
-
-    return TRUE;
 }
 
 void MMSIEditDialog::CreateControls( void )
