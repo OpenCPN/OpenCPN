@@ -394,8 +394,11 @@ void about::CreateControls( void )
         _("The Open Source Chart Plotter/Navigator"), wxDefaultPosition,
         wxSize( -1, 50 /* 500, 30 */ ), wxALIGN_CENTRE /* | wxALIGN_CENTER_VERTICAL */ );
 
-    wxFont *headerFont = wxTheFontList->FindOrCreateFont( 14, wxFONTFAMILY_SWISS,
-            wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
+    
+    wxFont *headerFont = wxTheFontList->FindOrCreateFont( 14, wxFONTFAMILY_DEFAULT,
+                                                          qFont->GetStyle(), wxFONTWEIGHT_BOLD, false,
+                                                          qFont->GetFaceName() );
     pST1->SetFont( *headerFont );
     mainSizer->Add( pST1, 0, wxALL | wxEXPAND, 8 );
 
