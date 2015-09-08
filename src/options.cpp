@@ -266,8 +266,6 @@ extern "C" bool CheckSerialAccess( void );
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY(ArrayOfDirCtrls);
 
-IMPLEMENT_DYNAMIC_CLASS( options, wxDialog )
-
 // sort callback for Connections list  Sort by priority.
 #if wxCHECK_VERSION(2, 9, 0)
 int wxCALLBACK SortConnectionOnPriority(long item1, long item2, wxIntPtr list)
@@ -749,11 +747,6 @@ BEGIN_EVENT_TABLE( options, wxDialog )
     EVT_TIMER ( ID_BT_SCANTIMER, options::onBTScanTimer )
 END_EVENT_TABLE()
 
-options::options( void )
-{
-    Init();
-}
-
 options::options( MyFrame* parent, wxWindowID id, const wxString& caption,
                   const wxPoint& pos, const wxSize& size, long style )
 {
@@ -888,24 +881,6 @@ void options::Init( void )
     m_bcompact = true;
 #endif
 
-}
-
-bool options::Create( MyFrame* parent, wxWindowID id, const wxString& caption, const wxPoint& pos,
-                      const wxSize& size, long style )
-{
-    SetExtraStyle( GetExtraStyle() | wxWS_EX_BLOCK_EVENTS );
-    wxDialog::Create( parent, id, caption, pos, size, style );
-
-    CreateControls();
-    Fit();
-    lastWindowPos == wxPoint( 0, 0 ) ? Centre() : Move( lastWindowPos );
-    lastWindowPos = GetPosition();
-    return TRUE;
-}
-
-wxWindow* options::GetContentWindow( void ) const
-{
-    return NULL;
 }
 
 size_t options::CreatePanel(const wxString & title)
