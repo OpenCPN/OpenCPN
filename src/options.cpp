@@ -4216,19 +4216,10 @@ void options::OnChartDirListSelect( wxCommandEvent& event )
 
 void options::OnDisplayCategoryRadioButton( wxCommandEvent& event )
 {
-    int select = pDispCat->GetSelection();
-
-    if( 3 == select ) {
-        ps57CtlListBox->Enable();
-        itemButtonClearList->Enable();
-        itemButtonSelectList->Enable();
-    }
-
-    else {
-        ps57CtlListBox->Disable();
-        itemButtonClearList->Disable();
-        itemButtonSelectList->Disable();
-    }
+    const bool select = pDispCat->GetSelection() == 3;
+    ps57CtlListBox->Enable( select );
+    itemButtonClearList->Enable( select );
+    itemButtonSelectList->Enable( select );
 
     event.Skip();
 }
