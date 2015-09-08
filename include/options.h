@@ -196,10 +196,20 @@ enum {
 
 WX_DECLARE_OBJARRAY(wxGenericDirCtrl *, ArrayOfDirCtrls);
 
+class Uncopyable {
+  protected:
+    Uncopyable( void ) {}
+    ~Uncopyable( void ) {}
+
+  private:
+    Uncopyable( const Uncopyable& );
+    Uncopyable& operator=( const Uncopyable& );
+};
+
 #ifndef bert // wxCHECK_VERSION(2, 9, 0)
-class options: public wxDialog
+class options: private Uncopyable, public wxDialog
 #else
-class options: public wxScrollingDialog
+class options: private Uncopyable, public wxScrollingDialog
 #endif
 {
   public:
@@ -546,7 +556,7 @@ class options: public wxScrollingDialog
     DECLARE_EVENT_TABLE()
 };
 
-class ChartGroupsUI: public wxScrolledWindow {
+class ChartGroupsUI: private Uncopyable, public wxScrolledWindow {
   public:
     explicit ChartGroupsUI( wxWindow *parent );
     ~ChartGroupsUI( void );
@@ -837,7 +847,7 @@ static int lang_list[] = {
 };
 #endif
 
-class SentenceListDlg : public wxDialog
+class SentenceListDlg : private Uncopyable, public wxDialog
 {
   public:
     explicit SentenceListDlg( wxWindow *parent, FilterDirection dir,
@@ -862,7 +872,7 @@ class SentenceListDlg : public wxDialog
     wxArrayString m_sentences;
 };
 
-class OpenGLOptionsDlg : public wxDialog
+class OpenGLOptionsDlg : private Uncopyable, public wxDialog
 {
   public:
     explicit OpenGLOptionsDlg( wxWindow *parent );
@@ -900,7 +910,7 @@ enum {
     mlVDM
 }; // MMSIListCtrl Columns;
 
-class MMSIListCtrl: public wxListCtrl
+class MMSIListCtrl: private Uncopyable, public wxListCtrl
 {
   public:
      explicit MMSIListCtrl( wxWindow *parent, wxWindowID id, const wxPoint& pos,
@@ -925,7 +935,7 @@ class MMSIListCtrl: public wxListCtrl
 #define ID_DEF_MENU_MMSI_EDIT   8194
 #define ID_DEF_MENU_MMSI_DELETE 8195
 
-class MMSIEditDialog: public wxDialog
+class MMSIEditDialog: private Uncopyable, public wxDialog
 {
   public:
     explicit MMSIEditDialog( MMSIProperties *props, wxWindow *parent,
@@ -952,7 +962,7 @@ class MMSIEditDialog: public wxDialog
     DECLARE_EVENT_TABLE()
 };
 
-class MMSI_Props_Panel: public wxPanel
+class MMSI_Props_Panel: private Uncopyable, public wxPanel
 {
   public:
     explicit MMSI_Props_Panel( wxWindow *parent );
