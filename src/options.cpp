@@ -974,7 +974,8 @@ bool options::DeletePage( wxScrolledWindow *page  )
     return FALSE;
 }
 
-void options::CreatePanel_NMEA_Compact( size_t parent, int border_size, int group_item_spacing, wxSize small_button_size )
+void options::CreatePanel_NMEA_Compact( size_t parent, int border_size,
+                                        int group_item_spacing )
 {
     m_pNMEAForm = AddPage( parent, _( "NMEA" ) );
 
@@ -1423,7 +1424,8 @@ void options::CreatePanel_NMEA_Compact( size_t parent, int border_size, int grou
     connectionsaved = TRUE;
 }
 
-void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_spacing, wxSize small_button_size )
+void options::CreatePanel_NMEA( size_t parent, int border_size,
+                                int group_item_spacing )
 {
     m_pNMEAForm = AddPage( parent, _( "NMEA" ) );
 
@@ -1906,7 +1908,8 @@ void options::OnConnectionToggleEnable( wxMouseEvent &event )
     event.Skip();
 }
 
-void options::CreatePanel_Ownship( size_t parent, int border_size, int group_item_spacing, wxSize small_button_size )
+void options::CreatePanel_Ownship( size_t parent, int border_size,
+                                   int group_item_spacing )
 {
     itemPanelShip = AddPage( parent, _( "Own Ship" ) );
 
@@ -2081,8 +2084,8 @@ void options::CreatePanel_Ownship( size_t parent, int border_size, int group_ite
     DimeControl( itemPanelShip );
 }
 
-void options::CreatePanel_ChartsLoad( size_t parent, int border_size, int group_item_spacing,
-                                      wxSize small_button_size )
+void options::CreatePanel_ChartsLoad( size_t parent, int border_size,
+                                      int group_item_spacing )
 {
     wxScrolledWindow *chartPanelWin = AddPage( m_pageCharts, _( "Chart Files" ) );
 
@@ -2137,8 +2140,8 @@ void options::CreatePanel_ChartsLoad( size_t parent, int border_size, int group_
 }
 
 
-void options::CreatePanel_Advanced( size_t parent, int border_size, int group_item_spacing,
-                                        wxSize small_button_size )
+void options::CreatePanel_Advanced( size_t parent, int border_size,
+                                    int group_item_spacing )
 {
     m_ChartDisplayPage = AddPage( parent, _("Advanced") );
 
@@ -2422,8 +2425,8 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
 
 }
 
-void options::CreatePanel_VectorCharts( size_t parent, int border_size, int group_item_spacing,
-        wxSize small_button_size )
+void options::CreatePanel_VectorCharts( size_t parent, int border_size,
+                                        int group_item_spacing )
 {
     ps57Ctl = AddPage( parent, _("Vector Chart Display") );
 
@@ -2614,8 +2617,8 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
 //    m_choicePrecision->SetSelection( g_NMEAAPBPrecision );
 }
 
-void options::CreatePanel_TidesCurrents( size_t parent, int border_size, int group_item_spacing,
-        wxSize small_button_size )
+void options::CreatePanel_TidesCurrents( size_t parent, int border_size,
+                                         int group_item_spacing )
 {
     wxScrolledWindow *tcPanel = AddPage( parent, _("Tides && Currents") );
 
@@ -2647,8 +2650,8 @@ void options::CreatePanel_TidesCurrents( size_t parent, int border_size, int gro
     btnSizer->Add( removeButton, 1, wxALL | wxEXPAND, group_item_spacing );
 }
 
-void options::CreatePanel_ChartGroups( size_t parent, int border_size, int group_item_spacing,
-        wxSize small_button_size )
+void options::CreatePanel_ChartGroups( size_t parent, int border_size,
+                                       int group_item_spacing )
 {
     // Special case for adding the tab here. We know this page has multiple tabs,
     // and we have the actual widgets in a separate class (because of its complexity)
@@ -2656,7 +2659,7 @@ void options::CreatePanel_ChartGroups( size_t parent, int border_size, int group
     m_groupsPage = m_pListbook->GetPage( parent );
     groupsPanel = new ChartGroupsUI( m_groupsPage );
 
-    groupsPanel->CreatePanel( parent, border_size, group_item_spacing, small_button_size );
+    groupsPanel->CreatePanel( parent, border_size, group_item_spacing );
     wxNotebook *nb = dynamic_cast<wxNotebook *>( m_groupsPage );
     if ( nb ) nb->AddPage( groupsPanel, _("Chart Groups") );
 
@@ -2665,8 +2668,8 @@ void options::CreatePanel_ChartGroups( size_t parent, int border_size, int group
 //    groupsPanel->CompletePanel();     // Deferred until panel is selected....
 }
 
-void ChartGroupsUI::CreatePanel( size_t parent, int border_size, int group_item_spacing,
-        wxSize small_button_size )
+void ChartGroupsUI::CreatePanel( size_t parent, int border_size,
+                                 int group_item_spacing )
 {
     modified = FALSE;
     m_border_size = border_size;
@@ -2757,8 +2760,8 @@ void ChartGroupsUI::CompletePanel( void )
 
 }
 
-void options::CreatePanel_Display( size_t parent, int border_size, int group_item_spacing,
-        wxSize small_button_size )
+void options::CreatePanel_Display( size_t parent, int border_size,
+                                   int group_item_spacing )
 {
     pDisplayPanel = AddPage( parent, _("General") );
 
@@ -2937,8 +2940,7 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
 }
 
 void options::CreatePanel_Units( size_t parent, int border_size,
-                                 int group_item_spacing,
-                                 wxSize small_button_size )
+                                 int group_item_spacing )
 {
     wxScrolledWindow *panelUnits = AddPage( parent, _("Units") );
     wxSize size = m_bcompact ? wxSize( 250, -1 ) : wxDefaultSize;
@@ -3057,7 +3059,8 @@ void options::CreatePanel_Units( size_t parent, int border_size,
 }
 
 
-void options::CreatePanel_MMSI( size_t parent, int border_size, int group_item_spacing, wxSize small_button_size )
+void options::CreatePanel_MMSI( size_t parent, int border_size,
+                                int group_item_spacing )
 {
     wxScrolledWindow *panelMMSI = AddPage( parent, _("MMSI Properties") );
 
@@ -3078,7 +3081,8 @@ void options::CreatePanel_MMSI( size_t parent, int border_size, int group_item_s
     panelMMSI->Layout();
 }
 
-void options::CreatePanel_AIS( size_t parent, int border_size, int group_item_spacing, wxSize small_button_size )
+void options::CreatePanel_AIS( size_t parent, int border_size,
+                               int group_item_spacing )
 {
     wxScrolledWindow *panelAIS = AddPage( parent, _("AIS Targets") );
 
@@ -3226,7 +3230,7 @@ void options::CreatePanel_AIS( size_t parent, int border_size, int group_item_sp
     pAlertGrid->Add( m_pCheck_AlertDialog, 0, wxALL, group_item_spacing );
 
     wxButton *m_SelSound = new wxButton( panelAIS, ID_AISALERTSELECTSOUND,
-            _("Select Alert Sound"), wxDefaultPosition, small_button_size, 0 );
+            _("Select Alert Sound"), wxDefaultPosition, m_small_button_size, 0 );
     pAlertGrid->Add( m_SelSound, 0, wxALL | wxALIGN_RIGHT, group_item_spacing );
 
     m_pCheck_AlertAudio = new wxCheckBox( panelAIS, ID_AISALERTAUDIO,
@@ -3234,7 +3238,7 @@ void options::CreatePanel_AIS( size_t parent, int border_size, int group_item_sp
     pAlertGrid->Add( m_pCheck_AlertAudio, 0, wxALL, group_item_spacing );
 
     wxButton *m_pPlay_Sound = new wxButton( panelAIS, ID_AISALERTTESTSOUND,
-            _("Test Alert Sound"), wxDefaultPosition, small_button_size, 0 );
+            _("Test Alert Sound"), wxDefaultPosition, m_small_button_size, 0 );
     pAlertGrid->Add( m_pPlay_Sound, 0, wxALL | wxALIGN_RIGHT, group_item_spacing );
 
     m_pCheck_Alert_Moored = new wxCheckBox( panelAIS, -1,
@@ -3254,8 +3258,8 @@ void options::CreatePanel_AIS( size_t parent, int border_size, int group_item_sp
     panelAIS->Layout();
 }
 
-void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spacing,
-        wxSize small_button_size )
+void options::CreatePanel_UI( size_t parent, int border_size,
+                              int group_item_spacing )
 {
     wxScrolledWindow *itemPanelFont = AddPage( parent, _("General Options") );
 
@@ -3582,33 +3586,33 @@ void options::CreateControls( void )
     buttons->Add( m_ApplyButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, border_size );
 
     m_pageDisplay = CreatePanel( _("Display") );
-    CreatePanel_Display( m_pageDisplay, border_size, group_item_spacing, m_small_button_size );
-    CreatePanel_Units( m_pageDisplay, border_size, group_item_spacing, m_small_button_size );
-    CreatePanel_Advanced( m_pageDisplay, border_size, group_item_spacing, m_small_button_size );
+    CreatePanel_Display( m_pageDisplay, border_size, group_item_spacing );
+    CreatePanel_Units( m_pageDisplay, border_size, group_item_spacing );
+    CreatePanel_Advanced( m_pageDisplay, border_size, group_item_spacing );
 
     m_pageCharts = CreatePanel( _("Charts") );
-    CreatePanel_ChartsLoad( m_pageCharts, border_size, group_item_spacing, m_small_button_size );
-    CreatePanel_VectorCharts( m_pageCharts, border_size, group_item_spacing, m_small_button_size );
+    CreatePanel_ChartsLoad( m_pageCharts, border_size, group_item_spacing );
+    CreatePanel_VectorCharts( m_pageCharts, border_size, group_item_spacing );
     // ChartGroups must be created after ChartsLoad and must be at least third
-    CreatePanel_ChartGroups( m_pageCharts, border_size, group_item_spacing, m_small_button_size );
-    CreatePanel_TidesCurrents( m_pageCharts, border_size, group_item_spacing, m_small_button_size );
+    CreatePanel_ChartGroups( m_pageCharts, border_size, group_item_spacing );
+    CreatePanel_TidesCurrents( m_pageCharts, border_size, group_item_spacing );
 
     m_pageConnections = CreatePanel( _("Connections") );
 #ifndef __OCPN__ANDROID__
-    CreatePanel_NMEA( m_pageConnections, border_size, group_item_spacing, m_small_button_size );
+    CreatePanel_NMEA( m_pageConnections, border_size, group_item_spacing );
 #else
-    CreatePanel_NMEA_Compact( m_pageConnections, border_size, group_item_spacing, m_small_button_size );
+    CreatePanel_NMEA_Compact( m_pageConnections, border_size, group_item_spacing );
 #endif
 
 //    SetDefaultConnectionParams();
 
     m_pageShips = CreatePanel( _("Ships") );
-    CreatePanel_Ownship( m_pageShips, border_size, group_item_spacing, m_small_button_size );
-    CreatePanel_AIS( m_pageShips, border_size, group_item_spacing, m_small_button_size );
-    CreatePanel_MMSI( m_pageShips, border_size, group_item_spacing, m_small_button_size );
+    CreatePanel_Ownship( m_pageShips, border_size, group_item_spacing );
+    CreatePanel_AIS( m_pageShips, border_size, group_item_spacing );
+    CreatePanel_MMSI( m_pageShips, border_size, group_item_spacing );
 
     m_pageUI = CreatePanel( _("User Interface") );
-    CreatePanel_UI( m_pageUI, border_size, group_item_spacing, m_small_button_size );
+    CreatePanel_UI( m_pageUI, border_size, group_item_spacing );
 
     m_pagePlugins = CreatePanel( _("Plugins") );
     itemPanelPlugins = AddPage( m_pagePlugins, _("Plugins") );
