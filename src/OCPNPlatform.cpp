@@ -229,6 +229,10 @@ bool         g_bEmailCrashReport;
 extern int                       g_ais_alert_dialog_x, g_ais_alert_dialog_y;
 extern int                       g_ais_alert_dialog_sx, g_ais_alert_dialog_sy;
 
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
+extern wxLocale                  *plocale_def_lang;
+#endif
+
 
 
 
@@ -1702,6 +1706,8 @@ QString getQtStyleSheet( void )
     return g_qtStyleSheet;
 }
 
+#endif
+
 void OCPNPlatform::LaunchLocalHelp( void ) {
  
 #ifdef __OCPN__ANDROID__
@@ -1732,5 +1738,4 @@ void OCPNPlatform::LaunchLocalHelp( void ) {
 #endif        
 }
 
-#endif
 
