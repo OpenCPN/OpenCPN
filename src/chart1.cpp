@@ -624,6 +624,7 @@ int                       g_AisTargetList_count;
 bool                      g_bAisTargetList_autosort;
 
 bool                      g_bGarminHostUpload;
+bool                      g_bFullscreen;
 
 wxAuiManager              *g_pauimgr;
 wxAuiDefaultDockArt       *g_pauidockart;
@@ -5776,6 +5777,9 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
     switch(m_iInitCount++) {
     case 0:
     {
+        // Set persistent Fullscreen mode
+        g_Platform->SetFullscreen(g_bFullscreen);
+        
         // Load the waypoints.. both of these routines are very slow to execute which is why
         // they have been to defered until here
         pWayPointMan = new WayPointman();

@@ -102,6 +102,8 @@ public:
     void PositionAISAlert( wxWindow *alert_window);
     float getChartScaleFactorExp( float scale_linear );
     int GetStatusBarFieldCount();
+    bool GetFullscreen();
+    bool SetFullscreen( bool bFull );
     
 //--------------------------------------------------------------------------
 //      Per-Platform file/directory support

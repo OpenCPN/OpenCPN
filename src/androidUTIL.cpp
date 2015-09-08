@@ -79,6 +79,7 @@ extern wxDateTime                 g_start_time;
 extern RouteManagerDialog        *pRouteManagerDialog;
 extern ChartCanvas               *cc1;
 extern about                     *g_pAboutDlg;
+extern bool                      g_bFullscreen;
 
 // Static globals
 extern ChartDB                   *ChartData;
@@ -911,8 +912,6 @@ extern "C"{
 extern "C"{
     JNIEXPORT jstring JNICALL Java_org_opencpn_OCPNNativeLib_getVPS(JNIEnv *env, jobject obj)
     {
-//        qDebug() << "getVPS";
-
         wxString s;
         
         if(cc1){
@@ -926,6 +925,14 @@ extern "C"{
         return ret;
     }
     
+}       
+
+extern "C"{
+    JNIEXPORT int JNICALL Java_org_opencpn_OCPNNativeLib_notifyFullscreenChange(JNIEnv *env, jobject obj, bool bFull)
+    {
+        g_bFullscreen = bFull;
+        return 1;
+    }    
 }       
 
 
@@ -1262,6 +1269,21 @@ wxString callActivityMethod_s4s(const char *method, wxString parm1, wxString par
     
     return return_string;
     
+}
+
+
+bool androidGetFullscreen()
+{
+    wxString s = callActivityMethod_vs("getFullscreen");
+    
+    return s == _T("YES");
+}
+
+bool androidSetFullscreen( bool bFull )
+{
+    callActivityMethod_is("setFullscreen", (int)bFull);
+    
+    return true;
 }
 
 

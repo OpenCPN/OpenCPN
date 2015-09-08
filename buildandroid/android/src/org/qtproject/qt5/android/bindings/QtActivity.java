@@ -381,6 +381,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     private void toggleFullscreen(){
         m_fullScreen = !m_fullScreen;
         setFullscreen(m_fullScreen);
+        nativeLib.notifyFullscreenChange(m_fullScreen);
     }
 
     public void setFullscreen( final boolean bfull){
@@ -395,6 +396,21 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
                 }});
         }
+    }
+
+    public String setFullscreen( final int bfull){
+        String aa = String.format("%d", bfull);
+        Log.i("DEBUGGER_TAG", "setFullscreen " + aa);
+        setFullscreen(bfull != 0);
+        return "OK";
+    }
+
+
+    public String getFullscreen( ){
+        if(m_fullScreen)
+            return "YES";
+        else
+            return "NO";
     }
 
 

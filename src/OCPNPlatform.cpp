@@ -1248,6 +1248,30 @@ void OCPNPlatform::onStagedResizeFinal()
     
 }
 
+bool OCPNPlatform::GetFullscreen()
+{
+    bool bret = false;
+#ifdef __OCPN__ANDROID__
+    bret = androidGetFullscreen();
+#else
+    
+#endif
+
+    return bret;
+}
+
+bool OCPNPlatform::SetFullscreen( bool bFull )
+{
+    bool bret = false;
+#ifdef __OCPN__ANDROID__
+    bret = androidSetFullscreen( bFull );
+#else
+#endif
+    
+    return bret;
+}
+
+
 void OCPNPlatform::PositionAISAlert(wxWindow *alert_window)
 {
 #ifndef __OCPN__ANDROID__    

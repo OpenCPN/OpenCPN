@@ -115,5 +115,7 @@ void resizeAndroidPersistents();
 
 bool androidPlaySound( wxString soundfile );
 
+bool androidGetFullscreen();
+bool androidSetFullscreen( bool bFull );
 
 #endif   //guard

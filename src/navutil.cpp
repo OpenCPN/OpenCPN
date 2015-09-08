@@ -107,6 +107,7 @@ extern bool             g_bShowMag;
 extern double           g_UserVar;
 extern bool             g_bShowStatusBar;
 extern bool             g_bUIexpert;
+extern bool             g_bFullscreen;
 
 extern wxToolBarBase    *toolBar;
 
@@ -1353,6 +1354,7 @@ int MyConfig::LoadMyConfig()
 #ifndef __WXOSX__
     Read( _T ( "ShowMenuBar" ), &m_bShowMenuBar, 0 );
 #endif
+    Read( _T ( "Fullscreen" ), &g_bFullscreen, 0 );
     Read( _T ( "ShowCompassWindow" ), &m_bShowCompassWin, 1 );
     Read( _T ( "ShowGrid" ), &g_bDisplayGrid, 0 );
     Read( _T ( "PlayShipsBells" ), &g_bPlayShipsBells, 0 );
@@ -2517,6 +2519,7 @@ void MyConfig::UpdateSettings()
 #endif
     Write( _T ( "DefaultFontSize" ), g_default_font_size );
     
+    Write( _T ( "Fullscreen" ), g_bFullscreen );
     Write( _T ( "ShowCompassWindow" ), m_bShowCompassWin );
     Write( _T ( "SetSystemTime" ), s_bSetSystemTime );
     Write( _T ( "ShowGrid" ), g_bDisplayGrid );
