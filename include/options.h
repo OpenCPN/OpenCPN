@@ -481,39 +481,31 @@ class options: private Uncopyable, public wxScrollingDialog
   private:
     void Init( void );
     void CreatePanel_MMSI( size_t parent, int border_size,
-                           int group_item_spacing, wxSize small_button_size );
+                           int group_item_spacing );
     void CreatePanel_AIS( size_t parent, int border_size,
-                          int group_item_spacing, wxSize small_button_size );
+                          int group_item_spacing );
     void CreatePanel_Ownship( size_t parent, int border_size,
-                              int group_item_spacing,
-                              wxSize small_button_size );
+                              int group_item_spacing );
     void CreatePanel_NMEA( size_t parent, int border_size,
-                           int group_item_spacing, wxSize small_button_size );
+                           int group_item_spacing );
     void CreatePanel_NMEA_Compact( size_t parent, int border_size,
-                                   int group_item_spacing,
-                                   wxSize small_button_size );
+                                   int group_item_spacing );
     void CreatePanel_ChartsLoad( size_t parent, int border_size,
-                                 int group_item_spacing,
-                                 wxSize small_button_size );
+                                 int group_item_spacing );
     void CreatePanel_VectorCharts( size_t parent, int border_size,
-                                   int group_item_spacing,
-                                   wxSize small_button_size );
+                                   int group_item_spacing );
     void CreatePanel_TidesCurrents( size_t parent, int border_size,
-                                    int group_item_spacing,
-                                    wxSize small_button_size );
+                                    int group_item_spacing );
     void CreatePanel_ChartGroups( size_t parent, int border_size,
-                                  int group_item_spacing,
-                                  wxSize small_button_size );
+                                  int group_item_spacing );
     void CreatePanel_Display( size_t parent, int border_size,
-                              int group_item_spacing,
-                              wxSize small_button_size );
-    void CreatePanel_UI( size_t parent, int border_size, int group_item_spacing,
-                         wxSize small_button_size );
+                              int group_item_spacing );
+    void CreatePanel_UI( size_t parent, int border_size,
+                         int group_item_spacing );
     void CreatePanel_Units( size_t parent, int border_size,
-                            int group_item_spacing, wxSize small_button_size );
+                            int group_item_spacing );
     void CreatePanel_Advanced( size_t parent, int border_size,
-                               int group_item_spacing,
-                               wxSize small_button_size );
+                               int group_item_spacing );
 
     int m_returnChanges;
     wxListBox *tcDataSelected;
@@ -561,8 +553,7 @@ class ChartGroupsUI: private Uncopyable, public wxScrolledWindow {
     explicit ChartGroupsUI( wxWindow *parent );
     ~ChartGroupsUI( void );
 
-    void CreatePanel( size_t parent, int border_size, int group_item_spacing,
-                      wxSize small_button_size );
+    void CreatePanel( size_t parent, int border_size, int group_item_spacing );
     void CompletePanel( void );
     void SetDBDirs( ArrayOfCDI &array ) { m_db_dirs = array; }
     void SetGroupArray( ChartGroupArray *pGroupArray ) {
