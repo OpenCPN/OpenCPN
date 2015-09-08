@@ -946,7 +946,7 @@ class MMSIEditDialog: private Uncopyable, public wxDialog
                              long style = 0 );
     ~MMSIEditDialog( void );
 
-    void SetColorScheme(ColorScheme cs);
+    void SetColorScheme( ColorScheme cs );
     void CreateControls( void );
     void OnMMSIEditCancelClick( wxCommandEvent& event );
     void OnMMSIEditOKClick( wxCommandEvent& event );
