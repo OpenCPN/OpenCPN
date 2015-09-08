@@ -118,4 +118,6 @@ bool androidPlaySound( wxString soundfile );
 bool androidGetFullscreen();
 bool androidSetFullscreen( bool bFull );
 
+void androidLaunchHelpView();
+
 #endif   //guard

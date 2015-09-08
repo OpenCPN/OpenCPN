@@ -140,6 +140,8 @@ public:
 //--------------------------------------------------------------------------
     void setChartTypeMaskSel(int mask, wxString &indicator);
 
+    void LaunchLocalHelp();
+    
 private:
     wxString    m_homeDir;
     wxString    m_exePath;

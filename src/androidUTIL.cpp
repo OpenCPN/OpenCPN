@@ -1286,6 +1286,12 @@ bool androidSetFullscreen( bool bFull )
     return true;
 }
 
+void androidLaunchHelpView()
+{
+    callActivityMethod_vs("launchHelpView");
+}
+
+
 
 wxString androidGetDeviceInfo()
 {

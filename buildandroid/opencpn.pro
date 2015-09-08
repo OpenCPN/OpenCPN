@@ -134,6 +134,10 @@ sound_deployment.files += $$PWD/../data/sounds/2bells.wav
 sound_deployment.path = /assets/sounds
 INSTALLS += sound_deployment
 
+doc_deployment.files += $$PWD/../data/doc
+doc_deployment.path = /assets/doc
+INSTALLS += doc_deployment
+
 # The built-in PlugIns
 
 # Chart Downloader-------------------------------------------------------------------

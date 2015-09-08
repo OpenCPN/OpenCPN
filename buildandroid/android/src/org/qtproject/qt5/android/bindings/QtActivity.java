@@ -154,6 +154,7 @@ import app.akexorcist.bluetotohspp.library.BluetoothSPP.OnDataReceivedListener;
 
 import org.opencpn.SpinnerNavItem;
 import org.opencpn.TitleNavigationAdapter;
+import org.opencpn.WebViewActivity;
 
 import ar.com.daidalos.afiledialog.*;
 
@@ -377,6 +378,12 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     }
 
     private String m_settingsReturn;
+
+    public String launchHelpView(){
+        Intent intent = new Intent(this, WebViewActivity.class);
+        startActivity(intent);
+        return "OK";
+    }
 
     private void toggleFullscreen(){
         m_fullScreen = !m_fullScreen;

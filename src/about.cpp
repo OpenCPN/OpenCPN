@@ -71,7 +71,16 @@ const wxString OpenCPNInfo =
     wxT("or donating funds to the project.<br><br>")
     wxT("For more information, visit http://opencpn.org<br><br>");
 
-
+const wxString OpenCPNInfoAlt =
+    wxT("<br><br>")
+    wxT("OpenCPN is a Free Software project, built by sailors.")
+    wxT("The complete source code and many other resources ")
+    wxT("are freely available for your download and use, ")
+    wxT("subject to applicable License agreements.")
+    wxT("<br><br>")
+    wxT("For more information, visit http://opencpn.org<br><br>");
+    
+    
 const wxString AuthorText =
     wxT("   David S Register\n")
     wxT("      OpenCPN Lead Developer\n\n")
@@ -204,6 +213,7 @@ void about::SetColorScheme( void )
     wxColor bg = GetBackgroundColour();
     pAboutHTMLCtl->SetBackgroundColour( bg );
     pLicenseHTMLCtl->SetBackgroundColour( bg );
+    pAuthorHTMLCtl->SetBackgroundColour( bg );
     
 
     // This looks like non-sense, but is needed for __WXGTK__
@@ -218,6 +228,7 @@ void about::SetColorScheme( void )
     tdc.Clear();
     pAboutHTMLCtl->SetBackgroundImage(tbm);
     pLicenseHTMLCtl->SetBackgroundImage(tbm);
+    pAuthorHTMLCtl->SetBackgroundImage(tbm);
 #endif
 
 }
@@ -251,7 +262,11 @@ void about::Populate( void )
     if( wxFONTSTYLE_ITALIC == dFont->GetStyle() )
         aboutText.Append( _T("<i>") );
 
+#ifdef __OCPN__ANDROID__    
+    aboutText.Append( AboutText + OpenCPNVersion + OpenCPNInfoAlt );
+#else
     aboutText.Append( AboutText + OpenCPNVersion + OpenCPNInfo );
+#endif    
 
     // Show where the log file is going to be placed
     wxString log_string = _T("Logfile location: ") + g_Platform->GetLogFileName();
@@ -271,11 +286,29 @@ void about::Populate( void )
     aboutText.Append( _T("</font></body></html>") );
 
     pAboutHTMLCtl->SetPage( aboutText );
-    pAuthorTextCtl->Clear();
-    pAuthorTextCtl->WriteText( AuthorText );
-    pAuthorTextCtl->SetInsertionPoint( 0 );
+    
+    
+    ///Authors page
+    // The HTML Header
+    wxString authorText =
+    wxString::Format(
+        _T( "<html><body bgcolor=#%02x%02x%02x><font color=#%02x%02x%02x>" ),
+                     bg.Red(), bg.Blue(), bg.Green(), fg.Red(), fg.Blue(), fg.Green() );
+    
+    pAuthorHTMLCtl->SetFonts( face, face, sizes );
+    
+    
+    wxString authorFixText = AuthorText;
+    authorFixText.Replace("\n", "<br>");
+    authorText.Append( authorFixText );
+    
+    // The HTML Footer
+    authorText.Append( _T("</font></body></html>") );
 
-    ///
+    pAuthorHTMLCtl->SetPage( authorFixText );
+    
+
+    ///License page
     // The HTML Header
     wxString licenseText =
     wxString::Format(
@@ -399,17 +432,19 @@ void about::CreateControls( void )
     itemPanelAbout->SetSizer( aboutSizer );
 
     //  Authors Panel
+
     itemPanelAuthors = new wxPanel( pNotebook, -1, wxDefaultPosition, wxDefaultSize,
-            wxSUNKEN_BORDER | wxTAB_TRAVERSAL );
+                                wxSUNKEN_BORDER | wxTAB_TRAVERSAL );
     itemPanelAuthors->InheritAttributes();
     pNotebook->AddPage( itemPanelAuthors, _("Authors") );
 
-    pAuthorTextCtl = new wxTextCtrl( itemPanelAuthors, -1, _T(""), wxDefaultPosition,
-                                     wxSize( -1, v_size ), wxTE_MULTILINE | wxTE_READONLY );
-    pAuthorTextCtl->InheritAttributes();
+    pAuthorHTMLCtl = new wxHtmlWindow( itemPanelAuthors, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                                    wxHW_SCROLLBAR_AUTO | wxHW_NO_SELECTION);
+    pAuthorHTMLCtl->SetBorders( 5 );
     wxBoxSizer* authorSizer = new wxBoxSizer( wxVERTICAL );
-    authorSizer->Add( pAuthorTextCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxEXPAND | wxALL, 5 );
+    authorSizer->Add( pAuthorHTMLCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxEXPAND | wxALL, 5 );
     itemPanelAuthors->SetSizer( authorSizer );
+    
 
     //  License Panel
     itemPanelLicense = new wxPanel( pNotebook, -1, wxDefaultPosition, wxDefaultSize,
@@ -424,22 +459,6 @@ void about::CreateControls( void )
     licenseSizer->Add( pLicenseHTMLCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxEXPAND | wxALL, 5 );
     itemPanelLicense->SetSizer( licenseSizer );
     
-
-#if 0    
-    int tcflags = wxTE_MULTILINE | wxTE_READONLY;
-    //  wxX11 TextCtrl is broken in many ways.
-    //  Here, the wxTE_DONTWRAP flag creates a horizontal scroll bar
-    //  which fails in wxX11 2.8.2....
-#ifndef __WXX11__
-    tcflags |= wxTE_DONTWRAP;
-#endif
-    pLicenseTextCtl = new wxTextCtrl( itemPanelLicense, -1, _T(""), wxDefaultPosition,
-                                      wxSize( -1, v_size ), tcflags );
-    pLicenseTextCtl->InheritAttributes();
-    wxBoxSizer* licenseSizer = new wxBoxSizer( wxVERTICAL );
-    licenseSizer->Add( pLicenseTextCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxEXPAND | wxALL, 5 );
-    itemPanelLicense->SetSizer( licenseSizer );
-#endif
 
     //  Help Panel
     itemPanelTips = new wxPanel( pNotebook, -1, wxDefaultPosition, wxDefaultSize,
@@ -521,6 +540,6 @@ void about::OnCopyClick( wxCommandEvent& event )
 void about::OnPageChange( wxNotebookEvent& event )
 {
     if( event.GetSelection() != 3 ) return; // 3 is the index of "Help" page
-    gFrame->LaunchLocalHelp();
+    g_Platform->LaunchLocalHelp();
     pNotebook->ChangeSelection(0);
 }

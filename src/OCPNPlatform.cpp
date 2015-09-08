@@ -1702,5 +1702,35 @@ QString getQtStyleSheet( void )
     return g_qtStyleSheet;
 }
 
+void OCPNPlatform::LaunchLocalHelp( void ) {
+ 
+#ifdef __OCPN__ANDROID__
+    androidLaunchHelpView();
+#else
+    wxString def_lang_canonical = _T("en_US");
+    
+    #if wxUSE_XLOCALE
+    if(plocale_def_lang)
+        def_lang_canonical = plocale_def_lang->GetCanonicalName();
+    #endif
+        
+        wxString help_locn = g_Platform->GetSharedDataDir() + _T("doc/help_");
+        
+        wxString help_try = help_locn + def_lang_canonical + _T(".html");
+        
+        if( ! ::wxFileExists( help_try ) ) {
+            help_try = help_locn + _T("en_US") + _T(".html");
+            
+            if( ! ::wxFileExists( help_try ) ) {
+                help_try = help_locn + _T("web") + _T(".html");
+            }
+            
+            if( ! ::wxFileExists( help_try ) ) return;
+        }
+        
+        wxLaunchDefaultBrowser(wxString( _T("file:///") ) + help_try );
+#endif        
+}
+
 #endif
 
