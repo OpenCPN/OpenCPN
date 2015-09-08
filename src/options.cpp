@@ -4257,13 +4257,12 @@ bool options::ShowToolTips( void )
 }
 
 void options::OnCharHook( wxKeyEvent& event ) {
-    if( event.GetKeyCode() == WXK_RETURN ) {
-        if( event.GetModifiers() == wxMOD_CONTROL ) {
-            wxCommandEvent okEvent;
-            okEvent.SetId( xID_OK );
-            okEvent.SetEventType( wxEVT_COMMAND_BUTTON_CLICKED );
-            GetEventHandler()->AddPendingEvent( okEvent );
-        }
+    if ( event.GetKeyCode() == WXK_RETURN &&
+         event.GetModifiers() == wxMOD_CONTROL ) {
+        wxCommandEvent okEvent;
+        okEvent.SetId( xID_OK );
+        okEvent.SetEventType( wxEVT_COMMAND_BUTTON_CLICKED );
+        GetEventHandler()->AddPendingEvent( okEvent );
     }
     event.Skip();
 }
