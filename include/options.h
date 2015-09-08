@@ -213,22 +213,22 @@ class options: private Uncopyable, public wxScrollingDialog
 #endif
 {
   public:
-    explicit options( MyFrame* parent, wxWindowID id = SYMBOL_OPTIONS_IDNAME,
-                      const wxString& caption = SYMBOL_OPTIONS_TITLE,
-                      const wxPoint& pos = SYMBOL_OPTIONS_POSITION,
-                      const wxSize& size = SYMBOL_OPTIONS_SIZE,
+    explicit options( MyFrame *parent, wxWindowID id = SYMBOL_OPTIONS_IDNAME,
+                      const wxString &caption = SYMBOL_OPTIONS_TITLE,
+                      const wxPoint &pos = SYMBOL_OPTIONS_POSITION,
+                      const wxSize &size = SYMBOL_OPTIONS_SIZE,
                       long style = SYMBOL_OPTIONS_STYLE );
 
     ~options( void );
 
-    void SetInitialPage( int page_sel);
+    void SetInitialPage( int page_sel );
     void Finish( void);
 
-    void OnClose( wxCloseEvent& event );
+    void OnClose( wxCloseEvent &event );
 
     void CreateControls( void );
-    size_t CreatePanel( const wxString & title );
-    wxScrolledWindow *AddPage( size_t parent, const wxString & title );
+    size_t CreatePanel( const wxString &title );
+    wxScrolledWindow *AddPage( size_t parent, const wxString &title );
     bool DeletePage( wxScrolledWindow *page );
     void SetColorScheme( ColorScheme cs );
     void RecalculateSize( void );
