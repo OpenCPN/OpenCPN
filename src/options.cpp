@@ -471,18 +471,21 @@ wxString MMSIListCtrl::OnGetItemText( long item, long column ) const
                 ret = wxString::Format( _T( "%d" ), props->MMSI );
             break;
         case mlTrackMode:
-            if ( TRACKTYPE_DEFAULT == props->TrackType )
-                ret = _( "Default" );
-            else if ( TRACKTYPE_ALWAYS == props->TrackType )
-                ret = _( "Always" );
-            else if ( TRACKTYPE_NEVER == props->TrackType )
-                ret = _( "Never" );
-            else
-                ret = _T( "???" );
-            if ( props->m_bPersistentTrack ){
-                ret.Append( _T( ", " ));
-                ret.Append( _( "Persistent" ) );
+            switch ( props->TrackType ) {
+                case TRACKTYPE_DEFAULT:
+                    ret = _( "Default" );
+                    break;
+                case TRACKTYPE_ALWAYS:
+                    ret = _( "Always" );
+                    break;
+                case TRACKTYPE_NEVER:
+                    ret = _( "Never" );
+                    break;
+                default:
+                    ret = _T( "???" );
             }
+            if ( props->m_bPersistentTrack )
+                ret.Append( _T( ", " ) ).Append( _( "Persistent" ) );
             break;
         case mlIgnore:
             if ( props->m_bignore )
