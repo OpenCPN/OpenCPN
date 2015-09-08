@@ -4248,25 +4248,21 @@ void options::UpdateOptionsUnits( void )
 
 void options::OnSizeAutoButton( wxCommandEvent& event )
 {
-//    pScreenMM->SetValue(_("Auto"));
-    wxString screenmm;
-    screenmm.Printf(_T("%d"), int(g_Platform->GetDisplaySizeMM()));
-    pScreenMM->SetValue(screenmm);
+    wxString screenmm = wxString::Format(
+        _T( "%d" ), static_cast<int>( g_Platform->GetDisplaySizeMM() )
+    );
+    pScreenMM->SetValue( screenmm );
     pScreenMM->Disable();
     g_config_display_size_manual = FALSE;
 }
 
 void options::OnSizeManualButton( wxCommandEvent& event )
 {
-    wxString screenmm;
-    if(g_config_display_size_mm > 0){
-        screenmm.Printf(_T("%d"), int(g_config_display_size_mm));
-    }
-    else {
-        screenmm.Printf(_T("%d"), int(g_Platform->GetDisplaySizeMM()));
-    }
-
-    pScreenMM->SetValue(screenmm);
+    wxString screenmm = wxString::Format(
+        _T( "%d" ), static_cast<int>( g_config_display_size_mm > 0 ?
+            g_config_display_size_mm : g_Platform->GetDisplaySizeMM() )
+    );
+    pScreenMM->SetValue( screenmm );
     pScreenMM->Enable();
     g_config_display_size_manual = TRUE;
 }
