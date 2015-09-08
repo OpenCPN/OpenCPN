@@ -3595,7 +3595,11 @@ void MyFrame::PositionConsole( void )
 
     console->GetSize( &consx, &consy );
 
-    wxPoint screen_pos = ClientToScreen( wxPoint( ccx + ccsx - consx - 2, ccy + 45 ) );
+    int yOffset = 45;
+    if(g_Compass)
+        yOffset = g_Compass->GetRect().y + g_Compass->GetRect().height + 45;
+    
+    wxPoint screen_pos = ClientToScreen( wxPoint( ccx + ccsx - consx - 2, ccy + yOffset ) );
     console->Move( screen_pos );
 }
 
