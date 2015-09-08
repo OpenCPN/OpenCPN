@@ -3708,17 +3708,14 @@ void options::SetColorScheme( ColorScheme cs )
 void options::SetInitialSettings( void )
 {
     wxString s;
-    wxString dirname;
 
     // ChartsLoad
     int nDir = m_CurrentDirList.GetCount();
 
-    for( int i = 0; i < nDir; i++ ) {
-        dirname = m_CurrentDirList.Item( i ).fullpath;
-        if( !dirname.IsEmpty() ) {
-            if( pActiveChartsList ) {
-                pActiveChartsList->Append( dirname );
-            }
+    for ( int i = 0; i < nDir; ++i ) {
+        wxString dirname = m_CurrentDirList.Item( i ).fullpath;
+        if ( !dirname.IsEmpty() && pActiveChartsList ) {
+            pActiveChartsList->Append( dirname );
         }
     }
 
@@ -3901,7 +3898,7 @@ void options::SetInitialSettings( void )
 
     m_pCheck_Wpl_Aprs->SetValue( g_bWplIsAprsPosition );
 
-    //      Alerts
+    // Alerts
     m_pCheck_AlertDialog->SetValue( g_bAIS_CPA_Alert );
     m_pCheck_AlertAudio->SetValue( g_bAIS_CPA_Alert_Audio );
     m_pCheck_Alert_Moored->SetValue( g_bAIS_CPA_Alert_Suppress_Moored );
@@ -4046,16 +4043,16 @@ void options::UpdateOptionsUnits( void )
 
     // set depth input values
     wxString s;
-    s.Printf( _T("%6.2f"), S52_getMarinerParam( S52_MAR_SHALLOW_CONTOUR ) / conv );
-    s.Trim(FALSE);
+    s.Printf( _T( "%6.2f" ), S52_getMarinerParam( S52_MAR_SHALLOW_CONTOUR ) / conv );
+    s.Trim( FALSE );
     m_ShallowCtl->SetValue( s );
 
-    s.Printf( _T("%6.2f"), S52_getMarinerParam( S52_MAR_SAFETY_CONTOUR ) / conv );
-    s.Trim(FALSE);
+    s.Printf( _T( "%6.2f" ), S52_getMarinerParam( S52_MAR_SAFETY_CONTOUR ) / conv );
+    s.Trim( FALSE );
     m_SafetyCtl->SetValue( s );
 
-    s.Printf( _T("%6.2f"), S52_getMarinerParam( S52_MAR_DEEP_CONTOUR ) / conv );
-    s.Trim(FALSE);
+    s.Printf( _T( "%6.2f" ), S52_getMarinerParam( S52_MAR_DEEP_CONTOUR ) / conv );
+    s.Trim( FALSE );
     m_DeepCtl->SetValue( s );
 }
 
