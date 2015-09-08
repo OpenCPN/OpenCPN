@@ -540,18 +540,14 @@ class options: public wxScrollingDialog
     void SetDSFormRWStates();
     void FillSourceList();
     ConnectionParams *CreateConnectionParamsFromSelectedItem();
-    
-    wxNotebookPage*             m_groupsPage;
-    wxFont*     smallFont;
-    wxFont*     dialogFont;
-    
-    wxSize      m_small_button_size;
-    
-    wxTimer     m_BTScanTimer;
-    wxArrayString m_BTscan_results;
-    
-    bool        m_bcompact;
 
+    wxNotebookPage *m_groupsPage;
+    wxFont *smallFont, *dialogFont;
+    wxSize m_small_button_size;
+    wxTimer m_BTScanTimer;
+    wxArrayString m_BTscan_results;
+
+    bool m_bcompact;
     int m_fontHeight, m_scrollRate, m_BTscanning, m_btNoChangeCounter;
     int m_btlastResultCount;
 
