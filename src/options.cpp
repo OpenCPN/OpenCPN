@@ -4101,10 +4101,10 @@ void options::OnCPAWarnClick( wxCommandEvent& event )
 
 void options::OnShowGpsWindowCheckboxClick( wxCommandEvent& event )
 {
-    if( !m_cbNMEADebug->GetValue() ) {
+    if ( !m_cbNMEADebug->GetValue() ) {
         NMEALogWindow::Get().DestroyWindow();
     } else {
-        NMEALogWindow::Get().Create(pParent, 35);
+        NMEALogWindow::Get().Create( pParent, 35 );
         Raise();
     }
 }
@@ -4122,11 +4122,7 @@ void options::OnZTCCheckboxClick( wxCommandEvent& event )
 
 void options::OnShipTypeSelect( wxCommandEvent& event )
 {
-    if( m_pShipIconType->GetSelection() == 0 ) {
-        realSizes->ShowItems( FALSE );
-    } else {
-        realSizes->ShowItems( TRUE );
-    }
+    realSizes->ShowItems( m_pShipIconType->GetSelection() != 0 );
     dispOptions->Layout();
     ownShip->Layout();
     itemPanelShip->Layout();
@@ -4136,11 +4132,7 @@ void options::OnShipTypeSelect( wxCommandEvent& event )
 
 void options::OnRadarringSelect( wxCommandEvent& event )
 {
-    if( pNavAidRadarRingsNumberVisible->GetSelection() == 0 ) {
-        radarGrid->ShowItems( FALSE );
-    } else {
-        radarGrid->ShowItems( TRUE );
-    }
+    radarGrid->ShowItems( pNavAidRadarRingsNumberVisible->GetSelection() != 0 );
     dispOptions->Layout();
     ownShip->Layout();
     itemPanelShip->Layout();
@@ -4150,11 +4142,7 @@ void options::OnRadarringSelect( wxCommandEvent& event )
 
 void options::OnWaypointRangeRingSelect( wxCommandEvent& event )
 {
-    if( pWaypointRangeRingsNumber->GetSelection() == 0 ) {
-        waypointradarGrid->ShowItems( FALSE );
-    } else {
-        waypointradarGrid->ShowItems( TRUE );
-    }
+    waypointradarGrid->ShowItems( pWaypointRangeRingsNumber->GetSelection() != 0 );
     dispOptions->Layout();
     ownShip->Layout();
     itemPanelShip->Layout();
@@ -4164,8 +4152,8 @@ void options::OnWaypointRangeRingSelect( wxCommandEvent& event )
 
 void options::OnGLClicked( wxCommandEvent& event )
 {
-    if(!g_bTransparentToolbarInOpenGLOK)
-        pTransparentToolbar->Enable(!pOpenGL->GetValue());
+    if ( !g_bTransparentToolbarInOpenGLOK )
+        pTransparentToolbar->Enable( !pOpenGL->GetValue() );
 }
 
 void options::OnOpenGLOptions( wxCommandEvent& event )
