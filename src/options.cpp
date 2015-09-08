@@ -2936,179 +2936,124 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
     }
 }
 
-void options::CreatePanel_Units( size_t parent, int border_size, int group_item_spacing,
+void options::CreatePanel_Units( size_t parent, int border_size,
+                                 int group_item_spacing,
                                  wxSize small_button_size )
 {
     wxScrolledWindow *panelUnits = AddPage( parent, _("Units") );
+    wxSize size = m_bcompact ? wxSize( 250, -1 ) : wxDefaultSize;
 
-    if(m_bcompact){
-        wxFlexGridSizer *unitsSizer = new wxFlexGridSizer( 2 );
-        unitsSizer->SetHGap(border_size);
+    wxFlexGridSizer *unitsSizer = new wxFlexGridSizer( 2 );
+    unitsSizer->SetHGap( border_size );
 
-        // wxFlexGridSizer grows wrongly in wx2.8, so we need to centre it in another sizer instead of letting it grow.
-        wxBoxSizer* wrapperSizer = new wxBoxSizer( wxVERTICAL );
-        panelUnits->SetSizer( wrapperSizer );
-        wrapperSizer->Add( unitsSizer, 1, wxALL | wxALIGN_CENTER, border_size );
+    // wxFlexGridSizer grows wrongly in wx2.8, so we need to centre it
+    // in another sizer instead of letting it grow.
+    wxBoxSizer *wrapperSizer = new wxBoxSizer( wxVERTICAL );
+    panelUnits->SetSizer( wrapperSizer );
+    wrapperSizer->Add( unitsSizer, 1, wxALL | wxALIGN_CENTER, border_size );
 
+    // spacer
+    unitsSizer->Add( 0, border_size * 4 );
+    unitsSizer->Add( 0, border_size * 4 );
 
-        // spacer
-        unitsSizer->Add( 0, border_size*4 );
-        unitsSizer->Add( 0, border_size*4 );
+    // distance units
+    unitsSizer->Add( new wxStaticText( panelUnits, wxID_ANY, _( "Distance" ) ),
+                     labelFlags );
+    wxArrayString pDistanceFormats;
+    pDistanceFormats.Add( _( "Nautical miles" ) );
+    pDistanceFormats.Add( _( "Statute miles" ) );
+    pDistanceFormats.Add( _( "Kilometers" ) );
+    pDistanceFormats.Add( _( "Meters" ) );
+    pDistanceFormat = new wxChoice( panelUnits, ID_DISTANCEUNITSCHOICE,
+                                    wxDefaultPosition, size, pDistanceFormats );
+    unitsSizer->Add( pDistanceFormat, inputFlags );
 
+    // speed units
+    unitsSizer->Add( new wxStaticText( panelUnits, wxID_ANY, _( "Speed" ) ),
+                     labelFlags );
+    wxArrayString pSpeedFormats;
+    pSpeedFormats.Add( _( "Knots" ) );
+    pSpeedFormats.Add( _( "Mph" ) );
+    pSpeedFormats.Add( _( "km/h" ) );
+    pSpeedFormats.Add( _( "m/s" ) );
+    pSpeedFormat = new wxChoice( panelUnits, ID_SPEEDUNITSCHOICE,
+                                 wxDefaultPosition, size, pSpeedFormats );
+    unitsSizer->Add( pSpeedFormat, inputFlags );
 
-        // distance units
-        unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("Distance")), labelFlags );
-        wxString pDistanceFormats[] = { _("Nautical miles"), _("Statute miles"), _("Kilometers"), _("Meters") };
-        int m_DistanceFormatsNChoices = sizeof(pDistanceFormats) / sizeof(wxString);
-        pDistanceFormat = new wxChoice( panelUnits, ID_DISTANCEUNITSCHOICE, wxDefaultPosition,
-                                        wxSize(250, -1), m_DistanceFormatsNChoices, pDistanceFormats );
-        unitsSizer->Add( pDistanceFormat, inputFlags );
+    // depth units
+    unitsSizer->Add( new wxStaticText( panelUnits, wxID_ANY, _( "Depth" ) ),
+                    labelFlags );
+    wxArrayString pDepthUnitStrings;
+    pDepthUnitStrings.Add( _( "Feet" ) );
+    pDepthUnitStrings.Add( _( "Meters" ) );
+    pDepthUnitStrings.Add( _( "Fathoms" ) );
+    pDepthUnitSelect = new wxChoice( panelUnits, ID_DEPTHUNITSCHOICE,
+                                     wxDefaultPosition, size,
+                                     pDepthUnitStrings );
+    unitsSizer->Add( pDepthUnitSelect, inputFlags );
 
+    // spacer
+    unitsSizer->Add( 0, border_size * 4 );
+    unitsSizer->Add( 0, border_size * 4 );
 
-        // speed units
-        unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("Speed")), labelFlags );
-        wxString pSpeedFormats[] = { _("Knots"), _("Mph"), _("km/h"), _("m/s") };
-        int m_SpeedFormatsNChoices = sizeof( pSpeedFormats ) / sizeof(wxString);
-        pSpeedFormat = new wxChoice( panelUnits, ID_SPEEDUNITSCHOICE, wxDefaultPosition,
-                                     wxSize(250, -1), m_SpeedFormatsNChoices, pSpeedFormats );
-        unitsSizer->Add( pSpeedFormat, inputFlags );
+    // lat/long units
+    unitsSizer->Add( new wxStaticText( panelUnits, wxID_ANY, _( "Lat/Long" ) ),
+                     labelFlags );
+    wxArrayString pSDMMFormats;
+    pSDMMFormats.Add( _( "Degrees, Decimal Minutes" ) );
+    pSDMMFormats.Add( _( "Decimal Degrees" ) );
+    pSDMMFormats.Add( _( "Degrees, Minutes, Seconds" ) );
+    pSDMMFormat = new wxChoice( panelUnits, ID_SDMMFORMATCHOICE,
+                                wxDefaultPosition, size, pSDMMFormats );
+    unitsSizer->Add( pSDMMFormat, inputFlags );
 
+    // spacer
+    unitsSizer->Add( 0, border_size * 4 );
+    unitsSizer->Add( 0, border_size * 4 );
 
-        // depth units
-        unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("Depth")), labelFlags );
-        wxString pDepthUnitStrings[] = { _("Feet"), _("Meters"), _("Fathoms"), };
-        pDepthUnitSelect = new wxChoice( panelUnits, ID_DEPTHUNITSCHOICE, wxDefaultPosition,
-                                         wxSize(250, -1), 3, pDepthUnitStrings );
-        unitsSizer->Add( pDepthUnitSelect, inputFlags );
+    // bearings (magnetic/true, variation)
+    unitsSizer->Add( new wxStaticText( panelUnits, wxID_ANY, _( "Bearings" ) ),
+                     groupLabelFlags );
 
-
-        // spacer
-        unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
-        unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
-
-
-        // lat/long units
-        unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("Lat/Long")), labelFlags );
-        wxString pSDMMFormats[] = { _("Degrees, Decimal Minutes"), _("Decimal Degrees"), _("Degrees, Minutes, Seconds") };
-        int m_SDMMFormatsNChoices = sizeof( pSDMMFormats ) / sizeof(wxString);
-        pSDMMFormat = new wxChoice( panelUnits, ID_SDMMFORMATCHOICE, wxDefaultPosition,
-                                    wxDefaultSize, m_SDMMFormatsNChoices, pSDMMFormats );
-        unitsSizer->Add( pSDMMFormat, inputFlags );
-
-
-        // spacer
-        unitsSizer->Add( 0, border_size*4 );
-        unitsSizer->Add( 0, border_size*4 );
-
-
-        // bearings (magnetic/true, variation)
-        unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("Bearings")), groupLabelFlags );
-
-
-        //  "Mag Heading" checkbox
-        pCBMagShow = new wxCheckBox( panelUnits, ID_MAGSHOWCHECKBOX, _("Show magnetic") );
-        unitsSizer->Add( pCBMagShow, 0, wxALL, group_item_spacing );
-
-
-        //  Mag Heading user variation
-        wxStaticText* itemStaticTextUserVar = new wxStaticText( panelUnits, wxID_ANY, _("Assumed magnetic variation") );
-        wrapperSizer->Add( itemStaticTextUserVar, 0, wxEXPAND | wxALL | wxALIGN_CENTRE_VERTICAL, group_item_spacing );
-
-        wxBoxSizer* magVarSizer = new wxBoxSizer( wxHORIZONTAL );
-        wrapperSizer->Add( magVarSizer, 0, wxALL | wxEXPAND, group_item_spacing );
-
-        magVarSizer->Add( 0, border_size*4 );
-
-        pMagVar = new wxTextCtrl( panelUnits, ID_OPTEXTCTRL, _T(""), wxDefaultPosition, wxSize(150, -1), wxTE_RIGHT );
-        magVarSizer->Add( pMagVar, 0, wxALIGN_CENTRE_VERTICAL, group_item_spacing );
-
-        magVarSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("deg (-W, +E)")),
-                          0, wxALL | wxALIGN_CENTRE_VERTICAL, group_item_spacing );
-
-    }
-    else{
-        wxFlexGridSizer *unitsSizer = new wxFlexGridSizer( 2 );
-        unitsSizer->SetHGap(border_size);
-
-        // wxFlexGridSizer grows wrongly in wx2.8, so we need to centre it in another sizer instead of letting it grow.
-        wxBoxSizer* wrapperSizer = new wxBoxSizer( wxVERTICAL );
-        panelUnits->SetSizer( wrapperSizer );
-        wrapperSizer->Add( unitsSizer, 1, wxALL | wxALIGN_CENTER, border_size );
-
-
-        // spacer
-        unitsSizer->Add( 0, border_size*4 );
-        unitsSizer->Add( 0, border_size*4 );
-
-
-        // distance units
-        unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("Distance")), labelFlags );
-        wxString pDistanceFormats[] = { _("Nautical miles"), _("Statute miles"), _("Kilometers"), _("Meters") };
-        int m_DistanceFormatsNChoices = sizeof(pDistanceFormats) / sizeof(wxString);
-        pDistanceFormat = new wxChoice( panelUnits, ID_DISTANCEUNITSCHOICE, wxDefaultPosition,
-                                        wxDefaultSize, m_DistanceFormatsNChoices, pDistanceFormats );
-        unitsSizer->Add( pDistanceFormat, inputFlags );
-
-
-        // speed units
-        unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("Speed")), labelFlags );
-        wxString pSpeedFormats[] = { _("Knots"), _("Mph"), _("km/h"), _("m/s") };
-        int m_SpeedFormatsNChoices = sizeof( pSpeedFormats ) / sizeof(wxString);
-        pSpeedFormat = new wxChoice( panelUnits, ID_SPEEDUNITSCHOICE, wxDefaultPosition,
-                                     wxDefaultSize, m_SpeedFormatsNChoices, pSpeedFormats );
-        unitsSizer->Add( pSpeedFormat, inputFlags );
-
-
-        // depth units
-        unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("Depth")), labelFlags );
-        wxString pDepthUnitStrings[] = { _("Feet"), _("Meters"), _("Fathoms"), };
-        pDepthUnitSelect = new wxChoice( panelUnits, ID_DEPTHUNITSCHOICE, wxDefaultPosition,
-                                         wxDefaultSize, 3, pDepthUnitStrings );
-        unitsSizer->Add( pDepthUnitSelect, inputFlags );
-
-
-        // spacer
-        unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
-        unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
-
-
-        // lat/long units
-        unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("Lat/Long")), labelFlags );
-        wxString pSDMMFormats[] = { _("Degrees, Decimal Minutes"), _("Decimal Degrees"), _("Degrees, Minutes, Seconds") };
-        int m_SDMMFormatsNChoices = sizeof( pSDMMFormats ) / sizeof(wxString);
-        pSDMMFormat = new wxChoice( panelUnits, ID_SDMMFORMATCHOICE, wxDefaultPosition,
-                                    wxDefaultSize, m_SDMMFormatsNChoices, pSDMMFormats );
-        unitsSizer->Add( pSDMMFormat, inputFlags );
-
-
-        // spacer
-        unitsSizer->Add( 0, border_size*4 );
-        unitsSizer->Add( 0, border_size*4 );
-
-
-        // bearings (magnetic/true, variation)
-        unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("Bearings")), groupLabelFlags );
-
-        wxBoxSizer* bearingsSizer = new wxBoxSizer( wxVERTICAL );
+    wxBoxSizer* bearingsSizer = new wxBoxSizer( wxVERTICAL );
+    if ( !m_bcompact )
         unitsSizer->Add( bearingsSizer, 0, 0, 0 );
 
-        //  "Mag Heading" checkbox
-        pCBMagShow = new wxCheckBox( panelUnits, ID_MAGSHOWCHECKBOX, _("Show magnetic bearings and headings") );
+    //  "Mag Heading" checkbox
+    pCBMagShow = new wxCheckBox( panelUnits, ID_MAGSHOWCHECKBOX, m_bcompact ?
+        _( "Show magnetic" ) : _( "Show magnetic bearings and headings" ));
+    if ( m_bcompact )
+        unitsSizer->Add( pCBMagShow, 0, wxALL, group_item_spacing );
+    else
         bearingsSizer->Add( pCBMagShow, 0, wxALL, group_item_spacing );
 
-        //  Mag Heading user variation
-        wxBoxSizer* magVarSizer = new wxBoxSizer( wxHORIZONTAL );
+    //  Mag Heading user variation
+    wxStaticText *itemStaticTextUserVar =
+        new wxStaticText( panelUnits, wxID_ANY,
+                          _( "Assumed magnetic variation" ) );
+    wxBoxSizer* magVarSizer = new wxBoxSizer( wxHORIZONTAL );
+
+    if ( m_bcompact ) {
+        wrapperSizer->Add( itemStaticTextUserVar, 0,
+                           wxEXPAND | wxALL | wxALIGN_CENTRE_VERTICAL,
+                           group_item_spacing );
+        wrapperSizer->Add( magVarSizer, 0, wxALL | wxEXPAND,
+                           group_item_spacing );
+        magVarSizer->Add( 0, border_size * 4 );
+    } else {
         bearingsSizer->Add( magVarSizer, 0, wxALL, group_item_spacing );
-
-        wxStaticText* itemStaticTextUserVar = new wxStaticText( panelUnits, wxID_ANY, _("Assumed magnetic variation") );
-        magVarSizer->Add( itemStaticTextUserVar, 0, wxALL | wxALIGN_CENTRE_VERTICAL, group_item_spacing );
-
-        pMagVar = new wxTextCtrl( panelUnits, ID_OPTEXTCTRL, _T(""), wxDefaultPosition, wxSize(50, -1), wxTE_RIGHT );
-        magVarSizer->Add( pMagVar, 0, wxALIGN_CENTRE_VERTICAL, group_item_spacing );
-
-        magVarSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("deg (-W, +E)")),
-                          0, wxALL | wxALIGN_CENTRE_VERTICAL, group_item_spacing );
+        magVarSizer->Add( itemStaticTextUserVar, 0,
+                          wxALL | wxALIGN_CENTRE_VERTICAL, group_item_spacing );
     }
+
+    pMagVar = new wxTextCtrl( panelUnits, ID_OPTEXTCTRL, wxEmptyString,
+                              wxDefaultPosition,
+                              wxSize( m_bcompact ? 150 : 50, -1 ), wxTE_RIGHT );
+    magVarSizer->Add( pMagVar, 0, wxALIGN_CENTRE_VERTICAL, group_item_spacing );
+
+    magVarSizer->Add( new wxStaticText( panelUnits, wxID_ANY,
+                                        _( "deg (-W, +E)" ) ),
+                      0, wxALL | wxALIGN_CENTRE_VERTICAL, group_item_spacing );
 }
 
 
