@@ -791,7 +791,7 @@ options::options( MyFrame* parent, wxWindowID id, const wxString& caption,
     wxDialog::Create( parent, id, caption, pos, size, wstyle );
 
     SetFont( *dialogFont );
-    
+
     CreateControls();
     RecalculateSize();
 
@@ -900,16 +900,16 @@ void options::Init( void )
     m_BTscanning = 0;
 
     dialogFont = GetOCPNScaledFont(_("Dialog"));
-    
+
     // This variable is used by plugin callback function AddOptionsPage
     g_pOptions = this;
-    
+
     m_bcompact = false;
-    
+
 #ifdef __OCPN__ANDROID__
     m_bcompact = true;
 #endif
-    
+
 }
 
 bool options::Create( MyFrame* parent, wxWindowID id, const wxString& caption, const wxPoint& pos,
@@ -2195,28 +2195,28 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
         m_ChartDisplayPage->SetSizer( wrapperSizer );
 
         wxBoxSizer* itemBoxSizerUI = wrapperSizer;
-        
+
         // spacer
         itemBoxSizerUI->Add( 0, border_size*3 );
         itemBoxSizerUI->Add( 0, border_size*3 );
-        
-        
+
+
         // Chart Display Options
         wxBoxSizer* boxCharts = new wxBoxSizer( wxVERTICAL );
         itemBoxSizerUI->Add( boxCharts, groupInputFlags );
 
         pSkewComp = new wxCheckBox( m_ChartDisplayPage, ID_SKEWCOMPBOX, _("De-skew Raster Charts") );
         boxCharts->Add( pSkewComp, inputFlags );
-        
+
         pFullScreenQuilt = new wxCheckBox( m_ChartDisplayPage, ID_FULLSCREENQUILT, _("Disable Full Screen Quilting") );
         boxCharts->Add( pFullScreenQuilt, inputFlags );
 
         pOverzoomEmphasis = new wxCheckBox( m_ChartDisplayPage, ID_FULLSCREENQUILT, _("Suppress blur/fog effects") );
         boxCharts->Add( pOverzoomEmphasis, inputFlags );
-        
+
         pOZScaleVector = new wxCheckBox( m_ChartDisplayPage, ID_FULLSCREENQUILT, _("Suppress scaled vector charts") );
         boxCharts->Add( pOZScaleVector, inputFlags );
-        
+
 
 
         // Control Options
@@ -2237,7 +2237,7 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
 
         itemBoxSizerUI->Add( 0, border_size*3 );
         itemBoxSizerUI->Add( 0, border_size*3 );
-        
+
         // OpenGL Options
         wxBoxSizer* OpenGLSizer = new wxBoxSizer( wxVERTICAL );
         itemBoxSizerUI->Add( OpenGLSizer, 0, 0, 0 );
@@ -2248,49 +2248,49 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
 
     #ifdef __OCPN__ANDROID__
         pOpenGL->Disable();
-    #endif    
-        
+    #endif
+
         wxButton *bOpenGL = new wxButton( m_ChartDisplayPage, ID_OPENGLOPTIONS, _("Options...") );
         OpenGLSizer->Add( bOpenGL, inputFlags );
         bOpenGL->Enable(!g_bdisable_opengl);
-        
+
         itemBoxSizerUI->Add( 0, border_size*3 );
         itemBoxSizerUI->Add( 0, border_size*3 );
-        
+
         //  Course Up display update period
         wrapperSizer->Add( new wxStaticText( m_ChartDisplayPage, wxID_ANY, _("Course-Up Update Period") ), inputFlags );
-        
+
         wxBoxSizer *pCOGUPFilterRow = new wxBoxSizer( wxHORIZONTAL );
         wrapperSizer->Add( pCOGUPFilterRow, 0, wxALL | wxEXPAND, group_item_spacing );
-        
+
         pCOGUPUpdateSecs = new wxTextCtrl( m_ChartDisplayPage, ID_OPTEXTCTRL, _T(""), wxDefaultPosition, wxSize( 50, -1 ), wxTE_RIGHT  );
         pCOGUPFilterRow->Add( pCOGUPUpdateSecs, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
-        
+
         pCOGUPFilterRow->Add( new wxStaticText( m_ChartDisplayPage, wxID_ANY, _("seconds") ), inputFlags );
-        
+
         itemBoxSizerUI->Add( 0, border_size*3 );
         itemBoxSizerUI->Add( 0, border_size*3 );
-        
+
         // Chart Zoom Scale Weighting
         itemBoxSizerUI->Add( new wxStaticText( m_ChartDisplayPage, wxID_ANY, _("Chart Zoom/Scale Weighting") ),  0, wxEXPAND );
         m_pSlider_Zoom = new wxSlider( m_ChartDisplayPage, ID_CM93ZOOM, 0, -5,
                                        5, wxDefaultPosition, wxSize( 300, 50),
                                        wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS );
-        
+
         #ifdef __OCPN__ANDROID__
         m_pSlider_Zoom->GetHandle()->setStyleSheet( getQtStyleSheet());
-        #endif    
-        
+        #endif
+
         itemBoxSizerUI->Add( m_pSlider_Zoom, inputFlags );
-  
+
         itemBoxSizerUI->Add( 0, border_size*3 );
         itemBoxSizerUI->Add( 0, border_size*3 );
-        
+
         //  Display size/DPI
         itemBoxSizerUI->Add( new wxStaticText( m_ChartDisplayPage, wxID_ANY, _("Physical Screen Width") ), inputFlags );
         wxBoxSizer *pDPIRow = new wxBoxSizer( wxHORIZONTAL );
         itemBoxSizerUI->Add( pDPIRow, 0, wxEXPAND );
-        
+
         pRBSizeAuto = new wxRadioButton( m_ChartDisplayPage, wxID_ANY, _("Auto") );
         pDPIRow->Add( pRBSizeAuto, inputFlags );
         pDPIRow->AddSpacer( 10 );
@@ -2299,7 +2299,7 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
 
         wxBoxSizer *pmmRow = new wxBoxSizer( wxHORIZONTAL );
         itemBoxSizerUI->Add( pmmRow, 0, wxEXPAND );
-        
+
         pScreenMM = new wxTextCtrl( m_ChartDisplayPage, ID_OPTEXTCTRL, _T(""), wxDefaultPosition,
                                     wxSize( 100, -1 ), wxTE_RIGHT  );
         pmmRow->Add( pScreenMM, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
@@ -2310,10 +2310,10 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
                             wxCommandEventHandler( options::OnSizeAutoButton ), NULL, this );
         pRBSizeManual->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED,
                             wxCommandEventHandler( options::OnSizeManualButton ), NULL, this );
-        
-                                                  
+
+
     }
-    
+
     else{
         wxFlexGridSizer* itemBoxSizerUI = new wxFlexGridSizer( 2 );
         itemBoxSizerUI->SetHGap(border_size);
@@ -2331,7 +2331,7 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
         itemBoxSizerUI->Add( 0, border_size*3 );
         itemBoxSizerUI->Add( 0, border_size*3 );
 
-        
+
         // Chart Display Options
         itemBoxSizerUI->Add( new wxStaticText( m_ChartDisplayPage, wxID_ANY, _("Chart Display") ), groupLabelFlags );
         wxBoxSizer* boxCharts = new wxBoxSizer( wxVERTICAL );
@@ -2339,21 +2339,21 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
 
         pSkewComp = new wxCheckBox( m_ChartDisplayPage, ID_SKEWCOMPBOX, _("Show Skewed Raster Charts as North-Up") );
         boxCharts->Add( pSkewComp, inputFlags );
-        
+
         pFullScreenQuilt = new wxCheckBox( m_ChartDisplayPage, ID_FULLSCREENQUILT, _("Disable Full Screen Quilting") );
         boxCharts->Add( pFullScreenQuilt, inputFlags );
 
         pOverzoomEmphasis = new wxCheckBox( m_ChartDisplayPage, ID_FULLSCREENQUILT, _("Suppress blur/fog effects on overzoom") );
         boxCharts->Add( pOverzoomEmphasis, inputFlags );
-        
+
         pOZScaleVector = new wxCheckBox( m_ChartDisplayPage, ID_FULLSCREENQUILT, _("Suppress scaled vector charts on overzoom") );
         boxCharts->Add( pOZScaleVector, inputFlags );
-        
+
         // spacer
         itemBoxSizerUI->Add( 0, border_size*3 );
         itemBoxSizerUI->Add( 0, border_size*3 );
 
-        
+
         //  Course Up display update period
         itemBoxSizerUI->Add( new wxStaticText( m_ChartDisplayPage, wxID_ANY, _("Course-Up Update Period") ), labelFlags );
         wxBoxSizer *pCOGUPFilterRow = new wxBoxSizer( wxHORIZONTAL );
@@ -2361,7 +2361,7 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
 
         pCOGUPUpdateSecs = new wxTextCtrl( m_ChartDisplayPage, ID_OPTEXTCTRL, _T(""), wxDefaultPosition, wxSize( 50, -1 ), wxTE_RIGHT  );
         pCOGUPFilterRow->Add( pCOGUPUpdateSecs, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
-        
+
         pCOGUPFilterRow->Add( new wxStaticText( m_ChartDisplayPage, wxID_ANY, _("seconds") ), inputFlags );
 
 
@@ -2375,23 +2375,23 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
         m_pSlider_Zoom = new wxSlider( m_ChartDisplayPage, ID_CM93ZOOM, 0, -5,
                                     5, wxDefaultPosition, wxSize( 300, 50),
                                     wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS );
-        
+
     #ifdef __OCPN__ANDROID__
         m_pSlider_Zoom->GetHandle()->setStyleSheet( getQtStyleSheet());
-    #endif    
-        
+    #endif
+
         itemBoxSizerUI->Add( m_pSlider_Zoom, inputFlags );
 
         itemBoxSizerUI->Add( 0, border_size*3 );
         wxStaticText* zoomText = new wxStaticText( m_ChartDisplayPage, wxID_ANY,
             _("With a lower value, the same zoom level shows a less detailed chart.\nWith a higher value, the same zoom level shows a more detailed chart.") );
-        
+
         smallFont = new wxFont( * dialogFont ); // we can't use Smaller() because wx2.8 doesn't support it
         smallFont->SetPointSize( (smallFont->GetPointSize() / 1.2) + 0.5 ); // + 0.5 to round instead of truncate
         zoomText->SetFont( * smallFont );
         itemBoxSizerUI->Add( zoomText, 0, wxALL | wxEXPAND, group_item_spacing );
-        
-        
+
+
         // spacer
         itemBoxSizerUI->Add( 0, border_size*3 );
         itemBoxSizerUI->Add( 0, border_size*3 );
@@ -2420,7 +2420,7 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
         itemBoxSizerUI->Add( new wxStaticText( m_ChartDisplayPage, wxID_ANY, _("Physical Screen Width") ), labelFlags );
         wxBoxSizer *pDPIRow = new wxBoxSizer( wxHORIZONTAL );
         itemBoxSizerUI->Add( pDPIRow, 0, wxEXPAND );
-        
+
         pRBSizeAuto = new wxRadioButton( m_ChartDisplayPage, wxID_ANY, _("Auto") );
         pDPIRow->Add( pRBSizeAuto, inputFlags );
         pDPIRow->AddSpacer( 10 );
@@ -2437,11 +2437,11 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
                             wxCommandEventHandler( options::OnSizeAutoButton ), NULL, this );
         pRBSizeManual->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED,
                             wxCommandEventHandler( options::OnSizeManualButton ), NULL, this );
-        
+
         // spacer
         itemBoxSizerUI->Add( 0, border_size*3 );
         itemBoxSizerUI->Add( 0, border_size*3 );
-        
+
         // OpenGL Options
         itemBoxSizerUI->Add( new wxStaticText( m_ChartDisplayPage, wxID_ANY, _("Graphics") ), labelFlags );
         wxBoxSizer* OpenGLSizer = new wxBoxSizer( wxHORIZONTAL );
@@ -2453,20 +2453,20 @@ void options::CreatePanel_Advanced( size_t parent, int border_size, int group_it
 
     #ifdef __OCPN__ANDROID__
         pOpenGL->Disable();
-    #endif    
-        
+    #endif
+
         wxButton *bOpenGL = new wxButton( m_ChartDisplayPage, ID_OPENGLOPTIONS, _("Options...") );
         OpenGLSizer->Add( bOpenGL, inputFlags );
         bOpenGL->Enable(!g_bdisable_opengl);
-        
-    
+
+
         itemBoxSizerUI->Add( 0, border_size*3 );
         pTransparentToolbar = new wxCheckBox( m_ChartDisplayPage, ID_TRANSTOOLBARCHECKBOX,
                                             _("Enable Transparent Toolbar") );
         itemBoxSizerUI->Add( pTransparentToolbar, 0, wxALL, border_size );
         if( g_bopengl && !g_bTransparentToolbarInOpenGLOK ) pTransparentToolbar->Disable();
     }
-    
+
 }
 
 void options::CreatePanel_VectorCharts( size_t parent, int border_size, int group_item_spacing,
@@ -2842,13 +2842,13 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
 
         pCBLookAhead = new wxCheckBox( pDisplayPanel, ID_CHECK_LOOKAHEAD, _("Look Ahead Mode") );
         boxNavMode->Add( pCBLookAhead, inputFlags );
-        
-        
+
+
         // spacer
         generalSizer->Add( 0, border_size*4 );
         generalSizer->Add( 0, border_size*4 );
 
-        
+
         // Control Options
         generalSizer->Add( new wxStaticText( pDisplayPanel, wxID_ANY, _("Chart Display") ), groupLabelFlags );
         wxBoxSizer* boxCharts = new wxBoxSizer( wxVERTICAL );
@@ -2865,25 +2865,25 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
         generalSizer->Add( 0, border_size*4 );
         generalSizer->Add( 0, border_size*4 );
 
-        
+
         // Control Options
         generalSizer->Add( new wxStaticText( pDisplayPanel, wxID_ANY, _("Controls") ), groupLabelFlags );
         wxBoxSizer* boxCtrls = new wxBoxSizer( wxVERTICAL );
         generalSizer->Add( boxCtrls, groupInputFlags );
-        
+
         pSmoothPanZoom = new wxCheckBox( pDisplayPanel, ID_SMOOTHPANZOOMBOX, _("Smooth Panning / Zooming") );
         boxCtrls->Add( pSmoothPanZoom, inputFlags );
-        
+
         pEnableZoomToCursor = new wxCheckBox( pDisplayPanel, ID_ZTCCHECKBOX, _("Zoom to Cursor") );
         pEnableZoomToCursor->SetValue( FALSE );
         boxCtrls->Add( pEnableZoomToCursor, inputFlags );
-        
+
 
         // spacer
         generalSizer->Add( 0, border_size*4 );
         generalSizer->Add( 0, border_size*4 );
 
-        
+
         // Display Options
         generalSizer->Add( new wxStaticText( pDisplayPanel, wxID_ANY, _("Display Features") ), groupLabelFlags );
         wxBoxSizer* boxDisp = new wxBoxSizer( wxVERTICAL );
@@ -2901,85 +2901,85 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
     else{
         wxBoxSizer* wrapperSizer = new wxBoxSizer( wxVERTICAL );
         pDisplayPanel->SetSizer( wrapperSizer );
-        
+
         wxBoxSizer* generalSizer = wrapperSizer;
-        
+
         // spacer
         generalSizer->Add( 0, border_size*4 );
         generalSizer->Add( 0, border_size*4 );
-        
-        
+
+
         // Nav Mode
         //generalSizer->Add( new wxStaticText( pDisplayPanel, wxID_ANY, _("Navigation Mode") ), groupLabelFlags );
         wxBoxSizer* boxNavMode = new wxBoxSizer( wxVERTICAL );
         generalSizer->Add( boxNavMode, groupInputFlags );
-        
+
         wxBoxSizer* rowOrientation = new wxBoxSizer( wxHORIZONTAL );
         boxNavMode->Add( rowOrientation );
-        
+
         pCBNorthUp = new wxRadioButton( pDisplayPanel, wxID_ANY, _("North Up") );
         rowOrientation->Add( pCBNorthUp, inputFlags );
         pCBCourseUp = new wxRadioButton( pDisplayPanel, ID_COURSEUPCHECKBOX, _("Course Up") );
         rowOrientation->Add( pCBCourseUp, wxSizerFlags(0).Align(wxALIGN_CENTRE_VERTICAL).Border(wxLEFT, group_item_spacing*2) );
-        
+
         pCBLookAhead = new wxCheckBox( pDisplayPanel, ID_CHECK_LOOKAHEAD, _("Look Ahead Mode") );
         boxNavMode->Add( pCBLookAhead, inputFlags );
-        
-        
+
+
         // spacer
         generalSizer->Add( 0, border_size*4 );
         generalSizer->Add( 0, border_size*4 );
-        
-        
+
+
         // Control Options
         //generalSizer->Add( new wxStaticText( pDisplayPanel, wxID_ANY, _("Chart Display") ), groupLabelFlags );
         wxBoxSizer* boxCharts = new wxBoxSizer( wxVERTICAL );
         generalSizer->Add( boxCharts, groupInputFlags );
-        
+
         pCDOQuilting = new wxCheckBox( pDisplayPanel, ID_QUILTCHECKBOX1, _("Enable Chart Quilting") );
         boxCharts->Add( pCDOQuilting, inputFlags );
-        
+
         pPreserveScale = new wxCheckBox( pDisplayPanel, ID_PRESERVECHECKBOX, _("Preserve Scale on Chart Switch") );
         boxCharts->Add( pPreserveScale, inputFlags );
-        
-        
+
+
         // spacer
         generalSizer->Add( 0, border_size*4 );
         generalSizer->Add( 0, border_size*4 );
-        
-        
+
+
         // Control Options
         //generalSizer->Add( new wxStaticText( pDisplayPanel, wxID_ANY, _("Controls") ), groupLabelFlags );
         wxBoxSizer* boxCtrls = new wxBoxSizer( wxVERTICAL );
         generalSizer->Add( boxCtrls, groupInputFlags );
-        
+
         pSmoothPanZoom = new wxCheckBox( pDisplayPanel, ID_SMOOTHPANZOOMBOX, _("Smooth Panning / Zooming") );
         boxCtrls->Add( pSmoothPanZoom, inputFlags );
-        
+
         pEnableZoomToCursor = new wxCheckBox( pDisplayPanel, ID_ZTCCHECKBOX, _("Zoom to Cursor") );
         pEnableZoomToCursor->SetValue( FALSE );
         boxCtrls->Add( pEnableZoomToCursor, inputFlags );
-        
-        
+
+
         // spacer
         generalSizer->Add( 0, border_size*4 );
         generalSizer->Add( 0, border_size*4 );
-        
-        
+
+
         // Display Options
         //generalSizer->Add( new wxStaticText( pDisplayPanel, wxID_ANY, _("Display Features") ), groupLabelFlags );
         wxBoxSizer* boxDisp = new wxBoxSizer( wxVERTICAL );
         generalSizer->Add( boxDisp, groupInputFlags );
-        
+
         pSDisplayGrid = new wxCheckBox( pDisplayPanel, ID_CHECK_DISPLAYGRID, _("Show Grid") );
         boxDisp->Add( pSDisplayGrid, inputFlags );
-        
+
         pCDOOutlines = new wxCheckBox( pDisplayPanel, ID_OUTLINECHECKBOX1, _("Show Chart Outlines") );
         boxDisp->Add( pCDOOutlines, inputFlags );
-        
+
         pSDepthUnits = new wxCheckBox( pDisplayPanel, ID_SHOWDEPTHUNITSBOX1, _("Show Depth Units") );
         boxDisp->Add( pSDepthUnits, inputFlags );
-        
+
     }
 }
 
@@ -2987,22 +2987,22 @@ void options::CreatePanel_Units( size_t parent, int border_size, int group_item_
                                  wxSize small_button_size )
 {
     wxScrolledWindow *panelUnits = AddPage( parent, _("Units") );
-    
+
     if(m_bcompact){
         wxFlexGridSizer *unitsSizer = new wxFlexGridSizer( 2 );
         unitsSizer->SetHGap(border_size);
-        
+
         // wxFlexGridSizer grows wrongly in wx2.8, so we need to centre it in another sizer instead of letting it grow.
         wxBoxSizer* wrapperSizer = new wxBoxSizer( wxVERTICAL );
         panelUnits->SetSizer( wrapperSizer );
         wrapperSizer->Add( unitsSizer, 1, wxALL | wxALIGN_CENTER, border_size );
-        
-        
+
+
         // spacer
         unitsSizer->Add( 0, border_size*4 );
         unitsSizer->Add( 0, border_size*4 );
-        
-        
+
+
         // distance units
         unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("Distance")), labelFlags );
         wxString pDistanceFormats[] = { _("Nautical miles"), _("Statute miles"), _("Kilometers"), _("Meters") };
@@ -3010,8 +3010,8 @@ void options::CreatePanel_Units( size_t parent, int border_size, int group_item_
         pDistanceFormat = new wxChoice( panelUnits, ID_DISTANCEUNITSCHOICE, wxDefaultPosition,
                                         wxSize(250, -1), m_DistanceFormatsNChoices, pDistanceFormats );
         unitsSizer->Add( pDistanceFormat, inputFlags );
-        
-        
+
+
         // speed units
         unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("Speed")), labelFlags );
         wxString pSpeedFormats[] = { _("Knots"), _("Mph"), _("km/h"), _("m/s") };
@@ -3019,21 +3019,21 @@ void options::CreatePanel_Units( size_t parent, int border_size, int group_item_
         pSpeedFormat = new wxChoice( panelUnits, ID_SPEEDUNITSCHOICE, wxDefaultPosition,
                                      wxSize(250, -1), m_SpeedFormatsNChoices, pSpeedFormats );
         unitsSizer->Add( pSpeedFormat, inputFlags );
-        
-        
+
+
         // depth units
         unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("Depth")), labelFlags );
         wxString pDepthUnitStrings[] = { _("Feet"), _("Meters"), _("Fathoms"), };
         pDepthUnitSelect = new wxChoice( panelUnits, ID_DEPTHUNITSCHOICE, wxDefaultPosition,
                                          wxSize(250, -1), 3, pDepthUnitStrings );
         unitsSizer->Add( pDepthUnitSelect, inputFlags );
-        
-        
+
+
         // spacer
         unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
         unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
-        
-        
+
+
         // lat/long units
         unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("Lat/Long")), labelFlags );
         wxString pSDMMFormats[] = { _("Degrees, Decimal Minutes"), _("Decimal Degrees"), _("Degrees, Minutes, Seconds") };
@@ -3041,53 +3041,53 @@ void options::CreatePanel_Units( size_t parent, int border_size, int group_item_
         pSDMMFormat = new wxChoice( panelUnits, ID_SDMMFORMATCHOICE, wxDefaultPosition,
                                     wxDefaultSize, m_SDMMFormatsNChoices, pSDMMFormats );
         unitsSizer->Add( pSDMMFormat, inputFlags );
-        
-        
+
+
         // spacer
         unitsSizer->Add( 0, border_size*4 );
         unitsSizer->Add( 0, border_size*4 );
-        
-        
+
+
         // bearings (magnetic/true, variation)
         unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("Bearings")), groupLabelFlags );
-        
-        
+
+
         //  "Mag Heading" checkbox
         pCBMagShow = new wxCheckBox( panelUnits, ID_MAGSHOWCHECKBOX, _("Show magnetic") );
         unitsSizer->Add( pCBMagShow, 0, wxALL, group_item_spacing );
-        
-        
+
+
         //  Mag Heading user variation
         wxStaticText* itemStaticTextUserVar = new wxStaticText( panelUnits, wxID_ANY, _("Assumed magnetic variation") );
         wrapperSizer->Add( itemStaticTextUserVar, 0, wxEXPAND | wxALL | wxALIGN_CENTRE_VERTICAL, group_item_spacing );
-        
+
         wxBoxSizer* magVarSizer = new wxBoxSizer( wxHORIZONTAL );
         wrapperSizer->Add( magVarSizer, 0, wxALL | wxEXPAND, group_item_spacing );
-        
+
         magVarSizer->Add( 0, border_size*4 );
-        
+
         pMagVar = new wxTextCtrl( panelUnits, ID_OPTEXTCTRL, _T(""), wxDefaultPosition, wxSize(150, -1), wxTE_RIGHT );
         magVarSizer->Add( pMagVar, 0, wxALIGN_CENTRE_VERTICAL, group_item_spacing );
-        
+
         magVarSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("deg (-W, +E)")),
                           0, wxALL | wxALIGN_CENTRE_VERTICAL, group_item_spacing );
-        
+
     }
     else{
         wxFlexGridSizer *unitsSizer = new wxFlexGridSizer( 2 );
         unitsSizer->SetHGap(border_size);
-        
+
         // wxFlexGridSizer grows wrongly in wx2.8, so we need to centre it in another sizer instead of letting it grow.
         wxBoxSizer* wrapperSizer = new wxBoxSizer( wxVERTICAL );
         panelUnits->SetSizer( wrapperSizer );
         wrapperSizer->Add( unitsSizer, 1, wxALL | wxALIGN_CENTER, border_size );
-        
-        
+
+
         // spacer
         unitsSizer->Add( 0, border_size*4 );
         unitsSizer->Add( 0, border_size*4 );
-        
-        
+
+
         // distance units
         unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("Distance")), labelFlags );
         wxString pDistanceFormats[] = { _("Nautical miles"), _("Statute miles"), _("Kilometers"), _("Meters") };
@@ -3095,8 +3095,8 @@ void options::CreatePanel_Units( size_t parent, int border_size, int group_item_
         pDistanceFormat = new wxChoice( panelUnits, ID_DISTANCEUNITSCHOICE, wxDefaultPosition,
                                         wxDefaultSize, m_DistanceFormatsNChoices, pDistanceFormats );
         unitsSizer->Add( pDistanceFormat, inputFlags );
-        
-        
+
+
         // speed units
         unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("Speed")), labelFlags );
         wxString pSpeedFormats[] = { _("Knots"), _("Mph"), _("km/h"), _("m/s") };
@@ -3104,21 +3104,21 @@ void options::CreatePanel_Units( size_t parent, int border_size, int group_item_
         pSpeedFormat = new wxChoice( panelUnits, ID_SPEEDUNITSCHOICE, wxDefaultPosition,
                                      wxDefaultSize, m_SpeedFormatsNChoices, pSpeedFormats );
         unitsSizer->Add( pSpeedFormat, inputFlags );
-        
-        
+
+
         // depth units
         unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("Depth")), labelFlags );
         wxString pDepthUnitStrings[] = { _("Feet"), _("Meters"), _("Fathoms"), };
         pDepthUnitSelect = new wxChoice( panelUnits, ID_DEPTHUNITSCHOICE, wxDefaultPosition,
                                          wxDefaultSize, 3, pDepthUnitStrings );
         unitsSizer->Add( pDepthUnitSelect, inputFlags );
-        
-        
+
+
         // spacer
         unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
         unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _T("")) );
-        
-        
+
+
         // lat/long units
         unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("Lat/Long")), labelFlags );
         wxString pSDMMFormats[] = { _("Degrees, Decimal Minutes"), _("Decimal Degrees"), _("Degrees, Minutes, Seconds") };
@@ -3126,33 +3126,33 @@ void options::CreatePanel_Units( size_t parent, int border_size, int group_item_
         pSDMMFormat = new wxChoice( panelUnits, ID_SDMMFORMATCHOICE, wxDefaultPosition,
                                     wxDefaultSize, m_SDMMFormatsNChoices, pSDMMFormats );
         unitsSizer->Add( pSDMMFormat, inputFlags );
-        
-        
+
+
         // spacer
         unitsSizer->Add( 0, border_size*4 );
         unitsSizer->Add( 0, border_size*4 );
-        
-        
+
+
         // bearings (magnetic/true, variation)
         unitsSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("Bearings")), groupLabelFlags );
-        
+
         wxBoxSizer* bearingsSizer = new wxBoxSizer( wxVERTICAL );
         unitsSizer->Add( bearingsSizer, 0, 0, 0 );
-        
+
         //  "Mag Heading" checkbox
         pCBMagShow = new wxCheckBox( panelUnits, ID_MAGSHOWCHECKBOX, _("Show magnetic bearings and headings") );
         bearingsSizer->Add( pCBMagShow, 0, wxALL, group_item_spacing );
-        
+
         //  Mag Heading user variation
         wxBoxSizer* magVarSizer = new wxBoxSizer( wxHORIZONTAL );
         bearingsSizer->Add( magVarSizer, 0, wxALL, group_item_spacing );
-        
+
         wxStaticText* itemStaticTextUserVar = new wxStaticText( panelUnits, wxID_ANY, _("Assumed magnetic variation") );
         magVarSizer->Add( itemStaticTextUserVar, 0, wxALL | wxALIGN_CENTRE_VERTICAL, group_item_spacing );
-        
+
         pMagVar = new wxTextCtrl( panelUnits, ID_OPTEXTCTRL, _T(""), wxDefaultPosition, wxSize(50, -1), wxTE_RIGHT );
         magVarSizer->Add( pMagVar, 0, wxALIGN_CENTRE_VERTICAL, group_item_spacing );
-        
+
         magVarSizer->Add( new wxStaticText(panelUnits, wxID_ANY, _("deg (-W, +E)")),
                           0, wxALL | wxALIGN_CENTRE_VERTICAL, group_item_spacing );
     }
@@ -3611,7 +3611,7 @@ void options::CreateControls( void )
     if(text_width > tbmp.GetWidth() * 2 ){
         wxListView* lv = m_pListbook->GetListView();
         wxFont *qFont = dialogFont;         // to get type, weight, etc...
-        
+
         wxFont *sFont = wxTheFontList->FindOrCreateFont( 10, qFont->GetFamily(), qFont->GetStyle(), qFont->GetWeight());
         lv->SetFont( *sFont );
     }
@@ -6990,8 +6990,8 @@ void OpenGLOptionsDlg::Populate( void )
 #else
     m_cbSoftwareGL->Hide();
 #endif
-    
-    
+
+
     wxFont *dialogFont = GetOCPNScaledFont(_("Dialog"));
     SetFont( *dialogFont );
 
