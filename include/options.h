@@ -203,7 +203,6 @@ class options: public wxScrollingDialog
 #endif
 {
   public:
-    explicit options( void );
     explicit options( MyFrame* parent, wxWindowID id = SYMBOL_OPTIONS_IDNAME,
                       const wxString& caption = SYMBOL_OPTIONS_TITLE,
                       const wxPoint& pos = SYMBOL_OPTIONS_POSITION,
@@ -212,16 +211,9 @@ class options: public wxScrollingDialog
 
     ~options( void );
 
-    bool Create( MyFrame* parent, wxWindowID id = SYMBOL_OPTIONS_IDNAME,
-                 const wxString& caption = SYMBOL_OPTIONS_TITLE,
-                 const wxPoint& pos = SYMBOL_OPTIONS_POSITION,
-                 const wxSize& size = SYMBOL_OPTIONS_SIZE,
-                 long style = SYMBOL_OPTIONS_STYLE );
-
     void SetInitialPage( int page_sel);
     void Finish( void);
 
-    wxWindow *GetContentWindow( void ) const;
     void OnClose( wxCloseEvent& event );
 
     void CreateControls( void );
@@ -551,7 +543,6 @@ class options: public wxScrollingDialog
     int m_fontHeight, m_scrollRate, m_BTscanning, m_btNoChangeCounter;
     int m_btlastResultCount;
 
-    DECLARE_DYNAMIC_CLASS( options )
     DECLARE_EVENT_TABLE()
 };
 
