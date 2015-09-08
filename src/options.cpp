@@ -384,9 +384,13 @@ void MMSIEditDialog::CreateControls( void )
     m_OKButton->SetDefault();
 
     //  Set initial values...
-    if (m_props->MMSI > 0)
-        m_MMSICtl->AppendText( wxString::Format( "%d", m_props->MMSI ) );
-
+    wxString sMMSI;
+    if(m_props->MMSI > 0)
+        sMMSI.Printf(_T("%d"), m_props->MMSI);
+    else
+        sMMSI = _T("");
+    m_MMSICtl->AppendText(sMMSI);
+    
     switch ( m_props->TrackType ){
         case TRACKTYPE_ALWAYS:
             m_rbTypeTrackAlways->SetValue(TRUE);
@@ -899,9 +903,9 @@ size_t options::CreatePanel(const wxString & title)
 wxScrolledWindow *options::AddPage( size_t parent, const wxString & title)
 {
     if ( parent > m_pListbook->GetPageCount() - 1 ) {
-        wxLogMessage( wxString::Format(
-            _T("Warning: invalid parent in options::AddPage( %d, %s )"),
-                        parent, title));
+        wxLogMessage(
+            wxString::Format( _T("Warning: invalid parent in options::AddPage( %d, "),
+                                 parent ) + title + _T(" )") );
         return NULL;
     }
     wxNotebookPage* page = m_pListbook->GetPage( parent );
@@ -1336,7 +1340,6 @@ void options::CreatePanel_NMEA_Compact( size_t parent, int border_size,
 
     // Connect Events
     m_lcSources->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED, wxListEventHandler( options::OnSelectDatasource ), NULL, this );
-    m_lcSources->Connect( wxEVT_LIST_ITEM_ACTIVATED, wxListEventHandler( options::OnConnectionToggleEnable ), NULL, this );
     m_buttonAdd->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnAddDatasourceClick ), NULL, this );
     m_buttonRemove->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnRemoveDatasourceClick ), NULL, this );
 
@@ -1378,8 +1381,12 @@ void options::CreatePanel_NMEA_Compact( size_t parent, int border_size,
     m_cbFilterSogCog->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnValChange ), NULL, this );
     m_tFilterSec->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
     m_cbAPBMagnetic->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnValChange ), NULL, this );
+    
+#if wxCHECK_VERSION(2, 9, 0)
     m_lcSources->Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler(options::OnConnectionToggleEnable), NULL, this );
-
+    m_lcSources->Connect( wxEVT_LIST_ITEM_ACTIVATED, wxListEventHandler( options::OnConnectionToggleEnable ), NULL, this );
+#endif
+    
     wxString columns[] = { _( "On" ), _( "Type" ), _( "Port" ), _("Prio"), _( "Parm" ), _( "I/O" ), _( "Filters" ) };
     for ( int i = 0; i < 7; ++i ) {
         wxListItem col;
@@ -1785,7 +1792,6 @@ void options::CreatePanel_NMEA( size_t parent, int border_size,
 
     // Connect Events
     m_lcSources->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED, wxListEventHandler( options::OnSelectDatasource ), NULL, this );
-    m_lcSources->Connect( wxEVT_LIST_ITEM_ACTIVATED, wxListEventHandler( options::OnConnectionToggleEnable ), NULL, this );
     m_buttonAdd->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnAddDatasourceClick ), NULL, this );
     m_buttonRemove->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnRemoveDatasourceClick ), NULL, this );
 
@@ -1827,8 +1833,12 @@ void options::CreatePanel_NMEA( size_t parent, int border_size,
     m_cbFilterSogCog->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnValChange ), NULL, this );
     m_tFilterSec->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
     m_cbAPBMagnetic->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnValChange ), NULL, this );
-    m_lcSources->Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler(options::OnConnectionToggleEnable), NULL, this );
 
+#if wxCHECK_VERSION(2, 9, 0)
+    m_lcSources->Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler(options::OnConnectionToggleEnable), NULL, this );
+    m_lcSources->Connect( wxEVT_LIST_ITEM_ACTIVATED, wxListEventHandler( options::OnConnectionToggleEnable ), NULL, this );
+#endif
+    
     wxString columns[] = { _( "Enable" ), _( "Type" ), _( "DataPort" ), _("Priority"), _( "Parameters" ), _( "Connection" ), _( "Filters" ) };
     for ( int i = 0; i < 7; ++i ) {
         wxListItem col;
@@ -6863,7 +6873,10 @@ void SentenceListDlg::OnAddClick( wxCommandEvent& event )
 {
     wxTextEntryDialog textdlg( this, _( "Enter the NMEA sentence (2, 3 or 5 characters) " ),
                                _( "Enter the NMEA sentence" ) );
+#if wxCHECK_VERSION(2, 9, 0)
     textdlg.SetMaxLength( 5 );
+#endif
+    
     textdlg.SetTextValidator( wxFILTER_ALPHANUMERIC );
     if ( textdlg.ShowModal() == wxID_CANCEL )
         return;
