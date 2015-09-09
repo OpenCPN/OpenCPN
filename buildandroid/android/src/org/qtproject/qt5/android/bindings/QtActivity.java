@@ -406,8 +406,8 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     }
 
     public String setFullscreen( final int bfull){
-        String aa = String.format("%d", bfull);
-        Log.i("DEBUGGER_TAG", "setFullscreen " + aa);
+ //       String aa = String.format("%d", bfull);
+//        Log.i("DEBUGGER_TAG", "setFullscreen " + aa);
         setFullscreen(bfull != 0);
         m_fullScreen = (bfull != 0);
         return "OK";
