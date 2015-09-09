@@ -618,7 +618,16 @@ void OCPNPlatform::SetDefaultOptions( void )
         
         pConfig->SetPath ( _T ( "/Settings/WMM" ) );
         pConfig->Write ( _T ( "ShowIcon" ), false );
+   
         
+        pConfig->SetPath ( _T ( "/Settings/QTFonts" ) );
+
+        //Status Bar
+        wxString str = _T("en_US-b25a3899");
+        wxString pval = _T("StatusBar:Roboto,26,-1,5,75,0,0,0,0,0:rgb(0, 0, 0)");
+        
+        pConfig->Write (str, pval );
+        FontMgr::Get().LoadFontNative( &str, &pval );
     }
         
         
