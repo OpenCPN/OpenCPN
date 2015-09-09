@@ -432,80 +432,13 @@ Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
         pTentRoute = new Route();
         
         RoutePoint *pWp = NULL;
+		bool route_existing = false;
         
         for( pugi::xml_node tschild = wpt_node.first_child(); tschild; tschild = tschild.next_sibling() ) {
             wxString ChildName = wxString::FromUTF8( tschild.name() );
 
-            if( ChildName == _T ( "rtept" ) ) {
-                RoutePoint *tpWp = ::GPXLoadWaypoint1(  tschild, _T("square"), _T(""), b_fullviz, b_layer, b_layerviz, layer_id);
-                RoutePoint *erp = ::WaypointExists( tpWp->m_GUID );
-                if( !b_change ) {
-					if(  erp != NULL )
-						pWp = erp;
-					else
-						pWp = tpWp;
-				} else				//when applying change after crash wps must keep the "change" values for the next step
-					pWp = tpWp;
-                
-                pTentRoute->AddPoint( pWp, false, true, true );          // defer BBox calculation
-                pWp->m_bIsInRoute = true;                      // Hack
-                pWp->m_bIsInTrack = false;
-                
-                if( !b_change ) {  //when applying change after crash, do not add any point at this step
-					if( erp == NULL )
-						pWayPointMan->AddRoutePoint( pWp );
-					else
-						delete tpWp;
-				}
-                    
-            }
-            else
-            if( ChildName == _T ( "name" ) ) {
-                RouteName = wxString::FromUTF8( tschild.first_child().value() );
-            }
-            else
-            if( ChildName == _T ( "desc" ) ) {
-                DescString = wxString::FromUTF8( tschild.first_child().value() );
-            }
-                
-            else
-            //TODO: This is wrong, left here just to save data of the 3.3 beta series users. 
-            if( ChildName.EndsWith( _T ( "RouteExtension" ) ) ) //Parse GPXX color
-            {
-                for( pugi::xml_node gpxx_child = tschild.first_child(); gpxx_child; gpxx_child = gpxx_child.next_sibling() ) {
-                    wxString gpxx_name = wxString::FromUTF8( gpxx_child.name() );
-                    if( gpxx_name.EndsWith( _T ( "DisplayColor" ) ) )
-                         pTentRoute->m_Colour = wxString::FromUTF8(gpxx_child.first_child().value() );
-                }
-            }
-            
-            else
-            if( ChildName == _T ( "link") ) {
-                wxString HrefString;
-                wxString HrefTextString;
-                wxString HrefTypeString;
-                if( linklist == NULL )
-                    linklist = new HyperlinkList;
-                HrefString = wxString::FromUTF8( tschild.first_attribute().value() );
-
-                for( pugi::xml_node child1 = tschild.first_child(); child1; child1 = child1.next_sibling() ) {
-                    wxString LinkString = wxString::FromUTF8( child1.name() );
-
-                    if( LinkString == _T ( "text" ) )
-                        HrefTextString = wxString::FromUTF8( child1.first_child().value() );
-                    if( LinkString == _T ( "type" ) ) 
-                        HrefTypeString = wxString::FromUTF8( child1.first_child().value() );
-                }
-              
-                Hyperlink *link = new Hyperlink;
-                link->Link = HrefString;
-                link->DescrText = HrefTextString;
-                link->LType = HrefTypeString;
-                linklist->Append( link );
-            }
-            
-            else
-            if( ChildName == _T ( "extensions" ) ) {
+			//load extentions first to determine if the route still exists
+			if( ChildName == _T ( "extensions" ) ) {
                 for( pugi::xml_node ext_child = tschild.first_child(); ext_child; ext_child = ext_child.next_sibling() ) {
                     wxString ext_name = wxString::FromUTF8( ext_child.name() );
 
@@ -565,9 +498,91 @@ Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
                                  pTentRoute->m_Colour = wxString::FromUTF8(gpxx_child.first_child().value() );
                         }
                      }
-                } //extensions
+                }
+				if( !b_change) {
+					if( RouteExists(pTentRoute->m_GUID) ) { //we are loading a different route with the same guid so let's generate a new guid
+						pTentRoute->m_GUID = pWayPointMan->CreateGUID(NULL);
+						route_existing = true;
+					}
+				}
+			}//extension
+			else
+            if( ChildName == _T ( "rtept" ) ) {
+                RoutePoint *tpWp = ::GPXLoadWaypoint1(  tschild, _T("square"), _T(""), b_fullviz, b_layer, b_layerviz, layer_id);
+                RoutePoint *erp = ::WaypointExists( tpWp->m_GUID );
+				// 1) if b_change is true, that means we are after crash - load the route and points as found in source file
+				// 2) if route_existing, we are loading a different route with the same guid. In this case load points as found in
+				//source file, changing the guid, but keep existing "isolated point" as found in the DB
+				// 3) in all other cases keep existing points if found and load new points if not found
+				bool new_wpt = true;
+				if( b_change )
+					pWp = tpWp;
+                else {
+					if(  erp != NULL && (!route_existing || ( route_existing && tpWp->m_bKeepXRoute) ) ) {
+						pWp = erp;
+						new_wpt = false;
+					}
+					else {
+						if( route_existing )
+							tpWp->m_GUID = pWayPointMan->CreateGUID( NULL );
+						pWp = tpWp;
+					}
+				}
+
+                pTentRoute->AddPoint( pWp, false, true, true );          // defer BBox calculation
+                pWp->m_bIsInRoute = true;                      // Hack
+                pWp->m_bIsInTrack = false;
+
+                if( new_wpt )
+					pWayPointMan->AddRoutePoint( pWp );
+				else
+					delete tpWp;
             }
-        }
+            else
+            if( ChildName == _T ( "name" ) ) {
+                RouteName = wxString::FromUTF8( tschild.first_child().value() );
+            }
+            else
+            if( ChildName == _T ( "desc" ) ) {
+                DescString = wxString::FromUTF8( tschild.first_child().value() );
+            }
+
+            else
+            //TODO: This is wrong, left here just to save data of the 3.3 beta series users.
+            if( ChildName.EndsWith( _T ( "RouteExtension" ) ) ) //Parse GPXX color
+            {
+                for( pugi::xml_node gpxx_child = tschild.first_child(); gpxx_child; gpxx_child = gpxx_child.next_sibling() ) {
+                    wxString gpxx_name = wxString::FromUTF8( gpxx_child.name() );
+                    if( gpxx_name.EndsWith( _T ( "DisplayColor" ) ) )
+                         pTentRoute->m_Colour = wxString::FromUTF8(gpxx_child.first_child().value() );
+                }
+            }
+
+            else
+            if( ChildName == _T ( "link") ) {
+                wxString HrefString;
+                wxString HrefTextString;
+                wxString HrefTypeString;
+                if( linklist == NULL )
+                    linklist = new HyperlinkList;
+                HrefString = wxString::FromUTF8( tschild.first_attribute().value() );
+
+                for( pugi::xml_node child1 = tschild.first_child(); child1; child1 = child1.next_sibling() ) {
+                    wxString LinkString = wxString::FromUTF8( child1.name() );
+
+                    if( LinkString == _T ( "text" ) )
+                        HrefTextString = wxString::FromUTF8( child1.first_child().value() );
+                    if( LinkString == _T ( "type" ) )
+                        HrefTypeString = wxString::FromUTF8( child1.first_child().value() );
+                }
+
+                Hyperlink *link = new Hyperlink;
+                link->Link = HrefString;
+                link->DescrText = HrefTextString;
+                link->LType = HrefTypeString;
+                linklist->Append( link );
+            }
+       }
                     
         pTentRoute->m_RouteNameString = RouteName;
         pTentRoute->m_RouteDescription = DescString;
@@ -988,17 +1003,6 @@ void InsertRouteA( Route *pTentRoute )
     
     //    TODO  All this trouble for a tentative route.......Should make some Route methods????
     if( bAddroute ) {
-            if( ::RouteExists( pTentRoute->m_GUID ) ) { //We are importing a different route with the same guid, so let's generate it a new guid
-                               pTentRoute->m_GUID = pWayPointMan->CreateGUID( NULL );
-                               //Now also change guids for the routepoints
-                               wxRoutePointListNode *pthisnode = ( pTentRoute->pRoutePointList )->GetFirst();
-                               while( pthisnode ) {
-                                   RoutePoint *pR =  pthisnode->GetData();
-                                   if( pR && pR->m_bIsolatedMark )
-                                        pR->m_GUID = pWayPointMan->CreateGUID( NULL );
-                                   pthisnode = pthisnode->GetNext();
-                               }
-            }
             
         pRouteList->Append( pTentRoute );
         pTentRoute->RebuildGUIDList();                  // ensure the GUID list is intact
