@@ -142,18 +142,18 @@ QTreeWidget QScrollBar:horizontal {
      subcontrol-origin: margin;
  }
 
- QListWidget QScrollBar:vertical {
+ #OCPNCheckedListCtrl QScrollBar::vertical {
      border: 0px solid grey;
      background-color: rgb(240, 240, 240);
      width: 45px;
      margin: 1px 0px 1px 0px;
  }
- QListWidget QScrollBar::handle:vertical {
-     background-color: rgb(200, 200, 200);
-     min-height: 20px;
-     border-radius: 10px;
+ #OCPNCheckedListCtrl QScrollBar::handle:vertical {
+     background-color: rgb(180, 180, 180);
+     min-height: 45px;
+     border-radius: 6px;
  }
- QListWidget QScrollBar::add-line:vertical {
+ #OCPNCheckedListCtrl QScrollBar::add-line:vertical {
      border: 0px solid grey;
      background: #32CC99;
      height: 0px;
@@ -161,7 +161,7 @@ QTreeWidget QScrollBar:horizontal {
      subcontrol-origin: margin;
  }
 
- QListWidget QScrollBar::sub-line:vertical {
+ #OCPNCheckedListCtrl QScrollBar::sub-line:vertical {
      border: 0px solid grey;
      background: #32CC99;
      height: 0px;

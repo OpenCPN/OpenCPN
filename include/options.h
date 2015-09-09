@@ -58,6 +58,7 @@ class ChartGroupArray;
 class ChartGroup;
 class MMSI_Props_Panel;
 class MMSIProperties;
+class OCPNCheckedListCtrl;
 
 #define ID_DIALOG 10001
 #define SYMBOL_OPTIONS_STYLE wxCAPTION | wxRESIZE_BORDER | wxSYSTEM_MENU | \
@@ -390,7 +391,13 @@ class options: private Uncopyable, public wxScrollingDialog
     // For "S57" page
     wxBoxSizer *vectorPanel;
     wxScrolledWindow *ps57Ctl;
+ 
+#ifdef __WXMSW__    
     wxCheckListBox *ps57CtlListBox;
+#else    
+    OCPNCheckedListCtrl *ps57CtlListBox;
+#endif    
+    
     wxChoice *pDispCat, *pPointStyle, *pBoundStyle, *p24Color;
     wxButton *itemButtonClearList, *itemButtonSelectList;
     wxCheckBox *pCheck_SOUNDG, *pCheck_META, *pCheck_SHOWIMPTEXT;
