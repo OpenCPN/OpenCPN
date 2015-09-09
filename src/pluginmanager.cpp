@@ -279,6 +279,10 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled
 #endif        
 #endif        
 
+#ifdef __OCPN__ANDROID__
+    get_flags =  wxDIR_FILES;           // No subdirs, especially "/files" where PlugIns are initially placed in APK
+#endif
+    
     bool ret = false; // return true if at least one new plugins gets loaded/unloaded
     wxDir::GetAllFiles( m_plugin_location, &file_list, pispec, get_flags );
     
