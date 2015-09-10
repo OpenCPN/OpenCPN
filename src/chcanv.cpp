@@ -9335,7 +9335,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
     if( m_brepaint_piano ) {
         g_Piano->Paint(GetClientSize().y - g_Piano->GetHeight(), mscratch_dc);
-        m_brepaint_piano = false;
+        //m_brepaint_piano = false;
     }
 
     if(g_Compass)
