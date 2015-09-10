@@ -58,6 +58,7 @@ class ChartGroupArray;
 class ChartGroup;
 class MMSI_Props_Panel;
 class MMSIProperties;
+class OCPNCheckedListCtrl;
 
 #define ID_DIALOG 10001
 #define SYMBOL_OPTIONS_STYLE wxCAPTION | wxRESIZE_BORDER | wxSYSTEM_MENU | \
@@ -196,37 +197,39 @@ enum {
 
 WX_DECLARE_OBJARRAY(wxGenericDirCtrl *, ArrayOfDirCtrls);
 
+class Uncopyable {
+  protected:
+    Uncopyable( void ) {}
+    ~Uncopyable( void ) {}
+
+  private:
+    Uncopyable( const Uncopyable& );
+    Uncopyable& operator=( const Uncopyable& );
+};
+
 #ifndef bert // wxCHECK_VERSION(2, 9, 0)
-class options: public wxDialog
+class options: private Uncopyable, public wxDialog
 #else
-class options: public wxScrollingDialog
+class options: private Uncopyable, public wxScrollingDialog
 #endif
 {
   public:
-    explicit options( void );
-    explicit options( MyFrame* parent, wxWindowID id = SYMBOL_OPTIONS_IDNAME,
-                      const wxString& caption = SYMBOL_OPTIONS_TITLE,
-                      const wxPoint& pos = SYMBOL_OPTIONS_POSITION,
-                      const wxSize& size = SYMBOL_OPTIONS_SIZE,
+    explicit options( MyFrame *parent, wxWindowID id = SYMBOL_OPTIONS_IDNAME,
+                      const wxString &caption = SYMBOL_OPTIONS_TITLE,
+                      const wxPoint &pos = SYMBOL_OPTIONS_POSITION,
+                      const wxSize &size = SYMBOL_OPTIONS_SIZE,
                       long style = SYMBOL_OPTIONS_STYLE );
 
     ~options( void );
 
-    bool Create( MyFrame* parent, wxWindowID id = SYMBOL_OPTIONS_IDNAME,
-                 const wxString& caption = SYMBOL_OPTIONS_TITLE,
-                 const wxPoint& pos = SYMBOL_OPTIONS_POSITION,
-                 const wxSize& size = SYMBOL_OPTIONS_SIZE,
-                 long style = SYMBOL_OPTIONS_STYLE );
-
-    void SetInitialPage( int page_sel);
+    void SetInitialPage( int page_sel );
     void Finish( void);
 
-    wxWindow *GetContentWindow( void ) const;
-    void OnClose( wxCloseEvent& event );
+    void OnClose( wxCloseEvent &event );
 
     void CreateControls( void );
-    size_t CreatePanel( const wxString & title );
-    wxScrolledWindow *AddPage( size_t parent, const wxString & title );
+    size_t CreatePanel( const wxString &title );
+    wxScrolledWindow *AddPage( size_t parent, const wxString &title );
     bool DeletePage( wxScrolledWindow *page );
     void SetColorScheme( ColorScheme cs );
     void RecalculateSize( void );
@@ -237,7 +240,7 @@ class options: public wxScrollingDialog
     void SetWorkDirListPtr( ArrayOfCDI *p ) { m_pWorkDirList = p; }
     ArrayOfCDI *GetWorkDirListPtr( void ) { return m_pWorkDirList; }
 
-    void AddChartDir( wxString &dir );
+    void AddChartDir( const wxString &dir );
 
     void UpdateDisplayedChartDirList(ArrayOfCDI p);
     void UpdateOptionsUnits( void );
@@ -388,7 +391,13 @@ class options: public wxScrollingDialog
     // For "S57" page
     wxBoxSizer *vectorPanel;
     wxScrolledWindow *ps57Ctl;
+ 
+#ifdef __WXMSW__    
     wxCheckListBox *ps57CtlListBox;
+#else    
+    OCPNCheckedListCtrl *ps57CtlListBox;
+#endif    
+    
     wxChoice *pDispCat, *pPointStyle, *pBoundStyle, *p24Color;
     wxButton *itemButtonClearList, *itemButtonSelectList;
     wxCheckBox *pCheck_SOUNDG, *pCheck_META, *pCheck_SHOWIMPTEXT;
@@ -479,39 +488,31 @@ class options: public wxScrollingDialog
   private:
     void Init( void );
     void CreatePanel_MMSI( size_t parent, int border_size,
-                           int group_item_spacing, wxSize small_button_size );
+                           int group_item_spacing );
     void CreatePanel_AIS( size_t parent, int border_size,
-                          int group_item_spacing, wxSize small_button_size );
+                          int group_item_spacing );
     void CreatePanel_Ownship( size_t parent, int border_size,
-                              int group_item_spacing,
-                              wxSize small_button_size );
+                              int group_item_spacing );
     void CreatePanel_NMEA( size_t parent, int border_size,
-                           int group_item_spacing, wxSize small_button_size );
+                           int group_item_spacing );
     void CreatePanel_NMEA_Compact( size_t parent, int border_size,
-                                   int group_item_spacing,
-                                   wxSize small_button_size );
+                                   int group_item_spacing );
     void CreatePanel_ChartsLoad( size_t parent, int border_size,
-                                 int group_item_spacing,
-                                 wxSize small_button_size );
+                                 int group_item_spacing );
     void CreatePanel_VectorCharts( size_t parent, int border_size,
-                                   int group_item_spacing,
-                                   wxSize small_button_size );
+                                   int group_item_spacing );
     void CreatePanel_TidesCurrents( size_t parent, int border_size,
-                                    int group_item_spacing,
-                                    wxSize small_button_size );
+                                    int group_item_spacing );
     void CreatePanel_ChartGroups( size_t parent, int border_size,
-                                  int group_item_spacing,
-                                  wxSize small_button_size );
+                                  int group_item_spacing );
     void CreatePanel_Display( size_t parent, int border_size,
-                              int group_item_spacing,
-                              wxSize small_button_size );
-    void CreatePanel_UI( size_t parent, int border_size, int group_item_spacing,
-                         wxSize small_button_size );
+                              int group_item_spacing );
+    void CreatePanel_UI( size_t parent, int border_size,
+                         int group_item_spacing );
     void CreatePanel_Units( size_t parent, int border_size,
-                            int group_item_spacing, wxSize small_button_size );
+                            int group_item_spacing );
     void CreatePanel_Advanced( size_t parent, int border_size,
-                               int group_item_spacing,
-                               wxSize small_button_size );
+                               int group_item_spacing );
 
     int m_returnChanges;
     wxListBox *tcDataSelected;
@@ -540,32 +541,26 @@ class options: public wxScrollingDialog
     void SetDSFormRWStates();
     void FillSourceList();
     ConnectionParams *CreateConnectionParamsFromSelectedItem();
-    
-    wxNotebookPage*             m_groupsPage;
-    wxFont*     smallFont;
-    wxFont*     dialogFont;
-    
-    wxSize      m_small_button_size;
-    
-    wxTimer     m_BTScanTimer;
-    wxArrayString m_BTscan_results;
-    
-    bool        m_bcompact;
 
+    wxNotebookPage *m_groupsPage;
+    wxFont *smallFont, *dialogFont;
+    wxSize m_small_button_size;
+    wxTimer m_BTScanTimer;
+    wxArrayString m_BTscan_results;
+
+    bool m_bcompact;
     int m_fontHeight, m_scrollRate, m_BTscanning, m_btNoChangeCounter;
     int m_btlastResultCount;
 
-    DECLARE_DYNAMIC_CLASS( options )
     DECLARE_EVENT_TABLE()
 };
 
-class ChartGroupsUI: public wxScrolledWindow {
+class ChartGroupsUI: private Uncopyable, public wxScrolledWindow {
   public:
     explicit ChartGroupsUI( wxWindow *parent );
     ~ChartGroupsUI( void );
 
-    void CreatePanel( size_t parent, int border_size, int group_item_spacing,
-                      wxSize small_button_size );
+    void CreatePanel( size_t parent, int border_size, int group_item_spacing );
     void CompletePanel( void );
     void SetDBDirs( ArrayOfCDI &array ) { m_db_dirs = array; }
     void SetGroupArray( ChartGroupArray *pGroupArray ) {
@@ -850,7 +845,7 @@ static int lang_list[] = {
 };
 #endif
 
-class SentenceListDlg : public wxDialog
+class SentenceListDlg : private Uncopyable, public wxDialog
 {
   public:
     explicit SentenceListDlg( wxWindow *parent, FilterDirection dir,
@@ -875,7 +870,7 @@ class SentenceListDlg : public wxDialog
     wxArrayString m_sentences;
 };
 
-class OpenGLOptionsDlg : public wxDialog
+class OpenGLOptionsDlg : private Uncopyable, public wxDialog
 {
   public:
     explicit OpenGLOptionsDlg( wxWindow *parent );
@@ -913,7 +908,7 @@ enum {
     mlVDM
 }; // MMSIListCtrl Columns;
 
-class MMSIListCtrl: public wxListCtrl
+class MMSIListCtrl: private Uncopyable, public wxListCtrl
 {
   public:
      explicit MMSIListCtrl( wxWindow *parent, wxWindowID id, const wxPoint& pos,
@@ -938,10 +933,9 @@ class MMSIListCtrl: public wxListCtrl
 #define ID_DEF_MENU_MMSI_EDIT   8194
 #define ID_DEF_MENU_MMSI_DELETE 8195
 
-class MMSIEditDialog: public wxDialog
+class MMSIEditDialog: private Uncopyable, public wxDialog
 {
   public:
-    explicit MMSIEditDialog( );
     explicit MMSIEditDialog( MMSIProperties *props, wxWindow *parent,
                              wxWindowID id = wxID_ANY,
                              const wxString& caption = wxEmptyString,
@@ -950,12 +944,7 @@ class MMSIEditDialog: public wxDialog
                              long style = 0 );
     ~MMSIEditDialog( void );
 
-    bool Create( MMSIProperties *props, wxWindow *parent,
-                 wxWindowID id = wxID_ANY,
-                 const wxString& caption = wxEmptyString,
-                 const wxPoint& pos = wxDefaultPosition,
-                 const wxSize& size = wxDefaultSize, long style = 0 );
-    void SetColorScheme(ColorScheme cs);
+    void SetColorScheme( ColorScheme cs );
     void CreateControls( void );
     void OnMMSIEditCancelClick( wxCommandEvent& event );
     void OnMMSIEditOKClick( wxCommandEvent& event );
@@ -968,11 +957,10 @@ class MMSIEditDialog: public wxDialog
     wxCheckBox *m_cbTrackPersist, *m_IgnoreButton, *m_MOBButton, *m_VDMButton;
     wxButton *m_CancelButton, *m_OKButton;
 
-    DECLARE_DYNAMIC_CLASS( MMSIEditDialog )
     DECLARE_EVENT_TABLE()
 };
 
-class MMSI_Props_Panel: public wxPanel
+class MMSI_Props_Panel: private Uncopyable, public wxPanel
 {
   public:
     explicit MMSI_Props_Panel( wxWindow *parent );

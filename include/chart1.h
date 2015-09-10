@@ -370,7 +370,6 @@ class MyFrame: public wxFrame
     int  DoOptionsDialog();
     int  ProcessOptionsDialog(int resultFlags, ArrayOfCDI *pNewDirArray );
     void DoPrint(void);
-    void LaunchLocalHelp(void);
     void StopSockets(void);
     void ResumeSockets(void);
     void TogglebFollow(void);

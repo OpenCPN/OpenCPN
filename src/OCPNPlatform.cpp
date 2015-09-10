@@ -229,6 +229,10 @@ bool         g_bEmailCrashReport;
 extern int                       g_ais_alert_dialog_x, g_ais_alert_dialog_y;
 extern int                       g_ais_alert_dialog_sx, g_ais_alert_dialog_sy;
 
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
+extern wxLocale                  *plocale_def_lang;
+#endif
+
 
 
 
@@ -614,7 +618,16 @@ void OCPNPlatform::SetDefaultOptions( void )
         
         pConfig->SetPath ( _T ( "/Settings/WMM" ) );
         pConfig->Write ( _T ( "ShowIcon" ), false );
+   
         
+        pConfig->SetPath ( _T ( "/Settings/QTFonts" ) );
+
+        //Status Bar
+        wxString str = _T("en_US-b25a3899");
+        wxString pval = _T("StatusBar:Roboto,26,-1,5,75,0,0,0,0,0:rgb(0, 0, 0)");
+        
+        pConfig->Write (str, pval );
+        FontMgr::Get().LoadFontNative( &str, &pval );
     }
         
         
@@ -1248,6 +1261,30 @@ void OCPNPlatform::onStagedResizeFinal()
     
 }
 
+bool OCPNPlatform::GetFullscreen()
+{
+    bool bret = false;
+#ifdef __OCPN__ANDROID__
+    bret = androidGetFullscreen();
+#else
+    
+#endif
+
+    return bret;
+}
+
+bool OCPNPlatform::SetFullscreen( bool bFull )
+{
+    bool bret = false;
+#ifdef __OCPN__ANDROID__
+    bret = androidSetFullscreen( bFull );
+#else
+#endif
+    
+    return bret;
+}
+
+
 void OCPNPlatform::PositionAISAlert(wxWindow *alert_window)
 {
 #ifndef __OCPN__ANDROID__    
@@ -1679,4 +1716,35 @@ QString getQtStyleSheet( void )
 }
 
 #endif
+
+void OCPNPlatform::LaunchLocalHelp( void ) {
+ 
+#ifdef __OCPN__ANDROID__
+    androidLaunchHelpView();
+#else
+    wxString def_lang_canonical = _T("en_US");
+    
+    #if wxUSE_XLOCALE
+    if(plocale_def_lang)
+        def_lang_canonical = plocale_def_lang->GetCanonicalName();
+    #endif
+        
+        wxString help_locn = g_Platform->GetSharedDataDir() + _T("doc/help_");
+        
+        wxString help_try = help_locn + def_lang_canonical + _T(".html");
+        
+        if( ! ::wxFileExists( help_try ) ) {
+            help_try = help_locn + _T("en_US") + _T(".html");
+            
+            if( ! ::wxFileExists( help_try ) ) {
+                help_try = help_locn + _T("web") + _T(".html");
+            }
+            
+            if( ! ::wxFileExists( help_try ) ) return;
+        }
+        
+        wxLaunchDefaultBrowser(wxString( _T("file:///") ) + help_try );
+#endif        
+}
+
 

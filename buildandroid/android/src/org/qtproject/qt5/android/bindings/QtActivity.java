@@ -154,6 +154,7 @@ import app.akexorcist.bluetotohspp.library.BluetoothSPP.OnDataReceivedListener;
 
 import org.opencpn.SpinnerNavItem;
 import org.opencpn.TitleNavigationAdapter;
+import org.opencpn.WebViewActivity;
 
 import ar.com.daidalos.afiledialog.*;
 
@@ -378,9 +379,16 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
     private String m_settingsReturn;
 
+    public String launchHelpView(){
+        Intent intent = new Intent(this, WebViewActivity.class);
+        startActivity(intent);
+        return "OK";
+    }
+
     private void toggleFullscreen(){
         m_fullScreen = !m_fullScreen;
         setFullscreen(m_fullScreen);
+        nativeLib.notifyFullscreenChange(m_fullScreen);
     }
 
     public void setFullscreen( final boolean bfull){
@@ -395,6 +403,22 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
                 }});
         }
+    }
+
+    public String setFullscreen( final int bfull){
+ //       String aa = String.format("%d", bfull);
+//        Log.i("DEBUGGER_TAG", "setFullscreen " + aa);
+        setFullscreen(bfull != 0);
+        m_fullScreen = (bfull != 0);
+        return "OK";
+    }
+
+
+    public String getFullscreen( ){
+        if(m_fullScreen)
+            return "YES";
+        else
+            return "NO";
     }
 
 

@@ -93,6 +93,8 @@ class about: public wxDialog
     wxNotebook *pNotebook;
     wxHtmlWindow *pAboutHTMLCtl;
     wxHtmlWindow *pLicenseHTMLCtl;
+    wxHtmlWindow *pAuthorHTMLCtl;
+    
     wxSize m_displaySize;
 
 };
