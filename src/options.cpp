@@ -2706,15 +2706,14 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size,
         wxStaticBoxSizer* marinersSizer = new wxStaticBoxSizer( marinersBox, wxVERTICAL );
         dispSizer->Add( marinersSizer, 1, wxALL | wxEXPAND, border_size );
 
-#ifndef __WXMSW__
-        ps57CtlListBox = new OCPNCheckedListCtrl( ps57Ctl, ID_CHECKLISTBOX, wxDefaultPosition, wxSize( 250, 350 ));
-#else
+#if defined(__WXMSW__) || defined(__WXOSX__)
         wxString* ps57CtlListBoxStrings = NULL;
-
+        
         ps57CtlListBox = new wxCheckListBox( ps57Ctl, ID_CHECKLISTBOX, wxDefaultPosition,
-                                         wxSize( 250, 350 ), 0, ps57CtlListBoxStrings, wxLB_SINGLE | wxLB_HSCROLL | wxLB_SORT );
+                                             wxSize( 250, 350 ), 0, ps57CtlListBoxStrings, wxLB_SINGLE | wxLB_HSCROLL | wxLB_SORT );
+#else
+        ps57CtlListBox = new OCPNCheckedListCtrl( ps57Ctl, ID_CHECKLISTBOX, wxDefaultPosition, wxSize( 250, 350 ));
 #endif
-
         marinersSizer->Add( ps57CtlListBox, 1, wxALL | wxEXPAND, group_item_spacing );
 
         wxBoxSizer* btnRow = new wxBoxSizer( wxHORIZONTAL );
@@ -2891,7 +2890,7 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size,
         btnRow->Add( itemButtonClearList, 1, wxALL | wxEXPAND, group_item_spacing );
         marinersSizer->Add( btnRow );
 
-#ifdef __WXMSW__
+#if defined(__WXMSW__) || defined(__WXOSX__) 
         wxString* ps57CtlListBoxStrings = NULL;
         ps57CtlListBox = new wxCheckListBox( ps57Ctl, ID_CHECKLISTBOX, wxDefaultPosition,
                                              wxSize( 250, 350 ), 0, ps57CtlListBoxStrings, wxLB_SINGLE | wxLB_HSCROLL | wxLB_SORT );
