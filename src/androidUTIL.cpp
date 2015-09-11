@@ -2148,12 +2148,14 @@ wxString BuildAndroidSettingsString( void )
             result += _T("prefs_vectorchartcolors:") + nset;
             
             // depth unit conversion factor
+          
             float conv = 1;
-    //         if ( depthUnit == 0 ) // feet
-    //             conv = 0.3048f; // international definiton of 1 foot is 0.3048 metres
-    //         else if ( depthUnit == 2 ) // fathoms
-    //             conv = 0.3048f * 6; // 1 fathom is 6 feet
-            
+            int depthUnit = ps52plib->m_nDepthUnitDisplay;
+            if ( depthUnit == 0 ) // feet
+                conv = 0.3048f; // international definiton of 1 foot is 0.3048 metres
+                else if ( depthUnit == 2 ) // fathoms
+                conv = 0.3048f * 6; // 1 fathom is 6 feet
+                
             s.Printf( _T("%4.0f;"), S52_getMarinerParam( S52_MAR_SHALLOW_CONTOUR ) / conv );
             s.Trim(false);
             result += _T("prefs_shallowdepth:") + s;
