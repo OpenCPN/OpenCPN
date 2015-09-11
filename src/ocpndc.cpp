@@ -358,8 +358,10 @@ void ocpnDC::DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2, bool b_hi
         if( b_hiqual ) {
             SetGLStipple();
 
+#ifndef __WXQT__
             glEnable( GL_BLEND );
             glEnable( GL_LINE_SMOOTH );
+#endif            
 
             if( pen_width > 1.0 ) {
                 GLint parms[2];
