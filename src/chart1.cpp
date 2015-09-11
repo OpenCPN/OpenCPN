@@ -1068,6 +1068,10 @@ void LoadS57()
         }
 
         pConfig->LoadS57Config();
+        
+        if(cc1)
+            ps52plib->SetPPMM( cc1->GetPixPerMM() );
+            
     } else {
         wxLogMessage( _T("   S52PLIB Initialization failed, disabling Vector charts.") );
         delete ps52plib;
