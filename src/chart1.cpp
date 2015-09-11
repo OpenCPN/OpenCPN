@@ -9193,7 +9193,8 @@ void MyFrame::applySettingsString( wxString settings)
     //  Save some present values
     int last_UIScaleFactor = g_GUIScaleFactor;
     bool previous_expert = g_bUIexpert;
-
+    int last_ChartScaleFactorExp = g_ChartScaleFactor;
+    
     //  Parse the passed settings string
     bool bproc_InternalGPS = false;
     bool benable_InternalGPS = false;
@@ -9498,6 +9499,10 @@ void MyFrame::applySettingsString( wxString settings)
     // And apply the changes
     pConfig->UpdateSettings();
 
+    //  Might need to rebuild symbols
+    if(last_ChartScaleFactorExp != g_ChartScaleFactor)
+        rr |= S52_CHANGED;
+    
     if(rr & S52_CHANGED){
         if(ps52plib){
             ps52plib->FlushSymbolCaches();
