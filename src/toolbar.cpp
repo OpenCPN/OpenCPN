@@ -2584,7 +2584,7 @@ END_EVENT_TABLE()
      
      if(GetParent()){
         wxSize dsize = GetParent()->GetClientSize();
-        esize.y = wxMin(esize.y, dsize.y - (12 * GetCharHeight()));
+        esize.y = wxMin(esize.y, dsize.y - (4 * GetCharHeight()));
         esize.x = wxMin(esize.x, dsize.x - (2 * GetCharHeight()));
         SetSize(esize);
         Centre();
@@ -2592,10 +2592,13 @@ END_EVENT_TABLE()
      }
      else{
         wxSize fsize =  g_Platform->getDisplaySize();
-        fsize.y = wxMin(esize.y, fsize.y - (12 * GetCharHeight()));
+        fsize.y = wxMin(esize.y, fsize.y - (4 * GetCharHeight()));
         fsize.x = wxMin(esize.x, fsize.x - (2 * GetCharHeight()));
         SetSize(fsize);
         CentreOnScreen();
+#ifdef __OCPN__ANDROID__
+        Move(GetPosition().x, 10);
+#endif        
      }
  }
  
