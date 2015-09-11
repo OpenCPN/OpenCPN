@@ -409,7 +409,12 @@ void ocpnFloatingToolbarDialog::SetColorScheme( ColorScheme cs )
         m_ptoolbar->Refresh( true );
     }
 
-    if( m_pGrabberwin ) m_pGrabberwin->SetColorScheme( cs );
+    if( m_pGrabberwin ){
+        m_pGrabberwin->SetColorScheme( cs );
+        m_pGrabberwin->Refresh();
+    }
+    
+    Refresh(true);
 
 }
 

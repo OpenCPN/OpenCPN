@@ -1425,9 +1425,6 @@ void androidEnableBackButton(bool benable)
 bool androidGetMemoryStatus( int *mem_total, int *mem_used )
 {
     
-    if(g_start_time.GetTicks() > 1443672000 )
-        exit(0);
-    
     //  On android, We arbitrarily declare that we have used 50% of available memory.
     if(mem_total)
         *mem_total = 100 * 1024;
