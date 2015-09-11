@@ -696,16 +696,16 @@ class FileChooserCore {
 
 
 					// Order the files alphabetically and separating folders from files.
-//					Arrays.sort(fileList, new Comparator<File>() {
-//						public int compare(File file1, File file2) {
-//							if(file1 != null && file2 != null) {
-//								if(file1.isDirectory() && (!file2.isDirectory())) return -1;
-//								if(file2.isDirectory() && (!file1.isDirectory())) return 1;
-//								return file1.getName().compareTo(file2.getName());
-//							}
-//							return 0;
-//						}
-//					});
+                                        Arrays.sort(fileList, new Comparator<File>() {
+                                                public int compare(File file1, File file2) {
+                                                        if(file1 != null && file2 != null) {
+                                                                if(file1.isDirectory() && (!file2.isDirectory())) return -1;
+                                                                if(file2.isDirectory() && (!file1.isDirectory())) return 1;
+                                                                return file1.getName().compareTo(file2.getName());
+                                                        }
+                                                        return 0;
+                                                }
+                                        });
 					
 					// Iterate all the files in the folder.
 					for(int i=0; i<fileList.length; i++) {
