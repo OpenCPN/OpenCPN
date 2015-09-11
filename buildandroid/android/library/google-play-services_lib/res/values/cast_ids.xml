@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2015 Google Inc. All Rights Reserved. -->
+
+<resources>
+    <item type="id" name="cast_notification_id" />
+</resources>
