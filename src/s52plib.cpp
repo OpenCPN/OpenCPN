@@ -3903,7 +3903,6 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
     char *str = (char*) rules->INSTstr;
-
     //    extract the parameters from the string
     //    And creating a unique string hash as we go
     wxString inst( str, wxConvUTF8 );
@@ -4022,6 +4021,9 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         //      This will properly establish the drawing box in the dc
 
         int border_fluff = 4; // by how much should the blit bitmap be "fluffed"
+        
+        //  wxDC min/max calculations are currently broken in wxQT, so we use the entire circle instead of arcs...
+#ifndef __WXQT__        
         if( fabs( sectr2 - sectr1 ) != 360 ) // not necessary for all-round lights
                 {
             mdc.ResetBoundingBox();
@@ -4050,8 +4052,8 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
             bm_width = ( mdc.MaxX() - mdc.MinX() ) + ( border_fluff * 2 );
             bm_height = ( mdc.MaxY() - mdc.MinY() ) + ( border_fluff * 2 );
-            bm_orgx = wxMax ( 0, mdc.MinX()-border_fluff );
-            bm_orgy = wxMax ( 0, mdc.MinY()-border_fluff );
+            bm_orgx = mdc.MinX()-border_fluff - width/2; //wxMax ( 0, mdc.MinX()-border_fluff );
+            bm_orgy = mdc.MinY()-border_fluff - height/2; //wxMax ( 0, mdc.MinY()-border_fluff );
 
             mdc.Clear();
         }
@@ -4059,10 +4061,17 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         else {
             bm_width = rad * 2 + ( border_fluff * 2 );
             bm_height = rad * 2 + ( border_fluff * 2 );
-            bm_orgx = wxMax ( 0, ( width / 2 - rad ) - border_fluff );
-            bm_orgy = wxMax ( 0, ( width / 2 - rad ) - border_fluff );
+            bm_orgx = -bm_width / 2;
+            bm_orgy = -bm_height / 2;
 
         }
+
+#else
+        bm_width = rad * 2 + ( border_fluff * 2 );
+        bm_height = rad * 2 + ( border_fluff * 2 );
+        bm_orgx = -bm_width / 2;
+        bm_orgy = -bm_height / 2; 
+#endif        
 
         wxBitmap *sbm = NULL;
 
@@ -4095,7 +4104,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
             //          Get smallest containing bitmap
             sbm = new wxBitmap(
-                    bm.GetSubBitmap( wxRect( bm_orgx, bm_orgy, bm_width, bm_height ) ) );
+                bm.GetSubBitmap( wxRect( width/2 + bm_orgx, height/2 + bm_orgy, bm_width, bm_height ) ) );
 
 //                  delete pbm;
 
@@ -4107,14 +4116,16 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
             // delete any old private data
             ClearRulesCache( rules->razRule );
+            
+             
         }
 
         //      Save the bitmap ptr and aux parms in the rule
         prule->pixelPtr = sbm;
         prule->parm0 = ID_wxBitmap;
         prule->parm1 = m_colortable_index;
-        prule->parm2 = bm_orgx - width / 2;
-        prule->parm3 = bm_orgy - height / 2;
+        prule->parm2 = bm_orgx;
+        prule->parm3 = bm_orgy;
         prule->parm5 = bm_width;
         prule->parm6 = bm_height;
     } // instantiation
@@ -4132,7 +4143,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         //    Is there not already an generated vbo the CARC_hashmap for this object?
         if( m_CARC_hashmap.find( carc_hash ) == m_CARC_hashmap.end() ) {
             int rad = (int) ( radius * canvas_pix_per_mm );
-    
+            
             if( sectr1 > sectr2 ) sectr2 += 360;
     
             /* to ensure that the final segment lands exactly on sectr2 */
@@ -4217,7 +4228,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         glPushMatrix();
         glTranslatef( r.x, r.y, 0 );
          
-        glScalef(scale_factor, scale_factor, 1);
+//        glScalef(scale_factor, scale_factor, 1);
         glVertexPointer(2, GL_FLOAT, 2 * sizeof(float), buffer.data);
 
 #ifndef __OCPN__ANDROID__
@@ -4251,6 +4262,25 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         glDisableClientState(GL_VERTEX_ARRAY);
         glDisable( GL_LINE_SMOOTH );
         glDisable( GL_BLEND );
+    
+        // Debug the symbol bounding box.....
+/*        
+        {
+            int x0 = rules->razRule->parm2;
+            int y0 = rules->razRule->parm3;
+
+            glLineWidth( 2 );
+            glColor4f( 0,0,0,0 );
+            
+            glBegin( GL_LINE_STRIP );
+            glVertex2i( x0, y0 );
+            glVertex2i( x0 + b_width, y0 );
+            glVertex2i( x0 + b_width, y0 + b_height );
+            glVertex2i( x0, y0 + b_height);
+            glVertex2i( x0, y0 );
+            glEnd();
+        }
+        */
         
 //        glTranslatef( -r.x, -r.y, 0 );
         glPopMatrix();
@@ -4293,6 +4323,15 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             y = r.y + (int) ( leg_len * sinf( a ) );
             DrawAALine( m_pdc, r.x, r.y, x, y, c, dash1[0], dash1[1] );
         }
+        
+        // Debug the symbol bounding box.....
+/*        
+        if(m_pdc){
+            m_pdc->SetPen(wxPen(*wxGREEN, 1));
+            m_pdc->SetBrush(wxBrush(*wxGREEN, wxTRANSPARENT));
+            m_pdc->DrawRectangle( r.x + rules->razRule->parm2, r.y + rules->razRule->parm3, b_width, b_height);
+        }
+        */
     }
 
     //  Update the object Bounding box,

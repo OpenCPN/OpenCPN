@@ -37,4 +37,7 @@ public class OCPNNativeLib {
   public native String getVPS();
 
   public native int setDownloadStatus( int status, String url);
+  public native int onMouseWheel(int dir);
+  public native int notifyFullscreenChange( boolean bFull );
+
 }

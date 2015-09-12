@@ -101,6 +101,9 @@ public:
 
     void PositionAISAlert( wxWindow *alert_window);
     float getChartScaleFactorExp( float scale_linear );
+    int GetStatusBarFieldCount();
+    bool GetFullscreen();
+    bool SetFullscreen( bool bFull );
     
 //--------------------------------------------------------------------------
 //      Per-Platform file/directory support
@@ -119,6 +122,7 @@ public:
     wxString *GetPrivateDataDirPtr();
     wxString &GetLogFileName(){ return mlog_file; }
     MyConfig *GetConfigObject();
+    wxString GetSupplementalLicenseString();
     
     int DoFileSelectorDialog( wxWindow *parent, wxString *file_spec, wxString Title, wxString initDir,
                                 wxString suggestedName, wxString wildcard);
@@ -136,6 +140,8 @@ public:
 //--------------------------------------------------------------------------
     void setChartTypeMaskSel(int mask, wxString &indicator);
 
+    void LaunchLocalHelp();
+    
 private:
     wxString    m_homeDir;
     wxString    m_exePath;

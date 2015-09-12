@@ -58,12 +58,21 @@ ocpnCompass::ocpnCompass()
             _img_compass.GetWidth() + _img_gpsRed.GetWidth() + style->GetCompassLeftMargin() * 2
                     + style->GetToolSeparation(),
                     _img_compass.GetHeight() + style->GetCompassTopMargin() + style->GetCompassBottomMargin() );
+#ifdef ocpnUSE_GL
     texobj = 0;
+#endif
     
 }
 
 ocpnCompass::~ocpnCompass()
 {
+#ifdef ocpnUSE_GL
+    if(texobj){
+        glDeleteTextures(1, &texobj);
+        texobj = 0;
+    }
+#endif
+    
     delete m_pStatBoxToolStaticBmp;
 }
 
@@ -71,7 +80,7 @@ void ocpnCompass::Paint( ocpnDC& dc )
 {
     if(m_shown && m_StatBmp.IsOk()){
 # ifdef ocpnUSE_GLES  // GLES does not do ocpnDC::DrawBitmap(), so use texture
-        if(g_bopengl){
+        if(g_bopengl && texobj){
             glBindTexture( GL_TEXTURE_2D, texobj );
             glEnable( GL_TEXTURE_2D );
             
@@ -109,7 +118,20 @@ void ocpnCompass::SetColorScheme( ColorScheme cs )
 
 void ocpnCompass::UpdateStatus( bool bnew )
 {
-    if( bnew ) m_lastgpsIconName.Clear();        // force an update to occur
+    if( bnew ){
+        m_lastgpsIconName.Clear();        // force an update to occur
+        
+        //  We clear the texture so that any onPaint method will not use a stale texture
+# ifdef ocpnUSE_GLES  
+        if(g_bopengl){
+             if(texobj){
+                glDeleteTextures(1, &texobj);
+                texobj = 0;
+             }
+        }
+#endif
+    }
+                
 
     CreateBmp( bnew );
 }

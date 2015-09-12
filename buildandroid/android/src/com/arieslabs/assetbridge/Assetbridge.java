@@ -34,7 +34,7 @@ public class Assetbridge {
                 tmpdir = c.getFilesDir().getPath();
 
  //            String tmpdir = c.getCacheDir().getPath();
-            Log.i("DEBUGGER_TAG", "assetbridge target " + tmpdir);
+ //           Log.i("DEBUGGER_TAG", "assetbridge target " + tmpdir);
 
 
             // now we need the assetmanager
@@ -43,7 +43,7 @@ public class Assetbridge {
 
             // iterate on the files...
             for(String asset : assets) {
-                Log.i("DEBUGGER_TAG", "assetbridge asset: " + asset);
+ //               Log.i("DEBUGGER_TAG", "assetbridge asset: " + asset);
                 copyAssetFolder(am, asset, tmpdir + "/" + asset);
             }
 
@@ -61,7 +61,7 @@ public class Assetbridge {
     public static void copyAssetFolder(AssetManager am, String src, String dest)
     	throws IOException{
 
-        Log.i("DEBUGGER_TAG", "assetbridge copyAssetFolder " + src + " " + dest);
+ //       Log.i("DEBUGGER_TAG", "assetbridge copyAssetFolder " + src + " " + dest);
 
         InputStream srcIS = null;
         File destfh;
@@ -82,7 +82,7 @@ public class Assetbridge {
         // and now, depending on ..
     	if(isDir) {
 
-            Log.i("DEBUGGER_TAG", "assetbridge copying dir " + dest);
+ //           Log.i("DEBUGGER_TAG", "assetbridge copying dir " + dest);
 
             // If the directory doesn't yet exist, create it
             if( !destfh.exists() ){
@@ -99,7 +99,7 @@ public class Assetbridge {
 
     	} else {
 
-            Log.i("DEBUGGER_TAG", "assetbridge copying file " + dest);
+//            Log.i("DEBUGGER_TAG", "assetbridge copying file " + dest);
             int count, buffer_len = 2048;
             byte[] data = new byte[buffer_len];
 

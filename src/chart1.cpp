@@ -624,6 +624,7 @@ int                       g_AisTargetList_count;
 bool                      g_bAisTargetList_autosort;
 
 bool                      g_bGarminHostUpload;
+bool                      g_bFullscreen;
 
 wxAuiManager              *g_pauimgr;
 wxAuiDefaultDockArt       *g_pauidockart;
@@ -1067,6 +1068,10 @@ void LoadS57()
         }
 
         pConfig->LoadS57Config();
+        
+        if(cc1)
+            ps52plib->SetPPMM( cc1->GetPixPerMM() );
+            
     } else {
         wxLogMessage( _T("   S52PLIB Initialization failed, disabling Vector charts.") );
         delete ps52plib;
@@ -2281,7 +2286,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     m_ulLastNEMATicktime = 0;
 
     m_pStatusBar = NULL;
-    m_StatusBarFieldCount = STAT_FIELD_COUNT;
+    m_StatusBarFieldCount = g_Platform->GetStatusBarFieldCount();
 
     m_pMenuBar = NULL;
     g_toolbar = NULL;
@@ -3433,6 +3438,9 @@ void MyFrame::ODoSetSize( void )
 //      Resize the children
 
         if( m_pStatusBar != NULL ) {
+            m_StatusBarFieldCount = g_Platform->GetStatusBarFieldCount();
+            m_pStatusBar->SetFieldsCount(m_StatusBarFieldCount);
+            
             if(m_StatusBarFieldCount){
 
                 //  If the status bar layout is "complex", meaning more than two columns,
@@ -3459,6 +3467,9 @@ void MyFrame::ODoSetSize( void )
                 int styles[] = { wxSB_FLAT, wxSB_FLAT, wxSB_FLAT, wxSB_FLAT, wxSB_FLAT, wxSB_FLAT };
                 m_pStatusBar->SetStatusStyles( m_StatusBarFieldCount, styles );
 
+                wxString sogcog( _T("SOG --- ") + getUsrSpeedUnit() + + _T("     ") + _T(" COG ---\u00B0") );
+                m_pStatusBar->SetStatusText( sogcog, STAT_FIELD_SOGCOG );
+                                    
             }
         }
 
@@ -3505,7 +3516,7 @@ void MyFrame::ODoSetSize( void )
 #ifdef __OCPN__ANDROID__
         min_height = ( pstat_font->GetPointSize() * getAndroidDisplayDensity() ) + 10;
         m_pStatusBar->SetMinHeight( min_height );
-        qDebug() <<"StatusBar min height:" << min_height << "StatusBar font points:" << pstat_font->GetPointSize();
+//        qDebug() <<"StatusBar min height:" << min_height << "StatusBar font points:" << pstat_font->GetPointSize();
 #endif
 //        wxString msg;
 //        msg.Printf(_T("StatusBar min height: %d    StatusBar font points: %d"), min_height, pstat_font->GetPointSize());
@@ -3588,7 +3599,11 @@ void MyFrame::PositionConsole( void )
 
     console->GetSize( &consx, &consy );
 
-    wxPoint screen_pos = ClientToScreen( wxPoint( ccx + ccsx - consx - 2, ccy + 45 ) );
+    int yOffset = 45;
+    if(g_Compass)
+        yOffset = g_Compass->GetRect().y + g_Compass->GetRect().height + 45;
+    
+    wxPoint screen_pos = ClientToScreen( wxPoint( ccx + ccsx - consx - 2, ccy + yOffset ) );
     console->Move( screen_pos );
 }
 
@@ -3950,7 +3965,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         }
 
         case wxID_HELP: {
-            LaunchLocalHelp();
+            g_Platform->LaunchLocalHelp();
             break;
         }
 
@@ -4057,6 +4072,13 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         case ID_CMD_SETVP:{
             setStringVP(event.GetString());
+            break;
+        }
+
+        case ID_CMD_INVALIDATE:{
+            if(cc1)
+                cc1->InvalidateGL();
+            Refresh(true);
             break;
         }
         
@@ -4666,7 +4688,7 @@ void MyFrame::SetToolbarItemBitmaps( int tool_id, wxBitmap *bmp, wxBitmap *bmpRo
 void MyFrame::ApplyGlobalSettings( bool bFlyingUpdate, bool bnewtoolbar )
 {
     //             ShowDebugWindow as a wxStatusBar
-    m_StatusBarFieldCount = STAT_FIELD_COUNT;
+    m_StatusBarFieldCount = g_Platform->GetStatusBarFieldCount();
 
 #ifdef __WXMSW__
     UseNativeStatusBar( false );              // better for MSW, undocumented in frame.cpp
@@ -5246,32 +5268,6 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
     return 0;
 }
 
-void MyFrame::LaunchLocalHelp( void ) {
-
-    wxString def_lang_canonical = _T("en_US");
-
-#if wxUSE_XLOCALE
-    if(plocale_def_lang)
-        def_lang_canonical = plocale_def_lang->GetCanonicalName();
-#endif
-
-    wxString help_locn = g_Platform->GetSharedDataDir() + _T("doc/help_");
-
-    wxString help_try = help_locn + def_lang_canonical + _T(".html");
-
-    if( ! ::wxFileExists( help_try ) ) {
-        help_try = help_locn + _T("en_US") + _T(".html");
-
-        if( ! ::wxFileExists( help_try ) ) {
-            help_try = help_locn + _T("web") + _T(".html");
-        }
-
-        if( ! ::wxFileExists( help_try ) ) return;
-    }
-
-    wxLaunchDefaultBrowser(wxString( _T("file:///") ) + help_try );
-}
-
 
 wxString MyFrame::GetGroupName( int igroup )
 {
@@ -5763,6 +5759,9 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
     switch(m_iInitCount++) {
     case 0:
     {
+        // Set persistent Fullscreen mode
+        g_Platform->SetFullscreen(g_bFullscreen);
+        
         // Load the waypoints.. both of these routines are very slow to execute which is why
         // they have been to defered until here
         pWayPointMan = new WayPointman();
@@ -6270,7 +6269,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 
 //      Update the Toolbar Status windows and lower status bar the first time watchdog times out
     if( ( gGPS_Watchdog == 0 ) || ( gSAT_Watchdog == 0 ) ) {
-        wxString sogcog( _T("SOG --- ") + getUsrSpeedUnit() + _T(" COG ---\u00B0") );
+        wxString sogcog( _T("SOG --- ") + getUsrSpeedUnit() + + _T("     ") + _T(" COG ---\u00B0") );
         if( GetStatusBar() ) SetStatusText( sogcog, STAT_FIELD_SOGCOG );
 
         gCog = 0.0;                                 // say speed is zero to kill ownship predictor
@@ -7278,14 +7277,14 @@ void MyFrame::selectChartDisplay( int type, int family)
         }
 
         if(sel_dbIndex >= 0){
-            SelectQuiltRefdbChart( sel_dbIndex );
+            SelectQuiltRefdbChart( sel_dbIndex, false );  // no autoscale
+            //  Re-qualify the quilt reference chart selection
+            cc1->AdjustQuiltRefChart(  );
         }
 
-        //  Now adjust the scale to the target...
+        //  Now reset the scale to the target...
         cc1->SetVPScale(target_scale);
 
-        //  Re-qualify the quilt reference chart selection
-        cc1->AdjustQuiltRefChart(  );
 
 
 
@@ -8812,7 +8811,7 @@ void MyFrame::PostProcessNNEA( bool pos_valid, const wxString &sfixtime )
             SetStatusText( s1, STAT_FIELD_TICK );
 
         wxString sogcog;
-        if( wxIsNaN(gSog) ) sogcog.Printf( _T("SOG --- ") + getUsrSpeedUnit() + _T("  ") );
+        if( wxIsNaN(gSog) ) sogcog.Printf( _T("SOG --- ") + getUsrSpeedUnit() + _T("     ") );
         else
             sogcog.Printf( _T("SOG %2.2f ") + getUsrSpeedUnit() + _T("  "), toUsrSpeed( gSog ) );
 
@@ -9228,6 +9227,13 @@ void MyFrame::applySettingsString( wxString settings)
         }
     }
 
+    float conv = 1;
+    int depthUnit = ps52plib->m_nDepthUnitDisplay;
+    if ( depthUnit == 0 ) // feet
+        conv = 0.3048f; // international definiton of 1 foot is 0.3048 metres
+    else if ( depthUnit == 2 ) // fathoms
+        conv = 0.3048f * 6; // 1 fathom is 6 feet
+
     wxStringTokenizer tk(settings, _T(";"));
     while ( tk.HasMoreTokens() )
     {
@@ -9332,6 +9338,8 @@ void MyFrame::applySettingsString( wxString settings)
             _DisCat nset = DISPLAYBASE;
             if(wxNOT_FOUND != val.Lower().Find(_T("base")))
                 nset = DISPLAYBASE;
+            else if(wxNOT_FOUND != val.Lower().Find(_T("mariner")))
+                nset = MARINERS_STANDARD;
             else if(wxNOT_FOUND != val.Lower().Find(_T("standard")))
                 nset = STANDARD;
             else if(wxNOT_FOUND != val.Lower().Find(_T("all")))
@@ -9345,13 +9353,6 @@ void MyFrame::applySettingsString( wxString settings)
 
         else if(token.StartsWith( _T("prefs_shallowdepth"))){
             double old_dval = S52_getMarinerParam( S52_MAR_SHALLOW_CONTOUR );
-
-            float conv = 1;
-            //             if ( depthUnit == 0 ) // feet
-            //                 conv = 0.3048f; // international definiton of 1 foot is 0.3048 metres
-            //             else if ( depthUnit == 2 ) // fathoms
-            //                 conv = 0.3048f * 6; // 1 fathom is 6 feet
-
             double dval;
             if(val.ToDouble(&dval)){
                 if(fabs(dval - old_dval) > .1){
@@ -9362,12 +9363,11 @@ void MyFrame::applySettingsString( wxString settings)
         }
 
         else if(token.StartsWith( _T("prefs_safetydepth"))){
-            double old_dval = S52_getMarinerParam( S52_MAR_SAFETY_DEPTH );
-            float conv = 1;
+            double old_dval = S52_getMarinerParam( S52_MAR_SAFETY_CONTOUR );
             double dval;
             if(val.ToDouble(&dval)){
                 if(fabs(dval - old_dval) > .1){
-                    S52_setMarinerParam( S52_MAR_SAFETY_DEPTH, dval * conv );
+                    S52_setMarinerParam( S52_MAR_SAFETY_CONTOUR, dval * conv );
                     rr |= S52_CHANGED;
                 }
             }
@@ -9375,7 +9375,6 @@ void MyFrame::applySettingsString( wxString settings)
 
         else if(token.StartsWith( _T("prefs_deepdepth"))){
             double old_dval = S52_getMarinerParam( S52_MAR_DEEP_CONTOUR );
-            float conv = 1;
             double dval;
             if(val.ToDouble(&dval)){
                 if(fabs(dval - old_dval) > .1){

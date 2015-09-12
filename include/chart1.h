@@ -111,15 +111,15 @@ enum
     ID_ENC_TEXT,
     ID_CURRENT,
     ID_TIDE,
-    ID_ABOUT,
-    ID_TBEXIT,
-    ID_TBSTAT,
     ID_PRINT,
-    ID_COLSCHEME,
     ID_ROUTEMANAGER,
     ID_TRACK,
-    ID_TBSTATBOX,
+    ID_COLSCHEME,
+    ID_ABOUT,
     ID_MOB,
+    ID_TBEXIT,
+    ID_TBSTAT,
+    ID_TBSTATBOX,
 
     ID_PLUGIN_BASE // This MUST be the last item in the enum
 };
@@ -194,6 +194,7 @@ enum
     
     ID_CMD_SELECT_CHART_TYPE,
     ID_CMD_SELECT_CHART_FAMILY,
+    ID_CMD_INVALIDATE,
     
 };
 
@@ -369,7 +370,6 @@ class MyFrame: public wxFrame
     int  DoOptionsDialog();
     int  ProcessOptionsDialog(int resultFlags, ArrayOfCDI *pNewDirArray );
     void DoPrint(void);
-    void LaunchLocalHelp(void);
     void StopSockets(void);
     void ResumeSockets(void);
     void TogglebFollow(void);

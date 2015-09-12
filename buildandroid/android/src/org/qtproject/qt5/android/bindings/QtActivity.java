@@ -43,6 +43,8 @@ import java.lang.Math;
 import java.util.concurrent.Semaphore;
 import java.util.StringTokenizer;
 
+import com.google.android.gms.common.GoogleApiAvailability;
+
 import org.kde.necessitas.ministro.IMinistro;
 import org.kde.necessitas.ministro.IMinistroCallback;
 
@@ -107,10 +109,12 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.Display;
 import android.view.MenuInflater;
+import android.view.InputDevice;
 
 import dalvik.system.DexClassLoader;
 import android.app.AlertDialog;
@@ -124,11 +128,11 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import org.opencpn.opencpn.R;
 
-//@ANDROID-11
+//ANDROID-11
 import android.app.Fragment;
 import android.view.ActionMode;
 import android.view.ActionMode.Callback;
-//@ANDROID-11
+//ANDROID-11
 
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.MulticastLock;
@@ -139,6 +143,9 @@ import android.bluetooth.BluetoothAdapter;
 import org.opencpn.GPSServer;
 import org.opencpn.OCPNNativeLib;
 
+import org.qtproject.qt5.android.QtNative;
+import org.qtproject.qt5.android.QtActivityDelegate;
+
 import android.bluetooth.BluetoothDevice;
 import org.opencpn.BTScanHelper;
 import app.akexorcist.bluetotohspp.library.BluetoothSPP;
@@ -147,6 +154,7 @@ import app.akexorcist.bluetotohspp.library.BluetoothSPP.OnDataReceivedListener;
 
 import org.opencpn.SpinnerNavItem;
 import org.opencpn.TitleNavigationAdapter;
+import org.opencpn.WebViewActivity;
 
 import ar.com.daidalos.afiledialog.*;
 
@@ -326,6 +334,8 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     private double m_gminitialLon;
     private double m_gminitialZoom;
 
+    private boolean m_fullScreen;
+
     public QtActivity()
     {
         if (Build.VERSION.SDK_INT <= 10) {
@@ -368,6 +378,50 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     }
 
     private String m_settingsReturn;
+
+    public String launchHelpView(){
+        Intent intent = new Intent(this, WebViewActivity.class);
+        startActivity(intent);
+        return "OK";
+    }
+
+    private void toggleFullscreen(){
+        m_fullScreen = !m_fullScreen;
+        setFullscreen(m_fullScreen);
+        nativeLib.notifyFullscreenChange(m_fullScreen);
+    }
+
+    public void setFullscreen( final boolean bfull){
+
+        final QtActivityDelegate delegate = QtNative.activityDelegate();
+
+        if(null != delegate){
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    delegate.setFullScreen( bfull );
+
+                }});
+        }
+    }
+
+    public String setFullscreen( final int bfull){
+ //       String aa = String.format("%d", bfull);
+//        Log.i("DEBUGGER_TAG", "setFullscreen " + aa);
+        setFullscreen(bfull != 0);
+        m_fullScreen = (bfull != 0);
+        return "OK";
+    }
+
+
+    public String getFullscreen( ){
+        if(m_fullScreen)
+            return "YES";
+        else
+            return "NO";
+    }
+
+
 
     public String invokeGoogleMaps(){
         Log.i("DEBUGGER_TAG", "invokeGoogleMaps");
@@ -523,6 +577,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
         Display display = getWindowManager().getDefaultDisplay();
 
+
         if (Build.VERSION.SDK_INT >= 13) {
 
             if(Build.VERSION.SDK_INT >= 17){
@@ -565,6 +620,19 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         }
 
 
+
+//  In FullScreen immersive mode, height needs a fixup...
+        if(m_fullScreen){
+            Point outPoint = new Point();
+            display.getRealSize(outPoint);
+            if (outPoint != null){
+                width = outPoint.x;
+                height = outPoint.y;
+            }
+            height += statusBarHeight;
+        }
+
+
         float tsize = new Button(this).getTextSize();       // in pixels
 
         String ret;
@@ -595,8 +663,8 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
 
     public String showBusyCircle(){
-//        Log.i("DEBUGGER_TAG", "show");
-
+    //if(!m_fullScreen)
+    {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -610,16 +678,20 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                  Drawable myIcon = getResources().getDrawable( R.drawable.progressbar_custom );
                  ringProgressDialog.setIndeterminateDrawable(myIcon);
 
+                 //  THIS IS IMPORTANT...Keeps the busy spinner from surfacing the hidden navigation buttons.
+                 ringProgressDialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
                  QtActivity.this.ringProgressDialog.show();
-
-             }});
+         }});
+     }
 
         String ret = "";
         return ret;
     }
 
     public String hideBusyCircle(){
-//        Log.i("DEBUGGER_TAG", "hide");
+
+        mutex = new Semaphore(0);
 
         runOnUiThread(new Runnable() {
             @Override
@@ -627,13 +699,26 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
                  ringProgressDialog.dismiss();
 
+                 mutex.release();
              }});
 
+/*
+             // One way to wait for the runnable to be done...
+      try {
+             mutex.acquire();            // Cannot get mutex until runnable above exits.
+      } catch (InterruptedException e) {
+             e.printStackTrace();
+      }
 
-
+        this.getWindow().getDecorView().requestFocus();
+*/
         String ret = "";
         return ret;
     }
+
+
+
+
 
 
     public String setRouteAnnunciator( final int viz){
@@ -643,11 +728,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
 //    if( null != itemRouteAnnunciator)
     {
-        //Log.i("DEBUGGER_TAG", "setRouteAnnunciatorA");
-        //if(viz == 0)
-            //Log.i("DEBUGGER_TAG", "setRouteAnnunciatorB");
-        //else
-            //Log.i("DEBUGGER_TAG", "setRouteAnnunciatorC");
 
         runOnUiThread(new Runnable() {
                 @Override
@@ -666,6 +746,8 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 //        return "NO";
     }
 
+    private boolean m_showAction = false;
+
     public String setFollowIconState( final int isActive){
         m_isFollowActive = (isActive != 0);
 
@@ -683,7 +765,9 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
                     }});
 
-           /// testing...playSound("/data/data/org.opencpn.opencpn/files/sounds/2bells.wav");
+           // testing playSound("/data/data/org.opencpn.opencpn/files/sounds/2bells.wav");
+
+           m_showAction = (isActive != 0);
 
            return "OK";
        }
@@ -771,7 +855,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     }
 
     public String stopBlueToothScan( final int parm ){
-        Log.i("DEBUGGER_TAG", "stopBlueToothScan");
+//        Log.i("DEBUGGER_TAG", "stopBlueToothScan");
 
         runOnUiThread(new Runnable() {
             @Override
@@ -808,8 +892,8 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         if(m_ScanHelperStarted)
             ret_str = scanHelper.getDiscoveredDevices();;
 
-        Log.i("DEBUGGER_TAG", "results");
-        Log.i("DEBUGGER_TAG", ret_str);
+//        Log.i("DEBUGGER_TAG", "results");
+//        Log.i("DEBUGGER_TAG", ret_str);
 
         return ret_str;
 
@@ -830,7 +914,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
 ///
                 if(!m_BTServiceCreated){
-                    Log.i("DEBUGGER_TAG", "Bluetooth createBTService");
+//                    Log.i("DEBUGGER_TAG", "Bluetooth createBTService");
                     m_BTSPP = new BluetoothSPP(getApplicationContext());
 
                     if(!m_BTSPP.isBluetoothAvailable() || !m_BTSPP.isBluetoothEnabled()) {
@@ -848,7 +932,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
                 m_BTSPP.setOnDataReceivedListener(new OnDataReceivedListener() {
                     public void onDataReceived(byte[] data, String message) {
-                        Log.i("DEBUGGER_TAG", message);
+//                        Log.i("DEBUGGER_TAG", message);
                         // Do something when data incoming
                         nativeLib.processBTNMEA( message );
 
@@ -856,10 +940,10 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                 });
 
                 if(m_BTSPP.isServiceAvailable()){
-                    Log.i("DEBUGGER_TAG", "Bluetooth startService");
+//                    Log.i("DEBUGGER_TAG", "Bluetooth startService");
                     m_BTSPP.startService(BluetoothState.DEVICE_OTHER);
 
-                    Log.i("DEBUGGER_TAG", "Bluetooth connectA");
+//                    Log.i("DEBUGGER_TAG", "Bluetooth connectA");
 //                    m_BTSPP.connect(address);
                     m_BTSPP.resetAutoConnect();
                     m_BTSPP.autoConnectAddress(address);
@@ -1030,6 +1114,19 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
         return "OK";
     }
+
+
+    public String getGMAPILicense( )
+    {
+        String ret = "";
+
+        GoogleApiAvailability av = GoogleApiAvailability.getInstance();
+        if(av != null)
+            ret = av.getOpenSourceSoftwareLicenseInfo (this);
+
+        return ret;
+    }
+
 
 
     /**
@@ -1767,10 +1864,10 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
         if (cacheVersion != packageVersion) {
             //deleteRecursively(new File(prefix));
-            Log.i("DEBUGGER_TAG", "cleanCacheIfNecessary return true");
+ //           Log.i("DEBUGGER_TAG", "cleanCacheIfNecessary return true");
             return true;
         } else {
-            Log.i("DEBUGGER_TAG", "cleanCacheIfNecessary return false");
+ //           Log.i("DEBUGGER_TAG", "cleanCacheIfNecessary return false");
 
             return false;
         }
@@ -2038,6 +2135,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev)
     {
+        //Toast.makeText(getApplicationContext(), "dispatchTouchEvent",Toast.LENGTH_LONG).show();
 
         if( (ev.getAction() == MotionEvent.ACTION_MOVE) && (Math.abs(ev.getRawX() - lastX) < 1.0f) && (Math.abs(ev.getRawY() - lastY) < 1.0f))
             return true;
@@ -2171,7 +2269,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
             if (resultCode == RESULT_OK)
             {
                 String finalPosition = data.getStringExtra("finalPosition");
-                Log.i("DEBUGGER_TAG", "finalPositionFromMaps " + finalPosition);
+//                Log.i("DEBUGGER_TAG", "finalPositionFromMaps " + finalPosition);
 
                 StringTokenizer tkz = new StringTokenizer(finalPosition, ";");
 
@@ -2205,14 +2303,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
                 nativeLib.invokeCmdEventCmdString( ID_CMD_SETVP, vpSet);
 
-                // defer hte application of settings until the screen refreshes
-//                Handler handler = new Handler();
-//                handler.postDelayed(new Runnable() {
-//                     public void run() {
-//                          nativeLib.invokeCmdEventCmdString( ID_CMD_APPLY_SETTINGS, m_settingsReturn);
-//                     }
-//                }, 100);
-//                Log.i("DEBUGGER_TAG", m_settingsReturn);
             }
             else if (resultCode == RESULT_CANCELED){
 //                Log.i("DEBUGGER_TAG", "onqtActivityResultE");
@@ -2325,44 +2415,18 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
-        //Log.i("DEBUGGER_TAG", "onCreate");
+//        Log.i("DEBUGGER_TAG", "onCreate");
+        //Toast.makeText(getApplicationContext(), "onCreate",Toast.LENGTH_LONG).show();
+
         super.onCreate(savedInstanceState);
 
-
-        // Navigation Drawer
-        //  Doesn't actually work on android qt...
+        //  Bug fix, see http://code.google.com/p/android/issues/detail?id=26658
+        if(!isTaskRoot()) {
+            finish();
+            return;
+        }
 
 //        setContentView(R.layout.activity_main);
-
-//        mDrawerList = (ListView)findViewById(R.id.left_drawer);
-//        String[] osArray = { "Android", "iOS", "Windows", "OS X", "Linux" };
-//        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, osArray);
-//        mDrawerList.setAdapter(mAdapter);
-
-        // Set up ActionBar spinner navigation
-        actionBar = getActionBar();
-
-        // Hide the action bar title
-//        actionBar.setDisplayShowTitleEnabled(false);
-
-//----------------------------------------------------------------------------
-        // Setup Spinner title navigation data
-        navSpinner = new ArrayList<SpinnerNavItem>();
-
-        spinnerItemRaster = new SpinnerNavItem("Raster", R.drawable.ic_action_map);
-        spinnerItemVector = new SpinnerNavItem("Vector", R.drawable.ic_action_map);
-        spinnerItemcm93 = new SpinnerNavItem("cm93", R.drawable.ic_action_map);
-
-        // title drop down adapter
-        adapter = new TitleNavigationAdapter(getApplicationContext(), navSpinner);
-        // assigning the spinner navigation
-        actionBar.setListNavigationCallbacks(adapter, this);
-
-        configureNavSpinner(7, 0);
-
-//----------------------------------------------------------------------------
-
-        nativeLib = new OCPNNativeLib();
 
         try {
             m_activityInfo = getPackageManager().getActivityInfo(getComponentName(), PackageManager.GET_META_DATA);
@@ -2386,7 +2450,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
         if (Build.VERSION.SDK_INT > 10) {
             try {
-                requestWindowFeature(Window.class.getField("FEATURE_ACTION_BAR").getInt(null));
+//                requestWindowFeature(Window.class.getField("FEATURE_ACTION_BAR").getInt(null));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -2394,10 +2458,34 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
             requestWindowFeature(Window.FEATURE_NO_TITLE);
         }
 
+        nativeLib = new OCPNNativeLib();
+
+
         if (QtApplication.m_delegateObject != null && QtApplication.onCreate != null) {
             QtApplication.invokeDelegateMethod(QtApplication.onCreate, savedInstanceState);
             return;
         }
+
+
+ //----------------------------------------------------------------------------
+        // Set up ActionBar spinner navigation
+        actionBar = getActionBar();
+
+        // Setup Spinner title navigation data
+        navSpinner = new ArrayList<SpinnerNavItem>();
+
+        spinnerItemRaster = new SpinnerNavItem("Raster", R.drawable.ic_action_map);
+        spinnerItemVector = new SpinnerNavItem("Vector", R.drawable.ic_action_map);
+        spinnerItemcm93 = new SpinnerNavItem("cm93", R.drawable.ic_action_map);
+
+        // title drop down adapter
+        adapter = new TitleNavigationAdapter(getApplicationContext(), navSpinner);
+        // assigning the spinner navigation
+        actionBar.setListNavigationCallbacks(adapter, this);
+
+        configureNavSpinner(7, 0);
+
+//----------------------------------------------------------------------------
 
         ENVIRONMENT_VARIABLES += "\tQT_ANDROID_THEME=" + QT_ANDROID_DEFAULT_THEME
                               + "/\tQT_ANDROID_THEME_DISPLAY_DPI=" + getResources().getDisplayMetrics().densityDpi + "\t";
@@ -2476,20 +2564,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
             startApp(true);
 
-            // setup action bar for tabs
- //           ActionBar actionBar = getActionBar();
- //           actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
- //           actionBar.setDisplayShowTitleEnabled(true);
-
- //           Tab tab = actionBar.newTab()
- //                              .setText("RasterCharts")
- //                              .setTabListener(this);
- //           actionBar.addTab(tab);
-
- //           tab = actionBar.newTab()
- //                          .setText("Vector Charts")
- //                          .setTabListener(this);
- //           actionBar.addTab(tab);
 
 
         }
@@ -2650,6 +2724,8 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     public View onCreateView(String name, Context context, AttributeSet attrs)
     {
+//        Toast.makeText(getApplicationContext(), "onCreateView " + name,Toast.LENGTH_LONG).show();
+
         QtApplication.InvokeResult res = QtApplication.invokeDelegate(name, context, attrs);
         if (res.invoked)
             return (View)res.methodReturns;
@@ -2665,6 +2741,8 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     protected void onDestroy()
     {
+        //Toast.makeText(getApplicationContext(), "onDestroy",Toast.LENGTH_LONG).show();
+
         super.onDestroy();
         QtApplication.invokeDelegate();
     }
@@ -2674,8 +2752,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)
     {
-
-//        Log.i("DEBUGGER_TAG", "onKeyDown");
 
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         audioManager.playSoundEffect(AudioManager.FX_KEY_CLICK);
@@ -2852,6 +2928,9 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                         invokeGoogleMaps();
                         return true;
 
+                case R.id.ocpn_action_toggle_fullscreen:
+                        toggleFullscreen();
+                        return true;
 
             default:
                 return super.onOptionsItemSelected(item);
@@ -3009,10 +3088,8 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     {
         //Log.i("DEBUGGER_TAG", "onResume");
 
-        int i = nativeLib.onResume();
-//        String aa;
-//        aa = String.format("%d", i);
-//        Log.i("DEBUGGER_TAG", aa);
+        if(null != nativeLib)
+            nativeLib.onResume();
 
         super.onResume();
         QtApplication.invokeDelegate();
@@ -3174,15 +3251,37 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         if (!QtApplication.invokeDelegate(hasFocus).invoked)
             super.onWindowFocusChanged(hasFocus);
 
-//        if (hasFocus) {
-//                 getWindow ().getDecorView().setSystemUiVisibility(
-//                         View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-//                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-//                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-//                         | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-//                         | View.SYSTEM_UI_FLAG_FULLSCREEN
-//                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-//                     }
+        if (hasFocus) {
+            if(m_fullScreen){
+/*
+                 getWindow ().getDecorView().setSystemUiVisibility(
+                         View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                         | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                         | View.SYSTEM_UI_FLAG_FULLSCREEN
+                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+*/
+                int flags =  View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+
+
+//                if(!m_showAction){
+//                    flags |= View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+//                }
+
+                getWindow ().getDecorView().setSystemUiVisibility( flags );
+
+
+
+
+                     }
+ //           else{
+ //               getWindow ().getDecorView().setSystemUiVisibility(0);
+ //           }
+        }
 
     }
     public void super_onWindowFocusChanged(boolean hasFocus)
@@ -3192,7 +3291,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     //---------------------------------------------------------------------------
 
     //////////////// Activity API 5 /////////////
-//@ANDROID-5
+//ANDROID-5
     @Override
     public void onAttachedToWindow()
     {
@@ -3243,10 +3342,10 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         return super.onKeyLongPress(keyCode, event);
     }
     //---------------------------------------------------------------------------
-//@ANDROID-5
+//ANDROID-5
 
 //////////////// Activity API 8 /////////////
-//@ANDROID-8
+//ANDROID-8
 @Override
     protected Dialog onCreateDialog(int id, Bundle args)
     {
@@ -3273,10 +3372,10 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         super.onPrepareDialog(id, dialog, args);
     }
     //---------------------------------------------------------------------------
-//@ANDROID-8
+//ANDROID-8
     //////////////// Activity API 11 /////////////
 
-//@ANDROID-11
+//ANDROID-11
     @Override
     public boolean dispatchKeyShortcutEvent(KeyEvent event)
     {
@@ -3370,13 +3469,15 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         return super.onWindowStartingActionMode(callback);
     }
     //---------------------------------------------------------------------------
-//@ANDROID-11
+//ANDROID-11
     //////////////// Activity API 12 /////////////
 
-//@ANDROID-12
+//ANDROID-12
     @Override
     public boolean dispatchGenericMotionEvent(MotionEvent ev)
     {
+        //Toast.makeText(getApplicationContext(), "dispatchGenericMotionEvent",Toast.LENGTH_LONG).show();
+
         if (QtApplication.m_delegateObject != null  && QtApplication.dispatchGenericMotionEvent != null)
             return (Boolean) QtApplication.invokeDelegateMethod(QtApplication.dispatchGenericMotionEvent, ev);
         else
@@ -3391,6 +3492,23 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     public boolean onGenericMotionEvent(MotionEvent event)
     {
+//        Log.i("DEBUGGER_TAG", "onGenericMotionEvent");
+//        Toast.makeText(getApplicationContext(), "onGenericMotionEvent",Toast.LENGTH_LONG).show();
+
+        if (0 != (event.getSource() & InputDevice.SOURCE_CLASS_POINTER)) {
+            switch (event.getAction()) {
+              case MotionEvent.ACTION_SCROLL:
+              if (event.getAxisValue(MotionEvent.AXIS_VSCROLL) < 0.0f){
+                  Log.i("DEBUGGER_TAG", "Scroll Up");
+                  nativeLib.onMouseWheel(-1);
+              }
+              else{
+                  Log.i("DEBUGGER_TAG", "Scroll Down");
+                  nativeLib.onMouseWheel(1);
+              }
+            }
+          }
+
         if (QtApplication.m_delegateObject != null  && QtApplication.onGenericMotionEvent != null)
             return (Boolean) QtApplication.invokeDelegateMethod(QtApplication.onGenericMotionEvent, event);
         else
@@ -3401,6 +3519,9 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         return super.onGenericMotionEvent(event);
     }
     //---------------------------------------------------------------------------
-//@ANDROID-12
+//ANDROID-12
+
+
+
 
 }

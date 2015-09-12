@@ -153,6 +153,10 @@ private:
         wxButton* m_sdbBtmBtnsSizerExtend;
         wxButton* m_sdbBtmBtnsSizerToRoute;
         wxButton* m_sdbBtmBtnsSizerExport;
+        
+        wxScrolledWindow *itemDialog1;
+        bool m_bcompact;
+        
 
         // Virtual event handlers, overide them in your derived class
         void OnCancelBtnClick( wxCommandEvent& event );
@@ -172,6 +176,7 @@ private:
         void OnEditLinkToggle( wxCommandEvent& event );
         void OnShowTimeTZ( wxCommandEvent& event );
         void CreateControls( void );
+        void CreateControlsCompact( void );
         
 public:
         static TrackPropDlg *getInstance( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Track Properties"),

@@ -15,11 +15,13 @@
         <item>Base</item>
         <item>Standard</item>
         <item>All</item>
+        <item>Mariner Standard</item>
     </string-array>
     <string-array name="displayCategoryListValues">
         <item>Base</item>
         <item>Standard</item>
         <item>All</item>
+        <item>Mariner Standard</item>
     </string-array>
 
 

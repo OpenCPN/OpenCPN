@@ -1002,8 +1002,14 @@ int Quilt::AdjustRefOnZoomOut( double proposed_scale_onscreen )
     m_lost_refchart_dbIndex = -1;
     
     int current_db_index = m_refchart_dbIndex;
-    int current_family = m_reference_family;
-    ChartTypeEnum current_type = (ChartTypeEnum) m_reference_type;
+    int current_family =   m_reference_family;
+    ChartTypeEnum current_type = (ChartTypeEnum)m_reference_type;
+    
+    if(m_refchart_dbIndex >= 0){
+        const ChartTableEntry &cte = ChartData->GetChartTableEntry( m_refchart_dbIndex );
+        current_family =  cte.GetChartFamily();
+        current_type = (ChartTypeEnum) cte.GetChartType(); 
+    }
  
     if( current_type == CHART_TYPE_CM93COMP )
             return current_db_index;

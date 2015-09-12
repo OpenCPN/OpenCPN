@@ -51,6 +51,7 @@
 #include "navutil.h"
 #include "TCWin.h"
 #include "ocpn_plugin.h"
+#include "about.h"
 
 class androidUtilHandler;
 
@@ -77,6 +78,8 @@ androidUtilHandler               *g_androidUtilHandler;
 extern wxDateTime                 g_start_time;
 extern RouteManagerDialog        *pRouteManagerDialog;
 extern ChartCanvas               *cc1;
+extern about                     *g_pAboutDlg;
+extern bool                      g_bFullscreen;
 
 // Static globals
 extern ChartDB                   *ChartData;
@@ -437,18 +440,29 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                     
             }
             
+            // About dialog
+            if(g_pAboutDlg){
+                bool bshown = g_pAboutDlg->IsShown();
+                g_pAboutDlg->Hide();
+                g_pAboutDlg->RecalculateSize();
+                if(bshown){
+                    g_pAboutDlg->Show();
+                }
+            }
+            
+            
             break;
  
             
         case ACTION_FILECHOOSER_END:            //  Handle polling of android Dialog
             {
-                qDebug() << "chooser poll";
+                //qDebug() << "chooser poll";
                 //  Get a reference to the running FileChooser
                 QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
                 "activity", "()Landroid/app/Activity;");
                 
                 if ( !activity.isValid() ){
-                    qDebug() << "onTimerEvent : Activity is not valid";
+                    //qDebug() << "onTimerEvent : Activity is not valid";
                     return;
                 }
  
@@ -459,7 +473,7 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                 
                 //  Need a Java environment to decode the resulting string
                 if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
-                    qDebug() << "GetEnv failed.";
+                    //qDebug() << "GetEnv failed.";
                 }
                 else {
                     
@@ -468,11 +482,11 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                     //  "cancel:"   .. user cancelled intent.
                     //  "file:{file_name}"  .. user selected this file, fully qualified.
                     if(!s){
-                        qDebug() << "isFileChooserFinished returned null";
+                        //qDebug() << "isFileChooserFinished returned null";
                     }
                     else if( (jenv)->GetStringLength( s )){
                         const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
-                        qDebug() << "isFileChooserFinished returned " << ret_string;
+                        //qDebug() << "isFileChooserFinished returned " << ret_string;
                         if( !strncmp(ret_string, "cancel:", 7) ){
                             m_done = true;
                             m_stringResult = _T("cancel:");
@@ -544,12 +558,12 @@ void resizeAndroidPersistents()
 
 jint JNI_OnLoad(JavaVM *vm, void *reserved)
 {
-    qDebug() << "JNI_OnLoad";
+    //qDebug() << "JNI_OnLoad";
     java_vm = vm;
     
     // Get JNI Env for all function calls
     if (vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
-        qDebug() << "GetEnv failed.";
+        //qDebug() << "GetEnv failed.";
         return -1;
     }
     
@@ -582,7 +596,7 @@ if ((*env)->RegisterNatives(env, NativeUsb, nm , 1)) {
 extern "C"{
 JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_test(JNIEnv *env, jobject obj)
 {
-    qDebug() << "test";
+    //qDebug() << "test";
     
     return 55;
 }
@@ -659,9 +673,25 @@ extern "C"{
 }
 
 extern "C"{
+    JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onMouseWheel(JNIEnv *env, jobject obj, int dir)
+    {
+        //qDebug() << "onMouseWheel" << dir;
+        
+        wxMouseEvent evt(wxEVT_MOUSEWHEEL);
+        evt.m_wheelRotation = dir;
+        if(cc1 && cc1->GetEventHandler()){
+            //qDebug() << "send event";
+            cc1->GetEventHandler()->AddPendingEvent(evt);
+        }
+        
+        return 77;
+    }
+}
+
+extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onMenuKey(JNIEnv *env, jobject obj)
     {
-        qDebug() << "onMenuKey";
+        //qDebug() << "onMenuKey";
 
         gFrame->ToggleToolbar();
             
@@ -725,6 +755,12 @@ extern "C"{
         qDebug() << "onResume";
         
         g_bSleep = false;
+
+        wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+        evt.SetId( ID_CMD_INVALIDATE );
+        
+        if(gFrame)
+            gFrame->GetEventHandler()->AddPendingEvent(evt);
         
         return 96;
     }
@@ -762,21 +798,21 @@ extern "C"{
         wxString wx_sparm;
         //  Need a Java environment to decode the string parameter
         if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
-            qDebug() << "GetEnv failed.";
+            //qDebug() << "GetEnv failed.";
         }
         else {
             sparm = (jenv)->GetStringUTFChars(s, NULL);
             wx_sparm = wxString(sparm, wxConvUTF8);
         }
         
-        qDebug() << "invokeCmdEventCmdString" << cmd_id << s;
+        //qDebug() << "invokeCmdEventCmdString" << cmd_id << s;
         
         wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
         evt.SetId( cmd_id );
         evt.SetString( wx_sparm);
         
         if(gFrame){
-            qDebug() << "add event" << cmd_id << s;
+            //qDebug() << "add event" << cmd_id << s;
             gFrame->GetEventHandler()->AddPendingEvent(evt);
         }
 
@@ -876,8 +912,6 @@ extern "C"{
 extern "C"{
     JNIEXPORT jstring JNICALL Java_org_opencpn_OCPNNativeLib_getVPS(JNIEnv *env, jobject obj)
     {
-//        qDebug() << "getVPS";
-
         wxString s;
         
         if(cc1){
@@ -893,6 +927,14 @@ extern "C"{
     
 }       
 
+extern "C"{
+    JNIEXPORT int JNICALL Java_org_opencpn_OCPNNativeLib_notifyFullscreenChange(JNIEnv *env, jobject obj, bool bFull)
+    {
+        g_bFullscreen = bFull;
+        return 1;
+    }    
+}       
+
 
 extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_setDownloadStatus(JNIEnv *env, jobject obj, int status, jstring url)
@@ -904,7 +946,7 @@ extern "C"{
         
         //  Need a Java environment to decode the string parameter
         if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
-            qDebug() << "GetEnv failed.";
+            //qDebug() << "GetEnv failed.";
         }
         else {
             sparm = (jenv)->GetStringUTFChars(url, NULL);
@@ -961,12 +1003,12 @@ extern "C"{
 bool CheckPendingJNIException()
 {
     if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
-        qDebug() << "GetEnv failed.";
+        //qDebug() << "GetEnv failed.";
         return true;
     }
 
     if( (jenv)->ExceptionCheck() == JNI_TRUE ) {
-        qDebug() << "Found JNI Exception Pending.";
+        //qDebug() << "Found JNI Exception Pending.";
         return true;
     }
     
@@ -987,7 +1029,7 @@ wxString callActivityMethod_vs(const char *method)
         return _T("NOK");
     
     if ( !activity.isValid() ){
-        qDebug() << "Activity is not valid";
+        //qDebug() << "Activity is not valid";
         return return_string;
     }
     
@@ -1002,7 +1044,7 @@ wxString callActivityMethod_vs(const char *method)
     if(s){
         //  Need a Java environment to decode the resulting string
         if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
-            qDebug() << "GetEnv failed.";
+            //qDebug() << "GetEnv failed.";
         }
         else {
             const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
@@ -1025,7 +1067,7 @@ wxString callActivityMethod_is(const char *method, int parm)
                                                                            "activity", "()Landroid/app/Activity;");
     
     if ( !activity.isValid() ){
-        qDebug() << "Activity is not valid";
+        //qDebug() << "Activity is not valid";
         return return_string;
     }
     
@@ -1038,7 +1080,7 @@ wxString callActivityMethod_is(const char *method, int parm)
     
     //  Need a Java environment to decode the resulting string
     if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
-        qDebug() << "GetEnv failed.";
+        //qDebug() << "GetEnv failed.";
     }
     else {
         const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
@@ -1061,7 +1103,7 @@ wxString callActivityMethod_iis(const char *method, int parm1, int parm2)
         return _T("NOK");
     
     if ( !activity.isValid() ){
-        qDebug() << "Activity is not valid";
+        //qDebug() << "Activity is not valid";
         return return_string;
     }
     
@@ -1074,7 +1116,7 @@ wxString callActivityMethod_iis(const char *method, int parm1, int parm2)
     
     //  Need a Java environment to decode the resulting string
     if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
-        qDebug() << "GetEnv failed.";
+        //qDebug() << "GetEnv failed.";
     }
     else {
         const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
@@ -1097,13 +1139,13 @@ wxString callActivityMethod_ss(const char *method, wxString parm)
         return _T("NOK");
     
     if ( !activity.isValid() ){
-        qDebug() << "Activity is not valid";
+        //qDebug() << "Activity is not valid";
         return return_string;
     }
 
     //  Need a Java environment to decode the resulting string
     if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
-        qDebug() << "GetEnv failed.";
+        //qDebug() << "GetEnv failed.";
         return _T("jenv Error");
     }
     
@@ -1143,13 +1185,13 @@ wxString callActivityMethod_s2s(const char *method, wxString parm1, wxString par
         return _T("NOK");
     
     if ( !activity.isValid() ){
-        qDebug() << "Activity is not valid";
+        //qDebug() << "Activity is not valid";
         return return_string;
     }
     
     //  Need a Java environment to decode the resulting string
     if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
-        qDebug() << "GetEnv failed.";
+        //qDebug() << "GetEnv failed.";
         return _T("jenv Error");
     }
     
@@ -1189,13 +1231,13 @@ wxString callActivityMethod_s4s(const char *method, wxString parm1, wxString par
         return _T("NOK");
     
     if ( !activity.isValid() ){
-        qDebug() << "Activity is not valid";
+        //qDebug() << "Activity is not valid";
         return return_string;
     }
     
     //  Need a Java environment to decode the resulting string
     if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
-        qDebug() << "GetEnv failed.";
+        //qDebug() << "GetEnv failed.";
         return _T("jenv Error");
     }
     
@@ -1228,6 +1270,27 @@ wxString callActivityMethod_s4s(const char *method, wxString parm1, wxString par
     return return_string;
     
 }
+
+
+bool androidGetFullscreen()
+{
+    wxString s = callActivityMethod_vs("getFullscreen");
+    
+    return s == _T("YES");
+}
+
+bool androidSetFullscreen( bool bFull )
+{
+    callActivityMethod_is("setFullscreen", (int)bFull);
+    
+    return true;
+}
+
+void androidLaunchHelpView()
+{
+    callActivityMethod_vs("launchHelpView");
+}
+
 
 
 wxString androidGetDeviceInfo()
@@ -1267,11 +1330,12 @@ wxString androidGetPrivateDir()                 // Used for logfile, config file
                 return false;
         }
 #endif        
-        if(g_androidExtFilesDir.Length())
-            return g_androidExtFilesDir;
+        return g_androidExtFilesDir;
     }
 
-    return g_androidFilesDir; //_T("/mnt/sdcard/opencpn")
+    // We choose to use the ExtFiles directory always , so that the contents of logfiles, navobjs, etc.
+    // may always be accessible by simple Android File Explorers...
+    return g_androidExtFilesDir;    
 }
 
 wxString androidGetSharedDir()                 // Used for assets like uidata, s57data, etc
@@ -1419,7 +1483,7 @@ double GetAndroidDisplaySize()
                                                                            "activity", "()Landroid/app/Activity;");
     
     if ( !activity.isValid() ){
-        qDebug() << "Activity is not valid";
+        //qDebug() << "Activity is not valid";
         return false;
     }
     
@@ -1431,7 +1495,7 @@ double GetAndroidDisplaySize()
     
     //  Need a Java environment to decode the resulting string
     if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
-        qDebug() << "GetEnv failed.";
+        //qDebug() << "GetEnv failed.";
     }
     else {
         const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
@@ -1551,7 +1615,7 @@ wxSize getAndroidDisplayDimensions( void )
                                                                            "activity", "()Landroid/app/Activity;");
     
     if ( !activity.isValid() ){
-        qDebug() << "Activity is not valid";
+        //qDebug() << "Activity is not valid";
         return sz_ret;
     }
     
@@ -1563,7 +1627,7 @@ wxSize getAndroidDisplayDimensions( void )
     
     //  Need a Java environment to decode the resulting string
     if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
-        qDebug() << "GetEnv failed.";
+        //qDebug() << "GetEnv failed.";
     }
     else {
         const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
@@ -1641,7 +1705,7 @@ void androidShowBusyIcon()
     QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
                                                                            "activity", "()Landroid/app/Activity;");
     if ( !activity.isValid() ){
-        qDebug() << "Activity is not valid";
+        //qDebug() << "Activity is not valid";
         return;
     }
     
@@ -1661,7 +1725,7 @@ void androidHideBusyIcon()
                                                                            "activity", "()Landroid/app/Activity;");
     
     if ( !activity.isValid() ){
-        qDebug() << "Activity is not valid";
+        //qDebug() << "Activity is not valid";
         return;
     }
     
@@ -1682,11 +1746,11 @@ bool androidDeviceHasGPS()
     
     bool result = query.Upper().IsSameAs(_T("YES"));
     if(result){
-        qDebug() << "Android Device has internal GPS";
+        //qDebug() << "Android Device has internal GPS";
         wxLogMessage(_T("Android Device has internal GPS"));
     }
     else{
-        qDebug() << "Android Device has NO internal GPS";
+        //qDebug() << "Android Device has NO internal GPS";
         wxLogMessage(_T("Android Device has NO internal GPS"));
     }
     return result;
@@ -1696,7 +1760,7 @@ bool androidStartNMEA(wxEvtHandler *consumer)
 {
     s_pAndroidNMEAMessageConsumer = consumer;
 
-    qDebug() << "androidStartNMEA";
+    //qDebug() << "androidStartNMEA";
     wxString s;
     
     s = androidGPSService( GPS_ON );
@@ -1730,7 +1794,7 @@ wxString androidGPSService(int parm)
                                                                            "activity", "()Landroid/app/Activity;");
     
     if ( !activity.isValid() ){
-        qDebug() << "Activity is not valid";
+        //qDebug() << "Activity is not valid";
         return _T("Activity is not valid");
     }
     
@@ -1742,7 +1806,7 @@ wxString androidGPSService(int parm)
     
     //  Need a Java environment to decode the resulting string
     if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
-        qDebug() << "GetEnv failed.";
+        //qDebug() << "GetEnv failed.";
     }
     else {
         const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
@@ -1759,7 +1823,7 @@ bool androidDeviceHasBlueTooth()
                                                                            "activity", "()Landroid/app/Activity;");
     
     if ( !activity.isValid() ){
-        qDebug() << "Activity is not valid";
+        //qDebug() << "Activity is not valid";
         return _T("Activity is not valid");
     }
     
@@ -1771,7 +1835,7 @@ bool androidDeviceHasBlueTooth()
     
     //  Need a Java environment to decode the resulting string
     if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
-        qDebug() << "GetEnv failed.";
+        //qDebug() << "GetEnv failed.";
     }
     else {
         const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
@@ -1781,11 +1845,11 @@ bool androidDeviceHasBlueTooth()
     bool result = query.Upper().IsSameAs(_T("YES"));
     
     if(result){
-        qDebug() << "Android Device has internal Bluetooth";
+        //qDebug() << "Android Device has internal Bluetooth";
         wxLogMessage(_T("Android Device has internal Bluetooth"));
     }
     else{
-        qDebug() << "Android Device has NO internal Bluetooth";
+        //qDebug() << "Android Device has NO internal Bluetooth";
         wxLogMessage(_T("Android Device has NO internal Bluetooth"));
     }
     
@@ -1822,7 +1886,7 @@ bool androidStartBT(wxEvtHandler *consumer, wxString mac_address )
     
 bool androidStopBT()
 {
-    qDebug() << "androidStopBT";
+    //qDebug() << "androidStopBT";
     
     s_pAndroidBTNMEAMessageConsumer = NULL;
     
@@ -1868,7 +1932,7 @@ int androidFileChooser( wxString *result, const wxString &initDir, const wxStrin
             activityResult = callActivityMethod_s4s("FileChooserDialog", initDir, title, suggestion, wildcard);
         
         if(activityResult == _T("OK") ){
-            qDebug() << "ResultOK, starting spin loop";
+            //qDebug() << "ResultOK, starting spin loop";
             g_androidUtilHandler->m_action = ACTION_FILECHOOSER_END;
             g_androidUtilHandler->m_eventTimer.Start(1000, wxTIMER_CONTINUOUS);
         
@@ -1878,7 +1942,7 @@ int androidFileChooser( wxString *result, const wxString &initDir, const wxStrin
                 wxSafeYield(NULL, true);
             }
         
-            qDebug() << "out of spin loop";
+            //qDebug() << "out of spin loop";
             g_androidUtilHandler->m_action = ACTION_NONE;
             g_androidUtilHandler->m_eventTimer.Stop();
         
@@ -1886,23 +1950,23 @@ int androidFileChooser( wxString *result, const wxString &initDir, const wxStrin
             tresult = g_androidUtilHandler->GetStringResult();
             
             if( tresult.StartsWith(_T("cancel:")) ){
-                qDebug() << "Cancel1";
+                //qDebug() << "Cancel1";
                 return wxID_CANCEL;
             }
             else if( tresult.StartsWith(_T("file:")) ){
                 if(result){
                     *result = tresult.AfterFirst(':');
-                    qDebug() << "OK";
+                    //qDebug() << "OK";
                     return wxID_OK;
                 }
                 else{
-                    qDebug() << "Cancel2";
+                    //qDebug() << "Cancel2";
                     return wxID_CANCEL;
                 }
             }
         }
         else{
-            qDebug() << "Result NOT OK";
+            //qDebug() << "Result NOT OK";
         }
         
     }
@@ -1984,7 +2048,7 @@ bool InvokeJNIPreferences( wxString &initial_settings)
         "activity", "()Landroid/app/Activity;");
         
         if ( !activity.isValid() ){
-            qDebug() << "Activity is not valid";
+            //qDebug() << "Activity is not valid";
             return false;
         }
         
@@ -2084,12 +2148,14 @@ wxString BuildAndroidSettingsString( void )
             result += _T("prefs_vectorchartcolors:") + nset;
             
             // depth unit conversion factor
+          
             float conv = 1;
-    //         if ( depthUnit == 0 ) // feet
-    //             conv = 0.3048f; // international definiton of 1 foot is 0.3048 metres
-    //         else if ( depthUnit == 2 ) // fathoms
-    //             conv = 0.3048f * 6; // 1 fathom is 6 feet
-            
+            int depthUnit = ps52plib->m_nDepthUnitDisplay;
+            if ( depthUnit == 0 ) // feet
+                conv = 0.3048f; // international definiton of 1 foot is 0.3048 metres
+                else if ( depthUnit == 2 ) // fathoms
+                conv = 0.3048f * 6; // 1 fathom is 6 feet
+                
             s.Printf( _T("%4.0f;"), S52_getMarinerParam( S52_MAR_SHALLOW_CONTOUR ) / conv );
             s.Trim(false);
             result += _T("prefs_shallowdepth:") + s;
@@ -2127,7 +2193,7 @@ wxString BuildAndroidSettingsString( void )
 
 bool DoAndroidPreferences( void )
 {
-    qDebug() << "Start AndroidPreferences";
+    //qDebug() << "Start AndroidPreferences";
     
     wxString settings = BuildAndroidSettingsString();
 
@@ -2234,6 +2300,12 @@ wxString getFontQtStylesheet(wxFont *font)
     wxString fontSize;
     fontSize.Printf(_T("%dpt }"), font->GetPointSize());
     qstyle += fontSize;
+
+    //  Oddity here....
+    //  If this line is active, this particular style is applied to ListCtrl() in PlugIns,
+    //  But not TreeCtrl.....
+    //  ????
+    //qstyle += _T("QTreeWidget::item{ border-color:red; border-style:outset; border-width:2px; color:black; }");
     
     return qstyle;
     
@@ -2243,13 +2315,22 @@ wxString getFontQtStylesheet(wxFont *font)
 
 bool androidPlaySound( wxString soundfile )
 {
-    qDebug() << "androidPlay";
+    //qDebug() << "androidPlay";
     
     wxString result = callActivityMethod_ss("playSound", soundfile);
     
     return true;
 }
     
+
+wxString androidGetSupplementalLicense( void )
+{
+    //qDebug() << "androidGetSupplementalLicense";
+    
+    wxString result = callActivityMethod_vs("getGMAPILicense");
+    
+    return result;
+}
 
 
 #if 0
