@@ -534,15 +534,40 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
     PlugIn_ViewPort uvp = *vp;
     uvp.rotation = uvp.skew = 0;
     uvp.view_scale_ppm = scalef;
-
+    double tp_scale = scalef;
     wxPoint porg;
-    GetCanvasPixLL( &uvp, &porg, pGR->getLatMax(), pGR->getLonMin() );
     wxPoint pmin;
-    GetCanvasPixLL( &uvp, &pmin, pGR->getLatMin(), pGR->getLonMin() );
     wxPoint pmax;
-    GetCanvasPixLL( &uvp, &pmax, pGR->getLatMax(), pGR->getLonMax() );
-    int width = abs( pmax.x - pmin.x );
-    int height = abs( pmax.y - pmin.y );
+    int width;
+    int height;
+    // find the biggest texture
+    do {
+        GetCanvasPixLL( &uvp, &porg, pGR->getLatMax(), pGR->getLonMin() );
+        GetCanvasPixLL( &uvp, &pmin, pGR->getLatMin(), pGR->getLonMin() );
+        GetCanvasPixLL( &uvp, &pmax, pGR->getLatMax(), pGR->getLonMax() );
+        width = abs( pmax.x - pmin.x );
+        height = abs( pmax.y - pmin.y );
+#if 0        
+        if (settings != GribOverlaySettings::CURRENT && settings != GribOverlaySettings::WAVE)
+            break;
+#endif            
+        if( width > 1024 || height > 1024 ) {
+            if (tp_scale == scalef)
+                break;
+            tp_scale /= 2.0;
+            uvp.view_scale_ppm = tp_scale;
+            GetCanvasPixLL( &uvp, &porg, pGR->getLatMax(), pGR->getLonMin() );
+            GetCanvasPixLL( &uvp, &pmin, pGR->getLatMin(), pGR->getLonMin() );
+            GetCanvasPixLL( &uvp, &pmax, pGR->getLatMax(), pGR->getLonMax() );
+            width = abs( pmax.x - pmin.x );
+            height = abs( pmax.y - pmin.y );
+            break;
+        }
+        tp_scale *= 2.0;
+        uvp.view_scale_ppm = tp_scale;
+        
+    } while (1);
+    
     //    Dont try to create enormous GRIB textures
     if( width > 1024 || height > 1024 )
         return false;
@@ -609,8 +634,8 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
     pGO->m_width = width;
     pGO->m_height = height;
 
-    pGO->m_dwidth = (pmax.x - pmin.x) / scalef * grib_pixel_size;
-    pGO->m_dheight = (pmin.y - pmax.y) / scalef * grib_pixel_size;
+    pGO->m_dwidth = (pmax.x - pmin.x) / uvp.view_scale_ppm * grib_pixel_size;
+    pGO->m_dheight = (pmin.y - pmax.y) / uvp.view_scale_ppm * grib_pixel_size;
 
     return true;
 }
