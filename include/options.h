@@ -392,7 +392,7 @@ class options: private Uncopyable, public wxScrollingDialog
     wxBoxSizer *vectorPanel;
     wxScrolledWindow *ps57Ctl;
  
-#ifdef __WXMSW__    
+#if defined(__WXMSW__) || defined(__WXOSX__)     
     wxCheckListBox *ps57CtlListBox;
 #else    
     OCPNCheckedListCtrl *ps57CtlListBox;
