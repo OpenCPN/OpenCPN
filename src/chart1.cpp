@@ -3351,7 +3351,7 @@ void MyFrame::ProcessCanvasResize( void )
 
     }
 
-    UpdateGPSCompassStatusBox( );
+    UpdateGPSCompassStatusBox( true );
 
     if( console && console->IsShown() ) PositionConsole();
 }
