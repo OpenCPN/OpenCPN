@@ -261,8 +261,8 @@ bool CompressChart(wxThread *pThread, ChartBase *pchart, wxString CompressedCach
         
         int tex_dim = g_GLOptions.m_iTextureDimension;
         
-        int nx_tex = ( size_X / tex_dim ) + 1;
-        int ny_tex = ( size_Y / tex_dim ) + 1;
+        int nx_tex = ceil( (float)size_X / tex_dim );
+        int ny_tex = ceil( (float)size_Y / tex_dim );
         
         int nd = 0;
         int nt = ny_tex * nx_tex;
@@ -2721,8 +2721,8 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, O
     wxRect R(floor(Rp.x), floor(Rp.y), ceil(Rs.x), ceil(Rs.y));
     
     //  Calculate the number of textures needed
-    int nx_tex = ( size_X / tex_dim ) + 1;
-    int ny_tex = ( size_Y / tex_dim ) + 1;
+    int nx_tex = ceil( (float)size_X / tex_dim );
+    int ny_tex = ceil( (float)size_Y / tex_dim );
     
     wxRect rect( 0, 0, 1, 1 );
     
@@ -3531,8 +3531,8 @@ void glChartCanvas::DrawGLTidesInBBox(ocpnDC& dc, LLBBox& BBox)
         
         // Texture is ready
         
-        glBindTexture( g_texture_rectangle_format, m_tideTex);
-        glEnable( g_texture_rectangle_format );
+        glBindTexture( GL_TEXTURE_2D, m_tideTex);
+        glEnable( GL_TEXTURE_2D );
         glEnable(GL_BLEND);
         glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
         
@@ -3576,9 +3576,9 @@ void glChartCanvas::DrawGLTidesInBBox(ocpnDC& dc, LLBBox& BBox)
         }       //loop
             
             
-        glDisable( g_texture_rectangle_format );
+        glDisable( GL_TEXTURE_2D );
         glDisable(GL_BLEND);
-        glBindTexture( g_texture_rectangle_format, 0);
+        glBindTexture( GL_TEXTURE_2D, 0);
     }
     else
         cc1->DrawAllTidesInBBox( dc, BBox );
