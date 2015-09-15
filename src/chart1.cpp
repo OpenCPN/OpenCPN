@@ -9228,12 +9228,6 @@ void MyFrame::applySettingsString( wxString settings)
         }
     }
 
-    float conv = 1;
-    int depthUnit = ps52plib->m_nDepthUnitDisplay;
-    if ( depthUnit == 0 ) // feet
-        conv = 0.3048f; // international definiton of 1 foot is 0.3048 metres
-    else if ( depthUnit == 2 ) // fathoms
-        conv = 0.3048f * 6; // 1 fathom is 6 feet
 
     wxStringTokenizer tk(settings, _T(";"));
     while ( tk.HasMoreTokens() )
@@ -9267,44 +9261,10 @@ void MyFrame::applySettingsString( wxString settings)
         else if(token.StartsWith( _T("prefb_expertmode"))){
             g_bUIexpert = val.IsSameAs(_T("1"));
         }
-        else if(token.StartsWith( _T("prefb_showsound"))){
-            bool old_val = ps52plib->m_bShowSoundg;
-            ps52plib->m_bShowSoundg = val.IsSameAs(_T("1"));
-            if(old_val != ps52plib->m_bShowSoundg)
-                rr |= S52_CHANGED;
-        }
-        else if(token.StartsWith( _T("prefb_showSCAMIN"))){
-            bool old_val = ps52plib->m_bUseSCAMIN;
-            ps52plib->m_bUseSCAMIN = val.IsSameAs(_T("1"));
-            if(old_val != ps52plib->m_bUseSCAMIN)
-                rr |= S52_CHANGED;
-        }
-        else if(token.StartsWith( _T("prefb_showimptext"))){
-            bool old_val = ps52plib->m_bShowS57ImportantTextOnly;
-            ps52plib->m_bShowS57ImportantTextOnly = val.IsSameAs(_T("1"));
-            if(old_val != ps52plib->m_bShowS57ImportantTextOnly)
-                rr |= S52_CHANGED;
-        }
-        else if(token.StartsWith( _T("prefb_showlightldesc"))){
-            bool old_val = ps52plib->m_bShowLdisText;
-            ps52plib->m_bShowLdisText = val.IsSameAs(_T("1"));
-            if(old_val != ps52plib->m_bShowLdisText)
-                rr |= S52_CHANGED;
-        }
-        else if(token.StartsWith( _T("prefb_showATONLabels"))){
-            bool old_val = ps52plib->m_bShowAtonText;
-            ps52plib->m_bShowAtonText = val.IsSameAs(_T("1"));
-            if(old_val != ps52plib->m_bShowAtonText)
-                rr |= S52_CHANGED;
-
-        }
         else if(token.StartsWith( _T("prefb_internalGPS"))){
             bproc_InternalGPS = true;
             benable_InternalGPS = val.IsSameAs(_T("1"));
         }
-
-
-
         else if(token.StartsWith( _T("prefs_navmode"))){
             bool bPrevMode = g_bCourseUp;
             bool new_val = val.IsSameAs(_T("Course Up"));
@@ -9333,100 +9293,138 @@ void MyFrame::applySettingsString( wxString settings)
             *pInit_Chart_Dir = val;
         }
 
-        else if(token.StartsWith( _T("prefs_displaycategory"))){
-            _DisCat old_nset = ps52plib->GetDisplayCategory();
-
-            _DisCat nset = DISPLAYBASE;
-            if(wxNOT_FOUND != val.Lower().Find(_T("base")))
-                nset = DISPLAYBASE;
-            else if(wxNOT_FOUND != val.Lower().Find(_T("mariner")))
-                nset = MARINERS_STANDARD;
-            else if(wxNOT_FOUND != val.Lower().Find(_T("standard")))
-                nset = STANDARD;
-            else if(wxNOT_FOUND != val.Lower().Find(_T("all")))
-                nset = OTHER;
-
-            if(nset != old_nset){
-                rr |= S52_CHANGED;
-                ps52plib-> SetDisplayCategory( nset );
+        
+        if(ps52plib){
+            float conv = 1;
+            int depthUnit = ps52plib->m_nDepthUnitDisplay;
+            if ( depthUnit == 0 ) // feet
+                conv = 0.3048f; // international definiton of 1 foot is 0.3048 metres
+            else if ( depthUnit == 2 ) // fathoms
+                conv = 0.3048f * 6; // 1 fathom is 6 feet
+            
+            if(token.StartsWith( _T("prefb_showsound"))){
+                bool old_val = ps52plib->m_bShowSoundg;
+                ps52plib->m_bShowSoundg = val.IsSameAs(_T("1"));
+                if(old_val != ps52plib->m_bShowSoundg)
+                    rr |= S52_CHANGED;
             }
-        }
+            else if(token.StartsWith( _T("prefb_showSCAMIN"))){
+                bool old_val = ps52plib->m_bUseSCAMIN;
+                ps52plib->m_bUseSCAMIN = val.IsSameAs(_T("1"));
+                if(old_val != ps52plib->m_bUseSCAMIN)
+                    rr |= S52_CHANGED;
+            }
+            else if(token.StartsWith( _T("prefb_showimptext"))){
+                bool old_val = ps52plib->m_bShowS57ImportantTextOnly;
+                ps52plib->m_bShowS57ImportantTextOnly = val.IsSameAs(_T("1"));
+                if(old_val != ps52plib->m_bShowS57ImportantTextOnly)
+                    rr |= S52_CHANGED;
+            }
+            else if(token.StartsWith( _T("prefb_showlightldesc"))){
+                bool old_val = ps52plib->m_bShowLdisText;
+                ps52plib->m_bShowLdisText = val.IsSameAs(_T("1"));
+                if(old_val != ps52plib->m_bShowLdisText)
+                    rr |= S52_CHANGED;
+                }
+            else if(token.StartsWith( _T("prefb_showATONLabels"))){
+                bool old_val = ps52plib->m_bShowAtonText;
+                ps52plib->m_bShowAtonText = val.IsSameAs(_T("1"));
+                if(old_val != ps52plib->m_bShowAtonText)
+                    rr |= S52_CHANGED;
+            }
+        
+            else if(token.StartsWith( _T("prefs_displaycategory"))){
+                _DisCat old_nset = ps52plib->GetDisplayCategory();
 
-        else if(token.StartsWith( _T("prefs_shallowdepth"))){
-            double old_dval = S52_getMarinerParam( S52_MAR_SHALLOW_CONTOUR );
-            double dval;
-            if(val.ToDouble(&dval)){
-                if(fabs(dval - old_dval) > .1){
-                    S52_setMarinerParam( S52_MAR_SHALLOW_CONTOUR, dval * conv );
+                _DisCat nset = DISPLAYBASE;
+                if(wxNOT_FOUND != val.Lower().Find(_T("base")))
+                    nset = DISPLAYBASE;
+                else if(wxNOT_FOUND != val.Lower().Find(_T("mariner")))
+                    nset = MARINERS_STANDARD;
+                else if(wxNOT_FOUND != val.Lower().Find(_T("standard")))
+                    nset = STANDARD;
+                else if(wxNOT_FOUND != val.Lower().Find(_T("all")))
+                    nset = OTHER;
+
+                if(nset != old_nset){
+                    rr |= S52_CHANGED;
+                    ps52plib-> SetDisplayCategory( nset );
+                }
+            }
+
+            else if(token.StartsWith( _T("prefs_shallowdepth"))){
+                double old_dval = S52_getMarinerParam( S52_MAR_SHALLOW_CONTOUR );
+                double dval;
+                if(val.ToDouble(&dval)){
+                    if(fabs(dval - old_dval) > .1){
+                        S52_setMarinerParam( S52_MAR_SHALLOW_CONTOUR, dval * conv );
+                        rr |= S52_CHANGED;
+                    }
+                }
+            }
+
+            else if(token.StartsWith( _T("prefs_safetydepth"))){
+                double old_dval = S52_getMarinerParam( S52_MAR_SAFETY_CONTOUR );
+                double dval;
+                if(val.ToDouble(&dval)){
+                    if(fabs(dval - old_dval) > .1){
+                        S52_setMarinerParam( S52_MAR_SAFETY_CONTOUR, dval * conv );
+                        rr |= S52_CHANGED;
+                    }
+                }
+            }
+
+            else if(token.StartsWith( _T("prefs_deepdepth"))){
+                double old_dval = S52_getMarinerParam( S52_MAR_DEEP_CONTOUR );
+                double dval;
+                if(val.ToDouble(&dval)){
+                    if(fabs(dval - old_dval) > .1){
+                        S52_setMarinerParam( S52_MAR_DEEP_CONTOUR, dval * conv );
+                        rr |= S52_CHANGED;
+                    }
+                }
+            }
+
+            else if(token.StartsWith( _T("prefs_vectorgraphicsstyle"))){
+                LUPname old_LUP = ps52plib->m_nSymbolStyle;
+
+                if(wxNOT_FOUND != val.Lower().Find(_T("paper")))
+                    ps52plib->m_nSymbolStyle = PAPER_CHART;
+                else if(wxNOT_FOUND != val.Lower().Find(_T("simplified")))
+                    ps52plib->m_nSymbolStyle = SIMPLIFIED;
+
+                if(old_LUP != ps52plib->m_nSymbolStyle)
+                    rr |= S52_CHANGED;
+
+            }
+
+            else if(token.StartsWith( _T("prefs_vectorboundarystyle"))){
+                LUPname old_LUP = ps52plib->m_nBoundaryStyle;
+
+                if(wxNOT_FOUND != val.Lower().Find(_T("plain")))
+                    ps52plib->m_nBoundaryStyle = PLAIN_BOUNDARIES;
+                else if(wxNOT_FOUND != val.Lower().Find(_T("symbolized")))
+                    ps52plib->m_nBoundaryStyle = SYMBOLIZED_BOUNDARIES;
+
+                if(old_LUP != ps52plib->m_nBoundaryStyle)
+                    rr |= S52_CHANGED;
+
+            }
+
+            else if(token.StartsWith( _T("prefs_vectorchartcolors"))){
+                double old_dval = S52_getMarinerParam( S52_MAR_TWO_SHADES );
+
+                if(wxNOT_FOUND != val.Lower().Find(_T("2")))
+                    S52_setMarinerParam( S52_MAR_TWO_SHADES, 1. );
+                else if(wxNOT_FOUND != val.Lower().Find(_T("4")))
+                    S52_setMarinerParam( S52_MAR_TWO_SHADES, 0. );
+
+                double new_dval = S52_getMarinerParam( S52_MAR_TWO_SHADES );
+                if(fabs(new_dval - old_dval) > .1){
                     rr |= S52_CHANGED;
                 }
             }
         }
-
-        else if(token.StartsWith( _T("prefs_safetydepth"))){
-            double old_dval = S52_getMarinerParam( S52_MAR_SAFETY_CONTOUR );
-            double dval;
-            if(val.ToDouble(&dval)){
-                if(fabs(dval - old_dval) > .1){
-                    S52_setMarinerParam( S52_MAR_SAFETY_CONTOUR, dval * conv );
-                    rr |= S52_CHANGED;
-                }
-            }
-        }
-
-        else if(token.StartsWith( _T("prefs_deepdepth"))){
-            double old_dval = S52_getMarinerParam( S52_MAR_DEEP_CONTOUR );
-            double dval;
-            if(val.ToDouble(&dval)){
-                if(fabs(dval - old_dval) > .1){
-                    S52_setMarinerParam( S52_MAR_DEEP_CONTOUR, dval * conv );
-                    rr |= S52_CHANGED;
-                }
-            }
-
-        }
-
-        else if(token.StartsWith( _T("prefs_vectorgraphicsstyle"))){
-            LUPname old_LUP = ps52plib->m_nSymbolStyle;
-
-            if(wxNOT_FOUND != val.Lower().Find(_T("paper")))
-                ps52plib->m_nSymbolStyle = PAPER_CHART;
-            else if(wxNOT_FOUND != val.Lower().Find(_T("simplified")))
-                ps52plib->m_nSymbolStyle = SIMPLIFIED;
-
-            if(old_LUP != ps52plib->m_nSymbolStyle)
-                rr |= S52_CHANGED;
-
-        }
-
-        else if(token.StartsWith( _T("prefs_vectorboundarystyle"))){
-            LUPname old_LUP = ps52plib->m_nBoundaryStyle;
-
-            if(wxNOT_FOUND != val.Lower().Find(_T("plain")))
-                ps52plib->m_nBoundaryStyle = PLAIN_BOUNDARIES;
-            else if(wxNOT_FOUND != val.Lower().Find(_T("symbolized")))
-                ps52plib->m_nBoundaryStyle = SYMBOLIZED_BOUNDARIES;
-
-            if(old_LUP != ps52plib->m_nBoundaryStyle)
-                rr |= S52_CHANGED;
-
-        }
-
-        else if(token.StartsWith( _T("prefs_vectorchartcolors"))){
-            double old_dval = S52_getMarinerParam( S52_MAR_TWO_SHADES );
-
-            if(wxNOT_FOUND != val.Lower().Find(_T("2")))
-                S52_setMarinerParam( S52_MAR_TWO_SHADES, 1. );
-            else if(wxNOT_FOUND != val.Lower().Find(_T("4")))
-                S52_setMarinerParam( S52_MAR_TWO_SHADES, 0. );
-
-            double new_dval = S52_getMarinerParam( S52_MAR_TWO_SHADES );
-            if(fabs(new_dval - old_dval) > .1){
-                 rr |= S52_CHANGED;
-            }
-
-        }
-
     }
 
     // Process Connections
