@@ -7236,6 +7236,11 @@ void OpenGLOptionsDlg::Populate( void )
             m_cbUseAcceleratedPanning->Disable();
         }
     }
+    else{
+        m_cbUseAcceleratedPanning->SetValue( g_GLOptions.m_bUseAcceleratedPanning );
+        m_cbUseAcceleratedPanning->Disable();
+    }
+        
 }
 
 void OpenGLOptionsDlg::OnButtonRebuild( wxCommandEvent& event )
