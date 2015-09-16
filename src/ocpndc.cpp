@@ -398,7 +398,11 @@ void ocpnDC::DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2, bool b_hi
                 float ya = y1;
                 float ldraw = t1 * dashes[0];
                 float lspace = t1 * dashes[1];
-                    
+
+                ldraw = wxMax(ldraw, 4.0);
+                lspace = wxMax(lspace, 4.0);
+                lpix = wxMin(lpix, 2000.0);
+                
                 glBegin( GL_LINES );
                 while( lrun < lpix ) {
                     //    Dash
