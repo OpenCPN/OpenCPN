@@ -988,6 +988,48 @@ Certificate fingerprints:
 
 
 
+Final Notes, OCPN Android Version 1
+
+    1. wxQT build:
+
+        a.  config.....
+
+        $ ../configure --with-qt --build=x86_64-unknown-linux-gnu --host=arm-linux-androideabi --enable-compat28 --disable-shared --disable-arttango --enable-image --disable-dragimage --with-libtiff=no --disable-baseevtloop --disable-xrc --disable-cmdline --disable-miniframe --disable-mdi --disable-stc --disable-ribbon --disable-propgrid --disable-timepick --disable-datepick --disable-xlocale --disable-intl --with-opengl --enable-selectloop
+
+        b.  Notes.....
+           If Networking does not work, there is some trouble with configure script.  Need to manually edit setup.h to enable:
+            #define wxUSE_SELECT_DISPATCHER 1
+           and then rebuild wxQt.
+
+    2.  Qt 5.5 build
+
+           0.  There is a bug in Qt5.5 that prevents Android life cycle events from performing correctly
+                    So, we need to apply the following patch and rebuild Qt5.5
+
+        ------------------ src/gui/kernel/qwindowsysteminterface.cpp ------------------
+index 9a9eab2..6a05d44 100644
+@@ -599,6 +599,15 @@ void QWindowSystemInterface::flushWindowSystemEvents(QEventLoop::ProcessEventsFl
+         QWindowSystemInterfacePrivate::windowSystemEventQueue.clear();
+         return;
+     }
++
++    if (!QGuiApplicationPrivate::qt_qpa_core_dispatcher()) {
++        qWarning().nospace()
++            << "QWindowSystemInterface::flushWindowSystemEvents() invoked without "
++               "QGuiApplicationPrivate::qt_qpa_core_dispatcher, discarding " << count << " events.";
++        QWindowSystemInterfacePrivate::windowSystemEventQueue.clear();
++        return;
++    }
++
+     if (QThread::currentThread() != QGuiApplication::instance()->thread()) {
+         QMutexLocker locker(&QWindowSystemInterfacePrivate::flushEventMutex);
+         QWindowSystemInterfacePrivate::FlushEventsEvent *e = new QWindowSystemInterfacePrivate::FlushEventsEvent(flags);
+
+    Since there is no ABI change, after building, it is sufficient to simply copy the built {lib} directory into the as-downloaded qt installation.  Save original as backup, please..
+
+        At runtime, this will provoke an ADB message:
+    W/libopencpn.so(21974): /home/dsr/Projects/qt5/qtbase/src/gui/kernel/qwindowsysteminterface.cpp:604 (static void QWindowSystemInterface::flushWindowSystemEvents(QEventLoop::ProcessEventsFlags)): QWindowSystemInterface::flushWindowSystemEvents() invoked without QGuiApplicationPrivate::qt_qpa_core_dispatcher, discarding 1 events.
+
 
 
 

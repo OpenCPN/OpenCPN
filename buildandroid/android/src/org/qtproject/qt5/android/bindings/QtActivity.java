@@ -158,6 +158,14 @@ import org.opencpn.WebViewActivity;
 
 import ar.com.daidalos.afiledialog.*;
 
+import com.google.android.vending.licensing.LicenseChecker;
+import com.google.android.vending.licensing.LicenseCheckerCallback;
+import com.google.android.vending.licensing.Policy;
+import com.google.android.vending.licensing.ServerManagedPolicy;
+import com.google.android.vending.licensing.AESObfuscator;
+import android.provider.Settings.Secure;
+import android.accounts.AccountManager;
+
 public class QtActivity extends Activity implements ActionBar.OnNavigationListener
 {
     private final static int MINISTRO_INSTALL_REQUEST_CODE = 0xf3ee; // request code used to know when Ministro instalation is finished
@@ -335,6 +343,17 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     private double m_gminitialZoom;
 
     private boolean m_fullScreen;
+
+    private LicenseCheckerCallback mLicenseCheckerCallback;
+    private LicenseChecker mChecker = null;
+    private Handler mLicenseHandler;
+    private boolean m_licenseOK = true;
+    private static final byte[] SALT = new byte[] {
+     -46, 65, 30, -128, -103, -57, 74, -64, 51, 88, -95,
+     -45, 77, -117, -36, -113, -11, 32, -64, 89
+     };
+
+    private static final String BASE64_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoMqiYIxHmwC+qVcD0KE1xnOA/RJDgOHvnsrSKAvIMJl3P7twBcybJ+/xzjtEXSvNXU0KME9P4r/q1j/A1ST6HFGvzZx90MipX9449LkZmUUlT0MwCX9BqB7Beq5VWOb6hzpoKRFnZHJVoHaJdAfNlg0AYpGosaOM7WiKZX0uHy2y5m5QsF3S+KYoJYzucKqRp39mCBl/zg7osZwSm5HoY9FbRw2D2/MAFwl8YycMYisEqLFlacGNkHYxvdh0x9uY4amo6nn5UndICXdBGBYTghA41hSUrQrDqnAgLy6Uw+/d54j+jezlJcuiUpcfkJECzxYAT6NS3OBEI+2FaVP6XwIDAQAB";
 
     public QtActivity()
     {
@@ -2327,6 +2346,111 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     {
         super.onActivityResult(requestCode, resultCode, data);
     }
+
+    private void doLicenseCheck() {
+        mChecker.checkAccess(mLicenseCheckerCallback);
+    }
+
+    private class MyLicenseCheckerCallback implements LicenseCheckerCallback {
+        public void allow(int reason) {
+            Log.i("OpenCPN", "License allow()");
+            if (isFinishing()) {
+                // Don't update UI if Activity is finishing.
+                return;
+            }
+            // Should allow user access.
+
+            m_licenseOK = true;
+        }
+
+        public void dontAllow(int reason) {
+            if (isFinishing()) {
+                // Don't update UI if Activity is finishing.
+                return;
+            }
+
+            if (reason == Policy.RETRY) {
+                // If the reason received from the policy is RETRY, it was probably
+                // due to a loss of connection with the service, so we should give the
+                // user a chance to retry. So show a dialog to retry.
+                mLicenseHandler.post(new Runnable() {
+                    public void run() {
+                        Log.i("OpenCPN", "License: dontAllow(), RETRY");
+                        m_licenseOK = true;
+                    }
+                });
+
+            } else {
+                // Otherwise, the user is not licensed to use this app.
+                // Your response should always inform the user that the application
+                // is not licensed, but your behavior at that point can vary. You might
+                // provide the user a limited access version of your app or you can
+                // take them to Google Play to purchase the app.
+                mLicenseHandler.post(new Runnable() {
+                    public void run() {
+                        Log.i("OpenCPN", "License: dontAllow(), NOT LICENSED");
+
+                        m_licenseOK = false;
+                        ShowTextDialog("OpenCPN is not licensed on this device.\nPlease visit the Google Play Store to install a valid copy.");
+
+                    }
+                });
+
+            }
+        }
+
+        public void applicationError(int errorCode) {
+/*
+            private static final int LICENSED = 0x0;
+            private static final int NOT_LICENSED = 0x1;
+            private static final int LICENSED_OLD_KEY = 0x2;
+            private static final int ERROR_NOT_MARKET_MANAGED = 0x3;
+            private static final int ERROR_SERVER_FAILURE = 0x4;
+            private static final int ERROR_OVER_QUOTA = 0x5;
+
+            private static final int ERROR_CONTACTING_SERVER = 0x101;
+            private static final int ERROR_INVALID_PACKAGE_NAME = 0x102;
+            private static final int ERROR_NON_MATCHING_UID = 0x103;
+*/
+            Log.i("OpenCPN", "License: applicationError() "  + String.valueOf(errorCode));
+
+            ShowTextDialog("License: applicationError() "  + String.valueOf(errorCode) );
+
+            if (isFinishing()) {
+                // Don't update UI if Activity is finishing.
+                return;
+            }
+       }
+
+    }
+
+    private void ShowTextDialog(final String message){
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+                builder1.setMessage(message);
+                builder1.setCancelable(true);
+                builder1.setNeutralButton("OK",
+                        new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                        if(!m_licenseOK)
+                            finish();
+                    }
+                });
+/*
+                builder1.setNegativeButton("No",
+                        new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+*/
+                AlertDialog alert11 = builder1.create();
+                alert11.show();
+        }
+
+
+
+
     //---------------------------------------------------------------------------
 
     @Override
@@ -2427,6 +2551,46 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         }
 
 //        setContentView(R.layout.activity_main);
+
+
+        // Validate Google Licensing plan...
+
+        // This device must have a Google Play Services account...
+        AccountManager am = AccountManager.get(this);
+        int numAccounts = am.getAccountsByType("com.google").length;
+
+        if(numAccounts == 0) {
+            Log.i("OpenCPN", "No Google account...");
+
+            ShowTextDialog( "OpenCPN is not licensed on this device. Please create a Google Play Services / Play Store account.");
+
+            finish();
+            return;
+
+       } else {
+             // Do the license check as you have an account
+
+        // Try to use more data here. ANDROID_ID is a single point of attack.
+            String deviceId = Secure.getString(getContentResolver(), Secure.ANDROID_ID);
+
+        // Construct the LicenseCheckerCallback.
+            mLicenseCheckerCallback = new MyLicenseCheckerCallback();
+
+        // Construct the LicenseChecker with a Policy.
+            mChecker = new LicenseChecker(
+                this, new ServerManagedPolicy(this,
+                    new AESObfuscator(SALT, getPackageName(), deviceId)),
+                BASE64_PUBLIC_KEY  // Your public licensing key.
+                );
+
+
+        // We need a Handler to manage license server responses
+            mLicenseHandler = new Handler();
+
+        // Initiate a license check
+            doLicenseCheck();
+        }
+
 
         try {
             m_activityInfo = getPackageManager().getActivityInfo(getComponentName(), PackageManager.GET_META_DATA);
@@ -2744,6 +2908,9 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         //Toast.makeText(getApplicationContext(), "onDestroy",Toast.LENGTH_LONG).show();
 
         super.onDestroy();
+        if(null != mChecker)
+            mChecker.onDestroy();
+
         QtApplication.invokeDelegate();
     }
     //---------------------------------------------------------------------------

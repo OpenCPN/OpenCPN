@@ -58,6 +58,9 @@ wxString OpenCPNVersion =
     wxString::Format( wxT("\n      Version %i.%i.%i Build %s"),
         VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_DATE );
 
+    wxString OpenCPNVersionAndroid = wxString::Format(_T("Android Version 1.0.0<br>Base %i.%i.%i<br>Build Date %s"),
+                                     VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_DATE);
+    
 const wxString AboutText =
     wxT("<br>OpenCPN<br>")
     wxT("(c) 2000-2015 The OpenCPN Authors<br><br>");
@@ -263,7 +266,7 @@ void about::Populate( void )
         aboutText.Append( _T("<i>") );
 
 #ifdef __OCPN__ANDROID__    
-    aboutText.Append( AboutText + OpenCPNVersion + OpenCPNInfoAlt );
+    aboutText.Append( AboutText + OpenCPNVersionAndroid  + OpenCPNInfoAlt );
 #else
     aboutText.Append( AboutText + OpenCPNVersion + OpenCPNInfo );
 #endif    

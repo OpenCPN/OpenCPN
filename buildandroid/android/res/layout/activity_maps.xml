@@ -7,5 +7,6 @@
     tools:context=".MapsActivity"
     map:uiRotateGestures="false"
     map:uiTiltGestures="false"
+    map:uiZoomControls="true"
     android:name="com.google.android.gms.maps.SupportMapFragment" />
 
