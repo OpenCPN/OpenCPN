@@ -58,7 +58,7 @@ static int FloatToInt( float a, int limit )
 	return i;
 }
 
-SingleColourFit::SingleColourFit( ColourSet const* colours, int flags )
+SingleColourFit::SingleColourFit( ColourSet * colours, int flags )
   : ColourFit( colours, flags )
 {
 	// grab the single colour

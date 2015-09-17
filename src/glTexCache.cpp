@@ -45,6 +45,7 @@
 #include "chartimg.h"
 #include "chartdb.h"
 #include "OCPNPlatform.h"
+#include "mipmap/mipmap.h"
 
 #ifndef GL_ETC1_RGB8_OES
 #define GL_ETC1_RGB8_OES                                        0x8D64
@@ -120,31 +121,6 @@ JobTicket::JobTicket()
     compcomp_bits_array = NULL;
 }
 
-
-
-/* generate mipmap in software */
-void HalfScaleChartBits( int width, int height, unsigned char *source, unsigned char *target )
-{
-    int newwidth = width / 2;
-    int newheight = height / 2;
-    int stride = width * 3;
-    
-    unsigned char *s = target;
-    unsigned char *t = source;
-    // Average 4 pixels
-    for( int i = 0; i < newheight; i++ ) {
-        for( int j = 0; j < newwidth; j++ ) {
-            
-            for( int k = 0; k < 3; k++ ) {
-                s[0] = ( *t + *( t + 3 ) + *( t + stride ) + *( t + stride + 3 ) ) / 4;
-                s++;
-                t += 1;
-            }
-            t += 3;
-        }
-        t += stride;
-    }
-}
 
 #include "ssl/sha1.h"
 
@@ -282,7 +258,7 @@ void GetFullMap( glTextureDescriptor *ptd,  const wxRect &rect, wxString chart_p
         
         if( level > 0 && ptd->map_array[level - 1] ){
             ptd->map_array[level] = (unsigned char *) malloc( dim * dim * 3 );
-            HalfScaleChartBits( 2*dim, 2*dim, ptd->map_array[level - 1], ptd->map_array[level] );
+            MipMap_24( 2*dim, 2*dim, ptd->map_array[level - 1], ptd->map_array[level] );
         }
         
         else {
@@ -305,7 +281,7 @@ void GetFullMap( glTextureDescriptor *ptd,  const wxRect &rect, wxString chart_p
                 while( i_lev <= level ){
                     if( !ptd->map_array[i_lev] ) {
                         ptd->map_array[i_lev] = (unsigned char *) malloc( dimh * dimh * 3 );
-                        HalfScaleChartBits( 2*dimh, 2*dimh, ptd->map_array[i_lev - 1], ptd->map_array[i_lev] );
+                        MipMap_24( 2*dimh, 2*dimh, ptd->map_array[i_lev - 1], ptd->map_array[i_lev] );
                     }
                     dimh /= 2;
                     i_lev++;
@@ -341,12 +317,8 @@ bool DoCompress(JobTicket *pticket, glTextureDescriptor *ptd, int level)
                 flags = squish::kDxt1 | squish::kColourClusterFit;
             }
 
-            bool b_flip = false;
-//#ifdef __WXMSW__ //ocpnUSE_ocpnBitmap
-//            b_flip = true;
-//#endif            
-            squish::CompressImageRGB_Flatten_Flip_Throttle( ptd->map_array[level], dim, dim, tex_data, flags,
-                                                            true, b_flip, pticket->b_throttle );
+            squish::CompressImageRGBpow2_Flatten_Throttle( ptd->map_array[level], dim, dim, tex_data, flags,
+                                                            true, pticket->b_throttle );
  
         }
         else if(raster_format == GL_ETC1_RGB8_OES) 
@@ -523,7 +495,7 @@ void * CompressionPoolThread::Entry()
         dim /= 2;
         for( int i = 1 ; i < g_mipmap_max_level+1 ; i++ ){
             m_bit_array[i] = (unsigned char *) malloc( dim * dim * 3 );
-            HalfScaleChartBits( 2*dim, 2*dim, m_bit_array[i - 1], m_bit_array[i] );
+            MipMap_24( 2*dim, 2*dim, m_bit_array[i - 1], m_bit_array[i] );
             dim /= 2;
         }
         
@@ -546,12 +518,8 @@ void * CompressionPoolThread::Entry()
                     flags = squish::kDxt1 | squish::kColourClusterFit;
                 }
             
-                bool b_flip = false;
-//    #ifdef __WXMSW__ //ocpnUSE_ocpnBitmap
-//                b_flip = true;
-//    #endif            
-                squish::CompressImageRGB_Flatten_Flip_Throttle( m_bit_array[i], dim, dim, tex_data, flags,
-                                                            true, b_flip, m_pticket->b_throttle );
+                squish::CompressImageRGBpow2_Flatten_Throttle( m_bit_array[i], dim, dim, tex_data, flags,
+                                                            true, m_pticket->b_throttle );
             
             }
             else if(raster_format == GL_ETC1_RGB8_OES) 

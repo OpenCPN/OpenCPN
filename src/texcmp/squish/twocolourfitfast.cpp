@@ -1,6 +1,6 @@
 /* -----------------------------------------------------------------------------
 
-	Copyright (c) 2006 Simon Brown                          si@sjbrown.co.uk
+	Copyright (c) 2015 Sean D'EPagnier
 
 	Permission is hereby granted, free of charge, to any person obtaining
 	a copy of this software and associated documentation files (the 
@@ -22,29 +22,67 @@
 	SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 	
    -------------------------------------------------------------------------- */
+
+#include <string.h>
    
-#include "colourfit.h"
+#include "twocolourfitfast.h"
 #include "colourset.h"
+#include "colourblock.h"
 
 namespace squish {
 
-ColourFit::ColourFit( ColourSet * colours, int flags ) 
-  : m_colours( colours ), 
-	m_flags( flags )
+static int FloatToInt( float a, int limit )
 {
+	// use ANSI round-to-zero behaviour to get round-to-nearest
+	int i = ( int )( a + 0.5f );
+
+	// clamp to the limit
+	if( i < 0 )
+		i = 0;
+	else if( i > limit )
+		i = limit; 
+
+	// done
+	return i;
 }
 
-void ColourFit::Compress( void* block )
+TwoColourFitFast::TwoColourFitFast( ColourSet * colours, int flags )
+  : ColourFit( colours, flags )
 {
-	bool isDxt1 = ( ( m_flags & kDxt1 ) != 0 );
-	if( isDxt1 )
+	// grab the two colours
+	u8 const* values = m_colours->GetPointsu8();
+        memcpy(m_colour, values, 6);
+
+        u8 source[2] = {0, 1};
+        colours->RemapIndices( source, m_indices );
+}
+
+void TwoColourFitFast::Compress3( void* block )
+{
+	// get the block as bytes
+	u8* bytes = ( u8* )block;
+
+        for(int i=0; i<2; i++) {
+            int a = (m_colour[i][0] << 8) | (m_colour[i][1] << 3) | (m_colour[i][2] >> 3);
+
+            // write the endpoints
+            bytes[0] = ( u8 )( a & 0xff );
+            bytes[1] = ( u8 )( a >> 8 );
+
+            bytes += 2;
+        }
+
+	
+	// write the indices
+	for( int i = 0; i < 4; ++i )
 	{
-		Compress3( block );
-		if( !m_colours->IsTransparent() )
-			Compress4( block );
+		u8 const* ind = m_indices + 4*i;
+		bytes[i] = ind[0] | ( ind[1] << 2 ) | ( ind[2] << 4 ) | ( ind[3] << 6 );
 	}
-	else
-		Compress4( block );
+}
+
+void TwoColourFitFast::Compress4( void* block )
+{
 }
 
 } // namespace squish

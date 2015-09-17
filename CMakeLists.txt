@@ -1034,6 +1034,8 @@ IF (OPENGL_FOUND)
     src/texcmp/squish/maths.cpp
     src/texcmp/squish/rangefit.cpp
     src/texcmp/squish/singlecolourfit.cpp
+    src/texcmp/squish/singlecolourfitfast.cpp
+    src/texcmp/squish/twocolourfitfast.cpp
     src/texcmp/squish/squish.cpp
     src/texcmp/etcpak.cpp)
 
@@ -1060,6 +1062,39 @@ IF (OPENGL_FOUND)
         # using sse which makes the compression run about 50% faster
         message (STATUS "Compiling texture compression library with sse support")
         set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "/arch:SSE2 -DSQUISH_USE_SSE=2")
+      ENDIF ()
+  ENDIF (NOT MSVC)
+
+
+  SET(SRC_MIPMAP
+    src/mipmap/mipmap.c
+    src/mipmap/mipmap_sse.c
+    src/mipmap/mipmap_sse2.c
+    src/mipmap/mipmap_ssse3.c
+    src/mipmap/mipmap_avx2.c)
+
+  ADD_LIBRARY(MIPMAP ${SRC_MIPMAP})
+  SET(EXTRA_LIBS ${EXTRA_LIBS} MIPMAP)
+
+  # always use optimizations for the texture compression which is much faster
+  IF ( NOT MSVC )
+      set_property(TARGET MIPMAP PROPERTY COMPILE_FLAGS "-O3")
+
+      IF (( ARCH MATCHES "i386" OR ARCH MATCHES "amd64" OR ARCH MATCHES "x86_64") AND NOT QT_ANDROID)
+        set_source_files_properties(src/mipmap/mipmap_sse.c PROPERTIES COMPILE_FLAGS "-msse")
+        set_source_files_properties(src/mipmap/mipmap_sse2.c PROPERTIES COMPILE_FLAGS "-msse2")
+        set_source_files_properties(src/mipmap/mipmap_ssse3.c PROPERTIES COMPILE_FLAGS "-mssse3")
+        set_source_files_properties(src/mipmap/mipmap_avx2.c PROPERTIES COMPILE_FLAGS "-mavx2")
+      ELSE ()
+#        neon version not yet tested or implemented
+#        set_source_files_properties(src/mipmap/mipmap_neon.c PROPERTIES COMPILE_FLAGS "-mfpu=neon")
+      ENDIF ()
+  ELSE (NOT MSVC)
+        # try to use sse on x86 based systems
+      IF ( ARCH MATCHES "i386" OR ARCH MATCHES "amd64" OR ARCH MATCHES "x86_64")
+        set_source_files_properties(src/mipmap/mipmap_sse.c PROPERTIES COMPILE_FLAGS "/arch:SSE")
+        set_source_files_properties(src/mipmap/mipmap_sse2.c PROPERTIES COMPILE_FLAGS "/arch:SSE2")
+        set_source_files_properties(src/mipmap/mipmap_ssse3.c PROPERTIES COMPILE_FLAGS "/arch:SSSE3")
       ENDIF ()
   ENDIF (NOT MSVC)
 
@@ -1338,6 +1373,7 @@ ADD_LIBRARY(gorp ${HDRS} ${SRCS}
         ${SRC_S57ENC}
 #        ${SRC_GARMINHOST}
         ${SRC_TEXCMP}
+        ${SRC_MIPMAP}
         ${SRC_SYMBOLS}
         )
         
