@@ -1428,6 +1428,8 @@ void GRIBOverlayFactory::DrawNumbers( wxPoint p, double value, int settings, wxC
         glColor4ub(back_color.Red(), back_color.Green(),
 					back_color.Blue(), m_Settings.m_iOverlayTransparency);
 
+        glLineWidth(1);
+
         wxString label = getLabelString(value, settings);
         int w, h;
         m_TexFontNumbers.GetTextExtent( label, &w, &h );
