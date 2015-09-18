@@ -27,7 +27,8 @@
 #include <string.h>
 #include "mipmap.h"
 
-#ifdef __SSE2__
+#if defined(__SSE2__) || defined(__MSVC__)
+
 #include <emmintrin.h>
 
 // typically 8 times faster than generic

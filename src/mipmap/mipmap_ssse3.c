@@ -27,7 +27,8 @@
 #include <string.h>
 #include "mipmap.h"
 
-#ifdef __SSSE3__
+#if defined(__SSSE3__) || defined(__MSVC__)
+
 #include <tmmintrin.h>
 
 // typically 5 times faster than generic

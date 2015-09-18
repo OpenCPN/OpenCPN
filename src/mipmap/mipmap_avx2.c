@@ -27,7 +27,7 @@
 #include <string.h>
 #include "mipmap.h"
 
-#ifdef __AVX2__
+#if defined(__AVX2__) || defined(__MSVC__)
 #include <immintrin.h>
 
 // typically 16 times faster than generic

@@ -24,6 +24,18 @@
  ***************************************************************************
  */
 
+#ifndef __MIPMAP_H__
+#define __MIPMAP_H__
+
+#ifdef __MSVC__
+#define bit_SSE         (1 << 25)
+#define bit_SSE2        (1 << 26)
+#define bit_SSE3        (1 << 0)
+#define bit_SSSE3       (1 << 9)
+#define bit_AVX2        (1 << 5)
+#endif
+
+
 #ifdef  __cplusplus
 extern "C" {
 #endif
@@ -43,4 +55,5 @@ void MipMap_32_avx2( int width, int height, unsigned char *source, unsigned char
 
 #ifdef  __cplusplus
 }
+#endif
 #endif

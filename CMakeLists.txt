@@ -1067,6 +1067,7 @@ IF (OPENGL_FOUND)
 
 
   SET(SRC_MIPMAP
+    src/mipmap/mipmap.h
     src/mipmap/mipmap.c
     src/mipmap/mipmap_sse.c
     src/mipmap/mipmap_sse2.c
@@ -1084,7 +1085,15 @@ IF (OPENGL_FOUND)
         set_source_files_properties(src/mipmap/mipmap_sse.c PROPERTIES COMPILE_FLAGS "-msse")
         set_source_files_properties(src/mipmap/mipmap_sse2.c PROPERTIES COMPILE_FLAGS "-msse2")
         set_source_files_properties(src/mipmap/mipmap_ssse3.c PROPERTIES COMPILE_FLAGS "-mssse3")
-        set_source_files_properties(src/mipmap/mipmap_avx2.c PROPERTIES COMPILE_FLAGS "-mavx2")
+
+        IF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    # require at least gcc 4.8
+            IF (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.8)
+        ELSE()
+            set_source_files_properties(src/mipmap/mipmap_avx2.c PROPERTIES COMPILE_FLAGS "-mavx2")
+        ENDIF(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.8)
+        ENDIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+        
       ELSE ()
 #        neon version not yet tested or implemented
 #        set_source_files_properties(src/mipmap/mipmap_neon.c PROPERTIES COMPILE_FLAGS "-mfpu=neon")
@@ -1094,7 +1103,7 @@ IF (OPENGL_FOUND)
       IF ( ARCH MATCHES "i386" OR ARCH MATCHES "amd64" OR ARCH MATCHES "x86_64")
         set_source_files_properties(src/mipmap/mipmap_sse.c PROPERTIES COMPILE_FLAGS "/arch:SSE")
         set_source_files_properties(src/mipmap/mipmap_sse2.c PROPERTIES COMPILE_FLAGS "/arch:SSE2")
-        set_source_files_properties(src/mipmap/mipmap_ssse3.c PROPERTIES COMPILE_FLAGS "/arch:SSSE3")
+        set_source_files_properties(src/mipmap/mipmap_avx2.c PROPERTIES COMPILE_FLAGS "/arch:AVX")
       ENDIF ()
   ENDIF (NOT MSVC)
 

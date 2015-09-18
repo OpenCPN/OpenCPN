@@ -153,6 +153,10 @@ void MipMap_32_arm( int width, int height, unsigned char *source, unsigned char 
 void (*MipMap_24)( int width, int height, unsigned char *source, unsigned char *target ) = MipMap_24_generic;
 void (*MipMap_32)( int width, int height, unsigned char *source, unsigned char *target ) = MipMap_32_generic;
 
+#define GCC_VERSION (__GNUC__ * 10000 \
++ __GNUC_MINOR__ * 100 \
++ __GNUC_PATCHLEVEL__)
+
 void MipMap_ResolveRoutines()
 {
 #if defined(__x86_64__) || defined(__i686__) || defined(__MSVC__)
@@ -171,14 +175,18 @@ void MipMap_ResolveRoutines()
         if(info[3] & bit_SSE)
             MipMap_32 = MipMap_32_sse;
 
-        if(info[2] & bit_SSSE3)
-            MipMap_24 = MipMap_24_ssse3;
+//        if(info[2] & bit_SSSE3)
+//            MipMap_24 = MipMap_24_ssse3;
     }
+    
+#if (GCC_VERSION > 40800) || defined(__MSVC__)
     if (nIds >= 0x00000007) {
         cpuid(info,0x00000007);
 
         if(info[1] & bit_AVX2)
             MipMap_32 = MipMap_32_avx2;
     }
+#endif
+
 #endif
 }
