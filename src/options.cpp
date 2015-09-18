@@ -4462,6 +4462,7 @@ void options::OnGLClicked( wxCommandEvent& event )
 
 void options::OnOpenGLOptions( wxCommandEvent& event )
 {
+#ifdef ocpnUSE_GL
     OpenGLOptionsDlg dlg( this );
 
     if ( dlg.ShowModal() == wxID_OK ) {
@@ -4490,6 +4491,7 @@ void options::OnOpenGLOptions( wxCommandEvent& event )
         m_returnChanges = REBUILD_RASTER_CACHE;
         Finish();
     }
+#endif
 }
 
 void options::OnChartDirListSelect( wxCommandEvent& event )
@@ -7082,6 +7084,7 @@ void SentenceListDlg::OnCheckAllClick( wxCommandEvent& event )
 // OpenGLOptionsDlg
 enum { ID_BUTTON_REBUILD, ID_BUTTON_CLEAR };
 
+#ifdef ocpnUSE_GL
 BEGIN_EVENT_TABLE( OpenGLOptionsDlg, wxDialog )
     EVT_BUTTON( ID_BUTTON_REBUILD, OpenGLOptionsDlg::OnButtonRebuild )
     EVT_BUTTON( ID_BUTTON_CLEAR, OpenGLOptionsDlg::OnButtonClear )
@@ -7286,3 +7289,5 @@ const wxString OpenGLOptionsDlg::GetTextureCacheSize( void )
     mb = mb / 1024.0;
     return wxString::Format( _T( "%.1f GB" ), mb );
 }
+
+#endif // ocpnUSE_GL
