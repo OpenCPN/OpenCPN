@@ -175,8 +175,8 @@ void MipMap_ResolveRoutines()
         if(info[3] & bit_SSE)
             MipMap_32 = MipMap_32_sse;
 
-//        if(info[2] & bit_SSSE3)
-//            MipMap_24 = MipMap_24_ssse3;
+        if(info[2] & bit_SSSE3)
+            MipMap_24 = MipMap_24_ssse3;
     }
     
 #if (GCC_VERSION > 40800) || defined(__MSVC__)
