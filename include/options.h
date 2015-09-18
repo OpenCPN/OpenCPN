@@ -870,6 +870,7 @@ class SentenceListDlg : private Uncopyable, public wxDialog
     wxArrayString m_sentences;
 };
 
+#ifdef ocpnUSE_GL
 class OpenGLOptionsDlg : private Uncopyable, public wxDialog
 {
   public:
@@ -897,6 +898,7 @@ class OpenGLOptionsDlg : private Uncopyable, public wxDialog
 
     DECLARE_EVENT_TABLE()
 };
+#endif
 
 #define ID_MMSI_PROPS_LIST 10073
 
