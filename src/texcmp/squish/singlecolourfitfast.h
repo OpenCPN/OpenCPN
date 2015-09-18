@@ -1,6 +1,6 @@
 /* -----------------------------------------------------------------------------
 
-	Copyright (c) 2006 Simon Brown                          si@sjbrown.co.uk
+	Copyright (c) 2015 Sean D'EPagnier
 
 	Permission is hereby granted, free of charge, to any person obtaining
 	a copy of this software and associated documentation files (the 
@@ -23,28 +23,30 @@
 	
    -------------------------------------------------------------------------- */
    
+#ifndef SQUISH_SINGLECOLOURFITFAST_H
+#define SQUISH_SINGLECOLOURFITFAST_H
+
+#include <limits.h>
+#include <squish.h>
 #include "colourfit.h"
-#include "colourset.h"
 
 namespace squish {
 
-ColourFit::ColourFit( ColourSet * colours, int flags ) 
-  : m_colours( colours ), 
-	m_flags( flags )
-{
-}
+class ColourSet;
 
-void ColourFit::Compress( void* block )
+class SingleColourFitFast : public ColourFit
 {
-	bool isDxt1 = ( ( m_flags & kDxt1 ) != 0 );
-	if( isDxt1 )
-	{
-		Compress3( block );
-		if( !m_colours->IsTransparent() )
-			Compress4( block );
-	}
-	else
-		Compress4( block );
-}
+public:
+	SingleColourFitFast( ColourSet * colours, int flags );
+	
+	virtual void Compress3( void* block );
+	virtual void Compress4( void* block );
+	
+private:
+	
+	u8 m_colour[3];
+};
 
 } // namespace squish
+
+#endif // ndef SQUISH_SINGLECOLOURFITFAST_H

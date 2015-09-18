@@ -1,6 +1,6 @@
 /* -----------------------------------------------------------------------------
 
-	Copyright (c) 2006 Simon Brown                          si@sjbrown.co.uk
+	Copyright (c) 2015 Sean D'EPagnier
 
 	Permission is hereby granted, free of charge, to any person obtaining
 	a copy of this software and associated documentation files (the 
@@ -22,29 +22,38 @@
 	SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 	
    -------------------------------------------------------------------------- */
+
+#include <string.h>
    
-#include "colourfit.h"
+#include "singlecolourfitfast.h"
 #include "colourset.h"
+#include "colourblock.h"
 
 namespace squish {
 
-ColourFit::ColourFit( ColourSet * colours, int flags ) 
-  : m_colours( colours ), 
-	m_flags( flags )
+SingleColourFitFast::SingleColourFitFast( ColourSet * colours, int flags )
+  : ColourFit( colours, flags )
 {
+	// grab the single colour
+	u8 const* values = m_colours->GetPointsu8();
+        memcpy(m_colour, values, 3);
 }
 
-void ColourFit::Compress( void* block )
+void SingleColourFitFast::Compress3( void* block )
 {
-	bool isDxt1 = ( ( m_flags & kDxt1 ) != 0 );
-	if( isDxt1 )
-	{
-		Compress3( block );
-		if( !m_colours->IsTransparent() )
-			Compress4( block );
-	}
-	else
-		Compress4( block );
+	// get the block as bytes
+	u8* bytes = ( u8* )block;
+
+        int a = (m_colour[0] << 8) | (m_colour[1] << 3) | (m_colour[2] >> 3);
+
+	// write the endpoints
+	bytes[0] = ( u8 )( a & 0xff );
+	bytes[1] = ( u8 )( a >> 8 );
+        memset(bytes + 2, 0, 6);
+}
+
+void SingleColourFitFast::Compress4( void* block )
+{
 }
 
 } // namespace squish

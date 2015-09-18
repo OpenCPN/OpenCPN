@@ -1324,6 +1324,8 @@ bool GribRecord::getInterpolatedValues(double &M, double &A,
 
         vx = GRX->getValue(i0, j0);
         vy = GRY->getValue(i0, j0);
+        if (vx == GRIB_NOTDEF || vy == GRIB_NOTDEF)
+            return false;
 
         M = sqrt(vx*vx + vy*vy);
         A = atan2(-vx, -vy) * 180 / M_PI;
