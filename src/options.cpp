@@ -4982,8 +4982,6 @@ void options::OnApplyClick( wxCommandEvent& event )
     g_fog_overzoom = !pOverzoomEmphasis->GetValue();
     g_oz_vector_scale = !pOZScaleVector->GetValue();
 
-    g_bopengl = pOpenGL->GetValue();
-
     g_bsmoothpanzoom = pSmoothPanZoom->GetValue();
 
     long update_val = 1;
@@ -5098,6 +5096,10 @@ void options::OnApplyClick( wxCommandEvent& event )
 
     g_TalkerIdText = m_TalkerIdText->GetValue().MakeUpper();
 
+    if ( g_bopengl != pOpenGL->GetValue() )
+        m_returnChanges |= GL_CHANGED;
+    g_bopengl = pOpenGL->GetValue();
+    
 #ifdef USE_S57
     //   Handle Vector Charts Tab
     g_cm93_zoom_factor = m_pSlider_CM93_Zoom->GetValue();
@@ -5116,15 +5118,13 @@ void options::OnApplyClick( wxCommandEvent& event )
     }
 
     if ( ps52plib ) {
-        if ( g_bopengl != pOpenGL->GetValue() ) {
+        if ( m_returnChanges & GL_CHANGED) {
             // Do this now to handle the screen refresh that is automatically
             // generated on Windows at closure of the options dialog...
             ps52plib->FlushSymbolCaches();
             // some CNSY depends on renderer (e.g. CARC)
             ps52plib->ClearCNSYLUPArray();
             ps52plib->GenerateStateHash();
-
-            m_returnChanges |= GL_CHANGED;
         }
 
         enum _DisCat nset = OTHER;
