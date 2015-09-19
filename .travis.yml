@@ -6,3 +6,9 @@ script:
     - mkdir build && cd build
     - cmake ../
     - make
+
+notifications:
+    email: false
+    
+git:
+    depth: 10
