@@ -285,7 +285,7 @@ ENDIF()
 IF((_wx_selected_config MATCHES "qt-armv7"))
 SET(wxWidgets_USE_LIBS base core     xml html adv aui)
 ELSE()
-SET(wxWidgets_USE_LIBS base core net xml html adv aui)
+  SET(wxWidgets_USE_LIBS net xml html adv aui core base)
 ENDIF()
 
 OPTION (USE_GL "Enable OpenGL support" ON)
@@ -343,7 +343,7 @@ ENDIF(USE_GL)
 
 IF(OPENGL_FOUND)
 
-    SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
+    SET(wxWidgets_USE_LIBS gl ${wxWidgets_USE_LIBS} )
     INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR})
 
     MESSAGE (STATUS "Found OpenGL..." )
@@ -367,6 +367,12 @@ SET( wxWidgets_USE_UNIVERSAL OFF)
 SET( wxWidgets_USE_STATIC OFF)
 
 FIND_PACKAGE(wxWidgets REQUIRED)
+
+IF(MSYS)
+# this is to convert msys to windows paths, and handle the missing /usr
+STRING( REGEX REPLACE "/usr/local" ";C:/MinGW/msys/1.0/local" wxWidgets_INCLUDE_DIRS ${wxWidgets_INCLUDE_DIRS} )
+ENDIF(MSYS)
+
 INCLUDE(${wxWidgets_USE_FILE})
     MESSAGE (STATUS "Found wxWidgets..." )
     MESSAGE (STATUS "${wxWidgets_LIBRARIES}")
@@ -418,6 +424,11 @@ IF(NOT WIN32 AND NOT APPLE )
 #    SET(EXTRA_LIBS ${EXTRA_LIBS} "gcov")
 ENDIF(NOT WIN32 AND NOT APPLE)
 
+IF(MINGW)
+  ADD_DEFINITIONS( "-Wall -Wno-unused -Wno-cpp -fexceptions" )
+  ADD_DEFINITIONS( " -g -fno-strict-aliasing")
+ENDIF(MINGW)
+
 IF( APPLE )
   ADD_DEFINITIONS( "-Wall -Wno-unused -fexceptions -Wno-overloaded-virtual" )
   ADD_DEFINITIONS( " -g -fno-strict-aliasing")
@@ -425,26 +436,26 @@ IF( APPLE )
   ADD_DEFINITIONS( " -D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_" )
 ENDIF(APPLE)
 
-#Enable CrashReporting for Windows and Linux
-IF(WIN32)
+#Enable CrashReporting for Windows (visual studio) and Linux
+IF(MSVC)
     ADD_DEFINITIONS(-DOCPN_USE_CRASHRPT)
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/buildwin/crashrpt)
     SET(EXTRA_LIBS ${EXTRA_LIBS} ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/CrashRpt1402.lib)
     SET(CMAKE_EXE_LINKER_FLAGS /DEBUG)
-ELSE(WIN32)
+ELSE(MSVC)
     IF(NOT APPLE AND NOT QT_ANDROID)
         IF(CMAKE_BUILD_TYPE MATCHES "Rel*")
             ADD_DEFINITIONS(-DLINUX_CRASHRPT)
         ENDIF(CMAKE_BUILD_TYPE MATCHES "Rel*")
     ENDIF(NOT APPLE AND NOT QT_ANDROID)
-ENDIF(WIN32)
+ENDIF(MSVC)
 
 # Add some definitions to satisfy MS
-IF(WIN32)
+IF(MSVC)
     ADD_DEFINITIONS(-D__MSVC__)
     ADD_DEFINITIONS(-D_CRT_NONSTDC_NO_DEPRECATE -D_CRT_SECURE_NO_DEPRECATE)
     ADD_DEFINITIONS(-DPSAPI_VERSION=1)
-ENDIF(WIN32)
+ENDIF(MSVC)
 
 # Location where cmake first looks for cmake modules.
 SET(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/build)
@@ -1362,9 +1373,9 @@ ENDIF(BUNDLE_DOCS MATCHES "ON")
 
 
 TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
-      ${wxWidgets_LIBRARIES}
       NMEA0183
       ${EXTRA_LIBS}
+      ${wxWidgets_LIBRARIES}
       )
 
 set_target_properties(${PACKAGE_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST
@@ -1406,10 +1417,26 @@ ENDIF(NOT APPLE AND NOT QT_ANDROID)
 IF(WIN32)
 TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
 	setupapi.lib
-	gdiplus.lib
 	glu32.lib
-        Psapi.lib
-)
+        psapi.lib
+        )
+
+# use gdi plus only on MSVC, it is not a free library
+IF(MSVC)
+  TARGET_LINK_LIBRARIES(${PACKAGE_NAME} gdiplus.lib)
+ENDIF(MSVC)
+
+IF(MINGW)
+  # assuming wxwidgets is compiled with unicode, this is needed for mingw headers
+  ADD_DEFINITIONS( " -DUNICODE" )
+  # this is needed for garmin jeeps code
+  ADD_DEFINITIONS( " -D_UNICODE" )
+  TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
+    ${OPENGL_LIBRARIES}
+    wsock32.lib
+    )
+ENDIF(MINGW)
+
 ENDIF(WIN32)
 
 IF(UNIX)
@@ -1628,7 +1655,9 @@ FILE(GLOB wxdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/wxWidgets/*.dll")
 INSTALL(FILES ${wxdll_files} DESTINATION ".")
 FILE(GLOB vcdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/vc/*.dll")
 INSTALL(FILES ${vcdll_files} DESTINATION ".")
+ENDIF(WIN32 AND NOT UNIX)
 
+IF(MSVC)
 INSTALL(FILES ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/CrashRpt1402.dll DESTINATION ${PREFIX_PKGDATA} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
 INSTALL(FILES ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/CrashSender1402.exe DESTINATION ${PREFIX_PKGDATA} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
 INSTALL(FILES ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/crashrpt_lang.ini DESTINATION ${PREFIX_PKGDATA} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
@@ -1636,7 +1665,7 @@ INSTALL(FILES ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/dbghelp.dll DESTINATION ${PR
 INSTALL(FILES ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/PrivacyPolicy.txt DESTINATION ${PREFIX_PKGDATA} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
 INSTALL(FILES ${CMAKE_SOURCE_DIR}/buildwin/ocpn_gltest1.exe DESTINATION ${PREFIX_PKGDATA} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
 
-ENDIF(WIN32 AND NOT UNIX)
+ENDIF(MSVC)
 
 MESSAGE (STATUS "")
 
@@ -1674,9 +1703,13 @@ IF(WIN32 AND NOT UNIX)
   SET(CPACK_NSIS_DIR "${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode")  #Gunther
   SET(CPACK_BUILDWIN_DIR "${CMAKE_SOURCE_DIR}/buildwin")  #Gunther
 
+  IF(MINGW)
+    SET(CPACK_STRIP_FILES "bin/opencpn")
+  ENDIF(MINGW)
+
 ELSE(WIN32 AND NOT UNIX)
   SET(CPACK_PACKAGE_INSTALL_DIRECTORY ${PACKAGE_NAME})
-  SET(CPACK_STRIP_FILES "bin/opencpn.exe")
+  SET(CPACK_STRIP_FILES "bin/opencpn")
   SET(CPACK_SOURCE_STRIP_FILES "")
   SET(CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME}_${PACKAGE_VERSION}-${PACKAGE_RELEASE}_${ARCH}" )
 
