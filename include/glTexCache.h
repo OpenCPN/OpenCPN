@@ -63,6 +63,8 @@ struct CatalogEntryValue
     uint32_t    compressed_size;
 }; 
 
+#define CATALOG_ENTRY_SERIAL_SIZE 6 * sizeof(uint32_t)
+
 class CatalogEntry
 {
 public:

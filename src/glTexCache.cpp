@@ -882,7 +882,7 @@ CatalogEntry::CatalogEntry(int level, int x0, int y0, ColorScheme colorscheme)
 
 int CatalogEntry::GetSerialSize()
 {
-    return 6 * sizeof(uint32_t);
+    return CATALOG_ENTRY_SERIAL_SIZE;
 }
 
 void CatalogEntry::Serialize( unsigned char *t)
@@ -1941,7 +1941,7 @@ bool glTexFactory::WriteCatalogAndHeader()
         
         CatalogEntry ps;
         int buf_size =  ps.GetSerialSize();
-        unsigned char buf[buf_size];
+        unsigned char buf[CATALOG_ENTRY_SERIAL_SIZE];   // MSVC requires constant stack array size...
         int new_n_catalog_entries = 0;
         CatalogEntry p;
         wxRect rect;
