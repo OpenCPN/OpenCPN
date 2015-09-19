@@ -1,0 +1,8 @@
+language: cpp
+install:
+    - sudo apt-get install libwxgtk3.0-dev libwxgtk3.0-0
+
+script:
+    - mkdir build && cd build
+    - cmake ../
+    - make
