@@ -1874,9 +1874,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
       }
       else {                            // This is a cm93 dataset, specified as yada/yada/cm93
             wxString dir_plus = dir_name;
-#ifdef __WXMSW__
             dir_plus += wxFileName::GetPathSeparator();
-#endif            
             FileList .Add(dir_plus);
       }
 
