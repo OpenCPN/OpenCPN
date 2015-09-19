@@ -195,8 +195,8 @@ void CompressDataETC(const unsigned char *data, int dim, int size,
                     memcpy(block + (bcol*4+brow)*3,
                            data + ((row+brow)*dim + col+bcol)*3, 3);
                     
-                    extern uint64_t ProcessRGB( const uint8_t* src );
-                *tex_data64++ = ProcessRGB( block );
+            extern uint64_t ProcessRGB( const uint8_t* src );
+            *tex_data64++ = ProcessRGB( block );
         }
 }
 
@@ -304,56 +304,50 @@ bool DoCompress(JobTicket *pticket, glTextureDescriptor *ptd, int level)
         if(size < 8)
             size = 8;
     }
-        GLuint raster_format = pticket->pFact->GetRasterFormat();
-    
-        unsigned char *tex_data = (unsigned char*)malloc(size);
-        
-        if(raster_format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT) {
-            // color range fit is worse quality but twice as fast
-            int flags = squish::kDxt1 | squish::kColourRangeFit;
-            
-            if( g_GLOptions.m_bTextureCompressionCaching) {
-                /* use slower cluster fit since we are building the cache for
-                 * better quality, this takes roughly 25% longer and uses about
-                 * 10% more disk space (result doesn't compress as well with lz4) */
-                flags = squish::kDxt1 | squish::kColourClusterFit;
-            }
 
-            squish::CompressImageRGBpow2_Flatten_Throttle( ptd->map_array[level], dim, dim, tex_data, flags,
+    GLuint raster_format = pticket->pFact->GetRasterFormat();
+    
+    unsigned char *tex_data = (unsigned char*)malloc(size);
+        
+    if(raster_format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT) {
+        // color range fit is worse quality but twice as fast
+        int flags = squish::kDxt1 | squish::kColourRangeFit;
+            
+        if( g_GLOptions.m_bTextureCompressionCaching) {
+            /* use slower cluster fit since we are building the cache for
+             * better quality, this takes roughly 25% longer and uses about
+             * 10% more disk space (result doesn't compress as well with lz4) */
+            flags = squish::kDxt1 | squish::kColourClusterFit;
+        }
+
+        squish::CompressImageRGBpow2_Flatten_Throttle( ptd->map_array[level], dim, dim, tex_data, flags,
                                                             true, pticket->b_throttle );
  
-        }
-        else if(raster_format == GL_ETC1_RGB8_OES) 
-            CompressDataETC(ptd->map_array[level], dim, size, tex_data);
+    }
+    else if(raster_format == GL_ETC1_RGB8_OES) 
+        CompressDataETC(ptd->map_array[level], dim, size, tex_data);
         
-        else if(raster_format == GL_COMPRESSED_RGB_FXT1_3DFX) {
-            CompressUsingGPU( ptd, raster_format, level, false);    // no post compression
+    else if(raster_format == GL_COMPRESSED_RGB_FXT1_3DFX) {
+        CompressUsingGPU( ptd, raster_format, level, false);    // no post compression
             
-        }
+    }
 
-        //  Store the pointer to compressed data in the ptd
-        ptd->CompressedArrayAccess( CA_WRITE, tex_data, level);
+    //  Store the pointer to compressed data in the ptd
+    ptd->CompressedArrayAccess( CA_WRITE, tex_data, level);
         
-        if(pticket->bpost_zip_compress) {
-            int max_compressed_size = LZ4_COMPRESSBOUND(g_tile_size);
-            if(max_compressed_size){
-                unsigned char *compressed_data = (unsigned char *)malloc(max_compressed_size);
-                int compressed_size = LZ4_compressHC2( (char *)ptd->CompressedArrayAccess( CA_READ, NULL, level),
+    if(pticket->bpost_zip_compress) {
+        int max_compressed_size = LZ4_COMPRESSBOUND(g_tile_size);
+        if(max_compressed_size){
+            unsigned char *compressed_data = (unsigned char *)malloc(max_compressed_size);
+            int compressed_size = LZ4_compressHC2( (char *)ptd->CompressedArrayAccess( CA_READ, NULL, level),
                                                    (char *)compressed_data, size, 4);
-                ptd->CompCompArrayAccess( CA_WRITE, compressed_data, level);
-                ptd->compcomp_size[level] = compressed_size;
-            }
+            ptd->CompCompArrayAccess( CA_WRITE, compressed_data, level);
+            ptd->compcomp_size[level] = compressed_size;
         }
+    }
         
-    
     return true;
-    
 }
-
-
-
-
-
 
 
 
@@ -381,9 +375,6 @@ void my_translate(unsigned int code, _EXCEPTION_POINTERS *ep)
     throw SE_Exception();
 }
 #endif
-
-
-
 
 
 
@@ -428,9 +419,6 @@ CompressionPoolThread::CompressionPoolThread(JobTicket *ticket, wxEvtHandler *me
     Create();
 }
 
-
-
-
 void * CompressionPoolThread::Entry()
 {
 
@@ -467,22 +455,22 @@ void * CompressionPoolThread::Entry()
         pchart = ChartData->OpenChartFromDBAndLock(index, FULL_INIT );
         
         if(pchart && ChartData->IsChartLocked( index )){
-                ChartBaseBSB *pBSBChart = dynamic_cast<ChartBaseBSB*>( pchart );
-                ChartPlugInWrapper *pPlugInWrapper = dynamic_cast<ChartPlugInWrapper*>( pchart );
+            ChartBaseBSB *pBSBChart = dynamic_cast<ChartBaseBSB*>( pchart );
+            ChartPlugInWrapper *pPlugInWrapper = dynamic_cast<ChartPlugInWrapper*>( pchart );
                 
-                if( pBSBChart ) {
-                    unsigned char *t_buf = (unsigned char *) malloc( ncrect.width * ncrect.height * 4 );
-                    m_bit_array[0] = t_buf;
+            if( pBSBChart ) {
+                unsigned char *t_buf = (unsigned char *) malloc( ncrect.width * ncrect.height * 4 );
+                m_bit_array[0] = t_buf;
 
-                    pBSBChart->GetChartBits( ncrect, t_buf, 1 );
-                }
-                else if( pPlugInWrapper ){
-                    unsigned char *t_buf = (unsigned char *) malloc( ncrect.width * ncrect.height * 4 );
-                    m_bit_array[0] = t_buf;
+                pBSBChart->GetChartBits( ncrect, t_buf, 1 );
+            }
+            else if( pPlugInWrapper ){
+                unsigned char *t_buf = (unsigned char *) malloc( ncrect.width * ncrect.height * 4 );
+                m_bit_array[0] = t_buf;
                     
-                    pPlugInWrapper->GetChartBits( ncrect, t_buf, 1 );
-                }
-                ChartData->UnLockCacheChart(index);
+                pPlugInWrapper->GetChartBits( ncrect, t_buf, 1 );
+            }
+            ChartData->UnLockCacheChart(index);
        }
        else
            m_bit_array[0] = NULL;
@@ -552,10 +540,10 @@ void * CompressionPoolThread::Entry()
             m_bit_array[i] = 0;
         }
        
-       if(m_pticket->b_abort){
-           m_pticket->b_isaborted = true;
-           goto SendEvtAndReturn;
-       }
+        if(m_pticket->b_abort){
+            m_pticket->b_isaborted = true;
+            goto SendEvtAndReturn;
+        }
 
         if(m_pticket->bpost_zip_compress) {
             
@@ -615,10 +603,8 @@ SendEvtAndReturn:
 
 
 
-
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(JobList);
-
 
 
 
@@ -954,9 +940,6 @@ void CatalogEntry::DeSerialize( unsigned char *t)
      
 }
     
-
-
-
 
 
 
@@ -1512,7 +1495,6 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     hw_mipmap = false;
 #endif
     
-    
     bool b_need_compress = false;
 
     for(int level = 0; level < g_mipmap_max_level+1; level++ ) {
@@ -1534,9 +1516,7 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
                         
                         // We can safely discard this level's compressed data, since the GPU has it
                         ptd->FreeCompLevel( level );
-                        
                     }
-                    
                 }                      
                 else {
                     if(!ptd->miplevel_upload[level]){
@@ -1560,7 +1540,6 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
                             b_need_compress = true;
                     }
                 }
-                    
             }
             else {
                 if(!ptd->miplevel_upload[level]){
@@ -1572,9 +1551,7 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
                     g_tex_mem_used += uncompressed_size;
                     ptd->miplevel_upload[level] = true;
                 }
-                
             }
-                
         }
    
         if( hw_mipmap &&  (ptd->nGPU_compressed == GPU_TEXTURE_UNCOMPRESSED) ) {
@@ -1609,7 +1586,6 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
         size /= 4;
         if(size < 8) size = 8;
         uncompressed_size /= 4;
-        
     }
 
  
@@ -1636,7 +1612,7 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     
     int mem_used;
     GetMemoryStatus(0, &mem_used);
-//    qDebug() << mem_used;
+    //    qDebug() << mem_used;
     
     unsigned int nCache = 0;
     unsigned int lcache_limit = (unsigned int)g_nCacheLimit * 8 / 10;
@@ -1662,7 +1638,6 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
         DeleteSingleTexture( ptd );
         return false;
     }
-   
 }
 
 
@@ -1671,15 +1646,11 @@ void glTexFactory::UpdateCacheLevel( const wxRect &rect, int level, ColorScheme 
 {
     //  Search for the requested texture
         //  Search the catalog for this particular texture
-        CatalogEntryValue *v = GetCacheEntryValue(level, rect.x, rect.y, color_scheme) ;
+    CatalogEntryValue *v = GetCacheEntryValue(level, rect.x, rect.y, color_scheme) ;
         
-        //      This texture is already done
-        if(v != 0)
-            return;
-    
-    
-    
-//    printf("Update cache level %d\n", level);
+    //      This texture is already done
+    if(v != 0)
+        return;
     
     //    Is this texture tile already defined?
     int array_index = ArrayIndex(rect.x, rect.y);
@@ -1746,7 +1717,7 @@ int glTexFactory::GetTextureLevel( glTextureDescriptor *ptd, const wxRect &rect,
     if(g_GLOptions.m_bTextureCompression &&
         g_GLOptions.m_bTextureCompressionCaching) {
         
-    //  Search for the requested texture
+        //  Search for the requested texture
         //  Search the catalog for this particular texture
         CatalogEntryValue *p = GetCacheEntryValue(level, rect.x, rect.y, color_scheme);
         
@@ -1787,21 +1758,7 @@ int glTexFactory::GetTextureLevel( glTextureDescriptor *ptd, const wxRect &rect,
     }
         
     return MAP_BUFFER_OK;
-        
-            
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1898,7 +1855,6 @@ bool glTexFactory::LoadHeader(void)
     }
     else 
         ret = true;
-        
     
     return ret;
 }
@@ -2065,7 +2021,6 @@ bool glTexFactory::UpdateCache(unsigned char *data, int data_size, glTextureDesc
         //      Write the catalog and Header (which follows the catalog at the end of the file
             m_catalog_offset += compressed_size;
             WriteCatalogAndHeader();
-        
         }
     }
     
@@ -2073,7 +2028,7 @@ bool glTexFactory::UpdateCache(unsigned char *data, int data_size, glTextureDesc
 }
 
 bool glTexFactory::UpdateCachePrecomp(unsigned char *data, int data_size, glTextureDescriptor *ptd, int level,
-                               ColorScheme color_scheme)
+                                      ColorScheme color_scheme)
 {
     bool b_found = false;
     //  Search the catalog for this particular texture
