@@ -6399,6 +6399,9 @@ wxString s57chart::GetObjectAttributeValueAsString( S57Obj *obj, int iatt, wxStr
 
 wxString s57chart::GetAttributeValueAsString( S57attVal *pAttrVal, wxString AttrName )
 {
+    if(NULL == pAttrVal)
+        return _T("");
+    
     wxString value;
     switch( pAttrVal->valType ){
         case OGR_STR: {
@@ -7235,12 +7238,12 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
         wxPoint2DDouble lightPosD(0,0);
         wxPoint2DDouble objPos;
         
-        char *curr_att;
-        int n_attr;
-        wxArrayOfS57attVal *attValArray;
+        char *curr_att = NULL;
+        int n_attr = 0;
+        wxArrayOfS57attVal *attValArray = NULL;
         
-        ListOfObjRazRules::Node *snode;
-        ListOfPI_S57Obj::Node *pnode;
+        ListOfObjRazRules::Node *snode = NULL;
+        ListOfPI_S57Obj::Node *pnode = NULL;
         
         if(Chs57) 
             snode = rule_list->GetLast();
@@ -7307,11 +7310,12 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
                         noAttr++;
                         
                         S57attVal *pAttrVal = NULL;
-                        if(Chs57) 
-                            pAttrVal = attValArray->Item(attrCounter);
-                        else if( target_plugin_chart )
-                            pAttrVal = attValArray->Item(attrCounter);
-                        
+                        if( attValArray ){
+                            if(Chs57) 
+                                pAttrVal = attValArray->Item(attrCounter);
+                            else if( target_plugin_chart )
+                                pAttrVal = attValArray->Item(attrCounter);
+                        }
                         
                         wxString value = s57chart::GetAttributeValueAsString( pAttrVal, curAttrName );
                         
