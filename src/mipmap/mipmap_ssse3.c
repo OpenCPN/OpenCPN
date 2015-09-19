@@ -90,7 +90,7 @@ void MipMap_24_ssse3( int width, int height, unsigned char *source, unsigned cha
             *b6 = _mm_or_ps(*b6, *b7);
 
             __m128i s2 = _mm_set_epi8(Z, Z, Z, Z, Z, Z, Z, Z, Z, 15, 11, 10, 9, 5, 4, 3);
-            __m128i s3 = _mm_set_epi8(Z, 14, 13, 12, 7, 6, 5, 1, 0, Z, Z, Z, Z, Z, Z, Z);
+            __m128i s3 = _mm_set_epi8(Z, 13, 12, 11, 7, 6, 5, 1, 0, Z, Z, Z, Z, Z, Z, Z);
             __m128i s4 = _mm_set_epi8(1, Z, Z, Z, Z, Z, Z, Z, Z, Z, Z, Z, Z, Z, Z, Z);
 
             a7 = _mm_shuffle_epi8(a0, s2);
@@ -144,7 +144,7 @@ void MipMap_24_ssse3( int width, int height, unsigned char *source, unsigned cha
             *b6 = _mm_or_ps(*b6, *b8);
 
             __m128i se = _mm_set_epi8(Z, Z, Z, Z, Z, Z, Z, Z, Z, 13, 12, 11, 7, 6, 5, 1);
-            __m128i sf = _mm_set_epi8(14, 13, 12, 9, 8, 7, 3, 2, 1, Z, Z, Z, Z, Z, Z, Z);
+            __m128i sf = _mm_set_epi8(15, 14, 13, 9, 8, 7, 3, 2, 1, Z, Z, Z, Z, Z, Z, Z);
 
             a7 = _mm_shuffle_epi8(a4, se);
             a8 = _mm_shuffle_epi8(a5, sf);
