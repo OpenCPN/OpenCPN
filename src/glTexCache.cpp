@@ -400,10 +400,6 @@ public:
     
     wxEvtHandler        *m_pMessageTarget;
     JobTicket           *m_pticket;
-    unsigned char       **m_comp_bits;
-    unsigned char       *m_bit_array[10];
-    unsigned char       **m_compcomp_bits;
-    
 };
 
 CompressionPoolThread::CompressionPoolThread(JobTicket *ticket, wxEvtHandler *message_target)
@@ -429,8 +425,9 @@ void * CompressionPoolThread::Entry()
     {
     SetPriority( WXTHREAD_MIN_PRIORITY );
         
+    unsigned char       *bit_array[10];
     for(int i=0 ; i < 10 ; i++)
-        m_bit_array[i] = 0;
+        bit_array[i] = 0;
     
     wxRect ncrect(m_pticket->rect);
 
@@ -438,11 +435,8 @@ void * CompressionPoolThread::Entry()
     ChartBase *pchart;
     int index;
 
-    m_comp_bits = (unsigned char **)calloc(g_mipmap_max_level+1, sizeof(unsigned char *));
-    m_pticket->comp_bits_array = m_comp_bits;
-
-    m_compcomp_bits = (unsigned char **)calloc(g_mipmap_max_level+1, sizeof(unsigned char *));
-    m_pticket->compcomp_bits_array = m_compcomp_bits;
+    m_pticket->comp_bits_array = (unsigned char **)calloc(g_mipmap_max_level+1, sizeof(unsigned char *));
+    m_pticket->compcomp_bits_array = (unsigned char **)calloc(g_mipmap_max_level+1, sizeof(unsigned char *));
     
     if(ChartData){
         index =  ChartData->FinddbIndex( m_pticket->m_ChartPath );
@@ -455,32 +449,32 @@ void * CompressionPoolThread::Entry()
                 
             if( pBSBChart ) {
                 unsigned char *t_buf = (unsigned char *) malloc( ncrect.width * ncrect.height * 4 );
-                m_bit_array[0] = t_buf;
+                bit_array[0] = t_buf;
 
                 pBSBChart->GetChartBits( ncrect, t_buf, 1 );
             }
             else if( pPlugInWrapper ){
                 unsigned char *t_buf = (unsigned char *) malloc( ncrect.width * ncrect.height * 4 );
-                m_bit_array[0] = t_buf;
+                bit_array[0] = t_buf;
                     
                 pPlugInWrapper->GetChartBits( ncrect, t_buf, 1 );
             }
             ChartData->UnLockCacheChart(index);
        }
        else
-           m_bit_array[0] = NULL;
+           bit_array[0] = NULL;
     }
     
     //OK, got the bits?
-    if( m_bit_array[0] ){        
+    if( bit_array[0] ){        
     
         //  Fill in the rest of the private uncompressed array
 
         int dim = g_GLOptions.m_iTextureDimension;
         dim /= 2;
         for( int i = 1 ; i < g_mipmap_max_level+1 ; i++ ){
-            m_bit_array[i] = (unsigned char *) malloc( dim * dim * 3 );
-            MipMap_24( 2*dim, 2*dim, m_bit_array[i - 1], m_bit_array[i] );
+            bit_array[i] = (unsigned char *) malloc( dim * dim * 3 );
+            MipMap_24( 2*dim, 2*dim, bit_array[i - 1], bit_array[i] );
             dim /= 2;
         }
         
@@ -501,14 +495,14 @@ void * CompressionPoolThread::Entry()
                     flags = squish::kDxt1 | squish::kColourClusterFit;
                 }
             
-                squish::CompressImageRGBpow2_Flatten_Throttle( m_bit_array[i], dim, dim, tex_data, flags,
+                squish::CompressImageRGBpow2_Flatten_Throttle( bit_array[i], dim, dim, tex_data, flags,
                                                             true, m_pticket->b_throttle );
             
             }
             else if(g_raster_format == GL_ETC1_RGB8_OES) 
-                CompressDataETC(m_bit_array[i], dim, ssize, tex_data);
+                CompressDataETC(bit_array[i], dim, ssize, tex_data);
             
-            m_comp_bits[i] = tex_data;
+            m_pticket->comp_bits_array[i] = tex_data;
             
             dim /= 2;
             ssize /= 4;
@@ -517,8 +511,8 @@ void * CompressionPoolThread::Entry()
 
             if(m_pticket->b_abort){
                 for( int i = 0; i < g_mipmap_max_level+1; i++ ){
-                    free( m_bit_array[i] );
-                    m_bit_array[i] = 0;
+                    free( bit_array[i] );
+                    bit_array[i] = 0;
                 }
                 m_pticket->b_isaborted = true;
                 goto SendEvtAndReturn;
@@ -529,8 +523,8 @@ void * CompressionPoolThread::Entry()
         
         //  All done with the uncompressed data in the thread
         for( int i = 0; i < g_mipmap_max_level+1; i++ ){
-            free( m_bit_array[i] );
-            m_bit_array[i] = 0;
+            free( bit_array[i] );
+            bit_array[i] = 0;
         }
        
         if(m_pticket->b_abort){
@@ -548,9 +542,9 @@ void * CompressionPoolThread::Entry()
                     goto SendEvtAndReturn;
                 }
                 unsigned char *compressed_data = (unsigned char *)malloc(max_compressed_size);
-                char *src = (char *)(char *)m_comp_bits[i];
+                char *src = (char *)m_pticket->comp_bits_array[i];
                 int compressed_size = LZ4_compressHC2( src, (char *)compressed_data, csize, 4);
-                m_compcomp_bits[i] = compressed_data;
+                m_pticket->compcomp_bits_array[i] = compressed_data;
                 m_pticket->compcomp_size_array[i] = compressed_size;
                 
                 csize /= 4;
