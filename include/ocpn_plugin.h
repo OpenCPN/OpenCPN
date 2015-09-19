@@ -972,8 +972,9 @@ int DECL_EXP PI_PLIBRenderObjectToGL( const wxGLContext &glcc, PI_S57Obj *pObj,
    ... // use current_viewport with GetCanvasLLPix again
 */
 
-extern DECL_EXP void PlugInMultMatrixViewport ( PlugIn_ViewPort *vp );
-extern DECL_EXP void PlugInNormalizeViewport ( PlugIn_ViewPort *vp );
+extern DECL_EXP bool PlugInHasNormalizedViewPort ( PlugIn_ViewPort *vp );
+extern DECL_EXP void PlugInMultMatrixViewport ( PlugIn_ViewPort *vp, float lat=0, float lon=0 );
+extern DECL_EXP void PlugInNormalizeViewport ( PlugIn_ViewPort *vp, float lat=0, float lon=0 );
 
 class wxPoint2DDouble;
 extern "C"  DECL_EXP void GetDoubleCanvasPixLL(PlugIn_ViewPort *vp, wxPoint2DDouble *pp, double lat, double lon);

@@ -723,15 +723,17 @@ void Piano::BuildGLTexture()
 
 void Piano::DrawGL(int off)
 {
+    int nKeys = m_key_array.GetCount();
+    if(!nKeys)
+        return;
+
 #ifdef ocpnUSE_GL
-    unsigned int w = cc1->GetClientSize().x, h = GetHeight(), endx = 0;
+    unsigned int w = cc1->GetClientSize().x, h = GetHeight(), endx;
  
     if(m_tex_piano_height != h)
         BuildGLTexture();
 
     int y1 = off, y2 = y1 + h;
-
-    int nKeys = m_key_array.GetCount();
 
     // we could cache the coordinates and recompute only when the piano hash changes,
     // but the performance is already fast enough at this point

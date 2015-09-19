@@ -1148,6 +1148,15 @@ void s57chart::GetValidCanvasRegion( const ViewPort& VPoint, OCPNRegion *pValidR
     pValidRegion->Union( rxl, ryt, rxr - rxl, ryb - ryt );
 }
 
+LLRegion s57chart::GetValidRegion()
+{
+    double ll[8] = {m_FullExtent.SLAT, m_FullExtent.WLON,
+                    m_FullExtent.SLAT, m_FullExtent.ELON,
+                    m_FullExtent.NLAT, m_FullExtent.ELON,
+                    m_FullExtent.NLAT, m_FullExtent.WLON};
+    return LLRegion(4, ll);
+}
+
 void s57chart::SetColorScheme( ColorScheme cs, bool bApplyImmediate )
 {
     if( !ps52plib ) return;
@@ -1364,8 +1373,8 @@ void s57chart::GetPixPoint( int pixx, int pixy, double *plat, double *plon, View
 void s57chart::SetVPParms( const ViewPort &vpt )
 {
     //  Set up local SM rendering constants
-    m_pixx_vp_center = vpt.pix_width / 2;
-    m_pixy_vp_center = vpt.pix_height / 2;
+    m_pixx_vp_center = vpt.pix_width / 2.0;
+    m_pixy_vp_center = vpt.pix_height / 2.0;
     m_view_scale_ppm = vpt.view_scale_ppm;
 
     toSM( vpt.clat, vpt.clon, ref_lat, ref_lon, &m_easting_vp_center, &m_northing_vp_center );
@@ -2099,19 +2108,19 @@ void s57chart::BuildLineVBO( void )
 
 
 bool s57chart::RenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& VPoint,
-        const OCPNRegion &Region )
+                                     const OCPNRegion &RectRegion, const LLRegion &Region )
 {
-    return DoRenderRegionViewOnGL( glc, VPoint, Region, false );
+    return DoRenderRegionViewOnGL( glc, VPoint, RectRegion, Region, false );
 }
 
 bool s57chart::RenderOverlayRegionViewOnGL( const wxGLContext &glc, const ViewPort& VPoint,
-        const OCPNRegion &Region )
+                                            const OCPNRegion &RectRegion, const LLRegion &Region )
 {
-    return DoRenderRegionViewOnGL( glc, VPoint, Region, true );
+    return DoRenderRegionViewOnGL( glc, VPoint, RectRegion, Region, true );
 }
 
 bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& VPoint,
-        const OCPNRegion &Region, bool b_overlay )
+                                       const OCPNRegion &RectRegion, const LLRegion &Region, bool b_overlay )
 {
 #ifdef ocpnUSE_GL
 //     CALLGRIND_START_INSTRUMENTATION
@@ -2122,14 +2131,7 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
     if( g_bDebugS57 ) printf( "\n" );
 
     SetVPParms( VPoint );
-
-    bool force_new_view = false;
-
-    if(!Region.Ok())
-        return false;
     
-    if( Region != m_last_Region ) force_new_view = true;
-
     ps52plib->PrepareForRender();
     
     if( m_plib_state_hash != ps52plib->GetStateHash() ) {
@@ -2154,29 +2156,7 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
     //        Clear the text declutter list
     ps52plib->ClearTextList();
 
-    //    How many rectangles in the Region?
-    int n_rect = 0;
-    OCPNRegionIterator clipit( Region );
-    while( clipit.HaveRects() ) {
-        wxRect rect = clipit.GetRect();
-        clipit.NextRect();
-        n_rect++;
-    }
-    /*
-     if(n_rect > 1)
-     {
-     printf("S57 n_rect: %d\n", n_rect);
-
-     OCPNRegionIterator upd ( Region );
-     while ( upd )
-     {
-     wxRect rect = upd.GetRect();
-     printf ( "   S57 Region Rect:  %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height );
-     upd ++ ;
-     }
-     }
-     */
-
+#if 0
     wxColour color = GetGlobalColor( _T ( "NODTA" ) );
     float r, g, b;
     if( color.IsOk() ) {
@@ -2186,104 +2166,36 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
     } else
         r = g = b = 0;
 
-    //    Adjust for rotation
-    glPushMatrix();
+    glColor3f( r, g, b ); /* nodta color */
+#endif
 
-    glChartCanvas::RotateToViewPort(VPoint);
+    ViewPort vp = VPoint;
 
-    //    Arbitrary optimization....
-    //    It is cheaper to draw the entire screen if the rectangle count is large,
-    //    as is the case for CM93 charts with non-rectilinear borders
-    //    However, most (all?) pan operations on "normal" charts will be small rect count
-    if( n_rect < 4 ) {
-        OCPNRegionIterator upd( Region ); // get the Region rect list
-        while( upd.HaveRects() ) {
-            wxRect rect = upd.GetRect();
+    // region always has either 1 or 2 rectangles (full screen or panning rectangles)
+    for(OCPNRegionIterator upd ( RectRegion ); upd.HaveRects(); upd.NextRect()) {
+        LLRegion chart_region = vp.GetLLRegion(upd.GetRect());
+        chart_region.Intersect(Region);
 
-            //  Build synthetic ViewPort on this rectangle
-            //  Especially, we want the BBox to be accurate in order to
-            //  render only those objects actually visible in this region
-
-            ViewPort temp_vp = VPoint;
-            double temp_lon_left, temp_lat_bot, temp_lon_right, temp_lat_top;
-
-            GetPixPoint( rect.x, rect.y, &temp_lat_top, &temp_lon_left, (ViewPort *) &VPoint );
-            GetPixPoint( rect.x + rect.width, rect.y + rect.height, &temp_lat_bot, &temp_lon_right,
-                    (ViewPort *) &VPoint );
-
-            if( temp_lon_right < temp_lon_left )        // presumably crossing Greenwich
-                temp_lon_right += 360.;
-            else if(temp_vp.GetBBox().GetMaxX() > 360){
-                if(temp_lon_left < 180.) {
-                    temp_lon_left += 360.;
-                    temp_lon_right += 360.;
-                }
+        if(!chart_region.Empty()) {
+            ViewPort cvp = glChartCanvas::ClippedViewport(VPoint, chart_region);
+            if( GetChartType() == CHART_TYPE_CM93 ) {
+                void SetVPPositive ( ViewPort *pvp );
+                SetVPPositive ( &cvp );
             }
-            
-            temp_vp.GetBBox().SetMin( temp_lon_left, temp_lat_bot );
-            temp_vp.GetBBox().SetMax( temp_lon_right, temp_lat_top );
 
-            //      Allow some slop in the viewport
-            //            double margin = wxMin(temp_vp.GetBBox().GetWidth(), temp_vp.GetBBox().GetHeight()) * 0.05;
-            //            temp_vp.GetBBox().EnLarge(margin);
-
-            if( g_bDebugS57 ) printf( "   S57 Render Box:  %d %d %d %d\n", rect.x, rect.y,
-                    rect.width, rect.height );
-
-            glColor3f( r, g, b ); /* nodta color */
-            glChartCanvas::SetClipRegion( temp_vp, OCPNRegion(rect), false, !b_overlay); /* no rotation, clear */
-            if( !glChartCanvas::s_b_useStencil )
-                ps52plib->m_last_clip_region = OCPNRegion(rect);
-            DoRenderRectOnGL( glc, temp_vp, rect );
+            glChartCanvas::SetClipRect(cvp, upd.GetRect(), false/*!b_overlay*/);
+            ps52plib->m_last_clip_rect = upd.GetRect();
+            glPushMatrix(); //    Adjust for rotation
+            glChartCanvas::RotateToViewPort(VPoint);
+            DoRenderOnGL( glc, cvp );
+            glPopMatrix();
             glChartCanvas::DisableClipRegion();
-
-            upd.NextRect();
         }
-    } else {
-        wxRect rect = Region.GetBox();
-        if( g_bDebugS57 ) printf( "   S57 Render GetBox:  %d %d %d %d\n", rect.x, rect.y,
-                rect.width, rect.height );
-
-        //  Build synthetic ViewPort on this rectangle
-        //  Especially, we want the BBox to be accurate in order to
-        //  render only those objects actually visible in this region
-
-        ViewPort temp_vp = VPoint;
-        double temp_lon_left, temp_lat_bot, temp_lon_right, temp_lat_top;
-
-        GetPixPoint( rect.x, rect.y, &temp_lat_top, &temp_lon_left, (ViewPort *) &VPoint );
-        GetPixPoint( rect.x + rect.width, rect.y + rect.height, &temp_lat_bot, &temp_lon_right,
-                (ViewPort *) &VPoint );
-
-        if( temp_lon_right < temp_lon_left )        // presumably crossing Greenwich
-            temp_lon_right += 360.;
-        else if(temp_vp.GetBBox().GetMaxX() > 360){
-            if(temp_lon_left < 180.) {
-                temp_lon_left += 360.;
-                temp_lon_right += 360.;
-            }
-        }
-        
-        temp_vp.GetBBox().SetMin( temp_lon_left, temp_lat_bot );
-        temp_vp.GetBBox().SetMax( temp_lon_right, temp_lat_top );
-
-        //      Allow some slop in the viewport
-        //            double margin = wxMin(temp_vp.GetBBox().GetWidth(), temp_vp.GetBBox().GetHeight()) * 0.05;
-        //            temp_vp.GetBBox().EnLarge(margin);
-
-        glColor3f( r, g, b ); /* nodta color */
-        glChartCanvas::SetClipRegion( temp_vp, Region, false, !b_overlay ); /* no rotation */
-        if( !glChartCanvas::s_b_useStencil )
-            ps52plib->m_last_clip_region = Region;
-        DoRenderRectOnGL( glc, temp_vp, rect );
-        glChartCanvas::DisableClipRegion();
-        
     }
+
 //      Update last_vp to reflect current state
     m_last_vp = VPoint;
-    m_last_Region = Region;
 
-    glPopMatrix();
 
 //      CALLGRIND_STOP_INSTRUMENTATION
     
@@ -2291,7 +2203,7 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
     return true;
 }
 
-bool s57chart::DoRenderRectOnGL( const wxGLContext &glc, const ViewPort& VPoint, wxRect &rect )
+bool s57chart::DoRenderOnGL( const wxGLContext &glc, const ViewPort& VPoint )
 {
 #ifdef ocpnUSE_GL
     
@@ -2310,7 +2222,7 @@ bool s57chart::DoRenderRectOnGL( const wxGLContext &glc, const ViewPort& VPoint,
             crnt = top;
             top = top->next;               // next object
             crnt->sm_transform_parms = &vp_transform;
-            ps52plib->RenderAreaToGL( glc, crnt, &tvp, rect );
+            ps52plib->RenderAreaToGL( glc, crnt, &tvp );
         }
     }
 
@@ -2323,7 +2235,7 @@ bool s57chart::DoRenderRectOnGL( const wxGLContext &glc, const ViewPort& VPoint,
             crnt = top;
             top = top->next;               // next object
             crnt->sm_transform_parms = &vp_transform;
-            ps52plib->RenderObjectToGL( glc, crnt, &tvp, rect );
+            ps52plib->RenderObjectToGL( glc, crnt, &tvp );
         }
 
         top = razRules[i][2];           //LINES
@@ -2331,7 +2243,7 @@ bool s57chart::DoRenderRectOnGL( const wxGLContext &glc, const ViewPort& VPoint,
             ObjRazRules *crnt = top;
             top = top->next;
             crnt->sm_transform_parms = &vp_transform;
-            ps52plib->RenderObjectToGL( glc, crnt, &tvp, rect );
+            ps52plib->RenderObjectToGL( glc, crnt, &tvp );
         }
 
         if( ps52plib->m_nSymbolStyle == SIMPLIFIED ) top = razRules[i][0];       //SIMPLIFIED Points
@@ -2342,7 +2254,7 @@ bool s57chart::DoRenderRectOnGL( const wxGLContext &glc, const ViewPort& VPoint,
             crnt = top;
             top = top->next;
             crnt->sm_transform_parms = &vp_transform;
-            ps52plib->RenderObjectToGL( glc, crnt, &tvp, rect );
+            ps52plib->RenderObjectToGL( glc, crnt, &tvp );
         }
 
     }
@@ -3255,6 +3167,8 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
 
     vp.pix_height = S57_THUMB_SIZE;
     vp.pix_width = S57_THUMB_SIZE;
+
+    vp.m_projection_type = PROJECTION_MERCATOR;
 
     vp.GetBBox().SetMin( m_FullExtent.WLON, m_FullExtent.SLAT );
     vp.GetBBox().SetMax( m_FullExtent.ELON, m_FullExtent.NLAT );

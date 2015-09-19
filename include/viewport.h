@@ -33,10 +33,9 @@
 
 #include "bbox.h"
 class OCPNRegion;
+class LLRegion;
 
 #if 0
-//#include "OCPNRegion.h"
-
 //    ChartType constants
 typedef enum ChartTypeEnum
 {
@@ -79,10 +78,14 @@ class ViewPort
             ViewPort();
 
             wxPoint GetPixFromLL(double lat, double lon);
-            void GetLLFromPix(const wxPoint &p, double *lat, double *lon);
+            void GetLLFromPix(const wxPoint &p, double *lat, double *lon) { GetLLFromPix(wxPoint2DDouble(p), lat, lon); }
+            void GetLLFromPix(const wxPoint2DDouble &p, double *lat, double *lon);
             wxPoint2DDouble GetDoublePixFromLL(double lat, double lon);
 
-            OCPNRegion GetVPRegionIntersect( const OCPNRegion &Region, size_t n, float *llpoints, int chart_native_scale, wxPoint *ppoints = NULL );
+            LLRegion GetLLRegion( const OCPNRegion &region );
+            OCPNRegion GetVPRegionIntersect( const OCPNRegion &region, const LLRegion &llregion, int chart_native_scale );
+            OCPNRegion GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoints, float *llpoints,
+                                             int chart_native_scale, wxPoint *ppoints );
             wxRect GetVPRectIntersect( size_t n, float *llpoints );
             ViewPort BuildExpandedVP(int width, int height);
             
@@ -97,8 +100,9 @@ class ViewPort
             void SetProjectionType(int type){ m_projection_type = type; }
 
             LLBBox &GetBBox() { return vpBBox; }
+            void SetBBoxDirect( const LLBBox &bbox ) { vpBBox = bbox; }
             void SetBBoxDirect( double latmin, double lonmin, double latmax, double lonmax);
-            
+
 //  Generic
             double   clat;                   // center point
             double   clon;
