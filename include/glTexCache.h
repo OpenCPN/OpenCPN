@@ -53,6 +53,20 @@ struct CompressedCacheHeader
     uint32_t catalog_offset;    
 };
 
+struct CatalogEntryKey
+{
+    int         mip_level;
+    ColorScheme tcolorscheme;
+    int         x;
+    int         y;
+};
+
+struct CatalogEntryValue
+{
+    int         texture_offset;
+    uint32_t    compressed_size;
+}; 
+
 class CatalogEntry
 {
 public:
@@ -62,17 +76,15 @@ public:
     int GetSerialSize();
     void Serialize(unsigned char *);
     void DeSerialize(unsigned char *);
+    CatalogEntryKey k;
+    CatalogEntryValue v;
     
-    int         mip_level;
-    int         x;
-    int         y;
-    ColorScheme tcolorscheme;
-    int         texture_offset;
-    uint32_t    compressed_size;
 };
 
 WX_DEFINE_ARRAY(CatalogEntry*, ArrayOfCatalogEntries);
 
+
+#define MAX_TEX_LEVEL 5
 
 class glTexFactory : public wxEvtHandler
 {
@@ -108,17 +120,24 @@ private:
     bool LoadHeader(void);
     bool WriteCatalogAndHeader();
 
-    CatalogEntry *GetCacheEntry(int level, int x, int y, ColorScheme color_scheme);
     bool UpdateCache(unsigned char *data, int data_size, glTextureDescriptor *ptd, int level,
                                    ColorScheme color_scheme);
     bool UpdateCachePrecomp(unsigned char *data, int data_size, glTextureDescriptor *ptd, int level,
                                           ColorScheme color_scheme);
     
     void DeleteSingleTexture( glTextureDescriptor *ptd );
+
+    CatalogEntryValue *GetCacheEntryValue(int level, int x, int y, ColorScheme color_scheme);
+    bool AddCacheEntryValue(const CatalogEntry &p);
     int  ArrayIndex(int x, int y) const { return ((y / m_tex_dim) * m_stride) + (x / m_tex_dim); } 
-    
+    void  ArrayXY(wxRect *r, int index) const;
+
     int         n_catalog_entries;
-    ArrayOfCatalogEntries       m_catalog;
+
+    CatalogEntryValue *m_cache[N_COLOR_SCHEMES][MAX_TEX_LEVEL];
+
+
+
     wxString    m_ChartPath;
     GLuint      m_raster_format;
     wxString    m_CompressedCacheFilePath;
@@ -126,6 +145,9 @@ private:
     int         m_catalog_offset;
     bool        m_hdrOK;
     bool        m_catalogOK;
+
+    bool	m_catalogCorrupted;
+    
     wxFFile     *m_fs;
     uint32_t    m_chart_date_binary;
     
