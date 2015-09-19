@@ -25,6 +25,11 @@
  */
 
 #include <wx/wxprec.h>
+
+#ifndef  WX_PRECOMP
+#include "wx/wx.h"
+#endif //precompiled headers
+
 #include <wx/tokenzr.h>
 
 #include <stdint.h>
@@ -1343,6 +1348,8 @@ void glChartCanvas::SetupOpenGL()
 
 void glChartCanvas::SetupCompression()
 {
+    int dim = g_GLOptions.m_iTextureDimension;
+
 #ifdef __WXMSW__    
     if(!::IsProcessorFeaturePresent( PF_XMMI64_INSTRUCTIONS_AVAILABLE )){
         wxLogMessage( _("OpenGL-> SSE2 Instruction set not available") );
@@ -1350,7 +1357,6 @@ void glChartCanvas::SetupCompression()
     }
 #endif
 
-    int dim = g_GLOptions.m_iTextureDimension;
     g_uncompressed_tile_size = dim*dim*3;
     if(g_GLOptions.m_bTextureCompression) {
 

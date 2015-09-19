@@ -74,7 +74,7 @@
 
 #include <algorithm>          // for std::sort
 
-#ifdef __WXMSW__
+#ifdef __MSVC__
 #define strncasecmp(x,y,z) _strnicmp(x,y,z)
 #endif
 

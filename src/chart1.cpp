@@ -9915,6 +9915,12 @@ int isTTYreal(const char *dev)
 
 #endif
 
+#ifdef __MINGW32__ // do I need this because of mingw, or because I am running mingw under wine?
+# ifndef GUID_CLASS_COMPORT
+DEFINE_GUID(GUID_CLASS_COMPORT, 0x86e0d1e0L, 0x8089, 0x11d0, 0x9c, 0xe4, 0x08, 0x00, 0x3e, 0x30, 0x1f, 0x73);
+# endif
+#endif
+
 wxArrayString *EnumerateSerialPorts( void )
 {
     wxArrayString *preturn = new wxArrayString;
@@ -11238,7 +11244,7 @@ void RedirectIOToConsole()
 
     int hConHandle;
 
-    long lStdHandle;
+    wxIntPtr lStdHandle;
 
     CONSOLE_SCREEN_BUFFER_INFO coninfo;
 
@@ -11256,7 +11262,7 @@ void RedirectIOToConsole()
 
     // redirect unbuffered STDOUT to the console
 
-    lStdHandle = (long)GetStdHandle(STD_OUTPUT_HANDLE);
+    lStdHandle = (wxIntPtr)GetStdHandle(STD_OUTPUT_HANDLE);
     hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
     fp = _fdopen( hConHandle, "w" );
     *stdout = *fp;
@@ -11265,7 +11271,7 @@ void RedirectIOToConsole()
 
     // redirect unbuffered STDIN to the console
 
-    lStdHandle = (long)GetStdHandle(STD_INPUT_HANDLE);
+    lStdHandle = (wxIntPtr)GetStdHandle(STD_INPUT_HANDLE);
     hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
     fp = _fdopen( hConHandle, "r" );
     *stdin = *fp;
@@ -11273,7 +11279,7 @@ void RedirectIOToConsole()
 
     // redirect unbuffered STDERR to the console
 
-    lStdHandle = (long)GetStdHandle(STD_ERROR_HANDLE);
+    lStdHandle = (wxIntPtr)GetStdHandle(STD_ERROR_HANDLE);
     hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
     fp = _fdopen( hConHandle, "w" );
     *stderr = *fp;
@@ -11290,8 +11296,9 @@ void RedirectIOToConsole()
 
 
 #ifdef __WXMSW__
-bool TestGLCanvas(wxString &prog_dir)
+bool TestGLCanvas(wxString prog_dir)
 {
+#ifdef __MSVC__
     wxString test_app = prog_dir;
     test_app += _T("ocpn_gltest1.exe");
 
@@ -11307,8 +11314,10 @@ bool TestGLCanvas(wxString &prog_dir)
     }
     else
         return true;
-
-
+#else
+    /* until we can get the source to ocpn_gltest1 assume true for mingw */
+    return true;
+#endif
 }
 #endif
 

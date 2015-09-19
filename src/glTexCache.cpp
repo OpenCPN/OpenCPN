@@ -35,8 +35,10 @@
 #include "GL/gl_private.h"
 #else
 #include "GL/gl.h"
+#ifdef __WXMSW__ // because gl.h includes windows.h which defines symbols that conflict with wx
+#include <wx/msw/winundef.h>
 #endif
-
+#endif
 
 #include "glTexCache.h"
 
@@ -414,7 +416,7 @@ CompressionPoolThread::CompressionPoolThread(JobTicket *ticket, wxEvtHandler *me
 void * CompressionPoolThread::Entry()
 {
 
-#ifdef __WXMSW__
+#ifdef __MSVC__
     _set_se_translator(my_translate);
 
     //  On Windows, if anything in this thread produces a SEH exception (like access violation)
@@ -568,7 +570,7 @@ SendEvtAndReturn:
 
     }           // try
     
-#ifdef __WXMSW__    
+#ifdef __MSVC__    
     catch (SE_Exception e)
     {
         if( m_pMessageTarget ) {
