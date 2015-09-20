@@ -41,6 +41,7 @@
 #endif
 
 #include "glTexCache.h"
+#include "glTextureDescriptor.h"
 
 #include "chcanv.h"
 #include "glChartCanvas.h"

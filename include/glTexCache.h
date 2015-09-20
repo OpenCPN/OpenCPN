@@ -31,7 +31,7 @@
 #include <stdint.h>
 
 #include "ocpn_types.h"
-#include "glTextureDescriptor.h"
+class glTextureDescriptor;
 
 #define COMPRESSED_CACHE_MAGIC 0xf010  // change this when the format changes
 
