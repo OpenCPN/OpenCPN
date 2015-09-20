@@ -8,7 +8,6 @@ test: OFF
 
 install:
   - '"C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /x86'
-  - cmd: SET WINDOWS_SDK_VERSION="v7.1"
 
   # sent environment variables for wxWidgets
   - set WXWIN=C:\wxWidgets-3.0.2
@@ -42,5 +41,5 @@ before_build:
 
 build_script:
   - cmake --build . --config debug
-  # commented out because of nsis not correctly installed
-  # - cmake --build . --config Release
+  - cmake --build . --config release
+  # --target package doesn't work because of nsis not correctly installed
