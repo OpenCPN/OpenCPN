@@ -173,7 +173,7 @@ bool wxMapiSession::Logon(const wxString& sProfileName, const wxString& sPasswor
         //No profile name given, then we must interactively request a profile name
         if (pParentWnd)
         {
-            nUIParam = (ULONG) (HWND) pParentWnd->GetHWND();
+            nUIParam = (ULONG_PTR) (HWND) pParentWnd->GetHWND();
             flags |= MAPI_LOGON_UI;
         }
         else
@@ -181,7 +181,7 @@ bool wxMapiSession::Logon(const wxString& sProfileName, const wxString& sPasswor
             //No window given, just use the main window of the app as the parent window
             if (wxTheApp->GetTopWindow())
             {
-                nUIParam = (ULONG) (HWND) wxTheApp->GetTopWindow()->GetHWND();
+                nUIParam = (ULONG_PTR) (HWND) wxTheApp->GetTopWindow()->GetHWND();
                 flags |= MAPI_LOGON_UI;
             }
         }

@@ -1146,7 +1146,7 @@ int TCMgr::GetStationIDXbyNameType(const wxString & prefix, double xlat, double 
 #define INFERRED_SEMI_DIURNAL_COUNT                 10
 #define INFERRED_DIURNAL_COUNT                      10
 
-#ifdef __WXMSW__
+#ifdef __MSVC__
 #pragma warning (disable : 4305)                // conversion loss, double to float
 #endif
 
