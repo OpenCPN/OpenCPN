@@ -31,18 +31,14 @@
 #include <stdint.h>
 
 #include "ocpn_types.h"
-#include "glTextureDescriptor.h"
+class glTextureDescriptor;
 
 #define COMPRESSED_CACHE_MAGIC 0xf010  // change this when the format changes
-
-#define COMPRESSED_BUFFER_OK            0
-#define COMPRESSED_BUFFER_PENDING       1
-#define MAP_BUFFER_OK                   4
 
 #define FACTORY_TIMER                   10000
 
 void HalfScaleChartBits( int width, int height, unsigned char *source, unsigned char *target );
-bool CompressUsingGPU( glTextureDescriptor *ptd, GLuint raster_format, int level, bool b_post_comp);
+bool CompressUsingGPU( glTextureDescriptor *ptd, int level, bool b_post_comp, bool inplace);
 
 struct CompressedCacheHeader
 {
@@ -53,6 +49,22 @@ struct CompressedCacheHeader
     uint32_t catalog_offset;    
 };
 
+struct CatalogEntryKey
+{
+    int         mip_level;
+    ColorScheme tcolorscheme;
+    int         x;
+    int         y;
+};
+
+struct CatalogEntryValue
+{
+    int         texture_offset;
+    uint32_t    compressed_size;
+}; 
+
+#define CATALOG_ENTRY_SERIAL_SIZE 6 * sizeof(uint32_t)
+
 class CatalogEntry
 {
 public:
@@ -62,22 +74,20 @@ public:
     int GetSerialSize();
     void Serialize(unsigned char *);
     void DeSerialize(unsigned char *);
+    CatalogEntryKey k;
+    CatalogEntryValue v;
     
-    int         mip_level;
-    int         x;
-    int         y;
-    ColorScheme tcolorscheme;
-    int         texture_offset;
-    uint32_t    compressed_size;
 };
 
 WX_DEFINE_ARRAY(CatalogEntry*, ArrayOfCatalogEntries);
 
 
+#define MAX_TEX_LEVEL 5
+
 class glTexFactory : public wxEvtHandler
 {
 public:
-    glTexFactory(ChartBase *chart, GLuint raster_format);
+    glTexFactory(ChartBase *chart);
     ~glTexFactory();
 
     bool PrepareTexture( int base_level, const wxRect &rect, ColorScheme color_scheme, bool b_throttle_thread = true );
@@ -100,32 +110,39 @@ public:
     void FreeSome( long target );
     
     glTextureDescriptor *GetpTD( wxRect & rect );
-    GLuint GetRasterFormat() { return m_raster_format; }
-    
     
 private:
     bool LoadCatalog(void);
     bool LoadHeader(void);
     bool WriteCatalogAndHeader();
 
-    CatalogEntry *GetCacheEntry(int level, int x, int y, ColorScheme color_scheme);
     bool UpdateCache(unsigned char *data, int data_size, glTextureDescriptor *ptd, int level,
                                    ColorScheme color_scheme);
     bool UpdateCachePrecomp(unsigned char *data, int data_size, glTextureDescriptor *ptd, int level,
                                           ColorScheme color_scheme);
     
     void DeleteSingleTexture( glTextureDescriptor *ptd );
+
+    CatalogEntryValue *GetCacheEntryValue(int level, int x, int y, ColorScheme color_scheme);
+    bool AddCacheEntryValue(const CatalogEntry &p);
     int  ArrayIndex(int x, int y) const { return ((y / m_tex_dim) * m_stride) + (x / m_tex_dim); } 
-    
+    void  ArrayXY(wxRect *r, int index) const;
+
     int         n_catalog_entries;
-    ArrayOfCatalogEntries       m_catalog;
+
+    CatalogEntryValue *m_cache[N_COLOR_SCHEMES][MAX_TEX_LEVEL];
+
+
+
     wxString    m_ChartPath;
-    GLuint      m_raster_format;
     wxString    m_CompressedCacheFilePath;
     
     int         m_catalog_offset;
     bool        m_hdrOK;
     bool        m_catalogOK;
+
+    bool	m_catalogCorrupted;
+    
     wxFFile     *m_fs;
     uint32_t    m_chart_date_binary;
     
@@ -184,8 +201,6 @@ public:
     int GetRunningJobCount(){ return m_njobs_running; }
     bool AsJob( wxString const &chart_path ) const;
     void PurgeJobList( wxString chart_path = wxEmptyString );
-    
-    unsigned int m_raster_format;
     
 private:
     

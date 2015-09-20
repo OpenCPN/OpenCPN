@@ -1874,9 +1874,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
       }
       else {                            // This is a cm93 dataset, specified as yada/yada/cm93
             wxString dir_plus = dir_name;
-#ifdef __WXMSW__
             dir_plus += wxFileName::GetPathSeparator();
-#endif            
             FileList .Add(dir_plus);
       }
 
@@ -2625,6 +2623,7 @@ void ChartDatabase::ApplyGroupArray(ChartGroupArray *pGroupArray)
                   for(unsigned int j=0; j < pGroup->m_element_array.GetCount(); j++)
                   {
                         wxString element_root = pGroup->m_element_array.Item(j)->m_element_name;
+                        element_root.Append(wxFileName::GetPathSeparator());	// Prevent comingling similar looking path names
                         if(chart_full_path->StartsWith(element_root))
                         {
                               bool b_add = true;

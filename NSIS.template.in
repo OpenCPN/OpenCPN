@@ -32,6 +32,8 @@ CMake variables
 ----------------------------------------------------------------------------------------------------------*/
 ;# Set compression
 	SetCompressor /FINAL lzma
+;# Set unicode
+        Unicode true
 
 ;--------------------------------
 ;# You must define these values
@@ -185,7 +187,7 @@ CMake variables
   ;# Default installation folder
   InstallDir "$PROGRAMFILES\OpenCPN"
 
-  BrandingText /TRIMLEFT "OpenCPN $(Installer) v${OCPN_INSTALLER_VERSION}"
+  BrandingText "OpenCPN $(Installer) v${OCPN_INSTALLER_VERSION}"
 ;--------------------------------
 ;# Interface Settings
   !define MUI_CUSTOMFUNCTION_GUIINIT myGuiInit
@@ -3342,7 +3344,7 @@ FunctionEnd
 
 ;!define LVM_GETITEMCOUNT 0x1004 ;# ANSI
 ;!define LVM_GETITEMTEXT 0x102D ;# ANSI
-!define LVM_GETITEMCOUNT 0x1004
+;!define LVM_GETITEMCOUNT 0x1004
 !define LVM_GETITEMTEXT 0x1073
 
 Function DumpLog

@@ -74,7 +74,7 @@
 
 #include <algorithm>          // for std::sort
 
-#ifdef __WXMSW__
+#ifdef __MSVC__
 #define strncasecmp(x,y,z) _strnicmp(x,y,z)
 #endif
 
@@ -505,21 +505,17 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
 
                         my_fgets( buf, MAX_LINE, *pfpx );
                         int wkb_len = atoi( buf + 2 );
-                        pfpx->Read( buf, wkb_len );
-
+                        // ARM need 32 bits alignment, may be faster on some x86 too
+                        unsigned int align = 3;
+                        pfpx->Read( buf +align, wkb_len );
+ 
                         float easting, northing;
                         npt = 1;
-                        float *pfs = (float *) ( buf + 5 );                // point to the point
-#ifdef ARMHF
-                        float east, north;
-                        memcpy(&east, pfs++, sizeof(float));
-                        memcpy(&north, pfs, sizeof(float));
-                        easting = east;
-                        northing = north;
-#else
+
+                        float *pfs = (float *) ( buf + 5 +align );     // point to the point
+
                         easting = *pfs++;
                         northing = *pfs;
-#endif
                         x = easting;                                    // and save as SM
                         y = northing;
 
@@ -543,9 +539,11 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
 
                         my_fgets( buf, MAX_LINE, *pfpx );
                         int wkb_len = atoi( buf + 2 );
-                        pfpx->Read( buf, wkb_len );
-
-                        npt = *( (int *) ( buf + 5 ) );
+                        // ARM need 32 bits alignment, may be faster on some x86 too
+                        unsigned int align = 3;
+                        pfpx->Read( buf +align, wkb_len );
+ 
+                        npt = *( (int *) ( buf + 5 +align) );
 
                         geoPtz = (double *) malloc( npt * 3 * sizeof(double) );
                         geoPtMulti = (double *) malloc( npt * 2 * sizeof(double) );
@@ -553,22 +551,9 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
                         double *pdd = geoPtz;
                         double *pdl = geoPtMulti;
 
-                        float *pfs = (float *) ( buf + 9 );                 // start of data
+                        float *pfs = (float *) ( buf + 9 +align);                 // start of data
                         for( int ip = 0; ip < npt; ip++ ) {
                             float easting, northing;
-#ifdef ARMHF
-                            float east, north, deep;
-                            memcpy(&east, pfs++, sizeof(float));
-                            memcpy(&north, pfs++, sizeof(float));
-                            memcpy(&deep, pfs++, sizeof(float));
-
-                            easting = east;
-                            northing = north;
-                            
-                            *pdd++ = east;
-                            *pdd++ = north;
-                            *pdd++ = deep;
-#else                        
                             easting = *pfs++;
                             northing = *pfs++;
                             float depth = *pfs++;
@@ -576,7 +561,7 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
                             *pdd++ = easting;
                             *pdd++ = northing;
                             *pdd++ = depth;
-#endif
+
                             //  Convert point from SM to lat/lon for later use in decomposed bboxes
                             double xll, yll;
                             fromSM( easting, northing, point_ref_lat, point_ref_lon, &yll, &xll );
@@ -611,37 +596,23 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
                         my_fgets( buf, MAX_LINE, *pfpx );
                         int sb_len = atoi( buf + 2 );
                         unsigned char *buft;
-                        if (sb_len > MAX_LINE) 
-                            buft = (unsigned char *) malloc( sb_len );
+                        // ARM need 32 bits alignment, may be faster on some x86 too
+                        int align = 3;
+                        if (sb_len > MAX_LINE + align) 
+                            buft = (unsigned char *) malloc( sb_len +align);
                         else
                             buft = (unsigned char *) buf;
 
-                        pfpx->Read( buft, sb_len );
+                        pfpx->Read( buft +align, sb_len );
 
-                        npt = *( (int *) ( buft + 5 ) );
+                        npt = *( (int *) ( buft + 5 +align) );
 
                         geoPt = (pt*) malloc( ( npt ) * sizeof(pt) );
                         pt *ppt = geoPt;
-                        float *pf = (float *) ( buft + 9 );
+                        float *pf = (float *) ( buft + 9 +align);
                         float xmax, xmin, ymax, ymin;
                         
 
-#ifdef ARMHF
-                        for( int ip = 0; ip < npt; ip++ ) {
-                            float east, north;
-                            memcpy(&east, pf++, sizeof(float));
-                            memcpy(&north, pf++, sizeof(float));
-                            
-                            ppt->x = east;
-                            ppt->y = north;
-                            ppt++;
-                        }
-                        memcpy(&xmax, pf++, sizeof(float));
-                        memcpy(&xmin, pf++, sizeof(float));
-                        memcpy(&ymax, pf++, sizeof(float));
-                        memcpy(&ymin, pf,   sizeof(float));
-                        
-#else                        
                         // Capture SM points
                         for( int ip = 0; ip < npt; ip++ ) {
                             ppt->x = *pf++;
@@ -654,8 +625,8 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
                         xmin = *pf++;
                         ymax = *pf++;
                         ymin = *pf;
-#endif
-                        if (sb_len > MAX_LINE) 
+
+						if (sb_len > MAX_LINE +align) 
                             free( buft );
 
                         // set s57obj bbox as lat/lon
@@ -6399,6 +6370,9 @@ wxString s57chart::GetObjectAttributeValueAsString( S57Obj *obj, int iatt, wxStr
 
 wxString s57chart::GetAttributeValueAsString( S57attVal *pAttrVal, wxString AttrName )
 {
+    if(NULL == pAttrVal)
+        return _T("");
+    
     wxString value;
     switch( pAttrVal->valType ){
         case OGR_STR: {
@@ -7235,12 +7209,12 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
         wxPoint2DDouble lightPosD(0,0);
         wxPoint2DDouble objPos;
         
-        char *curr_att;
-        int n_attr;
-        wxArrayOfS57attVal *attValArray;
+        char *curr_att = NULL;
+        int n_attr = 0;
+        wxArrayOfS57attVal *attValArray = NULL;
         
-        ListOfObjRazRules::Node *snode;
-        ListOfPI_S57Obj::Node *pnode;
+        ListOfObjRazRules::Node *snode = NULL;
+        ListOfPI_S57Obj::Node *pnode = NULL;
         
         if(Chs57) 
             snode = rule_list->GetLast();
@@ -7307,11 +7281,12 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
                         noAttr++;
                         
                         S57attVal *pAttrVal = NULL;
-                        if(Chs57) 
-                            pAttrVal = attValArray->Item(attrCounter);
-                        else if( target_plugin_chart )
-                            pAttrVal = attValArray->Item(attrCounter);
-                        
+                        if( attValArray ){
+                            if(Chs57) 
+                                pAttrVal = attValArray->Item(attrCounter);
+                            else if( target_plugin_chart )
+                                pAttrVal = attValArray->Item(attrCounter);
+                        }
                         
                         wxString value = s57chart::GetAttributeValueAsString( pAttrVal, curAttrName );
                         

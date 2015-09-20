@@ -2228,7 +2228,7 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
         SelectItem *pFind = pSelectAIS->FindSelection( m_cursor_lat, m_cursor_lon,
                                                        SELTYPE_AISTARGET );
         if( pFind ) {
-            int FoundAIS_MMSI = (long) pFind->m_pData1; // cast to long avoids problems with 64bit compilers
+            int FoundAIS_MMSI = (wxIntPtr) pFind->m_pData1;
             AIS_Target_Data *ptarget = g_pAIS->Get_Target_Data_From_MMSI( FoundAIS_MMSI );
 
             if( ptarget ) {

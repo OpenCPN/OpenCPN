@@ -55,7 +55,7 @@ int     m_DialogStyle;
 bool    m_OldZoneSelMode;
 int     m_ZoneSelMode;
 
-#if defined (_WIN32)
+#ifdef __MSVC__
 #if _MSC_VER < 1700
 int round (double x) {
 	int i = (int) x;

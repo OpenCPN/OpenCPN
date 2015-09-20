@@ -26,20 +26,16 @@
 #ifndef _PLUGIN_H_
 #define _PLUGIN_H_
 
-
 #ifndef DECL_EXP
 #ifdef __WXMSW__
 #  define DECL_EXP     __declspec(dllexport)
 #else
-#  define DECL_EXP
+# ifdef __GNUC__
+# define DECL_EXP       __attribute__((visibility("default")))
+# endif
 #endif
 #endif
 
-
-#ifdef __GNUC__
-#undef  DECL_EXP
-#define DECL_EXP       __attribute__((visibility("default")))
-#endif
 
 #include <wx/xml/xml.h>
 

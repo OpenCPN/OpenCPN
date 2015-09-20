@@ -99,7 +99,7 @@
       #define __min(a,b)  (((a) < (b)) ? (a) : (b))
 #endif
 
-#ifdef __WXMSW__
+#ifdef __MSVC__
       #define fmin __min
       #define fmax __max
 
