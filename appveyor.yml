@@ -24,8 +24,6 @@ install:
   - cmd: 7z x wxwidgets-3.0.2.zip -o%WXWIN% > null
 
   # some debugging information
-  - ls "c:\program files"
-  - ls "c:\program files (x86)"
   - set
   # - cmake --help
 
