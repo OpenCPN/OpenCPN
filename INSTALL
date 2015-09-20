@@ -184,18 +184,25 @@ All other steps should work the same as without cross compiling
 
 To set up nsis to build packages (must use nsis-3.0b0, 3.0b2 has a problem)
 
-cd /usr/local/
-sudo mkdir nsis
-mv <Downloads>/nsis-3.0b0* nsis/
-cd nsis
-sudo unzip nsis-3.0b0.zip
-sudo tar xjvf nsis-3.0b0-src.tar.bz2
-cd nsis-3.0b0-src/
-sudo scons SKIPSTUBS=all SKIPPLUGINS=all SKIPUTILS=all SKIPMISC=all NSIS_CONFIG_CONST_DATA=no PREFIX=/usr/local/nsis/nsis-3.0b0 install-compiler
-cd ../nsis-3.0b0
-sudo mkdir share
-sudo ln -s /usr/local/nsis/nsis-3.0b0 nsis
+    cd /usr/local/
+    sudo mkdir nsis
+    mv <Downloads>/nsis-3.0b0* nsis/
+    cd nsis
+    sudo unzip nsis-3.0b0.zip
+    sudo tar xjvf nsis-3.0b0-src.tar.bz2
+    cd nsis-3.0b0-src/
+    sudo scons SKIPSTUBS=all SKIPPLUGINS=all SKIPUTILS=all SKIPMISC=all NSIS_CONFIG_CONST_DATA=no PREFIX=/usr/local/nsis/nsis-3.0b0 install-compiler
+    cd ../nsis-3.0b0
+    sudo mkdir share
+    sudo ln -s /usr/local/nsis/nsis-3.0b0 nsis
 
-export PATH=/usr/local/nsis/nsis-3.0b0/bin/:$PATH
+    export PATH=/usr/local/nsis/nsis-3.0b0/bin/:$PATH
 
 Now it should be possible to run "make package"
+
+    make package
+
+And install and test it using wine:
+
+    chmod +x *exe
+    ./opencpn_*
