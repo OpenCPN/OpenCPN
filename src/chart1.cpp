@@ -1080,7 +1080,7 @@ void LoadS57()
 #endif
 }
 
-#ifdef __WXGTK__
+#if defined(__WXGTK__) && defined(OCPN_HAVE_X11)
 static char *get_X11_property (Display *disp, Window win,
                             Atom xa_prop_type, const char *prop_name) {
     Atom xa_prop_name;
@@ -1535,7 +1535,7 @@ bool MyApp::OnInit()
                 (wm_name = get_X11_property(disp, *sup_window,
                                         XA_STRING, "_NET_WM_NAME"))) {
                 // we know it works in xfce4, add other checks as we can validate them
-                if(strstr(wm_name, "Xfwm4"))
+                if(strstr(wm_name, "Xfwm4") || strstr(wm_name, "Compiz"))
                     g_bTransparentToolbarInOpenGLOK = true;
 
                 free(wm_name);
