@@ -177,8 +177,8 @@ Now, edit /usr/share/cmake-2.8/Modules/FindwxWidgets.cmake:
 
 
 When building opencpn with cmake, use the cross toolchain file:
-
-     cmake -DCMAKE_TOOLCHAIN_FILE=../buildwin/Toolchain-mingw32.cmake ..
+Be sure the right wx-config is in the PATH, for example:
+   PATH=~/build/wxWidgets-2.8.12/build_mingw/:$PATH cmake -DCMAKE_TOOLCHAIN_FILE=../buildwin/Toolchain-mingw32.cmake -DCMAKE_BUILD_TYPE=Debug ..
 
 All other steps should work the same as without cross compiling
 

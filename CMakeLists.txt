@@ -443,7 +443,7 @@ IF(MSVC)
     SET(EXTRA_LIBS ${EXTRA_LIBS} ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/CrashRpt1402.lib)
     SET(CMAKE_EXE_LINKER_FLAGS /DEBUG)
 ELSE(MSVC)
-    IF(NOT APPLE AND NOT QT_ANDROID)
+    IF(NOT APPLE AND NOT QT_ANDROID AND NOT MINGW)
         IF(CMAKE_BUILD_TYPE MATCHES "Rel*")
             ADD_DEFINITIONS(-DLINUX_CRASHRPT)
         ENDIF(CMAKE_BUILD_TYPE MATCHES "Rel*")
@@ -1147,9 +1147,9 @@ ENDIF (OPENGL_FOUND)
 
 # If we build for windows systems, we also include the resource file
 # containing the manifest, icon and other resources
-IF(WIN32)
+IF(MSVC)
   SET(SRCS ${SRCS} src/opencpn.rc)
-ENDIF(WIN32)
+ENDIF(MSVC)
 
 SET(gshhs_MIN
         data/gshhs/poly-c-1.dat
@@ -1408,9 +1408,9 @@ ENDIF()
 
 If(NOT APPLE AND NOT QT_ANDROID)
 TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
-      ${wxWidgets_LIBRARIES}
       NMEA0183
       ${EXTRA_LIBS}
+      ${wxWidgets_LIBRARIES}
       )
 ENDIF(NOT APPLE AND NOT QT_ANDROID)
 

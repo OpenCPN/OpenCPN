@@ -53,15 +53,21 @@ TTYWindow::TTYWindow(wxWindow *parent, int n_lines, WindowDestroyListener * list
     wxBoxSizer* bSizerOuterContainer = new wxBoxSizer( wxVERTICAL );
     SetSizer( bSizerOuterContainer );
 
-    m_pScroll = new TTYScroll(this, n_lines);
+    m_tFilter = new wxTextCtrl( this, wxID_ANY );
+
+    m_pScroll = new TTYScroll(this, n_lines, *m_tFilter);
     m_pScroll->Scroll(-1, 1000);        // start with full scroll down
 
     bSizerOuterContainer->Add( m_pScroll, 1, wxEXPAND, 5 );
 
+    wxStaticBox *psbf = new wxStaticBox( this,  wxID_ANY, _("Filter")) ;
+    wxStaticBoxSizer* sbSizer2 = new wxStaticBoxSizer( psbf , wxVERTICAL );
+    sbSizer2->Add( m_tFilter, 1, wxALL|wxEXPAND, 5 );
+    bSizerOuterContainer->Add( sbSizer2, 0, wxEXPAND, 5 );
+
     wxBoxSizer* bSizerBottomContainer = new wxBoxSizer( wxHORIZONTAL );
     bSizerOuterContainer->Add( bSizerBottomContainer, 0, wxEXPAND, 5 );
-
-
+    
     wxStaticBox *psb = new wxStaticBox( this,  wxID_ANY, _("Legend")) ;
     wxStaticBoxSizer* sbSizer1 = new wxStaticBoxSizer( psb , wxVERTICAL );
 
