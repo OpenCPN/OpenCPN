@@ -293,13 +293,16 @@ void wxCurlTransferDialog::UpdateLabels(wxCurlProgressBaseEvent *ev)
         m_pGauge->Pulse();
     }
 
-    if (m_pElapsedTime)
-        m_pElapsedTime->SetLabel(ev->GetElapsedTime().Format());
-    if (m_pRemainingTime)
-        m_pRemainingTime->SetLabel(ev->GetEstimatedRemainingTime().Format());
-    if (m_pEstimatedTime)
-        m_pEstimatedTime->SetLabel(ev->GetEstimatedTime().Format());
-
+    //  Correct an occasional ASSERT for invalid wxTimeSpan.   dsr
+    if(ev->GetElapsedTime().IsShorterThan( wxTimeSpan::Minutes(120))){
+        if (m_pElapsedTime)
+            m_pElapsedTime->SetLabel(ev->GetElapsedTime().Format());
+        if (m_pRemainingTime)
+            m_pRemainingTime->SetLabel(ev->GetEstimatedRemainingTime().Format());
+        if (m_pEstimatedTime)
+            m_pEstimatedTime->SetLabel(ev->GetEstimatedTime().Format());
+    }
+    
     if (m_pSize)
     {
         wxString currsize(ev->GetHumanReadableTransferredBytes().c_str(), wxConvUTF8);
