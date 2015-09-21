@@ -2604,8 +2604,13 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
 
     if( g_FloatingToolbarDialog ){
         tb = g_FloatingToolbarDialog->GetToolbar();
-        if(tb)
-            g_FloatingToolbarDialog->SetGeometry(g_Compass->IsShown(), g_Compass->GetRect());
+        if(tb){
+            if(g_Compass)
+                g_FloatingToolbarDialog->SetGeometry(g_Compass->IsShown(), g_Compass->GetRect());
+            else
+                g_FloatingToolbarDialog->SetGeometry(false, wxRect(0,0,1,1));
+        }
+            
     }
     if( !tb )
         return 0;

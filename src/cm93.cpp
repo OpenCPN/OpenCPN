@@ -123,6 +123,9 @@ M_COVR_Desc::M_COVR_Desc()
       user_yoff = 0.;
       m_centerlat_cos = 1.0;
       m_buser_offsets = false;
+      
+      m_ngl_vertices = 0;
+      gl_screen_vertices = NULL;
 
 }
 
@@ -4707,9 +4710,11 @@ void SetVPPositive ( ViewPort *pvp )
 {
       while ( pvp->GetBBox().GetMinX() < 0 )
       {
-            pvp->clon += 360.;
             wxPoint2DDouble t ( 360., 0. );
             pvp->GetBBox().Translate ( t );
+            if(pvp->clon < pvp->GetBBox().GetMinX())
+                pvp->clon += 360.;
+            
       }
 }
 

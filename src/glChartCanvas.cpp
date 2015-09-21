@@ -1647,7 +1647,7 @@ void glChartCanvas::DrawDynamicRoutesAndWaypoints( ViewPort &vp )
         if( pRouteDraw->IsTrack() ) {
             /* Active tracks */
             if( dynamic_cast<Track *>(pRouteDraw)->IsRunning() ){
-//                pRouteDraw->DrawGL( vp, region );
+                pRouteDraw->DrawGL( vp );
                 continue;
             }
         }
@@ -3026,13 +3026,13 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
                     if( chart->GetChartFamily() == CHART_FAMILY_RASTER ) {
                         ChartBaseBSB *Patch_Ch_BSB = dynamic_cast<ChartBaseBSB*>( chart );
                         if (Patch_Ch_BSB) {
-                            SetClipRegion(vp, pqp->quilt_region);
+                            SetClipRegion(vp, pqp->ActiveRegion/*pqp->quilt_region*/);
                             RenderRasterChartRegionGL( chart, vp, get_region );
                             DisableClipRegion();
                             b_rendered = true;
                         }
                     } else if(chart->GetChartFamily() == CHART_FAMILY_VECTOR ) {
-                        RenderNoDTA(vp, pqp->quilt_region);
+                        RenderNoDTA(vp, pqp->ActiveRegion/*pqp->quilt_region*/);
                         b_rendered = chart->RenderRegionViewOnGL( *m_pcontext, vp, rect_region, get_region );
                     }
                 }
@@ -3911,6 +3911,7 @@ void glChartCanvas::Render()
 
                         //   Done with cached texture "blit"
                         glDisable( g_texture_rectangle_format );
+                }
 
                 } else { // must redraw the entire screen
                     ( s_glFramebufferTexture2D )( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
@@ -3982,7 +3983,6 @@ void glChartCanvas::Render()
             // Disable Render to FBO
             ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, 0 );
             
-            }
         } // newview
 
         useFBO = true;

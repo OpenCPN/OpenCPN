@@ -423,11 +423,15 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &region, const LLReg
     }
 
     OCPNRegion r;
-    for(std::list<ContourRegion>::iterator k = cregions.begin(); k!=cregions.end(); k++)
-        if(k->subtract)
-            r.Subtract(k->r);
-        else
-            r.Union(k->r);
+    for(std::list<ContourRegion>::iterator k = cregions.begin(); k!=cregions.end(); k++){
+        
+        if(k->r.Ok()){
+            if(k->subtract)
+                r.Subtract(k->r);
+            else
+                r.Union(k->r);
+        }
+    }
 
     rotation = rotation_save;
     return r;
