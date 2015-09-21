@@ -573,11 +573,30 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_nTrackPrecision = 2;
     
 
+#ifdef __WXMSW__
     //  Enable some default PlugIns, and their default options
+    if(pConfig){
+        pConfig->SetPath( _T ( "/PlugIns/chartdldr_pi.dll" ) );
+        pConfig->Write( _T ( "bEnabled" ), true );
+    }
+#endif
+
+#ifdef __WXOSX__
+//  Enable some default PlugIns, and their default options
+    if(pConfig){
+        pConfig->SetPath( _T ( "/PlugIns/libchartdldr_pi.dylib" ) );
+        pConfig->Write( _T ( "bEnabled" ), true );
+    }
+#endif
+
+#ifdef __LINUX__
+//  Enable some default PlugIns, and their default options
     if(pConfig){
         pConfig->SetPath( _T ( "/PlugIns/libchartdldr_pi.so" ) );
         pConfig->Write( _T ( "bEnabled" ), true );
     }
+#endif
+
         
 #ifdef __OCPN__ANDROID__
     
