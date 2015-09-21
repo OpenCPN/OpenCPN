@@ -9,7 +9,7 @@
 INCLUDE_DIRECTORIES(src/wxcurl)
 IF(WIN32)
   IF(MSVC)
-    SET(CURL_LIBRARIES "../buildwin/libcurl")
+    SET(CURL_LIBRARIES "${CMAKE_SOURCE_DIR}/buildwin/libcurl.lib")
     INSTALL(FILES "buildwin/libcurl.dll" DESTINATION ".")
     INSTALL(FILES "buildwin/libeay32.dll" DESTINATION ".")
     INSTALL(FILES "buildwin/ssleay32.dll" DESTINATION ".")
