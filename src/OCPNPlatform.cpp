@@ -572,7 +572,13 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_bShowAISName = false;
     g_nTrackPrecision = 2;
     
-    
+
+    //  Enable some default PlugIns, and their default options
+    if(pConfig){
+        pConfig->SetPath( _T ( "/PlugIns/libchartdldr_pi.so" ) );
+        pConfig->Write( _T ( "bEnabled" ), true );
+    }
+        
 #ifdef __OCPN__ANDROID__
     
 #ifdef ocpnUSE_GL
@@ -580,9 +586,6 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_GLOptions.m_bTextureCompression = 1;
     g_GLOptions.m_bTextureCompressionCaching = 1;
 #endif
-    
-    //[PlugIns/libchartdldr_pi.so]
-    //bEnabled=1
     
     g_btouch = true;
     g_bresponsive = true;
