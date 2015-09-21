@@ -104,9 +104,15 @@ extern wxArrayString    g_locale_catalog_array;
 
 unsigned int      gs_plib_flags;
 
+enum
+{
+    CurlThreadId = wxID_HIGHEST+1
+};
+
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(Plugin_WaypointList);
 WX_DEFINE_LIST(Plugin_HyperlinkList);
+
 
 //    Some static helper funtions
 //    Scope is local to this module
@@ -220,8 +226,16 @@ PlugInToolbarToolContainer::~PlugInToolbarToolContainer()
 //-----------------------------------------------------------------------------------------------------
 PlugInManager *s_ppim;
 
+BEGIN_EVENT_TABLE( PlugInManager, wxEvtHandler )
+    EVT_CURL_END_PERFORM( CurlThreadId, PlugInManager::OnEndPerformCurlDownload )
+    EVT_CURL_DOWNLOAD( CurlThreadId, PlugInManager::OnCurlDownload )
+END_EVENT_TABLE()
+
 PlugInManager::PlugInManager(MyFrame *parent)
 {
+#ifndef __OCPN__ANDROID__
+    m_pCurlThread = NULL;
+#endif
     pParent = parent;
     s_ppim = this;
 
@@ -231,10 +245,16 @@ PlugInManager::PlugInManager(MyFrame *parent)
         m_plugin_menu_item_id_next = pFrame->GetCanvasWindow()->GetNextContextMenuId();
         m_plugin_tool_id_next = pFrame->GetNextToolbarToolId();
     }
+    #ifndef __OCPN__ANDROID__
+    wxCurlBase::Init();
+    #endif
 }
 
 PlugInManager::~PlugInManager()
 {
+    #ifndef __OCPN__ANDROID__
+    wxCurlBase::Shutdown();
+    #endif
 }
 
 
@@ -5065,6 +5085,46 @@ _OCPN_DLStatus OCPN_downloadFile( const wxString& url, const wxString &outputFil
         wxSleep(1);
         wxSafeYield();
     }
+
+#else
+
+    wxFileName tfn = wxFileName::CreateTempFileName( outputFile );
+    wxFileOutputStream output( tfn.GetFullPath() );
+    
+    wxCurlDownloadDialog ddlg(url, &output, title,
+            message + url, bitmap, parent,
+            style);
+    wxCurlDialogReturnFlag ret = ddlg.RunModal();
+    output.Close();
+    
+    _OCPN_DLStatus result = OCPN_DL_UNKNOWN;
+    
+    switch( ret )
+    {
+        case wxCDRF_SUCCESS:
+        {
+            if ( wxCopyFile( tfn.GetFullPath(), outputFile ) )
+                result = OCPN_DL_NO_ERROR;
+            else
+                result = OCPN_DL_FAILED;
+            break;
+        }
+        case wxCDRF_FAILED:
+        {
+            result = OCPN_DL_FAILED;
+            break;
+        }
+        case wxCDRF_USER_ABORTED:
+        {
+            result = OCPN_DL_ABORTED;
+            break;
+        }
+        default:
+            wxASSERT( false );  // This should never happen because we handle all possible cases of ret
+    }
+    if( wxFileExists( tfn.GetFullPath() ) )
+        wxRemoveFile ( tfn.GetFullPath() );
+    return result;
 #endif
     
     return OCPN_DL_FAILED;
@@ -5109,10 +5169,43 @@ _OCPN_DLStatus OCPN_downloadFileBackground( const wxString& url, const wxString 
         *handle = dl_ID;
     
     return OCPN_DL_STARTED;
+#else
+
+    if( g_pi_manager->m_pCurlThread ) //We allow just one download at a time. Do we want more? Or at least return some other status in this case?
+        return OCPN_DL_FAILED;
+    g_pi_manager->m_pCurlThread = new wxCurlDownloadThread( g_pi_manager, CurlThreadId );
+
+    bool failed = false;
+    if ( !g_pi_manager->HandleCurlThreadError( g_pi_manager->m_pCurlThread->SetURL( url ), g_pi_manager->m_pCurlThread, url ) )
+        failed = true;
+    
+    if ( !g_pi_manager->HandleCurlThreadError( g_pi_manager->m_pCurlThread->SetOutputStream( new wxFileOutputStream( outputFile ) ), g_pi_manager->m_pCurlThread) )
+        failed = true;
+        
+    g_pi_manager->m_download_evHandler = handler;
+    g_pi_manager->m_downloadHandle = handle;
+
+    wxCurlThreadError err = g_pi_manager->m_pCurlThread->Download();
+    if (err != wxCTE_NO_ERROR)
+    {
+        g_pi_manager->HandleCurlThreadError(err, g_pi_manager->m_pCurlThread);     // shows a message to the user
+        g_pi_manager->m_pCurlThread->Abort();
+        failed = true;
+    }
+    
+    if( !failed )
+        return OCPN_DL_STARTED;
+    
+    if( g_pi_manager->m_pCurlThread )
+    {
+        wxDELETE( g_pi_manager->m_pCurlThread );
+        g_pi_manager->m_pCurlThread = NULL;
+        g_pi_manager->m_download_evHandler = NULL;
+        g_pi_manager->m_downloadHandle = NULL;
+    }
 #endif
-    
+
     return OCPN_DL_FAILED;
-    
 }
 
 void OCPN_cancelDownloadFileBackground( long handle )
@@ -5122,7 +5215,95 @@ void OCPN_cancelDownloadFileBackground( long handle )
     finishAndroidFileDownload();
     if(g_piEventHandler)
         g_piEventHandler->clearBackgroundMode();
-    
+#else
+    if( g_pi_manager->m_pCurlThread )
+    {
+        if( g_pi_manager->m_pCurlThread->IsAlive() )
+            g_pi_manager->m_pCurlThread->Abort();
+        wxDELETE( g_pi_manager->m_pCurlThread );
+        g_pi_manager->m_pCurlThread = NULL;
+        g_pi_manager->m_download_evHandler = NULL;
+        g_pi_manager->m_downloadHandle = NULL;
+    }
 #endif
 }
 
+#ifndef __OCPN__ANDROID__
+void PlugInManager::OnEndPerformCurlDownload(wxCurlEndPerformEvent &ev)
+{
+    OCPN_downloadEvent event( wxEVT_DOWNLOAD_EVENT, 0 );
+    event.setDLEventStatus( OCPN_DL_NO_ERROR );
+    event.setDLEventCondition( OCPN_DL_EVENT_TYPE_END );
+    event.setComplete(true);
+    
+    if(m_download_evHandler){
+        m_download_evHandler->AddPendingEvent(event);
+        m_download_evHandler = NULL;
+        m_downloadHandle = NULL;
+    }
+    
+    if( m_pCurlThread )
+    {
+        wxDELETE( m_pCurlThread );
+        m_pCurlThread = NULL;
+    }
+}
+
+void PlugInManager::OnCurlDownload(wxCurlDownloadEvent &ev)
+{
+    OCPN_downloadEvent event( wxEVT_DOWNLOAD_EVENT, 0 );
+    event.setDLEventStatus( OCPN_DL_UNKNOWN );
+    event.setDLEventCondition( OCPN_DL_EVENT_TYPE_PROGRESS );
+    event.setTotal( ev.GetTotalBytes() );
+    event.setTransferred( ev.GetDownloadedBytes() );
+    event.setComplete(false);
+    
+    if(m_download_evHandler){
+        m_download_evHandler->AddPendingEvent(event);
+    }
+}
+
+
+bool PlugInManager::HandleCurlThreadError(wxCurlThreadError err, wxCurlBaseThread *p, const wxString &url)
+{
+    switch (err)
+    {
+        case wxCTE_NO_ERROR:
+            return true;        // ignore this
+
+        case wxCTE_NO_RESOURCE:
+            wxLogError(wxS("Insufficient resources for correct execution of the program."));
+            break;
+
+        case wxCTE_ALREADY_RUNNING:
+            wxFAIL;      // should never happen!
+            break;
+
+        case wxCTE_INVALID_PROTOCOL:
+            wxLogError(wxS("The URL '%s' uses an unsupported protocol."), url.c_str());
+            break;
+
+        case wxCTE_NO_VALID_STREAM:
+            wxFAIL;     // should never happen - the user streams should always be valid!
+            break;
+
+        case wxCTE_ABORTED:
+            return true;        // ignore this
+
+        case wxCTE_CURL_ERROR:
+            {
+                wxString err = wxS("unknown");
+                if (p->GetCurlSession())
+                    err = wxString(p->GetCurlSession()->GetErrorString().c_str(), wxConvUTF8);
+                wxLogError(wxS("Network error: %s"), err.c_str());
+            }
+            break;
+    }
+
+    // stop the thread
+    if (p->IsAlive()) p->Abort();
+
+    // this is an unrecoverable error:
+    return false;
+}
+#endif
