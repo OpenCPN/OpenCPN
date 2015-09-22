@@ -101,6 +101,7 @@
 #include <setjmp.h>
 
 
+extern ChartCanvas *cc1;
 extern struct sigaction sa_all;
 extern struct sigaction sa_all_old;
 
@@ -128,98 +129,26 @@ ViewPort::ViewPort()
     skew = 0.;
     view_scale_ppm = 1;
     rotation = 0.;
+    tilt = 0.;
     b_quilt = false;
     pix_height = pix_width = 0;
     b_MercatorProjectionOverride = false;
-    toSM_lat0_cache = 91;
+    lat0_cache = NAN;
+    m_projection_type = PROJECTION_MERCATOR;
+
 }
 
+// TODO: eliminate the use of this function
 wxPoint ViewPort::GetPixFromLL( double lat, double lon )
 {
-    double easting, northing;
-    double xlon = lon;
-
-    /*  Make sure lon and lon0 are same phase */
-    if( xlon * clon < 0. ) {
-        if( xlon < 0. ) xlon += 360.;
-        else
-            xlon -= 360.;
-    }
-
-    if( fabs( xlon - clon ) > 180. ) {
-        if( xlon > clon ) xlon -= 360.;
-        else
-            xlon += 360.;
-    }
-
-    if( PROJECTION_TRANSVERSE_MERCATOR == m_projection_type ) {
-        //    We calculate northings as referenced to the equator
-        //    And eastings as though the projection point is midscreen.
-
-        double tmeasting, tmnorthing;
-        double tmceasting, tmcnorthing;
-        toTM( clat, clon, 0., clon, &tmceasting, &tmcnorthing );
-        toTM( lat, xlon, 0., clon, &tmeasting, &tmnorthing );
-
-//            tmeasting -= tmceasting;
-//            tmnorthing -= tmcnorthing;
-
-        northing = tmnorthing - tmcnorthing;
-        easting = tmeasting - tmceasting;
-    } else if( PROJECTION_POLYCONIC == m_projection_type ) {
-
-        //    We calculate northings as referenced to the equator
-        //    And eastings as though the projection point is midscreen.
-        double pceasting, pcnorthing;
-        toPOLY( clat, clon, 0., clon, &pceasting, &pcnorthing );
-
-        double peasting, pnorthing;
-        toPOLY( lat, xlon, 0., clon, &peasting, &pnorthing );
-
-        easting = peasting;
-        northing = pnorthing - pcnorthing;
-    }
-
-    else {
-#if 0
-        toSM( lat, xlon, clat, clon, &easting, &northing );
-#else
-        if(clat != toSM_lat0_cache) {
-            toSM_lat0_cache = clat;
-            toSM_y30_cache = toSMcache_y30(clat);
-        }
-        toSMcache( lat, xlon, toSM_y30_cache, clon, &easting, &northing );
-#endif
-    }
-
-    if( !wxFinite(easting) || !wxFinite(northing) ) return wxPoint( 0, 0 );
-
-    double epix = easting * view_scale_ppm;
-    double npix = northing * view_scale_ppm;
-    double dxr = epix;
-    double dyr = npix;
-
-    //    Apply VP Rotation
-    double angle = rotation;
-
-    if(!g_bskew_comp)
-        angle += skew;
-        
-    if( angle ) {
-        dxr = epix * cos( angle ) + npix * sin( angle );
-        dyr = npix * cos( angle ) - epix * sin( angle );
-    }
-    wxPoint r;
-    //    We definitely need a round() function here
-    r.x = (int) wxRound( ( pix_width / 2 ) + dxr );
-    r.y = (int) wxRound( ( pix_height / 2 ) - dyr );
-
-    return r;
+    wxPoint2DDouble p = GetDoublePixFromLL(lat, lon);
+    return wxPoint(wxRound(p.m_x), wxRound(p.m_y));
 }
 
 wxPoint2DDouble ViewPort::GetDoublePixFromLL( double lat, double lon )
 {
-    double easting, northing;
+    double easting = 0;
+    double northing = 0;
     double xlon = lon;
 
     /*  Make sure lon and lon0 are same phase */
@@ -235,7 +164,34 @@ wxPoint2DDouble ViewPort::GetDoublePixFromLL( double lat, double lon )
             xlon += 360.;
     }
 
-    if( PROJECTION_TRANSVERSE_MERCATOR == m_projection_type ) {
+    // update cache of trig functions used for projections
+    if(clat != lat0_cache) {
+        lat0_cache = clat;
+        switch( m_projection_type ) {
+        case PROJECTION_MERCATOR:
+            cache0 = toSMcache_y30(clat);
+            break;
+        case PROJECTION_POLAR:
+            cache0 = toPOLARcache_e(clat);
+            break;
+        case PROJECTION_ORTHOGRAPHIC:
+        case PROJECTION_STEREOGRAPHIC:
+        case PROJECTION_GNOMONIC:
+            cache_phi0(clat, &cache0, &cache1);
+            break;
+        }
+    }
+
+    switch( m_projection_type ) {
+    case PROJECTION_MERCATOR:
+#if 0
+        toSM( lat, xlon, clat, clon, &easting, &northing );
+#else
+        toSMcache( lat, xlon, cache0, clon, &easting, &northing );
+#endif
+        break;
+
+    case PROJECTION_TRANSVERSE_MERCATOR:
         //    We calculate northings as referenced to the equator
         //    And eastings as though the projection point is midscreen.
 
@@ -246,7 +202,9 @@ wxPoint2DDouble ViewPort::GetDoublePixFromLL( double lat, double lon )
 
         northing = tmnorthing - tmcnorthing;
         easting = tmeasting - tmceasting;
-    } else if( PROJECTION_POLYCONIC == m_projection_type ) {
+        break;
+
+    case PROJECTION_POLYCONIC:
 
         //    We calculate northings as referenced to the equator
         //    And eastings as though the projection point is midscreen.
@@ -258,21 +216,34 @@ wxPoint2DDouble ViewPort::GetDoublePixFromLL( double lat, double lon )
 
         easting = peasting;
         northing = pnorthing - pcnorthing;
+        break;
+
+    case PROJECTION_ORTHOGRAPHIC:
+        toORTHO( lat, xlon, cache0, cache1, clon, &easting, &northing );
+        break;
+
+    case PROJECTION_POLAR:
+        toPOLAR( lat, xlon, cache0, clat, clon, &easting, &northing );
+        break;
+
+    case PROJECTION_STEREOGRAPHIC:
+        toSTEREO( lat, xlon, cache0, cache1, clon, &easting, &northing );
+        break;
+
+    case PROJECTION_GNOMONIC:
+        toGNO( lat, xlon, cache0, cache1, clon, &easting, &northing );
+        break;
+
+    case PROJECTION_EQUIRECTANGULAR:
+        toEQUIRECT( lat, xlon, clat, clon, &easting, &northing );
+        break;
+
+    default:
+        printf("unhandled projection\n");
     }
 
-    else {
-#if 0
-        toSM( lat, xlon, clat, clon, &easting, &northing );
-#else
-        if(clat != toSM_lat0_cache) {
-            toSM_lat0_cache = clat;
-            toSM_y30_cache = toSMcache_y30(clat);
-        }
-        toSMcache( lat, xlon, toSM_y30_cache, clon, &easting, &northing );
-#endif
-    }
-
-    if( !wxFinite(easting) || !wxFinite(northing) ) return wxPoint( 0, 0 );
+    if( !wxFinite(easting) || !wxFinite(northing) )
+        return wxPoint2DDouble( easting, northing );
 
     double epix = easting * view_scale_ppm;
     double npix = northing * view_scale_ppm;
@@ -289,13 +260,13 @@ wxPoint2DDouble ViewPort::GetDoublePixFromLL( double lat, double lon )
         dyr = npix * cos( angle ) - epix * sin( angle );
     }
 
-    return wxPoint2DDouble(( pix_width / 2 ) + dxr, ( pix_height / 2 ) - dyr);
+    return wxPoint2DDouble(( pix_width / 2.0 ) + dxr, ( pix_height / 2.0 ) - dyr);
 }
 
 void ViewPort::GetLLFromPix( const wxPoint2DDouble &p, double *lat, double *lon )
 {
-    int dx = p.m_x - ( pix_width / 2.0 );
-    int dy = ( pix_height / 2.0 ) - p.m_y;
+    double dx = p.m_x - ( pix_width / 2.0 );
+    double dy = ( pix_height / 2.0 ) - p.m_y;
 
     double xpr = dx;
     double ypr = dy;
@@ -313,23 +284,53 @@ void ViewPort::GetLLFromPix( const wxPoint2DDouble &p, double *lat, double *lon 
     double d_north = ypr / view_scale_ppm;
 
     double slat, slon;
-    if( PROJECTION_TRANSVERSE_MERCATOR == m_projection_type ) {
+    switch( m_projection_type ) {
+    case PROJECTION_MERCATOR:
+        //TODO  This could be fromSM_ECC to better match some Raster charts
+        //      However, it seems that cm93 (and S57) prefer no eccentricity correction
+        //      Think about it....
+        fromSM( d_east, d_north, clat, clon, &slat, &slon );
+        break;
+        
+    case PROJECTION_TRANSVERSE_MERCATOR:
+    {
         double tmceasting, tmcnorthing;
         toTM( clat, clon, 0., clon, &tmceasting, &tmcnorthing );
 
         fromTM( d_east, d_north + tmcnorthing, 0., clon, &slat, &slon );
-    } else if( PROJECTION_POLYCONIC == m_projection_type ) {
+    } break;
+
+    case PROJECTION_POLYCONIC:
+    {
         double polyeasting, polynorthing;
         toPOLY( clat, clon, 0., clon, &polyeasting, &polynorthing );
 
         fromPOLY( d_east, d_north + polynorthing, 0., clon, &slat, &slon );
-    }
+    } break;
 
-    //TODO  This could be fromSM_ECC to better match some Raster charts
-    //      However, it seems that cm93 (and S57) prefer no eccentricity correction
-    //      Think about it....
-    else
-        fromSM( d_east, d_north, clat, clon, &slat, &slon );
+    case PROJECTION_ORTHOGRAPHIC:
+        fromORTHO( d_east, d_north, clat, clon, &slat, &slon );
+        break;
+
+    case PROJECTION_POLAR:
+        fromPOLAR( d_east, d_north, clat, clon, &slat, &slon );
+        break;
+
+    case PROJECTION_STEREOGRAPHIC:
+        fromSTEREO( d_east, d_north, clat, clon, &slat, &slon );
+        break;
+
+    case PROJECTION_GNOMONIC:
+        fromGNO( d_east, d_north, clat, clon, &slat, &slon );
+        break;
+
+    case PROJECTION_EQUIRECTANGULAR:
+        fromEQUIRECT( d_east, d_north, clat, clon, &slat, &slon );
+        break;
+
+    default:
+        printf("unhandled projection\n");
+    }
 
     *lat = slat;
 
@@ -549,6 +550,8 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
     for( unsigned int ip = 0; ip < nPoints; ip++ ) {
         wxPoint p = GetPixFromLL( pfp[0], pfp[1] );
         pp[ip] = p;
+        if(p.x == INVALID_COORD)
+            continue;
 
         if(valid) {
             poly_x_max = wxMax(poly_x_max, p.x);
@@ -600,6 +603,9 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
             //  Quick check on y dimension
             int y0 = pp[i].y; int y1 = pp[i+1].y;
 
+            if(y0 == INVALID_COORD || y1 == INVALID_COORD)
+                continue;
+            
             if( ((y0 < rect.y) && (y1 < rect.y)) ||
                 ((y0 > rect.y+rect.height) && (y1 > rect.y+rect.height)) )
                 continue;               // both ends of line outside of box, top or bottom
@@ -655,6 +661,9 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
  
             for(size_t i=0 ; i < nPoints-1 ; i++){
                 int x0 = pp[i].x;  int y0 = pp[i].y;
+                if(x0 == INVALID_COORD)
+                    continue;
+
                 if((x0 < rect.x) || (x0 > rect.x+rect.width))
                     continue;
                 
@@ -842,7 +851,12 @@ void ViewPort::SetBoxes( void )
     bool hourglass = false;
     switch(m_projection_type) {
     case PROJECTION_TRANSVERSE_MERCATOR:
+    case PROJECTION_STEREOGRAPHIC:
+    case PROJECTION_GNOMONIC:
+        hourglass = true;
     case PROJECTION_POLYCONIC:
+    case PROJECTION_POLAR:
+    case PROJECTION_ORTHOGRAPHIC:
     {
         double d;
 

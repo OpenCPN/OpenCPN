@@ -69,6 +69,8 @@ typedef enum ColorScheme
 }_ColorScheme;
 #endif
 
+#define INVALID_COORD -2147483648
+
 //----------------------------------------------------------------------------
 // ViewPort Definition
 //----------------------------------------------------------------------------
@@ -103,12 +105,15 @@ class ViewPort
             void SetBBoxDirect( const LLBBox &bbox ) { vpBBox = bbox; }
             void SetBBoxDirect( double latmin, double lonmin, double latmax, double lonmax);
 
+            void InvalidateTransformCache() { lat0_cache = NAN; }
+            
 //  Generic
             double   clat;                   // center point
             double   clon;
             double   view_scale_ppm;
             double   skew;
             double   rotation;
+            double   tilt;  // For perspective view
 
             double    chart_scale;            // conventional chart displayed scale
             double    ref_scale;              //  the nominal scale of the "reference chart" for this view
@@ -129,7 +134,7 @@ class ViewPort
 
             bool     bValid;                 // This VP is valid
 
-            double toSM_lat0_cache, toSM_y30_cache;
+            double lat0_cache, cache0, cache1;
 };
 
 

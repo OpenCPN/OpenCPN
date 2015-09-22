@@ -2802,6 +2802,10 @@ int s52plib::RenderSY( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 // Line Simple Style, OpenGL
 int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
+    // for now don't use vbo model in non-mercator
+    if(vp->m_projection_type != PROJECTION_MERCATOR)
+        return RenderLS(rzRules, rules, vp);
+
     if( !m_benableGLLS )                        // root chart cannot support VBO model, for whatever reason
         return RenderLS(rzRules, rules, vp);
 
@@ -3137,37 +3141,10 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             vc_hash = (VC_Hash *)rzRules->obj->m_chart_context->m_pvc_hash; 
         }
 
-        unsigned int nls_max;
-        if( rzRules->obj->m_n_edge_max_points > 0 ) // size has been precalculated on SENC load
-            nls_max = rzRules->obj->m_n_edge_max_points;
-        else {
-            //  Calculate max malloc size required
-            nls_max = 0;
-            int *index_run_x = rzRules->obj->m_lsindex_array;
-            for( int imseg = 0; imseg < rzRules->obj->m_n_lsindex; imseg++ ) {
-                index_run_x++; //Skip cNode
-                //  Get the edge
-                unsigned int enode = *index_run_x;
-                if(enode){
-                    VE_Element *pedge = (*ve_hash)[enode];
-                    if(pedge){
-                        if( pedge->nCount > nls_max )
-                            nls_max = pedge->nCount;
-                    }
-                }
-                index_run_x += 2;
-            }
-            rzRules->obj->m_n_edge_max_points = nls_max; // Got it, cache for next time
-        }
-
-        //  Allocate some storage for converted points
-        wxPoint *ptp = (wxPoint *) malloc( ( nls_max + 2 ) * sizeof(wxPoint) ); // + 2 allows for end nodes
-
         int *index_run;
         double *ppt;
         double easting, northing;
 
-        wxPoint pra( 0, 0 );
         VC_Element *pnode;
 
 #ifdef ocpnUSE_GL
@@ -3180,16 +3157,6 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
             //  Get first connected node
             unsigned int inode = *index_run++;
-            if( ( inode ) ) {
-                pnode = (*vc_hash)[inode];
-                if( pnode ) {
-                    ppt = pnode->pPoint;
-                    easting = *ppt++;
-                    northing = *ppt;
-                    GetPointPixSingle( rzRules, (float) northing, (float) easting, &pra, vp );
-                }
-                ptp[0] = pra; // insert beginning node
-            }
 
             //  Get the edge
             unsigned int enode = *index_run++;
@@ -3197,89 +3164,89 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             if(enode)
                 pedge = (*ve_hash)[enode];
 
-            int nls = 0;
-            
-            if(pedge){
-
-            //  Here we decide to draw or not based on the highest priority seen for this segment
-            //  That is, if this segment is going to be drawn at a higher priority later, then "continue", and don't draw it here.
-            
-            // This logic is not perfectly right for one case:
-            // If the segment has only two end connected nodes, and no intermediate edge,
-            // then we have no good way to evaluate the priority.
-            // This is due to the fact that priority is only precalculated for edge segments, not connector nodes.
-            // Only thing to do is take the conservative approach and draw the segment, in this case.
-                if( pedge->nCount ){
-                    if( pedge->max_priority != priority_current ) continue;
-                }
-                nls = pedge->nCount;
-
-                ppt = pedge->pPoints;
-                for( int ip = 0; ip < nls; ip++ ) {
-                    easting = *ppt++;
-                    northing = *ppt++;
-                    GetPointPixSingle( rzRules, (float) northing, (float) easting, &ptp[ip + 1], vp );
-                }
-            }
-
             //  Get last connected node
             unsigned int jnode = *index_run++;
-            if( ( jnode ) ) {
-                pnode = (*vc_hash)[jnode];
-                if( pnode ) {
-                    ppt = pnode->pPoint;
-                    easting = *ppt++;
-                    northing = *ppt;
-                    GetPointPixSingle( rzRules, (float) northing, (float) easting, &pra, vp );
-                }
-                ptp[nls + 1] = pra; // insert ending node
-            }
 
-            int istart, ndraw;
+            int nls;
+            if(pedge) {
+                //  Here we decide to draw or not based on the highest priority seen for this segment
+                //  That is, if this segment is going to be drawn at a higher priority later, then "continue", and don't draw it here.
+            
+                // This logic is not perfectly right for one case:
+                // If the segment has only two end connected nodes, and no intermediate edge,
+                // then we have no good way to evaluate the priority.
+                // This is due to the fact that priority is only precalculated for edge segments, not connector nodes.
+                // Only thing to do is take the conservative approach and draw the segment, in this case.
+                if( pedge->nCount && pedge->max_priority != priority_current )
+                    continue;
+                nls = pedge->nCount + 1;
+            } else
+                nls = 1;
 
-            if(  inode  &&  jnode )  {
-                istart = 0;
-                ndraw = nls + 1;
-            } else {
-                istart = 1;
-                ndraw = nls;
-            }
-
-            //        Draw the edge as point-to-point
-            for( int ipc = istart; ipc < ndraw; ipc++ ) {
-                x0 = ptp[ipc].x;
-                y0 = ptp[ipc].y;
-                x1 = ptp[ipc + 1].x;
-                y1 = ptp[ipc + 1].y;
-
-                // Do not draw null segments
-                if( ( x0 == x1 ) && ( y0 == y1 ) ) continue;
-
-                ClipResult res = cohen_sutherland_line_clip_i( &x0, &y0, &x1, &y1, xmin_, xmax_,
-                        ymin_, ymax_ );
-
-                if( res != Invisible ) {
-                    if( m_pdc )
-                        m_pdc->DrawLine( x0, y0, x1, y1 );
-#ifdef ocpnUSE_GL
-                    else {
-                        if(!b_wide_line){
-                            glVertex2i( x0, y0 );
-                            glVertex2i( x1, y1 );
-                        }
-                        else {
-                            DrawGLThickLine( x0, y0, x1, y1, wide_pen, true );
-                        }
+            wxPoint l;
+            bool lastvalid = false;
+            for( int ipc = 0; ipc < nls + 1; ipc++ ) {
+                ppt = 0;
+                if( ipc == 0 ) {
+                    if( inode ) {
+                        pnode = (*vc_hash)[inode];
+                        if( pnode )
+                            ppt = pnode->pPoint;
                     }
-#endif                    
-                }
+                } else if(ipc == nls) {
+                    if( ( jnode ) ) {
+                        pnode = (*vc_hash)[jnode];
+                        if( pnode )
+                            ppt = pnode->pPoint;
+                    }
+                } else if(pedge)
+                    ppt = pedge->pPoints + 2*(ipc-1);
+                
+                if(ppt) {
+                    wxPoint r;
+                    GetPointPixSingle( rzRules, ppt[1], ppt[0], &r, vp );
+
+                    if(r.x != INVALID_COORD) {
+                        if(lastvalid) {
+                            //        Draw the edge as point-to-point
+                            x0 = l.x, y0 = l.y;
+                            x1 = r.x, y1 = r.y;
+
+                            // Do not draw null segments
+                            if( ( x0 == x1 ) && ( y0 == y1 ) ) continue;
+
+                            if( m_pdc ) {
+                                if( cohen_sutherland_line_clip_i( &x0, &y0, &x1, &y1, xmin_, xmax_,
+                                                                  ymin_, ymax_ ) != Invisible )
+                                    m_pdc->DrawLine( x0, y0, x1, y1 );
+                            }
+#ifdef ocpnUSE_GL
+                            else {
+                                // simplified faster test, let opengl do the rest
+                                if((x0 > xmin_ || x1 > xmin_) && (x0 < xmax_ || x1 < xmax_) &&
+                                   (y0 > ymin_ || y1 > ymin_) && (y0 < ymax_ || y1 < ymax_)) {
+                                    if(!b_wide_line) {
+                                        glVertex2i( x0, y0 );
+                                        glVertex2i( x1, y1 );
+                                    } else
+                                        DrawGLThickLine( x0, y0, x1, y1, wide_pen, true );
+                                }
+                            }
+#endif      
+                        }
+
+                        l = r;
+                        lastvalid = true;
+                    } else
+                        lastvalid = false;
+                } else
+                    lastvalid = false;
             }
         }
 #ifdef ocpnUSE_GL
         if(!b_wide_line)
             glEnd();
 #endif              
-        free( ptp );
     }
 #ifdef ocpnUSE_GL
     if( !m_pdc )
@@ -3291,8 +3258,6 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 // Line Complex
 int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
-//    return 0;
-    
     wxPoint *ptp;
     int npt;
     wxPoint r;
@@ -3565,7 +3530,7 @@ void s52plib::draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp, 
             inc = -1;
         }
         
-        float dx, dy, seg_len, theta, cth, sth, tdeg;
+        float dx, dy, seg_len, theta;
         
         bool done = false;
         int iseg = start_seg;
@@ -3587,10 +3552,6 @@ void s52plib::draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp, 
             dx = ptp[iseg + inc].x - ptp[iseg].x;
             dy = ptp[iseg + inc].y - ptp[iseg].y;
             seg_len = sqrt( dx * dx + dy * dy );
-            theta = atan2f( dy, dx );
-            cth = cos( theta );
-            sth = sin( theta );
-            tdeg = theta * 180. / PI;
             
             if( seg_len >= 1.0 ) {
                 if( seg_len <= sym_len * sym_factor ) {
@@ -3598,8 +3559,8 @@ void s52plib::draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp, 
                     int yst1 = ptp[iseg].y;
                     float xst2, yst2;
                     if( seg_len >= sym_len ) {
-                        xst2 = xst1 + ( sym_len * cth );
-                        yst2 = yst1 + ( sym_len * sth );
+                        xst2 = xst1 + ( sym_len * dx / seg_len );
+                        yst2 = yst1 + ( sym_len * dy / seg_len );
                     } else {
                         xst2 = ptp[iseg + inc].x;
                         yst2 = ptp[iseg + inc].y;
@@ -3622,10 +3583,11 @@ void s52plib::draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp, 
                                 draw_rule->pos.line.pivot_y.LIRW );
 
                         HPGL->SetTargetDC( pdc );
-                        HPGL->Render( str, col, r, pivot, tdeg );
+                        theta = atan2f( dy, dx );
+                        HPGL->Render( str, col, r, pivot, theta * 180. / PI );
 
-                        xs += sym_len * cth * sym_factor;
-                        ys += sym_len * sth * sym_factor;
+                        xs += sym_len * dx / seg_len * sym_factor;
+                        ys += sym_len * dy / seg_len * sym_factor;
                         s += sym_len * sym_factor;
                     }
 
@@ -3679,19 +3641,15 @@ next_seg_dc:
             dy = ptp[iseg + inc].y - ptp[iseg].y;
             seg_len = sqrt( dx * dx + dy * dy );
             
-            theta = atan2f( dy, dx );
-            cth = cos( theta );
-            sth = sin( theta );
-            tdeg = theta * 180. / PI;
-
             if( seg_len >= 1.0 ) {
                 if( seg_len <= sym_len * sym_factor ) {
                     int xst1 = ptp[iseg].x;
                     int yst1 = ptp[iseg].y;
                     float xst2, yst2;
+
                     if( seg_len >= sym_len ) {
-                        xst2 = xst1 + ( sym_len * cth );
-                        yst2 = yst1 + ( sym_len * sth );
+                        xst2 = xst1 + ( sym_len * dx / seg_len );
+                        yst2 = yst1 + ( sym_len * dy / seg_len );
                     } else {
                         xst2 = ptp[iseg + inc].x;
                         yst2 = ptp[iseg + inc].y;
@@ -3728,10 +3686,11 @@ next_seg_dc:
                                 draw_rule->pos.line.pivot_y.LIRW );
 
                         HPGL->SetTargetOpenGl();
-                        HPGL->Render( str, col, r, pivot, (double) tdeg );
+                        theta = atan2f( dy, dx );
+                        HPGL->Render( str, col, r, pivot, theta * 180. / PI );
 
-                        xs += sym_len * cth * sym_factor;
-                        ys += sym_len * sth * sym_factor;
+                        xs += sym_len * dx / seg_len * sym_factor;
+                        ys += sym_len * dy / seg_len * sym_factor;
                         s += sym_len * sym_factor;
                     }
 #ifndef __OCPN__ANDROID__
@@ -6169,8 +6128,33 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                     glDrawArrays(p_tp->type, 0, p_tp->nVert);
                 }
                 else {
-                    glVertexPointer(2, array_gl_type, 2 * array_data_size, p_tp->p_vertex);
-                    glDrawArrays(p_tp->type, 0, p_tp->nVert);
+                    if(vp->m_projection_type == PROJECTION_MERCATOR) {
+                        glVertexPointer(2, array_gl_type, 2 * array_data_size, p_tp->p_vertex);
+                        glDrawArrays(p_tp->type, 0, p_tp->nVert);
+                    } else {
+                        // temporary slow hack
+                        glDisableClientState(GL_VERTEX_ARRAY);
+
+                        glBegin(p_tp->type);
+                        float *pvert_list = (float *)p_tp->p_vertex;
+                        for(int i=0; i<p_tp->nVert; i++) {
+                            float lon = *pvert_list++;
+                            float lat = *pvert_list++;
+                            wxPoint r;
+                            GetPointPixSingle(rzRules, lat, lon, &r, vp);
+
+                            if(r.x != INVALID_COORD)
+                                glVertex2i(r.x, r.y);
+                            else if(p_tp->type != GL_TRIANGLE_FAN) {
+                                glEnd();
+                                glBegin(p_tp->type);
+                                if(p_tp->type == GL_TRIANGLES)
+                                    while(i%3 < 2) i++;
+                            }
+                        }
+                        glEnd();
+
+                    }
                 }
             }
             
@@ -6948,6 +6932,9 @@ render_canvas_parms* s52plib::CreatePatternBufferSpec( ObjRazRules *rzRules, Rul
 int s52plib::RenderToBufferAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp,
         render_canvas_parms *pb_spec )
 {
+    if(vp->m_projection_type != PROJECTION_MERCATOR)
+        return 1;
+
     wxImage Image;
 
     if( rules->razRule == NULL )
@@ -6984,6 +6971,9 @@ int s52plib::RenderToBufferAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp,
 int s52plib::RenderToBufferAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp,
         render_canvas_parms *pb_spec )
 {
+    if(vp->m_projection_type != PROJECTION_MERCATOR)
+        return 1;
+
     S52color *c;
     char *str = (char*) rules->INSTstr;
 
@@ -7394,8 +7384,12 @@ bool s52plib::GetPointPixArray( ObjRazRules *rzRules, wxPoint2DDouble* pd, wxPoi
     }
     else {
         for( int i = 0; i < nv; i++ ) {
+#if 1
+            GetPointPixSingle(rzRules, pd[i].m_y, pd[i].m_x, pp + i, vp);
+#else
             pp[i].x = roundint(((pd[i].m_x - rzRules->sm_transform_parms->easting_vp_center) * vp->view_scale_ppm) + (vp->pix_width / 2) );
             pp[i].y = roundint((vp->pix_height/2) - ((pd[i].m_y - rzRules->sm_transform_parms->northing_vp_center) * vp->view_scale_ppm));
+#endif
         }
     }
     
@@ -7408,9 +7402,17 @@ bool s52plib::GetPointPixSingle( ObjRazRules *rzRules, float north, float east, 
         rzRules->obj->m_chart_context->chart->GetPointPix(rzRules, north, east, r);
     }
     else {
-        r->x = roundint(((east - rzRules->sm_transform_parms->easting_vp_center) * vp->view_scale_ppm) + (vp->pix_width / 2) );
-        r->y = roundint((vp->pix_height/2) - ((north - rzRules->sm_transform_parms->northing_vp_center) * vp->view_scale_ppm));
-        
+        if(vp->m_projection_type == PROJECTION_MERCATOR) {
+            r->x = roundint(((east - rzRules->sm_transform_parms->easting_vp_center) * vp->view_scale_ppm) + (vp->pix_width / 2) );
+            r->y = roundint((vp->pix_height/2) - ((north - rzRules->sm_transform_parms->northing_vp_center) * vp->view_scale_ppm));
+        } else {
+              double lat, lon;
+              fromSM(east - rzRules->sm_transform_parms->easting_vp_center,
+                     north - rzRules->sm_transform_parms->northing_vp_center,
+                     vp->clat, vp->clon, &lat, &lon);
+
+              *r = vp->GetPixFromLL(north, east);
+        }
     }
     
     return true;
@@ -7418,6 +7420,11 @@ bool s52plib::GetPointPixSingle( ObjRazRules *rzRules, float north, float east, 
 
 void s52plib::GetPixPointSingle( int pixx, int pixy, double *plat, double *plon, ViewPort *vpt )
 {
+#if 1
+    vpt->GetLLFromPix(wxPoint(pixx, pixy), plat, plon);
+    if(*plon < 0 && vpt->clon > 180) // cm93 uses positive viewport, s57doesn't... gah
+        *plon += 360;
+#else
     //    Use Mercator estimator
     int dx = pixx - ( vpt->pix_width / 2 );
     int dy = ( vpt->pix_height / 2 ) - pixy;
@@ -7433,7 +7440,7 @@ void s52plib::GetPixPointSingle( int pixx, int pixy, double *plat, double *plon,
     
     *plat = slat;
     *plon = slon;
-    
+#endif    
 }
 
 

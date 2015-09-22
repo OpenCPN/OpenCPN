@@ -1348,6 +1348,9 @@ void s57chart::GetPointPix( ObjRazRules *rzRules, wxPoint2DDouble *en, wxPoint *
 
 void s57chart::GetPixPoint( int pixx, int pixy, double *plat, double *plon, ViewPort *vpt )
 {
+    if(vpt->m_projection_type != PROJECTION_MERCATOR)
+        printf("s57chart unhandled projection\n");
+
     //    Use Mercator estimator
     int dx = pixx - ( vpt->pix_width / 2 );
     int dy = ( vpt->pix_height / 2 ) - pixy;

@@ -6,7 +6,6 @@
  *
  ***************************************************************************
  *   Copyright (C) 2011 by Sean D'Epagnier                                 *
- *   sean at depagnier dot com                                             *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -135,24 +134,6 @@ void ocpnDC::SetBackground( const wxBrush &brush )
     }
 }
 
-void ocpnDC::SetGLAttrs( bool highQuality )
-{
-#ifdef ocpnUSE_GL
-    
-    //      Enable anti-aliased polys, at best quality
-    if( highQuality ) {
-        glEnable( GL_LINE_SMOOTH );
-        glEnable( GL_POLYGON_SMOOTH );
-        glEnable( GL_BLEND );
-    } else {
-        glDisable(GL_LINE_SMOOTH);
-        glDisable( GL_POLYGON_SMOOTH );
-        glDisable( GL_BLEND );
-    }
-    
-#endif
-}
-
 void ocpnDC::SetPen( const wxPen &pen )
 {
     if( dc ) {
@@ -211,6 +192,23 @@ void ocpnDC::GetSize( wxCoord *width, wxCoord *height ) const
         glcanvas->GetSize( width, height );
 #endif
     }
+}
+
+void ocpnDC::SetGLAttrs( bool highQuality )
+{
+#ifdef ocpnUSE_GL
+
+ // Enable anti-aliased polys, at best quality
+    if( highQuality ) {
+        glEnable( GL_LINE_SMOOTH );
+        glEnable( GL_POLYGON_SMOOTH );
+        glEnable( GL_BLEND );
+    } else {
+        glDisable(GL_LINE_SMOOTH);
+        glDisable( GL_POLYGON_SMOOTH );
+        glDisable( GL_BLEND );
+    }
+#endif
 }
 
 void ocpnDC::SetGLStipple() const
@@ -550,8 +548,7 @@ void ocpnDC::DrawLines( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffse
 #ifdef ocpnUSE_GL
     else if( ConfigurePen() ) {
 
-        SetGLAttrs( b_hiqual );
-
+        SetGLAttrs( b_hiqual ); 
         bool b_draw_thick = false;
 
         glDisable( GL_LINE_STIPPLE );
@@ -559,6 +556,7 @@ void ocpnDC::DrawLines( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffse
 
         //      Enable anti-aliased lines, at best quality
         if( b_hiqual ) {
+            glEnable( GL_BLEND );
             if( m_pen.GetWidth() > 1 ) {
                 GLint parms[2];
                 glGetIntegerv( GL_SMOOTH_LINE_WIDTH_RANGE, &parms[0] );
@@ -581,14 +579,22 @@ void ocpnDC::DrawLines( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffse
         if( b_draw_thick) {
             DrawGLThickLines( n, points, xoffset, yoffset, m_pen, b_hiqual );
         } else {
+
+            if( b_hiqual ) {
+                glEnable( GL_LINE_SMOOTH );
+                ;//                SetGLStipple(m_pen.GetStyle());
+            }
+
             glBegin( GL_LINE_STRIP );
             for( int i = 0; i < n; i++ )
                 glVertex2i( points[i].x + xoffset, points[i].y + yoffset );
             glEnd();
         }
 
-        glDisable( GL_LINE_STIPPLE );
-        SetGLAttrs( false );
+        if( b_hiqual ) {
+            glDisable( GL_LINE_STIPPLE );
+            glDisable( GL_POLYGON_SMOOTH );
+        }
     }
 #endif    
 }
@@ -780,20 +786,25 @@ void ocpnDC::DrawPolygon( int n, wxPoint points[], wxCoord xoffset, wxCoord yoff
 #endif        
 
         if( ConfigureBrush() ) {
+            glEnable( GL_POLYGON_SMOOTH );
             glBegin( GL_POLYGON );
             for( int i = 0; i < n; i++ )
                 glVertex2f( (points[i].x * scale) + xoffset, (points[i].y * scale) + yoffset );
             glEnd();
+            glDisable( GL_POLYGON_SMOOTH );
         }
 
         if( ConfigurePen() ) {
+            glEnable( GL_LINE_SMOOTH );
             glBegin( GL_LINE_LOOP );
             for( int i = 0; i < n; i++ )
                 glVertex2f( (points[i].x * scale) + xoffset, (points[i].y * scale) + yoffset );
             glEnd();
+            glDisable( GL_LINE_SMOOTH );
         }
 
-        SetGLAttrs( false );
+        SetGLAttrs( false ); 
+        
     }
 #endif    
 }
