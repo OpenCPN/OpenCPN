@@ -32,7 +32,7 @@
 
 class wxGLContext;
 
-#include "OCPNRegion.h"
+#include "LLRegion.h"
 #include "ocpn_types.h"
 
 #include <wx/dcgraph.h>         // supplemental, for Mac
@@ -180,10 +180,8 @@ public:
     void DestroyRulesChain( Rules *top );
     
     //    For OpenGL
-    int RenderObjectToGL( const wxGLContext &glcc, ObjRazRules *rzRules,
-                          ViewPort *vp, wxRect &render_rect );
-    int RenderAreaToGL( const wxGLContext &glcc, ObjRazRules *rzRules,
-                        ViewPort *vp, wxRect &render_rect );
+    int RenderObjectToGL( const wxGLContext &glcc, ObjRazRules *rzRules, ViewPort *vp );
+    int RenderAreaToGL( const wxGLContext &glcc, ObjRazRules *rzRules, ViewPort *vp );
    
     void RenderPolytessGL( ObjRazRules *rzRules, ViewPort *vp,double z_clip_geom, wxPoint *ptp );
     
@@ -237,7 +235,7 @@ public:
     RuleHash *_symb_sym; // symbol symbolisation rules
     MyNatsurHash m_natsur_hash;     // hash table for cacheing NATSUR string values from int attributes
 
-    OCPNRegion m_last_clip_region;
+    wxRect m_last_clip_rect;
     
 private:
     int S52_load_Plib( const wxString& PLib, bool b_forceLegacy );
@@ -348,8 +346,6 @@ private:
     wxString m_ColorScheme;
 
     long m_state_hash;
-
-    wxRect m_render_rect;
 
     bool m_txf_ready;
     int m_txf_avg_char_width;

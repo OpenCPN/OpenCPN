@@ -40,6 +40,7 @@
 #endif
 #endif
 
+#include "viewport.h"
 #include "glTexCache.h"
 #include "glTextureDescriptor.h"
 
@@ -217,26 +218,16 @@ void GetLevel0Map( glTextureDescriptor *ptd,  const wxRect &rect, wxString &char
     
         //    Prime the pump with the "zero" level bits, ie. 1x native chart bits
     ChartBaseBSB *pBSBChart = dynamic_cast<ChartBaseBSB*>( pChart );
-    ChartPlugInWrapper *pPlugInWrapper = dynamic_cast<ChartPlugInWrapper*>( pChart );
         
-    if( !pPlugInWrapper && !pBSBChart ) {
-        ptd->map_array[0] = (unsigned char *) calloc( ncrect.width * ncrect.height * 4, 1 );
-        return;
-    }
-    
     if( pBSBChart ) {
         unsigned char *t_buf = (unsigned char *) malloc( ncrect.width * ncrect.height * 4 );
         pBSBChart->GetChartBits( ncrect, t_buf, 1 );
         
         //    and cache them here
         ptd->map_array[0] = t_buf;
-    }
-    else if( pPlugInWrapper ){
-        unsigned char *t_buf = (unsigned char *) malloc( ncrect.width * ncrect.height * 4 );
-        pPlugInWrapper->GetChartBits( ncrect, t_buf, 1 );
-        
-        //    and cache them here
-        ptd->map_array[0] = t_buf;
+    } else {
+        ptd->map_array[0] = (unsigned char *) calloc( ncrect.width * ncrect.height * 4, 1 );
+        return;
     }
 }
 
@@ -924,7 +915,7 @@ BEGIN_EVENT_TABLE(glTexFactory, wxEvtHandler)
     EVT_TIMER(FACTORY_TIMER, glTexFactory::OnTimer)
 END_EVENT_TABLE()
 
-glTexFactory::glTexFactory(ChartBase *chart)
+glTexFactory::glTexFactory(ChartBase *chart, int raster_format)
 {
 //    m_pchart = chart;
     n_catalog_entries = 0;
@@ -948,22 +939,12 @@ glTexFactory::glTexFactory(ChartBase *chart)
     }
     //  Initialize the TextureDescriptor array
     ChartBaseBSB *pBSBChart = dynamic_cast<ChartBaseBSB*>( chart );
-    ChartPlugInWrapper *pPlugInWrapper = dynamic_cast<ChartPlugInWrapper*>( chart );
     
-    if( !pPlugInWrapper && !pBSBChart )
+    if( !pBSBChart )
         return;
     
-    bool b_plugin = false;
-    if( pPlugInWrapper )
-        b_plugin = true;
-    
-    if( b_plugin ) {
-        m_size_X = pPlugInWrapper->GetSize_X();
-        m_size_Y = pPlugInWrapper->GetSize_Y();
-    } else {
-        m_size_X = pBSBChart->GetSize_X();
-        m_size_Y = pBSBChart->GetSize_Y();
-    }
+    m_size_X = pBSBChart->GetSize_X();
+    m_size_Y = pBSBChart->GetSize_Y();
     
     m_ChartPath = chart->GetFullPath();
     
@@ -991,6 +972,9 @@ glTexFactory::glTexFactory(ChartBase *chart)
         m_timer.SetOwner(this, FACTORY_TIMER);
         m_timer.Start( 500 );
     }
+
+    m_prepared_projection_type = 0;
+    m_tiles = NULL;
 }
 
 glTexFactory::~glTexFactory()
@@ -1013,7 +997,12 @@ glTexFactory::~glTexFactory()
     }
  
     free( m_td_array );         // array is empty
-}
+
+    if(m_tiles)
+        for(int i=0 ; i < m_ntex; i++)
+            delete m_tiles[i];
+    delete [] m_tiles;
+ }
 
 glTextureDescriptor *glTexFactory::GetpTD( wxRect & rect )
 {
@@ -1386,7 +1375,7 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
         if(g_GLOptions.m_bTextureCompression && g_GLOptions.m_bTextureCompressionCaching) {
             if( ptd->nCache_Color != color_scheme ){
                 if( IsCompressedArrayComplete( 0, ptd) ){
-                    g_Platform->ShowBusySpinner();
+///                    g_Platform->ShowBusySpinner();
                 
                     for(int level = 0; level < g_mipmap_max_level + 1; level++ )
                         UpdateCacheLevel( rect, level, color_scheme );
@@ -1455,7 +1444,7 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
         return true;
     }
 
-    g_Platform->ShowBusySpinner();
+///    g_Platform->ShowBusySpinner();
     
     int dim = g_GLOptions.m_iTextureDimension;
     int size = g_tile_size;
@@ -1636,6 +1625,179 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     }
 }
 
+void glTexFactory::PrepareTiles(const ViewPort &vp, bool use_norm_vp, ChartBaseBSB *pChartBSB)
+{
+    // detect changing north/south polar
+    if(vp.m_projection_type == PROJECTION_POLAR) {
+        bool north = vp.clat > 0;
+        if(m_north != north)
+            m_prepared_projection_type = 0;
+        m_north = north;
+    }
+
+    if(vp.m_projection_type == m_prepared_projection_type)
+        return;
+
+    m_prepared_projection_type = vp.m_projection_type;
+
+    double native_scale;
+    native_scale = pChartBSB->GetNativeScale();
+
+    if(m_tiles)
+        for(int i=0 ; i < m_ntex; i++)
+            delete m_tiles[i];
+    delete [] m_tiles;
+    m_tiles = new glTexTile*[m_ntex];
+
+    int tex_dim = g_GLOptions.m_iTextureDimension;
+
+    // split cells for accuracy, much more with larger charts, and toward poles
+    // depending on projection of viewport and chart
+    // This is a very simplistic algorithm to determine split count, could be greatly improved
+
+    double xsplits, ysplits;
+    switch(vp.m_projection_type) {
+    case PROJECTION_POLAR:
+    case PROJECTION_STEREOGRAPHIC:
+    case PROJECTION_ORTHOGRAPHIC:
+    case PROJECTION_GNOMONIC:
+    case PROJECTION_POLYCONIC:
+        xsplits = native_scale / 1000000000.0 * tex_dim; // todo: fix this
+//        xsplits /= (1 << base_level); // split less zoomed out
+        
+        // split more near poles
+        if(vp.m_projection_type == PROJECTION_ORTHOGRAPHIC) {
+            Extent e;
+            pChartBSB->GetChartExtent(&e);
+            xsplits = xsplits * wxMax(fabsf(e.NLAT), fabsf(e.SLAT)) / 90;
+        }
+        
+        xsplits = round(xsplits);
+        ysplits = 2*xsplits;
+        
+        xsplits = wxMin(wxMax(xsplits, 1), 8);
+        ysplits = wxMin(wxMax(ysplits, 1), 8);
+        break;
+    case PROJECTION_EQUIRECTANGULAR:
+        // needed for skewed charts?
+//        xsplits = ysplits = 4;
+//        break;
+    default:
+        xsplits = ysplits = 1; // TODO: is this good enough in all cases to reproject
+        // non-mercator charts or even SM_ECC mercator charts in all cases?
+    }
+
+    ViewPort nvp;
+    if(use_norm_vp) {
+        pChartBSB->chartpix_to_latlong(m_size_X/2, m_size_Y/2, &m_clat, &m_clon);
+        nvp = glChartCanvas::NormalizedViewPort(vp, m_clat, m_clon);
+    }
+
+    //    Using a 2D loop, iterate thru the texture tiles of the chart
+    wxRect rect;
+    rect.y = 0;
+    for( int i = 0; i < m_ny_tex; i++ ) {
+        rect.height = tex_dim;
+        rect.x = 0;
+        for( int j = 0; j < m_nx_tex; j++ ) {
+            rect.width = tex_dim;
+
+            glTexTile *tile = m_tiles[i*m_nx_tex + j] = new glTexTile;
+            tile->rect = rect;
+
+            double lat, lon;
+            float ll[8];
+            int x[4] = {rect.x, rect.x, rect.x+rect.width, rect.x+rect.width};
+            int y[4] = {rect.y+rect.height, rect.y, rect.y, rect.y+rect.height};
+
+            for(int k=0; k<4; k++) {
+                pChartBSB->chartpix_to_latlong(x[k], y[k], &lat, &lon);
+                ll[2*k+0] = lon, ll[2*k+1] = lat;
+            }
+
+            // resolve idl
+            float lonmin = ll[0], lonmax = ll[0];
+            float latmin = ll[1], latmax = ll[1];
+            for(int i=2; i<8; i+=2) {
+                lonmin = wxMin(lonmin, ll[i]), lonmax = wxMax(lonmax, ll[i]);
+                latmin = wxMin(latmin, ll[i+1]), latmax = wxMax(latmax, ll[i+1]);
+            }
+
+            if(fabsf(lonmin - lonmax) > 180) {
+                lonmin = 540, lonmax = 0; 
+                for(int i=0; i<8; i+=2) {
+                    float lon = ll[i] < 0 ? ll[i]+360 : ll[i];
+                    lonmin = wxMin(lonmin, lon), lonmax = wxMax(lonmax, lon);
+                }
+            }
+
+            tile->box.SetMin(lonmin, latmin);
+            tile->box.SetMax(lonmax, latmax);
+
+            double sx = rect.width;
+            double sy = rect.height;
+                                
+            double xs = rect.width / xsplits;
+            double ys = rect.height / ysplits;
+            double x1 = rect.x, u1 = 0;
+
+            int maxncoords = 4*xsplits*ysplits;
+            tile->m_coords = new float[2*maxncoords];
+            tile->m_texcoords = new float[2*maxncoords];
+
+            tile->m_ncoords = 0;
+
+            int end = 0; // should be 1<<base_level but we have no way to know now
+
+            for(int x = 0; x<xsplits; x++) {
+                double x2 = wxMin(x1+xs, m_size_X - end);
+                double u2 = (x2-rect.x)/rect.width;
+
+                double y1 = rect.y, v1 = 0;
+                for(int y = 0; y<ysplits; y++) {
+                    double y2 = wxMin(y1+ys, m_size_Y - end);
+                    double v2 = (y2-rect.y)/rect.height;
+
+                    // todo avoid extra calls per loop and also caching from above
+                    double xc[4] = {x1, x1, x2, x2}, yc[4] = {y2, y1, y1, y2};
+                    double lat[4], lon[4];
+                    for(int k=0; k<4; k++)
+                        pChartBSB->chartpix_to_latlong(xc[k], yc[k], lat+k, lon+k);
+
+                    double u[4] = {u1, u1, u2, u2}, v[4] = {v2, v1, v1, v2};
+                    for(int j=0; j<4; j++) {
+                        int idx = 2*tile->m_ncoords;
+                        tile->m_texcoords[idx+0] = u[j];
+                        tile->m_texcoords[idx+1] = v[j];
+
+                        if(use_norm_vp) {
+                            wxPoint2DDouble p = nvp.GetDoublePixFromLL(lat[j], lon[j]);
+                            tile->m_coords[idx+0] = p.m_x;
+                            tile->m_coords[idx+1] = p.m_y;
+                        } else {
+                            tile->m_coords[idx+0] = lat[j];
+                            tile->m_coords[idx+1] = lon[j];
+                        }
+                        tile->m_ncoords++;
+                    }
+
+                    if(y1 + ys > m_size_Y - end)
+                        break;
+                        
+                    v1 = v2;
+                    y1 = y2;
+                }
+                if(x1 + xs > m_size_X - end)
+                    break;
+                
+                u1 = u2;
+                x1 = x2;
+            }
+            rect.x += rect.width;
+        }
+        rect.y += rect.height;
+    }
+}
 
 
 void glTexFactory::UpdateCacheLevel( const wxRect &rect, int level, ColorScheme color_scheme )

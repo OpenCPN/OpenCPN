@@ -101,8 +101,10 @@ public:
     GshhsPolyCell( FILE *fpoly, int x0, int y0, PolygonFileHeader *header );
     ~GshhsPolyCell();
 
-    void drawMapPlain( ocpnDC &pnt, double dx, ViewPort &vp, wxColor const &seaColor,
-                       wxColor const &landColor, int cellcount, bool idl );
+    void ClearPolyV();
+
+    void drawMapPlain( ocpnDC &pnt, double dx, ViewPort &vp, wxColor seaColor,
+                       wxColor landColor, bool idl );
 
     void drawSeaBorderLines( ocpnDC &pnt, double dx, ViewPort &vp );
     std::vector<wxLineF> * getCoasts() { return &coasts; }
@@ -161,6 +163,8 @@ private:
     void readPolygonFileHeader( FILE *polyfile, PolygonFileHeader *header );
 
     wxMutex mutex1, mutex2;
+
+    ViewPort last_rendered_vp;
 };
 
 // GSHHS file format:
