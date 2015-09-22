@@ -27,7 +27,7 @@
 #include <string.h>
 #include "mipmap.h"
 
-#if defined(__SSE2__) || defined(__MSVC__)
+#if defined(__SSE2__) || (defined(__MSVC__) &&  (_MSC_VER >= 1700))
 
 #include <emmintrin.h>
 

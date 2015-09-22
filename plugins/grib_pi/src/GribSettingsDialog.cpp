@@ -606,7 +606,7 @@ void GribSettingsDialog::SetDataTypeSettings(int settings)
     odc.m_bNumFixSpac = m_cNumFixSpac->GetValue();
     odc.m_iNumbersSpacing = m_sNumbersSpacing->GetValue();
     odc.m_bParticles = m_cbParticles->GetValue();
-    odc.m_dParticleDensity = 4.0*exp(m_sParticleDensity->GetValue() - 7);
+    odc.m_dParticleDensity = 4.0*exp(m_sParticleDensity->GetValue() - 7.0);
 }
 
 void GribSettingsDialog::ReadDataTypeSettings(int settings)

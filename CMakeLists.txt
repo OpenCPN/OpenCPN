@@ -513,8 +513,6 @@ IF(QT_ANDROID)
 
 ENDIF(QT_ANDROID)
 
-
-
 IF(UNIX AND NOT QT_ANDROID)
 INCLUDE("FindPortaudio.cmake")
 IF (PORTAUDIO_FOUND)
@@ -532,6 +530,29 @@ ENDIF (PORTAUDIO_FOUND)
 ENDIF(UNIX AND NOT QT_ANDROID)
 
 ENDIF (NOT WIN32 AND NOT APPLE)
+
+IF(NOT QT_ANDROID)
+    INCLUDE("Curl.cmake")
+    SET(SRC_WXCURL
+        src/wxcurl/base.cpp
+        src/wxcurl/dav.cpp
+        src/wxcurl/davtool.cpp
+        src/wxcurl/dialog.cpp
+        src/wxcurl/ftp.cpp
+        src/wxcurl/ftpparse.cpp
+        src/wxcurl/ftptool.cpp
+        src/wxcurl/http.cpp
+        src/wxcurl/panel.cpp
+        src/wxcurl/telnet.cpp
+        src/wxcurl/thread.cpp
+        src/wxcurl/utils.cpp
+    )
+    ADD_LIBRARY(WXCURL ${SRC_WXCURL})
+    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/wxcurl)
+    SET(EXTRA_LIBS ${EXTRA_LIBS} WXCURL)
+    SET(EXTRA_LIBS ${EXTRA_LIBS} ${CURL_LIBRARIES})
+    MESSAGE (STATUS "WXCURL CONFIGURED...")
+ENDIF(NOT QT_ANDROID)
 
 FIND_PACKAGE(Gettext REQUIRED)
 
@@ -1451,6 +1472,11 @@ IF(X11_FOUND AND NOT APPLE)
 ADD_DEFINITIONS(-DOCPN_HAVE_X11)
 TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${X11_LIBRARIES} )
 ENDIF(X11_FOUND AND NOT APPLE)
+
+IF(NOT APPLE AND NOT QT_ANDROID AND NOT WIN32 AND NOT X11_FOUND)
+  MESSAGE(STATUS "Did not find x11 libraries, support for transparent toolbar in opengl mode cannot be detected")
+ENDIF()
+
 
 IF(TINYXML_FOUND)
    TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${TINYXML_LIBRARIES} )

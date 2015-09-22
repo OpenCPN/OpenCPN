@@ -5344,6 +5344,10 @@ void options::OnCancelClick( wxCommandEvent& event )
 
     lastWindowPos = GetPosition();
     lastWindowSize = GetSize();
+    
+    if ( g_pi_manager )
+        g_pi_manager->CloseAllPlugInPanels( (int) wxCANCEL );
+    
     EndModal(0);
 }
 
@@ -7055,11 +7059,11 @@ void SentenceListDlg::OnAddClick( wxCommandEvent& event )
 
     OCPNMessageBox(
         this,
-        _("An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n "
-          "It can also have a two letter prefix identifying the source, or TALKER, of the message.\n "
-          "The whole sentences then looks like GPGGA or AITXT.\n "
-          "You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.).\n\n "
-          "The filter accepts just these three formats."),
+        _("An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n \
+          It can also have a two letter prefix identifying the source, or TALKER, of the message.\n \
+          The whole sentences then looks like GPGGA or AITXT.\n \
+          You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.).\n\n \
+          The filter accepts just these three formats."),
           _("OpenCPN Info")
     );
 }

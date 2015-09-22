@@ -159,7 +159,7 @@ void (*MipMap_32)( int width, int height, unsigned char *source, unsigned char *
 
 void MipMap_ResolveRoutines()
 {
-#if defined(__x86_64__) || defined(__i686__) || defined(__MSVC__)
+#if defined(__x86_64__) || defined(__i686__) || (defined(__MSVC__) &&  (_MSC_VER >= 1700)) 
     int info[4];
     cpuid(info, 0);
 

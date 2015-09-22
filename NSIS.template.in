@@ -33,7 +33,7 @@ CMake variables
 ;# Set compression
 	SetCompressor /FINAL lzma
 ;# Set unicode
-        Unicode true
+;        Unicode true
 
 ;--------------------------------
 ;# You must define these values
