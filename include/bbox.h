@@ -38,7 +38,7 @@ public:
 
     /* this routine is used very heavily, so this is a lightweight
        version for when we only care if the other box is out */
-    inline bool IntersectOut( const wxBoundingBox &other ) const {
+    virtual inline bool IntersectOut( const wxBoundingBox &other ) const {
         return (m_minx > other.m_maxx) || (m_maxx < other.m_minx) ||
                (m_maxy < other.m_miny) || (m_miny > other.m_maxy);
     }
@@ -87,8 +87,25 @@ protected:
 
 class LLBBox : public wxBoundingBox
 {
-      public:
-            bool PointInBox(double Lon, double Lat, double Marge);
+public:
+    bool PointInBox(double Lon, double Lat, double Marge);
+
+    // allow -180 to 180 or 0 to 360
+    virtual inline bool IntersectOut( const wxBoundingBox &other ) const {
+        if( !GetValid() || !other.GetValid() )
+            return true;
+
+        if((m_maxy < other.GetMinY()) || (m_miny > other.GetMaxY()))
+            return true;
+
+        double minx = m_minx, maxx = m_maxx;
+        if(m_maxx < other.GetMinX())
+            minx += 360, maxx += 360;
+        else if(m_minx > other.GetMaxX())
+            minx -= 360, maxx -= 360;
+
+        return (minx > other.GetMaxX()) || (maxx < other.GetMinX());
+    }
 };
 
 

@@ -152,7 +152,7 @@ public:
       wxColour          m_wxcWaypointRangeRingsColour;
 
 #ifdef ocpnUSE_GL
-      void DrawGL( ViewPort &vp, OCPNRegion &region, bool use_cached_screen_coords=false );
+      void DrawGL( ViewPort &vp, bool use_cached_screen_coords=false );
       unsigned int m_iTextTexture;
       int m_iTextTextureWidth, m_iTextTextureHeight;
 

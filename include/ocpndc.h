@@ -67,7 +67,7 @@ public:
      void SetBrush( const wxBrush &brush);
      void SetTextForeground(const wxColour &colour);
      void SetFont(const wxFont& font);
-     static void SetGLAttrs( bool highQuality );
+     static void SetGLAttrs( bool highQuality ); 
      void SetGLStipple() const;
 
      const wxPen& GetPen() const;

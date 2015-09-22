@@ -181,12 +181,12 @@ public:
       void CancelMouseRoute();
       void SetDisplaySizeMM( double size );
       
-      bool SetViewPoint(double lat, double lon, double scale_ppm, double skew, double rotation,
-                        bool b_adjust = true, bool b_refresh = true);
       bool SetVPScale(double sc, bool b_refresh = true);
+      bool SetVPProjection(int projection);
       bool SetViewPoint ( double lat, double lon);
       bool SetViewPointByCorners( double latSW, double lonSW, double latNE, double lonNE );
-      
+      bool SetViewPoint(double lat, double lon, double scale_ppm, double skew, double rotation,
+                        int projection = 0, bool b_adjust = true, bool b_refresh = true);
       void ReloadVP ( bool b_adjust = true );
       void LoadVP ( ViewPort &vp, bool b_adjust = true );
 
@@ -197,8 +197,8 @@ public:
 
       void GetDoubleCanvasPointPix(double rlat, double rlon, wxPoint2DDouble *r);
       void GetDoubleCanvasPointPixVP( ViewPort &vp, double rlat, double rlon, wxPoint2DDouble *r );
-      void GetCanvasPointPix( double rlat, double rlon, wxPoint *r );
-      void GetCanvasPointPixVP( ViewPort &vp, double rlat, double rlon, wxPoint *r );
+      bool GetCanvasPointPix( double rlat, double rlon, wxPoint *r );
+      bool GetCanvasPointPixVP( ViewPort &vp, double rlat, double rlon, wxPoint *r );
       
       void GetCanvasPixPoint(double x, double y, double &lat, double &lon);
       void WarpPointerDeferred(int x, int y);

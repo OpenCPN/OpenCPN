@@ -257,7 +257,7 @@ bool ChartDummy::GetChartExtent(Extent *pext)
     return true;
 }
 
-bool ChartDummy::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const OCPNRegion &Region)
+bool ChartDummy::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const OCPNRegion &RectRegion, const LLRegion &Region)
 {
       return true;
 }
@@ -311,6 +311,10 @@ void ChartDummy::GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion *pValid
       pValidRegion->Union(0, 0, 1, 1);
 }
 
+LLRegion ChartDummy::GetValidRegion()
+{
+    return LLRegion();
+}
 
 
 
@@ -757,7 +761,7 @@ found_uclc_file:
               //          return INIT_FAIL_REMOVE;
               }
           }
-          
+
 //    Convert captured plypoint information into chart COVR structures
       m_nCOVREntries = 1;
       m_pCOVRTablePoints = (int *)malloc(sizeof(int));
@@ -1414,6 +1418,47 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
             
     //          return INIT_FAIL_REMOVE;
         }
+      }
+
+      /* Augment ply points
+           This is needed for example on polyconic charts or skewed charts because
+           straight lines in the chart coordinates can not use simple
+           interpolation in lat/lon or mercator coordinate space to draw the
+           borders or be used for quilting operation.
+           TODO: should this be added as a subroutine for GEO chartso? */
+      if((m_projection != PROJECTION_MERCATOR && m_projection != PROJECTION_TRANSVERSE_MERCATOR)
+          || m_Chart_Skew > 2) {
+          int count = nPlypoint;
+          nPlypoint = 0;
+          Plypoint *pOldPlyTable = pPlyTable;
+          pPlyTable = NULL;
+          for( int i = 0; i < count+1; i++ ) {
+              double plylat = pOldPlyTable[i%count].ltp, plylon = pOldPlyTable[i%count].lnp;
+              double lastplylat, lastplylon, x1, y1, x2, y2;
+              latlong_to_chartpix(plylat, plylon, x2, y2);
+              if(i>0) {
+                  if(lastplylon - plylon > 180)
+                      lastplylon -= 360;
+                  else if(lastplylon - plylon < -180)
+                      lastplylon += 360;
+
+                  // use 2 degree steps
+                  double steps = ceil((fabs(lastplylat-plylat) + fabs(lastplylon-plylon))/2);
+                  for(double c=0; c<steps; c++) {
+                      double d = c/steps, lat, lon;
+                      wxPoint2DDouble s;
+                      double x = (1-d)*x1 + d*x2, y = (1-d)*y1 + d*y2;
+                      chartpix_to_latlong(x, y, &lat, &lon);
+                      pPlyTable = (Plypoint *)realloc(pPlyTable, sizeof(Plypoint) * (nPlypoint+1));
+                      pPlyTable[nPlypoint].ltp = lat;
+                      pPlyTable[nPlypoint].lnp = lon;
+                      nPlypoint++;
+                  }
+              }
+              x1 = x2, y1 = y2;
+              lastplylat = plylat, lastplylon = plylon;
+          }
+          free(pOldPlyTable);
       }
 
 //    Convert captured plypoint information into chart COVR structures
@@ -2937,141 +2982,29 @@ void ChartBaseBSB::chartpix_to_latlong(double pixx, double pixy, double *plat, d
 
 }
 
-void ChartBaseBSB::ComputeSourceRectangle(const ViewPort &vp, wxRealPoint *pPos, wxRealPoint *pSize)
+void ChartBaseBSB::ComputeSourceRectangle(const ViewPort &vp, wxRect *pSourceRect)
 {
-
-    //      This funny contortion is necessary to allow scale factors < 1, i.e. overzoom
-      double binary_scale_factor = (wxRound(100000 * GetPPM() / vp.view_scale_ppm)) / 100000.;
-
-      m_raster_scale_factor = binary_scale_factor;
-
-      double xd = 0, yd = 0;
+      m_raster_scale_factor = GetRasterScaleFactor(vp);
+      double xd, yd;
       latlong_to_chartpix(vp.clat, vp.clon, xd, yd);
 
-      pPos->x = xd - (vp.pix_width  * binary_scale_factor / 2);
-      pPos->y = yd - (vp.pix_height * binary_scale_factor / 2);
+      wxRealPoint pos, size;
 
-      pSize->x = vp.pix_width  * binary_scale_factor;
-      pSize->y = vp.pix_height * binary_scale_factor;
+      pos.x = xd - (vp.pix_width  * m_raster_scale_factor / 2);
+      pos.y = yd - (vp.pix_height * m_raster_scale_factor / 2);
 
-//      printf("Compute Rsrc:  vp.clat:  %g  clon: %g     pPos.x: %g  pPos.y:  %g\n", vp.clat, vp.clon, pPos->x, pPos->y);
+      size.x = vp.pix_width  * m_raster_scale_factor;
+      size.y = vp.pix_height * m_raster_scale_factor;
 
+      *pSourceRect = wxRect(wxRound(pos.x), wxRound(pos.y), wxRound(size.x), wxRound(size.y));
 }
 
-void ChartBaseBSB::ComputeSourceRectangle(const ViewPort &vp, wxRect *pSourceRect)
+
+double ChartBaseBSB::GetRasterScaleFactor(const ViewPort &vp)
 {
-    wxRealPoint pos, size;
-    ComputeSourceRectangle(vp, &pos, &size);
-    *pSourceRect = wxRect(wxRound(pos.x), wxRound(pos.y), wxRound(size.x), wxRound(size.y));
-}
-
-#if 0
-void ChartBaseBSB::ComputeSourceRectangle(const ViewPort &vp, wxRect *pSourceRect)
-{
-
-//    int pixxd, pixyd;
-
     //      This funny contortion is necessary to allow scale factors < 1, i.e. overzoom
-    double binary_scale_factor = (wxRound(100000 * GetPPM() / vp.view_scale_ppm)) / 100000.;
-
-    m_raster_scale_factor = binary_scale_factor;
-
-//    if(m_b_cdebug)printf(" ComputeSourceRect... PPM: %g  vp.view_scale_ppm: %g   m_raster_scale_factor: %g\n", GetPPM(), vp.view_scale_ppm, m_raster_scale_factor);
-
-    if(bHaveEmbeddedGeoref)
-    {
-
-          /* change longitude phase (CPH) */
-          double lonp = (vp.clon < 0) ? vp.clon + m_cph : vp.clon - m_cph;
-          double xd = polytrans( wpx, lonp + m_lon_datum_adjust,  vp.clat + m_lat_datum_adjust );
-          double yd = polytrans( wpy, lonp + m_lon_datum_adjust,  vp.clat + m_lat_datum_adjust );
-//          pixxd = (int)wxRound(xd);
-//          pixyd = (int)wxRound(yd);
-
-//          pSourceRect->x = pixxd - (int)wxRound(vp.pix_width  * binary_scale_factor / 2);
-//          pSourceRect->y = pixyd - (int)wxRound(vp.pix_height * binary_scale_factor / 2);
-
-          pSourceRect->x = wxRound(xd - (vp.pix_width  * binary_scale_factor / 2));
-          pSourceRect->y = wxRound(yd - (vp.pix_height * binary_scale_factor / 2));
-
-          pSourceRect->width =  (int)wxRound(vp.pix_width  * binary_scale_factor) ;
-          pSourceRect->height = (int)wxRound(vp.pix_height * binary_scale_factor) ;
-
-    }
-
-    else
-    {
-        if(m_projection == PROJECTION_MERCATOR)
-        {
-                  //      Apply poly solution to vp center point
-              double easting, northing;
-              double xlon = vp.clon;
-              if(m_bIDLcross)
-              {
-                    if(xlon < 0)
-                        xlon += 360.;
-              }
-              toSM_ECC(vp.clat + m_lat_datum_adjust, xlon + m_lon_datum_adjust, m_proj_lat, m_proj_lon, &easting, &northing);
-              double xc = polytrans( cPoints.wpx, easting, northing );
-              double yc = polytrans( cPoints.wpy, easting, northing );
-
-                  //    convert screen pixels to chart pixmap relative
-              pSourceRect->x = (int)(xc - (vp.pix_width / 2)*binary_scale_factor);
-              pSourceRect->y = (int)(yc - (vp.pix_height / 2)*binary_scale_factor);
-
-              pSourceRect->width =  (int)(vp.pix_width  * binary_scale_factor) ;
-              pSourceRect->height = (int)(vp.pix_height * binary_scale_factor) ;
-
- //             printf("Compute Rsrc:  vp.clat:  %g    Rsrc.y: %d  \n", vp.clat, pSourceRect->y);
-
-        }
-
-        else if(m_projection == PROJECTION_POLYCONIC)
-        {
-                  //      Apply poly solution to vp center point
-              double easting, northing;
-              double xlon = vp.clon;
-              if(m_bIDLcross)
-              {
-                    if(xlon < 0)
-                          xlon += 360.;
-              }
-              toPOLY(vp.clat + m_lat_datum_adjust, xlon + m_lon_datum_adjust, m_proj_lat, m_proj_lon, &easting, &northing);
-              double xc = polytrans( cPoints.wpx, easting, northing );
-              double yc = polytrans( cPoints.wpy, easting, northing );
-
-                  //    convert screen pixels to chart pixmap relative
-              pSourceRect->x = (int)(xc - (vp.pix_width / 2)*binary_scale_factor);
-              pSourceRect->y = (int)(yc - (vp.pix_height / 2)*binary_scale_factor);
-
-              pSourceRect->width =  (int)(vp.pix_width  * binary_scale_factor) ;
-              pSourceRect->height = (int)(vp.pix_height * binary_scale_factor) ;
-
-         }
-
-        else if(m_projection == PROJECTION_TRANSVERSE_MERCATOR)
-        {
-                  //      Apply poly solution to vp center point
-              double easting, northing;
-              toTM(vp.clat + m_lat_datum_adjust, vp.clon + m_lon_datum_adjust, m_proj_lat, m_proj_lon, &easting, &northing);
-              double xc = polytrans( cPoints.wpx, easting, northing );
-              double yc = polytrans( cPoints.wpy, easting, northing );
-
-                  //    convert screen pixels to chart pixmap relative
-              pSourceRect->x = (int)(xc - (vp.pix_width / 2)*binary_scale_factor);
-              pSourceRect->y = (int)(yc - (vp.pix_height / 2)*binary_scale_factor);
-
-              pSourceRect->width =  (int)(vp.pix_width  * binary_scale_factor) ;
-              pSourceRect->height = (int)(vp.pix_height * binary_scale_factor) ;
-
-        }
-    }
-
-//    printf("Compute Rsrc:  vp.clat:  %g  clon: %g     Rsrc.y: %d  Rsrc.x:  %d\n", vp.clat, vp.clon, pSourceRect->y, pSourceRect->x);
-
+      return (wxRound(100000 * GetPPM() / vp.view_scale_ppm)) / 100000.;
 }
-#endif
-
 
 void ChartBaseBSB::SetVPRasterParms(const ViewPort &vpt)
 {
@@ -3198,6 +3131,27 @@ void ChartBaseBSB::GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion *pVal
       pValidRegion->Union(rxl, ryt, rxr - rxl, ryb - ryt);
 }
 
+LLRegion ChartBaseBSB::GetValidRegion()
+{
+    // should we cache this?
+    double ll[8];
+    chartpix_to_latlong(0,      0,      ll+0, ll+1);
+    chartpix_to_latlong(0,      Size_Y, ll+2, ll+3);
+    chartpix_to_latlong(Size_X, Size_Y, ll+4, ll+5);
+    chartpix_to_latlong(Size_X, 0,      ll+6, ll+7);
+
+    // for now don't allow raster charts to cross both 0 meridian and IDL (complicated to deal with)
+    for(int i=1; i<6; i+=2)
+        if(fabs(ll[i] - ll[i+2]) > 180) {
+            // we detect crossing idl here, make all longitudes positive
+            for(int i=1; i<8; i+=2)
+                if(ll[i] < 0)
+                    ll[i] += 360;
+            break;
+        }
+
+    return LLRegion(4, ll);
+}
 
 bool ChartBaseBSB::GetViewUsingCache( wxRect& source, wxRect& dest, const OCPNRegion& Region, ScaleTypeEnum scale_type )
 {
@@ -3454,7 +3408,7 @@ bool ChartBaseBSB::RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint)
 
 
 
-bool ChartBaseBSB::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const OCPNRegion &Region)
+bool ChartBaseBSB::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const OCPNRegion &RectRegion, const LLRegion &Region)
 {
       return true;
 }
@@ -3466,7 +3420,7 @@ bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, 
 
       wxRect dest(0,0,VPoint.pix_width, VPoint.pix_height);
 //      double factor = ((double)Rsrc.width)/((double)dest.width);
-      double factor = m_raster_scale_factor;
+      double factor = GetRasterScaleFactor(VPoint);
       if(m_b_cdebug)
       {
             printf("%d RenderRegion  ScaleType:  %d   factor:  %g\n", s_dc++, RENDER_HIDEF, factor );

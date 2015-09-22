@@ -320,8 +320,6 @@ wxBoundingBox& wxBoundingBox::operator+(wxBoundingBox &other)
 // makes a boundingbox same as the other
 wxBoundingBox& wxBoundingBox::operator=( const wxBoundingBox &other)
 {
-    assert (other.GetValid());
-
     m_minx = other.m_minx;
     m_maxx = other.m_maxx;
     m_miny = other.m_miny;

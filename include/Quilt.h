@@ -26,6 +26,7 @@
 #define __QUIT_H__
 
 #include "chart1.h"
+#include "LLRegion.h"
 #include "OCPNRegion.h"
 
 struct ChartTableEntry;
@@ -40,12 +41,12 @@ public:
         b_overlay = false;
     }
     int dbIndex;
-    OCPNRegion ActiveRegion;
+    LLRegion ActiveRegion;
     int ProjType;
     bool b_Valid;
     bool b_eclipsed;
     bool b_overlay;
-    OCPNRegion quilt_region;
+    LLRegion quilt_region;
 };
 
 class QuiltCandidate
@@ -57,7 +58,7 @@ public:
         b_eclipsed = false;
     }
 
-    OCPNRegion &GetCandidateVPRegion( ViewPort &vp );
+    LLRegion &GetCandidateRegion();
     
     int dbIndex;
     int ChartScale;
@@ -65,7 +66,7 @@ public:
     bool b_eclipsed;
     
 private:    
-    OCPNRegion candidate_region;
+    LLRegion candidate_region;
 
 };
 
@@ -124,9 +125,9 @@ public:
     void ComputeRenderRegion( ViewPort &vp, OCPNRegion &chart_region );
     bool RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion &chart_region );
     bool IsVPBlittable( ViewPort &VPoint, int dx, int dy, bool b_allow_vector = false );
-    ChartBase *GetChartAtPix( wxPoint p );
-    ChartBase *GetOverlayChartAtPix( wxPoint p );
-    int GetChartdbIndexAtPix( wxPoint p );
+    ChartBase *GetChartAtPix( ViewPort &VPoint, wxPoint p );
+    ChartBase *GetOverlayChartAtPix( ViewPort &VPoint, wxPoint p );
+    int GetChartdbIndexAtPix( ViewPort &VPoint, wxPoint p );
     void InvalidateAllQuiltPatchs( void );
     void Invalidate( void )
     {
@@ -136,7 +137,7 @@ public:
     }
     void AdjustQuiltVP( ViewPort &vp_last, ViewPort &vp_proposed );
 
-    OCPNRegion &GetFullQuiltRegion( void ) {
+    LLRegion &GetFullQuiltRegion( void ) {
         return m_covered_region;
     }
     OCPNRegion &GetFullQuiltRenderedRegion( void ) {
@@ -194,12 +195,10 @@ public:
     bool IsChartInQuilt( wxString &full_path);
     
     bool IsQuiltVector( void );
-    OCPNRegion GetHiliteRegion( ViewPort &vp );
-    static OCPNRegion GetChartQuiltRegion( const ChartTableEntry &cte, ViewPort &vp );
+    LLRegion GetHiliteRegion( );
+    static LLRegion GetChartQuiltRegion( const ChartTableEntry &cte, ViewPort &vp );
     
 private:
-    wxRect GetChartQuiltBoundingRect( const ChartTableEntry &cte, ViewPort &vp );
-    
     void EmptyCandidateArray( void );
     void SubstituteClearDC( wxMemoryDC &dc, ViewPort &vp );
     int GetNewRefChart( void );
@@ -209,8 +208,8 @@ private:
     
     bool IsChartS57Overlay( int db_index );
     
-    OCPNRegion m_covered_region;
-    OCPNRegion m_rendered_region;
+    LLRegion m_covered_region;
+    OCPNRegion m_rendered_region; // used only in dc mode
 
     PatchList m_PatchList;
     wxBitmap *m_pBM;
@@ -235,7 +234,7 @@ private:
     int m_reference_type;
     int m_reference_family;
     bool m_bneed_clear;
-    OCPNRegion m_back_region;
+    LLRegion m_back_region;
     wxString m_quilt_depth_unit;
     double m_max_error_factor;
     double m_canvas_scale_factor;
@@ -250,6 +249,7 @@ private:
     bool m_b_hidef;
     
     bool m_bquiltskew;
+    bool m_bquiltanyproj;
 };
 
 #endif
