@@ -578,6 +578,13 @@ void OCPNPlatform::SetDefaultOptions( void )
     if(pConfig){
         pConfig->SetPath( _T ( "/PlugIns/chartdldr_pi.dll" ) );
         pConfig->Write( _T ( "bEnabled" ), true );
+
+        pConfig->SetPath( _T ( "/PlugIns/wmm_pi.dll" ) );
+        pConfig->Write( _T ( "bEnabled" ), true );
+        
+        pConfig->SetPath ( _T ( "/Settings/WMM" ) );
+        pConfig->Write ( _T ( "ShowIcon" ), false );
+        
     }
 #endif
 
@@ -586,6 +593,13 @@ void OCPNPlatform::SetDefaultOptions( void )
     if(pConfig){
         pConfig->SetPath( _T ( "/PlugIns/libchartdldr_pi.dylib" ) );
         pConfig->Write( _T ( "bEnabled" ), true );
+        
+        pConfig->SetPath( _T ( "/PlugIns/libwmm_pi.dylib" ) );
+        pConfig->Write( _T ( "bEnabled" ), true );
+        
+        pConfig->SetPath ( _T ( "/Settings/WMM" ) );
+        pConfig->Write ( _T ( "ShowIcon" ), false );
+        
     }
 #endif
 
@@ -594,6 +608,13 @@ void OCPNPlatform::SetDefaultOptions( void )
     if(pConfig){
         pConfig->SetPath( _T ( "/PlugIns/libchartdldr_pi.so" ) );
         pConfig->Write( _T ( "bEnabled" ), true );
+        
+        pConfig->SetPath( _T ( "/PlugIns/libwmm_pi.so" ) );
+        pConfig->Write( _T ( "bEnabled" ), true );
+        
+        pConfig->SetPath ( _T ( "/Settings/WMM" ) );
+        pConfig->Write ( _T ( "ShowIcon" ), false );
+        
     }
 #endif
 
