@@ -343,6 +343,10 @@ LLRegion ViewPort::GetLLRegion( const OCPNRegion &region )
 {
     // todo: for these projecetions, improve this calculation by using the
     //       method in SetBoxes here
+#ifndef ocpnUSE_GL
+    return LLRegion(GetBBox());
+#else    
+
     if(!glChartCanvas::CanClipViewport(*this))
         return LLRegion(GetBBox());
 
@@ -370,6 +374,7 @@ LLRegion ViewPort::GetLLRegion( const OCPNRegion &region )
         it.NextRect();
     }
     return r;
+#endif    
 }
 
 struct ContourRegion

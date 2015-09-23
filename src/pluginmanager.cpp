@@ -2832,10 +2832,14 @@ bool UpdatePlugInTrack ( PlugIn_Track *ptrack )
 
 bool PlugInHasNormalizedViewPort( PlugIn_ViewPort *vp )
 {
+#ifdef ocpnUSE_GL     
     ViewPort ocpn_vp;
     ocpn_vp.m_projection_type = vp->m_projection_type;
 
     return glChartCanvas::HasNormalizedViewPort(ocpn_vp);
+#else
+    return false;
+#endif    
 }
 
 void PlugInMultMatrixViewport ( PlugIn_ViewPort *vp, float lat, float lon )
@@ -2857,6 +2861,7 @@ void PlugInMultMatrixViewport ( PlugIn_ViewPort *vp, float lat, float lon )
 
 void PlugInNormalizeViewport ( PlugIn_ViewPort *vp, float lat, float lon )
 {
+#ifdef ocpnUSE_GL
     ViewPort ocpn_vp;
     glChartCanvas::NormalizedViewPort(ocpn_vp, lat, lon);
 
@@ -2865,6 +2870,7 @@ void PlugInNormalizeViewport ( PlugIn_ViewPort *vp, float lat, float lon )
     vp->view_scale_ppm = ocpn_vp.view_scale_ppm;
     vp->rotation = ocpn_vp.rotation;
     vp->rotation = ocpn_vp.skew;
+#endif    
 }
 
 
