@@ -5260,8 +5260,10 @@ void PlugInManager::OnEndPerformCurlDownload(wxCurlEndPerformEvent &ev)
     
     if( m_pCurlThread )
     {
-        wxDELETE( m_pCurlThread );
-        m_pCurlThread = NULL;
+        if(!m_pCurlThread->IsAborting()){
+            wxDELETE( m_pCurlThread );
+            m_pCurlThread = NULL;
+        }
     }
 }
 
