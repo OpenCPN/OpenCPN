@@ -8,9 +8,9 @@
 // Licence:     wxWidgets licence
 /////////////////////////////////////////////////////////////////////////////
 
-#ifdef __GNUG__
-    #pragma implementation "jsonval.cpp"
-#endif
+//#ifdef __GNUG__
+//    #pragma implementation "jsonval.cpp"
+//#endif
 
 
 // For compilers that support precompilation, includes "wx.h".
@@ -24,11 +24,16 @@
 #include <wx/debug.h>
 #include <wx/arrimpl.cpp>
 
-#include "jsonval.h"
+#include <wx/jsonval.h>
 
 
 WX_DEFINE_OBJARRAY( wxJSONInternalArray );
 
+#if wxCHECK_VERSION(3, 0, 0)
+#define compatibleLongLongFmtSpec _T(wxLongLongFmtSpec)
+#else
+#define compatibleLongLongFmtSpec wxLongLongFmtSpec
+#endif
 
 // the trace mask used in wxLogTrace() function
 // static const wxChar* traceMask = _T("jsonval");
@@ -962,7 +967,7 @@ wxJSONValue::AsString() const
             break;
         case wxJSONTYPE_INT :
             #if defined( wxJSON_64BIT_INT )
-                  s.Printf( _T("%") _T(wxLongLongFmtSpec) _T("i"),
+            s.Printf( _T("%") compatibleLongLongFmtSpec _T("i"),
                         data->m_value.m_valInt64 );
             #else
             s.Printf( _T("%ld"), data->m_value.m_valLong );
@@ -970,7 +975,7 @@ wxJSONValue::AsString() const
             break;
         case wxJSONTYPE_UINT :
             #if defined( wxJSON_64BIT_INT )
-            s.Printf( _T("%") _T(wxLongLongFmtSpec) _T("u"),
+            s.Printf( _T("%") compatibleLongLongFmtSpec _T("u"),
                         data->m_value.m_valUInt64 );
             #else
             s.Printf( _T("%lu"), data->m_value.m_valULong );
@@ -1815,8 +1820,10 @@ wxJSONValue&
 wxJSONValue::Item( const wxString& key )
 {
     wxLogTrace( traceMask, _T("(%s) searched key=\'%s\'"), __PRETTY_FUNCTION__, key.c_str());
+#if !wxCHECK_VERSION(2,9,0)
     wxLogTrace( traceMask, _T("(%s) actual object: %s"), __PRETTY_FUNCTION__, GetInfo().c_str());
-
+#endif
+    
     wxJSONRefData* data = COW();
     wxJSON_ASSERT( data );
 
@@ -1864,8 +1871,10 @@ wxJSONValue
 wxJSONValue::ItemAt( const wxString& key ) const
 {
     wxLogTrace( traceMask, _T("(%s) searched key=\'%s\'"), __PRETTY_FUNCTION__, key.c_str());
+#ifndef __WXOSX__
     wxLogTrace( traceMask, _T("(%s) actual object: %s"), __PRETTY_FUNCTION__, GetInfo().c_str());
-
+#endif
+    
     wxJSONRefData* data = GetRefData();
     wxJSON_ASSERT( data );
 

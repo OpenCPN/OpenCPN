@@ -46,6 +46,10 @@
 #define snprintf mysnprintf
 #endif
 
+#if !defined(NAN)
+static const long long lNaN = 0xfff8000000000000;
+#define NAN (*(double*)&lNaN)
+#endif
 
 
 

@@ -119,6 +119,11 @@ extern sigjmp_buf           env;                    // the context saved by sigs
 
 #include <vector>
 
+#if defined(__MSVC__) &&  (_MSC_VER < 1700) 
+#define  trunc(d) (d>0) ? floor(d) : ceil(d)
+#endif
+
+
 //    Profiling support
 //#include "/usr/include/valgrind/callgrind.h"
 

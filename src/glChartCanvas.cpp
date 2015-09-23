@@ -1915,7 +1915,6 @@ void glChartCanvas::GridDraw( )
 
     double nlat, elon, slat, wlon;
     float lat, lon;
-    float dlat, dlon;
     float gridlatMajor, gridlatMinor, gridlonMajor, gridlonMinor;
     wxCoord w, h;
     
@@ -2753,7 +2752,7 @@ void glChartCanvas::DrawRegion(ViewPort &vp, const LLRegion &region)
                     fromSM(d*smj[0] + (1-d)*sml[0], d*smj[1] + (1-d)*sml[1], 0, 0, &lat, &lon);
                 }
                 wxPoint2DDouble q = vp.GetDoublePixFromLL(lat, lon);
-                if(isnan(q.m_x))
+                if(wxIsNaN(q.m_x))
                     continue;
 
                 double *p = new double[6];
@@ -3100,7 +3099,6 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, L
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-    double angle;
     if(use_norm_vp) {
         glPushMatrix();
         double lat, lon;
@@ -3555,7 +3553,7 @@ void glChartCanvas::RenderNoDTA(ViewPort &vp, ChartBase *chart)
 #else
         int j = pCurrentStack->GetDBIndex(i);
         pt = (ChartTableEntry *) &ChartData->GetChartTableEntry( j );
-        if(pt->GetpFullPath() == chart->GetFullPath()) {
+        if(pt->GetpsFullPath()->IsSameAs(chart->GetFullPath())){
             index = j;
             break;
         }
@@ -4225,7 +4223,7 @@ void glChartCanvas::Render()
         glMatrixMode (GL_PROJECTION);
         glLoadIdentity();
 
-        gluPerspective(2*180/PI*atan2(h, w), (GLfloat) w/(GLfloat) h, 1, w);
+        gluPerspective(2*180/PI*atan2((double)h, (double)w), (GLfloat) w/(GLfloat) h, 1, w);
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
 
