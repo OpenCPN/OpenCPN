@@ -3,22 +3,21 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: opencpn 4.1.530\n"
+"Project-Id-Version: opencpn 4.1.915\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-05-31 22:01-0500\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"POT-Creation-Date: 2015-09-19 15:24+0800\n"
+"PO-Revision-Date: 2015-09-19 15:24+0800\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.4\n"
+"Last-Translator: \n"
+"Language-Team: \n"
 
 #: include/routeprop.h:64 src/chcanv.cpp:4793 src/chcanv.cpp:6296
-#: src/routemanagerdialog.cpp:1142
+#: src/routemanagerdialog.cpp:1142 src\canvasMenu.cpp:1391
 msgid "Route Properties"
 msgstr ""
 
@@ -39,7 +38,7 @@ msgstr ""
 msgid "Sentence Filter"
 msgstr ""
 
-#: include/about.h:39 src/chart1.cpp:2718 src/chart1.cpp:4668
+#: src/chart1.cpp:2726 src/chart1.cpp:4867 include\about.h:39
 msgid "About OpenCPN"
 msgstr ""
 
@@ -335,7 +334,7 @@ msgstr ""
 msgid "(Unnamed Track)"
 msgstr ""
 
-#: src/chart1.cpp:4236 src/chart1.cpp:4570 src/chart1.cpp:6384
+#: src/chart1.cpp:4435 src/chart1.cpp:4769 src/chart1.cpp:6594 src\canvasMenu.cpp:437
 msgid "North Up Mode"
 msgstr ""
 
@@ -347,7 +346,7 @@ msgstr ""
 msgid "Hide ENC Text (T)"
 msgstr ""
 
-#: src/chart1.cpp:4571
+#: src/chart1.cpp:4470 src\canvasMenu.cpp:432
 msgid "Course Up Mode"
 msgstr ""
 
@@ -476,7 +475,7 @@ msgstr ""
 msgid "Show This Chart"
 msgstr ""
 
-#: src/chart1.cpp:7465
+#: src/chart1.cpp:7465 src\canvasMenu.cpp:495
 msgid "Hide This Chart"
 msgstr ""
 
@@ -682,7 +681,7 @@ msgstr ""
 msgid "Console Value"
 msgstr ""
 
-#: src/concanv.cpp:190
+#: src/concanv.cpp:190 src\canvasMenu.cpp:289
 msgid "Route"
 msgstr ""
 
@@ -777,12 +776,16 @@ msgstr ""
 msgid "Would you like include the Great Circle routing points for this leg?"
 msgstr ""
 
-#: src/chcanv.cpp:7805 src/chcanv.cpp:7817
+#: src/chcanv.cpp:7964 src/chcanv.cpp:7970 src/chcanv.cpp:7976
+msgid "Object Query"
+msgstr ""
+
+#: src/chcanv.cpp:7976
 msgid "ObjectQuery"
 msgstr ""
 
-#: src/chcanv.cpp:7811
-msgid "Object Query"
+#: src\canvasMenu.cpp:400 src\canvasMenu.cpp:406
+msgid "Object Query..."
 msgstr ""
 
 #: src/chcanv.cpp:7942 src/routemanagerdialog.cpp:2105
@@ -806,8 +809,8 @@ msgstr ""
 
 #: src/chcanv.cpp:8092
 msgid ""
-"There are existing waypoints at the same location as some of the ones you are "
-"pasting. Would you like to just merge the pasted data into them?\n"
+"There are existing waypoints at the same location as some of the ones you "
+"are pasting. Would you like to just merge the pasted data into them?\n"
 "\n"
 msgstr ""
 
@@ -938,35 +941,35 @@ msgstr ""
 msgid "Click to confirm the font selection."
 msgstr ""
 
-#: src/navutil.cpp:4241
+#: src/navutil.cpp:4332
 msgid "NMi"
 msgstr ""
 
-#: src/navutil.cpp:4244
+#: src/navutil.cpp:4345
 msgid "mi"
 msgstr ""
 
-#: src/navutil.cpp:4247
+#: src/navutil.cpp:4338
 msgid "km"
 msgstr ""
 
-#: src/navutil.cpp:4250
+#: src/navutil.cpp:4341
 msgid "m"
 msgstr ""
 
-#: src/navutil.cpp:4253
+#: src/navutil.cpp:4344
 msgid "ft"
 msgstr ""
 
-#: src/navutil.cpp:4256
+#: src/navutil.cpp:4337
 msgid "fa"
 msgstr ""
 
-#: src/navutil.cpp:4259 src/AIS_Target_Data.cpp:758
+#: src/navutil.cpp:4350 src/AIS_Target_Data.cpp:758
 msgid "in"
 msgstr ""
 
-#: src/navutil.cpp:4262
+#: src/navutil.cpp:4353
 msgid "cm"
 msgstr ""
 
@@ -1418,7 +1421,7 @@ msgid "wxFB Website"
 msgstr ""
 
 #: src/routeprop.cpp:2052 src/options.cpp:613 src/options.cpp:6267
-#: src/TrackPropDlg.cpp:291
+#: src/TrackPropDlg.cpp:291 src\canvasMenu.cpp:712 src\canvasMenu.cpp:754
 msgid "Delete"
 msgstr ""
 
@@ -1611,11 +1614,11 @@ msgstr ""
 msgid " - "
 msgstr ""
 
-#: src/routemanagerdialog.cpp:979
+#: src/routemanagerdialog.cpp:979 src\canvasMenu.cpp:613 src\canvasMenu.cpp:628 src\canvasMenu.cpp:690 src\canvasMenu.cpp:696
 msgid "Activate"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:985
+#: src/routemanagerdialog.cpp:985 src\canvasMenu.cpp:610 src\canvasMenu.cpp:625
 msgid "Deactivate"
 msgstr ""
 
@@ -1650,7 +1653,7 @@ msgstr ""
 msgid "Question"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:1386 src/routemanagerdialog.cpp:2280
+#: src/routemanagerdialog.cpp:1386 src/routemanagerdialog.cpp:2280 src\canvasMenu.cpp:1284 src\canvasMenu.cpp:1295 src\canvasMenu.cpp:1308 src\canvasMenu.cpp:1320
 msgid "Send To GPS..."
 msgstr ""
 
@@ -1723,7 +1726,7 @@ msgstr ""
 msgid "Go to "
 msgstr ""
 
-#: src/routemanagerdialog.cpp:2229
+#: src/routemanagerdialog.cpp:2229 src\canvasMenu.cpp:881 src\canvasMenu.cpp:933
 msgid "Here"
 msgstr ""
 
@@ -2344,7 +2347,8 @@ msgid "Environmental Caution Area: Hazardous sea ice"
 msgstr ""
 
 #: src/ais.cpp:318
-msgid "Environmental Caution Area: Storm warning (storm cell or line of storms)"
+msgid ""
+"Environmental Caution Area: Storm warning (storm cell or line of storms)"
 msgstr ""
 
 #: src/ais.cpp:319
@@ -2497,7 +2501,8 @@ msgstr ""
 
 #: src/ais.cpp:376
 msgid ""
-"Instruction: Await instructions prior to proceeding beyond this point/juncture"
+"Instruction: Await instructions prior to proceeding beyond this point/"
+"juncture"
 msgstr ""
 
 #: src/ais.cpp:377
@@ -3372,7 +3377,7 @@ msgstr ""
 msgid "Add Dataset..."
 msgstr ""
 
-#: src/options.cpp:2298 src/options.cpp:2347 src/options.cpp:5107
+#: src/options.cpp:2298 src/options.cpp:2347 src/options.cpp:5107 src\canvasMenu.cpp:507
 msgid "Chart Groups"
 msgstr ""
 
@@ -3796,8 +3801,8 @@ msgid ""
 " It can also have a two letter prefix identifying the source, or TALKER, of "
 "the message.\n"
 " The whole sentences then looks like GPGGA or AITXT.\n"
-" You may filter out all the sentences with certain TALKER prefix (like GP, AI "
-"etc.).\n"
+" You may filter out all the sentences with certain TALKER prefix (like GP, "
+"AI etc.).\n"
 "\n"
 " The filter accepts just these three formats."
 msgstr ""
@@ -4051,7 +4056,7 @@ msgstr ""
 msgid "Move Waypoint"
 msgstr ""
 
-#: src/undo.cpp:90
+#: src/undo.cpp:90 src\canvasMenu.cpp:632
 msgid "Append Waypoint"
 msgstr ""
 
@@ -5506,4 +5511,454 @@ msgstr ""
 
 #: src/TTYWindow.cpp:147
 msgid "Resume"
+msgstr ""
+
+#: src/toolbar.cpp:2488
+msgid "Choose Toolbar Icons"
+msgstr ""
+
+#: src\canvasMenu.cpp:315
+msgid "End Route"
+msgstr ""
+
+#: src\canvasMenu.cpp:320
+msgid "Measure Off"
+msgstr ""
+
+#: src\canvasMenu.cpp:322
+msgid "Measure"
+msgstr ""
+
+#: src\canvasMenu.cpp:329
+msgid "Undo"
+msgstr ""
+
+#: src\canvasMenu.cpp:335
+msgid "Redo"
+msgstr ""
+
+#: src\canvasMenu.cpp:418
+msgid "Drop Mark"
+msgstr ""
+
+#: src\canvasMenu.cpp:394
+msgid "Max Detail Here"
+msgstr ""
+
+#: src\canvasMenu.cpp:395 src\canvasMenu.cpp:410
+msgid "Scale In"
+msgstr ""
+
+#: src\canvasMenu.cpp:396 src\canvasMenu.cpp:411
+msgid "Scale Out"
+msgstr ""
+
+#: src\canvasMenu.cpp:421
+msgid "Move Boat Here"
+msgstr ""
+
+#: src\canvasMenu.cpp:425
+msgid "Navigate To Here"
+msgstr ""
+
+#: src\canvasMenu.cpp:428
+msgid "Center View..."
+msgstr ""
+
+#: src\canvasMenu.cpp:288
+msgid "Waypoint"
+msgstr ""
+
+#: src\canvasMenu.cpp:290
+msgid "Track"
+msgstr ""
+
+#: src\canvasMenu.cpp:291
+msgid "AIS"
+msgstr ""
+
+#: src\canvasMenu.cpp:435
+msgid "Chart Up Mode"
+msgstr ""
+
+#: src\canvasMenu.cpp:603 src\canvasMenu.cpp:618 src\canvasMenu.cpp:667
+#: src\canvasMenu.cpp:670 src\canvasMenu.cpp:687 src\canvasMenu.cpp:693
+#: src\canvasMenu.cpp:743 src\canvasMenu.cpp:746
+msgid "Properties..."
+msgstr ""
+
+#: src\canvasMenu.cpp:445 src\canvasMenu.cpp:452
+msgid "Toggle Full Screen"
+msgstr ""
+
+#: src\canvasMenu.cpp:457
+msgid "Zero XTE"
+msgstr ""
+
+#: src\canvasMenu.cpp:464
+msgid "Paste Waypoint"
+msgstr ""
+
+#: src\canvasMenu.cpp:468 src\canvasMenu.cpp:476
+msgid "Paste Route"
+msgstr ""
+
+#: src\canvasMenu.cpp:472 src\canvasMenu.cpp:477
+msgid "Paste Track"
+msgstr ""
+
+#: src\canvasMenu.cpp:485
+msgid "CM93 Offset Dialog..."
+msgstr ""
+
+#: src\canvasMenu.cpp:521
+msgid "All Active Charts"
+msgstr ""
+
+#: src\canvasMenu.cpp:572
+msgid "AIS Target List..."
+msgstr ""
+
+#: src\canvasMenu.cpp:575
+msgid "Target Query..."
+msgstr ""
+
+#: src\canvasMenu.cpp:579
+msgid "Hide Target CPA"
+msgstr ""
+
+#: src\canvasMenu.cpp:581
+msgid "Show Target CPA"
+msgstr ""
+
+#: src\canvasMenu.cpp:583
+msgid "Target List..."
+msgstr ""
+
+#: src\canvasMenu.cpp:586
+msgid "Hide Target Track"
+msgstr ""
+
+#: src\canvasMenu.cpp:588
+msgid "Show Target Track"
+msgstr ""
+
+#: src\canvasMenu.cpp:602
+msgid "Layer Route"
+msgstr ""
+
+#: src\canvasMenu.cpp:608 src\canvasMenu.cpp:623 src\canvasMenu.cpp:703
+msgid "Activate Next Waypoint"
+msgstr ""
+
+#: src\canvasMenu.cpp:608
+msgid "Activate Next Waypoint"
+msgstr ""
+
+#: src\canvasMenu.cpp:631
+msgid "Insert Waypoint"
+msgstr ""
+
+#: src\canvasMenu.cpp:633
+msgid "Copy as KML..."
+msgstr ""
+
+#: src\canvasMenu.cpp:709 src\canvasMenu.cpp:751
+msgid "Copy as KML"
+msgstr ""
+
+#: src\canvasMenu.cpp:671
+msgid "Copy As KML"
+msgstr ""
+
+#: src\canvasMenu.cpp:634 src\canvasMenu.cpp:672
+msgid "Delete..."
+msgstr ""
+
+#: src\canvasMenu.cpp:635
+msgid "Reverse..."
+msgstr ""
+
+#: src\canvasMenu.cpp:640 src\canvasMenu.cpp:716 src\canvasMenu.cpp:758
+msgid "Send to GPS"
+msgstr ""
+
+#: src\canvasMenu.cpp:649 src\canvasMenu.cpp:725
+msgid "Send to new GPS"
+msgstr ""
+
+#: src\canvasMenu.cpp:686
+msgid "Layer Routepoint"
+msgstr ""
+
+#: src\canvasMenu.cpp:707
+msgid "Remove from Route"
+msgstr ""
+
+#: src\canvasMenu.cpp:742
+msgid "Layer Waypoint"
+msgstr ""
+
+#: src\canvasMenu.cpp:749
+msgid "Navigate To This"
+msgstr ""
+
+#: src\canvasMenu.cpp:768
+msgid "Clear Anchor Watch"
+msgstr ""
+
+#: src\canvasMenu.cpp:778
+msgid "Set Anchor Watch"
+msgstr ""
+
+#: src\canvasMenu.cpp:794
+msgid "Show Tide Information"
+msgstr ""
+
+#: src\canvasMenu.cpp:800
+msgid "Show Current Information"
+msgstr ""
+
+#: src\canvasMenu.cpp:880
+msgid "Temporary GOTO Route"
+msgstr ""
+
+#: src\canvasMenu.cpp:883
+msgid "There"
+msgstr ""
+
+#: src\canvasMenu.cpp:1128
+msgid "Rename Waypoints?"
+msgstr ""
+
+#: src\canvasMenu.cpp:1148
+msgid "Are you sure you want to delete this route?"
+msgstr ""
+
+#: src\canvasMenu.cpp:1149
+msgid "OpenCPN Route Delete"
+msgstr ""
+
+#: src\canvasMenu.cpp:1403
+msgid "Are you sure you want to delete this track?"
+msgstr ""
+
+#: src\canvasMenu.cpp:1404
+msgid "OpenCPN Track Delete"
+msgstr ""
+
+#: src\canvasMenu.cpp:1024 src\canvasMenu.cpp:1033
+msgid "%d m"
+msgstr ""
+
+#: src\routeprop.cpp:1895 src\routeprop.cpp:1907
+msgid "%03.0f Deg. M"
+msgstr ""
+
+#: src\routeprop.cpp:1897 src\routeprop.cpp:1909
+msgid "%03.0f Deg. T"
+msgstr ""
+
+#: src\chcanv.cpp:2320 src\chcanv.cpp:8890
+msgid "Route: "
+msgstr ""
+
+#: src\about.cpp:431
+msgid "About"
+msgstr ""
+
+#: src\routeprop.cpp:2472 src\options.cpp:2094
+msgid "Show Range Rings"
+msgstr ""
+
+#: src\options.cpp:3708
+msgid "Enable Toolbar auto-hide"
+msgstr ""
+
+#: src\options.cpp:3750
+msgid "User Interface scale factor"
+msgstr ""
+
+#: src\options.cpp:3764
+msgid "Chart Object scale factor"
+msgstr ""
+
+#: src\routeman.cpp:1178
+msgid "Empty"
+msgstr ""
+
+#: src\routeman.cpp:1179
+msgid "Airplane"
+msgstr ""
+
+#: src\routeman.cpp:1179
+msgid "airplane"
+msgstr ""
+
+#: src\routeman.cpp:1180
+msgid "Anchorage"
+msgstr ""
+
+#: src\routeman.cpp:1181
+msgid "Anchor"
+msgstr ""
+
+#: src\routeman.cpp:1182
+msgid "Boarding Location"
+msgstr ""
+
+#: src\routeman.cpp:1183
+msgid "Boundary Mark"
+msgstr ""
+
+#: src\routeman.cpp:1184
+msgid "Bouy Type A"
+msgstr ""
+
+#: src\routeman.cpp:1185
+msgid "Bouy Type B"
+msgstr ""
+
+#: src\routeman.cpp:1186
+msgid "Campfire"
+msgstr ""
+
+#: src\routeman.cpp:1187
+msgid "Camping Spot"
+msgstr ""
+
+#: src\routeman.cpp:1188
+msgid "Coral"
+msgstr ""
+
+#: src\routeman.cpp:1189
+msgid "Fish Haven"
+msgstr ""
+
+#: src\routeman.cpp:1190
+msgid "Fishing Spot"
+msgstr ""
+
+#: src\routeman.cpp:1191
+msgid "Fish"
+msgstr ""
+
+#: src\routeman.cpp:1192
+msgid "Float"
+msgstr ""
+
+#: src\routeman.cpp:1193
+msgid "Food"
+msgstr ""
+
+#: src\routeman.cpp:1194
+msgid "Fuel"
+msgstr ""
+
+#: src\routeman.cpp:1195
+msgid "Green Light"
+msgstr ""
+
+#: src\routeman.cpp:1196
+msgid "Kelp"
+msgstr ""
+
+#: src\routeman.cpp:1197
+msgid "Light Type A"
+msgstr ""
+
+#: src\routeman.cpp:1198
+msgid "Light Type B"
+msgstr ""
+
+#: src\routeman.cpp:1199
+msgid "Light Vessel"
+msgstr ""
+
+#: src\routeman.cpp:1200
+msgid "MOB"
+msgstr ""
+
+#: src\routeman.cpp:1201
+msgid "Mooring Bouy"
+msgstr ""
+
+#: src\routeman.cpp:1202
+msgid "Oil Bouy"
+msgstr ""
+
+#: src\routeman.cpp:1203
+msgid "Platform"
+msgstr ""
+
+#: src\routeman.cpp:1204
+msgid "Red/Green Light"
+msgstr ""
+
+#: src\routeman.cpp:1205
+msgid "Red Light"
+msgstr ""
+
+#: src\routeman.cpp:1206
+msgid "Rock (exposed)"
+msgstr ""
+
+#: src\routeman.cpp:1207
+msgid "Rock, (awash)"
+msgstr ""
+
+#: src\routeman.cpp:1208
+msgid "Sand"
+msgstr ""
+
+#: src\routeman.cpp:1209
+msgid "Scuba"
+msgstr ""
+
+#: src\routeman.cpp:1210
+msgid "Shoal"
+msgstr ""
+
+#: src\routeman.cpp:1211
+msgid "Snag"
+msgstr ""
+
+#: src\routeman.cpp:1212
+msgid "Square"
+msgstr ""
+
+#: src\routeman.cpp:1213
+msgid "Triangle"
+msgstr ""
+
+#: src\routeman.cpp:1214
+msgid "Diamond"
+msgstr ""
+
+#: src\routeman.cpp:1215
+msgid "Circle"
+msgstr ""
+
+#: src\routeman.cpp:1216
+msgid "Wreck A"
+msgstr ""
+
+#: src\routeman.cpp:1217
+msgid "Wreck B"
+msgstr ""
+
+#: src\routeman.cpp:1218
+msgid "Blue X"
+msgstr ""
+
+#: src\routeman.cpp:1219
+msgid "Green X"
+msgstr ""
+
+#: src\routeman.cpp:1220
+msgid "Red X"
+msgstr ""
+
+#: src\routeman.cpp:1221
+msgid "Active WP"
 msgstr ""
