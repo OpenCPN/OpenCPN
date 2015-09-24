@@ -27,7 +27,7 @@
 #ifndef __MIPMAP_H__
 #define __MIPMAP_H__
 
-#ifdef __MSVC__
+#if defined(__MSVC__) || defined(__WXOSX__)
 #define bit_SSE         (1 << 25)
 #define bit_SSE2        (1 << 26)
 #define bit_SSE3        (1 << 0)

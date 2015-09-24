@@ -34,7 +34,7 @@
 
 #include <stdint.h>
 
-#ifdef __UNIX__ // high resolution stopwatch for profiling
+#if defined( __UNIX__ ) && !defined(__WXOSX__)  // high resolution stopwatch for profiling
 class OCPNStopWatch
 {
 public:
