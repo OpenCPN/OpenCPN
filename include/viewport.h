@@ -35,6 +35,11 @@
 class OCPNRegion;
 class LLRegion;
 
+#if !defined(NAN)
+static const long long lNaN = 0xfff8000000000000;
+#define NAN (*(double*)&lNaN)
+#endif
+
 #if 0
 //    ChartType constants
 typedef enum ChartTypeEnum

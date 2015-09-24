@@ -130,6 +130,10 @@ public:     // getters
     int GetId() const
         { return m_nId; }
 
+    bool IsAborting()
+        { return m_bAbort; }
+        
+        
     //! Returns the wxCurlBase-derived object which is being used for the transfer.
     //! Note that the returned value will be NULL if you've not called #SetURL yet.
     //! You can cast it to the wxCurlBase-derived class associated with the return

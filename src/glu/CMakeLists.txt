@@ -12,6 +12,7 @@ link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 
 add_definitions(-g -O2 )
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(include)
 
 SET(GLU_SOURCES
     libutil/error.c

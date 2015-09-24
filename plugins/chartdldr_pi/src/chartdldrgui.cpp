@@ -451,6 +451,9 @@ ChartDldrPanel::~ChartDldrPanel()
 
 ChartDldrPrefsDlg::ChartDldrPrefsDlg( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
 {
+        wxFont *pFont = OCPNGetFont(_T("Dialog"), 0);
+        if( pFont ) SetFont( *pFont );
+                                   
 	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
 
 	wxBoxSizer* bSizerPrefsMain;
@@ -510,6 +513,7 @@ ChartDldrPrefsDlg::ChartDldrPrefsDlg( wxWindow* parent, wxWindowID id, const wxS
 	this->SetSizer( bSizerPrefsMain );
 	this->Layout();
 
+        this->Fit();
 	this->Centre( wxBOTH );
 
 	// Connect Events

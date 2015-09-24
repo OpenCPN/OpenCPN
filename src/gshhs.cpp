@@ -245,7 +245,7 @@ void GshhsPolyCell::DrawPolygonFilled( ocpnDC &pnt, contour_list * p, double dx,
         for( v = 0; v < p->at( c ).size(); v++ ) {
             wxRealPoint &ccp = cp.at( v );
             wxPoint2DDouble q = GetDoublePixFromLL(vp, ccp.y, ccp.x + dx );
-            if(isnan(q.m_x)) {
+            if(wxIsNaN(q.m_x)) {
                 pointCount = 0;
                 break;
             }

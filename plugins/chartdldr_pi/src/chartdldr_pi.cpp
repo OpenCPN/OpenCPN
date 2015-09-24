@@ -335,9 +335,10 @@ bool chartdldr_pi::SaveConfig(void)
 void chartdldr_pi::ShowPreferencesDialog( wxWindow* parent )
 {
     ChartDldrPrefsDlgImpl *dialog = new ChartDldrPrefsDlgImpl(m_parent_window);
+    
     if( m_parent_window ){
-        dialog->SetSize(parent->GetSize().GetWidth(), 800);
-        dialog->CenterOnScreen();
+        //dialog->SetSize(parent->GetSize().GetWidth(), 450);
+        //dialog->CenterOnScreen();
     }
     
     dialog->SetPath(m_base_chart_dir);
