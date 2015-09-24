@@ -308,7 +308,7 @@ IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
 
     add_subdirectory(src/glu)
 
-    SET(OPENGL_LIBRARIES "GL_static" "GLU_static" "EGL" "X11" "drm" "dri2")
+    SET(OPENGL_LIBRARIES "GL_static" "GLU_static" "EGL" "X11" "drm" )
   ENDIF()
 ENDIF()
 
