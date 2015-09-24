@@ -2297,9 +2297,6 @@ const wxEventType EVT_LLCHANGE = wxNewEventType();
 //    LatLonTextCtrl Window Implementation
 //------------------------------------------------------------------------------
 BEGIN_EVENT_TABLE(LatLonTextCtrl, wxWindow)
-
-EVT_KILL_FOCUS(LatLonTextCtrl::OnKillFocus)
-
 END_EVENT_TABLE()
 
 // constructor

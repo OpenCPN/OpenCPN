@@ -308,7 +308,7 @@ IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
 
     add_subdirectory(src/glu)
 
-    SET(OPENGL_LIBRARIES "GL_static" "GLU_static" "EGL" "X11" "drm" "dri2")
+    SET(OPENGL_LIBRARIES "GL_static" "GLU_static" "EGL" "X11" "drm" )
   ENDIF()
 ENDIF()
 
@@ -733,6 +733,7 @@ SET(HDRS
 		include/dsPortType.h
                 include/multiplexer.h
                 include/OCPNRegion.h
+                include/LLRegion.h
                 include/TrackPropDlg.h
                 include/LinkPropDlg.h
                 include/viewport.h
@@ -822,6 +823,7 @@ SET(SRCS
                 src/multiplexer.cpp
                 src/pugixml.cpp
                 src/OCPNRegion.cpp
+                src/LLRegion.cpp
                 src/TrackPropDlg.cpp
                 src/LinkPropDlg.cpp
                 src/ssl/sha1.c
