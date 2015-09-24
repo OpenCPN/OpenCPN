@@ -312,7 +312,7 @@ class options: private Uncopyable, public wxScrollingDialog
     int m_groups_changed;
 
     // Sizer flags
-    wxSizerFlags inputFlags, labelFlags, groupInputFlags;
+    wxSizerFlags inputFlags, inputFlags2, labelFlags, groupInputFlags;
     wxSizerFlags groupLabelFlags;
 
     // For general options

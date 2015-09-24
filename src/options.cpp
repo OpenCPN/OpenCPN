@@ -2411,16 +2411,16 @@ void options::CreatePanel_Advanced( size_t parent, int border_size,
         itemBoxSizerUI->Add( boxCharts, groupInputFlags );
 
         pSkewComp = new wxCheckBox( m_ChartDisplayPage, ID_SKEWCOMPBOX, _("Show Skewed Raster Charts as North-Up") );
-        boxCharts->Add( pSkewComp, inputFlags );
+        boxCharts->Add( pSkewComp, inputFlags2);
 
         pFullScreenQuilt = new wxCheckBox( m_ChartDisplayPage, ID_FULLSCREENQUILT, _("Disable Full Screen Quilting") );
-        boxCharts->Add( pFullScreenQuilt, inputFlags );
+        boxCharts->Add( pFullScreenQuilt, inputFlags2);
 
         pOverzoomEmphasis = new wxCheckBox( m_ChartDisplayPage, ID_FULLSCREENQUILT, _("Suppress blur/fog effects on overzoom") );
-        boxCharts->Add( pOverzoomEmphasis, inputFlags );
+        boxCharts->Add( pOverzoomEmphasis, inputFlags2);
 
         pOZScaleVector = new wxCheckBox( m_ChartDisplayPage, ID_FULLSCREENQUILT, _("Suppress scaled vector charts on overzoom") );
-        boxCharts->Add( pOZScaleVector, inputFlags );
+        boxCharts->Add( pOZScaleVector, inputFlags2);
 
         // spacer
         itemBoxSizerUI->Add( 0, border_size*3 );
@@ -2433,7 +2433,7 @@ void options::CreatePanel_Advanced( size_t parent, int border_size,
         itemBoxSizerUI->Add( pCOGUPFilterRow, 0, wxALL | wxEXPAND, group_item_spacing );
 
         pCOGUPUpdateSecs = new wxTextCtrl( m_ChartDisplayPage, ID_OPTEXTCTRL, _T(""), wxDefaultPosition, wxSize( 50, -1 ), wxTE_RIGHT  );
-        pCOGUPFilterRow->Add( pCOGUPUpdateSecs, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
+        pCOGUPFilterRow->Add( pCOGUPUpdateSecs, 0, wxALL, group_item_spacing );
 
         pCOGUPFilterRow->Add( new wxStaticText( m_ChartDisplayPage, wxID_ANY, _("seconds") ), inputFlags );
 
@@ -2477,11 +2477,11 @@ void options::CreatePanel_Advanced( size_t parent, int border_size,
 
         pWayPointPreventDragging = new wxCheckBox( m_ChartDisplayPage, ID_DRAGGINGCHECKBOX, _("Lock Waypoints (Unless waypoint property dialog visible)") );
         pWayPointPreventDragging->SetValue( FALSE );
-        boxCtrls->Add( pWayPointPreventDragging, inputFlags );
+        boxCtrls->Add( pWayPointPreventDragging, inputFlags2);
 
         pConfirmObjectDeletion = new wxCheckBox( m_ChartDisplayPage, ID_DELETECHECKBOX, _("Confirm deletion of tracks and routes") );
         pConfirmObjectDeletion->SetValue( FALSE );
-        boxCtrls->Add( pConfirmObjectDeletion, inputFlags );
+        boxCtrls->Add( pConfirmObjectDeletion, inputFlags2);
 
         // spacer
         itemBoxSizerUI->Add( 0, border_size*3 );
@@ -2502,7 +2502,7 @@ void options::CreatePanel_Advanced( size_t parent, int border_size,
 
         pScreenMM = new wxTextCtrl( m_ChartDisplayPage, ID_OPTEXTCTRL, _T(""), wxDefaultPosition,
                                     wxSize( 3 * m_fontHeight, -1 ), wxTE_RIGHT  );
-        pDPIRow->Add( pScreenMM, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
+        pDPIRow->Add( pScreenMM, 0, wxALL, group_item_spacing );
 
         pDPIRow->Add( new wxStaticText( m_ChartDisplayPage, wxID_ANY, _("mm") ), inputFlags );
 
@@ -2582,11 +2582,11 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size,
 
         pCheck_SOUNDG = new wxCheckBox( ps57Ctl, ID_SOUNDGCHECKBOX, _("Depth Soundings") );
         pCheck_SOUNDG->SetValue( FALSE );
-        miscSizer->Add( pCheck_SOUNDG, inputFlags );
+        miscSizer->Add( pCheck_SOUNDG, inputFlags2);
 
         pCheck_META = new wxCheckBox( ps57Ctl, ID_METACHECKBOX, _("Chart Information Objects") );
         pCheck_META->SetValue( FALSE );
-        miscSizer->Add( pCheck_META, inputFlags );
+        miscSizer->Add( pCheck_META, inputFlags2);
 
         optionsColumn->Add( new wxStaticText(ps57Ctl, wxID_ANY, _("Buoys/Lights")), groupLabelFlags );
 
@@ -2595,15 +2595,15 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size,
 
         pCheck_ATONTEXT = new wxCheckBox( ps57Ctl, ID_ATONTEXTCHECKBOX, _("Buoy/Light Labels") );
         pCheck_ATONTEXT->SetValue( FALSE );
-        lightSizer->Add( pCheck_ATONTEXT, inputFlags );
+        lightSizer->Add( pCheck_ATONTEXT, inputFlags2);
 
         pCheck_LDISTEXT = new wxCheckBox( ps57Ctl, ID_LDISTEXTCHECKBOX, _("Light Descriptions") );
         pCheck_LDISTEXT->SetValue( FALSE );
-        lightSizer->Add( pCheck_LDISTEXT, inputFlags );
+        lightSizer->Add( pCheck_LDISTEXT, inputFlags2);
 
         pCheck_XLSECTTEXT = new wxCheckBox( ps57Ctl, ID_LDISTEXTCHECKBOX, _("Extended Light Sectors") );
         pCheck_XLSECTTEXT->SetValue( FALSE );
-        lightSizer->Add( pCheck_XLSECTTEXT, inputFlags );
+        lightSizer->Add( pCheck_XLSECTTEXT, inputFlags2);
 
         optionsColumn->Add( new wxStaticText(ps57Ctl, wxID_ANY, _("Chart Texts")), groupLabelFlags );
 
@@ -2612,15 +2612,15 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size,
 
         pCheck_NATIONALTEXT = new wxCheckBox( ps57Ctl, ID_NATIONALTEXTCHECKBOX, _("National text on chart") );
         pCheck_NATIONALTEXT->SetValue( FALSE );
-        textSizer->Add( pCheck_NATIONALTEXT, inputFlags );
+        textSizer->Add( pCheck_NATIONALTEXT, inputFlags2);
 
         pCheck_SHOWIMPTEXT = new wxCheckBox( ps57Ctl, ID_IMPTEXTCHECKBOX, _("Important Text Only") );
         pCheck_SHOWIMPTEXT->SetValue( FALSE );
-        textSizer->Add( pCheck_SHOWIMPTEXT, inputFlags );
+        textSizer->Add( pCheck_SHOWIMPTEXT, inputFlags2);
 
         pCheck_DECLTEXT = new wxCheckBox( ps57Ctl, ID_DECLTEXTCHECKBOX, _("De-Cluttered Text") );
         pCheck_DECLTEXT->SetValue( FALSE );
-        textSizer->Add( pCheck_DECLTEXT, inputFlags );
+        textSizer->Add( pCheck_DECLTEXT, inputFlags2);
 
         optionsColumn->Add( new wxStaticText(ps57Ctl, wxID_ANY, _("Chart Detail")), labelFlags );
         pCheck_SCAMIN = new wxCheckBox( ps57Ctl, ID_SCAMINCHECKBOX, _("Reduced Detail at Small Scale") );
@@ -3084,7 +3084,7 @@ void options::CreatePanel_Display( size_t parent, int border_size,
         rowOrientation->Add( pCBCourseUp, wxSizerFlags(0).Align(wxALIGN_CENTRE_VERTICAL).Border(wxLEFT, group_item_spacing*2) );
 
         pCBLookAhead = new wxCheckBox( pDisplayPanel, ID_CHECK_LOOKAHEAD, _("Look Ahead Mode") );
-        boxNavMode->Add( pCBLookAhead, inputFlags );
+        boxNavMode->Add( pCBLookAhead, inputFlags2);
 
 
         // spacer
@@ -3098,10 +3098,10 @@ void options::CreatePanel_Display( size_t parent, int border_size,
         generalSizer->Add( boxCharts, groupInputFlags );
 
         pCDOQuilting = new wxCheckBox( pDisplayPanel, ID_QUILTCHECKBOX1, _("Enable Chart Quilting") );
-        boxCharts->Add( pCDOQuilting, inputFlags );
+        boxCharts->Add( pCDOQuilting, inputFlags2);
 
         pPreserveScale = new wxCheckBox( pDisplayPanel, ID_PRESERVECHECKBOX, _("Preserve Scale when Switching Charts") );
-        boxCharts->Add( pPreserveScale, inputFlags );
+        boxCharts->Add( pPreserveScale, inputFlags2);
 
 
         // spacer
@@ -3115,11 +3115,11 @@ void options::CreatePanel_Display( size_t parent, int border_size,
         generalSizer->Add( boxCtrls, groupInputFlags );
 
         pSmoothPanZoom = new wxCheckBox( pDisplayPanel, ID_SMOOTHPANZOOMBOX, _("Smooth Panning / Zooming") );
-        boxCtrls->Add( pSmoothPanZoom, inputFlags );
+        boxCtrls->Add( pSmoothPanZoom, inputFlags2);
 
         pEnableZoomToCursor = new wxCheckBox( pDisplayPanel, ID_ZTCCHECKBOX, _("Zoom to Cursor") );
         pEnableZoomToCursor->SetValue( FALSE );
-        boxCtrls->Add( pEnableZoomToCursor, inputFlags );
+        boxCtrls->Add( pEnableZoomToCursor, inputFlags2);
 
 
         // spacer
@@ -3133,13 +3133,13 @@ void options::CreatePanel_Display( size_t parent, int border_size,
         generalSizer->Add( boxDisp, groupInputFlags );
 
         pSDisplayGrid = new wxCheckBox( pDisplayPanel, ID_CHECK_DISPLAYGRID, _("Show Grid") );
-        boxDisp->Add( pSDisplayGrid, inputFlags );
+        boxDisp->Add( pSDisplayGrid, inputFlags2);
 
         pCDOOutlines = new wxCheckBox( pDisplayPanel, ID_OUTLINECHECKBOX1, _("Show Chart Outlines") );
-        boxDisp->Add( pCDOOutlines, inputFlags );
+        boxDisp->Add( pCDOOutlines, inputFlags2);
 
         pSDepthUnits = new wxCheckBox( pDisplayPanel, ID_SHOWDEPTHUNITSBOX1, _("Show Depth Units") );
-        boxDisp->Add( pSDepthUnits, inputFlags );
+        boxDisp->Add( pSDepthUnits, inputFlags2);
     }
     else{
         wxBoxSizer* wrapperSizer = new wxBoxSizer( wxVERTICAL );
@@ -3709,7 +3709,7 @@ void options::CreatePanel_UI( size_t parent, int border_size,
     pToolbarAutoHide->Add( pToolbarAutoHideCB, 0, wxALL, group_item_spacing );
 
     pToolbarHideSecs = new wxTextCtrl( itemPanelFont, ID_OPTEXTCTRL, _T(""), wxDefaultPosition, wxSize( 50, -1 ), wxTE_RIGHT  );
-    pToolbarAutoHide->Add( pToolbarHideSecs, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
+    pToolbarAutoHide->Add( pToolbarHideSecs, 0, wxALL, group_item_spacing );
 
     pToolbarAutoHide->Add( new wxStaticText( itemPanelFont, wxID_ANY, _("seconds") ),group_item_spacing );
 
@@ -3747,7 +3747,7 @@ void options::CreatePanel_UI( size_t parent, int border_size,
                                         wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS );
     m_pSlider_GUI_Factor->Hide();
 //#ifdef __OCPN__ANDROID__
-    miscOptions->Add( new wxStaticText(itemPanelFont, wxID_ANY, _("User Interface scale factor")), inputFlags );
+    miscOptions->Add( new wxStaticText(itemPanelFont, wxID_ANY, _("User Interface scale factor")), inputFlags2 );
     miscOptions->Add( m_pSlider_GUI_Factor, 0, wxALL, border_size );
     m_pSlider_GUI_Factor->Show();
 
@@ -3761,7 +3761,7 @@ void options::CreatePanel_UI( size_t parent, int border_size,
                                          wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS );
     m_pSlider_Chart_Factor->Hide();
 //#ifdef __OCPN__ANDROID__
-    miscOptions->Add( new wxStaticText(itemPanelFont, wxID_ANY, _("Chart Object scale factor")), inputFlags );
+    miscOptions->Add( new wxStaticText(itemPanelFont, wxID_ANY, _("Chart Object scale factor")), inputFlags2 );
     miscOptions->Add( m_pSlider_Chart_Factor, 0, wxALL, border_size );
     m_pSlider_Chart_Factor->Show();
 
@@ -3799,6 +3799,7 @@ void options::CreateControls( void )
 
     labelFlags = wxSizerFlags(0).Align(wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL).Border(wxALL, group_item_spacing);
     inputFlags = wxSizerFlags(0).Align(wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL).Border(wxALL, group_item_spacing);
+    inputFlags2 = wxSizerFlags(0).Align(wxALIGN_LEFT).Border(wxALL, group_item_spacing);
     groupLabelFlags = wxSizerFlags(0).Align(wxALIGN_RIGHT | wxALIGN_TOP).Border(wxALL, group_item_spacing);
     groupInputFlags = wxSizerFlags(0).Align(wxALIGN_LEFT | wxALIGN_TOP).Border(wxBOTTOM, group_item_spacing*2).Expand();
 
@@ -3924,8 +3925,7 @@ void options::CreateControls( void )
 #endif
 
     m_pListbook->SetImageList( m_topImgList );
-    itemBoxSizer2->Add( m_pListbook, 1,
-            wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL | wxALL | wxEXPAND, border_size );
+    itemBoxSizer2->Add( m_pListbook, 1, wxALL | wxEXPAND, border_size );
 
     wxBoxSizer* buttons = new wxBoxSizer( wxHORIZONTAL );
     itemBoxSizer2->Add( buttons, 0, wxALIGN_RIGHT | wxALL, border_size );
