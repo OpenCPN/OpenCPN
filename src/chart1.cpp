@@ -5772,6 +5772,13 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
         // Load the waypoints.. both of these routines are very slow to execute which is why
         // they have been to defered until here
         pWayPointMan = new WayPointman();
+        
+        // Reload the ownship icon from UserIcons, if present
+        if(cc1){
+            if(cc1->SetUserOwnship())
+                cc1->SetColorScheme(global_color_scheme);
+        }
+        
         pConfig->LoadNavObjects();
 
         //    Re-enable anchor watches if set in config file
