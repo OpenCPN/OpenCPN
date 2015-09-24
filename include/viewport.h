@@ -74,7 +74,7 @@ typedef enum ColorScheme
 }_ColorScheme;
 #endif
 
-#define INVALID_COORD -2147483648
+#define INVALID_COORD (-2147483647 - 1)
 
 //----------------------------------------------------------------------------
 // ViewPort Definition
