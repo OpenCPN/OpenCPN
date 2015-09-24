@@ -7,6 +7,10 @@
 # build a CPack driven installer package
 #include (InstallRequiredSystemLibraries)
 
+IF (COMMAND cmake_policy)
+  CMAKE_POLICY(SET CMP0002 OLD)
+ENDIF (COMMAND cmake_policy)
+
 SET(CPACK_PACKAGE_NAME "${PACKAGE_NAME}")
 SET(CPACK_PACKAGE_VENDOR "opencpn.org")
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY ${CPACK_PACKAGE_NAME} ${PACKAGE_VERSION})
@@ -147,8 +151,10 @@ ENDIF(TWIN32 AND NOT UNIX)
 
 INCLUDE(CPack)
 
+IF(NOT STANDALONE MATCHES "BUNDLED")
 
 IF(APPLE)
+MESSAGE (STATUS "*** Staging to build PlugIn OSX Package ***")
 
  #  Copy a bunch of files so the Packages installer builder can find them
  #  relative to ${CMAKE_CURRENT_BINARY_DIR}
@@ -181,3 +187,4 @@ configure_file(${PROJECT_SOURCE_DIR}/buildosx/InstallOSX/pkg_background.jpg
 
 
 ENDIF(APPLE)
+ENDIF(NOT STANDALONE MATCHES "BUNDLED")
