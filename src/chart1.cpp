@@ -897,29 +897,30 @@ void MyApp::OnActivateApp( wxActivateEvent& event )
     }
     else
     {
+        if(gFrame){
 //        printf("App Activate\n");
-        gFrame->SubmergeToolbar();              // This is needed to reset internal wxWidgets logic
-                                                // Also required for other TopLevelWindows here
-                                                // reportedly not required for wx 2.9
-        gFrame->SurfaceToolbar();
+            gFrame->SubmergeToolbar();              // This is needed to reset internal wxWidgets logic
+                                                    // Also required for other TopLevelWindows here
+                                                    // reportedly not required for wx 2.9
+            gFrame->SurfaceToolbar();
 
-        wxWindow *pOptions = NULL;
+            wxWindow *pOptions = NULL;
 
-        wxWindowListNode *node = AppActivateList.GetFirst();
-        while (node) {
-            wxWindow *win = node->GetData();
-            win->Show();
-            if( win->IsKindOf( CLASSINFO(options) ) )
-                pOptions = win;
+            wxWindowListNode *node = AppActivateList.GetFirst();
+            while (node) {
+                wxWindow *win = node->GetData();
+                win->Show();
+                if( win->IsKindOf( CLASSINFO(options) ) )
+                    pOptions = win;
 
-            node = node->GetNext();
+                node = node->GetNext();
+            }
+
+            if( pOptions )
+                pOptions->Raise();
+            else
+                gFrame->Raise();
         }
-
-        if( pOptions )
-            pOptions->Raise();
-        else
-            gFrame->Raise();
-
     }
 #endif
 
