@@ -6875,8 +6875,8 @@ void options::OnInsertTideDataLocation(wxCommandEvent& event) {
 #ifndef __OCPN__ANDROID__
   wxFileDialog* popenDialog = new wxFileDialog(
       NULL, _("Select Tide/Current Data"), g_TCData_Dir, wxT(""),
-      wxT("Tide/Current Data files (*.IDX; *.TCD)|*.IDX;*.idx;*.TCD;*.tcd|All "
-          "files (*.*)|*.*"),
+      wxT("Tide/Current Data files (*.IDX; *.TCD)|*.IDX;*.idx;*.TCD;*.tcd|All ")
+          wxT("files (*.*)|*.*"),
       wxFD_OPEN);
   if (g_bresponsive)
     popenDialog = g_Platform->AdjustFileDialogFont(this, popenDialog);
