@@ -2599,31 +2599,6 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc )
 #ifdef USE_S57
     s57_DrawExtendedLightSectors( dc, cc1->VPoint, cc1->extendedSectorLegs );
 #endif
-#if 0 // HEAD
-
-    /* This should be converted to opengl, it is currently caching screen
-       outside render, so the viewport can change without updating, (incorrect)
-       doing alpha blending in software with it and draw pixels (very slow) */
-    if( cc1->m_pRouteRolloverWin && cc1->m_pRouteRolloverWin->IsActive() ) {
-        dc.DrawBitmap( *(cc1->m_pRouteRolloverWin->GetBitmap()),
-                       cc1->m_pRouteRolloverWin->GetPosition().x,
-                       cc1->m_pRouteRolloverWin->GetPosition().y, false );
-    }
-
-    if( cc1->m_pAISRolloverWin && cc1->m_pAISRolloverWin->IsActive() ) {
-        dc.DrawBitmap( *(cc1->m_pAISRolloverWin->GetBitmap()),
-                       cc1->m_pAISRolloverWin->GetPosition().x,
-                       cc1->m_pAISRolloverWin->GetPosition().y, false );
-    }
-
-    // render the chart bar
-    if(g_bShowChartBar && !g_ChartBarWin)
-        DrawChartBar(dc);
-
-    if (g_Compass)
-        g_Compass->Paint(dc);
-#else //
-#endif // 90e80c0... Initial projections support commit
 }
 
 void glChartCanvas::DrawChartBar( ocpnDC &dc )
@@ -4366,6 +4341,9 @@ void glChartCanvas::Render()
     if(g_bShowChartBar && !g_ChartBarWin)
         DrawChartBar(gldc);
 
+    if (g_Compass)
+        g_Compass->Paint(gldc);
+    
     //quiting?
     if( g_bquiting )
         DrawQuiting();
