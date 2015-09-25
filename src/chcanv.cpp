@@ -120,7 +120,7 @@ extern sigjmp_buf           env;                    // the context saved by sigs
 #include <vector>
 
 #if defined(__MSVC__) &&  (_MSC_VER < 1700) 
-#define  trunc(d) (d>0) ? floor(d) : ceil(d)
+#define  trunc(d) ((d>0) ? floor(d) : ceil(d))
 #endif
 
 
@@ -903,110 +903,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_pos_image_red = &m_os_image_red_day;
     m_pos_image_yellow = &m_os_image_yellow_day;
 
-    //  Look for user defined ownship image
-    //  This may be found in the shared data location along with other user defined icons.
-    //  and will be called "ownship.xpm" or "ownship.png"
-    if( pWayPointMan && pWayPointMan->DoesIconExist( _T("ownship") ) ) {
-        wxBitmap *pbmp = pWayPointMan->GetIconBitmap( _T("ownship") );
-        m_pos_image_user_day = new wxImage;
-        *m_pos_image_user_day = pbmp->ConvertToImage();
-        m_pos_image_user_day->InitAlpha();
-
-        int gimg_width = m_pos_image_user_day->GetWidth();
-        int gimg_height = m_pos_image_user_day->GetHeight();
-
-        // Make dusk and night images
-        m_pos_image_user_dusk = new wxImage;
-        m_pos_image_user_night = new wxImage;
-
-        *m_pos_image_user_dusk = m_pos_image_user_day->Copy();
-        *m_pos_image_user_night = m_pos_image_user_day->Copy();
-
-        for( int iy = 0; iy < gimg_height; iy++ ) {
-            for( int ix = 0; ix < gimg_width; ix++ ) {
-                if( !m_pos_image_user_day->IsTransparent( ix, iy ) ) {
-                    wxImage::RGBValue rgb( m_pos_image_user_day->GetRed( ix, iy ),
-                                           m_pos_image_user_day->GetGreen( ix, iy ),
-                                           m_pos_image_user_day->GetBlue( ix, iy ) );
-                    wxImage::HSVValue hsv = wxImage::RGBtoHSV( rgb );
-                    hsv.value = hsv.value * factor_dusk;
-                    wxImage::RGBValue nrgb = wxImage::HSVtoRGB( hsv );
-                    m_pos_image_user_dusk->SetRGB( ix, iy, nrgb.red, nrgb.green, nrgb.blue );
-
-                    hsv = wxImage::RGBtoHSV( rgb );
-                    hsv.value = hsv.value * factor_night;
-                    nrgb = wxImage::HSVtoRGB( hsv );
-                    m_pos_image_user_night->SetRGB( ix, iy, nrgb.red, nrgb.green, nrgb.blue );
-                }
-            }
-        }
-
-        //  Make some alternate greyed out day/dusk/night images
-        m_pos_image_user_grey_day = new wxImage;
-        *m_pos_image_user_grey_day = m_pos_image_user_day->ConvertToGreyscale();
-
-        m_pos_image_user_grey_dusk = new wxImage;
-        m_pos_image_user_grey_night = new wxImage;
-
-        *m_pos_image_user_grey_dusk = m_pos_image_user_grey_day->Copy();
-        *m_pos_image_user_grey_night = m_pos_image_user_grey_day->Copy();
-
-        for( int iy = 0; iy < gimg_height; iy++ ) {
-            for( int ix = 0; ix < gimg_width; ix++ ) {
-                if( !m_pos_image_user_grey_day->IsTransparent( ix, iy ) ) {
-                    wxImage::RGBValue rgb( m_pos_image_user_grey_day->GetRed( ix, iy ),
-                                           m_pos_image_user_grey_day->GetGreen( ix, iy ),
-                                           m_pos_image_user_grey_day->GetBlue( ix, iy ) );
-                    wxImage::HSVValue hsv = wxImage::RGBtoHSV( rgb );
-                    hsv.value = hsv.value * factor_dusk;
-                    wxImage::RGBValue nrgb = wxImage::HSVtoRGB( hsv );
-                    m_pos_image_user_grey_dusk->SetRGB( ix, iy, nrgb.red, nrgb.green, nrgb.blue );
-
-                    hsv = wxImage::RGBtoHSV( rgb );
-                    hsv.value = hsv.value * factor_night;
-                    nrgb = wxImage::HSVtoRGB( hsv );
-                    m_pos_image_user_grey_night->SetRGB( ix, iy, nrgb.red, nrgb.green, nrgb.blue );
-                }
-            }
-        }
-
-        //  Make a yellow image for rendering under low accuracy chart conditions
-        m_pos_image_user_yellow_day = new wxImage;
-        m_pos_image_user_yellow_dusk = new wxImage;
-        m_pos_image_user_yellow_night = new wxImage;
-
-        *m_pos_image_user_yellow_day = m_pos_image_user_grey_day->Copy();
-        *m_pos_image_user_yellow_dusk = m_pos_image_user_grey_day->Copy();
-        *m_pos_image_user_yellow_night = m_pos_image_user_grey_day->Copy();
-
-        for( int iy = 0; iy < gimg_height; iy++ ) {
-            for( int ix = 0; ix < gimg_width; ix++ ) {
-                if( !m_pos_image_user_grey_day->IsTransparent( ix, iy ) ) {
-                    wxImage::RGBValue rgb( m_pos_image_user_grey_day->GetRed( ix, iy ),
-                                           m_pos_image_user_grey_day->GetGreen( ix, iy ),
-                                           m_pos_image_user_grey_day->GetBlue( ix, iy ) );
-
-                    //  Simply remove all "blue" from the greyscaled image...
-                    //  so, what is not black becomes yellow.
-                    wxImage::HSVValue hsv = wxImage::RGBtoHSV( rgb );
-                    wxImage::RGBValue nrgb = wxImage::HSVtoRGB( hsv );
-                    m_pos_image_user_yellow_day->SetRGB( ix, iy, nrgb.red, nrgb.green, 0 );
-
-                    hsv = wxImage::RGBtoHSV( rgb );
-                    hsv.value = hsv.value * factor_dusk;
-                    nrgb = wxImage::HSVtoRGB( hsv );
-                    m_pos_image_user_yellow_dusk->SetRGB( ix, iy, nrgb.red, nrgb.green, 0 );
-
-                    hsv = wxImage::RGBtoHSV( rgb );
-                    hsv.value = hsv.value * factor_night;
-                    nrgb = wxImage::HSVtoRGB( hsv );
-                    m_pos_image_user_yellow_night->SetRGB( ix, iy, nrgb.red, nrgb.green, 0 );
-                }
-            }
-        }
-
-    }
-
+    SetUserOwnship();
+        
     m_pBrightPopup = NULL;
     m_pQuilt = new Quilt();
     
@@ -1084,6 +982,120 @@ ChartCanvas::~ChartCanvas()
     }
 #endif
 
+}
+
+bool ChartCanvas::SetUserOwnship(){
+    //  Look for user defined ownship image
+    //  This may be found in the shared data location along with other user defined icons.
+    //  and will be called "ownship.xpm" or "ownship.png"
+    if( pWayPointMan && pWayPointMan->DoesIconExist( _T("ownship") ) ) {
+        
+        double factor_dusk = 0.5;
+        double factor_night = 0.25;
+        
+        wxBitmap *pbmp = pWayPointMan->GetIconBitmap( _T("ownship") );
+        m_pos_image_user_day = new wxImage;
+        *m_pos_image_user_day = pbmp->ConvertToImage();
+        if(!m_pos_image_user_day->HasAlpha())
+            m_pos_image_user_day->InitAlpha();
+        
+        int gimg_width = m_pos_image_user_day->GetWidth();
+        int gimg_height = m_pos_image_user_day->GetHeight();
+        
+        // Make dusk and night images
+        m_pos_image_user_dusk = new wxImage;
+        m_pos_image_user_night = new wxImage;
+        
+        *m_pos_image_user_dusk = m_pos_image_user_day->Copy();
+        *m_pos_image_user_night = m_pos_image_user_day->Copy();
+        
+        for( int iy = 0; iy < gimg_height; iy++ ) {
+            for( int ix = 0; ix < gimg_width; ix++ ) {
+                if( !m_pos_image_user_day->IsTransparent( ix, iy ) ) {
+                    wxImage::RGBValue rgb( m_pos_image_user_day->GetRed( ix, iy ),
+                                           m_pos_image_user_day->GetGreen( ix, iy ),
+                                           m_pos_image_user_day->GetBlue( ix, iy ) );
+                    wxImage::HSVValue hsv = wxImage::RGBtoHSV( rgb );
+                    hsv.value = hsv.value * factor_dusk;
+                    wxImage::RGBValue nrgb = wxImage::HSVtoRGB( hsv );
+                    m_pos_image_user_dusk->SetRGB( ix, iy, nrgb.red, nrgb.green, nrgb.blue );
+                    
+                    hsv = wxImage::RGBtoHSV( rgb );
+                    hsv.value = hsv.value * factor_night;
+                    nrgb = wxImage::HSVtoRGB( hsv );
+                    m_pos_image_user_night->SetRGB( ix, iy, nrgb.red, nrgb.green, nrgb.blue );
+                }
+            }
+        }
+        
+        //  Make some alternate greyed out day/dusk/night images
+        m_pos_image_user_grey_day = new wxImage;
+        *m_pos_image_user_grey_day = m_pos_image_user_day->ConvertToGreyscale();
+        
+        m_pos_image_user_grey_dusk = new wxImage;
+        m_pos_image_user_grey_night = new wxImage;
+        
+        *m_pos_image_user_grey_dusk = m_pos_image_user_grey_day->Copy();
+        *m_pos_image_user_grey_night = m_pos_image_user_grey_day->Copy();
+        
+        for( int iy = 0; iy < gimg_height; iy++ ) {
+            for( int ix = 0; ix < gimg_width; ix++ ) {
+                if( !m_pos_image_user_grey_day->IsTransparent( ix, iy ) ) {
+                    wxImage::RGBValue rgb( m_pos_image_user_grey_day->GetRed( ix, iy ),
+                                           m_pos_image_user_grey_day->GetGreen( ix, iy ),
+                                           m_pos_image_user_grey_day->GetBlue( ix, iy ) );
+                    wxImage::HSVValue hsv = wxImage::RGBtoHSV( rgb );
+                    hsv.value = hsv.value * factor_dusk;
+                    wxImage::RGBValue nrgb = wxImage::HSVtoRGB( hsv );
+                    m_pos_image_user_grey_dusk->SetRGB( ix, iy, nrgb.red, nrgb.green, nrgb.blue );
+                    
+                    hsv = wxImage::RGBtoHSV( rgb );
+                    hsv.value = hsv.value * factor_night;
+                    nrgb = wxImage::HSVtoRGB( hsv );
+                    m_pos_image_user_grey_night->SetRGB( ix, iy, nrgb.red, nrgb.green, nrgb.blue );
+                }
+            }
+        }
+        
+        //  Make a yellow image for rendering under low accuracy chart conditions
+        m_pos_image_user_yellow_day = new wxImage;
+        m_pos_image_user_yellow_dusk = new wxImage;
+        m_pos_image_user_yellow_night = new wxImage;
+        
+        *m_pos_image_user_yellow_day = m_pos_image_user_grey_day->Copy();
+        *m_pos_image_user_yellow_dusk = m_pos_image_user_grey_day->Copy();
+        *m_pos_image_user_yellow_night = m_pos_image_user_grey_day->Copy();
+        
+        for( int iy = 0; iy < gimg_height; iy++ ) {
+            for( int ix = 0; ix < gimg_width; ix++ ) {
+                if( !m_pos_image_user_grey_day->IsTransparent( ix, iy ) ) {
+                    wxImage::RGBValue rgb( m_pos_image_user_grey_day->GetRed( ix, iy ),
+                                           m_pos_image_user_grey_day->GetGreen( ix, iy ),
+                                           m_pos_image_user_grey_day->GetBlue( ix, iy ) );
+                    
+                    //  Simply remove all "blue" from the greyscaled image...
+                    //  so, what is not black becomes yellow.
+                    wxImage::HSVValue hsv = wxImage::RGBtoHSV( rgb );
+                    wxImage::RGBValue nrgb = wxImage::HSVtoRGB( hsv );
+                    m_pos_image_user_yellow_day->SetRGB( ix, iy, nrgb.red, nrgb.green, 0 );
+                    
+                    hsv = wxImage::RGBtoHSV( rgb );
+                    hsv.value = hsv.value * factor_dusk;
+                    nrgb = wxImage::HSVtoRGB( hsv );
+                    m_pos_image_user_yellow_dusk->SetRGB( ix, iy, nrgb.red, nrgb.green, 0 );
+                    
+                    hsv = wxImage::RGBtoHSV( rgb );
+                    hsv.value = hsv.value * factor_night;
+                    nrgb = wxImage::HSVtoRGB( hsv );
+                    m_pos_image_user_yellow_night->SetRGB( ix, iy, nrgb.red, nrgb.green, 0 );
+                }
+            }
+        }
+ 
+        return true;
+    }
+    else
+        return false;
 }
 
 void ChartCanvas::SetDisplaySizeMM( double size )

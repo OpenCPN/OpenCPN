@@ -170,6 +170,8 @@ public:
       
       void PopupMenuHandler(wxCommandEvent& event);
 
+      bool SetUserOwnship();
+          
       void EnablePaint(bool b_enable);
       virtual bool SetCursor(const wxCursor &c);
       virtual void Refresh( bool eraseBackground = true,
