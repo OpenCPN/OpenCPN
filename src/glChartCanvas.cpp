@@ -3764,12 +3764,13 @@ void glChartCanvas::DrawGLTidesInBBox(ocpnDC& dc, LLBBox& BBox)
     }
     else
         cc1->DrawAllTidesInBBox( dc, BBox );
-    
+    cc1->RebuildTideSelectList(BBox);
 }
 
 void glChartCanvas::DrawGLCurrentsInBBox(ocpnDC& dc, LLBBox& BBox)
 {
-        cc1->DrawAllCurrentsInBBox( dc, BBox );
+    cc1->DrawAllCurrentsInBBox(dc, BBox);
+    cc1->RebuildCurrentSelectList(BBox);
 }
 
 
