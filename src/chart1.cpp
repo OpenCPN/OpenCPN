@@ -4221,6 +4221,7 @@ void MyFrame::ToggleFullScreen()
 
     ShowFullScreen( to, style );
     UpdateToolbar( global_color_scheme );
+    SurfaceToolbar();
     UpdateControlBar();
     Layout();
 }
@@ -5080,7 +5081,7 @@ int MyFrame::DoOptionsDialog()
     options_lastWindowPos = g_options->lastWindowPos;
     options_lastWindowSize = g_options->lastWindowSize;
 
-    if( b_sub ) {
+    if( 1/*b_sub*/ ) {          // always surface toolbar, and restart the timer if needed
         SurfaceToolbar();
         cc1->SetFocus();
     }
