@@ -1687,7 +1687,8 @@ void glChartCanvas::DrawDynamicRoutesAndWaypoints( ViewPort &vp )
         if( pRouteDraw->IsTrack() ) {
             /* Active tracks */
             if( dynamic_cast<Track *>(pRouteDraw)->IsRunning() ){
-                pRouteDraw->DrawGL( vp );
+                pRouteDraw->Draw( dc, vp );     // We need Track::Draw() to dynamically render last (ownship) point.
+         //       pRouteDraw->DrawGL( vp );
                 continue;
             }
         }
