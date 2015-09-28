@@ -1295,7 +1295,7 @@ double s57chart::GetNormalScaleMin( double canvas_scale_factor, bool b_allow_ove
 }
 double s57chart::GetNormalScaleMax( double canvas_scale_factor, int canvas_width )
 {
-    return m_Chart_Scale * 2.0;
+    return m_Chart_Scale * 4.0;
     
 }
 
