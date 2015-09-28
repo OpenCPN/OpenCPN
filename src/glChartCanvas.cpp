@@ -2116,7 +2116,6 @@ void glChartCanvas::GridDraw( )
         cc1->GetCanvasPointPix( nlat, lon, &r );
         cc1->GetCanvasPointPix( slat, lon, &s );
 
-        char sbuf[12];
         float xlon = lon;
         if( xlon > 180.0 )
             xlon -= 360.0;
@@ -2133,7 +2132,7 @@ void glChartCanvas::GridDraw( )
                 y = (float)(r.y*s.x - s.y*r.x + (s.y - r.y)*x) / (s.x - r.x);
             }
             
-            m_gridfont.RenderString(sbuf, x, y);
+            m_gridfont.RenderString(st, x, y);
         } else {
             // iteratively attempt to find where the latitude line crosses x=0
             wxPoint2DDouble r;
@@ -2164,7 +2163,7 @@ void glChartCanvas::GridDraw( )
                 // failure, instead just draw the text at center latitude
                 cc1->GetDoubleCanvasPointPix( wxMin(wxMax(vp.clat, slat), nlat), lon, &r);
 
-            m_gridfont.RenderString(sbuf, r.m_x, r.m_y);
+            m_gridfont.RenderString(st, r.m_x, r.m_y);
         }
     }
 
