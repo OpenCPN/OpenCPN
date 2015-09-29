@@ -4947,8 +4947,8 @@ int cm93compchart::GetCMScaleFromVP ( const ViewPort &vpt )
       //        If overzoomed possible, switch to larger scale chart if available
       double zoom_factor = scale_breaks[7 - cmscale_calc] / vpt.chart_scale ;
       if( zoom_factor > 4.0) {
-//          if( cmscale_calc < 7 )
-//              cmscale_calc ++;
+          if( cmscale_calc < 7 )
+              cmscale_calc ++;
       }
       
       return cmscale_calc;
