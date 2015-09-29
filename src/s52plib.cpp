@@ -4144,7 +4144,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             buffer.color[1][1] = colorb.Green();
             buffer.color[1][2] = colorb.Blue();
             buffer.color[1][3] = 150;
-            buffer.line_width[1] = wxMax(g_GLMinSymbolLineWidth, arc_width  * scale_factor);
+            buffer.line_width[1] = wxMax(g_GLMinSymbolLineWidth, (arc_width  * scale_factor) + .8);
         
             //    Draw the sector legs
             if( sector_radius > 0 ) {
