@@ -950,8 +950,8 @@ glTexFactory::glTexFactory(ChartBase *chart, int raster_format)
     
     //  Calculate the number of textures needed
     m_tex_dim = g_GLOptions.m_iTextureDimension;
-    m_nx_tex = ( m_size_X / m_tex_dim ) + 1;
-    m_ny_tex = ( m_size_Y / m_tex_dim ) + 1;
+    m_nx_tex = ( m_size_X / m_tex_dim ) + ((m_size_X % m_tex_dim) == 0 ? 0:1);
+    m_ny_tex = ( m_size_Y / m_tex_dim ) + ((m_size_Y % m_tex_dim) == 0 ? 0:1);
     
     m_stride = m_nx_tex;
     m_ntex = m_nx_tex * m_ny_tex;
