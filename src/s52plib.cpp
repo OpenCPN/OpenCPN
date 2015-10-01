@@ -2063,22 +2063,6 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool
         wxPoint r;
         GetPointPixSingle( rzRules, rzRules->obj->y, rzRules->obj->x, &r, vp );
 
-        //      Once more I don't understand these adjustments
-        //      They are very broken for west longitude objects.
-#if 0        
-        // if object is east of greenwich
-        if(r.x < -text->rText.width) {
-            double x = rzRules->obj->x + (mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI)
-                / rzRules->obj->x_rate;
-            GetPointPixSingle( rzRules, rzRules->obj->y, x, &r, vp );
-        } else
-        // if object crosses greenwich
-        if(r.x > vp->pix_width) {
-            double x = rzRules->obj->x - (mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI)
-                / rzRules->obj->x_rate;
-            GetPointPixSingle( rzRules, rzRules->obj->y, x, &r, vp );
-        }
-#endif
         wxRect rect;
 
         bool bwas_drawn = RenderText( m_pdc, text, r.x, r.y, &rect, rzRules->obj, m_bDeClutterText,
@@ -2841,15 +2825,6 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     double margin = BBView.GetWidth() * .05;
     BBView.EnLarge( margin );
 
-    wxBoundingBox bbRight;
-    bool b_vp_cross_greenwich = false;
-
-    if( BBView.GetMaxX() > 360. ) {
-        bbRight = wxBoundingBox ( 0., vp->GetBBox().GetMinY(), vp->GetBBox().GetMaxX() - 360.,
-                              vp->GetBBox().GetMaxY() );
-        b_vp_cross_greenwich = true;
-    }       
-
     //  Try to determine if the feature needs to be drawn in the most efficient way
     //  We need to look at priority and visibility of each segment
     int bdraw = 0;
@@ -2865,22 +2840,11 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         
         if( (ls_list->priority == priority_current) && (ls_list->n_points > 1) )   
         {
-            
             //  Check visibility of the segment
-            bool b_greenwich = false;
-            if( b_vp_cross_greenwich ) {
-                bool bbri = (bbRight.GetMinX() > ls_list->lon_max) || (bbRight.GetMaxX() < ls_list->lon_min) ||
-                             (bbRight.GetMinY() > ls_list->lat_max) || (bbRight.GetMaxY() < ls_list->lat_min);
-                
-                if( !bbri )
-                    b_greenwich = true;
-            }
-            
-            bool bbi = (BBView.GetMinX() > ls_list->lon_max) || (BBView.GetMaxX() < ls_list->lon_min) ||
-            (BBView.GetMinY() > ls_list->lat_max) || (BBView.GetMaxY() < ls_list->lat_min);
-            
-            if( b_greenwich || !bbi )
-            {
+            if((BBView.GetMinY() < ls_list->lat_max && BBView.GetMaxY() > ls_list->lat_min) &&
+               ((BBView.GetMinX() <= ls_list->lon_max && BBView.GetMaxX() >= ls_list->lon_min) ||
+                (BBView.GetMaxX() >=  180 && BBView.GetMaxX() - 360 > ls_list->lon_min) ||
+                (BBView.GetMinX() <= -180 && BBView.GetMinX() + 360 < ls_list->lon_max))) {
                 // render the segment
                 bdraw++;
                 break;
@@ -2935,18 +2899,14 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     
     //  Next, the per-object transform
     
-    //      For some chart types (e.g. cm93), the viewport bounding box is constructed
-    //      so as to be positive semi-definite. That is, the right hand side may have a longitude > 360.
-    //      In this case, we may need to translate object coordinates by 360 degrees to conform.
-    if( BBView.GetMaxX() > 360. ) {
-        
-        wxBoundingBox bbRight ( 0., vp->GetBBox().GetMinY(),
-                                vp->GetBBox().GetMaxX() - 360., vp->GetBBox().GetMaxY() );
-        if(  (rzRules->obj->BBObj.GetMinX() >= 0) &&
-            (rzRules->obj->BBObj.GetMinX() < BBView.GetMaxX() - 360.) ){
-            glTranslatef( mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI, 0, 0);
-            }
-    }
+    //      We may need to translate object coordinates by 360 degrees to conform.
+    if( BBView.GetMaxX() > 180. ) {
+        if(rzRules->obj->BBObj.GetMinX() < BBView.GetMaxX() - 360.)
+            glTranslatef( mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI, 0, 0 );
+    } else
+    if( (BBView.GetMinX() <= -180. && rzRules->obj->BBObj.GetMaxX() > BBView.GetMinX() + 360.) ||
+        (BBView.GetMinX() <= 0. && rzRules->obj->BBObj.GetMaxX() > 180))
+        glTranslatef( -mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI, 0, 0 );
   
     if( rzRules->obj->m_chart_context->chart ){
         glTranslatef( rzRules->obj->x_origin, rzRules->obj->y_origin, 0);
@@ -2967,22 +2927,11 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         
         if( (ls_list->priority == priority_current) && (ls_list->n_points > 1) )   
         {
-          
             //  Check visibility of the segment
-            bool b_greenwich = false;
-            if( b_vp_cross_greenwich ) {
-                bool bbri = (bbRight.GetMinX() > ls_list->lon_max) || (bbRight.GetMaxX() < ls_list->lon_min) ||
-                (bbRight.GetMinY() > ls_list->lat_max) || (bbRight.GetMaxY() < ls_list->lat_min);
-                
-                if( !bbri )
-                    b_greenwich = true;
-            }
-
-            bool bbi = (BBView.GetMinX() > ls_list->lon_max) || (BBView.GetMaxX() < ls_list->lon_min) ||
-            (BBView.GetMinY() > ls_list->lat_max) || (BBView.GetMaxY() < ls_list->lat_min);
-            
-            if( b_greenwich || !bbi )
-            {
+            if((BBView.GetMinY() <= ls_list->lat_max && BBView.GetMaxY() >= ls_list->lat_min) &&
+               ((BBView.GetMinX() <= ls_list->lon_max && BBView.GetMaxX() >= ls_list->lon_min) ||
+                (BBView.GetMaxX() >=  180 && BBView.GetMaxX() - 360 >= ls_list->lon_min) ||
+                (BBView.GetMinX() <= -180 && BBView.GetMinX() + 360 <= ls_list->lon_max))) {
                 // render the segment
                 
                 if(b_useVBO){
@@ -5772,21 +5721,10 @@ void s52plib::RenderToBufferFilledPolygon( ObjRazRules *rzRules, S57Obj *obj, S5
         wxBoundingBox tp_box;
         TriPrim *p_tp = ppg->tri_prim_head;
         while( p_tp ) {
- 
-            tp_box.SetMin(p_tp->minx, p_tp->miny);
-            tp_box.SetMax(p_tp->maxx, p_tp->maxy);
-            
-            bool b_greenwich = false;
-            if( BBView.GetMaxX() > 360. ) {
-                wxBoundingBox bbRight( 0., BBView.GetMinY(), BBView.GetMaxX() - 360.,
-                        BBView.GetMaxY() );
-                
-                
-                if( bbRight.Intersect( tp_box, margin ) != _OUT )
-                    b_greenwich = true;
-            }
-
-            if( b_greenwich || ( BBView.Intersect( tp_box, margin ) != _OUT ) ) {
+            if((BBView.GetMinY() <= p_tp->maxy && BBView.GetMaxY() >= p_tp->miny) &&
+               ((BBView.GetMinX() <= p_tp->maxx && BBView.GetMaxX() >= p_tp->minx) ||
+                (BBView.GetMaxX() >=  180 && BBView.GetMaxX() - 360 > p_tp->minx) ||
+                (BBView.GetMinX() <= -180 && BBView.GetMinX() + 360 < p_tp->maxx))) {
                 //      Get and convert the points
                 wxPoint *pr = ptp;
 
@@ -5975,24 +5913,18 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             glTranslatef( -rzRules->sm_transform_parms->easting_vp_center, -rzRules->sm_transform_parms->northing_vp_center, 0 );
             //  Next, the per-object transform
 
-            //      For some chart types (e.g. cm93), the viewport bounding box is constructed
-            //      so as to be positive semi-definite. That is, the right hand side may have a longitude > 360.
-            //      In this case, we may need to translate object coordinates by 360 degrees to conform.
-            if( BBView.GetMaxX() > 360. ) {
-            
-                wxBoundingBox bbRight ( 0., vp->GetBBox().GetMinY(),
-                                        vp->GetBBox().GetMaxX() - 360., vp->GetBBox().GetMaxY() );
-//            if ( !bbRight.IntersectOut ( rzRules->obj->BBObj ) )
-//                glTranslatef( mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI, 0, 0);
-                if(  (rzRules->obj->BBObj.GetMinX() >= 0) &&
-                     (rzRules->obj->BBObj.GetMinX() < BBView.GetMaxX() - 360.) ){
-                    glTranslatef( mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI, 0, 0);
-                }
-            }
-        
-            glTranslatef( rzRules->obj->x_origin, rzRules->obj->y_origin, 0);
-            glScalef( rzRules->obj->x_rate, rzRules->obj->y_rate, 0 );
+            float x_origin = rzRules->obj->x_origin;
+            //      We may need to translate object coordinates by 360 degrees to conform.
+            if( BBView.GetMaxX() >= 180. ) {
+                if(rzRules->obj->BBObj.GetMinX() < BBView.GetMaxX() - 360.)
+                    x_origin += mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
+            } else
+            if( (BBView.GetMinX() <= -180. && rzRules->obj->BBObj.GetMaxX() > BBView.GetMinX() + 360.) ||
+                (BBView.GetMinX() <= 0. && rzRules->obj->BBObj.GetMaxX() > 180))
+                x_origin -= mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
 
+            glTranslatef( x_origin, rzRules->obj->y_origin, 0);
+            glScalef( rzRules->obj->x_rate, rzRules->obj->y_rate, 0 );
         }
         
         // perform deferred tesselation
@@ -6092,7 +6024,6 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
         PolyTriGroup *ppg = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
 
-        wxBoundingBox tp_box;
         TriPrim *p_tp = ppg->tri_prim_head;
         GLintptr vbo_offset = 0;
         
@@ -6108,20 +6039,12 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         }
             
         while( p_tp ) {
-            tp_box.SetMin(p_tp->minx, p_tp->miny);
-            tp_box.SetMax(p_tp->maxx, p_tp->maxy);
-            
-            bool b_greenwich = false;
-            if( BBView.GetMaxX() > 360. ) {
-                wxBoundingBox bbRight( 0., vp->GetBBox().GetMinY(), vp->GetBBox().GetMaxX() - 360.,
-                        vp->GetBBox().GetMaxY() );
-                
-                
-                if( bbRight.Intersect( tp_box, margin ) != _OUT )
-                    b_greenwich = true;
-            }
-
-            if( b_greenwich || !BBView.IntersectOut( tp_box ) ) {
+            if((BBView.GetMinY() <= p_tp->maxy && BBView.GetMaxY() >= p_tp->miny) &&
+               ((BBView.GetMinX() <= p_tp->maxx && BBView.GetMaxX() >= p_tp->minx) ||
+                (BBView.GetMaxX() >=  180 && BBView.GetMaxX() - 360 > p_tp->minx) ||
+                (BBView.GetMinX() <= -180 && BBView.GetMinX() + 360 < p_tp->maxx) ||
+                (180 <= p_tp->maxx && BBView.GetMinX() < 0)))
+            {
 
                 if(b_useVBO) {
                     glVertexPointer(2, array_gl_type, 2 * array_data_size, (GLvoid *)(vbo_offset));
@@ -6266,20 +6189,12 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         wxBoundingBox tp_box;
         TriPrim *p_tp = ppg->tri_prim_head;
         while( p_tp ) {
-            
-            tp_box.SetMin(p_tp->minx, p_tp->miny);
-            tp_box.SetMax(p_tp->maxx, p_tp->maxy);
-            
-            bool b_greenwich = false;
-            if( BBView.GetMaxX() > 360. ) {
-                wxBoundingBox bbRight( 0., vp->GetBBox().GetMinY(), vp->GetBBox().GetMaxX() - 360.,
-                        vp->GetBBox().GetMaxY() );
-                
-                if( bbRight.Intersect( tp_box, margin ) != _OUT )
-                    b_greenwich = true;
-            }
 
-            if( b_greenwich || ( BBView.Intersect( tp_box, margin ) != _OUT ) ) {
+            if((BBView.GetMinY() <= p_tp->maxy && BBView.GetMaxY() >= p_tp->miny) &&
+               ((BBView.GetMinX() <= p_tp->maxx && BBView.GetMaxX() >= p_tp->minx) ||
+                (BBView.GetMaxX() >=  180 && BBView.GetMaxX() - 360 > p_tp->minx) ||
+                (BBView.GetMinX() <= -180 && BBView.GetMinX() + 360 < p_tp->maxx) ||
+                (180 <= p_tp->maxx && BBView.GetMinX() < 0))) {
 
                 //      Get and convert the points
 
@@ -6548,21 +6463,12 @@ void s52plib::RenderPolytessGL(ObjRazRules *rzRules, ViewPort *vp, double z_clip
     wxBoundingBox tp_box;
     TriPrim *p_tp = ppg->tri_prim_head;
     while( p_tp ) {
-        
-        tp_box.SetMin(p_tp->minx, p_tp->miny);
-        tp_box.SetMax(p_tp->maxx, p_tp->maxy);
-        
-        bool b_greenwich = false;
-        if( BBView.GetMaxX() > 360. ) {
-            wxBoundingBox bbRight( 0., vp->GetBBox().GetMinY(), vp->GetBBox().GetMaxX() - 360.,
-                                   vp->GetBBox().GetMaxY() );
-            
-            if( bbRight.Intersect( tp_box, margin ) != _OUT )
-                b_greenwich = true;
-        }
-        
-        if( b_greenwich || ( BBView.Intersect( tp_box, margin ) != _OUT ) ) {
-            
+
+        if((BBView.GetMinY() <= p_tp->maxy && BBView.GetMaxY() >= p_tp->miny) &&
+           ((BBView.GetMinX() <= p_tp->maxx && BBView.GetMaxX() >= p_tp->minx) ||
+            (BBView.GetMaxX() >=  180 && BBView.GetMaxX() - 360 > p_tp->minx) ||
+            (BBView.GetMinX() <= -180 && BBView.GetMinX() + 360 < p_tp->maxx))) {
+
             //      Get and convert the points
             
             wxPoint *pr = ptp;
@@ -7207,13 +7113,10 @@ bool s52plib::ObjectRenderCheckPos( ObjRazRules *rzRules, ViewPort *vp )
     if(vpBox.GetMaxX() >= testBox.GetMinX() && vpBox.GetMinX() <= testBox.GetMaxX())
         return true;
 
-    //  Do a secondary test if the viewport crosses Greenwich
-    //  This will pick up objects east of Greenwich
-    if( vpBox.GetMaxX() >= 360. && vpBox.GetMaxX() - 360 >= testBox.GetMinX())
+    if(vpBox.GetMaxX() >= testBox.GetMinX()+360 && vpBox.GetMinX() <= testBox.GetMaxX()+360)
         return true;
 
-    // Tertiary test for objects which cross Greenwich
-    if( testBox.GetMaxX() >= 360. && vpBox.GetMinX() <= testBox.GetMaxX() - 360)
+    if(vpBox.GetMaxX() >= testBox.GetMinX()-360 && vpBox.GetMinX() <= testBox.GetMaxX()-360)
         return true;
 
     return false;
@@ -7422,8 +7325,8 @@ void s52plib::GetPixPointSingle( int pixx, int pixy, double *plat, double *plon,
 {
 #if 1
     vpt->GetLLFromPix(wxPoint(pixx, pixy), plat, plon);
-    if(*plon < 0 && vpt->clon > 180) // cm93 uses positive viewport, s57doesn't... gah
-        *plon += 360;
+//    if(*plon < 0 && vpt->clon > 180)
+    //      *plon += 360;
 #else
     //    Use Mercator estimator
     int dx = pixx - ( vpt->pix_width / 2 );
