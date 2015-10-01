@@ -2964,8 +2964,6 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 // Line Simple Style
 int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
-//    if(rzRules->obj->Index != 1570) return 0;
-    
     wxPoint *ptp;
     int npt;
     S52color *c;
@@ -5894,8 +5892,6 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     //  is within the requested Viewport
     double margin = BBView.GetWidth() * .05;
     BBView.EnLarge( margin );
-//    if(rzRules->obj->Index != 2666)
-//        return 0;
     
     if( rzRules->obj->pPolyTessGeo ) {
         
