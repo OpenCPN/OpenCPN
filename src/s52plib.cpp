@@ -2819,7 +2819,8 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     
 #ifdef ocpnUSE_GL
 
-    wxBoundingBox BBView = vp->GetBBox();
+    wxBoundingBox BBView = vp->GetBBoxView();
+
     //  Allow a little slop in calculating whether a segment
     //  is within the requested Viewport
     double margin = BBView.GetWidth() * .05;
@@ -5693,8 +5694,10 @@ inline int s52plib::dda_trap( wxPoint *segs, int lseg, int rseg, int ytop, int y
 }
 
 void s52plib::RenderToBufferFilledPolygon( ObjRazRules *rzRules, S57Obj *obj, S52color *c,
-        wxBoundingBox &BBView, render_canvas_parms *pb_spec, render_canvas_parms *pPatt_spec, ViewPort *vp )
+                                           render_canvas_parms *pb_spec, render_canvas_parms *pPatt_spec, ViewPort *vp )
 {
+    wxBoundingBox BBView = vp->GetBBoxView();
+
     S52color cp;
     if( NULL != c ) {
         cp.R = c->R;
@@ -5887,7 +5890,8 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
     glColor3ub( c->R, c->G, c->B );
 
-    wxBoundingBox BBView = vp->GetBBox();
+    wxBoundingBox BBView = vp->GetBBoxView();
+    
     //  Allow a little slop in calculating whether a triangle
     //  is within the requested Viewport
     double margin = BBView.GetWidth() * .05;
@@ -6119,7 +6123,8 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
     GLuint clip_list = 0;
 
-    wxBoundingBox BBView = vp->GetBBox();
+    wxBoundingBox BBView = vp->GetBBoxView();
+
     //  Allow a little slop in calculating whether a triangle
     //  is within the requested Viewport
     double margin = BBView.GetWidth() * .05;
@@ -6384,7 +6389,8 @@ void s52plib::RenderPolytessGL(ObjRazRules *rzRules, ViewPort *vp, double z_clip
 {
 #ifdef ocpnUSE_GL
 
-    wxBoundingBox BBView = vp->GetBBox();
+    wxBoundingBox BBView = vp->GetBBoxView();
+
     //  Allow a little slop in calculating whether a triangle
     //  is within the requested Viewport
     double margin = BBView.GetWidth() * .05;
@@ -6805,7 +6811,7 @@ int s52plib::RenderToBufferAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp,
     ppatt_spec->x = r.x - 2000000; // bias way down to avoid zero-crossing logic in dda
     ppatt_spec->y = r.y - 2000000;
 
-    RenderToBufferFilledPolygon( rzRules, rzRules->obj, NULL, vp->GetBBox(), pb_spec, ppatt_spec, vp );
+    RenderToBufferFilledPolygon( rzRules, rzRules->obj, NULL, pb_spec, ppatt_spec, vp );
 
     return 1;
 }
@@ -6821,7 +6827,7 @@ int s52plib::RenderToBufferAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp,
 
     c = ps52plib->getColor( str );
 
-    RenderToBufferFilledPolygon( rzRules, rzRules->obj, c, vp->GetBBox(), pb_spec, NULL, vp );
+    RenderToBufferFilledPolygon( rzRules, rzRules->obj, c, pb_spec, NULL, vp );
 
     //    At very small scales, the object could be visible on both the left and right sides of the screen.
     //    Identify this case......
@@ -6835,7 +6841,7 @@ int s52plib::RenderToBufferAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp,
                 //  If so, this area oject should be drawn again, this time for the left side
                 //    Do this by temporarily adjusting the objects rendering offset
                 rzRules->obj->x_origin -= mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
-                RenderToBufferFilledPolygon( rzRules, rzRules->obj, c, vp->GetBBox(), pb_spec,
+                RenderToBufferFilledPolygon( rzRules, rzRules->obj, c, pb_spec,
                         NULL, vp );
                 rzRules->obj->x_origin += mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
 
