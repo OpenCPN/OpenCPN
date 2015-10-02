@@ -56,8 +56,8 @@
 // Include CrashRpt Header
 #ifdef OCPN_USE_CRASHRPT
 #include "CrashRpt.h"
-#include <new.h>
 #endif
+#include <new.h>
 
 #ifdef LINUX_CRASHRPT
 #include "crashprint.h"
