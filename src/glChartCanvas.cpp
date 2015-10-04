@@ -1687,7 +1687,8 @@ void glChartCanvas::DrawDynamicRoutesAndWaypoints( ViewPort &vp )
         if( pRouteDraw->IsTrack() ) {
             /* Active tracks */
             if( dynamic_cast<Track *>(pRouteDraw)->IsRunning() ){
-                pRouteDraw->DrawGL( vp );
+                pRouteDraw->Draw( dc, vp );     // We need Track::Draw() to dynamically render last (ownship) point.
+         //       pRouteDraw->DrawGL( vp );
                 continue;
             }
         }
@@ -2116,7 +2117,6 @@ void glChartCanvas::GridDraw( )
         cc1->GetCanvasPointPix( nlat, lon, &r );
         cc1->GetCanvasPointPix( slat, lon, &s );
 
-        char sbuf[12];
         float xlon = lon;
         if( xlon > 180.0 )
             xlon -= 360.0;
@@ -2133,7 +2133,7 @@ void glChartCanvas::GridDraw( )
                 y = (float)(r.y*s.x - s.y*r.x + (s.y - r.y)*x) / (s.x - r.x);
             }
             
-            m_gridfont.RenderString(sbuf, x, y);
+            m_gridfont.RenderString(st, x, y);
         } else {
             // iteratively attempt to find where the latitude line crosses x=0
             wxPoint2DDouble r;
@@ -2164,7 +2164,7 @@ void glChartCanvas::GridDraw( )
                 // failure, instead just draw the text at center latitude
                 cc1->GetDoubleCanvasPointPix( wxMin(wxMax(vp.clat, slat), nlat), lon, &r);
 
-            m_gridfont.RenderString(sbuf, r.m_x, r.m_y);
+            m_gridfont.RenderString(st, r.m_x, r.m_y);
         }
     }
 
@@ -4048,10 +4048,23 @@ void glChartCanvas::Render()
                 dy = wxRound(c_new.m_y - c_old.m_y);
                 dx = wxRound(c_new.m_x - c_old.m_x);
 
+                //   The math below using the previous frame's texture does not really
+                //   work for sub-pixel pans.
+                //   TODO is to rethink this.
+                //   Meanwhile, require the accelerated pans to be whole pixel multiples only.
+                //   This is not as bad as it sounds.  Keyboard and mouse pans are whole_pixel moves.
+                //   However, autofollow at large scale is certainly not.
+                
+                double deltax = c_new.m_x - c_old.m_x;
+                double deltay = c_new.m_y - c_old.m_y;
+                
+                bool b_whole_pixel = true;
+                if( ( fabs( deltax - dx ) > 1e-2 ) || ( fabs( deltay - dy ) > 1e-2 ) )
+                    b_whole_pixel = false;
+                    
                 accelerated_pan = 
 //                    (!VPoint.b_quilt || cc1->m_pQuilt->IsVPBlittable( VPoint, dx, dy, true )) &&
-                    // there must be some overlap
-                    abs(dx) < m_cache_tex_x && abs(dy) < m_cache_tex_y;
+                      b_whole_pixel && abs(dx) < m_cache_tex_x && abs(dy) < m_cache_tex_y;
             }
 
             // do we allow accelerated panning?  can we perform it here?

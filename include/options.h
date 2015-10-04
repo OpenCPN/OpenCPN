@@ -385,7 +385,7 @@ class options : private Uncopyable,
   void OnUploadFormatChange(wxCommandEvent &event);
   void EnableItem(const long index);
   void OnConnectionToggleEnable(wxListEvent &event);
-  void OnConnectionToggleEnable(wxMouseEvent &event);
+  void OnConnectionToggleEnableMouse(wxMouseEvent &event);
 
   bool connectionsaved;
   bool m_connection_enabled;

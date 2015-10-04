@@ -1608,7 +1608,7 @@ void options::CreatePanel_NMEA_Compact(size_t parent, int border_size,
 
 #if wxCHECK_VERSION(2, 9, 0)
   m_lcSources->Connect(wxEVT_LEFT_DOWN,
-                       wxMouseEventHandler(options::OnConnectionToggleEnable),
+                       wxMouseEventHandler(options::OnConnectionToggleEnableMouse),
                        NULL, this);
   m_lcSources->Connect(wxEVT_LIST_ITEM_ACTIVATED,
                        wxListEventHandler(options::OnConnectionToggleEnable),
@@ -2223,7 +2223,7 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
 
 #if wxCHECK_VERSION(2, 9, 0)
   m_lcSources->Connect(wxEVT_LEFT_DOWN,
-                       wxMouseEventHandler(options::OnConnectionToggleEnable),
+                       wxMouseEventHandler(options::OnConnectionToggleEnableMouse),
                        NULL, this);
   m_lcSources->Connect(wxEVT_LIST_ITEM_ACTIVATED,
                        wxListEventHandler(options::OnConnectionToggleEnable),
@@ -2304,7 +2304,7 @@ void options::OnConnectionToggleEnable(wxListEvent& event) {
   cc1->Refresh();
 }
 
-void options::OnConnectionToggleEnable(wxMouseEvent& event) {
+void options::OnConnectionToggleEnableMouse(wxMouseEvent& event) {
   int flags;
   long index = m_lcSources->HitTest(event.GetPosition(), flags);
   if (index == wxNOT_FOUND || event.GetX() < m_lcSources->GetColumnWidth(0))

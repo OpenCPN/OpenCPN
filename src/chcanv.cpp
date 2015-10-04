@@ -3172,6 +3172,10 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                 b_needNewRef = true;
             
             // Would the current Ref Chart be excessively underzoomed?
+            // We need to check this here to be sure, since we cannot know where the reference chart was assigned.
+            // For instance, the reference chart may have been selected from the config file,
+            // or from a long jump with a chart family switch implicit.
+            // Anyway, we check to be sure....    
             bool renderable = true;
             ChartBase* referenceChart = ChartData->OpenChartFromDB( m_pQuilt->GetRefChartdbIndex(), FULL_INIT );
             if( referenceChart ) {

@@ -1797,9 +1797,9 @@ wxString FormatBytes(double bytes)
 
 void ChartDldrPanelImpl::onDLEvent(OCPN_downloadEvent &ev)
 {
-    wxString msg;
-    msg.Printf(_T("onDLEvent  %d %d"),ev.getDLEventCondition(), ev.getDLEventStatus()); 
-    wxLogMessage(msg);
+//    wxString msg;
+//    msg.Printf(_T("onDLEvent  %d %d"),ev.getDLEventCondition(), ev.getDLEventStatus()); 
+//    wxLogMessage(msg);
     
     switch(ev.getDLEventCondition()){
         case OCPN_DL_EVENT_TYPE_END:
