@@ -276,7 +276,7 @@ private:
         Rules *rules, ViewPort *vp, bool b_revrgb, bool b_pot = false );
 
     void RenderToBufferFilledPolygon( ObjRazRules *rzRules, S57Obj *obj,
-        S52color *c, wxBoundingBox &BBView, render_canvas_parms *pb_spec,
+        S52color *c, render_canvas_parms *pb_spec,
         render_canvas_parms *patt_spec, ViewPort *vp );
 
     void draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp,

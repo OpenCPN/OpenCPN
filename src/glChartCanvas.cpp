@@ -174,7 +174,7 @@ extern PlugInManager* g_pi_manager;
 extern WayPointman      *pWayPointMan;
 extern RouteList        *pRouteList;
 extern bool             b_inCompressAllCharts;
-extern bool             g_bexpert;
+extern bool             g_bGLexpert;
 extern bool             g_bcompression_wait;
 extern bool             g_bresponsive;
 extern float            g_ChartScaleFactorExp;
@@ -1357,7 +1357,7 @@ void glChartCanvas::SetupOpenGL()
 #endif
         
         
-    if(!g_bexpert)
+    if(!g_bGLexpert)
         g_GLOptions.m_bUseAcceleratedPanning =  !m_b_DisableFBO && m_b_BuiltFBO;
 }
 
