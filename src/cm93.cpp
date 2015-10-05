@@ -6316,9 +6316,6 @@ ListOfObjRazRules *cm93compchart::GetObjRuleListAtLatLon ( float lat, float lon,
 {
       float alon = lon;
 
-      while ( alon < 0 )            // CM93 longitudes are all positive
-            alon += 360;
-
       ViewPort vp;          // needs a new ViewPort also for ObjectRenderCheck()
       vp = *VPoint;
 
