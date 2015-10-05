@@ -57,6 +57,7 @@ struct CARC_Buffer {
     float *data;
 };
 WX_DECLARE_STRING_HASH_MAP( CARC_Buffer, CARC_Hash );
+WX_DECLARE_STRING_HASH_MAP( int, CARC_DL_Hash );
 
 class ViewPort;
 class PixelCache;
@@ -265,10 +266,8 @@ private:
     int RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
     int RenderGLLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
     
-    void RenderCARCGL( double sectr1, double sectr2,
-                                wxString& outline_color, long outline_width,
-                                wxString& arc_color, long arc_width,
-                                long sector_radius, long radius );
+    int RenderCARC_DisplayList( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
+    int RenderCARC_VBO( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
     
     void UpdateOBJLArray( S57Obj *obj );
 
@@ -276,7 +275,7 @@ private:
         Rules *rules, ViewPort *vp, bool b_revrgb, bool b_pot = false );
 
     void RenderToBufferFilledPolygon( ObjRazRules *rzRules, S57Obj *obj,
-        S52color *c, wxBoundingBox &BBView, render_canvas_parms *pb_spec,
+        S52color *c, render_canvas_parms *pb_spec,
         render_canvas_parms *patt_spec, ViewPort *vp );
 
     void draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
@@ -351,6 +350,7 @@ private:
     int m_txf_avg_char_width;
     int m_txf_avg_char_height;
     CARC_Hash m_CARC_hashmap;
+    CARC_DL_Hash m_CARC_DL_hashmap;
     RenderFromHPGL* HPGL;
 
     TexFont *m_txf;

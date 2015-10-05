@@ -238,7 +238,7 @@ extern ocpnStyle::StyleManager* g_StyleManager;
 extern ocpnGLOptions g_GLOptions;
 #endif
 
-extern bool g_bexpert;
+extern bool g_bGLexpert;
 //    Some constants
 #define ID_CHOICE_NMEA wxID_HIGHEST + 1
 
@@ -5101,12 +5101,12 @@ void options::OnOpenGLOptions(wxCommandEvent& event) {
 
   if (dlg.ShowModal() == wxID_OK) {
     g_GLOptions.m_bUseAcceleratedPanning =
-        g_bexpert ? dlg.GetAcceleratedPanning()
+        g_bGLexpert ? dlg.GetAcceleratedPanning()
                   : cc1->GetglCanvas()->CanAcceleratePanning();
     g_GLOptions.m_bTextureCompression = dlg.GetTextureCompression();
     g_bShowFPS = dlg.GetShowFPS();
     g_bSoftwareGL = dlg.GetSoftwareGL();
-    if (g_bexpert) {
+    if (g_bGLexpert) {
       g_GLOptions.m_bTextureCompressionCaching =
           dlg.GetTextureCompressionCaching();
       g_GLOptions.m_iTextureMemorySize = dlg.GetTextureMemorySize();
@@ -7646,7 +7646,7 @@ OpenGLOptionsDlg::OpenGLOptionsDlg(wxWindow* parent)
   wxFlexGridSizer* flexSizer = new wxFlexGridSizer(2);
 
   m_cbTextureCompression = new wxCheckBox(
-      this, wxID_ANY, g_bexpert ? _("Texture Compression")
+      this, wxID_ANY, g_bGLexpert ? _("Texture Compression")
                                 : _("Texture Compression with Caching"));
   m_cbTextureCompressionCaching =
       new wxCheckBox(this, wxID_ANY, _("Texture Compression Caching"));
@@ -7748,10 +7748,10 @@ void OpenGLOptionsDlg::Populate(void) {
     m_cbTextureCompression->SetValue(FALSE);
   }
 
-  m_cbTextureCompressionCaching->Show(g_bexpert);
-  m_memorySize->Show(g_bexpert);
-  m_sTextureMemorySize->Show(g_bexpert);
-  if (g_bexpert) {
+  m_cbTextureCompressionCaching->Show(g_bGLexpert);
+  m_memorySize->Show(g_bGLexpert);
+  m_sTextureMemorySize->Show(g_bGLexpert);
+  if (g_bGLexpert) {
     m_cbTextureCompressionCaching->SetValue(
         g_GLOptions.m_bTextureCompressionCaching);
     m_sTextureMemorySize->SetValue(g_GLOptions.m_iTextureMemorySize);
@@ -7770,7 +7770,7 @@ void OpenGLOptionsDlg::Populate(void) {
   wxFont* dialogFont = GetOCPNScaledFont(_("Dialog"));
   SetFont(*dialogFont);
 
-  if (g_bexpert) {
+  if (g_bGLexpert) {
     if (cc1->GetglCanvas()->CanAcceleratePanning()) {
       m_cbUseAcceleratedPanning->Enable();
       m_cbUseAcceleratedPanning->SetValue(g_GLOptions.m_bUseAcceleratedPanning);
