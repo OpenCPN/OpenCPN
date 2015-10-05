@@ -185,7 +185,7 @@ int chartdldr_pi::Init( void )
 
 bool chartdldr_pi::DeInit( void )
 {
-    wxLogMessage(_T("DeInit"));
+    wxLogMessage(_T("chartdldr_pi: DeInit"));
     
     //m_chartSources->Clear();
     //wxDELETE(m_chartSources);
@@ -292,8 +292,8 @@ bool chartdldr_pi::LoadConfig( void )
         fn.AppendDir(_T(CHART_DIR));
         
         pConf->Read ( _T ( "BaseChartDir" ), &m_base_chart_dir,  fn.GetPath() );
-        wxLogMessage(m_base_chart_dir);
-        wxLogMessage(fn.GetPath());
+        wxLogMessage( wxString::Format( _T ( "chartdldr_pi: %s" ) ,m_base_chart_dir ) );
+        wxLogMessage( wxString::Format( _T ( "chartdldr_pi: %s" ) ,fn.GetPath() ) );
         
         pConf->Read ( _T ( "PreselectNew" ), &m_preselect_new, false );
         pConf->Read ( _T ( "PreselectUpdated" ), &m_preselect_updated, true );
