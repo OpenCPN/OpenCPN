@@ -503,7 +503,7 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition( bool force_recompute )
         FindWindow( i + ID_CTRLALTITUDE )->Show( m_OverlaySettings.m_iCtrlBarCtrlVisible[state].GetChar(i) == _T('X') && vis );
     }
     //initiate tooltips
-    m_bpShowCursorData->SetToolTip( m_CDataIsShown ? _("Hide Data at cursor" ) : _("Show Data at cursor" ) );
+    m_bpShowCursorData->SetToolTip( m_CDataIsShown ? _("Hide data at cursor" ) : _("Show data at cursor" ) );
     m_bpPlay->SetToolTip(_("Start play back"));
 
     m_gGrabber->Hide();
