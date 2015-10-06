@@ -1794,7 +1794,7 @@ GRIBTableBase::GRIBTableBase( wxWindow* parent, wxWindowID id, const wxString& t
 	fgSizer19->SetFlexibleDirection( wxBOTH );
 	fgSizer19->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_NONE );
 
-	m_pPositionText = new wxStaticText( this, wxID_ANY, _("Data at Cursor Position:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_pPositionText = new wxStaticText( this, wxID_ANY, _("Data at Position:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_pPositionText->Wrap( -1 );
 	fgSizer19->Add( m_pPositionText, 0, wxALL|wxEXPAND, 5 );
 
