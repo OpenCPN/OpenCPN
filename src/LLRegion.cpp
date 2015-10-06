@@ -399,9 +399,12 @@ bool LLRegion::NoIntersection(const LLBBox& box) const
     return true;
 }
 
-// internal test to seem if if regions don't intersect (optimization)
+// internal test to see if regions don't intersect (optimization)
 bool LLRegion::NoIntersection(const LLRegion& region) const
 {
+    if(Empty() || region.Empty())
+        return true;
+    
     LLBBox box = GetBox(), rbox = region.GetBox();
     return box.IntersectOut(rbox) || NoIntersection(rbox) || region.NoIntersection(box);
 }

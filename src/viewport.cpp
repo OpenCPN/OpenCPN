@@ -950,6 +950,19 @@ void ViewPort::SetBoxes( void )
     SetRotationAngle( rotation_save );
 }
 
+LLBBox ViewPort::GetBBoxView()
+{
+    LLBBox BBView = vpBBox;
+
+    wxPoint2DDouble pos(360, 0), neg(-360, 0);
+    if(BBView.GetMaxX()+180 < clon)
+        BBView.Translate(pos);
+    else if(BBView.GetMinX()-180 > clon)
+        BBView.Translate(neg);
+
+    return BBView;
+}
+
 void ViewPort::SetBBoxDirect( double latmin, double lonmin, double latmax, double lonmax)
 {
     vpBBox.SetMin( lonmin, latmin );

@@ -1295,7 +1295,7 @@ double s57chart::GetNormalScaleMin( double canvas_scale_factor, bool b_allow_ove
 }
 double s57chart::GetNormalScaleMax( double canvas_scale_factor, int canvas_width )
 {
-    return m_Chart_Scale * 2.0;
+    return m_Chart_Scale * 4.0;
     
 }
 
@@ -2154,13 +2154,7 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
             
             //TODO  I think this needs nore work for alternate Projections...
             //  cm93 vpoint crossing Greenwich, panning east, was rendering areas incorrectly.
-            ViewPort cvp = VPoint;
-            if( GetChartType() == CHART_TYPE_CM93 ) {
-                void SetVPPositive ( ViewPort *pvp );
-                SetVPPositive ( &cvp );
-            }
-            else
-                cvp = glChartCanvas::ClippedViewport(VPoint, chart_region);
+            ViewPort cvp = glChartCanvas::ClippedViewport(VPoint, chart_region);
 
             glChartCanvas::SetClipRect(cvp, upd.GetRect(), false/*!b_overlay*/);
             ps52plib->m_last_clip_rect = upd.GetRect();
@@ -4581,21 +4575,9 @@ void s57chart::ResetPointBBoxes( const ViewPort &vp_last, const ViewPort &vp_thi
                         double minx = top->obj->BBObj.GetMinX();
                         double maxx = top->obj->BBObj.GetMaxX();
 
-                        //      Not sure what problems these longitude adjustments are trying to fix
-                        //      but certainly breaks point object display in western hemisphere S57 ENCs
-                        if(lon - minx > 180) {
-//                            minx += 360;
-//                            maxx += 360;
-                        }
-
                         double lon1 = (lon - minx) * d;
                         double lon2 = (lon - maxx) * d;
                         
-                        if(lon - lon1 < 0) {
-//                            lon1 -= 360;
-//                            lon2 -= 360;
-                        }
-
                         top->obj->BBObj.SetMin( lon - lon1, lat - lat1 );
                         top->obj->BBObj.SetMax( lon - lon2, lat - lat2 );
 
