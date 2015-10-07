@@ -32,7 +32,6 @@
 
 # define minimum cmake version
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.2)
-# This should be 2.8.0 to have FindGTK2 module
 IF (COMMAND cmake_policy)
   CMAKE_POLICY(SET CMP0002 OLD)
   CMAKE_POLICY(SET CMP0003 OLD)
@@ -270,13 +269,6 @@ ENDIF(_wx_selected_config MATCHES "androideabi-qt")
 
 ENDIF(DEFINED _wx_selected_config)
 
-IF(UNIX)
-  if(NOT QT)
-   MESSAGE (STATUS "Building for wxGTK2")
-   SET(GTK2 "ON")
-  ENDIF(NOT QT)
-ENDIF(UNIX)
-
 IF((_wx_selected_config MATCHES "qt-armv7"))
 #SET(CMAKE_BUILD_TYPE Debug)
 ENDIF()
@@ -459,25 +451,6 @@ SET(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/build)
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/")
 
 IF (NOT WIN32 AND NOT APPLE)
-
-IF(GTK2)
-FIND_PACKAGE(GTK2 2.6)
-IF (GTK2_FOUND)
-    MESSAGE (STATUS "Found GTK2")
-    ADD_DEFINITIONS(-DocpnUSE_GTK_OPTIMIZE)
-    ADD_DEFINITIONS(-DocpnHAS_GTK)
-    INCLUDE_DIRECTORIES(${GTK2_INCLUDE_DIRS})
-    SET(EXTRA_LIBS ${EXTRA_LIBS} ${GTK2_LIBRARIES})
-
-    # Add a definition to satisfy some linux system builds, avoiding Apple builds
-    IF (NOT WIN32 AND NOT APPLE)
-       ADD_DEFINITIONS("`pkg-config --cflags --libs gtk+-2.0`")
-    ENDIF (NOT WIN32 AND NOT APPLE)
-
-ELSE(GTK2_FOUND)
-    MESSAGE (STATUS "GTK2 Not found...")
-ENDIF (GTK2_FOUND)
-ENDIF(GTK2)
 
 IF(QT_ANDROID)
   SET(CMAKE_BUILD_TYPE Debug)
@@ -1485,10 +1458,6 @@ ENDIF(UNIX)
 IF(UNIX)
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} dl )
 ENDIF(UNIX)
-
-IF(GTK2_FOUND)
-TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} gobject-2.0 )
-ENDIF(GTK2_FOUND)
 
 IF(QT_LINUX)
   TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} Qt5Widgets Qt5OpenGL Qt5Gui Qt5Test Qt5Core )
