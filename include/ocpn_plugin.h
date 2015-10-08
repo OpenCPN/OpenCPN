@@ -301,7 +301,8 @@ class DECL_EXP PlugInChartBase : public wxObject
             virtual int GetSize_X();
             virtual int GetSize_Y();
             virtual void latlong_to_chartpix(double lat, double lon, double &pixx, double &pixy);
-
+            virtual void chartpix_to_latlong(double pixx, double pixy, double *plat, double *plon);
+            
       protected:
             ChartTypeEnumPI     m_ChartType;
             ChartFamilyEnumPI   m_ChartFamily;

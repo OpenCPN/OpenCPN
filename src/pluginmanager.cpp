@@ -3561,6 +3561,9 @@ int PlugInChartBase::GetSize_Y()
 void PlugInChartBase::latlong_to_chartpix(double lat, double lon, double &pixx, double &pixy)
 {}
 
+void PlugInChartBase::chartpix_to_latlong(double pixx, double pixy, double *plat, double *plon)
+{}
+
 
 // ----------------------------------------------------------------------------
 // PlugInChartBaseGL Implementation
@@ -4006,6 +4009,13 @@ void ChartPlugInWrapper::latlong_to_chartpix(double lat, double lon, double &pix
 {
     if(m_ppicb)
         m_ppicb->latlong_to_chartpix(lat, lon, pixx, pixy);
+}
+
+
+void ChartPlugInWrapper::chartpix_to_latlong(double pixx, double pixy, double *plat, double *plon)
+{
+    if(m_ppicb)
+        m_ppicb->chartpix_to_latlong(pixx, pixy, plat, plon);
 }
 
 

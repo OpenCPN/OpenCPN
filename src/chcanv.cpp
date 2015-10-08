@@ -2518,7 +2518,8 @@ void ChartCanvas::GetDoubleCanvasPointPixVP( ViewPort &vp, double rlat, double r
              || ( ( Current_Ch->GetChartProjectionType() != PROJECTION_MERCATOR )
                   && ( Current_Ch->GetChartProjectionType() != PROJECTION_TRANSVERSE_MERCATOR )
                   && ( Current_Ch->GetChartProjectionType() != PROJECTION_POLYCONIC ) ) )
-        && ( Current_Ch->GetChartProjectionType() == vp.m_projection_type ) )
+        && ( Current_Ch->GetChartProjectionType() == vp.m_projection_type )
+        && (Current_Ch->GetChartType() != CHART_TYPE_PLUGIN) )
     {
         ChartBaseBSB *Cur_BSB_Ch = dynamic_cast<ChartBaseBSB *>( Current_Ch );
         //                        bool bInside = G_FloatPtInPolygon ( ( MyFlPoint * ) Cur_BSB_Ch->GetCOVRTableHead ( 0 ),
@@ -2588,8 +2589,9 @@ void ChartCanvas::GetCanvasPixPoint( double x, double y, double &lat, double &lo
              || ( ( Current_Ch->GetChartProjectionType() != PROJECTION_MERCATOR )
                   && ( Current_Ch->GetChartProjectionType() != PROJECTION_TRANSVERSE_MERCATOR )
                   && ( Current_Ch->GetChartProjectionType() != PROJECTION_POLYCONIC ) ) )
-        && ( Current_Ch->GetChartProjectionType() == GetVP().m_projection_type ) )
-    {
+        && ( Current_Ch->GetChartProjectionType() == GetVP().m_projection_type )
+        && (Current_Ch->GetChartType() != CHART_TYPE_PLUGIN) )
+       {
         ChartBaseBSB *Cur_BSB_Ch = dynamic_cast<ChartBaseBSB *>( Current_Ch );
 
         // TODO     maybe need iterative process to validate bInside

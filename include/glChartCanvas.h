@@ -38,7 +38,7 @@
 #include "wx/qt/private/wxQtGesture.h"
 #endif
 
-#include "glTexCache.h"
+class glTexFactory;
 
 #define GESTURE_EVENT_TIMER 78334
 
