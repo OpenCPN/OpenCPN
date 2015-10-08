@@ -88,6 +88,7 @@ private:
 #include "compass.h"
 #include "FontMgr.h"
 #include "mipmap/mipmap.h"
+#include "chartimg.h"
 
 #ifndef GL_ETC1_RGB8_OES
 #define GL_ETC1_RGB8_OES                                        0x8D64
@@ -3463,7 +3464,33 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region)
     if(!vp.b_quilt && Current_Ch->GetChartType() == CHART_TYPE_CM93COMP)
         static_cast<cm93compchart*>( Current_Ch )->SetVPParms( vp );
 
-    LLRegion chart_region = vp.b_quilt ? cc1->m_pQuilt->GetFullQuiltRegion() : Current_Ch->GetValidRegion();
+    LLRegion chart_region;
+    if(!vp.b_quilt && (Current_Ch->GetChartType() == CHART_TYPE_PLUGIN) ){
+        // We do this the hard way, since PlugIn Raster charts do not understand LLRegion yet...
+        double ll[8];
+        ChartPlugInWrapper *cpw = dynamic_cast<ChartPlugInWrapper*> ( Current_Ch );
+        if( !cpw) return;
+        
+        cpw->chartpix_to_latlong(0,                     0,              ll+0, ll+1);
+        cpw->chartpix_to_latlong(0,                     cpw->GetSize_Y(), ll+2, ll+3);
+        cpw->chartpix_to_latlong(cpw->GetSize_X(),      cpw->GetSize_Y(), ll+4, ll+5);
+        cpw->chartpix_to_latlong(cpw->GetSize_X(),      0,              ll+6, ll+7);
+        
+        // for now don't allow raster charts to cross both 0 meridian and IDL (complicated to deal with)
+        for(int i=1; i<6; i+=2)
+            if(fabs(ll[i] - ll[i+2]) > 180) {
+                // we detect crossing idl here, make all longitudes positive
+                for(int i=1; i<8; i+=2)
+                    if(ll[i] < 0)
+                        ll[i] += 360;
+                    break;
+            }
+            
+        chart_region = LLRegion(4, ll);
+        
+    }
+    else
+        chart_region = vp.b_quilt ? cc1->m_pQuilt->GetFullQuiltRegion() : Current_Ch->GetValidRegion();
 
     bool world_view = false;
     for(OCPNRegionIterator upd ( rect_region ); upd.HaveRects(); upd.NextRect()) {
