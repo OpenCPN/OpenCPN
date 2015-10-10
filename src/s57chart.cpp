@@ -2080,6 +2080,15 @@ void s57chart::BuildLineVBO( void )
 }
 
 
+/*              RectRegion:
+ *                      This is the Screen region desired to be updated.  Will be either 1 rectangle(full screen)
+ *                      or two rectangles (panning with FBO accelerated pan logic)
+ * 
+ *              Region:
+ *                      This is the LLRegion describing the quilt active region for this chart.
+ * 
+ *              So, Actual rendering area onscreen should be clipped to the intersection of the two regions.
+ */
 
 bool s57chart::RenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& VPoint,
                                      const OCPNRegion &RectRegion, const LLRegion &Region )
