@@ -1463,6 +1463,21 @@ double OCPNPlatform::GetToolbarScaleFactor( int GUIScaleFactor )
         
     
 #else
+    if(g_bresponsive ){
+        
+        double premult = 1.0;
+        
+        //Adjust the scale factor using the global GUI scale parameter
+        double postmult =  exp( GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
+        
+        
+        rv = premult * postmult;
+        rv = wxMin(rv, 3.0);      //  Clamp at 3.0
+        rv = wxMax(rv, 1.0);
+        
+    }
+    
+
 #endif
 
     return rv;
@@ -1504,6 +1519,7 @@ double OCPNPlatform::GetCompassScaleFactor( int GUIScaleFactor )
         double postmult =  exp( GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
         rv *= postmult;
         rv = wxMin(rv, 3.0);      //  Clamp at 3.0
+        rv = wxMax(rv, 1.0);
     }
     
 #endif
