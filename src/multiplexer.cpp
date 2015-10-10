@@ -282,8 +282,10 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
         if ((g_b_legacy_input_filter_behaviour && !bpass) || bpass) {
 
             //Send to plugins
-            if ( g_pi_manager )
-                g_pi_manager->SendNMEASentenceToAllPlugIns( message );
+            if ( g_pi_manager ){
+                if( stream->ChecksumOK(event.GetNMEAString()) )
+                   g_pi_manager->SendNMEASentenceToAllPlugIns( message );
+            }
 
            //Send to all the other outputs
             for (size_t i = 0; i < m_pdatastreams->Count(); i++)
