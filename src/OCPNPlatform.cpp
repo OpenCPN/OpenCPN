@@ -56,6 +56,8 @@
 // Include CrashRpt Header
 #ifdef OCPN_USE_CRASHRPT
 #include "CrashRpt.h"
+#endif
+#ifdef __MSVC__
 #include <new.h>
 #endif
 
