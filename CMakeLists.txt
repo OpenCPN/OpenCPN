@@ -536,8 +536,20 @@ ENDIF(UNIX AND NOT QT_ANDROID)
 
 ENDIF (NOT WIN32 AND NOT APPLE)
 
+IF(WIN32)
+    OPTION(OCPN_USE_EXTERN_CURL "Use external libcurl" OFF)
+ELSE(WIN32)
+    SET(OCPN_USE_EXTERN_CURL ON)
+ENDIF(WIN32)
+
 IF(NOT QT_ANDROID)
-    INCLUDE("Curl.cmake")
+    IF(OCPN_USE_EXTERN_CURL)
+        FIND_PACKAGE(CURL REQUIRED)
+        INCLUDE_DIRECTORIES(${CURL_INCLUDE_DIR})
+    ELSE(OCPN_USE_EXTERN_CURL)
+        INCLUDE("Curl.cmake")
+	MESSAGE (STATUS "Using local curl library...")
+    ENDIF(OCPN_USE_EXTERN_CURL)
     SET(SRC_WXCURL
         src/wxcurl/base.cpp
         src/wxcurl/dav.cpp
@@ -556,7 +568,18 @@ IF(NOT QT_ANDROID)
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/wxcurl)
     SET(EXTRA_LIBS ${EXTRA_LIBS} WXCURL)
     SET(EXTRA_LIBS ${EXTRA_LIBS} ${CURL_LIBRARIES})
-    MESSAGE (STATUS "WXCURL CONFIGURED...")
+    MESSAGE (STATUS "wxCurl configured...")
+    IF(WIN32 AND OCPN_USE_EXTERN_CURL)
+        find_library(CURL_LIBRARY_DLL NAMES
+            curl
+            curllib
+            libcurl_imp
+            curllib_static
+            libcurl
+            PATH_SUFFIXES dll
+        )
+    INSTALL(FILES ${CURL_LIBRARY_DLL} DESTINATION ".")
+    ENDIF(WIN32 AND OCPN_USE_EXTERN_CURL)
 ENDIF(NOT QT_ANDROID)
 
 FIND_PACKAGE(Gettext REQUIRED)
