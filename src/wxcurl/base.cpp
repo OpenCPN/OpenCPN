@@ -827,7 +827,7 @@ void wxCurlBase::SetCurlHandleToDefaults(const wxString& relativeURL)
         SetOpt(CURLOPT_FOLLOWLOCATION, 1L);
 #ifdef __WXMSW__
         SetOpt(CURLOPT_CAINFO, "curl-ca-bundle.crt"); //Use our local certificate list on Windows
-		SetOpt(CURLOPT_SSL_VERIFYPEER, false);		// FIXME: Temporary until we get certificates working
+        SetOpt(CURLOPT_SSL_VERIFYPEER, true);		// FIXME: Temporary until we get certificates working
 #endif
         SetOpt(CURLOPT_ENCODING, "gzip,deflate"); //Save bandwidth by using compression
 
