@@ -440,6 +440,12 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
             return "NO";
     }
 
+    public String terminateApp(){
+        finish();
+        return "";
+    }
+
+
 
 
     public String invokeGoogleMaps(){

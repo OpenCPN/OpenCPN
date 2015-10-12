@@ -1000,6 +1000,10 @@ extern "C"{
 }       
 
 
+void androidTerminate(){
+    callActivityMethod_vs("terminateApp");
+}
+
 bool CheckPendingJNIException()
 {
     if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {

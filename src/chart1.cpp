@@ -1476,6 +1476,7 @@ bool MyApp::OnInit()
     wxLogMessage( _T("wxLocale support not available") );
 #endif
 
+#ifndef __OCPN__ANDROID__    
 //  Send the Welcome/warning message if it has never been sent before,
 //  or if the version string has changed at all
 //  We defer until here to allow for localization of the message
@@ -1485,7 +1486,7 @@ bool MyApp::OnInit()
     }
 
     g_config_version_string = vs;
-
+#endif
     //  log deferred log restart message, if it exists.
     if( !g_Platform->GetLargeLogMessage().IsEmpty() )
         wxLogMessage( g_Platform->GetLargeLogMessage() );
@@ -1726,6 +1727,24 @@ bool MyApp::OnInit()
     wxLogMessage(fmsg);
 
     gFrame = new MyFrame( NULL, myframe_window_title, position, new_frame_size, app_style ); //Gunther
+
+#ifdef __OCPN__ANDROID__    
+    //  We defer the startup message to here to allow the app frame to be contructed,
+    //  thus avoiding a dialog with NULL parent which might not work on some devices.
+    if( !n_NavMessageShown || ( vs != g_config_version_string ) )
+    {
+        qDebug() << "Showing NavWarning";
+        if( wxID_CANCEL == ShowNavWarning() ) {
+             qDebug() << "Closing due to NavWarning Cancel";
+             gFrame->Close();
+             androidTerminate();
+             return true;
+         }
+         n_NavMessageShown = 1;
+         g_config_version_string = vs;
+         
+     }
+#endif
 
 //  Initialize the Plugin Manager
     g_pi_manager = new PlugInManager( gFrame );
@@ -2086,7 +2105,7 @@ extern ocpnGLOptions g_GLOptions;
 #ifdef __OCPN__ANDROID__
     androidHideBusyIcon();
 #endif
-
+    
     return TRUE;
 }
 
@@ -3033,7 +3052,8 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     ::wxSetCursor( wxCURSOR_WAIT );
 
     // If we happen to have the measure tool open on Ctrl-Q quit
-    cc1->CancelMeasureRoute();
+    if(cc1)
+        cc1->CancelMeasureRoute();
 
     // We save perspective before closing to restore position next time
     // Pane is not closed so the child is not notified (OnPaneClose)
@@ -3043,8 +3063,10 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         g_pauimgr->DetachPane( g_pAISTargetList );
     }
 
-    pConfig->SetPath( _T ( "/AUI" ) );
-    pConfig->Write( _T ( "AUIPerspective" ), g_pauimgr->SavePerspective() );
+    if(g_pauimgr){
+        pConfig->SetPath( _T ( "/AUI" ) );
+        pConfig->Write( _T ( "AUIPerspective" ), g_pauimgr->SavePerspective() );
+    }
 
     g_bquiting = true;
 
@@ -3212,12 +3234,16 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         }
     }
 
-    cc1->Destroy();
-    cc1 = NULL;
+    if(cc1){
+        cc1->Destroy();
+        cc1 = NULL;
+    }
 
-    g_pauimgr->UnInit();
-    delete g_pauimgr;
-    g_pauimgr = NULL;
+    if(g_pauimgr){
+        g_pauimgr->UnInit();
+        delete g_pauimgr;
+        g_pauimgr = NULL;
+    }
 
     //    Unload the PlugIns
     //      Note that we are waiting until after the canvas is destroyed,
@@ -3240,7 +3266,8 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         g_pAIS = NULL;
     }
 
-    delete g_pMUX;
+    if(g_pMUX)
+        delete g_pMUX;
 
     //  Clear some global arrays, lists, and hash maps...
     for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
@@ -3314,6 +3341,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 #ifdef __OCPN__ANDROID__
     qDebug() << "Calling OnExit()";
     wxTheApp->OnExit();
+    
 #endif
 
 }

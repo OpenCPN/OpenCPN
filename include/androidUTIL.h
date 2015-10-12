@@ -119,5 +119,6 @@ bool androidGetFullscreen();
 bool androidSetFullscreen( bool bFull );
 
 void androidLaunchHelpView();
+void androidTerminate();
 
 #endif   //guard
