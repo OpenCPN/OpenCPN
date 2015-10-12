@@ -3871,22 +3871,52 @@ double ChartPlugInWrapper::GetNormalScaleMax(double canvas_scale_factor, int can
         return 2.0e7;
 }
 
+
+/*              RectRegion:
+ *                      This is the Screen region desired to be updated.  Will be either 1 rectangle(full screen)
+ *                      or two rectangles (panning with FBO accelerated pan logic)
+ * 
+ *              Region:
+ *                      This is the LLRegion describing the quilt active region for this chart.
+ * 
+ *              So, Actual rendering area onscreen should be clipped to the intersection of the two regions.
+ */
+
 bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
                                               const OCPNRegion &RectRegion, const LLRegion &Region)
 {
 #ifdef ocpnUSE_GL
     if(m_ppicb)
     {
+        ViewPort vp = VPoint;           // non-const copy
+        
         gs_plib_flags = 0;               // reset the CAPs flag
-        PlugIn_ViewPort pivp = CreatePlugInViewport( VPoint);
         PlugInChartBaseGL *ppicb_gl = dynamic_cast<PlugInChartBaseGL*>(m_ppicb);
         if(!Region.Empty() && ppicb_gl)
         {
-            // TODO: test with s63 plugin
             wxRegion *r = RectRegion.GetNew_wxRegion();
-            ppicb_gl->RenderRegionViewOnGL( glc, pivp, *r, glChartCanvas::s_b_useStencil);
+            for(OCPNRegionIterator upd ( RectRegion ); upd.HaveRects(); upd.NextRect()) {
+                LLRegion chart_region = vp.GetLLRegion(upd.GetRect());
+                chart_region.Intersect(Region);
+                
+                if(!chart_region.Empty()) {
+                    ViewPort cvp = glChartCanvas::ClippedViewport(VPoint, chart_region);
+                    
+                    glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
+                    ps52plib->m_last_clip_rect = upd.GetRect();
+                    glPushMatrix(); //    Adjust for rotation
+                    glChartCanvas::RotateToViewPort(VPoint);
+
+                    PlugIn_ViewPort pivp = CreatePlugInViewport( cvp );
+                    ppicb_gl->RenderRegionViewOnGL( glc, pivp, *r, glChartCanvas::s_b_useStencil);
+                    
+                    glPopMatrix();
+                    glChartCanvas::DisableClipRegion();
+                    
+                    
+                }  //!empty
+            } //for
             delete r;
-            return true;
         }
     }
     else
@@ -5230,6 +5260,7 @@ _OCPN_DLStatus OCPN_downloadFileBackground( const wxString& url, const wxString 
     
     if( g_pi_manager->m_pCurlThread )
     {
+        delete (g_pi_manager->m_pCurlThread->GetOutputStream());
         wxDELETE( g_pi_manager->m_pCurlThread );
         g_pi_manager->m_pCurlThread = NULL;
         g_pi_manager->m_download_evHandler = NULL;
@@ -5250,6 +5281,7 @@ void OCPN_cancelDownloadFileBackground( long handle )
 #else
     if( g_pi_manager->m_pCurlThread )
     {
+        delete (g_pi_manager->m_pCurlThread->GetOutputStream());
         if( g_pi_manager->m_pCurlThread->IsAlive() )
             g_pi_manager->m_pCurlThread->Abort();
         wxDELETE( g_pi_manager->m_pCurlThread );
@@ -5276,6 +5308,7 @@ void PlugInManager::OnEndPerformCurlDownload(wxCurlEndPerformEvent &ev)
     
     if( m_pCurlThread )
     {
+        delete (m_pCurlThread->GetOutputStream());
         if(!m_pCurlThread->IsAborting()){
             wxDELETE( m_pCurlThread );
             m_pCurlThread = NULL;

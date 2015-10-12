@@ -282,8 +282,10 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
         if ((g_b_legacy_input_filter_behaviour && !bpass) || bpass) {
 
             //Send to plugins
-            if ( g_pi_manager )
-                g_pi_manager->SendNMEASentenceToAllPlugIns( message );
+            if ( g_pi_manager ){
+                if( stream->ChecksumOK(event.GetNMEAString()) )
+                   g_pi_manager->SendNMEASentenceToAllPlugIns( message );
+            }
 
            //Send to all the other outputs
             for (size_t i = 0; i < m_pdatastreams->Count(); i++)
@@ -626,7 +628,17 @@ ret_point:
                         oNMEA0183.GPwpl.Write ( snt );
                     }
 
-                    if( dstr->SendSentence( snt.Sentence ) )
+                    wxString payload = snt.Sentence;
+
+                    // for some gps, like some garmin models, they assume the first waypoint
+                    // in the route is the boat location, therefore it is dropped.
+                    // These gps also can only accept a maximum of up to 20 waypoints at a time before
+                    // a delay is needed and a new string of waypoints may be sent.
+                    // To ensure all waypoints will arrive, we can simply send each one twice.
+                    // This ensures that the gps  will get the waypoint and also allows us to send as many as we like
+                    payload += _T("\r\n") + payload;
+                    
+                    if( dstr->SendSentence( payload ) )
                         LogOutputMessage( snt.Sentence, dstr->GetPort(), false );
 
                     wxString msg(_T("-->GPS Port:"));

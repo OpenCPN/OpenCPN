@@ -1144,6 +1144,12 @@ void glChartCanvas::SetupOpenGL()
         bad_stencil_code = true;
     }
     
+    //          Seen with intel processor on VBox Win7
+    if( GetRendererString().Find( _T("Chromium") ) != wxNOT_FOUND ) {
+        wxLogMessage( _T("OpenGL-> Detected Chromium renderer, disabling stencil buffer") );
+        bad_stencil_code = true;
+    }
+    
     //      Stencil buffer test
     glEnable( GL_STENCIL_TEST );
     GLboolean stencil = glIsEnabled( GL_STENCIL_TEST );
@@ -1244,7 +1250,6 @@ void glChartCanvas::SetupOpenGL()
     if( bad_stencil_code)    
         s_b_useStencil = false;
     
-
     g_GLOptions.m_bUseCanvasPanning = false;
 #ifdef __OCPN__ANDROID__
     g_GLOptions.m_bUseCanvasPanning = true;

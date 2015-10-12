@@ -314,7 +314,7 @@ class options : private Uncopyable,
   int m_groups_changed;
 
   // Sizer flags
-  wxSizerFlags inputFlags, labelFlags, groupInputFlags;
+  wxSizerFlags inputFlags, verticleInputFlags, labelFlags, groupInputFlags;
   wxSizerFlags groupLabelFlags;
 
   // For general options
