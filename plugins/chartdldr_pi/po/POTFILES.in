@@ -1,0 +1,10 @@
+src/chartcatalog.cpp
+src/chartcatalog.h
+src/checkedlistctrl.cpp
+src/checkedlistctrl.h
+src/chartdldr_pi.cpp
+src/chartdldr_pi.h
+src/chartdldrgui.cpp
+src/chartdldrgui.h
+src/wxcurl/dialog.cpp
+src/wxcurl/panel.cpp
