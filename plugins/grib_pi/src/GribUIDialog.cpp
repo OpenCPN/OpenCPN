@@ -180,6 +180,16 @@ void GribTimelineRecordSet::ClearCachedData()
     }
 }
 
+wxBitmap GetScaledBitmap( const char **pxpm, double scale_factor){
+    wxBitmap a = wxBitmap( pxpm );
+    wxImage b = a.ConvertToImage();
+    int w = a.GetWidth() * scale_factor;
+    int h = a.GetHeight() * scale_factor;
+    b.Rescale( w, h );
+    wxBitmap c = wxBitmap( b );
+    return c;
+}
+    
 //---------------------------------------------------------------------------------------
 //          GRIB CtrlBar Implementation
 //---------------------------------------------------------------------------------------
@@ -234,16 +244,19 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id, const wxString& ti
     }
     //init zone selection parameters
     m_ZoneSelMode = m_OldZoneSelMode ? START_SELECTION : AUTO_SELECTION;                       ////init zone selection parameters
+    
+    double scale_factor = 2.0;
    //set buttons bitmap
-    m_bpPrev->SetBitmapLabel(wxBitmap( prev ));
-    m_bpNext->SetBitmapLabel(wxBitmap( next ));
-    m_bpAltitude->SetBitmapLabel(wxBitmap( altitude ));
-    m_bpNow->SetBitmapLabel(wxBitmap( now ));
-    m_bpZoomToCenter->SetBitmapLabel(wxBitmap( zoomto ));
-    m_bpPlay->SetBitmapLabel(wxBitmap( play ));
-	m_bpShowCursorData->SetBitmapLabel(wxBitmap( m_CDataIsShown ? curdata : ncurdata ));
-    m_bpOpenFile->SetBitmapLabel(wxBitmap( openfile ));
-    m_bpSettings->SetBitmapLabel(wxBitmap( setting ));
+    m_bpPrev->SetBitmapLabel(GetScaledBitmap( prev, scale_factor ));
+    m_bpNext->SetBitmapLabel(GetScaledBitmap( next, scale_factor ));
+    m_bpAltitude->SetBitmapLabel(GetScaledBitmap( altitude, scale_factor ));
+    m_bpNow->SetBitmapLabel(GetScaledBitmap( now, scale_factor ));
+    m_bpZoomToCenter->SetBitmapLabel(GetScaledBitmap( zoomto , scale_factor));
+    m_bpPlay->SetBitmapLabel(GetScaledBitmap( play, scale_factor ));
+    m_bpShowCursorData->SetBitmapLabel(GetScaledBitmap( m_CDataIsShown ? curdata : ncurdata, scale_factor ));
+    m_bpOpenFile->SetBitmapLabel(GetScaledBitmap( openfile, scale_factor ));
+    m_bpSettings->SetBitmapLabel(GetScaledBitmap( setting, scale_factor ));
+    
     SetRequestBitmap( m_ZoneSelMode );
 
     //connect Timer
