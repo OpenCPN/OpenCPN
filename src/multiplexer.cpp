@@ -283,8 +283,15 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
 
             //Send to plugins
             if ( g_pi_manager ){
-                if( stream->ChecksumOK(event.GetNMEAString()) )
-                   g_pi_manager->SendNMEASentenceToAllPlugIns( message );
+                if(stream){                     // Is this a real or a virtual stream?
+                    if( stream->ChecksumOK(event.GetNMEAString()) )
+                        g_pi_manager->SendNMEASentenceToAllPlugIns( message );
+                }
+                else{
+                    if( CheckSumCheck(event.GetNMEAString()) )
+                        g_pi_manager->SendNMEASentenceToAllPlugIns( message );
+                }
+                    
             }
 
            //Send to all the other outputs

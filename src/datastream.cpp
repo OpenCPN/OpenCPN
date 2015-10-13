@@ -84,6 +84,29 @@ int gethostbyaddr_r(const char *, int, int, struct hostent *, char *, size_t, st
 #endif
 
 
+bool CheckSumCheck(const std::string& sentence)
+{
+    size_t check_start = sentence.find('*');
+    if(check_start == wxString::npos || check_start > sentence.size() - 3)
+        return false; // * not found, or it didn't have 2 characters following it.
+        
+    std::string check_str = sentence.substr(check_start+1,2);
+    unsigned long checksum;
+    //    if(!check_str.ToULong(&checksum,16))
+    if(!(checksum = strtol(check_str.c_str(), 0, 16)))
+        return false;
+    
+    unsigned char calculated_checksum = 0;
+    for(std::string::const_iterator i = sentence.begin()+1; i != sentence.end() && *i != '*'; ++i)
+        calculated_checksum ^= static_cast<unsigned char> (*i);
+    
+    return calculated_checksum == checksum;
+    
+}
+
+
+
+
 //------------------------------------------------------------------------------
 //    DataStream Implementation
 //------------------------------------------------------------------------------
@@ -719,21 +742,8 @@ bool DataStream::ChecksumOK( const std::string &sentence )
     if (!m_bchecksumCheck)
         return true;
 
-    size_t check_start = sentence.find('*');
-    if(check_start == wxString::npos || check_start > sentence.size() - 3)
-        return false; // * not found, or it didn't have 2 characters following it.
-
-    std::string check_str = sentence.substr(check_start+1,2);
-    unsigned long checksum;
-//    if(!check_str.ToULong(&checksum,16))
-    if(!(checksum = strtol(check_str.c_str(), 0, 16)))
-        return false;
-
-    unsigned char calculated_checksum = 0;
-    for(std::string::const_iterator i = sentence.begin()+1; i != sentence.end() && *i != '*'; ++i)
-        calculated_checksum ^= static_cast<unsigned char> (*i);
-
-    return calculated_checksum == checksum;
+    return CheckSumCheck(sentence);
+    
 }
 
 bool DataStream::SendSentence( const wxString &sentence )
