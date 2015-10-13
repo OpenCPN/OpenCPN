@@ -784,7 +784,7 @@ wxColour GRIBOverlayFactory::GetGraphicColor(int settings, double val_in)
             }
             else
                 c.Set(map[i].r, map[i].g, map[i].b);
-            
+
             return c;
         }
     }
@@ -1259,6 +1259,9 @@ void GRIBOverlayFactory::RenderGribOverlayMap( int settings, GribRecord **pGR, P
                 else if( QueryExtension( "GL_ARB_texture_rectangle" ) )
                     texture_format = GL_TEXTURE_RECTANGLE_ARB;
             }
+#ifdef __OCPN__ANDROID__
+            texture_format = GL_TEXTURE_2D;
+#endif
 
             if(!texture_format) // it's very unlikely to not have any of the above extensions
                 m_Message_Hiden.Append(_("Overlays not supported by this graphics hardware (Disable OpenGL)"));

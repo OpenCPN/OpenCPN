@@ -1076,7 +1076,7 @@ void GRIBUICtrlBar::OnOpenFile( wxCommandEvent& event )
     if( m_tPlayStop.IsRunning() ) return;      // do nothing when play back is running !
 
 
-
+#ifndef __OCPN__ANDROID__
     if( !wxDir::Exists( m_grib_dir ) ) {
         wxStandardPathsBase& path = wxStandardPaths::Get();
         m_grib_dir = path.GetDocumentsDir();
@@ -1092,6 +1092,24 @@ void GRIBUICtrlBar::OnOpenFile( wxCommandEvent& event )
         OpenFile();
         SetDialogsStyleSizePosition( true );
     }
+#else
+    if( !wxDir::Exists( m_grib_dir ) ) {
+        wxStandardPathsBase& path = wxStandardPaths::Get();
+        m_grib_dir = path.GetDocumentsDir();
+    }
+
+    wxString file;
+    int response = PlatformFileSelectorDialog( NULL, &file, _("Select a GRIB file"),
+                                          m_grib_dir, _T(""), _T("*.*") );
+
+    if( response == wxID_OK ) {
+        wxFileName fn(file);
+        m_grib_dir = fn.GetPath();
+        m_file_name = file;
+        OpenFile();
+        SetDialogsStyleSizePosition( true );
+    }
+#endif
 }
 
 void GRIBUICtrlBar::CreateActiveFileFromName( wxString filename )
