@@ -38,7 +38,6 @@
 #include "ocpn_plugin.h"
 #include "chart1.h"                 // for MyFrame
 #include "chcanv.h"                 // for ViewPort
-#include "datastream.h"             // for GenericPosDat
 #include "OCPN_Sound.h"
 #include "s52s57.h"
 #include "s57chart.h"               // for Object list
