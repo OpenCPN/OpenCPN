@@ -1428,6 +1428,10 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
            TODO: should this be added as a subroutine for GEO chartso? */
       if((m_projection != PROJECTION_MERCATOR && m_projection != PROJECTION_TRANSVERSE_MERCATOR)
           || m_Chart_Skew > 2) {
+          
+          //   Analyze Refpoints early because we need georef coefficient here.
+          AnalyzeRefpoints( false );              // no post test needed
+     
           int count = nPlypoint;
           nPlypoint = 0;
           Plypoint *pOldPlyTable = pPlyTable;
@@ -4868,7 +4872,7 @@ bool ChartBaseBSB::AnalyzeSkew(void)
 }
 
 
-int   ChartBaseBSB::AnalyzeRefpoints(void)
+int   ChartBaseBSB::AnalyzeRefpoints(bool b_testSolution)
 {
       int i,n;
       double elt, elg;
@@ -5240,7 +5244,10 @@ int   ChartBaseBSB::AnalyzeRefpoints(void)
            m_Chart_Skew = apparent_skew;
        }
 #endif       
-       
+
+        if(!b_testSolution)
+            return(0);
+        
         // Do a last little test using a synthetic ViewPort of nominal size.....
         ViewPort vp;
         vp.clat = pRefTable[0].latr;
