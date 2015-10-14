@@ -11,20 +11,20 @@
 
 GRIBUICtrlBarBase::GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
 {
-    bool m_bcompact = true;
+    bool m_bcompact = false;
 
     if(m_bcompact){
 	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
 
         m_fgCtrlBarSizer = new wxFlexGridSizer(0, 1, 0, 0 );
-        
+
 	wxBoxSizer *mainBox = new wxBoxSizer(wxVERTICAL);
         m_fgCtrlBarSizer->Add( mainBox, 1, wxEXPAND, 0 );
-        
+
 
 	wxBoxSizer *fgSizer50 = new wxBoxSizer(wxHORIZONTAL);
         mainBox->Add( fgSizer50, 1, wxEXPAND, 5 );
-        
+
 	m_bpPrev = new wxBitmapButton( this, ID_BTNPREV, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_bpPrev->SetToolTip( _("Previous") );
 
@@ -41,14 +41,14 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id, const wxS
 	fgSizer50->Add( m_bpNext, 0, wxALL, 1 );
 
 
-        
+
 
         wxBoxSizer *fgSizer51 = new wxBoxSizer(wxHORIZONTAL);
         mainBox->Add( fgSizer51, 1, wxEXPAND, 5 );
-        
-        
-        
-        
+
+
+
+
 	m_bpAltitude = new wxBitmapButton( this, ID_CTRLALTITUDE, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_bpAltitude->SetToolTip( _("Select geoptential altitude") );
 
@@ -97,24 +97,24 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id, const wxS
         fgSizer49->AddGrowableCol( 0 );
         fgSizer49->SetFlexibleDirection( wxVERTICAL );
         fgSizer49->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-        
+
         //fgSizer49->Add( fgSizer50, 1, wxEXPAND, 5 );
- 
+
  	m_fgCDataSizer = new wxFlexGridSizer( 0, 2, 0, 0 );
  	m_fgCDataSizer->SetFlexibleDirection( wxBOTH );
  	m_fgCDataSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
- 
- 
+
+
  	mainBox->Add( m_fgCDataSizer, 1, wxEXPAND, 5 );
- 
- 
+
+
  	//m_fgCtrlBarSizer->Add( fgSizer49, 1, wxEXPAND, 0 );
- 
+
  	m_fgCtrlGrabberSize = new wxFlexGridSizer( 0, 1, 0, 0 );
  	m_fgCtrlGrabberSize->SetFlexibleDirection( wxBOTH );
  	m_fgCtrlGrabberSize->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
- 
- 
+
+
 // 	m_fgCtrlBarSizer->Add( m_fgCtrlGrabberSize, 1, wxEXPAND, 0 );
 
 
