@@ -11,6 +11,120 @@
 
 GRIBUICtrlBarBase::GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
 {
+       bool m_bcompact = true;
+
+    if(m_bcompact){
+        this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+
+        m_fgCtrlBarSizer = new wxFlexGridSizer(0, 1, 0, 0 );
+
+        wxBoxSizer *mainBox = new wxBoxSizer(wxVERTICAL);
+        m_fgCtrlBarSizer->Add( mainBox, 1, wxEXPAND, 0 );
+
+
+        wxBoxSizer *fgSizer50 = new wxBoxSizer(wxHORIZONTAL);
+        mainBox->Add( fgSizer50, 1, wxEXPAND, 5 );
+
+        m_bpPrev = new wxBitmapButton( this, ID_BTNPREV, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+        m_bpPrev->SetToolTip( _("Previous") );
+
+        fgSizer50->Add( m_bpPrev, 0, wxALL, 1 );
+
+        wxArrayString m_cRecordForecastChoices;
+        m_cRecordForecastChoices.Add(_T("Item0"));
+        m_cRecordForecast = new wxChoice( this, ID_CTRLTIME, wxDefaultPosition, wxDefaultSize,
+                                          m_cRecordForecastChoices, 0 );
+        m_cRecordForecast->SetSelection( 0 );
+        fgSizer50->Add( m_cRecordForecast, 0, wxALIGN_CENTER_VERTICAL|wxALL, 1 );
+
+        m_bpNext = new wxBitmapButton( this, ID_BTNNEXT, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+        m_bpNext->SetToolTip( _("Next") );
+
+        fgSizer50->Add( m_bpNext, 0, wxALL, 1 );
+
+
+
+
+        wxBoxSizer *fgSizer51 = new wxBoxSizer(wxHORIZONTAL);
+        mainBox->Add( fgSizer51, 1, wxEXPAND, 5 );
+
+
+
+
+        m_bpAltitude = new wxBitmapButton( this, ID_CTRLALTITUDE, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+        m_bpAltitude->SetToolTip( _("Select geoptential altitude") );
+
+        fgSizer51->Add( m_bpAltitude, 0, wxALL, 1 );
+
+        m_bpNow = new wxBitmapButton( this, ID_BTNNOW, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+        m_bpNow->SetToolTip( _("Now") );
+
+        fgSizer51->Add( m_bpNow, 0, wxALL, 1 );
+
+        m_bpZoomToCenter = new wxBitmapButton( this, ID_BTNZOOMTC, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+        m_bpZoomToCenter->SetToolTip( _("Zoom To Center") );
+
+        fgSizer51->Add( m_bpZoomToCenter, 0, wxALL, 1 );
+
+        m_bpShowCursorData = new wxBitmapButton( this, ID_BTNSHOWCDATA, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+        fgSizer51->Add( m_bpShowCursorData, 0, wxALL, 1 );
+
+
+        fgSizer51->Add( 0, 0, 1, wxEXPAND|wxLEFT|wxRIGHT, 1 );
+        m_bpPlay = new wxBitmapButton( this, ID_BTNPLAY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+        fgSizer51->Add( m_bpPlay, 0, wxBOTTOM|wxLEFT|wxTOP, 1 );
+
+        m_sTimeline = new wxSlider( this, ID_TIMELINE, 1, 0, 10, wxDefaultPosition, wxSize( 90,-1 ), wxSL_HORIZONTAL );
+        fgSizer51->Add( m_sTimeline, 0, wxEXPAND, 1 );
+
+
+        fgSizer51->Add( 0, 0, 1, wxEXPAND|wxLEFT|wxRIGHT, 1 );
+
+        m_bpOpenFile = new wxBitmapButton( this, ID_BTNOPENFILE, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+        m_bpOpenFile->SetToolTip( _("Open a new file") );
+
+        fgSizer51->Add( m_bpOpenFile, 0, wxALL, 1 );
+
+        m_bpSettings = new wxBitmapButton( this, ID_BTNSETTING, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+        m_bpSettings->SetToolTip( _("Settings") );
+
+        fgSizer51->Add( m_bpSettings, 0, wxALL, 1 );
+
+        m_bpRequest = new wxBitmapButton( this, ID_BTNREQUEST, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+        fgSizer51->Add( m_bpRequest, 0, wxALL, 1 );
+
+
+        wxFlexGridSizer* fgSizer49;
+        fgSizer49 = new wxFlexGridSizer( 0, 1, 0, 0 );
+        fgSizer49->AddGrowableCol( 0 );
+        fgSizer49->SetFlexibleDirection( wxVERTICAL );
+        fgSizer49->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+        //fgSizer49->Add( fgSizer50, 1, wxEXPAND, 5 );
+
+        m_fgCDataSizer = new wxFlexGridSizer( 0, 2, 0, 0 );
+        m_fgCDataSizer->SetFlexibleDirection( wxBOTH );
+        m_fgCDataSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+
+        mainBox->Add( m_fgCDataSizer, 1, wxEXPAND, 5 );
+
+
+        //m_fgCtrlBarSizer->Add( fgSizer49, 1, wxEXPAND, 0 );
+
+        m_fgCtrlGrabberSize = new wxFlexGridSizer( 0, 1, 0, 0 );
+        m_fgCtrlGrabberSize->SetFlexibleDirection( wxBOTH );
+        m_fgCtrlGrabberSize->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+
+//      m_fgCtrlBarSizer->Add( m_fgCtrlGrabberSize, 1, wxEXPAND, 0 );
+
+
+        this->SetSizer( m_fgCtrlBarSizer );
+        this->Layout();
+        m_fgCtrlBarSizer->Fit( this );
+    }
+    else{
 	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
 
 	m_fgCtrlBarSizer = new wxFlexGridSizer( 1, 2, 0, 0 );
@@ -38,7 +152,7 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id, const wxS
 	fgSizer50->Add( m_bpPrev, 0, wxALL, 1 );
 
 	wxArrayString m_cRecordForecastChoices;
-        m_cRecordForecastChoices.Add(_T("Dummy"));
+        m_cRecordForecastChoices.Add(_T("Item0"));
 	m_cRecordForecast = new wxChoice( this, ID_CTRLTIME, wxDefaultPosition, wxDefaultSize, m_cRecordForecastChoices, 0 );
 	m_cRecordForecast->SetSelection( 0 );
 	fgSizer50->Add( m_cRecordForecast, 0, wxALIGN_CENTER_VERTICAL|wxALL, 1 );
@@ -118,6 +232,7 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id, const wxS
 	this->SetSizer( m_fgCtrlBarSizer );
 	this->Layout();
 	m_fgCtrlBarSizer->Fit( this );
+    }
 
 	this->Centre( wxBOTH );
 
@@ -596,9 +711,13 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	fgSizer15->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
 	wxArrayString m_cDataTypeChoices;
+        m_cDataTypeChoices.Add(_T("Item0"));
+
 	m_cDataType = new wxChoice( m_scSetDataPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cDataTypeChoices, 0 );
 	m_cDataType->SetSelection( 0 );
+
 	fgSizer15->Add( m_cDataType, 0, wxBOTTOM|wxEXPAND|wxTOP, 10 );
+        m_cDataType->Clear();
 
 	wxStaticText* m_staticText12;
 	m_staticText12 = new wxStaticText( m_scSetDataPanel, wxID_ANY, _("Units"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -608,6 +727,7 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	fgSizer15->Add( m_staticText12, 0, wxALL|wxEXPAND, 15 );
 
 	wxArrayString m_cDataUnitsChoices;
+        m_cDataUnitsChoices.Add(_T("Item0"));
 	m_cDataUnits = new wxChoice( m_scSetDataPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cDataUnitsChoices, 0 );
 	m_cDataUnits->SetSelection( 0 );
 	fgSizer15->Add( m_cDataUnits, 0, wxBOTTOM|wxEXPAND|wxTOP, 5 );
@@ -801,7 +921,7 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	m_fgSetDataSizer->Add( sbSizer101, 1, wxEXPAND|wxTOP, 10 );
 
 
-	m_fgSetDataSizer->Add( 0, 0, 1, wxEXPAND, 5 );
+// Spacer??	m_fgSetDataSizer->Add( 0, 0, 1, wxEXPAND, 5 );
 
 	wxStaticBoxSizer* sbSizer12;
 	sbSizer12 = new wxStaticBoxSizer( new wxStaticBox( m_scSetDataPanel, wxID_ANY, _("Transparency for all Overlay Maps") ), wxVERTICAL );
@@ -879,6 +999,7 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	fgSizer48->Add( m_tSlicesPerUpdate, 0, wxALL|wxEXPAND, 5 );
 
 	wxArrayString m_sSlicesPerUpdateChoices;
+        m_sSlicesPerUpdateChoices.Add(_T("Item0"));
 	m_sSlicesPerUpdate = new wxChoice( m_scSetPlaybackPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_sSlicesPerUpdateChoices, 0 );
 	m_sSlicesPerUpdate->SetSelection( 0 );
 	fgSizer48->Add( m_sSlicesPerUpdate, 0, wxALL|wxEXPAND, 5 );
@@ -1334,6 +1455,7 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	fgSizer33->Add( m_staticText15, 0, wxEXPAND|wxLEFT|wxRIGHT|wxTOP, 5 );
 
 	wxArrayString m_pMailToChoices;
+        m_pMailToChoices.Add(_T("Item0"));
 	m_pMailTo = new wxChoice( m_sScrolledDialog, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_pMailToChoices, 0 );
 	m_pMailTo->SetSelection( 0 );
 	fgSizer33->Add( m_pMailTo, 0, wxALL, 5 );
@@ -1344,6 +1466,7 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	fgSizer33->Add( m_staticText16, 0, wxALL|wxEXPAND|wxLEFT|wxRIGHT|wxTOP, 5 );
 
 	wxArrayString m_pModelChoices;
+        m_pModelChoices.Add(_T("Item0"));
 	m_pModel = new wxChoice( m_sScrolledDialog, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_pModelChoices, 0 );
 	m_pModel->SetSelection( 0 );
 	fgSizer33->Add( m_pModel, 0, wxALL, 5 );
@@ -1431,6 +1554,7 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	fgSizer13->Add( m_staticText17, 0, wxALL, 5 );
 
 	wxArrayString m_pResolutionChoices;
+        m_pResolutionChoices.Add(_T("Item0"));
 	m_pResolution = new wxChoice( m_sScrolledDialog, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_pResolutionChoices, 0 );
 	m_pResolution->SetSelection( 0 );
 	fgSizer13->Add( m_pResolution, 0, wxALL, 1 );
@@ -1445,6 +1569,7 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	fgSizer13->Add( m_staticText18, 0, wxALL, 5 );
 
 	wxArrayString m_pIntervalChoices;
+        m_pIntervalChoices.Add(_T("Item0"));
 	m_pInterval = new wxChoice( m_sScrolledDialog, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_pIntervalChoices, 0 );
 	m_pInterval->SetSelection( 0 );
 	fgSizer13->Add( m_pInterval, 0, wxALL, 1 );
@@ -1460,6 +1585,7 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	fgSizer13->Add( m_staticText19, 0, wxALL, 5 );
 
 	wxArrayString m_pTimeRangeChoices;
+        m_pTimeRangeChoices.Add(_T("Item0"));
 	m_pTimeRange = new wxChoice( m_sScrolledDialog, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_pTimeRangeChoices, 0 );
 	m_pTimeRange->SetSelection( 0 );
 	fgSizer13->Add( m_pTimeRange, 0, wxALL, 1 );
@@ -1593,6 +1719,7 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	fgSizer28->Add( m_pWaves, 0, wxALL, 5 );
 
 	wxArrayString m_pWModelChoices;
+        m_pWModelChoices.Add(_T("Item0"));
 	m_pWModel = new wxChoice( m_sScrolledDialog, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_pWModelChoices, 0 );
 	m_pWModel->SetSelection( 0 );
 	fgSizer28->Add( m_pWModel, 0, wxALL, 1 );

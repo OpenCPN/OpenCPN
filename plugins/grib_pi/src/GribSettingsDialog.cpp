@@ -530,8 +530,9 @@ void GribSettingsDialog::SetSettingsDialogSize()
     /*Sizing do not work with wxScolledWindow so we need to compute it
     using fixed X/Y margin to try to center nicely the dialog in the screen*/
 	int wt,ht,w,h;
-    ::wxDisplaySize( &wt, &ht);                                                         // the screen size
-	int XMargin = 300, YMargin = 200;													//set margins
+        ::wxDisplaySize( &wt, &ht);                                                         // the screen size
+        
+	int XMargin = 100, YMargin = 200;													//set margins
 	w = wt - XMargin;																	//maximum scolled window size
     h = ht - ( m_sButton->GetSize().GetY() + YMargin );
 	wxSize scroll(0, 0);
@@ -552,7 +553,7 @@ void GribSettingsDialog::SetSettingsDialogSize()
 #endif
 	}																					//end compute
 
-	m_nSettingsBook->SetSize( wt, ht);
+	m_nSettingsBook->SetSize( wt, -1);
 
 	Layout();
     Fit();

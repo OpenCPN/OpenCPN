@@ -48,6 +48,8 @@
 #include "GribUIDialog.h"
 #include <wx/arrimpl.cpp>
 
+#include "qdebug.h"
+
 //general variables
 double  m_cursor_lat, m_cursor_lon;
 int     m_Altitude;
@@ -103,6 +105,17 @@ static wxString TToString( const wxDateTime date_time, const int time_zone )
         default: return t.Format( _T(" %a %d-%b-%Y %H:%M  "), wxDateTime::UTC ) + _T("UTC");
     }
 }
+
+wxBitmap GetScaledBitmap( const char **pxpm, double scale_factor){
+    wxBitmap a = wxBitmap( pxpm );
+    wxImage b = a.ConvertToImage();
+    int w = a.GetWidth() * scale_factor;
+    int h = a.GetHeight() * scale_factor;
+    b.Rescale( w, h );
+    wxBitmap c = wxBitmap( b );
+    return c;
+}
+
 
 //---------------------------------------------------------------------------------------
 //          GRIB Control Implementation
@@ -234,17 +247,20 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id, const wxString& ti
     }
     //init zone selection parameters
     m_ZoneSelMode = m_OldZoneSelMode ? START_SELECTION : AUTO_SELECTION;                       ////init zone selection parameters
+
+    double scale_factor = 2.0;
    //set buttons bitmap
-    m_bpPrev->SetBitmapLabel(wxBitmap( prev ));
-    m_bpNext->SetBitmapLabel(wxBitmap( next ));
-    m_bpAltitude->SetBitmapLabel(wxBitmap( altitude ));
-    m_bpNow->SetBitmapLabel(wxBitmap( now ));
-    m_bpZoomToCenter->SetBitmapLabel(wxBitmap( zoomto ));
-    m_bpPlay->SetBitmapLabel(wxBitmap( play ));
-	m_bpShowCursorData->SetBitmapLabel(wxBitmap( m_CDataIsShown ? curdata : ncurdata ));
-    m_bpOpenFile->SetBitmapLabel(wxBitmap( openfile ));
-    m_bpSettings->SetBitmapLabel(wxBitmap( setting ));
-    SetRequestBitmap( m_ZoneSelMode );
+    m_bpPrev->SetBitmapLabel(GetScaledBitmap( prev, scale_factor ));
+    m_bpNext->SetBitmapLabel(GetScaledBitmap( next, scale_factor ));
+    m_bpAltitude->SetBitmapLabel(GetScaledBitmap( altitude, scale_factor ));
+    m_bpNow->SetBitmapLabel(GetScaledBitmap( now, scale_factor ));
+    m_bpZoomToCenter->SetBitmapLabel(GetScaledBitmap( zoomto , scale_factor));
+    m_bpPlay->SetBitmapLabel(GetScaledBitmap( play, scale_factor ));
+    m_bpShowCursorData->SetBitmapLabel(GetScaledBitmap( m_CDataIsShown ? curdata : ncurdata, scale_factor ));
+    m_bpOpenFile->SetBitmapLabel(GetScaledBitmap( openfile, scale_factor ));
+    m_bpSettings->SetBitmapLabel(GetScaledBitmap( setting, scale_factor ));
+
+     SetRequestBitmap( m_ZoneSelMode );
 
     //connect Timer
     m_tPlayStop.Connect(wxEVT_TIMER, wxTimerEventHandler( GRIBUICtrlBar::OnPlayStopTimer ), NULL, this);
@@ -1180,6 +1196,10 @@ void GRIBUICtrlBar::OnZoomToCenterClick( wxCommandEvent& event )
 
     ppm = wxMin(ppm, 1.0);
 
+    wxString msg;
+    msg.Printf(_T("%g  %g  %g  %d  %d  %g  %g"), clat, clon,ppm,w, h, ow, oh);
+    wxLogMessage(msg);
+    
     JumpToPosition(clat, clon, ppm);
 
     RequestRefresh( pParent );
