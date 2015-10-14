@@ -36,8 +36,10 @@ public class OCPNGpsNmeaListener implements GpsStatus.NmeaListener{
 //        Log.i("DEBUGGER_TAG", nmea);
 
         // Reset the dog.
-        if(null != mserver)
-            mserver.m_watchDog = 0;
+        if( nmea.contains("RMC") ){
+            if(null != mserver)
+                mserver.m_watchDog = 0;
+        }
 
         mNativeLib.processNMEA( nmea );
     }

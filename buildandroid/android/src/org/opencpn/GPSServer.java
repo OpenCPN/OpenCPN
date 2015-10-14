@@ -456,7 +456,7 @@ public class GPSServer extends Service implements LocationListener {
 
     private String createRMC(){
         // Create an NMEA sentence
-        String s = "$LCRMC,,";
+        String s = "$OCRMC,,";
         if(isGPSFix)
             s = s.concat("A,");
         else
