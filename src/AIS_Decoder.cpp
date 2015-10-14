@@ -1355,7 +1355,11 @@ bool AIS_Decoder::Parse_VDXBitstring( AIS_Bitstring *bstr, AIS_Target_Data *ptd 
                 //    On receipt of Msg 3, force any existing SART target out of acknowledge mode
                 //    by adjusting its ack_time to yesterday
                 //    This will cause any previously "Acknowledged" SART to re-alert.
-                ptd->m_ack_time = wxDateTime::Now() - wxTimeSpan::Day();
+                
+                //    On reflection, re-alerting seems a little excessive in real life use.
+                //    After all, the target is on-screen, and in the AIS target list.
+                //    So lets just honor the programmed ACK timout value for SART targets as well
+                //ptd->m_ack_time = wxDateTime::Now() - wxTimeSpan::Day();
             }
 
             parse_result = true;                // so far so good
