@@ -156,22 +156,22 @@ INSTALLS += so_dldr_plugin_deployment
 
 # World Magnetic Model---------------------------------------------------------------
 #library
-#so_wmm_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/wmm_pi/libwmm_pi.so
-#so_wmm_plugin_deployment.path = /assets/plugins
-#INSTALLS += so_wmm_plugin_deployment
+so_wmm_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/wmm_pi/libwmm_pi.so
+so_wmm_plugin_deployment.path = /assets/plugins
+INSTALLS += so_wmm_plugin_deployment
 
 #data
-#wmm_plugin_deployment.files += $$PWD/../plugins/wmm_pi/data/WMM.COF
-#wmm_plugin_deployment.path = /assets/plugins/wmm_pi/data
+wmm_plugin_deployment.files += $$PWD/../plugins/wmm_pi/data/WMM.COF
+wmm_plugin_deployment.path = /assets/plugins/wmm_pi/data
 INSTALLS += wmm_plugin_deployment
 #------------------------------------------------------------------------------------
 
 
 # GRIB---------------------------------------------------------------
 #library
-so_grib_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/grib_pi/libgrib_pi.so
-so_grib_plugin_deployment.path = /assets/plugins
-INSTALLS += so_grib_plugin_deployment
+#so_grib_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/grib_pi/libgrib_pi.so
+#so_grib_plugin_deployment.path = /assets/plugins
+#INSTALLS += so_grib_plugin_deployment
 #------------------------------------------------------------------------------------
 
 
