@@ -1,0 +1,5 @@
+src/wmm_pi.cpp
+src/wmm_pi.h
+src/WmmUIDialog.cpp
+src/WmmUIDialog.h
+src/MagneticPlotMap.cpp
