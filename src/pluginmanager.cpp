@@ -231,6 +231,20 @@ PlugInManager::PlugInManager(MyFrame *parent)
         m_plugin_menu_item_id_next = pFrame->GetCanvasWindow()->GetNextContextMenuId();
         m_plugin_tool_id_next = pFrame->GetNextToolbarToolId();
     }
+
+#ifdef __OCPN__ANDROID__    
+    //  Due to the oddball mixed static/dynamic linking model used in the Android architecture,
+    //  all classes used in PlugIns must be present in the core, even if stubs.
+    //
+    //  Here is where we do that....
+    if(pFrame){
+        wxArrayString as;
+        as.Add(_T("Item0"));
+        wxRadioBox *box = new wxRadioBox(pFrame, -1, _T(""), wxPoint(0,0), wxSize(-1, -1), as);
+        delete box;
+    }
+#endif
+
 }
 
 PlugInManager::~PlugInManager()
