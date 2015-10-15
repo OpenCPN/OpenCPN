@@ -148,7 +148,7 @@ IF (QT_ANDROID )
         ${Qt_Base}/android_armv7/lib/libQt5Gui.so
         ${Qt_Base}/android_armv7/lib/libQt5AndroidExtras.so
 
-        ${NDK_Base}/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi-v7a/libgnustl_shared.so
+        #${NDK_Base}/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi-v7a/libgnustl_shared.so
         )
 
 ENDIF(QT_ANDROID)
