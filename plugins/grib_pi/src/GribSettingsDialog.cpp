@@ -62,6 +62,70 @@ static const wxString altitude_from_index[3][5] = {
 
 enum SettingsDisplay {B_ARROWS, ISO_LINE, ISO_LINE_VISI, ISO_LINE_SHORT, D_ARROWS, OVERLAY, NUMBERS, PARTICLES};
 
+#ifdef __OCPN__ANDROID__
+
+QString qtStyleSheet = "QScrollBar:horizontal {\
+border: 0px solid grey;\
+background-color: rgb(240, 240, 240);\
+height: 35px;\
+margin: 0px 1px 0 1px;\
+}\
+QScrollBar::handle:horizontal {\
+background-color: rgb(200, 200, 200);\
+min-width: 20px;\
+border-radius: 10px;\
+}\
+QScrollBar::add-line:horizontal {\
+border: 0px solid grey;\
+background: #32CC99;\
+width: 0px;\
+subcontrol-position: right;\
+subcontrol-origin: margin;\
+}\
+QScrollBar::sub-line:horizontal {\
+border: 0px solid grey;\
+background: #32CC99;\
+width: 0px;\
+subcontrol-position: left;\
+subcontrol-origin: margin;\
+}\
+QScrollBar:vertical {\
+border: 0px solid grey;\
+background-color: rgb(240, 240, 240);\
+width: 35px;\
+margin: 1px 0px 1px 0px;\
+}\
+QScrollBar::handle:vertical {\
+background-color: rgb(200, 200, 200);\
+min-height: 20px;\
+border-radius: 10px;\
+}\
+QScrollBar::add-line:vertical {\
+border: 0px solid grey;\
+background: #32CC99;\
+height: 0px;\
+subcontrol-position: top;\
+subcontrol-origin: margin;\
+}\
+QScrollBar::sub-line:vertical {\
+border: 0px solid grey;\
+background: #32CC99;\
+height: 0px;\
+subcontrol-position: bottom;\
+subcontrol-origin: margin;\
+}\
+QCheckBox {\
+spacing: 25px;\
+}\
+QCheckBox::indicator {\
+width: 30px;\
+height: 30px;\
+}\
+";
+
+#endif
+
+
 extern int   m_DialogStyle;
 
 wxString GribOverlaySettings::GetAltitudeFromIndex( int index, int unit )
@@ -495,6 +559,10 @@ GribSettingsDialog::GribSettingsDialog(GRIBUICtrlBar &parent, GribOverlaySetting
 
     DimeWindow( this );                             //aplly global colours scheme
 
+#ifdef __OCPN__ANDROID__
+    GetHandle()->setStyleSheet( qtStyleSheet);
+#endif
+
     Fit();
 }
 
@@ -531,7 +599,7 @@ void GribSettingsDialog::SetSettingsDialogSize()
     using fixed X/Y margin to try to center nicely the dialog in the screen*/
 	int wt,ht,w,h;
         ::wxDisplaySize( &wt, &ht);                                                         // the screen size
-        
+
 	int XMargin = 100, YMargin = 200;													//set margins
 	w = wt - XMargin;																	//maximum scolled window size
     h = ht - ( m_sButton->GetSize().GetY() + YMargin );
