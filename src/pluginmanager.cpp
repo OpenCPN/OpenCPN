@@ -5240,19 +5240,23 @@ _OCPN_DLStatus OCPN_downloadFileBackground( const wxString& url, const wxString 
     bool failed = false;
     if ( !g_pi_manager->HandleCurlThreadError( g_pi_manager->m_pCurlThread->SetURL( url ), g_pi_manager->m_pCurlThread, url ) )
         failed = true;
-    
-    if ( !g_pi_manager->HandleCurlThreadError( g_pi_manager->m_pCurlThread->SetOutputStream( new wxFileOutputStream( outputFile ) ), g_pi_manager->m_pCurlThread) )
-        failed = true;
-        
-    g_pi_manager->m_download_evHandler = handler;
-    g_pi_manager->m_downloadHandle = handle;
-
-    wxCurlThreadError err = g_pi_manager->m_pCurlThread->Download();
-    if (err != wxCTE_NO_ERROR)
+    if (!failed)
     {
-        g_pi_manager->HandleCurlThreadError(err, g_pi_manager->m_pCurlThread);     // shows a message to the user
-        g_pi_manager->m_pCurlThread->Abort();
-        failed = true;
+        if (!g_pi_manager->HandleCurlThreadError(g_pi_manager->m_pCurlThread->SetOutputStream(new wxFileOutputStream(outputFile)), g_pi_manager->m_pCurlThread))
+            failed = true;
+    }
+    if (!failed)
+    {
+        g_pi_manager->m_download_evHandler = handler;
+        g_pi_manager->m_downloadHandle = handle;
+
+        wxCurlThreadError err = g_pi_manager->m_pCurlThread->Download();
+        if (err != wxCTE_NO_ERROR)
+        {
+            g_pi_manager->HandleCurlThreadError(err, g_pi_manager->m_pCurlThread);     // shows a message to the user
+            g_pi_manager->m_pCurlThread->Abort();
+            failed = true;
+        }
     }
     
     if( !failed )
@@ -5260,9 +5264,11 @@ _OCPN_DLStatus OCPN_downloadFileBackground( const wxString& url, const wxString 
     
     if( g_pi_manager->m_pCurlThread )
     {
-        delete (g_pi_manager->m_pCurlThread->GetOutputStream());
-        wxDELETE( g_pi_manager->m_pCurlThread );
-        g_pi_manager->m_pCurlThread = NULL;
+        if (g_pi_manager->m_pCurlThread->IsAlive())
+            g_pi_manager->m_pCurlThread->Abort();
+        if (g_pi_manager->m_pCurlThread->GetOutputStream())
+            delete (g_pi_manager->m_pCurlThread->GetOutputStream());
+        wxDELETE(g_pi_manager->m_pCurlThread);
         g_pi_manager->m_download_evHandler = NULL;
         g_pi_manager->m_downloadHandle = NULL;
     }
@@ -5281,11 +5287,10 @@ void OCPN_cancelDownloadFileBackground( long handle )
 #else
     if( g_pi_manager->m_pCurlThread )
     {
-        delete (g_pi_manager->m_pCurlThread->GetOutputStream());
-        if( g_pi_manager->m_pCurlThread->IsAlive() )
+        if (g_pi_manager->m_pCurlThread->IsAlive())
             g_pi_manager->m_pCurlThread->Abort();
-        wxDELETE( g_pi_manager->m_pCurlThread );
-        g_pi_manager->m_pCurlThread = NULL;
+        delete (g_pi_manager->m_pCurlThread->GetOutputStream());
+        wxDELETE(g_pi_manager->m_pCurlThread);
         g_pi_manager->m_download_evHandler = NULL;
         g_pi_manager->m_downloadHandle = NULL;
     }
@@ -5308,10 +5313,11 @@ void PlugInManager::OnEndPerformCurlDownload(wxCurlEndPerformEvent &ev)
     
     if( m_pCurlThread )
     {
-        delete (m_pCurlThread->GetOutputStream());
+        if (m_pCurlThread->IsAlive())
+            m_pCurlThread->Wait();
         if(!m_pCurlThread->IsAborting()){
-            wxDELETE( m_pCurlThread );
-            m_pCurlThread = NULL;
+            delete (m_pCurlThread->GetOutputStream());
+            wxDELETE(m_pCurlThread);
         }
     }
 }
