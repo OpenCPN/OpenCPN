@@ -220,7 +220,7 @@ protected:
 
       virtual int BSBScanScanline(wxInputStream *pinStream);
       virtual int ReadBSBHdrLine( wxFFileInputStream*, char *, int );
-      virtual int AnalyzeRefpoints(void);
+      virtual int AnalyzeRefpoints(bool b_testSolution = true);
       virtual bool AnalyzeSkew(void);
       
       virtual bool SetMinMax(void);
