@@ -3996,15 +3996,15 @@ wxString CalcGridText( float latlon, float spacing, bool bPostfix )
 
     wxString ret;
     if( spacing >= 1.0 ) {
-        ret.Printf( _T("%3d° %c"), deg, postfix );
+        ret.Printf( _T("%3d%c %c"), deg, 0x00b0, postfix );
     } else if( spacing >= ( 1.0 / 60.0 ) ) {
-        ret.Printf( _T("%3d°%02.0f %c"), deg, min, postfix );
+        ret.Printf( _T("%3d%c%02.0f %c"), deg, 0x00b0, min, postfix );
     } else {
-        ret.Printf( _T("%3d°%02.2f %c"), deg, min, postfix );
+        ret.Printf( _T("%3d%c°%02.2f %c"), deg, 0x00b0, min, postfix );
     }
+
     return ret;
 }
-
 
 /* @ChartCanvas::GridDraw *****************************************
  **
