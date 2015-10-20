@@ -4000,7 +4000,7 @@ wxString CalcGridText( float latlon, float spacing, bool bPostfix )
     } else if( spacing >= ( 1.0 / 60.0 ) ) {
         ret.Printf( _T("%3d%c%02.0f %c"), deg, 0x00b0, min, postfix );
     } else {
-        ret.Printf( _T("%3d%c°%02.2f %c"), deg, 0x00b0, min, postfix );
+        ret.Printf( _T("%3d%c%02.2f %c"), deg, 0x00b0, min, postfix );
     }
 
     return ret;

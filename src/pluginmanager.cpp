@@ -2636,6 +2636,23 @@ bool GetSingleWaypoint( wxString &GUID, PlugIn_Waypoint *pwaypoint )
     return true;
 }
 
+wxArrayString GetWaypointGUIDArray( void )
+{
+    wxArrayString result;
+    RoutePointList *list = pWayPointMan->GetWaypointList();
+    
+    wxRoutePointListNode *prpnode = list->GetFirst();
+    while( prpnode ) {
+        RoutePoint *prp = prpnode->GetData();
+        result.Add(prp->m_GUID);
+        
+        prpnode = prpnode->GetNext(); //RoutePoint
+    }
+    
+    return result;
+}
+
+
 bool AddPlugInRoute( PlugIn_Route *proute, bool b_permanent )
 {
     Route *route = new Route();
