@@ -1123,7 +1123,8 @@ private:
 };
 
 //DECLARE_EVENT_TYPE(wxEVT_DOWNLOAD_EVENT, -1)
-extern const wxEventType DECL_EXP wxEVT_DOWNLOAD_EVENT;
+//extern const wxEventType DECL_EXP wxEVT_DOWNLOAD_EVENT;
 
+extern WXDLLIMPEXP_CORE const wxEventType wxEVT_DOWNLOAD_EVENT;
 
 #endif //_PLUGIN_H_
