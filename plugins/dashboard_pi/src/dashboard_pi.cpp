@@ -2074,7 +2074,7 @@ void DashboardWindow::OnContextMenu( wxContextMenuEvent& event )
 void DashboardWindow::OnContextMenuSelect( wxCommandEvent& event )
 {
     if( event.GetId() < ID_DASH_PREFS ) { // Toggle dashboard visibility
-        m_plugin->ShowDashboard( event.GetId(), event.IsChecked() );
+        m_plugin->ShowDashboard( event.GetId()-1, event.IsChecked() );
         if( m_plugin )
             SetToolbarItemState( m_plugin->GetToolbarItemId(), m_plugin->GetDashboardWindowShownCount() != 0 );
     }
