@@ -1855,6 +1855,16 @@ bool MyApp::OnInit()
 
         }
 
+		if (g_bportable)
+		{
+			ChartDirInfo cdi;
+			cdi.fullpath =_T("charts");
+			cdi.fullpath.Prepend(g_Platform->GetSharedDataDir());
+			cdi.magic_number = _T("");
+			ChartDirArray.Add(cdi);
+			ndirs++;
+		}
+
         if( ndirs ) pConfig->UpdateChartDirs( ChartDirArray );
 
         //    As a favor to new users, poll the database and
