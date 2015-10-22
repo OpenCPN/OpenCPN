@@ -1368,8 +1368,7 @@ void options::CreatePanel_NMEA_Compact(size_t parent, int border_size,
                                 wxDefaultPosition, wxDefaultSize, 0);
   m_cbCheckCRC->SetValue(TRUE);
   m_cbCheckCRC->SetToolTip(
-      _("If checked, only the sentences with a valid checksum are passed "
-        "through"));
+      _("If checked, only the sentences with a valid checksum are passed through"));
   fgSizer5->Add(m_cbCheckCRC, 0, wxALL, 5);
 
   m_cbGarminHost =
@@ -1984,8 +1983,7 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
                                 wxDefaultPosition, wxDefaultSize, 0);
   m_cbCheckCRC->SetValue(TRUE);
   m_cbCheckCRC->SetToolTip(
-      _("If checked, only the sentences with a valid checksum are passed "
-        "through"));
+      _("If checked, only the sentences with a valid checksum are passed through"));
   fgSizer5->Add(m_cbCheckCRC, 0, wxALL, 5);
 
   m_cbGarminHost = new wxCheckBox(m_pNMEAForm, wxID_ANY,
@@ -2855,9 +2853,8 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     itemBoxSizerUI->Add(0, border_size * 3);
     wxStaticText* zoomText =
         new wxStaticText(m_ChartDisplayPage, wxID_ANY,
-                         _("With a lower value, the same zoom level shows a "
-                           "less detailed chart.\nWith a higher value, the "
-                           "same zoom level shows a more detailed chart."));
+                         _("With a lower value, the same zoom level shows a less detailed chart.\n \
+                         With a higher value, the same zoom level shows a more detailed chart."));
 
     smallFont = new wxFont(*dialogFont);  // we can't use Smaller() because
                                           // wx2.8 doesn't support it
