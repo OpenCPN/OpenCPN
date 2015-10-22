@@ -2506,7 +2506,8 @@ bool AddSingleWaypoint( PlugIn_Waypoint *pwaypoint, bool b_permanent)
     }
 
     pWP->m_MarkDescription = pwaypoint->m_MarkDescription;
-    pWP->m_btemp = (b_permanent == false);
+	pWP->SetCreateTime(pwaypoint->m_CreateTime);
+	pWP->m_btemp = (b_permanent == false);
 
     pSelect->AddSelectableRoutePoint( pwaypoint->m_lat, pwaypoint->m_lon, pWP );
     if(b_permanent)
@@ -2555,6 +2556,8 @@ bool UpdateSingleWaypoint( PlugIn_Waypoint *pwaypoint )
         prp->SetIconName( pwaypoint->m_IconName );
         prp->SetName( pwaypoint->m_MarkName );
         prp->m_MarkDescription = pwaypoint->m_MarkDescription;
+		prp->SetVisible(pwaypoint->m_IsVisible);
+		prp->SetCreateTime(pwaypoint->m_CreateTime);
 
         //  Transcribe (clone) the html HyperLink List, if present
 
@@ -2593,7 +2596,7 @@ bool UpdateSingleWaypoint( PlugIn_Waypoint *pwaypoint )
     return b_found;
 }
 
-bool GetSingleWaypoint( wxString &GUID, PlugIn_Waypoint *pwaypoint )
+bool GetSingleWaypoint(wxString GUID, PlugIn_Waypoint *pwaypoint)
 {
     //  Find the RoutePoint
     bool b_found = false;
@@ -2607,6 +2610,8 @@ bool GetSingleWaypoint( wxString &GUID, PlugIn_Waypoint *pwaypoint )
     pwaypoint->m_IconName = prp->GetIconName();
     pwaypoint->m_MarkName = prp->GetName(  );
     pwaypoint->m_MarkDescription = prp->m_MarkDescription;
+	pwaypoint->m_IsVisible = prp->IsVisible();
+	pwaypoint->m_CreateTime = prp->GetCreateTime();
 
     //  Transcribe (clone) the html HyperLink List, if present
 
