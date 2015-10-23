@@ -32,8 +32,12 @@ public class OCPNGpsNmeaListener implements GpsStatus.NmeaListener{
 
     @Override
     public void onNmeaReceived(long timestamp, String nmea) {
-//        Log.i("DEBUGGER_TAG", "onNmeaReceived");
-//        Log.i("DEBUGGER_TAG", nmea);
+//        Log.i("DEBUGGER_TAG", "onNmeaReceived: " + nmea);
+
+        String filterNMEA = nmea;
+        filterNMEA = filterNMEA.replaceAll("[^\\x0A\\x0D\\x20-\\x7E]", "");
+//        Log.i("DEBUGGER_TAG", "filterNMEA: " + filterNMEA);
+
 
         // Reset the dog.
         if( nmea.contains("RMC") ){
@@ -41,7 +45,7 @@ public class OCPNGpsNmeaListener implements GpsStatus.NmeaListener{
                 mserver.m_watchDog = 0;
         }
 
-        mNativeLib.processNMEA( nmea );
+        mNativeLib.processNMEA( filterNMEA );
     }
 
 
