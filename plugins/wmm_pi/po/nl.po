@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-24 20:40-0500\n"
-"PO-Revision-Date: 2015-09-24 21:47-0400\n"
+"PO-Revision-Date: 2015-10-22 23:36-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Dutch\n"
 "Language: nl_NL\n"
@@ -32,11 +32,10 @@ msgstr "\n"
 "Variatie is de hoek tussen het ware en het magnetische noorden. \n"
 "Inclinatie is de verticale hoek van de aardmagnetisch veld \n"
 "(+90 of -90 graden ter plaatse van de magnetische polen). \n"
-"Veldsterkte is een waarde van het aardmagnetisch veld in nanotesla (tussen \n"
-"20.000 en 66.000).\n\n"
-"De getekende lijnen zijn vergelijkbaar met een topografische kaart.  De ruimte ertussen kan worden aangepast; meer ruimte vergt minder berekeningstijd.\n\n"
+"Veldsterkte is een waarde van het aardmagnetisch veld in nanotesla (tussen 20.000 en 66.000).\n\n"
+"De getekende lijnen zijn lijnen van gelijke variatie, inclinatie of veldsterkte.  De ruimte ertussen kan worden aangepast; meer ruimte vergt minder berekeningstijd.\n\n"
 "De schuifregelaars voor stapgrootte en poolnauwkeurigheid maken het mogelijk de verhouding tussen berekeningssnelheid en -tijd te variëren.\n\n"
-"Deze plugin is geschreven door Pavel Kalian en is uitgebreid door Sean D'Epagnier met  plotfunctionaliteit."
+"Deze PlugIn is geschreven door Pavel Kalian en is uitgebreid door Sean D'Epagnier met  plotfunctionaliteit."
 
 #: src/wmm_pi.cpp:102
 msgid "WMM Plugin"
@@ -82,7 +81,7 @@ msgstr "Schip"
 
 #: src/WmmUIDialog.cpp:33 src/WmmUIDialog.cpp:129
 msgid "F "
-msgstr ""
+msgstr "F "
 
 #: src/WmmUIDialog.cpp:35 src/WmmUIDialog.cpp:131
 msgid "Total Intensity"
@@ -90,7 +89,7 @@ msgstr "Totale intensiteit"
 
 #: src/WmmUIDialog.cpp:43 src/WmmUIDialog.cpp:139
 msgid "H "
-msgstr ""
+msgstr "H "
 
 #: src/WmmUIDialog.cpp:45 src/WmmUIDialog.cpp:141
 msgid "Horizontal Intensity"
@@ -98,23 +97,23 @@ msgstr "Horizontale intensiteit"
 
 #: src/WmmUIDialog.cpp:53 src/WmmUIDialog.cpp:149
 msgid "X "
-msgstr ""
+msgstr "X "
 
 #: src/WmmUIDialog.cpp:55 src/WmmUIDialog.cpp:151
 msgid "North Component"
-msgstr "Noord component"
+msgstr "Noordcomponent"
 
 #: src/WmmUIDialog.cpp:63 src/WmmUIDialog.cpp:159
 msgid "Y "
-msgstr ""
+msgstr "Y "
 
 #: src/WmmUIDialog.cpp:65 src/WmmUIDialog.cpp:161
 msgid "East Component"
-msgstr "Oost component"
+msgstr "Oostcomponent"
 
 #: src/WmmUIDialog.cpp:73 src/WmmUIDialog.cpp:169
 msgid "Z "
-msgstr ""
+msgstr "Z "
 
 #: src/WmmUIDialog.cpp:75 src/WmmUIDialog.cpp:171
 msgid "Vertical Component"
@@ -142,11 +141,11 @@ msgstr "Cursor"
 
 #: src/WmmUIDialog.cpp:222
 msgid "Plot"
-msgstr ""
+msgstr "Plot"
 
 #: src/WmmUIDialog.cpp:231
 msgid "Enable plot"
-msgstr ""
+msgstr "Plotten inschakelen"
 
 #: src/WmmUIDialog.cpp:235
 msgid "Settings..."
@@ -174,7 +173,7 @@ msgstr "Toon ook gegevens voor cursorpositie"
 
 #: src/WmmUIDialog.cpp:286
 msgid "Show toolbar icon"
-msgstr ""
+msgstr "Toon werkbalkpictogram"
 
 #: src/WmmUIDialog.cpp:289
 msgid "Show data in toolbar icon"
