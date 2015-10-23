@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-24 20:40-0500\n"
-"PO-Revision-Date: 2015-09-24 21:47-0400\n"
+"PO-Revision-Date: 2015-10-22 23:36-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Dutch\n"
 "Language: nl_NL\n"
@@ -35,15 +35,15 @@ msgstr "Vaart en verheid"
 
 #: src/dashboard_pi.cpp:103
 msgid "COG"
-msgstr "Koers over grond"
+msgstr "Koers over grond (W)"
 
 #: src/dashboard_pi.cpp:105
 msgid "Mag COG"
-msgstr "COG (M)"
+msgstr "Koers over grond (M)"
 
 #: src/dashboard_pi.cpp:107
 msgid "GPS Compass"
-msgstr "Koers (GPS)"
+msgstr "Richting (GPS)"
 
 #: src/dashboard_pi.cpp:109
 msgid "True Compass"
@@ -55,11 +55,11 @@ msgstr "Vaart door water"
 
 #: src/dashboard_pi.cpp:113
 msgid "True HDG"
-msgstr "Ware koers"
+msgstr "Koers (W)"
 
 #: src/dashboard_pi.cpp:115
 msgid "Mag HDG"
-msgstr "Magnetische koers"
+msgstr "Koers (M)"
 
 #: src/dashboard_pi.cpp:118
 msgid "App. Wind Angle & Speed"
@@ -67,7 +67,7 @@ msgstr "Schijnbare wind"
 
 #: src/dashboard_pi.cpp:120
 msgid "App & True Wind Angle"
-msgstr ""
+msgstr "Sch. & Ware Windhoek"
 
 #: src/dashboard_pi.cpp:122 src/dashboard_pi.cpp:124
 msgid "App. Wind Speed"
@@ -167,11 +167,11 @@ msgstr "Vanaf eigen vaartuig"
 
 #: src/dashboard_pi.cpp:180
 msgid "Pitch"
-msgstr ""
+msgstr "Stamphoek"
 
 #: src/dashboard_pi.cpp:182
 msgid "Heel"
-msgstr ""
+msgstr "Slagzij"
 
 #: src/dashboard_pi.cpp:352 src/dashboard_pi.cpp:465 src/dashboard_pi.cpp:1397
 #: src/dashboard_pi.cpp:1406 src/dashboard_pi.cpp:1564 src/dashboard_pi.cpp:1603
@@ -383,12 +383,12 @@ msgstr "magn"
 
 #: src/wind_history.cpp:56 src/wind_history.cpp:107
 msgid "--"
-msgstr ""
+msgstr "--"
 
 #: src/wind_history.cpp:331
 #, c-format
 msgid "--- %s"
-msgstr ""
+msgstr "--- %s"
 
 #: src/wind_history.cpp:436
 msgid "NNE"
@@ -425,5 +425,5 @@ msgstr "NNW"
 #: src/wind_history.cpp:575
 #, c-format
 msgid "Max %.1f %s since %02d:%02d  Overall %.1f %s"
-msgstr ""
+msgstr "Max %.1f %s sinds %02d:%02d  Overall %.1f %s"
 

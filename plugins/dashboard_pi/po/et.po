@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-24 20:40-0500\n"
-"PO-Revision-Date: 2015-09-24 21:48-0400\n"
+"PO-Revision-Date: 2015-10-22 23:37-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Estonian\n"
 "Language: et_EE\n"
@@ -67,7 +67,7 @@ msgstr "Näiv tuule nurk ja kiirus"
 
 #: src/dashboard_pi.cpp:120
 msgid "App & True Wind Angle"
-msgstr ""
+msgstr "Näiva % tegeliku tuule nurk"
 
 #: src/dashboard_pi.cpp:122 src/dashboard_pi.cpp:124
 msgid "App. Wind Speed"
@@ -167,11 +167,11 @@ msgstr "Omalt laevalt"
 
 #: src/dashboard_pi.cpp:180
 msgid "Pitch"
-msgstr ""
+msgstr "Pikiõõtsumine"
 
 #: src/dashboard_pi.cpp:182
 msgid "Heel"
-msgstr ""
+msgstr "Kreen"
 
 #: src/dashboard_pi.cpp:352 src/dashboard_pi.cpp:465 src/dashboard_pi.cpp:1397
 #: src/dashboard_pi.cpp:1406 src/dashboard_pi.cpp:1564 src/dashboard_pi.cpp:1603
@@ -383,12 +383,12 @@ msgstr "magn."
 
 #: src/wind_history.cpp:56 src/wind_history.cpp:107
 msgid "--"
-msgstr ""
+msgstr "--"
 
 #: src/wind_history.cpp:331
 #, c-format
 msgid "--- %s"
-msgstr ""
+msgstr "---%s"
 
 #: src/wind_history.cpp:436
 msgid "NNE"
@@ -425,5 +425,5 @@ msgstr "NNW"
 #: src/wind_history.cpp:575
 #, c-format
 msgid "Max %.1f %s since %02d:%02d  Overall %.1f %s"
-msgstr ""
+msgstr "Max %.1f %s alates %02d:%02d Üldine %.1f %s"
 

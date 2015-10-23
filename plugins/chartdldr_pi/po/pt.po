@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-24 20:40-0500\n"
-"PO-Revision-Date: 2015-09-24 21:48-0400\n"
+"PO-Revision-Date: 2015-10-22 23:37-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Portuguese, Brazilian\n"
 "Language: pt_BR\n"
@@ -84,7 +84,7 @@ msgstr "Atualizado"
 #: src/chartdldr_pi.cpp:574
 #, c-format
 msgid "%lu charts total, %lu updated, %lu new"
-msgstr ""
+msgstr "%lu total de cartas, %lu atualizadas, %lu novas"
 
 #: src/chartdldr_pi.cpp:651 src/chartdldr_pi.cpp:1217
 msgid "(Please update first)"
@@ -160,11 +160,11 @@ msgstr "Não foram selecionadas cartas para baixar."
 
 #: src/chartdldr_pi.cpp:976
 msgid "Abort download"
-msgstr ""
+msgstr "Abortar download"
 
 #: src/chartdldr_pi.cpp:985
 msgid "Unknown"
-msgstr ""
+msgstr "Desconhecido"
 
 #: src/chartdldr_pi.cpp:992
 #, c-format
@@ -181,12 +181,13 @@ msgstr "Erro, o URL para os dados das cartas (%s) parece errado."
 #: src/chartdldr_pi.cpp:1030
 #, c-format
 msgid "Downloading chart %u of %u, %u downloads failed (%s / %s)"
-msgstr ""
+msgstr "Baixando o gráfico %u de %u, %u downloads falharam (%s / %s)"
 
 #: src/chartdldr_pi.cpp:1059 src/chartdldrgui.cpp:293
 msgid "Download\n"
 " selected charts"
-msgstr ""
+msgstr "Baixando\n"
+" as cartas selecionadas"
 
 #: src/chartdldr_pi.cpp:1085 src/chartdldrgui.cpp:95
 msgid "Catalog"
@@ -275,7 +276,7 @@ msgstr "Escolha uma pasta"
 
 #: src/chartdldrgui.cpp:197 src/chartdldrgui.cpp:529
 msgid "Choose Chart File Directory"
-msgstr ""
+msgstr "Escolha o diretório para a carta"
 
 #: src/chartdldrgui.cpp:222 src/chartdldrgui.cpp:335
 msgid "Catalogs"
@@ -344,11 +345,11 @@ msgstr "Preferências"
 
 #: src/chartdldrgui.cpp:483
 msgid "After catalog update select for download"
-msgstr "Depois de actualizar o catálogo escolha para descarregar"
+msgstr "Depois do catálogo atualizado escolha para baixar"
 
 #: src/chartdldrgui.cpp:487
 msgid "All updated charts"
-msgstr "Todas as cartas actualizadas"
+msgstr "Todas as cartas atualizadas"
 
 #: src/chartdldrgui.cpp:491
 msgid "All new charts"
@@ -392,7 +393,7 @@ msgstr "Tempo restante estimado:"
 
 #: src/wxcurl/dialog.cpp:243 src/wxcurl/dialog.cpp:397
 msgid "Abort"
-msgstr "Anular"
+msgstr "Abortar"
 
 #: src/wxcurl/dialog.cpp:245
 msgid "Settings"
@@ -404,7 +405,7 @@ msgstr "Pausa"
 
 #: src/wxcurl/dialog.cpp:252
 msgid "Start"
-msgstr "Inicio"
+msgstr "Iniciar"
 
 #: src/wxcurl/dialog.cpp:397
 msgid "Close"
@@ -440,19 +441,19 @@ msgstr "Enviado:"
 
 #: src/wxcurl/panel.cpp:111
 msgid "Username:"
-msgstr "Nome de utilizador:"
+msgstr "Nome de usuário:"
 
 #: src/wxcurl/panel.cpp:112
 msgid "Password:"
-msgstr "Password:"
+msgstr "Senha:"
 
 #: src/wxcurl/panel.cpp:120
 msgid "Port:"
-msgstr "Porta:"
+msgstr "Porto:"
 
 #: src/wxcurl/panel.cpp:134
 msgid "Proxy settings"
-msgstr "Preferências de Proxy"
+msgstr "Configurações de proxy"
 
 #: src/wxcurl/panel.cpp:136
 msgid "Use proxy"
@@ -464,7 +465,7 @@ msgstr "Servidor proxy:"
 
 #: src/wxcurl/panel.cpp:142
 msgid "Proxy username:"
-msgstr "Nome de utilizador do proxy:"
+msgstr "Nome de usuário proxy:"
 
 #: src/wxcurl/panel.cpp:143
 msgid "Proxy password:"

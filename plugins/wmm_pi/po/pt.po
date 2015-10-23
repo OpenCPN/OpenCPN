@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-24 20:40-0500\n"
-"PO-Revision-Date: 2015-09-24 21:48-0400\n"
+"PO-Revision-Date: 2015-10-22 23:37-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Portuguese, Brazilian\n"
 "Language: pt_BR\n"
@@ -84,7 +84,7 @@ msgstr "Barco"
 
 #: src/WmmUIDialog.cpp:33 src/WmmUIDialog.cpp:129
 msgid "F "
-msgstr ""
+msgstr "F "
 
 #: src/WmmUIDialog.cpp:35 src/WmmUIDialog.cpp:131
 msgid "Total Intensity"
@@ -92,7 +92,7 @@ msgstr "Intensidade total"
 
 #: src/WmmUIDialog.cpp:43 src/WmmUIDialog.cpp:139
 msgid "H "
-msgstr ""
+msgstr "H "
 
 #: src/WmmUIDialog.cpp:45 src/WmmUIDialog.cpp:141
 msgid "Horizontal Intensity"
@@ -100,7 +100,7 @@ msgstr "Intensidade horizontal"
 
 #: src/WmmUIDialog.cpp:53 src/WmmUIDialog.cpp:149
 msgid "X "
-msgstr ""
+msgstr "X "
 
 #: src/WmmUIDialog.cpp:55 src/WmmUIDialog.cpp:151
 msgid "North Component"
@@ -108,7 +108,7 @@ msgstr "Componente do Norte"
 
 #: src/WmmUIDialog.cpp:63 src/WmmUIDialog.cpp:159
 msgid "Y "
-msgstr ""
+msgstr "Y "
 
 #: src/WmmUIDialog.cpp:65 src/WmmUIDialog.cpp:161
 msgid "East Component"
@@ -116,7 +116,7 @@ msgstr "Componente leste"
 
 #: src/WmmUIDialog.cpp:73 src/WmmUIDialog.cpp:169
 msgid "Z "
-msgstr ""
+msgstr "Z "
 
 #: src/WmmUIDialog.cpp:75 src/WmmUIDialog.cpp:171
 msgid "Vertical Component"
@@ -144,11 +144,11 @@ msgstr "Cursor"
 
 #: src/WmmUIDialog.cpp:222
 msgid "Plot"
-msgstr ""
+msgstr "Plot"
 
 #: src/WmmUIDialog.cpp:231
 msgid "Enable plot"
-msgstr ""
+msgstr "Ativar plot"
 
 #: src/WmmUIDialog.cpp:235
 msgid "Settings..."
@@ -176,7 +176,7 @@ msgstr "Mostram também os dados na posição do cursor"
 
 #: src/WmmUIDialog.cpp:286
 msgid "Show toolbar icon"
-msgstr ""
+msgstr "Mostrar o ícone da barra de ferramentas"
 
 #: src/WmmUIDialog.cpp:289
 msgid "Show data in toolbar icon"
