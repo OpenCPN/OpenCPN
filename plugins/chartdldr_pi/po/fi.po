@@ -181,7 +181,7 @@ msgstr "Virhe, URL karttaan (%s) näyttää väärältä."
 #: src/chartdldr_pi.cpp:1030
 #, c-format
 msgid "Downloading chart %u of %u, %u downloads failed (%s / %s)"
-msgstr "Karttojen lataaminen %u sta %u hun lataus epäonnistui (%s / %s)"
+msgstr "Karttojen lataaminen %u sta %u, %u hun lataus epäonnistui (%s / %s)"
 
 #: src/chartdldr_pi.cpp:1059 src/chartdldrgui.cpp:293
 msgid "Download\n"
