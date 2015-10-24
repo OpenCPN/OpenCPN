@@ -165,7 +165,6 @@ private:
 	int             updatingAll;
     int             failed_downloads;
     bool            cancelled;
-    bool            m_bulkdownload;
     chartdldr_pi   *pPlugIn;
     bool            m_populated;
 
