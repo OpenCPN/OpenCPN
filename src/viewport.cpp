@@ -283,7 +283,7 @@ void ViewPort::GetLLFromPix( const wxPoint2DDouble &p, double *lat, double *lon 
     double d_east = xpr / view_scale_ppm;
     double d_north = ypr / view_scale_ppm;
 
-    double slat, slon;
+    double slat = 0.0, slon = 0.0;
     switch( m_projection_type ) {
     case PROJECTION_MERCATOR:
         //TODO  This could be fromSM_ECC to better match some Raster charts

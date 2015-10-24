@@ -1438,7 +1438,7 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
           pPlyTable = NULL;
           for( int i = 0; i < count+1; i++ ) {
               double plylat = pOldPlyTable[i%count].ltp, plylon = pOldPlyTable[i%count].lnp;
-              double lastplylat, lastplylon, x1, y1, x2, y2;
+              double lastplylat = 0.0, lastplylon = 0.0, x1 = 0.0, y1 = 0.0, x2, y2;
               latlong_to_chartpix(plylat, plylon, x2, y2);
               if(i>0) {
                   if(lastplylon - plylon > 180)
