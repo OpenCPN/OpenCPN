@@ -151,7 +151,7 @@ void ChartStack::AddChart( int db_add )
                         {
                             ChartTableEntry *pn = ChartData->GetpChartTableEntry(GetDBIndex(jd));
                             if( pm->GetFileTime() && pn->GetFileTime()) {
-                                if( abs(pm->GetFileTime() - pn->GetFileTime()) < 60 ) {           // simple test
+                                if( labs(pm->GetFileTime() - pn->GetFileTime()) < 60 ) {           // simple test
                                     if(pn->GetpFileName()->IsSameAs(*(pm->GetpFileName())))
                                         SetDBIndex(jd, -1);           // mark to remove
                                 }
@@ -565,7 +565,7 @@ int ChartDB::BuildChartStack(ChartStack * cstk, float lat, float lon)
                         {
                               const ChartTableEntry &cten = GetChartTableEntry(cstk->GetDBIndex(jd));
                               if( ctem.GetFileTime() && cten.GetFileTime()) {
-                                    if( abs(ctem.GetFileTime() - cten.GetFileTime()) < 60 ) {           // simple test
+                                    if( labs(ctem.GetFileTime() - cten.GetFileTime()) < 60 ) {           // simple test
                                         if(cten.GetpFileName()->IsSameAs(*(ctem.GetpFileName())))
                                            cstk->SetDBIndex(jd, -1);           // mark to remove
                                     }
