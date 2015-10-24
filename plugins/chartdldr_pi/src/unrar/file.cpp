@@ -23,10 +23,12 @@ File::File()
 File::~File()
 {
   if (hFile!=FILE_BAD_HANDLE && !SkipClose)
+  {
     if (NewFile)
       Delete();
     else
       Close();
+  }
 }
 
 
@@ -371,6 +373,7 @@ int File::Read(void *Data,size_t Size)
     {
       ErrorType=FILE_READERROR;
       if (AllowExceptions)
+      {
         if (IgnoreReadErrors)
         {
           ReadSize=0;
@@ -388,6 +391,7 @@ int File::Read(void *Data,size_t Size)
             continue;
           ErrHandler.ReadError(FileName);
         }
+      }
     }
     break;
   }
@@ -503,10 +507,12 @@ bool File::RawSeek(int64 Offset,int Method)
 int64 File::Tell()
 {
   if (hFile==FILE_BAD_HANDLE)
+  {
     if (AllowExceptions)
       ErrHandler.SeekError(FileName);
     else
       return -1;
+  }
 #ifdef _WIN_ALL
   LONG HighDist=0;
   uint LowDist=SetFilePointer(hFile,0,&HighDist,FILE_CURRENT);

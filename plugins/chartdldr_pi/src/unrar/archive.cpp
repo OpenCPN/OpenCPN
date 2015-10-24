@@ -202,7 +202,7 @@ bool Archive::IsArchive(bool EnableBroken)
     HEADER_TYPE Type=GetHeaderType();
     // In RAR 5.0 we need to quit after reading HEAD_CRYPT if we wish to
     // avoid the password prompt.
-    if (Type==HEAD_MAIN || SilentOpen && Type==HEAD_CRYPT)
+    if (Type==HEAD_MAIN || (SilentOpen && Type==HEAD_CRYPT))
       break;
     SeekToNext();
   }
