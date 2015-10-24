@@ -85,10 +85,10 @@ public:
 
 
 typedef struct _Extent{
-  double SLAT;
-  double WLON;
-  double NLAT;
-  double ELON;
+  float SLAT;
+  float WLON;
+  float NLAT;
+  float ELON;
 }Extent;
 
 //          Depth unit type enum
