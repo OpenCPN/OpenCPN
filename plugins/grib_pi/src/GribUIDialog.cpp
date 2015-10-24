@@ -736,32 +736,34 @@ void GRIBUICtrlBar::OnMouseEvent( wxMouseEvent& event )
 
 void GRIBUICtrlBar::ContextMenuItemCallback(int id)
 {
-     wxFileConfig *pConf = GetOCPNConfigObject();
+    wxFileConfig *pConf = GetOCPNConfigObject();
 
-     int x,y,w,h;
+    int x = -1;
+    int y = -1;
+    int w = 900;
+    int h = 350;
 
-     if(pConf) {
+    if(pConf) {
         pConf->SetPath ( _T ( "/Settings/GRIB" ) );
 
         pConf->Read( _T ( "GribDataTablePosition_x" ), &x, -1 );
         pConf->Read( _T ( "GribDataTablePosition_y" ), &y, -1 );
         pConf->Read( _T ( "GribDataTableWidth" ), &w, 900 );
         pConf->Read( _T ( "GribDataTableHeight" ), &h, 350 );
-     }
-     //init centered position and default size if not set yet
-     if(x==-1 && y == -1) { x = (m_vp->pix_width - w) / 2; y = (m_vp->pix_height - h) /2; }
+    }
+    //init centered position and default size if not set yet
+    if(x==-1 && y == -1) { x = (m_vp->pix_width - w) / 2; y = (m_vp->pix_height - h) /2; }
 
-     ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
-     GRIBTable *table = new GRIBTable(*this);
+    ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+    GRIBTable *table = new GRIBTable(*this);
 
-     table->InitGribTable( pPlugIn->GetTimeZone(), rsa );
-     table->m_pButtonTableOK->SetLabel(_("Close"));
+    table->InitGribTable( pPlugIn->GetTimeZone(), rsa );
+    table->m_pButtonTableOK->SetLabel(_("Close"));
 
-     //set dialog size and position
-     table->SetSize(w, h);
-     table->SetPosition(wxPoint(x, y));
-     table->ShowModal();
-
+    //set dialog size and position
+    table->SetSize(w, h);
+    table->SetPosition(wxPoint(x, y));
+    table->ShowModal();
 }
 
 void GRIBUICtrlBar::SetViewPort( PlugIn_ViewPort *vp )
