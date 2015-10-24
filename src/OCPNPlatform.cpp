@@ -1044,7 +1044,8 @@ bool OCPNPlatform::InitializeLogFile( void )
     
 #ifdef  __WXOSX__
     
-    wxFileName LibPref(mlog_file);          // starts like "~/Library/Preferences"
+    wxFileName LibPref(mlog_file);          // starts like "~/Library/Preferences/opencpn"
+    LibPref.RemoveLastDir();// takes off "opencpn"
     LibPref.RemoveLastDir();// takes off "Preferences"
     
     mlog_file = LibPref.GetFullPath();
