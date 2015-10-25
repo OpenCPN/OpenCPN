@@ -703,12 +703,12 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
                         MenuAppend1( menuWaypoint, ID_RT_MENU_ACTNXTPOINT, _( "Activate Next Waypoint" ) );
                 }
             }
-            if( m_pSelectedRoute->GetnPoints() > 2 )
+            if( m_pSelectedRoute && m_pSelectedRoute->GetnPoints() > 2 )
                 MenuAppend1( menuWaypoint, ID_RT_MENU_REMPOINT, _( "Remove from Route" ) );
 
             MenuAppend1( menuWaypoint, ID_WPT_MENU_COPY, _( "Copy as KML" ) );
 
-            if( m_pFoundRoutePoint->GetIconName() != _T("mob") )
+            if( m_pFoundRoutePoint && m_pFoundRoutePoint->GetIconName() != _T("mob") )
                 MenuAppend1( menuWaypoint, ID_RT_MENU_DELPOINT,  _( "Delete" ) );
 
             wxString port = parent->FindValidUploadPort();
@@ -750,7 +750,7 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
 
             MenuAppend1( menuWaypoint, ID_WPT_MENU_COPY, _( "Copy as KML" ) );
 
-            if( m_pFoundRoutePoint->GetIconName() != _T("mob") )
+            if( m_pFoundRoutePoint && m_pFoundRoutePoint->GetIconName() != _T("mob") )
                 MenuAppend1( menuWaypoint, ID_WP_MENU_DELPOINT, _( "Delete" ) );
 
             wxString port = parent->FindValidUploadPort();
@@ -767,7 +767,7 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
             if( ( m_pFoundRoutePoint == pAnchorWatchPoint1 ) || ( m_pFoundRoutePoint == pAnchorWatchPoint2 ) )
                 MenuAppend1( menuWaypoint, ID_WP_MENU_CLEAR_ANCHORWATCH, _( "Clear Anchor Watch" ) );
             else {
-                if( !( m_pFoundRoutePoint->m_bIsInLayer )
+                if( m_pFoundRoutePoint && !( m_pFoundRoutePoint->m_bIsInLayer )
                     && ( ( NULL == pAnchorWatchPoint1 ) || ( NULL == pAnchorWatchPoint2 ) ) ) {
 
                     double dist;
