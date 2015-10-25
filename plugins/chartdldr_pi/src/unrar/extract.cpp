@@ -64,6 +64,7 @@ void CmdExtract::DoExtract()
 #ifndef GUI
   else
     if (!Cmd->DisableDone)
+    {
       if (Cmd->Command[0]=='I')
         mprintf(St(MDone));
       else
@@ -71,6 +72,7 @@ void CmdExtract::DoExtract()
           mprintf(St(MExtrAllOk));
         else
           mprintf(St(MExtrTotalErr),ErrHandler.GetErrorCount());
+    }
 #endif
 }
 
@@ -182,6 +184,7 @@ EXTRACT_ARC_CODE CmdExtract::ExtractArchive()
 
     bool Repeat=false;
     if (!ExtractCurrentFile(Arc,Size,Repeat))
+    {
       if (Repeat)
       {
         // If we started extraction from not first volume and need to
@@ -197,6 +200,7 @@ EXTRACT_ARC_CODE CmdExtract::ExtractArchive()
       }
       else
         break;
+    }
   }
 
 
@@ -208,6 +212,7 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
 {
   wchar Command=Cmd->Command[0];
   if (HeaderSize==0)
+  {
     if (DataIO.UnpVolume)
     {
 #ifdef NOVOLUME
@@ -224,6 +229,7 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
     }
     else
       return false;
+  }
   HEADER_TYPE HeaderType=Arc.GetHeaderType();
   if (HeaderType!=HEAD_FILE)
   {
@@ -234,6 +240,7 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
     if (HeaderType==HEAD_SERVICE && PrevExtracted)
       SetExtraInfo(Cmd,Arc,DestFileName);
     if (HeaderType==HEAD_ENDARC)
+    {
       if (Arc.EndArcHead.NextVolume)
       {
 #ifndef NOVOLUME
@@ -248,6 +255,7 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
       }
       else
         return false;
+    }
     Arc.SeekToNext();
     return true;
   }
@@ -479,6 +487,7 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
       FileCount++;
 #ifndef GUI
       if (Command!='I')
+      {
         if (SkipSolid)
           mprintf(St(MExtrSkipFile),ArcFileName);
         else
@@ -497,6 +506,7 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
               mprintf(St(MExtrFile),DestFileName);
               break;
           }
+      }
       if (!Cmd->DisablePercentage)
         mprintf(L"     ");
 #endif
@@ -563,10 +573,12 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
           wchar NameExisting[NM];
           ExtrPrepareName(Arc,Arc.FileHead.RedirName,NameExisting,ASIZE(NameExisting));
           if (FileCreateMode && *NameExisting!=0) // *NameExisting can be 0 in case of excessive -ap switch.
+          {
             if (Type==FSREDIR_HARDLINK)
               LinkSuccess=ExtractHardlink(DestFileName,NameExisting,ASIZE(NameExisting));
             else
               LinkSuccess=ExtractFileCopy(CurFile,Arc.FileName,DestFileName,NameExisting,ASIZE(NameExisting));
+          }
         }
         else
           if (Type==FSREDIR_UNIXSYMLINK || Type==FSREDIR_WINSYMLINK || Type==FSREDIR_JUNCTION)
@@ -593,6 +605,7 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
       }
       else
         if (!Arc.FileHead.SplitBefore && !WrongPassword)
+        {
           if (Arc.FileHead.Method==0)
             UnstoreFile(DataIO,Arc.FileHead.UnpSize);
           else
@@ -613,6 +626,7 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
 #endif
               Unp->DoUnpack(Arc.FileHead.UnpVer,Arc.FileHead.Solid);
           }
+        }
 
       Arc.SeekToNext();
 
@@ -650,11 +664,13 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
         else
         {
           if (!WrongPassword)
-            if (Arc.FileHead.Encrypted && (!Arc.FileHead.UsePswCheck || 
+          {
+            if (Arc.FileHead.Encrypted && (!Arc.FileHead.UsePswCheck ||
                 Arc.BrokenHeader) && !AnySolidDataUnpackedWell)
               uiMsg(UIERROR_CHECKSUMENC,Arc.FileName,ArcFileName);
             else
               uiMsg(UIERROR_CHECKSUM,Arc.FileName,ArcFileName);
+          }
           BrokenFile=true;
           ErrHandler.SetErrorCode(RARX_CRC);
 #ifdef RARDLL
@@ -714,11 +730,13 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
   if (DataIO.NextVolumeMissing)
     return false;
   if (!ExtrFile)
+  {
     if (!Arc.Solid)
       Arc.SeekToNext();
     else
       if (!SkipSolid)
         return false;
+  }
   return true;
 }
 

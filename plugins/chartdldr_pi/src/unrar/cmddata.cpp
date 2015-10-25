@@ -754,6 +754,7 @@ void CommandData::ProcessSwitch(const wchar *Switch)
                   break;
               };
               if (!AlreadyBad)
+              {
                 if (Switch[3]==0)
                   CommentCharset=FilelistCharset=ErrlogCharset=rch;
                 else
@@ -771,6 +772,7 @@ void CommandData::ProcessSwitch(const wchar *Switch)
                         AlreadyBad=true;
                         break;
                     }
+              }
             }
             break;
 
@@ -1198,7 +1200,7 @@ void CommandData::ProcessCommand()
 #ifndef SFX_MODULE
 
   const wchar *SingleCharCommands=L"FUADPXETK";
-  if (Command[0]!=0 && Command[1]!=0 && wcschr(SingleCharCommands,Command[0])!=NULL || *ArcName==0)
+  if ((Command[0]!=0 && Command[1]!=0 && wcschr(SingleCharCommands,Command[0])!=NULL) || *ArcName==0)
     OutHelp(*Command==0 ? RARX_SUCCESS:RARX_USERERROR); // Return 'success' for 'rar' without parameters.
 
 #ifdef _UNIX
