@@ -1503,6 +1503,10 @@ double GetAndroidDisplaySize()
         return_string = wxString(ret_string, wxConvUTF8);
     }
     
+    //  Return string may have commas instead of periods, if using Euro locale
+    //  We just fix it here...
+    return_string.Replace( _T(","), _T(".") );
+    
     wxLogMessage(_T("Metrics:") + return_string);
     wxSize screen_size = ::wxGetDisplaySize();
     wxString msg;
