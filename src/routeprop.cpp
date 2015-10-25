@@ -2139,7 +2139,7 @@ bool RouteProp::SaveChanges( void )
         pConfig->UpdateSettings();
     }
 
-    if( m_pRoute->IsActive() || ((Track*) m_pRoute)->IsRunning() )
+    if( m_pRoute && ( m_pRoute->IsActive() || ((Track*) m_pRoute)->IsRunning() ) )
     {
         wxJSONValue v;
         v[_T("Name")] =  m_pRoute->m_RouteNameString;
@@ -3018,7 +3018,7 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
 
         //  not found, so add  it to the list, with a generic bitmap and using the name as description
         // n.b.  This should never happen...
-        if( -1 == iconToSelect){    
+        if( icons && -1 == iconToSelect){
             m_bcomboBoxIcon->Append( m_pRoutePoint->GetIconName(), icons->GetBitmap( 0 ) );
             iconToSelect = m_bcomboBoxIcon->GetCount() - 1;
         }

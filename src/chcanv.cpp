@@ -2885,7 +2885,7 @@ void ChartCanvas::ReloadVP( bool b_adjust )
 void ChartCanvas::LoadVP( ViewPort &vp, bool b_adjust )
 {
 #ifdef ocpnUSE_GL
-    if( g_bopengl ) {
+    if( g_bopengl && m_glcc ) {
         glChartCanvas::Invalidate();
         if( m_glcc->GetSize() != GetSize() ) {
             m_glcc->SetSize( GetSize() );
@@ -9661,7 +9661,7 @@ int ChartCanvas::GetNextContextMenuId()
 bool ChartCanvas::SetCursor( const wxCursor &c )
 {
 #ifdef ocpnUSE_GL
-    if( g_bopengl )
+    if( g_bopengl && m_glcc )
         return m_glcc->SetCursor( c );
     else
 #endif
