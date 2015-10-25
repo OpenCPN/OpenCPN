@@ -574,7 +574,10 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
     }
 
     if(!valid)
+    {
+        delete[] pp;
         return OCPNRegion(); //empty;
+    }
  
     //  We want to avoid processing regions with very large rectangle counts,
     //  so make some tests for special cases
