@@ -455,7 +455,9 @@ void AISTargetQueryDialog::AdjustBestSize( AIS_Target_Data *td )
     // Try to avoid vertical scroll bar if possible.
     
     //  Estimate the control button area height
-    int yb = m_createWptBtn->GetSize().y * 4;
+    int yb = 0;
+    if( m_createWptBtn )
+        m_createWptBtn->GetSize().y * 4;
     
     wxSize szyv = m_pQueryTextCtl->GetVirtualSize();
     int csz = g_Platform->getDisplaySize().y * 8 / 10;
