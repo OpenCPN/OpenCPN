@@ -4516,29 +4516,28 @@ bool MyFrame::ToggleLights( bool doToggle, bool temporary )
             }
 	    pOLE = NULL;
         }
-    }
 
-    oldstate &= !ps52plib->IsObjNoshow("LIGHTS");
+        oldstate &= !ps52plib->IsObjNoshow("LIGHTS");
 
-    if( doToggle ){
-        if(oldstate)                            // On, going off
-            ps52plib->AddObjNoshow("LIGHTS");
-        else{                                   // Off, going on
-            if(pOLE)
-                pOLE->nViz = 1;
-            ps52plib->RemoveObjNoshow("LIGHTS");
+        if( doToggle ){
+            if(oldstate)                            // On, going off
+                ps52plib->AddObjNoshow("LIGHTS");
+            else{                                   // Off, going on
+                if(pOLE)
+                    pOLE->nViz = 1;
+                ps52plib->RemoveObjNoshow("LIGHTS");
+            }
+
+            SetMenubarItemState( ID_MENU_ENC_LIGHTS, !oldstate );
         }
 
-        SetMenubarItemState( ID_MENU_ENC_LIGHTS, !oldstate );
-    }
-
-    if( doToggle ) {
-        if( ! temporary ) {
-            ps52plib->GenerateStateHash();
-            cc1->ReloadVP();
+        if( doToggle ) {
+            if( ! temporary ) {
+                ps52plib->GenerateStateHash();
+                cc1->ReloadVP();
+            }
         }
     }
-
 
 #endif
     return oldstate;
@@ -5525,8 +5524,8 @@ void MyFrame::ToggleQuiltMode( void )
             cc1->InvalidateGL();
             Refresh();
         }
+        g_bQuiltEnable = cc1->GetQuiltMode();
     }
-    g_bQuiltEnable = cc1->GetQuiltMode();
 }
 
 void MyFrame::SetQuiltMode( bool bquilt )
