@@ -359,6 +359,7 @@ bool UtfToWide(const char *Src,wchar *Dest,size_t DestSize)
         continue;
       }
       if (Dest!=NULL)
+      {
         if (sizeof(*Dest)==2) // Use the surrogate pair for 2 byte Unicode.
         {
           *(Dest++)=((d-0x10000)>>10)+0xd800;
@@ -366,6 +367,7 @@ bool UtfToWide(const char *Src,wchar *Dest,size_t DestSize)
         }
         else
           *(Dest++)=d;
+      }
     }
     else
       if (Dest!=NULL)

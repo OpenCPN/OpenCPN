@@ -22,8 +22,8 @@
 
 #ifdef _WIN_ALL
 
-#define STRICT
-#define UNICODE
+//#define STRICT
+//#define UNICODE
 #undef WINVER
 #undef _WIN32_WINNT
 #define WINVER 0x0501
@@ -182,7 +182,7 @@
 #define WRITEBINARY  "w"
 #define APPENDTEXT   "a"
 
-#define _stdfunction 
+#define _stdfunction
 #define _forceinline inline
 
 #ifdef _APPLE
