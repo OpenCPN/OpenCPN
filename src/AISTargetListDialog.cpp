@@ -936,7 +936,7 @@ void AISTargetListDialog::UpdateAISTargetList( void )
     if(m_pListCtrlAISTargets && !m_pListCtrlAISTargets->IsVirtual())
         return UpdateNVAISTargetList();
     
-    if( m_pdecoder ) {
+    if( m_pdecoder && m_pListCtrlAISTargets ) {
 
         //    Capture the MMSI of the curently selected list item
         long selItemID = -1;

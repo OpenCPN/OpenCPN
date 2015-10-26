@@ -4938,7 +4938,8 @@ void options::SetInitialSettings(void) {
 
     pDispCat->SetSelection(nset);
 
-    ps57CtlListBox->Enable(MARINERS_STANDARD == ps52plib->GetDisplayCategory());
+    if( ps57CtlListBox )
+        ps57CtlListBox->Enable(MARINERS_STANDARD == ps52plib->GetDisplayCategory());
     itemButtonClearList->Enable(MARINERS_STANDARD ==
                                 ps52plib->GetDisplayCategory());
     itemButtonSelectList->Enable(MARINERS_STANDARD ==

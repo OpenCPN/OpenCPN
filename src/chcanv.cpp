@@ -2885,7 +2885,7 @@ void ChartCanvas::ReloadVP( bool b_adjust )
 void ChartCanvas::LoadVP( ViewPort &vp, bool b_adjust )
 {
 #ifdef ocpnUSE_GL
-    if( g_bopengl ) {
+    if( g_bopengl && m_glcc ) {
         glChartCanvas::Invalidate();
         if( m_glcc->GetSize() != GetSize() ) {
             m_glcc->SetSize( GetSize() );
@@ -3940,14 +3940,14 @@ void CalcGridSpacing( float view_scale_ppm, float& MajorSpacing, float&MinorSpac
     // [1] spacing between major grid lines in degrees
     // [2] spacing between minor grid lines in degrees
     const float lltab[][3] =
-        { { 0, 90.0f, 30.0f },                    { 1e-5, 45.0f, 15.0f },
-          { 2e-4, 30.0f, 10.0f },                 { 3e-4, 10.0f, 2.0f  },
-          { 6e-4, 5.0f, 1.0f },                   { 2e-3, 2.0f, 30.0f / 60.0f },
-          { 3e-3, 1.0f, 20.0f / 60.0f },          { 6e-3, 0.5f, 10.0f / 60.0f },
-          { 1e-2, 15.0f / 60.0f, 5.0f / 60.0f },  { 2e-2, 10.0f / 60.0f, 2.0f / 60.0f },
-          { 3e-2, 5.0f / 60.0f, 1.0f / 60.0f },   { 6e-2, 2.0f / 60.0f, 0.5f / 60.0f },
-          { 1e-1, 1.0f / 60.0f, 0.2f / 60.0f },   { 4e-1, 0.5f / 60.0f, 0.1f / 60.0f },
-          { 8e-1, 0.2f / 60.0f, 0.05f / 60.0f },  { 1e10, 0.1f / 60.0f, 0.02f / 60.0f }
+        { { 0.0f, 90.0f, 30.0f },                  { 1e-5, 45.0f, 15.0f },
+          { 2e-4f, 30.0f, 10.0f },                 { 3e-4f, 10.0f, 2.0f  },
+          { 6e-4f, 5.0f, 1.0f },                   { 2e-3f, 2.0f, 30.0f / 60.0f },
+          { 3e-3f, 1.0f, 20.0f / 60.0f },          { 6e-3f, 0.5f, 10.0f / 60.0f },
+          { 1e-2f, 15.0f / 60.0f, 5.0f / 60.0f },  { 2e-2f, 10.0f / 60.0f, 2.0f / 60.0f },
+          { 3e-2f, 5.0f / 60.0f, 1.0f / 60.0f },   { 6e-2f, 2.0f / 60.0f, 0.5f / 60.0f },
+          { 1e-1f, 1.0f / 60.0f, 0.2f / 60.0f },   { 4e-1f, 0.5f / 60.0f, 0.1f / 60.0f },
+          { 8e-1f, 0.2f / 60.0f, 0.05f / 60.0f },  { 1e10f, 0.1f / 60.0f, 0.02f / 60.0f }
     };
 
     unsigned int tabi;
@@ -9661,7 +9661,7 @@ int ChartCanvas::GetNextContextMenuId()
 bool ChartCanvas::SetCursor( const wxCursor &c )
 {
 #ifdef ocpnUSE_GL
-    if( g_bopengl )
+    if( g_bopengl && m_glcc )
         return m_glcc->SetCursor( c );
     else
 #endif
