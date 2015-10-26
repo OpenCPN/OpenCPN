@@ -457,7 +457,7 @@ void AISTargetQueryDialog::AdjustBestSize( AIS_Target_Data *td )
     //  Estimate the control button area height
     int yb = 0;
     if( m_createWptBtn )
-        m_createWptBtn->GetSize().y * 4;
+        yb = m_createWptBtn->GetSize().y * 4;
     
     wxSize szyv = m_pQueryTextCtl->GetVirtualSize();
     int csz = g_Platform->getDisplaySize().y * 8 / 10;
