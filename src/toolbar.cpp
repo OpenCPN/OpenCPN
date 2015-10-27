@@ -526,9 +526,9 @@ void ocpnFloatingToolbarDialog::Surface()
 {
     
     if(m_pRecoverwin){
-        SurfaceFromGrabber();
-        //m_pRecoverwin->Show();
-        //m_pRecoverwin->Raise();
+        //SurfaceFromGrabber();
+        m_pRecoverwin->Show();
+        m_pRecoverwin->Raise();
     }
     else {
         m_bsubmerged = false;
