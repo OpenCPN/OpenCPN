@@ -600,6 +600,7 @@ void ocpnFloatingToolbarDialog::SurfaceFromGrabber()
 #endif
     
     m_destroyGrabber = m_pRecoverwin;
+    m_pRecoverwin = NULL;
     m_destroyTimer.Start( 5, wxTIMER_ONE_SHOT );           //  Destor the unneeded recovery grabber
     
 }
@@ -608,7 +609,7 @@ void ocpnFloatingToolbarDialog::DestroyTimerEvent( wxTimerEvent& event )
 {
     delete m_destroyGrabber;
     m_destroyGrabber = NULL;
-    m_pRecoverwin = NULL;
+   
 }
 
 void ocpnFloatingToolbarDialog::HideTooltip()
@@ -979,6 +980,7 @@ void ocpnFloatingToolbarDialog::DestroyToolBar()
     }
  
     m_destroyGrabber = m_pRecoverwin;
+    m_pRecoverwin = NULL;
     m_destroyTimer.Start( 5, wxTIMER_ONE_SHOT );           //  Destor the unneeded recovery grabber
     
 }
