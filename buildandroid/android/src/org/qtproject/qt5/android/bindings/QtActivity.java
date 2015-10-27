@@ -2558,7 +2558,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
 //        setContentView(R.layout.activity_main);
 
-
+/*
         // Validate Google Licensing plan...
 
         // This device must have a Google Play Services account...
@@ -2596,7 +2596,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         // Initiate a license check
             doLicenseCheck();
         }
-
+*/
 
         try {
             m_activityInfo = getPackageManager().getActivityInfo(getComponentName(), PackageManager.GET_META_DATA);
@@ -2620,7 +2620,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
         if (Build.VERSION.SDK_INT > 10) {
             try {
-//                requestWindowFeature(Window.class.getField("FEATURE_ACTION_BAR").getInt(null));
+                setTitle("OpenCPN");
             } catch (Exception e) {
                 e.printStackTrace();
             }
