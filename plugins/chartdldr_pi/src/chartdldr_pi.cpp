@@ -459,6 +459,8 @@ void ChartDldrPanelImpl::OnContextMenu( wxMouseEvent& event )
 
 void ChartDldrPanelImpl::OnShowLocalDir( wxCommandEvent& event )
 {
+    if (pPlugIn->m_pChartSource == 0)
+        return;
 #ifdef __WXGTK__
     wxExecute(wxString::Format(_T("xdg-open %s"), pPlugIn->m_pChartSource->GetDir().c_str()));
 #endif
