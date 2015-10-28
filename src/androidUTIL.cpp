@@ -53,6 +53,24 @@
 #include "ocpn_plugin.h"
 #include "about.h"
 
+const wxString AndroidSuppLicense =
+wxT("<br><br>The software included in this product contains copyrighted software that is licensed under the GPL.")
+wxT("A copy of that license is shown above.")
+wxT("You may obtain the complete Corresponding Source code from us for ")
+wxT("a period of three years after our last shipment of this product, ")
+wxT("by sending a money order or check for $5 to:<br><br>")
+wxT("GPL Compliance Division<br>")
+wxT("Dyad Inc.<br>")
+wxT("31 Ocean Reef Dr<br>")
+wxT("# C101-449<br>")
+wxT("Key Largo, FL 33037-5282<br>")
+wxT("United States<br><br>")
+wxT("Please write “source for OpenCPN Version {insert version here} in the memo line of your payment.<br><br>")
+wxT("You may also find a copy of the source at https://github.com/OpenCPN/OpenCPN.");
+
+
+
+
 class androidUtilHandler;
 
 
@@ -2330,9 +2348,9 @@ bool androidPlaySound( wxString soundfile )
 
 wxString androidGetSupplementalLicense( void )
 {
-    //qDebug() << "androidGetSupplementalLicense";
-    
     wxString result = callActivityMethod_vs("getGMAPILicense");
+    
+    result += AndroidSuppLicense;
     
     return result;
 }
