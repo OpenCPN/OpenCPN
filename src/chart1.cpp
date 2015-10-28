@@ -1403,16 +1403,14 @@ bool MyApp::OnInit()
     //  Get the default language info
     wxString def_lang_canonical;
 #ifdef __WXMSW__
-	LANGID lang_id = GetUserDefaultUILanguage();
-	wxChar lngcp[100];
-	const wxLanguageInfo* languageInfo = 0;
-	if (0 != GetLocaleInfo(MAKELCID(lang_id, SORT_DEFAULT), LOCALE_SENGLANGUAGE, lngcp, 100))
-	{
-		languageInfo = wxLocale::FindLanguageInfo(lngcp);
-		g_locale = wxString(lngcp);
-	}
-	else
-		languageInfo = wxLocale::GetLanguageInfo(wxLANGUAGE_DEFAULT);
+    LANGID lang_id = GetUserDefaultUILanguage();
+    wxChar lngcp[100];
+    const wxLanguageInfo* languageInfo = 0;
+    if (0 != GetLocaleInfo(MAKELCID(lang_id, SORT_DEFAULT), LOCALE_SENGLANGUAGE, lngcp, 100)){
+        languageInfo = wxLocale::FindLanguageInfo(lngcp);
+    }
+    else
+        languageInfo = wxLocale::GetLanguageInfo(wxLANGUAGE_DEFAULT);
 #else
     const wxLanguageInfo* languageInfo = wxLocale::GetLanguageInfo(wxLANGUAGE_DEFAULT);
 #endif
