@@ -297,20 +297,6 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
     popx = x;
     popy = y;
 
-#ifdef __WXGTK__
-#ifdef ocpnUSE_GTK_OPTIMIZE
-    //  This code changes the background color on the popup context menu
-    wxColour back_color = GetGlobalColor(_T("UIBCK"));
-    GdkColor color;
-
-    color.red = back_color.Red() << 8;
-    color.green = back_color.Green() << 8;
-    color.blue = back_color.Blue() << 8;
-
-//    gtk_widget_modify_bg (GTK_WIDGET(contextMenu->m_menu), GTK_STATE_NORMAL, &color);
-#endif
-#endif
-
     if( seltype == SELTYPE_ROUTECREATE ) {
         MenuAppend1( contextMenu, ID_RC_MENU_FINISH, _menuText( _( "End Route" ), _T("Esc") ) );
     }
