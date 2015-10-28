@@ -348,7 +348,7 @@ void OCPNPlatform::Initialize_1( void )
     
     
     // URL for sending error reports over HTTP.
-    if(g_bEmailCrashReport){
+    if(1/*g_bEmailCrashReport*/){
         info.pszEmailTo = _T("opencpn@bigdumboat.com");
         info.pszSmtpProxy = _T("mail.bigdumboat.com:587");
         info.pszUrl = _T("http://bigdumboat.com/crashrpt/ocpn_crashrpt.php");
