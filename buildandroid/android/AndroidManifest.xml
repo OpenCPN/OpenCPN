@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <manifest package="org.opencpn.opencpn" xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="1.0.5" android:versionCode="5" android:installLocation="auto">
-    <application android:hardwareAccelerated="true" android:name="org.qtproject.qt5.android.bindings.QtApplication" android:label="@string/app_name" android:icon="@drawable/opencpn_mobile" android:theme="@android:style/Theme.Holo">
+    <application android:hardwareAccelerated="true" android:debuggable="false" android:name="org.qtproject.qt5.android.bindings.QtApplication" android:label="@string/app_name" android:icon="@drawable/opencpn_mobile" android:theme="@android:style/Theme.Holo">
 
         <activity android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|locale|fontScale|keyboard|keyboardHidden|navigation" android:name="org.qtproject.qt5.android.bindings.QtActivity" android:label="@string/app_name" android:screenOrientation="unspecified">
             <intent-filter>
@@ -67,10 +67,10 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
 
     <!-- %%INSERT_FEATURES -->
-    <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
-    <uses-feature android:name="android.hardware.location.gps" android:required="false" />
-    <uses-feature android:name="android.hardware.location" android:required="false" />
-    <uses-feature android:name="android.hardware.wifi" android:required="false" />
+    <uses-feature android:name="android.hardware.bluetooth" android:required="false"/>
+    <uses-feature android:name="android.hardware.location.gps" android:required="false"/>
+    <uses-feature android:name="android.hardware.location" android:required="false"/>
+    <uses-feature android:name="android.hardware.wifi" android:required="false"/>
 
 
 </manifest>
