@@ -4739,12 +4739,9 @@ int s52plib::RenderObjectToGL( const wxGLContext &glcc, ObjRazRules *rzRules, Vi
 
 int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
 {
-    if( !ObjectRenderCheckCat( rzRules, vp ) )
-        return 0;
-        
     if( !ObjectRenderCheckPos( rzRules, vp ) )
         return 0;
-
+    
     if( IsObjNoshow( rzRules->LUP->OBCL) )
         return 0;
         
