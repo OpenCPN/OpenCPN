@@ -450,14 +450,16 @@ void MMSIEditDialog::CreateControls(void) {
 
   m_IgnoreButton = new wxCheckBox(this, wxID_ANY, _("Ignore this MMSI"));
   mmsiSizer->Add(m_IgnoreButton, 0, wxEXPAND, 5);
-
+  
   m_MOBButton = new wxCheckBox(this, wxID_ANY,
                                _("Handle this MMSI as SART/PLB(AIS) MOB."));
   mmsiSizer->Add(m_MOBButton, 0, wxEXPAND, 5);
 
-  m_VDMButton =
-      new wxCheckBox(this, wxID_ANY, _("Convert AIVDM to AIVDO for this MMSI"));
+  m_VDMButton = new wxCheckBox(this, wxID_ANY, _("Convert AIVDM to AIVDO for this MMSI"));
   mmsiSizer->Add(m_VDMButton, 0, wxEXPAND, 5);
+
+  m_FollowerButton = new wxCheckBox(this, wxID_ANY, _("This MMSI is my Follower - No CPA Alert"));
+  mmsiSizer->Add(m_FollowerButton, 0, wxEXPAND, 5);
 
   wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
   mainSizer->Add(btnSizer, 0, wxALIGN_RIGHT | wxALL, 5);
@@ -492,6 +494,7 @@ void MMSIEditDialog::CreateControls(void) {
   m_IgnoreButton->SetValue(m_props->m_bignore);
   m_MOBButton->SetValue(m_props->m_bMOB);
   m_VDMButton->SetValue(m_props->m_bVDM);
+  m_FollowerButton->SetValue(m_props->m_bFollower);
 
   SetColorScheme(GLOBAL_COLOR_SCHEME_RGB);
 }
@@ -519,6 +522,7 @@ void MMSIEditDialog::OnMMSIEditOKClick(wxCommandEvent& event) {
     m_props->m_bignore = m_IgnoreButton->GetValue();
     m_props->m_bMOB = m_MOBButton->GetValue();
     m_props->m_bVDM = m_VDMButton->GetValue();
+    m_props->m_bFollower = m_FollowerButton->GetValue();
     m_props->m_bPersistentTrack = m_cbTrackPersist->GetValue();
   }
 
@@ -578,6 +582,9 @@ wxString MMSIListCtrl::OnGetItemText(long item, long column) const {
       break;
     case mlVDM:
       if (props->m_bVDM) ret = _T( "X" );
+      break;
+    case mlFollower:
+      if (props->m_bFollower) ret = _T("X");
       break;
     default:
       ret = _T( "??" );
@@ -662,7 +669,7 @@ MMSI_Props_Panel::MMSI_Props_Panel(wxWindow* parent)
   wxBoxSizer* topSizer = new wxBoxSizer(wxVERTICAL);
   SetSizer(topSizer);
 
-  wxString MMSI_props_column_spec = _T( "120;120;100;100;100;100;100" );
+  wxString MMSI_props_column_spec = _T("120;120;100;100;100;100;100"); //Håa
   //  Parse the global column width string as read from config file
   wxStringTokenizer tkz(MMSI_props_column_spec, _T(";"));
   wxString s_width = tkz.GetNextToken();
@@ -722,6 +729,15 @@ MMSI_Props_Panel::MMSI_Props_Panel(wxWindow* parent)
     width = wxMin(width, dx * 30);
   }
   m_pListCtrlMMSI->InsertColumn(tlTYPE, _("VDM->VDO"), wxLIST_FORMAT_CENTER,
+                                width);
+  s_width = tkz.GetNextToken();
+
+  width = dx * 8;
+  if (s_width.ToLong(&lwidth)) {
+    width = wxMax(dx * 2, lwidth);
+    width = wxMin(width, dx * 30);
+  }
+  m_pListCtrlMMSI->InsertColumn(tlTYPE, _("Follower"), wxLIST_FORMAT_CENTER,
                                 width);
   s_width = tkz.GetNextToken();
 

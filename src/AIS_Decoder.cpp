@@ -1954,6 +1954,20 @@ void AIS_Decoder::UpdateAllAlarms( void )
                     continue;
                 }
 
+                //    No alert for my Follower
+                bool hit = false;
+                for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
+                    MMSIProperties *props =  g_MMSI_Props_Array.Item(i);
+                    if(td->MMSI == props->MMSI){
+                        if (props->m_bFollower) {
+                            hit = true;
+                            td->n_alert_state = AIS_NO_ALERT;
+                        }
+                        break;
+                    }
+                }
+                if (hit) continue;
+
                 //    Skip distant targets if requested
                 if( g_bCPAMax ) {
                     if( td->Range_NM > g_CPAMax_NM ) {
@@ -2434,7 +2448,7 @@ MMSIProperties::MMSIProperties( wxString &spec )
         if(s.Upper() == _T("IGNORE"))
             m_bignore = true;
     }
-    
+
     s = tkz.GetNextToken();
     if(s.Len()){
         if(s.Upper() == _T("MOB"))
@@ -2446,7 +2460,13 @@ MMSIProperties::MMSIProperties( wxString &spec )
         if(s.Upper() == _T("VDM"))
             m_bVDM = true;
     }
-    
+
+    s = tkz.GetNextToken();
+    if (s.Len()){
+        if (s.Upper() == _T("FOLLOWER"))
+            m_bFollower = true;
+    }
+
     s = tkz.GetNextToken();
     if(s.Len()){
         if(s.Upper() == _T("PERSIST"))
@@ -2466,6 +2486,7 @@ void MMSIProperties::Init(void )
     m_bignore = false;
     m_bMOB = false;
     m_bVDM = false;
+    m_bFollower = false;
     m_bPersistentTrack = false;
 }
 
@@ -2489,7 +2510,7 @@ wxString MMSIProperties::Serialize( void )
         sMMSI << _T("ignore");
     }
     sMMSI << _T(";");
-    
+
     if(m_bMOB){
         sMMSI << _T("MOB");
     }
@@ -2497,8 +2518,12 @@ wxString MMSIProperties::Serialize( void )
     
     if(m_bVDM){
         sMMSI << _T("VDM");
+    }    
+    sMMSI << _T(";");
+
+    if (m_bFollower){ 
+        sMMSI << _T("Follower");
     }
-    
     sMMSI << _T(";");
     
     if(m_bPersistentTrack){

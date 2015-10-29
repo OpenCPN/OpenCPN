@@ -49,6 +49,7 @@ public:
     bool        m_bignore;
     bool        m_bMOB;
     bool        m_bVDM;
+    bool        m_bFollower;
     bool        m_bPersistentTrack;
 };
 
