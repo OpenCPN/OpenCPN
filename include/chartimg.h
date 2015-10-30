@@ -191,7 +191,7 @@ protected:
 
       wxRect GetSourceRect(){ return Rsrc; }
 
-      virtual bool GetAndScaleData(unsigned char *ppn,
+      virtual bool GetAndScaleData(unsigned char *ppn, size_t data_size,
                                    wxRect& source, int source_stride, wxRect& dest, int dest_stride,
                                    double scale_factor, ScaleTypeEnum scale_type);
       bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint);

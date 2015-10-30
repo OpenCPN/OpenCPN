@@ -3330,7 +3330,7 @@ bool ChartBaseBSB::GetViewUsingCache( wxRect& source, wxRect& dest, const OCPNRe
             wxRegionContain rc = Region.Contains(sub_dest);
             if((wxPartRegion == rc) || (wxInRegion == rc))
             {
-                GetAndScaleData(pPixCache->GetpData(), source, source.width, sub_dest, width, cs1d, pan_scale_type_y);
+                GetAndScaleData(pPixCache->GetpData(), pPixCache->GetLength(), source, source.width, sub_dest, width, cs1d, pan_scale_type_y);
             }
             pPixCache->Update();
             
@@ -3368,7 +3368,7 @@ bool ChartBaseBSB::GetViewUsingCache( wxRect& source, wxRect& dest, const OCPNRe
             wxRegionContain rc = Region.Contains(sub_dest);
             if((wxPartRegion == rc) || (wxInRegion == rc))
             {
-                GetAndScaleData(pPixCache->GetpData(), source, source.width, sub_dest, width, cs1d, pan_scale_type_x);
+                GetAndScaleData(pPixCache->GetpData(), pPixCache->GetLength(), source, source.width, sub_dest, width, cs1d, pan_scale_type_x);
             }
             
             pPixCache->Update();
@@ -3444,7 +3444,7 @@ bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, 
             cached_image_ok = false;
             m_vp_render_last.Invalidate();
       }
-
+/*
       if(pPixCache)
       {
             if((pPixCache->GetWidth() != dest.width) || (pPixCache->GetHeight() != dest.height))
@@ -3455,7 +3455,7 @@ bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, 
       }
       else
             pPixCache = new PixelCache(dest.width, dest.height, BPP);
-
+*/
 
       m_cached_scale_ppm = VPoint.view_scale_ppm;
       m_last_vprect = dest;
@@ -3504,11 +3504,33 @@ bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, 
 
      if((!IsRenderCacheable( Rsrc, dest ) && ( n_rect > 4 ) && (n_rect < 20)) || ( factor < 1))
      {
+         if(m_b_cdebug)printf("   RenderRegion by rect iterator   n_rect: %d\n", n_rect);
+                              
+           // Verify that the persistent pixel cache is at least as large as the largest rectangle in the region
+           wxRect dest_check_rect = dest;
+           OCPNRegionIterator upd_check ( Region ); // get the requested rect list
+           while ( upd_check.HaveRects() )
+           {
+               wxRect rect = upd_check.GetRect();
+               dest_check_rect.Union(rect);
+               upd_check.NextRect();
+           }
+ 
+            if(pPixCache)
+            {
+                if((pPixCache->GetWidth() != dest_check_rect.width) || (pPixCache->GetHeight() != dest_check_rect.height))
+                {
+                    delete pPixCache;
+                    pPixCache = new PixelCache(dest_check_rect.width, dest_check_rect.height, BPP);
+                }
+            }
+            else
+                pPixCache = new PixelCache(dest_check_rect.width, dest_check_rect.height, BPP);
+
+           
            ScaleTypeEnum ren_type = RENDER_LODEF;
 
-           if(m_b_cdebug)printf("   RenderRegion by rect iterator   n_rect: %d\n", n_rect);
 
-//           PixelCache *pPixCacheTemp = new PixelCache(dest.width, dest.height, BPP);
 
       //    Decompose the region into rectangles, and fetch them into the target dc
            OCPNRegionIterator upd ( Region ); // get the requested rect list
@@ -3516,20 +3538,27 @@ bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, 
            while ( upd.HaveRects() )
            {
                  wxRect rect = upd.GetRect();
-                 GetAndScaleData(pPixCache->GetpData(), Rsrc, Rsrc.width, rect, dest.width, factor, ren_type);
+                 
+                 //  Floating point math can lead to negative rectangle origin.
+                 //  If this happens, we arbitrarily shift the rectangle to be positive semidefinite.
+                 //  This will cause at most a 1 pixlel error onscreen.
+                 if(rect.y < 0) rect.Offset(0, -rect.y);
+                 if(rect.x < 0) rect.Offset(-rect.x, 0);
+           
+                 
+                 GetAndScaleData(pPixCache->GetpData(), pPixCache->GetLength(),
+                        Rsrc, Rsrc.width, rect, pPixCache->GetWidth(), factor, ren_type);
+                 
                  ir++;
                  upd.NextRect();;
            }
-
-//           delete pPixCache;                           // new cache is OK
-//           pPixCache = pPixCacheTemp;
 
            pPixCache->Update();
 
       //    Update cache parameters
            cache_rect = Rsrc;
            cache_scale_method = ren_type;
-           cached_image_ok = false;//true;            // Never cache this type of render
+           cached_image_ok = false;            // Never cache this type of render
 
       //    Select the data into the dc
            pPixCache->SelectIntoDC(dc);
@@ -3538,8 +3567,21 @@ bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, 
      }
 
 
-
      //     Default is to try using the cache
+     
+     if(pPixCache)
+     {
+         if((pPixCache->GetWidth() != dest.width) || (pPixCache->GetHeight() != dest.height))
+         {
+             delete pPixCache;
+             pPixCache = new PixelCache(dest.width, dest.height, BPP);
+         }
+     }
+     else
+         pPixCache = new PixelCache(dest.width, dest.height, BPP);
+     
+     
+
      if(m_b_cdebug)printf("  Render Region By GVUC\n");
 
      //     A performance enhancement.....
@@ -3570,7 +3612,7 @@ wxImage *ChartBaseBSB::GetImage()
             wxRect source_rect(0,i,Size_X, 1);
             wxRect dest_rect(0,0,Size_X, 1);
 
-            GetAndScaleData(img->GetData(), source_rect, Size_X, dest_rect, Size_X, 1.0, RENDER_HIDEF);
+            GetAndScaleData(img->GetData(), img_size_x * Size_Y * 3, source_rect, Size_X, dest_rect, Size_X, 1.0, RENDER_HIDEF);
 
             ppnx += img_size_x * 3;
       }
@@ -3598,7 +3640,7 @@ bool ChartBaseBSB::GetView( wxRect& source, wxRect& dest, ScaleTypeEnum scale_ty
            pPixCache = pPixCacheTemp;
       }
 */
-      GetAndScaleData(pPixCache->GetpData(), source, source.width, dest, dest.width, factor, scale_type);
+      GetAndScaleData(pPixCache->GetpData(), pPixCache->GetLength(), source, source.width, dest, dest.width, factor, scale_type);
       pPixCache->Update();
 
 //    Update cache parameters
@@ -3614,7 +3656,7 @@ bool ChartBaseBSB::GetView( wxRect& source, wxRect& dest, ScaleTypeEnum scale_ty
 }
 
 
-bool ChartBaseBSB::GetAndScaleData(unsigned char *ppn, wxRect& source, int source_stride,
+bool ChartBaseBSB::GetAndScaleData(unsigned char *ppn, size_t data_size, wxRect& source, int source_stride,
                                    wxRect& dest, int dest_stride, double scale_factor, ScaleTypeEnum scale_type)
 {
 
@@ -3877,15 +3919,22 @@ bool ChartBaseBSB::GetAndScaleData(unsigned char *ppn, wxRect& source, int sourc
 
                         i = dest.x;
 
-                        while( i < dest.x + dest.width )
-                        {
-                              memcpy( target_data_x,
-                                          source_data + BPP/8*(y_offset + (int)((i + x_vernier_i) * m_raster_scale_factor)),
-                                    BPP/8 );
-                              target_data_x += BPP/8;
-
-                              i++;
+                        // Check data bounds to be sure of not overrunning the upstream buffer
+                        if( (target_data_x + ( dest.width * BPP/8)) > (target_data + data_size) ) {
+                            j = dest.y + dest.height;
                         }
+                        else{ 
+                            while( i < dest.x + dest.width ){
+                                memcpy( target_data_x,
+                                            source_data + BPP/8*(y_offset + (int)((i + x_vernier_i) * m_raster_scale_factor)),
+                                        BPP/8 );
+                                                            
+                                target_data_x += BPP/8;
+
+                                i++;
+                            }
+                        }
+                        
                         j++;
                   }
             }

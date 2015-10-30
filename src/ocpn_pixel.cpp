@@ -405,6 +405,16 @@ PixelCache::~PixelCache()
 
 }
 
+size_t PixelCache::GetLength(void)
+{
+#ifdef __PIX_CACHE_WXIMAGE__
+    return m_width * m_height * 3;
+#else
+    return 0;
+#endif    
+}
+    
+
 void PixelCache::Update(void)
 {
 #ifdef __PIX_CACHE_WXIMAGE__
