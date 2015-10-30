@@ -4600,21 +4600,17 @@ void MyFrame::ToggleAnchor( void )
         else if(OTHER == ps52plib->GetDisplayCategory())
             old_vis = true;
 
-        const char * categories[] = { "ACHBRT", "ACHARE", "CBLSUB", "PIPARE", "PIPSOL", "TUNNEL" };
+        const char * categories[] = { "ACHBRT", "ACHARE", "CBLSUB", "PIPARE", "PIPSOL", "TUNNEL", "SBDARE" };
         unsigned int num = sizeof(categories) / sizeof(categories[0]);
 
         old_vis &= !ps52plib->IsObjNoshow("SBDARE");
 
         if(old_vis){                            // On, going off
-            ps52plib->AddObjNoshow("SBDARE");
             for( unsigned int c = 0; c < num; c++ ) {
                 ps52plib->AddObjNoshow(categories[c]);
             }
         }
         else{                                   // Off, going on
-            if(pOLE)
-                pOLE->nViz = 1;
-            ps52plib->RemoveObjNoshow("SBDARE");
             for( unsigned int c = 0; c < num; c++ ) {
                 ps52plib->RemoveObjNoshow(categories[c]);
             }
