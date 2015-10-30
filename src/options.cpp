@@ -512,6 +512,17 @@ void MMSIEditDialog::OnMMSIEditOKClick(wxCommandEvent& event) {
     m_MMSICtl->GetValue().ToLong(&nmmsi);
     m_props->MMSI = nmmsi;
 
+    if (strlen(m_MMSICtl->GetValue()) != 9)
+    {
+        if (wxID_CANCEL == OCPNMessageBox(this,
+            _("An MMSI Id is generally a number of nine digits.\nPlease check your entries and cancel if necessary."),
+            _("OpenCPN Info"),
+            wxOK | wxCANCEL))
+        {
+            return;
+        }
+    }
+    
     if (m_rbTypeTrackDefault->GetValue())
       m_props->TrackType = TRACKTYPE_DEFAULT;
     else if (m_rbTypeTrackAlways->GetValue())
@@ -669,7 +680,7 @@ MMSI_Props_Panel::MMSI_Props_Panel(wxWindow* parent)
   wxBoxSizer* topSizer = new wxBoxSizer(wxVERTICAL);
   SetSizer(topSizer);
 
-  wxString MMSI_props_column_spec = _T("120;120;100;100;100;100;100"); //Håa
+  wxString MMSI_props_column_spec = _T("120;120;100;100;100;100;100");
   //  Parse the global column width string as read from config file
   wxStringTokenizer tkz(MMSI_props_column_spec, _T(";"));
   wxString s_width = tkz.GetNextToken();
