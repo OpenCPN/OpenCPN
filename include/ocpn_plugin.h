@@ -1057,6 +1057,7 @@ enum OCPN_DLDialogStyle
     OCPN_DLDS_DEFAULT_STYLE = OCPN_DLDS_CAN_START|OCPN_DLDS_CAN_PAUSE|OCPN_DLDS_CAN_ABORT|OCPN_DLDS_SHOW_ALL|OCPN_DLDS_AUTO_CLOSE
 };
 
+#define ONLINE_CHECK_RETRY 30 // Recheck the Internet connection availability every ONLINE_CHECK_RETRY s
 
 /*   Synchronous (Blocking) download of a single file  */
 
@@ -1065,6 +1066,7 @@ extern DECL_EXP _OCPN_DLStatus OCPN_downloadFile( const wxString& url, const wxS
                                        const wxBitmap& bitmap,
                                        wxWindow *parent, long style, int timeout_secs);
 
+
 /*   Asynchronous (Background) download of a single file  */
 
 extern DECL_EXP _OCPN_DLStatus OCPN_downloadFileBackground( const wxString& url, const wxString &outputFile,
@@ -1072,6 +1074,13 @@ extern DECL_EXP _OCPN_DLStatus OCPN_downloadFileBackground( const wxString& url,
 
 extern DECL_EXP void OCPN_cancelDownloadFileBackground( long handle );
 
+/*   Synchronous (Blocking) HTTP POST operation for small amounts of data */
+
+extern DECL_EXP _OCPN_DLStatus OCPN_postDataHttp( const wxString& url, const wxString& parameters, wxString& result, int timeout_secs );
+
+/*   Check whether connection to the Internet is working */
+
+extern DECL_EXP bool OCPN_isOnline();
 
 /*  Supporting  Event for Background downloading          */
 /*  OCPN_downloadEvent Definition  */
