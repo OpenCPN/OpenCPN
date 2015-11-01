@@ -385,8 +385,8 @@ private:
 class ChartGroupElement;
 class ChartGroup;
 
-WX_DECLARE_OBJARRAY(ChartGroupElement*, ChartGroupElementArray);
-WX_DECLARE_OBJARRAY(ChartGroup*, ChartGroupArray);
+WX_DEFINE_ARRAY_PTR(ChartGroupElement*, ChartGroupElementArray);
+WX_DEFINE_ARRAY_PTR(ChartGroup*, ChartGroupArray);
 
 class ChartGroupElement
 {
