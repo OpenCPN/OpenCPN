@@ -248,6 +248,8 @@ PlugInManager::PlugInManager(MyFrame *parent)
     #ifndef __OCPN__ANDROID__
     wxCurlBase::Init();
     #endif
+    m_last_online = false;
+    m_last_online_chk = -1;
 }
 
 PlugInManager::~PlugInManager()
@@ -5316,6 +5318,43 @@ void OCPN_cancelDownloadFileBackground( long handle )
         g_pi_manager->m_download_evHandler = NULL;
         g_pi_manager->m_downloadHandle = NULL;
     }
+#endif
+}
+
+_OCPN_DLStatus OCPN_postDataHttp( const wxString& url, const wxString& parameters, wxString& result, int timeout_secs )
+{
+#ifdef __OCPN__ANDROID__
+    //TODO
+#else
+    wxCurlHTTP post;
+    post.SetOpt(CURLOPT_TIMEOUT, timeout_secs);
+    size_t res = post.Post( parameters.ToAscii(), parameters.Len(), url );
+    
+    if( res )
+    {
+        result = post.GetResponseBody();
+        return OCPN_DL_NO_ERROR;
+    } else
+        result = wxEmptyString;
+    
+    return OCPN_DL_FAILED;
+#endif
+}
+
+bool OCPN_isOnline()
+{
+#ifdef __OCPN__ANDROID__
+    //TODO
+#else
+    if (wxDateTime::GetTimeNow() > g_pi_manager->m_last_online_chk + ONLINE_CHECK_RETRY)
+    {
+        wxCurlHTTP get;
+        get.Head( _T("http://yahoo.com/") );
+        g_pi_manager->m_last_online = get.GetResponseCode() > 0;
+        
+        g_pi_manager->m_last_online_chk = wxDateTime::GetTimeNow();
+    }
+    return g_pi_manager->m_last_online;
 #endif
 }
 
