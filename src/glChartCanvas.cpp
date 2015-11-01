@@ -849,8 +849,9 @@ glChartCanvas::~glChartCanvas()
 
 void glChartCanvas::FlushFBO( void ) 
 {
-    if(m_bsetup)
+    if(m_bsetup){
         BuildFBO();
+    }
 }
 
 
@@ -891,8 +892,9 @@ void glChartCanvas::OnSize( wxSizeEvent& event )
     /* expand opengl widget to fill viewport */
     if( GetSize() != cc1->GetSize() ) {
         SetSize( cc1->GetSize() );
-        if( m_bsetup )
+        if( m_bsetup ){
             BuildFBO();
+        }
     }
 
     glDeleteTextures(1, &m_piano_tex);
@@ -940,46 +942,86 @@ void glChartCanvas::MouseEvent( wxMouseEvent& event )
         
 }
 
-void glChartCanvas::BuildFBO( )
+bool glChartCanvas::buildFBOSize(int fboSize)
 {
-    if( m_b_BuiltFBO ) {
-        glDeleteTextures( 2, m_cache_tex );
-        ( s_glDeleteFramebuffers )( 1, &m_fb0 );
-        ( s_glDeleteRenderbuffers )( 1, &m_renderbuffer );
-        m_b_BuiltFBO = false;
-    }
-
-    if( m_b_DisableFBO)
-        return;
-
+    bool retVal = true;
+    
     //  In CanvasPanning mode, we will build square POT textures for the FBO backing store
     //  We will make them as large as possible...
     if(g_GLOptions.m_bUseCanvasPanning){
+        wxString msg;
+        msg.Printf( _T("OpenGL-> Trying Framebuffer size: %d"), fboSize );
+        wxLogMessage(msg);
+        
         int rb_x = GetSize().x;
         int rb_y = GetSize().y;
         int i=1;
         while(i < rb_x) i <<= 1;
-            rb_x = i;
-            
+        rb_x = i;
+        
         i=1;
         while(i < rb_y) i <<= 1;
-            rb_y = i;
-            
+        rb_y = i;
+        
         m_cache_tex_x = wxMax(rb_x, rb_y);
         m_cache_tex_y = wxMax(rb_x, rb_y);
-        m_cache_tex_x = wxMax(2048, m_cache_tex_x);
-        m_cache_tex_y = wxMax(2048, m_cache_tex_y);
+        m_cache_tex_x = wxMax(fboSize, m_cache_tex_x);
+        m_cache_tex_y = wxMax(fboSize, m_cache_tex_y);
     } else {            
         m_cache_tex_x = GetSize().x;
         m_cache_tex_y = GetSize().y;
     }        
-        
-    ( s_glGenFramebuffers )( 1, &m_fb0 );
-    ( s_glGenRenderbuffers )( 1, &m_renderbuffer );
 
-    ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, m_fb0 );
+    int err = GL_NO_ERROR;
+    GLint params;
+    glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE,&params);
     
+    err = glGetError();
+    if(err == GL_INVALID_ENUM){
+        glGetIntegerv(GL_MAX_TEXTURE_SIZE,&params);
+        err = glGetError();
+            
+    }
+     
+    if(err == GL_NO_ERROR){
+        if( fboSize > params ){
+            wxLogMessage(_T("    OpenGL-> Requested Framebuffer size exceeds GL_MAX_RENDERBUFFER_SIZE") );
+            return false;
+        }
+    }
+        
+        
+    
+   
+    
+    ( s_glGenFramebuffers )( 1, &m_fb0 );
+    err = glGetError();
+    if(err){
+        wxString msg;
+        msg.Printf( _T("    OpenGL-> Framebuffer GenFramebuffers error:  %08X"), err );
+        wxLogMessage(msg);
+        retVal = false;
+    }
 
+    ( s_glGenRenderbuffers )( 1, &m_renderbuffer );
+    err = glGetError();
+    if(err){
+        wxString msg;
+        msg.Printf( _T("    OpenGL-> Framebuffer GenRenderbuffers error:  %08X"), err );
+        wxLogMessage(msg);
+        retVal = false;
+    }
+
+    
+    ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, m_fb0 );
+    err = glGetError();
+    if(err){
+        wxString msg;
+        msg.Printf( _T("    OpenGL-> Framebuffer BindFramebuffers error:  %08X"), err );
+        wxLogMessage(msg);
+        retVal = false;
+    }
+    
     // initialize color textures
     glGenTextures( 2, m_cache_tex );
     for(int i=0; i<2; i++) {
@@ -992,58 +1034,112 @@ void glChartCanvas::BuildFBO( )
     }
 
     ( s_glBindRenderbuffer )( GL_RENDERBUFFER_EXT, m_renderbuffer );
-
+    
     if( m_b_useFBOStencil ) {
         // initialize composite depth/stencil renderbuffer
         ( s_glRenderbufferStorage )( GL_RENDERBUFFER_EXT, GL_DEPTH24_STENCIL8_EXT,
-                                         m_cache_tex_x, m_cache_tex_y );
+                                     m_cache_tex_x, m_cache_tex_y );
         
         ( s_glFramebufferRenderbuffer )( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
-                                             GL_RENDERBUFFER_EXT, m_renderbuffer );
-
+                                         GL_RENDERBUFFER_EXT, m_renderbuffer );
+        
         ( s_glFramebufferRenderbuffer )( GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT,
-                                             GL_RENDERBUFFER_EXT, m_renderbuffer );
+                                         GL_RENDERBUFFER_EXT, m_renderbuffer );
     } else {
         
         GLenum depth_format = GL_DEPTH_COMPONENT24;
         
         //      Need to check for availability of 24 bit depth buffer extension on GLES
-#ifdef ocpnUSE_GLES
+        #ifdef ocpnUSE_GLES
         if( !QueryExtension("GL_OES_depth24") )
             depth_format = GL_DEPTH_COMPONENT16;
-#endif        
-        
-        // initialize depth renderbuffer
+        #endif        
+            
+            // initialize depth renderbuffer
         ( s_glRenderbufferStorage )( GL_RENDERBUFFER_EXT, depth_format,
                                          m_cache_tex_x, m_cache_tex_y );
         int err = glGetError();
         if(err){
-            wxString msg;
-            msg.Printf( _T("    OpenGL-> Framebuffer Depth Buffer Storage error:  %08X"), err );
-            wxLogMessage(msg);
+                wxString msg;
+                msg.Printf( _T("    OpenGL-> Framebuffer Depth Buffer Storage error:  %08X"), err );
+                wxLogMessage(msg);
+                retVal = false;
         }
-                
+            
         ( s_glFramebufferRenderbuffer )( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
                                              GL_RENDERBUFFER_EXT, m_renderbuffer );
-        
-        err = glGetError();
-        if(err){
-            wxString msg;
-            msg.Printf( _T("    OpenGL-> Framebuffer Depth Buffer Attach error:  %08X"), err );
-            wxLogMessage(msg);
+            
+            err = glGetError();
+            if(err){
+                wxString msg;
+                msg.Printf( _T("    OpenGL-> Framebuffer Depth Buffer Attach error:  %08X"), err );
+                wxLogMessage(msg);
+                retVal = false;
         }
+    
     }
     
-    // Disable Render to FBO
+        // Check framebuffer completeness at the end of initialization.
+    ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, m_fb0 );
+        
+    ( s_glFramebufferTexture2D )
+        ( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
+          g_texture_rectangle_format, m_cache_tex[0], 0 );
+        
+    GLenum fb_status = ( s_glCheckFramebufferStatus )( GL_FRAMEBUFFER_EXT );
     ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, 0 );
+        
+    if( fb_status != GL_FRAMEBUFFER_COMPLETE_EXT ) {
+        wxString msg;
+        msg.Printf( _T("    OpenGL-> Framebuffer Incomplete:  %08X"), fb_status );
+        wxLogMessage( msg );
+        retVal = false;
+    }
+    
+    return retVal;
+}
+    
+    
+void glChartCanvas::BuildFBO( )
+{
+    
+    if( m_b_BuiltFBO ) {
+        glDeleteTextures( 2, m_cache_tex );
+        ( s_glDeleteFramebuffers )( 1, &m_fb0 );
+        ( s_glDeleteRenderbuffers )( 1, &m_renderbuffer );
+        m_b_BuiltFBO = false;
+    }
 
-    // Disable Render to FBO
-    ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, 0 );
+    if( m_b_DisableFBO)
+        return;
 
+    if(!buildFBOSize(2048)){
+        glDeleteTextures( 2, m_cache_tex );
+        ( s_glDeleteFramebuffers )( 1, &m_fb0 );
+        ( s_glDeleteRenderbuffers )( 1, &m_renderbuffer );
+        
+        if(!buildFBOSize(1024)){
+            m_b_DisableFBO = true;
+            wxLogMessage( _T("OpenGL-> FBO Framebuffer unavailable") );
+            m_b_BuiltFBO = false;
+            
+            return;
+        }
+    }
+
+    //  All OK
+    
+    wxString msg;
+    msg.Printf( _T("OpenGL Framebuffer OK, size = %d"), m_cache_tex_x );
+    wxLogMessage(msg);
+    
     /* invalidate cache */
     Invalidate();
-
+    
     m_b_BuiltFBO = true;
+    
+    return;
+    
 }
 
 

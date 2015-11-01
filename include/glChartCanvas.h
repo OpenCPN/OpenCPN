@@ -130,6 +130,7 @@ public:
 protected:
     void RenderQuiltViewGL(ViewPort &vp, const OCPNRegion &Region );
     void BuildFBO();
+    bool buildFBOSize(int fboSize);
     void SetupOpenGL();
     bool TextureCrunch(double factor);
     bool FactoryCrunch(double factor);
