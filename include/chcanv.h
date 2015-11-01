@@ -195,6 +195,7 @@ public:
       void SetVPRotation(double angle){ VPoint.rotation = angle; }
       double GetVPRotation(void) { return GetVP().rotation; }
       double GetVPSkew(void) { return GetVP().skew; }
+      double GetVPTilt(void) { return GetVP().tilt; }
       void ClearbFollow(void);
 
       void GetDoubleCanvasPointPix(double rlat, double rlon, wxPoint2DDouble *r);
@@ -270,6 +271,7 @@ public:
 
       void RotateCanvas( double dir );
       void DoRotateCanvas( double rotation );
+      void DoTiltCanvas( double tilt );
 
       void ShowAISTargetList(void);
 
