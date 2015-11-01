@@ -1140,7 +1140,7 @@ void WayPointman::ProcessUserIcons( ocpnStyle::Style* style )
     wxString UserIconPath = g_Platform->GetPrivateDataDir();
     wxChar sep = wxFileName::GetPathSeparator();
     if( UserIconPath.Last() != sep ) UserIconPath.Append( sep );
-    UserIconPath.Append( _T("UserIcons") );
+    UserIconPath.Append( _T("UserIcons/") );
     
     wxLogMessage(_T("Looking for UserIcons at ") + UserIconPath );
     
@@ -1148,8 +1148,7 @@ void WayPointman::ProcessUserIcons( ocpnStyle::Style* style )
         wxLogMessage(_T("Loading UserIcons from ") + UserIconPath );
         wxArrayString FileList;
         
-        wxDir dir( UserIconPath );
-        int n_files = dir.GetAllFiles( UserIconPath, &FileList );
+        int n_files = wxDir::GetAllFiles( UserIconPath, &FileList, _T(""), wxDIR_FILES  );
         
         for( int ifile = 0; ifile < n_files; ifile++ ) {
             wxString name = FileList.Item( ifile );
@@ -1157,14 +1156,15 @@ void WayPointman::ProcessUserIcons( ocpnStyle::Style* style )
             wxFileName fn( name );
             wxString iconname = fn.GetName();
             wxBitmap icon1;
-            
             if( fn.GetExt().Lower() == _T("xpm") ) {
                 if( icon1.LoadFile( name, wxBITMAP_TYPE_XPM ) ) {
+                    wxLogMessage(_T("Adding icon: ") + iconname);
                     ProcessIcon( icon1, iconname, iconname );
                 }
             }
             if( fn.GetExt().Lower() == _T("png") ) {
                 if( icon1.LoadFile( name, wxBITMAP_TYPE_PNG ) ) {
+                    wxLogMessage(_T("Adding icon: ") + iconname);
                     ProcessIcon( icon1, iconname, iconname );
                 }
             }
