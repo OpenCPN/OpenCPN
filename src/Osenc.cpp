@@ -600,7 +600,9 @@ int Osenc::createSenc124(const wxString& FullPath000, const wxString& SENCFileNa
     }
     
     delete s_ProgDialog;
-        
+    
+    delete poS57DS;
+    
     return ret_code;
     
     
@@ -1175,7 +1177,7 @@ int Osenc::ingestCell( const wxString &FullPath000, const wxString &working_dir 
     wxString sobj;
     
     //  Here comes the actual ISO8211 file reading
-    OGRS57DataSource *poS57DS = new OGRS57DataSource;
+    poS57DS = new OGRS57DataSource;
     poS57DS->SetS57Registrar( m_poRegistrar );
     
     //  Set up the options
