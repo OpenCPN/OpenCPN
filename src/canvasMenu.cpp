@@ -533,6 +533,31 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
         PlugInMenuItemContainer *pimis = item_array.Item( i );
         {
             if( pimis->b_viz ) {
+                wxMenu *submenu = NULL;
+                if(pimis->pmenu_item->GetSubMenu()) {
+                    submenu = new wxMenu();
+                    const wxMenuItemList &items = pimis->pmenu_item->GetSubMenu()->GetMenuItems();
+                    for( wxMenuItemList::const_iterator it = items.begin(); it != items.end(); ++it ) {
+                        int id = -1;
+                        for( unsigned int j = 0; j < item_array.GetCount(); j++ ) {
+                            PlugInMenuItemContainer *pimis = item_array.Item( j );
+                            if(pimis->pmenu_item == *it)
+                                id = pimis->id;
+                        }
+
+                        wxMenuItem *pmi = new wxMenuItem( submenu, id,
+#if wxCHECK_VERSION(3,0,0)
+                                                        (*it)->GetItemLabelText(),
+#else
+                                                        (*it)->GetLabel(),
+#endif
+                                                        (*it)->GetHelp(),
+                                                          (*it)->GetKind());
+                        submenu->Append(pmi);
+                        pmi->Check((*it)->IsChecked());
+                    }
+                }
+                
                 wxMenuItem *pmi = new wxMenuItem( contextMenu, pimis->id,
 #if wxCHECK_VERSION(3,0,0)
                                                   pimis->pmenu_item->GetItemLabelText(),
@@ -540,7 +565,8 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
                                                   pimis->pmenu_item->GetLabel(),
 #endif
                                                   pimis->pmenu_item->GetHelp(),
-                                                  pimis->pmenu_item->GetKind(), pimis->pmenu_item->GetSubMenu() );
+                                                  pimis->pmenu_item->GetKind(),
+                                                  submenu );
 #ifdef __WXMSW__
                 pmi->SetFont(pimis->pmenu_item->GetFont());
 #endif
