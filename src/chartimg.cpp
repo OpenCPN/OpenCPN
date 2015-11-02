@@ -1436,19 +1436,21 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
           nPlypoint = 0;
           Plypoint *pOldPlyTable = pPlyTable;
           pPlyTable = NULL;
+          double lastplylat = 0.0, lastplylon = 0.0, x1 = 0.0, y1 = 0.0, x2, y2;
+          double plylat, plylon;
           for( int i = 0; i < count+1; i++ ) {
-              double plylat = pOldPlyTable[i%count].ltp, plylon = pOldPlyTable[i%count].lnp;
-              double lastplylat = 0.0, lastplylon = 0.0, x1 = 0.0, y1 = 0.0, x2, y2;
+              plylat = pOldPlyTable[i%count].ltp;
+              plylon = pOldPlyTable[i%count].lnp;
               latlong_to_chartpix(plylat, plylon, x2, y2);
-              if(i>0) {
-                  if(lastplylon - plylon > 180)
-                      lastplylon -= 360;
-                  else if(lastplylon - plylon < -180)
-                      lastplylon += 360;
+              if( i > 0 ) {
+                  if( lastplylon - plylon > 180. )
+                      lastplylon -= 360.;
+                  else if( lastplylon - plylon < -180. )
+                      lastplylon += 360.;
 
                   // use 2 degree steps
-                  double steps = ceil((fabs(lastplylat-plylat) + fabs(lastplylon-plylon))/2);
-                  for(double c=0; c<steps; c++) {
+                  double steps = ceil( (fabs(lastplylat-plylat) + fabs(lastplylon-plylon)) / 2 );
+                  for( double c = 0; c < steps; c++ ) {
                       double d = c/steps, lat, lon;
                       wxPoint2DDouble s;
                       double x = (1-d)*x1 + d*x2, y = (1-d)*y1 + d*y2;
