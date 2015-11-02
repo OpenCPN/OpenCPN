@@ -2916,8 +2916,10 @@ void MyConfig::UpdateNavObj( void )
 
     delete pNavObjectSet;
 
-    if( ::wxFileExists( m_sNavObjSetChangesFile ) )
+    if( ::wxFileExists( m_sNavObjSetChangesFile ) ){
+        wxLogNull logNo;                // avoid silly log error message.
         wxRemoveFile( m_sNavObjSetChangesFile );
+    }
 
     //delete m_pNavObjectChangesSet;
     //m_pNavObjectChangesSet = new NavObjectChanges(m_sNavObjSetChangesFile);
