@@ -1087,8 +1087,8 @@ bool Piano::MouseEvent( wxMouseEvent& event )
             if( -1 != sel_index ){
                 m_click_sel_index = sel_index;
                 m_click_sel_dbindex = sel_dbindex;
+                m_action = DEFERRED_KEY_CLICK_UP;
                 if(!m_eventTimer.IsRunning()){
-                    m_action = DEFERRED_KEY_CLICK_UP;
                     m_eventTimer.Start(10, wxTIMER_ONE_SHOT);
                 }
             }
