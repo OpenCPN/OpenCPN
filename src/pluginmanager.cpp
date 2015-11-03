@@ -5332,7 +5332,7 @@ _OCPN_DLStatus OCPN_postDataHttp( const wxString& url, const wxString& parameter
     
     if( res )
     {
-        result = post.GetResponseBody();
+        result = wxString(post.GetResponseBody().c_str(), wxConvUTF8);
         return OCPN_DL_NO_ERROR;
     } else
         result = wxEmptyString;
