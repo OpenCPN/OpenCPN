@@ -598,10 +598,15 @@ void ocpnFloatingToolbarDialog::SurfaceFromGrabber()
         gFrame->TriggerResize(m_recoversize);
     Raise();
 #endif
-    
-    m_destroyGrabber = m_pRecoverwin;
-    m_pRecoverwin = NULL;
-    m_destroyTimer.Start( 5, wxTIMER_ONE_SHOT );           //  Destor the unneeded recovery grabber
+
+    if (m_pRecoverwin) {
+        delete m_pRecoverwin;
+        m_pRecoverwin = NULL;
+    }
+
+//    m_destroyGrabber = m_pRecoverwin;
+//    m_pRecoverwin = NULL;
+//    m_destroyTimer.Start( 5, wxTIMER_ONE_SHOT );           //  Destor the unneeded recovery grabber
     
 }
 
@@ -973,15 +978,20 @@ ocpnToolBarSimple *ocpnFloatingToolbarDialog::GetToolbar()
 
 void ocpnFloatingToolbarDialog::DestroyToolBar()
 {
+    if (m_pRecoverwin) {
+        delete m_pRecoverwin;
+        m_pRecoverwin = NULL;
+    }
+
     if( m_ptoolbar ) {
         m_ptoolbar->ClearTools();
         delete m_ptoolbar;                  //->Destroy();
         m_ptoolbar = NULL;
     }
  
-    m_destroyGrabber = m_pRecoverwin;
-    m_pRecoverwin = NULL;
-    m_destroyTimer.Start( 5, wxTIMER_ONE_SHOT );           //  Destor the unneeded recovery grabber
+//    m_destroyGrabber = m_pRecoverwin;
+//    m_pRecoverwin = NULL;
+//    m_destroyTimer.Start( 5, wxTIMER_ONE_SHOT );           //  Destor the unneeded recovery grabber
     
 }
 
