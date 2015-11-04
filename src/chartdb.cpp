@@ -1033,7 +1033,7 @@ CacheEntry *ChartDB::FindOldestDeleteCandidate( bool blog)
                 
             if( (!pce->n_lock) && (Current_Ch != pDeleteCandidate) ){
                 if(blog)
-                    wxLogMessage(_T("Oldest unlocked cache index is %d, delta t is %d"), iOldest, LRUTime);
+                    wxLogMessage(_T("Oldest unlocked cache index is %d, delta t is %d"), iOldest, dt);
                 
                 pret = pce;
             }
