@@ -38,7 +38,6 @@
 #include "ocpn_plugin.h"
 #include "chart1.h"                 // for MyFrame
 #include "chcanv.h"                 // for ViewPort
-#include "datastream.h"             // for GenericPosDat
 #include "OCPN_Sound.h"
 #include "s52s57.h"
 #include "s57chart.h"               // for Object list
@@ -51,6 +50,7 @@
 #include <wx/bmpcbox.h>
 
 #ifndef __OCPN__ANDROID__
+#include "wx/curl/http.h"
 #include "wx/curl/dialog.h"
 #endif
 
@@ -320,7 +320,7 @@ private:
       wxArrayString     m_plugin_order;
       void SetPluginOrder( wxString serialized_names );
       wxString GetPluginOrder();
-      
+    
 #ifndef __OCPN__ANDROID__
 public:
       wxCurlDownloadThread *m_pCurlThread;
@@ -332,6 +332,8 @@ public:
       
       wxEvtHandler   *m_download_evHandler;
       long           *m_downloadHandle;
+      bool m_last_online;
+      long m_last_online_chk;
 #endif
 
 DECLARE_EVENT_TABLE()

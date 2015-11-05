@@ -191,7 +191,7 @@ protected:
 
       wxRect GetSourceRect(){ return Rsrc; }
 
-      virtual bool GetAndScaleData(unsigned char *ppn,
+      virtual bool GetAndScaleData(unsigned char *ppn, size_t data_size,
                                    wxRect& source, int source_stride, wxRect& dest, int dest_stride,
                                    double scale_factor, ScaleTypeEnum scale_type);
       bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint);
@@ -220,7 +220,7 @@ protected:
 
       virtual int BSBScanScanline(wxInputStream *pinStream);
       virtual int ReadBSBHdrLine( wxFFileInputStream*, char *, int );
-      virtual int AnalyzeRefpoints(void);
+      virtual int AnalyzeRefpoints(bool b_testSolution = true);
       virtual bool AnalyzeSkew(void);
       
       virtual bool SetMinMax(void);
@@ -426,7 +426,8 @@ class ChartPlugInWrapper : public ChartBaseBSB
             virtual int GetSize_X();
             virtual int GetSize_Y();
             virtual void latlong_to_chartpix(double lat, double lon, double &pixx, double &pixy);
-
+            virtual void chartpix_to_latlong(double pixx, double pixy, double *plat, double *plon);
+            
 
       private:
             PlugInChartBase *m_ppicb;

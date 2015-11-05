@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-24 20:40-0500\n"
-"PO-Revision-Date: 2015-09-24 21:47-0400\n"
+"PO-Revision-Date: 2015-10-22 23:36-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Dutch\n"
 "Language: nl_NL\n"
@@ -38,7 +38,7 @@ msgid "Chart Downloader PlugIn for OpenCPN\n"
 "Manages chart downloads and updates from sources supporting\n"
 "NOAA Chart Catalog format"
 msgstr "Kaart Downloader PlugIn voor OpenCPN\n"
-"Voor het downloaden van kaarten en verbeteringen vaanf bronnen die\n"
+"Voor het downloaden van kaarten en verbeteringen vanaf bronnen die\n"
 "de NOAA kaartcatalogus ondersteunen."
 
 #: src/chartdldr_pi.cpp:252 src/chartdldr_pi.cpp:680 src/chartdldr_pi.cpp:687
@@ -102,25 +102,25 @@ msgstr "Fout"
 msgid "You have chosen to update all chart catalogs.\n"
 "Then download all new and updated charts.\n"
 "This may take a long time."
-msgstr "U hebt gekozen voor het bijwerken van alle kaarten catalogi. \n"
-"Dan downloaden van alle nieuwe en bijgewerkte kaarten. \n"
-"Dit duurt een lange tijd."
+msgstr "U hebt gekozen voor het bijwerken van alle kaartcatalogi en\n"
+"het downloaden van alle nieuwe en bijgewerkte kaarten.\n"
+"Dit kan lang duren."
 
 #: src/chartdldr_pi.cpp:686
 msgid "You have chosen to update all chart catalogs.\n"
 "Then download only new (but not updated) charts.\n"
 "This may take a long time."
-msgstr "U hebt gekozen voor het bijwerken van alle kaarten catalogi. \n"
-"Dan downloaden van alleen nieuwe (maar niet bijgewerkte) kaarten. \n"
-"Dit kan een lange tijd duren."
+msgstr "U hebt gekozen voor het bijwerken van alle kaartcatalogi en \n"
+"het downloaden van alleen nieuwe (dus niet de bijgewerkte) kaarten. \n"
+"Dit kan lang duren."
 
 #: src/chartdldr_pi.cpp:692
 msgid "You have chosen to update all chart catalogs.\n"
 "Then download only updated (but not new) charts.\n"
 "This may take a long time."
-msgstr "U hebt gekozen voor het bijwerken van alle kaarten catalogi. \n"
-"Dan downloaden van alleen bijgewerkte (maar niet nieuwe) kaarten. \n"
-"Dit kan een lange tijd duren."
+msgstr "U hebt gekozen voor het bijwerken van alle kaartcatalogi en \n"
+"het downloaden van alleen bijgewerkte (dus niet van nieuwe) kaarten. \n"
+"Dit kan lang duren."
 
 #: src/chartdldr_pi.cpp:710 src/chartdldr_pi.cpp:1062
 #, c-format
@@ -151,8 +151,8 @@ msgstr "Nieuwe catalogus: %s niet gevonden "
 #, c-format
 msgid "Failed to Download Catalog: %s \n"
 "Verify there is a working Internet connection."
-msgstr "Download catalogus: %s niet gelukt\n"
-"Verifeer dat er is een werkende Internet-verbinding is."
+msgstr "Download van catalogus %s niet gelukt.\n"
+"Controleer of er een werkende internetverbinding is."
 
 #: src/chartdldr_pi.cpp:960 src/chartdldr_pi.cpp:966
 msgid "No charts selected for download."
@@ -170,8 +170,8 @@ msgstr "Onbekend"
 #, c-format
 msgid "The selected chart '%s' can't be downloaded automatically, do you want me to open a browser window and download them manually?\n\n"
 " After downloading the charts, please extract them to %s"
-msgstr "De geselecteerde kaart '%s' kan niet automatisch worden gedownload, wil je dat een browservenster wordt geopend en deze handmatig downloaden? \n\n"
-" Na het downloaden van de kaarten, gelieve deze uit te pakken naar %s"
+msgstr "De geselecteerde kaarten '%s' kunnen niet automatisch worden gedownload. Wilt u een browservenster openen en handmatig downloaden? \n\n"
+"Na het downloaden van de kaarten deze uitpakken in %s"
 
 #: src/chartdldr_pi.cpp:1004
 #, c-format
@@ -211,7 +211,7 @@ msgstr "Status"
 
 #: src/chartdldr_pi.cpp:1093
 msgid "Latest"
-msgstr "Meest recente"
+msgstr "Versiedatum"
 
 #: src/chartdldr_pi.cpp:1137
 msgid "Do you really want to remove the chart source?\n"
@@ -227,7 +227,7 @@ msgstr "Kaartbron bewerken"
 #, c-format
 msgid "Path %s seems not to be covered by your configured Chart Directories.\n"
 "To see the charts you have to adjust the configuration on the 'Chart Files' tab."
-msgstr "Het pad %s is maakt geen deel uit van de door u aangegeven kaartmappen.\n"
+msgstr "Het pad %s maakt geen deel uit van de door u aangegeven kaartmappen.\n"
 "Om de kaarten te zien moet u de juiste map toevoegen via 'Optionele Instellingen' - 'Kaarten' - 'Kaartbestanden' - 'Voeg map toe ...'."
 
 #: src/chartdldr_pi.cpp:1739 src/chartdldr_pi.cpp:1742
@@ -236,7 +236,7 @@ msgstr "U moet één van de voorgedefinieerde kaartbronnen selecteren of er zelf
 
 #: src/chartdldr_pi.cpp:1745
 msgid "The chart source must have a name.\n"
-msgstr "De kaartbron moet een naam hebben. \n"
+msgstr "De kaartbron moet een naam hebben.\n"
 
 #: src/chartdldr_pi.cpp:1748
 msgid "The chart source must have a valid URL.\n"
@@ -357,7 +357,7 @@ msgstr "Alle nieuwe kaarten"
 
 #: src/chartdldrgui.cpp:497
 msgid "Allow bulk update of all configured chart sources and charts"
-msgstr "Bulk bijwerken van alle geconfigureerde kaart bronnen en kaarten"
+msgstr "Bulkbijwerking van alle geconfigureerde kaartbronnen en kaarten"
 
 #: src/chartdldrgui.h:77
 msgid "New chart source"
@@ -461,7 +461,7 @@ msgstr "Gebruik proxy"
 
 #: src/wxcurl/panel.cpp:141
 msgid "Proxy host:"
-msgstr "Proxy host:"
+msgstr "Proxy-host:"
 
 #: src/wxcurl/panel.cpp:142
 msgid "Proxy username:"
@@ -469,9 +469,9 @@ msgstr "Proxy-gebruikersnaam:"
 
 #: src/wxcurl/panel.cpp:143
 msgid "Proxy password:"
-msgstr "Proxywachtwoord:"
+msgstr "Proxy-wachtwoord:"
 
 #: src/wxcurl/panel.cpp:144
 msgid "Proxy port:"
-msgstr "Proxypoort:"
+msgstr "Proxy-poort:"
 

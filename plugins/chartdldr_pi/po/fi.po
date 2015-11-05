@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-24 20:40-0500\n"
-"PO-Revision-Date: 2015-09-24 21:47-0400\n"
+"PO-Revision-Date: 2015-10-22 23:36-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Finnish\n"
 "Language: fi_FI\n"
@@ -84,7 +84,7 @@ msgstr "Ajan tasalla"
 #: src/chartdldr_pi.cpp:574
 #, c-format
 msgid "%lu charts total, %lu updated, %lu new"
-msgstr ""
+msgstr "%lu kartat yhteensä %lu päivitetty, %lu uusia"
 
 #: src/chartdldr_pi.cpp:651 src/chartdldr_pi.cpp:1217
 msgid "(Please update first)"
@@ -160,11 +160,11 @@ msgstr "Karttoja ei ole valittu ladattavaksi."
 
 #: src/chartdldr_pi.cpp:976
 msgid "Abort download"
-msgstr ""
+msgstr "Keskeytä lataus"
 
 #: src/chartdldr_pi.cpp:985
 msgid "Unknown"
-msgstr ""
+msgstr "Tuntematon"
 
 #: src/chartdldr_pi.cpp:992
 #, c-format
@@ -181,12 +181,13 @@ msgstr "Virhe, URL karttaan (%s) näyttää väärältä."
 #: src/chartdldr_pi.cpp:1030
 #, c-format
 msgid "Downloading chart %u of %u, %u downloads failed (%s / %s)"
-msgstr ""
+msgstr "Karttojen lataaminen %u sta %u, %u hun lataus epäonnistui (%s / %s)"
 
 #: src/chartdldr_pi.cpp:1059 src/chartdldrgui.cpp:293
 msgid "Download\n"
 " selected charts"
-msgstr ""
+msgstr "Lataa\n"
+" valitut kartat"
 
 #: src/chartdldr_pi.cpp:1085 src/chartdldrgui.cpp:95
 msgid "Catalog"
@@ -275,7 +276,7 @@ msgstr "Valitse kansio"
 
 #: src/chartdldrgui.cpp:197 src/chartdldrgui.cpp:529
 msgid "Choose Chart File Directory"
-msgstr ""
+msgstr "Valitse karttojen kansio"
 
 #: src/chartdldrgui.cpp:222 src/chartdldrgui.cpp:335
 msgid "Catalogs"

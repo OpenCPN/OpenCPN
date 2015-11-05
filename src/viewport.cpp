@@ -283,7 +283,7 @@ void ViewPort::GetLLFromPix( const wxPoint2DDouble &p, double *lat, double *lon 
     double d_east = xpr / view_scale_ppm;
     double d_north = ypr / view_scale_ppm;
 
-    double slat, slon;
+    double slat = 0.0, slon = 0.0;
     switch( m_projection_type ) {
     case PROJECTION_MERCATOR:
         //TODO  This could be fromSM_ECC to better match some Raster charts
@@ -574,7 +574,10 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
     }
 
     if(!valid)
+    {
+        delete[] pp;
         return OCPNRegion(); //empty;
+    }
  
     //  We want to avoid processing regions with very large rectangle counts,
     //  so make some tests for special cases

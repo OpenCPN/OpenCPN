@@ -120,6 +120,8 @@ class GarminProtocolHandler;
 extern  const wxEventType wxEVT_OCPN_DATASTREAM;
 extern  const wxEventType wxEVT_OCPN_THREADMSG;
 
+bool CheckSumCheck(const std::string& sentence);
+
 //----------------------------------------------------------------------------
 // DataStream
 //

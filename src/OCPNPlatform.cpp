@@ -56,6 +56,8 @@
 // Include CrashRpt Header
 #ifdef OCPN_USE_CRASHRPT
 #include "CrashRpt.h"
+#endif
+#ifdef __MSVC__
 #include <new.h>
 #endif
 
@@ -346,7 +348,7 @@ void OCPNPlatform::Initialize_1( void )
     
     
     // URL for sending error reports over HTTP.
-    if(g_bEmailCrashReport){
+    if(1/*g_bEmailCrashReport*/){
         info.pszEmailTo = _T("opencpn@bigdumboat.com");
         info.pszSmtpProxy = _T("mail.bigdumboat.com:587");
         info.pszUrl = _T("http://bigdumboat.com/crashrpt/ocpn_crashrpt.php");
@@ -1042,7 +1044,8 @@ bool OCPNPlatform::InitializeLogFile( void )
     
 #ifdef  __WXOSX__
     
-    wxFileName LibPref(mlog_file);          // starts like "~/Library/Preferences"
+    wxFileName LibPref(mlog_file);          // starts like "~/Library/Preferences/opencpn"
+    LibPref.RemoveLastDir();// takes off "opencpn"
     LibPref.RemoveLastDir();// takes off "Preferences"
     
     mlog_file = LibPref.GetFullPath();
@@ -1463,6 +1466,33 @@ double OCPNPlatform::GetToolbarScaleFactor( int GUIScaleFactor )
         
     
 #else
+    if(g_bresponsive ){
+        
+        double premult = 1.0;
+        
+        //  Get the basic size of a tool icon
+        ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+        wxSize style_tool_size = style->GetToolSize();
+        double tool_size = style_tool_size.x;
+
+        // unless overridden by user, we declare the "best" tool size
+        // to be roughly 6 mm square.
+        double target_size = 6.0;                // mm
+
+        double basic_tool_size_mm = tool_size / GetDisplayDPmm();
+        premult = target_size / basic_tool_size_mm;
+
+        //Adjust the scale factor using the global GUI scale parameter
+        double postmult =  exp( GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
+        
+        
+        rv = premult * postmult;
+        rv = wxMin(rv, 3.0);      //  Clamp at 3.0
+        rv = wxMax(rv, 1.0);
+        
+    }
+    
+
 #endif
 
     return rv;
@@ -1493,7 +1523,6 @@ double OCPNPlatform::GetCompassScaleFactor( int GUIScaleFactor )
         rv = wxMin(rv, 1.5);      //  Clamp at 1.5
         
         rv = premult * postmult;
-//        qDebug() << "parmsF" << GUIScaleFactor << premult << postmult << rv;
         rv = wxMin(rv, 3.0);      //  Clamp at 3.0
     }
     
@@ -1501,9 +1530,23 @@ double OCPNPlatform::GetCompassScaleFactor( int GUIScaleFactor )
     
 #else
     if(g_bresponsive ){
+        double premult = 1.0;
+        
+        ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+        wxSize style_tool_size = style->GetToolSize();
+        double compass_size = style_tool_size.x;
+
+        // We declare the "best" tool size to be roughly 6 mm.
+        double target_size = 6.0;                // mm
+        
+        double basic_tool_size_mm = compass_size / GetDisplayDPmm();
+        premult = target_size / basic_tool_size_mm;
+        
         double postmult =  exp( GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
-        rv *= postmult;
+
+        rv = premult * postmult;
         rv = wxMin(rv, 3.0);      //  Clamp at 3.0
+        rv = wxMax(rv, 1.0);
     }
     
 #endif

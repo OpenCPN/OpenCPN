@@ -248,6 +248,8 @@ PlugInManager::PlugInManager(MyFrame *parent)
     #ifndef __OCPN__ANDROID__
     wxCurlBase::Init();
     #endif
+    m_last_online = false;
+    m_last_online_chk = -1;
 }
 
 PlugInManager::~PlugInManager()
@@ -2506,7 +2508,8 @@ bool AddSingleWaypoint( PlugIn_Waypoint *pwaypoint, bool b_permanent)
     }
 
     pWP->m_MarkDescription = pwaypoint->m_MarkDescription;
-    pWP->m_btemp = (b_permanent == false);
+	pWP->SetCreateTime(pwaypoint->m_CreateTime);
+	pWP->m_btemp = (b_permanent == false);
 
     pSelect->AddSelectableRoutePoint( pwaypoint->m_lat, pwaypoint->m_lon, pWP );
     if(b_permanent)
@@ -2555,6 +2558,8 @@ bool UpdateSingleWaypoint( PlugIn_Waypoint *pwaypoint )
         prp->SetIconName( pwaypoint->m_IconName );
         prp->SetName( pwaypoint->m_MarkName );
         prp->m_MarkDescription = pwaypoint->m_MarkDescription;
+		prp->SetVisible(pwaypoint->m_IsVisible);
+		prp->SetCreateTime(pwaypoint->m_CreateTime);
 
         //  Transcribe (clone) the html HyperLink List, if present
 
@@ -2593,7 +2598,7 @@ bool UpdateSingleWaypoint( PlugIn_Waypoint *pwaypoint )
     return b_found;
 }
 
-bool GetSingleWaypoint( wxString &GUID, PlugIn_Waypoint *pwaypoint )
+bool GetSingleWaypoint(wxString GUID, PlugIn_Waypoint *pwaypoint)
 {
     //  Find the RoutePoint
     bool b_found = false;
@@ -2607,6 +2612,8 @@ bool GetSingleWaypoint( wxString &GUID, PlugIn_Waypoint *pwaypoint )
     pwaypoint->m_IconName = prp->GetIconName();
     pwaypoint->m_MarkName = prp->GetName(  );
     pwaypoint->m_MarkDescription = prp->m_MarkDescription;
+	pwaypoint->m_IsVisible = prp->IsVisible();
+	pwaypoint->m_CreateTime = prp->GetCreateTime();
 
     //  Transcribe (clone) the html HyperLink List, if present
 
@@ -2635,6 +2642,23 @@ bool GetSingleWaypoint( wxString &GUID, PlugIn_Waypoint *pwaypoint )
 
     return true;
 }
+
+wxArrayString GetWaypointGUIDArray( void )
+{
+    wxArrayString result;
+    RoutePointList *list = pWayPointMan->GetWaypointList();
+    
+    wxRoutePointListNode *prpnode = list->GetFirst();
+    while( prpnode ) {
+        RoutePoint *prp = prpnode->GetData();
+        result.Add(prp->m_GUID);
+        
+        prpnode = prpnode->GetNext(); //RoutePoint
+    }
+    
+    return result;
+}
+
 
 bool AddPlugInRoute( PlugIn_Route *proute, bool b_permanent )
 {
@@ -3561,6 +3585,9 @@ int PlugInChartBase::GetSize_Y()
 void PlugInChartBase::latlong_to_chartpix(double lat, double lon, double &pixx, double &pixy)
 {}
 
+void PlugInChartBase::chartpix_to_latlong(double pixx, double pixy, double *plat, double *plon)
+{}
+
 
 // ----------------------------------------------------------------------------
 // PlugInChartBaseGL Implementation
@@ -3868,22 +3895,52 @@ double ChartPlugInWrapper::GetNormalScaleMax(double canvas_scale_factor, int can
         return 2.0e7;
 }
 
+
+/*              RectRegion:
+ *                      This is the Screen region desired to be updated.  Will be either 1 rectangle(full screen)
+ *                      or two rectangles (panning with FBO accelerated pan logic)
+ * 
+ *              Region:
+ *                      This is the LLRegion describing the quilt active region for this chart.
+ * 
+ *              So, Actual rendering area onscreen should be clipped to the intersection of the two regions.
+ */
+
 bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
                                               const OCPNRegion &RectRegion, const LLRegion &Region)
 {
 #ifdef ocpnUSE_GL
     if(m_ppicb)
     {
+        ViewPort vp = VPoint;           // non-const copy
+        
         gs_plib_flags = 0;               // reset the CAPs flag
-        PlugIn_ViewPort pivp = CreatePlugInViewport( VPoint);
         PlugInChartBaseGL *ppicb_gl = dynamic_cast<PlugInChartBaseGL*>(m_ppicb);
         if(!Region.Empty() && ppicb_gl)
         {
-            // TODO: test with s63 plugin
             wxRegion *r = RectRegion.GetNew_wxRegion();
-            ppicb_gl->RenderRegionViewOnGL( glc, pivp, *r, glChartCanvas::s_b_useStencil);
+            for(OCPNRegionIterator upd ( RectRegion ); upd.HaveRects(); upd.NextRect()) {
+                LLRegion chart_region = vp.GetLLRegion(upd.GetRect());
+                chart_region.Intersect(Region);
+                
+                if(!chart_region.Empty()) {
+                    ViewPort cvp = glChartCanvas::ClippedViewport(VPoint, chart_region);
+                    
+                    glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
+                    ps52plib->m_last_clip_rect = upd.GetRect();
+                    glPushMatrix(); //    Adjust for rotation
+                    glChartCanvas::RotateToViewPort(VPoint);
+
+                    PlugIn_ViewPort pivp = CreatePlugInViewport( cvp );
+                    ppicb_gl->RenderRegionViewOnGL( glc, pivp, *r, glChartCanvas::s_b_useStencil);
+                    
+                    glPopMatrix();
+                    glChartCanvas::DisableClipRegion();
+                    
+                    
+                }  //!empty
+            } //for
             delete r;
-            return true;
         }
     }
     else
@@ -4006,6 +4063,13 @@ void ChartPlugInWrapper::latlong_to_chartpix(double lat, double lon, double &pix
 {
     if(m_ppicb)
         m_ppicb->latlong_to_chartpix(lat, lon, pixx, pixy);
+}
+
+
+void ChartPlugInWrapper::chartpix_to_latlong(double pixx, double pixy, double *plat, double *plon)
+{
+    if(m_ppicb)
+        m_ppicb->chartpix_to_latlong(pixx, pixy, plat, plon);
 }
 
 
@@ -5200,19 +5264,23 @@ _OCPN_DLStatus OCPN_downloadFileBackground( const wxString& url, const wxString 
     bool failed = false;
     if ( !g_pi_manager->HandleCurlThreadError( g_pi_manager->m_pCurlThread->SetURL( url ), g_pi_manager->m_pCurlThread, url ) )
         failed = true;
-    
-    if ( !g_pi_manager->HandleCurlThreadError( g_pi_manager->m_pCurlThread->SetOutputStream( new wxFileOutputStream( outputFile ) ), g_pi_manager->m_pCurlThread) )
-        failed = true;
-        
-    g_pi_manager->m_download_evHandler = handler;
-    g_pi_manager->m_downloadHandle = handle;
-
-    wxCurlThreadError err = g_pi_manager->m_pCurlThread->Download();
-    if (err != wxCTE_NO_ERROR)
+    if (!failed)
     {
-        g_pi_manager->HandleCurlThreadError(err, g_pi_manager->m_pCurlThread);     // shows a message to the user
-        g_pi_manager->m_pCurlThread->Abort();
-        failed = true;
+        if (!g_pi_manager->HandleCurlThreadError(g_pi_manager->m_pCurlThread->SetOutputStream(new wxFileOutputStream(outputFile)), g_pi_manager->m_pCurlThread))
+            failed = true;
+    }
+    if (!failed)
+    {
+        g_pi_manager->m_download_evHandler = handler;
+        g_pi_manager->m_downloadHandle = handle;
+
+        wxCurlThreadError err = g_pi_manager->m_pCurlThread->Download();
+        if (err != wxCTE_NO_ERROR)
+        {
+            g_pi_manager->HandleCurlThreadError(err, g_pi_manager->m_pCurlThread);     // shows a message to the user
+            g_pi_manager->m_pCurlThread->Abort();
+            failed = true;
+        }
     }
     
     if( !failed )
@@ -5220,8 +5288,11 @@ _OCPN_DLStatus OCPN_downloadFileBackground( const wxString& url, const wxString 
     
     if( g_pi_manager->m_pCurlThread )
     {
-        wxDELETE( g_pi_manager->m_pCurlThread );
-        g_pi_manager->m_pCurlThread = NULL;
+        if (g_pi_manager->m_pCurlThread->IsAlive())
+            g_pi_manager->m_pCurlThread->Abort();
+        if (g_pi_manager->m_pCurlThread->GetOutputStream())
+            delete (g_pi_manager->m_pCurlThread->GetOutputStream());
+        wxDELETE(g_pi_manager->m_pCurlThread);
         g_pi_manager->m_download_evHandler = NULL;
         g_pi_manager->m_downloadHandle = NULL;
     }
@@ -5240,13 +5311,50 @@ void OCPN_cancelDownloadFileBackground( long handle )
 #else
     if( g_pi_manager->m_pCurlThread )
     {
-        if( g_pi_manager->m_pCurlThread->IsAlive() )
+        if (g_pi_manager->m_pCurlThread->IsAlive())
             g_pi_manager->m_pCurlThread->Abort();
-        wxDELETE( g_pi_manager->m_pCurlThread );
-        g_pi_manager->m_pCurlThread = NULL;
+        delete (g_pi_manager->m_pCurlThread->GetOutputStream());
+        wxDELETE(g_pi_manager->m_pCurlThread);
         g_pi_manager->m_download_evHandler = NULL;
         g_pi_manager->m_downloadHandle = NULL;
     }
+#endif
+}
+
+_OCPN_DLStatus OCPN_postDataHttp( const wxString& url, const wxString& parameters, wxString& result, int timeout_secs )
+{
+#ifdef __OCPN__ANDROID__
+    //TODO
+#else
+    wxCurlHTTP post;
+    post.SetOpt(CURLOPT_TIMEOUT, timeout_secs);
+    size_t res = post.Post( parameters.ToAscii(), parameters.Len(), url );
+    
+    if( res )
+    {
+        result = wxString(post.GetResponseBody().c_str(), wxConvUTF8);
+        return OCPN_DL_NO_ERROR;
+    } else
+        result = wxEmptyString;
+    
+    return OCPN_DL_FAILED;
+#endif
+}
+
+bool OCPN_isOnline()
+{
+#ifdef __OCPN__ANDROID__
+    //TODO
+#else
+    if (wxDateTime::GetTimeNow() > g_pi_manager->m_last_online_chk + ONLINE_CHECK_RETRY)
+    {
+        wxCurlHTTP get;
+        get.Head( _T("http://yahoo.com/") );
+        g_pi_manager->m_last_online = get.GetResponseCode() > 0;
+        
+        g_pi_manager->m_last_online_chk = wxDateTime::GetTimeNow();
+    }
+    return g_pi_manager->m_last_online;
 #endif
 }
 
@@ -5266,9 +5374,11 @@ void PlugInManager::OnEndPerformCurlDownload(wxCurlEndPerformEvent &ev)
     
     if( m_pCurlThread )
     {
+        if (m_pCurlThread->IsAlive())
+            m_pCurlThread->Wait();
         if(!m_pCurlThread->IsAborting()){
-            wxDELETE( m_pCurlThread );
-            m_pCurlThread = NULL;
+            delete (m_pCurlThread->GetOutputStream());
+            wxDELETE(m_pCurlThread);
         }
     }
 }

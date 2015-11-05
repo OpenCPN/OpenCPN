@@ -314,7 +314,7 @@ class options : private Uncopyable,
   int m_groups_changed;
 
   // Sizer flags
-  wxSizerFlags inputFlags, labelFlags, groupInputFlags;
+  wxSizerFlags inputFlags, verticleInputFlags, labelFlags, groupInputFlags;
   wxSizerFlags groupLabelFlags;
 
   // For general options
@@ -758,11 +758,12 @@ class OpenGLOptionsDlg : private Uncopyable, public wxDialog {
 #define ID_MMSI_PROPS_LIST 10073
 
 enum {
-  mlMMSI = 0,
-  mlTrackMode,
-  mlIgnore,
-  mlMOB,
-  mlVDM
+    mlMMSI = 0,
+    mlTrackMode,
+    mlIgnore,
+    mlMOB,
+    mlVDM,
+    mlFollower
 };  // MMSIListCtrl Columns;
 
 class MMSIListCtrl : private Uncopyable, public wxListCtrl {
@@ -808,7 +809,7 @@ class MMSIEditDialog : private Uncopyable, public wxDialog {
   wxTextCtrl *m_MMSICtl;
   wxRadioButton *m_rbTypeTrackDefault, *m_rbTypeTrackAlways;
   wxRadioButton *m_rbTypeTrackNever;
-  wxCheckBox *m_cbTrackPersist, *m_IgnoreButton, *m_MOBButton, *m_VDMButton;
+  wxCheckBox *m_cbTrackPersist, *m_IgnoreButton, *m_MOBButton, *m_VDMButton, *m_FollowerButton;
   wxButton *m_CancelButton, *m_OKButton;
 
   DECLARE_EVENT_TABLE()

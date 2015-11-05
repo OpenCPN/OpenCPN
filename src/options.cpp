@@ -450,14 +450,16 @@ void MMSIEditDialog::CreateControls(void) {
 
   m_IgnoreButton = new wxCheckBox(this, wxID_ANY, _("Ignore this MMSI"));
   mmsiSizer->Add(m_IgnoreButton, 0, wxEXPAND, 5);
-
+  
   m_MOBButton = new wxCheckBox(this, wxID_ANY,
                                _("Handle this MMSI as SART/PLB(AIS) MOB."));
   mmsiSizer->Add(m_MOBButton, 0, wxEXPAND, 5);
 
-  m_VDMButton =
-      new wxCheckBox(this, wxID_ANY, _("Convert AIVDM to AIVDO for this MMSI"));
+  m_VDMButton = new wxCheckBox(this, wxID_ANY, _("Convert AIVDM to AIVDO for this MMSI"));
   mmsiSizer->Add(m_VDMButton, 0, wxEXPAND, 5);
+
+  m_FollowerButton = new wxCheckBox(this, wxID_ANY, _("This MMSI is my Follower - No CPA Alert"));
+  mmsiSizer->Add(m_FollowerButton, 0, wxEXPAND, 5);
 
   wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
   mainSizer->Add(btnSizer, 0, wxALIGN_RIGHT | wxALL, 5);
@@ -492,6 +494,7 @@ void MMSIEditDialog::CreateControls(void) {
   m_IgnoreButton->SetValue(m_props->m_bignore);
   m_MOBButton->SetValue(m_props->m_bMOB);
   m_VDMButton->SetValue(m_props->m_bVDM);
+  m_FollowerButton->SetValue(m_props->m_bFollower);
 
   SetColorScheme(GLOBAL_COLOR_SCHEME_RGB);
 }
@@ -509,6 +512,17 @@ void MMSIEditDialog::OnMMSIEditOKClick(wxCommandEvent& event) {
     m_MMSICtl->GetValue().ToLong(&nmmsi);
     m_props->MMSI = nmmsi;
 
+    if (m_MMSICtl->GetValue().Length() != 9)
+    {
+        if (wxID_CANCEL == OCPNMessageBox(this,
+            _("An MMSI Id is generally a number of nine digits.\nPlease check your entries and cancel if necessary."),
+            _("OpenCPN Info"),
+            wxOK | wxCANCEL))
+        {
+            return;
+        }
+    }
+    
     if (m_rbTypeTrackDefault->GetValue())
       m_props->TrackType = TRACKTYPE_DEFAULT;
     else if (m_rbTypeTrackAlways->GetValue())
@@ -519,6 +533,7 @@ void MMSIEditDialog::OnMMSIEditOKClick(wxCommandEvent& event) {
     m_props->m_bignore = m_IgnoreButton->GetValue();
     m_props->m_bMOB = m_MOBButton->GetValue();
     m_props->m_bVDM = m_VDMButton->GetValue();
+    m_props->m_bFollower = m_FollowerButton->GetValue();
     m_props->m_bPersistentTrack = m_cbTrackPersist->GetValue();
   }
 
@@ -578,6 +593,9 @@ wxString MMSIListCtrl::OnGetItemText(long item, long column) const {
       break;
     case mlVDM:
       if (props->m_bVDM) ret = _T( "X" );
+      break;
+    case mlFollower:
+      if (props->m_bFollower) ret = _T("X");
       break;
     default:
       ret = _T( "??" );
@@ -662,7 +680,7 @@ MMSI_Props_Panel::MMSI_Props_Panel(wxWindow* parent)
   wxBoxSizer* topSizer = new wxBoxSizer(wxVERTICAL);
   SetSizer(topSizer);
 
-  wxString MMSI_props_column_spec = _T( "120;120;100;100;100;100;100" );
+  wxString MMSI_props_column_spec = _T("120;120;100;100;100;100;100");
   //  Parse the global column width string as read from config file
   wxStringTokenizer tkz(MMSI_props_column_spec, _T(";"));
   wxString s_width = tkz.GetNextToken();
@@ -722,6 +740,15 @@ MMSI_Props_Panel::MMSI_Props_Panel(wxWindow* parent)
     width = wxMin(width, dx * 30);
   }
   m_pListCtrlMMSI->InsertColumn(tlTYPE, _("VDM->VDO"), wxLIST_FORMAT_CENTER,
+                                width);
+  s_width = tkz.GetNextToken();
+
+  width = dx * 8;
+  if (s_width.ToLong(&lwidth)) {
+    width = wxMax(dx * 2, lwidth);
+    width = wxMin(width, dx * 30);
+  }
+  m_pListCtrlMMSI->InsertColumn(tlTYPE, _("Follower"), wxLIST_FORMAT_CENTER,
                                 width);
   s_width = tkz.GetNextToken();
 
@@ -1368,8 +1395,7 @@ void options::CreatePanel_NMEA_Compact(size_t parent, int border_size,
                                 wxDefaultPosition, wxDefaultSize, 0);
   m_cbCheckCRC->SetValue(TRUE);
   m_cbCheckCRC->SetToolTip(
-      _("If checked, only the sentences with a valid checksum are passed "
-        "through"));
+      _("If checked, only the sentences with a valid checksum are passed through"));
   fgSizer5->Add(m_cbCheckCRC, 0, wxALL, 5);
 
   m_cbGarminHost =
@@ -1984,8 +2010,7 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
                                 wxDefaultPosition, wxDefaultSize, 0);
   m_cbCheckCRC->SetValue(TRUE);
   m_cbCheckCRC->SetToolTip(
-      _("If checked, only the sentences with a valid checksum are passed "
-        "through"));
+      _("If checked, only the sentences with a valid checksum are passed through"));
   fgSizer5->Add(m_cbCheckCRC, 0, wxALL, 5);
 
   m_cbGarminHost = new wxCheckBox(m_pNMEAForm, wxID_ANY,
@@ -2796,21 +2821,21 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
 
     pSkewComp = new wxCheckBox(m_ChartDisplayPage, ID_SKEWCOMPBOX,
                                _("Show Skewed Raster Charts as North-Up"));
-    boxCharts->Add(pSkewComp, inputFlags);
+    boxCharts->Add(pSkewComp, verticleInputFlags);
 
     pFullScreenQuilt = new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
                                       _("Disable Full Screen Quilting"));
-    boxCharts->Add(pFullScreenQuilt, inputFlags);
+    boxCharts->Add(pFullScreenQuilt, verticleInputFlags);
 
     pOverzoomEmphasis =
         new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
                        _("Suppress blur/fog effects on overzoom"));
-    boxCharts->Add(pOverzoomEmphasis, inputFlags);
+    boxCharts->Add(pOverzoomEmphasis, verticleInputFlags);
 
     pOZScaleVector =
         new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
                        _("Suppress scaled vector charts on overzoom"));
-    boxCharts->Add(pOZScaleVector, inputFlags);
+    boxCharts->Add(pOZScaleVector, verticleInputFlags);
 
     // spacer
     itemBoxSizerUI->Add(0, border_size * 3);
@@ -2827,7 +2852,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     pCOGUPUpdateSecs =
         new wxTextCtrl(m_ChartDisplayPage, ID_OPTEXTCTRL, _T(""),
                        wxDefaultPosition, wxSize(50, -1), wxTE_RIGHT);
-    pCOGUPFilterRow->Add(pCOGUPUpdateSecs, 0, wxALIGN_RIGHT | wxALL,
+    pCOGUPFilterRow->Add(pCOGUPUpdateSecs, 0, wxALL,
                          group_item_spacing);
 
     pCOGUPFilterRow->Add(
@@ -2855,9 +2880,8 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     itemBoxSizerUI->Add(0, border_size * 3);
     wxStaticText* zoomText =
         new wxStaticText(m_ChartDisplayPage, wxID_ANY,
-                         _("With a lower value, the same zoom level shows a "
-                           "less detailed chart.\nWith a higher value, the "
-                           "same zoom level shows a more detailed chart."));
+                         _("With a lower value, the same zoom level shows a less detailed chart.\n \
+                         With a higher value, the same zoom level shows a more detailed chart."));
 
     smallFont = new wxFont(*dialogFont);  // we can't use Smaller() because
                                           // wx2.8 doesn't support it
@@ -2881,13 +2905,13 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
         m_ChartDisplayPage, ID_DRAGGINGCHECKBOX,
         _("Lock Waypoints (Unless waypoint property dialog visible)"));
     pWayPointPreventDragging->SetValue(FALSE);
-    boxCtrls->Add(pWayPointPreventDragging, inputFlags);
+    boxCtrls->Add(pWayPointPreventDragging, verticleInputFlags);
 
     pConfirmObjectDeletion =
         new wxCheckBox(m_ChartDisplayPage, ID_DELETECHECKBOX,
                        _("Confirm deletion of tracks and routes"));
     pConfirmObjectDeletion->SetValue(FALSE);
-    boxCtrls->Add(pConfirmObjectDeletion, inputFlags);
+    boxCtrls->Add(pConfirmObjectDeletion, verticleInputFlags);
 
     // spacer
     itemBoxSizerUI->Add(0, border_size * 3);
@@ -2910,7 +2934,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     pScreenMM = new wxTextCtrl(m_ChartDisplayPage, ID_OPTEXTCTRL, _T(""),
                                wxDefaultPosition, wxSize(3 * m_fontHeight, -1),
                                wxTE_RIGHT);
-    pDPIRow->Add(pScreenMM, 0, wxALIGN_RIGHT | wxALL, group_item_spacing);
+    pDPIRow->Add(pScreenMM, 0, wxALL, group_item_spacing);
 
     pDPIRow->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("mm")),
                  inputFlags);
@@ -2999,12 +3023,12 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     pCheck_SOUNDG =
         new wxCheckBox(ps57Ctl, ID_SOUNDGCHECKBOX, _("Depth Soundings"));
     pCheck_SOUNDG->SetValue(FALSE);
-    miscSizer->Add(pCheck_SOUNDG, inputFlags);
+    miscSizer->Add(pCheck_SOUNDG, verticleInputFlags);
 
     pCheck_META = new wxCheckBox(ps57Ctl, ID_METACHECKBOX,
                                  _("Chart Information Objects"));
     pCheck_META->SetValue(FALSE);
-    miscSizer->Add(pCheck_META, inputFlags);
+    miscSizer->Add(pCheck_META, verticleInputFlags);
 
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Buoys/Lights")),
                        groupLabelFlags);
@@ -3015,17 +3039,17 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     pCheck_ATONTEXT =
         new wxCheckBox(ps57Ctl, ID_ATONTEXTCHECKBOX, _("Buoy/Light Labels"));
     pCheck_ATONTEXT->SetValue(FALSE);
-    lightSizer->Add(pCheck_ATONTEXT, inputFlags);
+    lightSizer->Add(pCheck_ATONTEXT, verticleInputFlags);
 
     pCheck_LDISTEXT =
         new wxCheckBox(ps57Ctl, ID_LDISTEXTCHECKBOX, _("Light Descriptions"));
     pCheck_LDISTEXT->SetValue(FALSE);
-    lightSizer->Add(pCheck_LDISTEXT, inputFlags);
+    lightSizer->Add(pCheck_LDISTEXT, verticleInputFlags);
 
     pCheck_XLSECTTEXT = new wxCheckBox(ps57Ctl, ID_LDISTEXTCHECKBOX,
                                        _("Extended Light Sectors"));
     pCheck_XLSECTTEXT->SetValue(FALSE);
-    lightSizer->Add(pCheck_XLSECTTEXT, inputFlags);
+    lightSizer->Add(pCheck_XLSECTTEXT, verticleInputFlags);
 
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Chart Texts")),
                        groupLabelFlags);
@@ -3036,17 +3060,17 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     pCheck_NATIONALTEXT = new wxCheckBox(ps57Ctl, ID_NATIONALTEXTCHECKBOX,
                                          _("National text on chart"));
     pCheck_NATIONALTEXT->SetValue(FALSE);
-    textSizer->Add(pCheck_NATIONALTEXT, inputFlags);
+    textSizer->Add(pCheck_NATIONALTEXT, verticleInputFlags);
 
     pCheck_SHOWIMPTEXT =
         new wxCheckBox(ps57Ctl, ID_IMPTEXTCHECKBOX, _("Important Text Only"));
     pCheck_SHOWIMPTEXT->SetValue(FALSE);
-    textSizer->Add(pCheck_SHOWIMPTEXT, inputFlags);
+    textSizer->Add(pCheck_SHOWIMPTEXT, verticleInputFlags);
 
     pCheck_DECLTEXT =
         new wxCheckBox(ps57Ctl, ID_DECLTEXTCHECKBOX, _("De-Cluttered Text"));
     pCheck_DECLTEXT->SetValue(FALSE);
-    textSizer->Add(pCheck_DECLTEXT, inputFlags);
+    textSizer->Add(pCheck_DECLTEXT, verticleInputFlags);
 
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Chart Detail")),
                        labelFlags);
@@ -3585,7 +3609,7 @@ void options::CreatePanel_Display(size_t parent, int border_size,
 
     pCBLookAhead =
         new wxCheckBox(pDisplayPanel, ID_CHECK_LOOKAHEAD, _("Look Ahead Mode"));
-    boxNavMode->Add(pCBLookAhead, inputFlags);
+    boxNavMode->Add(pCBLookAhead, verticleInputFlags);
 
     // spacer
     generalSizer->Add(0, border_size * 4);
@@ -3600,11 +3624,11 @@ void options::CreatePanel_Display(size_t parent, int border_size,
 
     pCDOQuilting = new wxCheckBox(pDisplayPanel, ID_QUILTCHECKBOX1,
                                   _("Enable Chart Quilting"));
-    boxCharts->Add(pCDOQuilting, inputFlags);
+    boxCharts->Add(pCDOQuilting, verticleInputFlags);
 
     pPreserveScale = new wxCheckBox(pDisplayPanel, ID_PRESERVECHECKBOX,
                                     _("Preserve Scale when Switching Charts"));
-    boxCharts->Add(pPreserveScale, inputFlags);
+    boxCharts->Add(pPreserveScale, verticleInputFlags);
 
     // spacer
     generalSizer->Add(0, border_size * 4);
@@ -3618,12 +3642,12 @@ void options::CreatePanel_Display(size_t parent, int border_size,
 
     pSmoothPanZoom = new wxCheckBox(pDisplayPanel, ID_SMOOTHPANZOOMBOX,
                                     _("Smooth Panning / Zooming"));
-    boxCtrls->Add(pSmoothPanZoom, inputFlags);
+    boxCtrls->Add(pSmoothPanZoom, verticleInputFlags);
 
     pEnableZoomToCursor =
         new wxCheckBox(pDisplayPanel, ID_ZTCCHECKBOX, _("Zoom to Cursor"));
     pEnableZoomToCursor->SetValue(FALSE);
-    boxCtrls->Add(pEnableZoomToCursor, inputFlags);
+    boxCtrls->Add(pEnableZoomToCursor, verticleInputFlags);
 
     // spacer
     generalSizer->Add(0, border_size * 4);
@@ -3638,15 +3662,15 @@ void options::CreatePanel_Display(size_t parent, int border_size,
 
     pSDisplayGrid =
         new wxCheckBox(pDisplayPanel, ID_CHECK_DISPLAYGRID, _("Show Grid"));
-    boxDisp->Add(pSDisplayGrid, inputFlags);
+    boxDisp->Add(pSDisplayGrid, verticleInputFlags);
 
     pCDOOutlines = new wxCheckBox(pDisplayPanel, ID_OUTLINECHECKBOX1,
                                   _("Show Chart Outlines"));
-    boxDisp->Add(pCDOOutlines, inputFlags);
+    boxDisp->Add(pCDOOutlines, verticleInputFlags);
 
     pSDepthUnits = new wxCheckBox(pDisplayPanel, ID_SHOWDEPTHUNITSBOX1,
                                   _("Show Depth Units"));
-    boxDisp->Add(pSDepthUnits, inputFlags);
+    boxDisp->Add(pSDepthUnits, verticleInputFlags);
   } else {
     wxBoxSizer* wrapperSizer = new wxBoxSizer(wxVERTICAL);
     pDisplayPanel->SetSizer(wrapperSizer);
@@ -4279,7 +4303,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   pToolbarHideSecs =
       new wxTextCtrl(itemPanelFont, ID_OPTEXTCTRL, _T(""), wxDefaultPosition,
                      wxSize(50, -1), wxTE_RIGHT);
-  pToolbarAutoHide->Add(pToolbarHideSecs, 0, wxALIGN_RIGHT | wxALL,
+  pToolbarAutoHide->Add(pToolbarHideSecs, 0, wxALL,
                         group_item_spacing);
 
   pToolbarAutoHide->Add(new wxStaticText(itemPanelFont, wxID_ANY, _("seconds")),
@@ -4326,7 +4350,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   //#ifdef __OCPN__ANDROID__
   miscOptions->Add(new wxStaticText(itemPanelFont, wxID_ANY,
                                     _("User Interface scale factor")),
-                   inputFlags);
+                   verticleInputFlags);
   miscOptions->Add(m_pSlider_GUI_Factor, 0, wxALL, border_size);
   m_pSlider_GUI_Factor->Show();
 
@@ -4342,7 +4366,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   //#ifdef __OCPN__ANDROID__
   miscOptions->Add(
       new wxStaticText(itemPanelFont, wxID_ANY, _("Chart Object scale factor")),
-      inputFlags);
+      verticleInputFlags);
   miscOptions->Add(m_pSlider_Chart_Factor, 0, wxALL, border_size);
   m_pSlider_Chart_Factor->Show();
 
@@ -4383,6 +4407,9 @@ void options::CreateControls(void) {
                    .Border(wxALL, group_item_spacing);
   inputFlags = wxSizerFlags(0)
                    .Align(wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL)
+                   .Border(wxALL, group_item_spacing);
+  verticleInputFlags = wxSizerFlags(0)
+                   .Align(wxALIGN_LEFT)
                    .Border(wxALL, group_item_spacing);
   groupLabelFlags = wxSizerFlags(0)
                         .Align(wxALIGN_RIGHT | wxALIGN_TOP)
@@ -4564,7 +4591,7 @@ void options::CreateControls(void) {
   m_pListbook->SetImageList(m_topImgList);
   itemBoxSizer2->Add(
       m_pListbook, 1,
-      wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL | wxALL | wxEXPAND,
+      wxALL | wxEXPAND,
       border_size);
 
   wxBoxSizer* buttons = new wxBoxSizer(wxHORIZONTAL);
@@ -4938,7 +4965,8 @@ void options::SetInitialSettings(void) {
 
     pDispCat->SetSelection(nset);
 
-    ps57CtlListBox->Enable(MARINERS_STANDARD == ps52plib->GetDisplayCategory());
+    if( ps57CtlListBox )
+        ps57CtlListBox->Enable(MARINERS_STANDARD == ps52plib->GetDisplayCategory());
     itemButtonClearList->Enable(MARINERS_STANDARD ==
                                 ps52plib->GetDisplayCategory());
     itemButtonSelectList->Enable(MARINERS_STANDARD ==
@@ -5268,14 +5296,16 @@ ConnectionParams* options::CreateConnectionParamsFromSelectedItem(void) {
 
   //  DataStreams should be Input, Output, or Both
   if (!(m_cbInput->GetValue() || m_cbOutput->GetValue())) {
-    OCPNMessageBox(NULL, _("Data connection must be input, output or both"),
+      m_pListbook->SetSelection(2);   // Raise connections page.
+      OCPNMessageBox(NULL, _("Data connection must be input, output or both"),
                    _("OpenCPN Info"), wxICON_HAND);
 
     return NULL;
   }
 
   if (m_rbTypeSerial->GetValue() && m_comboPort->GetValue() == wxEmptyString) {
-    OCPNMessageBox(NULL, _("You must select or enter the port..."),
+      m_pListbook->SetSelection(2);   // Raise connections page.
+      OCPNMessageBox(NULL, _("You must select or enter the port..."),
                    _("OpenCPN Info"), wxICON_HAND);
     return NULL;
   }
@@ -5283,14 +5313,16 @@ ConnectionParams* options::CreateConnectionParamsFromSelectedItem(void) {
   //  TCP clients, GPSD and UDP output sockets require an address
   else if (m_rbTypeNet->GetValue()) {
     if (wxAtoi(m_tNetPort->GetValue()) == 0) {
-      OCPNMessageBox(NULL, _("You must enter a port..."), _("OpenCPN Info"),
+        m_pListbook->SetSelection(2);   // Raise connections page.
+        OCPNMessageBox(NULL, _("You must enter a port..."), _("OpenCPN Info"),
                      wxICON_HAND);
       return NULL;
     }
     if (m_tNetAddress->GetValue() == wxEmptyString) {
       if ((m_rbNetProtoGPSD->GetValue()) ||
           (m_rbNetProtoUDP->GetValue() && m_cbOutput->GetValue())) {
-        OCPNMessageBox(NULL, _("You must enter the address..."),
+          m_pListbook->SetSelection(2);   // Raise connections page.
+          OCPNMessageBox(NULL, _("You must enter the address..."),
                        _("OpenCPN Info"), wxICON_HAND);
         return NULL;
       } else {
@@ -6111,7 +6143,7 @@ void options::OnNBPageChange(wxNotebookEvent& event) {
 void options::DoOnPageChange(size_t page) {
   unsigned int i = page;
   lastPage = i;
-
+  
   //    User selected Chart Page?
   //    If so, build the "Charts" page variants
   if (1 == i) {  // 2 is the index of "Charts" page
@@ -6747,9 +6779,6 @@ void ChartGroupsUI::OnDeleteGroup(wxCommandEvent& event) {
     modified = TRUE;
   }
 }
-
-WX_DEFINE_OBJARRAY(ChartGroupElementArray);
-WX_DEFINE_OBJARRAY(ChartGroupArray);
 
 int ChartGroupsUI::FindGroupBranch(ChartGroup* pGroup, wxTreeCtrl* ptree,
                                    wxTreeItemId item, wxString* pbranch_adder) {

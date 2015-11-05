@@ -2916,8 +2916,10 @@ void MyConfig::UpdateNavObj( void )
 
     delete pNavObjectSet;
 
-    if( ::wxFileExists( m_sNavObjSetChangesFile ) )
+    if( ::wxFileExists( m_sNavObjSetChangesFile ) ){
+        wxLogNull logNo;                // avoid silly log error message.
         wxRemoveFile( m_sNavObjSetChangesFile );
+    }
 
     //delete m_pNavObjectChangesSet;
     //m_pNavObjectChangesSet = new NavObjectChanges(m_sNavObjSetChangesFile);
@@ -4647,8 +4649,10 @@ void AlphaBlending( ocpnDC &dc, int x, int y, int size_x, int size_y, float radi
 
         //  Sometimes, on Windows, the destination image is corrupt...
         if(NULL == box)
+        {
+            free(d);
             return;
-
+        }
         float alpha = 1.0 - (float)transparency / 255.0;
         int sb = size_x * size_y;
         for( int i = 0; i < sb; i++ ) {

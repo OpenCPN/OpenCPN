@@ -529,6 +529,8 @@ bool RarVM::ExecuteCode(VM_PreparedCommand *PreparedCode,uint CodeSize)
 #endif
       case VM_PRINT:
         break;
+      default:
+        break;
     }
     Cmd++;
     --MaxOpCount;
@@ -856,12 +858,12 @@ VM_StandardFilters RarVM::IsStandardFilter(byte *Code,uint CodeSize)
     uint CRC;
     VM_StandardFilters Type;
   } static StdList[]={
-    53, 0xad576887, VMSF_E8,
-    57, 0x3cd7e57e, VMSF_E8E9,
-   120, 0x3769893f, VMSF_ITANIUM,
-    29, 0x0e06077d, VMSF_DELTA,
-   149, 0x1c2c5dc8, VMSF_RGB,
-   216, 0xbc85e701, VMSF_AUDIO
+    {53, 0xad576887, VMSF_E8},
+    {57, 0x3cd7e57e, VMSF_E8E9},
+   {120, 0x3769893f, VMSF_ITANIUM},
+    {29, 0x0e06077d, VMSF_DELTA},
+   {149, 0x1c2c5dc8, VMSF_RGB},
+   {216, 0xbc85e701, VMSF_AUDIO}
   };
   uint CodeCRC=CRC32(0xffffffff,Code,CodeSize)^0xffffffff;
   for (uint I=0;I<ASIZE(StdList);I++)
@@ -1090,6 +1092,8 @@ void RarVM::ExecuteStandardFilter(VM_StandardFilters FilterType)
           }
         }
       }
+      break;
+    default:
       break;
   }
 }

@@ -2080,6 +2080,15 @@ void s57chart::BuildLineVBO( void )
 }
 
 
+/*              RectRegion:
+ *                      This is the Screen region desired to be updated.  Will be either 1 rectangle(full screen)
+ *                      or two rectangles (panning with FBO accelerated pan logic)
+ * 
+ *              Region:
+ *                      This is the LLRegion describing the quilt active region for this chart.
+ * 
+ *              So, Actual rendering area onscreen should be clipped to the intersection of the two regions.
+ */
 
 bool s57chart::RenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& VPoint,
                                      const OCPNRegion &RectRegion, const LLRegion &Region )
@@ -4174,15 +4183,8 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
     int n_ve_elements = VEs.size();
     
     for( int i = 0; i < n_ve_elements; i++ ) {
-        VE_Element *pve_from_array = VEs.at( i );
-        
- //       VE_Element ve_from_array = VEs.at( i );
-        VE_Element *vep = new VE_Element;
-        vep->index = pve_from_array->index;
-        vep->nCount = pve_from_array->nCount;
-        vep->pPoints = pve_from_array->pPoints;
-        vep->max_priority = 0;            // Default
-        
+
+        VE_Element *vep = VEs.at( i );
         if(vep->nCount){
             //  Get a bounding box for the edge
             double east_max = -1e7; double east_min = 1e7;
@@ -4209,18 +4211,14 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
         m_ve_hash[vep->index] = vep;
     }
     
+        
     //    Create a hash map VC_Element pointers as a chart class member
     int n_vc_elements = VCs.size();
     
     for( int i = 0; i < n_vc_elements; i++ ) {
-        VC_Element *vc_from_array = VCs.at( i );
-        VC_Element *vcp = new VC_Element;
-        vcp->index = vc_from_array->index;
-        vcp->pPoint = vc_from_array->pPoint;
-        
+        VC_Element *vcp = VCs.at( i );
         m_vc_hash[vcp->index] = vcp;
     }
-    
     
     
     //Walk the vector of S57Objs, associating LUPS, instructions, etc...

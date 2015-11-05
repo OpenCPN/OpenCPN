@@ -128,9 +128,8 @@ public:
     void FreeSome( long target );
     
     glTextureDescriptor *GetpTD( wxRect & rect );
-//    GLuint GetRasterFormat() { return g_raster_format; }
 
-    void PrepareTiles(const ViewPort &vp, bool use_norm_vp, ChartBaseBSB *pChartBSB);
+    void PrepareTiles(const ViewPort &vp, bool use_norm_vp, ChartBase *pChart);
     glTexTile** GetTiles(int &num) { num = m_ntex; return m_tiles; }
     void GetCenter(double &lat, double &lon) { lat = m_clat, lon = m_clon; }
 

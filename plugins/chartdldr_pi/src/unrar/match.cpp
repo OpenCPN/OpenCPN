@@ -47,6 +47,7 @@ bool CmpName(const wchar *Wildcard,const wchar *Name,int CmpMode)
         mwcsicompc(Path1,Path2,ForceCase)!=0)
       return(false);
     if (CmpMode==MATCH_SUBPATH || CmpMode==MATCH_WILDSUBPATH)
+    {
       if (IsWildcard(Path1))
         return(match(Wildcard,Name,ForceCase));
       else
@@ -58,6 +59,7 @@ bool CmpName(const wchar *Wildcard,const wchar *Name,int CmpMode)
         else
           if (mwcsicompc(Path1,Path2,ForceCase)!=0)
             return(false);
+    }
   }
   wchar *Name1=PointToName(Wildcard);
   wchar *Name2=PointToName(Name);

@@ -292,8 +292,8 @@ bool chartdldr_pi::LoadConfig( void )
         fn.AppendDir(_T(CHART_DIR));
         
         pConf->Read ( _T ( "BaseChartDir" ), &m_base_chart_dir,  fn.GetPath() );
-        wxLogMessage( wxString::Format( _T ( "chartdldr_pi: %s" ) ,m_base_chart_dir ) );
-        wxLogMessage( wxString::Format( _T ( "chartdldr_pi: %s" ) ,fn.GetPath() ) );
+        wxLogMessage( _T ( "chartdldr_pi: " ) + m_base_chart_dir );
+        wxLogMessage( _T ( "chartdldr_pi: " ) + fn.GetPath() );
         
         pConf->Read ( _T ( "PreselectNew" ), &m_preselect_new, false );
         pConf->Read ( _T ( "PreselectUpdated" ), &m_preselect_updated, true );
@@ -459,6 +459,8 @@ void ChartDldrPanelImpl::OnContextMenu( wxMouseEvent& event )
 
 void ChartDldrPanelImpl::OnShowLocalDir( wxCommandEvent& event )
 {
+    if (pPlugIn->m_pChartSource == 0)
+        return;
 #ifdef __WXGTK__
     wxExecute(wxString::Format(_T("xdg-open %s"), pPlugIn->m_pChartSource->GetDir().c_str()));
 #endif
@@ -1755,8 +1757,11 @@ void ChartDldrGuiAddSourceDlg::OnOkClick( wxCommandEvent& event )
 
     if( msg != wxEmptyString )
         wxMessageBox( msg, _("Chart source definition problem"), wxOK | wxCENTRE | wxICON_ERROR );
-    else
+    else {
         event.Skip();
+        SetReturnCode(wxID_OK);
+        EndModal( wxID_OK );
+    }
 }
 
 void ChartDldrGuiAddSourceDlg::OnCancelClick( wxCommandEvent& event )

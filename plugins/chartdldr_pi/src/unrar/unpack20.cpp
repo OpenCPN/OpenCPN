@@ -254,14 +254,18 @@ bool Unpack::ReadTables20()
 void Unpack::ReadLastTables()
 {
   if (ReadTop>=Inp.InAddr+5)
+  {
     if (UnpAudioBlock)
     {
       if (DecodeNumber(Inp,&MD[UnpCurChannel])==256)
         ReadTables20();
     }
     else
+    {
       if (DecodeNumber(Inp,&BlockTables.LD)==269)
         ReadTables20();
+    }
+  }
 }
 
 
