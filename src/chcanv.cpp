@@ -3940,7 +3940,7 @@ void CalcGridSpacing( float view_scale_ppm, float& MajorSpacing, float&MinorSpac
     // [1] spacing between major grid lines in degrees
     // [2] spacing between minor grid lines in degrees
     const float lltab[][3] =
-        { { 0.0f, 90.0f, 30.0f },                  { 1e-5, 45.0f, 15.0f },
+        { { 0.0f, 90.0f, 30.0f },                  { 1e-5f, 45.0f, 15.0f },
           { 2e-4f, 30.0f, 10.0f },                 { 3e-4f, 10.0f, 2.0f  },
           { 6e-4f, 5.0f, 1.0f },                   { 2e-3f, 2.0f, 30.0f / 60.0f },
           { 3e-3f, 1.0f, 20.0f / 60.0f },          { 6e-3f, 0.5f, 10.0f / 60.0f },

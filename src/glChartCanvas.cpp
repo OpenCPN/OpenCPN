@@ -3611,12 +3611,13 @@ void glChartCanvas::RenderWorldChart(ocpnDC &dc, ViewPort &vp, wxRect &rect, boo
             wxPoint2DDouble p = tvp.GetDoublePixFromLL( 89.99, 0);
             float w = tvp.pix_width/2, h = tvp.pix_height/2;
             double world_r = h - p.m_y;
+            const float pi_ovr100 = float(M_PI)/100;
             if(world_r*world_r < w*w + h*h) {
                 glClear( GL_COLOR_BUFFER_BIT );
 
                 glBegin(GL_TRIANGLE_FAN);
                 float w = vp.pix_width/2, h = vp.pix_height/2;
-                for(float theta = 0; theta < 2*M_PI+.01; theta+=M_PI/100)
+                for(float theta = 0; theta < 2*M_PI+.01f; theta+=pi_ovr100)
                     glVertex2f(w + world_r*sinf(theta), h + world_r*cosf(theta));
                 glEnd();
 

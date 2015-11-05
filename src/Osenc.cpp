@@ -1173,7 +1173,7 @@ int Osenc::ingestCell( const wxString &FullPath000, const wxString &working_dir 
     
     bool bcont = true;
     int iObj = 0;
-    OGRwkbGeometryType geoType;
+ //   OGRwkbGeometryType geoType;
     wxString sobj;
     
     //  Here comes the actual ISO8211 file reading
