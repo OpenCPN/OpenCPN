@@ -257,6 +257,7 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id, const wxS
 	m_bpNext->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnNext ), NULL, this );
 	m_bpNext->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
 	m_bpAltitude->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnAltitude ), NULL, this );
+	m_bpAltitude->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
 	m_bpNow->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnNow ), NULL, this );
 	m_bpNow->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
 	m_bpZoomToCenter->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnZoomToCenterClick ), NULL, this );
