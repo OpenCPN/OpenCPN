@@ -54,6 +54,9 @@ const double qNan = nan("");
 const double zero = 0;
 const double qNan = (zero / zero);
 #endif  // _MSCVER
+#else   // Linux and OSX will still generate warnings for now
+const double zero = 0;
+const double qNan = (zero / zero);
 #endif  // __WIN32__
 
 double square(double x) { return x*x; }
