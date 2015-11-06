@@ -48,7 +48,7 @@
 
 #if defined(__WIN32__)
 #define isnan(x) _isnan(x)
-#if _MSC_VER > 1800
+#if _MSC_VER > 1700
 const double qNan = nan("");
 #else
 const double zero = 0;
