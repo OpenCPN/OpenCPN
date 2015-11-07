@@ -123,7 +123,7 @@ void CursorData::AddTrackingControl( wxControl *ctrl1,  wxControl *ctrl2,  wxCon
 
         if(ctrl4) {
             m_fgTrackingControls->Add(ctrl4, 0, wxALL, 0);
-            ctrl4->SetMinSize(wxSize(wctrl3_4, -1));
+            ctrl4->SetMinSize(wxSize(vertical? wctrl2: wctrl3_4, -1));
             ctrl4->Show();
         } else
             if( !vertical ) m_fgTrackingControls->Add(0, 0, 1, wxALL, 1 ); /* spacer */
@@ -171,13 +171,14 @@ void CursorData::PopulateTrackingControls( bool vertical )
             AddTrackingControl(m_cbWave, m_tcWaveHeight, vertical? m_tcWavePeriode: m_tcWaveDirection,
                     vertical? m_tcWaveDirection: 0 , m_Altitude == 0, vertical, wl, ws);
         else
-            AddTrackingControl(m_cbWave, m_tcWaveHeight, 0, vertical? m_tcWavePeriode: 0, m_Altitude == 0, vertical, wn, ws);
+            AddTrackingControl(m_cbWave, m_tcWaveHeight, 0, 0, m_Altitude == 0, vertical, wn );
     } else {
         if(m_gparent.m_pTimelineSet && m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WVDIR) != wxNOT_FOUND)
-            AddTrackingControl(m_cbWave, m_tcWaveDirection, 0,0 , m_Altitude == 0, vertical, ws, ws);
+            AddTrackingControl(m_cbWave, m_tcWaveDirection, 0, 0, m_Altitude == 0, vertical, wn );
     }
 
-    AddTrackingControl(m_cbCurrent, m_tcCurrentVelocity, m_tcCurrentDirection, 0,
+    AddTrackingControl(m_cbCurrent, m_tcCurrentVelocity, m_tcCurrentDirection, 0, false, vertical, 0, 0); //hide all current's parameters
+    AddTrackingControl(m_cbCurrent, m_tcCurrentVelocity, m_tcCurrentDirection, vertical? m_tcCurrentDirection: 0,
         m_gparent.m_pTimelineSet && m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEACURRENT_VX) != wxNOT_FOUND
         && m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEACURRENT_VY) != wxNOT_FOUND
 		&& m_Altitude == 0, vertical, wn, ws);
