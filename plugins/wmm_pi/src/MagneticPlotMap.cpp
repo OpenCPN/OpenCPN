@@ -48,16 +48,10 @@
 
 #if defined(__WIN32__)
 #define isnan(x) _isnan(x)
-#if _MSC_VER > 1700
-const double qNan = nan("");
-#else
-const double zero = 0;
-const double qNan = (zero / zero);
-#endif  // _MSCVER
-#else   // Linux and OSX will still generate warnings for now
-const double zero = 0;
-const double qNan = (zero / zero);
 #endif  // __WIN32__
+
+static const long long lNaN = 0xfff8000000000000;
+#define qNan (*(double*)&lNaN)
 
 double square(double x) { return x*x; }
 
