@@ -71,7 +71,7 @@ wxString OCPNListCtrl::GetTargetColumnData( AIS_Target_Data *pAISTarget, long co
     if( pAISTarget ) {
         switch( column ){
             case tlTRK:
-                if( pAISTarget->b_show_track )
+                if ((pAISTarget->b_show_track) && !((pAISTarget-> b_NoTrack || pAISTarget->Class == AIS_ATON) || (pAISTarget->Class == AIS_BASE)))
                     ret = _("Yes");
                 else
                     ret = _("No");
