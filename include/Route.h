@@ -49,8 +49,7 @@ public:
 
       void AddPoint(RoutePoint *pNewPoint,
                     bool b_rename_in_sequence = true,
-                    bool b_deferBoxCalc = false,
-                    bool b_isLoading = false);
+                    bool b_deferBoxCalc = false);
 
       void AddTentativePoint(const wxString& GUID);
       RoutePoint *GetPoint(int nPoint);
@@ -68,6 +67,7 @@ public:
       void RemovePoint(RoutePoint *rp, bool bRenamePoints = false);
       void DeSelectRoute();
       void FinalizeForRendering();
+      void UpdateSegmentDistance( RoutePoint *prp0, RoutePoint *prp, double planspeed = -1.0 );
       void UpdateSegmentDistances(double planspeed = -1.0);
       void CalculateDCRect(wxDC& dc_route, wxRect *prect, ViewPort &VP);
       int GetnPoints(void){ return m_nPoints; }
