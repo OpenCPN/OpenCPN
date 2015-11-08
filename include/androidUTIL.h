@@ -121,4 +121,6 @@ bool androidSetFullscreen( bool bFull );
 void androidLaunchHelpView();
 void androidTerminate();
 
+bool androidShowDisclaimer( wxString title, wxString msg );
+
 #endif   //guard

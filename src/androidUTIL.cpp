@@ -1314,6 +1314,12 @@ void androidLaunchHelpView()
 }
 
 
+bool androidShowDisclaimer( wxString title, wxString msg )
+{
+    wxString ret_val = callActivityMethod_s2s("disclaimerDialog", title, msg);
+    return (ret_val == _T("OK"));
+}
+    
 
 wxString androidGetDeviceInfo()
 {

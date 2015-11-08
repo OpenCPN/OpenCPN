@@ -354,6 +354,60 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
     }
 
+    public String showDisclaimerDialog( String title, String message) {
+
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+            // set title
+            alertDialogBuilder.setTitle(title);
+
+            // set dialog message
+            alertDialogBuilder
+                    .setMessage(message)
+                    .setCancelable(false)
+                    .setPositiveButton("Cancel",new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                    // if this button is clicked, close
+                                    // current activity
+                                    QtActivity.this.finish();
+                            }
+                      })
+                    .setNegativeButton("OK",new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                    // if this button is clicked, just close
+                                    // the dialog box and do nothing
+                                    dialog.cancel();
+                            }
+                    });
+
+                    // create alert dialog
+                    AlertDialog alertDialog = alertDialogBuilder.create();
+
+                    // show it
+                    alertDialog.show();
+
+                    return ("OK");
+
+      }
+
+      public String disclaimerDialog( final String title, final String message) {
+
+          final QtActivityDelegate delegate = QtNative.activityDelegate();
+
+          if(null != delegate){
+              runOnUiThread(new Runnable() {
+                  @Override
+                  public void run() {
+                      showDisclaimerDialog( title, message );
+
+                  }});
+          }
+
+          String ret = "OK";
+          return ret;
+      }
+
+
 //    public static QtActivity activity()
 //    {
 //        return QtActivity.this;
@@ -474,6 +528,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     public String doAndroidSettings(String settings){
         //Log.i("DEBUGGER_TAG", "doAndroidSettings");
         //Log.i("DEBUGGER_TAG", settings);
+
 
         m_settingsReturn = new String();
 
@@ -2573,7 +2628,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
 
             startApp(true);
-
 
 
         }

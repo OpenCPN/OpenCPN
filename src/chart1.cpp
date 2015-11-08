@@ -162,7 +162,7 @@ void RedirectIOToConsole();
 //------------------------------------------------------------------------------
 
 OCPNPlatform              *g_Platform;
-
+wxString                  g_vs;
 bool                      g_bFirstRun;
 
 int                       g_unit_test_1;
@@ -768,9 +768,15 @@ Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n") );
         wxString::Format(wxT(" .. Version %i.%i.%i"),
             VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH);
 
+#ifdef __OCPN__ANDROID__
+    androidShowDisclaimer( _("OpenCPN for Android") + vs, msg0 );
+    return true;    
+#else        
     wxMessageDialog odlg( gFrame, msg0, _("Welcome to OpenCPN") + vs, wxCANCEL | wxOK );
 
     return ( odlg.ShowModal() );
+#endif
+    
 }
 
 
@@ -1221,6 +1227,7 @@ bool MyApp::OnInit()
     wxString vs = version.Trim( true );
     vs = vs.Trim( false );
     wxLogMessage( vs );
+    g_vs = vs;
 
     wxString wxver(wxVERSION_STRING);
     wxver.Prepend( _T("wxWidgets version: ") );
@@ -1728,24 +1735,6 @@ bool MyApp::OnInit()
 
     gFrame = new MyFrame( NULL, myframe_window_title, position, new_frame_size, app_style ); //Gunther
 
-#ifdef __OCPN__ANDROID__    
-    //  We defer the startup message to here to allow the app frame to be contructed,
-    //  thus avoiding a dialog with NULL parent which might not work on some devices.
-    if( !n_NavMessageShown || ( vs != g_config_version_string ) )
-    {
-        qDebug() << "Showing NavWarning";
-        if( wxID_CANCEL == ShowNavWarning() ) {
-             qDebug() << "Closing due to NavWarning Cancel";
-             gFrame->Close();
-             androidTerminate();
-             return true;
-         }
-         n_NavMessageShown = 1;
-         g_config_version_string = vs;
-         
-     }
-#endif
-
 //  Initialize the Plugin Manager
     g_pi_manager = new PlugInManager( gFrame );
 
@@ -2097,14 +2086,35 @@ extern ocpnGLOptions g_GLOptions;
         g_FloatingToolbarDialog->Raise();
 #endif
 
+#ifdef __OCPN__ANDROID__
+    androidHideBusyIcon();
+#endif
+        
+#ifdef __OCPN__ANDROID__    
+        //  We defer the startup message to here to allow the app frame to be contructed,
+        //  thus avoiding a dialog with NULL parent which might not work on some devices.    
+        if( !n_NavMessageShown || ( g_vs != g_config_version_string ) )
+        {
+            qDebug() << "Showing NavWarning";
+            wxMilliSleep(500);
+            if( wxID_CANCEL == ShowNavWarning() ) {
+                qDebug() << "Closing due to NavWarning Cancel";
+                gFrame->Close();
+                androidTerminate();
+                return true;
+            }
+            n_NavMessageShown = 1;
+            g_config_version_string = g_vs;
+            
+        }
+#endif
+        
+        
     // Start delayed initialization chain after 100 milliseconds
     gFrame->InitTimer.Start( 100, wxTIMER_CONTINUOUS );
 
     wxLogMessage( wxString::Format(_("OpenCPN Initialized in %ld ms."), sw.Time() ) );
 
-#ifdef __OCPN__ANDROID__
-    androidHideBusyIcon();
-#endif
     
     return TRUE;
 }
