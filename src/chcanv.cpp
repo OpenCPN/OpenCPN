@@ -1829,9 +1829,11 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             break;
 
         case 9:                      // Ctrl I
-            g_Compass->Show(!g_Compass->IsShown());
-            m_brepaint_piano = true;
-            Refresh( false );
+            if (g_Compass) {
+                g_Compass->Show(!g_Compass->IsShown());
+                m_brepaint_piano = true;
+                Refresh( false );
+            }
             break;
 
         default:
