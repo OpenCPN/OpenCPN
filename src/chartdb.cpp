@@ -34,6 +34,7 @@
 #include <wx/stopwatch.h>
 #include <wx/regex.h>
 #include "wx/tokenzr.h"
+#include "wx/dir.h"
 
 #include "chartdb.h"
 #include "chartimg.h"
@@ -1297,10 +1298,17 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
             if(Ch)
             {
                   InitReturn ir;
+                  
+#ifdef USE_S57
+                  s52plib *plib = ps52plib;
+#else
+                  s52plib *plib = NULL;
+#endif                  
+                  
 
                   //    Vector charts need a PLIB for useful display....
                   if((chart_family != CHART_FAMILY_VECTOR) ||
-                      ((chart_family == CHART_FAMILY_VECTOR) && ps52plib) )
+                      ((chart_family == CHART_FAMILY_VECTOR) && plib) )
                   {
                         wxString msg(_T("Initializing Chart "));
                         msg.Append(ChartFullPath);
@@ -1630,6 +1638,8 @@ wxXmlDocument ChartDB::GetXMLDescription(int dbIndex, bool b_getGeom)
                   node->AddChild ( tnode );
             }
 
+#ifdef USE_S57
+            
             s57chart *pcs57 = dynamic_cast<s57chart*>(pc);
             if(pcs57)
             {
@@ -1654,6 +1664,7 @@ wxXmlDocument ChartDB::GetXMLDescription(int dbIndex, bool b_getGeom)
                   node->AddChild ( tnode );
 
             }
+#endif            
       }
 
 

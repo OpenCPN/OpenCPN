@@ -31,6 +31,7 @@
 #endif //precompiled headers
 
 #include <wx/tokenzr.h>
+#include "wx/progdlg.h"
 
 #include <stdint.h>
 
@@ -72,7 +73,6 @@ private:
 #include "routeman.h"
 #include "chartbase.h"
 #include "chartimg.h"
-#include "s57chart.h"
 #include "ChInfoWin.h"
 #include "thumbwin.h"
 #include "chartdb.h"
@@ -1084,8 +1084,10 @@ void glChartCanvas::SetupOpenGL()
     msg += m_renderer;
     wxLogMessage( msg );
 
+    #ifdef USE_S57
     if( ps52plib ) ps52plib->SetGLRendererString( m_renderer );
-
+    #endif
+    
     char version_string[80];
     strncpy( version_string, (char *) glGetString( GL_VERSION ), 79 );
     msg.Printf( _T("OpenGL-> Version reported:  "));
@@ -1490,8 +1492,11 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
     
     if( !m_bsetup ) {
         SetupOpenGL();
+        
+        #ifdef USE_S57
         if( ps52plib )
             ps52plib->FlushSymbolCaches();
+        #endif
         
         m_bsetup = true;
 //        g_bDebugOGL = true;
@@ -3230,11 +3235,13 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
                 LLRegion get_region = pqp->ActiveRegion;
 
                 get_region.Intersect( region );
+#ifdef USE_S57
                 if( !get_region.Empty()  ) {
                     s57chart *Chs57 = dynamic_cast<s57chart*>( pch );
                     if( Chs57 )
                         Chs57->RenderOverlayRegionViewOnGL( *m_pcontext, vp, rect_region, get_region );
                 }
+#endif                
             }
 
             pch = cc1->m_pQuilt->GetNextChart();
@@ -3462,13 +3469,16 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region)
 {
     ViewPort &vp = cc1->VPoint;
 
+#ifdef USE_S57
+    
     // Only for cm93 (not quilted), SetVPParms can change the valid region of the chart
     // we need to know this before rendering the chart so we can compute the background region
     // and nodta regions correctly.  I would prefer to just perform this here (or in SetViewPoint)
     // for all vector charts instead of in their render routine, but how to handle quilted cases?
     if(!vp.b_quilt && Current_Ch->GetChartType() == CHART_TYPE_CM93COMP)
         static_cast<cm93compchart*>( Current_Ch )->SetVPParms( vp );
-
+#endif
+        
     LLRegion chart_region;
     if(!vp.b_quilt && (Current_Ch->GetChartType() == CHART_TYPE_PLUGIN) ){
         // We do this the hard way, since PlugIn Raster charts do not understand LLRegion yet...

@@ -3927,7 +3927,10 @@ bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc, const View
                     ViewPort cvp = glChartCanvas::ClippedViewport(VPoint, chart_region);
                     
                     glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
+
+#ifdef USE_S57
                     ps52plib->m_last_clip_rect = upd.GetRect();
+#endif                    
                     glPushMatrix(); //    Adjust for rotation
                     glChartCanvas::RotateToViewPort(VPoint);
 
@@ -4163,7 +4166,7 @@ wxString PlugInManager::CreateObjDescriptions( ChartPlugInWrapper *target, ListO
 }
 
 
-
+#ifdef USE_S57
 //      API 1.11 Access to S52 PLIB
 wxString PI_GetPLIBColorScheme()
 {
@@ -4795,6 +4798,7 @@ int PI_PLIBRenderObjectToGL( const wxGLContext &glcc, PI_S57Obj *pObj,
     return 1;
     
 }
+#endif  //USE_S57
 
 /* API 1.13  */
 

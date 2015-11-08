@@ -28,9 +28,11 @@
 #include "chartdb.h"
 #include "s52plib.h"
 #include "chcanv.h"
-#include "s57chart.h"
 #include "ocpn_pixel.h"                         // for ocpnUSE_DIBSECTION
 
+#ifdef USE_S57
+#include "s57chart.h"
+#endif
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST( PatchList );
@@ -251,6 +253,8 @@ bool Quilt::IsVPBlittable( ViewPort &VPoint, int dx, int dy, bool b_allow_vector
 
 bool Quilt::IsChartS57Overlay( int db_index )
 {
+#ifdef USE_S57
+    
     if( db_index < 0 )
         return false;
     
@@ -259,6 +263,7 @@ bool Quilt::IsChartS57Overlay( int db_index )
         return  s57chart::IsCellOverlayType( cte.GetpFullPath() );
     }
     else
+#endif        
         return false;
 }
             
@@ -1429,6 +1434,8 @@ bool Quilt::Compose( const ViewPort &vp_in )
     }
 
     bool b_has_overlays = false;
+#ifdef USE_S57
+    
     //  If this is an S57 quilt, we need to know if there are overlays in it
     if(  CHART_TYPE_S57 == m_reference_type ) {
         for( unsigned int ir = 0; ir < m_pcandidate_array->GetCount(); ir++ ) {
@@ -1441,6 +1448,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
             }
         }
     }
+#endif
 
     //    Using Region logic, and starting from the largest scale chart
     //    figuratively "draw" charts until the ViewPort window is completely quilted over
@@ -1494,12 +1502,13 @@ bool Quilt::Compose( const ViewPort &vp_in )
             //  Skip overlays on this pass, so that they do not subtract from quilt and thus displace 
             //  a geographical cell with the same extents.
             //  Overlays will be picked up in the next pass, if any are found
+#ifdef USE_S57             
             if(  CHART_TYPE_S57 == m_reference_type ) {
                 if(s57chart::IsCellOverlayType(cte.GetpFullPath() )){
                     continue;
                 }
             }
-            
+#endif            
             if( cte.GetScale() >= m_reference_scale ) {
                 //  If this chart appears in the no-show array, then simply include it, but
                 //  don't subtract its region when determining the smaller scale charts to include.....
@@ -1572,11 +1581,13 @@ bool Quilt::Compose( const ViewPort &vp_in )
                     
                     if( vpu_region.Empty() )
                         pqc->b_include = false; // skip this chart, no true overlap
+#ifdef USE_S57
                     else {
                         bool b_overlay = s57chart::IsCellOverlayType(cte.GetpFullPath() );
                         if( b_overlay )
                             pqc->b_include = true;
                     }
+#endif                    
                 }
             }
         }
@@ -2015,7 +2026,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
         ChartBase *pc = ChartData->OpenChartFromDB( pqp->dbIndex, FULL_INIT );
         if( pc ) {
             m_max_error_factor = wxMax(m_max_error_factor, pc->GetChart_Error_Factor());
-
+#ifdef USE_S57
             if( pc->GetChartType() == CHART_TYPE_S57 ) {
                 s57chart *ps57 = dynamic_cast<s57chart *>( pc );
                 if( ps57 ){
@@ -2024,6 +2035,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
                         m_bquilt_has_overlays = true;
                 }
             }
+#endif            
         }
     }
 
@@ -2167,9 +2179,10 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion 
                         OCPNRegion get_screen_region = vp.GetVPRegionIntersect(chart_region, get_region,
                                                                                chart->GetNativeScale());
                         if( !get_region.Empty() ) {
+#ifdef USE_S57
                             s57chart *Chs57 = dynamic_cast<s57chart*>( chart );
                             Chs57->RenderOverlayRegionViewOnDC( tmp_dc, vp, get_screen_region );
-
+#endif
                             OCPNRegionIterator upd( get_screen_region );
                             while( upd.HaveRects() ) {
                                 wxRect rect = upd.GetRect();
