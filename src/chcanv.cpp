@@ -9444,7 +9444,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         DrawAllCurrentsInBBox( scratch_dc, GetVP().GetBBox() );
     }
 
-    if( m_brepaint_piano ) {
+    if( m_brepaint_piano && g_bShowChartBar ) {
         g_Piano->Paint(GetClientSize().y - g_Piano->GetHeight(), mscratch_dc);
         //m_brepaint_piano = false;
     }
