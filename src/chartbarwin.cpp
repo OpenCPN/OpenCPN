@@ -212,6 +212,7 @@ Piano::Piano()
     m_eventTimer.SetOwner( this, PIANO_EVENT_TIMER );
     
     m_tex = m_tex_piano_height = 0;
+    m_texh = 0;
 }
 
 Piano::~Piano()

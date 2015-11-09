@@ -326,6 +326,7 @@ bool LLRegion::NoIntersection(const LLBBox& box) const
 {
     return false; // there are occasional false positives we must fix first
 
+#if 0    
     double minx = box.GetMinX(), maxx = box.GetMaxX(), miny = box.GetMinY(), maxy = box.GetMaxY();
     if(Contains(miny, minx))
         return false;
@@ -397,6 +398,7 @@ bool LLRegion::NoIntersection(const LLBBox& box) const
     }
 
     return true;
+#endif    
 }
 
 // internal test to see if regions don't intersect (optimization)

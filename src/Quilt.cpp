@@ -656,11 +656,13 @@ ChartBase *Quilt::GetOverlayChartAtPix( ViewPort &VPoint, wxPoint p )
 
 void Quilt::InvalidateAllQuiltPatchs( void )
 {
+/*    
     if( m_bbusy )
         return;
 
     m_bbusy = true;
     m_bbusy = false;
+*/    
     return;
 }
 

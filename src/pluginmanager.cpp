@@ -2893,7 +2893,7 @@ void PlugInNormalizeViewport ( PlugIn_ViewPort *vp, float lat, float lon )
     vp->clon = ocpn_vp.clon;
     vp->view_scale_ppm = ocpn_vp.view_scale_ppm;
     vp->rotation = ocpn_vp.rotation;
-    vp->rotation = ocpn_vp.skew;
+    vp->skew = ocpn_vp.skew;
 #endif    
 }
 
@@ -4895,6 +4895,7 @@ OCPN_downloadEvent::OCPN_downloadEvent(wxEventType commandType, int id)
     m_stat = OCPN_DL_UNKNOWN;
     m_condition = OCPN_DL_EVENT_TYPE_UNKNOWN;
     m_b_complete = false;
+    m_sofarBytes = 0;
 }
 
 OCPN_downloadEvent::~OCPN_downloadEvent()

@@ -1070,8 +1070,8 @@ bool options::DeletePage(wxScrolledWindow* page) {
         wxString toptitle = m_pListbook->GetPageText(i);
         m_pListbook->DeletePage(i);
         m_pListbook->InsertPage(i, spg, toptitle, FALSE, i);
-        return TRUE;
       }
+      return TRUE;
     } else if (pg == page) {
       /* There's only one page, replace it with empty panel */
       m_pListbook->DeletePage(i);
