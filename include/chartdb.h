@@ -170,6 +170,7 @@ private:
       
       
       wxArrayPtrVoid    *pChartCache;
+      int              m_ticks;
 
       bool              m_b_locked;
       bool              m_b_busy;

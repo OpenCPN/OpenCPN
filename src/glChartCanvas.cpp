@@ -845,6 +845,8 @@ glChartCanvas::glChartCanvas( wxWindow *parent ) :
     m_last_render_time = -1;
 
     m_prevMemUsed = 0;    
+
+    m_LRUtime = 0;
     
     m_tideTex = 0;
     m_currentTex = 0;
@@ -3061,8 +3063,8 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, L
         m_chart_texfactory_hash[key] = new glTexFactory(chart, g_raster_format);
     
     pTexFact = m_chart_texfactory_hash[key];
-    pTexFact->SetLRUTime(wxDateTime::Now());
-
+    pTexFact->SetLRUTime(++m_LRUtime);
+    
     // for small scales, don't use normalized coordinates for accuracy (difference is up to 3 meters error)
     bool use_norm_vp = glChartCanvas::HasNormalizedViewPort(vp) && pBSBChart->GetPPM() < 1;
     pTexFact->PrepareTiles(vp, use_norm_vp, pBSBChart);
@@ -3930,7 +3932,7 @@ bool glChartCanvas::FactoryCrunch(double factor)
     if(bGLMemCrunch){
         
         //      Find the oldest unused factory
-        wxDateTime lru_oldest = wxDateTime::Now();
+        int lru_oldest = 2147483647;
         glTexFactory *ptf_oldest = NULL;
         
         for( it0 = m_chart_texfactory_hash.begin(); it0 != m_chart_texfactory_hash.end(); ++it0 ) {
@@ -3946,8 +3948,8 @@ bool glChartCanvas::FactoryCrunch(double factor)
                 if( cc1->m_pQuilt && cc1->m_pQuilt->IsComposed() &&
                     !cc1->m_pQuilt->IsChartInQuilt( chart_full_path ) ) {
                     
-                    wxDateTime lru = ptf->GetLRUTime();
-                    if(lru.IsEarlierThan(lru_oldest) && !ptf->BackgroundCompressionAsJob()){
+                    int lru = ptf->GetLRUTime();
+                    if(lru < lru_oldest && !ptf->BackgroundCompressionAsJob()){
                         lru_oldest = lru;
                         ptf_oldest = ptf;
                     }
@@ -3955,8 +3957,8 @@ bool glChartCanvas::FactoryCrunch(double factor)
             }
             else {
                 if( !Current_Ch->GetFullPath().IsSameAs(chart_full_path)) {
-                    wxDateTime lru = ptf->GetLRUTime();
-                    if(lru.IsEarlierThan(lru_oldest) && !ptf->BackgroundCompressionAsJob()){
+                    int lru = ptf->GetLRUTime();
+                    if(lru < lru_oldest && !ptf->BackgroundCompressionAsJob()){
                         lru_oldest = lru;
                         ptf_oldest = ptf;
                     }
