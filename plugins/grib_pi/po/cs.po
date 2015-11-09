@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-22 22:27-0500\n"
-"PO-Revision-Date: 2015-10-22 23:36-0400\n"
+"PO-Revision-Date: 2015-11-01 13:54-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Czech\n"
 "Language: cs_CZ\n"
@@ -18,27 +18,27 @@ msgstr ""
 
 #: src/GribUIDialog.cpp:317 src/GribUIDialog.cpp:720
 msgid "Start a request"
-msgstr ""
+msgstr "Zahájení požadavku"
 
 #: src/GribUIDialog.cpp:321 src/GribUIDialog.cpp:720
 msgid "Stop request"
-msgstr ""
+msgstr "Zastavit požadavek"
 
 #: src/GribUIDialog.cpp:325 src/GribUIDialog.cpp:720
 msgid "Valid request"
-msgstr ""
+msgstr "Platný požadavek"
 
 #: src/GribUIDialog.cpp:356
 msgid "File"
-msgstr ""
+msgstr "Soubor"
 
 #: src/GribUIDialog.cpp:363 src/GribUIDialog.cpp:389
 msgid "Error! "
-msgstr ""
+msgstr "Chyba! "
 
 #: src/GribUIDialog.cpp:363
 msgid " contains no valid data!"
-msgstr ""
+msgstr " neobsahuje žádná platná data!"
 
 #: src/GribUIDialog.cpp:386
 msgid "Warning:  Empty directory!"
@@ -46,15 +46,15 @@ msgstr "Varování: Prázdný adresář!"
 
 #: src/GribUIDialog.cpp:524 src/GribUIDialog.cpp:713
 msgid "Hide data at cursor"
-msgstr ""
+msgstr "Skrýt data u kurzoru"
 
 #: src/GribUIDialog.cpp:524 src/GribUIDialog.cpp:713
 msgid "Show data at cursor"
-msgstr ""
+msgstr "Zobrazit data u kurzoru"
 
 #: src/GribUIDialog.cpp:525 src/GribUIDialog.cpp:715 src/GribUIDialog.cpp:923
 msgid "Start play back"
-msgstr ""
+msgstr "Spustit přehrávání"
 
 #: src/GribUIDialog.cpp:672 src/grib_pi.cpp:353 src/CursorData.cpp:541
 msgid "Menu"
@@ -62,7 +62,7 @@ msgstr "Nabídka"
 
 #: src/GribUIDialog.cpp:709
 msgid "Select geopotential altitude"
-msgstr ""
+msgstr "Vybrat geopotencíalní výšku"
 
 #: src/GribUIDialog.cpp:711 src/GribUIDialogBase.cpp:58
 #: src/GribUIDialogBase.cpp:171 src/GribUIDialogBase.cpp:1091
@@ -76,12 +76,12 @@ msgstr "Zvětšení na střed"
 
 #: src/GribUIDialog.cpp:715 src/GribUIDialog.cpp:887
 msgid "Stop play back"
-msgstr ""
+msgstr "Zastavit přehrávání"
 
 #: src/GribUIDialog.cpp:717 src/GribUIDialogBase.cpp:82
 #: src/GribUIDialogBase.cpp:196
 msgid "Open a new file"
-msgstr ""
+msgstr "Otevřít nový soubor"
 
 #: src/GribUIDialog.cpp:718 src/GribUIDialogBase.cpp:87
 #: src/GribUIDialogBase.cpp:201 src/GribUIDialogBase.cpp:1187
@@ -98,11 +98,11 @@ msgstr "Složka souborů GRIB"
 
 #: src/GribUIDialog.cpp:1332
 msgid " does not exist!"
-msgstr ""
+msgstr " neexistuje!"
 
 #: src/GribUIDialog.cpp:1345
 msgid " can't be read!"
-msgstr ""
+msgstr " nelze přečíst!"
 
 #: src/GribSettingsDialog.cpp:31 src/GribSettingsDialog.cpp:38
 msgid "Knots"
@@ -270,21 +270,23 @@ msgstr "Mezery"
 
 #: src/GribSettingsDialog.cpp:792
 msgid "You want to remove the dialog title/drag bar\n"
-msgstr ""
+msgstr "Chceš odebrat název/hlavičku dialogu\n"
 
 #: src/GribSettingsDialog.cpp:794
 msgid "You want to add a title/drag bar to the dialog\n"
-msgstr ""
+msgstr "Chceš přidat název/hlavičku dialogu\n"
 
 #: src/GribSettingsDialog.cpp:797
 msgid "This change needs a complete reload.\n"
 "It will be applied after closing and re-opening the plugin"
-msgstr ""
+msgstr "Tato změna potřebuje úplný restart. \n"
+"Bude použita po zavření a znovuotevření pluginu"
 
 #: src/GribSettingsDialog.cpp:818
 msgid "You have chosen to authorize interpolation.\n"
 "Don't forget that data displayed will not be real but recomputed and this can decrease accuracy!"
-msgstr ""
+msgstr "Rozhodl ses povolit interpolace. \n"
+"Nezapomeň, že zobrazená data nebudou reálná, ale přepočítávána a tím se sníží přesnost!"
 
 #: src/GribSettingsDialog.cpp:819 src/GribSettingsDialog.cpp:858
 #: src/grib_pi.cpp:338 src/grib_pi.cpp:618 src/GribRequestDialog.cpp:606
@@ -294,7 +296,8 @@ msgstr "Varování!"
 #: src/GribSettingsDialog.cpp:857
 msgid "This option imply you authorize intrepolation\n"
 "Don't forget that data displayed will not be real but recomputed and this can decrease accuracy!"
-msgstr ""
+msgstr "Tato možnost znamená, že schválíš intrepolaci\n"
+"Nezapomeň, že zobrazená data nebudou reálná, ale přepočítávaná a to může snížit přesnost!"
 
 #: src/GribUIDialogBase.cpp:29 src/GribUIDialogBase.cpp:148
 msgid "Previous"
@@ -306,7 +309,7 @@ msgstr "Další"
 
 #: src/GribUIDialogBase.cpp:53 src/GribUIDialogBase.cpp:166
 msgid "Select geoptential altitude"
-msgstr ""
+msgstr "Vybrat geopotencíalní výšku"
 
 #: src/GribUIDialogBase.cpp:374
 msgid "MyLabel"
@@ -322,7 +325,7 @@ msgstr "Signifikantní výška vln, m"
 
 #: src/GribUIDialogBase.cpp:434
 msgid "Waves period"
-msgstr ""
+msgstr "Perioda vln"
 
 #: src/GribUIDialogBase.cpp:439
 msgid "Waves Direction"
@@ -358,19 +361,19 @@ msgstr "Konvektivní dostupná potenciální energie"
 
 #: src/GribUIDialogBase.cpp:527
 msgid "Geop. Altitude"
-msgstr ""
+msgstr "Geop. nadmořská výška"
 
 #: src/GribUIDialogBase.cpp:544
 msgid "Geop. Temp"
-msgstr ""
+msgstr "Geop. teplota"
 
 #: src/GribUIDialogBase.cpp:561
 msgid "Geop. R. Hum."
-msgstr ""
+msgstr "Geop. rel. vlhkost"
 
 #: src/GribUIDialogBase.cpp:704
 msgid "Data Display Options"
-msgstr ""
+msgstr "Možnosti zobrazení dat"
 
 #: src/GribUIDialogBase.cpp:717
 msgid "Units"
@@ -391,16 +394,16 @@ msgstr "Kontrolované barvy"
 #: src/GribUIDialogBase.cpp:747 src/GribUIDialogBase.cpp:825
 #: src/GribUIDialogBase.cpp:881
 msgid "Spacing(pixels)"
-msgstr ""
+msgstr "Rozestupy (body)"
 
 #: src/GribUIDialogBase.cpp:751 src/GribUIDialogBase.cpp:829
 msgid "Fixed"
-msgstr ""
+msgstr "Pevné"
 
 #: src/GribUIDialogBase.cpp:757 src/GribUIDialogBase.cpp:835
 #: src/GribUIDialogBase.cpp:891
 msgid "Minimum"
-msgstr ""
+msgstr "Minimální"
 
 #: src/GribUIDialogBase.cpp:770 src/GribUIDialogBase.cpp:800
 msgid "Always visible"
@@ -456,7 +459,7 @@ msgstr "Čísla"
 
 #: src/GribUIDialogBase.cpp:885
 msgid "Fixed\n"
-msgstr ""
+msgstr "Pevné\n"
 
 #: src/GribUIDialogBase.cpp:900 src/CursorData.cpp:462 src/CursorData.cpp:495
 msgid "Particle Map"
@@ -468,7 +471,7 @@ msgstr "Hustota"
 
 #: src/GribUIDialogBase.cpp:920
 msgid "Transparency for all Overlay Maps"
-msgstr ""
+msgstr "Průhůlednost pro všechny překryvné mapy"
 
 #: src/GribUIDialogBase.cpp:927
 msgid "Overlay Transparency (%)"
@@ -480,7 +483,7 @@ msgstr "Data"
 
 #: src/GribUIDialogBase.cpp:956
 msgid "Playback Options"
-msgstr ""
+msgstr "Možnosti přehrávání"
 
 #: src/GribUIDialogBase.cpp:963
 msgid "Loop Mode"
@@ -512,55 +515,55 @@ msgstr "Časový Interval"
 
 #: src/GribUIDialogBase.cpp:1009 src/GribUIDialogBase.cpp:1139
 msgid "Playback"
-msgstr ""
+msgstr "Přehrávání"
 
 #: src/GribUIDialogBase.cpp:1019
 msgid "Dialogs Style"
-msgstr ""
+msgstr "Styl dialogových oken"
 
 #: src/GribUIDialogBase.cpp:1026
 msgid "Only one Dialog with a title/drag bar"
-msgstr ""
+msgstr "Jen jeden dialog s hlavičkou"
 
 #: src/GribUIDialogBase.cpp:1029
 msgid "Only one Dialog without title/drag bar"
-msgstr ""
+msgstr "Jen jeden dialog bez hlavičky"
 
 #: src/GribUIDialogBase.cpp:1032
 msgid "Two separated Dialogs - horizontal Cursor Data display"
-msgstr ""
+msgstr "Dva oddělené dialogy – horizontální zobrazení dat u kurzoru"
 
 #: src/GribUIDialogBase.cpp:1035
 msgid "Two separated Dialogs - vertical Cursor Data display"
-msgstr ""
+msgstr "Dva oddělené dialogy – vertikální zobrazení dat u kurzoru"
 
 #: src/GribUIDialogBase.cpp:1048
 msgid "Buttons/Ctrl Visibility"
-msgstr ""
+msgstr "Viditelnost tlačítek a ovladačů"
 
 #: src/GribUIDialogBase.cpp:1062
 msgid "Attached Dialog"
-msgstr ""
+msgstr "Připojený dialog"
 
 #: src/GribUIDialogBase.cpp:1067
 msgid "Isolated Dialog"
-msgstr ""
+msgstr "Izolovaný dialog"
 
 #: src/GribUIDialogBase.cpp:1075
 msgid "Altitude Choice"
-msgstr ""
+msgstr "Volba nadmořské výšky"
 
 #: src/GribUIDialogBase.cpp:1107
 msgid "Zoom to Center"
-msgstr ""
+msgstr "Zvětšení na střed"
 
 #: src/GribUIDialogBase.cpp:1123
 msgid "Show Cursor Data"
-msgstr ""
+msgstr "Zobrazit data u kurzoru"
 
 #: src/GribUIDialogBase.cpp:1155
 msgid "Time Slider"
-msgstr ""
+msgstr "Posuvník času"
 
 #: src/GribUIDialogBase.cpp:1171
 msgid "Open File"
@@ -576,7 +579,7 @@ msgstr ""
 
 #: src/GribUIDialogBase.cpp:1314
 msgid "General Options"
-msgstr ""
+msgstr "Obecné nastavení"
 
 #: src/GribUIDialogBase.cpp:1321
 msgid "Use High Definition Graphics"
@@ -788,7 +791,7 @@ msgstr " (Maximální velikost)"
 
 #: src/GribUIDialogBase.cpp:1911
 msgid "Data at Position:"
-msgstr ""
+msgstr "Údaje na pozici:"
 
 #: src/smapi.cpp:119
 msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
@@ -816,7 +819,7 @@ msgstr "Tabulka dat GRIB"
 
 #: src/GribOverlayFactory.cpp:476
 msgid "Warning : Data at"
-msgstr ""
+msgstr "Upozornění: Data na"
 
 #: src/GribOverlayFactory.cpp:1028
 msgid "Building Isobar map"
@@ -873,7 +876,8 @@ msgstr "Doplněk GRIB pro OpenCPN\n"
 #: src/grib_pi.cpp:337
 msgid "The Gribs Dialogs are probably too wide for the screen size\n"
 "In this case, please try a smaller Font size"
-msgstr ""
+msgstr "Gribs dialogy jsou pravděpodobně příliš široké pro velikost obrazovky\n"
+"V tomto případě, prosím, zkus zmenšit velikost písma"
 
 #: src/grib_pi.cpp:351
 msgid "Weather table"
@@ -882,7 +886,8 @@ msgstr "Tabulka počasí"
 #: src/grib_pi.cpp:617
 msgid "You have chosen to authorize interpolation.\n"
 "Don't forget that data displayed at current time will not be real but Recomputed and this can decrease accuracy!"
-msgstr ""
+msgstr "Rozhodl ses povolit interpolace. \n"
+"Nezapomeň, že data zobrazená pro aktuální čas nebudou reálná ale přepočítaná a to sníží přesnost!"
 
 #: src/GribTable.cpp:168
 msgid "Air\n"
@@ -925,7 +930,7 @@ msgstr "Zadej předpokládaný kurs"
 
 #: src/GribRequestDialog.cpp:444
 msgid "Coord. "
-msgstr ""
+msgstr "Souřadnice "
 
 #: src/GribRequestDialog.cpp:449 src/GribRequestDialog.cpp:809
 #: src/GribRequestDialog.cpp:812
@@ -996,35 +1001,35 @@ msgstr "Žádost nelze odeslat. Zkontroluj, zda je tvůj poštovní systém spr�
 
 #: src/CursorData.cpp:211
 msgid "Data at cursor position"
-msgstr ""
+msgstr "Údaje na pozici kurzoru"
 
 #: src/CursorData.cpp:223
 msgid "Wind Speed at"
-msgstr ""
+msgstr "Rychlost větru na"
 
 #: src/CursorData.cpp:224
 msgid "Wind Speed in at"
-msgstr ""
+msgstr "Rychlost větru na"
 
 #: src/CursorData.cpp:225
 msgid "Wind Direction at"
-msgstr ""
+msgstr "Směr větru na"
 
 #: src/CursorData.cpp:228
 msgid "Wind Gust at"
-msgstr ""
+msgstr "Poryv větru na"
 
 #: src/CursorData.cpp:231
 msgid "Air Temperature at"
-msgstr ""
+msgstr "Teplota vzduchu na"
 
 #: src/CursorData.cpp:231
 msgid "Surface level"
-msgstr ""
+msgstr "Na hladině"
 
 #: src/CursorData.cpp:231
 msgid "Sea Surface Temperature"
-msgstr ""
+msgstr "Teplota hladiny moře"
 
 #: src/CursorData.cpp:271 src/CursorData.cpp:272 src/CursorData.cpp:273
 #: src/CursorData.cpp:285 src/CursorData.cpp:298 src/CursorData.cpp:318

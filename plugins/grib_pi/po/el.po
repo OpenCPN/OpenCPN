@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-22 22:27-0500\n"
-"PO-Revision-Date: 2015-10-22 23:36-0400\n"
+"PO-Revision-Date: 2015-11-08 22:34-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Greek\n"
 "Language: el_GR\n"
@@ -270,21 +270,23 @@ msgstr "Αποστάσεις"
 
 #: src/GribSettingsDialog.cpp:792
 msgid "You want to remove the dialog title/drag bar\n"
-msgstr ""
+msgstr "Θέλετε να καταργήσετε το τίτλο του διαλόγου ή την μπάρα\n"
 
 #: src/GribSettingsDialog.cpp:794
 msgid "You want to add a title/drag bar to the dialog\n"
-msgstr ""
+msgstr "Θέλετε να προσθέσετε έναν τίτλο/μπάρα στον διάλογο\n"
 
 #: src/GribSettingsDialog.cpp:797
 msgid "This change needs a complete reload.\n"
 "It will be applied after closing and re-opening the plugin"
-msgstr ""
+msgstr "Αυτή η αλλαγή χρειάζεται μια πλήρη επαναφόρτωση.\n"
+"Θα εφαρμοστεί μετά το κλείσιμο και την επανέναρξη του προσθέτου"
 
 #: src/GribSettingsDialog.cpp:818
 msgid "You have chosen to authorize interpolation.\n"
 "Don't forget that data displayed will not be real but recomputed and this can decrease accuracy!"
-msgstr ""
+msgstr "Έχετε επιτρέψει παρεμβολή δεδομένων. \n"
+"Μη ξεχνάτε ότι τα δεδομένα που εμφανίζονται δεν είναι πραγματικά αλλά υπολογισμένα, και αυτό μπορεί να μειώσει την ακρίβεια!"
 
 #: src/GribSettingsDialog.cpp:819 src/GribSettingsDialog.cpp:858
 #: src/grib_pi.cpp:338 src/grib_pi.cpp:618 src/GribRequestDialog.cpp:606
@@ -294,7 +296,8 @@ msgstr "Προσοχή!"
 #: src/GribSettingsDialog.cpp:857
 msgid "This option imply you authorize intrepolation\n"
 "Don't forget that data displayed will not be real but recomputed and this can decrease accuracy!"
-msgstr ""
+msgstr "Αυτή η επιλογή συνεπάγεται εξουσιοδότηση παρεμβολής\n"
+"Μην ξεχάσετε ότι τα δεδομένα που εμφανίζονται δεν είναι πραγματικά αλλά υπολογισμένα, και αυτό μπορεί να μειώσει την ακρίβεια!"
 
 #: src/GribUIDialogBase.cpp:29 src/GribUIDialogBase.cpp:148
 msgid "Previous"
@@ -520,19 +523,19 @@ msgstr "Στιλ δαλόγων"
 
 #: src/GribUIDialogBase.cpp:1026
 msgid "Only one Dialog with a title/drag bar"
-msgstr ""
+msgstr "Μόνο ένα παράθυρο διαλόγου με τίτλο/μπάρα"
 
 #: src/GribUIDialogBase.cpp:1029
 msgid "Only one Dialog without title/drag bar"
-msgstr ""
+msgstr "Μόνο ένα παράθυρο διαλόγου χωρίς τίτλο/μπάρα"
 
 #: src/GribUIDialogBase.cpp:1032
 msgid "Two separated Dialogs - horizontal Cursor Data display"
-msgstr ""
+msgstr "Δύο χωριστοί διάλογοι - εμφανίζονται οριζόντια δεδομένα δρομέα"
 
 #: src/GribUIDialogBase.cpp:1035
 msgid "Two separated Dialogs - vertical Cursor Data display"
-msgstr ""
+msgstr "Δύο χωριστοί διάλογοι - εμφανίζονται κάθετα δεδομένα δρομέα"
 
 #: src/GribUIDialogBase.cpp:1048
 msgid "Buttons/Ctrl Visibility"
@@ -540,11 +543,11 @@ msgstr "Κουμπιά/Ctrl ορατότητα"
 
 #: src/GribUIDialogBase.cpp:1062
 msgid "Attached Dialog"
-msgstr ""
+msgstr "Συνημμένος διάλογος"
 
 #: src/GribUIDialogBase.cpp:1067
 msgid "Isolated Dialog"
-msgstr ""
+msgstr "Μεμονωμένος διάλογος"
 
 #: src/GribUIDialogBase.cpp:1075
 msgid "Altitude Choice"
@@ -560,7 +563,7 @@ msgstr "Εμφάνιση δεδομένων δρομέα"
 
 #: src/GribUIDialogBase.cpp:1155
 msgid "Time Slider"
-msgstr ""
+msgstr "Ρυθμιστικό χρόνου"
 
 #: src/GribUIDialogBase.cpp:1171
 msgid "Open File"
@@ -628,7 +631,7 @@ msgstr "Τοπική ώρα"
 
 #: src/GribUIDialogBase.cpp:1351
 msgid "UTC"
-msgstr ""
+msgstr "UTC"
 
 #: src/GribUIDialogBase.cpp:1353
 msgid "Time Options"
@@ -760,19 +763,19 @@ msgstr "Γεωδυναμικό ύψος"
 
 #: src/GribUIDialogBase.cpp:1731
 msgid "850 hPa"
-msgstr ""
+msgstr "850 hPa"
 
 #: src/GribUIDialogBase.cpp:1734
 msgid "700 hPa"
-msgstr ""
+msgstr "700 hPa"
 
 #: src/GribUIDialogBase.cpp:1737
 msgid "500 hPa"
-msgstr ""
+msgstr "500 hPa"
 
 #: src/GribUIDialogBase.cpp:1740
 msgid "300 hPa"
-msgstr ""
+msgstr "300 hPa"
 
 #: src/GribUIDialogBase.cpp:1753
 msgid "Mail"
@@ -788,7 +791,7 @@ msgstr " ﻿ (Μέγιστο μέγεθος)"
 
 #: src/GribUIDialogBase.cpp:1911
 msgid "Data at Position:"
-msgstr ""
+msgstr "Δεδομένa στη θέση:"
 
 #: src/smapi.cpp:119
 msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
@@ -881,7 +884,8 @@ msgstr "Πρόσθετο GRIB για το OpenCPN\n"
 #: src/grib_pi.cpp:337
 msgid "The Gribs Dialogs are probably too wide for the screen size\n"
 "In this case, please try a smaller Font size"
-msgstr ""
+msgstr "Οι διάλογοι Gribs είναι πιθανώς πάρα πολύ πλατείς για την οθόνη\n"
+"Δοκιμάστε ένα μικρότερο μέγεθος γραμματοσειράς"
 
 #: src/grib_pi.cpp:351
 msgid "Weather table"
@@ -890,7 +894,8 @@ msgstr "Μετεωρολογικός πίνακας"
 #: src/grib_pi.cpp:617
 msgid "You have chosen to authorize interpolation.\n"
 "Don't forget that data displayed at current time will not be real but Recomputed and this can decrease accuracy!"
-msgstr ""
+msgstr "Έχετε επιτρέψει παρεμβολή δεδομένων. \n"
+"Μη ξεχνάτε ότι τα δεδομένα που εμφανίζονται δεν είναι πραγματικά αλλά υπολογισμένα, και αυτό μπορεί να μειώσει την ακρίβεια!"
 
 #: src/GribTable.cpp:168
 msgid "Air\n"
@@ -939,7 +944,7 @@ msgstr "Συντεταγμ. "
 #: src/GribRequestDialog.cpp:449 src/GribRequestDialog.cpp:809
 #: src/GribRequestDialog.cpp:812
 msgid "MB"
-msgstr ""
+msgstr "MB"
 
 #: src/GribRequestDialog.cpp:605
 msgid "You request a forecast for more than 8 days horizon.\n"
@@ -1005,35 +1010,35 @@ msgstr "Το αίτημα δεν μπορεί να αποσταλεί. Παρα�
 
 #: src/CursorData.cpp:211
 msgid "Data at cursor position"
-msgstr ""
+msgstr "Δεδομένα στη θέση του δρομέα"
 
 #: src/CursorData.cpp:223
 msgid "Wind Speed at"
-msgstr ""
+msgstr "Ταχύτητα ανέμου σε"
 
 #: src/CursorData.cpp:224
 msgid "Wind Speed in at"
-msgstr ""
+msgstr "Ταχύτητα ανέμου σε"
 
 #: src/CursorData.cpp:225
 msgid "Wind Direction at"
-msgstr ""
+msgstr "Κατεύθυνση ανέμου σε"
 
 #: src/CursorData.cpp:228
 msgid "Wind Gust at"
-msgstr ""
+msgstr "Σπιλιάδες σε"
 
 #: src/CursorData.cpp:231
 msgid "Air Temperature at"
-msgstr ""
+msgstr "Θερμοκρασία αέρος σε"
 
 #: src/CursorData.cpp:231
 msgid "Surface level"
-msgstr ""
+msgstr "Επιφάνεια"
 
 #: src/CursorData.cpp:231
 msgid "Sea Surface Temperature"
-msgstr ""
+msgstr "Θερμοκρασία επιφανείας θαλάσσης"
 
 #: src/CursorData.cpp:271 src/CursorData.cpp:272 src/CursorData.cpp:273
 #: src/CursorData.cpp:285 src/CursorData.cpp:298 src/CursorData.cpp:318
@@ -1043,5 +1048,5 @@ msgstr ""
 #: src/CursorData.cpp:412 src/CursorData.cpp:424 src/CursorData.cpp:436
 #: src/CursorData.cpp:447
 msgid "N/A"
-msgstr ""
+msgstr "Δ/Υ"
 
