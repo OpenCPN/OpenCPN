@@ -1023,15 +1023,11 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
         break;
 
     case ID_DEF_MENU_ACTIVATE_MEASURE:
-        parent->m_bMeasure_Active = true;
-        parent->m_nMeasureState = 1;
+        parent->StartMeasureRoute();
         break;
 
     case ID_DEF_MENU_DEACTIVATE_MEASURE:
-        parent->m_bMeasure_Active = false;
-        parent->m_nMeasureState = 0;
-        g_pRouteMan->DeleteRoute( parent->m_pMeasureRoute );
-        parent->m_pMeasureRoute = NULL;
+        parent->CancelMeasureRoute();
         gFrame->SurfaceToolbar();
         parent->InvalidateGL();
         parent->Refresh( false );
