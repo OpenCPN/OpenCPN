@@ -127,6 +127,7 @@ AIS_Target_Data::AIS_Target_Data()
     b_isEuroInland = false;
     b_blue_paddle = false;
 
+    b_NoTrack = false;
     b_OwnShip = false;
     b_PersistTrack = false;
     b_in_ack_timeout = false;

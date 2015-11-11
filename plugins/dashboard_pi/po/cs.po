@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-24 20:40-0500\n"
-"PO-Revision-Date: 2015-09-24 21:47-0400\n"
+"PO-Revision-Date: 2015-11-01 13:54-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Czech\n"
 "Language: cs_CZ\n"
@@ -39,7 +39,7 @@ msgstr "COG"
 
 #: src/dashboard_pi.cpp:105
 msgid "Mag COG"
-msgstr ""
+msgstr "Mag COG"
 
 #: src/dashboard_pi.cpp:107
 msgid "GPS Compass"
@@ -67,7 +67,7 @@ msgstr "Zdánlivý úhel a rychlost větru"
 
 #: src/dashboard_pi.cpp:120
 msgid "App & True Wind Angle"
-msgstr ""
+msgstr "Úhel skutečného a zdánlivého větru"
 
 #: src/dashboard_pi.cpp:122 src/dashboard_pi.cpp:124
 msgid "App. Wind Speed"
@@ -167,11 +167,11 @@ msgstr "Od lodi"
 
 #: src/dashboard_pi.cpp:180
 msgid "Pitch"
-msgstr ""
+msgstr "Houpání"
 
 #: src/dashboard_pi.cpp:182
 msgid "Heel"
-msgstr ""
+msgstr "Náklon"
 
 #: src/dashboard_pi.cpp:352 src/dashboard_pi.cpp:465 src/dashboard_pi.cpp:1397
 #: src/dashboard_pi.cpp:1406 src/dashboard_pi.cpp:1564 src/dashboard_pi.cpp:1603
@@ -425,5 +425,5 @@ msgstr "SZ"
 #: src/wind_history.cpp:575
 #, c-format
 msgid "Max %.1f %s since %02d:%02d  Overall %.1f %s"
-msgstr ""
+msgstr "Max %.1f %s od %02d:%02d Celkově %.1f %s"
 

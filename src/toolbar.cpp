@@ -326,7 +326,8 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
     
     m_bAutoHideToolbar = false;
     m_nAutoHideToolbar = 5;
-    
+
+    m_cs = (ColorScheme)-1;
 
     m_style = g_StyleManager->GetCurrentStyle();
 
@@ -599,9 +600,11 @@ void ocpnFloatingToolbarDialog::SurfaceFromGrabber()
     Raise();
 #endif
     
-    m_destroyGrabber = m_pRecoverwin;
-    m_pRecoverwin = NULL;
-    m_destroyTimer.Start( 5, wxTIMER_ONE_SHOT );           //  Destor the unneeded recovery grabber
+    if(!m_destroyTimer.IsRunning()){
+        m_destroyGrabber = m_pRecoverwin;
+        m_pRecoverwin = NULL;
+        m_destroyTimer.Start( 5, wxTIMER_ONE_SHOT );           //  Destor the unneeded recovery grabber
+    }
     
 }
 
@@ -979,9 +982,11 @@ void ocpnFloatingToolbarDialog::DestroyToolBar()
         m_ptoolbar = NULL;
     }
  
-    m_destroyGrabber = m_pRecoverwin;
-    m_pRecoverwin = NULL;
-    m_destroyTimer.Start( 5, wxTIMER_ONE_SHOT );           //  Destor the unneeded recovery grabber
+    if(!m_destroyTimer.IsRunning()){
+        m_destroyGrabber = m_pRecoverwin;
+        m_pRecoverwin = NULL;
+        m_destroyTimer.Start( 5, wxTIMER_ONE_SHOT );           //  Destor the unneeded recovery grabber
+    }
     
 }
 

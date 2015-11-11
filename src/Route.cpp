@@ -190,10 +190,10 @@ void Route::CloneAddedRoutePoint( RoutePoint *ptargetpoint, RoutePoint *psourcep
     ptargetpoint->m_bPtIsSelected = false;
     ptargetpoint->m_bShowName = psourcepoint->m_bShowName;
     ptargetpoint->m_bBlink = psourcepoint->m_bBlink;
-    ptargetpoint->m_bBlink = psourcepoint->m_bDynamicName;
+    ptargetpoint->m_bDynamicName = psourcepoint->m_bDynamicName;
     ptargetpoint->CurrentRect_in_DC = psourcepoint->CurrentRect_in_DC;
     ptargetpoint->m_NameLocationOffsetX = psourcepoint->m_NameLocationOffsetX;
-    ptargetpoint->m_NameLocationOffsetX = psourcepoint->m_NameLocationOffsetY;
+    ptargetpoint->m_NameLocationOffsetY = psourcepoint->m_NameLocationOffsetY;
     ptargetpoint->SetCreateTime(psourcepoint->GetCreateTime());
     ptargetpoint->m_HyperlinkList = new HyperlinkList;
     ptargetpoint->ReLoadIcon();
@@ -215,10 +215,10 @@ void Route::CloneAddedTrackPoint( RoutePoint *ptargetpoint, RoutePoint *psourcep
     ptargetpoint->m_bPtIsSelected = false;
     ptargetpoint->m_bShowName = psourcepoint->m_bShowName;
     ptargetpoint->m_bBlink = psourcepoint->m_bBlink;
-    ptargetpoint->m_bBlink = psourcepoint->m_bDynamicName;
+    ptargetpoint->m_bDynamicName = psourcepoint->m_bDynamicName;
     ptargetpoint->CurrentRect_in_DC = psourcepoint->CurrentRect_in_DC;
     ptargetpoint->m_NameLocationOffsetX = psourcepoint->m_NameLocationOffsetX;
-    ptargetpoint->m_NameLocationOffsetX = psourcepoint->m_NameLocationOffsetY;
+    ptargetpoint->m_NameLocationOffsetY = psourcepoint->m_NameLocationOffsetY;
     ptargetpoint->SetCreateTime(psourcepoint->GetCreateTime());
     ptargetpoint->m_HyperlinkList = new HyperlinkList;
     ptargetpoint->ReLoadIcon();

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-22 22:27-0500\n"
-"PO-Revision-Date: 2015-10-22 23:36-0400\n"
+"POT-Creation-Date: 2015-11-08 21:32-0600\n"
+"PO-Revision-Date: 2015-11-08 22:34-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Greek\n"
 "Language: el_GR\n"
@@ -16,7 +16,7 @@ msgstr ""
 "X-Crowdin-Language: el\n"
 "X-Crowdin-File: /po/opencpn.pot\n"
 
-#: include/about.h:39 src/chart1.cpp:2756 src/chart1.cpp:4898
+#: include/about.h:39 src/chart1.cpp:2752 src/chart1.cpp:4898
 msgid "About OpenCPN"
 msgstr "Για το OpenCPN"
 
@@ -24,7 +24,7 @@ msgstr "Για το OpenCPN"
 #: src/routemanagerdialog.cpp:1178 src/routemanagerdialog.cpp:1841
 #: src/routemanagerdialog.cpp:1949 src/routemanagerdialog.cpp:2244
 #: src/routemanagerdialog.cpp:2277 src/routemanagerdialog.cpp:2409
-#: src/routemanagerdialog.cpp:2543 src/toolbar.cpp:930 src/toolbar.cpp:2380
+#: src/routemanagerdialog.cpp:2543 src/toolbar.cpp:934 src/toolbar.cpp:2387
 msgid "OpenCPN Alert"
 msgstr "OpenCPN: Συναγερμός"
 
@@ -33,7 +33,7 @@ msgid "OpenCPN AIS Alert"
 msgstr "Συναγερμός AIS"
 
 #: include/AISTargetQueryDialog.h:46 include/AISTargetQueryDialog.h:58
-#: include/S57QueryDialog.h:43 include/S57QueryDialog.h:53 src/chcanv.cpp:8069
+#: include/S57QueryDialog.h:43 include/S57QueryDialog.h:53 src/chcanv.cpp:8075
 msgid "Object Query"
 msgstr "Πληροφορίες αντικειμένου"
 
@@ -117,7 +117,7 @@ msgstr "Άσπρο"
 msgid "Link Properties"
 msgstr "Ιδιότητες συνδέσμου"
 
-#: include/options.h:66 src/chart1.cpp:2693 src/chart1.cpp:5036
+#: include/options.h:66 src/chart1.cpp:2689 src/chart1.cpp:5036
 msgid "Options"
 msgstr "Επιλογές"
 
@@ -125,12 +125,12 @@ msgstr "Επιλογές"
 msgid "Print Route Selection"
 msgstr "Εκτύπωση επιλογής διαδρομών"
 
-#: include/routeprop.h:64 src/canvasMenu.cpp:1391 src/chcanv.cpp:5019
-#: src/chcanv.cpp:6556 src/routemanagerdialog.cpp:1222
+#: include/routeprop.h:64 src/canvasMenu.cpp:1377 src/chcanv.cpp:5023
+#: src/chcanv.cpp:6560 src/routemanagerdialog.cpp:1222
 msgid "Route Properties"
 msgstr "Ιδιότητες διαδρομής"
 
-#: include/routeprop.h:108 include/routeprop.h:353 src/chcanv.cpp:8203
+#: include/routeprop.h:108 include/routeprop.h:353 src/chcanv.cpp:8210
 #: src/routemanagerdialog.cpp:2216
 msgid "Waypoint Properties"
 msgstr "Ιδιότητες σημείου"
@@ -148,14 +148,14 @@ msgid "Track Properties"
 msgstr "Ιδιότητες ίχνους"
 
 #: src/about.cpp:202 src/about.cpp:252 src/about.cpp:401
-#: src/AISTargetListDialog.cpp:300 src/chart1.cpp:10986 src/chcanv.cpp:9910
-#: src/chcanv.cpp:9941 src/concanv.cpp:102 src/glChartCanvas.cpp:514
-#: src/LinkPropDlg.cpp:38 src/OCPNPlatform.cpp:1006 src/OCPNPlatform.cpp:1373
-#: src/OCPNPlatform.cpp:1412 src/options.cpp:659 src/options.cpp:950
-#: src/options.cpp:6516 src/options.cpp:7770 src/routemanagerdialog.cpp:451
+#: src/AISTargetListDialog.cpp:300 src/chart1.cpp:10989 src/chcanv.cpp:9917
+#: src/chcanv.cpp:9948 src/concanv.cpp:102 src/glChartCanvas.cpp:514
+#: src/LinkPropDlg.cpp:38 src/OCPNPlatform.cpp:1006 src/OCPNPlatform.cpp:1374
+#: src/OCPNPlatform.cpp:1413 src/options.cpp:678 src/options.cpp:978
+#: src/options.cpp:6552 src/options.cpp:7803 src/routemanagerdialog.cpp:451
 #: src/routeprop.cpp:387 src/routeprop.cpp:713 src/routeprop.cpp:1064
 #: src/routeprop.cpp:2339 src/TCWin.cpp:73 src/TCWin.cpp:175
-#: src/toolbar.cpp:2472 src/TrackPropDlg.cpp:107 src/TrackPropDlg.cpp:238
+#: src/toolbar.cpp:2479 src/TrackPropDlg.cpp:107 src/TrackPropDlg.cpp:238
 #: src/TrackPropDlg.cpp:565
 msgid "Dialog"
 msgstr "Διάλογος"
@@ -238,11 +238,11 @@ msgstr "Σε χαμηλή πτηση"
 
 #: src/ais.cpp:149
 msgid "Power-driven vessel towing astern (regional use)"
-msgstr ""
+msgstr "Μηχανοκίνητο σκάφος ρυμούλκησης (τοπική χρήση)"
 
 #: src/ais.cpp:150
 msgid "Power-driven vessel pushing ahead or towing alongside (regional use)"
-msgstr ""
+msgstr "Μηχανοκίνητο σκάφος ώθησης ή πλαϊνής ρυμούλκησης (τοπική χρήση)"
 
 #: src/ais.cpp:151
 msgid "Reserved 13"
@@ -252,7 +252,7 @@ msgstr "Κρατημένο για μελλοντική χρήση 13"
 msgid "Reserved 14"
 msgstr "Κρατημένο για μελλοντική χρήση 14"
 
-#: src/ais.cpp:153 src/AIS_Target_Data.cpp:375
+#: src/ais.cpp:153 src/AIS_Target_Data.cpp:376
 msgid "Undefined"
 msgstr "Απροσδιόριστο"
 
@@ -352,8 +352,8 @@ msgstr "Φορτηγό πλοίο"
 msgid "Tanker"
 msgstr "Δεξαμενόπλοιο"
 
-#: src/ais.cpp:187 src/AIS_Target_Data.cpp:361 src/AIS_Target_Data.cpp:639
-#: src/AIS_Target_Data.cpp:699 src/AIS_Target_Data.cpp:870 src/chartdbs.cpp:1278
+#: src/ais.cpp:187 src/AIS_Target_Data.cpp:362 src/AIS_Target_Data.cpp:640
+#: src/AIS_Target_Data.cpp:700 src/AIS_Target_Data.cpp:871 src/chartdbs.cpp:1279
 msgid "Unknown"
 msgstr "Άγνωστο"
 
@@ -501,7 +501,7 @@ msgstr "Κατάσταση κινδύνου"
 msgid "ARPA radar target"
 msgstr "Στόχος ραντάρ APRA"
 
-#: src/ais.cpp:224 src/AIS_Target_Data.cpp:867
+#: src/ais.cpp:224 src/AIS_Target_Data.cpp:868
 msgid "APRS Position Report"
 msgstr "Αναφορά θέσης APRS"
 
@@ -581,7 +581,7 @@ msgstr "Ο/Γ"
 msgid "?"
 msgstr ";"
 
-#: src/ais.cpp:254 src/AIS_Target_Data.cpp:852
+#: src/ais.cpp:254 src/AIS_Target_Data.cpp:853
 msgid "AtoN"
 msgstr "Βοηθ.Ναυσ."
 
@@ -625,7 +625,7 @@ msgstr "Τερτκλ. Ν"
 msgid "Card. W"
 msgstr "Τερτκλ. Δ"
 
-#: src/ais.cpp:267 src/options.cpp:1617
+#: src/ais.cpp:267 src/options.cpp:1645
 msgid "Port"
 msgstr "Αριστερά"
 
@@ -657,21 +657,21 @@ msgstr "Δεξιά"
 msgid "LtV/Rig"
 msgstr "Φαρο-πλοίο/κατασ."
 
-#: src/ais.cpp:286 src/AIS_Target_Data.cpp:856
+#: src/ais.cpp:286 src/AIS_Target_Data.cpp:857
 msgid "Buddy"
 msgstr "Φίλος"
 
-#: src/ais.cpp:287 src/AIS_Target_Data.cpp:859 src/AIS_Target_Data.cpp:861
+#: src/ais.cpp:287 src/AIS_Target_Data.cpp:860 src/AIS_Target_Data.cpp:862
 msgid "DSC"
-msgstr ""
+msgstr "DSC"
 
-#: src/ais.cpp:289 src/AIS_Target_Data.cpp:865
+#: src/ais.cpp:289 src/AIS_Target_Data.cpp:866
 msgid "ARPA"
-msgstr ""
+msgstr "ARPA"
 
-#: src/ais.cpp:290 src/AIS_Target_Data.cpp:867
+#: src/ais.cpp:290 src/AIS_Target_Data.cpp:868
 msgid "APRS"
-msgstr ""
+msgstr "APRS"
 
 #: src/ais.cpp:297
 msgid "Caution Area: Marine mammals habitat (implies whales NOT observed)"
@@ -883,7 +883,7 @@ msgstr "Περιοχή με κατάσταση κινδύνου: Πλοίο πο
 
 #: src/ais.cpp:364
 msgid "Distress Area: Vessel requests medical assistance"
-msgstr "Περιοχή με κατάσταση κινδύνου: Πλοίο που ζητά ιατρική βοήθεια"
+msgstr "Περιοχή με κατάσταση κινδύνου: Πλοίο ζητά ιατρική βοήθεια"
 
 #: src/ais.cpp:365
 msgid "Distress Area: Vessel flooding"
@@ -919,7 +919,7 @@ msgstr "Περιοχή με κατάσταση κινδύνου: περιοχή 
 
 #: src/ais.cpp:373
 msgid "Distress Area: Pollution response area"
-msgstr "Περιοχή με κατάσταση κινδύνου: περιοχή αντιμετώπισης ρύπανσης"
+msgstr "Περιοχή με κατάσταση κινδύνου: αντιμετώπιση ρύπανσης"
 
 #: src/ais.cpp:377
 msgid "Instruction: Contact VTS at this point/juncture"
@@ -955,7 +955,7 @@ msgstr "Πληροφορίες: περιοχή αναμονής παγοθραυ
 
 #: src/ais.cpp:387
 msgid "Information: Places of refuge"
-msgstr "Πληροφορίες: καταφύγια"
+msgstr "Πληροφορίες: Ναύτικά καταφύγια"
 
 #: src/ais.cpp:388
 msgid "Information: Position of icebreakers"
@@ -1091,7 +1091,7 @@ msgstr "Ρυμουλκό ώθησης, μονό"
 
 #: src/AIS_Decoder.cpp:189
 msgid "Object, not otherwise specified"
-msgstr "Μη προσδιορισμένο αντικείμενο"
+msgstr "Αντικείμενο, μη προσδιορισμένο"
 
 #: src/AIS_Decoder.cpp:190
 msgid "Object, towed, not otherwise specified"
@@ -1319,7 +1319,7 @@ msgstr "Δεξαμενόπλοιο υγροποιημένου αερίου"
 
 #: src/AIS_Decoder.cpp:248
 msgid "Pleasure craft, longer than 20 metres"
-msgstr "Σκάφος αναψυχής, περισσότερο από 20 m"
+msgstr "Σκάφος αναψυχής, μακρύτερο από 20 m"
 
 #: src/AIS_Decoder.cpp:249
 msgid "Fast ship"
@@ -1329,1168 +1329,1163 @@ msgstr "Γρήγορο πλοίο"
 msgid "Hydrofoil"
 msgstr "Υδροπτέρυγα"
 
-#: src/AIS_Decoder.cpp:2315
+#: src/AIS_Decoder.cpp:2327
 msgid "AIS Alert"
 msgstr "Συναγερμός AIS"
 
-#: src/AISTargetAlertDialog.cpp:157
+#: src/AISTargetAlertDialog.cpp:158 src/AISTargetAlertDialog.cpp:249
 msgid "AISTargetAlert"
 msgstr "AISΣυναγρμΣτόχου"
 
-#: src/AISTargetAlertDialog.cpp:199
+#: src/AISTargetAlertDialog.cpp:200
 msgid "&Silence Alert"
 msgstr "&Σίγαση  συναγερμού"
 
-#: src/AISTargetAlertDialog.cpp:206
+#: src/AISTargetAlertDialog.cpp:207
 msgid "&Acknowledge"
 msgstr "&Αναγνώριση"
 
-#: src/AISTargetAlertDialog.cpp:212
+#: src/AISTargetAlertDialog.cpp:213
 msgid "&Jump To"
 msgstr "&Πήγαινε σε"
 
-#: src/AISTargetAlertDialog.cpp:218 src/AISTargetQueryDialog.cpp:300
+#: src/AISTargetAlertDialog.cpp:219 src/AISTargetQueryDialog.cpp:300
 #: src/undo.cpp:81
 msgid "Create Waypoint"
 msgstr "Δημιουργία σημείου πορείας"
 
-#: src/AISTargetAlertDialog.cpp:248 src/AISTargetQueryDialog.cpp:199
-#: src/AISTargetQueryDialog.cpp:248
-msgid "AISTargetQuery"
-msgstr "AIS.Πληρ.Στόχου"
-
-#: src/AIS_Target_Data.cpp:313 src/AIS_Target_Data.cpp:681
+#: src/AIS_Target_Data.cpp:314 src/AIS_Target_Data.cpp:682
 #: src/OCPNListCtrl.cpp:107
 msgid "SAR Aircraft"
 msgstr "Αεροσκάφος διάσωσης"
 
-#: src/AIS_Target_Data.cpp:317 src/AIS_Target_Data.cpp:326
-#: src/AISTargetListDialog.cpp:510 src/options.cpp:420 src/options.cpp:690
-msgid "MMSI"
-msgstr ""
-
 #: src/AIS_Target_Data.cpp:318 src/AIS_Target_Data.cpp:327
+#: src/AISTargetListDialog.cpp:510 src/options.cpp:421 src/options.cpp:709
+msgid "MMSI"
+msgstr "MMSI"
+
+#: src/AIS_Target_Data.cpp:319 src/AIS_Target_Data.cpp:328
 #: src/AISTargetListDialog.cpp:518
 msgid "Class"
 msgstr "Κατηγορία"
 
-#: src/AIS_Target_Data.cpp:319
+#: src/AIS_Target_Data.cpp:320
 msgid "IMO"
-msgstr ""
+msgstr "ΙΜΟ"
 
-#: src/AIS_Target_Data.cpp:333
+#: src/AIS_Target_Data.cpp:334
 msgid "Flag"
 msgstr "Σημαία"
 
-#: src/AIS_Target_Data.cpp:343 src/AIS_Target_Data.cpp:717
+#: src/AIS_Target_Data.cpp:344 src/AIS_Target_Data.cpp:718
 #: src/AISTargetListDialog.cpp:140 src/AISTargetListDialog.cpp:152
 #: src/OCPNListCtrl.cpp:121
 msgid "Active"
 msgstr "Ενεργό"
 
-#: src/AIS_Target_Data.cpp:344 src/AIS_Target_Data.cpp:718
+#: src/AIS_Target_Data.cpp:345 src/AIS_Target_Data.cpp:719
 #: src/AISTargetListDialog.cpp:141 src/AISTargetListDialog.cpp:153
 #: src/OCPNListCtrl.cpp:122
 msgid "Testing"
 msgstr "Τεστ"
 
-#: src/AIS_Target_Data.cpp:391
+#: src/AIS_Target_Data.cpp:392
 msgid "Safety Broadcast Message"
 msgstr "Μήνυμα ασφαλείας ασυρμάτου"
 
-#: src/AIS_Target_Data.cpp:464
+#: src/AIS_Target_Data.cpp:465
 msgid " (Last Known)"
 msgstr " (τελευταία γνωστή)"
 
-#: src/AIS_Target_Data.cpp:470 src/GoToPositionDialog.cpp:116
+#: src/AIS_Target_Data.cpp:471 src/GoToPositionDialog.cpp:116
 #: src/routeprintout.cpp:107 src/routeprintout.cpp:370
 msgid "Position"
 msgstr "Θέση"
 
-#: src/AIS_Target_Data.cpp:471
+#: src/AIS_Target_Data.cpp:472
 msgid "Report Age"
 msgstr "Παλαιότητα αναφοράς"
 
-#: src/AIS_Target_Data.cpp:492
+#: src/AIS_Target_Data.cpp:493
 msgid "Report as of"
 msgstr "Αναφορά από"
 
-#: src/AIS_Target_Data.cpp:499 src/routeprop.cpp:574 src/routeprop.cpp:750
+#: src/AIS_Target_Data.cpp:500 src/routeprop.cpp:574 src/routeprop.cpp:750
 #: src/routeprop.cpp:1104 src/TrackPropDlg.cpp:275 src/TrackPropDlg.cpp:1236
 msgid "Destination"
 msgstr "Προορισμός"
 
-#: src/AIS_Target_Data.cpp:501
+#: src/AIS_Target_Data.cpp:502
 msgid "ETA (UTC)"
 msgstr "Εκτ.Ω.Άφ. (UTC)"
 
-#: src/AIS_Target_Data.cpp:507 src/AIS_Target_Data.cpp:517
-#: src/AIS_Target_Data.cpp:546 src/AIS_Target_Data.cpp:564
-#: src/AIS_Target_Data.cpp:571 src/AIS_Target_Data.cpp:583
+#: src/AIS_Target_Data.cpp:508 src/AIS_Target_Data.cpp:518
+#: src/AIS_Target_Data.cpp:547 src/AIS_Target_Data.cpp:565
+#: src/AIS_Target_Data.cpp:572 src/AIS_Target_Data.cpp:584
 msgid "---"
 msgstr "--"
 
-#: src/AIS_Target_Data.cpp:555 src/AIS_Target_Data.cpp:558
+#: src/AIS_Target_Data.cpp:556 src/AIS_Target_Data.cpp:559
 msgid "Right"
 msgstr "Δεξιά"
 
-#: src/AIS_Target_Data.cpp:556 src/AIS_Target_Data.cpp:559
+#: src/AIS_Target_Data.cpp:557 src/AIS_Target_Data.cpp:560
 msgid "Left"
 msgstr "Αριστερά"
 
-#: src/AIS_Target_Data.cpp:588 src/options.cpp:3770 src/options.cpp:3875
+#: src/AIS_Target_Data.cpp:589 src/options.cpp:3798 src/options.cpp:3903
 #: src/routeprop.cpp:1013 src/routeprop.cpp:1306 src/TrackPropDlg.cpp:448
 #: src/TrackPropDlg.cpp:739 src/TrackPropDlg.cpp:1238
 msgid "Speed"
 msgstr "Ταχύτητα"
 
-#: src/AIS_Target_Data.cpp:589 src/routeprintout.cpp:110
+#: src/AIS_Target_Data.cpp:590 src/routeprintout.cpp:110
 #: src/routeprintout.cpp:377 src/routeprop.cpp:1019 src/routeprop.cpp:1312
 msgid "Course"
 msgstr "Πορεία"
 
-#: src/AIS_Target_Data.cpp:591
+#: src/AIS_Target_Data.cpp:592
 msgid "Heading"
 msgstr "Πορεία"
 
-#: src/AIS_Target_Data.cpp:602
+#: src/AIS_Target_Data.cpp:603
 msgid "Turn Rate"
 msgstr "Ρυθμός περιστροφής"
 
-#: src/AIS_Target_Data.cpp:605 src/AISTargetListDialog.cpp:550
+#: src/AIS_Target_Data.cpp:606 src/AISTargetListDialog.cpp:550
 msgid "Range"
 msgstr "Απόσταση"
 
-#: src/AIS_Target_Data.cpp:606 src/routeprop.cpp:1008 src/routeprop.cpp:1301
+#: src/AIS_Target_Data.cpp:607 src/routeprop.cpp:1008 src/routeprop.cpp:1301
 #: src/TrackPropDlg.cpp:444 src/TrackPropDlg.cpp:735
 msgid "Bearing"
 msgstr "Στίγμα"
 
-#: src/AIS_Target_Data.cpp:617
+#: src/AIS_Target_Data.cpp:618
 msgid "in "
 msgstr "σε "
 
-#: src/AIS_Target_Data.cpp:619 src/AIS_Target_Data.cpp:757
+#: src/AIS_Target_Data.cpp:620 src/AIS_Target_Data.cpp:758
 #: src/AISTargetListDialog.cpp:573
 msgid "CPA"
-msgstr ""
+msgstr "CPA"
 
-#: src/AIS_Target_Data.cpp:626 src/AIS_Target_Data.cpp:629
+#: src/AIS_Target_Data.cpp:627 src/AIS_Target_Data.cpp:630
 msgid "Inland Blue Flag"
 msgstr "Μπλε σημαία"
 
-#: src/AIS_Target_Data.cpp:627
+#: src/AIS_Target_Data.cpp:628
 msgid "Clear"
 msgstr "Εκκαθάριση"
 
-#: src/AIS_Target_Data.cpp:630
+#: src/AIS_Target_Data.cpp:631
 msgid "Set"
 msgstr "Θέσε"
 
-#: src/AIS_Target_Data.cpp:641
+#: src/AIS_Target_Data.cpp:642
 msgid "Altitude"
 msgstr "Υψόμετρο"
 
-#: src/AIS_Target_Data.cpp:748 src/AIS_Target_Data.cpp:752
+#: src/AIS_Target_Data.cpp:749 src/AIS_Target_Data.cpp:753
 msgid " COG Unavailable"
 msgstr " Πορεία CoG μη διαθέσιμη"
 
-#: src/AIS_Target_Data.cpp:758 src/navutil.cpp:4350
+#: src/AIS_Target_Data.cpp:759 src/navutil.cpp:4352
 msgid "in"
 msgstr "σε"
 
-#: src/AIS_Target_Data.cpp:759
+#: src/AIS_Target_Data.cpp:760
 msgid "min"
 msgstr "λεπτά"
 
-#: src/AIS_Target_Data.cpp:848
+#: src/AIS_Target_Data.cpp:849
 msgid "A"
-msgstr ""
+msgstr "Α"
 
-#: src/AIS_Target_Data.cpp:850
+#: src/AIS_Target_Data.cpp:851
 msgid "B"
-msgstr ""
+msgstr "Β"
 
-#: src/AIS_Target_Data.cpp:852
+#: src/AIS_Target_Data.cpp:853
 msgid "Aid to Navigation"
 msgstr "Βοήθημα ναυσιπλοΐας"
 
-#: src/AIS_Target_Data.cpp:854 src/options.cpp:2979 src/options.cpp:3189
+#: src/AIS_Target_Data.cpp:855 src/options.cpp:3007 src/options.cpp:3217
 msgid "Base"
 msgstr "Βασική"
 
-#: src/AIS_Target_Data.cpp:854
+#: src/AIS_Target_Data.cpp:855
 msgid "Base Station"
 msgstr "Σταθμος βάσης"
 
-#: src/AIS_Target_Data.cpp:856
+#: src/AIS_Target_Data.cpp:857
 msgid "GPSGate Buddy"
 msgstr "Φίλος GPSGate"
 
-#: src/AIS_Target_Data.cpp:859
+#: src/AIS_Target_Data.cpp:860
 msgid "DSC Distress"
 msgstr "Συναγερμός μέσω DSC"
 
-#: src/AIS_Target_Data.cpp:861
+#: src/AIS_Target_Data.cpp:862
 msgid "DSC Position Report"
 msgstr "Αναφορά θέσης μέσω DSC"
 
-#: src/AIS_Target_Data.cpp:863
+#: src/AIS_Target_Data.cpp:864
 msgid "SART"
 msgstr "SART (πομπός διάσωσης)"
 
-#: src/AIS_Target_Data.cpp:870
+#: src/AIS_Target_Data.cpp:871
 msgid "Unk"
 msgstr "Αγν."
 
-#: src/AIS_Target_Data.cpp:895
+#: src/AIS_Target_Data.cpp:896
 msgid "Albania"
 msgstr "Αλβανία"
 
-#: src/AIS_Target_Data.cpp:896
+#: src/AIS_Target_Data.cpp:897
 msgid "Andorra"
 msgstr "Ανδόρα"
 
-#: src/AIS_Target_Data.cpp:897
+#: src/AIS_Target_Data.cpp:898
 msgid "Austria"
 msgstr "Αυστρία"
 
-#: src/AIS_Target_Data.cpp:898
+#: src/AIS_Target_Data.cpp:899
 msgid "Azores"
 msgstr "Αζόρες"
 
-#: src/AIS_Target_Data.cpp:899
+#: src/AIS_Target_Data.cpp:900
 msgid "Belgium"
 msgstr "Βέλγιο"
 
-#: src/AIS_Target_Data.cpp:900
+#: src/AIS_Target_Data.cpp:901
 msgid "Belarus"
 msgstr "Λευκορωσία"
 
-#: src/AIS_Target_Data.cpp:901
+#: src/AIS_Target_Data.cpp:902
 msgid "Bulgaria"
 msgstr "Βουλγαρία"
 
-#: src/AIS_Target_Data.cpp:902
+#: src/AIS_Target_Data.cpp:903
 msgid "Vatican City State"
 msgstr "Βατικανό"
 
-#: src/AIS_Target_Data.cpp:903 src/AIS_Target_Data.cpp:904
-#: src/AIS_Target_Data.cpp:906
+#: src/AIS_Target_Data.cpp:904 src/AIS_Target_Data.cpp:905
+#: src/AIS_Target_Data.cpp:907
 msgid "Cyprus"
 msgstr "Κύπρος"
 
-#: src/AIS_Target_Data.cpp:905 src/AIS_Target_Data.cpp:911
+#: src/AIS_Target_Data.cpp:906 src/AIS_Target_Data.cpp:912
 msgid "Germany"
 msgstr "Γερμανία"
 
-#: src/AIS_Target_Data.cpp:907
+#: src/AIS_Target_Data.cpp:908
 msgid "Georgia"
 msgstr "Γεωργία"
 
-#: src/AIS_Target_Data.cpp:908
+#: src/AIS_Target_Data.cpp:909
 msgid "Moldova"
 msgstr "Μολδαβία"
 
-#: src/AIS_Target_Data.cpp:909 src/AIS_Target_Data.cpp:919
-#: src/AIS_Target_Data.cpp:938 src/AIS_Target_Data.cpp:939
-#: src/AIS_Target_Data.cpp:946
+#: src/AIS_Target_Data.cpp:910 src/AIS_Target_Data.cpp:920
+#: src/AIS_Target_Data.cpp:939 src/AIS_Target_Data.cpp:940
+#: src/AIS_Target_Data.cpp:947
 msgid "Malta"
 msgstr "Μάλτα"
 
-#: src/AIS_Target_Data.cpp:910
+#: src/AIS_Target_Data.cpp:911
 msgid "Armenia"
 msgstr "Αρμενία"
 
-#: src/AIS_Target_Data.cpp:912 src/AIS_Target_Data.cpp:913
+#: src/AIS_Target_Data.cpp:913 src/AIS_Target_Data.cpp:914
 msgid "Denmark"
 msgstr "Δανία"
 
-#: src/AIS_Target_Data.cpp:914 src/AIS_Target_Data.cpp:915
+#: src/AIS_Target_Data.cpp:915 src/AIS_Target_Data.cpp:916
 msgid "Spain"
 msgstr "Ισπανία"
 
-#: src/AIS_Target_Data.cpp:916 src/AIS_Target_Data.cpp:917
-#: src/AIS_Target_Data.cpp:918
+#: src/AIS_Target_Data.cpp:917 src/AIS_Target_Data.cpp:918
+#: src/AIS_Target_Data.cpp:919
 msgid "France"
 msgstr "Γαλλία"
 
-#: src/AIS_Target_Data.cpp:920
+#: src/AIS_Target_Data.cpp:921
 msgid "Finland"
 msgstr "Φινλανδία"
 
-#: src/AIS_Target_Data.cpp:921
+#: src/AIS_Target_Data.cpp:922
 msgid "Faroe Islands"
 msgstr "Νησιά Φερόε"
 
-#: src/AIS_Target_Data.cpp:925
+#: src/AIS_Target_Data.cpp:926
 msgid "Great Britain"
 msgstr "Μεγάλη Βρετανία"
 
-#: src/AIS_Target_Data.cpp:926
+#: src/AIS_Target_Data.cpp:927
 msgid "Gibraltar"
 msgstr "Γιβραλτάρ"
 
-#: src/AIS_Target_Data.cpp:927 src/AIS_Target_Data.cpp:929
-#: src/AIS_Target_Data.cpp:930 src/AIS_Target_Data.cpp:931
+#: src/AIS_Target_Data.cpp:928 src/AIS_Target_Data.cpp:930
+#: src/AIS_Target_Data.cpp:931 src/AIS_Target_Data.cpp:932
 msgid "Greece"
 msgstr "Ελλάδα"
 
-#: src/AIS_Target_Data.cpp:928
+#: src/AIS_Target_Data.cpp:929
 msgid "Croatia"
 msgstr "Κροατία"
 
-#: src/AIS_Target_Data.cpp:932
+#: src/AIS_Target_Data.cpp:933
 msgid "Morocco"
 msgstr "Μαρόκο"
 
-#: src/AIS_Target_Data.cpp:933
+#: src/AIS_Target_Data.cpp:934
 msgid "Hungary"
 msgstr "Ουγγαρία"
 
-#: src/AIS_Target_Data.cpp:934 src/AIS_Target_Data.cpp:935
-#: src/AIS_Target_Data.cpp:936
+#: src/AIS_Target_Data.cpp:935 src/AIS_Target_Data.cpp:936
+#: src/AIS_Target_Data.cpp:937
 msgid "Netherlands"
 msgstr "Ολλανδία"
 
-#: src/AIS_Target_Data.cpp:937
+#: src/AIS_Target_Data.cpp:938
 msgid "Italy"
 msgstr "Ιταλία"
 
-#: src/AIS_Target_Data.cpp:940
+#: src/AIS_Target_Data.cpp:941
 msgid "Ireland"
 msgstr "Ιρλανδία"
 
-#: src/AIS_Target_Data.cpp:941
+#: src/AIS_Target_Data.cpp:942
 msgid "Iceland"
 msgstr "Ισλανδία"
 
-#: src/AIS_Target_Data.cpp:942
+#: src/AIS_Target_Data.cpp:943
 msgid "Liechtenstein"
 msgstr "Λίχτενσταϊν"
 
-#: src/AIS_Target_Data.cpp:943
+#: src/AIS_Target_Data.cpp:944
 msgid "Luxembourg"
 msgstr "Λουξεμβούργο"
 
-#: src/AIS_Target_Data.cpp:944
+#: src/AIS_Target_Data.cpp:945
 msgid "Monaco"
 msgstr "Μονακό"
 
-#: src/AIS_Target_Data.cpp:945
+#: src/AIS_Target_Data.cpp:946
 msgid "Madeira"
 msgstr "Μαδέρα"
 
-#: src/AIS_Target_Data.cpp:949
+#: src/AIS_Target_Data.cpp:950
 msgid "Norway"
 msgstr "Νορβηγία"
 
-#: src/AIS_Target_Data.cpp:950
+#: src/AIS_Target_Data.cpp:951
 msgid "Poland"
 msgstr "Πολωνία"
 
-#: src/AIS_Target_Data.cpp:951
+#: src/AIS_Target_Data.cpp:952
 msgid "Montenegro"
 msgstr "Μαυροβούνιο"
 
-#: src/AIS_Target_Data.cpp:952
+#: src/AIS_Target_Data.cpp:953
 msgid "Portugal"
 msgstr "Πορτογαλία"
 
-#: src/AIS_Target_Data.cpp:953
+#: src/AIS_Target_Data.cpp:954
 msgid "Romania"
 msgstr "Ρουμανία"
 
-#: src/AIS_Target_Data.cpp:954 src/AIS_Target_Data.cpp:955
+#: src/AIS_Target_Data.cpp:955 src/AIS_Target_Data.cpp:956
 msgid "Sweden"
 msgstr "Σουηδία"
 
-#: src/AIS_Target_Data.cpp:956
+#: src/AIS_Target_Data.cpp:957
 msgid "Slovak Republic"
 msgstr "Σλοβακία"
 
-#: src/AIS_Target_Data.cpp:957
+#: src/AIS_Target_Data.cpp:958
 msgid "San Marino"
 msgstr "Άγιος Μαρίνος"
 
-#: src/AIS_Target_Data.cpp:958
+#: src/AIS_Target_Data.cpp:959
 msgid "Switzerland"
 msgstr "Ελβετία"
 
-#: src/AIS_Target_Data.cpp:959
+#: src/AIS_Target_Data.cpp:960
 msgid "Czech Republic"
 msgstr "Τσεχία"
 
-#: src/AIS_Target_Data.cpp:960
+#: src/AIS_Target_Data.cpp:961
 msgid "Turkey"
 msgstr "Τουρκία"
 
-#: src/AIS_Target_Data.cpp:961
+#: src/AIS_Target_Data.cpp:962
 msgid "Ukraine"
 msgstr "Ουκρανία"
 
-#: src/AIS_Target_Data.cpp:962
+#: src/AIS_Target_Data.cpp:963
 msgid "Russian"
 msgstr "Ρωσία"
 
-#: src/AIS_Target_Data.cpp:963
+#: src/AIS_Target_Data.cpp:964
 msgid "Macedonia"
 msgstr "FYROM"
 
-#: src/AIS_Target_Data.cpp:964
+#: src/AIS_Target_Data.cpp:965
 msgid "Latvia"
 msgstr "Λετονία"
 
-#: src/AIS_Target_Data.cpp:965
+#: src/AIS_Target_Data.cpp:966
 msgid "Estonia"
 msgstr "Εσθονία"
 
-#: src/AIS_Target_Data.cpp:966
+#: src/AIS_Target_Data.cpp:967
 msgid "Lithuania"
 msgstr "Λιθουανία"
 
-#: src/AIS_Target_Data.cpp:967
+#: src/AIS_Target_Data.cpp:968
 msgid "Slovenia"
 msgstr "Σλοβενία"
 
-#: src/AIS_Target_Data.cpp:968
+#: src/AIS_Target_Data.cpp:969
 msgid "Serbia"
 msgstr "Σερβία"
 
-#: src/AIS_Target_Data.cpp:969
+#: src/AIS_Target_Data.cpp:970
 msgid "Anguilla"
 msgstr "Ανγκουίλα"
 
-#: src/AIS_Target_Data.cpp:970
+#: src/AIS_Target_Data.cpp:971
 msgid "Alaska"
 msgstr "Αλάσκα"
 
-#: src/AIS_Target_Data.cpp:971 src/AIS_Target_Data.cpp:972
+#: src/AIS_Target_Data.cpp:972 src/AIS_Target_Data.cpp:973
 msgid "Antigua and Barbuda"
 msgstr "Αντίγκουα και Μπαρμπούντα"
 
-#: src/AIS_Target_Data.cpp:973
+#: src/AIS_Target_Data.cpp:974
 msgid "Antilles"
 msgstr "Αντίλλες"
 
-#: src/AIS_Target_Data.cpp:974
+#: src/AIS_Target_Data.cpp:975
 msgid "Aruba"
 msgstr "Αρούμπα"
 
-#: src/AIS_Target_Data.cpp:975 src/AIS_Target_Data.cpp:976
-#: src/AIS_Target_Data.cpp:978
+#: src/AIS_Target_Data.cpp:976 src/AIS_Target_Data.cpp:977
+#: src/AIS_Target_Data.cpp:979
 msgid "Bahamas"
 msgstr "Μπαχάμες"
 
-#: src/AIS_Target_Data.cpp:977
+#: src/AIS_Target_Data.cpp:978
 msgid "Bermuda"
 msgstr "Βερμούδα"
 
-#: src/AIS_Target_Data.cpp:979
+#: src/AIS_Target_Data.cpp:980
 msgid "Belize"
 msgstr "Μπελίζ"
 
-#: src/AIS_Target_Data.cpp:980
+#: src/AIS_Target_Data.cpp:981
 msgid "Barbados"
 msgstr "Μπαρμπάντος"
 
-#: src/AIS_Target_Data.cpp:981
+#: src/AIS_Target_Data.cpp:982
 msgid "Canada"
 msgstr "Καναδάς"
 
-#: src/AIS_Target_Data.cpp:982
+#: src/AIS_Target_Data.cpp:983
 msgid "Cayman Islands"
 msgstr "Νησιά Καϊμάν"
 
-#: src/AIS_Target_Data.cpp:983
+#: src/AIS_Target_Data.cpp:984
 msgid "Costa Rica"
 msgstr "Κόστα Ρίκα"
 
-#: src/AIS_Target_Data.cpp:984
+#: src/AIS_Target_Data.cpp:985
 msgid "Cuba"
 msgstr "Κούβα"
 
-#: src/AIS_Target_Data.cpp:985
+#: src/AIS_Target_Data.cpp:986
 msgid "Dominica"
 msgstr "Ντομίνικα"
 
-#: src/AIS_Target_Data.cpp:986
+#: src/AIS_Target_Data.cpp:987
 msgid "Dominican Republic"
 msgstr "Δομινικανή Δημοκρατία"
 
-#: src/AIS_Target_Data.cpp:987
+#: src/AIS_Target_Data.cpp:988
 msgid "Guadeloupe"
 msgstr "Γουαδελούπη"
 
-#: src/AIS_Target_Data.cpp:988
+#: src/AIS_Target_Data.cpp:989
 msgid "Grenada"
 msgstr "Γρενάδα"
 
-#: src/AIS_Target_Data.cpp:989
+#: src/AIS_Target_Data.cpp:990
 msgid "Greenland"
 msgstr "Γροιλανδία"
 
-#: src/AIS_Target_Data.cpp:990
+#: src/AIS_Target_Data.cpp:991
 msgid "Guatemala"
 msgstr "Γουατεμάλα"
 
-#: src/AIS_Target_Data.cpp:991
+#: src/AIS_Target_Data.cpp:992
 msgid "Honduras"
 msgstr "Ονδούρα"
 
-#: src/AIS_Target_Data.cpp:992
+#: src/AIS_Target_Data.cpp:993
 msgid "Haiti"
 msgstr "Αϊτή"
 
-#: src/AIS_Target_Data.cpp:993 src/AIS_Target_Data.cpp:1016
+#: src/AIS_Target_Data.cpp:994 src/AIS_Target_Data.cpp:1017
 msgid "United States of America"
 msgstr "Ηνωμένες Πολιτείες της Αμερικής"
 
-#: src/AIS_Target_Data.cpp:994
+#: src/AIS_Target_Data.cpp:995
 msgid "Jamaica"
 msgstr "Τζαμάικα"
 
-#: src/AIS_Target_Data.cpp:995
+#: src/AIS_Target_Data.cpp:996
 msgid "Saint Kitts and Nevis"
 msgstr "Σεν Κιτς και Νέβις"
 
-#: src/AIS_Target_Data.cpp:996
+#: src/AIS_Target_Data.cpp:997
 msgid "Saint Lucia"
 msgstr "Αγία Λουκία"
 
-#: src/AIS_Target_Data.cpp:997
+#: src/AIS_Target_Data.cpp:998
 msgid "Mexico"
 msgstr "Μεξικό"
 
-#: src/AIS_Target_Data.cpp:998
+#: src/AIS_Target_Data.cpp:999
 msgid "Martinique"
 msgstr "Μαρτινίκα"
 
-#: src/AIS_Target_Data.cpp:999
+#: src/AIS_Target_Data.cpp:1000
 msgid "Montserrat"
 msgstr "Μοντσερράτ"
 
-#: src/AIS_Target_Data.cpp:1000
+#: src/AIS_Target_Data.cpp:1001
 msgid "Nicaragua"
 msgstr "Νικαράγουα"
 
-#: src/AIS_Target_Data.cpp:1007 src/AIS_Target_Data.cpp:1020
+#: src/AIS_Target_Data.cpp:1008 src/AIS_Target_Data.cpp:1021
 msgid "Panama"
 msgstr "Παναμάς"
 
-#: src/AIS_Target_Data.cpp:1008
+#: src/AIS_Target_Data.cpp:1009
 msgid "Puerto Rico"
 msgstr "Πουέρτο Ρίκο"
 
-#: src/AIS_Target_Data.cpp:1009
+#: src/AIS_Target_Data.cpp:1010
 msgid "El Salvador"
 msgstr "Ελ Σαλβαδόρ"
 
-#: src/AIS_Target_Data.cpp:1010
+#: src/AIS_Target_Data.cpp:1011
 msgid "Saint Pierre and Miquelon"
 msgstr "Σαιν Πιέρ και Μικελόν"
 
-#: src/AIS_Target_Data.cpp:1011
+#: src/AIS_Target_Data.cpp:1012
 msgid "Trinidad and Tobago"
 msgstr "Τρινιντάντ και Τομπάγκο"
 
-#: src/AIS_Target_Data.cpp:1012
+#: src/AIS_Target_Data.cpp:1013
 msgid "Turks and Caicos Islands"
 msgstr "Νησιά Τούρκ και Κάικο"
 
-#: src/AIS_Target_Data.cpp:1023
+#: src/AIS_Target_Data.cpp:1024
 msgid "Saint Vincent and the Grenadines"
 msgstr "Άγιος Βικέντιος και Γρεναδίνες"
 
-#: src/AIS_Target_Data.cpp:1024
+#: src/AIS_Target_Data.cpp:1025
 msgid "British Virgin Islands"
 msgstr "Βρετανικές Παρθένοι Νήσοι"
 
-#: src/AIS_Target_Data.cpp:1025
+#: src/AIS_Target_Data.cpp:1026
 msgid "United States Virgin Islands"
 msgstr "Αμερικάνικες Παρθένοι Νήσοι"
 
-#: src/AIS_Target_Data.cpp:1026
+#: src/AIS_Target_Data.cpp:1027
 msgid "Afghanistan"
 msgstr "Αφγανιστάν"
 
-#: src/AIS_Target_Data.cpp:1027
+#: src/AIS_Target_Data.cpp:1028
 msgid "Saudi Arabia"
 msgstr "Σαουδική Αραβία"
 
-#: src/AIS_Target_Data.cpp:1028
+#: src/AIS_Target_Data.cpp:1029
 msgid "Bangladesh"
 msgstr "Μπαγκλαντές"
 
-#: src/AIS_Target_Data.cpp:1029
+#: src/AIS_Target_Data.cpp:1030
 msgid "Bahrain"
 msgstr "Μπαχρέιν"
 
-#: src/AIS_Target_Data.cpp:1030
+#: src/AIS_Target_Data.cpp:1031
 msgid "Bhutan"
 msgstr "Μπουτάν"
 
-#: src/AIS_Target_Data.cpp:1033
+#: src/AIS_Target_Data.cpp:1034
 msgid "China"
 msgstr "Κίνα"
 
-#: src/AIS_Target_Data.cpp:1034
+#: src/AIS_Target_Data.cpp:1035
 msgid "Taiwan"
 msgstr "Ταϊβάν"
 
-#: src/AIS_Target_Data.cpp:1035
+#: src/AIS_Target_Data.cpp:1036
 msgid "Sri Lanka"
 msgstr "Σρι Λάνκα"
 
-#: src/AIS_Target_Data.cpp:1036
+#: src/AIS_Target_Data.cpp:1037
 msgid "India"
 msgstr "Ινδία"
 
-#: src/AIS_Target_Data.cpp:1037
+#: src/AIS_Target_Data.cpp:1038
 msgid "Iran"
 msgstr "Ιράν"
 
-#: src/AIS_Target_Data.cpp:1038
+#: src/AIS_Target_Data.cpp:1039
 msgid "Azerbaijani Republic"
 msgstr "Αζερμπαϊτζάν"
 
-#: src/AIS_Target_Data.cpp:1039
+#: src/AIS_Target_Data.cpp:1040
 msgid "Iraq"
 msgstr "Ιράκ"
 
-#: src/AIS_Target_Data.cpp:1040
+#: src/AIS_Target_Data.cpp:1041
 msgid "Israel"
 msgstr "Ισραήλ"
 
-#: src/AIS_Target_Data.cpp:1041 src/AIS_Target_Data.cpp:1042
+#: src/AIS_Target_Data.cpp:1042 src/AIS_Target_Data.cpp:1043
 msgid "Japan"
 msgstr "Ιαπωνία"
 
-#: src/AIS_Target_Data.cpp:1043
+#: src/AIS_Target_Data.cpp:1044
 msgid "Turkmenistan"
 msgstr "Τουρκμενιστάν"
 
-#: src/AIS_Target_Data.cpp:1044
+#: src/AIS_Target_Data.cpp:1045
 msgid "Kazakhstan"
 msgstr "Καζακστάν"
 
-#: src/AIS_Target_Data.cpp:1045
+#: src/AIS_Target_Data.cpp:1046
 msgid "Uzbekistan"
 msgstr "Ουζμπεκιστάν"
 
-#: src/AIS_Target_Data.cpp:1046
+#: src/AIS_Target_Data.cpp:1047
 msgid "Jordan"
 msgstr "Ιορδανία"
 
-#: src/AIS_Target_Data.cpp:1047 src/AIS_Target_Data.cpp:1048
+#: src/AIS_Target_Data.cpp:1048 src/AIS_Target_Data.cpp:1049
 msgid "Korea"
 msgstr "Κορέα"
 
-#: src/AIS_Target_Data.cpp:1049
+#: src/AIS_Target_Data.cpp:1050
 msgid "Palestine"
 msgstr "Παλαιστίνη"
 
-#: src/AIS_Target_Data.cpp:1050
+#: src/AIS_Target_Data.cpp:1051
 msgid "People's Rep. of Korea"
 msgstr "Βόρεια Κορέα"
 
-#: src/AIS_Target_Data.cpp:1051
+#: src/AIS_Target_Data.cpp:1052
 msgid "Kuwait"
 msgstr "Κουβέιτ"
 
-#: src/AIS_Target_Data.cpp:1052
+#: src/AIS_Target_Data.cpp:1053
 msgid "Lebanon"
 msgstr "Λίβανος"
 
-#: src/AIS_Target_Data.cpp:1053
+#: src/AIS_Target_Data.cpp:1054
 msgid "Kyrgyz Republic"
 msgstr "Κιργιζία"
 
-#: src/AIS_Target_Data.cpp:1054
+#: src/AIS_Target_Data.cpp:1055
 msgid "Macao"
 msgstr "Μακάο"
 
-#: src/AIS_Target_Data.cpp:1055
+#: src/AIS_Target_Data.cpp:1056
 msgid "Maldives"
 msgstr "Μαλδίβες"
 
-#: src/AIS_Target_Data.cpp:1056
+#: src/AIS_Target_Data.cpp:1057
 msgid "Mongolia"
 msgstr "Μογγολία"
 
-#: src/AIS_Target_Data.cpp:1057
+#: src/AIS_Target_Data.cpp:1058
 msgid "Nepal"
 msgstr "Νεπάλ"
 
-#: src/AIS_Target_Data.cpp:1058
+#: src/AIS_Target_Data.cpp:1059
 msgid "Oman"
 msgstr "Ομάν"
 
-#: src/AIS_Target_Data.cpp:1059
+#: src/AIS_Target_Data.cpp:1060
 msgid "Pakistan"
 msgstr "Πακιστάν"
 
-#: src/AIS_Target_Data.cpp:1060
+#: src/AIS_Target_Data.cpp:1061
 msgid "Qatar"
 msgstr "Κατάρ"
 
-#: src/AIS_Target_Data.cpp:1061
+#: src/AIS_Target_Data.cpp:1062
 msgid "Syrian Arab Republic"
 msgstr "Συρία"
 
-#: src/AIS_Target_Data.cpp:1062
+#: src/AIS_Target_Data.cpp:1063
 msgid "United Arab Emirates"
 msgstr "Ηνωμένα Αραβικά Εμιράτα"
 
-#: src/AIS_Target_Data.cpp:1063
+#: src/AIS_Target_Data.cpp:1064
 msgid "Tajikistan"
 msgstr "Τατζικιστάν"
 
-#: src/AIS_Target_Data.cpp:1064 src/AIS_Target_Data.cpp:1065
+#: src/AIS_Target_Data.cpp:1065 src/AIS_Target_Data.cpp:1066
 msgid "Yemen"
 msgstr "Υεμένη"
 
-#: src/AIS_Target_Data.cpp:1066
+#: src/AIS_Target_Data.cpp:1067
 msgid "Hong Kong"
 msgstr "Χονγκ Κονγκ"
 
-#: src/AIS_Target_Data.cpp:1067
+#: src/AIS_Target_Data.cpp:1068
 msgid "Bosnia and Herzegovina"
 msgstr "Βοσνία και Ερζεγοβίνη"
 
-#: src/AIS_Target_Data.cpp:1068
+#: src/AIS_Target_Data.cpp:1069
 msgid "Adelie Land"
 msgstr "Αντελί"
 
-#: src/AIS_Target_Data.cpp:1069
+#: src/AIS_Target_Data.cpp:1070
 msgid "Australia"
 msgstr "Αυστραλία"
 
-#: src/AIS_Target_Data.cpp:1070
+#: src/AIS_Target_Data.cpp:1071
 msgid "Myanmar"
 msgstr "Μιανμάρ"
 
-#: src/AIS_Target_Data.cpp:1071
+#: src/AIS_Target_Data.cpp:1072
 msgid "Brunei Darussalam"
 msgstr "Μπρουνέι"
 
-#: src/AIS_Target_Data.cpp:1072
+#: src/AIS_Target_Data.cpp:1073
 msgid "Micronesia"
 msgstr "Μικρονησία"
 
-#: src/AIS_Target_Data.cpp:1073
+#: src/AIS_Target_Data.cpp:1074
 msgid "Palau"
 msgstr "Παλάου"
 
-#: src/AIS_Target_Data.cpp:1074
+#: src/AIS_Target_Data.cpp:1075
 msgid "New Zealand"
 msgstr "Νέα Ζηλανδία"
 
-#: src/AIS_Target_Data.cpp:1075 src/AIS_Target_Data.cpp:1076
+#: src/AIS_Target_Data.cpp:1076 src/AIS_Target_Data.cpp:1077
 msgid "Cambodia"
 msgstr "Καμπότζη"
 
-#: src/AIS_Target_Data.cpp:1077
+#: src/AIS_Target_Data.cpp:1078
 msgid "Christmas Island"
 msgstr "Νήσος Χριστουγέννων"
 
-#: src/AIS_Target_Data.cpp:1078
+#: src/AIS_Target_Data.cpp:1079
 msgid "Cook Islands"
 msgstr "Νήσοι Κουκ"
 
-#: src/AIS_Target_Data.cpp:1079
+#: src/AIS_Target_Data.cpp:1080
 msgid "Fiji"
 msgstr "Φίτζι"
 
-#: src/AIS_Target_Data.cpp:1080
+#: src/AIS_Target_Data.cpp:1081
 msgid "Cocos"
 msgstr "Κόκος"
 
-#: src/AIS_Target_Data.cpp:1081
+#: src/AIS_Target_Data.cpp:1082
 msgid "Indonesia"
 msgstr "Ινδονησία"
 
-#: src/AIS_Target_Data.cpp:1082
+#: src/AIS_Target_Data.cpp:1083
 msgid "Kiribati"
 msgstr "Κιριμπάτι"
 
-#: src/AIS_Target_Data.cpp:1083
+#: src/AIS_Target_Data.cpp:1084
 msgid "Lao People's Dem. Rep."
 msgstr "Λάος"
 
-#: src/AIS_Target_Data.cpp:1084
+#: src/AIS_Target_Data.cpp:1085
 msgid "Malaysia"
 msgstr "Μαλαισία"
 
-#: src/AIS_Target_Data.cpp:1085
+#: src/AIS_Target_Data.cpp:1086
 msgid "Northern Mariana Islands"
 msgstr "Νησιά Βόρειες Μαριάνες"
 
-#: src/AIS_Target_Data.cpp:1086
+#: src/AIS_Target_Data.cpp:1087
 msgid "Marshall Islands"
 msgstr "Νησιά Μάρσαλ"
 
-#: src/AIS_Target_Data.cpp:1087
+#: src/AIS_Target_Data.cpp:1088
 msgid "New Caledonia"
 msgstr "Νέα Καληδονία"
 
-#: src/AIS_Target_Data.cpp:1088
+#: src/AIS_Target_Data.cpp:1089
 msgid "Niue"
 msgstr "Νιούε"
 
-#: src/AIS_Target_Data.cpp:1089
+#: src/AIS_Target_Data.cpp:1090
 msgid "Nauru"
 msgstr "Ναουρού"
 
-#: src/AIS_Target_Data.cpp:1090
+#: src/AIS_Target_Data.cpp:1091
 msgid "French Polynesia"
 msgstr "Γαλλική Πολυνησία"
 
-#: src/AIS_Target_Data.cpp:1091
+#: src/AIS_Target_Data.cpp:1092
 msgid "Philippines"
 msgstr "Φιλιππίνες"
 
-#: src/AIS_Target_Data.cpp:1092
+#: src/AIS_Target_Data.cpp:1093
 msgid "Papua New Guinea"
 msgstr "Παπούα Νέα Γουινέα"
 
-#: src/AIS_Target_Data.cpp:1093
+#: src/AIS_Target_Data.cpp:1094
 msgid "Pitcairn Island"
 msgstr "Νήσος Πίτκερν"
 
-#: src/AIS_Target_Data.cpp:1094
+#: src/AIS_Target_Data.cpp:1095
 msgid "Solomon Islands"
 msgstr "Νησιά Σολομώντα"
 
-#: src/AIS_Target_Data.cpp:1095
+#: src/AIS_Target_Data.cpp:1096
 msgid "American Samoa"
 msgstr "Αμερικανική Σαμόα"
 
-#: src/AIS_Target_Data.cpp:1096
+#: src/AIS_Target_Data.cpp:1097
 msgid "Samoa"
 msgstr "Σαμόα"
 
-#: src/AIS_Target_Data.cpp:1100
+#: src/AIS_Target_Data.cpp:1101
 msgid "Singapore"
 msgstr "Σιγκαπούρη"
 
-#: src/AIS_Target_Data.cpp:1101
+#: src/AIS_Target_Data.cpp:1102
 msgid "Thailand"
 msgstr "Ταϊλάνδη"
 
-#: src/AIS_Target_Data.cpp:1102
+#: src/AIS_Target_Data.cpp:1103
 msgid "Tonga"
 msgstr "Τόνγκα"
 
-#: src/AIS_Target_Data.cpp:1103
+#: src/AIS_Target_Data.cpp:1104
 msgid "Tuvalu"
 msgstr "Τουβαλού"
 
-#: src/AIS_Target_Data.cpp:1104
+#: src/AIS_Target_Data.cpp:1105
 msgid "Viet Nam"
 msgstr "Βιετνάμ"
 
-#: src/AIS_Target_Data.cpp:1105 src/AIS_Target_Data.cpp:1106
+#: src/AIS_Target_Data.cpp:1106 src/AIS_Target_Data.cpp:1107
 msgid "Vanuatu"
 msgstr "Βανουάτου"
 
-#: src/AIS_Target_Data.cpp:1107
+#: src/AIS_Target_Data.cpp:1108
 msgid "Wallis and Futuna Islands"
 msgstr "Νησιά Ουόλις και Φουτούνα"
 
-#: src/AIS_Target_Data.cpp:1108
+#: src/AIS_Target_Data.cpp:1109
 msgid "South Africa"
 msgstr "Νότια Αφρική"
 
-#: src/AIS_Target_Data.cpp:1109
+#: src/AIS_Target_Data.cpp:1110
 msgid "Angola"
 msgstr "Αγκόλα"
 
-#: src/AIS_Target_Data.cpp:1110
+#: src/AIS_Target_Data.cpp:1111
 msgid "Algeria"
 msgstr "Αλγερία"
 
-#: src/AIS_Target_Data.cpp:1111
+#: src/AIS_Target_Data.cpp:1112
 msgid "Saint Paul"
 msgstr "Σαιντ Πωλ"
 
-#: src/AIS_Target_Data.cpp:1112
+#: src/AIS_Target_Data.cpp:1113
 msgid "Ascension Island"
 msgstr "Νήσος Ασενσιόν"
 
-#: src/AIS_Target_Data.cpp:1113
+#: src/AIS_Target_Data.cpp:1114
 msgid "Burundi"
 msgstr "Μπουρούντι"
 
-#: src/AIS_Target_Data.cpp:1114
+#: src/AIS_Target_Data.cpp:1115
 msgid "Benin"
 msgstr "Μπενίν"
 
-#: src/AIS_Target_Data.cpp:1115
+#: src/AIS_Target_Data.cpp:1116
 msgid "Botswana"
 msgstr "Μποτσουάνα"
 
-#: src/AIS_Target_Data.cpp:1116
+#: src/AIS_Target_Data.cpp:1117
 msgid "Central African Republic"
 msgstr "Κεντροαφρικανική Δημοκρατία"
 
-#: src/AIS_Target_Data.cpp:1117
+#: src/AIS_Target_Data.cpp:1118
 msgid "Cameroon"
 msgstr "Καμερούν"
 
-#: src/AIS_Target_Data.cpp:1118
+#: src/AIS_Target_Data.cpp:1119
 msgid "Congo"
 msgstr "Κογκό"
 
-#: src/AIS_Target_Data.cpp:1119
+#: src/AIS_Target_Data.cpp:1120
 msgid "Comoros"
 msgstr "Κομόρες"
 
-#: src/AIS_Target_Data.cpp:1120
+#: src/AIS_Target_Data.cpp:1121
 msgid "Cape Verde"
 msgstr "Πράσινο Ακρωτήριο"
 
-#: src/AIS_Target_Data.cpp:1121
+#: src/AIS_Target_Data.cpp:1122
 msgid "Crozet Archipelago"
 msgstr "Αρχιπέλαγος Κροζέ"
 
-#: src/AIS_Target_Data.cpp:1122
+#: src/AIS_Target_Data.cpp:1123
 msgid "Ivory Coast"
 msgstr "Ακτή Ελεφαντοστού"
 
-#: src/AIS_Target_Data.cpp:1123
+#: src/AIS_Target_Data.cpp:1124
 msgid "Comoros (Union of the)"
 msgstr "Κομόρες"
 
-#: src/AIS_Target_Data.cpp:1124
+#: src/AIS_Target_Data.cpp:1125
 msgid "Djibouti"
 msgstr "Τζιμπουτί"
 
-#: src/AIS_Target_Data.cpp:1125
+#: src/AIS_Target_Data.cpp:1126
 msgid "Egypt"
 msgstr "Αίγυπτος"
 
-#: src/AIS_Target_Data.cpp:1126
+#: src/AIS_Target_Data.cpp:1127
 msgid "Ethiopia"
 msgstr "Αιθιοπία"
 
-#: src/AIS_Target_Data.cpp:1127
+#: src/AIS_Target_Data.cpp:1128
 msgid "Eritrea"
 msgstr "Ερυθραία"
 
-#: src/AIS_Target_Data.cpp:1128
+#: src/AIS_Target_Data.cpp:1129
 msgid "Gabonese Republic"
 msgstr "Γκαμπόν"
 
-#: src/AIS_Target_Data.cpp:1129
+#: src/AIS_Target_Data.cpp:1130
 msgid "Ghana"
 msgstr "Γκάνα"
 
-#: src/AIS_Target_Data.cpp:1130
+#: src/AIS_Target_Data.cpp:1131
 msgid "Gambia"
 msgstr "Γκάμπια"
 
-#: src/AIS_Target_Data.cpp:1131
+#: src/AIS_Target_Data.cpp:1132
 msgid "Guinea-Bissau"
 msgstr "Γουινέα Μπισσάου"
 
-#: src/AIS_Target_Data.cpp:1132
+#: src/AIS_Target_Data.cpp:1133
 msgid "Equatorial Guinea"
 msgstr "Ισημερινή Γουινέα"
 
-#: src/AIS_Target_Data.cpp:1133
+#: src/AIS_Target_Data.cpp:1134
 msgid "Guinea"
 msgstr "Γουινέα"
 
-#: src/AIS_Target_Data.cpp:1134
+#: src/AIS_Target_Data.cpp:1135
 msgid "Burkina Faso"
 msgstr "Μπουρκίνα Φάσο"
 
-#: src/AIS_Target_Data.cpp:1135
+#: src/AIS_Target_Data.cpp:1136
 msgid "Kenya"
 msgstr "Κένυα"
 
-#: src/AIS_Target_Data.cpp:1136
+#: src/AIS_Target_Data.cpp:1137
 msgid "Kerguelen Islands"
 msgstr "Νησιά Κεργκουέλεν"
 
-#: src/AIS_Target_Data.cpp:1137 src/AIS_Target_Data.cpp:1138
+#: src/AIS_Target_Data.cpp:1138 src/AIS_Target_Data.cpp:1139
 msgid "Liberia"
 msgstr "Λιβερία"
 
-#: src/AIS_Target_Data.cpp:1139
+#: src/AIS_Target_Data.cpp:1140
 msgid "South Sudan (Republic of)"
 msgstr "Νότιο Σουδάν"
 
-#: src/AIS_Target_Data.cpp:1140
+#: src/AIS_Target_Data.cpp:1141
 msgid "Libyan Arab Jamahiriya"
 msgstr "Λιβύη"
 
-#: src/AIS_Target_Data.cpp:1141
+#: src/AIS_Target_Data.cpp:1142
 msgid "Lesotho"
 msgstr "Λεσόθο"
 
-#: src/AIS_Target_Data.cpp:1142
+#: src/AIS_Target_Data.cpp:1143
 msgid "Mauritius"
 msgstr "Μαυρίκιος"
 
-#: src/AIS_Target_Data.cpp:1143
+#: src/AIS_Target_Data.cpp:1144
 msgid "Madagascar"
 msgstr "Μαδαγασκάρη"
 
-#: src/AIS_Target_Data.cpp:1144
+#: src/AIS_Target_Data.cpp:1145
 msgid "Mali"
 msgstr "Μάλι"
 
-#: src/AIS_Target_Data.cpp:1145
+#: src/AIS_Target_Data.cpp:1146
 msgid "Mozambique"
 msgstr "Μοζαμβίκη"
 
-#: src/AIS_Target_Data.cpp:1146
+#: src/AIS_Target_Data.cpp:1147
 msgid "Mauritania"
 msgstr "Μαυριτανία"
 
-#: src/AIS_Target_Data.cpp:1147
+#: src/AIS_Target_Data.cpp:1148
 msgid "Malawi"
 msgstr "Μαλάουι"
 
-#: src/AIS_Target_Data.cpp:1148
+#: src/AIS_Target_Data.cpp:1149
 msgid "Niger"
 msgstr "Νίγηρας"
 
-#: src/AIS_Target_Data.cpp:1149
+#: src/AIS_Target_Data.cpp:1150
 msgid "Nigeria"
 msgstr "Νιγηρία"
 
-#: src/AIS_Target_Data.cpp:1150
+#: src/AIS_Target_Data.cpp:1151
 msgid "Namibia"
 msgstr "Ναμίμπια"
 
-#: src/AIS_Target_Data.cpp:1151
+#: src/AIS_Target_Data.cpp:1152
 msgid "Reunion"
 msgstr "Ρεουνιόν"
 
-#: src/AIS_Target_Data.cpp:1152
+#: src/AIS_Target_Data.cpp:1153
 msgid "Rwanda"
 msgstr "Ρουάντα"
 
-#: src/AIS_Target_Data.cpp:1153
+#: src/AIS_Target_Data.cpp:1154
 msgid "Sudan"
 msgstr "Σουδάν"
 
-#: src/AIS_Target_Data.cpp:1154
+#: src/AIS_Target_Data.cpp:1155
 msgid "Senegal"
 msgstr "Σενεγάλη"
 
-#: src/AIS_Target_Data.cpp:1155
+#: src/AIS_Target_Data.cpp:1156
 msgid "Seychelles"
 msgstr "Σεϋχέλλες"
 
-#: src/AIS_Target_Data.cpp:1156
+#: src/AIS_Target_Data.cpp:1157
 msgid "Saint Helena"
 msgstr "Αγία Ελένη"
 
-#: src/AIS_Target_Data.cpp:1157
+#: src/AIS_Target_Data.cpp:1158
 msgid "Somali Democratic Republic"
 msgstr "Σομαλία"
 
-#: src/AIS_Target_Data.cpp:1158
+#: src/AIS_Target_Data.cpp:1159
 msgid "Sierra Leone"
 msgstr "Σιέρα Λεόνε"
 
-#: src/AIS_Target_Data.cpp:1159
+#: src/AIS_Target_Data.cpp:1160
 msgid "Sao Tome and Principe"
 msgstr "Σάο Τομέ και Πρίνσιπε"
 
-#: src/AIS_Target_Data.cpp:1160
+#: src/AIS_Target_Data.cpp:1161
 msgid "Swaziland"
 msgstr "Σουαζιλάνδη"
 
-#: src/AIS_Target_Data.cpp:1161
+#: src/AIS_Target_Data.cpp:1162
 msgid "Chad"
 msgstr "Τσαντ"
 
-#: src/AIS_Target_Data.cpp:1162
+#: src/AIS_Target_Data.cpp:1163
 msgid "Togolese Republic"
 msgstr "Τόγκο"
 
-#: src/AIS_Target_Data.cpp:1163
+#: src/AIS_Target_Data.cpp:1164
 msgid "Tunisia"
 msgstr "Τυνησία"
 
-#: src/AIS_Target_Data.cpp:1164 src/AIS_Target_Data.cpp:1167
+#: src/AIS_Target_Data.cpp:1165 src/AIS_Target_Data.cpp:1168
 msgid "Tanzania"
 msgstr "Τανζανία"
 
-#: src/AIS_Target_Data.cpp:1165
+#: src/AIS_Target_Data.cpp:1166
 msgid "Uganda"
 msgstr "Ουγκάντα"
 
-#: src/AIS_Target_Data.cpp:1166
+#: src/AIS_Target_Data.cpp:1167
 msgid "Dem Rep.of the Congo"
 msgstr "Λαϊκή Δημοκρατία του Κογκό"
 
-#: src/AIS_Target_Data.cpp:1168
+#: src/AIS_Target_Data.cpp:1169
 msgid "Zambia"
 msgstr "Ζάμπια"
 
-#: src/AIS_Target_Data.cpp:1169
+#: src/AIS_Target_Data.cpp:1170
 msgid "Zimbabwe"
 msgstr "Ζιμπάμπουε"
 
-#: src/AIS_Target_Data.cpp:1170
+#: src/AIS_Target_Data.cpp:1171
 msgid "Argentine Republic"
 msgstr "Αργεντινή"
 
-#: src/AIS_Target_Data.cpp:1171
+#: src/AIS_Target_Data.cpp:1172
 msgid "Brazil"
 msgstr "Βραζιλία"
 
-#: src/AIS_Target_Data.cpp:1172
+#: src/AIS_Target_Data.cpp:1173
 msgid "Bolivia"
 msgstr "Βολιβία"
 
-#: src/AIS_Target_Data.cpp:1173
+#: src/AIS_Target_Data.cpp:1174
 msgid "Chile"
 msgstr "Χιλή"
 
-#: src/AIS_Target_Data.cpp:1174
+#: src/AIS_Target_Data.cpp:1175
 msgid "Colombia"
 msgstr "Κολομβία"
 
-#: src/AIS_Target_Data.cpp:1175
+#: src/AIS_Target_Data.cpp:1176
 msgid "Ecuador"
 msgstr "Ισημερινός"
 
-#: src/AIS_Target_Data.cpp:1176
+#: src/AIS_Target_Data.cpp:1177
 msgid "Falkland Islands"
 msgstr "Νήσοι Φώκλαντ"
 
-#: src/AIS_Target_Data.cpp:1177
+#: src/AIS_Target_Data.cpp:1178
 msgid "Guiana"
 msgstr "Γουιάνα"
 
-#: src/AIS_Target_Data.cpp:1178
+#: src/AIS_Target_Data.cpp:1179
 msgid "Guyana"
 msgstr "Γουιάνα"
 
-#: src/AIS_Target_Data.cpp:1179
+#: src/AIS_Target_Data.cpp:1180
 msgid "Paraguay"
 msgstr "Παραγουάη"
 
-#: src/AIS_Target_Data.cpp:1180
+#: src/AIS_Target_Data.cpp:1181
 msgid "Peru"
 msgstr "Περού"
 
-#: src/AIS_Target_Data.cpp:1181
+#: src/AIS_Target_Data.cpp:1182
 msgid "Suriname"
 msgstr "Σουρινάμ"
 
-#: src/AIS_Target_Data.cpp:1182
+#: src/AIS_Target_Data.cpp:1183
 msgid "Uruguay"
 msgstr "Ουρουγουάη"
 
-#: src/AIS_Target_Data.cpp:1183
+#: src/AIS_Target_Data.cpp:1184
 msgid "Venezuela"
 msgstr "Βενεζουέλα"
 
@@ -2521,7 +2516,7 @@ msgstr "Όνομα"
 msgid "Call"
 msgstr "ΔΔΣ"
 
-#: src/AISTargetListDialog.cpp:526 src/options.cpp:1617 src/options.cpp:2231
+#: src/AISTargetListDialog.cpp:526 src/options.cpp:1645 src/options.cpp:2259
 msgid "Type"
 msgstr "Τύπος"
 
@@ -2535,11 +2530,11 @@ msgstr "Κατεύθ."
 
 #: src/AISTargetListDialog.cpp:558
 msgid "CoG"
-msgstr ""
+msgstr "CoG"
 
 #: src/AISTargetListDialog.cpp:566
 msgid "SoG"
-msgstr ""
+msgstr "SoG"
 
 #: src/AISTargetListDialog.cpp:580
 msgid "TCPA"
@@ -2588,14 +2583,19 @@ msgid "The recently captured track of this target has been recorded.\n"
 msgstr "Το πρόσφατο ίχνος αυτού του στόχου έχει καταγραφεί.\n"
 " Να συνεχιστεί η καταγραφή μέχρι το τέλος της τρέχουσας συνεδρίας;"
 
-#: src/AISTargetQueryDialog.cpp:172 src/chart1.cpp:5196 src/chart1.cpp:10465
-#: src/chart1.cpp:10496 src/LinkPropDlg.cpp:130 src/options.cpp:5272
-#: src/options.cpp:5279 src/options.cpp:5286 src/options.cpp:5294
-#: src/options.cpp:7611 src/pluginmanager.cpp:358 src/pluginmanager.cpp:760
-#: src/pluginmanager.cpp:802 src/pluginmanager.cpp:830 src/pluginmanager.cpp:865
-#: src/Route.cpp:1406 src/RoutePoint.cpp:780 src/tcmgr.cpp:762
+#: src/AISTargetQueryDialog.cpp:172 src/chart1.cpp:5196 src/chart1.cpp:10468
+#: src/chart1.cpp:10499 src/LinkPropDlg.cpp:130 src/options.cpp:520
+#: src/options.cpp:5305 src/options.cpp:5313 src/options.cpp:5321
+#: src/options.cpp:5330 src/options.cpp:7644 src/pluginmanager.cpp:360
+#: src/pluginmanager.cpp:762 src/pluginmanager.cpp:804 src/pluginmanager.cpp:832
+#: src/pluginmanager.cpp:867 src/Route.cpp:1406 src/RoutePoint.cpp:780
+#: src/tcmgr.cpp:762
 msgid "OpenCPN Info"
 msgstr "Πληροφορίες για το OpenCPN"
+
+#: src/AISTargetQueryDialog.cpp:199 src/AISTargetQueryDialog.cpp:248
+msgid "AISTargetQuery"
+msgstr "AIS.Πληρ.Στόχου"
 
 #: src/AISTargetQueryDialog.cpp:335
 msgid "Stop Tracking"
@@ -2611,7 +2611,7 @@ msgstr "Η Android συσκευή σας έχει εσωτερικό GPS, η ο�
 msgid "Nothing found"
 msgstr "Δεν βρέθηκε"
 
-#: src/canvasMenu.cpp:264 src/canvasMenu.cpp:280 src/options.cpp:619
+#: src/canvasMenu.cpp:264 src/canvasMenu.cpp:280 src/options.cpp:638
 msgid "Menu"
 msgstr "Μενού"
 
@@ -2629,286 +2629,286 @@ msgstr "Ίχνος"
 
 #: src/canvasMenu.cpp:291
 msgid "AIS"
-msgstr ""
+msgstr "AIS"
 
-#: src/canvasMenu.cpp:315
+#: src/canvasMenu.cpp:301
 msgid "End Route"
 msgstr "Τέλος διααδρομής"
 
-#: src/canvasMenu.cpp:320
+#: src/canvasMenu.cpp:306
 msgid "Measure Off"
 msgstr "Τέλος μέτρησης"
 
-#: src/canvasMenu.cpp:322
+#: src/canvasMenu.cpp:308
 msgid "Measure"
 msgstr "Μέτρηση"
 
-#: src/canvasMenu.cpp:329
+#: src/canvasMenu.cpp:315
 msgid "Undo"
 msgstr "Αναίρεση"
 
-#: src/canvasMenu.cpp:335
+#: src/canvasMenu.cpp:321
 msgid "Redo"
 msgstr "Επανάληψη"
 
-#: src/canvasMenu.cpp:394
+#: src/canvasMenu.cpp:380
 msgid "Max Detail Here"
 msgstr "Μέγιστη λεπτομέρεια εδώ"
 
-#: src/canvasMenu.cpp:395 src/canvasMenu.cpp:410
+#: src/canvasMenu.cpp:381 src/canvasMenu.cpp:396
 msgid "Scale In"
 msgstr "Μικρότερη κλίμακα"
 
-#: src/canvasMenu.cpp:396 src/canvasMenu.cpp:411
+#: src/canvasMenu.cpp:382 src/canvasMenu.cpp:397
 msgid "Scale Out"
 msgstr "Μεγαλύτερη κλίμακα"
 
-#: src/canvasMenu.cpp:400 src/canvasMenu.cpp:406
+#: src/canvasMenu.cpp:386 src/canvasMenu.cpp:392
 msgid "Object Query..."
 msgstr "Πληροφορίες αντικειμένου..."
 
-#: src/canvasMenu.cpp:418
+#: src/canvasMenu.cpp:404
 msgid "Drop Mark"
 msgstr "Τοποθέτησε σημάδι"
 
-#: src/canvasMenu.cpp:421
+#: src/canvasMenu.cpp:407
 msgid "Move Boat Here"
 msgstr "Φέρε το πλοίο εδώ"
 
-#: src/canvasMenu.cpp:425
+#: src/canvasMenu.cpp:411
 msgid "Navigate To Here"
 msgstr "Πλεύση μέχρι εδώ"
 
-#: src/canvasMenu.cpp:428
+#: src/canvasMenu.cpp:414
 msgid "Center View..."
 msgstr "Κεντράρισμα στη θέση..."
 
-#: src/canvasMenu.cpp:432 src/chart1.cpp:4801
+#: src/canvasMenu.cpp:418 src/chart1.cpp:4801
 msgid "Course Up Mode"
 msgstr "«Πορεία προς τα πάνω»"
 
-#: src/canvasMenu.cpp:435
+#: src/canvasMenu.cpp:421
 msgid "Chart Up Mode"
 msgstr "Λειτουργία «Χάρτης προς τα πάνω»"
 
-#: src/canvasMenu.cpp:437 src/chart1.cpp:4466 src/chart1.cpp:4800
+#: src/canvasMenu.cpp:423 src/chart1.cpp:4471 src/chart1.cpp:4800
 #: src/chart1.cpp:6632
 msgid "North Up Mode"
 msgstr "«Βορράς προς τα πάνω»"
 
-#: src/canvasMenu.cpp:445 src/canvasMenu.cpp:452
+#: src/canvasMenu.cpp:431 src/canvasMenu.cpp:438
 msgid "Toggle Full Screen"
 msgstr "Αλλαγή σε/από fullscreen"
 
-#: src/canvasMenu.cpp:457
+#: src/canvasMenu.cpp:443
 msgid "Zero XTE"
 msgstr "Μηδενική XTE"
 
-#: src/canvasMenu.cpp:464
+#: src/canvasMenu.cpp:450
 msgid "Paste Waypoint"
 msgstr "Επικόλληση σημείου πορείας"
 
-#: src/canvasMenu.cpp:468 src/canvasMenu.cpp:476
+#: src/canvasMenu.cpp:454 src/canvasMenu.cpp:462
 msgid "Paste Route"
 msgstr "Επικόλληση διαδρομής"
 
-#: src/canvasMenu.cpp:472 src/canvasMenu.cpp:477
+#: src/canvasMenu.cpp:458 src/canvasMenu.cpp:463
 msgid "Paste Track"
 msgstr "Επικόλληση ίχνους"
 
-#: src/canvasMenu.cpp:485
+#: src/canvasMenu.cpp:471
 msgid "CM93 Offset Dialog..."
 msgstr "Διάλογος αντιστάθμισης χάρτη CM93..."
 
-#: src/canvasMenu.cpp:495 src/chart1.cpp:7806
+#: src/canvasMenu.cpp:481 src/chart1.cpp:7806
 msgid "Hide This Chart"
 msgstr "Κρύψε αυτόν τον χάρτη"
 
-#: src/canvasMenu.cpp:507 src/options.cpp:3432 src/options.cpp:3486
-#: src/options.cpp:6491
+#: src/canvasMenu.cpp:493 src/options.cpp:3460 src/options.cpp:3514
+#: src/options.cpp:6527
 msgid "Chart Groups"
 msgstr "Ομάδες χαρτών"
 
-#: src/canvasMenu.cpp:521
+#: src/canvasMenu.cpp:507
 msgid "All Active Charts"
 msgstr "Όλοι οι ενεργοί χάρτες"
 
-#: src/canvasMenu.cpp:572 src/chart1.cpp:4869
+#: src/canvasMenu.cpp:558 src/chart1.cpp:4869
 msgid "AIS Target List..."
 msgstr "Κατάλογος στόχων AIS..."
 
-#: src/canvasMenu.cpp:575
+#: src/canvasMenu.cpp:561
 msgid "Target Query..."
 msgstr "Πληροφορίες στόχου..."
 
-#: src/canvasMenu.cpp:579
+#: src/canvasMenu.cpp:565
 msgid "Hide Target CPA"
 msgstr "Κρύψε το CPA του στόχου"
 
-#: src/canvasMenu.cpp:581
+#: src/canvasMenu.cpp:567
 msgid "Show Target CPA"
 msgstr "Εμφάνιση CPA στόχου"
 
-#: src/canvasMenu.cpp:583
+#: src/canvasMenu.cpp:569
 msgid "Target List..."
 msgstr "Κατάλογος στόχων..."
 
-#: src/canvasMenu.cpp:586
+#: src/canvasMenu.cpp:572
 msgid "Hide Target Track"
 msgstr "Κρύψε το ίχνος του στόχου"
 
-#: src/canvasMenu.cpp:588
+#: src/canvasMenu.cpp:574
 msgid "Show Target Track"
 msgstr "Εμφάνιση ίχνους στόχου"
 
-#: src/canvasMenu.cpp:602
+#: src/canvasMenu.cpp:588
 msgid "Layer Route"
 msgstr "Διαδρομή ταξιδιού"
 
-#: src/canvasMenu.cpp:603 src/canvasMenu.cpp:618 src/canvasMenu.cpp:667
-#: src/canvasMenu.cpp:670 src/canvasMenu.cpp:687 src/canvasMenu.cpp:693
-#: src/canvasMenu.cpp:743 src/canvasMenu.cpp:746
+#: src/canvasMenu.cpp:589 src/canvasMenu.cpp:604 src/canvasMenu.cpp:653
+#: src/canvasMenu.cpp:656 src/canvasMenu.cpp:673 src/canvasMenu.cpp:679
+#: src/canvasMenu.cpp:729 src/canvasMenu.cpp:732
 msgid "Properties..."
 msgstr "Ιδιότητες..."
 
-#: src/canvasMenu.cpp:608 src/canvasMenu.cpp:623 src/canvasMenu.cpp:703
+#: src/canvasMenu.cpp:594 src/canvasMenu.cpp:609 src/canvasMenu.cpp:689
 msgid "Activate Next Waypoint"
 msgstr "Ενεργοποίηση επόμενου σημείου πορείας"
 
-#: src/canvasMenu.cpp:610 src/canvasMenu.cpp:625 src/routemanagerdialog.cpp:1066
+#: src/canvasMenu.cpp:596 src/canvasMenu.cpp:611 src/routemanagerdialog.cpp:1066
 msgid "Deactivate"
 msgstr "Απενεργοποίηση"
 
-#: src/canvasMenu.cpp:613 src/canvasMenu.cpp:628 src/canvasMenu.cpp:690
-#: src/canvasMenu.cpp:696 src/routemanagerdialog.cpp:1060
+#: src/canvasMenu.cpp:599 src/canvasMenu.cpp:614 src/canvasMenu.cpp:676
+#: src/canvasMenu.cpp:682 src/routemanagerdialog.cpp:1060
 msgid "Activate"
 msgstr "Ενεργοποίηση"
 
-#: src/canvasMenu.cpp:631
+#: src/canvasMenu.cpp:617
 msgid "Insert Waypoint"
 msgstr "Εισαγωγή Σημείου Πορείας"
 
-#: src/canvasMenu.cpp:632 src/undo.cpp:90
+#: src/canvasMenu.cpp:618 src/undo.cpp:90
 msgid "Append Waypoint"
 msgstr "Προσθήκη Σημείου Πορείας"
 
-#: src/canvasMenu.cpp:633
+#: src/canvasMenu.cpp:619
 msgid "Copy as KML..."
 msgstr "Αντιγραφή ως KML..."
 
-#: src/canvasMenu.cpp:634 src/canvasMenu.cpp:672
+#: src/canvasMenu.cpp:620 src/canvasMenu.cpp:658
 msgid "Delete..."
 msgstr "Διαγραφή..."
 
-#: src/canvasMenu.cpp:635
+#: src/canvasMenu.cpp:621
 msgid "Reverse..."
 msgstr "Αντιστροφή..."
 
-#: src/canvasMenu.cpp:640 src/canvasMenu.cpp:716 src/canvasMenu.cpp:758
+#: src/canvasMenu.cpp:626 src/canvasMenu.cpp:702 src/canvasMenu.cpp:744
 msgid "Send to GPS"
 msgstr "Αποστολή στο GPS"
 
-#: src/canvasMenu.cpp:649 src/canvasMenu.cpp:725
+#: src/canvasMenu.cpp:635 src/canvasMenu.cpp:711
 msgid "Send to new GPS"
 msgstr "Αποστολή σε νέο GPS"
 
-#: src/canvasMenu.cpp:666
+#: src/canvasMenu.cpp:652
 msgid "Layer Track"
 msgstr "Ίχνος πορείας ταξιδιού"
 
-#: src/canvasMenu.cpp:671
+#: src/canvasMenu.cpp:657
 msgid "Copy As KML"
 msgstr "Αντιγραφή ως KML"
 
-#: src/canvasMenu.cpp:686
+#: src/canvasMenu.cpp:672
 msgid "Layer Routepoint"
 msgstr "Σημείο διαδρομής ταξιδιού"
 
-#: src/canvasMenu.cpp:707
+#: src/canvasMenu.cpp:693
 msgid "Remove from Route"
 msgstr "Αφαίρεση από τη διαδρομή"
 
-#: src/canvasMenu.cpp:709 src/canvasMenu.cpp:751
+#: src/canvasMenu.cpp:695 src/canvasMenu.cpp:737
 msgid "Copy as KML"
 msgstr "Αντιγραφή ως KML"
 
-#: src/canvasMenu.cpp:712 src/canvasMenu.cpp:754 src/options.cpp:615
-#: src/options.cpp:7495 src/routeprop.cpp:2563 src/TrackPropDlg.cpp:788
+#: src/canvasMenu.cpp:698 src/canvasMenu.cpp:740 src/options.cpp:634
+#: src/options.cpp:7528 src/routeprop.cpp:2563 src/TrackPropDlg.cpp:788
 msgid "Delete"
 msgstr "Διαγραφή"
 
-#: src/canvasMenu.cpp:742
+#: src/canvasMenu.cpp:728
 msgid "Layer Waypoint"
 msgstr "Σημείο πορείας ταξιδιού"
 
-#: src/canvasMenu.cpp:749
+#: src/canvasMenu.cpp:735
 msgid "Navigate To This"
 msgstr "Πλεύση προς αυτό"
 
-#: src/canvasMenu.cpp:768
+#: src/canvasMenu.cpp:754
 msgid "Clear Anchor Watch"
 msgstr "Διάγραψε την επιτήρηση αγκυροβολίας"
 
-#: src/canvasMenu.cpp:778
+#: src/canvasMenu.cpp:764
 msgid "Set Anchor Watch"
 msgstr "Θέσε επιτήρηση αγκυροβολίας"
 
-#: src/canvasMenu.cpp:794
+#: src/canvasMenu.cpp:780
 msgid "Show Tide Information"
 msgstr "Εμφάνιση πληροφοριών παλίρροιας"
 
-#: src/canvasMenu.cpp:800
+#: src/canvasMenu.cpp:786
 msgid "Show Current Information"
 msgstr "Εμφάνιση πληροφοριών για ρεύματα"
 
-#: src/canvasMenu.cpp:880
+#: src/canvasMenu.cpp:866
 msgid "Temporary GOTO Route"
 msgstr "Προσωρινή διαδρομή GOTO"
 
-#: src/canvasMenu.cpp:881 src/canvasMenu.cpp:933 src/routemanagerdialog.cpp:2336
+#: src/canvasMenu.cpp:867 src/canvasMenu.cpp:919 src/routemanagerdialog.cpp:2336
 msgid "Here"
 msgstr "Εδώ"
 
-#: src/canvasMenu.cpp:883
+#: src/canvasMenu.cpp:869
 msgid "There"
 msgstr "Εκεί"
 
-#: src/canvasMenu.cpp:929 src/routemanagerdialog.cpp:2009
+#: src/canvasMenu.cpp:915 src/routemanagerdialog.cpp:2009
 #: src/routemanagerdialog.cpp:2332
 msgid "(Unnamed Waypoint)"
 msgstr "(Ανώνυμο σημείο πορείας)"
 
-#: src/canvasMenu.cpp:930 src/routemanagerdialog.cpp:2333
+#: src/canvasMenu.cpp:916 src/routemanagerdialog.cpp:2333
 msgid "Go to "
 msgstr "Πήγαινε "
 
-#: src/canvasMenu.cpp:1128 src/routemanagerdialog.cpp:1274
+#: src/canvasMenu.cpp:1114 src/routemanagerdialog.cpp:1274
 msgid "Rename Waypoints?"
 msgstr "Αλλαγή ονόματος σημείων;"
 
-#: src/canvasMenu.cpp:1148
+#: src/canvasMenu.cpp:1134
 msgid "Are you sure you want to delete this route?"
 msgstr "Σίγουρα θέλετε να διαγράψετε αυτή τη διαδρομή;"
 
-#: src/canvasMenu.cpp:1149
+#: src/canvasMenu.cpp:1135
 msgid "OpenCPN Route Delete"
 msgstr "Διαγραφή διαδρομής"
 
-#: src/canvasMenu.cpp:1284 src/canvasMenu.cpp:1295 src/canvasMenu.cpp:1308
-#: src/canvasMenu.cpp:1320 src/routemanagerdialog.cpp:1466
+#: src/canvasMenu.cpp:1270 src/canvasMenu.cpp:1281 src/canvasMenu.cpp:1294
+#: src/canvasMenu.cpp:1306 src/routemanagerdialog.cpp:1466
 #: src/routemanagerdialog.cpp:2387
 msgid "Send To GPS..."
 msgstr "Αποστολή στο GPS..."
 
-#: src/canvasMenu.cpp:1403
+#: src/canvasMenu.cpp:1389
 msgid "Are you sure you want to delete this track?"
 msgstr "Σίγουρα θέλετε να διαγράψετε αυτό το ίχνος;"
 
-#: src/canvasMenu.cpp:1404 src/routeman.cpp:930
+#: src/canvasMenu.cpp:1390 src/routeman.cpp:930
 msgid "OpenCPN Track Delete"
 msgstr "Διαγραφή ίχνους πορείας"
 
-#: src/chart1.cpp:757
+#: src/chart1.cpp:754
 msgid "\n"
 "OpenCPN is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied\n"
@@ -2929,207 +2929,207 @@ msgstr "\n"
 "ΜΗΝ βασίζεστε στο OpenCPN για την ασφάλεια της ζωής και της περιουσίας σας.\n\n"
 "Πατήστε \"OK\" αν συμφωνείτε για να συνεχίσετε, ή ΑΚΥΡΩΣΗ (\"Cancel\") για να σταματήσετε.\n"
 
-#: src/chart1.cpp:772
+#: src/chart1.cpp:769
 msgid "Welcome to OpenCPN"
 msgstr "Καλωσήρθατε στο OpenCPN"
 
-#: src/chart1.cpp:1354 src/chart1.cpp:1360
+#: src/chart1.cpp:1351 src/chart1.cpp:1357
 msgid "Failed to initialize the user interface. "
 msgstr "Δεν μπόρεσε να εκκινήσει η διεπιφάνεια χρήστη. "
 
-#: src/chart1.cpp:1355
+#: src/chart1.cpp:1352
 msgid "OpenCPN cannot start. "
 msgstr "Το OpenCPN δεν μπορεί να ξεκινήσει. "
 
-#: src/chart1.cpp:1356
+#: src/chart1.cpp:1353
 msgid "The necessary configuration files were not found. "
 msgstr "Δεν βρέθηκαν τα απαραίτητα αρχεία διαμόρφωσης. "
 
-#: src/chart1.cpp:1357
+#: src/chart1.cpp:1354
 msgid "See the log file at "
 msgstr "Δες το log σε "
 
-#: src/chart1.cpp:1357
+#: src/chart1.cpp:1354
 msgid " for details."
 msgstr " για λεπτομέρειες."
 
-#: src/chart1.cpp:1438
+#: src/chart1.cpp:1433
 msgid "Retrieving initial language selection from Windows Registry"
 msgstr "Εξάγεται η αρχική επιλογή γλώσσας από τα κατάστιχα των Windows"
 
-#: src/chart1.cpp:1734
+#: src/chart1.cpp:1729
 msgid " -- [Portable(-p) executing from "
 msgstr " -- [Φορητό(-p) εκτελείται από "
 
-#: src/chart1.cpp:1853
+#: src/chart1.cpp:1848
 msgid "Retrieving initial Chart Directory set from Windows Registry"
 msgstr "Εξάγονται οι αρχικοί φάκελοι των χαρτών από τα κατάστιχα των Windows"
 
-#: src/chart1.cpp:1916
+#: src/chart1.cpp:1911
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr "Ανακατασκευή της βάσης δεδομένων των χαρτών από τα αρχεία διαμόρφωσης..."
 
-#: src/chart1.cpp:1919
+#: src/chart1.cpp:1914
 msgid "Elapsed time : "
 msgstr "Χρόνος που πέρασε: "
 
-#: src/chart1.cpp:1920
+#: src/chart1.cpp:1915
 msgid "Estimated time : "
 msgstr "Εκτιμώμενος χρόνος: "
 
-#: src/chart1.cpp:1921
+#: src/chart1.cpp:1916
 msgid "Remaining time : "
 msgstr "Απομένων χρόνος: "
 
-#: src/chart1.cpp:1922 src/chart1.cpp:5482 src/chart1.cpp:5484
+#: src/chart1.cpp:1917 src/chart1.cpp:5482 src/chart1.cpp:5484
 msgid "OpenCPN Chart Update"
 msgstr "Ανανέωση του χάρτη"
 
-#: src/chart1.cpp:1939
+#: src/chart1.cpp:1934
 msgid "No Charts Installed.\n"
 "Please select chart folders in Options > Charts."
 msgstr "Δεν υπάρχουν εγκατεστημένοι χάρτες.\n"
 "Διαλέξτε φακέλους χαρτών στο «Επιλογές -> Χάρτες»."
 
-#: src/chart1.cpp:2109
+#: src/chart1.cpp:2104
 #, c-format
 msgid "OpenCPN Initialized in %ld ms."
 msgstr "Το OpenCPN άρχισε σε %ld ms."
 
-#: src/chart1.cpp:2565 src/chcanv.cpp:10753
+#: src/chart1.cpp:2561 src/chcanv.cpp:10763
 msgid "AIS Target Query"
 msgstr "Πληροφορίες για τον στόχο AIS"
 
-#: src/chart1.cpp:2648 src/chart1.cpp:4804 src/chart1.cpp:4807
+#: src/chart1.cpp:2644 src/chart1.cpp:4804 src/chart1.cpp:4807
 msgid "Zoom In"
 msgstr "Μεγέθυνση"
 
-#: src/chart1.cpp:2654 src/chart1.cpp:4805 src/chart1.cpp:4808
+#: src/chart1.cpp:2650 src/chart1.cpp:4805 src/chart1.cpp:4808
 msgid "Zoom Out"
 msgstr "Σμίκρυνση"
 
-#: src/chart1.cpp:2663
+#: src/chart1.cpp:2659
 msgid "Shift to Larger Scale Chart"
 msgstr "Πήγαινε σε χάρτη μεγαλύτερης κλίμακας"
 
-#: src/chart1.cpp:2671
+#: src/chart1.cpp:2667
 msgid "Shift to Smaller Scale Chart"
 msgstr "Πήγαινε σε χάρτη μικρότερης κλίμακας"
 
-#: src/chart1.cpp:2679 src/chart1.cpp:4881
+#: src/chart1.cpp:2675 src/chart1.cpp:4881
 msgid "Create Route"
 msgstr "Δημιουργία διαδρομής"
 
-#: src/chart1.cpp:2686 src/chart1.cpp:4797
+#: src/chart1.cpp:2682 src/chart1.cpp:4797
 msgid "Auto Follow"
 msgstr "Αυτόματη παρακολούθηση"
 
-#: src/chart1.cpp:2699 src/chart1.cpp:4833 src/chart1.cpp:4838
+#: src/chart1.cpp:2695 src/chart1.cpp:4833 src/chart1.cpp:4838
 msgid "Show ENC Text"
 msgstr "Εμφάνιση κειμένου ENC"
 
-#: src/chart1.cpp:2707 src/chart1.cpp:2792 src/chart1.cpp:3854
+#: src/chart1.cpp:2703 src/chart1.cpp:2788 src/chart1.cpp:3859
 msgid "Hide AIS Targets"
 msgstr "Απόκρυψη στόχων AIS"
 
-#: src/chart1.cpp:2714 src/chart1.cpp:3927 src/chart1.cpp:4846
+#: src/chart1.cpp:2710 src/chart1.cpp:3932 src/chart1.cpp:4846
 msgid "Show Currents"
 msgstr "Εμφάνιση ρευμάτων"
 
-#: src/chart1.cpp:2720 src/chart1.cpp:3961 src/chart1.cpp:4845
+#: src/chart1.cpp:2716 src/chart1.cpp:3966 src/chart1.cpp:4845
 msgid "Show Tides"
 msgstr "Εμφάνιση παλίρροιας"
 
-#: src/chart1.cpp:2726
+#: src/chart1.cpp:2722
 msgid "Print Chart"
 msgstr "Εκτύπωση χάρτη"
 
-#: src/chart1.cpp:2732 src/routemanagerdialog.cpp:448
+#: src/chart1.cpp:2728 src/routemanagerdialog.cpp:448
 msgid "Route & Mark Manager"
 msgstr "Διαχείριση διαδρομών και σημείων πορείας"
 
-#: src/chart1.cpp:2739 src/chart1.cpp:4412 src/chart1.cpp:4798
+#: src/chart1.cpp:2735 src/chart1.cpp:4417 src/chart1.cpp:4798
 msgid "Enable Tracking"
 msgstr "Ενεργοποίηση ίχνους"
 
-#: src/chart1.cpp:2746 src/chart1.cpp:4849 src/chart1.cpp:4851
+#: src/chart1.cpp:2742 src/chart1.cpp:4849 src/chart1.cpp:4851
 msgid "Change Color Scheme"
 msgstr "Αλλαγή χρωμάτων"
 
-#: src/chart1.cpp:2765 src/chart1.cpp:4887 src/chart1.cpp:4891
+#: src/chart1.cpp:2761 src/chart1.cpp:4887 src/chart1.cpp:4891
 msgid "Drop MOB Marker"
 msgstr "Ρίξε σημάδι «Άνθρωπος στη Θάλασσα» (MOB)"
 
-#: src/chart1.cpp:2765
+#: src/chart1.cpp:2761
 msgid " (Ctrl-Space)"
 msgstr " (Ctrl-Space)"
 
-#: src/chart1.cpp:2796 src/chart1.cpp:3857 src/chart1.cpp:4864
+#: src/chart1.cpp:2792 src/chart1.cpp:3862 src/chart1.cpp:4864
 msgid "Show AIS Targets"
 msgstr "Εμφάνιση στόχων AIS"
 
-#: src/chart1.cpp:3159
+#: src/chart1.cpp:3164
 msgid "Anchorage created "
 msgstr "Δημιουργήθηκε αγκυροβόλιο"
 
-#: src/chart1.cpp:3528 src/chcanv.cpp:3418 src/OCPNPlatform.cpp:1200
+#: src/chart1.cpp:3533 src/chcanv.cpp:3422 src/OCPNPlatform.cpp:1201
 msgid "StatusBar"
 msgstr "ΛωρίδαΚατάστασης"
 
-#: src/chart1.cpp:3733
+#: src/chart1.cpp:3738
 msgid "Group \""
 msgstr "Η ομάδα \""
 
-#: src/chart1.cpp:3735
+#: src/chart1.cpp:3740
 msgid "\" is empty, switching to \"All Active Charts\" group."
 msgstr "\" είναι άδεια. Επιστροφή στην ομάδα \"Όλοι οι ενεργοί Χάρτες \"."
 
-#: src/chart1.cpp:3737
+#: src/chart1.cpp:3742
 msgid "OpenCPN Group Notice"
 msgstr "Σημείωση ομάδας OpenCPN"
 
-#: src/chart1.cpp:3929
+#: src/chart1.cpp:3934
 msgid "Hide Currents"
 msgstr "Απόκρυψη ρευμάτων"
 
-#: src/chart1.cpp:3963
+#: src/chart1.cpp:3968
 msgid "Hide Tides"
 msgstr "Απόκρυψη παλίρροιας"
 
-#: src/chart1.cpp:3970
+#: src/chart1.cpp:3975
 msgid "Chart1::Event...TCMgr Not Available"
 msgstr "Χάρτης1::Γεγονός...Το TCMgr δεν υπάρχει"
 
-#: src/chart1.cpp:4257 src/chart1.cpp:4315
+#: src/chart1.cpp:4262 src/chart1.cpp:4320
 msgid "MAN OVERBOARD"
 msgstr "ΑΝΘΡΩΠΟΣ ΣΤΗ ΘΑΛΑΣΣΑ"
 
-#: src/chart1.cpp:4276
+#: src/chart1.cpp:4281
 msgid "1.0 NM along COG"
 msgstr "1.0 ν.μ. κατά μήκος της πραγμ. πορείας (COG)"
 
-#: src/chart1.cpp:4287
+#: src/chart1.cpp:4292
 msgid "Temporary MOB Route"
 msgstr "Προσωρινή διαδρομή για MOB"
 
-#: src/chart1.cpp:4288
+#: src/chart1.cpp:4293
 msgid "Assumed 1 Mile Point"
 msgstr "Υποθέτω σημείο 1 μιλίου"
 
-#: src/chart1.cpp:4338
+#: src/chart1.cpp:4343
 msgid "Disable Tracking"
 msgstr "Απενεργοποίηση ίχνους"
 
-#: src/chart1.cpp:4363 src/chart1.cpp:8150 src/chart1.cpp:8283
+#: src/chart1.cpp:4368 src/chart1.cpp:8150 src/chart1.cpp:8283
 #: src/routemanagerdialog.cpp:1711
 msgid "(Unnamed Track)"
 msgstr "(Ανώνυμο ίχνος)"
 
-#: src/chart1.cpp:4480
+#: src/chart1.cpp:4485
 msgid "Show ENC Text (T)"
 msgstr "Εμφάνιση κειμένου ENC (T)"
 
-#: src/chart1.cpp:4482
+#: src/chart1.cpp:4487
 msgid "Hide ENC Text (T)"
 msgstr "Απόκρυψη κειμένου ENC (T)"
 
@@ -3149,17 +3149,17 @@ msgstr "Έξοδος από το OpenCPN"
 msgid "&Navigate"
 msgstr "&Πλεύση"
 
-#: src/chart1.cpp:4822 src/chart1.cpp:4825 src/options.cpp:3599
-#: src/options.cpp:3690
+#: src/chart1.cpp:4822 src/chart1.cpp:4825 src/options.cpp:3627
+#: src/options.cpp:3718
 msgid "Enable Chart Quilting"
 msgstr "Συρραφή χαρτών"
 
-#: src/chart1.cpp:4823 src/chart1.cpp:4826 src/options.cpp:3641
-#: src/options.cpp:3731
+#: src/chart1.cpp:4823 src/chart1.cpp:4826 src/options.cpp:3669
+#: src/options.cpp:3759
 msgid "Show Chart Outlines"
 msgstr "Εμφάνιση των ορίων των χαρτών"
 
-#: src/chart1.cpp:4828 src/options.cpp:4260
+#: src/chart1.cpp:4828 src/options.cpp:4288
 msgid "Show Chart Bar"
 msgstr "Εμφάνιση της λωρίδας πληροφοριών χάρτη"
 
@@ -3219,7 +3219,7 @@ msgstr "Τοποθέτησε σημάδι στον δρομέα"
 msgid "Preferences..."
 msgstr "Προτιμήσεις..."
 
-#: src/chart1.cpp:4893 src/options.cpp:2693 src/options.cpp:2943
+#: src/chart1.cpp:4893 src/options.cpp:2721 src/options.cpp:2971
 msgid "Options..."
 msgstr "Επιλογές..."
 
@@ -3281,17 +3281,17 @@ msgstr "Θέση ιδίου πλοίου"
 msgid "AIS MAN OVERBOARD UPDATE"
 msgstr "AIS: ΑΝΑΝΕΩΣΗ του \"ΑΝΘΡΩΠΟΣ ΣΤΗ ΘΑΛΑΣΣΑ\""
 
-#: src/chart1.cpp:10460
+#: src/chart1.cpp:10463
 msgid "OpenCPN requires access to serial ports to use serial NMEA data.\n"
 msgstr "Το OpenCPN χρειάζεται πρόσβαση σε σειριακές θύρες για να χρησιμοποιήσει δεδομένα NMEA.\n"
 
-#: src/chart1.cpp:10462
+#: src/chart1.cpp:10465
 msgid "No Serial Ports can be found on this system.\n"
 "You must install a serial port (modprobe correct kernel module) or plug in a usb serial device.\n"
 msgstr "Δεν βρέθηκαν σειριακές θύρες στο σύστημα.\n"
 "Εγκαταστήστε μια σειριακή θύρα (modprobe correct kernel module) ή συνδέστε μια συσκευή usb-serial.\n"
 
-#: src/chart1.cpp:10484
+#: src/chart1.cpp:10487
 msgid "You do currently not have permission to access the serial ports on this system.\n\n"
 "It is suggested that you exit OpenCPN now,\n"
 "and add yourself to the correct group to enable serial port access.\n\n"
@@ -3303,68 +3303,68 @@ msgstr "Δεν έχετε άδεια πρόσβασης στις σειριακ�
 "Σε Linux μπορείτε να το κάνετε αυτό  με την εξής εντολή:\n\n"
 "           sudo usermod -a -G "
 
-#: src/chartdbs.cpp:1167
+#: src/chartdbs.cpp:1168
 msgid " ChartFile:  "
 msgstr " ΑρχείοΧάρτη:  "
 
-#: src/chartdbs.cpp:1204
+#: src/chartdbs.cpp:1205
 msgid " Name:  "
 msgstr " Όνομα:  "
 
-#: src/chartdbs.cpp:1232 src/chartdbs.cpp:1234
+#: src/chartdbs.cpp:1233 src/chartdbs.cpp:1235
 #, c-format
 msgid " Scale:  1:%d"
 msgstr " Κλίμακα:  1:%d"
 
-#: src/chartdbs.cpp:1244
+#: src/chartdbs.cpp:1245
 msgid " ID:  "
 msgstr " ID:  "
 
-#: src/chartdbs.cpp:1252
+#: src/chartdbs.cpp:1253
 msgid " Depth Units:  "
 msgstr " Βαθυμετρικές μονάδες: "
 
-#: src/chartdbs.cpp:1260
+#: src/chartdbs.cpp:1261
 msgid " Soundings:  "
 msgstr " Βυθομετρήσεις:  "
 
-#: src/chartdbs.cpp:1268
+#: src/chartdbs.cpp:1269
 msgid " Datum:  "
 msgstr " Δεδομένο: "
 
-#: src/chartdbs.cpp:1276
+#: src/chartdbs.cpp:1277
 msgid " Projection:  "
 msgstr " Προβολή: "
 
-#: src/chartdbs.cpp:1280
+#: src/chartdbs.cpp:1281
 msgid "Mercator"
 msgstr "Μερκατορική"
 
-#: src/chartdbs.cpp:1282
+#: src/chartdbs.cpp:1283
 msgid "Transverse Mercator"
 msgstr "Αντίστροφη Μερκατορική"
 
-#: src/chartdbs.cpp:1284
+#: src/chartdbs.cpp:1285
 msgid "Polyconic"
 msgstr "Πολυκωνική"
 
-#: src/chartdbs.cpp:1293
+#: src/chartdbs.cpp:1294
 msgid " Source Edition:  "
 msgstr " Έκδοση:  "
 
-#: src/chartdbs.cpp:1301
+#: src/chartdbs.cpp:1302
 msgid " Updated:  "
 msgstr " Ανανέωση:  "
 
-#: src/chartdbs.cpp:1521
+#: src/chartdbs.cpp:1522
 msgid "OpenCPN Chart Scan...."
 msgstr "Έρευνα για χάρτες...."
 
-#: src/chartdbs.cpp:1565
+#: src/chartdbs.cpp:1566
 msgid "OpenCPN Directory Scan...."
 msgstr "Έρευνα για φακέλους...."
 
-#: src/chartdbs.cpp:1896
+#: src/chartdbs.cpp:1897
 msgid "OpenCPN Chart Add...."
 msgstr "Προσθήκη χάρτη...."
 
@@ -3385,241 +3385,241 @@ msgstr "   Το αρχείο του χάρτη δεν έχει επικεφαλ�
 msgid "   Chart File contains less than 3 PLY points: "
 msgstr "   Το αρχείο του χάρτη περιέχει λιγότερα από 3 σημεία PLY: "
 
-#: src/chartimg.cpp:1518
+#: src/chartimg.cpp:1520
 msgid "   Chart File RLL data corrupt on chart "
 msgstr "   Τα δεδομένα RLL είναι κατεστραμμένα στο αρχείο του χάρτη"
 
-#: src/chartimg.cpp:1856 src/chartimg.cpp:1891 src/chartimg.cpp:1901
-#: src/chartimg.cpp:1920
+#: src/chartimg.cpp:1858 src/chartimg.cpp:1893 src/chartimg.cpp:1903
+#: src/chartimg.cpp:1922
 msgid "   Chart File corrupt in PostInit() on chart "
 msgstr "   Κατεστραμμένο αρχείο χάρτη στο PostInit() του χάρτη"
 
-#: src/chartimg.cpp:1960
+#: src/chartimg.cpp:1962
 msgid "   Line Index corrupt, recreating Index for chart "
 msgstr "   Κατεστραμμένο ευρετήριο, γίνεται ανακατασκευή για τον χάρτη "
 
-#: src/chartimg.cpp:1965
+#: src/chartimg.cpp:1967
 msgid "   Error creating Line Index for chart "
 msgstr "   Σφάλμα στην κατασκευή ευρετήριου για τον χάρτη "
 
-#: src/chartimg.cpp:2017
+#: src/chartimg.cpp:2019
 msgid "---<<< Warning:  Chart Datum may be incorrect. >>>---"
 msgstr "---<<< Προσοχή:  Οι συντεταγμένες του χάρτη ίσως να είναι ανακριβείς. >>>---"
 
-#: src/chartimg.cpp:5217
+#: src/chartimg.cpp:5266
 msgid "---<<< Warning:  Chart georef accuracy may be poor. >>>---"
 msgstr "---<<< Προειδοποίηση:  Πιθανά χαμηλή γεωδετική ακρίβεια στον χάρτη. >>>---"
 
-#: src/chartimg.cpp:5315
+#: src/chartimg.cpp:5364
 msgid "   VP Final Check: Georeference Chart_Error_Factor on chart "
 msgstr "   Τελικός έλεγχος VP: O γεωδετικός Chart_Error_Factor στον χάρτη "
 
-#: src/chartimg.cpp:5323 src/chartimg.cpp:5391
+#: src/chartimg.cpp:5372 src/chartimg.cpp:5440
 msgid "---<<< Warning:  Chart georef accuracy is poor. >>>---"
 msgstr "---<<< Προειδοποίηση:  Χαμηλή ακρίβεια συντεταγμένων στον χάρτη. >>>---"
 
-#: src/chartimg.cpp:5330
+#: src/chartimg.cpp:5379
 msgid "   Trying again with internally calculated georef solution "
 msgstr "   Νέα προσπάθεια με εσωτερικά υπολογισμένη γεωδετική λύση"
 
-#: src/chartimg.cpp:5383
+#: src/chartimg.cpp:5432
 msgid "   VP Final Check with internal georef: Georeference Chart_Error_Factor on chart "
 msgstr "   Τελικός έλεγχος VP με χρήση εσωτερικής γεωδεσίας :  Ο Chart_Error_Factor στον χάρτη "
 
-#: src/chartimg.cpp:5395
+#: src/chartimg.cpp:5444
 msgid "   Result: OK, Internal georef solution used."
 msgstr "   Αποτέλεσμα: OK, χρησιμοποιήθηκε εσωτερική γεωδετική λύση."
 
-#: src/chcanv.cpp:1663 src/options.cpp:3131 src/options.cpp:3339
+#: src/chcanv.cpp:1664 src/options.cpp:3159 src/options.cpp:3367
 msgid "CM93 Detail Level"
 msgstr "Επίπεδο λεπτομέρειας στον χάρτη CM93"
 
-#: src/chcanv.cpp:2337 src/chcanv.cpp:8996
+#: src/chcanv.cpp:2341 src/chcanv.cpp:9003
 msgid "Route: "
 msgstr "Διαδρομή: "
 
-#: src/chcanv.cpp:2339 src/chcanv.cpp:8998
+#: src/chcanv.cpp:2343 src/chcanv.cpp:9005
 msgid "Layer Route: "
 msgstr "Διαδρομή ταξιδιού: "
 
-#: src/chcanv.cpp:2341
+#: src/chcanv.cpp:2345
 msgid "(unnamed)"
 msgstr "(ανώνυμο)"
 
-#: src/chcanv.cpp:2345
+#: src/chcanv.cpp:2349
 msgid "Total Length: "
 msgstr "Συνολικό μήκος: "
 
-#: src/chcanv.cpp:2346
+#: src/chcanv.cpp:2350
 msgid "Leg: from "
 msgstr "Σκέλος: από "
 
-#: src/chcanv.cpp:2347
+#: src/chcanv.cpp:2351
 msgid " to "
 msgstr " προς "
 
-#: src/chcanv.cpp:3388
+#: src/chcanv.cpp:3392
 #, c-format
 msgid "Scale %4.0f (%1.0fx)"
 msgstr "Κλίμακα %4.0f (%1.0fx)"
 
-#: src/chcanv.cpp:3390
+#: src/chcanv.cpp:3394
 #, c-format
 msgid "Scale %4.0f (%1.1fx)"
 msgstr "Κλίμακα %4.0f (%1.1fx)"
 
-#: src/chcanv.cpp:3393
+#: src/chcanv.cpp:3397
 #, c-format
 msgid "Scale %4.0f (%1.2fx)"
 msgstr "Κλίμακα %4.0f (%1.2fx)"
 
-#: src/chcanv.cpp:3396
+#: src/chcanv.cpp:3400
 #, c-format
 msgid "Scale %4.0f (---)"
 msgstr "Κλίμακα %4.0f (---)"
 
-#: src/chcanv.cpp:3427
+#: src/chcanv.cpp:3431
 #, c-format
 msgid "Scale (%1.1fx)"
 msgstr "Κλίμακα (%1.1fx)"
 
-#: src/chcanv.cpp:5107 src/chcanv.cpp:5517 src/chcanv.cpp:6777
-#: src/chcanv.cpp:7187
+#: src/chcanv.cpp:5111 src/chcanv.cpp:5521 src/chcanv.cpp:6781
+#: src/chcanv.cpp:7191
 msgid "Use nearby waypoint?"
 msgstr "Να χρησιμοποιηθεί το κοντινό σημείο πορείας;"
 
-#: src/chcanv.cpp:5108 src/chcanv.cpp:5160 src/chcanv.cpp:5518
-#: src/chcanv.cpp:5567 src/chcanv.cpp:6778 src/chcanv.cpp:6829
-#: src/chcanv.cpp:7188 src/chcanv.cpp:7237
+#: src/chcanv.cpp:5112 src/chcanv.cpp:5164 src/chcanv.cpp:5522
+#: src/chcanv.cpp:5571 src/chcanv.cpp:6782 src/chcanv.cpp:6833
+#: src/chcanv.cpp:7192 src/chcanv.cpp:7241
 msgid "OpenCPN Route Create"
 msgstr "Δημιουργία διαδρομής"
 
-#: src/chcanv.cpp:5154 src/chcanv.cpp:5562 src/chcanv.cpp:6823
-#: src/chcanv.cpp:7232
+#: src/chcanv.cpp:5158 src/chcanv.cpp:5566 src/chcanv.cpp:6827
+#: src/chcanv.cpp:7236
 msgid "For this leg the Great Circle route is "
 msgstr "Γι' αυτό το σκέλος, η διαδρομή μεγίστου κύκλου είναι "
 
-#: src/chcanv.cpp:5155 src/chcanv.cpp:5563 src/chcanv.cpp:6824
-#: src/chcanv.cpp:7233
+#: src/chcanv.cpp:5159 src/chcanv.cpp:5567 src/chcanv.cpp:6828
+#: src/chcanv.cpp:7237
 msgid " shorter than rhumbline.\n\n"
 msgstr " κοντύτερη από την ισογώνια.\n"
 " \n"
 
-#: src/chcanv.cpp:5156 src/chcanv.cpp:5564 src/chcanv.cpp:6825
-#: src/chcanv.cpp:7234
+#: src/chcanv.cpp:5160 src/chcanv.cpp:5568 src/chcanv.cpp:6829
+#: src/chcanv.cpp:7238
 msgid "Would you like include the Great Circle routing points for this leg?"
 msgstr "Θέλετε να συμπεριλάβετε τα σημεία της πορείας Μεγίστου Κύκλου για αυτό το σκέλος;"
 
-#: src/chcanv.cpp:8063 src/chcanv.cpp:8075 src/S57QueryDialog.cpp:86
+#: src/chcanv.cpp:8069 src/chcanv.cpp:8081 src/S57QueryDialog.cpp:86
 msgid "ObjectQuery"
 msgstr "ΠληροφορίεςΑντικειμένου"
 
-#: src/chcanv.cpp:8199 src/routemanagerdialog.cpp:2212
+#: src/chcanv.cpp:8206 src/routemanagerdialog.cpp:2212
 msgid "Waypoint Properties, Layer: "
 msgstr "Ιδιότητες σημείου, ταξίδι: "
 
-#: src/chcanv.cpp:8286
+#: src/chcanv.cpp:8293
 msgid "There is an existing waypoint at the same location as the one you are pasting. Would you like to merge the pasted data with it?\n\n"
 msgstr "Υπάρχει ένα σημείο πορείας στην ίδια θέση με αυτήν που επικολλάτε. Θέλετε να συγχωνεύσετε τα δεδομένα με αυτό;\n"
 
-#: src/chcanv.cpp:8287
+#: src/chcanv.cpp:8294
 msgid "Answering 'No' will create a new waypoint at the same location."
 msgstr "Αρνητική απάντηση θα δημιουργήσει ένα νέο σημείο στην ίδια θέση."
 
-#: src/chcanv.cpp:8288
+#: src/chcanv.cpp:8295
 msgid "Merge waypoint?"
 msgstr "Συγχώνευση σημείου πορείας;"
 
-#: src/chcanv.cpp:8347
+#: src/chcanv.cpp:8354
 msgid "There are existing waypoints at the same location as some of the ones you are pasting. Would you like to just merge the pasted data into them?\n\n"
 msgstr "Υπάρχουν σημεία πορείας στις ίδιες θέσεις με μερικά από αυτά που επικολλάτε. Θέλετε να συγχωνεύσετε τα δεδομένα με αυτά;\n"
 
-#: src/chcanv.cpp:8348
+#: src/chcanv.cpp:8355
 msgid "Answering 'No' will create all new waypoints for this route."
 msgstr "Αρνητική απάντηση θα δημιουργήσει καινούργια σημεία για αυτή τη διαδρομή."
 
-#: src/chcanv.cpp:8349
+#: src/chcanv.cpp:8356
 msgid "Merge waypoints?"
 msgstr "Συγχώνευση σημείων πορείας;"
 
-#: src/chcanv.cpp:8871 src/chcanv.cpp:8973 src/RolloverWin.cpp:106
+#: src/chcanv.cpp:8878 src/chcanv.cpp:8980 src/RolloverWin.cpp:106
 #: src/RolloverWin.cpp:156
 msgid "RouteLegInfoRollover"
 msgstr "Πληροφορίες σκέλους σε Rollover"
 
-#: src/chcanv.cpp:9927 src/options.cpp:3783 src/options.cpp:3888
+#: src/chcanv.cpp:9934 src/options.cpp:3811 src/options.cpp:3916
 msgid "Feet"
 msgstr "πόδια"
 
-#: src/chcanv.cpp:9928 src/options.cpp:3762 src/options.cpp:3783
-#: src/options.cpp:3867 src/options.cpp:3888
+#: src/chcanv.cpp:9935 src/options.cpp:3790 src/options.cpp:3811
+#: src/options.cpp:3895 src/options.cpp:3916
 msgid "Meters"
 msgstr "μέτρα"
 
-#: src/chcanv.cpp:9929 src/options.cpp:3783 src/options.cpp:3888
+#: src/chcanv.cpp:9936 src/options.cpp:3811 src/options.cpp:3916
 msgid "Fathoms"
 msgstr "οργιές"
 
-#: src/chcanv.cpp:9932
+#: src/chcanv.cpp:9939
 msgid "OverZoom"
 msgstr "Υπερμεγέθυνση"
 
-#: src/chcanv.cpp:10310 src/chcanv.cpp:10311
+#: src/chcanv.cpp:10317 src/chcanv.cpp:10318
 msgid "ExtendedTideIcon"
 msgstr "Εικονίδιο παλίρροιας"
 
-#: src/chcanv.cpp:10571
+#: src/chcanv.cpp:10581
 msgid "CurrentValue"
 msgstr "Τρέχουσα τιμή"
 
-#: src/chcanv.cpp:10957
+#: src/chcanv.cpp:10967
 msgid "   External application \"xcalib\" not found. Screen brightness not changed."
 msgstr "    Η εξωτερική εφαρμογή \"xcalib\" δεν βρέθηκε. Η φωτεινότητα της οθόνης δεν άλλαξε."
 
-#: src/cm93.cpp:6738
+#: src/cm93.cpp:6742
 msgid "OpenCPN CM93 Cell Offset Adjustments"
 msgstr "Ρυθμίσεις αντιστάθμισης κυψέλης χαρτών CM93"
 
-#: src/cm93.cpp:6755
+#: src/cm93.cpp:6759
 msgid "Cell"
 msgstr "Κυψέλη"
 
-#: src/cm93.cpp:6758
+#: src/cm93.cpp:6762
 msgid "M_COVR ID"
 msgstr "M_COVR ID"
 
-#: src/cm93.cpp:6761
+#: src/cm93.cpp:6765
 msgid "Cell Scale"
 msgstr "Κλίμακα κυψέλης"
 
-#: src/cm93.cpp:6764
+#: src/cm93.cpp:6768
 msgid "wgsox"
 msgstr "wgsox"
 
-#: src/cm93.cpp:6767
+#: src/cm93.cpp:6771
 msgid "wgsoy"
 msgstr "wgsoy"
 
-#: src/cm93.cpp:6770
+#: src/cm93.cpp:6774
 msgid "User X Offset"
 msgstr "Αντιστάθμιση Χ άξονα από χρήστη"
 
-#: src/cm93.cpp:6773
+#: src/cm93.cpp:6777
 msgid "User Y Offset"
 msgstr "Αντιστάθμιση Υ άξονα από χρήστη"
 
-#: src/cm93.cpp:6781
+#: src/cm93.cpp:6785
 msgid "User X Offset (Metres)"
 msgstr "Αντιστάθμιση Χ άξονα από χρήστη (m)"
 
-#: src/cm93.cpp:6788
+#: src/cm93.cpp:6792
 msgid "User Y Offset (Metres)"
 msgstr "Αντιστάθμιση Y άξονα από χρήστη (m)"
 
-#: src/cm93.cpp:6795 src/GoToPositionDialog.cpp:149 src/options.cpp:468
-#: src/options.cpp:4573 src/routeprintout.cpp:407 src/routeprop.cpp:983
+#: src/cm93.cpp:6799 src/GoToPositionDialog.cpp:149 src/options.cpp:471
+#: src/options.cpp:4601 src/routeprintout.cpp:407 src/routeprop.cpp:983
 #: src/routeprop.cpp:1278 src/TCWin.cpp:133 src/TCWin.cpp:144
-#: src/toolbar.cpp:2528 src/TrackPropDlg.cpp:507 src/TrackPropDlg.cpp:876
+#: src/toolbar.cpp:2535 src/TrackPropDlg.cpp:507 src/TrackPropDlg.cpp:876
 msgid "OK"
 msgstr "Εντάξει"
 
@@ -3657,35 +3657,35 @@ msgstr "XTE         R"
 msgid "ETA          "
 msgstr "Εκτ.Ώ.Άφ.          "
 
-#: src/ConnectionParams.cpp:135 src/options.cpp:1177 src/options.cpp:1785
+#: src/ConnectionParams.cpp:135 src/options.cpp:1205 src/options.cpp:1813
 msgid "Serial"
 msgstr "Σειριακή"
 
 #: src/ConnectionParams.cpp:137
 msgid "Net"
-msgstr "Καθαρό"
+msgstr "Δίκτυο"
 
 #: src/ConnectionParams.cpp:139
 msgid "GPS"
-msgstr ""
+msgstr "GPS"
 
 #: src/ConnectionParams.cpp:141
 msgid "BT"
-msgstr ""
+msgstr "BT"
 
 #: src/ConnectionParams.cpp:153
 msgid "Internal"
 msgstr "Εσωτερικό"
 
-#: src/ConnectionParams.cpp:166 src/options.cpp:1263 src/options.cpp:1872
+#: src/ConnectionParams.cpp:166 src/options.cpp:1291 src/options.cpp:1900
 msgid "TCP"
-msgstr ""
+msgstr "TCP"
 
-#: src/ConnectionParams.cpp:168 src/options.cpp:1269 src/options.cpp:1878
+#: src/ConnectionParams.cpp:168 src/options.cpp:1297 src/options.cpp:1906
 msgid "UDP"
 msgstr ""
 
-#: src/ConnectionParams.cpp:170 src/options.cpp:1275 src/options.cpp:1884
+#: src/ConnectionParams.cpp:170 src/options.cpp:1303 src/options.cpp:1912
 msgid "GPSD"
 msgstr ""
 
@@ -3723,7 +3723,7 @@ msgstr "Σε"
 
 #: src/ConnectionParams.cpp:229
 msgid "In: None"
-msgstr "In: τίποτα"
+msgstr "In: κανένα"
 
 #: src/ConnectionParams.cpp:233
 msgid "Out"
@@ -3731,7 +3731,7 @@ msgstr "Έξοδος"
 
 #: src/ConnectionParams.cpp:238
 msgid ", Out: None"
-msgstr ", έξοδος: τίποτα"
+msgstr ", Out: κανένα"
 
 #: src/glChartCanvas.cpp:510
 msgid "OpenCPN Compressed Cache Update"
@@ -3742,32 +3742,32 @@ msgstr "OpenCPN: ανανέωση του συμπιεσμένου Cache"
 msgid "Distance from Ownship:  %4.0f NMi"
 msgstr "Απόσταση από ίδιον πλοίο: %4.0f ν.μ."
 
-#: src/glChartCanvas.cpp:1381
+#: src/glChartCanvas.cpp:1385
 msgid "OpenGL-> SSE2 Instruction set not available"
 msgstr "OpenGL-> μη διαθέσιμο SSE2"
 
-#: src/glChartCanvas.cpp:1396
+#: src/glChartCanvas.cpp:1400
 msgid "OpenGL-> Using oes etc1 compression"
 msgstr "OpenGL-> χρήση συμπίεσης oes etc1"
 
-#: src/glChartCanvas.cpp:1417
+#: src/glChartCanvas.cpp:1421
 msgid "OpenGL-> Using s3tc dxt1 compression"
 msgstr "OpenGL-> χρήση συμπίεσης s3tc dtx1"
 
-#: src/glChartCanvas.cpp:1422
+#: src/glChartCanvas.cpp:1426
 msgid "OpenGL-> Using 3dfx fxt1 compression"
 msgstr "OpenGL-> χρήση συμπίεσης 3dfx fxt1"
 
-#: src/glChartCanvas.cpp:1424
+#: src/glChartCanvas.cpp:1428
 msgid "OpenGL-> No Useable compression format found"
 msgstr "OpenGL-> δεν βρέθηκε τρόπος συμπίεσης"
 
-#: src/glChartCanvas.cpp:1936 src/s52plib.cpp:1843 src/s52plib.cpp:1909
+#: src/glChartCanvas.cpp:1943 src/s52plib.cpp:1843 src/s52plib.cpp:1909
 #: src/s52plib.cpp:2056
 msgid "ChartTexts"
 msgstr "ΚείμεναΧάρτη"
 
-#: src/glChartCanvas.cpp:4402
+#: src/glChartCanvas.cpp:4415
 msgid "Waiting for raster chart compression thread exit."
 msgstr "Αναμονή για τέλος της συμπίεσης του χάρτη raster."
 
@@ -3781,9 +3781,9 @@ msgstr "Γεωγρ. πλάτος"
 msgid "Longitude"
 msgstr "Γεωγρ. μήκος"
 
-#: src/GoToPositionDialog.cpp:145 src/options.cpp:465 src/routeprintout.cpp:403
+#: src/GoToPositionDialog.cpp:145 src/options.cpp:468 src/routeprintout.cpp:403
 #: src/routeprop.cpp:979 src/routeprop.cpp:1274 src/SendToGpsDlg.cpp:132
-#: src/toolbar.cpp:2524 src/TrackPropDlg.cpp:503 src/TrackPropDlg.cpp:872
+#: src/toolbar.cpp:2531 src/TrackPropDlg.cpp:503 src/TrackPropDlg.cpp:872
 msgid "Cancel"
 msgstr "Ακύρωση"
 
@@ -3821,7 +3821,7 @@ msgstr "Περιγραφή συνδέσμου"
 
 #: src/LinkPropDlg.cpp:59
 msgid "URL"
-msgstr ""
+msgstr "url"
 
 #: src/LinkPropDlg.cpp:68
 msgid "Local file..."
@@ -3835,133 +3835,133 @@ msgstr "Διαλέξτε αρχείο"
 msgid "Link not complete, can't be saved."
 msgstr "Ο σύνδεσμος δεν είναι πλήρης και δεν μπορεί να αποθηκευθεί"
 
-#: src/navutil.cpp:2932 src/navutil.cpp:2942 src/navutil.cpp:2990
-#: src/navutil.cpp:3001 src/navutil.cpp:3039 src/navutil.cpp:3050
-#: src/navutil.cpp:3080
+#: src/navutil.cpp:2934 src/navutil.cpp:2944 src/navutil.cpp:2992
+#: src/navutil.cpp:3003 src/navutil.cpp:3041 src/navutil.cpp:3052
+#: src/navutil.cpp:3082
 msgid "Export GPX file"
 msgstr "Εξαγωγή αρχείου GPX"
 
-#: src/navutil.cpp:2970 src/navutil.cpp:3019 src/navutil.cpp:3068
+#: src/navutil.cpp:2972 src/navutil.cpp:3021 src/navutil.cpp:3070
 msgid "Overwrite existing file?"
 msgstr "Επικάλυψη υπάρχοντος αρχείου;"
 
-#: src/navutil.cpp:3159 src/navutil.cpp:3181
+#: src/navutil.cpp:3161 src/navutil.cpp:3183
 msgid "Import GPX file"
 msgstr "Εισαγωγή αρχείου GPX"
 
-#: src/navutil.cpp:3714
+#: src/navutil.cpp:3716
 msgid "&Font family:"
 msgstr "&Γραμματοσειρά: "
 
-#: src/navutil.cpp:3720 src/navutil.cpp:3722
+#: src/navutil.cpp:3722 src/navutil.cpp:3724
 msgid "The font family."
 msgstr "Η γραμματοσειρά."
 
-#: src/navutil.cpp:3727
+#: src/navutil.cpp:3729
 msgid "&Style:"
 msgstr "&Στιλ:"
 
-#: src/navutil.cpp:3731 src/navutil.cpp:3733
+#: src/navutil.cpp:3733 src/navutil.cpp:3735
 msgid "The font style."
 msgstr "Το στιλ των γραμμάτων."
 
-#: src/navutil.cpp:3738
+#: src/navutil.cpp:3740
 msgid "&Weight:"
 msgstr "&Πάχος:"
 
-#: src/navutil.cpp:3742 src/navutil.cpp:3744
+#: src/navutil.cpp:3744 src/navutil.cpp:3746
 msgid "The font weight."
 msgstr "Το πάχος των γραμμάτων."
 
-#: src/navutil.cpp:3751
+#: src/navutil.cpp:3753
 msgid "C&olour:"
 msgstr "&Χρώμα: "
 
-#: src/navutil.cpp:3761 src/navutil.cpp:3763
+#: src/navutil.cpp:3763 src/navutil.cpp:3765
 msgid "The font colour."
 msgstr "Το χρώμα των γραμμάτων."
 
-#: src/navutil.cpp:3769
+#: src/navutil.cpp:3771
 msgid "&Point size:"
 msgstr "&Μέγεθος: "
 
-#: src/navutil.cpp:3774 src/navutil.cpp:3776
+#: src/navutil.cpp:3776 src/navutil.cpp:3778
 msgid "The font point size."
 msgstr "Το μέγεθος των γραμμάτων."
 
-#: src/navutil.cpp:3783
+#: src/navutil.cpp:3785
 msgid "&Underline"
 msgstr "&Υπογράμμιση"
 
-#: src/navutil.cpp:3786 src/navutil.cpp:3788
+#: src/navutil.cpp:3788 src/navutil.cpp:3790
 msgid "Whether the font is underlined."
 msgstr "Αν υπάρχει υπογράμμιση."
 
-#: src/navutil.cpp:3795
+#: src/navutil.cpp:3797
 msgid "Preview:"
 msgstr "Προεπισκόπηση: "
 
-#: src/navutil.cpp:3800 src/navutil.cpp:3802
+#: src/navutil.cpp:3802 src/navutil.cpp:3804
 msgid "Shows the font preview."
 msgstr "Προεπισκόπιση της γραμματοσειράς."
 
-#: src/navutil.cpp:3809 src/options.cpp:4577
+#: src/navutil.cpp:3811 src/options.cpp:4605
 msgid "&Cancel"
 msgstr "&Ακύρωση"
 
-#: src/navutil.cpp:3811
+#: src/navutil.cpp:3813
 msgid "Click to cancel the font selection."
 msgstr "Ακύρωση επιλογής γραμματοσειράς."
 
-#: src/navutil.cpp:3814
+#: src/navutil.cpp:3816
 msgid "&OK"
 msgstr "&Εντάξει"
 
-#: src/navutil.cpp:3816 src/navutil.cpp:3818
+#: src/navutil.cpp:3818 src/navutil.cpp:3820
 msgid "Click to confirm the font selection."
 msgstr "Επικύρωση επιλογής γραμματοσειράς."
 
-#: src/navutil.cpp:4332
+#: src/navutil.cpp:4334
 msgid "NMi"
 msgstr "ν.μ."
 
-#: src/navutil.cpp:4335
+#: src/navutil.cpp:4337
 msgid "mi"
 msgstr "μίλια"
 
-#: src/navutil.cpp:4338
+#: src/navutil.cpp:4340
 msgid "km"
 msgstr "km"
 
-#: src/navutil.cpp:4341
+#: src/navutil.cpp:4343
 msgid "m"
 msgstr "m"
 
-#: src/navutil.cpp:4344
+#: src/navutil.cpp:4346
 msgid "ft"
 msgstr "πόδια"
 
-#: src/navutil.cpp:4347
+#: src/navutil.cpp:4349
 msgid "fa"
 msgstr "οργιές"
 
-#: src/navutil.cpp:4353
+#: src/navutil.cpp:4355
 msgid "cm"
 msgstr "cm"
 
-#: src/navutil.cpp:4421
+#: src/navutil.cpp:4423
 msgid "kts"
 msgstr "κόμβοι"
 
-#: src/navutil.cpp:4424
+#: src/navutil.cpp:4426
 msgid "mph"
 msgstr "μ.α.ώ."
 
-#: src/navutil.cpp:4427 src/options.cpp:3772 src/options.cpp:3877
+#: src/navutil.cpp:4429 src/options.cpp:3800 src/options.cpp:3905
 msgid "km/h"
 msgstr "km/h"
 
-#: src/navutil.cpp:4430 src/options.cpp:3772 src/options.cpp:3877
+#: src/navutil.cpp:4432 src/options.cpp:3800 src/options.cpp:3905
 msgid "m/s"
 msgstr "m/s"
 
@@ -3977,7 +3977,7 @@ msgstr "Ναί"
 msgid "No"
 msgstr "Όχι"
 
-#: src/OCPNPlatform.cpp:1088
+#: src/OCPNPlatform.cpp:1089
 msgid "Old log will be moved to opencpn.log.log"
 msgstr "Το παλιό log θα μεταφερθεί στο opencpn.log.log"
 
@@ -3991,35 +3991,35 @@ msgstr "Δεδομένα ήχου δεν μπόρεσαν να φορτωθού�
 msgid "Sound file '%s' is in unsupported format."
 msgstr "Αρχείο ήχου «%s» είναι σε μορφή που δεν υποστηρίζεται."
 
-#: src/options.cpp:415
+#: src/options.cpp:416
 msgid "MMSI Extended Properties"
 msgstr "Ιδιότητες MMSI (εκτεταμένες)"
 
-#: src/options.cpp:429
+#: src/options.cpp:430
 msgid "Tracking"
 msgstr "Καταγραφή του ίχνους"
 
-#: src/options.cpp:434
+#: src/options.cpp:435
 msgid "Default tracking"
 msgstr "Προεπιλεγμένη παρακολούθηση"
 
-#: src/options.cpp:439
+#: src/options.cpp:440
 msgid "Always track"
 msgstr "Μόνιμο καταγραφή ίχνους"
 
-#: src/options.cpp:442
+#: src/options.cpp:443
 msgid " Never track"
 msgstr " Όχι ίχνος"
 
-#: src/options.cpp:445 src/options.cpp:571
+#: src/options.cpp:446 src/options.cpp:587
 msgid "Persistent"
 msgstr "Επίμονο"
 
-#: src/options.cpp:451
+#: src/options.cpp:452
 msgid "Ignore this MMSI"
 msgstr "Αγνόησε αυτό το MMSI"
 
-#: src/options.cpp:455
+#: src/options.cpp:456
 msgid "Handle this MMSI as SART/PLB(AIS) MOB."
 msgstr "Αυτό το MMSI θεωρείται SART/PLB(AIS) MOB."
 
@@ -4027,1275 +4027,1289 @@ msgstr "Αυτό το MMSI θεωρείται SART/PLB(AIS) MOB."
 msgid "Convert AIVDM to AIVDO for this MMSI"
 msgstr "Μετατροπή AIVDM σε AIVDO για αυτό το MMSI"
 
-#: src/options.cpp:559 src/options.cpp:2351 src/routeprop.cpp:857
+#: src/options.cpp:462
+msgid "This MMSI is my Follower - No CPA Alert"
+msgstr ""
+
+#: src/options.cpp:519
+msgid "An MMSI Id is generally a number of nine digits.\n"
+"Please check your entries and cancel if necessary."
+msgstr ""
+
+#: src/options.cpp:575 src/options.cpp:2379 src/routeprop.cpp:857
 #: src/routeprop.cpp:875 src/routeprop.cpp:1203 src/routeprop.cpp:1222
 #: src/routeprop.cpp:2947 src/TrackPropDlg.cpp:387 src/TrackPropDlg.cpp:405
 #: src/TrackPropDlg.cpp:644 src/TrackPropDlg.cpp:654
 msgid "Default"
 msgstr "Προεπιλεγμένο"
 
-#: src/options.cpp:562
+#: src/options.cpp:578
 msgid "Always"
 msgstr "Πάντα"
 
-#: src/options.cpp:565
+#: src/options.cpp:581
 msgid "Never"
 msgstr "Ποτέ"
 
-#: src/options.cpp:596 src/options.cpp:640
+#: src/options.cpp:615 src/options.cpp:659
 msgid "Edit MMSI Properties"
 msgstr "Επεξεργασία ιδιοτήτων MMSI"
 
-#: src/options.cpp:610 src/options.cpp:3947 src/options.cpp:3954
+#: src/options.cpp:629 src/options.cpp:3975 src/options.cpp:3982
 msgid "MMSI Properties"
 msgstr "Ιδιότητες MMSI"
 
-#: src/options.cpp:612
+#: src/options.cpp:631
 msgid "Edit..."
 msgstr "Επεξεργασία..."
 
-#: src/options.cpp:698
+#: src/options.cpp:717
 msgid "Track Mode"
 msgstr "Είδος ίχνους"
 
-#: src/options.cpp:707
+#: src/options.cpp:726
 msgid "Ignore"
 msgstr "Αγνόησε"
 
-#: src/options.cpp:716
+#: src/options.cpp:735
 msgid "MOB"
 msgstr "Άνθρωπος στη Θάλασσα (MOB)"
 
-#: src/options.cpp:724
+#: src/options.cpp:743
 msgid "VDM->VDO"
+msgstr "VDM->VDO"
+
+#: src/options.cpp:752
+msgid "Follower"
 msgstr ""
 
-#: src/options.cpp:730
+#: src/options.cpp:758
 msgid "New..."
 msgstr "Νέο..."
 
-#: src/options.cpp:753
+#: src/options.cpp:781
 msgid "Add MMSI Properties"
 msgstr "Προσθήκη ιδιοτήτων MMSI"
 
-#: src/options.cpp:1061 src/options.cpp:1671
+#: src/options.cpp:1089 src/options.cpp:1699
 msgid "NMEA"
 msgstr "NMEA (δίκτυο δεδομ. πλοίου)"
 
-#: src/options.cpp:1071 src/options.cpp:1681 src/options.cpp:3545
+#: src/options.cpp:1099 src/options.cpp:1709 src/options.cpp:3573
 msgid "General"
 msgstr "Γενικά"
 
-#: src/options.cpp:1080
+#: src/options.cpp:1108
 msgid "Filter NMEA COG/SOG"
 msgstr "Φίλτρο NMEA COG/SOG"
 
-#: src/options.cpp:1090 src/options.cpp:1699
+#: src/options.cpp:1118 src/options.cpp:1727
 msgid "Filter period (sec)"
 msgstr "Περίοδος φίλτρου (sec)"
 
-#: src/options.cpp:1111 src/options.cpp:1719
+#: src/options.cpp:1139 src/options.cpp:1747
 msgid "Show NMEA Debug Window"
 msgstr "Παράθυρο που δείχνει τη ροή δεδομένων NMEA"
 
-#: src/options.cpp:1117
+#: src/options.cpp:1145
 msgid "Use Furuno GP3X for uploads"
 msgstr "Χρησιμοποιήστε Furuno GP3X για upload"
 
-#: src/options.cpp:1123
+#: src/options.cpp:1151
 msgid "Use GRMN for uploads"
 msgstr "Χρήση GRMN για upload"
 
-#: src/options.cpp:1129
+#: src/options.cpp:1157
 msgid "Use mag bearings in ECAPB"
 msgstr "Χρήση μαγνητικών συντεταγμένων στο ECAPB"
 
-#: src/options.cpp:1140 src/options.cpp:1749
+#: src/options.cpp:1168 src/options.cpp:1777
 msgid "Data Connections"
 msgstr "Σνδέσεις δεδομένων"
 
-#: src/options.cpp:1154
+#: src/options.cpp:1182
 msgid "Add..."
 msgstr "Προσθήκη..."
 
-#: src/options.cpp:1158
+#: src/options.cpp:1186
 msgid "Remove"
 msgstr "Διαγραφή"
 
-#: src/options.cpp:1168 src/options.cpp:1777 src/routeprop.cpp:1081
+#: src/options.cpp:1196 src/options.cpp:1805 src/routeprop.cpp:1081
 #: src/routeprop.cpp:2383
 msgid "Properties"
 msgstr "Ιδιότητες"
 
-#: src/options.cpp:1182 src/options.cpp:1790
+#: src/options.cpp:1210 src/options.cpp:1818
 msgid "Network"
-msgstr "Δίκτυο"
+msgstr "Διαδίκτυο"
 
-#: src/options.cpp:1188 src/options.cpp:1796
+#: src/options.cpp:1216 src/options.cpp:1824
 msgid "Built-in GPS"
 msgstr "Ενσωματωμένο GPS"
 
-#: src/options.cpp:1197
+#: src/options.cpp:1225
 msgid "Built-in Bluetooth"
 msgstr "Ενσωματωμένο Bluetooth"
 
-#: src/options.cpp:1201
+#: src/options.cpp:1229
 msgid "BT Scan..."
 msgstr "Σάρωση BT..."
 
-#: src/options.cpp:1209
+#: src/options.cpp:1237
 msgid "BT Sources"
 msgstr "Πηγές BT"
 
-#: src/options.cpp:1253 src/options.cpp:1334 src/options.cpp:1863
-#: src/options.cpp:1944
+#: src/options.cpp:1281 src/options.cpp:1362 src/options.cpp:1891
+#: src/options.cpp:1972
 msgid "Protocol"
 msgstr "Πρωτόκολο"
 
-#: src/options.cpp:1285 src/options.cpp:1891
+#: src/options.cpp:1313 src/options.cpp:1919
 msgid "Address"
 msgstr "Διεύθυνση"
 
-#: src/options.cpp:1293 src/options.cpp:1308 src/options.cpp:1900
-#: src/options.cpp:1918 src/options.cpp:2231
+#: src/options.cpp:1321 src/options.cpp:1336 src/options.cpp:1928
+#: src/options.cpp:1946 src/options.cpp:2259
 msgid "DataPort"
 msgstr "ΘύραΔεδομένων"
 
-#: src/options.cpp:1317 src/options.cpp:1927
+#: src/options.cpp:1345 src/options.cpp:1955
 msgid "Baudrate"
 msgstr "Baudrate"
 
-#: src/options.cpp:1323 src/options.cpp:1933
+#: src/options.cpp:1351 src/options.cpp:1961
 msgid "150"
 msgstr ""
 
-#: src/options.cpp:1323 src/options.cpp:1933
+#: src/options.cpp:1351 src/options.cpp:1961
 msgid "300"
 msgstr ""
 
-#: src/options.cpp:1323 src/options.cpp:1933
+#: src/options.cpp:1351 src/options.cpp:1961
 msgid "600"
 msgstr ""
 
-#: src/options.cpp:1323 src/options.cpp:1933
+#: src/options.cpp:1351 src/options.cpp:1961
 msgid "1200"
 msgstr ""
 
-#: src/options.cpp:1323 src/options.cpp:1933
+#: src/options.cpp:1351 src/options.cpp:1961
 msgid "2400"
 msgstr ""
 
-#: src/options.cpp:1324 src/options.cpp:1934
+#: src/options.cpp:1352 src/options.cpp:1962
 msgid "4800"
-msgstr ""
+msgstr "4800"
 
-#: src/options.cpp:1324 src/options.cpp:1934
+#: src/options.cpp:1352 src/options.cpp:1962
 msgid "9600"
-msgstr ""
+msgstr "9600"
 
-#: src/options.cpp:1324 src/options.cpp:1934
+#: src/options.cpp:1352 src/options.cpp:1962
 msgid "19200"
-msgstr ""
+msgstr "19200"
 
-#: src/options.cpp:1324 src/options.cpp:1934
+#: src/options.cpp:1352 src/options.cpp:1962
 msgid "38400"
-msgstr ""
+msgstr "38400"
 
-#: src/options.cpp:1324 src/options.cpp:1934
+#: src/options.cpp:1352 src/options.cpp:1962
 msgid "57600"
-msgstr ""
+msgstr "57600"
 
-#: src/options.cpp:1325 src/options.cpp:1935
+#: src/options.cpp:1353 src/options.cpp:1963
 msgid "115200"
-msgstr ""
+msgstr "115200"
 
-#: src/options.cpp:1325 src/options.cpp:1935
+#: src/options.cpp:1353 src/options.cpp:1963
 msgid "230400"
-msgstr ""
+msgstr "230400"
 
-#: src/options.cpp:1325 src/options.cpp:1935
+#: src/options.cpp:1353 src/options.cpp:1963
 msgid "460800"
-msgstr ""
+msgstr "460800"
 
-#: src/options.cpp:1325 src/options.cpp:1935
+#: src/options.cpp:1353 src/options.cpp:1963
 msgid "921600"
-msgstr ""
+msgstr "921600"
 
-#: src/options.cpp:1339 src/options.cpp:1949
+#: src/options.cpp:1367 src/options.cpp:1977
 msgid "NMEA 0183"
-msgstr ""
+msgstr "NMEA 0183"
 
-#: src/options.cpp:1339 src/options.cpp:1949
+#: src/options.cpp:1367 src/options.cpp:1977
 msgid "NMEA 2000"
-msgstr ""
+msgstr "NMEA 2000"
 
-#: src/options.cpp:1340 src/options.cpp:1950
+#: src/options.cpp:1368 src/options.cpp:1978
 msgid "Seatalk"
 msgstr "Seatalk"
 
-#: src/options.cpp:1350 src/options.cpp:1960 src/options.cpp:2232
+#: src/options.cpp:1378 src/options.cpp:1988 src/options.cpp:2260
 msgid "Priority"
 msgstr "Προτεραιότητα"
 
-#: src/options.cpp:1355 src/options.cpp:1965
+#: src/options.cpp:1383 src/options.cpp:1993
 msgid "0"
-msgstr ""
+msgstr "0"
 
-#: src/options.cpp:1355 src/options.cpp:1965
+#: src/options.cpp:1383 src/options.cpp:1993
 msgid "1"
-msgstr ""
+msgstr "1"
 
-#: src/options.cpp:1355 src/options.cpp:1965
+#: src/options.cpp:1383 src/options.cpp:1993
 msgid "2"
-msgstr ""
+msgstr "2"
 
-#: src/options.cpp:1355 src/options.cpp:1965
+#: src/options.cpp:1383 src/options.cpp:1993
 msgid "3"
-msgstr ""
+msgstr "3"
 
-#: src/options.cpp:1355 src/options.cpp:1965
+#: src/options.cpp:1383 src/options.cpp:1993
 msgid "4"
-msgstr ""
+msgstr "4"
 
-#: src/options.cpp:1356 src/options.cpp:1966
+#: src/options.cpp:1384 src/options.cpp:1994
 msgid "5"
-msgstr ""
+msgstr "5"
 
-#: src/options.cpp:1356 src/options.cpp:1966
+#: src/options.cpp:1384 src/options.cpp:1994
 msgid "6"
-msgstr ""
+msgstr "6"
 
-#: src/options.cpp:1356 src/options.cpp:1966
+#: src/options.cpp:1384 src/options.cpp:1994
 msgid "7"
-msgstr ""
+msgstr "7"
 
-#: src/options.cpp:1356 src/options.cpp:1966
+#: src/options.cpp:1384 src/options.cpp:1994
 msgid "8"
-msgstr ""
+msgstr "8"
 
-#: src/options.cpp:1356 src/options.cpp:1966
+#: src/options.cpp:1384 src/options.cpp:1994
 msgid "9"
-msgstr ""
+msgstr "9"
 
-#: src/options.cpp:1367 src/options.cpp:1982
+#: src/options.cpp:1395 src/options.cpp:2010
 msgid "Control checksum"
 msgstr "Έλεγχος checksum"
 
-#: src/options.cpp:1371 src/options.cpp:1986
+#: src/options.cpp:1399 src/options.cpp:2014
 msgid "If checked, only the sentences with a valid checksum are passed through"
 msgstr "Αν τσεκαριστεί, περνούν μόνο τα δεδομένα με για τα οποία ισχύει το chekcsum τους"
 
-#: src/options.cpp:1375
+#: src/options.cpp:1403
 msgid "Use GRMN mode for input"
 msgstr "Χρησιμοποίησε το στιλ GRMN για την είσοδο"
 
-#: src/options.cpp:1384 src/options.cpp:1999
+#: src/options.cpp:1412 src/options.cpp:2027
 msgid "Receive Input on this Port"
 msgstr "Είσοδος σε αυτή τη θύρα"
 
-#: src/options.cpp:1388
+#: src/options.cpp:1416
 msgid "Output on this port"
 msgstr "Έξοδος σε αυτή τη θύρα"
 
-#: src/options.cpp:1396
+#: src/options.cpp:1424
 msgid "Talker ID"
 msgstr "ID ομιλητή"
 
-#: src/options.cpp:1407 src/options.cpp:2021
+#: src/options.cpp:1435 src/options.cpp:2049
 msgid "APB bearing precision"
 msgstr "Ακρίβεια στίγματος APB"
 
-#: src/options.cpp:1413 src/options.cpp:2027
+#: src/options.cpp:1441 src/options.cpp:2055
 msgid "x"
 msgstr "x"
 
-#: src/options.cpp:1413 src/options.cpp:2027
+#: src/options.cpp:1441 src/options.cpp:2055
 msgid "x.x"
-msgstr ""
+msgstr "x.x"
 
-#: src/options.cpp:1413 src/options.cpp:2027
+#: src/options.cpp:1441 src/options.cpp:2055
 msgid "x.xx"
-msgstr ""
+msgstr "x.xx"
 
-#: src/options.cpp:1414 src/options.cpp:2028
+#: src/options.cpp:1442 src/options.cpp:2056
 msgid "x.xxx"
-msgstr ""
+msgstr "x.xxx"
 
-#: src/options.cpp:1414 src/options.cpp:2028
+#: src/options.cpp:1442 src/options.cpp:2056
 msgid "x.xxxx"
-msgstr ""
+msgstr "x.xxxx"
 
-#: src/options.cpp:1428 src/options.cpp:2041
+#: src/options.cpp:1456 src/options.cpp:2069
 msgid "Input filtering"
 msgstr "Φίλτρο εισόδου"
 
-#: src/options.cpp:1434 src/options.cpp:2047
+#: src/options.cpp:1462 src/options.cpp:2075
 msgid "Accept only sentences"
 msgstr "Αποδέξου μόνο τα δεδομένα"
 
-#: src/options.cpp:1438 src/options.cpp:2051
+#: src/options.cpp:1466 src/options.cpp:2079
 msgid "Ignore sentences"
 msgstr "Αγνόησε τα δεδομένα"
 
-#: src/options.cpp:1453 src/options.cpp:1487 src/options.cpp:2066
-#: src/options.cpp:2101 src/routeprop.cpp:2537
+#: src/options.cpp:1481 src/options.cpp:1515 src/options.cpp:2094
+#: src/options.cpp:2129 src/routeprop.cpp:2537
 msgid "..."
 msgstr "..."
 
-#: src/options.cpp:1461 src/options.cpp:2075
+#: src/options.cpp:1489 src/options.cpp:2103
 msgid "Output filtering"
 msgstr "Φίλτρο εξόδου"
 
-#: src/options.cpp:1468 src/options.cpp:2082
+#: src/options.cpp:1496 src/options.cpp:2110
 msgid "Transmit sentences"
 msgstr "Στείλε τα δεδομένα"
 
-#: src/options.cpp:1472 src/options.cpp:2086
+#: src/options.cpp:1500 src/options.cpp:2114
 msgid "Drop sentences"
 msgstr "Παράλειψε τα δεδομένα"
 
-#: src/options.cpp:1617
+#: src/options.cpp:1645
 msgid "On"
-msgstr ""
+msgstr "ON"
 
-#: src/options.cpp:1617
+#: src/options.cpp:1645
 msgid "Prio"
 msgstr "προτ."
 
-#: src/options.cpp:1618
+#: src/options.cpp:1646
 msgid "Parm"
 msgstr "παραμ."
 
-#: src/options.cpp:1618
+#: src/options.cpp:1646
 msgid "I/O"
-msgstr ""
+msgstr "I/O"
 
-#: src/options.cpp:1618 src/options.cpp:2233
+#: src/options.cpp:1646 src/options.cpp:2261
 msgid "Filters"
 msgstr "Φίλτρα"
 
-#: src/options.cpp:1693
+#: src/options.cpp:1721
 msgid "Filter NMEA Course and Speed data"
 msgstr "Φίλτρο για δεδομένα πορείας και ταχύτητας ΝΜΕΑ"
 
-#: src/options.cpp:1725
+#: src/options.cpp:1753
 msgid "Format uploads for Furuno GP3X"
 msgstr "Μέθοδος μεταφοράς για Furuno GP3X"
 
-#: src/options.cpp:1731
+#: src/options.cpp:1759
 msgid "Use Garmin GRMN (Host) mode for uploads"
 msgstr "Χρήση μεθόδου Garmin GRMN (Host) για εξαγωγή δεδομένων"
 
-#: src/options.cpp:1738
+#: src/options.cpp:1766
 msgid "Use magnetic bearings in output sentence ECAPB"
 msgstr "Χρήση μ. στίγματος στα δεδομένα εξόδου ECAPB"
 
-#: src/options.cpp:1762
+#: src/options.cpp:1790
 msgid "Add Connection"
 msgstr "Προσθήκη σύνδεσης"
 
-#: src/options.cpp:1766
+#: src/options.cpp:1794
 msgid "Remove Connection"
 msgstr "Αφαίρεση σύνδεσης"
 
-#: src/options.cpp:1805
+#: src/options.cpp:1833
 msgid "Built-in Bluetooth SPP"
 msgstr "Ενσωματωμένο Bluetooth SPP"
 
-#: src/options.cpp:1809 src/options.cpp:7003
+#: src/options.cpp:1837 src/options.cpp:7036
 msgid "BT Scan"
 msgstr "Σάρωση για Bluetooth"
 
-#: src/options.cpp:1819
+#: src/options.cpp:1847
 msgid "Bluetooth Data Sources"
 msgstr "Πηγές δεδομένων Bluetooth"
 
-#: src/options.cpp:1990
+#: src/options.cpp:2018
 msgid "Use Garmin (GRMN) mode for input"
 msgstr "Χρήση μεθόδου Garmin (GRMN) για εισαγωγή δεδομένων"
 
-#: src/options.cpp:2005
+#: src/options.cpp:2033
 msgid "Output on this port ( as Autopilot or NMEA Repeater)"
 msgstr "Έξοδος σε αυτή τη θύρα (π.χ. Αυτομ. πιλότος ή επανεκπομπή NMEA)"
 
-#: src/options.cpp:2010
+#: src/options.cpp:2038
 msgid "Talker ID (blank = default ID)"
 msgstr "ID ομιλητή (κενό = προεπιλεγμένη ID)"
 
-#: src/options.cpp:2231 src/pluginmanager.cpp:3466 src/pluginmanager.cpp:3476
+#: src/options.cpp:2259 src/pluginmanager.cpp:3468 src/pluginmanager.cpp:3478
 msgid "Enable"
 msgstr "On"
 
-#: src/options.cpp:2232
+#: src/options.cpp:2260
 msgid "Parameters"
 msgstr "Παράμετροι"
 
-#: src/options.cpp:2232
+#: src/options.cpp:2260
 msgid "Connection"
 msgstr "Σύνδεση"
 
-#: src/options.cpp:2317
+#: src/options.cpp:2345
 msgid "Own Ship"
 msgstr "Ίδιον πλοίο"
 
-#: src/options.cpp:2324
+#: src/options.cpp:2352
 msgid "Display Options"
 msgstr "Επιλογές παρουσίασης"
 
-#: src/options.cpp:2334
+#: src/options.cpp:2362
 msgid "COG Predictor Length (min)"
 msgstr "Μήκος πρόγνωσης πραγμ. πορείας (min)"
 
-#: src/options.cpp:2341
+#: src/options.cpp:2369
 msgid "Heading Predictor Length (NMi)"
 msgstr "Μήκος πρόγνωσης πορείας (heading, ν.μ.)"
 
-#: src/options.cpp:2348
+#: src/options.cpp:2376
 msgid "Ship Icon Type"
 msgstr "Τύπος εικονιδίου πλοίου"
 
-#: src/options.cpp:2351
+#: src/options.cpp:2379
 msgid "Real Scale Bitmap"
 msgstr "Bitmap σε πραγματική κλίμακα"
 
-#: src/options.cpp:2352
+#: src/options.cpp:2380
 msgid "Real Scale Vector"
 msgstr "Διανυσματικό σε πραγματική κλίμακα"
 
-#: src/options.cpp:2366
+#: src/options.cpp:2394
 msgid "Length Over All (m)"
 msgstr "Ολικό μήκος (m)"
 
-#: src/options.cpp:2372
+#: src/options.cpp:2400
 msgid "Width Over All (m)"
 msgstr "Ολικό πλάτος (m)"
 
-#: src/options.cpp:2378
+#: src/options.cpp:2406
 msgid "GPS Offset from Bow (m)"
 msgstr "Αντιστάθμιση θέσης κεραίας GPS από την πλώρη (m)"
 
-#: src/options.cpp:2384
+#: src/options.cpp:2412
 msgid "GPS Offset from Midship (m)"
 msgstr "Αντιστάθμιση θέσης κεραίας GPS από το μέσον του πλοίου"
 
-#: src/options.cpp:2390
+#: src/options.cpp:2418
 msgid "Minimum Screen Size (mm)"
 msgstr "Ελάχιστο μέγεθος στην οθόνη (mm)"
 
-#: src/options.cpp:2402
+#: src/options.cpp:2430
 msgid "Show range rings"
 msgstr "Εμφάνιση δακτυλίων ραντάρ"
 
-#: src/options.cpp:2405 src/routeprop.cpp:2480
+#: src/options.cpp:2433 src/routeprop.cpp:2480
 msgid "None"
 msgstr "Καμία"
 
-#: src/options.cpp:2419
+#: src/options.cpp:2447
 msgid "Distance Between Rings"
 msgstr "Απόσταση ανάμεσα στους δακτυλιους"
 
-#: src/options.cpp:2428 src/options.cpp:2534 src/routeprop.cpp:2496
+#: src/options.cpp:2456 src/options.cpp:2562 src/routeprop.cpp:2496
 msgid "Distance Unit"
 msgstr "Μονάδα απόστασης"
 
-#: src/options.cpp:2431
+#: src/options.cpp:2459
 msgid "Nautical Miles"
 msgstr "Ναυτικά μίλια"
 
-#: src/options.cpp:2431 src/options.cpp:3762 src/options.cpp:3867
+#: src/options.cpp:2459 src/options.cpp:3790 src/options.cpp:3895
 msgid "Kilometers"
 msgstr "Χιλιόμετρα"
 
-#: src/options.cpp:2439 src/routemanagerdialog.cpp:588
+#: src/options.cpp:2467 src/routemanagerdialog.cpp:588
 msgid "Tracks"
 msgstr "Ίχνη πορείας "
 
-#: src/options.cpp:2444
+#: src/options.cpp:2472
 msgid "Automatic Daily Tracks"
 msgstr "Αυτόματα ημερήσια ίχνη πορείας"
 
-#: src/options.cpp:2448
+#: src/options.cpp:2476
 msgid "Highlight Tracks"
 msgstr "Φωτισμένα ίχνη πορείας"
 
-#: src/options.cpp:2457
+#: src/options.cpp:2485
 msgid "Tracking Precision"
 msgstr "Ακρίβεια καταγραφής"
 
-#: src/options.cpp:2460
+#: src/options.cpp:2488
 msgid "Low"
 msgstr "Χαμηλή"
 
-#: src/options.cpp:2460
+#: src/options.cpp:2488
 msgid "Medium"
 msgstr "Μεσαία"
 
-#: src/options.cpp:2460
+#: src/options.cpp:2488
 msgid "High"
 msgstr "Υψηλή"
 
-#: src/options.cpp:2468 src/routemanagerdialog.cpp:486
+#: src/options.cpp:2496 src/routemanagerdialog.cpp:486
 msgid "Routes"
 msgstr "Διαδρομές"
 
-#: src/options.cpp:2478
+#: src/options.cpp:2506
 msgid "Waypoint Arrival Circle Radius (NMi)"
 msgstr "Ακτίνα προσέγγισης σημείου πορείας (ν.μ.)"
 
-#: src/options.cpp:2487
+#: src/options.cpp:2515
 msgid "Advance route waypoint on arrival only"
 msgstr "Προχώρησε σε επόμενο σημείο διαδρομής μόνο με την άφιξη"
 
-#: src/options.cpp:2492 src/routemanagerdialog.cpp:667 src/routeprop.cpp:886
+#: src/options.cpp:2520 src/routemanagerdialog.cpp:667 src/routeprop.cpp:886
 #: src/routeprop.cpp:1233 src/TrackPropDlg.cpp:416
 msgid "Waypoints"
 msgstr "Σημεία πορείας"
 
-#: src/options.cpp:2508
+#: src/options.cpp:2536
 msgid "Waypoint range rings"
 msgstr "Δακτύλιοι περιοχής σημείου πορείας"
 
-#: src/options.cpp:2523
+#: src/options.cpp:2551
 msgid "Distance Between Waypoint Rings"
 msgstr "Απόσταση μεταξύ των δακτυλίων γύρω από τα σημεία"
 
-#: src/options.cpp:2545
+#: src/options.cpp:2573
 msgid "Waypoint Range Ring Colours"
 msgstr "Χρώματα των δακτυλίων γύρω από τα σημεία"
 
-#: src/options.cpp:2559
+#: src/options.cpp:2587
 msgid "Chart Files"
 msgstr "Αρχεία χαρτών"
 
-#: src/options.cpp:2565
+#: src/options.cpp:2593
 msgid "Directories"
 msgstr "Φάκελοι"
 
-#: src/options.cpp:2596
+#: src/options.cpp:2624
 msgid "Add Directory..."
 msgstr "Προσθήκη φακέλου..."
 
-#: src/options.cpp:2600 src/options.cpp:3412 src/routeprop.cpp:452
+#: src/options.cpp:2628 src/options.cpp:3440 src/routeprop.cpp:452
 msgid "Remove Selected"
 msgstr "Αφαίρεση επιλεγμένων"
 
-#: src/options.cpp:2605
+#: src/options.cpp:2633
 msgid "Update Control"
 msgstr "Έλεγχος ανανέωσης"
 
-#: src/options.cpp:2611
+#: src/options.cpp:2639
 msgid "Scan Charts and Update Database"
 msgstr "Σκάναρε τους χάρτες και ανανέωσε τη βάση δεδομένων "
 
-#: src/options.cpp:2615
+#: src/options.cpp:2643
 msgid "Force Full Database Rebuild"
 msgstr "Ανακατασκευή ολόκληρης της βάσης δεδομένων"
 
-#: src/options.cpp:2623 src/TrackPropDlg.cpp:821
+#: src/options.cpp:2651 src/TrackPropDlg.cpp:821
 msgid "Advanced"
 msgstr "Για προχωρημένους"
 
-#: src/options.cpp:2640
+#: src/options.cpp:2668
 msgid "De-skew Raster Charts"
 msgstr "Ίσιωσε τους χάρτες raster"
 
-#: src/options.cpp:2644 src/options.cpp:2800
+#: src/options.cpp:2672 src/options.cpp:2828
 msgid "Disable Full Screen Quilting"
 msgstr "Όχι συρραφή χαρτών σε λειτουργία fullscreen"
 
-#: src/options.cpp:2648
+#: src/options.cpp:2676
 msgid "Suppress blur/fog effects"
 msgstr "Κατάστειλε τα εφέ θολώματος"
 
-#: src/options.cpp:2652
+#: src/options.cpp:2680
 msgid "Suppress scaled vector charts"
 msgstr "Σταμάτησε τους διανυσματικούς χάρτες"
 
-#: src/options.cpp:2660
+#: src/options.cpp:2688
 msgid "Lock Waypoints"
 msgstr "Κλείδωμα σημείων"
 
-#: src/options.cpp:2665
+#: src/options.cpp:2693
 msgid "Confirm deletion"
 msgstr "Επιβεβαίωση διαγραφής"
 
-#: src/options.cpp:2671 src/options.cpp:2950
+#: src/options.cpp:2699 src/options.cpp:2978
 msgid "Enable Transparent Toolbar"
 msgstr "Διαφανής λωρίδα εργαλείων"
 
-#: src/options.cpp:2684
+#: src/options.cpp:2712
 msgid "Use Accelerated Graphics"
 msgstr "Χρήση γρήγορων γραφικών"
 
-#: src/options.cpp:2702 src/options.cpp:2819
+#: src/options.cpp:2730 src/options.cpp:2847
 msgid "Course-Up Update Period"
 msgstr "Περιόδος ανανέωσης «πορείας προς τα πάνω»"
 
-#: src/options.cpp:2715 src/options.cpp:2832 src/options.cpp:4282
+#: src/options.cpp:2743 src/options.cpp:2860 src/options.cpp:4310
 msgid "seconds"
 msgstr "δευτερόλεπτα"
 
-#: src/options.cpp:2723 src/options.cpp:2841
+#: src/options.cpp:2751 src/options.cpp:2869
 msgid "Chart Zoom/Scale Weighting"
 msgstr "Κλίμακα λεπτομέρειας χάρτη"
 
-#: src/options.cpp:2740 src/options.cpp:2895
+#: src/options.cpp:2768 src/options.cpp:2923
 msgid "Physical Screen Width"
 msgstr "Πλάτος φυσικής οθόνης"
 
-#: src/options.cpp:2745 src/options.cpp:2900
+#: src/options.cpp:2773 src/options.cpp:2928
 msgid "Auto"
 msgstr "Αυτόματα"
 
-#: src/options.cpp:2749 src/options.cpp:2904
+#: src/options.cpp:2777 src/options.cpp:2932
 msgid "Manual:"
 msgstr "Μη αυτόματα:"
 
-#: src/options.cpp:2759 src/options.cpp:2912
+#: src/options.cpp:2787 src/options.cpp:2940
 msgid "mm"
-msgstr ""
+msgstr "mm"
 
-#: src/options.cpp:2790 src/options.cpp:3593
+#: src/options.cpp:2818 src/options.cpp:3621
 msgid "Chart Display"
 msgstr "Εμφάνιση χάρτη"
 
-#: src/options.cpp:2796
+#: src/options.cpp:2824
 msgid "Show Skewed Raster Charts as North-Up"
 msgstr "Δείξε τους παραμορφωμένους raster χάρτες με τον «Βορρά Πάνω»"
 
-#: src/options.cpp:2805
+#: src/options.cpp:2833
 msgid "Suppress blur/fog effects on overzoom"
 msgstr "Όχι εφέ ομίχλης σε υπερμεγέθυνση"
 
-#: src/options.cpp:2810
+#: src/options.cpp:2838
 msgid "Suppress scaled vector charts on overzoom"
 msgstr "Χάρτες εκτός κλίμακας σε υπερμεγέθυνση"
 
-#: src/options.cpp:2856
+#: src/options.cpp:2884
 msgid "With a lower value, the same zoom level shows a less detailed chart.\n"
 "                          With a higher value, the same zoom level shows a more detailed chart."
-msgstr ""
+msgstr "Το ίδιο επίπεδο ζουμ δείχνει ένα λιγότερο λεπτομερή χάρτη με χαμηλότερη τιμή, \n"
+" και ένα πιο λεπτομερή χάρτη με υψηλότερη τιμή."
 
-#: src/options.cpp:2872 src/options.cpp:3611
+#: src/options.cpp:2900 src/options.cpp:3639
 msgid "Controls"
 msgstr "Ρυθμίσεις"
 
-#: src/options.cpp:2879
+#: src/options.cpp:2907
 msgid "Lock Waypoints (Unless waypoint property dialog visible)"
 msgstr "Κλείδωμα σημείων πορείας (εκτός αν ο διάλογος ιδιοτήτων τους είναι ανοικτός)"
 
-#: src/options.cpp:2885
+#: src/options.cpp:2913
 msgid "Confirm deletion of tracks and routes"
 msgstr "Επιβεβαίωση για διαγραφή ιχνών και διαδρομών"
 
-#: src/options.cpp:2928
+#: src/options.cpp:2956
 msgid "Graphics"
 msgstr "Γραφικά"
 
-#: src/options.cpp:2934
+#: src/options.cpp:2962
 msgid "Use Accelerated Graphics (OpenGL)"
 msgstr "Χρήση γραφικών OpenGL"
 
-#: src/options.cpp:2959
+#: src/options.cpp:2987
 msgid "Vector Chart Display"
 msgstr "Επιλογές εμφάνισης χάρτη"
 
-#: src/options.cpp:2978 src/options.cpp:3188
+#: src/options.cpp:3006 src/options.cpp:3216
 msgid "Display Category"
 msgstr "Κατηγορία παρουσίασης"
 
-#: src/options.cpp:2979 src/options.cpp:3189
+#: src/options.cpp:3007 src/options.cpp:3217
 msgid "Standard"
 msgstr "Κανονική"
 
-#: src/options.cpp:2979 src/options.cpp:3189
+#: src/options.cpp:3007 src/options.cpp:3217
 msgid "All"
 msgstr "Όλα"
 
-#: src/options.cpp:2980 src/options.cpp:3151 src/options.cpp:3190
-#: src/options.cpp:3359
+#: src/options.cpp:3008 src/options.cpp:3179 src/options.cpp:3218
+#: src/options.cpp:3387
 msgid "Mariner's Standard"
 msgstr "Στάνταρ ναυτικών"
 
-#: src/options.cpp:2990 src/options.cpp:4040 src/options.cpp:4583
+#: src/options.cpp:3018 src/options.cpp:4068 src/options.cpp:4611
 msgid "Display"
 msgstr "Παρουσίαση"
 
-#: src/options.cpp:2997 src/options.cpp:3204
+#: src/options.cpp:3025 src/options.cpp:3232
 msgid "Depth Soundings"
 msgstr "Βυθομετρήσεις"
 
-#: src/options.cpp:3002 src/options.cpp:3209
+#: src/options.cpp:3030 src/options.cpp:3237
 msgid "Chart Information Objects"
 msgstr "Αντικείμενα πληροφοριών χάρτη"
 
-#: src/options.cpp:3006
+#: src/options.cpp:3034
 msgid "Buoys/Lights"
 msgstr "Σημαντήρες/Φάροι"
 
-#: src/options.cpp:3013 src/options.cpp:3217
+#: src/options.cpp:3041 src/options.cpp:3245
 msgid "Buoy/Light Labels"
 msgstr "Ετικέτες σημαντήρα/φάρου"
 
-#: src/options.cpp:3018 src/options.cpp:3222
+#: src/options.cpp:3046 src/options.cpp:3250
 msgid "Light Descriptions"
 msgstr "Περιγραφές φάρων"
 
-#: src/options.cpp:3023 src/options.cpp:3227
+#: src/options.cpp:3051 src/options.cpp:3255
 msgid "Extended Light Sectors"
 msgstr "Επέκταση τομέων φάρου"
 
-#: src/options.cpp:3027
+#: src/options.cpp:3055
 msgid "Chart Texts"
 msgstr "Κείμενα στον χάρτη"
 
-#: src/options.cpp:3034 src/options.cpp:3235
+#: src/options.cpp:3062 src/options.cpp:3263
 msgid "National text on chart"
 msgstr "Κείμενο στον χάρτη στην τοπική γλώσσα"
 
-#: src/options.cpp:3039 src/options.cpp:3240
+#: src/options.cpp:3067 src/options.cpp:3268
 msgid "Important Text Only"
 msgstr "Μονο σημαντικό κείμενο"
 
-#: src/options.cpp:3044 src/options.cpp:3245
+#: src/options.cpp:3072 src/options.cpp:3273
 msgid "De-Cluttered Text"
 msgstr "Αραιωμένο κείμενο"
 
-#: src/options.cpp:3048
+#: src/options.cpp:3076
 msgid "Chart Detail"
 msgstr "Λεπτομέρεια χάρτη"
 
-#: src/options.cpp:3051 src/options.cpp:3250
+#: src/options.cpp:3079 src/options.cpp:3278
 msgid "Reduced Detail at Small Scale"
 msgstr "Μειωμένη λεπτομέρεια σε μικρή κλίμακα"
 
-#: src/options.cpp:3060 src/options.cpp:3266
+#: src/options.cpp:3088 src/options.cpp:3294
 msgid "Graphics Style"
 msgstr "Στιλ γραφικών"
 
-#: src/options.cpp:3063 src/options.cpp:3269
+#: src/options.cpp:3091 src/options.cpp:3297
 msgid "Paper Chart"
 msgstr "Σαν τυπωμένοι χάρτες"
 
-#: src/options.cpp:3063 src/options.cpp:3269
+#: src/options.cpp:3091 src/options.cpp:3297
 msgid "Simplified"
 msgstr "Απλοποιημένοι"
 
-#: src/options.cpp:3069 src/options.cpp:3275
+#: src/options.cpp:3097 src/options.cpp:3303
 msgid "Boundaries"
 msgstr "Όρια"
 
-#: src/options.cpp:3072 src/options.cpp:3278
+#: src/options.cpp:3100 src/options.cpp:3306
 msgid "Plain"
 msgstr "Απλοί"
 
-#: src/options.cpp:3072 src/options.cpp:3278
+#: src/options.cpp:3100 src/options.cpp:3306
 msgid "Symbolized"
 msgstr "Με σύμβολα"
 
-#: src/options.cpp:3078 src/options.cpp:3284
+#: src/options.cpp:3106 src/options.cpp:3312
 msgid "Colors"
 msgstr "Χρώματα"
 
-#: src/options.cpp:3081 src/options.cpp:3287
+#: src/options.cpp:3109 src/options.cpp:3315
 msgid "2 Color"
 msgstr "2-χρωμοι"
 
-#: src/options.cpp:3081 src/options.cpp:3287
+#: src/options.cpp:3109 src/options.cpp:3315
 msgid "4 Color"
 msgstr "4-χρωμοι"
 
-#: src/options.cpp:3092 src/options.cpp:3305
+#: src/options.cpp:3120 src/options.cpp:3333
 msgid "Shallow Depth"
 msgstr "Αβαθή"
 
-#: src/options.cpp:3100 src/options.cpp:3110 src/options.cpp:3120
-#: src/options.cpp:3311 src/options.cpp:3320 src/options.cpp:3328
+#: src/options.cpp:3128 src/options.cpp:3138 src/options.cpp:3148
+#: src/options.cpp:3339 src/options.cpp:3348 src/options.cpp:3356
 msgid "metres"
 msgstr "μέτρα"
 
-#: src/options.cpp:3103 src/options.cpp:3314
+#: src/options.cpp:3131 src/options.cpp:3342
 msgid "Safety Depth"
 msgstr "Ασφαλές βάθος"
 
-#: src/options.cpp:3113 src/options.cpp:3323
+#: src/options.cpp:3141 src/options.cpp:3351
 msgid "Deep Depth"
 msgstr "Βαθιά"
 
-#: src/options.cpp:3170 src/options.cpp:3366 src/options.cpp:7492
+#: src/options.cpp:3198 src/options.cpp:3394 src/options.cpp:7525
 msgid "Select All"
 msgstr "Επιλογή όλων"
 
-#: src/options.cpp:3172 src/options.cpp:3368 src/options.cpp:7493
+#: src/options.cpp:3200 src/options.cpp:3396 src/options.cpp:7526
 msgid "Clear All"
 msgstr "Εκκαθάριση όλων"
 
-#: src/options.cpp:3388
+#: src/options.cpp:3416
 msgid "Tides && Currents"
 msgstr "Παλίρροια && ρεύματα"
 
-#: src/options.cpp:3393
+#: src/options.cpp:3421
 msgid "Active Datasets"
 msgstr "Ενεργές βάσεις δεδομένων"
 
-#: src/options.cpp:3410
+#: src/options.cpp:3438
 msgid "Add Dataset..."
 msgstr "Προσθήκη βάσης δεδομένων..."
 
-#: src/options.cpp:3461
+#: src/options.cpp:3489
 msgid "All Available Charts"
 msgstr "Όλοι οι διαθέσιμοι χάρτες"
 
-#: src/options.cpp:3475 src/options.cpp:7494 src/routeprop.cpp:2587
+#: src/options.cpp:3503 src/options.cpp:7527 src/routeprop.cpp:2587
 #: src/TrackPropDlg.cpp:804
 msgid "Add"
 msgstr "Προσθήκη"
 
-#: src/options.cpp:3477
+#: src/options.cpp:3505
 msgid "Remove Chart"
 msgstr "Αφαίρεση χάρτη"
 
-#: src/options.cpp:3501
+#: src/options.cpp:3529
 msgid "All Charts"
 msgstr "Όλοι οι χάρτες"
 
-#: src/options.cpp:3519
+#: src/options.cpp:3547
 msgid "New Group..."
 msgstr "Νέα ομάδα..."
 
-#: src/options.cpp:3521
+#: src/options.cpp:3549
 msgid "Delete Group"
 msgstr "Διαγραφή ομάδας"
 
-#: src/options.cpp:3566
+#: src/options.cpp:3594
 msgid "Navigation Mode"
 msgstr "Τρόπος παρουσίασης"
 
-#: src/options.cpp:3574 src/options.cpp:3666
+#: src/options.cpp:3602 src/options.cpp:3694
 msgid "North Up"
 msgstr "Λειτουργία «Βορράς προς τα πάνω»"
 
-#: src/options.cpp:3577 src/options.cpp:3669
+#: src/options.cpp:3605 src/options.cpp:3697
 msgid "Course Up"
 msgstr "Λειτουργία «Πορεία προς τα πάνω»"
 
-#: src/options.cpp:3584 src/options.cpp:3676
+#: src/options.cpp:3612 src/options.cpp:3704
 msgid "Look Ahead Mode"
 msgstr "Προεπισκόπηση πορείας"
 
-#: src/options.cpp:3603
+#: src/options.cpp:3631
 msgid "Preserve Scale when Switching Charts"
 msgstr "Διατήρηση της κλίμακας όταν αλλάζει ο χάρτης"
 
-#: src/options.cpp:3617 src/options.cpp:3708
+#: src/options.cpp:3645 src/options.cpp:3736
 msgid "Smooth Panning / Zooming"
 msgstr "Ομαλό Panning/Zooming"
 
-#: src/options.cpp:3621 src/options.cpp:3712
+#: src/options.cpp:3649 src/options.cpp:3740
 msgid "Zoom to Cursor"
 msgstr "Μεγέθυνση γύρω από τον δρομέα"
 
-#: src/options.cpp:3631
+#: src/options.cpp:3659
 msgid "Display Features"
 msgstr "Χαρακτηριστικά παρουσίασης"
 
-#: src/options.cpp:3637 src/options.cpp:3727
+#: src/options.cpp:3665 src/options.cpp:3755
 msgid "Show Grid"
 msgstr "Εμφάνιση καννάβου"
 
-#: src/options.cpp:3645 src/options.cpp:3735
+#: src/options.cpp:3673 src/options.cpp:3763
 msgid "Show Depth Units"
 msgstr "Εμφάνιση βαθυμετρικών μονάδων"
 
-#: src/options.cpp:3694
+#: src/options.cpp:3722
 msgid "Preserve Scale on Chart Switch"
 msgstr "Διατήρηση κλίμακας σε αλλαγή του χάρτη"
 
-#: src/options.cpp:3742
+#: src/options.cpp:3770
 msgid "Units"
 msgstr "Μονάδες"
 
-#: src/options.cpp:3759 src/options.cpp:3864 src/routeprintout.cpp:113
+#: src/options.cpp:3787 src/options.cpp:3892 src/routeprintout.cpp:113
 #: src/routeprintout.cpp:384 src/routeprop.cpp:1003 src/routeprop.cpp:1296
 #: src/TrackPropDlg.cpp:443 src/TrackPropDlg.cpp:734
 msgid "Distance"
 msgstr "Απόσταση"
 
-#: src/options.cpp:3761 src/options.cpp:3866
+#: src/options.cpp:3789 src/options.cpp:3894
 msgid "Nautical miles"
 msgstr "Ναυτικά μίλια"
 
-#: src/options.cpp:3761 src/options.cpp:3866
+#: src/options.cpp:3789 src/options.cpp:3894
 msgid "Statute miles"
 msgstr "Εγγλέζικα μίλια"
 
-#: src/options.cpp:3772 src/options.cpp:3877
+#: src/options.cpp:3800 src/options.cpp:3905
 msgid "Knots"
 msgstr "κόμβοι"
 
-#: src/options.cpp:3772 src/options.cpp:3877
+#: src/options.cpp:3800 src/options.cpp:3905
 msgid "Mph"
 msgstr "Μ.α.ώ."
 
-#: src/options.cpp:3780 src/options.cpp:3885
+#: src/options.cpp:3808 src/options.cpp:3913
 msgid "Depth"
 msgstr "Βάθος"
 
-#: src/options.cpp:3795 src/options.cpp:3900
+#: src/options.cpp:3823 src/options.cpp:3928
 msgid "Lat/Long"
 msgstr "Γεωγ. πλάτος/μήκος"
 
-#: src/options.cpp:3797 src/options.cpp:3902
+#: src/options.cpp:3825 src/options.cpp:3930
 msgid "Degrees, Decimal Minutes"
 msgstr "Μοίρες, λεπτά με δεκαδικά"
 
-#: src/options.cpp:3798 src/options.cpp:3903
+#: src/options.cpp:3826 src/options.cpp:3931
 msgid "Decimal Degrees"
 msgstr "Μοίρες με δεκαδικά"
 
-#: src/options.cpp:3799 src/options.cpp:3904
+#: src/options.cpp:3827 src/options.cpp:3932
 msgid "Degrees, Minutes, Seconds"
 msgstr "Μοίρες, λεπτά, δεύτερα"
 
-#: src/options.cpp:3811 src/options.cpp:3916
+#: src/options.cpp:3839 src/options.cpp:3944
 msgid "Bearings"
 msgstr "Στίγμα"
 
-#: src/options.cpp:3816
+#: src/options.cpp:3844
 msgid "Show magnetic"
 msgstr "Εμφάνιση μαγνητικής"
 
-#: src/options.cpp:3822 src/options.cpp:3932
+#: src/options.cpp:3850 src/options.cpp:3960
 msgid "Assumed magnetic variation"
 msgstr "Υποθέτω μαγνητική απόκλιση"
 
-#: src/options.cpp:3844 src/options.cpp:3940
+#: src/options.cpp:3872 src/options.cpp:3968
 msgid "deg (-W, +E)"
 msgstr "μοίρες (-Δ, +Α)"
 
-#: src/options.cpp:3924
+#: src/options.cpp:3952
 msgid "Show magnetic bearings and headings"
 msgstr "Κατεύθυνση και στίγμα μαγνητικής πυξίδας"
 
-#: src/options.cpp:3970
+#: src/options.cpp:3998
 msgid "AIS Targets"
 msgstr "Στόχοι AIS"
 
-#: src/options.cpp:3977
+#: src/options.cpp:4005
 msgid "CPA Calculation"
 msgstr "Υπολογισμός σημείου πλησιέστερης προσέγγισης (CPA)"
 
-#: src/options.cpp:3988
+#: src/options.cpp:4016
 msgid "No CPA Calculation if target range is greater than (NMi)"
 msgstr "Όχι υπολογισμός του CPA αν η απόσταση του στόχου είναι μεγαλύτερη από (ν.μ.)"
 
-#: src/options.cpp:3995
+#: src/options.cpp:4023
 msgid "Warn if CPA less than (NMi)"
 msgstr "Ειδοποίηση αν το CPA είναι μικρότερο από (ν.μ.)"
 
-#: src/options.cpp:4007
+#: src/options.cpp:4035
 msgid "...and TCPA is less than (min)"
 msgstr "...και ο χρόνος για CPA είναι λιγότερος από (min)"
 
-#: src/options.cpp:4015
+#: src/options.cpp:4043
 msgid "Lost Targets"
 msgstr "Χαμένοι στόχοι"
 
-#: src/options.cpp:4024
+#: src/options.cpp:4052
 msgid "Mark targets as lost after (min)"
 msgstr "Θεώρησε τους στόχους ως χαμένους μετά από (min)"
 
-#: src/options.cpp:4032
+#: src/options.cpp:4060
 msgid "Remove lost targets after (min)"
 msgstr "Αφαίρεσε τους χαμένους στόχους μετά από (min)"
 
-#: src/options.cpp:4049
+#: src/options.cpp:4077
 msgid "Show target COG predictor arrow, length (min)"
 msgstr "Βέλος πρόγνωσης πορείας COG του στόχου, μήκος (min)"
 
-#: src/options.cpp:4057
+#: src/options.cpp:4085
 msgid "Show target tracks, length (min)"
 msgstr "Εμφάνιση ίχνους στόχων, μήκος (min)"
 
-#: src/options.cpp:4065
+#: src/options.cpp:4093
 msgid "Hide anchored/moored targets, speed max (kn)"
 msgstr "Κρύβε τους αγκυροβολημένους στοχους, μεγ. ταχύτητα (κόμβοι)"
 
-#: src/options.cpp:4073
+#: src/options.cpp:4101
 msgid "Show area notices (from AIS binary messages)"
 msgstr "Εμφάνιση τοπικών ανακοινώσεων (από μηνύματα AIS)"
 
-#: src/options.cpp:4080
+#: src/options.cpp:4108
 msgid "Show AIS targets real size"
 msgstr "Εμφάνιση στόχων AIS σε πραγματικό μέγεθος"
 
-#: src/options.cpp:4087
+#: src/options.cpp:4115
 msgid "Show names with AIS targets at scale greater than 1:"
 msgstr "Ονόματα των στόχων AIS σε κλίματα μεγαλυτερη από 1:"
 
-#: src/options.cpp:4095
+#: src/options.cpp:4123
 msgid "Treat WPL sentences as APRS position reports"
 msgstr "Τα δεδομένα WPL θεωρούνται ως αναφορές θέσης APRS"
 
-#: src/options.cpp:4105
+#: src/options.cpp:4133
 msgid "Rollover"
 msgstr "Το Rollover ποντικιού δείχνει:"
 
-#: src/options.cpp:4111
+#: src/options.cpp:4139
 msgid "\"Ship Name\" MMSI (Call Sign)"
 msgstr "\"Όνομα πλοιου\" MMSI (ΔΔΣ)"
 
-#: src/options.cpp:4115
+#: src/options.cpp:4143
 msgid "[Class] Type (Status)"
 msgstr "[Κατηγορία] Τύπος (Κατάσταση)"
 
-#: src/options.cpp:4118
+#: src/options.cpp:4146
 msgid "SOG COG"
 msgstr "Ταχύτητα, πορεία (SOG COG)"
 
-#: src/options.cpp:4121
+#: src/options.cpp:4149
 msgid "CPA TCPA"
 msgstr "Σημείο/Χρόνος πλησ. προσέγγισης (CPA/TCPA)"
 
-#: src/options.cpp:4126
+#: src/options.cpp:4154
 msgid "CPA/TCPA Alerts"
 msgstr "Συναγερμοί CPA/TCPA"
 
-#: src/options.cpp:4135
+#: src/options.cpp:4163
 msgid "Show CPA/TCPA Alert Dialog"
 msgstr "Διάλογος για συναγερμούς  CPA/TCPA"
 
-#: src/options.cpp:4139
+#: src/options.cpp:4167
 msgid "Select Alert Sound"
 msgstr "Διάλεξε ήχο συναγερμού"
 
-#: src/options.cpp:4145
+#: src/options.cpp:4173
 msgid "Play Sound on CPA/TCPA Alerts and DSC/SART emergencies."
 msgstr "Ηχητικό σήμα για συναγερμούς CPA/TCPA και σήματα κινδύνου DSC/SART"
 
-#: src/options.cpp:4149
+#: src/options.cpp:4177
 msgid "Test Alert Sound"
 msgstr "Δοκιμή ήχου συναγερμού"
 
-#: src/options.cpp:4154
+#: src/options.cpp:4182
 msgid "Supress Alerts for anchored/moored targets"
 msgstr "Όχι συναγερμος για αγκυροβολημένους στόχους"
 
-#: src/options.cpp:4161
+#: src/options.cpp:4189
 msgid "Enable Target Alert Acknowledge timeout (min)"
 msgstr "Μέγιστος χρόνος για σίγαση του συναγερμού (min)"
 
-#: src/options.cpp:4173
+#: src/options.cpp:4201
 msgid "General Options"
 msgstr "Γενικές επιλογές"
 
-#: src/options.cpp:4182
+#: src/options.cpp:4210
 msgid "Language"
 msgstr "Γλώσσα"
 
-#: src/options.cpp:4194
+#: src/options.cpp:4222
 msgid "Fonts"
 msgstr "Γραμματοσειρές"
 
-#: src/options.cpp:4216
+#: src/options.cpp:4244
 msgid "Choose Font..."
 msgstr "Επιλογή γραμματοσειράς..."
 
-#: src/options.cpp:4221
+#: src/options.cpp:4249
 msgid "Choose Font Color..."
 msgstr "Επιλογή χρώματος γραμμάτων..."
 
-#: src/options.cpp:4226
+#: src/options.cpp:4254
 msgid "Toolbar and Window Style"
 msgstr "Στιλ του παράθυρου και της λωρίδας εργαλείων"
 
-#: src/options.cpp:4244
+#: src/options.cpp:4272
 msgid "Interface Options"
 msgstr "Επιλογές διεπαφής"
 
-#: src/options.cpp:4250
+#: src/options.cpp:4278
 msgid "Show Status Bar"
 msgstr "Εμφάνιση της λωρίδας πληροφοριών κατάστασης"
 
-#: src/options.cpp:4255
+#: src/options.cpp:4283
 msgid "Show Menu Bar"
 msgstr "Εμφάνιση της λωρίδας του μενού"
 
-#: src/options.cpp:4265
+#: src/options.cpp:4293
 msgid "Show Compass/GPS Status Window"
 msgstr "Παράθυρο κατάστασης πυξίδας/GPS"
 
-#: src/options.cpp:4273
+#: src/options.cpp:4301
 msgid "Enable Toolbar auto-hide"
 msgstr "Επίτρεψε αυτόματη απόκρυψη της λωρίδας των εργαλείων"
 
-#: src/options.cpp:4287
+#: src/options.cpp:4315
 msgid "Play Ships Bells"
 msgstr "Χτύπα το καμπανάκι του πλοίου"
 
-#: src/options.cpp:4302
+#: src/options.cpp:4330
 msgid "Sound Device Index"
 msgstr "Δείκτης συσκευής ήχου"
 
-#: src/options.cpp:4310
+#: src/options.cpp:4338
 msgid "Enable Touchscreen interface"
 msgstr "Επιφάνεια αφής"
 
-#: src/options.cpp:4314
+#: src/options.cpp:4342
 msgid "Enable Tablet Scaled Graphics interface"
 msgstr "Διεπιφάνεια για tablet"
 
-#: src/options.cpp:4325
+#: src/options.cpp:4353
 msgid "User Interface scale factor"
 msgstr "Κλίμακα διεπιφάνειας χρήστη"
 
-#: src/options.cpp:4341
+#: src/options.cpp:4369
 msgid "Chart Object scale factor"
 msgstr "Κλίμακα αντικειμένων χάρτη"
 
-#: src/options.cpp:4466 src/options.cpp:4595
+#: src/options.cpp:4494 src/options.cpp:4623
 msgid "Connections"
 msgstr "Συνδέσεις"
 
-#: src/options.cpp:4580
+#: src/options.cpp:4608
 msgid "Apply"
 msgstr "Εφαρμογή"
 
-#: src/options.cpp:4588
+#: src/options.cpp:4616
 msgid "Charts"
 msgstr "Χάρτες"
 
-#: src/options.cpp:4604
+#: src/options.cpp:4632
 msgid "Ships"
 msgstr "Πλοία"
 
-#: src/options.cpp:4609
+#: src/options.cpp:4637
 msgid "User Interface"
 msgstr "Διεπιφάνεια χρήστη"
 
-#: src/options.cpp:4612 src/options.cpp:4613
+#: src/options.cpp:4640 src/options.cpp:4641
 msgid "Plugins"
 msgstr "Πρόσθετα"
 
-#: src/options.cpp:4990
+#: src/options.cpp:5019
 msgid "feet"
 msgstr "πόδια"
 
-#: src/options.cpp:4990
+#: src/options.cpp:5019
 msgid "meters"
 msgstr "μέτρα"
 
-#: src/options.cpp:4990
+#: src/options.cpp:5019
 msgid "fathoms"
 msgstr "οργιές"
 
-#: src/options.cpp:5181
+#: src/options.cpp:5213
 msgid "Add a directory containing chart files"
 msgstr "Πρόσθεσε έναν φάκελο με αρχεία χαρτών"
 
-#: src/options.cpp:5271
+#: src/options.cpp:5304
 msgid "Data connection must be input, output or both"
 msgstr "Η σύνδεση πρέπει να είναι είσοδος, έξοδος δεδομένων ή αμφότερα"
 
-#: src/options.cpp:5278
+#: src/options.cpp:5312
 msgid "You must select or enter the port..."
 msgstr "Πρέπει να επιλέξετε την θύρα δεδομένων..."
 
-#: src/options.cpp:5286
+#: src/options.cpp:5321
 msgid "You must enter a port..."
 msgstr "Πρέπει να γράψετε μια θύρα..."
 
-#: src/options.cpp:5293
+#: src/options.cpp:5329
 msgid "You must enter the address..."
 msgstr "Πρέπει να γράψετε τη διεύθυνση..."
 
-#: src/options.cpp:5404
+#: src/options.cpp:5440
 msgid "\n"
 " - your ship's length must be > 0"
 msgstr "\n"
 " - το μήκος του πλοίου σας πρέπει να είναι > 0"
 
-#: src/options.cpp:5406
+#: src/options.cpp:5442
 msgid "\n"
 " - your ship's beam must be > 0"
 msgstr "\n"
 " - το πλάτος του πλοίου σας πρέπει να είναι > 0"
 
-#: src/options.cpp:5409
+#: src/options.cpp:5445
 msgid "\n"
 " - your GPS offset from midship must be within your ship's beam"
 msgstr "\n"
 " -η απόσταση του GPS από τον άξονα του σκάφους πρέπει να είναι εντός του πλάτους του"
 
-#: src/options.cpp:5413
+#: src/options.cpp:5449
 msgid "\n"
 " - your GPS offset from bow must be within your ship's length"
 msgstr "\n"
 " -η απόσταση του GPS από την πλώρη πρέπει να είναι εντός του μήκους του σκάφους"
 
-#: src/options.cpp:5415
+#: src/options.cpp:5451
 msgid "\n"
 " - your minimum ship icon size must be between 1 and 100 mm"
 msgstr "\n"
 " - το ελάχιστο μήκος του εικονιδίου πρέπει να είναι μεταξύ 1 και 100  mm"
 
-#: src/options.cpp:5417
+#: src/options.cpp:5453
 msgid "The settings for own ship real size are not correct:"
 msgstr "Οι διαστάσεις του ιδίου πλοίου δεν είναι σωστές:"
 
-#: src/options.cpp:5418 src/routemanagerdialog.cpp:1554
+#: src/options.cpp:5454 src/routemanagerdialog.cpp:1554
 msgid "OpenCPN info"
 msgstr "Πληροφορίες για το OpenCPN"
 
-#: src/options.cpp:6298 src/options.cpp:6309
+#: src/options.cpp:6334 src/options.cpp:6345
 msgid "Select Sound File"
 msgstr "Επιλογή αρχείου ήχου"
 
-#: src/options.cpp:6724
+#: src/options.cpp:6760
 msgid "Enter Group Name"
 msgstr "Όνομα ομάδας: "
 
-#: src/options.cpp:6724
+#: src/options.cpp:6760
 msgid "New Chart Group"
 msgstr "Νέα ομάδα χαρτών"
 
-#: src/options.cpp:6877 src/options.cpp:6891
+#: src/options.cpp:6910 src/options.cpp:6924
 msgid "Select Tide/Current Data"
 msgstr "Επιλογή δεδομένων παλίρροιας/ρευμάτων"
 
-#: src/options.cpp:6949
+#: src/options.cpp:6982
 msgid "Stop Scan"
 msgstr "Τέλος σάρωσης"
 
-#: src/options.cpp:7480
+#: src/options.cpp:7513
 msgid "Sentence Filter"
 msgstr "Φίλτρο δεδομένων"
 
-#: src/options.cpp:7541
+#: src/options.cpp:7574
 msgid "Transmit Sentences"
 msgstr "Στείλε τα δεδομένα"
 
-#: src/options.cpp:7541
+#: src/options.cpp:7574
 msgid "Drop Sentences"
 msgstr "Παράλειψε τα δεδομένα"
 
-#: src/options.cpp:7543
+#: src/options.cpp:7576
 msgid "Accept Sentences"
 msgstr "Αποδέξου τα δεδομένα"
 
-#: src/options.cpp:7543
+#: src/options.cpp:7576
 msgid "Ignore Sentences"
 msgstr "Αγνόησε τα δεδομένα"
 
-#: src/options.cpp:7588
+#: src/options.cpp:7621
 msgid "Enter the NMEA sentence (2, 3 or 5 characters) "
 msgstr "Γράψτε τα δεδομένα NMEA (2, 3, ή 5 χαρακτήρες) "
 
-#: src/options.cpp:7589
+#: src/options.cpp:7622
 msgid "Enter the NMEA sentence"
 msgstr "Γράψτε τα δεδομένα NMEA"
 
-#: src/options.cpp:7606
+#: src/options.cpp:7639
 msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n"
 "           It can also have a two letter prefix identifying the source, or TALKER, of the message.\n"
 "           The whole sentences then looks like GPGGA or AITXT.\n"
@@ -5307,73 +5321,73 @@ msgstr "Μια πρόταση NMEA έχει γενικά 3 χαρακτήρες 
 " Μπορείτε να φιλτράρετε όλες τις προτάσεις με ορισμένες πρόθεμα TALKER (όπως GP, AI κλπ.). Το φίλτρο \n\n"
 " δέχεται μόνο αυτές τις τρεις μορφές."
 
-#: src/options.cpp:7649
+#: src/options.cpp:7682
 msgid "Texture Compression"
 msgstr "Συμπίεση υφής"
 
-#: src/options.cpp:7650
+#: src/options.cpp:7683
 msgid "Texture Compression with Caching"
 msgstr "Συμπίεση υφής με απομνημόνευση"
 
-#: src/options.cpp:7652
+#: src/options.cpp:7685
 msgid "Texture Compression Caching"
 msgstr "Απομνημόνευση συμπίεσης υφής"
 
-#: src/options.cpp:7654
+#: src/options.cpp:7687
 msgid "Texture Memory Size (MB)"
 msgstr "Μέγεθος μνήμης για την υφη (MB)"
 
-#: src/options.cpp:7658 src/options.cpp:7807
+#: src/options.cpp:7691 src/options.cpp:7840
 msgid "Size: "
 msgstr "Μέγεθος: "
 
-#: src/options.cpp:7660
+#: src/options.cpp:7693
 msgid "Rebuild Texture Cache"
 msgstr "Ανακατασκευή της μνήμης υφής"
 
-#: src/options.cpp:7662
+#: src/options.cpp:7695
 msgid "Clear Texture Cache"
 msgstr "Εκκαθάριση της μνήμης της υφής"
 
-#: src/options.cpp:7666
+#: src/options.cpp:7699
 msgid "Show FPS"
 msgstr "Εμφάνιση FPS"
 
-#: src/options.cpp:7668
+#: src/options.cpp:7701
 msgid "Software OpenGL (restart OpenCPN)"
 msgstr "OpenGL λογισμικό (επανεκκίνηση του OpenCPN)"
 
-#: src/options.cpp:7670
+#: src/options.cpp:7703
 msgid "Use Accelerated Panning"
 msgstr "Γρήγορο panning"
 
-#: src/options.cpp:7672
+#: src/options.cpp:7705
 msgid "Texture Settings"
 msgstr "Ρυθμίσεις υφής"
 
-#: src/options.cpp:7679
+#: src/options.cpp:7712
 msgid "Texture Cache"
 msgstr "Cache υφής"
 
-#: src/options.cpp:7686
+#: src/options.cpp:7719
 msgid "Miscellaneous"
 msgstr "Διάφορα"
 
-#: src/Osenc.cpp:500
+#: src/Osenc.cpp:503
 msgid "OpenCPN S57 SENC File Create..."
 msgstr "Δημιουργία αρχείου S57 SENC..."
 
-#: src/pluginmanager.cpp:357
+#: src/pluginmanager.cpp:359
 #, c-format
 msgid "    Incompatible PlugIn detected: %s"
 msgstr "    Βρέθηκε μη συμβατό PlugIn: %s"
 
-#: src/pluginmanager.cpp:358
+#: src/pluginmanager.cpp:360
 #, c-format
 msgid "The plugin %s is not compatible with this version of OpenCPN, please get an updated version."
 msgstr "Το πρόσθετο %s δεν είναι συμβατό με αυτήν την έκδοση του OpenCPN, παρακαλούμε κατεβάστε μια ενημερωμένη έκδοση."
 
-#: src/pluginmanager.cpp:788
+#: src/pluginmanager.cpp:790
 #, c-format
 msgid "PlugIn %s (%s), version %i.%i was detected.\n"
 " This version is known to be unstable and will not be loaded.\n"
@@ -5382,11 +5396,11 @@ msgstr "Πρόσθετο %s (%s), εκδοχή %i.%i.\n"
 "Αυτή η εκδοχή είναι ασταθής και δεν θα εγκατασταθεί.\n"
 "Ανανεώστε την στο opencpn.org"
 
-#: src/pluginmanager.cpp:789 src/pluginmanager.cpp:795
+#: src/pluginmanager.cpp:791 src/pluginmanager.cpp:797
 msgid "Blacklisted plugin detected..."
 msgstr "Ακατάλληλο πρόσθετο..."
 
-#: src/pluginmanager.cpp:794
+#: src/pluginmanager.cpp:796
 #, c-format
 msgid "PlugIn %s (%s), version %i.%i was detected.\n"
 " This version is known to be unstable.\n"
@@ -5395,32 +5409,32 @@ msgstr "Πρόσθετο %s (%s), εκδοχή %i.%i.\n"
 "Αυτή η εκδοχή είναι ασταθής.\n"
 "Ανανεώστε την στο opencpn.org"
 
-#: src/pluginmanager.cpp:827
+#: src/pluginmanager.cpp:829
 msgid "Unreadable PlugIn library detected, check the file permissions:\n"
 msgstr "Δυσανάγνωστο πρόσθετο, ελέγξτε τα δικαιώματα του αρχείου: \n"
 
-#: src/pluginmanager.cpp:852
+#: src/pluginmanager.cpp:854
 msgid "Incompatible PlugIn detected:\n"
 msgstr "Μη συμβατό πρόσθετο:\n"
 
-#: src/pluginmanager.cpp:857
+#: src/pluginmanager.cpp:859
 #, c-format
 msgid "PlugIn [ %s ] version %i.%i"
 msgstr "Πρόσθετο [ %s ] εκδοχή %i.%i"
 
-#: src/pluginmanager.cpp:862
+#: src/pluginmanager.cpp:864
 msgid ", and all previous versions,"
 msgstr ", και όλες οι προηγούμενες εκδοχές,"
 
-#: src/pluginmanager.cpp:863
+#: src/pluginmanager.cpp:865
 msgid " is incompatible with this version of OpenCPN."
 msgstr " είναι ασύμβατο με την παρούσα εκδοχή του OpenCPN."
 
-#: src/pluginmanager.cpp:3384
+#: src/pluginmanager.cpp:3386
 msgid "Preferences"
 msgstr "Προτιμήσεις"
 
-#: src/pluginmanager.cpp:3386 src/pluginmanager.cpp:3474
+#: src/pluginmanager.cpp:3388 src/pluginmanager.cpp:3476
 msgid "Disable"
 msgstr "Απενεργοποίησε"
 
@@ -5576,7 +5590,7 @@ msgstr "Περιεχόμενα"
 
 #: src/routemanagerdialog.cpp:1001 src/routemanagerdialog.cpp:1285
 msgid " - "
-msgstr ""
+msgstr " - "
 
 #: src/routemanagerdialog.cpp:1129 src/routemanagerdialog.cpp:1841
 #: src/routemanagerdialog.cpp:2244
@@ -5788,11 +5802,11 @@ msgstr "&Αντιγραφή όλων ως κείμενο"
 
 #: src/routeprop.cpp:488 src/routeprop.cpp:493 src/TrackPropDlg.cpp:1201
 msgid "_A"
-msgstr ""
+msgstr "_A"
 
 #: src/routeprop.cpp:489 src/routeprop.cpp:494 src/TrackPropDlg.cpp:1202
 msgid "_B"
-msgstr ""
+msgstr "_B"
 
 #: src/routeprop.cpp:556 src/TrackPropDlg.cpp:1177
 msgid "_plus"
@@ -6132,11 +6146,11 @@ msgstr "Οι σύνδεσμοι ανοίγουν στον στάνταρτ brows
 
 #: src/routeprop.cpp:2629
 msgid "GUID"
-msgstr ""
+msgstr "GUID"
 
 #: src/routeprop.cpp:2639
 msgid "GPX"
-msgstr ""
+msgstr "GPX"
 
 #: src/routeprop.cpp:2652
 msgid "Extended"
@@ -6162,7 +6176,7 @@ msgstr "Επικόλληση"
 msgid "Paste lat/long"
 msgstr "Επικόλληση πλάτους/μήκους"
 
-#: src/s57chart.cpp:3986
+#: src/s57chart.cpp:3999
 msgid "S57 Cell Update chain incomplete.\n"
 "ENC features may be incomplete or inaccurate.\n"
 "Check the logfile for details."
@@ -6170,11 +6184,11 @@ msgstr "Ελλιπής ανανέωση των κυψελών S57.\n"
 "Τα χαρακτηριστικά ENC μπορεί να είναι ελλιπή ή ανακριβή.\n"
 "Ελέγξτε το log για λεπτομέρειες."
 
-#: src/s57chart.cpp:3987
+#: src/s57chart.cpp:4000
 msgid "OpenCPN Create SENC Warning"
 msgstr "Προσοχή! δημιουργία SENC"
 
-#: src/s57chart.cpp:6645
+#: src/s57chart.cpp:6648
 msgid "<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>"
 msgstr "<font size=-2>(Οι γωνίες των τομέων είναι αληθείς κατευθύνσεις από τη θάλασσα)</font><br>"
 
@@ -6218,51 +6232,51 @@ msgstr "Σταθμός αναφοράς: "
 msgid "Data Source :"
 msgstr "Πηγή δεδομένων: "
 
-#: src/TCWin.cpp:523
+#: src/TCWin.cpp:524
 msgid "HW"
 msgstr "Πλυμ."
 
-#: src/TCWin.cpp:523
+#: src/TCWin.cpp:524
 msgid "LW"
 msgstr "Άμπωτις"
 
-#: src/TCWin.cpp:689
+#: src/TCWin.cpp:690
 msgid "Today"
 msgstr "Σήμερα"
 
-#: src/TCWin.cpp:690 src/TCWin.cpp:695
+#: src/TCWin.cpp:691 src/TCWin.cpp:696
 msgid "Tomorrow"
 msgstr "Αύριο"
 
-#: src/toolbar.cpp:929
+#: src/toolbar.cpp:933
 msgid "You can't hide the last tool from the toolbar\n"
 "as this would make it inaccessible."
 msgstr "Δεν μπορείς να κρύψεις το τελευταίο εργαλείο\n"
 "γιατί τότε η λωριδα εργαλείων θα γίνει μη προσβάσιμη."
 
-#: src/toolbar.cpp:1058 src/toolbar.cpp:1070 src/toolbar.cpp:1086
+#: src/toolbar.cpp:1065 src/toolbar.cpp:1077 src/toolbar.cpp:1093
 msgid "ToolTips"
 msgstr "Συμβουλές"
 
-#: src/toolbar.cpp:2387
+#: src/toolbar.cpp:2394
 msgid "No, I don't want to hide it."
 msgstr "Όχι, δεν θέλω να κρυφτεί"
 
-#: src/toolbar.cpp:2390
+#: src/toolbar.cpp:2397
 msgid "No, and permanently remove the option to hide it."
 msgstr "Όχι! Και να απομακρυνθεί η επιλογή να κρύβεται."
 
-#: src/toolbar.cpp:2393
+#: src/toolbar.cpp:2400
 msgid "Yes, hide it."
 msgstr "Ναι, κρύψτο."
 
-#: src/toolbar.cpp:2399
+#: src/toolbar.cpp:2406
 msgid "The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
 msgstr "Το κουμπί «Ανθρωπος στη Θάλασσα» (MOB) είναι σημαντικό χαρακτηριστικό ασφαλείας.\n"
 "Σίγουρα θέλετε να το αφαιρέσετε;"
 
-#: src/toolbar.cpp:2489
+#: src/toolbar.cpp:2496
 msgid "Choose Toolbar Icons"
 msgstr "Επιλέξτε εικονίδια στη γραμμή εργαλείων"
 
@@ -6344,7 +6358,7 @@ msgstr "%D Μέρες, %H:%M"
 
 #: src/TrackPropDlg.cpp:1072
 msgid "%H:%M"
-msgstr ""
+msgstr "%H:%M"
 
 #: src/TrackPropDlg.cpp:1116
 #, c-format
@@ -6355,9 +6369,9 @@ msgstr "Ιδιότητες ίχνους, ταξίδι: %d"
 msgid "track"
 msgstr "ίχνος"
 
-#: src/TrackPropDlg.cpp:1791
+#: src/TrackPropDlg.cpp:1796
 msgid "--"
-msgstr ""
+msgstr "--"
 
 #: src/TTYWindow.cpp:63
 msgid "Filter"

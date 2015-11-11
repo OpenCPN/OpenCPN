@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-24 20:40-0500\n"
-"PO-Revision-Date: 2015-09-24 21:47-0400\n"
+"PO-Revision-Date: 2015-11-01 13:54-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Czech\n"
 "Language: cs_CZ\n"
@@ -84,7 +84,7 @@ msgstr "Aktuální"
 #: src/chartdldr_pi.cpp:574
 #, c-format
 msgid "%lu charts total, %lu updated, %lu new"
-msgstr ""
+msgstr "%lu map celkem, %lu aktualizováno, %lu nových"
 
 #: src/chartdldr_pi.cpp:651 src/chartdldr_pi.cpp:1217
 msgid "(Please update first)"
@@ -160,11 +160,11 @@ msgstr "Žádné mapy ke stažení."
 
 #: src/chartdldr_pi.cpp:976
 msgid "Abort download"
-msgstr ""
+msgstr "Přerušit stahování"
 
 #: src/chartdldr_pi.cpp:985
 msgid "Unknown"
-msgstr ""
+msgstr "Neznámý"
 
 #: src/chartdldr_pi.cpp:992
 #, c-format
@@ -181,12 +181,12 @@ msgstr "Chyba, URL dat mapy (%s) se zdá špatné."
 #: src/chartdldr_pi.cpp:1030
 #, c-format
 msgid "Downloading chart %u of %u, %u downloads failed (%s / %s)"
-msgstr ""
+msgstr "Stahování mapy %u z %u, %u stažení se nezdařilo (%s / %s)"
 
 #: src/chartdldr_pi.cpp:1059 src/chartdldrgui.cpp:293
 msgid "Download\n"
 " selected charts"
-msgstr ""
+msgstr "Stáhni vybrané mapy"
 
 #: src/chartdldr_pi.cpp:1085 src/chartdldrgui.cpp:95
 msgid "Catalog"
@@ -275,7 +275,7 @@ msgstr "Vyber složku"
 
 #: src/chartdldrgui.cpp:197 src/chartdldrgui.cpp:529
 msgid "Choose Chart File Directory"
-msgstr ""
+msgstr "Zvol složku pro soubory map"
 
 #: src/chartdldrgui.cpp:222 src/chartdldrgui.cpp:335
 msgid "Catalogs"

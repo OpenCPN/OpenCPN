@@ -48,7 +48,10 @@
 
 #if defined(__WIN32__)
 #define isnan(x) _isnan(x)
-#endif
+#endif  // __WIN32__
+
+static const long long lNaN = 0xfff8000000000000;
+#define qNan (*(double*)&lNaN)
 
 double square(double x) { return x*x; }
 
@@ -173,7 +176,7 @@ bool MagneticPlotMap::Interpolate(double x1, double x2, double y1, double y2, bo
 {
     if(fabs(x1-x2) < m_PoleAccuracy) { /* to avoid recursing too far. make this value
                                           smaller to get more accuracy especially near the magnetic poles */
-        rx = nan(""); /* set as no intersections */
+        rx = qNan; /* set as no intersections */
         return true;
     }
 
@@ -190,7 +193,7 @@ bool MagneticPlotMap::Interpolate(double x1, double x2, double y1, double y2, bo
 
     double fy1 = floor(y1), fy2 = floor(y2);
     if(fy1 == fy2) {
-        rx = nan(""); /* no intersections occured */
+        rx = qNan; /* no intersections occured */
         return true;
     }
 

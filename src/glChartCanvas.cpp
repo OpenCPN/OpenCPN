@@ -31,6 +31,7 @@
 #endif //precompiled headers
 
 #include <wx/tokenzr.h>
+#include "wx/progdlg.h"
 
 #include <stdint.h>
 
@@ -72,7 +73,6 @@ private:
 #include "routeman.h"
 #include "chartbase.h"
 #include "chartimg.h"
-#include "s57chart.h"
 #include "ChInfoWin.h"
 #include "thumbwin.h"
 #include "chartdb.h"
@@ -845,6 +845,8 @@ glChartCanvas::glChartCanvas( wxWindow *parent ) :
     m_last_render_time = -1;
 
     m_prevMemUsed = 0;    
+
+    m_LRUtime = 0;
     
     m_tideTex = 0;
     m_currentTex = 0;
@@ -1084,8 +1086,10 @@ void glChartCanvas::SetupOpenGL()
     msg += m_renderer;
     wxLogMessage( msg );
 
+    #ifdef USE_S57
     if( ps52plib ) ps52plib->SetGLRendererString( m_renderer );
-
+    #endif
+    
     char version_string[80];
     strncpy( version_string, (char *) glGetString( GL_VERSION ), 79 );
     msg.Printf( _T("OpenGL-> Version reported:  "));
@@ -1490,8 +1494,11 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
     
     if( !m_bsetup ) {
         SetupOpenGL();
+        
+        #ifdef USE_S57
         if( ps52plib )
             ps52plib->FlushSymbolCaches();
+        #endif
         
         m_bsetup = true;
 //        g_bDebugOGL = true;
@@ -3056,8 +3063,8 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, L
         m_chart_texfactory_hash[key] = new glTexFactory(chart, g_raster_format);
     
     pTexFact = m_chart_texfactory_hash[key];
-    pTexFact->SetLRUTime(wxDateTime::Now());
-
+    pTexFact->SetLRUTime(++m_LRUtime);
+    
     // for small scales, don't use normalized coordinates for accuracy (difference is up to 3 meters error)
     bool use_norm_vp = glChartCanvas::HasNormalizedViewPort(vp) && pBSBChart->GetPPM() < 1;
     pTexFact->PrepareTiles(vp, use_norm_vp, pBSBChart);
@@ -3230,11 +3237,13 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
                 LLRegion get_region = pqp->ActiveRegion;
 
                 get_region.Intersect( region );
+#ifdef USE_S57
                 if( !get_region.Empty()  ) {
                     s57chart *Chs57 = dynamic_cast<s57chart*>( pch );
                     if( Chs57 )
                         Chs57->RenderOverlayRegionViewOnGL( *m_pcontext, vp, rect_region, get_region );
                 }
+#endif                
             }
 
             pch = cc1->m_pQuilt->GetNextChart();
@@ -3462,13 +3471,16 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region)
 {
     ViewPort &vp = cc1->VPoint;
 
+#ifdef USE_S57
+    
     // Only for cm93 (not quilted), SetVPParms can change the valid region of the chart
     // we need to know this before rendering the chart so we can compute the background region
     // and nodta regions correctly.  I would prefer to just perform this here (or in SetViewPoint)
     // for all vector charts instead of in their render routine, but how to handle quilted cases?
     if(!vp.b_quilt && Current_Ch->GetChartType() == CHART_TYPE_CM93COMP)
         static_cast<cm93compchart*>( Current_Ch )->SetVPParms( vp );
-
+#endif
+        
     LLRegion chart_region;
     if(!vp.b_quilt && (Current_Ch->GetChartType() == CHART_TYPE_PLUGIN) ){
         // We do this the hard way, since PlugIn Raster charts do not understand LLRegion yet...
@@ -3609,14 +3621,14 @@ void glChartCanvas::RenderWorldChart(ocpnDC &dc, ViewPort &vp, wxRect &rect, boo
             tvp.clat = 0, tvp.clon = 0;
             tvp.rotation = 0;
             wxPoint2DDouble p = tvp.GetDoublePixFromLL( 89.99, 0);
-            float w = tvp.pix_width/2, h = tvp.pix_height/2;
+            float w = ((float)tvp.pix_width)/2, h = ((float)tvp.pix_height)/2;
             double world_r = h - p.m_y;
             const float pi_ovr100 = float(M_PI)/100;
             if(world_r*world_r < w*w + h*h) {
                 glClear( GL_COLOR_BUFFER_BIT );
 
                 glBegin(GL_TRIANGLE_FAN);
-                float w = vp.pix_width/2, h = vp.pix_height/2;
+                float w = ((float)vp.pix_width)/2, h = ((float)vp.pix_height)/2;
                 for(float theta = 0; theta < 2*M_PI+.01f; theta+=pi_ovr100)
                     glVertex2f(w + world_r*sinf(theta), h + world_r*cosf(theta));
                 glEnd();
@@ -3920,7 +3932,7 @@ bool glChartCanvas::FactoryCrunch(double factor)
     if(bGLMemCrunch){
         
         //      Find the oldest unused factory
-        wxDateTime lru_oldest = wxDateTime::Now();
+        int lru_oldest = 2147483647;
         glTexFactory *ptf_oldest = NULL;
         
         for( it0 = m_chart_texfactory_hash.begin(); it0 != m_chart_texfactory_hash.end(); ++it0 ) {
@@ -3936,8 +3948,8 @@ bool glChartCanvas::FactoryCrunch(double factor)
                 if( cc1->m_pQuilt && cc1->m_pQuilt->IsComposed() &&
                     !cc1->m_pQuilt->IsChartInQuilt( chart_full_path ) ) {
                     
-                    wxDateTime lru = ptf->GetLRUTime();
-                    if(lru.IsEarlierThan(lru_oldest) && !ptf->BackgroundCompressionAsJob()){
+                    int lru = ptf->GetLRUTime();
+                    if(lru < lru_oldest && !ptf->BackgroundCompressionAsJob()){
                         lru_oldest = lru;
                         ptf_oldest = ptf;
                     }
@@ -3945,8 +3957,8 @@ bool glChartCanvas::FactoryCrunch(double factor)
             }
             else {
                 if( !Current_Ch->GetFullPath().IsSameAs(chart_full_path)) {
-                    wxDateTime lru = ptf->GetLRUTime();
-                    if(lru.IsEarlierThan(lru_oldest) && !ptf->BackgroundCompressionAsJob()){
+                    int lru = ptf->GetLRUTime();
+                    if(lru < lru_oldest && !ptf->BackgroundCompressionAsJob()){
                         lru_oldest = lru;
                         ptf_oldest = ptf;
                     }
