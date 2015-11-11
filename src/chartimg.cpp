@@ -4269,7 +4269,7 @@ int   ChartBaseBSB::BSBGetScanline( unsigned char *pLineBuf, int y, int xs, int 
 #ifdef USE_OLD_CACHE
           pt->pPix = (unsigned char *)malloc(Size_X);
 #else
-          pt->pTileOffset = (TileOffsetCache *)malloc(sizeof(TileOffsetCache)*(Size_X/TILE_SIZE + 1));
+          pt->pTileOffset = (TileOffsetCache *)calloc(sizeof(TileOffsetCache)*(Size_X/TILE_SIZE + 1), 1);
           pt->pPix = (unsigned char *)malloc(thisline_size);
 #endif
           if(pline_table[y] == 0 || pline_table[y+1] == 0)
