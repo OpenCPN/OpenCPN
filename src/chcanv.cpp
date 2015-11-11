@@ -6240,15 +6240,16 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
             if( !bseltc ){
                 InvokeCanvasMenu(x, y, seltype);
                 
-                // Clean up
-                if( ( m_pSelectedRoute ) ) {
+                // Clean up if not deleted in InvokeCanvasMenu
+                if( m_pSelectedRoute && g_pRouteMan->IsRouteValid(m_pSelectedRoute) ) {
                     m_pSelectedRoute->m_bRtIsSelected = false;
                 }
                 
                 m_pSelectedRoute = NULL;
                 
                 if( m_pFoundRoutePoint ) {
-                    m_pFoundRoutePoint->m_bPtIsSelected = false;
+                    if (pSelect->IsSelectableRoutePointValid(m_pFoundRoutePoint))
+                        m_pFoundRoutePoint->m_bPtIsSelected = false;
                 }
                 m_pFoundRoutePoint = NULL;
                 
