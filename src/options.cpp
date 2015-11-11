@@ -40,6 +40,7 @@
 #include <wx/dirdlg.h>
 #include <wx/clrpicker.h>
 #include "wx/tokenzr.h"
+#include "wx/dir.h"
 
 #if wxCHECK_VERSION(2, 9, \
                     4) /* does this work in 2.8 too.. do we need a test? */
@@ -1069,8 +1070,8 @@ bool options::DeletePage(wxScrolledWindow* page) {
         wxString toptitle = m_pListbook->GetPageText(i);
         m_pListbook->DeletePage(i);
         m_pListbook->InsertPage(i, spg, toptitle, FALSE, i);
-        return TRUE;
       }
+      return TRUE;
     } else if (pg == page) {
       /* There's only one page, replace it with empty panel */
       m_pListbook->DeletePage(i);
@@ -5029,6 +5030,8 @@ void options::UpdateOptionsUnits(void) {
     conv = 0.3048f * 6;     // 1 fathom is 6 feet
 
   // set depth input values
+#ifdef USE_S57
+  
   wxString s;
   s.Printf(_T( "%6.2f" ), S52_getMarinerParam(S52_MAR_SHALLOW_CONTOUR) / conv);
   s.Trim(FALSE);
@@ -5041,6 +5044,7 @@ void options::UpdateOptionsUnits(void) {
   s.Printf(_T( "%6.2f" ), S52_getMarinerParam(S52_MAR_DEEP_CONTOUR) / conv);
   s.Trim(FALSE);
   m_DeepCtl->SetValue(s);
+#endif  
 }
 
 void options::OnSizeAutoButton(wxCommandEvent& event) {

@@ -326,7 +326,8 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
     
     m_bAutoHideToolbar = false;
     m_nAutoHideToolbar = 5;
-    
+
+    m_cs = (ColorScheme)-1;
 
     m_style = g_StyleManager->GetCurrentStyle();
 

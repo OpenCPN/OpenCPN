@@ -930,7 +930,7 @@ glTexFactory::glTexFactory(ChartBase *chart, int raster_format)
     m_catalogCorrupted = false;
 
     m_fs = 0;
-
+    m_LRUtime = 0;
 
     for (int i = 0; i < N_COLOR_SCHEMES; i++) {
         for (int j = 0; j < MAX_TEX_LEVEL; j++) {

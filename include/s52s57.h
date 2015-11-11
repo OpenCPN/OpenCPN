@@ -30,6 +30,7 @@
 #define _S52S57_H_
 
 #include "bbox.h"
+#include "ocpn_types.h"
 
 #include <vector>
 
@@ -209,13 +210,6 @@ typedef struct _Cond{
 
 
 
-typedef struct _S52color{
-   char colName[20];
-   unsigned char  R;
-   unsigned char  G;
-   unsigned char  B;
-}S52color;
-
 class S52_TextC
 {
 public:
@@ -246,17 +240,6 @@ public:
 };
 
 
-WX_DECLARE_STRING_HASH_MAP( wxColour, wxColorHashMap );
-
-WX_DECLARE_STRING_HASH_MAP( S52color, colorHashMap );
-
-typedef struct _colTable {
-	wxString *tableName;
-	wxString rasterFileName;
-	wxArrayPtrVoid *color;
-	colorHashMap colors;
-	wxColorHashMap wxColors;
-} colTable;
 
 
 //

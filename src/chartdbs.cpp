@@ -34,6 +34,7 @@
 #include <wx/regex.h>
 #include <wx/progdlg.h>
 #include "wx/tokenzr.h"
+#include "wx/dir.h"
 
 #include "chartdbs.h"
 #include "chartbase.h"

@@ -69,6 +69,7 @@ SingleColourFit::SingleColourFit( ColourSet * colours, int flags )
 		
 	// initialise the best error
 	m_besterror = INT_MAX;
+        m_error = INT_MAX;
 }
 
 void SingleColourFit::Compress3( void* block )

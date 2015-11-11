@@ -666,7 +666,6 @@ SET(HDRS
 		include/S57QueryDialog.h
 		include/S57ObjectDesc.h
 		include/S57Light.h
-		include/s57RegistrarMgr.h
 		include/S57ClassRegistrar.h
 		include/MarkIcon.h
 		include/SendToGpsDlg.h
@@ -755,7 +754,6 @@ SET(SRCS
 		src/ocpCursor.cpp
 		src/TCWin.cpp
 		src/S57QueryDialog.cpp
-		src/s57RegistrarMgr.cpp
 		src/GoToPositionDialog.cpp
 		src/CM93DSlide.cpp
 		src/RolloverWin.cpp
@@ -908,6 +906,9 @@ IF (USE_S57)
 		src/tri.c
 		src/Osenc.cpp
 		include/Osenc.h
+                include/s57RegistrarMgr.h
+                src/s57RegistrarMgr.cpp
+
 		src/myiso8211/ddffielddefn.cpp
 		src/myiso8211/ddfmodule.cpp
 		src/myiso8211/ddfrecord.cpp

@@ -4278,6 +4278,7 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
                 LogMessageOnce( msg );
             }
             delete obj;
+            obj = NULL;
             Objects[i] = NULL;
         } else {
             //              Convert LUP to rules set
@@ -4306,7 +4307,7 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
         }
 
         //      Build/Maintain the ATON floating/rigid arrays
-        if( GEO_POINT == obj->Primitive_type ) {
+        if( obj && (GEO_POINT == obj->Primitive_type) ) {
             
             // set floating platform
             if( ( !strncmp( obj->FeatureName, "LITFLT", 6 ) )

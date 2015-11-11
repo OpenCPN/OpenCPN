@@ -34,7 +34,7 @@
 #include <wx/listbook.h>
 #include <wx/clipbrd.h>
 #include <wx/aui/aui.h>
-
+#include "wx/progdlg.h"
 #include "dychart.h"
 #include "OCPNPlatform.h"
 
@@ -1644,6 +1644,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             break;
 
         case 'D': {
+#ifdef USE_S57
                 int x,y;
                 event.GetPosition( &x, &y );
                 bool cm93IsAvailable = ( Current_Ch && ( Current_Ch->GetChartType() == CHART_TYPE_CM93COMP ) );
@@ -1664,6 +1665,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
                     }
                     pCM93DetailSlider->Show( !pCM93DetailSlider->IsShown() );
                 }
+#endif                
                 break;
             }
 
@@ -1829,9 +1831,11 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             break;
 
         case 9:                      // Ctrl I
-            g_Compass->Show(!g_Compass->IsShown());
-            m_brepaint_piano = true;
-            Refresh( false );
+            if (g_Compass) {
+                g_Compass->Show(!g_Compass->IsShown());
+                m_brepaint_piano = true;
+                Refresh( false );
+            }
             break;
 
         default:
@@ -7969,6 +7973,8 @@ void ChartCanvas::LostMouseCapture( wxMouseCaptureLostEvent& event )
 
 void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
 {
+#ifdef USE_S57
+    
     ChartPlugInWrapper *target_plugin_chart = NULL;
     s57chart *Chs57 = NULL;
 
@@ -8136,6 +8142,7 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
 
         SetCursor( wxCURSOR_ARROW );
     }
+#endif    
 }
 
 void ChartCanvas::RemovePointFromRoute( RoutePoint* point, Route* route ) {

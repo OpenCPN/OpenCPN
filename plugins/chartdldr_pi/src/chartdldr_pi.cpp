@@ -474,7 +474,7 @@ void ChartDldrPanelImpl::OnShowLocalDir( wxCommandEvent& event )
 
 void ChartDldrPanelImpl::SetSource( int id )
 {
-    wxSetCursor(wxCURSOR_WAIT);
+    ::wxBeginBusyCursor();      //wxSetCursor(wxCURSOR_WAIT);
     wxYield();
     pPlugIn->SetSourceId( id );
 
@@ -497,7 +497,7 @@ void ChartDldrPanelImpl::SetSource( int id )
     {
         pPlugIn->m_pChartSource = NULL;
     }
-    wxSetCursor(wxCURSOR_DEFAULT);
+    ::wxEndBusyCursor();                //wxSetCursor(wxCURSOR_DEFAULT);
 }
 
 void ChartDldrPanelImpl::SelectSource( wxListEvent& event )

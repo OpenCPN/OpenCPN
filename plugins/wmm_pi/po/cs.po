@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-24 20:40-0500\n"
-"PO-Revision-Date: 2015-09-24 21:47-0400\n"
+"PO-Revision-Date: 2015-11-01 13:54-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Czech\n"
 "Language: cs_CZ\n"
@@ -58,7 +58,13 @@ msgid "World Magnetic Model PlugIn for OpenCPN\n"
 "After then, if new version of the plugin will not be released\n"
 "in time, get a new WMM.COF from NOAA and place it to the\n"
 "location you can find in the OpenCPN logfile."
-msgstr ""
+msgstr "World Magnetic Model PlugIn pro OpenCPN\n"
+"Implementuje NOAA World Magnetic Model\n"
+"Více informací: http://www.ngdc.noaa.gov/geomag/WMM/\n"
+"Obsahuje model WMM2015, který expiruje 31. prosince 2019.\n"
+"Potom, pokud nebude včas vzdána nová verze pluginu\n"
+"stáhni nový WMM.COF na webu NOAA a umísti ho\n"
+"na místo, které najdeš v logu OpenCPN."
 
 #: src/wmm_pi.cpp:443 src/wmm_pi.cpp:514
 msgid "Error, see log."
@@ -138,11 +144,11 @@ msgstr "Kurzor"
 
 #: src/WmmUIDialog.cpp:222
 msgid "Plot"
-msgstr ""
+msgstr "Vykreslit"
 
 #: src/WmmUIDialog.cpp:231
 msgid "Enable plot"
-msgstr ""
+msgstr "Povolit vykreslování"
 
 #: src/WmmUIDialog.cpp:235
 msgid "Settings..."
@@ -162,7 +168,7 @@ msgstr "Zobrazit"
 
 #: src/WmmUIDialog.cpp:280
 msgid "Show Plot Options"
-msgstr ""
+msgstr "Zobrazit možnosti vykreslení"
 
 #: src/WmmUIDialog.cpp:283
 msgid "Show also data at cursor position"
@@ -170,7 +176,7 @@ msgstr "Ukaž i data pro pozici kurzoru"
 
 #: src/WmmUIDialog.cpp:286
 msgid "Show toolbar icon"
-msgstr ""
+msgstr "Zobrazit ikonu v panelu nástrojů"
 
 #: src/WmmUIDialog.cpp:289
 msgid "Show data in toolbar icon"
