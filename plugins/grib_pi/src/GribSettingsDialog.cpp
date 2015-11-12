@@ -527,14 +527,13 @@ void GribSettingsDialog::OnPageChange( wxNotebookEvent& event )
 
 void GribSettingsDialog::SetSettingsDialogSize()
 {
-    /*Sizing do not work with wxScolledWindow so we need to compute it
-    using fixed X/Y margin to try to center nicely the dialog in the screen*/
-	int wt,ht,w,h;
-    ::wxDisplaySize( &wt, &ht);                                                         // the screen size
-	int XMargin = 300, YMargin = 200;													//set margins
-	w = wt - XMargin;																	//maximum scolled window size
-    h = ht - ( m_sButton->GetSize().GetY() + YMargin );
-	wxSize scroll(0, 0);
+    /*Sizing do not work with wxScolledWindow so we need to compute it*/
+    int w = GetOCPNCanvasWindow()->GetClientSize().x;           // the display size
+    int h = GetOCPNCanvasWindow()->GetClientSize().y;
+    int dMargin = 80;                          //set a margin
+	w -= dMargin;								//width available for the scrolled window
+    h -= (2 * m_sButton->GetSize().GetY()) + dMargin; //height available for the scrolled window
+                                                      //two times the button's height to handle pages tab's height
 	for( size_t i = 0; i < m_nSettingsBook->GetPageCount(); i++ ) {						//compute and set scrolled windows size
 		wxScrolledWindow *sc = ((wxScrolledWindow*) m_nSettingsBook->GetPage( i ));
 		wxSize scr;
@@ -548,11 +547,10 @@ void GribSettingsDialog::SetSettingsDialogSize()
 		}
 		sc->SetMinSize( wxSize(wxMin( scr.x, w ), h) );
 #if defined __WXMSW__ || defined ( __WXOSX__ )
-		sc->Show( i == (unsigned int) m_SetBookpageIndex );
+        sc->Show( i == (unsigned int) m_SetBookpageIndex );
 #endif
-	}																					//end compute
+       } // end compute
 
-	m_nSettingsBook->SetSize( wt, ht);
 
 	Layout();
     Fit();
