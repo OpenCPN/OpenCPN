@@ -4824,6 +4824,11 @@ void SetCanvasTilt(double tilt)
     cc1->DoTiltCanvas( tilt );
 }
 
+void SetCanvasProjection(int projection)
+{
+    cc1->SetVPProjection(projection);
+}
+
 // Play a sound to a given device
 bool PlugInPlaySoundEx( wxString &sound_file, int deviceIndex )
 {

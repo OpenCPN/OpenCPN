@@ -142,6 +142,8 @@ ViewPort::ViewPort()
 wxPoint ViewPort::GetPixFromLL( double lat, double lon )
 {
     wxPoint2DDouble p = GetDoublePixFromLL(lat, lon);
+    if(wxIsNaN(p.m_x) || wxIsNaN(p.m_y))
+        return wxPoint(INVALID_COORD, INVALID_COORD);
     return wxPoint(wxRound(p.m_x), wxRound(p.m_y));
 }
 
