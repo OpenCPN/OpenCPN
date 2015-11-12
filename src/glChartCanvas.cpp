@@ -1623,7 +1623,24 @@ ViewPort glChartCanvas::ClippedViewport(const ViewPort &vp, const LLRegion &regi
         return vp;
 
     ViewPort cvp = vp;
-    cvp.SetBBoxDirect(region.GetBox());
+    LLBBox bbox = region.GetBox();
+
+    /* region.GetBox() will always try to give coordinates from -180 to 180 but in
+       the case where the viewport crosses the IDL, we actually want the clipped viewport
+       to use coordinates outside this range to ensure the logic in the various rendering
+       routines works the same here (with accelerated panning) as it does without, so we
+       can adjust the coordinates here */
+
+    if(bbox.GetMaxX() < cvp.GetBBox().GetMinX()) {
+        wxPoint2DDouble p360(360, 0);
+        bbox.Translate(p360);
+    } else if(bbox.GetMinX() > cvp.GetBBox().GetMaxX()) {
+        wxPoint2DDouble n360(-360, 0);
+        bbox.Translate(n360);
+    }
+
+    cvp.SetBBoxDirect(bbox);
+
     return cvp;
 }
 

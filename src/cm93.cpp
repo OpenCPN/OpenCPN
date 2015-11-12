@@ -6044,7 +6044,6 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
                               
               /* test rectangle for entire set to reduce number of tests */
               if( !psc->m_covr_bbox.GetValid() ||
-                  !vp.GetBBox().IntersectOut ( psc->m_covr_bbox ) ||
                   !vp.GetBBox().IntersectOut ( psc->m_covr_bbox ) ) 
               {
                   if ( psc ) 
@@ -6074,8 +6073,7 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
     
                               // TODO: this calculation doesn't work crossing IDL
                               // was anything actually drawn?
-                              if(! ( vp.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) ||
-                                 ! ( vp.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) ) {
+                              if(! ( vp.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) ) {
                                   bdrawn = true;
 
                                   //  Does current vp cross international dateline?
@@ -6084,8 +6082,7 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
                           } else
 #endif
                               //    Anything actually to be drawn?
-                              if(! ( vp.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) ||
-                                 ! ( vp.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) ) {
+                              if(! ( vp.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) ) {
                                             
                                   wxPoint *pwp = psc->GetDrawBuffer ( mcd->m_nvertices );
                                   bdrawn = RenderCellOutlinesOnDC(dc, vp, pwp, mcd);
