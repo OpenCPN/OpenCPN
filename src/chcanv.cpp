@@ -2806,6 +2806,18 @@ void ChartCanvas::DoRotateCanvas( double rotation )
     parent_frame->UpdateRotationState( VPoint.rotation);
 }
 
+void ChartCanvas::DoTiltCanvas( double tilt )
+{
+    while(tilt < 0) tilt = 0;
+    while(tilt > .95) tilt = .95;
+
+    if(tilt == VPoint.tilt || wxIsNaN(tilt))
+        return;
+
+    VPoint.tilt = tilt;
+    Refresh( false );
+}
+
 void ChartCanvas::ClearbFollow( void )
 {
     m_bFollow = false;      // update the follow flag
