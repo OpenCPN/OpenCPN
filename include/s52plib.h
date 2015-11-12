@@ -388,7 +388,7 @@ private:
     void Polygon();
 
     s52plib* plib;
-    int scaleFactor;
+    float scaleFactor;
 
     wxDC* targetDC;
 #if wxUSE_GRAPHICS_CONTEXT

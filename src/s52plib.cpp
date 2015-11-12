@@ -7472,6 +7472,13 @@ RenderFromHPGL::RenderFromHPGL( s52plib* plibarg )
     renderToDC = false;
     renderToOpenGl = false;
     renderToGCDC = false;
+    
+    if(plib)
+        scaleFactor = 100.0 / plib->GetPPMM();
+    else
+        scaleFactor = 10.0;  //Nominal
+    
+    
 }
 
 void RenderFromHPGL::SetTargetDC( wxDC* pdc )
@@ -7651,8 +7658,6 @@ bool RenderFromHPGL::Render( char *str, char *col, wxPoint &r, wxPoint &pivot, d
     wxPoint lineStart;
     wxPoint lineEnd;
 
-    scaleFactor = 100.0 / plib->GetPPMM();
-    
     wxStringTokenizer commands( wxString( str, wxConvUTF8 ), _T(";") );
     while( commands.HasMoreTokens() ) {
         wxString command = commands.GetNextToken();
