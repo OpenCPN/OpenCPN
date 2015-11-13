@@ -713,14 +713,14 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	wxArrayString m_cDataTypeChoices;
 	m_cDataType = new wxChoice( m_scSetDataPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cDataTypeChoices, 0 );
 	m_cDataType->SetSelection( 0 );
-	fgSizer15->Add( m_cDataType, 0, wxBOTTOM|wxEXPAND|wxTOP, 10 );
+	fgSizer15->Add( m_cDataType, 0, wxBOTTOM|wxEXPAND|wxTOP, 5 );
 
 	wxStaticText* m_staticText12;
 	m_staticText12 = new wxStaticText( m_scSetDataPanel, wxID_ANY, _("Units"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText12->Wrap( -1 );
 	m_staticText12->SetMinSize( wxSize( 110,-1 ) );
 
-	fgSizer15->Add( m_staticText12, 0, wxALL|wxEXPAND, 15 );
+	fgSizer15->Add( m_staticText12, 0, wxALL|wxEXPAND, 5 );
 
 	wxArrayString m_cDataUnitsChoices;
 	m_cDataUnits = new wxChoice( m_scSetDataPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cDataUnitsChoices, 0 );
@@ -999,10 +999,10 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	fgSizer48->Add( m_sSlicesPerUpdate, 0, wxALL|wxEXPAND, 5 );
 
 
-	sbSizer121->Add( fgSizer48, 1, wxEXPAND, 5 );
+	sbSizer121->Add( fgSizer48, 1, wxEXPAND|wxALL, 5 );
 
 
-	m_fgSetPlaybackSizer->Add( sbSizer121, 1, wxEXPAND, 5 );
+	m_fgSetPlaybackSizer->Add( sbSizer121, 1, wxEXPAND|wxTOP, 10 );
 
 
 	m_scSetPlaybackPanel->SetSizer( m_fgSetPlaybackSizer );
@@ -1041,7 +1041,7 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	sbSizer9->Add( fgSizer47, 1, wxEXPAND, 5 );
 
 
-	m_fgSetGuiSizer->Add( sbSizer9, 1, wxEXPAND, 5 );
+	m_fgSetGuiSizer->Add( sbSizer9, 1, wxEXPAND|wxTOP, 10 );
 
 
 	m_fgSetGuiSizer->Add( 0, 0, 1, wxALL, 5 );
@@ -1218,7 +1218,7 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	sbSizer10->Add( fgSizer52, 1, wxEXPAND, 5 );
 
 
-	m_fgSetGuiSizer->Add( sbSizer10, 1, wxEXPAND, 5 );
+	m_fgSetGuiSizer->Add( sbSizer10, 1, wxEXPAND|wxTOP, 5 );
 
 
 	m_scSetGuiPanel->SetSizer( m_fgSetGuiSizer );
