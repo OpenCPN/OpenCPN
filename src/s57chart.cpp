@@ -4712,6 +4712,8 @@ void s57chart::UpdateLUPs( s57chart *pOwner )
             top = razRules[i][j];
             while( top != NULL ) {
                 top->obj->bCS_Added = 0;
+                if (top->LUP)
+                    top->obj->m_DisplayCat = top->LUP->DISC;
 
                 nxx = top->next;
                 top = nxx;
@@ -4729,6 +4731,8 @@ void s57chart::UpdateLUPs( s57chart *pOwner )
                     ObjRazRules *ctop = top->child;
                     while( NULL != ctop ) {
                         ctop->obj->bCS_Added = 0;
+                        if (ctop->LUP)
+                            ctop->obj->m_DisplayCat = ctop->LUP->DISC;
                         ctop = ctop->next;
                     }
                 }
