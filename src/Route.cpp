@@ -229,7 +229,7 @@ void Route::CloneAddedTrackPoint( RoutePoint *ptargetpoint, RoutePoint *psourcep
     //}
 }
 
-void Route::AddPoint( RoutePoint *pNewPoint, bool b_rename_in_sequence, bool b_deferBoxCalc, bool b_isLoading )
+void Route::AddPoint( RoutePoint *pNewPoint, bool b_rename_in_sequence, bool b_deferBoxCalc )
 {
     if( pNewPoint->m_bIsolatedMark ) {
         pNewPoint->m_bKeepXRoute = true;
@@ -237,6 +237,7 @@ void Route::AddPoint( RoutePoint *pNewPoint, bool b_rename_in_sequence, bool b_d
     pNewPoint->m_bIsolatedMark = false;       // definitely no longer isolated
     pNewPoint->m_bIsInRoute = true;
 
+    RoutePoint *prev = GetLastPoint();
     pRoutePointList->Append( pNewPoint );
 
     m_nPoints++;
@@ -244,8 +245,9 @@ void Route::AddPoint( RoutePoint *pNewPoint, bool b_rename_in_sequence, bool b_d
     if( !b_deferBoxCalc )
         FinalizeForRendering();
 
-    if (!b_isLoading)
-        UpdateSegmentDistances();
+    if( prev )
+        UpdateSegmentDistance( prev, pNewPoint );
+
     m_pLastAddedPoint = pNewPoint;
 
     if( b_rename_in_sequence && pNewPoint->GetName().IsEmpty() && !pNewPoint->m_bKeepXRoute ) {
@@ -951,14 +953,10 @@ wxString Route::GetNewMarkSequenced( void )
 
 RoutePoint *Route::GetLastPoint()
 {
-    RoutePoint *data_m1 = NULL;
-    wxRoutePointListNode *node = pRoutePointList->GetFirst();
+    if(pRoutePointList->IsEmpty())
+        return NULL;
 
-    while( node ) {
-        data_m1 = node->GetData();
-        node = node->GetNext();
-    }
-    return ( data_m1 );
+    return pRoutePointList->GetLast()->GetData();
 }
 
 int Route::GetIndexOf( RoutePoint *prp )
@@ -1187,93 +1185,93 @@ void Route::CalculateDCRect( wxDC& dc_route, wxRect *prect, ViewPort &VP )
 }
 
 /*
+ Update a single route segment lengths
+ Also, compute total route length by summing segment distances.
+ */
+void Route::UpdateSegmentDistance( RoutePoint *prp0, RoutePoint *prp, double planspeed )
+{
+    double slat1 = prp0->m_lat, slon1 = prp0->m_lon;
+    double slat2 = prp->m_lat, slon2 = prp->m_lon;
+
+//    Calculate the absolute distance from 1->2
+
+    double dd;
+    // why are we using mercator rather than great circle here?? [sean 8-11-2015]
+    DistanceBearingMercator( slat1, slon1, slat2, slon2, 0, &dd );
+
+//    And store in Point 2
+    prp->m_seg_len = dd;
+
+    m_route_length += dd;
+
+//    If Point1 Description contains VMG, store it for Properties Dialog in Point2
+//    If Point1 Description contains ETD, store it in Point1
+
+    if( planspeed > 0. ) {
+        double vmg = 0.0;
+        wxDateTime etd;
+
+        if( prp0->m_MarkDescription.Find( _T("VMG=") ) != wxNOT_FOUND ) {
+            wxString s_vmg = ( prp0->m_MarkDescription.Mid(
+                                   prp0->m_MarkDescription.Find( _T("VMG=") ) + 4 ) ).BeforeFirst( ';' );
+            if( !s_vmg.ToDouble( &vmg ) ) vmg = planspeed;
+        }
+
+        double legspeed = planspeed;
+        if( vmg > 0.1 && vmg < 1000. ) legspeed = vmg;
+        if( legspeed > 0.1 && legspeed < 1000. ) {
+            m_route_time += 3600. * dd / legspeed;
+            prp->m_seg_vmg = legspeed;
+        }
+
+        prp0->m_seg_etd = wxInvalidDateTime;
+        if( prp0->m_MarkDescription.Find( _T("ETD=") ) != wxNOT_FOUND ) {
+            wxString s_etd = ( prp0->m_MarkDescription.Mid(
+                                   prp0->m_MarkDescription.Find( _T("ETD=") ) + 4 ) ).BeforeFirst( ';' );
+            const wxChar *parse_return = etd.ParseDateTime( s_etd );
+            if( parse_return ) {
+                wxString tz( parse_return );
+
+                if( tz.Find( _T("UT") ) != wxNOT_FOUND ) prp0->m_seg_etd = etd;
+                else
+                    if( tz.Find( _T("LMT") ) != wxNOT_FOUND ) {
+                        prp0->m_seg_etd = etd;
+                        long lmt_offset = (long) ( ( prp0->m_lon * 3600. ) / 15. );
+                        wxTimeSpan lmt( 0, 0, (int) lmt_offset, 0 );
+                        prp0->m_seg_etd -= lmt;
+                    } else
+                        prp0->m_seg_etd = etd.ToUTC();
+            }
+        }
+    }
+}
+
+/*
  Update the route segment lengths, storing each segment length in <destination> point.
  Also, compute total route length by summing segment distances.
  */
 void Route::UpdateSegmentDistances( double planspeed )
 {
     wxPoint rpt, rptn;
-    float slat1, slon1, slat2, slon2;
 
-    double route_len = 0.0;
-    double route_time = 0.0;
+    m_route_length = 0.0;
+    m_route_time = 0.0;
 
     wxRoutePointListNode *node = pRoutePointList->GetFirst();
 
     if( node ) {
         RoutePoint *prp0 = node->GetData();
-        slat1 = prp0->m_lat;
-        slon1 = prp0->m_lon;
-
         node = node->GetNext();
 
         while( node ) {
             RoutePoint *prp = node->GetData();
-            slat2 = prp->m_lat;
-            slon2 = prp->m_lon;
-
-//    Calculate the absolute distance from 1->2
-
-            double brg, dd;
-            DistanceBearingMercator( slat1, slon1, slat2, slon2, &brg, &dd );
-
-//    And store in Point 2
-            prp->m_seg_len = dd;
-
-            route_len += dd;
-
-            slat1 = slat2;
-            slon1 = slon2;
-
-//    If Point1 Description contains VMG, store it for Properties Dialog in Point2
-//    If Point1 Description contains ETD, store it in Point1
-
-            if( planspeed > 0. ) {
-                double vmg = 0.0;
-                wxDateTime etd;
-
-                if( prp0->m_MarkDescription.Find( _T("VMG=") ) != wxNOT_FOUND ) {
-                    wxString s_vmg = ( prp0->m_MarkDescription.Mid(
-                            prp0->m_MarkDescription.Find( _T("VMG=") ) + 4 ) ).BeforeFirst( ';' );
-                    if( !s_vmg.ToDouble( &vmg ) ) vmg = planspeed;
-                }
-
-                double legspeed = planspeed;
-                if( vmg > 0.1 && vmg < 1000. ) legspeed = vmg;
-                if( legspeed > 0.1 && legspeed < 1000. ) {
-                    route_time += dd / legspeed;
-                    prp->m_seg_vmg = legspeed;
-                }
-
-                prp0->m_seg_etd = wxInvalidDateTime;
-                if( prp0->m_MarkDescription.Find( _T("ETD=") ) != wxNOT_FOUND ) {
-                    wxString s_etd = ( prp0->m_MarkDescription.Mid(
-                            prp0->m_MarkDescription.Find( _T("ETD=") ) + 4 ) ).BeforeFirst( ';' );
-                    const wxChar *parse_return = etd.ParseDateTime( s_etd );
-                    if( parse_return ) {
-                        wxString tz( parse_return );
-
-                        if( tz.Find( _T("UT") ) != wxNOT_FOUND ) prp0->m_seg_etd = etd;
-                        else
-                            if( tz.Find( _T("LMT") ) != wxNOT_FOUND ) {
-                                prp0->m_seg_etd = etd;
-                                long lmt_offset = (long) ( ( prp0->m_lon * 3600. ) / 15. );
-                                wxTimeSpan lmt( 0, 0, (int) lmt_offset, 0 );
-                                prp0->m_seg_etd -= lmt;
-                            } else
-                                prp0->m_seg_etd = etd.ToUTC();
-                    }
-                }
-            }
+            UpdateSegmentDistance( prp0, prp, planspeed );
 
             prp0 = prp;
 
             node = node->GetNext();
         }
     }
-
-    m_route_length = route_len;
-    m_route_time = route_time * 3600.;
 }
 
 void Route::Reverse( bool bRenamePoints )

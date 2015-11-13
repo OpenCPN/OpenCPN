@@ -50,9 +50,10 @@ CursorData::CursorData( wxWindow *window, GRIBUICtrlBar &parent )
         wxWindow *win = node->GetData();
         if( win->IsKindOf(CLASSINFO(wxCheckBox)) ) {
 			int winId = ((wxCheckBox*) win )->GetId() - ID_CB_WIND;
-			((wxCheckBox*) win )->SetId( winId );
-			if (m_gparent.InDataPlot(winId))
-                ((wxCheckBox*) win )->SetValue( m_gparent.m_bDataPlot[winId] );
+			if (m_gparent.InDataPlot(winId)) {
+			    ((wxCheckBox*) win )->SetId( winId );
+			    ((wxCheckBox*) win )->SetValue( m_gparent.m_bDataPlot[winId] );
+            }
 		}
 		node = node->GetNext();
 	}
@@ -149,12 +150,15 @@ void CursorData::PopulateTrackingControls( bool vertical )
     GetTextExtent( _T("abcdefghijklmopq"), &wd, NULL, 0, 0, font); // long width text control size for double unit wind display
     GetTextExtent( _T("abcdefghijklm"), &wl, NULL, 0, 0, font); // long width text control size for double unit wave display
     //
+    //create a dummy textCtrl to be used as a "space" in vertical display
+    wxTextCtrl *dummy = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY|wxNO_BORDER );
+    //
     bool bf = m_gparent.m_OverlaySettings.Settings[GribOverlaySettings::WIND].m_Units == GribOverlaySettings::BFS;
     wd = vertical ? wn: bf? wn: wd;
     wl = vertical? wn : wl;
 
     AddTrackingControl(m_cbWind, m_tcWindSpeed, m_tcWindSpeedBf, m_tcWindDirection, false, vertical, 0, 0 ); //hide all wind's parameters
-    AddTrackingControl(m_cbWind, m_tcWindSpeed, vertical? (bf ? m_tcWindDirection: m_tcWindSpeedBf) : m_tcWindDirection, vertical? (bf ? 0: m_tcWindDirection): 0,
+    AddTrackingControl(m_cbWind, m_tcWindSpeed, vertical? (bf? dummy : m_tcWindSpeedBf): m_tcWindDirection, vertical? m_tcWindDirection: 0,
         m_gparent.m_pTimelineSet && m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX) != wxNOT_FOUND
         && m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VY) != wxNOT_FOUND, vertical, wd, ws);
     AddTrackingControl(m_cbWindGust, m_tcWindGust, 0, 0, m_gparent.m_pTimelineSet
@@ -178,7 +182,7 @@ void CursorData::PopulateTrackingControls( bool vertical )
     }
 
     AddTrackingControl(m_cbCurrent, m_tcCurrentVelocity, m_tcCurrentDirection, 0, false, vertical, 0, 0); //hide all current's parameters
-    AddTrackingControl(m_cbCurrent, m_tcCurrentVelocity, m_tcCurrentDirection, vertical? m_tcCurrentDirection: 0,
+    AddTrackingControl(m_cbCurrent, m_tcCurrentVelocity, vertical? dummy: m_tcCurrentDirection, vertical? m_tcCurrentDirection: 0,
         m_gparent.m_pTimelineSet && m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEACURRENT_VX) != wxNOT_FOUND
         && m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEACURRENT_VY) != wxNOT_FOUND
 		&& m_Altitude == 0, vertical, wn, ws);
@@ -238,6 +242,7 @@ void CursorData::PopulateTrackingControls( bool vertical )
 
         m_tcSeaTemperature->SetToolTip( m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index( 1000 + NOAA_GFS) != wxNOT_FOUND ? s[1] + s[0] + s[2] : s[3] );
     }
+    dummy->Show( false );
 }
 
 void CursorData::UpdateTrackingControls( void )
