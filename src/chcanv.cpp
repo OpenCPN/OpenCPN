@@ -34,7 +34,7 @@
 #include <wx/listbook.h>
 #include <wx/clipbrd.h>
 #include <wx/aui/aui.h>
-
+#include "wx/progdlg.h"
 #include "dychart.h"
 #include "OCPNPlatform.h"
 
@@ -1338,6 +1338,8 @@ void ChartCanvas::StartMeasureRoute()
         
         m_bMeasure_Active = true;
         m_nMeasureState = 1;
+        m_bDrawingRoute = false;
+
         SetCursor( *pCursorPencil );
         Refresh();
     }
@@ -1347,6 +1349,8 @@ void ChartCanvas::CancelMeasureRoute()
 {
     m_bMeasure_Active = false;
     m_nMeasureState = 0;
+    m_bDrawingRoute = false;
+
     g_pRouteMan->DeleteRoute( m_pMeasureRoute );
     m_pMeasureRoute = NULL;
 }
@@ -1644,6 +1648,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             break;
 
         case 'D': {
+#ifdef USE_S57
                 int x,y;
                 event.GetPosition( &x, &y );
                 bool cm93IsAvailable = ( Current_Ch && ( Current_Ch->GetChartType() == CHART_TYPE_CM93COMP ) );
@@ -1664,6 +1669,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
                     }
                     pCM93DetailSlider->Show( !pCM93DetailSlider->IsShown() );
                 }
+#endif                
                 break;
             }
 
@@ -1746,8 +1752,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             return;
 
         case 18:                       // Ctrl R
-            gFrame->nRoute_State = 1;
-            cc1->SetCursor( *cc1->pCursorPencil );
+            StartRoute();
             return;
 
         case 20:                       // Ctrl T
@@ -1783,11 +1788,10 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         case 27:
             // Generic break
             if( m_bMeasure_Active ) {
-                m_bMeasure_Active = false;
-                m_nMeasureState = 0;
-                g_pRouteMan->DeleteRoute( m_pMeasureRoute );
-                m_pMeasureRoute = NULL;
+                CancelMeasureRoute();
+
                 SetCursor( *pCursorArrow );
+
                 gFrame->SurfaceToolbar();
                 InvalidateGL();
                 Refresh( false );
@@ -1829,9 +1833,11 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             break;
 
         case 9:                      // Ctrl I
-            g_Compass->Show(!g_Compass->IsShown());
-            m_brepaint_piano = true;
-            Refresh( false );
+            if (g_Compass) {
+                g_Compass->Show(!g_Compass->IsShown());
+                m_brepaint_piano = true;
+                Refresh( false );
+            }
             break;
 
         default:
@@ -2800,6 +2806,18 @@ void ChartCanvas::DoRotateCanvas( double rotation )
 
     SetVPRotation( rotation );
     parent_frame->UpdateRotationState( VPoint.rotation);
+}
+
+void ChartCanvas::DoTiltCanvas( double tilt )
+{
+    while(tilt < 0) tilt = 0;
+    while(tilt > .95) tilt = .95;
+
+    if(tilt == VPoint.tilt || wxIsNaN(tilt))
+        return;
+
+    VPoint.tilt = tilt;
+    Refresh( false );
 }
 
 void ChartCanvas::ClearbFollow( void )
@@ -4683,7 +4701,13 @@ bool leftIsDown;
 
 bool ChartCanvas::MouseEventChartBar( wxMouseEvent& event )
 {
-    if(!g_bShowChartBar || g_ChartBarWin || !g_Piano->MouseEvent(event))
+    if(!g_bShowChartBar || g_ChartBarWin)
+        return false;
+
+    if( m_bDrawingRoute )
+        return false;
+
+    if (! g_Piano->MouseEvent(event) )
         return false;
 
     cursor_region = CENTER;
@@ -4861,11 +4885,11 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
     
     
     if(!g_btouch){
-        if( ( m_bMeasure_Active && ( m_nMeasureState >= 2 ) ) || ( parent_frame->nRoute_State > 1 )
-            || ( parent_frame->nRoute_State ) > 1 ) {
+        if( ( m_bMeasure_Active && ( m_nMeasureState >= 2 ) ) || ( parent_frame->nRoute_State > 1 ) )
+        {
             wxPoint p = ClientToScreen( wxPoint( x, y ) );
             gFrame->SubmergeToolbarIfOverlap( p.x, p.y, 20 );
-            }
+        }
     }
     
     if(1/*!g_btouch*/ ){
@@ -6236,15 +6260,16 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
             if( !bseltc ){
                 InvokeCanvasMenu(x, y, seltype);
                 
-                // Clean up
-                if( ( m_pSelectedRoute ) ) {
+                // Clean up if not deleted in InvokeCanvasMenu
+                if( m_pSelectedRoute && g_pRouteMan->IsRouteValid(m_pSelectedRoute) ) {
                     m_pSelectedRoute->m_bRtIsSelected = false;
                 }
                 
                 m_pSelectedRoute = NULL;
                 
                 if( m_pFoundRoutePoint ) {
-                    m_pFoundRoutePoint->m_bPtIsSelected = false;
+                    if (pSelect->IsSelectableRoutePointValid(m_pFoundRoutePoint))
+                        m_pFoundRoutePoint->m_bPtIsSelected = false;
                 }
                 m_pFoundRoutePoint = NULL;
                 
@@ -7969,6 +7994,8 @@ void ChartCanvas::LostMouseCapture( wxMouseCaptureLostEvent& event )
 
 void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
 {
+#ifdef USE_S57
+    
     ChartPlugInWrapper *target_plugin_chart = NULL;
     s57chart *Chs57 = NULL;
 
@@ -8136,6 +8163,7 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
 
         SetCursor( wxCURSOR_ARROW );
     }
+#endif    
 }
 
 void ChartCanvas::RemovePointFromRoute( RoutePoint* point, Route* route ) {
@@ -8516,10 +8544,19 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
     
 }
 
+void ChartCanvas::StartRoute( void )
+{
+    parent_frame->nRoute_State = 1;
+    m_bDrawingRoute = false;
+    SetCursor( *pCursorPencil );
+    parent_frame->SetToolbarItemState( ID_ROUTE, true );
+}
+
 void ChartCanvas::FinishRoute( void )
 {
     parent_frame->nRoute_State = 0;
     m_prev_pMousePoint = NULL;
+    m_bDrawingRoute = false;
 
     parent_frame->SetToolbarItemState( ID_ROUTE, false );
 #ifdef __OCPN__ANDROID__
@@ -8527,7 +8564,6 @@ void ChartCanvas::FinishRoute( void )
 #endif        
     
     SetCursor( *pCursorArrow );
-    m_bDrawingRoute = false;
 
     if( m_pMouseRoute ) {
         if( m_bAppendingRoute ) 
@@ -9437,7 +9473,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         DrawAllCurrentsInBBox( scratch_dc, GetVP().GetBBox() );
     }
 
-    if( m_brepaint_piano ) {
+    if( m_brepaint_piano && g_bShowChartBar ) {
         g_Piano->Paint(GetClientSize().y - g_Piano->GetHeight(), mscratch_dc);
         //m_brepaint_piano = false;
     }
@@ -9651,6 +9687,7 @@ void ChartCanvas::CancelMouseRoute()
 {
     parent_frame->nRoute_State = 0;
     m_pMouseRoute = NULL;
+    m_bDrawingRoute = false;
 }
 
 int ChartCanvas::GetNextContextMenuId()

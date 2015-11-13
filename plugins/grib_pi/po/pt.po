@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-22 22:27-0500\n"
-"PO-Revision-Date: 2015-10-22 23:37-0400\n"
+"PO-Revision-Date: 2015-11-08 22:35-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Portuguese, Brazilian\n"
 "Language: pt_BR\n"
@@ -280,23 +280,23 @@ msgstr "Você deseja adicionar uma barra de título/arrastar para o dialogo\n"
 msgid "This change needs a complete reload.\n"
 "It will be applied after closing and re-opening the plugin"
 msgstr "Esta alteração necessita um recarregamento completo.\n"
-"Será efetuado após fechar e re-abrir a extensão"
+"Será efetuado após fechar e reabrir o plugin"
 
 #: src/GribSettingsDialog.cpp:818
 msgid "You have chosen to authorize interpolation.\n"
 "Don't forget that data displayed will not be real but recomputed and this can decrease accuracy!"
 msgstr "Você optou por autorizar a interpolação.\n"
-"Não esquecer que os dados exibidos não serão reais, mas serão recalculadas e isso pode diminuir a precisão!"
+"Não esquecer que os dados exibidos não serão reais, mas serão recalculados e isso pode diminuir a precisão!"
 
 #: src/GribSettingsDialog.cpp:819 src/GribSettingsDialog.cpp:858
 #: src/grib_pi.cpp:338 src/grib_pi.cpp:618 src/GribRequestDialog.cpp:606
 msgid "Warning!"
-msgstr "Atenção!"
+msgstr "Aviso!"
 
 #: src/GribSettingsDialog.cpp:857
 msgid "This option imply you authorize intrepolation\n"
 "Don't forget that data displayed will not be real but recomputed and this can decrease accuracy!"
-msgstr "Esta opção implica autorizar intrepolação\n"
+msgstr "Esta opção implica autorizar interpolação\n"
 "Não se esqueça que os dados exibidos não serão reais mas recalculados e isso pode diminuir a precisão!"
 
 #: src/GribUIDialogBase.cpp:29 src/GribUIDialogBase.cpp:148
@@ -394,7 +394,7 @@ msgstr "Cores controladas"
 #: src/GribUIDialogBase.cpp:747 src/GribUIDialogBase.cpp:825
 #: src/GribUIDialogBase.cpp:881
 msgid "Spacing(pixels)"
-msgstr "Espaçaento(pixels)"
+msgstr "Espaçamento(pixels)"
 
 #: src/GribUIDialogBase.cpp:751 src/GribUIDialogBase.cpp:829
 msgid "Fixed"
@@ -531,11 +531,11 @@ msgstr "Só um diálogo sem uma barra de título/arrasto"
 
 #: src/GribUIDialogBase.cpp:1032
 msgid "Two separated Dialogs - horizontal Cursor Data display"
-msgstr "Dois diálogos separados - apresentar dados de curso horizontal"
+msgstr "Dois diálogos separados - exibir dados de curso horizontal"
 
 #: src/GribUIDialogBase.cpp:1035
 msgid "Two separated Dialogs - vertical Cursor Data display"
-msgstr "Dois diálogos separados - apresentar dados de curso vertical"
+msgstr "Dois diálogos separados - exibir dados de Cursor vertical"
 
 #: src/GribUIDialogBase.cpp:1048
 msgid "Buttons/Ctrl Visibility"
@@ -543,7 +543,7 @@ msgstr "Botões/Ctrl Visibilidade"
 
 #: src/GribUIDialogBase.cpp:1062
 msgid "Attached Dialog"
-msgstr "Caixa de diálogo anexa"
+msgstr "Caixa de diálogo anexada"
 
 #: src/GribUIDialogBase.cpp:1067
 msgid "Isolated Dialog"
@@ -555,7 +555,7 @@ msgstr "Escolha de altitude"
 
 #: src/GribUIDialogBase.cpp:1107
 msgid "Zoom to Center"
-msgstr "Zoom para centro"
+msgstr "Zoom para o centro"
 
 #: src/GribUIDialogBase.cpp:1123
 msgid "Show Cursor Data"
@@ -703,11 +703,11 @@ msgstr "Dias"
 
 #: src/GribUIDialogBase.cpp:1594
 msgid "Area Selection"
-msgstr "Selecção de área"
+msgstr "Seleção de área"
 
 #: src/GribUIDialogBase.cpp:1601
 msgid "Manual Selection"
-msgstr "Selecção manual"
+msgstr "Seleção manual"
 
 #: src/GribUIDialogBase.cpp:1609
 msgid "Max Lat"
@@ -743,11 +743,11 @@ msgstr "Min Long"
 #: src/GribUIDialogBase.cpp:1651 src/GribRequestDialog.cpp:289
 #: src/GribRequestDialog.cpp:290
 msgid "W"
-msgstr "O"
+msgstr "W"
 
 #: src/GribUIDialogBase.cpp:1665
 msgid "Data Selection"
-msgstr "Dados pretendidos"
+msgstr "Seleção de dados"
 
 #: src/GribUIDialogBase.cpp:1687
 msgid "Air Temperature(2m)"
@@ -755,11 +755,11 @@ msgstr "Temperatura do ar (2m)"
 
 #: src/GribUIDialogBase.cpp:1691
 msgid "Sea Temperature(surf.)"
-msgstr "Temperatura do mar(sup.)"
+msgstr "Temperatura do mar(superfície)"
 
 #: src/GribUIDialogBase.cpp:1721
 msgid "Geopotential Height"
-msgstr "Altitude Geopotencial"
+msgstr "Altura geopotencial"
 
 #: src/GribUIDialogBase.cpp:1731
 msgid "850 hPa"
@@ -783,7 +783,7 @@ msgstr "Correio"
 
 #: src/GribUIDialogBase.cpp:1781
 msgid "Estimated File Size"
-msgstr "Tamanho estimado do ficheiro"
+msgstr "Tamanho estimado do arquivo"
 
 #: src/GribUIDialogBase.cpp:1789
 msgid " (Max size )"
@@ -791,7 +791,7 @@ msgstr " (Tamanho máximo )"
 
 #: src/GribUIDialogBase.cpp:1911
 msgid "Data at Position:"
-msgstr ""
+msgstr "Dados na Posição:"
 
 #: src/smapi.cpp:119
 msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
@@ -988,57 +988,57 @@ msgstr "Continuar..."
 msgid "Your request is ready. An email is prepared in your email environment. \n"
 "You have just to verify and send it...\n"
 "Save or Cancel to finish...or Continue..."
-msgstr "O seu pedido está pronto. Um email está pronto no seu ambiente de mail. \n"
-"Só necessita verificar e enviá-lo...\n"
-"Guardar ou Cancelar para terminar...ou Continuar..."
+msgstr "O seu pedido está pronto. Um email está pronto no seu ambiente de email. \n"
+"Você só necessita verificar e enviá-lo...\n"
+"Salvar ou Cancelar para terminar...ou Continuar..."
 
 #: src/GribRequestDialog.cpp:966
 msgid "Your request was sent \n"
 "(if your system has an MTA configured and is able to send email).\n"
 "Save or Cancel to finish...or Continue..."
 msgstr "O seu pedido foi enviado \n"
-"(se o seu sistema tem um  MTA configurado e consegue enviar o email).\n"
-"Guardar ou Cancelar para terminar...ou Continuar..."
+"(se o seu sistema tem um MTA configurado e consegue enviar o email).\n"
+"Salvar ou Cancelar para terminar...ou Continuar..."
 
 #: src/GribRequestDialog.cpp:971
 msgid "Request can't be sent. Please verify your email systeme parameters.\n"
 "You should also have a look at your log file.\n"
 "Save or Cancel to finish..."
 msgstr "Pedido não pôde ser enviado. Verifique os parâmetros do seu sistema de correio.\n"
-"Verifique também o seu ficheiro de log.\n"
-"Guardar ou Cancelar para terminar..."
+"Verifique também o seu arquivo de log.\n"
+"Salvar ou Cancelar para terminar..."
 
 #: src/CursorData.cpp:211
 msgid "Data at cursor position"
-msgstr ""
+msgstr "Dados na posição do cursor"
 
 #: src/CursorData.cpp:223
 msgid "Wind Speed at"
-msgstr ""
+msgstr "Velocidade do vento em"
 
 #: src/CursorData.cpp:224
 msgid "Wind Speed in at"
-msgstr ""
+msgstr "Velocidade do vento no"
 
 #: src/CursorData.cpp:225
 msgid "Wind Direction at"
-msgstr ""
+msgstr "Direção do vento no"
 
 #: src/CursorData.cpp:228
 msgid "Wind Gust at"
-msgstr ""
+msgstr "Rajada de vento no"
 
 #: src/CursorData.cpp:231
 msgid "Air Temperature at"
-msgstr ""
+msgstr "Temperatura do ar na"
 
 #: src/CursorData.cpp:231
 msgid "Surface level"
-msgstr ""
+msgstr "Nível de superficie"
 
 #: src/CursorData.cpp:231
 msgid "Sea Surface Temperature"
-msgstr ""
+msgstr "Temperatura na superfície do mar"
 
 #: src/CursorData.cpp:271 src/CursorData.cpp:272 src/CursorData.cpp:273
 #: src/CursorData.cpp:285 src/CursorData.cpp:298 src/CursorData.cpp:318
@@ -1048,5 +1048,5 @@ msgstr ""
 #: src/CursorData.cpp:412 src/CursorData.cpp:424 src/CursorData.cpp:436
 #: src/CursorData.cpp:447
 msgid "N/A"
-msgstr ""
+msgstr "N/A"
 

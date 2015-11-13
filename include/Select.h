@@ -45,6 +45,7 @@ public:
 
     void SetSelectPixelRadius(int radius){ pixelRadius = radius; }
 
+    bool IsSelectableRoutePointValid(RoutePoint *pRoutePoint );
     bool AddSelectableRoutePoint( float slat, float slon, RoutePoint *pRoutePointAdd );
     bool AddSelectableRouteSegment( float slat1, float slon1, float slat2, float slon2,
             RoutePoint *pRoutePointAdd1, RoutePoint *pRoutePointAdd2, Route *pRoute );

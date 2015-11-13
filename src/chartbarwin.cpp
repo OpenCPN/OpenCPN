@@ -212,6 +212,7 @@ Piano::Piano()
     m_eventTimer.SetOwner( this, PIANO_EVENT_TIMER );
     
     m_tex = m_tex_piano_height = 0;
+    m_texh = 0;
 }
 
 Piano::~Piano()
@@ -728,7 +729,8 @@ void Piano::DrawGL(int off)
         return;
 
 #ifdef ocpnUSE_GL
-    unsigned int w = cc1->GetClientSize().x, h = GetHeight(), endx;
+    unsigned int w = cc1->GetClientSize().x, h = GetHeight();
+    unsigned int endx = 0;
  
     if(m_tex_piano_height != h)
         BuildGLTexture();

@@ -35,6 +35,12 @@
 #include "wx/tokenzr.h"
 #include <wx/mstream.h>
 
+#ifdef USE_S57
+#include <ogr_geometry.h>
+#endif
+
+#include "cutil.h"
+
 #include "vector2D.h"
 
 #include "s52s57.h"
@@ -2924,38 +2930,6 @@ PolyTrapGroup::~PolyTrapGroup()
       free (trap_array);
 }
 
-void DouglasPeucker(double *PointList, int fp, int lp, double epsilon, wxArrayInt *keep)
-{
-// Find the point with the maximum distance
-    double dmax = 0;
-    int index = 0;
-
-    vector2D va(PointList[2*fp] - PointList[2*lp],
-                PointList[2*fp+1] - PointList[2*lp+1]);
-
-    double da = va.x*va.x + va.y*va.y;
-    for(int i = fp+1 ; i < lp ; ++i) {
-        vector2D vb(PointList[2*i] - PointList[2*fp],
-                    PointList[2*i + 1] - PointList[2*fp+1]);
-        
-        double dab = va.x*vb.x + va.y*vb.y;
-        double db = vb.x*vb.x + vb.y*vb.y;
-        double d = da - dab*dab/db;
-        if ( d > dmax ) {
-            index = i;
-            dmax = d;
-        }
-    }
-// If max distance is greater than epsilon, recursively simplify
-    if ( dmax > epsilon*epsilon ) {
-        keep->Add(index);
-        
-    // Recursive call
-        DouglasPeucker(PointList, fp, index, epsilon, keep);
-        DouglasPeucker(PointList, index, lp, epsilon, keep);
-
-    }
-}
 
 
 

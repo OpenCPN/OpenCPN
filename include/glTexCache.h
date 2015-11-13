@@ -89,7 +89,7 @@ WX_DEFINE_ARRAY(CatalogEntry*, ArrayOfCatalogEntries);
 class glTexTile
 {
 public:
-    glTexTile() { m_coords = m_texcoords = NULL; }
+    glTexTile() { m_coords = m_texcoords = NULL;  m_ncoords = 0;}
     virtual ~glTexTile() { delete [] m_coords; delete [] m_texcoords; }
 
     wxRect rect;
@@ -123,8 +123,8 @@ public:
     bool BackgroundCompressionAsJob() const;
     void PurgeBackgroundCompressionPool();
     void OnTimer(wxTimerEvent &event);
-    void SetLRUTime(wxDateTime time) { m_LRUtime = time; }
-    wxDateTime &GetLRUTime() { return m_LRUtime; }
+    void SetLRUTime(int lru) { m_LRUtime = lru; }
+    int	 GetLRUTime() { return m_LRUtime; }
     void FreeSome( long target );
     
     glTextureDescriptor *GetpTD( wxRect & rect );
@@ -179,7 +179,7 @@ private:
     ColorScheme m_colorscheme;
     wxTimer     m_timer;
     size_t      m_ticks;
-    wxDateTime  m_LRUtime;
+    int		m_LRUtime;
     
     glTextureDescriptor  **m_td_array;
 

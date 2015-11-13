@@ -1101,7 +1101,7 @@ wxString GetLayerName( int id )
 
 MyConfig::MyConfig( const wxString &appName, const wxString &vendorName,
         const wxString &LocalFileName ) :
-        wxFileConfig( appName, vendorName, LocalFileName, wxString( _T ( "" ) ) )
+        wxFileConfig( appName, vendorName, LocalFileName, _T (""),  wxCONFIG_USE_LOCAL_FILE )
 {
     //    Create the default NavObjectCollection FileName
     wxFileName config_file( LocalFileName );

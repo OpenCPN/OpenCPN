@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-22 22:27-0500\n"
-"PO-Revision-Date: 2015-10-22 23:35-0400\n"
+"PO-Revision-Date: 2015-11-01 13:53-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -22,11 +22,11 @@ msgstr "Démarrer une requête"
 
 #: src/GribUIDialog.cpp:321 src/GribUIDialog.cpp:720
 msgid "Stop request"
-msgstr "Arrêter une requête"
+msgstr "Arrêter la requête"
 
 #: src/GribUIDialog.cpp:325 src/GribUIDialog.cpp:720
 msgid "Valid request"
-msgstr "Valider une requête"
+msgstr "Valider la requête"
 
 #: src/GribUIDialog.cpp:356
 msgid "File"
@@ -38,11 +38,11 @@ msgstr "Erreur ! "
 
 #: src/GribUIDialog.cpp:363
 msgid " contains no valid data!"
-msgstr " Contient des données non valides !"
+msgstr " contient des données invalides !"
 
 #: src/GribUIDialog.cpp:386
 msgid "Warning:  Empty directory!"
-msgstr "Attention : Ce dossier est vide !"
+msgstr "Attention : ce dossier est vide !"
 
 #: src/GribUIDialog.cpp:524 src/GribUIDialog.cpp:713
 msgid "Hide data at cursor"
@@ -791,7 +791,7 @@ msgstr "(Taille maximale)"
 
 #: src/GribUIDialogBase.cpp:1911
 msgid "Data at Position:"
-msgstr ""
+msgstr "Donnée à la position :"
 
 #: src/smapi.cpp:119
 msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
@@ -1012,35 +1012,35 @@ msgstr "La demande ne peut être envoyée. S'il vous plait, vérifiez les param�
 
 #: src/CursorData.cpp:211
 msgid "Data at cursor position"
-msgstr ""
+msgstr "Donnée à l'emplacement du curseur"
 
 #: src/CursorData.cpp:223
 msgid "Wind Speed at"
-msgstr ""
+msgstr "Vitesse du vent à"
 
 #: src/CursorData.cpp:224
 msgid "Wind Speed in at"
-msgstr ""
+msgstr "Vitesse du vent à"
 
 #: src/CursorData.cpp:225
 msgid "Wind Direction at"
-msgstr ""
+msgstr "Direction du vent à"
 
 #: src/CursorData.cpp:228
 msgid "Wind Gust at"
-msgstr ""
+msgstr "Rafales à"
 
 #: src/CursorData.cpp:231
 msgid "Air Temperature at"
-msgstr ""
+msgstr "Température de l'air à"
 
 #: src/CursorData.cpp:231
 msgid "Surface level"
-msgstr ""
+msgstr "Niveau de la surface"
 
 #: src/CursorData.cpp:231
 msgid "Sea Surface Temperature"
-msgstr ""
+msgstr "Température de l'eau à la surface"
 
 #: src/CursorData.cpp:271 src/CursorData.cpp:272 src/CursorData.cpp:273
 #: src/CursorData.cpp:285 src/CursorData.cpp:298 src/CursorData.cpp:318
@@ -1050,5 +1050,5 @@ msgstr ""
 #: src/CursorData.cpp:412 src/CursorData.cpp:424 src/CursorData.cpp:436
 #: src/CursorData.cpp:447
 msgid "N/A"
-msgstr ""
+msgstr "N/A"
 
