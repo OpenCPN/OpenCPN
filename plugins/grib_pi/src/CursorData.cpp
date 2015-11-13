@@ -50,9 +50,10 @@ CursorData::CursorData( wxWindow *window, GRIBUICtrlBar &parent )
         wxWindow *win = node->GetData();
         if( win->IsKindOf(CLASSINFO(wxCheckBox)) ) {
 			int winId = ((wxCheckBox*) win )->GetId() - ID_CB_WIND;
-			((wxCheckBox*) win )->SetId( winId );
-			if (m_gparent.InDataPlot(winId))
-                ((wxCheckBox*) win )->SetValue( m_gparent.m_bDataPlot[winId] );
+			if (m_gparent.InDataPlot(winId)) {
+			    ((wxCheckBox*) win )->SetId( winId );
+			    ((wxCheckBox*) win )->SetValue( m_gparent.m_bDataPlot[winId] );
+            }
 		}
 		node = node->GetNext();
 	}
