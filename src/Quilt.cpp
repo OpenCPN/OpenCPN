@@ -123,7 +123,8 @@ LLRegion &QuiltCandidate::GetCandidateRegion()
             float *pfp = cte.GetpAuxPlyTableEntry( ip );
             int nAuxPly = cte.GetAuxCntTableEntry( ip );
 
-            candidate_region = LLRegion( nAuxPly, pfp );
+            candidate_region.Union(LLRegion( nAuxPly, pfp ));
+            
         }
     } else {
         int n_ply_entries = cte.GetnPlyEntries();
