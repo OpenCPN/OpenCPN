@@ -300,7 +300,7 @@ void Route::DrawPointWhich( ocpnDC& dc, int iPoint, wxPoint *rpn )
         GetPoint( iPoint )->Draw( dc, rpn );
 }
 
-void Route::DrawSegment( ocpnDC& dc, wxPoint *rp1, wxPoint *rp2, ViewPort &VP, bool bdraw_arrow )
+void Route::DrawSegment( ocpnDC& dc, wxPoint *rp1, wxPoint *rp2, ViewPort &vp, bool bdraw_arrow )
 {
     if( m_bRtIsSelected ) dc.SetPen( *g_pRouteMan->GetSelectedRoutePen() );
     else
@@ -308,10 +308,10 @@ void Route::DrawSegment( ocpnDC& dc, wxPoint *rp1, wxPoint *rp2, ViewPort &VP, b
         else
             dc.SetPen( *g_pRouteMan->GetRoutePen() );
 
-    RenderSegment( dc, rp1->x, rp1->y, rp2->x, rp2->y, VP, bdraw_arrow );
+    RenderSegment( dc, rp1->x, rp1->y, rp2->x, rp2->y, vp, bdraw_arrow );
 }
 
-void Route::Draw( ocpnDC& dc, ViewPort &VP )
+void Route::Draw( ocpnDC& dc, ViewPort &vp )
 {
     if( m_nPoints == 0 ) return;
 
@@ -373,18 +373,18 @@ void Route::Draw( ocpnDC& dc, ViewPort &VP )
         if ( m_bVisible )
         {
             //    Handle offscreen points
-            bool b_2_on = VP.GetBBox().PointInBox( prp2->m_lon, prp2->m_lat, 0 );
-            bool b_1_on = VP.GetBBox().PointInBox( prp1->m_lon, prp1->m_lat, 0 );
+            bool b_2_on = vp.GetBBox().PointInBox( prp2->m_lon, prp2->m_lat, 0 );
+            bool b_1_on = vp.GetBBox().PointInBox( prp1->m_lon, prp1->m_lat, 0 );
 
             //Simple case
-            if( b_1_on && b_2_on ) RenderSegment( dc, rpt1.x, rpt1.y, rpt2.x, rpt2.y, VP, true, m_hiliteWidth ); // with arrows
+            if( b_1_on && b_2_on ) RenderSegment( dc, rpt1.x, rpt1.y, rpt2.x, rpt2.y, vp, true, m_hiliteWidth ); // with arrows
 
             //    In the cases where one point is on, and one off
             //    we must decide which way to go in longitude
             //     Arbitrarily, we will go the shortest way
 
             double pix_full_circle = WGS84_semimajor_axis_meters * mercator_k0 * 2 * PI
-                * VP.view_scale_ppm;
+                * vp.view_scale_ppm;
             double dp = pow( (double) ( rpt1.x - rpt2.x ), 2 ) + pow( (double) ( rpt1.y - rpt2.y ), 2 );
             double dtest;
             int adder;
@@ -398,7 +398,7 @@ void Route::Draw( ocpnDC& dc, ViewPort &VP )
 
                 if( dp < dtest ) adder = 0;
 
-                RenderSegment( dc, rpt1.x, rpt1.y, rpt2.x + adder, rpt2.y, VP, true, m_hiliteWidth );
+                RenderSegment( dc, rpt1.x, rpt1.y, rpt2.x + adder, rpt2.y, vp, true, m_hiliteWidth );
             } else
                 if( !b_1_on ) {
                     if( rpt1.x < rpt2.x ) adder = (int) pix_full_circle;
@@ -411,7 +411,7 @@ void Route::Draw( ocpnDC& dc, ViewPort &VP )
                     
                     if( dp < dtest ) adder = 0;
 
-                    RenderSegment( dc, rpt1.x + adder, rpt1.y, rpt2.x, rpt2.y, VP, true, m_hiliteWidth );
+                    RenderSegment( dc, rpt1.x + adder, rpt1.y, rpt2.x, rpt2.y, vp, true, m_hiliteWidth );
                 }
         }
 
@@ -709,7 +709,7 @@ void Route::DrawGLRouteLines( ViewPort &vp )
 
 static int s_arrow_icon[] = { 0, 0, 5, 2, 18, 6, 12, 0, 18, -6, 5, -2, 0, 0 };
 
-void Route::RenderSegment( ocpnDC& dc, int xa, int ya, int xb, int yb, ViewPort &VP,
+void Route::RenderSegment( ocpnDC& dc, int xa, int ya, int xb, int yb, ViewPort &vp,
         bool bdraw_arrow, int hilite_width )
 {
     //    Get the dc boundary
@@ -759,7 +759,7 @@ void Route::RenderSegment( ocpnDC& dc, int xa, int ya, int xb, int yb, ViewPort 
         theta -= PI / 2.;
 
         wxPoint icon[10];
-        double icon_scale_factor = 100 * VP.view_scale_ppm;
+        double icon_scale_factor = 100 * vp.view_scale_ppm;
         icon_scale_factor = fmin ( icon_scale_factor, 1.5 );              // Sets the max size
         icon_scale_factor = fmax ( icon_scale_factor, .10 );
 
@@ -794,12 +794,12 @@ void Route::RenderSegment( ocpnDC& dc, int xa, int ya, int xb, int yb, ViewPort 
     }
 }
 
-void Route::RenderSegmentArrowsGL( int xa, int ya, int xb, int yb, ViewPort &VP)
+void Route::RenderSegmentArrowsGL( int xa, int ya, int xb, int yb, ViewPort &vp)
 {
 #ifdef ocpnUSE_GL
     //    Draw a direction arrow        
     wxPoint icon[10];
-    float icon_scale_factor = 100 * VP.view_scale_ppm;
+    float icon_scale_factor = 100 * vp.view_scale_ppm;
     icon_scale_factor = fmin ( icon_scale_factor, 1.5 );              // Sets the max size
     icon_scale_factor = fmax ( icon_scale_factor, .10 );
     
@@ -1084,7 +1084,7 @@ LLBBox &Route::GetBBox( void )
     return RBBox;
 }
 
-void Route::CalculateDCRect( wxDC& dc_route, wxRect *prect, ViewPort &VP )
+void Route::CalculateDCRect( wxDC& dc_route, wxRect *prect )
 {
     dc_route.ResetBoundingBox();
     dc_route.DestroyClippingRegion();

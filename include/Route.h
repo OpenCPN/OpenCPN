@@ -59,10 +59,10 @@ public:
       RoutePoint *InsertPointBefore(RoutePoint *pRP, double rlat, double rlon, bool bRenamePoints = false);
       RoutePoint *InsertPointAfter(RoutePoint *pRP, double rlat, double rlon, bool bRenamePoints = false);
       void DrawPointWhich(ocpnDC& dc, int iPoint, wxPoint *rpn);
-      void DrawSegment(ocpnDC& dc, wxPoint *rp1, wxPoint *rp2, ViewPort &VP, bool bdraw_arrow);
-      virtual void Draw(ocpnDC& dc, ViewPort &pVP);
-      void DrawGLLines( ViewPort &VP, ocpnDC *dc );
-      virtual void DrawGL( ViewPort &VP );
+      void DrawSegment(ocpnDC& dc, wxPoint *rp1, wxPoint *rp2, ViewPort &vp, bool bdraw_arrow);
+      virtual void Draw(ocpnDC& dc, ViewPort &pvp);
+      void DrawGLLines( ViewPort &vp, ocpnDC *dc );
+      virtual void DrawGL( ViewPort &vp );
       void DrawGLRouteLines( ViewPort &vp );
       RoutePoint *GetLastPoint();
       void DeletePoint(RoutePoint *rp, bool bRenamePoints = false);
@@ -70,7 +70,7 @@ public:
       void DeSelectRoute();
       void FinalizeForRendering();
       void UpdateSegmentDistances(double planspeed = -1.0);
-      void CalculateDCRect(wxDC& dc_route, wxRect *prect, ViewPort &VP);
+      void CalculateDCRect(wxDC& dc_route, wxRect *prect);
       int GetnPoints(void){ return m_nPoints; }
       LLBBox &GetBBox();
       void SetnPoints(void){ m_nPoints = pRoutePointList->GetCount(); }
@@ -87,8 +87,8 @@ public:
       void CloneAddedTrackPoint(RoutePoint *ptargetpoint, RoutePoint *psourcepoint);
       void CloneAddedRoutePoint(RoutePoint *ptargetpoint, RoutePoint *psourcepoint);
       void ClearHighlights(void);
-      void RenderSegment(ocpnDC& dc, int xa, int ya, int xb, int yb, ViewPort &VP, bool bdraw_arrow, int hilite_width = 0);
-      void RenderSegmentArrowsGL( int xa, int ya, int xb, int yb, ViewPort &VP);
+      void RenderSegment(ocpnDC& dc, int xa, int ya, int xb, int yb, ViewPort &vp, bool bdraw_arrow, int hilite_width = 0);
+      void RenderSegmentArrowsGL( int xa, int ya, int xb, int yb, ViewPort &vp);
 
       void SetVisible(bool visible = true, bool includeWpts = true);
       void SetListed(bool visible = true);

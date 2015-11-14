@@ -5328,7 +5328,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                                                             //      navigating to an isolated waypoint on a temporary route
                                                             if( g_pRouteMan->IsRouteValid(pr) ) {
                                                                 wxRect route_rect;
-                                                                pr->CalculateDCRect( m_dc_route, &route_rect, VPoint );
+                                                                pr->CalculateDCRect( m_dc_route, &route_rect );
                                                                 pre_rect.Union( route_rect );
                                                             }
                                                         }
@@ -5365,7 +5365,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                                                                 Route *pr = (Route *) m_pEditRouteArray->Item( ir );
                                                                 if( g_pRouteMan->IsRouteValid(pr) ) {
                                                                     wxRect route_rect;
-                                                                    pr->CalculateDCRect( m_dc_route, &route_rect, VPoint );
+                                                                    pr->CalculateDCRect( m_dc_route, &route_rect );
                                                                     post_rect.Union( route_rect );
                                                                 }
                                                             }
@@ -5695,7 +5695,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                             if( g_pRouteMan->IsRouteValid(pr) ) {
                                 //                                pr->SetHiLite(50);
                                 wxRect route_rect;
-                                pr->CalculateDCRect( m_dc_route, &route_rect, VPoint );
+                                pr->CalculateDCRect( m_dc_route, &route_rect );
                                 pre_rect.Union( route_rect );
                             }
                         }
