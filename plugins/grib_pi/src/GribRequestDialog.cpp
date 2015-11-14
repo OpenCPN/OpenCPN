@@ -182,19 +182,20 @@ void GribRequestSetting::OnClose( wxCloseEvent& event )
 
 void GribRequestSetting::SetRequestDialogSize()
 {
-    int h;
-#ifndef __WXMSW__                   //default resizing do not work properly on no Windows plateforms
-    GetTextExtent( _T("abc"), NULL, &h, 0, 0, OCPNGetFont(_("Dialog"), 10) );
-    m_MailImage->SetMinSize( wxSize( -1, (h * m_MailImage->GetNumberOfLines()) + 5 ) );
-#endif
-    /*default sizing do not work with wxScolledWindow so we need to compute it
-    using a conditional X margin to stabilise the display width and a fixed Y margin to include different OS bars*/
-    int XMargin = m_sScrolledDialog->GetScrollLines( wxVERTICAL )? 0 : 18;
-    int YMargin = 130;
+    int y;
+    /*first let's size the mail display space*/
+    GetTextExtent( _T("abc"), NULL, &y, 0, 0, OCPNGetFont(_("Dialog"), 10) );
+    m_MailImage->SetMinSize( wxSize( -1, ( (y * m_MailImage->GetNumberOfLines()) + 10 ) ) );
+
+    /*then as default sizing do not work with wxScolledWindow let's compute it*/
     wxSize scroll = m_fgScrollSizer->Fit(m_sScrolledDialog);                                   // the area size to be scrolled
-    ::wxDisplaySize( NULL, &h);                                                                // the screen size
-    h -= m_rButton->GetSize().GetY() + m_fgFixedSizer->GetSize().GetY() + YMargin;             //height available for the scrolled window
-    m_sScrolledDialog->SetMinSize( wxSize( scroll.GetWidth() + XMargin,	h ) );				   //set scrolled area size with margins
+
+    int w = GetOCPNCanvasWindow()->GetClientSize().x;           // the display size
+    int h = GetOCPNCanvasWindow()->GetClientSize().y;
+    int dMargin = 80;                                      //set a margin
+    h -= ( m_rButton->GetSize().GetY() + dMargin );         //height available for the scrolled window
+    w -= dMargin;                                           //width available for the scrolled window
+    m_sScrolledDialog->SetMinSize( wxSize( wxMin( w, scroll.GetWidth() ), h ) );		//set scrolled area size with margin
 
 	Layout();
     Fit();
