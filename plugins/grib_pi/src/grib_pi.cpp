@@ -410,7 +410,7 @@ void grib_pi::OnGribCtrlBarClose()
     RequestRefresh(m_parent_window); // refresh main window
 
     if( m_DialogStyleChanged ) {
-        delete m_pGribCtrlBar;
+        m_pGribCtrlBar->Destroy();
         m_pGribCtrlBar = NULL;
         m_DialogStyleChanged = false;
     }

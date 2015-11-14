@@ -3777,14 +3777,10 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         case ID_MENU_ROUTE_NEW:
         case ID_ROUTE: {
             if( 0 == nRoute_State ){
-                nRoute_State = 1;
-                cc1->SetCursor( *cc1->pCursorPencil );
-                SetToolbarItemState( ID_ROUTE, true );
-
+                cc1->StartRoute();
             }
             else {
                 cc1->FinishRoute();
-                SetToolbarItemState( ID_ROUTE, false );
             }
 
 #ifdef __OCPN__ANDROID__
