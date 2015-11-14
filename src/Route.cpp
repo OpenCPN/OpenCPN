@@ -78,7 +78,6 @@ Route::Route( void )
 
     m_bNeedsUpdateBBox = true;
     RBBox.Reset();
-    m_bcrosses_idl = false;
 
     m_LayerID = 0;
     m_bIsInLayer = false;
@@ -445,10 +444,10 @@ static void TestLongitude(double lon, double min, double max, bool &lonl, bool &
     }
 }
 
-void Route::DrawGLLines( ViewPort &VP, ocpnDC *dc )
+void Route::DrawGLLines( ViewPort &vp, ocpnDC *dc )
 {
 #ifdef ocpnUSE_GL    
-    float pix_full_circle = WGS84_semimajor_axis_meters * mercator_k0 * 2 * PI * VP.view_scale_ppm;
+    float pix_full_circle = WGS84_semimajor_axis_meters * mercator_k0 * 2 * PI * vp.view_scale_ppm;
 
     bool r1valid = false;
     wxPoint2DDouble r1;
@@ -463,6 +462,9 @@ void Route::DrawGLLines( ViewPort &VP, ocpnDC *dc )
         dc->DrawLine(r1.m_x, r1.m_y, r1.m_x+2, r1.m_y+2);
         return;
     }
+
+    //    Handle offscreen points
+    LLBBox bbox = vp.GetBBox();
 
     // dc is passed for thicker highlighted lines (performance not very important)
     if( !dc )
@@ -484,11 +486,13 @@ void Route::DrawGLLines( ViewPort &VP, ocpnDC *dc )
             
             wxPoint2DDouble r2;
             cc1->GetDoubleCanvasPointPix( prp2->m_lat, prp2->m_lon, &r2);
+            if(wxIsNaN(r2.m_x)) {
+                r1valid = false;
+                continue;
+            }
+
             lastpoint = r2;             // For active track segment to ownship
             
-            //    Handle offscreen points
-            LLBBox bbox = VP.GetBBox();
-
             // don't need to perform calculations or render segment
             // if both points are past any edge of the vp
             // TODO: use these optimizations for dc mode
@@ -509,36 +513,54 @@ void Route::DrawGLLines( ViewPort &VP, ocpnDC *dc )
                 continue;
             }
 
-            if(!r1valid)
+            if(!r1valid) {
                 cc1->GetDoubleCanvasPointPix( prp1->m_lat, prp1->m_lon, &r1);
+                if(wxIsNaN(r1.m_x))
+                    continue;
+            }
 
-            //    In the cases where one point is on, and one off
-            //    we must decide which way to go in longitude
+            //  we must decide which way to go in longitude
+            //  for projections which wrap, in this case, we will render two lines
+            //  (one may often be off screen which would be nice to fix but complicate things here
+            //  anyway, in some cases both points are on screen, but the route wraps to either side
+            //  so two lines are needed to draw this properly
 
-            double adder1 = 0, adder2 = 0;
-            if(!(lon1l || lon1r) && (lon2l || lon2r) ) { // first point is on screen, second not
-                if( r2.m_x < r1.m_x )
-                    adder2 = pix_full_circle;
-                else
-                    adder2 = -pix_full_circle;
+            double adder = 0;
+            if( (vp.m_projection_type == PROJECTION_MERCATOR ||
+                 vp.m_projection_type == PROJECTION_EQUIRECTANGULAR) ) {
+                float olon = vp.clon > 0 ? vp.clon - 180 : vp.clon + 180;
 
-                if( fabs(r1.m_x - r2.m_x) < fabs(r1.m_x - ( r2.m_x + adder2 )) )
-                    adder2 = 0;
-            } else if(lon1l || lon1r) { // first point is off screen
-                if( r1.m_x < r2.m_x )
-                    adder1 = pix_full_circle;
-                else
-                    adder1 = -pix_full_circle;
-
-                if( fabs(r1.m_x - r2.m_x) < fabs(r2.m_x - (r1.m_x + adder1)) )
-                    adder1 = 0;
+                if(prp1->m_lon < prp2->m_lon) {
+                    if(prp2->m_lon - prp1->m_lon < 180) {
+                        if(olon > prp1->m_lon && olon < prp2->m_lon)
+                            adder = pix_full_circle;
+                    } else
+                        if(olon < prp1->m_lon || olon > prp2->m_lon)
+                            adder = -pix_full_circle;
+                } else
+                    if(prp1->m_lon - prp2->m_lon < 180) {
+                        if(olon < prp1->m_lon && olon > prp2->m_lon)
+                            adder = -pix_full_circle;
+                    } else
+                        if(olon > prp1->m_lon || olon < prp2->m_lon)
+                            adder = pix_full_circle;
             }
 
             if( dc )
-                dc->DrawLine(r1.m_x + adder1, r1.m_y, r2.m_x + adder2, r2.m_y);
+                if(adder) {
+                    float adderc = cos(vp.rotation)*adder, adders = sin(vp.rotation)*adder;
+                    dc->DrawLine(r1.m_x, r1.m_y, r2.m_x + adderc, r2.m_y + adders);
+                    dc->DrawLine(r1.m_x - adderc, r1.m_y - adders, r2.m_x, r2.m_y);
+                } else
+                    dc->DrawLine(r1.m_x, r1.m_y, r2.m_x, r2.m_y);
             else {
-                glVertex2f(r1.m_x + adder1, r1.m_y);
-                glVertex2f(r2.m_x + adder2, r2.m_y);
+                glVertex2f(r1.m_x, r1.m_y);
+                if(adder) {
+                    float adderc = cos(vp.rotation)*adder, adders = sin(vp.rotation)*adder;
+                    glVertex2f(r2.m_x+adderc, r2.m_y+adders);
+                    glVertex2f(r1.m_x-adderc, r1.m_y-adders);
+                }
+                glVertex2f(r2.m_x, r2.m_y);
 
                 // cache screen position for arrows and points
                 if(!r1valid) {
@@ -577,11 +599,28 @@ void Route::DrawGLLines( ViewPort &VP, ocpnDC *dc )
 #endif    
 }
 
-void Route::DrawGL( ViewPort &VP )
+void Route::DrawGL( ViewPort &vp )
 {
 #ifdef ocpnUSE_GL
     if( m_nPoints < 1 || !m_bVisible ) return;
+
+    if(!vp.GetBBox().IntersectOut(GetBBox()))
+        DrawGLRouteLines(vp);
     
+    /*  Route points  */
+    for(wxRoutePointListNode *node = pRoutePointList->GetFirst(); node; node = node->GetNext()) {
+        RoutePoint *prp = node->GetData();
+        if ( !m_bVisible && prp->m_bKeepXRoute )
+            prp->DrawGL( vp );
+        else if (m_bVisible)
+            prp->DrawGL( vp );
+    }
+#endif
+}
+
+void Route::DrawGLRouteLines( ViewPort &vp )
+{
+#ifdef ocpnUSE_GL
     //  Hiliting first
     //  Being special case to draw something for a 1 point route....
     ocpnDC dc;
@@ -594,40 +633,8 @@ void Route::DrawGL( ViewPort &VP )
         ocpnDC dc;
         dc.SetPen( HiPen );
         
-        wxRoutePointListNode *node = pRoutePointList->GetFirst();
-        RoutePoint *prp0 = node->GetData();
-        wxPoint r0;
-
-        bool r0valid = cc1->GetCanvasPointPix( prp0->m_lat, prp0->m_lon, &r0);
-        
-        int lines = 0;
-        node = node->GetNext();
-        while( node ) {
-            
-            RoutePoint *prp = node->GetData();
-            wxPoint r1;
-            bool r1valid = cc1->GetCanvasPointPix( prp->m_lat, prp->m_lon, &r1);
-
-            if(r0valid && r1valid) {
-                dc.StrokeLine( r0.x, r0.y, r1.x, r1.y );
-                lines++;
-            }
-             
-            r0valid = r1valid;
-            r0 = r1;
-            node = node->GetNext();
-            
-        }
-
-        if(lines == 0 &&
-           cc1->GetCanvasPointPix( prp0->m_lat, prp0->m_lon, &r0)) {
-            dc.StrokeLine( r0.x, r0.y, r0.x + 2, r0.y + 2 );
-            return;
-        }
+        DrawGLLines(vp, &dc);
     }
-    
-//    if( m_nPoints < 2  )
-//        return;
     
     /* determine color and width */
     wxColour col;
@@ -679,50 +686,9 @@ void Route::DrawGL( ViewPort &VP )
     glLineWidth( wxMax( g_GLMinSymbolLineWidth, width ) );
 
     dc.SetGLStipple();
-    glBegin(GL_LINE_STRIP);
-    float lastlon = 0;
-    float lastlat = 0;
-    unsigned short int FromSegNo = 1;
-    for(wxRoutePointListNode *node = pRoutePointList->GetFirst();
-        node; node = node->GetNext()) {
-        RoutePoint *prp = node->GetData();
-        unsigned short int ToSegNo = prp->m_GPXTrkSegNo;
-        
-        /* crosses IDL? if so break up into two segments */
-        int dir = 0;
-        if(prp->m_lon > 150 && lastlon < -150)
-            dir = -1;
-        else if(prp->m_lon < -150 && lastlon > 150)
-            dir = 1;
-        
-        wxPoint r;
-        if (FromSegNo != ToSegNo)
-        {
-            glEnd();
-            FromSegNo = ToSegNo;
-            glBegin(GL_LINE_STRIP);
-        }
-        if(dir)
-        {
-            double crosslat = lat_rl_crosses_meridian(lastlat, lastlon, prp->m_lat, prp->m_lon, 180.0);
-            if(cc1->GetCanvasPointPix( crosslat, dir*180, &r))
-                glVertex2i(r.x, r.y);
-            glEnd();
-            glBegin(GL_LINE_STRIP);
-            if(cc1->GetCanvasPointPix( crosslat, -dir*180, &r))
-                glVertex2i(r.x, r.y);
-        }
-        lastlat=prp->m_lat;
-        lastlon=prp->m_lon;
-        
-        if(cc1->GetCanvasPointPix( prp->m_lat, prp->m_lon, &r))
-            glVertex2i(r.x, r.y);
-        else {
-            glEnd();
-            glBegin(GL_LINE_STRIP);
-        }
-    }
-    glEnd();
+
+    DrawGLLines(vp, NULL);
+
     glDisable (GL_LINE_STIPPLE);
 
     /* direction arrows.. could probably be further optimized for opengl */
@@ -733,22 +699,11 @@ void Route::DrawGL( ViewPort &VP )
             RoutePoint *prp = node->GetData();
             cc1->GetCanvasPointPix( prp->m_lat, prp->m_lon, &rpt2 );
             if(node != pRoutePointList->GetFirst())
-                RenderSegmentArrowsGL( rpt1.x, rpt1.y, rpt2.x, rpt2.y, cc1->GetVP() );
+                RenderSegmentArrowsGL( rpt1.x, rpt1.y, rpt2.x, rpt2.y, vp );
             rpt1 = rpt2;
             node = node->GetNext();
         }
     }
-
-    /*  Route points  */
-    for(wxRoutePointListNode *node = pRoutePointList->GetFirst(); node; node = node->GetNext()) {
-        RoutePoint *prp = node->GetData();
-        if ( !m_bVisible && prp->m_bKeepXRoute )
-            prp->DrawGL( VP );
-        else if (m_bVisible)
-            prp->DrawGL( VP );
-    
-    }
-        
 #endif
 }
 
@@ -1071,86 +1026,62 @@ void Route::FinalizeForRendering()
     m_bNeedsUpdateBBox = true;
 }
 
-wxBoundingBox Route::GetBBox( void )
+LLBBox &Route::GetBBox( void )
 {
     if(!m_bNeedsUpdateBBox)
         return RBBox;
 
-    double bbox_xmin = 180.;                        // set defaults
+    double bbox_xmin;
+    double bbox_xmax;
     double bbox_ymin = 90.;
-    double bbox_xmax = -180;
     double bbox_ymax = -90.;
 
-    RBBox.Reset();
-    m_bcrosses_idl = CalculateCrossesIDL();
-
     wxRoutePointListNode *node = pRoutePointList->GetFirst();
-    RoutePoint *data;
+    RoutePoint *data = node->GetData();
 
-    if( !m_bcrosses_idl ) {
-        while( node ) {
-            data = node->GetData();
+    bbox_xmax = bbox_xmin = data->m_lon;
+    bbox_ymax = bbox_ymin = data->m_lat;
 
-            if( data->m_lon > bbox_xmax ) bbox_xmax = data->m_lon;
-            if( data->m_lon < bbox_xmin ) bbox_xmin = data->m_lon;
-            if( data->m_lat > bbox_ymax ) bbox_ymax = data->m_lat;
-            if( data->m_lat < bbox_ymin ) bbox_ymin = data->m_lat;
+    double lastlon = data->m_lon, wrap = 0;
 
-            node = node->GetNext();
-        }
-    } else {
-        //    For Routes that cross the IDL, we compute and store
-        //    the bbox as positive definite
-        while( node ) {
-            data = node->GetData();
-            double lon = data->m_lon;
-            if( lon < 0. ) lon += 360.;
+    node = node->GetNext();
+    while( node ) {
+        data = node->GetData();
 
-            if( lon > bbox_xmax ) bbox_xmax = lon;
-            if( lon < bbox_xmin ) bbox_xmin = lon;
-            if( data->m_lat > bbox_ymax ) bbox_ymax = data->m_lat;
-            if( data->m_lat < bbox_ymin ) bbox_ymin = data->m_lat;
+        if(lastlon - data->m_lon > 180)
+            wrap += 360;
+        else if(data->m_lon - lastlon > 180)
+            wrap -= 360;
+        
+        double lon = data->m_lon + wrap;
 
-            node = node->GetNext();
-        }
+        if( lon > bbox_xmax )
+            bbox_xmax = lon;
+        if( lon < bbox_xmin )
+            bbox_xmin = lon;
+
+        if( data->m_lat > bbox_ymax )
+            bbox_ymax = data->m_lat;
+        if( data->m_lat < bbox_ymin )
+            bbox_ymin = data->m_lat;
+
+        lastlon = data->m_lon;
+        node = node->GetNext();
     }
+    
+    if(bbox_xmin < -360)
+        bbox_xmin += 360, bbox_xmax += 360;
+    else if(bbox_xmax > 360)
+        bbox_xmin -= 360, bbox_xmax -= 360;
 
-    RBBox.Expand( bbox_xmin, bbox_ymin );
-    RBBox.Expand( bbox_xmax, bbox_ymax );
+    if(bbox_xmax - bbox_xmin > 360)
+       bbox_xmin = -180, bbox_xmax = 180;
+
+    RBBox.SetMin(bbox_xmin, bbox_ymin);
+    RBBox.SetMax(bbox_xmax, bbox_ymax);
 
     m_bNeedsUpdateBBox = false;
     return RBBox;
-}
-
-bool Route::CalculateCrossesIDL( void )
-{
-    wxRoutePointListNode *node = pRoutePointList->GetFirst();
-    if( NULL == node ) return false;
-
-    bool idl_cross = false;
-    RoutePoint *data = node->GetData();             // first node
-
-    double lon0 = data->m_lon;
-    node = node->GetNext();
-
-    while( node ) {
-        data = node->GetData();
-        if( ( lon0 < -150. ) && ( data->m_lon > 150. ) ) {
-            idl_cross = true;
-            break;
-        }
-
-        if( ( lon0 > 150. ) && ( data->m_lon < -150. ) ) {
-            idl_cross = true;
-            break;
-        }
-
-        lon0 = data->m_lon;
-
-        node = node->GetNext();
-    }
-
-    return idl_cross;
 }
 
 void Route::CalculateDCRect( wxDC& dc_route, wxRect *prect, ViewPort &VP )

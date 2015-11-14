@@ -1670,29 +1670,7 @@ void glChartCanvas::DrawStaticRoutesAndWaypoints( ViewPort &vp )
         if( pRouteDraw->m_bIsBeingEdited )
             continue;
     
-        /* this routine is called very often, so rather than using the
-         *           wxBoundingBox::Intersect routine, do the comparisons directly
-         *           to reduce the number of floating point comparisons */
-    
-        const wxBoundingBox &vp_box = vp.GetBBox(), &test_box = pRouteDraw->GetBBox();
-    
-        if(test_box.GetMaxY() < vp_box.GetMinY() ||
-           test_box.GetMinY() > vp_box.GetMaxY())
-            continue;
-    
-        double vp_minx = vp_box.GetMinX(), vp_maxx = vp_box.GetMaxX();
-        double test_minx = test_box.GetMinX(), test_maxx = test_box.GetMaxX();
-    
-        // Route is not wholly outside viewport
-        if(test_maxx >= vp_minx && test_minx <= vp_maxx) {
-            pRouteDraw->DrawGL( vp );
-        } else if( vp_maxx > 180. ) {
-            if(test_minx + 360 <= vp_maxx && test_maxx + 360 >= vp_minx)
-                pRouteDraw->DrawGL( vp );
-        } else if( pRouteDraw->CrossesIDL() || vp_minx < -180. ) {
-            if(test_maxx - 360 >= vp_minx && test_minx - 360 <= vp_maxx)
-                pRouteDraw->DrawGL( vp );
-        }
+        pRouteDraw->DrawGL( vp );
     }
         
     /* Waypoints not drawn as part of routes, and not being edited */
@@ -1737,30 +1715,9 @@ void glChartCanvas::DrawDynamicRoutesAndWaypoints( ViewPort &vp )
             drawit++;
         
         if(drawit) {
-            /* this routine is called very often, so rather than using the
-             *           wxBoundingBox::Intersect routine, do the comparisons directly
-             *           to reduce the number of floating point comparisons */
-            
             const wxBoundingBox &vp_box = vp.GetBBox(), &test_box = pRouteDraw->GetBBox();
-            
-            if(test_box.GetMaxY() < vp_box.GetMinY() ||
-               test_box.GetMinY() > vp_box.GetMaxY())
-                continue;
-            
-            double vp_minx = vp_box.GetMinX(), vp_maxx = vp_box.GetMaxX();
-            double test_minx = test_box.GetMinX(), test_maxx = test_box.GetMaxX();
-            
-            
-            // Route is not wholly outside viewport
-            if(test_maxx >= vp_minx && test_minx <= vp_maxx) {
+            if(!vp_box.IntersectOut(test_box));
                 pRouteDraw->DrawGL( vp );
-            } else if( vp_maxx > 180. ) {
-                if(test_minx + 360 <= vp_maxx && test_maxx + 360 >= vp_minx)
-                    pRouteDraw->DrawGL( vp );
-            } else if( pRouteDraw->CrossesIDL() || vp_minx < -180. ) {
-                if(test_maxx - 360 >= vp_minx && test_minx - 360 <= vp_maxx)
-                    pRouteDraw->DrawGL( vp );
-            }
         }
     }
     

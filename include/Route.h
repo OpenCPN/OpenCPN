@@ -63,6 +63,7 @@ public:
       virtual void Draw(ocpnDC& dc, ViewPort &pVP);
       void DrawGLLines( ViewPort &VP, ocpnDC *dc );
       virtual void DrawGL( ViewPort &VP );
+      void DrawGLRouteLines( ViewPort &vp );
       RoutePoint *GetLastPoint();
       void DeletePoint(RoutePoint *rp, bool bRenamePoints = false);
       void RemovePoint(RoutePoint *rp, bool bRenamePoints = false);
@@ -71,7 +72,7 @@ public:
       void UpdateSegmentDistances(double planspeed = -1.0);
       void CalculateDCRect(wxDC& dc_route, wxRect *prect, ViewPort &VP);
       int GetnPoints(void){ return m_nPoints; }
-      wxBoundingBox GetBBox();
+      LLBBox &GetBBox();
       void SetnPoints(void){ m_nPoints = pRoutePointList->GetCount(); }
       void SetHiLite( int width ) {m_hiliteWidth = width; }
       void Reverse(bool bRenamePoints = false);
@@ -89,7 +90,6 @@ public:
       void RenderSegment(ocpnDC& dc, int xa, int ya, int xb, int yb, ViewPort &VP, bool bdraw_arrow, int hilite_width = 0);
       void RenderSegmentArrowsGL( int xa, int ya, int xb, int yb, ViewPort &VP);
 
-      bool CrossesIDL(){ return m_bcrosses_idl; }
       void SetVisible(bool visible = true, bool includeWpts = true);
       void SetListed(bool visible = true);
       bool IsVisible() { return m_bVisible; }
@@ -140,15 +140,13 @@ public:
 
 private:
       bool m_bNeedsUpdateBBox;
-      wxBoundingBox     RBBox;
+      LLBBox     RBBox;
 
-      bool        CalculateCrossesIDL();
       int         m_nPoints;
       int         m_nm_sequence;
       bool        m_bVisible; // should this route be drawn?
       bool        m_bListed;
       double      m_ArrivalRadius;
-      bool        m_bcrosses_idl;
 };
 
 WX_DECLARE_LIST(Route, RouteList); // establish class Route as list member
