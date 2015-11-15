@@ -99,7 +99,7 @@ public:
 
      void DrawText(const wxString &text, wxCoord x, wxCoord y);
      void GetTextExtent(const wxString &string, wxCoord *w, wxCoord *h, wxCoord *descent = NULL,
-                        wxCoord *externalLeading = NULL, wxFont *font = NULL) const;
+                        wxCoord *externalLeading = NULL, wxFont *font = NULL);
 
      void ResetBoundingBox();
      void CalcBoundingBox(wxCoord x, wxCoord y);
