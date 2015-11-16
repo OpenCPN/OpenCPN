@@ -2158,14 +2158,18 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
     for(OCPNRegionIterator upd ( RectRegion ); upd.HaveRects(); upd.NextRect()) {
         LLRegion chart_region = vp.GetLLRegion(upd.GetRect());
         chart_region.Intersect(Region);
-
+        
         if(!chart_region.Empty()) {
             
             //TODO  I think this needs nore work for alternate Projections...
             //  cm93 vpoint crossing Greenwich, panning east, was rendering areas incorrectly.
             ViewPort cvp = glChartCanvas::ClippedViewport(VPoint, chart_region);
 
-            glChartCanvas::SetClipRect(cvp, upd.GetRect(), false/*!b_overlay*/);
+            if(CHART_TYPE_CM93 == GetChartType())
+                glChartCanvas::SetClipRegion(cvp, chart_region);
+            else
+                glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
+            
             ps52plib->m_last_clip_rect = upd.GetRect();
             glPushMatrix(); //    Adjust for rotation
             glChartCanvas::RotateToViewPort(VPoint);
