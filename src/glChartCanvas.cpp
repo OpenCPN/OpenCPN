@@ -1583,8 +1583,11 @@ void glChartCanvas::MultMatrixViewPort(ViewPort &vp, float lat, float lon)
         printf("ERROR: Unhandled projection\n");
     }
 
-    if(vp.rotation)
-        glRotatef(vp.rotation*180/PI, 0, 0, 1);
+    double rotation = vp.rotation;
+    if (!g_bskew_comp && vp.skew)
+        rotation += vp.skew;
+    if (rotation)
+        glRotatef(rotation*180/PI, 0, 0, 1);
 }
 
 ViewPort glChartCanvas::NormalizedViewPort(const ViewPort &vp, float lat, float lon)
@@ -1928,8 +1931,10 @@ void glChartCanvas::GridDraw( )
 
     ViewPort &vp = cc1->GetVP();
 
+    if (!g_bskew_comp && (fabs(vp.skew) > 0.0001)) return;
+
     // TODO: make minor grid work all the time
-    bool minorgrid = fabs( vp.rotation ) < 0.0001 && ( !g_bskew_comp || fabs( vp.skew ) < 0.0001) &&
+    bool minorgrid = fabs( vp.rotation ) < 0.0001 && ( g_bskew_comp || fabs( vp.skew ) < 0.0001) &&
         vp.m_projection_type == PROJECTION_MERCATOR;
 
     double nlat, elon, slat, wlon;
