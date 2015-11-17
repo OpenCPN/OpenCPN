@@ -6938,8 +6938,10 @@ void CM93OffsetDialog::OnCellSelected ( wxListEvent &event )
       
       m_pcompchart->InvalidateCache();
 
-      if ( m_pparent )
+      if ( m_pparent ) {
             m_pparent->Refresh ( true );
+            cc1->InvalidateGL();
+      }
     }
 }
 
