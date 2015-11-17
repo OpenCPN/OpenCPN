@@ -110,6 +110,11 @@ bool ocpnCompass::MouseEvent( wxMouseEvent& event )
     if(!m_shown || !m_rect.Contains(event.GetPosition()))
         return false;
 
+    // only react to left click events
+    // XXX wrong behavior if it's the start of a dragging event
+    if (!event.LeftDown() && !event.LeftUp())
+        return false;
+
     if (event.LeftDown())
         gFrame->ToggleCourseUp();
     return true;
