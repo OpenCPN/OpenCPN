@@ -1835,6 +1835,8 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         case 9:                      // Ctrl I
             if (g_Compass) {
                 g_Compass->Show(!g_Compass->IsShown());
+                if (g_Compass->IsShown())
+                    g_Compass->UpdateStatus();
                 m_brepaint_piano = true;
                 Refresh( false );
             }
