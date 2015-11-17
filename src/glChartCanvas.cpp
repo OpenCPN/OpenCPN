@@ -927,10 +927,7 @@ void glChartCanvas::OnSize( wxSizeEvent& event )
 
 void glChartCanvas::MouseEvent( wxMouseEvent& event )
 {
-    if(g_Compass && g_Compass->MouseEvent( event ))
-        return;
-
-    if(cc1->MouseEventChartBar( event ))
+    if(cc1->MouseEventOverlayWindows( event ))
         return;
 
 #ifndef __OCPN__ANDROID__
