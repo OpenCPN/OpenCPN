@@ -6847,8 +6847,10 @@ void CM93OffsetDialog::OnClose ( wxCloseEvent& event )
 
             m_pcompchart->InvalidateCache();
 
-            if ( m_pparent )
+            if ( m_pparent ) {
                   m_pparent->Refresh ( true );
+                  cc1->InvalidateGL();
+            }
       }
 
       if ( m_pListCtrlMCOVRs->GetItemCount() > m_selected_list_index )
