@@ -5413,6 +5413,9 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
                   LLRegion vpr_empty = Region;
                   LLRegion chart_region = GetValidRegion();
 
+#if 0
+                  // old method which draws the regions from large to small scale, then finishes with the largest
+                  // scale.  This is broken on systems with broken clipping regions
                   if ( !chart_region.Empty() )
                         vpr_empty.Subtract ( chart_region );
 
@@ -5451,6 +5454,28 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
                         m_pcm93chart_current = m_pcm93chart_save;
                         m_cmscale = cmscale_save;
                   }
+#else
+                  // Draw the regions from small to large scale
+                  if ( !chart_region.Empty() )
+                        vpr_empty.Subtract ( chart_region );
+
+                  if ( !vpr_empty.Empty() && m_cmscale )        // This chart scale does not fully cover the region
+                  {
+                        //    Save the current cm93 chart pointer for restoration later
+                        cm93chart *m_pcm93chart_save = m_pcm93chart_current;
+                        int cmscale_save = m_cmscale;
+
+                        //    Render smaller scale cells the entire requested region is full
+                        //    get the next smaller scale chart
+                        m_cmscale = PrepareChartScale ( vp, m_cmscale - 1, false );
+
+                        if ( m_pcm93chart_current )
+                            render_return |= DoRenderRegionViewOnGL( glc, vp, RectRegion, vpr_empty );
+                        // restore the base chart pointer
+                        m_pcm93chart_current = m_pcm93chart_save;
+                        m_cmscale = cmscale_save;
+                  }
+#endif
 
                   render_return |= m_pcm93chart_current->RenderRegionViewOnGL
                       ( glc, vp, RectRegion, Region );
