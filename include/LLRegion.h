@@ -57,7 +57,7 @@ public:
 
     static bool PointsCCW( size_t n, const double *points );
     
-    void Print() const;
+    void Print(bool plot=false, FILE *f=NULL) const;
     
     LLBBox GetBox() const;
     bool IntersectOut(const LLBBox &box) const;
