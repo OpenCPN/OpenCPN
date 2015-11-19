@@ -2033,16 +2033,14 @@ void cm93chart::GetPointPix ( ObjRazRules *rzRules, wxPoint2DDouble *en, wxPoint
       double yr =  obj->y_rate;
       double yo =  obj->y_origin;
 
-      bool mercator = m_vp_current.m_projection_type == PROJECTION_MERCATOR;
-
-      if(mercator) {
-          if ( m_vp_current.GetBBox().GetMaxX() >= 180. )
-          {
-              if ( rzRules->obj->BBObj.GetMaxX() < 0 )
-                  xo += mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
-          } else
-          if (( m_vp_current.GetBBox().GetMinX() <= -180. && rzRules->obj->BBObj.GetMaxX() > 0 ) ||
-              ( rzRules->obj->BBObj.GetMaxX() >= 180 && m_vp_current.GetBBox().GetMinX() <= 0 ))
+      if(m_vp_current.m_projection_type == PROJECTION_MERCATOR) {
+          // not sure if these corrections are needed anymore
+          if ( m_vp_current.GetBBox().GetMaxX() >= 180. &&
+               rzRules->obj->BBObj.GetMaxX() < m_vp_current.GetBBox().GetMinX() )
+              xo += mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
+          else
+          if ( m_vp_current.GetBBox().GetMinX() <= -180. &&
+               rzRules->obj->BBObj.GetMinX() > m_vp_current.GetBBox().GetMaxX() )
               xo -= mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
 
           for ( int i=0 ; i < nPoints ; i++ )
@@ -5415,6 +5413,9 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
                   LLRegion vpr_empty = Region;
                   LLRegion chart_region = GetValidRegion();
 
+#if 0
+                  // old method which draws the regions from large to small scale, then finishes with the largest
+                  // scale.  This is broken on systems with broken clipping regions
                   if ( !chart_region.Empty() )
                         vpr_empty.Subtract ( chart_region );
 
@@ -5453,6 +5454,28 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
                         m_pcm93chart_current = m_pcm93chart_save;
                         m_cmscale = cmscale_save;
                   }
+#else
+                  // Draw the regions from small to large scale
+                  if ( !chart_region.Empty() )
+                        vpr_empty.Subtract ( chart_region );
+
+                  if ( !vpr_empty.Empty() && m_cmscale )        // This chart scale does not fully cover the region
+                  {
+                        //    Save the current cm93 chart pointer for restoration later
+                        cm93chart *m_pcm93chart_save = m_pcm93chart_current;
+                        int cmscale_save = m_cmscale;
+
+                        //    Render smaller scale cells the entire requested region is full
+                        //    get the next smaller scale chart
+                        m_cmscale = PrepareChartScale ( vp, m_cmscale - 1, false );
+
+                        if ( m_pcm93chart_current )
+                            render_return |= DoRenderRegionViewOnGL( glc, vp, RectRegion, vpr_empty );
+                        // restore the base chart pointer
+                        m_pcm93chart_current = m_pcm93chart_save;
+                        m_cmscale = cmscale_save;
+                  }
+#endif
 
                   render_return |= m_pcm93chart_current->RenderRegionViewOnGL
                       ( glc, vp, RectRegion, Region );

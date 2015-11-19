@@ -70,27 +70,32 @@ LLRegion::LLRegion( size_t n, const double *points )
 bool LLRegion::PointsCCW( size_t n, const double *points )
 {
     double total = 0;
-    int pl = 2*(n-1);
-    double x0 = points[0] - points[pl+0];
-    double y0 = points[1] - points[pl+1];
     for(unsigned int i=0; i<2*n; i+=2) {
         int pn = i < 2*(n-1) ? i + 2 : 0;
-        double x1 = points[pn+0] - points[i+0];
-        double y1 = points[pn+1] - points[i+1];
-        total += x1*y0 - x0*y1;
-        x0 = x1, y0 = y1;
+        total += (points[pn+0] - points[i+0]) * (points[pn+1] + points[i+1]);
     }
     return total > 0;
 }
 
-void LLRegion::Print() const
+void LLRegion::Print(bool plot, FILE *f) const
 {
-    for(std::list<poly_contour>::const_iterator i = contours.begin(); i != contours.end(); i++) {
-        printf("[");
-        for(poly_contour::const_iterator j = i->begin(); j != i->end(); j++)
-            printf("(%g %g) ", j->y, j->x);
-        printf("]\n");
-    }
+    if(!f)
+        f = stdout;
+    if(plot)
+        for(std::list<poly_contour>::const_iterator i = contours.begin(); i != contours.end(); i++) {
+            for(poly_contour::const_iterator j = i->begin(); j != i->end(); j++)
+                fprintf(f, "%f %f\n", j->x, j->y);
+            
+            fprintf(f, "%f %f\n", i->begin()->x, i->begin()->y);
+            fprintf(f, "\n");
+        }
+    else
+        for(std::list<poly_contour>::const_iterator i = contours.begin(); i != contours.end(); i++) {
+            fprintf(f, "[");
+            for(poly_contour::const_iterator j = i->begin(); j != i->end(); j++)
+                fprintf(f, "(%g %g) ", j->y, j->x);
+            fprintf(f, "]\n");
+        }
 }
 
 LLBBox LLRegion::GetBox() const
