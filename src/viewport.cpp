@@ -364,7 +364,6 @@ LLRegion ViewPort::GetLLRegion( const OCPNRegion &region )
             GetLLFromPix(wxPoint(p[i], p[i+1]), pll+i, pll+i+1);
 
         // resolve (this works even if rectangle crosses both 0 and 180)
-        //if(LLRegion::PointsCCW(4, pll))
         for(int i=0; i<8; i+=2) {
             if(pll[i+1] <= clon - 180)
                 pll[i+1] += 360;

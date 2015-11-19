@@ -70,15 +70,9 @@ LLRegion::LLRegion( size_t n, const double *points )
 bool LLRegion::PointsCCW( size_t n, const double *points )
 {
     double total = 0;
-    int pl = 2*(n-1);
-    double x0 = points[0] - points[pl+0];
-    double y0 = points[1] - points[pl+1];
     for(unsigned int i=0; i<2*n; i+=2) {
         int pn = i < 2*(n-1) ? i + 2 : 0;
-        double x1 = points[pn+0] - points[i+0];
-        double y1 = points[pn+1] - points[i+1];
-        total += x1*y0 - x0*y1;
-        x0 = x1, y0 = y1;
+        total += (points[pn+0] - points[i+0]) * (points[pn+1] + points[i+1]);
     }
     return total > 0;
 }
