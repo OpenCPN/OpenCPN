@@ -3373,13 +3373,13 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
       pobj->attVal =  new wxArrayOfS57attVal();
 
 
-      cm93_attr_block *pab = new cm93_attr_block ( pobject->attributes_block, pDict );
+      cm93_attr_block pab( pobject->attributes_block, pDict );
 
 
       for ( int jattr = 0 ; jattr  < pobject->n_attributes ; jattr++ )
       {
 
-            unsigned char *curr_attr = pab->GetNextAttr();
+            unsigned char *curr_attr = pab.GetNextAttr();
 
             unsigned char iattr = *curr_attr;
 
@@ -3586,7 +3586,6 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
 
       }     //for
 
-      delete pab;
 
       //    ATON label optimization:
       //    Some CM93 ATON objects do not contain OBJNAM attribute, which means that no label is shown
@@ -4285,10 +4284,10 @@ void cm93chart::ProcessMCOVRObjects ( int cell_index, char subcell )
                               double tmp_transform_x = 0.;
                               double tmp_transform_y = 0.;
 
-                              cm93_attr_block *pab = new cm93_attr_block ( pobject->attributes_block, m_pDict );
+                              cm93_attr_block pab( pobject->attributes_block, m_pDict );
                               for ( int jattr = 0 ; jattr  < pobject->n_attributes ; jattr++ )
                               {
-                                    unsigned char *curr_attr = pab->GetNextAttr();
+                                    unsigned char *curr_attr = pab.GetNextAttr();
                                     unsigned char iattr = *curr_attr;
                                     wxString sattr = m_pDict->GetAttrName ( iattr );
                                     char vtype = m_pDict->GetAttrType ( iattr );
@@ -4314,8 +4313,6 @@ void cm93chart::ProcessMCOVRObjects ( int cell_index, char subcell )
 
 
                               }     //for all attributes
-
-                              delete pab;
 
 
                               if ( NULL != xgeom )
