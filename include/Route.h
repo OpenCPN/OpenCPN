@@ -58,10 +58,11 @@ public:
       RoutePoint *InsertPointBefore(RoutePoint *pRP, double rlat, double rlon, bool bRenamePoints = false);
       RoutePoint *InsertPointAfter(RoutePoint *pRP, double rlat, double rlon, bool bRenamePoints = false);
       void DrawPointWhich(ocpnDC& dc, int iPoint, wxPoint *rpn);
-      void DrawSegment(ocpnDC& dc, wxPoint *rp1, wxPoint *rp2, ViewPort &VP, bool bdraw_arrow);
-      virtual void Draw(ocpnDC& dc, ViewPort &pVP);
-      void DrawGLLines( ViewPort &VP, ocpnDC *dc );
-      virtual void DrawGL( ViewPort &VP );
+      void DrawSegment(ocpnDC& dc, wxPoint *rp1, wxPoint *rp2, ViewPort &vp, bool bdraw_arrow);
+      virtual void Draw(ocpnDC& dc, ViewPort &pvp);
+      void DrawGLLines( ViewPort &vp, ocpnDC *dc );
+      virtual void DrawGL( ViewPort &vp );
+      void DrawGLRouteLines( ViewPort &vp );
       RoutePoint *GetLastPoint();
       void DeletePoint(RoutePoint *rp, bool bRenamePoints = false);
       void RemovePoint(RoutePoint *rp, bool bRenamePoints = false);
@@ -69,9 +70,9 @@ public:
       void FinalizeForRendering();
       void UpdateSegmentDistance( RoutePoint *prp0, RoutePoint *prp, double planspeed = -1.0 );
       void UpdateSegmentDistances(double planspeed = -1.0);
-      void CalculateDCRect(wxDC& dc_route, wxRect *prect, ViewPort &VP);
+      void CalculateDCRect(wxDC& dc_route, wxRect *prect);
       int GetnPoints(void){ return m_nPoints; }
-      wxBoundingBox GetBBox();
+      LLBBox &GetBBox();
       void SetnPoints(void){ m_nPoints = pRoutePointList->GetCount(); }
       void SetHiLite( int width ) {m_hiliteWidth = width; }
       void Reverse(bool bRenamePoints = false);
@@ -86,10 +87,9 @@ public:
       void CloneAddedTrackPoint(RoutePoint *ptargetpoint, RoutePoint *psourcepoint);
       void CloneAddedRoutePoint(RoutePoint *ptargetpoint, RoutePoint *psourcepoint);
       void ClearHighlights(void);
-      void RenderSegment(ocpnDC& dc, int xa, int ya, int xb, int yb, ViewPort &VP, bool bdraw_arrow, int hilite_width = 0);
-      void RenderSegmentArrowsGL( int xa, int ya, int xb, int yb, ViewPort &VP);
+      void RenderSegment(ocpnDC& dc, int xa, int ya, int xb, int yb, ViewPort &vp, bool bdraw_arrow, int hilite_width = 0);
+      void RenderSegmentArrowsGL( int xa, int ya, int xb, int yb, ViewPort &vp);
 
-      bool CrossesIDL(){ return m_bcrosses_idl; }
       void SetVisible(bool visible = true, bool includeWpts = true);
       void SetListed(bool visible = true);
       bool IsVisible() { return m_bVisible; }
@@ -140,15 +140,13 @@ public:
 
 private:
       bool m_bNeedsUpdateBBox;
-      wxBoundingBox     RBBox;
+      LLBBox     RBBox;
 
-      bool        CalculateCrossesIDL();
       int         m_nPoints;
       int         m_nm_sequence;
       bool        m_bVisible; // should this route be drawn?
       bool        m_bListed;
       double      m_ArrivalRadius;
-      bool        m_bcrosses_idl;
 };
 
 WX_DECLARE_LIST(Route, RouteList); // establish class Route as list member

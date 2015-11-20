@@ -224,7 +224,7 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
     if( ( fabs( cc1->GetVPRotation() ) > .01 ) || ( fabs( cc1->GetVPSkew() ) > .01 ) ) {
         rose_angle = -cc1->GetVPRotation();
 
-        if( !g_bCourseUp && !g_bskew_comp )
+        if( !g_bskew_comp )
             rose_angle -= cc1->GetVPSkew();
 
     } else

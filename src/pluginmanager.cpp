@@ -1808,6 +1808,17 @@ wxArrayString PlugInManager::GetPlugInChartClassNameArray(void)
     return array;
 }
 
+bool PlugInManager::IsPlugInAvailable(wxString commonName)
+{
+    for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++) {
+        PlugInContainer *pic = plugin_array.Item(i);
+        if(pic && pic->m_bEnabled && (pic->m_common_name == commonName) )
+            return true;
+    }
+    
+    return false;
+}
+
 
 
 //----------------------------------------------------------------------------------------------------------

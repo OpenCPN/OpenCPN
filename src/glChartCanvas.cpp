@@ -1583,8 +1583,11 @@ void glChartCanvas::MultMatrixViewPort(ViewPort &vp, float lat, float lon)
         printf("ERROR: Unhandled projection\n");
     }
 
-    if(vp.rotation)
-        glRotatef(vp.rotation*180/PI, 0, 0, 1);
+    double rotation = vp.rotation;
+    if (!g_bskew_comp && vp.skew)
+        rotation += vp.skew;
+    if (rotation)
+        glRotatef(rotation*180/PI, 0, 0, 1);
 }
 
 ViewPort glChartCanvas::NormalizedViewPort(const ViewPort &vp, float lat, float lon)
@@ -1623,7 +1626,24 @@ ViewPort glChartCanvas::ClippedViewport(const ViewPort &vp, const LLRegion &regi
         return vp;
 
     ViewPort cvp = vp;
-    cvp.SetBBoxDirect(region.GetBox());
+    LLBBox bbox = region.GetBox();
+
+    /* region.GetBox() will always try to give coordinates from -180 to 180 but in
+       the case where the viewport crosses the IDL, we actually want the clipped viewport
+       to use coordinates outside this range to ensure the logic in the various rendering
+       routines works the same here (with accelerated panning) as it does without, so we
+       can adjust the coordinates here */
+
+    if(bbox.GetMaxX() < cvp.GetBBox().GetMinX()) {
+        wxPoint2DDouble p360(360, 0);
+        bbox.Translate(p360);
+    } else if(bbox.GetMinX() > cvp.GetBBox().GetMaxX()) {
+        wxPoint2DDouble n360(-360, 0);
+        bbox.Translate(n360);
+    }
+
+    cvp.SetBBoxDirect(bbox);
+
     return cvp;
 }
 
@@ -1653,29 +1673,7 @@ void glChartCanvas::DrawStaticRoutesAndWaypoints( ViewPort &vp )
         if( pRouteDraw->m_bIsBeingEdited )
             continue;
     
-        /* this routine is called very often, so rather than using the
-         *           wxBoundingBox::Intersect routine, do the comparisons directly
-         *           to reduce the number of floating point comparisons */
-    
-        const wxBoundingBox &vp_box = vp.GetBBox(), &test_box = pRouteDraw->GetBBox();
-    
-        if(test_box.GetMaxY() < vp_box.GetMinY() ||
-           test_box.GetMinY() > vp_box.GetMaxY())
-            continue;
-    
-        double vp_minx = vp_box.GetMinX(), vp_maxx = vp_box.GetMaxX();
-        double test_minx = test_box.GetMinX(), test_maxx = test_box.GetMaxX();
-    
-        // Route is not wholly outside viewport
-        if(test_maxx >= vp_minx && test_minx <= vp_maxx) {
-            pRouteDraw->DrawGL( vp );
-        } else if( vp_maxx > 180. ) {
-            if(test_minx + 360 <= vp_maxx && test_maxx + 360 >= vp_minx)
-                pRouteDraw->DrawGL( vp );
-        } else if( pRouteDraw->CrossesIDL() || vp_minx < -180. ) {
-            if(test_maxx - 360 >= vp_minx && test_minx - 360 <= vp_maxx)
-                pRouteDraw->DrawGL( vp );
-        }
+        pRouteDraw->DrawGL( vp );
     }
         
     /* Waypoints not drawn as part of routes, and not being edited */
@@ -1720,30 +1718,9 @@ void glChartCanvas::DrawDynamicRoutesAndWaypoints( ViewPort &vp )
             drawit++;
         
         if(drawit) {
-            /* this routine is called very often, so rather than using the
-             *           wxBoundingBox::Intersect routine, do the comparisons directly
-             *           to reduce the number of floating point comparisons */
-            
             const wxBoundingBox &vp_box = vp.GetBBox(), &test_box = pRouteDraw->GetBBox();
-            
-            if(test_box.GetMaxY() < vp_box.GetMinY() ||
-               test_box.GetMinY() > vp_box.GetMaxY())
-                continue;
-            
-            double vp_minx = vp_box.GetMinX(), vp_maxx = vp_box.GetMaxX();
-            double test_minx = test_box.GetMinX(), test_maxx = test_box.GetMaxX();
-            
-            
-            // Route is not wholly outside viewport
-            if(test_maxx >= vp_minx && test_minx <= vp_maxx) {
+            if(!vp_box.IntersectOut(test_box));
                 pRouteDraw->DrawGL( vp );
-            } else if( vp_maxx > 180. ) {
-                if(test_minx + 360 <= vp_maxx && test_maxx + 360 >= vp_minx)
-                    pRouteDraw->DrawGL( vp );
-            } else if( pRouteDraw->CrossesIDL() || vp_minx < -180. ) {
-                if(test_maxx - 360 >= vp_minx && test_minx - 360 <= vp_maxx)
-                    pRouteDraw->DrawGL( vp );
-            }
         }
     }
     
@@ -1928,8 +1905,10 @@ void glChartCanvas::GridDraw( )
 
     ViewPort &vp = cc1->GetVP();
 
+    if (!g_bskew_comp && (fabs(vp.skew) > 0.0001)) return;
+
     // TODO: make minor grid work all the time
-    bool minorgrid = fabs( vp.rotation ) < 0.0001 && ( !g_bskew_comp || fabs( vp.skew ) < 0.0001) &&
+    bool minorgrid = fabs( vp.rotation ) < 0.0001 && ( g_bskew_comp || fabs( vp.skew ) < 0.0001) &&
         vp.m_projection_type == PROJECTION_MERCATOR;
 
     double nlat, elon, slat, wlon;

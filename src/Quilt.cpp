@@ -87,9 +87,8 @@ LLRegion &QuiltCandidate::GetCandidateRegion()
         ChartBase *chart = ChartData->OpenChartFromDB( dbIndex, FULL_INIT);
         return candidate_region = chart->GetValidRegion();
 #else
-        double cm93_ll_bounds[16] = {-80, -180, -80, 180, 80, 180, 80, 120,
-                                     40, 120, 40, 40, 80, 40, 80, -180};
-        candidate_region = LLRegion(8, cm93_ll_bounds);
+        double cm93_ll_bounds[8] = {-80, -180, -80, 180, 80, 180, 80, -180};
+        candidate_region = LLRegion(4, cm93_ll_bounds);
         return candidate_region;
 #endif
     }
@@ -123,7 +122,8 @@ LLRegion &QuiltCandidate::GetCandidateRegion()
             float *pfp = cte.GetpAuxPlyTableEntry( ip );
             int nAuxPly = cte.GetAuxCntTableEntry( ip );
 
-            candidate_region = LLRegion( nAuxPly, pfp );
+            candidate_region.Union(LLRegion( nAuxPly, pfp ));
+            
         }
     } else {
         int n_ply_entries = cte.GetnPlyEntries();
