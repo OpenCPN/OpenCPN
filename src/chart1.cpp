@@ -3998,7 +3998,6 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             else
                 g_pAboutDlg->SetFocus();
             g_pAboutDlg->Show();
-
             break;
         }
 
@@ -5169,6 +5168,9 @@ int MyFrame::DoOptionsDialog()
     if (NMEALogWindow::Get().Active())
         NMEALogWindow::Get().GetTTYWindow()->Raise();
 
+    if(g_pi_manager)
+        g_pi_manager->NotifyAuiPlugIns();
+    
     return ret_val;
 }
 
@@ -9613,6 +9615,9 @@ void MyFrame::applySettingsString( wxString settings)
 
     if (NMEALogWindow::Get().Active())
         NMEALogWindow::Get().GetTTYWindow()->Raise();
+    
+    if(g_pi_manager)
+        g_pi_manager->NotifyAuiPlugIns();
 
 }
 

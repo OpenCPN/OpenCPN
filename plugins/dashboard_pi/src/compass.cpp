@@ -64,6 +64,7 @@ void DashboardInstrument_Compass::SetData(int st, double data, wxString unit)
             m_ExtraValue = data;
             m_ExtraValueUnit = unit;
       }
+      Refresh();
 }
 
 void DashboardInstrument_Compass::DrawBackground(wxGCDC* dc)

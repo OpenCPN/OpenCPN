@@ -35,6 +35,10 @@
 #include "instrument.h"
 #include "wx28compat.h"
 
+#ifdef __OCPN__ANDROID__
+#include "qdebug.h"
+#endif
+
 //----------------------------------------------------------------
 //
 //    Generic DashboardInstrument Implementation
@@ -64,13 +68,14 @@ DashboardInstrument::DashboardInstrument(wxWindow *pparent, wxWindowID id, wxStr
       //  Strangely, this does not work for GTK...
       //  See: http://trac.wxwidgets.org/ticket/15417
       
-#ifdef __WXOSX__
+#if defined(__WXOSX__) || defined(__WXQT__)
       Connect(wxEVT_RIGHT_DOWN, wxMouseEventHandler(DashboardInstrument::MouseEvent), NULL, this);
 #endif      
 }
 
 void DashboardInstrument::MouseEvent( wxMouseEvent &event )
 {
+    
     if ( event.GetEventType() == wxEVT_RIGHT_DOWN )
     {
        wxContextMenuEvent evtCtx(wxEVT_CONTEXT_MENU,
@@ -275,6 +280,8 @@ void DashboardInstrument_Single::SetData(int st, double data, wxString unit)
             }
             else
                 m_data = _T("---");
+      
+            Refresh();
       }
 }
 
@@ -344,7 +351,7 @@ void DashboardInstrument_Position::Draw(wxGCDC* dc)
 
 void DashboardInstrument_Position::SetData(int st, double data, wxString unit)
 {
-      if (st == m_cap_flag1)
+    if (st == m_cap_flag1)
       {
             m_data1 = toSDMM(1, data);
             m_data1[0] = ' ';

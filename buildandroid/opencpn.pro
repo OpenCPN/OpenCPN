@@ -175,6 +175,14 @@ INSTALLS += wmm_plugin_deployment
 #------------------------------------------------------------------------------------
 
 
+# Dashboard---------------------------------------------------------------
+#library
+so_dashboard_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/dashboard_pi/libdashboard_pi.so
+so_dashboard_plugin_deployment.path = /assets/plugins
+INSTALLS += so_dashboard_plugin_deployment
+#------------------------------------------------------------------------------------
+
+
 ANDROID_EXTRA_LIBS = \
         /home/dsr/Projects/opencpn_android/buildandroid/../buildandroid/assetbridge/libs/armeabi/libassetbridge.so
 
