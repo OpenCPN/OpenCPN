@@ -295,6 +295,8 @@ bool            s_bdownloading;
 wxString        s_requested_url;
 wxEvtHandler    *s_download_evHandler;
 
+wxString        g_deviceInfo;
+
 #define ANDROID_EVENT_TIMER 4389
 
 #define ACTION_NONE                     -1
@@ -846,7 +848,7 @@ extern "C"{
 //        qDebug() << "invokeMenuItem" << item;
         
         // If in Route Create, disable all other menu items
-        if( (gFrame->nRoute_State > 1 ) && (OCPN_ACTION_ROUTE != item) ) {
+        if( gFrame && (gFrame->nRoute_State > 1 ) && (OCPN_ACTION_ROUTE != item) ) {
             return 72;
         }
             
@@ -1323,9 +1325,10 @@ bool androidShowDisclaimer( wxString title, wxString msg )
 
 wxString androidGetDeviceInfo()
 {
-    wxString info = callActivityMethod_vs("getDeviceInfo");
+    if(!g_deviceInfo.Length())
+        g_deviceInfo = callActivityMethod_vs("getDeviceInfo");
     
-    return info;
+    return g_deviceInfo;
 }
 
 wxString androidGetHomeDir()
