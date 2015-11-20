@@ -2420,12 +2420,12 @@ int cm93chart::CreateObjChain ( int cell_index, int subcell, double view_scale_p
                   {
                         wxString objnam  = obj->GetAttrValueAsString("OBJNAM");
                         wxString fe_name = wxString(obj->FeatureName, wxConvUTF8);
-                        wxString cellname = wxString::Format(_T("%i_%i"), cell_index, subcell);
                         if ( fe_name == _T("_texto") )
                             objnam  = obj->GetAttrValueAsString("_texta");
-                        if (objnam.Len() > 0)
+                        if (objnam.Len() > 0) {
+                            wxString cellname = wxString::Format(_T("%i_%i"), cell_index, subcell);
                             g_pi_manager->SendVectorChartObjectInfo( cellname, fe_name, objnam, obj->m_lat, obj->m_lon, scale, nativescale );
-
+                        }
 //      Build/Maintain the ATON floating/rigid arrays
                         if ( GEO_POINT == obj->Primitive_type )
                         {
