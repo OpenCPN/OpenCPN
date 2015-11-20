@@ -1113,7 +1113,18 @@ void glChartCanvas::BuildFBO( )
     if( m_b_DisableFBO)
         return;
 
-    if(!buildFBOSize(2048)){
+    int initialSize = 2048;
+    
+#ifdef __OCPN__ANDROID__
+    //  Some low mem-spec devices have trouble with 2048 FBO size.
+    //  Detect here, and choose 1024 size instead
+    wxString info = androidGetDeviceInfo();
+    
+    if(wxNOT_FOUND != info.Find(_T("GT-S6312")) )
+        initialSize = 1024;
+#endif    
+    
+    if(!buildFBOSize(initialSize)){
         glDeleteTextures( 2, m_cache_tex );
         ( s_glDeleteFramebuffers )( 1, &m_fb0 );
         ( s_glDeleteRenderbuffers )( 1, &m_renderbuffer );
