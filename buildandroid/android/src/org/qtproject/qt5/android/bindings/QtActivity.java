@@ -3089,10 +3089,16 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 //            return super.onPrepareOptionsMenu(menu);
         ActionBar actionBar = getActionBar();
         if(actionBar != null){
+
             // set the icon
-            //actionBar.setIcon(R.drawable.opencpn_mobile);
-            actionBar.setLogo(R.drawable.opencpn_mobile);
-            actionBar.setDisplayUseLogoEnabled(true);
+
+            // crashes here on some 3.2 devices
+            // So, lets require at least Version 4.0 for this method
+            if (Build.VERSION.SDK_INT >= 14) {
+                actionBar.setLogo(R.drawable.opencpn_mobile);
+                actionBar.setDisplayUseLogoEnabled(true);
+            }
+
 
             //  Use transparent ActionBar background?
             //getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);//or add in style.xml
