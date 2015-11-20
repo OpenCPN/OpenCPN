@@ -5348,7 +5348,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                                                             //      navigating to an isolated waypoint on a temporary route
                                                             if( g_pRouteMan->IsRouteValid(pr) ) {
                                                                 wxRect route_rect;
-                                                                pr->CalculateDCRect( m_dc_route, &route_rect, VPoint );
+                                                                pr->CalculateDCRect( m_dc_route, &route_rect );
                                                                 pre_rect.Union( route_rect );
                                                             }
                                                         }
@@ -5385,7 +5385,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                                                                 Route *pr = (Route *) m_pEditRouteArray->Item( ir );
                                                                 if( g_pRouteMan->IsRouteValid(pr) ) {
                                                                     wxRect route_rect;
-                                                                    pr->CalculateDCRect( m_dc_route, &route_rect, VPoint );
+                                                                    pr->CalculateDCRect( m_dc_route, &route_rect );
                                                                     post_rect.Union( route_rect );
                                                                 }
                                                             }
@@ -5715,7 +5715,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                             if( g_pRouteMan->IsRouteValid(pr) ) {
                                 //                                pr->SetHiLite(50);
                                 wxRect route_rect;
-                                pr->CalculateDCRect( m_dc_route, &route_rect, VPoint );
+                                pr->CalculateDCRect( m_dc_route, &route_rect );
                                 pre_rect.Union( route_rect );
                             }
                         }
@@ -10113,27 +10113,41 @@ void ChartCanvas::DrawAllRoutesInBBox( ocpnDC& dc, LLBBox& BltBBox, const wxRegi
 
             }
 
-            wxBoundingBox test_box = pRouteDraw->GetBBox();
+            if( ( pRouteDraw == active_route ) || ( pRouteDraw == active_track ) )
+                continue;
+
+            LLBBox test_box = pRouteDraw->GetBBox();
 
             if( b_run ) test_box.Expand( gLon, gLat );
 
             if( !BltBBox.IntersectOut( test_box ) ) // Route is not wholly outside window
             {
                 b_drawn = true;
+                pRouteDraw->Draw( dc, GetVP() );
+            } else if( b_run ) {
+                /* it would be nicer to instead of what is below,
+                   append gLat, gLon to the route, compute the bbox, then remove it
+                   and just use the first test */
+                wxPoint2DDouble xlatep( 360., 0. );
+                test_box = pRouteDraw->GetBBox();
+                test_box.Translate( xlatep );
+                test_box.Expand( gLon, gLat );
 
-                if( ( pRouteDraw != active_route ) && ( pRouteDraw != active_track ) )
-                    pRouteDraw->Draw( dc, GetVP() );
-            } else if( pRouteDraw->CrossesIDL() ) {
-                wxPoint2DDouble xlate( -360., 0. );
-                wxBoundingBox test_box1 = pRouteDraw->GetBBox();
-                test_box1.Translate( xlate );
-                if( b_run ) test_box1.Expand( gLon, gLat );
-
-                if( !BltBBox.IntersectOut( test_box1 ) ) // Route is not wholly outside window
+                if( !BltBBox.IntersectOut( test_box ) ) // Route is not wholly outside window
                 {
                     b_drawn = true;
-                    if( ( pRouteDraw != active_route ) && ( pRouteDraw != active_track ) ) pRouteDraw->Draw(
-                            dc, GetVP() );
+                    pRouteDraw->Draw(dc, GetVP() );
+                } else {
+                    wxPoint2DDouble xlaten( -360., 0. );
+                    test_box = pRouteDraw->GetBBox();
+                    test_box.Translate( xlaten );
+                    test_box.Expand( gLon, gLat );
+
+                    if( !BltBBox.IntersectOut( test_box ) ) // Route is not wholly outside window
+                    {
+                        b_drawn = true;
+                        pRouteDraw->Draw(dc, GetVP() );
+                    }
                 }
             }
 
