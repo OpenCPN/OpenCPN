@@ -4439,7 +4439,7 @@ bool cm93chart::UpdateCovrSet ( ViewPort *vpt )
 bool cm93chart::IsPointInLoadedM_COVR ( double xc, double yc )
 {
     //  Provisionally revert to older method pending investigation.
-#if 0
+#if 1
     return m_region.Contains(yc, xc);
 #else
       for ( unsigned int im=0 ; im < m_pcovr_array_loaded.GetCount() ; im++ )
