@@ -4759,7 +4759,6 @@ cm93compchart::cm93compchart()
       m_pcm93mgr = new cm93manager();
 
 
-
 }
 
 cm93compchart::~cm93compchart()
@@ -4965,7 +4964,6 @@ void cm93compchart::SetVPParms ( const ViewPort &vpt )
       m_vpt = vpt;                              // save a copy
 
       int cmscale = GetCMScaleFromVP ( vpt );         // First order calculation of cmscale
-
       m_cmscale = PrepareChartScale ( vpt, cmscale );
 
       //    Continuoesly update the composite chart edition date to the latest cell decoded
@@ -5413,9 +5411,19 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
                   LLRegion vpr_empty = Region;
                   LLRegion chart_region = GetValidRegion();
 
-#if 0
                   // old method which draws the regions from large to small scale, then finishes with the largest
                   // scale.  This is broken on systems with broken clipping regions
+                  
+                  // So we modify the algorithm as follows:
+                  //  a. Calculate the region patches from large scale to small scale, starting with the Reference scale, and
+                  //     ending when the total region requested is full.
+                  //  b. Save the calculated patches in an array as they are generated.
+                  //  c. Render the regions/scales saved in the array in reverse order, from small scale to large scale.
+                  //  d. Finally, render the Reference region/scale.
+                  //  
+                  //  This logic has the advantage that only the minimum necessary Object rendering is actually performed, and
+                  //  only within the minimum necessary region.
+                  
                   if ( !chart_region.Empty() )
                         vpr_empty.Subtract ( chart_region );
 
@@ -5427,7 +5435,10 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
 
                         int cmscale_next = m_cmscale;
 
+                        LLRegion region_vect[8];
+                        
                         //    Render smaller scale cells the entire requested region is full
+                        
                         while ( !vpr_empty.Empty() && cmscale_next )
                         {
                               //    get the next smaller scale chart
@@ -5440,45 +5451,31 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
 
                                     //    Only need to render that part of the vp that is not yet full
                                     sscale_region.Intersect ( vpr_empty );
-
-                                    if(!sscale_region.Empty())
-                                        render_return |= m_pcm93chart_current->RenderRegionViewOnGL
-                                            ( glc, vp, RectRegion, sscale_region );
+                                    
+                                    //  Save the calculated per-scale region in the array
+                                    region_vect[m_cmscale] = sscale_region;
+                                    
                                     //    Update the remaining empty region
                                     vpr_empty.Subtract ( sscale_region );
                               }
 
                         }     // while
 
+                        //  Render all non-empty regions saved in the array, from small to large scale.
+                        for( int i=0 ; i < 8 ; i++) {
+                            if(!region_vect[i].Empty()){
+                                m_cmscale = PrepareChartScale ( vp, i, false );
+                                render_return |= m_pcm93chart_current->RenderRegionViewOnGL( glc, vp, RectRegion, region_vect[i] );
+                            }
+                        }
+
                         // restore the base chart pointer
                         m_pcm93chart_current = m_pcm93chart_save;
                         m_cmscale = cmscale_save;
                   }
-#else
-                  // Draw the regions from small to large scale
-                  if ( !chart_region.Empty() )
-                        vpr_empty.Subtract ( chart_region );
 
-                  if ( !vpr_empty.Empty() && m_cmscale )        // This chart scale does not fully cover the region
-                  {
-                        //    Save the current cm93 chart pointer for restoration later
-                        cm93chart *m_pcm93chart_save = m_pcm93chart_current;
-                        int cmscale_save = m_cmscale;
-
-                        //    Render smaller scale cells the entire requested region is full
-                        //    get the next smaller scale chart
-                        m_cmscale = PrepareChartScale ( vp, m_cmscale - 1, false );
-
-                        if ( m_pcm93chart_current )
-                            render_return |= DoRenderRegionViewOnGL( glc, vp, RectRegion, vpr_empty );
-                        // restore the base chart pointer
-                        m_pcm93chart_current = m_pcm93chart_save;
-                        m_cmscale = cmscale_save;
-                  }
-#endif
-
-                  render_return |= m_pcm93chart_current->RenderRegionViewOnGL
-                      ( glc, vp, RectRegion, Region );
+                  //  Render the on-top Reference region/scale
+                  render_return |= m_pcm93chart_current->RenderRegionViewOnGL( glc, vp, RectRegion, Region );
 
                   m_Name = m_pcm93chart_current->GetName();
 
