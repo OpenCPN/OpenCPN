@@ -2518,37 +2518,21 @@ void DashboardWindow::OnMouseEvent( wxMouseEvent& event )
                 dragSize.y += p.y - m_resizeStartPoint.y;
                 dragSize.x += p.x - m_resizeStartPoint.x;;
 
-                ///vertical
-                dragSize.x = dragSize.y / aRatio;
-                
                 if((par_pos.y + dragSize.y) > par_size.y)
                     dragSize.y = par_size.y - par_pos.y;
                 
                 if((par_pos.x + dragSize.x) > par_size.x)
                     dragSize.x = par_size.x - par_pos.x;
-                    // not too small
+
+                // not too small
                 dragSize.x = wxMax(dragSize.x, 150);
                 dragSize.y = wxMax(dragSize.y, 150);
-
+/*
                 for( unsigned int i=0; i<m_ArrayOfInstrument.size(); i++ ) {
                     DashboardInstrument* inst = m_ArrayOfInstrument.Item(i)->m_pInstrument;
                     inst->Show();
                 }
-                
-                //  Try a manual layout of the window, to estimate a good primary size..
-                // vertical
-                if(itemBoxSizer->GetOrientation() == wxVERTICAL){
-                    int total_y = 0;
-                    for( unsigned int i=0; i<m_ArrayOfInstrument.size(); i++ ) {
-                        DashboardInstrument* inst = m_ArrayOfInstrument.Item(i)->m_pInstrument;
-                        wxSize is = inst->GetSize( itemBoxSizer->GetOrientation(), dragSize );
-                        total_y += is.y;
-                    }
-                    
-                    dragSize.y = total_y;
-                    dragSize.x = dragSize.y / aRatio;
-                    
-                }
+*/
                 pane.FloatingSize(dragSize);
                 m_pauimgr->Update();
                 
@@ -2625,12 +2609,12 @@ void DashboardWindow::OnContextMenuSelect( wxCommandEvent& event )
             return; // Does it's own save.
         }
         case ID_DASH_RESIZE: {
-            
+/*            
             for( unsigned int i=0; i<m_ArrayOfInstrument.size(); i++ ) {
                 DashboardInstrument* inst = m_ArrayOfInstrument.Item(i)->m_pInstrument;
                 inst->Hide();
             }
-            
+*/            
             m_binResize = true;
             
             return; 
