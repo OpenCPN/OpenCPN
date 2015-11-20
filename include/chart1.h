@@ -434,6 +434,8 @@ class MyFrame: public wxFrame
 
     bool CheckGroup(int igroup);
     double GetTrueOrMag(double a);
+    double GetTrueOrMag(double a, double lat, double lon);
+    bool SendJSON_WMM_Var_Request(double lat, double lon, wxDateTime date);
     
     void DestroyPersistentDialogs();
     void TouchAISActive(void);

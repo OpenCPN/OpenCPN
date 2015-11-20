@@ -658,6 +658,9 @@ int                       g_GPU_MemSize;
 bool                      g_bserial_access_checked;
 wxString                  g_uiStyle;
 
+//      Values returned from WMM_PI for variation computation request
+double                    gQueryVar;
+
 
 char bells_sound_file_name[2][12] = { "1bells.wav", "2bells.wav" };
 
@@ -6468,6 +6471,58 @@ double MyFrame::GetTrueOrMag(double a)
         return a;
 }
 
+double MyFrame::GetTrueOrMag(double a, double lat, double lon)
+{
+    if( g_bShowMag ){
+        if(g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"))){
+            
+            // Request variation at a specific lat/lon
+            
+            // Note that the requested value is returned sometime later in the event stream,
+            // so there may be invalid data returned on the first call to this method.
+            // In the case of rollover windows, the value is requested continuously, so will be correct very soon.
+            wxDateTime now = wxDateTime::Now();
+            SendJSON_WMM_Var_Request(lat, lon, now);
+            
+            if((a - gQueryVar) >360.)
+                return (a - gQueryVar - 360.);
+            else
+                return ((a - gQueryVar) >= 0.) ? (a - gQueryVar) : (a - gQueryVar + 360.);
+        }
+        else if(!wxIsNaN(gVar)){
+            if((a - gVar) >360.)
+                return (a - gVar - 360.);
+            else
+                return ((a - gVar) >= 0.) ? (a - gVar) : (a - gVar + 360.);
+        }
+        else{
+            if((a - g_UserVar) >360.)
+                return (a - g_UserVar - 360.);
+            else
+                return ((a - g_UserVar) >= 0.) ? (a - g_UserVar) : (a - g_UserVar + 360.);
+        }
+    }
+    else
+        return a;
+}
+
+bool MyFrame::SendJSON_WMM_Var_Request(double lat, double lon, wxDateTime date)
+{
+    if(g_pi_manager){
+        wxJSONValue v;
+        v[_T("Lat")] = lat;
+        v[_T("Lon")] = lon;
+        v[_T("Year")] = date.GetYear();
+        v[_T("Month")] = date.GetMonth();
+        v[_T("Day")] = date.GetDay();
+    
+        g_pi_manager->SendJSONMessageToAllPlugins(_T("WMM_VARIATION_REQUEST"), v);
+        return true;
+    }
+    else
+        return false;
+}    
+    
 void MyFrame::TouchAISActive( void )
 {
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
@@ -8117,6 +8172,31 @@ void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
             gVar = decl_val;
         }
     }
+    
+    if(message_ID == _T("WMM_VARIATION"))
+    {
+        
+        // construct the JSON root object
+        wxJSONValue  root;
+        // construct a JSON parser
+        wxJSONReader reader;
+        
+        // now read the JSON text and store it in the 'root' structure
+        // check for errors before retreiving values...
+        int numErrors = reader.Parse( message_JSONText, &root );
+        if ( numErrors > 0 )  {
+            //              const wxArrayString& errors = reader.GetErrors();
+            return;
+        }
+        
+        // get the DECL value from the JSON message
+        wxString decl = root[_T("Decl")].AsString();
+        double decl_val;
+        decl.ToDouble(&decl_val);
+        
+        gQueryVar = decl_val;
+    }
+    
 
     if(message_ID == _T("OCPN_TRACK_REQUEST"))
     {

@@ -2353,8 +2353,13 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
                     << _(" to ") << segShow_point_b->GetName()
                     << _T("\n");
 
-                    if( g_bShowMag )
-                        s << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( brg ) );
+                    if( g_bShowMag ){
+                        double latAverage = (segShow_point_b->m_lat + segShow_point_a->m_lat)/2;
+                        double lonAverage = (segShow_point_b->m_lon + segShow_point_a->m_lon)/2;
+                        double varBrg = gFrame->GetTrueOrMag( brg, latAverage, lonAverage);
+                        
+                        s << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)varBrg );
+                    }
                     else
                         s << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( brg ) );
 
@@ -8999,8 +9004,13 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
         }
 
         wxString routeInfo;
-        if( g_bShowMag )
-            routeInfo << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( brg ) );
+        if( g_bShowMag ){
+            double latAverage = (m_cursor_lat + render_lat)/2;
+            double lonAverage = (m_cursor_lon + render_lon)/2;
+            double varBrg = gFrame->GetTrueOrMag( brg, latAverage, lonAverage);
+            
+            routeInfo << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)varBrg );
+        }
         else
             routeInfo << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( brg ) );
 

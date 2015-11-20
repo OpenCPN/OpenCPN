@@ -1843,8 +1843,8 @@ bool RouteProp::UpdateProperties()
             bool starting_point = false;
 
             starting_point = ( i == 0 ) && enroute;
-            if( m_pEnroutePoint && !starting_point ) starting_point = ( prp->m_GUID
-                    == m_pEnroutePoint->m_GUID );
+            if( m_pEnroutePoint && !starting_point )
+                starting_point = ( prp->m_GUID == m_pEnroutePoint->m_GUID );
 
             if( starting_point ) {
                 slat = gLat;
@@ -1891,8 +1891,13 @@ bool RouteProp::UpdateProperties()
         prp->SetDistance(leg_dist); // save the course to the next waypoint for printing.
 
             //  Bearing
-        if( g_bShowMag )
-            t.Printf( _T("%03.0f Deg. M"), gFrame->GetTrueOrMag( brg ) );
+        if( g_bShowMag ){
+            double latAverage = (prp->m_lat + slat)/2;
+            double lonAverage = (prp->m_lon + slon)/2;
+            double varBrg = gFrame->GetTrueOrMag( brg, latAverage, lonAverage);
+            
+            t.Printf( _T("%03.0f Deg. M"), varBrg );
+        }
         else
             t.Printf( _T("%03.0f Deg. T"), gFrame->GetTrueOrMag( brg ) );
 
@@ -1903,8 +1908,20 @@ bool RouteProp::UpdateProperties()
 
         // Course (bearing of next )
         if (_next_prp){
-            if( g_bShowMag )
-                t.Printf( _T("%03.0f Deg. M"), gFrame->GetTrueOrMag( course ) );
+            if( g_bShowMag ){
+                double next_lat = prp->m_lat;
+                double next_lon = prp->m_lon;
+                if (_next_prp ){
+                    next_lat = _next_prp->m_lat;
+                    next_lon = _next_prp->m_lon;
+                }
+                    
+                double latAverage = (prp->m_lat + next_lat)/2;
+                double lonAverage = (prp->m_lon + next_lon)/2;
+                double varCourse = gFrame->GetTrueOrMag( course, latAverage, lonAverage);
+                
+                t.Printf( _T("%03.0f Deg. M"), varCourse );
+            }
             else
                 t.Printf( _T("%03.0f Deg. T"), gFrame->GetTrueOrMag( course ) );
             if( arrival )
