@@ -350,7 +350,11 @@ class options : private Uncopyable,
   wxStaticText *m_stTalkerIdText;
   wxChoice *m_choiceBTDataSources, *m_choiceBaudRate, *m_choiceSerialProtocol;
   wxChoice *m_choicePriority, *m_choicePrecision;
-
+  
+  // For the Display\Units page
+  wxStaticText* itemStaticTextUserVar;
+  wxStaticText* itemStaticTextUserVar2;
+  
   wxGridSizer *gSizerNetProps, *gSizerSerProps;
   wxTextCtrl *m_tNetAddress, *m_tNetPort, *m_tFilterSec, *m_tcInputStc;
   wxTextCtrl *m_tcOutputStc, *m_TalkerIdText;
