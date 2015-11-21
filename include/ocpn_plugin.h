@@ -997,7 +997,6 @@ extern DECL_EXP void SetCursor_PlugIn( wxCursor *pPlugin_Cursor = NULL );
 
 extern DECL_EXP double GetCanvasTilt();
 extern DECL_EXP void SetCanvasTilt(double tilt);
-extern DECL_EXP bool GetSingleWaypoint( wxString &GUID, PlugIn_Waypoint *pwaypoint );
 
 extern DECL_EXP bool PlugInPlaySoundEx( wxString &sound_file, int deviceIndex=-1 );
 extern DECL_EXP void AddChartDirectory( wxString &path );
