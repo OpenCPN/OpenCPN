@@ -260,7 +260,7 @@ void chartdldr_pi::OnSetupOptions( void )
 
     m_dldrpanel = new ChartDldrPanelImpl( this, m_pOptionsPage, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE );
 
-    m_pOptionsPage->InvalidateBestSize();
+    //m_pOptionsPage->InvalidateBestSize();
     sizer->Add( m_dldrpanel, 1, wxALL | wxEXPAND );
     m_dldrpanel->SetBulkUpdate( m_allow_bulk_update );
     m_dldrpanel->FitInside();
