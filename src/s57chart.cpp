@@ -3354,20 +3354,9 @@ bool s57chart::CreateHeaderDataFromENC( void )
 
     m_nCOVREntries = pAuxCntArray->GetCount();
 
-    //    If only one M_COVR,CATCOV=1 object was found,
-    //    assign the geometry to the one and only COVR
+    //    Create new COVR entries
 
-    if( m_nCOVREntries == 1 ) {
-        m_pCOVRTablePoints = (int *) malloc( sizeof(int) );
-        *m_pCOVRTablePoints = pAuxCntArray->Item( 0 );
-        m_pCOVRTable = (float **) malloc( sizeof(float *) );
-        *m_pCOVRTable = (float *) malloc( pAuxCntArray->Item( 0 ) * 2 * sizeof(float) );
-        memcpy( *m_pCOVRTable, pAuxPtrArray->Item( 0 ),
-                pAuxCntArray->Item( 0 ) * 2 * sizeof(float) );
-    }
-
-    else if( m_nCOVREntries > 1 ) {
-        //    Create new COVR entries
+    if( m_nCOVREntries >= 1 ) {
         m_pCOVRTablePoints = (int *) malloc( m_nCOVREntries * sizeof(int) );
         m_pCOVRTable = (float **) malloc( m_nCOVREntries * sizeof(float *) );
 
