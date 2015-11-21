@@ -3271,7 +3271,7 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
 }
 
 #include <wx/arrimpl.cpp>
-WX_DEFINE_ARRAY( float*, MyFloatPtrArray );
+WX_DEFINE_ARRAY_PTR( float*, MyFloatPtrArray );
 
 //    Read the .000 ENC file and create required Chartbase data structures
 bool s57chart::CreateHeaderDataFromENC( void )
@@ -3362,9 +3362,7 @@ bool s57chart::CreateHeaderDataFromENC( void )
 
         for( unsigned int j = 0; j < (unsigned int) m_nCOVREntries; j++ ) {
             m_pCOVRTablePoints[j] = pAuxCntArray->Item( j );
-            m_pCOVRTable[j] = (float *) malloc( pAuxCntArray->Item( j ) * 2 * sizeof(float) );
-            memcpy( m_pCOVRTable[j], pAuxPtrArray->Item( j ),
-                    pAuxCntArray->Item( j ) * 2 * sizeof(float) );
+            m_pCOVRTable[j] = pAuxPtrArray->Item( j );
         }
     }
 
@@ -3387,9 +3385,7 @@ bool s57chart::CreateHeaderDataFromENC( void )
         for( unsigned int j = 0; j < (unsigned int) m_nNoCOVREntries; j++ ) {
             int npoints = pNoCovrCntArray->Item( j );
             m_pNoCOVRTablePoints[j] = npoints;
-            m_pNoCOVRTable[j] = (float *) malloc( npoints * 2 * sizeof(float) );
-            memcpy( m_pNoCOVRTable[j], pNoCovrPtrArray->Item( j ),
-                    npoints * 2 * sizeof(float) );
+            m_pNoCOVRTable[j] = pNoCovrPtrArray->Item( j );
         }
     }
     else {
