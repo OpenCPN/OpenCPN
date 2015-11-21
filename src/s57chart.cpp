@@ -6540,6 +6540,11 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
             LUPstring.Printf( _T("LUP RCID:  %d<br>"), current->LUP->RCID );
             classAttributes << LUPstring;
 
+            wxString Bbox;
+            wxBoundingBox bbox = current->obj->BBObj;
+            Bbox.Printf( _T("Bounding box:  %g %g %g %g<br>"), bbox.GetMinY(), bbox.GetMaxY() , bbox.GetMinX(), bbox.GetMaxX() );
+            classAttributes << Bbox;
+
             wxString Type;
             Type.Printf( _T(" Type:  %s<br>"), type2str(current->obj->Primitive_type));
             classAttributes << Type;
