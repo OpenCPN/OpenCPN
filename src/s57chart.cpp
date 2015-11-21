@@ -6253,7 +6253,7 @@ wxString s57chart::GetObjectAttributeValueAsString( S57Obj *obj, int iatt, wxStr
             }
 
             else if( ( curAttrName == _T("VALSOU") ) || ( curAttrName == _T("DRVAL1") )
-                    || ( curAttrName == _T("DRVAL2") ) ) {
+                    || ( curAttrName == _T("DRVAL2") ) || ( curAttrName == _T("VALDCO") ) ) {
                 switch( ps52plib->m_nDepthUnitDisplay ){
                     case 0:                       // feet
                         dval = dval * 3 * 39.37 / 36;              // feet

@@ -1835,6 +1835,8 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         case 9:                      // Ctrl I
             if (g_Compass) {
                 g_Compass->Show(!g_Compass->IsShown());
+                if (g_Compass->IsShown())
+                    g_Compass->UpdateStatus();
                 m_brepaint_piano = true;
                 Refresh( false );
             }
@@ -4704,12 +4706,28 @@ void ChartCanvas::MouseTimedEvent( wxTimerEvent& event )
 bool leftIsDown;
 
 
+bool ChartCanvas::MouseEventOverlayWindows( wxMouseEvent& event )
+{
+    if (!m_bChartDragging && !m_bDrawingRoute) {
+        if(g_Compass && g_Compass->IsShown() && g_Compass->GetRect().Contains(event.GetPosition())) { 
+            if (g_Compass->MouseEvent( event )) {
+                cursor_region = CENTER;
+                if( !g_btouch )
+                    SetCanvasCursor( event );
+                return true;
+            }
+        }
+
+        if(MouseEventChartBar( event ))
+            return true;
+    }
+    return false;
+}
+
+
 bool ChartCanvas::MouseEventChartBar( wxMouseEvent& event )
 {
     if(!g_bShowChartBar || g_ChartBarWin)
-        return false;
-
-    if( m_bDrawingRoute )
         return false;
 
     if (! g_Piano->MouseEvent(event) )
@@ -6398,13 +6416,9 @@ bool ChartCanvas::MouseEventProcessCanvas( wxMouseEvent& event )
                 
 }
 
-
 void ChartCanvas::MouseEvent( wxMouseEvent& event )
 {
-    if(g_Compass && g_Compass->MouseEvent( event ))
-        return;
-
-    if(MouseEventChartBar( event ))
+    if (MouseEventOverlayWindows( event ))
         return;
 
     if(MouseEventSetup( event ))
