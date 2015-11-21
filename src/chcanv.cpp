@@ -3207,7 +3207,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
             ChartBase* referenceChart = ChartData->OpenChartFromDB( m_pQuilt->GetRefChartdbIndex(), FULL_INIT );
             if( referenceChart ) {
                 double chartMaxScale = referenceChart->GetNormalScaleMax( cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth() );
-                renderable = chartMaxScale*1.5 > VPoint.chart_scale;
+                renderable = chartMaxScale * 64 >= VPoint.chart_scale;
             }
             if( !renderable )
                 b_needNewRef = true;
