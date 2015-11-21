@@ -2682,7 +2682,18 @@ void glChartCanvas::RotateToViewPort(const ViewPort &vp)
     }
 }
 
-void glChartCanvas::DrawRegion(ViewPort &vp, const LLRegion &region)
+bool s_binvalidRegion;
+void combineCallbackD(GLdouble coords[3],
+                                       GLdouble *vertex_data[4],
+                                       GLfloat weight[4], GLdouble **dataOut )
+{
+    printf("Self Intersecting\n");
+    s_binvalidRegion = true;
+    
+}
+
+
+bool glChartCanvas::DrawRegion(ViewPort &vp, const LLRegion &region)
 {
     float lat_dist, lon_dist;
     GetLatLonCurveDist(vp, lat_dist, lon_dist);
@@ -2692,9 +2703,11 @@ void glChartCanvas::DrawRegion(ViewPort &vp, const LLRegion &region)
     gluTessCallback( tobj, GLU_TESS_VERTEX, (_GLUfuncptr) &glVertex3dv );
     gluTessCallback( tobj, GLU_TESS_BEGIN, (_GLUfuncptr) &glBegin );
     gluTessCallback( tobj, GLU_TESS_END, (_GLUfuncptr) &glEnd );
-
+    gluTessCallback( tobj, GLU_TESS_COMBINE, (_GLUfuncptr) &combineCallbackD );
+    
     gluTessNormal( tobj, 0, 0, 1);
-
+    s_binvalidRegion = false;
+    
     std::list<double*> work_data;
     gluTessBeginPolygon(tobj, NULL);
     for(std::list<poly_contour>::const_iterator i = region.contours.begin(); i != region.contours.end(); i++) {
@@ -2745,11 +2758,15 @@ void glChartCanvas::DrawRegion(ViewPort &vp, const LLRegion &region)
 
     for(std::list<double*>::iterator i = work_data.begin(); i!=work_data.end(); i++)
         delete [] *i;
+    
+    return !s_binvalidRegion;
 }
 
 /* set stencil buffer to clip in this region, and optionally clear using the current color */
-void glChartCanvas::SetClipRegion(ViewPort &vp, const LLRegion &region)
+bool glChartCanvas::SetClipRegion(ViewPort &vp, const LLRegion &region)
 {
+    bool ret_val = true;
+    
     glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );   // disable color buffer
 
     if( s_b_useStencil ) {
@@ -2782,7 +2799,7 @@ void glChartCanvas::SetClipRegion(ViewPort &vp, const LLRegion &region)
         glTranslatef( 0, 0, .5 );
     }
 
-    DrawRegion(vp, region);
+     ret_val = DrawRegion(vp, region);
 
     if( s_b_useStencil ) {
         //    Now set the stencil ops to subsequently render only where the stencil bit is "1"
@@ -2795,6 +2812,8 @@ void glChartCanvas::SetClipRegion(ViewPort &vp, const LLRegion &region)
     }
 
     glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );  // re-enable color buffer
+    
+    return ret_val;
 }
 
 void glChartCanvas::SetClipRect(const ViewPort &vp, const wxRect &rect, bool b_clear)

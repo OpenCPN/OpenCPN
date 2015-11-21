@@ -2165,8 +2165,10 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
             //  cm93 vpoint crossing Greenwich, panning east, was rendering areas incorrectly.
             ViewPort cvp = glChartCanvas::ClippedViewport(VPoint, chart_region);
 
-            if(CHART_TYPE_CM93 == GetChartType())
-                glChartCanvas::SetClipRegion(cvp, chart_region);
+            if(CHART_TYPE_CM93 == GetChartType()){
+                if(!glChartCanvas::SetClipRegion(cvp, chart_region))
+                    glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
+            }
             else
                 glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
             
