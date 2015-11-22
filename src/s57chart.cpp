@@ -2165,8 +2165,10 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
             //  cm93 vpoint crossing Greenwich, panning east, was rendering areas incorrectly.
             ViewPort cvp = glChartCanvas::ClippedViewport(VPoint, chart_region);
 
-            if(CHART_TYPE_CM93 == GetChartType())
-                glChartCanvas::SetClipRegion(cvp, chart_region);
+            if(CHART_TYPE_CM93 == GetChartType()){
+                if(!glChartCanvas::SetClipRegion(cvp, chart_region))
+                    glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
+            }
             else
                 glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
             
@@ -6251,7 +6253,7 @@ wxString s57chart::GetObjectAttributeValueAsString( S57Obj *obj, int iatt, wxStr
             }
 
             else if( ( curAttrName == _T("VALSOU") ) || ( curAttrName == _T("DRVAL1") )
-                    || ( curAttrName == _T("DRVAL2") ) ) {
+                    || ( curAttrName == _T("DRVAL2") ) || ( curAttrName == _T("VALDCO") ) ) {
                 switch( ps52plib->m_nDepthUnitDisplay ){
                     case 0:                       // feet
                         dval = dval * 3 * 39.37 / 36;              // feet

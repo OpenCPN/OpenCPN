@@ -5433,28 +5433,23 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
                         cm93chart *m_pcm93chart_save = m_pcm93chart_current;
                         int cmscale_save = m_cmscale;
 
-                        int cmscale_next = m_cmscale;
-
                         LLRegion region_vect[8];
                         
                         //    Render smaller scale cells the entire requested region is full
                         
-                        while ( !vpr_empty.Empty() && cmscale_next )
+                        while ( !vpr_empty.Empty() && m_cmscale )
                         {
                               //    get the next smaller scale chart
-                              cmscale_next--;
-                              m_cmscale = PrepareChartScale ( vp, cmscale_next, false );
+                              m_cmscale = PrepareChartScale ( vp, m_cmscale - 1, false );
 
                               if ( m_pcm93chart_current )
                               {
                                     LLRegion sscale_region = GetValidRegion();
 
-                                    //    Only need to render that part of the vp that is not yet full
-                                    sscale_region.Intersect ( vpr_empty );
-                                    
                                     //  Save the calculated per-scale region in the array
                                     region_vect[m_cmscale] = sscale_region;
-                                    
+                                    region_vect[m_cmscale].Intersect ( vpr_empty );
+                                    //    Only need to render that part of the vp that is not yet full
                                     //    Update the remaining empty region
                                     vpr_empty.Subtract ( sscale_region );
                               }
@@ -6847,8 +6842,10 @@ void CM93OffsetDialog::OnClose ( wxCloseEvent& event )
 
             m_pcompchart->InvalidateCache();
 
-            if ( m_pparent )
+            if ( m_pparent ) {
                   m_pparent->Refresh ( true );
+                  cc1->InvalidateGL();
+            }
       }
 
       if ( m_pListCtrlMCOVRs->GetItemCount() > m_selected_list_index )
@@ -6938,8 +6935,10 @@ void CM93OffsetDialog::OnCellSelected ( wxListEvent &event )
       
       m_pcompchart->InvalidateCache();
 
-      if ( m_pparent )
+      if ( m_pparent ) {
             m_pparent->Refresh ( true );
+            cc1->InvalidateGL();
+      }
     }
 }
 

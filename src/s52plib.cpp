@@ -1628,7 +1628,10 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
     
     if(!g_oz_vector_scale || !vp->b_quilt)
         scale_factor = 1.0;
-        
+    
+    //  Place an upper bound on the scaled text size
+    scale_factor = wxMin(scale_factor, 4);
+    
     if( !pdc ) // OpenGL
     {
 #ifdef ocpnUSE_GL
