@@ -77,25 +77,29 @@ bool LLRegion::PointsCCW( size_t n, const double *points )
     return total > 0;
 }
 
-void LLRegion::Print(bool plot, FILE *f) const
+void LLRegion::Print() const
 {
-    if(!f)
-        f = stdout;
-    if(plot)
-        for(std::list<poly_contour>::const_iterator i = contours.begin(); i != contours.end(); i++) {
-            for(poly_contour::const_iterator j = i->begin(); j != i->end(); j++)
-                fprintf(f, "%f %f\n", j->x, j->y);
-            
-            fprintf(f, "%f %f\n", i->begin()->x, i->begin()->y);
-            fprintf(f, "\n");
-        }
-    else
-        for(std::list<poly_contour>::const_iterator i = contours.begin(); i != contours.end(); i++) {
-            fprintf(f, "[");
-            for(poly_contour::const_iterator j = i->begin(); j != i->end(); j++)
-                fprintf(f, "(%g %g) ", j->y, j->x);
-            fprintf(f, "]\n");
-        }
+    for(std::list<poly_contour>::const_iterator i = contours.begin(); i != contours.end(); i++) {
+        printf("[");
+        for(poly_contour::const_iterator j = i->begin(); j != i->end(); j++)
+            printf("(%g %g) ", j->y, j->x);
+        printf("]\n");
+    }
+}
+
+void LLRegion::plot(const char*fn) const
+{
+    char filename[100] = "/home/sean/";
+    strcat(filename, fn);
+    FILE *f = fopen(filename, "w");
+    for(std::list<poly_contour>::const_iterator i = contours.begin(); i != contours.end(); i++) {
+        for(poly_contour::const_iterator j = i->begin(); j != i->end(); j++)
+            fprintf(f, "%f %f\n", j->x, j->y);
+        
+        fprintf(f, "%f %f\n", i->begin()->x, i->begin()->y);
+        fprintf(f, "\n");
+    }
+    fclose(f);
 }
 
 LLBBox LLRegion::GetBox() const
