@@ -62,7 +62,7 @@ class ChartSource;
 class ChartDldrPanelImpl;
 class ChartDldrGuiAddSourceDlg;
 
-WX_DECLARE_OBJARRAY(ChartSource *, wxArrayOfChartSources);
+WX_DEFINE_ARRAY_PTR(ChartSource *, wxArrayOfChartSources);
 WX_DECLARE_OBJARRAY(wxDateTime, wxArrayOfDateTime);
 
 //----------------------------------------------------------------------------------------------------------
@@ -129,6 +129,8 @@ class ChartSource : public wxTreeItemData
 {
 public:
     ChartSource( wxString name, wxString url, wxString localdir );
+    ~ChartSource();
+    
     wxString        GetName() { return m_name; }
     wxString        GetUrl() { return m_url; }
     wxString        GetDir() { return m_dir; }
