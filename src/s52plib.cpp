@@ -6344,8 +6344,9 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 if(rzRules->obj->BBObj.GetMinX() < BBView.GetMaxX() - 360.)
                     x_origin += mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
             } else
-            if( (BBView.GetMinX() <= -180. && rzRules->obj->BBObj.GetMaxX() > BBView.GetMinX() + 360.) ||
-                (BBView.GetMinX() <= 0. && rzRules->obj->BBObj.GetMaxX() > 180))
+            if( (BBView.GetMinX() <= -180. && rzRules->obj->BBObj.GetMaxX() > BBView.GetMinX() + 360.)
+               || (rzRules->obj->BBObj.GetMaxX() > 180 && BBView.GetMinX() + 360 < rzRules->obj->BBObj.GetMaxX() )
+                )
                 x_origin -= mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
 
             glTranslatef( x_origin, rzRules->obj->y_origin, 0);

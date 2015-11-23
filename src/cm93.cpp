@@ -5129,11 +5129,8 @@ int cm93compchart::PrepareChartScale ( const ViewPort &vpt, int cmscale, bool bO
         if( zoom_factor > 4.0) {
             // See if there is a larger scale chart present that will avoid overzoom
             
-            //    Bound the clon to 0-360. degrees
             float yc = vpt.clat;
             float xc = vpt.clon;
-//            while ( xc < 0 ) xc += 360.;
-//            if ( xc > 360. ) xc -= 360.;
             
             //    Find out what the smallest available scale is that is not overzoomed
             FillScaleArray ( vpt.clat,vpt.clon );
