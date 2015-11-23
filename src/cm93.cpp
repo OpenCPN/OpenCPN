@@ -2034,13 +2034,13 @@ void cm93chart::GetPointPix ( ObjRazRules *rzRules, wxPoint2DDouble *en, wxPoint
       double yo =  obj->y_origin;
 
       if(m_vp_current.m_projection_type == PROJECTION_MERCATOR) {
-          // not sure if these corrections are needed anymore
           if ( m_vp_current.GetBBox().GetMaxX() >= 180. &&
                rzRules->obj->BBObj.GetMaxX() < m_vp_current.GetBBox().GetMinX() )
               xo += mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
           else
-          if ( m_vp_current.GetBBox().GetMinX() <= -180. &&
-               rzRules->obj->BBObj.GetMinX() > m_vp_current.GetBBox().GetMaxX() )
+          if ( (m_vp_current.GetBBox().GetMinX() <= -180. &&
+                rzRules->obj->BBObj.GetMinX() > m_vp_current.GetBBox().GetMaxX()) ||
+               (rzRules->obj->BBObj.GetMaxX() >= 180 && m_vp_current.GetBBox().GetMinX() <= 0.))
               xo -= mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
 
           for ( int i=0 ; i < nPoints ; i++ )
