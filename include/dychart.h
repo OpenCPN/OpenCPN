@@ -197,6 +197,7 @@
 #endif
 
 
+#if 0
 #ifndef OCPN_GL_INCLUDES
 #define OCPN_GL_INCLUDES 1
 
@@ -218,6 +219,7 @@
 #endif
 
 #endif      //OCPN_GL_INCLUDES
+#endif
 
 
 #ifdef __OCPN__ANDROID__

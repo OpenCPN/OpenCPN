@@ -53,7 +53,7 @@ static void __gluMakeIdentityf(GLfloat m[16])
     m[3+4*0] = 0; m[3+4*1] = 0; m[3+4*2] = 0; m[3+4*3] = 1;
 }
 
-void GLAPIENTRY
+void /*GLAPIENTRY*/
 gluOrtho2D(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top)
 {
     glOrtho(left, right, bottom, top, -1, 1);
@@ -61,7 +61,7 @@ gluOrtho2D(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top)
 
 #define __glPi 3.14159265358979323846
 
-void GLAPIENTRY
+void /*GLAPIENTRY*/
 gluPerspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar)
 {
     GLdouble m[4][4];
@@ -104,7 +104,7 @@ static void cross(float v1[3], float v2[3], float result[3])
     result[2] = v1[0]*v2[1] - v1[1]*v2[0];
 }
 
-void GLAPIENTRY
+void /*GLAPIENTRY*/
 gluLookAt(GLdouble eyex, GLdouble eyey, GLdouble eyez, GLdouble centerx,
 	  GLdouble centery, GLdouble centerz, GLdouble upx, GLdouble upy,
 	  GLdouble upz)
@@ -230,7 +230,7 @@ static void __gluMultMatricesd(const GLdouble a[16], const GLdouble b[16],
     }
 }
 
-GLint GLAPIENTRY
+GLint /*GLAPIENTRY*/
 gluProject(GLdouble objx, GLdouble objy, GLdouble objz, 
 	      const GLdouble modelMatrix[16], 
 	      const GLdouble projMatrix[16],
@@ -265,7 +265,7 @@ gluProject(GLdouble objx, GLdouble objy, GLdouble objz,
     return(GL_TRUE);
 }
 
-GLint GLAPIENTRY
+GLint /*GLAPIENTRY*/
 gluUnProject(GLdouble winx, GLdouble winy, GLdouble winz,
 		const GLdouble modelMatrix[16], 
 		const GLdouble projMatrix[16],
@@ -304,7 +304,7 @@ gluUnProject(GLdouble winx, GLdouble winy, GLdouble winz,
     return(GL_TRUE);
 }
 
-GLint GLAPIENTRY
+GLint /*GLAPIENTRY*/
 gluUnProject4(GLdouble winx, GLdouble winy, GLdouble winz, GLdouble clipw,
 	      const GLdouble modelMatrix[16], 
 	      const GLdouble projMatrix[16],
@@ -344,7 +344,7 @@ gluUnProject4(GLdouble winx, GLdouble winy, GLdouble winz, GLdouble clipw,
     return(GL_TRUE);
 }
 
-void GLAPIENTRY
+void /*GLAPIENTRY*/
 gluPickMatrix(GLdouble x, GLdouble y, GLdouble deltax, GLdouble deltay,
 		  GLint viewport[4])
 {

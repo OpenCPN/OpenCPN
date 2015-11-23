@@ -62,7 +62,7 @@
 #define __CALL_CONVENTION
 #endif
 
-typedef void (GLAPIENTRY * PFNGLBINDBUFFERPROC) (GLenum target, GLuint buffer);
+typedef void (APIENTRY * PFNGLBINDBUFFERPROC) (GLenum target, GLuint buffer);
 
 extern wxString *pWorldMapLocation;
 

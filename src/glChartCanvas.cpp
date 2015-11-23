@@ -1716,7 +1716,7 @@ void glChartCanvas::DrawDynamicRoutesAndWaypoints( ViewPort &vp )
         
         if(drawit) {
             const wxBoundingBox &vp_box = vp.GetBBox(), &test_box = pRouteDraw->GetBBox();
-            if(!vp_box.IntersectOut(test_box));
+            if(!vp_box.IntersectOut(test_box))
                 pRouteDraw->DrawGL( vp );
         }
     }
@@ -2689,6 +2689,20 @@ void combineCallbackD(GLdouble coords[3],
     
 }
 
+void vertexCallbackD(GLvoid *vertex)
+{
+    glVertex3dv( (GLdouble *)vertex);
+}
+
+void beginCallbackD( GLenum mode)
+{
+    glBegin( mode );
+}
+
+void endCallbackD()
+{
+    glEnd();
+}
 
 bool glChartCanvas::DrawRegion(ViewPort &vp, const LLRegion &region)
 {
@@ -2697,9 +2711,9 @@ bool glChartCanvas::DrawRegion(ViewPort &vp, const LLRegion &region)
 
     GLUtesselator *tobj = gluNewTess();
 
-    gluTessCallback( tobj, GLU_TESS_VERTEX, (_GLUfuncptr) &glVertex3dv );
-    gluTessCallback( tobj, GLU_TESS_BEGIN, (_GLUfuncptr) &glBegin );
-    gluTessCallback( tobj, GLU_TESS_END, (_GLUfuncptr) &glEnd );
+    gluTessCallback( tobj, GLU_TESS_VERTEX, (_GLUfuncptr) &vertexCallbackD  );
+    gluTessCallback( tobj, GLU_TESS_BEGIN, (_GLUfuncptr) &beginCallbackD  );
+    gluTessCallback( tobj, GLU_TESS_END, (_GLUfuncptr) &endCallbackD  );
     gluTessCallback( tobj, GLU_TESS_COMBINE, (_GLUfuncptr) &combineCallbackD );
     
     gluTessNormal( tobj, 0, 0, 1);
@@ -4258,6 +4272,7 @@ void glChartCanvas::Render()
         glLoadIdentity();
 
         gluPerspective(2*180/PI*atan2((double)h, (double)w), (GLfloat) w/(GLfloat) h, 1, w);
+        
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
 
