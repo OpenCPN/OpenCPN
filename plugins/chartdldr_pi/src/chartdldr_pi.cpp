@@ -1472,7 +1472,8 @@ bool chartdldr_pi::ExtractZipFiles( const wxString& aZipFile, const wxString& aT
                 //fn.SetPath(aTargetDir);
                 //name = fn.GetFullPath();
                 /* Or only remove the first dir (eg. ENC_ROOT) */
-                fn.RemoveDir(0);
+                if (fn.GetDirCount() > 0)
+                    fn.RemoveDir(0);
                 name = aTargetDir + wxFileName::GetPathSeparator() + fn.GetFullPath();
             }
             else
