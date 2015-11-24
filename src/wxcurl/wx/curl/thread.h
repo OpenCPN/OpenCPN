@@ -87,6 +87,11 @@ public:
         m_bAbort = false;
     }
 
+    ~wxCurlBaseThread() 
+    {
+            wxDELETE(m_pCurl);
+    }
+
 public:     // thread execution management
 
     //! Returns true if this thread is ready to be started using e.g. #StartTransfer.
