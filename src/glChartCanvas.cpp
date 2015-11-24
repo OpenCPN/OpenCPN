@@ -2679,18 +2679,19 @@ void glChartCanvas::RotateToViewPort(const ViewPort &vp)
     }
 }
 
-bool s_binvalidRegion;
-void combineCallbackD(GLdouble coords[3],
-                                       GLdouble *vertex_data[4],
-                                       GLfloat weight[4], GLdouble **dataOut )
+static std::list<double*> combine_work_data;
+static void combineCallbackD(GLdouble coords[3],
+                             GLdouble *vertex_data[4],
+                             GLfloat weight[4], GLdouble **dataOut )
 {
-    printf("Self Intersecting\n");
-    s_binvalidRegion = true;
-    
+    double *vertex = new double[3];
+    combine_work_data.push_back(vertex);
+    memcpy(vertex, coords, 3*(sizeof *coords)); 
+    *dataOut = vertex;
 }
 
 
-bool glChartCanvas::DrawRegion(ViewPort &vp, const LLRegion &region)
+void glChartCanvas::DrawRegion(ViewPort &vp, const LLRegion &region)
 {
     float lat_dist, lon_dist;
     GetLatLonCurveDist(vp, lat_dist, lon_dist);
@@ -2703,9 +2704,7 @@ bool glChartCanvas::DrawRegion(ViewPort &vp, const LLRegion &region)
     gluTessCallback( tobj, GLU_TESS_COMBINE, (_GLUfuncptr) &combineCallbackD );
     
     gluTessNormal( tobj, 0, 0, 1);
-    s_binvalidRegion = false;
     
-    std::list<double*> work_data;
     gluTessBeginPolygon(tobj, NULL);
     for(std::list<poly_contour>::const_iterator i = region.contours.begin(); i != region.contours.end(); i++) {
         gluTessBeginContour(tobj);
@@ -2740,7 +2739,7 @@ bool glChartCanvas::DrawRegion(ViewPort &vp, const LLRegion &region)
                 double *p = new double[6];
                 p[0] = q.m_x, p[1] = q.m_y, p[2] = 0;
                 gluTessVertex(tobj, p, p);
-                work_data.push_back(p);
+                combine_work_data.push_back(p);
             }
             l = *j;
 
@@ -2753,17 +2752,14 @@ bool glChartCanvas::DrawRegion(ViewPort &vp, const LLRegion &region)
 
     gluDeleteTess(tobj);
 
-    for(std::list<double*>::iterator i = work_data.begin(); i!=work_data.end(); i++)
+    for(std::list<double*>::iterator i = combine_work_data.begin(); i!=combine_work_data.end(); i++)
         delete [] *i;
-    
-    return !s_binvalidRegion;
+    combine_work_data.clear();
 }
 
 /* set stencil buffer to clip in this region, and optionally clear using the current color */
-bool glChartCanvas::SetClipRegion(ViewPort &vp, const LLRegion &region)
+void glChartCanvas::SetClipRegion(ViewPort &vp, const LLRegion &region)
 {
-    bool ret_val = true;
-    
     glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );   // disable color buffer
 
     if( s_b_useStencil ) {
@@ -2796,7 +2792,7 @@ bool glChartCanvas::SetClipRegion(ViewPort &vp, const LLRegion &region)
         glTranslatef( 0, 0, .5 );
     }
 
-     ret_val = DrawRegion(vp, region);
+    DrawRegion(vp, region);
 
     if( s_b_useStencil ) {
         //    Now set the stencil ops to subsequently render only where the stencil bit is "1"
@@ -2809,8 +2805,6 @@ bool glChartCanvas::SetClipRegion(ViewPort &vp, const LLRegion &region)
     }
 
     glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );  // re-enable color buffer
-    
-    return ret_val;
 }
 
 void glChartCanvas::SetClipRect(const ViewPort &vp, const wxRect &rect, bool b_clear)

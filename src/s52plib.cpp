@@ -4428,7 +4428,7 @@ int s52plib::RenderCARC_DisplayList( ObjRazRules *rzRules, Rules *rules, ViewPor
                 {
                     mdc.ResetBoundingBox();
                     
-                    wxPen *pblockpen = wxThePenList->FindOrCreatePen( *wxBLACK, 10, wxSOLID );
+                    wxPen *pblockpen = wxThePenList->FindOrCreatePen( *wxBLACK, 10, wxPENSTYLE_SOLID );
                     mdc.SetPen( *pblockpen );
                     
                     float start_angle, end_angle;
@@ -4474,9 +4474,9 @@ int s52plib::RenderCARC_DisplayList( ObjRazRules *rzRules, Rules *rules, ViewPor
                     //    Draw the outer border
                     wxColour color = getwxColour( outline_color );
                     
-                    wxPen *pthispen = wxThePenList->FindOrCreatePen( color, outline_width, wxSOLID );
+                    wxPen *pthispen = wxThePenList->FindOrCreatePen( color, outline_width, wxPENSTYLE_SOLID );
                     mdc.SetPen( *pthispen );
-                    wxBrush *pthisbrush = wxTheBrushList->FindOrCreateBrush( color, wxTRANSPARENT );
+                    wxBrush *pthisbrush = wxTheBrushList->FindOrCreateBrush( color, wxBRUSHSTYLE_TRANSPARENT );
                     mdc.SetBrush( *pthisbrush );
                     
                     mdc.DrawEllipticArc( width / 2 - rad, height / 2 - rad, rad * 2, rad * 2, sb, se );
@@ -4486,7 +4486,7 @@ int s52plib::RenderCARC_DisplayList( ObjRazRules *rzRules, Rules *rules, ViewPor
                         
                         if( !colorb.IsOk() ) colorb = getwxColour( _T("CHMGD") );
                         
-                        pthispen = wxThePenList->FindOrCreatePen( colorb, arc_width, wxSOLID );
+                        pthispen = wxThePenList->FindOrCreatePen( colorb, arc_width, wxPENSTYLE_SOLID );
                         mdc.SetPen( *pthispen );
                         
                         mdc.DrawEllipticArc( width / 2 - rad, height / 2 - rad, rad * 2, rad * 2, sb, se );
@@ -6344,8 +6344,9 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 if(rzRules->obj->BBObj.GetMinX() < BBView.GetMaxX() - 360.)
                     x_origin += mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
             } else
-            if( (BBView.GetMinX() <= -180. && rzRules->obj->BBObj.GetMaxX() > BBView.GetMinX() + 360.) ||
-                (BBView.GetMinX() <= 0. && rzRules->obj->BBObj.GetMaxX() > 180))
+            if( (BBView.GetMinX() <= -180. && rzRules->obj->BBObj.GetMaxX() > BBView.GetMinX() + 360.)
+               || (rzRules->obj->BBObj.GetMaxX() > 180 && BBView.GetMinX() + 360 < rzRules->obj->BBObj.GetMaxX() )
+                )
                 x_origin -= mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
 
             glTranslatef( x_origin, rzRules->obj->y_origin, 0);
