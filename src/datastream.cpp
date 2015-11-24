@@ -608,7 +608,8 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
         {
             //          wxSocketError e = m_sock->LastError();          // this produces wxSOCKET_WOULDBLOCK.
             if(m_net_protocol == TCP || m_net_protocol == GPSD) {
-                wxLogMessage( wxString::Format(_T("Datastream connection lost: %s"), m_portstring.c_str()) );
+				if (m_brx_connect_event)
+					wxLogMessage(wxString::Format(_T("Datastream connection lost: %s"), m_portstring.c_str()));
                 if (m_socket_server) {
                     m_sock->Destroy();
                     m_sock=0;
