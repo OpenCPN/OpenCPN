@@ -1330,6 +1330,7 @@ bool chartdldr_pi::ExtractRarFiles( const wxString& aRarFile, const wxString& aT
     strncpy(target, (const char*)aTargetDir.mb_str(wxConvUTF8), 1023);
     char *argv[] = {const_cast<char *>("unrar"), command, const_cast<char *>("-y"), file, target};
 #ifdef _UNIX
+    // XXX is setlocale need?
     setlocale(LC_ALL,"");
 #endif
 
@@ -1425,6 +1426,12 @@ bool chartdldr_pi::ExtractRarFiles( const wxString& aRarFile, const wxString& aT
 
     if( aRemoveRar )
         wxRemoveFile(aRarFile);
+
+#ifdef _UNIX
+    // reset LC_NUMERIC locale, some locales use a comma for decimal point
+    // and it corrupts navobj.xml file
+    setlocale(LC_NUMERIC, "C");
+#endif
 
     return true;
 }
