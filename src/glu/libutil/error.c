@@ -62,7 +62,7 @@ static const struct token_string Errors[] = {
 
 
 
-const GLubyte* GLAPIENTRY
+const GLubyte* /*GLAPIENTRY*/
 gluErrorString(GLenum errorCode)
 {
     int i;

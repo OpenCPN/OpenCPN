@@ -84,6 +84,7 @@ extern GLuint g_raster_format;
 #include "androidUTIL.h"
 #endif
 
+
 #include "OCPNPlatform.h"
 
 wxString GetOCPNKnownLanguage(const wxString lang_canonical,

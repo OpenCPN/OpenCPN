@@ -2166,8 +2166,9 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
             ViewPort cvp = glChartCanvas::ClippedViewport(VPoint, chart_region);
 
             if(CHART_TYPE_CM93 == GetChartType()){
-                if(!glChartCanvas::SetClipRegion(cvp, chart_region))
-                    glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
+                // for now I will revert to the faster rectangle clipping now that rendering order is resolved
+//                glChartCanvas::SetClipRegion(cvp, chart_region);
+                glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
             }
             else
                 glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
