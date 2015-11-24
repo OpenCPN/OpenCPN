@@ -1324,10 +1324,16 @@ bool chartdldr_pi::ExtractRarFiles( const wxString& aRarFile, const wxString& aT
 
     char command[2];
     strncpy(command, (const char*)cmd.mb_str(wxConvUTF8), 1);
+    command[1] = 0;
+
     char file[1024];
     strncpy(file, (const char*)aRarFile.mb_str(wxConvUTF8), 1023);
+    file[1023] = 0;
+
     char target[1024];
     strncpy(target, (const char*)aTargetDir.mb_str(wxConvUTF8), 1023);
+    target[1023] = 0;
+
     char *argv[] = {const_cast<char *>("unrar"), command, const_cast<char *>("-y"), file, target};
 #ifdef _UNIX
     // XXX is setlocale need?
