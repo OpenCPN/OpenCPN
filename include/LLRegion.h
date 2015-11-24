@@ -28,7 +28,7 @@
 #define _LLREGION_H_
 
 #include <list>
-#include <GL/glu.h>
+#include "dychart.h"
 
 #include "bbox.h"
 #include "cutil.h"

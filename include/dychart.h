@@ -103,10 +103,10 @@
       #define fmin __min
       #define fmax __max
 
-//      #define round(x) floor(x)
+      #define round(x) round_msvc(x)
+
 #endif
 
-#define round(x) round_msvc(x)
 //------------------------------------------------------------------------------
 //          Some Build constants
 //------------------------------------------------------------------------------
@@ -196,10 +196,9 @@
 #define __POSIX__
 #endif
 
-
-#if 0
 #ifndef OCPN_GL_INCLUDES
 #define OCPN_GL_INCLUDES 1
+
 
 #ifdef __WXMSW__
     #include "GL/gl.h"            // local copy for Windows
@@ -219,8 +218,6 @@
 #endif
 
 #endif      //OCPN_GL_INCLUDES
-#endif
-
 
 #ifdef __OCPN__ANDROID__
 #include "qdebug.h"

@@ -33,6 +33,8 @@
 #include "chcanv.h"
 #include "styles.h"
 
+#include "dychart.h"
+
 
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern ChartCanvas *cc1;

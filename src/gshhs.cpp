@@ -47,22 +47,16 @@
 #include "chartbase.h" // for projections
 #include "wx28compat.h"
 
-#ifdef __OCPN__ANDROID__
-#include "qopengl.h"                  // this gives us the qt runtime gles2.h
-#include "GL/gl_private.h"
-#else
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/glext.h>
-#endif
+#include "dychart.h"
+
 
 #ifdef __WXMSW__
-#define __CALL_CONVENTION __stdcall
+#define __CALL_CONVENTION  //__stdcall
 #else
 #define __CALL_CONVENTION
 #endif
 
-typedef void (APIENTRY * PFNGLBINDBUFFERPROC) (GLenum target, GLuint buffer);
+//typedef void (APIENTRY * PFNGLBINDBUFFERPROC) (GLenum target, GLuint buffer);
 
 extern wxString *pWorldMapLocation;
 

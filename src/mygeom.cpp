@@ -50,33 +50,13 @@
 
 #include "triangulate.h"
 
-#ifdef ocpnUSE_GL
-
-#ifdef USE_GLU_TESS
-
-#ifdef __WXMSW__
-#include "GL/gl.h"            // local copy for Windows
-#include <GL/glu.h>
-#else
-
-#ifndef __OCPN__ANDROID__
-#include <GL/gl.h>
-#include <GL/glu.h>
-#else
-#include "qopengl.h"                  // this gives us the qt runtime gles2.h
-#include "GL/gl_private.h"
-#endif
-
-#endif
-
-#endif //USE_GLU_TESS
+#include "dychart.h"
 
 
 #ifdef __WXMSW__
 #include <windows.h>
 #endif
 
-#endif
 
 
 //      Module Internal Prototypes

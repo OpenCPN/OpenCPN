@@ -53,20 +53,15 @@ private:
 };
 #endif
 
+
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
-
-#include <qopengl.h>
-#include "GL/gl_private.h"
-
-#else
-#include "GL/gl.h"
 #endif
 
+#include "dychart.h"
 
 #include "glChartCanvas.h"
 #include "chcanv.h"
-#include "dychart.h"
 #include "s52plib.h"
 #include "Quilt.h"
 #include "pluginmanager.h"
