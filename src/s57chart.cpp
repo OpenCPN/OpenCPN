@@ -6438,6 +6438,29 @@ int s57chart::CompareLights( const void** l1ptr, const void** l2ptr )
     return -1;
 }
 
+static const char *type2str( GeoPrim_t type)
+{
+    const char *r = "Uknown";
+    switch(type) {
+    case GEO_POINT:
+        return "Point";
+        break;
+    case GEO_LINE:
+        return "Line";
+        break;
+    case GEO_AREA:
+        return "Area";
+        break;
+    case GEO_META:
+        return "Meta";
+        break;
+    case GEO_PRIM:
+        return "Prim";
+        break;
+    }
+    return r;
+}
+
 wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
 {
     wxString ret_val;
@@ -6494,21 +6517,32 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
         //    Show LUP
         if( g_bDebugS57 ) {
             wxString index;
-            index.Printf( _T("Feature Index: %d\n"), current->obj->Index );
+            
+            classAttributes = _T("");
+            index.Printf( _T("Feature Index: %d<br>"), current->obj->Index );
             classAttributes << index;
 
             wxString LUPstring;
-            LUPstring.Printf( _T("LUP RCID:  %d\n"), current->LUP->RCID );
+            LUPstring.Printf( _T("LUP RCID:  %d<br>"), current->LUP->RCID );
             classAttributes << LUPstring;
+
+            wxString Bbox;
+            wxBoundingBox bbox = current->obj->BBObj;
+            Bbox.Printf( _T("Bounding box:  %g %g %g %g<br>"), bbox.GetMinY(), bbox.GetMaxY() , bbox.GetMinX(), bbox.GetMaxX() );
+            classAttributes << Bbox;
+
+            wxString Type;
+            Type.Printf( _T(" Type:  %s<br>"), type2str(current->obj->Primitive_type));
+            classAttributes << Type;
 
             LUPstring = _T("    LUP ATTC: ");
             if( current->LUP->ATTCArray ) LUPstring += current->LUP->ATTCArray->Item( 0 );
-            LUPstring += _T("\n");
+            LUPstring += _T("<br>");
             classAttributes << LUPstring;
 
             LUPstring = _T("    LUP INST: ");
             if( current->LUP->INST ) LUPstring += *( current->LUP->INST );
-            LUPstring += _T("\n\n");
+            LUPstring += _T("<br><br>");
             classAttributes << LUPstring;
 
         }
@@ -6543,6 +6577,10 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
             wxString attribStr;
             int noAttr = 0;
             attribStr << _T("<table border=0 cellspacing=0 cellpadding=0>");
+
+            if( g_bDebugS57 ) {
+                ret_val << _T("<p>") << classAttributes;
+            }
 
             bool inDepthRange = false;
 
