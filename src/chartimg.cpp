@@ -196,6 +196,14 @@ ChartBase::~ChartBase()
       free( m_pCOVRTable );
       free( m_pCOVRTablePoints );
 
+      //    Free the No COVR tables
+
+      for(unsigned int j=0 ; j<(unsigned int)m_nNoCOVREntries ; j++)
+            free( m_pNoCOVRTable[j] );
+
+      free( m_pNoCOVRTable );
+      free( m_pNoCOVRTablePoints );
+
 }
 /*
 int ChartBase::Continue_BackgroundHiDefRender(void)

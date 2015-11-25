@@ -3272,7 +3272,7 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
 }
 
 #include <wx/arrimpl.cpp>
-WX_DEFINE_ARRAY( float*, MyFloatPtrArray );
+WX_DEFINE_ARRAY_PTR( float*, MyFloatPtrArray );
 
 //    Read the .000 ENC file and create required Chartbase data structures
 bool s57chart::CreateHeaderDataFromENC( void )
@@ -3349,70 +3349,55 @@ bool s57chart::CreateHeaderDataFromENC( void )
 
             delete pFeat;
             pFeat = GetChartNextM_COVR( catcov );
-        }         // while
+    }         // while
 
-        //    Allocate the storage
+    //    Allocate the storage
 
-        m_nCOVREntries = pAuxCntArray->GetCount();
+    m_nCOVREntries = pAuxCntArray->GetCount();
 
-        //    If only one M_COVR,CATCOV=1 object was found,
-        //    assign the geometry to the one and only COVR
+    //    Create new COVR entries
 
-        if( m_nCOVREntries == 1 ) {
-            m_pCOVRTablePoints = (int *) malloc( sizeof(int) );
-            *m_pCOVRTablePoints = pAuxCntArray->Item( 0 );
-            m_pCOVRTable = (float **) malloc( sizeof(float *) );
-            *m_pCOVRTable = (float *) malloc( pAuxCntArray->Item( 0 ) * 2 * sizeof(float) );
-            memcpy( *m_pCOVRTable, pAuxPtrArray->Item( 0 ),
-                    pAuxCntArray->Item( 0 ) * 2 * sizeof(float) );
+    if( m_nCOVREntries >= 1 ) {
+        m_pCOVRTablePoints = (int *) malloc( m_nCOVREntries * sizeof(int) );
+        m_pCOVRTable = (float **) malloc( m_nCOVREntries * sizeof(float *) );
+
+        for( unsigned int j = 0; j < (unsigned int) m_nCOVREntries; j++ ) {
+            m_pCOVRTablePoints[j] = pAuxCntArray->Item( j );
+            m_pCOVRTable[j] = pAuxPtrArray->Item( j );
         }
+    }
 
-        else if( m_nCOVREntries > 1 ) {
-            //    Create new COVR entries
-            m_pCOVRTablePoints = (int *) malloc( m_nCOVREntries * sizeof(int) );
-            m_pCOVRTable = (float **) malloc( m_nCOVREntries * sizeof(float *) );
+    else                                     // strange case, found no CATCOV=1 M_COVR objects
+    {
+        wxString msg( _T("   ENC contains no useable M_COVR, CATCOV=1 features:  ") );
+        msg.Append( m_FullPath );
+        wxLogMessage( msg );
+    }
 
-            for( unsigned int j = 0; j < (unsigned int) m_nCOVREntries; j++ ) {
-                m_pCOVRTablePoints[j] = pAuxCntArray->Item( j );
-                m_pCOVRTable[j] = (float *) malloc( pAuxCntArray->Item( j ) * 2 * sizeof(float) );
-                memcpy( m_pCOVRTable[j], pAuxPtrArray->Item( j ),
-                        pAuxCntArray->Item( j ) * 2 * sizeof(float) );
-            }
+
+    //      And for the NoCovr regions
+    m_nNoCOVREntries = pNoCovrCntArray->GetCount();
+
+    if( m_nNoCOVREntries ) {
+        //    Create new NoCOVR entries
+        m_pNoCOVRTablePoints = (int *) malloc( m_nNoCOVREntries * sizeof(int) );
+        m_pNoCOVRTable = (float **) malloc( m_nNoCOVREntries * sizeof(float *) );
+
+        for( unsigned int j = 0; j < (unsigned int) m_nNoCOVREntries; j++ ) {
+            int npoints = pNoCovrCntArray->Item( j );
+            m_pNoCOVRTablePoints[j] = npoints;
+            m_pNoCOVRTable[j] = pNoCovrPtrArray->Item( j );
         }
+    }
+    else {
+        m_pNoCOVRTablePoints = NULL;
+        m_pNoCOVRTable = NULL;
+    }
 
-        else                                     // strange case, found no CATCOV=1 M_COVR objects
-        {
-            wxString msg( _T("   ENC contains no useable M_COVR, CATCOV=1 features:  ") );
-            msg.Append( m_FullPath );
-            wxLogMessage( msg );
-        }
-
-
-        //      And for the NoCovr regions
-        m_nNoCOVREntries = pNoCovrCntArray->GetCount();
-
-        if( m_nNoCOVREntries ) {
-            //    Create new NoCOVR entries
-            m_pNoCOVRTablePoints = (int *) malloc( m_nNoCOVREntries * sizeof(int) );
-            m_pNoCOVRTable = (float **) malloc( m_nNoCOVREntries * sizeof(float *) );
-
-            for( unsigned int j = 0; j < (unsigned int) m_nNoCOVREntries; j++ ) {
-                int npoints = pNoCovrCntArray->Item( j );
-                m_pNoCOVRTablePoints[j] = npoints;
-                m_pNoCOVRTable[j] = (float *) malloc( npoints * 2 * sizeof(float) );
-                memcpy( m_pNoCOVRTable[j], pNoCovrPtrArray->Item( j ),
-                        npoints * 2 * sizeof(float) );
-            }
-        }
-        else {
-            m_pNoCOVRTablePoints = NULL;
-            m_pNoCOVRTable = NULL;
-        }
-
-        delete pAuxPtrArray;
-        delete pAuxCntArray;
-        delete pNoCovrPtrArray;
-        delete pNoCovrCntArray;
+    delete pAuxPtrArray;
+    delete pAuxCntArray;
+    delete pNoCovrPtrArray;
+    delete pNoCovrCntArray;
 
 
     if( 0 == m_nCOVREntries ) {                        // fallback
