@@ -780,6 +780,7 @@ void GribSettingsDialog::OnUnitChange( wxCommandEvent& event )
 void GribSettingsDialog::OnTransparencyChange( wxScrollEvent& event  )
 {
     m_Settings.m_iOverlayTransparency = 254. - ( (long) m_sTransparency->GetValue() * 254. / 100. );
+    m_extSettings.m_iOverlayTransparency = m_Settings.m_iOverlayTransparency;
     m_parent.SetFactoryOptions();
 }
 
