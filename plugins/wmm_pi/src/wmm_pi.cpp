@@ -552,7 +552,7 @@ void wmm_pi::SendVariationAt(double lat, double lon, int year, int month, int da
 {
     wxJSONValue v;
     v[_T("Lat")] = lat;
-    v[_T("Lon")] = lat;
+    v[_T("Lon")] = lon;
     v[_T("Year")] = year;
     v[_T("Month")] = month;
     v[_T("Day")] = day;
