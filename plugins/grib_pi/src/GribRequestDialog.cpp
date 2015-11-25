@@ -927,6 +927,8 @@ void GribRequestSetting::OnSendMaiL( wxCommandEvent& event  )
         _("Too big file! zyGrib limit is 2Mb!"), _("Error! Max Lat lower than Min Lat or Max Lon lower than Min Lon!"),
         _("Too large area! Each side must be less than 180\u00B0!"), _("Too small area for this resolution!") };
 
+    ::wxBeginBusyCursor();
+
     m_MailImage->SetForegroundColour(wxColor( 255, 0, 0 ));
     m_AllowSend = false;
 
@@ -943,6 +945,9 @@ void GribRequestSetting::OnSendMaiL( wxCommandEvent& event  )
         m_rButtonYes->SetLabel(_("Continue..."));
         m_rButton->Layout();
         SetRequestDialogSize();
+
+        ::wxEndBusyCursor();
+
         return;
     }
 
@@ -975,4 +980,6 @@ void GribRequestSetting::OnSendMaiL( wxCommandEvent& event  )
     m_rButtonYes->SetLabel(_("Continue..."));
     m_rButton->Layout();
     SetRequestDialogSize();
+
+    ::wxEndBusyCursor();
 }
