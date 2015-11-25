@@ -362,6 +362,8 @@ LLRegion ViewPort::GetLLRegion( const OCPNRegion &region )
         double pll[540];
         int j;
 
+        /* if the viewport is rotated, we must split the segments as straight lines in lat/lon
+           coordinates map to curves in projected coordinate space */
         if(fabs( rotation ) >= 0.0001) {
             j=0;
             double lastlat, lastlon;
