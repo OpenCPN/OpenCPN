@@ -6957,14 +6957,10 @@ int s52plib::RenderAreaToGL( const wxGLContext &glcc, ObjRazRules *rzRules, View
     while( rules != NULL ) {
         switch( rules->ruleType ){
             case RUL_ARE_CO:
-                if( rzRules->obj->bCS_Added  && !ObjectRenderCheckCat( rzRules, vp ) )
-                    break;
                 RenderToGLAC( rzRules, rules, vp );
                 break; // AC
 
             case RUL_ARE_PA:
-                if( rzRules->obj->bCS_Added  && !ObjectRenderCheckCat( rzRules, vp ) )
-                        break;
                 RenderToGLAP( rzRules, rules, vp );
                 break; // AP
 
