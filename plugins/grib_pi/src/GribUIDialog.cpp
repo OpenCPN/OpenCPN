@@ -818,6 +818,8 @@ void GRIBUICtrlBar::OnRequest(  wxCommandEvent& event )
     /*create new request dialog*/
     if( m_ZoneSelMode == AUTO_SELECTION || m_ZoneSelMode == START_SELECTION ) {
 
+		::wxBeginBusyCursor();
+
         delete pReq_Dialog;     //delete to be re-created
 
         pReq_Dialog = new GribRequestSetting( *this );
@@ -829,17 +831,23 @@ void GRIBUICtrlBar::OnRequest(  wxCommandEvent& event )
         int w;
         ::wxDisplaySize( &w, NULL);
         pReq_Dialog->Move( (w - pReq_Dialog->GetSize().GetX() ) / 2, 30 );
+
     } //end create new request dialog
 
     pReq_Dialog->Show( m_ZoneSelMode == AUTO_SELECTION || m_ZoneSelMode == COMPLETE_SELECTION );
     m_ZoneSelMode = m_ZoneSelMode == START_SELECTION ? DRAW_SELECTION : m_ZoneSelMode == COMPLETE_SELECTION ? START_SELECTION : m_ZoneSelMode;
     if( m_ZoneSelMode == START_SELECTION ) pReq_Dialog->StopGraphicalZoneSelection();
     SetRequestBitmap( m_ZoneSelMode );                   //set appopriate bitmap
+
+	if ( ::wxIsBusy() )::wxEndBusyCursor();
+
 }
 
 void GRIBUICtrlBar::OnSettings( wxCommandEvent& event )
 {
     if( m_tPlayStop.IsRunning() ) return;      // do nothing when play back is running !
+
+	::wxBeginBusyCursor();
 
     GribOverlaySettings initSettings = m_OverlaySettings;
     GribSettingsDialog *dialog = new GribSettingsDialog( *this, m_OverlaySettings,  m_lastdatatype, m_FileIntervalIndex);
@@ -857,6 +865,9 @@ void GRIBUICtrlBar::OnSettings( wxCommandEvent& event )
     ::wxDisplaySize( &w, NULL);
     dialog->Move( (w - dialog->GetSize().GetX() ) / 2, 30 );
 	// end set position
+
+	::wxEndBusyCursor();
+
     if(dialog->ShowModal() == wxID_OK)
     {
         dialog->WriteSettings();
@@ -869,6 +880,7 @@ void GRIBUICtrlBar::OnSettings( wxCommandEvent& event )
         m_OverlaySettings = initSettings;
         m_DialogStyle = initSettings.m_iCtrlandDataStyle;
     }
+    ::wxBeginBusyCursor();
 
 	dialog->SaveLastPage();
     if( !m_OverlaySettings.m_bInterpolate ) m_InterpolateMode = false;        //Interpolate could have been unchecked
@@ -1095,8 +1107,6 @@ void GRIBUICtrlBar::OnOpenFile( wxCommandEvent& event )
 {
     if( m_tPlayStop.IsRunning() ) return;      // do nothing when play back is running !
 
-
-
     if( !wxDir::Exists( m_grib_dir ) ) {
         wxStandardPathsBase& path = wxStandardPaths::Get();
         m_grib_dir = path.GetDocumentsDir();
@@ -1107,6 +1117,9 @@ void GRIBUICtrlBar::OnOpenFile( wxCommandEvent& event )
         wxDefaultSize, _T("File Dialog") );
 
     if( dialog->ShowModal() == wxID_OK ) {
+
+        ::wxBeginBusyCursor();
+
         m_grib_dir = dialog->GetDirectory();
         m_file_name = dialog->GetPath();
         OpenFile();
@@ -1147,6 +1160,8 @@ void GRIBUICtrlBar::OnZoomToCenterClick( wxCommandEvent& event )
     double latmin,latmax,lonmin,lonmax;
     if(!GetGribZoneLimits(m_pTimelineSet, &latmin, &latmax, &lonmin, &lonmax ))
         return;
+
+    ::wxBeginBusyCursor();
 
     //calculate overlay size
     double width = lonmax - lonmin;

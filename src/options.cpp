@@ -84,6 +84,7 @@ extern GLuint g_raster_format;
 #include "androidUTIL.h"
 #endif
 
+
 #include "OCPNPlatform.h"
 
 wxString GetOCPNKnownLanguage(const wxString lang_canonical,
@@ -3956,7 +3957,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     wxBoxSizer* magVarSizer = new wxBoxSizer(wxHORIZONTAL);
     bearingsSizer->Add(magVarSizer, 0, wxALL, group_item_spacing);
 
-    wxStaticText* itemStaticTextUserVar =
+    itemStaticTextUserVar =
         new wxStaticText(panelUnits, wxID_ANY, _("Assumed magnetic variation"));
     magVarSizer->Add(itemStaticTextUserVar, 0, wxALL | wxALIGN_CENTRE_VERTICAL,
                      group_item_spacing);
@@ -3965,8 +3966,8 @@ void options::CreatePanel_Units(size_t parent, int border_size,
                              wxDefaultPosition, wxSize(50, -1), wxTE_RIGHT);
     magVarSizer->Add(pMagVar, 0, wxALIGN_CENTRE_VERTICAL, group_item_spacing);
 
-    magVarSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("deg (-W, +E)")),
-                     0, wxALL | wxALIGN_CENTRE_VERTICAL, group_item_spacing);
+	itemStaticTextUserVar2 = new wxStaticText(panelUnits, wxID_ANY, _("deg (-W, +E)"));
+    magVarSizer->Add(itemStaticTextUserVar2, 0, wxALL | wxALIGN_CENTRE_VERTICAL, group_item_spacing);
   }
 }
 
@@ -5044,8 +5045,13 @@ void options::UpdateOptionsUnits(void) {
   s.Printf(_T( "%6.2f" ), S52_getMarinerParam(S52_MAR_DEEP_CONTOUR) / conv);
   s.Trim(FALSE);
   m_DeepCtl->SetValue(s);
-#endif  
-}
+#endif
+  
+  //disable input for variation if WMM is available
+  itemStaticTextUserVar->Enable(!(g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"))));
+  itemStaticTextUserVar2->Enable(!(g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"))));
+  pMagVar->Enable(!(g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"))));
+} 
 
 void options::OnSizeAutoButton(wxCommandEvent& event) {
   wxString screenmm = wxString::Format(

@@ -30,15 +30,7 @@
 
 #include <stdint.h>
 
-#ifdef __OCPN__ANDROID__
-#include <qopengl.h>
-#include "GL/gl_private.h"
-#else
-#include "GL/gl.h"
-#ifdef __WXMSW__ // because gl.h includes windows.h which defines symbols that conflict with wx
-#include <wx/msw/winundef.h>
-#endif
-#endif
+#include "dychart.h"
 
 #include "viewport.h"
 #include "glTexCache.h"

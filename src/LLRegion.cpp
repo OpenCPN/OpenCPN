@@ -264,7 +264,7 @@ struct work
 };
 
 
-static void APIENTRY LLvertexCallback(GLvoid *vertex, void *user_data)
+static void /*APIENTRY*/ LLvertexCallback(GLvoid *vertex, void *user_data)
 {
     work *w = (work*)user_data;
     const GLdouble *pointer = (GLdouble *)vertex;
@@ -273,10 +273,10 @@ static void APIENTRY LLvertexCallback(GLvoid *vertex, void *user_data)
     w->contour.push_back(p);
 }
 
-static void APIENTRY LLbeginCallback(GLenum which) {
+static void /*APIENTRY*/ LLbeginCallback(GLenum which) {
 }
 
-static void APIENTRY LLendCallback(void *user_data)
+static void /*APIENTRY*/ LLendCallback(void *user_data)
 {
     work *w = (work*)user_data;
     if(w->contour.size()) {
@@ -285,7 +285,7 @@ static void APIENTRY LLendCallback(void *user_data)
     }    
 }
 
-static void APIENTRY LLcombineCallback( GLdouble coords[3], GLdouble *vertex_data[4], GLfloat weight[4],
+static void /*APIENTRY*/ LLcombineCallback( GLdouble coords[3], GLdouble *vertex_data[4], GLfloat weight[4],
                       GLdouble **dataOut, void *user_data )
 {
     work *w = (work*)user_data;
@@ -294,7 +294,7 @@ static void APIENTRY LLcombineCallback( GLdouble coords[3], GLdouble *vertex_dat
     *dataOut = vertex;    
 }
 
-static void APIENTRY LLerrorCallback(GLenum errorCode)
+static void /*APIENTRY*/ LLerrorCallback(GLenum errorCode)
 {
     const GLubyte *estring;
     estring = gluErrorString(errorCode);

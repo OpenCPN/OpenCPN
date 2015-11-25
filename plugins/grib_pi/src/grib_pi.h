@@ -156,7 +156,6 @@ private:
       bool             m_bGRIBShowIcon;
 
       bool        m_bShowGrib;
-      bool        m_bInitIsOK;
 };
 
 //----------------------------------------------------------------------------------------

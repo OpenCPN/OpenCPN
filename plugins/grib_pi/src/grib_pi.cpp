@@ -115,7 +115,10 @@ int grib_pi::Init(void)
                                                  _("Grib"), _T(""), NULL,
                                                  GRIB_TOOL_POSITION, 0, this);
 
-      m_bInitIsOK = QualifyCtrlBarPosition( m_CtrlBarxy, m_CtrlBar_Sizexy );
+      if( !QualifyCtrlBarPosition( m_CtrlBarxy, m_CtrlBar_Sizexy ) ) {
+          m_CtrlBarxy = wxPoint( 20, 60 );   //reset to the default position
+          m_CursorDataxy = wxPoint( 20, 170 );
+      }
 
       return (WANTS_OVERLAY_CALLBACK |
               WANTS_OPENGL_OVERLAY_CALLBACK |
@@ -321,10 +324,12 @@ bool grib_pi::QualifyCtrlBarPosition( wxPoint position, wxSize size )
 void grib_pi::MoveDialog( wxDialog *dialog, wxPoint position, wxPoint dfault )
 {
     wxPoint p = position;
-    if( m_DialogStyle != ATTACHED_HAS_CAPTION ) {
-        if( !QualifyCtrlBarPosition(p, dialog->GetSize()) )
-            p = dfault;
-    }
+    //Check and ensure there is always a "grabb" zone always visible wathever the dialoue size is.
+    if( p.x + dialog->GetSize().GetX() > GetOCPNCanvasWindow()->GetClientSize().GetX() || p.x < 0 )
+        p.x = wxMin( (GetOCPNCanvasWindow()->GetClientSize().GetX() - dialog->GetSize().GetX()), dfault.x );
+    if( p.y + dialog->GetSize().GetY() > GetOCPNCanvasWindow()->GetClientSize().GetY() )
+        p.y = dfault.y;
+
 #ifdef __WXGTK__
     dialog->Move(0, 0);
 #endif
@@ -333,12 +338,7 @@ void grib_pi::MoveDialog( wxDialog *dialog, wxPoint position, wxPoint dfault )
 
 void grib_pi::OnToolbarToolCallback(int id)
 {
-    if( !m_bInitIsOK ) {
-        wxMessageDialog mes( m_parent_window, _("The Gribs Dialogs are probably too wide for the screen size\nIn this case, please try a smaller Font size"),
-                _("Warning!"), wxOK);
-            mes.ShowModal();
-        m_bInitIsOK = true;
-    }
+    ::wxBeginBusyCursor();
 
     bool starting = false;
     if(!m_pGribCtrlBar)
@@ -427,6 +427,7 @@ bool grib_pi::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp)
     m_pGRIBOverlayFactory->RenderGribOverlay ( dc, vp );
     if( m_pGribCtrlBar->pReq_Dialog )
         m_pGribCtrlBar->pReq_Dialog->RenderZoneOverlay( dc );
+    if( ::wxIsBusy() ) ::wxEndBusyCursor();
     return true;
 }
 
@@ -441,6 +442,7 @@ bool grib_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp)
     m_pGRIBOverlayFactory->RenderGLGribOverlay ( pcontext, vp );
     if( m_pGribCtrlBar->pReq_Dialog )
         m_pGribCtrlBar->pReq_Dialog->RenderGlZoneOverlay();
+    if( ::wxIsBusy() ) ::wxEndBusyCursor();
     return true;
 }
 
