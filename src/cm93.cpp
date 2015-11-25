@@ -1082,7 +1082,7 @@ void CreateDecodeTable ( void )
 }
 
 
-int   read_and_decode_bytes ( FILE *stream, void *p, int nbytes )
+static int   read_and_decode_bytes ( FILE *stream, void *p, int nbytes )
 {
       if ( 0 == nbytes )                  // declare victory if no bytes requested
             return 1;
@@ -1107,7 +1107,7 @@ int   read_and_decode_bytes ( FILE *stream, void *p, int nbytes )
 }
 
 
-int read_and_decode_double ( FILE *stream, double *p )
+static int read_and_decode_double ( FILE *stream, double *p )
 {
       double t;
       //    read into temp buffer
@@ -1133,7 +1133,7 @@ int read_and_decode_double ( FILE *stream, double *p )
       return 1;
 }
 
-int read_and_decode_int ( FILE *stream, int *p )
+static int read_and_decode_int ( FILE *stream, int *p )
 {
       int t;
       //    read into temp buffer
@@ -1159,7 +1159,7 @@ int read_and_decode_int ( FILE *stream, int *p )
       return 1;
 }
 
-int read_and_decode_ushort ( FILE *stream, unsigned short *p )
+static int read_and_decode_ushort ( FILE *stream, unsigned short *p )
 {
       unsigned short t;
       //    read into temp buffer
@@ -1335,7 +1335,7 @@ bool Is_CM93Cell_Present ( wxString &fileprefix, double lat, double lon, int sca
 }
 
 
-int get_dval ( int native_scale )
+static int get_dval ( int native_scale )
 {
       int dval;
       switch ( native_scale )
@@ -1354,7 +1354,7 @@ int get_dval ( int native_scale )
 }
 
 
-bool read_header_and_populate_cib ( FILE *stream, Cell_Info_Block *pCIB )
+static bool read_header_and_populate_cib ( FILE *stream, Cell_Info_Block *pCIB )
 {
       //    Read header, populate Cell_Info_Block
 
@@ -1445,7 +1445,7 @@ bool read_header_and_populate_cib ( FILE *stream, Cell_Info_Block *pCIB )
       return true;
 }
 
-bool read_vector_record_table ( FILE *stream, int count, Cell_Info_Block *pCIB )
+static bool read_vector_record_table ( FILE *stream, int count, Cell_Info_Block *pCIB )
 {
       bool brv;
 
@@ -1521,7 +1521,7 @@ bool read_vector_record_table ( FILE *stream, int count, Cell_Info_Block *pCIB )
 }
 
 
-bool read_3dpoint_table ( FILE *stream, int count, Cell_Info_Block *pCIB )
+static bool read_3dpoint_table ( FILE *stream, int count, Cell_Info_Block *pCIB )
 {
       geometry_descriptor *p = pCIB->point3d_descriptor_block;
       cm93_point_3d *q = pCIB->p3dpoint_array;
@@ -1564,7 +1564,7 @@ bool read_3dpoint_table ( FILE *stream, int count, Cell_Info_Block *pCIB )
 }
 
 
-bool read_2dpoint_table ( FILE *stream, int count, Cell_Info_Block *pCIB )
+static bool read_2dpoint_table ( FILE *stream, int count, Cell_Info_Block *pCIB )
 {
 
 //      int rv = read_and_decode_bytes(stream, pCIB->p2dpoint_array, count * 4);
@@ -1586,7 +1586,7 @@ bool read_2dpoint_table ( FILE *stream, int count, Cell_Info_Block *pCIB )
 }
 
 
-bool read_feature_record_table ( FILE *stream, int n_features, Cell_Info_Block *pCIB )
+static bool read_feature_record_table ( FILE *stream, int n_features, Cell_Info_Block *pCIB )
 {
       try
       {
@@ -2420,12 +2420,12 @@ int cm93chart::CreateObjChain ( int cell_index, int subcell, double view_scale_p
                   {
                         wxString objnam  = obj->GetAttrValueAsString("OBJNAM");
                         wxString fe_name = wxString(obj->FeatureName, wxConvUTF8);
-                        wxString cellname = wxString::Format(_T("%i_%i"), cell_index, subcell);
                         if ( fe_name == _T("_texto") )
                             objnam  = obj->GetAttrValueAsString("_texta");
-                        if (objnam.Len() > 0)
+                        if (objnam.Len() > 0) {
+                            wxString cellname = wxString::Format(_T("%i_%i"), cell_index, subcell);
                             g_pi_manager->SendVectorChartObjectInfo( cellname, fe_name, objnam, obj->m_lat, obj->m_lon, scale, nativescale );
-
+                        }
 //      Build/Maintain the ATON floating/rigid arrays
                         if ( GEO_POINT == obj->Primitive_type )
                         {
@@ -3373,13 +3373,13 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
       pobj->attVal =  new wxArrayOfS57attVal();
 
 
-      cm93_attr_block *pab = new cm93_attr_block ( pobject->attributes_block, pDict );
+      cm93_attr_block pab( pobject->attributes_block, pDict );
 
 
       for ( int jattr = 0 ; jattr  < pobject->n_attributes ; jattr++ )
       {
 
-            unsigned char *curr_attr = pab->GetNextAttr();
+            unsigned char *curr_attr = pab.GetNextAttr();
 
             unsigned char iattr = *curr_attr;
 
@@ -3586,7 +3586,6 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
 
       }     //for
 
-      delete pab;
 
       //    ATON label optimization:
       //    Some CM93 ATON objects do not contain OBJNAM attribute, which means that no label is shown
@@ -4285,10 +4284,10 @@ void cm93chart::ProcessMCOVRObjects ( int cell_index, char subcell )
                               double tmp_transform_x = 0.;
                               double tmp_transform_y = 0.;
 
-                              cm93_attr_block *pab = new cm93_attr_block ( pobject->attributes_block, m_pDict );
+                              cm93_attr_block pab( pobject->attributes_block, m_pDict );
                               for ( int jattr = 0 ; jattr  < pobject->n_attributes ; jattr++ )
                               {
-                                    unsigned char *curr_attr = pab->GetNextAttr();
+                                    unsigned char *curr_attr = pab.GetNextAttr();
                                     unsigned char iattr = *curr_attr;
                                     wxString sattr = m_pDict->GetAttrName ( iattr );
                                     char vtype = m_pDict->GetAttrType ( iattr );
@@ -4314,8 +4313,6 @@ void cm93chart::ProcessMCOVRObjects ( int cell_index, char subcell )
 
 
                               }     //for all attributes
-
-                              delete pab;
 
 
                               if ( NULL != xgeom )
