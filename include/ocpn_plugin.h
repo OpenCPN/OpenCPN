@@ -995,6 +995,7 @@ extern DECL_EXP bool CheckEdgePan_PlugIn( int x, int y, bool dragging, int margi
 extern DECL_EXP wxBitmap GetIcon_PlugIn(const wxString & name);
 extern DECL_EXP void SetCursor_PlugIn( wxCursor *pPlugin_Cursor = NULL );
 extern DECL_EXP wxFont *OCPNGetScaledFont_PlugIn(wxString TextElement, int default_size);
+extern DECL_EXP wxFont GetOCPNGUIScaledFont_PlugIn(wxString item);
 
 extern DECL_EXP double GetCanvasTilt();
 extern DECL_EXP void SetCanvasTilt(double tilt);
