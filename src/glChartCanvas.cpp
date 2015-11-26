@@ -1135,10 +1135,12 @@ void glChartCanvas::SetupOpenGL()
     if( GetRendererString().Find( _T("Mali") ) != wxNOT_FOUND )
         bad_stencil_code = true;
 
-    if( GetRendererString().Find( _T("Generic") ) != wxNOT_FOUND ) {
-        wxLogMessage( _T("OpenGL-> Detected Generic renderer, disabling stencil buffer") );
-        bad_stencil_code = true;
-    }
+    //XP  Generic Needs stencil buffer
+    //W7 Generic Needs stencil buffer    
+//      if( GetRendererString().Find( _T("Generic") ) != wxNOT_FOUND ) {
+//          wxLogMessage( _T("OpenGL-> Detected Generic renderer, disabling stencil buffer") );
+//          bad_stencil_code = true;
+//      }
     
     //          Seen with intel processor on VBox Win7
     if( GetRendererString().Find( _T("Chromium") ) != wxNOT_FOUND ) {
