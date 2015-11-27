@@ -2109,6 +2109,8 @@ void glChartCanvas::GridDraw( )
         float xlon = lon;
         if( xlon > 180.0 )
             xlon -= 360.0;
+        else if( xlon <= -180.0 )
+            xlon += 360.0;
         
         wxString st = CalcGridText( xlon, gridlonMajor, false );
         int ix;
