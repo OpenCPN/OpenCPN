@@ -1492,10 +1492,14 @@ void dashboard_pi::ApplyConfig( void )
             if(sz.x == 0)
                 sz.IncTo( wxSize( 160, 388) );
 #endif
-            m_pauimgr->AddPane( cont->m_pDashboardWindow,
-                wxAuiPaneInfo().Name( cont->m_sName ).Caption( cont->m_sCaption ).CaptionVisible( true ).TopDockable(
-                !vertical ).BottomDockable( !vertical ).LeftDockable( vertical ).RightDockable( vertical ).MinSize(
-                sz ).BestSize( sz ).FloatingSize( sz ).FloatingPosition( 100, 100 ).Float().Show( cont->m_bIsVisible ) );
+                wxAuiPaneInfo p = wxAuiPaneInfo().Name( cont->m_sName ).Caption( cont->m_sCaption ).CaptionVisible( false ).TopDockable(
+                    !vertical ).BottomDockable( !vertical ).LeftDockable( vertical ).RightDockable( vertical ).MinSize(
+                        sz ).BestSize( sz ).FloatingSize( sz ).FloatingPosition( 100, 100 ).Float().Show( cont->m_bIsVisible ).Gripper(false) ;
+                        
+            m_pauimgr->AddPane( cont->m_pDashboardWindow, p);
+                //wxAuiPaneInfo().Name( cont->m_sName ).Caption( cont->m_sCaption ).CaptionVisible( false ).TopDockable(
+               // !vertical ).BottomDockable( !vertical ).LeftDockable( vertical ).RightDockable( vertical ).MinSize(
+               // sz ).BestSize( sz ).FloatingSize( sz ).FloatingPosition( 100, 100 ).Float().Show( cont->m_bIsVisible ) );
         } else {
             wxAuiPaneInfo& pane = m_pauimgr->GetPane( cont->m_pDashboardWindow );
             pane.Caption( cont->m_sCaption ).Show( cont->m_bIsVisible );
@@ -2101,6 +2105,12 @@ void DashboardWindow::OnContextMenuSelect( wxCommandEvent& event )
 void DashboardWindow::SetColorScheme( PI_ColorScheme cs )
 {
     DimeWindow( this );
+    
+    //  Improve appearance, especially in DUSK or NIGHT palette
+    wxColour col;
+    GetGlobalColor( _T("DASHL"), &col );
+    SetBackgroundColour( col );
+    
     Refresh( false );
 }
 

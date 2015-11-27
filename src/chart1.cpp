@@ -484,6 +484,13 @@ wxSize                    options_lastWindowSize( 0,0 );
 
 bool                      g_bSleep;
 
+int                       g_grad_default;
+wxColour                  g_border_color_default;
+int                       g_border_size_default;
+int                       g_sash_size_default;
+wxColour                  g_caption_color_default;
+wxColour                  g_sash_color_default;
+
 bool GetMemoryStatus(int *mem_total, int *mem_used);
 
 #ifdef __WXMSW__
@@ -1744,9 +1751,18 @@ bool MyApp::OnInit()
     g_pi_manager = new PlugInManager( gFrame );
 
     g_pauimgr = new wxAuiManager;
-//        g_pauidockart= new wxAuiDefaultDockArt;
-//        g_pauimgr->SetArtProvider(g_pauidockart);
-
+    g_pauidockart= new wxAuiDefaultDockArt;
+    g_pauimgr->SetArtProvider(g_pauidockart);
+        
+    g_grad_default = g_pauidockart->GetMetric(wxAUI_DOCKART_GRADIENT_TYPE);
+    g_border_color_default = g_pauidockart->GetColour(wxAUI_DOCKART_BORDER_COLOUR );
+    g_border_size_default = g_pauidockart->GetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE );
+    g_sash_size_default = g_pauidockart->GetMetric(wxAUI_DOCKART_SASH_SIZE);
+    g_caption_color_default = g_pauidockart->GetColour(wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR);
+    g_sash_color_default = g_pauidockart->GetColour(wxAUI_DOCKART_SASH_COLOUR );
+    
+        
+         
 // tell wxAuiManager to manage the frame
     g_pauimgr->SetManagedWindow( gFrame );
 
@@ -2508,6 +2524,29 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
             break;
     }
 
+    
+    if( cs == GLOBAL_COLOR_SCHEME_DUSK || cs == GLOBAL_COLOR_SCHEME_NIGHT ) {
+        g_pauidockart->SetMetric(wxAUI_DOCKART_GRADIENT_TYPE, wxAUI_GRADIENT_NONE);
+        
+        g_pauidockart->SetColour(wxAUI_DOCKART_BORDER_COLOUR, wxColour(0,0,0));
+        g_pauidockart->SetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE, 1);
+        g_pauidockart->SetColour(wxAUI_DOCKART_SASH_COLOUR, wxColour(0,0,0));
+        g_pauidockart->SetMetric(wxAUI_DOCKART_SASH_SIZE, 0);
+        g_pauidockart->SetColour(wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR, wxColour(0,0,0));
+        
+    }
+    else{
+        g_pauidockart->SetMetric(wxAUI_DOCKART_GRADIENT_TYPE, g_grad_default);
+        g_pauidockart->SetColour(wxAUI_DOCKART_BORDER_COLOUR, g_border_color_default);
+        g_pauidockart->SetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE, g_border_size_default);
+        g_pauidockart->SetColour(wxAUI_DOCKART_SASH_COLOUR, g_sash_color_default);
+        g_pauidockart->SetMetric(wxAUI_DOCKART_SASH_SIZE, g_sash_size_default);
+        g_pauidockart->SetColour(wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR, g_caption_color_default);
+    
+    }
+    
+    g_pauimgr->Update();
+    
     g_StyleManager->GetCurrentStyle()->SetColorScheme( cs );
     cc1->GetWorldBackgroundChart()->SetColorScheme( cs );
 
@@ -10712,7 +10751,7 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
 
         "Table:NIGHT", "GREEN1; 30; 80; 30;", "GREEN2; 15; 60; 15;", "GREEN3; 12; 23;  9;",
         "GREEN4;  0; 64;  0;", "BLUE1;  60; 60;100;", "BLUE2;  22; 22; 85;", "BLUE3;   0;  0; 40;",
-        "GREY1;  48; 48; 48;", "GREY2;  64; 64; 64;", "RED1;  100; 50; 50;", "UWHIT; 255;255;255;",
+        "GREY1;  48; 48; 48;", "GREY2;  32; 32; 32;", "RED1;  100; 50; 50;", "UWHIT; 255;255;255;",
         "UBLCK;   0;  0;  0;", "URED;   60; 27;  5;", "UGREN;  17; 55; 10;", "YELO1;  60; 65; 12;",
         "YELO2;  32; 20;  0;", "TEAL1;   0; 32; 32;", "GREEN5; 44; 64; 0;",
         "DILG0;  80; 80; 80;",              // Dialog Background

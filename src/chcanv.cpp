@@ -495,7 +495,7 @@ END_EVENT_TABLE()
 
 // Define a constructor for my canvas
 ChartCanvas::ChartCanvas ( wxFrame *frame ) :
-    wxWindow ( frame, wxID_ANY,    wxPoint ( 20,20 ), wxSize ( 5,5 ), wxSIMPLE_BORDER )
+     wxWindow ( frame, wxID_ANY,    wxPoint ( 20,20 ), wxSize ( 5,5 ), wxNO_BORDER )
 {
     parent_frame = ( MyFrame * ) frame;       // save a pointer to parent
 
@@ -2142,6 +2142,18 @@ void ChartCanvas::SetColorScheme( ColorScheme cs )
             break;
     }
     m_fog_color.Set( m_fog_color.Red()*dim, m_fog_color.Green()*dim, m_fog_color.Blue()*dim );
+
+    //  Really dark
+    if( cs == GLOBAL_COLOR_SCHEME_DUSK || cs == GLOBAL_COLOR_SCHEME_NIGHT ) {
+        SetBackgroundColour( wxColour(0,0,0) );
+        
+        SetWindowStyleFlag( (GetWindowStyleFlag() && !wxSIMPLE_BORDER) || wxNO_BORDER);
+    }
+    else{
+        SetWindowStyleFlag( (GetWindowStyleFlag() && !wxNO_BORDER) || wxSIMPLE_BORDER);
+        SetBackgroundColour( wxNullColour );
+    }
+        
     
 
 #ifdef ocpnUSE_GL
