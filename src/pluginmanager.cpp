@@ -1983,6 +1983,16 @@ wxFont *OCPNGetFont(wxString TextElement, int default_size)
     return FontMgr::Get().GetFont(TextElement, default_size);
 }
 
+wxFont *OCPNGetScaledFont_PlugIn(wxString TextElement, int default_size)
+{
+    return GetOCPNScaledFont( TextElement, default_size );
+}
+
+wxFont GetOCPNGUIScaledFont_PlugIn(wxString item)
+{
+    return GetOCPNGUIScaledFont( item );
+}
+
 wxString *GetpSharedDataLocation(void)
 {
     return g_Platform->GetSharedDataDirPtr();
