@@ -1539,7 +1539,6 @@ S52_TextC *S52_PL_parseTE( ObjRazRules *rzRules, Rules *rules, char *cmd )
     S52_TextC *text = NULL;
 
     char *str = (char*) rules->INSTstr;
-    *b = 0;
 
     if( str && *str ) {
         str = _getParamVal( rzRules, str, fmt, MAXL ); // get FORMAT
@@ -1593,6 +1592,7 @@ S52_TextC *S52_PL_parseTE( ObjRazRules *rzRules, Rules *rules, char *cmd )
                 *b++ = *pf++;
         }
 
+        *b = 0;
         text = new S52_TextC;
         str = _parseTEXT( rzRules, text, str );
         if( NULL != text ) text->frmtd = wxString( buf, wxConvUTF8 );
