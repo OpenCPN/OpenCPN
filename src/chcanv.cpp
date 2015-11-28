@@ -3765,8 +3765,11 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
     float icon_rad = atan2f( (float) ( osd_head_point.y - lShipMidPoint.y ),
                              (float) ( osd_head_point.x - lShipMidPoint.x ) );
     icon_rad += (float)PI;
+    double rotate = GetVP().rotation;
+    if (!g_bskew_comp)
+        rotate += GetVP().skew;
 
-    if( pSog < 0.2 ) icon_rad = ( ( icon_hdt + 90. ) * PI / 180. ) + GetVP().rotation;
+    if (pSog < 0.2) icon_rad = ((icon_hdt + 90.) * PI / 180) + rotate;
 
 //    Calculate ownship Heading pointer as a predictor
     double hdg_pred_lat, hdg_pred_lon;
@@ -9179,7 +9182,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
     //  If the ViewPort is rotated, we may be able to use the cached rotated bitmap
     bool b_rcache_ok = false;
-    if( fabs( VPoint.rotation ) > 0.01 ) b_rcache_ok = !b_newview;
+    b_rcache_ok = !b_newview;
 
     //  If in skew compensation mode, with a skewed VP shown, we may be able to use the cached rotated bitmap
     if( g_bskew_comp && ( fabs( VPoint.skew ) > 0.01 ) ) b_rcache_ok = !b_newview;
@@ -9369,8 +9372,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         if( chartValidRegion.IsOk() )
             backgroundRegion.Subtract( chartValidRegion );
 
-        if( ( ( fabs( GetVP().skew ) < .01 ) || ! g_bskew_comp )
-            && ! backgroundRegion.IsEmpty() ) {
+        if( ! backgroundRegion.IsEmpty() ) {
         
             //    Draw the Background Chart only in the areas NOT covered by the current chart view
 
@@ -9392,8 +9394,11 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
             delete clip_region;
 
             ocpnDC bgdc( temp_dc );
-            double r =         VPoint.rotation;
-            SetVPRotation( 0.0 );
+            double r = VPoint.rotation;
+            if (g_bskew_comp)
+                SetVPRotation(VPoint.skew);
+            else
+                SetVPRotation(0.0);
             pWorldBackgroundChart->RenderViewOnDC( bgdc, VPoint );
             SetVPRotation( r );
         }
@@ -9401,9 +9406,6 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
     wxMemoryDC *pChartDC = &temp_dc;
     wxMemoryDC rotd_dc;
-
-    if( ( ( fabs( GetVP().rotation ) > 0.01 ) )
-            || ( g_bskew_comp && ( fabs( GetVP().skew ) > 0.01 ) ) ) {
 
         //  Can we use the current rotated image cache?
         if( !b_rcache_ok ) {
@@ -9465,12 +9467,6 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
             pChartDC = &temp_dc;
             m_roffset = wxPoint( 0, 0 );
         }
-
-    } else {
-        pChartDC = &temp_dc;
-        m_roffset = wxPoint( 0, 0 );
-
-    }
 
     wxPoint offset = m_roffset;
 
@@ -10654,9 +10650,10 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
                             wxBRUSHSTYLE_SOLID );
 
     double skew_angle = GetVPRotation();
-
-    if( !g_bskew_comp )
-        skew_angle += GetVPSkew();
+    if (!g_bopengl) {
+        if (!g_bskew_comp)
+            skew_angle += GetVPSkew();
+    }
 
     pTCFont = FontMgr::Get().GetFont( _("CurrentValue") );
     
