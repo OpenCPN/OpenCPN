@@ -2038,7 +2038,8 @@ extern ocpnGLOptions g_GLOptions;
 
     gFrame->DoChartUpdate();
 
-    FontMgr::Get().ScrubList(); // is this needed?
+    // Remove to allow restoration of font information for objects created by plugins
+    //FontMgr::Get().ScrubList(); // is this needed?
 
 //      Start up the ticker....
     gFrame->FrameTimer1.Start( TIMER_GFRAME_1, wxTIMER_CONTINUOUS );
