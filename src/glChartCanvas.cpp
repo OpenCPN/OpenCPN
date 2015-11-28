@@ -1578,8 +1578,7 @@ void glChartCanvas::MultMatrixViewPort(ViewPort &vp, float lat, float lon)
     }
 
     double rotation = vp.rotation;
-    if (!g_bskew_comp && vp.skew)
-        rotation += vp.skew;
+
     if (rotation)
         glRotatef(rotation*180/PI, 0, 0, 1);
 }
@@ -1899,10 +1898,8 @@ void glChartCanvas::GridDraw( )
 
     ViewPort &vp = cc1->GetVP();
 
-    if (!g_bskew_comp && (fabs(vp.skew) > 0.0001)) return;
-
     // TODO: make minor grid work all the time
-    bool minorgrid = fabs( vp.rotation ) < 0.0001 && ( g_bskew_comp || fabs( vp.skew ) < 0.0001) &&
+    bool minorgrid = fabs( vp.rotation ) < 0.0001 &&
         vp.m_projection_type == PROJECTION_MERCATOR;
 
     double nlat, elon, slat, wlon;
@@ -2664,8 +2661,6 @@ void glChartCanvas::DrawCloseMessage(wxString msg)
 void glChartCanvas::RotateToViewPort(const ViewPort &vp)
 {
     float angle = vp.rotation;
-    if(g_bskew_comp)
-        angle -= vp.skew;
 
     if( fabs( angle ) > 0.0001 )
     {
@@ -3049,9 +3044,6 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, L
 {
     ChartBaseBSB *pBSBChart = dynamic_cast<ChartBaseBSB*>( chart );
     if( !pBSBChart ) return;
-
-    double skew_norm = chart->GetChartSkew();
-    if( skew_norm > 180. ) skew_norm -= 360.;
 
     double scalefactor = pBSBChart->GetRasterScaleFactor(vp);
 
@@ -4091,8 +4083,7 @@ void glChartCanvas::Render()
 //               && (VPoint.b_quilt || (Current_Ch && Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR))
                && (VPoint.m_projection_type == PROJECTION_MERCATOR ||
                    VPoint.m_projection_type == PROJECTION_EQUIRECTANGULAR) 
-               && m_cache_vp.pix_height == VPoint.pix_height
-               /* && (!g_bskew_comp || fabs( VPoint.skew ) == 0.0 )*/) {
+               && m_cache_vp.pix_height == VPoint.pix_height) {
                 wxPoint2DDouble c_old = VPoint.GetDoublePixFromLL( VPoint.clat, VPoint.clon );
                 wxPoint2DDouble c_new = m_cache_vp.GetDoublePixFromLL( VPoint.clat, VPoint.clon );
 

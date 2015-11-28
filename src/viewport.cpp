@@ -118,7 +118,7 @@ extern sigjmp_buf           env;                    // the context saved by sigs
 extern void catch_signals(int signo);
 
 extern bool             g_bskew_comp;
-
+extern bool             g_bopengl;
 
 //------------------------------------------------------------------------------
 //    ViewPort Implementation
@@ -254,7 +254,7 @@ wxPoint2DDouble ViewPort::GetDoublePixFromLL( double lat, double lon )
 
     //    Apply VP Rotation
     double angle = rotation;
-    if(!g_bskew_comp)
+    if (!g_bopengl && !g_bskew_comp)
         angle += skew;
 
     if( angle ) {
@@ -275,7 +275,7 @@ void ViewPort::GetLLFromPix( const wxPoint2DDouble &p, double *lat, double *lon 
 
     //    Apply VP Rotation
     double angle = rotation;
-    if(!g_bskew_comp)
+    if (!g_bopengl && !g_bskew_comp)
         angle += skew;
 
     if( angle ) {
@@ -857,16 +857,24 @@ void ViewPort::SetBoxes( void )
     rv_rect = wxRect( 0, 0, pix_width, pix_height );
 
     //  Specify the minimum required rectangle in unrotated screen space which will supply full screen data after specified rotation
-    if( ( g_bskew_comp && ( fabs( skew ) > .001 ) ) || ( fabs( rotation ) > .001 ) ) {
+    if (( fabs( skew ) > .0001 ) || (fabs(rotation )>.0001 )) {
 
         double rotator = rotation;
-        if(g_bskew_comp)
-            rotator -= skew;
+        double lpixh = pix_height;
+        double lpixw = pix_width;
+
+        if (!g_bopengl && (fabs(skew) > 0.0001))
+            if (g_bskew_comp)
+                rotator -= skew;
+            else {
+                lpixh = wxMax(lpixh, (fabs(pix_height * cos(skew)) + fabs(pix_width * sin(skew))));
+                lpixw = wxMax(lpixw, (fabs(pix_width * cos(skew)) + fabs(pix_height * sin(skew))));
+            }
 
         int dy = wxRound(
-                     fabs( pix_height * cos( rotator ) ) + fabs( pix_width * sin( rotator ) ) );
+                     fabs( lpixh * cos( rotator ) ) + fabs( lpixw * sin( rotator ) ) );
         int dx = wxRound(
-                     fabs( pix_width * cos( rotator ) ) + fabs( pix_height * sin( rotator ) ) );
+                     fabs( lpixw * cos( rotator ) ) + fabs( lpixh * sin( rotator ) ) );
 
         //  It is important for MSW build that viewport pixel dimensions be multiples of 4.....
         if( dy % 4 ) dy += 4 - ( dy % 4 );
@@ -876,16 +884,18 @@ void ViewPort::SetBoxes( void )
         int inflate_y = wxMax(( dy - pix_height ) / 2, 0);
         
         //  Grow the source rectangle appropriately
-        if( fabs( rotator ) > .001 )
+        if( fabs( rotator ) > .0001 || fabs( skew ) > .0001)
             rv_rect.Inflate( inflate_x, inflate_y );
-
     }
 
     //  Compute Viewport lat/lon reference points for co-ordinate hit testing
 
     //  This must be done in unrotated space with respect to full unrotated screen space calculated above
     double rotation_save = rotation;
-    SetRotationAngle( 0. );
+    if (!g_bopengl &&!g_bskew_comp)
+        SetRotationAngle(-skew);
+    else
+        SetRotationAngle(0.0);
 
     wxPoint ul( rv_rect.x, rv_rect.y ), lr( rv_rect.x + rv_rect.width, rv_rect.y + rv_rect.height );
     double dlat_min, dlat_max, dlon_min, dlon_max;

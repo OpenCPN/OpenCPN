@@ -4499,8 +4499,13 @@ void MyFrame::ToggleCourseUp( void )
         }
         g_COGAvg = stuff;
         gFrame->FrameCOGTimer.Start( 100, wxTIMER_CONTINUOUS );
-    } else
-        cc1->SetVPRotation(0); /* reset to north up */
+    } else {
+        if (g_bopengl && !g_bskew_comp && (fabs(cc1->GetVPSkew()) > 0.0001))
+            cc1->SetVPRotation(cc1->GetVPSkew());
+        else
+            cc1->SetVPRotation(0); /* reset to north up */
+    }
+
 
     SetMenubarItemState( ID_MENU_CHART_COGUP, g_bCourseUp );
     SetMenubarItemState( ID_MENU_CHART_NORTHUP, !g_bCourseUp );
@@ -6667,7 +6672,7 @@ void MyFrame::DoCOGSet( void )
 
     double old_VPRotate = g_VPRotate;
     g_VPRotate = -g_COGAvg * PI / 180.;
-    if(!g_bskew_comp)
+    if (!g_bopengl && !g_bskew_comp)
         g_VPRotate -= cc1->GetVPSkew();
 
     cc1->SetVPRotation( g_VPRotate );
@@ -7075,9 +7080,19 @@ void MyFrame::SelectChartFromStack( int index, bool bDir, ChartTypeEnum New_Type
         }
 
         double best_scale = GetBestVPScale( Current_Ch );
+        double rotation = cc1->GetVPRotation();
+        double oldskew = cc1->GetVPSkew();
+        double newskew = Current_Ch->GetChartSkew() * PI / 180.0;
 
-        cc1->SetViewPoint( zLat, zLon, best_scale, Current_Ch->GetChartSkew() * PI / 180.,
-                cc1->GetVPRotation() );
+        if (g_bopengl){
+            if (!g_bskew_comp) {
+                if (fabs(oldskew) > 0.0001)
+                    rotation = 0.0;
+                if (fabs(newskew) > 0.0001)
+                    rotation = newskew;
+            }
+        }
+        cc1->SetViewPoint( zLat, zLon, best_scale, newskew, rotation );
 
         SetChartUpdatePeriod( cc1->GetVP() );
 
@@ -7151,10 +7166,9 @@ void MyFrame::SetChartUpdatePeriod( ViewPort &vp )
 
     g_ChartUpdatePeriod = 1;            // General default
 
-    if( !vp.b_quilt ) {
-        if( g_bskew_comp && ( fabs( vp.skew ) ) > 0.01 ) g_ChartUpdatePeriod =
-                g_SkewCompUpdatePeriod;
-    }
+    if (!g_bopengl && !vp.b_quilt)
+        if (g_bskew_comp && fabs(vp.skew) > 0.0001)
+            g_ChartUpdatePeriod = g_SkewCompUpdatePeriod;
 
     m_ChartUpdatePeriod = g_ChartUpdatePeriod;
 }
