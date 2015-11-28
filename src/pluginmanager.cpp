@@ -1993,6 +1993,11 @@ wxFont GetOCPNGUIScaledFont_PlugIn(wxString item)
     return GetOCPNGUIScaledFont( item );
 }
 
+wxColour GetFontColour_PlugIn(wxString TextElement)
+{
+    return FontMgr::Get().GetFontColor( TextElement );
+}
+
 wxString *GetpSharedDataLocation(void)
 {
     return g_Platform->GetSharedDataDirPtr();
