@@ -192,6 +192,8 @@ public:
     void AddObjNoshow( const char *objcl);
     void RemoveObjNoshow( const char *objcl);
     void ClearNoshow(void);
+    void SaveObjNoshow() { m_saved_noshow = m_noshow_array; };
+    void RestoreObjNoshow() { m_noshow_array = m_saved_noshow; };
     
     //Todo accessors
     LUPname m_nSymbolStyle;
@@ -358,6 +360,7 @@ private:
     bool m_benableGLLS;
     DisCat m_nDisplayCategory;
     ArrayOfNoshow m_noshow_array;
+    ArrayOfNoshow m_saved_noshow;
 };
 
 
