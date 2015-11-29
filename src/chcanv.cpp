@@ -10149,8 +10149,10 @@ void ChartCanvas::DrawAllRoutesInBBox( ocpnDC& dc, LLBBox& BltBBox, const wxRegi
 
             }
 
-            if( ( pRouteDraw == active_route ) || ( pRouteDraw == active_track ) )
-                continue;
+			if ((pRouteDraw == active_route) || (pRouteDraw == active_track)) {
+				node = node->GetNext();
+				continue;
+			}
 
             LLBBox test_box = pRouteDraw->GetBBox();
 
