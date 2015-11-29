@@ -1694,7 +1694,7 @@ void s57chart::AssembleLineGeometry( void )
                                         
                                         wxString key;
                                         key.Printf(_T("EC%d%d"), venode, enode);
-                                        
+
                                         if(m_connector_hash.find( key ) == m_connector_hash.end()){
                                             ndelta += 2;
                                             connector_segment *pcs = new connector_segment;
@@ -1882,9 +1882,10 @@ void s57chart::AssembleLineGeometry( void )
                                             wxString key;
                                             key.Printf(_T("CE%d%d"), inode, venode);
                                             
-                                            if(m_connector_hash.find( key ) != m_connector_hash.end()){
+                                            connected_segment_hash::iterator itcs = m_connector_hash.find( key );
+                                            if(itcs != m_connector_hash.end()){
                                                 
-                                                connector_segment *pcs = m_connector_hash[key];
+                                                connector_segment *pcs = itcs->second;
                                                 
                                                 line_segment_element *pls = new line_segment_element;
                                                 pls->next = 0;
@@ -1951,8 +1952,9 @@ void s57chart::AssembleLineGeometry( void )
                                                 wxString key;
                                                 key.Printf(_T("EC%d%d"), venode, enode);
                                                 
-                                                if(m_connector_hash.find( key ) != m_connector_hash.end()){
-                                                    connector_segment *pcs = m_connector_hash[key];
+                                                connected_segment_hash::iterator itcs = m_connector_hash.find( key );
+                                                if(itcs != m_connector_hash.end()){
+                                                    connector_segment *pcs = itcs->second;
                                                     
                                                     line_segment_element *pls = new line_segment_element;
                                                     pls->next = 0;
@@ -1982,8 +1984,9 @@ void s57chart::AssembleLineGeometry( void )
                                                 wxString key;
                                                 key.Printf(_T("CC%d%d"), inode, enode);
                                                 
-                                                if(m_connector_hash.find( key ) != m_connector_hash.end()){
-                                                    connector_segment *pcs = m_connector_hash[key];
+                                                connected_segment_hash::iterator itcs = m_connector_hash.find( key );
+                                                if(itcs != m_connector_hash.end()){
+                                                    connector_segment *pcs = itcs->second;
                                                     
                                                     line_segment_element *pls = new line_segment_element;
                                                     pls->next = 0;
