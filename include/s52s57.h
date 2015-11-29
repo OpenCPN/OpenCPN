@@ -483,8 +483,8 @@ public:
     float               lat_min;
     float               lon_max;
     float               lon_min;
-    void                *private0;
     int                 type;
+    void                *private0;
     
     line_segment_element *next;
 };
