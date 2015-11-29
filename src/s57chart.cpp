@@ -1637,18 +1637,18 @@ void s57chart::AssembleLineGeometry( void )
                             
                             //  Get the edge
                             unsigned int venode = *index_run++;
-                            VE_Element *pedge = 0;
+                            VE_Element *pedge;
                             pedge = m_ve_hash[venode];
                             
                             //  Get end connected node
                             unsigned int enode = *index_run++;
                             
                             //  Get first connected node
-                            VC_Element *ipnode = 0;
+                            VC_Element *ipnode;
                             ipnode = m_vc_hash[inode];
                             
                             //  Get end connected node
-                            VC_Element *epnode = 0;
+                            VC_Element *epnode;
                             epnode = m_vc_hash[enode];
                             
                             double e0, n0, e1, n1;
@@ -1766,7 +1766,6 @@ void s57chart::AssembleLineGeometry( void )
                     connected_segment_hash::iterator itc;
                     for( itc = m_connector_hash.begin(); itc != m_connector_hash.end(); ++itc )
                     {
-                        wxString key = itc->first;
                         connector_segment *pcs = itc->second;
                         
                         switch(pcs->type){
@@ -1857,18 +1856,18 @@ void s57chart::AssembleLineGeometry( void )
                                     
                                     //  Get the edge
                                     unsigned int venode = *index_run++;
-                                    VE_Element *pedge = 0;
+                                    VE_Element *pedge;
                                     pedge = m_ve_hash[venode];
                                     
                                     //  Get end connected node
                                     unsigned int enode = *index_run++;
                                     
                                     //  Get first connected node
-                                    VC_Element *ipnode = 0;
+                                    VC_Element *ipnode;
                                     ipnode = m_vc_hash[inode];
                                     
                                     //  Get end connected node
-                                    VC_Element *epnode = 0;
+                                    VC_Element *epnode;
                                     epnode = m_vc_hash[enode];
                                     
                                     double e0=0, n0=0, e1, n1;
