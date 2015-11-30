@@ -2382,9 +2382,12 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
             draw_color = SHIP_NORMAL;
         else if( SHIP_LOWACCURACY == cc1->m_ownship_state )
             draw_color = SHIP_LOWACCURACY;
-       
+
         if(!ownship_tex || (draw_color != ownship_color)) { /* initial run, create texture for ownship,
                               also needed at colorscheme changes (not implemented) */
+                              
+            ownship_color = draw_color;
+            
             if(ownship_tex)
                 glDeleteTextures(1, &ownship_tex);
             
@@ -3824,6 +3827,8 @@ void glChartCanvas::SetColorScheme(ColorScheme cs)
     glDeleteTextures(1, &m_currentTex);
     m_tideTex = 0;
     m_currentTex = 0;
+    ownship_color = -1;
+    
 }
 
 bool glChartCanvas::TextureCrunch(double factor)
