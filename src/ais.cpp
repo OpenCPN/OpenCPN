@@ -885,8 +885,6 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         //    If the target reported a valid HDG, then use it for icon
         if( (int) ( td->HDG ) != 511 ) {
             theta = ( ( td->HDG - 90 ) * PI / 180. ) + cc1->GetVP().rotation;
-            if (!g_bopengl && !g_bskew_comp)
-                theta += cc1->GetVP().skew;
         } else {
             // question: why can we not compute similar to above using COG instead of HDG?
             //  Calculate the relative angle for this chart orientation
