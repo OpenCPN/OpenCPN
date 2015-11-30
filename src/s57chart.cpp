@@ -3203,6 +3203,9 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
 
 //      Also, save some other settings
     bool bsavem_bShowSoundgp = ps52plib->m_bShowSoundg;
+    
+    // SetDisplayCategory may clear Noshow array
+    ps52plib->SaveObjNoshow();
 
 //      Now, set up what I want for this render
     for( iPtr = 0; iPtr < OBJLCount; iPtr++ ) {
@@ -3240,6 +3243,8 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
     }
 
     ps52plib->SetDisplayCategory(dsave);
+    ps52plib->RestoreObjNoshow();
+
     ps52plib->m_bShowSoundg = bsavem_bShowSoundgp;
 
 //      Reset the color scheme
