@@ -557,6 +557,8 @@ bool                      g_bTrackActive;
 bool                      g_bTrackCarryOver;
 bool                      g_bDeferredStartTrack;
 bool                      g_bTrackDaily;
+int                       g_track_rotate_time;
+int                       g_track_rotate_time_type;
 bool                      g_bHighliteTracks;
 int                       g_route_line_width;
 int                       g_track_line_width;
@@ -2323,6 +2325,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
         wxFrame( frame, -1, title, pos, size, style ) //wxSIMPLE_BORDER | wxCLIP_CHILDREN | wxRESIZE_BORDER)
 //wxCAPTION | wxSYSTEM_MENU | wxRESIZE_BORDER
 {
+    m_last_track_rotation_ts = 0;
     m_ulLastNEMATicktime = 0;
 
     m_pStatusBar = NULL;
@@ -4463,7 +4466,48 @@ Track *MyFrame::TrackOff( bool do_add_point )
     return return_val;
 }
 
-void MyFrame::TrackMidnightRestart( void )
+bool MyFrame::ShouldRestartTrack( void )
+{
+    if( !g_pActiveTrack || !g_bTrackDaily)
+        return false;
+    time_t now = wxDateTime::Now().GetTicks();
+    time_t today = wxDateTime::Today().GetTicks();
+    int rotate_at = 0;
+    switch( g_track_rotate_time_type )
+    {
+        case TIME_TYPE_LMT:
+            rotate_at = g_track_rotate_time + wxRound(gLon * 3600. / 15.);
+            break;
+        case TIME_TYPE_COMPUTER:
+            rotate_at = g_track_rotate_time;
+            break;
+        case TIME_TYPE_UTC:
+            int utc_offset = wxDateTime::Now().GetTicks() - wxDateTime::Now().ToUTC().GetTicks();
+            rotate_at = g_track_rotate_time + utc_offset;
+            break;
+    }
+    if( rotate_at > 86400 )
+        rotate_at -= 86400;
+    else if (rotate_at < 0 )
+        rotate_at += 86400;
+    if( now >= m_last_track_rotation_ts + 86400 - 3600 &&
+        now - today >= rotate_at )
+    {
+        if( m_last_track_rotation_ts == 0 )
+        {
+            if( now - today > rotate_at)
+                m_last_track_rotation_ts = today + rotate_at;
+            else
+                m_last_track_rotation_ts = today + rotate_at - 86400;
+            return false;
+        }
+        m_last_track_rotation_ts = now;
+        return true;
+    }
+    return false;
+}
+
+void MyFrame::TrackDailyRestart( void )
 {
     if( !g_pActiveTrack )
         return;
@@ -6332,9 +6376,6 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
             wxLogMessage( navmsg );
             g_loglast_time = lognow;
 
-            if( hourLOC == 0 && minuteLOC == 0 && g_bTrackDaily )
-                TrackMidnightRestart();
-
             int bells = ( hourLOC % 4 ) * 2;     // 2 bells each hour
             if( minuteLOC != 0 ) bells++;       // + 1 bell on 30 minutes
             if( !bells ) bells = 8;     // 0 is 8 bells
@@ -6345,6 +6386,9 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
             }
         }
     }
+    
+    if( ShouldRestartTrack() )
+        TrackDailyRestart();
 
     if(g_bSleep){
         FrameTimer1.Start( TIMER_GFRAME_1, wxTIMER_CONTINUOUS );
