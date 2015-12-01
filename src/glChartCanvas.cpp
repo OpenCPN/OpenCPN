@@ -137,7 +137,6 @@ extern ChartStack *pCurrentStack;
 
 GLenum       g_texture_rectangle_format;
 
-extern bool g_bskew_comp;
 extern int g_memCacheLimit;
 extern bool g_bCourseUp;
 extern ChartBase *Current_Ch;
@@ -4084,11 +4083,11 @@ void glChartCanvas::Render()
 
             int dx, dy;
             bool accelerated_pan = false;
-            if(g_GLOptions.m_bUseAcceleratedPanning && m_cache_vp.IsValid()
-//               && (VPoint.b_quilt || (Current_Ch && Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR))
-               && (VPoint.m_projection_type == PROJECTION_MERCATOR ||
-                   VPoint.m_projection_type == PROJECTION_EQUIRECTANGULAR) 
-               && m_cache_vp.pix_height == VPoint.pix_height) {
+            if( g_GLOptions.m_bUseAcceleratedPanning && m_cache_vp.IsValid()
+                && ( VPoint.m_projection_type == PROJECTION_MERCATOR
+                || VPoint.m_projection_type == PROJECTION_EQUIRECTANGULAR )
+                && m_cache_vp.pix_height == VPoint.pix_height )
+            {
                 wxPoint2DDouble c_old = VPoint.GetDoublePixFromLL( VPoint.clat, VPoint.clon );
                 wxPoint2DDouble c_new = m_cache_vp.GetDoublePixFromLL( VPoint.clat, VPoint.clon );
 

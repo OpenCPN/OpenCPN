@@ -117,9 +117,6 @@ extern sigjmp_buf           env;                    // the context saved by sigs
 
 extern void catch_signals(int signo);
 
-extern bool             g_bskew_comp;
-extern bool             g_bopengl;
-
 //------------------------------------------------------------------------------
 //    ViewPort Implementation
 //------------------------------------------------------------------------------

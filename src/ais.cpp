@@ -58,8 +58,6 @@ extern  double          gLat, gLon, gSog, gCog;
 extern ChartCanvas      *cc1;
 extern MyFrame          *gFrame;
 extern MyConfig         *pConfig;
-extern bool              g_bskew_comp;
-extern bool              g_bopengl;
 
 int                      g_ais_cog_predictor_width;
 extern AIS_Decoder              *g_pAIS;
