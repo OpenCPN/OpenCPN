@@ -42,7 +42,6 @@ extern bool bGPSValid;
 extern bool g_bSatValid;
 extern int g_SatsInView;
 extern bool g_bCourseUp;
-extern bool g_bskew_comp;
 extern MyFrame *gFrame;
 extern bool g_bopengl;
 
