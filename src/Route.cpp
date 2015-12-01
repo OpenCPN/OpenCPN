@@ -608,7 +608,10 @@ void Route::DrawGL( ViewPort &vp )
 
     if(!vp.GetBBox().IntersectOut(GetBBox()))
         DrawGLRouteLines(vp);
-    
+
+    if(m_bIsTrack)
+        return;
+
     /*  Route points  */
     for(wxRoutePointListNode *node = pRoutePointList->GetFirst(); node; node = node->GetNext()) {
         RoutePoint *prp = node->GetData();
