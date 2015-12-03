@@ -1964,14 +1964,12 @@ bool glTexFactory::LoadHeader(void)
                         hdr.format != g_raster_format) {
                         
                         //  Bad header signature    
-                        m_fs->Close();
                         delete m_fs;
                     
                         m_fs = new wxFFile(m_CompressedCacheFilePath, _T("wb"));
                         n_catalog_entries = 0;
                         m_catalog_offset = 0;
                         WriteCatalogAndHeader();
-                        m_fs->Close();
                         delete m_fs;
                     
                         m_fs = new wxFFile(m_CompressedCacheFilePath, _T("rb+"));
@@ -2002,7 +2000,6 @@ bool glTexFactory::LoadHeader(void)
                 n_catalog_entries = 0;
                 m_catalog_offset = 0;
                 WriteCatalogAndHeader();
-                m_fs->Close();
                 delete m_fs;
                 
                 m_fs = new wxFFile(m_CompressedCacheFilePath, _T("rb+"));
@@ -2025,7 +2022,6 @@ bool glTexFactory::LoadHeader(void)
             n_catalog_entries = 0;
             m_catalog_offset = 0;
             WriteCatalogAndHeader();
-            m_fs->Close();
             delete m_fs;
 
             m_fs = new wxFFile(m_CompressedCacheFilePath, _T("rb+"));
@@ -2167,7 +2163,6 @@ bool glTexFactory::UpdateCache(unsigned char *data, int data_size, glTextureDesc
             
             if(!fn.FileExists()){
                 wxFFile new_file(m_CompressedCacheFilePath, _T("wb"));
-                new_file.Close();
             }
             
             m_fs = new wxFFile(m_CompressedCacheFilePath, _T("rb+"));
@@ -2228,7 +2223,6 @@ bool glTexFactory::UpdateCachePrecomp(unsigned char *data, int data_size, glText
             
             if(!fn.FileExists()){
                 wxFFile new_file(m_CompressedCacheFilePath, _T("wb"));
-                new_file.Close();
             }
             
             m_fs = new wxFFile(m_CompressedCacheFilePath, _T("rb+"));
