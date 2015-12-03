@@ -2231,7 +2231,7 @@ bool glTexFactory::UpdateCachePrecomp(unsigned char *data, int data_size, glText
                 new_file.Close();
             }
             
-            m_fs = new wxFFile(m_CompressedCacheFilePath, _T("rwb"));
+            m_fs = new wxFFile(m_CompressedCacheFilePath, _T("rb+"));
             
             WriteCatalogAndHeader();
         }
