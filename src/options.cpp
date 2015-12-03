@@ -141,7 +141,7 @@ extern double g_AISShowTracks_Mins;
 extern bool g_bShowMoored;
 extern double g_ShowMoored_Kts;
 extern bool g_bShowScaled;
-extern long g_ShowScaled_Num;
+extern int g_ShowScaled_Num;
 extern bool g_bAIS_CPA_Alert;
 extern bool g_bAIS_CPA_Alert_Audio;
 extern wxString g_sAIS_Alert_Sound_File;
@@ -4876,7 +4876,7 @@ void options::SetInitialSettings(void) {
   
   m_pCheck_Scale_Priority->SetValue(g_bShowScaled);
   
-  s.Printf(_T("%4.0f"), g_ShowScaled_Num);
+  s.Printf(_T("%i"), g_ShowScaled_Num);
   m_pText_Scale_Priority->SetValue(s);
 
   m_pCheck_Show_Area_Notices->SetValue(g_bShowAreaNotices);
@@ -5755,7 +5755,9 @@ void options::OnApplyClick(wxCommandEvent& event) {
   m_pText_Moored_Speed->GetValue().ToDouble(&g_ShowMoored_Kts);
   
   g_bShowScaled = m_pCheck_Scale_Priority->GetValue();
-  m_pText_Scale_Priority->GetValue().ToLong(&g_ShowScaled_Num);
+  long l;
+  m_pText_Scale_Priority->GetValue().ToLong(&l);
+  g_ShowScaled_Num = (int)l;
 
   g_bShowAreaNotices = m_pCheck_Show_Area_Notices->GetValue();
   g_bDrawAISSize = m_pCheck_Draw_Target_Size->GetValue();

@@ -530,7 +530,7 @@ double                    g_AISShowTracks_Mins;
 bool                      g_bShowMoored;
 bool 					  g_bShowScaled;
 double                    g_ShowMoored_Kts;
-long					  g_ShowScaled_Num;
+int						  g_ShowScaled_Num;
 wxString                  g_sAIS_Alert_Sound_File;
 bool                      g_bAIS_CPA_Alert_Suppress_Moored;
 bool                      g_bAIS_ACK_Timeout;

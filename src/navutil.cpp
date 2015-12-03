@@ -188,7 +188,7 @@ extern double           g_AISShowTracks_Mins;
 extern bool             g_bShowMoored;
 extern bool 			g_bShowScaled;
 extern double           g_ShowMoored_Kts;
-extern double			g_ShowScaled_Num;
+extern int			g_ShowScaled_Num;
 extern bool             g_bAIS_CPA_Alert;
 extern bool             g_bAIS_CPA_Alert_Audio;
 extern int              g_ais_alert_dialog_x, g_ais_alert_dialog_y;
@@ -1502,9 +1502,8 @@ int MyConfig::LoadMyConfig()
     s.ToDouble( &g_ShowMoored_Kts );
 	
 	Read(_T ("bShowScaledTargets"), &g_bShowScaled );
-	Read( _T ( "AISScaledNumber" ), &s );
-    s.ToDouble( &g_ShowScaled_Num );
-	g_ScaledNumWeightSOG = Read( _T ( "AISScaledNumberWeightSOG" ), 150L );
+	g_ShowScaled_Num = Read( _T ( "AISScaledNumber" ), 10L );
+	g_ScaledNumWeightSOG = Read( _T ( "AISScaledNumberWeightSOG" ), 120L );
 	g_ScaledNumWeightCPA = Read( _T ( "AISScaledNumberWeightCPA" ), 100L );
 	g_ScaledNumWeightTCPA = Read( _T ( "AISScaledNumberWeightTCPA" ), 100L );
 	g_ScaledNumWeightRange = Read( _T ( "AISScaledNumberWeightRange" ), 100L );

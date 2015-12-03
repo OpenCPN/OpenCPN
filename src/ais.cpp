@@ -87,7 +87,7 @@ extern double           g_ShowMoored_Kts;
 extern bool             g_bAISShowTracks;
 extern bool             g_bShowAreaNotices;
 extern bool 			g_bShowScaled;
-extern double 			g_ShowScaled_Num;
+extern int 			g_ShowScaled_Num;
 extern bool             g_bDrawAISSize;
 extern bool             g_bShowAISName;
 extern int              g_Show_Target_Name_Scale;
@@ -1533,7 +1533,7 @@ void AISDraw( ocpnDC& dc )
 
     AIS_Target_Hash *current_targets = g_pAIS->GetTargetList();
 	// init an aray for scaling calculations
-	int NoOfElements=(int)g_ShowScaled_Num;
+	int NoOfElements=g_ShowScaled_Num;
 	int* p_Array = NULL;   // Pointer to int, initialize to nothing.
 	p_Array = new int[NoOfElements];  // Allocate n ints and save ptr in p_Array.
 	for (int i=0; i < NoOfElements; i++) {
