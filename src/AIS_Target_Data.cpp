@@ -143,6 +143,8 @@ AIS_Target_Data::AIS_Target_Data()
     b_SarAircraftPosnReport = false;
     altitude = 0;
     b_nameFromCache = false;
+	importance = 0;
+	last_scale = 50; //new target starts at 50% scale
 }
 
 void AIS_Target_Data::CloneFrom( AIS_Target_Data* q )
@@ -233,6 +235,7 @@ void AIS_Target_Data::CloneFrom( AIS_Target_Data* q )
     b_show_track = q->b_show_track;
     b_SarAircraftPosnReport = q->b_SarAircraftPosnReport;
     altitude = q->altitude;
+	importance = q->importance;
 }
 
 

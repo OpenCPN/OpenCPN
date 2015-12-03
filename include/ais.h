@@ -39,6 +39,7 @@
 #include <wx/spinctrl.h>
 #include <wx/aui/aui.h>
 #include <wx/wxhtml.h>
+#include <wx/dynarray.h>
 
 #include <vector>
 
@@ -216,8 +217,7 @@ WX_DECLARE_HASH_MAP( int, Ais8_001_22, wxIntegerHash, wxIntegerEqual, AIS_Area_N
 //  AIS_Decoder Helpers
 //
 //---------------------------------------------------------------------------------
-WX_DEFINE_SORTED_ARRAY(AIS_Target_Data *, ArrayOfAISTarget);
-
+WX_DEFINE_SORTED_ARRAY(AIS_Target_Data*, ArrayOfAISTarget);
 
 //      Implement the AISTargetList as a wxHashMap
 
@@ -234,5 +234,20 @@ bool AnyAISTargetsOnscreen( ViewPort &vp );
 
 
 WX_DECLARE_HASH_MAP( int, wxString, wxIntegerHash, wxIntegerEqual, AIS_Target_Name_Hash );
+
+class MaxArray
+{
+public:
+	MaxArray(int NoOfElements);
+	~MaxArray();
+	void Add(int Element);
+	int Highest();
+	int Lowest();
+//private:
+	int size;
+	int *p_Array;
+	int low;
+	int high;
+};
 
 #endif
