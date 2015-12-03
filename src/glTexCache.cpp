@@ -1944,93 +1944,91 @@ int glTexFactory::GetTextureLevel( glTextureDescriptor *ptd, const wxRect &rect,
 
 bool glTexFactory::LoadHeader(void)
 {
-    bool ret = false;
-    if( !m_hdrOK) {
+    if(m_hdrOK)
+        return true;
 
-        if(wxFileName::FileExists(m_CompressedCacheFilePath)) {
+    bool ret = false;
+    if(wxFileName::FileExists(m_CompressedCacheFilePath)) {
+        
+        m_fs = new wxFFile(m_CompressedCacheFilePath, _T("rb+"));
+        if(m_fs->IsOpened()){
+        
+            CompressedCacheHeader hdr;
             
-            m_fs = new wxFFile(m_CompressedCacheFilePath, _T("rb+"));
-            if(m_fs->IsOpened()){
+            //  Header is located at the end of the file
+            wxFileOffset hdr_offset = m_fs->Length() -sizeof( hdr);
+            hdr_offset = m_fs->Seek( hdr_offset );
             
-                CompressedCacheHeader hdr;
+            if( sizeof( hdr) == m_fs->Read(&hdr, sizeof( hdr ))) {
+                if( hdr.magic != COMPRESSED_CACHE_MAGIC ||
+                    hdr.chartdate != m_chart_date_binary ||
+                    hdr.format != g_raster_format) {
+                    
+                    //  Bad header signature    
+                    delete m_fs;
                 
-                //  Header is located at the end of the file
-                wxFileOffset hdr_offset = m_fs->Length() -sizeof( hdr);
-                hdr_offset = m_fs->Seek( hdr_offset );
-                
-                if( sizeof( hdr) == m_fs->Read(&hdr, sizeof( hdr ))) {
-                    if( hdr.magic != COMPRESSED_CACHE_MAGIC ||
-                        hdr.chartdate != m_chart_date_binary ||
-                        hdr.format != g_raster_format) {
-                        
-                        //  Bad header signature    
-                        delete m_fs;
-                    
-                        m_fs = new wxFFile(m_CompressedCacheFilePath, _T("wb"));
-                        n_catalog_entries = 0;
-                        m_catalog_offset = 0;
-                        WriteCatalogAndHeader();
-                        delete m_fs;
-                    
-                        m_fs = new wxFFile(m_CompressedCacheFilePath, _T("rb+"));
-                    
-                        m_hdrOK = true;
-                    }
-                    else {      // good header
-                        n_catalog_entries = hdr.m_nentries;
-                        m_catalog_offset = hdr.catalog_offset;
-                        m_hdrOK = true;
-                        ret = true;
-                    }
-                }
-                else{  // file exists, and is empty
+                    m_fs = new wxFFile(m_CompressedCacheFilePath, _T("wb"));
                     n_catalog_entries = 0;
                     m_catalog_offset = 0;
                     WriteCatalogAndHeader();
+                    delete m_fs;
+                
+                    m_fs = new wxFFile(m_CompressedCacheFilePath, _T("rb+"));
+                
+                    m_hdrOK = true;
+                }
+                else {      // good header
+                    n_catalog_entries = hdr.m_nentries;
+                    m_catalog_offset = hdr.catalog_offset;
                     m_hdrOK = true;
                     ret = true;
                 }
-            }  // is open
-            
-            else{               // some problem opening file, probably permissions on Win7
-                delete m_fs;
-                wxRemoveFile(m_CompressedCacheFilePath);
-                
-                m_fs = new wxFFile(m_CompressedCacheFilePath, _T("wb"));
+            }
+            else{  // file exists, and is empty
                 n_catalog_entries = 0;
                 m_catalog_offset = 0;
                 WriteCatalogAndHeader();
-                delete m_fs;
-                
-                m_fs = new wxFFile(m_CompressedCacheFilePath, _T("rb+"));
-                
                 m_hdrOK = true;
                 ret = true;
-                
-                
             }
+        }  // is open
+        
+        else{               // some problem opening file, probably permissions on Win7
+            delete m_fs;
+            wxRemoveFile(m_CompressedCacheFilePath);
             
-        }   // exists
-       
-        else {   // File does not exist
-            wxFileName fn(m_CompressedCacheFilePath);
-            if(!fn.DirExists())
-                fn.Mkdir();
-            
-            //  Create new file, with empty catalog, and correct header
             m_fs = new wxFFile(m_CompressedCacheFilePath, _T("wb"));
             n_catalog_entries = 0;
             m_catalog_offset = 0;
             WriteCatalogAndHeader();
             delete m_fs;
-
+            
             m_fs = new wxFFile(m_CompressedCacheFilePath, _T("rb+"));
+            
+            m_hdrOK = true;
             ret = true;
             
+            
         }
-    }
-    else 
+        
+    }   // exists
+    
+    else {   // File does not exist
+        wxFileName fn(m_CompressedCacheFilePath);
+        if(!fn.DirExists())
+            fn.Mkdir();
+        
+        //  Create new file, with empty catalog, and correct header
+        m_fs = new wxFFile(m_CompressedCacheFilePath, _T("wb"));
+        n_catalog_entries = 0;
+        m_catalog_offset = 0;
+        WriteCatalogAndHeader();
+        delete m_fs;
+
+        m_fs = new wxFFile(m_CompressedCacheFilePath, _T("rb+"));
         ret = true;
+        
+    }
     
     return ret;
 }
