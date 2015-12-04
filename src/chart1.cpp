@@ -7288,6 +7288,13 @@ void MyFrame::SetChartThumbnail( int index )
                         pthumbwin->Resize();
                         pthumbwin->Show( true );
                         pthumbwin->Refresh( true );
+                        pthumbwin->Move( wxPoint( 4, 4 ) );
+
+                        // Simplistic overlap avoidance works only when toolbar is at top of screen.
+                        if( g_FloatingToolbarDialog )
+                            if( g_FloatingToolbarDialog->GetScreenRect().Intersects( pthumbwin->GetScreenRect() ) ) {
+                                pthumbwin->Move( wxPoint( 4, g_FloatingToolbarDialog->GetSize().y + 4 ) );
+                            }
                     } else
                         pthumbwin->Show( false );
 
