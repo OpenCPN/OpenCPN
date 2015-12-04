@@ -907,6 +907,9 @@ void glChartCanvas::OnSize( wxSizeEvent& event )
     // this is also necessary to update the context on some platforms
 #if !wxCHECK_VERSION(3,0,0)    
     wxGLCanvas::OnSize( event );
+#else
+    // OnSize can be called with a different OpenGL context (when a plugin uses a different GL context).
+    SetCurrent(*m_pcontext);
 #endif
     
     /* expand opengl widget to fill viewport */
