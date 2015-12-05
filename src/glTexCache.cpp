@@ -228,6 +228,10 @@ void GetLevel0Map( glTextureDescriptor *ptd,  const wxRect &rect, wxString &char
 void GetFullMap( glTextureDescriptor *ptd,  const wxRect &rect, wxString chart_path, int level)
 {
     
+    //  Confirm that the uncompressed bits are all available, get them if not there yet
+    if( ptd->map_array[level]) 
+        return;
+
     int dim = g_GLOptions.m_iTextureDimension;
     int size = g_tile_size;
     
@@ -236,44 +240,37 @@ void GetFullMap( glTextureDescriptor *ptd,  const wxRect &rect, wxString chart_p
         size /= 4;
         if(size < 8)
             size = 8;
+    }
         
+    if( level > 0 && ptd->map_array[level - 1] ){
+        ptd->map_array[level] = (unsigned char *) malloc( dim * dim * 3 );
+        MipMap_24( 2*dim, 2*dim, ptd->map_array[level - 1], ptd->map_array[level] );
     }
     
-    
-    //  Confirm that the uncompressed bits are all available, get them if not there yet
-    if( !ptd->map_array[level]) {
-        
-        
-        if( level > 0 && ptd->map_array[level - 1] ){
-            ptd->map_array[level] = (unsigned char *) malloc( dim * dim * 3 );
-            MipMap_24( 2*dim, 2*dim, ptd->map_array[level - 1], ptd->map_array[level] );
+    else {
+        //      Any holes in the bit pointer array below the level requested?
+        bool b_hole = false;
+        for(int i=0 ; i < level ; i++){ 
+            if( !ptd->map_array[i] ){
+                b_hole = true;
+                break;
+            }
         }
         
-        else {
-            //      Any holes in the bit pointer array below the level requested?
-            bool b_hole = false;
-            for(int i=0 ; i < level ; i++){ 
-                if( !ptd->map_array[i] ){
-                    b_hole = true;
-                    break;
+        if( ( level == 0 ) || b_hole ){
+            //Get level 0 bits from chart?
+            if( !ptd->map_array[0] )
+                GetLevel0Map( ptd, rect, chart_path );
+                
+            int i_lev = 1;
+            int dimh = g_GLOptions.m_iTextureDimension / 2;         // starts at level 1
+            while( i_lev <= level ){
+                if( !ptd->map_array[i_lev] ) {
+                    ptd->map_array[i_lev] = (unsigned char *) malloc( dimh * dimh * 3 );
+                    MipMap_24( 2*dimh, 2*dimh, ptd->map_array[i_lev - 1], ptd->map_array[i_lev] );
                 }
-            }
-            
-            if( ( level == 0 ) || b_hole ){
-                //Get level 0 bits from chart?
-                if( !ptd->map_array[0] )
-                    GetLevel0Map( ptd, rect, chart_path );
-                    
-                int i_lev = 1;
-                int dimh = g_GLOptions.m_iTextureDimension / 2;         // starts at level 1
-                while( i_lev <= level ){
-                    if( !ptd->map_array[i_lev] ) {
-                        ptd->map_array[i_lev] = (unsigned char *) malloc( dimh * dimh * 3 );
-                        MipMap_24( 2*dimh, 2*dimh, ptd->map_array[i_lev - 1], ptd->map_array[i_lev] );
-                    }
-                    dimh /= 2;
-                    i_lev++;
-                }
+                dimh /= 2;
+                i_lev++;
             }
         }
     }
