@@ -2037,7 +2037,13 @@ bool glTexFactory::LoadCatalog(void)
 
     if( !LoadHeader() )
         return false;
-        
+    
+    if (n_catalog_entries == 0) {
+        // new empty header
+        m_catalogOK = true;
+        return true;
+    }
+    
     m_fs->Seek(m_catalog_offset);
  
     CatalogEntry ps;
