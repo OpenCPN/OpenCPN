@@ -158,7 +158,7 @@ extern bool                      g_bAISShowTracks;
 extern double                    g_AISShowTracks_Mins;
 extern bool                      g_bShowMoored;
 extern double                    g_ShowMoored_Kts;
-extern long 					 g_ShowScaled_Num;
+extern int			 g_ShowScaled_Num;
 extern wxString                  g_sAIS_Alert_Sound_File;
 extern bool                      g_bAIS_CPA_Alert_Suppress_Moored;
 extern bool                      g_bAIS_ACK_Timeout;
