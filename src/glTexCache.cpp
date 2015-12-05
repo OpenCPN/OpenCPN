@@ -1938,13 +1938,16 @@ int glTexFactory::GetTextureLevel( glTextureDescriptor *ptd, const wxRect &rect,
 }
 
 
-
+// return not used
+// false? never
+// true 
 bool glTexFactory::LoadHeader(void)
 {
     if(m_hdrOK)
         return true;
 
-    bool ret = false;
+    bool need_new = false;
+
     if(wxFileName::FileExists(m_CompressedCacheFilePath)) {
         
         m_fs = new wxFFile(m_CompressedCacheFilePath, _T("rb+"));
@@ -1963,49 +1966,24 @@ bool glTexFactory::LoadHeader(void)
                     
                     //  Bad header signature    
                     delete m_fs;
-                
-                    m_fs = new wxFFile(m_CompressedCacheFilePath, _T("wb"));
-                    n_catalog_entries = 0;
-                    m_catalog_offset = 0;
-                    WriteCatalogAndHeader();
-                    delete m_fs;
-                
-                    m_fs = new wxFFile(m_CompressedCacheFilePath, _T("rb+"));
-                
-                    m_hdrOK = true;
+                    need_new = true;
                 }
                 else {      // good header
                     n_catalog_entries = hdr.m_nentries;
                     m_catalog_offset = hdr.catalog_offset;
-                    m_hdrOK = true;
-                    ret = true;
                 }
             }
             else{  // file exists, and is empty
                 n_catalog_entries = 0;
                 m_catalog_offset = 0;
                 WriteCatalogAndHeader();
-                m_hdrOK = true;
-                ret = true;
             }
         }  // is open
         
         else{               // some problem opening file, probably permissions on Win7
             delete m_fs;
+            need_new = true;
             wxRemoveFile(m_CompressedCacheFilePath);
-            
-            m_fs = new wxFFile(m_CompressedCacheFilePath, _T("wb"));
-            n_catalog_entries = 0;
-            m_catalog_offset = 0;
-            WriteCatalogAndHeader();
-            delete m_fs;
-            
-            m_fs = new wxFFile(m_CompressedCacheFilePath, _T("rb+"));
-            
-            m_hdrOK = true;
-            ret = true;
-            
-            
         }
         
     }   // exists
@@ -2014,7 +1992,10 @@ bool glTexFactory::LoadHeader(void)
         wxFileName fn(m_CompressedCacheFilePath);
         if(!fn.DirExists())
             fn.Mkdir();
-        
+        need_new = true;
+    }
+
+    if (need_new) {
         //  Create new file, with empty catalog, and correct header
         m_fs = new wxFFile(m_CompressedCacheFilePath, _T("wb"));
         n_catalog_entries = 0;
@@ -2023,11 +2004,9 @@ bool glTexFactory::LoadHeader(void)
         delete m_fs;
 
         m_fs = new wxFFile(m_CompressedCacheFilePath, _T("rb+"));
-        ret = true;
-        
     }
-    
-    return ret;
+    m_hdrOK = true;
+    return true;
 }
 
 bool glTexFactory::AddCacheEntryValue(const CatalogEntry &p)
