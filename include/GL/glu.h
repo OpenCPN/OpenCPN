@@ -56,6 +56,9 @@
 # define GLAPI extern
 #endif /* _STATIC_MESA support */
 
+#define OCPN_GLUAPIENTRY 
+#define OCPN_GLUAPIENTRYP * 
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -279,7 +282,8 @@ typedef GLUtesselator GLUtriangulatorObj;
 #define GLU_TESS_MAX_COORD 1.0e150
 
 /* Internal convenience typedefs */
-typedef void (GLAPIENTRYP _GLUfuncptr)();
+//typedef void (GLAPIENTRYP _GLUfuncptr)();
+typedef void (*  _GLUfuncptr)();
 
 GLAPI void GLAPIENTRY gluBeginCurve (GLUnurbs* nurb);
 GLAPI void GLAPIENTRY gluBeginPolygon (GLUtesselator* tess);
@@ -291,25 +295,25 @@ GLAPI GLint GLAPIENTRY gluBuild2DMipmapLevels (GLenum target, GLint internalForm
 GLAPI GLint GLAPIENTRY gluBuild2DMipmaps (GLenum target, GLint internalFormat, GLsizei width, GLsizei height, GLenum format, GLenum type, const void *data);
 GLAPI GLint GLAPIENTRY gluBuild3DMipmapLevels (GLenum target, GLint internalFormat, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, GLint level, GLint base, GLint max, const void *data);
 GLAPI GLint GLAPIENTRY gluBuild3DMipmaps (GLenum target, GLint internalFormat, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const void *data);
-GLAPI GLboolean GLAPIENTRY gluCheckExtension (const GLubyte *extName, const GLubyte *extString);
+extern GLboolean /*GLAPIENTRY*/ gluCheckExtension (const GLubyte *extName, const GLubyte *extString);
 GLAPI void GLAPIENTRY gluCylinder (GLUquadric* quad, GLdouble base, GLdouble top, GLdouble height, GLint slices, GLint stacks);
 GLAPI void GLAPIENTRY gluDeleteNurbsRenderer (GLUnurbs* nurb);
 GLAPI void GLAPIENTRY gluDeleteQuadric (GLUquadric* quad);
-GLAPI void GLAPIENTRY gluDeleteTess (GLUtesselator* tess);
+extern void /*GLAPIENTRY*/ gluDeleteTess (GLUtesselator* tess);
 GLAPI void GLAPIENTRY gluDisk (GLUquadric* quad, GLdouble inner, GLdouble outer, GLint slices, GLint loops);
 GLAPI void GLAPIENTRY gluEndCurve (GLUnurbs* nurb);
 GLAPI void GLAPIENTRY gluEndPolygon (GLUtesselator* tess);
 GLAPI void GLAPIENTRY gluEndSurface (GLUnurbs* nurb);
 GLAPI void GLAPIENTRY gluEndTrim (GLUnurbs* nurb);
-GLAPI const GLubyte * GLAPIENTRY gluErrorString (GLenum error);
+extern const GLubyte * /*GLAPIENTRY*/ gluErrorString (GLenum error);
 GLAPI void GLAPIENTRY gluGetNurbsProperty (GLUnurbs* nurb, GLenum property, GLfloat* data);
-GLAPI const GLubyte * GLAPIENTRY gluGetString (GLenum name);
-GLAPI void GLAPIENTRY gluGetTessProperty (GLUtesselator* tess, GLenum which, GLdouble* data);
+extern const GLubyte * /*GLAPIENTRY*/ gluGetString (GLenum name);
+extern void /*GLAPIENTRY*/ gluGetTessProperty (GLUtesselator* tess, GLenum which, GLdouble* data);
 GLAPI void GLAPIENTRY gluLoadSamplingMatrices (GLUnurbs* nurb, const GLfloat *model, const GLfloat *perspective, const GLint *view);
-GLAPI void GLAPIENTRY gluLookAt (GLdouble eyeX, GLdouble eyeY, GLdouble eyeZ, GLdouble centerX, GLdouble centerY, GLdouble centerZ, GLdouble upX, GLdouble upY, GLdouble upZ);
+extern void /*GLAPIENTRY*/ gluLookAt (GLdouble eyeX, GLdouble eyeY, GLdouble eyeZ, GLdouble centerX, GLdouble centerY, GLdouble centerZ, GLdouble upX, GLdouble upY, GLdouble upZ);
 GLAPI GLUnurbs* GLAPIENTRY gluNewNurbsRenderer (void);
 GLAPI GLUquadric* GLAPIENTRY gluNewQuadric (void);
-GLAPI GLUtesselator* GLAPIENTRY gluNewTess (void);
+extern GLUtesselator* /*OCPN_GLUAPIENTRY*/ gluNewTess (void);
 GLAPI void GLAPIENTRY gluNextContour (GLUtesselator* tess, GLenum type);
 GLAPI void GLAPIENTRY gluNurbsCallback (GLUnurbs* nurb, GLenum which, _GLUfuncptr CallBackFunc);
 GLAPI void GLAPIENTRY gluNurbsCallbackData (GLUnurbs* nurb, GLvoid* userData);
@@ -317,11 +321,11 @@ GLAPI void GLAPIENTRY gluNurbsCallbackDataEXT (GLUnurbs* nurb, GLvoid* userData)
 GLAPI void GLAPIENTRY gluNurbsCurve (GLUnurbs* nurb, GLint knotCount, GLfloat *knots, GLint stride, GLfloat *control, GLint order, GLenum type);
 GLAPI void GLAPIENTRY gluNurbsProperty (GLUnurbs* nurb, GLenum property, GLfloat value);
 GLAPI void GLAPIENTRY gluNurbsSurface (GLUnurbs* nurb, GLint sKnotCount, GLfloat* sKnots, GLint tKnotCount, GLfloat* tKnots, GLint sStride, GLint tStride, GLfloat* control, GLint sOrder, GLint tOrder, GLenum type);
-GLAPI void GLAPIENTRY gluOrtho2D (GLdouble left, GLdouble right, GLdouble bottom, GLdouble top);
+extern void /*GLAPIENTRY*/ gluOrtho2D (GLdouble left, GLdouble right, GLdouble bottom, GLdouble top);
 GLAPI void GLAPIENTRY gluPartialDisk (GLUquadric* quad, GLdouble inner, GLdouble outer, GLint slices, GLint loops, GLdouble start, GLdouble sweep);
-GLAPI void GLAPIENTRY gluPerspective (GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar);
-GLAPI void GLAPIENTRY gluPickMatrix (GLdouble x, GLdouble y, GLdouble delX, GLdouble delY, GLint *viewport);
-GLAPI GLint GLAPIENTRY gluProject (GLdouble objX, GLdouble objY, GLdouble objZ, const GLdouble *model, const GLdouble *proj, const GLint *view, GLdouble* winX, GLdouble* winY, GLdouble* winZ);
+extern void /*GLAPIENTRY*/ gluPerspective (GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar);
+extern void /*GLAPIENTRY*/ gluPickMatrix (GLdouble x, GLdouble y, GLdouble delX, GLdouble delY, GLint *viewport);
+extern GLint /*GLAPIENTRY*/ gluProject (GLdouble objX, GLdouble objY, GLdouble objZ, const GLdouble *model, const GLdouble *proj, const GLint *view, GLdouble* winX, GLdouble* winY, GLdouble* winZ);
 GLAPI void GLAPIENTRY gluPwlCurve (GLUnurbs* nurb, GLint count, GLfloat* data, GLint stride, GLenum type);
 GLAPI void GLAPIENTRY gluQuadricCallback (GLUquadric* quad, GLenum which, _GLUfuncptr CallBackFunc);
 GLAPI void GLAPIENTRY gluQuadricDrawStyle (GLUquadric* quad, GLenum draw);
@@ -330,16 +334,16 @@ GLAPI void GLAPIENTRY gluQuadricOrientation (GLUquadric* quad, GLenum orientatio
 GLAPI void GLAPIENTRY gluQuadricTexture (GLUquadric* quad, GLboolean texture);
 GLAPI GLint GLAPIENTRY gluScaleImage (GLenum format, GLsizei wIn, GLsizei hIn, GLenum typeIn, const void *dataIn, GLsizei wOut, GLsizei hOut, GLenum typeOut, GLvoid* dataOut);
 GLAPI void GLAPIENTRY gluSphere (GLUquadric* quad, GLdouble radius, GLint slices, GLint stacks);
-GLAPI void GLAPIENTRY gluTessBeginContour (GLUtesselator* tess);
-GLAPI void GLAPIENTRY gluTessBeginPolygon (GLUtesselator* tess, GLvoid* data);
-GLAPI void GLAPIENTRY gluTessCallback (GLUtesselator* tess, GLenum which, _GLUfuncptr CallBackFunc);
-GLAPI void GLAPIENTRY gluTessEndContour (GLUtesselator* tess);
-GLAPI void GLAPIENTRY gluTessEndPolygon (GLUtesselator* tess);
-GLAPI void GLAPIENTRY gluTessNormal (GLUtesselator* tess, GLdouble valueX, GLdouble valueY, GLdouble valueZ);
-GLAPI void GLAPIENTRY gluTessProperty (GLUtesselator* tess, GLenum which, GLdouble data);
-GLAPI void GLAPIENTRY gluTessVertex (GLUtesselator* tess, GLdouble *location, GLvoid* data);
-GLAPI GLint GLAPIENTRY gluUnProject (GLdouble winX, GLdouble winY, GLdouble winZ, const GLdouble *model, const GLdouble *proj, const GLint *view, GLdouble* objX, GLdouble* objY, GLdouble* objZ);
-GLAPI GLint GLAPIENTRY gluUnProject4 (GLdouble winX, GLdouble winY, GLdouble winZ, GLdouble clipW, const GLdouble *model, const GLdouble *proj, const GLint *view, GLdouble nearVal, GLdouble farVal, GLdouble* objX, GLdouble* objY, GLdouble* objZ, GLdouble* objW);
+extern void /*GLAPIENTRY*/ gluTessBeginContour (GLUtesselator* tess);
+extern void /*GLAPIENTRY*/ gluTessBeginPolygon (GLUtesselator* tess, GLvoid* data);
+extern void /*GLAPIENTRY*/ gluTessCallback (GLUtesselator* tess, GLenum which, _GLUfuncptr CallBackFunc);
+extern void /*GLAPIENTRY*/ gluTessEndContour (GLUtesselator* tess);
+extern void /*GLAPIENTRY*/ gluTessEndPolygon (GLUtesselator* tess);
+extern void /*GLAPIENTRY*/ gluTessNormal (GLUtesselator* tess, GLdouble valueX, GLdouble valueY, GLdouble valueZ);
+extern void /*GLAPIENTRY*/ gluTessProperty (GLUtesselator* tess, GLenum which, GLdouble data);
+extern void /*GLAPIENTRY*/ gluTessVertex (GLUtesselator* tess, GLdouble *location, GLvoid* data);
+extern GLint /*GLAPIENTRY*/ gluUnProject (GLdouble winX, GLdouble winY, GLdouble winZ, const GLdouble *model, const GLdouble *proj, const GLint *view, GLdouble* objX, GLdouble* objY, GLdouble* objZ);
+extern GLint /*GLAPIENTRY*/ gluUnProject4 (GLdouble winX, GLdouble winY, GLdouble winZ, GLdouble clipW, const GLdouble *model, const GLdouble *proj, const GLint *view, GLdouble nearVal, GLdouble farVal, GLdouble* objX, GLdouble* objY, GLdouble* objZ, GLdouble* objW);
 
 #ifdef __cplusplus
 }

@@ -64,6 +64,8 @@ class Multiplexer : public wxEvtHandler
         int SendWaypointToGPS(RoutePoint *prp, const wxString &com_name, wxGauge *pProgress);
 
         void OnEvtStream(OCPN_DataStreamEvent& event);
+        wxString ProcessNMEA4Tags( wxString msg);
+        
         void LogOutputMessage(const wxString &msg, wxString stream_name, bool b_filter);
         void LogOutputMessageColor(const wxString &msg, const wxString & stream_name, const wxString & color);
         void LogInputMessage(const wxString &msg, const wxString & stream_name, bool b_filter, bool b_error = false);

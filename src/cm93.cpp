@@ -1082,7 +1082,7 @@ void CreateDecodeTable ( void )
 }
 
 
-int   read_and_decode_bytes ( FILE *stream, void *p, int nbytes )
+static int   read_and_decode_bytes ( FILE *stream, void *p, int nbytes )
 {
       if ( 0 == nbytes )                  // declare victory if no bytes requested
             return 1;
@@ -1107,7 +1107,7 @@ int   read_and_decode_bytes ( FILE *stream, void *p, int nbytes )
 }
 
 
-int read_and_decode_double ( FILE *stream, double *p )
+static int read_and_decode_double ( FILE *stream, double *p )
 {
       double t;
       //    read into temp buffer
@@ -1133,7 +1133,7 @@ int read_and_decode_double ( FILE *stream, double *p )
       return 1;
 }
 
-int read_and_decode_int ( FILE *stream, int *p )
+static int read_and_decode_int ( FILE *stream, int *p )
 {
       int t;
       //    read into temp buffer
@@ -1159,7 +1159,7 @@ int read_and_decode_int ( FILE *stream, int *p )
       return 1;
 }
 
-int read_and_decode_ushort ( FILE *stream, unsigned short *p )
+static int read_and_decode_ushort ( FILE *stream, unsigned short *p )
 {
       unsigned short t;
       //    read into temp buffer
@@ -1335,7 +1335,7 @@ bool Is_CM93Cell_Present ( wxString &fileprefix, double lat, double lon, int sca
 }
 
 
-int get_dval ( int native_scale )
+static int get_dval ( int native_scale )
 {
       int dval;
       switch ( native_scale )
@@ -1354,7 +1354,7 @@ int get_dval ( int native_scale )
 }
 
 
-bool read_header_and_populate_cib ( FILE *stream, Cell_Info_Block *pCIB )
+static bool read_header_and_populate_cib ( FILE *stream, Cell_Info_Block *pCIB )
 {
       //    Read header, populate Cell_Info_Block
 
@@ -1445,7 +1445,7 @@ bool read_header_and_populate_cib ( FILE *stream, Cell_Info_Block *pCIB )
       return true;
 }
 
-bool read_vector_record_table ( FILE *stream, int count, Cell_Info_Block *pCIB )
+static bool read_vector_record_table ( FILE *stream, int count, Cell_Info_Block *pCIB )
 {
       bool brv;
 
@@ -1521,7 +1521,7 @@ bool read_vector_record_table ( FILE *stream, int count, Cell_Info_Block *pCIB )
 }
 
 
-bool read_3dpoint_table ( FILE *stream, int count, Cell_Info_Block *pCIB )
+static bool read_3dpoint_table ( FILE *stream, int count, Cell_Info_Block *pCIB )
 {
       geometry_descriptor *p = pCIB->point3d_descriptor_block;
       cm93_point_3d *q = pCIB->p3dpoint_array;
@@ -1564,7 +1564,7 @@ bool read_3dpoint_table ( FILE *stream, int count, Cell_Info_Block *pCIB )
 }
 
 
-bool read_2dpoint_table ( FILE *stream, int count, Cell_Info_Block *pCIB )
+static bool read_2dpoint_table ( FILE *stream, int count, Cell_Info_Block *pCIB )
 {
 
 //      int rv = read_and_decode_bytes(stream, pCIB->p2dpoint_array, count * 4);
@@ -1586,7 +1586,7 @@ bool read_2dpoint_table ( FILE *stream, int count, Cell_Info_Block *pCIB )
 }
 
 
-bool read_feature_record_table ( FILE *stream, int n_features, Cell_Info_Block *pCIB )
+static bool read_feature_record_table ( FILE *stream, int n_features, Cell_Info_Block *pCIB )
 {
       try
       {
@@ -2033,16 +2033,14 @@ void cm93chart::GetPointPix ( ObjRazRules *rzRules, wxPoint2DDouble *en, wxPoint
       double yr =  obj->y_rate;
       double yo =  obj->y_origin;
 
-      bool mercator = m_vp_current.m_projection_type == PROJECTION_MERCATOR;
-
-      if(mercator) {
-          if ( m_vp_current.GetBBox().GetMaxX() >= 180. )
-          {
-              if ( rzRules->obj->BBObj.GetMaxX() < 0 )
-                  xo += mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
-          } else
-          if (( m_vp_current.GetBBox().GetMinX() <= -180. && rzRules->obj->BBObj.GetMaxX() > 0 ) ||
-              ( rzRules->obj->BBObj.GetMaxX() >= 180 && m_vp_current.GetBBox().GetMinX() <= 0 ))
+      if(m_vp_current.m_projection_type == PROJECTION_MERCATOR) {
+          if ( m_vp_current.GetBBox().GetMaxX() >= 180. &&
+               rzRules->obj->BBObj.GetMaxX() < m_vp_current.GetBBox().GetMinX() )
+              xo += mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
+          else
+          if ( (m_vp_current.GetBBox().GetMinX() <= -180. &&
+                rzRules->obj->BBObj.GetMinX() > m_vp_current.GetBBox().GetMaxX()) ||
+               (rzRules->obj->BBObj.GetMaxX() >= 180 && m_vp_current.GetBBox().GetMinX() <= 0.))
               xo -= mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
 
           for ( int i=0 ; i < nPoints ; i++ )
@@ -2422,12 +2420,12 @@ int cm93chart::CreateObjChain ( int cell_index, int subcell, double view_scale_p
                   {
                         wxString objnam  = obj->GetAttrValueAsString("OBJNAM");
                         wxString fe_name = wxString(obj->FeatureName, wxConvUTF8);
-                        wxString cellname = wxString::Format(_T("%i_%i"), cell_index, subcell);
                         if ( fe_name == _T("_texto") )
                             objnam  = obj->GetAttrValueAsString("_texta");
-                        if (objnam.Len() > 0)
+                        if (objnam.Len() > 0) {
+                            wxString cellname = wxString::Format(_T("%i_%i"), cell_index, subcell);
                             g_pi_manager->SendVectorChartObjectInfo( cellname, fe_name, objnam, obj->m_lat, obj->m_lon, scale, nativescale );
-
+                        }
 //      Build/Maintain the ATON floating/rigid arrays
                         if ( GEO_POINT == obj->Primitive_type )
                         {
@@ -3375,13 +3373,13 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
       pobj->attVal =  new wxArrayOfS57attVal();
 
 
-      cm93_attr_block *pab = new cm93_attr_block ( pobject->attributes_block, pDict );
+      cm93_attr_block pab( pobject->attributes_block, pDict );
 
 
       for ( int jattr = 0 ; jattr  < pobject->n_attributes ; jattr++ )
       {
 
-            unsigned char *curr_attr = pab->GetNextAttr();
+            unsigned char *curr_attr = pab.GetNextAttr();
 
             unsigned char iattr = *curr_attr;
 
@@ -3588,7 +3586,6 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
 
       }     //for
 
-      delete pab;
 
       //    ATON label optimization:
       //    Some CM93 ATON objects do not contain OBJNAM attribute, which means that no label is shown
@@ -4287,10 +4284,10 @@ void cm93chart::ProcessMCOVRObjects ( int cell_index, char subcell )
                               double tmp_transform_x = 0.;
                               double tmp_transform_y = 0.;
 
-                              cm93_attr_block *pab = new cm93_attr_block ( pobject->attributes_block, m_pDict );
+                              cm93_attr_block pab( pobject->attributes_block, m_pDict );
                               for ( int jattr = 0 ; jattr  < pobject->n_attributes ; jattr++ )
                               {
-                                    unsigned char *curr_attr = pab->GetNextAttr();
+                                    unsigned char *curr_attr = pab.GetNextAttr();
                                     unsigned char iattr = *curr_attr;
                                     wxString sattr = m_pDict->GetAttrName ( iattr );
                                     char vtype = m_pDict->GetAttrType ( iattr );
@@ -4316,8 +4313,6 @@ void cm93chart::ProcessMCOVRObjects ( int cell_index, char subcell )
 
 
                               }     //for all attributes
-
-                              delete pab;
 
 
                               if ( NULL != xgeom )
@@ -4441,7 +4436,7 @@ bool cm93chart::UpdateCovrSet ( ViewPort *vpt )
 bool cm93chart::IsPointInLoadedM_COVR ( double xc, double yc )
 {
     //  Provisionally revert to older method pending investigation.
-#if 0
+#if 1
     return m_region.Contains(yc, xc);
 #else
       for ( unsigned int im=0 ; im < m_pcovr_array_loaded.GetCount() ; im++ )
@@ -4761,7 +4756,6 @@ cm93compchart::cm93compchart()
       m_pcm93mgr = new cm93manager();
 
 
-
 }
 
 cm93compchart::~cm93compchart()
@@ -4967,7 +4961,6 @@ void cm93compchart::SetVPParms ( const ViewPort &vpt )
       m_vpt = vpt;                              // save a copy
 
       int cmscale = GetCMScaleFromVP ( vpt );         // First order calculation of cmscale
-
       m_cmscale = PrepareChartScale ( vpt, cmscale );
 
       //    Continuoesly update the composite chart edition date to the latest cell decoded
@@ -5133,11 +5126,8 @@ int cm93compchart::PrepareChartScale ( const ViewPort &vpt, int cmscale, bool bO
         if( zoom_factor > 4.0) {
             // See if there is a larger scale chart present that will avoid overzoom
             
-            //    Bound the clon to 0-360. degrees
             float yc = vpt.clat;
             float xc = vpt.clon;
-//            while ( xc < 0 ) xc += 360.;
-//            if ( xc > 360. ) xc -= 360.;
             
             //    Find out what the smallest available scale is that is not overzoomed
             FillScaleArray ( vpt.clat,vpt.clon );
@@ -5415,6 +5405,19 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
                   LLRegion vpr_empty = Region;
                   LLRegion chart_region = GetValidRegion();
 
+                  // old method which draws the regions from large to small scale, then finishes with the largest
+                  // scale.  This is broken on systems with broken clipping regions
+                  
+                  // So we modify the algorithm as follows:
+                  //  a. Calculate the region patches from large scale to small scale, starting with the Reference scale, and
+                  //     ending when the total region requested is full.
+                  //  b. Save the calculated patches in an array as they are generated.
+                  //  c. Render the regions/scales saved in the array in reverse order, from small scale to large scale.
+                  //  d. Finally, render the Reference region/scale.
+                  //  
+                  //  This logic has the advantage that only the minimum necessary Object rendering is actually performed, and
+                  //  only within the minimum necessary region.
+                  
                   if ( !chart_region.Empty() )
                         vpr_empty.Subtract ( chart_region );
 
@@ -5424,38 +5427,44 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
                         cm93chart *m_pcm93chart_save = m_pcm93chart_current;
                         int cmscale_save = m_cmscale;
 
-                        int cmscale_next = m_cmscale;
-
+                        LLRegion region_vect[8];
+                        
                         //    Render smaller scale cells the entire requested region is full
-                        while ( !vpr_empty.Empty() && cmscale_next )
+                        
+                        while ( !vpr_empty.Empty() && m_cmscale )
                         {
                               //    get the next smaller scale chart
-                              cmscale_next--;
-                              m_cmscale = PrepareChartScale ( vp, cmscale_next, false );
+                              m_cmscale = PrepareChartScale ( vp, m_cmscale - 1, false );
 
                               if ( m_pcm93chart_current )
                               {
                                     LLRegion sscale_region = GetValidRegion();
 
+                                    //  Save the calculated per-scale region in the array
+                                    region_vect[m_cmscale] = sscale_region;
+                                    region_vect[m_cmscale].Intersect ( vpr_empty );
                                     //    Only need to render that part of the vp that is not yet full
-                                    sscale_region.Intersect ( vpr_empty );
-
-                                    if(!sscale_region.Empty())
-                                        render_return |= m_pcm93chart_current->RenderRegionViewOnGL
-                                            ( glc, vp, RectRegion, sscale_region );
                                     //    Update the remaining empty region
                                     vpr_empty.Subtract ( sscale_region );
                               }
 
                         }     // while
 
+                        //  Render all non-empty regions saved in the array, from small to large scale.
+                        for( int i=0 ; i < 8 ; i++) {
+                            if(!region_vect[i].Empty()){
+                                m_cmscale = PrepareChartScale ( vp, i, false );
+                                render_return |= m_pcm93chart_current->RenderRegionViewOnGL( glc, vp, RectRegion, region_vect[i] );
+                            }
+                        }
+
                         // restore the base chart pointer
                         m_pcm93chart_current = m_pcm93chart_save;
                         m_cmscale = cmscale_save;
                   }
 
-                  render_return |= m_pcm93chart_current->RenderRegionViewOnGL
-                      ( glc, vp, RectRegion, Region );
+                  //  Render the on-top Reference region/scale
+                  render_return |= m_pcm93chart_current->RenderRegionViewOnGL( glc, vp, RectRegion, Region );
 
                   m_Name = m_pcm93chart_current->GetName();
 
@@ -6045,7 +6054,6 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
                               
               /* test rectangle for entire set to reduce number of tests */
               if( !psc->m_covr_bbox.GetValid() ||
-                  !vp.GetBBox().IntersectOut ( psc->m_covr_bbox ) ||
                   !vp.GetBBox().IntersectOut ( psc->m_covr_bbox ) ) 
               {
                   if ( psc ) 
@@ -6075,8 +6083,7 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
     
                               // TODO: this calculation doesn't work crossing IDL
                               // was anything actually drawn?
-                              if(! ( vp.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) ||
-                                 ! ( vp.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) ) {
+                              if(! ( vp.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) ) {
                                   bdrawn = true;
 
                                   //  Does current vp cross international dateline?
@@ -6085,8 +6092,7 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
                           } else
 #endif
                               //    Anything actually to be drawn?
-                              if(! ( vp.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) ||
-                                 ! ( vp.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) ) {
+                              if(! ( vp.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) ) {
                                             
                                   wxPoint *pwp = psc->GetDrawBuffer ( mcd->m_nvertices );
                                   bdrawn = RenderCellOutlinesOnDC(dc, vp, pwp, mcd);
@@ -6830,8 +6836,10 @@ void CM93OffsetDialog::OnClose ( wxCloseEvent& event )
 
             m_pcompchart->InvalidateCache();
 
-            if ( m_pparent )
+            if ( m_pparent ) {
                   m_pparent->Refresh ( true );
+                  cc1->InvalidateGL();
+            }
       }
 
       if ( m_pListCtrlMCOVRs->GetItemCount() > m_selected_list_index )
@@ -6921,8 +6929,10 @@ void CM93OffsetDialog::OnCellSelected ( wxListEvent &event )
       
       m_pcompchart->InvalidateCache();
 
-      if ( m_pparent )
+      if ( m_pparent ) {
             m_pparent->Refresh ( true );
+            cc1->InvalidateGL();
+      }
     }
 }
 

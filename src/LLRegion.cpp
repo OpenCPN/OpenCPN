@@ -70,15 +70,9 @@ LLRegion::LLRegion( size_t n, const double *points )
 bool LLRegion::PointsCCW( size_t n, const double *points )
 {
     double total = 0;
-    int pl = 2*(n-1);
-    double x0 = points[0] - points[pl+0];
-    double y0 = points[1] - points[pl+1];
     for(unsigned int i=0; i<2*n; i+=2) {
         int pn = i < 2*(n-1) ? i + 2 : 0;
-        double x1 = points[pn+0] - points[i+0];
-        double y1 = points[pn+1] - points[i+1];
-        total += x1*y0 - x0*y1;
-        x0 = x1, y0 = y1;
+        total += (points[pn+0] - points[i+0]) * (points[pn+1] + points[i+1]);
     }
     return total > 0;
 }
@@ -91,6 +85,21 @@ void LLRegion::Print() const
             printf("(%g %g) ", j->y, j->x);
         printf("]\n");
     }
+}
+
+void LLRegion::plot(const char*fn) const
+{
+    char filename[100] = "/home/sean/";
+    strcat(filename, fn);
+    FILE *f = fopen(filename, "w");
+    for(std::list<poly_contour>::const_iterator i = contours.begin(); i != contours.end(); i++) {
+        for(poly_contour::const_iterator j = i->begin(); j != i->end(); j++)
+            fprintf(f, "%f %f\n", j->x, j->y);
+        
+        fprintf(f, "%f %f\n", i->begin()->x, i->begin()->y);
+        fprintf(f, "\n");
+    }
+    fclose(f);
 }
 
 LLBBox LLRegion::GetBox() const
@@ -255,7 +264,7 @@ struct work
 };
 
 
-static void APIENTRY LLvertexCallback(GLvoid *vertex, void *user_data)
+static void /*APIENTRY*/ LLvertexCallback(GLvoid *vertex, void *user_data)
 {
     work *w = (work*)user_data;
     const GLdouble *pointer = (GLdouble *)vertex;
@@ -264,10 +273,10 @@ static void APIENTRY LLvertexCallback(GLvoid *vertex, void *user_data)
     w->contour.push_back(p);
 }
 
-static void APIENTRY LLbeginCallback(GLenum which) {
+static void /*APIENTRY*/ LLbeginCallback(GLenum which) {
 }
 
-static void APIENTRY LLendCallback(void *user_data)
+static void /*APIENTRY*/ LLendCallback(void *user_data)
 {
     work *w = (work*)user_data;
     if(w->contour.size()) {
@@ -276,7 +285,7 @@ static void APIENTRY LLendCallback(void *user_data)
     }    
 }
 
-static void APIENTRY LLcombineCallback( GLdouble coords[3], GLdouble *vertex_data[4], GLfloat weight[4],
+static void /*APIENTRY*/ LLcombineCallback( GLdouble coords[3], GLdouble *vertex_data[4], GLfloat weight[4],
                       GLdouble **dataOut, void *user_data )
 {
     work *w = (work*)user_data;
@@ -285,7 +294,7 @@ static void APIENTRY LLcombineCallback( GLdouble coords[3], GLdouble *vertex_dat
     *dataOut = vertex;    
 }
 
-static void APIENTRY LLerrorCallback(GLenum errorCode)
+static void /*APIENTRY*/ LLerrorCallback(GLenum errorCode)
 {
     const GLubyte *estring;
     estring = gluErrorString(errorCode);

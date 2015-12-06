@@ -30,15 +30,7 @@
 
 #include <stdint.h>
 
-#ifdef __OCPN__ANDROID__
-#include <qopengl.h>
-#include "GL/gl_private.h"
-#else
-#include "GL/gl.h"
-#ifdef __WXMSW__ // because gl.h includes windows.h which defines symbols that conflict with wx
-#include <wx/msw/winundef.h>
-#endif
-#endif
+#include "dychart.h"
 
 #include "viewport.h"
 #include "glTexCache.h"
@@ -1028,7 +1020,7 @@ void glTexFactory::DeleteAllTextures( void )
     // iterate over all the textures presently loaded
     // and delete the OpenGL texture from the GPU
     // but keep the private texture descriptor for now
-    
+  
     for(int i=0 ; i < m_ntex ; i++){
         glTextureDescriptor *ptd = m_td_array[i] ;
         
@@ -1054,7 +1046,7 @@ void glTexFactory::DeleteSomeTextures( long target )
         
         if( ptd ) {
 //            if(ptd->tex_name && bthread_debug)
-//                printf("DST::Delete Texture %d   resulting g_tex_mem_used, mb:  %ld\n", ptd->tex_name, g_tex_mem_used/(1024 * 1024));
+//                printf("DSoT::Delete Some Texture %d   resulting g_tex_mem_used, mb:  %ld\n", ptd->tex_name, g_tex_mem_used/(1024 * 1024));
             
             if(ptd->tex_name)
                 DeleteSingleTexture( ptd);
@@ -1120,9 +1112,8 @@ void glTexFactory::DeleteSingleTexture( glTextureDescriptor *ptd )
         size = g_uncompressed_tile_size;
     
     for(int level = 0; level < g_mipmap_max_level + 1; level++) {
-        if(level == ptd->level_min) {
+        if(ptd->miplevel_upload[level]) {
             g_tex_mem_used -= size;
-            ptd->level_min++;
             ptd->miplevel_upload[level] = false;
         }
         size /= 4;
@@ -1131,11 +1122,16 @@ void glTexFactory::DeleteSingleTexture( glTextureDescriptor *ptd )
             size = 8;
     }
     
+    ptd->level_min = g_mipmap_max_level + 1;  // default, nothing loaded
+    
+
     if(ptd->tex_name) {
         glDeleteTextures( 1, &ptd->tex_name );
         ptd->tex_name = 0;
     }
     ptd->nGPU_compressed = GPU_TEXTURE_UNKNOWN;
+    
+    
     
 }
 
@@ -1180,7 +1176,6 @@ void  glTexFactory::ArrayXY(wxRect *r, int index) const
 
 CatalogEntryValue *glTexFactory::GetCacheEntryValue(int level, int x, int y, ColorScheme color_scheme)
 {
-
     if (level < 0 || level >= MAX_TEX_LEVEL)
         return 0;
 
@@ -1406,6 +1401,7 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     //    If the GPU does not know about this texture, create it
     if( ptd->tex_name == 0 ) {
         glGenTextures( 1, &ptd->tex_name );
+        
 //        printf("gentex  %d   rect:  %d %d   index %d\n", ptd->tex_name, rect.x, rect.y, array_index);
         glBindTexture( GL_TEXTURE_2D, ptd->tex_name );
         
@@ -1462,13 +1458,13 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
                 if( (COMPRESSED_BUFFER_OK == status) && (ptd->nGPU_compressed != GPU_TEXTURE_UNCOMPRESSED ) ){
                     ptd->nGPU_compressed = GPU_TEXTURE_COMPRESSED;
                     if(!ptd->miplevel_upload[level]){
-                        //if(bthread_debug)
-//                             printf("Upload Compressed Texture %d  level: %d \n", ptd->tex_name, level);
                         s_glCompressedTexImage2D( GL_TEXTURE_2D, level, g_raster_format,
                                           dim, dim, 0, size,
                                           ptd->CompressedArrayAccess( CA_READ, NULL, level));
                         ptd->miplevel_upload[level] = true;
                         g_tex_mem_used += size;
+                        //if(bthread_debug)
+                            //printf("Upload Compressed Texture %d  level: %d g_tex_mem_used: %ld \n", ptd->tex_name, level, g_tex_mem_used/(1024*1024));
                         
                         // We can safely discard this level's compressed data, since the GPU has it
                         ptd->FreeCompLevel( level );
@@ -1478,8 +1474,8 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
                     if(!ptd->miplevel_upload[level]){
                         
  //                       if(bthread_debug)
-//                            printf("Upload Un-Compressed Texture %d  level: %d g_tex_mem_used: %ld\n", ptd->tex_name, level, g_tex_mem_used/(1024*1024));
-                        
+ //                                printf("UploadA Un-Compressed Texture %d  level: %d g_tex_mem_used: %ld\n", ptd->tex_name, level, g_tex_mem_used/(1024*1024));
+ 
                     //  This level has not been compressed yet, and is not in the cache
                     //  So, need to start a compression job 
                         
@@ -1497,6 +1493,7 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
                             g_tex_mem_used += uncompressed_size;
 #endif
                             ptd->miplevel_upload[level] = true;
+                            
                         }
                         else {
                             ptd->nGPU_compressed = GPU_TEXTURE_UNCOMPRESSED;
@@ -1543,6 +1540,9 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
                             }
                         }
 
+                        //if(bthread_debug)
+                            //printf("UploadB Un-Compressed Texture %d  level: %d g_tex_mem_used: %ld\n", ptd->tex_name, level, g_tex_mem_used/(1024*1024));
+                        
                         break;
 #else // this version uses mipmaps
                         glTexImage2D( GL_TEXTURE_2D, level, GL_RGB,
@@ -1553,7 +1553,7 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
                     }
                 }
             }
-            else {
+            else {              // not compresssed
                 if(!ptd->miplevel_upload[level]){
  //                   if(bthread_debug)
  //                       printf("Upload Un-Compressed Texture %d  level: %d g_tex_mem_used: %ld, data ptr: %p\n", ptd->tex_name, level, g_tex_mem_used/(1024*1024), ptd->map_array[level]);
@@ -2231,7 +2231,7 @@ bool glTexFactory::UpdateCachePrecomp(unsigned char *data, int data_size, glText
                 new_file.Close();
             }
             
-            m_fs = new wxFFile(m_CompressedCacheFilePath, _T("rwb"));
+            m_fs = new wxFFile(m_CompressedCacheFilePath, _T("rb+"));
             
             WriteCatalogAndHeader();
         }

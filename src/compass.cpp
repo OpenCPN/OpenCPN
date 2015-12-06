@@ -33,6 +33,8 @@
 #include "chcanv.h"
 #include "styles.h"
 
+#include "dychart.h"
+
 
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern ChartCanvas *cc1;
@@ -40,7 +42,6 @@ extern bool bGPSValid;
 extern bool g_bSatValid;
 extern int g_SatsInView;
 extern bool g_bCourseUp;
-extern bool g_bskew_comp;
 extern MyFrame *gFrame;
 extern bool g_bopengl;
 
@@ -223,10 +224,6 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
 
     if( ( fabs( cc1->GetVPRotation() ) > .01 ) || ( fabs( cc1->GetVPSkew() ) > .01 ) ) {
         rose_angle = -cc1->GetVPRotation();
-
-        if( !g_bskew_comp )
-            rose_angle -= cc1->GetVPSkew();
-
     } else
         rose_angle = 0.;
 

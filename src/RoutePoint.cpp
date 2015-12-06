@@ -469,24 +469,8 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
        vp.rotation == m_wpBBox_rotation) {
         /* see if this waypoint can intersect with bounding box */
         LLBBox vpBBox = vp.GetBBox();
-        if( vpBBox.IntersectOut( m_wpBBox ) ) {
-            /* try with vp crossing IDL */
-            if(vpBBox.GetMinX() < -180 && vpBBox.GetMaxX() > -180) {
-                wxPoint2DDouble xlate( -360., 0. );
-                wxBoundingBox test_box2 = m_wpBBox;
-                test_box2.Translate( xlate );
-                if( vp.GetBBox().IntersectOut( test_box2 ) )
-                    return;
-            } else 
-            if(vpBBox.GetMinX() < 180 && vpBBox.GetMaxX() > 180) {
-                wxPoint2DDouble xlate( 360., 0. );
-                wxBoundingBox test_box2 = m_wpBBox;
-                test_box2.Translate( xlate );
-                if( vp.GetBBox().IntersectOut( test_box2 ) )
-                    return;
-            } else
-                return;
-        }
+        if( vpBBox.IntersectOut( m_wpBBox ) )
+            return;
     }
 
     wxPoint r;
@@ -548,8 +532,13 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
         cc1->GetCanvasPixPoint(r.x+hilitebox.x, r.y+hilitebox.y+hilitebox.height, lat1, lon1);
         cc1->GetCanvasPixPoint(r.x+hilitebox.x+hilitebox.width, r.y+hilitebox.y, lat2, lon2);
 
-        m_wpBBox.SetMin(lon1, lat1);
-        m_wpBBox.SetMax(lon2, lat2);
+        if(lon1 > lon2) {
+            m_wpBBox.SetMin(lon1, lat1);
+            m_wpBBox.SetMax(lon2+360, lat2);
+        } else {
+            m_wpBBox.SetMin(lon1, lat1);
+            m_wpBBox.SetMax(lon2, lat2);
+        }
         m_wpBBox_view_scale_ppm = vp.view_scale_ppm;
         m_wpBBox_rotation = vp.rotation;
     }

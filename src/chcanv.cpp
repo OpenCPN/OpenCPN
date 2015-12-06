@@ -258,7 +258,6 @@ extern PlugInManager    *g_pi_manager;
 
 extern wxAuiManager      *g_pauimgr;
 
-extern bool             g_bskew_comp;
 extern bool             g_bopengl;
 extern bool             g_bdisable_opengl;
 
@@ -495,7 +494,7 @@ END_EVENT_TABLE()
 
 // Define a constructor for my canvas
 ChartCanvas::ChartCanvas ( wxFrame *frame ) :
-    wxWindow ( frame, wxID_ANY,    wxPoint ( 20,20 ), wxSize ( 5,5 ), wxSIMPLE_BORDER )
+     wxWindow ( frame, wxID_ANY,    wxPoint ( 20,20 ), wxSize ( 5,5 ), wxNO_BORDER )
 {
     parent_frame = ( MyFrame * ) frame;       // save a pointer to parent
 
@@ -1835,6 +1834,8 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         case 9:                      // Ctrl I
             if (g_Compass) {
                 g_Compass->Show(!g_Compass->IsShown());
+                if (g_Compass->IsShown())
+                    g_Compass->UpdateStatus();
                 m_brepaint_piano = true;
                 Refresh( false );
             }
@@ -2140,6 +2141,18 @@ void ChartCanvas::SetColorScheme( ColorScheme cs )
             break;
     }
     m_fog_color.Set( m_fog_color.Red()*dim, m_fog_color.Green()*dim, m_fog_color.Blue()*dim );
+
+    //  Really dark
+    if( cs == GLOBAL_COLOR_SCHEME_DUSK || cs == GLOBAL_COLOR_SCHEME_NIGHT ) {
+        SetBackgroundColour( wxColour(0,0,0) );
+        
+        SetWindowStyleFlag( (GetWindowStyleFlag() && !wxSIMPLE_BORDER) || wxNO_BORDER);
+    }
+    else{
+        SetWindowStyleFlag( (GetWindowStyleFlag() && !wxNO_BORDER) || wxSIMPLE_BORDER);
+        SetBackgroundColour( wxNullColour );
+    }
+        
     
 
 #ifdef ocpnUSE_GL
@@ -2353,8 +2366,13 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
                     << _(" to ") << segShow_point_b->GetName()
                     << _T("\n");
 
-                    if( g_bShowMag )
-                        s << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( brg ) );
+                    if( g_bShowMag ){
+                        double latAverage = (segShow_point_b->m_lat + segShow_point_a->m_lat)/2;
+                        double lonAverage = (segShow_point_b->m_lon + segShow_point_a->m_lon)/2;
+                        double varBrg = gFrame->GetTrueOrMag( brg, latAverage, lonAverage);
+                        
+                        s << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)varBrg );
+                    }
                     else
                         s << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( brg ) );
 
@@ -2518,14 +2536,13 @@ void ChartCanvas::GetDoubleCanvasPointPixVP( ViewPort &vp, double rlat, double r
     
     // If for some reason the chart rejects the request by returning an error,
     // then fall back to Viewport Projection estimate from canvas parameters
-    if(!g_bopengl && Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_RASTER )
-        && ( ( ( fabs( vp.rotation ) < .0001 ) &&
-               ( ( !g_bskew_comp || ( fabs( vp.skew ) < .0001 ) ) ) )
-             || ( ( Current_Ch->GetChartProjectionType() != PROJECTION_MERCATOR )
-                  && ( Current_Ch->GetChartProjectionType() != PROJECTION_TRANSVERSE_MERCATOR )
-                  && ( Current_Ch->GetChartProjectionType() != PROJECTION_POLYCONIC ) ) )
+    if( !g_bopengl && Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_RASTER )
+        && ( ( ( fabs( vp.rotation ) < .0001 ) && ( fabs( vp.skew ) < .0001 ) )
+        || ( ( Current_Ch->GetChartProjectionType() != PROJECTION_MERCATOR )
+        && ( Current_Ch->GetChartProjectionType() != PROJECTION_TRANSVERSE_MERCATOR )
+        && ( Current_Ch->GetChartProjectionType() != PROJECTION_POLYCONIC ) ) )
         && ( Current_Ch->GetChartProjectionType() == vp.m_projection_type )
-        && (Current_Ch->GetChartType() != CHART_TYPE_PLUGIN) )
+        && ( Current_Ch->GetChartType() != CHART_TYPE_PLUGIN) )
     {
         ChartBaseBSB *Cur_BSB_Ch = dynamic_cast<ChartBaseBSB *>( Current_Ch );
         //                        bool bInside = G_FloatPtInPolygon ( ( MyFlPoint * ) Cur_BSB_Ch->GetCOVRTableHead ( 0 ),
@@ -2589,15 +2606,14 @@ void ChartCanvas::GetCanvasPixPoint( double x, double y, double &lat, double &lo
     // then fall back to Viewport Projection  estimate from canvas parameters
     bool bUseVP = true;
 
-    if(!g_bopengl && Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_RASTER )
-        && ( ( ( fabs( GetVP().rotation ) < .0001 ) &&
-               ( ( !g_bskew_comp || ( fabs( GetVP().skew ) < .0001 ) ) ) )
-             || ( ( Current_Ch->GetChartProjectionType() != PROJECTION_MERCATOR )
-                  && ( Current_Ch->GetChartProjectionType() != PROJECTION_TRANSVERSE_MERCATOR )
-                  && ( Current_Ch->GetChartProjectionType() != PROJECTION_POLYCONIC ) ) )
+    if( !g_bopengl && Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_RASTER )
+        && ( ( ( fabs( GetVP().rotation ) < .0001 ) && ( fabs( GetVP().skew ) < .0001 ) )
+        || ( ( Current_Ch->GetChartProjectionType() != PROJECTION_MERCATOR )
+        && ( Current_Ch->GetChartProjectionType() != PROJECTION_TRANSVERSE_MERCATOR )
+        && ( Current_Ch->GetChartProjectionType() != PROJECTION_POLYCONIC ) ) )
         && ( Current_Ch->GetChartProjectionType() == GetVP().m_projection_type )
-        && (Current_Ch->GetChartType() != CHART_TYPE_PLUGIN) )
-       {
+        && ( Current_Ch->GetChartType() != CHART_TYPE_PLUGIN ) )
+    {
         ChartBaseBSB *Cur_BSB_Ch = dynamic_cast<ChartBaseBSB *>( Current_Ch );
 
         // TODO     maybe need iterative process to validate bInside
@@ -3200,7 +3216,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
             ChartBase* referenceChart = ChartData->OpenChartFromDB( m_pQuilt->GetRefChartdbIndex(), FULL_INIT );
             if( referenceChart ) {
                 double chartMaxScale = referenceChart->GetNormalScaleMax( cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth() );
-                renderable = chartMaxScale*1.5 > VPoint.chart_scale;
+                renderable = chartMaxScale * 64 >= VPoint.chart_scale;
             }
             if( !renderable )
                 b_needNewRef = true;
@@ -3746,8 +3762,9 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
     float icon_rad = atan2f( (float) ( osd_head_point.y - lShipMidPoint.y ),
                              (float) ( osd_head_point.x - lShipMidPoint.x ) );
     icon_rad += (float)PI;
+    double rotate = GetVP().rotation;
 
-    if( pSog < 0.2 ) icon_rad = ( ( icon_hdt + 90. ) * PI / 180. ) + GetVP().rotation;
+    if (pSog < 0.2) icon_rad = ((icon_hdt + 90.) * PI / 180) + rotate;
 
 //    Calculate ownship Heading pointer as a predictor
     double hdg_pred_lat, hdg_pred_lon;
@@ -4037,8 +4054,8 @@ wxString CalcGridText( float latlon, float spacing, bool bPostfix )
  ************************************************************************/
 void ChartCanvas::GridDraw( ocpnDC& dc )
 {
-    if( !( g_bDisplayGrid && ( fabs( GetVP().rotation ) < 1e-5 )
-            && ( ( fabs( GetVP().skew ) < 1e-9 ) || g_bskew_comp ) ) ) return;
+    if( !( g_bDisplayGrid && ( fabs( GetVP().rotation ) < 1e-5 ) ) )
+        return;
 
     double nlat, elon, slat, wlon;
     float lat, lon;
@@ -4158,8 +4175,7 @@ void ChartCanvas::ScaleBarDraw( ocpnDC& dc )
 
     GetCanvasPixPoint( x_origin, y_origin, blat, blon );
     double rotation = -VPoint.rotation;
-    if(!g_bskew_comp)
-        rotation -= VPoint.skew;
+
     ll_gc_ll( blat, blon, rotation * 180 / PI, dist, &tlat, &tlon );
     GetCanvasPointPix( tlat, tlon, &r );
     int l1 = ( y_origin - r.y ) / count;
@@ -4699,12 +4715,28 @@ void ChartCanvas::MouseTimedEvent( wxTimerEvent& event )
 bool leftIsDown;
 
 
+bool ChartCanvas::MouseEventOverlayWindows( wxMouseEvent& event )
+{
+    if (!m_bChartDragging && !m_bDrawingRoute) {
+        if(g_Compass && g_Compass->IsShown() && g_Compass->GetRect().Contains(event.GetPosition())) { 
+            if (g_Compass->MouseEvent( event )) {
+                cursor_region = CENTER;
+                if( !g_btouch )
+                    SetCanvasCursor( event );
+                return true;
+            }
+        }
+
+        if(MouseEventChartBar( event ))
+            return true;
+    }
+    return false;
+}
+
+
 bool ChartCanvas::MouseEventChartBar( wxMouseEvent& event )
 {
     if(!g_bShowChartBar || g_ChartBarWin)
-        return false;
-
-    if( m_bDrawingRoute )
         return false;
 
     if (! g_Piano->MouseEvent(event) )
@@ -5348,7 +5380,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                                                             //      navigating to an isolated waypoint on a temporary route
                                                             if( g_pRouteMan->IsRouteValid(pr) ) {
                                                                 wxRect route_rect;
-                                                                pr->CalculateDCRect( m_dc_route, &route_rect, VPoint );
+                                                                pr->CalculateDCRect( m_dc_route, &route_rect );
                                                                 pre_rect.Union( route_rect );
                                                             }
                                                         }
@@ -5385,7 +5417,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                                                                 Route *pr = (Route *) m_pEditRouteArray->Item( ir );
                                                                 if( g_pRouteMan->IsRouteValid(pr) ) {
                                                                     wxRect route_rect;
-                                                                    pr->CalculateDCRect( m_dc_route, &route_rect, VPoint );
+                                                                    pr->CalculateDCRect( m_dc_route, &route_rect );
                                                                     post_rect.Union( route_rect );
                                                                 }
                                                             }
@@ -5715,7 +5747,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                             if( g_pRouteMan->IsRouteValid(pr) ) {
                                 //                                pr->SetHiLite(50);
                                 wxRect route_rect;
-                                pr->CalculateDCRect( m_dc_route, &route_rect, VPoint );
+                                pr->CalculateDCRect( m_dc_route, &route_rect );
                                 pre_rect.Union( route_rect );
                             }
                         }
@@ -6393,13 +6425,9 @@ bool ChartCanvas::MouseEventProcessCanvas( wxMouseEvent& event )
                 
 }
 
-
 void ChartCanvas::MouseEvent( wxMouseEvent& event )
 {
-    if(g_Compass && g_Compass->MouseEvent( event ))
-        return;
-
-    if(MouseEventChartBar( event ))
+    if (MouseEventOverlayWindows( event ))
         return;
 
     if(MouseEventSetup( event ))
@@ -8999,8 +9027,13 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
         }
 
         wxString routeInfo;
-        if( g_bShowMag )
-            routeInfo << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( brg ) );
+        if( g_bShowMag ){
+            double latAverage = (m_cursor_lat + render_lat)/2;
+            double lonAverage = (m_cursor_lon + render_lon)/2;
+            double varBrg = gFrame->GetTrueOrMag( brg, latAverage, lonAverage);
+            
+            routeInfo << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)varBrg );
+        }
         else
             routeInfo << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( brg ) );
 
@@ -9143,10 +9176,10 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
     //  If the ViewPort is rotated, we may be able to use the cached rotated bitmap
     bool b_rcache_ok = false;
-    if( fabs( VPoint.rotation ) > 0.01 ) b_rcache_ok = !b_newview;
+    b_rcache_ok = !b_newview;
 
     //  If in skew compensation mode, with a skewed VP shown, we may be able to use the cached rotated bitmap
-    if( g_bskew_comp && ( fabs( VPoint.skew ) > 0.01 ) ) b_rcache_ok = !b_newview;
+    if(  fabs( VPoint.skew ) > 0.01 ) b_rcache_ok = !b_newview;
 
     //  Make a special VP
     if( VPoint.b_MercatorProjectionOverride ) VPoint.SetProjectionType( PROJECTION_MERCATOR );
@@ -9333,8 +9366,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         if( chartValidRegion.IsOk() )
             backgroundRegion.Subtract( chartValidRegion );
 
-        if( ( ( fabs( GetVP().skew ) < .01 ) || ! g_bskew_comp )
-            && ! backgroundRegion.IsEmpty() ) {
+        if( ! backgroundRegion.IsEmpty() ) {
         
             //    Draw the Background Chart only in the areas NOT covered by the current chart view
 
@@ -9356,8 +9388,9 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
             delete clip_region;
 
             ocpnDC bgdc( temp_dc );
-            double r =         VPoint.rotation;
-            SetVPRotation( 0.0 );
+            double r = VPoint.rotation;
+            SetVPRotation(VPoint.skew);
+
             pWorldBackgroundChart->RenderViewOnDC( bgdc, VPoint );
             SetVPRotation( r );
         }
@@ -9365,9 +9398,6 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
     wxMemoryDC *pChartDC = &temp_dc;
     wxMemoryDC rotd_dc;
-
-    if( ( ( fabs( GetVP().rotation ) > 0.01 ) )
-            || ( g_bskew_comp && ( fabs( GetVP().skew ) > 0.01 ) ) ) {
 
         //  Can we use the current rotated image cache?
         if( !b_rcache_ok ) {
@@ -9386,19 +9416,14 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
             //    Use a local static image rotator to improve wxWidgets code profile
             //    Especially, on GTK the wxRound and wxRealPoint functions are very expensive.....
-            double angle;
-            angle = -GetVP().rotation;
-            if(g_bskew_comp)
-                angle += GetVP().skew;
 
+            double angle = GetVP().skew - GetVP().rotation;
             wxImage ri;
             bool b_rot_ok = false;
             if( base_image.IsOk() ) {
                 ViewPort rot_vp = GetVP();
 
                 m_b_rot_hidef = false;
-//                              if(g_bskew_comp && (fabs(GetVP().skew) > 0.01))
-//                                    m_b_rot_hidef = true;
 
                 ri = Image_Rotate( base_image, angle,
                                    wxPoint( GetVP().rv_rect.width / 2, GetVP().rv_rect.height / 2 ),
@@ -9429,12 +9454,6 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
             pChartDC = &temp_dc;
             m_roffset = wxPoint( 0, 0 );
         }
-
-    } else {
-        pChartDC = &temp_dc;
-        m_roffset = wxPoint( 0, 0 );
-
-    }
 
     wxPoint offset = m_roffset;
 
@@ -10113,27 +10132,43 @@ void ChartCanvas::DrawAllRoutesInBBox( ocpnDC& dc, LLBBox& BltBBox, const wxRegi
 
             }
 
-            wxBoundingBox test_box = pRouteDraw->GetBBox();
+            if ((pRouteDraw == active_route) || (pRouteDraw == active_track)) {
+                node = node->GetNext();
+                continue;
+            }
+
+            LLBBox test_box = pRouteDraw->GetBBox();
 
             if( b_run ) test_box.Expand( gLon, gLat );
 
             if( !BltBBox.IntersectOut( test_box ) ) // Route is not wholly outside window
             {
                 b_drawn = true;
+                pRouteDraw->Draw( dc, GetVP() );
+            } else if( b_run ) {
+                /* it would be nicer to instead of what is below,
+                   append gLat, gLon to the route, compute the bbox, then remove it
+                   and just use the first test */
+                wxPoint2DDouble xlatep( 360., 0. );
+                test_box = pRouteDraw->GetBBox();
+                test_box.Translate( xlatep );
+                test_box.Expand( gLon, gLat );
 
-                if( ( pRouteDraw != active_route ) && ( pRouteDraw != active_track ) )
-                    pRouteDraw->Draw( dc, GetVP() );
-            } else if( pRouteDraw->CrossesIDL() ) {
-                wxPoint2DDouble xlate( -360., 0. );
-                wxBoundingBox test_box1 = pRouteDraw->GetBBox();
-                test_box1.Translate( xlate );
-                if( b_run ) test_box1.Expand( gLon, gLat );
-
-                if( !BltBBox.IntersectOut( test_box1 ) ) // Route is not wholly outside window
+                if( !BltBBox.IntersectOut( test_box ) ) // Route is not wholly outside window
                 {
                     b_drawn = true;
-                    if( ( pRouteDraw != active_route ) && ( pRouteDraw != active_track ) ) pRouteDraw->Draw(
-                            dc, GetVP() );
+                    pRouteDraw->Draw(dc, GetVP() );
+                } else {
+                    wxPoint2DDouble xlaten( -360., 0. );
+                    test_box = pRouteDraw->GetBBox();
+                    test_box.Translate( xlaten );
+                    test_box.Expand( gLon, gLat );
+
+                    if( !BltBBox.IntersectOut( test_box ) ) // Route is not wholly outside window
+                    {
+                        b_drawn = true;
+                        pRouteDraw->Draw(dc, GetVP() );
+                    }
                 }
             }
 
@@ -10604,9 +10639,6 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
                             wxBRUSHSTYLE_SOLID );
 
     double skew_angle = GetVPRotation();
-
-    if( !g_bskew_comp )
-        skew_angle += GetVPSkew();
 
     pTCFont = FontMgr::Get().GetFont( _("CurrentValue") );
     

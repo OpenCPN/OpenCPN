@@ -2165,8 +2165,11 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
             //  cm93 vpoint crossing Greenwich, panning east, was rendering areas incorrectly.
             ViewPort cvp = glChartCanvas::ClippedViewport(VPoint, chart_region);
 
-            if(CHART_TYPE_CM93 == GetChartType())
-                glChartCanvas::SetClipRegion(cvp, chart_region);
+            if(CHART_TYPE_CM93 == GetChartType()){
+                // for now I will revert to the faster rectangle clipping now that rendering order is resolved
+//                glChartCanvas::SetClipRegion(cvp, chart_region);
+                glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
+            }
             else
                 glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
             
@@ -3200,6 +3203,9 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
 
 //      Also, save some other settings
     bool bsavem_bShowSoundgp = ps52plib->m_bShowSoundg;
+    
+    // SetDisplayCategory may clear Noshow array
+    ps52plib->SaveObjNoshow();
 
 //      Now, set up what I want for this render
     for( iPtr = 0; iPtr < OBJLCount; iPtr++ ) {
@@ -3237,6 +3243,8 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
     }
 
     ps52plib->SetDisplayCategory(dsave);
+    ps52plib->RestoreObjNoshow();
+
     ps52plib->m_bShowSoundg = bsavem_bShowSoundgp;
 
 //      Reset the color scheme
@@ -3269,7 +3277,7 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
 }
 
 #include <wx/arrimpl.cpp>
-WX_DEFINE_ARRAY( float*, MyFloatPtrArray );
+WX_DEFINE_ARRAY_PTR( float*, MyFloatPtrArray );
 
 //    Read the .000 ENC file and create required Chartbase data structures
 bool s57chart::CreateHeaderDataFromENC( void )
@@ -3346,70 +3354,55 @@ bool s57chart::CreateHeaderDataFromENC( void )
 
             delete pFeat;
             pFeat = GetChartNextM_COVR( catcov );
-        }         // while
+    }         // while
 
-        //    Allocate the storage
+    //    Allocate the storage
 
-        m_nCOVREntries = pAuxCntArray->GetCount();
+    m_nCOVREntries = pAuxCntArray->GetCount();
 
-        //    If only one M_COVR,CATCOV=1 object was found,
-        //    assign the geometry to the one and only COVR
+    //    Create new COVR entries
 
-        if( m_nCOVREntries == 1 ) {
-            m_pCOVRTablePoints = (int *) malloc( sizeof(int) );
-            *m_pCOVRTablePoints = pAuxCntArray->Item( 0 );
-            m_pCOVRTable = (float **) malloc( sizeof(float *) );
-            *m_pCOVRTable = (float *) malloc( pAuxCntArray->Item( 0 ) * 2 * sizeof(float) );
-            memcpy( *m_pCOVRTable, pAuxPtrArray->Item( 0 ),
-                    pAuxCntArray->Item( 0 ) * 2 * sizeof(float) );
+    if( m_nCOVREntries >= 1 ) {
+        m_pCOVRTablePoints = (int *) malloc( m_nCOVREntries * sizeof(int) );
+        m_pCOVRTable = (float **) malloc( m_nCOVREntries * sizeof(float *) );
+
+        for( unsigned int j = 0; j < (unsigned int) m_nCOVREntries; j++ ) {
+            m_pCOVRTablePoints[j] = pAuxCntArray->Item( j );
+            m_pCOVRTable[j] = pAuxPtrArray->Item( j );
         }
+    }
 
-        else if( m_nCOVREntries > 1 ) {
-            //    Create new COVR entries
-            m_pCOVRTablePoints = (int *) malloc( m_nCOVREntries * sizeof(int) );
-            m_pCOVRTable = (float **) malloc( m_nCOVREntries * sizeof(float *) );
+    else                                     // strange case, found no CATCOV=1 M_COVR objects
+    {
+        wxString msg( _T("   ENC contains no useable M_COVR, CATCOV=1 features:  ") );
+        msg.Append( m_FullPath );
+        wxLogMessage( msg );
+    }
 
-            for( unsigned int j = 0; j < (unsigned int) m_nCOVREntries; j++ ) {
-                m_pCOVRTablePoints[j] = pAuxCntArray->Item( j );
-                m_pCOVRTable[j] = (float *) malloc( pAuxCntArray->Item( j ) * 2 * sizeof(float) );
-                memcpy( m_pCOVRTable[j], pAuxPtrArray->Item( j ),
-                        pAuxCntArray->Item( j ) * 2 * sizeof(float) );
-            }
+
+    //      And for the NoCovr regions
+    m_nNoCOVREntries = pNoCovrCntArray->GetCount();
+
+    if( m_nNoCOVREntries ) {
+        //    Create new NoCOVR entries
+        m_pNoCOVRTablePoints = (int *) malloc( m_nNoCOVREntries * sizeof(int) );
+        m_pNoCOVRTable = (float **) malloc( m_nNoCOVREntries * sizeof(float *) );
+
+        for( unsigned int j = 0; j < (unsigned int) m_nNoCOVREntries; j++ ) {
+            int npoints = pNoCovrCntArray->Item( j );
+            m_pNoCOVRTablePoints[j] = npoints;
+            m_pNoCOVRTable[j] = pNoCovrPtrArray->Item( j );
         }
+    }
+    else {
+        m_pNoCOVRTablePoints = NULL;
+        m_pNoCOVRTable = NULL;
+    }
 
-        else                                     // strange case, found no CATCOV=1 M_COVR objects
-        {
-            wxString msg( _T("   ENC contains no useable M_COVR, CATCOV=1 features:  ") );
-            msg.Append( m_FullPath );
-            wxLogMessage( msg );
-        }
-
-
-        //      And for the NoCovr regions
-        m_nNoCOVREntries = pNoCovrCntArray->GetCount();
-
-        if( m_nNoCOVREntries ) {
-            //    Create new NoCOVR entries
-            m_pNoCOVRTablePoints = (int *) malloc( m_nNoCOVREntries * sizeof(int) );
-            m_pNoCOVRTable = (float **) malloc( m_nNoCOVREntries * sizeof(float *) );
-
-            for( unsigned int j = 0; j < (unsigned int) m_nNoCOVREntries; j++ ) {
-                int npoints = pNoCovrCntArray->Item( j );
-                m_pNoCOVRTablePoints[j] = npoints;
-                m_pNoCOVRTable[j] = (float *) malloc( npoints * 2 * sizeof(float) );
-                memcpy( m_pNoCOVRTable[j], pNoCovrPtrArray->Item( j ),
-                        npoints * 2 * sizeof(float) );
-            }
-        }
-        else {
-            m_pNoCOVRTablePoints = NULL;
-            m_pNoCOVRTable = NULL;
-        }
-
-        delete pAuxPtrArray;
-        delete pAuxCntArray;
-        delete pNoCovrPtrArray;
-        delete pNoCovrCntArray;
+    delete pAuxPtrArray;
+    delete pAuxCntArray;
+    delete pNoCovrPtrArray;
+    delete pNoCovrCntArray;
 
 
     if( 0 == m_nCOVREntries ) {                        // fallback
@@ -4712,6 +4705,8 @@ void s57chart::UpdateLUPs( s57chart *pOwner )
             top = razRules[i][j];
             while( top != NULL ) {
                 top->obj->bCS_Added = 0;
+                if (top->LUP)
+                    top->obj->m_DisplayCat = top->LUP->DISC;
 
                 nxx = top->next;
                 top = nxx;
@@ -4729,6 +4724,8 @@ void s57chart::UpdateLUPs( s57chart *pOwner )
                     ObjRazRules *ctop = top->child;
                     while( NULL != ctop ) {
                         ctop->obj->bCS_Added = 0;
+                        if (ctop->LUP)
+                            ctop->obj->m_DisplayCat = ctop->LUP->DISC;
                         ctop = ctop->next;
                     }
                 }
@@ -6247,7 +6244,7 @@ wxString s57chart::GetObjectAttributeValueAsString( S57Obj *obj, int iatt, wxStr
             }
 
             else if( ( curAttrName == _T("VALSOU") ) || ( curAttrName == _T("DRVAL1") )
-                    || ( curAttrName == _T("DRVAL2") ) ) {
+                    || ( curAttrName == _T("DRVAL2") ) || ( curAttrName == _T("VALDCO") ) ) {
                 switch( ps52plib->m_nDepthUnitDisplay ){
                     case 0:                       // feet
                         dval = dval * 3 * 39.37 / 36;              // feet
@@ -6446,6 +6443,29 @@ int s57chart::CompareLights( const void** l1ptr, const void** l2ptr )
     return -1;
 }
 
+static const char *type2str( GeoPrim_t type)
+{
+    const char *r = "Uknown";
+    switch(type) {
+    case GEO_POINT:
+        return "Point";
+        break;
+    case GEO_LINE:
+        return "Line";
+        break;
+    case GEO_AREA:
+        return "Area";
+        break;
+    case GEO_META:
+        return "Meta";
+        break;
+    case GEO_PRIM:
+        return "Prim";
+        break;
+    }
+    return r;
+}
+
 wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
 {
     wxString ret_val;
@@ -6502,21 +6522,32 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
         //    Show LUP
         if( g_bDebugS57 ) {
             wxString index;
-            index.Printf( _T("Feature Index: %d\n"), current->obj->Index );
+            
+            classAttributes = _T("");
+            index.Printf( _T("Feature Index: %d<br>"), current->obj->Index );
             classAttributes << index;
 
             wxString LUPstring;
-            LUPstring.Printf( _T("LUP RCID:  %d\n"), current->LUP->RCID );
+            LUPstring.Printf( _T("LUP RCID:  %d<br>"), current->LUP->RCID );
             classAttributes << LUPstring;
+
+            wxString Bbox;
+            wxBoundingBox bbox = current->obj->BBObj;
+            Bbox.Printf( _T("Bounding box:  %g %g %g %g<br>"), bbox.GetMinY(), bbox.GetMaxY() , bbox.GetMinX(), bbox.GetMaxX() );
+            classAttributes << Bbox;
+
+            wxString Type;
+            Type.Printf( _T(" Type:  %s<br>"), type2str(current->obj->Primitive_type));
+            classAttributes << Type;
 
             LUPstring = _T("    LUP ATTC: ");
             if( current->LUP->ATTCArray ) LUPstring += current->LUP->ATTCArray->Item( 0 );
-            LUPstring += _T("\n");
+            LUPstring += _T("<br>");
             classAttributes << LUPstring;
 
             LUPstring = _T("    LUP INST: ");
             if( current->LUP->INST ) LUPstring += *( current->LUP->INST );
-            LUPstring += _T("\n\n");
+            LUPstring += _T("<br><br>");
             classAttributes << LUPstring;
 
         }
@@ -6551,6 +6582,10 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
             wxString attribStr;
             int noAttr = 0;
             attribStr << _T("<table border=0 cellspacing=0 cellpadding=0>");
+
+            if( g_bDebugS57 ) {
+                ret_val << _T("<p>") << classAttributes;
+            }
 
             bool inDepthRange = false;
 

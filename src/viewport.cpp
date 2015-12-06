@@ -117,9 +117,6 @@ extern sigjmp_buf           env;                    // the context saved by sigs
 
 extern void catch_signals(int signo);
 
-extern bool             g_bskew_comp;
-
-
 //------------------------------------------------------------------------------
 //    ViewPort Implementation
 //------------------------------------------------------------------------------
@@ -254,8 +251,6 @@ wxPoint2DDouble ViewPort::GetDoublePixFromLL( double lat, double lon )
 
     //    Apply VP Rotation
     double angle = rotation;
-    if(!g_bskew_comp)
-        angle += skew;
 
     if( angle ) {
         dxr = epix * cos( angle ) + npix * sin( angle );
@@ -275,8 +270,6 @@ void ViewPort::GetLLFromPix( const wxPoint2DDouble &p, double *lat, double *lon 
 
     //    Apply VP Rotation
     double angle = rotation;
-    if(!g_bskew_comp)
-        angle += skew;
 
     if( angle ) {
         xpr = ( dx * cos( angle ) ) - ( dy * sin( angle ) );
@@ -359,20 +352,52 @@ LLRegion ViewPort::GetLLRegion( const OCPNRegion &region )
 
         int x1 = rect.x, y1 = rect.y, x2 = x1 + rect.width, y2 = y1 + rect.height;
         int p[8] = {x1, y1, x2, y1, x2, y2, x1, y2};
-        double pll[8];
-        for(int i=0; i<8; i+=2)
-            GetLLFromPix(wxPoint(p[i], p[i+1]), pll+i, pll+i+1);
+        double pll[540];
+        int j;
+
+        /* if the viewport is rotated, we must split the segments as straight lines in lat/lon
+           coordinates map to curves in projected coordinate space */
+        if(fabs( rotation ) >= 0.0001) {
+            j=0;
+            double lastlat, lastlon;
+            int li = 6;
+            GetLLFromPix(wxPoint(p[li], p[li+1]), &lastlat, &lastlon);
+            for(int i=0; i<8; i+=2) {
+                double lat, lon;
+                GetLLFromPix(wxPoint(p[i], p[i+1]), &lat, &lon);
+
+                // use 2 degree grid
+                double grid = 2;
+                int lat_splits = floor(fabs(lat-lastlat) / grid);
+                double lond = fabs(lon-lastlon);
+                int lon_splits = floor((lond > 180 ? 360-lond : lond) / grid);
+                int splits = wxMax(lat_splits, lon_splits) + 1;
+
+                for(int k = 1; k<splits; k++) {
+                    float d = (float)k / splits;
+                    GetLLFromPix(wxPoint((1-d)*p[li] + d*p[i], (1-d)*p[li+1] + d*p[i+1]), pll+j, pll+j+1);
+                    j += 2;
+                }
+                pll[j++] = lat;
+                pll[j++] = lon;
+                li = i;
+                lastlat = lat, lastlon = lon;
+            }
+        } else {
+            j=8;
+            for(int i=0; i<j; i+=2)
+                GetLLFromPix(wxPoint(p[i], p[i+1]), pll+i, pll+i+1);
+        }
 
         // resolve (this works even if rectangle crosses both 0 and 180)
-        //if(LLRegion::PointsCCW(4, pll))
-        for(int i=0; i<8; i+=2) {
+        for(int i=0; i<j; i+=2) {
             if(pll[i+1] <= clon - 180)
                 pll[i+1] += 360;
             else if(pll[i+1] >= clon + 180)
                 pll[i+1] -= 360;
         }
 
-        r.Union(LLRegion(4, pll));
+        r.Union(LLRegion(j/2, pll));
         it.NextRect();
     }
     return r;
@@ -825,16 +850,19 @@ void ViewPort::SetBoxes( void )
     rv_rect = wxRect( 0, 0, pix_width, pix_height );
 
     //  Specify the minimum required rectangle in unrotated screen space which will supply full screen data after specified rotation
-    if( ( g_bskew_comp && ( fabs( skew ) > .001 ) ) || ( fabs( rotation ) > .001 ) ) {
+    if (( fabs( skew ) > .0001 ) || (fabs(rotation )>.0001 )) {
 
         double rotator = rotation;
-        if(g_bskew_comp)
-            rotator -= skew;
+        double lpixh = pix_height;
+        double lpixw = pix_width;
+
+        lpixh = wxMax(lpixh, (fabs(pix_height * cos(skew)) + fabs(pix_width * sin(skew))));
+        lpixw = wxMax(lpixw, (fabs(pix_width * cos(skew)) + fabs(pix_height * sin(skew))));
 
         int dy = wxRound(
-                     fabs( pix_height * cos( rotator ) ) + fabs( pix_width * sin( rotator ) ) );
+                     fabs( lpixh * cos( rotator ) ) + fabs( lpixw * sin( rotator ) ) );
         int dx = wxRound(
-                     fabs( pix_width * cos( rotator ) ) + fabs( pix_height * sin( rotator ) ) );
+                     fabs( lpixw * cos( rotator ) ) + fabs( lpixh * sin( rotator ) ) );
 
         //  It is important for MSW build that viewport pixel dimensions be multiples of 4.....
         if( dy % 4 ) dy += 4 - ( dy % 4 );
@@ -844,16 +872,14 @@ void ViewPort::SetBoxes( void )
         int inflate_y = wxMax(( dy - pix_height ) / 2, 0);
         
         //  Grow the source rectangle appropriately
-        if( fabs( rotator ) > .001 )
-            rv_rect.Inflate( inflate_x, inflate_y );
-
+        rv_rect.Inflate( inflate_x, inflate_y );
     }
 
     //  Compute Viewport lat/lon reference points for co-ordinate hit testing
 
     //  This must be done in unrotated space with respect to full unrotated screen space calculated above
     double rotation_save = rotation;
-    SetRotationAngle( 0. );
+    SetRotationAngle(0.0);
 
     wxPoint ul( rv_rect.x, rv_rect.y ), lr( rv_rect.x + rv_rect.width, rv_rect.y + rv_rect.height );
     double dlat_min, dlat_max, dlon_min, dlon_max;

@@ -76,6 +76,8 @@ public:
     std::map<int, Track*> m_persistent_tracks;
     
 private:
+    wxString ProcessNMEA4Tags( wxString msg);
+    
     void OnActivate(wxActivateEvent& event);
     void OnTimerAIS(wxTimerEvent& event);
     void OnTimerAISAudio(wxTimerEvent& event);

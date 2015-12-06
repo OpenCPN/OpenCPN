@@ -337,11 +337,29 @@ IF(OPENGL_FOUND)
     SET(wxWidgets_USE_LIBS gl ${wxWidgets_USE_LIBS} )
     INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR})
 
-    MESSAGE (STATUS "Found OpenGL..." )
-    MESSAGE (STATUS "    Lib: " ${OPENGL_LIBRARIES})
-    MESSAGE (STATUS "    Include: " ${OPENGL_INCLUDE_DIR})
+    MESSAGE (STATUS "Found OpenGL...." )
+    MESSAGE (STATUS "    GL Lib: " ${OPENGL_LIBRARIES})
+    MESSAGE (STATUS "    GL Include: " ${OPENGL_INCLUDE_DIR})
     ADD_DEFINITIONS(-DocpnUSE_GL)
     ADD_DEFINITIONS(-DUSE_GLU_TESS)
+
+    # We need to remove GLU from the OPENGL_LIBRARIES list
+    FOREACH (_currentLibFile ${OPENGL_LIBRARIES})
+        #MESSAGE (STATUS "    Lib File: " ${_currentLibFile})
+        SET(UCNAME ${_currentLibFile})
+        string(TOUPPER ${UCNAME} UCNAME)
+        IF(NOT ${UCNAME} MATCHES   "(.*)GLU(.*)")
+            SET( REVISED_OPENGL_LIBRARIES ${_currentLibFile} ${REVISED_OPENGL_LIBRARIES}) 
+        ENDIF()
+    ENDFOREACH (_currentLibFile )
+
+    MESSAGE (STATUS "    Adding local GLU" )
+    add_subdirectory(src/glu)
+
+    SET( OPENGL_LIBRARIES "GLU_static" ${REVISED_OPENGL_LIBRARIES}) 
+    MESSAGE (STATUS "    Revised GL Lib: " ${OPENGL_LIBRARIES})
+   
+
 
 ELSE(OPENGL_FOUND)
     MESSAGE (STATUS "OpenGL not found..." )
@@ -366,7 +384,20 @@ ENDIF(MSYS)
 
 INCLUDE(${wxWidgets_USE_FILE})
     MESSAGE (STATUS "Found wxWidgets..." )
-    MESSAGE (STATUS "${wxWidgets_LIBRARIES}")
+    MESSAGE (STATUS " wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
+    
+    # We need to remove GLU from the wxWidgets_LIBRARIES list
+    # It only appears to get on the list for MSW...
+    FOREACH (_currentLibFile ${wxWidgets_LIBRARIES})
+        SET(UCNAME ${_currentLibFile})
+        string(TOUPPER ${UCNAME} UCNAME)
+        IF(NOT ${UCNAME} MATCHES   "(.*)GLU(.*)")
+            SET( REVISED_wxWidgets_LIBRARIES  ${REVISED_wxWidgets_LIBRARIES} ${_currentLibFile}) 
+        ENDIF()
+    ENDFOREACH (_currentLibFile )
+    SET( wxWidgets_LIBRARIES ${REVISED_wxWidgets_LIBRARIES}) 
+
+    MESSAGE (STATUS " Revised wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
 ENDIF(NOT QT_ANDROID)
 
 MESSAGE (STATUS "")
@@ -1433,7 +1464,6 @@ ENDIF()
 
 
 
-
 If(NOT APPLE AND NOT QT_ANDROID)
 TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
       NMEA0183
@@ -1445,7 +1475,8 @@ ENDIF(NOT APPLE AND NOT QT_ANDROID)
 IF(WIN32)
 TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
 	setupapi.lib
-	glu32.lib
+#	glu32.lib
+        "GLU_static"
         psapi.lib
         )
 
@@ -1723,7 +1754,6 @@ SET(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_CURRENT_BINARY_DIR};${PACKAGE_NAME};AL
 SET(CPACK_PACKAGE_EXECUTABLES ${PACKAGE_NAME} "OpenCPN")
 
 
-
 IF(WIN32 AND NOT UNIX)
   # There is a bug in NSI that does not handle full unix paths properly. Make
   # sure there is at least one set of four (4) backlasshes.
@@ -1840,8 +1870,15 @@ IF(NOT SKIP_VERSION_CONFIG)
 ENDIF(NOT SKIP_VERSION_CONFIG)
 ENDIF(WIN32 AND NOT UNIX)
 
+#IF(NOT SKIP_VERSION_CONFIG)
+#   configure_file(version.h.in ${CMAKE_SOURCE_DIR}/include/version.h)
+#ENDIF(NOT SKIP_VERSION_CONFIG)
+
+#  Do the version.h configuration into the build output directory,
+#  thereby allowing building from a read-only source tree.
 IF(NOT SKIP_VERSION_CONFIG)
-   configure_file(version.h.in ${CMAKE_SOURCE_DIR}/include/version.h)
+    configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/include/version.h)
+    INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/include)
 ENDIF(NOT SKIP_VERSION_CONFIG)
 
 # this dummy target is necessary to make sure the ADDITIONAL_MAKE_CLEAN_FILES directive is executed.

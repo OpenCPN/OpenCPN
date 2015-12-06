@@ -1808,6 +1808,17 @@ wxArrayString PlugInManager::GetPlugInChartClassNameArray(void)
     return array;
 }
 
+bool PlugInManager::IsPlugInAvailable(wxString commonName)
+{
+    for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++) {
+        PlugInContainer *pic = plugin_array.Item(i);
+        if(pic && pic->m_bEnabled && (pic->m_common_name == commonName) )
+            return true;
+    }
+    
+    return false;
+}
+
 
 
 //----------------------------------------------------------------------------------------------------------
@@ -1970,6 +1981,21 @@ bool GetGlobalColor(wxString colorName, wxColour *pcolour)
 wxFont *OCPNGetFont(wxString TextElement, int default_size)
 {
     return FontMgr::Get().GetFont(TextElement, default_size);
+}
+
+wxFont *GetOCPNScaledFont_PlugIn(wxString TextElement, int default_size)
+{
+    return GetOCPNScaledFont( TextElement, default_size );
+}
+
+wxFont GetOCPNGUIScaledFont_PlugIn(wxString item)
+{
+    return GetOCPNGUIScaledFont( item );
+}
+
+wxColour GetFontColour_PlugIn(wxString TextElement)
+{
+    return FontMgr::Get().GetFontColor( TextElement );
 }
 
 wxString *GetpSharedDataLocation(void)

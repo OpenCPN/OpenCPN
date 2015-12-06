@@ -484,6 +484,13 @@ wxSize                    options_lastWindowSize( 0,0 );
 
 bool                      g_bSleep;
 
+int                       g_grad_default;
+wxColour                  g_border_color_default;
+int                       g_border_size_default;
+int                       g_sash_size_default;
+wxColour                  g_caption_color_default;
+wxColour                  g_sash_color_default;
+
 bool GetMemoryStatus(int *mem_total, int *mem_used);
 
 #ifdef __WXMSW__
@@ -550,6 +557,8 @@ bool                      g_bTrackActive;
 bool                      g_bTrackCarryOver;
 bool                      g_bDeferredStartTrack;
 bool                      g_bTrackDaily;
+int                       g_track_rotate_time;
+int                       g_track_rotate_time_type;
 bool                      g_bHighliteTracks;
 int                       g_route_line_width;
 int                       g_track_line_width;
@@ -657,6 +666,9 @@ int                       g_GPU_MemSize;
 
 bool                      g_bserial_access_checked;
 wxString                  g_uiStyle;
+
+//      Values returned from WMM_PI for variation computation request
+double                    gQueryVar;
 
 
 char bells_sound_file_name[2][12] = { "1bells.wav", "2bells.wav" };
@@ -1741,9 +1753,18 @@ bool MyApp::OnInit()
     g_pi_manager = new PlugInManager( gFrame );
 
     g_pauimgr = new wxAuiManager;
-//        g_pauidockart= new wxAuiDefaultDockArt;
-//        g_pauimgr->SetArtProvider(g_pauidockart);
-
+    g_pauidockart= new wxAuiDefaultDockArt;
+    g_pauimgr->SetArtProvider(g_pauidockart);
+        
+    g_grad_default = g_pauidockart->GetMetric(wxAUI_DOCKART_GRADIENT_TYPE);
+    g_border_color_default = g_pauidockart->GetColour(wxAUI_DOCKART_BORDER_COLOUR );
+    g_border_size_default = g_pauidockart->GetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE );
+    g_sash_size_default = g_pauidockart->GetMetric(wxAUI_DOCKART_SASH_SIZE);
+    g_caption_color_default = g_pauidockart->GetColour(wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR);
+    g_sash_color_default = g_pauidockart->GetColour(wxAUI_DOCKART_SASH_COLOUR );
+    
+        
+         
 // tell wxAuiManager to manage the frame
     g_pauimgr->SetManagedWindow( gFrame );
 
@@ -2035,7 +2056,8 @@ extern ocpnGLOptions g_GLOptions;
 
     gFrame->DoChartUpdate();
 
-    FontMgr::Get().ScrubList(); // is this needed?
+    // Remove to allow restoration of font information for objects created by plugins
+    //FontMgr::Get().ScrubList(); // is this needed?
 
 //      Start up the ticker....
     gFrame->FrameTimer1.Start( TIMER_GFRAME_1, wxTIMER_CONTINUOUS );
@@ -2303,6 +2325,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
         wxFrame( frame, -1, title, pos, size, style ) //wxSIMPLE_BORDER | wxCLIP_CHILDREN | wxRESIZE_BORDER)
 //wxCAPTION | wxSYSTEM_MENU | wxRESIZE_BORDER
 {
+    m_last_track_rotation_ts = 0;
     m_ulLastNEMATicktime = 0;
 
     m_pStatusBar = NULL;
@@ -2505,6 +2528,29 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
             break;
     }
 
+    
+    if( cs == GLOBAL_COLOR_SCHEME_DUSK || cs == GLOBAL_COLOR_SCHEME_NIGHT ) {
+        g_pauidockart->SetMetric(wxAUI_DOCKART_GRADIENT_TYPE, wxAUI_GRADIENT_NONE);
+        
+        g_pauidockart->SetColour(wxAUI_DOCKART_BORDER_COLOUR, wxColour(0,0,0));
+        g_pauidockart->SetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE, 1);
+        g_pauidockart->SetColour(wxAUI_DOCKART_SASH_COLOUR, wxColour(0,0,0));
+        g_pauidockart->SetMetric(wxAUI_DOCKART_SASH_SIZE, 0);
+        g_pauidockart->SetColour(wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR, wxColour(0,0,0));
+        
+    }
+    else{
+        g_pauidockart->SetMetric(wxAUI_DOCKART_GRADIENT_TYPE, g_grad_default);
+        g_pauidockart->SetColour(wxAUI_DOCKART_BORDER_COLOUR, g_border_color_default);
+        g_pauidockart->SetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE, g_border_size_default);
+        g_pauidockart->SetColour(wxAUI_DOCKART_SASH_COLOUR, g_sash_color_default);
+        g_pauidockart->SetMetric(wxAUI_DOCKART_SASH_SIZE, g_sash_size_default);
+        g_pauidockart->SetColour(wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR, g_caption_color_default);
+    
+    }
+    
+    g_pauimgr->Update();
+    
     g_StyleManager->GetCurrentStyle()->SetColorScheme( cs );
     cc1->GetWorldBackgroundChart()->SetColorScheme( cs );
 
@@ -4420,7 +4466,48 @@ Track *MyFrame::TrackOff( bool do_add_point )
     return return_val;
 }
 
-void MyFrame::TrackMidnightRestart( void )
+bool MyFrame::ShouldRestartTrack( void )
+{
+    if( !g_pActiveTrack || !g_bTrackDaily)
+        return false;
+    time_t now = wxDateTime::Now().GetTicks();
+    time_t today = wxDateTime::Today().GetTicks();
+    int rotate_at = 0;
+    switch( g_track_rotate_time_type )
+    {
+        case TIME_TYPE_LMT:
+            rotate_at = g_track_rotate_time + wxRound(gLon * 3600. / 15.);
+            break;
+        case TIME_TYPE_COMPUTER:
+            rotate_at = g_track_rotate_time;
+            break;
+        case TIME_TYPE_UTC:
+            int utc_offset = wxDateTime::Now().GetTicks() - wxDateTime::Now().ToUTC().GetTicks();
+            rotate_at = g_track_rotate_time + utc_offset;
+            break;
+    }
+    if( rotate_at > 86400 )
+        rotate_at -= 86400;
+    else if (rotate_at < 0 )
+        rotate_at += 86400;
+    if( now >= m_last_track_rotation_ts + 86400 - 3600 &&
+        now - today >= rotate_at )
+    {
+        if( m_last_track_rotation_ts == 0 )
+        {
+            if( now - today > rotate_at)
+                m_last_track_rotation_ts = today + rotate_at;
+            else
+                m_last_track_rotation_ts = today + rotate_at - 86400;
+            return false;
+        }
+        m_last_track_rotation_ts = now;
+        return true;
+    }
+    return false;
+}
+
+void MyFrame::TrackDailyRestart( void )
 {
     if( !g_pActiveTrack )
         return;
@@ -4457,8 +4544,13 @@ void MyFrame::ToggleCourseUp( void )
         }
         g_COGAvg = stuff;
         gFrame->FrameCOGTimer.Start( 100, wxTIMER_CONTINUOUS );
-    } else
-        cc1->SetVPRotation(0); /* reset to north up */
+    } else {
+        if ( !g_bskew_comp && (fabs(cc1->GetVPSkew()) > 0.0001))
+            cc1->SetVPRotation(cc1->GetVPSkew());
+        else
+            cc1->SetVPRotation(0); /* reset to north up */
+    }
+
 
     SetMenubarItemState( ID_MENU_CHART_COGUP, g_bCourseUp );
     SetMenubarItemState( ID_MENU_CHART_NORTHUP, !g_bCourseUp );
@@ -6284,9 +6376,6 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
             wxLogMessage( navmsg );
             g_loglast_time = lognow;
 
-            if( hourLOC == 0 && minuteLOC == 0 && g_bTrackDaily )
-                TrackMidnightRestart();
-
             int bells = ( hourLOC % 4 ) * 2;     // 2 bells each hour
             if( minuteLOC != 0 ) bells++;       // + 1 bell on 30 minutes
             if( !bells ) bells = 8;     // 0 is 8 bells
@@ -6297,6 +6386,9 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
             }
         }
     }
+    
+    if( ShouldRestartTrack() )
+        TrackDailyRestart();
 
     if(g_bSleep){
         FrameTimer1.Start( TIMER_GFRAME_1, wxTIMER_CONTINUOUS );
@@ -6468,6 +6560,58 @@ double MyFrame::GetTrueOrMag(double a)
         return a;
 }
 
+double MyFrame::GetTrueOrMag(double a, double lat, double lon)
+{
+    if( g_bShowMag ){
+        if(g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"))){
+            
+            // Request variation at a specific lat/lon
+            
+            // Note that the requested value is returned sometime later in the event stream,
+            // so there may be invalid data returned on the first call to this method.
+            // In the case of rollover windows, the value is requested continuously, so will be correct very soon.
+            wxDateTime now = wxDateTime::Now();
+            SendJSON_WMM_Var_Request(lat, lon, now);
+            
+            if((a - gQueryVar) >360.)
+                return (a - gQueryVar - 360.);
+            else
+                return ((a - gQueryVar) >= 0.) ? (a - gQueryVar) : (a - gQueryVar + 360.);
+        }
+        else if(!wxIsNaN(gVar)){
+            if((a - gVar) >360.)
+                return (a - gVar - 360.);
+            else
+                return ((a - gVar) >= 0.) ? (a - gVar) : (a - gVar + 360.);
+        }
+        else{
+            if((a - g_UserVar) >360.)
+                return (a - g_UserVar - 360.);
+            else
+                return ((a - g_UserVar) >= 0.) ? (a - g_UserVar) : (a - g_UserVar + 360.);
+        }
+    }
+    else
+        return a;
+}
+
+bool MyFrame::SendJSON_WMM_Var_Request(double lat, double lon, wxDateTime date)
+{
+    if(g_pi_manager){
+        wxJSONValue v;
+        v[_T("Lat")] = lat;
+        v[_T("Lon")] = lon;
+        v[_T("Year")] = date.GetYear();
+        v[_T("Month")] = date.GetMonth();
+        v[_T("Day")] = date.GetDay();
+    
+        g_pi_manager->SendJSONMessageToAllPlugins(_T("WMM_VARIATION_REQUEST"), v);
+        return true;
+    }
+    else
+        return false;
+}    
+    
 void MyFrame::TouchAISActive( void )
 {
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
@@ -6573,8 +6717,6 @@ void MyFrame::DoCOGSet( void )
 
     double old_VPRotate = g_VPRotate;
     g_VPRotate = -g_COGAvg * PI / 180.;
-    if(!g_bskew_comp)
-        g_VPRotate -= cc1->GetVPSkew();
 
     cc1->SetVPRotation( g_VPRotate );
     bool bnew_chart = DoChartUpdate();
@@ -6981,9 +7123,18 @@ void MyFrame::SelectChartFromStack( int index, bool bDir, ChartTypeEnum New_Type
         }
 
         double best_scale = GetBestVPScale( Current_Ch );
+        double rotation = cc1->GetVPRotation();
+        double oldskew = cc1->GetVPSkew();
+        double newskew = Current_Ch->GetChartSkew() * PI / 180.0;
 
-        cc1->SetViewPoint( zLat, zLon, best_scale, Current_Ch->GetChartSkew() * PI / 180.,
-                cc1->GetVPRotation() );
+        if (!g_bskew_comp) {
+            if (fabs(oldskew) > 0.0001)
+                rotation = 0.0;
+            if (fabs(newskew) > 0.0001)
+                rotation = newskew;
+        }
+
+        cc1->SetViewPoint( zLat, zLon, best_scale, newskew, rotation );
 
         SetChartUpdatePeriod( cc1->GetVP() );
 
@@ -7057,10 +7208,9 @@ void MyFrame::SetChartUpdatePeriod( ViewPort &vp )
 
     g_ChartUpdatePeriod = 1;            // General default
 
-    if( !vp.b_quilt ) {
-        if( g_bskew_comp && ( fabs( vp.skew ) ) > 0.01 ) g_ChartUpdatePeriod =
-                g_SkewCompUpdatePeriod;
-    }
+    if (!g_bopengl && !vp.b_quilt)
+        if ( fabs(vp.skew) > 0.0001)
+            g_ChartUpdatePeriod = g_SkewCompUpdatePeriod;
 
     m_ChartUpdatePeriod = g_ChartUpdatePeriod;
 }
@@ -8117,6 +8267,31 @@ void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
             gVar = decl_val;
         }
     }
+    
+    if(message_ID == _T("WMM_VARIATION"))
+    {
+        
+        // construct the JSON root object
+        wxJSONValue  root;
+        // construct a JSON parser
+        wxJSONReader reader;
+        
+        // now read the JSON text and store it in the 'root' structure
+        // check for errors before retreiving values...
+        int numErrors = reader.Parse( message_JSONText, &root );
+        if ( numErrors > 0 )  {
+            //              const wxArrayString& errors = reader.GetErrors();
+            return;
+        }
+        
+        // get the DECL value from the JSON message
+        wxString decl = root[_T("Decl")].AsString();
+        double decl_val;
+        decl.ToDouble(&decl_val);
+        
+        gQueryVar = decl_val;
+    }
+    
 
     if(message_ID == _T("OCPN_TRACK_REQUEST"))
     {
@@ -10632,7 +10807,7 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
 
         "Table:NIGHT", "GREEN1; 30; 80; 30;", "GREEN2; 15; 60; 15;", "GREEN3; 12; 23;  9;",
         "GREEN4;  0; 64;  0;", "BLUE1;  60; 60;100;", "BLUE2;  22; 22; 85;", "BLUE3;   0;  0; 40;",
-        "GREY1;  48; 48; 48;", "GREY2;  64; 64; 64;", "RED1;  100; 50; 50;", "UWHIT; 255;255;255;",
+        "GREY1;  48; 48; 48;", "GREY2;  32; 32; 32;", "RED1;  100; 50; 50;", "UWHIT; 255;255;255;",
         "UBLCK;   0;  0;  0;", "URED;   60; 27;  5;", "UGREN;  17; 55; 10;", "YELO1;  60; 65; 12;",
         "YELO2;  32; 20;  0;", "TEAL1;   0; 32; 32;", "GREEN5; 44; 64; 0;",
         "DILG0;  80; 80; 80;",              // Dialog Background

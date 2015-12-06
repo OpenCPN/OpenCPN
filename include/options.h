@@ -33,6 +33,7 @@
 #include <wx/choice.h>
 #include <wx/collpane.h>
 #include <wx/clrpicker.h>
+#include <wx/timectrl.h>
 
 #include <vector>
 
@@ -168,7 +169,11 @@ enum {
   ID_SIZEMANUALRADIOBUTTON,
   ID_OPWAYPOINTRANGERINGS,
   xID_OK,
-  ID_BT_SCANTIMER
+  ID_BT_SCANTIMER,
+  ID_TRACKROTATETIME,
+  ID_TRACKROTATEUTC,
+  ID_TRACKROTATELMT,
+  ID_TRACKROTATECOMPUTER
 };
 
 /* Define an int bit field for dialog return value
@@ -350,7 +355,11 @@ class options : private Uncopyable,
   wxStaticText *m_stTalkerIdText;
   wxChoice *m_choiceBTDataSources, *m_choiceBaudRate, *m_choiceSerialProtocol;
   wxChoice *m_choicePriority, *m_choicePrecision;
-
+  
+  // For the Display\Units page
+  wxStaticText* itemStaticTextUserVar;
+  wxStaticText* itemStaticTextUserVar2;
+  
   wxGridSizer *gSizerNetProps, *gSizerSerProps;
   wxTextCtrl *m_tNetAddress, *m_tNetPort, *m_tFilterSec, *m_tcInputStc;
   wxTextCtrl *m_tcOutputStc, *m_TalkerIdText;
@@ -475,6 +484,8 @@ class options : private Uncopyable,
   wxCheckBox *pFullScreenToolbar, *pTransparentToolbar;
   wxCheckBox *pAdvanceRouteWaypointOnArrivalOnly, *pTrackShowIcon;
   wxCheckBox *pTrackDaily, *pTrackHighlite;
+  wxTimePickerCtrl *pTrackRotateTime;
+  wxRadioButton *pTrackRotateComputerTime, *pTrackRotateUTC, *pTrackRotateLMT;
   wxColourPickerCtrl *m_colourWaypointRangeRingsColour;
   wxSpinCtrl *pSoundDeviceIndex;
   wxArrayPtrVoid OBJLBoxArray;

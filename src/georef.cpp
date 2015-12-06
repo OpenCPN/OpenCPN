@@ -502,9 +502,9 @@ toPOLY(double lat, double lon, double lat0, double lon0, double *x, double *y)
       }
       else
       {
-          const double E = (lon - lon0) * DEGREE;
+          const double E = (lon - lon0) * DEGREE * sin(lat * DEGREE);
           const double cot = 1. / tan(lat * DEGREE);
-          *x = sin(E * sin((lat * DEGREE))) * cot;
+          *x = sin(E) * cot;
           *y = (lat * DEGREE) - (lat0 * DEGREE) + cot * (1. - cos(E));
 
           *x *= z;
@@ -546,8 +546,8 @@ fromPOLY(double x, double y, double lat0, double lon0, double *lat, double *lon)
             double dphi;
             do {
                   double tp = tan(lat3);
-                  dphi = ((yp) * (lat3 * tp + 1.) - lat3 - .5 * ( lat3 * lat3 + B) * tp);
-                  lat3 -= (dphi / ((lat3 - (yp)) / tp - 1.));
+                  dphi = (yp * (lat3 * tp + 1.) - lat3 - .5 * ( lat3 * lat3 + B) * tp) / ((lat3 - yp) / tp - 1.);
+                  lat3 -= dphi;
             } while (fabs(dphi) > CONV && --i);
             if (! i)
             {
