@@ -137,7 +137,6 @@ extern ChartStack *pCurrentStack;
 
 GLenum       g_texture_rectangle_format;
 
-extern bool g_bskew_comp;
 extern int g_memCacheLimit;
 extern bool g_bCourseUp;
 extern ChartBase *Current_Ch;
@@ -1135,10 +1134,12 @@ void glChartCanvas::SetupOpenGL()
     if( GetRendererString().Find( _T("Mali") ) != wxNOT_FOUND )
         bad_stencil_code = true;
 
-    if( GetRendererString().Find( _T("Generic") ) != wxNOT_FOUND ) {
-        wxLogMessage( _T("OpenGL-> Detected Generic renderer, disabling stencil buffer") );
-        bad_stencil_code = true;
-    }
+    //XP  Generic Needs stencil buffer
+    //W7 Generic Needs stencil buffer    
+//      if( GetRendererString().Find( _T("Generic") ) != wxNOT_FOUND ) {
+//          wxLogMessage( _T("OpenGL-> Detected Generic renderer, disabling stencil buffer") );
+//          bad_stencil_code = true;
+//      }
     
     //          Seen with intel processor on VBox Win7
     if( GetRendererString().Find( _T("Chromium") ) != wxNOT_FOUND ) {
@@ -1576,8 +1577,7 @@ void glChartCanvas::MultMatrixViewPort(ViewPort &vp, float lat, float lon)
     }
 
     double rotation = vp.rotation;
-    if (!g_bskew_comp && vp.skew)
-        rotation += vp.skew;
+
     if (rotation)
         glRotatef(rotation*180/PI, 0, 0, 1);
 }
@@ -1897,10 +1897,8 @@ void glChartCanvas::GridDraw( )
 
     ViewPort &vp = cc1->GetVP();
 
-    if (!g_bskew_comp && (fabs(vp.skew) > 0.0001)) return;
-
     // TODO: make minor grid work all the time
-    bool minorgrid = fabs( vp.rotation ) < 0.0001 && ( g_bskew_comp || fabs( vp.skew ) < 0.0001) &&
+    bool minorgrid = fabs( vp.rotation ) < 0.0001 &&
         vp.m_projection_type == PROJECTION_MERCATOR;
 
     double nlat, elon, slat, wlon;
@@ -2383,9 +2381,12 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
             draw_color = SHIP_NORMAL;
         else if( SHIP_LOWACCURACY == cc1->m_ownship_state )
             draw_color = SHIP_LOWACCURACY;
-       
+
         if(!ownship_tex || (draw_color != ownship_color)) { /* initial run, create texture for ownship,
                               also needed at colorscheme changes (not implemented) */
+                              
+            ownship_color = draw_color;
+            
             if(ownship_tex)
                 glDeleteTextures(1, &ownship_tex);
             
@@ -2662,8 +2663,6 @@ void glChartCanvas::DrawCloseMessage(wxString msg)
 void glChartCanvas::RotateToViewPort(const ViewPort &vp)
 {
     float angle = vp.rotation;
-    if(g_bskew_comp)
-        angle -= vp.skew;
 
     if( fabs( angle ) > 0.0001 )
     {
@@ -3047,9 +3046,6 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, L
 {
     ChartBaseBSB *pBSBChart = dynamic_cast<ChartBaseBSB*>( chart );
     if( !pBSBChart ) return;
-
-    double skew_norm = chart->GetChartSkew();
-    if( skew_norm > 180. ) skew_norm -= 360.;
 
     double scalefactor = pBSBChart->GetRasterScaleFactor(vp);
 
@@ -3830,6 +3826,8 @@ void glChartCanvas::SetColorScheme(ColorScheme cs)
     glDeleteTextures(1, &m_currentTex);
     m_tideTex = 0;
     m_currentTex = 0;
+    ownship_color = -1;
+    
 }
 
 bool glChartCanvas::TextureCrunch(double factor)
@@ -4085,12 +4083,11 @@ void glChartCanvas::Render()
 
             int dx, dy;
             bool accelerated_pan = false;
-            if(g_GLOptions.m_bUseAcceleratedPanning && m_cache_vp.IsValid()
-//               && (VPoint.b_quilt || (Current_Ch && Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR))
-               && (VPoint.m_projection_type == PROJECTION_MERCATOR ||
-                   VPoint.m_projection_type == PROJECTION_EQUIRECTANGULAR) 
-               && m_cache_vp.pix_height == VPoint.pix_height
-               /* && (!g_bskew_comp || fabs( VPoint.skew ) == 0.0 )*/) {
+            if( g_GLOptions.m_bUseAcceleratedPanning && m_cache_vp.IsValid()
+                && ( VPoint.m_projection_type == PROJECTION_MERCATOR
+                || VPoint.m_projection_type == PROJECTION_EQUIRECTANGULAR )
+                && m_cache_vp.pix_height == VPoint.pix_height )
+            {
                 wxPoint2DDouble c_old = VPoint.GetDoublePixFromLL( VPoint.clat, VPoint.clon );
                 wxPoint2DDouble c_new = m_cache_vp.GetDoublePixFromLL( VPoint.clat, VPoint.clon );
 

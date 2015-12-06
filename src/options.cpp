@@ -177,6 +177,8 @@ extern double g_n_arrival_circle_radius;
 
 extern bool g_bEnableZoomToCursor;
 extern bool g_bTrackDaily;
+extern int g_track_rotate_time;
+extern int g_track_rotate_time_type;
 extern bool g_bHighliteTracks;
 extern double g_TrackIntervalSeconds;
 extern double g_TrackDeltaDistance;
@@ -2467,12 +2469,29 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
   wxStaticBox* trackText =
       new wxStaticBox(itemPanelShip, wxID_ANY, _("Tracks"));
   wxStaticBoxSizer* trackSizer = new wxStaticBoxSizer(trackText, wxVERTICAL);
+  wxBoxSizer* trackSizer1 = new wxBoxSizer(wxHORIZONTAL);
   ownShip->Add(trackSizer, 0, wxGROW | wxALL, border_size);
 
   pTrackDaily = new wxCheckBox(itemPanelShip, ID_DAILYCHECKBOX,
-                               _("Automatic Daily Tracks"));
-  trackSizer->Add(pTrackDaily, 1, wxALL, border_size);
+                               _("Automatic Daily Tracks at"));
+  trackSizer1->Add(pTrackDaily, 0, wxALIGN_CENTER_VERTICAL|wxRIGHT, border_size);
+    
+  trackSizer1->Add( 0, 0, 1, wxEXPAND, 0 );
+  
+  pTrackRotateTime = new wxTimePickerCtrl( itemPanelShip, ID_TRACKROTATETIME, wxDateTime((time_t)g_track_rotate_time).ToUTC(), wxDefaultPosition, wxDefaultSize, 0 );
+  trackSizer1->Add( pTrackRotateTime, 0, wxALIGN_CENTER_VERTICAL|wxRIGHT, border_size );
+    
+  pTrackRotateComputerTime = new wxRadioButton( itemPanelShip, ID_TRACKROTATECOMPUTER, _("Computer"), wxDefaultPosition, wxDefaultSize, 0 );
+  trackSizer1->Add( pTrackRotateComputerTime, 0, wxALIGN_CENTER_VERTICAL|wxRIGHT, border_size );
+    
+  pTrackRotateUTC = new wxRadioButton( itemPanelShip, ID_TRACKROTATEUTC, _("UTC"), wxDefaultPosition, wxDefaultSize, 0 );
+  trackSizer1->Add( pTrackRotateUTC, 0, wxALIGN_CENTER_VERTICAL|wxRIGHT, border_size );
+    
+  pTrackRotateLMT = new wxRadioButton( itemPanelShip, ID_TRACKROTATELMT, _("LMT"), wxDefaultPosition, wxDefaultSize, 0 );
+  trackSizer1->Add( pTrackRotateLMT, 0, wxALIGN_CENTER_VERTICAL|wxRIGHT, border_size );
 
+  trackSizer->Add(trackSizer1, 1, wxEXPAND | wxALL, border_size);
+    
   pTrackHighlite =
       new wxCheckBox(itemPanelShip, ID_TRACKHILITE, _("Highlight Tracks"));
   trackSizer->Add(pTrackHighlite, 1, wxALL, border_size);
@@ -4505,90 +4524,111 @@ void options::CreateControls(void) {
   }
 #endif
 
-  m_topImgList = new wxImageList(40, 40, TRUE, 1);
+//  m_topImgList = new wxImageList(40, 40, TRUE, 1);
   ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 
-#ifndef __OCPN__ANDROID__
-  m_topImgList = new wxImageList(40, 40, TRUE, 1);
+  if(!g_bresponsive){
+    m_topImgList = new wxImageList(40, 40, TRUE, 1);
 
 #if wxCHECK_VERSION(2, 8, 12)
-  m_topImgList->Add(style->GetIcon(_T("Display")));
-  m_topImgList->Add(style->GetIcon(_T("Charts")));
-  m_topImgList->Add(style->GetIcon(_T("Connections")));
-  m_topImgList->Add(style->GetIcon(_T("Ship")));
-  m_topImgList->Add(style->GetIcon(_T("UI")));
-  m_topImgList->Add(style->GetIcon(_T("Plugins")));
+    m_topImgList->Add(style->GetIcon(_T("Display")));
+    m_topImgList->Add(style->GetIcon(_T("Charts")));
+    m_topImgList->Add(style->GetIcon(_T("Connections")));
+    m_topImgList->Add(style->GetIcon(_T("Ship")));
+    m_topImgList->Add(style->GetIcon(_T("UI")));
+    m_topImgList->Add(style->GetIcon(_T("Plugins")));
 #else
-  wxBitmap bmp;
-  wxImage img;
-  bmp = style->GetIcon(_T("Display"));
-  img = bmp.ConvertToImage();
-  img.ConvertAlphaToMask(128);
-  bmp = wxBitmap(img);
-  m_topImgList->Add(bmp);
-  bmp = style->GetIcon(_T("Charts"));
-  img = bmp.ConvertToImage();
-  img.ConvertAlphaToMask(128);
-  bmp = wxBitmap(img);
-  m_topImgList->Add(bmp);
-  bmp = style->GetIcon(_T("Connections"));
-  img = bmp.ConvertToImage();
-  img.ConvertAlphaToMask(128);
-  bmp = wxBitmap(img);
-  m_topImgList->Add(bmp);
-  bmp = style->GetIcon(_T("Ship"));
-  img = bmp.ConvertToImage();
-  img.ConvertAlphaToMask(128);
-  bmp = wxBitmap(img);
-  m_topImgList->Add(bmp);
-  bmp = style->GetIcon(_T("UI"));
-  img = bmp.ConvertToImage();
-  img.ConvertAlphaToMask(128);
-  bmp = wxBitmap(img);
-  m_topImgList->Add(bmp);
-  bmp = style->GetIcon(_T("Plugins"));
-  img = bmp.ConvertToImage();
-  img.ConvertAlphaToMask(128);
-  bmp = wxBitmap(img);
-  m_topImgList->Add(bmp);
+    wxBitmap bmp;
+    wxImage img;
+    bmp = style->GetIcon(_T("Display"));
+    img = bmp.ConvertToImage();
+    img.ConvertAlphaToMask(128);
+    bmp = wxBitmap(img);
+    m_topImgList->Add(bmp);
+    bmp = style->GetIcon(_T("Charts"));
+    img = bmp.ConvertToImage();
+    img.ConvertAlphaToMask(128);
+    bmp = wxBitmap(img);
+    m_topImgList->Add(bmp);
+    bmp = style->GetIcon(_T("Connections"));
+    img = bmp.ConvertToImage();
+    img.ConvertAlphaToMask(128);
+    bmp = wxBitmap(img);
+    m_topImgList->Add(bmp);
+    bmp = style->GetIcon(_T("Ship"));
+    img = bmp.ConvertToImage();
+    img.ConvertAlphaToMask(128);
+    bmp = wxBitmap(img);
+    m_topImgList->Add(bmp);
+    bmp = style->GetIcon(_T("UI"));
+    img = bmp.ConvertToImage();
+    img.ConvertAlphaToMask(128);
+    bmp = wxBitmap(img);
+    m_topImgList->Add(bmp);
+    bmp = style->GetIcon(_T("Plugins"));
+    img = bmp.ConvertToImage();
+    img.ConvertAlphaToMask(128);
+    bmp = wxBitmap(img);
+    m_topImgList->Add(bmp);
 #endif
+  }
+  else{
+    wxBitmap bmps;
+    bmps = style->GetIcon(_T("Display"));
+    int base_size = bmps.GetWidth();
+    double tool_size = base_size;
+    
+    double premult = 1.0;
+    
+    // unless overridden by user, we declare the "best" size
+    // to be roughly 6 mm square.
+    double target_size = 6.0;                // mm
+    
+    double basic_tool_size_mm = tool_size / g_Platform->GetDisplayDPmm();
+    premult = target_size / basic_tool_size_mm;
+    
+    //Adjust the scale factor using the global GUI scale parameter
+    double postmult =  exp( g_GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
+    postmult = wxMin(postmult, 3.0);
+    postmult = wxMax(postmult, 1.0);
+    
+    int sizeTab = base_size * postmult * premult;
+    
+    m_topImgList = new wxImageList(sizeTab, sizeTab, TRUE, 1);
 
-#else
-  m_topImgList = new wxImageList(80, 80, TRUE, 1);
-
-  wxBitmap bmp;
-  wxImage img, simg;
-  bmp = style->GetIcon(_T("Display"));
-  img = bmp.ConvertToImage();
-  simg = img.Scale(80, 80);
-  bmp = wxBitmap(simg);
-  m_topImgList->Add(bmp);
-  bmp = style->GetIcon(_T("Charts"));
-  img = bmp.ConvertToImage();
-  simg = img.Scale(80, 80);
-  bmp = wxBitmap(simg);
-  m_topImgList->Add(bmp);
-  bmp = style->GetIcon(_T("Connections"));
-  img = bmp.ConvertToImage();
-  simg = img.Scale(80, 80);
-  bmp = wxBitmap(simg);
-  m_topImgList->Add(bmp);
-  bmp = style->GetIcon(_T("Ship"));
-  img = bmp.ConvertToImage();
-  simg = img.Scale(80, 80);
-  bmp = wxBitmap(simg);
-  m_topImgList->Add(bmp);
-  bmp = style->GetIcon(_T("UI"));
-  img = bmp.ConvertToImage();
-  simg = img.Scale(80, 80);
-  bmp = wxBitmap(simg);
-  m_topImgList->Add(bmp);
-  bmp = style->GetIcon(_T("Plugins"));
-  img = bmp.ConvertToImage();
-  simg = img.Scale(80, 80);
-  bmp = wxBitmap(simg);
-  m_topImgList->Add(bmp);
-#endif
+    wxBitmap bmp;
+    wxImage img, simg;
+    bmp = style->GetIcon(_T("Display"));
+    img = bmp.ConvertToImage();
+    simg = img.Scale(sizeTab, sizeTab);
+    bmp = wxBitmap(simg);
+    m_topImgList->Add(bmp);
+    bmp = style->GetIcon(_T("Charts"));
+    img = bmp.ConvertToImage();
+    simg = img.Scale(sizeTab, sizeTab);
+    bmp = wxBitmap(simg);
+    m_topImgList->Add(bmp);
+    bmp = style->GetIcon(_T("Connections"));
+    img = bmp.ConvertToImage();
+    simg = img.Scale(sizeTab, sizeTab);
+    bmp = wxBitmap(simg);
+    m_topImgList->Add(bmp);
+    bmp = style->GetIcon(_T("Ship"));
+    img = bmp.ConvertToImage();
+    simg = img.Scale(sizeTab, sizeTab);
+    bmp = wxBitmap(simg);
+    m_topImgList->Add(bmp);
+    bmp = style->GetIcon(_T("UI"));
+    img = bmp.ConvertToImage();
+    simg = img.Scale(sizeTab, sizeTab);
+    bmp = wxBitmap(simg);
+    m_topImgList->Add(bmp);
+    bmp = style->GetIcon(_T("Plugins"));
+    img = bmp.ConvertToImage();
+    simg = img.Scale(sizeTab, sizeTab);
+    bmp = wxBitmap(simg);
+    m_topImgList->Add(bmp);
+  }
 
   m_pListbook->SetImageList(m_topImgList);
   itemBoxSizer2->Add(
@@ -4813,6 +4853,9 @@ void options::SetInitialSettings(void) {
       g_bAdvanceRouteWaypointOnArrivalOnly);
 
   pTrackDaily->SetValue(g_bTrackDaily);
+  pTrackRotateLMT->SetValue(g_track_rotate_time_type == TIME_TYPE_LMT);
+  pTrackRotateUTC->SetValue(g_track_rotate_time_type == TIME_TYPE_UTC);
+  pTrackRotateComputerTime->SetValue(g_track_rotate_time_type == TIME_TYPE_COMPUTER);
   pTrackHighlite->SetValue(g_bHighliteTracks);
 
   pTrackPrecision->SetSelection(g_nTrackPrecision);
@@ -5701,6 +5744,16 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_nTrackPrecision = pTrackPrecision->GetSelection();
 
   g_bTrackDaily = pTrackDaily->GetValue();
+  int h,m,s;
+  if( pTrackRotateTime->GetTime(&h, &m, &s) )
+  {
+      g_track_rotate_time = h*3600 + m*60 + s;
+      if( pTrackRotateUTC->GetValue() )
+          g_track_rotate_time_type = TIME_TYPE_UTC;
+      else if( pTrackRotateLMT->GetValue() )
+          g_track_rotate_time_type = TIME_TYPE_LMT;
+      else g_track_rotate_time_type = TIME_TYPE_COMPUTER;
+  }
   g_bHighliteTracks = pTrackHighlite->GetValue();
 
   g_bEnableZoomToCursor = pEnableZoomToCursor->GetValue();
