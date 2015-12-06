@@ -911,7 +911,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 					temp_importance += td->TCPA; //g_ScaledNumWeightTCPA + td->TCPA; 
 			}
 			
-			if (td->bCPA_Valid && ( 5*td->CPA < g_ScaledNumWeightCPA )) temp_importance += g_ScaledNumWeightCPA - (5*td->CPA);
+			if (td->bCPA_Valid && ( 20*td->CPA < g_ScaledNumWeightCPA )) temp_importance += g_ScaledNumWeightCPA - (20*td->CPA);
 													 
 			if ( sqrt(td->Range_NM) < (double)g_ScaledNumWeightRange/32 ) temp_importance += (double)g_ScaledNumWeightRange - sqrt(td->Range_NM)*32;
 			
