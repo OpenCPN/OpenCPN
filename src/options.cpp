@@ -382,7 +382,10 @@ bool OCPNCheckedListCtrl::IsChecked(int index) {
 }
 
 void OCPNCheckedListCtrl::Clear() {
-  m_list.DeleteContents(true);
+  for(int i=0 ; i < m_list.GetCount() ; i++){
+      wxCheckBox* cb = m_list[i];
+      delete cb;
+  }
   m_list.Clear();
 }
 
@@ -887,6 +890,7 @@ options::~options(void) {
   delete m_pGroupArray;
   delete m_topImgList;
   delete smallFont;
+  
 }
 
 void options::RecalculateSize(void) {
@@ -938,7 +942,8 @@ void options::Init(void) {
   k_plugins = 0;
   k_tides = 0;
   smallFont = 0;
-
+  m_pConfig = NULL;
+  
   activeSizer = NULL;
   itemActiveChartStaticBox = NULL;
 
@@ -979,8 +984,6 @@ void options::Init(void) {
   m_BTscanning = 0;
 
   dialogFont = GetOCPNScaledFont(_("Dialog"));
-
-  ps57CtlListBox = NULL;
 
   // This variable is used by plugin callback function AddOptionsPage
   g_pOptions = this;
@@ -4722,15 +4725,18 @@ void options::SetInitialSettings(void) {
   // ChartsLoad
   int nDir = m_CurrentDirList.GetCount();
 
-  for (int i = 0; i < nDir; ++i) {
-    wxString dirname = m_CurrentDirList.Item(i).fullpath;
-    if (!dirname.IsEmpty() && pActiveChartsList) {
-      pActiveChartsList->Append(dirname);
+  if (pActiveChartsList) {
+    pActiveChartsList->Clear();
+    for (int i = 0; i < nDir; ++i) {
+        wxString dirname = m_CurrentDirList.Item(i).fullpath;
+        if (!dirname.IsEmpty() && pActiveChartsList) {
+            pActiveChartsList->Append(dirname);
+        }
     }
   }
 
   // ChartGroups
-  if (pActiveChartsList) {
+  if (pActiveChartsList && m_pWorkDirList) {
     UpdateWorkArrayFromTextCtl();
     groupsPanel->SetDBDirs(*m_pWorkDirList);
 
@@ -6006,9 +6012,9 @@ void options::Finish(void) {
     if (nb) nb->ChangeSelection(0);
   }
 
-  delete pActiveChartsList;
-  delete ps57CtlListBox;
-  delete tcDataSelected;
+  //delete pActiveChartsList;
+  //delete ps57CtlListBox;
+  //delete tcDataSelected;
 
   lastWindowPos = GetPosition();
   lastWindowSize = GetSize();
@@ -6062,8 +6068,8 @@ void options::OnCancelClick(wxCommandEvent& event) {
         wxListbookEventHandler(options::OnChartsPageChange), NULL, this);
 
   m_pListbook->ChangeSelection(0);
-  delete pActiveChartsList;
-  delete ps57CtlListBox;
+  //delete pActiveChartsList;
+  //delete ps57CtlListBox;
 
   lastWindowPos = GetPosition();
   lastWindowSize = GetSize();
@@ -6084,8 +6090,8 @@ void options::OnClose(wxCloseEvent& event) {
         wxListbookEventHandler(options::OnChartsPageChange), NULL, this);
 
   m_pListbook->ChangeSelection(0);
-  delete pActiveChartsList;
-  delete ps57CtlListBox;
+  //delete pActiveChartsList;
+  //delete ps57CtlListBox;
 
   lastWindowPos = GetPosition();
   lastWindowSize = GetSize();
