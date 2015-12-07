@@ -141,6 +141,8 @@ extern bool g_bAISShowTracks;
 extern double g_AISShowTracks_Mins;
 extern bool g_bShowMoored;
 extern double g_ShowMoored_Kts;
+extern bool g_bShowScaled;
+extern int g_ShowScaled_Num;
 extern bool g_bAIS_CPA_Alert;
 extern bool g_bAIS_CPA_Alert_Audio;
 extern wxString g_sAIS_Alert_Sound_File;
@@ -4124,6 +4126,14 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
   pDisplayGrid->Add(m_pText_Moored_Speed, 1, wxALL | wxALIGN_RIGHT,
                     group_item_spacing);
 
+  m_pCheck_Scale_Priority = new wxCheckBox(
+      panelAIS, -1, _("If more then ... targets, scale down the less important ones"));
+  pDisplayGrid->Add(m_pCheck_Scale_Priority, 1, wxALL, group_item_spacing);
+
+  m_pText_Scale_Priority = new wxTextCtrl(panelAIS, -1);
+  pDisplayGrid->Add(m_pText_Scale_Priority, 1, wxALL | wxALIGN_RIGHT,
+                    group_item_spacing);
+  
   m_pCheck_Show_Area_Notices = new wxCheckBox(
       panelAIS, -1, _("Show area notices (from AIS binary messages)"));
   pDisplayGrid->Add(m_pCheck_Show_Area_Notices, 1, wxALL, group_item_spacing);
@@ -4208,7 +4218,7 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
   m_pCheck_Alert_Moored = new wxCheckBox(
       panelAIS, -1, _("Supress Alerts for anchored/moored targets"));
   pAlertGrid->Add(m_pCheck_Alert_Moored, 1, wxALL, group_item_spacing);
-
+  
   wxStaticText* pStatic_Dummy2 = new wxStaticText(panelAIS, -1, _T(""));
   pAlertGrid->Add(pStatic_Dummy2, 1, wxALL, group_item_spacing);
 
@@ -4917,6 +4927,11 @@ void options::SetInitialSettings(void) {
 
   s.Printf(_T("%4.1f"), g_ShowMoored_Kts);
   m_pText_Moored_Speed->SetValue(s);
+  
+  m_pCheck_Scale_Priority->SetValue(g_bShowScaled);
+  
+  s.Printf(_T("%i"), g_ShowScaled_Num);
+  m_pText_Scale_Priority->SetValue(s);
 
   m_pCheck_Show_Area_Notices->SetValue(g_bShowAreaNotices);
 
@@ -5807,6 +5822,11 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
   g_bShowMoored = !m_pCheck_Show_Moored->GetValue();
   m_pText_Moored_Speed->GetValue().ToDouble(&g_ShowMoored_Kts);
+  
+  g_bShowScaled = m_pCheck_Scale_Priority->GetValue();
+  long l;
+  m_pText_Scale_Priority->GetValue().ToLong(&l);
+  g_ShowScaled_Num = (int)l;
 
   g_bShowAreaNotices = m_pCheck_Show_Area_Notices->GetValue();
   g_bDrawAISSize = m_pCheck_Draw_Target_Size->GetValue();
