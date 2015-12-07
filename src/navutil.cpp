@@ -184,6 +184,8 @@ extern double           g_ShowCOG_Mins;
 extern bool             g_bAISShowTracks;
 extern bool             g_bTrackCarryOver;
 extern bool             g_bTrackDaily;
+extern int              g_track_rotate_time;
+extern int              g_track_rotate_time_type;
 extern double           g_AISShowTracks_Mins;
 extern bool             g_bShowMoored;
 extern double           g_ShowMoored_Kts;
@@ -1397,6 +1399,8 @@ int MyConfig::LoadMyConfig()
 
     Read( _T ( "StartWithTrackActive" ), &g_bTrackCarryOver, 0 );
     Read( _T ( "AutomaticDailyTracks" ), &g_bTrackDaily, 0 );
+    Read( _T ( "TrackRotateAt" ), &g_track_rotate_time, 0 );
+    Read( _T ( "TrackRotateTimeType" ), &g_track_rotate_time_type, TIME_TYPE_COMPUTER );
     Read( _T ( "HighlightTracks" ), &g_bHighliteTracks, 1 );
 
     wxString stps;
@@ -2613,6 +2617,8 @@ void MyConfig::UpdateSettings()
 
     Write( _T ( "StartWithTrackActive" ), g_bTrackCarryOver );
     Write( _T ( "AutomaticDailyTracks" ), g_bTrackDaily );
+    Write( _T ( "TrackRotateAt" ), g_track_rotate_time );
+    Write( _T ( "TrackRotateTimeType" ), g_track_rotate_time_type );
     Write( _T ( "HighlightTracks" ), g_bHighliteTracks );
 
     Write( _T ( "InitialStackIndex" ), g_restore_stackindex );

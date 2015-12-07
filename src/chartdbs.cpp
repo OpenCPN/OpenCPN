@@ -2624,7 +2624,13 @@ void ChartDatabase::ApplyGroupArray(ChartGroupArray *pGroupArray)
                   for(unsigned int j=0; j < pGroup->m_element_array.GetCount(); j++)
                   {
                         wxString element_root = pGroup->m_element_array.Item(j)->m_element_name;
-                        element_root.Append(wxFileName::GetPathSeparator());	// Prevent comingling similar looking path names
+                        
+                        //  The element may be a full single chart name
+                        //  If so, add it
+                        //  Otherwise, append a sep character so that similar paths are distinguished.
+                        //  See FS#1060
+                        if(!chart_full_path->IsSameAs(element_root))
+                            element_root.Append(wxFileName::GetPathSeparator());	// Prevent comingling similar looking path names
                         if(chart_full_path->StartsWith(element_root))
                         {
                               bool b_add = true;

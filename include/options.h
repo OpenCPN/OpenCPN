@@ -33,7 +33,9 @@
 #include <wx/choice.h>
 #include <wx/collpane.h>
 #include <wx/clrpicker.h>
-
+#if wxCHECK_VERSION(2, 9, 0)
+ #include <wx/timectrl.h>
+#endif
 #include <vector>
 
 #if wxCHECK_VERSION(2, 9, 0)
@@ -168,7 +170,11 @@ enum {
   ID_SIZEMANUALRADIOBUTTON,
   ID_OPWAYPOINTRANGERINGS,
   xID_OK,
-  ID_BT_SCANTIMER
+  ID_BT_SCANTIMER,
+  ID_TRACKROTATETIME,
+  ID_TRACKROTATEUTC,
+  ID_TRACKROTATELMT,
+  ID_TRACKROTATECOMPUTER
 };
 
 /* Define an int bit field for dialog return value
@@ -479,6 +485,10 @@ class options : private Uncopyable,
   wxCheckBox *pFullScreenToolbar, *pTransparentToolbar;
   wxCheckBox *pAdvanceRouteWaypointOnArrivalOnly, *pTrackShowIcon;
   wxCheckBox *pTrackDaily, *pTrackHighlite;
+#if wxCHECK_VERSION(2, 9, 0)
+  wxTimePickerCtrl *pTrackRotateTime;
+#endif  
+  wxRadioButton *pTrackRotateComputerTime, *pTrackRotateUTC, *pTrackRotateLMT;
   wxColourPickerCtrl *m_colourWaypointRangeRingsColour;
   wxSpinCtrl *pSoundDeviceIndex;
   wxArrayPtrVoid OBJLBoxArray;

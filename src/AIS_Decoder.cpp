@@ -250,12 +250,37 @@ void AIS_Decoder::BuildERIShipTypeHash(void)
       make_hash_ERI(1910, _("Hydrofoil"));
 }
 
+
+//----------------------------------------------------------------------------------
+//     Strip NMEA V4 tags from message
+//----------------------------------------------------------------------------------
+wxString AIS_Decoder::ProcessNMEA4Tags( wxString msg)
+{
+    int idxFirst =  msg.Find('\\');
+    
+    if(wxNOT_FOUND == idxFirst)
+        return msg;
+    
+    if(idxFirst < (int)msg.Length()-1){
+        int idxSecond = msg.Mid(idxFirst + 1).Find('\\') + 1;
+        if(wxNOT_FOUND != idxSecond){
+            if(idxSecond < (int)msg.Length()-1){
+                
+               // wxString tag = msg.Mid(idxFirst+1, (idxSecond - idxFirst) -1);
+                return msg.Mid(idxSecond + 1);
+            }
+        }
+    }
+    
+    return msg;
+}
+
 //----------------------------------------------------------------------------------
 //     Handle events from AIS DataStream
 //----------------------------------------------------------------------------------
 void AIS_Decoder::OnEvtAIS( OCPN_DataStreamEvent& event )
 {
-    wxString message = wxString(event.GetNMEAString().c_str(), wxConvUTF8);
+    wxString message = ProcessNMEA4Tags(wxString(event.GetNMEAString().c_str(), wxConvUTF8) );
 
     int nr = 0;
     if( !message.IsEmpty() )
