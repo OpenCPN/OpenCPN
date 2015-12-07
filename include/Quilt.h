@@ -58,6 +58,7 @@ public:
     {
         b_include = false;
         b_eclipsed = false;
+        b_locked = false;
     }
 
     LLRegion &GetCandidateRegion();
@@ -66,6 +67,7 @@ public:
     int ChartScale;
     bool b_include;
     bool b_eclipsed;
+    bool b_locked;
     
 private:    
     LLRegion candidate_region;

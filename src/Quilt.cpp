@@ -1366,7 +1366,15 @@ bool Quilt::Compose( const ViewPort &vp_in )
     m_bbusy = true;
     
     ChartData->UnLockCache();
-    ChartData->UnLockAllCacheCharts();
+    // unlocked only charts owned by the Quilt
+    for(unsigned int ir = 0; ir < m_pcandidate_array->GetCount(); ir++ ) {
+        QuiltCandidate *pqc = m_pcandidate_array->Item( ir );
+        if (pqc->b_locked == true) {
+            ChartData->UnLockCacheChart(pqc->dbIndex);
+            pqc->b_locked = false;
+        }
+    }
+
     
     ViewPort vp_local = vp_in;                   // need a non-const copy
 
@@ -1890,21 +1898,32 @@ bool Quilt::Compose( const ViewPort &vp_in )
     //  thus causing performance loss on recursion
     //  We will (always??) get a refresh on the new Quilt anyway...
     cc1->EnablePaint(false);
-    
+
+    //  first lock charts already in the cache
+    //  otherwise under memory pressure if chart1 and chart2
+    //  are in the quilt loading chart1 could evict chart2
+    //  
     for( ir = 0; ir < m_pcandidate_array->GetCount(); ir++ ) {
         QuiltCandidate *pqc = m_pcandidate_array->Item( ir );
         if( ( pqc->b_include ) && ( !pqc->b_eclipsed ) )
+            pqc->b_locked = ChartData->LockCacheChart( pqc->dbIndex );
+    }
+
+    // open charts not in the cache
+    for( ir = 0; ir < m_pcandidate_array->GetCount(); ir++ ) {
+        QuiltCandidate *pqc = m_pcandidate_array->Item( ir );
+        if( ( pqc->b_include ) && ( !pqc->b_eclipsed ) ) {
 //         I am fairly certain this test can now be removed
 //            with improved smooth movement logic
 //            if( !ChartData->IsChartInCache( pqc->dbIndex ) )
 //                b_stop_movement = true;
-
-            ChartData->OpenChartFromDBAndLock( pqc->dbIndex, FULL_INIT );
-//              ChartData->OpenChartFromDB( pqc->dbIndex, FULL_INIT );
+            // only lock chart if not already locked
+            if (ChartData->OpenChartFromDBAndLock( pqc->dbIndex, FULL_INIT, !pqc->b_locked ))
+                pqc->b_locked = true;
         }
+    }
 
     cc1->EnablePaint(true);
-    
     //    Build and maintain the array of indexes in this quilt
 
     m_last_index_array = m_index_array;       //save the last one for delta checks
