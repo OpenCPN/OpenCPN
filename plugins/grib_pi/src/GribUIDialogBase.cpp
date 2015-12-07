@@ -373,7 +373,7 @@ CursorDataBase::CursorDataBase( wxWindow* parent, wxWindowID id, const wxPoint& 
 	fgSizer30->SetFlexibleDirection( wxBOTH );
 	fgSizer30->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_ALL );
 
-	m_stTrackingText = new wxStaticText( this, wxID_ANY, _("MyLabel"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_stTrackingText = new wxStaticText( this, wxID_ANY, _T("MyLabel"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_stTrackingText->Wrap( -1 );
 	fgSizer30->Add( m_stTrackingText, 0, wxEXPAND|wxLEFT, 5 );
 
@@ -1025,16 +1025,16 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	fgSizer47->SetFlexibleDirection( wxBOTH );
 	fgSizer47->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
-	m_rbCurDataAttaWCap = new wxRadioButton( m_scSetGuiPanel, wxID_ANY, _("Only one Dialog with a title/drag bar"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+	m_rbCurDataAttaWCap = new wxRadioButton( m_scSetGuiPanel, wxID_ANY, _("Data at cursor dialog is attached to icons bar - with a title/drag bar"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
 	fgSizer47->Add( m_rbCurDataAttaWCap, 0, wxALL, 5 );
 
-	m_rbCurDataAttaWoCap = new wxRadioButton( m_scSetGuiPanel, wxID_ANY, _("Only one Dialog without title/drag bar"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_rbCurDataAttaWoCap = new wxRadioButton( m_scSetGuiPanel, wxID_ANY, _("Data at cursor dialog is attached to icons bar - without a title/drag bar"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer47->Add( m_rbCurDataAttaWoCap, 0, wxALL, 5 );
 
-	m_rbCurDataIsolHoriz = new wxRadioButton( m_scSetGuiPanel, wxID_ANY, _("Two separated Dialogs - horizontal Cursor Data display"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_rbCurDataIsolHoriz = new wxRadioButton( m_scSetGuiPanel, wxID_ANY, _("Data at cursor dialog is isolated and dispayed horizontally"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer47->Add( m_rbCurDataIsolHoriz, 0, wxALL, 5 );
 
-	m_rbCurDataIsolVertic = new wxRadioButton( m_scSetGuiPanel, wxID_ANY, _("Two separated Dialogs - vertical Cursor Data display"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_rbCurDataIsolVertic = new wxRadioButton( m_scSetGuiPanel, wxID_ANY, _("Data at cursor dialog is isolated and dispayed vertically"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer47->Add( m_rbCurDataIsolVertic, 0, wxALL, 5 );
 
 
@@ -1047,7 +1047,7 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	m_fgSetGuiSizer->Add( 0, 0, 1, wxALL, 5 );
 
 	wxStaticBoxSizer* sbSizer10;
-	sbSizer10 = new wxStaticBoxSizer( new wxStaticBox( m_scSetGuiPanel, wxID_ANY, _("Buttons/Ctrl Visibility") ), wxVERTICAL );
+	sbSizer10 = new wxStaticBoxSizer( new wxStaticBox( m_scSetGuiPanel, wxID_ANY, _("Buttons Visibility") ), wxVERTICAL );
 
 	wxFlexGridSizer* fgSizer52;
 	fgSizer52 = new wxFlexGridSizer( 0, 4, 0, 0 );
@@ -1061,7 +1061,7 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	fgSizer52->Add( 0, 0, 1, wxEXPAND, 5 );
 
 	wxStaticText* m_staticText44;
-	m_staticText44 = new wxStaticText( m_scSetGuiPanel, wxID_ANY, _("Attached Dialog"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText44 = new wxStaticText( m_scSetGuiPanel, wxID_ANY, _("Only one Dialog"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText44->Wrap( -1 );
 	fgSizer52->Add( m_staticText44, 0, wxBOTTOM|wxLEFT|wxRIGHT, 5 );
 

@@ -226,14 +226,14 @@ void CursorData::PopulateTrackingControls( bool vertical )
                 .Append( m_gparent.m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::GEO_ALTITUDE) )
                 );
     m_tcWindSpeed->SetToolTip( _("Wind Speed at") + t.Prepend( _T(" ") ) );
-    m_tcWindSpeedBf->SetToolTip( _("Wind Speed in at") + t.Prepend( _T(" ") ) );
+    m_tcWindSpeedBf->SetToolTip( _("Wind Speed in Bf at") + t.Prepend( _T(" ") ) );
     m_tcWindDirection->SetToolTip( _("Wind Direction at") + t );
 
     t.Printf( _T(" %1.*f ") + m_gparent.m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::GEO_ALTITUDE), lev == (int) lev ? 0 : 1, lev );
     m_tcWindGust->SetToolTip( _("Wind Gust at") + t );
 
     if( m_gparent.m_pTimelineSet ) {
-        wxString s[] = { _T(" "), _("Air Temperature at"), _("Surface level"), _("Sea Surface Temperature") };
+        wxString s[] = { _T(" "), _("Air Temperature at"), _("surface level"), _("Sea Surface Temperature") };
 
         lev = m_gparent.m_OverlaySettings.CalibrateValue(GribOverlaySettings::GEO_ALTITUDE, 2 );      //convert 2m in current altitude unit
         t.Printf( m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(1000 + NORWAY_METNO) != wxNOT_FOUND ? s[0] + s[2]
