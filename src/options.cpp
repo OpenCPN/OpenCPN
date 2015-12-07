@@ -382,7 +382,10 @@ bool OCPNCheckedListCtrl::IsChecked(int index) {
 }
 
 void OCPNCheckedListCtrl::Clear() {
-  m_list.DeleteContents(true);
+  for(unsigned int i=0 ; i < m_list.GetCount() ; i++){
+      wxCheckBox* cb = m_list[i];
+      delete cb;
+  }
   m_list.Clear();
 }
 
@@ -887,6 +890,7 @@ options::~options(void) {
   delete m_pGroupArray;
   delete m_topImgList;
   delete smallFont;
+  
 }
 
 void options::RecalculateSize(void) {
@@ -938,7 +942,8 @@ void options::Init(void) {
   k_plugins = 0;
   k_tides = 0;
   smallFont = 0;
-
+  m_pConfig = NULL;
+  
   activeSizer = NULL;
   itemActiveChartStaticBox = NULL;
 
@@ -979,8 +984,6 @@ void options::Init(void) {
   m_BTscanning = 0;
 
   dialogFont = GetOCPNScaledFont(_("Dialog"));
-
-  ps57CtlListBox = NULL;
 
   // This variable is used by plugin callback function AddOptionsPage
   g_pOptions = this;
@@ -2473,13 +2476,17 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
   ownShip->Add(trackSizer, 0, wxGROW | wxALL, border_size);
 
   pTrackDaily = new wxCheckBox(itemPanelShip, ID_DAILYCHECKBOX,
-                               _("Automatic Daily Tracks at"));
+                               _("Automatic Daily Tracks at midnight"));
+  
   trackSizer1->Add(pTrackDaily, 0, wxALIGN_CENTER_VERTICAL|wxRIGHT, border_size);
     
   trackSizer1->Add( 0, 0, 1, wxEXPAND, 0 );
   
+#if wxCHECK_VERSION(2, 9, 0)
+  pTrackDaily->SetLabel(_("Automatic Daily Tracks at"));
   pTrackRotateTime = new wxTimePickerCtrl( itemPanelShip, ID_TRACKROTATETIME, wxDateTime((time_t)g_track_rotate_time).ToUTC(), wxDefaultPosition, wxDefaultSize, 0 );
   trackSizer1->Add( pTrackRotateTime, 0, wxALIGN_CENTER_VERTICAL|wxRIGHT, border_size );
+#endif
     
   pTrackRotateComputerTime = new wxRadioButton( itemPanelShip, ID_TRACKROTATECOMPUTER, _("Computer"), wxDefaultPosition, wxDefaultSize, 0 );
   trackSizer1->Add( pTrackRotateComputerTime, 0, wxALIGN_CENTER_VERTICAL|wxRIGHT, border_size );
@@ -4722,15 +4729,18 @@ void options::SetInitialSettings(void) {
   // ChartsLoad
   int nDir = m_CurrentDirList.GetCount();
 
-  for (int i = 0; i < nDir; ++i) {
-    wxString dirname = m_CurrentDirList.Item(i).fullpath;
-    if (!dirname.IsEmpty() && pActiveChartsList) {
-      pActiveChartsList->Append(dirname);
+  if (pActiveChartsList) {
+    pActiveChartsList->Clear();
+    for (int i = 0; i < nDir; ++i) {
+        wxString dirname = m_CurrentDirList.Item(i).fullpath;
+        if (!dirname.IsEmpty() && pActiveChartsList) {
+            pActiveChartsList->Append(dirname);
+        }
     }
   }
 
   // ChartGroups
-  if (pActiveChartsList) {
+  if (pActiveChartsList && m_pWorkDirList) {
     UpdateWorkArrayFromTextCtl();
     groupsPanel->SetDBDirs(*m_pWorkDirList);
 
@@ -5744,16 +5754,21 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_nTrackPrecision = pTrackPrecision->GetSelection();
 
   g_bTrackDaily = pTrackDaily->GetValue();
+
+  g_track_rotate_time = 0;
+#if wxCHECK_VERSION(2, 9, 0)
   int h,m,s;
   if( pTrackRotateTime->GetTime(&h, &m, &s) )
-  {
       g_track_rotate_time = h*3600 + m*60 + s;
-      if( pTrackRotateUTC->GetValue() )
-          g_track_rotate_time_type = TIME_TYPE_UTC;
-      else if( pTrackRotateLMT->GetValue() )
-          g_track_rotate_time_type = TIME_TYPE_LMT;
-      else g_track_rotate_time_type = TIME_TYPE_COMPUTER;
-  }
+#endif
+
+    if( pTrackRotateUTC->GetValue() )
+        g_track_rotate_time_type = TIME_TYPE_UTC;
+    else if( pTrackRotateLMT->GetValue() )
+        g_track_rotate_time_type = TIME_TYPE_LMT;
+    else g_track_rotate_time_type = TIME_TYPE_COMPUTER;
+
+
   g_bHighliteTracks = pTrackHighlite->GetValue();
 
   g_bEnableZoomToCursor = pEnableZoomToCursor->GetValue();
@@ -6006,9 +6021,9 @@ void options::Finish(void) {
     if (nb) nb->ChangeSelection(0);
   }
 
-  delete pActiveChartsList;
-  delete ps57CtlListBox;
-  delete tcDataSelected;
+  //delete pActiveChartsList;
+  //delete ps57CtlListBox;
+  //delete tcDataSelected;
 
   lastWindowPos = GetPosition();
   lastWindowSize = GetSize();
@@ -6062,8 +6077,8 @@ void options::OnCancelClick(wxCommandEvent& event) {
         wxListbookEventHandler(options::OnChartsPageChange), NULL, this);
 
   m_pListbook->ChangeSelection(0);
-  delete pActiveChartsList;
-  delete ps57CtlListBox;
+  //delete pActiveChartsList;
+  //delete ps57CtlListBox;
 
   lastWindowPos = GetPosition();
   lastWindowSize = GetSize();
@@ -6084,8 +6099,8 @@ void options::OnClose(wxCloseEvent& event) {
         wxListbookEventHandler(options::OnChartsPageChange), NULL, this);
 
   m_pListbook->ChangeSelection(0);
-  delete pActiveChartsList;
-  delete ps57CtlListBox;
+  //delete pActiveChartsList;
+  //delete ps57CtlListBox;
 
   lastWindowPos = GetPosition();
   lastWindowSize = GetSize();
