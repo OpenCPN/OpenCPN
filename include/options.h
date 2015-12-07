@@ -33,8 +33,9 @@
 #include <wx/choice.h>
 #include <wx/collpane.h>
 #include <wx/clrpicker.h>
-#include <wx/timectrl.h>
-
+#if wxCHECK_VERSION(2, 9, 0)
+ #include <wx/timectrl.h>
+#endif
 #include <vector>
 
 #if wxCHECK_VERSION(2, 9, 0)
@@ -484,7 +485,9 @@ class options : private Uncopyable,
   wxCheckBox *pFullScreenToolbar, *pTransparentToolbar;
   wxCheckBox *pAdvanceRouteWaypointOnArrivalOnly, *pTrackShowIcon;
   wxCheckBox *pTrackDaily, *pTrackHighlite;
+#if wxCHECK_VERSION(2, 9, 0)
   wxTimePickerCtrl *pTrackRotateTime;
+#endif  
   wxRadioButton *pTrackRotateComputerTime, *pTrackRotateUTC, *pTrackRotateLMT;
   wxColourPickerCtrl *m_colourWaypointRangeRingsColour;
   wxSpinCtrl *pSoundDeviceIndex;
