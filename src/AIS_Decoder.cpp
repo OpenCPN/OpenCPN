@@ -2195,12 +2195,11 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
 
     it = ( *current_targets ).begin();
     while( it != ( *current_targets ).end() ) {
-        bool b_new_it = false;
 
         AIS_Target_Data *td = it->second;
 
         if( NULL == td )                        // This should never happen, but I saw it once....
-                {
+        {
             current_targets->erase( it );
             break;                          // leave the loop
         }
@@ -2238,14 +2237,11 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
                     current_targets->erase( it );
                     delete td;
 
-                    //      Reset the iterator on item erase.
-                    it = ( *current_targets ).begin();
-                    b_new_it = true;
                 }
             }
         }
 
-        if( !b_new_it ) ++it;
+		++it;
     }
 
     UpdateAllCPA();
