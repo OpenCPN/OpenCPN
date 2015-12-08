@@ -1083,7 +1083,7 @@ void ocpnDC::DrawText( const wxString &text, wxCoord x, wxCoord y )
 }
 
 void ocpnDC::GetTextExtent( const wxString &string, wxCoord *w, wxCoord *h, wxCoord *descent,
-        wxCoord *externalLeading, wxFont *font ) const
+        wxCoord *externalLeading, wxFont *font )
 {
     //  Give at least reasonable results on failure.
     if(w) *w = 100;
@@ -1093,10 +1093,13 @@ void ocpnDC::GetTextExtent( const wxString &string, wxCoord *w, wxCoord *h, wxCo
     else {
         wxFont f = m_font;
         if( font ) f = *font;
-
+#ifndef __WXMAC__
+        m_texfont.Build( f );      // make sure the font is ready
+        m_texfont.GetTextExtent(string, w, h);
+#else
         wxMemoryDC temp_dc;
         temp_dc.GetTextExtent( string, w, h, descent, externalLeading, &f );
-        
+#endif
      }
      
      //  Sometimes GetTextExtent returns really wrong, uninitialized results.
