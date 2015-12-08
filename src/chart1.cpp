@@ -5253,6 +5253,12 @@ int MyFrame::DoOptionsDialog()
     if (NMEALogWindow::Get().Active())
         NMEALogWindow::Get().GetTTYWindow()->Raise();
 
+    //  Force reload of options dialog to pick up font changes
+    if(rr & FONT_CHANGED){
+        delete g_options;
+        g_options = NULL;
+    }
+
     return ret_val;
 }
 

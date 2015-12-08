@@ -4726,6 +4726,8 @@ void options::SetColorScheme(ColorScheme cs) {
 void options::SetInitialSettings(void) {
   wxString s;
 
+  m_returnChanges = 0;                  // reset the flags
+  
   // ChartsLoad
   int nDir = m_CurrentDirList.GetCount();
 
@@ -5479,8 +5481,6 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
   StopBTScan();
 
-  m_returnChanges = 0;
-
   // Start with the stuff that requires intelligent validation.
 
   if (m_pShipIconType->GetSelection() > 0) {
@@ -6156,6 +6156,7 @@ void options::OnChooseFont(wxCommandEvent& event) {
     wxColor color = font_data.GetColour();
     FontMgr::Get().SetFont(sel_text_element, psfont, color);
     pParent->UpdateAllFonts();
+    m_returnChanges |= FONT_CHANGED;
   }
 
   event.Skip();
@@ -6183,6 +6184,7 @@ void options::OnChooseFontColor(wxCommandEvent& event) {
     FontMgr::Get().SetFont(sel_text_element, pif, color);
 
     pParent->UpdateAllFonts();
+    m_returnChanges |= FONT_CHANGED;
   }
 
   event.Skip();
