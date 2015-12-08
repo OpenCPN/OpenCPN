@@ -539,7 +539,7 @@ void BuildCompressedCache()
         wxString CompressedCacheFilePath = CompressedCachePath(filename);
         double distance = ct_array.Item(j).distance;
 
-        ChartBase *pchart = ChartData->OpenChartFromDB( filename, FULL_INIT );
+        ChartBase *pchart = ChartData->OpenChartFromDBAndLock( filename, FULL_INIT );
         if(!pchart) /* probably a corrupt chart */
             continue;
 
