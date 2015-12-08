@@ -2108,8 +2108,10 @@ void ocpnToolBarSimple::EnableTool( int id, bool enable )
             DoEnableTool( tool, enable );
         }
     }
+    
     wxMenuItem* configItem = g_FloatingToolbarConfigMenu->FindItem( id );
-    configItem->Check( true );
+    if(configItem)
+        configItem->Check( true );
 }
 
 void ocpnToolBarSimple::SetToolBitmaps( int id, wxBitmap *bmp, wxBitmap *bmpRollover )

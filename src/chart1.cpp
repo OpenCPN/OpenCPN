@@ -3101,6 +3101,9 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         return;
     }
 
+    if(g_options)
+        delete g_options;
+    
     //  If the multithread chart compressor engine is running, cancel the close command
     if( b_inCompressAllCharts ) {
         return;
@@ -5121,7 +5124,8 @@ int MyFrame::DoOptionsDialog()
 
     g_Platform->ShowBusySpinner();
 
-    g_options = new options( this, -1, _("Options") );
+    if(NULL == g_options)
+        g_options = new options( this, -1, _("Options") );
 
     g_Platform->HideBusySpinner();
 
@@ -5246,11 +5250,14 @@ int MyFrame::DoOptionsDialog()
 
     g_boptionsactive = false;
 
-    delete g_options;
-    g_options = NULL;
-
     if (NMEALogWindow::Get().Active())
         NMEALogWindow::Get().GetTTYWindow()->Raise();
+
+    //  Force reload of options dialog to pick up font changes
+    if(rr & FONT_CHANGED){
+        delete g_options;
+        g_options = NULL;
+    }
 
     return ret_val;
 }
@@ -5880,6 +5887,9 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
     switch(m_iInitCount++) {
     case 0:
     {
+        if( g_toolbar )
+            g_toolbar->EnableTool( ID_SETTINGS, false );
+        
         // Set persistent Fullscreen mode
         g_Platform->SetFullscreen(g_bFullscreen);
         
@@ -5970,7 +5980,9 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
         g_pi_manager->LoadAllPlugIns( g_Platform->GetPluginDir(), true, false );
 
         RequestNewToolbar();
-
+        if( g_toolbar )
+            g_toolbar->EnableTool( ID_SETTINGS, false );
+        
         wxString perspective;
         pConfig->SetPath( _T ( "/AUI" ) );
         pConfig->Read( _T ( "AUIPerspective" ), &perspective );
@@ -6003,14 +6015,29 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
         break;
     }
 
-    default:
+    case 3:
     {
-        // Last call....
-
         if(g_FloatingToolbarDialog){
             g_FloatingToolbarDialog->SetAutoHide(g_bAutoHideToolbar);
             g_FloatingToolbarDialog->SetAutoHideTimer(g_nAutoHideToolbar);
         }
+        
+        break;
+    }
+
+    case 4:
+    {
+        g_options = new options( this, -1, _("Options") );
+ 
+        if( g_toolbar )
+            g_toolbar->EnableTool( ID_SETTINGS, true );
+        
+        break;
+    }
+
+    default:
+    {
+        // Last call....
 
         InitTimer.Stop(); // Initialization complete
         break;
