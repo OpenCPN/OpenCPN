@@ -111,6 +111,12 @@ static wxString TToString( const wxDateTime date_time, const int time_zone )
    as a possible optimization, write this function to also
    take latitude longitude boundaries so the resulting record can be
    a subset of the input, but also would need to be recomputed when panning the screen */
+GribTimelineRecordSet::GribTimelineRecordSet()
+{
+    for(int i=0; i<Idx_COUNT; i++)
+        m_IsobarArray[i] = NULL;
+}
+#if 0
 GribTimelineRecordSet::GribTimelineRecordSet(GribRecordSet &GRS1, GribRecordSet &GRS2, double interp_const)
 {
     for(int i=0; i<Idx_COUNT; i++) {
@@ -156,7 +162,7 @@ GribTimelineRecordSet::GribTimelineRecordSet(GribRecordSet &GRS1, GribRecordSet 
     m_Reference_Time = (1-interp_const)*GRS1.m_Reference_Time
         + interp_const*GRS2.m_Reference_Time;
 }
-
+#endif
 
 GribTimelineRecordSet::~GribTimelineRecordSet()
 {
@@ -1055,43 +1061,84 @@ wxDateTime GRIBUICtrlBar::MinTime()
 
 GribTimelineRecordSet* GRIBUICtrlBar::GetTimeLineRecordSet(wxDateTime time)
 {
-    unsigned int i, im1;
     ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
 
     if(rsa->GetCount() == 0)
         return NULL;
 
-    wxDateTime curtime;
-    for(i=0; i<rsa->GetCount(); i++) {
-        GribRecordSet &cur=rsa->Item(i);
-        curtime = cur.m_Reference_Time;
-        if(curtime >= time)
-            break;
+    GribTimelineRecordSet *set = new GribTimelineRecordSet;
+    for(int i=0; i<Idx_COUNT; i++) {
+        GribRecordSet *GRS1 = NULL, *GRS2 = NULL;
+        GribRecord *GR1 = NULL, *GR2 = NULL;
+        wxDateTime GR1time, GR2time;
+
+        // already computed using polar interpolation from first axis
+        if(set->m_GribRecordPtrArray[i])
+            continue;
+        
+        unsigned int j;
+        for(j=0; j<rsa->GetCount(); j++) {
+            GribRecordSet *GRS = &rsa->Item(j);
+            GribRecord *GR = GRS->m_GribRecordPtrArray[i];
+            if(!GR)
+                continue;
+            
+            wxDateTime curtime = GRS->m_Reference_Time;
+            if(curtime <= time)
+                GR1time = curtime, GRS1 = GRS, GR1 = GR;
+
+            if(curtime >= time) {
+                GR2time = curtime, GRS2 = GRS, GR2 = GR;
+                break;
+            }
+        }
+
+        if(!GR1 || !GR2)
+            continue;
+
+        wxDateTime mintime = MinTime();
+        double minute2 = (GR2time - mintime).GetMinutes();
+        double minute1 = (GR1time - mintime).GetMinutes();
+        double nminute = (time - mintime).GetMinutes();
+
+        if(minute2<minute1 || nminute < minute1 || nminute > minute2)
+            continue;
+
+        double interp_const;
+        if(minute1 == minute2) {
+            set->m_GribRecordPtrArray[i] = new GribRecord(*GR1);
+            continue;
+        } else
+            interp_const = (nminute-minute1) / (minute2-minute1);
+
+        /* if this is a vector interpolation use the 2d method */
+        if(i < Idx_WIND_VY) {
+            GribRecord *GR1y = GRS1->m_GribRecordPtrArray[i + Idx_WIND_VY];
+            GribRecord *GR2y = GRS2->m_GribRecordPtrArray[i + Idx_WIND_VY];
+            if(GR1y && GR2y) {
+                set->m_GribRecordPtrArray[i] = GribRecord::Interpolated2DRecord
+                    (set->m_GribRecordPtrArray[i + Idx_WIND_VY], *GR1, *GR1y, *GR2, *GR2y, interp_const);
+                continue;
+            }
+        } else if(i <= Idx_WIND_VY300)
+            continue;
+        else if(i == Idx_SEACURRENT_VX) {
+            GribRecord *GR1y = GRS1->m_GribRecordPtrArray[Idx_SEACURRENT_VY];
+            GribRecord *GR2y = GRS2->m_GribRecordPtrArray[Idx_SEACURRENT_VY];
+            if(GR1y && GR2y) {
+                set->m_GribRecordPtrArray[i] = GribRecord::Interpolated2DRecord
+                    (set->m_GribRecordPtrArray[Idx_SEACURRENT_VY], *GR1, *GR1y, *GR2, *GR2y, interp_const);
+                continue;
+            }
+        } else if(i == Idx_SEACURRENT_VY)
+            continue;
+
+        set->m_GribRecordPtrArray[i] = GribRecord::InterpolatedRecord(*GR1, *GR2, interp_const, i == Idx_WVDIR);
     }
-    if(i == 0)
-        im1 = 0;
-    else
-        im1 = i-1;
 
-    if(curtime == time) im1 = i;                            //no interpolation for record boundary
-
-    wxDateTime mintime = MinTime();
-    double minute2 = (curtime - mintime).GetMinutes();
-    curtime = rsa->Item(im1).m_Reference_Time;
-    double minute1 = (curtime - mintime).GetMinutes();
-    double nminute = (time - mintime).GetMinutes();
-
-    if(minute2<minute1 || nminute < minute1 || nminute > minute2)
-        return NULL;
-
-    double interp_const;
-    if(minute1 == minute2)
-        interp_const = 0;
-    else
-        interp_const = (nminute-minute1) / (minute2-minute1);
-
-    GribRecordSet &GRS1 = rsa->Item(im1), &GRS2 = rsa->Item(i);
-    return new GribTimelineRecordSet(GRS1, GRS2, interp_const);
+    set->m_Reference_Time = time.GetTicks();
+    //(1-interp_const)*GRS1.m_Reference_Time + interp_const*GRS2.m_Reference_Time;
+    return set;
 }
 
 void GRIBUICtrlBar::OnTimeline( wxScrollEvent& event )

@@ -70,7 +70,8 @@ enum ZoneSelection { AUTO_SELECTION, START_SELECTION, DRAW_SELECTION, COMPLETE_S
 class GribTimelineRecordSet : public GribRecordSet
 {
 public:
-    GribTimelineRecordSet(GribRecordSet &GRS1, GribRecordSet &GRS2, double interp_const);
+    GribTimelineRecordSet();
+//    GribTimelineRecordSet(GribRecordSet &GRS1, GribRecordSet &GRS2, double interp_const);
     ~GribTimelineRecordSet();
 
     void ClearCachedData();
