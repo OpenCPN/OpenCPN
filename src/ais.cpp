@@ -1328,9 +1328,13 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 #ifdef ocpnUSE_GL
             wxColour c = target_brush.GetColour();
             glColor3ub(c.Red(), c.Green(), c.Blue());
-            glBegin(GL_TRIANGLE_STRIP);
-            for(int i=0; i<4; i++)
-                glVertex2i(ais_quad_icon[i].x + TargetPoint.x, ais_quad_icon[i].y  + TargetPoint.y);
+            glBegin(GL_TRIANGLE_FAN);
+
+            glVertex2i(ais_quad_icon[3].x + TargetPoint.x, ais_quad_icon[3].y  + TargetPoint.y);
+            glVertex2i(ais_quad_icon[0].x + TargetPoint.x, ais_quad_icon[0].y  + TargetPoint.y);
+            glVertex2i(ais_quad_icon[1].x + TargetPoint.x, ais_quad_icon[1].y  + TargetPoint.y);
+            glVertex2i(ais_quad_icon[2].x + TargetPoint.x, ais_quad_icon[2].y  + TargetPoint.y);
+            
             glEnd();
 
             glLineWidth(1);
