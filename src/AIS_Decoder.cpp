@@ -2194,6 +2194,8 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
     AIS_Target_Hash *current_targets = GetTargetList();
 
     it = ( *current_targets ).begin();
+    wxArrayInt remove_array;                    // collector for MMSI of targets to be removed
+    
     while( it != ( *current_targets ).end() ) {
         bool b_new_it = false;
 
@@ -2234,20 +2236,24 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
 
                 //      If we have not seen a static report in 3 times the removal spec,
                 //      then remove the target from all lists.
-                if( target_static_age > removelost_Mins * 60 * 3 ) {
-                    current_targets->erase( it );
-                    delete td;
-
-                    //      Reset the iterator on item erase.
-                    it = ( *current_targets ).begin();
-                    b_new_it = true;
-                }
+                if( target_static_age > removelost_Mins * 60 * 3 ) 
+                    remove_array.Add(td->MMSI);         //Add this target to removal list
             }
         }
 
-        if( !b_new_it ) ++it;
+        ++it;
     }
 
+    //  Remove all the targets collected in remove_array in one pass
+    for(unsigned int i=0 ; i < remove_array.GetCount() ; i++){
+        AIS_Target_Hash::iterator itd = current_targets->find( remove_array[i] );
+        if(itd != current_targets->end() ){
+            AIS_Target_Data *td = itd->second;
+            current_targets->erase(itd);
+            delete td;
+        }
+    }
+    
     UpdateAllCPA();
     UpdateAllAlarms();
 
