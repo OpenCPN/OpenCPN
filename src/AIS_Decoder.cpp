@@ -2194,13 +2194,13 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
     AIS_Target_Hash *current_targets = GetTargetList();
 
     it = ( *current_targets ).begin();
+	bool doNotInc = false;
     while( it != ( *current_targets ).end() ) {
-        bool b_new_it = false;
 
         AIS_Target_Data *td = it->second;
 
         if( NULL == td )                        // This should never happen, but I saw it once....
-                {
+        {
             current_targets->erase( it );
             break;                          // leave the loop
         }
@@ -2235,17 +2235,18 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
                 //      If we have not seen a static report in 3 times the removal spec,
                 //      then remove the target from all lists.
                 if( target_static_age > removelost_Mins * 60 * 3 ) {
-                    current_targets->erase( it );
+					doNotInc = true;
+					AIS_Target_Hash::iterator toBeDeleted = it++;
+                    current_targets->erase( toBeDeleted );
                     delete td;
 
-                    //      Reset the iterator on item erase.
-                    it = ( *current_targets ).begin();
-                    b_new_it = true;
                 }
             }
         }
-
-        if( !b_new_it ) ++it;
+		if ( doNotInc )
+			doNotInc = false;
+		else
+			++it;
     }
 
     UpdateAllCPA();
