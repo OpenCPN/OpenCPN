@@ -497,7 +497,7 @@ void ChartDldrPanelImpl::SetSource( int id )
     {
         pPlugIn->m_pChartSource = NULL;
     }
-    ::wxEndBusyCursor();                //wxSetCursor(wxCURSOR_DEFAULT);
+    if (::wxIsBusy()) ::wxEndBusyCursor();
 }
 
 void ChartDldrPanelImpl::SelectSource( wxListEvent& event )
