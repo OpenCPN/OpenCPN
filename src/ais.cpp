@@ -1147,7 +1147,6 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                                                            cc1->GetVP().pix_width, 0, cc1->GetVP().pix_height );
 
             if( res != Invisible ) {
-                if(dc.GetDC()) {
                     //    Draw a wider coloured line
                     wxPen wide_pen( target_brush.GetColour(), g_ais_cog_predictor_width );
                     dc.SetPen( wide_pen );
@@ -1160,11 +1159,11 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                         dc.StrokeLine( pixx, pixy, pixx1, pixy1 );
                     }
 
-                    dc.SetBrush( target_brush );
-                    dc.StrokeCircle( PredPoint.x, PredPoint.y, 5 );
-                } else {
 #ifdef ocpnUSE_GL
-                    // opengl optimized version
+
+/*
+                    // opengl optimized version, looks not as nice...
+                    
                     wxColour c = target_brush.GetColour();
                     glColor3ub(c.Red(), c.Green(), c.Blue());
                     float dx = pixx1 - pixx, dy = pixy1 - pixy;
@@ -1179,37 +1178,48 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
                     if( g_ais_cog_predictor_width > 1 ) {
                         //    Draw a 1 pixel wide black line
+                        glLineWidth( 1 );
                         glColor3ub(0, 0, 0);
-                    glEnable( GL_BLEND );
-                    glEnable( GL_LINE_SMOOTH );
+                        glEnable( GL_BLEND );
+                        glEnable( GL_LINE_SMOOTH );
                         glBegin(GL_LINES);
                         glVertex2i(pixx, pixy);
                         glVertex2i(pixx1, pixy1);
                         glEnd();
-                    glDisable( GL_LINE_SMOOTH );
-                    glDisable( GL_BLEND );
+                        glDisable( GL_LINE_SMOOTH );
+                        glDisable( GL_BLEND );
                         glColor3ub(c.Red(), c.Green(), c.Blue());
                     }
-
+*/
+#endif
+                    if(dc.GetDC()) {      
+                        dc.SetBrush( target_brush );
+                        dc.StrokeCircle( PredPoint.x, PredPoint.y, 5 );
+                    } else {
+#ifdef ocpnUSE_GL
+                        
                     // draw circle
-                    float points[] = {0.0, 5.0, 2.5, 4.33012701892219, 4.33012701892219, 2.5, 5.0,
-                                      0, 4.33012701892219, -2.5, 2.5, -4.33012701892219, 0, -5.0,
-                                      -2.5, -4.3301270189222, -4.33012701892219, -2.5, -5.0, 0,
-                                      -4.33012701892219, 2.5, -2.5, 4.33012701892219, 0, 5};
+                         float points[] = {0.0f, 5.0f, 2.5f, 4.330127f, 4.330127f, 2.5f, 5.0f,
+                                      0, 4.330127f, -2.5f, 2.5f, -4.330127f, 0, -5.1f,
+                                      -2.5f, -4.330127f, -4.330127f, -2.5f, -5.0f, 0,
+                                      -4.330127f, 2.5f, -2.5f, 4.330127f, 0, 5.0f};
+                                      
+                        wxColour c = target_brush.GetColour();
+                        glColor3ub(c.Red(), c.Green(), c.Blue());
+                                      
+                        glBegin(GL_TRIANGLE_FAN);
+                        for(unsigned int i=0; i<(sizeof points) / (sizeof *points); i+=2)
+                            glVertex2i(pixx1 + points[i], pixy1 + points[i+1]);
+                        glEnd();
 
-                    glBegin(GL_TRIANGLE_FAN);
-                    for(unsigned int i=0; i<(sizeof points) / (sizeof *points); i+=2)
-                        glVertex2i(pixx1 + points[i], pixy1 + points[i+1]);
-                    glEnd();
-
-                    glColor3ub(0, 0, 0);
-                    glLineWidth( 1 );
-                    glBegin(GL_LINE_LOOP);
-                    for(unsigned int i=0; i<(sizeof points) / (sizeof *points); i+=2)
-                        glVertex2i(pixx1 + points[i], pixy1 + points[i+1]);
-                    glEnd();
+                        glColor3ub(0, 0, 0);
+                        glLineWidth( 1 );
+                        glBegin(GL_LINE_LOOP);
+                        for(unsigned int i=0; i<(sizeof points) / (sizeof *points); i+=2)
+                            glVertex2i(pixx1 + points[i], pixy1 + points[i+1]);
+                        glEnd();
 #endif                    
-                }
+                    }
             }
 
             //      Draw RateOfTurn Vector
