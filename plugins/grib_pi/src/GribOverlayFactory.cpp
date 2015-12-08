@@ -473,7 +473,7 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
     }
     if( m_Altitude ) {
         if( ! m_Message_Hiden.IsEmpty() ) m_Message_Hiden.Append(_T("\n"));
-		m_Message_Hiden.Append(_("Warning : Data at")).Append(_T(" "))
+		m_Message_Hiden.Append(_("Warning : Data at Geopotential Height")).Append(_T(" "))
             .Append(m_Settings.GetAltitudeFromIndex(m_Altitude, m_Settings.Settings[GribOverlaySettings::PRESSURE].m_Units)).Append(_T(" "))
             .Append(m_Settings.GetUnitSymbol(GribOverlaySettings::PRESSURE))
             .Append(_T(" ! "));
