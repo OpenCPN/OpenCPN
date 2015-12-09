@@ -338,7 +338,7 @@ void grib_pi::MoveDialog( wxDialog *dialog, wxPoint position, wxPoint dfault )
 
 void grib_pi::OnToolbarToolCallback(int id)
 {
-    ::wxBeginBusyCursor();
+    if( !::wxIsBusy() ) ::wxBeginBusyCursor();
 
     bool starting = false;
     if(!m_pGribCtrlBar)
@@ -616,8 +616,7 @@ void grib_pi::SendTimelineMessage(wxDateTime time)
 void GribPreferencesDialog::OnStartOptionChange( wxCommandEvent& event )
 {
     if(m_rbStartOptions->GetSelection() == 2) {
-        wxMessageDialog mes(this, _("You have chosen to authorize interpolation.\nDon't forget that data displayed at current time will not be real but Recomputed and this can decrease accuracy!"),
-                _("Warning!"), wxOK);
-        mes.ShowModal();
+        OCPNMessageBox_PlugIn(this, _("You have chosen to authorize interpolation.\nDon't forget that data displayed at current time will not be real but Recomputed and this can decrease accuracy!"),
+                _("Warning!"));
     }
 }

@@ -225,9 +225,16 @@ void CursorData::PopulateTrackingControls( bool vertical )
            : wxString::Format( _T("%1.*f "), lev == (int) lev ? 0 : 1, lev )
                 .Append( m_gparent.m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::GEO_ALTITUDE) )
                 );
-    m_tcWindSpeed->SetToolTip( _("Wind Speed at") + t.Prepend( _T(" ") ) );
-    m_tcWindSpeedBf->SetToolTip( _("Wind Speed in Bf at") + t.Prepend( _T(" ") ) );
-    m_tcWindDirection->SetToolTip( _("Wind Direction at") + t );
+    if( m_Altitude ) {
+        t.Prepend( _T(" ") + _("at Geopotential Height") +_T(" ") );
+        m_tcAltitude->SetToolTip( _("Altitude" ) + t );
+        m_tcTemp->SetToolTip( _("Temperature") + t ); 
+        m_tcRelHumid->SetToolTip( _("Relative Humidity") + t );
+    } else
+        t.Prepend( _T(" ") + _("at") + _T(" ") );
+    m_tcWindSpeed->SetToolTip( _("Wind Speed") + t );
+    m_tcWindSpeedBf->SetToolTip( _("Wind Speed in Bf") + t );
+    m_tcWindDirection->SetToolTip( _("Wind Direction") + t );
 
     t.Printf( _T(" %1.*f ") + m_gparent.m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::GEO_ALTITUDE), lev == (int) lev ? 0 : 1, lev );
     m_tcWindGust->SetToolTip( _("Wind Gust at") + t );
