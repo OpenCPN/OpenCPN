@@ -5363,8 +5363,7 @@ void OCPN_cancelDownloadFileBackground( long handle )
 #else
     if( g_pi_manager->m_pCurlThread )
     {
-        if (g_pi_manager->m_pCurlThread->IsAlive())
-            g_pi_manager->m_pCurlThread->Abort();
+        g_pi_manager->m_pCurlThread->Abort();
         delete (g_pi_manager->m_pCurlThread->GetOutputStream());
         wxDELETE(g_pi_manager->m_pCurlThread);
         g_pi_manager->m_download_evHandler = NULL;
@@ -5426,8 +5425,7 @@ void PlugInManager::OnEndPerformCurlDownload(wxCurlEndPerformEvent &ev)
     
     if( m_pCurlThread )
     {
-        if (m_pCurlThread->IsAlive())
-            m_pCurlThread->Wait();
+        m_pCurlThread->Wait();
         if(!m_pCurlThread->IsAborting()){
             delete (m_pCurlThread->GetOutputStream());
             wxDELETE(m_pCurlThread);

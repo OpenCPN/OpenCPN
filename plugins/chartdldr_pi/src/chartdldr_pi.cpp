@@ -50,7 +50,6 @@
 #include "unrar/rar.hpp"
 
 #include <wx/arrimpl.cpp>
-    WX_DEFINE_OBJARRAY(wxArrayOfChartSources);
     WX_DEFINE_OBJARRAY(wxArrayOfDateTime);
 
 #include <fstream>
@@ -363,7 +362,11 @@ ChartSource::ChartSource( wxString name, wxString url, wxString localdir )
     m_url = url;
     m_dir = localdir;
     m_update_data.clear();
-    
+}
+
+ChartSource::~ChartSource()
+{
+    m_update_data.clear();
 }
 
 #define ID_MNU_SELALL 2001
@@ -542,15 +545,15 @@ void ChartDldrPanelImpl::FillFromFile( wxString url, wxString dir, bool selnew, 
         m_clCharts->DeleteAllItems();
         size_t updated_charts = 0;
         size_t new_charts = 0;
-        for( size_t i = 0; i < pPlugIn->m_pChartCatalog->charts->Count(); i++ )
+        for( size_t i = 0; i < pPlugIn->m_pChartCatalog->charts.Count(); i++ )
         {
             wxListItem li;
             li.SetId(i);
-            li.SetText(pPlugIn->m_pChartCatalog->charts->Item(i).GetChartTitle());
+            li.SetText(pPlugIn->m_pChartCatalog->charts.Item(i).GetChartTitle());
             long x = m_clCharts->InsertItem(li);
-            m_clCharts->SetItem(x, 0, pPlugIn->m_pChartCatalog->charts->Item(i).GetChartTitle());
-            wxString file = pPlugIn->m_pChartCatalog->charts->Item(i).GetChartFilename(true);
-            if( !pPlugIn->m_pChartSource->ExistsLocaly(pPlugIn->m_pChartCatalog->charts->Item(i).number, file) )
+            m_clCharts->SetItem(x, 0, pPlugIn->m_pChartCatalog->charts.Item(i).GetChartTitle());
+            wxString file = pPlugIn->m_pChartCatalog->charts.Item(i).GetChartFilename(true);
+            if( !pPlugIn->m_pChartSource->ExistsLocaly(pPlugIn->m_pChartCatalog->charts.Item(i).number, file) )
             {
                 new_charts++;
                 m_clCharts->SetItem(x, 1, _("New"));
@@ -559,7 +562,7 @@ void ChartDldrPanelImpl::FillFromFile( wxString url, wxString dir, bool selnew, 
             }
             else
             {
-                if( pPlugIn->m_pChartSource->IsNewerThanLocal(pPlugIn->m_pChartCatalog->charts->Item(i).number, file, pPlugIn->m_pChartCatalog->charts->Item(i).GetUpdateDatetime()) )
+                if( pPlugIn->m_pChartSource->IsNewerThanLocal(pPlugIn->m_pChartCatalog->charts.Item(i).number, file, pPlugIn->m_pChartCatalog->charts.Item(i).GetUpdateDatetime()) )
                 {
                     updated_charts++;
                     m_clCharts->SetItem(x, 1, _("Update available"));
@@ -571,9 +574,9 @@ void ChartDldrPanelImpl::FillFromFile( wxString url, wxString dir, bool selnew, 
                     m_clCharts->SetItem(x, 1, _("Up to date"));
                 }
             }
-            m_clCharts->SetItem(x, 2, pPlugIn->m_pChartCatalog->charts->Item(i).GetUpdateDatetime().Format(_T("%Y-%m-%d %H:%M")));
+            m_clCharts->SetItem(x, 2, pPlugIn->m_pChartCatalog->charts.Item(i).GetUpdateDatetime().Format(_T("%Y-%m-%d %H:%M")));
         }
-        m_stCatalogInfo->SetLabel( wxString::Format( _("%lu charts total, %lu updated, %lu new"), pPlugIn->m_pChartCatalog->charts->Count(), updated_charts, new_charts ) );
+        m_stCatalogInfo->SetLabel( wxString::Format( _("%lu charts total, %lu updated, %lu new"), pPlugIn->m_pChartCatalog->charts.Count(), updated_charts, new_charts ) );
         m_stCatalogInfo->Show( true );
     }
 }
@@ -987,20 +990,20 @@ void ChartDldrPanelImpl::DownloadCharts()
             m_totalsize = _("Unknown");
             m_transferredsize = _T("0");
             downloading++;
-            if( pPlugIn->m_pChartCatalog->charts->Item(i).NeedsManualDownload() )
+            if( pPlugIn->m_pChartCatalog->charts.Item(i).NeedsManualDownload() )
             {
                 if( wxYES ==
                         wxMessageBox(
                                 wxString::Format( _("The selected chart '%s' can't be downloaded automatically, do you want me to open a browser window and download them manually?\n\n \
-After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCatalog->charts->Item(i).title.c_str(), pPlugIn->m_pChartSource->GetDir().c_str() ), _("Chart Downloader"), wxYES_NO | wxCENTRE | wxICON_QUESTION ) )
+After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCatalog->charts.Item(i).title.c_str(), pPlugIn->m_pChartSource->GetDir().c_str() ), _("Chart Downloader"), wxYES_NO | wxCENTRE | wxICON_QUESTION ) )
                 {
-                    wxLaunchDefaultBrowser( pPlugIn->m_pChartCatalog->charts->Item(i).GetManualDownloadUrl() );
+                    wxLaunchDefaultBrowser( pPlugIn->m_pChartCatalog->charts.Item(i).GetManualDownloadUrl() );
                 }
             }
             else
             {
                 //download queue
-                wxURI url(pPlugIn->m_pChartCatalog->charts->Item(i).GetDownloadLocation());
+                wxURI url(pPlugIn->m_pChartCatalog->charts.Item(i).GetDownloadLocation());
                 if( url.IsReference() )
                 {
                     wxMessageBox(wxString::Format(_("Error, the URL to the chart (%s) data seems wrong."), url.BuildURI().c_str()), _("Error"));
@@ -1008,14 +1011,14 @@ After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCata
                     return;
                 }
                 //construct local file path
-                wxString file = pPlugIn->m_pChartCatalog->charts->Item(i).GetChartFilename();
+                wxString file = pPlugIn->m_pChartCatalog->charts.Item(i).GetChartFilename();
                 wxFileName fn;
                 fn.SetFullName(file);
                 fn.SetPath(cs->GetDir());
                 wxString path = fn.GetFullPath();
                 if( wxFileExists( path ) )
                     wxRemoveFile( path );
-                wxString title = pPlugIn->m_pChartCatalog->charts->Item(i).GetChartTitle();
+                wxString title = pPlugIn->m_pChartCatalog->charts.Item(i).GetChartTitle();
 
                 //  Ready to start download
 #ifdef __OCPN__ANDROID__
@@ -1045,8 +1048,8 @@ After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCata
                 if( m_bTransferSuccess && !cancelled )
                 {
                     wxFileName myfn(path);
-                    pPlugIn->ProcessFile(path, myfn.GetPath(), true, pPlugIn->m_pChartCatalog->charts->Item(i).GetUpdateDatetime());
-                    cs->ChartUpdated( pPlugIn->m_pChartCatalog->charts->Item(i).number, pPlugIn->m_pChartCatalog->charts->Item(i).GetUpdateDatetime().GetTicks() );
+                    pPlugIn->ProcessFile(path, myfn.GetPath(), true, pPlugIn->m_pChartCatalog->charts.Item(i).GetUpdateDatetime());
+                    cs->ChartUpdated( pPlugIn->m_pChartCatalog->charts.Item(i).number, pPlugIn->m_pChartCatalog->charts.Item(i).GetUpdateDatetime().GetTicks() );
                 } else {
                     if( wxFileExists( path ) )
                         wxRemoveFile( path );
@@ -1321,12 +1324,19 @@ bool chartdldr_pi::ExtractRarFiles( const wxString& aRarFile, const wxString& aT
 
     char command[2];
     strncpy(command, (const char*)cmd.mb_str(wxConvUTF8), 1);
+    command[1] = 0;
+
     char file[1024];
     strncpy(file, (const char*)aRarFile.mb_str(wxConvUTF8), 1023);
+    file[1023] = 0;
+
     char target[1024];
     strncpy(target, (const char*)aTargetDir.mb_str(wxConvUTF8), 1023);
+    target[1023] = 0;
+
     char *argv[] = {const_cast<char *>("unrar"), command, const_cast<char *>("-y"), file, target};
 #ifdef _UNIX
+    // XXX is setlocale need?
     setlocale(LC_ALL,"");
 #endif
 
@@ -1423,6 +1433,12 @@ bool chartdldr_pi::ExtractRarFiles( const wxString& aRarFile, const wxString& aT
     if( aRemoveRar )
         wxRemoveFile(aRarFile);
 
+#ifdef _UNIX
+    // reset LC_NUMERIC locale, some locales use a comma for decimal point
+    // and it corrupts navobj.xml file
+    setlocale(LC_NUMERIC, "C");
+#endif
+
     return true;
 }
 
@@ -1456,7 +1472,8 @@ bool chartdldr_pi::ExtractZipFiles( const wxString& aZipFile, const wxString& aT
                 //fn.SetPath(aTargetDir);
                 //name = fn.GetFullPath();
                 /* Or only remove the first dir (eg. ENC_ROOT) */
-                fn.RemoveDir(0);
+                if (fn.GetDirCount() > 0)
+                    fn.RemoveDir(0);
                 name = aTargetDir + wxFileName::GetPathSeparator() + fn.GetFullPath();
             }
             else
