@@ -1822,9 +1822,14 @@ int MyConfig::LoadMyConfig()
     long dummyk;
     wxString kval;
     bool bContk = GetFirstEntry( strk, dummyk );
+    bool bNewKey = false;
     while( bContk ) {
         Read( strk, &kval );
-        FontMgr::Get().AddAuxKey(kval);
+        bNewKey = FontMgr::Get().AddAuxKey(kval);
+        if(!bNewKey) {
+            DeleteEntry( strk );
+            dummyk--;
+        }
         bContk = GetNextEntry( strk, dummyk );
     }
         
