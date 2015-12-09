@@ -1993,6 +1993,12 @@ wxFont GetOCPNGUIScaledFont_PlugIn(wxString item)
     return GetOCPNGUIScaledFont( item );
 }
 
+bool AddPersistentFontKey(wxString TextElement)
+{
+    return FontMgr::Get().AddAuxKey( TextElement );
+}
+
+
 wxColour GetFontColour_PlugIn(wxString TextElement)
 {
     return FontMgr::Get().GetFontColor( TextElement );

@@ -1814,7 +1814,20 @@ int MyConfig::LoadMyConfig()
     wxLogMessage( s );
 
 //    Fonts
-
+    
+    //  Load the persistent Auxiliary Font descriptor Keys
+    SetPath ( _T ( "/Settings/AuxFontKeys" ) );
+    
+    wxString strk;
+    long dummyk;
+    wxString kval;
+    bool bContk = GetFirstEntry( strk, dummyk );
+    while( bContk ) {
+        Read( strk, &kval );
+        FontMgr::Get().AddAuxKey(kval);
+        bContk = GetNextEntry( strk, dummyk );
+    }
+        
 #ifdef __WXX11__
     SetPath ( _T ( "/Settings/X11Fonts" ) );
 #endif
@@ -2826,6 +2839,18 @@ void MyConfig::UpdateSettings()
     Write ( _T ( "DataConnections" ), connectionconfigs );
 
     //    Fonts
+    
+    //  Store the persistent Auxiliary Font descriptor Keys
+    SetPath( _T ( "/Settings/AuxFontKeys" ) );
+    
+    wxArrayString keyArray = FontMgr::Get().GetAuxKeyArray();
+    for(unsigned int i=0 ; i <  keyArray.GetCount() ; i++){
+        wxString key;
+        key.Printf(_T("Key%i"), i);
+        wxString keyval = keyArray[i];
+        Write( key, keyval );
+    }
+    
     wxString font_path;
 #ifdef __WXX11__
     font_path = ( _T ( "/Settings/X11Fonts" ) );
