@@ -4252,7 +4252,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   m_itemBoxSizerFontPanel->Add(itemFontStaticBoxSizer, 0, wxEXPAND | wxALL,
                                border_size);
 
-  m_itemFontElementListBox = new wxChoice(itemPanelFont, ID_CHOICE_FONTELEMENT);
+  m_itemFontElementListBox = new wxChoice(itemPanelFont, ID_CHOICE_FONTELEMENT, wxDefaultPosition, wxDefaultSize, 0, NULL, wxCB_SORT);
 
   int nFonts = FontMgr::Get().GetNumFonts();
   for (int it = 0; it < nFonts; it++) {
