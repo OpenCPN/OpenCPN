@@ -90,6 +90,7 @@ extern RouteList *pRouteList;
 extern OCPNPlatform     *g_Platform;
 
 bool g_benableAISNameCache;
+wxString GetShipNameFromFile(int);
 
 BEGIN_EVENT_TABLE(AIS_Decoder, wxEvtHandler)
     EVT_TIMER(TIMER_AIS1, AIS_Decoder::OnTimerAIS)
@@ -2501,7 +2502,11 @@ MMSIProperties::MMSIProperties( wxString &spec )
         if(s.Upper() == _T("PERSIST"))
             m_bPersistentTrack = true;
     }
-    
+
+    s = tkz.GetNextToken();
+    if (s.Len()){
+        m_ShipName = s.Upper();
+    }
 }
 
 MMSIProperties::~MMSIProperties()
@@ -2517,6 +2522,7 @@ void MMSIProperties::Init(void )
     m_bVDM = false;
     m_bFollower = false;
     m_bPersistentTrack = false;
+    m_ShipName = wxEmptyString;
 }
 
 wxString MMSIProperties::Serialize( void )
@@ -2558,7 +2564,33 @@ wxString MMSIProperties::Serialize( void )
     if(m_bPersistentTrack){
         sMMSI << _T("PERSIST");
     }
-    
+    sMMSI << _T(";");
+
+    if (m_ShipName == wxEmptyString) {
+        m_ShipName = GetShipNameFromFile(MMSI);
+    }
+    sMMSI << m_ShipName;
     return sMMSI;
+}
+
+wxString GetShipNameFromFile(int nmmsi)
+{
+    wxString name = wxEmptyString;
+    if (g_benableAISNameCache){
+        std::ifstream infile(AISTargetNameFileName.mb_str());
+        if (infile) {
+            std::string line;
+            while (getline(infile, line)) {
+                wxStringTokenizer tokenizer(wxString::FromUTF8(line.c_str()), _T(","));
+                if (nmmsi == wxAtoi(tokenizer.GetNextToken())) {
+                    name = tokenizer.GetNextToken().Trim();
+                    break;
+                }
+                else tokenizer.GetNextToken();
+            }
+        }
+        infile.close();
+    }
+    return name;
 }
 
