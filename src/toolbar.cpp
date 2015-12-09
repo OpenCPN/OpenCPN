@@ -1986,6 +1986,8 @@ wxRect ocpnToolBarSimple::GetToolRect( int tool_id )
 
 void ocpnToolBarSimple::DoEnableTool( wxToolBarToolBase *tool, bool WXUNUSED(enable) )
 {
+    ocpnToolBarTool *t = (ocpnToolBarTool *) tool;
+    t->bitmapOK = false;
     DrawTool( tool );
 }
 
