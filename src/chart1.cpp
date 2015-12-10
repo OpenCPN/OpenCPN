@@ -2364,6 +2364,8 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     //      Set up some assorted member variables
     nRoute_State = 0;
     m_bTimeIsSet = false;
+    nBlinkerTick = 0;
+
     m_bdefer_resize = false;
 
     //    Clear the NMEA Filter tables
