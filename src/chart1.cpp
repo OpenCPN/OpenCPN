@@ -3895,26 +3895,39 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         case ID_MENU_AIS_TARGETS:
         case ID_AIS: {
-            g_bShowAIS = !g_bShowAIS;
-
+			// make some arrays to hold the dfferences between cycle steps
+			//show all, hide all, hide moored, scaled
+			bool g_bShowScaled = false; //not implemented yet
+			bool g_bShowAIS_Array[4] = {true, false, true, true}; 
+			bool g_bShowMoored_Array[4] = {true, false, false, true};
+			bool g_bShowScaled_Array[4] = {false, false, false, true};
+			wxString ToolShortHelp_Array[4] = { _("Hide AIS Targets"),  _("Hide MooredAIS Targets"), _("Show all AIS Targets"),  _("Scale less important AIS Targets")};
+			wxString iconName_Array[4] = { _("AIS"),  _("AIS_Disabled"),  _("AIS_Suppressed"),  _("AIS_Suppressed")};
+			int ArraySize = 3;
+			
+			//find current state of switch
+			int AIS_Toolbar_Switch = 0;
+			for ( int i = 0; i < ArraySize; i++){
+				if( (g_bShowAIS_Array[i] == g_bShowAIS) && 
+					(g_bShowMoored_Array[i] == g_bShowMoored) &&
+					(g_bShowScaled_Array[i] == g_bShowScaled) ) AIS_Toolbar_Switch = i;
+			}
+			AIS_Toolbar_Switch++;
+			if (AIS_Toolbar_Switch >= ArraySize ) AIS_Toolbar_Switch=0; 
+			
+            g_bShowAIS = g_bShowAIS_Array[AIS_Toolbar_Switch];
+			g_bShowMoored = g_bShowMoored_Array[AIS_Toolbar_Switch];
+			g_bShowScaled = g_bShowScaled_Array[AIS_Toolbar_Switch];	
             if( g_toolbar ) {
-                wxString iconName;
-                if( g_bShowAIS ) {
-                    g_toolbar->SetToolShortHelp( ID_AIS, _("Hide AIS Targets") );
-                    iconName = _T("AIS");
-                } else {
-                    g_toolbar->SetToolShortHelp( ID_AIS, _("Show AIS Targets") );
-                    iconName = _T("AIS_Disabled");
-                }
-
-                if( m_pAISTool ) {
-                    g_toolbar->SetToolNormalBitmapEx( m_pAISTool, iconName );
+				g_toolbar->SetToolShortHelp( ID_AIS, ToolShortHelp_Array[AIS_Toolbar_Switch] );
+				if( m_pAISTool ) {
+                    g_toolbar->SetToolNormalBitmapEx( m_pAISTool, iconName_Array[AIS_Toolbar_Switch] );
                     g_toolbar->Refresh();
-                    m_lastAISiconName = iconName;
+                    m_lastAISiconName = iconName_Array[AIS_Toolbar_Switch];
                 }
             }
 
-            SetMenubarItemState(ID_MENU_AIS_TARGETS, g_bShowAIS);
+            //SetMenubarItemState(ID_MENU_AIS_TARGETS, g_bShowAIS);
 
             cc1->ReloadVP();
 
