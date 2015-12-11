@@ -126,11 +126,8 @@ void CM93DSlide::OnChangeValue( wxScrollEvent& event )
 {
     g_cm93_zoom_factor = m_pCM93DetailSlider->GetValue();
 
-    OCPNPlatform::ShowBusySpinner();
-
     cc1->ReloadVP();
     cc1->Refresh( false );
 
-    OCPNPlatform::HideBusySpinner();
 }
 
