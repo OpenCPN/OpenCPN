@@ -7153,7 +7153,7 @@ void MyFrame::SelectChartFromStack( int index, bool bDir, ChartTypeEnum New_Type
         double oldskew = cc1->GetVPSkew();
         double newskew = Current_Ch->GetChartSkew() * PI / 180.0;
 
-        if (!g_bskew_comp) {
+        if (!g_bskew_comp && !g_bCourseUp) {
             if (fabs(oldskew) > 0.0001)
                 rotation = 0.0;
             if (fabs(newskew) > 0.0001)
