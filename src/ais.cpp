@@ -52,6 +52,8 @@
 #include "AISTargetQueryDialog.h"
 #include "wx28compat.h"
 
+#include "vase_rend_draft_2.h"
+
 extern  int             s_dns_test_flag;
 extern  Select          *pSelectAIS;
 extern  double          gLat, gLon, gSog, gCog;
@@ -1166,31 +1168,24 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 #ifdef ocpnUSE_GL
                     // opengl optimized version
                     wxColour c = target_brush.GetColour();
-                    glColor3ub(c.Red(), c.Green(), c.Blue());
-                    float dx = pixx1 - pixx, dy = pixy1 - pixy;
-                    float m = (g_ais_cog_predictor_width + 1) / 2 / sqrtf(dx*dx + dy*dy);
-                    float tx = dy * m, ty = dx * m;
-                    glBegin(GL_TRIANGLE_STRIP);
-                    glVertex2f(pixx+tx,  pixy+ty);
-                    glVertex2f(pixx1+tx, pixy1+ty);
-                    glVertex2f(pixx-tx,  pixy-ty);
-                    glVertex2f(pixx1-tx, pixy1-ty);
-                    glEnd();
+                    glEnable(GL_BLEND);
+                    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                    glEnableClientState(GL_VERTEX_ARRAY);
+                    glEnableClientState(GL_COLOR_ARRAY);
+                    line ( pixx , pixy , pixx1 , pixy1,		//coordinates
+			g_ais_cog_predictor_width,		//thickness in px
+			c.Red()/255., c.Green()/255., c.Blue()/255., 1.0,	//line color RGBA
+			0.,0.,				//not used
+			true);				//enable alphablend
 
                     if( g_ais_cog_predictor_width > 1 ) {
                         //    Draw a 1 pixel wide black line
-                        glColor3ub(0, 0, 0);
-                    glEnable( GL_BLEND );
-                    glEnable( GL_LINE_SMOOTH );
-                        glBegin(GL_LINES);
-                        glVertex2i(pixx, pixy);
-                        glVertex2i(pixx1, pixy1);
-                        glEnd();
-                    glDisable( GL_LINE_SMOOTH );
-                    glDisable( GL_BLEND );
-                        glColor3ub(c.Red(), c.Green(), c.Blue());
+                        hair_line( pixx, pixy, pixx1, pixy1, true);
                     }
-
+                    glDisableClientState(GL_VERTEX_ARRAY);
+                    glDisableClientState(GL_COLOR_ARRAY);
+                    glDisable(GL_BLEND); //restore blending options
+                    glColor3ub(c.Red(), c.Green(), c.Blue());
                     // draw circle
                     float points[] = {0.0, 5.0, 2.5, 4.33012701892219, 4.33012701892219, 2.5, 5.0,
                                       0, 4.33012701892219, -2.5, 2.5, -4.33012701892219, 0, -5.0,
@@ -1336,13 +1331,35 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             glVertex2i(ais_quad_icon[2].x + TargetPoint.x, ais_quad_icon[2].y  + TargetPoint.y);
             
             glEnd();
-
+#if 0
             glLineWidth(1);
             glColor3ub(0,0,0);
             glBegin(GL_LINE_LOOP);
             for(int i=0; i<4; i++)
                 glVertex2i(ais_quad_icon[i].x + TargetPoint.x, ais_quad_icon[i].y  + TargetPoint.y);
             glEnd();
+#else
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glEnableClientState(GL_VERTEX_ARRAY);
+            glEnableClientState(GL_COLOR_ARRAY);
+            hair_line( ais_quad_icon[0].x + TargetPoint.x, ais_quad_icon[0].y  + TargetPoint.y,
+                       ais_quad_icon[1].x + TargetPoint.x, ais_quad_icon[1].y  + TargetPoint.y,
+                         true);
+            hair_line( ais_quad_icon[1].x + TargetPoint.x, ais_quad_icon[1].y  + TargetPoint.y,
+                       ais_quad_icon[2].x + TargetPoint.x, ais_quad_icon[2].y  + TargetPoint.y,
+                         true);
+            hair_line( ais_quad_icon[2].x + TargetPoint.x, ais_quad_icon[2].y  + TargetPoint.y,
+                       ais_quad_icon[3].x + TargetPoint.x, ais_quad_icon[3].y  + TargetPoint.y,
+                         true);
+            hair_line( ais_quad_icon[3].x + TargetPoint.x, ais_quad_icon[3].y  + TargetPoint.y,
+                       ais_quad_icon[0].x + TargetPoint.x, ais_quad_icon[0].y  + TargetPoint.y,
+                         true);
+            
+            glDisableClientState(GL_VERTEX_ARRAY);
+            glDisableClientState(GL_COLOR_ARRAY);
+            glDisable(GL_BLEND);
+#endif            
 #endif
         }
 
