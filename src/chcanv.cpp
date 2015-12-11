@@ -4760,6 +4760,10 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
 
     event.GetPosition( &x, &y );
     
+    //  Occasionally, MSW will produce nonsense events on right click....
+    if((x == -1) || (y == -1))
+        return true;
+    
     //  Some systems produce null drag events, where the pointer position has not changed from the previous value.
     //  Detect this case, and abort further processing (FS#1748)
 #ifdef __WXMSW__    
