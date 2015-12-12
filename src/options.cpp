@@ -139,8 +139,10 @@ extern bool g_bShowCOG;
 extern double g_ShowCOG_Mins;
 extern bool g_bAISShowTracks;
 extern double g_AISShowTracks_Mins;
-extern bool g_bShowMoored;
+extern bool g_bAllowShowMoored;
 extern double g_ShowMoored_Kts;
+extern bool g_bAllowShowScaled;
+extern int  g_ShowScaled_Num;
 extern bool g_bAIS_CPA_Alert;
 extern bool g_bAIS_CPA_Alert_Audio;
 extern wxString g_sAIS_Alert_Sound_File;
@@ -4117,11 +4119,19 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
                     group_item_spacing);
 
   m_pCheck_Show_Moored = new wxCheckBox(
-      panelAIS, -1, _("Hide anchored/moored targets, speed max (kn)"));
+      panelAIS, -1, _("Allow hiding anchored/moored targets, speed max (kn)"));
   pDisplayGrid->Add(m_pCheck_Show_Moored, 1, wxALL, group_item_spacing);
 
   m_pText_Moored_Speed = new wxTextCtrl(panelAIS, -1);
   pDisplayGrid->Add(m_pText_Moored_Speed, 1, wxALL | wxALIGN_RIGHT,
+                    group_item_spacing);
+
+  m_pCheck_Scale_Priority = new wxCheckBox(
+      panelAIS, -1, _("Allow scaling down targets if more then ... targets"));
+  pDisplayGrid->Add(m_pCheck_Scale_Priority, 1, wxALL, group_item_spacing);
+
+  m_pText_Scale_Priority = new wxTextCtrl(panelAIS, -1);
+  pDisplayGrid->Add(m_pText_Scale_Priority, 1, wxALL | wxALIGN_RIGHT,
                     group_item_spacing);
 
   m_pCheck_Show_Area_Notices = new wxCheckBox(
@@ -4915,10 +4925,16 @@ void options::SetInitialSettings(void) {
   s.Printf(_T("%4.0f"), g_AISShowTracks_Mins);
   m_pText_Track_Length->SetValue(s);
 
-  m_pCheck_Show_Moored->SetValue(!g_bShowMoored);
+  m_pCheck_Show_Moored->SetValue(g_bAllowShowMoored);
 
   s.Printf(_T("%4.1f"), g_ShowMoored_Kts);
   m_pText_Moored_Speed->SetValue(s);
+  
+  m_pCheck_Scale_Priority->SetValue(g_bAllowShowScaled);
+  
+  s.Printf(_T("%i"), g_ShowScaled_Num);
+  m_pText_Scale_Priority->SetValue(s);
+
 
   m_pCheck_Show_Area_Notices->SetValue(g_bShowAreaNotices);
 
@@ -5805,9 +5821,14 @@ void options::OnApplyClick(wxCommandEvent& event) {
     }
   }
 
-  g_bShowMoored = !m_pCheck_Show_Moored->GetValue();
+  g_bAllowShowMoored = m_pCheck_Show_Moored->GetValue();
   m_pText_Moored_Speed->GetValue().ToDouble(&g_ShowMoored_Kts);
 
+  g_bAllowShowScaled = m_pCheck_Scale_Priority->GetValue();
+  long l;
+  m_pText_Scale_Priority->GetValue().ToLong(&l);
+  g_ShowScaled_Num = (int)l;
+  
   g_bShowAreaNotices = m_pCheck_Show_Area_Notices->GetValue();
   g_bDrawAISSize = m_pCheck_Draw_Target_Size->GetValue();
   g_bShowAISName = m_pCheck_Show_Target_Name->GetValue();

@@ -113,7 +113,7 @@ extern bool             g_bAISRolloverShowCPA;
 
 extern bool             g_bAIS_ACK_Timeout;
 extern double           g_AckTimeout_Mins;
-bool                    g_bShowScaled;
+extern bool             g_bShowScaled;
 int                     g_ShowScaled_Num;
 int                     ImportanceSwitchPoint = 100;
 int                     g_ScaledNumWeightSOG;
@@ -944,7 +944,6 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
     dash_long[0] = (int) ( 1.0 * cc1->GetPixPerMM() );  // Long dash  <---------+
     dash_long[1] = (int) ( 0.5 * cc1->GetPixPerMM() );  // Short gap            |
 
-    bool g_bShowScaled = true;//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     int targetscale = 100;
         if ( g_bShowScaled )
         {
@@ -1435,7 +1434,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         if( ( ( td->ShipType >= 40 ) && ( td->ShipType < 50 ) )
             && navstatus == UNDERWAY_USING_ENGINE ) navstatus = HSC;
     
-        if(targetscale > 50){
+        if(targetscale > 75){
             switch( navstatus ) {
             case MOORED:
             case AT_ANCHOR: {
@@ -1496,7 +1495,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                 break;
             }
             }
-        }//end if (targetscale > g_ScaledSizeMinimal)
+        }//end if (targetscale > 75)
 
         //        Draw the inactive cross-out line
         if( !td->b_active ) {
@@ -1523,7 +1522,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         }
     }
 
-    if ( (g_bShowAISName) && (targetscale > g_ScaledSizeMinimal) ) {
+    if ( (g_bShowAISName) && (targetscale > 75) ) {
         int true_scale_display = (int) (floor( cc1->GetVP().chart_scale / 100. ) * 100);
         if( true_scale_display < g_Show_Target_Name_Scale ) { // from which scale to display name
 

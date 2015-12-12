@@ -535,11 +535,14 @@ double                    g_ShowCOG_Mins;
 bool                      g_bAISShowTracks;
 double                    g_AISShowTracks_Mins;
 bool                      g_bShowMoored;
+bool                      g_bAllowShowMoored;
+bool                      g_bAllowShowScaled;
 double                    g_ShowMoored_Kts;
 wxString                  g_sAIS_Alert_Sound_File;
 bool                      g_bAIS_CPA_Alert_Suppress_Moored;
 bool                      g_bAIS_ACK_Timeout;
 double                    g_AckTimeout_Mins;
+bool                      g_bShowScaled;
 bool                      g_bShowAreaNotices;
 bool                      g_bDrawAISSize;
 bool                      g_bShowAISName;
@@ -3897,29 +3900,36 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         case ID_AIS: {
 			// make some arrays to hold the dfferences between cycle steps
 			//show all, hide all, hide moored, scaled
-			bool g_bShowScaled = false; //not implemented yet
 			bool g_bShowAIS_Array[4] = {true, false, true, true}; 
 			bool g_bShowMoored_Array[4] = {true, false, false, true};
 			bool g_bShowScaled_Array[4] = {false, false, false, true};
-			wxString ToolShortHelp_Array[4] = { _("Hide AIS Targets"),  _("Hide MooredAIS Targets"), _("Show all AIS Targets"),  _("Scale less important AIS Targets")};
+			wxString ToolShortHelp_Array[4] = { _("Show all AIS Targets"), _("Hide AIS Targets"),  _("Hide MooredAIS Targets"), _("Scale less important AIS Targets") };
 			wxString iconName_Array[4] = { _("AIS"),  _("AIS_Disabled"),  _("AIS_Suppressed"),  _("AIS_Suppressed")};
-			int ArraySize = 3;
+			int ArraySize = 4;
 			
-			//find current state of switch
-			int AIS_Toolbar_Switch = 0;
-			for ( int i = 0; i < ArraySize; i++){
-				if( (g_bShowAIS_Array[i] == g_bShowAIS) && 
-					(g_bShowMoored_Array[i] == g_bShowMoored) &&
-					(g_bShowScaled_Array[i] == g_bShowScaled) ) AIS_Toolbar_Switch = i;
-			}
-			AIS_Toolbar_Switch++;
-			if (AIS_Toolbar_Switch >= ArraySize ) AIS_Toolbar_Switch=0; 
+             //find current state of switch
+            int AIS_Toolbar_Switch = 0;
+            for ( int i = 1; i < ArraySize; i++){
+                if( (g_bShowAIS_Array[i] == g_bShowAIS) && 
+                    (g_bShowMoored_Array[i] == g_bShowMoored) &&
+                    (g_bShowScaled_Array[i] == g_bShowScaled) ) AIS_Toolbar_Switch = i;
+            }
+            AIS_Toolbar_Switch++; // we did click so continu with next item
+            if ( (!g_bAllowShowMoored) && (AIS_Toolbar_Switch == 2) ) AIS_Toolbar_Switch++;
+            if ( (!g_bAllowShowScaled) && (AIS_Toolbar_Switch == 3) ) AIS_Toolbar_Switch++; 
+            if (AIS_Toolbar_Switch >= ArraySize ) AIS_Toolbar_Switch=0; // If at end of cycle start at 0
+            
+            int AIS_Toolbar_Switch_Next = AIS_Toolbar_Switch+1; //Find out what will happen at next click
+            if ( (!g_bAllowShowMoored) && (AIS_Toolbar_Switch_Next == 2) ) AIS_Toolbar_Switch_Next++;
+            if ( (!g_bAllowShowScaled) && (AIS_Toolbar_Switch_Next == 3) ) AIS_Toolbar_Switch_Next++;                
+            if (AIS_Toolbar_Switch_Next >= ArraySize ) AIS_Toolbar_Switch_Next=0; // If at end of cycle start at 0
 			
+			//Set found values to variables
             g_bShowAIS = g_bShowAIS_Array[AIS_Toolbar_Switch];
 			g_bShowMoored = g_bShowMoored_Array[AIS_Toolbar_Switch];
-			g_bShowScaled = g_bShowScaled_Array[AIS_Toolbar_Switch];	
+			g_bShowScaled = g_bShowScaled_Array[AIS_Toolbar_Switch];
             if( g_toolbar ) {
-				g_toolbar->SetToolShortHelp( ID_AIS, ToolShortHelp_Array[AIS_Toolbar_Switch] );
+				g_toolbar->SetToolShortHelp( ID_AIS, ToolShortHelp_Array[AIS_Toolbar_Switch_Next] );
 				if( m_pAISTool ) {
                     g_toolbar->SetToolNormalBitmapEx( m_pAISTool, iconName_Array[AIS_Toolbar_Switch] );
                     g_toolbar->Refresh();
@@ -3927,7 +3937,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
                 }
             }
 
-            //SetMenubarItemState(ID_MENU_AIS_TARGETS, g_bShowAIS);
+            SetMenubarItemState(ID_MENU_AIS_TARGETS, g_bShowAIS);
 
             cc1->ReloadVP();
 
