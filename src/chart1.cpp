@@ -1516,6 +1516,8 @@ bool MyApp::OnInit()
 #ifdef ocpnUSE_GL
 
 #ifdef __WXMSW__
+#if !wxCHECK_VERSION(2, 9, 0)           // The OpenGL test app only runs on wx 2.8, unavailable on wx3.x
+        
     if( /*g_bopengl &&*/ !g_bdisable_opengl ) {
         wxFileName fn(g_Platform->GetExePath());
         bool b_test_result = TestGLCanvas(fn.GetPathWithSep() );
@@ -1525,6 +1527,7 @@ bool MyApp::OnInit()
 
         g_bdisable_opengl = !b_test_result;
     }
+#endif
 #endif
 
 #else
