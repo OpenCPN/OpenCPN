@@ -1007,6 +1007,12 @@ ChartBase *ChartDB::OpenChartFromDBAndLock( int index, ChartInitFlag init_flag, 
     return pret;
 }
 
+ChartBase *ChartDB::OpenChartFromDBAndLock(wxString chart_path, ChartInitFlag init_flag)
+{
+    int dbii = FinddbIndex( chart_path );
+    return OpenChartFromDBAndLock(dbii, init_flag);
+}
+
 CacheEntry *ChartDB::FindOldestDeleteCandidate( bool blog)
 {
     CacheEntry *pret = 0;
@@ -1392,6 +1398,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
       return NULL;
 }
 
+// 
 bool ChartDB::DeleteCacheChart(ChartBase *pDeleteCandidate)
 {
     bool retval = false;
@@ -1414,8 +1421,13 @@ bool ChartDB::DeleteCacheChart(ChartBase *pDeleteCandidate)
 
             if(pce)
             {
-                  DeleteCacheEntry( pce);
-                  retval = true;
+                  if(pce->n_lock > 0)
+                    pce->n_lock--;
+
+                  if( pce->n_lock == 0) {
+                      DeleteCacheEntry( pce);
+                      retval = true;
+                  }
             }
       }
       

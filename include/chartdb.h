@@ -131,6 +131,7 @@ public:
       ChartBase *OpenChartFromStack(ChartStack *pStack, int StackEntry, ChartInitFlag iflag = FULL_INIT);
       ChartBase *OpenChartFromDB(int index, ChartInitFlag init_flag);
       ChartBase *OpenChartFromDBAndLock(int index, ChartInitFlag init_flag , bool lock = true);
+      ChartBase *OpenChartFromDBAndLock(wxString chart_path, ChartInitFlag init_flag);
       ChartBase *OpenChartFromDB(wxString chart_path, ChartInitFlag init_flag);
       
       void ApplyColorSchemeToCachedCharts(ColorScheme cs);
