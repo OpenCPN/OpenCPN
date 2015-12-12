@@ -99,7 +99,6 @@ void wxCurlBaseThread::OnExit()
     if (m_pCurl->IsVerbose())
         wxLogDebug(wxS("wxCurlBaseThread - exiting"));
 
-    wxDELETE(m_pCurl);
 }
 
 bool wxCurlBaseThread::TestDestroy()

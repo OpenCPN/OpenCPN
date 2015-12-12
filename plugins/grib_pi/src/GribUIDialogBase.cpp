@@ -373,7 +373,7 @@ CursorDataBase::CursorDataBase( wxWindow* parent, wxWindowID id, const wxPoint& 
 	fgSizer30->SetFlexibleDirection( wxBOTH );
 	fgSizer30->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_ALL );
 
-	m_stTrackingText = new wxStaticText( this, wxID_ANY, _("MyLabel"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_stTrackingText = new wxStaticText( this, wxID_ANY, _T("MyLabel"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_stTrackingText->Wrap( -1 );
 	fgSizer30->Add( m_stTrackingText, 0, wxEXPAND|wxLEFT, 5 );
 
@@ -526,7 +526,7 @@ CursorDataBase::CursorDataBase( wxWindow* parent, wxWindowID id, const wxPoint& 
 
 	m_fgTrackingControls->Add( 0, 0, 1, wxEXPAND, 5 );
 
-	m_cbAltitude = new wxCheckBox( this, wxID_ANY, _("Geop. Altitude"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_cbAltitude = new wxCheckBox( this, wxID_ANY, _("Altitude"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_cbAltitude->SetValue(true);
 	m_cbAltitude->Enable( false );
 
@@ -543,7 +543,7 @@ CursorDataBase::CursorDataBase( wxWindow* parent, wxWindowID id, const wxPoint& 
 
 	m_fgTrackingControls->Add( 0, 0, 1, wxEXPAND, 5 );
 
-	m_cbTemp = new wxCheckBox( this, wxID_ANY, _("Geop. Temp"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_cbTemp = new wxCheckBox( this, wxID_ANY, _("Temp."), wxDefaultPosition, wxDefaultSize, 0 );
 	m_cbTemp->SetValue(true);
 	m_cbTemp->Enable( false );
 
@@ -560,7 +560,7 @@ CursorDataBase::CursorDataBase( wxWindow* parent, wxWindowID id, const wxPoint& 
 
 	m_fgTrackingControls->Add( 0, 0, 1, wxEXPAND, 5 );
 
-	m_cbRelHumid = new wxCheckBox( this, wxID_ANY, _("Geop. R. Hum."), wxDefaultPosition, wxDefaultSize, 0 );
+	m_cbRelHumid = new wxCheckBox( this, wxID_ANY, _("Relat. Hum."), wxDefaultPosition, wxDefaultSize, 0 );
 	m_cbRelHumid->SetValue(true);
 	m_cbRelHumid->Enable( false );
 
@@ -1025,16 +1025,16 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	fgSizer47->SetFlexibleDirection( wxBOTH );
 	fgSizer47->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
-	m_rbCurDataAttaWCap = new wxRadioButton( m_scSetGuiPanel, wxID_ANY, _("Only one Dialog with a title/drag bar"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+	m_rbCurDataAttaWCap = new wxRadioButton( m_scSetGuiPanel, wxID_ANY, _("Data at cursor dialog is attached to icons bar - with a title/drag bar"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
 	fgSizer47->Add( m_rbCurDataAttaWCap, 0, wxALL, 5 );
 
-	m_rbCurDataAttaWoCap = new wxRadioButton( m_scSetGuiPanel, wxID_ANY, _("Only one Dialog without title/drag bar"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_rbCurDataAttaWoCap = new wxRadioButton( m_scSetGuiPanel, wxID_ANY, _("Data at cursor dialog is attached to icons bar - without a title/drag bar"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer47->Add( m_rbCurDataAttaWoCap, 0, wxALL, 5 );
 
-	m_rbCurDataIsolHoriz = new wxRadioButton( m_scSetGuiPanel, wxID_ANY, _("Two separated Dialogs - horizontal Cursor Data display"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_rbCurDataIsolHoriz = new wxRadioButton( m_scSetGuiPanel, wxID_ANY, _("Data at cursor dialog is isolated and displayed horizontally"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer47->Add( m_rbCurDataIsolHoriz, 0, wxALL, 5 );
 
-	m_rbCurDataIsolVertic = new wxRadioButton( m_scSetGuiPanel, wxID_ANY, _("Two separated Dialogs - vertical Cursor Data display"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_rbCurDataIsolVertic = new wxRadioButton( m_scSetGuiPanel, wxID_ANY, _("Data at cursor dialog is isolated and displayed vertically"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer47->Add( m_rbCurDataIsolVertic, 0, wxALL, 5 );
 
 
@@ -1047,7 +1047,7 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	m_fgSetGuiSizer->Add( 0, 0, 1, wxALL, 5 );
 
 	wxStaticBoxSizer* sbSizer10;
-	sbSizer10 = new wxStaticBoxSizer( new wxStaticBox( m_scSetGuiPanel, wxID_ANY, _("Buttons/Ctrl Visibility") ), wxVERTICAL );
+	sbSizer10 = new wxStaticBoxSizer( new wxStaticBox( m_scSetGuiPanel, wxID_ANY, _("Buttons Visibility") ), wxVERTICAL );
 
 	wxFlexGridSizer* fgSizer52;
 	fgSizer52 = new wxFlexGridSizer( 0, 4, 0, 0 );
@@ -1061,12 +1061,12 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	fgSizer52->Add( 0, 0, 1, wxEXPAND, 5 );
 
 	wxStaticText* m_staticText44;
-	m_staticText44 = new wxStaticText( m_scSetGuiPanel, wxID_ANY, _("Attached Dialog"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText44 = new wxStaticText( m_scSetGuiPanel, wxID_ANY, _("Attached icon bar"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText44->Wrap( -1 );
 	fgSizer52->Add( m_staticText44, 0, wxBOTTOM|wxLEFT|wxRIGHT, 5 );
 
 	wxStaticText* m_staticText45;
-	m_staticText45 = new wxStaticText( m_scSetGuiPanel, wxID_ANY, _("Isolated Dialog"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText45 = new wxStaticText( m_scSetGuiPanel, wxID_ANY, _("Isolated icon bar"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText45->Wrap( -1 );
 	fgSizer52->Add( m_staticText45, 0, wxBOTTOM|wxLEFT|wxRIGHT, 5 );
 
@@ -1074,7 +1074,7 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	fgSizer52->Add( m_biAltitude, 0, wxALL, 2 );
 
 	wxStaticText* m_staticText46;
-	m_staticText46 = new wxStaticText( m_scSetGuiPanel, wxID_ANY, _("Altitude Choice"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText46 = new wxStaticText( m_scSetGuiPanel, wxID_ANY, _("Geopot. Height Choice"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText46->Wrap( -1 );
 	fgSizer52->Add( m_staticText46, 0, wxALL, 3 );
 

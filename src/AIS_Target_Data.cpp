@@ -1139,7 +1139,7 @@ wxString AIS_Target_Data::GetCountryCode( bool b_CntryLongStr )  //false = Short
     case 636: return b_CntryLongStr ? _("Liberia") : _T("LR") ;
     case 637: return b_CntryLongStr ? _("Liberia") : _T("LR") ;
     case 638: return b_CntryLongStr ? _("South Sudan (Republic of)") : _T("SS") ;
-    case 642: return b_CntryLongStr ? _("Libyan Arab Jamahiriya") : _T("LY") ;
+    case 642: return b_CntryLongStr ? _("Libya") : _T("LY") ;
     case 644: return b_CntryLongStr ? _("Lesotho") : _T("LS") ;
     case 645: return b_CntryLongStr ? _("Mauritius") : _T("MU") ;
     case 647: return b_CntryLongStr ? _("Madagascar") : _T("MG") ;

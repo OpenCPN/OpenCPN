@@ -228,6 +228,10 @@ void GetLevel0Map( glTextureDescriptor *ptd,  const wxRect &rect, wxString &char
 void GetFullMap( glTextureDescriptor *ptd,  const wxRect &rect, wxString chart_path, int level)
 {
     
+    //  Confirm that the uncompressed bits are all available, get them if not there yet
+    if( ptd->map_array[level]) 
+        return;
+
     int dim = g_GLOptions.m_iTextureDimension;
     int size = g_tile_size;
     
@@ -236,44 +240,37 @@ void GetFullMap( glTextureDescriptor *ptd,  const wxRect &rect, wxString chart_p
         size /= 4;
         if(size < 8)
             size = 8;
+    }
         
+    if( level > 0 && ptd->map_array[level - 1] ){
+        ptd->map_array[level] = (unsigned char *) malloc( dim * dim * 3 );
+        MipMap_24( 2*dim, 2*dim, ptd->map_array[level - 1], ptd->map_array[level] );
     }
     
-    
-    //  Confirm that the uncompressed bits are all available, get them if not there yet
-    if( !ptd->map_array[level]) {
-        
-        
-        if( level > 0 && ptd->map_array[level - 1] ){
-            ptd->map_array[level] = (unsigned char *) malloc( dim * dim * 3 );
-            MipMap_24( 2*dim, 2*dim, ptd->map_array[level - 1], ptd->map_array[level] );
+    else {
+        //      Any holes in the bit pointer array below the level requested?
+        bool b_hole = false;
+        for(int i=0 ; i < level ; i++){ 
+            if( !ptd->map_array[i] ){
+                b_hole = true;
+                break;
+            }
         }
         
-        else {
-            //      Any holes in the bit pointer array below the level requested?
-            bool b_hole = false;
-            for(int i=0 ; i < level ; i++){ 
-                if( !ptd->map_array[i] ){
-                    b_hole = true;
-                    break;
+        if( ( level == 0 ) || b_hole ){
+            //Get level 0 bits from chart?
+            if( !ptd->map_array[0] )
+                GetLevel0Map( ptd, rect, chart_path );
+                
+            int i_lev = 1;
+            int dimh = g_GLOptions.m_iTextureDimension / 2;         // starts at level 1
+            while( i_lev <= level ){
+                if( !ptd->map_array[i_lev] ) {
+                    ptd->map_array[i_lev] = (unsigned char *) malloc( dimh * dimh * 3 );
+                    MipMap_24( 2*dimh, 2*dimh, ptd->map_array[i_lev - 1], ptd->map_array[i_lev] );
                 }
-            }
-            
-            if( ( level == 0 ) || b_hole ){
-                //Get level 0 bits from chart?
-                if( !ptd->map_array[0] )
-                    GetLevel0Map( ptd, rect, chart_path );
-                    
-                int i_lev = 1;
-                int dimh = g_GLOptions.m_iTextureDimension / 2;         // starts at level 1
-                while( i_lev <= level ){
-                    if( !ptd->map_array[i_lev] ) {
-                        ptd->map_array[i_lev] = (unsigned char *) malloc( dimh * dimh * 3 );
-                        MipMap_24( 2*dimh, 2*dimh, ptd->map_array[i_lev - 1], ptd->map_array[i_lev] );
-                    }
-                    dimh /= 2;
-                    i_lev++;
-                }
+                dimh /= 2;
+                i_lev++;
             }
         }
     }
@@ -1941,102 +1938,75 @@ int glTexFactory::GetTextureLevel( glTextureDescriptor *ptd, const wxRect &rect,
 }
 
 
-
+// return not used
+// false? never
+// true 
 bool glTexFactory::LoadHeader(void)
 {
-    bool ret = false;
-    if( !m_hdrOK) {
+    if(m_hdrOK)
+        return true;
 
-        if(wxFileName::FileExists(m_CompressedCacheFilePath)) {
+    bool need_new = false;
+
+    if(wxFileName::FileExists(m_CompressedCacheFilePath)) {
+        
+        m_fs = new wxFFile(m_CompressedCacheFilePath, _T("rb+"));
+        if(m_fs->IsOpened()){
+        
+            CompressedCacheHeader hdr;
             
-            m_fs = new wxFFile(m_CompressedCacheFilePath, _T("rb+"));
-            if(m_fs->IsOpened()){
+            //  Header is located at the end of the file
+            wxFileOffset hdr_offset = m_fs->Length() -sizeof( hdr);
+            hdr_offset = m_fs->Seek( hdr_offset );
             
-                CompressedCacheHeader hdr;
-                
-                //  Header is located at the end of the file
-                wxFileOffset hdr_offset = m_fs->Length() -sizeof( hdr);
-                hdr_offset = m_fs->Seek( hdr_offset );
-                
-                if( sizeof( hdr) == m_fs->Read(&hdr, sizeof( hdr ))) {
-                    if( hdr.magic != COMPRESSED_CACHE_MAGIC ||
-                        hdr.chartdate != m_chart_date_binary ||
-                        hdr.format != g_raster_format) {
-                        
-                        //  Bad header signature    
-                        m_fs->Close();
-                        delete m_fs;
+            if( sizeof( hdr) == m_fs->Read(&hdr, sizeof( hdr ))) {
+                if( hdr.magic != COMPRESSED_CACHE_MAGIC ||
+                    hdr.chartdate != m_chart_date_binary ||
+                    hdr.format != g_raster_format) {
                     
-                        m_fs = new wxFFile(m_CompressedCacheFilePath, _T("wb"));
-                        n_catalog_entries = 0;
-                        m_catalog_offset = 0;
-                        WriteCatalogAndHeader();
-                        m_fs->Close();
-                        delete m_fs;
-                    
-                        m_fs = new wxFFile(m_CompressedCacheFilePath, _T("rb+"));
-                    
-                        m_hdrOK = true;
-                    }
-                    else {      // good header
-                        n_catalog_entries = hdr.m_nentries;
-                        m_catalog_offset = hdr.catalog_offset;
-                        m_hdrOK = true;
-                        ret = true;
-                    }
+                    //  Bad header signature    
+                    delete m_fs;
+                    need_new = true;
                 }
-                else{  // file exists, and is empty
-                    n_catalog_entries = 0;
-                    m_catalog_offset = 0;
-                    WriteCatalogAndHeader();
-                    m_hdrOK = true;
-                    ret = true;
+                else {      // good header
+                    n_catalog_entries = hdr.m_nentries;
+                    m_catalog_offset = hdr.catalog_offset;
                 }
-            }  // is open
-            
-            else{               // some problem opening file, probably permissions on Win7
-                delete m_fs;
-                wxRemoveFile(m_CompressedCacheFilePath);
-                
-                m_fs = new wxFFile(m_CompressedCacheFilePath, _T("wb"));
+            }
+            else{  // file exists, and is empty
                 n_catalog_entries = 0;
                 m_catalog_offset = 0;
                 WriteCatalogAndHeader();
-                m_fs->Close();
-                delete m_fs;
-                
-                m_fs = new wxFFile(m_CompressedCacheFilePath, _T("rb+"));
-                
-                m_hdrOK = true;
-                ret = true;
-                
-                
             }
-            
-        }   // exists
-       
-        else {   // File does not exist
-            wxFileName fn(m_CompressedCacheFilePath);
-            if(!fn.DirExists())
-                fn.Mkdir();
-            
-            //  Create new file, with empty catalog, and correct header
-            m_fs = new wxFFile(m_CompressedCacheFilePath, _T("wb"));
-            n_catalog_entries = 0;
-            m_catalog_offset = 0;
-            WriteCatalogAndHeader();
-            m_fs->Close();
+        }  // is open
+        
+        else{               // some problem opening file, probably permissions on Win7
             delete m_fs;
-
-            m_fs = new wxFFile(m_CompressedCacheFilePath, _T("rb+"));
-            ret = true;
-            
+            need_new = true;
+            wxRemoveFile(m_CompressedCacheFilePath);
         }
-    }
-    else 
-        ret = true;
+        
+    }   // exists
     
-    return ret;
+    else {   // File does not exist
+        wxFileName fn(m_CompressedCacheFilePath);
+        if(!fn.DirExists())
+            fn.Mkdir();
+        need_new = true;
+    }
+
+    if (need_new) {
+        //  Create new file, with empty catalog, and correct header
+        m_fs = new wxFFile(m_CompressedCacheFilePath, _T("wb"));
+        n_catalog_entries = 0;
+        m_catalog_offset = 0;
+        WriteCatalogAndHeader();
+        delete m_fs;
+
+        m_fs = new wxFFile(m_CompressedCacheFilePath, _T("rb+"));
+    }
+    m_hdrOK = true;
+    return true;
 }
 
 bool glTexFactory::AddCacheEntryValue(const CatalogEntry &p)
@@ -2064,32 +2034,38 @@ bool glTexFactory::LoadCatalog(void)
 {
     if(m_catalogOK)
         return true;
-    if( LoadHeader() ){
-        m_fs->Seek(m_catalog_offset);
- 
-        CatalogEntry ps;
-        int buf_size =  ps.GetSerialSize();
-        unsigned char *buf = (unsigned char *)malloc(buf_size);
-        
-        CatalogEntry p;
-        bool bad = false;
-        for(int i=0 ; i < n_catalog_entries ; i++){
-            m_fs->Read(buf, buf_size);
-            p.DeSerialize(buf);
-            if (!AddCacheEntryValue(p))
-                bad = true;
-        }
-        
-        free(buf);
-        if (bad && !m_catalogCorrupted) {
-            wxLogMessage(_T("Bad cache catalog %s %s"), m_ChartPath.c_str(), m_CompressedCacheFilePath.c_str());
-            m_catalogCorrupted = true;
-        }
+
+    if( !LoadHeader() )
+        return false;
+    
+    if (n_catalog_entries == 0) {
+        // new empty header
         m_catalogOK = true;
         return true;
     }
-    else
-        return false;
+    
+    m_fs->Seek(m_catalog_offset);
+ 
+    CatalogEntry ps;
+    int buf_size =  ps.GetSerialSize();
+    unsigned char *buf = (unsigned char *)malloc(buf_size);
+    
+    CatalogEntry p;
+    bool bad = false;
+    for(int i=0 ; i < n_catalog_entries ; i++){
+        m_fs->Read(buf, buf_size);
+        p.DeSerialize(buf);
+        if (!AddCacheEntryValue(p))
+            bad = true;
+    }
+    
+    free(buf);
+    if (bad && !m_catalogCorrupted) {
+        wxLogMessage(_T("Bad cache catalog %s %s"), m_ChartPath.c_str(), m_CompressedCacheFilePath.c_str());
+        m_catalogCorrupted = true;
+    }
+    m_catalogOK = true;
+    return true;
 }
 
 
@@ -2145,64 +2121,49 @@ bool glTexFactory::WriteCatalogAndHeader()
     else
         return false;
 }
-    
+
+// return false on error (currently not used by callers)
 bool glTexFactory::UpdateCache(unsigned char *data, int data_size, glTextureDescriptor *ptd, int level,
                                ColorScheme color_scheme)
 {
-    bool b_found = false;
-    //  Search the catalog for this particular texture
-    if (GetCacheEntryValue(level, ptd->x, ptd->y, color_scheme) != 0) {
-        b_found = true;
-    }
-    
-    if( ! b_found ) {                           // not found, so add it
+    if (level < 0 || level >= MAX_TEX_LEVEL)
+        return false;	// XXX BUG wrong level, assert ?
 
-        // Make sure the file exists
-        if(m_fs == 0){
-            
-            wxFileName fn(m_CompressedCacheFilePath);
-            
-            if(!fn.DirExists())
-                fn.Mkdir();
-            
-            if(!fn.FileExists()){
-                wxFFile new_file(m_CompressedCacheFilePath, _T("wb"));
-                new_file.Close();
-            }
-            
-            m_fs = new wxFFile(m_CompressedCacheFilePath, _T("rb+"));
-            
-            WriteCatalogAndHeader();
-        }
-        
-        if(m_fs->IsOpened() ){
-        //      Create a new catalog entry
-            CatalogEntry p( level, ptd->x, ptd->y, color_scheme);
-            
-            n_catalog_entries++;
-        
-        //      Write the compressed data to disk
-             p.v.texture_offset = m_catalog_offset;
-            
-            int max_compressed_size = LZ4_COMPRESSBOUND(g_tile_size);
-            char *compressed_data = new char[max_compressed_size];
-            
-            int compressed_size = LZ4_compressHC2((char*)data, compressed_data, data_size, 4);
-            p.v.compressed_size = compressed_size;
-            AddCacheEntryValue(p);
-            
-            //      We write the new data at the current catalog offset, overwriting the old catalog
-            m_fs->Seek( m_catalog_offset );
-            m_fs->Write( compressed_data, compressed_size );
-            
-            delete [] compressed_data;
-            
-            
-        //      Write the catalog and Header (which follows the catalog at the end of the file
-            m_catalog_offset += compressed_size;
-            WriteCatalogAndHeader();
-        }
-    }
+    //  Search the catalog for this particular texture
+    if (GetCacheEntryValue(level, ptd->x, ptd->y, color_scheme) != 0) 
+        return true;
+
+    // not found, so add it
+    // Make sure the file exists
+    wxASSERT(m_fs != 0);
+    
+    if( !m_fs->IsOpened() )
+        return false;
+
+    //      Create a new catalog entry
+    CatalogEntry p( level, ptd->x, ptd->y, color_scheme);
+    
+    n_catalog_entries++;
+    
+    //      Write the compressed data to disk
+     p.v.texture_offset = m_catalog_offset;
+    
+    int max_compressed_size = LZ4_COMPRESSBOUND(g_tile_size);
+    char *compressed_data = new char[max_compressed_size];
+    
+    int compressed_size = LZ4_compressHC2((char*)data, compressed_data, data_size, 4);
+    p.v.compressed_size = compressed_size;
+    AddCacheEntryValue(p);
+    
+    //      We write the new data at the current catalog offset, overwriting the old catalog
+    m_fs->Seek( m_catalog_offset );
+    m_fs->Write( compressed_data, compressed_size );
+    
+    delete [] compressed_data;
+    
+    //      Write the catalog and Header (which follows the catalog at the end of the file
+    m_catalog_offset += compressed_size;
+    WriteCatalogAndHeader();
     
     return true;
 }
@@ -2210,54 +2171,36 @@ bool glTexFactory::UpdateCache(unsigned char *data, int data_size, glTextureDesc
 bool glTexFactory::UpdateCachePrecomp(unsigned char *data, int data_size, glTextureDescriptor *ptd, int level,
                                       ColorScheme color_scheme)
 {
-    bool b_found = false;
+    if (level < 0 || level >= MAX_TEX_LEVEL)
+        return false;	// XXX BUG
+
     //  Search the catalog for this particular texture
-    if (GetCacheEntryValue(level, ptd->x, ptd->y, color_scheme) != 0)  {
-        b_found = true;
-    }
+    if (GetCacheEntryValue(level, ptd->x, ptd->y, color_scheme) != 0) 
+        return true;
     
-    if( ! b_found ) {                           // not found, so add it
-
-        // Make sure the file exists
-        if(m_fs == 0){
-            
-            wxFileName fn(m_CompressedCacheFilePath);
-            
-            if(!fn.DirExists())
-                fn.Mkdir();
-            
-            if(!fn.FileExists()){
-                wxFFile new_file(m_CompressedCacheFilePath, _T("wb"));
-                new_file.Close();
-            }
-            
-            m_fs = new wxFFile(m_CompressedCacheFilePath, _T("rb+"));
-            
-            WriteCatalogAndHeader();
-        }
+    // Make sure the file exists
+    wxASSERT(m_fs != 0);
         
-        if(m_fs->IsOpened() ){
-            //      Create a new catalog entry
-            CatalogEntry p( level, ptd->x, ptd->y, color_scheme);
-            
-            //      Write the compressed data to disk
-            p.v.texture_offset = m_catalog_offset;
-            
-            p.v.compressed_size = data_size;
-            AddCacheEntryValue(p);            
-            n_catalog_entries++;
+    if( ! m_fs->IsOpened() )
+        return false;
 
-            //      We write the new data at the current catalog offset, overwriting the old catalog
-            m_fs->Seek( m_catalog_offset );
-            m_fs->Write( data, data_size );
-            
-            
-            //      Write the catalog and Header (which follows the catalog at the end of the file
-            m_catalog_offset += data_size;
-            WriteCatalogAndHeader();
-            
-        }
-    }
+    //      Create a new catalog entry
+    CatalogEntry p( level, ptd->x, ptd->y, color_scheme);
+    
+    //      Write the compressed data to disk
+    p.v.texture_offset = m_catalog_offset;
+    
+    p.v.compressed_size = data_size;
+    AddCacheEntryValue(p);            
+    n_catalog_entries++;
+
+    //      We write the new data at the current catalog offset, overwriting the old catalog
+    m_fs->Seek( m_catalog_offset );
+    m_fs->Write( data, data_size );
+    
+    //      Write the catalog and Header (which follows the catalog at the end of the file
+    m_catalog_offset += data_size;
+    WriteCatalogAndHeader();
     
     return true;
 }

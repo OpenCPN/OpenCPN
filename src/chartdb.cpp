@@ -920,23 +920,26 @@ bool ChartDB::IsChartLocked( int index )
     return false;
 }
     
-void ChartDB::LockCacheChart( int index )
+bool ChartDB::LockCacheChart( int index )
 {
     //    Search the cache
+    bool ret = false;
     if( wxMUTEX_NO_ERROR == m_cache_mutex.Lock() ){
         
         unsigned int nCache = pChartCache->GetCount();
         for(unsigned int i=0 ; i<nCache ; i++)
         {
             CacheEntry *pce = (CacheEntry *)(pChartCache->Item(i));
-            if(pce->dbIndex == index)
+            if(pce->dbIndex == index )
             {
                 pce->n_lock++;
+                ret = true;
                 break;
             }
         }
         m_cache_mutex.Unlock();
     }
+    return ret;
 }
 
 void ChartDB::UnLockCacheChart( int index )
@@ -995,12 +998,19 @@ ChartBase *ChartDB::OpenChartFromStack(ChartStack *pStack, int StackEntry, Chart
     return OpenChartUsingCache(pStack->GetDBIndex(StackEntry), init_flag);
 }
 
-ChartBase *ChartDB::OpenChartFromDBAndLock( int index, ChartInitFlag init_flag )
+ChartBase *ChartDB::OpenChartFromDBAndLock( int index, ChartInitFlag init_flag, bool lock )
 {
     wxCriticalSectionLocker locker(m_critSect);
     ChartBase *pret = OpenChartUsingCache(index, init_flag);
-    LockCacheChart( index );
+    if (lock && pret)
+        LockCacheChart( index );
     return pret;
+}
+
+ChartBase *ChartDB::OpenChartFromDBAndLock(wxString chart_path, ChartInitFlag init_flag)
+{
+    int dbii = FinddbIndex( chart_path );
+    return OpenChartFromDBAndLock(dbii, init_flag);
 }
 
 CacheEntry *ChartDB::FindOldestDeleteCandidate( bool blog)
@@ -1060,6 +1070,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
       
       ChartBase *Ch = NULL;
       CacheEntry *pce = NULL;
+      int old_lock = 0;
 
       bool bInCache = false;
       m_ticks++;
@@ -1099,13 +1110,15 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                     if(pthumbwin && pthumbwin->pThumbChart == Ch)
                        pthumbwin->pThumbChart = NULL;
                     delete Ch;                                  // chart is not useable
-                    
+                    // but may be locked in quilt
                     if( wxMUTEX_NO_ERROR == m_cache_mutex.Lock() ){
+                        old_lock = pce->n_lock;
                         pChartCache->Remove(pce);                   // so remove it
+                        delete pce;
                         m_cache_mutex.Unlock();
                     }
+                    // XXX and if there's a mutex error?
                         
-                    delete pce;
                     bInCache = false;
               }
           }
@@ -1338,7 +1351,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                               pce->dbIndex = dbindex;
 //                              printf("    Adding chart %d\n", dbindex);
                               pce->RecentTime = m_ticks;
-                              pce->n_lock = 0;
+                              pce->n_lock = old_lock;
 
                               if( wxMUTEX_NO_ERROR == m_cache_mutex.Lock() ){
                                 pChartCache->Add((void *)pce);
@@ -1385,6 +1398,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
       return NULL;
 }
 
+// 
 bool ChartDB::DeleteCacheChart(ChartBase *pDeleteCandidate)
 {
     bool retval = false;
@@ -1407,8 +1421,13 @@ bool ChartDB::DeleteCacheChart(ChartBase *pDeleteCandidate)
 
             if(pce)
             {
-                  DeleteCacheEntry( pce);
-                  retval = true;
+                  if(pce->n_lock > 0)
+                    pce->n_lock--;
+
+                  if( pce->n_lock == 0) {
+                      DeleteCacheEntry( pce);
+                      retval = true;
+                  }
             }
       }
       
