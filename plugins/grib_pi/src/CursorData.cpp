@@ -225,13 +225,19 @@ void CursorData::PopulateTrackingControls( bool vertical )
            : wxString::Format( _T("%1.*f "), lev == (int) lev ? 0 : 1, lev )
                 .Append( m_gparent.m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::GEO_ALTITUDE) )
                 );
+    wxString pre = _T(" ");
     if( m_Altitude ) {
-        t.Prepend( _T(" ") + _("at Geopotential Height") +_T(" ") );
+        pre.Append(_("at Geopotential Height"));
+        pre.Append(_T(" "));
         m_tcAltitude->SetToolTip( _("Altitude" ) + t );
-        m_tcTemp->SetToolTip( _("Temperature") + t ); 
+        m_tcTemp->SetToolTip( _("Temperature") + t );
         m_tcRelHumid->SetToolTip( _("Relative Humidity") + t );
-    } else
-        t.Prepend( _T(" ") + _("at") + _T(" ") );
+    } else{
+        pre.Append(_("at"));
+        pre.Append(_T(" "));
+    }
+    t.Prepend(pre);
+
     m_tcWindSpeed->SetToolTip( _("Wind Speed") + t );
     m_tcWindSpeedBf->SetToolTip( _("Wind Speed in Bf") + t );
     m_tcWindDirection->SetToolTip( _("Wind Direction") + t );
