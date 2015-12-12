@@ -374,6 +374,7 @@ RouteProp::RouteProp( wxWindow* parent, wxWindowID id, const wxString& caption, 
     m_pEnroutePoint = NULL;
     m_bStartNow = false;
 
+    m_pRoute = 0;
     m_pEnroutePoint = NULL;
     m_bStartNow = false;
     long wstyle = style;

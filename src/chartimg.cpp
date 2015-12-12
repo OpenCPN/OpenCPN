@@ -1436,7 +1436,6 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
            TODO: should this be added as a subroutine for GEO chartso? */
       if((m_projection != PROJECTION_MERCATOR && m_projection != PROJECTION_TRANSVERSE_MERCATOR)
           || m_Chart_Skew > 2) {
-          
           //   Analyze Refpoints early because we need georef coefficient here.
           AnalyzeRefpoints( false );              // no post test needed
      
@@ -5035,6 +5034,19 @@ int   ChartBaseBSB::AnalyzeRefpoints(bool b_testSolution)
 
 //          Build the Control Point Structure, etc
         cPoints.count = nRefpoint;
+        if (cPoints.status)
+        {
+              // AnalyzeRefpoints can be called twice
+              free(cPoints.tx );
+              free(cPoints.ty );
+              free(cPoints.lon );
+              free(cPoints.lat );
+
+              free(cPoints.pwx );
+              free(cPoints.wpx );
+              free(cPoints.pwy );
+              free(cPoints.wpy );
+        }
 
         cPoints.tx  = (double *)malloc(nRefpoint * sizeof(double));
         cPoints.ty  = (double *)malloc(nRefpoint * sizeof(double));
@@ -5045,7 +5057,7 @@ int   ChartBaseBSB::AnalyzeRefpoints(bool b_testSolution)
         cPoints.wpx = (double *)malloc(12 * sizeof(double));
         cPoints.pwy = (double *)malloc(12 * sizeof(double));
         cPoints.wpy = (double *)malloc(12 * sizeof(double));
-
+        cPoints.status = 1;
 
         //  Find the two REF points that are farthest apart
         double dist_max = 0.;
@@ -5107,8 +5119,6 @@ int   ChartBaseBSB::AnalyzeRefpoints(bool b_testSolution)
               toTM(latmax, lonmax, m_proj_lat, m_proj_lon, &cPoints.lonmax, &cPoints.latmax);
               toTM(latmin, lonmin, m_proj_lat, m_proj_lon, &cPoints.lonmin, &cPoints.latmin);
 
-              cPoints.status = 1;
-
               Georef_Calculate_Coefficients_Proj(&cPoints);
 
        }
@@ -5158,8 +5168,6 @@ int   ChartBaseBSB::AnalyzeRefpoints(bool b_testSolution)
              cPoints.tymin = platmin;
              toSM_ECC(latmax, lonmax, m_proj_lat, m_proj_lon, &cPoints.lonmax, &cPoints.latmax);
              toSM_ECC(latmin, lonmin, m_proj_lat, m_proj_lon, &cPoints.lonmin, &cPoints.latmin);
-
-             cPoints.status = 1;
 
              Georef_Calculate_Coefficients_Proj(&cPoints);
 
@@ -5243,8 +5251,6 @@ int   ChartBaseBSB::AnalyzeRefpoints(bool b_testSolution)
              cPoints.tymin = platmin;
              toPOLY(latmax, lonmax, m_proj_lat, m_proj_lon, &cPoints.lonmax, &cPoints.latmax);
              toPOLY(latmin, lonmin, m_proj_lat, m_proj_lon, &cPoints.lonmin, &cPoints.latmin);
-
-             cPoints.status = 1;
 
              Georef_Calculate_Coefficients_Proj(&cPoints);
 

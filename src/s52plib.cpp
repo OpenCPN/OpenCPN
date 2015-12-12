@@ -7933,7 +7933,9 @@ bool RenderFromHPGL::Render( char *str, char *col, wxPoint &r, wxPoint &pivot, d
     wxPoint lineEnd;
 
     scaleFactor = 100.0 / plib->GetPPMM();
-    
+    // SW is not always defined, cf. US/US4CA17M/US4CA17M.000
+    penWidth = 1;
+
     wxStringTokenizer commands( wxString( str, wxConvUTF8 ), _T(";") );
     while( commands.HasMoreTokens() ) {
         wxString command = commands.GetNextToken();
