@@ -247,6 +247,7 @@ extern double           g_COGAvg;               // only needed for debug....
 extern int              g_click_stop;
 extern double           g_ownship_predictor_minutes;
 extern double           g_ownship_HDTpredictor_miles;
+extern bool             g_ownship_predictor_colour_red;
 
 extern ArrayOfInts      g_quilt_noshow_index_array;
 extern ChartStack       *pCurrentStack;
@@ -3499,6 +3500,8 @@ static int s_ownship_icon[] = { 5, -42, 11, -28, 11, 42, -11, 42, -11, -28, -5, 
 
 wxColour ChartCanvas::PredColor()
 { 
+    if(g_ownship_predictor_colour_red) return GetGlobalColor( _T ( "URED" ) );
+    
     if( SHIP_NORMAL == m_ownship_state )
         return GetGlobalColor( _T ( "URED" ) );
     return GetGlobalColor( _T ( "GREY1" ) );

@@ -331,6 +331,7 @@ class options : private Uncopyable,
   wxCheckBox *pCBCM93, *pCBLookAhead, *pSkewComp, *pOpenGL, *pSmoothPanZoom;
   wxCheckBox *pFullScreenQuilt, *pMobile, *pResponsive, *pOverzoomEmphasis;
   wxCheckBox *pOZScaleVector, *pToolbarAutoHideCB;
+  wxCheckBox *m_pPredictorColour;
   wxTextCtrl *pCOGUPUpdateSecs, *m_pText_OSCOG_Predictor, *pScreenMM;
   wxTextCtrl *pToolbarHideSecs, *m_pText_OSHDT_Predictor;
   wxChoice *m_pShipIconType, *m_pcTCDatasets;

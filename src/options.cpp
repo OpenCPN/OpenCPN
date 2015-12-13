@@ -200,6 +200,7 @@ extern bool g_bLookAhead;
 
 extern double g_ownship_predictor_minutes;
 extern double g_ownship_HDTpredictor_miles;
+extern bool   g_ownship_predictor_colour_red;
 
 extern bool g_bAISRolloverShowClass;
 extern bool g_bAISRolloverShowCOG;
@@ -2364,6 +2365,12 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
   dispOptionsGrid->AddGrowableCol(1);
   dispOptions->Add(dispOptionsGrid, 0, wxALL | wxEXPAND, border_size);
 
+  m_pPredictorColour = new wxCheckBox(itemPanelShip, wxID_ANY,
+                                      _("Predictor always RED"));
+  
+  dispOptionsGrid->Add(m_pPredictorColour, 0, wxALIGN_CENTER_VERTICAL|wxALL );
+  dispOptionsGrid->Add( 0, 0, 1, wxEXPAND );
+  
   wxStaticText* pStatic_OSCOG_Predictor = new wxStaticText(
       itemPanelShip, wxID_ANY, _("COG Predictor Length (min)"));
   dispOptionsGrid->Add(pStatic_OSCOG_Predictor, 0);
@@ -4807,7 +4814,8 @@ void options::SetInitialSettings(void) {
   else
     s.Printf(_T("%4.0f"), g_ownship_HDTpredictor_miles);
   m_pText_OSHDT_Predictor->SetValue(s);
-
+  m_pPredictorColour->SetValue(g_ownship_predictor_colour_red);
+  
   m_pShipIconType->SetSelection(g_OwnShipIconType);
   wxCommandEvent eDummy;
   OnShipTypeSelect(eDummy);
@@ -5722,7 +5730,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
   m_pText_OSCOG_Predictor->GetValue().ToDouble(&g_ownship_predictor_minutes);
   m_pText_OSHDT_Predictor->GetValue().ToDouble(&g_ownship_HDTpredictor_miles);
-
+  g_ownship_predictor_colour_red = m_pPredictorColour->GetValue();
+  
   double temp_dbl;
   g_iNavAidRadarRingsNumberVisible =
       pNavAidRadarRingsNumberVisible->GetSelection();
