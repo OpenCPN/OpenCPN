@@ -1639,11 +1639,11 @@ void options::CreatePanel_NMEA_Compact(size_t parent, int border_size,
                            wxCommandEventHandler(options::OnValChange), NULL,
                            this);
 
-#if wxCHECK_VERSION(2, 9, 0)
   m_lcSources->Connect(wxEVT_LEFT_DOWN,
                        wxMouseEventHandler(options::OnConnectionToggleEnableMouse),
                        NULL, this);
-  m_lcSources->Connect(wxEVT_LIST_ITEM_ACTIVATED,
+#if wxCHECK_VERSION(2, 9, 0)
+    m_lcSources->Connect(wxEVT_LIST_ITEM_ACTIVATED,
                        wxListEventHandler(options::OnConnectionToggleEnable),
                        NULL, this);
 #endif
@@ -2253,10 +2253,10 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
                            wxCommandEventHandler(options::OnValChange), NULL,
                            this);
 
-#if wxCHECK_VERSION(2, 9, 0)
   m_lcSources->Connect(wxEVT_LEFT_DOWN,
                        wxMouseEventHandler(options::OnConnectionToggleEnableMouse),
                        NULL, this);
+#if wxCHECK_VERSION(2, 9, 0)
   m_lcSources->Connect(wxEVT_LIST_ITEM_ACTIVATED,
                        wxListEventHandler(options::OnConnectionToggleEnable),
                        NULL, this);
