@@ -4124,9 +4124,8 @@ void glChartCanvas::Render()
                 if( ( fabs( deltax - dx ) > 1e-2 ) || ( fabs( deltay - dy ) > 1e-2 ) )
                     b_whole_pixel = false;
                     
-                accelerated_pan = 
-//                    (!VPoint.b_quilt || cc1->m_pQuilt->IsVPBlittable( VPoint, dx, dy, true )) &&
-                      b_whole_pixel && abs(dx) < m_cache_tex_x && abs(dy) < m_cache_tex_y;
+                accelerated_pan = b_whole_pixel && abs(dx) < m_cache_tex_x && abs(dy) < m_cache_tex_y
+                                  && sx == m_cache_tex_x && sy == m_cache_tex_y;
             }
 
             // do we allow accelerated panning?  can we perform it here?
@@ -4165,8 +4164,6 @@ void glChartCanvas::Render()
                     // Render the cached texture as quad to FBO(m_blit_tex) with offsets
                     int x1, x2, y1, y2;
 
-                    wxASSERT(sx == m_cache_tex_x);
-                    wxASSERT(sy == m_cache_tex_y);
                     int ow = VPoint.pix_width - abs( dx );
                     int oh = VPoint.pix_height - abs( dy );
                     if( dx > 0 )
