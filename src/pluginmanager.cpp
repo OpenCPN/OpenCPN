@@ -1988,6 +1988,11 @@ wxFont *GetOCPNScaledFont_PlugIn(wxString TextElement, int default_size)
     return GetOCPNScaledFont( TextElement, default_size );
 }
 
+double GetOCPNGUIToolScaleFactor_PlugIn(int GUIScaleFactor)
+{
+    return g_Platform->GetToolbarScaleFactor(GUIScaleFactor);
+}
+
 wxFont GetOCPNGUIScaledFont_PlugIn(wxString item)
 {
     return GetOCPNGUIScaledFont( item );
@@ -1997,7 +2002,6 @@ bool AddPersistentFontKey(wxString TextElement)
 {
     return FontMgr::Get().AddAuxKey( TextElement );
 }
-
 
 wxColour GetFontColour_PlugIn(wxString TextElement)
 {
