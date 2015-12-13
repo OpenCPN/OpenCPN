@@ -466,8 +466,8 @@ wxString GRIBUICtrlBar::GetNewestFileInDirectory()
     wxArrayString file_array;
     int m_n_files = 0;
     m_n_files = wxDir::GetAllFiles( m_grib_dir, &file_array, _T ( "*.grb" ), wxDIR_FILES );
-    m_n_files += wxDir::GetAllFiles( m_grib_dir, &file_array, _T ( "*.bz2" ),
-        wxDIR_FILES );
+    m_n_files += wxDir::GetAllFiles( m_grib_dir, &file_array, _T ( "*.bz2" ), wxDIR_FILES );
+    m_n_files += wxDir::GetAllFiles( m_grib_dir, &file_array, _T ( "*.gz" ), wxDIR_FILES );
     if( m_n_files ) {
         file_array.Sort( CompareFileStringTime );              //sort the files by File Modification Date
 
@@ -1178,7 +1178,7 @@ void GRIBUICtrlBar::OnOpenFile( wxCommandEvent& event )
     }
 
     wxFileDialog *dialog = new wxFileDialog(NULL, _("Select a GRIB file"), m_grib_dir,
-        _T(""), wxT ( "Grib files (*.grb;*.bz2)|*.grb;*.bz2|All files (*)|*.*"), wxFD_OPEN, wxDefaultPosition,
+        _T(""), wxT ( "Grib files (*.grb;*.bz2;*.gz)|*.grb;*.bz2;*.gz|All files (*)|*.*"), wxFD_OPEN, wxDefaultPosition,
         wxDefaultSize, _T("File Dialog") );
 
     if( dialog->ShowModal() == wxID_OK ) {
