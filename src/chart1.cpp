@@ -108,6 +108,8 @@
 #include "S57QueryDialog.h"
 #include "glTexCache.h"
 
+#include "AIS_TempSliderDlg.h"
+
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
 #endif
@@ -269,6 +271,8 @@ ChartDummy                *pDummyChart;
 
 ocpnToolBarSimple*        g_toolbar;
 ocpnStyle::StyleManager*  g_StyleManager;
+
+AIS_weight_settingsFrame* AIS_WeightDlg;
 
 // Global print data, to remember settings during the session
 wxPrintData               *g_printData = (wxPrintData*) NULL ;
@@ -3936,6 +3940,13 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
                     m_lastAISiconName = iconName_Array[AIS_Toolbar_Switch];
                 }
             }
+
+            if (g_bShowScaled){
+                AIS_WeightDlg = new AIS_weight_settingsFrame( NULL, wxID_ANY);
+                AIS_WeightDlg->Show();
+            }
+            else 
+                if ( AIS_WeightDlg != NULL ) AIS_WeightDlg->Hide();
 
             SetMenubarItemState(ID_MENU_AIS_TARGETS, g_bShowAIS);
 

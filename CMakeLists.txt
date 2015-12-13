@@ -771,6 +771,7 @@ SET(HDRS
                 include/canvasMenu.h
                 include/OCPNPlatform.h
                 include/S57Sector.h
+                include/AIS_TempSliderDlg.h
 )
 
 SET(SRCS
@@ -860,6 +861,7 @@ SET(SRCS
                 src/viewport.cpp
                 src/canvasMenu.cpp
                 src/OCPNPlatform.cpp
+                src/AIS_TempSliderDlg.cpp 
     )
 
 IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)

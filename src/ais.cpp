@@ -947,30 +947,39 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
     int targetscale = 100;
         if ( g_bShowScaled )
         {
-            double temp_importance = 0.; //calc the importance of target
+            double temp_importance, So, Tcpa, Cpa, Rang,Siz = 0.; //calc the importance of target
+            So = .0;
+            So = g_ScaledNumWeightSOG/12 * td->SOG; //0 - 12 knts gives 0 - g_ScaledNumWeightSOG weight
+            if (So > g_ScaledNumWeightSOG) So = g_ScaledNumWeightSOG; 
+                       
+            Tcpa=.0;
+            Tcpa = g_ScaledNumWeightTCPA / 60 * td->TCPA; //0 - 60 minutes gives 0 - g_ScaledNumWeightTCPA weight
+            if (Tcpa > g_ScaledNumWeightTCPA) Tcpa = g_ScaledNumWeightTCPA;
+                else if ( Tcpa < (-.5 *g_ScaledNumWeightTCPA) ) Tcpa = -.5 * g_ScaledNumWeightTCPA;
+   
             
-            if (target_sog * 30 > g_ScaledNumWeightSOG) temp_importance = g_ScaledNumWeightSOG; else temp_importance = target_sog * 30; //target SOG on a scale 0 - 100
+            if (td->bCPA_Valid){
+                Cpa= g_ScaledNumWeightCPA/4 * td->CPA;
+                if ( Cpa > g_ScaledNumWeightCPA ) Cpa = g_ScaledNumWeightCPA;
+            }else Cpa = .0;
             
-            if (td->TCPA > 0.)
-            { 
-                if (td->TCPA < g_ScaledNumWeightTCPA)
-                    temp_importance += g_ScaledNumWeightTCPA - td->TCPA; 
-            }
-            else
-            {
-                if (-td->TCPA < 0.4*g_ScaledNumWeightTCPA)
-                    temp_importance += 0.4*td->TCPA; //g_ScaledNumWeightTCPA + td->TCPA; 
-            }
-            
-            if (td->bCPA_Valid && ( 20*td->CPA < g_ScaledNumWeightCPA )) temp_importance += g_ScaledNumWeightCPA - (20*td->CPA);
-                                                     
-            if ( sqrt(td->Range_NM) < (double)g_ScaledNumWeightRange/32 ) temp_importance += (double)g_ScaledNumWeightRange - sqrt(td->Range_NM)*32;
-            
-            if ( td->Class == AIS_CLASS_B ) temp_importance += g_ScaledNumWeightClassB;
+            Rang = g_ScaledNumWeightRange / 10 * td->Range_NM;
+            if ( Rang > g_ScaledNumWeightRange ) Rang = g_ScaledNumWeightRange;
+            Rang = g_ScaledNumWeightRange - Rang;
+                                                   
+            //if ( sqrt(td->Range_NM) < (double)g_ScaledNumWeightRange/32 ) Rang += (double)g_ScaledNumWeightRange - sqrt(td->Range_NM)*32;
+         
+            //if ( td->Class == AIS_CLASS_B ) Siz=0;
+            //else 
+            Siz = g_ScaledNumWeightClassB/30*( td->DimA + td->DimB);
+            if ( Siz > g_ScaledNumWeightClassB ) Siz = g_ScaledNumWeightClassB;
+            temp_importance = So + Cpa + Tcpa + Rang + Siz;
+    printf("SOG:%.1f CPA:%.1f TCPA:%.1f Range:%.1f Size:%.1f Tot%.2f\n",So,Cpa,Tcpa,Rang, Siz, temp_importance);           
+             ///   += g_ScaledNumWeightClassB;
             
             td->importance=(int)temp_importance;
             int calc_scale = 0;
-            if ( td->importance  > ImportanceSwitchPoint ) calc_scale=100; else calc_scale = 50; //g_ScaledSizeMinimal is minium scale for target
+            if ( td->importance  > ImportanceSwitchPoint ) calc_scale=100; else calc_scale = 50; //50% is minium scale for target
             //with one tick per second targets gan slink from 100 to g_ScaledSizeMinimal% in 25 seconds
             if ( td->importance  < ImportanceSwitchPoint ) targetscale = td->last_scale -2;
             //growing from g_ScaledSizeMinimal till 100% goes faster in 10 seconds
@@ -1646,6 +1655,7 @@ void AISDraw( ocpnDC& dc )
                 }
             }
         }
+        
     }
     
     for( it = ( *current_targets ).begin(); it != ( *current_targets ).end(); ++it ) {
