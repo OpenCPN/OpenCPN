@@ -75,7 +75,6 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id, const wxS
 	m_sTimeline = new wxSlider( this, ID_TIMELINE, 1, 0, 10, wxDefaultPosition, wxSize( 90,-1 ), wxSL_HORIZONTAL );
         fgSizer51->Add( m_sTimeline, 0, wxEXPAND, 1 );
 
-
         fgSizer51->Add( 0, 0, 1, wxEXPAND|wxLEFT|wxRIGHT, 1 );
 
 	m_bpOpenFile = new wxBitmapButton( this, ID_BTNOPENFILE, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
@@ -250,6 +249,7 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id, const wxS
 	this->Connect( wxEVT_ENTER_WINDOW, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ) );
 	this->Connect( wxEVT_MOUSEWHEEL, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ) );
 	this->Connect( wxEVT_SIZE, wxSizeEventHandler( GRIBUICtrlBarBase::OnSize ) );
+    this->Connect( wxEVT_PAINT, wxPaintEventHandler( GRIBUICtrlBarBase::OnPaint ) );
 	m_bpPrev->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnPrev ), NULL, this );
 	m_bpPrev->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
 	m_cRecordForecast->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GRIBUICtrlBarBase::OnRecordForecast ), NULL, this );
@@ -302,6 +302,7 @@ GRIBUICtrlBarBase::~GRIBUICtrlBarBase()
 	this->Disconnect( wxEVT_ENTER_WINDOW, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ) );
 	this->Disconnect( wxEVT_MOUSEWHEEL, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ) );
 	this->Disconnect( wxEVT_SIZE, wxSizeEventHandler( GRIBUICtrlBarBase::OnSize ) );
+	this->Disconnect( wxEVT_PAINT, wxPaintEventHandler( GRIBUICtrlBarBase::OnPaint ) );
 	m_bpPrev->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnPrev ), NULL, this );
 	m_bpPrev->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
 	m_cRecordForecast->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GRIBUICtrlBarBase::OnRecordForecast ), NULL, this );

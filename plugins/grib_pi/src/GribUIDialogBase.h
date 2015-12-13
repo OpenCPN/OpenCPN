@@ -120,6 +120,7 @@ class GRIBUICtrlBarBase : public wxDialog
 		virtual void OnClose( wxCloseEvent& event ) { event.Skip(); }
 		virtual void OnMouseEvent( wxMouseEvent& event ) { event.Skip(); }
 		virtual void OnSize( wxSizeEvent& event ) { event.Skip(); }
+        virtual void OnPaint( wxPaintEvent& event) { event.Skip(); }
 		virtual void OnPrev( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnRecordForecast( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnNext( wxCommandEvent& event ) { event.Skip(); }
