@@ -633,7 +633,7 @@ void grib_pi::SendTimelineMessage(wxDateTime time)
 void GribPreferencesDialog::OnStartOptionChange( wxCommandEvent& event )
 {
     if(m_rbStartOptions->GetSelection() == 2) {
-        OCPNMessageBox_PlugIn(this, _("You have chosen to authorize interpolation.\nDon't forget that data displayed at current time will not be real but Recomputed and this can decrease accuracy!"),
+        OCPNMessageBox_PlugIn(this, _("You have chosen to authorize interpolation.\nDon't forget that data displayed at current time will not be real but Recomputed\nThis can decrease accuracy!"),
                 _("Warning!"));
     }
 }

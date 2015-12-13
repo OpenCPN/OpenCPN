@@ -603,7 +603,7 @@ void GribRequestSetting::OnTimeRangeChange(wxCommandEvent &event)
         if( m_pTimeRange->GetCurrentSelection() > 6 ) {         //time range more than 8 days
             m_pWaves->SetValue(0);
             m_pWaves->Enable(false);
-            OCPNMessageBox_PlugIn(this, _("You request a forecast for more than 8 days horizon.\nThis is conflicting with Wave data which will be removed from your request.\nDon't forget that beyond the first 8 days, the resolution will be only 2.5\u00B0x2.5\u00B0 and the time intervall 12 hours."),
+            OCPNMessageBox_PlugIn(this, _("You request a forecast for more than 8 days horizon.\nThis is conflicting with Wave data which will be removed from your request.\nDon't forget that beyond the first 8 days, the resolution will be only 2.5\u00B0x2.5\u00B0\nand the time intervall 12 hours."),
                 _("Warning!") );
         } else
             m_pWaves->Enable(true);
