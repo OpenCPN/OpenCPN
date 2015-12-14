@@ -3499,9 +3499,14 @@ static int s_ownship_icon[] = { 5, -42, 11, -28, 11, 42, -11, 42, -11, -28, -5, 
 
 wxColour ChartCanvas::PredColor()
 { 
+    //  RAdjust predictor color change on LOW_ACCURACY ship state in interests of visibility.
     if( SHIP_NORMAL == m_ownship_state )
         return GetGlobalColor( _T ( "URED" ) );
-    return GetGlobalColor( _T ( "GREY1" ) );
+
+    else if( SHIP_LOWACCURACY == m_ownship_state ) 
+        return GetGlobalColor( _T ( "YELO1" ) );
+         
+    return GetGlobalColor( _T ( "NODTA" ) );
 }
 
 wxColour ChartCanvas::ShipColor()
