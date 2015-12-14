@@ -1293,7 +1293,7 @@ void PlugInManager::CloseAllPlugInPanels( int ok_apply_cancel)
         PlugInContainer *pic = plugin_array.Item(i);
         if(pic->m_bEnabled && pic->m_bInitState)
         {
-            if((pic->m_cap_flag & INSTALLS_TOOLBOX_PAGE) && ( pic->m_bToolboxPanel))
+            if((pic->m_cap_flag & INSTALLS_TOOLBOX_PAGE)/* && ( pic->m_bToolboxPanel)*/)
             {
                 pic->m_pplugin->OnCloseToolboxPanel(0, ok_apply_cancel);
                 pic->m_bToolboxPanel = false;
@@ -5288,9 +5288,6 @@ _OCPN_DLStatus OCPN_downloadFileBackground( const wxString& url, const wxString 
         g_piEventHandler = new PI_DLEvtHandler;
     
     
-    //  Create a connection for the expected events
-    //g_piEventHandler->Connect(wxEVT_DOWNLOAD_EVENT, (wxObjectEventFunction)(wxEventFunction)&PI_DLEvtHandler::onDLEvent);
-    
     
     long dl_ID = -1;
     
@@ -5298,8 +5295,6 @@ _OCPN_DLStatus OCPN_downloadFileBackground( const wxString& url, const wxString 
     //  Started OK?
     if(res){
         finishAndroidFileDownload();
-        //g_piEventHandler->Disconnect(wxEVT_DOWNLOAD_EVENT, (wxObjectEventFunction)(wxEventFunction)&PI_DLEvtHandler::onDLEvent);
-        //delete g_piEventHandler;
         return OCPN_DL_FAILED;
     }
  

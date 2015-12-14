@@ -3499,9 +3499,14 @@ static int s_ownship_icon[] = { 5, -42, 11, -28, 11, 42, -11, 42, -11, -28, -5, 
 
 wxColour ChartCanvas::PredColor()
 { 
+    //  RAdjust predictor color change on LOW_ACCURACY ship state in interests of visibility.
     if( SHIP_NORMAL == m_ownship_state )
         return GetGlobalColor( _T ( "URED" ) );
-    return GetGlobalColor( _T ( "GREY1" ) );
+
+    else if( SHIP_LOWACCURACY == m_ownship_state ) 
+        return GetGlobalColor( _T ( "YELO1" ) );
+         
+    return GetGlobalColor( _T ( "NODTA" ) );
 }
 
 wxColour ChartCanvas::ShipColor()
@@ -4760,10 +4765,6 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
 
     event.GetPosition( &x, &y );
     
-    //  Occasionally, MSW will produce nonsense events on right click....
-    if((x == -1) || (y == -1))
-        return true;
-    
     //  Some systems produce null drag events, where the pointer position has not changed from the previous value.
     //  Detect this case, and abort further processing (FS#1748)
 #ifdef __WXMSW__    
@@ -4916,8 +4917,12 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
 #endif
 
     //  Send the current cursor lat/lon to all PlugIns requesting it
-    if( g_pi_manager )
-        g_pi_manager->SendCursorLatLonToAllPlugIns( m_cursor_lat, m_cursor_lon );
+    if( g_pi_manager ){
+        //  Occasionally, MSW will produce nonsense events on right click....
+        //  This results in an error in cursor geo position, so we skip this case
+        if( (x >= 0) && (y >= 0) )
+            g_pi_manager->SendCursorLatLonToAllPlugIns( m_cursor_lat, m_cursor_lon );
+    }
     
     
     if(!g_btouch){

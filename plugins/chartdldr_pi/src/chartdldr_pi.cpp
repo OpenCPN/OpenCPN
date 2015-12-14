@@ -959,7 +959,11 @@ void ChartDldrPanelImpl::OnDownloadCharts( wxCommandEvent& event )
 
 void ChartDldrPanelImpl::DownloadCharts()
 {
-
+    if(!m_bconnected){
+        Connect(wxEVT_DOWNLOAD_EVENT, (wxObjectEventFunction)(wxEventFunction)&ChartDldrPanelImpl::onDLEvent);
+        m_bconnected = true;
+    }
+    
     if( !m_lbChartSources->GetSelectedItemCount() && !updatingAll )
     {
         wxMessageBox(_("No charts selected for download."));
@@ -1073,7 +1077,8 @@ After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCata
 ChartDldrPanelImpl::~ChartDldrPanelImpl()
 {
     Disconnect(wxEVT_DOWNLOAD_EVENT, (wxObjectEventFunction)(wxEventFunction)&ChartDldrPanelImpl::onDLEvent);
-
+    m_bconnected = false;
+    
 #ifndef __OCPN__ANDROID__
     OCPN_cancelDownloadFileBackground( 0 ); //Stop the thread, is something like this needed on Android as well?
 #endif
@@ -1108,6 +1113,7 @@ ChartDldrPanelImpl::ChartDldrPanelImpl( chartdldr_pi* plugin, wxWindow* parent, 
     m_stCatalogInfo->SetLabel( wxEmptyString );
     
     Connect(wxEVT_DOWNLOAD_EVENT, (wxObjectEventFunction)(wxEventFunction)&ChartDldrPanelImpl::onDLEvent);
+    m_bconnected = true;
 
     for (size_t i = 0; i < pPlugIn->m_chartSources->GetCount(); i++)
     {
