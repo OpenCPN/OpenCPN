@@ -47,7 +47,7 @@ wxString toMailFormat ( int NEflag, int a )                 //convert position t
     return s;
 }
 
-extern bool m_OldZoneSelMode;
+extern int m_SavedZoneSelMode;
 extern int m_ZoneSelMode;
 
 //----------------------------------------------------------------------------------------------------------
@@ -81,8 +81,10 @@ void GribRequestSetting::InitRequestConfig()
         m_sMovingSpeed->SetValue( m );
         pConf->Read ( _T( "MovingGribCourse" ), &m, 0 );
         m_sMovingCourse->SetValue( m );
-        m_cManualZoneSel->SetValue( m_OldZoneSelMode );           //has been read in GriUbICtrlBar dialog implementation or updated previously
-        fgZoneCoordinatesSizer->ShowItems( m_OldZoneSelMode );
+        m_cManualZoneSel->SetValue( m_SavedZoneSelMode != AUTO_SELECTION );      //has been read in GriUbICtrlBar dialog implementation or updated previously
+        m_cUseSavedZone->SetValue( m_SavedZoneSelMode == SAVED_SELECTION );
+        fgZoneCoordinatesSizer->ShowItems( m_SavedZoneSelMode != AUTO_SELECTION );
+        m_cUseSavedZone->Show( m_SavedZoneSelMode != AUTO_SELECTION );
         if( m_cManualZoneSel->GetValue() ) {
             pConf->Read ( _T( "RequestZoneMaxLat" ), &m, 0 );
             m_spMaxLat->SetValue( m );
@@ -174,7 +176,8 @@ void GribRequestSetting::OnClose( wxCloseEvent& event )
     m_RenderZoneOverlay = 0;                                    //eventually stop graphical zone display
     RequestRefresh( m_parent.pParent );
 
-    m_ZoneSelMode = m_OldZoneSelMode ? START_SELECTION : AUTO_SELECTION;                  //allow to be back to old value if changes have not been saved
+    //allow to be back to old value if changes have not been saved
+    m_ZoneSelMode = m_SavedZoneSelMode;
     m_parent.SetRequestBitmap( m_ZoneSelMode );                                           //set appopriate bitmap
 
     this->Hide();
@@ -226,7 +229,7 @@ void GribRequestSetting::SetVpSize(PlugIn_ViewPort *vp)
 
 bool GribRequestSetting::MouseEventHook( wxMouseEvent &event )
 {
-    if( m_ZoneSelMode == AUTO_SELECTION || m_ZoneSelMode == START_SELECTION ) return false;
+    if( m_ZoneSelMode == AUTO_SELECTION || m_ZoneSelMode == SAVED_SELECTION || m_ZoneSelMode == START_SELECTION ) return false;
 
     if( event.Moving()) return false;                           //maintain status bar and tracking dialog updated
 
@@ -407,11 +410,19 @@ void GribRequestSetting::OnZoneSelectionModeChange( wxCommandEvent& event )
     if( !m_ZoneSelMode )
         SetVpSize( m_Vp );                              //recompute zone
 
-    //set temporarily zone selection mode if manual selection set, put it directly in "drawing" position
-    m_ZoneSelMode = m_cManualZoneSel->GetValue() ? DRAW_SELECTION : AUTO_SELECTION;
+    if( event.GetId() == MANSELECT ) {
+        //set temporarily zone selection mode if manual selection set, put it directly in "drawing" position
+        //else put it in "auto selection position
+        m_ZoneSelMode = m_cManualZoneSel->GetValue() ? DRAW_SELECTION : AUTO_SELECTION;
+        m_cUseSavedZone->SetValue( false );
+    } else if(event.GetId() == SAVEDZONE ) {
+        //set temporarily zone selection mode if saved selection set, put it directly in "no selection" position
+        //else put it directly in "drawing" position
+        m_ZoneSelMode = m_cUseSavedZone->GetValue()? SAVED_SELECTION : DRAW_SELECTION;
+    }
     m_parent.SetRequestBitmap( m_ZoneSelMode );               //set appopriate bitmap
     fgZoneCoordinatesSizer->ShowItems( m_ZoneSelMode != AUTO_SELECTION ); //show coordinate if necessary
-
+    m_cUseSavedZone->Show( m_ZoneSelMode != AUTO_SELECTION );
     if(m_AllowSend) m_MailImage->SetValue( WriteMail() );
 
     SetRequestDialogSize();
@@ -685,14 +696,16 @@ void GribRequestSetting::OnSaveMail( wxCommandEvent& event )
         pConf->Write ( _T( "SendMailMethod" ), m_SendMethod );
         pConf->Write ( _T( "MovingGribSpeed" ), m_sMovingSpeed->GetValue() );
         pConf->Write ( _T( "MovingGribCourse" ), m_sMovingCourse->GetValue() );
-        pConf->Write ( _T( "ManualRequestZoneSizing" ), m_cManualZoneSel->GetValue() );
+
+        m_SavedZoneSelMode = m_cUseSavedZone->GetValue()? SAVED_SELECTION: m_cManualZoneSel->GetValue()? START_SELECTION: AUTO_SELECTION;
+        pConf->Write ( _T( "ManualRequestZoneSizing" ), m_SavedZoneSelMode );
+
         pConf->Write ( _T( "RequestZoneMaxLat" ), m_spMaxLat->GetValue() );
         pConf->Write ( _T( "RequestZoneMinLat" ), m_spMinLat->GetValue() );
         pConf->Write ( _T( "RequestZoneMaxLon" ), m_spMaxLon->GetValue() );
         pConf->Write ( _T( "RequestZoneMinLon" ), m_spMinLon->GetValue() );
 
     }
-    m_OldZoneSelMode = m_cManualZoneSel->GetValue();
 
     wxCloseEvent evt;
     OnClose ( evt );

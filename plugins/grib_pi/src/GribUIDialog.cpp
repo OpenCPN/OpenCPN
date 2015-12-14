@@ -52,7 +52,7 @@
 double  m_cursor_lat, m_cursor_lon;
 int     m_Altitude;
 int     m_DialogStyle;
-bool    m_OldZoneSelMode;
+int     m_SavedZoneSelMode;
 int     m_ZoneSelMode;
 
 #ifdef __MSVC__
@@ -251,10 +251,10 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id, const wxString& ti
         pConf->Read ( _T ( "GRIBDirectory" ), &m_grib_dir, spath.GetDocumentsDir()  );
 
         pConf->SetPath ( _T( "/PlugIns/GRIB" ) );
-        pConf->Read ( _T( "ManualRequestZoneSizing" ), &m_OldZoneSelMode, false );
+        pConf->Read ( _T( "ManualRequestZoneSizing" ), &m_SavedZoneSelMode, 0 );
     }
     //init zone selection parameters
-    m_ZoneSelMode = m_OldZoneSelMode ? START_SELECTION : AUTO_SELECTION;                       ////init zone selection parameters
+     m_ZoneSelMode = m_SavedZoneSelMode;
 
     //connect Timer
     m_tPlayStop.Connect(wxEVT_TIMER, wxTimerEventHandler( GRIBUICtrlBar::OnPlayStopTimer ), NULL, this);
@@ -324,6 +324,7 @@ void GRIBUICtrlBar::SetRequestBitmap( int type )
 {
     switch( type ) {
     case AUTO_SELECTION:
+    case SAVED_SELECTION:
     case START_SELECTION:
         m_bpRequest->SetBitmapLabel( GetScaledBitmap( request, m_ScaledFactor));
         m_bpRequest->SetToolTip(_("Start a request"));
@@ -728,10 +729,10 @@ void GRIBUICtrlBar::OnMouseEvent( wxMouseEvent& event )
                         wxITEM_NORMAL, wxBitmap( m_tPlayStop.IsRunning() ? stop : play ) );
         MenuAppend( xmenu, ID_BTNOPENFILE, _("Open a new file"), wxITEM_NORMAL, wxBitmap( openfile ) );
         MenuAppend( xmenu, ID_BTNSETTING, _("Settings"), wxITEM_NORMAL, wxBitmap( setting ) );
-        MenuAppend( xmenu, ID_BTNREQUEST, (m_ZoneSelMode == AUTO_SELECTION || m_ZoneSelMode == START_SELECTION) ?
+        MenuAppend( xmenu, ID_BTNREQUEST, (m_ZoneSelMode == AUTO_SELECTION || m_ZoneSelMode == SAVED_SELECTION || m_ZoneSelMode == START_SELECTION) ?
                         _("Start a request") : m_ZoneSelMode == DRAW_SELECTION ? _( "Stop request" ) : _("Valid request"),
-                        wxITEM_NORMAL, wxBitmap( (m_ZoneSelMode == AUTO_SELECTION ||
-                        m_ZoneSelMode == START_SELECTION) ? request : m_ZoneSelMode == DRAW_SELECTION ? selzone : request_end ) );
+                        wxITEM_NORMAL, wxBitmap( (m_ZoneSelMode == AUTO_SELECTION || m_ZoneSelMode == SAVED_SELECTION ||
+                        m_ZoneSelMode == START_SELECTION ) ? request : m_ZoneSelMode == DRAW_SELECTION ? selzone : request_end ) );
 
     PopupMenu( xmenu );
 
@@ -840,7 +841,7 @@ void GRIBUICtrlBar::OnRequest(  wxCommandEvent& event )
     }
 
     /*create new request dialog*/
-    if( m_ZoneSelMode == AUTO_SELECTION || m_ZoneSelMode == START_SELECTION ) {
+    if( m_ZoneSelMode == AUTO_SELECTION || m_ZoneSelMode == SAVED_SELECTION || m_ZoneSelMode == START_SELECTION ) {
 
 		::wxBeginBusyCursor();
 
@@ -858,7 +859,7 @@ void GRIBUICtrlBar::OnRequest(  wxCommandEvent& event )
 
     } //end create new request dialog
 
-    pReq_Dialog->Show( m_ZoneSelMode == AUTO_SELECTION || m_ZoneSelMode == COMPLETE_SELECTION );
+    pReq_Dialog->Show( m_ZoneSelMode == AUTO_SELECTION || m_ZoneSelMode == SAVED_SELECTION || m_ZoneSelMode == COMPLETE_SELECTION );
     m_ZoneSelMode = m_ZoneSelMode == START_SELECTION ? DRAW_SELECTION : m_ZoneSelMode == COMPLETE_SELECTION ? START_SELECTION : m_ZoneSelMode;
     if( m_ZoneSelMode == START_SELECTION ) pReq_Dialog->StopGraphicalZoneSelection();
     SetRequestBitmap( m_ZoneSelMode );                   //set appopriate bitmap
