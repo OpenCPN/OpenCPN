@@ -3534,7 +3534,9 @@ void PluginPanel::OnPluginDown( wxCommandEvent& event )
 // ----------------------------------------------------------------------------
 
 PlugInChartBase::PlugInChartBase()
-{}
+{
+    m_Chart_Error_Factor = 0.;
+}
 
 PlugInChartBase::~PlugInChartBase()
 {}
