@@ -163,6 +163,9 @@ public:
     }
     void SetReferenceChart( int dbIndex ) {
         m_refchart_dbIndex = dbIndex;
+        if (dbIndex >= 0) {
+            m_zout_family = -1;
+        }
     }
     int GetRefChartdbIndex( void ) {
         return m_refchart_dbIndex;
