@@ -381,6 +381,7 @@ extern HINSTANCE          s_hGLU_DLL; // Handle to DLL
 
 double                    g_ownship_predictor_minutes;
 double                    g_ownship_HDTpredictor_miles;
+bool                      g_ownship_predictor_colour_red;
 
 int                       g_current_arrow_scale;
 
