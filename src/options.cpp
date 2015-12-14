@@ -358,9 +358,10 @@ bool OCPNCheckedListCtrl::Create(wxWindow* parent, wxWindowID id,
 unsigned int OCPNCheckedListCtrl::Append(wxString& label) {
   wxCheckBox* cb = new wxCheckBox(this, wxID_ANY, label);
   m_sizer->Add(cb);
-
+  m_sizer->Layout();  
+  
   m_list.Append(cb);
-
+  
   return m_list.GetCount() - 1;
 }
 
