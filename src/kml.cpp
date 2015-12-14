@@ -186,13 +186,14 @@ KmlPastebufferType Kml::ParseOnePlacemarkPoint( TiXmlNode* node, wxString& name 
         pointDescr = wxString( printer.CStr(), wxConvUTF8 );
     }
 
-	parsedRoutePoint = new RoutePoint();
+    // XXX leak ?
+    parsedRoutePoint = new RoutePoint();
     parsedRoutePoint->m_lat = newLat;
     parsedRoutePoint->m_lon = newLon;
     parsedRoutePoint->m_bIsolatedMark = true;
     parsedRoutePoint->m_bPtIsSelected = false;
-	parsedRoutePoint->m_MarkDescription = pointDescr;
-	parsedRoutePoint->SetName( pointName );
+    parsedRoutePoint->m_MarkDescription = pointDescr;
+    parsedRoutePoint->SetName( pointName );
 
     return KML_PASTE_WAYPOINT;
 }
@@ -275,6 +276,8 @@ KmlPastebufferType Kml::ParsePasteBuffer() {
         if( n ) {
             if( ParseOnePlacemarkPoint( n->ToElement(), name ) == KML_PASTE_WAYPOINT ) {
                 parsedRoute->AddPoint( new RoutePoint( parsedRoutePoint ) );
+                delete parsedRoutePoint;
+                parsedRoutePoint = 0;
                 foundPoints = true;
             }
         }
@@ -613,7 +616,7 @@ Kml::~Kml() {
         }
         delete parsedRoute;
     }
-    if( parsedRoutePoint ) delete parsedRoutePoint;
+    delete parsedRoutePoint;
 }
 
 //----------------------------------------------------------------------------------

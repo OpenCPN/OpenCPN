@@ -8333,11 +8333,11 @@ void ChartCanvas::ShowTrackPropertiesDialog( Route* selected )
 }
 
 void pupHandler_PasteWaypoint() {
-    Kml* kml = new Kml();
+    Kml kml;
     OCPNPlatform::ShowBusySpinner();
 
-    int pasteBuffer = kml->ParsePasteBuffer();
-    RoutePoint* pasted = kml->GetParsedRoutePoint();
+    int pasteBuffer = kml.ParsePasteBuffer();
+    RoutePoint* pasted = kml.GetParsedRoutePoint();
 
     int nearby_sel_rad_pix = 8;
     double nearby_radius_meters = nearby_sel_rad_pix / cc1->GetCanvasTrueScale();
@@ -8370,16 +8370,15 @@ void pupHandler_PasteWaypoint() {
 
     cc1->InvalidateGL();
     cc1->Refresh( false );
-    delete kml;
     OCPNPlatform::HideBusySpinner();
 }
 
 void pupHandler_PasteRoute() {
-    Kml* kml = new Kml();
+    Kml kml;
     OCPNPlatform::ShowBusySpinner();
 
-    int pasteBuffer = kml->ParsePasteBuffer();
-    Route* pasted = kml->GetParsedRoute();
+    int pasteBuffer = kml.ParsePasteBuffer();
+    Route* pasted = kml.GetParsedRoute();
     if( ! pasted ) return;
 
     int nearby_sel_rad_pix = 8;
@@ -8414,7 +8413,6 @@ void pupHandler_PasteRoute() {
         answer = OCPNMessageBox( cc1, msg, _("Merge waypoints?"), (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
 
         if( answer == wxID_CANCEL ) {
-            delete kml;
             return;
         }
     }
@@ -8490,16 +8488,15 @@ void pupHandler_PasteRoute() {
         cc1->Refresh( false );
     }
 
-    delete kml;
     OCPNPlatform::HideBusySpinner();
 }
 
 void pupHandler_PasteTrack() {
-    Kml* kml = new Kml();
+    Kml kml;
     OCPNPlatform::ShowBusySpinner();
 
-    int pasteBuffer = kml->ParsePasteBuffer();
-    Track* pasted = kml->GetParsedTrack();
+    int pasteBuffer = kml.ParsePasteBuffer();
+    Track* pasted = kml.GetParsedTrack();
     if( ! pasted ) return;
 
     RoutePoint* curPoint;
@@ -8542,7 +8539,6 @@ void pupHandler_PasteTrack() {
 
     cc1->InvalidateGL();
     cc1->Refresh( false );
-    delete kml;
     OCPNPlatform::HideBusySpinner();
 }
 
