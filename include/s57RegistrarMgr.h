@@ -27,15 +27,35 @@
 
 #include <wx/string.h>
 
+WX_DECLARE_STRING_HASH_MAP( int, AttributeHash1 );
+
+WX_DECLARE_HASH_MAP( int,
+                     std::string,
+                     wxIntegerHash,
+                     wxIntegerEqual,
+                     AttributeHash2 );
+
+
 /**
  * s57RegistrarMgr Definition
  * This is a class holding the ctor and dtor for the global registrar
  */
 class s57RegistrarMgr
 {
-      public:
-            s57RegistrarMgr(const wxString& csv_dir, FILE *flog);
-            ~s57RegistrarMgr();
+public:
+    s57RegistrarMgr(const wxString& csv_dir, FILE *flog);
+    ~s57RegistrarMgr();
+   
+    int getAttributeID(const char *pAttrName);
+    std::string getAttributeAcronym(int nID);
+        
+private:
+    
+    bool s57_attr_init( const wxString& csv_dir );
+    
+    AttributeHash1       m_attrHash1;
+    AttributeHash2       m_attrHash2;
+    
 };
 
 #endif
