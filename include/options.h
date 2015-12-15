@@ -585,6 +585,8 @@ class ChartGroupsUI : private Uncopyable, public wxScrolledWindow {
                         const wxColour &col, wxFont *pFont = NULL);
   void BuildNotebookPages(ChartGroupArray *pGroupArray);
   void EmptyChartGroupArray(ChartGroupArray *s);
+  void ClearGroupPages();
+  
 
   void OnNodeExpanded(wxTreeEvent &event);
   void OnAvailableSelection(wxTreeEvent &event);

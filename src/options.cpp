@@ -6939,7 +6939,10 @@ void ChartGroupsUI::OnNodeExpanded(wxTreeEvent& event) {
   }
 }
 
-void ChartGroupsUI::BuildNotebookPages(ChartGroupArray* pGroupArray) {
+void ChartGroupsUI::BuildNotebookPages(ChartGroupArray* pGroupArray)
+{
+  ClearGroupPages();
+  
   for (unsigned int i = 0; i < pGroupArray->GetCount(); i++) {
     ChartGroup* pGroup = pGroupArray->Item(i);
     wxTreeCtrl* ptc = AddEmptyGroupPage(pGroup->m_group_name);
@@ -6978,6 +6981,15 @@ wxTreeCtrl* ChartGroupsUI::AddEmptyGroupPage(const wxString& label) {
   return ptree;
 }
 
+void ChartGroupsUI::ClearGroupPages()
+{
+    for(unsigned int i = m_GroupNB->GetPageCount()-1 ; i > 0 ; i--){
+        m_DirCtrlArray.RemoveAt(i);
+        m_GroupNB->DeletePage(i);
+    }
+}
+
+            
 void options::OnInsertTideDataLocation(wxCommandEvent& event) {
   wxString sel_file;
   int response = wxID_CANCEL;
