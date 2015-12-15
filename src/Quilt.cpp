@@ -60,17 +60,39 @@ extern bool g_bopengl;
 
 #define GetChartTableEntry(i) GetChartTable()[i]
 
-static int CompareScales( QuiltCandidate *qc1, QuiltCandidate *qc2 )
+
+static int CompareScales( int *i1, int *i2 )
 {
     if( !ChartData ) return 0;
 
-    const ChartTableEntry &cte1 = ChartData->GetChartTableEntry( qc1->dbIndex );
-    const ChartTableEntry &cte2 = ChartData->GetChartTableEntry( qc2->dbIndex );
+    const ChartTableEntry &cte1 = ChartData->GetChartTableEntry( *i1 );
+    const ChartTableEntry &cte2 = ChartData->GetChartTableEntry( *i2 );
 
-    if( cte1.GetScale() == cte2.GetScale() )          // same scales, so sort on dbIndex
-        return qc1->dbIndex - qc2->dbIndex;
+    if( cte1.GetScale() == cte2.GetScale() ) {         // same scales, so sort on dbIndex
+        float lat1, lat2;
+        lat1 = cte1.GetLatMax();
+        lat2 = cte2.GetLatMax();
+        if (roundf(lat1*100.) == roundf(lat2*100.)) {
+            float lon1, lon2;
+            lon1 = cte1.GetLonMin();
+            lon2 = cte2.GetLonMin();
+            if (lon1 == lon2) {
+                return *i1 -*i2;
+            }
+            else 
+                return (lon1 < lon2)?-1:1;
+        }
+        else 
+            return (lat1 < lat2)?1:-1;
+    }
     else
         return cte1.GetScale() - cte2.GetScale();
+}
+
+static int CompareQuiltCandidateScales( QuiltCandidate *qc1, QuiltCandidate *qc2 )
+{
+    if( !ChartData ) return 0;
+    return CompareScales(&qc1->dbIndex, &qc2->dbIndex);
 }
 
 const LLRegion &QuiltCandidate::GetCandidateRegion()
@@ -179,7 +201,7 @@ Quilt::Quilt()
     m_bbusy = false;
     m_b_hidef = false;
 
-    m_pcandidate_array = new ArrayOfSortedQuiltCandidates( CompareScales );
+    m_pcandidate_array = new ArrayOfSortedQuiltCandidates( CompareQuiltCandidateScales );
     m_nHiLiteIndex = -1;
 
     m_zout_family = -1;
@@ -1251,24 +1273,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
 
     // Re sort the extended stack array on scale
     if( b_need_resort && m_extended_stack_array.GetCount() > 1 ) {
-        int swap = 1;
-        int ti;
-        while( swap == 1 ) {
-            swap = 0;
-            for( unsigned int is = 0; is < m_extended_stack_array.GetCount() - 1; is++ ) {
-                const ChartTableEntry &m = ChartData->GetChartTableEntry(
-                                               m_extended_stack_array.Item( is ) );
-                const ChartTableEntry &n = ChartData->GetChartTableEntry(
-                                               m_extended_stack_array.Item( is + 1 ) );
-
-                if( n.GetScale() < m.GetScale() ) {
-                    ti = m_extended_stack_array.Item( is );
-                    m_extended_stack_array.RemoveAt( is );
-                    m_extended_stack_array.Insert( ti, is + 1 );
-                    swap = 1;
-                }
-            }
-        }
+        m_extended_stack_array.Sort(CompareScales);
     }
     return true;
 }
