@@ -563,7 +563,8 @@ class options : private Uncopyable,
   bool m_bcompact;
   int m_fontHeight, m_scrollRate, m_BTscanning, m_btNoChangeCounter;
   int m_btlastResultCount;
-
+  bool m_bfontChanged;
+  
   DECLARE_EVENT_TABLE()
 };
 

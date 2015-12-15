@@ -4728,6 +4728,8 @@ void options::SetInitialSettings(void) {
   wxString s;
 
   m_returnChanges = 0;                  // reset the flags
+  m_bfontChanged = false;
+  
   
   // ChartsLoad
   int nDir = m_CurrentDirList.GetCount();
@@ -5526,6 +5528,10 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
   m_pText_ACRadius->GetValue().ToDouble(&g_n_arrival_circle_radius);
 
+  //  Any Font changes?
+  if(m_bfontChanged)
+      m_returnChanges |= FONT_CHANGED;
+  
   // Handle Chart Tab
   if (pActiveChartsList) {
     UpdateWorkArrayFromTextCtl();
@@ -5996,6 +6002,11 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
   if (event.GetId() == ID_APPLY) {
     gFrame->ProcessOptionsDialog(m_returnChanges, m_pWorkDirList);
+    
+    //  We can clear a few flag bits on "Apply", so they won't be recognised at the "OK" click.
+    //  Their actions have already been accomplished once...
+    m_returnChanges &= ~( FORCE_UPDATE | SCAN_UPDATE );
+    
     cc1->ReloadVP();
   }
 
@@ -6157,7 +6168,7 @@ void options::OnChooseFont(wxCommandEvent& event) {
     wxColor color = font_data.GetColour();
     FontMgr::Get().SetFont(sel_text_element, psfont, color);
     pParent->UpdateAllFonts();
-    m_returnChanges |= FONT_CHANGED;
+    m_bfontChanged = true;
   }
 
   event.Skip();
@@ -6185,7 +6196,7 @@ void options::OnChooseFontColor(wxCommandEvent& event) {
     FontMgr::Get().SetFont(sel_text_element, pif, color);
 
     pParent->UpdateAllFonts();
-    m_returnChanges |= FONT_CHANGED;
+    m_bfontChanged = true;
   }
 
   event.Skip();
