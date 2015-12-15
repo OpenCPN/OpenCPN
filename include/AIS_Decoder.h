@@ -51,6 +51,7 @@ public:
     bool        m_bVDM;
     bool        m_bFollower;
     bool        m_bPersistentTrack;
+    wxString    m_ShipName;
 };
 
 WX_DECLARE_OBJARRAY(MMSIProperties *,      ArrayOfMMSIProperties);
@@ -76,6 +77,7 @@ public:
     std::map<int, Track*> m_persistent_tracks;
     
 private:
+    wxString GetShipNameFromFile(int nmmsi);
     wxString ProcessNMEA4Tags( wxString msg);
     
     void OnActivate(wxActivateEvent& event);

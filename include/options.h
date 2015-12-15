@@ -780,7 +780,8 @@ enum {
     mlIgnore,
     mlMOB,
     mlVDM,
-    mlFollower
+    mlFollower,
+    mlShipName
 };  // MMSIListCtrl Columns;
 
 class MMSIListCtrl : private Uncopyable, public wxListCtrl {
@@ -823,7 +824,7 @@ class MMSIEditDialog : private Uncopyable, public wxDialog {
   void OnCtlUpdated(wxCommandEvent &event);
 
   MMSIProperties *m_props;
-  wxTextCtrl *m_MMSICtl;
+  wxTextCtrl *m_MMSICtl, m_ShipNameCtl; //Has ToDo take away?
   wxRadioButton *m_rbTypeTrackDefault, *m_rbTypeTrackAlways;
   wxRadioButton *m_rbTypeTrackNever;
   wxCheckBox *m_cbTrackPersist, *m_IgnoreButton, *m_MOBButton, *m_VDMButton, *m_FollowerButton;
