@@ -5207,12 +5207,10 @@ int MyFrame::DoOptionsDialog()
 
     g_boptionsactive = true;
 
-
-    g_Platform->ShowBusySpinner();
-
-    if(NULL == g_options)
+    if(NULL == g_options) {
+        g_Platform->ShowBusySpinner();
         g_options = new options( this, -1, _("Options") );
-
+    }
     g_Platform->HideBusySpinner();
 
 //    Set initial Chart Dir
