@@ -140,7 +140,6 @@ void GribGrabberWin::OnPaint( wxPaintEvent& event )
 }
 
 void GribGrabberWin::Size( double factor )
-
 {
     wxBitmap bitmap = (wxBitmap( grabber ));
     int width = (int)(bitmap.GetWidth() * factor);
