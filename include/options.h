@@ -244,6 +244,8 @@ class options : private Uncopyable,
 
   void SetInitChartDir(const wxString &dir) { m_init_chart_dir = dir; }
   void SetInitialSettings(void);
+  void SetInitialVectorSettings(void);
+  
   void SetCurrentDirList(ArrayOfCDI p) { m_CurrentDirList = p; }
   void SetWorkDirListPtr(ArrayOfCDI *p) { m_pWorkDirList = p; }
   ArrayOfCDI *GetWorkDirListPtr(void) { return m_pWorkDirList; }

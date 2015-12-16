@@ -883,8 +883,6 @@ END_EVENT_TABLE()
 options::options(MyFrame* parent, wxWindowID id, const wxString& caption,
                  const wxPoint& pos, const wxSize& size, long style) {
   Init();
-  // Need to load S52 Options
-  LoadS57();
 
   pParent = parent;
 
@@ -4985,102 +4983,7 @@ void options::SetInitialSettings(void) {
 
   m_TalkerIdText->SetValue(g_TalkerIdText.MakeUpper());
 
-#ifdef USE_S57
-  m_pSlider_CM93_Zoom->SetValue(g_cm93_zoom_factor);
-
-  //    Diplay Category
-  if (ps52plib) {
-    if (ps57CtlListBox) {
-      //    S52 Primary Filters
-      ps57CtlListBox->Clear();
-      marinersStdXref.clear();
-
-      for (unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount();
-           iPtr++) {
-        OBJLElement* pOLE = (OBJLElement*)(ps52plib->pOBJLArray->Item(iPtr));
-        wxString item;
-        if (iPtr < ps52plib->OBJLDescriptions.size()) {
-          item = ps52plib->OBJLDescriptions[iPtr];
-        } else {
-          item = wxString(pOLE->OBJLName, wxConvUTF8);
-        }
-
-        // The ListBox control will insert entries in sorted order, which means
-        // we need to
-        // keep track of already inseted items that gets pushed down the line.
-        int newpos = ps57CtlListBox->Append(item);
-        marinersStdXref.push_back(newpos);
-        for (size_t i = 0; i < iPtr; i++) {
-          if (marinersStdXref[i] >= newpos) marinersStdXref[i]++;
-        }
-
-        ps57CtlListBox->Check(newpos, !(pOLE->nViz == 0));
-      }
-    }
-#ifdef __OCPN__ANDROID__
-    ps57CtlListBox->GetHandle()->setStyleSheet(getQtStyleSheet());
-#endif
-
-    int nset = 2;  // default OTHER
-    switch (ps52plib->GetDisplayCategory()) {
-      case (DISPLAYBASE):
-        nset = 0;
-        break;
-      case (STANDARD):
-        nset = 1;
-        break;
-      case (OTHER):
-        nset = 2;
-        break;
-      case (MARINERS_STANDARD):
-        nset = 3;
-        break;
-      default:
-        nset = 3;
-        break;
-    }
-
-    pDispCat->SetSelection(nset);
-
-    if( ps57CtlListBox )
-        ps57CtlListBox->Enable(MARINERS_STANDARD == ps52plib->GetDisplayCategory());
-    itemButtonClearList->Enable(MARINERS_STANDARD ==
-                                ps52plib->GetDisplayCategory());
-    itemButtonSelectList->Enable(MARINERS_STANDARD ==
-                                 ps52plib->GetDisplayCategory());
-
-    //  Other Display Filters
-    pCheck_SOUNDG->SetValue(ps52plib->m_bShowSoundg);
-    pCheck_META->SetValue(ps52plib->m_bShowMeta);
-    pCheck_SHOWIMPTEXT->SetValue(ps52plib->m_bShowS57ImportantTextOnly);
-    pCheck_SCAMIN->SetValue(ps52plib->m_bUseSCAMIN);
-    pCheck_ATONTEXT->SetValue(ps52plib->m_bShowAtonText);
-    pCheck_LDISTEXT->SetValue(ps52plib->m_bShowLdisText);
-    pCheck_XLSECTTEXT->SetValue(ps52plib->m_bExtendLightSectors);
-    pCheck_DECLTEXT->SetValue(ps52plib->m_bDeClutterText);
-    pCheck_NATIONALTEXT->SetValue(ps52plib->m_bShowNationalTexts);
-
-    // Chart Display Style
-    if (ps52plib->m_nSymbolStyle == PAPER_CHART)
-      pPointStyle->SetSelection(0);
-    else
-      pPointStyle->SetSelection(1);
-
-    if (ps52plib->m_nBoundaryStyle == PLAIN_BOUNDARIES)
-      pBoundStyle->SetSelection(0);
-    else
-      pBoundStyle->SetSelection(1);
-
-    if (S52_getMarinerParam(S52_MAR_TWO_SHADES) == 1.0)
-      p24Color->SetSelection(0);
-    else
-      p24Color->SetSelection(1);
-
-    // Depths
-    pDepthUnitSelect->SetSelection(ps52plib->m_nDepthUnitDisplay);
-    UpdateOptionsUnits();  // sets depth values using the user's unit preference
-  }
-#endif
+  SetInitialVectorSettings();
 
   pToolbarAutoHideCB->SetValue(g_bAutoHideToolbar);
 
@@ -5088,15 +4991,109 @@ void options::SetInitialSettings(void) {
   pToolbarHideSecs->SetValue(s);
 }
 
+void options::SetInitialVectorSettings(void)
+{
+#ifdef USE_S57
+    m_pSlider_CM93_Zoom->SetValue(g_cm93_zoom_factor);
+    
+    //    Diplay Category
+    if (ps52plib) {
+        if (ps57CtlListBox) {
+            //    S52 Primary Filters
+            ps57CtlListBox->Clear();
+            marinersStdXref.clear();
+            
+            for (unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount();
+                 iPtr++) {
+                OBJLElement* pOLE = (OBJLElement*)(ps52plib->pOBJLArray->Item(iPtr));
+            wxString item;
+            if (iPtr < ps52plib->OBJLDescriptions.size()) {
+                item = ps52plib->OBJLDescriptions[iPtr];
+            } else {
+                item = wxString(pOLE->OBJLName, wxConvUTF8);
+            }
+            
+            // The ListBox control will insert entries in sorted order, which means
+            // we need to
+            // keep track of already inseted items that gets pushed down the line.
+            int newpos = ps57CtlListBox->Append(item);
+            marinersStdXref.push_back(newpos);
+            for (size_t i = 0; i < iPtr; i++) {
+                if (marinersStdXref[i] >= newpos) marinersStdXref[i]++;
+            }
+            
+            ps57CtlListBox->Check(newpos, !(pOLE->nViz == 0));
+                 }
+        }
+        #ifdef __OCPN__ANDROID__
+        ps57CtlListBox->GetHandle()->setStyleSheet(getQtStyleSheet());
+        #endif
+        
+        int nset = 2;  // default OTHER
+        switch (ps52plib->GetDisplayCategory()) {
+            case (DISPLAYBASE):
+                nset = 0;
+                break;
+            case (STANDARD):
+                nset = 1;
+                break;
+            case (OTHER):
+                nset = 2;
+                break;
+            case (MARINERS_STANDARD):
+                nset = 3;
+                break;
+            default:
+                nset = 3;
+                break;
+        }
+        
+        pDispCat->SetSelection(nset);
+        
+        if( ps57CtlListBox )
+            ps57CtlListBox->Enable(MARINERS_STANDARD == ps52plib->GetDisplayCategory());
+        itemButtonClearList->Enable(MARINERS_STANDARD ==
+        ps52plib->GetDisplayCategory());
+        itemButtonSelectList->Enable(MARINERS_STANDARD ==
+        ps52plib->GetDisplayCategory());
+        
+        //  Other Display Filters
+        pCheck_SOUNDG->SetValue(ps52plib->m_bShowSoundg);
+        pCheck_META->SetValue(ps52plib->m_bShowMeta);
+        pCheck_SHOWIMPTEXT->SetValue(ps52plib->m_bShowS57ImportantTextOnly);
+        pCheck_SCAMIN->SetValue(ps52plib->m_bUseSCAMIN);
+        pCheck_ATONTEXT->SetValue(ps52plib->m_bShowAtonText);
+        pCheck_LDISTEXT->SetValue(ps52plib->m_bShowLdisText);
+        pCheck_XLSECTTEXT->SetValue(ps52plib->m_bExtendLightSectors);
+        pCheck_DECLTEXT->SetValue(ps52plib->m_bDeClutterText);
+        pCheck_NATIONALTEXT->SetValue(ps52plib->m_bShowNationalTexts);
+        
+        // Chart Display Style
+        if (ps52plib->m_nSymbolStyle == PAPER_CHART)
+            pPointStyle->SetSelection(0);
+        else
+            pPointStyle->SetSelection(1);
+        
+        if (ps52plib->m_nBoundaryStyle == PLAIN_BOUNDARIES)
+            pBoundStyle->SetSelection(0);
+        else
+            pBoundStyle->SetSelection(1);
+        
+        if (S52_getMarinerParam(S52_MAR_TWO_SHADES) == 1.0)
+            p24Color->SetSelection(0);
+        else
+            p24Color->SetSelection(1);
+        
+        // Depths
+            pDepthUnitSelect->SetSelection(ps52plib->m_nDepthUnitDisplay);
+            UpdateOptionsUnits();  // sets depth values using the user's unit preference
+    }
+#endif
+}
+
+
 void options::UpdateOptionsUnits(void) {
   int depthUnit = pDepthUnitSelect->GetSelection();
-
-  // set depth unit labels
-  wxString depthUnitStrings[] = {_("feet"), _("meters"), _("fathoms")};
-  wxString depthUnitString = depthUnitStrings[depthUnit];
-  m_depthUnitsShal->SetLabel(depthUnitString);
-  m_depthUnitsSafe->SetLabel(depthUnitString);
-  m_depthUnitsDeep->SetLabel(depthUnitString);
 
   // depth unit conversion factor
   float conv = 1;
@@ -5107,7 +5104,14 @@ void options::UpdateOptionsUnits(void) {
 
   // set depth input values
 #ifdef USE_S57
-  
+
+    // set depth unit labels
+  wxString depthUnitStrings[] = {_("feet"), _("meters"), _("fathoms")};
+  wxString depthUnitString = depthUnitStrings[depthUnit];
+  m_depthUnitsShal->SetLabel(depthUnitString);
+  m_depthUnitsSafe->SetLabel(depthUnitString);
+  m_depthUnitsDeep->SetLabel(depthUnitString);
+
   wxString s;
   s.Printf(_T( "%6.2f" ), S52_getMarinerParam(S52_MAR_SHALLOW_CONTOUR) / conv);
   s.Trim(FALSE);
@@ -6236,6 +6240,10 @@ void options::OnChartsPageChange(wxListbookEvent& event) {
       groupsPanel->PopulateTrees();
       groupsPanel->m_treespopulated = TRUE;
     }
+  }
+  else if(1 == i){              // Vector charts panel
+    LoadS57();
+    SetInitialVectorSettings();
   }
 
   event.Skip();  // Allow continued event processing
