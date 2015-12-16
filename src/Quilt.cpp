@@ -984,6 +984,19 @@ int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
 
     int proposed_ref_index = AdjustRefOnZoom( true, (ChartFamilyEnum)current_family, current_type, proposed_scale_onscreen );
 
+    if (current_db_index == -1) {
+        SetReferenceChart( proposed_ref_index );
+        return proposed_ref_index;
+    }
+
+    if (proposed_ref_index != -1) {
+        if (ChartData->GetDBChartScale(current_db_index) >= ChartData->GetDBChartScale(proposed_ref_index)) {
+            SetReferenceChart( proposed_ref_index );
+            return proposed_ref_index;
+        }
+    }
+    proposed_ref_index = current_db_index;
+
     SetReferenceChart( proposed_ref_index );
 
     return proposed_ref_index;
