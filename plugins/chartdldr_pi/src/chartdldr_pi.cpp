@@ -542,6 +542,7 @@ void ChartDldrPanelImpl::FillFromFile( wxString url, wxString dir, bool selnew, 
         pPlugIn->m_pChartCatalog->LoadFromFile(path);
 //            m_tChartSourceInfo->SetValue(pPlugIn->m_pChartCatalog->GetDescription());
         //fill in the rest of the form
+        m_clCharts->Freeze();
         m_clCharts->DeleteAllItems();
         size_t updated_charts = 0;
         size_t new_charts = 0;
@@ -576,6 +577,8 @@ void ChartDldrPanelImpl::FillFromFile( wxString url, wxString dir, bool selnew, 
             }
             m_clCharts->SetItem(x, 2, pPlugIn->m_pChartCatalog->charts.Item(i).GetUpdateDatetime().Format(_T("%Y-%m-%d %H:%M")));
         }
+        m_clCharts->Thaw();
+
         m_stCatalogInfo->SetLabel( wxString::Format( _("%lu charts total, %lu updated, %lu new"), pPlugIn->m_pChartCatalog->charts.Count(), updated_charts, new_charts ) );
         m_stCatalogInfo->Show( true );
     }
