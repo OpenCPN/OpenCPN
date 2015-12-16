@@ -163,6 +163,7 @@ private:
     int         m_catalog_offset;
     bool        m_hdrOK;
     bool        m_catalogOK;
+    bool        m_newCatalog;
 
     bool	m_catalogCorrupted;
     
