@@ -644,11 +644,13 @@ void ChartDldrPanelImpl::SelectCatalog( int item )
     if( item >= 0 )
     {
         m_bDeleteSource->Enable();
+        m_bEditSource->Enable();
         m_bUpdateChartList->Enable();
     }
     else
     {
         m_bDeleteSource->Disable();
+        m_bEditSource->Disable();
         m_bUpdateChartList->Disable();
     }
     m_lbChartSources->SetItemState(item, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
@@ -1098,6 +1100,7 @@ ChartDldrPanelImpl::ChartDldrPanelImpl( chartdldr_pi* plugin, wxWindow* parent, 
 {
     m_bDeleteSource->Disable();
     m_bUpdateChartList->Disable();
+    m_bEditSource->Disable();
     m_lbChartSources->InsertColumn (0, _("Catalog"), wxLIST_FORMAT_LEFT, CATALOGS_NAME_WIDTH);
     m_lbChartSources->InsertColumn (1, _("Released"), wxLIST_FORMAT_LEFT, CATALOGS_DATE_WIDTH);
     m_lbChartSources->InsertColumn (2, _("Local path"), wxLIST_FORMAT_LEFT, CATALOGS_PATH_WIDTH);
@@ -1127,7 +1130,6 @@ ChartDldrPanelImpl::ChartDldrPanelImpl( chartdldr_pi* plugin, wxWindow* parent, 
         AppendCatalog(pPlugIn->m_chartSources->Item(i));
     }
     m_populated = true;
-    
     
 }
 
