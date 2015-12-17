@@ -1110,6 +1110,7 @@ ChartDldrPanelImpl::ChartDldrPanelImpl( chartdldr_pi* plugin, wxWindow* parent, 
     updatingAll = false;
     pPlugIn = plugin;
     m_populated = false;
+    DownloadIsCancel = false;
     failed_downloads = 0;
     m_stCatalogInfo->SetLabel( wxEmptyString );
     
