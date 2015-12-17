@@ -949,7 +949,7 @@ void ChartDldrPanelImpl::DisableForDownload( bool enabled )
 
 void ChartDldrPanelImpl::OnDownloadCharts( wxCommandEvent& event )
 {
-    if( !cancelled )
+    if( DownloadIsCancel )
     {
         cancelled = true;
         return;
@@ -983,7 +983,7 @@ void ChartDldrPanelImpl::DownloadCharts()
     DisableForDownload( false );
     //wxString old_label = m_bDnldCharts->GetLabel();     // Broken on Android??
     m_bDnldCharts->SetLabel( _("Abort download") );
-
+    DownloadIsCancel = true;
     for( int i = 0; i < m_clCharts->GetItemCount(); i++ )
     {
         //Prepare download queues
@@ -1066,6 +1066,7 @@ After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCata
     }
     DisableForDownload( true );
     m_bDnldCharts->SetLabel( _("Download\n selected charts") );
+    DownloadIsCancel = false;
     SetSource(GetSelectedCatalog());
     if( failed_downloads > 0 && !updatingAll )
         wxMessageBox( wxString::Format( _("%d out of %d charts failed to download.\nCheck the list, verify there is a working Internet connection and repeat the operation if needed."), failed_downloads,downloading ),
@@ -1109,6 +1110,7 @@ ChartDldrPanelImpl::ChartDldrPanelImpl( chartdldr_pi* plugin, wxWindow* parent, 
     updatingAll = false;
     pPlugIn = plugin;
     m_populated = false;
+    DownloadIsCancel = false;
     failed_downloads = 0;
     m_stCatalogInfo->SetLabel( wxEmptyString );
     
@@ -1464,6 +1466,7 @@ bool chartdldr_pi::ExtractZipFiles( const wxString& aZipFile, const wxString& aT
             break;
         }
         wxZipInputStream zip(in);
+        ret = false;
 
         while( entry.reset(zip.GetNextEntry()), entry.get() != NULL )
         {
@@ -1532,6 +1535,7 @@ bool chartdldr_pi::ExtractZipFiles( const wxString& aZipFile, const wxString& aT
                 }
                 zip.Read(file);
                 fn.SetTimes(&aMTime, &aMTime, &aMTime);
+                ret = true;
             }
 
         }
