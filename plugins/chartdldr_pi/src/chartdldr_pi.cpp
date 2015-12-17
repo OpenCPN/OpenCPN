@@ -1066,6 +1066,7 @@ After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCata
     }
     DisableForDownload( true );
     m_bDnldCharts->SetLabel( _("Download\n selected charts") );
+    cancelled = true;
     SetSource(GetSelectedCatalog());
     if( failed_downloads > 0 && !updatingAll )
         wxMessageBox( wxString::Format( _("%d out of %d charts failed to download.\nCheck the list, verify there is a working Internet connection and repeat the operation if needed."), failed_downloads,downloading ),
