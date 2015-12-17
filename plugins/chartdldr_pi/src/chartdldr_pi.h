@@ -167,6 +167,7 @@ private:
 	int             updatingAll;
     int             failed_downloads;
     bool            cancelled;
+    bool            DownloadIsCancel;
     chartdldr_pi   *pPlugIn;
     bool            m_populated;
 
@@ -212,7 +213,7 @@ protected:
     void            SetBulkUpdate( bool bulk_update );
 
 public:
-    ChartDldrPanelImpl() {m_bconnected = false; }
+    ChartDldrPanelImpl() { m_bconnected = false; DownloadIsCancel = false; }
     ~ChartDldrPanelImpl();
     ChartDldrPanelImpl( chartdldr_pi* plugin, wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE );
     void            SelectCatalog( int item );
