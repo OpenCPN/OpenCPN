@@ -306,9 +306,7 @@ bool CompressChart(wxThread *pThread, ChartBase *pchart, wxString CompressedCach
                 if(b_needCompress){
                     b_compressed = true;
                     tex_fact->DoImmediateFullCompress(rect);
-                    for(int level = 0; level < g_mipmap_max_level + 1; level++ ) {
-                        tex_fact->UpdateCacheLevel( rect, level, global_color_scheme );
-                    }
+                    tex_fact->UpdateCacheAllLevels( rect, global_color_scheme );
                 }
 
                 //      Free all possible memory

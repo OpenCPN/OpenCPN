@@ -244,6 +244,8 @@ class options : private Uncopyable,
 
   void SetInitChartDir(const wxString &dir) { m_init_chart_dir = dir; }
   void SetInitialSettings(void);
+  void SetInitialVectorSettings(void);
+  
   void SetCurrentDirList(ArrayOfCDI p) { m_CurrentDirList = p; }
   void SetWorkDirListPtr(ArrayOfCDI *p) { m_pWorkDirList = p; }
   ArrayOfCDI *GetWorkDirListPtr(void) { return m_pWorkDirList; }
@@ -563,7 +565,8 @@ class options : private Uncopyable,
   bool m_bcompact;
   int m_fontHeight, m_scrollRate, m_BTscanning, m_btNoChangeCounter;
   int m_btlastResultCount;
-
+  bool m_bfontChanged;
+  
   DECLARE_EVENT_TABLE()
 };
 
@@ -585,6 +588,8 @@ class ChartGroupsUI : private Uncopyable, public wxScrolledWindow {
                         const wxColour &col, wxFont *pFont = NULL);
   void BuildNotebookPages(ChartGroupArray *pGroupArray);
   void EmptyChartGroupArray(ChartGroupArray *s);
+  void ClearGroupPages();
+  
 
   void OnNodeExpanded(wxTreeEvent &event);
   void OnAvailableSelection(wxTreeEvent &event);
@@ -777,7 +782,8 @@ enum {
     mlIgnore,
     mlMOB,
     mlVDM,
-    mlFollower
+    mlFollower,
+    mlShipName
 };  // MMSIListCtrl Columns;
 
 class MMSIListCtrl : private Uncopyable, public wxListCtrl {
@@ -820,7 +826,7 @@ class MMSIEditDialog : private Uncopyable, public wxDialog {
   void OnCtlUpdated(wxCommandEvent &event);
 
   MMSIProperties *m_props;
-  wxTextCtrl *m_MMSICtl;
+  wxTextCtrl *m_MMSICtl, m_ShipNameCtl; //Has ToDo take away?
   wxRadioButton *m_rbTypeTrackDefault, *m_rbTypeTrackAlways;
   wxRadioButton *m_rbTypeTrackNever;
   wxCheckBox *m_cbTrackPersist, *m_IgnoreButton, *m_MOBButton, *m_VDMButton, *m_FollowerButton;

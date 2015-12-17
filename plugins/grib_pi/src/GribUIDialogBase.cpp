@@ -1601,8 +1601,18 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	fgSizer36->SetFlexibleDirection( wxBOTH );
 	fgSizer36->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
-	m_cManualZoneSel = new wxCheckBox( m_sScrolledDialog, wxID_ANY, _("Manual Selection"), wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer36->Add( m_cManualZoneSel, 0, wxLEFT, 5 );
+    wxFlexGridSizer* fgSizer37;
+	fgSizer37 = new wxFlexGridSizer( 0, 1, 0, 0 );
+	fgSizer37->SetFlexibleDirection( wxBOTH );
+	fgSizer37->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+	m_cManualZoneSel = new wxCheckBox( m_sScrolledDialog, MANSELECT, _("Manual Selection"), wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer37->Add( m_cManualZoneSel, 0, wxLEFT|wxBOTTOM, 5 );
+
+    m_cUseSavedZone = new wxCheckBox( m_sScrolledDialog, SAVEDZONE, _("Use Always this Area"), wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer37->Add( m_cUseSavedZone, 0, wxLEFT|wxTOP, 5 );
+
+    fgSizer36->Add( fgSizer37, 1, wxEXPAND|wxLEFT, 5 );
 
 	fgZoneCoordinatesSizer = new wxFlexGridSizer( 0, 6, 0, 0 );
 	fgZoneCoordinatesSizer->SetFlexibleDirection( wxBOTH );
@@ -1655,9 +1665,7 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	m_stMinLonEW->Wrap( -1 );
 	fgZoneCoordinatesSizer->Add( m_stMinLonEW, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-
 	fgSizer36->Add( fgZoneCoordinatesSizer, 1, wxEXPAND|wxLEFT, 20 );
-
 
 	sbSizer81->Add( fgSizer36, 1, wxBOTTOM|wxEXPAND|wxTOP, 5 );
 
@@ -1827,6 +1835,7 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	m_pInterval->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pTimeRange->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnTimeRangeChange ), NULL, this );
 	m_cManualZoneSel->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnZoneSelectionModeChange ), NULL, this );
+    m_cUseSavedZone->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnZoneSelectionModeChange ), NULL, this );
 	m_spMaxLat->Connect( wxEVT_COMMAND_SPINCTRL_UPDATED, wxSpinEventHandler( GribRequestSettingBase::OnCoordinatesChange ), NULL, this );
 	m_spMaxLon->Connect( wxEVT_COMMAND_SPINCTRL_UPDATED, wxSpinEventHandler( GribRequestSettingBase::OnCoordinatesChange ), NULL, this );
 	m_spMinLat->Connect( wxEVT_COMMAND_SPINCTRL_UPDATED, wxSpinEventHandler( GribRequestSettingBase::OnCoordinatesChange ), NULL, this );
@@ -1867,6 +1876,7 @@ GribRequestSettingBase::~GribRequestSettingBase()
 	m_pInterval->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pTimeRange->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnTimeRangeChange ), NULL, this );
 	m_cManualZoneSel->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnZoneSelectionModeChange ), NULL, this );
+    m_cUseSavedZone->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnZoneSelectionModeChange ), NULL, this );
 	m_spMaxLat->Disconnect( wxEVT_COMMAND_SPINCTRL_UPDATED, wxSpinEventHandler( GribRequestSettingBase::OnCoordinatesChange ), NULL, this );
 	m_spMaxLon->Disconnect( wxEVT_COMMAND_SPINCTRL_UPDATED, wxSpinEventHandler( GribRequestSettingBase::OnCoordinatesChange ), NULL, this );
 	m_spMinLat->Disconnect( wxEVT_COMMAND_SPINCTRL_UPDATED, wxSpinEventHandler( GribRequestSettingBase::OnCoordinatesChange ), NULL, this );

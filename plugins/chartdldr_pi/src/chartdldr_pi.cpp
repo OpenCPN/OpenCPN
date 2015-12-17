@@ -477,8 +477,6 @@ void ChartDldrPanelImpl::OnShowLocalDir( wxCommandEvent& event )
 
 void ChartDldrPanelImpl::SetSource( int id )
 {
-    ::wxBeginBusyCursor();      //wxSetCursor(wxCURSOR_WAIT);
-    wxYield();
     pPlugIn->SetSourceId( id );
 
     m_bDeleteSource->Enable( id >= 0 );
@@ -490,17 +488,19 @@ void ChartDldrPanelImpl::SetSource( int id )
     CleanForm();
     if( id >= 0 && id < (int)pPlugIn->m_chartSources->Count() )
     {
+        ::wxBeginBusyCursor();      //wxSetCursor(wxCURSOR_WAIT);
+        wxYield();
         ChartSource *cs = pPlugIn->m_chartSources->Item(id);
         cs->LoadUpdateData();
         cs->UpdateLocalFiles();
         pPlugIn->m_pChartSource = cs;
         FillFromFile(cs->GetUrl(), cs->GetDir(), pPlugIn->m_preselect_new, pPlugIn->m_preselect_updated);
+        if (::wxIsBusy()) ::wxEndBusyCursor();
     }
     else
     {
         pPlugIn->m_pChartSource = NULL;
     }
-    if (::wxIsBusy()) ::wxEndBusyCursor();
 }
 
 void ChartDldrPanelImpl::SelectSource( wxListEvent& event )
@@ -519,7 +519,9 @@ void ChartDldrPanelImpl::SetBulkUpdate( bool bulk_update )
 
 void ChartDldrPanelImpl::CleanForm()
 {
+    m_clCharts->Freeze();
     m_clCharts->DeleteAllItems();
+    m_clCharts->Thaw();
     //m_stCatalogInfo->Show( false );
 }
 
@@ -542,6 +544,7 @@ void ChartDldrPanelImpl::FillFromFile( wxString url, wxString dir, bool selnew, 
         pPlugIn->m_pChartCatalog->LoadFromFile(path);
 //            m_tChartSourceInfo->SetValue(pPlugIn->m_pChartCatalog->GetDescription());
         //fill in the rest of the form
+        m_clCharts->Freeze();
         m_clCharts->DeleteAllItems();
         size_t updated_charts = 0;
         size_t new_charts = 0;
@@ -576,6 +579,8 @@ void ChartDldrPanelImpl::FillFromFile( wxString url, wxString dir, bool selnew, 
             }
             m_clCharts->SetItem(x, 2, pPlugIn->m_pChartCatalog->charts.Item(i).GetUpdateDatetime().Format(_T("%Y-%m-%d %H:%M")));
         }
+        m_clCharts->Thaw();
+
         m_stCatalogInfo->SetLabel( wxString::Format( _("%lu charts total, %lu updated, %lu new"), pPlugIn->m_pChartCatalog->charts.Count(), updated_charts, new_charts ) );
         m_stCatalogInfo->Show( true );
     }
@@ -639,11 +644,13 @@ void ChartDldrPanelImpl::SelectCatalog( int item )
     if( item >= 0 )
     {
         m_bDeleteSource->Enable();
+        m_bEditSource->Enable();
         m_bUpdateChartList->Enable();
     }
     else
     {
         m_bDeleteSource->Disable();
+        m_bEditSource->Disable();
         m_bUpdateChartList->Disable();
     }
     m_lbChartSources->SetItemState(item, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
@@ -949,7 +956,7 @@ void ChartDldrPanelImpl::DisableForDownload( bool enabled )
 
 void ChartDldrPanelImpl::OnDownloadCharts( wxCommandEvent& event )
 {
-    if( !cancelled )
+    if( DownloadIsCancel )
     {
         cancelled = true;
         return;
@@ -983,7 +990,7 @@ void ChartDldrPanelImpl::DownloadCharts()
     DisableForDownload( false );
     //wxString old_label = m_bDnldCharts->GetLabel();     // Broken on Android??
     m_bDnldCharts->SetLabel( _("Abort download") );
-
+    DownloadIsCancel = true;
     for( int i = 0; i < m_clCharts->GetItemCount(); i++ )
     {
         //Prepare download queues
@@ -1066,6 +1073,7 @@ After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCata
     }
     DisableForDownload( true );
     m_bDnldCharts->SetLabel( _("Download\n selected charts") );
+    DownloadIsCancel = false;
     SetSource(GetSelectedCatalog());
     if( failed_downloads > 0 && !updatingAll )
         wxMessageBox( wxString::Format( _("%d out of %d charts failed to download.\nCheck the list, verify there is a working Internet connection and repeat the operation if needed."), failed_downloads,downloading ),
@@ -1092,6 +1100,7 @@ ChartDldrPanelImpl::ChartDldrPanelImpl( chartdldr_pi* plugin, wxWindow* parent, 
 {
     m_bDeleteSource->Disable();
     m_bUpdateChartList->Disable();
+    m_bEditSource->Disable();
     m_lbChartSources->InsertColumn (0, _("Catalog"), wxLIST_FORMAT_LEFT, CATALOGS_NAME_WIDTH);
     m_lbChartSources->InsertColumn (1, _("Released"), wxLIST_FORMAT_LEFT, CATALOGS_DATE_WIDTH);
     m_lbChartSources->InsertColumn (2, _("Local path"), wxLIST_FORMAT_LEFT, CATALOGS_PATH_WIDTH);
@@ -1109,6 +1118,7 @@ ChartDldrPanelImpl::ChartDldrPanelImpl( chartdldr_pi* plugin, wxWindow* parent, 
     updatingAll = false;
     pPlugIn = plugin;
     m_populated = false;
+    DownloadIsCancel = false;
     failed_downloads = 0;
     m_stCatalogInfo->SetLabel( wxEmptyString );
     
@@ -1119,10 +1129,7 @@ ChartDldrPanelImpl::ChartDldrPanelImpl( chartdldr_pi* plugin, wxWindow* parent, 
     {
         AppendCatalog(pPlugIn->m_chartSources->Item(i));
     }
-    SelectCatalog(pPlugIn->GetSourceId());
-    SetSource(pPlugIn->GetSourceId());
     m_populated = true;
-    
     
 }
 
@@ -1135,8 +1142,6 @@ void ChartDldrPanelImpl::OnPaint( wxPaintEvent& event )
         {
             AppendCatalog(pPlugIn->m_chartSources->Item(i));
         }
-        SelectCatalog(pPlugIn->GetSourceId());
-        SetSource(pPlugIn->GetSourceId());
     }
     event.Skip();
 }
@@ -1466,6 +1471,7 @@ bool chartdldr_pi::ExtractZipFiles( const wxString& aZipFile, const wxString& aT
             break;
         }
         wxZipInputStream zip(in);
+        ret = false;
 
         while( entry.reset(zip.GetNextEntry()), entry.get() != NULL )
         {
@@ -1534,6 +1540,7 @@ bool chartdldr_pi::ExtractZipFiles( const wxString& aZipFile, const wxString& aT
                 }
                 zip.Read(file);
                 fn.SetTimes(&aMTime, &aMTime, &aMTime);
+                ret = true;
             }
 
         }

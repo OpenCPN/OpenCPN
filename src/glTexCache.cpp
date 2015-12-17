@@ -1244,9 +1244,8 @@ void glTexFactory::OnTimer(wxTimerEvent &event)
             
             if( ptd && ptd->nCache_Color != m_colorscheme ){
                 if( IsCompressedArrayComplete( 0, ptd) ){
-                    for(int level = 0; level < g_mipmap_max_level + 1; level++ )
-                        UpdateCacheLevel( wxRect(ptd->x, ptd->y, g_GLOptions.m_iTextureDimension, g_GLOptions.m_iTextureDimension),
-                                          level, m_colorscheme );
+                    UpdateCacheAllLevels( wxRect(ptd->x, ptd->y, g_GLOptions.m_iTextureDimension, g_GLOptions.m_iTextureDimension),
+                                          m_colorscheme );
                     
                     // no longer need to store the compressed compressed data
                     ptd->FreeCompComp();
@@ -1369,8 +1368,7 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
                 if( IsCompressedArrayComplete( 0, ptd) ){
 ///                    g_Platform->ShowBusySpinner();
                 
-                    for(int level = 0; level < g_mipmap_max_level + 1; level++ )
-                        UpdateCacheLevel( rect, level, color_scheme );
+                    UpdateCacheAllLevels( rect, color_scheme );
 
                     // no longer need to store the compressed compressed data
                     ptd->FreeCompComp();
@@ -1819,7 +1817,7 @@ void glTexFactory::PrepareTiles(const ViewPort &vp, bool use_norm_vp, ChartBase 
 }
 
 
-void glTexFactory::UpdateCacheLevel( const wxRect &rect, int level, ColorScheme color_scheme )
+void glTexFactory::UpdateCacheLevel( const wxRect &rect, int level, ColorScheme color_scheme, bool write_catalog )
 {
     //  Search for the requested texture
         //  Search the catalog for this particular texture
@@ -1848,15 +1846,22 @@ void glTexFactory::UpdateCacheLevel( const wxRect &rect, int level, ColorScheme 
         if( g_GLOptions.m_bTextureCompressionCaching){
             unsigned char *pd = ptd->CompCompArrayAccess(CA_READ, NULL, level);
             if(pd){
-                UpdateCachePrecomp(pd, ptd->compcomp_size[level], ptd, level, color_scheme);
+                UpdateCachePrecomp(pd, ptd->compcomp_size[level], ptd, level, color_scheme, write_catalog);
             }
             else {
                 unsigned char *source = ptd->CompressedArrayAccess( CA_READ, NULL, level);
                 if(source)
-                    UpdateCache(source, size, ptd, level, color_scheme);
+                    UpdateCache(source, size, ptd, level, color_scheme, write_catalog);
             }
         }
     }
+}
+
+void glTexFactory::UpdateCacheAllLevels( const wxRect &rect, ColorScheme color_scheme )
+{
+    for (int level = 0; level < g_mipmap_max_level + 1; level++ )
+        UpdateCacheLevel( rect, level, color_scheme, false );
+    WriteCatalogAndHeader();
 }
 
 int glTexFactory::GetTextureLevel( glTextureDescriptor *ptd, const wxRect &rect,
@@ -2124,7 +2129,7 @@ bool glTexFactory::WriteCatalogAndHeader()
 
 // return false on error (currently not used by callers)
 bool glTexFactory::UpdateCache(unsigned char *data, int data_size, glTextureDescriptor *ptd, int level,
-                               ColorScheme color_scheme)
+                               ColorScheme color_scheme, bool write_catalog)
 {
     if (level < 0 || level >= MAX_TEX_LEVEL)
         return false;	// XXX BUG wrong level, assert ?
@@ -2163,13 +2168,14 @@ bool glTexFactory::UpdateCache(unsigned char *data, int data_size, glTextureDesc
     
     //      Write the catalog and Header (which follows the catalog at the end of the file
     m_catalog_offset += compressed_size;
-    WriteCatalogAndHeader();
+    if (write_catalog)
+        WriteCatalogAndHeader();
     
     return true;
 }
 
 bool glTexFactory::UpdateCachePrecomp(unsigned char *data, int data_size, glTextureDescriptor *ptd, int level,
-                                      ColorScheme color_scheme)
+                                      ColorScheme color_scheme, bool write_catalog)
 {
     if (level < 0 || level >= MAX_TEX_LEVEL)
         return false;	// XXX BUG
@@ -2200,7 +2206,8 @@ bool glTexFactory::UpdateCachePrecomp(unsigned char *data, int data_size, glText
     
     //      Write the catalog and Header (which follows the catalog at the end of the file
     m_catalog_offset += data_size;
-    WriteCatalogAndHeader();
+    if (write_catalog)
+        WriteCatalogAndHeader();
     
     return true;
 }

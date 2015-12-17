@@ -543,8 +543,18 @@ void MMSIEditDialog::OnMMSIEditOKClick(wxCommandEvent& event) {
     m_props->m_bVDM = m_VDMButton->GetValue();
     m_props->m_bFollower = m_FollowerButton->GetValue();
     m_props->m_bPersistentTrack = m_cbTrackPersist->GetValue();
+    if (m_props->m_ShipName == wxEmptyString) {
+        AIS_Target_Data *proptarget = g_pAIS->Get_Target_Data_From_MMSI(nmmsi);
+        if (proptarget) {
+            wxString s = proptarget->GetFullName();
+            m_props->m_ShipName = s;
+        }
+        else {
+            wxString GetShipNameFromFile(int);
+            m_props->m_ShipName = GetShipNameFromFile(nmmsi);
+        }
+    }
   }
-
   EndModal(wxID_OK);
 }
 
@@ -605,6 +615,9 @@ wxString MMSIListCtrl::OnGetItemText(long item, long column) const {
     case mlFollower:
       if (props->m_bFollower) ret = _T("X");
       break;
+    case mlShipName:
+        ret = props->m_ShipName;
+        break;
     default:
       ret = _T( "??" );
       break;
@@ -688,7 +701,7 @@ MMSI_Props_Panel::MMSI_Props_Panel(wxWindow* parent)
   wxBoxSizer* topSizer = new wxBoxSizer(wxVERTICAL);
   SetSizer(topSizer);
 
-  wxString MMSI_props_column_spec = _T("120;120;100;100;100;100;100");
+  wxString MMSI_props_column_spec = _T("120;120;100;100;100;100;100;100");
   //  Parse the global column width string as read from config file
   wxStringTokenizer tkz(MMSI_props_column_spec, _T(";"));
   wxString s_width = tkz.GetNextToken();
@@ -696,7 +709,7 @@ MMSI_Props_Panel::MMSI_Props_Panel(wxWindow* parent)
   long lwidth;
 
   m_pListCtrlMMSI = new MMSIListCtrl(
-      this, ID_MMSI_PROPS_LIST, wxDefaultPosition, wxSize(-1, 400),
+      this, ID_MMSI_PROPS_LIST, wxDefaultPosition, wxSize(-1, 450),
       wxLC_REPORT | wxLC_SINGLE_SEL | wxLC_HRULES | wxLC_VRULES |
           wxBORDER_SUNKEN | wxLC_VIRTUAL);
   wxImageList* imglist = new wxImageList(16, 16, TRUE, 2);
@@ -708,58 +721,62 @@ MMSI_Props_Panel::MMSI_Props_Panel(wxWindow* parent)
   // m_pListCtrlMMSI->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
   int dx = GetCharWidth();
 
-  width = dx * 12;
+  width = dx * 5;
   if (s_width.ToLong(&lwidth)) {
     width = wxMax(dx * 2, lwidth);
-    width = wxMin(width, dx * 30);
+    width = wxMin(width, dx * 13);
   }
   m_pListCtrlMMSI->InsertColumn(tlMMSI, _("MMSI"), wxLIST_FORMAT_LEFT, width);
+  
   s_width = tkz.GetNextToken();
-
   width = dx * 12;
   if (s_width.ToLong(&lwidth)) {
     width = wxMax(dx * 2, lwidth);
-    width = wxMin(width, dx * 30);
+    width = wxMin(width, dx * 25);
   }
-  m_pListCtrlMMSI->InsertColumn(tlCLASS, _("Track Mode"), wxLIST_FORMAT_CENTER,
-                                width);
-  s_width = tkz.GetNextToken();
+  m_pListCtrlMMSI->InsertColumn(tlCLASS, _("Track Mode"), wxLIST_FORMAT_CENTER, width);
 
+  s_width = tkz.GetNextToken();
   width = dx * 8;
   if (s_width.ToLong(&lwidth)) {
     width = wxMax(dx * 2, lwidth);
-    width = wxMin(width, dx * 30);
+    width = wxMin(width, dx * 10);
   }
   m_pListCtrlMMSI->InsertColumn(tlTYPE, _("Ignore"), wxLIST_FORMAT_CENTER,
                                 width);
-  s_width = tkz.GetNextToken();
 
+  s_width = tkz.GetNextToken();
   width = dx * 8;
   if (s_width.ToLong(&lwidth)) {
     width = wxMax(dx * 2, lwidth);
-    width = wxMin(width, dx * 30);
+    width = wxMin(width, dx * 10);
   }
   m_pListCtrlMMSI->InsertColumn(tlTYPE, _("MOB"), wxLIST_FORMAT_CENTER, width);
-  s_width = tkz.GetNextToken();
 
+  s_width = tkz.GetNextToken();
+  width = dx * 8;
+  if (s_width.ToLong(&lwidth)) {
+    width = wxMax(dx * 2, lwidth);
+    width = wxMin(width, dx * 15);
+  }
+  m_pListCtrlMMSI->InsertColumn(tlTYPE, _("VDM->VDO"), wxLIST_FORMAT_CENTER, width);
+
+  s_width = tkz.GetNextToken();
   width = dx * 8;
   if (s_width.ToLong(&lwidth)) {
     width = wxMax(dx * 2, lwidth);
     width = wxMin(width, dx * 30);
   }
-  m_pListCtrlMMSI->InsertColumn(tlTYPE, _("VDM->VDO"), wxLIST_FORMAT_CENTER,
-                                width);
-  s_width = tkz.GetNextToken();
+  m_pListCtrlMMSI->InsertColumn(tlTYPE, _("Ship name"), wxLIST_FORMAT_CENTER, width);
 
-  width = dx * 8;
+  s_width = tkz.GetNextToken();
+  width = dx * 8;  
   if (s_width.ToLong(&lwidth)) {
-    width = wxMax(dx * 2, lwidth);
-    width = wxMin(width, dx * 30);
+      width = wxMax(dx * 2, lwidth);
+      width = wxMin(width, dx * 10);
   }
-  m_pListCtrlMMSI->InsertColumn(tlTYPE, _("Follower"), wxLIST_FORMAT_CENTER,
-                                width);
-  s_width = tkz.GetNextToken();
-
+  m_pListCtrlMMSI->InsertColumn(tlTYPE, _("Follower"), wxLIST_FORMAT_CENTER, width);  //Has
+  
   topSizer->Add(m_pListCtrlMMSI, 1, wxEXPAND | wxALL, 0);
 
   m_pButtonNew = new wxButton(this, wxID_ANY, _("New..."), wxDefaultPosition,
@@ -866,8 +883,6 @@ END_EVENT_TABLE()
 options::options(MyFrame* parent, wxWindowID id, const wxString& caption,
                  const wxPoint& pos, const wxSize& size, long style) {
   Init();
-  // Need to load S52 Options
-  LoadS57();
 
   pParent = parent;
 
@@ -4728,6 +4743,8 @@ void options::SetInitialSettings(void) {
   wxString s;
 
   m_returnChanges = 0;                  // reset the flags
+  m_bfontChanged = false;
+  
   
   // ChartsLoad
   int nDir = m_CurrentDirList.GetCount();
@@ -4966,102 +4983,7 @@ void options::SetInitialSettings(void) {
 
   m_TalkerIdText->SetValue(g_TalkerIdText.MakeUpper());
 
-#ifdef USE_S57
-  m_pSlider_CM93_Zoom->SetValue(g_cm93_zoom_factor);
-
-  //    Diplay Category
-  if (ps52plib) {
-    if (ps57CtlListBox) {
-      //    S52 Primary Filters
-      ps57CtlListBox->Clear();
-      marinersStdXref.clear();
-
-      for (unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount();
-           iPtr++) {
-        OBJLElement* pOLE = (OBJLElement*)(ps52plib->pOBJLArray->Item(iPtr));
-        wxString item;
-        if (iPtr < ps52plib->OBJLDescriptions.size()) {
-          item = ps52plib->OBJLDescriptions[iPtr];
-        } else {
-          item = wxString(pOLE->OBJLName, wxConvUTF8);
-        }
-
-        // The ListBox control will insert entries in sorted order, which means
-        // we need to
-        // keep track of already inseted items that gets pushed down the line.
-        int newpos = ps57CtlListBox->Append(item);
-        marinersStdXref.push_back(newpos);
-        for (size_t i = 0; i < iPtr; i++) {
-          if (marinersStdXref[i] >= newpos) marinersStdXref[i]++;
-        }
-
-        ps57CtlListBox->Check(newpos, !(pOLE->nViz == 0));
-      }
-    }
-#ifdef __OCPN__ANDROID__
-    ps57CtlListBox->GetHandle()->setStyleSheet(getQtStyleSheet());
-#endif
-
-    int nset = 2;  // default OTHER
-    switch (ps52plib->GetDisplayCategory()) {
-      case (DISPLAYBASE):
-        nset = 0;
-        break;
-      case (STANDARD):
-        nset = 1;
-        break;
-      case (OTHER):
-        nset = 2;
-        break;
-      case (MARINERS_STANDARD):
-        nset = 3;
-        break;
-      default:
-        nset = 3;
-        break;
-    }
-
-    pDispCat->SetSelection(nset);
-
-    if( ps57CtlListBox )
-        ps57CtlListBox->Enable(MARINERS_STANDARD == ps52plib->GetDisplayCategory());
-    itemButtonClearList->Enable(MARINERS_STANDARD ==
-                                ps52plib->GetDisplayCategory());
-    itemButtonSelectList->Enable(MARINERS_STANDARD ==
-                                 ps52plib->GetDisplayCategory());
-
-    //  Other Display Filters
-    pCheck_SOUNDG->SetValue(ps52plib->m_bShowSoundg);
-    pCheck_META->SetValue(ps52plib->m_bShowMeta);
-    pCheck_SHOWIMPTEXT->SetValue(ps52plib->m_bShowS57ImportantTextOnly);
-    pCheck_SCAMIN->SetValue(ps52plib->m_bUseSCAMIN);
-    pCheck_ATONTEXT->SetValue(ps52plib->m_bShowAtonText);
-    pCheck_LDISTEXT->SetValue(ps52plib->m_bShowLdisText);
-    pCheck_XLSECTTEXT->SetValue(ps52plib->m_bExtendLightSectors);
-    pCheck_DECLTEXT->SetValue(ps52plib->m_bDeClutterText);
-    pCheck_NATIONALTEXT->SetValue(ps52plib->m_bShowNationalTexts);
-
-    // Chart Display Style
-    if (ps52plib->m_nSymbolStyle == PAPER_CHART)
-      pPointStyle->SetSelection(0);
-    else
-      pPointStyle->SetSelection(1);
-
-    if (ps52plib->m_nBoundaryStyle == PLAIN_BOUNDARIES)
-      pBoundStyle->SetSelection(0);
-    else
-      pBoundStyle->SetSelection(1);
-
-    if (S52_getMarinerParam(S52_MAR_TWO_SHADES) == 1.0)
-      p24Color->SetSelection(0);
-    else
-      p24Color->SetSelection(1);
-
-    // Depths
-    pDepthUnitSelect->SetSelection(ps52plib->m_nDepthUnitDisplay);
-    UpdateOptionsUnits();  // sets depth values using the user's unit preference
-  }
-#endif
+  SetInitialVectorSettings();
 
   pToolbarAutoHideCB->SetValue(g_bAutoHideToolbar);
 
@@ -5069,15 +4991,109 @@ void options::SetInitialSettings(void) {
   pToolbarHideSecs->SetValue(s);
 }
 
+void options::SetInitialVectorSettings(void)
+{
+#ifdef USE_S57
+    m_pSlider_CM93_Zoom->SetValue(g_cm93_zoom_factor);
+    
+    //    Diplay Category
+    if (ps52plib) {
+        if (ps57CtlListBox) {
+            //    S52 Primary Filters
+            ps57CtlListBox->Clear();
+            marinersStdXref.clear();
+            
+            for (unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount();
+                 iPtr++) {
+                OBJLElement* pOLE = (OBJLElement*)(ps52plib->pOBJLArray->Item(iPtr));
+            wxString item;
+            if (iPtr < ps52plib->OBJLDescriptions.size()) {
+                item = ps52plib->OBJLDescriptions[iPtr];
+            } else {
+                item = wxString(pOLE->OBJLName, wxConvUTF8);
+            }
+            
+            // The ListBox control will insert entries in sorted order, which means
+            // we need to
+            // keep track of already inseted items that gets pushed down the line.
+            int newpos = ps57CtlListBox->Append(item);
+            marinersStdXref.push_back(newpos);
+            for (size_t i = 0; i < iPtr; i++) {
+                if (marinersStdXref[i] >= newpos) marinersStdXref[i]++;
+            }
+            
+            ps57CtlListBox->Check(newpos, !(pOLE->nViz == 0));
+                 }
+        }
+        #ifdef __OCPN__ANDROID__
+        ps57CtlListBox->GetHandle()->setStyleSheet(getQtStyleSheet());
+        #endif
+        
+        int nset = 2;  // default OTHER
+        switch (ps52plib->GetDisplayCategory()) {
+            case (DISPLAYBASE):
+                nset = 0;
+                break;
+            case (STANDARD):
+                nset = 1;
+                break;
+            case (OTHER):
+                nset = 2;
+                break;
+            case (MARINERS_STANDARD):
+                nset = 3;
+                break;
+            default:
+                nset = 3;
+                break;
+        }
+        
+        pDispCat->SetSelection(nset);
+        
+        if( ps57CtlListBox )
+            ps57CtlListBox->Enable(MARINERS_STANDARD == ps52plib->GetDisplayCategory());
+        itemButtonClearList->Enable(MARINERS_STANDARD ==
+        ps52plib->GetDisplayCategory());
+        itemButtonSelectList->Enable(MARINERS_STANDARD ==
+        ps52plib->GetDisplayCategory());
+        
+        //  Other Display Filters
+        pCheck_SOUNDG->SetValue(ps52plib->m_bShowSoundg);
+        pCheck_META->SetValue(ps52plib->m_bShowMeta);
+        pCheck_SHOWIMPTEXT->SetValue(ps52plib->m_bShowS57ImportantTextOnly);
+        pCheck_SCAMIN->SetValue(ps52plib->m_bUseSCAMIN);
+        pCheck_ATONTEXT->SetValue(ps52plib->m_bShowAtonText);
+        pCheck_LDISTEXT->SetValue(ps52plib->m_bShowLdisText);
+        pCheck_XLSECTTEXT->SetValue(ps52plib->m_bExtendLightSectors);
+        pCheck_DECLTEXT->SetValue(ps52plib->m_bDeClutterText);
+        pCheck_NATIONALTEXT->SetValue(ps52plib->m_bShowNationalTexts);
+        
+        // Chart Display Style
+        if (ps52plib->m_nSymbolStyle == PAPER_CHART)
+            pPointStyle->SetSelection(0);
+        else
+            pPointStyle->SetSelection(1);
+        
+        if (ps52plib->m_nBoundaryStyle == PLAIN_BOUNDARIES)
+            pBoundStyle->SetSelection(0);
+        else
+            pBoundStyle->SetSelection(1);
+        
+        if (S52_getMarinerParam(S52_MAR_TWO_SHADES) == 1.0)
+            p24Color->SetSelection(0);
+        else
+            p24Color->SetSelection(1);
+        
+        // Depths
+            pDepthUnitSelect->SetSelection(ps52plib->m_nDepthUnitDisplay);
+            UpdateOptionsUnits();  // sets depth values using the user's unit preference
+    }
+#endif
+}
+
+
 void options::UpdateOptionsUnits(void) {
   int depthUnit = pDepthUnitSelect->GetSelection();
-
-  // set depth unit labels
-  wxString depthUnitStrings[] = {_("feet"), _("meters"), _("fathoms")};
-  wxString depthUnitString = depthUnitStrings[depthUnit];
-  m_depthUnitsShal->SetLabel(depthUnitString);
-  m_depthUnitsSafe->SetLabel(depthUnitString);
-  m_depthUnitsDeep->SetLabel(depthUnitString);
 
   // depth unit conversion factor
   float conv = 1;
@@ -5088,7 +5104,14 @@ void options::UpdateOptionsUnits(void) {
 
   // set depth input values
 #ifdef USE_S57
-  
+
+    // set depth unit labels
+  wxString depthUnitStrings[] = {_("feet"), _("meters"), _("fathoms")};
+  wxString depthUnitString = depthUnitStrings[depthUnit];
+  m_depthUnitsShal->SetLabel(depthUnitString);
+  m_depthUnitsSafe->SetLabel(depthUnitString);
+  m_depthUnitsDeep->SetLabel(depthUnitString);
+
   wxString s;
   s.Printf(_T( "%6.2f" ), S52_getMarinerParam(S52_MAR_SHALLOW_CONTOUR) / conv);
   s.Trim(FALSE);
@@ -5526,6 +5549,10 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
   m_pText_ACRadius->GetValue().ToDouble(&g_n_arrival_circle_radius);
 
+  //  Any Font changes?
+  if(m_bfontChanged)
+      m_returnChanges |= FONT_CHANGED;
+  
   // Handle Chart Tab
   if (pActiveChartsList) {
     UpdateWorkArrayFromTextCtl();
@@ -5996,6 +6023,11 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
   if (event.GetId() == ID_APPLY) {
     gFrame->ProcessOptionsDialog(m_returnChanges, m_pWorkDirList);
+    
+    //  We can clear a few flag bits on "Apply", so they won't be recognised at the "OK" click.
+    //  Their actions have already been accomplished once...
+    m_returnChanges &= ~( FORCE_UPDATE | SCAN_UPDATE );
+    
     cc1->ReloadVP();
   }
 
@@ -6157,7 +6189,7 @@ void options::OnChooseFont(wxCommandEvent& event) {
     wxColor color = font_data.GetColour();
     FontMgr::Get().SetFont(sel_text_element, psfont, color);
     pParent->UpdateAllFonts();
-    m_returnChanges |= FONT_CHANGED;
+    m_bfontChanged = true;
   }
 
   event.Skip();
@@ -6185,7 +6217,7 @@ void options::OnChooseFontColor(wxCommandEvent& event) {
     FontMgr::Get().SetFont(sel_text_element, pif, color);
 
     pParent->UpdateAllFonts();
-    m_returnChanges |= FONT_CHANGED;
+    m_bfontChanged = true;
   }
 
   event.Skip();
@@ -6208,6 +6240,10 @@ void options::OnChartsPageChange(wxListbookEvent& event) {
       groupsPanel->PopulateTrees();
       groupsPanel->m_treespopulated = TRUE;
     }
+  }
+  else if(1 == i){              // Vector charts panel
+    LoadS57();
+    SetInitialVectorSettings();
   }
 
   event.Skip();  // Allow continued event processing
@@ -6939,7 +6975,10 @@ void ChartGroupsUI::OnNodeExpanded(wxTreeEvent& event) {
   }
 }
 
-void ChartGroupsUI::BuildNotebookPages(ChartGroupArray* pGroupArray) {
+void ChartGroupsUI::BuildNotebookPages(ChartGroupArray* pGroupArray)
+{
+  ClearGroupPages();
+  
   for (unsigned int i = 0; i < pGroupArray->GetCount(); i++) {
     ChartGroup* pGroup = pGroupArray->Item(i);
     wxTreeCtrl* ptc = AddEmptyGroupPage(pGroup->m_group_name);
@@ -6978,6 +7017,15 @@ wxTreeCtrl* ChartGroupsUI::AddEmptyGroupPage(const wxString& label) {
   return ptree;
 }
 
+void ChartGroupsUI::ClearGroupPages()
+{
+    for(unsigned int i = m_GroupNB->GetPageCount()-1 ; i > 0 ; i--){
+        m_DirCtrlArray.RemoveAt(i);
+        m_GroupNB->DeletePage(i);
+    }
+}
+
+            
 void options::OnInsertTideDataLocation(wxCommandEvent& event) {
   wxString sel_file;
   int response = wxID_CANCEL;
