@@ -477,8 +477,6 @@ void ChartDldrPanelImpl::OnShowLocalDir( wxCommandEvent& event )
 
 void ChartDldrPanelImpl::SetSource( int id )
 {
-    ::wxBeginBusyCursor();      //wxSetCursor(wxCURSOR_WAIT);
-    wxYield();
     pPlugIn->SetSourceId( id );
 
     m_bDeleteSource->Enable( id >= 0 );
@@ -490,17 +488,19 @@ void ChartDldrPanelImpl::SetSource( int id )
     CleanForm();
     if( id >= 0 && id < (int)pPlugIn->m_chartSources->Count() )
     {
+        ::wxBeginBusyCursor();      //wxSetCursor(wxCURSOR_WAIT);
+        wxYield();
         ChartSource *cs = pPlugIn->m_chartSources->Item(id);
         cs->LoadUpdateData();
         cs->UpdateLocalFiles();
         pPlugIn->m_pChartSource = cs;
         FillFromFile(cs->GetUrl(), cs->GetDir(), pPlugIn->m_preselect_new, pPlugIn->m_preselect_updated);
+        if (::wxIsBusy()) ::wxEndBusyCursor();
     }
     else
     {
         pPlugIn->m_pChartSource = NULL;
     }
-    if (::wxIsBusy()) ::wxEndBusyCursor();
 }
 
 void ChartDldrPanelImpl::SelectSource( wxListEvent& event )
@@ -519,7 +519,9 @@ void ChartDldrPanelImpl::SetBulkUpdate( bool bulk_update )
 
 void ChartDldrPanelImpl::CleanForm()
 {
+    m_clCharts->Freeze();
     m_clCharts->DeleteAllItems();
+    m_clCharts->Thaw();
     //m_stCatalogInfo->Show( false );
 }
 
