@@ -230,8 +230,6 @@ Chart::Chart( TiXmlNode * xmldata )
     coast_guard_districts = new wxArrayString();
     states = new wxArrayString();
     regions = new wxArrayString();
-    nm = NULL;
-    lnm = NULL;
     TiXmlNode *child;
     target_filename = wxEmptyString;
     reference_file = wxEmptyString;
@@ -306,11 +304,13 @@ Chart::Chart( TiXmlNode * xmldata )
         }
         else if( s == _T("nm") )
         {
-            nm = new NoticeToMariners(child);
+            // NOT USED
+            // nm = new NoticeToMariners(child);
         }
         else if( s == _T("lnm") )
         {
-            lnm = new NoticeToMariners(child);
+            // NOT USED
+            // lnm = new NoticeToMariners(child);
         }
         else if( s == _T("cov") )
         {
@@ -714,7 +714,8 @@ Panel::Panel( TiXmlNode * xmldata )
         }
         else if( s == _T("vertex") )
         {
-            vertexes.Add(new Vertex(child));
+            // NOT USED
+            //vertexes.Add(new Vertex(child));
         }
     }
 }
