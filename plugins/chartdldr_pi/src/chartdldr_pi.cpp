@@ -1121,7 +1121,6 @@ ChartDldrPanelImpl::ChartDldrPanelImpl( chartdldr_pi* plugin, wxWindow* parent, 
         AppendCatalog(pPlugIn->m_chartSources->Item(i));
     }
     SelectCatalog(pPlugIn->GetSourceId());
-    SetSource(pPlugIn->GetSourceId());
     m_populated = true;
     
     
@@ -1137,7 +1136,6 @@ void ChartDldrPanelImpl::OnPaint( wxPaintEvent& event )
             AppendCatalog(pPlugIn->m_chartSources->Item(i));
         }
         SelectCatalog(pPlugIn->GetSourceId());
-        SetSource(pPlugIn->GetSourceId());
     }
     event.Skip();
 }

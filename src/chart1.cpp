@@ -3105,6 +3105,11 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         return;
     }
 
+    // If Options dialog is not fully initialized, just cancel the close request. 
+    //  This is only reachable on slow hardware...
+    if(!g_options)
+        return;
+    
     if(g_options)
         delete g_options;
     
