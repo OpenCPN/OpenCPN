@@ -1244,22 +1244,29 @@ void glTexFactory::OnTimer(wxTimerEvent &event)
             
             if( ptd && ptd->nCache_Color != m_colorscheme ){
                 if( IsCompressedArrayComplete( 0, ptd) ){
-                    UpdateCacheAllLevels( wxRect(ptd->x, ptd->y, g_GLOptions.m_iTextureDimension, g_GLOptions.m_iTextureDimension),
+                    bool work = UpdateCacheAllLevels( wxRect(ptd->x, ptd->y, g_GLOptions.m_iTextureDimension, g_GLOptions.m_iTextureDimension),
                                           m_colorscheme );
                     
                     // no longer need to store the compressed compressed data
                     ptd->FreeCompComp();
+                    if (work) {
+                        // we saved something reloaded the texture
+                        // Now Delete the texture so it will be reloaded with compressed data
+                        DeleteSingleTexture(ptd);
 
-                    // Now Delete the texture so it will be reloaded with compressed data
-                    DeleteSingleTexture(ptd);
-
-                    // We need to force a refresh to replace the uncompressed texture
-                    // This frees video memory and is also really required if we had
-                    // gone up a mipmap level
-                    glChartCanvas::Invalidate(); // ensure we refresh
-                    extern ChartCanvas *cc1;
-                    cc1->Refresh();
+                        // We need to force a refresh to replace the uncompressed texture
+                        // This frees video memory and is also really required if we had
+                        // gone up a mipmap level
+                        glChartCanvas::Invalidate(); // ensure we refresh
+                        extern ChartCanvas *cc1;
+                        cc1->Refresh();
+                    }
+                    else {
+                        // XXX is that true?
+                        ptd->nCache_Color = m_colorscheme;               // mark this TD as cached.
+                    }
                     break;
+
                 }
             }
         }
@@ -1368,14 +1375,14 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
                 if( IsCompressedArrayComplete( 0, ptd) ){
 ///                    g_Platform->ShowBusySpinner();
                 
-                    UpdateCacheAllLevels( rect, color_scheme );
+                    bool work = UpdateCacheAllLevels( rect, color_scheme );
 
                     // no longer need to store the compressed compressed data
                     ptd->FreeCompComp();
-
-                    // Now Delete the texture so it will be reloaded with compressed data
-                    DeleteSingleTexture(ptd);
-                
+                    if (work) {
+                        // Now Delete the texture so it will be reloaded with compressed data
+                        DeleteSingleTexture(ptd);
+                    }
                     ptd->nCache_Color = color_scheme;               // mark this TD as cached.
                 }
             }
