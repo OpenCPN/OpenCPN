@@ -4055,8 +4055,7 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
   itemStaticBoxSizerCPA->Add(pCPAGrid, 0, wxALL | wxEXPAND, border_size);
 
   m_pCheck_CPA_Max = new wxCheckBox(
-      panelAIS, -1,
-      _("No CPA Calculation if target range is greater than (NMi)"));
+      panelAIS, -1, _("No (T)CPA Alerts if target range is greater than (NMi)"));
   pCPAGrid->Add(m_pCheck_CPA_Max, 0, wxALL, group_item_spacing);
 
   m_pText_CPA_Max = new wxTextCtrl(panelAIS, -1);
