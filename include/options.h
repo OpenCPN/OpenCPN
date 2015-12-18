@@ -566,6 +566,7 @@ class options : private Uncopyable,
   int m_fontHeight, m_scrollRate, m_BTscanning, m_btNoChangeCounter;
   int m_btlastResultCount;
   bool m_bfontChanged;
+  bool m_bVectorInit;
   
   DECLARE_EVENT_TABLE()
 };
