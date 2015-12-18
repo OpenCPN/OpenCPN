@@ -4859,6 +4859,9 @@ void MyFrame::ApplyGlobalSettings( bool bFlyingUpdate, bool bnewtoolbar )
 #endif
 
     if ( showMenuBar ) {
+        //  Menu bar has some dependencies on S52 PLIB, so be sure it is loaded.
+        LoadS57();
+        
         if ( !m_pMenuBar ) {    // add the menu bar if it is enabled
             m_pMenuBar = new wxMenuBar();
             RegisterGlobalMenuItems();

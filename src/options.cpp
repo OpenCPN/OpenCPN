@@ -1000,6 +1000,7 @@ void options::Init(void) {
   m_BTscanning = 0;
 
   dialogFont = GetOCPNScaledFont(_("Dialog"));
+  m_bVectorInit = false;
 
   // This variable is used by plugin callback function AddOptionsPage
   g_pOptions = this;
@@ -4055,8 +4056,7 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
   itemStaticBoxSizerCPA->Add(pCPAGrid, 0, wxALL | wxEXPAND, border_size);
 
   m_pCheck_CPA_Max = new wxCheckBox(
-      panelAIS, -1,
-      _("No CPA Calculation if target range is greater than (NMi)"));
+      panelAIS, -1, _("No (T)CPA Alerts if target range is greater than (NMi)"));
   pCPAGrid->Add(m_pCheck_CPA_Max, 0, wxALL, group_item_spacing);
 
   m_pText_CPA_Max = new wxTextCtrl(panelAIS, -1);
@@ -4998,6 +4998,8 @@ void options::SetInitialVectorSettings(void)
     
     //    Diplay Category
     if (ps52plib) {
+        m_bVectorInit = true;
+    
         if (ps57CtlListBox) {
             //    S52 Primary Filters
             ps57CtlListBox->Clear();
@@ -6243,7 +6245,8 @@ void options::OnChartsPageChange(wxListbookEvent& event) {
   }
   else if(1 == i){              // Vector charts panel
     LoadS57();
-    SetInitialVectorSettings();
+    if (!m_bVectorInit)
+        SetInitialVectorSettings();
   }
 
   event.Skip();  // Allow continued event processing
