@@ -1000,6 +1000,7 @@ void options::Init(void) {
   m_BTscanning = 0;
 
   dialogFont = GetOCPNScaledFont(_("Dialog"));
+  m_bVectorInit = false;
 
   // This variable is used by plugin callback function AddOptionsPage
   g_pOptions = this;
@@ -4997,6 +4998,8 @@ void options::SetInitialVectorSettings(void)
     
     //    Diplay Category
     if (ps52plib) {
+        m_bVectorInit = true;
+    
         if (ps57CtlListBox) {
             //    S52 Primary Filters
             ps57CtlListBox->Clear();
@@ -6242,7 +6245,8 @@ void options::OnChartsPageChange(wxListbookEvent& event) {
   }
   else if(1 == i){              // Vector charts panel
     LoadS57();
-    SetInitialVectorSettings();
+    if (!m_bVectorInit)
+        SetInitialVectorSettings();
   }
 
   event.Skip();  // Allow continued event processing
