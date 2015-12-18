@@ -681,6 +681,7 @@ static int tick_idx;
 int               g_sticky_chart;
 
 extern wxString OpenCPNVersion; //Gunther
+extern options          *g_pOptions;
 
 int n_NavMessageShown;
 wxString g_config_version_string;
@@ -3110,8 +3111,11 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     if(!g_options)
         return;
     
-    if(g_options)
+    if(g_options){
         delete g_options;
+        g_options = NULL;
+        g_pOptions = NULL;
+    }
     
     //  If the multithread chart compressor engine is running, cancel the close command
     if( b_inCompressAllCharts ) {

@@ -900,8 +900,14 @@ options::options(MyFrame* parent, wxWindowID id, const wxString& caption,
 }
 
 options::~options(void) {
+    
+  wxNotebook* nb = dynamic_cast<wxNotebook*>(m_pListbook->GetPage(m_pageCharts));
+    if (nb)
+        nb->Disconnect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
+                                    wxListbookEventHandler(options::OnChartsPageChange),
+                                    NULL, this);
+        
   groupsPanel->EmptyChartGroupArray(m_pGroupArray);
-  g_pOptions = NULL;
   delete m_pSerialArray;
   delete m_pGroupArray;
   delete m_topImgList;
@@ -3503,12 +3509,6 @@ void options::CreatePanel_ChartGroups(size_t parent, int border_size,
   wxNotebook* nb = dynamic_cast<wxNotebook*>(m_groupsPage);
   if (nb) nb->AddPage(groupsPanel, _("Chart Groups"));
 
-  m_groupsPage->Connect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
-                        wxListbookEventHandler(options::OnChartsPageChange),
-                        NULL, this);
-
-  //    groupsPanel->CompletePanel();     // Deferred until panel is
-  //    selected....
 }
 
 void ChartGroupsUI::CreatePanel(size_t parent, int border_size,
@@ -4678,12 +4678,22 @@ void options::CreateControls(void) {
   CreatePanel_Advanced(m_pageDisplay, border_size, group_item_spacing);
 
   m_pageCharts = CreatePanel(_("Charts"));
+  
+  
+  
   CreatePanel_ChartsLoad(m_pageCharts, border_size, group_item_spacing);
   CreatePanel_VectorCharts(m_pageCharts, border_size, group_item_spacing);
   // ChartGroups must be created after ChartsLoad and must be at least third
   CreatePanel_ChartGroups(m_pageCharts, border_size, group_item_spacing);
   CreatePanel_TidesCurrents(m_pageCharts, border_size, group_item_spacing);
 
+  wxNotebook* nb = dynamic_cast<wxNotebook*>(m_pListbook->GetPage(m_pageCharts));
+  if (nb)
+      nb->Connect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
+                                  wxListbookEventHandler(options::OnChartsPageChange),
+                                  NULL, this);
+      
+      
   m_pageConnections = CreatePanel(_("Connections"));
 #ifndef __OCPN__ANDROID__
   CreatePanel_NMEA(m_pageConnections, border_size, group_item_spacing);
@@ -6105,15 +6115,8 @@ void options::OnButtondeleteClick(wxCommandEvent& event) {
 void options::OnDebugcheckbox1Click(wxCommandEvent& event) { event.Skip(); }
 
 void options::OnCancelClick(wxCommandEvent& event) {
-  //  Required to avoid intermittent crash on wxGTK
-  if (m_groupsPage)
-    m_groupsPage->Disconnect(
-        wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
-        wxListbookEventHandler(options::OnChartsPageChange), NULL, this);
 
   m_pListbook->ChangeSelection(0);
-  //delete pActiveChartsList;
-  //delete ps57CtlListBox;
 
   lastWindowPos = GetPosition();
   lastWindowSize = GetSize();
@@ -6127,15 +6130,7 @@ void options::OnClose(wxCloseEvent& event) {
   //      PlugIns may have added panels
   if (g_pi_manager) g_pi_manager->CloseAllPlugInPanels((int)wxOK);
 
-  //  Required to avoid intermittent crash on wxGTK
-  if (m_groupsPage)
-    m_groupsPage->Disconnect(
-        wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
-        wxListbookEventHandler(options::OnChartsPageChange), NULL, this);
-
   m_pListbook->ChangeSelection(0);
-  //delete pActiveChartsList;
-  //delete ps57CtlListBox;
 
   lastWindowPos = GetPosition();
   lastWindowSize = GetSize();
