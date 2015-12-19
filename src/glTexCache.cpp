@@ -1266,7 +1266,6 @@ void glTexFactory::OnTimer(wxTimerEvent &event)
                         ptd->nCache_Color = m_colorscheme;               // mark this TD as cached.
                     }
                     break;
-
                 }
             }
         }
@@ -1437,8 +1436,17 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     //  so we are done
     if(base_level >= ptd->level_min){
 //        if(ptd->miplevel_upload[0] && ptd->map_array[0])
-            ptd->FreeAll();
+        ptd->FreeAll();
+        if(ptd->nGPU_compressed == GPU_TEXTURE_UNCOMPRESSED && g_GLOptions.m_bTextureCompression
+                 && g_GLOptions.m_bTextureCompressionCaching) {
             
+             if( (GL_COMPRESSED_RGBA_S3TC_DXT1_EXT == g_raster_format) ||
+                 (GL_COMPRESSED_RGB_S3TC_DXT1_EXT == g_raster_format) ||
+                 (GL_ETC1_RGB8_OES == g_raster_format) ){
+                if(g_CompressorPool)
+                    g_CompressorPool->ScheduleJob( this, rect, 0, b_throttle_thread, false, true);   // with postZip
+             }
+        }
         return true;
     }
 
