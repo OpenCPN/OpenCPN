@@ -215,8 +215,9 @@ extern int              g_ScaledNumWeightSOG;
 extern int              g_ScaledNumWeightCPA;
 extern int              g_ScaledNumWeightTCPA;
 extern int              g_ScaledNumWeightRange;
-extern int              g_ScaledNumWeightClassB;
+extern int              g_ScaledNumWeightSizeOfT;
 extern int              g_ScaledSizeMinimal;
+extern bool             g_bShowScaled;
 
 extern int              g_S57_dialog_sx, g_S57_dialog_sy;
 
@@ -1508,13 +1509,14 @@ int MyConfig::LoadMyConfig()
     
     Read(_T ("bShowScaledTargets"), &g_bAllowShowScaled );
     g_ShowScaled_Num = Read( _T ( "AISScaledNumber" ), 10L );
-    g_ScaledNumWeightSOG = Read( _T ( "AISScaledNumberWeightSOG" ), 120L );
-    g_ScaledNumWeightCPA = Read( _T ( "AISScaledNumberWeightCPA" ), 100L );
-    g_ScaledNumWeightTCPA = Read( _T ( "AISScaledNumberWeightTCPA" ), 100L );
-    g_ScaledNumWeightRange = Read( _T ( "AISScaledNumberWeightRange" ), 100L );
-    g_ScaledNumWeightClassB = Read( _T ( "AISScaledNumberWeightClassB" ), -20L );
+    g_ScaledNumWeightSOG = Read( _T ( "AISScaledNumberWeightSOG" ), 50L );
+    g_ScaledNumWeightCPA = Read( _T ( "AISScaledNumberWeightCPA" ), 60L );
+    g_ScaledNumWeightTCPA = Read( _T ( "AISScaledNumberWeightTCPA" ), 25L );
+    g_ScaledNumWeightRange = Read( _T ( "AISScaledNumberWeightRange" ), 75L );
+    g_ScaledNumWeightSizeOfT = Read( _T ( "AISScaledNumberWeightSizeOfTarget" ), 25L );
     g_ScaledSizeMinimal = Read( _T ( "AISScaledSizeMinimal" ), 50L );
-
+    Read(_("AISShowScaled"), g_bShowScaled );
+    
     Read( _T ( "bShowAreaNotices" ), &g_bShowAreaNotices );
     Read( _T ( "bDrawAISSize" ), &g_bDrawAISSize );
     Read( _T ( "bShowAISName" ), &g_bShowAISName );
@@ -2798,8 +2800,9 @@ void MyConfig::UpdateSettings()
     Write( _T ( "AISScaledNumberWeightCPA" ), g_ScaledNumWeightCPA );
     Write( _T ( "AISScaledNumberWeightTCPA" ), g_ScaledNumWeightTCPA );
     Write( _T ( "AISScaledNumberWeightRange" ), g_ScaledNumWeightRange );
-    Write( _T ( "AISScaledNumberWeightClassB" ), g_ScaledNumWeightClassB ); 
+    Write( _T ( "AISScaledNumberWeightSizeOfTarget" ), g_ScaledNumWeightSizeOfT ); 
     Write( _T ( "AISScaledSizeMinimal" ), g_ScaledSizeMinimal );
+    Write( _T ( "AISShowScaled"), g_bShowScaled);
 
     Write( _T ( "AlertDialogSizeX" ), g_ais_alert_dialog_sx );
     Write( _T ( "AlertDialogSizeY" ), g_ais_alert_dialog_sy );

@@ -120,7 +120,7 @@ int                     g_ScaledNumWeightSOG;
 int                     g_ScaledNumWeightCPA;
 int                     g_ScaledNumWeightTCPA;
 int                     g_ScaledNumWeightRange;
-int                     g_ScaledNumWeightClassB;
+int                     g_ScaledNumWeightSizeOfT;
 int                     g_ScaledSizeMinimal;
 
 
@@ -947,35 +947,25 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
     int targetscale = 100;
         if ( g_bShowScaled )
         {
-            double temp_importance, So, Tcpa, Cpa, Rang,Siz = 0.; //calc the importance of target
-            So = .0;
+            double temp_importance, So, Tcpa, Cpa, Rang, Siz = 0.; //calc the importance of target
             So = g_ScaledNumWeightSOG/12 * td->SOG; //0 - 12 knts gives 0 - g_ScaledNumWeightSOG weight
             if (So > g_ScaledNumWeightSOG) So = g_ScaledNumWeightSOG; 
                        
-            Tcpa=.0;
-            Tcpa = g_ScaledNumWeightTCPA / 60 * td->TCPA; //0 - 60 minutes gives 0 - g_ScaledNumWeightTCPA weight
-            if (Tcpa > g_ScaledNumWeightTCPA) Tcpa = g_ScaledNumWeightTCPA;
-                else if ( Tcpa < (-.5 *g_ScaledNumWeightTCPA) ) Tcpa = -.5 * g_ScaledNumWeightTCPA;
-   
-            
             if (td->bCPA_Valid){
-                Cpa= g_ScaledNumWeightCPA/4 * td->CPA;
-                if ( Cpa > g_ScaledNumWeightCPA ) Cpa = g_ScaledNumWeightCPA;
-            }else Cpa = .0;
+                Cpa=g_ScaledNumWeightCPA - g_ScaledNumWeightCPA/4 * td->CPA;
+                //if TCPA is positief (target is coming closer), make weight of CPA bigger
+                if (td->TCPA > .0) Cpa = Cpa + Cpa * g_ScaledNumWeightTCPA/100;
+                if ( Cpa < .0 ) Cpa = .0; //if CPA is > 4
+            }
+            else Cpa = .0;
             
             Rang = g_ScaledNumWeightRange / 10 * td->Range_NM;
             if ( Rang > g_ScaledNumWeightRange ) Rang = g_ScaledNumWeightRange;
             Rang = g_ScaledNumWeightRange - Rang;
                                                    
-            //if ( sqrt(td->Range_NM) < (double)g_ScaledNumWeightRange/32 ) Rang += (double)g_ScaledNumWeightRange - sqrt(td->Range_NM)*32;
-         
-            //if ( td->Class == AIS_CLASS_B ) Siz=0;
-            //else 
-            Siz = g_ScaledNumWeightClassB/30*( td->DimA + td->DimB);
-            if ( Siz > g_ScaledNumWeightClassB ) Siz = g_ScaledNumWeightClassB;
-            temp_importance = So + Cpa + Tcpa + Rang + Siz;
-    printf("SOG:%.1f CPA:%.1f TCPA:%.1f Range:%.1f Size:%.1f Tot%.2f\n",So,Cpa,Tcpa,Rang, Siz, temp_importance);           
-             ///   += g_ScaledNumWeightClassB;
+            Siz = g_ScaledNumWeightSizeOfT/30*( td->DimA + td->DimB);
+            if ( Siz > g_ScaledNumWeightSizeOfT ) Siz = g_ScaledNumWeightSizeOfT;
+            temp_importance = So + Cpa + Rang + Siz;
             
             td->importance=(int)temp_importance;
             int calc_scale = 0;
@@ -986,8 +976,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             if ( td->importance  > ImportanceSwitchPoint ) targetscale = td->last_scale +5; 
             if ( targetscale > 100 ) targetscale = 100;
             if ( targetscale < 50 ) targetscale = 50;//g_ScaledSizeMinimal;
-            td->last_scale = targetscale;
-            
+            td->last_scale = targetscale;            
         }//if (g_bShowScaled
     
     //  Draw the icon rotated to the COG
@@ -1274,7 +1263,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                                       -2.5f, -4.330127f, -4.330127f, -2.5f, -5.0f, 0,
                                       -4.330127f, 2.5f, -2.5f, 4.330127f, 0, 5.0f};
                         if (targetscale <= 75){
-                            for ( int i = 0; i < (sizeof points) / (sizeof *points); i++ )
+                            for (unsigned int i = 0; i<(sizeof points) / (sizeof *points); i++ )
                                points[i] =  points[i]/2;
                        }
                                       
@@ -1297,7 +1286,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             }
 
             //      Draw RateOfTurn Vector
-            if( ( td->ROTAIS != 0 ) && ( td->ROTAIS != -128 ) ) {
+            if( ( td->ROTAIS != 0 ) && ( td->ROTAIS != -128 ) && (!g_bShowScaled) ) {
                 float nv = 10;
                 float theta2 = theta;
                 if( td->ROTAIS > 0 ) theta2 += (float)PI / 2.;
@@ -1443,7 +1432,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         if( ( ( td->ShipType >= 40 ) && ( td->ShipType < 50 ) )
             && navstatus == UNDERWAY_USING_ENGINE ) navstatus = HSC;
     
-        if(targetscale > 75){
+        if(targetscale > 90){
             switch( navstatus ) {
             case MOORED:
             case AT_ANCHOR: {
@@ -1629,13 +1618,13 @@ void AISDraw( ocpnDC& dc )
 
     AIS_Target_Hash *current_targets = g_pAIS->GetTargetList();
     // init an aray for scaling calculations
-    int NoOfElements=g_ShowScaled_Num;
+    int NoOfElements=(int)g_ShowScaled_Num;
     int* p_Array = NULL;   // Pointer to int, initialize to nothing.
     p_Array = new int[NoOfElements];  // Allocate n ints and save ptr in p_Array.
     for (int i=0; i < NoOfElements; i++) {
         p_Array[i] = 0;}    // Initialize all elements to zero.
     int low=0;
-    int t;
+    int temp;
     
     //    Draw all targets in three pass loop, sorted on SOG, GPSGate & DSC on top
     //    This way, fast targets are not obscured by slow/stationary targets
@@ -1647,10 +1636,10 @@ void AISDraw( ocpnDC& dc )
             AISDrawTarget( td, dc );
             if( td->importance > low )
             {
-                t = low; low = 999999;
+                temp = low; low = 999999;
                 for (int i=0; i < NoOfElements; i++) 
                 {
-                    if ( p_Array[i] == t ) { p_Array[i] = td->importance; t=-1; }
+                    if ( p_Array[i] == temp ) { p_Array[i] = td->importance; temp=-1; }
                     if ( p_Array[i] < low ) low = p_Array[i];
                 }
             }
@@ -1668,10 +1657,10 @@ void AISDraw( ocpnDC& dc )
             AISDrawTarget( td, dc );
             if( td->importance > low )
             {
-                t = low; low = 999999;
+                temp = low; low = 999999;
                 for (int i=0; i < NoOfElements; i++) 
                 {
-                    if ( p_Array[i] == t ) { p_Array[i] = td->importance; t=-1; }
+                    if ( p_Array[i] == temp ) { p_Array[i] = td->importance; temp=-1; }
                     if ( p_Array[i] < low ) low = p_Array[i];
                 }
             }
