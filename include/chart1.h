@@ -183,6 +183,8 @@ enum
     ID_MENU_MARK_MOB,
 
     ID_MENU_AIS_TARGETS,
+    ID_MENU_AIS_MOORED_TARGETS,
+    ID_MENU_AIS_SCALED_TARGETS,
     ID_MENU_AIS_TRACKS,
     ID_MENU_AIS_CPADIALOG,
     ID_MENU_AIS_CPASOUND,
@@ -512,6 +514,7 @@ class MyFrame: public wxFrame
     void LoadHarmonics();
 
     bool EvalPriority(const wxString & message, DataStream *pDS );
+    void SetAISDisplayStyle(int StyleIndx);
 
     int                 m_StatusBarFieldCount;
 

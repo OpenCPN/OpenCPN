@@ -270,6 +270,7 @@ ChartDummy                *pDummyChart;
 ocpnToolBarSimple*        g_toolbar;
 ocpnStyle::StyleManager*  g_StyleManager;
 
+
 // Global print data, to remember settings during the session
 wxPrintData               *g_printData = (wxPrintData*) NULL ;
 
@@ -535,11 +536,14 @@ double                    g_ShowCOG_Mins;
 bool                      g_bAISShowTracks;
 double                    g_AISShowTracks_Mins;
 bool                      g_bShowMoored;
+bool                      g_bAllowShowMoored;
+bool                      g_bAllowShowScaled;
 double                    g_ShowMoored_Kts;
 wxString                  g_sAIS_Alert_Sound_File;
 bool                      g_bAIS_CPA_Alert_Suppress_Moored;
 bool                      g_bAIS_ACK_Timeout;
 double                    g_AckTimeout_Mins;
+bool                      g_bShowScaled;
 bool                      g_bShowAreaNotices;
 bool                      g_bDrawAISSize;
 bool                      g_bShowAISName;
@@ -3907,31 +3911,21 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         }
 #endif
 
-        case ID_MENU_AIS_TARGETS:
+        case ID_MENU_AIS_TARGETS: {
+            if ( g_bShowAIS ) SetAISDisplayStyle(0);
+            else SetAISDisplayStyle(1);
+            break;
+        }
+         case ID_MENU_AIS_MOORED_TARGETS: {
+            SetAISDisplayStyle(2);
+            break;
+        }
+         case ID_MENU_AIS_SCALED_TARGETS: {
+            SetAISDisplayStyle(3);
+            break;
+        }
         case ID_AIS: {
-            g_bShowAIS = !g_bShowAIS;
-
-            if( g_toolbar ) {
-                wxString iconName;
-                if( g_bShowAIS ) {
-                    g_toolbar->SetToolShortHelp( ID_AIS, _("Hide AIS Targets") );
-                    iconName = _T("AIS");
-                } else {
-                    g_toolbar->SetToolShortHelp( ID_AIS, _("Show AIS Targets") );
-                    iconName = _T("AIS_Disabled");
-                }
-
-                if( m_pAISTool ) {
-                    g_toolbar->SetToolNormalBitmapEx( m_pAISTool, iconName );
-                    g_toolbar->Refresh();
-                    m_lastAISiconName = iconName;
-                }
-            }
-
-            SetMenubarItemState(ID_MENU_AIS_TARGETS, g_bShowAIS);
-
-            cc1->ReloadVP();
-
+			SetAISDisplayStyle(-1);
             break;
         }
 
@@ -4203,6 +4197,57 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
     }         // switch
 
+}
+
+void MyFrame::SetAISDisplayStyle(int StyleIndx)
+{
+    // make some arrays to hold the dfferences between cycle steps
+    //show all, hide all, hide moored, scaled
+    bool g_bShowAIS_Array[4] = {true, false, true, true}; 
+    bool g_bShowMoored_Array[4] = {true, false, false, true};
+    bool g_bShowScaled_Array[4] = {false, false, false, true};
+    wxString ToolShortHelp_Array[4] = { _("Show all AIS Targets"), _("Hide AIS Targets"),  _("Hide MooredAIS Targets"), _("Scale less important AIS Targets") };
+    wxString iconName_Array[4] = { _("AIS"),  _("AIS_Disabled"),  _("AIS_Suppressed"),  _("AIS_Suppressed")};
+    int ArraySize = 4;
+    int AIS_Toolbar_Switch = 0;
+    if (StyleIndx == -1){// -1 means coming from toolbar button
+        //find current state of switch 
+        for ( int i = 1; i < ArraySize; i++){
+            if( (g_bShowAIS_Array[i] == g_bShowAIS) && 
+                (g_bShowMoored_Array[i] == g_bShowMoored) &&
+                (g_bShowScaled_Array[i] == g_bShowScaled) ) AIS_Toolbar_Switch = i;
+        }
+        AIS_Toolbar_Switch++; // we did click so continu with next item
+        if ( (!g_bAllowShowMoored) && (AIS_Toolbar_Switch == 2) ) AIS_Toolbar_Switch++;
+        if ( (!g_bAllowShowScaled) && (AIS_Toolbar_Switch == 3) ) AIS_Toolbar_Switch++; 
+
+    }
+    else { // coming from menu bar.
+        AIS_Toolbar_Switch = StyleIndx;
+    }
+     //make sure we are not above array
+    if (AIS_Toolbar_Switch >= ArraySize ) AIS_Toolbar_Switch=0;
+    
+    int AIS_Toolbar_Switch_Next = AIS_Toolbar_Switch+1; //Find out what will happen at next click
+    if ( (!g_bAllowShowMoored) && (AIS_Toolbar_Switch_Next == 2) ) AIS_Toolbar_Switch_Next++;
+    if ( (!g_bAllowShowScaled) && (AIS_Toolbar_Switch_Next == 3) ) AIS_Toolbar_Switch_Next++;                
+    if (AIS_Toolbar_Switch_Next >= ArraySize ) AIS_Toolbar_Switch_Next=0; // If at end of cycle start at 0
+    
+    //Set found values to variables
+    g_bShowAIS = g_bShowAIS_Array[AIS_Toolbar_Switch];
+    g_bShowMoored = g_bShowMoored_Array[AIS_Toolbar_Switch];
+    g_bShowScaled = g_bShowScaled_Array[AIS_Toolbar_Switch];
+    if( g_toolbar ) {
+        g_toolbar->SetToolShortHelp( ID_AIS, ToolShortHelp_Array[AIS_Toolbar_Switch_Next] );
+        if( m_pAISTool ) {
+            g_toolbar->SetToolNormalBitmapEx( m_pAISTool, iconName_Array[AIS_Toolbar_Switch] );
+            g_toolbar->Refresh();
+            m_lastAISiconName = iconName_Array[AIS_Toolbar_Switch];
+        }
+    }
+
+    UpdateGlobalMenuItems();
+    cc1->ReloadVP();    
 }
 
 void MyFrame::setStringVP(wxString VPS)
@@ -4972,6 +5017,8 @@ void MyFrame::RegisterGlobalMenuItems()
 
     wxMenu* ais_menu = new wxMenu();
     ais_menu->AppendCheckItem( ID_MENU_AIS_TARGETS, _("Show AIS Targets") );
+    ais_menu->AppendCheckItem( ID_MENU_AIS_MOORED_TARGETS, _("   Hide Moored Targets") );
+    ais_menu->AppendCheckItem( ID_MENU_AIS_SCALED_TARGETS, _("   Scale Less Important Targets") );    
     ais_menu->AppendCheckItem( ID_MENU_AIS_TRACKS, _("Show Target Tracks") );
     ais_menu->AppendCheckItem( ID_MENU_AIS_CPADIALOG, _("Show CPA Alert Dialogs") );
     ais_menu->AppendCheckItem( ID_MENU_AIS_CPASOUND, _("Sound CPA Alarms") );
@@ -5026,6 +5073,10 @@ void MyFrame::UpdateGlobalMenuItems()
     m_pMenuBar->FindItem( ID_MENU_CHART_QUILTING )->Check( g_bQuiltEnable );
     m_pMenuBar->FindItem( ID_MENU_UI_CHARTBAR )->Check( g_bShowChartBar );
     m_pMenuBar->FindItem( ID_MENU_AIS_TARGETS )->Check( g_bShowAIS );
+    m_pMenuBar->FindItem( ID_MENU_AIS_MOORED_TARGETS )->Check( !g_bShowMoored );
+    m_pMenuBar->FindItem( ID_MENU_AIS_MOORED_TARGETS )->Enable(g_bAllowShowMoored);
+    m_pMenuBar->FindItem( ID_MENU_AIS_SCALED_TARGETS )->Check( g_bShowScaled );
+    m_pMenuBar->FindItem( ID_MENU_AIS_MOORED_TARGETS )->Enable(g_bAllowShowScaled);
     m_pMenuBar->FindItem( ID_MENU_AIS_TRACKS )->Check( g_bAISShowTracks );
     m_pMenuBar->FindItem( ID_MENU_AIS_CPADIALOG )->Check( g_bAIS_CPA_Alert );
     m_pMenuBar->FindItem( ID_MENU_AIS_CPASOUND )->Check( g_bAIS_CPA_Alert_Audio );

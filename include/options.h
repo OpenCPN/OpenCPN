@@ -444,7 +444,7 @@ class options : private Uncopyable,
   // For the "AIS" page
   wxCheckBox *m_pCheck_CPA_Max, *m_pCheck_CPA_Warn, *m_pCheck_CPA_WarnT;
   wxCheckBox *m_pCheck_Mark_Lost, *m_pCheck_Remove_Lost, *m_pCheck_Show_COG;
-  wxCheckBox *m_pCheck_Show_Tracks, *m_pCheck_Show_Moored;
+  wxCheckBox *m_pCheck_Show_Tracks, *m_pCheck_Show_Moored, *m_pCheck_Scale_Priority;
   wxCheckBox *m_pCheck_AlertDialog, *m_pCheck_AlertAudio;
   wxCheckBox *m_pCheck_Alert_Moored, *m_pCheck_Rollover_Class;
   wxCheckBox *m_pCheck_Rollover_COG, *m_pCheck_Rollover_CPA;
@@ -453,7 +453,7 @@ class options : private Uncopyable,
   wxCheckBox *m_pCheck_Wpl_Aprs, *m_pCheck_ShowAllCPA;
   wxTextCtrl *m_pText_CPA_Max, *m_pText_CPA_Warn, *m_pText_CPA_WarnT;
   wxTextCtrl *m_pText_Mark_Lost, *m_pText_Remove_Lost, *m_pText_COG_Predictor;
-  wxTextCtrl *m_pText_Track_Length, *m_pText_Moored_Speed;
+  wxTextCtrl *m_pText_Track_Length, *m_pText_Moored_Speed, *m_pText_Scale_Priority;
   wxTextCtrl *m_pText_ACK_Timeout, *m_pText_Show_Target_Name_Scale;
 
   // For the ship page
