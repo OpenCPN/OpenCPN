@@ -1435,7 +1435,7 @@ int ChartDatabase::FinddbIndex(wxString PathToFind)
       //    Find the chart
       for(unsigned int i=0 ; i<active_chartTable.GetCount() ; i++)
       {
-          if(PathToFind.IsSameAs(wxString(active_chartTable[i].GetpFullPath(), wxConvUTF8)))
+          if(active_chartTable[i].GetpsFullPath()->IsSameAs(PathToFind))
             {
                   return i;
             }
