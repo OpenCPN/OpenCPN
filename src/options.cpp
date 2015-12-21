@@ -139,7 +139,7 @@ extern bool g_bShowCOG;
 extern double g_ShowCOG_Mins;
 extern bool g_bAISShowTracks;
 extern double g_AISShowTracks_Mins;
-extern bool g_bAllowShowMoored;
+extern bool g_bAllowHideMoored;
 extern double g_ShowMoored_Kts;
 extern bool g_bAllowShowScaled;
 extern int  g_ShowScaled_Num;
@@ -4134,9 +4134,9 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
   pDisplayGrid->Add(m_pText_Track_Length, 1, wxALL | wxALIGN_RIGHT,
                     group_item_spacing);
 
-  m_pCheck_Show_Moored = new wxCheckBox(
+  m_pCheck_Hide_Moored = new wxCheckBox(
       panelAIS, -1, _("Allow hiding anchored/moored targets, speed max (kn)"));
-  pDisplayGrid->Add(m_pCheck_Show_Moored, 1, wxALL, group_item_spacing);
+  pDisplayGrid->Add(m_pCheck_Hide_Moored, 1, wxALL, group_item_spacing);
 
   m_pText_Moored_Speed = new wxTextCtrl(panelAIS, -1);
   pDisplayGrid->Add(m_pText_Moored_Speed, 1, wxALL | wxALIGN_RIGHT,
@@ -4953,7 +4953,7 @@ void options::SetInitialSettings(void) {
   s.Printf(_T("%4.0f"), g_AISShowTracks_Mins);
   m_pText_Track_Length->SetValue(s);
 
-  m_pCheck_Show_Moored->SetValue(g_bAllowShowMoored);
+  m_pCheck_Hide_Moored->SetValue(g_bAllowHideMoored);
 
   s.Printf(_T("%4.1f"), g_ShowMoored_Kts);
   m_pText_Moored_Speed->SetValue(s);
@@ -5861,7 +5861,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
     }
   }
 
-  g_bAllowShowMoored = m_pCheck_Show_Moored->GetValue();
+  g_bAllowHideMoored = m_pCheck_Hide_Moored->GetValue();
   m_pText_Moored_Speed->GetValue().ToDouble(&g_ShowMoored_Kts);
 
   g_bAllowShowScaled = m_pCheck_Scale_Priority->GetValue();

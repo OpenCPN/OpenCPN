@@ -188,6 +188,7 @@ extern int              g_track_rotate_time;
 extern int              g_track_rotate_time_type;
 extern double           g_AISShowTracks_Mins;
 extern bool             g_bShowMoored;
+extern bool             g_bAllowHideMoored;
 extern double           g_ShowMoored_Kts;
 extern bool             g_bAllowShowScaled;
 extern int              g_ShowScaled_Num;
@@ -1503,7 +1504,8 @@ int MyConfig::LoadMyConfig()
         g_AISShowTracks_Mins = 20;
 
     Read( _T ( "bShowMooredTargets" ), &g_bShowMoored );
-
+    Read( _T ( "bAllowShowMooredTargets" ), &g_bAllowHideMoored );
+    
     Read( _T ( "MooredTargetMaxSpeedKnots" ), &s );
     s.ToDouble( &g_ShowMoored_Kts );
     
@@ -2782,8 +2784,11 @@ void MyConfig::UpdateSettings()
     Write( _T ( "CogArrowMinutes" ), g_ShowCOG_Mins );
     Write( _T ( "bShowTargetTracks" ), g_bAISShowTracks );
     Write( _T ( "TargetTracksMinutes" ), g_AISShowTracks_Mins );
+
     Write( _T ( "bShowMooredTargets" ), g_bShowMoored );
+    Write( _T ( "bAllowShowMooredTargets" ), g_bAllowHideMoored );
     Write( _T ( "MooredTargetMaxSpeedKnots" ), g_ShowMoored_Kts );
+    
     Write( _T ( "bAISAlertDialog" ), g_bAIS_CPA_Alert );
     Write( _T ( "bAISAlertAudio" ), g_bAIS_CPA_Alert_Audio );
     Write( _T ( "AISAlertAudioFile" ), g_sAIS_Alert_Sound_File );

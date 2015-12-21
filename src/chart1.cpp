@@ -537,7 +537,7 @@ double                    g_ShowCOG_Mins;
 bool                      g_bAISShowTracks;
 double                    g_AISShowTracks_Mins;
 bool                      g_bShowMoored;
-bool                      g_bAllowShowMoored;
+bool                      g_bAllowHideMoored;
 bool                      g_bAllowShowScaled;
 double                    g_ShowMoored_Kts;
 wxString                  g_sAIS_Alert_Sound_File;
@@ -3920,15 +3920,23 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             break;
         }
          case ID_MENU_AIS_MOORED_TARGETS: {
-            SetAISDisplayStyle(2);
+             if(g_bShowMoored)
+                 SetAISDisplayStyle(2);
+             else
+                 SetAISDisplayStyle(0);
+             
             break;
         }
          case ID_MENU_AIS_SCALED_TARGETS: {
-            SetAISDisplayStyle(3);
+             if(g_bShowScaled)
+                SetAISDisplayStyle(0);
+            else
+                SetAISDisplayStyle(3);
+            
             break;
         }
         case ID_AIS: {
-			SetAISDisplayStyle(-1);
+            SetAISDisplayStyle(-1);
             break;
         }
 
@@ -4221,7 +4229,7 @@ void MyFrame::SetAISDisplayStyle(int StyleIndx)
                 (g_bShowScaled_Array[i] == g_bShowScaled) ) AIS_Toolbar_Switch = i;
         }
         AIS_Toolbar_Switch++; // we did click so continu with next item
-        if ( (!g_bAllowShowMoored) && (AIS_Toolbar_Switch == 2) ) AIS_Toolbar_Switch++;
+        if ( (!g_bAllowHideMoored) && (AIS_Toolbar_Switch == 2) ) AIS_Toolbar_Switch++;
         if ( (!g_bAllowShowScaled) && (AIS_Toolbar_Switch == 3) ) AIS_Toolbar_Switch++; 
 
     }
@@ -4232,7 +4240,7 @@ void MyFrame::SetAISDisplayStyle(int StyleIndx)
     if (AIS_Toolbar_Switch >= ArraySize ) AIS_Toolbar_Switch=0;
     
     int AIS_Toolbar_Switch_Next = AIS_Toolbar_Switch+1; //Find out what will happen at next click
-    if ( (!g_bAllowShowMoored) && (AIS_Toolbar_Switch_Next == 2) ) AIS_Toolbar_Switch_Next++;
+    if ( (!g_bAllowHideMoored) && (AIS_Toolbar_Switch_Next == 2) ) AIS_Toolbar_Switch_Next++;
     if ( (!g_bAllowShowScaled) && (AIS_Toolbar_Switch_Next == 3) ) AIS_Toolbar_Switch_Next++;                
     if (AIS_Toolbar_Switch_Next >= ArraySize ) AIS_Toolbar_Switch_Next=0; // If at end of cycle start at 0
     
@@ -5077,9 +5085,9 @@ void MyFrame::UpdateGlobalMenuItems()
     m_pMenuBar->FindItem( ID_MENU_UI_CHARTBAR )->Check( g_bShowChartBar );
     m_pMenuBar->FindItem( ID_MENU_AIS_TARGETS )->Check( g_bShowAIS );
     m_pMenuBar->FindItem( ID_MENU_AIS_MOORED_TARGETS )->Check( !g_bShowMoored );
-    m_pMenuBar->FindItem( ID_MENU_AIS_MOORED_TARGETS )->Enable(g_bAllowShowMoored);
+    m_pMenuBar->FindItem( ID_MENU_AIS_MOORED_TARGETS )->Enable(g_bAllowHideMoored);
     m_pMenuBar->FindItem( ID_MENU_AIS_SCALED_TARGETS )->Check( g_bShowScaled );
-    m_pMenuBar->FindItem( ID_MENU_AIS_MOORED_TARGETS )->Enable(g_bAllowShowScaled);
+    m_pMenuBar->FindItem( ID_MENU_AIS_SCALED_TARGETS )->Enable(g_bAllowShowScaled);
     m_pMenuBar->FindItem( ID_MENU_AIS_TRACKS )->Check( g_bAISShowTracks );
     m_pMenuBar->FindItem( ID_MENU_AIS_CPADIALOG )->Check( g_bAIS_CPA_Alert );
     m_pMenuBar->FindItem( ID_MENU_AIS_CPASOUND )->Check( g_bAIS_CPA_Alert_Audio );

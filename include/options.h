@@ -444,7 +444,7 @@ class options : private Uncopyable,
   // For the "AIS" page
   wxCheckBox *m_pCheck_CPA_Max, *m_pCheck_CPA_Warn, *m_pCheck_CPA_WarnT;
   wxCheckBox *m_pCheck_Mark_Lost, *m_pCheck_Remove_Lost, *m_pCheck_Show_COG;
-  wxCheckBox *m_pCheck_Show_Tracks, *m_pCheck_Show_Moored, *m_pCheck_Scale_Priority;
+  wxCheckBox *m_pCheck_Show_Tracks, *m_pCheck_Hide_Moored, *m_pCheck_Scale_Priority;
   wxCheckBox *m_pCheck_AlertDialog, *m_pCheck_AlertAudio;
   wxCheckBox *m_pCheck_Alert_Moored, *m_pCheck_Rollover_Class;
   wxCheckBox *m_pCheck_Rollover_COG, *m_pCheck_Rollover_CPA;
