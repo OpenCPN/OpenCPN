@@ -1528,8 +1528,8 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             tgt_name = tgt_name.substr( 0, tgt_name.find( _T ( "Unknown" ), 0) );
 
             if ( tgt_name != wxEmptyString ) {
-                dc.SetFont( *FontMgr::Get().GetFont( _T( "AIS Target Name" ), 12 ) );
-                dc.SetTextForeground( FontMgr::Get().GetFontColor( _T( "AIS Target Name" ) ) );
+                dc.SetFont( *FontMgr::Get().GetFont( _( "AIS Target Name" ), 12 ) );
+                dc.SetTextForeground( FontMgr::Get().GetFontColor( _( "AIS Target Name" ) ) );
 
                 int w, h;
                 dc.GetTextExtent( tgt_name, &w, &h );
