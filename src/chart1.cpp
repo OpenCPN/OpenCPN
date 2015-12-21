@@ -479,6 +479,7 @@ wxString                  g_TCData_Dir;
 
 bool                      g_boptionsactive;
 options                   *g_options;
+bool                      g_bDeferredInitDone;
 int                       options_lastPage = 0;
 wxPoint                   options_lastWindowPos( 0,0 );
 wxSize                    options_lastWindowSize( 0,0 );
@@ -3110,10 +3111,12 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         return;
     }
 
-    // If Options dialog is not fully initialized, just cancel the close request. 
-    //  This is only reachable on slow hardware...
-    if(!g_options)
+    // The Options dialog, and other deferred init items, are not fully initialized.
+    // Best to just cancel the close request. 
+    // This is probably only reachable on slow hardware...
+    if(!g_bDeferredInitDone)
         return;
+    
     
     if(g_options){
         delete g_options;
@@ -5329,6 +5332,7 @@ int MyFrame::DoOptionsDialog()
     if(rr & FONT_CHANGED){
         delete g_options;
         g_options = NULL;
+        g_pOptions = NULL;
     }
 
     g_boptionsactive = false;
@@ -5958,163 +5962,164 @@ void MyFrame::DoStackDelta( int direction )
 void MyFrame::OnInitTimer(wxTimerEvent& event)
 {
     switch(m_iInitCount++) {
-    case 0:
-    {
-        if( g_toolbar )
-            g_toolbar->EnableTool( ID_SETTINGS, false );
-        
-        // Set persistent Fullscreen mode
-        g_Platform->SetFullscreen(g_bFullscreen);
-        
-        // Load the waypoints.. both of these routines are very slow to execute which is why
-        // they have been to defered until here
-        pWayPointMan = new WayPointman();
-        
-        // Reload the ownship icon from UserIcons, if present
-        if(cc1){
-            if(cc1->SetUserOwnship())
-                cc1->SetColorScheme(global_color_scheme);
-        }
-        
-        pConfig->LoadNavObjects();
-
-        //    Re-enable anchor watches if set in config file
-        if( !g_AW1GUID.IsEmpty() ) {
-            pAnchorWatchPoint1 = pWayPointMan->FindRoutePointByGUID( g_AW1GUID );
-        }
-        if( !g_AW2GUID.IsEmpty() ) {
-            pAnchorWatchPoint2 = pWayPointMan->FindRoutePointByGUID( g_AW2GUID );
-        }
-
-        // Import Layer-wise any .gpx files from /Layers directory
-        wxString layerdir = g_Platform->GetPrivateDataDir();
-        appendOSDirSlash( &layerdir );
-        layerdir.Append( _T("layers") );
-
-        if( wxDir::Exists( layerdir ) ) {
-            wxString laymsg;
-            laymsg.Printf( wxT("Getting .gpx layer files from: %s"), layerdir.c_str() );
-            wxLogMessage( laymsg );
-
-            pConfig->LoadLayers(layerdir);
-        }
-
-        break;
-    }
-    case 1:
-        // Connect Datastreams
-
-
-        for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+        case 0:
         {
-            ConnectionParams *cp = g_pConnectionParams->Item(i);
-            if( cp->bEnabled ) {
-
-#ifdef __unix__
-                if( cp->GetDSPort().Contains(_T("Serial"))) {
-                    if( ! g_bserial_access_checked ){
-                        if( !CheckSerialAccess() ){
-                        }
-                        g_bserial_access_checked = true;
-                    }
-                }
-#endif
-
-                dsPortType port_type = cp->IOSelect;
-                DataStream *dstr = new DataStream( g_pMUX,
-                                                   cp->Type,
-                                                   cp->GetDSPort(),
-                                                   wxString::Format(wxT("%i"),cp->Baudrate),
-                                                   port_type,
-                                                   cp->Priority,
-                                                   cp->Garmin
-                    );
-                dstr->SetInputFilter(cp->InputSentenceList);
-                dstr->SetInputFilterType(cp->InputSentenceListType);
-                dstr->SetOutputFilter(cp->OutputSentenceList);
-                dstr->SetOutputFilterType(cp->OutputSentenceListType);
-                dstr->SetChecksumCheck(cp->ChecksumCheck);
-
-                cp->b_IsSetup = true;
-
-                g_pMUX->AddStream(dstr);
+            if( g_toolbar )
+                g_toolbar->EnableTool( ID_SETTINGS, false );
+            
+            // Set persistent Fullscreen mode
+            g_Platform->SetFullscreen(g_bFullscreen);
+            
+            // Load the waypoints.. both of these routines are very slow to execute which is why
+            // they have been to defered until here
+            pWayPointMan = new WayPointman();
+            
+            // Reload the ownship icon from UserIcons, if present
+            if(cc1){
+                if(cc1->SetUserOwnship())
+                    cc1->SetColorScheme(global_color_scheme);
             }
-        }
+            
+            pConfig->LoadNavObjects();
 
-        console = new ConsoleCanvas( gFrame );                    // the console
-        console->SetColorScheme( global_color_scheme );
-        break;
+            //    Re-enable anchor watches if set in config file
+            if( !g_AW1GUID.IsEmpty() ) {
+                pAnchorWatchPoint1 = pWayPointMan->FindRoutePointByGUID( g_AW1GUID );
+            }
+            if( !g_AW2GUID.IsEmpty() ) {
+                pAnchorWatchPoint2 = pWayPointMan->FindRoutePointByGUID( g_AW2GUID );
+            }
 
-    case 2:
-    {
-        if (m_initializing)
+            // Import Layer-wise any .gpx files from /Layers directory
+            wxString layerdir = g_Platform->GetPrivateDataDir();
+            appendOSDirSlash( &layerdir );
+            layerdir.Append( _T("layers") );
+
+            if( wxDir::Exists( layerdir ) ) {
+                wxString laymsg;
+                laymsg.Printf( wxT("Getting .gpx layer files from: %s"), layerdir.c_str() );
+                wxLogMessage( laymsg );
+
+                pConfig->LoadLayers(layerdir);
+            }
+
             break;
-        m_initializing = true;
-        g_pi_manager->LoadAllPlugIns( g_Platform->GetPluginDir(), true, false );
+        }
+        case 1:
+            // Connect Datastreams
 
-        RequestNewToolbar();
-        if( g_toolbar )
-            g_toolbar->EnableTool( ID_SETTINGS, false );
-        
-        wxString perspective;
-        pConfig->SetPath( _T ( "/AUI" ) );
-        pConfig->Read( _T ( "AUIPerspective" ), &perspective );
 
-        // Make sure the perspective saved in the config file is "reasonable"
-        // In particular, the perspective should have an entry for every
-        // windows added to the AUI manager so far.
-        // If any are not found, then use the default layout
+            for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+            {
+                ConnectionParams *cp = g_pConnectionParams->Item(i);
+                if( cp->bEnabled ) {
 
-        bool bno_load = false;
-        wxAuiPaneInfoArray pane_array_val = g_pauimgr->GetAllPanes();
+    #ifdef __unix__
+                    if( cp->GetDSPort().Contains(_T("Serial"))) {
+                        if( ! g_bserial_access_checked ){
+                            if( !CheckSerialAccess() ){
+                            }
+                            g_bserial_access_checked = true;
+                        }
+                    }
+    #endif
 
-        for( unsigned int i = 0; i < pane_array_val.GetCount(); i++ ) {
-            wxAuiPaneInfo pane = pane_array_val.Item( i );
-            if( perspective.Find( pane.name ) == wxNOT_FOUND ) {
-                bno_load = true;
-                break;
+                    dsPortType port_type = cp->IOSelect;
+                    DataStream *dstr = new DataStream( g_pMUX,
+                                                    cp->Type,
+                                                    cp->GetDSPort(),
+                                                    wxString::Format(wxT("%i"),cp->Baudrate),
+                                                    port_type,
+                                                    cp->Priority,
+                                                    cp->Garmin
+                        );
+                    dstr->SetInputFilter(cp->InputSentenceList);
+                    dstr->SetInputFilterType(cp->InputSentenceListType);
+                    dstr->SetOutputFilter(cp->OutputSentenceList);
+                    dstr->SetOutputFilterType(cp->OutputSentenceListType);
+                    dstr->SetChecksumCheck(cp->ChecksumCheck);
+
+                    cp->b_IsSetup = true;
+
+                    g_pMUX->AddStream(dstr);
+                }
             }
+
+            console = new ConsoleCanvas( gFrame );                    // the console
+            console->SetColorScheme( global_color_scheme );
+            break;
+
+        case 2:
+        {
+            if (m_initializing)
+                break;
+            m_initializing = true;
+            g_pi_manager->LoadAllPlugIns( g_Platform->GetPluginDir(), true, false );
+
+            RequestNewToolbar();
+            if( g_toolbar )
+                g_toolbar->EnableTool( ID_SETTINGS, false );
+            
+            wxString perspective;
+            pConfig->SetPath( _T ( "/AUI" ) );
+            pConfig->Read( _T ( "AUIPerspective" ), &perspective );
+
+            // Make sure the perspective saved in the config file is "reasonable"
+            // In particular, the perspective should have an entry for every
+            // windows added to the AUI manager so far.
+            // If any are not found, then use the default layout
+
+            bool bno_load = false;
+            wxAuiPaneInfoArray pane_array_val = g_pauimgr->GetAllPanes();
+
+            for( unsigned int i = 0; i < pane_array_val.GetCount(); i++ ) {
+                wxAuiPaneInfo pane = pane_array_val.Item( i );
+                if( perspective.Find( pane.name ) == wxNOT_FOUND ) {
+                    bno_load = true;
+                    break;
+                }
+            }
+
+            if( !bno_load )
+                g_pauimgr->LoadPerspective( perspective, false );
+
+            g_pauimgr->Update();
+
+            //   Notify all the AUI PlugIns so that they may syncronize with the Perspective
+            g_pi_manager->NotifyAuiPlugIns();
+            g_pi_manager->ShowDeferredBlacklistMessages(); //  Give the use dialog on any blacklisted PlugIns
+            g_pi_manager->CallLateInit();
+            break;
         }
 
-        if( !bno_load )
-            g_pauimgr->LoadPerspective( perspective, false );
-
-        g_pauimgr->Update();
-
-        //   Notify all the AUI PlugIns so that they may syncronize with the Perspective
-        g_pi_manager->NotifyAuiPlugIns();
-        g_pi_manager->ShowDeferredBlacklistMessages(); //  Give the use dialog on any blacklisted PlugIns
-        g_pi_manager->CallLateInit();
-        break;
-    }
-
-    case 3:
-    {
-        if(g_FloatingToolbarDialog){
-            g_FloatingToolbarDialog->SetAutoHide(g_bAutoHideToolbar);
-            g_FloatingToolbarDialog->SetAutoHideTimer(g_nAutoHideToolbar);
+        case 3:
+        {
+            if(g_FloatingToolbarDialog){
+                g_FloatingToolbarDialog->SetAutoHide(g_bAutoHideToolbar);
+                g_FloatingToolbarDialog->SetAutoHideTimer(g_nAutoHideToolbar);
+            }
+            
+            break;
         }
-        
-        break;
-    }
 
-    case 4:
-    {
-        g_options = new options( this, -1, _("Options") );
- 
-        if( g_toolbar )
-            g_toolbar->EnableTool( ID_SETTINGS, true );
-        
-        break;
-    }
+        case 4:
+        {
+            g_options = new options( this, -1, _("Options") );
+    
+            if( g_toolbar )
+                g_toolbar->EnableTool( ID_SETTINGS, true );
+            
+            break;
+        }
 
-    default:
-    {
-        // Last call....
+        default:
+        {
+            // Last call....
 
-        InitTimer.Stop(); // Initialization complete
-        break;
-    }
+            InitTimer.Stop(); // Initialization complete
+            g_bDeferredInitDone = true;
+            break;
+        }
     }   // switch
     cc1->Refresh( true );
 }
