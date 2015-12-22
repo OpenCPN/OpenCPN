@@ -2736,17 +2736,22 @@ void MarkInfoDef::RecalculateSize( void )
     
     Layout();
 
-    // X size is correctly computed by sizers.
-    // W change only Y size, unless X is too big for the parent client size....
+    // X size is correctly computed by sizers, except on MSW....
+    // We change only Y size, unless X is too big for the parent client size....
     
     wxSize esize;
-    esize.x = GetCharWidth() * 40;
+#ifdef __WXMSW__    
+    esize.x = GetCharWidth() * 46;
+#else
+    esize.x = -1;
+#endif
+    
     esize.y = GetCharHeight() * 30;
     
     wxSize dsize = GetParent()->GetClientSize();
     esize.y = wxMin(esize.y, dsize.y - (2 * GetCharHeight()));
     esize.x = wxMin(esize.x, dsize.x - (1 * GetCharHeight()));
-    SetClientSize(wxSize(-1, esize.y));
+    SetClientSize(wxSize(esize.x, esize.y));
     
     wxSize fsize = GetSize();
     fsize.y = wxMin(fsize.y, dsize.y - (2 * GetCharHeight()));
