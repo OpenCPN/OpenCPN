@@ -1517,7 +1517,7 @@ int MyConfig::LoadMyConfig()
     g_ScaledNumWeightRange = Read( _T ( "AISScaledNumberWeightRange" ), 75L );
     g_ScaledNumWeightSizeOfT = Read( _T ( "AISScaledNumberWeightSizeOfTarget" ), 25L );
     g_ScaledSizeMinimal = Read( _T ( "AISScaledSizeMinimal" ), 50L );
-    Read(_("AISShowScaled"), g_bShowScaled );
+    Read(_T("AISShowScaled"), g_bShowScaled );
     
     Read( _T ( "bShowAreaNotices" ), &g_bShowAreaNotices );
     Read( _T ( "bDrawAISSize" ), &g_bDrawAISSize );

@@ -5028,8 +5028,8 @@ void MyFrame::RegisterGlobalMenuItems()
 
     wxMenu* ais_menu = new wxMenu();
     ais_menu->AppendCheckItem( ID_MENU_AIS_TARGETS, _("Show AIS Targets") );
-    ais_menu->AppendCheckItem( ID_MENU_AIS_MOORED_TARGETS, _("   Hide Moored Targets") );
-    ais_menu->AppendCheckItem( ID_MENU_AIS_SCALED_TARGETS, _("   Scale Less Important Targets") );    
+    ais_menu->AppendCheckItem( ID_MENU_AIS_MOORED_TARGETS, _("   Hide Moored AIS Targets") );
+    ais_menu->AppendCheckItem( ID_MENU_AIS_SCALED_TARGETS, _("   Scale Less Important AIS Targets") );    
     ais_menu->AppendCheckItem( ID_MENU_AIS_TRACKS, _("Show Target Tracks") );
     ais_menu->AppendCheckItem( ID_MENU_AIS_CPADIALOG, _("Show CPA Alert Dialogs") );
     ais_menu->AppendCheckItem( ID_MENU_AIS_CPASOUND, _("Sound CPA Alarms") );
