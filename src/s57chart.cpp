@@ -1586,26 +1586,19 @@ int s57chart::GetLineFeaturePointArray(S57Obj *obj, void **ret_array)
     }
     
     //  Allocate the buffer
-    float *ret_temp = (float *)malloc(nPoints * 2 * sizeof(float));
-    
+    float *br = (float *)malloc(nPoints * 2 * sizeof(float));
+    *ret_array = br;
+
     // populate the buffer
     unsigned char *source_buffer = (unsigned char *)GetLineVertexBuffer();
-    float *br = ret_temp;
     ls_list = obj->m_ls_list;
     while( ls_list){
-        float *pt = (float *)(source_buffer + ls_list->vbo_offset);
-        float a = *pt++;
-        float b = *pt++;
-        
         memcpy(br, source_buffer + ls_list->vbo_offset, ls_list->n_points * 2 * sizeof(float));
-        br += ls_list->n_points * 2;
+        br+= ls_list->n_points * 2;
         ls_list = ls_list->next;
     }
     
-    *ret_array = ret_temp;
-    
     return nPoints;
-        
     
 }
 
