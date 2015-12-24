@@ -1594,7 +1594,7 @@ int s57chart::GetLineFeaturePointArray(S57Obj *obj, void **ret_array)
     ls_list = obj->m_ls_list;
     while( ls_list){
         memcpy(br, source_buffer + ls_list->vbo_offset, ls_list->n_points * 2 * sizeof(float));
-        br+= ls_list->n_points * 2;
+        br += ls_list->n_points * 2;
         ls_list = ls_list->next;
     }
     
