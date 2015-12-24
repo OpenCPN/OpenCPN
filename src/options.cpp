@@ -974,7 +974,6 @@ void options::Init(void) {
   m_bVisitLang = FALSE;
   m_itemFontElementListBox = NULL;
   m_topImgList = NULL;
-  m_pSerialArray = EnumerateSerialPorts();
 
   m_pListbook = NULL;
   m_pGroupArray = NULL;
@@ -1713,12 +1712,6 @@ void options::CreatePanel_NMEA_Compact(size_t parent, int border_size,
   m_lcSources->Refresh();
   FillSourceList();
 
-  if (m_pSerialArray) {
-    for (size_t i = 0; i < m_pSerialArray->Count(); i++) {
-      m_comboPort->Append(m_pSerialArray->Item(i));
-    }
-  }
-
   ShowNMEACommon(FALSE);
   ShowNMEASerial(FALSE);
   ShowNMEANet(FALSE);
@@ -2327,12 +2320,6 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
 
   m_lcSources->Refresh();
   FillSourceList();
-
-  if (m_pSerialArray) {
-    for (size_t i = 0; i < m_pSerialArray->Count(); i++) {
-      m_comboPort->Append(m_pSerialArray->Item(i));
-    }
-  }
 
   ShowNMEACommon(FALSE);
   ShowNMEASerial(FALSE);
@@ -5015,6 +5002,20 @@ void options::SetInitialSettings(void) {
 
   s.Printf(_T("%d"), g_nAutoHideToolbar);
   pToolbarHideSecs->SetValue(s);
+  
+  //  Serial ports
+  
+  delete m_pSerialArray;
+  m_pSerialArray = NULL;
+  m_pSerialArray = EnumerateSerialPorts();
+  
+  if (m_pSerialArray) {
+      m_comboPort->Clear();
+      for (size_t i = 0; i < m_pSerialArray->Count(); i++) {
+          m_comboPort->Append(m_pSerialArray->Item(i));
+      }
+  }
+  
 }
 
 void options::SetInitialVectorSettings(void)
