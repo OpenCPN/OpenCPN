@@ -1050,6 +1050,8 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                     if( pTargetData->b_show_track )
                         UpdateOneTrack( pTargetData );
                 }
+                // TODO add ais message call
+                SendJSONMsg( pTargetData );
             } else {
     //             printf("Unrecognised AIS message ID: %d\n", pTargetData->MID);
                 if( bnewtarget ) {
@@ -1068,8 +1070,6 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                     }
                 }
             }
-            // TODO add ais message call
-            SendJSONMsg( pTargetData );
         }
 
     n_msgs++;
