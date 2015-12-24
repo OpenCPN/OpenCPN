@@ -94,6 +94,7 @@ private:
     void UpdateOneTrack(AIS_Target_Data *ptarget);
     void BuildERIShipTypeHash(void);
     AIS_Target_Data *ProcessDSx( const wxString& str, bool b_take_dsc = false );
+    void SendJSONMsg( AIS_Target_Data *pTarget );
     
     AIS_Target_Hash *AISTargetList;
     AIS_Target_Hash *AIS_AreaNotice_Sources;
