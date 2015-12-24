@@ -310,7 +310,7 @@ public:
       //  Public Methods
       S57Obj();
       ~S57Obj();
-      S57Obj(char *first_line, wxInputStream *fpx, double ref_lat, double ref_lon, int senc_file_version);
+      S57Obj(char *first_line, int size, wxInputStream *fpx, double ref_lat, double ref_lon, int senc_file_version);
 
       wxString GetAttrValueAsString ( const char *attr );
       int GetAttributeIndex( const char *AttrSeek );

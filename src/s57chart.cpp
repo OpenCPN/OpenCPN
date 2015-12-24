@@ -247,7 +247,7 @@ S57Obj::~S57Obj()
 //      S57Obj CTOR from SENC file
 //----------------------------------------------------------------------------------
 
-S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dummy2, int senc_file_version )
+S57Obj::S57Obj( char *buf, int size, wxInputStream *pfpx, double dummy, double dummy2, int senc_file_version )
 {
     att_array = NULL;
     attVal = NULL;
@@ -282,12 +282,11 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
     x_origin = 0.0;
     y_origin = 0.0;
 
-    if( strlen( first_line ) == 0 ) return;
+    if( strlen( buf ) == 0 ) return;
 
     int FEIndex;
 
-    int MAX_LINE = 499999;
-    char *buf = (char *) malloc( MAX_LINE + 1 );
+    int MAX_LINE = size;
     int llmax = 0;
 
     char *br;
@@ -297,8 +296,6 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
     bool bMulti = false;
 
     char *hdr_buf = (char *) malloc( 1 );
-
-    strcpy( buf, first_line );
 
 //    while(!dun)
     {
@@ -753,7 +750,6 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
         }               //OGRF
     }                       //while(!dun)
 
-    free( buf );
     free( hdr_buf );
 
 }
