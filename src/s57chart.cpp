@@ -397,8 +397,10 @@ S57Obj::S57Obj( char *buf, int size, wxInputStream *pfpx, double dummy, double d
                 bool iua = IsUsefulAttribute( buf );
 
                 szAtt[0] = 0;
-
-                if( iua ) {
+                char t = buf[10];
+                // there's enough other types, testing first is faster 
+                // than new/delete
+                if( iua && (t == 'I' || t == 'S' || t == 'R')) {
                     S57attVal *pattValTmp = new S57attVal;
 
                     if( buf[10] == 'I' ) {
