@@ -5630,6 +5630,7 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
 
                 float *ptest;
                 int ntp = GetLineFeaturePointArray(obj, (void **) &ptest);
+
                 if(!ntp)
                     return false;
                 
@@ -5677,6 +5678,7 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
                 }
                 free (pfree);
             }
+
             break;
         }
 
