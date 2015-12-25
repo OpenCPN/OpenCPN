@@ -2840,8 +2840,12 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
 
     wxString initiconName;
     if( g_bShowAIS ) {
-        if (g_bAllowShowScaled)
-            tb->SetToolShortHelp( ID_AIS, _("Attenuate less critical AIS Targets") );
+        if (g_bAllowShowScaled){
+            if(!g_bShowScaled)
+                tb->SetToolShortHelp( ID_AIS, _("Attenuate less critical AIS Targets") );
+            else
+                tb->SetToolShortHelp( ID_AIS, _("Hide AIS Targets") );
+        }
         else
             tb->SetToolShortHelp( ID_AIS, _("Hide AIS Targets") );
         initiconName = _T("AIS");
