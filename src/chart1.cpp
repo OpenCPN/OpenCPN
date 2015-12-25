@@ -4227,7 +4227,7 @@ void MyFrame::SetAISDisplayStyle(int StyleIndx)
                 AIS_Toolbar_Switch = i;
         }
         AIS_Toolbar_Switch++; // we did click so continu with next item
-        if ( (!g_bAllowShowScaled) && (AIS_Toolbar_Switch == (ArraySize-1)) )
+        if ( (!g_bAllowShowScaled) && (AIS_Toolbar_Switch == 1) )
             AIS_Toolbar_Switch++; 
 
     }
@@ -4239,7 +4239,7 @@ void MyFrame::SetAISDisplayStyle(int StyleIndx)
         AIS_Toolbar_Switch=0;
     
     int AIS_Toolbar_Switch_Next = AIS_Toolbar_Switch+1; //Find out what will happen at next click
-    if ( (!g_bAllowShowScaled) && (AIS_Toolbar_Switch_Next == (ArraySize-1)) )
+    if ( (!g_bAllowShowScaled) && (AIS_Toolbar_Switch_Next == 1) )
         AIS_Toolbar_Switch_Next++;                
     if (AIS_Toolbar_Switch_Next >= ArraySize )
         AIS_Toolbar_Switch_Next=0; // If at end of cycle start at 0
