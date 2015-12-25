@@ -117,14 +117,16 @@ void GribRequestSetting::InitRequestConfig()
     m_sCourseUnit->SetLabel(wxString::Format( _T("\u00B0")));
 
     //Set wxSpinCtrl sizing
-    int w;
-    GetTextExtent( _T("-3600"), &w, NULL, 0, 0, OCPNGetFont(_("Dialog"), 10)); // optimal width text control size
-    m_sMovingSpeed->SetMinSize( wxSize( w + 30 , -1) );
-    m_sMovingCourse->SetMinSize( wxSize( w + 30 , -1) );
-    m_spMaxLat->SetMinSize( wxSize( w + 30 , -1) );
-    m_spMinLat->SetMinSize( wxSize( w + 30 , -1) );
-    m_spMaxLon->SetMinSize( wxSize( w + 30 , -1) );
-    m_spMinLon->SetMinSize( wxSize( w + 30 , -1) );
+    int w,h;
+    GetTextExtent( _T("-360"), &w, &h, 0, 0, OCPNGetFont(_("Dialog"), 10)); // optimal text control size
+    w += 30;
+    h += 4;
+    m_sMovingSpeed->SetMinSize( wxSize(w, h) );
+    m_sMovingCourse->SetMinSize( wxSize(w, h) );
+    m_spMaxLat->SetMinSize( wxSize(w, h) );
+    m_spMinLat->SetMinSize( wxSize(w, h) );
+    m_spMaxLon->SetMinSize( wxSize(w, h) );
+    m_spMinLon->SetMinSize( wxSize(w, h) );
 
     //add tooltips
     m_pSenderAddress->SetToolTip(_("Address used to send request eMail. (Mandatory for LINUX)"));

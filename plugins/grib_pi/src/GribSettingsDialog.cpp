@@ -481,18 +481,6 @@ GribSettingsDialog::GribSettingsDialog(GRIBUICtrlBar &parent, GribOverlaySetting
     ReadDataTypeSettings(m_lastdatatype);
     m_sButtonApply->SetLabel(_("Apply"));
 
-    //set all wxSpinCtrl width
-    int w;
-    GetTextExtent( _T("1234"), &w, NULL, 0, 0, OCPNGetFont(_("Dialog"), 10) );
-    wxWindowList list = this->GetChildren();
-    wxWindowListNode *node = list.GetFirst();
-    for( size_t i = 0; i < list.GetCount(); i++ ) {
-        wxWindow *win = node->GetData();
-        if( win->IsKindOf( CLASSINFO(wxSpinCtrl) ) )
-            win->SetMinSize( wxSize( w + 30, -1 ) );
-        node = node->GetNext();
-    }
-
     DimeWindow( this );                             //aplly global colours scheme
 
     Fit();
