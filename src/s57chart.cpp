@@ -1586,26 +1586,19 @@ int s57chart::GetLineFeaturePointArray(S57Obj *obj, void **ret_array)
     }
     
     //  Allocate the buffer
-    float *ret_temp = (float *)malloc(nPoints * 2 * sizeof(float));
-    
+    float *br = (float *)malloc(nPoints * 2 * sizeof(float));
+    *ret_array = br;
+
     // populate the buffer
     unsigned char *source_buffer = (unsigned char *)GetLineVertexBuffer();
-    float *br = ret_temp;
     ls_list = obj->m_ls_list;
     while( ls_list){
-        float *pt = (float *)(source_buffer + ls_list->vbo_offset);
-        float a = *pt++;
-        float b = *pt++;
-        
         memcpy(br, source_buffer + ls_list->vbo_offset, ls_list->n_points * 2 * sizeof(float));
         br += ls_list->n_points * 2;
         ls_list = ls_list->next;
     }
     
-    *ret_array = ret_temp;
-    
     return nPoints;
-        
     
 }
 
@@ -5630,10 +5623,11 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
 
                 float *ptest;
                 int ntp = GetLineFeaturePointArray(obj, (void **) &ptest);
-                
+
                 if(!ntp)
                     return false;
                 
+                float *pfree = ptest;
                 pt *ppt = obj->geoPt;
                 int npt = obj->npt;
 
@@ -5649,7 +5643,7 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
                 
                 ppt++;
 
-                for( int ip = 1; ip < npt; ip++ ) {
+                for( int ip = 1; ip < ntp; ip++ ) {
                     
                     float a = *ptest++;
                     float b = *ptest++;
@@ -5667,6 +5661,7 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
                         >= ( fmin(east, east0) - sel_rad_meters ) ) if( easting
                         <= ( fmax(east, east0) + sel_rad_meters ) ) {
                         //                                                    index = ip;
+                        free (pfree);
                         return true;
                     }
 
@@ -5674,6 +5669,7 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
                     east0 = east;
                     ppt++;
                 }
+                free (pfree);
             }
 
             break;

@@ -373,19 +373,40 @@ public:
     int m_thread;
 };
 
+static double chart_dist(int index)
+{
+    double d;
+    float  clon;
+    float  clat;
+    const ChartTableEntry &cte = ChartData->GetChartTableEntry(index);
+    // if the chart contains ownship position set the distance to 0
+    if (cte.GetBBox().PointInBox(gLon, gLat, 0.))
+        d = 0.;
+    else {
+        // find the nearest edge 
+        double t;
+        clon = (cte.GetLonMax() + cte.GetLonMin())/2;
+        d = DistGreatCircle(cte.GetLatMax(), clon, gLat, gLon);
+        t = DistGreatCircle(cte.GetLatMin(), clon, gLat, gLon);
+        if (t < d)
+            d = t;
+            
+        clat = (cte.GetLatMax() + cte.GetLatMin())/2;
+        t = DistGreatCircle(clat, cte.GetLonMin(), gLat, gLon);
+        if (t < d)
+            d = t;
+        t = DistGreatCircle(clat, cte.GetLonMax(), gLat, gLon);
+        if (t < d)
+            d = t;
+    }
+    return d;
+}
+
 WX_DEFINE_SORTED_ARRAY_INT(int, MySortedArrayInt);
 int CompareInts(int n1, int n2)
 {
-    const ChartTableEntry &cte1 = ChartData->GetChartTableEntry(n1);
-    float clon = (cte1.GetLonMax() + cte1.GetLonMin())/2;
-    float clat = (cte1.GetLatMax() + cte1.GetLatMin())/2;
-    double d1 = DistGreatCircle(clat, clon, gLat, gLon);
-    
-    const ChartTableEntry &cte2 = ChartData->GetChartTableEntry(n2);
-    clon = (cte2.GetLonMax() + cte2.GetLonMin())/2;
-    clat = (cte2.GetLatMax() + cte2.GetLatMin())/2;
-    double d2 = DistGreatCircle(clat, clon, gLat, gLon);
-    
+    double d1 = chart_dist(n1);
+    double d2 = chart_dist(n2);
     return (int)(d1 - d2);
 }
 
@@ -450,9 +471,7 @@ void BuildCompressedCache()
         int i = idx_sorted_by_distance.Item(j);
         
         const ChartTableEntry &cte = ChartData->GetChartTableEntry(i);
-        float clon = (cte.GetLonMax() + cte.GetLonMin())/2;
-        float clat = (cte.GetLatMax() + cte.GetLatMin())/2;
-        double distance = DistGreatCircle(clat, clon, gLat, gLon);
+        double distance = chart_dist(i);
         
         wxString filename(cte.GetpFullPath(), wxConvUTF8);
         

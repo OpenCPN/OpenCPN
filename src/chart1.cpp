@@ -270,6 +270,7 @@ ChartDummy                *pDummyChart;
 ocpnToolBarSimple*        g_toolbar;
 ocpnStyle::StyleManager*  g_StyleManager;
 
+
 // Global print data, to remember settings during the session
 wxPrintData               *g_printData = (wxPrintData*) NULL ;
 
@@ -478,6 +479,7 @@ wxString                  g_TCData_Dir;
 
 bool                      g_boptionsactive;
 options                   *g_options;
+bool                      g_bDeferredInitDone;
 int                       options_lastPage = 0;
 wxPoint                   options_lastWindowPos( 0,0 );
 wxSize                    options_lastWindowSize( 0,0 );
@@ -534,12 +536,14 @@ bool                      g_bShowCOG;
 double                    g_ShowCOG_Mins;
 bool                      g_bAISShowTracks;
 double                    g_AISShowTracks_Mins;
-bool                      g_bShowMoored;
+bool                      g_bHideMoored;
+bool                      g_bAllowShowScaled;
 double                    g_ShowMoored_Kts;
 wxString                  g_sAIS_Alert_Sound_File;
 bool                      g_bAIS_CPA_Alert_Suppress_Moored;
 bool                      g_bAIS_ACK_Timeout;
 double                    g_AckTimeout_Mins;
+bool                      g_bShowScaled;
 bool                      g_bShowAreaNotices;
 bool                      g_bDrawAISSize;
 bool                      g_bShowAISName;
@@ -681,6 +685,7 @@ static int tick_idx;
 int               g_sticky_chart;
 
 extern wxString OpenCPNVersion; //Gunther
+extern options          *g_pOptions;
 
 int n_NavMessageShown;
 wxString g_config_version_string;
@@ -2835,7 +2840,10 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
 
     wxString initiconName;
     if( g_bShowAIS ) {
-        tb->SetToolShortHelp( ID_AIS, _("Hide AIS Targets") );
+        if (g_bAllowShowScaled)
+            tb->SetToolShortHelp( ID_AIS, _("Scale less critical AIS Targets") );
+        else
+            tb->SetToolShortHelp( ID_AIS, _("Hide AIS Targets") );
         initiconName = _T("AIS");
     }
     else {
@@ -3105,13 +3113,18 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         return;
     }
 
-    // If Options dialog is not fully initialized, just cancel the close request. 
-    //  This is only reachable on slow hardware...
-    if(!g_options)
+    // The Options dialog, and other deferred init items, are not fully initialized.
+    // Best to just cancel the close request. 
+    // This is probably only reachable on slow hardware...
+    if(!g_bDeferredInitDone)
         return;
     
-    if(g_options)
+    
+    if(g_options){
         delete g_options;
+        g_options = NULL;
+        g_pOptions = NULL;
+    }
     
     //  If the multithread chart compressor engine is running, cancel the close command
     if( b_inCompressAllCharts ) {
@@ -3903,31 +3916,25 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         }
 #endif
 
-        case ID_MENU_AIS_TARGETS:
+        case ID_MENU_AIS_TARGETS: {
+            if ( g_bShowAIS ) SetAISDisplayStyle(0);
+            else SetAISDisplayStyle(1);
+            break;
+        }
+         case ID_MENU_AIS_MOORED_TARGETS: {
+            g_bHideMoored = !g_bHideMoored;
+            break;
+        }
+         case ID_MENU_AIS_SCALED_TARGETS: {
+             if(g_bShowScaled)
+                SetAISDisplayStyle(0);
+            else
+                SetAISDisplayStyle(1);
+            
+            break;
+        }
         case ID_AIS: {
-            g_bShowAIS = !g_bShowAIS;
-
-            if( g_toolbar ) {
-                wxString iconName;
-                if( g_bShowAIS ) {
-                    g_toolbar->SetToolShortHelp( ID_AIS, _("Hide AIS Targets") );
-                    iconName = _T("AIS");
-                } else {
-                    g_toolbar->SetToolShortHelp( ID_AIS, _("Show AIS Targets") );
-                    iconName = _T("AIS_Disabled");
-                }
-
-                if( m_pAISTool ) {
-                    g_toolbar->SetToolNormalBitmapEx( m_pAISTool, iconName );
-                    g_toolbar->Refresh();
-                    m_lastAISiconName = iconName;
-                }
-            }
-
-            SetMenubarItemState(ID_MENU_AIS_TARGETS, g_bShowAIS);
-
-            cc1->ReloadVP();
-
+            SetAISDisplayStyle(-1);
             break;
         }
 
@@ -4199,6 +4206,58 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
     }         // switch
 
+}
+
+void MyFrame::SetAISDisplayStyle(int StyleIndx)
+{
+    // make some arrays to hold the dfferences between cycle steps
+    //show all, scaled, hide all
+    bool g_bShowAIS_Array[3] = {true, true, false}; 
+    bool g_bShowScaled_Array[3] = {false, true, true};
+    wxString ToolShortHelp_Array[3] = { _("Show all AIS Targets"),
+                                        _("Scale less critical AIS Targets"),
+                                        _("Hide AIS Targets") };
+    wxString iconName_Array[3] = { _("AIS"),  _("AIS_Suppressed"), _("AIS_Disabled")};
+    int ArraySize = 3;
+    int AIS_Toolbar_Switch = 0;
+    if (StyleIndx == -1){// -1 means coming from toolbar button
+        //find current state of switch 
+        for ( int i = 1; i < ArraySize; i++){
+            if( (g_bShowAIS_Array[i] == g_bShowAIS) && (g_bShowScaled_Array[i] == g_bShowScaled) )
+                AIS_Toolbar_Switch = i;
+        }
+        AIS_Toolbar_Switch++; // we did click so continu with next item
+        if ( (!g_bAllowShowScaled) && (AIS_Toolbar_Switch == (ArraySize-1)) )
+            AIS_Toolbar_Switch++; 
+
+    }
+    else { // coming from menu bar.
+        AIS_Toolbar_Switch = StyleIndx;
+    }
+     //make sure we are not above array
+    if (AIS_Toolbar_Switch >= ArraySize )
+        AIS_Toolbar_Switch=0;
+    
+    int AIS_Toolbar_Switch_Next = AIS_Toolbar_Switch+1; //Find out what will happen at next click
+    if ( (!g_bAllowShowScaled) && (AIS_Toolbar_Switch_Next == (ArraySize-1)) )
+        AIS_Toolbar_Switch_Next++;                
+    if (AIS_Toolbar_Switch_Next >= ArraySize )
+        AIS_Toolbar_Switch_Next=0; // If at end of cycle start at 0
+    
+    //Set found values to variables
+    g_bShowAIS = g_bShowAIS_Array[AIS_Toolbar_Switch];
+    g_bShowScaled = g_bShowScaled_Array[AIS_Toolbar_Switch];
+    if( g_toolbar ) {
+        g_toolbar->SetToolShortHelp( ID_AIS, ToolShortHelp_Array[AIS_Toolbar_Switch_Next] );
+        if( m_pAISTool ) {
+            g_toolbar->SetToolNormalBitmapEx( m_pAISTool, iconName_Array[AIS_Toolbar_Switch] );
+            g_toolbar->Refresh();
+            m_lastAISiconName = iconName_Array[AIS_Toolbar_Switch];
+        }
+    }
+
+    UpdateGlobalMenuItems();
+    cc1->ReloadVP();    
 }
 
 void MyFrame::setStringVP(wxString VPS)
@@ -4968,7 +5027,9 @@ void MyFrame::RegisterGlobalMenuItems()
 
     wxMenu* ais_menu = new wxMenu();
     ais_menu->AppendCheckItem( ID_MENU_AIS_TARGETS, _("Show AIS Targets") );
-    ais_menu->AppendCheckItem( ID_MENU_AIS_TRACKS, _("Show Target Tracks") );
+    ais_menu->AppendCheckItem( ID_MENU_AIS_MOORED_TARGETS, _("Hide Moored AIS Targets") );
+    ais_menu->AppendCheckItem( ID_MENU_AIS_SCALED_TARGETS, _("Scale Less Critical AIS Targets") );    
+    ais_menu->AppendCheckItem( ID_MENU_AIS_TRACKS, _("Show AIS Target Tracks") );
     ais_menu->AppendCheckItem( ID_MENU_AIS_CPADIALOG, _("Show CPA Alert Dialogs") );
     ais_menu->AppendCheckItem( ID_MENU_AIS_CPASOUND, _("Sound CPA Alarms") );
     ais_menu->AppendSeparator();
@@ -5022,6 +5083,9 @@ void MyFrame::UpdateGlobalMenuItems()
     m_pMenuBar->FindItem( ID_MENU_CHART_QUILTING )->Check( g_bQuiltEnable );
     m_pMenuBar->FindItem( ID_MENU_UI_CHARTBAR )->Check( g_bShowChartBar );
     m_pMenuBar->FindItem( ID_MENU_AIS_TARGETS )->Check( g_bShowAIS );
+    m_pMenuBar->FindItem( ID_MENU_AIS_MOORED_TARGETS )->Check( g_bHideMoored );
+    m_pMenuBar->FindItem( ID_MENU_AIS_SCALED_TARGETS )->Check( g_bShowScaled );
+    m_pMenuBar->FindItem( ID_MENU_AIS_SCALED_TARGETS )->Enable(g_bAllowShowScaled);
     m_pMenuBar->FindItem( ID_MENU_AIS_TRACKS )->Check( g_bAISShowTracks );
     m_pMenuBar->FindItem( ID_MENU_AIS_CPADIALOG )->Check( g_bAIS_CPA_Alert );
     m_pMenuBar->FindItem( ID_MENU_AIS_CPASOUND )->Check( g_bAIS_CPA_Alert_Audio );
@@ -5274,6 +5338,7 @@ int MyFrame::DoOptionsDialog()
     if(rr & FONT_CHANGED){
         delete g_options;
         g_options = NULL;
+        g_pOptions = NULL;
     }
 
     g_boptionsactive = false;
@@ -5903,163 +5968,164 @@ void MyFrame::DoStackDelta( int direction )
 void MyFrame::OnInitTimer(wxTimerEvent& event)
 {
     switch(m_iInitCount++) {
-    case 0:
-    {
-        if( g_toolbar )
-            g_toolbar->EnableTool( ID_SETTINGS, false );
-        
-        // Set persistent Fullscreen mode
-        g_Platform->SetFullscreen(g_bFullscreen);
-        
-        // Load the waypoints.. both of these routines are very slow to execute which is why
-        // they have been to defered until here
-        pWayPointMan = new WayPointman();
-        
-        // Reload the ownship icon from UserIcons, if present
-        if(cc1){
-            if(cc1->SetUserOwnship())
-                cc1->SetColorScheme(global_color_scheme);
-        }
-        
-        pConfig->LoadNavObjects();
-
-        //    Re-enable anchor watches if set in config file
-        if( !g_AW1GUID.IsEmpty() ) {
-            pAnchorWatchPoint1 = pWayPointMan->FindRoutePointByGUID( g_AW1GUID );
-        }
-        if( !g_AW2GUID.IsEmpty() ) {
-            pAnchorWatchPoint2 = pWayPointMan->FindRoutePointByGUID( g_AW2GUID );
-        }
-
-        // Import Layer-wise any .gpx files from /Layers directory
-        wxString layerdir = g_Platform->GetPrivateDataDir();
-        appendOSDirSlash( &layerdir );
-        layerdir.Append( _T("layers") );
-
-        if( wxDir::Exists( layerdir ) ) {
-            wxString laymsg;
-            laymsg.Printf( wxT("Getting .gpx layer files from: %s"), layerdir.c_str() );
-            wxLogMessage( laymsg );
-
-            pConfig->LoadLayers(layerdir);
-        }
-
-        break;
-    }
-    case 1:
-        // Connect Datastreams
-
-
-        for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+        case 0:
         {
-            ConnectionParams *cp = g_pConnectionParams->Item(i);
-            if( cp->bEnabled ) {
-
-#ifdef __unix__
-                if( cp->GetDSPort().Contains(_T("Serial"))) {
-                    if( ! g_bserial_access_checked ){
-                        if( !CheckSerialAccess() ){
-                        }
-                        g_bserial_access_checked = true;
-                    }
-                }
-#endif
-
-                dsPortType port_type = cp->IOSelect;
-                DataStream *dstr = new DataStream( g_pMUX,
-                                                   cp->Type,
-                                                   cp->GetDSPort(),
-                                                   wxString::Format(wxT("%i"),cp->Baudrate),
-                                                   port_type,
-                                                   cp->Priority,
-                                                   cp->Garmin
-                    );
-                dstr->SetInputFilter(cp->InputSentenceList);
-                dstr->SetInputFilterType(cp->InputSentenceListType);
-                dstr->SetOutputFilter(cp->OutputSentenceList);
-                dstr->SetOutputFilterType(cp->OutputSentenceListType);
-                dstr->SetChecksumCheck(cp->ChecksumCheck);
-
-                cp->b_IsSetup = true;
-
-                g_pMUX->AddStream(dstr);
+            if( g_toolbar )
+                g_toolbar->EnableTool( ID_SETTINGS, false );
+            
+            // Set persistent Fullscreen mode
+            g_Platform->SetFullscreen(g_bFullscreen);
+            
+            // Load the waypoints.. both of these routines are very slow to execute which is why
+            // they have been to defered until here
+            pWayPointMan = new WayPointman();
+            
+            // Reload the ownship icon from UserIcons, if present
+            if(cc1){
+                if(cc1->SetUserOwnship())
+                    cc1->SetColorScheme(global_color_scheme);
             }
-        }
+            
+            pConfig->LoadNavObjects();
 
-        console = new ConsoleCanvas( gFrame );                    // the console
-        console->SetColorScheme( global_color_scheme );
-        break;
+            //    Re-enable anchor watches if set in config file
+            if( !g_AW1GUID.IsEmpty() ) {
+                pAnchorWatchPoint1 = pWayPointMan->FindRoutePointByGUID( g_AW1GUID );
+            }
+            if( !g_AW2GUID.IsEmpty() ) {
+                pAnchorWatchPoint2 = pWayPointMan->FindRoutePointByGUID( g_AW2GUID );
+            }
 
-    case 2:
-    {
-        if (m_initializing)
+            // Import Layer-wise any .gpx files from /Layers directory
+            wxString layerdir = g_Platform->GetPrivateDataDir();
+            appendOSDirSlash( &layerdir );
+            layerdir.Append( _T("layers") );
+
+            if( wxDir::Exists( layerdir ) ) {
+                wxString laymsg;
+                laymsg.Printf( wxT("Getting .gpx layer files from: %s"), layerdir.c_str() );
+                wxLogMessage( laymsg );
+
+                pConfig->LoadLayers(layerdir);
+            }
+
             break;
-        m_initializing = true;
-        g_pi_manager->LoadAllPlugIns( g_Platform->GetPluginDir(), true, false );
+        }
+        case 1:
+            // Connect Datastreams
 
-        RequestNewToolbar();
-        if( g_toolbar )
-            g_toolbar->EnableTool( ID_SETTINGS, false );
-        
-        wxString perspective;
-        pConfig->SetPath( _T ( "/AUI" ) );
-        pConfig->Read( _T ( "AUIPerspective" ), &perspective );
 
-        // Make sure the perspective saved in the config file is "reasonable"
-        // In particular, the perspective should have an entry for every
-        // windows added to the AUI manager so far.
-        // If any are not found, then use the default layout
+            for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+            {
+                ConnectionParams *cp = g_pConnectionParams->Item(i);
+                if( cp->bEnabled ) {
 
-        bool bno_load = false;
-        wxAuiPaneInfoArray pane_array_val = g_pauimgr->GetAllPanes();
+    #ifdef __unix__
+                    if( cp->GetDSPort().Contains(_T("Serial"))) {
+                        if( ! g_bserial_access_checked ){
+                            if( !CheckSerialAccess() ){
+                            }
+                            g_bserial_access_checked = true;
+                        }
+                    }
+    #endif
 
-        for( unsigned int i = 0; i < pane_array_val.GetCount(); i++ ) {
-            wxAuiPaneInfo pane = pane_array_val.Item( i );
-            if( perspective.Find( pane.name ) == wxNOT_FOUND ) {
-                bno_load = true;
-                break;
+                    dsPortType port_type = cp->IOSelect;
+                    DataStream *dstr = new DataStream( g_pMUX,
+                                                    cp->Type,
+                                                    cp->GetDSPort(),
+                                                    wxString::Format(wxT("%i"),cp->Baudrate),
+                                                    port_type,
+                                                    cp->Priority,
+                                                    cp->Garmin
+                        );
+                    dstr->SetInputFilter(cp->InputSentenceList);
+                    dstr->SetInputFilterType(cp->InputSentenceListType);
+                    dstr->SetOutputFilter(cp->OutputSentenceList);
+                    dstr->SetOutputFilterType(cp->OutputSentenceListType);
+                    dstr->SetChecksumCheck(cp->ChecksumCheck);
+
+                    cp->b_IsSetup = true;
+
+                    g_pMUX->AddStream(dstr);
+                }
             }
+
+            console = new ConsoleCanvas( gFrame );                    // the console
+            console->SetColorScheme( global_color_scheme );
+            break;
+
+        case 2:
+        {
+            if (m_initializing)
+                break;
+            m_initializing = true;
+            g_pi_manager->LoadAllPlugIns( g_Platform->GetPluginDir(), true, false );
+
+            RequestNewToolbar();
+            if( g_toolbar )
+                g_toolbar->EnableTool( ID_SETTINGS, false );
+            
+            wxString perspective;
+            pConfig->SetPath( _T ( "/AUI" ) );
+            pConfig->Read( _T ( "AUIPerspective" ), &perspective );
+
+            // Make sure the perspective saved in the config file is "reasonable"
+            // In particular, the perspective should have an entry for every
+            // windows added to the AUI manager so far.
+            // If any are not found, then use the default layout
+
+            bool bno_load = false;
+            wxAuiPaneInfoArray pane_array_val = g_pauimgr->GetAllPanes();
+
+            for( unsigned int i = 0; i < pane_array_val.GetCount(); i++ ) {
+                wxAuiPaneInfo pane = pane_array_val.Item( i );
+                if( perspective.Find( pane.name ) == wxNOT_FOUND ) {
+                    bno_load = true;
+                    break;
+                }
+            }
+
+            if( !bno_load )
+                g_pauimgr->LoadPerspective( perspective, false );
+
+            g_pauimgr->Update();
+
+            //   Notify all the AUI PlugIns so that they may syncronize with the Perspective
+            g_pi_manager->NotifyAuiPlugIns();
+            g_pi_manager->ShowDeferredBlacklistMessages(); //  Give the use dialog on any blacklisted PlugIns
+            g_pi_manager->CallLateInit();
+            break;
         }
 
-        if( !bno_load )
-            g_pauimgr->LoadPerspective( perspective, false );
-
-        g_pauimgr->Update();
-
-        //   Notify all the AUI PlugIns so that they may syncronize with the Perspective
-        g_pi_manager->NotifyAuiPlugIns();
-        g_pi_manager->ShowDeferredBlacklistMessages(); //  Give the use dialog on any blacklisted PlugIns
-        g_pi_manager->CallLateInit();
-        break;
-    }
-
-    case 3:
-    {
-        if(g_FloatingToolbarDialog){
-            g_FloatingToolbarDialog->SetAutoHide(g_bAutoHideToolbar);
-            g_FloatingToolbarDialog->SetAutoHideTimer(g_nAutoHideToolbar);
+        case 3:
+        {
+            if(g_FloatingToolbarDialog){
+                g_FloatingToolbarDialog->SetAutoHide(g_bAutoHideToolbar);
+                g_FloatingToolbarDialog->SetAutoHideTimer(g_nAutoHideToolbar);
+            }
+            
+            break;
         }
-        
-        break;
-    }
 
-    case 4:
-    {
-        g_options = new options( this, -1, _("Options") );
- 
-        if( g_toolbar )
-            g_toolbar->EnableTool( ID_SETTINGS, true );
-        
-        break;
-    }
+        case 4:
+        {
+            g_options = new options( this, -1, _("Options") );
+    
+            if( g_toolbar )
+                g_toolbar->EnableTool( ID_SETTINGS, true );
+            
+            break;
+        }
 
-    default:
-    {
-        // Last call....
+        default:
+        {
+            // Last call....
 
-        InitTimer.Stop(); // Initialization complete
-        break;
-    }
+            InitTimer.Stop(); // Initialization complete
+            g_bDeferredInitDone = true;
+            break;
+        }
     }   // switch
     cc1->Refresh( true );
 }

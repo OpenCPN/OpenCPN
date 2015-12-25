@@ -8235,6 +8235,7 @@ void ChartCanvas::ShowMarkPropertiesDialog( RoutePoint* markPoint ) {
         wxPoint canvas_pos = GetPosition();
         wxSize fitted_size = pMarkPropDialog->GetSize();;
 
+        bool newFit = false;
         if(canvas_size.x < fitted_size.x){
             fitted_size.x = canvas_size.x - 40;
             if(canvas_size.y < fitted_size.y)
@@ -8246,16 +8247,10 @@ void ChartCanvas::ShowMarkPropertiesDialog( RoutePoint* markPoint ) {
                 fitted_size.x -= 40;                // scrollbar added
         }
 
-        pMarkPropDialog->SetSize( fitted_size );
-        pMarkPropDialog->Centre();
-
-
-        int xp = (canvas_size.x - fitted_size.x)/2;
-        int yp = (canvas_size.y - fitted_size.y)/2;
-
-        wxPoint xxp = ClientToScreen(canvas_pos);
-//        pMarkPropDialog->Move(xxp.x + xp, xxp.y + yp);
-
+        if(newFit){
+            pMarkPropDialog->SetSize( fitted_size );
+            pMarkPropDialog->Centre();
+        }
     }
 
     pMarkPropDialog->SetRoutePoint( markPoint );

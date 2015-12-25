@@ -2679,6 +2679,8 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     m_sdbSizerButtons->Realize();
 
     bSizer1->Add( m_sdbSizerButtons, 0, wxALL | wxEXPAND, 5 );
+    
+    Fit();
 
     RecalculateSize();
     
@@ -2733,24 +2735,31 @@ void MarkInfoDef::RecalculateSize( void )
 {
     
     Layout();
+
+    // X size is correctly computed by sizers, except on MSW....
+    // We change only Y size, unless X is too big for the parent client size....
     
     wxSize esize;
-    esize.x = GetCharWidth() * 110;
-    esize.y = GetCharHeight() * 40;
+#ifdef __WXMSW__    
+    esize.x = GetCharWidth() * 46;
+#else
+    esize.x = -1;
+#endif
+    
+    esize.y = GetCharHeight() * 30;
     
     wxSize dsize = GetParent()->GetClientSize();
     esize.y = wxMin(esize.y, dsize.y - (2 * GetCharHeight()));
     esize.x = wxMin(esize.x, dsize.x - (1 * GetCharHeight()));
-    SetClientSize(esize);
+    SetClientSize(wxSize(esize.x, esize.y));
     
     wxSize fsize = GetSize();
     fsize.y = wxMin(fsize.y, dsize.y - (2 * GetCharHeight()));
     fsize.x = wxMin(fsize.x, dsize.x - (1 * GetCharHeight()));
-    SetSize(fsize);
+    SetSize(wxSize(-1, fsize.y));
     
     m_defaultClientSize = GetClientSize();
     
-    Centre( wxBOTH );
 }
 
 
@@ -3358,7 +3367,7 @@ void MarkInfoImpl::OnMarkInfoOKClick( wxCommandEvent& event )
     if( pRoutePropDialog && pRoutePropDialog->IsShown() )
         pRoutePropDialog->UpdateProperties();
 
-    SetClientSize(m_defaultClientSize);
+//    SetClientSize(m_defaultClientSize);
     
     #ifdef __OCPN__ANDROID__
     androidEnableBackButton( true );
@@ -3398,7 +3407,7 @@ void MarkInfoImpl::OnMarkInfoCancelClick( wxCommandEvent& event )
     Show( false );
     delete m_pMyLinkList;
     m_pMyLinkList = NULL;
-    SetClientSize(m_defaultClientSize);
+//    SetClientSize(m_defaultClientSize);
 
     #ifdef __OCPN__ANDROID__
     androidEnableBackButton( true );

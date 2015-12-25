@@ -859,7 +859,7 @@ SET(SRCS
                 src/ssl/sha1.c
                 src/viewport.cpp
                 src/canvasMenu.cpp
-                src/OCPNPlatform.cpp
+                src/OCPNPlatform.cpp 
     )
 
 IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)

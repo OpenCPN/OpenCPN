@@ -139,8 +139,10 @@ extern bool g_bShowCOG;
 extern double g_ShowCOG_Mins;
 extern bool g_bAISShowTracks;
 extern double g_AISShowTracks_Mins;
-extern bool g_bShowMoored;
 extern double g_ShowMoored_Kts;
+extern bool g_bHideMoored;
+extern bool g_bAllowShowScaled;
+extern int  g_ShowScaled_Num;
 extern bool g_bAIS_CPA_Alert;
 extern bool g_bAIS_CPA_Alert_Audio;
 extern wxString g_sAIS_Alert_Sound_File;
@@ -900,8 +902,14 @@ options::options(MyFrame* parent, wxWindowID id, const wxString& caption,
 }
 
 options::~options(void) {
+    
+  wxNotebook* nb = dynamic_cast<wxNotebook*>(m_pListbook->GetPage(m_pageCharts));
+    if (nb)
+        nb->Disconnect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
+                                    wxListbookEventHandler(options::OnChartsPageChange),
+                                    NULL, this);
+        
   groupsPanel->EmptyChartGroupArray(m_pGroupArray);
-  g_pOptions = NULL;
   delete m_pSerialArray;
   delete m_pGroupArray;
   delete m_topImgList;
@@ -966,7 +974,6 @@ void options::Init(void) {
   m_bVisitLang = FALSE;
   m_itemFontElementListBox = NULL;
   m_topImgList = NULL;
-  m_pSerialArray = EnumerateSerialPorts();
 
   m_pListbook = NULL;
   m_pGroupArray = NULL;
@@ -1705,12 +1712,6 @@ void options::CreatePanel_NMEA_Compact(size_t parent, int border_size,
   m_lcSources->Refresh();
   FillSourceList();
 
-  if (m_pSerialArray) {
-    for (size_t i = 0; i < m_pSerialArray->Count(); i++) {
-      m_comboPort->Append(m_pSerialArray->Item(i));
-    }
-  }
-
   ShowNMEACommon(FALSE);
   ShowNMEASerial(FALSE);
   ShowNMEANet(FALSE);
@@ -2319,12 +2320,6 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
 
   m_lcSources->Refresh();
   FillSourceList();
-
-  if (m_pSerialArray) {
-    for (size_t i = 0; i < m_pSerialArray->Count(); i++) {
-      m_comboPort->Append(m_pSerialArray->Item(i));
-    }
-  }
 
   ShowNMEACommon(FALSE);
   ShowNMEASerial(FALSE);
@@ -3503,12 +3498,6 @@ void options::CreatePanel_ChartGroups(size_t parent, int border_size,
   wxNotebook* nb = dynamic_cast<wxNotebook*>(m_groupsPage);
   if (nb) nb->AddPage(groupsPanel, _("Chart Groups"));
 
-  m_groupsPage->Connect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
-                        wxListbookEventHandler(options::OnChartsPageChange),
-                        NULL, this);
-
-  //    groupsPanel->CompletePanel();     // Deferred until panel is
-  //    selected....
 }
 
 void ChartGroupsUI::CreatePanel(size_t parent, int border_size,
@@ -4132,12 +4121,20 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
   pDisplayGrid->Add(m_pText_Track_Length, 1, wxALL | wxALIGN_RIGHT,
                     group_item_spacing);
 
-  m_pCheck_Show_Moored = new wxCheckBox(
-      panelAIS, -1, _("Hide anchored/moored targets, speed max (kn)"));
-  pDisplayGrid->Add(m_pCheck_Show_Moored, 1, wxALL, group_item_spacing);
+  m_pCheck_Hide_Moored = new wxCheckBox(
+      panelAIS, -1, _("Suppress anchored/moored targets, speed max (kn)"));
+  pDisplayGrid->Add(m_pCheck_Hide_Moored, 1, wxALL, group_item_spacing);
 
   m_pText_Moored_Speed = new wxTextCtrl(panelAIS, -1);
   pDisplayGrid->Add(m_pText_Moored_Speed, 1, wxALL | wxALIGN_RIGHT,
+                    group_item_spacing);
+
+  m_pCheck_Scale_Priority = new wxCheckBox(
+      panelAIS, -1, _("Allow scaling down targets if more than ... targets"));
+  pDisplayGrid->Add(m_pCheck_Scale_Priority, 1, wxALL, group_item_spacing);
+
+  m_pText_Scale_Priority = new wxTextCtrl(panelAIS, -1);
+  pDisplayGrid->Add(m_pText_Scale_Priority, 1, wxALL | wxALIGN_RIGHT,
                     group_item_spacing);
 
   m_pCheck_Show_Area_Notices = new wxCheckBox(
@@ -4678,12 +4675,22 @@ void options::CreateControls(void) {
   CreatePanel_Advanced(m_pageDisplay, border_size, group_item_spacing);
 
   m_pageCharts = CreatePanel(_("Charts"));
+  
+  
+  
   CreatePanel_ChartsLoad(m_pageCharts, border_size, group_item_spacing);
   CreatePanel_VectorCharts(m_pageCharts, border_size, group_item_spacing);
   // ChartGroups must be created after ChartsLoad and must be at least third
   CreatePanel_ChartGroups(m_pageCharts, border_size, group_item_spacing);
   CreatePanel_TidesCurrents(m_pageCharts, border_size, group_item_spacing);
 
+  wxNotebook* nb = dynamic_cast<wxNotebook*>(m_pListbook->GetPage(m_pageCharts));
+  if (nb)
+      nb->Connect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
+                                  wxListbookEventHandler(options::OnChartsPageChange),
+                                  NULL, this);
+      
+      
   m_pageConnections = CreatePanel(_("Connections"));
 #ifndef __OCPN__ANDROID__
   CreatePanel_NMEA(m_pageConnections, border_size, group_item_spacing);
@@ -4933,10 +4940,16 @@ void options::SetInitialSettings(void) {
   s.Printf(_T("%4.0f"), g_AISShowTracks_Mins);
   m_pText_Track_Length->SetValue(s);
 
-  m_pCheck_Show_Moored->SetValue(!g_bShowMoored);
+  m_pCheck_Hide_Moored->SetValue(g_bHideMoored);
 
   s.Printf(_T("%4.1f"), g_ShowMoored_Kts);
   m_pText_Moored_Speed->SetValue(s);
+  
+  m_pCheck_Scale_Priority->SetValue(g_bAllowShowScaled);
+  
+  s.Printf(_T("%i"), g_ShowScaled_Num);
+  m_pText_Scale_Priority->SetValue(s);
+
 
   m_pCheck_Show_Area_Notices->SetValue(g_bShowAreaNotices);
 
@@ -4989,6 +5002,20 @@ void options::SetInitialSettings(void) {
 
   s.Printf(_T("%d"), g_nAutoHideToolbar);
   pToolbarHideSecs->SetValue(s);
+  
+  //  Serial ports
+  
+  delete m_pSerialArray;
+  m_pSerialArray = NULL;
+  m_pSerialArray = EnumerateSerialPorts();
+  
+  if (m_pSerialArray) {
+      m_comboPort->Clear();
+      for (size_t i = 0; i < m_pSerialArray->Count(); i++) {
+          m_comboPort->Append(m_pSerialArray->Item(i));
+      }
+  }
+  
 }
 
 void options::SetInitialVectorSettings(void)
@@ -5835,9 +5862,14 @@ void options::OnApplyClick(wxCommandEvent& event) {
     }
   }
 
-  g_bShowMoored = !m_pCheck_Show_Moored->GetValue();
+  g_bHideMoored = m_pCheck_Hide_Moored->GetValue();
   m_pText_Moored_Speed->GetValue().ToDouble(&g_ShowMoored_Kts);
 
+  g_bAllowShowScaled = m_pCheck_Scale_Priority->GetValue();
+  long l;
+  m_pText_Scale_Priority->GetValue().ToLong(&l);
+  g_ShowScaled_Num = (int)l;
+  
   g_bShowAreaNotices = m_pCheck_Show_Area_Notices->GetValue();
   g_bDrawAISSize = m_pCheck_Draw_Target_Size->GetValue();
   g_bShowAISName = m_pCheck_Show_Target_Name->GetValue();
@@ -6105,15 +6137,8 @@ void options::OnButtondeleteClick(wxCommandEvent& event) {
 void options::OnDebugcheckbox1Click(wxCommandEvent& event) { event.Skip(); }
 
 void options::OnCancelClick(wxCommandEvent& event) {
-  //  Required to avoid intermittent crash on wxGTK
-  if (m_groupsPage)
-    m_groupsPage->Disconnect(
-        wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
-        wxListbookEventHandler(options::OnChartsPageChange), NULL, this);
 
   m_pListbook->ChangeSelection(0);
-  //delete pActiveChartsList;
-  //delete ps57CtlListBox;
 
   lastWindowPos = GetPosition();
   lastWindowSize = GetSize();
@@ -6127,15 +6152,7 @@ void options::OnClose(wxCloseEvent& event) {
   //      PlugIns may have added panels
   if (g_pi_manager) g_pi_manager->CloseAllPlugInPanels((int)wxOK);
 
-  //  Required to avoid intermittent crash on wxGTK
-  if (m_groupsPage)
-    m_groupsPage->Disconnect(
-        wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
-        wxListbookEventHandler(options::OnChartsPageChange), NULL, this);
-
   m_pListbook->ChangeSelection(0);
-  //delete pActiveChartsList;
-  //delete ps57CtlListBox;
 
   lastWindowPos = GetPosition();
   lastWindowSize = GetSize();

@@ -137,6 +137,8 @@ public:
     bool                     b_SarAircraftPosnReport;
     int                      altitude;                  // Metres, from special position report(9)
     bool                     b_nameFromCache;
+    float                    importance;
+    float                    last_scale;
     
 };
 
