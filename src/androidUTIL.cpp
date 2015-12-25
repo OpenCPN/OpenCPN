@@ -123,7 +123,7 @@ extern bool             g_bShowCOG;
 extern double           g_ShowCOG_Mins;
 extern bool             g_bAISShowTracks;
 extern double           g_AISShowTracks_Mins;
-extern bool             g_bShowMoored;
+extern bool             g_bHideMoored;
 extern double           g_ShowMoored_Kts;
 extern bool             g_bAIS_CPA_Alert;
 extern bool             g_bAIS_CPA_Alert_Audio;
