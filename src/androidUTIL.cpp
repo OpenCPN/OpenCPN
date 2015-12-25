@@ -1765,7 +1765,7 @@ bool androidStartNMEA(wxEvtHandler *consumer)
     if(s.Upper().Find(_T("DISABLED")) != wxNOT_FOUND){
         OCPNMessageBox(NULL,
                        _("Your android device has an internal GPS, but it is disabled.\n\
-                       Please visit android Settings/Location dialog to enabled GPS"),
+                       Please visit android Settings/Location dialog to enable GPS"),
                         _T("OpenCPN"), wxOK );        
         
         androidStopNMEA();
