@@ -4130,7 +4130,7 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
                     group_item_spacing);
 
   m_pCheck_Scale_Priority = new wxCheckBox(
-      panelAIS, -1, _("Allow scaling down targets if more than ... targets"));
+      panelAIS, -1, _("Allow attenuation of less critical targets if more than ... targets"));
   pDisplayGrid->Add(m_pCheck_Scale_Priority, 1, wxALL, group_item_spacing);
 
   m_pText_Scale_Priority = new wxTextCtrl(panelAIS, -1);

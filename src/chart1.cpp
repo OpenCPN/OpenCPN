@@ -2841,7 +2841,7 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     wxString initiconName;
     if( g_bShowAIS ) {
         if (g_bAllowShowScaled)
-            tb->SetToolShortHelp( ID_AIS, _("Scale less critical AIS Targets") );
+            tb->SetToolShortHelp( ID_AIS, _("Attenuate less critical AIS Targets") );
         else
             tb->SetToolShortHelp( ID_AIS, _("Hide AIS Targets") );
         initiconName = _T("AIS");
@@ -4215,7 +4215,7 @@ void MyFrame::SetAISDisplayStyle(int StyleIndx)
     bool g_bShowAIS_Array[3] = {true, true, false}; 
     bool g_bShowScaled_Array[3] = {false, true, true};
     wxString ToolShortHelp_Array[3] = { _("Show all AIS Targets"),
-                                        _("Scale less critical AIS Targets"),
+                                        _("Attenuate less critical AIS Targets"),
                                         _("Hide AIS Targets") };
     wxString iconName_Array[3] = { _("AIS"),  _("AIS_Suppressed"), _("AIS_Disabled")};
     int ArraySize = 3;
@@ -5028,7 +5028,7 @@ void MyFrame::RegisterGlobalMenuItems()
     wxMenu* ais_menu = new wxMenu();
     ais_menu->AppendCheckItem( ID_MENU_AIS_TARGETS, _("Show AIS Targets") );
     ais_menu->AppendCheckItem( ID_MENU_AIS_MOORED_TARGETS, _("Hide Moored AIS Targets") );
-    ais_menu->AppendCheckItem( ID_MENU_AIS_SCALED_TARGETS, _("Scale Less Critical AIS Targets") );    
+    ais_menu->AppendCheckItem( ID_MENU_AIS_SCALED_TARGETS, _("Attenuate Less Critical AIS Targets") );    
     ais_menu->AppendCheckItem( ID_MENU_AIS_TRACKS, _("Show AIS Target Tracks") );
     ais_menu->AppendCheckItem( ID_MENU_AIS_CPADIALOG, _("Show CPA Alert Dialogs") );
     ais_menu->AppendCheckItem( ID_MENU_AIS_CPASOUND, _("Sound CPA Alarms") );
