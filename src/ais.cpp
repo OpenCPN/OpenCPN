@@ -80,7 +80,7 @@ extern bool             g_bShowCOG;
 extern double           g_ShowCOG_Mins;
 extern bool             g_bShowTracks;
 extern double           g_ShowTracks_Mins;
-extern bool             g_bShowMoored;
+extern bool             g_bHideMoored;
 extern double           g_ShowMoored_Kts;
 extern bool             g_bAISShowTracks;
 extern bool             g_bShowAreaNotices;
@@ -852,7 +852,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
     
     //      Skip anchored/moored (interpreted as low speed) targets if requested
     //      unless the target is NUC or AtoN, in which case it is always displayed.
-    if( ( !g_bShowMoored ) && ( td->SOG <= g_ShowMoored_Kts )
+    if( ( g_bHideMoored ) && ( td->SOG <= g_ShowMoored_Kts )
             && ( td->NavStatus != NOT_UNDER_COMMAND )
             && ( ( td->Class == AIS_CLASS_A ) || ( td->Class == AIS_CLASS_B ) ) ) return;
 

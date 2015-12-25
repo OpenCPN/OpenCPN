@@ -62,7 +62,7 @@ extern bool     g_bShowCOG;
 extern double   g_ShowCOG_Mins;
 extern bool     g_bAISShowTracks;
 extern double   g_AISShowTracks_Mins;
-extern bool     g_bShowMoored;
+extern bool     g_bHideMoored;
 extern double   g_ShowMoored_Kts;
 extern wxString g_sAIS_Alert_Sound_File;
 extern bool     g_bAIS_CPA_Alert_Suppress_Moored;
@@ -72,6 +72,9 @@ extern bool     g_bShowAreaNotices;
 extern bool     g_bDrawAISSize;
 extern bool     g_bShowAISName;
 extern int      g_Show_Target_Name_Scale;
+extern bool     g_bAllowShowScaled;
+extern bool     g_bShowScaled;
+
 extern bool     g_bWplIsAprsPosition;
 extern double gLat;
 extern double gLon;
@@ -1967,7 +1970,7 @@ void AIS_Decoder::UpdateAllAlarms( void )
             if( g_bCPAWarn && td->b_active && td->b_positionOnceValid &&
                 ( td->Class != AIS_SART ) && ( td->Class != AIS_DSC ) ) {
                 //      Skip anchored/moored(interpreted as low speed) targets if requested
-                if( ( !g_bShowMoored ) && ( td->SOG <= g_ShowMoored_Kts ) ) {       // dsr
+                if( ( g_bHideMoored ) && ( td->SOG <= g_ShowMoored_Kts ) ) {       // dsr
                     td->n_alert_state = AIS_NO_ALERT;
                     continue;
                 }
@@ -2260,7 +2263,9 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
 
     //    Update the general suppression flag
     m_bSuppressed = false;
-    if( g_bAIS_CPA_Alert_Suppress_Moored || !g_bShowMoored ) m_bSuppressed = true;
+    if( g_bAIS_CPA_Alert_Suppress_Moored || g_bHideMoored 
+        || (g_bShowScaled && g_bAllowShowScaled) )
+        m_bSuppressed = true;
 
     m_bAIS_Audio_Alert_On = false;            // default, may be set on
 
