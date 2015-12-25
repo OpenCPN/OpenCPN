@@ -426,6 +426,8 @@ void grib_pi::OnGribCtrlBarClose()
 
     RequestRefresh(m_parent_window); // refresh main window
 
+	if (::wxIsBusy()) ::wxEndBusyCursor();
+
     if( m_DialogStyleChanged ) {
         m_pGribCtrlBar->Destroy();
         m_pGribCtrlBar = NULL;
