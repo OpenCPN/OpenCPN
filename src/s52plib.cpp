@@ -542,18 +542,17 @@ LUPrec *s52plib::FindBestLUP( wxArrayOfLUPrec *LUPArray, unsigned int startIndex
             char *slatc = NULL;
             wxCharBuffer buffer=LATTC.ToUTF8();
             slatc = buffer.data();
+            //  Get the LUP attribute value as a string
+                        
+            if( buffer.length() < 6 )
+                goto next_LUP_Attr;         // LUP attribute value not UTF8 convertible (never seen in PLIB 3.x)
 
             if( slatc ){
+                char *slatv = slatc + 6;
                 while( attIdx < pObj->n_attr ) {
                     if( 0 == strncmp( slatc, currATT, 6 ) ) {
                         //OK we have an attribute name match
                         
-                        //  Get the LUP attribute value as a string
-                        wxCharBuffer vbuffer=LATTC.Mid(6).ToUTF8();
-                        char *slatv = vbuffer.data();
-                        
-                        if( !slatv )
-                            goto next_LUP_Attr;         // LUP attribute value not UTF8 convertible (never seen in PLIB 3.x)
                         
                         bool attValMatch = false;
                         
@@ -621,8 +620,9 @@ LUPrec *s52plib::FindBestLUP( wxArrayOfLUPrec *LUPArray, unsigned int startIndex
                                 //    Strings must be exact match
                                 //    n.b. OGR_STR is used for S-57 attribute type 'L', comma-separated list
                                 
-                                wxString cs( (char *) v->value, wxConvUTF8 ); // Attribute from object
-                                if( LATTC.Mid( 6 ) == cs )
+                                //wxString cs( (char *) v->value, wxConvUTF8 ); // Attribute from object
+                                //if( LATTC.Mid( 6 ) == cs )
+                                if( !strcmp((char *) v->value, slatv))
                                     attValMatch = true;
                                 break;
                             }
