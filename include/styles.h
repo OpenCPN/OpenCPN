@@ -144,6 +144,7 @@ public:
       void Unload();
 
       wxString name;
+    wxString sysname;
       wxString description;
       wxString graphicsFile;
       int toolMarginTop[2];

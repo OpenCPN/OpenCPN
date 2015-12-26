@@ -1,5 +1,5 @@
 <styles>
-	<style name="Traditional">
+	<style name="Traditional" sysname="traditional">
 		<graphics-file name="toolicons_traditional.png" />
 		<active-route>
 			<font-color r="50" g="240" b="50" />
@@ -480,7 +480,7 @@
 			</icon>
 		</icons>
 	</style>
-	<style name="Journeyman">
+	<style name="Journeyman" sysname="journeyman">
 		<description>Inspired by the grey winter skies over Rio de la Plata</description>
 		<graphics-file name="toolicons_journeyman.png" />
 		<chart-status-icon width="40"/>
@@ -987,7 +987,7 @@
 		</icons>
 	</style>
 
-	<style name="Journeyman Flat">
+	<style name="Journeyman Flat" sysname="journeyman_flat">
 		<description>Inspired by the grey winter skies over Rio de la Plata</description>
 		<graphics-file name="toolicons_journeyman_flat.png" />
 		<chart-status-icon width="30"/>
