@@ -1601,6 +1601,18 @@ S52_TextC *S52_PL_parseTE( ObjRazRules *rzRules, Rules *rules, char *cmd )
     return text;
 }
 
+static void rotate(wxRect *r, ViewPort const &vp)
+{
+    float cx = vp.pix_width/2.;
+    float cy = vp.pix_height/2.;
+    float c = cosf(vp.rotation );
+    float s = sinf(vp.rotation );
+    float x = r->GetX() -cx;
+    float y = r->GetY() -cy;
+    r->SetX( x*c - y*s +cx);
+    r->SetY( x*s + y*c +cy);
+}
+
 bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRectDrawn,
                           S57Obj *pobj, bool bCheckOverlap, ViewPort *vp )
 {
@@ -1825,15 +1837,18 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
             //  Add in the offsets, specified in units of nominal font height
             yp += ptext->yoffs * ( ptext->rendered_char_height );
             xp += ptext->xoffs * ( ptext->rendered_char_height );
-    
+
             pRectDrawn->SetX( xp );
             pRectDrawn->SetY( yp );
             pRectDrawn->SetWidth( w );
             pRectDrawn->SetHeight( h );
 
-            if( bCheckOverlap )
+            if( bCheckOverlap ) {
+                if(fabs( vp->rotation ) > .01){
+                    rotate(pRectDrawn, *vp );
+                }
                 if( CheckTextRectList( *pRectDrawn, ptext ) ) bdraw = false;
-
+            }
 
             if( bdraw ) {
                 wxColour wcolor = FontMgr::Get().GetFontColor(_("ChartTexts"));
@@ -2536,12 +2551,30 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
     wxBoundingBox symbox;
     double plat, plon;
 
-    GetPixPointSingle( r.x - pivot_x, r.y - pivot_y + b_height, &plat, &plon, vp );
-    symbox.SetMin( plon, plat );
+    if( !m_pdc && fabs( vp->rotation ) > .01)          // opengl
+    {
+        float cx = vp->pix_width/2.;
+        float cy = vp->pix_height/2.;
+        float c = cosf(vp->rotation );
+        float s = sinf(vp->rotation );
+        float x = r.x - pivot_x -cx;
+        float y = r.y - pivot_y + b_height -cy;
+        GetPixPointSingle( x*c - y*s +cx, x*s + y*c +cy, &plat, &plon, vp );
+        symbox.SetMin( plon, plat );
 
-    GetPixPointSingle( r.x - pivot_x + b_width, r.y - pivot_y, &plat, &plon, vp );
-    symbox.SetMax( plon, plat );
+        x = r.x - pivot_x + b_width -cx;
+        y = r.y - pivot_y -cy;
+        GetPixPointSingle( x*c - y*s +cx, x*s + y*c +cy, &plat, &plon, vp );
+        symbox.SetMax( plon, plat );
+    
+    }
+    else {
+        GetPixPointSingle( r.x - pivot_x, r.y - pivot_y + b_height, &plat, &plon, vp );
+        symbox.SetMin( plon, plat );
 
+        GetPixPointSingle( r.x - pivot_x + b_width, r.y - pivot_y, &plat, &plon, vp );
+        symbox.SetMax( plon, plat );
+    }
     //  Special case for GEO_AREA objects with centred symbols
     if( rzRules->obj->Primitive_type == GEO_AREA ) {
         if( rzRules->obj->BBObj.Intersect( symbox, 0 ) != _IN ) // Symbol is wholly outside base object
