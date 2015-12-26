@@ -32,6 +32,7 @@
 #include "OCPN_DataStreamEvent.h"
 #include <fstream>
 #include "OCPNPlatform.h"
+#include "pluginmanager.h"
 
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;
@@ -91,6 +92,7 @@ extern wxString AISTargetNameFileName;
 extern MyConfig *pConfig;
 extern RouteList *pRouteList;
 extern OCPNPlatform     *g_Platform;
+extern PlugInManager             *g_pi_manager;
 
 bool g_benableAISNameCache;
 wxString GetShipNameFromFile(int);
@@ -1051,6 +1053,8 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                     if( pTargetData->b_show_track )
                         UpdateOneTrack( pTargetData );
                 }
+                // TODO add ais message call
+                SendJSONMsg( pTargetData );
             } else {
     //             printf("Unrecognised AIS message ID: %d\n", pTargetData->MID);
                 if( bnewtarget ) {
@@ -2599,3 +2603,23 @@ wxString GetShipNameFromFile(int nmmsi)
     return name;
 }
 
+void AIS_Decoder::SendJSONMsg(AIS_Target_Data* pTarget)
+{
+    // Do JSON message to all Plugin to inform of target
+    wxJSONValue jMsg;
+    struct timeval tp;
+    gettimeofday(&tp, NULL);
+    int ms = tp.tv_sec * 1000 + (tp.tv_usec / 1000);
+    jMsg[wxS("Source")] = wxS("AIS_Decoder");
+    jMsg[wxT("Type")] = wxT("Information");
+    jMsg[wxT("Msg")] = wxS("AIS Target");
+    jMsg[wxT("MsgId")] = ms;
+    jMsg[wxS("lat")] = pTarget->Lat;
+    jMsg[wxS("lon")] = pTarget->Lon;
+    jMsg[wxS("sog")] = pTarget->SOG;
+    jMsg[wxS("cog")] = pTarget->COG;
+    jMsg[wxS("hdg")] = pTarget->HDG;
+    jMsg[wxS("mmsi")] = pTarget->MMSI;
+    jMsg[wxS("shipname")] = pTarget->ShipName;
+    g_pi_manager->SendJSONMessageToAllPlugins( wxT("AIS"), jMsg );    
+}
