@@ -183,7 +183,7 @@ static uint64_t hash_fast64(const void *buf, size_t len, uint64_t seed)
     return h;
 }
 
-static uint32_t hash_fast32(const void *buf, size_t len, uint32_t seed)
+static unsigned int hash_fast32(const void *buf, size_t len, unsigned int seed)
 {
     uint64_t h = hash_fast64(buf, len, seed);
     /* The following trick converts the 64-bit hashcode to a
