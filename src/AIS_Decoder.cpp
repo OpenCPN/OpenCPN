@@ -2611,9 +2611,10 @@ void AIS_Decoder::SendJSONMsg(AIS_Target_Data* pTarget)
         
     // Do JSON message to all Plugin to inform of target
     wxJSONValue jMsg;
-    struct timeval tp;
-    gettimeofday(&tp, NULL);
-    int ms = tp.tv_sec * 1000 + (tp.tv_usec / 1000);
+    
+    wxLongLong t = ::wxGetLocalTimeMillis();
+    int ms = t.GetLo();
+    
     jMsg[wxS("Source")] = wxS("AIS_Decoder");
     jMsg[wxT("Type")] = wxT("Information");
     jMsg[wxT("Msg")] = wxS("AIS Target");
