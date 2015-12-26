@@ -2605,6 +2605,10 @@ wxString GetShipNameFromFile(int nmmsi)
 
 void AIS_Decoder::SendJSONMsg(AIS_Target_Data* pTarget)
 {
+    //  Only send messages if someone is listening...
+    if(!g_pi_manager->GetJSONMessageTargetCount())
+        return;
+        
     // Do JSON message to all Plugin to inform of target
     wxJSONValue jMsg;
     struct timeval tp;

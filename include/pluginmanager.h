@@ -273,7 +273,8 @@ public:
       void SendAISSentenceToAllPlugIns(const wxString &sentence);
       void SendJSONMessageToAllPlugins(const wxString &message_id, wxJSONValue v);
       void SendMessageToAllPlugins(const wxString &message_id, const wxString &message_body);
-
+      int GetJSONMessageTargetCount();
+      
       void SendResizeEventToAllPlugIns(int x, int y);
       void SetColorSchemeForAllPlugIns(ColorScheme cs);
       void NotifyAuiPlugIns(void);

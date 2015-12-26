@@ -1382,6 +1382,18 @@ void PlugInManager::SendNMEASentenceToAllPlugIns(const wxString &sentence)
     }
 }
 
+int PlugInManager::GetJSONMessageTargetCount()
+{
+    int rv = 0;
+    for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
+    {
+        PlugInContainer *pic = plugin_array.Item(i);
+        if(pic->m_bEnabled && pic->m_bInitState && (pic->m_cap_flag & WANTS_PLUGIN_MESSAGING) )
+                rv++;
+    }
+    return rv;
+}
+
 void PlugInManager::SendJSONMessageToAllPlugins(const wxString &message_id, wxJSONValue v)
 {
     wxJSONWriter w;
