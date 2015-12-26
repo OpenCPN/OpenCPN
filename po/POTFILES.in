@@ -115,7 +115,6 @@ include/TTYWindow.h
 include/tzdata.h
 include/undo.h
 include/vector2D.h
-include/version.h
 include/viewport.h
 include/wificlient.h
 include/WindowDestroyListener.h
