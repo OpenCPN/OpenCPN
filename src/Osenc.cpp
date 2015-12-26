@@ -190,7 +190,7 @@ int Osenc::ingest(const wxString &senc_file_name,
         
         if( !strncmp( buf, "OGRF", 4 ) ) {
             
-            S57Obj *obj = new S57Obj( buf, &fpx, 0, 0, senc_file_version );
+            S57Obj *obj = new S57Obj( buf, MAX_LINE, &fpx, 0, 0, senc_file_version );
             if( obj ) {
                 //      Ensure that Area objects actually describe a valid object
                 if( GEO_AREA == obj->Primitive_type ) {
