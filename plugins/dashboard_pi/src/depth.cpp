@@ -105,10 +105,10 @@ void DashboardInstrument_Depth::DrawBackground(wxGCDC* dc)
       pen.SetStyle(wxPENSTYLE_SOLID);
       GetGlobalColor(_T("DASHF"), &cl);
       pen.SetColour(cl);
-      pen.SetWidth(2);
+      pen.SetWidth(1);
       dc->SetPen(pen);
 
-      dc->DrawLine(3, 40, size.x-3, 40);
+      dc->DrawLine(3, 50, size.x-3, 50);
       dc->DrawLine(3, 140, size.x-3, 140);
 
 #ifdef __WXMSW__      
