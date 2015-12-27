@@ -69,6 +69,11 @@ const wxEventType wxEVT_OCPN_DATASTREAM = wxNewEventType();
 
 #define N_DOG_TIMEOUT   5
 
+#ifdef __WXMSW__
+// {2C9C45C2-8E7D-4C08-A12D-816BBAE722C0}
+DEFINE_GUID(GARMIN_GUID1, 0x2c9c45c2L, 0x8e7d, 0x4c08, 0xa1, 0x2d, 0x81, 0x6b, 0xba, 0xe7, 0x22, 0xc0);
+#endif
+
 #ifdef __OCPN__ANDROID__
 #include <netdb.h>
 int gethostbyaddr_r(const char *, int, int, struct hostent *, char *, size_t, struct hostent **, int *)
@@ -77,6 +82,29 @@ int gethostbyaddr_r(const char *, int, int, struct hostent *, char *, size_t, st
     return 0;
 }
 #endif
+
+
+bool CheckSumCheck(const std::string& sentence)
+{
+    size_t check_start = sentence.find('*');
+    if(check_start == wxString::npos || check_start > sentence.size() - 3)
+        return false; // * not found, or it didn't have 2 characters following it.
+        
+    std::string check_str = sentence.substr(check_start+1,2);
+    unsigned long checksum;
+    //    if(!check_str.ToULong(&checksum,16))
+    if(!(checksum = strtol(check_str.c_str(), 0, 16)))
+        return false;
+    
+    unsigned char calculated_checksum = 0;
+    for(std::string::const_iterator i = sentence.begin()+1; i != sentence.end() && *i != '*'; ++i)
+        calculated_checksum ^= static_cast<unsigned char> (*i);
+    
+    return calculated_checksum == checksum;
+    
+}
+
+
 
 
 //------------------------------------------------------------------------------
@@ -580,7 +608,8 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
         {
             //          wxSocketError e = m_sock->LastError();          // this produces wxSOCKET_WOULDBLOCK.
             if(m_net_protocol == TCP || m_net_protocol == GPSD) {
-                wxLogMessage( wxString::Format(_T("Datastream connection lost: %s"), m_portstring.c_str()) );
+				if (m_brx_connect_event)
+					wxLogMessage(wxString::Format(_T("Datastream connection lost: %s"), m_portstring.c_str()));
                 if (m_socket_server) {
                     m_sock->Destroy();
                     m_sock=0;
@@ -714,21 +743,8 @@ bool DataStream::ChecksumOK( const std::string &sentence )
     if (!m_bchecksumCheck)
         return true;
 
-    size_t check_start = sentence.find('*');
-    if(check_start == wxString::npos || check_start > sentence.size() - 3)
-        return false; // * not found, or it didn't have 2 characters following it.
-
-    std::string check_str = sentence.substr(check_start+1,2);
-    unsigned long checksum;
-//    if(!check_str.ToULong(&checksum,16))
-    if(!(checksum = strtol(check_str.c_str(), 0, 16)))
-        return false;
-
-    unsigned char calculated_checksum = 0;
-    for(std::string::const_iterator i = sentence.begin()+1; i != sentence.end() && *i != '*'; ++i)
-        calculated_checksum ^= static_cast<unsigned char> (*i);
-
-    return calculated_checksum == checksum;
+    return CheckSumCheck(sentence);
+    
 }
 
 bool DataStream::SendSentence( const wxString &sentence )
@@ -1055,7 +1071,7 @@ void GarminProtocolHandler::OnTimerGarmin1(wxTimerEvent& event)
                 
                 //    Start the pump
                 m_garmin_usb_thread = new GARMIN_USB_Thread(this, m_pparent,
-						m_pMainEventHandler, (int)m_usb_handle, m_max_tx_size);
+						m_pMainEventHandler, (wxIntPtr)m_usb_handle, m_max_tx_size);
                 m_Thread_run_flag = 1;
                 m_garmin_usb_thread->Run();
             }
@@ -1089,7 +1105,7 @@ bool GarminProtocolHandler::ResetGarminUSBDriver()
     SP_DEVINFO_DATA devInfo;
     SP_PROPCHANGE_PARAMS pchange;
     
-    devs = SetupDiGetClassDevs( (GUID *) &GARMIN_GUID, NULL, NULL,
+    devs = SetupDiGetClassDevs( (GUID *) &GARMIN_GUID1, NULL, NULL,
                                 DIGCF_PRESENT | DIGCF_INTERFACEDEVICE);
     if (devs == INVALID_HANDLE_VALUE)
         return false;
@@ -1133,7 +1149,7 @@ bool GarminProtocolHandler::FindGarminDeviceInterface()
 HDEVINFO hdevinfo;
 SP_DEVINFO_DATA devInfo;
 
-hdevinfo = SetupDiGetClassDevs( (GUID *) &GARMIN_GUID, NULL, NULL,
+hdevinfo = SetupDiGetClassDevs( (GUID *) &GARMIN_GUID1, NULL, NULL,
                                 DIGCF_PRESENT | DIGCF_INTERFACEDEVICE);
 
 if (hdevinfo != INVALID_HANDLE_VALUE)
@@ -1157,7 +1173,7 @@ bool GarminProtocolHandler::IsGarminPlugged()
     SP_DEVICE_INTERFACE_DATA infodata;
     
     //    Search for the Garmin Device Interface Class
-    hdevinfo = SetupDiGetClassDevs( (GUID *) &GARMIN_GUID, NULL, NULL,
+    hdevinfo = SetupDiGetClassDevs( (GUID *) &GARMIN_GUID1, NULL, NULL,
                                     DIGCF_PRESENT | DIGCF_INTERFACEDEVICE);
     
     if (hdevinfo == INVALID_HANDLE_VALUE)
@@ -1166,7 +1182,7 @@ bool GarminProtocolHandler::IsGarminPlugged()
     infodata.cbSize = sizeof(infodata);
     
     bool bgarmin_unit_found = (SetupDiEnumDeviceInterfaces(hdevinfo,
-                                                           NULL,(GUID *) &GARMIN_GUID, 0, &infodata) != 0);
+                                                           NULL,(GUID *) &GARMIN_GUID1, 0, &infodata) != 0);
     
     if(!bgarmin_unit_found)
         return false;
@@ -1202,7 +1218,7 @@ HANDLE GarminProtocolHandler::garmin_usb_start()
     SP_DEVICE_INTERFACE_DATA infodata;
     
     //    Search for the Garmin Device Interface Class
-    hdevinfo = SetupDiGetClassDevs( (GUID *) &GARMIN_GUID, NULL, NULL,
+    hdevinfo = SetupDiGetClassDevs( (GUID *) &GARMIN_GUID1, NULL, NULL,
                                     DIGCF_PRESENT | DIGCF_INTERFACEDEVICE);
     
     if (hdevinfo == INVALID_HANDLE_VALUE)
@@ -1211,7 +1227,7 @@ HANDLE GarminProtocolHandler::garmin_usb_start()
     infodata.cbSize = sizeof(infodata);
     
     bool bgarmin_unit_found = (SetupDiEnumDeviceInterfaces(hdevinfo,
-                                                           NULL,(GUID *) &GARMIN_GUID, 0, &infodata) != 0);
+                                                           NULL,(GUID *) &GARMIN_GUID1, 0, &infodata) != 0);
     
     if(!bgarmin_unit_found)
         return INVALID_HANDLE_VALUE;

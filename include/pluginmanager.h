@@ -38,16 +38,24 @@
 #include "ocpn_plugin.h"
 #include "chart1.h"                 // for MyFrame
 #include "chcanv.h"                 // for ViewPort
-#include "datastream.h"             // for GenericPosDat
 #include "OCPN_Sound.h"
+#include "chartimg.h"
+
+#ifdef USE_S57
 #include "s52s57.h"
 #include "s57chart.h"               // for Object list
+#endif
 
 //For widgets...
 #include "wx/hyperlink.h"
 #include <wx/choice.h>
 #include <wx/tglbtn.h>
 #include <wx/bmpcbox.h>
+
+#ifndef __OCPN__ANDROID__
+#include "wx/curl/http.h"
+#include "wx/curl/dialog.h"
+#endif
 
 //    Include wxJSON headers
 //    We undefine MIN/MAX so avoid warning of redefinition coming from
@@ -215,7 +223,7 @@ WX_DEFINE_ARRAY_PTR(PlugInToolbarToolContainer *, ArrayOfPlugInToolbarTools);
 //
 //-----------------------------------------------------------------------------------------------------
 
-class PlugInManager
+class PlugInManager: public wxEvtHandler
 {
 
 public:
@@ -265,11 +273,14 @@ public:
       void SendAISSentenceToAllPlugIns(const wxString &sentence);
       void SendJSONMessageToAllPlugins(const wxString &message_id, wxJSONValue v);
       void SendMessageToAllPlugins(const wxString &message_id, const wxString &message_body);
-
+      int GetJSONMessageTargetCount();
+      
       void SendResizeEventToAllPlugIns(int x, int y);
       void SetColorSchemeForAllPlugIns(ColorScheme cs);
       void NotifyAuiPlugIns(void);
       bool CallLateInit(void);
+      
+      bool IsPlugInAvailable(wxString commonName);
       
       void SendVectorChartObjectInfo(const wxString &chart, const wxString &feature, const wxString &objname, double &lat, double &lon, double &scale, int &nativescale);
 
@@ -315,6 +326,23 @@ private:
       wxArrayString     m_plugin_order;
       void SetPluginOrder( wxString serialized_names );
       wxString GetPluginOrder();
+    
+#ifndef __OCPN__ANDROID__
+public:
+      wxCurlDownloadThread *m_pCurlThread;
+      // returns true if the error can be ignored
+      bool            HandleCurlThreadError(wxCurlThreadError err, wxCurlBaseThread *p,
+                               const wxString &url = wxEmptyString);
+      void            OnEndPerformCurlDownload(wxCurlEndPerformEvent &ev);
+      void            OnCurlDownload(wxCurlDownloadEvent &ev);
+      
+      wxEvtHandler   *m_download_evHandler;
+      long           *m_downloadHandle;
+      bool m_last_online;
+      long m_last_online_chk;
+#endif
+
+DECLARE_EVENT_TABLE()
 };
 
 WX_DEFINE_ARRAY_PTR(PluginPanel *, ArrayOfPluginPanel);
@@ -375,6 +403,8 @@ private:
 //  API 1.11 adds access to S52 Presentation library
 //  These are some wrapper conversion utilities
 
+#ifdef USE_S57
+
 class S52PLIB_Context
 {
 public:
@@ -410,6 +440,7 @@ public:
 
 void CreateCompatibleS57Object( PI_S57Obj *pObj, S57Obj *cobj, chart_context *pctx );
 void UpdatePIObjectPlibContext( PI_S57Obj *pObj, S57Obj *cobj );
+#endif
 
 #endif            // _PLUGINMGR_H_
 

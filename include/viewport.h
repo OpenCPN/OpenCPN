@@ -33,10 +33,14 @@
 
 #include "bbox.h"
 class OCPNRegion;
+class LLRegion;
+
+#if !defined(NAN)
+static const long long lNaN = 0xfff8000000000000;
+#define NAN (*(double*)&lNaN)
+#endif
 
 #if 0
-//#include "OCPNRegion.h"
-
 //    ChartType constants
 typedef enum ChartTypeEnum
 {
@@ -70,6 +74,8 @@ typedef enum ColorScheme
 }_ColorScheme;
 #endif
 
+#define INVALID_COORD (-2147483647 - 1)
+
 //----------------------------------------------------------------------------
 // ViewPort Definition
 //----------------------------------------------------------------------------
@@ -79,10 +85,14 @@ class ViewPort
             ViewPort();
 
             wxPoint GetPixFromLL(double lat, double lon);
-            void GetLLFromPix(const wxPoint &p, double *lat, double *lon);
+            void GetLLFromPix(const wxPoint &p, double *lat, double *lon) { GetLLFromPix(wxPoint2DDouble(p), lat, lon); }
+            void GetLLFromPix(const wxPoint2DDouble &p, double *lat, double *lon);
             wxPoint2DDouble GetDoublePixFromLL(double lat, double lon);
 
-            OCPNRegion GetVPRegionIntersect( const OCPNRegion &Region, size_t n, float *llpoints, int chart_native_scale, wxPoint *ppoints = NULL );
+            LLRegion GetLLRegion( const OCPNRegion &region );
+            OCPNRegion GetVPRegionIntersect( const OCPNRegion &region, const LLRegion &llregion, int chart_native_scale );
+            OCPNRegion GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoints, float *llpoints,
+                                             int chart_native_scale, wxPoint *ppoints );
             wxRect GetVPRectIntersect( size_t n, float *llpoints );
             ViewPort BuildExpandedVP(int width, int height);
             
@@ -97,7 +107,11 @@ class ViewPort
             void SetProjectionType(int type){ m_projection_type = type; }
 
             LLBBox &GetBBox() { return vpBBox; }
+            LLBBox GetBBoxView();
+            void SetBBoxDirect( const LLBBox &bbox ) { vpBBox = bbox; }
             void SetBBoxDirect( double latmin, double lonmin, double latmax, double lonmax);
+
+            void InvalidateTransformCache() { lat0_cache = NAN; }
             
 //  Generic
             double   clat;                   // center point
@@ -105,6 +119,7 @@ class ViewPort
             double   view_scale_ppm;
             double   skew;
             double   rotation;
+            double   tilt;  // For perspective view
 
             double    chart_scale;            // conventional chart displayed scale
             double    ref_scale;              //  the nominal scale of the "reference chart" for this view
@@ -125,7 +140,7 @@ class ViewPort
 
             bool     bValid;                 // This VP is valid
 
-            double toSM_lat0_cache, toSM_y30_cache;
+            double lat0_cache, cache0, cache1;
 };
 
 

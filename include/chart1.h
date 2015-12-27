@@ -66,7 +66,7 @@ wxString _menuText(wxString name, wxString shortcut);
 // The point for anchor watch should really be a class...
 double AnchorDistFix( double const d, double const AnchorPointMinDist, double const AnchorPointMaxDist);   //  pjotrc 2010.02.22
 
-bool TestGLCanvas(wxString &prog_dir);
+bool TestGLCanvas(wxString prog_dir);
 bool ReloadLocale();
 
 void LoadS57();
@@ -183,6 +183,8 @@ enum
     ID_MENU_MARK_MOB,
 
     ID_MENU_AIS_TARGETS,
+    ID_MENU_AIS_MOORED_TARGETS,
+    ID_MENU_AIS_SCALED_TARGETS,
     ID_MENU_AIS_TRACKS,
     ID_MENU_AIS_CPADIALOG,
     ID_MENU_AIS_CPASOUND,
@@ -196,6 +198,13 @@ enum
     ID_CMD_SELECT_CHART_FAMILY,
     ID_CMD_INVALIDATE,
     
+};
+
+enum
+{
+    TIME_TYPE_UTC = 1,
+    TIME_TYPE_LMT,
+    TIME_TYPE_COMPUTER
 };
 
 //      Command identifiers for wxCommandEvents coming from the outside world.
@@ -275,7 +284,6 @@ private:
 
 
 
-WX_DECLARE_OBJARRAY(wxRect, ArrayOfRect);
 
 
 class MyApp: public wxApp
@@ -385,7 +393,8 @@ class MyFrame: public wxFrame
     void ToggleAnchor(void);
     void TrackOn(void);
     Track *TrackOff(bool do_add_point = false);
-    void TrackMidnightRestart(void);
+    void TrackDailyRestart(void);
+    bool ShouldRestartTrack();
     void ToggleColorScheme();
     int GetnChartStack(void);
     void SetMenubarItemState ( int item_id, bool state );
@@ -435,6 +444,8 @@ class MyFrame: public wxFrame
 
     bool CheckGroup(int igroup);
     double GetTrueOrMag(double a);
+    double GetTrueOrMag(double a, double lat, double lon);
+    bool SendJSON_WMM_Var_Request(double lat, double lon, wxDateTime date);
     
     void DestroyPersistentDialogs();
     void TouchAISActive(void);
@@ -503,6 +514,7 @@ class MyFrame: public wxFrame
     void LoadHarmonics();
 
     bool EvalPriority(const wxString & message, DataStream *pDS );
+    void SetAISDisplayStyle(int StyleIndx);
 
     int                 m_StatusBarFieldCount;
 
@@ -546,6 +558,8 @@ class MyFrame: public wxFrame
     time_t              m_fixtime;
     wxMenu              *piano_ctx_menu;
     bool                b_autofind;
+    
+    time_t              m_last_track_rotation_ts;
     
     DECLARE_EVENT_TABLE()
 };

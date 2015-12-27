@@ -378,14 +378,31 @@ void FontMgr::ScrubList( )
     wxString now_locale = g_locale;
     wxArrayString string_array;
     
+    //  Build the composite candidate array
+    wxArrayString candidateArray;
     bool done = false;
     unsigned int i = 0;
+    
+    // The fixed, static list
     while( ! done ){
         wxString candidate = FontCandidates[i];
         if(candidate == _T("END_OF_LIST") ) {
             done = true;
             break;
         }
+        
+        candidateArray.Add(candidate);
+        i++;
+    }
+        
+    //  The Aux Key array    
+    for(unsigned int i=0 ; i <  m_AuxKeyArray.GetCount() ; i++){
+        candidateArray.Add(m_AuxKeyArray[i]);
+    }
+    
+    
+    for(unsigned int i = 0; i < candidateArray.GetCount() ; i++ ){
+        wxString candidate = candidateArray[i];
         
         //  For each font identifier string in the FontCandidate array...
         
@@ -408,8 +425,6 @@ void FontMgr::ScrubList( )
  
             node = node->GetNext();
         }
-        
-        i++;
     }        
 
     // now we have an array of correct translations    
@@ -470,5 +485,13 @@ void FontMgr::ScrubList( )
      
 }
 
-
+bool FontMgr::AddAuxKey( wxString key )
+{
+    for(unsigned int i=0 ; i <  m_AuxKeyArray.GetCount() ; i++){
+        if(m_AuxKeyArray[i] == key)
+            return false;
+    }
+    m_AuxKeyArray.Add(key);
+    return true;
+}
 

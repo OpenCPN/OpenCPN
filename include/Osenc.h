@@ -111,6 +111,8 @@ private:
     int                 m_senc_file_version;
     
     S57Reader           *poReader;
+    OGRS57DataSource    *poS57DS;
+    
     wxDateTime          m_date000;
     wxString            m_sdate000;
     

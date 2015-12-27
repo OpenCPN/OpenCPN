@@ -925,6 +925,15 @@
           <dir>{USERDATA}/RNC/NZ</dir>
         </catalog>
         <catalog>
+<<<<<<< HEAD
+=======
+          <name>Peru RNC Nautical Charts</name>
+          <type>RNC</type>
+          <location>https://raw.githubusercontent.com/chartcatalogs/catalogs/master/PE_RNC_Catalog.xml</location>
+          <dir>{USERDATA}/RNC/PERU</dir>
+        </catalog>
+        <catalog>
+>>>>>>> master
           <name>Poland Inland ENC Charts</name>
           <type>ENC</type>
           <location>https://raw.githubusercontent.com/chartcatalogs/catalogs/master/PL_IENC_Catalog.xml</location>

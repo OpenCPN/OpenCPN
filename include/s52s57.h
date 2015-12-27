@@ -30,6 +30,7 @@
 #define _S52S57_H_
 
 #include "bbox.h"
+#include "ocpn_types.h"
 
 #include <vector>
 
@@ -209,13 +210,6 @@ typedef struct _Cond{
 
 
 
-typedef struct _S52color{
-   char colName[20];
-   unsigned char  R;
-   unsigned char  G;
-   unsigned char  B;
-}S52color;
-
 class S52_TextC
 {
 public:
@@ -246,17 +240,6 @@ public:
 };
 
 
-WX_DECLARE_STRING_HASH_MAP( wxColour, wxColorHashMap );
-
-WX_DECLARE_STRING_HASH_MAP( S52color, colorHashMap );
-
-typedef struct _colTable {
-	wxString *tableName;
-	wxString rasterFileName;
-	wxArrayPtrVoid *color;
-	colorHashMap colors;
-	wxColorHashMap wxColors;
-} colTable;
 
 
 //
@@ -327,7 +310,7 @@ public:
       //  Public Methods
       S57Obj();
       ~S57Obj();
-      S57Obj(char *first_line, wxInputStream *fpx, double ref_lat, double ref_lon, int senc_file_version);
+      S57Obj(char *first_line, int size, wxInputStream *fpx, double ref_lat, double ref_lon, int senc_file_version);
 
       wxString GetAttrValueAsString ( const char *attr );
       int GetAttributeIndex( const char *AttrSeek );
@@ -500,8 +483,8 @@ public:
     float               lat_min;
     float               lon_max;
     float               lon_min;
-    void                *private0;
     int                 type;
+    void                *private0;
     
     line_segment_element *next;
 };
@@ -528,8 +511,55 @@ WX_DECLARE_HASH_MAP( int, int, wxIntegerHash, wxIntegerEqual, VectorHelperHash )
 
 WX_DECLARE_HASH_MAP( unsigned int, VE_Element *, wxIntegerHash, wxIntegerEqual, VE_Hash );
 WX_DECLARE_HASH_MAP( unsigned int, VC_Element *, wxIntegerHash, wxIntegerEqual, VC_Hash );
-WX_DECLARE_STRING_HASH_MAP( connector_segment *, connected_segment_hash );
 
+class connector_key
+{
+public:
+    connector_key() 
+    {
+      memset(k, 0 , sizeof k);
+    }
+        
+    connector_key(SegmentType t, int a, int b)
+    {
+      set(t,a,b);
+    }   
 
+    void set(SegmentType t, int a, int b) 
+    {
+      memcpy(k, &a, sizeof a);
+      memcpy(&k[sizeof a], &b, sizeof b);
+      k[sizeof (a) + sizeof (b)] = (unsigned char)t;      
+    }
+
+    unsigned long hash() const;
+ 
+    unsigned char k[sizeof(int) + sizeof(int) + sizeof(char)];
+};
+
+class connHash
+{
+public:
+  connHash() { }
+  unsigned long operator()( const connector_key& k ) const
+  { return k.hash(); }
+  
+  connHash& operator=(const connHash&) { return *this; }
+};
+
+// comparison operator
+class connEqual
+{
+public:
+connEqual() { }
+bool operator()( const connector_key& a, const connector_key& b ) const
+{
+  return memcmp(a.k, b.k, sizeof b.k) == 0; 
+}
+
+connEqual& operator=(const connEqual&) { return *this; }
+};
+
+WX_DECLARE_HASH_MAP( connector_key, connector_segment *, connHash, connEqual, connected_segment_hash );
 
 #endif

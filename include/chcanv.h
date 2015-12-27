@@ -162,6 +162,7 @@ public:
       void PaintCleanup();
       void Scroll(int dx, int dy);
 
+      bool MouseEventOverlayWindows( wxMouseEvent& event );
       bool MouseEventChartBar( wxMouseEvent& event );
       bool MouseEventSetup( wxMouseEvent& event, bool b_handle_dclick = true );
       bool MouseEventProcessObjects( wxMouseEvent& event );
@@ -170,6 +171,8 @@ public:
       
       void PopupMenuHandler(wxCommandEvent& event);
 
+      bool SetUserOwnship();
+          
       void EnablePaint(bool b_enable);
       virtual bool SetCursor(const wxCursor &c);
       virtual void Refresh( bool eraseBackground = true,
@@ -181,24 +184,25 @@ public:
       void CancelMouseRoute();
       void SetDisplaySizeMM( double size );
       
-      bool SetViewPoint(double lat, double lon, double scale_ppm, double skew, double rotation,
-                        bool b_adjust = true, bool b_refresh = true);
       bool SetVPScale(double sc, bool b_refresh = true);
+      bool SetVPProjection(int projection);
       bool SetViewPoint ( double lat, double lon);
       bool SetViewPointByCorners( double latSW, double lonSW, double latNE, double lonNE );
-      
+      bool SetViewPoint(double lat, double lon, double scale_ppm, double skew, double rotation,
+                        int projection = 0, bool b_adjust = true, bool b_refresh = true);
       void ReloadVP ( bool b_adjust = true );
       void LoadVP ( ViewPort &vp, bool b_adjust = true );
 
       void SetVPRotation(double angle){ VPoint.rotation = angle; }
       double GetVPRotation(void) { return GetVP().rotation; }
       double GetVPSkew(void) { return GetVP().skew; }
+      double GetVPTilt(void) { return GetVP().tilt; }
       void ClearbFollow(void);
 
       void GetDoubleCanvasPointPix(double rlat, double rlon, wxPoint2DDouble *r);
       void GetDoubleCanvasPointPixVP( ViewPort &vp, double rlat, double rlon, wxPoint2DDouble *r );
-      void GetCanvasPointPix( double rlat, double rlon, wxPoint *r );
-      void GetCanvasPointPixVP( ViewPort &vp, double rlat, double rlon, wxPoint *r );
+      bool GetCanvasPointPix( double rlat, double rlon, wxPoint *r );
+      bool GetCanvasPointPixVP( ViewPort &vp, double rlat, double rlon, wxPoint *r );
       
       void GetCanvasPixPoint(double x, double y, double &lat, double &lon);
       void WarpPointerDeferred(int x, int y);
@@ -268,6 +272,7 @@ public:
 
       void RotateCanvas( double dir );
       void DoRotateCanvas( double rotation );
+      void DoTiltCanvas( double tilt );
 
       void ShowAISTargetList(void);
 
@@ -330,6 +335,8 @@ public:
       void RemovePointFromRoute( RoutePoint* point, Route* route );
 
       void DrawBlinkObjects( void );
+
+      void StartRoute(void);
       void FinishRoute(void);
       
       void InvalidateGL();

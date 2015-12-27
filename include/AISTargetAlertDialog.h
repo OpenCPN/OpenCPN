@@ -106,6 +106,7 @@ class AISTargetAlertDialog: public OCPN_AlertDialog
             bool              m_bcreateWP;
             int               m_max_nline;
             int               m_adj_height;
+            bool              m_bsizeSet;
             
 
 };

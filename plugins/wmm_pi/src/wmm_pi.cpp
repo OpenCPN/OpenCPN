@@ -552,7 +552,7 @@ void wmm_pi::SendVariationAt(double lat, double lon, int year, int month, int da
 {
     wxJSONValue v;
     v[_T("Lat")] = lat;
-    v[_T("Lon")] = lat;
+    v[_T("Lon")] = lon;
     v[_T("Year")] = year;
     v[_T("Month")] = month;
     v[_T("Day")] = day;
@@ -643,7 +643,7 @@ void wmm_pi::SendCursorVariation()
 
 wxString wmm_pi::AngleToText(double angle)
 {
-    int deg = abs(angle);
+    int deg = (int)fabs(angle);
     int min = (fabs(angle) - deg) * 60;
     if (angle < 0)
         return wxString::Format(_T("%u\u00B0%u' W"), deg, min);

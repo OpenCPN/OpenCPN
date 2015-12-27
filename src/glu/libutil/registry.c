@@ -40,7 +40,7 @@ static const GLubyte extensionString[] =
     "GLU_EXT_object_space_tess "
     ;
 
-const GLubyte * GLAPIENTRY
+const GLubyte * /*GLAPIENTRY*/
 gluGetString(GLenum name)
 {
 
@@ -59,7 +59,7 @@ gluGetString(GLenum name)
  * GL_EXT_texture and GL_EXT_texture3D.
  * Returns GL_TRUE if extName is found otherwise it returns GL_FALSE.
  */
-GLboolean GLAPIENTRY
+GLboolean /*GLAPIENTRY*/
 gluCheckExtension(const GLubyte *extName, const GLubyte *extString)
 {
   GLboolean flag = GL_FALSE;

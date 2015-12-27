@@ -101,6 +101,7 @@
 #include <setjmp.h>
 
 
+extern ChartCanvas *cc1;
 extern struct sigaction sa_all;
 extern struct sigaction sa_all_old;
 
@@ -116,9 +117,6 @@ extern sigjmp_buf           env;                    // the context saved by sigs
 
 extern void catch_signals(int signo);
 
-extern bool             g_bskew_comp;
-
-
 //------------------------------------------------------------------------------
 //    ViewPort Implementation
 //------------------------------------------------------------------------------
@@ -128,98 +126,28 @@ ViewPort::ViewPort()
     skew = 0.;
     view_scale_ppm = 1;
     rotation = 0.;
+    tilt = 0.;
     b_quilt = false;
     pix_height = pix_width = 0;
     b_MercatorProjectionOverride = false;
-    toSM_lat0_cache = 91;
+    lat0_cache = NAN;
+    m_projection_type = PROJECTION_MERCATOR;
+
 }
 
+// TODO: eliminate the use of this function
 wxPoint ViewPort::GetPixFromLL( double lat, double lon )
 {
-    double easting, northing;
-    double xlon = lon;
-
-    /*  Make sure lon and lon0 are same phase */
-    if( xlon * clon < 0. ) {
-        if( xlon < 0. ) xlon += 360.;
-        else
-            xlon -= 360.;
-    }
-
-    if( fabs( xlon - clon ) > 180. ) {
-        if( xlon > clon ) xlon -= 360.;
-        else
-            xlon += 360.;
-    }
-
-    if( PROJECTION_TRANSVERSE_MERCATOR == m_projection_type ) {
-        //    We calculate northings as referenced to the equator
-        //    And eastings as though the projection point is midscreen.
-
-        double tmeasting, tmnorthing;
-        double tmceasting, tmcnorthing;
-        toTM( clat, clon, 0., clon, &tmceasting, &tmcnorthing );
-        toTM( lat, xlon, 0., clon, &tmeasting, &tmnorthing );
-
-//            tmeasting -= tmceasting;
-//            tmnorthing -= tmcnorthing;
-
-        northing = tmnorthing - tmcnorthing;
-        easting = tmeasting - tmceasting;
-    } else if( PROJECTION_POLYCONIC == m_projection_type ) {
-
-        //    We calculate northings as referenced to the equator
-        //    And eastings as though the projection point is midscreen.
-        double pceasting, pcnorthing;
-        toPOLY( clat, clon, 0., clon, &pceasting, &pcnorthing );
-
-        double peasting, pnorthing;
-        toPOLY( lat, xlon, 0., clon, &peasting, &pnorthing );
-
-        easting = peasting;
-        northing = pnorthing - pcnorthing;
-    }
-
-    else {
-#if 0
-        toSM( lat, xlon, clat, clon, &easting, &northing );
-#else
-        if(clat != toSM_lat0_cache) {
-            toSM_lat0_cache = clat;
-            toSM_y30_cache = toSMcache_y30(clat);
-        }
-        toSMcache( lat, xlon, toSM_y30_cache, clon, &easting, &northing );
-#endif
-    }
-
-    if( !wxFinite(easting) || !wxFinite(northing) ) return wxPoint( 0, 0 );
-
-    double epix = easting * view_scale_ppm;
-    double npix = northing * view_scale_ppm;
-    double dxr = epix;
-    double dyr = npix;
-
-    //    Apply VP Rotation
-    double angle = rotation;
-
-    if(!g_bskew_comp)
-        angle += skew;
-        
-    if( angle ) {
-        dxr = epix * cos( angle ) + npix * sin( angle );
-        dyr = npix * cos( angle ) - epix * sin( angle );
-    }
-    wxPoint r;
-    //    We definitely need a round() function here
-    r.x = (int) wxRound( ( pix_width / 2 ) + dxr );
-    r.y = (int) wxRound( ( pix_height / 2 ) - dyr );
-
-    return r;
+    wxPoint2DDouble p = GetDoublePixFromLL(lat, lon);
+    if(wxIsNaN(p.m_x) || wxIsNaN(p.m_y))
+        return wxPoint(INVALID_COORD, INVALID_COORD);
+    return wxPoint(wxRound(p.m_x), wxRound(p.m_y));
 }
 
 wxPoint2DDouble ViewPort::GetDoublePixFromLL( double lat, double lon )
 {
-    double easting, northing;
+    double easting = 0;
+    double northing = 0;
     double xlon = lon;
 
     /*  Make sure lon and lon0 are same phase */
@@ -235,7 +163,34 @@ wxPoint2DDouble ViewPort::GetDoublePixFromLL( double lat, double lon )
             xlon += 360.;
     }
 
-    if( PROJECTION_TRANSVERSE_MERCATOR == m_projection_type ) {
+    // update cache of trig functions used for projections
+    if(clat != lat0_cache) {
+        lat0_cache = clat;
+        switch( m_projection_type ) {
+        case PROJECTION_MERCATOR:
+            cache0 = toSMcache_y30(clat);
+            break;
+        case PROJECTION_POLAR:
+            cache0 = toPOLARcache_e(clat);
+            break;
+        case PROJECTION_ORTHOGRAPHIC:
+        case PROJECTION_STEREOGRAPHIC:
+        case PROJECTION_GNOMONIC:
+            cache_phi0(clat, &cache0, &cache1);
+            break;
+        }
+    }
+
+    switch( m_projection_type ) {
+    case PROJECTION_MERCATOR:
+#if 0
+        toSM( lat, xlon, clat, clon, &easting, &northing );
+#else
+        toSMcache( lat, xlon, cache0, clon, &easting, &northing );
+#endif
+        break;
+
+    case PROJECTION_TRANSVERSE_MERCATOR:
         //    We calculate northings as referenced to the equator
         //    And eastings as though the projection point is midscreen.
 
@@ -246,7 +201,9 @@ wxPoint2DDouble ViewPort::GetDoublePixFromLL( double lat, double lon )
 
         northing = tmnorthing - tmcnorthing;
         easting = tmeasting - tmceasting;
-    } else if( PROJECTION_POLYCONIC == m_projection_type ) {
+        break;
+
+    case PROJECTION_POLYCONIC:
 
         //    We calculate northings as referenced to the equator
         //    And eastings as though the projection point is midscreen.
@@ -258,21 +215,34 @@ wxPoint2DDouble ViewPort::GetDoublePixFromLL( double lat, double lon )
 
         easting = peasting;
         northing = pnorthing - pcnorthing;
+        break;
+
+    case PROJECTION_ORTHOGRAPHIC:
+        toORTHO( lat, xlon, cache0, cache1, clon, &easting, &northing );
+        break;
+
+    case PROJECTION_POLAR:
+        toPOLAR( lat, xlon, cache0, clat, clon, &easting, &northing );
+        break;
+
+    case PROJECTION_STEREOGRAPHIC:
+        toSTEREO( lat, xlon, cache0, cache1, clon, &easting, &northing );
+        break;
+
+    case PROJECTION_GNOMONIC:
+        toGNO( lat, xlon, cache0, cache1, clon, &easting, &northing );
+        break;
+
+    case PROJECTION_EQUIRECTANGULAR:
+        toEQUIRECT( lat, xlon, clat, clon, &easting, &northing );
+        break;
+
+    default:
+        printf("unhandled projection\n");
     }
 
-    else {
-#if 0
-        toSM( lat, xlon, clat, clon, &easting, &northing );
-#else
-        if(clat != toSM_lat0_cache) {
-            toSM_lat0_cache = clat;
-            toSM_y30_cache = toSMcache_y30(clat);
-        }
-        toSMcache( lat, xlon, toSM_y30_cache, clon, &easting, &northing );
-#endif
-    }
-
-    if( !wxFinite(easting) || !wxFinite(northing) ) return wxPoint( 0, 0 );
+    if( !wxFinite(easting) || !wxFinite(northing) )
+        return wxPoint2DDouble( easting, northing );
 
     double epix = easting * view_scale_ppm;
     double npix = northing * view_scale_ppm;
@@ -281,29 +251,25 @@ wxPoint2DDouble ViewPort::GetDoublePixFromLL( double lat, double lon )
 
     //    Apply VP Rotation
     double angle = rotation;
-    if(!g_bskew_comp)
-        angle += skew;
 
     if( angle ) {
         dxr = epix * cos( angle ) + npix * sin( angle );
         dyr = npix * cos( angle ) - epix * sin( angle );
     }
 
-    return wxPoint2DDouble(( pix_width / 2 ) + dxr, ( pix_height / 2 ) - dyr);
+    return wxPoint2DDouble(( pix_width / 2.0 ) + dxr, ( pix_height / 2.0 ) - dyr);
 }
 
-void ViewPort::GetLLFromPix( const wxPoint &p, double *lat, double *lon )
+void ViewPort::GetLLFromPix( const wxPoint2DDouble &p, double *lat, double *lon )
 {
-    int dx = p.x - ( pix_width / 2 );
-    int dy = ( pix_height / 2 ) - p.y;
+    double dx = p.m_x - ( pix_width / 2.0 );
+    double dy = ( pix_height / 2.0 ) - p.m_y;
 
     double xpr = dx;
     double ypr = dy;
 
     //    Apply VP Rotation
     double angle = rotation;
-    if(!g_bskew_comp)
-        angle += skew;
 
     if( angle ) {
         xpr = ( dx * cos( angle ) ) - ( dy * sin( angle ) );
@@ -312,24 +278,54 @@ void ViewPort::GetLLFromPix( const wxPoint &p, double *lat, double *lon )
     double d_east = xpr / view_scale_ppm;
     double d_north = ypr / view_scale_ppm;
 
-    double slat, slon;
-    if( PROJECTION_TRANSVERSE_MERCATOR == m_projection_type ) {
+    double slat = 0.0, slon = 0.0;
+    switch( m_projection_type ) {
+    case PROJECTION_MERCATOR:
+        //TODO  This could be fromSM_ECC to better match some Raster charts
+        //      However, it seems that cm93 (and S57) prefer no eccentricity correction
+        //      Think about it....
+        fromSM( d_east, d_north, clat, clon, &slat, &slon );
+        break;
+        
+    case PROJECTION_TRANSVERSE_MERCATOR:
+    {
         double tmceasting, tmcnorthing;
         toTM( clat, clon, 0., clon, &tmceasting, &tmcnorthing );
 
         fromTM( d_east, d_north + tmcnorthing, 0., clon, &slat, &slon );
-    } else if( PROJECTION_POLYCONIC == m_projection_type ) {
+    } break;
+
+    case PROJECTION_POLYCONIC:
+    {
         double polyeasting, polynorthing;
         toPOLY( clat, clon, 0., clon, &polyeasting, &polynorthing );
 
         fromPOLY( d_east, d_north + polynorthing, 0., clon, &slat, &slon );
-    }
+    } break;
 
-    //TODO  This could be fromSM_ECC to better match some Raster charts
-    //      However, it seems that cm93 (and S57) prefer no eccentricity correction
-    //      Think about it....
-    else
-        fromSM( d_east, d_north, clat, clon, &slat, &slon );
+    case PROJECTION_ORTHOGRAPHIC:
+        fromORTHO( d_east, d_north, clat, clon, &slat, &slon );
+        break;
+
+    case PROJECTION_POLAR:
+        fromPOLAR( d_east, d_north, clat, clon, &slat, &slon );
+        break;
+
+    case PROJECTION_STEREOGRAPHIC:
+        fromSTEREO( d_east, d_north, clat, clon, &slat, &slon );
+        break;
+
+    case PROJECTION_GNOMONIC:
+        fromGNO( d_east, d_north, clat, clon, &slat, &slon );
+        break;
+
+    case PROJECTION_EQUIRECTANGULAR:
+        fromEQUIRECT( d_east, d_north, clat, clon, &slat, &slon );
+        break;
+
+    default:
+        printf("unhandled projection\n");
+    }
 
     *lat = slat;
 
@@ -338,8 +334,144 @@ void ViewPort::GetLLFromPix( const wxPoint &p, double *lat, double *lon )
     *lon = slon;
 }
 
+LLRegion ViewPort::GetLLRegion( const OCPNRegion &region )
+{
+    // todo: for these projecetions, improve this calculation by using the
+    //       method in SetBoxes here
+#ifndef ocpnUSE_GL
+    return LLRegion(GetBBox());
+#else    
+
+    if(!glChartCanvas::CanClipViewport(*this))
+        return LLRegion(GetBBox());
+
+    OCPNRegionIterator it( region );
+    LLRegion r;
+    while( it.HaveRects() ) {
+        wxRect rect = it.GetRect();
+
+        int x1 = rect.x, y1 = rect.y, x2 = x1 + rect.width, y2 = y1 + rect.height;
+        int p[8] = {x1, y1, x2, y1, x2, y2, x1, y2};
+        double pll[540];
+        int j;
+
+        /* if the viewport is rotated, we must split the segments as straight lines in lat/lon
+           coordinates map to curves in projected coordinate space */
+        if(fabs( rotation ) >= 0.0001) {
+            j=0;
+            double lastlat, lastlon;
+            int li = 6;
+            GetLLFromPix(wxPoint(p[li], p[li+1]), &lastlat, &lastlon);
+            for(int i=0; i<8; i+=2) {
+                double lat, lon;
+                GetLLFromPix(wxPoint(p[i], p[i+1]), &lat, &lon);
+
+                // use 2 degree grid
+                double grid = 2;
+                int lat_splits = floor(fabs(lat-lastlat) / grid);
+                double lond = fabs(lon-lastlon);
+                int lon_splits = floor((lond > 180 ? 360-lond : lond) / grid);
+                int splits = wxMax(lat_splits, lon_splits) + 1;
+
+                for(int k = 1; k<splits; k++) {
+                    float d = (float)k / splits;
+                    GetLLFromPix(wxPoint((1-d)*p[li] + d*p[i], (1-d)*p[li+1] + d*p[i+1]), pll+j, pll+j+1);
+                    j += 2;
+                }
+                pll[j++] = lat;
+                pll[j++] = lon;
+                li = i;
+                lastlat = lat, lastlon = lon;
+            }
+        } else {
+            j=8;
+            for(int i=0; i<j; i+=2)
+                GetLLFromPix(wxPoint(p[i], p[i+1]), pll+i, pll+i+1);
+        }
+
+        // resolve (this works even if rectangle crosses both 0 and 180)
+        for(int i=0; i<j; i+=2) {
+            if(pll[i+1] <= clon - 180)
+                pll[i+1] += 360;
+            else if(pll[i+1] >= clon + 180)
+                pll[i+1] -= 360;
+        }
+
+        r.Union(LLRegion(j/2, pll));
+        it.NextRect();
+    }
+    return r;
+#endif    
+}
+
+struct ContourRegion
+{
+    double maxlat;
+    bool subtract;
+    OCPNRegion r;
+};
+
+OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &region, const LLRegion &llregion, int chart_native_scale )
+{
+    double rotation_save = rotation;
+    rotation = 0;
+
+    std::list<ContourRegion> cregions;
+    for(std::list<poly_contour>::const_iterator i = llregion.contours.begin(); i != llregion.contours.end(); i++) {
+        float *contour_points = new float[2*i->size()];
+        int idx = 0;
+        std::list<contour_pt>::const_iterator j;
+        for(j = i->begin(); j != i->end(); j++) {
+            contour_points[idx++] = j->y;
+            contour_points[idx++] = j->x;
+        }
+
+        double total = 0, maxlat = -90;
+        int pl = idx - 2;
+        double x0 = contour_points[0] - contour_points[pl+0];
+        double y0 = contour_points[1] - contour_points[pl+1];
+        // determine winding direction of this contour
+        for(int p=0; p<idx; p+=2) {
+            maxlat = wxMax(maxlat, contour_points[p]);
+            int pn = p < idx - 2 ? p + 2 : 0;
+            double x1 = contour_points[pn+0] - contour_points[p+0];
+            double y1 = contour_points[pn+1] - contour_points[p+1];
+            total += x1*y0 - x0*y1;
+            x0 = x1, y0 = y1;
+        }
+
+        ContourRegion s;
+        s.maxlat = maxlat;
+        s.subtract = total < 0;
+        s.r = GetVPRegionIntersect(region, i->size(), contour_points, chart_native_scale, NULL);
+        delete [] contour_points;
+
+        std::list<ContourRegion>::iterator k = cregions.begin();
+        while(k!=cregions.end()) {
+            if(k->maxlat < s.maxlat)
+                break;
+            k++;
+        }
+        cregions.insert(k, s);
+    }
+
+    OCPNRegion r;
+    for(std::list<ContourRegion>::iterator k = cregions.begin(); k!=cregions.end(); k++){
+        
+        if(k->r.Ok()){
+            if(k->subtract)
+                r.Subtract(k->r);
+            else
+                r.Union(k->r);
+        }
+    }
+
+    rotation = rotation_save;
+    return r;
+}
+
 OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoints, float *llpoints,
-        int chart_native_scale, wxPoint *ppoints )
+                                           int chart_native_scale, wxPoint *ppoints )
 {
     //  Calculate the intersection between a given OCPNRegion (Region) and a polygon specified by lat/lon points.
 
@@ -444,19 +576,34 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
 
     
     wxPoint p = GetPixFromLL( pfp[0], pfp[1] );
-    int poly_x_max = p.x;
-    int poly_y_max = p.y;
-    int poly_x_min = p.x;
-    int poly_y_min = p.y;
+    int poly_x_max, poly_y_max, poly_x_min, poly_y_min;
     
+    bool valid = false;
     for( unsigned int ip = 0; ip < nPoints; ip++ ) {
         wxPoint p = GetPixFromLL( pfp[0], pfp[1] );
         pp[ip] = p;
-        poly_x_max = wxMax(poly_x_max, p.x);
-        poly_y_max = wxMax(poly_y_max, p.y);
-        poly_x_min = wxMin(poly_x_min, p.x);
-        poly_y_min = wxMin(poly_y_min, p.y);
+        if(p.x == INVALID_COORD)
+            continue;
+
+        if(valid) {
+            poly_x_max = wxMax(poly_x_max, p.x);
+            poly_y_max = wxMax(poly_y_max, p.y);
+            poly_x_min = wxMin(poly_x_min, p.x);
+            poly_y_min = wxMin(poly_y_min, p.y);
+        } else {
+            poly_x_max = p.x;
+            poly_y_max = p.y;
+            poly_x_min = p.x;
+            poly_y_min = p.y;
+            valid = true;
+        }
         pfp += 2;
+    }
+
+    if(!valid)
+    {
+        delete[] pp;
+        return OCPNRegion(); //empty;
     }
  
     //  We want to avoid processing regions with very large rectangle counts,
@@ -487,10 +634,12 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
         p3.y = lat; p3.x = lon;
         
         
-        for(size_t i=0 ; i < nPoints-1 ; i++){
-            
+        for(size_t i=0 ; i < nPoints-1 ; i++){            
             //  Quick check on y dimension
             int y0 = pp[i].y; int y1 = pp[i+1].y;
+
+            if(y0 == INVALID_COORD || y1 == INVALID_COORD)
+                continue;
             
             if( ((y0 < rect.y) && (y1 < rect.y)) ||
                 ((y0 > rect.y+rect.height) && (y1 > rect.y+rect.height)) )
@@ -547,6 +696,9 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
  
             for(size_t i=0 ; i < nPoints-1 ; i++){
                 int x0 = pp[i].x;  int y0 = pp[i].y;
+                if(x0 == INVALID_COORD)
+                    continue;
+
                 if((x0 < rect.x) || (x0 > rect.x+rect.width))
                     continue;
                 
@@ -698,16 +850,19 @@ void ViewPort::SetBoxes( void )
     rv_rect = wxRect( 0, 0, pix_width, pix_height );
 
     //  Specify the minimum required rectangle in unrotated screen space which will supply full screen data after specified rotation
-    if( ( g_bskew_comp && ( fabs( skew ) > .001 ) ) || ( fabs( rotation ) > .001 ) ) {
+    if (( fabs( skew ) > .0001 ) || (fabs(rotation )>.0001 )) {
 
         double rotator = rotation;
-        if(g_bskew_comp)
-            rotator -= skew;
+        double lpixh = pix_height;
+        double lpixw = pix_width;
+
+        lpixh = wxMax(lpixh, (fabs(pix_height * cos(skew)) + fabs(pix_width * sin(skew))));
+        lpixw = wxMax(lpixw, (fabs(pix_width * cos(skew)) + fabs(pix_height * sin(skew))));
 
         int dy = wxRound(
-                     fabs( pix_height * cos( rotator ) ) + fabs( pix_width * sin( rotator ) ) );
+                     fabs( lpixh * cos( rotator ) ) + fabs( lpixw * sin( rotator ) ) );
         int dx = wxRound(
-                     fabs( pix_width * cos( rotator ) ) + fabs( pix_height * sin( rotator ) ) );
+                     fabs( lpixw * cos( rotator ) ) + fabs( lpixh * sin( rotator ) ) );
 
         //  It is important for MSW build that viewport pixel dimensions be multiples of 4.....
         if( dy % 4 ) dy += 4 - ( dy % 4 );
@@ -717,69 +872,106 @@ void ViewPort::SetBoxes( void )
         int inflate_y = wxMax(( dy - pix_height ) / 2, 0);
         
         //  Grow the source rectangle appropriately
-        if( fabs( rotator ) > .001 )
-            rv_rect.Inflate( inflate_x, inflate_y );
-
+        rv_rect.Inflate( inflate_x, inflate_y );
     }
 
     //  Compute Viewport lat/lon reference points for co-ordinate hit testing
 
     //  This must be done in unrotated space with respect to full unrotated screen space calculated above
     double rotation_save = rotation;
-    SetRotationAngle( 0. );
+    SetRotationAngle(0.0);
 
-    double lat_ul, lat_ur, lat_lr, lat_ll;
-    double lon_ul, lon_ur, lon_lr, lon_ll;
+    wxPoint ul( rv_rect.x, rv_rect.y ), lr( rv_rect.x + rv_rect.width, rv_rect.y + rv_rect.height );
+    double dlat_min, dlat_max, dlon_min, dlon_max;
 
-    GetLLFromPix( wxPoint( rv_rect.x, rv_rect.y ), &lat_ul, &lon_ul );
-    GetLLFromPix( wxPoint( rv_rect.x + rv_rect.width, rv_rect.y ), &lat_ur, &lon_ur );
-    GetLLFromPix( wxPoint( rv_rect.x + rv_rect.width, rv_rect.y + rv_rect.height ), &lat_lr,
-                  &lon_lr );
-    GetLLFromPix( wxPoint( rv_rect.x, rv_rect.y + rv_rect.height ), &lat_ll, &lon_ll );
+    bool hourglass = false;
+    switch(m_projection_type) {
+    case PROJECTION_TRANSVERSE_MERCATOR:
+    case PROJECTION_STEREOGRAPHIC:
+    case PROJECTION_GNOMONIC:
+        hourglass = true;
+    case PROJECTION_POLYCONIC:
+    case PROJECTION_POLAR:
+    case PROJECTION_ORTHOGRAPHIC:
+    {
+        double d;
 
-    if( clon < 0. ) {
-        if( ( lon_ul > 0. ) && ( lon_ur < 0. ) ) {
-            lon_ul -= 360.;
-            lon_ll -= 360.;
+        if( clat > 0 ) { // north polar
+            wxPoint u( rv_rect.x + rv_rect.width/2, rv_rect.y );
+            wxPoint ur( rv_rect.x + rv_rect.width, rv_rect.y );
+            GetLLFromPix( ul, &d, &dlon_min );
+            GetLLFromPix( ur, &d, &dlon_max );
+            GetLLFromPix( lr, &dlat_min, &d );
+            GetLLFromPix( u, &dlat_max, &d );
+
+            if(fabs(fabs(d - clon) - 180) < 1) { // the pole is onscreen
+                dlat_max = 90;
+                dlon_min = -180;
+                dlon_max = 180;
+            } else if(wxIsNaN(dlat_max))
+                dlat_max = 90;
+
+            if(hourglass) {
+                // near equator, center may be less
+                wxPoint l( rv_rect.x + rv_rect.width/2, rv_rect.y + rv_rect.height );
+                double dlat_min2;
+                GetLLFromPix( l, &dlat_min2, &d );
+                dlat_min = wxMin(dlat_min, dlat_min2);
+            }
+
+            if(wxIsNaN(dlat_min)) //  world is off-screen
+                dlat_min = clat - 90;
+        } else { // south polar
+            wxPoint l( rv_rect.x + rv_rect.width/2, rv_rect.y + rv_rect.height );
+            wxPoint ll( rv_rect.x, rv_rect.y + rv_rect.height );
+            GetLLFromPix( ul, &dlat_max, &d );
+            GetLLFromPix( lr, &d, &dlon_max );
+            GetLLFromPix( ll, &d, &dlon_min );
+            GetLLFromPix( l, &dlat_min, &d );            
+
+            if(fabs(fabs(d - clon) - 180) < 1) { // the pole is onscreen
+                dlat_min = -90;
+                dlon_min = -180;
+                dlon_max = 180;
+            } else if(wxIsNaN(dlat_min))
+                dlat_min = -90;
+
+            if(hourglass) {
+                // near equator, center may be less
+                wxPoint u( rv_rect.x + rv_rect.width/2, rv_rect.y );
+                double dlat_max2;
+                GetLLFromPix( u, &dlat_max2, &d );
+                dlat_max = wxMax(dlat_max, dlat_max2);
+            }
+
+            if(wxIsNaN(dlat_max)) //  world is off-screen
+                dlat_max = clat + 90;
         }
-    } else {
-        if( ( lon_ul > 0. ) && ( lon_ur < 0. ) ) {
-            lon_ur += 360.;
-            lon_lr += 360.;
+
+        if(wxIsNaN(dlon_min)) {
+            // if neither pole is visible, but left and right of the screen are in space
+            // we can avoid drawing the far side of the earth
+            if(dlat_max < 90 && dlat_min > -90) {
+                dlon_min = clon - 90 - fabs(clat); // this logic is not optimal, is it always correct?
+                dlon_max = clon + 90 + fabs(clat);
+            } else {
+                dlon_min = -180;
+                dlon_max = 180;
+            }
         }
+    } break;
+
+    default: // works for mercator and equirectangular
+    {
+        GetLLFromPix( ul, &dlat_max, &dlon_min );
+        GetLLFromPix( lr, &dlat_min, &dlon_max );
+    }
     }
 
-    if( lon_ur < lon_ul ) {
-        lon_ur += 360.;
-        lon_lr += 360.;
-    }
-
-    if( lon_ur > 360. ) {
-        lon_ur -= 360.;
-        lon_lr -= 360.;
-        lon_ul -= 360.;
-        lon_ll -= 360.;
-    }
-
-    double dlat_min = lat_ul;
-    dlat_min = fmin ( dlat_min, lat_ur );
-    dlat_min = fmin ( dlat_min, lat_lr );
-    dlat_min = fmin ( dlat_min, lat_ll );
-
-    double dlon_min = lon_ul;
-    dlon_min = fmin ( dlon_min, lon_ur );
-    dlon_min = fmin ( dlon_min, lon_lr );
-    dlon_min = fmin ( dlon_min, lon_ll );
-
-    double dlat_max = lat_ul;
-    dlat_max = fmax ( dlat_max, lat_ur );
-    dlat_max = fmax ( dlat_max, lat_lr );
-    dlat_max = fmax ( dlat_max, lat_ll );
-
-    double dlon_max = lon_ur;
-    dlon_max = fmax ( dlon_max, lon_ul );
-    dlon_max = fmax ( dlon_max, lon_lr );
-    dlon_max = fmax ( dlon_max, lon_ll );
+    if( clon < dlon_min )
+        dlon_min -= 360;
+    else if(clon > dlon_max)
+        dlon_max += 360;
 
     //  Set the viewport lat/lon bounding box appropriately
     vpBBox.SetMin( dlon_min, dlat_min );
@@ -787,6 +979,19 @@ void ViewPort::SetBoxes( void )
 
     // Restore the rotation angle
     SetRotationAngle( rotation_save );
+}
+
+LLBBox ViewPort::GetBBoxView()
+{
+    LLBBox BBView = vpBBox;
+
+    wxPoint2DDouble pos(360, 0), neg(-360, 0);
+    if(BBView.GetMaxX()+180 < clon)
+        BBView.Translate(pos);
+    else if(BBView.GetMinX()-180 > clon)
+        BBView.Translate(neg);
+
+    return BBView;
 }
 
 void ViewPort::SetBBoxDirect( double latmin, double lonmin, double latmax, double lonmax)

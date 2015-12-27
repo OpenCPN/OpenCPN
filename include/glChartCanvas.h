@@ -28,6 +28,7 @@
 #include <wx/glcanvas.h>
 #include "ocpn_types.h"
 #include "OCPNRegion.h"
+#include "LLRegion.h"
 #include "viewport.h"
 #include "TexFont.h"
 
@@ -37,7 +38,7 @@
 #include "wx/qt/private/wxQtGesture.h"
 #endif
 
-#include "glTexCache.h"
+class glTexFactory;
 
 #define GESTURE_EVENT_TIMER 78334
 
@@ -65,12 +66,17 @@ class ChartBaseBSB;
 class glChartCanvas : public wxGLCanvas
 {
 public:
-    static void MultMatrixViewPort(ViewPort &vp);
-    static ViewPort NormalizedViewPort(const ViewPort &vp);
+    static bool CanClipViewport(const ViewPort &vp);
+    static ViewPort ClippedViewport(const ViewPort &vp, const LLRegion &region);
+
+    static bool HasNormalizedViewPort(const ViewPort &vp);
+    static void MultMatrixViewPort(ViewPort &vp, float lat=0, float lon=0);
+    static ViewPort NormalizedViewPort(const ViewPort &vp, float lat=0, float lon=0);
 
     static void RotateToViewPort(const ViewPort &vp);
-    static void SetClipRegion(const ViewPort &vp, const OCPNRegion &region,
-                              bool apply_rotation=true, bool b_clear=false);
+    static void DrawRegion( ViewPort &vp, const LLRegion &region);
+    static void SetClipRegion( ViewPort &vp, const LLRegion &region);
+    static void SetClipRect(const ViewPort &vp, const wxRect &rect, bool g_clear=false);
     static void DisableClipRegion();
     void SetColorScheme(ColorScheme cs);
     
@@ -105,15 +111,15 @@ public:
     void EnablePaint(bool b_enable){ m_b_paint_enable = b_enable; }
 
     static void Invalidate();
-    void RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, OCPNRegion &region);
+    void RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, LLRegion &region);
     bool PurgeChartTextures(ChartBase *pc, bool b_purge_factory = false);
     void ClearAllRasterTextures(void);
     void DrawGLOverLayObjects(void);
     void GridDraw( );
     void FlushFBO( void );
     
-    void DrawDynamicRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region );
-    void DrawStaticRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region );
+    void DrawDynamicRoutesAndWaypoints( ViewPort &vp );
+    void DrawStaticRoutesAndWaypoints( ViewPort &vp );
     
     void RenderAllChartOutlines( ocpnDC &dc, ViewPort &VP );
     void RenderChartOutline( int dbIndex, ViewPort &VP );
@@ -127,21 +133,25 @@ public:
 
     time_t m_last_render_time;
 
+    int viewport[4];
+    double mvmatrix[16], projmatrix[16];
+
 protected:
-    void RenderQuiltViewGL(ViewPort &vp, const OCPNRegion &Region );
+    void RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_region );
     void BuildFBO();
     bool buildFBOSize(int fboSize);
     void SetupOpenGL();
     bool TextureCrunch(double factor);
     bool FactoryCrunch(double factor);
     
-    void ComputeRenderQuiltViewGLRegion( ViewPort &vp, OCPNRegion &Region );
-    void RenderCharts(ocpnDC &dc, OCPNRegion &region);
-    void RenderWorldChart(ocpnDC &dc, OCPNRegion &region, ViewPort &vp);
-    ViewPort BuildClippedVP(ViewPort &VP, wxRect &rect);
+//    void ComputeRenderQuiltViewGLRegion( ViewPort &vp, OCPNRegion &Region );
+    void RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region);
+    void RenderNoDTA(ViewPort &vp, const LLRegion &region);
+    void RenderNoDTA(ViewPort &vp, ChartBase *chart);
+    void RenderWorldChart(ocpnDC &dc, ViewPort &vp, wxRect &rect, bool &world_view);
 
-    void DrawFloatingOverlayObjects( ocpnDC &dc, OCPNRegion &region );
-    void DrawGroundedOverlayObjectsRect(ocpnDC &dc, wxRect &rect);
+    void DrawFloatingOverlayObjects( ocpnDC &dc );
+    void DrawGroundedOverlayObjects(ocpnDC &dc, ViewPort &vp);
 
     void DrawChartBar( ocpnDC &dc );
     void DrawQuiting();
@@ -154,16 +164,11 @@ protected:
 
     int max_texture_dimension;
 
-    unsigned char *m_data;
-    int m_datasize;
-
     bool m_bsetup;
 
     wxString m_renderer;
     wxString m_version;
     wxString m_extensions;
-
-    void GrowData(int size);
 
     //    This is a hash table
     //    key is Chart full path
@@ -188,7 +193,6 @@ protected:
     GLuint       m_cache_page;
     int          m_cache_tex_x;
     int          m_cache_tex_y;
-    OCPNRegion   m_gl_rendered_region;
 
     int		m_prevMemUsed;
 
@@ -214,6 +218,8 @@ protected:
     
     OCPNRegion  m_canvasregion;
     TexFont     m_gridfont;
+
+    int		m_LRUtime;
 
     GLuint       m_tideTex;
     GLuint       m_currentTex;

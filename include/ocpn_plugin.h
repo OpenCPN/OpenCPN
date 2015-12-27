@@ -26,20 +26,16 @@
 #ifndef _PLUGIN_H_
 #define _PLUGIN_H_
 
-
 #ifndef DECL_EXP
 #ifdef __WXMSW__
 #  define DECL_EXP     __declspec(dllexport)
 #else
-#  define DECL_EXP
+# ifdef __GNUC__
+# define DECL_EXP       __attribute__((visibility("default")))
+# endif
 #endif
 #endif
 
-
-#ifdef __GNUC__
-#undef  DECL_EXP
-#define DECL_EXP       __attribute__((visibility("default")))
-#endif
 
 #include <wx/xml/xml.h>
 
@@ -225,7 +221,13 @@ typedef enum OcpnProjTypePI
       PI_PROJECTION_UNKNOWN,
       PI_PROJECTION_MERCATOR,
       PI_PROJECTION_TRANSVERSE_MERCATOR,
-      PI_PROJECTION_POLYCONIC
+      PI_PROJECTION_POLYCONIC,
+
+      PI_PROJECTION_ORTHOGRAPHIC,
+      PI_PROJECTION_POLAR,
+      PI_PROJECTION_STEREOGRAPHIC,
+      PI_PROJECTION_GNOMONIC,
+      PI_PROJECTION_EQUIRECTANGULAR
 }_OcpnProjTypePI;
 
 typedef struct _ExtentPI{
@@ -305,7 +307,8 @@ class DECL_EXP PlugInChartBase : public wxObject
             virtual int GetSize_X();
             virtual int GetSize_Y();
             virtual void latlong_to_chartpix(double lat, double lon, double &pixx, double &pixy);
-
+            virtual void chartpix_to_latlong(double pixx, double pixy, double *plat, double *plon);
+            
       protected:
             ChartTypeEnumPI     m_ChartType;
             ChartFamilyEnumPI   m_ChartFamily;
@@ -542,6 +545,7 @@ public:
     wxString          m_MarkName;
     wxString          m_MarkDescription;
     wxDateTime        m_CreateTime;
+	bool			  m_IsVisible;
 
     wxString          m_IconName;
 
@@ -972,8 +976,9 @@ int DECL_EXP PI_PLIBRenderObjectToGL( const wxGLContext &glcc, PI_S57Obj *pObj,
    ... // use current_viewport with GetCanvasLLPix again
 */
 
-extern DECL_EXP void PlugInMultMatrixViewport ( PlugIn_ViewPort *vp );
-extern DECL_EXP void PlugInNormalizeViewport ( PlugIn_ViewPort *vp );
+extern DECL_EXP bool PlugInHasNormalizedViewPort ( PlugIn_ViewPort *vp );
+extern DECL_EXP void PlugInMultMatrixViewport ( PlugIn_ViewPort *vp, float lat=0, float lon=0 );
+extern DECL_EXP void PlugInNormalizeViewport ( PlugIn_ViewPort *vp, float lat=0, float lon=0 );
 
 class wxPoint2DDouble;
 extern "C"  DECL_EXP void GetDoubleCanvasPixLL(PlugIn_ViewPort *vp, wxPoint2DDouble *pp, double lat, double lon);
@@ -984,20 +989,28 @@ extern "C"  DECL_EXP void GetDoubleCanvasPixLL(PlugIn_ViewPort *vp, wxPoint2DDou
 
 extern DECL_EXP double fromDMM_Plugin( wxString sdms );
 extern DECL_EXP void SetCanvasRotation(double rotation);
-extern DECL_EXP bool GetSingleWaypoint( wxString &GUID, PlugIn_Waypoint *pwaypoint );
+extern DECL_EXP void SetCanvasProjection(int projection);
+extern DECL_EXP bool GetSingleWaypoint( wxString GUID, PlugIn_Waypoint *pwaypoint );
 extern DECL_EXP bool CheckEdgePan_PlugIn( int x, int y, bool dragging, int margin, int delta );
 extern DECL_EXP wxBitmap GetIcon_PlugIn(const wxString & name);
 extern DECL_EXP void SetCursor_PlugIn( wxCursor *pPlugin_Cursor = NULL );
+extern DECL_EXP wxFont *GetOCPNScaledFont_PlugIn(wxString TextElement, int default_size = 0);
+extern DECL_EXP wxFont GetOCPNGUIScaledFont_PlugIn(wxString item);
+extern DECL_EXP double GetOCPNGUIToolScaleFactor_PlugIn(int GUIScaledFactor);
+extern DECL_EXP wxColour GetFontColour_PlugIn(wxString TextElement);
 
-/* API 1.13 */
-extern DECL_EXP void SetCanvasRotation(double rotation);
-extern DECL_EXP bool GetSingleWaypoint( wxString &GUID, PlugIn_Waypoint *pwaypoint );
+extern DECL_EXP double GetCanvasTilt();
+extern DECL_EXP void SetCanvasTilt(double tilt);
+
 extern DECL_EXP bool PlugInPlaySoundEx( wxString &sound_file, int deviceIndex=-1 );
 extern DECL_EXP void AddChartDirectory( wxString &path );
 extern DECL_EXP void ForceChartDBUpdate();
 
 extern  DECL_EXP wxString GetWritableDocumentsDir( void );
 extern  DECL_EXP wxDialog *GetActiveOptionsDialog();
+extern  DECL_EXP wxArrayString GetWaypointGUIDArray( void );
+
+extern  DECL_EXP bool AddPersistentFontKey(wxString TextElement);
 
 
 /*  Platform optimized File/Dir selector dialogs */
@@ -1059,6 +1072,7 @@ enum OCPN_DLDialogStyle
     OCPN_DLDS_DEFAULT_STYLE = OCPN_DLDS_CAN_START|OCPN_DLDS_CAN_PAUSE|OCPN_DLDS_CAN_ABORT|OCPN_DLDS_SHOW_ALL|OCPN_DLDS_AUTO_CLOSE
 };
 
+#define ONLINE_CHECK_RETRY 30 // Recheck the Internet connection availability every ONLINE_CHECK_RETRY s
 
 /*   Synchronous (Blocking) download of a single file  */
 
@@ -1067,6 +1081,7 @@ extern DECL_EXP _OCPN_DLStatus OCPN_downloadFile( const wxString& url, const wxS
                                        const wxBitmap& bitmap,
                                        wxWindow *parent, long style, int timeout_secs);
 
+
 /*   Asynchronous (Background) download of a single file  */
 
 extern DECL_EXP _OCPN_DLStatus OCPN_downloadFileBackground( const wxString& url, const wxString &outputFile,
@@ -1074,6 +1089,13 @@ extern DECL_EXP _OCPN_DLStatus OCPN_downloadFileBackground( const wxString& url,
 
 extern DECL_EXP void OCPN_cancelDownloadFileBackground( long handle );
 
+/*   Synchronous (Blocking) HTTP POST operation for small amounts of data */
+
+extern DECL_EXP _OCPN_DLStatus OCPN_postDataHttp( const wxString& url, const wxString& parameters, wxString& result, int timeout_secs );
+
+/*   Check whether connection to the Internet is working */
+
+extern DECL_EXP bool OCPN_isOnline();
 
 /*  Supporting  Event for Background downloading          */
 /*  OCPN_downloadEvent Definition  */
@@ -1123,7 +1145,9 @@ private:
     bool m_b_complete;
 };
 
-DECLARE_EVENT_TYPE(wxEVT_DOWNLOAD_EVENT, -1)
+//DECLARE_EVENT_TYPE(wxEVT_DOWNLOAD_EVENT, -1)
+//extern const wxEventType DECL_EXP wxEVT_DOWNLOAD_EVENT;
 
+extern WXDLLIMPEXP_CORE const wxEventType wxEVT_DOWNLOAD_EVENT;
 
 #endif //_PLUGIN_H_

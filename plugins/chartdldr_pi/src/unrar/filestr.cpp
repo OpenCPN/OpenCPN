@@ -16,10 +16,12 @@ bool ReadTextFile(
   *FileName=0;
 
   if (Name!=NULL)
+  {
     if (Config)
       GetConfigName(Name,FileName,ASIZE(FileName),true,false);
     else
       wcsncpyz(FileName,Name,ASIZE(FileName));
+  }
 
   File SrcFile;
   if (*FileName!=0)
@@ -52,7 +54,7 @@ bool ReadTextFile(
   Array<wchar> WideStr;
 
   if (SrcCharset==RCH_UNICODE ||
-      SrcCharset==RCH_DEFAULT && IsUnicode((byte *)&Data[0],DataSize))
+      (SrcCharset==RCH_DEFAULT && IsUnicode((byte *)&Data[0],DataSize)))
   {
     // Unicode in native system format, can be more than 2 bytes per character.
     Array<wchar> DataW(Data.Size()/2+1);

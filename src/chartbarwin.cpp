@@ -212,6 +212,7 @@ Piano::Piano()
     m_eventTimer.SetOwner( this, PIANO_EVENT_TIMER );
     
     m_tex = m_tex_piano_height = 0;
+    m_texh = 0;
 }
 
 Piano::~Piano()
@@ -625,6 +626,7 @@ void Piano::DrawGL(int off)
 // this texture is only updated if the color scheme or chart bar height change
 void Piano::BuildGLTexture()
 {
+#ifdef ocpnUSE_GL
     int h = GetHeight();
 
     wxBrush tbackBrush; // transparent back brush
@@ -717,18 +719,23 @@ void Piano::BuildGLTexture()
         glTexSubImage2D( GL_TEXTURE_2D, 0, 0, off, iw, ih, GL_RGBA, GL_UNSIGNED_BYTE, data );
         delete [] data;
     }
+#endif
 }
 
 void Piano::DrawGL(int off)
 {
-    unsigned int w = cc1->GetClientSize().x, h = GetHeight(), endx = 0;
+    int nKeys = m_key_array.GetCount();
+    if(!nKeys)
+        return;
+
+#ifdef ocpnUSE_GL
+    unsigned int w = cc1->GetClientSize().x, h = GetHeight();
+    unsigned int endx = 0;
  
     if(m_tex_piano_height != h)
         BuildGLTexture();
 
     int y1 = off, y2 = y1 + h;
-
-    int nKeys = m_key_array.GetCount();
 
     // we could cache the coordinates and recompute only when the piano hash changes,
     // but the performance is already fast enough at this point
@@ -873,6 +880,7 @@ void Piano::DrawGL(int off)
     delete [] coords;
 
     glDisable(GL_TEXTURE_2D);
+#endif
 }
 
 void Piano::SetColorScheme( ColorScheme cs )
@@ -1081,8 +1089,8 @@ bool Piano::MouseEvent( wxMouseEvent& event )
             if( -1 != sel_index ){
                 m_click_sel_index = sel_index;
                 m_click_sel_dbindex = sel_dbindex;
+                m_action = DEFERRED_KEY_CLICK_UP;
                 if(!m_eventTimer.IsRunning()){
-                    m_action = DEFERRED_KEY_CLICK_UP;
                     m_eventTimer.Start(10, wxTIMER_ONE_SHOT);
                 }
             }

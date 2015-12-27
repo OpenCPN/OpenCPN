@@ -25,7 +25,14 @@
 #ifndef __GLTEXTUREDESCRIPTOR_H__
 #define __GLTEXTUREDESCRIPTOR_H__
 
+#include "wx/wxprec.h"
+
+#ifndef  WX_PRECOMP
+#include "wx/wx.h"
+#endif //precompiled headers
+
 #include "dychart.h"
+
 
 #define CA_READ         0
 #define CA_WRITE        1
@@ -42,7 +49,8 @@ public:
     void FreeAll();
     void FreeMap();
     void FreeCompLevel(int level);
-    
+    void FreeCompComp();
+
     size_t GetMapArrayAlloc(void);
     size_t GetCompArrayAlloc(void);
     size_t GetCompCompArrayAlloc(void);
@@ -57,7 +65,7 @@ public:
     int nCache_Color;
     
     unsigned char       *map_array[10];
-    int                 miplevel_upload[10];
+    bool                miplevel_upload[10];
     int                 compcomp_size[10];
     
 private:    

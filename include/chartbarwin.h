@@ -134,7 +134,7 @@ private:
       bool        m_brounded;
       bool        m_bleaving;
 
-      GLuint      m_tex, m_texw, m_texh, m_tex_piano_height;
+      unsigned int      m_tex, m_texw, m_texh, m_tex_piano_height;
 
 DECLARE_EVENT_TABLE()
 };

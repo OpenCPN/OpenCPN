@@ -51,7 +51,11 @@ bool ChartCatalog::LoadFromFile( wxString path, bool headerOnly )
     if (ret)
         ret = LoadFromXml( doc, headerOnly );
     else
-        charts->Clear();
+// <<<<<<< HEAD
+//         charts->Clear();
+// =======
+        charts.Clear();
+// >>>>>>> master
     doc->Clear();
     wxDELETE(doc);
 
@@ -60,13 +64,19 @@ bool ChartCatalog::LoadFromFile( wxString path, bool headerOnly )
 
 ChartCatalog::ChartCatalog()
 {
-    charts = new wxArrayOfCharts();
+// <<<<<<< HEAD
+//     charts = new wxArrayOfCharts();
+// =======
+// >>>>>>> master
 }
 
 ChartCatalog::~ChartCatalog()
 {
-    charts->Clear();
-    wxDELETE(charts);
+// <<<<<<< HEAD
+//     charts->Clear();
+//     wxDELETE(charts);
+// =======
+// >>>>>>> master
 }
 
 wxDateTime ChartCatalog::GetReleaseDate()
@@ -90,7 +100,11 @@ bool ChartCatalog::LoadFromXml( TiXmlDocument * doc, bool headerOnly )
 {
     TiXmlElement * root = doc->RootElement();
     wxString rootName = wxString::FromUTF8( root->Value() );
-    charts->Clear();
+// <<<<<<< HEAD
+//     charts->Clear();
+// =======
+    charts.Clear();
+// >>>>>>> master
 
     if( rootName.StartsWith( _T("RncProductCatalog") ) )
     {
@@ -104,7 +118,11 @@ bool ChartCatalog::LoadFromXml( TiXmlDocument * doc, bool headerOnly )
         for ( child = root->FirstChildElement()->NextSibling(); child != 0; child = child->NextSibling() )
         {
             if( _T("chart") == wxString::FromUTF8( child->Value() ) )
-                charts->Add(new RasterChart(child));
+// <<<<<<< HEAD
+//                 charts->Add(new RasterChart(child));
+// =======
+                charts.Add(new RasterChart(child));
+// >>>>>>> master
         }
     }
     else if( rootName.StartsWith(_T("EncProductCatalog")) )
@@ -118,7 +136,11 @@ bool ChartCatalog::LoadFromXml( TiXmlDocument * doc, bool headerOnly )
         for( child = root->FirstChildElement()->NextSibling(); child != 0; child = child->NextSibling() )
         {
             if( _T("cell") == wxString::FromUTF8( child->Value() ) )
-                charts->Add( new EncCell(child) );
+// <<<<<<< HEAD
+//                 charts->Add( new EncCell(child) );
+// =======
+                charts.Add( new EncCell(child) );
+// >>>>>>> master
         }
     }
     else if( rootName.StartsWith(_T("IENCU37ProductCatalog")) )
@@ -133,7 +155,11 @@ bool ChartCatalog::LoadFromXml( TiXmlDocument * doc, bool headerOnly )
         for( child = root->FirstChildElement()->NextSibling(); child != 0; child = child->NextSibling())
         {
             if( _T("Cell") == wxString::FromUTF8( child->Value() ) )
-                charts->Add(new IEncCell(child));
+// <<<<<<< HEAD
+//                 charts->Add(new IEncCell(child));
+// =======
+                charts.Add(new IEncCell(child));
+// >>>>>>> master
         }
     }
     else
@@ -226,8 +252,11 @@ Chart::~Chart()
     wxDELETE(regions);
     wxDELETE(nm);
     wxDELETE(lnm);
-    coverage->Clear();
-    wxDELETE(coverage);
+// <<<<<<< HEAD
+//     coverage->Clear();
+//     wxDELETE(coverage);
+// =======
+// >>>>>>> master
 }
 
 Chart::Chart( TiXmlNode * xmldata )
@@ -235,9 +264,12 @@ Chart::Chart( TiXmlNode * xmldata )
     coast_guard_districts = new wxArrayString();
     states = new wxArrayString();
     regions = new wxArrayString();
-    nm = NULL;
-    lnm = NULL;
-    coverage = new wxArrayOfPanels();
+// <<<<<<< HEAD
+//     nm = NULL;
+//     lnm = NULL;
+//     coverage = new wxArrayOfPanels();
+// =======
+// >>>>>>> master
     TiXmlNode *child;
     target_filename = wxEmptyString;
     reference_file = wxEmptyString;
@@ -312,18 +344,32 @@ Chart::Chart( TiXmlNode * xmldata )
         }
         else if( s == _T("nm") )
         {
-            nm = new NoticeToMariners(child);
+// <<<<<<< HEAD
+//             nm = new NoticeToMariners(child);
+//         }
+//         else if( s == _T("lnm") )
+//         {
+//             lnm = new NoticeToMariners(child);
+// =======
+            // NOT USED
+            // nm = new NoticeToMariners(child);
         }
         else if( s == _T("lnm") )
         {
-            lnm = new NoticeToMariners(child);
+            // NOT USED
+            // lnm = new NoticeToMariners(child);
+// >>>>>>> master
         }
         else if( s == _T("cov") )
         {
             TiXmlNode *mychild;
             for( mychild = child->FirstChild(); mychild != 0; mychild = mychild->NextSibling() )
             {
-                coverage->Add(new Panel(mychild));
+// <<<<<<< HEAD
+//                 coverage->Add(new Panel(mychild));
+// =======
+                coverage.Add(new Panel(mychild));
+// >>>>>>> master
             }
         }
         else if( s == _T("target_filename") )
@@ -709,7 +755,10 @@ NoticeToMariners::NoticeToMariners( TiXmlNode * xmldata )
 Panel::Panel( TiXmlNode * xmldata )
 {
     panel_no = -1;
-    vertexes = new wxArrayOfVertexes();
+// <<<<<<< HEAD
+//     vertexes = new wxArrayOfVertexes();
+// =======
+// >>>>>>> master
     TiXmlNode *child;
     for( child = xmldata->FirstChild(); child != 0; child = child->NextSibling() )
     {
@@ -721,15 +770,23 @@ Panel::Panel( TiXmlNode * xmldata )
         }
         else if( s == _T("vertex") )
         {
-            vertexes->Add(new Vertex(child));
+// <<<<<<< HEAD
+//             vertexes->Add(new Vertex(child));
+// =======
+            // NOT USED
+            //vertexes.Add(new Vertex(child));
+// >>>>>>> master
         }
     }
 }
 
 Panel::~Panel()
 {
-    vertexes->Clear();
-    wxDELETE(vertexes);
+// <<<<<<< HEAD
+//     vertexes->Clear();
+//     wxDELETE(vertexes);
+// =======
+// >>>>>>> master
 }
 
 RncPanel::RncPanel( TiXmlNode * xmldata ) : Panel( xmldata )

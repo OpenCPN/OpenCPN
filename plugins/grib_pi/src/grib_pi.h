@@ -152,11 +152,11 @@ private:
       wxString         m_bMailFromAddress;
       wxString         m_ZyGribLogin;
       wxString         m_ZyGribCode;
+      int              m_GUIScaleFactor;
 
       bool             m_bGRIBShowIcon;
 
       bool        m_bShowGrib;
-      bool        m_bInitIsOK;
 };
 
 //----------------------------------------------------------------------------------------

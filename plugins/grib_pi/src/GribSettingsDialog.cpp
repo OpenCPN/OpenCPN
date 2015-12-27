@@ -545,18 +545,6 @@ GribSettingsDialog::GribSettingsDialog(GRIBUICtrlBar &parent, GribOverlaySetting
     ReadDataTypeSettings(m_lastdatatype);
     m_sButtonApply->SetLabel(_("Apply"));
 
-    //set all wxSpinCtrl width
-    int w;
-    GetTextExtent( _T("1234"), &w, NULL, 0, 0, OCPNGetFont(_("Dialog"), 10) );
-    wxWindowList list = this->GetChildren();
-    wxWindowListNode *node = list.GetFirst();
-    for( size_t i = 0; i < list.GetCount(); i++ ) {
-        wxWindow *win = node->GetData();
-        if( win->IsKindOf( CLASSINFO(wxSpinCtrl) ) )
-            win->SetMinSize( wxSize( w + 30, -1 ) );
-        node = node->GetNext();
-    }
-
     DimeWindow( this );                             //aplly global colours scheme
 
 #ifdef __OCPN__ANDROID__
@@ -595,6 +583,7 @@ void GribSettingsDialog::OnPageChange( wxNotebookEvent& event )
 
 void GribSettingsDialog::SetSettingsDialogSize()
 {
+#ifdef __OCPN__ANDROID__
     /*Sizing do not work with wxScolledWindow so we need to compute it
     using fixed X/Y margin to try to center nicely the dialog in the screen*/
 	int wt,ht,w,h;
@@ -604,6 +593,15 @@ void GribSettingsDialog::SetSettingsDialogSize()
 	w = wt - XMargin;																	//maximum scolled window size
     h = ht - ( m_sButton->GetSize().GetY() + YMargin );
 	wxSize scroll(0, 0);
+#else        
+    /*Sizing do not work with wxScolledWindow so we need to compute it*/
+    int w = GetOCPNCanvasWindow()->GetClientSize().x;           // the display size
+    int h = GetOCPNCanvasWindow()->GetClientSize().y;
+    int dMargin = 80;                          //set a margin
+	w -= dMargin;								//width available for the scrolled window
+    h -= (2 * m_sButton->GetSize().GetY()) + dMargin; //height available for the scrolled window
+                                                      //two times the button's height to handle pages tab's height
+#endif
 	for( size_t i = 0; i < m_nSettingsBook->GetPageCount(); i++ ) {						//compute and set scrolled windows size
 		wxScrolledWindow *sc = ((wxScrolledWindow*) m_nSettingsBook->GetPage( i ));
 		wxSize scr;
@@ -617,11 +615,13 @@ void GribSettingsDialog::SetSettingsDialogSize()
 		}
 		sc->SetMinSize( wxSize(wxMin( scr.x, w ), h) );
 #if defined __WXMSW__ || defined ( __WXOSX__ )
-		sc->Show( i == (unsigned int) m_SetBookpageIndex );
+        sc->Show( i == (unsigned int) m_SetBookpageIndex );
 #endif
-	}																					//end compute
+       } // end compute
 
+#ifdef __OCPN__ANDROID__
 	m_nSettingsBook->SetSize( wt, -1);
+#endif        
 
 	Layout();
     Fit();
@@ -675,7 +675,7 @@ void GribSettingsDialog::SetDataTypeSettings(int settings)
     odc.m_bNumFixSpac = m_cNumFixSpac->GetValue();
     odc.m_iNumbersSpacing = m_sNumbersSpacing->GetValue();
     odc.m_bParticles = m_cbParticles->GetValue();
-    odc.m_dParticleDensity = 4.0*exp(m_sParticleDensity->GetValue() - 7);
+    odc.m_dParticleDensity = 4.0*exp(m_sParticleDensity->GetValue() - 7.0);
 }
 
 void GribSettingsDialog::ReadDataTypeSettings(int settings)
@@ -851,6 +851,7 @@ void GribSettingsDialog::OnUnitChange( wxCommandEvent& event )
 void GribSettingsDialog::OnTransparencyChange( wxScrollEvent& event  )
 {
     m_Settings.m_iOverlayTransparency = 254. - ( (long) m_sTransparency->GetValue() * 254. / 100. );
+    m_extSettings.m_iOverlayTransparency = m_Settings.m_iOverlayTransparency;
     m_parent.SetFactoryOptions();
 }
 
@@ -864,8 +865,7 @@ void GribSettingsDialog::OnCtrlandDataStyleChanged( wxCommandEvent& event )
     if( !messages.IsEmpty() ) {
         m_parent.pPlugIn->m_DialogStyleChanged = true;
         messages.Append( _("This change needs a complete reload.\nIt will be applied after closing and re-opening the plugin") );
-        wxMessageDialog mes(this, messages );
-        mes.ShowModal();
+        OCPNMessageBox_PlugIn(this, messages );
     }
 }
 
@@ -884,9 +884,8 @@ void GribSettingsDialog::OnApply( wxCommandEvent& event )
 void GribSettingsDialog::OnIntepolateChange( wxCommandEvent& event )
 {
     if( m_cInterpolate->IsChecked() ) {
-        wxMessageDialog mes(this, _("You have chosen to authorize interpolation.\nDon't forget that data displayed will not be real but recomputed and this can decrease accuracy!"),
-                            _("Warning!"), wxOK);
-        mes.ShowModal();
+        OCPNMessageBox_PlugIn(this, _("You have chosen to authorize interpolation.\nDon't forget that data displayed will not be real but recomputed\nThis can decrease accuracy!"),
+                            _("Warning!") );
         m_tSlicesPerUpdate->Show();
         m_sSlicesPerUpdate->Show();
     } else {                                        //hide no suiting parameters
@@ -923,8 +922,7 @@ void GribSettingsDialog::OnSpacingModeChange( wxCommandEvent& event )
     }
 
     if( message ) {
-        wxMessageDialog mes(this, _("This option imply you authorize intrepolation\nDon't forget that data displayed will not be real but recomputed and this can decrease accuracy!"),
-                            _("Warning!"), wxOK);
-        mes.ShowModal();
+        OCPNMessageBox_PlugIn(this, _("This option imply you authorize intrepolation\nDon't forget that data displayed will not be real but recomputed\nThis can decrease accuracy!"),
+                            _("Warning!") );
     }
 }

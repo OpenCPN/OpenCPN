@@ -65,12 +65,13 @@ class wxGraphicsContext;
 
 WX_DECLARE_OBJARRAY( GribRecordSet, ArrayOfGribRecordSets );
 
-enum ZoneSelection { AUTO_SELECTION, START_SELECTION, DRAW_SELECTION, COMPLETE_SELECTION };
+enum ZoneSelection { AUTO_SELECTION, SAVED_SELECTION, START_SELECTION, DRAW_SELECTION, COMPLETE_SELECTION };
 
 class GribTimelineRecordSet : public GribRecordSet
 {
 public:
-    GribTimelineRecordSet(GribRecordSet &GRS1, GribRecordSet &GRS2, double interp_const);
+    GribTimelineRecordSet();
+//    GribTimelineRecordSet(GribRecordSet &GRS1, GribRecordSet &GRS2, double interp_const);
     ~GribTimelineRecordSet();
 
     void ClearCachedData();
@@ -109,7 +110,8 @@ public:
     void SetRequestBitmap( int type );
     void OnMouseEvent( wxMouseEvent& event );
     GRIBUICData *GetCDataDialog() { return m_gGRIBUICData; }
-    bool InDataPlot (int id) { return id >= 0 && id < (int)GribOverlaySettings::GEO_ALTITUDE; }
+    bool InDataPlot (int id) { return id > wxID_ANY && id < (int)GribOverlaySettings::GEO_ALTITUDE; }
+    void SetScaledBitmap( double factor );
 
     wxWindow *pParent;
     GribOverlaySettings m_OverlaySettings;
@@ -127,6 +129,7 @@ public:
 private:
     void OnClose( wxCloseEvent& event );
     void OnSize( wxSizeEvent& event );
+    void OnPaint( wxPaintEvent& event );
     void OnSettings( wxCommandEvent& event );
     void OnPlayStop( wxCommandEvent& event );
     void OnPlayStopTimer( wxTimerEvent & event);
@@ -169,6 +172,7 @@ private:
     bool m_InterpolateMode;
     bool m_pNowMode;
     bool m_HasAltitude;
+    double m_ScaledFactor;
 
     bool             m_SelectionIsSaved;
     int              m_Selection_index;

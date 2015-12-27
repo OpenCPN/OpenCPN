@@ -24,6 +24,10 @@ size_t Archive::ReadHeader()
     case RARFMT50:
       ReadSize=ReadHeader50();
       break;
+    default:
+      BrokenHeaderMsg();
+      return 0;
+      break;
   }
 
   if (ReadSize>0 && NextBlockPos<=CurBlockPos)
@@ -167,6 +171,7 @@ size_t Archive::ReadHeader15()
     case HEAD3_FILE:    ShortBlock.HeaderType=HEAD_FILE;     break;
     case HEAD3_SERVICE: ShortBlock.HeaderType=HEAD_SERVICE;  break;
     case HEAD3_ENDARC:  ShortBlock.HeaderType=HEAD_ENDARC;   break;
+    default: break;
   }
   CurHeaderType=ShortBlock.HeaderType;
 
@@ -844,6 +849,10 @@ size_t Archive::ReadHeader50()
         EndArcHead.RevSpace=false;
       }
       break;
+    default:
+      BrokenHeaderMsg();
+      return 0;
+      break;
   }
 
   if (NextBlockPos<=CurBlockPos)
@@ -1006,20 +1015,26 @@ void Archive::ProcessExtra50(RawRead *Raw,size_t ExtraSize,BaseBlock *bb)
             byte Flags=(byte)Raw->GetV();
             bool UnixTime=(Flags & FHEXTRA_HTIME_UNIXTIME)!=0;
             if ((Flags & FHEXTRA_HTIME_MTIME)!=0)
+            {
               if (UnixTime)
                 hd->mtime=(time_t)Raw->Get4();
               else
                 hd->mtime.SetRaw(Raw->Get8());
+            }
             if ((Flags & FHEXTRA_HTIME_CTIME)!=0)
+            {
               if (UnixTime)
                 hd->ctime=(time_t)Raw->Get4();
               else
                 hd->ctime.SetRaw(Raw->Get8());
+            }
             if ((Flags & FHEXTRA_HTIME_ATIME)!=0)
+            {
               if (UnixTime)
                 hd->atime=(time_t)Raw->Get4();
               else
                 hd->atime.SetRaw(Raw->Get8());
+            }
           }
           break;
         case FHEXTRA_VERSION:
@@ -1261,11 +1276,13 @@ void Archive::ConvertFileHeader(FileHeader *hd)
   if (Format==RARFMT15 && hd->UnpVer<20 && (hd->FileAttr & 0x10))
     hd->Dir=true;
   if (hd->HSType==HSYS_UNKNOWN)
+  {
     if (hd->Dir)
       hd->FileAttr=0x10;
     else
       hd->FileAttr=0x20;
-
+  }
+    
   for (wchar *s=hd->FileName;*s!=0;s++)
   {
 #ifdef _UNIX
@@ -1297,7 +1314,7 @@ void Archive::ConvertFileHeader(FileHeader *hd)
     // Still, RAR 4.x uses backslashes as path separator even in Unix.
     // Forward slash is not allowed in both systems. In RAR 5.0 we use
     // the forward slash as universal path separator.
-    if (*s=='/' || *s=='\\' && Format!=RARFMT50)
+    if (*s=='/' || (*s=='\\' && Format!=RARFMT50))
       *s=CPATHDIVIDER;
   }
 }
@@ -1348,12 +1365,14 @@ bool Archive::ReadSubData(Array<byte> *UnpData,File *DestFile)
     SubDataIO.SetUnpackToMemory(&(*UnpData)[0],(uint)SubHead.UnpSize);
   }
   if (SubHead.Encrypted)
+  {
     if (Cmd->Password.IsSet())
       SubDataIO.SetEncryption(false,SubHead.CryptMethod,&Cmd->Password,
                 SubHead.SaltSet ? SubHead.Salt:NULL,SubHead.InitV,
                 SubHead.Lg2Count,SubHead.PswCheck,SubHead.HashKey);
     else
       return false;
+  }
   SubDataIO.UnpHash.Init(SubHead.FileHash.Type,1);
   SubDataIO.SetPackedSizeToRead(SubHead.PackSize);
   SubDataIO.EnableShowProgress(false);

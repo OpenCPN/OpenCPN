@@ -525,19 +525,22 @@ void AnnunText::RefreshFonts()
     m_plabelFont = FontMgr::Get().GetFont( m_LegendTextElement );
     m_pvalueFont = FontMgr::Get().GetFont( m_ValueTextElement );
 
+    m_legend_color = FontMgr::Get().GetFontColor( _("Console Legend") );
+    m_val_color = FontMgr::Get().GetFontColor( _("Console Value") );
+    
     CalculateMinSize();
     
     // Make sure that the background color and the text colors are not too close, for contrast
     if(m_backBrush.IsOk()){
         wxColour back_color = m_backBrush.GetColour();
     
-        wxColour legend_color = FontMgr::Get().GetFontColor( _("Console Legend") );
+        wxColour legend_color = m_legend_color;
         if( (abs(legend_color.Red() - back_color.Red()) < 5) &&
                 (abs(legend_color.Green() - back_color.Blue()) < 5) &&
                 (abs(legend_color.Blue() - back_color.Blue()) < 5))
             m_legend_color = m_default_text_color;
             
-        wxColour value_color = FontMgr::Get().GetFontColor( _("Console Value") );
+        wxColour value_color = m_val_color;
         if( (abs(value_color.Red() - back_color.Red()) < 5) &&
             (abs(value_color.Green() - back_color.Blue()) < 5) &&
             (abs(value_color.Blue() - back_color.Blue()) < 5))

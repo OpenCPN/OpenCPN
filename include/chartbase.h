@@ -30,6 +30,7 @@
 
 #include "bbox.h"
 #include "ocpn_types.h"
+#include "LLRegion.h"
 
 //----------------------------------------------------------------------------
 //  Forward Declarations
@@ -84,10 +85,10 @@ public:
 
 
 typedef struct _Extent{
-  double SLAT;
-  double WLON;
-  double NLAT;
-  double ELON;
+  float SLAT;
+  float WLON;
+  float NLAT;
+  float ELON;
 }Extent;
 
 //          Depth unit type enum
@@ -105,7 +106,13 @@ typedef enum OcpnProjType
       PROJECTION_UNKNOWN,
       PROJECTION_MERCATOR,
       PROJECTION_TRANSVERSE_MERCATOR,
-      PROJECTION_POLYCONIC
+      PROJECTION_POLYCONIC,
+
+      PROJECTION_ORTHOGRAPHIC,
+      PROJECTION_POLAR,
+      PROJECTION_STEREOGRAPHIC,
+      PROJECTION_GNOMONIC,
+      PROJECTION_EQUIRECTANGULAR
 }_OcpnProjType;
 
 
@@ -172,11 +179,12 @@ public:
                                         const OCPNRegion &Region) = 0;
 
       virtual bool RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
-                                        const OCPNRegion &Region) = 0;
+                                        const OCPNRegion &RectRegion, const LLRegion &Region) = 0;
 
       virtual bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed) = 0;
 
       virtual void GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion *pValidRegion) = 0;
+      virtual LLRegion GetValidRegion() = 0;
 
       virtual void SetColorScheme(ColorScheme cs, bool bApplyImmediate = true ) = 0;
 
@@ -272,11 +280,12 @@ public:
                                         const OCPNRegion &Region);
 
       virtual bool RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
-                                        const OCPNRegion &Region);
+                                        const OCPNRegion &RectRegion, const LLRegion &Region);
 
       virtual bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed);
 
       virtual void GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion *pValidRegion);
+      virtual LLRegion GetValidRegion();
 
       virtual void SetColorScheme(ColorScheme cs, bool bApplyImmediate);
 
@@ -287,79 +296,6 @@ private:
 
       wxBitmap    *m_pBM;
 };
-
-
-// ----------------------------------------------------------------------------
-// ChartPlugInWrapper
-//    This class is a wrapper/interface to PlugIn charts(PlugInChartBase) as defined in ocpn_plugin.h
-// ----------------------------------------------------------------------------
-
-class PlugInChartBase;                  // found in ocpn_plugin.h
-
-class ChartPlugInWrapper : public ChartBase
-{
-      public:
-            ChartPlugInWrapper();
-            ChartPlugInWrapper(const wxString &chart_class);
-            virtual ~ChartPlugInWrapper();
-
-            virtual wxString GetFileSearchMask(void);
-
-            virtual InitReturn Init( const wxString& name, ChartInitFlag init_flags );
-
-//    Accessors
-            virtual ThumbData *GetThumbData(int tnx, int tny, float lat, float lon);
-            virtual ThumbData *GetThumbData();
-            virtual bool UpdateThumbData(double lat, double lon);
-
-            double GetNormalScaleMin(double canvas_scale_factor, bool b_allow_overzoom);
-            double GetNormalScaleMax(double canvas_scale_factor, int canvas_width);
-
-            virtual bool GetChartExtent(Extent *pext);
-
-            virtual bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint,
-                                              const OCPNRegion &Region);
-
-            virtual bool RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
-                                              const OCPNRegion &Region);
-
-            virtual bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed);
-
-            virtual void GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion *pValidRegion);
-
-            virtual void SetColorScheme(ColorScheme cs, bool bApplyImmediate);
-
-            virtual double GetNearestPreferredScalePPM(double target_scale_ppm);
-            
-            virtual PlugInChartBase *GetPlugInChart(void){ return m_ppicb; }
-
-            virtual int GetCOVREntries();
-            virtual int GetCOVRTablePoints(int iTable);
-            virtual int GetCOVRTablenPoints(int iTable);
-            virtual float *GetCOVRTableHead(int iTable);
-
-            virtual int GetNoCOVREntries();
-            virtual int GetNoCOVRTablePoints(int iTable);
-            virtual int  GetNoCOVRTablenPoints(int iTable);
-            virtual float *GetNoCOVRTableHead(int iTable);
-            
-            //    The following set of methods apply to BSB (i.e. Raster) type PlugIn charts only
-            //    and need not be implemented if the ChartFamily is not CHART_FAMILY_RASTER
-            virtual void ComputeSourceRectangle(const ViewPort &vp, wxRect *pSourceRect);
-            virtual double GetRasterScaleFactor();
-            virtual bool GetChartBits( wxRect& source, unsigned char *pPix, int sub_samp );
-            virtual int GetSize_X();
-            virtual int GetSize_Y();
-            virtual void latlong_to_chartpix(double lat, double lon, double &pixx, double &pixy);
-
-
-      private:
-            PlugInChartBase *m_ppicb;
-            wxObject          *m_ppo;
-            wxCriticalSection m_critSect;
-            
-};
-
 
 
 #endif

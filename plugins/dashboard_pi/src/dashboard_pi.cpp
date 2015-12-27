@@ -1611,17 +1611,34 @@ void dashboard_pi::ApplyConfig( void )
             if(sz.x == 0)
                 sz.IncTo( wxSize( 160, 388) );
 #endif
-      
-            m_pauimgr->AddPane( cont->m_pDashboardWindow,
-                wxAuiPaneInfo().Name( cont->m_sName ).Caption( cont->m_sCaption ).CaptionVisible( true ).MinSize(
-                sz ).BestSize( sz ).FloatingSize( sz ).FloatingPosition( 100, 100 ).Float().Show( cont->m_bIsVisible )
-                .TopDockable(!vertical ).BottomDockable( !vertical ).LeftDockable( vertical ).RightDockable( vertical ) );
-
-#ifdef __OCPN__ANDROID__
+// <<<<<<< HEAD
+//       
+//             m_pauimgr->AddPane( cont->m_pDashboardWindow,
+//                 wxAuiPaneInfo().Name( cont->m_sName ).Caption( cont->m_sCaption ).CaptionVisible( true ).MinSize(
+//                 sz ).BestSize( sz ).FloatingSize( sz ).FloatingPosition( 100, 100 ).Float().Show( cont->m_bIsVisible )
+//                 .TopDockable(!vertical ).BottomDockable( !vertical ).LeftDockable( vertical ).RightDockable( vertical ) );
+// 
+// #ifdef __OCPN__ANDROID__
+//             wxAuiPaneInfo& pane = m_pauimgr->GetPane( cont->m_pDashboardWindow );
+//             pane.Dockable( false );
+//             
+// #endif            
+//             
+// =======
+                wxAuiPaneInfo p = wxAuiPaneInfo().Name( cont->m_sName ).Caption( cont->m_sCaption ).CaptionVisible( false ).TopDockable(
+                    !vertical ).BottomDockable( !vertical ).LeftDockable( vertical ).RightDockable( vertical ).MinSize(
+                        sz ).BestSize( sz ).FloatingSize( sz ).FloatingPosition( 100, 100 ).Float().Show( cont->m_bIsVisible ).Gripper(false) ;
+                        
+            m_pauimgr->AddPane( cont->m_pDashboardWindow, p);
+                //wxAuiPaneInfo().Name( cont->m_sName ).Caption( cont->m_sCaption ).CaptionVisible( false ).TopDockable(
+               // !vertical ).BottomDockable( !vertical ).LeftDockable( vertical ).RightDockable( vertical ).MinSize(
+               // sz ).BestSize( sz ).FloatingSize( sz ).FloatingPosition( 100, 100 ).Float().Show( cont->m_bIsVisible ) );
+            
+            #ifdef __OCPN__ANDROID__
             wxAuiPaneInfo& pane = m_pauimgr->GetPane( cont->m_pDashboardWindow );
             pane.Dockable( false );
             
-#endif            
+            #endif            
             
         } else {
             wxAuiPaneInfo& pane = m_pauimgr->GetPane( cont->m_pDashboardWindow );
@@ -2636,6 +2653,12 @@ void DashboardWindow::OnContextMenuSelect( wxCommandEvent& event )
 void DashboardWindow::SetColorScheme( PI_ColorScheme cs )
 {
     DimeWindow( this );
+    
+    //  Improve appearance, especially in DUSK or NIGHT palette
+    wxColour col;
+    GetGlobalColor( _T("DASHL"), &col );
+    SetBackgroundColour( col );
+    
     Refresh( false );
 }
 

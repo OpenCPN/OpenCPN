@@ -33,6 +33,8 @@
 #include "chcanv.h"
 #include "styles.h"
 
+#include "dychart.h"
+
 
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern ChartCanvas *cc1;
@@ -40,7 +42,6 @@ extern bool bGPSValid;
 extern bool g_bSatValid;
 extern int g_SatsInView;
 extern bool g_bCourseUp;
-extern bool g_bskew_comp;
 extern MyFrame *gFrame;
 extern bool g_bopengl;
 
@@ -95,8 +96,12 @@ void ocpnCompass::Paint( ocpnDC& dc )
             glDisable( GL_TEXTURE_2D );
             
         }
-#else        
-        dc.DrawBitmap( m_StatBmp, m_rect.x, m_rect.y, true );
+#else 
+        bool b_alpha = true;
+#ifdef __WXOSX__
+        b_alpha = false;
+#endif        
+        dc.DrawBitmap( m_StatBmp, m_rect.x, m_rect.y, b_alpha );
 #endif        
     }
 }
@@ -122,7 +127,7 @@ void ocpnCompass::UpdateStatus( bool bnew )
         m_lastgpsIconName.Clear();        // force an update to occur
         
         //  We clear the texture so that any onPaint method will not use a stale texture
-# ifdef ocpnUSE_GLES  
+#ifdef ocpnUSE_GLES  
         if(g_bopengl){
              if(texobj){
                 glDeleteTextures(1, &texobj);
@@ -219,10 +224,6 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
 
     if( ( fabs( cc1->GetVPRotation() ) > .01 ) || ( fabs( cc1->GetVPSkew() ) > .01 ) ) {
         rose_angle = -cc1->GetVPRotation();
-
-        if( !g_bCourseUp && !g_bskew_comp )
-            rose_angle -= cc1->GetVPSkew();
-
     } else
         rose_angle = 0.;
 

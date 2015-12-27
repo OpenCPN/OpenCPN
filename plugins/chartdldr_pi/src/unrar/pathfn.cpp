@@ -339,7 +339,7 @@ void NextVolumeName(wchar *ArcName,uint MaxLength,bool OldNumbering)
     ChPtr=GetExt(ArcName);
   }
   else
-    if (ChPtr[1]==0 && wcslen(ArcName)<MaxLength-3 || wcsicomp(ChPtr+1,L"exe")==0 || wcsicomp(ChPtr+1,L"sfx")==0)
+    if ((ChPtr[1]==0 && wcslen(ArcName)<MaxLength-3) || wcsicomp(ChPtr+1,L"exe")==0 || wcsicomp(ChPtr+1,L"sfx")==0)
       wcscpy(ChPtr+1,L"rar");
   if (!OldNumbering)
   {
@@ -410,7 +410,7 @@ void MakeNameUsable(char *Name,bool Extended)
 #endif
   for (char *s=Name;*s!=0;s=charnext(s))
   {
-    if (strchr(Extended ? "?*<>|\"":"?*",*s)!=NULL || Extended && (byte)*s<32)
+    if (strchr(Extended ? "?*<>|\"":"?*",*s)!=NULL || (Extended && (byte)*s<32))
       *s='_';
 #ifdef _EMX
     if (*s=='=')
@@ -431,7 +431,7 @@ void MakeNameUsable(wchar *Name,bool Extended)
 {
   for (wchar *s=Name;*s!=0;s++)
   {
-    if (wcschr(Extended ? L"?*<>|\"":L"?*",*s)!=NULL || Extended && (uint)*s<32)
+    if (wcschr(Extended ? L"?*<>|\"":L"?*",*s)!=NULL || (Extended && (uint)*s<32))
       *s='_';
 #ifndef _UNIX
     if (s-Name>1 && *s==':')
@@ -723,10 +723,12 @@ static void GenArcName(wchar *ArcName,const wchar *GenerateMask,uint ArcNumber,b
   int WeekDay=rlt.wDay==0 ? 6:rlt.wDay-1;
   int StartWeekDay=rlt.yDay-WeekDay;
   if (StartWeekDay<0)
+  {
     if (StartWeekDay<=-4)
       StartWeekDay+=IsLeapYear(rlt.Year-1) ? 366:365;
     else
       StartWeekDay=0;
+  }
   int CurWeek=StartWeekDay/7+1;
   if (StartWeekDay%7>=4)
     CurWeek++;

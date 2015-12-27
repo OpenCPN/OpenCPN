@@ -19,6 +19,7 @@ SET(VERSION_MINOR "1")
 
 #SET(CMAKE_BUILD_TYPE Debug)
 
+
 INCLUDE("cmake/PluginConfigure.cmake")
 
 SET(SRC_WMM

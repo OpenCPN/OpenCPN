@@ -47,7 +47,7 @@ wxString toMailFormat ( int NEflag, int a )                 //convert position t
     return s;
 }
 
-extern bool m_OldZoneSelMode;
+extern int m_SavedZoneSelMode;
 extern int m_ZoneSelMode;
 
 //----------------------------------------------------------------------------------------------------------
@@ -81,8 +81,10 @@ void GribRequestSetting::InitRequestConfig()
         m_sMovingSpeed->SetValue( m );
         pConf->Read ( _T( "MovingGribCourse" ), &m, 0 );
         m_sMovingCourse->SetValue( m );
-        m_cManualZoneSel->SetValue( m_OldZoneSelMode );           //has been read in GriUbICtrlBar dialog implementation or updated previously
-        fgZoneCoordinatesSizer->ShowItems( m_OldZoneSelMode );
+        m_cManualZoneSel->SetValue( m_SavedZoneSelMode != AUTO_SELECTION );      //has been read in GriUbICtrlBar dialog implementation or updated previously
+        m_cUseSavedZone->SetValue( m_SavedZoneSelMode == SAVED_SELECTION );
+        fgZoneCoordinatesSizer->ShowItems( m_SavedZoneSelMode != AUTO_SELECTION );
+        m_cUseSavedZone->Show( m_SavedZoneSelMode != AUTO_SELECTION );
         if( m_cManualZoneSel->GetValue() ) {
             pConf->Read ( _T( "RequestZoneMaxLat" ), &m, 0 );
             m_spMaxLat->SetValue( m );
@@ -115,14 +117,16 @@ void GribRequestSetting::InitRequestConfig()
     m_sCourseUnit->SetLabel(wxString::Format( _T("\u00B0")));
 
     //Set wxSpinCtrl sizing
-    int w;
-    GetTextExtent( _T("-3600"), &w, NULL, 0, 0, OCPNGetFont(_("Dialog"), 10)); // optimal width text control size
-    m_sMovingSpeed->SetMinSize( wxSize( w + 30 , -1) );
-    m_sMovingCourse->SetMinSize( wxSize( w + 30 , -1) );
-    m_spMaxLat->SetMinSize( wxSize( w + 30 , -1) );
-    m_spMinLat->SetMinSize( wxSize( w + 30 , -1) );
-    m_spMaxLon->SetMinSize( wxSize( w + 30 , -1) );
-    m_spMinLon->SetMinSize( wxSize( w + 30 , -1) );
+    int w,h;
+    GetTextExtent( _T("-360"), &w, &h, 0, 0, OCPNGetFont(_("Dialog"), 10)); // optimal text control size
+    w += 30;
+    h += 4;
+    m_sMovingSpeed->SetMinSize( wxSize(w, h) );
+    m_sMovingCourse->SetMinSize( wxSize(w, h) );
+    m_spMaxLat->SetMinSize( wxSize(w, h) );
+    m_spMinLat->SetMinSize( wxSize(w, h) );
+    m_spMaxLon->SetMinSize( wxSize(w, h) );
+    m_spMinLon->SetMinSize( wxSize(w, h) );
 
     //add tooltips
     m_pSenderAddress->SetToolTip(_("Address used to send request eMail. (Mandatory for LINUX)"));
@@ -174,7 +178,8 @@ void GribRequestSetting::OnClose( wxCloseEvent& event )
     m_RenderZoneOverlay = 0;                                    //eventually stop graphical zone display
     RequestRefresh( m_parent.pParent );
 
-    m_ZoneSelMode = m_OldZoneSelMode ? START_SELECTION : AUTO_SELECTION;                  //allow to be back to old value if changes have not been saved
+    //allow to be back to old value if changes have not been saved
+    m_ZoneSelMode = m_SavedZoneSelMode;
     m_parent.SetRequestBitmap( m_ZoneSelMode );                                           //set appopriate bitmap
 
     this->Hide();
@@ -182,19 +187,20 @@ void GribRequestSetting::OnClose( wxCloseEvent& event )
 
 void GribRequestSetting::SetRequestDialogSize()
 {
-    int h;
-#ifndef __WXMSW__                   //default resizing do not work properly on no Windows plateforms
-    GetTextExtent( _T("abc"), NULL, &h, 0, 0, OCPNGetFont(_("Dialog"), 10) );
-    m_MailImage->SetMinSize( wxSize( -1, (h * m_MailImage->GetNumberOfLines()) + 5 ) );
-#endif
-    /*default sizing do not work with wxScolledWindow so we need to compute it
-    using a conditional X margin to stabilise the display width and a fixed Y margin to include different OS bars*/
-    int XMargin = m_sScrolledDialog->GetScrollLines( wxVERTICAL )? 0 : 18;
-    int YMargin = 130;
+    int y;
+    /*first let's size the mail display space*/
+    GetTextExtent( _T("abc"), NULL, &y, 0, 0, OCPNGetFont(_("Dialog"), 10) );
+    m_MailImage->SetMinSize( wxSize( -1, ( (y * m_MailImage->GetNumberOfLines()) + 10 ) ) );
+
+    /*then as default sizing do not work with wxScolledWindow let's compute it*/
     wxSize scroll = m_fgScrollSizer->Fit(m_sScrolledDialog);                                   // the area size to be scrolled
-    ::wxDisplaySize( NULL, &h);                                                                // the screen size
-    h -= m_rButton->GetSize().GetY() + m_fgFixedSizer->GetSize().GetY() + YMargin;             //height available for the scrolled window
-    m_sScrolledDialog->SetMinSize( wxSize( scroll.GetWidth() + XMargin,	h ) );				   //set scrolled area size with margins
+
+    int w = GetOCPNCanvasWindow()->GetClientSize().x;           // the display size
+    int h = GetOCPNCanvasWindow()->GetClientSize().y;
+    int dMargin = 80;                                      //set a margin
+    h -= ( m_rButton->GetSize().GetY() + dMargin );         //height available for the scrolled window
+    w -= dMargin;                                           //width available for the scrolled window
+    m_sScrolledDialog->SetMinSize( wxSize( wxMin( w, scroll.GetWidth() ), h ) );		//set scrolled area size with margin
 
 	Layout();
     Fit();
@@ -225,7 +231,7 @@ void GribRequestSetting::SetVpSize(PlugIn_ViewPort *vp)
 
 bool GribRequestSetting::MouseEventHook( wxMouseEvent &event )
 {
-    if( m_ZoneSelMode == AUTO_SELECTION || m_ZoneSelMode == START_SELECTION ) return false;
+    if( m_ZoneSelMode == AUTO_SELECTION || m_ZoneSelMode == SAVED_SELECTION || m_ZoneSelMode == START_SELECTION ) return false;
 
     if( event.Moving()) return false;                           //maintain status bar and tracking dialog updated
 
@@ -406,11 +412,19 @@ void GribRequestSetting::OnZoneSelectionModeChange( wxCommandEvent& event )
     if( !m_ZoneSelMode )
         SetVpSize( m_Vp );                              //recompute zone
 
-    //set temporarily zone selection mode if manual selection set, put it directly in "drawing" position
-    m_ZoneSelMode = m_cManualZoneSel->GetValue() ? DRAW_SELECTION : AUTO_SELECTION;
+    if( event.GetId() == MANSELECT ) {
+        //set temporarily zone selection mode if manual selection set, put it directly in "drawing" position
+        //else put it in "auto selection position
+        m_ZoneSelMode = m_cManualZoneSel->GetValue() ? DRAW_SELECTION : AUTO_SELECTION;
+        m_cUseSavedZone->SetValue( false );
+    } else if(event.GetId() == SAVEDZONE ) {
+        //set temporarily zone selection mode if saved selection set, put it directly in "no selection" position
+        //else put it directly in "drawing" position
+        m_ZoneSelMode = m_cUseSavedZone->GetValue()? SAVED_SELECTION : DRAW_SELECTION;
+    }
     m_parent.SetRequestBitmap( m_ZoneSelMode );               //set appopriate bitmap
     fgZoneCoordinatesSizer->ShowItems( m_ZoneSelMode != AUTO_SELECTION ); //show coordinate if necessary
-
+    m_cUseSavedZone->Show( m_ZoneSelMode != AUTO_SELECTION );
     if(m_AllowSend) m_MailImage->SetValue( WriteMail() );
 
     SetRequestDialogSize();
@@ -602,9 +616,8 @@ void GribRequestSetting::OnTimeRangeChange(wxCommandEvent &event)
         if( m_pTimeRange->GetCurrentSelection() > 6 ) {         //time range more than 8 days
             m_pWaves->SetValue(0);
             m_pWaves->Enable(false);
-            wxMessageDialog mes(this, _("You request a forecast for more than 8 days horizon.\nThis is conflicting with Wave data which will be removed from your request.\nDon't forget that beyond the first 8 days, the resolution will be only 2.5\u00B0x2.5\u00B0 and the time intervall 12 hours."),
-                _("Warning!"), wxOK);
-            mes.ShowModal();
+            OCPNMessageBox_PlugIn(this, _("You request a forecast for more than 8 days horizon.\nThis is conflicting with Wave data which will be removed from your request.\nDon't forget that beyond the first 8 days, the resolution will be only 2.5\u00B0x2.5\u00B0\nand the time intervall 12 hours."),
+                _("Warning!") );
         } else
             m_pWaves->Enable(true);
     }
@@ -685,14 +698,16 @@ void GribRequestSetting::OnSaveMail( wxCommandEvent& event )
         pConf->Write ( _T( "SendMailMethod" ), m_SendMethod );
         pConf->Write ( _T( "MovingGribSpeed" ), m_sMovingSpeed->GetValue() );
         pConf->Write ( _T( "MovingGribCourse" ), m_sMovingCourse->GetValue() );
-        pConf->Write ( _T( "ManualRequestZoneSizing" ), m_cManualZoneSel->GetValue() );
+
+        m_SavedZoneSelMode = m_cUseSavedZone->GetValue()? SAVED_SELECTION: m_cManualZoneSel->GetValue()? START_SELECTION: AUTO_SELECTION;
+        pConf->Write ( _T( "ManualRequestZoneSizing" ), m_SavedZoneSelMode );
+
         pConf->Write ( _T( "RequestZoneMaxLat" ), m_spMaxLat->GetValue() );
         pConf->Write ( _T( "RequestZoneMinLat" ), m_spMinLat->GetValue() );
         pConf->Write ( _T( "RequestZoneMaxLon" ), m_spMaxLon->GetValue() );
         pConf->Write ( _T( "RequestZoneMinLon" ), m_spMinLon->GetValue() );
 
     }
-    m_OldZoneSelMode = m_cManualZoneSel->GetValue();
 
     wxCloseEvent evt;
     OnClose ( evt );
@@ -926,6 +941,8 @@ void GribRequestSetting::OnSendMaiL( wxCommandEvent& event  )
         _("Too big file! zyGrib limit is 2Mb!"), _("Error! Max Lat lower than Min Lat or Max Lon lower than Min Lon!"),
         _("Too large area! Each side must be less than 180\u00B0!"), _("Too small area for this resolution!") };
 
+    ::wxBeginBusyCursor();
+
     m_MailImage->SetForegroundColour(wxColor( 255, 0, 0 ));
     m_AllowSend = false;
 
@@ -942,6 +959,9 @@ void GribRequestSetting::OnSendMaiL( wxCommandEvent& event  )
         m_rButtonYes->SetLabel(_("Continue..."));
         m_rButton->Layout();
         SetRequestDialogSize();
+
+        ::wxEndBusyCursor();
+
         return;
     }
 
@@ -974,4 +994,6 @@ void GribRequestSetting::OnSendMaiL( wxCommandEvent& event  )
     m_rButtonYes->SetLabel(_("Continue..."));
     m_rButton->Layout();
     SetRequestDialogSize();
+
+    ::wxEndBusyCursor();
 }

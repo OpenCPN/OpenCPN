@@ -1790,21 +1790,21 @@ WMMtype_LegendreFunction *WMM_AllocateLegendreFunctionMemory(int NumTerms)
 	if (!LegendreFunction) {
 		WMM_Error(1);
 		//printf("error allocating in WMM_AllocateLegendreFunctionMemory\n");
-		return FALSE;
+		return NULL;
 					}
 	LegendreFunction->Pcup = (double *) 	malloc	( (NumTerms +1) * sizeof ( double ) );
 	if (LegendreFunction->Pcup == 0)
 	{
 		WMM_Error(1);
 		//printf("error allocating in WMM_AllocateLegendreFunctionMemory\n");
-		return FALSE;
+        return NULL;
 	}
 	LegendreFunction->dPcup = (double *) 	malloc	( (NumTerms +1) * sizeof ( double ) );
 	if (LegendreFunction->dPcup == 0)
 	{
 		WMM_Error(1);
 		//printf("error allocating in WMM_AllocateLegendreFunctionMemory\n");
-		return FALSE;
+        return NULL;
 	}
 	return LegendreFunction;
 	}  /*WMMtype_LegendreFunction*/
@@ -1842,7 +1842,7 @@ WMMtype_MagneticModel *WMM_AllocateModelMemory(int NumTerms)
 	if (MagneticModel == NULL) {
 		WMM_Error(2);
 		//printf("error allocating in WMM_AllocateModelMemory\n");
-		return FALSE;
+        return NULL;
 					}
 
 	MagneticModel->Main_Field_Coeff_G =  (double *) 	malloc	( (NumTerms +1) * sizeof ( double ) );
@@ -1851,7 +1851,7 @@ WMMtype_MagneticModel *WMM_AllocateModelMemory(int NumTerms)
 	{
 		WMM_Error(2);
 		//printf("error allocating in WMM_AllocateModelMemory\n");
-		return FALSE;
+        return NULL;
 	}
 
 	MagneticModel->Main_Field_Coeff_H =  (double *) 	malloc	( (NumTerms +1) * sizeof ( double ) );
@@ -1860,21 +1860,21 @@ WMMtype_MagneticModel *WMM_AllocateModelMemory(int NumTerms)
 	{
 		WMM_Error(2);
 		//printf("error allocating in WMM_AllocateModelMemory\n");
-		return FALSE;
+        return NULL;
 	}
 	MagneticModel->Secular_Var_Coeff_G =  (double *) 	malloc	( (NumTerms +1) * sizeof ( double ) );
 	if (MagneticModel->Secular_Var_Coeff_G == NULL)
 	{
 		WMM_Error(2);
 		//printf("error allocating in WMM_AllocateModelMemory\n");
-		return FALSE;
+        return NULL;
 	}
 	MagneticModel->Secular_Var_Coeff_H =  (double *) 	malloc	( (NumTerms +1) * sizeof ( double ) );
 	if (MagneticModel->Secular_Var_Coeff_H == NULL)
 	{
 		WMM_Error(2);
 		//printf("error allocating in WMM_AllocateModelMemory\n");
-		return FALSE;
+        return NULL;
 	}
 	return MagneticModel;
 
@@ -3051,7 +3051,7 @@ int WMM_Comparison(WMMtype_MagneticModel *MagneticModel, WMMtype_Ellipsoid Ellip
 		WMM_GeodeticToSpherical(Ellip, CoordGeodetic, &CoordSpherical);
 		WMM_Geomag(Ellip, CoordSpherical, CoordGeodetic, TimedMagneticModel, &Results);
 		if(fabs(Results.X - Bx) > 10.0 || fabs(Results.Y - By) > 10.0 || fabs(Results.Z - Bz) > 10.0)
-			fprintf(fileout, "%lf %lf %lf %lf: %lf => %lf, %lf => %lf, %lf => %lf\n", CoordGeodetic.phi, CoordGeodetic.lambda, CoordGeodetic.HeightAboveEllipsoid, Date.DecimalYear, Results.X, Results.X - Bx, Results.Y, Results.Y - By, Results.Z, Results.Z - Bz);+
+			fprintf(fileout, "%lf %lf %lf %lf: %lf => %lf, %lf => %lf, %lf => %lf\n", CoordGeodetic.phi, CoordGeodetic.lambda, CoordGeodetic.HeightAboveEllipsoid, Date.DecimalYear, Results.X, Results.X - Bx, Results.Y, Results.Y - By, Results.Z, Results.Z - Bz);
 		printf("%lf %lf %lf %lf:\n %lf => %lf, %lf => %lf, %lf => %lf\n", CoordGeodetic.phi, CoordGeodetic.lambda, CoordGeodetic.HeightAboveEllipsoid, Date.DecimalYear, Results.X, Results.X - Bx, Results.Y, Results.Y - By, Results.Z, Results.Z - Bz);
 		tot_RMSx += (Results.X - Bx) * (Results.X - Bx);
 		tot_RMSy += (Results.Y - By) * (Results.Y - By);

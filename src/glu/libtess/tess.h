@@ -66,7 +66,7 @@ struct GLUtesselator {
   GLUmesh	*mesh;		/* stores the input contours, and eventually
                                    the tessellation itself */
 
-  void		(GLAPIENTRY *callError)( GLenum errnum );
+  void		(/*GLAPIENTRY*/ *callError)( GLenum errnum );
 
   /*** state needed for projecting onto the sweep plane ***/
 
@@ -84,7 +84,7 @@ struct GLUtesselator {
   PriorityQ	*pq;		/* priority queue of vertex events */
   GLUvertex	*event;		/* current sweep event being processed */
 
-  void		(GLAPIENTRY *callCombine)( GLdouble coords[3], void *data[4],
+  void		(/*GLAPIENTRY*/ *callCombine)( GLdouble coords[3], void *data[4],
 			        GLfloat weight[4], void **outData );
 
   /*** state needed for rendering callbacks (see render.c) ***/
@@ -94,11 +94,11 @@ struct GLUtesselator {
   GLUface	*lonelyTriList;
     /* list of triangles which could not be rendered as strips or fans */
 
-  void		(GLAPIENTRY *callBegin)( GLenum type );
-  void		(GLAPIENTRY *callEdgeFlag)( GLboolean boundaryEdge );
-  void		(GLAPIENTRY *callVertex)( void *data );
-  void		(GLAPIENTRY *callEnd)( void );
-  void		(GLAPIENTRY *callMesh)( GLUmesh *mesh );
+  void		(/*GLAPIENTRY*/ *callBegin)( GLenum type );
+  void		(/*GLAPIENTRY*/ *callEdgeFlag)( GLboolean boundaryEdge );
+  void		(/*GLAPIENTRY*/ *callVertex)( void *data );
+  void		(/*GLAPIENTRY*/ *callEnd)( void );
+  void		(/*GLAPIENTRY*/ *callMesh)( GLUmesh *mesh );
 
 
   /*** state needed to cache single-contour polygons for renderCache() */
@@ -108,13 +108,13 @@ struct GLUtesselator {
   CachedVertex	cache[TESS_MAX_CACHE];	/* the vertex data */
 
   /*** rendering callbacks that also pass polygon data  ***/ 
-  void		(GLAPIENTRY *callBeginData)( GLenum type, void *polygonData );
-  void		(GLAPIENTRY *callEdgeFlagData)( GLboolean boundaryEdge, 
+  void		(/*GLAPIENTRY*/ *callBeginData)( GLenum type, void *polygonData );
+  void		(/*GLAPIENTRY*/ *callEdgeFlagData)( GLboolean boundaryEdge, 
 				     void *polygonData );
-  void		(GLAPIENTRY *callVertexData)( void *data, void *polygonData );
-  void		(GLAPIENTRY *callEndData)( void *polygonData );
-  void		(GLAPIENTRY *callErrorData)( GLenum errnum, void *polygonData );
-  void		(GLAPIENTRY *callCombineData)( GLdouble coords[3], void *data[4],
+  void		(/*GLAPIENTRY*/ *callVertexData)( void *data, void *polygonData );
+  void		(/*GLAPIENTRY*/ *callEndData)( void *polygonData );
+  void		(/*GLAPIENTRY*/ *callErrorData)( GLenum errnum, void *polygonData );
+  void		(/*GLAPIENTRY*/ *callCombineData)( GLdouble coords[3], void *data[4],
 				    GLfloat weight[4], void **outData,
 				    void *polygonData );
 
@@ -123,12 +123,12 @@ struct GLUtesselator {
   void *polygonData;		/* client data for current polygon */
 };
 
-void GLAPIENTRY __gl_noBeginData( GLenum type, void *polygonData );
-void GLAPIENTRY __gl_noEdgeFlagData( GLboolean boundaryEdge, void *polygonData );
-void GLAPIENTRY __gl_noVertexData( void *data, void *polygonData );
-void GLAPIENTRY __gl_noEndData( void *polygonData );
-void GLAPIENTRY __gl_noErrorData( GLenum errnum, void *polygonData );
-void GLAPIENTRY __gl_noCombineData( GLdouble coords[3], void *data[4],
+void /*GLAPIENTRY*/ __gl_noBeginData( GLenum type, void *polygonData );
+void /*GLAPIENTRY*/ __gl_noEdgeFlagData( GLboolean boundaryEdge, void *polygonData );
+void /*GLAPIENTRY*/ __gl_noVertexData( void *data, void *polygonData );
+void /*GLAPIENTRY*/ __gl_noEndData( void *polygonData );
+void /*GLAPIENTRY*/ __gl_noErrorData( GLenum errnum, void *polygonData );
+void /*GLAPIENTRY*/ __gl_noCombineData( GLdouble coords[3], void *data[4],
 			 GLfloat weight[4], void **outData,
 			 void *polygonData );
 
