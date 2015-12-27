@@ -2756,7 +2756,7 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     if (gs)
         tipString = wxString( _("Hide ENC Text") ) << _T(" (T)");
     else
-        tipString = wxString(_("Show ENC Text")) << _T(" (T)");
+        tipString = wxString( _("Show ENC Text") ) << _T(" (T)");
 
     if( _toolbarConfigMenuUtil( ID_ENC_TEXT, tipString ) )
         tb->AddTool( ID_ENC_TEXT, _T("text"),
