@@ -2615,6 +2615,6 @@ void AIS_Decoder::SendJSONMsg(AIS_Target_Data* pTarget)
     jMsg[wxS("cog")] = pTarget->COG;
     jMsg[wxS("hdg")] = pTarget->HDG;
     jMsg[wxS("mmsi")] = pTarget->MMSI;
-    jMsg[wxS("shipname")] = pTarget->ShipName;
+    jMsg[wxS("shipname")] = wxString(pTarget->ShipName);
     g_pi_manager->SendJSONMessageToAllPlugins( wxT("AIS"), jMsg );    
 }
