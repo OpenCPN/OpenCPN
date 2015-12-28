@@ -21,7 +21,6 @@
 ## *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
 ## ***************************************************************************
 
-
 #TODO:
 # - cross platform compiling
 # - test with Win & OSX
@@ -606,7 +605,7 @@ IF(OCPN_USE_SVG)
       SET( CAIRO_NAMES libcairo cairo )
       FIND_LIBRARY( CAIRO_LIBRARY
               NAMES ${CAIRO_NAMES}
-              PATHS /usr/lib /usr/local/lib )
+              PATHS /usr/lib /usr/local/lib /usr/lib/i386-linux-gnu)
 
       GET_FILENAME_COMPONENT( CAIRO_LIBRARY_DIR ${CAIRO_LIBRARY} PATH )
 
