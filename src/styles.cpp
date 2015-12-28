@@ -60,7 +60,7 @@ static wxBitmap LoadSVG( const wxString filename, unsigned int width, unsigned i
     
     wxSVGDocument* svgDoc = new wxSVGDocument;
     if( svgDoc->Load(filename) )
-        return wxBitmap( svgDoc->Render( width, height, NULL, true, true ) );
+        return wxBitmap( svgDoc->Render( width, height, NULL, true, false/*true*/ ) );
     else
         return wxBitmap(width, height);
 }
