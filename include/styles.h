@@ -109,7 +109,9 @@ public:
       bool HasBackground() const { return hasBackground; }
       void HasBackground( bool b ) { hasBackground = b; }
       wxBitmap GetIcon(const wxString & name);
-      wxBitmap GetToolIcon(const wxString & toolname, int iconType = TOOLICON_NORMAL, bool rollover = false );
+      wxBitmap GetToolIcon(const wxString & toolname,
+                           int iconType = TOOLICON_NORMAL, bool rollover = false,
+                           int width = -1, int height = -1);
       wxBitmap BuildPluginIcon( const wxBitmap* bm, int iconType );
 
       int GetTopMargin() const { return toolMarginTop[currentOrientation]; }

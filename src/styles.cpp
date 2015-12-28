@@ -71,7 +71,7 @@ static wxBitmap LoadSVG( const wxString filename, unsigned int width, unsigned i
 
 wxBitmap MergeBitmaps( wxBitmap back, wxBitmap front, wxSize offset )
 {
-    wxBitmap merged( back.GetWidth(), back.GetHeight(), back.GetDepth() );
+    wxBitmap merged( front.GetWidth(), front.GetHeight(), front.GetDepth() );
 
     //  If the front bitmap has no alpha channel, then merging will accomplish nothing
     //  So, simply return the bitmap intact
@@ -235,7 +235,7 @@ wxBitmap Style::GetIcon(const wxString & name)
     return icon->icon;
 }
 
-wxBitmap Style::GetToolIcon(const wxString & toolname, int iconType, bool rollover )
+wxBitmap Style::GetToolIcon(const wxString & toolname, int iconType, bool rollover, int width, int height )
 {
 
     if( toolIndex.find( toolname ) == toolIndex.end() ) {
@@ -249,14 +249,20 @@ wxBitmap Style::GetToolIcon(const wxString & toolname, int iconType, bool rollov
     int index = toolIndex[toolname];
 
     Tool* tool = (Tool*) tools.Item( index );
-
+ 
+    wxSize size = tool->customSize;
+    if( size.x == 0 )
+        size = toolSize[currentOrientation];
+    
+    wxSize retSize = size;
+    if((width > 0) && (height > 0))
+        retSize = wxSize(width, height);
+    
     switch( iconType ){
         case TOOLICON_NORMAL: {
             if( tool->iconLoaded && !rollover ) return tool->icon;
             if( tool->rolloverLoaded && rollover ) return tool->rollover;
 
-            wxSize size = tool->customSize;
-            if( size.x == 0 ) size = toolSize[currentOrientation];
             wxRect location( tool->iconLoc, size );
 
             //  If rollover icon does not exist, use the defult icon
@@ -278,25 +284,33 @@ wxBitmap Style::GetToolIcon(const wxString & toolname, int iconType, bool rollov
             else
                 fullFilePath = myConfigFileDir + this->sysname + wxFileName::GetPathSeparator() + toolname + ".svg";
             if( wxFileExists( fullFilePath ) )
-                bm = LoadSVG( fullFilePath, GetToolSize().x, GetToolSize().y );
+                bm = LoadSVG( fullFilePath, retSize.x, retSize.y );
             else
             {
                 wxLogMessage( _T("Can't find SVG: ") + fullFilePath );
 #endif // ocpnUSE_SVG
                 bm = graphics->GetSubBitmap( location );
+                
+                if( hasBackground ) {
+                    bm = MergeBitmaps( GetNormalBG(), bm, wxSize( 0, 0 ) );
+                } else {
+                    wxBitmap bg( GetToolSize().x, GetToolSize().y );
+                    wxMemoryDC mdc( bg );
+                    mdc.SetBackground( wxBrush( GetGlobalColor( _T("GREY2") ), wxBRUSHSTYLE_SOLID ) );
+                    mdc.Clear();
+                    mdc.SelectObject( wxNullBitmap );
+                    bm = MergeBitmaps( bg, bm, wxSize( 0, 0 ) );
+                }
+                
+                if(retSize != size){
+                    wxImage scaled_image = bm.ConvertToImage();
+                    bm = wxBitmap(scaled_image.Scale(retSize.x, retSize.y, wxIMAGE_QUALITY_HIGH));
+                }
+                
 #ifdef ocpnUSE_SVG
             }
 #endif // ocpnUSE_SVG
-            if( hasBackground ) {
-                bm = MergeBitmaps( GetNormalBG(), bm, wxSize( 0, 0 ) );
-            } else {
-                wxBitmap bg( GetToolSize().x, GetToolSize().y );
-                wxMemoryDC mdc( bg );
-                mdc.SetBackground( wxBrush( GetGlobalColor( _T("GREY2") ), wxBRUSHSTYLE_SOLID ) );
-                mdc.Clear();
-                mdc.SelectObject( wxNullBitmap );
-                bm = MergeBitmaps( bg, bm, wxSize( 0, 0 ) );
-            }
+
             if( rollover ) {
                 tool->rollover = SetBitmapBrightness( bm );
                 tool->rolloverLoaded = true;
@@ -322,8 +336,6 @@ wxBitmap Style::GetToolIcon(const wxString & toolname, int iconType, bool rollov
             if( tool->toggledLoaded && !rollover ) return tool->toggled;
             if( tool->rolloverToggledLoaded && rollover ) return tool->rolloverToggled;
 
-            wxSize size = tool->customSize;
-            if( size.x == 0 ) size = toolSize[currentOrientation];
             wxRect location( tool->iconLoc, size );
             if( rollover ) location = wxRect( tool->rolloverLoc, size );
             wxSize offset( 0, 0 );
@@ -343,16 +355,22 @@ wxBitmap Style::GetToolIcon(const wxString & toolname, int iconType, bool rollov
             else
                 fullFilePath = myConfigFileDir + this->sysname + wxFileName::GetPathSeparator() + toolname + "_toggled.svg";
             if( wxFileExists( fullFilePath ) )
-                bm = LoadSVG( fullFilePath, GetToolSize().x, GetToolSize().y );
+                bm = LoadSVG( fullFilePath, retSize.x, retSize.y );
             else
             {
                 wxLogMessage( _T("Can't find SVG: ") + fullFilePath );
 #endif // ocpnUSE_SVG
                 bm = graphics->GetSubBitmap( location );
+                bm = MergeBitmaps( GetToggledBG(), bm, offset );
+                
+                if(retSize != size){
+                    wxImage scaled_image = bm.ConvertToImage();
+                    bm = wxBitmap(scaled_image.Scale(retSize.x, retSize.y, wxIMAGE_QUALITY_HIGH));
+                }
+                
 #ifdef ocpnUSE_SVG
             }
 #endif // ocpnUSE_SVG
-            bm = MergeBitmaps( GetToggledBG(), bm, offset );
             if( rollover ) {
                 tool->rolloverToggled = SetBitmapBrightness( bm );
                 tool->rolloverToggledLoaded = true;
@@ -365,28 +383,33 @@ wxBitmap Style::GetToolIcon(const wxString & toolname, int iconType, bool rollov
         }
         case TOOLICON_DISABLED: {
             if( tool->disabledLoaded ) return tool->disabled;
-            wxSize size = tool->customSize;
-            if( size.x == 0 ) size = toolSize[currentOrientation];
             wxRect location( tool->disabledLoc, size );
+
             wxBitmap bm;
 #ifdef ocpnUSE_SVG
             wxString fullFilePath = myConfigFileDir + this->sysname + wxFileName::GetPathSeparator() + toolname + "_disabled.svg";
             if( wxFileExists( fullFilePath ) )
-                bm = LoadSVG( fullFilePath, GetToolSize().x, GetToolSize().y );
+                bm = LoadSVG( fullFilePath, retSize.x, retSize.y );
             else
             {
                 wxLogMessage( _T("Can't find SVG: ") + fullFilePath );
 #endif // ocpnUSE_SVG
                 bm = graphics->GetSubBitmap( location );
+                
+                if( hasBackground ) {
+                    bm = MergeBitmaps( GetNormalBG(), bm, wxSize( 0, 0 ) );
+                }
+                
+                if(retSize != size){
+                    wxImage scaled_image = bm.ConvertToImage();
+                    bm = wxBitmap(scaled_image.Scale(retSize.x, retSize.y, wxIMAGE_QUALITY_HIGH));
+                }
 #ifdef ocpnUSE_SVG
             }
 #endif // ocpnUSE_SVG
             if( currentOrientation ) {
                 location.x -= verticalIconOffset.x;
                 location.y -= verticalIconOffset.y;
-            }
-            if( hasBackground ) {
-                bm = MergeBitmaps( GetNormalBG(), bm, wxSize( 0, 0 ) );
             }
             tool->disabled = SetBitmapBrightness( bm );
             tool->disabledLoaded = true;

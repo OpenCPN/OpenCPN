@@ -1819,22 +1819,16 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
         if( tool->IsEnabled() ) {
             bmp = tool->GetNormalBitmap();
             if( !bmp.IsOk() ){
-                bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_NORMAL, tool->rollover );
-                if(m_sizefactor > 1.0 ){
-                    wxImage scaled_image = bmp.ConvertToImage();
-                    bmp = wxBitmap(scaled_image.Scale(tool->m_width, tool->m_height, wxIMAGE_QUALITY_HIGH));
-                }
+                bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_NORMAL, tool->rollover,
+                                            tool->m_width, tool->m_height );
                 tool->SetNormalBitmap( bmp );
                 tool->bitmapOK = true;
             }
         } else {
             bmp = tool->GetDisabledBitmap();
             if( !bmp.IsOk() ){
-                bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_DISABLED );
-                if(m_sizefactor > 1.0 ){
-                    wxImage scaled_image = bmp.ConvertToImage();
-                    bmp = wxBitmap(scaled_image.Scale(tool->m_width, tool->m_height, wxIMAGE_QUALITY_HIGH));
-                }
+                bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_DISABLED, false,
+                                            tool->m_width, tool->m_height );
                 tool->SetDisabledBitmap( bmp );
                 tool->bitmapOK = true;
             }
@@ -1868,31 +1862,26 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
                         bmp = m_style->BuildPluginIcon( tool->pluginNormalIcon, TOOLICON_NORMAL );
                 }
             }
-            if(m_sizefactor > 1.0 ){
-                wxImage scaled_image = bmp.ConvertToImage();
-                bmp = wxBitmap(scaled_image.Scale(tool->m_width, tool->m_height, wxIMAGE_QUALITY_HIGH));
-            }
+             if(m_sizefactor > 1.0 ){
+                 wxImage scaled_image = bmp.ConvertToImage();
+                 bmp = wxBitmap(scaled_image.Scale(tool->m_width, tool->m_height, wxIMAGE_QUALITY_HIGH));
+             }
             tool->SetNormalBitmap( bmp );
             tool->bitmapOK = true;
         } else {
             if( tool->IsEnabled() ) {
                 if( tool->IsToggled() )
-                    bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_TOGGLED, tool->rollover );
+                    bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_TOGGLED, tool->rollover,
+                                                tool->m_width, tool->m_height );
                 else
-                    bmp = m_style->GetToolIcon( tool->GetIconName(), TOOLICON_NORMAL, tool->rollover );
+                    bmp = m_style->GetToolIcon( tool->GetIconName(), TOOLICON_NORMAL, tool->rollover,
+                                                tool->m_width, tool->m_height );
 
-                if(m_sizefactor > 1.0 ){
-                    wxImage scaled_image = bmp.ConvertToImage();
-                    bmp = wxBitmap(scaled_image.Scale(tool->m_width, tool->m_height, wxIMAGE_QUALITY_HIGH));
-                }
                 tool->SetNormalBitmap( bmp );
                 tool->bitmapOK = true;
             } else {
-                bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_DISABLED );
-                if(m_sizefactor > 1.0 ){
-                    wxImage scaled_image = bmp.ConvertToImage();
-                    bmp = wxBitmap(scaled_image.Scale(tool->m_width, tool->m_height, wxIMAGE_QUALITY_HIGH));
-                }
+                bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_DISABLED, false,
+                                            tool->m_width, tool->m_height );
                 tool->SetDisabledBitmap( bmp );
                 tool->bitmapOK = true;
             }

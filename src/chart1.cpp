@@ -2820,6 +2820,7 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
 
 
 // Realize() the toolbar
+    style->Unload();
     g_FloatingToolbarDialog->Realize();
 
 //      Set up the toggle states
