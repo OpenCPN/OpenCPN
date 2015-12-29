@@ -695,7 +695,7 @@ GenericFunction ocpnGetProcAddress(const char *addr, const char *extension)
     if(!extension)
         return (GenericFunction)NULL;
 
-#ifndef __OCPN__ANDROID__    
+#ifndef ocpnUSE_GLES
     //  If this is an extension entry point,
     //  We look explicitly in the extensions list to confirm
     //  that the request is actually supported.
@@ -731,7 +731,7 @@ static void GetglEntryPoints( void )
     // (I don't know that it could ever happen, but if it did, bad things would happen)
 
 #ifndef __OCPN__ANDROID__
-    const char *extensions[] = {"", "ARB", "EXT", 0 };
+    const char *extensions[] = {"", "ARB", "EXT", "OES", 0 };
 #else
     const char *extensions[] = {"OES", 0 };
 #endif
@@ -1112,7 +1112,7 @@ void glChartCanvas::SetupOpenGL()
     
     const GLubyte *ext_str = glGetString(GL_EXTENSIONS);
     m_extensions = wxString( (const char *)ext_str, wxConvUTF8 );
-#ifdef __WXQT__    
+#ifdef ocpnUSE_GLES
     wxLogMessage( _T("OpenGL extensions available: ") );
     wxLogMessage(m_extensions );
 #endif    
@@ -1195,7 +1195,8 @@ void glChartCanvas::SetupOpenGL()
         if(!g_texture_rectangle_format)
             m_b_DisableFBO = true;
         
-        if(!QueryExtension( "GL_EXT_framebuffer_object" ))
+        if(!QueryExtension( "GL_EXT_framebuffer_object" ) &&
+           !QueryExtension( "GL_OES_framebuffer_object" ))
             m_b_DisableFBO = true;
 #endif
  
@@ -1512,15 +1513,15 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
         event.Skip();
         return;
     }
-
+    
+    if( !m_bsetup ) {
 #if wxCHECK_VERSION(2, 9, 0)
     SetCurrent(*m_pcontext);
 #else
     SetCurrent();
 #endif
-    
-    if( !m_bsetup ) {
-        SetupOpenGL();
+
+    SetupOpenGL();
         
         #ifdef USE_S57
         if( ps52plib )

@@ -179,7 +179,6 @@ void FlattenColorsForCompression(unsigned char *data, int dim, bool swap_colors=
 void CompressDataETC(const unsigned char *data, int dim, int size,
                      unsigned char *tex_data)
 {
-    wxASSERT(dim*dim == 2*size); // must be 4bpp
     uint64_t *tex_data64 = (uint64_t*)tex_data;
     
     int mbrow = wxMin(4, dim), mbcol = wxMin(4, dim);
