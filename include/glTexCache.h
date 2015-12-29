@@ -35,7 +35,7 @@
 
 class glTextureDescriptor;
 
-#define COMPRESSED_CACHE_MAGIC 0xf010  // change this when the format changes
+#define COMPRESSED_CACHE_MAGIC 0xf011  // change this when the format changes
 
 #define FACTORY_TIMER                   10000
 
@@ -100,7 +100,7 @@ public:
     float *m_coords, *m_texcoords;
 };
 
-#define MAX_TEX_LEVEL 5
+#define MAX_TEX_LEVEL 10
 
 class glTexFactory : public wxEvtHandler
 {
