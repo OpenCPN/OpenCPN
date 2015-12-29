@@ -312,6 +312,11 @@ wxBitmap Style::GetToolIcon(const wxString & toolname, int iconType, bool rollov
                     bm = MergeBitmaps( bg, bm, wxSize( 0, 0 ) );
                 }
                 
+                if(retSize != size){
+                    wxImage scaled_image = bm.ConvertToImage();
+                    bm = wxBitmap(scaled_image.Scale(retSize.x, retSize.y, wxIMAGE_QUALITY_HIGH));
+                }
+                
 #ifdef ocpnUSE_SVG
             }
 #endif // ocpnUSE_SVG
