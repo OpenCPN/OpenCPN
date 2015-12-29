@@ -1020,7 +1020,6 @@ void glChartCanvas::BuildFBO( )
             m_cache_tex_x = NextPow2(m_cache_tex_x);
             m_cache_tex_y = NextPow2(m_cache_tex_y);
         }
-        printf("cache %d %d\n", m_cache_tex_x, m_cache_tex_y);
     }        
         
     ( s_glGenFramebuffers )( 1, &m_fb0 );
@@ -1231,14 +1230,7 @@ void glChartCanvas::SetupOpenGL()
 #ifdef __WXMSW__
         if( GetRendererString().Upper().Find( _T("INTEL") ) != wxNOT_FOUND )
             s_glGenerateMipmap = 0;
-#endif        
-            
-    // This driver found on raspberry PI does not not support really large texture rectangles
-    if( GetRendererString().Find( _T("VideoCore IV HW") ) != wxNOT_FOUND ) {
-        wxLogMessage( _T("OpenGL-> VideoCore IV detected, not using large npot textures") );
-//        g_mipmap_max_level=0;
-	g_bno_large_texture_rectangle = true;
-    }
+#endif
 
     if( !s_glGenerateMipmap )
         wxLogMessage( _T("OpenGL-> glGenerateMipmap unavailable") );
@@ -1289,7 +1281,13 @@ void glChartCanvas::SetupOpenGL()
 #ifdef __OCPN__ANDROID__
     g_GLOptions.m_bUseCanvasPanning = true;
 #endif
-        
+    // This driver found on raspberry PI does not not support really large texture rectangles
+    if( GetRendererString().Find( _T("VideoCore IV HW") ) != wxNOT_FOUND ) {
+        wxLogMessage( _T("OpenGL-> VideoCore IV detected, not using large npot textures") );
+	g_bno_large_texture_rectangle = true;
+        //        g_GLOptions.m_bUseCanvasPanning = true;
+    }
+
     //      Maybe build FBO(s)
 
     BuildFBO();
@@ -4108,7 +4106,10 @@ void glChartCanvas::Render()
 
     // Try to use the framebuffer object's cache of the last frame
     // to accelerate drawing this frame (if overlapping)
-    if(m_b_BuiltFBO && !m_bfogit && !scale_it && !bpost_hilite
+    if(m_b_BuiltFBO && !m_bfogit && !scale_it && !bpost_hilite &&
+       (!g_bno_large_texture_rectangle || VPoint.b_quilt ||  // slight optimization (33% speedup on rpi2)
+        Current_Ch->GetChartFamily() != CHART_FAMILY_RASTER) // for single chart raster to not use fbo
+
        //&& VPoint.tilt == 0 // disabling fbo in tilt mode gives better quality but slower
         ) {
         //  Is this viewpoint the same as the previously painted one?
@@ -4158,8 +4159,8 @@ void glChartCanvas::Render()
                 if( ( fabs( deltax - dx ) > 1e-2 ) || ( fabs( deltay - dy ) > 1e-2 ) )
                     b_whole_pixel = false;
                     
-                accelerated_pan = b_whole_pixel && abs(dx) < m_cache_tex_x && abs(dy) < m_cache_tex_y
-                                  && sx == m_cache_tex_x && sy == m_cache_tex_y;
+                accelerated_pan = b_whole_pixel && abs(dx) < m_cache_tex_x && abs(dy) < m_cache_tex_y;
+//                                  && sx == m_cache_tex_x && sy == m_cache_tex_y
             }
 
             // do we allow accelerated panning?  can we perform it here?
@@ -4192,7 +4193,7 @@ void glChartCanvas::Render()
                     glBindTexture( g_texture_rectangle_format, m_cache_tex[!m_cache_page] );
                     glEnable( g_texture_rectangle_format );
                     glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
-                                
+
                     //    Render the reuseable portion of the cached texture
                                 
                     // Render the cached texture as quad to FBO(m_blit_tex) with offsets
