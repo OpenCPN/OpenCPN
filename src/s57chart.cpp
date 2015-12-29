@@ -2899,7 +2899,6 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
             } else
                 ret_value = PostInit( flags, m_global_color_scheme );
 
-            OCPNPlatform::HideBusySpinner();
         }
 
     }
@@ -2909,8 +2908,6 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
 
         m_SENCFileName = name;
         ret_value = PostInit( flags, m_global_color_scheme );
-
-        OCPNPlatform::HideBusySpinner();
 
     }
 

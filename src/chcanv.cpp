@@ -8365,7 +8365,6 @@ void pupHandler_PasteWaypoint() {
 
     cc1->InvalidateGL();
     cc1->Refresh( false );
-    OCPNPlatform::HideBusySpinner();
 }
 
 void pupHandler_PasteRoute() {
@@ -8483,7 +8482,6 @@ void pupHandler_PasteRoute() {
         cc1->Refresh( false );
     }
 
-    OCPNPlatform::HideBusySpinner();
 }
 
 void pupHandler_PasteTrack() {
@@ -8534,7 +8532,6 @@ void pupHandler_PasteTrack() {
 
     cc1->InvalidateGL();
     cc1->Refresh( false );
-    OCPNPlatform::HideBusySpinner();
 }
 
 bool ChartCanvas::InvokeCanvasMenu(int x, int y, int seltype)
@@ -9555,7 +9552,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
     dc.DestroyClippingRegion();
 
     PaintCleanup();
-
+    OCPNPlatform::HideBusySpinner();
 //      CALLGRIND_STOP_INSTRUMENTATION
 
 }

@@ -101,8 +101,6 @@ WX_DEFINE_OBJARRAY ( Array_Of_M_COVR_Desc );
 WX_DEFINE_LIST ( List_Of_M_COVR_Desc );
 
 
-bool s_b_busy_shown;
-
 void appendOSDirSep ( wxString* pString )
 {
       wxChar sep = wxFileName::GetPathSeparator();
@@ -2238,10 +2236,6 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
       if (recalc_depth) {
           ClearDepthContourArray();
           BuildDepthContourArray();
-      }
-      if( s_b_busy_shown){
-          OCPNPlatform::HideBusySpinner();
-          s_b_busy_shown = false;
       }
 }
 
@@ -4557,10 +4551,7 @@ int cm93chart::loadsubcell ( int cellindex, wxChar sub_char )
 
       //    File is known to exist
 
-      if(!s_b_busy_shown) {
-          ::wxBeginBusyCursor();
-          s_b_busy_shown = true;
-      }
+      OCPNPlatform::ShowBusySpinner();
       
       wxString msg ( _T ( "Loading CM93 cell " ) );
       msg += file;
