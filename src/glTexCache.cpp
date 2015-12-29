@@ -915,6 +915,7 @@ glTexFactory::glTexFactory(ChartBase *chart, int raster_format)
     m_CompressedCacheFilePath = CompressedCachePath(chart->GetFullPath());
     m_hdrOK = false;
     m_catalogOK = false;
+    m_newCatalog = true;
 
     m_catalogCorrupted = false;
 
@@ -1464,8 +1465,9 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
         if( level >= base_level ) {
             int status = GetTextureLevel( ptd, rect, level, color_scheme );
             if (m_newCatalog) {
-                 // it's an empty catalog, odd it's going to be slow
+                 // it's an empty catalog or it's not used, odds it's going to be slow
                  OCPNPlatform::ShowBusySpinner();
+                 m_newCatalog = false;
             }
             if(g_GLOptions.m_bTextureCompression) {
                 if( (COMPRESSED_BUFFER_OK == status) && (ptd->nGPU_compressed != GPU_TEXTURE_UNCOMPRESSED ) ){
