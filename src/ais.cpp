@@ -616,7 +616,7 @@ static void AtoN_Diamond( ocpnDC &dc, int x, int y, int radius, AIS_Target_Data*
 
     wxPen aton_DrawPen;
     wxPen aton_WhiteBorderPen;
-    wxBrush aton_Brush;
+
     
     int rad1a = radius / 2; //size off topmarks of AtoN
     int rad2a = radius / 4;
@@ -676,6 +676,24 @@ static void AtoN_Diamond( ocpnDC &dc, int x, int y, int radius, AIS_Target_Data*
     TriPointDown[1] = wxPoint(  rad1a, -rad1a );
                 TriPointDown[2] = wxPoint(  0, 0 );
                 TriPointDown[3] = wxPoint(  -rad1a, -rad1a );
+                
+    wxPoint CircleOpen[16]; // Workaround to draw transparent circles
+                CircleOpen[0] = wxPoint(  -1, 5 );
+                CircleOpen[1] = wxPoint(  1, 5 );
+                CircleOpen[2] = wxPoint(  3, 4 );
+                CircleOpen[3] = wxPoint(  4, 3);
+                CircleOpen[4] = wxPoint(  5, 1 );
+                CircleOpen[5] = wxPoint(  5,-1  );
+                CircleOpen[6] = wxPoint(  4,-3  );
+                CircleOpen[7] = wxPoint(  3,-4  );
+                CircleOpen[8] = wxPoint(  1,-5  );
+                CircleOpen[9] = wxPoint( -1,-5 );
+                CircleOpen[10] = wxPoint( -3,-4 );
+                CircleOpen[11] = wxPoint( -4,-3 );
+                CircleOpen[12] = wxPoint( -5,-1 );
+                CircleOpen[13] = wxPoint( -4,3 );
+                CircleOpen[14] = wxPoint( -3,4 );
+                CircleOpen[15] = wxPoint( -1,5 );                
 
     switch (td->ShipType ) {
         case 9 :
@@ -737,16 +755,21 @@ static void AtoN_Diamond( ocpnDC &dc, int x, int y, int radius, AIS_Target_Data*
             break;
         case 17: 
         case 28: //Isolated danger
-            //TODO Draw transparant circles
+            dc.SetPen( aton_WhiteBorderPen );
+            dc.DrawLines( 16, CircleOpen, x, y - radius -5);
             dc.SetPen( aton_DrawPen );
-            dc.DrawCircle(x, y-radius-rad3a, rad3a);
-            dc.DrawCircle(x, y-radius-3*rad3a-1, rad3a);
+            dc.DrawLines( 16, CircleOpen, x, y - radius -5);
+            dc.SetPen( aton_WhiteBorderPen );
+            dc.DrawLines( 16, CircleOpen, x, y - radius -16);
+            dc.SetPen( aton_DrawPen );
+            dc.DrawLines( 16, CircleOpen, x, y - radius -16);
             break;
         case 18: 
         case 29: //Safe water
-            //TODO Draw transparant circle
+            dc.SetPen( aton_WhiteBorderPen );
+            dc.DrawLines( 16, CircleOpen, x, y - radius -5);
             dc.SetPen( aton_DrawPen );
-            dc.DrawCircle(x, y-radius-rad3a, rad3a);
+            dc.DrawLines( 16, CircleOpen, x, y - radius -5);
             break;
         case 19: 
         case 30:{ //Special Mark
@@ -1057,12 +1080,11 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
     transrot_pts(4, ais_quad_icon, sin_theta, cos_theta);
 
-    wxColour UBLCK = GetGlobalColor( _T ( "UBLCK" ));
-    dc.SetPen( wxPen( UBLCK ) );
+    
+    dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ) ) );
 
     // Default color is green
-    wxColour UINFG = GetGlobalColor( _T ( "UINFG" ));
-    wxBrush target_brush = wxBrush( UINFG );
+    wxBrush target_brush = wxBrush( GetGlobalColor( _T ( "UINFG" ) ) );
 
     // Euro Inland targets render slightly differently
     if( td->b_isEuroInland )
@@ -1073,16 +1095,15 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         target_brush = wxBrush( GetGlobalColor( _T ( "GREEN5" ) ) );
             
     //and....
-    wxColour URED = GetGlobalColor( _T ( "URED" ));
     if( !td->b_nameValid )
         target_brush = wxBrush( GetGlobalColor( _T ( "CHYLW" ) ) );
     if( ( td->Class == AIS_DSC ) && ( td->ShipType == 12 ) )                    // distress
-        target_brush = wxBrush( URED );
+        target_brush = wxBrush( GetGlobalColor( _T ( "URED" ) ) );
     if( td->b_SarAircraftPosnReport )
-        target_brush = wxBrush( UINFG );
+        target_brush = wxBrush( GetGlobalColor( _T ( "UINFG" ) ) );
 
     if( ( td->n_alert_state == AIS_ALERT_SET ) && ( td->bCPA_Valid ) )
-        target_brush = wxBrush( URED );
+        target_brush = wxBrush( GetGlobalColor( _T ( "URED" ) ) );
 
     if( td->b_positionDoubtful ) target_brush = wxBrush( GetGlobalColor( _T ( "UINFF" ) ) );
 
@@ -1100,7 +1121,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                                                        &tCPAPoint.y, 0, cc1->GetVP().pix_width, 0, cc1->GetVP().pix_height );
 
         if( res != Invisible ) {
-            wxPen ppPen2( URED, 2, wxPENSTYLE_USER_DASH );
+            wxPen ppPen2( GetGlobalColor( _T ( "URED" ) ), 2, wxPENSTYLE_USER_DASH );
             ppPen2.SetDashes( 2, dash_long );
             dc.SetPen( ppPen2 );
 
@@ -1137,7 +1158,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             dc.SetPen( wxPen( yellow, 4 ) );
             dc.StrokeLine( tCPAPoint.x, tCPAPoint.y, oCPAPoint.x, oCPAPoint.y );
 
-            wxPen ppPen2( URED, 2, wxPENSTYLE_USER_DASH );
+            wxPen ppPen2( GetGlobalColor( _T ( "URED" ) ), 2, wxPENSTYLE_USER_DASH );
             ppPen2.SetDashes( 2, dash_long );
             dc.SetPen( ppPen2 );
             dc.StrokeLine( tCPAPoint.x, tCPAPoint.y, oCPAPoint.x, oCPAPoint.y );
@@ -1145,7 +1166,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             //        Draw little circles at the ends of the CPA alert line
             wxBrush br( GetGlobalColor( _T ( "BLUE3" ) ) );
             dc.SetBrush( br );
-            dc.SetPen( wxPen( UBLCK ) );
+            dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLK" ) ) ) );
 
             //  Using the true ends, not the clipped ends
             dc.StrokeCircle( tCPAPoint_unclipped.x, tCPAPoint_unclipped.y, 5 );
@@ -1162,27 +1183,29 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                                                            0, cc1->GetVP().pix_width, 0, cc1->GetVP().pix_height );
 
         if ( ownres != Invisible ) {
-            wxPen ppPen2 ( URED, 2, wxPENSTYLE_USER_DASH );
+            wxPen ppPen2 ( GetGlobalColor ( _T ( "URED" )), 2, wxPENSTYLE_USER_DASH );
             ppPen2.SetDashes( 2, dash_long );
             dc.SetPen(ppPen2);
 
             dc.StrokeLine ( oShipPoint.x, oShipPoint.y, oCPAPoint.x, oCPAPoint.y );
         } //TR : till here
 
-        dc.SetPen( wxPen( UBLCK ) );
-        dc.SetBrush( wxBrush( URED ) );
+        dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ) ) );
+        dc.SetBrush( wxBrush( GetGlobalColor( _T ( "URED" ) ) ) );
     }
 
     //  Highlight the AIS target symbol if an alert dialog is currently open for it
     if( g_pais_alert_dialog_active && g_pais_alert_dialog_active->IsShown() ) {
         if( g_pais_alert_dialog_active->Get_Dialog_MMSI() == td->MMSI )
-            cc1->JaggyCircle( dc, wxPen( URED , 2 ), TargetPoint.x, TargetPoint.y, 100 );
+            cc1->JaggyCircle( dc, wxPen( GetGlobalColor( _T ( "URED" ) ), 2 ),
+                              TargetPoint.x, TargetPoint.y, 100 );
     }
 
     //  Highlight the AIS target symbol if a query dialog is currently open for it
     if( g_pais_query_dialog_active && g_pais_query_dialog_active->IsShown() ) {
         if( g_pais_query_dialog_active->GetMMSI() == td->MMSI )
-            TargetFrame( dc, wxPen( UBLCK , 2 ), TargetPoint.x, TargetPoint.y, 25 );
+            TargetFrame( dc, wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 2 ),
+                         TargetPoint.x, TargetPoint.y, 25 );
     }
     
     //       Render the COG line if the speed is greater than moored speed defined by ais options dialog
@@ -1210,7 +1233,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
                     if( g_ais_cog_predictor_width > 1 ) {
                         //    Draw a 1 pixel wide black line
-                        wxPen narrow_pen( UBLCK, 1 );
+                        wxPen narrow_pen( GetGlobalColor( _T ( "UBLCK" ) ), 1 );
                         dc.SetPen( narrow_pen );
                         dc.StrokeLine( pixx, pixy, pixx1, pixy1 );
                     }
@@ -1302,7 +1325,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
     //        Actually Draw the target
     if( td->Class == AIS_ARPA ) {
-        wxPen target_pen( UBLCK, 2 );
+        wxPen target_pen( GetGlobalColor( _T ( "UBLCK" ) ), 2 );
 
         dc.SetPen( target_pen );
         dc.SetBrush( target_brush );
@@ -1311,17 +1334,19 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         dc.StrokeCircle( TargetPoint.x, TargetPoint.y, 1 );
         //        Draw the inactive cross-out line
         if( !td->b_active ) {
-            dc.SetPen( wxPen( UBLCK, 2 ) );
+            dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 2 ) );
             dc.StrokeLine( TargetPoint.x - 14, TargetPoint.y, TargetPoint.x + 14, TargetPoint.y );
-            dc.SetPen( wxPen( UBLCK, 1 ) );
+            dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 1 ) );
         }
-    } else if( td->Class == AIS_ATON ) {                   // Aid to Navigation
+    } else if( td->Class == AIS_ATON )
         AtoN_Diamond( dc, TargetPoint.x, TargetPoint.y, 12, td );
-    } else if( td->Class == AIS_BASE ) {                      // Base Station
-        Base_Square( dc, wxPen( UBLCK , 2 ), TargetPoint.x, TargetPoint.y, 8 );
+      else if( td->Class == AIS_BASE ) {                      // Base Station
+        Base_Square( dc, wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 2 ), TargetPoint.x,
+                     TargetPoint.y, 8 );
     } else if( td->Class == AIS_SART ) {                      // SART Target
         if( td->NavStatus == 14 )       // active
-            SART_Render( dc, wxPen( URED , 2 ), TargetPoint.x, TargetPoint.y, 8 );
+            SART_Render( dc, wxPen( GetGlobalColor( _T ( "URED" ) ), 2 ), TargetPoint.x,
+                         TargetPoint.y, 8 );
         else
             SART_Render( dc, wxPen( GetGlobalColor( _T ( "UGREN" ) ), 2 ),
                          TargetPoint.x, TargetPoint.y, 8 );
@@ -1361,9 +1386,9 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
         }
 
-        wxPen target_outline_pen( UBLCK, 2 );
+        wxPen target_outline_pen( GetGlobalColor( _T ( "UBLCK" ) ), 2 );
         dc.SetPen( target_outline_pen );
-        dc.SetBrush( wxBrush( UBLCK, wxBRUSHSTYLE_TRANSPARENT ) );
+        dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UBLCK" ) ), wxBRUSHSTYLE_TRANSPARENT ) );
         dc.StrokePolygon( 9, SarRot, TargetPoint.x, TargetPoint.y );
 
         // second half
@@ -1384,11 +1409,11 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         }
 
         dc.SetPen( target_outline_pen );
-        dc.SetBrush( wxBrush( UBLCK, wxBRUSHSTYLE_TRANSPARENT ) );
+        dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UBLCK" ) ), wxBRUSHSTYLE_TRANSPARENT ) );
         dc.StrokePolygon( 9, SarRot, TargetPoint.x, TargetPoint.y );
 
     } else {         // ship class A or B or a Buddy or DSC
-        wxPen target_pen( UBLCK, 1 );
+        wxPen target_pen( GetGlobalColor( _T ( "UBLCK" ) ), 1 );
 
         dc.SetBrush( target_brush );
 
@@ -1419,7 +1444,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
         if (g_bDrawAISSize && bcan_draw_size)
         {
-            dc.SetBrush( wxBrush( UBLCK, wxBRUSHSTYLE_TRANSPARENT ) );
+            dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UBLCK" ) ), wxBRUSHSTYLE_TRANSPARENT ) );
             dc.StrokePolygon( 6, ais_real_size, TargetPoint.x, TargetPoint.y, scale_factor );
         }
 
@@ -1498,7 +1523,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             wxPoint p1 = transrot( wxPoint( -14, 0 ), sin_theta, cos_theta, TargetPoint );
             wxPoint p2 = transrot( wxPoint( 14, 0 ), sin_theta, cos_theta, TargetPoint );
 
-            dc.SetPen( wxPen( UBLCK, 2 ) );
+            dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 2 ) );
             dc.StrokeLine( p1.x, p1.y, p2.x, p2.y );
         }
 
