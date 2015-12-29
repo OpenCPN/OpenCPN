@@ -194,4 +194,8 @@ void MipMap_ResolveRoutines()
 #endif
 
 #endif
+
+#ifdef __ARM_NEON__
+    MipMap_32 = MipMap_32_neon;
+#endif
 }
