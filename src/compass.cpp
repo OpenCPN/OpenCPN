@@ -277,22 +277,19 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
     wxBitmap BMPRose;
     wxPoint after_rotate;
 
-    if( g_bCourseUp ) BMPRose = style->GetIcon( _T("CompassRose") );
+    int cwidth = style->GetToolSize().x * m_scale;
+    int cheight = style->GetToolSize().y * m_scale;
+    
+    if( g_bCourseUp )
+        BMPRose = style->GetIcon( _T("CompassRose"), cwidth, cheight );
     else
-        BMPRose = style->GetIcon( _T("CompassRoseBlue") );
-    if( ( fabs( cc1->GetVPRotation() ) > .01 ) || ( fabs( cc1->GetVPSkew() ) > .01 )  || (fabs(m_scale-1.0) > 0.1) ) {
-        int width = BMPRose.GetWidth() * m_scale;
-        int height = BMPRose.GetHeight() * m_scale;
+        BMPRose = style->GetIcon( _T("CompassRoseBlue"), cwidth, cheight );
+    if( ( fabs( cc1->GetVPRotation() ) > .01 ) || ( fabs( cc1->GetVPSkew() ) > .01 ) ) {
         
         wxImage rose_img = BMPRose.ConvertToImage();
-        
-        if(fabs(m_scale-1.0) > 0.1)
-            rose_img.Rescale(width, height, wxIMAGE_QUALITY_NORMAL);
-        
-        wxPoint rot_ctr( width / 2, height / 2  );
- 
+        wxPoint rot_ctr( cwidth / 2, cheight / 2  );
         wxImage rot_image = rose_img.Rotate( rose_angle, rot_ctr, true, &after_rotate );
-        BMPRose = wxBitmap( rot_image ).GetSubBitmap( wxRect( -after_rotate.x, -after_rotate.y, width, height ));
+        BMPRose = wxBitmap( rot_image ).GetSubBitmap( wxRect( -after_rotate.x, -after_rotate.y, cwidth, cheight ));
     }
 
     wxBitmap iconBm;
@@ -309,16 +306,11 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
     m_rose_angle = rose_angle;
 
     //  GPS Icon
-    wxBitmap gicon = style->GetIcon( gpsIconName );
-    if(fabs(m_scale-1.0) > 0.1){
-        int width = gicon.GetWidth() * m_scale;
-        int height = gicon.GetHeight() * m_scale;
-        
-        wxImage gps_img = gicon.ConvertToImage();
-        gps_img.Rescale(width, height, wxIMAGE_QUALITY_NORMAL);
-        gicon = wxBitmap( gps_img );
-    }
+    int swidth = style->GetToolSize().x * m_scale;
+    int sheight = style->GetToolSize().y * m_scale;
     
+    wxBitmap gicon = style->GetIcon( gpsIconName, swidth, sheight );
+
     if( style->HasBackground() ) {
         iconBm = MergeBitmaps( gpsBg, gicon, wxSize( 0, 0 ) );
     } else {
