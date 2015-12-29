@@ -136,6 +136,7 @@ extern ocpnCompass         *g_Compass;
 extern ChartStack *pCurrentStack;
 
 GLenum       g_texture_rectangle_format;
+bool         g_bno_large_texture_rectangle = false;
 
 extern int g_memCacheLimit;
 extern bool g_bCourseUp;
@@ -1008,9 +1009,18 @@ void glChartCanvas::BuildFBO( )
         m_cache_tex_y = wxMax(rb_x, rb_y);
         m_cache_tex_x = wxMax(2048, m_cache_tex_x);
         m_cache_tex_y = wxMax(2048, m_cache_tex_y);
-    } else {            
+    } else {
         m_cache_tex_x = GetSize().x;
         m_cache_tex_y = GetSize().y;
+
+        if(g_bno_large_texture_rectangle) {
+            if(m_cache_tex_x > 2048 || m_cache_tex_y > 2048)
+                return; // no fbo
+
+            m_cache_tex_x = NextPow2(m_cache_tex_x);
+            m_cache_tex_y = NextPow2(m_cache_tex_y);
+        }
+        printf("cache %d %d\n", m_cache_tex_x, m_cache_tex_y);
     }        
         
     ( s_glGenFramebuffers )( 1, &m_fb0 );
@@ -1223,7 +1233,12 @@ void glChartCanvas::SetupOpenGL()
             s_glGenerateMipmap = 0;
 #endif        
             
-            
+    // This driver found on raspberry PI does not not support really large texture rectangles
+    if( GetRendererString().Find( _T("VideoCore IV HW") ) != wxNOT_FOUND ) {
+        wxLogMessage( _T("OpenGL-> VideoCore IV detected, not using large npot textures") );
+//        g_mipmap_max_level=0;
+	g_bno_large_texture_rectangle = true;
+    }
 
     if( !s_glGenerateMipmap )
         wxLogMessage( _T("OpenGL-> glGenerateMipmap unavailable") );
@@ -1362,7 +1377,6 @@ void glChartCanvas::SetupOpenGL()
 #ifdef __OCPN__ANDROID__    
     g_mipmap_max_level = 0;
 #endif
-    
 #endif
 
     MipMap_ResolveRoutines();
@@ -4199,7 +4213,7 @@ void glChartCanvas::Render()
                     // normalize to texture coordinates range from 0 to 1
                     float tx1 = x1, tx2 = x1 + ow, ty1 = sy - y1, ty2 = sy - (y1 + oh);
                     if( GL_TEXTURE_RECTANGLE_ARB != g_texture_rectangle_format )
-                        tx1 /= sx, tx2 /= sx, ty1 /= sy, ty2 /= sy;
+                        tx1 /= m_cache_tex_x, tx2 /= m_cache_tex_x, ty1 /= m_cache_tex_y, ty2 /= m_cache_tex_y;
 
                         glBegin( GL_QUADS );
                         glTexCoord2f( tx1, ty1 );  glVertex2f( x2, y2 );
