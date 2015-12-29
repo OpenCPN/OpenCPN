@@ -108,7 +108,7 @@ public:
       wxBitmap GetToolbarEnd();
       bool HasBackground() const { return hasBackground; }
       void HasBackground( bool b ) { hasBackground = b; }
-      wxBitmap GetIcon(const wxString & name);
+      wxBitmap GetIcon(const wxString & name, int width = -1, int height = -1);
       wxBitmap GetToolIcon(const wxString & toolname,
                            int iconType = TOOLICON_NORMAL, bool rollover = false,
                            int width = -1, int height = -1);

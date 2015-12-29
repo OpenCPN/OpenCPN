@@ -60,7 +60,7 @@ static wxBitmap LoadSVG( const wxString filename, unsigned int width, unsigned i
     
     wxSVGDocument* svgDoc = new wxSVGDocument;
     if( svgDoc->Load(filename) )
-        return wxBitmap( svgDoc->Render( width, height, NULL, true, false/*true*/ ) );
+        return wxBitmap( svgDoc->Render( width, height, NULL, true, true ) );
     else
         return wxBitmap(width, height);
 }
@@ -199,7 +199,7 @@ wxBitmap ConvertTo24Bit( wxColor bgColor, wxBitmap front ) {
 // Tools and Icons perform on-demand loading and dimming of bitmaps.
 // Changing color scheme invalidatres all loaded bitmaps.
 
-wxBitmap Style::GetIcon(const wxString & name)
+wxBitmap Style::GetIcon(const wxString & name, int width, int height)
 {
     if( iconIndex.find( name ) == iconIndex.end() ) {
         wxString msg( _T("The requested icon was not found in the style: ") );
@@ -216,17 +216,27 @@ wxBitmap Style::GetIcon(const wxString & name)
         return icon->icon;
     if( icon->size.x == 0 )
         icon->size = toolSize[currentOrientation];
+    
+    wxSize retSize = icon->size;
+    if((width > 0) && (height > 0))
+        retSize = wxSize(width, height);
+    
     wxBitmap bm;
 #ifdef ocpnUSE_SVG
     wxString fullFilePath = myConfigFileDir + this->sysname + wxFileName::GetPathSeparator() + name + ".svg";
     if( wxFileExists( fullFilePath ) )
-        bm = LoadSVG( fullFilePath, icon->size.x, icon->size.y);
+        bm = LoadSVG( fullFilePath, retSize.x, retSize.y);
     else
     {
         wxLogMessage( _T("Can't find SVG icon: ") + fullFilePath );
 #endif // ocpnUSE_SVG
         wxRect location( icon->iconLoc, icon->size );
         bm = graphics->GetSubBitmap( location );
+        if(retSize != icon->size){
+            wxImage scaled_image = bm.ConvertToImage();
+            bm = wxBitmap(scaled_image.Scale(retSize.x, retSize.y, wxIMAGE_QUALITY_HIGH));
+        }
+        
 #ifdef ocpnUSE_SVG
     }
 #endif // ocpnUSE_SVG
@@ -300,11 +310,6 @@ wxBitmap Style::GetToolIcon(const wxString & toolname, int iconType, bool rollov
                     mdc.Clear();
                     mdc.SelectObject( wxNullBitmap );
                     bm = MergeBitmaps( bg, bm, wxSize( 0, 0 ) );
-                }
-                
-                if(retSize != size){
-                    wxImage scaled_image = bm.ConvertToImage();
-                    bm = wxBitmap(scaled_image.Scale(retSize.x, retSize.y, wxIMAGE_QUALITY_HIGH));
                 }
                 
 #ifdef ocpnUSE_SVG

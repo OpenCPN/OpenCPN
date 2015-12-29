@@ -2361,12 +2361,8 @@ void ocpnToolBarSimple::SetToolNormalBitmapEx(wxToolBarToolBase *tool, const wxS
         if(otool){
             ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
 
-            wxBitmap bmp = style->GetToolIcon( iconName, TOOLICON_NORMAL );
-            if(m_sizefactor > 1.0 ){
-                wxImage scaled_image = bmp.ConvertToImage();
-                bmp = wxBitmap(scaled_image.Scale(otool->m_width, otool->m_height, wxIMAGE_QUALITY_HIGH));
-            }
-        
+            wxBitmap bmp = style->GetToolIcon( iconName, TOOLICON_NORMAL, false,
+                                        otool->m_width, otool->m_height );
             tool->SetNormalBitmap( bmp );
             otool->SetIconName( iconName );
         }
