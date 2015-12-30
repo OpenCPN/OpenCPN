@@ -4443,6 +4443,12 @@ void glChartCanvas::Render()
     if( g_bcompression_wait)
         DrawCloseMessage( _("Waiting for raster chart compression thread exit."));
 
+#ifdef __WXMSW__    
+     //  MSW OpenGL drivers are generally very unstable.
+     //  This helps...   
+     glFinish();
+#endif    
+    
     SwapBuffers();
     if(b_timeGL && g_bShowFPS){
         if(n_render % 10){
