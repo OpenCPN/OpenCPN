@@ -230,7 +230,7 @@ wxBitmap Style::GetIcon(const wxString & name, int width, int height)
         bm = LoadSVG( fullFilePath, retSize.x, retSize.y);
     else
     {
-        wxLogMessage( _T("Can't find SVG icon: ") + fullFilePath );
+///        wxLogMessage( _T("Can't find SVG icon: ") + fullFilePath );
 #endif // ocpnUSE_SVG
         wxRect location( icon->iconLoc, icon->size );
         bm = graphics->GetSubBitmap( location );
