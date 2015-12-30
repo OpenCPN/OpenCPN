@@ -3932,8 +3932,8 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 #endif
 
         case ID_MENU_AIS_TARGETS: {
-            if ( g_bShowAIS ) SetAISDisplayStyle(0);
-            else SetAISDisplayStyle(1);
+            if ( g_bShowAIS ) SetAISDisplayStyle(2);
+            else SetAISDisplayStyle(0);
             break;
         }
          case ID_MENU_AIS_MOORED_TARGETS: {
