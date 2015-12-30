@@ -71,13 +71,15 @@ static wxBitmap LoadSVG( const wxString filename, unsigned int width, unsigned i
 
 wxBitmap MergeBitmaps( wxBitmap back, wxBitmap front, wxSize offset )
 {
-    wxBitmap merged( front.GetWidth(), front.GetHeight(), front.GetDepth() );
-
     //  If the front bitmap has no alpha channel, then merging will accomplish nothing
     //  So, simply return the bitmap intact
+    //  However, if the bitmaps are different sizes, do the render anyway.
     wxImage im_front = front.ConvertToImage();
-    if(!im_front.HasAlpha())
+    if(!im_front.HasAlpha() && (front.GetWidth() == back.GetWidth()) )
         return front;
+
+    wxBitmap merged( back.GetWidth(), back.GetHeight(), back.GetDepth() );
+    
 #if !wxCHECK_VERSION(2,9,4)
 
     // Manual alpha blending for broken wxWidgets alpha bitmap support, pervasive in wx2.8.
