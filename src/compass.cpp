@@ -279,6 +279,8 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
 
     int cwidth = style->GetToolSize().x * m_scale;
     int cheight = style->GetToolSize().y * m_scale;
+    cwidth = wxMin( cwidth, cheight );
+    cheight = cwidth;
     
     if( g_bCourseUp )
         BMPRose = style->GetIcon( _T("CompassRose"), cwidth, cheight );
@@ -306,8 +308,10 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
     m_rose_angle = rose_angle;
 
     //  GPS Icon
-    int swidth = style->GetToolSize().x * m_scale;
-    int sheight = style->GetToolSize().y * m_scale;
+    int twidth = style->GetToolSize().x * m_scale;
+    int theight = style->GetToolSize().y * m_scale;
+    int swidth = wxMax( twidth, theight );
+    int sheight = wxMin( twidth, theight );
     
     wxBitmap gicon = style->GetIcon( gpsIconName, swidth, sheight );
 
