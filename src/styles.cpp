@@ -201,7 +201,7 @@ wxBitmap ConvertTo24Bit( wxColor bgColor, wxBitmap front ) {
 // Tools and Icons perform on-demand loading and dimming of bitmaps.
 // Changing color scheme invalidatres all loaded bitmaps.
 
-wxBitmap Style::GetIcon(const wxString & name, int width, int height)
+wxBitmap Style::GetIcon(const wxString & name, int width, int height, bool bforceReload)
 {
     if( iconIndex.find( name ) == iconIndex.end() ) {
         wxString msg( _T("The requested icon was not found in the style: ") );
@@ -214,7 +214,7 @@ wxBitmap Style::GetIcon(const wxString & name, int width, int height)
 
     Icon* icon = (Icon*) icons.Item( index );
 
-    if( icon->loaded )
+    if( icon->loaded && !bforceReload)
         return icon->icon;
     if( icon->size.x == 0 )
         icon->size = toolSize[currentOrientation];
