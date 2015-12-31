@@ -1529,14 +1529,18 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         //    Symbolize it if set by most recent message
         if( td->b_blue_paddle ) {
             wxPoint ais_flag_icon[4];
-            ais_flag_icon[0] = wxPoint(-8, -6);
-            ais_flag_icon[1] = wxPoint(-2, 18);
-            ais_flag_icon[2] = wxPoint(-2, 0);
-            ais_flag_icon[3] = wxPoint(-2, -6);
+            ais_flag_icon[0] = wxPoint((int)-8*targetscale/100, (int)-6*targetscale/100);
+            ais_flag_icon[1] = wxPoint( (int)-2*targetscale/100, (int)18*targetscale/100);
+            ais_flag_icon[2] = wxPoint( (int)-2*targetscale/100, 0);
+            ais_flag_icon[3] = wxPoint( (int)-2*targetscale/100, (int)-6*targetscale/100);
+            
             transrot_pts(4, ais_flag_icon, sin_theta, cos_theta, TargetPoint);
 
+            int penWidth = 2;
+            if(targetscale < 100)
+                penWidth = 1;
             dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UINFB" ) ) ) );
-            dc.SetPen( wxPen( GetGlobalColor( _T ( "CHWHT" ) ), 2 ) );
+            dc.SetPen( wxPen( GetGlobalColor( _T ( "CHWHT" ) ), penWidth ) );
             dc.StrokePolygon( 4, ais_flag_icon);
         }
     }
