@@ -1527,7 +1527,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
         //    European Inland AIS define a "stbd-stbd" meeting sign, a blue paddle.
         //    Symbolize it if set by most recent message
-        if( td->b_blue_paddle ) {
+        if( ( td->b_blue_paddle ) && ( targetscale > 75 ) ) {
             wxPoint ais_flag_icon[4];
             ais_flag_icon[0] = wxPoint(-8, -6);
             ais_flag_icon[1] = wxPoint(-2, 18);
