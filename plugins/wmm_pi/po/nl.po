@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-24 20:40-0500\n"
-"PO-Revision-Date: 2015-11-01 13:54-0500\n"
+"POT-Creation-Date: 2015-12-20 18:03-0600\n"
+"PO-Revision-Date: 2015-12-31 15:38-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Dutch\n"
 "Language: nl_NL\n"
@@ -121,7 +121,7 @@ msgstr "Verticale component"
 
 #: src/WmmUIDialog.cpp:83 src/WmmUIDialog.cpp:179
 msgid "Incl"
-msgstr "Incl"
+msgstr "Incl."
 
 #: src/WmmUIDialog.cpp:85 src/WmmUIDialog.cpp:181
 msgid "(DIP) - Geomagnetic Inclination "
@@ -183,7 +183,7 @@ msgstr "Toon gegevens in werkbalkpictogram"
 msgid "Window transparency"
 msgstr "Venstertransparantie"
 
-#: src/WmmUIDialog.cpp:329 src/MagneticPlotMap.cpp:360
+#: src/WmmUIDialog.cpp:329 src/MagneticPlotMap.cpp:362
 msgid "Declination"
 msgstr "Variatie"
 
@@ -191,11 +191,11 @@ msgstr "Variatie"
 msgid "Degrees"
 msgstr "graden"
 
-#: src/WmmUIDialog.cpp:340 src/MagneticPlotMap.cpp:361
+#: src/WmmUIDialog.cpp:340 src/MagneticPlotMap.cpp:363
 msgid "Inclination"
 msgstr "Inclinatie"
 
-#: src/WmmUIDialog.cpp:350 src/MagneticPlotMap.cpp:361
+#: src/WmmUIDialog.cpp:350 src/MagneticPlotMap.cpp:363
 msgid "Field Strength"
 msgstr "Veldsterkte"
 
@@ -223,7 +223,7 @@ msgstr "Opslaan"
 msgid "Cancel"
 msgstr "Annuleren"
 
-#: src/MagneticPlotMap.cpp:359
+#: src/MagneticPlotMap.cpp:361
 msgid "Building Magnetic Map"
 msgstr "Isogonenkaart wordt gemaakt"
 

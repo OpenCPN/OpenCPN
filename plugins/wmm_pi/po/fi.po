@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-24 20:40-0500\n"
-"PO-Revision-Date: 2015-11-01 13:54-0500\n"
+"POT-Creation-Date: 2015-12-20 18:03-0600\n"
+"PO-Revision-Date: 2015-12-31 15:37-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Finnish\n"
 "Language: fi_FI\n"
@@ -186,7 +186,7 @@ msgstr "Näytä tiedot työkalurivin kuvakeessa"
 msgid "Window transparency"
 msgstr "Ikkunoiden läpinäkyvyys"
 
-#: src/WmmUIDialog.cpp:329 src/MagneticPlotMap.cpp:360
+#: src/WmmUIDialog.cpp:329 src/MagneticPlotMap.cpp:362
 msgid "Declination"
 msgstr "Eranto"
 
@@ -194,11 +194,11 @@ msgstr "Eranto"
 msgid "Degrees"
 msgstr "Asteita"
 
-#: src/WmmUIDialog.cpp:340 src/MagneticPlotMap.cpp:361
+#: src/WmmUIDialog.cpp:340 src/MagneticPlotMap.cpp:363
 msgid "Inclination"
 msgstr "Kaltevuus"
 
-#: src/WmmUIDialog.cpp:350 src/MagneticPlotMap.cpp:361
+#: src/WmmUIDialog.cpp:350 src/MagneticPlotMap.cpp:363
 msgid "Field Strength"
 msgstr "Kentän voimakkuus"
 
@@ -226,7 +226,7 @@ msgstr "Tallenna"
 msgid "Cancel"
 msgstr "Peruuta"
 
-#: src/MagneticPlotMap.cpp:359
+#: src/MagneticPlotMap.cpp:361
 msgid "Building Magnetic Map"
 msgstr "Rakennetaan magneettinen kartta"
 

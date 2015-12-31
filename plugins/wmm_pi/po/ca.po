@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-24 20:40-0500\n"
-"PO-Revision-Date: 2015-09-24 21:46-0400\n"
+"POT-Creation-Date: 2015-12-20 18:03-0600\n"
+"PO-Revision-Date: 2015-12-31 15:36-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Catalan\n"
 "Language: ca_ES\n"
@@ -144,11 +144,11 @@ msgstr "Cursor"
 
 #: src/WmmUIDialog.cpp:222
 msgid "Plot"
-msgstr ""
+msgstr "Traçat"
 
 #: src/WmmUIDialog.cpp:231
 msgid "Enable plot"
-msgstr ""
+msgstr "Permetre el traçat"
 
 #: src/WmmUIDialog.cpp:235
 msgid "Settings..."
@@ -176,7 +176,7 @@ msgstr "Mostrar les dades en la posició del cursor"
 
 #: src/WmmUIDialog.cpp:286
 msgid "Show toolbar icon"
-msgstr ""
+msgstr "Mostra la icona de la barra d'eines"
 
 #: src/WmmUIDialog.cpp:289
 msgid "Show data in toolbar icon"
@@ -186,7 +186,7 @@ msgstr "Mostrar dades en icona de la barra d'eines"
 msgid "Window transparency"
 msgstr "Transparència de finestra"
 
-#: src/WmmUIDialog.cpp:329 src/MagneticPlotMap.cpp:360
+#: src/WmmUIDialog.cpp:329 src/MagneticPlotMap.cpp:362
 msgid "Declination"
 msgstr "Declinació"
 
@@ -194,11 +194,11 @@ msgstr "Declinació"
 msgid "Degrees"
 msgstr "Graus"
 
-#: src/WmmUIDialog.cpp:340 src/MagneticPlotMap.cpp:361
+#: src/WmmUIDialog.cpp:340 src/MagneticPlotMap.cpp:363
 msgid "Inclination"
 msgstr "Inclinació"
 
-#: src/WmmUIDialog.cpp:350 src/MagneticPlotMap.cpp:361
+#: src/WmmUIDialog.cpp:350 src/MagneticPlotMap.cpp:363
 msgid "Field Strength"
 msgstr "Intensitat del camp"
 
@@ -226,7 +226,7 @@ msgstr "Desar"
 msgid "Cancel"
 msgstr "Cancel·lar"
 
-#: src/MagneticPlotMap.cpp:359
+#: src/MagneticPlotMap.cpp:361
 msgid "Building Magnetic Map"
 msgstr "Construir mapa magnètic"
 

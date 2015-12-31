@@ -3,17 +3,17 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-20 18:03-0600\n"
-"PO-Revision-Date: 2015-12-31 15:38-0500\n"
+"PO-Revision-Date: 2015-12-31 15:37-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
-"Language-Team: Turkish\n"
-"Language: tr_TR\n"
+"Language-Team: Japanese\n"
+"Language: ja_JP\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
-"X-Crowdin-Language: tr\n"
+"X-Crowdin-Language: ja\n"
 "X-Crowdin-File: /plugins/grib_pi/po/grib_pi.pot\n"
 
 #: src/GribUIDialog.cpp:330 src/GribUIDialog.cpp:733
@@ -42,7 +42,7 @@ msgstr ""
 
 #: src/GribUIDialog.cpp:399
 msgid "Warning:  Empty directory!"
-msgstr "Dikkat: Boş Klasör"
+msgstr ""
 
 #: src/GribUIDialog.cpp:537 src/GribUIDialog.cpp:726
 msgid "Hide data at cursor"
@@ -58,7 +58,7 @@ msgstr ""
 
 #: src/GribUIDialog.cpp:685 src/grib_pi.cpp:366 src/CursorData.cpp:560
 msgid "Menu"
-msgstr "Menü"
+msgstr ""
 
 #: src/GribUIDialog.cpp:722
 msgid "Select geopotential altitude"
@@ -67,12 +67,12 @@ msgstr ""
 #: src/GribUIDialog.cpp:724 src/GribUIDialogBase.cpp:58
 #: src/GribUIDialogBase.cpp:170 src/GribUIDialogBase.cpp:1094
 msgid "Now"
-msgstr "Şimdi"
+msgstr ""
 
 #: src/GribUIDialog.cpp:725 src/GribUIDialogBase.cpp:63
 #: src/GribUIDialogBase.cpp:175
 msgid "Zoom To Center"
-msgstr "Merkezi Yakınlaştır"
+msgstr ""
 
 #: src/GribUIDialog.cpp:728 src/GribUIDialog.cpp:930
 msgid "Stop play back"
@@ -87,15 +87,15 @@ msgstr ""
 #: src/GribUIDialogBase.cpp:200 src/GribUIDialogBase.cpp:1190
 #: src/GribUIDialogBase.h:313
 msgid "Settings"
-msgstr "Yapılandırma"
+msgstr ""
 
 #: src/GribUIDialog.cpp:774
 msgid "Close"
-msgstr "Kapat"
+msgstr ""
 
 #: src/GribUIDialog.cpp:1185
 msgid "Select a GRIB file"
-msgstr "GRIP Dosyasını Seçin"
+msgstr ""
 
 #: src/GribUIDialog.cpp:1419
 msgid " does not exist!"
@@ -107,167 +107,167 @@ msgstr ""
 
 #: src/GribSettingsDialog.cpp:31 src/GribSettingsDialog.cpp:38
 msgid "Knots"
-msgstr "Knot"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:31 src/GribSettingsDialog.cpp:38
 msgid "m/s"
-msgstr "m/s"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:31 src/GribSettingsDialog.cpp:38
 msgid "mph"
-msgstr "mph"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:31 src/GribSettingsDialog.cpp:38
 msgid "km/h"
-msgstr "km/h"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:31
 msgid "Beaufort"
-msgstr "Bofor"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:32
 msgid "MilliBars"
-msgstr "MiliBar"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:32
 msgid "mmHG"
-msgstr "mmHG"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:32
 msgid "inHG"
-msgstr "HG"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:33
 msgid "Meters"
-msgstr "Metre"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:33
 msgid "Feet"
-msgstr "Feet"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:34
 msgid "Celsius"
-msgstr "Santigrat"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:34
 msgid "Fahrenheit"
-msgstr "Fahrenayt"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:35
 msgid "Millimeters"
-msgstr "Milimetre"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:35
 msgid "Inches"
-msgstr "İnç"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:36
 msgid "Percentage"
-msgstr "Yüzde"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:37
 msgid "j/kg"
-msgstr "j/kg"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:47 src/GribUIDialogBase.cpp:390
 #: src/GribUIDialogBase.cpp:870 src/GribUIDialogBase.cpp:1683
 #: src/GribOverlayFactory.cpp:1028 src/GribTable.cpp:121
 msgid "Wind"
-msgstr "Rüzgar"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:47 src/GribUIDialogBase.cpp:402
 #: src/GribUIDialogBase.cpp:1689 src/GribTable.cpp:139
 msgid "Wind Gust"
-msgstr "Rüzgar Kaçağı"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:47 src/GribUIDialogBase.cpp:414
 #: src/GribUIDialogBase.cpp:1686 src/GribTable.cpp:133
 msgid "Pressure"
-msgstr "Basınç"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:48 src/GribUIDialogBase.cpp:428
 #: src/GribUIDialogBase.cpp:1716 src/GribTable.cpp:147
 msgid "Waves"
-msgstr "Dalga"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:48 src/GribUIDialogBase.cpp:446
 #: src/GribUIDialogBase.cpp:870 src/GribUIDialogBase.cpp:1705
 #: src/GribTable.cpp:190
 msgid "Current"
-msgstr "Akıntı"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:49 src/GribUIDialogBase.cpp:462
 #: src/GribUIDialogBase.cpp:870 src/GribUIDialogBase.cpp:1692
 #: src/GribTable.cpp:154
 msgid "Rainfall"
-msgstr "Yağmur"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:49 src/GribUIDialogBase.cpp:476
 #: src/GribUIDialogBase.cpp:480 src/GribUIDialogBase.cpp:870
 #: src/GribUIDialogBase.cpp:1695 src/GribTable.cpp:161
 msgid "Cloud Cover"
-msgstr "Bulut Durumu"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:50
 msgid "Air Temperature"
-msgstr "Hava Sıcaklığı"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:50
 msgid "Sea Temperature"
-msgstr "Deniz Suyu Sıcaklığı"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:50 src/GribUIDialogBase.cpp:516
 #: src/GribUIDialogBase.cpp:1708 src/GribTable.cpp:182
 msgid "CAPE"
-msgstr "CAPE"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:51
 msgid "Altitude(Geopotential)"
-msgstr "Yükseklik(Coğrafi)"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:51 src/CursorData.cpp:234
 msgid "Relative Humidity"
-msgstr "Göreceli Nem"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:436
 msgid "h"
-msgstr "Saat"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:436
 msgid "mn"
-msgstr "DenizMili"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:482
 msgid "Apply"
-msgstr "Uygula"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:486 src/grib_pi.h:104 src/grib_pi.cpp:382
 #: src/GribRequestDialog.cpp:121 src/GribRequestDialog.cpp:190
 #: src/GribRequestDialog.cpp:446 src/CursorData.cpp:146
 msgid "Dialog"
-msgstr "Diaylog"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:660 src/GribSettingsDialog.cpp:669
 #: src/CursorData.cpp:478 src/CursorData.cpp:484
 msgid "Display Isotachs"
-msgstr "Eşrüzgar Eğrilerini Göster"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:676 src/CursorData.cpp:489
 msgid "Display Isobars"
-msgstr "Eşbasınç Eğrilerini Göster"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:695 src/CursorData.cpp:494
 msgid "Display Isotherms"
-msgstr "Eşısı Eğrilerini Göster"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:702 src/CursorData.cpp:501
 msgid "Display Iso CAPE"
-msgstr "Eş CAPE'i Göster"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:708 src/GribSettingsDialog.cpp:776
 #: src/GribUIDialogBase.cpp:789
 msgid "Spacing"
-msgstr "Aralama"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:791
 msgid "You want to remove the dialog title/drag bar\n"
@@ -291,7 +291,7 @@ msgstr ""
 #: src/GribSettingsDialog.cpp:817 src/GribSettingsDialog.cpp:855
 #: src/grib_pi.cpp:637 src/GribRequestDialog.cpp:618
 msgid "Warning!"
-msgstr "Dikkat!"
+msgstr ""
 
 #: src/GribSettingsDialog.cpp:854
 msgid "This option imply you authorize intrepolation\n"
@@ -301,11 +301,11 @@ msgstr ""
 
 #: src/GribUIDialogBase.cpp:29 src/GribUIDialogBase.cpp:147
 msgid "Previous"
-msgstr "Önceki"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:39 src/GribUIDialogBase.cpp:157
 msgid "Next"
-msgstr "Sonraki"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:53 src/GribUIDialogBase.cpp:165
 msgid "Select geoptential altitude"
@@ -313,11 +313,11 @@ msgstr ""
 
 #: src/GribUIDialogBase.cpp:418
 msgid "Mean Sea Level Pressure (MSLP)"
-msgstr "Ortalama Deniz Seviye Basıncı"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:432
 msgid "Significant Wave Height"
-msgstr "elirgin Dalga Yüksekliği"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:437
 msgid "Waves period"
@@ -325,35 +325,35 @@ msgstr ""
 
 #: src/GribUIDialogBase.cpp:442
 msgid "Waves Direction"
-msgstr "Dalga Yönü"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:450
 msgid "Surface Current Speed"
-msgstr "Yüzeydekii Akıntı Hızı"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:455
 msgid "Surface Current Direction"
-msgstr "Yüzeydeki Akıntı Yönü"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:466
 msgid "Cumulative Rainfall per Hour"
-msgstr "Bir Saatte Düşen Yamur Miktarı"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:490 src/GribUIDialogBase.cpp:870
 msgid "Air Temp"
-msgstr "Hava Sıcaklığı"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:502 src/GribUIDialogBase.cpp:870
 msgid "Sea Temp"
-msgstr "Deniz Suyu Sıcaklığı"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:506
 msgid "Sea or Air Temperature at Surface Level"
-msgstr "Deniz Suyu Seviyesindeki Deniz ya daHava sıcaklığı"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:520
 msgid "Convective Available Potential Energy"
-msgstr "Toplanabilen Potansiyel enerji"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:530 src/CursorData.cpp:232
 msgid "Altitude"
@@ -373,19 +373,19 @@ msgstr ""
 
 #: src/GribUIDialogBase.cpp:720
 msgid "Units"
-msgstr "Birimler"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:731 src/CursorData.cpp:477
 msgid "Barbed Arrows"
-msgstr "Sakallı Oklar"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:738
 msgid "Default Colour"
-msgstr "Varsayılan Renk"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:738
 msgid "Controled Colours"
-msgstr "Denetlenebilen Renkler"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:750 src/GribUIDialogBase.cpp:828
 #: src/GribUIDialogBase.cpp:884
@@ -404,63 +404,63 @@ msgstr ""
 
 #: src/GribUIDialogBase.cpp:773 src/GribUIDialogBase.cpp:803
 msgid "Always visible"
-msgstr "Hezaman Görünür"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:782
 msgid "IsoBars"
-msgstr "EşBasınç"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:809 src/CursorData.cpp:506 src/CursorData.cpp:511
 msgid "Direction Arrows"
-msgstr "Yön Okları"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:816
 msgid "Single Arrow"
-msgstr "Tek Ok"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:816
 msgid "Double Arrow"
-msgstr "Çift Ok"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:816
 msgid "Proportional Arrow"
-msgstr "Orantılı Ok"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:851
 msgid "Default Size"
-msgstr "Varsayılan Büyüklük"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:851
 msgid "Small Size"
-msgstr "Küçük Boy"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:863 src/CursorData.cpp:479 src/CursorData.cpp:485
 #: src/CursorData.cpp:497 src/CursorData.cpp:502 src/CursorData.cpp:507
 #: src/CursorData.cpp:512
 msgid "OverlayMap"
-msgstr "Haritaya Bindir"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:866
 msgid "Colors"
-msgstr "Renkler"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:870
 msgid "Generic"
-msgstr "Yapma"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:876 src/CursorData.cpp:480 src/CursorData.cpp:486
 #: src/CursorData.cpp:490 src/CursorData.cpp:498 src/CursorData.cpp:503
 #: src/CursorData.cpp:508 src/CursorData.cpp:513
 msgid "Numbers"
-msgstr "Satılar"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:903 src/CursorData.cpp:481 src/CursorData.cpp:514
 msgid "Particle Map"
-msgstr "Haritanın Parçası"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:906
 msgid "Density"
-msgstr "Yoğunluk"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:923
 msgid "Transparency for all Overlay Maps"
@@ -468,11 +468,11 @@ msgstr ""
 
 #: src/GribUIDialogBase.cpp:930
 msgid "Overlay Transparency (%)"
-msgstr "Haritadaki Geçirgenlik (%)"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:949
 msgid "Data"
-msgstr "Veri"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:959
 msgid "Playback Options"
@@ -480,31 +480,31 @@ msgstr ""
 
 #: src/GribUIDialogBase.cpp:966
 msgid "Loop Mode"
-msgstr "Tekrar Modu"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:969
 msgid "Loop Start"
-msgstr "Tekrarı Başlat"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:973
 msgid "Top of Grib File"
-msgstr "En üst GRIB Dosyası"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:973
 msgid "Current time forecast"
-msgstr "Şimdiki Zaman Tahmini"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:983
 msgid "Updates per Second"
-msgstr "Her Saniye Güncelle"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:990
 msgid "Interpolate between gribs"
-msgstr "GRIB'ler Arasındaki Katman"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:993
 msgid "Time Interval"
-msgstr "Zaman Aralığı"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1012 src/GribUIDialogBase.cpp:1142
 msgid "Playback"
@@ -560,11 +560,11 @@ msgstr ""
 
 #: src/GribUIDialogBase.cpp:1174
 msgid "Open File"
-msgstr "Dosyayı Aç"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1206
 msgid "Request"
-msgstr "İste"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1228
 msgid "GUI"
@@ -576,131 +576,131 @@ msgstr ""
 
 #: src/GribUIDialogBase.cpp:1324
 msgid "Use High Definition Graphics"
-msgstr "Yüksek Çözünürlüklü Grafik Kullan"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1327
 msgid "Use Gradual Colors"
-msgstr "Geçişken Renkler Kullan"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1330
 msgid "Copy First Cumulative Missing Record"
-msgstr "Önce Kayıp Birikimli Kaydı Kopyala"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1333
 msgid "Copy Missing Wave Records"
-msgstr "Kayıp Dalga Kaydını Kopyala"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1342
 msgid "Load the More Recent File in Directory"
-msgstr "Klasördeki en Son Dosyayı ükle"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1342
 msgid "Load the Last Opened File"
-msgstr "Son Açılan Dosyayı Yükle"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1344
 msgid "Load File Options"
-msgstr "Dosya Seçeneklerini Aç"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1348
 msgid "Start at the first forecast in GRIB file"
-msgstr "İlk tahminde GRIB dosyasında başlat"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1348
 msgid "Start at the nearest forecast to current time"
-msgstr "Şimdiki zamana en yakın olan tahmini Başlat"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1348
 msgid "Authorize Interpolation to start at current time"
-msgstr "Şimdiki zamanda başlatmak için ortalama değerlere izin verin."
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1350
 msgid "Start Options"
-msgstr "Seçenekleri Başlat"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1354
 msgid "Local Time"
-msgstr "Yerel Saat"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1354
 msgid "UTC"
-msgstr "UTC"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1356
 msgid "Time Options"
-msgstr "Zaman Seçenekleri"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1406
 msgid "Profile"
-msgstr "Profil"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1419
 msgid "Sender eMail Address"
-msgstr "Göndericinin eMail Adresi"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1448
 msgid "Mail To "
-msgstr "Mail gönder"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1458
 msgid "Forecast Model "
-msgstr "Tahmin Modeli"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1475
 msgid "Moving Grib"
-msgstr "Hareketli Grib"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1483
 msgid "Speed"
-msgstr "Hız"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1491
 msgid "Kts"
-msgstr "Kts"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1496
 msgid "Course"
-msgstr "Yön"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1503 src/GribUIDialogBase.cpp:1554
 msgid "Deg"
-msgstr "Derece"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1518
 msgid "zyGrib Login"
-msgstr "zyGrib Dosyasının Yeri"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1526
 msgid "zyGrib Code"
-msgstr "zyGrib Kodu"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1545
 msgid "Resolution"
-msgstr "Çözünürlük"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1559
 msgid "Interval"
-msgstr "Rapor Aralığı"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1569
 msgid "Hours"
-msgstr "Saat"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1574
 msgid "Time Range"
-msgstr "Zaman Aralığı"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1583
 msgid "Days"
-msgstr "Gün"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1597
 msgid "Area Selection"
-msgstr "Bölge Seçimi"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1609
 msgid "Manual Selection"
-msgstr "Elle Seçim"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1612
 msgid "Use Always this Area"
@@ -708,83 +708,83 @@ msgstr ""
 
 #: src/GribUIDialogBase.cpp:1622
 msgid "Max Lat"
-msgstr "Max Boylam"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1629 src/GribRequestDialog.cpp:292
 #: src/GribRequestDialog.cpp:295
 msgid "N"
-msgstr "K"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1633
 msgid "Max Long"
-msgstr "Max  Enlem"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1640 src/GribRequestDialog.cpp:293
 #: src/GribRequestDialog.cpp:294
 msgid "E"
-msgstr "D"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1645
 msgid "Min Lat"
-msgstr "Min Boylam"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1652 src/GribRequestDialog.cpp:292
 #: src/GribRequestDialog.cpp:295
 msgid "S"
-msgstr "G"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1657
 msgid "Min Long"
-msgstr "Min Enlem"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1664 src/GribRequestDialog.cpp:293
 #: src/GribRequestDialog.cpp:294
 msgid "W"
-msgstr "B"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1676
 msgid "Data Selection"
-msgstr "Veri Seçimi"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1698
 msgid "Air Temperature(2m)"
-msgstr "Hava Sıcaklığı(2m)"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1702
 msgid "Sea Temperature(surf.)"
-msgstr "Deniz Suyu Sıcaklığı (Yüzey)"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1732
 msgid "Geopotential Height"
-msgstr "Geografik Yükseklik"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1742
 msgid "850 hPa"
-msgstr "850hPa"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1745
 msgid "700 hPa"
-msgstr "700 hPa"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1748
 msgid "500 hPa"
-msgstr "500 hPa"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1751
 msgid "300 hPa"
-msgstr "300 hPa"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1764
 msgid "Mail"
-msgstr "Mail Gönder"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1792
 msgid "Estimated File Size"
-msgstr "Hesaplanan Dosya Boyutu"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1800
 msgid " (Max size )"
-msgstr "(Max büyüklük)"
+msgstr ""
 
 #: src/GribUIDialogBase.cpp:1924
 msgid "Data at Position:"
@@ -792,11 +792,11 @@ msgstr ""
 
 #: src/smapi.cpp:119
 msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
-msgstr "MAIL Hatası: MAPI32.DLL bu bilgisayarda yok ya da doğru yüklenmemiş."
+msgstr ""
 
 #: src/GribUIDialogBase.h:165
 msgid "GRIB Display Control"
-msgstr "GRIP Görünüm Denetimi"
+msgstr ""
 
 #: src/GribUIDialogBase.h:340
 msgid "Preferences"
@@ -804,11 +804,11 @@ msgstr ""
 
 #: src/GribUIDialogBase.h:426
 msgid "Write and send eMail request"
-msgstr "Yaz ve eMail'le gönderilmesini iste"
+msgstr ""
 
 #: src/GribUIDialogBase.h:454
 msgid "Grib Data Table"
-msgstr "GRIB Veri Tablosu"
+msgstr ""
 
 #: src/GribOverlayFactory.cpp:476
 msgid "Warning : Data at Geopotential Height"
@@ -816,31 +816,31 @@ msgstr ""
 
 #: src/GribOverlayFactory.cpp:1028
 msgid "Building Isobar map"
-msgstr "EşBasınç Haritası Çıkarılıyor."
+msgstr ""
 
 #: src/GribOverlayFactory.cpp:1264
 msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
-msgstr "Harita üzerinde gösterilmesini bu grafik desteklemiyor. (OpenGL'yi devre dışı bırakın)"
+msgstr ""
 
 #: src/GribOverlayFactory.cpp:1274
 msgid "Overlays too wide and can't be displayed:"
-msgstr "Harita üzerinde gösterilen alan çok geniş olduğu için gösterilemiyor."
+msgstr ""
 
 #: src/GribOverlayFactory.cpp:1283
 msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
-msgstr "Eğer DC durumunda kuzey yukarı değilse, harita üzerinde gösterilemiyor (OpenGL'yi etkinleştirin)"
+msgstr ""
 
 #: src/GribOverlayFactory.cpp:1300
 msgid "Please Zoom or Scale Out to view invisible overlays:"
-msgstr "Görünmeyen bölgeler için lütfen yakınlaştırın ya da uzaklaştırın:"
+msgstr ""
 
 #: src/grib_pi.cpp:115
 msgid "Grib"
-msgstr "Grib"
+msgstr ""
 
 #: src/grib_pi.cpp:182
 msgid "GRIB PlugIn for OpenCPN"
-msgstr "OpenCPN için GRIB Eklentisi"
+msgstr ""
 
 #: src/grib_pi.cpp:188
 msgid "GRIB PlugIn for OpenCPN\n"
@@ -858,25 +858,11 @@ msgid "GRIB PlugIn for OpenCPN\n"
 "- surface current direction and speed\n"
 "- Convective Available Potential Energy (CAPE)\n"
 "- wind, altitude, temperature and relative humidity at 300, 500, 700, 850 hPa."
-msgstr "OpenCPN için GRIB Eklentisi\n"
-"Birçok GRIB dosya türü için, temel GRIB dosyalarını harita üzerinde gösterilmesini\n"
-"ve eMail'le GRIB dosyalarını istenilmesini sağlar..\n\n"
-"Aşağıdaki GRIB verileri desteklenir:\n"
-"- Rüzgar yönü ve hızı (10 m deki)\n"
-"- Rüzgar kaçakları\n"
-"- Yüzey basıncı\n"
-"- Yağmur miktarı\n"
-"- Bulut durumu\n"
-"- Belirgin dalga yüksekliği ve yönü\n"
-"- Deniz yüzeyi hava sıcaklığı (2 m deki)\n"
-"- Deniz yüzey sıcaklığı\n"
-"- Deniz yüzeyindeki akıntı hızı ve yönü\n"
-"- Convective Eldeedilebilir Potansiyel Enerji (CAPE)\n"
-"- Rüzgar, yükseklik, sıcaklık ve görece nem (300, 500, 700, 850 hPa)."
+msgstr ""
 
 #: src/grib_pi.cpp:364
 msgid "Weather table"
-msgstr "Hava Raporu Tablosu"
+msgstr ""
 
 #: src/grib_pi.cpp:636
 msgid "You have chosen to authorize interpolation.\n"
@@ -887,42 +873,40 @@ msgstr ""
 #: src/GribTable.cpp:168
 msgid "Air\n"
 "Temperature"
-msgstr "Hava\n"
-"Sıcaklığı"
+msgstr ""
 
 #: src/GribTable.cpp:175
 msgid "Sea\n"
 "Temperature"
-msgstr "DenizSuyu\n"
-"Sıcaklığı"
+msgstr ""
 
 #: src/GribRequestDialog.cpp:114 src/GribRequestDialog.cpp:927
 msgid "Send"
-msgstr "Gönder"
+msgstr ""
 
 #: src/GribRequestDialog.cpp:115
 msgid "Save"
-msgstr "Sakla"
+msgstr ""
 
 #: src/GribRequestDialog.cpp:130
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
-msgstr "eMail'le rapor istenen adres kullanılacak. (LINUX için zorunlu)"
+msgstr ""
 
 #: src/GribRequestDialog.cpp:131
 msgid "This is your zyGrib's forum access Login"
-msgstr "Burası zyGrib Forumunuz, giriş için bağlanın"
+msgstr ""
 
 #: src/GribRequestDialog.cpp:132
 msgid "Get this Code in zyGrib's forum ( This is not your password! )"
-msgstr "Bu kodu zyGrib forumundan alın (Bu sizin şifreniz değildir)"
+msgstr ""
 
 #: src/GribRequestDialog.cpp:133
 msgid "Enter your forescasted Speed (in Knots)"
-msgstr "Öngördüğünüz hızı (knts) girin"
+msgstr ""
 
 #: src/GribRequestDialog.cpp:134
 msgid "Enter your forecasted Course"
-msgstr "Öngördüğünüz yönü girin"
+msgstr ""
 
 #: src/GribRequestDialog.cpp:456
 msgid "Coord. "
@@ -931,7 +915,7 @@ msgstr ""
 #: src/GribRequestDialog.cpp:461 src/GribRequestDialog.cpp:822
 #: src/GribRequestDialog.cpp:825
 msgid "MB"
-msgstr "MB"
+msgstr ""
 
 #: src/GribRequestDialog.cpp:617
 msgid "You request a forecast for more than 8 days horizon.\n"
@@ -942,57 +926,50 @@ msgstr ""
 
 #: src/GribRequestDialog.cpp:825
 msgid "Max"
-msgstr "Max"
+msgstr ""
 
 #: src/GribRequestDialog.cpp:938
 msgid "Before sending an email to Zygrib you have to enter your Login and Code.\n"
 "Please visit www.zygrib.org/ and follow instructions..."
-msgstr "Zygrib'e aMail göndermeden önce bağlanıp kodu girmeniz gerekir.\n"
-"Lütfen www.zygrib.org/ sayfasına gidin ve gösterilen yolu izleyin..."
+msgstr ""
 
 #: src/GribRequestDialog.cpp:939
 msgid "Too big file! zyGrib limit is 2Mb!"
-msgstr "Çok büyük dosya! zyGrib sınırı 2Mb'dır!"
+msgstr ""
 
 #: src/GribRequestDialog.cpp:939
 msgid "Error! Max Lat lower than Min Lat or Max Lon lower than Min Lon!"
-msgstr "Max Boylam, Min Boylam'dan ya da üst Enlem, alttaki Enlem'den daha aşağıda olamaz!"
+msgstr ""
 
 #: src/GribRequestDialog.cpp:940
 msgid "Too large area! Each side must be less than 180°!"
-msgstr "Çok geniş bir bölge! Her kenar 180°'den daha az olmalı!"
+msgstr ""
 
 #: src/GribRequestDialog.cpp:940
 msgid "Too small area for this resolution!"
-msgstr "Bu çözünürlük için çok küçük!"
+msgstr ""
 
 #: src/GribRequestDialog.cpp:957 src/GribRequestDialog.cpp:992
 msgid "Continue..."
-msgstr "Devam..."
+msgstr ""
 
 #: src/GribRequestDialog.cpp:977 src/GribRequestDialog.cpp:981
 msgid "Your request is ready. An email is prepared in your email environment. \n"
 "You have just to verify and send it...\n"
 "Save or Cancel to finish...or Continue..."
-msgstr "İstğiniz hazır. Adresinize gönderilecek bir email hazırlandı.\n"
-"Sadece doğrulayıp gönderin...\n"
-"Bitirmek için Sakla ya da Bitir'e basın...ya da Devam edin..."
+msgstr ""
 
 #: src/GribRequestDialog.cpp:984
 msgid "Your request was sent \n"
 "(if your system has an MTA configured and is able to send email).\n"
 "Save or Cancel to finish...or Continue..."
-msgstr "İsteğiniz gönderildi \n"
-"(Eğer sisteminizde bir MTA tanımlanmış ve eMail gönderebiliyorsa).\n"
-"Bitirmek için Sakla ya da İptal'e bas... ya da Devam edin"
+msgstr ""
 
 #: src/GribRequestDialog.cpp:989
 msgid "Request can't be sent. Please verify your email systeme parameters.\n"
 "You should also have a look at your log file.\n"
 "Save or Cancel to finish..."
-msgstr "İsteğiniz gönderilemedi. Lütfen eMail yapılandırmanızı kontrol edin.\n"
-"Aynı zamanda kütük dosyanıza bakın (log file).\n"
-"Saklayın ya da iptal edin..."
+msgstr ""
 
 #: src/CursorData.cpp:216
 msgid "Data at cursor position"

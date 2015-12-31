@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-24 20:40-0500\n"
-"PO-Revision-Date: 2015-09-24 21:47-0400\n"
+"POT-Creation-Date: 2015-12-20 18:03-0600\n"
+"PO-Revision-Date: 2015-12-31 15:37-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -186,7 +186,7 @@ msgstr "Zeige Daten im Werkzeugleiste-Symbol"
 msgid "Window transparency"
 msgstr "Fenster-Transparenz"
 
-#: src/WmmUIDialog.cpp:329 src/MagneticPlotMap.cpp:360
+#: src/WmmUIDialog.cpp:329 src/MagneticPlotMap.cpp:362
 msgid "Declination"
 msgstr ""
 
@@ -194,11 +194,11 @@ msgstr ""
 msgid "Degrees"
 msgstr "Grad"
 
-#: src/WmmUIDialog.cpp:340 src/MagneticPlotMap.cpp:361
+#: src/WmmUIDialog.cpp:340 src/MagneticPlotMap.cpp:363
 msgid "Inclination"
 msgstr ""
 
-#: src/WmmUIDialog.cpp:350 src/MagneticPlotMap.cpp:361
+#: src/WmmUIDialog.cpp:350 src/MagneticPlotMap.cpp:363
 msgid "Field Strength"
 msgstr "Feldstärke"
 
@@ -226,7 +226,7 @@ msgstr "Speichern"
 msgid "Cancel"
 msgstr "Abbr."
 
-#: src/MagneticPlotMap.cpp:359
+#: src/MagneticPlotMap.cpp:361
 msgid "Building Magnetic Map"
 msgstr "Erzeuge Magnetische Karte "
 
