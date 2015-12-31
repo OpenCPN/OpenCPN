@@ -136,7 +136,6 @@ extern ocpnCompass         *g_Compass;
 extern ChartStack *pCurrentStack;
 
 GLenum       g_texture_rectangle_format;
-bool         g_bno_large_texture_rectangle = false;
 
 extern int g_memCacheLimit;
 extern bool g_bCourseUp;
@@ -1013,7 +1012,7 @@ void glChartCanvas::BuildFBO( )
         m_cache_tex_x = GetSize().x;
         m_cache_tex_y = GetSize().y;
 
-        if(g_bno_large_texture_rectangle) {
+        if(g_GLOptions.m_bbcmhost) {
             if(m_cache_tex_x > 2048 || m_cache_tex_y > 2048)
                 return; // no fbo
 
@@ -1284,8 +1283,8 @@ void glChartCanvas::SetupOpenGL()
     // This driver found on raspberry PI does not not support really large texture rectangles
     if( GetRendererString().Find( _T("VideoCore IV HW") ) != wxNOT_FOUND ) {
         wxLogMessage( _T("OpenGL-> VideoCore IV detected, not using large npot textures") );
-	g_bno_large_texture_rectangle = true;
-        //        g_GLOptions.m_bUseCanvasPanning = true;
+        g_GLOptions.m_bbcmhost = true;
+//                g_GLOptions.m_bUseCanvasPanning = true;
     }
 
     //      Maybe build FBO(s)
@@ -1372,8 +1371,10 @@ void glChartCanvas::SetupOpenGL()
         max_level++;
     g_mipmap_max_level = max_level - 1;
 
+    if(g_GLOptions.m_bbcmhost)
+        g_mipmap_max_level = 0;
 #ifdef __OCPN__ANDROID__    
-    g_mipmap_max_level = 0;
+     g_mipmap_max_level = 0;
 #endif
 #endif
 
@@ -4107,7 +4108,7 @@ void glChartCanvas::Render()
     // Try to use the framebuffer object's cache of the last frame
     // to accelerate drawing this frame (if overlapping)
     if(m_b_BuiltFBO && !m_bfogit && !scale_it && !bpost_hilite &&
-       (!g_bno_large_texture_rectangle || VPoint.b_quilt ||  // slight optimization (33% speedup on rpi2)
+       (!g_GLOptions.m_bbcmhost || VPoint.b_quilt ||  // slight optimization (33% speedup)
         Current_Ch->GetChartFamily() != CHART_FAMILY_RASTER) // for single chart raster to not use fbo
 
        //&& VPoint.tilt == 0 // disabling fbo in tilt mode gives better quality but slower

@@ -1415,6 +1415,9 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
 #else /* looks nicer */
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
 #endif
+
+        if(g_mipmap_max_level == 0)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         
 #ifdef __OCPN__ANDROID__
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

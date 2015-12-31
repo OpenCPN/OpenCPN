@@ -35,13 +35,15 @@
 #include "chartsymbols.h"
 #ifdef ocpnUSE_GL
 #include <wx/glcanvas.h>
+
+#include "glChartCanvas.h"
+extern ocpnGLOptions g_GLOptions;
 #endif
 
 extern bool g_bopengl;
 
 #ifdef ocpnUSE_GL
 extern GLenum       g_texture_rectangle_format;
-extern bool         g_bno_large_texture_rectangle;
 #endif
 
 //--------------------------------------------------------------------------------------
@@ -877,7 +879,7 @@ int ChartSymbols::LoadRasterFileForColorTable( int tableNo, bool flush )
             
             /* unfortunately this texture looks terrible with compression */
 	    GLuint format = GL_RGBA;
-	    if(g_bno_large_texture_rectangle) {
+	    if(g_GLOptions.m_bbcmhost) {
                 // apparently broadcom IV drivers
                 // cannot handle npot textures above a certain size, but 2048x2048 is ok
                 // this is unfortunate but easy fix wastes 10M of video memory
