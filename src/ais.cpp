@@ -1518,8 +1518,8 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
         //        Draw the inactive cross-out line
         if( !td->b_active ) {
-            wxPoint p1 = transrot( wxPoint( -14, 0 ), sin_theta, cos_theta, TargetPoint );
-            wxPoint p2 = transrot( wxPoint( 14, 0 ), sin_theta, cos_theta, TargetPoint );
+            wxPoint p1 = transrot( wxPoint( (int)-14*targetscale/100, 0 ), sin_theta, cos_theta, TargetPoint );
+            wxPoint p2 = transrot( wxPoint( (int)14*targetscale/100, 0 ),  sin_theta, cos_theta, TargetPoint );
 
             dc.SetPen( wxPen( UBLCK, 2 ) );
             dc.StrokeLine( p1.x, p1.y, p2.x, p2.y );
