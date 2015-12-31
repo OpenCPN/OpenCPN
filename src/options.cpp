@@ -5249,24 +5249,32 @@ void options::OnOpenGLOptions(wxCommandEvent& event) {
     g_GLOptions.m_bUseAcceleratedPanning =
         g_bGLexpert ? dlg.GetAcceleratedPanning()
                   : cc1->GetglCanvas()->CanAcceleratePanning();
-    g_GLOptions.m_bTextureCompression = dlg.GetTextureCompression();
+
     g_bShowFPS = dlg.GetShowFPS();
     g_bSoftwareGL = dlg.GetSoftwareGL();
+
     if (g_bGLexpert) {
+      // user defined
       g_GLOptions.m_bTextureCompressionCaching =
           dlg.GetTextureCompressionCaching();
       g_GLOptions.m_iTextureMemorySize = dlg.GetTextureMemorySize();
     } else {
+      // caching is on if textures are compressed
       g_GLOptions.m_bTextureCompressionCaching = dlg.GetTextureCompression();
     }
+
     if (g_bopengl &&
         g_GLOptions.m_bTextureCompression != dlg.GetTextureCompression()) {
+      // new g_GLoptions setting is needed in callees
       g_GLOptions.m_bTextureCompression = dlg.GetTextureCompression();
       ::wxBeginBusyCursor();
       cc1->GetglCanvas()->SetupCompression();
       cc1->GetglCanvas()->ClearAllRasterTextures();
       ::wxEndBusyCursor();
     }
+    else
+      g_GLOptions.m_bTextureCompression = dlg.GetTextureCompression();
+    
   }
 
   if (dlg.GetRebuildCache()) {
