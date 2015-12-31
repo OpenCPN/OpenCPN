@@ -313,14 +313,18 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
     int swidth = wxMax( twidth, theight );
     int sheight = wxMin( twidth, theight );
     
+    //  Sometimes, the SVG renderer gets the size wrong due to some internal rounding error.
+    //  If so found, it seems to work OK by just reducing the requested size by one pixel....
     wxBitmap gicon = style->GetIcon( gpsIconName, swidth, sheight );
-
+    if( gicon.GetHeight() != sheight )
+        gicon = style->GetIcon( gpsIconName, swidth-1, sheight-1, true );
+    
     if( style->HasBackground() ) {
         iconBm = MergeBitmaps( gpsBg, gicon, wxSize( 0, 0 ) );
     } else {
         iconBm = gicon;
     }
-    
+
     mdc.DrawBitmap( iconBm, offset );
     mdc.SelectObject( wxNullBitmap );
     m_lastgpsIconName = gpsIconName;
