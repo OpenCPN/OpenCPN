@@ -2625,7 +2625,7 @@ void AIS_Decoder::SendJSONMsg(AIS_Target_Data* pTarget)
     jMsg[wxS("cog")] = pTarget->COG;
     jMsg[wxS("hdg")] = pTarget->HDG;
     jMsg[wxS("mmsi")] = pTarget->MMSI;
-    wxString l_ShipName = wxString(pTarget->ShipName);
+    wxString l_ShipName = wxString::FromUTF8(pTarget->ShipName);
     for(size_t i =0; i < l_ShipName.Len(); i++) {
         if(l_ShipName.GetChar(i) == '@') l_ShipName.SetChar(i, '\n');
     }

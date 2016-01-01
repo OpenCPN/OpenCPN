@@ -544,7 +544,7 @@ LUPrec *s52plib::FindBestLUP( wxArrayOfLUPrec *LUPArray, unsigned int startIndex
             slatc = buffer.data();
             //  Get the LUP attribute value as a string
                         
-            if( buffer.length() < 6 )
+            if( slatc && (strlen(slatc) < 6) )
                 goto next_LUP_Attr;         // LUP attribute value not UTF8 convertible (never seen in PLIB 3.x)
 
             if( slatc ){
