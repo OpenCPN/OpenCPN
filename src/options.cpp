@@ -917,6 +917,13 @@ options::~options(void) {
   
 }
 
+// with AIS it's called very often
+bool options::SendIdleEvents(wxIdleEvent &event )  { 
+   if (IsShown())
+       return wxDialog::SendIdleEvents(event);
+   return false;
+}
+
 void options::RecalculateSize(void) {
   if (!g_bresponsive) {
     wxSize canvas_size = cc1->GetSize();
