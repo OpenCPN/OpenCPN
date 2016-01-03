@@ -31,6 +31,17 @@
 
 #include "TexFont.h"
 
+TexFont::TexFont( )
+{
+    texobj = 0;
+    m_blur = false;
+}
+
+TexFont::~TexFont( )
+{
+    Delete( );
+}
+
 void TexFont::Build( wxFont &font, bool blur, bool luminance )
 {
     /* avoid rebuilding if the parameters are the same */
@@ -135,8 +146,7 @@ void TexFont::Build( wxFont &font, bool blur, bool luminance )
             for( int k = 0; k < stride; k++ )
                 teximage[j * stride + k] = imgdata[3*j];
     }
-    if(texobj)
-        Delete();
+    Delete();
 
     glGenTextures( 1, &texobj );
     glBindTexture( GL_TEXTURE_2D, texobj );
@@ -154,8 +164,10 @@ void TexFont::Build( wxFont &font, bool blur, bool luminance )
 
 void TexFont::Delete( )
 {
-    glDeleteTextures(1, &texobj);
-    texobj = 0;
+    if (texobj != 0) {
+        glDeleteTextures(1, &texobj);
+        texobj = 0;
+    }
 }
 
 void TexFont::GetTextExtent(const wxString &string, int *width, int *height)
