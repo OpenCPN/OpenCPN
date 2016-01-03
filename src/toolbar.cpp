@@ -1840,8 +1840,10 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
             // If it is not in the style we build a new icon from the style BG and the plugin icon.
 
             if( tool->IsToggled() ) {
-                bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_TOGGLED, tool->rollover );
-                if( bmp.GetDepth() == 1 ) {
+                bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_TOGGLED, tool->rollover,
+                                            tool->m_width, tool->m_height );
+                
+                if( bmp.GetDepth() == 1 ) {     // Tool icon not found
                     if( tool->rollover ) {
                         bmp = m_style->BuildPluginIcon( tool->pluginRolloverIcon, TOOLICON_TOGGLED );
                         if( ! bmp.IsOk() )
@@ -1851,8 +1853,10 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
                         bmp = m_style->BuildPluginIcon( tool->pluginNormalIcon, TOOLICON_TOGGLED );
                 }
             } else {
-                bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_NORMAL, tool->rollover );
-                if( bmp.GetDepth() == 1 ) {
+                bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_NORMAL, tool->rollover,
+                                            tool->m_width, tool->m_height );
+                
+                if( bmp.GetDepth() == 1 ) {      // Tool icon not found
                     if( tool->rollover ) {
                         bmp = m_style->BuildPluginIcon( tool->pluginRolloverIcon, TOOLICON_NORMAL );
                         if( ! bmp.IsOk() )
@@ -1862,7 +1866,7 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
                         bmp = m_style->BuildPluginIcon( tool->pluginNormalIcon, TOOLICON_NORMAL );
                 }
             }
-             if(m_sizefactor > 1.0 ){
+             if( m_sizefactor > 1.0 ){
                  wxImage scaled_image = bmp.ConvertToImage();
                  bmp = wxBitmap(scaled_image.Scale(tool->m_width, tool->m_height, wxIMAGE_QUALITY_HIGH));
              }
