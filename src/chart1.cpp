@@ -6606,6 +6606,10 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 
     FrameTimer1.Start( TIMER_GFRAME_1, wxTIMER_CONTINUOUS );
 
+    //  Make sure we get a redraw and alert sound on AnchorWatch excursions.
+    if(AnchorAlertOn1 || AnchorAlertOn2)
+        bnew_view = true;
+    
     if(g_bopengl) {
 #ifdef ocpnUSE_GL
         if(m_fixtime - cc1->GetglCanvas()->m_last_render_time > 0)
