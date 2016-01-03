@@ -182,11 +182,11 @@ void TexFont::Delete( )
     texobj = 0;
 }
 
-void TexFont::GetTextExtent(const char *string, int len, int *width, int *height)
+void TexFont::GetTextExtent(const char *string, int *width, int *height)
 {
     int w=0, h=0;
 
-    for(int i = 0; i < len; i++ ) {
+    for(int i = 0; string[i]; i++ ) {
         unsigned char c = string[i];
         if(c == '\n') {
             h += tgi[(int)'A'].height;
@@ -210,7 +210,7 @@ void TexFont::GetTextExtent(const char *string, int len, int *width, int *height
 
 void TexFont::GetTextExtent(const wxString &string, int *width, int *height)
 {
-    GetTextExtent(string.ToUTF8(), string.size(), width, height);
+    GetTextExtent((const char*)string.ToUTF8(), width, height);
 }
 
 void TexFont::RenderGlyph( int c )

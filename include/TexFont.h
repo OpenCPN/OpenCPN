@@ -57,13 +57,13 @@ public:
     void Build( wxFont &font, bool blur = false );
     void Delete();
 
-    void GetTextExtent( const char *string, int len, int *width, int *height);
     void GetTextExtent( const wxString &string, int *width, int *height);
     void RenderString( const char *string, int x=0, int y=0 );
     void RenderString( const wxString &string, int x=0, int y=0 );
     bool IsBuilt(){ return m_built; }
 
 private:
+    void GetTextExtent( const char *string, int *width, int *height);
     void RenderGlyph( int c );
 
     wxFont m_font;
