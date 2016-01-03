@@ -123,6 +123,10 @@ extern sigjmp_buf           env;                    // the context saved by sigs
 #define  trunc(d) ((d>0) ? floor(d) : ceil(d))
 #endif
 
+//  Define to enable the invocation of a temporary menubar by pressing the Alt key.
+//  Not implemented for Windows XP, as it interferes with Alt-Tab processing.
+#define OCPN_ALT_MENUBAR 1
+
 
 //    Profiling support
 //#include "/usr/include/valgrind/callgrind.h"
@@ -983,6 +987,17 @@ ChartCanvas::~ChartCanvas()
 
 }
 
+bool ChartCanvas::IsTempMenuBarEnabled()
+{
+#ifdef __WXMSW__
+    int major;
+    wxGetOsVersion(&major);
+    return (major > 5);   //  For Windows, function is only available on Vista and above
+#else
+    return true;
+#endif
+}
+
 bool ChartCanvas::SetUserOwnship(){
     //  Look for user defined ownship image
     //  This may be found in the shared data location along with other user defined icons.
@@ -1410,8 +1425,6 @@ void ChartCanvas::OnKeyChar( wxKeyEvent &event )
     event.Skip();
 }    
 
-
-
 void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 {
     if(g_pi_manager)
@@ -1429,7 +1442,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
     // If the permanent menubar is disabled, we show it temporarily when Alt is pressed or when
     // Alt + a letter is presssed (for the top-menu-level hotkeys).
     // The toggling normally takes place in OnKeyUp, but here we handle some special cases.
-    if ( event.AltDown()  &&  !pConfig->m_bShowMenuBar ) {
+    if ( IsTempMenuBarEnabled() && event.AltDown()  &&  !pConfig->m_bShowMenuBar ) {
         // If Alt + a letter is pressed, and the menubar is hidden, show it now
         if ( event.GetKeyCode() >= 'A' && event.GetKeyCode() <= 'Z' ) {
             if ( !g_bTempShowMenuBar ) {
@@ -1892,7 +1905,7 @@ void ChartCanvas::OnKeyUp( wxKeyEvent &event )
 #ifndef __WXOSX__
         // If the permanent menu bar is disabled, and we are not in the middle of another key combo,
         // then show the menu bar temporarily when Alt is released (or hide it if already visible).
-        if ( !pConfig->m_bShowMenuBar  &&  m_bMayToggleMenuBar ) {
+        if ( IsTempMenuBarEnabled() && !pConfig->m_bShowMenuBar  &&  m_bMayToggleMenuBar ) {
             g_bTempShowMenuBar = !g_bTempShowMenuBar;
             parent_frame->ApplyGlobalSettings(false, false);
         }
