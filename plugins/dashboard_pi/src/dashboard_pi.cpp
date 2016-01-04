@@ -758,10 +758,13 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                             _T("\u00B0M") );
                 }
 
-                SendSentenceToAllInstruments( OCPN_DBP_STC_TWS, toUsrSpeed_Plugin( m_NMEA0183.Mwd.WindSpeedKnots, g_iDashWindSpeedUnit ),
-                                              getUsrSpeedUnit_Plugin( g_iDashWindSpeedUnit ) );
-                SendSentenceToAllInstruments( OCPN_DBP_STC_TWS2, toUsrSpeed_Plugin( m_NMEA0183.Mwd.WindSpeedKnots, g_iDashWindSpeedUnit ),
-                        getUsrSpeedUnit_Plugin( g_iDashWindSpeedUnit ) );
+                //    Special check for unintialized values, as opposed to zero values
+                if (m_NMEA0183.Mwd.WindSpeedKnots < 999.) {
+                    SendSentenceToAllInstruments(OCPN_DBP_STC_TWS, toUsrSpeed_Plugin(m_NMEA0183.Mwd.WindSpeedKnots, g_iDashWindSpeedUnit),
+                        getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
+                    SendSentenceToAllInstruments(OCPN_DBP_STC_TWS2, toUsrSpeed_Plugin(m_NMEA0183.Mwd.WindSpeedKnots, g_iDashWindSpeedUnit),
+                        getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
+                }
                 //m_NMEA0183.Mwd.WindSpeedms
             }
         }
@@ -790,7 +793,9 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
 							}
                             SendSentenceToAllInstruments( OCPN_DBP_STC_AWA,
 								m_awaangle, m_awaunit);
-                            SendSentenceToAllInstruments( OCPN_DBP_STC_AWS,
+                            //    Special check for unintialized values, as opposed to zero values
+                            if (m_NMEA0183.Mwv.WindSpeed < 999.)
+                                SendSentenceToAllInstruments(OCPN_DBP_STC_AWS,
                                     toUsrSpeed_Plugin( m_NMEA0183.Mwv.WindSpeed * m_wSpeedFactor, g_iDashWindSpeedUnit ),
                                     getUsrSpeedUnit_Plugin( g_iDashWindSpeedUnit ) );
                         }
@@ -810,7 +815,9 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
 							}
                             SendSentenceToAllInstruments( OCPN_DBP_STC_TWA,
 								m_twaangle, m_twaunit);
-                            SendSentenceToAllInstruments( OCPN_DBP_STC_TWS,
+                            //    Special check for unintialized values, as opposed to zero values
+                            if (m_NMEA0183.Mwv.WindSpeed < 999.)
+                                SendSentenceToAllInstruments(OCPN_DBP_STC_TWS,
                                     toUsrSpeed_Plugin( m_NMEA0183.Mwv.WindSpeed * m_wSpeedFactor, g_iDashWindSpeedUnit ),
                                     getUsrSpeedUnit_Plugin( g_iDashWindSpeedUnit ) );
                         }
@@ -970,7 +977,9 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                     awaunit = m_NMEA0183.Vwr.DirectionOfWind == Left ? _T("\u00B0L") : _T("\u00B0R");
                     SendSentenceToAllInstruments( OCPN_DBP_STC_AWA,
                             m_NMEA0183.Vwr.WindDirectionMagnitude, awaunit );
-                    SendSentenceToAllInstruments( OCPN_DBP_STC_AWS, toUsrSpeed_Plugin( m_NMEA0183.Vwr.WindSpeedKnots, g_iDashWindSpeedUnit ),
+                    //    Special check for unintialized values, as opposed to zero values
+                    if (m_NMEA0183.Vwr.WindSpeedKnots < 999.)
+                        SendSentenceToAllInstruments(OCPN_DBP_STC_AWS, toUsrSpeed_Plugin(m_NMEA0183.Vwr.WindSpeedKnots, g_iDashWindSpeedUnit),
                             getUsrSpeedUnit_Plugin( g_iDashWindSpeedUnit ) );
                     /*
                      double m_NMEA0183.Vwr.WindSpeedms;
