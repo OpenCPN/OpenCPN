@@ -2006,7 +2006,6 @@ void GRIBOverlayFactory::DrawGLTexture( GLuint texture, int width, int height,
 
         //    Rotations occur around 0,0, so calculate a post-rotate translation factor
         double angle = vp->rotation;
-        angle -= vp->skew;
 
         glTranslatef( xd, yd, 0 );
         glRotatef( angle * 180. / PI, 0, 0, 1 );
