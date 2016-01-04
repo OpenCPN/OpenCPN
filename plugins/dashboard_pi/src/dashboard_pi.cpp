@@ -367,6 +367,7 @@ int dashboard_pi::Init( void )
 
 bool dashboard_pi::DeInit( void )
 {
+    SaveConfig();
     if( IsRunning() ) // Timer started?
     Stop(); // Stop timer
 
@@ -1299,8 +1300,8 @@ void dashboard_pi::OnToolbarToolCallback( int id )
                     if( b_anyviz )
                         pane.Show( cont->m_bIsVisible );
                     else {
-                       cont->m_bIsVisible = true;
-                       pane.Show( true );       // show all if none are marked visible and none are shown
+                       cont->m_bIsVisible = cont->m_bPersVisible;
+                       pane.Show( cont->m_bIsVisible );
                     }
                 else
                     pane.Show( false );
@@ -1408,7 +1409,9 @@ bool dashboard_pi::LoadConfig( void )
                 pConf->Read( _T("Orientation"), &orient, _T("V") );
                 int i_cnt;
                 pConf->Read( _T("InstrumentCount"), &i_cnt, -1 );
-
+                bool b_persist;
+                pConf->Read( _T("Persistence"), &b_persist, 1 );
+                
                 wxArrayInt ar;
                 for( int i = 0; i < i_cnt; i++ ) {
                     int id;
@@ -1416,8 +1419,11 @@ bool dashboard_pi::LoadConfig( void )
                     if( id != -1 ) ar.Add( id );
                 }
 // TODO: Do not add if GetCount == 0
-                m_ArrayOfDashboardWindow.Add(
-                        new DashboardWindowContainer( NULL, name, caption, orient, ar ) );
+
+                DashboardWindowContainer *cont = new DashboardWindowContainer( NULL, name, caption, orient, ar );
+                cont->m_bPersVisible = b_persist;
+
+                m_ArrayOfDashboardWindow.Add(cont);
 
             }
         }
@@ -1452,7 +1458,8 @@ bool dashboard_pi::SaveConfig( void )
             pConf->Write( _T("Name"), cont->m_sName );
             pConf->Write( _T("Caption"), cont->m_sCaption );
             pConf->Write( _T("Orientation"), cont->m_sOrientation );
-
+            pConf->Write( _T("Persistence"), cont->m_bPersVisible );
+            
             pConf->Write( _T("InstrumentCount"), (int) cont->m_aInstrumentList.GetCount() );
             for( unsigned int j = 0; j < cont->m_aInstrumentList.GetCount(); j++ )
                 pConf->Write( wxString::Format( _T("Instrument%d"), j + 1 ),
@@ -1531,6 +1538,7 @@ void dashboard_pi::ShowDashboard( size_t id, bool visible )
         DashboardWindowContainer *cont = m_ArrayOfDashboardWindow.Item( id );
         m_pauimgr->GetPane( cont->m_pDashboardWindow ).Show( visible );
         cont->m_bIsVisible = visible;
+        cont->m_bPersVisible = visible;
         m_pauimgr->Update();
     }
 }

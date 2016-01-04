@@ -361,6 +361,7 @@ public:
       CanvasMenuHandler  *m_canvasMenu;
       
 private:
+      bool IsTempMenuBarEnabled();
       bool InvokeCanvasMenu(int x, int y, int seltype);
     
       ViewPort    VPoint;

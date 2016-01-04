@@ -146,6 +146,58 @@ static bool s_ProgressCallBack( void )
     return ret;
 }
 
+static uint64_t hash_fast64(const void *buf, size_t len, uint64_t seed)
+{
+    const uint64_t	m = 0x880355f21e6d1965ULL;
+    const uint64_t *pos = (const uint64_t *)buf;
+    const uint64_t *end = pos + (len >> 3);
+    const unsigned char *pc;
+    uint64_t h = len * m ^ seed;
+    uint64_t v;
+    while (pos != end) {
+        v = *pos++;
+        v ^= v >> 23;
+        v *= 0x2127599bf4325c37ULL;
+        h ^= v ^ (v >> 47);
+        h *= m;
+    }
+    pc = (const unsigned char*)pos;
+    v = 0;
+    switch (len & 7) {
+        case 7: v ^= (uint64_t)pc[6] << 48;
+        case 6: v ^= (uint64_t)pc[5] << 40;
+        case 5: v ^= (uint64_t)pc[4] << 32;
+        case 4: v ^= (uint64_t)pc[3] << 24;
+        case 3: v ^= (uint64_t)pc[2] << 16;
+        case 2: v ^= (uint64_t)pc[1] << 8;
+        case 1: v ^= (uint64_t)pc[0];
+            v ^= v >> 23;
+            v *= 0x2127599bf4325c37ULL;
+            h ^= v ^ (v >> 47);
+            h *= m;
+    }
+
+    h ^= h >> 23;
+    h *= 0x2127599bf4325c37ULL;
+    h ^= h >> 47;
+    return h;
+}
+
+static unsigned int hash_fast32(const void *buf, size_t len, unsigned int seed)
+{
+    uint64_t h = hash_fast64(buf, len, seed);
+    /* The following trick converts the 64-bit hashcode to a
+     * residue over a Fermat Number, in which information from
+     * both the higher and lower parts of hashcode shall be
+     * retained. */
+    return h - (h >> 32);
+}
+
+unsigned long connector_key::hash() const
+{
+    return hash_fast32(k, sizeof k, 0);
+}
+
 //----------------------------------------------------------------------------------
 //      S57Obj CTOR
 //----------------------------------------------------------------------------------
@@ -247,7 +299,7 @@ S57Obj::~S57Obj()
 //      S57Obj CTOR from SENC file
 //----------------------------------------------------------------------------------
 
-S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dummy2, int senc_file_version )
+S57Obj::S57Obj( char *buf, int size, wxInputStream *pfpx, double dummy, double dummy2, int senc_file_version )
 {
     att_array = NULL;
     attVal = NULL;
@@ -282,12 +334,11 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
     x_origin = 0.0;
     y_origin = 0.0;
 
-    if( strlen( first_line ) == 0 ) return;
+    if( strlen( buf ) == 0 ) return;
 
     int FEIndex;
 
-    int MAX_LINE = 499999;
-    char *buf = (char *) malloc( MAX_LINE + 1 );
+    int MAX_LINE = size;
     int llmax = 0;
 
     char *br;
@@ -297,8 +348,6 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
     bool bMulti = false;
 
     char *hdr_buf = (char *) malloc( 1 );
-
-    strcpy( buf, first_line );
 
 //    while(!dun)
     {
@@ -400,8 +449,10 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
                 bool iua = IsUsefulAttribute( buf );
 
                 szAtt[0] = 0;
-
-                if( iua ) {
+                char t = buf[10];
+                // there's enough other types, testing first is faster 
+                // than new/delete
+                if( iua && (t == 'I' || t == 'S' || t == 'R')) {
                     S57attVal *pattValTmp = new S57attVal;
 
                     if( buf[10] == 'I' ) {
@@ -753,7 +804,6 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
         }               //OGRF
     }                       //while(!dun)
 
-    free( buf );
     free( hdr_buf );
 
 }
@@ -1586,26 +1636,19 @@ int s57chart::GetLineFeaturePointArray(S57Obj *obj, void **ret_array)
     }
     
     //  Allocate the buffer
-    float *ret_temp = (float *)malloc(nPoints * 2 * sizeof(float));
-    
+    float *br = (float *)malloc(nPoints * 2 * sizeof(float));
+    *ret_array = br;
+
     // populate the buffer
     unsigned char *source_buffer = (unsigned char *)GetLineVertexBuffer();
-    float *br = ret_temp;
     ls_list = obj->m_ls_list;
     while( ls_list){
-        float *pt = (float *)(source_buffer + ls_list->vbo_offset);
-        float a = *pt++;
-        float b = *pt++;
-        
         memcpy(br, source_buffer + ls_list->vbo_offset, ls_list->n_points * 2 * sizeof(float));
         br += ls_list->n_points * 2;
         ls_list = ls_list->next;
     }
     
-    *ret_array = ret_temp;
-    
     return nPoints;
-        
     
 }
 
@@ -1624,8 +1667,8 @@ void s57chart::AssembleLineGeometry( void )
                     nPoints += pedge->nCount;
                 }
             }
-            
-            
+
+            connector_key key;            
             int ndelta = 0;
             //  Get the end node connected segments.  To do this, we
             //  walk the Feature array and process each feature that potetially has a LINE type element
@@ -1644,18 +1687,18 @@ void s57chart::AssembleLineGeometry( void )
                             
                             //  Get the edge
                             unsigned int venode = *index_run++;
-                            VE_Element *pedge = 0;
+                            VE_Element *pedge;
                             pedge = m_ve_hash[venode];
                             
                             //  Get end connected node
                             unsigned int enode = *index_run++;
                             
                             //  Get first connected node
-                            VC_Element *ipnode = 0;
+                            VC_Element *ipnode;
                             ipnode = m_vc_hash[inode];
                             
                             //  Get end connected node
-                            VC_Element *epnode = 0;
+                            VC_Element *epnode;
                             epnode = m_vc_hash[enode];
                             
                             double e0, n0, e1, n1;
@@ -1670,9 +1713,7 @@ void s57chart::AssembleLineGeometry( void )
                                     n1 = pedge->pPoints[1];
                                     
                                     //      The initial node exists and connects to the start of an edge
-                                    wxString key;
-                                    key.Printf(_T("CE%d%d"), inode, venode);
-                                    
+                                    key.set(TYPE_CE, inode, venode);
                                     if(m_connector_hash.find( key ) == m_connector_hash.end()){
                                         ndelta += 2;
                                         connector_segment *pcs = new connector_segment;
@@ -1699,9 +1740,8 @@ void s57chart::AssembleLineGeometry( void )
                                 if(ipnode){
                                     if(pedge && pedge->nCount){
                                         
-                                        wxString key;
-                                        key.Printf(_T("EC%d%d"), venode, enode);
-                                        
+                                        key.set(TYPE_EC, venode, enode);
+
                                         if(m_connector_hash.find( key ) == m_connector_hash.end()){
                                             ndelta += 2;
                                             connector_segment *pcs = new connector_segment;
@@ -1712,8 +1752,7 @@ void s57chart::AssembleLineGeometry( void )
                                         }
                                     }
                                     else {
-                                        wxString key;
-                                        key.Printf(_T("CC%d%d"), inode, enode);
+                                        key.set(TYPE_CC, inode, enode);
                                         
                                         if(m_connector_hash.find( key ) == m_connector_hash.end()){
                                             ndelta += 2;
@@ -1773,7 +1812,6 @@ void s57chart::AssembleLineGeometry( void )
                     connected_segment_hash::iterator itc;
                     for( itc = m_connector_hash.begin(); itc != m_connector_hash.end(); ++itc )
                     {
-                        wxString key = itc->first;
                         connector_segment *pcs = itc->second;
                         
                         switch(pcs->type){
@@ -1864,18 +1902,18 @@ void s57chart::AssembleLineGeometry( void )
                                     
                                     //  Get the edge
                                     unsigned int venode = *index_run++;
-                                    VE_Element *pedge = 0;
+                                    VE_Element *pedge;
                                     pedge = m_ve_hash[venode];
                                     
                                     //  Get end connected node
                                     unsigned int enode = *index_run++;
                                     
                                     //  Get first connected node
-                                    VC_Element *ipnode = 0;
+                                    VC_Element *ipnode;
                                     ipnode = m_vc_hash[inode];
                                     
                                     //  Get end connected node
-                                    VC_Element *epnode = 0;
+                                    VC_Element *epnode;
                                     epnode = m_vc_hash[enode];
                                     
                                     double e0=0, n0=0, e1, n1;
@@ -1887,12 +1925,12 @@ void s57chart::AssembleLineGeometry( void )
                                         
                                         if(pedge && pedge->nCount)
                                         {
-                                            wxString key;
-                                            key.Printf(_T("CE%d%d"), inode, venode);
+                                            key.set(TYPE_CE, inode, venode);
                                             
-                                            if(m_connector_hash.find( key ) != m_connector_hash.end()){
+                                            connected_segment_hash::iterator itcs = m_connector_hash.find( key );
+                                            if(itcs != m_connector_hash.end()){
                                                 
-                                                connector_segment *pcs = m_connector_hash[key];
+                                                connector_segment *pcs = itcs->second;
                                                 
                                                 line_segment_element *pls = new line_segment_element;
                                                 pls->next = 0;
@@ -1956,11 +1994,11 @@ void s57chart::AssembleLineGeometry( void )
                                         if(ipnode){
                                             if(pedge && pedge->nCount){
                                                 
-                                                wxString key;
-                                                key.Printf(_T("EC%d%d"), venode, enode);
+                                                key.set(TYPE_EC, venode, enode);
                                                 
-                                                if(m_connector_hash.find( key ) != m_connector_hash.end()){
-                                                    connector_segment *pcs = m_connector_hash[key];
+                                                connected_segment_hash::iterator itcs = m_connector_hash.find( key );
+                                                if(itcs != m_connector_hash.end()){
+                                                    connector_segment *pcs = itcs->second;
                                                     
                                                     line_segment_element *pls = new line_segment_element;
                                                     pls->next = 0;
@@ -1987,11 +2025,11 @@ void s57chart::AssembleLineGeometry( void )
                                                 }
                                             }
                                             else {
-                                                wxString key;
-                                                key.Printf(_T("CC%d%d"), inode, enode);
+                                                key.set(TYPE_CC, inode, enode);
                                                 
-                                                if(m_connector_hash.find( key ) != m_connector_hash.end()){
-                                                    connector_segment *pcs = m_connector_hash[key];
+                                                connected_segment_hash::iterator itcs = m_connector_hash.find( key );
+                                                if(itcs != m_connector_hash.end()){
+                                                    connector_segment *pcs = itcs->second;
                                                     
                                                     line_segment_element *pls = new line_segment_element;
                                                     pls->next = 0;
@@ -2861,7 +2899,6 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
             } else
                 ret_value = PostInit( flags, m_global_color_scheme );
 
-            OCPNPlatform::HideBusySpinner();
         }
 
     }
@@ -2871,8 +2908,6 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
 
         m_SENCFileName = name;
         ret_value = PostInit( flags, m_global_color_scheme );
-
-        OCPNPlatform::HideBusySpinner();
 
     }
 
@@ -5630,10 +5665,11 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
 
                 float *ptest;
                 int ntp = GetLineFeaturePointArray(obj, (void **) &ptest);
-                
+
                 if(!ntp)
                     return false;
                 
+                float *pfree = ptest;
                 pt *ppt = obj->geoPt;
                 int npt = obj->npt;
 
@@ -5649,7 +5685,7 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
                 
                 ppt++;
 
-                for( int ip = 1; ip < npt; ip++ ) {
+                for( int ip = 1; ip < ntp; ip++ ) {
                     
                     float a = *ptest++;
                     float b = *ptest++;
@@ -5667,6 +5703,7 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
                         >= ( fmin(east, east0) - sel_rad_meters ) ) if( easting
                         <= ( fmax(east, east0) + sel_rad_meters ) ) {
                         //                                                    index = ip;
+                        free (pfree);
                         return true;
                     }
 
@@ -5674,6 +5711,7 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
                     east0 = east;
                     ppt++;
                 }
+                free (pfree);
             }
 
             break;

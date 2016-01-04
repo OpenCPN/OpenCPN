@@ -187,10 +187,10 @@ extern bool             g_bTrackDaily;
 extern int              g_track_rotate_time;
 extern int              g_track_rotate_time_type;
 extern double           g_AISShowTracks_Mins;
-extern bool             g_bShowMoored;
-extern bool             g_bAllowHideMoored;
+extern bool             g_bHideMoored;
 extern double           g_ShowMoored_Kts;
 extern bool             g_bAllowShowScaled;
+extern bool             g_bShowScaled;
 extern int              g_ShowScaled_Num;
 extern bool             g_bAIS_CPA_Alert;
 extern bool             g_bAIS_CPA_Alert_Audio;
@@ -218,7 +218,6 @@ extern int              g_ScaledNumWeightTCPA;
 extern int              g_ScaledNumWeightRange;
 extern int              g_ScaledNumWeightSizeOfT;
 extern int              g_ScaledSizeMinimal;
-extern bool             g_bShowScaled;
 
 extern int              g_S57_dialog_sx, g_S57_dialog_sy;
 
@@ -1503,13 +1502,11 @@ int MyConfig::LoadMyConfig()
     } else
         g_AISShowTracks_Mins = 20;
 
-    Read( _T ( "bShowMooredTargets" ), &g_bShowMoored );
-    Read( _T ( "bAllowShowMooredTargets" ), &g_bAllowHideMoored );
-    
+    Read( _T ( "bHideMooredTargets" ), &g_bHideMoored, false );
     Read( _T ( "MooredTargetMaxSpeedKnots" ), &s );
     s.ToDouble( &g_ShowMoored_Kts );
     
-    Read(_T ("bShowScaledTargets"), &g_bAllowShowScaled );
+    Read(_T ("bShowScaledTargets"), &g_bAllowShowScaled, false );
     g_ShowScaled_Num = Read( _T ( "AISScaledNumber" ), 10L );
     g_ScaledNumWeightSOG = Read( _T ( "AISScaledNumberWeightSOG" ), 50L );
     g_ScaledNumWeightCPA = Read( _T ( "AISScaledNumberWeightCPA" ), 60L );
@@ -1517,7 +1514,7 @@ int MyConfig::LoadMyConfig()
     g_ScaledNumWeightRange = Read( _T ( "AISScaledNumberWeightRange" ), 75L );
     g_ScaledNumWeightSizeOfT = Read( _T ( "AISScaledNumberWeightSizeOfTarget" ), 25L );
     g_ScaledSizeMinimal = Read( _T ( "AISScaledSizeMinimal" ), 50L );
-    Read(_T("AISShowScaled"), g_bShowScaled );
+    Read(_T("AISShowScaled"), &g_bShowScaled, false );
     
     Read( _T ( "bShowAreaNotices" ), &g_bShowAreaNotices );
     Read( _T ( "bDrawAISSize" ), &g_bDrawAISSize );
@@ -2785,8 +2782,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "bShowTargetTracks" ), g_bAISShowTracks );
     Write( _T ( "TargetTracksMinutes" ), g_AISShowTracks_Mins );
 
-    Write( _T ( "bShowMooredTargets" ), g_bShowMoored );
-    Write( _T ( "bAllowShowMooredTargets" ), g_bAllowHideMoored );
+    Write( _T ( "bHideMooredTargets" ), g_bHideMoored );
     Write( _T ( "MooredTargetMaxSpeedKnots" ), g_ShowMoored_Kts );
     
     Write( _T ( "bAISAlertDialog" ), g_bAIS_CPA_Alert );

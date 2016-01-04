@@ -2610,6 +2610,8 @@ bool  ChartDatabase::IsChartAvailable(int dbIndex)
 
 void ChartDatabase::ApplyGroupArray(ChartGroupArray *pGroupArray)
 {
+    wxString separator(wxFileName::GetPathSeparator());
+
     for(unsigned int ic=0 ; ic < active_chartTable.GetCount(); ic++)
       {
             ChartTableEntry *pcte = &active_chartTable[ic];
@@ -2630,7 +2632,7 @@ void ChartDatabase::ApplyGroupArray(ChartGroupArray *pGroupArray)
                         //  Otherwise, append a sep character so that similar paths are distinguished.
                         //  See FS#1060
                         if(!chart_full_path->IsSameAs(element_root))
-                            element_root.Append(wxFileName::GetPathSeparator());	// Prevent comingling similar looking path names
+                            element_root.Append(separator);	// Prevent comingling similar looking path names
                         if(chart_full_path->StartsWith(element_root))
                         {
                               bool b_add = true;

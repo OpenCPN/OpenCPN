@@ -187,7 +187,7 @@ public:
 
       virtual void SetToolTooltipHiViz( int id, bool b_hiviz );
 
-      virtual void SetSizeFactor( float factor){ m_sizefactor = factor; }
+      virtual void SetSizeFactor( float factor){ m_sizefactor = factor; InvalidateBitmaps(); }
       // toolbar geometry
       // ----------------
 

@@ -69,7 +69,6 @@ include/Osenc.h
 include/pluginmanager.h
 include/PositionParser.h
 include/printtable.h
-include/PyPluginProxy.h
 include/Quilt.h
 include/razdsparser.h
 include/RolloverWin.h
@@ -94,7 +93,6 @@ include/scrollingdialog.h
 include/Select.h
 include/SelectItem.h
 include/SendToGpsDlg.h
-include/Stackwalker.h
 include/Station_Data.h
 include/styles.h
 include/TCDataFactory.h
@@ -117,7 +115,6 @@ include/TTYWindow.h
 include/tzdata.h
 include/undo.h
 include/vector2D.h
-include/version.h
 include/viewport.h
 include/wificlient.h
 include/WindowDestroyListener.h
@@ -187,7 +184,6 @@ src/pluginmanager.cpp
 src/PositionParser.cpp
 src/printtable.cpp
 src/pugixml.cpp
-src/PyPluginProxy.cpp
 src/Quilt.cpp
 src/razdsparser.cpp
 src/RolloverWin.cpp
