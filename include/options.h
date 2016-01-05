@@ -229,7 +229,7 @@ class options : private Uncopyable,
                    long style = SYMBOL_OPTIONS_STYLE);
 
   ~options(void);
-
+  bool SendIdleEvents(wxIdleEvent &event );
   void SetInitialPage(int page_sel);
   void Finish(void);
 
