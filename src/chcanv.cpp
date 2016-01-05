@@ -8940,7 +8940,7 @@ wxString ChartCanvas::FormatDistanceAdaptive( double distance ) {
     return result;
 }
 
-void RenderExtraRouteLegInfo( ocpnDC &dc, wxPoint ref_point, wxString s )
+static void RouteLegInfo( ocpnDC &dc, wxPoint ref_point, int row, wxString s )
 {
     wxFont *dFont = FontMgr::Get().GetFont( _("RouteLegInfoRollover") );
     dc.SetFont( *dFont );
@@ -8956,12 +8956,12 @@ void RenderExtraRouteLegInfo( ocpnDC &dc, wxPoint ref_point, wxString s )
 #endif
 
     xp = ref_point.x - w;
-    yp = ref_point.y + h;
+    yp = ref_point.y + h*row;
     yp += hilite_offset;
 
+    dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ) ) );
     AlphaBlending( dc, xp, yp, w, h, 0.0, GetGlobalColor( _T ( "YELO1" ) ), 172 );
 
-    dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ) ) );
     dc.DrawText( s, xp, yp );
 }
 
@@ -9049,26 +9049,7 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
 
         routeInfo << _T(" ") << FormatDistanceAdaptive( dist );
 
-        wxFont *dFont = FontMgr::Get().GetFont( _("RouteLegInfoRollover") );
-        dc.SetFont( *dFont );
-
-        int w, h;
-        int xp, yp;
-        int hilite_offset = 3;
-    #ifdef __WXMAC__
-        wxScreenDC sdc;
-        sdc.GetTextExtent(routeInfo, &w, &h, NULL, NULL, dFont);
-    #else
-        dc.GetTextExtent( routeInfo, &w, &h );
-    #endif
-        xp = r_rband.x - w;
-        yp = r_rband.y;
-        yp += hilite_offset;
-
-        AlphaBlending( dc, xp, yp, w, h, 0.0, GetGlobalColor( _T ( "YELO1" ) ), 172 );
-
-        dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ) ) );
-        dc.DrawText( routeInfo, xp, yp );
+        RouteLegInfo( dc, r_rband, 0, routeInfo );
 
         wxString s0;
         if( !route->m_bIsInLayer )
@@ -9080,7 +9061,7 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
         if( !g_btouch)
             disp_length += dist;
         s0 += FormatDistanceAdaptive( disp_length );
-        RenderExtraRouteLegInfo( dc, r_rband, s0 );
+        RouteLegInfo( dc, r_rband, 1, s0 );
         m_brepaint_piano = true;
     }
 }
