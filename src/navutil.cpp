@@ -2088,6 +2088,8 @@ void MyConfig::LoadS57Config()
 
     SetPath( _T ( "/Settings/GlobalState" ) );
     Read( _T ( "S52_DEPTH_UNIT_SHOW" ), &read_int, 1 );   // default is metres
+    read_int = wxMax(read_int, 0);                      // qualify value
+    read_int = wxMin(read_int, 2);
     ps52plib->m_nDepthUnitDisplay = read_int;
 
 //    S57 Object Class Visibility
