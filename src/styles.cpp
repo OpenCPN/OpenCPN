@@ -225,7 +225,7 @@ wxBitmap Style::GetIcon(const wxString & name, int width, int height, bool bforc
     
     wxBitmap bm;
 #ifdef ocpnUSE_SVG
-    wxString fullFilePath = myConfigFileDir + this->sysname + wxFileName::GetPathSeparator() + name + ".svg";
+    wxString fullFilePath = myConfigFileDir + this->sysname + wxFileName::GetPathSeparator() + name + _T(".svg");
     if( wxFileExists( fullFilePath ) )
         bm = LoadSVG( fullFilePath, retSize.x, retSize.y);
     else
@@ -292,9 +292,9 @@ wxBitmap Style::GetToolIcon(const wxString & toolname, int iconType, bool rollov
 #ifdef ocpnUSE_SVG
             wxString fullFilePath;
             if( rollover )
-                fullFilePath = myConfigFileDir + this->sysname + wxFileName::GetPathSeparator() + toolname + "_rollover.svg";
+                fullFilePath = myConfigFileDir + this->sysname + wxFileName::GetPathSeparator() + toolname + _T("_rollover.svg");
             else
-                fullFilePath = myConfigFileDir + this->sysname + wxFileName::GetPathSeparator() + toolname + ".svg";
+                fullFilePath = myConfigFileDir + this->sysname + wxFileName::GetPathSeparator() + toolname + _T(".svg");
             if( wxFileExists( fullFilePath ) )
                 bm = LoadSVG( fullFilePath, retSize.x, retSize.y );
             else
@@ -363,9 +363,9 @@ wxBitmap Style::GetToolIcon(const wxString & toolname, int iconType, bool rollov
 #ifdef ocpnUSE_SVG
             wxString fullFilePath;
             if( rollover )
-                fullFilePath = myConfigFileDir + this->sysname + wxFileName::GetPathSeparator() + toolname + "_rollover_toggled.svg";
+                fullFilePath = myConfigFileDir + this->sysname + wxFileName::GetPathSeparator() + toolname + _T("_rollover_toggled.svg");
             else
-                fullFilePath = myConfigFileDir + this->sysname + wxFileName::GetPathSeparator() + toolname + "_toggled.svg";
+                fullFilePath = myConfigFileDir + this->sysname + wxFileName::GetPathSeparator() + toolname + _T("_toggled.svg");
             if( wxFileExists( fullFilePath ) )
                 bm = LoadSVG( fullFilePath, retSize.x, retSize.y );
             else
@@ -399,7 +399,7 @@ wxBitmap Style::GetToolIcon(const wxString & toolname, int iconType, bool rollov
 
             wxBitmap bm;
 #ifdef ocpnUSE_SVG
-            wxString fullFilePath = myConfigFileDir + this->sysname + wxFileName::GetPathSeparator() + toolname + "_disabled.svg";
+            wxString fullFilePath = myConfigFileDir + this->sysname + wxFileName::GetPathSeparator() + toolname + _T("_disabled.svg");
             if( wxFileExists( fullFilePath ) )
                 bm = LoadSVG( fullFilePath, retSize.x, retSize.y );
             else
