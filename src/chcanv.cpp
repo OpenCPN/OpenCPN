@@ -1515,7 +1515,18 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         break;
     }
     case WXK_F4:
-        StartMeasureRoute();
+        if( !m_bMeasure_Active )
+            StartMeasureRoute();
+        else{
+            CancelMeasureRoute();
+            
+            SetCursor( *pCursorArrow );
+            
+            gFrame->SurfaceToolbar();
+            InvalidateGL();
+            Refresh( false );
+        }
+        
         break;
 
     case WXK_F5:
