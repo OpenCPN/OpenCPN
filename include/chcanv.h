@@ -662,6 +662,7 @@ private:
       
       wxColour    m_fog_color;      
       bool        m_disable_edge_pan;
+      wxFont      *m_pgridFont;
       
       
 DECLARE_EVENT_TABLE()

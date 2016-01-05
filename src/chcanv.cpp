@@ -915,6 +915,9 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     if ( !g_bdisable_opengl )
         m_pQuilt->EnableHighDefinitionZoom( true );
 #endif    
+
+    m_pgridFont = wxTheFontList->FindOrCreateFont( 8, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL,
+         wxFONTWEIGHT_NORMAL, FALSE, wxString( _T ( "Arial" ) ) );
         
 }
 
@@ -4092,10 +4095,8 @@ void ChartCanvas::GridDraw( ocpnDC& dc )
     float gridlatMajor, gridlatMinor, gridlonMajor, gridlonMinor;
     wxCoord w, h;
     wxPen GridPen( GetGlobalColor( _T ( "SNDG1" ) ), 1, wxPENSTYLE_SOLID );
-    wxFont *font = wxTheFontList->FindOrCreateFont( 8, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL,
-                   wxFONTWEIGHT_NORMAL, FALSE, wxString( _T ( "Arial" ) ) );
     dc.SetPen( GridPen );
-    dc.SetFont( *font );
+    dc.SetFont( *m_pgridFont );
     dc.SetTextForeground( GetGlobalColor( _T ( "SNDG1" ) ) );
 
     w = m_canvas_width;
