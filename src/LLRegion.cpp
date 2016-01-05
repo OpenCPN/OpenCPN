@@ -36,6 +36,16 @@ static inline double cross(const contour_pt &v1, const contour_pt &v2)
     return v1.y*v2.x - v1.x*v2.y;
 }
 
+static inline double dot(const contour_pt &v1, const contour_pt &v2)
+{
+    return v1.x*v2.x + v1.y*v2.y;
+}
+
+static inline double dist2(const contour_pt &v)
+{
+    return dot(v, v);
+}
+
 static inline contour_pt vector(const contour_pt &p1, const contour_pt &p2)
 {
     contour_pt r = {p2.y - p1.y, p2.x - p1.x};
@@ -328,6 +338,39 @@ void LLRegion::Subtract(const LLRegion& region)
         return;
     
     Put(region, GLU_TESS_WINDING_POSITIVE, true);
+}
+
+void LLRegion::Reduce(double factor)
+{
+    double factor2 = factor*factor;
+
+    std::list<poly_contour>::iterator i = contours.begin();
+    while(i != contours.end()) {
+        if(i->size() < 3) {
+            printf("invalid contour");
+            continue;
+        }
+
+        // reduce segments
+        contour_pt l = *i->rbegin();
+        poly_contour::iterator j = i->begin(), k;
+        while(j != i->end()) {
+            k = j;
+            j++;
+            if(dist2(vector(*k, l)) < factor2)
+                i->erase(k);
+            else
+                l = *k;
+        }
+
+        // erase zero contours
+        if(i->size() < 3)
+            i = contours.erase(i);
+        else
+            i++;
+    }
+
+    //Optimize();
 }
 
 // slightly ugly, but efficient intersection algorithm
