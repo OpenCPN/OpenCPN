@@ -119,12 +119,20 @@ void DashboardInstrument_AppTrueWindAngle::SetData(int st, double data, wxString
 		m_MainValueOption1 = DIAL_POSITION_TOPLEFT;
 	}
 	else if (st == OCPN_DBP_STC_AWS){
-		m_ExtraValueApp = data;
-		m_ExtraValueAppUnit = unit;
+                if(data > 200.0)                  // Presumably un-initialized
+                    m_ExtraValueApp = 0.;
+                else
+                    m_ExtraValueApp = data;
+
+                m_ExtraValueAppUnit = unit;
 		m_ExtraValueOption1 = DIAL_POSITION_TOPRIGHT;
 	}
 	else if (st == OCPN_DBP_STC_TWS){
-		m_ExtraValueTrue = data;
+                if(data > 200.0)                  // Presumably un-initialized
+                    m_ExtraValueTrue = 0.;
+                else
+                    m_ExtraValueTrue = data;
+          
 		m_ExtraValueTrueUnit = unit;
 		m_ExtraValueOption2 = DIAL_POSITION_BOTTOMRIGHT;
 	}
