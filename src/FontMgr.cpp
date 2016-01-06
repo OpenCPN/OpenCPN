@@ -394,21 +394,24 @@ bool OCPNwxFontList::isSame(wxFont *font, int pointSize, wxFontFamily family,
          font->GetWeight () == weight &&
          font->GetUnderlined () == underline )
     {
-        bool same = font->GetFamily() == family;
+        bool same;
 
         // empty facename matches anything at all: this is bad because
         // depending on which fonts are already created, we might get back
         // a different font if we create it with empty facename, but it is
         // still better than never matching anything in the cache at all
         // in this case
-        if ( same && !facename.empty() )
+        if ( !facename.empty() )
         {
             const wxString& fontFace = font->GetFaceName();
 
             // empty facename matches everything
             same = !fontFace || fontFace == facename;
         }
-
+        else 
+        {
+            same = font->GetFamily() == family;
+        }
         if ( same && (encoding != wxFONTENCODING_DEFAULT) )
         {
             // have to match the encoding too
