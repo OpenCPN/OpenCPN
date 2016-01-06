@@ -523,7 +523,7 @@ void BuildCompressedCache()
     wxSize csz = GetOCPNCanvasWindow()->GetClientSize();
     if(csz.x < 600 || csz.y < 600){
         wxFont *qFont = GetOCPNScaledFont(_("Dialog"));         // to get type, weight, etc...
-        wxFont *sFont = wxTheFontList->FindOrCreateFont( 10, qFont->GetFamily(), qFont->GetStyle(), qFont->GetWeight());
+        wxFont *sFont = FontMgr::Get().FindOrCreateFont( 10, qFont->GetFamily(), qFont->GetStyle(), qFont->GetWeight());
         pprog->SetFont( *sFont );
     }
     
@@ -2674,7 +2674,7 @@ void glChartCanvas::DrawCloseMessage(wxString msg)
 {
     if(1){
         
-        wxFont *pfont = wxTheFontList->FindOrCreateFont(12, wxFONTFAMILY_DEFAULT,
+        wxFont *pfont = FontMgr::Get().FindOrCreateFont(12, wxFONTFAMILY_DEFAULT,
                                                         wxFONTSTYLE_NORMAL,
                                                         wxFONTWEIGHT_NORMAL);
         

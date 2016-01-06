@@ -161,7 +161,7 @@ bool AISTargetAlertDialog::Create( int target_mmsi, wxWindow *parent, AIS_Decode
 #ifdef __WXGTK__
     face = _T("Monospace");
 #endif
-    wxFont *fp_font = wxTheFontList->FindOrCreateFont( font_size, wxFONTFAMILY_MODERN,
+    wxFont *fp_font = FontMgr::Get().FindOrCreateFont( font_size, wxFONTFAMILY_MODERN,
             wxFONTSTYLE_NORMAL, dFont->GetWeight(), false, face );
 
     SetFont( *fp_font );

@@ -175,13 +175,13 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     wxFont *dlg_font = FontMgr::Get().GetFont( _("Dialog") );
     int dlg_font_size = dlg_font->GetPointSize();
 
-    pSFont = wxTheFontList->FindOrCreateFont( dlg_font_size-2, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL,
+    pSFont = FontMgr::Get().FindOrCreateFont( dlg_font_size-2, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL,
                                                     wxFONTWEIGHT_NORMAL, FALSE, wxString( _T ( "Arial" ) ) );
-    pSMFont = wxTheFontList->FindOrCreateFont( dlg_font_size-1, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL,
+    pSMFont = FontMgr::Get().FindOrCreateFont( dlg_font_size-1, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL,
                                                        wxFONTWEIGHT_NORMAL, FALSE, wxString( _T ( "Arial" ) ) );
-    pMFont = wxTheFontList->FindOrCreateFont( dlg_font_size, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD,
+    pMFont = FontMgr::Get().FindOrCreateFont( dlg_font_size, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD,
                                                       FALSE, wxString( _T ( "Arial" ) ) );
-    pLFont = wxTheFontList->FindOrCreateFont( dlg_font_size+1, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD,
+    pLFont = FontMgr::Get().FindOrCreateFont( dlg_font_size+1, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD,
                                                       FALSE, wxString( _T ( "Arial" ) ) );
 
     pblack_1 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFD" ) ), 1,

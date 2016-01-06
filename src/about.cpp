@@ -403,7 +403,7 @@ void about::CreateControls( void )
 
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     
-    wxFont *headerFont = wxTheFontList->FindOrCreateFont( 14, wxFONTFAMILY_DEFAULT,
+    wxFont *headerFont = FontMgr::Get().FindOrCreateFont( 14, wxFONTFAMILY_DEFAULT,
                                                           qFont->GetStyle(), wxFONTWEIGHT_BOLD, false,
                                                           qFont->GetFaceName() );
     pST1->SetFont( *headerFont );
