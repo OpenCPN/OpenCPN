@@ -701,21 +701,27 @@
 			</icon>
 			<icon name="gps1Bar">
 				<icon-location x="340" y="60"/>
+				<size x="38" y="32"/>
 			</icon>
 			<icon name="gps2Bar">
 				<icon-location x="380" y="60"/>
+				<size x="38" y="32"/>
 			</icon>
 			<icon name="gps3Bar">
 				<icon-location x="420" y="60"/>
+				<size x="38" y="32"/>
 			</icon>
 			<icon name="gpsGrn">
 				<icon-location x="460" y="60"/>
+				<size x="38" y="32"/>
 			</icon>
 			<icon name="gpsGry">
 				<icon-location x="500" y="60"/>
+				<size x="38" y="32"/>
 			</icon>
 			<icon name="gpsRed">
 				<icon-location x="540" y="60"/>
+				<size x="38" y="32"/>
 			</icon>
 			<icon name="CompassRose">
 				<icon-location x="580" y="60"/>
@@ -1195,21 +1201,27 @@
 			</icon>
 			<icon name="gps1Bar">
 				<icon-location x="340" y="60"/>
+				<size x="38" y="32"/>
 			</icon>
 			<icon name="gps2Bar">
 				<icon-location x="380" y="60"/>
+				<size x="38" y="32"/>
 			</icon>
 			<icon name="gps3Bar">
 				<icon-location x="420" y="60"/>
+				<size x="38" y="32"/>
 			</icon>
 			<icon name="gpsGrn">
 				<icon-location x="460" y="60"/>
+				<size x="38" y="32"/>
 			</icon>
 			<icon name="gpsGry">
 				<icon-location x="500" y="60"/>
+				<size x="38" y="32"/>
 			</icon>
 			<icon name="gpsRed">
 				<icon-location x="540" y="60"/>
+				<size x="38" y="32"/>
 			</icon>
 			<icon name="CompassRose">
 				<icon-location x="580" y="60"/>
