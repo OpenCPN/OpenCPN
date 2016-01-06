@@ -962,7 +962,7 @@ int OCPNPlatform::DoFileSelectorDialog( wxWindow *parent, wxString *file_spec, w
     
     wxFileDialog *psaveDialog = new wxFileDialog( parent, Title, initDir, suggestedName, mask, flag );
 
-    if(g_bresponsive)
+    if(g_bresponsive && parent)
         psaveDialog = g_Platform->AdjustFileDialogFont(parent, psaveDialog);
     
 #ifdef __WXOSX__
@@ -977,8 +977,8 @@ int OCPNPlatform::DoFileSelectorDialog( wxWindow *parent, wxString *file_spec, w
         parent->ShowWithEffect(wxSHOW_EFFECT_BLEND );
 #endif
 
-	if(file_spec)
-		*file_spec = psaveDialog->GetPath();
+    if(file_spec)
+        *file_spec = psaveDialog->GetPath();
     delete psaveDialog;
         
 #endif
@@ -1006,19 +1006,19 @@ int OCPNPlatform::DoDirSelectorDialog( wxWindow *parent, wxString *file_spec, wx
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     dirSelector->SetFont(*qFont);
 
-    if(g_bresponsive)
+    if(g_bresponsive && parent)
         dirSelector = AdjustDirDialogFont(parent, dirSelector);
     
 #ifdef __WXOSX__
-    if(parent)
-        parent->HideWithEffect(wxSHOW_EFFECT_BLEND );
+//    if(parent)
+//        parent->HideWithEffect(wxSHOW_EFFECT_BLEND );
 #endif
             
     result = dirSelector->ShowModal();
             
 #ifdef __WXOSX__
-    if(parent)
-        parent->ShowWithEffect(wxSHOW_EFFECT_BLEND );
+//    if(parent)
+//        parent->ShowWithEffect(wxSHOW_EFFECT_BLEND );
 #endif
 
     if( result == wxID_CANCEL ){
@@ -1387,8 +1387,8 @@ wxDirDialog* OCPNPlatform::AdjustDirDialogFont(wxWindow *container, wxDirDialog*
     return ret_dlg;
 }
         
-        wxFileDialog* OCPNPlatform::AdjustFileDialogFont(wxWindow *container, wxFileDialog* dlg)
-        {
+wxFileDialog* OCPNPlatform::AdjustFileDialogFont(wxWindow *container, wxFileDialog* dlg)
+{
             wxFileDialog* ret_dlg = dlg;
             
             dlg->Show();
@@ -1424,7 +1424,7 @@ wxDirDialog* OCPNPlatform::AdjustDirDialogFont(wxWindow *container, wxDirDialog*
             ret_dlg->Hide();
             
             return ret_dlg;
-        }
+}
         
 double OCPNPlatform::GetToolbarScaleFactor( int GUIScaleFactor )
 {
