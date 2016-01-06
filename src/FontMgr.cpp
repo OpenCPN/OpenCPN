@@ -361,6 +361,13 @@ public:
                              bool underline = false,
                              const wxString& face = wxEmptyString,
                              wxFontEncoding encoding = wxFONTENCODING_DEFAULT);
+private:
+    bool isSame(wxFont *font, int pointSize, wxFontFamily family,
+                             wxFontStyle style,
+                             wxFontWeight weight,
+                             bool underline,
+                             const wxString& facename,
+                             wxFontEncoding encoding);
 };
 
 wxFont* FontMgr::FindOrCreateFont( int point_size, wxFontFamily family, 
@@ -373,6 +380,44 @@ wxFont* FontMgr::FindOrCreateFont( int point_size, wxFontFamily family,
     return m_wxFontCache->FindOrCreateFont( point_size, family, style, weight,
         underline, facename, encoding);
 }        
+
+bool OCPNwxFontList::isSame(wxFont *font, int pointSize, wxFontFamily family,
+                             wxFontStyle style,
+                             wxFontWeight weight,
+                             bool underline,
+                             const wxString& facename,
+                             wxFontEncoding encoding)
+{
+    if (
+         font->GetPointSize () == pointSize &&
+         font->GetStyle () == style &&
+         font->GetWeight () == weight &&
+         font->GetUnderlined () == underline )
+    {
+        bool same = font->GetFamily() == family;
+
+        // empty facename matches anything at all: this is bad because
+        // depending on which fonts are already created, we might get back
+        // a different font if we create it with empty facename, but it is
+        // still better than never matching anything in the cache at all
+        // in this case
+        if ( same && !facename.empty() )
+        {
+            const wxString& fontFace = font->GetFaceName();
+
+            // empty facename matches everything
+            same = !fontFace || fontFace == facename;
+        }
+
+        if ( same && (encoding != wxFONTENCODING_DEFAULT) )
+        {
+            // have to match the encoding too
+            same = font->GetEncoding() == encoding;
+        }
+        return same;
+    }
+    return false;
+}
 
 wxFont *OCPNwxFontList::FindOrCreateFont(int pointSize,
                                      wxFontFamily family,
@@ -399,38 +444,8 @@ wxFont *OCPNwxFontList::FindOrCreateFont(int pointSize,
     for (node = list.GetFirst(); node; node = node->GetNext())
     {
         font = (wxFont *)node->GetData();
-        if (
-             font->GetPointSize () == pointSize &&
-             font->GetStyle () == style &&
-             font->GetWeight () == weight &&
-             font->GetUnderlined () == underline )
-        {
-            bool same = font->GetFamily() == family;
-
-            // empty facename matches anything at all: this is bad because
-            // depending on which fonts are already created, we might get back
-            // a different font if we create it with empty facename, but it is
-            // still better than never matching anything in the cache at all
-            // in this case
-            if ( same && !facename.empty() )
-            {
-                const wxString& fontFace = font->GetFaceName();
-
-                // empty facename matches everything
-                same = !fontFace || fontFace == facename;
-            }
-
-            if ( same && (encoding != wxFONTENCODING_DEFAULT) )
-            {
-                // have to match the encoding too
-                same = font->GetEncoding() == encoding;
-            }
-
-            if ( same )
-            {
-                return font;
-            }
-        }
+        if (isSame(font, pointSize, family, style, weight, underline, facename, encoding))
+            return font;
     }
 
     // font not found, create the new one
@@ -440,6 +455,8 @@ wxFont *OCPNwxFontList::FindOrCreateFont(int pointSize,
     {
         font = new wxFont(fontTmp);
         list.Append(font);
+        // double check the font really roundtrip
+        wxASSERT(isSame(font, pointSize, family, style, weight, underline, facename, encoding));
     }
 
     return font;
