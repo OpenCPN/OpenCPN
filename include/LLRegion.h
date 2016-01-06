@@ -85,6 +85,8 @@ public:
     void Union(const LLRegion& region);
     void Subtract(const LLRegion& region);
 
+    void Reduce(double factor);
+
     std::list<poly_contour> contours;
 
 private:
