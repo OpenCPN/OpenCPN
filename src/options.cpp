@@ -919,8 +919,10 @@ options::~options(void) {
 
 // with AIS it's called very often
 bool options::SendIdleEvents(wxIdleEvent &event )  { 
-   if (IsShown())
+#if wxCHECK_VERSION(3,0,0)
+    if (IsShown())
        return wxDialog::SendIdleEvents(event);
+#endif    
    return false;
 }
 
