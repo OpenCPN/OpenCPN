@@ -299,7 +299,7 @@ wxBitmap Style::GetToolIcon(const wxString & toolname, int iconType, bool rollov
                 bm = LoadSVG( fullFilePath, retSize.x, retSize.y );
             else
             {
-                wxLogMessage( _T("Can't find SVG: ") + fullFilePath );
+                ///wxLogMessage( _T("Can't find SVG: ") + fullFilePath );
 #endif // ocpnUSE_SVG
                 bm = graphics->GetSubBitmap( location );
                 
@@ -370,7 +370,7 @@ wxBitmap Style::GetToolIcon(const wxString & toolname, int iconType, bool rollov
                 bm = LoadSVG( fullFilePath, retSize.x, retSize.y );
             else
             {
-                wxLogMessage( _T("Can't find SVG: ") + fullFilePath );
+                ///wxLogMessage( _T("Can't find SVG: ") + fullFilePath );
 #endif // ocpnUSE_SVG
                 bm = graphics->GetSubBitmap( location );
                 bm = MergeBitmaps( GetToggledBG(), bm, offset );
@@ -404,7 +404,7 @@ wxBitmap Style::GetToolIcon(const wxString & toolname, int iconType, bool rollov
                 bm = LoadSVG( fullFilePath, retSize.x, retSize.y );
             else
             {
-                wxLogMessage( _T("Can't find SVG: ") + fullFilePath );
+                ///wxLogMessage( _T("Can't find SVG: ") + fullFilePath );
 #endif // ocpnUSE_SVG
                 bm = graphics->GetSubBitmap( location );
                 
