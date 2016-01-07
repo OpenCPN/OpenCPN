@@ -9179,7 +9179,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
     //  If the ViewPort is rotated, we may be able to use the cached rotated bitmap
     bool b_rcache_ok = false;
-    b_rcache_ok = !b_newview;
+    ///b_rcache_ok = !b_newview;
 
     //  If in skew compensation mode, with a skewed VP shown, we may be able to use the cached rotated bitmap
     if(  fabs( VPoint.skew ) > 0.01 ) b_rcache_ok = !b_newview;
@@ -9401,7 +9401,10 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
     wxMemoryDC *pChartDC = &temp_dc;
     wxMemoryDC rotd_dc;
-
+    
+    if( ( ( fabs( GetVP().rotation ) > 0.01 ) )
+        ||   ( fabs( GetVP().skew ) > 0.01 ) )  {
+        
         //  Can we use the current rotated image cache?
         if( !b_rcache_ok ) {
 #ifdef __WXMSW__
@@ -9457,7 +9460,11 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
             pChartDC = &temp_dc;
             m_roffset = wxPoint( 0, 0 );
         }
-
+    } else {            // unrotated
+        pChartDC = &temp_dc;
+        m_roffset = wxPoint( 0, 0 );
+    }
+        
     wxPoint offset = m_roffset;
 
     //        Save the PixelCache viewpoint for next time
