@@ -1560,6 +1560,27 @@ IF(OCPN_USE_SVG)
   ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE
     ${TRADITIONAL_SVG_FILES}
   )
+
+  #Journeyman theme SVG icons
+  FILE(GLOB TRADITIONAL_SVG_FILES "${CMAKE_SOURCE_DIR}/data/svg/journeyman/*")
+  FOREACH (_currentSvgFile ${JOURNEYMAN_SVG_FILES})
+    SET_SOURCE_FILES_PROPERTIES(
+            ${_currentSvgFile} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/uidata/journeyman )
+  ENDFOREACH (_currentSvgFile )
+  ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE
+    ${JOURNEYMAN_SVG_FILES}
+  )
+  
+  #Journeyman_flat theme SVG icons
+  FILE(GLOB TRADITIONAL_SVG_FILES "${CMAKE_SOURCE_DIR}/data/svg/journeyman_flat/*")
+  FOREACH (_currentSvgFile ${JOURNEYMAN_FLAT_SVG_FILES})
+    SET_SOURCE_FILES_PROPERTIES(
+            ${_currentSvgFile} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/uidata/journeyman_flat )
+  ENDFOREACH (_currentSvgFile )
+  ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE
+    ${JOURNEYMAN_FLAT_SVG_FILES}
+  )
+  
 ENDIF(OCPN_USE_SVG)
 
 SET_SOURCE_FILES_PROPERTIES(
@@ -1742,6 +1763,8 @@ INSTALL(FILES ${uiData} DESTINATION ${PREFIX_PKGDATA}/uidata PERMISSIONS OWNER_R
 IF(OCPN_USE_SVG)
   #Traditional theme SVG icons
   INSTALL(DIRECTORY data/svg/traditional/ DESTINATION ${PREFIX_PKGDATA}/uidata/traditional)
+  INSTALL(DIRECTORY data/svg/journeyman/ DESTINATION ${PREFIX_PKGDATA}/uidata/journeyman)
+  INSTALL(DIRECTORY data/svg/journeyman_flat/ DESTINATION ${PREFIX_PKGDATA}/uidata/journeyman_flat)
 ENDIF(OCPN_USE_SVG)
 
 IF (USE_S57)
