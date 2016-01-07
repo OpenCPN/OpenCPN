@@ -281,6 +281,7 @@ public:
       bool CallLateInit(void);
       
       bool IsPlugInAvailable(wxString commonName);
+      bool IsAnyPlugInChartEnabled();
       
       void SendVectorChartObjectInfo(const wxString &chart, const wxString &feature, const wxString &objname, double &lat, double &lon, double &scale, int &nativescale);
 

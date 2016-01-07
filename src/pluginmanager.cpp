@@ -486,6 +486,23 @@ void PlugInManager::SendVectorChartObjectInfo(const wxString &chart, const wxStr
 }
 
 
+bool PlugInManager::IsAnyPlugInChartEnabled()
+{
+    //  Is there a PlugIn installed and active that implements PlugIn Chart type(s)?
+    for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
+    {
+        PlugInContainer *pic = plugin_array.Item(i);
+        if(pic->m_bEnabled && pic->m_bInitState)
+        {
+            if( (pic->m_cap_flag & INSTALLS_PLUGIN_CHART) || (pic->m_cap_flag & INSTALLS_PLUGIN_CHART_GL) )
+                return true;
+        }
+    }
+    return false;
+}
+
+
+
 bool PlugInManager::UpdatePlugIns()
 {
     bool bret = false;
