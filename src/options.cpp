@@ -918,11 +918,13 @@ options::~options(void) {
 }
 
 // with AIS it's called very often
+#if wxCHECK_VERSION(3,0,0)
 bool options::SendIdleEvents(wxIdleEvent &event )  { 
-   if (IsShown())
+    if (IsShown())
        return wxDialog::SendIdleEvents(event);
    return false;
 }
+#endif    
 
 void options::RecalculateSize(void) {
   if (!g_bresponsive) {
