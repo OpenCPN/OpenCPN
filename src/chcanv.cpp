@@ -916,7 +916,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
         m_pQuilt->EnableHighDefinitionZoom( true );
 #endif    
 
-    m_pgridFont = wxTheFontList->FindOrCreateFont( 8, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL,
+    m_pgridFont = FontMgr::Get().FindOrCreateFont( 8, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL,
          wxFONTWEIGHT_NORMAL, FALSE, wxString( _T ( "Arial" ) ) );
         
 }
@@ -2223,7 +2223,7 @@ wxBitmap ChartCanvas::CreateDimBitmap( wxBitmap &Bitmap, double factor )
 
 void ChartCanvas::ShowBrightnessLevelTimedPopup( int brightness, int min, int max )
 {
-    wxFont *pfont = wxTheFontList->FindOrCreateFont( 40, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
+    wxFont *pfont = FontMgr::Get().FindOrCreateFont( 40, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
 
     if( !m_pBrightPopup ) {
         //    Calculate size
@@ -10392,7 +10392,7 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
     wxFont *dFont = FontMgr::Get().GetFont( _("ExtendedTideIcon") );
     dc.SetTextForeground( FontMgr::Get().GetFontColor( _("ExtendedTideIcon") ) );
     int font_size = wxMax(8, dFont->GetPointSize());
-    wxFont *plabelFont = wxTheFontList->FindOrCreateFont( font_size, dFont->GetFamily(),
+    wxFont *plabelFont = FontMgr::Get().FindOrCreateFont( font_size, dFont->GetFamily(),
                          dFont->GetStyle(), dFont->GetWeight() );
 
     dc.SetPen( *pblack_pen );

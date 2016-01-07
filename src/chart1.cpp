@@ -3628,7 +3628,7 @@ void MyFrame::ODoSetSize( void )
 #endif
 
 
-        wxFont *pstat_font = wxTheFontList->FindOrCreateFont( font_size,
+        wxFont *pstat_font = FontMgr::Get().FindOrCreateFont( font_size,
               wxFONTFAMILY_DEFAULT, templateFont->GetStyle(), templateFont->GetWeight(), false,
               templateFont->GetFaceName() );
 
@@ -11701,7 +11701,7 @@ wxFont *GetOCPNScaledFont( wxString item, int default_size )
             if(req_size >= nscaled_font_size)
                 return dFont;
             else{
-                wxFont *qFont = wxTheFontList->FindOrCreateFont( nscaled_font_size,
+                wxFont *qFont = FontMgr::Get().FindOrCreateFont( nscaled_font_size,
                                                              dFont->GetFamily(),
                                                              dFont->GetStyle(),
                                                              dFont->GetWeight());
