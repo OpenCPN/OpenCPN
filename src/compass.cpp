@@ -47,18 +47,19 @@ extern bool g_bopengl;
 
 ocpnCompass::ocpnCompass()
 {
-    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-    _img_compass = style->GetIcon( _T("CompassRose") );
-    _img_gpsRed = style->GetIcon( _T("gpsRed") );
+     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+     _img_compass = style->GetIcon( _T("CompassRose") );
+     _img_gpsRed = style->GetIcon( _T("gpsRed") );
 
     m_rose_angle = -999;  // force a refresh when first used
 
     m_pStatBoxToolStaticBmp = NULL;
 
-    m_rect = wxRect(style->GetCompassXOffset(), style->GetCompassYOffset(),
-            _img_compass.GetWidth() + _img_gpsRed.GetWidth() + style->GetCompassLeftMargin() * 2
-                    + style->GetToolSeparation(),
-                    _img_compass.GetHeight() + style->GetCompassTopMargin() + style->GetCompassBottomMargin() );
+     m_rect = wxRect(style->GetCompassXOffset(), style->GetCompassYOffset(),
+             _img_compass.GetWidth() + _img_gpsRed.GetWidth() + style->GetCompassLeftMargin() * 2
+                     + style->GetToolSeparation(),
+                     _img_compass.GetHeight() + style->GetCompassTopMargin() + style->GetCompassBottomMargin() );
+    
 #ifdef ocpnUSE_GL
     texobj = 0;
 #endif
@@ -199,6 +200,7 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
         topmargin = style->GetCompassTopMargin();
         toolsize = style->GetToolSize();
         toolsize.x *= 2;
+        toolsize.x += leftmargin * 2;
         radius = style->GetCompassCornerRadius();
 
         if( orient ) style->SetOrientation( wxTB_VERTICAL );
@@ -232,10 +234,14 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
     if( !b_need_refresh )
         return;
 
+//     m_StatBmp.Create(
+//         m_scale * ( ( _img_compass.GetWidth() + _img_gpsRed.GetWidth() ) + style->GetCompassLeftMargin() * 2
+//         + style->GetToolSeparation()),
+//                    m_scale * (_img_compass.GetHeight() + style->GetCompassTopMargin() + style->GetCompassBottomMargin()) );
+
     m_StatBmp.Create(
-        m_scale * ( ( _img_compass.GetWidth() + _img_gpsRed.GetWidth() ) + style->GetCompassLeftMargin() * 2
-        + style->GetToolSeparation()),
-                   m_scale * (_img_compass.GetHeight() + style->GetCompassTopMargin() + style->GetCompassBottomMargin()) );
+         ( ( compassBg.GetWidth() + gpsBg.GetWidth() ) + leftmargin * 2 + style->GetToolSeparation()),
+                     (compassBg.GetHeight() + topmargin + style->GetCompassBottomMargin()) );
     
     if( !m_StatBmp.IsOk() )
         return;
@@ -304,6 +310,7 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
 
     mdc.DrawBitmap( iconBm, offset );
     offset.x += iconBm.GetWidth();
+    offset.x += style->GetToolSeparation();
 
     m_rose_angle = rose_angle;
 
@@ -313,11 +320,12 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
     int swidth = wxMax( twidth, theight );
     int sheight = wxMin( twidth, theight );
     
+    int sdim = wxMin(swidth, sheight);
     //  Sometimes, the SVG renderer gets the size wrong due to some internal rounding error.
     //  If so found, it seems to work OK by just reducing the requested size by one pixel....
-    wxBitmap gicon = style->GetIcon( gpsIconName, swidth, sheight );
+    wxBitmap gicon = style->GetIcon( gpsIconName, sdim, sdim );
     if( gicon.GetHeight() != sheight )
-        gicon = style->GetIcon( gpsIconName, swidth-1, sheight-1, true );
+        gicon = style->GetIcon( gpsIconName, sdim-1, sdim-1, true );
     
     if( style->HasBackground() ) {
         iconBm = MergeBitmaps( gpsBg, gicon, wxSize( 0, 0 ) );
