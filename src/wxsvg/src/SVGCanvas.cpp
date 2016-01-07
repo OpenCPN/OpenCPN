@@ -180,9 +180,14 @@ unsigned int wxSVGCanvas::GetGradientStops(const wxSVGSVGElement& svgElem, wxSVG
 	stop_elem = (wxSVGStopElement*) gradElem->GetChildren();
 	int i = 0;
 	while (stop_elem) {
-		if (stop_elem->GetDtd() == wxSVG_STOP_ELEMENT)
+		if (stop_elem->GetDtd() == wxSVG_STOP_ELEMENT) {
+		        wxSVGColor color = stop_elem->GetStopColor();
+		        // no color, default is black
+		        if (color.GetColorType() == wxSVG_COLORTYPE_UNKNOWN)
+                                color = wxSVGColor(0,0,0);
 			SetStopValue(i++, stop_elem->GetOffset(), stop_elem->GetStopOpacity() * opacity,
-					stop_elem->GetStopColor().GetRGBColor());
+					color.GetRGBColor());
+                }
 		stop_elem = (wxSVGStopElement*) stop_elem->GetNext();
 	}
 	return stop_count;
