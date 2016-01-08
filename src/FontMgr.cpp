@@ -458,8 +458,10 @@ wxFont *OCPNwxFontList::FindOrCreateFont(int pointSize,
     {
         font = new wxFont(fontTmp);
         list.Append(font);
+        
         // double check the font really roundtrip
-        wxASSERT(isSame(font, pointSize, family, style, weight, underline, facename, encoding));
+        //  Removed after verification.
+        //wxASSERT(isSame(font, pointSize, family, style, weight, underline, facename, encoding));
     }
 
     return font;
