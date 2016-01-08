@@ -1562,7 +1562,7 @@ IF(OCPN_USE_SVG)
   )
 
   #Journeyman theme SVG icons
-  FILE(GLOB TRADITIONAL_SVG_FILES "${CMAKE_SOURCE_DIR}/data/svg/journeyman/*")
+  FILE(GLOB JOURNEYMAN_SVG_FILES "${CMAKE_SOURCE_DIR}/data/svg/journeyman/*")
   FOREACH (_currentSvgFile ${JOURNEYMAN_SVG_FILES})
     SET_SOURCE_FILES_PROPERTIES(
             ${_currentSvgFile} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/uidata/journeyman )
@@ -1572,7 +1572,7 @@ IF(OCPN_USE_SVG)
   )
   
   #Journeyman_flat theme SVG icons
-  FILE(GLOB TRADITIONAL_SVG_FILES "${CMAKE_SOURCE_DIR}/data/svg/journeyman_flat/*")
+  FILE(GLOB JOURNEYMAN_FLAT_SVG_FILES "${CMAKE_SOURCE_DIR}/data/svg/journeyman_flat/*")
   FOREACH (_currentSvgFile ${JOURNEYMAN_FLAT_SVG_FILES})
     SET_SOURCE_FILES_PROPERTIES(
             ${_currentSvgFile} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/uidata/journeyman_flat )
