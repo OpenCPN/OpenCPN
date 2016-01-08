@@ -105,7 +105,7 @@ wxBitmap MergeBitmaps( wxBitmap back, wxBitmap front, wxSize offset )
     aresult = im_result.GetAlpha();
 
     // Do alpha blending, associative version of "over" operator.
-    if(presult && pback && pfront){ 
+    if(presult && pback && pfront && afront && aback && aresult){ 
         for( int i = 0; i < back.GetHeight(); i++ ) {
             for( int j = 0; j < back.GetWidth(); j++ ) {
 
