@@ -3629,7 +3629,7 @@ void MyFrame::ODoSetSize( void )
 
 
         wxFont *pstat_font = FontMgr::Get().FindOrCreateFont( font_size,
-              wxFONTFAMILY_DEFAULT, templateFont->GetStyle(), templateFont->GetWeight(), false,
+              wxFONTFAMILY_DEFAULT, (wxFontStyle)templateFont->GetStyle(), (wxFontWeight)templateFont->GetWeight(), false,
               templateFont->GetFaceName() );
 
         int min_height = stat_box.height;
@@ -11702,9 +11702,9 @@ wxFont *GetOCPNScaledFont( wxString item, int default_size )
                 return dFont;
             else{
                 wxFont *qFont = FontMgr::Get().FindOrCreateFont( nscaled_font_size,
-                                                             dFont->GetFamily(),
-                                                             dFont->GetStyle(),
-                                                             dFont->GetWeight());
+                                                             (wxFontFamily)dFont->GetFamily(),
+                                                             (wxFontStyle)dFont->GetStyle(),
+                                                             (wxFontWeight)dFont->GetWeight());
                 return qFont;
             }
         }
@@ -11727,9 +11727,9 @@ wxFont GetOCPNGUIScaledFont( wxString item )
        int nscaled_font_size = wxMax( wxRound(scaled_font_size), min_scaled_font_size );
 
 //        wxFont *qFont = wxTheFontList->FindOrCreateFont( nscaled_font_size,
-//                                                                  dFont->GetFamily(),
-//                                                                  dFont->GetStyle(),
-//                                                                  dFont->GetWeight());
+//                                                                  (wxFontFamily)dFont->GetFamily(),
+//                                                                  (wxFontStyle)dFont->GetStyle(),
+//                                                                  (wxFontWeight)dFont->GetWeight());
        qFont.SetPointSize(nscaled_font_size);
     }
 

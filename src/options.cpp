@@ -4547,8 +4547,8 @@ void options::CreateControls(void) {
     wxListView* lv = m_pListbook->GetListView();
     wxFont* qFont = dialogFont;  // to get type, weight, etc...
 
-    wxFont* sFont = FontMgr::Get().FindOrCreateFont(
-        10, qFont->GetFamily(), qFont->GetStyle(), qFont->GetWeight());
+    wxFont* sFont = wxTheFontList->FindOrCreateFont(
+        10, (wxFontFamily)qFont->GetFamily(), (wxFontStyle)qFont->GetStyle(), (wxFontWeight)qFont->GetWeight());
     lv->SetFont(*sFont);
   }
 #endif
