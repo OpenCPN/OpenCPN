@@ -55,12 +55,9 @@ void bmdump(wxBitmap bm, wxString name)
 #ifdef ocpnUSE_SVG
 static wxBitmap LoadSVG( const wxString filename, unsigned int width, unsigned int height )
 {
-    unsigned char *data = NULL;
-    wxBitmap ret;
-    
-    wxSVGDocument* svgDoc = new wxSVGDocument;
-    if( svgDoc->Load(filename) )
-        return wxBitmap( svgDoc->Render( width, height, NULL, true, true ) );
+    wxSVGDocument svgDoc;
+    if( svgDoc.Load(filename) )
+        return wxBitmap( svgDoc.Render( width, height, NULL, true, true ) );
     else
         return wxBitmap(width, height);
 }
