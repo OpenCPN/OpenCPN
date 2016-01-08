@@ -10392,8 +10392,8 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
     wxFont *dFont = FontMgr::Get().GetFont( _("ExtendedTideIcon") );
     dc.SetTextForeground( FontMgr::Get().GetFontColor( _("ExtendedTideIcon") ) );
     int font_size = wxMax(8, dFont->GetPointSize());
-    wxFont *plabelFont = FontMgr::Get().FindOrCreateFont( font_size, dFont->GetFamily(),
-                         dFont->GetStyle(), dFont->GetWeight() );
+    wxFont *plabelFont = FontMgr::Get().FindOrCreateFont( font_size, (wxFontFamily)dFont->GetFamily(),
+                         (wxFontStyle)dFont->GetStyle(), (wxFontWeight)dFont->GetWeight() );
 
     dc.SetPen( *pblack_pen );
     dc.SetBrush( *pgreen_brush );

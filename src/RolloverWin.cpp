@@ -159,8 +159,8 @@ void RolloverWin::SetBestPosition( int x, int y, int off_x, int off_y, int rollo
     }
 
     int font_size = wxMax(8, dFont->GetPointSize());
-    m_plabelFont = FontMgr::Get().FindOrCreateFont( font_size, dFont->GetFamily(),
-                         dFont->GetStyle(), dFont->GetWeight(), false, dFont->GetFaceName() );
+    m_plabelFont = FontMgr::Get().FindOrCreateFont( font_size, (wxFontFamily)dFont->GetFamily(),
+                         (wxFontStyle)dFont->GetStyle(), (wxFontWeight)dFont->GetWeight(), false, dFont->GetFaceName() );
 
     if(m_plabelFont && m_plabelFont->IsOk()) {
 #ifdef __WXMAC__

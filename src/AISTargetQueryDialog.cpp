@@ -203,7 +203,7 @@ bool AISTargetQueryDialog::Create( wxWindow* parent, wxWindowID id, const wxStri
     face = _T("Monospace");
 #endif
     m_basefont = FontMgr::Get().FindOrCreateFont( font_size, wxFONTFAMILY_MODERN,
-                      wxFONTSTYLE_NORMAL, dFont->GetWeight(), false, face );
+                      wxFONTSTYLE_NORMAL, (wxFontWeight)dFont->GetWeight(), false, face );
 
     SetFont( *m_basefont );
     m_adjustedFontSize = dFont->GetPointSize();
@@ -252,7 +252,7 @@ void AISTargetQueryDialog::RecalculateSize()
     face = _T("Monospace");
     #endif
     m_basefont = FontMgr::Get().FindOrCreateFont( font_size, wxFONTFAMILY_MODERN,
-                                                  wxFONTSTYLE_NORMAL, dFont->GetWeight(), false, face );
+                                                  wxFONTSTYLE_NORMAL, (wxFontWeight)dFont->GetWeight(), false, face );
     
     SetFont( *m_basefont );
     m_adjustedFontSize = dFont->GetPointSize();
@@ -427,7 +427,7 @@ void AISTargetQueryDialog::AdjustBestSize( AIS_Target_Data *td )
         
         wxScreenDC dc;
         wxFont *tFont = FontMgr::Get().FindOrCreateFont( m_control_font_size, wxFONTFAMILY_MODERN,
-                                                           wxFONTSTYLE_NORMAL, m_basefont->GetWeight(), false,
+                                                         wxFONTSTYLE_NORMAL, (wxFontWeight)m_basefont->GetWeight(), false,
                                                            m_basefont->GetFaceName() );
         dc.SetFont(*tFont);
         
@@ -485,7 +485,7 @@ void AISTargetQueryDialog::RenderHTMLQuery(AIS_Target_Data *td)
 {
     int font_size = m_adjustedFontSize; 
     wxFont *fp_font = FontMgr::Get().FindOrCreateFont( font_size, wxFONTFAMILY_MODERN,
-                                                       wxFONTSTYLE_NORMAL, m_basefont->GetWeight(),
+                                                       wxFONTSTYLE_NORMAL, (wxFontWeight)m_basefont->GetWeight(),
                                                        false, m_basefont->GetFaceName() );
     
     SetFont( *fp_font );

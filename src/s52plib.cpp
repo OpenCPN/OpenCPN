@@ -1647,8 +1647,8 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
   
             int old_size = ptext->pFont->GetPointSize();
             int new_size = old_size * scale_factor;
-            scaled_font = FontMgr::Get().FindOrCreateFont( new_size, ptext->pFont->GetFamily(),
-                                                           ptext->pFont->GetStyle(), ptext->pFont->GetWeight(), false,
+            scaled_font = FontMgr::Get().FindOrCreateFont( new_size, (wxFontFamily)ptext->pFont->GetFamily(),
+                                                           (wxFontStyle)ptext->pFont->GetStyle(), (wxFontWeight)ptext->pFont->GetWeight(), false,
                                                            ptext->pFont->GetFaceName() );
             wxScreenDC sdc;
             sdc.GetTextExtent( ptext->frmtd, &w_scaled, &h_scaled, &descent, &exlead, scaled_font ); // measure the text
@@ -1884,8 +1884,8 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
                 wxFont *pf = ptext->pFont;
                 int old_size = pf->GetPointSize();
                 int new_size = old_size * scale_factor;
-                wxFont *scaled_font = FontMgr::Get().FindOrCreateFont( new_size, pf->GetFamily(),
-                                                                       pf->GetStyle(), pf->GetWeight(), false,
+                wxFont *scaled_font = FontMgr::Get().FindOrCreateFont( new_size, (wxFontFamily)pf->GetFamily(),
+                                                                       (wxFontStyle)pf->GetStyle(), (wxFontWeight)pf->GetWeight(), false,
                                                                        pf->GetFaceName() );
                 pdc->SetFont( *scaled_font);
             }
@@ -2081,7 +2081,7 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool
                 fontSize = wxMax(10, fontSize);
 
                 text->pFont = FontMgr::Get().FindOrCreateFont( fontSize, wxFONTFAMILY_SWISS,
-                        templateFont->GetStyle(), fontweight, false, templateFont->GetFaceName() );
+                        (wxFontStyle)templateFont->GetStyle(), fontweight, false, templateFont->GetFaceName() );
             }
         }
 

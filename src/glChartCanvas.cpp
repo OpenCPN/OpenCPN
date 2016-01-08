@@ -523,7 +523,7 @@ void BuildCompressedCache()
     wxSize csz = GetOCPNCanvasWindow()->GetClientSize();
     if(csz.x < 600 || csz.y < 600){
         wxFont *qFont = GetOCPNScaledFont(_("Dialog"));         // to get type, weight, etc...
-        wxFont *sFont = FontMgr::Get().FindOrCreateFont( 10, qFont->GetFamily(), qFont->GetStyle(), qFont->GetWeight());
+        wxFont *sFont = FontMgr::Get().FindOrCreateFont( 10, (wxFontFamily)qFont->GetFamily(), (wxFontStyle)qFont->GetStyle(), (wxFontWeight)qFont->GetWeight());
         pprog->SetFont( *sFont );
     }
     

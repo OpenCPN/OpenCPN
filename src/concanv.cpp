@@ -102,7 +102,7 @@ long style = wxSIMPLE_BORDER | wxCLIP_CHILDREN;
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     
     wxFont *pThisLegFont = FontMgr::Get().FindOrCreateFont( 10, wxFONTFAMILY_DEFAULT,
-                                                          qFont->GetStyle(), wxFONTWEIGHT_BOLD, false,
+                                                          (wxFontStyle)qFont->GetStyle(), wxFONTWEIGHT_BOLD, false,
                                                           qFont->GetFaceName() );
     pThisLegText->SetFont( *pThisLegFont );
 

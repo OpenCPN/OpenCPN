@@ -404,7 +404,7 @@ void about::CreateControls( void )
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     
     wxFont *headerFont = FontMgr::Get().FindOrCreateFont( 14, wxFONTFAMILY_DEFAULT,
-                                                          qFont->GetStyle(), wxFONTWEIGHT_BOLD, false,
+                                                          (wxFontStyle)qFont->GetStyle(), wxFONTWEIGHT_BOLD, false,
                                                           qFont->GetFaceName() );
     pST1->SetFont( *headerFont );
     mainSizer->Add( pST1, 0, wxALL | wxEXPAND, 8 );
