@@ -2324,7 +2324,8 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
                     m_pAISRolloverWin->SetString( s );
 
                     wxSize win_size = GetSize();
-                    if( console->IsShown() ) win_size.x -= console->GetSize().x;
+                    if( console && console->IsShown() ) win_size.x -= console->GetSize().x;
+
                     m_pAISRolloverWin->SetBestPosition( mouse_x, mouse_y, 16, 16, AIS_ROLLOVER, win_size );
 
                     m_pAISRolloverWin->SetBitmap( AIS_ROLLOVER );
