@@ -538,7 +538,7 @@ bool IsQuadraticType(wxPATHSEG segType) {
 }
 
 double AngleBisect(float a1, float a2) {
-	double delta = fmod(a2 - a1, 2 * M_PI);
+	double delta = fmod((double)(a2 - a1), 2 * M_PI);
 	if (delta < 0) {
 		delta += 2 * M_PI;
 	}

@@ -15,6 +15,12 @@
 #include <wx/log.h>
 #include <wx/file.h>
 
+#ifdef __WXMSW__
+ inline long lround(double d) {
+    return (long)(d>0 ? d+0.5 : ceil(d-0.5));
+    }
+#endif
+
 wxSVGCanvasCairo::~wxSVGCanvasCairo() {
 	Destroy();
 }
