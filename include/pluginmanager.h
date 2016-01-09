@@ -53,8 +53,10 @@
 #include <wx/bmpcbox.h>
 
 #ifndef __OCPN__ANDROID__
+#ifdef __OCPN_USE_CURL__
 #include "wx/curl/http.h"
 #include "wx/curl/dialog.h"
+#endif
 #endif
 
 //    Include wxJSON headers
@@ -329,6 +331,8 @@ private:
       wxString GetPluginOrder();
     
 #ifndef __OCPN__ANDROID__
+#ifdef __OCPN_USE_CURL__
+      
 public:
       wxCurlDownloadThread *m_pCurlThread;
       // returns true if the error can be ignored
@@ -341,6 +345,7 @@ public:
       long           *m_downloadHandle;
       bool m_last_online;
       long m_last_online_chk;
+#endif
 #endif
 
 DECLARE_EVENT_TABLE()
