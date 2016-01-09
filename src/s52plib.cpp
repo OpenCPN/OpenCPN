@@ -2389,9 +2389,15 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
         scale_factor = wxMin(scale_factor, 20);
     }
     
-    int pivot_x = prule->pos.line.pivot_x.SYCL * scale_factor;
-    int pivot_y = prule->pos.line.pivot_y.SYRW * scale_factor;
+    int pivot_x = prule->pos.line.pivot_x.SYCL;
+    int pivot_y = prule->pos.line.pivot_y.SYRW;
 
+    //  bitmaps are not scaled down, only up.
+    if(scale_factor > 1.0){
+        pivot_x *= scale_factor;
+        pivot_y *= scale_factor;
+    }
+    
     // For opengl, hopefully the symbols are loaded in a texture
     unsigned int texture = 0;
     wxRect texrect;
@@ -4107,9 +4113,11 @@ int s52plib::RenderCARC_VBO( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     CARC_Buffer buffer;
 
     float scale_factor = 1.0;
-    if(g_bresponsive){
-        scale_factor *= g_ChartScaleFactorExp;
-    }
+    
+    // Light arcs are specified in terms of absolute dimensions on screen, and should not be scaled.
+//     if(g_bresponsive){
+//         scale_factor *= g_ChartScaleFactorExp;
+//     }
     
     if( !m_pdc ) // opengl
     {
@@ -7844,11 +7852,13 @@ void RenderFromHPGL::SetPen()
     // plib->canvas_pix_per_mm;
     scaleFactor = 100.0 / plib->GetPPMM();
 
-    if(g_bresponsive){
-        double scale_factor = 1.0;
-        scale_factor *=  g_ChartScaleFactorExp;
-        scaleFactor /= scale_factor;
-    }
+    // Vector rendered (HPGL) features are specified in terms of absolute dimensions on screen, and should not be scaled.
+    
+//     if(g_bresponsive){
+//         double scale_factor = 1.0;
+//         scale_factor *=  g_ChartScaleFactorExp;
+//         scaleFactor /= scale_factor;
+//     }
     
     if( renderToDC ) {
         pen = wxThePenList->FindOrCreatePen( penColor, penWidth, wxPENSTYLE_SOLID );
