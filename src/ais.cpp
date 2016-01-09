@@ -114,6 +114,8 @@ extern bool             g_bAISRolloverShowCPA;
 extern bool             g_bAIS_ACK_Timeout;
 extern double           g_AckTimeout_Mins;
 extern bool             g_bShowScaled;
+extern bool             g_bAllowShowScaled;
+
 int                     g_ShowScaled_Num;
 int                     ImportanceSwitchPoint = 100;
 int                     g_ScaledNumWeightSOG;
@@ -968,8 +970,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
     dash_long[1] = (int) ( 0.5 * cc1->GetPixPerMM() );  // Short gap            |
 
     int targetscale = 100;
-        if ( g_bShowScaled )
-        {
+    if ( g_bAllowShowScaled && g_bShowScaled ){
             double temp_importance, So, Tcpa, Cpa, Rang, Siz = 0.; //calc the importance of target
             So = g_ScaledNumWeightSOG/12 * td->SOG; //0 - 12 knts gives 0 - g_ScaledNumWeightSOG weight
             if (So > g_ScaledNumWeightSOG) So = g_ScaledNumWeightSOG; 
