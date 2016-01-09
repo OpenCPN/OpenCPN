@@ -485,6 +485,17 @@ void ocpnFloatingToolbarDialog::RePosition()
 
         wxPoint screen_pos = m_pparent->ClientToScreen( m_position );
 
+        //  GTK sometimes has trouble with ClientToScreen() if executed in the context of an event handler
+        //  The position of the window is calculated incorrectly if a deferred Move() has not been processed yet.
+        //  So work around this here...
+        //  Discovered with a Dashboard window left-docked, toggled on and off by toolbar tool.
+#ifdef __WXGTK__
+        wxPoint pp = m_pparent->GetPosition();
+        wxPoint ppg = m_pparent->GetParent()->GetScreenPosition();
+        wxPoint screen_pos_fix = ppg + pp + m_position;
+        screen_pos.x = screen_pos_fix.x;
+#endif        
+
         Move( screen_pos );
 
 #ifdef __WXQT__
