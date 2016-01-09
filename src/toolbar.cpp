@@ -152,17 +152,18 @@ void GrabberWin::MouseEvent( wxMouseEvent& event )
 
     if( event.RightDown() ){
         if(m_ptoolbar){
-            m_dragging = true;
-            
-            if( !m_ptoolbar->m_bnavgrabber ){
-                m_ptoolbar->m_bnavgrabber = true;
-                m_ptoolbar->SetGrabber(_T("4WayMove") );
-            }
-            else{
-                m_ptoolbar->m_bnavgrabber = false;
-                m_ptoolbar->SetGrabber(_T("grabber_hi") );
-            }
+            if(!m_ptoolbar->m_bsubmerged){
+                m_dragging = true;
                 
+                if( !m_ptoolbar->m_bnavgrabber ){
+                    m_ptoolbar->m_bnavgrabber = true;
+                    m_ptoolbar->SetGrabber(_T("4WayMove") );
+                }
+                else{
+                    m_ptoolbar->m_bnavgrabber = false;
+                    m_ptoolbar->SetGrabber(_T("grabber_hi") );
+                }
+            }
         }
     }
     
