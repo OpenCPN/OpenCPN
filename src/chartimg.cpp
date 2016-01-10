@@ -5373,7 +5373,9 @@ int   ChartBaseBSB::AnalyzeRefpoints(bool b_testSolution)
         double chart_error_pixels = chart_error_meters * 4000. / m_Chart_Scale;
         
         //        Good enough for navigation?
-        if(chart_error_pixels > 10)
+        int max_pixel_error = 4;
+        
+        if(chart_error_pixels > max_pixel_error)
         {
                     wxString msg = _("   VP Final Check: Georeference Chart_Error_Factor on chart ");
                     msg.Append(m_FullPath);
@@ -5388,7 +5390,7 @@ int   ChartBaseBSB::AnalyzeRefpoints(bool b_testSolution)
 
         //  Try again with my calculated georef
         //  This problem was found on NOAA 514_1.KAP.  The embedded coefficients are just wrong....
-        if((chart_error_pixels > 10) && bHaveEmbeddedGeoref)
+        if((chart_error_pixels > max_pixel_error) && bHaveEmbeddedGeoref)
         {
               wxString msg = _("   Trying again with internally calculated georef solution ");
               wxLogMessage(msg);
@@ -5441,7 +5443,7 @@ int   ChartBaseBSB::AnalyzeRefpoints(bool b_testSolution)
               chart_error_pixels = chart_error_meters * 4000. / m_Chart_Scale;
               
         //        Good enough for navigation?
-              if(chart_error_pixels > 10)
+              if(chart_error_pixels > max_pixel_error)
               {
                     wxString msg = _("   VP Final Check with internal georef: Georeference Chart_Error_Factor on chart ");
                     msg.Append(m_FullPath);
