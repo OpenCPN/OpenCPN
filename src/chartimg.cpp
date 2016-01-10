@@ -1484,18 +1484,56 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
       free(pPlyTable);
 
 
+      //    Setup the datum transform parameters
+      char d_str[100];
+      strncpy(d_str, m_datum_str.mb_str(), 99);
+      d_str[99] = 0;
+      
+      int datum_index = GetDatumIndex(d_str);
+      m_datum_index = datum_index; 
+      
+      if(datum_index < 0)
+          m_ExtraInfo = _("---<<< Warning:  Chart Datum may be incorrect. >>>---");
+ 
+      //    Establish defaults, may be overridden later
+      m_lon_datum_adjust = (-m_dtm_lon) / 3600.;
+      m_lat_datum_adjust = (-m_dtm_lat) / 3600.;
+          
       //    Adjust the PLY points to WGS84 datum
       Plypoint *ppp = (Plypoint *)GetCOVRTableHead(0);
       int cnPlypoint = GetCOVRTablenPoints(0);
 
-      //  n.b. this is not precisely right for non-wgs84 charts.
-      //  should use molodensky transform, and then consider SHOM Ver 1.1 charts
 
       for(int u=0 ; u<cnPlypoint ; u++)
       {
-            ppp->lnp += m_dtm_lon / 3600;
-            ppp->ltp += m_dtm_lat / 3600;
-            ppp++;
+          double dlat = 0;
+          double dlon = 0;
+          
+          if(m_datum_index == DATUM_INDEX_WGS84){
+          }
+          
+          else if(m_datum_index == DATUM_INDEX_UNKNOWN)
+          {
+              dlon = m_dtm_lon / 3600.;
+              dlat = m_dtm_lat / 3600.;
+          }
+          
+          
+          else{
+            double to_lat, to_lon;
+            MolodenskyTransform (ppp->ltp, ppp->lnp, &to_lat, &to_lon, m_datum_index, DATUM_INDEX_WGS84);
+            dlon = (to_lon - ppp->lnp);
+            dlat = (to_lat - ppp->ltp);
+            if(m_b_apply_dtm)
+            {
+                dlon += m_dtm_lon / 3600.;
+                dlat += m_dtm_lat / 3600.;
+            }
+          }
+          
+          ppp->lnp += dlon;
+          ppp->ltp += dlat;
+          ppp++;
       }
 
 
@@ -2015,21 +2053,7 @@ InitReturn ChartBaseBSB::PostInit(void)
       else if(test_str.Find(_T("METERS")) != wxNOT_FOUND)             // Special case for "Meters and decimeters"
             m_depth_unit_id = DEPTH_UNIT_METERS;
 
-           //    Setup the datum transform parameters
-      char d_str[100];
-      strncpy(d_str, m_datum_str.mb_str(), 99);
-      d_str[99] = 0;
-
-      int datum_index = GetDatumIndex(d_str);
-      m_datum_index = datum_index; 
-      
-      if(datum_index < 0)
-          m_ExtraInfo = _("---<<< Warning:  Chart Datum may be incorrect. >>>---");
-
-      //    Establish defaults, may be overridden later
-      m_lon_datum_adjust = (-m_dtm_lon) / 3600.;
-      m_lat_datum_adjust = (-m_dtm_lat) / 3600.;
-          
+           
       //   Analyze Refpoints
       int analyze_ret_val = AnalyzeRefpoints();
       if(0 != analyze_ret_val)
