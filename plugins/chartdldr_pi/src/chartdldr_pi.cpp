@@ -1810,6 +1810,19 @@ void ChartDldrPrefsDlgImpl::OnOkClick( wxCommandEvent& event )
             return;
         }
     event.Skip();
+    EndModal( wxID_OK );
+}
+
+void ChartDldrPrefsDlg::OnCancelClick( wxCommandEvent& event )
+{
+    event.Skip();
+    EndModal( wxID_CANCEL );
+}
+
+void ChartDldrPrefsDlg::OnOkClick( wxCommandEvent& event )
+{
+    event.Skip();
+    EndModal( wxID_OK );
 }
 
 

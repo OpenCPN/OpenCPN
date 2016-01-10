@@ -1010,15 +1010,15 @@ int OCPNPlatform::DoDirSelectorDialog( wxWindow *parent, wxString *file_spec, wx
         dirSelector = AdjustDirDialogFont(parent, dirSelector);
     
 #ifdef __WXOSX__
-//    if(parent)
-//        parent->HideWithEffect(wxSHOW_EFFECT_BLEND );
+    if(parent)
+        parent->HideWithEffect(wxSHOW_EFFECT_BLEND );
 #endif
             
     result = dirSelector->ShowModal();
             
 #ifdef __WXOSX__
-//    if(parent)
-//        parent->ShowWithEffect(wxSHOW_EFFECT_BLEND );
+    if(parent)
+        parent->ShowWithEffect(wxSHOW_EFFECT_BLEND );
 #endif
 
     if( result == wxID_CANCEL ){

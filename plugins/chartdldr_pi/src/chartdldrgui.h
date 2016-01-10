@@ -145,8 +145,8 @@ class ChartDldrPrefsDlg : public wxDialog
                 
                 
 		// Virtual event handlers, overide them in your derived class
-		virtual void OnCancelClick( wxCommandEvent& event ) { event.Skip(); }
-		virtual void OnOkClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnCancelClick( wxCommandEvent& event ) ;
+		virtual void OnOkClick( wxCommandEvent& event );
 
 
 	public:
