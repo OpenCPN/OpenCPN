@@ -101,6 +101,7 @@ extern options         *g_options;
 extern ColorScheme      global_color_scheme;
 extern ChartCanvas     *cc1;
 extern wxArrayString    g_locale_catalog_array;
+extern int              g_GUIScaleFactor;
 
 unsigned int      gs_plib_flags;
 
@@ -2020,6 +2021,11 @@ wxFont *GetOCPNScaledFont_PlugIn(wxString TextElement, int default_size)
 double GetOCPNGUIToolScaleFactor_PlugIn(int GUIScaleFactor)
 {
     return g_Platform->GetToolbarScaleFactor(GUIScaleFactor);
+}
+
+double GetOCPNGUIToolScaleFactor_PlugIn()
+{
+    return g_Platform->GetToolbarScaleFactor(g_GUIScaleFactor);
 }
 
 wxFont GetOCPNGUIScaledFont_PlugIn(wxString item)
