@@ -2021,12 +2021,10 @@ InitReturn ChartBaseBSB::PostInit(void)
       d_str[99] = 0;
 
       int datum_index = GetDatumIndex(d_str);
-      if(datum_index < 0){
-          m_datum_index = DATUM_INDEX_WGS84;
+      m_datum_index = datum_index; 
+      
+      if(datum_index < 0)
           m_ExtraInfo = _("---<<< Warning:  Chart Datum may be incorrect. >>>---");
-      }
-      else
-          m_datum_index = datum_index;
 
       //    Establish defaults, may be overridden later
       m_lon_datum_adjust = (-m_dtm_lon) / 3600.;
