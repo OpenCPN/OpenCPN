@@ -2565,6 +2565,7 @@ void ChartCanvas::GetDoubleCanvasPointPixVP( ViewPort &vp, double rlat, double r
     // If for some reason the chart rejects the request by returning an error,
     // then fall back to Viewport Projection estimate from canvas parameters
     if( !g_bopengl && Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_RASTER )
+        && (Current_Ch->GetNativeScale() < 1000000)
         && ( ( ( fabs( vp.rotation ) < .0001 ) && ( fabs( vp.skew ) < .0001 ) )
         || ( ( Current_Ch->GetChartProjectionType() != PROJECTION_MERCATOR )
         && ( Current_Ch->GetChartProjectionType() != PROJECTION_TRANSVERSE_MERCATOR )
@@ -2635,6 +2636,7 @@ void ChartCanvas::GetCanvasPixPoint( double x, double y, double &lat, double &lo
     bool bUseVP = true;
 
     if( !g_bopengl && Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_RASTER )
+        && (Current_Ch->GetNativeScale() < 1000000)
         && ( ( ( fabs( GetVP().rotation ) < .0001 ) && ( fabs( GetVP().skew ) < .0001 ) )
         || ( ( Current_Ch->GetChartProjectionType() != PROJECTION_MERCATOR )
         && ( Current_Ch->GetChartProjectionType() != PROJECTION_TRANSVERSE_MERCATOR )
