@@ -96,6 +96,7 @@ public:
     void EnableHighDefinitionZoom( bool value ) { m_b_hidef = value;}
     
     bool BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_db_index, ViewPort &vp_in);
+    void UnlockQuilt();
     bool Compose( const ViewPort &vp );
     bool IsComposed() {
         return m_bcomposed;

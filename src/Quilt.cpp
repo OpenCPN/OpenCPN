@@ -1319,6 +1319,20 @@ double Quilt::GetBestStartScale(int dbi_ref_hint, const ViewPort &vp_in)
     return cc1->GetCanvasScaleFactor() / proposed_scale_onscreen;
 }
 
+void Quilt::UnlockQuilt()
+{
+    wxASSERT(m_bbusy == false);
+    ChartData->UnLockCache();
+    // unlocked only charts owned by the Quilt
+    for(unsigned int ir = 0; ir < m_pcandidate_array->GetCount(); ir++ ) {
+        QuiltCandidate *pqc = m_pcandidate_array->Item( ir );
+        if (pqc->b_locked == true) {
+            ChartData->UnLockCacheChart(pqc->dbIndex);
+            pqc->b_locked = false;
+        }
+    }
+}
+
 bool Quilt::Compose( const ViewPort &vp_in )
 {
     if( !ChartData )
@@ -1330,18 +1344,9 @@ bool Quilt::Compose( const ViewPort &vp_in )
     if( m_bbusy )
         return false;
 
+    // XXX call before setting m_bbusy for wxASSERT in UnlockQuilt
+    UnlockQuilt();
     m_bbusy = true;
-
-    ChartData->UnLockCache();
-    // unlocked only charts owned by the Quilt
-    for(unsigned int ir = 0; ir < m_pcandidate_array->GetCount(); ir++ ) {
-        QuiltCandidate *pqc = m_pcandidate_array->Item( ir );
-        if (pqc->b_locked == true) {
-            ChartData->UnLockCacheChart(pqc->dbIndex);
-            pqc->b_locked = false;
-        }
-    }
-
 
     ViewPort vp_local = vp_in;                   // need a non-const copy
 
