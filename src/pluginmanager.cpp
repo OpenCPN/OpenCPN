@@ -3538,6 +3538,7 @@ void PluginPanel::SetEnabled( bool enabled )
         m_pName->SetForegroundColour(*wxLIGHT_GREY);
         m_pVersion->SetForegroundColour(*wxLIGHT_GREY);
         m_pDescription->SetForegroundColour(*wxLIGHT_GREY);
+        m_pDescription->SetLabel( m_pPlugin->m_short_description );  //Pick up translation, if any
         m_pButtonEnable->SetLabel(_("Enable"));
     }
     else
@@ -3545,12 +3546,14 @@ void PluginPanel::SetEnabled( bool enabled )
         m_pName->SetForegroundColour(*wxBLACK);
         m_pVersion->SetForegroundColour(*wxBLACK);
         m_pDescription->SetForegroundColour(*wxBLACK);
+        m_pDescription->SetLabel( m_pPlugin->m_long_description ); //Pick up translation, if any
         if ( enabled )
             m_pButtonEnable->SetLabel(_("Disable"));
         else
             m_pButtonEnable->SetLabel(_("Enable"));
     }
     m_pButtonPreferences->Enable( enabled && (m_pPlugin->m_cap_flag & WANTS_PREFERENCES) );
+    
 }
 
 void PluginPanel::OnPluginUp( wxCommandEvent& event )
