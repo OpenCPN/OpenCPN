@@ -44,6 +44,7 @@
 #include "navutil.h"
 #include "ConnectionParams.h"
 #include "FontMgr.h"
+#include "s52s57.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -220,6 +221,7 @@ extern double                   g_overzoom_emphasis_base;
 extern bool                     g_oz_vector_scale;
 extern int                      g_nTrackPrecision;
 extern wxString                 g_toolbarConfig;
+extern bool                     g_bPreserveScaleOnX;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions            g_GLOptions;
@@ -573,8 +575,34 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_bDrawAISSize = false;
     g_bShowAISName = false;
     g_nTrackPrecision = 2;
+    g_bPreserveScaleOnX = true;
     
-
+    // Initial S52/S57 options
+    if(pConfig){
+        pConfig->SetPath( _T ( "/Settings/GlobalState" ) );
+        pConfig->Write( _T ( "bShowS57Text" ), false );
+        pConfig->Write( _T ( "bShowS57ImportantTextOnly" ), false );
+        pConfig->Write( _T ( "nDisplayCategory" ), (int)(_DisCat)STANDARD );
+        pConfig->Write( _T ( "nSymbolStyle" ), (int)(_LUPname)PAPER_CHART );
+        pConfig->Write( _T ( "nBoundaryStyle" ), (int)(_LUPname)PLAIN_BOUNDARIES );
+        
+        pConfig->Write( _T ( "bShowSoundg" ), false );
+        pConfig->Write( _T ( "bShowMeta" ), false );
+        pConfig->Write( _T ( "bUseSCAMIN" ), true );
+        pConfig->Write( _T ( "bShowAtonText" ), false );
+        pConfig->Write( _T ( "bShowLightDescription" ), false );
+        pConfig->Write( _T ( "bExtendLightSectors" ), true );
+        pConfig->Write( _T ( "bDeClutterText" ), true );
+        pConfig->Write( _T ( "bShowNationalText" ), false );
+        
+        pConfig->Write( _T ( "S52_MAR_SAFETY_CONTOUR" ), 5 );
+        pConfig->Write( _T ( "S52_MAR_SHALLOW_CONTOUR" ), 2 );
+        pConfig->Write( _T ( "S52_MAR_DEEP_CONTOUR" ), 10 );
+        pConfig->Write( _T ( "S52_MAR_TWO_SHADES" ), 0  );
+        pConfig->Write( _T ( "S52_DEPTH_UNIT_SHOW" ), 1 );
+     }
+    
+    
 #ifdef __WXMSW__
     //  Enable some default PlugIns, and their default options
     if(pConfig){
