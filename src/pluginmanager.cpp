@@ -1627,6 +1627,43 @@ int PlugInManager::AddToolbarTool(wxString label, wxBitmap *bitmap, wxBitmap *bm
     return pttc->id;
 }
 
+int PlugInManager::AddToolbarTool(wxString label, wxString SVGfile, wxString SVGfileToggled, wxItemKind kind,
+                                  wxString shortHelp, wxString longHelp, wxObject *clientData, int position,
+                                  int tool_sel, opencpn_plugin *pplugin )
+{
+    PlugInToolbarToolContainer *pttc = new PlugInToolbarToolContainer;
+    pttc->label = label;
+    
+    pttc->pluginNormalIconSVG = SVGfile;
+    pttc->pluginToggledIconSVG = SVGfileToggled;
+    
+    ocpnStyle::Style*style = g_StyleManager->GetCurrentStyle();
+    pttc->bitmap_day = new wxBitmap( style->GetIcon( _T("default_pi") ));
+
+    pttc->bitmap_dusk = new wxBitmap(*pttc->bitmap_day);
+    pttc->bitmap_night = new wxBitmap(*pttc->bitmap_day);
+    pttc->bitmap_Rollover = new wxBitmap(*pttc->bitmap_day);
+    
+    pttc->kind = kind;
+    pttc->shortHelp = shortHelp;
+    pttc->longHelp = longHelp;
+    pttc->clientData = clientData;
+    pttc->position = position;
+    pttc->m_pplugin = pplugin;
+    pttc->tool_sel = tool_sel;
+    pttc->b_viz = true;
+    pttc->b_toggle = false;
+    pttc->id = m_plugin_tool_id_next;
+    
+    
+    
+    m_PlugInToolbarTools.Add(pttc);
+    
+    m_plugin_tool_id_next++;
+    
+    return pttc->id;
+}
+
 void PlugInManager::RemoveToolbarTool(int tool_id)
 {
     for(unsigned int i=0; i < m_PlugInToolbarTools.GetCount(); i++)
@@ -1721,6 +1758,28 @@ void PlugInManager::SetToolbarItemBitmaps(int item, wxBitmap *bitmap, wxBitmap *
     }
 
 }
+
+void PlugInManager::SetToolbarItemBitmaps(int item, wxString SVGfile, wxString SVGfileRollover, wxString SVGfileToggled)
+{
+    for(unsigned int i=0; i < m_PlugInToolbarTools.GetCount(); i++)
+    {
+        PlugInToolbarToolContainer *pttc = m_PlugInToolbarTools.Item(i);
+        {
+            if(pttc->id == item)
+            {
+                pttc->pluginNormalIconSVG = SVGfile;
+                pttc->pluginRolloverIconSVG = SVGfileRollover;
+                pttc->pluginToggledIconSVG = SVGfileToggled;
+                pParent->SetToolbarItemSVG(item, pttc->pluginNormalIconSVG,
+                                           pttc->pluginRolloverIconSVG,
+                                           pttc->pluginToggledIconSVG);
+                break;
+            }
+        }
+    }
+    
+}
+
 
 opencpn_plugin *PlugInManager::FindToolOwner(const int id)
 {
@@ -1900,6 +1959,26 @@ void SetToolbarToolBitmaps(int item, wxBitmap *bitmap, wxBitmap *bmprollover)
     if(s_ppim)
         s_ppim->SetToolbarItemBitmaps(item, bitmap, bmprollover);
 }
+
+int InsertPlugInToolSVG(wxString label, wxString SVGfile, wxString SVGfileToggled, wxItemKind kind,
+                                          wxString shortHelp, wxString longHelp, wxObject *clientData, int position,
+                                          int tool_sel, opencpn_plugin *pplugin)
+{
+    if(s_ppim)
+        return s_ppim->AddToolbarTool(label, SVGfile, SVGfileToggled, kind,
+                                      shortHelp, longHelp, clientData, position,
+                                      tool_sel, pplugin );
+    else
+        return -1;
+}
+
+void SetToolbarToolBitmapsSVG(int item, wxString SVGfile, wxString SVGfileRollover, wxString SVGfileToggled)
+{
+    if(s_ppim)
+        s_ppim->SetToolbarItemBitmaps(item, SVGfile, SVGfileRollover, SVGfileToggled);
+}
+
+
 
 int AddCanvasContextMenuItem(wxMenuItem *pitem, opencpn_plugin *pplugin )
 {

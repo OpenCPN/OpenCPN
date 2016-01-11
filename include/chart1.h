@@ -400,6 +400,9 @@ class MyFrame: public wxFrame
     void SetMenubarItemState ( int item_id, bool state );
     void SetToolbarItemState ( int tool_id, bool state );
     void SetToolbarItemBitmaps ( int tool_id, wxBitmap *bitmap, wxBitmap *bmpDisabled );
+    void SetToolbarItemSVG( int tool_id, wxString normalSVGfile,
+                            wxString rolloverSVGfile,
+                            wxString toggledSVGfile );
     void ToggleQuiltMode(void);
     void ToggleCourseUp(void);
     void SetQuiltMode(bool bquilt);
