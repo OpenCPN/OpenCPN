@@ -2954,26 +2954,30 @@ bool MyFrame::AddDefaultPositionPlugInTools( ocpnToolBarSimple *tb )
         if( pttc->position == -1 )                  // PlugIn has requested default positioning
                 {
             wxBitmap *ptool_bmp;
+            wxBitmap *ptool_bmp_Rollover;
 
             switch( global_color_scheme ){
                 case GLOBAL_COLOR_SCHEME_DAY:
                     ptool_bmp = pttc->bitmap_day;
+                    ptool_bmp_Rollover = pttc->bitmap_Rollover_day;
                     ;
                     break;
                 case GLOBAL_COLOR_SCHEME_DUSK:
                     ptool_bmp = pttc->bitmap_dusk;
+                    ptool_bmp_Rollover = pttc->bitmap_Rollover_dusk;
                     break;
                 case GLOBAL_COLOR_SCHEME_NIGHT:
                     ptool_bmp = pttc->bitmap_night;
+                    ptool_bmp_Rollover = pttc->bitmap_Rollover_night;
                     break;
                 default:
                     ptool_bmp = pttc->bitmap_day;
-                    ;
+                    ptool_bmp_Rollover = pttc->bitmap_Rollover_day;
                     break;
             }
 
-            tb->AddTool( pttc->id, wxString( pttc->label ), *( ptool_bmp ),
-                    wxString( pttc->shortHelp ), pttc->kind );
+            tb->AddTool( pttc->id, wxString( pttc->label ), *( ptool_bmp ), *( ptool_bmp_Rollover ),
+                         pttc->kind, wxString( pttc->shortHelp ) );
             bret = true;
         }
     }
