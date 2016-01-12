@@ -281,6 +281,7 @@ public:
     wxString iconName;
     const wxBitmap* pluginNormalIcon;
     const wxBitmap* pluginRolloverIcon;
+    const wxBitmap* pluginToggledIcon;
     bool firstInLine;
     bool lastInLine;
     bool rollover;
@@ -1878,7 +1879,7 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
                 if( wxFileExists( svgFile ) ){
                     wxSVGDocument svgDoc;
                     if( svgDoc.Load(svgFile) ){
-                        wxBitmap bmp = wxBitmap( svgDoc.Render( tool->m_width, tool->m_height, NULL, true, true ) );
+                        bmp = wxBitmap( svgDoc.Render( tool->m_width, tool->m_height, NULL, true, true ) );
                     }
                     else
                         bmp = m_style->BuildPluginIcon( tool->pluginNormalIcon, TOOLICON_NORMAL );
@@ -1906,7 +1907,7 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
                     }
                 }
             }
-            
+            bmp = m_style->SetBitmapBrightness(bmp);
 #if 0            
             if( tool->IsToggled() ) {
                 bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_TOGGLED, tool->rollover,

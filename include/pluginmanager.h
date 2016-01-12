@@ -266,13 +266,13 @@ public:
       void SetToolbarItemState(int tool_id, bool toggle);
       void SetToolbarItemBitmaps(int item, wxBitmap *bitmap, wxBitmap *bmpDisabled);
       
-      int AddToolbarTool(wxString label, wxString SVGfile, wxString SVGfileDisabled,
+      int AddToolbarTool(wxString label, wxString SVGfile, wxString SVGRolloverfile,
                          wxItemKind kind, wxString shortHelp, wxString longHelp,
                          wxObject *clientData, int position,
                          int tool_sel, opencpn_plugin *pplugin );
       
       void SetToolbarItemBitmaps(int item, wxString SVGfile,
-                                 wxString SVGfileDisabled,
+                                 wxString SVGfileRollover,
                                  wxString SVGfileToggled);
       
       opencpn_plugin *FindToolOwner(const int id);

@@ -52,16 +52,18 @@ void bmdump(wxBitmap bm, wxString name)
     img.SaveFile( name << _T(".png"), wxBITMAP_TYPE_PNG );
 }
 
-#ifdef ocpnUSE_SVG
 static wxBitmap LoadSVG( const wxString filename, unsigned int width, unsigned int height )
 {
+#ifdef ocpnUSE_SVG
     wxSVGDocument svgDoc;
     if( svgDoc.Load(filename) )
         return wxBitmap( svgDoc.Render( width, height, NULL, true, true ) );
     else
         return wxBitmap(width, height);
-}
+#else
+    return wxBitmap(width, height);
 #endif // ocpnUSE_SVG
+}
 
 // This function can be used to create custom bitmap blending for all platforms
 // where 32 bit bitmap ops are broken. Can hopefully be removed for wxWidgets 3.0...
