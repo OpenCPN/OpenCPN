@@ -1253,6 +1253,11 @@ bool ChartCanvas::IsQuiltDelta()
     return m_pQuilt->IsQuiltDelta( VPoint );
 }
 
+void ChartCanvas::UnlockQuilt()
+{
+    m_pQuilt->UnlockQuilt();
+}
+
 ArrayOfInts ChartCanvas::GetQuiltIndexArray( void )
 {
     return m_pQuilt->GetQuiltIndexArray();;
