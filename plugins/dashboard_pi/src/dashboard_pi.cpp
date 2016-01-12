@@ -30,6 +30,10 @@
 #ifndef  WX_PRECOMP
 #include "wx/wx.h"
 #endif //precompiled headers
+
+// xw 2.8
+#include <wx/filename.h>
+
 #include <typeinfo>
 #include "dashboard_pi.h"
 #include "icons.h"
