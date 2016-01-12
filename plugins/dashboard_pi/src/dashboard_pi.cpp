@@ -348,9 +348,23 @@ int dashboard_pi::Init( void )
     LoadConfig();
 
     //    This PlugIn needs a toolbar icon
-    m_toolbar_item_id = InsertPlugInTool( _T(""), _img_dashboard, _img_dashboard, wxITEM_CHECK,
-            _("Dashboard"), _T(""), NULL, DASHBOARD_TOOL_POSITION, 0, this );
-
+//    m_toolbar_item_id = InsertPlugInTool( _T(""), _img_dashboard, _img_dashboard, wxITEM_CHECK,
+//            _("Dashboard"), _T(""), NULL, DASHBOARD_TOOL_POSITION, 0, this );
+    
+    wxString shareLocn =*GetpSharedDataLocation() +
+                _T("plugins") + wxFileName::GetPathSeparator() +
+                _T("dashboard_pi") + wxFileName::GetPathSeparator()
+                +_T("data") + wxFileName::GetPathSeparator();
+    
+     wxString normalIcon = shareLocn + _T("Dashboard.svg");
+     wxString toggledIcon = shareLocn + _T("Dashboard_toggled.svg");
+     wxString rolloverIcon = shareLocn + _T("Dashboard_rollover.svg");
+     wxLogMessage(normalIcon);
+     m_toolbar_item_id = InsertPlugInToolSVG( _T(""), normalIcon, toggledIcon, wxITEM_CHECK,
+             _("Dashboard"), _T(""), NULL, DASHBOARD_TOOL_POSITION, 0, this );
+     SetToolbarToolBitmapsSVG(m_toolbar_item_id, normalIcon, rolloverIcon, toggledIcon);
+    
+    
     ApplyConfig();
 
     //  If we loaded a version 1 config setup, convert now to version 2
