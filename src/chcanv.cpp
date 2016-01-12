@@ -113,10 +113,11 @@
 
 extern struct sigaction sa_all;
 extern struct sigaction sa_all_old;
-extern float  g_ChartScaleFactorExp;
 
 extern sigjmp_buf           env;                    // the context saved by sigsetjmp();
 #endif
+
+extern float  g_ChartScaleFactorExp;
 
 #include <vector>
 
