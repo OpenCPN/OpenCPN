@@ -980,6 +980,16 @@ int TCMgr::GetStationTimeOffset(IDX_entry *pIDX)
     return pIDX->IDX_time_zone;
 }
 
+double  TCMgr::GetStationLat(IDX_entry *pIDX)
+{
+    return pIDX->IDX_lat;
+}
+
+double  TCMgr::GetStationLon(IDX_entry *pIDX)
+{
+    return pIDX->IDX_lon;
+}
+
 int TCMgr::GetNextBigEvent(time_t *tm, int idx)
 {
     float tcvalue[1];
