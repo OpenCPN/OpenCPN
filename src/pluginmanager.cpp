@@ -101,6 +101,7 @@ extern options         *g_options;
 extern ColorScheme      global_color_scheme;
 extern ChartCanvas     *cc1;
 extern wxArrayString    g_locale_catalog_array;
+extern int              g_GUIScaleFactor;
 
 unsigned int      gs_plib_flags;
 
@@ -208,7 +209,10 @@ PlugInToolbarToolContainer::PlugInToolbarToolContainer()
     bitmap_dusk = NULL;
     bitmap_night = NULL;
     bitmap_day = NULL;
-    bitmap_Rollover = NULL;;
+    bitmap_Rollover_day = NULL;
+    bitmap_Rollover_dusk = NULL;
+    bitmap_Rollover_night = NULL;
+    
 }
 
 PlugInToolbarToolContainer::~PlugInToolbarToolContainer()
@@ -216,7 +220,9 @@ PlugInToolbarToolContainer::~PlugInToolbarToolContainer()
     delete bitmap_dusk;
     delete bitmap_night;
     delete bitmap_day;
-    delete bitmap_Rollover;
+    delete bitmap_Rollover_day;
+    delete bitmap_Rollover_dusk;
+    delete bitmap_Rollover_night;
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -1585,7 +1591,7 @@ void PlugInManager::NotifyAuiPlugIns(void)
     }
 }
 
-int PlugInManager::AddToolbarTool(wxString label, wxBitmap *bitmap, wxBitmap *bmpDisabled, wxItemKind kind,
+int PlugInManager::AddToolbarTool(wxString label, wxBitmap *bitmap, wxBitmap *bmpRollover, wxItemKind kind,
                                   wxString shortHelp, wxString longHelp, wxObject *clientData, int position,
                                   int tool_sel, opencpn_plugin *pplugin )
 {
@@ -1601,11 +1607,19 @@ int PlugInManager::AddToolbarTool(wxString label, wxBitmap *bitmap, wxBitmap *bm
         pttc->bitmap_day->UnShare();
     }
 
-    pttc->bitmap_Rollover = new wxBitmap(*pttc->bitmap_day);
-    pttc->bitmap_Rollover->UnShare();
-
+    if( !bmpRollover->IsOk() ) {
+        ocpnStyle::Style*style = g_StyleManager->GetCurrentStyle();
+        pttc->bitmap_Rollover_day = new wxBitmap( style->GetIcon( _T("default_pi") ));
+    } else {
+        //  Force a non-reference copy of the bitmap from the PlugIn
+        pttc->bitmap_Rollover_day = new wxBitmap(*bmpRollover);
+        pttc->bitmap_Rollover_day->UnShare();
+    }
+    
     pttc->bitmap_dusk = BuildDimmedToolBitmap(pttc->bitmap_day, 128);
     pttc->bitmap_night = BuildDimmedToolBitmap(pttc->bitmap_day, 32);
+    pttc->bitmap_Rollover_dusk = BuildDimmedToolBitmap(pttc->bitmap_Rollover_day, 128);
+    pttc->bitmap_Rollover_night = BuildDimmedToolBitmap(pttc->bitmap_Rollover_day, 32);
     
     pttc->kind = kind;
     pttc->shortHelp = shortHelp;
@@ -1637,12 +1651,16 @@ int PlugInManager::AddToolbarTool(wxString label, wxString SVGfile, wxString SVG
     pttc->pluginNormalIconSVG = SVGfile;
     pttc->pluginToggledIconSVG = SVGfileToggled;
     
+    // Build a set of bitmaps based on the generic "puzzle piece" icon,
+    // In case there is some problem with the SVG file(s) specified.
     ocpnStyle::Style*style = g_StyleManager->GetCurrentStyle();
     pttc->bitmap_day = new wxBitmap( style->GetIcon( _T("default_pi") ));
 
-    pttc->bitmap_dusk = new wxBitmap(*pttc->bitmap_day);
-    pttc->bitmap_night = new wxBitmap(*pttc->bitmap_day);
-    pttc->bitmap_Rollover = new wxBitmap(*pttc->bitmap_day);
+    pttc->bitmap_dusk = BuildDimmedToolBitmap(pttc->bitmap_day, 128);
+    pttc->bitmap_night = BuildDimmedToolBitmap(pttc->bitmap_day, 32);
+    pttc->bitmap_Rollover_day = new wxBitmap(*pttc->bitmap_day);
+    pttc->bitmap_Rollover_dusk = BuildDimmedToolBitmap(pttc->bitmap_Rollover_day, 128);
+    pttc->bitmap_Rollover_night = BuildDimmedToolBitmap(pttc->bitmap_Rollover_day, 32);
     
     pttc->kind = kind;
     pttc->shortHelp = shortHelp;
@@ -1728,7 +1746,7 @@ void PlugInManager::SetToolbarItemBitmaps(int item, wxBitmap *bitmap, wxBitmap *
                 delete pttc->bitmap_day;
                 delete pttc->bitmap_dusk;
                 delete pttc->bitmap_night;
-                delete pttc->bitmap_Rollover;
+                delete pttc->bitmap_Rollover_day;
 
                 if( !bitmap->IsOk() ) {
                     ocpnStyle::Style*style = g_StyleManager->GetCurrentStyle();
@@ -1741,17 +1759,17 @@ void PlugInManager::SetToolbarItemBitmaps(int item, wxBitmap *bitmap, wxBitmap *
 
                 if( !bmpRollover->IsOk() ) {
                     ocpnStyle::Style*style = g_StyleManager->GetCurrentStyle();
-                    pttc->bitmap_Rollover = new wxBitmap( style->GetIcon( _T("default_pi") ));
+                    pttc->bitmap_Rollover_day = new wxBitmap( style->GetIcon( _T("default_pi") ));
                 } else {
                     //  Force a non-reference copy of the bitmap from the PlugIn
-                    pttc->bitmap_Rollover = new wxBitmap(*bmpRollover);
-                    pttc->bitmap_Rollover->UnShare();
+                    pttc->bitmap_Rollover_day = new wxBitmap(*bmpRollover);
+                    pttc->bitmap_Rollover_day->UnShare();
                 }
                 
                 pttc->bitmap_dusk = BuildDimmedToolBitmap(pttc->bitmap_day, 128);
                 pttc->bitmap_night = BuildDimmedToolBitmap(pttc->bitmap_day, 32);
 
-                pParent->SetToolbarItemBitmaps(item, pttc->bitmap_day, pttc->bitmap_Rollover);
+                pParent->SetToolbarItemBitmaps(item, pttc->bitmap_day, pttc->bitmap_Rollover_day);
                 break;
             }
         }
@@ -1923,12 +1941,12 @@ bool PlugInManager::IsPlugInAvailable(wxString commonName)
 //----------------------------------------------------------------------------------------------------------
 
 
-int InsertPlugInTool(wxString label, wxBitmap *bitmap, wxBitmap *bmpDisabled, wxItemKind kind,
+int InsertPlugInTool(wxString label, wxBitmap *bitmap, wxBitmap *bmpRollover, wxItemKind kind,
                      wxString shortHelp, wxString longHelp, wxObject *clientData, int position,
                      int tool_sel, opencpn_plugin *pplugin)
 {
     if(s_ppim)
-        return s_ppim->AddToolbarTool(label, bitmap, bmpDisabled, kind,
+        return s_ppim->AddToolbarTool(label, bitmap, bmpRollover, kind,
                                       shortHelp, longHelp, clientData, position,
                                       tool_sel, pplugin );
     else
@@ -1954,10 +1972,10 @@ void SetToolbarItemState(int item, bool toggle)
         s_ppim->SetToolbarItemState(item, toggle);
 }
 
-void SetToolbarToolBitmaps(int item, wxBitmap *bitmap, wxBitmap *bmprollover)
+void SetToolbarToolBitmaps(int item, wxBitmap *bitmap, wxBitmap *bmpRollover)
 {
     if(s_ppim)
-        s_ppim->SetToolbarItemBitmaps(item, bitmap, bmprollover);
+        s_ppim->SetToolbarItemBitmaps(item, bitmap, bmpRollover);
 }
 
 int InsertPlugInToolSVG(wxString label, wxString SVGfile, wxString SVGfileToggled, wxItemKind kind,
@@ -2107,6 +2125,11 @@ wxFont *GetOCPNScaledFont_PlugIn(wxString TextElement, int default_size)
 double GetOCPNGUIToolScaleFactor_PlugIn(int GUIScaleFactor)
 {
     return g_Platform->GetToolbarScaleFactor(GUIScaleFactor);
+}
+
+double GetOCPNGUIToolScaleFactor_PlugIn()
+{
+    return g_Platform->GetToolbarScaleFactor(g_GUIScaleFactor);
 }
 
 wxFont GetOCPNGUIScaledFont_PlugIn(wxString item)

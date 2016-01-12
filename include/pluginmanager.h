@@ -201,8 +201,10 @@ class PlugInToolbarToolContainer
             wxBitmap          *bitmap_day;
             wxBitmap          *bitmap_dusk;
             wxBitmap          *bitmap_night;
-            wxBitmap          *bitmap_Rollover;
-
+            wxBitmap          *bitmap_Rollover_day;
+            wxBitmap          *bitmap_Rollover_dusk;
+            wxBitmap          *bitmap_Rollover_night;
+            
             wxItemKind        kind;
             wxString          shortHelp;
             wxString          longHelp;
@@ -254,7 +256,7 @@ public:
       void CloseAllPlugInPanels( int );
 
       ArrayOfPlugInToolbarTools &GetPluginToolbarToolArray(){ return m_PlugInToolbarTools; }
-      int AddToolbarTool(wxString label, wxBitmap *bitmap, wxBitmap *bmpDisabled,
+      int AddToolbarTool(wxString label, wxBitmap *bitmap, wxBitmap *bmpRollover,
                          wxItemKind kind, wxString shortHelp, wxString longHelp,
                          wxObject *clientData, int position,
                          int tool_sel, opencpn_plugin *pplugin );

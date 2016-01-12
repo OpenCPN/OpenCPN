@@ -594,13 +594,13 @@ public:
 //----------------------------------------------------------------------------------------------------------
 
 
-extern "C"  DECL_EXP int InsertPlugInTool(wxString label, wxBitmap *bitmap, wxBitmap *bmpDisabled, wxItemKind kind,
+extern "C"  DECL_EXP int InsertPlugInTool(wxString label, wxBitmap *bitmap, wxBitmap *bmpRollover, wxItemKind kind,
                                           wxString shortHelp, wxString longHelp, wxObject *clientData, int position,
                                           int tool_sel, opencpn_plugin *pplugin);
 extern "C"  DECL_EXP void RemovePlugInTool(int tool_id);
 extern "C"  DECL_EXP void SetToolbarToolViz(int item, bool viz);      // Temporarily change toolbar tool viz
 extern "C"  DECL_EXP void SetToolbarItemState(int item, bool toggle);
-extern "C"  DECL_EXP void SetToolbarToolBitmaps(int item, wxBitmap *bitmap, wxBitmap *bmpDisabled);
+extern "C"  DECL_EXP void SetToolbarToolBitmaps(int item, wxBitmap *bitmap, wxBitmap *bmpRollover);
 
 extern "C"  DECL_EXP int InsertPlugInToolSVG(wxString label, wxString SVGfile, wxString SVGfileToggled, wxItemKind kind,
                                           wxString shortHelp, wxString longHelp, wxObject *clientData, int position,
@@ -1004,6 +1004,7 @@ extern DECL_EXP void SetCursor_PlugIn( wxCursor *pPlugin_Cursor = NULL );
 extern DECL_EXP wxFont *GetOCPNScaledFont_PlugIn(wxString TextElement, int default_size = 0);
 extern DECL_EXP wxFont GetOCPNGUIScaledFont_PlugIn(wxString item);
 extern DECL_EXP double GetOCPNGUIToolScaleFactor_PlugIn(int GUIScaledFactor);
+extern DECL_EXP double GetOCPNGUIToolScaleFactor_PlugIn();
 extern DECL_EXP wxColour GetFontColour_PlugIn(wxString TextElement);
 
 extern DECL_EXP double GetCanvasTilt();
