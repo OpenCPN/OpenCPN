@@ -341,6 +341,7 @@ public:
       ocpnToolBarSimple *GetToolbar();
       void Submerge();
       void SubmergeToGrabber();
+      bool isSubmergedToGrabber();
       void Surface();
       void SurfaceFromGrabber();
       void HideTooltip();

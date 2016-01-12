@@ -634,6 +634,11 @@ void ocpnFloatingToolbarDialog::DestroyTimerEvent( wxTimerEvent& event )
    
 }
 
+bool ocpnFloatingToolbarDialog::isSubmergedToGrabber()
+{
+    return (m_pRecoverwin != 0);
+}
+
 void ocpnFloatingToolbarDialog::HideTooltip()
 {
     if( m_ptoolbar ) m_ptoolbar->HideTooltip();

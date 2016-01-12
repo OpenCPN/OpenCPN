@@ -3017,7 +3017,7 @@ void MyFrame::RequestNewToolbar(bool bforcenew)
             DestroyMyToolbar();
 
         g_toolbar = CreateAToolbar();
-        if (g_FloatingToolbarDialog->m_bsubmerged) {
+        if (g_FloatingToolbarDialog->isSubmergedToGrabber()) {
             g_FloatingToolbarDialog->SubmergeToGrabber();
         } else {
             g_FloatingToolbarDialog->RePosition();
