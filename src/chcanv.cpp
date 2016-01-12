@@ -113,6 +113,7 @@
 
 extern struct sigaction sa_all;
 extern struct sigaction sa_all_old;
+extern float  g_ChartScaleFactorExp;
 
 extern sigjmp_buf           env;                    // the context saved by sigsetjmp();
 #endif
@@ -3965,7 +3966,10 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
                     if( rot_image.GetAlpha( ip, jp ) > 64 ) rot_image.SetAlpha( ip, jp, 255 );
 
             wxBitmap os_bm( rot_image );
-
+            
+            wxImage scaled_image = os_bm.ConvertToImage();
+            os_bm = scaled_image.Scale(scaled_image.GetWidth() * g_ChartScaleFactorExp, scaled_image.GetHeight() * g_ChartScaleFactorExp, wxIMAGE_QUALITY_HIGH);
+            
             int w = os_bm.GetWidth();
             int h = os_bm.GetHeight();
             img_height = h;

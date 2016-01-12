@@ -2365,9 +2365,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
     if( cc1->GetVP().chart_scale > 300000 )             // According to S52, this should be 50,000
     {
         float scale =  1.0f;
-        if(g_bresponsive){
-            scale =  g_ChartScaleFactorExp;
-        }
+        scale =  g_ChartScaleFactorExp;
         
         const int v = 12;
         // start with cross
@@ -2482,7 +2480,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
             glColor4ub(128, 128, 128, 255);
 
         /* scaled ship? */
-        float scale_factor_y = 1, scale_factor_x = 1;
+        float scale_factor_y = g_ChartScaleFactorExp, scale_factor_x = g_ChartScaleFactorExp;
         int ownShipWidth = 22; // Default values from s_ownship_icon
         int ownShipLength= 84;
         lShipMidPoint = lGPSPoint;
@@ -2513,12 +2511,6 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 
         glScalef(scale_factor_x, scale_factor_y, 1);
 
-        if(g_bresponsive){
-            float scale =  g_ChartScaleFactorExp;
-            glScalef(scale, scale, 1);
-        }
-        
-        
         if( g_OwnShipIconType < 2 ) { // Bitmap
 
             glEnable(GL_TEXTURE_2D);
