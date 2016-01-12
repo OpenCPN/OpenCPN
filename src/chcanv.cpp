@@ -3969,7 +3969,7 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
             wxBitmap os_bm( rot_image );
             
             wxImage scaled_image = os_bm.ConvertToImage();
-            os_bm = scaled_image.Scale(scaled_image.GetWidth() * g_ChartScaleFactorExp, scaled_image.GetHeight() * g_ChartScaleFactorExp, wxIMAGE_QUALITY_HIGH);
+            os_bm = wxBitmap(scaled_image.Scale(scaled_image.GetWidth() * g_ChartScaleFactorExp, scaled_image.GetHeight() * g_ChartScaleFactorExp, wxIMAGE_QUALITY_HIGH));
             
             int w = os_bm.GetWidth();
             int h = os_bm.GetHeight();
