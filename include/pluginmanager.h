@@ -266,7 +266,7 @@ public:
       void SetToolbarItemState(int tool_id, bool toggle);
       void SetToolbarItemBitmaps(int item, wxBitmap *bitmap, wxBitmap *bmpDisabled);
       
-      int AddToolbarTool(wxString label, wxString SVGfile, wxString SVGRolloverfile,
+      int AddToolbarTool(wxString label, wxString SVGfile, wxString SVGRolloverfile, wxString SVGToggledfile,
                          wxItemKind kind, wxString shortHelp, wxString longHelp,
                          wxObject *clientData, int position,
                          int tool_sel, opencpn_plugin *pplugin );

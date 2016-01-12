@@ -1913,35 +1913,6 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
                 }
             }
             bmp = m_style->SetBitmapBrightness(bmp);
-#if 0            
-            if( tool->IsToggled() ) {
-                bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_TOGGLED, tool->rollover,
-                                            tool->m_width, tool->m_height );
-                
-                if( bmp.GetDepth() == 1 ) {     // Tool icon not found
-                    if( tool->rollover ) {
-                        bmp = m_style->BuildPluginIcon( tool->pluginRolloverIcon, TOOLICON_TOGGLED );
-                        if( ! bmp.IsOk() )
-                            bmp = m_style->BuildPluginIcon( tool->pluginNormalIcon, TOOLICON_TOGGLED );
-                    }
-                    else
-                        bmp = m_style->BuildPluginIcon( tool->pluginNormalIcon, TOOLICON_TOGGLED );
-                }
-            } else {
-                bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_NORMAL, tool->rollover,
-                                            tool->m_width, tool->m_height );
-                
-                if( bmp.GetDepth() == 1 ) {      // Tool icon not found
-                    if( tool->rollover ) {
-                        bmp = m_style->BuildPluginIcon( tool->pluginRolloverIcon, TOOLICON_NORMAL );
-                        if( ! bmp.IsOk() )
-                            bmp = m_style->BuildPluginIcon( tool->pluginNormalIcon, TOOLICON_NORMAL );
-                    }
-                    else
-                        bmp = m_style->BuildPluginIcon( tool->pluginNormalIcon, TOOLICON_NORMAL );
-                }
-            }
-#endif            
             tool->SetNormalBitmap( bmp );
             tool->bitmapOK = true;
         } else {

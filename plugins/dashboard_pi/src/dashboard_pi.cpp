@@ -360,9 +360,8 @@ int dashboard_pi::Init( void )
      wxString toggledIcon = shareLocn + _T("Dashboard_toggled.svg");
      wxString rolloverIcon = shareLocn + _T("Dashboard_rollover.svg");
      wxLogMessage(normalIcon);
-     m_toolbar_item_id = InsertPlugInToolSVG( _T(""), normalIcon, toggledIcon, wxITEM_CHECK,
+     m_toolbar_item_id = InsertPlugInToolSVG( _T(""), normalIcon, rolloverIcon, toggledIcon, wxITEM_CHECK,
              _("Dashboard"), _T(""), NULL, DASHBOARD_TOOL_POSITION, 0, this );
-     SetToolbarToolBitmapsSVG(m_toolbar_item_id, normalIcon, rolloverIcon, toggledIcon);
     
     
     ApplyConfig();

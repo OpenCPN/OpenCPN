@@ -1641,15 +1641,16 @@ int PlugInManager::AddToolbarTool(wxString label, wxBitmap *bitmap, wxBitmap *bm
     return pttc->id;
 }
 
-int PlugInManager::AddToolbarTool(wxString label, wxString SVGfile, wxString SVGRolloverfile, wxItemKind kind,
-                                  wxString shortHelp, wxString longHelp, wxObject *clientData, int position,
-                                  int tool_sel, opencpn_plugin *pplugin )
+int PlugInManager::AddToolbarTool(wxString label, wxString SVGfile, wxString SVGRolloverfile, wxString SVGToggledfile,
+                                  wxItemKind kind, wxString shortHelp, wxString longHelp,
+                                  wxObject *clientData, int position, int tool_sel, opencpn_plugin *pplugin )
 {
     PlugInToolbarToolContainer *pttc = new PlugInToolbarToolContainer;
     pttc->label = label;
     
     pttc->pluginNormalIconSVG = SVGfile;
     pttc->pluginRolloverIconSVG = SVGRolloverfile;
+    pttc->pluginToggledIconSVG = SVGToggledfile;
     
     // Build a set of bitmaps based on the generic "puzzle piece" icon,
     // In case there is some problem with the SVG file(s) specified.
@@ -1979,12 +1980,12 @@ void SetToolbarToolBitmaps(int item, wxBitmap *bitmap, wxBitmap *bmpRollover)
         s_ppim->SetToolbarItemBitmaps(item, bitmap, bmpRollover);
 }
 
-int InsertPlugInToolSVG(wxString label, wxString SVGfile, wxString SVGfileRollover, wxItemKind kind,
-                                          wxString shortHelp, wxString longHelp, wxObject *clientData, int position,
-                                          int tool_sel, opencpn_plugin *pplugin)
+int InsertPlugInToolSVG(wxString label, wxString SVGfile, wxString SVGfileRollover, wxString SVGfileToggled,
+                        wxItemKind kind, wxString shortHelp, wxString longHelp,
+                        wxObject *clientData, int position, int tool_sel, opencpn_plugin *pplugin)
 {
     if(s_ppim)
-        return s_ppim->AddToolbarTool(label, SVGfile, SVGfileRollover, kind,
+        return s_ppim->AddToolbarTool(label, SVGfile, SVGfileRollover, SVGfileToggled, kind,
                                       shortHelp, longHelp, clientData, position,
                                       tool_sel, pplugin );
     else
