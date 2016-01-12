@@ -631,24 +631,30 @@ void TCWin::OnPaint( wxPaintEvent& event )
         if( m_graphday.IsDST() ) h += 1;
         m_stz.Printf( _T("Z %+03d:%02d"), h, m );
 
+         
+        
 //    Make the "nice" (for the US) station time-zone string, brutally by hand
-        wxString mtz;
-        switch( ptcmgr->GetStationTimeOffset( pIDX ) ) {
-        case -240:
-            mtz = _T( "AST" );
-            break;
-        case -300:
-            mtz = _T( "EST" );
-            break;
-        case -360:
-            mtz = _T( "CST" );
-            break;
-        }
+        double lat = ptcmgr->GetStationLat(pIDX);
+        
+        if( lat > 20.0 ){
+            wxString mtz;
+            switch( ptcmgr->GetStationTimeOffset( pIDX ) ) {
+            case -240:
+                mtz = _T( "AST" );
+                break;
+            case -300:
+                mtz = _T( "EST" );
+                break;
+            case -360:
+                mtz = _T( "CST" );
+                break;
+            }
 
-        if( mtz.Len() ) {
-            if( m_graphday.IsDST() ) mtz[1] = 'D';
+            if( mtz.Len() ) {
+                if( m_graphday.IsDST() ) mtz[1] = 'D';
 
-            m_stz = mtz;
+                m_stz = mtz;
+            }
         }
 
         dc.SetFont( *pSFont );
