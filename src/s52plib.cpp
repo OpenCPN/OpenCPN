@@ -2379,9 +2379,7 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
 {
     double scale_factor = 1.0;
  
-    if(g_bresponsive){
-        scale_factor *=  g_ChartScaleFactorExp;
-    }
+    scale_factor *=  g_ChartScaleFactorExp;
     
     if(g_oz_vector_scale && vp->b_quilt){
         double sfactor = vp->ref_scale/vp->chart_scale;
