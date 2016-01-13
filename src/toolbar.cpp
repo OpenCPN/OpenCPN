@@ -156,7 +156,7 @@ void GrabberWin::MouseEvent( wxMouseEvent& event )
 
     if( event.RightDown() ){
         if(m_ptoolbar){
-            if(!m_ptoolbar->m_bsubmerged){
+            if(!m_ptoolbar->isSubmergedToGrabber()){
                 m_dragging = true;
                 
                 if( !m_ptoolbar->m_bnavgrabber ){
@@ -196,7 +196,7 @@ void GrabberWin::MouseEvent( wxMouseEvent& event )
                     m_ptoolbar->ToggleOrientation();
             }
             else if(!m_dragging){
-                if(m_ptoolbar->m_bsubmerged){
+                if(m_ptoolbar->isSubmergedToGrabber()){
                     m_ptoolbar->SurfaceFromGrabber();
                 }
                 else{
@@ -359,6 +359,7 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
     Hide();
 
     m_bsubmerged = false;
+    m_bsubmergedToGrabber = false;
     
     m_fade_timer.SetOwner( this, FADE_TIMER );
     if( g_bTransparentToolbar )
@@ -525,6 +526,7 @@ void ocpnFloatingToolbarDialog::SubmergeToGrabber()
 {
 //Submerge();
     m_bsubmerged = true;
+    m_bsubmergedToGrabber = true;
     Hide();
     if( m_ptoolbar ) m_ptoolbar->KillTooltip();
 
@@ -595,6 +597,7 @@ bool ocpnFloatingToolbarDialog::CheckSurfaceRequest( wxMouseEvent &event )
 void ocpnFloatingToolbarDialog::SurfaceFromGrabber()
 {
     m_bsubmerged = false;
+    m_bsubmergedToGrabber = false;
     
 #ifndef __WXOSX__
     Hide();
@@ -637,7 +640,7 @@ void ocpnFloatingToolbarDialog::DestroyTimerEvent( wxTimerEvent& event )
 
 bool ocpnFloatingToolbarDialog::isSubmergedToGrabber()
 {
-    return (m_pRecoverwin != 0);
+    return (m_bsubmergedToGrabber);
 }
 
 void ocpnFloatingToolbarDialog::HideTooltip()

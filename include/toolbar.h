@@ -375,11 +375,13 @@ public:
       bool toolbarConfigChanged;
       GrabberWin *m_pRecoverwin;
       bool m_bnavgrabber;
-      bool  m_bsubmerged;
       
 private:
       void DoFade( int value );
 
+      bool  m_bsubmerged;
+      bool  m_bsubmergedToGrabber;
+      
       wxWindow *m_pparent;
       ocpnToolBarSimple *m_ptoolbar;
       wxBoxSizer *m_topSizer;
