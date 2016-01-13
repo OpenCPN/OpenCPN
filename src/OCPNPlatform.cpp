@@ -1493,18 +1493,20 @@ double OCPNPlatform::GetToolbarScaleFactor( int GUIScaleFactor )
     
 #else
     double premult = 1.0;
-    
+
+    if(g_bresponsive){
     //  Get the basic size of a tool icon
-    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-    wxSize style_tool_size = style->GetToolSize();
-    double tool_size = style_tool_size.x;
+        ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+        wxSize style_tool_size = style->GetToolSize();
+        double tool_size = style_tool_size.x;
 
     // unless overridden by user, we declare the "best" tool size
-    // to be roughly 6 mm square.
-    double target_size = 6.0;                // mm
+    // to be roughly 9 mm square.
+        double target_size = 9.0;                // mm
 
-    double basic_tool_size_mm = tool_size / GetDisplayDPmm();
-    premult = target_size / basic_tool_size_mm;
+        double basic_tool_size_mm = tool_size / GetDisplayDPmm();
+        premult = target_size / basic_tool_size_mm;
+    }
 
     //Adjust the scale factor using the global GUI scale parameter
     double postmult =  exp( GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
