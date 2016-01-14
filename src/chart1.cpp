@@ -10887,6 +10887,7 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "BLUE3;   0;  0;255;", "GREY1; 200;200;200;", "GREY2; 230;230;230;", "RED1;  220;200;200;",
         "UBLCK;   0;  0;  0;", "UWHIT; 255;255;255;", "URED;  255;  0;  0;", "UGREN;   0;255;  0;",
         "YELO1; 243;229; 47;", "YELO2; 128; 80;  0;", "TEAL1;   0;128;128;", "GREEN5;170;254;  0;",
+        "COMPT; 245;247;244",
 #ifdef __WXOSX__
         "DILG0; 255;255;255;",              // Dialog Background white
 #else
@@ -10936,7 +10937,8 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "GREY1; 100;100;100;", "GREY2; 128;128;128;", "RED1;  150;100;100;", "UBLCK;   0;  0;  0;",
         "UWHIT; 255;255;255;", "URED;  120; 54; 11;", "UGREN;  35;110; 20;", "YELO1; 120;115; 24;",
         "YELO2;  64; 40;  0;", "TEAL1;   0; 64; 64;", "GREEN5; 85;128; 0;",
-
+        "COMPT; 124;126;121",
+        
         "CHGRF;  41; 46; 46;",
         "UINFM;  58; 20; 57;",
         "UINFG;  35; 76; 29;",
@@ -10981,6 +10983,7 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "GREY1;  48; 48; 48;", "GREY2;  32; 32; 32;", "RED1;  100; 50; 50;", "UWHIT; 255;255;255;",
         "UBLCK;   0;  0;  0;", "URED;   60; 27;  5;", "UGREN;  17; 55; 10;", "YELO1;  60; 65; 12;",
         "YELO2;  32; 20;  0;", "TEAL1;   0; 32; 32;", "GREEN5; 44; 64; 0;",
+        "COMPT;  48; 49; 51",
         "DILG0;  80; 80; 80;",              // Dialog Background
         "DILG1;  80; 80; 80;",              // Dialog Background
         "DILG2;   0;  0;  0;",              // Control Background

@@ -1552,8 +1552,9 @@ double OCPNPlatform::GetCompassScaleFactor( int GUIScaleFactor )
     
     
 #else
+    double premult = 1.0;
+
     if(g_bresponsive ){
-        double premult = 1.0;
         
         ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
         wxSize style_tool_size = style->GetToolSize();
@@ -1564,13 +1565,13 @@ double OCPNPlatform::GetCompassScaleFactor( int GUIScaleFactor )
         
         double basic_tool_size_mm = compass_size / GetDisplayDPmm();
         premult = target_size / basic_tool_size_mm;
-        
-        double postmult =  exp( GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
-
-        rv = premult * postmult;
-        rv = wxMin(rv, 3.0);      //  Clamp at 3.0
-        rv = wxMax(rv, 1.0);
     }
+        
+    double postmult =  exp( GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
+
+    rv = premult * postmult;
+    rv = wxMin(rv, 3.0);      //  Clamp at 3.0
+    rv = wxMax(rv, 1.0);
     
 #endif
     
