@@ -1091,6 +1091,9 @@ void ToolTipWin::SetColorScheme( ColorScheme cs )
 {
     m_back_color = GetGlobalColor( _T ( "UIBCK" ) );
     m_text_color = FontMgr::Get().GetFontColor( _("ToolTips") );
+    // assume black is the default 
+    if (m_text_color == *wxBLACK)
+       m_text_color = GetGlobalColor( _T ( "UITX1" ) );
 
     m_cs = cs;
 }
