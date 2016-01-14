@@ -228,6 +228,7 @@ extern wxProgressDialog *pprog;
 extern bool b_skipout;
 extern wxSize pprog_size;
 extern int pprog_count;
+extern int pprog_threads;
 
 //#if defined(__MSVC__) && !defined(ocpnUSE_GLES) /* this compiler doesn't support vla */
 //const
@@ -502,9 +503,17 @@ void BuildCompressedCache()
 #endif
 
     int thread_count = 0;
+    pprog_threads = 0;
     CompressedCacheWorkerThread **workers = NULL;
     if(ramonly) {
         thread_count = wxThread::GetCPUCount();
+        // XXX if only 1 or unknown set ramonly to false?
+        if (thread_count < 1) {
+            // obviously there's a least one CPU!
+            thread_count = 1;
+        }
+        pprog_threads = thread_count;
+
         workers = new CompressedCacheWorkerThread*[thread_count];
         for(int t = 0; t < thread_count; t++)
             workers[t] = NULL;
