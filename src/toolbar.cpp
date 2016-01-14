@@ -408,8 +408,6 @@ void ocpnFloatingToolbarDialog::SetColorScheme( ColorScheme cs )
     ClearBackground();
 
     if( m_ptoolbar ) {
-        wxColour back_color = GetGlobalColor( _T("GREY2") );
-
         //  Set background
         m_ptoolbar->SetBackgroundColour( back_color );
         m_ptoolbar->ClearBackground();
