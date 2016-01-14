@@ -1888,6 +1888,7 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
                     wxSVGDocument svgDoc;
                     if( svgDoc.Load(svgFile) ){
                         bmp = wxBitmap( svgDoc.Render( tool->m_width, tool->m_height, NULL, true, true ) );
+                        bmp = m_style->SetBitmapBrightness(bmp);
                     }
                     else
                         bmp = m_style->BuildPluginIcon( tool->pluginNormalIcon, TOOLICON_NORMAL );
@@ -1915,7 +1916,6 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
                     }
                 }
             }
-            bmp = m_style->SetBitmapBrightness(bmp);
             tool->SetNormalBitmap( bmp );
             tool->bitmapOK = true;
         } else {
