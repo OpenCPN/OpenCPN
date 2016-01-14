@@ -1876,8 +1876,8 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
                     svgFile = tool->pluginRolloverIconSVG;
             }
             
-            if(m_style->sysname.Lower() != _T("traditional") )
-                svgFile.Clear();
+            //if(m_style->sysname.Lower() != _T("traditional") )
+            //    svgFile.Clear();
             
             if(svgFile.Length()){         // try SVG
 #ifdef ocpnUSE_SVG
