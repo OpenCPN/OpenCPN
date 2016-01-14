@@ -73,6 +73,7 @@
 extern MyConfig        *pConfig;
 extern AIS_Decoder     *g_pAIS;
 extern wxAuiManager    *g_pauimgr;
+extern ocpnStyle::StyleManager* g_StyleManager;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
 extern wxLocale        *plocale_def_lang;
@@ -2143,6 +2144,15 @@ bool AddPersistentFontKey(wxString TextElement)
 {
     return FontMgr::Get().AddAuxKey( TextElement );
 }
+
+wxString GetActiveStyleName()
+{
+    if(g_StyleManager)
+        return g_StyleManager->GetCurrentStyle()->name;
+    else
+        return _T("");
+}
+
 
 wxColour GetFontColour_PlugIn(wxString TextElement)
 {
