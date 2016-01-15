@@ -624,6 +624,20 @@ IF(OCPN_USE_SVG)
         message(FATAL_ERROR "Cairo component required, but not found!")
       endif()
 
+      #  Some systems (e.g ARMHF RPI2) require some extra libraries
+      #  This is not exactly a general solution, but probably harmless where not needed.
+      FIND_LIBRARY( PANGOCAIRO_LIBRARY  NAMES pangocairo-1.0 PATHS /usr/lib /usr/local/lib)
+      FIND_LIBRARY( PANGOFT2_LIBRARY NAMES pangoft2-1.0 PATHS /usr/lib /usr/local/lib)
+      FIND_LIBRARY( PANGOXFT_LIBRARY NAMES pangoxft-1.0 PATHS /usr/lib /usr/local/lib)
+      FIND_LIBRARY( GDK_PIXBUF_LIBRARY NAMES gdk_pixbuf-2.0 PATHS /usr/lib /usr/local/lib)
+      FIND_PACKAGE_HANDLE_STANDARD_ARGS( "CAIRO_EXTRAS" DEFAULT_MSG PANGOCAIRO_LIBRARY
+                                            PANGOFT2_LIBRARY PANGOXFT_LIBRARY GDK_PIXBUF_LIBRARY)
+      IF ( CAIRO_EXTRAS_FOUND )                                           
+        SET( CAIRO_EXTRA_LIBRARIES ${PANGOCAIRO_LIBRARY} ${PANGOFT2_LIBRARY} ${PANGOXFT_LIBRARY} ${GDK_PIXBUF_LIBRARY} )
+        message(STATUS "Cairo Extra Libraries: " ${CAIRO_EXTRA_LIBRARIES})
+      ENDIF ( CAIRO_EXTRAS_FOUND ) 
+
+ 
       IF(NOT WIN32 AND NOT APPLE)
         OPTION(OCPN_FORCE_GTK3 "Force the build to use GTK3" OFF)
 
@@ -683,8 +697,9 @@ IF(OCPN_USE_SVG)
     ELSE(WIN32)
       SET(SVG_LIBS
         ${CAIRO_LIBRARY}
-	#${FFMPEG_LIBRARIES}
-	${EXPAT_LIBRARIES}
+        ${CAIRO_EXTRA_LIBRARIES}
+#        ${FFMPEG_LIBRARIES}
+        ${EXPAT_LIBRARIES}
         ${GTK_LIBRARIES}
       )
     ENDIF(WIN32)
