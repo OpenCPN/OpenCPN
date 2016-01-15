@@ -6363,6 +6363,8 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
         
 }
 
+bool panleftIsDown;
+
 bool ChartCanvas::MouseEventProcessCanvas( wxMouseEvent& event )
 {
     int x, y;
@@ -6404,10 +6406,13 @@ bool ChartCanvas::MouseEventProcessCanvas( wxMouseEvent& event )
         ZoomCanvas( factor, true, false );
         
     }
-    
+
+    if( event.LeftDown() )
+        panleftIsDown = true;
+        
     if( event.LeftUp() ) {
-        if( 1/*leftIsDown*/ ) {  // left click for chart center
-            leftIsDown = false;
+        if( panleftIsDown ) {  // leftUp for chart center, but only after a leftDown seen here.
+            panleftIsDown = false;
             
             if( !g_btouch ){
                 if( !m_bChartDragging && !m_bMeasure_Active ) {
