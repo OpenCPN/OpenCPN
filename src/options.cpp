@@ -5025,6 +5025,9 @@ void options::SetInitialSettings(void) {
       }
   }
   
+  //  Reset the touch flag...
+  connectionsaved = true;
+  
 }
 
 void options::SetInitialVectorSettings(void)
@@ -7483,6 +7486,10 @@ void options::SetConnectionParams(ConnectionParams* cp) {
     ClearNMEAForm();
 
   m_connection_enabled = cp->bEnabled;
+  
+  // Reset touch flag
+  connectionsaved = true;
+  
 }
 
 void options::SetDefaultConnectionParams(void) {
@@ -7510,6 +7517,10 @@ void options::SetDefaultConnectionParams(void) {
 
   bserial ? SetNMEAFormToSerial() : SetNMEAFormToNet();
   m_connection_enabled = TRUE;
+  
+  // Reset touch flag
+  connectionsaved = true;
+  
 }
 
 void options::OnAddDatasourceClick(wxCommandEvent& event) {
@@ -7615,7 +7626,6 @@ void options::OnRemoveDatasourceClick(wxCommandEvent& event) {
 }
 
 void options::OnSelectDatasource(wxListEvent& event) {
-  connectionsaved = FALSE;
   SetConnectionParams(g_pConnectionParams->Item(event.GetData()));
   m_buttonRemove->Enable();
   event.Skip();
