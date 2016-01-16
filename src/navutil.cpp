@@ -3004,31 +3004,6 @@ bool MyConfig::ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxSt
                                                      wxT ( "*.gpx" )
     );
     
-#if 0    
-    wxFileDialog *psaveDialog = new wxFileDialog( NULL, _( "Export GPX file" ), m_gpx_path, suggestedName,
-            wxT ( "GPX files (*.gpx)|*.gpx" ), wxFD_SAVE );
-
-    if(g_bresponsive)
-        psaveDialog = g_Platform->AdjustFileDialogFont(parent, psaveDialog);
-
-#ifdef __WXOSX__
-    if(parent)
-        parent->HideWithEffect(wxSHOW_EFFECT_BLEND );
-#endif
-
-     int response = psaveDialog->ShowModal();
-
-#ifdef __WXOSX__
-    if(parent)
-        parent->ShowWithEffect(wxSHOW_EFFECT_BLEND );
-#endif
-
-    wxString path = psaveDialog->GetPath();
-//    wxFileName fn( path );
-//    m_gpx_path = fn.GetPath();
-    delete psaveDialog;
-#endif
-    
     if( response == wxID_OK ) {
         wxFileName fn(path);
         m_gpx_path = fn.GetPath();
@@ -3062,21 +3037,6 @@ bool MyConfig::ExportGPXWaypoints( wxWindow* parent, RoutePointList *pRoutePoint
                                                      );
 
 
-#if 0        
-    wxFileDialog *psaveDialog = new wxFileDialog( NULL, _( "Export GPX file" ), m_gpx_path, suggestedName,
-            wxT ( "GPX files (*.gpx)|*.gpx" ), wxFD_SAVE );
-
-    if(g_bresponsive)
-        psaveDialog = g_Platform->AdjustFileDialogFont(parent, psaveDialog);
-    
-    int response = psaveDialog->ShowModal();
-
-    wxString path = psaveDialog->GetPath();
-//    wxFileName fn( path );
-//    m_gpx_path = fn.GetPath();
-    delete psaveDialog;
-#endif
-    
     if( response == wxID_OK ) {
         wxFileName fn( path );
         m_gpx_path = fn.GetPath();
@@ -3111,20 +3071,6 @@ void MyConfig::ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
     
     
     
-#if 0    
-    wxFileDialog *psaveDialog = new wxFileDialog( NULL, _( "Export GPX file" ), m_gpx_path, wxT ( "" ),
-            wxT ( "GPX files (*.gpx)|*.gpx" ), wxFD_SAVE );
-
-    if(g_bresponsive)
-        psaveDialog = g_Platform->AdjustFileDialogFont(parent, psaveDialog);
-    
-    int response = psaveDialog->ShowModal();
-
-    wxString path = psaveDialog->GetPath();
-    wxFileName fn( path );
-    m_gpx_path = fn.GetPath();
-    delete psaveDialog;
-#endif
     
     if( response == wxID_OK ) {
         wxFileName fn(path);
