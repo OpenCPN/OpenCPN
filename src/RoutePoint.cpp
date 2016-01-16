@@ -586,9 +586,9 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
         int x = r1.x, y = r1.y, w = r1.width, h = r1.height;
         
         float scale = 1.0;
-        if(g_bresponsive){
+ //       if(g_bresponsive){
             scale =  g_ChartScaleFactorExp;
-        }
+//        }
             
         float ws = r1.width * scale;
         float hs = r1.height * scale;

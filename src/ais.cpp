@@ -871,9 +871,9 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
     if( td->b_lost ) return;
     
     float scale_factor = 1.0;
-    if(g_bresponsive){
+//    if(g_bresponsive){
         scale_factor =  g_ChartScaleFactorExp;
-    }
+//    }
     
     //      Skip anchored/moored (interpreted as low speed) targets if requested
     //      unless the target is NUC or AtoN, in which case it is always displayed.
