@@ -504,6 +504,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 {
     parent_frame = ( MyFrame * ) frame;       // save a pointer to parent
 
+    pscratch_bm = NULL;
+
     SetBackgroundColour ( GetGlobalColor ( _T ( "NODTA" ) ) );
     SetBackgroundStyle ( wxBG_STYLE_CUSTOM );  // on WXMSW, this prevents flashing on color scheme change
 
@@ -764,7 +766,6 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 
     m_b_rot_hidef = true;
     
-    pscratch_bm = NULL;
     proute_bm = NULL;
 
     m_prot_bm = NULL;
