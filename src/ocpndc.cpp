@@ -1094,8 +1094,13 @@ void ocpnDC::GetTextExtent( const wxString &string, wxCoord *w, wxCoord *h, wxCo
         wxFont f = m_font;
         if( font ) f = *font;
 #ifndef __WXMAC__
+  #ifdef ocpnUSE_GL       
         m_texfont.Build( f );      // make sure the font is ready
         m_texfont.GetTextExtent(string, w, h);
+  #else        
+        wxMemoryDC temp_dc;
+        temp_dc.GetTextExtent( string, w, h, descent, externalLeading, &f );
+  #endif      
 #else
         wxMemoryDC temp_dc;
         temp_dc.GetTextExtent( string, w, h, descent, externalLeading, &f );

@@ -81,7 +81,7 @@ ocpnCompass::~ocpnCompass()
 void ocpnCompass::Paint( ocpnDC& dc )
 {
     if(m_shown && m_StatBmp.IsOk()){
-//# ifdef ocpnUSE_GLES  // GLES does not do ocpnDC::DrawBitmap(), so use texture
+# if defined(ocpnUSE_GLES) || defined(ocpnUSE_GL)  // GLES does not do ocpnDC::DrawBitmap(), so use texture
         if(g_bopengl && texobj){
             glBindTexture( GL_TEXTURE_2D, texobj );
             glEnable( GL_TEXTURE_2D );
@@ -97,21 +97,21 @@ void ocpnCompass::Paint( ocpnDC& dc )
             glDisable( GL_TEXTURE_2D );
             
         }
-// #else 
-//         bool b_alpha = true;
-// #ifdef __WXOSX__
-//         b_alpha = false;
-// #endif        
-//         dc.DrawBitmap( m_StatBmp, m_rect.x, m_rect.y, b_alpha );
-// #endif        
-    
-        else{
-            bool b_alpha = true;
-    #ifdef __WXOSX__
-            b_alpha = false;
-    #endif        
-            dc.DrawBitmap( m_StatBmp, m_rect.x, m_rect.y, b_alpha );
+        else {
+         bool b_alpha = true;
+ #ifdef __WXOSX__
+         b_alpha = false;
+ #endif        
+         dc.DrawBitmap( m_StatBmp, m_rect.x, m_rect.y, b_alpha );
         }
+    
+#else
+    bool b_alpha = true;
+    #ifdef __WXOSX__
+      b_alpha = false;
+    #endif        
+    dc.DrawBitmap( m_StatBmp, m_rect.x, m_rect.y, b_alpha );
+#endif        
     }
         
 }
