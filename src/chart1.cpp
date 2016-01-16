@@ -2414,12 +2414,6 @@ extern ocpnGLOptions g_GLOptions;
 
     FontMgr::Get().ScrubList(); // Clean the font list, removing nonsensical entries
 
-//      Start up the ticker....
-    gFrame->FrameTimer1.Start( TIMER_GFRAME_1, wxTIMER_CONTINUOUS );
-
-//      Start up the ViewPort Rotation angle Averaging Timer....
-    if(g_bCourseUp)
-        gFrame->FrameCOGTimer.Start( 10, wxTIMER_CONTINUOUS );
 
     cc1->ReloadVP();                  // once more, and good to go
 
@@ -2474,6 +2468,13 @@ extern ocpnGLOptions g_GLOptions;
     gFrame->ShowTides( g_bShowTide );
     gFrame->ShowCurrents( g_bShowCurrent );
  
+//      Start up the ticker....
+    gFrame->FrameTimer1.Start( TIMER_GFRAME_1, wxTIMER_CONTINUOUS );
+
+//      Start up the ViewPort Rotation angle Averaging Timer....
+    if(g_bCourseUp)
+        gFrame->FrameCOGTimer.Start( 10, wxTIMER_CONTINUOUS );
+
     // Start delayed initialization chain after 100 milliseconds
     gFrame->InitTimer.Start( 100, wxTIMER_CONTINUOUS );
 
