@@ -7470,7 +7470,7 @@ void MyFrame::SetChartThumbnail( int index )
                 
                 // Simplistic overlap avoidance works best when toolbar is horizontal near the top of screen.
                 // Other difficult cases simply center the thumbwin on the canvas....
-                if( g_FloatingToolbarDialog ){
+                if( g_FloatingToolbarDialog && !g_FloatingToolbarDialog->isSubmergedToGrabber()){
                     if( g_FloatingToolbarDialog->GetScreenRect().Intersects( tRect ) ) {
                         wxPoint tbpos = cc1->ScreenToClient(g_FloatingToolbarDialog->GetPosition());
                         pos = wxPoint(4, g_FloatingToolbarDialog->GetSize().y + tbpos.y + 4);
