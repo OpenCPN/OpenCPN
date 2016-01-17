@@ -371,8 +371,7 @@ int dashboard_pi::Init( void )
          rolloverIcon = _T("");
      }
          
-     wxLogMessage(normalIcon);
-     m_toolbar_item_id = InsertPlugInToolSVG( _T(""), normalIcon, rolloverIcon, toggledIcon, wxITEM_CHECK,
+      m_toolbar_item_id = InsertPlugInToolSVG( _T(""), normalIcon, rolloverIcon, toggledIcon, wxITEM_CHECK,
              _("Dashboard"), _T(""), NULL, DASHBOARD_TOOL_POSITION, 0, this );
     
     
