@@ -6,3 +6,4 @@ cscope.out
 *~
 *.kdev*
 *.patch
+crowdin.yaml
