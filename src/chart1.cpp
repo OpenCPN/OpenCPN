@@ -7389,6 +7389,8 @@ void MyFrame::SetChartThumbnail( int index )
 
     if( NULL == cc1 ) return;
 
+    bool bneedmove = false;
+    
     if( index == -1 ) {
         wxRect thumb_rect_in_parent = pthumbwin->GetRect();
 
@@ -7414,12 +7416,7 @@ void MyFrame::SetChartThumbnail( int index )
                         pthumbwin->Show( true );
                         pthumbwin->Refresh( FALSE );
                         pthumbwin->Move( wxPoint( 4, 4 ) );
-
-                        // Simplistic overlap avoidance works only when toolbar is at top of screen.
-                        if( g_FloatingToolbarDialog )
-                            if( g_FloatingToolbarDialog->GetScreenRect().Intersects( pthumbwin->GetScreenRect() ) ) {
-                                pthumbwin->Move( wxPoint( 4, g_FloatingToolbarDialog->GetSize().y + 4 ) );
-                        }
+                        bneedmove = true;
                     }
 
                     else {
@@ -7453,18 +7450,43 @@ void MyFrame::SetChartThumbnail( int index )
                         pthumbwin->Show( true );
                         pthumbwin->Refresh( true );
                         pthumbwin->Move( wxPoint( 4, 4 ) );
-
-                        // Simplistic overlap avoidance works only when toolbar is at top of screen.
-                        if( g_FloatingToolbarDialog )
-                            if( g_FloatingToolbarDialog->GetScreenRect().Intersects( pthumbwin->GetScreenRect() ) ) {
-                                pthumbwin->Move( wxPoint( 4, g_FloatingToolbarDialog->GetSize().y + 4 ) );
-                            }
+                        bneedmove = true;
                     } else
                         pthumbwin->Show( false );
 
                     cc1->Refresh( FALSE );
                 }
             }
+            
+            if(bneedmove && pthumbwin){         // Adjust position to avoid bad overlap
+                wxPoint pos = wxPoint(4,4);
+                
+                wxPoint tLocn = ClientToScreen(pos);
+                wxRect tRect = wxRect(tLocn.x, tLocn.y, pthumbwin->GetSize().x, pthumbwin->GetSize().y);
+                
+                // Simplistic overlap avoidance works best when toolbar is horizontal near the top of screen.
+                // Other difficult cases simply center the thumbwin on the canvas....
+                if( g_FloatingToolbarDialog ){
+                    if( g_FloatingToolbarDialog->GetScreenRect().Intersects( tRect ) ) {
+                        wxPoint tbpos = cc1->ScreenToClient(g_FloatingToolbarDialog->GetPosition());
+                        pos = wxPoint(4, g_FloatingToolbarDialog->GetSize().y + tbpos.y + 4);
+                    }
+                }
+                
+                //  We cannot let the thumbwin overlap the Piano
+                if(g_Piano){
+                    int piano_height = g_Piano->GetHeight() + 4;
+                    wxPoint cbarLocn = ClientToScreen(wxPoint(0, cc1->GetCanvasHeight() - piano_height));
+                    wxRect cbarRect = wxRect(cbarLocn.x, cbarLocn.y, cc1->GetCanvasWidth(), piano_height);
+                    if( cbarRect.Intersects( wxRect(pos.x, pos.y, pthumbwin->GetSize().x, pthumbwin->GetSize().y))){
+                        pos = wxPoint((cc1->GetCanvasWidth() - pthumbwin->GetSize().x)/2,
+                                      (cc1->GetCanvasHeight() - pthumbwin->GetSize().y)/2);
+                    }
+                }
+                pthumbwin->Move( pos );
+                
+            }
+            
         }
 
 }
