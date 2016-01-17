@@ -308,6 +308,7 @@ protected:
       float m_sizefactor;
 
       int m_last_plugin_down_id;
+      bool m_leftDown;
 
 private:
 DECLARE_EVENT_TABLE()
