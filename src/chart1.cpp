@@ -2994,8 +2994,14 @@ bool MyFrame::AddDefaultPositionPlugInTools( ocpnToolBarSimple *tb )
     return bret;
 }
 
+static bool b_inCloseWindow;
+
 void MyFrame::RequestNewToolbar(bool bforcenew)
 {
+    if( b_inCloseWindow ) {
+        return;
+    }
+    
     bool b_reshow = true;
     if( g_FloatingToolbarDialog ) {
         b_reshow = g_FloatingToolbarDialog->IsShown();
@@ -3131,8 +3137,6 @@ void MyFrame::OnExit( wxCommandEvent& event )
     quitflag++;                             // signal to the timer loop
 
 }
-
-static bool b_inCloseWindow;
 
 void MyFrame::OnCloseWindow( wxCloseEvent& event )
 {
