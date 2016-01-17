@@ -169,6 +169,7 @@ private:
     int           m_MapPoleAccuracy;
 
     void          RearrangeWindow();
+    void          SetIconType();
     wxString        m_wmm_dir;
     bool          m_buseable, m_busegeoid;
 

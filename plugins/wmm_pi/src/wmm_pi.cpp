@@ -199,8 +199,9 @@ int wmm_pi::Init(void)
     if(m_bShowIcon){
     //    This PlugIn needs a toolbar icon, so request its insertion
         m_leftclick_tool_id  = InsertPlugInTool(_T(""), _img_wmm, _img_wmm, wxITEM_NORMAL,
-            _("WMM"), _T(""), NULL,
-            WMM_TOOL_POSITION, 0, this);
+                                            _("WMM"), _T(""), NULL, WMM_TOOL_POSITION, 0, this);
+        
+        SetIconType();          // SVGs allowed if not showing live icon
         
         ret_flag |= INSTALLS_TOOLBAR_TOOL;
     }
@@ -296,6 +297,29 @@ void wmm_pi::SetColorScheme(PI_ColorScheme cs)
         return;
     DimeWindow(m_pWmmDialog);
 }
+
+void wmm_pi::SetIconType()
+{
+    if(m_bShowLiveIcon){
+        SetToolbarToolBitmaps(m_leftclick_tool_id, _img_wmm, _img_wmm);
+        SetToolbarToolBitmapsSVG(m_leftclick_tool_id, _T(""), _T(""), _T(""));
+        m_LastVal.Empty();
+    }
+    else{
+        wxString shareLocn =*GetpSharedDataLocation() +
+        _T("plugins") + wxFileName::GetPathSeparator() +
+        _T("wmm_pi") + wxFileName::GetPathSeparator()
+        +_T("data") + wxFileName::GetPathSeparator();
+        
+        wxString normalIcon = shareLocn + _T("wmm_pi.svg");
+        wxString toggledIcon = shareLocn + _T("wmm_pi.svg");
+        wxString rolloverIcon = shareLocn + _T("wmm_pi.svg");
+        
+        SetToolbarToolBitmapsSVG(m_leftclick_tool_id, normalIcon, rolloverIcon, toggledIcon);
+    }
+    
+}
+
 
 void wmm_pi::RearrangeWindow()
 {
@@ -764,6 +788,7 @@ void wmm_pi::ShowPreferencesDialog( wxWindow* parent )
         m_iOpacity = dialog->m_sOpacity->GetValue();
 
         RearrangeWindow();
+        SetIconType();
 
         SaveConfig();
     }
