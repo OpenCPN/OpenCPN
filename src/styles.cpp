@@ -96,18 +96,18 @@ wxBitmap MergeBitmaps( wxBitmap back, wxBitmap front, wxSize offset )
 
     unsigned char *afront = NULL;
     if( im_front.HasAlpha() )
-    afront = im_front.GetAlpha();
+        afront = im_front.GetAlpha();
 
     unsigned char *aback = NULL;
     if( im_back.HasAlpha() )
-    aback = im_back.GetAlpha();
+        aback = im_back.GetAlpha();
 
     unsigned char *aresult = NULL;
     if( im_result.HasAlpha() )
-    aresult = im_result.GetAlpha();
+        aresult = im_result.GetAlpha();
 
     // Do alpha blending, associative version of "over" operator.
-    if(presult && pback && pfront && afront && aback && aresult){ 
+    if(presult && pback && pfront){ 
         for( int i = 0; i < back.GetHeight(); i++ ) {
             for( int j = 0; j < back.GetWidth(); j++ ) {
 
@@ -120,11 +120,15 @@ wxBitmap MergeBitmaps( wxBitmap back, wxBitmap front, wxSize offset )
                 if( fY >= front.GetHeight() ) inFront = false;
 
                 if( inFront ) {
-                    double alphaF = (double) ( *afront++ ) / 256.0;
-                    double alphaB = (double) ( *aback++ ) / 256.0;
+                    double alphaF = 1.0;
+                    if (afront) alphaF = (double) ( *afront++ ) / 255.0;
+                    double alphaB = 1.0;
+                    if (aback) alphaB = (double) ( *aback++ ) / 255.0;
                     double alphaRes = alphaF + alphaB * ( 1.0 - alphaF );
-                    unsigned char a = alphaRes * 256;
-                    *aresult++ = a;
+                    if (aresult) {
+                        unsigned char a = alphaRes * 255;
+                        *aresult++ = a;
+                    }
                     unsigned char r = (*pfront++ * alphaF + *pback++ * alphaB * ( 1.0 - alphaF )) / alphaRes;
                     *presult++ = r;
                     unsigned char g = (*pfront++ * alphaF + *pback++ * alphaB * ( 1.0 - alphaF )) / alphaRes;
@@ -132,7 +136,7 @@ wxBitmap MergeBitmaps( wxBitmap back, wxBitmap front, wxSize offset )
                     unsigned char b = (*pfront++ * alphaF + *pback++ * alphaB * ( 1.0 - alphaF )) / alphaRes;
                     *presult++ = b;
                 } else {
-                    *aresult++ = *aback++;
+                    if (aresult && aback) *aresult++ = *aback++;
                     *presult++ = *pback++;
                     *presult++ = *pback++;
                     *presult++ = *pback++;
