@@ -3507,7 +3507,7 @@ msgstr "Maßstab %4.0f (%1.2fx)"
 #: src/chcanv.cpp:3430
 #, c-format
 msgid "Scale %4.0f (---)"
-msgstr "Skala-%4.von (-)"
+msgstr "Skala-%4.0fvon (-)"
 
 #: src/chcanv.cpp:3461
 #, c-format
