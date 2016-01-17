@@ -7474,6 +7474,7 @@ void MyFrame::SetChartThumbnail( int index )
                     if( g_FloatingToolbarDialog->GetScreenRect().Intersects( tRect ) ) {
                         wxPoint tbpos = cc1->ScreenToClient(g_FloatingToolbarDialog->GetPosition());
                         pos = wxPoint(4, g_FloatingToolbarDialog->GetSize().y + tbpos.y + 4);
+                        tLocn = ClientToScreen(pos);
                     }
                 }
                 
@@ -7482,7 +7483,7 @@ void MyFrame::SetChartThumbnail( int index )
                     int piano_height = g_Piano->GetHeight() + 4;
                     wxPoint cbarLocn = ClientToScreen(wxPoint(0, cc1->GetCanvasHeight() - piano_height));
                     wxRect cbarRect = wxRect(cbarLocn.x, cbarLocn.y, cc1->GetCanvasWidth(), piano_height);
-                    if( cbarRect.Intersects( wxRect(pos.x, pos.y, pthumbwin->GetSize().x, pthumbwin->GetSize().y))){
+                    if( cbarRect.Intersects( wxRect(tLocn.x, tLocn.y, pthumbwin->GetSize().x, pthumbwin->GetSize().y))){
                         pos = wxPoint((cc1->GetCanvasWidth() - pthumbwin->GetSize().x)/2,
                                       (cc1->GetCanvasHeight() - pthumbwin->GetSize().y)/2);
                     }
