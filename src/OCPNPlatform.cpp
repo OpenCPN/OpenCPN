@@ -990,8 +990,9 @@ int OCPNPlatform::DoFileSelectorDialog( wxWindow *parent, wxString *file_spec, w
     
     wxFileDialog *psaveDialog = new wxFileDialog( parent, Title, initDir, suggestedName, mask, flag );
 
-    if(g_bresponsive && parent)
-        psaveDialog = g_Platform->AdjustFileDialogFont(parent, psaveDialog);
+//    Try to reduce the dialog size, and scale fonts down, if necessary.
+//     if(g_bresponsive && parent)
+//         psaveDialog = g_Platform->AdjustFileDialogFont(parent, psaveDialog);
     
 #ifdef __WXOSX__
     if(parent)
@@ -1034,8 +1035,9 @@ int OCPNPlatform::DoDirSelectorDialog( wxWindow *parent, wxString *file_spec, wx
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     dirSelector->SetFont(*qFont);
 
-    if(g_bresponsive && parent)
-        dirSelector = AdjustDirDialogFont(parent, dirSelector);
+//    Try to reduce the dialog size, and scale fonts down, if necessary.
+//     if(g_bresponsive && parent)
+//         dirSelector = AdjustDirDialogFont(parent, dirSelector);
     
 #ifdef __WXOSX__
     if(parent)
