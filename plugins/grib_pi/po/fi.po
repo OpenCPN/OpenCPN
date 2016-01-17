@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-20 18:03-0600\n"
-"PO-Revision-Date: 2015-12-31 15:37-0500\n"
+"PO-Revision-Date: 2016-01-16 21:00-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Finnish\n"
 "Language: fi_FI\n"
@@ -287,7 +287,9 @@ msgstr "Tämä muutos tarvitse täydellisen uusintalatauksen. \n"
 msgid "You have chosen to authorize interpolation.\n"
 "Don't forget that data displayed will not be real but recomputed\n"
 "This can decrease accuracy!"
-msgstr ""
+msgstr "Olet päättänyt sallia interpoloinnin.\n"
+"Älä unohda, että näytetty tieto ei ole todellista vaan laskenallista\n"
+"ja tämä voi vähentää tarkkuutta!"
 
 #: src/GribSettingsDialog.cpp:817 src/GribSettingsDialog.cpp:855
 #: src/grib_pi.cpp:637 src/GribRequestDialog.cpp:618
@@ -298,7 +300,9 @@ msgstr "Varoitus!"
 msgid "This option imply you authorize intrepolation\n"
 "Don't forget that data displayed will not be real but recomputed\n"
 "This can decrease accuracy!"
-msgstr ""
+msgstr "Tämä vaihtoehto ehdottaa intrepolointilupaa\n"
+"Älä unohda, että tiedot eivät ole todellisia vaan laskennallisia\n"
+"ja tämä voi vähentää tarkkuutta!"
 
 #: src/GribUIDialogBase.cpp:29 src/GribUIDialogBase.cpp:147
 msgid "Previous"
@@ -358,15 +362,15 @@ msgstr "Konvektion saatavilla oleva energia"
 
 #: src/GribUIDialogBase.cpp:530 src/CursorData.cpp:232
 msgid "Altitude"
-msgstr ""
+msgstr "Korkeus"
 
 #: src/GribUIDialogBase.cpp:547
 msgid "Temp."
-msgstr ""
+msgstr "Lämp."
 
 #: src/GribUIDialogBase.cpp:564
 msgid "Relat. Hum."
-msgstr ""
+msgstr "Suht. Kost."
 
 #: src/GribUIDialogBase.cpp:707
 msgid "Data Display Options"
@@ -517,35 +521,35 @@ msgstr "Dialogien tyyli"
 
 #: src/GribUIDialogBase.cpp:1029
 msgid "Data at cursor dialog is attached to icons bar - with a title/drag bar"
-msgstr ""
+msgstr "Kursorin ikkunan tieto liitetää kuvakeriville - ilman otsake/vetoriviä"
 
 #: src/GribUIDialogBase.cpp:1032
 msgid "Data at cursor dialog is attached to icons bar - without a title/drag bar"
-msgstr ""
+msgstr "Kursorin ikkunan tieto liitetää kuvakeriville - ilman otsake/vetoriviä"
 
 #: src/GribUIDialogBase.cpp:1035
 msgid "Data at cursor dialog is isolated and displayed horizontally"
-msgstr ""
+msgstr "Kursorin ikkunan tieto on eristetty ja näytetään vaakasuorana"
 
 #: src/GribUIDialogBase.cpp:1038
 msgid "Data at cursor dialog is isolated and displayed vertically"
-msgstr ""
+msgstr "Kursorin ikkunan tieto on eristetty ja näytetään pystysuorana"
 
 #: src/GribUIDialogBase.cpp:1051
 msgid "Buttons Visibility"
-msgstr ""
+msgstr "Painikkeiden näkyvyys"
 
 #: src/GribUIDialogBase.cpp:1065
 msgid "Attached icon bar"
-msgstr ""
+msgstr "Liittetty kuvakerivin"
 
 #: src/GribUIDialogBase.cpp:1070
 msgid "Isolated icon bar"
-msgstr ""
+msgstr "Eristetty kuvakerivi"
 
 #: src/GribUIDialogBase.cpp:1078
 msgid "Geopot. Height Choice"
-msgstr ""
+msgstr "Geopot. Korkeusvalinta"
 
 #: src/GribUIDialogBase.cpp:1110
 msgid "Zoom to Center"
@@ -705,7 +709,7 @@ msgstr "Käsivalinta"
 
 #: src/GribUIDialogBase.cpp:1612
 msgid "Use Always this Area"
-msgstr ""
+msgstr "Käytä aina tätä aluetta"
 
 #: src/GribUIDialogBase.cpp:1622
 msgid "Max Lat"
@@ -801,7 +805,7 @@ msgstr "GRIB Näyttöohjaus"
 
 #: src/GribUIDialogBase.h:340
 msgid "Preferences"
-msgstr ""
+msgstr "Ominaisuudet"
 
 #: src/GribUIDialogBase.h:426
 msgid "Write and send eMail request"
@@ -813,7 +817,7 @@ msgstr "Grib arvotaulukko"
 
 #: src/GribOverlayFactory.cpp:476
 msgid "Warning : Data at Geopotential Height"
-msgstr ""
+msgstr "Varoitus: Tietoa Geopotentiaalisesta korkeudesta"
 
 #: src/GribOverlayFactory.cpp:1028
 msgid "Building Isobar map"
@@ -883,7 +887,9 @@ msgstr "Sää taulukko"
 msgid "You have chosen to authorize interpolation.\n"
 "Don't forget that data displayed at current time will not be real but Recomputed\n"
 "This can decrease accuracy!"
-msgstr ""
+msgstr "Olet päättänyt sallia interpolointi.\n"
+"Älä unohda, että näytetty tieto ei ole todellista tällä hetkellä, vaan laskenallista\n"
+"ja tämä voi vähentää tarkkuutta!"
 
 #: src/GribTable.cpp:168
 msgid "Air\n"
@@ -939,7 +945,10 @@ msgid "You request a forecast for more than 8 days horizon.\n"
 "This is conflicting with Wave data which will be removed from your request.\n"
 "Don't forget that beyond the first 8 days, the resolution will be only 2.5°x2.5°\n"
 "and the time intervall 12 hours."
-msgstr ""
+msgstr "Pyydät ennustetta pitkälle yli 8 päivän horsontin.\n"
+"Tässä ennusteessa on ristiriitaisia aaltotietoja, jotka poistetaan pyydettäessä.\n"
+"Älä unohda, että 8 ensimmäisen päivän jälkeen tarkkuus on vain 2,5 ° x2.5 °\n"
+"ja aikajakso on 12 tuntia."
 
 #: src/GribRequestDialog.cpp:825
 msgid "Max"
@@ -1001,31 +1010,31 @@ msgstr "Tiedot kohdistimen sijainnissa"
 
 #: src/CursorData.cpp:230
 msgid "at Geopotential Height"
-msgstr ""
+msgstr "geopotentiaalisessa korkeudessa"
 
 #: src/CursorData.cpp:233
 msgid "Temperature"
-msgstr ""
+msgstr "Lämpötila"
 
 #: src/CursorData.cpp:236
 msgid "at"
-msgstr ""
+msgstr "klo"
 
 #: src/CursorData.cpp:241
 msgid "Wind Speed"
-msgstr ""
+msgstr "Tuulennopeus"
 
 #: src/CursorData.cpp:242
 msgid "Wind Speed in Bf"
-msgstr ""
+msgstr "Tuulennopeus Bf"
 
 #: src/CursorData.cpp:243
 msgid "Wind Direction"
-msgstr ""
+msgstr "Tuulensuunta"
 
 #: src/CursorData.cpp:246
 msgid "Wind Gust at"
-msgstr ""
+msgstr "Tuulenpuuska"
 
 #: src/CursorData.cpp:249
 msgid "Air Temperature at"
@@ -1033,7 +1042,7 @@ msgstr "Ilmanlämpötila"
 
 #: src/CursorData.cpp:249
 msgid "surface level"
-msgstr ""
+msgstr "vedenpinnantaso"
 
 #: src/CursorData.cpp:249
 msgid "Sea Surface Temperature"

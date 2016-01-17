@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-31 17:29-0300\n"
-"PO-Revision-Date: 2015-12-31 15:36-0500\n"
+"PO-Revision-Date: 2016-01-16 20:59-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Spanish\n"
 "Language: es_ES\n"
@@ -1064,7 +1064,7 @@ msgstr "Sin definir (por defecto)"
 
 #: src/ais.cpp:1556 src/ais.cpp:1557
 msgid "AIS Target Name"
-msgstr ""
+msgstr "Nombre Blanco AIS"
 
 #: src/AIS_Decoder.cpp:189
 msgid "Vessel, type unknown"
@@ -2320,7 +2320,7 @@ msgstr "Sudán del sur (República de)"
 
 #: src/AIS_Target_Data.cpp:1144
 msgid "Libya"
-msgstr ""
+msgstr "Libia"
 
 #: src/AIS_Target_Data.cpp:1145
 msgid "Lesotho"
@@ -2605,7 +2605,8 @@ msgstr "Parar Dejar Derrota"
 #: src/androidUTIL.cpp:1767
 msgid "Your android device has an internal GPS, but it is disabled.\n"
 "                       Please visit android Settings/Location dialog to enable GPS"
-msgstr ""
+msgstr "Tu dispositivo android tiene un GPS interno, pero está desconectado. \n"
+" por favor vaya al cuadro de diálogo de android para establecer ajustes/ubicación y habilite el GPS"
 
 #: src/androidUTIL.cpp:1910
 msgid "Nothing found"
@@ -3027,7 +3028,7 @@ msgstr "Autoseguimiento"
 
 #: src/chart1.cpp:2757
 msgid "Hide ENC Text"
-msgstr ""
+msgstr "Ocultar texto ENC"
 
 #: src/chart1.cpp:2759 src/chart1.cpp:5013 src/chart1.cpp:5018
 msgid "Show ENC Text"
@@ -3072,7 +3073,7 @@ msgstr " (Ctrl-Barra Espaciadora)"
 
 #: src/chart1.cpp:2856 src/chart1.cpp:4233
 msgid "Attenuate less critical AIS Targets"
-msgstr ""
+msgstr "Atenuar blancos AIS menos críticos"
 
 #: src/chart1.cpp:2865 src/chart1.cpp:5044
 msgid "Show AIS Targets"
@@ -3112,15 +3113,15 @@ msgstr "Chart1::Event...TCMgr No Disponible"
 
 #: src/chart1.cpp:4232
 msgid "Show all AIS Targets"
-msgstr ""
+msgstr "Mostrar todos los blancos AIS"
 
 #: src/chart1.cpp:4235
 msgid "AIS_Suppressed"
-msgstr ""
+msgstr "AIS suprimido"
 
 #: src/chart1.cpp:4235
 msgid "AIS_Disabled"
-msgstr ""
+msgstr "AIS desconectado"
 
 #: src/chart1.cpp:4393 src/chart1.cpp:4451
 msgid "MAN OVERBOARD"
@@ -3207,15 +3208,15 @@ msgstr "&Vista"
 
 #: src/chart1.cpp:5045
 msgid "Hide Moored AIS Targets"
-msgstr ""
+msgstr "Ocultar blancos amarrados"
 
 #: src/chart1.cpp:5046
 msgid "Attenuate Less Critical AIS Targets"
-msgstr ""
+msgstr "Atenuar blancos AIS menos críticos"
 
 #: src/chart1.cpp:5047
 msgid "Show AIS Target Tracks"
-msgstr ""
+msgstr "Mostrar derrotas de blancos AIS"
 
 #: src/chart1.cpp:5048
 msgid "Show CPA Alert Dialogs"
@@ -4111,7 +4112,7 @@ msgstr "VDM->VDO"
 
 #: src/options.cpp:772
 msgid "Ship name"
-msgstr ""
+msgstr "Nombre del barco"
 
 #: src/options.cpp:780
 msgid "Follower"
@@ -4559,15 +4560,15 @@ msgstr "Derrotas"
 
 #: src/options.cpp:2491
 msgid "Automatic Daily Tracks at midnight"
-msgstr ""
+msgstr "Derrota diaria automática a medianoche"
 
 #: src/options.cpp:2498
 msgid "Automatic Daily Tracks at"
-msgstr ""
+msgstr "Derrota diaria automática a"
 
 #: src/options.cpp:2503
 msgid "Computer"
-msgstr ""
+msgstr "Ordenador"
 
 #: src/options.cpp:2506 src/routeprop.cpp:820 src/routeprop.cpp:827
 #: src/routeprop.cpp:1167 src/routeprop.cpp:1176 src/TrackPropDlg.cpp:349
@@ -4577,7 +4578,7 @@ msgstr "UTC"
 
 #: src/options.cpp:2509
 msgid "LMT"
-msgstr ""
+msgstr "LMT"
 
 #: src/options.cpp:2515
 msgid "Highlight Tracks"
@@ -5053,7 +5054,7 @@ msgstr "Cálculos CPA"
 
 #: src/options.cpp:4048
 msgid "No (T)CPA Alerts if target range is greater than (NMi)"
-msgstr ""
+msgstr "No dar alertas (T)CPA si la distancia a blanco es mayor de (NMi)"
 
 #: src/options.cpp:4055
 msgid "Warn if CPA less than (NMi)"
@@ -5085,11 +5086,11 @@ msgstr "Mostrar derrotas blanco, longitud (min)"
 
 #: src/options.cpp:4125
 msgid "Suppress anchored/moored targets, speed max (kn)"
-msgstr ""
+msgstr "Suprimir blancos atracados/fondeados, velocidad máxima (kn)"
 
 #: src/options.cpp:4133
 msgid "Allow attenuation of less critical targets if more than ... targets"
-msgstr ""
+msgstr "Permitir atenuación de los blancos menos importantes si hay más de .... blancos"
 
 #: src/options.cpp:4141
 msgid "Show area notices (from AIS binary messages)"

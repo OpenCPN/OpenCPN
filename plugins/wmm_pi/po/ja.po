@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-20 18:03-0600\n"
-"PO-Revision-Date: 2015-12-31 15:37-0500\n"
+"POT-Creation-Date: 2016-01-08 08:29-0300\n"
+"PO-Revision-Date: 2016-01-16 21:00-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Japanese\n"
 "Language: ja_JP\n"
@@ -18,7 +18,7 @@ msgstr ""
 
 #: src/wmm_pi.cpp:86
 msgid "\n"
-"World Magnetic Model Plotting allows users to cross reference the magnetic deviation values printed on many raster charts.\n\n"
+"World Magnetic Model Plotting allows users to cross reference the magnetic declination values printed on many raster charts.\n\n"
 "Declination is the angle between true and magnetic north.\n"
 "Inclination is the vertical angle of the magnetic field.\n"
 "\t(+- 90 at the magnetic poles)\n"
@@ -31,11 +31,11 @@ msgstr ""
 
 #: src/wmm_pi.cpp:102
 msgid "WMM Plugin"
-msgstr ""
+msgstr "WMM プラグイン"
 
 #: src/wmm_pi.cpp:202 src/wmm_pi.cpp:267 src/WmmUIDialog.h:87
 msgid "WMM"
-msgstr ""
+msgstr "WMM"
 
 #: src/wmm_pi.cpp:273
 msgid "World Magnetic Model PlugIn for OpenCPN"
@@ -65,7 +65,7 @@ msgstr ""
 
 #: src/WmmUIDialog.cpp:26
 msgid "Boat"
-msgstr ""
+msgstr "ボート"
 
 #: src/WmmUIDialog.cpp:33 src/WmmUIDialog.cpp:129
 msgid "F "
@@ -125,7 +125,7 @@ msgstr ""
 
 #: src/WmmUIDialog.cpp:122
 msgid "Cursor"
-msgstr ""
+msgstr "カーソル"
 
 #: src/WmmUIDialog.cpp:222
 msgid "Plot"
@@ -137,7 +137,7 @@ msgstr ""
 
 #: src/WmmUIDialog.cpp:235
 msgid "Settings..."
-msgstr ""
+msgstr "設定..."
 
 #: src/WmmUIDialog.cpp:274
 msgid "Extended"
@@ -205,11 +205,11 @@ msgstr ""
 
 #: src/WmmUIDialog.cpp:384
 msgid "Save"
-msgstr ""
+msgstr "保存"
 
 #: src/WmmUIDialog.cpp:387
 msgid "Cancel"
-msgstr ""
+msgstr "キャンセル"
 
 #: src/MagneticPlotMap.cpp:361
 msgid "Building Magnetic Map"

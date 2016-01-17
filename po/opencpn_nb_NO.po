@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-31 17:29-0300\n"
-"PO-Revision-Date: 2015-12-31 15:39-0500\n"
+"PO-Revision-Date: 2016-01-16 21:01-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Norwegian Bokmal\n"
 "Language: nb_NO\n"
@@ -1064,7 +1064,7 @@ msgstr "Udefinert (standard)"
 
 #: src/ais.cpp:1556 src/ais.cpp:1557
 msgid "AIS Target Name"
-msgstr ""
+msgstr "Navn på AIS-mål"
 
 #: src/AIS_Decoder.cpp:189
 msgid "Vessel, type unknown"
@@ -2605,7 +2605,8 @@ msgstr "Stopp sporing"
 #: src/androidUTIL.cpp:1767
 msgid "Your android device has an internal GPS, but it is disabled.\n"
 "                       Please visit android Settings/Location dialog to enable GPS"
-msgstr ""
+msgstr "Din android enhet har innebygget GPS, men er deaktivert.\n"
+"                       Vennligst gå til android innstillinger/posisjons valg for å aktivere GPS"
 
 #: src/androidUTIL.cpp:1910
 msgid "Nothing found"
@@ -3028,7 +3029,7 @@ msgstr "Følg automatisk"
 
 #: src/chart1.cpp:2757
 msgid "Hide ENC Text"
-msgstr ""
+msgstr "Skjul ENC tekst"
 
 #: src/chart1.cpp:2759 src/chart1.cpp:5013 src/chart1.cpp:5018
 msgid "Show ENC Text"
@@ -3073,7 +3074,7 @@ msgstr " (Ctrl-Mellomrom)"
 
 #: src/chart1.cpp:2856 src/chart1.cpp:4233
 msgid "Attenuate less critical AIS Targets"
-msgstr ""
+msgstr "Demp mindre kritiske AIS-mål"
 
 #: src/chart1.cpp:2865 src/chart1.cpp:5044
 msgid "Show AIS Targets"
@@ -3113,15 +3114,15 @@ msgstr "Kart1::Hendelse...TCMgr er ikke tilgjengelig"
 
 #: src/chart1.cpp:4232
 msgid "Show all AIS Targets"
-msgstr ""
+msgstr "Vis alle AIS-målene"
 
 #: src/chart1.cpp:4235
 msgid "AIS_Suppressed"
-msgstr ""
+msgstr "AIS_Undertrykket"
 
 #: src/chart1.cpp:4235
 msgid "AIS_Disabled"
-msgstr ""
+msgstr "AIS_Deaktivert"
 
 #: src/chart1.cpp:4393 src/chart1.cpp:4451
 msgid "MAN OVERBOARD"
@@ -3208,15 +3209,15 @@ msgstr "&Vis"
 
 #: src/chart1.cpp:5045
 msgid "Hide Moored AIS Targets"
-msgstr ""
+msgstr "Skjul fortøyde AIS-mål"
 
 #: src/chart1.cpp:5046
 msgid "Attenuate Less Critical AIS Targets"
-msgstr ""
+msgstr "Demp mindre kritiske AIS-mål"
 
 #: src/chart1.cpp:5047
 msgid "Show AIS Target Tracks"
-msgstr ""
+msgstr "Vis slepestrek etter AIS-mål"
 
 #: src/chart1.cpp:5048
 msgid "Show CPA Alert Dialogs"
@@ -4560,11 +4561,11 @@ msgstr "Slepestreker"
 
 #: src/options.cpp:2491
 msgid "Automatic Daily Tracks at midnight"
-msgstr ""
+msgstr "Automatisk daglig slepestrek ved midnatt"
 
 #: src/options.cpp:2498
 msgid "Automatic Daily Tracks at"
-msgstr ""
+msgstr "Automatisk daglig slepestrek på"
 
 #: src/options.cpp:2503
 msgid "Computer"
@@ -5054,7 +5055,7 @@ msgstr "CPA kalkulasjon"
 
 #: src/options.cpp:4048
 msgid "No (T)CPA Alerts if target range is greater than (NMi)"
-msgstr ""
+msgstr "Ingen (T)CPA varsel hvis målets avstand er større enn (Nm)"
 
 #: src/options.cpp:4055
 msgid "Warn if CPA less than (NMi)"
@@ -5086,11 +5087,11 @@ msgstr "Vis slepestrek etter mål, lengde (min)"
 
 #: src/options.cpp:4125
 msgid "Suppress anchored/moored targets, speed max (kn)"
-msgstr ""
+msgstr "Undertrykk ankrede/fortøyde mål, fart maks (Kn)"
 
 #: src/options.cpp:4133
 msgid "Allow attenuation of less critical targets if more than ... targets"
-msgstr ""
+msgstr "Tillat demping av mindre kritiske mål hvis det er mer enn ... mål"
 
 #: src/options.cpp:4141
 msgid "Show area notices (from AIS binary messages)"

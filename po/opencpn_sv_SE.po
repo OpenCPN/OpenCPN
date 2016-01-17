@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-31 17:29-0300\n"
-"PO-Revision-Date: 2015-12-31 15:38-0500\n"
+"PO-Revision-Date: 2016-01-16 21:01-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Swedish\n"
 "Language: sv_SE\n"
@@ -3028,7 +3028,7 @@ msgstr "Följ båt automatiskt"
 
 #: src/chart1.cpp:2757
 msgid "Hide ENC Text"
-msgstr ""
+msgstr "Dölj ENC Text"
 
 #: src/chart1.cpp:2759 src/chart1.cpp:5013 src/chart1.cpp:5018
 msgid "Show ENC Text"
@@ -4740,8 +4740,8 @@ msgstr "Undertryck förstoring av detaljer på vektorkort vid överzoom"
 #: src/options.cpp:2923
 msgid "With a lower value, the same zoom level shows a less detailed chart.\n"
 "                          With a higher value, the same zoom level shows a more detailed chart."
-msgstr "Med ett lägre värde visar samma zoomnivå en mindre detaljerade diagram. \n"
-" med ett högre värde, samma zoomnivå visar ett mer detaljerade diagram."
+msgstr "Med ett lägre värde visar samma zoomnivå färre detaljer på kortet. \n"
+"Med ett högre värde och samma zoomnivå visas fler detaljer på kortet."
 
 #: src/options.cpp:2939 src/options.cpp:3672
 msgid "Controls"
@@ -5086,7 +5086,7 @@ msgstr "Visa fartygsspår, med längd (min):"
 
 #: src/options.cpp:4125
 msgid "Suppress anchored/moored targets, speed max (kn)"
-msgstr "Visa inte förankrade/förtöjd mål, d.v.s. fart max (kn)"
+msgstr "Visa inte ankrade/förtöjd mål, d.v.s. när farten är mindre än .....(kn)"
 
 #: src/options.cpp:4133
 msgid "Allow attenuation of less critical targets if more than ... targets"
@@ -5102,7 +5102,7 @@ msgstr "Visa AIS-fartyg med verklig storlek"
 
 #: src/options.cpp:4155
 msgid "Show names with AIS targets at scale greater than 1:"
-msgstr "Visa namn med AIS-mål när skalan är större än 1:"
+msgstr "Visa namn på AIS-mål när skalan är större än 1:"
 
 #: src/options.cpp:4163
 msgid "Treat WPL sentences as APRS position reports"

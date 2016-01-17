@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-31 17:29-0300\n"
-"PO-Revision-Date: 2015-12-31 15:37-0500\n"
+"PO-Revision-Date: 2016-01-16 20:59-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Danish\n"
 "Language: da_DK\n"
@@ -30,7 +30,7 @@ msgstr "OpenCPN advarsel"
 
 #: include/AISTargetAlertDialog.h:76
 msgid "OpenCPN AIS Alert"
-msgstr ""
+msgstr "OpenCPN AIS-advarsel"
 
 #: include/AISTargetQueryDialog.h:46 include/AISTargetQueryDialog.h:58
 #: include/S57QueryDialog.h:43 include/S57QueryDialog.h:53 src/chcanv.cpp:8133
@@ -48,23 +48,23 @@ msgstr "Sort"
 
 #: include/gpxdocument.h:35
 msgid "DarkRed"
-msgstr ""
+msgstr "Mørkerød"
 
 #: include/gpxdocument.h:35
 msgid "DarkGreen"
-msgstr ""
+msgstr "Mørkegrøn"
 
 #: include/gpxdocument.h:35
 msgid "DarkYellow"
-msgstr ""
+msgstr "Mørk gul"
 
 #: include/gpxdocument.h:35
 msgid "DarkBlue"
-msgstr ""
+msgstr "Mørkeblå"
 
 #: include/gpxdocument.h:35
 msgid "DarkMagenta"
-msgstr ""
+msgstr "Mørkeviolet"
 
 #: include/gpxdocument.h:35
 msgid "DarkCyan"
@@ -72,11 +72,11 @@ msgstr ""
 
 #: include/gpxdocument.h:35
 msgid "LightGray"
-msgstr ""
+msgstr "Lysegrå"
 
 #: include/gpxdocument.h:35
 msgid "DarkGray"
-msgstr ""
+msgstr "Mørkegrå"
 
 #: include/gpxdocument.h:35 src/routeprop.cpp:846 src/routeprop.cpp:1192
 #: src/routeprop.cpp:2532 src/TrackPropDlg.cpp:375 src/TrackPropDlg.cpp:633
@@ -142,7 +142,7 @@ msgstr "Waypointinformation"
 
 #: include/SendToGpsDlg.h:38
 msgid "Send Route To GPS"
-msgstr ""
+msgstr "Send rute til GPS"
 
 #: include/TrackPropDlg.h:182 src/TrackPropDlg.cpp:1129
 msgid "Track Properties"
@@ -1084,7 +1084,7 @@ msgstr ""
 
 #: src/AIS_Decoder.cpp:193
 msgid "Service vessel, police patrol, port service"
-msgstr ""
+msgstr "Servicefartøj, politipatrulje, havnekontrol"
 
 #: src/AIS_Decoder.cpp:194 src/AIS_Decoder.cpp:240
 msgid "Pushboat, single"
@@ -1124,27 +1124,27 @@ msgstr ""
 
 #: src/AIS_Decoder.cpp:203
 msgid "Container vessel"
-msgstr ""
+msgstr "Containerskib"
 
 #: src/AIS_Decoder.cpp:204
 msgid "Gas tanker"
-msgstr ""
+msgstr "Gastankskib"
 
 #: src/AIS_Decoder.cpp:205
 msgid "Motor freighter, tug"
-msgstr ""
+msgstr "Motorfragtskib, slæbebåd"
 
 #: src/AIS_Decoder.cpp:206
 msgid "Motor tanker, tug"
-msgstr ""
+msgstr "Motortankskib, slæbebåd"
 
 #: src/AIS_Decoder.cpp:207
 msgid "Motor freighter with one or more ships alongside"
-msgstr ""
+msgstr "Motorfragtskib med skibe langskibs"
 
 #: src/AIS_Decoder.cpp:208
 msgid "Motor freighter with tanker"
-msgstr ""
+msgstr "Motorfragtskib med tankskib"
 
 #: src/AIS_Decoder.cpp:209
 msgid "Motor freighter pushing one or more freighters"
@@ -1156,15 +1156,15 @@ msgstr ""
 
 #: src/AIS_Decoder.cpp:211
 msgid "Tug, freighter"
-msgstr ""
+msgstr "Slæbebåd, fragtskib"
 
 #: src/AIS_Decoder.cpp:212
 msgid "Tug, tanker"
-msgstr ""
+msgstr "Slæbebåd, tankskib"
 
 #: src/AIS_Decoder.cpp:213
 msgid "Tug freighter, coupled"
-msgstr ""
+msgstr "Slæbebåd fragtskib, kombineret"
 
 #: src/AIS_Decoder.cpp:214
 msgid "Tug, freighter/tanker, coupled"
@@ -1316,7 +1316,7 @@ msgstr ""
 
 #: src/AIS_Decoder.cpp:253
 msgid "Liquified gas tanker"
-msgstr ""
+msgstr "Tankskib, flydende gas"
 
 #: src/AIS_Decoder.cpp:254
 msgid "Pleasure craft, longer than 20 metres"
@@ -1324,15 +1324,15 @@ msgstr ""
 
 #: src/AIS_Decoder.cpp:255
 msgid "Fast ship"
-msgstr ""
+msgstr "Hurtiggående fartøj"
 
 #: src/AIS_Decoder.cpp:256
 msgid "Hydrofoil"
-msgstr ""
+msgstr "Flyvebåd"
 
 #: src/AIS_Decoder.cpp:2368
 msgid "AIS Alert"
-msgstr ""
+msgstr "AIS-alarm"
 
 #: src/AISTargetAlertDialog.cpp:158 src/AISTargetAlertDialog.cpp:249
 msgid "AISTargetAlert"
@@ -2320,7 +2320,7 @@ msgstr "Sydsudan (Republikken)"
 
 #: src/AIS_Target_Data.cpp:1144
 msgid "Libya"
-msgstr ""
+msgstr "Libyen"
 
 #: src/AIS_Target_Data.cpp:1145
 msgid "Lesotho"
@@ -2645,15 +2645,15 @@ msgstr ""
 
 #: src/canvasMenu.cpp:315
 msgid "Undo"
-msgstr ""
+msgstr "Fortryd"
 
 #: src/canvasMenu.cpp:321
 msgid "Redo"
-msgstr ""
+msgstr "Gendan"
 
 #: src/canvasMenu.cpp:380
 msgid "Max Detail Here"
-msgstr ""
+msgstr "Maksimale detaljer her"
 
 #: src/canvasMenu.cpp:381 src/canvasMenu.cpp:396
 msgid "Scale In"
@@ -2669,19 +2669,19 @@ msgstr ""
 
 #: src/canvasMenu.cpp:404
 msgid "Drop Mark"
-msgstr ""
+msgstr "Sæt mærke her"
 
 #: src/canvasMenu.cpp:407
 msgid "Move Boat Here"
-msgstr ""
+msgstr "Flyt båden hertil"
 
 #: src/canvasMenu.cpp:411
 msgid "Navigate To Here"
-msgstr ""
+msgstr "Naviger hertil"
 
 #: src/canvasMenu.cpp:414
 msgid "Center View..."
-msgstr ""
+msgstr "Centreret visning..."
 
 #: src/canvasMenu.cpp:418 src/chart1.cpp:4981
 msgid "Course Up Mode"
@@ -2689,7 +2689,7 @@ msgstr "Kurs-op tilstand"
 
 #: src/canvasMenu.cpp:421
 msgid "Chart Up Mode"
-msgstr ""
+msgstr "Kort-op tilstand"
 
 #: src/canvasMenu.cpp:423 src/chart1.cpp:4648 src/chart1.cpp:4980
 #: src/chart1.cpp:6894
@@ -2698,27 +2698,27 @@ msgstr "Nord-op tilstand"
 
 #: src/canvasMenu.cpp:431 src/canvasMenu.cpp:438
 msgid "Toggle Full Screen"
-msgstr ""
+msgstr "Åbn/luk fuld skærm"
 
 #: src/canvasMenu.cpp:443
 msgid "Zero XTE"
-msgstr ""
+msgstr "Nulstil XTE"
 
 #: src/canvasMenu.cpp:450
 msgid "Paste Waypoint"
-msgstr ""
+msgstr "Indsæt waypoint"
 
 #: src/canvasMenu.cpp:454 src/canvasMenu.cpp:462
 msgid "Paste Route"
-msgstr ""
+msgstr "Indsæt rute"
 
 #: src/canvasMenu.cpp:458 src/canvasMenu.cpp:463
 msgid "Paste Track"
-msgstr ""
+msgstr "Indsæt spor"
 
 #: src/canvasMenu.cpp:471
 msgid "CM93 Offset Dialog..."
-msgstr ""
+msgstr "CM93 Offset dialogboks..."
 
 #: src/canvasMenu.cpp:481 src/chart1.cpp:8083
 msgid "Hide This Chart"
@@ -2731,7 +2731,7 @@ msgstr "Kortgrupper"
 
 #: src/canvasMenu.cpp:507
 msgid "All Active Charts"
-msgstr ""
+msgstr "Alle aktive kort"
 
 #: src/canvasMenu.cpp:584 src/chart1.cpp:5051
 msgid "AIS Target List..."
@@ -2739,41 +2739,41 @@ msgstr "AIS objektliste..."
 
 #: src/canvasMenu.cpp:587
 msgid "Target Query..."
-msgstr ""
+msgstr "Forespørg på objekt..."
 
 #: src/canvasMenu.cpp:591
 msgid "Hide Target CPA"
-msgstr ""
+msgstr "Skjul CPA"
 
 #: src/canvasMenu.cpp:593
 msgid "Show Target CPA"
-msgstr ""
+msgstr "Vis CPA"
 
 #: src/canvasMenu.cpp:595
 msgid "Target List..."
-msgstr ""
+msgstr "Objektliste..."
 
 #: src/canvasMenu.cpp:598
 msgid "Hide Target Track"
-msgstr ""
+msgstr "Skjul spor"
 
 #: src/canvasMenu.cpp:600
 msgid "Show Target Track"
-msgstr ""
+msgstr "Vis spor"
 
 #: src/canvasMenu.cpp:614
 msgid "Layer Route"
-msgstr ""
+msgstr "Rute på lag"
 
 #: src/canvasMenu.cpp:615 src/canvasMenu.cpp:630 src/canvasMenu.cpp:679
 #: src/canvasMenu.cpp:682 src/canvasMenu.cpp:699 src/canvasMenu.cpp:705
 #: src/canvasMenu.cpp:755 src/canvasMenu.cpp:758
 msgid "Properties..."
-msgstr ""
+msgstr "Egenskaber..."
 
 #: src/canvasMenu.cpp:620 src/canvasMenu.cpp:635 src/canvasMenu.cpp:715
 msgid "Activate Next Waypoint"
-msgstr ""
+msgstr "Aktiver næste waypoint på ruten"
 
 #: src/canvasMenu.cpp:622 src/canvasMenu.cpp:637 src/routemanagerdialog.cpp:1066
 msgid "Deactivate"
@@ -2786,7 +2786,7 @@ msgstr "Aktiver"
 
 #: src/canvasMenu.cpp:643
 msgid "Insert Waypoint"
-msgstr ""
+msgstr "Tilføj waypoint"
 
 #: src/canvasMenu.cpp:644 src/undo.cpp:90
 msgid "Append Waypoint"
@@ -2794,31 +2794,31 @@ msgstr "Tilføj waypoint"
 
 #: src/canvasMenu.cpp:645
 msgid "Copy as KML..."
-msgstr ""
+msgstr "Kopier som KML..."
 
 #: src/canvasMenu.cpp:646 src/canvasMenu.cpp:684
 msgid "Delete..."
-msgstr ""
+msgstr "Slet..."
 
 #: src/canvasMenu.cpp:647
 msgid "Reverse..."
-msgstr ""
+msgstr "Ombyt fra/til..."
 
 #: src/canvasMenu.cpp:652 src/canvasMenu.cpp:728 src/canvasMenu.cpp:770
 msgid "Send to GPS"
-msgstr ""
+msgstr "Send til GPS"
 
 #: src/canvasMenu.cpp:661 src/canvasMenu.cpp:737
 msgid "Send to new GPS"
-msgstr ""
+msgstr "Send til ny GPS"
 
 #: src/canvasMenu.cpp:678
 msgid "Layer Track"
-msgstr ""
+msgstr "Spor på lag"
 
 #: src/canvasMenu.cpp:683
 msgid "Copy As KML"
-msgstr ""
+msgstr "Kopier som KML"
 
 #: src/canvasMenu.cpp:698
 msgid "Layer Routepoint"
@@ -3736,31 +3736,31 @@ msgstr ""
 
 #: src/ConnectionParams.cpp:196
 msgid "Accept"
-msgstr ""
+msgstr "Accepter"
 
 #: src/ConnectionParams.cpp:200
 msgid "Drop"
-msgstr ""
+msgstr "Drop"
 
 #: src/ConnectionParams.cpp:202 src/SendToGpsDlg.cpp:136
 msgid "Send"
-msgstr ""
+msgstr "Send"
 
 #: src/ConnectionParams.cpp:224
 msgid "In"
-msgstr ""
+msgstr "Ind"
 
 #: src/ConnectionParams.cpp:229
 msgid "In: None"
-msgstr ""
+msgstr "Ind: Ingen"
 
 #: src/ConnectionParams.cpp:233
 msgid "Out"
-msgstr ""
+msgstr "Ud"
 
 #: src/ConnectionParams.cpp:238
 msgid ", Out: None"
-msgstr ""
+msgstr ", Ud: Ingen"
 
 #: src/glChartCanvas.cpp:521
 msgid "OpenCPN Compressed Cache Update"
@@ -3769,7 +3769,7 @@ msgstr ""
 #: src/glChartCanvas.cpp:568
 #, c-format
 msgid "Distance from Ownship:  %4.0f NMi"
-msgstr ""
+msgstr "Afstand fra eget skib: %4.0f sm"
 
 #: src/glChartCanvas.cpp:1412
 msgid "OpenGL-> SSE2 Instruction set not available"
@@ -4000,25 +4000,25 @@ msgstr ""
 
 #: src/OCPNListCtrl.cpp:77
 msgid "Yes"
-msgstr ""
+msgstr "Ja"
 
 #: src/OCPNListCtrl.cpp:79
 msgid "No"
-msgstr ""
+msgstr "Nej"
 
 #: src/OCPNPlatform.cpp:1089
 msgid "Old log will be moved to opencpn.log.log"
-msgstr ""
+msgstr "Gammel log vil blive flyttet til opencpn.log.log"
 
 #: src/OCPN_Sound.cpp:147
 #, c-format
 msgid "Couldn't load sound data from '%s'."
-msgstr ""
+msgstr "Kunne ikke indlæse dybde-data fra '%s'."
 
 #: src/OCPN_Sound.cpp:154
 #, c-format
 msgid "Sound file '%s' is in unsupported format."
-msgstr ""
+msgstr "Formatet af dybde-datafilen '%s' er ikke understøttet."
 
 #: src/options.cpp:425
 msgid "MMSI Extended Properties"
@@ -4038,7 +4038,7 @@ msgstr "Spor, altid"
 
 #: src/options.cpp:452
 msgid " Never track"
-msgstr ""
+msgstr " Spor, aldrig"
 
 #: src/options.cpp:455 src/options.cpp:606
 msgid "Persistent"
@@ -4058,12 +4058,13 @@ msgstr "Konverter AIVDM til AIVDO for denne MMSI"
 
 #: src/options.cpp:471
 msgid "This MMSI is my Follower - No CPA Alert"
-msgstr ""
+msgstr "Denne MMSI følger mig - Ingen CPA advarsel"
 
 #: src/options.cpp:528
 msgid "An MMSI Id is generally a number of nine digits.\n"
 "Please check your entries and cancel if necessary."
-msgstr ""
+msgstr "Et MMSI-Id er generelt et nummer på ni cifre. \n"
+"Check dine indtastninger og Annuller om nødvendigt."
 
 #: src/options.cpp:594 src/options.cpp:2397 src/routeprop.cpp:858
 #: src/routeprop.cpp:876 src/routeprop.cpp:1204 src/routeprop.cpp:1223
@@ -4110,11 +4111,11 @@ msgstr "VDM->VDO"
 
 #: src/options.cpp:772
 msgid "Ship name"
-msgstr ""
+msgstr "Skibets navn"
 
 #: src/options.cpp:780
 msgid "Follower"
-msgstr ""
+msgstr "Følger"
 
 #: src/options.cpp:784
 msgid "New..."
@@ -4134,7 +4135,7 @@ msgstr "AIS Generelt"
 
 #: src/options.cpp:1138
 msgid "Filter NMEA COG/SOG"
-msgstr ""
+msgstr "Filter NMEA COG/SOG"
 
 #: src/options.cpp:1148 src/options.cpp:1751
 msgid "Filter period (sec)"
@@ -4146,15 +4147,15 @@ msgstr "Vis vindue for GPS/NMEA data"
 
 #: src/options.cpp:1175
 msgid "Use Furuno GP3X for uploads"
-msgstr ""
+msgstr "Brug Furuno GP3X for uploads"
 
 #: src/options.cpp:1181
 msgid "Use GRMN for uploads"
-msgstr ""
+msgstr "Brug GRMN for uploads"
 
 #: src/options.cpp:1187
 msgid "Use mag bearings in ECAPB"
-msgstr ""
+msgstr "Brug kurser i fh. til magnetisk nord i ECAPB"
 
 #: src/options.cpp:1198 src/options.cpp:1801
 msgid "Data Connections"
@@ -4162,11 +4163,11 @@ msgstr "Dataforbindelser"
 
 #: src/options.cpp:1212
 msgid "Add..."
-msgstr ""
+msgstr "Tilføj..."
 
 #: src/options.cpp:1216
 msgid "Remove"
-msgstr ""
+msgstr "Fjern"
 
 #: src/options.cpp:1226 src/options.cpp:1829 src/routeprop.cpp:1082
 #: src/routeprop.cpp:2401
@@ -4179,19 +4180,19 @@ msgstr "Netværk"
 
 #: src/options.cpp:1246 src/options.cpp:1848
 msgid "Built-in GPS"
-msgstr ""
+msgstr "Indbygget GPS"
 
 #: src/options.cpp:1255
 msgid "Built-in Bluetooth"
-msgstr ""
+msgstr "Indbygget Bluetooth"
 
 #: src/options.cpp:1259
 msgid "BT Scan..."
-msgstr ""
+msgstr "Bluetooth Skan..."
 
 #: src/options.cpp:1267
 msgid "BT Sources"
-msgstr ""
+msgstr "Bluetooth kilder"
 
 #: src/options.cpp:1311 src/options.cpp:1392 src/options.cpp:1915
 #: src/options.cpp:1996
@@ -4333,7 +4334,7 @@ msgstr "Hvis markeret, bruges kun sætninger med en gyldig kontrolsum"
 
 #: src/options.cpp:1433
 msgid "Use GRMN mode for input"
-msgstr ""
+msgstr "Brug GRMN til input"
 
 #: src/options.cpp:1442 src/options.cpp:2051
 msgid "Receive Input on this Port"
@@ -4341,11 +4342,11 @@ msgstr "Modtag Input på denne port"
 
 #: src/options.cpp:1446
 msgid "Output on this port"
-msgstr ""
+msgstr "Udgang på denne port"
 
 #: src/options.cpp:1454
 msgid "Talker ID"
-msgstr ""
+msgstr "Talker ID"
 
 #: src/options.cpp:1465 src/options.cpp:2073
 msgid "APB bearing precision"
@@ -4402,19 +4403,19 @@ msgstr "Drop sætninger"
 
 #: src/options.cpp:1675
 msgid "On"
-msgstr ""
+msgstr "Tænd"
 
 #: src/options.cpp:1675
 msgid "Prio"
-msgstr ""
+msgstr "Prio"
 
 #: src/options.cpp:1676
 msgid "Parm"
-msgstr ""
+msgstr "Parm"
 
 #: src/options.cpp:1676
 msgid "I/O"
-msgstr ""
+msgstr "I/O"
 
 #: src/options.cpp:1676 src/options.cpp:2285
 msgid "Filters"
@@ -4454,7 +4455,7 @@ msgstr "Bluetooth skanning"
 
 #: src/options.cpp:1871
 msgid "Bluetooth Data Sources"
-msgstr ""
+msgstr "Bluetooth-datakilder"
 
 #: src/options.cpp:2042
 msgid "Use Garmin (GRMN) mode for input"
@@ -4466,7 +4467,7 @@ msgstr "Output på denne port (som Autopilot eller NMEA Repeater)"
 
 #: src/options.cpp:2062
 msgid "Talker ID (blank = default ID)"
-msgstr ""
+msgstr "Talker ID (Tom = standard-ID)"
 
 #: src/options.cpp:2283 src/pluginmanager.cpp:3516 src/pluginmanager.cpp:3526
 msgid "Enable"
@@ -4558,15 +4559,15 @@ msgstr "Spor"
 
 #: src/options.cpp:2491
 msgid "Automatic Daily Tracks at midnight"
-msgstr ""
+msgstr "Automatisk daglig spor ved midnat"
 
 #: src/options.cpp:2498
 msgid "Automatic Daily Tracks at"
-msgstr ""
+msgstr "Automatisk daglig spor kl."
 
 #: src/options.cpp:2503
 msgid "Computer"
-msgstr ""
+msgstr "Computer"
 
 #: src/options.cpp:2506 src/routeprop.cpp:820 src/routeprop.cpp:827
 #: src/routeprop.cpp:1167 src/routeprop.cpp:1176 src/TrackPropDlg.cpp:349
@@ -4576,7 +4577,7 @@ msgstr "UTC"
 
 #: src/options.cpp:2509
 msgid "LMT"
-msgstr ""
+msgstr "LMT"
 
 #: src/options.cpp:2515
 msgid "Highlight Tracks"
@@ -6045,7 +6046,7 @@ msgstr "10 pixels"
 
 #: src/routeprop.cpp:959 src/routeprop.cpp:1257
 msgid "Print Route"
-msgstr "Slet rute"
+msgstr "Udskriv rute"
 
 #: src/routeprop.cpp:967 src/routeprop.cpp:1262 src/routeprop.cpp:1518
 #: src/TrackPropDlg.cpp:857
@@ -6245,11 +6246,11 @@ msgstr ""
 
 #: src/SendToGpsDlg.cpp:116
 msgid "Prepare GPS for Route/Waypoint upload and press Send..."
-msgstr ""
+msgstr "Klargør GPS til at modtage rute/waypoint og tryk på Send..."
 
 #: src/SendToGpsDlg.cpp:120
 msgid "Progress..."
-msgstr ""
+msgstr "Status..."
 
 #: src/tcmgr.cpp:761
 msgid "It seems you have no tide/current harmonic data installed."
@@ -6325,7 +6326,7 @@ msgstr "Knappen Mand Over Bord kan være en vigtig sikkerhedsfunktion. \n"
 
 #: src/toolbar.cpp:2485
 msgid "Choose Toolbar Icons"
-msgstr ""
+msgstr "Vælg Værktøjslinjeikoner"
 
 #: src/TrackPropDlg.cpp:447 src/TrackPropDlg.cpp:738
 msgid "Timestamp"
@@ -6422,7 +6423,7 @@ msgstr "-"
 
 #: src/TTYWindow.cpp:63
 msgid "Filter"
-msgstr ""
+msgstr "Filter"
 
 #: src/TTYWindow.cpp:71
 msgid "Legend"

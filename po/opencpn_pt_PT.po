@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-31 17:29-0300\n"
-"PO-Revision-Date: 2015-12-31 15:38-0500\n"
+"PO-Revision-Date: 2016-01-16 21:00-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Portuguese\n"
 "Language: pt_PT\n"
@@ -1064,7 +1064,7 @@ msgstr "Indefinito (default)"
 
 #: src/ais.cpp:1556 src/ais.cpp:1557
 msgid "AIS Target Name"
-msgstr ""
+msgstr "Nome do Alvo AIS"
 
 #: src/AIS_Decoder.cpp:189
 msgid "Vessel, type unknown"
@@ -1414,7 +1414,7 @@ msgstr "Informe a partir de"
 #: src/AIS_Target_Data.cpp:502 src/routeprop.cpp:575 src/routeprop.cpp:751
 #: src/routeprop.cpp:1105 src/TrackPropDlg.cpp:275 src/TrackPropDlg.cpp:1236
 msgid "Destination"
-msgstr "Destino a:"
+msgstr "Destino"
 
 #: src/AIS_Target_Data.cpp:504
 msgid "ETA (UTC)"
@@ -2320,7 +2320,7 @@ msgstr "Sudão do Sul (República do)"
 
 #: src/AIS_Target_Data.cpp:1144
 msgid "Libya"
-msgstr ""
+msgstr "Líbia"
 
 #: src/AIS_Target_Data.cpp:1145
 msgid "Lesotho"
@@ -2605,7 +2605,8 @@ msgstr "Parar rastreamento"
 #: src/androidUTIL.cpp:1767
 msgid "Your android device has an internal GPS, but it is disabled.\n"
 "                       Please visit android Settings/Location dialog to enable GPS"
-msgstr ""
+msgstr "O seu dispositivo android tem um GPS interno, mas está desativado.\n"
+"use Definições/Serviços de localização para ativar o GPS"
 
 #: src/androidUTIL.cpp:1910
 msgid "Nothing found"
@@ -2617,7 +2618,7 @@ msgstr "Menu"
 
 #: src/canvasMenu.cpp:288
 msgid "Waypoint"
-msgstr "Pontos da passagem"
+msgstr "Ponto de passagem"
 
 #: src/canvasMenu.cpp:289 src/concanv.cpp:194
 msgid "Route"
@@ -2727,7 +2728,7 @@ msgstr "Esconder esta Carta"
 #: src/canvasMenu.cpp:493 src/options.cpp:3499 src/options.cpp:3547
 #: src/options.cpp:6668
 msgid "Chart Groups"
-msgstr "Cartas"
+msgstr "Grupo de cartas"
 
 #: src/canvasMenu.cpp:507
 msgid "All Active Charts"
@@ -2843,7 +2844,7 @@ msgstr "Camada Ponto de passagem"
 
 #: src/canvasMenu.cpp:761
 msgid "Navigate To This"
-msgstr "Navegue até esta"
+msgstr "Navegar para aqui"
 
 #: src/canvasMenu.cpp:780
 msgid "Clear Anchor Watch"
@@ -3003,11 +3004,11 @@ msgstr "Consulta Destino AIS"
 
 #: src/chart1.cpp:2699 src/chart1.cpp:4984 src/chart1.cpp:4987
 msgid "Zoom In"
-msgstr "Aproximar Zoom"
+msgstr "Ampliar"
 
 #: src/chart1.cpp:2705 src/chart1.cpp:4985 src/chart1.cpp:4988
 msgid "Zoom Out"
-msgstr "Afastar Zoom"
+msgstr "Reduzir"
 
 #: src/chart1.cpp:2714
 msgid "Shift to Larger Scale Chart"
@@ -3027,7 +3028,7 @@ msgstr "Acompanhar Automaticamente"
 
 #: src/chart1.cpp:2757
 msgid "Hide ENC Text"
-msgstr ""
+msgstr "Omitir texto ENC"
 
 #: src/chart1.cpp:2759 src/chart1.cpp:5013 src/chart1.cpp:5018
 msgid "Show ENC Text"
@@ -3072,7 +3073,7 @@ msgstr " (Ctrl-espaço)"
 
 #: src/chart1.cpp:2856 src/chart1.cpp:4233
 msgid "Attenuate less critical AIS Targets"
-msgstr ""
+msgstr "Atenuar alvos AIS menos críticos"
 
 #: src/chart1.cpp:2865 src/chart1.cpp:5044
 msgid "Show AIS Targets"
@@ -3112,15 +3113,15 @@ msgstr "Carta 1 :: Evento...TCMgr Não Disponível"
 
 #: src/chart1.cpp:4232
 msgid "Show all AIS Targets"
-msgstr ""
+msgstr "Mostrar todos os alvos AIS"
 
 #: src/chart1.cpp:4235
 msgid "AIS_Suppressed"
-msgstr ""
+msgstr "AIS_Suprimido"
 
 #: src/chart1.cpp:4235
 msgid "AIS_Disabled"
-msgstr ""
+msgstr "AIS_Desabilitado"
 
 #: src/chart1.cpp:4393 src/chart1.cpp:4451
 msgid "MAN OVERBOARD"
@@ -3183,7 +3184,7 @@ msgstr "Mostrar limites das Cartas"
 
 #: src/chart1.cpp:5008 src/options.cpp:4328
 msgid "Show Chart Bar"
-msgstr "Mostrar barra de Cartas"
+msgstr "Mostrar Barra de Cartas"
 
 #: src/chart1.cpp:5014 src/chart1.cpp:5019
 msgid "Show ENC Lights"
@@ -3207,15 +3208,15 @@ msgstr "&Vista"
 
 #: src/chart1.cpp:5045
 msgid "Hide Moored AIS Targets"
-msgstr ""
+msgstr "Ocultar alvos AIS atracados"
 
 #: src/chart1.cpp:5046
 msgid "Attenuate Less Critical AIS Targets"
-msgstr ""
+msgstr "Atenuar alvos AIS menos críticos"
 
 #: src/chart1.cpp:5047
 msgid "Show AIS Target Tracks"
-msgstr ""
+msgstr "Mostra rasto dos alvos AIS"
 
 #: src/chart1.cpp:5048
 msgid "Show CPA Alert Dialogs"
@@ -3760,7 +3761,7 @@ msgstr "Saída"
 
 #: src/ConnectionParams.cpp:238
 msgid ", Out: None"
-msgstr "Saída: nada"
+msgstr ", Saída: nada"
 
 #: src/glChartCanvas.cpp:521
 msgid "OpenCPN Compressed Cache Update"
@@ -4111,7 +4112,7 @@ msgstr "VDM->VDO"
 
 #: src/options.cpp:772
 msgid "Ship name"
-msgstr ""
+msgstr "Nome do navio"
 
 #: src/options.cpp:780
 msgid "Follower"
@@ -4143,7 +4144,7 @@ msgstr "Período de filtro (sec)"
 
 #: src/options.cpp:1169 src/options.cpp:1771
 msgid "Show NMEA Debug Window"
-msgstr "Mostrar Janela de fluxo de dados GPS/NMEA"
+msgstr "Mostrar janela de depuração NMEA"
 
 #: src/options.cpp:1175
 msgid "Use Furuno GP3X for uploads"
@@ -4483,15 +4484,15 @@ msgstr "Conexão"
 
 #: src/options.cpp:2363
 msgid "Own Ship"
-msgstr "Barco"
+msgstr "O barco"
 
 #: src/options.cpp:2370
 msgid "Display Options"
-msgstr "Opções de Visualização"
+msgstr "Opções de Apresentação"
 
 #: src/options.cpp:2380
 msgid "COG Predictor Length (min)"
-msgstr "      Vector COG Comprimento Previsto[Minutos]:"
+msgstr "Comprimento da linha de previsão COG (em minutos)"
 
 #: src/options.cpp:2387
 msgid "Heading Predictor Length (NMi)"
@@ -4559,15 +4560,15 @@ msgstr "Rastro"
 
 #: src/options.cpp:2491
 msgid "Automatic Daily Tracks at midnight"
-msgstr ""
+msgstr "Registo diário à meia noite"
 
 #: src/options.cpp:2498
 msgid "Automatic Daily Tracks at"
-msgstr ""
+msgstr "Registo diário automático às"
 
 #: src/options.cpp:2503
 msgid "Computer"
-msgstr ""
+msgstr "Computador"
 
 #: src/options.cpp:2506 src/routeprop.cpp:820 src/routeprop.cpp:827
 #: src/routeprop.cpp:1167 src/routeprop.cpp:1176 src/TrackPropDlg.cpp:349
@@ -4577,7 +4578,7 @@ msgstr "UTC"
 
 #: src/options.cpp:2509
 msgid "LMT"
-msgstr ""
+msgstr "LMT"
 
 #: src/options.cpp:2515
 msgid "Highlight Tracks"
@@ -4601,11 +4602,11 @@ msgstr "Alta"
 
 #: src/options.cpp:2535 src/routemanagerdialog.cpp:486
 msgid "Routes"
-msgstr "Rota"
+msgstr "Rotas"
 
 #: src/options.cpp:2545
 msgid "Waypoint Arrival Circle Radius (NMi)"
-msgstr "Raio do circulo de ponto de passagem de chegada (NMi)"
+msgstr "Raio do circulo de ponto de chegada (NMi)"
 
 #: src/options.cpp:2554
 msgid "Advance route waypoint on arrival only"
@@ -4634,7 +4635,7 @@ msgstr "Ficheiros de cartas"
 
 #: src/options.cpp:2632
 msgid "Directories"
-msgstr "Pastas de Arquivo de Cartas, Activas"
+msgstr "Diretórios"
 
 #: src/options.cpp:2663
 msgid "Add Directory..."
@@ -4654,7 +4655,7 @@ msgstr "Examinar cartas e atualizar base de dados"
 
 #: src/options.cpp:2682
 msgid "Force Full Database Rebuild"
-msgstr "Forçar a Reconstrução da Base de Dados de Cartas"
+msgstr "Forçar a Reconstrução total da Base de Dados de Cartas"
 
 #: src/options.cpp:2690 src/TrackPropDlg.cpp:821
 msgid "Advanced"
@@ -4722,11 +4723,11 @@ msgstr "mm"
 
 #: src/options.cpp:2857 src/options.cpp:3654
 msgid "Chart Display"
-msgstr "Mostrar Carta"
+msgstr "Apresentação de cartas"
 
 #: src/options.cpp:2863
 msgid "Show Skewed Raster Charts as North-Up"
-msgstr "Mostrar cartas Raster inclinada com o norte para cima"
+msgstr "Mostrar cartas digitalizadas distorcidas com o norte para cima"
 
 #: src/options.cpp:2872
 msgid "Suppress blur/fog effects on overzoom"
@@ -4740,7 +4741,7 @@ msgstr "Suprimir cartas vetoriais à escala no Sobre Ampliado"
 msgid "With a lower value, the same zoom level shows a less detailed chart.\n"
 "                          With a higher value, the same zoom level shows a more detailed chart."
 msgstr "Com um valor menor, o mesmo nível de aproximação apresenta uma carta menos detalhada.\n"
-"                          Com um valor superior, o mesmo nível de aproximação apresenta uma carta mais detalhada."
+"Com um valor superior, o mesmo nível de aproximação apresenta uma carta mais detalhada."
 
 #: src/options.cpp:2939 src/options.cpp:3672
 msgid "Controls"
@@ -4748,7 +4749,7 @@ msgstr "Controles"
 
 #: src/options.cpp:2946
 msgid "Lock Waypoints (Unless waypoint property dialog visible)"
-msgstr "Trancar Pontos de Passagem( a menos que esteja aberta a janela de propriedades de Pontos de Passagem)"
+msgstr "Trancar Pontos de Passagem( a menos que esteja aberta a janela de propriedades)"
 
 #: src/options.cpp:2952
 msgid "Confirm deletion of tracks and routes"
@@ -4785,7 +4786,7 @@ msgstr "Standard Marítimo"
 
 #: src/options.cpp:3057 src/options.cpp:4100 src/options.cpp:4672
 msgid "Display"
-msgstr "Mostrar"
+msgstr "Apresentação"
 
 #: src/options.cpp:3064 src/options.cpp:3271
 msgid "Depth Soundings"
@@ -4825,7 +4826,7 @@ msgstr "Só Texto Importante"
 
 #: src/options.cpp:3111 src/options.cpp:3312
 msgid "De-Cluttered Text"
-msgstr "Desobstruir Texto (exp.)"
+msgstr "Desobstruir Texto"
 
 #: src/options.cpp:3115
 msgid "Chart Detail"
@@ -4873,7 +4874,7 @@ msgstr "4 Cores"
 
 #: src/options.cpp:3159 src/options.cpp:3372
 msgid "Shallow Depth"
-msgstr "baixo"
+msgstr "Pouca profundidade"
 
 #: src/options.cpp:3167 src/options.cpp:3177 src/options.cpp:3187
 #: src/options.cpp:3378 src/options.cpp:3387 src/options.cpp:3395
@@ -4882,11 +4883,11 @@ msgstr "metros"
 
 #: src/options.cpp:3170 src/options.cpp:3381
 msgid "Safety Depth"
-msgstr "sonda segura"
+msgstr "Profundidade segura"
 
 #: src/options.cpp:3180 src/options.cpp:3390
 msgid "Deep Depth"
-msgstr "águas livres"
+msgstr "Águas livres"
 
 #: src/options.cpp:3237 src/options.cpp:3433 src/options.cpp:7678
 msgid "Select All"
@@ -4955,11 +4956,11 @@ msgstr "Manter escala ao alternar entre cartas"
 
 #: src/options.cpp:3678 src/options.cpp:3769
 msgid "Smooth Panning / Zooming"
-msgstr "Aproximação / Deslocação suave"
+msgstr "Ampliação / Deslocação suave"
 
 #: src/options.cpp:3682 src/options.cpp:3773
 msgid "Zoom to Cursor"
-msgstr "Zoom para Cursor"
+msgstr "Ampliação para Cursor"
 
 #: src/options.cpp:3692
 msgid "Display Features"
@@ -5053,7 +5054,7 @@ msgstr "Cálculo do CPA"
 
 #: src/options.cpp:4048
 msgid "No (T)CPA Alerts if target range is greater than (NMi)"
-msgstr ""
+msgstr "Não há alertas de (T)CPA se a distância do alvo for maior que (MiN)"
 
 #: src/options.cpp:4055
 msgid "Warn if CPA less than (NMi)"
@@ -5069,7 +5070,7 @@ msgstr "Alvo Perdido"
 
 #: src/options.cpp:4084
 msgid "Mark targets as lost after (min)"
-msgstr "Marcar Embarcações como alvo perdido após [Minutos]:"
+msgstr "Marcar alvo como perdido após (Minutos)"
 
 #: src/options.cpp:4092
 msgid "Remove lost targets after (min)"
@@ -5077,7 +5078,7 @@ msgstr "Eliminar Alvos perdidos após [Minutos]:"
 
 #: src/options.cpp:4109
 msgid "Show target COG predictor arrow, length (min)"
-msgstr "Mostrar Vector COG da embarcação alvo"
+msgstr "Mostrar seta de previsão COG da embarcação alvo (min)"
 
 #: src/options.cpp:4117
 msgid "Show target tracks, length (min)"
@@ -5085,11 +5086,11 @@ msgstr "Mostrar Rastro da Embarcação Alvo, comprimento (min)"
 
 #: src/options.cpp:4125
 msgid "Suppress anchored/moored targets, speed max (kn)"
-msgstr ""
+msgstr "Suprimir alvos ancorados/atracado, velocidade max (nós)"
 
 #: src/options.cpp:4133
 msgid "Allow attenuation of less critical targets if more than ... targets"
-msgstr ""
+msgstr "Permitir atenuação dos alvos menos críticos, se mais do que ... alvos"
 
 #: src/options.cpp:4141
 msgid "Show area notices (from AIS binary messages)"
@@ -5141,7 +5142,7 @@ msgstr "Seleccionar Som Alarme"
 
 #: src/options.cpp:4213
 msgid "Play Sound on CPA/TCPA Alerts and DSC/SART emergencies."
-msgstr "Alarme Sonoro CPA/TCPA"
+msgstr "Alarme Sonoro para alertas CPA/TCPA e emergências DSC/SART."
 
 #: src/options.cpp:4217
 msgid "Test Alert Sound"
@@ -5189,7 +5190,7 @@ msgstr "Mostrar Barra de Estado"
 
 #: src/options.cpp:4323
 msgid "Show Menu Bar"
-msgstr "Mostrar barra de menu"
+msgstr "Mostrar Barra de Menu"
 
 #: src/options.cpp:4333
 msgid "Show Compass/GPS Status Window"
@@ -5651,11 +5652,11 @@ msgstr " - "
 #: src/routemanagerdialog.cpp:1129 src/routemanagerdialog.cpp:1841
 #: src/routemanagerdialog.cpp:2244
 msgid "Are you sure you want to delete the selected object(s)"
-msgstr "Confirma que quer Apagar o(s) objecto(s) seleccionado(s)"
+msgstr "Tem certeza que quer Apagar o(s) objecto(s) seleccionado(s)"
 
 #: src/routemanagerdialog.cpp:1177
 msgid "Are you sure you want to delete <ALL> routes?"
-msgstr "Confirma que quer Apagar <TODAS> as Rotas?"
+msgstr "Tem certeza que quer apagar <TODAS> as Rotas?"
 
 #: src/routemanagerdialog.cpp:1375
 msgid "Do you also want to make the shared waypoints being part of this route invisible?"
@@ -5714,7 +5715,7 @@ msgstr "Feito."
 
 #: src/routemanagerdialog.cpp:1948
 msgid "Are you sure you want to delete <ALL> tracks?"
-msgstr "Confirma que quer apagar <ALL> Rastos?"
+msgstr "Tem certeza que quer apagar <TODOS> os rastos?"
 
 #: src/routemanagerdialog.cpp:2277
 msgid "The waypoint you want to delete is used in a route, do you really want to delete it?"
@@ -5722,7 +5723,7 @@ msgstr "O ponto de passagem que pretende apagar é usado por uma rota, quer real
 
 #: src/routemanagerdialog.cpp:2399
 msgid "Are you sure you want to delete <ALL> waypoints?"
-msgstr "Confirma que quer apagar <TODOS> os Pontos de passagem?"
+msgstr "Tem certeza que quer apagar <TODOS> os Pontos de passagem?"
 
 #: src/routemanagerdialog.cpp:2405
 msgid "There are some waypoints used in routes or anchor alarms.\n"
@@ -5748,7 +5749,7 @@ msgstr "Não listar conteúdo"
 
 #: src/routemanagerdialog.cpp:2542
 msgid "Are you sure you want to delete this layer and <ALL> of its contents?"
-msgstr "Confirma que quer Apagar esta camada e <TODO> o seu conteúdo?"
+msgstr "Tem certeza que quer apagar esta camada e <TODO> o seu conteúdo?"
 
 #: src/routemanagerdialog.cpp:2816
 msgid "(Unnamed Layer)"
@@ -5874,7 +5875,7 @@ msgstr "_plus"
 #: src/routeprop.cpp:574 src/routeprop.cpp:741 src/routeprop.cpp:1100
 #: src/TrackPropDlg.cpp:265 src/TrackPropDlg.cpp:1235
 msgid "Depart From"
-msgstr "Partida de:"
+msgstr "Partida de"
 
 #: src/routeprop.cpp:576 src/routeprop.cpp:770 src/routeprop.cpp:1124
 #: src/TrackPropDlg.cpp:297 src/TrackPropDlg.cpp:1237
@@ -6089,7 +6090,7 @@ msgstr "Rumo (M)"
 
 #: src/routeprop.cpp:1400
 msgid "Are you sure you want to remove this waypoint?"
-msgstr "Confirma que quer apagar este Ponto de passagem?"
+msgstr "Tem certeza que quer apagar este Ponto de passagem?"
 
 #: src/routeprop.cpp:1401
 msgid "OpenCPN Remove Waypoint"

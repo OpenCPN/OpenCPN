@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-31 17:29-0300\n"
-"PO-Revision-Date: 2015-12-31 15:36-0500\n"
+"PO-Revision-Date: 2016-01-16 20:59-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -3026,7 +3026,7 @@ msgstr "Centrage automatique"
 
 #: src/chart1.cpp:2757
 msgid "Hide ENC Text"
-msgstr ""
+msgstr "Cacher les textes des ENC"
 
 #: src/chart1.cpp:2759 src/chart1.cpp:5013 src/chart1.cpp:5018
 msgid "Show ENC Text"
@@ -5212,7 +5212,7 @@ msgstr "Activer l'interface pour écran tactile"
 
 #: src/options.cpp:4382
 msgid "Enable Tablet Scaled Graphics interface"
-msgstr "Activer l'interface de mise à l'échelle de tablette graphique"
+msgstr "Activer l'interface d'adaptation des échelles d'affichage"
 
 #: src/options.cpp:4393
 msgid "User Interface scale factor"

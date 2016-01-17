@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-31 17:29-0300\n"
-"PO-Revision-Date: 2015-12-31 15:37-0500\n"
+"PO-Revision-Date: 2016-01-16 21:00-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Italian\n"
 "Language: it_IT\n"
@@ -584,7 +584,7 @@ msgstr "?"
 
 #: src/ais.cpp:263 src/AIS_Target_Data.cpp:855
 msgid "AtoN"
-msgstr ""
+msgstr "AtoN"
 
 #: src/ais.cpp:264
 msgid "Ref. Pt"
@@ -2637,7 +2637,7 @@ msgstr "Fine Rotta"
 
 #: src/canvasMenu.cpp:306
 msgid "Measure Off"
-msgstr "Chiudi Stumento Misura"
+msgstr "Chiudi Strumento Misura"
 
 #: src/canvasMenu.cpp:308
 msgid "Measure"
@@ -3831,7 +3831,7 @@ msgstr "OpenCPN Waypoint"
 
 #: src/kml.cpp:625
 msgid "Choose Format for Copy"
-msgstr "Schegliere il formato per la copia"
+msgstr "Scegliere il formato per la copia"
 
 #: src/kml.cpp:632
 msgid "KML Standard (Google Earth and others)"
@@ -3859,7 +3859,7 @@ msgstr "File locale..."
 
 #: src/LinkPropDlg.cpp:119
 msgid "Choose a file"
-msgstr "Schegli un file"
+msgstr "Scegli un file"
 
 #: src/LinkPropDlg.cpp:130
 msgid "Link not complete, can't be saved."
@@ -4940,7 +4940,7 @@ msgstr "Modalità Navigazione"
 
 #: src/options.cpp:3635 src/options.cpp:3727
 msgid "North Up"
-msgstr "Nord sopra"
+msgstr "'Nord in alto'"
 
 #: src/options.cpp:3638 src/options.cpp:3730
 msgid "Course Up"

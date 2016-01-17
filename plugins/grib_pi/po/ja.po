@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-20 18:03-0600\n"
-"PO-Revision-Date: 2015-12-31 15:37-0500\n"
+"PO-Revision-Date: 2016-01-06 09:11-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Japanese\n"
 "Language: ja_JP\n"
@@ -30,11 +30,11 @@ msgstr ""
 
 #: src/GribUIDialog.cpp:369
 msgid "File"
-msgstr ""
+msgstr "ファイル"
 
 #: src/GribUIDialog.cpp:376 src/GribUIDialog.cpp:402
 msgid "Error! "
-msgstr ""
+msgstr "エラー! "
 
 #: src/GribUIDialog.cpp:376
 msgid " contains no valid data!"
@@ -58,7 +58,7 @@ msgstr ""
 
 #: src/GribUIDialog.cpp:685 src/grib_pi.cpp:366 src/CursorData.cpp:560
 msgid "Menu"
-msgstr ""
+msgstr "メニュー"
 
 #: src/GribUIDialog.cpp:722
 msgid "Select geopotential altitude"
@@ -91,7 +91,7 @@ msgstr ""
 
 #: src/GribUIDialog.cpp:774
 msgid "Close"
-msgstr ""
+msgstr "閉じる"
 
 #: src/GribUIDialog.cpp:1185
 msgid "Select a GRIB file"
@@ -111,7 +111,7 @@ msgstr ""
 
 #: src/GribSettingsDialog.cpp:31 src/GribSettingsDialog.cpp:38
 msgid "m/s"
-msgstr ""
+msgstr "m/s"
 
 #: src/GribSettingsDialog.cpp:31 src/GribSettingsDialog.cpp:38
 msgid "mph"
@@ -245,7 +245,7 @@ msgstr ""
 #: src/GribRequestDialog.cpp:121 src/GribRequestDialog.cpp:190
 #: src/GribRequestDialog.cpp:446 src/CursorData.cpp:146
 msgid "Dialog"
-msgstr ""
+msgstr "ダイアログ"
 
 #: src/GribSettingsDialog.cpp:660 src/GribSettingsDialog.cpp:669
 #: src/CursorData.cpp:478 src/CursorData.cpp:484
@@ -305,7 +305,7 @@ msgstr ""
 
 #: src/GribUIDialogBase.cpp:39 src/GribUIDialogBase.cpp:157
 msgid "Next"
-msgstr ""
+msgstr "次へ"
 
 #: src/GribUIDialogBase.cpp:53 src/GribUIDialogBase.cpp:165
 msgid "Select geoptential altitude"
@@ -800,7 +800,7 @@ msgstr ""
 
 #: src/GribUIDialogBase.h:340
 msgid "Preferences"
-msgstr ""
+msgstr "設定"
 
 #: src/GribUIDialogBase.h:426
 msgid "Write and send eMail request"
@@ -886,7 +886,7 @@ msgstr ""
 
 #: src/GribRequestDialog.cpp:115
 msgid "Save"
-msgstr ""
+msgstr "保存"
 
 #: src/GribRequestDialog.cpp:130
 msgid "Address used to send request eMail. (Mandatory for LINUX)"

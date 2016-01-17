@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-20 18:03-0600\n"
-"PO-Revision-Date: 2015-12-31 15:39-0500\n"
+"PO-Revision-Date: 2016-01-16 21:01-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Norwegian Bokmal\n"
 "Language: nb_NO\n"
@@ -287,7 +287,9 @@ msgstr "Denne endringen trenger en omlasting.\n"
 msgid "You have chosen to authorize interpolation.\n"
 "Don't forget that data displayed will not be real but recomputed\n"
 "This can decrease accuracy!"
-msgstr ""
+msgstr "Du har valgt å godkjenne interpolering.\n"
+"Ikke glem at data som vises, ikke vil være virkelige, men omkalkulerte.\n"
+"Dette kan redusere nøyaktigheten!"
 
 #: src/GribSettingsDialog.cpp:817 src/GribSettingsDialog.cpp:855
 #: src/grib_pi.cpp:637 src/GribRequestDialog.cpp:618
@@ -298,7 +300,9 @@ msgstr "Advarsel!"
 msgid "This option imply you authorize intrepolation\n"
 "Don't forget that data displayed will not be real but recomputed\n"
 "This can decrease accuracy!"
-msgstr ""
+msgstr "Dette valget innebærer at du godkjenner interpolering\n"
+"Ikke glem at vist data ikke vil være ekte, men omregnet.\n"
+"Dette kan redusere nøyaktigheten!"
 
 #: src/GribUIDialogBase.cpp:29 src/GribUIDialogBase.cpp:147
 msgid "Previous"
@@ -362,11 +366,11 @@ msgstr "Høyde"
 
 #: src/GribUIDialogBase.cpp:547
 msgid "Temp."
-msgstr ""
+msgstr "Temp."
 
 #: src/GribUIDialogBase.cpp:564
 msgid "Relat. Hum."
-msgstr ""
+msgstr "Rel. Fukt."
 
 #: src/GribUIDialogBase.cpp:707
 msgid "Data Display Options"
@@ -517,35 +521,35 @@ msgstr "Dialogstil"
 
 #: src/GribUIDialogBase.cpp:1029
 msgid "Data at cursor dialog is attached to icons bar - with a title/drag bar"
-msgstr ""
+msgstr "Data ved kursor dialog er festet til ikonlinjen - med en tittel/dra-linje"
 
 #: src/GribUIDialogBase.cpp:1032
 msgid "Data at cursor dialog is attached to icons bar - without a title/drag bar"
-msgstr ""
+msgstr "Data ved kursor dialog er festet til ikonlinjen - med en tittellinje/flyttbar linje"
 
 #: src/GribUIDialogBase.cpp:1035
 msgid "Data at cursor dialog is isolated and displayed horizontally"
-msgstr ""
+msgstr "Data ved kursor-dialog er isolert og vist horisontalt"
 
 #: src/GribUIDialogBase.cpp:1038
 msgid "Data at cursor dialog is isolated and displayed vertically"
-msgstr ""
+msgstr "Data ved kursor-dialog er isolert og vist vertikalt"
 
 #: src/GribUIDialogBase.cpp:1051
 msgid "Buttons Visibility"
-msgstr ""
+msgstr "Knappesynlighet"
 
 #: src/GribUIDialogBase.cpp:1065
 msgid "Attached icon bar"
-msgstr ""
+msgstr "Festet ikonlinje"
 
 #: src/GribUIDialogBase.cpp:1070
 msgid "Isolated icon bar"
-msgstr ""
+msgstr "Isolert ikonlinje"
 
 #: src/GribUIDialogBase.cpp:1078
 msgid "Geopot. Height Choice"
-msgstr ""
+msgstr "Geopot. Høydevalg"
 
 #: src/GribUIDialogBase.cpp:1110
 msgid "Zoom to Center"
@@ -705,7 +709,7 @@ msgstr "Manuelt valg"
 
 #: src/GribUIDialogBase.cpp:1612
 msgid "Use Always this Area"
-msgstr ""
+msgstr "Bruk alltid dette området"
 
 #: src/GribUIDialogBase.cpp:1622
 msgid "Max Lat"
@@ -813,7 +817,7 @@ msgstr "GRIB Datatabell"
 
 #: src/GribOverlayFactory.cpp:476
 msgid "Warning : Data at Geopotential Height"
-msgstr ""
+msgstr "Advarsel : Data ved geopotensiell høyde"
 
 #: src/GribOverlayFactory.cpp:1028
 msgid "Building Isobar map"
@@ -883,7 +887,9 @@ msgstr "Værtabell"
 msgid "You have chosen to authorize interpolation.\n"
 "Don't forget that data displayed at current time will not be real but Recomputed\n"
 "This can decrease accuracy!"
-msgstr ""
+msgstr "Du har valgt å godkjenne interpolarisasjon.\n"
+"Ikke glem at data vist på nåværende tidspunkt ikke vil være riktig, men omkalkulert.\n"
+"Dette kan redusere nøyaktigheten!"
 
 #: src/GribTable.cpp:168
 msgid "Air\n"
@@ -939,7 +945,10 @@ msgid "You request a forecast for more than 8 days horizon.\n"
 "This is conflicting with Wave data which will be removed from your request.\n"
 "Don't forget that beyond the first 8 days, the resolution will be only 2.5°x2.5°\n"
 "and the time intervall 12 hours."
-msgstr ""
+msgstr "Du ber om en prognose for mer enn 8 dager fremover.\n"
+"Dette kommer i konflikt med bølgedata som vil bli fjernet fra din forespørsel.\n"
+"Ikke glem at over de første 8 dagene vil oppløsningen kun bli 2.5°x2.5°\n"
+"og et tidsintervall på 12 timer."
 
 #: src/GribRequestDialog.cpp:825
 msgid "Max"
@@ -1001,7 +1010,7 @@ msgstr "Data ved kursor posisjon"
 
 #: src/CursorData.cpp:230
 msgid "at Geopotential Height"
-msgstr ""
+msgstr "ved geopotensiell høyde"
 
 #: src/CursorData.cpp:233
 msgid "Temperature"

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-31 17:29-0300\n"
-"PO-Revision-Date: 2015-12-31 15:37-0500\n"
+"PO-Revision-Date: 2016-01-16 21:00-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Dutch\n"
 "Language: nl_NL\n"
@@ -3030,11 +3030,11 @@ msgstr "Automatische volgmodus"
 
 #: src/chart1.cpp:2757
 msgid "Hide ENC Text"
-msgstr ""
+msgstr "Verberg ENC-tekst"
 
 #: src/chart1.cpp:2759 src/chart1.cpp:5013 src/chart1.cpp:5018
 msgid "Show ENC Text"
-msgstr "Toon tekst van vectorkaarten"
+msgstr "Toon ENC-tekst"
 
 #: src/chart1.cpp:2768 src/chart1.cpp:2858 src/chart1.cpp:2861
 #: src/chart1.cpp:4234
@@ -3152,11 +3152,11 @@ msgstr "(Track zonder naam)"
 
 #: src/chart1.cpp:4662
 msgid "Show ENC Text (T)"
-msgstr "Toon ENC tekst (T)"
+msgstr "Toon ENC-tekst (T)"
 
 #: src/chart1.cpp:4664
 msgid "Hide ENC Text (T)"
-msgstr "Verberg ENC tekst (T)"
+msgstr "Verberg ENC-tekst (T)"
 
 #: src/chart1.cpp:4991
 msgid "Larger Scale Chart"
@@ -3730,7 +3730,7 @@ msgstr "Uitvoer"
 
 #: src/ConnectionParams.cpp:187
 msgid "In/Out"
-msgstr "In/Out"
+msgstr "In/Uit"
 
 #: src/ConnectionParams.cpp:194
 msgid "Reject"
@@ -3848,7 +3848,7 @@ msgstr "Koppeling"
 
 #: src/LinkPropDlg.cpp:50
 msgid "Link description"
-msgstr "Link-omschrijving"
+msgstr "Link-beschrijving"
 
 #: src/LinkPropDlg.cpp:59
 msgid "URL"
@@ -4089,7 +4089,7 @@ msgstr "Bewerk MMSI-eigenschappen"
 
 #: src/options.cpp:651 src/options.cpp:4008 src/options.cpp:4015
 msgid "MMSI Properties"
-msgstr "MMSI-eigenschappen"
+msgstr "MMSI Eigenschappen"
 
 #: src/options.cpp:653
 msgid "Edit..."
@@ -4595,7 +4595,7 @@ msgstr "Laag"
 
 #: src/options.cpp:2527
 msgid "Medium"
-msgstr "Gemiddeld"
+msgstr "Middelgroot"
 
 #: src/options.cpp:2527
 msgid "High"
@@ -5346,7 +5346,7 @@ msgstr "Stringfilter"
 
 #: src/options.cpp:7727
 msgid "Transmit Sentences"
-msgstr "Zend Onderstaande Strings"
+msgstr "Verzend onderstaande strings"
 
 #: src/options.cpp:7727
 msgid "Drop Sentences"
@@ -5354,19 +5354,19 @@ msgstr "Wijs onderstaande strings af"
 
 #: src/options.cpp:7729
 msgid "Accept Sentences"
-msgstr "Accepteer Onderstaande Strings"
+msgstr "Accepteer onderstaande strings"
 
 #: src/options.cpp:7729
 msgid "Ignore Sentences"
-msgstr "Negeer Onderstaande Strings"
+msgstr "Negeer onderstaande strings"
 
 #: src/options.cpp:7774
 msgid "Enter the NMEA sentence (2, 3 or 5 characters) "
-msgstr "Voer de NMEA string in (2, 3 of 5 karakters) "
+msgstr "Voer de NMEA-string in (2, 3 of 5 karakters) "
 
 #: src/options.cpp:7775
 msgid "Enter the NMEA sentence"
-msgstr "Voer de NMEA string in"
+msgstr "Voer de NMEA-string in"
 
 #: src/options.cpp:7792
 msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n"
@@ -5792,7 +5792,7 @@ msgstr "Fout bij laden van markeringspunten. Raadpleeg logbestanden ..."
 #: src/routeprop.cpp:1309 src/routeprop.cpp:2542 src/routeprop.cpp:2634
 #: src/TrackPropDlg.cpp:764
 msgid "Description"
-msgstr "Omschrijving"
+msgstr "Beschrijving"
 
 #: src/routeprintout.cpp:354
 msgid "Elements to print..."
@@ -6254,7 +6254,7 @@ msgstr "GPS/Plotter-poort"
 
 #: src/SendToGpsDlg.cpp:116
 msgid "Prepare GPS for Route/Waypoint upload and press Send..."
-msgstr "GPS-ontvanger voorbereiden op uploaden en op Verzenden drukken ..."
+msgstr "GPS-ontvanger voorbereiden op uploaden en op Verzenden klikken ..."
 
 #: src/SendToGpsDlg.cpp:120
 msgid "Progress..."

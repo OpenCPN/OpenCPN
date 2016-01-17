@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-20 18:03-0600\n"
-"PO-Revision-Date: 2015-12-31 15:38-0500\n"
+"POT-Creation-Date: 2016-01-08 08:29-0300\n"
+"PO-Revision-Date: 2016-01-16 21:00-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Dutch\n"
 "Language: nl_NL\n"
@@ -18,7 +18,7 @@ msgstr ""
 
 #: src/wmm_pi.cpp:86
 msgid "\n"
-"World Magnetic Model Plotting allows users to cross reference the magnetic deviation values printed on many raster charts.\n\n"
+"World Magnetic Model Plotting allows users to cross reference the magnetic declination values printed on many raster charts.\n\n"
 "Declination is the angle between true and magnetic north.\n"
 "Inclination is the vertical angle of the magnetic field.\n"
 "\t(+- 90 at the magnetic poles)\n"
@@ -59,8 +59,8 @@ msgid "World Magnetic Model PlugIn for OpenCPN\n"
 "location you can find in the OpenCPN logfile."
 msgstr "Deze PlugIn geeft binnen OpenCPN de beschikking over het World Magnetic Model\n"
 "van NOAA. Meer informatie op de site: http://www.ngdc.noaa.gov/geomag/WMM/.\n"
-"Het huidige WMM2015 model is valide tot 31 december 2019. Als er daarna geen\n"
-"nieuwe versie van de PlugIn  beschikbaar is: download het bestand WMM.COF van\n"
+"Het huidige WMM2015 model is valide tot en met 31 december 2019. Als er daarna geen\n"
+"nieuwe versie van de PlugIn beschikbaar is: download het bestand WMM.COF van\n"
 "de NOAA site en plaats dit op de locatie waar ook het OpenCPN logbestand staat."
 
 #: src/wmm_pi.cpp:443 src/wmm_pi.cpp:514
@@ -133,7 +133,7 @@ msgstr "var"
 
 #: src/WmmUIDialog.cpp:105 src/WmmUIDialog.cpp:201
 msgid "Magnetic Variation"
-msgstr "Geomagnetische variatie"
+msgstr "Magnetische variatie"
 
 #: src/WmmUIDialog.cpp:122
 msgid "Cursor"

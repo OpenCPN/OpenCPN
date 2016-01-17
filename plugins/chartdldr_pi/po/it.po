@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-20 18:04-0600\n"
-"PO-Revision-Date: 2015-12-31 15:37-0500\n"
+"PO-Revision-Date: 2016-01-16 21:00-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Italian\n"
 "Language: it_IT\n"
@@ -473,5 +473,5 @@ msgstr "Password del proxy:"
 
 #: src/wxcurl/panel.cpp:144
 msgid "Proxy port:"
-msgstr ""
+msgstr "Porta Proxy:"
 

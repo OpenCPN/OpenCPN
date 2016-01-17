@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-20 18:04-0600\n"
-"PO-Revision-Date: 2015-12-31 15:37-0500\n"
+"PO-Revision-Date: 2016-01-06 09:11-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Japanese\n"
 "Language: ja_JP\n"
@@ -69,7 +69,7 @@ msgstr ""
 
 #: src/chartdldr_pi.cpp:562
 msgid "New"
-msgstr ""
+msgstr "新規"
 
 #: src/chartdldr_pi.cpp:571
 msgid "Update available"
@@ -94,7 +94,7 @@ msgstr ""
 
 #: src/chartdldr_pi.cpp:668 src/chartdldr_pi.cpp:740 src/chartdldr_pi.cpp:1020
 msgid "Error"
-msgstr ""
+msgstr "エラー"
 
 #: src/chartdldr_pi.cpp:691
 msgid "You have chosen to update all chart catalogs.\n"
@@ -127,7 +127,7 @@ msgstr ""
 
 #: src/chartdldr_pi.cpp:793
 msgid "Downloading file"
-msgstr ""
+msgstr "ファイルをダウンロード中"
 
 #: src/chartdldr_pi.cpp:794
 msgid "Reading Headers: "
@@ -191,15 +191,15 @@ msgstr ""
 
 #: src/chartdldr_pi.cpp:1110
 msgid "Title"
-msgstr ""
+msgstr "タイトル"
 
 #: src/chartdldr_pi.cpp:1111
 msgid "Status"
-msgstr ""
+msgstr "ステータス"
 
 #: src/chartdldr_pi.cpp:1112
 msgid "Latest"
-msgstr ""
+msgstr "最新"
 
 #: src/chartdldr_pi.cpp:1153
 msgid "Do you really want to remove the chart source?\n"
@@ -270,7 +270,7 @@ msgstr ""
 
 #: src/chartdldrgui.cpp:245 src/chartdldrgui.cpp:346
 msgid "Add"
-msgstr ""
+msgstr "追加"
 
 #: src/chartdldrgui.cpp:246 src/chartdldrgui.cpp:347
 msgid "Add a new chart catalog."
@@ -278,7 +278,7 @@ msgstr ""
 
 #: src/chartdldrgui.cpp:250 src/chartdldrgui.cpp:351
 msgid "Delete"
-msgstr ""
+msgstr "削除"
 
 #: src/chartdldrgui.cpp:251 src/chartdldrgui.cpp:352
 msgid "Delete the chart catalog. The downloaded charts are not deleted."
@@ -286,11 +286,11 @@ msgstr ""
 
 #: src/chartdldrgui.cpp:255 src/chartdldrgui.cpp:356
 msgid "Edit..."
-msgstr ""
+msgstr "編集..."
 
 #: src/chartdldrgui.cpp:258 src/chartdldrgui.cpp:359
 msgid "Update"
-msgstr ""
+msgstr "アップデート"
 
 #: src/chartdldrgui.cpp:260 src/chartdldrgui.cpp:361
 msgid "Download the current chart catalog and update the data."
@@ -298,7 +298,7 @@ msgstr ""
 
 #: src/chartdldrgui.cpp:264 src/chartdldrgui.cpp:365
 msgid "Update All"
-msgstr ""
+msgstr "すべてアップデート"
 
 #: src/chartdldrgui.cpp:269 src/chartdldrgui.cpp:378
 msgid "Charts"
@@ -306,7 +306,7 @@ msgstr ""
 
 #: src/chartdldrgui.cpp:290 src/chartdldrgui.cpp:394
 msgid "Help"
-msgstr ""
+msgstr "ヘルプ"
 
 #: src/chartdldrgui.cpp:296 src/chartdldrgui.cpp:403
 msgid "Show local files"
@@ -327,7 +327,7 @@ msgstr ""
 
 #: src/chartdldrgui.cpp:479
 msgid "Preferences"
-msgstr ""
+msgstr "設定"
 
 #: src/chartdldrgui.cpp:483
 msgid "After catalog update select for download"
@@ -359,7 +359,7 @@ msgstr ""
 
 #: src/wxcurl/dialog.cpp:168
 msgid "URL:"
-msgstr ""
+msgstr "URL:"
 
 #: src/wxcurl/dialog.cpp:187
 msgid "Speed:"
@@ -383,7 +383,7 @@ msgstr ""
 
 #: src/wxcurl/dialog.cpp:245
 msgid "Settings"
-msgstr ""
+msgstr "設定"
 
 #: src/wxcurl/dialog.cpp:250 src/wxcurl/dialog.cpp:418
 msgid "Pause"
@@ -395,7 +395,7 @@ msgstr ""
 
 #: src/wxcurl/dialog.cpp:397
 msgid "Close"
-msgstr ""
+msgstr "閉じる"
 
 #: src/wxcurl/dialog.cpp:408
 msgid "Resume"
@@ -419,19 +419,19 @@ msgstr ""
 
 #: src/wxcurl/dialog.cpp:535
 msgid "Downloaded:"
-msgstr ""
+msgstr "ダウンロード済み:"
 
 #: src/wxcurl/dialog.cpp:583
 msgid "Uploaded:"
-msgstr ""
+msgstr "アップロード済み:"
 
 #: src/wxcurl/panel.cpp:111
 msgid "Username:"
-msgstr ""
+msgstr "ユーザー名:"
 
 #: src/wxcurl/panel.cpp:112
 msgid "Password:"
-msgstr ""
+msgstr "パスワード:"
 
 #: src/wxcurl/panel.cpp:120
 msgid "Port:"

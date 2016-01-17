@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-20 18:04-0600\n"
-"PO-Revision-Date: 2015-12-31 15:37-0500\n"
+"PO-Revision-Date: 2016-01-16 21:00-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Italian\n"
 "Language: it_IT\n"
@@ -167,11 +167,11 @@ msgstr "Dalla barca"
 
 #: src/dashboard_pi.cpp:180
 msgid "Pitch"
-msgstr ""
+msgstr "Inclinazione longitudinale"
 
 #: src/dashboard_pi.cpp:182
 msgid "Heel"
-msgstr ""
+msgstr "Inclinazione laterale"
 
 #: src/dashboard_pi.cpp:352 src/dashboard_pi.cpp:465 src/dashboard_pi.cpp:1397
 #: src/dashboard_pi.cpp:1406 src/dashboard_pi.cpp:1568
@@ -211,7 +211,7 @@ msgstr "verticale"
 
 #: src/dashboard_pi.cpp:1633 src/dashboard_pi.cpp:2066
 msgid "Horizontal"
-msgstr "horizontale"
+msgstr "Orizzontale"
 
 #: src/dashboard_pi.cpp:1640 src/dashboard_pi.cpp:1648
 #: src/dashboard_pi.cpp:1990

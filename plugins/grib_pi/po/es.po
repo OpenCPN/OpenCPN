@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-20 18:03-0600\n"
-"PO-Revision-Date: 2015-12-31 15:36-0500\n"
+"PO-Revision-Date: 2016-01-16 20:59-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Spanish\n"
 "Language: es_ES\n"
@@ -287,7 +287,9 @@ msgstr "Este cambio necesita una recarga completa.\n"
 msgid "You have chosen to authorize interpolation.\n"
 "Don't forget that data displayed will not be real but recomputed\n"
 "This can decrease accuracy!"
-msgstr ""
+msgstr "Ha elegido autorizar una interpolación.\n"
+"No olvide que los datos mostrados no serán reales hasta que se recalculen\n"
+"Esto ¡podrá bajar la precisión!"
 
 #: src/GribSettingsDialog.cpp:817 src/GribSettingsDialog.cpp:855
 #: src/grib_pi.cpp:637 src/GribRequestDialog.cpp:618
@@ -298,7 +300,9 @@ msgstr "¡Atención!"
 msgid "This option imply you authorize intrepolation\n"
 "Don't forget that data displayed will not be real but recomputed\n"
 "This can decrease accuracy!"
-msgstr ""
+msgstr "Esta opción implica autorizar una interpolación\n"
+"No olvide que los datos mostrados no serán reales hasta su recálculo\n"
+"Esto ¡podrá bajar la precisión!"
 
 #: src/GribUIDialogBase.cpp:29 src/GribUIDialogBase.cpp:147
 msgid "Previous"
@@ -358,15 +362,15 @@ msgstr "Energía potencial de convección disponible"
 
 #: src/GribUIDialogBase.cpp:530 src/CursorData.cpp:232
 msgid "Altitude"
-msgstr ""
+msgstr "Altitud"
 
 #: src/GribUIDialogBase.cpp:547
 msgid "Temp."
-msgstr ""
+msgstr "Temp."
 
 #: src/GribUIDialogBase.cpp:564
 msgid "Relat. Hum."
-msgstr ""
+msgstr "Hum. Relat."
 
 #: src/GribUIDialogBase.cpp:707
 msgid "Data Display Options"
@@ -517,35 +521,35 @@ msgstr "Estilo de diálogos"
 
 #: src/GribUIDialogBase.cpp:1029
 msgid "Data at cursor dialog is attached to icons bar - with a title/drag bar"
-msgstr ""
+msgstr "Los datos bajo el cursor se unen a la barra de iconos - con una barra desplegable"
 
 #: src/GribUIDialogBase.cpp:1032
 msgid "Data at cursor dialog is attached to icons bar - without a title/drag bar"
-msgstr ""
+msgstr "Los datos bajo el cursor se unen a la barra de iconos - sin barra desplegable"
 
 #: src/GribUIDialogBase.cpp:1035
 msgid "Data at cursor dialog is isolated and displayed horizontally"
-msgstr ""
+msgstr "Los datos bajo el cursor se separan y se muestan horizontalmente"
 
 #: src/GribUIDialogBase.cpp:1038
 msgid "Data at cursor dialog is isolated and displayed vertically"
-msgstr ""
+msgstr "Los datos bajo el cursor se separan y se muestan verticalmente"
 
 #: src/GribUIDialogBase.cpp:1051
 msgid "Buttons Visibility"
-msgstr ""
+msgstr "Visibilidad de Botones"
 
 #: src/GribUIDialogBase.cpp:1065
 msgid "Attached icon bar"
-msgstr ""
+msgstr "Barra de iconos unidos"
 
 #: src/GribUIDialogBase.cpp:1070
 msgid "Isolated icon bar"
-msgstr ""
+msgstr "Barra de iconos separados"
 
 #: src/GribUIDialogBase.cpp:1078
 msgid "Geopot. Height Choice"
-msgstr ""
+msgstr "Geopot. Elección de altura"
 
 #: src/GribUIDialogBase.cpp:1110
 msgid "Zoom to Center"
@@ -705,7 +709,7 @@ msgstr "Selección manual"
 
 #: src/GribUIDialogBase.cpp:1612
 msgid "Use Always this Area"
-msgstr ""
+msgstr "Utilice siempre esta Área"
 
 #: src/GribUIDialogBase.cpp:1622
 msgid "Max Lat"
@@ -801,7 +805,7 @@ msgstr "Control Visualización GRIB"
 
 #: src/GribUIDialogBase.h:340
 msgid "Preferences"
-msgstr ""
+msgstr "Preferencias"
 
 #: src/GribUIDialogBase.h:426
 msgid "Write and send eMail request"
@@ -813,7 +817,7 @@ msgstr "Tabla de Datos Grib"
 
 #: src/GribOverlayFactory.cpp:476
 msgid "Warning : Data at Geopotential Height"
-msgstr ""
+msgstr "Advertencia: Datos a altura Geopotencial"
 
 #: src/GribOverlayFactory.cpp:1028
 msgid "Building Isobar map"
@@ -883,7 +887,9 @@ msgstr "Tabla del tiempo"
 msgid "You have chosen to authorize interpolation.\n"
 "Don't forget that data displayed at current time will not be real but Recomputed\n"
 "This can decrease accuracy!"
-msgstr ""
+msgstr "Ha elegido permitir la interpolación.\n"
+"No olvide que los datos mostrados en este momento actual no serán reales hasta que se recalculen\n"
+"Esto ¡puede disminuir la precisión!"
 
 #: src/GribTable.cpp:168
 msgid "Air\n"
@@ -939,7 +945,10 @@ msgid "You request a forecast for more than 8 days horizon.\n"
 "This is conflicting with Wave data which will be removed from your request.\n"
 "Don't forget that beyond the first 8 days, the resolution will be only 2.5°x2.5°\n"
 "and the time intervall 12 hours."
-msgstr ""
+msgstr "Quiere una predicción para un horizonte superior a 8 días.\n"
+"Entra en conflicto con los datos a quitar de su petición.\n"
+"No olvide que tras los primeros 8 días la resolución será solo de 2.5°x2.5°\n"
+"y con un intervalo de tiempo de 12 horas."
 
 #: src/GribRequestDialog.cpp:825
 msgid "Max"
@@ -1001,27 +1010,27 @@ msgstr "Datos en posición de cursor"
 
 #: src/CursorData.cpp:230
 msgid "at Geopotential Height"
-msgstr ""
+msgstr "a altura Geopotencial"
 
 #: src/CursorData.cpp:233
 msgid "Temperature"
-msgstr ""
+msgstr "Temperatura"
 
 #: src/CursorData.cpp:236
 msgid "at"
-msgstr ""
+msgstr "a"
 
 #: src/CursorData.cpp:241
 msgid "Wind Speed"
-msgstr ""
+msgstr "Velocidad del viento"
 
 #: src/CursorData.cpp:242
 msgid "Wind Speed in Bf"
-msgstr ""
+msgstr "Velocidad del viento en Bf"
 
 #: src/CursorData.cpp:243
 msgid "Wind Direction"
-msgstr ""
+msgstr "Dirección viento"
 
 #: src/CursorData.cpp:246
 msgid "Wind Gust at"
@@ -1033,7 +1042,7 @@ msgstr "Temperatura del aire en"
 
 #: src/CursorData.cpp:249
 msgid "surface level"
-msgstr ""
+msgstr "nivel de superficie"
 
 #: src/CursorData.cpp:249
 msgid "Sea Surface Temperature"
