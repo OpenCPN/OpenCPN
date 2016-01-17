@@ -1891,7 +1891,8 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
                 if( wxFileExists( svgFile ) ){
                     wxSVGDocument svgDoc;
                     if( svgDoc.Load(svgFile) ){
-                        bmp = wxBitmap( svgDoc.Render( tool->m_width, tool->m_height, NULL, true, true ) );
+                        bmp = wxBitmap( svgDoc.Render( tool->m_width, tool->m_height, NULL, false, true ) );
+                        int xs = bmp.GetWidth();
                         bmp = m_style->SetBitmapBrightness(bmp);
                     }
                     else
