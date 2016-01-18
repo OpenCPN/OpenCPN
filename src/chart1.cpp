@@ -3721,7 +3721,7 @@ void MyFrame::ODoSetSize( void )
     }
 
     if( pthumbwin )
-        pthumbwin->SetMaxSize( cc1->GetParent()->GetSize() );
+        pthumbwin->SetMaxSize( cc1->GetParent()->GetClientSize() );
 
     //  Reset the options dialog size logic
     options_lastWindowSize = wxSize(0,0);
@@ -7485,7 +7485,7 @@ void MyFrame::SetChartThumbnail( int index )
                     wxRect cbarRect = wxRect(cbarLocn.x, cbarLocn.y, cc1->GetCanvasWidth(), piano_height);
                     if( cbarRect.Intersects( wxRect(tLocn.x, tLocn.y, pthumbwin->GetSize().x, pthumbwin->GetSize().y))){
                         pos = wxPoint((cc1->GetCanvasWidth() - pthumbwin->GetSize().x)/2,
-                                      (cc1->GetCanvasHeight() - pthumbwin->GetSize().y)/2);
+                                      (cc1->GetCanvasHeight() - pthumbwin->GetSize().y)/2 - piano_height);
                     }
                 }
                 pthumbwin->Move( pos );
