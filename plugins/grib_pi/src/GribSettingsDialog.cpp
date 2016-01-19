@@ -436,15 +436,16 @@ GribSettingsDialog::GribSettingsDialog(GRIBUICtrlBar &parent, GribOverlaySetting
         m_sSlicesPerUpdate->Append(wxString::Format(_T("%2d "), mn / 60) + _("h") + wxString::Format(_T(" %.2d "), mn % 60) + _("mn"));
     }
     //Set Bitmap
-    m_biAltitude->SetBitmap( wxBitmap( altitude ) );
-    m_biNow->SetBitmap( wxBitmap( now ) );
-    m_biZoomToCenter->SetBitmap( wxBitmap( zoomto ) );
-    m_biShowCursorData->SetBitmap( wxBitmap( m_parent.m_CDataIsShown ? curdata : ncurdata ) );
-    m_biPlay->SetBitmap( wxBitmap( play ) );
-    m_biTimeSlider->SetBitmap( wxBitmap( slider ) );
-    m_biOpenFile->SetBitmap( wxBitmap( openfile ) );
-    m_biSettings->SetBitmap( wxBitmap( setting ) );
-    m_biRequest->SetBitmap( wxBitmap( request ) );
+	m_biAltitude->SetBitmap(parent.GetScaledBitmap(wxBitmap(altitude), _T("altitude"), parent.m_ScaledFactor));
+	m_biNow->SetBitmap(parent.GetScaledBitmap(wxBitmap(now), _T("now"), parent.m_ScaledFactor));
+	m_biZoomToCenter->SetBitmap(parent.GetScaledBitmap(wxBitmap(zoomto), _T("zoomto"), parent.m_ScaledFactor));
+	m_biShowCursorData->SetBitmap(parent.GetScaledBitmap(parent.m_CDataIsShown ? wxBitmap(curdata) : wxBitmap(ncurdata),
+		parent.m_CDataIsShown ? _T("curdata") : _T("ncurdata"), parent.m_ScaledFactor));
+	m_biPlay->SetBitmap(parent.GetScaledBitmap(wxBitmap(play), _T("play"), parent.m_ScaledFactor));
+	m_biTimeSlider->SetBitmap(parent.GetScaledBitmap(wxBitmap(slider), _T("slider"), parent.m_ScaledFactor));
+	m_biOpenFile->SetBitmap(parent.GetScaledBitmap(wxBitmap(openfile), _T("openfile"), parent.m_ScaledFactor));
+	m_biSettings->SetBitmap(parent.GetScaledBitmap(wxBitmap(setting), _T("setting"), parent.m_ScaledFactor));
+	m_biRequest->SetBitmap(parent.GetScaledBitmap(wxBitmap(request), _T("request"), parent.m_ScaledFactor));
 	//read bookpage
 	wxFileConfig *pConf = GetOCPNConfigObject();
      if(pConf) {
