@@ -112,6 +112,7 @@ and extended by Sean D'Epagnier to support plotting."));
 
 wmm_pi::wmm_pi(void *ppimgr)
     : opencpn_plugin_18(ppimgr),
+    m_bShowPlot(false), 
     m_DeclinationMap(DECLINATION, MagneticModel, TimedMagneticModel, &Ellip),
     m_InclinationMap(INCLINATION, MagneticModel, TimedMagneticModel, &Ellip),
     m_FieldStrengthMap(FIELD_STRENGTH, MagneticModel, TimedMagneticModel, &Ellip),
