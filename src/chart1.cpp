@@ -1465,6 +1465,8 @@ bool MyApp::OnInit()
         // of the wxWidgets strings is not present.
         // So try again, without attempting to load defaults wxstd.mo.
         if( !b_initok ){
+            delete plocale_def_lang;
+            plocale_def_lang = new wxLocale;
             b_initok = plocale_def_lang->Init( pli->Language, 0 );
         }
         loc_lang_canonical = pli->CanonicalName;
