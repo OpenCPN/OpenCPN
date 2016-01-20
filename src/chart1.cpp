@@ -5900,6 +5900,10 @@ void MyFrame::SetupQuiltMode( void )
                 one_array.Add( dbi );
                 g_Piano->SetActiveKeyArray( one_array );
             }
+            
+            if( Current_Ch ) {
+                cc1->GetVP().SetProjectionType(Current_Ch->GetChartProjectionType());
+            }
 
         }
         //    Invalidate the current stack so that it will be rebuilt on next tick
@@ -7091,6 +7095,10 @@ void MyFrame::HandlePianoClick( int selected_index, int selected_dbIndex )
             SelectChartFromStack( selected_index );
             g_sticky_chart = selected_dbIndex;
         }
+
+        if( Current_Ch )
+            cc1->GetVP().SetProjectionType(Current_Ch->GetChartProjectionType());
+        
     } else {
         if( cc1->IsChartQuiltableRef( selected_dbIndex ) ){
             if( ChartData ) ChartData->PurgeCache();
