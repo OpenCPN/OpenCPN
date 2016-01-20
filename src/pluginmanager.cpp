@@ -2153,16 +2153,19 @@ wxString GetActiveStyleName()
         return _T("");
 }
 
-#ifdef ocpnUSE_SVG
 wxBitmap GetBitmapFromSVGFile(wxString filename, unsigned int width, unsigned int height)
 {
-	wxSVGDocument svgDoc;
-	if (svgDoc.Load(filename))
-		return wxBitmap(svgDoc.Render(width, height, NULL, true, true));
-	else
-		return wxBitmap(0, 0);
+#ifdef ocpnUSE_SVG
+    wxSVGDocument svgDoc;
+    if ( (width > 0) && (height > 0) && svgDoc.Load(filename))
+        return wxBitmap(svgDoc.Render(width, height, NULL, false, true));
+    else
+        return wxBitmap(0, 0);
+    
+#else        
+        return wxBitmap(0, 0);
+#endif // ocpnUSE_SVG   
 }
-#endif // ocpnUSE_SVG
 
 wxColour GetFontColour_PlugIn(wxString TextElement)
 {
