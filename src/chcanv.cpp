@@ -3209,7 +3209,8 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
             }
         }
         
-        VPoint.b_MercatorProjectionOverride = false;
+        if(!g_bopengl)
+            VPoint.b_MercatorProjectionOverride = false;
     }
 
     //  Handle the quilted case
