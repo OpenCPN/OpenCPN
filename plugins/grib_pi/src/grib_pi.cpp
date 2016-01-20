@@ -406,7 +406,7 @@ void grib_pi::OnToolbarToolCallback(int id)
         if( starting ) {
             m_GUIScaleFactor = scale_factor;
             SetDialogFont( m_pGribCtrlBar );
-            m_pGribCtrlBar->SetScaledBitmap( GetOCPNGUIToolScaleFactor_PlugIn(m_GUIScaleFactor) );
+			m_pGribCtrlBar->SetScaledBitmap( GetOCPNGUIToolScaleFactor_PlugIn(m_GUIScaleFactor) );
             m_pGribCtrlBar->SetDialogsStyleSizePosition( true );
         } else {
             MoveDialog( m_pGribCtrlBar, GetCtrlBarXY(), wxPoint( 20, 60) );

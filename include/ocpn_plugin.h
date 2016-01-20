@@ -39,6 +39,10 @@
 
 #include <wx/xml/xml.h>
 
+#ifdef ocpnUSE_SVG
+#include "wxsvg/include/wxSVG/svg.h"
+#endif // ocpnUSE_SVG
+
 class wxGLContext;
 
 //    This is the most modern API Version number
@@ -1020,6 +1024,10 @@ extern  DECL_EXP wxArrayString GetWaypointGUIDArray( void );
 
 extern  DECL_EXP bool AddPersistentFontKey(wxString TextElement);
 extern  DECL_EXP wxString GetActiveStyleName();
+
+#ifdef ocpnUSE_SVG
+extern  DECL_EXP wxBitmap GetBitmapFromSVGFile(wxString filename, unsigned int width, unsigned int height);
+#endif // ocpnUSE_SVG
 
 /*  Platform optimized File/Dir selector dialogs */
 extern  DECL_EXP int PlatformDirSelectorDialog( wxWindow *parent, wxString *file_spec, wxString Title, wxString initDir);
