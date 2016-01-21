@@ -7060,6 +7060,9 @@ wxTreeCtrl* ChartGroupsUI::AddEmptyGroupPage(const wxString& label) {
 
 void ChartGroupsUI::ClearGroupPages()
 {
+    if (m_GroupNB->GetPageCount() == 0)
+        return;
+
     for(unsigned int i = m_GroupNB->GetPageCount()-1 ; i > 0 ; i--){
         m_DirCtrlArray.RemoveAt(i);
         m_GroupNB->DeletePage(i);
