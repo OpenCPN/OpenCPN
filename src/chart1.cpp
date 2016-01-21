@@ -5599,6 +5599,7 @@ bool MyFrame::ScrubGroupArray()
             {
                 ChartGroupElement *pelement = pGroup->m_element_array.Item( j );
                 pGroup->m_element_array.RemoveAt( j );
+                j--;
                 delete pelement;
                 b_change = true;
             }
