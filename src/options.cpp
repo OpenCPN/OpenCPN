@@ -6646,16 +6646,17 @@ ChartGroupArray* ChartGroupsUI::CloneChartGroupArray(ChartGroupArray* s) {
 
 void ChartGroupsUI::EmptyChartGroupArray(ChartGroupArray* s) {
   if (!s) return;
-  for (unsigned int i = 0; i < s->GetCount(); i++) {
-    ChartGroup* psg = s->Item(i);
 
-    for (unsigned int j = 0; j < psg->m_element_array.GetCount(); j++) {
-      ChartGroupElement* pe = psg->m_element_array.Item(j);
+  while (s->GetCount() != 0) {
+    ChartGroup* psg = s->Item(0);
+
+    while (psg->m_element_array.GetCount() != 0) {
+      ChartGroupElement* pe = psg->m_element_array.Item(0);
       pe->m_missing_name_array.Clear();
-      psg->m_element_array.RemoveAt(j);
+      psg->m_element_array.RemoveAt(0);
       delete pe;
     }
-    s->RemoveAt(i);
+    s->RemoveAt(0);
     delete psg;
   }
 
