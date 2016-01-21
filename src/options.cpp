@@ -271,9 +271,6 @@ extern bool g_config_display_size_manual;
 
 extern "C" bool CheckSerialAccess(void);
 
-#include <wx/arrimpl.cpp>
-WX_DEFINE_OBJARRAY(ArrayOfDirCtrls);
-
 // sort callback for Connections list  Sort by priority.
 #if wxCHECK_VERSION(2, 9, 0)
 int wxCALLBACK SortConnectionOnPriority(long item1, long item2, wxIntPtr list)

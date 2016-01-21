@@ -201,7 +201,8 @@ enum {
 #define wxFIXED_MINSIZE 0
 #endif
 
-WX_DECLARE_OBJARRAY(wxGenericDirCtrl *, ArrayOfDirCtrls);
+#include <wx/arrimpl.cpp>
+WX_DEFINE_ARRAY_PTR(wxGenericDirCtrl *, ArrayOfDirCtrls);
 
 class Uncopyable {
  protected:
