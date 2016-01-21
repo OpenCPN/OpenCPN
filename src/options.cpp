@@ -6862,6 +6862,7 @@ void ChartGroupsUI::OnRemoveChartItem(wxCommandEvent& event) {
         }
         modified = TRUE;
         lastSelectedCtl->Unselect();
+        lastSelectedCtl = 0;
         m_pRemoveButton->Disable();
         wxLogMessage(_T("Disable"));
       }
@@ -6873,7 +6874,10 @@ void ChartGroupsUI::OnRemoveChartItem(wxCommandEvent& event) {
 void ChartGroupsUI::OnGroupPageChange(wxNotebookEvent& event) {
   m_GroupSelectedPage = event.GetSelection();
   allAvailableCtl->GetTreeCtrl()->UnselectAll();
-  if (lastSelectedCtl) lastSelectedCtl->UnselectAll();
+  if (lastSelectedCtl) {
+      lastSelectedCtl->UnselectAll();
+      lastSelectedCtl = 0;
+  }
   m_pRemoveButton->Disable();
   m_pAddButton->Disable();
 }
