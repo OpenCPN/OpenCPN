@@ -245,9 +245,21 @@ void datumParams(short datum, double *a, double *es)
     extern struct DATUM const gDatum[];
     extern struct ELLIPSOID const gEllipsoid[];
 
-    double f = 1.0 / gEllipsoid[gDatum[datum].ellipsoid].invf;    // flattening
-    *es = 2 * f - f * f;                                          // eccentricity^2
-    *a = gEllipsoid[gDatum[datum].ellipsoid].a;                   // semimajor axis
+    
+    if( datum < nDatums){
+        double f = 1.0 / gEllipsoid[gDatum[datum].ellipsoid].invf;    // flattening
+        if(es)
+            *es = 2 * f - f * f;                                          // eccentricity^2
+        if(a)
+            *a = gEllipsoid[gDatum[datum].ellipsoid].a;                   // semimajor axis
+    }
+    else{
+        double f = 1.0 / 298.257223563;    // WGS84
+        if(es)
+            *es = 2 * f - f * f;              
+        if(a)
+            *a = 6378137.0;                   
+    }
 }
 
 static int datumNameCmp(const char *n1, const char *n2)
@@ -887,6 +899,10 @@ void fromEQUIRECT(double x, double y, double lat0, double lon0, double *lat, dou
 
 void MolodenskyTransform (double lat, double lon, double *to_lat, double *to_lon, int from_datum_index, int to_datum_index)
 {
+    double dlat = 0;
+    double dlon = 0;
+    
+    if( from_datum_index < nDatums){
       const double from_lat = lat * DEGREE;
       const double from_lon = lon * DEGREE;
       const double from_f = 1.0 / gEllipsoid[gDatum[from_datum_index].ellipsoid].invf;    // flattening
@@ -912,18 +928,20 @@ void MolodenskyTransform (double lat, double lon, double *to_lat, double *to_lon
       const double rn = from_a / sqrt (1.0 - from_esq * ssqlat);
       const double rm = from_a * (1. - from_esq) / pow ((1.0 - from_esq * ssqlat), 1.5);
 
-      const double dlat = (((((-dx * slat * clon - dy * slat * slon) + dz * clat)
+      dlat = (((((-dx * slat * clon - dy * slat * slon) + dz * clat)
                   + (da * ((rn * from_esq * slat * clat) / from_a)))
                   + (df * (rm * adb + rn / adb) * slat * clat)))
             / (rm + from_h);
 
-      const double dlon = (-dx * slon + dy * clon) / ((rn + from_h) * clat);
+      dlon = (-dx * slon + dy * clon) / ((rn + from_h) * clat);
 
       const double dh = (dx * clat * clon) + (dy * clat * slon) + (dz * slat)
                   - (da * (from_a / rn)) + ((df * rn * ssqlat) / adb);
 
-      *to_lon = lon + dlon/DEGREE;
-      *to_lat = lat + dlat/DEGREE;
+    } 
+    
+    *to_lon = lon + dlon/DEGREE;
+    *to_lat = lat + dlat/DEGREE;
 //
       return;
 }
