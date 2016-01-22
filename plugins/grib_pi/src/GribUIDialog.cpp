@@ -345,11 +345,11 @@ void GRIBUICtrlBar::SetRequestBitmap( int type )
         break;
     case DRAW_SELECTION:
 		m_bpRequest->SetBitmapLabel(GetScaledBitmap(wxBitmap(selzone), _T("selzone"),m_ScaledFactor));
-        m_bpRequest->SetToolTip(_("Stop request"));
+        m_bpRequest->SetToolTip(_("Draw requested Area\nor Click here to stop request"));
         break;
     case COMPLETE_SELECTION:
 		m_bpRequest->SetBitmapLabel(GetScaledBitmap(wxBitmap(request_end), _T("request_end"), m_ScaledFactor));
-        m_bpRequest->SetToolTip(_("Valid request"));
+        m_bpRequest->SetToolTip(_("Valid Area and Continue"));
 		break;
     }
 }
@@ -747,7 +747,8 @@ void GRIBUICtrlBar::OnMouseEvent( wxMouseEvent& event )
 		MenuAppend(xmenu, ID_BTNSETTING, _("Settings"), wxITEM_NORMAL, GetScaledBitmap(wxBitmap(setting), _T("setting"), m_ScaledFactor));
 		bool requeststate1 = m_ZoneSelMode == AUTO_SELECTION || m_ZoneSelMode == SAVED_SELECTION || m_ZoneSelMode == START_SELECTION;
 		bool requeststate3 = m_ZoneSelMode == DRAW_SELECTION;
-		MenuAppend(xmenu, ID_BTNREQUEST, requeststate1 ? _("Start a request") : requeststate3 ? _("Stop request") : _("Valid request"),
+		MenuAppend(xmenu, ID_BTNREQUEST, requeststate1 ? _("Start a request") : requeststate3 ?
+						_("Draw requested Area or Click here to stop request") : _("Valid Area and Continue"),
 						wxITEM_NORMAL, GetScaledBitmap(wxBitmap(requeststate1 ? request : requeststate3 ? selzone : request_end),
 						requeststate1 ? _T("request") : requeststate3 ? _T("selzone") : _T("request_end"), m_ScaledFactor));
 
