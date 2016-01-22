@@ -89,6 +89,8 @@ extern wxPageSetupData*          g_pageSetupData;
 // Global print route selection dialog
 extern RoutePrintSelection * pRoutePrintSelection;
 
+extern float g_ChartScaleFactorExp;
+
 /*!
 * Helper stuff for calculating Route Plans
 */
@@ -2447,8 +2449,15 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
 
     m_bcomboBoxIcon = new wxBitmapComboBox( m_panelBasicProperties, wxID_ANY, _("Combo!"),
             wxDefaultPosition, wxDefaultSize, 0, NULL, wxCB_READONLY );
-    bSizer8->Add( m_bcomboBoxIcon, 1, wxALL, 5 );
 
+#ifdef __WXMSW__    
+    //  Accomodate scaling of icon
+    int min_size = metric * 3;
+    min_size = wxMax( min_size, (32 *g_ChartScaleFactorExp) + 8 );
+    m_bcomboBoxIcon->SetMinSize( wxSize(-1, min_size) );
+#endif
+    
+    bSizer8->Add( m_bcomboBoxIcon, 1, wxALL, 5 );
 
     bSizerTextProperties->AddSpacer(5);
     
@@ -3017,23 +3026,30 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
         bool fillCombo = m_bcomboBoxIcon->GetCount() == 0;
         wxImageList *icons = pWayPointMan->Getpmarkicon_image_list();
 
+        int target = 16;
         if( fillCombo  && icons){
             for( int i = 0; i < pWayPointMan->GetNumIcons(); i++ ) {
                 wxString *ps = pWayPointMan->GetIconDescription( i );
                 wxBitmap bmp = icons->GetBitmap( i );
 
-#ifdef __WXMSW__                
-                int target = 16;
-                int h = bmp.GetHeight();
-                if(bmp.GetHeight() > target){
-                    wxBitmap bmpl = bmp;
-                    wxImage img = bmpl.ConvertToImage();
+#ifdef __WXMSW__
+                if(g_ChartScaleFactorExp > 1.0){
+                    target = bmp.GetHeight() * g_ChartScaleFactorExp;
+                    wxImage img = bmp.ConvertToImage();
                     img.Rescale(target, target, wxIMAGE_QUALITY_HIGH);
                     bmp = wxBitmap(img);
                 }
+                
 #endif                
                 m_bcomboBoxIcon->Append( *ps, bmp );
             }
+#ifdef __WXMSW__ 
+            int metric = GetCharHeight();
+            target = wxMax( target, metric /** 15 / 10*/);
+
+            HWND hWnd = GetHwndOf(m_bcomboBoxIcon);
+            ::SendMessage(hWnd, CB_SETITEMHEIGHT, -1, target);     //  Set selection box size
+#endif            
         }
         
         // find the correct item in the combo box

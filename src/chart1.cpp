@@ -5384,6 +5384,14 @@ int MyFrame::DoOptionsDialog()
         g_options = NULL;
         g_pOptions = NULL;
     }
+    
+    //  Pick up chart object icon size changes (g_ChartScaleFactorExp)
+    if( pMarkPropDialog ) {
+        pMarkPropDialog->Hide();
+        pMarkPropDialog->Destroy();
+        pMarkPropDialog = NULL;
+    }
+    
 
     g_boptionsactive = false;
     return ret_val;
