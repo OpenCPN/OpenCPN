@@ -387,6 +387,7 @@ void wmm_pi::OnToolbarToolCallback(int id)
     /*m_pWmmDialog->SetMaxSize(m_pWmmDialog->GetSize());
     m_pWmmDialog->SetMinSize(m_pWmmDialog->GetSize());*/
     m_pWmmDialog->Show(!m_pWmmDialog->IsShown());
+    m_pWmmDialog->Layout();     // Some platforms need a re-Layout at this point (gtk, at least)
     if (m_pWmmDialog->IsShown())
         SendPluginMessage(_T("WMM_WINDOW_SHOWN"), wxEmptyString);
     else
