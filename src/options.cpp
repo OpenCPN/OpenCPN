@@ -271,9 +271,6 @@ extern bool g_config_display_size_manual;
 
 extern "C" bool CheckSerialAccess(void);
 
-#include <wx/arrimpl.cpp>
-WX_DEFINE_OBJARRAY(ArrayOfDirCtrls);
-
 // sort callback for Connections list  Sort by priority.
 #if wxCHECK_VERSION(2, 9, 0)
 int wxCALLBACK SortConnectionOnPriority(long item1, long item2, wxIntPtr list)
@@ -6649,16 +6646,17 @@ ChartGroupArray* ChartGroupsUI::CloneChartGroupArray(ChartGroupArray* s) {
 
 void ChartGroupsUI::EmptyChartGroupArray(ChartGroupArray* s) {
   if (!s) return;
-  for (unsigned int i = 0; i < s->GetCount(); i++) {
-    ChartGroup* psg = s->Item(i);
 
-    for (unsigned int j = 0; j < psg->m_element_array.GetCount(); j++) {
-      ChartGroupElement* pe = psg->m_element_array.Item(j);
+  while (s->GetCount() != 0) {
+    ChartGroup* psg = s->Item(0);
+
+    while (psg->m_element_array.GetCount() != 0) {
+      ChartGroupElement* pe = psg->m_element_array.Item(0);
       pe->m_missing_name_array.Clear();
-      psg->m_element_array.RemoveAt(j);
+      psg->m_element_array.RemoveAt(0);
       delete pe;
     }
-    s->RemoveAt(i);
+    s->RemoveAt(0);
     delete psg;
   }
 
@@ -6862,6 +6860,7 @@ void ChartGroupsUI::OnRemoveChartItem(wxCommandEvent& event) {
         }
         modified = TRUE;
         lastSelectedCtl->Unselect();
+        lastSelectedCtl = 0;
         m_pRemoveButton->Disable();
         wxLogMessage(_T("Disable"));
       }
@@ -6873,7 +6872,10 @@ void ChartGroupsUI::OnRemoveChartItem(wxCommandEvent& event) {
 void ChartGroupsUI::OnGroupPageChange(wxNotebookEvent& event) {
   m_GroupSelectedPage = event.GetSelection();
   allAvailableCtl->GetTreeCtrl()->UnselectAll();
-  if (lastSelectedCtl) lastSelectedCtl->UnselectAll();
+  if (lastSelectedCtl) {
+      lastSelectedCtl->UnselectAll();
+      lastSelectedCtl = 0;
+  }
   m_pRemoveButton->Disable();
   m_pAddButton->Disable();
 }
@@ -7059,6 +7061,9 @@ wxTreeCtrl* ChartGroupsUI::AddEmptyGroupPage(const wxString& label) {
 
 void ChartGroupsUI::ClearGroupPages()
 {
+    if (m_GroupNB->GetPageCount() == 0)
+        return;
+
     for(unsigned int i = m_GroupNB->GetPageCount()-1 ; i > 0 ; i--){
         m_DirCtrlArray.RemoveAt(i);
         m_GroupNB->DeletePage(i);
