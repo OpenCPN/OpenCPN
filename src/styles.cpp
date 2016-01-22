@@ -697,6 +697,11 @@ StyleManager::StyleManager(void)
     Init( g_Platform->GetHomeDir() );
     Init( g_Platform->GetHomeDir() + _T(".opencpn") + wxFileName::GetPathSeparator() );
     SetStyle( _T("") );
+#ifdef ocpnUSE_SVG
+    wxLogMessage("Using SVG Icons");
+#else
+    wxLogMessage("Using PNG Icons");
+#endif    
 }
 
 StyleManager::StyleManager(const wxString & configDir)
