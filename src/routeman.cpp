@@ -1378,6 +1378,8 @@ wxBitmap *WayPointman::CreateDimBitmap( wxBitmap *pBitmap, double factor )
 
 void WayPointman::SetColorScheme( ColorScheme cs )
 {
+    ProcessIcons( g_StyleManager->GetCurrentStyle() );
+    
     //    Iterate on the RoutePoint list, requiring each to reload icon
 
     wxRoutePointListNode *node = m_pWayPointList->GetFirst();
