@@ -1439,6 +1439,20 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
           //   Analyze Refpoints early because we need georef coefficient here.
           AnalyzeRefpoints( false );              // no post test needed
      
+          //  We need to compute a tentative min/max lat/lon to perform georefs
+          //  These lat/lon extents will be more accurately updated later.
+          m_LonMax = -360.0;
+          m_LonMin = 360.0;
+          m_LatMax = -90.0;
+          m_LatMin = 90.0;
+      
+          for(int i=0 ; i < nPlypoint ; i++){
+              m_LatMax = wxMax(m_LatMax, pPlyTable[i].ltp);
+              m_LatMin = wxMin(m_LatMin, pPlyTable[i].ltp);
+              m_LonMax = wxMax(m_LonMax, pPlyTable[i].lnp);
+              m_LonMin = wxMin(m_LonMin, pPlyTable[i].lnp);
+          }
+          
           int count = nPlypoint;
           nPlypoint = 0;
           Plypoint *pOldPlyTable = pPlyTable;
