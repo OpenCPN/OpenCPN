@@ -2374,8 +2374,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 
     if( cc1->GetVP().chart_scale > 300000 )             // According to S52, this should be 50,000
     {
-        float scale =  1.0f;
-        scale =  g_ChartScaleFactorExp;
+        float scale =  g_ChartScaleFactorExp;
         
         const int v = 12;
         // start with cross
@@ -2519,6 +2518,12 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
         float deg = 180/PI * ( icon_rad - PI/2 );
         glRotatef(deg, 0, 0, 1);
 
+        
+        if((g_ChartScaleFactorExp > 1.0) && ( g_OwnShipIconType < 2 )){
+            scale_factor_x = (log(g_ChartScaleFactorExp) + 1.0) * 1.0;   // soften the scale factor a bit
+            scale_factor_y = (log(g_ChartScaleFactorExp) + 1.0) * 1.0;
+        }
+        
         glScalef(scale_factor_x, scale_factor_y, 1);
 
         if( g_OwnShipIconType < 2 ) { // Bitmap
