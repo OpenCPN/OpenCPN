@@ -4230,7 +4230,9 @@ private:
 #define FAIL \
     do { \
       free(pt->pTileOffset); \
+      pt->pTileOffset = NULL; \
       free(pt->pPix); \
+      pt->pPix = NULL; \
       pt->bValid = false; \
       return 0; \
     } while(0)
