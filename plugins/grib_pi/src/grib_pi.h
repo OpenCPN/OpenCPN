@@ -152,7 +152,7 @@ private:
       wxString         m_bMailFromAddress;
       wxString         m_ZyGribLogin;
       wxString         m_ZyGribCode;
-      int              m_GUIScaleFactor;
+      double           m_GUIScaleFactor;
 
       bool             m_bGRIBShowIcon;
 
