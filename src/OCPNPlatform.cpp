@@ -1516,7 +1516,7 @@ double OCPNPlatform::GetToolbarScaleFactor( int GUIScaleFactor )
     
     rv = premult * postmult;
     rv = wxMin(rv, 3.0);      //  Clamp at 3.0
-    rv = wxMax(rv, 1.0);
+    rv = wxMax(rv, 0.5);      //  and at 0.5  
 
 #endif
 
@@ -1573,7 +1573,7 @@ double OCPNPlatform::GetCompassScaleFactor( int GUIScaleFactor )
 
     rv = premult * postmult;
     rv = wxMin(rv, 3.0);      //  Clamp at 3.0
-    rv = wxMax(rv, 1.0);
+    rv = wxMax(rv, 0.5);
     
 #endif
     
