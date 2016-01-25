@@ -81,7 +81,7 @@ wxBitmap MergeBitmaps( wxBitmap back, wxBitmap front, wxSize offset )
     //  WxWidgets still has some trouble overlaying bitmaps with transparency.
     //  This is true on wx2.8 as well as wx3.0
     //  In the specific case where the back bitmap has alpha, but the front does not,
-    //  we obviously mean for the front to be draw over the back, with 100% opacity.
+    //  we obviously mean for the front to be drawn over the back, with 100% opacity.
     //  To do this, we need to convert the back bitmap to simple no-alpha model.    
     if(!im_front.HasAlpha()){
         wxImage im_back = back.ConvertToImage();
@@ -91,14 +91,16 @@ wxBitmap MergeBitmaps( wxBitmap back, wxBitmap front, wxSize offset )
     
     wxBitmap merged( back.GetWidth(), back.GetHeight(), back.GetDepth() );
     
-#if !wxCHECK_VERSION(2,9,4)
-
     // Manual alpha blending for broken wxWidgets alpha bitmap support, pervasive in wx2.8.
+    // And also in wx3, at least on Windows...
+#if 1 //!wxCHECK_VERSION(2,9,4) 
+
+#if !wxCHECK_VERSION(2,9,4) 
     merged.UseAlpha();
     back.UseAlpha();
     front.UseAlpha();
+#endif    
     
-//    wxImage im_front = front.ConvertToImage();
     wxImage im_back = back.ConvertToImage();
     wxImage im_result = back.ConvertToImage();// Only way to make result have alpha channel in wxW 2.8.
 
@@ -464,7 +466,7 @@ wxBitmap Style::GetToolIcon(const wxString & toolname, int iconType, bool rollov
     return wxBitmap( GetToolSize().x, GetToolSize().y ); // Prevents crashing.
 }
 
-wxBitmap Style::BuildPluginIcon( const wxBitmap* bm, int iconType )
+wxBitmap Style::BuildPluginIcon( const wxBitmap* bm, int iconType, double factor )
 {
 	if( ! bm || ! bm->IsOk() ) return wxNullBitmap;
 
@@ -475,9 +477,28 @@ wxBitmap Style::BuildPluginIcon( const wxBitmap* bm, int iconType )
             if( hasBackground ) {
                 wxBitmap bg = GetNormalBG();
 
-                wxSize offset = wxSize( bg.GetWidth() - bm->GetWidth(), bg.GetHeight() - bm->GetHeight() );
-                offset /= 2;
-                iconbm = MergeBitmaps( bg, *bm, offset );
+                if((bg.GetWidth() >= bm->GetWidth()) && (bg.GetHeight() >= bm->GetHeight())){
+                    int w = bg.GetWidth() * factor;
+                    int h = bg.GetHeight() * factor;
+                    wxImage scaled_image = bg.ConvertToImage();
+                    bg = wxBitmap(scaled_image.Scale(w, h, wxIMAGE_QUALITY_HIGH));
+                    
+                    wxSize offset = wxSize( bg.GetWidth() - bm->GetWidth(), bg.GetHeight() - bm->GetHeight() );
+                    offset /= 2;
+                    iconbm = MergeBitmaps( bg, *bm, offset );
+                }
+                else{
+                    double factor = ((double)bm->GetHeight()) / bg.GetHeight();
+                    int nw = bg.GetWidth() * factor;
+                    int nh = bm->GetHeight();
+                    wxImage scaled_image = bg.ConvertToImage();
+                    bg = wxBitmap(scaled_image.Scale(nw, nh, wxIMAGE_QUALITY_HIGH));
+                    
+                    wxSize offset = wxSize( bg.GetWidth() - bm->GetWidth(), bg.GetHeight() - bm->GetHeight() );
+                    offset /= 2;
+                    iconbm = MergeBitmaps( bg, *bm, offset );
+                }
+                
             } else {
                 wxBitmap bg( GetToolSize().x, GetToolSize().y );
                 wxMemoryDC mdc( bg );
