@@ -1946,10 +1946,10 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
     }
 
     if( tool->firstInLine ) {
-        m_style->DrawToolbarLineStart( bmp );
+        m_style->DrawToolbarLineStart( bmp, m_sizefactor );
     }
     if( tool->lastInLine ) {
-        m_style->DrawToolbarLineEnd( bmp );
+        m_style->DrawToolbarLineEnd( bmp, m_sizefactor );
     }
 
     if( bmp.GetWidth() != m_style->GetToolSize().x

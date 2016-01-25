@@ -590,22 +590,41 @@ int Style::GetToolbarCornerRadius()
     return cornerRadius[currentOrientation];
 }
 
-void Style::DrawToolbarLineStart( wxBitmap& bmp )
+void Style::DrawToolbarLineStart( wxBitmap& bmp, double scale )
 {
     if( !HasToolbarStart() ) return;
     wxMemoryDC dc( bmp );
-    dc.DrawBitmap( GetToolbarStart(), 0, 0, true );
+    wxBitmap sbmp = GetToolbarStart();
+    if( fabs(scale - 1.0) > 0.01){
+        int h = sbmp.GetHeight() * scale;
+        int w = sbmp.GetWidth() * scale;
+        if( (h > 0) && (w > 0)){
+            wxImage scaled_image = sbmp.ConvertToImage();
+            sbmp = wxBitmap(scaled_image.Scale(w, h, wxIMAGE_QUALITY_HIGH));
+        }
+    }
+    dc.DrawBitmap( sbmp, 0, 0, true );
     dc.SelectObject( wxNullBitmap );
 }
 
-void Style::DrawToolbarLineEnd( wxBitmap& bmp )
+void Style::DrawToolbarLineEnd( wxBitmap& bmp, double scale )
 {
     if( !HasToolbarStart() ) return;
     wxMemoryDC dc( bmp );
+    wxBitmap sbmp = GetToolbarEnd();
+    if( fabs(scale - 1.0) > 0.01){
+        int h = sbmp.GetHeight() * scale;
+        int w = sbmp.GetWidth() * scale;
+        if( (h > 0) && (w > 0)){
+            wxImage scaled_image = sbmp.ConvertToImage();
+            sbmp = wxBitmap(scaled_image.Scale(w, h, wxIMAGE_QUALITY_HIGH));
+        }
+    }
+    
     if( currentOrientation ) {
-        dc.DrawBitmap( GetToolbarEnd(), 0, bmp.GetHeight() - GetToolbarEnd().GetHeight(), true );
+        dc.DrawBitmap( sbmp, 0, bmp.GetHeight() - sbmp.GetHeight(), true );
     } else {
-        dc.DrawBitmap( GetToolbarEnd(), bmp.GetWidth() - GetToolbarEnd().GetWidth(), 0, true );
+        dc.DrawBitmap( sbmp, bmp.GetWidth() - sbmp.GetWidth(), 0, true );
     }
     dc.SelectObject( wxNullBitmap );
 }

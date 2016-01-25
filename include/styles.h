@@ -134,8 +134,8 @@ public:
 
       bool HasToolbarStart() const { return toolbarStartLoc[currentOrientation] != wxPoint(0,0); }
       bool HasToolbarEnd() const { return toolbarEndLoc[currentOrientation] != wxPoint(0,0); }
-      void DrawToolbarLineStart( wxBitmap& bmp );
-      void DrawToolbarLineEnd( wxBitmap& bmp );
+      void DrawToolbarLineStart( wxBitmap& bmp, double scale = 1.0 );
+      void DrawToolbarLineEnd( wxBitmap& bmp, double scale = 1.0 );
 
       wxBitmap SetBitmapBrightness( wxBitmap& bitmap );
       wxBitmap SetBitmapBrightnessAbs( wxBitmap& bitmap, double level );
