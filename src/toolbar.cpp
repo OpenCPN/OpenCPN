@@ -1915,9 +1915,11 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
                     else
                         bmp = m_style->BuildPluginIcon( tool->pluginNormalIcon, toggleFlag );
                     
-                    if( m_sizefactor > 1.0 ){
-                        wxImage scaled_image = bmp.ConvertToImage();
-                        bmp = wxBitmap(scaled_image.Scale(tool->m_width, tool->m_height, wxIMAGE_QUALITY_HIGH));
+                    if( fabs(m_sizefactor - 1.0) > 0.01){
+                        if(tool->m_width && tool->m_height){
+                            wxImage scaled_image = bmp.ConvertToImage();
+                            bmp = wxBitmap(scaled_image.Scale(tool->m_width, tool->m_height, wxIMAGE_QUALITY_HIGH));
+                        }
                     }
                 }
             }

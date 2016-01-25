@@ -77,6 +77,18 @@ wxBitmap MergeBitmaps( wxBitmap back, wxBitmap front, wxSize offset )
     if(!im_front.HasAlpha() && (front.GetWidth() == back.GetWidth()) )
         return front;
 
+#ifdef __WXMSW__
+    //  WxWidgets still has some trouble overlaying bitmaps with transparency.
+    //  This is true on wx2.8 as well as wx3.0
+    //  In the specific case where the back bitmap has alpha, but the front does not,
+    //  we obviously mean for the front to be draw over the back, with 100% opacity.
+    //  To do this, we need to convert the back bitmap to simple no-alpha model.    
+    if(!im_front.HasAlpha()){
+        wxImage im_back = back.ConvertToImage();
+        back = wxBitmap(im_back);
+    }
+#endif    
+    
     wxBitmap merged( back.GetWidth(), back.GetHeight(), back.GetDepth() );
     
 #if !wxCHECK_VERSION(2,9,4)
@@ -145,7 +157,6 @@ wxBitmap MergeBitmaps( wxBitmap back, wxBitmap front, wxSize offset )
         }
     }
     merged = wxBitmap( im_result );
-
 #else
     wxMemoryDC mdc( merged );
     mdc.Clear();
