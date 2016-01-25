@@ -103,7 +103,7 @@ extern ColorScheme      global_color_scheme;
 extern ChartCanvas     *cc1;
 extern wxArrayString    g_locale_catalog_array;
 extern int              g_GUIScaleFactor;
-extern float            g_ChartScaleFactor;
+extern int              g_ChartScaleFactor;
 
 unsigned int      gs_plib_flags;
 
