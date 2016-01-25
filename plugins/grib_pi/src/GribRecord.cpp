@@ -1309,6 +1309,8 @@ bool GribRecord::getInterpolatedValues(double &M, double &A,
     unsigned int i1 = pi+1, j1 = pj+1;
     if(i1 >= GRX->Ni)
         i1 -= GRX->Ni;
+    if(j1 >= GRX->Nj)
+        j1 -= GRX->Nj;
 
     // distances to 00
     double dx = pi-i0;
