@@ -144,6 +144,8 @@ int wmm_pi::Init(void)
 
     m_LastVal = wxEmptyString;
 
+    pFontSmall = new wxFont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
+    
     //    WMM initialization
     /* Memory allocation */
     int NumTerms = ( ( WMM_MAX_MODEL_DEGREES + 1 ) * ( WMM_MAX_MODEL_DEGREES + 2 ) / 2 );    /* WMM_MAX_MODEL_DEGREES is defined in WMM_Header.h */
@@ -235,6 +237,8 @@ bool wmm_pi::DeInit(void)
         free(Geoid.GeoidHeightBuffer);
         Geoid.GeoidHeightBuffer = NULL;
     }*/
+    
+    delete pFontSmall;
     return true;
 }
 
@@ -526,6 +530,8 @@ void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix)
         wxColour cf;
         GetGlobalColor(_T("CHBLK"), &cf);
         dc.SetTextForeground(cf);
+        if(pFontSmall->IsOk())
+            dc.SetFont(*pFontSmall);
         wxSize s = dc.GetTextExtent(NewVal);
         dc.DrawText(NewVal, (_img_wmm_live->GetWidth() - s.GetWidth()) / 2, (_img_wmm_live->GetHeight() - s.GetHeight()) / 2);
         dc.SelectObject(wxNullBitmap);
