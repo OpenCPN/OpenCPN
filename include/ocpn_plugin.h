@@ -1009,6 +1009,7 @@ extern DECL_EXP wxFont *GetOCPNScaledFont_PlugIn(wxString TextElement, int defau
 extern DECL_EXP wxFont GetOCPNGUIScaledFont_PlugIn(wxString item);
 extern DECL_EXP double GetOCPNGUIToolScaleFactor_PlugIn(int GUIScaledFactor);
 extern DECL_EXP double GetOCPNGUIToolScaleFactor_PlugIn();
+extern DECL_EXP float  GetOCPNChartScaleFactor_Plugin();
 extern DECL_EXP wxColour GetFontColour_PlugIn(wxString TextElement);
 
 extern DECL_EXP double GetCanvasTilt();
