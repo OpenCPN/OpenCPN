@@ -103,6 +103,7 @@ extern ColorScheme      global_color_scheme;
 extern ChartCanvas     *cc1;
 extern wxArrayString    g_locale_catalog_array;
 extern int              g_GUIScaleFactor;
+extern int              g_ChartScaleFactor;
 
 unsigned int      gs_plib_flags;
 
@@ -2133,6 +2134,11 @@ double GetOCPNGUIToolScaleFactor_PlugIn(int GUIScaleFactor)
 double GetOCPNGUIToolScaleFactor_PlugIn()
 {
     return g_Platform->GetToolbarScaleFactor(g_GUIScaleFactor);
+}
+
+float GetOCPNChartScaleFactor_Plugin()
+{
+    return g_Platform->getChartScaleFactorExp( g_ChartScaleFactor );
 }
 
 wxFont GetOCPNGUIScaledFont_PlugIn(wxString item)
