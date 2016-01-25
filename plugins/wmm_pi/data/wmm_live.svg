@@ -50,7 +50,7 @@
      inkscape:window-x="-3"
      inkscape:window-y="-3"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg1" />
+     inkscape:current-layer="g4376-1" />
   <defs
      id="defs3">
     <linearGradient
@@ -182,11 +182,11 @@
     <linearGradient
        id="linearGradient1640">
       <stop
-         style="stop-color:#c9ccc9;stop-opacity:1;"
+         style="stop-color:#c9cbcc;stop-opacity:1;"
          offset="0"
          id="stop1641" />
       <stop
-         style="stop-color:#0020e2;stop-opacity:1;"
+         style="stop-color:#7eb5ff;stop-opacity:1;"
          offset="1"
          id="stop1642" />
     </linearGradient>
@@ -585,7 +585,7 @@
        xlink:href="#linearGradient1640"
        id="radialGradient3990"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.03798106,0,0,0.03774915,-15.747763,-15.698695)"
+       gradientTransform="matrix(0.03798106,0,0,0.03774915,-15.51606,-15.814546)"
        cx="832.37164"
        cy="840.52863"
        fx="832.37164"
@@ -646,8 +646,8 @@
      id="rect3585-4"
      style="fill:none;stroke:#939393;stroke-width:1.02100003;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;enable-background:new" />
   <path
-     d="m 27.078139,16.030556 a 11.211614,11.142713 0 0 1 -22.4232272,0 11.211614,11.142713 0 1 1 22.4232272,0 z"
-     style="fill:url(#radialGradient3990);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.047;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+     d="m 27.309841,15.914705 a 11.211614,11.142713 0 0 1 -22.4232264,0 11.211614,11.142713 0 1 1 22.4232264,0 z"
+     style="fill:url(#radialGradient3990);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.03786489pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
      id="path1720"
      inkscape:connector-curvature="0" />
   <path
