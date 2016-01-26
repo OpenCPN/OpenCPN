@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-31 17:29-0300\n"
-"PO-Revision-Date: 2015-12-31 15:38-0500\n"
+"PO-Revision-Date: 2016-01-25 19:58-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
@@ -39,7 +39,7 @@ msgstr "Сведения об объектах в точке"
 
 #: include/GoToPositionDialog.h:38 src/AISTargetListDialog.cpp:609
 msgid "Center View"
-msgstr "Центрировать вид"
+msgstr "Перейти по координатам"
 
 #: include/gpxdocument.h:35 src/routeprop.cpp:844 src/routeprop.cpp:1190
 #: src/routeprop.cpp:2530 src/TrackPropDlg.cpp:373 src/TrackPropDlg.cpp:631
@@ -64,19 +64,19 @@ msgstr "Тёмно-синий"
 
 #: include/gpxdocument.h:35
 msgid "DarkMagenta"
-msgstr "Тёмно-Фиолетовый"
+msgstr "Тёмно-фиолетовый"
 
 #: include/gpxdocument.h:35
 msgid "DarkCyan"
-msgstr ""
+msgstr "Темно-голубой"
 
 #: include/gpxdocument.h:35
 msgid "LightGray"
-msgstr ""
+msgstr "Светло-серый"
 
 #: include/gpxdocument.h:35
 msgid "DarkGray"
-msgstr ""
+msgstr "Темно-серый"
 
 #: include/gpxdocument.h:35 src/routeprop.cpp:846 src/routeprop.cpp:1192
 #: src/routeprop.cpp:2532 src/TrackPropDlg.cpp:375 src/TrackPropDlg.cpp:633
@@ -142,7 +142,7 @@ msgstr "Информация о путевой точке"
 
 #: include/SendToGpsDlg.h:38
 msgid "Send Route To GPS"
-msgstr "Отправить маршрут GPS"
+msgstr "Отправить маршрут в GPS"
 
 #: include/TrackPropDlg.h:182 src/TrackPropDlg.cpp:1129
 msgid "Track Properties"
@@ -1064,11 +1064,11 @@ msgstr "Не определено (по умолчанию)"
 
 #: src/ais.cpp:1556 src/ais.cpp:1557
 msgid "AIS Target Name"
-msgstr ""
+msgstr "Наименование цели АИС"
 
 #: src/AIS_Decoder.cpp:189
 msgid "Vessel, type unknown"
-msgstr ""
+msgstr "Судно неизвестного типа"
 
 #: src/AIS_Decoder.cpp:190
 msgid "Freightbarge"
@@ -1124,7 +1124,7 @@ msgstr ""
 
 #: src/AIS_Decoder.cpp:203
 msgid "Container vessel"
-msgstr ""
+msgstr "Контейнеровоз"
 
 #: src/AIS_Decoder.cpp:204
 msgid "Gas tanker"
@@ -1156,11 +1156,11 @@ msgstr ""
 
 #: src/AIS_Decoder.cpp:211
 msgid "Tug, freighter"
-msgstr ""
+msgstr "Буксир, грузовое судно"
 
 #: src/AIS_Decoder.cpp:212
 msgid "Tug, tanker"
-msgstr ""
+msgstr "Буксир, танкер"
 
 #: src/AIS_Decoder.cpp:213
 msgid "Tug freighter, coupled"

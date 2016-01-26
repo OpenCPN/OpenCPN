@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-31 17:29-0300\n"
-"PO-Revision-Date: 2016-01-16 20:59-0500\n"
+"PO-Revision-Date: 2016-01-25 19:56-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -3178,7 +3178,7 @@ msgstr "Activer l'affichage en mosaïque"
 #: src/chart1.cpp:5003 src/chart1.cpp:5006 src/options.cpp:3702
 #: src/options.cpp:3792
 msgid "Show Chart Outlines"
-msgstr "La bordure des cartes"
+msgstr "Montrer la bordure des cartes"
 
 #: src/chart1.cpp:5008 src/options.cpp:4328
 msgid "Show Chart Bar"
@@ -4130,7 +4130,7 @@ msgstr "NMEA"
 
 #: src/options.cpp:1129 src/options.cpp:1733 src/options.cpp:3606
 msgid "General"
-msgstr "Options propres à l'utilisateur"
+msgstr "Général"
 
 #: src/options.cpp:1138
 msgid "Filter NMEA COG/SOG"
@@ -4918,7 +4918,7 @@ msgstr "Ajouter"
 
 #: src/options.cpp:3538
 msgid "Remove Chart"
-msgstr "Enlever ce dossier du groupe sélectionné"
+msgstr "Enlever ce dossier du groupe choisi"
 
 #: src/options.cpp:3562
 msgid "All Charts"
@@ -5156,7 +5156,7 @@ msgstr "Alerte sur cible : Activer le délai maximum d’acquittement (minutes)"
 
 #: src/options.cpp:4241
 msgid "General Options"
-msgstr "Options propres à l'utilisateur"
+msgstr "Options générales"
 
 #: src/options.cpp:4250
 msgid "Language"

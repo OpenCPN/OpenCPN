@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-20 18:04-0600\n"
-"PO-Revision-Date: 2016-01-16 21:00-0500\n"
+"PO-Revision-Date: 2016-01-25 19:56-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -27,7 +27,7 @@ msgstr "Position"
 
 #: src/dashboard_pi.cpp:99
 msgid "SOG"
-msgstr ""
+msgstr "SOG"
 
 #: src/dashboard_pi.cpp:101
 msgid "Speedometer"
@@ -35,11 +35,11 @@ msgstr "Log"
 
 #: src/dashboard_pi.cpp:103
 msgid "COG"
-msgstr ""
+msgstr "COG"
 
 #: src/dashboard_pi.cpp:105
 msgid "Mag COG"
-msgstr ""
+msgstr "Mag COG"
 
 #: src/dashboard_pi.cpp:107
 msgid "GPS Compass"
@@ -51,7 +51,7 @@ msgstr "Wahrer Kompaß"
 
 #: src/dashboard_pi.cpp:111
 msgid "STW"
-msgstr ""
+msgstr "STW"
 
 #: src/dashboard_pi.cpp:113
 msgid "True HDG"
@@ -67,7 +67,7 @@ msgstr "scheinb. Windwinkel & -Geschw."
 
 #: src/dashboard_pi.cpp:120
 msgid "App & True Wind Angle"
-msgstr ""
+msgstr "Scheinb. & Wahrer Windwinkel"
 
 #: src/dashboard_pi.cpp:122 src/dashboard_pi.cpp:124
 msgid "App. Wind Speed"
@@ -115,7 +115,7 @@ msgstr "wahre Windricht. & -Geschw."
 
 #: src/dashboard_pi.cpp:150 src/dashboard_pi.cpp:152
 msgid "VMG"
-msgstr ""
+msgstr "VMG"
 
 #: src/dashboard_pi.cpp:154 src/dashboard_pi.cpp:156
 msgid "Rudder Angle"
@@ -127,11 +127,11 @@ msgstr "GPS Sat. Anzahl"
 
 #: src/dashboard_pi.cpp:160
 msgid "GPS Status"
-msgstr ""
+msgstr "GPS-Status"
 
 #: src/dashboard_pi.cpp:162
 msgid "Cursor"
-msgstr ""
+msgstr "Cursor"
 
 #: src/dashboard_pi.cpp:164
 msgid "Clock"
@@ -155,11 +155,11 @@ msgstr "Barometerhistorie"
 
 #: src/dashboard_pi.cpp:174
 msgid "Trip Log"
-msgstr ""
+msgstr "Log Trip"
 
 #: src/dashboard_pi.cpp:176
 msgid "Sum Log"
-msgstr ""
+msgstr "Summenlog"
 
 #: src/dashboard_pi.cpp:178
 msgid "From Ownship"
@@ -167,17 +167,17 @@ msgstr "von eigener Position"
 
 #: src/dashboard_pi.cpp:180
 msgid "Pitch"
-msgstr ""
+msgstr "Nickwinkel"
 
 #: src/dashboard_pi.cpp:182
 msgid "Heel"
-msgstr ""
+msgstr "Krägung"
 
 #: src/dashboard_pi.cpp:352 src/dashboard_pi.cpp:465 src/dashboard_pi.cpp:1397
 #: src/dashboard_pi.cpp:1406 src/dashboard_pi.cpp:1568
 #: src/dashboard_pi.cpp:1607 src/dashboard_pi.cpp:1871
 msgid "Dashboard"
-msgstr ""
+msgstr "Dashboard"
 
 #: src/dashboard_pi.cpp:470
 msgid "Dashboard PlugIn for OpenCPN"
@@ -252,7 +252,7 @@ msgstr "Daten:"
 
 #: src/dashboard_pi.cpp:1710
 msgid "Label:"
-msgstr ""
+msgstr "Beschreibung:"
 
 #: src/dashboard_pi.cpp:1716
 msgid "Small:"
@@ -426,5 +426,5 @@ msgstr "NNW"
 #: src/wind_history.cpp:575
 #, c-format
 msgid "Max %.1f %s since %02d:%02d  Overall %.1f %s"
-msgstr ""
+msgstr "Max %.1f %s seit %02d:%02d  Gesamt %.1f %s"
 

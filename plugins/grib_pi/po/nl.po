@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-20 18:03-0600\n"
-"PO-Revision-Date: 2016-01-16 21:00-0500\n"
+"PO-Revision-Date: 2016-01-25 19:57-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Dutch\n"
 "Language: nl_NL\n"
@@ -18,11 +18,11 @@ msgstr ""
 
 #: src/GribUIDialog.cpp:330 src/GribUIDialog.cpp:733
 msgid "Start a request"
-msgstr "Start een verzoek"
+msgstr "Start verzoek"
 
 #: src/GribUIDialog.cpp:334 src/GribUIDialog.cpp:733
 msgid "Stop request"
-msgstr "Stop een verzoek"
+msgstr "Stop verzoek"
 
 #: src/GribUIDialog.cpp:338 src/GribUIDialog.cpp:733
 msgid "Valid request"
@@ -46,11 +46,11 @@ msgstr "Waarschuwing: lege map!"
 
 #: src/GribUIDialog.cpp:537 src/GribUIDialog.cpp:726
 msgid "Hide data at cursor"
-msgstr "Verberg gegevens op cursor"
+msgstr "Verberg gegevens bij cursor"
 
 #: src/GribUIDialog.cpp:537 src/GribUIDialog.cpp:726
 msgid "Show data at cursor"
-msgstr "Geef gegevens weer op cursor"
+msgstr "Toon gegevens bij cursor"
 
 #: src/GribUIDialog.cpp:538 src/GribUIDialog.cpp:728 src/GribUIDialog.cpp:966
 msgid "Start play back"
@@ -271,11 +271,11 @@ msgstr "tussenafstand:"
 
 #: src/GribSettingsDialog.cpp:791
 msgid "You want to remove the dialog title/drag bar\n"
-msgstr "U wilt de titel/sleep-balk van het dialoogvenster verwijderen\n"
+msgstr "U wilt de titel-/sleepbalk van het dialoogvenster verwijderen\n"
 
 #: src/GribSettingsDialog.cpp:793
 msgid "You want to add a title/drag bar to the dialog\n"
-msgstr "U wilt een titel/sleep-balk aan het dialoogvenster toevoegen\n"
+msgstr "U wilt een titel-/sleepbalk aan het dialoogvenster toevoegen\n"
 
 #: src/GribSettingsDialog.cpp:796
 msgid "This change needs a complete reload.\n"
@@ -393,7 +393,7 @@ msgstr "Kleuren"
 #: src/GribUIDialogBase.cpp:750 src/GribUIDialogBase.cpp:828
 #: src/GribUIDialogBase.cpp:884
 msgid "Spacing(pixels)"
-msgstr "Afstand(pixels)"
+msgstr "Afstand (pixels)"
 
 #: src/GribUIDialogBase.cpp:754 src/GribUIDialogBase.cpp:832
 #: src/GribUIDialogBase.cpp:888
@@ -515,7 +515,7 @@ msgstr "Afspelen"
 
 #: src/GribUIDialogBase.cpp:1022
 msgid "Dialogs Style"
-msgstr "Dialoogstijl"
+msgstr "Stijl dialoogvenster"
 
 #: src/GribUIDialogBase.cpp:1029
 msgid "Data at cursor dialog is attached to icons bar - with a title/drag bar"
@@ -929,7 +929,7 @@ msgstr "Voer uw verwachte koers in"
 
 #: src/GribRequestDialog.cpp:456
 msgid "Coord. "
-msgstr "Coord. "
+msgstr "Coörd. "
 
 #: src/GribRequestDialog.cpp:461 src/GribRequestDialog.cpp:822
 #: src/GribRequestDialog.cpp:825

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-20 18:04-0600\n"
-"PO-Revision-Date: 2016-01-16 21:00-0500\n"
+"PO-Revision-Date: 2016-01-25 19:57-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -84,7 +84,7 @@ msgstr "Aktuell"
 #: src/chartdldr_pi.cpp:584
 #, c-format
 msgid "%lu charts total, %lu updated, %lu new"
-msgstr ""
+msgstr "%lu Karten gesamt, %lu erneuert, %lu neu"
 
 #: src/chartdldr_pi.cpp:663 src/chartdldr_pi.cpp:1233
 msgid "(Please update first)"
@@ -160,11 +160,11 @@ msgstr "Keine Karten zum Download gewählt."
 
 #: src/chartdldr_pi.cpp:992
 msgid "Abort download"
-msgstr ""
+msgstr "Download Abbrechen"
 
 #: src/chartdldr_pi.cpp:1001
 msgid "Unknown"
-msgstr ""
+msgstr "Unbekannt"
 
 #: src/chartdldr_pi.cpp:1008
 #, c-format
@@ -181,12 +181,13 @@ msgstr "Fehler, die URL zu den Kartendaten (%s) scheint falsch."
 #: src/chartdldr_pi.cpp:1046
 #, c-format
 msgid "Downloading chart %u of %u, %u downloads failed (%s / %s)"
-msgstr ""
+msgstr "Karte %u von %u herunterladen, %u Downloads fehlgeschlagen (%s / %s)"
 
 #: src/chartdldr_pi.cpp:1075 src/chartdldrgui.cpp:293
 msgid "Download\n"
 " selected charts"
-msgstr ""
+msgstr "Download von \n"
+" gewählten Karten"
 
 #: src/chartdldr_pi.cpp:1104 src/chartdldrgui.cpp:95
 msgid "Catalog"
@@ -206,7 +207,7 @@ msgstr "Titel"
 
 #: src/chartdldr_pi.cpp:1111
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #: src/chartdldr_pi.cpp:1112
 msgid "Latest"
@@ -255,11 +256,11 @@ msgstr "Vordefiniert"
 
 #: src/chartdldrgui.cpp:125
 msgid "Name"
-msgstr ""
+msgstr "Name"
 
 #: src/chartdldrgui.cpp:133
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #: src/chartdldrgui.cpp:145
 msgid "Custom"
@@ -275,7 +276,7 @@ msgstr "Wähle Ordner"
 
 #: src/chartdldrgui.cpp:197 src/chartdldrgui.cpp:529
 msgid "Choose Chart File Directory"
-msgstr ""
+msgstr "Wählen Sie den Ordner für die Karten"
 
 #: src/chartdldrgui.cpp:222 src/chartdldrgui.cpp:335
 msgid "Catalogs"
@@ -303,7 +304,7 @@ msgstr "Editiere..."
 
 #: src/chartdldrgui.cpp:258 src/chartdldrgui.cpp:359
 msgid "Update"
-msgstr ""
+msgstr "Aktualisieren"
 
 #: src/chartdldrgui.cpp:260 src/chartdldrgui.cpp:361
 msgid "Download the current chart catalog and update the data."
@@ -372,23 +373,23 @@ msgstr "Nicht verfügbar"
 
 #: src/wxcurl/dialog.cpp:168
 msgid "URL:"
-msgstr ""
+msgstr "URL:"
 
 #: src/wxcurl/dialog.cpp:187
 msgid "Speed:"
-msgstr ""
+msgstr "Geschw:"
 
 #: src/wxcurl/dialog.cpp:196
 msgid "Elapsed time:"
-msgstr ""
+msgstr "Verstrichene Zeit:"
 
 #: src/wxcurl/dialog.cpp:198
 msgid "Estimated total time:"
-msgstr ""
+msgstr "Voraussichtliche Gesamtdauer:"
 
 #: src/wxcurl/dialog.cpp:200
 msgid "Estimated remaining time:"
-msgstr ""
+msgstr "Geschätzte verbleibende Zeit:"
 
 #: src/wxcurl/dialog.cpp:243 src/wxcurl/dialog.cpp:397
 msgid "Abort"
@@ -400,23 +401,23 @@ msgstr "Einstellungen"
 
 #: src/wxcurl/dialog.cpp:250 src/wxcurl/dialog.cpp:418
 msgid "Pause"
-msgstr ""
+msgstr "Anhalten"
 
 #: src/wxcurl/dialog.cpp:252
 msgid "Start"
-msgstr ""
+msgstr "Start"
 
 #: src/wxcurl/dialog.cpp:397
 msgid "Close"
-msgstr ""
+msgstr "Schließen"
 
 #: src/wxcurl/dialog.cpp:408
 msgid "Resume"
-msgstr ""
+msgstr "Fortsetzen"
 
 #: src/wxcurl/dialog.cpp:411
 msgid "0 (transfer paused)"
-msgstr ""
+msgstr "0 (Download angehalten)"
 
 #: src/wxcurl/dialog.cpp:459
 msgid "Connection settings"
@@ -428,15 +429,15 @@ msgstr "Verbindungseinstellungen dieses Transfers:"
 
 #: src/wxcurl/dialog.cpp:514
 msgid "0 (transfer completed)"
-msgstr ""
+msgstr "0 (Download abgeschlossen)"
 
 #: src/wxcurl/dialog.cpp:535
 msgid "Downloaded:"
-msgstr ""
+msgstr "Heruntergeladen:"
 
 #: src/wxcurl/dialog.cpp:583
 msgid "Uploaded:"
-msgstr ""
+msgstr "Hochgeladen:"
 
 #: src/wxcurl/panel.cpp:111
 msgid "Username:"
@@ -448,15 +449,15 @@ msgstr "Paßwort:"
 
 #: src/wxcurl/panel.cpp:120
 msgid "Port:"
-msgstr ""
+msgstr "Port: :"
 
 #: src/wxcurl/panel.cpp:134
 msgid "Proxy settings"
-msgstr ""
+msgstr "Proxy-Einstellungen"
 
 #: src/wxcurl/panel.cpp:136
 msgid "Use proxy"
-msgstr ""
+msgstr "Benutze Proxy-Server"
 
 #: src/wxcurl/panel.cpp:141
 msgid "Proxy host:"

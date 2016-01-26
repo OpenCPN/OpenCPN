@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-31 17:29-0300\n"
-"PO-Revision-Date: 2016-01-16 20:59-0500\n"
+"PO-Revision-Date: 2016-01-25 19:56-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -1561,20 +1561,20 @@ msgstr "Belgien"
 
 #: src/AIS_Target_Data.cpp:903
 msgid "Belarus"
-msgstr ""
+msgstr "Weißrussland"
 
 #: src/AIS_Target_Data.cpp:904
 msgid "Bulgaria"
-msgstr ""
+msgstr "Bulgarien"
 
 #: src/AIS_Target_Data.cpp:905
 msgid "Vatican City State"
-msgstr ""
+msgstr "Vatikanstaat"
 
 #: src/AIS_Target_Data.cpp:906 src/AIS_Target_Data.cpp:907
 #: src/AIS_Target_Data.cpp:909
 msgid "Cyprus"
-msgstr ""
+msgstr "Zypern"
 
 #: src/AIS_Target_Data.cpp:908 src/AIS_Target_Data.cpp:914
 msgid "Germany"
@@ -1592,11 +1592,11 @@ msgstr "Moldawien"
 #: src/AIS_Target_Data.cpp:941 src/AIS_Target_Data.cpp:942
 #: src/AIS_Target_Data.cpp:949
 msgid "Malta"
-msgstr ""
+msgstr "Malta"
 
 #: src/AIS_Target_Data.cpp:913
 msgid "Armenia"
-msgstr ""
+msgstr "Armenien"
 
 #: src/AIS_Target_Data.cpp:915 src/AIS_Target_Data.cpp:916
 msgid "Denmark"
@@ -1804,7 +1804,7 @@ msgstr "Costa Rica"
 
 #: src/AIS_Target_Data.cpp:987
 msgid "Cuba"
-msgstr ""
+msgstr "Kuba"
 
 #: src/AIS_Target_Data.cpp:988
 msgid "Dominica"
@@ -1848,7 +1848,7 @@ msgstr "Jamaika"
 
 #: src/AIS_Target_Data.cpp:998
 msgid "Saint Kitts and Nevis"
-msgstr ""
+msgstr "St. Kitts und Nevis"
 
 #: src/AIS_Target_Data.cpp:999
 msgid "Saint Lucia"
@@ -2040,7 +2040,7 @@ msgstr "Vereinigte Arabische Emirate"
 
 #: src/AIS_Target_Data.cpp:1067
 msgid "Tajikistan"
-msgstr ""
+msgstr "Tadschikistan"
 
 #: src/AIS_Target_Data.cpp:1068 src/AIS_Target_Data.cpp:1069
 msgid "Yemen"
@@ -2264,43 +2264,43 @@ msgstr "Dschibuti"
 
 #: src/AIS_Target_Data.cpp:1129
 msgid "Egypt"
-msgstr ""
+msgstr "Ägypten"
 
 #: src/AIS_Target_Data.cpp:1130
 msgid "Ethiopia"
-msgstr ""
+msgstr "Äthiopien"
 
 #: src/AIS_Target_Data.cpp:1131
 msgid "Eritrea"
-msgstr ""
+msgstr "Eritrea"
 
 #: src/AIS_Target_Data.cpp:1132
 msgid "Gabonese Republic"
-msgstr ""
+msgstr "Gabun"
 
 #: src/AIS_Target_Data.cpp:1133
 msgid "Ghana"
-msgstr ""
+msgstr "Ghana"
 
 #: src/AIS_Target_Data.cpp:1134
 msgid "Gambia"
-msgstr ""
+msgstr "Gambia"
 
 #: src/AIS_Target_Data.cpp:1135
 msgid "Guinea-Bissau"
-msgstr ""
+msgstr "Guinea-Bissau"
 
 #: src/AIS_Target_Data.cpp:1136
 msgid "Equatorial Guinea"
-msgstr ""
+msgstr "Äquatorial-Guinea"
 
 #: src/AIS_Target_Data.cpp:1137
 msgid "Guinea"
-msgstr ""
+msgstr "Guinea"
 
 #: src/AIS_Target_Data.cpp:1138
 msgid "Burkina Faso"
-msgstr ""
+msgstr "Burkina Faso"
 
 #: src/AIS_Target_Data.cpp:1139
 msgid "Kenya"
@@ -2308,103 +2308,103 @@ msgstr "Kenia"
 
 #: src/AIS_Target_Data.cpp:1140
 msgid "Kerguelen Islands"
-msgstr ""
+msgstr "Kerguelen"
 
 #: src/AIS_Target_Data.cpp:1141 src/AIS_Target_Data.cpp:1142
 msgid "Liberia"
-msgstr ""
+msgstr "Liberia"
 
 #: src/AIS_Target_Data.cpp:1143
 msgid "South Sudan (Republic of)"
-msgstr ""
+msgstr "Südsudan"
 
 #: src/AIS_Target_Data.cpp:1144
 msgid "Libya"
-msgstr ""
+msgstr "Libyien"
 
 #: src/AIS_Target_Data.cpp:1145
 msgid "Lesotho"
-msgstr ""
+msgstr "Lesotho"
 
 #: src/AIS_Target_Data.cpp:1146
 msgid "Mauritius"
-msgstr ""
+msgstr "Mauritius"
 
 #: src/AIS_Target_Data.cpp:1147
 msgid "Madagascar"
-msgstr ""
+msgstr "Madagaskar"
 
 #: src/AIS_Target_Data.cpp:1148
 msgid "Mali"
-msgstr ""
+msgstr "Mali"
 
 #: src/AIS_Target_Data.cpp:1149
 msgid "Mozambique"
-msgstr ""
+msgstr "Mosambik"
 
 #: src/AIS_Target_Data.cpp:1150
 msgid "Mauritania"
-msgstr ""
+msgstr "Mauretanien"
 
 #: src/AIS_Target_Data.cpp:1151
 msgid "Malawi"
-msgstr ""
+msgstr "Malawi"
 
 #: src/AIS_Target_Data.cpp:1152
 msgid "Niger"
-msgstr ""
+msgstr "Niger"
 
 #: src/AIS_Target_Data.cpp:1153
 msgid "Nigeria"
-msgstr ""
+msgstr "Nigeria"
 
 #: src/AIS_Target_Data.cpp:1154
 msgid "Namibia"
-msgstr ""
+msgstr "Namibia"
 
 #: src/AIS_Target_Data.cpp:1155
 msgid "Reunion"
-msgstr ""
+msgstr "Réunion"
 
 #: src/AIS_Target_Data.cpp:1156
 msgid "Rwanda"
-msgstr ""
+msgstr "Ruanda"
 
 #: src/AIS_Target_Data.cpp:1157
 msgid "Sudan"
-msgstr ""
+msgstr "Sudan"
 
 #: src/AIS_Target_Data.cpp:1158
 msgid "Senegal"
-msgstr ""
+msgstr "Senegal"
 
 #: src/AIS_Target_Data.cpp:1159
 msgid "Seychelles"
-msgstr ""
+msgstr "Seychellen"
 
 #: src/AIS_Target_Data.cpp:1160
 msgid "Saint Helena"
-msgstr ""
+msgstr "St. Helena"
 
 #: src/AIS_Target_Data.cpp:1161
 msgid "Somali Democratic Republic"
-msgstr ""
+msgstr "Somalia"
 
 #: src/AIS_Target_Data.cpp:1162
 msgid "Sierra Leone"
-msgstr ""
+msgstr "Sierra Leone"
 
 #: src/AIS_Target_Data.cpp:1163
 msgid "Sao Tome and Principe"
-msgstr ""
+msgstr "São Tomé und Príncipe"
 
 #: src/AIS_Target_Data.cpp:1164
 msgid "Swaziland"
-msgstr ""
+msgstr "Swasiland"
 
 #: src/AIS_Target_Data.cpp:1165
 msgid "Chad"
-msgstr ""
+msgstr "Tschad"
 
 #: src/AIS_Target_Data.cpp:1166
 msgid "Togolese Republic"
@@ -2719,7 +2719,7 @@ msgstr "Track einfügen"
 
 #: src/canvasMenu.cpp:471
 msgid "CM93 Offset Dialog..."
-msgstr ""
+msgstr "CM93 Offset Dialog..."
 
 #: src/canvasMenu.cpp:481 src/chart1.cpp:8083
 msgid "Hide This Chart"
@@ -2732,7 +2732,7 @@ msgstr "Karten-Gruppen"
 
 #: src/canvasMenu.cpp:507
 msgid "All Active Charts"
-msgstr ""
+msgstr "Alle aktiven Karten"
 
 #: src/canvasMenu.cpp:584 src/chart1.cpp:5051
 msgid "AIS Target List..."
@@ -2740,37 +2740,37 @@ msgstr "Liste AIS-Ziele..."
 
 #: src/canvasMenu.cpp:587
 msgid "Target Query..."
-msgstr ""
+msgstr "AIS-Zielabfrage..."
 
 #: src/canvasMenu.cpp:591
 msgid "Hide Target CPA"
-msgstr ""
+msgstr "Verstecke Ziel CPA"
 
 #: src/canvasMenu.cpp:593
 msgid "Show Target CPA"
-msgstr ""
+msgstr "Zeige Ziel CPA"
 
 #: src/canvasMenu.cpp:595
 msgid "Target List..."
-msgstr ""
+msgstr "Liste AIS-Ziele..."
 
 #: src/canvasMenu.cpp:598
 msgid "Hide Target Track"
-msgstr ""
+msgstr "Verstecke Ziel Track"
 
 #: src/canvasMenu.cpp:600
 msgid "Show Target Track"
-msgstr ""
+msgstr "Zeige Ziel Track"
 
 #: src/canvasMenu.cpp:614
 msgid "Layer Route"
-msgstr ""
+msgstr "Layer Route"
 
 #: src/canvasMenu.cpp:615 src/canvasMenu.cpp:630 src/canvasMenu.cpp:679
 #: src/canvasMenu.cpp:682 src/canvasMenu.cpp:699 src/canvasMenu.cpp:705
 #: src/canvasMenu.cpp:755 src/canvasMenu.cpp:758
 msgid "Properties..."
-msgstr ""
+msgstr "Eigenschaften..."
 
 #: src/canvasMenu.cpp:620 src/canvasMenu.cpp:635 src/canvasMenu.cpp:715
 msgid "Activate Next Waypoint"
@@ -3271,7 +3271,7 @@ msgstr "Bitte starten Sie OpenCPN neu zur Aktivierung der Sprach- oder Stil-Änd
 
 #: src/chart1.cpp:6887
 msgid "Rotated Mode"
-msgstr ""
+msgstr "Rotierter Modus"
 
 #: src/chart1.cpp:8078
 msgid "Show This Chart"
@@ -3305,7 +3305,7 @@ msgstr "Temporäre AISMOB Route"
 
 #: src/chart1.cpp:9445
 msgid "Present Ownship"
-msgstr ""
+msgstr "Present Ownship"
 
 #: src/chart1.cpp:9515
 msgid "AIS MAN OVERBOARD UPDATE"
@@ -3507,7 +3507,7 @@ msgstr "Maßstab %4.0f (%1.2fx)"
 #: src/chcanv.cpp:3430
 #, c-format
 msgid "Scale %4.0f (---)"
-msgstr "Skala-%4.0fvon (-)"
+msgstr "Skala-%4.0f (-)"
 
 #: src/chcanv.cpp:3461
 #, c-format
@@ -3761,36 +3761,36 @@ msgstr "Ausgang"
 
 #: src/ConnectionParams.cpp:238
 msgid ", Out: None"
-msgstr ""
+msgstr ", Ausgang: Keiner"
 
 #: src/glChartCanvas.cpp:521
 msgid "OpenCPN Compressed Cache Update"
-msgstr ""
+msgstr "OpenCPN Update Komprimierter Cache"
 
 #: src/glChartCanvas.cpp:568
 #, c-format
 msgid "Distance from Ownship:  %4.0f NMi"
-msgstr ""
+msgstr "Entfernung von Ownship: %4.0f NMi"
 
 #: src/glChartCanvas.cpp:1412
 msgid "OpenGL-> SSE2 Instruction set not available"
-msgstr ""
+msgstr "OpenGL-> SSE2 Instruction set nicht vorhanden"
 
 #: src/glChartCanvas.cpp:1427
 msgid "OpenGL-> Using oes etc1 compression"
-msgstr ""
+msgstr "OpenGL-> Anwenden der Oes etc1 Komprimierung"
 
 #: src/glChartCanvas.cpp:1448
 msgid "OpenGL-> Using s3tc dxt1 compression"
-msgstr ""
+msgstr "OpenGL-> Anwenden der s3tc dxt1-Komprimierung"
 
 #: src/glChartCanvas.cpp:1453
 msgid "OpenGL-> Using 3dfx fxt1 compression"
-msgstr ""
+msgstr "OpenGL-> Anwenden der 3dfx fxt1 Komprimierung"
 
 #: src/glChartCanvas.cpp:1455
 msgid "OpenGL-> No Useable compression format found"
-msgstr ""
+msgstr "OpenGL-> Kein anwendbares Komprimierungsformat gefunden"
 
 #: src/glChartCanvas.cpp:1946 src/s52plib.cpp:1854 src/s52plib.cpp:1920
 #: src/s52plib.cpp:2067
@@ -3799,7 +3799,7 @@ msgstr "Kartentexte"
 
 #: src/glChartCanvas.cpp:4444
 msgid "Waiting for raster chart compression thread exit."
-msgstr ""
+msgstr "Warten auf Beendigung des Rasterkomprimierungsprozesses."
 
 #: src/GoToPositionDialog.cpp:122 src/routeprop.cpp:1011 src/routeprop.cpp:1304
 #: src/routeprop.cpp:2462 src/TrackPropDlg.cpp:445 src/TrackPropDlg.cpp:736
@@ -4014,32 +4014,32 @@ msgstr "Altes Logfile verschoben nach opencpn.log.log"
 #: src/OCPN_Sound.cpp:147
 #, c-format
 msgid "Couldn't load sound data from '%s'."
-msgstr ""
+msgstr "Sounddaten konnten nicht von '%s' geladen werden."
 
 #: src/OCPN_Sound.cpp:154
 #, c-format
 msgid "Sound file '%s' is in unsupported format."
-msgstr ""
+msgstr "Sound-Datei '%s' ist ein nicht unterstütztes Format."
 
 #: src/options.cpp:425
 msgid "MMSI Extended Properties"
-msgstr ""
+msgstr "MMSI Erweiterte Eigenschaften"
 
 #: src/options.cpp:439
 msgid "Tracking"
-msgstr ""
+msgstr "Tracking"
 
 #: src/options.cpp:444
 msgid "Default tracking"
-msgstr ""
+msgstr "Standard Tracking"
 
 #: src/options.cpp:449
 msgid "Always track"
-msgstr ""
+msgstr "Immer Trocken"
 
 #: src/options.cpp:452
 msgid " Never track"
-msgstr ""
+msgstr " Nie Tracken"
 
 #: src/options.cpp:455 src/options.cpp:606
 msgid "Persistent"
@@ -4047,24 +4047,25 @@ msgstr "Dauerhaft"
 
 #: src/options.cpp:461
 msgid "Ignore this MMSI"
-msgstr ""
+msgstr "Diese MMSI ignorieren"
 
 #: src/options.cpp:465
 msgid "Handle this MMSI as SART/PLB(AIS) MOB."
-msgstr ""
+msgstr "Diese MMSI als SART/PLB(AIS) MOB Ziel."
 
 #: src/options.cpp:468
 msgid "Convert AIVDM to AIVDO for this MMSI"
-msgstr ""
+msgstr "Für diese MMSI AIVDM in AIVDO wandeln"
 
 #: src/options.cpp:471
 msgid "This MMSI is my Follower - No CPA Alert"
-msgstr ""
+msgstr "Diese MMSI ist mein Begleiter/Follower - Kein CPA Alarm"
 
 #: src/options.cpp:528
 msgid "An MMSI Id is generally a number of nine digits.\n"
 "Please check your entries and cancel if necessary."
-msgstr ""
+msgstr "Eine MMSI besteht in der Regel aus neun Ziffern. \n"
+"Bitte überprüfen Sie Ihre Eingaben - ggf. Abbrechen."
 
 #: src/options.cpp:594 src/options.cpp:2397 src/routeprop.cpp:858
 #: src/routeprop.cpp:876 src/routeprop.cpp:1204 src/routeprop.cpp:1223
@@ -4107,15 +4108,15 @@ msgstr "MOB"
 
 #: src/options.cpp:764
 msgid "VDM->VDO"
-msgstr ""
+msgstr "VDM->VDO"
 
 #: src/options.cpp:772
 msgid "Ship name"
-msgstr ""
+msgstr "Schiffsname"
 
 #: src/options.cpp:780
 msgid "Follower"
-msgstr ""
+msgstr "Follower"
 
 #: src/options.cpp:784
 msgid "New..."
@@ -4135,7 +4136,7 @@ msgstr "Allgemein"
 
 #: src/options.cpp:1138
 msgid "Filter NMEA COG/SOG"
-msgstr ""
+msgstr "NMEA COG/SOG filtern"
 
 #: src/options.cpp:1148 src/options.cpp:1751
 msgid "Filter period (sec)"
@@ -4147,15 +4148,15 @@ msgstr "Zeige NMEA-Datenfluß"
 
 #: src/options.cpp:1175
 msgid "Use Furuno GP3X for uploads"
-msgstr ""
+msgstr "Furuno GP3X für Uploads verwenden"
 
 #: src/options.cpp:1181
 msgid "Use GRMN for uploads"
-msgstr ""
+msgstr "GRMN für Uploads verwenden"
 
 #: src/options.cpp:1187
 msgid "Use mag bearings in ECAPB"
-msgstr ""
+msgstr "Magnetische Peilung in ECAPB verwenden"
 
 #: src/options.cpp:1198 src/options.cpp:1801
 msgid "Data Connections"
@@ -4334,7 +4335,7 @@ msgstr "Wenn aktiv, passieren nur Sequenzen mit gültiger Prüfsumme"
 
 #: src/options.cpp:1433
 msgid "Use GRMN mode for input"
-msgstr ""
+msgstr "GRMN Modus für Eingabe verwenden"
 
 #: src/options.cpp:1442 src/options.cpp:2051
 msgid "Receive Input on this Port"
@@ -4342,7 +4343,7 @@ msgstr "Eingabe auf diesem Port empfangen"
 
 #: src/options.cpp:1446
 msgid "Output on this port"
-msgstr ""
+msgstr "Ausgabe auf diesem Port"
 
 #: src/options.cpp:1454
 msgid "Talker ID"
@@ -4350,7 +4351,7 @@ msgstr "Talker ID"
 
 #: src/options.cpp:1465 src/options.cpp:2073
 msgid "APB bearing precision"
-msgstr ""
+msgstr "APB Peilung Nachkommagenauigkeit"
 
 #: src/options.cpp:1471 src/options.cpp:2079
 msgid "x"
@@ -4403,19 +4404,19 @@ msgstr "Sequenzen nicht senden"
 
 #: src/options.cpp:1675
 msgid "On"
-msgstr ""
+msgstr "Ein"
 
 #: src/options.cpp:1675
 msgid "Prio"
-msgstr ""
+msgstr "Prio"
 
 #: src/options.cpp:1676
 msgid "Parm"
-msgstr ""
+msgstr "Param"
 
 #: src/options.cpp:1676
 msgid "I/O"
-msgstr ""
+msgstr "I/O"
 
 #: src/options.cpp:1676 src/options.cpp:2285
 msgid "Filters"
@@ -4739,7 +4740,8 @@ msgstr "Skalierte Vektor Charts bei Overzoom unterdrücken"
 #: src/options.cpp:2923
 msgid "With a lower value, the same zoom level shows a less detailed chart.\n"
 "                          With a higher value, the same zoom level shows a more detailed chart."
-msgstr ""
+msgstr "Mit einem niedrigeren Wert zeigt eine gleiche Zoomstufe eine weniger detaillierte Karte. \n"
+" mit einem höheren Wert zeigt eine gleiche Zoomstufe eine detaillierte Karte."
 
 #: src/options.cpp:2939 src/options.cpp:3672
 msgid "Controls"
@@ -4771,7 +4773,7 @@ msgstr "Anzeigekategorie"
 
 #: src/options.cpp:3046 src/options.cpp:3256
 msgid "Standard"
-msgstr ""
+msgstr "Standard"
 
 #: src/options.cpp:3046 src/options.cpp:3256
 msgid "All"
@@ -4836,7 +4838,7 @@ msgstr "Reduziertes Detail bei kleinem Maßstab"
 
 #: src/options.cpp:3127 src/options.cpp:3333
 msgid "Graphics Style"
-msgstr ""
+msgstr "Grafik Stile"
 
 #: src/options.cpp:3130 src/options.cpp:3336
 msgid "Paper Chart"
@@ -4974,7 +4976,7 @@ msgstr "Tiefeneinheit (oben rechts) anzeigen"
 
 #: src/options.cpp:3755
 msgid "Preserve Scale on Chart Switch"
-msgstr ""
+msgstr "Skalierung beim Wechseln der Karte beibehalten"
 
 #: src/options.cpp:3803
 msgid "Units"
@@ -5028,7 +5030,7 @@ msgstr "Peilungen"
 
 #: src/options.cpp:3877
 msgid "Show magnetic"
-msgstr ""
+msgstr "Magnetisch Anzeigen"
 
 #: src/options.cpp:3883 src/options.cpp:3993
 msgid "Assumed magnetic variation"
@@ -5036,11 +5038,11 @@ msgstr "Angenommene magnetische Missweisung"
 
 #: src/options.cpp:3905 src/options.cpp:4001
 msgid "deg (-W, +E)"
-msgstr ""
+msgstr "deg (-W, +E)"
 
 #: src/options.cpp:3985
 msgid "Show magnetic bearings and headings"
-msgstr ""
+msgstr "Zeige magn. Peilungen und Kurse"
 
 #: src/options.cpp:4031
 msgid "AIS Targets"
@@ -5052,7 +5054,7 @@ msgstr "CPA-Berechnung"
 
 #: src/options.cpp:4048
 msgid "No (T)CPA Alerts if target range is greater than (NMi)"
-msgstr ""
+msgstr "Keine (T) CPA Warnungen Zielbereich ist größer als (NMi)"
 
 #: src/options.cpp:4055
 msgid "Warn if CPA less than (NMi)"
@@ -5084,11 +5086,11 @@ msgstr "Zeige Tracks für Ziele, Länge (Minuten)"
 
 #: src/options.cpp:4125
 msgid "Suppress anchored/moored targets, speed max (kn)"
-msgstr ""
+msgstr "Unterdrücken von ankernden/liegenden Zielen, V. max (kn)"
 
 #: src/options.cpp:4133
 msgid "Allow attenuation of less critical targets if more than ... targets"
-msgstr ""
+msgstr "Erlaube die Dämpfung der Anzeige weniger kritischer Ziele wenn mehr als ... Ziele"
 
 #: src/options.cpp:4141
 msgid "Show area notices (from AIS binary messages)"
@@ -5196,7 +5198,7 @@ msgstr "Kompass/GPS-Status-Fenster anzeigen"
 
 #: src/options.cpp:4341
 msgid "Enable Toolbar auto-hide"
-msgstr ""
+msgstr "Automatisches Ausblenden der Werkzeugleiste aktivieren"
 
 #: src/options.cpp:4355
 msgid "Play Ships Bells"
@@ -5204,23 +5206,23 @@ msgstr "Schiffsglocke läuten"
 
 #: src/options.cpp:4370
 msgid "Sound Device Index"
-msgstr ""
+msgstr "Liste Sound Devices"
 
 #: src/options.cpp:4378
 msgid "Enable Touchscreen interface"
-msgstr ""
+msgstr "Touchscreen Interface aktivieren"
 
 #: src/options.cpp:4382
 msgid "Enable Tablet Scaled Graphics interface"
-msgstr ""
+msgstr "Skalierte Grafikoberfläche für Tablets aktivieren"
 
 #: src/options.cpp:4393
 msgid "User Interface scale factor"
-msgstr ""
+msgstr "Skalierungsfaktor Benutzer Oberfläche"
 
 #: src/options.cpp:4409
 msgid "Chart Object scale factor"
-msgstr ""
+msgstr "Skalierungsfaktor Karten Objekte"
 
 #: src/options.cpp:4534 src/options.cpp:4694
 msgid "Connections"
@@ -5334,7 +5336,7 @@ msgstr "Wähle Tiden-/Strom-Daten"
 
 #: src/options.cpp:7135
 msgid "Stop Scan"
-msgstr ""
+msgstr "Scan abbrechen"
 
 #: src/options.cpp:7666
 msgid "Sentence Filter"
@@ -5358,7 +5360,7 @@ msgstr "Abgewiesene Sequenzen"
 
 #: src/options.cpp:7774
 msgid "Enter the NMEA sentence (2, 3 or 5 characters) "
-msgstr ""
+msgstr "Die NMEA Sequenz eingeben (2, 3 oder 5 Zeichen) "
 
 #: src/options.cpp:7775
 msgid "Enter the NMEA sentence"
@@ -5370,43 +5372,47 @@ msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n"
 "           The whole sentences then looks like GPGGA or AITXT.\n"
 "           You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.).\n\n"
 "           The filter accepts just these three formats."
-msgstr ""
+msgstr "Eine NMEA Nachricht ist in der Regel 3 Zeichen lang (wie RMC, GGA etc..) \n"
+" Sie kann auch einen aus zwei Buchstaben bestehenden Präfix zur Kennzeichnung der Quelle, eine TALKER-ID, haben. \n"
+" Ein komplette Nachricht hat eine Form wie GPGGA oder AITXT.\n"
+" Sie können alle Nachrichten mit einem bestimmten TALKER-ID (wie GP, AI etc..) herausfiltern. \n\n"
+" der Filter akzeptiert nur diese drei Formate."
 
 #: src/options.cpp:7835
 msgid "Texture Compression"
-msgstr ""
+msgstr "Texture Kompression"
 
 #: src/options.cpp:7836
 msgid "Texture Compression with Caching"
-msgstr ""
+msgstr "Texture Kompression mit Caching"
 
 #: src/options.cpp:7838
 msgid "Texture Compression Caching"
-msgstr ""
+msgstr "Texture Kompression Caching"
 
 #: src/options.cpp:7840
 msgid "Texture Memory Size (MB)"
-msgstr ""
+msgstr "Gres texture Speicher (MB)"
 
 #: src/options.cpp:7844 src/options.cpp:7993
 msgid "Size: "
-msgstr ""
+msgstr "Größe: "
 
 #: src/options.cpp:7846
 msgid "Rebuild Texture Cache"
-msgstr ""
+msgstr "Texture Cache wiederherstellen"
 
 #: src/options.cpp:7848
 msgid "Clear Texture Cache"
-msgstr ""
+msgstr "Texture Cache löschen"
 
 #: src/options.cpp:7852
 msgid "Show FPS"
-msgstr ""
+msgstr "FPS Anzeigen"
 
 #: src/options.cpp:7854
 msgid "Software OpenGL (restart OpenCPN)"
-msgstr ""
+msgstr "Software OpenGL (OpenCPN neu starten)"
 
 #: src/options.cpp:7856
 msgid "Use Accelerated Panning"
@@ -5414,11 +5420,11 @@ msgstr "Verwende beschleunigte Grafik (OpenGL)"
 
 #: src/options.cpp:7858
 msgid "Texture Settings"
-msgstr ""
+msgstr "Textur-Einstellungen"
 
 #: src/options.cpp:7865
 msgid "Texture Cache"
-msgstr ""
+msgstr "Texture Cache"
 
 #: src/options.cpp:7872
 msgid "Miscellaneous"
@@ -5968,7 +5974,7 @@ msgstr "Stil:"
 #: src/routeprop.cpp:858 src/routeprop.cpp:1204 src/TrackPropDlg.cpp:387
 #: src/TrackPropDlg.cpp:644
 msgid "Solid"
-msgstr ""
+msgstr "Voll"
 
 #: src/routeprop.cpp:858 src/routeprop.cpp:1204 src/TrackPropDlg.cpp:387
 #: src/TrackPropDlg.cpp:644

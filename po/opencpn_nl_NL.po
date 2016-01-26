@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-31 17:29-0300\n"
-"PO-Revision-Date: 2016-01-16 21:00-0500\n"
+"PO-Revision-Date: 2016-01-25 19:57-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Dutch\n"
 "Language: nl_NL\n"
@@ -628,11 +628,11 @@ msgstr "card. W"
 
 #: src/ais.cpp:276 src/options.cpp:1675
 msgid "Port"
-msgstr "Poort:"
+msgstr "BB"
 
 #: src/ais.cpp:277
 msgid "Stbd"
-msgstr "stuurboord"
+msgstr "SB"
 
 #: src/ais.cpp:278 src/ais.cpp:279 src/ais.cpp:289 src/ais.cpp:290
 msgid "Pref. Chnl"
@@ -2646,11 +2646,11 @@ msgstr "Meten Aan"
 
 #: src/canvasMenu.cpp:315
 msgid "Undo"
-msgstr "Herstel"
+msgstr "Herstel:"
 
 #: src/canvasMenu.cpp:321
 msgid "Redo"
-msgstr "Opnieuw"
+msgstr "Opnieuw:"
 
 #: src/canvasMenu.cpp:380
 msgid "Max Detail Here"
@@ -2783,7 +2783,7 @@ msgstr "Deactiveren"
 #: src/canvasMenu.cpp:625 src/canvasMenu.cpp:640 src/canvasMenu.cpp:702
 #: src/canvasMenu.cpp:708 src/routemanagerdialog.cpp:1060
 msgid "Activate"
-msgstr "Activeer "
+msgstr "Activeren "
 
 #: src/canvasMenu.cpp:643
 msgid "Insert Waypoint"
@@ -3242,7 +3242,7 @@ msgstr "Beheer routes, tracks en markeringspunten ..."
 
 #: src/chart1.cpp:5065
 msgid "Drop Mark at Boat"
-msgstr "Markeer bij vaartuig"
+msgstr "Markeer bij schip"
 
 #: src/chart1.cpp:5066
 msgid "Drop Mark at Cursor"
@@ -3300,7 +3300,7 @@ msgstr "AIS MAN OVERBOORD"
 
 #: src/chart1.cpp:9433
 msgid "Ownship"
-msgstr "Eigen vaartuig"
+msgstr "Eigen schip"
 
 #: src/chart1.cpp:9444
 msgid "Temporary AISMOB Route"
@@ -3308,7 +3308,7 @@ msgstr "Tijdelijke AIS-MOB route"
 
 #: src/chart1.cpp:9445
 msgid "Present Ownship"
-msgstr "Uitgangspositie eigen vaartuig"
+msgstr "Uitgangspositie eigen schip"
 
 #: src/chart1.cpp:9515
 msgid "AIS MAN OVERBOARD UPDATE"
@@ -3476,15 +3476,15 @@ msgstr "Laag-route: "
 
 #: src/chcanv.cpp:2360
 msgid "(unnamed)"
-msgstr "(onbenoemd)"
+msgstr "(naamloos)"
 
 #: src/chcanv.cpp:2364
 msgid "Total Length: "
-msgstr "Totale lengte:"
+msgstr "Totale lengte: "
 
 #: src/chcanv.cpp:2365
 msgid "Leg: from "
-msgstr "Routedeel: van "
+msgstr "Segment: van "
 
 #: src/chcanv.cpp:2366
 msgid " to "
@@ -3656,7 +3656,7 @@ msgstr "OK"
 
 #: src/concanv.cpp:97 src/concanv.cpp:196 src/concanv.cpp:204
 msgid "This Leg"
-msgstr "Dit routedeel"
+msgstr "Routedeel"
 
 #: src/concanv.cpp:109 src/concanv.cpp:113 src/concanv.cpp:117
 #: src/concanv.cpp:121 src/concanv.cpp:125 src/concanv.cpp:528
@@ -3982,7 +3982,7 @@ msgstr "cm"
 
 #: src/navutil.cpp:4488
 msgid "kts"
-msgstr "Knopen"
+msgstr "knopen"
 
 #: src/navutil.cpp:4491
 msgid "mph"
@@ -4044,7 +4044,7 @@ msgstr " Nooit volgen"
 
 #: src/options.cpp:455 src/options.cpp:606
 msgid "Persistent"
-msgstr "Persistent"
+msgstr "vasthouden"
 
 #: src/options.cpp:461
 msgid "Ignore this MMSI"
@@ -4077,11 +4077,11 @@ msgstr "standaard"
 
 #: src/options.cpp:597
 msgid "Always"
-msgstr "Altijd"
+msgstr "altijd"
 
 #: src/options.cpp:600
 msgid "Never"
-msgstr "Nooit"
+msgstr "nooit"
 
 #: src/options.cpp:637 src/options.cpp:681
 msgid "Edit MMSI Properties"
@@ -4591,15 +4591,15 @@ msgstr "    Volgnauwkeurigheid:"
 
 #: src/options.cpp:2527
 msgid "Low"
-msgstr "Laag"
+msgstr "laag"
 
 #: src/options.cpp:2527
 msgid "Medium"
-msgstr "Middelgroot"
+msgstr "gemiddeld"
 
 #: src/options.cpp:2527
 msgid "High"
-msgstr "Hoog"
+msgstr "hoog"
 
 #: src/options.cpp:2535 src/routemanagerdialog.cpp:486
 msgid "Routes"
@@ -4987,7 +4987,7 @@ msgstr "Eenheden"
 #: src/routeprintout.cpp:384 src/routeprop.cpp:1004 src/routeprop.cpp:1297
 #: src/TrackPropDlg.cpp:443 src/TrackPropDlg.cpp:734
 msgid "Distance"
-msgstr "Verheid"
+msgstr "afstand"
 
 #: src/options.cpp:3822 src/options.cpp:3927
 msgid "Nautical miles"
@@ -5593,7 +5593,7 @@ msgstr "Markeringspuntnaam"
 
 #: src/routemanagerdialog.cpp:689
 msgid "Distance from Ownship"
-msgstr "Afstand van eigen vaartuig"
+msgstr "Afstand van eigen schip"
 
 #: src/routemanagerdialog.cpp:703
 msgid "&New"
@@ -5621,7 +5621,7 @@ msgstr "Kaartlagen"
 
 #: src/routemanagerdialog.cpp:793
 msgid "Layer Name"
-msgstr "Kaartlaag-naam"
+msgstr "Kaartlaagnaam"
 
 #: src/routemanagerdialog.cpp:794
 msgid "No. of items"
@@ -5658,7 +5658,7 @@ msgstr "Weet u zeker dat u de geselecteerde objecten wilt verwijderen?"
 
 #: src/routemanagerdialog.cpp:1177
 msgid "Are you sure you want to delete <ALL> routes?"
-msgstr "Weet u zeker dat u <ALLE> routes wilt verwijderen?"
+msgstr "Weet u zeker dat u ALLE routes wilt verwijderen?"
 
 #: src/routemanagerdialog.cpp:1375
 msgid "Do you also want to make the shared waypoints being part of this route invisible?"
@@ -5717,7 +5717,7 @@ msgstr "Klaar"
 
 #: src/routemanagerdialog.cpp:1948
 msgid "Are you sure you want to delete <ALL> tracks?"
-msgstr "Weet u zeker dat u <ALLE> tracks wilt verwijderen?"
+msgstr "Weet u zeker dat u ALLE tracks wilt verwijderen?"
 
 #: src/routemanagerdialog.cpp:2277
 msgid "The waypoint you want to delete is used in a route, do you really want to delete it?"
@@ -5755,7 +5755,7 @@ msgstr "Weet u zeker dat u deze kaartlaag en <ALLE> inhoud ervan wilt verwijdere
 
 #: src/routemanagerdialog.cpp:2816
 msgid "(Unnamed Layer)"
-msgstr "(Kaartlaag zonder naam)"
+msgstr "(naamloze kaartlaag)"
 
 #: src/routeman.cpp:787 src/routeman.cpp:863
 msgid "You are trying to delete an active AIS MOB route, are you REALLY sure?"
@@ -6160,7 +6160,7 @@ msgstr "Combo!"
 
 #: src/routeprop.cpp:2479
 msgid "Arrival Radius"
-msgstr "Aankomstradius"
+msgstr "Straal aankomstcirkel"
 
 #: src/routeprop.cpp:2487
 msgid "Show Range Rings"
@@ -6218,7 +6218,7 @@ msgstr "Links zijn geopend voor aanpassing."
 
 #: src/routeprop.cpp:3437
 msgid "Copy"
-msgstr "Kopieëren"
+msgstr "Kopiëren"
 
 #: src/routeprop.cpp:3438
 msgid "Copy lat/long"
@@ -6246,7 +6246,7 @@ msgstr "OpenCPN SENC-waarschuwing"
 
 #: src/s57chart.cpp:6725
 msgid "<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>"
-msgstr "<font size=-2>(Sectorhoeken zijn ware peilingen vanaf zeezijde)</font><br>"
+msgstr "<font size=-2>(Sectorhoeken zijn ware richtingen vanaf zeezijde)</font><br>"
 
 #: src/SendToGpsDlg.cpp:86
 msgid "GPS/Plotter Port"

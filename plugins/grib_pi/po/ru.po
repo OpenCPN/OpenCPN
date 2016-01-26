@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-20 18:03-0600\n"
-"PO-Revision-Date: 2015-12-31 15:38-0500\n"
+"PO-Revision-Date: 2016-01-25 19:58-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
@@ -18,27 +18,27 @@ msgstr ""
 
 #: src/GribUIDialog.cpp:330 src/GribUIDialog.cpp:733
 msgid "Start a request"
-msgstr ""
+msgstr "Начать запрос"
 
 #: src/GribUIDialog.cpp:334 src/GribUIDialog.cpp:733
 msgid "Stop request"
-msgstr ""
+msgstr "Остановить запрос"
 
 #: src/GribUIDialog.cpp:338 src/GribUIDialog.cpp:733
 msgid "Valid request"
-msgstr ""
+msgstr "Допустимый запрос"
 
 #: src/GribUIDialog.cpp:369
 msgid "File"
-msgstr ""
+msgstr "Файл"
 
 #: src/GribUIDialog.cpp:376 src/GribUIDialog.cpp:402
 msgid "Error! "
-msgstr ""
+msgstr "Ошибка! "
 
 #: src/GribUIDialog.cpp:376
 msgid " contains no valid data!"
-msgstr ""
+msgstr " не содержит допустимые данные!"
 
 #: src/GribUIDialog.cpp:399
 msgid "Warning:  Empty directory!"
@@ -46,23 +46,23 @@ msgstr "Предупреждение: папка пуста!"
 
 #: src/GribUIDialog.cpp:537 src/GribUIDialog.cpp:726
 msgid "Hide data at cursor"
-msgstr ""
+msgstr "Скрыть данные под курсором"
 
 #: src/GribUIDialog.cpp:537 src/GribUIDialog.cpp:726
 msgid "Show data at cursor"
-msgstr ""
+msgstr "Показать данные под курсором"
 
 #: src/GribUIDialog.cpp:538 src/GribUIDialog.cpp:728 src/GribUIDialog.cpp:966
 msgid "Start play back"
-msgstr ""
+msgstr "Начать воспроизведение"
 
 #: src/GribUIDialog.cpp:685 src/grib_pi.cpp:366 src/CursorData.cpp:560
 msgid "Menu"
-msgstr ""
+msgstr "Меню"
 
 #: src/GribUIDialog.cpp:722
 msgid "Select geopotential altitude"
-msgstr ""
+msgstr "Выбор высоты геопотенциала"
 
 #: src/GribUIDialog.cpp:724 src/GribUIDialogBase.cpp:58
 #: src/GribUIDialogBase.cpp:170 src/GribUIDialogBase.cpp:1094
@@ -76,12 +76,12 @@ msgstr "Центрировать и приблизить"
 
 #: src/GribUIDialog.cpp:728 src/GribUIDialog.cpp:930
 msgid "Stop play back"
-msgstr ""
+msgstr "Остановить воспроизведение"
 
 #: src/GribUIDialog.cpp:730 src/GribUIDialogBase.cpp:81
 #: src/GribUIDialogBase.cpp:195
 msgid "Open a new file"
-msgstr ""
+msgstr "Открыть новый файл"
 
 #: src/GribUIDialog.cpp:731 src/GribUIDialogBase.cpp:86
 #: src/GribUIDialogBase.cpp:200 src/GribUIDialogBase.cpp:1190
@@ -99,11 +99,11 @@ msgstr "Выберите GRIB-файл"
 
 #: src/GribUIDialog.cpp:1419
 msgid " does not exist!"
-msgstr ""
+msgstr " не существует!"
 
 #: src/GribUIDialog.cpp:1432
 msgid " can't be read!"
-msgstr ""
+msgstr " не удается прочитать!"
 
 #: src/GribSettingsDialog.cpp:31 src/GribSettingsDialog.cpp:38
 msgid "Knots"
@@ -223,7 +223,7 @@ msgstr "Энергия конвекции"
 
 #: src/GribSettingsDialog.cpp:51
 msgid "Altitude(Geopotential)"
-msgstr ""
+msgstr "Высота (Геопотенциальная)"
 
 #: src/GribSettingsDialog.cpp:51 src/CursorData.cpp:234
 msgid "Relative Humidity"
@@ -357,19 +357,19 @@ msgstr "Потенциальная энергия конвекции"
 
 #: src/GribUIDialogBase.cpp:530 src/CursorData.cpp:232
 msgid "Altitude"
-msgstr ""
+msgstr "Высота"
 
 #: src/GribUIDialogBase.cpp:547
 msgid "Temp."
-msgstr ""
+msgstr "Темп."
 
 #: src/GribUIDialogBase.cpp:564
 msgid "Relat. Hum."
-msgstr ""
+msgstr "Относ. Влажность."
 
 #: src/GribUIDialogBase.cpp:707
 msgid "Data Display Options"
-msgstr ""
+msgstr "Параметры отображения данных"
 
 #: src/GribUIDialogBase.cpp:720
 msgid "Units"
@@ -390,7 +390,7 @@ msgstr "Переменный цвет"
 #: src/GribUIDialogBase.cpp:750 src/GribUIDialogBase.cpp:828
 #: src/GribUIDialogBase.cpp:884
 msgid "Spacing(pixels)"
-msgstr ""
+msgstr "Интервал (пикс)"
 
 #: src/GribUIDialogBase.cpp:754 src/GribUIDialogBase.cpp:832
 #: src/GribUIDialogBase.cpp:888
@@ -456,19 +456,19 @@ msgstr "Значения"
 
 #: src/GribUIDialogBase.cpp:903 src/CursorData.cpp:481 src/CursorData.cpp:514
 msgid "Particle Map"
-msgstr ""
+msgstr "Карта Частиц"
 
 #: src/GribUIDialogBase.cpp:906
 msgid "Density"
-msgstr ""
+msgstr "Плотность"
 
 #: src/GribUIDialogBase.cpp:923
 msgid "Transparency for all Overlay Maps"
-msgstr ""
+msgstr "Прозрачность для всех Наложенных метео-карт"
 
 #: src/GribUIDialogBase.cpp:930
 msgid "Overlay Transparency (%)"
-msgstr ""
+msgstr "Прозрачность (%)"
 
 #: src/GribUIDialogBase.cpp:949
 msgid "Data"
@@ -476,7 +476,7 @@ msgstr "Визуализация данных"
 
 #: src/GribUIDialogBase.cpp:959
 msgid "Playback Options"
-msgstr ""
+msgstr "Настройка воспроизведения"
 
 #: src/GribUIDialogBase.cpp:966
 msgid "Loop Mode"
@@ -508,7 +508,7 @@ msgstr "Временной интервал"
 
 #: src/GribUIDialogBase.cpp:1012 src/GribUIDialogBase.cpp:1142
 msgid "Playback"
-msgstr ""
+msgstr "Воспроизведение"
 
 #: src/GribUIDialogBase.cpp:1022
 msgid "Dialogs Style"
@@ -532,7 +532,7 @@ msgstr ""
 
 #: src/GribUIDialogBase.cpp:1051
 msgid "Buttons Visibility"
-msgstr ""
+msgstr "Видимые кнопки"
 
 #: src/GribUIDialogBase.cpp:1065
 msgid "Attached icon bar"
@@ -556,7 +556,7 @@ msgstr ""
 
 #: src/GribUIDialogBase.cpp:1158
 msgid "Time Slider"
-msgstr ""
+msgstr "Ползунок времени"
 
 #: src/GribUIDialogBase.cpp:1174
 msgid "Open File"
@@ -572,7 +572,7 @@ msgstr ""
 
 #: src/GribUIDialogBase.cpp:1317
 msgid "General Options"
-msgstr ""
+msgstr "Основные Настройки"
 
 #: src/GribUIDialogBase.cpp:1324
 msgid "Use High Definition Graphics"
@@ -696,11 +696,11 @@ msgstr "дн."
 
 #: src/GribUIDialogBase.cpp:1597
 msgid "Area Selection"
-msgstr ""
+msgstr "Выбор области"
 
 #: src/GribUIDialogBase.cpp:1609
 msgid "Manual Selection"
-msgstr ""
+msgstr "Ручной выбор области"
 
 #: src/GribUIDialogBase.cpp:1612
 msgid "Use Always this Area"
@@ -744,7 +744,7 @@ msgstr ""
 
 #: src/GribUIDialogBase.cpp:1676
 msgid "Data Selection"
-msgstr ""
+msgstr "Выбор данных"
 
 #: src/GribUIDialogBase.cpp:1698
 msgid "Air Temperature(2m)"
@@ -788,7 +788,7 @@ msgstr " (макс. размер)"
 
 #: src/GribUIDialogBase.cpp:1924
 msgid "Data at Position:"
-msgstr ""
+msgstr "Данные в позиции:"
 
 #: src/smapi.cpp:119
 msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
@@ -800,7 +800,7 @@ msgstr "GRIB — Управление отображением"
 
 #: src/GribUIDialogBase.h:340
 msgid "Preferences"
-msgstr ""
+msgstr "Настройки"
 
 #: src/GribUIDialogBase.h:426
 msgid "Write and send eMail request"
@@ -979,7 +979,7 @@ msgstr "Не удаётся отправить запрос. Проверьте
 
 #: src/CursorData.cpp:216
 msgid "Data at cursor position"
-msgstr ""
+msgstr "Данные под курсором"
 
 #: src/CursorData.cpp:230
 msgid "at Geopotential Height"
@@ -987,7 +987,7 @@ msgstr ""
 
 #: src/CursorData.cpp:233
 msgid "Temperature"
-msgstr ""
+msgstr "Температура"
 
 #: src/CursorData.cpp:236
 msgid "at"
@@ -995,23 +995,23 @@ msgstr ""
 
 #: src/CursorData.cpp:241
 msgid "Wind Speed"
-msgstr ""
+msgstr "Скорость ветра"
 
 #: src/CursorData.cpp:242
 msgid "Wind Speed in Bf"
-msgstr ""
+msgstr "Скорость ветра по шкале Бофорта"
 
 #: src/CursorData.cpp:243
 msgid "Wind Direction"
-msgstr ""
+msgstr "Направление ветра"
 
 #: src/CursorData.cpp:246
 msgid "Wind Gust at"
-msgstr ""
+msgstr "Порывы ветра"
 
 #: src/CursorData.cpp:249
 msgid "Air Temperature at"
-msgstr ""
+msgstr "Температура воздуха"
 
 #: src/CursorData.cpp:249
 msgid "surface level"
@@ -1019,7 +1019,7 @@ msgstr ""
 
 #: src/CursorData.cpp:249
 msgid "Sea Surface Temperature"
-msgstr ""
+msgstr "Температура воды"
 
 #: src/CursorData.cpp:290 src/CursorData.cpp:291 src/CursorData.cpp:292
 #: src/CursorData.cpp:304 src/CursorData.cpp:317 src/CursorData.cpp:337

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-20 18:04-0600\n"
-"PO-Revision-Date: 2015-12-31 15:38-0500\n"
+"PO-Revision-Date: 2016-01-25 19:58-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
@@ -23,7 +23,7 @@ msgstr "С"
 
 #: src/dashboard_pi.cpp:97
 msgid "Position"
-msgstr "Положение"
+msgstr "Местоположение"
 
 #: src/dashboard_pi.cpp:99
 msgid "SOG"
@@ -63,7 +63,7 @@ msgstr "Магн. путевой угол"
 
 #: src/dashboard_pi.cpp:118
 msgid "App. Wind Angle & Speed"
-msgstr "Кажущ. угол и скор. ветра"
+msgstr "Вымп. угол и скор. ветра"
 
 #: src/dashboard_pi.cpp:120
 msgid "App & True Wind Angle"
@@ -71,7 +71,7 @@ msgstr ""
 
 #: src/dashboard_pi.cpp:122 src/dashboard_pi.cpp:124
 msgid "App. Wind Speed"
-msgstr "Кажущ. скорость ветра"
+msgstr "Вымп. скорость ветра"
 
 #: src/dashboard_pi.cpp:126
 msgid "True Wind Angle & Speed"
@@ -95,7 +95,7 @@ msgstr "Температура воздуха"
 
 #: src/dashboard_pi.cpp:140
 msgid "App. Wind Angle"
-msgstr "Кажущ. угол ветра"
+msgstr "Вымп. угол ветра"
 
 #: src/dashboard_pi.cpp:142
 msgid "True Wind Angle"
@@ -127,7 +127,7 @@ msgstr "Число видимых спутников"
 
 #: src/dashboard_pi.cpp:160
 msgid "GPS Status"
-msgstr "Состояние GPS-приёмника"
+msgstr "Состояние ГНСС"
 
 #: src/dashboard_pi.cpp:162
 msgid "Cursor"
@@ -139,7 +139,7 @@ msgstr "Часы"
 
 #: src/dashboard_pi.cpp:166
 msgid "Sunrise/Sunset"
-msgstr "Восход-заход"
+msgstr "Восход/Закат"
 
 #: src/dashboard_pi.cpp:168
 msgid "Moon phase"
@@ -163,7 +163,7 @@ msgstr "Итоговый журнал"
 
 #: src/dashboard_pi.cpp:178
 msgid "From Ownship"
-msgstr "От своего судна"
+msgstr "Пеленг и Дистанция от Судна"
 
 #: src/dashboard_pi.cpp:180
 msgid "Pitch"

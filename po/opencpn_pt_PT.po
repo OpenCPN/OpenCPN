@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-31 17:29-0300\n"
-"PO-Revision-Date: 2016-01-16 21:00-0500\n"
+"PO-Revision-Date: 2016-01-25 19:57-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Portuguese\n"
 "Language: pt_PT\n"
@@ -5110,7 +5110,7 @@ msgstr "Tratar as frases WPL como relatórios de posição de APRS"
 
 #: src/options.cpp:4173
 msgid "Rollover"
-msgstr "Capotamento"
+msgstr "Informação imediata"
 
 #: src/options.cpp:4179
 msgid "\"Ship Name\" MMSI (Call Sign)"
