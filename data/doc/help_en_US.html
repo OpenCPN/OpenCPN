@@ -1,9 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>OpenCPN User Manual</title><link type="text/css" rel="stylesheet" href="images/print.htm" />
-
-
-
-</head>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>OpenCPN User Manual</title><link type="text/css" rel="stylesheet" href="images/print.htm" /></head>
 <body style="background-color: rgb(246, 246, 246); font-family: Arial,Helvetica,sans-serif; line-height: 1.5; color: rgb(51, 51, 51); margin-left: 15%; margin-right: 15%;" alink="#5b83c1" link="#486899" vlink="#c1964d">
 <div id="node-31" class="section-1">
 <h1 id="OpenCPN User Manual" class="book-heading"><a name="index"></a><span style="font-weight: normal;">OpenCPN
@@ -2277,7 +2273,7 @@ Thats it - you should now have a Bluetooth GPS Connected.<br />
 actual number here)<br />
 -sudo gedit /etc/bluetooth/rfcomm.conf #edit rfcomm input file. Text
 should be:
-<pre>	#<br />	# RFCOMM configuration file.<br />	#<br />	# $Id: rfcomm.conf,v 1.1 2002/10/07 05:58:18 maxk Exp $<br />	#<br /><br />	rfcomm0 {<br />	# Automatically bind the device at startup<br />	bind yes;<br /><br />	# Bluetooth address of the device<br />	device xx:xx:xx:xx:xx:xx;<br /><br />	# RFCOMM channel for the connection<br />	channel 1;#use channel number as provided by sdptool records XX:XX:XX:XX:XX:XX<br /><br />	# Description of the connection<br />	comment "Your GPS Device Here";<br />	}</pre>
+<pre>	#<br />	# RFCOMM configuration file.<br />	#<br />	# $Id: rfcomm.conf,v 1.1 2002/10/07 05:58:18 maxk Exp $<br />	#<br /><br />	rfcomm0 {<br />	# Automatically bind the device at startup<br />	bind yes;<br /><br />	# Bluetooth address of the device<br />	device xx:xx:xx:xx:xx:xx;<br /><br />	# RFCOMM channel for the connection<br />	channel 1;#use channel number as provided by sdptool <br />          records XX:XX:XX:XX:XX:XX<br /><br />	# Description of the connection<br />	comment "Your GPS Device Here";<br />	}</pre>
 - sudo rfcomm release 0 (not strictly necessary)<br />
 - sudo rfcomm connect 0 (you only need to to this once, not required if
 you reboot at this point)<br />
@@ -2752,7 +2748,7 @@ Of Contents</a> </div>
 <div id="node-394" class="section-3">
 <h1 id="View" class="book-heading"><br />
 </h1>
-<h1 id="View" class="book-heading">View</h1>
+<h1 style="font-weight: normal;" id="View" class="book-heading">View</h1>
 <img src="images/Menubar-View.jpg" alt="" /><br />
 <br />
 <strong>Enable Chart Quilting</strong> Read more: <a href="#Chart%20Quilting">Chart Quilting</a><br />
@@ -3364,7 +3360,7 @@ More about "ownship" icons and setting "ownship" size in <a href="#Options%20Set
 -button and start the creation of a route.
 Hotkey "CTRL R" is an
 alternative way to start a route and "Esc" ends the route. The cursor
-changes to a (<img alt="" src="images/pencil2.jpg" align="absbottom" height="16" width="31" /> )
+changes to a&nbsp;<img alt="" src="images/pencil2.jpg" align="absbottom" height="16" width="31" />
 pencil. Left click along the desired route
 you want to make. This
 will leave sequential numbered waypoints as you click along, the
@@ -3522,7 +3518,6 @@ waypoint in an active route.</li>
 <br />
 <img style="border: 1px solid ; width: 110px; height: 446px; float: left;" alt="" src="images/route-legs.jpg" hspace="20" vspace="20" /><br />
 <br />
-<br />
 XTE Cross Track Error. How far off course your boat is. "L"=left,
 "R"=right<br />
 <br />
@@ -3531,7 +3526,6 @@ BRG Direction to next waypoint.<br />
 VMG Velocity made good to next waypoint<br />
 <br />
 RNG Distance to next waypoint.<br />
-<br />
 <br />
 TTG Time To Go to next waypoint.<br />
 <br />
@@ -4994,7 +4988,7 @@ case.<em><em><em><em><em><em><em><em><em><em><em><em><em><em><br />
 <br />
 <a id="#">
 </a></em></em></em></em></em></em></em></em></em></em></em></em></em></em>
-<h3 id="MMSI Properties"><a id="#">MMSI
+<h3 id="MMSI Properties"><a style="font-weight: normal;" id="#">MMSI
 Properties</a><br />
 </h3>
 <a id="#">Maritime Mobile Service Identifier (MMSI) is a
@@ -5039,7 +5033,7 @@ If you for some reason, wish to save a non nine digit number click –
 OK, otherwise “Cancel” will take you back to edit the number.<br />
 <br />
 </a>
-<h3><a id="#">Tracking</a></h3>
+<h3 style="font-weight: normal;"><a id="#">Tracking</a></h3>
 <a id="#"><strong>Default tracking</strong>:
 This is the normal tracking
 controlled by Options-&gt;Ships "OwnShip" and "AIS TArgets" tabs.<br />
@@ -5257,15 +5251,15 @@ including: Marks, Routes, Buoys, Daybeacons, Wrecks, Rocks, and Depths.<br />
 <br />
 </a></em></em></em></em></em></em></em></em></em></em></em></em></em></em><a id="#">The Plugin tab is found on these pages</a><em><em><em><em><em><em><em><em><em><a id="#"><br />
 </a></em></em></em></em></em></em></em></em></em><a href="#Plugins">Plugins</a><br />
-<em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><a href="help_en_US.html#Install%20and%20Enable">Install and
+<a href="help_en_US.html#Install%20and%20Enable">Install and
 Enable</a>
-Plugin<br />
-<strong><span style="font-weight: normal;"><a href="help_en_US.html#Dashboard">Dashboard</a> Plugin</span></strong><br />
-<a style="font-weight: normal;" href="help_en_US.html#Grib%20Weather">Grib Weather</a><span style="font-weight: normal;"> Plugin</span><strong><br />
-<a style="font-weight: normal;" href="help_en_US.html#WMM">WMM</a><span style="font-weight: normal;"> Plugin</span><br />
+Plugin<em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><br />
+</em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em><strong><span style="font-weight: normal;"><a href="help_en_US.html#Dashboard">Dashboard</a> Plugin</span></strong><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><br />
+</em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em><a style="font-weight: normal;" href="help_en_US.html#Grib%20Weather">Grib Weather</a><span style="font-weight: normal;"> Plugin</span><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><strong><br />
+</strong></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em><strong><a style="font-weight: normal;" href="help_en_US.html#WMM">WMM</a><span style="font-weight: normal;"> Plugin</span><br />
 <a style="font-weight: normal;" href="help_en_US.html#Chart%20Downloader">Chart Downloader</a></strong>
-<strong><span style="font-weight: normal;">Plugin</span><br />
-</strong><a style="font-weight: normal;" href="help_en_US.html#External%20Plugins">External Plugins</a><span style="font-weight: normal;"> Third Party</span></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em><br />
+<strong><span style="font-weight: normal;"></span></strong><strong><span style="font-weight: normal;">Plugin</span></strong><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><strong><br />
+</strong></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em><a style="font-weight: normal;" href="help_en_US.html#External%20Plugins">External Plugins</a><span style="font-weight: normal;"> Third Party</span><br />
 <br />
 <em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><br />
 </em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><br />
@@ -5910,8 +5904,8 @@ Target List" above.<br />
 <strong>Note the first column in the Target list -&gt; "Trk".
 This
 indicates the current status of tracking for each target</strong>.</a></div>
-<p class="rteleft"><a id="#"><strong>Show
-target tracks, length (min)</strong><br />
+<p class="rteleft"><a id="#">Show
+target tracks, length (min)<br />
 This is the basic setting that can be refined in the "AIS Target list".
 With this box ticked targets are tracked even if they are not
 displayed. Start out with this option ticked, if you hesitate. Come
@@ -7078,16 +7072,16 @@ one will be visible...</li>
 </em></strong></strong></em></em></em></em></em></em></strong></strong></em></em></em></em></em></em></em></em></em></em></em>
 <ul>
 <em><em><em><em><em><em><em><em><em><em><em><strong><strong><em><em><em><em><em><em><strong><strong><em>
-</em></strong></strong></em></em></em></em></em><li><em><em><em><em><em><strong><strong><em>Go
+</em></strong></strong></em></em></em></em></em></em></strong></strong></em></em></em></em></em></em></em></em></em></em></em><li>Go
 to Options-&gt;Charts-&gt;Tides &amp; Currents. Press "Add
-Dataset.." to add another dataset.</em></strong></strong></em></em></em></em></em></li>
+Dataset.." to add another dataset.</li><em><em><em><em><em><em><em><em><em><em><em><strong><strong><em>
 <em><em><em><em><em><strong><strong><em>
-</em></strong></strong></em></em></em></em></em><li><em><em><em><em><em><strong><strong><em>Tidal
+</em></strong></strong></em></em></em></em></em></em></strong></strong></em></em></em></em></em></em></em></em></em></em></em><li>Tidal
 files can be located anywhere on your file system, but it
 will pay off to be organized. The first entry above shows the default
 location for the built in datafile on Linux. On windows a typical
-location is "C:\Program Files\OpenCPN\tcdata".</em></strong></strong></em></em></em></em></em></li>
-</em><br />
+location is "C:\Program Files\OpenCPN\tcdata".</li>
+<em><em><em><em><em><em><em><em><em><em><em><strong><strong><br />
 </strong></strong></em></em></em></em></em></em></em></em></em></em></em>
 </ul>
 <p><em><em><em><em><em><em><em><em><em><em><em><strong><strong><em><em><em><em><em><em><strong><strong><em>
@@ -8411,8 +8405,8 @@ PlugIn Version detected: 101</p>
 </tr>
 </tbody>
 </table>
-<p><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em>This
-example is from Linux.</em></em></em></em></em></em></em><strong><strong><em><em><em><em><em><em><strong><strong><em><br />
+<p>This
+example is from Linux.<em><em><em><em><em><em><em><em><em><em><em><strong><strong><em><em><em><em><em><em><strong><strong><em><br />
 </em></strong></strong></em></em></em></em></em></em></strong></strong><em><em><em><em><em><em><em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em><br />
 On Windows systems the location of the log file will be displayed when
 you click "Help" (the ? mark icon) on the toolbar. Alternatively, to
@@ -9929,7 +9923,7 @@ for certain functions).</p>
 <h4 id="Installing the plugin"><span style="font-weight: normal;">Installing
 the plugin</span><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></h4>
 <ul>
-<li>Look for the sQuidd.io icon <img style="width: 32px; height: 37px;" alt="" src="images/marina_grn.jpg" />in
+<li>Look for the sQuidd.io icon <img style="width: 32px; height: 37px;" alt="" src="images/marina_grn.jpg" /> in
 the Plugins for OpenCPN 3.3 and later section of the plugins <a href="http://opencpn.org/ocpn/downloadplugins#plugins33">download
 page</a>.</li>
 <li>Select the architecture and platform of your choice,
@@ -10271,7 +10265,7 @@ following the success:<em><em><em><em><em><em><em><em><em><em><em><strong><stron
 </em></strong></strong></em></em></em></em></em></em></strong></strong></em></em></em></em></em></em></em></em></em></em></em>
 <ul>
 <em><em><em><em><em><em><em><em><em><em><em><strong><strong><em><em><em><em><em><em><strong><strong><em>
-</em></strong></strong></em></em></em></em></em></em></strong></strong></em></em></em></em></em></em></em></em></em></em></em><em><em><em><em><em><em><em><em><em><em><em><strong><strong><em><li style="font-weight: normal;">Forgot you wanted to connect to
+</em></strong></strong></em></em></em></em></em></em></strong></strong></em></em></em></em></em></em></em></em></em></em></em><li style="font-weight: normal;">Forgot you wanted to connect to
 internet via wifi, but now I am
 wondering why the Radar is on "Public".... I guess you can't log into
 it and direct it to a "Home" setup.... maybe its expecting to see a
@@ -10286,8 +10280,8 @@ redirecting [the
 radar] to 'home'. Possibly something in the registry, but we don't need
 to do it that badly. We eschew messing with the registry. Anyway, we
 got it working, drilling some small holes in the firewall for gradar to
-peek through.....After all, I am a mechanical guy.....Every problem
-looks like a nail when the only tool you have is a hammer.....</li>
+peek through...After all, I am a mechanical guy...Every problem
+looks like a nail when the only tool you have is a hammer.</li><em><em><em><em><em><em><em><em><em><em><em><strong><strong><em>
 <li><span style="font-weight: normal;">On both PCs
 we only had to plugin an active LA N connection, in
 this case, the Garmin radar cable (with associated hardware to control
@@ -10579,7 +10573,7 @@ source code. <br />
 <br />
 <br />
 </em></strong></strong></em></em></em></em></em></em></strong></strong></em></em></em></em></em></em></em></em></em></em></em></p>
-<em><em><em><em><em><em><em><em><em><em><em><strong><strong><em><em><em><em><em><em><strong><strong><em>.
+<em><em><em><em><em><em><em><em><em><em><em><strong><strong><em><em><em><em><em><em><strong><strong><em>
 </em></strong></strong></em></em></em></em></em></em></strong></strong></em></em></em></em></em></em></em></em></em></em></em></div>
 </div>
 </div>
@@ -10828,9 +10822,8 @@ will happen when you first try to use the chart.</li>
 <em><em><em><em><em><em><em><em><em><em><em><strong><strong><em><em><em><em><em><em><strong><strong><em><br />
 <img style="width: 522px; height: 248px;" alt="" src="images/S63message.jpg" /><br />
 </em></strong></strong></em></em></em></em></em></em></strong></strong></em></em></em></em></em></em></em></em></em></em></em>
-<h3 style="font-weight: normal;" id="Testing">Testing</h3>
-Download <a href="http://www.iho.int/iho_pubs/standard/S-64/ENC_Test_Data_Sets/ENC_TDS_S-63_Encrypted/ENC3.1.1_TDS_S-63_Encrypted.zip">http://www.iho.int/iho_pubs/standard/S-64/ENC_Test_Data_Sets/ENC_TDS_S-63_Encrypted/ENC3.1.1_TDS_S-63_Encrypted.zip</a><br />
-<br />
+<h3 style="font-weight: normal;" id="Testing">Testing</h3><a href="http://www.iho.int/iho_pubs/standard/S-64/ENC_Test_Data_Sets/ENC_TDS_S-63_Encrypted/ENC3.1.1_TDS_S-63_Encrypted.zip">
+Download test charts</a> <a href="http://www.iho.int/iho_pubs/standard/S-64/ENC_Test_Data_Sets/ENC_TDS_S-63_Encrypted/ENC3.1.1_TDS_S-63_Encrypted.zip"></a><br />
 You may exercise the S64 Test set using the following special permits:<br />
 User Permit: 66B5CBFDF7E4139D5B6086C23130<br />
 Install Permit: 38F99B50<br />
@@ -12735,13 +12728,13 @@ Alarm”-window). <em><em><em><em><em><em><em><em><em><em><em><strong><strong><e
 Boundary Alarm: “Distance” or “Time”<br />
 In the “Edit Alarm”-window you can choose between:<br />
 <br />
- trigger the alarm when my position (GPS-fix) is less than ……..
+ trigger the alarm when my position (GPS-fix) is less than ...
 nautical mile from the boundary.<br />
 (GPS fix). This type of alarm is a “Boundary-Distance”
 alarm.<br />
 or<br />
  trigger the alarm when my present course and speed will bring me at
-the boundary in less than …… minutes (GPS course). This type of alarm
+the boundary in less than&nbsp;… minutes (GPS course). This type of alarm
 is a “Boundary-Time” alarm.<br />
 <br />
 If you choose “Boundary-Distance”, you can type how many nautical miles
@@ -13362,15 +13355,15 @@ The lower NMEA Data alarm is the GPS-alarm<br />
 Each alarm can be switched on or off.<em><em><em><em><em><em><em><em><em><em><em><strong><strong><em><em><em><em><em><em><strong><strong><em><br />
 <img style="width: 324px; height: 234px;" alt="" src="images/S-WDpi-73.jpg" /> </em></strong></strong></em></em></em></em></em></em></strong></strong></em></em></em></em></em></em></em></em></em></em></em></div>
 <a id="EMAILTOSELF" name="EMAILTOSELF"><font color="#27638c"><span><b><br />
-</b>EMAIL
-TO YOURSELF</span></font></a><br />
-<div><em><em><em><em><em><em><em><em><em><em><em><strong><strong><em><em><em><em><em><em><strong><strong><em><span style="font-weight: normal;">You can order Watchdog to
+</b><span style="color: rgb(51, 51, 51);">EMAIL
+TO YOURSELF</span></span></font></a><br />
+<div><span style="font-weight: normal;">You can order Watchdog to
 execute a computer-command. Let's say that we
 want Watchdog to send us an email in case our anchor drags. We have
-stored that command in a file we made and called </span><strong style="font-weight: normal;">AnchorAlarm.bat</strong><span style="font-weight: normal;">.
+stored that command in a file we made and called </span><span style="font-weight: normal;">AnchorAlarm.bat</span><span style="font-weight: normal;">.
 In this example that file is stored in the root of our computer (C:\)
 but of course you can put in anywhere, as long as you tell Watchdog
-where to find it.</span><br />
+where to find it.</span><em><em><em><em><em><em><em><em><em><em><em><strong><strong><em><em><em><em><em><em><strong><strong><em><br />
 <br />
 <img style="width: 451px; height: 100px;" alt="" src="images/S-WDpi-04aa.jpg" /><br />
 </em></strong></strong></em></em></em></em></em></em></strong></strong><em><em><em><em><em><em><em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em><br />
@@ -13657,7 +13650,7 @@ Aspect Ratio"<em><em><em><em><em><em><em><em><em><em><em><strong><strong><em><em
 Mercator projection chart which are reviewed on the forum and will be
 more fully described later. Review the posts following this <a href="http://www.cruisersforum.com/forums/f134/weatherfax-97533-18.html#post1185034">one</a>
 in the Forums. <em><em><em><em><em><em><em><em><em><em><em><strong><strong><em><em><em><em><em><em><strong><strong><em><br />
-<img style="width: 525px; height: 295px;" alt="" id="lightboximg7" src="images/attachment.jpg" title="Weatherfax-Polar-NewTry-1.jpg; 1600 x 900 (@70%)" /><br />
+<img style="width: 202px; height: 136px;" alt="" id="lightboximg7" src="images/attachment.jpg" title="Weatherfax-Polar-NewTry-1.jpg; 1600 x 900 (@70%)" /><br />
 </em></strong></strong></em></em></em></em></em></em></strong></strong></em></em></em></em></em></em></em></em></em></em></em>Coordinate
 1 (Red) -Select a high latitude
 which must also lie on the vertical meridian running through the pole
@@ -14011,34 +14004,34 @@ Compute.<br /></li>
 </ol><em><em><em><em><em><em><em><em><em><em><em><strong><strong><em><em><em><em><em><em><strong><strong><em>
 <img style="width: 525px; height: 144px;" alt="" src="images/WeatherRoutingConfiguration.jpg" /><br />
 <br />
-</em></strong></strong></em></em></em></em></em></em></strong></strong><em><em><em><em><em><em><em><span style="font-weight: normal;">Configuration Window </span><span style="font-weight: normal;">(Edit &gt; Configuration)</span><br style="font-weight: normal;" />
+</em></strong></strong></em></em></em></em></em></em></strong></strong></em></em></em></em></em></em></em></em></em></em></em><span style="font-weight: normal;">Configuration Window </span><span style="font-weight: normal;">(Edit &gt; Configuration)</span><br style="font-weight: normal;" />
 <span style="font-weight: normal;">Provides setup
 flexibility for various factors:
-</span></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em>
+</span>
 <ol>
-<em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em>
-</em></em></em></em></em></em><li><em><em><em><em><em><em>Start
-location, date and time. End location.</em></em></em></em></em></em></li>
-<em><em><em><em><em><em> </em></em></em></em></em></em><li><em><em><em><em><em><em>Step
+
+<li>Start
+location, date and time. End location.</li>
+ <li>Step
 duration for isochrones in hours and minutes (12 hours for
-long routes, 1 hour for shorter)</em></em></em></em></em></em></li>
-<em><em><em><em><em><em> </em></em></em></em></em></em><li><em><em><em><em><em><em>Degree
-Steps (5 degree steps is faster than 1 degree steps)</em></em></em></em></em></em></li>
-<em><em><em><em><em><em> </em></em></em></em></em></em><li><em><em><em><em><em><em>Boat
+long routes, 1 hour for shorter)</li>
+ <li>Degree
+Steps (5 degree steps is faster than 1 degree steps)</li>
+ <li>Boat
 Performance based on editing boat specifications or based on
-a polar data file.</em></em></em></em></em></em></li>
-<em><em><em><em><em><em> </em></em></em></em></em></em><li><em><em><em><em><em><em>Set
+a polar data file.</li>
+ <li>Set
 constraints on various factors such as max wind, swell,
-waves, latitude, max diverted course etc...</em></em></em></em></em></em></li>
-<em><em><em><em><em><em> </em></em></em></em></em></em><li><em><em><em><em><em><em>Set
-data source Grib or Climatology, greys if not available.</em></em></em></em></em></em></li>
-<em><em><em><em><em><em> </em></em></em></em></em></em><li><em><em><em><em><em><em>Set
+waves, latitude, max diverted course etc...</li>
+ <li>Set
+data source Grib or Climatology, greys if not available.</li>
+ <li>Set
 options like detect land, currents, inverted regions,
-anchoring.</em></em></em></em></em></em></li>
-<em><em><em><em><em><em> </em></em></em></em></em></em><li><em><em><em><em><em><em>Routes
+anchoring.</li>
+ <li>Routes
 can be Edited (created, selected, renamed, reset and
-exported.)</em></em></em></em></em></em></li>
-</em></em></em></em></em></em></em></em></em></em></em></em>
+exported.)</li>
+
 </ol>
 <em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><em><img style="font-weight: normal; width: 525px; height: 472px;" alt="" src="images/WeatherRoutingConfiguration1.jpg" /></em></em></em></em></em></em></em><strong><strong><em><em><em><em><em><em><strong><strong><em><br />
 <br />
@@ -14215,13 +14208,12 @@ Text file format is UNIX ie lines that are terminated by LF (Line
 Feed) and not CR (Carriage Return) and LF. A good text editor windows
 (PsPad or Notepad + +) knows rerecord this format.</font><em><em><em><em><em><em><em><em><em><em><em><strong><strong><em><em><em><em><em><em><strong><strong><em><font face="Arial"><br />
 <br />
-</font></em></strong></strong></em></em></em></em></em></em></strong></strong></em></em></em></em></em></em></em></em></em></em></em><em><em><em><em><em><em><em><em><em><em><em><strong><strong><em><em><em><em><em><em><strong><strong><em></em></strong></strong></em></em></em></em></em></em></strong></strong></em></em></em></em></em></em></em></em></em></em></em><font face="Arial">TWA\TWS;0;2;4;6;8;10;12;14;16;18;20;22;24;26;28;30;32;34;36;38;40;42;44;46;48;50;52;54;56;58;60<br />
+</font></em></strong></strong></em></em></em></em></em></em></strong></strong></em></em></em></em></em></em></em></em></em></em></em><em><em><em><em><em><em><em><em><em><em><em><strong><strong><em><em><em><em><em><em><strong><strong><em></em></strong></strong></em></em></em></em></em></em></strong></strong></em></em></em></em></em></em></em></em></em></em></em><small><font face="Arial">TWA\TWS;0;2;4;6;8;10;12;14;16;18;20;22;24;26;28;30;32;34;36;38;40;42;44;46;48;50;52;54;56;58;60<br />
 0;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;<br />
 0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000;0.000<br />
 5;0.000;0.210;0.420;0.630;0.800;0.860;0.920;0.940;0.950;0.970;0.980;0.980;0.990;0.950;0.880;<br />
-0.810;0.740;0.670;0.600;0.530;0.460;0.370;0.280;0.190;0.090;0.000;0.000;0.000;0.000;0.000;0.000</font><em><em><em><em><em><em><em><em><em><em><em><strong><strong><em><em><em><em><em><em><strong><strong><em><font face="Arial"><br />
+0.810;0.740;0.670;0.600;0.530;0.460;0.370;0.280;0.190;0.090;0.000;0.000;0.000;0.000;0.000;0.000</font></small><em><em><em><em><em><em><em><em><em><em><em><strong><strong><em><em><em><em><em><em><strong><strong><em><font face="Arial"><br />
 </font></em></strong></strong></em></em></em></em></em></em></strong></strong><em><em><em><em><em><em><em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em><font face="Arial"><br />
-<br />
 Maxsea Polar Format (same as Adrena, or SailGrib WR)<br />
 <a class="moz-txt-link-freetext" href="http://www.sailgrib.com/wr-user-guide">http://www.sailgrib.com/wr-user-guide</a><br />
 <br />
@@ -15032,7 +15024,7 @@ positioning (see below).<br />
 <br />
 This is the document containing the test data used for the example
 below: <a href="http://opencpn.org/ocpn/sites/default/files/users/rgleason/Textbook%20data.pdf">Example
-worksheet</a> (4 star observations).</span><em><em><em><em><em><em><em><em><em><em><em><strong><strong><em><em><em><em><em><em><strong><strong><em><br />
+worksheet</a> <br />(4 star observations).</span><em><em><em><em><em><em><em><em><em><em><em><strong><strong><em><em><em><em><em><em><strong><strong><em><br />
 <br />
 </em></strong></strong></em></em></em></em></em></em></strong></strong></em></em></em></em></em></em></em></em></em></em></em>
 <h3 style="font-weight: normal;">2. Sight
@@ -15680,28 +15672,27 @@ with, and retaining variables.<em><em><em><em><em><em><em><em><em><em><em><stron
 </strong></em></strong></strong></em></em></em></em></em></strong></em></strong></strong></em></em></em></em></em></em></em></em></em></em></em>
 <ul>
 <em><em><em><em><em><em><em><em><em><em><em><strong><strong><em><strong><em><em><em><em><em><strong><strong><em><strong>
-</strong></em></strong></strong></em></em></em></em></em></strong></em></strong></strong></em></em></em></em></em></em></em></em></em></em></em><em><em><em><em><em><em><em><em><em><em><em><li style="font-weight: normal;">When starting the plugin for
+</strong></em></strong></strong></em></em></em></em></em></strong></em></strong></strong></em></em></em></em></em></em></em></em></em></em></em><li style="font-weight: normal;">When starting the plugin for
 the first time, go to <img style="width: 32px; height: 32px;" alt="" src="images/settings_003.jpg" />to
 find the
 plugin tab. Click on the calculator plugin, then the "Enable" button.</li>
 <li style="font-weight: normal;">Back in the OpenCPN
-menu the calculator icon brings up the calculator.</li>
-<strong><strong><strong> <a style="font-weight: normal;" href="#"> </a> <li style="font-weight: normal;"><a href="#"><br />
-</a></li>
+menu the calculator icon brings up the calculator.<br />
+</li><em><em><em><em><em><em><em><em><em><em><em><strong><strong><strong><a href="#"></a>
 <a style="font-weight: normal;" href="#"> </a>
-<li style="font-weight: normal;">Tick the "Help" tickbox
+</strong></strong></strong></em></em></em></em></em></em></em></em></em></em></em><li style="font-weight: normal;">Tick the "Help" tickbox
 to bring up a comprehensive
 help screen.
 Unticking the help button brings you back to the calculator only
-interface and resizes the menu to the original size.</li>
+interface and resizes the menu to the original size.</li><em><em><em><em><em><em><em><em><em><em><em><strong><strong><strong>
 <a style="font-weight: normal;" href="#"> </a>
-<li style="font-weight: normal;">Enter calculations in
+</strong></strong></strong></em></em></em></em></em></em></em></em></em></em></em><li style="font-weight: normal;">Enter calculations in
 the box and press enter or
 "Calculate" for
 evaluation. Press the up or down button, to retrieve historic input and
-results (max 30).</li>
+results (max 30).</li><em><em><em><em><em><em><em><em><em><em><em><strong><strong><strong>
 <a style="font-weight: normal;" href="#"> </a>
-<li><span style="font-weight: normal;">Examples of
+</strong></strong></strong></em></em></em></em></em></em></em></em></em></em></em><em><em><em><em><em><em><em><em><em><em><em><strong><strong><strong><li><span style="font-weight: normal;">Examples of
 expression that work in
 the
 calculator are: (comments are in brackets, some results depend on
@@ -15725,13 +15716,13 @@ other example calculations): </span>
 Mile)</li>
 <li style="font-weight: normal;">ftm*LWL
 (waterline length in meters)</li>
-<em><em><em><em><em><strong><strong><em><strong>
-</strong></em></strong></strong></em></em></em></em></em>
+
+
 </ul>
-<em><em><em><em><em><strong><strong><em><strong>
-</strong></em></strong></strong></em></em></em></em></em></li>
-<em><em><em><em><em><strong><strong><em><strong>
-</strong></em></strong></strong></em></em></em></em></em><li style="font-weight: normal;">Distance to horizon
+
+</li>
+
+<li style="font-weight: normal;">Distance to horizon
 <ul>
 <li>R=6378.1*1000 (Radius of the earth in m)</li>
 <li>H=2.5 (Height of the eye above sea-level
@@ -15754,13 +15745,13 @@ lighthouse in m)</li>
 </li>
 </ul>
 </li>
-<li style="font-weight: normal;">Ans is the result of
+</strong></strong></strong></em></em></em></em></em></em></em></em></em></em></em><li style="font-weight: normal;">Ans is the result of
 the previous
-calculation</li>
+calculation</li><em><em><em><em><em><em><em><em><em><em><em><strong><strong><strong>
 <a style="font-weight: normal;" href="#"> </a>
-<li style="font-weight: normal;">Variables can be
+</strong></strong></strong></em></em></em></em></em></em></em></em></em></em></em><li style="font-weight: normal;">Variables can be
 defined (e.g.
-myvariable=10/8*cos(dtr*90) or yourvariable=Ans)</li>
+myvariable=10/8*cos(dtr*90) or yourvariable=Ans)</li><em><em><em><em><em><em><em><em><em><em><em><strong><strong><strong>
 <li><span style="font-weight: normal;">Operators:</span>
 <ul>
 <li style="font-weight: normal;">+ plus</li>
@@ -16253,7 +16244,7 @@ Available "hotkeys", if any, are shown to the right.<em><em><em><em><em><em><em>
 <img style="width: 274px; height: 273px;" alt="" src="images/Right-Click-RNC-single-chart.jpg" /> <img style="width: 254px; height: 252px;" alt="" src="images/Right-Click-ENC-single-chart.jpg" /><br />
 </strong></em></strong></strong></em></em></em></em></em></strong></em></strong></strong><em><em><em><em><em><em><em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em></em><br />
 <h3 style="font-weight: normal;">Starting with the left
-menu for rastercharts
+menu for raster charts
 </h3>
 Measure<br />
 Activates a "pencil". Move the pencil with the cursor. Put the tip of
@@ -16843,14 +16834,14 @@ the direction of the arrow.</li>
 </strong></em></strong></strong></em></em></em></em></em></strong></em></strong></strong></em></em><span>*
 Ctrl-G </span>Works on some Windows systems (depending on
 graphic driver)<span>.</span><em><em><strong><strong><em><strong><em><em><em><em><em><strong><strong><em><strong><br />
-<br />
-</strong></em></strong></strong></em></em></em></em></em></strong></em></strong></strong></em></em><span class="" style="font-weight: normal;">NOTE: This list
+</strong></em></strong></strong></em></em></em></em></em></strong></em></strong></strong></em></em><strong><strong><strong><strong><strong><strong><br />
+</strong></strong></strong></strong></strong></strong><span class="" style="font-weight: normal;">NOTE: This list
 may not be completely detailed and correct for now, but
-it does try to establish all the shortcuts available.</span><em><em><strong><em><em><em><em><em><em><em><br style="font-weight: normal;" />
+it does try to establish all the shortcuts available.</span><strong><br style="font-weight: normal;" />
 <span style="font-weight: normal;">We may need to add some
 things to Caesar's Functional and tabular list
 to make it more complete. Please contribute ideas and
-corrections/improvements!</span></em></em></em></em></em></em></em></strong></em></em></p>
+corrections/improvements!</span></strong></p></em></em></em></em></em></em></em></em></em><em><em><em><em><em><em><em><em><em>
 <em><em><strong><strong><em><strong><em><em><em><em><em><strong><strong><em><strong>
 </strong></em></strong></strong></em></em></em></em></em></strong></em></strong></strong></em></em></em></em></em></em></em></em></em></em></em></div>
 <div id="node-187" class="section-2">
@@ -17174,7 +17165,7 @@ Loading Vector Charts<br />
 When using a vector chart for the first time, OpenCPN has to process
 the data, and transform the information to an internal display format.
 Click the green chart rectangle in the chart-bar to start the process.<em><em><em><em><em><em><em><em><em><em><em><strong><strong><em><strong><em><em><em><em><em><strong><strong><em><strong><br />
-<img style="width: 525px; height: 344px;" alt="" src="images/33vec.jpg" /><br />
+<img style="width: 525px; height: 344px;" alt="" src="images/33vec.jpg" /><br /><br />
 </strong></em></strong></strong></em></em></em></em></em></strong></em></strong></strong></em></em></em></em></em></em></em></em></em></em></em>This
 can take some time, depending on your computer. This internal SENC
 chart, is saved for future use. The created files are quite large, but
@@ -17182,13 +17173,13 @@ is in a format optimized for quick loading. OpenCPN is trading,
 creation time and size, for fast rendering when actually using the
 vector chart. The SENC files are saved in the SENC directory, in the
 same place as
-the opencpn.conf file - opencpn.ini on windows.<br />
+the opencpn.conf file - opencpn.ini on windows.<br /><br />
 To avoid getting a very long series of SENC charts being built at the
 same time, use single chart mode, for better control. This is certainly
 called for in areas that are densely populated with vector charts.
 Single chart mode and quilting are explained on this page <a href="#Chart%20Quilting">Chart Quilting</a> .<br />
 You probably do not want to build SENCs for all of your loaded S57 ENCs
-unless you plan to actually go there....<br />
+unless you plan to actually go there...<br /><br />
 For an advanced approach to building all SENC files in one go .. <a href="http://opencpn.org/ocpn/Adv_commandline">Command Line</a><br />
 Updating Vector Charts<br />
 Publishers of Vector Charts, such as NOAA and EAHC issues regular
@@ -18265,7 +18256,7 @@ If the status shows New for every chart you will get
 a
 message that no charts were selected for download. In that case you may
 not have gotten the chart directory right. You can edit the chart
-directory by clicking the button labeled Edit… .
+directory by clicking the button labeled Edit..
 This
 brings up a dialog box similar to the Add Catalog button except you can
 edit the Name, URL and Chart Directory. Be careful if you change the
@@ -20834,7 +20825,7 @@ This page has been placed as a link to the
 User
 Manual Page</a></p>
 So that it will not get deleted!<br />
-It is in the Developers Manual.<em><em><em><em><em><em><em><em><em><em><em><strong><strong><em><strong><em><em><em><em><em><strong><strong><em><strong>
+It is in the Developers Manual.<br /><br /><em><em><em><em><em><em><em><em><em><em><em><strong><strong><em><strong><em><em><em><em><em><strong><strong><em><strong>
 </strong></em></strong></strong></em></em></em></em></em></strong></em></strong></strong></em></em></em></em></em></em></em></em></em></em></em></div>
 </div>
 </body></html>
