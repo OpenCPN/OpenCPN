@@ -65,6 +65,8 @@ void ConnectionParams::Deserialize(const wxString &configStr)
     FurunoGP3X = !!wxAtoi(prms[16]);
 
     bEnabled = true;
+    LastNetworkPort = 0;
+    b_IsSetup = false;
     if (prms.Count() >= 18)
         bEnabled = !!wxAtoi(prms[17]);
 }
@@ -127,6 +129,7 @@ ConnectionParams::ConnectionParams()
     Priority = 0;
     Valid = true;
     bEnabled = true;
+    b_IsSetup = false;
 }
 
 wxString ConnectionParams::GetSourceTypeStr()
