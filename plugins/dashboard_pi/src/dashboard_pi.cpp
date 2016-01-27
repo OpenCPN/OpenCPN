@@ -837,6 +837,9 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                             SendSentenceToAllInstruments( OCPN_DBP_STC_TWS,
                                     toUsrSpeed_Plugin( m_NMEA0183.Mwv.WindSpeed * m_wSpeedFactor, g_iDashWindSpeedUnit ),
                                     getUsrSpeedUnit_Plugin( g_iDashWindSpeedUnit ) );
+                            SendSentenceToAllInstruments( OCPN_DBP_STC_TWS2,
+                                    toUsrSpeed_Plugin( m_NMEA0183.Mwv.WindSpeed * m_wSpeedFactor, g_iDashWindSpeedUnit ),
+                                    getUsrSpeedUnit_Plugin( g_iDashWindSpeedUnit ) );
                         }
                     }
                 }
