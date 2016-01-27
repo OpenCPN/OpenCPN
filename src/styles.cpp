@@ -473,9 +473,15 @@ wxBitmap Style::BuildPluginIcon( const wxBitmap* bm, int iconType, double factor
     wxBitmap iconbm;
 
     switch( iconType ){
-        case TOOLICON_NORMAL: {
+        case TOOLICON_NORMAL:
+        case TOOLICON_TOGGLED:
+            {
             if( hasBackground ) {
-                wxBitmap bg = GetNormalBG();
+                wxBitmap bg;
+                if(iconType == TOOLICON_NORMAL)
+                    bg = GetNormalBG();
+                else
+                    bg = GetToggledBG();
 
                 if((bg.GetWidth() >= bm->GetWidth()) && (bg.GetHeight() >= bm->GetHeight())){
                     int w = bg.GetWidth() * factor;
@@ -488,9 +494,12 @@ wxBitmap Style::BuildPluginIcon( const wxBitmap* bm, int iconType, double factor
                     iconbm = MergeBitmaps( bg, *bm, offset );
                 }
                 else{
+                    // A bit of contorted logic for non-square backgrounds...
                     double factor = ((double)bm->GetHeight()) / bg.GetHeight();
                     int nw = bg.GetWidth() * factor;
                     int nh = bm->GetHeight();
+                    if(bg.GetWidth() == bg.GetHeight())
+                        nw = nh;
                     wxImage scaled_image = bg.ConvertToImage();
                     bg = wxBitmap(scaled_image.Scale(nw, nh, wxIMAGE_QUALITY_HIGH));
                     
@@ -509,10 +518,6 @@ wxBitmap Style::BuildPluginIcon( const wxBitmap* bm, int iconType, double factor
                 mdc.SelectObject( wxNullBitmap );
                 iconbm = MergeBitmaps( bg, *bm, offset );
             }
-            break;
-        }
-        case TOOLICON_TOGGLED: {
-            iconbm = MergeBitmaps( GetToggledBG(), *bm, wxSize( 0, 0 ) );
             break;
         }
         default:
