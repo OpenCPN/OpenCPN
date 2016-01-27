@@ -279,12 +279,7 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
 
     wxMemoryDC mdc;
     mdc.SelectObject( m_StatBmp );
-#ifdef __WXMSW__    
-    if(g_bopengl)
-        mdc.SetBackground( wxBrush( GetGlobalColor( _T("COMPT") ), wxSOLID ) );
-    else
-#endif        
-        mdc.SetBackground( wxBrush( GetGlobalColor( _T("GREY2") ), wxSOLID ) );
+    mdc.SetBackground( wxBrush( GetGlobalColor( _T("COMP1") ), wxSOLID ) );
     mdc.Clear();
 
     mdc.SetPen( wxPen( GetGlobalColor( _T("UITX1") ), 1 ) );
@@ -324,6 +319,8 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
         iconBm = BMPRose;
     }
     
+    iconBm = ConvertTo24Bit( wxColor(0,0,0), iconBm);
+        
     mdc.DrawBitmap( iconBm, offset );
     offset.x += iconBm.GetWidth();
     offset.x += style->GetToolSeparation();
@@ -348,14 +345,14 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
         iconBm = gicon;
     }
     
+    iconBm = ConvertTo24Bit( wxColor(0,0,0), iconBm);
     mdc.DrawBitmap( iconBm, offset );
     mdc.SelectObject( wxNullBitmap );
     
     m_lastgpsIconName = gpsIconName;
 
-#if defined(ocpnUSE_GLES) || defined (__WXMSW__)  // GLES does not do ocpnDC::DrawBitmap(), so use texture
-                                                  // We also have trouble with MSW alpha bitmap rendering in GL mode
-    if(g_bopengl && (style->name.Lower() == _T("traditional"))){
+#if defined(ocpnUSE_GLES)   // GLES does not do ocpnDC::DrawBitmap(), so use texture
+    if(g_bopengl){
         wxImage image = m_StatBmp.ConvertToImage(); 
         unsigned char *imgdata = image.GetData();
         unsigned char *imgalpha = image.GetAlpha();
