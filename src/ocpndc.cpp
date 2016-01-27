@@ -32,6 +32,7 @@
 #endif
 
 #include "dychart.h"
+#include "ocpn_plugin.h"
 
 #ifdef __MSVC__
 #include <windows.h>
@@ -62,7 +63,8 @@ ocpnDC::ocpnDC( wxGLCanvas &canvas ) :
 #endif
 #ifdef ocpnUSE_GL
     m_textforegroundcolour = wxColour( 0, 0, 0 );
-#endif    
+#endif   
+    m_buseTex = GetLocaleCanonicalName().IsSameAs(_T("en_US"));
 }
 
 ocpnDC::ocpnDC( wxDC &pdc ) :
@@ -78,6 +80,7 @@ ocpnDC::ocpnDC( wxDC &pdc ) :
     }
 #endif
     m_textforegroundcolour = wxColour( 0, 0, 0 );
+    m_buseTex = GetLocaleCanonicalName().IsSameAs(_T("en_US"));
 }
 
 ocpnDC::ocpnDC() :
@@ -86,6 +89,7 @@ ocpnDC::ocpnDC() :
 #if wxUSE_GRAPHICS_CONTEXT
     pgc = NULL;
 #endif
+    m_buseTex = GetLocaleCanonicalName().IsSameAs(_T("en_US"));
 }
 
 ocpnDC::~ocpnDC()
@@ -1006,33 +1010,34 @@ void ocpnDC::DrawText( const wxString &text, wxCoord x, wxCoord y )
        wxCoord w = 0;
         wxCoord h = 0;
 
-#ifndef __WXMAC__
+        if(m_buseTex){
         
-        m_texfont.Build( m_font );      // make sure the font is ready
-        m_texfont.GetTextExtent(text, &w, &h);
-        
-        if( w && h ) {
+            m_texfont.Build( m_font );      // make sure the font is ready
+            m_texfont.GetTextExtent(text, &w, &h);
             
-            glEnable( GL_BLEND );
-            glEnable( GL_TEXTURE_2D );
-            glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-            glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+            if( w && h ) {
+                
+                glEnable( GL_BLEND );
+                glEnable( GL_TEXTURE_2D );
+                glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+                glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
 
-            glPushMatrix();
-            glTranslatef(x, y, 0);
-            
-            glColor3ub( m_textforegroundcolour.Red(), m_textforegroundcolour.Green(),
-                        m_textforegroundcolour.Blue() );
-            
+                glPushMatrix();
+                glTranslatef(x, y, 0);
+                
+                glColor3ub( m_textforegroundcolour.Red(), m_textforegroundcolour.Green(),
+                            m_textforegroundcolour.Blue() );
+                
 
-            m_texfont.RenderString(text);
-            glPopMatrix();
+                m_texfont.RenderString(text);
+                glPopMatrix();
 
-            glDisable( GL_TEXTURE_2D );
-            glDisable( GL_BLEND );
+                glDisable( GL_TEXTURE_2D );
+                glDisable( GL_BLEND );
 
+            }
         }
-#else            
+        else{           
             wxScreenDC sdc;
             sdc.GetTextExtent(text, &w, &h, NULL, NULL, &m_font);
             
@@ -1077,7 +1082,7 @@ void ocpnDC::DrawText( const wxString &text, wxCoord x, wxCoord y )
                     m_textforegroundcolour.Blue(), 255 );
             GLDrawBlendData( x, y, w, h, GL_ALPHA, data );
             delete[] data;
-#endif            
+        }            
     }
 #endif    
 }
@@ -1093,7 +1098,8 @@ void ocpnDC::GetTextExtent( const wxString &string, wxCoord *w, wxCoord *h, wxCo
     else {
         wxFont f = m_font;
         if( font ) f = *font;
-#ifndef __WXMAC__
+
+        if(m_buseTex){
   #ifdef ocpnUSE_GL       
         m_texfont.Build( f );      // make sure the font is ready
         m_texfont.GetTextExtent(string, w, h);
@@ -1101,10 +1107,12 @@ void ocpnDC::GetTextExtent( const wxString &string, wxCoord *w, wxCoord *h, wxCo
         wxMemoryDC temp_dc;
         temp_dc.GetTextExtent( string, w, h, descent, externalLeading, &f );
   #endif      
-#else
-        wxMemoryDC temp_dc;
-        temp_dc.GetTextExtent( string, w, h, descent, externalLeading, &f );
-#endif
+        }
+        else{
+            wxMemoryDC temp_dc;
+            temp_dc.GetTextExtent( string, w, h, descent, externalLeading, &f );
+        }
+
      }
      
      //  Sometimes GetTextExtent returns really wrong, uninitialized results.

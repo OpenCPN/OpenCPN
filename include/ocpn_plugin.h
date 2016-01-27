@@ -739,7 +739,7 @@ extern  DECL_EXP wxString GetPlugInPath(opencpn_plugin *pplugin);
 
 extern "C"  DECL_EXP int AddChartToDBInPlace( wxString &full_path, bool b_RefreshCanvas );
 extern "C"  DECL_EXP int RemoveChartFromDBInPlace( wxString &full_path );
-
+extern  DECL_EXP wxString GetLocaleCanonicalName();
 
 //  API 1.11 adds access to S52 Presentation library
 //Types

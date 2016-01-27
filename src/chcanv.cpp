@@ -8996,6 +8996,8 @@ static void RouteLegInfo( ocpnDC &dc, wxPoint ref_point, int row, wxString s )
     yp += hilite_offset;
 
     dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ) ) );
+    dc.SetTextForeground( FontMgr::Get().GetFontColor( _("RouteLegInfoRollover") ) );
+    
     AlphaBlending( dc, xp, yp, w, h, 0.0, GetGlobalColor( _T ( "YELO1" ) ), 172 );
 
     dc.DrawText( s, xp, yp );

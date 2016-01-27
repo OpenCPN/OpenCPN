@@ -104,6 +104,7 @@ extern ChartCanvas     *cc1;
 extern wxArrayString    g_locale_catalog_array;
 extern int              g_GUIScaleFactor;
 extern int              g_ChartScaleFactor;
+extern wxString         g_locale;
 
 unsigned int      gs_plib_flags;
 
@@ -2356,6 +2357,11 @@ int RemoveChartFromDBInPlace( wxString &full_path )
     }
     
     return bret;
+}
+
+wxString GetLocaleCanonicalName()
+{
+    return g_locale;
 }
 
 
