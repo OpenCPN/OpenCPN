@@ -2573,14 +2573,17 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
 
     bSizerBasicProperties->Add( sbSizerProperties, 3, wxALL | wxEXPAND, 5 );
 
-    sbSizerLinks = new wxStaticBoxSizer(
-            new wxStaticBox( m_panelBasicProperties, wxID_ANY, _("Links") ), wxVERTICAL );
-
+    sbSizerLinks = new wxStaticBoxSizer( new wxStaticBox( m_panelBasicProperties, wxID_ANY, _("Links") ), wxVERTICAL );
+    bSizerBasicProperties->Add( sbSizerLinks, 2, wxALL | wxEXPAND, 5 );
+    
     m_scrolledWindowLinks = new wxScrolledWindow( m_panelBasicProperties, wxID_ANY,
-            wxDefaultPosition, wxDefaultSize, wxHSCROLL | wxVSCROLL );
+            wxDefaultPosition, wxSize(-1, 60), wxHSCROLL | wxVSCROLL );
     m_scrolledWindowLinks->SetScrollRate( 2, 2 );
+    sbSizerLinks->Add( m_scrolledWindowLinks, 0, wxEXPAND | wxALL, 5 );
+    
     bSizerLinks = new wxBoxSizer( wxVERTICAL );
-
+    m_scrolledWindowLinks->SetSizer( bSizerLinks );
+    
     m_hyperlink17 = new wxHyperlinkCtrl( m_scrolledWindowLinks, wxID_ANY, _("wxFB Website"),
             wxT("file:///C:\\ProgramData\\opencpn\\opencpn.log"), wxDefaultPosition,
             wxDefaultSize, wxHL_DEFAULT_STYLE );
@@ -2606,9 +2609,6 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
 
     bSizerLinks->Add( m_hyperlink17, 0, wxALL, 5 );
 
-    m_scrolledWindowLinks->SetSizer( bSizerLinks );
-    sbSizerLinks->Add( m_scrolledWindowLinks, 1, wxEXPAND | wxALL, 5 );
-
     wxBoxSizer* bSizer9 = new wxBoxSizer( wxHORIZONTAL );
 
     m_buttonAddLink = new wxButton( m_panelBasicProperties, wxID_ANY, _("Add"), wxDefaultPosition,
@@ -2627,8 +2627,6 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
                                                 0 );
     sbSizerLinks->Add( m_staticTextEditEnabled, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
     
-    bSizerBasicProperties->Add( sbSizerLinks, 2, wxALL | wxEXPAND, 5 );
-
 
     m_panelDescription = new wxPanel( m_notebookProperties, wxID_ANY, wxDefaultPosition,
             wxDefaultSize, wxTAB_TRAVERSAL );
@@ -2691,6 +2689,7 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     
     Fit();
 
+    SetMinSize(wxSize(-1, 600));
     RecalculateSize();
     
     // Connect Events
@@ -2745,22 +2744,17 @@ void MarkInfoDef::RecalculateSize( void )
     
     Layout();
 
-    // X size is correctly computed by sizers, except on MSW....
     // We change only Y size, unless X is too big for the parent client size....
     
     wxSize esize;
-#ifdef __WXMSW__    
-    esize.x = GetCharWidth() * 46;
-#else
+
     esize.x = -1;
-#endif
-    
     esize.y = GetCharHeight() * 30;
     
     wxSize dsize = GetParent()->GetClientSize();
     esize.y = wxMin(esize.y, dsize.y - (2 * GetCharHeight()));
     esize.x = wxMin(esize.x, dsize.x - (1 * GetCharHeight()));
-    SetClientSize(wxSize(esize.x, esize.y));
+    SetSize(wxSize(esize.x, esize.y));
     
     wxSize fsize = GetSize();
     fsize.y = wxMin(fsize.y, dsize.y - (2 * GetCharHeight()));
@@ -3075,6 +3069,9 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
     androidEnableBackButton( false );
     #endif
     
+    Fit();
+    SetMinSize(wxSize(-1, 600));
+    RecalculateSize();
     
     return true;
 }
