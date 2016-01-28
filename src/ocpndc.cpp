@@ -968,6 +968,11 @@ void ocpnDC::DrawBitmap( const wxBitmap &bitmap, wxCoord x, wxCoord y, bool usem
                 printf("trying to use mask to draw a bitmap without alpha or mask\n" );
             }
 
+#ifdef __WXOSX__            
+            if(image.HasMask())
+                a=0;
+#endif
+            
             unsigned char *e = new unsigned char[4 * w * h];
             if(e && d){
                 for( int y = 0; y < h; y++ )
@@ -984,6 +989,7 @@ void ocpnDC::DrawBitmap( const wxBitmap &bitmap, wxCoord x, wxCoord y, bool usem
 
                         e[off * 4 + 3] =
                                 a ? a[off] : ( ( r == mr ) && ( g == mg ) && ( b == mb ) ? 0 : 255 );
+//                        e[off * 4 + 3] = ( ( r == mr ) && ( g == mg ) && ( b == mb ) ? 0 : 255 );
                     }
             }
 

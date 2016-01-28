@@ -6973,7 +6973,7 @@ void MyFrame::UpdateGPSCompassStatusBox( bool b_force_new )
         wxSize parent_size = cc1->GetSize();
 
         // check to see if it would overlap if it was in its home position (upper right)
-        wxPoint tentative_pt(parent_size.x - rect.width - cc1_edge_comp, 0);
+        wxPoint tentative_pt(parent_size.x - rect.width - cc1_edge_comp, g_StyleManager->GetCurrentStyle()->GetCompassYOffset());
         wxRect tentative_rect( tentative_pt, rect.GetSize() );
 
         //  If the toolbar location has changed, or the proposed compassDialog location has changed
