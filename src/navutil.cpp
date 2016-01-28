@@ -1564,9 +1564,8 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "bAISRolloverShowCOG" ), &g_bAISRolloverShowCOG );
     Read( _T ( "bAISRolloverShowCPA" ), &g_bAISRolloverShowCPA );
 
-    g_S57_dialog_sx = Read( _T ( "S57QueryDialogSizeX" ), 400L );
-    g_S57_dialog_sy = Read( _T ( "S57QueryDialogSizeY" ), 400L );
-
+    Read( _T ( "S57QueryDialogSizeX" ), &g_S57_dialog_sx, 400 );
+    Read( _T ( "S57QueryDialogSizeY" ), &g_S57_dialog_sy, 400 );
 
     wxString strpres( _T ( "PresentationLibraryData" ) );
     wxString valpres;
