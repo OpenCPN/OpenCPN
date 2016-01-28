@@ -2167,10 +2167,10 @@ wxBitmap GetBitmapFromSVGFile(wxString filename, unsigned int width, unsigned in
     if ( (width > 0) && (height > 0) && svgDoc.Load(filename))
         return wxBitmap(svgDoc.Render(width, height, NULL, false, true));
     else
-        return wxBitmap(0, 0);
+        return wxBitmap();
     
 #else        
-        return wxBitmap(0, 0);
+        return wxBitmap();
 #endif // ocpnUSE_SVG   
 }
 
