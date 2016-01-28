@@ -554,8 +554,10 @@ void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix)
         GetGlobalColor(_T("CHBLK"), &cf);
         dc.SetTextForeground(cf);
         if(pFontSmall->IsOk()){
-            int point_size = wxMax(10, 10 * scale);
-            pFontSmall->SetPointSize(point_size);
+            if(live.IsOk()){
+                int point_size = wxMax(10, 10 * scale);
+                pFontSmall->SetPointSize(point_size);
+            }
             dc.SetFont(*pFontSmall);
         }
         wxSize s = dc.GetTextExtent(NewVal);
