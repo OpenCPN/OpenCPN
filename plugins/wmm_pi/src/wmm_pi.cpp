@@ -553,8 +553,11 @@ void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix)
         wxColour cf;
         GetGlobalColor(_T("CHBLK"), &cf);
         dc.SetTextForeground(cf);
-        if(pFontSmall->IsOk())
+        if(pFontSmall->IsOk()){
+            int point_size = wxMax(10, 10 * scale);
+            pFontSmall->SetPointSize(point_size);
             dc.SetFont(*pFontSmall);
+        }
         wxSize s = dc.GetTextExtent(NewVal);
         dc.DrawText(NewVal, (icon.GetWidth() - s.GetWidth()) / 2, (icon.GetHeight() - s.GetHeight()) / 2);
         dc.SelectObject(wxNullBitmap);
