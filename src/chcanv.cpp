@@ -11186,14 +11186,26 @@ int SetScreenBrightness( int brightness )
             ReleaseDC( NULL, hDC );                                             // Release the DC
         }
 
-        if( NULL == g_pcurtain ) InitScreenBrightness();
+        if(brightness < 100 ){
+            if( NULL == g_pcurtain )
+                InitScreenBrightness();
+    
+            if( g_pcurtain ) {
+                int sbrite = wxMax(1, brightness);
+                sbrite = wxMin(100, sbrite);
 
-        if( g_pcurtain ) {
-            int sbrite = wxMax(1, brightness);
-            sbrite = wxMin(100, sbrite);
-
-            g_pcurtain->SetTransparent( ( 100 - sbrite ) * 256 / 100 );
+                g_pcurtain->SetTransparent( ( 100 - sbrite ) * 256 / 100 );
+            }
         }
+        else{
+            if( g_pcurtain ) {
+                g_pcurtain->Close();
+                g_pcurtain->Destroy();
+                g_pcurtain = NULL;
+            }
+        }
+        
+            
         return 1;
     }
 
