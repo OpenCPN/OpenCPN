@@ -256,6 +256,7 @@ bool GribRequestSetting::MouseEventHook( wxMouseEvent &event )
             m_StartPoint = event.GetPosition();                                    //starting selection point
             m_RenderZoneOverlay = 2;
         }
+		m_IsMaxLong = m_StartPoint.x > event.GetPosition().x? true: false;         //find if startpoint is max longitude 
         GetCanvasLLPix( m_Vp, event.GetPosition(), &m_Lat, &m_Lon);                //extend selection
         if( !m_tMouseEventTimer.IsRunning() ) m_tMouseEventTimer.Start( 20, wxTIMER_ONE_SHOT );
     }
@@ -277,7 +278,7 @@ void GribRequestSetting::OnMouseEventTimer( wxTimerEvent & event)
         m_spMaxLat->SetValue( (int) ceil(m_Lat) );
         m_spMinLat->SetValue( (int) floor(lat) );
     }
-    if( lon > m_Lon ) {
+	if(m_IsMaxLong) {
         m_spMaxLon->SetValue( (int) ceil(lon) );
         m_spMinLon->SetValue( (int) floor(m_Lon) );
     }
@@ -743,9 +744,11 @@ wxString GribRequestSetting::WriteMail()
         m_pTimeRange->GetStringSelection().ToDouble(&v);
         r_topmess.Append(wxString::Format(_T("..%d"), (int) v*24) + _T("|=\n"));
         break;
-    case ZYGRIB:                                                                         //Zygrib
-        r_zone = toMailFormat(1, m_spMinLat->GetValue() ) + toMailFormat(2, m_spMinLon->GetValue() ) + _T(" ")
-            + toMailFormat(1, m_spMaxLat->GetValue() ) + toMailFormat(2, m_spMaxLon->GetValue() );
+	case ZYGRIB:                                                                         //Zygrib
+		double maxlon = (m_spMinLon->GetValue() > m_spMaxLon->GetValue() && m_spMaxLon->GetValue() < 0)?
+			m_spMaxLon->GetValue() + 360 : m_spMaxLon->GetValue();
+		r_zone = toMailFormat(1, m_spMinLat->GetValue() ) + toMailFormat(2, m_spMinLon->GetValue() ) + _T(" ")
+			+ toMailFormat(1, m_spMaxLat->GetValue() ) + toMailFormat(2, maxlon );
         r_topmess = wxT("login : ");
         r_topmess.Append(m_pLogin->GetValue() + _T("\n"));
         r_topmess.Append(wxT("code :"));
@@ -842,18 +845,17 @@ int GribRequestSetting::EstimateFileSize( double *size )
 
     double maxlon = m_spMaxLon->GetValue(), minlon = m_spMinLon->GetValue();
     double maxlat = m_spMaxLat->GetValue(), minlat = m_spMinLat->GetValue();
-
     if( maxlat - minlat < 0 )
         return 3;                               // maxlat must be > minlat
-
-    if ((maxlon > minlon ? 0 : 360) + maxlon - minlon > 180 || ( maxlat - minlat > 180 ))
+	double wlon = (maxlon > minlon ? 0 : 360) + maxlon - minlon;
+    if (wlon > 180 || ( maxlat - minlat > 180 ))
         return 4;                           //ovoid too big area
 
-    if ( fabs(maxlon - minlon) < 2*reso || maxlat - minlat < 2*reso  )
+    if ( fabs(wlon) < 2*reso || maxlat - minlat < 2*reso  )
         return 5;                           //ovoid too small area
 
     int npts = (int) (  ceil(((double)(maxlat - minlat )/reso))
-                      * ceil(((double)(maxlon - minlon )/reso)) );
+                      * ceil(((double)(wlon )/reso)) );
 
     if(m_pModel->GetCurrentSelection() == COAMPS )                                           //limited area for COAMPS
         npts = wxMin(npts, (int) (  ceil(40.0/reso) * ceil(40.0/reso) ) );
