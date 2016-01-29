@@ -11472,8 +11472,7 @@ void DimeControl( wxWindow* ctrl, wxColour col, wxColour window_back_color, wxCo
             ( (wxRadioButton*) win )->SetBackgroundColour( window_back_color );
 
         else if( win->IsKindOf( CLASSINFO(wxScrolledWindow) ) ) {
-            if( cs != GLOBAL_COLOR_SCHEME_DAY && cs != GLOBAL_COLOR_SCHEME_RGB )
-                ( (wxScrolledWindow*) win )->SetBackgroundColour( window_back_color );
+            ( (wxScrolledWindow*) win )->SetBackgroundColour( window_back_color );
         }
 #endif
 
