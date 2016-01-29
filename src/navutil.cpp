@@ -4608,8 +4608,9 @@ double fromDMM( wxString sdms )
     if( sdms.Contains( _T("N") ) || sdms.Contains( _T("S") ) || sdms.Contains( _T("E") )
             || sdms.Contains( _T("W") ) ) sdms.Replace( _T("-"), _T(" ") );
 
-    wcsncpy( buf, sdms.wc_str( wxConvUTF8 ), 64 );
-    len = wcslen( buf );
+    wcsncpy( buf, sdms.wc_str( wxConvUTF8 ), 63 );
+    buf[63] = 0;
+    len = wxMin( wcslen( buf ), sizeof(narrowbuf)-1);;
 
     for( i = 0; i < len; i++ ) {
         wchar_t c = buf[i];
