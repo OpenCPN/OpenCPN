@@ -1077,16 +1077,34 @@ void ocpnDC::DrawText( const wxString &text, wxCoord x, wxCoord y )
                 y += dy;
             }
 
-            unsigned char *data = new unsigned char[w * h];
+            unsigned char *data = new unsigned char[w * h * 4];
             unsigned char *im = image.GetData();
+            
+            
             if(im){
-                for( int i = 0; i < w * h; i++ )
-                    data[i] = im[3 * i];
+                unsigned int r = m_textforegroundcolour.Red();
+                unsigned int g = m_textforegroundcolour.Green();
+                unsigned int b = m_textforegroundcolour.Blue();
+                for( int i = 0; i < h; i++ ){
+                    for(int j=0 ; j < w ; j++){
+                        unsigned int index = ((i*w) + j) * 4;
+                        data[index] = r;
+                        data[index+1] = g;
+                        data[index+2] = b;
+                        data[index+3] = im[((i*w) + j) * 3];
+                    }
+                }
             }
 
-            glColor4ub( m_textforegroundcolour.Red(), m_textforegroundcolour.Green(),
-                    m_textforegroundcolour.Blue(), 255 );
-            GLDrawBlendData( x, y, w, h, GL_ALPHA, data );
+            glColor4ub( 255, 255, 255, 255 );
+            glEnable( GL_BLEND );
+            glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+            glRasterPos2i( x, y );
+            glPixelZoom( 1, -1 );
+            glDrawPixels( w, h, GL_RGBA, GL_UNSIGNED_BYTE, data );
+            glPixelZoom( 1, 1 );
+            glDisable( GL_BLEND );
+            
             delete[] data;
         }            
     }
