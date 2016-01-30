@@ -9,14 +9,14 @@
 			<horizontal>
 				<separation distance="8"/>
 				<margin top="6" bottom="6" left="6" right="6" invisible="false"/>
-				<toggled-location x="660" y="60" width="36" height="36"/>
+				<toggled-location x="660" y="60" width="32" height="32"/>
 				<background-location x="340" y="100" />
 				<size x="32" y="32"/>
 			</horizontal>
 			<vertical>
 				<separation distance="8"/>
 				<margin top="8" bottom="8" left="8" right="8" invisible="false"/>
-				<toggled-location x="660" y="60" width="36" height="36"/>
+				<toggled-location x="660" y="60" width="32" height="32"/>
 				<background-location x="340" y="100" />
 				<size x="32" y="32"/>
 			</vertical>
