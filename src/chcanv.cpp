@@ -1741,7 +1741,8 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             break;
 
         case 2:                      // Ctrl B
-            parent_frame->ToggleChartBar();
+            if ( pConfig->m_bShowMenuBar == false )
+                parent_frame->ToggleChartBar();
             break;
 
         case 13:             // Ctrl M // Drop Marker at cursor
