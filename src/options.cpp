@@ -708,7 +708,7 @@ MMSI_Props_Panel::MMSI_Props_Panel(wxWindow* parent)
   long lwidth;
 
   m_pListCtrlMMSI = new MMSIListCtrl(
-      this, ID_MMSI_PROPS_LIST, wxDefaultPosition, wxSize(-1, 450),
+      this, ID_MMSI_PROPS_LIST, wxDefaultPosition, wxSize(-1, -1),
       wxLC_REPORT | wxLC_SINGLE_SEL | wxLC_HRULES | wxLC_VRULES |
           wxBORDER_SUNKEN | wxLC_VIRTUAL);
   wxImageList* imglist = new wxImageList(16, 16, TRUE, 2);
