@@ -2128,12 +2128,12 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool
             wxBoundingBox bbtext;
             double plat, plon, extent = 0;
 
-            GetPixPointSingle( rect.GetX(), rect.GetY() + rect.GetHeight(), &plat, &plon, vp );
+            GetPixPointSingleNoRotate( rect.GetX(), rect.GetY() + rect.GetHeight(), &plat, &plon, vp );
             if(plon >= 360)
                 extent = 360;
             bbtext.SetMin( plon - extent, plat );
 
-            GetPixPointSingle( rect.GetX() + rect.GetWidth(), rect.GetY(), &plat, &plon, vp );
+            GetPixPointSingleNoRotate( rect.GetX() + rect.GetWidth(), rect.GetY(), &plat, &plon, vp );
             bbtext.SetMax( plon - extent, plat );
 
             if( rzRules->obj->bBBObj_valid )
@@ -2297,10 +2297,10 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPor
         wxBoundingBox symbox;
         double plat, plon;
 
-        GetPixPointSingle( r.x + prule->parm2, r.y + prule->parm3 + bm_height, &plat, &plon, vp );
+        GetPixPointSingleNoRotate( r.x + prule->parm2, r.y + prule->parm3 + bm_height, &plat, &plon, vp );
         symbox.SetMin( plon, plat );
 
-        GetPixPointSingle( r.x + prule->parm2 + bm_width, r.y + prule->parm3, &plat,  &plon, vp );
+        GetPixPointSingleNoRotate( r.x + prule->parm2 + bm_width, r.y + prule->parm3, &plat,  &plon, vp );
         symbox.SetMax( plon, plat );
 
         if( rzRules->obj->bBBObj_valid )
@@ -4259,8 +4259,8 @@ int s52plib::RenderCARC_VBO( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             glVertex2i( x0, y0 );
             glEnd();
         }
-        */
-        
+        */ 
+
 //        glTranslatef( -r.x, -r.y, 0 );
         glPopMatrix();
 #endif        
@@ -4319,9 +4319,9 @@ int s52plib::RenderCARC_VBO( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     double plat, plon;
     wxBoundingBox symbox;
 
-    GetPixPointSingle( r.x + rules->razRule->parm2, r.y + rules->razRule->parm3 + b_height, &plat, &plon, vp );
+    GetPixPointSingleNoRotate( r.x + rules->razRule->parm2, r.y + rules->razRule->parm3 + b_height, &plat, &plon, vp );
     symbox.SetMin( plon, plat );
-    GetPixPointSingle( r.x + rules->razRule->parm2 + b_width, r.y + rules->razRule->parm3, &plat, &plon, vp );
+    GetPixPointSingleNoRotate( r.x + rules->razRule->parm2 + b_width, r.y + rules->razRule->parm3, &plat, &plon, vp );
     symbox.SetMax( plon, plat );
 
     if( rzRules->obj->bBBObj_valid ) rzRules->obj->BBObj.Expand( symbox );
@@ -4709,9 +4709,9 @@ int s52plib::RenderCARC_DisplayList( ObjRazRules *rzRules, Rules *rules, ViewPor
     double plat, plon;
     wxBoundingBox symbox;
     
-    GetPixPointSingle( r.x + rules->razRule->parm2, r.y + rules->razRule->parm3 + b_height, &plat, &plon, vp );
+    GetPixPointSingleNoRotate( r.x + rules->razRule->parm2, r.y + rules->razRule->parm3 + b_height, &plat, &plon, vp );
     symbox.SetMin( plon, plat );
-    GetPixPointSingle( r.x + rules->razRule->parm2 + b_width, r.y + rules->razRule->parm3, &plat, &plon, vp );
+    GetPixPointSingleNoRotate( r.x + rules->razRule->parm2 + b_width, r.y + rules->razRule->parm3, &plat, &plon, vp );
     symbox.SetMax( plon, plat );
     
     if( rzRules->obj->bBBObj_valid ) rzRules->obj->BBObj.Expand( symbox );
@@ -7757,7 +7757,15 @@ void s52plib::GetPixPointSingle( int pixx, int pixy, double *plat, double *plon,
 #endif    
 }
 
-
+void s52plib::GetPixPointSingleNoRotate( int pixx, int pixy, double *plat, double *plon, ViewPort *vpt )
+{
+    if(vpt){
+        double rotation = vpt->rotation;
+        vpt->SetRotationAngle(0);
+        vpt->GetLLFromPix(wxPoint(pixx, pixy), plat, plon);
+        vpt->SetRotationAngle(rotation);
+    }
+}    
 
 
 void DrawAALine( wxDC *pDC, int x0, int y0, int x1, int y1, wxColour clrLine, int dash, int space )
