@@ -60,11 +60,11 @@
 #endif
 
 #ifdef __WXMSW__
-#include <windows.h>
+#include <winsock2.h>
 #include <dbt.h>
-#include <windows.h>
 #include <winioctl.h>
 #include <initguid.h>
+#include <Ws2tcpip.h>
 #endif
 #include <string>
 #include "ConnectionParams.h"
