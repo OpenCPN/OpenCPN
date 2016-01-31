@@ -311,6 +311,7 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
 
     int cwidth = style->GetToolSize().x * m_scale;
     int cheight = style->GetToolSize().y * m_scale;
+    cheight = wxMin(cheight, compassBg.GetHeight());
     cwidth = wxMin( cwidth, cheight );
     cheight = cwidth;
     
@@ -345,6 +346,7 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
     //  GPS Icon
     int twidth = style->GetToolSize().x * m_scale;
     int theight = style->GetToolSize().y * m_scale;
+    theight = wxMin(cheight, compassBg.GetHeight());
     int swidth = wxMax( twidth, theight );
     int sheight = wxMin( twidth, theight );
     
