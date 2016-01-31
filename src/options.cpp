@@ -6517,12 +6517,12 @@ void options::OnButtonTestSound(wxCommandEvent& event) {
     qDebug() << "Options play";
     AIS_Sound.Play();
 #else
-#if defined(__WXMSW__)
+#if defined(__WXMSW__) || defined(__WXOSX__)
     AIS_Sound.Play(wxSOUND_SYNC);
 #else
     AIS_Sound.Play();
     int t = 0;
-    while (AIS_Sound.IsPlaying() && (t < 10)) {
+    while (AIS_Sound.IsPlaying() && (t < 5)) {
       wxSleep(1);
       t++;
     }
