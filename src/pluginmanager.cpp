@@ -2174,6 +2174,11 @@ wxBitmap GetBitmapFromSVGFile(wxString filename, unsigned int width, unsigned in
 #endif // ocpnUSE_SVG   
 }
 
+bool IsTouchInterface_PlugIn(void)
+{
+    return g_btouch;
+}
+
 wxColour GetFontColour_PlugIn(wxString TextElement)
 {
     return FontMgr::Get().GetFontColor( TextElement );

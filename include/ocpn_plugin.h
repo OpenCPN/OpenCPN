@@ -1027,6 +1027,7 @@ extern  DECL_EXP bool AddPersistentFontKey(wxString TextElement);
 extern  DECL_EXP wxString GetActiveStyleName();
 
 extern  DECL_EXP wxBitmap GetBitmapFromSVGFile(wxString filename, unsigned int width, unsigned int height);
+extern  DECL_EXP bool IsTouchInterface_PlugIn(void);
 
 /*  Platform optimized File/Dir selector dialogs */
 extern  DECL_EXP int PlatformDirSelectorDialog( wxWindow *parent, wxString *file_spec, wxString Title, wxString initDir);
