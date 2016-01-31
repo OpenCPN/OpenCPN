@@ -105,6 +105,7 @@ extern wxArrayString    g_locale_catalog_array;
 extern int              g_GUIScaleFactor;
 extern int              g_ChartScaleFactor;
 extern wxString         g_locale;
+extern bool             g_btouch;
 
 unsigned int      gs_plib_flags;
 
