@@ -361,8 +361,6 @@ void grib_pi::OnToolbarToolCallback(int id)
 
     double scale_factor = GetOCPNGUIToolScaleFactor_PlugIn();
     if( scale_factor != m_GUIScaleFactor ) starting = true;
-
-    m_GUIScaleFactor = scale_factor;
     
     if(!m_pGribCtrlBar)
     {
@@ -370,7 +368,7 @@ void grib_pi::OnToolbarToolCallback(int id)
         long style = m_DialogStyle == ATTACHED_HAS_CAPTION ? wxCAPTION|wxCLOSE_BOX|wxSYSTEM_MENU : wxBORDER_NONE|wxSYSTEM_MENU;
         m_pGribCtrlBar = new GRIBUICtrlBar(m_parent_window, wxID_ANY, wxEmptyString, wxDefaultPosition,
                 wxDefaultSize, style, this);
-        m_pGribCtrlBar->SetScaledBitmap(m_GUIScaleFactor);
+		m_pGribCtrlBar->SetScaledBitmap(scale_factor);
         
         wxMenu* dummy = new wxMenu(_T("Plugin"));
         wxMenuItem* table = new wxMenuItem( dummy, wxID_ANY, wxString( _("Weather table") ), wxEmptyString, wxITEM_NORMAL );
@@ -400,7 +398,8 @@ void grib_pi::OnToolbarToolCallback(int id)
     if(m_bShowGrib) {
         if( starting ) {
             SetDialogFont( m_pGribCtrlBar );
-	    m_pGribCtrlBar->SetScaledBitmap( m_GUIScaleFactor );
+			m_GUIScaleFactor = scale_factor;
+			m_pGribCtrlBar->SetScaledBitmap( m_GUIScaleFactor );
             m_pGribCtrlBar->SetDialogsStyleSizePosition( true );
             m_pGribCtrlBar->Refresh();
         } else {
