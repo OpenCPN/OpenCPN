@@ -613,7 +613,8 @@ void OCPNPlatform::SetDefaultOptions( void )
         pConfig->Write( _T ( "bEnabled" ), true );
         
         pConfig->SetPath ( _T ( "/Settings/WMM" ) );
-        pConfig->Write ( _T ( "ShowIcon" ), false );
+        pConfig->Write ( _T ( "ShowIcon" ), true );
+        pConfig->Write ( _T ( "ShowLiveIcon" ), true );
         
     }
 #endif
@@ -628,7 +629,8 @@ void OCPNPlatform::SetDefaultOptions( void )
         pConfig->Write( _T ( "bEnabled" ), true );
         
         pConfig->SetPath ( _T ( "/Settings/WMM" ) );
-        pConfig->Write ( _T ( "ShowIcon" ), false );
+        pConfig->Write ( _T ( "ShowIcon" ), true );
+        pConfig->Write ( _T ( "ShowLiveIcon" ), true );
         
     }
 #endif
@@ -643,7 +645,8 @@ void OCPNPlatform::SetDefaultOptions( void )
         pConfig->Write( _T ( "bEnabled" ), true );
         
         pConfig->SetPath ( _T ( "/Settings/WMM" ) );
-        pConfig->Write ( _T ( "ShowIcon" ), false );
+        pConfig->Write ( _T ( "ShowIcon" ), true );
+        pConfig->Write ( _T ( "ShowLiveIcon" ), true );
         
     }
 #endif
