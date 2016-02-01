@@ -557,6 +557,19 @@ void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix)
             if(live.IsOk()){
                 int point_size = wxMax(10, 10 * scale);
                 pFontSmall->SetPointSize(point_size);
+                
+                //  Validate and adjust the font size...
+                //   No smaller than 8 pt.
+                int w;
+                wxScreenDC sdc;
+                sdc.SetFont(*pFontSmall);
+                sdc.GetTextExtent(NewVal, &w, NULL);
+                while( (w > (icon.GetWidth() * 8 / 10) ) && (point_size >= 8) ){
+                    point_size--;
+                    pFontSmall->SetPointSize(point_size);
+                    sdc.SetFont(*pFontSmall);
+                    sdc.GetTextExtent(NewVal, &w, NULL);
+                }
             }
             dc.SetFont(*pFontSmall);
         }
