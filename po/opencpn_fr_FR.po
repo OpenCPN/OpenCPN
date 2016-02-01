@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-31 17:29-0300\n"
-"PO-Revision-Date: 2016-01-25 19:56-0500\n"
+"PO-Revision-Date: 2016-02-01 16:24-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -4037,7 +4037,7 @@ msgstr "Toujours suivre"
 
 #: src/options.cpp:452
 msgid " Never track"
-msgstr " Nouvelle trace"
+msgstr " Ne jamais suivre"
 
 #: src/options.cpp:455 src/options.cpp:606
 msgid "Persistent"
