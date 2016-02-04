@@ -212,13 +212,30 @@ public class GPSServer extends Service implements LocationListener {
                             m_watchDog++;
 
                             if(isGPSEnabled && (m_watchDog > 10)){
+//                                Log.i("DEBUGGER_TAG", "Dog Timeout");
                                 if(null != locationManager){
+//                                    Log.i("DEBUGGER_TAG", "locationManager OK");
                                     mLastLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                                     if (mLastLocation != null) {
+//                                        Log.i("DEBUGGER_TAG", "Set Posn");
                                         latitude = mLastLocation.getLatitude();
                                         longitude = mLastLocation.getLongitude();
                                         course = mLastLocation.getBearing();
                                         speed = mLastLocation.getSpeed();
+
+                                        // Some (most?) mock location providers like "You Are Here GPS"
+                                        // do not provide position nor satellite status updates to a registered listener.
+                                        // So, we have to process their updates in a tick loop, and assume that
+                                        // they are always producing a valid fix.
+
+                                        boolean isMock = false;
+                                        if (android.os.Build.VERSION.SDK_INT >= 18) {
+                                            isMock = mLastLocation.isFromMockProvider();
+                                        } else {
+                                            isMock = Settings.Secure.getString(mContext.getContentResolver(), Settings.Secure.ALLOW_MOCK_LOCATION).equals("0");
+                                        }
+                                        if(isMock)
+                                            isGPSFix = true;
                                     }
 
                                     if(null != mNativeLib){

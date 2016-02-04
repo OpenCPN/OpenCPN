@@ -53,7 +53,7 @@
         <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version"/>
 
     </application>
-    <uses-sdk android:minSdkVersion="11" android:targetSdkVersion="19"/>
+    <uses-sdk android:minSdkVersion="11" android:targetSdkVersion="12"/>
     <supports-screens android:largeScreens="true" android:normalScreens="true" android:anyDensity="true" android:smallScreens="true"/>
     <!-- %%INSERT_PERMISSIONS -->
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -71,6 +71,10 @@
     <uses-feature android:name="android.hardware.location.gps" android:required="false"/>
     <uses-feature android:name="android.hardware.location" android:required="false"/>
     <uses-feature android:name="android.hardware.wifi" android:required="false"/>
+
+
+<uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION"/>
+
 
 
 </manifest>
