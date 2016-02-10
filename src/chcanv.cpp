@@ -10172,6 +10172,11 @@ void ChartCanvas::DrawAllRoutesInBBox( ocpnDC& dc, LLBBox& BltBBox, const wxRegi
                 continue;
             }
 
+            if ( 0 == pRouteDraw->GetnPoints() ) {
+                node = node->GetNext();
+                continue;
+            }
+            
             LLBBox test_box = pRouteDraw->GetBBox();
 
             if( b_run ) test_box.Expand( gLon, gLat );
