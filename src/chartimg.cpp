@@ -2886,7 +2886,7 @@ void ChartBaseBSB::latlong_to_chartpix(double lat, double lon, double &pixx, dou
                   alat = lat + m_lat_datum_adjust;
 
                 //      Get e/n from  Projection
-                  xlon = AdjustLongitude(xlon);
+                  xlon = AdjustLongitude(alon);
 
                   toSM_ECC(alat, xlon, m_proj_lat, m_proj_lon, &easting, &northing);
 
