@@ -4339,7 +4339,7 @@ void glChartCanvas::Render()
                             b_reset = true;
                         if(!m_cache_vp.IsValid())
                             b_reset = true;
-                            
+                        
                         if( b_reset ){
                             m_fbo_offsetx = (m_cache_tex_x - GetSize().x)/2;
                             m_fbo_offsety = (m_cache_tex_y - GetSize().y)/2;
@@ -4354,27 +4354,17 @@ void glChartCanvas::Render()
                             RenderCanvasBackingChart(gldc, m_canvasregion);
                         }
                         
-                        
 
                         glPushMatrix();
                         
                         glViewport( m_fbo_offsetx, m_fbo_offsety, (GLint) sx, (GLint) sy );
 
-                        //g_Platform->ShowBusySpinner();
+//                        glOrtho( m_fbo_offsetx, (GLint) sx, (GLint) sy, m_fbo_offsety, -1, 1 );
+//                        glMatrixMode(GL_MODELVIEW);
+//                        glLoadIdentity();
+                        
                         RenderCharts(gldc, screen_region);
-                        //g_Platform->HideBusySpinner();
                         
-    /*                    
-                        wxRect rect( 50, 50, cc1->VPoint.rv_rect.width-100, cc1->VPoint.rv_rect.height-100 );
-                        glColor3ub(250, 0, 0);
-                        
-                        glBegin( GL_QUADS );
-                        glVertex2f( rect.x,                     rect.y );
-                        glVertex2f( rect.x + rect.width,        rect.y );
-                        glVertex2f( rect.x + rect.width,        rect.y + rect.height );
-                        glVertex2f( rect.x,                     rect.y + rect.height );
-                        glEnd();
-    */                    
                         glPopMatrix();
 
                         glViewport( 0, 0, (GLint) sx, (GLint) sy );
@@ -4583,122 +4573,32 @@ void glChartCanvas::Render()
 
 void glChartCanvas::RenderCanvasBackingChart( ocpnDC dc, OCPNRegion valid_region)
 {
- 
-    glPushMatrix();
-
+    //  Fill the FBO with the current gshhs world chart
+    int w, h;
+    GetClientSize( &w, &h );
+    
+    glViewport( 0, 0, (GLint) m_cache_tex_x, (GLint) m_cache_tex_y );
+    glMatrixMode (GL_PROJECTION);
     glLoadIdentity();
     
     glOrtho( 0, m_cache_tex_x, m_cache_tex_y, 0, -1, 1 );
-    glViewport( 0, 0, (GLint) m_cache_tex_x, (GLint) m_cache_tex_y );
-    
-    // strategies:
-    
-    // 1:  Simple clear to color
-    
-    OCPNRegion texr( 0, 0, m_cache_tex_x,  m_cache_tex_y );
-    texr.Subtract(valid_region);
-   
-    glViewport( 0, 0, (GLint) m_cache_tex_x, (GLint) m_cache_tex_y );
-    
-    glColor3ub(0, 250, 250);
-    
-    OCPNRegionIterator upd ( texr );
-    while ( upd.HaveRects() )
-    {
-        wxRect rect = upd.GetRect();
-        
-        glBegin( GL_QUADS );
-        glVertex2f( rect.x,                     rect.y );
-        glVertex2f( rect.x + rect.width,        rect.y );
-        glVertex2f( rect.x + rect.width,        rect.y + rect.height );
-        glVertex2f( rect.x,                     rect.y + rect.height );
-        glEnd();
-        
-        upd.NextRect();
-    }        
-
-    // 2:  Render World Background chart
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
     
     wxRect rtex( 0, 0, m_cache_tex_x,  m_cache_tex_y );
     ViewPort cvp = cc1->GetVP().BuildExpandedVP( m_cache_tex_x,  m_cache_tex_y );
-
-    bool world_view = false;
-    RenderWorldChart(dc, cvp, rtex, world_view);
-
-/*    
-    dc.SetPen(wxPen(wxColour(254,254,0), 3));
-    dc.DrawLine( 0, 0, m_cache_tex_x, m_cache_tex_y);
+    bool worldview = false;
+    RenderWorldChart(dc, cvp, rtex, worldview);   // no worldview needed
     
-    dc.DrawLine( 0, 0, 0, m_cache_tex_y);
-    dc.DrawLine( 0, m_cache_tex_y, m_cache_tex_x, m_cache_tex_y);
-    dc.DrawLine( m_cache_tex_x, m_cache_tex_y, m_cache_tex_x, 0);
-    dc.DrawLine( m_cache_tex_x, 0, 0, 0);
-*/    
-  
-    // 3:  Use largest scale chart in the current quilt candidate list (which is identical to chart bar)
-    //          which covers the entire canvas
-#if 0 
-
-int sx = GetSize().x;
-int sy = GetSize().y;
-//glViewport( m_fbo_offsetx, m_fbo_offsety, (GLint) sx, (GLint) sy );
-//glViewport( 0, 0, (GLint) sx, (GLint) sy );
-
-
-//glBindTexture( g_texture_rectangle_format, m_cache_tex[m_cache_page]);
-//glEnable( g_texture_rectangle_format );
-//glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
-
-
-
-glColor3ub(250, 0, 250);
-
+    //  Reset matrices
+    glViewport( 0, 0, (GLint) w, (GLint) h );
+    glMatrixMode (GL_PROJECTION);
+    glLoadIdentity();
     
-    glBegin( GL_QUADS );
-    glVertex2f( 0,                     0 );
-    glVertex2f( 2048,        0 );
-    glVertex2f( 2048,        2049 );
-    glVertex2f( 0,                     2048 );
-    glEnd();
+    glOrtho( 0, (GLint) w, (GLint) h, 0, -1, 1 );
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
     
-
-    //  Make a ViewPort covering the entire canvas
-    wxRect rtex( 0, 0, m_cache_tex_x,  m_cache_tex_y );
-    ViewPort cvp = cc1->GetVP().BuildExpandedVP( m_cache_tex_x,  m_cache_tex_y );  //BuildClippedVP(cc1->GetVP(), rtex);
-
-    int dbIndex = -1;
-    ArrayOfInts candidates = cc1->GetQuiltCandidatedbIndexArray( );
-    for(unsigned int i=0 ; i < candidates.GetCount(); i++){
-        int index = candidates.Item(i);
-        
-        const ChartTableEntry &cte = ChartData->GetChartTableEntry(index);
-        OCPNRegion testr = Quilt::GetChartQuiltRegion( cte, cvp );
-
-        OCPNRegion texr( 0, 0, m_cache_tex_x,  m_cache_tex_y );
-        texr.Subtract(testr);
-        if(texr.IsEmpty()){
-            dbIndex = index;
-            break;
-        }
-    }
-    
-    if(dbIndex >= 0){
-        ChartBase *target_chart = ChartData->OpenChartFromDB( dbIndex, FULL_INIT );
-        if(target_chart){
-            
-            
-//            OCPNRegion texr( 0, 0, m_cache_tex_x,  m_cache_tex_y );
-            OCPNRegion texr( 10, 10, m_cache_tex_x-20,  m_cache_tex_y-20 );
-            RenderRasterChartRegionGL( target_chart, cvp, texr, true );
-        }
-    }
-
-    glBindTexture( g_texture_rectangle_format, 0);
-    
-#endif
-
-    glPopMatrix();
-
 }
 
 
@@ -4718,10 +4618,14 @@ void glChartCanvas::FastPan(int dx, int dy)
     
     int w, h;
     GetClientSize( &w, &h );
-    glViewport( 0, 0, (GLint) w, (GLint) h );
     
+    glViewport( 0, 0, (GLint) w, (GLint) h );
+    glMatrixMode (GL_PROJECTION);
     glLoadIdentity();
+    
     glOrtho( 0, (GLint) w, (GLint) h, 0, -1, 1 );
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
     
     if( s_b_useStencil ) {
         glEnable( GL_STENCIL_TEST );
@@ -4899,10 +4803,15 @@ void glChartCanvas::FastZoom(float factor)
     
     int w, h;
     GetClientSize( &w, &h );
+
     glViewport( 0, 0, (GLint) w, (GLint) h );
-    
+    glMatrixMode (GL_PROJECTION);
     glLoadIdentity();
+    
     glOrtho( 0, (GLint) w, (GLint) h, 0, -1, 1 );
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    
     
     if( s_b_useStencil ) {
         glEnable( GL_STENCIL_TEST );
