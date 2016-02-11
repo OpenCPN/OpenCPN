@@ -339,6 +339,7 @@ private:
       wxBitmap          m_cached_overlay_bm;
 
       bool              m_benable_blackdialog;
+      bool              m_benable_blackdialog_done;
       wxArrayString     m_deferred_blacklist_messages;
       
       wxArrayString     m_plugin_order;
