@@ -45,9 +45,29 @@ Opencpn uses the cmake system, so...
 
         su, <password>
 
-        make install	
-
-
+        make install
+        
+  
+------------------------------------------------
+Build OpenCPN in Ubuntu 14.04 LTS 64-bit
+------------------------------------------------
+# How to compile and install OpenCPN 4.2.0 from source code (via Github) in Ubuntu 14.04 LTS 64-bit:
+cd
+sudo apt-get update
+sudo apt-get install plplot12-driver-wxwidgets libalien-wxwidgets-perl checkinstall build-essential
+sudo rm -rf OpenCPN
+git clone https://github.com/OpenCPN/OpenCPN.git 
+cd OpenCPN
+mkdir build
+cd build
+cmake ../
+sudo make
+sudo checkinstall 	
+# during checkinstall process, press 2 and manually change name from build to opencpn
+apt-cache show opencpn
+# if you forgot to change the name of the newly built package, you need to use this command instead:
+apt-cache show build
+/usr/local/bin/opencpn
 
 
 ----------------------------------------------------------------------
