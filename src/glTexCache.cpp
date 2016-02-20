@@ -1514,13 +1514,21 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
                             ptd->nGPU_compressed = GPU_TEXTURE_UNCOMPRESSED;
                             b_need_compress = true;
 
-#if 1
+#ifndef __OCPN__ANDROID__
                         // in this version, we upload only the current level and don't use mipmaps
                         // temporarily while the compressed texture is being generated
                         // This is significant for memory consumption on opengles where a full mipmap
                         // stack is required in underzoom as we can avoid pushing  the uncompressed size
                         // into texture memory which is significant
                         // should be ok because the uncompressed data is only temporary anyway
+                            
+                        // On the other hand, if we have adequate graphics memory and a good GLES driver,
+                        // we would rather use mipmaps temporarily to get a nicer display.
+                        // This seems to be the normal case on Android devices.
+                        // Also, on Android, we use fast pan logic, so we already expect some small delay
+                        // in rendering newly exposed tiles.  Better to have them look nice when they finally do appear.
+                        // So don't take this optimization for Android builds.    
+                            
                         b_use_mipmaps = false;
 
 #ifdef ocpnUSE_GLES
