@@ -2111,14 +2111,14 @@ ENDIF(NOT SKIP_VERSION_CONFIG)
 ENDIF(WIN32 AND NOT UNIX)
 
 #IF(NOT SKIP_VERSION_CONFIG)
-   configure_file(version.h.in ${CMAKE_SOURCE_DIR}/include/version.h)
+   #configure_file(version.h.in ${CMAKE_SOURCE_DIR}/include/version.h)
 #ENDIF(NOT SKIP_VERSION_CONFIG)
 
 #  Do the version.h configuration into the build output directory,
 #  thereby allowing building from a read-only source tree.
 IF(NOT SKIP_VERSION_CONFIG)
-#    configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/include/version.h)
-#    INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/include)
+    configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/include/version.h)
+    INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/include)
 ENDIF(NOT SKIP_VERSION_CONFIG)
 
 # this dummy target is necessary to make sure the ADDITIONAL_MAKE_CLEAN_FILES directive is executed.
